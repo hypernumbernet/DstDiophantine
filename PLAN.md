@@ -55,7 +55,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
    偶数ギャップのヌルトランスレータ表現と最小 `J` 分解・強い回避過剰。
 4. ~~**abc予想**~~ → 完了（条件付き bridge）  
    コプライム三重項のねじれ高さによる品質の有界性。連続極限での古典的主張の回復も。
-5. **リーマン予想**（最難）  
+5. ~~**リーマン予想**（最難）~~ → 完了（条件付き bridge）  
    ゼータ関数の非自明零点が「ねじれ不整合が消えるローター・アンサンブル」に対応し、離散ねじれ層のスケール不変性から \(\mathrm{Re}=1/2\) が強制される、という埋め込みの形式化。mathlibの複素解析・ゼータ関数の現状を大幅に拡張する必要がある。
 
 ### 7. 全体の見通しとリスク・戦略
@@ -248,7 +248,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 FLT / Beal の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
 - Beal の分数冪不一致・三項 BCH・素数ローターによる共通因子消去は形式化しない（下限 `m²` 単軸模型）
 - 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²`・`1/m²` を下回りうる
-- ~~Collatz~~ → 下記完了；~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；RH は未着手
+- ~~Collatz~~ → 下記完了；~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；~~RH~~ → 下記完了
 
 ### フェーズ5 — Collatz 予想（2026-08-11 完了）
 
@@ -270,7 +270,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 Collatz の無条件主張はしない（古典軌道 ⇔ 高さ有界ローター流の橋は未証明）
 - 奇数段の `Γ₁` 剪断は純双曲モデル `log(3+1/n)` で代替
 - 吸引閉路 `4→2→1` 自体は連続埋め込みで `|JNormalized|≤1` に収まらない点を含む
-- ~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；RH は未着手
+- ~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；~~RH~~ → 下記完了
 
 ### フェーズ5 — Goldbach・Polignac（双子素数含む）（2026-08-12 完了）
 
@@ -301,7 +301,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 Goldbach / Polignac / 双子素数の無条件主張はしない
 - Goldbach の「対が無い ⇒ 既約 ⇒ `J_norm(2n)>1`」は加法分解と乗法ロータ高さを混同（高さ超過自体は常に成り立つ）
 - Polignac の弱い回避 `g_n≠2k` から過剰項が正とは限らない；Lean は強い回避のみを証明
-- ~~abc~~ → 下記完了；RH は未着手
+- ~~abc~~ → 下記完了；~~RH~~ → 下記完了
 
 ### フェーズ5 — abc 予想（2026-08-12 完了）
 
@@ -323,4 +323,26 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 - 古典 abc の無条件主張はしない（高品質三重項 ⇔ 許容純双曲配置の橋は未証明）
 - 双対セクター `R_dual(p)` / `lem:radical-dual` と品質–高さの `O(1)` 誤差は形式化しない
-- RH は未着手
+- ~~RH~~ → 下記完了
+
+### フェーズ5 — リーマン予想（2026-08-12 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Theorems/Riemann.lean` | 臨界ミスマッチ・dagger 対称・層スケール・有理格子証明書・条件付き古典回収 |
+
+**証明済み（sorry なし）— RH**
+
+- `primeRotor` / `finitePrimeEnsemble`（有限アンサンブル；Euler 積はしない）
+- `criticalMismatchParams` / `critical_J_eq` / `critical_zero_iff`（`θ≠0` で `J=0 ↔ σ=1/2`）
+- `critical_dagger`（`σ ↔ 1−σ`）と `criticalHeight_dagger`
+- `layerScale` / `critical_zero_layer_invariant`
+- `critical_balance_of_le_twenty` / `critical_balance_ok_of_le_twenty`
+- `riemann_hypothesis_of_bridge`（`RiemannAdmissibleBridge` 仮定付き）
+- `critical_line_of_zero_ensemble`（代数的臨界線定理）
+
+**論文ギャップ（無理に閉じない）**
+
+- 古典 RH の無条件主張はしない（非自明零点 ⇔ 許容零点アンサンブルの橋は未証明）
+- Euler 積のロータ置換・解析接続・`ζ(ρ)=0 ⇔ J(ρ)=0`・PNT 誤差は形式化しない
+- mathlib `riemannZeta` は未使用

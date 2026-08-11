@@ -55,3 +55,6 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `Fermat.lean` — FLT の DST 増幅核（`fermat_amplification_contradiction`、離散高さ下限、条件付き `fermat_last_theorem_of_bridge`）。古典 FLT の無条件主張は論文ギャップのため置かない。
 - `Beal.lean` — Beal 予想の DST 増幅核（`m=min(x,y,z)` 増幅、`beal_amplification_contradiction`、条件付き `beal_conjecture_of_bridge`）。古典 Beal の無条件主張は論文ギャップのため置かない。
 - `Collatz.lean` — Collatz 予想の DST 軌道・高さ核（`collatz_cycle_avoids_one_exceeds_bound`、有限探索証明書 `reachesOne_of_le_twenty`、条件付き `collatz_conjecture_of_bridge`）。古典 Collatz の無条件主張は論文ギャップのため置かない。
+- `Goldbach.lean` / `Polignac.lean` — Goldbach・Polignac（双子素数）の条件付き bridge 回収と有限証明書。
+- `Abc.lean` — abc 予想の品質–高さ核と条件付き `abc_conjecture_of_bridge`。
+- `Riemann.lean` — リーマン予想の臨界線バランス核（`critical_zero_iff`、有理格子証明書、条件付き `riemann_hypothesis_of_bridge`）。古典 RH の無条件主張は論文ギャップのため置かない。

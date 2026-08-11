@@ -26,10 +26,11 @@ import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
 import DstDiophantine.Theorems.Abc
+import DstDiophantine.Theorems.Riemann
 
 /-!
 Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including
-Goldbach / Polignac / abc).
+Goldbach / Polignac / abc / RH).
 -/
 
 namespace DstDiophantine
@@ -90,6 +91,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   abc_sum_iff_motor abc_solution_iff_motor abcHeight_eq_quality
   abc_quality_bound_of_admissible abc_amplification_contradiction
   discrete_abc_bound abc_radical_pow_of_le_hundred
-  AbcAdmissibleBridge abc_conjecture_of_bridge)
+  AbcAdmissibleBridge abc_conjecture_of_bridge
+  primeRotor finitePrimeEnsemble criticalMismatchParams criticalHeight
+  IsCriticalZeroEnsemble critical_zero_iff critical_dagger layerScale
+  criticalBalanceOk critical_balance_of_le_twenty
+  RiemannAdmissibleBridge riemann_hypothesis_of_bridge
+  critical_line_of_zero_ensemble)
 
 end DstDiophantine
