@@ -30,11 +30,15 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `Discrete.lean` — 離散ラピディティ `(ℤ/Nℤ)⁶` と主枝条件 `IsPrincipalBranch`
 - `UnitGroup.lean` — 離散ローター像 `DiscreteUnit`（有限集合）
 - `PGA/Normed.lean` — Banach 代数構造（`NormedSpace.exp` 用）
+- `Amplification.lean` — スケーリング増幅 `J_scale`、`J_pow_amplify`（純双曲模型）
+- `Continuum.lean` — 連続許容領域と離散近似 `exists_discrete_approx`
+- `Invariant.lean` — `J5_unbounded` / `J5_bound_spatial`（並進拘束付き有界性）
 
-## 論文ギャップ（有界性）
+## フェーズ3 整数埋め込み（Embedding API）
 
-論文 Ch.3 の生の \(|J|\le 1\) は式 \(J=\frac12\sum(\alpha_a^2-\beta_a^2)\) と矛盾する（Appendix extremal で \(J=3\pi^2/8\)）。Lean では許容配置 `IsAdmissible` 上で \(\|J\|\le 3\pi^2/8\) と正規化 \(J_{\rm norm}=\frac{8}{3\pi^2}J\) の \(\|J_{\rm norm}\|\le 1\) を証明。`IsPrincipalBranch` のみでは非有界（`torsion_bound_naive_false`）。詳細は [`PLAN.md`](PLAN.md) を参照。
-
-## 既知の `sorry`
-
-現時点でフェーズ1–2 コア API に `sorry` はなし。
+- `IntegerRotor.lean` — `R(n) = exp(log|n| · iI)`、乗法・冪乗
+- `NullTranslator.lean` — `T(a)`、加法忠実性
+- `PowerMap.lean` — 整数不一致モデルでの `p²` 増幅
+- `RotorClass.lean` — 離散トーラス代表・量子化 API
+- `Height.lean` — `integerHeight`、`descentCandidate`
+- `Equation.lean` — `diophantineMotor`、加法式の忠実埋め込み

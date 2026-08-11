@@ -102,12 +102,11 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - `Ω_trans² = 0`、`expTrans = 1 + Ω_trans`
 - `J` の係数公式 `J_coef`（Killing 正規化 `×8` 込み）
 
-**フェーズ2 以降に委譲（明示的 `sorry`）**
+**フェーズ2 以降に委譲（当時）— 多くはその後完了**
 
-- 双曲・循環生成子の平方・reverse-odd 性
-- 双対閉性（`dual_hyperbolic` / `dual_cyclic` / `dual_mul`）
-- ~~モーター単位性 `motor_unitary`~~ → **証明済み**（`rotorTorsion = exp(Ω_torsion)`、`motor_unitary`）
-- ~~有界性 `|J| ≤ 1`（`torsion_bound`）~~ → **証明済み**（`JNormalized`、許容配置上で `|J| ≤ 3π²/8`）
+- ~~双曲・循環生成子の平方・reverse-odd 性~~ → 主要分は証明済み
+- ~~モーター単位性~~ → 証明済み
+- ~~有界性 `|J| ≤ 1`~~ → `JNormalized` 版で証明済み（許容配置上）
 
 ### フェーズ2 — インフラ優先（A）完了（2026-08-11）
 
@@ -141,8 +140,6 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - \(J^{(5)}\) の並進項 \(\frac12\eta(\lambda,\lambda)\) は拘束なしでは非有界
 - [`discrete-dual-spacetime.tex`](References/discrete-dual-spacetime.tex) は連続極限で局所非有界と述べ、[`dst-diophantine.tex`](References/dst-diophantine.tex) は連続主枝で \(|J|\le 1\) と主張（論文間矛盾）
 
-**論文 TeX 修正済み（2026-08-11）** — `dst-diophantine.tex` / `discrete-dual-spacetime.tex` / `double-spacetime-theory.tex` / `dst-pga.tex` を Lean 結果（許容配置上 \(\|J_{\rm norm}\|\le 1\)、生 \(J\) 上界 \(3\pi^2/8\)）に整合。`pdflatex` は本環境未インストールのためコンパイル未実行。
-
 **Lean で証明した主張**
 
 | 定理 | 内容 |
@@ -155,6 +152,39 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 **未着手**
 
-- Spin 被覆・BCH・Dirichlet 核による論文 Ch.3 の「完全」導出
-- 連続極限 \(N\to\infty\) での TEGR 回復
-- \(J^{(5)}\) 並進込み大域有界
+- Spin 被覆・BCH 一般論・Dirichlet 核による論文 Ch.3 の「完全」導出
+- TEGR = Einstein–Hilbert の同値（連続極限の作用そのもの）
+- 統一降下アルゴリズムの完全終了証明（フェーズ4）
+
+### フェーズ2 — 仕上げ（2026-08-11 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Amplification.lean` | `scaleTorsion`、`J_scale`、`pureBoost`、`J_pow_amplify`、`rotorTorsion_pureBoost_pow` |
+| `Invariant.lean`（追記） | `J5_unbounded`、`IsSpatialTrans` / `IsBoundedTrans`、`J5_bound_spatial` |
+| `Continuum.lean` | `AdmissibleContinuous`、`exists_discrete_approx`（連続許容領域の稠密性） |
+
+**証明済み（sorry なし）**
+
+- スケーリング二次性 `J(c·p) = c² J(p)`
+- 純双曲1軸モデルでの厳密 `p²` 増幅
+- `J⁵` 並進無拘束非有界（反例）＋有界空間並進での `J⁵` 有界
+- 離散格子による連続許容配置の任意精度近似
+
+### フェーズ3 — 整数埋め込み（2026-08-11 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Embedding/IntegerRotor.lean` | `integerRotor`、`integerRotor_mul` / `_pow`、 `rotorTorsion` 接続 |
+| `Embedding/NullTranslator.lean` | `nullTranslator`、`nullTranslator_add`、忠実性 `nullTranslator_faithful` |
+| `Embedding/PowerMap.lean` | `J_pow_amplify_int`、`logMismatch` |
+| `Embedding/RotorClass.lean` | `RotorClass`、`quantizeInt`、`quantizeRotor` |
+| `Embedding/Height.lean` | `torsionHeight`、`integerHeight`、`descentCandidate` |
+| `Embedding/Equation.lean` | `diophantineMotor`、`additive_faithful`、`diophantine_zero_iff` |
+
+**証明済み（sorry なし）**
+
+- 整数ローターの乗法性・冪乗 `R(n·m)=R(n)R(m)`、`R(n^p)=R(n)^p`
+- ヌル加法 `T(a+b)=T(a)T(b)` と `T(a)=1 ↔ a=0`
+- 純不一致モデルでの `J` 増幅 `J(Ω^p)=p² J(Ω)`
+- 加法式ディオファントス式の忠実埋め込み

@@ -3,6 +3,7 @@ import DstDiophantine.Algebra.Motor
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Torsional invariants `J` and `J⁽⁵⁾
@@ -58,6 +59,50 @@ noncomputable def J5 (p : OmegaParams) : ℝ :=
 
 theorem J5_eq (p : OmegaParams) :
     J5 p = J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda := rfl
+
+/-- Spatial translation: vanishing time component. -/
+def IsSpatialTrans (p : TransParams) : Prop :=
+  p.lambda 0 = 0
+
+/-- Bounded spatial translation parameters. -/
+def IsBoundedTrans (R : ℝ) (p : TransParams) : Prop :=
+  IsSpatialTrans p ∧ ∑ μ : Fin 4, p.lambda μ ^ 2 ≤ R ^ 2
+
+/-- Without translation constraints, `J⁽⁵⁾` is unbounded. -/
+theorem J5_unbounded (M : ℝ) :
+    ∃ p : OmegaParams, M < |J5 p| := by
+  set L := Real.sqrt (2 * max (M + 1) 1)
+  refine ⟨{
+    torsion := { alpha := fun _ => 0, beta := fun _ => 0 }
+    trans := { lambda := fun μ => if μ = (1 : Fin 4) then L else 0 }
+  }, ?_⟩
+  have hJ : J { alpha := fun _ => 0, beta := fun _ => 0 } = 0 := by
+    rw [J_coef]
+    simp
+  have hdot : minkowskiDot (fun μ => if μ = (1 : Fin 4) then L else 0) = L ^ 2 := by
+    simp only [minkowskiDot, Fin.sum_univ_four, pow_two]
+    simp
+  have hsq : L ^ 2 = 2 * max (M + 1) 1 := Real.sq_sqrt (by positivity)
+  simp only [J5, hJ, zero_add]
+  have hmain : M < (1 / 2 : ℝ) * (2 * max (M + 1) 1) := by
+    rw [max_def]
+    split_ifs with h
+    · nlinarith
+    · nlinarith
+  have hnonneg : 0 ≤ (1 / 2 : ℝ) * (2 * max (M + 1) 1) := by positivity
+  rw [hdot, hsq, abs_of_nonneg hnonneg]
+  exact hmain
+
+theorem minkowskiDot_le_sq (lam : Fin 4 → ℝ) (h0 : lam 0 = 0) :
+    |minkowskiDot lam| ≤ ∑ μ : Fin 4, lam μ ^ 2 := by
+  have hEq : minkowskiDot lam = lam 1 * lam 1 + lam 2 * lam 2 + lam 3 * lam 3 := by
+    simp [minkowskiDot, h0, Fin.sum_univ_four]
+  have hnn : 0 ≤ lam 1 * lam 1 + lam 2 * lam 2 + lam 3 * lam 3 :=
+    add_nonneg (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)) (mul_self_nonneg _)
+  rw [hEq, abs_of_nonneg hnn]
+  simp only [Fin.sum_univ_four, h0, pow_two, sq]
+  apply le_of_eq
+  ring
 
 private theorem sq_diff_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
@@ -147,6 +192,26 @@ theorem torsion_bound_naive_false :
       nlinarith [Real.pi_gt_three, Real.pi_pos, Real.pi_le_four]
     rw [abs_of_pos hpos]
     nlinarith [Real.pi_gt_three, Real.pi_pos, Real.pi_le_four]
+
+/-- `J⁽⁵⁾` is bounded under admissible torsion and bounded spatial translation. -/
+theorem J5_bound_spatial (R : ℝ) (p : OmegaParams)
+    (ht : IsAdmissibleContinuous p.torsion) (hb : IsBoundedTrans R p.trans) :
+    |J5 p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 + R ^ 2 / 2 := by
+  rw [J5_eq]
+  have htors := torsion_bound_raw_continuous p.torsion ht
+  have htrans : |minkowskiDot p.trans.lambda| ≤ R ^ 2 := by
+    have h0 : p.trans.lambda 0 = 0 := hb.1
+    calc |minkowskiDot p.trans.lambda|
+        ≤ ∑ μ : Fin 4, p.trans.lambda μ ^ 2 := minkowskiDot_le_sq _ h0
+      _ ≤ R ^ 2 := hb.2
+  calc |J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda|
+      ≤ |J p.torsion| + |(1 / 2) * minkowskiDot p.trans.lambda| := abs_add_le _ _
+    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 + |(1 / 2) * minkowskiDot p.trans.lambda| := by gcongr
+    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 + (1 / 2) * R ^ 2 := by
+      gcongr
+      rw [abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
+      exact mul_le_mul_of_nonneg_left htrans (by norm_num)
+    _ = 3 * (Real.pi / 2) ^ 2 / 2 + R ^ 2 / 2 := by ring
 
 end Invariant
 

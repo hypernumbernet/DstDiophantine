@@ -99,6 +99,15 @@ theorem null_mul_null (μ ν : Fin 4) : null μ * null ν = 0 := by
         simp [mul_assoc]
     _ = 0 := by simp [e4_sq_zero]
 
+theorem null_one_ne_zero : null 1 ≠ 0 := by
+  intro h
+  have hcast : Fin.castAdd 1 (1 : Fin 4) = (1 : Fin 5) := by decide
+  have hι : ι e4Index = 0 := by
+    calc ι e4Index
+        = null 1 * ι 1 := by rw [null, hcast, mul_assoc, e1_sq, mul_one]
+      _ = 0 := by rw [h, zero_mul]
+  exact ι_e4_ne_zero hι
+
 theorem null_reverse (μ : Fin 4) : reverse (null μ) = -null μ := by
   dsimp [null]
   exact reverse_ι_mul_ι _ _ (e4_ne_cast μ)
@@ -108,6 +117,30 @@ theorem hyperbolic_reverse (a : Fin 3) : reverse (hyperbolic a) = -hyperbolic a 
   · exact reverse_ι_mul_ι 0 1 (by decide)
   · exact reverse_ι_mul_ι 0 2 (by decide)
   · exact reverse_ι_mul_ι 0 3 (by decide)
+
+theorem hyperbolic_smul_mul (x y : ℝ) :
+    (x • hyperbolic 0) * (y • hyperbolic 0) = (y • hyperbolic 0) * (x • hyperbolic 0) := by
+  simp only [Algebra.smul_def]
+  set h : PGA := hyperbolic 0
+  have hh : h * h = 1 := hyperbolic_sq 0
+  set Ax : PGA := algebraMap ℝ PGA x
+  set Ay : PGA := algebraMap ℝ PGA y
+  have scalar_mul_comm : Ax * Ay = Ay * Ax := by rw [← map_mul, ← map_mul, mul_comm x y]
+  have commute_h_Ay : h * Ay = Ay * h := (Algebra.commutes y h).symm
+  calc (Ax * h) * (Ay * h)
+      = Ax * (h * (Ay * h)) := mul_assoc Ax h (Ay * h)
+    _ = Ax * (Ay * (h * h)) := by
+        congr 1
+        calc h * (Ay * h) = (h * Ay) * h := (mul_assoc h Ay h).symm
+          _ = (Ay * h) * h := by rw [commute_h_Ay]
+          _ = Ay * (h * h) := mul_assoc Ay h h
+    _ = Ax * Ay := by rw [hh, mul_one]
+    _ = Ay * Ax := scalar_mul_comm
+    _ = Ay * (Ax * (h * h)) := by rw [← mul_one (Ay * Ax), ← hh, mul_assoc Ay Ax (h * h)]
+    _ = Ay * ((Ax * h) * h) := by congr 1; exact (mul_assoc Ax h h).symm
+    _ = (Ay * h) * (Ax * h) := by
+        have inner : (Ax * h) * h = h * (Ax * h) := by rw [← mul_assoc, (Algebra.commutes x h).symm]
+        rw [inner, mul_assoc Ay h (Ax * h)]
 
 theorem cyclic_reverse (a : Fin 3) : reverse (cyclic a) = -cyclic a := by
   fin_cases a

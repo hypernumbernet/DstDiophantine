@@ -57,6 +57,13 @@ theorem reverse_pow_of_reverse_neg (x : PGA) (hx : reverse x = -x) (n : ℕ) :
 theorem omegaTrans_sq (p : TransParams) : omegaTrans p * omegaTrans p = 0 := by
   simp [omegaTrans, Finset.sum_mul_sum, null_mul_null]
 
+theorem omegaTrans_mul (p q : TransParams) : omegaTrans p * omegaTrans q = 0 := by
+  simp [omegaTrans, Finset.sum_mul_sum, null_mul_null]
+
+theorem omegaTrans_add (p q : TransParams) :
+    omegaTrans p + omegaTrans q = omegaTrans ⟨fun μ => p.lambda μ + q.lambda μ⟩ := by
+  simp only [omegaTrans, Finset.sum_add_distrib, add_smul, add_div]
+
 /-- First-order null exponential: `exp(Ω_trans) = 1 + Ω_trans`. -/
 noncomputable def expTrans (p : TransParams) : PGA :=
   1 + omegaTrans p

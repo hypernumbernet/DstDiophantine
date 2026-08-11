@@ -1,5 +1,8 @@
 import DstDiophantine.Algebra.QuadraticForm
+import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -58,6 +61,20 @@ theorem e4_mul_anticomm (μ : Fin 4) :
 theorem e4_inner_anticomm (μ : Fin 4) :
     ι (Fin.castAdd 1 μ) * ι e4Index = -(ι e4Index * ι (Fin.castAdd 1 μ)) := by
   exact (neg_eq_iff_eq_neg.mpr (e4_mul_anticomm μ)).symm
+
+theorem ι_e4_ne_zero : ι e4Index ≠ 0 := by
+  intro h
+  have : Invertible (2 : ℝ) := ⟨2⁻¹, by norm_num, by norm_num⟩
+  have h' : (CliffordAlgebra.equivExterior Q311) (ι e4Index) = 0 := by
+    rw [h]
+    exact map_zero (CliffordAlgebra.equivExterior Q311)
+  rw [show (CliffordAlgebra.equivExterior Q311) = CliffordAlgebra.changeFormEquiv
+      CliffordAlgebra.changeForm.associated_neg_proof from rfl,
+    CliffordAlgebra.changeFormEquiv_apply] at h'
+  dsimp [ι] at h'
+  rw [CliffordAlgebra.changeForm_ι] at h'
+  exact absurd (Iff.mp (ExteriorAlgebra.ι_eq_zero_iff (e5vec e4Index)) h')
+    (by simp [e5vec, e4Index, Pi.single])
 
 end PGA
 

@@ -4,8 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: DstDiophantine contributors
 -/
 
+import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.Continuum
+import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.UnitGroup
+import DstDiophantine.Embedding.Equation
+import DstDiophantine.Embedding.Height
+import DstDiophantine.Embedding.IntegerRotor
+import DstDiophantine.Embedding.NullTranslator
+import DstDiophantine.Embedding.PowerMap
+import DstDiophantine.Embedding.RotorClass
 
 /-!
 Core re-exports for the PGA / biquaternion algebra layer (phases 1–2).
@@ -25,7 +35,15 @@ export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans 
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary)
 export UnitGroup (discreteRotor DiscreteUnit discreteUnit_finite)
 export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef J5_eq killingForm
-  axis_sq_diff_eq torsion_bound_raw torsion_bound torsion_bound_continuous JNormalized_extremal
+  axis_sq_diff_eq IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
+  torsion_bound_raw torsion_bound torsion_bound_continuous JNormalized_extremal
   torsion_bound_naive_false)
+export Amplification (scaleTorsion pureBoost J_scale JNormalized_scale J_pow_amplify
+  JNormalized_pow_amplify rotorTorsion_pureBoost_pow)
+export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
+export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
+  nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
+  quantizeInt quantizeRotor torsionHeight integerHeight descentCandidate diophantineMotor
+  additive_faithful diophantine_zero_iff)
 
 end DstDiophantine
