@@ -5,20 +5,18 @@ import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Normed algebra structure on `PGA`
 
 Finite-dimensional `Cl(3,1,1)` inherits a `NormedAlgebra` from left-multiplication matrices.
 This enables `NormedSpace.exp` for torsion rotors.
-
-## Deferred instances (`sorry`)
-
-- `Module.Finite` / `CharZero` on `Cl(3,1,1)` (expected dimension `2⁵`)
-- `NormedAlgebra ℚ` (needed for full `exp_add_of_commute` infrastructure)
 -/
-
-set_option warn.sorry false
 
 namespace DstDiophantine
 
@@ -28,9 +26,20 @@ open scoped BigOperators Matrix
 
 abbrev Alg311 := CliffordAlgebra Q311
 
-instance : Module.Finite ℝ Alg311 := by sorry
+instance : Module.Finite ℝ (ExteriorAlgebra ℝ Vec5) := by
+  classical
+  exact Module.Finite.of_basis (Pi.basisFun ℝ (Fin 5)).ExteriorAlgebra
 
-instance : CharZero Alg311 := by sorry
+instance : Module.Finite ℝ Alg311 :=
+  Module.Finite.equiv (CliffordAlgebra.equivExterior Q311).symm
+
+instance : Nontrivial Alg311 :=
+  (CliffordAlgebra.equivExterior Q311).symm.injective.nontrivial
+
+instance : FaithfulSMul ℝ Alg311 := inferInstance
+
+instance : CharZero Alg311 :=
+  Algebra.charZero_of_charZero (R := ℝ) (A := Alg311)
 
 noncomputable abbrev BasisIndex := Fin (Module.finrank ℝ Alg311)
 
@@ -55,7 +64,8 @@ noncomputable instance : NormedAlgebra ℝ Alg311 :=
 instance : CompleteSpace Alg311 :=
   FiniteDimensional.complete ℝ Alg311
 
-noncomputable instance instNormedAlgebraRat : NormedAlgebra ℚ Alg311 := by sorry
+noncomputable instance instNormedAlgebraRat : NormedAlgebra ℚ Alg311 :=
+  NormedAlgebra.restrictScalars ℚ ℝ Alg311
 
 end PGANormed
 

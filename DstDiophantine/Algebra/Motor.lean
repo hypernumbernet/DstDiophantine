@@ -9,8 +9,6 @@ The translational exponential truncates at first order because the null sector i
 strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra exponential.
 -/
 
-set_option warn.sorry false
-
 namespace DstDiophantine
 
 open CliffordAlgebra PGA Generators Operations NormedSpace
@@ -70,9 +68,18 @@ theorem expTrans_eq (p : TransParams) :
 noncomputable def rotorTorsion (p : TorsionParams) : PGA :=
   exp (omegaTorsion p)
 
-/-- `reverse(exp x) = exp(-x)` when `reverse x = -x`. Proof deferred. -/
+/-- `reverse(exp x) = exp(-x)` when `reverse x = -x`. -/
 theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
-    reverse (exp x) = exp (-x) := by sorry
+    reverse (exp x) = exp (-x) := by
+  set revOp := CliffordAlgebra.reverseOp (Q := Q311)
+  have hcont : Continuous revOp := revOp.toLinearMap.continuous_of_finiteDimensional
+  calc
+    reverse (exp x) = (revOp (exp x)).unop :=
+      (CliffordAlgebra.unop_reverseOp (Q := Q311) (exp x)).symm
+    _ = (exp (revOp x)).unop := by rw [map_exp revOp hcont]
+    _ = (exp (MulOpposite.op (reverse x))).unop := by rw [CliffordAlgebra.op_reverse (Q := Q311)]
+    _ = (exp (MulOpposite.op (-x))).unop := by rw [hx]
+    _ = exp (-x) := by rw [← MulOpposite.unop_op (exp (-x)), ← exp_op (-x)]
 
 theorem rotor_unitary (p : TorsionParams) :
     rotorTorsion p * reverse (rotorTorsion p) = 1 := by

@@ -35,8 +35,6 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 
 | 場所 | 内容 |
 |------|------|
-| `PGA/Normed.lean` | `Module.Finite`、`CharZero`、`NormedAlgebra ℚ` |
-| `Motor.lean` | `reverse_exp_of_reverse_neg`（`rotor_unitary` の補助） |
 | `Invariant.lean` | `torsion_bound_continuous`（許容配置上の `\|J\| ≤ 1`） |
 
-`motor_unitary` 自体は証明済み。上記補助 `sorry` への依存関係は [`PLAN.md`](PLAN.md) を参照。
+`motor_unitary`・`rotor_unitary`・Banach 代数インフラ（`Module.Finite` / `CharZero` / `NormedAlgebra ℚ` / `reverse_exp_of_reverse_neg`）は証明済み。詳細は [`PLAN.md`](PLAN.md) を参照。

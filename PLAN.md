@@ -124,14 +124,13 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 **証明済み（sorry なし）**
 
 - 離散トーラス `DiscreteTorsion N` の `Fintype` / `Finite`
-- `rotor_unitary`、`motor_unitary`（`expTrans_unitary` 経由）
+- `PGA/Normed.lean` — `Module.Finite`、`CharZero`、`NormedAlgebra ℚ`
+- `reverse_exp_of_reverse_neg` → `rotor_unitary` / `motor_unitary` 依存鎖が完全に閉じた
 - `torsion_bound` の型が主枝条件 `IsAdmissible` 付きに修正され、離散版は連続版へ帰着
 
 **フェーズ2 本体（有界性の完全証明）に委譲（明示的 `sorry`）**
 
 一覧は [`README.md`](README.md) の「既知の `sorry`」を参照。
 
-- `PGA/Normed.lean` — 有限次元・`CharZero`・`NormedAlgebra ℚ`
-- `Motor.lean` — `reverse_exp_of_reverse_neg`
 - `Invariant.lean` — `torsion_bound_continuous` / `torsion_bound`
 - 連続極限 `N → ∞` での TEGR 回復
