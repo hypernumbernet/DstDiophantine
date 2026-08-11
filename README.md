@@ -49,3 +49,7 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `Lattice.lean` — 許容格子 `AdmissibleClass`、零高さの整数判定
 - `Descent.lean` — dagger 高さ保存（論文ギャップ）と `DescentSchema`
 - `Search.lean` — `findZeroHeight`、有限探索の終了・決定可能性
+
+## フェーズ5 個別定理（Theorems API）
+
+- `Fermat.lean` — FLT の DST 増幅核（`fermat_amplification_contradiction`、離散高さ下限、条件付き `fermat_last_theorem_of_bridge`）。古典 FLT の無条件主張は論文ギャップのため置かない。Beal は未着手。

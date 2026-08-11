@@ -20,9 +20,10 @@ import DstDiophantine.Framework.Descent
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
+import DstDiophantine.Theorems.Fermat
 
 /-!
-Core re-exports for the PGA / biquaternion algebra layer (phases 1–4).
+Core re-exports for the PGA / biquaternion algebra layer (phases 1–5).
 -/
 
 namespace DstDiophantine
@@ -53,5 +54,9 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   fermatEquation fermatMotor_one_iff IsZeroHeight AdmissibleClass ExistsZeroHeight
   latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
   findZeroHeight findZeroHeight_isSome phase4_layers)
+export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorTorsion
+  amplification_implies_seed_le fermat_amplification_contradiction
+  discrete_nonzero_height_lb discrete_amplification_contradiction
+  FermatAdmissibleBridge fermat_last_theorem_of_bridge)
 
 end DstDiophantine

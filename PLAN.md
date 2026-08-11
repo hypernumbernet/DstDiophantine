@@ -218,3 +218,23 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 **フェーズ5 へ委譲**
 
 - 7つの個別予想（増幅矛盾・整数サイズ降下の本格インスタンス）
+
+### フェーズ5 — Fermat 最終定理（2026-08-11 完了・Beal 未着手）
+
+| ファイル | 内容 |
+|----------|------|
+| `Theorems/Fermat.lean` | 加法モータ同値、mismatch↔pureBoost、p² 増幅 vs 許容有界性、離散高さ下限、条件付き古典 FLT |
+
+**証明済み（sorry なし）**
+
+- `fermat_solution_iff_motor` / `fermat_pos_lt`（正整数解 ⇒ `a < c`）
+- `mismatchRotor_eq_rotorTorsion`（`logMismatch` との係数 2 を明示）
+- `amplification_implies_seed_le` / `fermat_amplification_contradiction`
+- `discrete_nonzero_height_lb`（`|JNormalized| ≥ 16/(3N²)`）と離散増幅矛盾
+- `fermat_last_theorem_of_bridge`（`FermatAdmissibleBridge` 仮定付き）
+
+**論文ギャップ（無理に閉じない）**
+
+- 古典 FLT の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
+- 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²` を下回りうる
+- Beal / Collatz / Goldbach / abc / RH は未着手
