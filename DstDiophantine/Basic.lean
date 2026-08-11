@@ -21,6 +21,7 @@ import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Theorems.Beal
 
 /-!
 Core re-exports for the PGA / biquaternion algebra layer (phases 1–5).
@@ -51,12 +52,16 @@ export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator 
   quantizeInt torsionHeight integerHeight descentCandidate diophantineMotor
   additive_faithful diophantine_zero_iff)
 export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_iff
-  fermatEquation fermatMotor_one_iff IsZeroHeight AdmissibleClass ExistsZeroHeight
+  fermatEquation fermatMotor_one_iff bealEquation bealMotor_one_iff
+  IsZeroHeight AdmissibleClass ExistsZeroHeight
   latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
   findZeroHeight findZeroHeight_isSome phase4_layers)
 export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorTorsion
   amplification_implies_seed_le fermat_amplification_contradiction
   discrete_nonzero_height_lb discrete_amplification_contradiction
-  FermatAdmissibleBridge fermat_last_theorem_of_bridge)
+  FermatAdmissibleBridge fermat_last_theorem_of_bridge
+  beal_solution_iff_motor bealMinExp bealGcd beal_amplification_contradiction
+  beal_discrete_amplification_contradiction BealAdmissibleBridge
+  beal_conjecture_of_bridge beal_eq_exp_not_coprime_of_bridge)
 
 end DstDiophantine

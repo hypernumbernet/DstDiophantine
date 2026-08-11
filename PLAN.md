@@ -219,13 +219,15 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 - 7つの個別予想（増幅矛盾・整数サイズ降下の本格インスタンス）
 
-### フェーズ5 — Fermat 最終定理（2026-08-11 完了・Beal 未着手）
+### フェーズ5 — Fermat 最終定理・Beal 予想（2026-08-11 完了）
 
 | ファイル | 内容 |
 |----------|------|
 | `Theorems/Fermat.lean` | 加法モータ同値、mismatch↔pureBoost、p² 増幅 vs 許容有界性、離散高さ下限、条件付き古典 FLT |
+| `Theorems/Beal.lean` | Beal 形冪和、`m=min(x,y,z)` 増幅 vs 許容有界性、条件付き共通素因数、等指数→FLT 回収 |
+| `Framework/Representation.lean` | `bealEquation` / `bealMotor_one_iff` / `bealEquation_eq_fermat` |
 
-**証明済み（sorry なし）**
+**証明済み（sorry なし）— Fermat**
 
 - `fermat_solution_iff_motor` / `fermat_pos_lt`（正整数解 ⇒ `a < c`）
 - `mismatchRotor_eq_rotorTorsion`（`logMismatch` との係数 2 を明示）
@@ -233,8 +235,17 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - `discrete_nonzero_height_lb`（`|JNormalized| ≥ 16/(3N²)`）と離散増幅矛盾
 - `fermat_last_theorem_of_bridge`（`FermatAdmissibleBridge` 仮定付き）
 
+**証明済み（sorry なし）— Beal**
+
+- `beal_solution_iff_motor` / `bealEquation_eq_fermat`
+- `bealMinExp` / `bealGcd` と `beal_amplification_contradiction`（`m²` 増幅）
+- `beal_discrete_amplification_contradiction`（Fermat 離散核の再利用）
+- `beal_conjecture_of_bridge`（`BealAdmissibleBridge` 仮定付きで `gcd > 1`）
+- `beal_eq_exp_not_coprime_of_bridge`（等指数の原始解排除）
+
 **論文ギャップ（無理に閉じない）**
 
-- 古典 FLT の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
-- 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²` を下回りうる
-- Beal / Collatz / Goldbach / abc / RH は未着手
+- 古典 FLT / Beal の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
+- Beal の分数冪不一致・三項 BCH・素数ローターによる共通因子消去は形式化しない（下限 `m²` 単軸模型）
+- 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²`・`1/m²` を下回りうる
+- Collatz / Goldbach / abc / RH は未着手

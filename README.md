@@ -52,4 +52,5 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 
 ## フェーズ5 個別定理（Theorems API）
 
-- `Fermat.lean` — FLT の DST 増幅核（`fermat_amplification_contradiction`、離散高さ下限、条件付き `fermat_last_theorem_of_bridge`）。古典 FLT の無条件主張は論文ギャップのため置かない。Beal は未着手。
+- `Fermat.lean` — FLT の DST 増幅核（`fermat_amplification_contradiction`、離散高さ下限、条件付き `fermat_last_theorem_of_bridge`）。古典 FLT の無条件主張は論文ギャップのため置かない。
+- `Beal.lean` — Beal 予想の DST 増幅核（`m=min(x,y,z)` 増幅、`beal_amplification_contradiction`、条件付き `beal_conjecture_of_bridge`）。古典 Beal の無条件主張は論文ギャップのため置かない。

@@ -62,6 +62,27 @@ theorem fermatMotor_one_iff (a b c : ℤ) (p : ℕ) :
     powerSumMotor (fermatEquation a b c p) = 1 ↔ a ^ p + b ^ p = c ^ p := by
   rw [powerSumMotor_one_iff, eval_fermat, sub_eq_zero]
 
+/-- Convenience: equation `A^x + B^y - C^z = 0` (Beal shape). -/
+def bealEquation (A B C : ℤ) (x y z : ℕ) : PowerSumEquation where
+  terms := [
+    ⟨1, A, x⟩,
+    ⟨1, B, y⟩,
+    ⟨-1, C, z⟩
+  ]
+
+theorem eval_beal (A B C : ℤ) (x y z : ℕ) :
+    evalPowerSum (bealEquation A B C x y z) = A ^ x + B ^ y - C ^ z := by
+  simp [evalPowerSum, bealEquation, evalTerm]
+  ring
+
+theorem bealMotor_one_iff (A B C : ℤ) (x y z : ℕ) :
+    powerSumMotor (bealEquation A B C x y z) = 1 ↔ A ^ x + B ^ y = C ^ z := by
+  rw [powerSumMotor_one_iff, eval_beal, sub_eq_zero]
+
+theorem bealEquation_eq_fermat (A B C : ℤ) (p : ℕ) :
+    bealEquation A B C p p p = fermatEquation A B C p :=
+  rfl
+
 /-- Additive relation `a + b - c = 0` as a power-sum (exponents `1`). -/
 def additivePowerSum (a b c : ℤ) : PowerSumEquation where
   terms := [
