@@ -51,8 +51,8 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
    冪乗による \(J\) の \(p^2\) 増幅と有界性の矛盾。ヌルトランスレータによる加法関係の扱いが中心。
 2. **Collatz予想**  
    有限トーラス上の軌道の周期性と \(J\) の蓄積。計算的検証と相性が良い。
-3. **Goldbach・Polignac（双子素数含む）**  
-   偶数ギャップのヌルトランスレータ表現と最小 \(J\) 分解の存在。
+3. ~~**Goldbach・Polignac（双子素数含む）**~~ → 完了（条件付き bridge）  
+   偶数ギャップのヌルトランスレータ表現と最小 `J` 分解・強い回避過剰。
 4. **abc予想**  
    コプライム三重項のねじれ高さによる品質の有界性。連続極限での古典的主張の回復も。
 5. **リーマン予想**（最難）  
@@ -248,7 +248,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 FLT / Beal の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
 - Beal の分数冪不一致・三項 BCH・素数ローターによる共通因子消去は形式化しない（下限 `m²` 単軸模型）
 - 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²`・`1/m²` を下回りうる
-- ~~Collatz~~ → 下記完了；Goldbach / abc / RH は未着手
+- ~~Collatz~~ → 下記完了；~~Goldbach / Polignac~~ → 下記完了；abc / RH は未着手
 
 ### フェーズ5 — Collatz 予想（2026-08-11 完了）
 
@@ -270,4 +270,35 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 Collatz の無条件主張はしない（古典軌道 ⇔ 高さ有界ローター流の橋は未証明）
 - 奇数段の `Γ₁` 剪断は純双曲モデル `log(3+1/n)` で代替
 - 吸引閉路 `4→2→1` 自体は連続埋め込みで `|JNormalized|≤1` に収まらない点を含む
-- Goldbach / Polignac / abc / RH は未着手
+- ~~Goldbach / Polignac~~ → 下記完了；abc / RH は未着手
+
+### フェーズ5 — Goldbach・Polignac（双子素数含む）（2026-08-12 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Theorems/Goldbach.lean` | Goldbach 対・モータ同値・目標高さ・候補最小 J・≤100 証明書・条件付き古典回収 |
+| `Theorems/Polignac.lean` | 偶ギャップ・強い回避過剰・鎖高さ・双子系・小証明書・条件付き古典回収 |
+| `Framework/Representation.lean` | `goldbachEquation` / `gapEquation` |
+
+**証明済み（sorry なし）— Goldbach**
+
+- `IsGoldbachPair` / `goldbach_sum_iff_motor` / `goldbach_solution_iff_motor`
+- `goldbachTargetHeight_gt_one_of_four_le`（`n≥4` で整数ロータ高さ `>1`；分解の有無と独立）
+- `exists_min_goldbachMismatch`（有限候補上の最小ミスマッチ高さ）
+- `goldbach_of_le_hundred`（偶数 `4…100` の有限探索証明書）
+- `goldbach_conjecture_of_bridge`（`GoldbachAdmissibleBridge` 仮定付き）
+
+**証明済み（sorry なし）— Polignac / 双子素数**
+
+- `IsPolignacPair` / `IsTwinPrimePair` / `polignac_gap_iff_motor`
+- `even_gap_of_odd_prime_pair`（奇素数差は偶数）
+- `strong_avoidance_term_ge` / `gapChainHeight_gt_one_of_sq`（強い回避 `g≥2k+2` のみ）
+- `exists_twin_of_le_twenty` および gap `4`,`6` の小証明書
+- `polignac_conjecture_of_bridge` / `twin_prime_conjecture_of_bridge`
+
+**論文ギャップ（無理に閉じない）**
+
+- 古典 Goldbach / Polignac / 双子素数の無条件主張はしない
+- Goldbach の「対が無い ⇒ 既約 ⇒ `J_norm(2n)>1`」は加法分解と乗法ロータ高さを混同（高さ超過自体は常に成り立つ）
+- Polignac の弱い回避 `g_n≠2k` から過剰項が正とは限らない；Lean は強い回避のみを証明
+- abc / RH は未着手

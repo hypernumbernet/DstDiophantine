@@ -23,9 +23,12 @@ import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Collatz
+import DstDiophantine.Theorems.Goldbach
+import DstDiophantine.Theorems.Polignac
 
 /-!
-Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including Collatz).
+Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including
+Goldbach / Polignac).
 -/
 
 namespace DstDiophantine
@@ -54,6 +57,7 @@ export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator 
   additive_faithful diophantine_zero_iff)
 export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_iff
   fermatEquation fermatMotor_one_iff bealEquation bealMotor_one_iff
+  goldbachEquation goldbachMotor_one_iff gapEquation gapMotor_one_iff
   IsZeroHeight AdmissibleClass ExistsZeroHeight
   latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
   findZeroHeight findZeroHeight_isSome phase4_layers)
@@ -68,6 +72,16 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   collatzHeight_even_le collatz_odd_log_delta
   collatzHeight_le_one_implies_le_three IsCollatzCycle
   collatz_cycle_avoids_one_exceeds_bound eventually_periodic_of_fintype
-  reachesOne_of_le_twenty CollatzAdmissibleBridge collatz_conjecture_of_bridge)
+  reachesOne_of_le_twenty CollatzAdmissibleBridge collatz_conjecture_of_bridge
+  IsGoldbachPair goldbach_sum_iff_motor goldbach_solution_iff_motor
+  goldbachTargetHeight goldbachTargetHeight_gt_one_of_four_le
+  goldbachCandidates exists_min_goldbachMismatch
+  goldbach_of_le_hundred GoldbachAdmissibleBridge goldbach_conjecture_of_bridge
+  evenGap IsPolignacPair IsTwinPrimePair twin_prime_of_polignac
+  polignac_gap_iff_motor even_gap_of_odd_prime_pair
+  gapExcessTerm gapExcessSum gapChainHeight strong_avoidance_term_ge
+  gapChainHeight_gt_one_of_sq exists_twin_of_le_twenty
+  PolignacAdmissibleBridge polignac_conjecture_of_bridge
+  twin_prime_conjecture_of_bridge)
 
 end DstDiophantine

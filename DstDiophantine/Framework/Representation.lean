@@ -99,6 +99,40 @@ theorem additivePowerSum_one_iff (a b c : ℤ) :
     powerSumMotor (additivePowerSum a b c) = 1 ↔ a + b = c := by
   rw [powerSumMotor_one_iff, eval_additivePowerSum, sub_eq_zero]
 
+/-- Goldbach skeleton: `p + q - n = 0`. -/
+def goldbachEquation (p q n : ℤ) : PowerSumEquation :=
+  additivePowerSum p q n
+
+theorem eval_goldbach (p q n : ℤ) :
+    evalPowerSum (goldbachEquation p q n) = p + q - n :=
+  eval_additivePowerSum p q n
+
+theorem goldbachMotor_one_iff (p q n : ℤ) :
+    powerSumMotor (goldbachEquation p q n) = 1 ↔ p + q = n :=
+  additivePowerSum_one_iff p q n
+
+/-- Even-gap / Polignac skeleton: `q - p - 2k = 0`. -/
+def gapEquation (p q k : ℤ) : PowerSumEquation where
+  terms := [
+    ⟨1, q, 1⟩,
+    ⟨-1, p, 1⟩,
+    ⟨-2, k, 1⟩
+  ]
+
+theorem eval_gap (p q k : ℤ) :
+    evalPowerSum (gapEquation p q k) = q - p - 2 * k := by
+  simp [evalPowerSum, gapEquation, evalTerm, pow_one]
+  ring
+
+theorem gapMotor_one_iff (p q k : ℤ) :
+    powerSumMotor (gapEquation p q k) = 1 ↔ q = p + 2 * k := by
+  rw [powerSumMotor_one_iff, eval_gap]
+  constructor
+  · intro h
+    linarith
+  · intro h
+    linarith
+
 /--
 Paper shape `R(f) · exp(∑ T) = 1` specialised to the null sector:
 vanishing of `eval` is equivalent to the translator motor being the identity.
