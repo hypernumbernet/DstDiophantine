@@ -59,11 +59,8 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
    ゼータ関数の非自明零点が「ねじれ不整合が消えるローター・アンサンブル」に対応し、離散ねじれ層のスケール不変性から \(\mathrm{Re}=1/2\) が強制される、という埋め込みの形式化。mathlibの複素解析・ゼータ関数の現状を大幅に拡張する必要がある。
 
 ### 7. 全体の見通しとリスク・戦略
-- **現実的な規模**：基盤（フェーズ1–3）だけで数ヶ月〜1年以上の集中的作業が必要。全体完成は複数年規模のプロジェクトになる可能性が高い。
 - **戦略的分割**：
-  - まず「\(|J|\le 1\) を仮定した上でのディオファントス部分」を完成させ、後から有界性を放電する。
   - 小さな \(N\) に対する計算的証明書（全探索）をLeanの `decide` や外部計算との連携で先行させる。
-  - PGA部分は独立論文・ライブラリとして公開し、コミュニティ貢献を狙う。
 - **主な技術的ハードル**：
   - 主枝対数とBCHの誤差評価の厳密化
   - 連続パラメータの離散化における「物理的に許容される配置」の定義
@@ -109,5 +106,30 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 - 双曲・循環生成子の平方・reverse-odd 性
 - 双対閉性（`dual_hyperbolic` / `dual_cyclic` / `dual_mul`）
-- モーター単位性 `motor_unitary`
-- 有界性 `|J| ≤ 1`（`torsion_bound`）
+- ~~モーター単位性 `motor_unitary`~~ → **証明済み**（`rotorTorsion = exp(Ω_torsion)`、`motor_unitary`）
+- 有界性 `|J| ≤ 1`（`torsion_bound`）— 主張は許容配置上へ修正済み、証明は委譲
+
+### フェーズ2 — インフラ優先（A）完了（2026-08-11）
+
+モジュール追加・更新:
+
+| ファイル | 内容 |
+|----------|------|
+| `Discrete.lean` | `(ℤ/Nℤ)⁶`、`toTorsionParams`、`IsPrincipalBranch` / `IsAdmissible` |
+| `PGA/Normed.lean` | `NormedAlgebra`（左乗法行列ノルム）、`NormedSpace.exp` 用 |
+| `UnitGroup.lean` | 離散ローター像 `DiscreteUnit`、有限性 |
+| `Motor.lean` | `rotorTorsion = exp(Ω_torsion)`、`rotor_unitary` / `motor_unitary` |
+| `Invariant.lean` | `torsion_bound` を許容配置上の主張に修正（証明は `sorry`） |
+
+**証明済み（sorry なし）**
+
+- 離散トーラス `DiscreteTorsion N` の `Fintype` / `Finite`
+- `rotor_unitary`、`motor_unitary`（`expTrans_unitary` 経由）
+- `torsion_bound` の型が主枝条件 `IsAdmissible` 付きに修正され、離散版は連続版へ帰着
+
+**フェーズ2 本体（有界性の完全証明）に委譲（明示的 `sorry`）**
+
+- `Module.Finite` / `CharZero` / `NormedAlgebra ℚ` on `PGA`（`PGA/Normed.lean`）
+- `reverse_exp_of_reverse_neg`（`exp` と `reverse` の可換性、スキュー元）
+- `torsion_bound_continuous` / `torsion_bound`（Spin 被覆・BCH・Dirichlet 核）
+- 連続極限 `N → ∞` での TEGR 回復

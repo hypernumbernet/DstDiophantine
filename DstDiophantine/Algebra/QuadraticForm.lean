@@ -64,12 +64,12 @@ def extend4 (v : Vec4) : Vec5 :=
 
 @[simp] theorem extend4_e4vec (μ : Fin 4) : extend4 (e4vec μ) = e5vec (Fin.castAdd 1 μ) := by
   funext i
-  fin_cases i <;> fin_cases μ <;> simp [extend4, e4vec, e5vec, Pi.single, extend4_apply]
+  fin_cases i <;> fin_cases μ <;> simp [extend4, e4vec, e5vec, Pi.single]
 
 theorem Q311_extend4 (v : Vec4) : Q311 (extend4 v) = Q31 v := by
   simp only [Q311, Q31, QuadraticMap.weightedSumSquares_apply, w311, w31, extend4]
   rw [Fin.sum_univ_five, Fin.sum_univ_four]
-  simp [w311, w31]
+  simp
 
 theorem Q311_e5vec (μ : Fin 5) : Q311 (e5vec μ) = w311 μ := by
   simp only [Q311, QuadraticMap.weightedSumSquares_apply, e5vec, w311]
@@ -86,7 +86,7 @@ theorem Q311_isOrtho_basis (i j : Fin 5) (hij : i ≠ j) :
   fin_cases i <;> fin_cases j <;>
     first
     | exact absurd rfl hij
-    | simp [Pi.single, Fin.sum_univ_five, mul_add, add_mul, pow_two, mul_one, add_assoc]
+    | simp [Pi.single, Fin.sum_univ_five, mul_add, add_mul, mul_one, add_assoc]
 
 theorem Q31_isOrtho_basis (i j : Fin 4) (hij : i ≠ j) :
     Q31.IsOrtho (e4vec i) (e4vec j) := by
@@ -95,7 +95,7 @@ theorem Q31_isOrtho_basis (i j : Fin 4) (hij : i ≠ j) :
   fin_cases i <;> fin_cases j <;>
     first
     | exact absurd rfl hij
-    | simp [Pi.single, Fin.sum_univ_four, mul_add, add_mul, pow_two, mul_one, add_assoc]
+    | simp [Pi.single, Fin.sum_univ_four, mul_add, add_mul, mul_one, add_assoc]
 
 /-- Minkowski inner product on translation parameters. -/
 def minkowskiDot (lam : Fin 4 → ℝ) : ℝ :=

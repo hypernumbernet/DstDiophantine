@@ -1,15 +1,18 @@
 import DstDiophantine.Algebra.Operations
+import DstDiophantine.Algebra.PGA.Normed
+import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Motors, Ω decomposition, and null exponential truncation
 
 The translational exponential truncates at first order because the null sector is
-strongly nilpotent (`N_μ N_ν = 0`).
+strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra exponential.
 -/
 
 namespace DstDiophantine
 
-open CliffordAlgebra PGA Generators Operations
+open CliffordAlgebra PGA Generators Operations NormedSpace
 
 namespace Motor
 
@@ -32,9 +35,27 @@ noncomputable def omegaTrans (p : TransParams) : PGA :=
 noncomputable def omegaBiv (p : OmegaParams) : PGA :=
   omegaTorsion p.torsion + omegaTrans p.trans
 
+theorem omegaTorsion_reverse (p : TorsionParams) :
+    reverse (omegaTorsion p) = -omegaTorsion p := by
+  simp only [omegaTorsion, map_sum, map_smul, map_add, hyperbolic_reverse, cyclic_reverse]
+  rw [← Finset.sum_neg_distrib]
+  congr 1
+  ext a
+  simp [neg_smul, neg_add_rev, add_comm]
+
+theorem reverse_pow (x : PGA) (n : ℕ) : reverse (x ^ n) = (reverse x) ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, CliffordAlgebra.reverse.map_mul, ih, pow_succ (reverse x)]
+    exact (Commute.pow_right (Commute.refl (reverse x)) n).eq
+
+theorem reverse_pow_of_reverse_neg (x : PGA) (hx : reverse x = -x) (n : ℕ) :
+    reverse (x ^ n) = (-x) ^ n := by
+  rw [reverse_pow, hx]
+
 theorem omegaTrans_sq (p : TransParams) : omegaTrans p * omegaTrans p = 0 := by
-  simp [omegaTrans, Finset.sum_mul_sum, null_mul_null, mul_smul_comm, smul_smul, add_mul,
-    mul_add, two_mul, mul_assoc]
+  simp [omegaTrans, Finset.sum_mul_sum, null_mul_null]
 
 /-- First-order null exponential: `exp(Ω_trans) = 1 + Ω_trans`. -/
 noncomputable def expTrans (p : TransParams) : PGA :=
@@ -43,17 +64,50 @@ noncomputable def expTrans (p : TransParams) : PGA :=
 theorem expTrans_eq (p : TransParams) :
     expTrans p = 1 + omegaTrans p := rfl
 
-/-- Torsion rotor placeholder (full `exp` deferred to phase 2). -/
+/-- Torsion rotor `R = exp(Ω_torsion)`. -/
 noncomputable def rotorTorsion (p : TorsionParams) : PGA :=
-  1 + omegaTorsion p
+  exp (omegaTorsion p)
+
+/-- Reverse commutes with `exp` on reverse-skew generators. Proof deferred. -/
+theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
+    reverse (exp x) = exp (-x) := by sorry
+
+theorem rotor_unitary (p : TorsionParams) :
+    rotorTorsion p * reverse (rotorTorsion p) = 1 := by
+  dsimp [rotorTorsion]
+  rw [reverse_exp_of_reverse_neg (omegaTorsion_reverse p)]
+  rw [← exp_add_of_commute (Commute.neg_right (Commute.refl (omegaTorsion p)))]
+  simp
 
 /-- Motor split `M = R · T` at the definition level. -/
 noncomputable def motor (p : OmegaParams) : PGA :=
   rotorTorsion p.torsion * expTrans p.trans
 
+/-- Null translator is unitary: `(1+Ω_trans)(1+Ω_trans)˜ = 1`. -/
+theorem expTrans_unitary (p : TransParams) :
+    expTrans p * reverse (expTrans p) = 1 := by
+  have hrev : reverse (omegaTrans p) = -omegaTrans p := by
+    simp only [omegaTrans, map_sum, map_smul, null_reverse]
+    rw [← Finset.sum_neg_distrib]
+    congr 1
+    ext μ
+    simp [neg_smul]
+  simp [expTrans, CliffordAlgebra.reverse.map_add, CliffordAlgebra.reverse.map_one, hrev,
+    mul_add, add_mul, omegaTrans_sq, mul_neg]
+
 theorem motor_unitary (p : OmegaParams) :
     motor p * reverse (motor p) = 1 := by
-  sorry
+  simp only [motor, CliffordAlgebra.reverse.map_mul]
+  calc
+    rotorTorsion p.torsion * expTrans p.trans *
+        (reverse (expTrans p.trans) * reverse (rotorTorsion p.torsion))
+        = rotorTorsion p.torsion * (expTrans p.trans * reverse (expTrans p.trans)) *
+            reverse (rotorTorsion p.torsion) := by
+              rw [← mul_assoc, mul_assoc (rotorTorsion p.torsion) (expTrans p.trans)
+                (reverse (expTrans p.trans))]
+    _ = rotorTorsion p.torsion * reverse (rotorTorsion p.torsion) := by
+              rw [expTrans_unitary, mul_one]
+    _ = 1 := rotor_unitary p.torsion
 
 theorem motor_factorization (p : OmegaParams) :
     motor p = rotorTorsion p.torsion * expTrans p.trans := rfl

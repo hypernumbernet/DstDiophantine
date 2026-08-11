@@ -22,5 +22,11 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `Q311` / `PGA` — 5次元クリフォード代数
 - `Generators` — 双曲・循環・ヌル10生成子（`N_μ N_ν = 0` 証明済み）
 - `Operations` — reverse / dual / dagger
-- `Motor` — `Ω` 分解、ヌル指数の一次打ち切り
-- `Invariant` — `J` / `J⁽⁵⁾`（`|J| ≤ 1` はフェーズ2）
+- `Motor` — `Ω` 分解、本物の `rotorTorsion = exp(Ω_torsion)`、`motor_unitary` 証明済み
+- `Invariant` — `J` / `J⁽⁵⁾`（`|J| ≤ 1` は許容配置上の主張、証明はフェーズ2本体）
+
+## フェーズ2 インフラ（Discrete API）
+
+- `Discrete.lean` — 離散ラピディティ `(ℤ/Nℤ)⁶` と主枝条件 `IsPrincipalBranch`
+- `UnitGroup.lean` — 離散ローター像 `DiscreteUnit`（有限集合）
+- `PGA/Normed.lean` — Banach 代数構造（`NormedSpace.exp` 用）

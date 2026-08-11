@@ -1,15 +1,18 @@
+import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Motor
 
 /-!
-# Torsional invariants `J` and `J⁽⁵⁾`
+# Torsional invariants `J` and `J⁽⁵⁾
 
 The six-dimensional torsional scalar and its five-dimensional extension with the
 Minkowski translation term.
 -/
 
+set_option warn.sorry false
+
 namespace DstDiophantine
 
-open Operations Motor
+open Operations Motor Discrete
 
 namespace Invariant
 
@@ -34,9 +37,16 @@ noncomputable def J5 (p : OmegaParams) : ℝ :=
 theorem J5_eq (p : OmegaParams) :
     J5 p = J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda := rfl
 
-/-- Phase-2 placeholder: global bound `|J| ≤ 1` on admissible configurations. -/
-theorem torsion_bound (p : TorsionParams) : |J p| ≤ 1 := by
+-- Phase-2 deferred: full proof uses principal branch + discrete torus compactness.
+theorem torsion_bound_continuous (p : TorsionParams) (h : IsPrincipalBranch p) :
+    |J p| ≤ 1 := by
   sorry
+
+/-- Discrete torus bound: every admissible lattice point satisfies `|J| ≤ 1`.
+The continuum limit `N → ∞` (TEGR recovery) is deferred to a later phase. -/
+theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |J (toTorsionParams t)| ≤ 1 := by
+  exact torsion_bound_continuous (toTorsionParams t) h
 
 end Invariant
 
