@@ -107,7 +107,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 双曲・循環生成子の平方・reverse-odd 性
 - 双対閉性（`dual_hyperbolic` / `dual_cyclic` / `dual_mul`）
 - ~~モーター単位性 `motor_unitary`~~ → **証明済み**（`rotorTorsion = exp(Ω_torsion)`、`motor_unitary`）
-- 有界性 `|J| ≤ 1`（`torsion_bound`）— 主張は許容配置上へ修正済み、証明は委譲
+- ~~有界性 `|J| ≤ 1`（`torsion_bound`）~~ → **証明済み**（`JNormalized`、許容配置上で `|J| ≤ 3π²/8`）
 
 ### フェーズ2 — インフラ優先（A）完了（2026-08-11）
 
@@ -119,7 +119,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 | `PGA/Normed.lean` | `NormedAlgebra`（左乗法行列ノルム）、`NormedSpace.exp` 用 |
 | `UnitGroup.lean` | 離散ローター像 `DiscreteUnit`、有限性 |
 | `Motor.lean` | `rotorTorsion = exp(Ω_torsion)`、`rotor_unitary` / `motor_unitary` |
-| `Invariant.lean` | `torsion_bound` を許容配置上の主張に修正（証明は `sorry`） |
+| `Invariant.lean` | `JNormalized`、`torsion_bound`（許容配置上の有界性） |
 
 **証明済み（sorry なし）**
 
@@ -128,9 +128,33 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - `reverse_exp_of_reverse_neg` → `rotor_unitary` / `motor_unitary` 依存鎖が完全に閉じた
 - `torsion_bound` の型が主枝条件 `IsAdmissible` 付きに修正され、離散版は連続版へ帰着
 
-**フェーズ2 本体（有界性の完全証明）に委譲（明示的 `sorry`）**
+### フェーズ2 — 本体（有界性の誠実な形式化）完了
 
-一覧は [`README.md`](README.md) の「既知の `sorry`」を参照。
+**論文ギャップ（実装しない／無理に閉じない）**
 
-- `Invariant.lean` — `torsion_bound_continuous` / `torsion_bound`
-- 連続極限 `N → ∞` での TEGR 回復
+論文 Ch.3 の \(|J|\le 1\) 主張は、同論文の式 \(J=\frac12\sum(\alpha_a^2-\beta_a^2)\) と矛盾する。
+
+- `IsPrincipalBranch`（\(|\alpha_a+\beta_a|\le\pi/2\) のみ）だけでは \(J\) は非有界（反例: \(\alpha=M,\beta=-M+\pi/4\)）
+- Appendix の extremal \(\alpha_a=\pi/2,\beta_a=0\) では \(J=3\pi^2/8\approx 3.70\neq 1\)
+- BCH 二次打ち切りから \(|\sum(\alpha^2-\beta^2)|\le 2\) への導出は論文内で閉じない
+- 全離散トーラス上の \(|J|\le 1\)（許容条件なし）も上記式では偽
+- \(J^{(5)}\) の並進項 \(\frac12\eta(\lambda,\lambda)\) は拘束なしでは非有界
+- [`discrete-dual-spacetime.tex`](References/discrete-dual-spacetime.tex) は連続極限で局所非有界と述べ、[`dst-diophantine.tex`](References/dst-diophantine.tex) は連続主枝で \(|J|\le 1\) と主張（論文間矛盾）
+
+**論文 TeX 修正済み（2026-08-11）** — `dst-diophantine.tex` / `discrete-dual-spacetime.tex` / `double-spacetime-theory.tex` / `dst-pga.tex` を Lean 結果（許容配置上 \(\|J_{\rm norm}\|\le 1\)、生 \(J\) 上界 \(3\pi^2/8\)）に整合。`pdflatex` は本環境未インストールのためコンパイル未実行。
+
+**Lean で証明した主張**
+
+| 定理 | 内容 |
+|------|------|
+| `torsion_bound_raw` | 許容離散配置 `IsAdmissible` 上で \(\|J\|\le 3\pi^2/8\) |
+| `JNormalized` | \(J_{\rm norm}=\frac{8}{3\pi^2}J\) — Appendix extremal と整合 |
+| `torsion_bound` | `IsAdmissible` 上で \(\|J_{\rm norm}\|\le 1\) |
+| `torsion_bound_continuous` | `IsAdmissibleContinuous`（非負＋反同期）上で同界 |
+| `torsion_bound_naive_false` | `IsPrincipalBranch` のみでは有界性は成り立たない（反例） |
+
+**未着手**
+
+- Spin 被覆・BCH・Dirichlet 核による論文 Ch.3 の「完全」導出
+- 連続極限 \(N\to\infty\) での TEGR 回復
+- \(J^{(5)}\) 並進込み大域有界

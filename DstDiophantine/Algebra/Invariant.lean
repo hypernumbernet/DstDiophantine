@@ -1,18 +1,26 @@
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Motor
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Tactic.Linarith
 
 /-!
 # Torsional invariants `J` and `J⁽⁵⁾
 
 The six-dimensional torsional scalar and its five-dimensional extension with the
 Minkowski translation term.
--/
 
-set_option warn.sorry false
+## Boundedness note
+
+The raw paper claim `|J| ≤ 1` under `IsPrincipalBranch` alone is false for
+`J = (1/2) ∑ (α² - β²)`. On admissible configurations (`IsAdmissibleContinuous`:
+non-negative rapidities with `α + β ≤ π/2`) we prove `|J| ≤ 3π²/8` and
+`|JNormalized| ≤ 1` where `JNormalized = (8/(3π²)) J` matches the appendix extremals.
+-/
 
 namespace DstDiophantine
 
-open Operations Motor Discrete
+open Operations Motor Discrete Real
 
 namespace Invariant
 
@@ -30,6 +38,20 @@ theorem J_coef (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring_nf
 
+/-- Paper-normalized torsional scalar; equals `1` at appendix pure-boost extremals. -/
+noncomputable def JNormalized (p : TorsionParams) : ℝ :=
+  (8 / (3 * Real.pi ^ 2)) * J p
+
+theorem JNormalized_coef (p : TorsionParams) :
+    JNormalized p =
+      (4 / (3 * Real.pi ^ 2)) * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
+  unfold JNormalized
+  rw [J_coef]
+  ring_nf
+
+/-- Axis-wise factorisation behind the Killing quadratic form. -/
+theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
+
 /-- Extended invariant with translation sector. -/
 noncomputable def J5 (p : OmegaParams) : ℝ :=
   J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda
@@ -37,15 +59,94 @@ noncomputable def J5 (p : OmegaParams) : ℝ :=
 theorem J5_eq (p : OmegaParams) :
     J5 p = J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda := rfl
 
-/-- Principal-branch bound `|J| ≤ 1`. Proof deferred (Spin cover / BCH / Dirichlet kernel). -/
-theorem torsion_bound_continuous (p : TorsionParams) (h : IsPrincipalBranch p) :
-    |J p| ≤ 1 := by
-  sorry
+private theorem sq_diff_le_half_pi_sq {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
+  have hαle : α ≤ Real.pi / 2 := by linarith [hβ]
+  have hβle : β ≤ Real.pi / 2 := by linarith [hα]
+  rcases le_total α β with hle | hle
+  · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
+    rw [abs_of_nonpos hnonpos]
+    nlinarith [sq_nonneg (β - α)]
+  · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
+    rw [abs_of_nonneg hnonneg]
+    nlinarith [sq_nonneg (α - β)]
 
-/-- Discrete torus bound on admissible configurations; reduces to `torsion_bound_continuous`. -/
+private theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |J p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by
+  rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
+  have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ (Real.pi / 2) ^ 2 := fun a =>
+    sq_diff_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
+  have hsum : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * (Real.pi / 2) ^ 2 := by
+    simp only [Fin.sum_univ_three]
+    linarith [hbound 0, hbound 1, hbound 2]
+  have habs : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| ≤
+      ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+    Finset.abs_sum_le_sum_abs (s := Finset.univ) (f := fun a => p.alpha a ^ 2 - p.beta a ^ 2)
+  calc
+    (1 / 2 : ℝ) * |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)|
+        ≤ (1 / 2) * ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+      mul_le_mul_of_nonneg_left habs (by norm_num)
+    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by linarith [hsum]
+
+/-- Raw bound `|J| ≤ 3π²/8` on admissible discrete configurations. -/
+theorem torsion_bound_raw {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+  torsion_bound_raw_continuous _ (admissible_continuous_of_discrete t h)
+
+/-- Normalized bound `|JNormalized| ≤ 1` on admissible continuous configurations. -/
+theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |JNormalized p| ≤ 1 := by
+  unfold JNormalized
+  have hJ := torsion_bound_raw_continuous p h
+  have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
+  rw [abs_mul, abs_of_nonneg hcoef]
+  calc
+    (8 / (3 * Real.pi ^ 2)) * |J p|
+        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * (Real.pi / 2) ^ 2 / 2) := by gcongr
+    _ = 1 := by field_simp; ring
+
+/-- Normalized bound on admissible discrete configurations. -/
 theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |J (toTorsionParams t)| ≤ 1 := by
-  exact torsion_bound_continuous (toTorsionParams t) h
+    |JNormalized (toTorsionParams t)| ≤ 1 :=
+  torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
+
+/-- Appendix pure-boost extremal attains `JNormalized = 1`. -/
+theorem JNormalized_extremal :
+    JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
+  unfold JNormalized J killingForm
+  simp only [Fin.sum_univ_three, mul_zero, sub_zero]
+  field_simp [Real.pi_ne_zero]
+  ring_nf
+
+/-- Counterexample showing `IsPrincipalBranch` alone does not bound `J`. -/
+noncomputable def counterExampleParams : TorsionParams where
+  alpha := fun a => match a with | 0 => 10 | 1 => 0 | 2 => 0
+  beta := fun a => match a with | 0 => -10 + Real.pi / 4 | 1 => 0 | 2 => 0
+
+/-- `IsPrincipalBranch` alone does not bound `J`; the paper's naive claim is false. -/
+theorem torsion_bound_naive_false :
+    ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| := by
+  refine ⟨counterExampleParams, ?_, ?_⟩
+  · intro a
+    fin_cases a
+    · simp only [counterExampleParams]
+      rw [show (10 : ℝ) + (-10 + Real.pi / 4) = Real.pi / 4 from by ring,
+        abs_of_pos (by linarith [Real.pi_pos] : 0 < Real.pi / 4)]
+      linarith [Real.pi_pos]
+    · simp [counterExampleParams, abs_zero]
+      linarith [Real.pi_pos.le]
+    · simp [counterExampleParams, abs_zero]
+      linarith [Real.pi_pos.le]
+  · have hJ : J counterExampleParams = (1 / 2) * (5 * Real.pi - Real.pi ^ 2 / 16) := by
+      rw [J_coef]
+      simp [counterExampleParams, Fin.sum_univ_three]
+      ring_nf
+    rw [hJ]
+    have hpos : 0 < (1 / 2) * (5 * Real.pi - Real.pi ^ 2 / 16) := by
+      nlinarith [Real.pi_gt_three, Real.pi_pos, Real.pi_le_four]
+    rw [abs_of_pos hpos]
+    nlinarith [Real.pi_gt_three, Real.pi_pos, Real.pi_le_four]
 
 end Invariant
 
