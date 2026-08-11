@@ -248,4 +248,26 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 FLT / Beal の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
 - Beal の分数冪不一致・三項 BCH・素数ローターによる共通因子消去は形式化しない（下限 `m²` 単軸模型）
 - 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²`・`1/m²` を下回りうる
-- Collatz / Goldbach / abc / RH は未着手
+- ~~Collatz~~ → 下記完了；Goldbach / abc / RH は未着手
+
+### フェーズ5 — Collatz 予想（2026-08-11 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Theorems/Collatz.lean` | Collatz ステップ・高さ符号化、閉路高さ超過、有限型周期性、≤20 証明書、条件付き古典回収 |
+
+**証明済み（sorry なし）— Collatz**
+
+- `collatzStep` / `collatzIter` / `ReachesOne` と吸引閉路 `4→2→1`
+- `collatzHeight`（`integerHeight`）と偶数収縮・奇数デルタ `log(3n+1)=log n+log(3+1/n)`
+- `collatzHeight_le_one_implies_le_three` / `collatz_cycle_avoids_one_exceeds_bound`
+- `eventually_periodic_of_fintype`（有限型上の最終周期性）
+- `reachesOne_of_le_twenty`（燃料付き有限探索証明書）
+- `collatz_conjecture_of_bridge`（`CollatzAdmissibleBridge` 仮定付き）
+
+**論文ギャップ（無理に閉じない）**
+
+- 古典 Collatz の無条件主張はしない（古典軌道 ⇔ 高さ有界ローター流の橋は未証明）
+- 奇数段の `Γ₁` 剪断は純双曲モデル `log(3+1/n)` で代替
+- 吸引閉路 `4→2→1` 自体は連続埋め込みで `|JNormalized|≤1` に収まらない点を含む
+- Goldbach / Polignac / abc / RH は未着手

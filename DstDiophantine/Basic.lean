@@ -22,9 +22,10 @@ import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
+import DstDiophantine.Theorems.Collatz
 
 /-!
-Core re-exports for the PGA / biquaternion algebra layer (phases 1–5).
+Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including Collatz).
 -/
 
 namespace DstDiophantine
@@ -62,6 +63,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   FermatAdmissibleBridge fermat_last_theorem_of_bridge
   beal_solution_iff_motor bealMinExp bealGcd beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge
-  beal_conjecture_of_bridge beal_eq_exp_not_coprime_of_bridge)
+  beal_conjecture_of_bridge beal_eq_exp_not_coprime_of_bridge
+  collatzStep collatzIter ReachesOne collatzHeight collatzHeight_one
+  collatzHeight_even_le collatz_odd_log_delta
+  collatzHeight_le_one_implies_le_three IsCollatzCycle
+  collatz_cycle_avoids_one_exceeds_bound eventually_periodic_of_fintype
+  reachesOne_of_le_twenty CollatzAdmissibleBridge collatz_conjecture_of_bridge)
 
 end DstDiophantine
