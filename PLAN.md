@@ -129,7 +129,9 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 **フェーズ2 本体（有界性の完全証明）に委譲（明示的 `sorry`）**
 
-- `Module.Finite` / `CharZero` / `NormedAlgebra ℚ` on `PGA`（`PGA/Normed.lean`）
-- `reverse_exp_of_reverse_neg`（`exp` と `reverse` の可換性、スキュー元）
-- `torsion_bound_continuous` / `torsion_bound`（Spin 被覆・BCH・Dirichlet 核）
+一覧は [`README.md`](README.md) の「既知の `sorry`」を参照。
+
+- `PGA/Normed.lean` — 有限次元・`CharZero`・`NormedAlgebra ℚ`
+- `Motor.lean` — `reverse_exp_of_reverse_neg`
+- `Invariant.lean` — `torsion_bound_continuous` / `torsion_bound`
 - 連続極限 `N → ∞` での TEGR 回復

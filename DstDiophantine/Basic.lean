@@ -19,7 +19,7 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
 export Operations (pseudoscalar dual TorsionParams daggerParams)
 export Discrete (DiscreteTorsion toTorsionParams IsPrincipalBranch IsAdmissible)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
-  omegaTrans_sq omegaTorsion_reverse rotor_unitary)
+  omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary)
 export UnitGroup (discreteRotor DiscreteUnit discreteUnit_finite)
 export Invariant (J J5 J_coef J5_eq killingForm torsion_bound torsion_bound_continuous)
 

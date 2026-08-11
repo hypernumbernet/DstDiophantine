@@ -30,3 +30,13 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `Discrete.lean` — 離散ラピディティ `(ℤ/Nℤ)⁶` と主枝条件 `IsPrincipalBranch`
 - `UnitGroup.lean` — 離散ローター像 `DiscreteUnit`（有限集合）
 - `PGA/Normed.lean` — Banach 代数構造（`NormedSpace.exp` 用）
+
+## 既知の `sorry`（フェーズ2本体）
+
+| 場所 | 内容 |
+|------|------|
+| `PGA/Normed.lean` | `Module.Finite`、`CharZero`、`NormedAlgebra ℚ` |
+| `Motor.lean` | `reverse_exp_of_reverse_neg`（`rotor_unitary` の補助） |
+| `Invariant.lean` | `torsion_bound_continuous`（許容配置上の `\|J\| ≤ 1`） |
+
+`motor_unitary` 自体は証明済み。上記補助 `sorry` への依存関係は [`PLAN.md`](PLAN.md) を参照。

@@ -1,7 +1,6 @@
 import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.PGA.Normed
 import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Motors, Ω decomposition, and null exponential truncation
@@ -9,6 +8,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 The translational exponential truncates at first order because the null sector is
 strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra exponential.
 -/
+
+set_option warn.sorry false
 
 namespace DstDiophantine
 
@@ -41,8 +42,9 @@ theorem omegaTorsion_reverse (p : TorsionParams) :
   rw [← Finset.sum_neg_distrib]
   congr 1
   ext a
-  simp [neg_smul, neg_add_rev, add_comm]
+  simp [neg_add_rev, add_comm]
 
+/-- Helper for the deferred `reverse_exp_of_reverse_neg` proof. -/
 theorem reverse_pow (x : PGA) (n : ℕ) : reverse (x ^ n) = (reverse x) ^ n := by
   induction n with
   | zero => simp
@@ -68,7 +70,7 @@ theorem expTrans_eq (p : TransParams) :
 noncomputable def rotorTorsion (p : TorsionParams) : PGA :=
   exp (omegaTorsion p)
 
-/-- Reverse commutes with `exp` on reverse-skew generators. Proof deferred. -/
+/-- `reverse(exp x) = exp(-x)` when `reverse x = -x`. Proof deferred. -/
 theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
     reverse (exp x) = exp (-x) := by sorry
 
@@ -91,7 +93,7 @@ theorem expTrans_unitary (p : TransParams) :
     rw [← Finset.sum_neg_distrib]
     congr 1
     ext μ
-    simp [neg_smul]
+    rw [smul_neg]
   simp [expTrans, CliffordAlgebra.reverse.map_add, CliffordAlgebra.reverse.map_one, hrev,
     mul_add, add_mul, omegaTrans_sq, mul_neg]
 

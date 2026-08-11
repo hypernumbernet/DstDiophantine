@@ -37,13 +37,12 @@ noncomputable def J5 (p : OmegaParams) : ℝ :=
 theorem J5_eq (p : OmegaParams) :
     J5 p = J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda := rfl
 
--- Phase-2 deferred: full proof uses principal branch + discrete torus compactness.
+/-- Principal-branch bound `|J| ≤ 1`. Proof deferred (Spin cover / BCH / Dirichlet kernel). -/
 theorem torsion_bound_continuous (p : TorsionParams) (h : IsPrincipalBranch p) :
     |J p| ≤ 1 := by
   sorry
 
-/-- Discrete torus bound: every admissible lattice point satisfies `|J| ≤ 1`.
-The continuum limit `N → ∞` (TEGR recovery) is deferred to a later phase. -/
+/-- Discrete torus bound on admissible configurations; reduces to `torsion_bound_continuous`. -/
 theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |J (toTorsionParams t)| ≤ 1 := by
   exact torsion_bound_continuous (toTorsionParams t) h

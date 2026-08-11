@@ -1,7 +1,5 @@
 import DstDiophantine.Algebra.QuadraticForm
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -13,6 +11,11 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 Finite-dimensional `Cl(3,1,1)` inherits a `NormedAlgebra` from left-multiplication matrices.
 This enables `NormedSpace.exp` for torsion rotors.
+
+## Deferred instances (`sorry`)
+
+- `Module.Finite` / `CharZero` on `Cl(3,1,1)` (expected dimension `2⁵`)
+- `NormedAlgebra ℚ` (needed for full `exp_add_of_commute` infrastructure)
 -/
 
 set_option warn.sorry false
@@ -25,7 +28,6 @@ open scoped BigOperators Matrix
 
 abbrev Alg311 := CliffordAlgebra Q311
 
-/-- `Cl(3,1,1)` is finite-dimensional (dimension `2⁵ = 32`). Proof deferred. -/
 instance : Module.Finite ℝ Alg311 := by sorry
 
 instance : CharZero Alg311 := by sorry
