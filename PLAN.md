@@ -71,3 +71,43 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - **最終目標**：7つの予想すべてを「離散双対時空代数の内部で \(|J|\le 1\) を破る格子点が存在しない」という単一の原理から導く、完全に機械検証された状態にする。
 
 この順序で進めれば、途中成果（PGAライブラリ、有界性定理、FLTの形式化など）を段階的に公開・検証しながら全体を積み上げることができます。必要に応じて特定フェーズの詳細設計や最初のLeanスケルトンの作成に進みましょう。
+
+---
+
+## 実装進捗（2026-08-11）
+
+### フェーズ0 — 完了
+
+- `lake build` 成功（Lean 4.34.0-rc1 + mathlib `v4.34.0-rc1`）
+- `DstDiophantine/Algebra/` モジュール骨格を配置し `DstDiophantine.lean` から import
+- README をビルド手順 + フェーズ概要に更新
+
+### フェーズ1 — コア API 固め（完了）
+
+モジュール構成:
+
+| ファイル | 内容 |
+|----------|------|
+| `QuadraticForm.lean` | `Q31` / `Q311`、`extend4`、`minkowskiDot` |
+| `PGA.lean` | `G(3,1,1)`、`e₄²=0`、`{e₄,e_μ}=0` |
+| `Cl31.lean` | `Cl(3,1)` 部分代数、`toPGA` 埋め込み |
+| `Generators.lean` | 10 生成子（双曲・循環・ヌル） |
+| `Operations.lean` | reverse / dual / dagger API |
+| `Motor.lean` | `Ω` 分解、`expTrans`、モーター因数分解 |
+| `Invariant.lean` | `J` / `J⁽⁵⁾`、Killing 正規化 |
+
+**証明済み（sorry なし）**
+
+- 二次形式の直交性、`Q311_extend4`
+- `e₄² = 0`、`ι e₄` と `ι e_μ` の反可換性
+- `Cl(3,1) → G(3,1,1)` 埋め込み (`toPGA_ι`)
+- ヌル強消滅 `N_μ N_ν = 0`、`N_μ² = 0`
+- `Ω_trans² = 0`、`expTrans = 1 + Ω_trans`
+- `J` の係数公式 `J_coef`（Killing 正規化 `×8` 込み）
+
+**フェーズ2 以降に委譲（明示的 `sorry`）**
+
+- 双曲・循環生成子の平方・reverse-odd 性
+- 双対閉性（`dual_hyperbolic` / `dual_cyclic` / `dual_mul`）
+- モーター単位性 `motor_unitary`
+- 有界性 `|J| ≤ 1`（`torsion_bound`）
