@@ -53,7 +53,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
    有限トーラス上の軌道の周期性と \(J\) の蓄積。計算的検証と相性が良い。
 3. ~~**Goldbach・Polignac（双子素数含む）**~~ → 完了（条件付き bridge）  
    偶数ギャップのヌルトランスレータ表現と最小 `J` 分解・強い回避過剰。
-4. **abc予想**  
+4. ~~**abc予想**~~ → 完了（条件付き bridge）  
    コプライム三重項のねじれ高さによる品質の有界性。連続極限での古典的主張の回復も。
 5. **リーマン予想**（最難）  
    ゼータ関数の非自明零点が「ねじれ不整合が消えるローター・アンサンブル」に対応し、離散ねじれ層のスケール不変性から \(\mathrm{Re}=1/2\) が強制される、という埋め込みの形式化。mathlibの複素解析・ゼータ関数の現状を大幅に拡張する必要がある。
@@ -248,7 +248,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 FLT / Beal の無条件主張はしない（連続整数ローター ⇔ 許容増幅配置の橋は未証明）
 - Beal の分数冪不一致・三項 BCH・素数ローターによる共通因子消去は形式化しない（下限 `m²` 単軸模型）
 - 細かい離散トーラスでは最小高さ `O(1/N²)` が `1/p²`・`1/m²` を下回りうる
-- ~~Collatz~~ → 下記完了；~~Goldbach / Polignac~~ → 下記完了；abc / RH は未着手
+- ~~Collatz~~ → 下記完了；~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；RH は未着手
 
 ### フェーズ5 — Collatz 予想（2026-08-11 完了）
 
@@ -270,7 +270,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 Collatz の無条件主張はしない（古典軌道 ⇔ 高さ有界ローター流の橋は未証明）
 - 奇数段の `Γ₁` 剪断は純双曲モデル `log(3+1/n)` で代替
 - 吸引閉路 `4→2→1` 自体は連続埋め込みで `|JNormalized|≤1` に収まらない点を含む
-- ~~Goldbach / Polignac~~ → 下記完了；abc / RH は未着手
+- ~~Goldbach / Polignac~~ → 下記完了；~~abc~~ → 下記完了；RH は未着手
 
 ### フェーズ5 — Goldbach・Polignac（双子素数含む）（2026-08-12 完了）
 
@@ -301,4 +301,26 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - 古典 Goldbach / Polignac / 双子素数の無条件主張はしない
 - Goldbach の「対が無い ⇒ 既約 ⇒ `J_norm(2n)>1`」は加法分解と乗法ロータ高さを混同（高さ超過自体は常に成り立つ）
 - Polignac の弱い回避 `g_n≠2k` から過剰項が正とは限らない；Lean は強い回避のみを証明
-- abc / RH は未着手
+- ~~abc~~ → 下記完了；RH は未着手
+
+### フェーズ5 — abc 予想（2026-08-12 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Theorems/Abc.lean` | 原始三重項・radical・品質・純双曲高さ・天井・≤100 証明書・条件付き古典回収 |
+| `Framework/Representation.lean` | `abcEquation` / `abcMotor_one_iff` |
+
+**証明済み（sorry なし）— abc**
+
+- `IsAbcTriple` / `abcRadical` / `abcQuality` / `abc_sum_iff_motor`
+- `abcHeight_eq_quality`（純双曲モデルで `H = c₁ (q−1)²`）
+- `abc_quality_bound_of_admissible` / `abc_amplification_contradiction`
+- `discrete_abc_bound` / `discrete_abc_height_lb`（`ε_N` 再利用）
+- `abc_radical_pow_of_le_hundred`（`c ≤ 100` で `c ≤ rad(abc)²`）
+- `abc_conjecture_of_bridge`（`AbcAdmissibleBridge` 仮定付き）
+
+**論文ギャップ（無理に閉じない）**
+
+- 古典 abc の無条件主張はしない（高品質三重項 ⇔ 許容純双曲配置の橋は未証明）
+- 双対セクター `R_dual(p)` / `lem:radical-dual` と品質–高さの `O(1)` 誤差は形式化しない
+- RH は未着手

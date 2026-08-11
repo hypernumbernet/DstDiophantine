@@ -25,10 +25,11 @@ import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
+import DstDiophantine.Theorems.Abc
 
 /-!
 Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including
-Goldbach / Polignac).
+Goldbach / Polignac / abc).
 -/
 
 namespace DstDiophantine
@@ -57,7 +58,8 @@ export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator 
   additive_faithful diophantine_zero_iff)
 export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_iff
   fermatEquation fermatMotor_one_iff bealEquation bealMotor_one_iff
-  goldbachEquation goldbachMotor_one_iff gapEquation gapMotor_one_iff
+  goldbachEquation goldbachMotor_one_iff abcEquation abcMotor_one_iff
+  gapEquation gapMotor_one_iff
   IsZeroHeight AdmissibleClass ExistsZeroHeight
   latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
   findZeroHeight findZeroHeight_isSome phase4_layers)
@@ -82,6 +84,12 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   gapExcessTerm gapExcessSum gapChainHeight strong_avoidance_term_ge
   gapChainHeight_gt_one_of_sq exists_twin_of_le_twenty
   PolignacAdmissibleBridge polignac_conjecture_of_bridge
-  twin_prime_conjecture_of_bridge)
+  twin_prime_conjecture_of_bridge
+  abcRadical IsAbcTriple abcQuality abcMismatchParams abcHeight
+  abcHeightCoef abcQualityCeiling discreteAbcCeiling
+  abc_sum_iff_motor abc_solution_iff_motor abcHeight_eq_quality
+  abc_quality_bound_of_admissible abc_amplification_contradiction
+  discrete_abc_bound abc_radical_pow_of_le_hundred
+  AbcAdmissibleBridge abc_conjecture_of_bridge)
 
 end DstDiophantine

@@ -111,6 +111,18 @@ theorem goldbachMotor_one_iff (p q n : ℤ) :
     powerSumMotor (goldbachEquation p q n) = 1 ↔ p + q = n :=
   additivePowerSum_one_iff p q n
 
+/-- abc skeleton: `a + b - c = 0` (coprimality is imposed separately). -/
+def abcEquation (a b c : ℤ) : PowerSumEquation :=
+  additivePowerSum a b c
+
+theorem eval_abc (a b c : ℤ) :
+    evalPowerSum (abcEquation a b c) = a + b - c :=
+  eval_additivePowerSum a b c
+
+theorem abcMotor_one_iff (a b c : ℤ) :
+    powerSumMotor (abcEquation a b c) = 1 ↔ a + b = c :=
+  additivePowerSum_one_iff a b c
+
 /-- Even-gap / Polignac skeleton: `q - p - 2k = 0`. -/
 def gapEquation (p q k : ℤ) : PowerSumEquation where
   terms := [
