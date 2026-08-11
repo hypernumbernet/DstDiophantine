@@ -5,6 +5,12 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Diophantine equations as rotor–translator motors
+
+Additive relations are faithfully encoded by null translators
+(`additive_faithful`, `diophantine_zero_iff`).
+
+For the Phase-4 power-sum representation (`∑ cᵢ bᵢ^{eᵢ} = 0`) and the unified
+descent / lattice-search API, see `DstDiophantine.Framework`.
 -/
 
 namespace DstDiophantine

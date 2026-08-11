@@ -42,3 +42,10 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 - `RotorClass.lean` — 離散トーラス代表・量子化 API
 - `Height.lean` — `integerHeight`、`descentCandidate`
 - `Equation.lean` — `diophantineMotor`、加法式の忠実埋め込み
+
+## フェーズ4 統一枠組み（Framework API）
+
+- `Representation.lean` — 冪和方程式 `powerSumMotor`（`=1 ↔ eval=0`）
+- `Lattice.lean` — 許容格子 `AdmissibleClass`、零高さの整数判定
+- `Descent.lean` — dagger 高さ保存（論文ギャップ）と `DescentSchema`
+- `Search.lean` — `findZeroHeight`、有限探索の終了・決定可能性

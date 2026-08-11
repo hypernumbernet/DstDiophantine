@@ -150,11 +150,11 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 | `torsion_bound_continuous` | `IsAdmissibleContinuous`（非負＋反同期）上で同界 |
 | `torsion_bound_naive_false` | `IsPrincipalBranch` のみでは有界性は成り立たない（反例） |
 
-**未着手**
+**未着手（フェーズ2時点）**
 
 - Spin 被覆・BCH 一般論・Dirichlet 核による論文 Ch.3 の「完全」導出
 - TEGR = Einstein–Hilbert の同値（連続極限の作用そのもの）
-- 統一降下アルゴリズムの完全終了証明（フェーズ4）
+- ~~統一降下アルゴリズムの完全終了証明（フェーズ4）~~ → フェーズ4で離散許容問題として完了
 
 ### フェーズ2 — 仕上げ（2026-08-11 完了）
 
@@ -178,7 +178,7 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 | `Embedding/IntegerRotor.lean` | `integerRotor`、`integerRotor_mul` / `_pow`、 `rotorTorsion` 接続 |
 | `Embedding/NullTranslator.lean` | `nullTranslator`、`nullTranslator_add`、忠実性 `nullTranslator_faithful` |
 | `Embedding/PowerMap.lean` | `J_pow_amplify_int`、`logMismatch` |
-| `Embedding/RotorClass.lean` | `RotorClass`、`quantizeInt`、`quantizeRotor` |
+| `Embedding/RotorClass.lean` | `RotorClass`、`quantizeInt` |
 | `Embedding/Height.lean` | `torsionHeight`、`integerHeight`、`descentCandidate` |
 | `Embedding/Equation.lean` | `diophantineMotor`、`additive_faithful`、`diophantine_zero_iff` |
 
@@ -188,3 +188,33 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 - ヌル加法 `T(a+b)=T(a)T(b)` と `T(a)=1 ↔ a=0`
 - 純不一致モデルでの `J` 増幅 `J(Ω^p)=p² J(Ω)`
 - 加法式ディオファントス式の忠実埋め込み
+
+### フェーズ4 — 統一ディオファントス枠組み（2026-08-11 完了）
+
+| ファイル | 内容 |
+|----------|------|
+| `Framework/Representation.lean` | 冪和方程式 `PowerSumEquation`、`powerSumMotor`、FLT 形 |
+| `Framework/Lattice.lean` | `AdmissibleClass`、`latticeMismatch`、`IsZeroHeight` |
+| `Framework/Descent.lean` | `dagger_preserves_height`（論文ギャップ）、`DescentSchema` |
+| `Framework/Search.lean` | `findZeroHeight`、決定可能性、`phase4_layers` |
+
+**証明済み（sorry なし）**
+
+- 冪和モータ忠実性 `powerSumMotor e = 1 ↔ eval = 0`（Fermat / 加法特例含む）
+- 零高さ ⇔ 整数格子条件 `latticeMismatch = 0`（決定可能）
+- 許容条件 ⇔ `4(n.val+m.val) ≤ N`
+- dagger は高さを保存する（論文の「厳密減少」は不成立）
+- `DiscreteUnit` フィルタは現状自明（`unitFilter_trivial`）
+- `DescentSchema.reaches_terminal` と格子探索インスタンス
+- `findZeroHeight` の健全性・常に成功（原点が許容零）
+
+**論文ギャップ（無理に閉じない）**
+
+- Ch.10 の dagger による `J` 厳密減少は偽（符号反転のみ）
+- 「単位群が候補を絞る」は現行 `DiscreteUnit = range discreteRotor` では追加制約にならない
+- 任意多項式 AST の埋め込みは冪和型に制限（FLT / Beal / abc / Goldbach の骨格をカバー）
+- 整数方程式の解 ⇔ ある許容格子で `J=0` は量子化誤差のため同値として主張しない（三層 API）
+
+**フェーズ5 へ委譲**
+
+- 7つの個別予想（増幅矛盾・整数サイズ降下の本格インスタンス）

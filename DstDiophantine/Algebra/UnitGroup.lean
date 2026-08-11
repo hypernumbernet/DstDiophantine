@@ -4,8 +4,9 @@ import DstDiophantine.Algebra.Motor
 /-!
 # Finite unit group of the discrete torsion sector
 
-On the compact torus `(ℤ/Nℤ)⁶` only finitely many torsion rotors arise. Phase 3 will relate
-this image to the integer biquaternion unit group; here we expose the finite rotor image.
+On the compact torus `(ℤ/Nℤ)⁶` only finitely many torsion rotors arise.
+`DiscreteUnit` is the image of `discreteRotor`; every `RotorClass` representative
+lies in this set by construction (see `Framework.unitFilter_trivial`).
 -/
 
 namespace DstDiophantine

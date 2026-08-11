@@ -16,9 +16,13 @@ import DstDiophantine.Embedding.IntegerRotor
 import DstDiophantine.Embedding.NullTranslator
 import DstDiophantine.Embedding.PowerMap
 import DstDiophantine.Embedding.RotorClass
+import DstDiophantine.Framework.Descent
+import DstDiophantine.Framework.Lattice
+import DstDiophantine.Framework.Representation
+import DstDiophantine.Framework.Search
 
 /-!
-Core re-exports for the PGA / biquaternion algebra layer (phases 1–2).
+Core re-exports for the PGA / biquaternion algebra layer (phases 1–4).
 -/
 
 namespace DstDiophantine
@@ -43,7 +47,11 @@ export Amplification (scaleTorsion pureBoost J_scale JNormalized_scale J_pow_amp
 export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
 export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
   nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
-  quantizeInt quantizeRotor torsionHeight integerHeight descentCandidate diophantineMotor
+  quantizeInt torsionHeight integerHeight descentCandidate diophantineMotor
   additive_faithful diophantine_zero_iff)
+export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_iff
+  fermatEquation fermatMotor_one_iff IsZeroHeight AdmissibleClass ExistsZeroHeight
+  latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
+  findZeroHeight findZeroHeight_isSome phase4_layers)
 
 end DstDiophantine

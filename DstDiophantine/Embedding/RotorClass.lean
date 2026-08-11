@@ -54,9 +54,6 @@ noncomputable def quantizeInt (N : ℕ) [NeZero N] (n : ℤ) (_hn : n ≠ 0) : D
 noncomputable def integerClass (n : ℤ) (hn : n ≠ 0) : RotorClass N :=
   rotorClassOf (quantizeInt N n hn)
 
-noncomputable def quantizeRotor (N : ℕ) [NeZero N] (_r : PGA) : PGA :=
-  discreteRotor (quantizeInt N 1 (by norm_num))
-
 theorem mem_discreteUnit_of_class (c : RotorClass N) :
     rotorOfClass c ∈ DiscreteUnit N :=
   ⟨c.rep, rfl⟩
