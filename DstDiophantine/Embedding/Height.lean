@@ -21,7 +21,7 @@ noncomputable def torsionHeight (p : TorsionParams) : ℝ :=
   |JNormalized p|
 
 /-- Height of the canonical integer rotor embedding. -/
-noncomputable def integerHeight (n : ℤ) (hn : n ≠ 0) : ℝ :=
+noncomputable def integerHeight (n : ℤ) (_hn : n ≠ 0) : ℝ :=
   torsionHeight (pureBoost (2 * Real.log (Int.natAbs n)))
 
 theorem integerHeight_eq (n : ℤ) (_hn : n ≠ 0) :

@@ -15,7 +15,7 @@ namespace DstDiophantine
 
 namespace Framework
 
-open Embedding CliffordAlgebra PGA
+open _root_.DstDiophantine.Embedding CliffordAlgebra PGA
 /-- A single powered monomial `coeff · base ^ exp`. -/
 structure PowerSumTerm where
   coeff : ℤ

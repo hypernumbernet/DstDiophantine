@@ -80,7 +80,7 @@ theorem J5_unbounded (M : ℝ) :
     rw [J_coef]
     simp
   have hdot : minkowskiDot (fun μ => if μ = (1 : Fin 4) then L else 0) = L ^ 2 := by
-    simp only [minkowskiDot, Fin.sum_univ_four, pow_two]
+    simp only [minkowskiDot, pow_two]
     simp
   have hsq : L ^ 2 = 2 * max (M + 1) 1 := Real.sq_sqrt (by positivity)
   simp only [J5, hJ, zero_add]
@@ -96,11 +96,11 @@ theorem J5_unbounded (M : ℝ) :
 theorem minkowskiDot_le_sq (lam : Fin 4 → ℝ) (h0 : lam 0 = 0) :
     |minkowskiDot lam| ≤ ∑ μ : Fin 4, lam μ ^ 2 := by
   have hEq : minkowskiDot lam = lam 1 * lam 1 + lam 2 * lam 2 + lam 3 * lam 3 := by
-    simp [minkowskiDot, h0, Fin.sum_univ_four]
+    simp [minkowskiDot, h0]
   have hnn : 0 ≤ lam 1 * lam 1 + lam 2 * lam 2 + lam 3 * lam 3 :=
     add_nonneg (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)) (mul_self_nonneg _)
   rw [hEq, abs_of_nonneg hnn]
-  simp only [Fin.sum_univ_four, h0, pow_two, sq]
+  simp only [Fin.sum_univ_four, h0, pow_two]
   apply le_of_eq
   ring
 

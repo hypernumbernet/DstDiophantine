@@ -33,7 +33,7 @@ theorem integerRotor_neg (n : ℤ) (hn : n ≠ 0) :
 theorem integerRotor_one (n : ℤ) (hn : n ≠ 0) (habs : Int.natAbs n = 1) :
     integerRotor n hn = 1 := by
   rw [integerRotor]
-  simp [habs, Real.log_one, zero_smul, exp_zero]
+  simp [habs, Real.log_one, zero_smul]
 
 theorem integerRotor_pos (n : ℕ) (hn : n ≠ 0) :
     integerRotor n (Int.natCast_ne_zero.mpr hn) =
@@ -49,7 +49,9 @@ theorem integerRotor_mul {m n : ℤ} (hm : m ≠ 0) (hn : n ≠ 0) :
   rw [show Real.log ((Int.natAbs m * Int.natAbs n : ℕ) : ℝ) =
       Real.log (Int.natAbs m : ℝ) + Real.log (Int.natAbs n : ℝ) from by
     rw [Nat.cast_mul]; exact Real.log_mul (ne_of_gt hmpos) (ne_of_gt hnpos)]
-  have hcomm : Commute (Real.log (Int.natAbs m) • hyperbolic 0) (Real.log (Int.natAbs n) • hyperbolic 0) :=
+  have hcomm :
+      Commute (Real.log (Int.natAbs m) • hyperbolic 0)
+        (Real.log (Int.natAbs n) • hyperbolic 0) :=
     Generators.hyperbolic_smul_mul _ _
   rw [add_smul, exp_add_of_commute hcomm]
 

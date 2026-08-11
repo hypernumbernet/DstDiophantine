@@ -79,11 +79,13 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
     nlinarith [Real.pi_pos, hε, (div_le_iff₀ hε).1 hNbound]
   let αk (a : Fin 3) : ℕ := ⌊p.alpha a * N / (2 * Real.pi)⌋₊
   let βk (a : Fin 3) : ℕ := ⌊p.beta a * N / (2 * Real.pi)⌋₊
-  let t : Discrete.DiscreteTorsion N := { n := fun a => (αk a : ZMod N), m := fun a => (βk a : ZMod N) }
+  let t : Discrete.DiscreteTorsion N :=
+    { n := fun a => (αk a : ZMod N), m := fun a => (βk a : ZMod N) }
   have hαklt (a : Fin 3) : αk a < N := by
     have hα : p.alpha a < 2 * Real.pi := by
       have hle : p.alpha a ≤ Real.pi / 2 := by linarith [(h a).1, (h a).2.1, (h a).2.2]
-      linarith [Real.pi_pos, hle, show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
+      linarith [Real.pi_pos, hle,
+        show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
     have hlt : p.alpha a * (N : ℝ) < (N : ℝ) * (2 * Real.pi) := by
       rw [mul_comm (p.alpha a)]
       exact mul_lt_mul_of_pos_left hα (Nat.cast_pos.mpr hNpos)
@@ -94,7 +96,8 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
   have hβklt (a : Fin 3) : βk a < N := by
     have hβ : p.beta a < 2 * Real.pi := by
       have hle : p.beta a ≤ Real.pi / 2 := by linarith [(h a).2.1, (h a).1, (h a).2.2]
-      linarith [Real.pi_pos, hle, show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
+      linarith [Real.pi_pos, hle,
+        show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
     have hlt : p.beta a * (N : ℝ) < (N : ℝ) * (2 * Real.pi) := by
       rw [mul_comm (p.beta a)]
       exact mul_lt_mul_of_pos_left hβ (Nat.cast_pos.mpr hNpos)

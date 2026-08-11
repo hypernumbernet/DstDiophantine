@@ -62,8 +62,8 @@ private theorem castAdd_one_eq_one : Fin.castAdd 1 (1 : Fin 4) = (1 : Fin 5) := 
 
 private theorem omegaTrans_minkowski_eq (a : ℤ) :
     omegaTrans ⟨minkowskiOfInt a⟩ = (a / 2 : ℝ) • null 1 := by
-  simp only [omegaTrans, minkowskiOfInt, Fin.sum_univ_four, null, div_eq_mul_inv, Int.cast_mul,
-    Fin.isValue, castAdd_one_eq_one]
+  simp only [omegaTrans, minkowskiOfInt, Fin.sum_univ_four, null, div_eq_mul_inv, Fin.isValue,
+    castAdd_one_eq_one]
   ring_nf
   simp [zero_smul, add_zero]
 

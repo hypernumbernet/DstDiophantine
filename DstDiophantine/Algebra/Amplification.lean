@@ -45,16 +45,16 @@ theorem rotorTorsion_pureBoost (θ : ℝ) :
 theorem pureBoost_scale (θ : ℝ) (p : ℕ) :
     pureBoost (p * θ) = scaleTorsion (p : ℝ) (pureBoost θ) := by
   dsimp [pureBoost, scaleTorsion]
-  congr <;> funext a <;> fin_cases a <;> simp [Nat.cast_mul]
+  congr <;> funext a <;> fin_cases a <;> simp
 
 theorem rotorTorsion_pureBoost_pow (θ : ℝ) (p : ℕ) :
     rotorTorsion (pureBoost (p * θ)) = rotorTorsion (pureBoost θ) ^ p := by
   rw [pureBoost_scale, rotorTorsion]
   have hω : omegaTorsion (scaleTorsion (p : ℝ) (pureBoost θ)) =
       (p : ℝ) • ((θ / 2) • hyperbolic 0) := by
-    simp only [omegaTorsion, scaleTorsion, pureBoost, Fin.sum_univ_three, zero_smul, add_zero,
-      div_eq_mul_inv, ← smul_smul, mul_div_assoc]
-    simp only [zero_smul, add_zero, smul_zero, mul_zero]
+    simp only [omegaTorsion, scaleTorsion, pureBoost, Fin.sum_univ_three, zero_smul,
+      div_eq_mul_inv, ← smul_smul]
+    simp only [add_zero, smul_zero]
   rw [hω, rotorTorsion_pureBoost (θ := θ), ← exp_nsmul (n := p)]
   congr 1
 

@@ -25,7 +25,7 @@ def zeroTorsion (N : ℕ) [NeZero N] : DiscreteTorsion N :=
   { n := fun _ => 0, m := fun _ => 0 }
 
 theorem discreteRotor_zero (N : ℕ) [NeZero N] : discreteRotor (zeroTorsion N) = 1 := by
-  simp [discreteRotor, rotorTorsion, toTorsionParams, zeroTorsion, omegaTorsion, exp_zero]
+  simp [discreteRotor, rotorTorsion, toTorsionParams, zeroTorsion, omegaTorsion]
 
 /-- Right-multiplication by a discrete unit: `r ~ s` when `r = s · u`. -/
 def RotorRel (N : ℕ) [NeZero N] (r s : PGA) : Prop :=
