@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-12（正当性監査・modular 再設計）
+最終更新: 2026-08-12（PGA–TEGR チャート層）
 
 ## 1. 三層アーキテクチャ
 
@@ -90,8 +90,10 @@ flowchart LR
 2. Fermat / Beal / abc 向けの *modular* bridge 設計（旧 coarse の単純流用は空になるため、別設計を優先）
 3. 有限証明書の拡大
 
-### 探索的
+### 探索的（並列 Gravity トラック — 進行中）
 
+- **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
+  動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
 - 3-blade bracket / dual-as-normal の一般定理
 - `exp(Ω⁽⁵⁾)` と定義積 `RT` の関係
@@ -102,7 +104,7 @@ flowchart LR
 - 現行連続 FLT bridge をそのまま証明する
 - 旧 `CoarseAmplificationWitness` を本命の量子化写像として扱うこと（構造的に空；Beal/abc でも単純流用すれば同様）
 - dagger 厳密降下・単純折り返し・`J5` 単独解決
-- Schwarzschild/TEGR（長期仮説；形式化対象外）
+- 一般多様体上の TEGR↔Einstein–Hilbert 変分同値の完全形式化（文献引用のまま据え置き）
 
 ---
 
@@ -115,6 +117,15 @@ flowchart LR
 - [x] 無条件 FLT や他予想の達成を主張しない
 - [x] `lake build` と Docker LaTeX（検証ステップで確認）
 
+### Gravity トラック（PGA–TEGR）
+
+- [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
+- [x] チャート上 Weitzenböck ねじれ成分と `T = r⁻² DivClosed`
+- [x] 動径ブースト尺度 `e^{±φ}` と Schwarzschild redshift の一致
+- [x] 静的対角切片での `J` / `J⁵` と `T` のチャート同定パッケージ
+- [ ] 一般 motor 場の `J⁵ = ½ T + div`（予想）
+- [ ] TEGR↔EH 変分同値（据え置き・文献）
+
 ---
 
 ## 5. モジュール地図（現行）
@@ -125,6 +136,8 @@ Algebra/
   Discrete, Continuum, UnitGroup
   Amplification          ← pureBoost / 実スケール
   ModularAmplification   ← ZMod 倍写・巻数・非空 witness
+Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
+  Coframe, Sandwich, Schwarzschild, Weitzenbock, Identification
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt スケルトン
@@ -132,6 +145,7 @@ Theorems/
   Fermat                 ← legacy coarse bridge（空）+ 連続診断
   Beal, Abc, Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
+Gravity.lean             ← Gravity 公開入口（Basic には強制 import しない）
 ```
 
 ---
@@ -158,6 +172,12 @@ Basic.lean / FoundationRegression.lean
                    （設計中）矛盾または有界
 ```
 
+### フェーズ 8 — PGA–TEGR チャート層（進行中）
+
+- `dst-pga.tex` §6 を独立節「PGA–TEGR Correspondence」へ再構成
+- Lean `Gravity/`: コフレーム・Schwarzschild・Weitzenböck・`J`/`T` 同定
+- 数論主軸（modular bridge）と並列；TEGR↔EH は据え置き
+
 ---
 
 ## 7. 次アクション
@@ -165,6 +185,7 @@ Basic.lean / FoundationRegression.lean
 1. **（主）** modular 巻数誤差に対する数論的下限と Fermat modular bridge の設計
 2. 成功パターンを Beal（`m = min`）/ abc（品質）へ個別再設計（旧粗離散の単純流用は空になる点に注意）
 3. 軌道型・加法分解型は別系列として bridge 診断を継続
-4. 長期: mathlib PGA contrib、3-blade / TEGR は仮説枠のまま
+4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明、3-blade / dual-as-normal
+5. 長期: mathlib PGA contrib；TEGR↔EH 変分同値は文献枠のまま
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤** を固めた段階であり、無条件古典定理はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤** を固めた段階であり、無条件古典定理はまだ未達成である。並列で PGA–TEGR チャート骨格を機械検証中。

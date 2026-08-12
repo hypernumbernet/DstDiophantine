@@ -37,7 +37,20 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 | null bivector の dual 閉性 | **棄却**（`dual_null` は grade 4） |
 | `so(3,1)⊕so(3,1)` ラベル | **棄却**（正しくは `so(3,1)⋉ℝ^{3,1}` 候補） |
 | `J⁽⁵⁾` パラメータ定義 / 非有界性 | 証明済み；ad-invariant は未主張 |
-| 3-blade bracket / dual-as-normal / Schwarzschild | 未形式化・仮説 |
+| 3-blade bracket / dual-as-normal | 未形式化・仮説 |
+| Schwarzschild 対角テトラッド・誘導計量 | チャート証明済み（`Gravity.Schwarzschild`） |
+| Weitzenböck `T` と発散形 | チャート証明済み（`Gravity.Weitzenbock`） |
+| 動径ブースト尺度 ↔ redshift | 証明済み（`Gravity.Sandwich`） |
+| 一般 `J⁵ ↔ T` / TEGR↔EH | 予想 / 据え置き |
+
+## フェーズ 8（PGA–TEGR / Gravity）
+
+`DstDiophantine.Gravity` にチャート固定の TEGR 骨格があります（`Basic` には強制 import しません）。
+
+- `Coframe` / `Sandwich` — 誘導計量、動径ブースト尺度
+- `Schwarzschild` — 外域対角テトラッドと Schwarzschild 計量
+- `Weitzenbock` — ねじれ成分と `T = r⁻² DivClosed`
+- `Identification` — 静的対角切片での `J`/`J⁵` と `T` の同定パッケージ
 
 ## フェーズ1 API（概要）
 

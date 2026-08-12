@@ -34,6 +34,9 @@ import DstDiophantine.FoundationRegression
 /-!
 Core re-exports for the PGA / biquaternion algebra layer and the shared
 amplification proof core (phases 1–6).
+
+The PGA–TEGR chart layer lives in `DstDiophantine.Gravity` and is **not**
+re-exported here, so the Diophantine path does not depend on gravity modules.
 -/
 
 namespace DstDiophantine
