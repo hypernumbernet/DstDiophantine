@@ -421,12 +421,34 @@ DSTディオファントス論文（`dst-diophantine.tex`）の主張をLean 4 +
 
 #### 次に Lean で実装すべき候補（優先順・無条件 FLT 向け）
 
-1. **`FermatAdmissibleBridge` docstring 改訂**（最小）  
+1. ~~**`FermatAdmissibleBridge` docstring 改訂**（最小）~~ → 完了
    釣り合い型での破綻可能性と、「最終目標は無条件 FLT；現行 bridge は仮の足場」を明記する。
-2. **種高さの証明可能補題**  
+2. ~~**種高さの証明可能補題**~~ → 完了
    例: `JNormalized(pureBoost θ) = (4/(3π²))θ²` の明示、釣り合い型での `種 < 1/p²` を定理化し、現行模型では足りないことを機械検証する（再設計の正当性の証拠）。
-3. **`N = O(p)` 離散戦略の定義スケルトン → 量子化写像の証明**  
+3. **`N = O(p)` 離散戦略の定義スケルトン → 量子化写像の証明**（スケルトン・閾値完了、量子化写像は未完）
    粗いトーラス上で増幅矛盾が効く形に持ち込み、最終的に bridge 仮定なしの古典 FLT へ接続する。ここが無条件化の主戦場。
+
+#### フェーズ6 — Lean 実装進捗（2026-08-12）
+
+| ファイル | 追加内容 |
+|----------|----------|
+| `Algebra/Amplification.lean` | `JNormalized_pureBoost`（純ブースト正規化高さの閉形式） |
+| `Theorems/Fermat.lean` | 釣り合い型の厳密障害、粗トーラス閾値、離散 bridge スケルトン |
+
+**証明済み（sorry なし）**
+
+- `fermat_balanced_seed_constant_lt_one`: 小数近似を使わず \(\frac{4}{3\pi^2}(\log 2)^2<1\)
+- `fermat_balanced_seed_height_eq` / `fermat_balanced_seed_lt_threshold`: \(\theta=\log 2/p\) では種高さが厳密に \(1/p^2\) 未満
+- `isAdmissibleContinuous_pureBoost_iff` / `fermat_balanced_amplification_admissible`: 純ブーストの許容条件を整理し、釣り合い種の \(p\) 倍が連続許容錐内にあることを証明
+- `fermat_coarse_height_gap`: \(3N^2<16p^2\) なら \(1/p^2<16/(3N^2)\)
+- `fermat_coarse_condition_of_le_two_mul`: 単純な線形条件 \(N\le 2p\) が上記粗さ条件を満たす
+- `fermat_coarse_discrete_contradiction`: 粗トーラス上の非零格子点と \(p\) 倍後の許容性が両立しないことを再利用可能な核として分離
+- `FermatCoarseDiscreteBridge` / `fermat_last_theorem_of_coarse_discrete_bridge`: 必要な量子化像を明示した弱い bridge と、上記矛盾核から古典 FLT を回収する定理
+
+**現在の未解決点**
+
+- `FermatCoarseDiscreteBridge` 自体は未証明。整数解から \(N=O(p)\) 上の「非零・許容・増幅後も許容」な格子点を構成する量子化写像が必要
+- したがって無条件 FLT はまだ未達成。次は `quantizeInt` の単純な差ではなく、加法 null 条件と両立する Fermat 専用量子化の設計・不変量証明
 
 #### 探索時点の結論
 

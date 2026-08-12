@@ -64,6 +64,18 @@ theorem J_pureBoost (θ : ℝ) :
   simp only [pureBoost, Fin.sum_univ_three, zero_pow two_ne_zero, sub_zero, mul_zero, add_zero,
     pow_two]
 
+/-- The normalised height coefficient of a one-axis pure boost. -/
+theorem JNormalized_pureBoost (θ : ℝ) :
+    JNormalized (pureBoost θ) = (4 / (3 * Real.pi ^ 2)) * θ ^ 2 := by
+  unfold JNormalized
+  rw [J_pureBoost]
+  ring
+
+theorem JNormalized_pureBoost_nonneg (θ : ℝ) :
+    0 ≤ JNormalized (pureBoost θ) := by
+  rw [JNormalized_pureBoost]
+  positivity
+
 theorem J_pow_amplify (θ : ℝ) (p : ℕ) :
     J (pureBoost (p * θ)) = (p : ℝ) ^ 2 * J (pureBoost θ) := by
   rw [pureBoost_scale, J_scale]

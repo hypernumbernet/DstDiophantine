@@ -28,6 +28,12 @@ with an admissible configuration after powering; that bridge is recorded as
 `FermatAdmissibleBridge` and left unproved. On fine discrete tori the minimal
 nonzero height is `O(1/N²)`, which need not exceed `1/p²`, so the paper's uniform
 `ε > Jbound/p²` step also fails without an extra hypothesis.
+
+Phase 6 treats this bridge only as a temporary diagnostic device.  In particular,
+the balanced scale `θ = log 2 / p` is admissible after amplification but its seed
+height is strictly below `1/p²`; see `fermat_balanced_seed_lt_threshold`.  The
+target remains an unconditional classical FLT theorem obtained from a redesigned
+quantisation argument, not by postulating this bridge.
 -/
 
 namespace DstDiophantine
@@ -133,13 +139,68 @@ theorem poweredMismatch_eq_rotorTorsion (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0
 
 /-! ### Amplification vs admissible bound -/
 
-theorem JNormalized_pureBoost_nonneg (θ : ℝ) :
-    0 ≤ JNormalized (pureBoost θ) := by
-  unfold JNormalized
-  have hJ : 0 ≤ J (pureBoost θ) := by
-    rw [J_pureBoost]
+private theorem log_two_nonneg : 0 ≤ Real.log 2 :=
+  Real.log_nonneg (by norm_num)
+
+private theorem log_two_lt_one : Real.log 2 < 1 := by
+  have h := Real.log_lt_sub_one_of_pos (by norm_num : (0 : ℝ) < 2) (by norm_num)
+  norm_num at h ⊢
+  exact h
+
+/-- A one-axis pure boost is admissible exactly on the non-negative half principal branch. -/
+theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
+    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
+  constructor
+  · intro h
+    simpa [pureBoost] using h (0 : Fin 3)
+  · rintro ⟨hθ0, hθπ⟩ a
+    have hhalf_pi : (0 : ℝ) ≤ Real.pi / 2 := by positivity
+    fin_cases a <;> simp [pureBoost, hθ0, hθπ, hhalf_pi]
+
+/--
+The dimensionless coefficient controlling the balanced seed is strictly below
+one.  This is proved from `log 2 < 1` and `3 < π`, without decimal approximations.
+-/
+theorem fermat_balanced_seed_constant_lt_one :
+    (4 / (3 * Real.pi ^ 2)) * Real.log 2 ^ 2 < (1 : ℝ) := by
+  have hnum : 4 * Real.log 2 ^ 2 < 4 := by
+    nlinarith [log_two_nonneg, log_two_lt_one]
+  have hden : 4 < 3 * Real.pi ^ 2 := by nlinarith [Real.pi_gt_three]
+  rw [div_mul_eq_mul_div, div_lt_one (by positivity)]
+  exact hnum.trans hden
+
+/-- Exact height of the balanced scale `θ = log 2 / p`. -/
+theorem fermat_balanced_seed_height_eq (p : ℕ) :
+    |JNormalized (pureBoost (Real.log 2 / (p : ℝ)))| =
+      ((4 / (3 * Real.pi ^ 2)) * Real.log 2 ^ 2) / (p : ℝ) ^ 2 := by
+  rw [abs_of_nonneg (JNormalized_pureBoost_nonneg _), JNormalized_pureBoost]
+  ring
+
+/--
+At the balanced scale, the present pure-boost seed is too small for the
+`1/p²` amplification contradiction.  This mechanically records the obstruction
+that motivates the phase-6 model/quantisation redesign.
+-/
+theorem fermat_balanced_seed_lt_threshold {p : ℕ} (hp : 1 ≤ p) :
+    |JNormalized (pureBoost (Real.log 2 / (p : ℝ)))| < (1 : ℝ) / (p : ℝ) ^ 2 := by
+  rw [fermat_balanced_seed_height_eq]
+  have hp2 : 0 < (p : ℝ) ^ 2 := by
+    have : 0 < (p : ℝ) := Nat.cast_pos.mpr hp
     positivity
-  positivity
+  exact (div_lt_div_iff_of_pos_right hp2).mpr fermat_balanced_seed_constant_lt_one
+
+/--
+The balanced seed remains admissible after `p`-fold amplification.  Thus the
+balanced obstruction is the seed threshold, not principal-branch admissibility.
+-/
+theorem fermat_balanced_amplification_admissible {p : ℕ} (hp : 1 ≤ p) :
+    IsAdmissibleContinuous (pureBoost (p * (Real.log 2 / (p : ℝ)))) := by
+  have hp0 : (p : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.ne_of_gt (Nat.zero_lt_of_lt hp))
+  have hscale : (p : ℝ) * (Real.log 2 / (p : ℝ)) = Real.log 2 := by
+    field_simp
+  rw [hscale, isAdmissibleContinuous_pureBoost_iff]
+  have hone_pi : (1 : ℝ) < Real.pi / 2 := by nlinarith [Real.pi_gt_three]
+  exact ⟨log_two_nonneg, (log_two_lt_one.trans hone_pi).le⟩
 
 theorem amplification_implies_seed_le (θ : ℝ) {p : ℕ} (hp : 1 ≤ p)
     (hadm : IsAdmissibleContinuous (pureBoost (p * θ))) :
@@ -220,13 +281,99 @@ theorem discrete_amplification_contradiction {N : ℕ} [NeZero N] {p : ℕ} (hp 
     (le_div_iff₀ hp2).mpr (by linarith [hmul])
   exact not_le_of_gt hlb hle
 
+/--
+Exact coarse-torus criterion: `3N² < 16p²` makes the universal nonzero lattice
+height `16/(3N²)` strictly larger than the amplification threshold `1/p²`.
+-/
+theorem fermat_coarse_height_gap {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
+    (hcoarse : 3 * N ^ 2 < 16 * p ^ 2) :
+    (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+  have hp2 : 0 < (p : ℝ) ^ 2 := by
+    have : 0 < (p : ℝ) := Nat.cast_pos.mpr hp
+    positivity
+  have hNden : 0 < (3 : ℝ) * (N : ℝ) ^ 2 := by
+    have : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+    positivity
+  rw [div_lt_div_iff₀ hp2 hNden]
+  simpa only [one_mul] using (by exact_mod_cast hcoarse :
+    (3 : ℝ) * (N : ℝ) ^ 2 < 16 * (p : ℝ) ^ 2)
+
+/-- The simple linear choice `N ≤ 2p` satisfies the exact coarse-size criterion. -/
+theorem fermat_coarse_condition_of_le_two_mul {N p : ℕ} (hp : 1 ≤ p)
+    (hN : N ≤ 2 * p) : 3 * N ^ 2 < 16 * p ^ 2 := by
+  have hsquare : N ^ 2 ≤ (2 * p) ^ 2 := Nat.pow_le_pow_left hN 2
+  have hp2 : 0 < p ^ 2 := pow_pos (Nat.zero_lt_of_lt hp) 2
+  nlinarith
+
+/-- Convenient `N = O(p)` form of `fermat_coarse_height_gap`. -/
+theorem fermat_coarse_height_gap_of_le_two_mul {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
+    (hN : N ≤ 2 * p) :
+    (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
+  fermat_coarse_height_gap hp (fermat_coarse_condition_of_le_two_mul hp hN)
+
+/--
+No nonzero lattice mismatch on a coarse torus can remain admissible after
+`p`-fold scaling.  This is the reusable contradiction behind the phase-6 bridge.
+-/
+theorem fermat_coarse_discrete_contradiction {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
+    (hcoarse : 3 * N ^ 2 < 16 * p ^ 2) (t : AdmissibleClass N)
+    (hne : latticeMismatch t.val ≠ 0)
+    (hadm :
+      IsAdmissibleContinuous
+        (scaleTorsion (p : ℝ) (AdmissibleClass.toParams t))) :
+    False := by
+  have hgap := fermat_coarse_height_gap hp hcoarse
+  have hlb := discrete_nonzero_height_lb t.val hne
+  have hseed :
+      (1 : ℝ) / (p : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t) :=
+    hgap.trans_le hlb
+  exact discrete_amplification_contradiction hp t hseed hadm
+
+/--
+Phase-6 coarse quantisation bridge.  Unlike `FermatAdmissibleBridge`, this asks
+only for a nonzero admissible lattice mismatch on some torus satisfying the
+explicit coarse-size inequality.  Constructing this witness from an integer
+solution is the remaining quantisation problem; this proposition is not assumed
+by any unconditional theorem.
+-/
+def FermatCoarseDiscreteBridge : Prop :=
+  ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (_ha : a ≠ 0) (_hb : b ≠ 0) (_hc : c ≠ 0),
+    a ^ p + b ^ p = c ^ p →
+      ∃ (N : ℕ) (hN : N ≠ 0),
+        letI : NeZero N := ⟨hN⟩
+        3 * N ^ 2 < 16 * p ^ 2 ∧
+          ∃ t : AdmissibleClass N,
+            latticeMismatch t.val ≠ 0 ∧
+              IsAdmissibleContinuous
+                (scaleTorsion (p : ℝ) (AdmissibleClass.toParams t))
+
+/--
+The coarse bridge is sufficient for classical FLT.  The proof uses only the
+integer lattice lower bound and the already verified amplification bound.
+-/
+theorem fermat_last_theorem_of_coarse_discrete_bridge
+    (hbridge : FermatCoarseDiscreteBridge) :
+    ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
+      ¬ (a ^ p + b ^ p = c ^ p) := by
+  intro a b c p hp ha hb hc hsol
+  obtain ⟨N, hN, hcoarse, t, hne, hadm⟩ := hbridge a b c p hp ha hb hc hsol
+  let _ : NeZero N := ⟨hN⟩
+  have hp1 : 1 ≤ p := Nat.le_trans (by decide : 1 ≤ 3) hp
+  exact fermat_coarse_discrete_contradiction hp1 hcoarse t hne hadm
+
 /-! ### Classical FLT under an explicit bridge hypothesis -/
 
 /--
 Paper Chapter 5's missing bridge: a putative nonzero Fermat solution produces an
 admissible powered pure-boost mismatch whose seed already exceeds `1/p²`.
 
-This proposition is **not** proved in this development.
+This proposition is **not** proved in this development and is only a temporary
+diagnostic device.  Its seed inequality fails for the balanced model scale
+`θ = log 2 / p`, as `fermat_balanced_seed_lt_threshold` proves, even though the
+powered scale `log 2` is admissible by
+`fermat_balanced_amplification_admissible`.  Phase 6 therefore targets the
+coarse discrete quantisation bridge above and ultimately an unconditional FLT
+theorem; this continuous bridge must not be declared true by fiat.
 -/
 def FermatAdmissibleBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (ha : a ≠ 0) (_hb : b ≠ 0) (hc : c ≠ 0),
