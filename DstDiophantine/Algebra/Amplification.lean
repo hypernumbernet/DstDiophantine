@@ -1,15 +1,20 @@
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Generators
+import DstDiophantine.Algebra.Discrete
 import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Tactic.Positivity
 
 /-!
 # Torsional amplification under scaling and rotor powers
+
+Problem-independent pure-boost API used by the continuous and discrete
+amplification no-go theorems in `Framework.Amplification`.
 -/
 
 namespace DstDiophantine
 
-open Operations Motor Invariant Generators NormedSpace
+open Operations Motor Invariant Generators Discrete NormedSpace
 
 namespace Amplification
 
@@ -42,10 +47,15 @@ theorem rotorTorsion_pureBoost (θ : ℝ) :
     rotorTorsion (pureBoost θ) = exp ((θ / 2) • hyperbolic 0) := by
   rw [rotorTorsion, omegaTorsion_pureBoost]
 
-theorem pureBoost_scale (θ : ℝ) (p : ℕ) :
-    pureBoost (p * θ) = scaleTorsion (p : ℝ) (pureBoost θ) := by
+/-- Real scaling of a one-axis pure boost. -/
+theorem pureBoost_scale_real (c θ : ℝ) :
+    pureBoost (c * θ) = scaleTorsion c (pureBoost θ) := by
   dsimp [pureBoost, scaleTorsion]
   congr <;> funext a <;> fin_cases a <;> simp
+
+theorem pureBoost_scale (θ : ℝ) (p : ℕ) :
+    pureBoost (p * θ) = scaleTorsion (p : ℝ) (pureBoost θ) :=
+  pureBoost_scale_real (p : ℝ) θ
 
 theorem rotorTorsion_pureBoost_pow (θ : ℝ) (p : ℕ) :
     rotorTorsion (pureBoost (p * θ)) = rotorTorsion (pureBoost θ) ^ p := by
@@ -83,6 +93,16 @@ theorem J_pow_amplify (θ : ℝ) (p : ℕ) :
 theorem JNormalized_pow_amplify (θ : ℝ) (p : ℕ) :
     JNormalized (pureBoost (p * θ)) = (p : ℝ) ^ 2 * JNormalized (pureBoost θ) := by
   rw [pureBoost_scale, JNormalized_scale]
+
+/-- A one-axis pure boost is admissible exactly on the non-negative half principal branch. -/
+theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
+    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
+  constructor
+  · intro h
+    simpa [pureBoost] using h (0 : Fin 3)
+  · rintro ⟨hθ0, hθπ⟩ a
+    have hhalf_pi : (0 : ℝ) ≤ Real.pi / 2 := by positivity
+    fin_cases a <;> simp [pureBoost, hθ0, hθπ, hhalf_pi]
 
 end Amplification
 

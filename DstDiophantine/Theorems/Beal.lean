@@ -1,4 +1,4 @@
-import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.PowerMap
@@ -9,22 +9,18 @@ import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
-# Phase 5: Beal's conjecture (DST amplification core)
+# Phase 5: Beal's conjecture (problem-specific layer)
 
-We formalise Chapter 6 of `dst-diophantine.tex` as an **amplification vs.
-admissible bound** argument on the pure-boost mismatch model with minimal
-exponent `m = min(x,y,z)`, together with the faithful null-translator encoding
-of `A^x + B^y - C^z`.
+Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
+together with the faithful null-translator encoding of `A^x + B^y - C^z`.
+Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal (`A^x + B^y = C^z` with `x,y,z ≥ 3` forces a common prime
-factor) is **not** claimed unconditionally. Fractional-power mismatch rotors,
-the three-term BCH formula `J_Beal = x²J_A + y²J_B + z²J_C`, and the “prime
-rotor cancels common factors” mechanism are left informal. The bridge from a
-coprime integer solution to an admissible amplified pure-boost is recorded as
-`BealAdmissibleBridge`. On fine discrete tori the minimal nonzero height is
-`O(1/N²)`, which need not exceed `1/m²`.
+Classical Beal is **not** claimed unconditionally. Fractional-power mismatch
+rotors, the three-term BCH formula, and prime-rotor cancellation are left
+informal. The bridge from a coprime integer solution to an admissible amplified
+pure-boost is `BealAdmissibleBridge` (unproved).
 -/
 
 namespace DstDiophantine
@@ -87,9 +83,10 @@ theorem beal_amplification_contradiction
         |JNormalized (logMismatch A C hA hC)|) :
     False := by
   have hm1 : 1 ≤ bealMinExp x y z := bealMinExp_ge_one hx hy hz
-  exact fermat_amplification_contradiction hA hC hm1 hadm hbig
+  change (1 : ℝ) / (_ : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
+  exact continuous_amplification_contradiction _ hm1 hadm hbig
 
-/-- Discrete torus form: reuse the Fermat discrete amplification contradiction. -/
+/-- Discrete torus form via the shared amplification core. -/
 theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (t : AdmissibleClass N)
@@ -109,7 +106,8 @@ theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : 
 Paper Chapter 6's missing bridge: a putative coprime Beal solution produces an
 admissible powered pure-boost mismatch whose seed already exceeds `1/m²`.
 
-This proposition is **not** proved in this development.
+**Assumption (unproved).** Shared no-go:
+`beal_amplification_contradiction`. Does **not** yield unconditional Beal.
 -/
 def BealAdmissibleBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)

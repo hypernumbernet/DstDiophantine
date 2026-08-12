@@ -1,10 +1,11 @@
+import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
+import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.Height
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Operations
-import DstDiophantine.Theorems.Fermat
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Nat.PrimeFin
@@ -298,11 +299,11 @@ theorem discrete_abc_bound {a b c : ℕ} (h : IsAbcTriple a b c)
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) :=
   abc_quality_bound_of_admissible h hadm
 
-/-- Nonzero discrete seeds are at least `ε_N` tall. -/
+/-- Nonzero discrete seeds are at least `ε_N` tall (shared core). -/
 theorem discrete_abc_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
     (hne : latticeMismatch t ≠ 0) :
     (16 : ℝ) / (3 * (N : ℝ) ^ 2) ≤ |JNormalized (toTorsionParams t)| :=
-  discrete_nonzero_height_lb t hne
+  Framework.discrete_nonzero_height_lb t hne
 
 /-! ### Finite computational certificate -/
 
@@ -352,10 +353,11 @@ theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
 /--
 Paper Chapter 7's missing bridge: a primitive triple whose quality exceeds
 `1 + ε` produces an admissible continuous pure-boost configuration that already
-lies past the model quality ceiling (so `torsion_bound_continuous` yields a
-contradiction).
+lies past the model quality ceiling.
 
-This proposition is **not** proved in this development.
+**Assumption (unproved).** Shared continuous bound:
+`torsion_bound_continuous` / `abc_amplification_contradiction`. Does **not**
+yield unconditional abc.
 -/
 def AbcAdmissibleBridge : Prop :=
   ∀ (ε : ℝ), 0 < ε → ∀ (a b c : ℕ),

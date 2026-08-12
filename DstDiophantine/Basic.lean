@@ -16,6 +16,7 @@ import DstDiophantine.Embedding.IntegerRotor
 import DstDiophantine.Embedding.NullTranslator
 import DstDiophantine.Embedding.PowerMap
 import DstDiophantine.Embedding.RotorClass
+import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Descent
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.Representation
@@ -27,10 +28,11 @@ import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Theorems.Riemann
+import DstDiophantine.FoundationRegression
 
 /-!
-Core re-exports for the PGA / biquaternion algebra layer (phases 1–5, including
-Goldbach / Polignac / abc / RH).
+Core re-exports for the PGA / biquaternion algebra layer and the shared
+amplification proof core (phases 1–6).
 -/
 
 namespace DstDiophantine
@@ -50,8 +52,10 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   axis_sq_diff_eq IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
   torsion_bound_raw torsion_bound torsion_bound_continuous JNormalized_extremal
   torsion_bound_naive_false)
-export Amplification (scaleTorsion pureBoost J_scale JNormalized_scale J_pow_amplify
-  JNormalized_pow_amplify rotorTorsion_pureBoost_pow)
+export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scale
+  J_scale JNormalized_scale J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
+  J_pow_amplify JNormalized_pow_amplify rotorTorsion_pureBoost_pow
+  isAdmissibleContinuous_pureBoost_iff)
 export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
 export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
   nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
@@ -63,11 +67,22 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   gapEquation gapMotor_one_iff
   IsZeroHeight AdmissibleClass ExistsZeroHeight
   latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
-  findZeroHeight findZeroHeight_isSome phase4_layers)
+  findZeroHeight findZeroHeight_isSome phase4_layers
+  amplification_implies_seed_le continuous_amplification_contradiction
+  abs_latticeMismatch_ge_one discrete_nonzero_height_lb
+  discrete_amplification_contradiction
+  coarse_height_gap coarse_condition_of_le_two_mul
+  coarse_height_gap_of_le_two_mul coarse_discrete_contradiction
+  CoarseAmplificationWitness)
 export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorTorsion
-  amplification_implies_seed_le fermat_amplification_contradiction
-  discrete_nonzero_height_lb discrete_amplification_contradiction
+  fermat_balanced_seed_constant_lt_one fermat_balanced_seed_height_eq
+  fermat_balanced_seed_lt_threshold fermat_balanced_amplification_admissible
+  fermat_amplification_contradiction
+  fermat_coarse_height_gap fermat_coarse_condition_of_le_two_mul
+  fermat_coarse_height_gap_of_le_two_mul fermat_coarse_discrete_contradiction
   FermatAdmissibleBridge fermat_last_theorem_of_bridge
+  FermatCoarseDiscreteBridge
+  fermat_last_theorem_of_coarse_discrete_bridge
   beal_solution_iff_motor bealMinExp bealGcd beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge
   beal_conjecture_of_bridge beal_eq_exp_not_coprime_of_bridge
