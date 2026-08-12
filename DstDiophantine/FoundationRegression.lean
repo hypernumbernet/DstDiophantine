@@ -2,6 +2,7 @@ import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.Height
+import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
@@ -22,6 +23,7 @@ namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification
 open _root_.DstDiophantine.Embedding
+-- CGA probe is intentionally not imported here (same policy as Gravity).
 
 /-- Additive faithfulness. -/
 example (a b c : ℤ) (p : ℕ) :
@@ -88,6 +90,28 @@ example : Nonempty (ModularAmplificationWitness 16 5) :=
 example {N : ℕ} [NeZero N] (k : ℕ) (x : ZMod N) :
     k * x.val = (k • x).val + N * windingCoord k x :=
   mul_val_eq_val_add_winding k x
+
+/-- Real-scale continuous admissibility forces zero total winding. -/
+example {N k : ℕ} [NeZero N] (t : DiscreteTorsion N)
+    (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
+    windingTotal k t = 0 :=
+  admissible_scale_implies_windingTotal_eq_zero k t hadm
+
+/-- Modular witness with winding is not real-scale admissible. -/
+example {N k : ℕ} [NeZero N] (w : ModularAmplificationWitness N k) :
+    ¬ IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
+  ModularAmplificationWitness.not_admissible_real_scale w
+
+/-- `|n|=1` quantises to the zero seed. -/
+example {N : ℕ} [NeZero N] (n : ℤ) (hn : n ≠ 0) (habs : Int.natAbs n = 1) :
+    quantizeInt N n hn = zeroTorsion N :=
+  quantizeInt_one n hn habs
+
+/-- Modular bridge recovers classical FLT conditionally (solution-dependent payload). -/
+example (hbridge : FermatModularBridge) :
+    ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
+      ¬ (a ^ p + b ^ p = c ^ p) :=
+  fermat_last_theorem_of_modular_bridge hbridge
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :

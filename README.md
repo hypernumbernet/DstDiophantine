@@ -14,6 +14,8 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **コアは `sorry` なし。** Lean 4 + mathlib 上で、代数・増幅・層境界の中核が機械検証されています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
+- **Fermat modular bridge を型付けした。** 解依存の `quantizeMismatch` 種と巻数付き witness、および共形ゲージの残ギャップ `ConformalGaugeAdmissible` を分けてあります。無条件 FLT は主張しません。
+- **1D CGA 探針を並列に入れた。** PGA の `integerHeight` は非有界ですが、`Cl(2,1)` の null 点埋め込みは斉次です（`Basic` には強制しません）。
 - **古典予想の無条件証明はまだ主張しない。** FLT / Beal / abc などは「bridge が正しければ従う」形で型付けしてあります。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
 
@@ -63,7 +65,9 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - 離散側の非零高さ下限 `ε_N = 16/(3N²)` と、粗トーラス上の no-go
 - **旧粗離散証明書の構造的空性**（方程式に依存しない。同じ設計を Beal / abc に流用しても空のまま）
 - **modular 増幅:** 巻数の恒等式、正規化高さの誤差恒等式、具体例 `N = 16`, `k = 5` で witness が非空であること
-- `FoundationRegression` で、空性・modular の inhabited・三層の境界を回帰テストとして固定
+- **巻数ギャップ:** 実スケールが連続許容なら総巻数は 0（よって巻数付き modular witness は連続 no-go に直接渡せない）
+- **`FermatModularBridge`:** 解依存 payload + `ConformalGaugeAdmissible`（暫定的に PGA 実スケール錐と同一視）→ 条件付き FLT
+- `FoundationRegression` で、空性・modular の inhabited・巻数 0・modular bridge・三層の境界を回帰テストとして固定
 
 つまり「共通の禁止定理」と「空ではない新しい証明書の型」までは揃っています。残るのは、各予想の解からその証明書へ渡る bridge です。
 
@@ -84,7 +88,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 | ファイル | いま入っているもの |
 |----------|-------------------|
-| `Fermat.lean` | 加法同値、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
+| `Fermat.lean` | 加法同値、`FermatModularBridge`、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
 | `Beal.lean` / `Abc.lean` | 共通増幅 no-go の直利用、品質・高さの関係（abc） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
 | `Goldbach.lean` / `Polignac.lean` | 加法分解の motor 同値、候補の健全性、有限範囲の存在 |
@@ -114,10 +118,14 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 ## これからの見通し
 
 いまの焦点は「共通 no-go はあるが、解から証明書への橋がない」状態を埋めることです。
+`FermatModularBridge` の型は置きましたが、本体と共形ゲージの再定義が残っています。
 
 - **主軸（冪和・品質型）**  
-  modular の巻数誤差に数論的な下限を付け、Fermat / Beal / abc 向けの **modular bridge** を設計する。  
-  旧粗離散の単純コピーは空命題になるので、別設計を優先します。無条件 FLT はその先の応用です。
+  `ConformalGaugeAdmissible` を CGA 側で PGA 実スケールと切り離せるかを検証し、
+  modular の巻数誤差に数論的な下限を付ける。  
+  旧粗離散の単純コピーは空命題になるので、**解依存 payload** を優先します。無条件 FLT はその先の応用です。
+- **1D CGA 探針**  
+  `DstDiophantine.CGA` で null 点・dilation を診断中。時空 CGA は後続です。
 - **有限証明書の拡大**  
   Collatz / Goldbach / abc などの検証上限を上げ、回帰の厚みを増やす。
 - **別系列の bridge 診断**  
@@ -126,7 +134,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
   一般の `J⁵ ↔ T`、3-blade / dual-as-normal の一般定理を進める。TEGR↔EH の完全な変分同値は文献枠のまま据え置き。
 - **長期目標**  
   7 予想を「離散双対時空の内部で、許容される増幅証明書が存在しない」という単一原理から導くこと。  
-  現状はその共通原理の片側（no-go + modular 基盤）まで固めた段階で、無条件の古典定理は未達成です。
+  現状はその共通原理の片側（no-go + modular 基盤 + Fermat modular の型付け）まで固めた段階で、無条件の古典定理は未達成です。
 
 ## ビルド
 
@@ -138,4 +146,5 @@ lake build
 Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使います。
 
 公開の入口は `DstDiophantine.Basic`、三層の境界や空性・modular の inhabited を固定する回帰例は
-`DstDiophantine.FoundationRegression` です。重力側だけ見る場合は `DstDiophantine.Gravity` を使います。
+`DstDiophantine.FoundationRegression` です。重力側だけ見る場合は `DstDiophantine.Gravity`、
+1D CGA 探針だけ見る場合は `DstDiophantine.CGA` を使います（いずれも `Basic` には強制しません）。

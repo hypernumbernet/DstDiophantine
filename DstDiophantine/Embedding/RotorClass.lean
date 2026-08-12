@@ -1,9 +1,14 @@
 import DstDiophantine.Embedding.IntegerRotor
+import DstDiophantine.Embedding.PowerMap
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.UnitGroup
 import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.Amplification
 import Mathlib.Data.Fintype.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
 
 /-!
 # Rotor equivalence classes modulo the discrete unit group
@@ -16,7 +21,7 @@ namespace DstDiophantine
 
 namespace Embedding
 
-open Discrete UnitGroup Operations Motor Real CliffordAlgebra PGA
+open Discrete UnitGroup Operations Motor Amplification Real CliffordAlgebra PGA
 
 variable {N : ℕ} [NeZero N]
 
@@ -44,10 +49,32 @@ def rotorClassOf (t : DiscreteTorsion N) : RotorClass N := ⟨t⟩
 noncomputable def rotorOfClass (c : RotorClass N) : PGA :=
   discreteRotor c.rep
 
-/-- Quantise `log|n|` to the nearest lattice rapidity on axis `0`. -/
+/-- Lattice index for a continuous pure-boost rapidity on axis `0`. -/
+noncomputable def quantizeRapidity (N : ℕ) [NeZero N] (θ : ℝ) : ℤ :=
+  ⌊θ * N / (2 * Real.pi)⌋
+
+/-- Quantise `log|n|` to the nearest lattice rapidity on axis `0`.
+
+Uses the integer-rotor convention `pureBoost (2 log|n|)`, so the index is
+`⌊(2 log|n|) N / (2π)⌋ = ⌊N log|n| / π⌋`.
+-/
 noncomputable def quantizeInt (N : ℕ) [NeZero N] (n : ℤ) (_hn : n ≠ 0) : DiscreteTorsion N :=
   { n := fun a => match a with
-      | 0 => (⌊2 * Real.log (Int.natAbs n) * N / (2 * Real.pi)⌋ : ZMod N)
+      | 0 => (quantizeRapidity N (2 * Real.log (Int.natAbs n)) : ZMod N)
+      | _ => 0
+    m := fun _ => 0 }
+
+/--
+Quantise the continuous log-mismatch `logMismatch a c` to a pure-boost lattice
+seed.  Uses the same floor map as `quantizeInt`, applied to the mismatch
+rapidity `log|c| - log|a|` (so index `⌊N (log|c|-log|a|) / (2π)⌋`).
+-/
+noncomputable def quantizeMismatch (N : ℕ) [NeZero N] (a c : ℤ)
+    (_ha : a ≠ 0) (_hc : c ≠ 0) : DiscreteTorsion N :=
+  { n := fun i => match i with
+      | 0 =>
+        (quantizeRapidity N
+          (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)) : ZMod N)
       | _ => 0
     m := fun _ => 0 }
 
@@ -69,6 +96,95 @@ noncomputable instance : Fintype (RotorClass N) :=
 
 theorem rotorClass_finite : (Set.univ : Set (RotorClass N)).Finite :=
   Set.finite_univ
+
+/-! ### Quantisation lemmas -/
+
+theorem quantizeInt_m_eq_zero (n : ℤ) (hn : n ≠ 0) (a : Fin 3) :
+    (quantizeInt N n hn).m a = 0 := rfl
+
+theorem quantizeInt_n_of_ne_zero (n : ℤ) (hn : n ≠ 0) {a : Fin 3} (ha : a ≠ 0) :
+    (quantizeInt N n hn).n a = 0 := by
+  fin_cases a <;> first | exact (ha rfl).elim | rfl
+
+/-- `quantizeInt` is a pure-boost seed (only axis `0` of `n` may be nonzero). -/
+theorem quantizeInt_pureBoost (n : ℤ) (hn : n ≠ 0) :
+    (∀ a : Fin 3, a ≠ 0 → (quantizeInt N n hn).n a = 0) ∧
+      (∀ a : Fin 3, (quantizeInt N n hn).m a = 0) :=
+  ⟨fun _a ha => quantizeInt_n_of_ne_zero n hn ha, fun a => quantizeInt_m_eq_zero n hn a⟩
+
+theorem quantizeMismatch_m_eq_zero (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) (i : Fin 3) :
+    (quantizeMismatch N a c ha hc).m i = 0 := rfl
+
+theorem quantizeMismatch_n_of_ne_zero (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0)
+    {i : Fin 3} (hi : i ≠ 0) :
+    (quantizeMismatch N a c ha hc).n i = 0 := by
+  fin_cases i <;> first | exact (hi rfl).elim | rfl
+
+theorem quantizeMismatch_pureBoost (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    (∀ i : Fin 3, i ≠ 0 → (quantizeMismatch N a c ha hc).n i = 0) ∧
+      (∀ i : Fin 3, (quantizeMismatch N a c ha hc).m i = 0) :=
+  ⟨fun _i hi => quantizeMismatch_n_of_ne_zero a c ha hc hi,
+    fun i => quantizeMismatch_m_eq_zero a c ha hc i⟩
+
+theorem quantizeRapidity_zero : quantizeRapidity N 0 = 0 := by
+  simp [quantizeRapidity]
+
+theorem quantizeInt_one (n : ℤ) (hn : n ≠ 0) (habs : Int.natAbs n = 1) :
+    quantizeInt N n hn = zeroTorsion N := by
+  refine congr_arg₂ DiscreteTorsion.mk ?_ ?_
+  · funext a; fin_cases a <;>
+      simp [quantizeRapidity, habs, Real.log_one]
+  · funext a; rfl
+
+/--
+Floor error for the continuous lift of a quantised rapidity: the reconstructed
+axis-`0` angle differs from `θ` by less than one lattice step `2π/N`, after
+accounting for the integral part that is reduced mod `N`.
+
+Here we record the standard floor inequality before modular reduction:
+`quantizeRapidity N θ ≤ θ N / (2π) < quantizeRapidity N θ + 1`.
+-/
+theorem quantizeRapidity_le (θ : ℝ) :
+    (quantizeRapidity N θ : ℝ) ≤ θ * N / (2 * Real.pi) :=
+  Int.floor_le _
+
+theorem lt_quantizeRapidity_add_one (θ : ℝ) :
+    θ * N / (2 * Real.pi) < (quantizeRapidity N θ : ℝ) + 1 :=
+  Int.lt_floor_add_one _
+
+/-- Reconstructed rapidity on the principal real line (before `ZMod` wrap). -/
+noncomputable def rapidityOfIndex (N : ℕ) [NeZero N] (k : ℤ) : ℝ :=
+  2 * Real.pi * k / N
+
+theorem quantizeRapidity_error (θ : ℝ) :
+    |θ - rapidityOfIndex N (quantizeRapidity N θ)| < 2 * Real.pi / N := by
+  have hN : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hπ : 0 < Real.pi := Real.pi_pos
+  have hden : 0 < (2 * Real.pi : ℝ) := by positivity
+  unfold rapidityOfIndex quantizeRapidity
+  set k := ⌊θ * N / (2 * Real.pi)⌋
+  have hle : (k : ℝ) ≤ θ * N / (2 * Real.pi) := Int.floor_le _
+  have hlt : θ * N / (2 * Real.pi) < (k : ℝ) + 1 := Int.lt_floor_add_one _
+  have h1 : 2 * Real.pi * k / N ≤ θ := by
+    have := mul_le_mul_of_nonneg_left hle (le_of_lt hden)
+    have hL : 2 * Real.pi * (k : ℝ) = 2 * Real.pi * k := by ring
+    field_simp [hN.ne'] at this ⊢
+    linarith
+  have h2 : θ < 2 * Real.pi * k / N + 2 * Real.pi / N := by
+    have := mul_lt_mul_of_pos_left hlt hden
+    field_simp [hN.ne'] at this ⊢
+    linarith
+  have hnonneg : 0 ≤ θ - 2 * Real.pi * k / N := sub_nonneg.mpr h1
+  rw [abs_of_nonneg hnonneg]
+  linarith
+
+theorem quantizeMismatch_error (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    |(logMismatch a c ha hc).alpha 0 -
+        rapidityOfIndex N (quantizeRapidity N
+          (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)))| <
+      2 * Real.pi / N := by
+  simp only [logMismatch, pureBoost]
+  exact quantizeRapidity_error _
 
 end Embedding
 

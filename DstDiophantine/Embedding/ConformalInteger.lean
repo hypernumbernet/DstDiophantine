@@ -1,0 +1,131 @@
+import DstDiophantine.Algebra.CGA.NullCone
+import DstDiophantine.Embedding.Height
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.FieldSimp
+
+/-!
+# Conformal integer embedding (1D CGA probe)
+
+PGA integer rotors `R(n) = exp(log|n| · B)` are **not** homogeneous: the
+torsional height `integerHeight n ≍ (log|n|)²` diverges as `|n| → ∞`, which is
+the quantisation gap behind continuous / coarse bridges.
+
+1D CGA places nonzero integers on the null cone via
+`X(n) = n₀ + n e + (1/2) n² n∞` with `X(n)² = 0`.
+Dilation acts by the algebraic weight pattern `(1, c, c²)` on
+`(n₀, e, n∞)` components — the multiplicative layer that PGA Poincaré-type
+null translators do not supply.
+-/
+
+namespace DstDiophantine
+
+namespace Embedding
+
+open CGA CGA.CGA1 Real
+
+/-- Conformal embedding of a real coordinate as a null point in `Cl(2,1)`. -/
+noncomputable def conformalPoint (x : ℝ) : CGA1 :=
+  CGA1.point x
+
+theorem conformalPoint_sq (x : ℝ) : conformalPoint x * conformalPoint x = 0 :=
+  CGA1.point_sq x
+
+/-- Conformal embedding of an integer as a null point. -/
+noncomputable def conformalInteger (n : ℤ) : CGA1 :=
+  conformalPoint (n : ℝ)
+
+theorem conformalInteger_sq (n : ℤ) :
+    conformalInteger n * conformalInteger n = 0 :=
+  conformalPoint_sq _
+
+/-- Multiplicative dilation on conformal integers. -/
+theorem conformalInteger_mul (m n : ℤ) :
+    conformalInteger (m * n) =
+      CliffordAlgebra.ι CGA.Q21
+        (CGA1.n0Vec + ((m : ℝ) * (n : ℝ)) • CGA1.eLineVec
+          + (1 / 2 * ((m : ℝ) * (n : ℝ)) ^ 2) • CGA1.nInfVec) := by
+  simpa [conformalInteger, conformalPoint] using CGA1.point_mul m n
+
+/-- Algebraic dilation weights `(1, c, c²)` on the null-cone embedding. -/
+theorem conformalPoint_smul (c x : ℝ) :
+    conformalPoint (c * x) =
+      CliffordAlgebra.ι CGA.Q21
+        (CGA1.n0Vec + c • (x • CGA1.eLineVec)
+          + (c ^ 2) • ((1 / 2 * x ^ 2) • CGA1.nInfVec)) := by
+  simp only [conformalPoint, CGA1.point, CGA1.pointVec_smul_weights]
+
+theorem pointVec_on_null_cone (x : ℝ) : CGA.Q21 (CGA1.pointVec x) = 0 :=
+  CGA1.Q21_pointVec x
+
+/--
+PGA integer-rotor height is unbounded: for every real bound `M` there is a
+nonzero integer whose torsional height exceeds `M`.
+-/
+theorem exists_integerHeight_gt (M : ℝ) :
+    ∃ (n : ℤ) (hn : n ≠ 0), M < integerHeight n hn := by
+  have hcoef : (0 : ℝ) < 16 / (3 * Real.pi ^ 2) := by positivity
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  let target : ℝ := max M 0 + 1
+  have htarget : 0 < target := by
+    have : 0 ≤ max M 0 := le_max_right _ _
+    linarith
+  let thresh : ℝ :=
+    Real.sqrt (target / (16 / (3 * Real.pi ^ 2))) / Real.log 2
+  obtain ⟨k, hk⟩ := exists_nat_gt thresh
+  refine ⟨(2 : ℤ) ^ (k + 1), pow_ne_zero _ (by decide), ?_⟩
+  have hn : (2 : ℤ) ^ (k + 1) ≠ 0 := pow_ne_zero _ (by decide)
+  rw [integerHeight_eq _ hn]
+  have habs : Int.natAbs ((2 : ℤ) ^ (k + 1)) = 2 ^ (k + 1) := by
+    rw [Int.natAbs_pow]; simp
+  rw [habs, Nat.cast_pow]
+  -- Goal contains `log (↑2 ^ (k+1))`.
+  have h2 : ((2 : ℕ) : ℝ) = (2 : ℝ) := by norm_num
+  rw [h2]
+  have hlog : Real.log ((2 : ℝ) ^ (k + 1)) = (↑(k + 1) : ℝ) * Real.log 2 := by
+    rw [Real.log_pow (2 : ℝ) (k + 1)]
+  rw [hlog, abs_of_nonneg (mul_nonneg hcoef.le (sq_nonneg _))]
+  have hk1 : thresh < (↑(k + 1) : ℝ) := by
+    have : (k : ℝ) < ↑(k + 1) := by exact_mod_cast Nat.lt_succ_self k
+    exact hk.trans this
+  have hsqrt :
+      Real.sqrt (target / (16 / (3 * Real.pi ^ 2))) <
+        (↑(k + 1) : ℝ) * Real.log 2 := by
+    have hden : Real.log 2 ≠ 0 := ne_of_gt hlog2
+    calc Real.sqrt (target / (16 / (3 * Real.pi ^ 2)))
+        = thresh * Real.log 2 := by
+          change _ = (_ / Real.log 2) * Real.log 2
+          field_simp [hden]
+      _ < (↑(k + 1) : ℝ) * Real.log 2 := mul_lt_mul_of_pos_right hk1 hlog2
+  have ha : 0 ≤ target / (16 / (3 * Real.pi ^ 2)) := by positivity
+  have hsq :
+      target / (16 / (3 * Real.pi ^ 2)) < ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 := by
+    have hnn' : 0 ≤ (↑(k + 1) : ℝ) * Real.log 2 := by positivity
+    have hlt := (sq_lt_sq₀ (Real.sqrt_nonneg _) hnn').mpr hsqrt
+    rwa [Real.sq_sqrt ha] at hlt
+  have hgt :
+      target < (16 / (3 * Real.pi ^ 2)) * ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 := by
+    have hc : (16 / (3 * Real.pi ^ 2) : ℝ) ≠ 0 := ne_of_gt hcoef
+    calc target
+        = (16 / (3 * Real.pi ^ 2)) *
+            (target / (16 / (3 * Real.pi ^ 2))) := by field_simp [hc]
+      _ < (16 / (3 * Real.pi ^ 2)) * ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 :=
+          mul_lt_mul_of_pos_left hsq hcoef
+  have hMlt : M < target := by
+    have : M ≤ max M 0 := le_max_left _ _
+    linarith
+  exact hMlt.trans hgt
+
+/-- Convenience form of the unboundedness diagnostic. -/
+theorem integerHeight_not_globally_bounded :
+    ¬ ∃ M : ℝ, ∀ (n : ℤ) (hn : n ≠ 0), integerHeight n hn ≤ M := by
+  rintro ⟨M, hM⟩
+  obtain ⟨n, hn, hlt⟩ := exists_integerHeight_gt M
+  exact not_le_of_gt hlt (hM n hn)
+
+end Embedding
+
+end DstDiophantine

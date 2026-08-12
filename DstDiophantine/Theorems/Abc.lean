@@ -38,6 +38,11 @@ high-quality classical triple as an *admissible* continuous configuration (with
 quality already past the model ceiling) is `AbcAdmissibleBridge`. Continuum
 recovery of `Cε` via `Q(N) → ∞` is absorbed into that bridge rather than proved
 as a separate limit theorem.
+
+Legacy coarse real-scale witnesses are equation-independently empty; reusing
+that design stays vacuous. A modular / quality redesign needs a
+**solution-dependent** payload (cf. `FermatModularBridge`), not a bare
+inhabited modular witness.
 -/
 
 namespace DstDiophantine

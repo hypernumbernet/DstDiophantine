@@ -3,8 +3,10 @@ import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.PowerMap
 import DstDiophantine.Embedding.IntegerRotor
+import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Embedding.Height
 import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Generators
@@ -15,7 +17,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
-# Phase 5–6: Fermat's Last Theorem (problem-specific layer)
+# Phase 5–7: Fermat's Last Theorem (problem-specific layer)
 
 Additive null encoding and Fermat-specific bridges / balanced-seed diagnostics.
 Shared amplification no-go theorems live in `Framework.Amplification`; pure-boost
@@ -26,15 +28,17 @@ algebra lives in `Algebra.Amplification`.
 Classical FLT is **not** claimed unconditionally. Continuous
 `FermatAdmissibleBridge` is only a diagnostic device (false on the balanced
 scale). The legacy `FermatCoarseDiscreteBridge` uses a structurally empty
-payload (`CoarseAmplificationWitness.empty_of_coarse`); the live programme
-is modular wrapping in `Algebra.ModularAmplification`.
+payload (`CoarseAmplificationWitness.empty_of_coarse`). The live programme is
+`FermatModularBridge`: a **solution-dependent** modular witness on
+`quantizeMismatch`, together with the residual conformal-gauge gap
+`ConformalGaugeAdmissible`.
 -/
 
 namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Discrete Invariant Motor Operations Generators
+open Amplification Discrete Invariant Motor Operations Generators ModularAmplification
 open CliffordAlgebra PGA Real NormedSpace
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Framework
@@ -281,6 +285,56 @@ theorem fermat_last_theorem_of_bridge (hbridge : FermatAdmissibleBridge) :
   have ⟨hadm, hbig⟩ := hbridge a b c p hp ha hb hc hsol
   have hp1 : 1 ≤ p := Nat.le_trans (by decide : 1 ≤ 3) hp
   exact fermat_amplification_contradiction ha hc hp1 hadm hbig
+
+/-! ### Live modular bridge (solution-dependent payload) -/
+
+/--
+**Live modular bridge** (unproved).
+
+* **Payload (solution-dependent):** the quantised log-mismatch
+  `t := quantizeMismatch N a c` is admissible, carries a
+  `ModularAmplificationWitness N p` with `w.t.val = t`, and the powered
+  real-scale configuration is `ConformalGaugeAdmissible`.
+* **Unlike** `FermatCoarseDiscreteBridge`: the witness type is inhabited in
+  general (`ModularAmplificationWitness.nonempty_example`), but the bridge
+  demands that the *solution's* quantised mismatch be that witness — not a
+  fixed unrelated seed.
+* **Unlike** merely asserting `Nonempty (ModularAmplificationWitness 16 5)`:
+  the seed is tied to `(a,c)` via `quantizeMismatch`.
+* **Proved core used by the conditional wrapper:**
+  `ModularAmplificationWitness.not_admissible_real_scale` — nonzero winding
+  rules out `ConformalGaugeAdmissible` under the present identification of
+  conformal gauge with the PGA real-scale cone.
+* **Residual gap:** whether a conformal / CGA gauge can make the third
+  conjunct hold without collapsing to that obstruction (see `Algebra.CGA`).
+* **Does not claim:** unconditional classical FLT.
+-/
+def FermatModularBridge : Prop :=
+  ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (ha : a ≠ 0) (_hb : b ≠ 0) (hc : c ≠ 0),
+    a ^ p + b ^ p = c ^ p →
+      ∃ (N : ℕ) (hN : N ≠ 0),
+        letI : NeZero N := ⟨hN⟩
+        let t := Embedding.quantizeMismatch N a c ha hc
+        IsAdmissible t ∧
+          (∃ w : ModularAmplificationWitness N p, w.t.val = t) ∧
+            ModularAmplification.ConformalGaugeAdmissible
+              (scaleTorsion (p : ℝ) (toTorsionParams t))
+
+/--
+Conditional FLT from the modular bridge: a solution-dependent winding witness
+cannot be conformally / real-scale admissible.
+-/
+theorem fermat_last_theorem_of_modular_bridge
+    (hbridge : FermatModularBridge) :
+    ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
+      ¬ (a ^ p + b ^ p = c ^ p) := by
+  intro a b c p hp ha hb hc hsol
+  obtain ⟨N, hN, _hadm, ⟨w, hw⟩, hconf⟩ := hbridge a b c p hp ha hb hc hsol
+  let : NeZero N := ⟨hN⟩
+  have hnot :=
+    ModularAmplification.ModularAmplificationWitness.not_admissible_real_scale w
+  rw [hw] at hnot
+  exact hnot hconf
 
 end Theorems
 

@@ -21,6 +21,11 @@ Classical Beal is **not** claimed unconditionally. Fractional-power mismatch
 rotors, the three-term BCH formula, and prime-rotor cancellation are left
 informal. The bridge from a coprime integer solution to an admissible amplified
 pure-boost is `BealAdmissibleBridge` (unproved).
+
+Legacy coarse real-scale witnesses are equation-independently empty
+(`CoarseAmplificationWitness.empty_of_coarse`); a modular redesign needs a
+**solution-dependent** payload (cf. `FermatModularBridge`), not a bare
+`Nonempty (ModularAmplificationWitness N k)`.
 -/
 
 namespace DstDiophantine

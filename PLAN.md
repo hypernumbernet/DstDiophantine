@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-12（PGA–TEGR チャート層）
+最終更新: 2026-08-13（Fermat modular bridge + 1D CGA 探針）
 
 ## 1. 三層アーキテクチャ
 
@@ -18,8 +18,9 @@ flowchart LR
 |----|------|------|----------|
 | **加法忠実化** | 冪和型方程式 ↔ `powerSumMotor = 1` | 証明済み | `Framework/Representation`, `Embedding/NullTranslator` |
 | **共通 no-go** | `k` 倍増幅 vs 許容有界性 / 粗格子下限 | 証明済み（高さ版） | `Framework/Amplification`, `Algebra/Amplification` |
-| **問題別 bridge** | 整数解 ⇒ 増幅証明書 | **未証明**（旧 coarse は構造的空） | 各 `Theorems/*.lean` の `*Bridge` |
-| **modular 増幅** | `ZMod` 倍写と巻数誤差 | **基盤証明済み・非空** | `Algebra/ModularAmplification` |
+| **問題別 bridge** | 整数解 ⇒ 増幅証明書 | **未証明**（旧 coarse は構造的空；modular は型付け済） | 各 `Theorems/*.lean` の `*Bridge` |
+| **modular 増幅** | `ZMod` 倍写と巻数誤差 | **基盤＋巻数/実スケールギャップ証明済** | `Algebra/ModularAmplification` |
+| **1D CGA 探針** | 乗法 dilation / 斉次 null 点 | **診断層（Basic 非依存）** | `Algebra/CGA`, `Embedding/ConformalInteger` |
 
 ### 確立済み（機械検証済み・sorry なし）
 
@@ -31,6 +32,10 @@ flowchart LR
 - **旧 `CoarseAmplificationWitness` の構造的空性**（方程式非依存；`empty_of_coarse`）
 - 加法 null 忠実性（Fermat / Beal / abc / Goldbach / Polignac の骨格）
 - modular 巻数恒等式と `ModularAmplificationWitness` の具体例（`N=16,k=5`）
+- **実スケール許容 ⇒ `windingTotal = 0`**（modular witness は連続 no-go に直接渡せない）
+- `quantizeMismatch` / `quantizeInt` 補題とフロア誤差
+- **`FermatModularBridge` の型付け**と条件付き FLT（解依存 payload；bridge 本体は未証明）
+- 1D CGA `Cl(2,1)`: `X(x)² = 0`、dilation 重み、`integerHeight` 非有界診断
 - 有限計算証明書（Collatz ≤20、Goldbach ≤100、abc ≤100、RH 有理格子 ≤20、
   Polignac 双子 ≤20 / gap4·6 ≤30）
 
@@ -38,9 +43,10 @@ flowchart LR
 
 | Bridge | 問題 | 核との接続 | 備考 |
 |--------|------|------------|------|
+| `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealAdmissibleBridge` | Beal | 連続増幅 no-go | 旧 coarse の単純流用は空になる点に注意 |
+| `BealAdmissibleBridge` | Beal | 連続増幅 no-go | 旧 coarse の単純流用は空；modular は解依存 payload が要る |
 | `AbcAdmissibleBridge` | abc | 品質天井 | 同上 |
 | `CollatzAdmissibleBridge` | Collatz | 軌道・高さ | 別系列 |
 | `GoldbachAdmissibleBridge` | Goldbach | 分解候補 | 別系列 |
@@ -86,12 +92,15 @@ flowchart LR
 
 ### 中実現性（現行の主対象）
 
-1. **modular 巻数誤差の数論的下限** — `JNormalized_scale = JNormalized_amplified + error(winding)` の右辺を制御
-2. Fermat / Beal / abc 向けの *modular* bridge 設計（旧 coarse の単純流用は空になるため、別設計を優先）
-3. 有限証明書の拡大
+1. **残ギャップ:** `ConformalGaugeAdmissible` を PGA 実スケール錐と同一視せず、CGA ゲージで再定義できるか
+2. **modular 巻数誤差の数論的下限** — `JNormalized_scale = JNormalized_amplified + error(winding)` の右辺を制御
+3. `FermatModularBridge` 本体の部分証明（解 ⇒ `quantizeMismatch` が巻数付き witness）
+4. 成功パターンを Beal / abc へ個別再設計（解依存 payload）
+5. 有限証明書の拡大
 
-### 探索的（並列 Gravity トラック — 進行中）
+### 探索的（並列トラック）
 
+- **1D CGA 探針**（`Algebra/CGA`, `CGA.lean`）: `Cl(2,1)` null 点・dilation。時空 CGA は未着手
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
   動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
@@ -117,6 +126,15 @@ flowchart LR
 - [x] 無条件 FLT や他予想の達成を主張しない
 - [x] `lake build` と Docker LaTeX（検証ステップで確認）
 
+### フェーズ 7（modular + CGA 探針）
+
+- [x] `admissible_scale_implies_windingTotal_eq_zero` と対偶
+- [x] `quantizeMismatch` / フロア誤差補題
+- [x] `FermatModularBridge` と `fermat_last_theorem_of_modular_bridge`（条件付き）
+- [x] 1D CGA: `point_sq` / dilation 重み / `integerHeight` 非有界
+- [ ] `FermatModularBridge` 本体（無条件 FLT 相当 — 主張しない）
+- [ ] 共形ゲージ ≠ PGA 実スケール の再定義
+
 ### Gravity トラック（PGA–TEGR）
 
 - [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
@@ -135,17 +153,19 @@ Algebra/
   QuadraticForm, PGA, Cl31, Generators, Operations, Motor, Invariant
   Discrete, Continuum, UnitGroup
   Amplification          ← pureBoost / 実スケール
-  ModularAmplification   ← ZMod 倍写・巻数・非空 witness
+  ModularAmplification   ← ZMod 倍写・巻数・非空 witness・共形ギャップラベル
+  CGA/                   ← 1D Cl(2,1) 探針（Basic 非依存）
 Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
   Coframe, Sandwich, Schwarzschild, Weitzenbock, Identification
 Framework/
   Representation, Lattice, Amplification, Descent, Search
-Embedding/               ← R(n), T(a), Height, quantizeInt スケルトン
+Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
+  ConformalInteger       ← CGA null 点埋め込み（診断）
 Theorems/
-  Fermat                 ← legacy coarse bridge（空）+ 連続診断
+  Fermat                 ← FermatModularBridge + legacy / 連続診断
   Beal, Abc, Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
-Gravity.lean             ← Gravity 公開入口（Basic には強制 import しない）
+Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）
 ```
 
 ---
@@ -162,14 +182,19 @@ Gravity.lean             ← Gravity 公開入口（Basic には強制 import �
 - 問題非依存核を `Framework/Amplification` へ抽出
 - **旧粗離散 witness が方程式非依存に空**であることを直接証明
 
-### フェーズ 7 — modular 再設計（進行中）
+### フェーズ 7 — modular 再設計（進行中）+ 1D CGA 探針
 
 ```
 解 a^p+b^p=c^p ──► null translator = 1          （加法・証明済）
-                ┄┄► ModularAmplificationWitness （乗法・未証明 bridge）
-                         │ 巻数誤差の下限が核
+                ┄┄► quantizeMismatch 種
+                         │
                          ▼
-                   （設計中）矛盾または有界
+                ModularAmplificationWitness（解依存・未証明）
+                         │ has_winding ⇒ ¬ 実スケール許容（証明済）
+                         ▼
+                ConformalGaugeAdmissible（残ギャップ / CGA 探針）
+                         ▼
+                   条件付き FLT（fermat_last_theorem_of_modular_bridge）
 ```
 
 ### フェーズ 8 — PGA–TEGR チャート層（進行中）
@@ -182,10 +207,11 @@ Gravity.lean             ← Gravity 公開入口（Basic には強制 import �
 
 ## 7. 次アクション
 
-1. **（主）** modular 巻数誤差に対する数論的下限と Fermat modular bridge の設計
-2. 成功パターンを Beal（`m = min`）/ abc（品質）へ個別再設計（旧粗離散の単純流用は空になる点に注意）
-3. 軌道型・加法分解型は別系列として bridge 診断を継続
-4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明、3-blade / dual-as-normal
-5. 長期: mathlib PGA contrib；TEGR↔EH 変分同値は文献枠のまま
+1. **（主）** `ConformalGaugeAdmissible` を CGA ゲージで再定義し、巻数付き modular witness と両立させられるかを検証
+2. modular 巻数誤差の数論的下限と、解 ⇒ `quantizeMismatch` witness の部分構成
+3. 成功パターンを Beal（`m = min`）/ abc（品質）へ個別再設計（旧粗離散の単純流用は空になる点に注意）
+4. 軌道型・加法分解型は別系列として bridge 診断を継続
+5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明、3-blade / dual-as-normal
+6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤** を固めた段階であり、無条件古典定理はまだ未達成である。並列で PGA–TEGR チャート骨格を機械検証中。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Fermat modular bridge の型付け + 1D CGA 診断** まで固めた段階であり、無条件古典定理はまだ未達成である。
