@@ -131,6 +131,42 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
       _ = ι 0 * (ι 2 * ι 2) * ι 3 := by simp [mul_assoc]
       _ = ι 0 * ι 3 := by simp [e2_sq]
 
+/-! ### Duality on the null sector (does **not** close as bivectors) -/
+
+/--
+`e₄` commutes with the Cl(3,1) pseudoscalar `i = e₀e₁e₂e₃` because it
+anticommutes with each of the four factors (four sign flips).
+-/
+theorem e4_commute_pseudoscalar :
+    ι e4Index * pseudoscalar = pseudoscalar * ι e4Index := by
+  dsimp [pseudoscalar, e4Index]
+  have h0 : ι 4 * ι 0 = -(ι 0 * ι 4) := e_mul_anticomm (by decide)
+  have h1 : ι 4 * ι 1 = -(ι 1 * ι 4) := e_mul_anticomm (by decide)
+  have h2 : ι 4 * ι 2 = -(ι 2 * ι 4) := e_mul_anticomm (by decide)
+  have h3 : ι 4 * ι 3 = -(ι 3 * ι 4) := e_mul_anticomm (by decide)
+  calc ι 4 * (ι 0 * ι 1 * ι 2 * ι 3)
+      = (ι 4 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
+    _ = (-(ι 0 * ι 4)) * ι 1 * ι 2 * ι 3 := by rw [h0]
+    _ = -(ι 0 * (ι 4 * ι 1) * ι 2 * ι 3) := by simp [mul_assoc]
+    _ = -(ι 0 * (-(ι 1 * ι 4)) * ι 2 * ι 3) := by rw [h1]
+    _ = ι 0 * ι 1 * (ι 4 * ι 2) * ι 3 := by simp [mul_assoc]
+    _ = ι 0 * ι 1 * (-(ι 2 * ι 4)) * ι 3 := by rw [h2]
+    _ = -(ι 0 * ι 1 * ι 2 * (ι 4 * ι 3)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι 1 * ι 2 * (-(ι 3 * ι 4))) := by rw [h3]
+    _ = ι 0 * ι 1 * ι 2 * ι 3 * ι 4 := by simp [mul_neg, mul_assoc]
+
+/--
+Dual of a null generator: `N_μ · i = e₄ · (e_μ · i)` by associativity.
+
+**Grade warning:** `e_μ · i` is grade 3 in the Cl(3,1) subalgebra, so the
+right-hand side is grade 4 in `G(3,1,1)`.  Duality therefore does **not** map
+the null *bivector* sector into itself.  The paper claim that duality closes
+the four-dimensional null bivector ideal is rejected at the grade level.
+-/
+theorem dual_null (μ : Fin 4) :
+    dual (null μ) = ι e4Index * (ι (Fin.castAdd 1 μ) * pseudoscalar) := by
+  simp [dual, null, mul_assoc]
+
 structure TorsionParams where
   alpha : Fin 3 → ℝ
   beta : Fin 3 → ℝ

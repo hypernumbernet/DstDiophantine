@@ -103,11 +103,13 @@ theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : 
 /-! ### Classical Beal under an explicit bridge hypothesis -/
 
 /--
-Paper Chapter 6's missing bridge: a putative coprime Beal solution produces an
-admissible powered pure-boost mismatch whose seed already exceeds `1/m²`.
+Continuous Beal amplification bridge.
 
-**Assumption (unproved).** Shared no-go:
-`beal_amplification_contradiction`. Does **not** yield unconditional Beal.
+* **Assumption (unproved):** a coprime Beal solution yields an admissible powered
+  pure-boost mismatch whose seed already exceeds `1/m²`.
+* **Proved core:** `beal_amplification_contradiction` /
+  `continuous_amplification_contradiction`.
+* **Does not claim:** unconditional classical Beal.
 -/
 def BealAdmissibleBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)

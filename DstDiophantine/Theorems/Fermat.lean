@@ -25,8 +25,9 @@ algebra lives in `Algebra.Amplification`.
 
 Classical FLT is **not** claimed unconditionally. Continuous
 `FermatAdmissibleBridge` is only a diagnostic device (false on the balanced
-scale). Phase 6's `FermatCoarseDiscreteBridge` asks for a coarse discrete
-witness; constructing it from an integer solution remains open.
+scale). The legacy `FermatCoarseDiscreteBridge` uses a structurally empty
+payload (`CoarseAmplificationWitness.empty_of_coarse`); the live programme
+is modular wrapping in `Algebra.ModularAmplification`.
 -/
 
 namespace DstDiophantine
@@ -214,46 +215,56 @@ theorem fermat_coarse_discrete_contradiction {N p : ℕ} [NeZero N] (hp : 1 ≤ 
     False :=
   coarse_discrete_contradiction hp hcoarse t hne hadm
 
-/-! ### Coarse discrete bridge (open quantisation) -/
+/-! ### Legacy coarse discrete bridge (structurally vacuous) -/
 
 /--
-Phase-6 coarse quantisation bridge.  Asks only for a nonzero admissible lattice
-mismatch on some torus satisfying the coarse-size inequality.  Constructing this
-witness from an integer solution is the remaining quantisation problem; this
-proposition is not assumed by any unconditional theorem.
+**Legacy / diagnostic** coarse bridge.
+
+* **Payload:** `CoarseAmplificationWitness N p` under `3N² < 16p²`.
+* **Proved independently of any equation:** that payload is uninhabited
+  (`CoarseAmplificationWitness.empty_of_coarse`).  Real `p`-fold scaling plus
+  coarseness force every lattice coordinate to vanish.
+* **Conditional wrapper:** `fermat_last_theorem_of_coarse_discrete_bridge`
+  remains valid as a vacuous implication, but is not a mid-term research
+  target: the same real-scaling design stays empty if reused elsewhere.
+  The live quantisation programme uses modular wrapping
+  (`Algebra.ModularAmplification`).
+* **Does not claim:** unconditional classical FLT.
 -/
 def FermatCoarseDiscreteBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (_ha : a ≠ 0) (_hb : b ≠ 0) (_hc : c ≠ 0),
     a ^ p + b ^ p = c ^ p →
       ∃ (N : ℕ) (hN : N ≠ 0),
         letI : NeZero N := ⟨hN⟩
-        3 * N ^ 2 < 16 * p ^ 2 ∧
-          ∃ t : AdmissibleClass N,
-            latticeMismatch t.val ≠ 0 ∧
-              IsAdmissibleContinuous
-                (scaleTorsion (p : ℝ) (AdmissibleClass.toParams t))
+        3 * N ^ 2 < 16 * p ^ 2 ∧ Nonempty (CoarseAmplificationWitness N p)
 
 /--
-The coarse bridge is sufficient for classical FLT.  The proof packages the
-bridge fields as a `CoarseAmplificationWitness` and applies the shared no-go.
+Vacuous conditional recovery of classical FLT via the legacy coarse witness.
+Under the coarse threshold the witness is already empty
+(`CoarseAmplificationWitness.empty_of_coarse`), so the implication holds but
+does not encode a viable quantisation map.
 -/
 theorem fermat_last_theorem_of_coarse_discrete_bridge
     (hbridge : FermatCoarseDiscreteBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
       ¬ (a ^ p + b ^ p = c ^ p) := by
   intro a b c p hp ha hb hc hsol
-  obtain ⟨N, hN, hcoarse, t, hne, hadm⟩ := hbridge a b c p hp ha hb hc hsol
+  obtain ⟨N, hN, hcoarse, ⟨w⟩⟩ := hbridge a b c p hp ha hb hc hsol
   let : NeZero N := ⟨hN⟩
   have hp1 : 1 ≤ p := Nat.le_trans (by decide : 1 ≤ 3) hp
-  exact CoarseAmplificationWitness.false hp1 hcoarse ⟨t, hne, hadm⟩
+  exact CoarseAmplificationWitness.empty_of_coarse hp1 hcoarse w
 
 /-! ### Classical FLT under continuous bridge (diagnostic only) -/
 
 /--
-Paper Chapter 5's missing continuous bridge.  **Not proved.** Its seed inequality
-fails for the balanced model scale `θ = log 2 / p`
-(`fermat_balanced_seed_lt_threshold`), even though the powered scale remains
-admissible.  Do not declare this proposition true by fiat.
+Continuous diagnostic bridge (balanced-seed obstruction).
+
+* **Assumption (unproved):** an FLT solution yields an admissible powered
+  pure-boost whose seed already exceeds `1/p²`.
+* **Proved core:** `fermat_amplification_contradiction` /
+  `continuous_amplification_contradiction`.
+* **Does not claim:** unconditional classical FLT. The seed inequality fails on
+  the balanced model scale `θ = log 2 / p` (`fermat_balanced_seed_lt_threshold`).
 -/
 def FermatAdmissibleBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (ha : a ≠ 0) (_hb : b ≠ 0) (hc : c ≠ 0),

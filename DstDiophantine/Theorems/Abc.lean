@@ -351,13 +351,13 @@ theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
 /-! ### Classical abc under an explicit bridge hypothesis -/
 
 /--
-Paper Chapter 7's missing bridge: a primitive triple whose quality exceeds
-`1 + ε` produces an admissible continuous pure-boost configuration that already
-lies past the model quality ceiling.
+Continuous abc quality bridge.
 
-**Assumption (unproved).** Shared continuous bound:
-`torsion_bound_continuous` / `abc_amplification_contradiction`. Does **not**
-yield unconditional abc.
+* **Assumption (unproved):** a primitive triple with quality `> 1 + ε` yields an
+  admissible continuous pure-boost past the model quality ceiling.
+* **Proved core:** `abc_amplification_contradiction` /
+  `torsion_bound_continuous`.
+* **Does not claim:** unconditional classical abc (Oesterlé–Masser).
 -/
 def AbcAdmissibleBridge : Prop :=
   ∀ (ε : ℝ), 0 < ε → ∀ (a b c : ℕ),

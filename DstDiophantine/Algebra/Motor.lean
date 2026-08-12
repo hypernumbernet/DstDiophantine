@@ -7,6 +7,18 @@ import Mathlib.Analysis.Normed.Algebra.Exponential
 
 The translational exponential truncates at first order because the null sector is
 strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra exponential.
+
+## What is proved vs. paper narrative
+
+* **Proved here:** the *definitional* factorisation `motor p := rotorTorsion *
+  expTrans`, together with `rotor_unitary`, `expTrans_unitary`, and
+  `motor_unitary` for that product.
+* **Not identified:** `motor p` with `exp(omegaBiv p)`.  When
+  `[Ω_torsion, Ω_trans] ≠ 0`, the exponential of the sum differs from the
+  product of exponentials; the paper’s conjugated re-parameterisation
+  `T = exp(Ω'_trans)` is not formalised.
+* Sandwich metric preservation for the full degenerate quadratic form is likewise
+  not claimed.
 -/
 
 namespace DstDiophantine
@@ -95,7 +107,7 @@ theorem rotor_unitary (p : TorsionParams) :
   rw [← exp_add_of_commute (Commute.neg_right (Commute.refl (omegaTorsion p)))]
   simp
 
-/-- Motor split `M = R · T` at the definition level. -/
+/-- Motor split `M := R · T` at the **definition** level (not `exp(Ω_biv)`). -/
 noncomputable def motor (p : OmegaParams) : PGA :=
   rotorTorsion p.torsion * expTrans p.trans
 

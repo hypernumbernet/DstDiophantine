@@ -5,6 +5,7 @@ Authors: DstDiophantine contributors
 -/
 
 import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Invariant
@@ -39,8 +40,10 @@ namespace DstDiophantine
 
 export PGA (ι e4Index e4_sq_zero e4_anticomm e4_inner_anticomm)
 export Cl31 (ι toPGA toPGA_ι)
-export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq)
-export Operations (pseudoscalar dual TorsionParams daggerParams)
+export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
+  commutator commutator_null_null null_commute)
+export Operations (pseudoscalar dual TorsionParams daggerParams
+  e4_commute_pseudoscalar dual_null)
 export Discrete (DiscreteTorsion toTorsionParams IsPrincipalBranch IsAdmissibleContinuous
   IsAdmissible toTorsionParams_alpha_nonneg toTorsionParams_beta_nonneg
   admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
@@ -56,6 +59,10 @@ export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scal
   J_scale JNormalized_scale J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
   J_pow_amplify JNormalized_pow_amplify rotorTorsion_pureBoost_pow
   isAdmissibleContinuous_pureBoost_iff)
+export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplifiedParams
+  ModularAmplificationWitness modularWitness_example
+  mul_val_eq_val_add_winding scale_angle_eq_mod_plus_winding
+  J_scale_eq_J_amplified_add_error JNormalized_scale_eq_JNormalized_amplified_add_error)
 export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
 export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
   nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
@@ -73,7 +80,8 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   discrete_amplification_contradiction
   coarse_height_gap coarse_condition_of_le_two_mul
   coarse_height_gap_of_le_two_mul coarse_discrete_contradiction
-  CoarseAmplificationWitness)
+  CoarseAmplificationWitness coarse_implies_lt_four_mul
+  scale_admissible_iff_four_mul_le)
 export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorTorsion
   fermat_balanced_seed_constant_lt_one fermat_balanced_seed_height_eq
   fermat_balanced_seed_lt_threshold fermat_balanced_amplification_admissible

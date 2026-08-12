@@ -22,6 +22,17 @@ here.
 3. Shared no-go: an admissible `k`-fold amplification cannot have seed taller
    than `1/k²` (continuous) or cannot sit on a coarse nonzero lattice
    (discrete).
+
+## Legacy coarse witness (diagnostic)
+
+`CoarseAmplificationWitness` asks for a nonzero lattice point that remains
+admissible after *real* `k`-fold scaling of rapidities.  Under the coarse
+threshold `3N² < 16k²` this payload is **structurally empty** (independent of
+any Diophantine equation): scaled admissibility forces `4k(n+m) ≤ N`, while
+coarseness forces `N < 4k`, hence all coordinates vanish.  The height-based
+no-go below remains valid.  Reusing this *same* payload for Beal/abc would
+again yield only a vacuous bridge; a non-vacuous replacement tracks modular
+wrapping — see `Algebra.ModularAmplification`.
 -/
 
 namespace DstDiophantine
@@ -160,13 +171,16 @@ theorem coarse_discrete_contradiction {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     hgap.trans_le hlb
   exact discrete_amplification_contradiction hk t hseed hadm
 
-/-! ### Coarse amplification witness (bridge payload) -/
+/-! ### Coarse amplification witness (legacy / diagnostic payload) -/
 
 /--
-A discrete amplification certificate: a nonzero admissible lattice point that
-remains continuously admissible after `k`-fold scaling.  On a coarse torus this
-is already contradictory; problem-specific bridges only need to *produce* such a
-witness from an integer solution.
+Legacy discrete amplification certificate: a nonzero admissible lattice point
+that remains continuously admissible after *real* `k`-fold scaling.
+
+**Diagnostic status:** under `3N² < 16k²` this type is uninhabited for every
+`N,k` (see `CoarseAmplificationWitness.empty_of_coarse`), independently of any
+integer equation.  Retained only so conditional wrappers and regressions stay
+honest about the obsolete design.
 -/
 structure CoarseAmplificationWitness (N k : ℕ) [NeZero N] where
   t : AdmissibleClass N
@@ -174,10 +188,125 @@ structure CoarseAmplificationWitness (N k : ℕ) [NeZero N] where
   admissible_after :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (AdmissibleClass.toParams t))
 
+/-- Height-based no-go (unchanged). -/
 theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False :=
   coarse_discrete_contradiction hk hcoarse w.t w.nonzero w.admissible_after
+
+/-! ### Direct emptiness of the legacy witness -/
+
+/--
+Scaled continuous admissibility on a discrete seed is the integer inequality
+`4 k (n.val + m.val) ≤ N` on each axis (non-negative rapidities are automatic
+when `0 ≤ k`).
+-/
+theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (hk0 : 0 ≤ (k : ℝ)) :
+    IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t)) ↔
+      ∀ a : Fin 3, 4 * k * ((t.n a).val + (t.m a).val) ≤ N := by
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hπ : 0 < Real.pi := Real.pi_pos
+  constructor
+  · intro hadm a
+    have hαnn := toTorsionParams_alpha_nonneg t a
+    have hβnn := toTorsionParams_beta_nonneg t a
+    have hsum := (hadm a).2.2
+    -- `k * (α + β) ≤ π/2` with α = 2π n/N, β = 2π m/N
+    have hcomb :
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi / 2 := by
+      convert hsum using 1
+      simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
+      ring
+    have hcleared : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
+      have h1 :=
+        mul_le_mul_of_nonneg_left hcomb
+          (by positivity : (0 : ℝ) ≤ 2 * N / Real.pi)
+      have hL :
+          2 * N / Real.pi *
+              ((k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N)) =
+            (4 * k * ((t.n a).val + (t.m a).val) : ℝ) := by
+        field_simp; ring
+      have hR : 2 * N / Real.pi * (Real.pi / 2) = (N : ℝ) := by field_simp
+      rwa [hL, hR] at h1
+    exact_mod_cast hcleared
+  · intro h a
+    have hαnn := toTorsionParams_alpha_nonneg t a
+    have hβnn := toTorsionParams_beta_nonneg t a
+    refine ⟨mul_nonneg hk0 hαnn, mul_nonneg hk0 hβnn, ?_⟩
+    have hineq : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
+      exact_mod_cast h a
+    have hhalf : (k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ 1 / 2 := by
+      have h1 : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) / N ≤ 1 :=
+        (div_le_one hNpos).mpr hineq
+      have : 2 * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) ≤ 1 := by
+        convert h1 using 1
+        field_simp; ring
+      linarith
+    have hπbound :
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤
+          Real.pi / 2 := by
+      calc (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N)
+          = Real.pi * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) := by
+              ring
+        _ ≤ Real.pi * (1 / 2) := mul_le_mul_of_nonneg_left hhalf hπ.le
+        _ = Real.pi / 2 := by ring
+    convert hπbound using 1
+    simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
+    ring
+
+/-- Coarse threshold forces `N < 4k`. -/
+theorem coarse_implies_lt_four_mul {N k : ℕ} (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) :
+    N < 4 * k := by
+  by_contra hge
+  have hN : 4 * k ≤ N := Nat.le_of_not_gt hge
+  have hsq : (4 * k) ^ 2 ≤ N ^ 2 := Nat.pow_le_pow_left hN 2
+  have : 16 * k ^ 2 ≤ N ^ 2 := by
+    convert hsq using 1
+    ring
+  have : 16 * k ^ 2 ≤ 3 * N ^ 2 := by
+    have h3 : N ^ 2 ≤ 3 * N ^ 2 := Nat.le_mul_of_pos_left _ (by decide : 0 < 3)
+    exact this.trans h3
+  exact absurd hcoarse (not_lt_of_ge this)
+
+/-- Under `N < 4k`, scaled admissibility forces every lattice coordinate to vanish. -/
+theorem scale_admissible_forces_zero {N k : ℕ} [NeZero N] (_hk : 1 ≤ k)
+    (hN : N < 4 * k) (t : DiscreteTorsion N)
+    (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
+    ∀ a : Fin 3, t.n a = 0 ∧ t.m a = 0 := by
+  have hk0 : 0 ≤ (k : ℝ) := Nat.cast_nonneg _
+  intro a
+  have hfour := (scale_admissible_iff_four_mul_le t hk0).mp hadm a
+  have hsum : (t.n a).val + (t.m a).val = 0 := by
+    have hlt : 4 * k * ((t.n a).val + (t.m a).val) < 4 * k * 1 := by
+      simpa using lt_of_le_of_lt hfour hN
+    exact Nat.lt_one_iff.mp (Nat.lt_of_mul_lt_mul_left hlt)
+  have ⟨hn, hm⟩ := Nat.add_eq_zero_iff.mp hsum
+  exact ⟨(ZMod.val_eq_zero _).mp hn, (ZMod.val_eq_zero _).mp hm⟩
+
+theorem scale_admissible_forces_latticeMismatch_zero {N k : ℕ} [NeZero N]
+    (hk : 1 ≤ k) (hN : N < 4 * k) (t : DiscreteTorsion N)
+    (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
+    latticeMismatch t = 0 := by
+  have hzm := scale_admissible_forces_zero hk hN t hadm
+  simp only [latticeMismatch]
+  apply Finset.sum_eq_zero
+  intro a _
+  have ⟨hn, hm⟩ := hzm a
+  simp [hn, hm]
+
+/--
+**Structural emptiness (equation-independent):** under the coarse threshold the
+legacy witness is uninhabited, because scaled admissibility and coarseness
+force `latticeMismatch = 0`.
+-/
+theorem CoarseAmplificationWitness.empty_of_coarse {N k : ℕ} [NeZero N]
+    (hk : 1 ≤ k) (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
+    (w : CoarseAmplificationWitness N k) : False := by
+  have hN := coarse_implies_lt_four_mul hcoarse
+  have h0 :=
+    scale_admissible_forces_latticeMismatch_zero hk hN w.t.val w.admissible_after
+  exact w.nonzero h0
 
 end Framework
 

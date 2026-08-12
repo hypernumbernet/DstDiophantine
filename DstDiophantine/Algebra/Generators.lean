@@ -5,6 +5,18 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 # Ten bivector generators of G(3,1,1)
 
 Hyperbolic (`iI,iJ,iK`), cyclic (`I,J,K`), and null (`N₀…N₃`) generators.
+
+## Lie-algebra status
+
+The six hyperbolic–cyclic generators span a candidate copy of `𝔰𝔬(3,1)`
+(Lorentz), and the four null generators form an abelian translation ideal under
+the geometric product (`N_μ N_ν = 0`).  Together they are the standard
+**Poincaré** candidate `𝔰𝔬(3,1) ⋉ ℝ^{3,1}` inside `G(3,1,1)`.
+
+We deliberately **do not** call the six generators `𝔰𝔬(3,1) ⊕ 𝔰𝔬(3,1)`: that
+would be twelve-dimensional.  Full Lie-bracket isomorphism theorems are not
+claimed here; only product squares, strong null vanishing, and a minimal
+commutator API are formalised.
 -/
 
 namespace DstDiophantine
@@ -12,6 +24,10 @@ namespace DstDiophantine
 open CliffordAlgebra PGA
 
 namespace Generators
+
+/-- Geometric commutator `[x,y] = xy - yx`. -/
+noncomputable def commutator (x y : PGA) : PGA :=
+  x * y - y * x
 
 /-- Hyperbolic boost generators `B⁺ₐ = e₀ e_{a+1}` for `a = 0,1,2`. -/
 noncomputable def hyperbolic : Fin 3 → PGA
@@ -98,6 +114,15 @@ theorem null_mul_null (μ ν : Fin 4) : null μ * null ν = 0 := by
     _ = -(ι e4Index * ι e4Index * ι (Fin.castAdd 1 μ) * ι (Fin.castAdd 1 ν)) := by
         simp [mul_assoc]
     _ = 0 := by simp [e4_sq_zero]
+
+theorem commutator_null_null (μ ν : Fin 4) :
+    commutator (null μ) (null ν) = 0 := by
+  simp [commutator, null_mul_null]
+
+/-- Null generators form an abelian ideal under the geometric product. -/
+theorem null_commute (μ ν : Fin 4) : Commute (null μ) (null ν) := by
+  unfold Commute SemiconjBy
+  simp [null_mul_null]
 
 theorem null_one_ne_zero : null 1 ≠ 0 := by
   intro h

@@ -15,46 +15,58 @@ lake build
 
 Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使用します。
 
+公開 API は `DstDiophantine.Basic`、層境界の回帰例は
+`DstDiophantine.FoundationRegression` です。
+
+## 三層アーキテクチャ（要約）
+
+1. **加法忠実化** — 冪和型方程式 ↔ `powerSumMotor = 1`（証明済み）
+2. **共通 no-go** — `k` 倍増幅 vs 許容有界性 / 粗格子下限（証明済み）
+3. **問題別 bridge** — 整数解 ⇒ 増幅証明書（未証明；無条件古典主張はしない）
+
+**重要:** 旧 `CoarseAmplificationWitness`（実スケール）は粗条件下で**構造的に空**
+（`CoarseAmplificationWitness.empty_of_coarse`）。現行の乗法側基盤は
+`Algebra.ModularAmplification`（`ZMod` 倍写 + 巻数誤差）です。
+
+## PGA 論文との証明状態（要約）
+
+| 主張 | 状態 |
+|------|------|
+| G(3,1,1)、10 生成子、`N_μ N_ν=0`、定義積 `M:=RT` 単位性 | 証明済み |
+| `e₄` と `i` の可換、`dual` on hyperbolic/cyclic | 証明済み |
+| null bivector の dual 閉性 | **棄却**（`dual_null` は grade 4） |
+| `so(3,1)⊕so(3,1)` ラベル | **棄却**（正しくは `so(3,1)⋉ℝ^{3,1}` 候補） |
+| `J⁽⁵⁾` パラメータ定義 / 非有界性 | 証明済み；ad-invariant は未主張 |
+| 3-blade bracket / dual-as-normal / Schwarzschild | 未形式化・仮説 |
+
 ## フェーズ1 API（概要）
 
 `DstDiophantine.Algebra` に `G(3,1,1)` のコア代数を実装しています。
 
 - `Q311` / `PGA` — 5次元クリフォード代数
-- `Generators` — 双曲・循環・ヌル10生成子（`N_μ N_ν = 0` 証明済み）
-- `Operations` — reverse / dual / dagger
-- `Motor` — `Ω` 分解、本物の `rotorTorsion = exp(Ω_torsion)`、`motor_unitary` 証明済み
-- `Invariant` — `J` / `J⁽⁵⁾` / `JNormalized`（許容配置上の有界性 `|J| ≤ 3π²/8`、正規化版 `|JNormalized| ≤ 1` 証明済み）
+- `Generators` — 双曲・循環・ヌル10生成子（`N_μ N_ν = 0`、commutator API）
+- `Operations` — reverse / dual / dagger（`e4_commute_pseudoscalar`, `dual_null`）
+- `Motor` — `Ω` 分解、定義積 `motor := R*T`、`motor_unitary`
+- `Invariant` — `J` / `J⁽⁵⁾` / `JNormalized`（許容配置上の有界性）
 
-## フェーズ2 インフラ（Discrete API）
+## フェーズ2–4
 
-- `Discrete.lean` — 離散ラピディティ `(ℤ/Nℤ)⁶` と主枝条件 `IsPrincipalBranch`
-- `UnitGroup.lean` — 離散ローター像 `DiscreteUnit`（有限集合）
-- `PGA/Normed.lean` — Banach 代数構造（`NormedSpace.exp` 用）
-- `Amplification.lean` — スケーリング増幅 `J_scale`、`J_pow_amplify`（純双曲模型）
-- `Continuum.lean` — 連続許容領域と離散近似 `exists_discrete_approx`
-- `Invariant.lean` — `J5_unbounded` / `J5_bound_spatial`（並進拘束付き有界性）
-
-## フェーズ3 整数埋め込み（Embedding API）
-
-- `IntegerRotor.lean` — `R(n) = exp(log|n| · iI)`、乗法・冪乗
-- `NullTranslator.lean` — `T(a)`、加法忠実性
-- `PowerMap.lean` — 整数不一致モデルでの `p²` 増幅
-- `RotorClass.lean` — 離散トーラス代表・量子化 API
-- `Height.lean` — `integerHeight`、`descentCandidate`
-- `Equation.lean` — `diophantineMotor`、加法式の忠実埋め込み
-
-## フェーズ4 統一枠組み（Framework API）
-
-- `Representation.lean` — 冪和方程式 `powerSumMotor`（`=1 ↔ eval=0`）
-- `Lattice.lean` — 許容格子 `AdmissibleClass`、零高さの整数判定
-- `Descent.lean` — dagger 高さ保存（論文ギャップ）と `DescentSchema`
-- `Search.lean` — `findZeroHeight`、有限探索の終了・決定可能性
+- Discrete / Continuum / UnitGroup / Amplification（実スケール）
+- Embedding（`integerRotor`, `nullTranslator`, `quantizeInt` スケルトン）
+- Framework（`Representation`, `Lattice`, `Amplification` no-go, `Descent`, `Search`）
 
 ## フェーズ5 個別定理（Theorems API）
 
-- `Fermat.lean` — FLT の DST 増幅核（`fermat_amplification_contradiction`、離散高さ下限、条件付き `fermat_last_theorem_of_bridge`）。古典 FLT の無条件主張は論文ギャップのため置かない。
-- `Beal.lean` — Beal 予想の DST 増幅核（`m=min(x,y,z)` 増幅、`beal_amplification_contradiction`、条件付き `beal_conjecture_of_bridge`）。古典 Beal の無条件主張は論文ギャップのため置かない。
-- `Collatz.lean` — Collatz 予想の DST 軌道・高さ核（`collatz_cycle_avoids_one_exceeds_bound`、有限探索証明書 `reachesOne_of_le_twenty`、条件付き `collatz_conjecture_of_bridge`）。古典 Collatz の無条件主張は論文ギャップのため置かない。
-- `Goldbach.lean` / `Polignac.lean` — Goldbach・Polignac（双子素数）の条件付き bridge 回収と有限証明書。
-- `Abc.lean` — abc 予想の品質–高さ核と条件付き `abc_conjecture_of_bridge`。
-- `Riemann.lean` — リーマン予想の臨界線バランス核（`critical_zero_iff`、有理格子証明書、条件付き `riemann_hypothesis_of_bridge`）。古典 RH の無条件主張は論文ギャップのため置かない。
+いずれも条件付き（`*_of_bridge`）。古典予想の無条件主張は置かない。
+
+- `Fermat.lean` — 加法同値・釣り合い障害・連続/旧粗離散（legacy）bridge
+- `Beal.lean` / `Abc.lean` — `Framework.Amplification` 直利用
+- `Collatz.lean` / `Goldbach.lean` / `Polignac.lean` / `Riemann.lean`
+- 有限証明書: Collatz≤20, Goldbach≤100, abc≤100, RH≤20,
+  Polignac 双子≤20 / gap4·6≤30
+
+## フェーズ6–7（共有増幅 + modular 再設計）
+
+- 旧 `FermatCoarseDiscreteBridge` は構造的空ペイロードの diagnostic / legacy
+- `Algebra/ModularAmplification.lean` — 巻数恒等式・誤差項・非空 witness 例
+- `FoundationRegression.lean` — 空性・modular inhabited・層境界を回帰
