@@ -214,6 +214,12 @@ theorem pointVec_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) 
   have : δ + 2 * Real.pi = δ := hinj
   linarith [Real.pi_pos]
 
+/-- `k`-fold rapidity dilation: `e^{kδ} = (e^δ)^k` on null-cone seeds. -/
+theorem pointVec_exp_nat_mul (a δ : ℝ) (k : ℕ) :
+    pointVec (Real.exp ((k : ℝ) * δ) * a) =
+      pointVec (Real.exp δ ^ k * a) :=
+  congrArg (fun t => pointVec (t * a)) (Real.exp_nat_mul δ k)
+
 /-! ### Point–point pairing and scale-invariant dilation mismatch -/
 
 /--

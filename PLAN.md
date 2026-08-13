@@ -161,7 +161,7 @@ flowchart LR
 - [x] 広い主値窓 `N = k`, `2π/k ≤ δ < 4π/k`（`m = 3` 含む）⇒ modular witness
 - [x] `principalRapidity` トーラス折り畳みと主値窓への拡張
 - [x] CGA 点対ペアリング / スケール不変 dilation mismatch / 2π 非周期性
-- [x] 三点 `α^m+β^m=γ^m` と `BealCGALatticeGauge`（等指数で成立・混合で反例）
+- [x] 三点 `α^m+β^m=γ^m` と `BealCGALatticeGauge`（等指数で成立・混合で反例；恒真 Triple Prop は置かない）
 - [x] 窓に入る解 ⇒ 巻数 witness（`beal_winding_of_solution_window`）
 - [x] 旧 `BealCGANoGo` を診断化（ill-posed；窓との関係補題）
 - [ ] `BealWindingBridge` 本体（全解；釣り合い型は窓外）

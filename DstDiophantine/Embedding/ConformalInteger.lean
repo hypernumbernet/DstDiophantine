@@ -102,16 +102,47 @@ theorem IsCGAIntegerPoint_conformalInteger {n : ℤ} (hn : n ≠ 0) :
     IsCGAIntegerPoint (n : ℝ) :=
   ⟨n, hn, rfl⟩
 
-theorem IsCGAIntegerPoint_of_intCast {n : ℤ} (hn : n ≠ 0) :
-    IsCGAIntegerPoint (n : ℝ) :=
-  IsCGAIntegerPoint_conformalInteger hn
+theorem IsCGAIntegerPoint_natAbs {n : ℤ} (hn : n ≠ 0) :
+    IsCGAIntegerPoint (n.natAbs : ℝ) :=
+  ⟨(n.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hn), rfl⟩
 
-/-- Fractional magnitude `|n|^{e/m}` is an integer lattice point when it equals
-a nonzero integer (typically a perfect power). -/
-theorem IsCGAIntegerPoint_bealRootMag_of_eq {n : ℤ} {e m : ℕ} {k : ℤ}
-    (hk : k ≠ 0) (heq : (n.natAbs : ℝ) ^ ((e : ℝ) / m) = (k : ℝ)) :
-    IsCGAIntegerPoint ((n.natAbs : ℝ) ^ ((e : ℝ) / m)) :=
+theorem IsCGAIntegerPoint_of_eq {x : ℝ} {k : ℤ} (hk : k ≠ 0)
+    (heq : x = (k : ℝ)) : IsCGAIntegerPoint x :=
   ⟨k, hk, heq⟩
+
+/-- Diagnostic: `2^{4/3}` is not an integer null-lattice point. -/
+theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
+    ¬ IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) := by
+  rintro ⟨k, hk, heq⟩
+  have hkpos : 0 < (k : ℝ) := by
+    have : (0 : ℝ) < (2 : ℝ) ^ ((4 : ℝ) / 3) :=
+      Real.rpow_pos_of_pos (by norm_num) _
+    rwa [heq] at this
+  have hk0 : 0 < k := Int.cast_pos.mp hkpos
+  have h16R : (k : ℝ) ^ 3 = 16 := by
+    have hnn : (0 : ℝ) ≤ 2 := by norm_num
+    have hpow : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (k : ℝ) ^ 3 := by rw [heq]
+    have hleft : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
+      have hstep :
+          ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
+            (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
+        rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
+      rw [hstep]; norm_num
+    linarith [hleft, hpow]
+  have hk3 : k ^ 3 = (16 : ℤ) := by exact_mod_cast h16R
+  -- No integer cube equals 16: 2³ = 8 < 16 < 27 = 3³.
+  have hle : k ≤ 2 := by
+    by_contra h
+    have : (3 : ℤ) ^ 3 ≤ k ^ 3 :=
+      pow_le_pow_left₀ (by decide : (0 : ℤ) ≤ 3) (by omega : (3 : ℤ) ≤ k) 3
+    omega
+  have hge : 2 ≤ k := by
+    by_contra h
+    have : k ^ 3 ≤ (1 : ℤ) ^ 3 :=
+      pow_le_pow_left₀ (le_of_lt hk0) (by omega : k ≤ 1) 3
+    omega
+  rw [le_antisymm hle hge] at hk3
+  norm_num at hk3
 
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a

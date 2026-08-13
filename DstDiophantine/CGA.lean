@@ -45,9 +45,19 @@ example (m : ℕ) (hm : 0 < m) :
     0 < CGA1.cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
   CGA1.cgaDilationMismatch_balanced_pos m hm
 
+/-- Regression: `k`-fold rapidity on the null cone. -/
+example (a δ : ℝ) (k : ℕ) :
+    CGA1.pointVec (Real.exp ((k : ℝ) * δ) * a) =
+      CGA1.pointVec (Real.exp δ ^ k * a) :=
+  CGA1.pointVec_exp_nat_mul a δ k
+
 /-- Regression: nonzero integers are CGA lattice points. -/
 example {n : ℤ} (hn : n ≠ 0) : Embedding.IsCGAIntegerPoint (n : ℝ) :=
   Embedding.IsCGAIntegerPoint_conformalInteger hn
+
+/-- Regression: `2^{4/3}` is off the integer null lattice. -/
+example : ¬ Embedding.IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) :=
+  Embedding.not_isCGAIntegerPoint_two_rpow_four_thirds
 
 end CGA
 

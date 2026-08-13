@@ -432,7 +432,7 @@ The three conjuncts are equation-independently incompatible: a
 `ModularAmplificationWitness` with nonzero winding rules out
 `ConformalGaugeAdmissible` under the present PGA real-scale identification
 (`beal_modular_payload_incompatible`). Live programme: `BealWindingBridge` +
-`BealCGAGauge` / `BealCGANoGo`.
+`BealCGALatticeGauge` / `BealCGADilationNoGo`.
 -/
 def BealModularBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -583,16 +583,6 @@ theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
   rw [bealRootMag_pow A x m hm, bealRootMag_pow B y m hm, bealRootMag_pow C z m hm,
     hAn, hBn, hCn, hsolR]
 
-/-- Triple CGA null embedding of the three Beal root-magnitudes (always true). -/
-def BealCGATriple (A B C : ℤ) (x y z m : ℕ) : Prop :=
-  conformalPoint (bealRootMag A x m) * conformalPoint (bealRootMag A x m) = 0 ∧
-    conformalPoint (bealRootMag B y m) * conformalPoint (bealRootMag B y m) = 0 ∧
-      conformalPoint (bealRootMag C z m) * conformalPoint (bealRootMag C z m) = 0
-
-theorem BealCGATriple_of_ne_zero (A B C : ℤ) (x y z m : ℕ) :
-    BealCGATriple A B C x y z m :=
-  ⟨conformalPoint_sq _, conformalPoint_sq _, conformalPoint_sq _⟩
-
 /-- Scale-invariant CGA mismatch of the A–C Beal dilation. -/
 noncomputable def bealCGADilationMismatch (A C : ℤ) (x z m : ℕ) : ℝ :=
   cgaDilationMismatch (bealFracLogGap A C x z m)
@@ -602,26 +592,16 @@ theorem bealCGADilationMismatch_pos_of_solution {A B C : ℤ} {x y z m : ℕ}
     (hsol : A ^ x + B ^ y = C ^ z) :
     0 < bealCGADilationMismatch A C x z m := by
   unfold bealCGADilationMismatch
-  have hδ : 0 < bealFracLogGap A C x z m :=
-    bealFracLogGap_pos_of_solution hm hA hB hC hsol
-  exact CGA.CGA1.cgaDilationMismatch_pos_of_ne_zero (ne_of_gt hδ)
-
-/-- Balanced model mismatch `(2^{1/m} − 1)²` — visible to CGA, missed by PGA window. -/
-theorem beal_balanced_cgaDilationMismatch (m : ℕ) (hm : 0 < m) :
-    cgaDilationMismatch (Real.log 2 / (m : ℝ)) =
-      ((2 : ℝ) ^ ((1 : ℝ) / m) - 1) ^ 2 :=
-  CGA.CGA1.cgaDilationMismatch_balanced m hm
-
-theorem beal_balanced_cgaDilationMismatch_pos (m : ℕ) (hm : 0 < m) :
-    0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
-  CGA.CGA1.cgaDilationMismatch_balanced_pos m hm
+  exact CGA.CGA1.cgaDilationMismatch_pos_of_ne_zero
+    (ne_of_gt (bealFracLogGap_pos_of_solution hm hA hB hC hsol))
 
 /-! ### Diagnostic tautological CGA gauge (always true) -/
 
 /--
-**Diagnostic** CGA gauge: both root-magnitudes embed as null points.
+**Diagnostic** CGA gauge: A/C root-magnitudes embed as null points.
 Always true (`BealCGAGauge_of_ne_zero`); do **not** use as a live no-go hypothesis.
-Live gauge: `BealCGALatticeGauge`.
+Live gauge: `BealCGALatticeGauge`. The third root `B` is likewise null by
+`conformalPoint_sq` (no separate triple predicate).
 -/
 def BealCGAGauge (A C : ℤ) (x z m : ℕ) : Prop :=
   conformalPoint (bealRootMag A x m) * conformalPoint (bealRootMag A x m) = 0 ∧
@@ -650,15 +630,14 @@ theorem beal_cga_dilation_weights (A C : ℤ) (x z m : ℕ)
     field_simp [ne_of_gt ha]
   rw [← hexp, conformalPoint_smul]
 
-/-- `k`-fold CGA dilation of a Beal seed (non-toroidal; not `2π`-periodic). -/
-theorem beal_cga_k_fold_dilation (A C : ℤ) (x z m k : ℕ)
-    (_hA : A ≠ 0) (_hC : C ≠ 0) :
+/-- Beal seed under `k`-fold CGA dilation (via `pointVec_exp_nat_mul`). -/
+theorem beal_cga_k_fold_dilation (A C : ℤ) (x z m k : ℕ) :
     let δ := bealFracLogGap A C x z m
     let a := bealRootMag A x m
     CGA1.pointVec (Real.exp ((k : ℝ) * δ) * a) =
-      CGA1.pointVec (Real.exp δ ^ (k : ℕ) * a) := by
+      CGA1.pointVec (Real.exp δ ^ k * a) := by
   intro δ a
-  simpa using congrArg (fun t => CGA1.pointVec (t * a)) (Real.exp_nat_mul δ k)
+  exact CGA1.pointVec_exp_nat_mul a δ k
 
 /-! ### Non-tautological DST integer null lattice gauge -/
 
@@ -677,70 +656,39 @@ theorem BealCGALatticeGauge_of_eq_exp (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
     BealCGALatticeGauge A B C p p p p := by
   refine ⟨?_, ?_, ?_⟩
-  · refine ⟨(A.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA), ?_⟩
-    simpa using bealRootMag_eq_natAbs A p hp
-  · refine ⟨(B.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hB), ?_⟩
-    simpa using bealRootMag_eq_natAbs B p hp
-  · refine ⟨(C.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC), ?_⟩
-    simpa using bealRootMag_eq_natAbs C p hp
+  · exact IsCGAIntegerPoint_of_eq (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA))
+      (bealRootMag_eq_natAbs A p hp)
+  · exact IsCGAIntegerPoint_of_eq (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hB))
+      (bealRootMag_eq_natAbs B p hp)
+  · exact IsCGAIntegerPoint_of_eq (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC))
+      (bealRootMag_eq_natAbs C p hp)
 
 /--
-Equal-exponent lattice solutions reduce to an integer Fermat equation
-`α^p + β^p = γ^p` (no unconditional FLT claimed).
+Equal-exponent positive solutions are integer Fermat equations on absolute
+values (no unconditional FLT claimed). Lattice membership is immediate from
+`BealCGALatticeGauge_of_eq_exp`.
 -/
 theorem beal_eq_exp_lattice_fermat_form {A B C : ℤ} {p : ℕ} (hp : p ≠ 0)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hsol : A ^ p + B ^ p = C ^ p)
-    (hlat : BealCGALatticeGauge A B C p p p p) :
+    (hsol : A ^ p + B ^ p = C ^ p) :
     ∃ (α β γ : ℤ), α ≠ 0 ∧ β ≠ 0 ∧ γ ≠ 0 ∧
       α ^ p + β ^ p = γ ^ p ∧
         bealRootMag A p p = α ∧ bealRootMag B p p = β ∧
           bealRootMag C p p = γ := by
-  obtain ⟨α, hα0, hα⟩ := hlat.1
-  obtain ⟨β, hβ0, hβ⟩ := hlat.2.1
-  obtain ⟨γ, hγ0, hγ⟩ := hlat.2.2
-  refine ⟨α, β, γ, hα0, hβ0, hγ0, ?_, hα, hβ, hγ⟩
+  refine ⟨(A.natAbs : ℤ), (B.natAbs : ℤ), (C.natAbs : ℤ),
+    by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA.ne'),
+    by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hB.ne'),
+    by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC.ne'), ?_,
+    bealRootMag_eq_natAbs A p hp, bealRootMag_eq_natAbs B p hp,
+    bealRootMag_eq_natAbs C p hp⟩
   have hpow := beal_rootMag_pow_sum_of_solution hp hA hB hC hsol
-  have : (α : ℝ) ^ p + (β : ℝ) ^ p = (γ : ℝ) ^ p := by
-    rw [← hα, ← hβ, ← hγ, hpow]
+  have hA' := bealRootMag_eq_natAbs A p hp
+  have hB' := bealRootMag_eq_natAbs B p hp
+  have hC' := bealRootMag_eq_natAbs C p hp
+  have : ((A.natAbs : ℤ) : ℝ) ^ p + ((B.natAbs : ℤ) : ℝ) ^ p =
+      ((C.natAbs : ℤ) : ℝ) ^ p := by
+    simpa [hA', hB', hC'] using hpow
   exact_mod_cast this
-
-/-- Diagnostic: `2^{4/3}` is not an integer null-lattice point. -/
-theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
-    ¬ IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) := by
-  rintro ⟨k, hk, heq⟩
-  have hkpos : 0 < (k : ℝ) := by
-    have : (0 : ℝ) < (2 : ℝ) ^ ((4 : ℝ) / 3) :=
-      Real.rpow_pos_of_pos (by norm_num) _
-    rwa [heq] at this
-  have hk0 : 0 < k := Int.cast_pos.mp hkpos
-  have hleft : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
-    have hnn : (0 : ℝ) ≤ 2 := by norm_num
-    have hstep :
-        ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
-          (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
-      rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]
-      norm_cast
-    rw [hstep]
-    norm_num
-  have h16 : (k : ℝ) ^ 3 = 16 := by
-    have : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (k : ℝ) ^ 3 := by rw [heq]
-    linarith [hleft, this]
-  have hk3 : k ^ 3 = 16 := by exact_mod_cast h16
-  have hle : k ≤ 2 := by
-    by_contra h
-    have hkge : (3 : ℤ) ≤ k := by omega
-    have : (3 : ℤ) ^ 3 ≤ k ^ 3 :=
-      pow_le_pow_left₀ (by decide : (0 : ℤ) ≤ 3) hkge 3
-    omega
-  have hge : 2 ≤ k := by
-    by_contra h
-    have : k ^ 3 ≤ (1 : ℤ) ^ 3 :=
-      pow_le_pow_left₀ (le_of_lt hk0) (by omega : k ≤ 1) 3
-    omega
-  have hk_eq : k = 2 := le_antisymm hle hge
-  rw [hk_eq] at hk3
-  norm_num at hk3
 
 /-- Mixed-exponent seed `2^{4/3}` misses the integer lattice (diagnostic). -/
 theorem not_BealCGALatticeGauge_two_two_two_four_four_three :

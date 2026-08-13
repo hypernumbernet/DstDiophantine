@@ -191,30 +191,15 @@ example (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
       1 < bealGcd A B C :=
   beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
 
-/-- Diagnostic CGA gauge is tautological (always true — not a live hypothesis). -/
-example (A C : ℤ) (x z m : ℕ) : BealCGAGauge A C x z m :=
-  BealCGAGauge_of_ne_zero A C x z m
-
 /-- Equal exponents place roots on the DST integer null lattice. -/
 example (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
     BealCGALatticeGauge A B C p p p p :=
   BealCGALatticeGauge_of_eq_exp A B C p hp hA hB hC
 
-/-- Mixed-exponent seed misses the integer lattice. -/
+/-- Mixed-exponent seed misses the integer lattice (Beal-specific diagnostic). -/
 example : ¬ BealCGALatticeGauge 2 2 2 4 4 3 3 :=
   not_BealCGALatticeGauge_two_two_two_four_four_three
-
-/-- CGA point–point pairing. -/
-example (x y : ℝ) :
-    CGA.CGA1.bilin21 (CGA.CGA1.pointVec x) (CGA.CGA1.pointVec y) =
-      -((x - y) ^ 2) / 2 :=
-  bilin21_conformalPoint_conformalPoint x y
-
-/-- Balanced CGA dilation mismatch is strictly positive. -/
-example (m : ℕ) (hm : 0 < m) :
-    0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
-  beal_balanced_cgaDilationMismatch_pos m hm
 
 /-- Window solution yields a modular winding witness. -/
 example {A B C : ℤ} {x y z : ℕ}
