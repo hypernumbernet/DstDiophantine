@@ -1103,7 +1103,8 @@ CGA seed on the `m`-power null lattice.
 
 By `beal_kFold_powerLattice_iff_natAbs_eq_one` this is equivalent to
 “every coprime solution has `|A| = 1`”. Not an independent geometric principle;
-the live programme is `BealCGARealization` + Mihăilescu (`BealUnitBaseNoGo`).
+the live programme is exponent-gcd reduction + mathlib `FermatLastTheorem`
+(hypothesis) + Mihăilescu (`BealUnitBaseNoGo`).
 -/
 def BealCGADiscreteClosed : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -1249,7 +1250,7 @@ theorem bealRootMag_div_eq_natAbs_div (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
 
 /--
 Integer CGA dilation of the A–C root-magnitude ratio is equivalent to a
-positive integer power identity |C|^z = k^m |A|^x in ℕ.
+positive integer power identity `|C|^z = k^m |A|^x` in `ℕ`.
 -/
 theorem beal_integerDilation_iff_pow_eq (A C : ℤ) (x z m : ℕ)
     (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
@@ -1295,6 +1296,9 @@ theorem beal_integerDilation_iff_pow_eq (A C : ℤ) (x z m : ℕ)
       (pow_left_inj₀ hγ.le hposR hm).mp hscale
     exact ((eq_div_iff (ne_of_gt hα)).mpr heqMag.symm).symm
 
+/--
+Easy direction: a discrete DST config that is three-way coprime forces `|A| = 1`.
+-/
 theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1310,28 +1314,9 @@ theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
   have hac := beal_coprime_ac hA hB hC hx0 hy0 hz0 hgcd hsol
   set m := bealMinExp x y z
   have hm : m ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
-  obtain ⟨n, hn, heq⟩ := hdil
-  have hα : 0 < bealRootMag A x m := bealRootMag_pos hA x m
-  have hγ : 0 < bealRootMag C z m := bealRootMag_pos hC z m
-  have hnpos : 0 < n :=
-    Int.cast_pos.mp (heq ▸ div_pos hγ hα)
-  have hscale : bealRootMag C z m = (n : ℝ) * bealRootMag A x m := by
-    have := congrArg (fun t => t * bealRootMag A x m) heq
-    field_simp [ne_of_gt hα] at this
-    linarith [this]
-  have hpow : (C.natAbs : ℝ) ^ z =
-      (n : ℝ) ^ m * (A.natAbs : ℝ) ^ x := by
-    have hL := congrArg (fun t : ℝ => t ^ m) hscale
-    rw [mul_pow, bealRootMag_pow A x m hm, bealRootMag_pow C z m hm] at hL
-    exact hL
-  have hdvd : A.natAbs ^ x ∣ C.natAbs ^ z := by
-    refine ⟨n.toNat ^ m, ?_⟩
-    apply_fun (fun t : ℕ => (t : ℝ)) using Nat.cast_injective
-    simp only [Nat.cast_mul, Nat.cast_pow]
-    have hnR : (n.toNat : ℝ) = (n : ℝ) := by
-      exact_mod_cast Int.toNat_of_nonneg hnpos.le
-    rw [hnR, hpow, mul_comm]
-  exact beal_natAbs_eq_one_of_ac_pow_dvd hx0 hac hdvd
+  obtain ⟨k, _hk, hpow⟩ :=
+    (beal_integerDilation_iff_pow_eq A C x z m hm hA hC).mp hdil
+  exact beal_natAbs_eq_one_of_ac_pow_dvd hx0 hac ⟨k ^ m, by rw [hpow, mul_comm]⟩
 
 /-- Coprime DST discrete configs do not exist (positive bases + Mihăilescu). -/
 theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
@@ -1431,14 +1416,8 @@ theorem beal_eq_exp_integerDilation_iff_natAbs_eq_one (A C : ℤ) (p : ℕ)
     IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
       A.natAbs = 1 := by
   rw [beal_eq_exp_integerDilation_iff A C p hp hA hC]
-  constructor
-  · intro hdvd
-    have : A.natAbs ∣ 1 := by
-      simpa [Nat.coprime_iff_gcd_eq_one.mp hac] using Nat.dvd_gcd (Nat.dvd_refl _) hdvd
-    exact Nat.dvd_one.mp this
-  · intro hA1
-    rw [hA1]
-    exact one_dvd _
+  exact ⟨fun hdvd => Nat.Coprime.eq_one_of_dvd hac hdvd, fun hA1 => by
+    rw [hA1]; exact one_dvd _⟩
 
 /--
 For a three-way-coprime Beal solution, integer CGA dilation of the A–C root
@@ -1477,17 +1456,8 @@ dilation fails as a geometric principle even before Beal exponents.)
 -/
 theorem not_beal_eq_exp_integerDilation_three_four_five :
     ¬ IsCGAIntegerDilation (bealRootMag (5 : ℤ) 2 2 / bealRootMag (3 : ℤ) 2 2) := by
-  have h : bealRootMag (5 : ℤ) 2 2 / bealRootMag (3 : ℤ) 2 2 = (5 : ℝ) / 3 := by
-    rw [bealRootMag_div_eq_natAbs_div 3 5 2 (by decide)]
-    norm_num
-  rw [h]
+  rw [bealRootMag_div_eq_natAbs_div 3 5 2 (by decide)]
   exact not_isCGAIntegerDilation_five_div_three
-
-theorem bealGcd_three_four_five : bealGcd 3 4 5 = 1 := by
-  decide
-
-theorem beal_sol_three_four_five : (3 : ℤ) ^ 2 + 4 ^ 2 = 5 ^ 2 := by
-  decide
 
 /-! ### Phase 7f: exponent-gcd reduction -/
 
@@ -1575,28 +1545,12 @@ theorem bealGcd_pow_eq_one {A B C : ℤ} {p q r : ℕ}
   rw [hgcd] at hpG
   exact Nat.Prime.not_dvd_one hpPrime hpG
 
-/-- Quotients of exponents by a positive common divisor remain positive under `≥ 3`. -/
-theorem bealExpGcd_div_pos {x y z : ℕ} (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
-    0 < x / bealExpGcd x y z ∧
-      0 < y / bealExpGcd x y z ∧
-        0 < z / bealExpGcd x y z := by
-  have hdpos := bealExpGcd_pos (x := x) (y := y) (z := z) hx
-  refine ⟨?_, ?_, ?_⟩
-  · exact Nat.div_pos (Nat.le_of_dvd (Nat.lt_of_lt_of_le (by decide : 0 < 3) hx)
-      (bealExpGcd_dvd_left x y z)) hdpos
-  · exact Nat.div_pos (Nat.le_of_dvd (Nat.lt_of_lt_of_le (by decide : 0 < 3) hy)
-      (bealExpGcd_dvd_mid x y z)) hdpos
-  · exact Nat.div_pos (Nat.le_of_dvd (Nat.lt_of_lt_of_le (by decide : 0 < 3) hz)
-      (bealExpGcd_dvd_right x y z)) hdpos
-
 /--
-When `d = bealExpGcd ≥ 3`, a nonzero Beal solution yields a nonzero Fermat
-equation of exponent `d`.
+A nonzero Beal solution yields a nonzero Fermat equation of exponent
+`d = bealExpGcd`. Used for the `d ≥ 3` FLT slice.
 -/
 theorem beal_fermat_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
-    (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (_hd : 3 ≤ bealExpGcd x y z)
     (hsol : A ^ x + B ^ y = C ^ z) :
     let d := bealExpGcd x y z
     let α := A ^ (x / d)
@@ -1605,8 +1559,8 @@ theorem beal_fermat_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
     α ≠ 0 ∧ β ≠ 0 ∧ γ ≠ 0 ∧
       α ^ d + β ^ d = γ ^ d := by
   intro d α β γ
-  refine ⟨pow_ne_zero _ hA, pow_ne_zero _ hB, pow_ne_zero _ hC, ?_⟩
-  exact (beal_eq_pow_mul_expGcd A B C x y z).mp hsol
+  exact ⟨pow_ne_zero _ hA, pow_ne_zero _ hB, pow_ne_zero _ hC,
+    (beal_eq_pow_mul_expGcd A B C x y z).mp hsol⟩
 
 /--
 Under `FermatLastTheorem`, there is no nonzero Beal solution with
@@ -1614,13 +1568,11 @@ Under `FermatLastTheorem`, there is no nonzero Beal solution with
 -/
 theorem not_beal_sol_of_expGcd_ge_three_of_FLT
     (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z := by
   intro hsol
-  obtain ⟨hα, hβ, hγ, hF⟩ :=
-    beal_fermat_of_expGcd_ge_three hx hy hz hA hB hC hd hsol
+  obtain ⟨hα, hβ, hγ, hF⟩ := beal_fermat_of_expGcd_ge_three hA hB hC hsol
   have hInt : FermatLastTheoremWith ℤ (bealExpGcd x y z) :=
     (fermatLastTheoremFor_iff_int).mp (hFLT (bealExpGcd x y z) hd)
   exact hInt _ _ _ hα hβ hγ hF
@@ -1631,12 +1583,11 @@ force `1 < bealGcd` (vacuous, since solutions are forbidden).
 -/
 theorem beal_conjecture_of_expGcd_ge_three_of_FLT
     (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z)
     (hsol : A ^ x + B ^ y = C ^ z) :
     1 < bealGcd A B C :=
-  False.elim (not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hx hy hz hA hB hC hd hsol)
+  False.elim (not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd hsol)
 
 /-- Equal-exponent Beal (`p ≥ 3`) is the FLT slice of the exponent-gcd reduction. -/
 theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
@@ -1645,17 +1596,16 @@ theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
     ¬ A ^ p + B ^ p = C ^ p := by
   have hd : 3 ≤ bealExpGcd p p p := by
     rw [bealExpGcd_eq_of_eq_exp]; exact hp
-  exact not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hp hp hp hA hB hC hd
+  exact not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd
 
 /-- Modular Fermat bridge yields the gcd≥3 Beal slice. -/
 theorem not_beal_sol_of_expGcd_ge_three_of_modular_bridge
     (hbridge : FermatModularBridge) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
   not_beal_sol_of_expGcd_ge_three_of_FLT
-    (FermatLastTheorem_of_modular_bridge hbridge) hx hy hz hA hB hC hd
+    (FermatLastTheorem_of_modular_bridge hbridge) hA hB hC hd
 
 /--
 When `bealExpGcd = 2`, a Beal solution is a Pythagorean equation on powered
@@ -1672,29 +1622,18 @@ theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
       (A ^ x') ^ 2 + (B ^ y') ^ 2 = (C ^ z') ^ 2 := by
   intro x' y' z'
   have hxdiv : 2 ∣ x := by
-    have := bealExpGcd_dvd_left x y z; rw [hd] at this; exact this
+    have := bealExpGcd_dvd_left x y z; rwa [hd] at this
   have hydiv : 2 ∣ y := by
-    have := bealExpGcd_dvd_mid x y z; rw [hd] at this; exact this
+    have := bealExpGcd_dvd_mid x y z; rwa [hd] at this
   have hzdiv : 2 ∣ z := by
-    have := bealExpGcd_dvd_right x y z; rw [hd] at this; exact this
-  have hx4 : 4 ≤ x := by
-    have : x ≠ 3 := by
-      intro h; have : 2 ∣ (3 : ℕ) := by rw [← h]; exact hxdiv
-      norm_num at this
-    omega
-  have hy4 : 4 ≤ y := by
-    have : y ≠ 3 := by
-      intro h; have : 2 ∣ (3 : ℕ) := by rw [← h]; exact hydiv
-      norm_num at this
-    omega
-  have hz4 : 4 ≤ z := by
-    have : z ≠ 3 := by
-      intro h; have : 2 ∣ (3 : ℕ) := by rw [← h]; exact hzdiv
-      norm_num at this
-    omega
-  have hx2 : 2 ≤ x / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr hx4
-  have hy2 : 2 ≤ y / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr hy4
-  have hz2 : 2 ≤ z / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr hz4
+    have := bealExpGcd_dvd_right x y z; rwa [hd] at this
+  -- `3 ≤ n` and `2 ∣ n` force `4 ≤ n`, hence `2 ≤ n/2`.
+  have hx2 : 2 ≤ x / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
+    (by have := hxdiv; omega)
+  have hy2 : 2 ≤ y / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
+    (by have := hydiv; omega)
+  have hz2 : 2 ≤ z / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
+    (by have := hzdiv; omega)
   have hsol' := (beal_eq_pow_mul_expGcd A B C x y z).mp hsol
   simp only [hd] at hsol'
   exact ⟨hx2, hy2, hz2, hsol'⟩

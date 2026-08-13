@@ -229,7 +229,7 @@ Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
   ConformalInteger       ← CGA null 点埋め込み（診断）
 Theorems/
   Fermat                 ← FermatModularBridge + legacy / 連続診断
-  Beal (Realization + DST config + Mihăilescu), Mihailescu,
+  Beal (exp-gcd 還元 + Realization bookkeeping + Mihăilescu), Mihailescu,
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）

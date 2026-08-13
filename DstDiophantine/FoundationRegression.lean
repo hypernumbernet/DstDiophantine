@@ -259,19 +259,17 @@ example (A B C : ℤ) (x y z : ℕ) :
 
 /-- Phase 7f: mathlib FLT forbids Beal solutions with `bealExpGcd ≥ 3`. -/
 example (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
-  not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hx hy hz hA hB hC hd
+  not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd
 
 /-- Phase 7f: modular Fermat bridge yields the gcd≥3 Beal slice. -/
 example (hbridge : FermatModularBridge) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
-  not_beal_sol_of_expGcd_ge_three_of_modular_bridge hbridge hx hy hz hA hB hC hd
+  not_beal_sol_of_expGcd_ge_three_of_modular_bridge hbridge hA hB hC hd
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
