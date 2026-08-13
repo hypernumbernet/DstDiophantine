@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7h に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping。無条件スライスは `3∣d` / `4∣d` / 等指数 3,4 に加え、`d=2` で `{x,y,z}` のうち 2 つ以上が 4 で割れる場合まで閉鎖（`BealPythagorean` の DiffFourth / UFD）。残件型は `BealMixedExpResidual`（`d=1`；二一致 3 位置と全相異を切り出し）と `BealPythagoreanResidual`（還元指数のうち奇数 2 本以上）。正の `|A|=1` は Mihăilescu axiom で閉じた。
+- **Beal 危機路線をフェーズ 7i に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_residuals` で残件 2 つへ還元。ℤ[i] UFD で斜辺冪を定理化し、equal-odd / 偶二一致を進捗（`BealGaussian`）。無条件古典 Beal は主張しない。残件は `BealMixedExpResidual` / `BealPythagoreanResidual` / `BealEqualOddTwoFactorResidual` / `BealTwoEqualEvenResidual`。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。

@@ -11,6 +11,7 @@ import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Mihailescu
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -40,15 +41,19 @@ is **exponent-gcd reduction** (not an independent CGA geometric principle):
   an integer CGA dilation; under coprimality this forces `|A|=1` and an
   `m`-th-power condition on `|C|^z` (not a live geometric bridge);
 * `bealExpGcd` reduction — `d = gcd(x,y,z)`: trichotomy `d ∈ {1,2}` or `d ≥ 3`;
-  `d ≥ 3` reduces to FLT (`FermatLastTheorem` hypothesis, not an axiom);
+  `d ≥ 3` is closed under the FLT axiom `fermatLastTheorem` (phase 7i;
+  same contract as Mihăilescu; not a Lean proof of Wiles);
   unconditional slices when `3 ∣ d` or `4 ∣ d` live in `BealSlice`
   (mathlib `fermatLastTheoremThree` / `Four`);
 * `d = 2` — Pythagorean powers; coprime solutions admit
   `PythagoreanTriple.coprime_classification` parameters; fourth-divisibility
   of at least two exponents is closed in `BealPythagorean` / `BealSlice`;
-  residual is `BealPythagoreanResidual` (at least two reduced exponents odd);
+  equal-odd matching even-leg/hyp slices reduce via Gaussian UFD to
+  `BealEqualOddTwoFactorResidual` (`BealGaussian`); residual outside those
+  is `BealPythagoreanResidual` (at least two reduced exponents odd);
 * `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved), with
-  two-equal and all-distinct case splits recorded below;
+  two-equal and all-distinct case splits; even two-equal progress (mod 4 +
+  sum-of-squares shape) in `BealGaussian` / `BealTwoEqualEvenResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
@@ -1630,6 +1635,16 @@ theorem not_beal_sol_of_expGcd_ge_three_of_FLT
   exact hInt _ _ _ hα hβ hγ hF
 
 /--
+Phase 7i: no nonzero Beal solution with `bealExpGcd ≥ 3`, via the FLT axiom
+`fermatLastTheorem` (not a Lean proof of Wiles's theorem).
+-/
+theorem not_beal_sol_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : 3 ≤ bealExpGcd x y z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_ge_three_of_FLT fermatLastTheorem hA hB hC hd
+
+/--
 Beal-shaped conclusion under FLT when `bealExpGcd ≥ 3`: any solution would
 force `1 < bealGcd` (vacuous, since solutions are forbidden).
 -/
@@ -1641,6 +1656,14 @@ theorem beal_conjecture_of_expGcd_ge_three_of_FLT
     1 < bealGcd A B C :=
   False.elim (not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd hsol)
 
+/-- Phase 7i: `d ≥ 3` forces `1 < bealGcd` via the FLT axiom. -/
+theorem beal_conjecture_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : 3 ≤ bealExpGcd x y z)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    1 < bealGcd A B C :=
+  beal_conjecture_of_expGcd_ge_three_of_FLT fermatLastTheorem hA hB hC hd hsol
+
 /-- Equal-exponent Beal (`p ≥ 3`) is the FLT slice of the exponent-gcd reduction. -/
 theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
     {A B C : ℤ} {p : ℕ} (hp : 3 ≤ p)
@@ -1649,6 +1672,12 @@ theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
   have hd : 3 ≤ bealExpGcd p p p := by
     rw [bealExpGcd_eq_of_eq_exp]; exact hp
   exact not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd
+
+/-- Phase 7i: equal-exponent Beal forbidden by the FLT axiom. -/
+theorem beal_eq_exp_not_sol {A B C : ℤ} {p : ℕ} (hp : 3 ≤ p)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
+    ¬ A ^ p + B ^ p = C ^ p :=
+  beal_eq_exp_not_sol_of_FLT fermatLastTheorem hp hA hB hC
 
 /-- Modular Fermat bridge yields the gcd≥3 Beal slice. -/
 theorem not_beal_sol_of_expGcd_ge_three_of_modular_bridge

@@ -1,0 +1,13 @@
+private theorem dvd_two_of_dvd_two_mul_coprime {δ : ℤ[i]} {m n : ℤ}
+    (hcop : Int.gcd m n = 1)
+    (hm : δ ∣ (2 * m : �i]} {m n : ℤ}
+    (hcop : Int.gcd m n = 1)
+    (hm : δ ∣ (2 * m : ℤ[i])) (hn : δ ∣ (2 * n : ℤ[i])) :
+    δ ∣ (2 : ℤ[i]) := by
+  obtain ⟨a, b, hab⟩ := Int.isCoprime_iff_gcd_eq_one.mpr hcop
+  have h2 : (2 : ℤ[i]) =
+      (a : ℤ[i]) * (2 * m : ℤ[i]) + (b : ℤ[i]) * (2 * n : ℤ[i]) := by
+    have : (2 : ℤ) = a * (2 * m) + b * (2 * n) := by
+      linarith [show (a * m + b * n : ℤ) = 1 from hab]
+    exact_mod_cast this
+  

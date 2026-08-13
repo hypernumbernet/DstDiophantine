@@ -16,6 +16,8 @@ import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
+import DstDiophantine.Theorems.BealGaussian
+import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
 import DstDiophantine.Algebra.CGA.NullCone
@@ -33,7 +35,8 @@ Beal critical-path regressions (payload incompatibility, winding window,
 power-lattice descent, phase 7e bookkeeping realisation / Mihăilescu / DST
 config, phase 7f exponent-gcd reduction / FLT hypothesis, phase 7g
 unconditional FLT slices / Pythagorean classification, phase 7h Pythagorean
-UFD slices / mixed-exponent case splits, diagnostic NoGo) are included;
+UFD slices / mixed-exponent case splits, phase 7i FLT axiom / Gaussian UFD /
+equal-odd and even two-equal progress, diagnostic NoGo) are included;
 Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
@@ -379,6 +382,45 @@ example {A B C : ℤ} {x y z : ℕ}
 example {x y z : ℕ} (hd : bealExpGcd x y z = 1) :
     x = y ∨ y = z ∨ x = z ∨ (x ≠ y ∧ y ≠ z ∧ x ≠ z) :=
   beal_expGcd_eq_one_two_equal_or_all_distinct hd
+
+/-- Phase 7i: FLT axiom closes `d ≥ 3` with no extra hypothesis. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : 3 ≤ bealExpGcd x y z)
+    (hsol : A ^ x + B ^ y = C ^ z) : False :=
+  not_beal_sol_of_expGcd_ge_three hA hB hC hd hsol
+
+/-- Phase 7i: positive classical Beal reduces to the two residuals under FLT. -/
+example (hMix : BealMixedExpResidual) (hPyth : BealPythagoreanResidual) :
+    ∀ {A B C : ℤ} {x y z : ℕ},
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      0 < A → 0 < B → 0 < C →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_pos_of_residuals hMix hPyth
+
+/-- Phase 7i: opposite-parity coprime parameters yield a Gaussian associate power. -/
+example {m n c : ℤ} {e : ℕ} (he : 0 < e)
+    (hcop : Int.gcd m n = 1)
+    (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
+    (heq : m ^ 2 + n ^ 2 = c ^ e) :
+    IsGaussianHypotenusePower m n e :=
+  isGaussianHypotenusePower_of_hyp_eq_pow he hcop hpar heq
+
+/-- Phase 7i: equal-odd two-factor residual type. -/
+example : Prop := BealEqualOddTwoFactorResidual
+
+/-- Phase 7i: even two-equal `d = 1` progress forces odd `C` and opposite parity. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hz : 3 ≤ z) (hxy : x = y) (hd : bealExpGcd x y z = 1)
+    (hxeven : Even x)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Odd C ∧
+      ((Even A ∧ Odd B) ∨ (Odd A ∧ Even B)) ∧
+        (A ^ (x / 2)) ^ 2 + (B ^ (x / 2)) ^ 2 = C ^ z :=
+  beal_two_equal_xy_even_progress hx hz hxy hd hxeven hA hB hC hgcd hsol
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :

@@ -17,8 +17,10 @@ Isolated from `Beal.lean` so that the cyclotomic import for
 
 ## What remains residual
 
-* general `d ≥ 3` not divisible by 3 or 4 (needs full `FermatLastTheorem`);
-* general `d = 2` Pythagorean powers beyond the biquadratic slice;
+* general `d ≥ 3` not divisible by 3 or 4 — closed in phase 7i by the FLT
+  axiom `fermatLastTheorem` (`not_beal_sol_of_expGcd_ge_three`);
+* general `d = 2` Pythagorean powers beyond the biquadratic / equal-odd slices
+  (`BealPythagoreanResidual`);
 * `d = 1` mixed exponents (`BealMixedExpResidual`).
 
 Classical Beal is **not** claimed unconditionally.

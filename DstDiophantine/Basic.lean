@@ -20,6 +20,8 @@ import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
+import DstDiophantine.Theorems.BealGaussian
+import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
@@ -120,6 +122,7 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   beal_fermat_of_expGcd_ge_three not_beal_sol_of_expGcd_ge_three_of_FLT
   beal_conjecture_of_expGcd_ge_three_of_FLT beal_eq_exp_not_sol_of_FLT
   not_beal_sol_of_expGcd_ge_three_of_modular_bridge
+  fermatLastTheorem not_beal_sol_of_expGcd_ge_three beal_conjecture_of_expGcd_ge_three
   bealExpGcd_eq_one_or_eq_two_or_ge_three bealExpGcd_eq_one_implies_not_all_eq
   bealExpGcd_eq_two_dvd bealExpGcd_div_two_eq_one
   beal_pythagorean_of_expGcd_eq_two beal_pythagoreanTriple_of_expGcd_eq_two
@@ -134,6 +137,14 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   nat_eq_pow_of_mul_eq_pow_of_coprime nat_eq_pow_of_mul_eq_pow_of_coprime_right
   exists_pow_of_two_mul_coprime_eq_pow exists_sq_of_two_mul_coprime_eq_sq
   gaussian_norm_mk IsGaussianHypotenusePower isGaussianHypotenusePower_one
+  isGaussianHypotenusePower_of_hyp_eq_pow exists_associated_pow_of_hyp_eq_pow
+  isCoprime_mk_star_of_coprime_opposite_parity
+  beal_conjecture_pos_of_residuals
+  BealEqualOddTwoFactorResidual BealTwoEqualEvenResidual
+  not_both_odd_bases_of_expGcd_eq_two_of_eq_odd_yz
+  not_beal_sol_of_expGcd_eq_two_of_eq_odd_yz
+  not_beal_sol_of_expGcd_eq_two_of_eq_odd_xz
+  beal_two_equal_xy_even_progress beal_two_equal_xy_even_C_odd
   DiffFourthSqPos not_diffFourthSqPos
   not_pow_four_sub_pow_four_eq_sq not_pow_four_add_sq_eq_pow_four
   not_beal_sol_of_expGcd_eq_two_of_four_dvd_xz
