@@ -16,10 +16,11 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
 - **Beal 危機路線を分割した。** 旧 `BealModularBridge`（巻数 + PGA `ConformalGaugeAdmissible`）は方程式非依存に矛盾すると機械検証済みです。本命は `BealWindingBridge`（数論）と `BealCGAGauge` / `BealCGANoGo`（CGA・PGA 錐と非同一）です。
-- **不均衡窓の巻数 witness を証明した。** `m ≥ 4` かつ `2π/m ≤ δ < 5π/(2m)` なら、分数冪 gap だけから `ModularAmplificationWitness` を構成できます（解仮説不要；`m = 3` はこの窓が空）。
-- **Fermat / abc modular bridge も型付け済み。** abc の連続品質 bridge は偽だと機械検証済みです。無条件 FLT / Beal / abc は主張しません。
-- **1D CGA 分数冪シード。** Beal の `|n|^{e/m}` を `Cl(2,1)` null 点に載せて PGA 高さと切り離しています。
-- **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（不均衡窓）までです。
+- **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
+- **広い主値窓の巻数 witness を証明した。** `4 ≤ k` かつ `2π/k ≤ δ < 4π/k` なら `N = k` 上で構成できます（`m = 3` 含む）。`δ ≥ 2π` は `principalRapidity` 折り畳みで同じ種に落ちます。
+- **1D CGA 分数冪シード。** ペアリングと dilation の 2π 非周期性まで機械検証。PGA 高さと切り離しています。
+- **Fermat / abc modular bridge も型付け済み。** 無条件 FLT / Beal / abc は主張しません。
+- **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（広い主値窓・折り畳み）までです。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
 
 ## 行ったこと
@@ -92,7 +93,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | ファイル | いま入っているもの |
 |----------|-------------------|
 | `Fermat.lean` | 加法同値、`FermatModularBridge`、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
-| `Beal.lean` | 分数冪 gap、`BealWindingBridge` / CGA 分割、不均衡窓 witness、旧 modular（診断・矛盾） |
+| `Beal.lean` | 分数冪 gap、`bealAmpExp`、`BealWindingBridge` / CGA 分割、広い主値窓・折り畳み、旧 modular（診断・矛盾） |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
 | `Goldbach.lean` / `Polignac.lean` | 加法分解の motor 同値、候補の健全性、有限範囲の存在 |
@@ -125,10 +126,10 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 「巻数半分」と「CGA 幾何半分」に分けて進めます。
 
 - **主軸（Beal）**  
-  `BealCGANoGo`（CGA 上で巻数 witness を禁止）と、窓外・`m = 3` への
+  `BealCGANoGo`（CGA 上で巻数 witness を禁止）と、釣り合い型への
   `BealWindingBridge` 拡張。旧 PGA `ConformalGaugeAdmissible` 同一視は使わない。
 - **1D CGA**  
-  分数冪シードは Beal 経路に接続済み。時空 CGA は後続です。
+  分数冪シード・非周期 dilation は接続済み。時空 CGA は後続です。
 - **後続の冪和 / 品質型**  
   Fermat / abc modular への移植、巻数誤差の数論的下限。
 - **有限証明書の拡大**  

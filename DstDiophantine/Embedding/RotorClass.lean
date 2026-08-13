@@ -53,6 +53,81 @@ noncomputable def rotorOfClass (c : RotorClass N) : PGA :=
 noncomputable def quantizeRapidity (N : ℕ) [NeZero N] (θ : ℝ) : ℤ :=
   ⌊θ * N / (2 * Real.pi)⌋
 
+/-- Principal rapidity in `[0, 2π)` for nonnegative `θ`. -/
+noncomputable def principalRapidity (θ : ℝ) : ℝ :=
+  θ - 2 * Real.pi * ⌊θ / (2 * Real.pi)⌋
+
+theorem principalRapidity_nonneg {θ : ℝ} (_hθ : 0 ≤ θ) :
+    0 ≤ principalRapidity θ := by
+  unfold principalRapidity
+  have hden : (0 : ℝ) < 2 * Real.pi := by positivity
+  have hle : (⌊θ / (2 * Real.pi)⌋ : ℝ) ≤ θ / (2 * Real.pi) := Int.floor_le _
+  have hmul : (⌊θ / (2 * Real.pi)⌋ : ℝ) * (2 * Real.pi) ≤ θ :=
+    (le_div_iff₀ hden).mp hle
+  linarith
+
+theorem principalRapidity_lt_two_pi {θ : ℝ} (_hθ : 0 ≤ θ) :
+    principalRapidity θ < 2 * Real.pi := by
+  unfold principalRapidity
+  have hden : (0 : ℝ) < 2 * Real.pi := by positivity
+  have hlt : θ / (2 * Real.pi) < (⌊θ / (2 * Real.pi)⌋ : ℝ) + 1 :=
+    Int.lt_floor_add_one _
+  have hmul : θ < ((⌊θ / (2 * Real.pi)⌋ : ℝ) + 1) * (2 * Real.pi) :=
+    (div_lt_iff₀ hden).mp hlt
+  linarith
+
+theorem quantizeRapidity_add_two_pi (N : ℕ) [NeZero N] (θ : ℝ) :
+    quantizeRapidity N (θ + 2 * Real.pi) = quantizeRapidity N θ + (N : ℤ) := by
+  unfold quantizeRapidity
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  have hden : (2 * Real.pi : ℝ) ≠ 0 := by positivity
+  have h :
+      (θ + 2 * Real.pi) * N / (2 * Real.pi) =
+        θ * N / (2 * Real.pi) + (N : ℝ) := by
+    field_simp [hN, hden]
+  rw [h, Int.floor_add_natCast]
+
+theorem quantizeRapidity_add_two_pi_nsmul (N : ℕ) [NeZero N] (θ : ℝ) (n : ℕ) :
+    quantizeRapidity N (θ + 2 * Real.pi * n) =
+      quantizeRapidity N θ + (n : ℤ) * (N : ℤ) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have h :
+        θ + 2 * Real.pi * (n + 1 : ℕ) =
+          (θ + 2 * Real.pi * (n : ℕ)) + 2 * Real.pi := by
+      simp [Nat.cast_succ]; ring
+    rw [h, quantizeRapidity_add_two_pi, ih]
+    push_cast
+    ring
+
+theorem quantizeRapidity_principal (N : ℕ) [NeZero N] {θ : ℝ} (hθ : 0 ≤ θ) :
+    quantizeRapidity N (principalRapidity θ) =
+      quantizeRapidity N θ - (⌊θ / (2 * Real.pi)⌋ : ℤ) * (N : ℤ) := by
+  have hden : (0 : ℝ) < 2 * Real.pi := by positivity
+  set n := ⌊θ / (2 * Real.pi)⌋
+  have hn0 : 0 ≤ n := Int.floor_nonneg.mpr (div_nonneg hθ hden.le)
+  have hnR : (n : ℝ) = (n.toNat : ℝ) := by
+    rw [← Int.cast_natCast n.toNat, Int.toNat_of_nonneg hn0]
+  have hprin : principalRapidity θ = θ - 2 * Real.pi * n := rfl
+  have hθeq : θ = principalRapidity θ + 2 * Real.pi * (n.toNat : ℝ) := by
+    rw [hprin, ← hnR]; ring
+  have hmul := quantizeRapidity_add_two_pi_nsmul N (principalRapidity θ) n.toNat
+  have hθq : quantizeRapidity N θ =
+      quantizeRapidity N (principalRapidity θ) + (n.toNat : ℤ) * (N : ℤ) := by
+    rw [← hθeq] at hmul; exact hmul
+  have hnZ : (n.toNat : ℤ) = n := Int.toNat_of_nonneg hn0
+  rw [hθq, hnZ]
+  abel
+
+theorem quantizeRapidity_zmod_eq_principal (N : ℕ) [NeZero N] {θ : ℝ}
+    (hθ : 0 ≤ θ) :
+    (quantizeRapidity N θ : ZMod N) =
+      (quantizeRapidity N (principalRapidity θ) : ZMod N) := by
+  have h := quantizeRapidity_principal N hθ
+  rw [h]
+  simp
+
 /-- Quantise `log|n|` to the nearest lattice rapidity on axis `0`.
 
 Uses the integer-rotor convention `pureBoost (2 log|n|)`, so the index is

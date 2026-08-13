@@ -15,7 +15,9 @@ import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
+import DstDiophantine.Algebra.CGA.NullCone
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Public-API / layering regression examples
@@ -182,16 +184,46 @@ example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
 example (A C : ℤ) (x z m : ℕ) : BealCGAGauge A C x z m :=
   BealCGAGauge_of_ne_zero A C x z m
 
-/-- Unbalanced window constructs a modular winding witness (gap hypothesis only). -/
-example (A C : ℤ) (x z m : ℕ) (hm4 : 4 ≤ m)
-    (hle : 2 * Real.pi / m ≤ bealFracLogGap A C x z m)
-    (hlt : bealFracLogGap A C x z m < 5 * Real.pi / (2 * m)) :
-    let N := 4 * m
+/-- Amplification factor below 4 never yields a modular winding witness. -/
+example {N : ℕ} [NeZero N] : IsEmpty (ModularAmplificationWitness N 3) :=
+  modularWitness_empty_of_eq_three
+
+/-- At `m = 3` the lifted amplification factor is 4. -/
+example {x y z : ℕ} (hm : bealMinExp x y z = 3) : bealAmpExp x y z = 4 :=
+  bealAmpExp_eq_four_of_minExp_eq_three hm
+
+/-- Wide window constructs a modular winding witness (includes `m = 3` via `k = 4`). -/
+example (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
+    (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
+    (hlt : bealFracLogGap A C x z m < 4 * Real.pi / k) :
+    let N := k
     ∃ (hN : N ≠ 0),
       letI : NeZero N := ⟨hN⟩
       let t := quantizeBealMismatch N A C x z m
-      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t :=
-  beal_modularWitness_of_fracGap_window A C x z m hm4 hle hlt
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
+  beal_modularWitness_of_fracGap_window A C x z m k hk4 hle hlt
+
+/-- Torus fold: principal gap in the wide window still yields a witness. -/
+example (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
+    (hδ0 : 0 ≤ bealFracLogGap A C x z m)
+    (hle : 2 * Real.pi / k ≤ principalRapidity (bealFracLogGap A C x z m))
+    (hlt : principalRapidity (bealFracLogGap A C x z m) < 4 * Real.pi / k) :
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
+  beal_modularWitness_of_principal_fracGap_window A C x z m k hk4 hδ0 hle hlt
+
+/-- CGA dilation is not `2π`-periodic (contrast with PGA rapidity torus). -/
+example {a : ℝ} (ha : 0 < a) (δ : ℝ) :
+    CGA.CGA1.pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
+      CGA.CGA1.pointVec (Real.exp δ * a) :=
+  conformalPoint_dilation_not_two_pi_periodic ha δ
+
+/-- Normalised CGA points pair with null infinity to `-1`. -/
+example (x : ℝ) : CGA.CGA1.bilin21 (CGA.CGA1.pointVec x) CGA.CGA1.nInfVec = -1 :=
+  bilin21_conformalPoint_nInf x
 
 /-- Equal-exponent Beal fractional gap degenerates to Fermat log-mismatch. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :

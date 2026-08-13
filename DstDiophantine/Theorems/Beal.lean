@@ -42,9 +42,10 @@ The legacy `BealModularBridge` (witness + `ConformalGaugeAdmissible`) is
 (`beal_modular_payload_incompatible`). Continuous `BealAdmissibleBridge` remains
 diagnostic (balanced seeds sit below `1/m²`).
 
-Unbalanced-window construction: for `m ≥ 4` and
-`2π/m ≤ δ < 5π/(2m)`, the quantised gap alone yields a modular winding witness
-(`beal_modularWitness_of_fracGap_window`; no solution hypothesis).
+Amplification factor for modular witnesses is `k = bealAmpExp = max(m, 4)`:
+`ModularAmplificationWitness` forces `4 ≤ k`, so the old payload with `k = m = 3`
+was empty (`modularWitness_empty_of_eq_three`). Wide principal window:
+`2π/k ≤ {δ} < 4π/k` on `N = k` yields `n₀ = 1` (includes `m = 3`).
 -/
 
 namespace DstDiophantine
@@ -88,6 +89,31 @@ theorem bealMinExp_ge_one {x y z : ℕ} (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 �
 theorem bealMinExp_pos {x y z : ℕ} (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     0 < bealMinExp x y z :=
   Nat.zero_lt_of_lt (bealMinExp_ge_one hx hy hz)
+
+/--
+Modular amplification factor: `max(m, 4)`. The fractional gap still uses
+`m = bealMinExp`, but `ModularAmplificationWitness` requires `4 ≤ k`
+(`modularWitness_four_le`), so `m = 3` lifts to `k = 4`.
+-/
+def bealAmpExp (x y z : ℕ) : ℕ :=
+  max (bealMinExp x y z) 4
+
+theorem bealAmpExp_ge_four (x y z : ℕ) : 4 ≤ bealAmpExp x y z :=
+  le_max_right _ _
+
+theorem bealMinExp_le_bealAmpExp (x y z : ℕ) : bealMinExp x y z ≤ bealAmpExp x y z :=
+  le_max_left _ _
+
+theorem bealAmpExp_eq_of_four_le {x y z : ℕ} (hm : 4 ≤ bealMinExp x y z) :
+    bealAmpExp x y z = bealMinExp x y z :=
+  max_eq_left hm
+
+theorem bealAmpExp_eq_four_of_minExp_eq_three {x y z : ℕ}
+    (hm : bealMinExp x y z = 3) : bealAmpExp x y z = 4 := by
+  simp [bealAmpExp, hm]
+
+theorem bealAmpExp_pos (x y z : ℕ) : 0 < bealAmpExp x y z :=
+  Nat.lt_of_lt_of_le (by decide : 0 < 4) (bealAmpExp_ge_four x y z)
 
 /-- Three-way gcd on absolute values (classical Beal coprimality). -/
 def bealGcd (A B C : ℤ) : ℕ :=
@@ -244,6 +270,35 @@ theorem beal_balanced_fracGap_lt_winding_threshold {m : ℕ} (hm : 0 < m) :
       norm_num at h ⊢; exact h
     exact h1.trans (by nlinarith [Real.pi_gt_three])
   exact div_lt_div_of_pos_right hlog (Nat.cast_pos.mpr hm)
+
+/-- Balanced gap also misses the lifted threshold `2π / bealAmpExp`. -/
+theorem beal_balanced_fracGap_lt_ampExp_threshold {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
+    Real.log 2 / (bealMinExp x y z : ℝ) <
+      2 * Real.pi / (bealAmpExp x y z : ℝ) := by
+  have hmR : (0 : ℝ) < bealMinExp x y z := Nat.cast_pos.mpr (bealMinExp_pos hx hy hz)
+  have hkR : (0 : ℝ) < bealAmpExp x y z := Nat.cast_pos.mpr (bealAmpExp_pos x y z)
+  have hlog1 : Real.log 2 < 1 := by
+    have h := Real.log_lt_sub_one_of_pos (by norm_num : (0 : ℝ) < 2) (by norm_num)
+    norm_num at h ⊢; exact h
+  have : Real.log 2 * (bealAmpExp x y z : ℝ) <
+      2 * Real.pi * (bealMinExp x y z : ℝ) := by
+    by_cases h4 : 4 ≤ bealMinExp x y z
+    · have hkEq : bealAmpExp x y z = bealMinExp x y z := bealAmpExp_eq_of_four_le h4
+      rw [hkEq]
+      nlinarith [hlog1, Real.pi_gt_three, hmR]
+    · have hm3 : bealMinExp x y z = 3 := by
+        have hge : 3 ≤ bealMinExp x y z := bealMinExp_ge_three hx hy hz
+        have hlt : bealMinExp x y z < 4 := Nat.not_le.mp h4
+        omega
+      have hk4 : bealAmpExp x y z = 4 := bealAmpExp_eq_four_of_minExp_eq_three hm3
+      rw [hm3, hk4]
+      -- `4 log 2 < 6π` from `log 2 < 1` and `π > 3`
+      have hπ : (3 : ℝ) < Real.pi := Real.pi_gt_three
+      have : (4 : ℝ) * Real.log 2 < 6 * Real.pi := by
+        nlinarith [hlog1, hπ]
+      convert this using 1 <;> ring
+  exact (div_lt_div_iff₀ hmR hkR).mpr this
 
 /-! ### Amplification vs admissible bound -/
 
@@ -429,24 +484,21 @@ theorem beal_eq_exp_not_coprime_of_modular_bridge (hbridge : BealModularBridge)
 /-! ### Partial winding on the principal interval -/
 
 /--
-If `2π/m ≤ δ < 2π` and `m ∣ N`, the quantised Beal seed has nonzero total
-winding. On a positive solution this is equivalent (via
-`bealFracLogGap_of_solution`) to a lower bound
-`e^{2π} − 1 ≤ B^y / A^x` on the size ratio — so typical balanced models
-`B^y ≈ A^x` (giving `δ = log 2 / m`) miss this principal-interval criterion.
+If `2π/k ≤ δ < 2π` and `k ∣ N`, the quantised Beal seed (gap still uses `m`)
+has nonzero total winding under amplification factor `k`.
 -/
-theorem beal_has_winding_of_fracGap_ge (N m : ℕ) [NeZero N] (hm : 0 < m)
+theorem beal_has_winding_of_fracGap_ge (N k m : ℕ) [NeZero N] (hk : 0 < k)
     (A C : ℤ) (x z : ℕ)
-    (hle : 2 * Real.pi / m ≤ bealFracLogGap A C x z m)
+    (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
     (hlt : bealFracLogGap A C x z m < 2 * Real.pi)
-    (hdvd : m ∣ N) :
-    windingTotal m (quantizeBealMismatch N A C x z m) ≠ 0 := by
-  have hπk : 0 ≤ 2 * Real.pi / m :=
+    (hdvd : k ∣ N) :
+    windingTotal k (quantizeBealMismatch N A C x z m) ≠ 0 := by
+  have hπk : 0 ≤ 2 * Real.pi / k :=
     div_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) Real.pi_pos.le) (Nat.cast_nonneg _)
   have h0 : 0 ≤ bealFracLogGap A C x z m := le_trans hπk hle
   simpa [quantizeBealMismatch] using
     windingTotal_ne_zero_of_rapidity_ge
-      N m hm (bealFracLogGap A C x z m) h0 hle hlt hdvd
+      N k hk (bealFracLogGap A C x z m) h0 hle hlt hdvd
 
 /-! ### Live winding bridge (number-theoretic half) -/
 
@@ -454,9 +506,9 @@ theorem beal_has_winding_of_fracGap_ge (N m : ℕ) [NeZero N] (hm : 0 < m)
 **Live** Beal winding bridge (unproved in full generality).
 
 A coprime solution yields some lattice `N` on which the quantised fractional
-gap is an admissible modular winding witness. No PGA real-scale /
-`ConformalGaugeAdmissible` conjunct — that identification is the diagnostic
-obstruction.
+gap is an admissible modular winding witness with amplification
+`k = bealAmpExp = max(m, 4)`. No PGA real-scale / `ConformalGaugeAdmissible`
+conjunct — that identification is the diagnostic obstruction.
 -/
 def BealWindingBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -466,8 +518,9 @@ def BealWindingBridge : Prop :=
       ∃ (N : ℕ) (hN : N ≠ 0),
         letI : NeZero N := ⟨hN⟩
         let m := bealMinExp x y z
+        let k := bealAmpExp x y z
         let t := quantizeBealMismatch N A C x z m
-        IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t
+        IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t
 
 /-! ### CGA fractional-power gauge (geometric half) -/
 
@@ -525,8 +578,8 @@ theorem beal_cga_dilation_weights (A C : ℤ) (x z m : ℕ)
 
 /--
 Residual geometric no-go (unproved): a coprime solution cannot carry a modular
-winding witness once the CGA fractional-power gauge is in force.
-Does **not** reuse `ConformalGaugeAdmissible` / PGA real-scale.
+winding witness (amplification `bealAmpExp`) once the CGA fractional-power gauge
+is in force. Does **not** reuse `ConformalGaugeAdmissible` / PGA real-scale.
 -/
 def BealCGANoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -537,8 +590,9 @@ def BealCGANoGo : Prop :=
         ∀ (N : ℕ) (hN : N ≠ 0),
           letI : NeZero N := ⟨hN⟩
           let m := bealMinExp x y z
+          let k := bealAmpExp x y z
           let t := quantizeBealMismatch N A C x z m
-          ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t)
+          ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t)
 
 /-- Conditional classical Beal from the split winding + CGA no-go bridges. -/
 theorem beal_conjecture_of_winding_and_cga_nogo
@@ -559,30 +613,20 @@ theorem beal_conjecture_of_winding_and_cga_nogo
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hsol
     (BealCGAGauge_of_ne_zero A C x z (bealMinExp x y z)) N hN ⟨hadm, hw⟩
 
-/-! ### Unbalanced fractional-gap window (proved construction) -/
+/-! ### Wide principal window (proved construction) -/
 
-private theorem beal_window_frac_bounds (m : ℕ) (hm : 0 < m) (δ : ℝ)
-    (hle : 2 * Real.pi / m ≤ δ) (hlt : δ < 5 * Real.pi / (2 * m)) :
-    (4 : ℝ) ≤ δ * (↑(4 * m) : ℝ) / (2 * Real.pi) ∧
-      δ * (↑(4 * m) : ℝ) / (2 * Real.pi) < (5 : ℝ) := by
+private theorem beal_wide_frac_bounds (k : ℕ) (hk : 0 < k) (δ : ℝ)
+    (hle : 2 * Real.pi / k ≤ δ) (hlt : δ < 4 * Real.pi / k) :
+    (1 : ℝ) ≤ δ * (k : ℝ) / (2 * Real.pi) ∧
+      δ * (k : ℝ) / (2 * Real.pi) < (2 : ℝ) := by
   have hden : (0 : ℝ) < 2 * Real.pi := by positivity
-  have hN : (0 : ℝ) ≤ ↑(4 * m) := Nat.cast_nonneg _
-  have hNpos : (0 : ℝ) < ↑(4 * m) :=
-    Nat.cast_pos.mpr (Nat.mul_pos (by decide : 0 < 4) hm)
-  have hcast : (↑(4 * m) : ℝ) = 4 * (m : ℝ) := by simp [Nat.cast_mul]
-  have hm0 : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hm)
-  have hlo :
-      (2 * Real.pi / m) * (↑(4 * m) : ℝ) / (2 * Real.pi) = (4 : ℝ) := by
-    rw [hcast]
-    calc (2 * Real.pi / m) * (4 * (m : ℝ)) / (2 * Real.pi)
-        = 4 * ((2 * Real.pi) * m / m) / (2 * Real.pi) := by ring
-      _ = 4 := by field_simp [hm0]
-  have hhi :
-      (5 * Real.pi / (2 * m)) * (↑(4 * m) : ℝ) / (2 * Real.pi) = (5 : ℝ) := by
-    rw [hcast]
-    calc (5 * Real.pi / (2 * m)) * (4 * (m : ℝ)) / (2 * Real.pi)
-        = 5 * ((2 * Real.pi) * m / m) / (2 * Real.pi) := by ring
-      _ = 5 := by field_simp [hm0]
+  have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
+  have hN : (0 : ℝ) ≤ k := Nat.cast_nonneg _
+  have hNpos : (0 : ℝ) < k := Nat.cast_pos.mpr hk
+  have hlo : (2 * Real.pi / k) * (k : ℝ) / (2 * Real.pi) = (1 : ℝ) := by
+    field_simp [hk0]
+  have hhi : (4 * Real.pi / k) * (k : ℝ) / (2 * Real.pi) = (2 : ℝ) := by
+    field_simp [hk0]; ring
   exact ⟨
     by
       have := div_le_div_of_nonneg_right (mul_le_mul_of_nonneg_right hle hN) hden.le
@@ -591,92 +635,168 @@ private theorem beal_window_frac_bounds (m : ℕ) (hm : 0 < m) (δ : ℝ)
       have := div_lt_div_of_pos_right (mul_lt_mul_of_pos_right hlt hNpos) hden
       rwa [hhi] at this⟩
 
-private theorem beal_window_delta_lt_two_pi (m : ℕ) (hm4 : 4 ≤ m)
-    (δ : ℝ) (hlt : δ < 5 * Real.pi / (2 * m)) :
+private theorem beal_wide_delta_lt_two_pi (k : ℕ) (hk4 : 4 ≤ k)
+    (δ : ℝ) (hlt : δ < 4 * Real.pi / k) :
     δ < 2 * Real.pi := by
-  have hmR : (4 : ℝ) ≤ m := Nat.cast_le.mpr hm4
-  have hupper : 5 * Real.pi / (2 * m) ≤ 5 * Real.pi / 8 :=
-    div_le_div_of_nonneg_left (by positivity) (by positivity)
-      (by nlinarith [hmR] : (8 : ℝ) ≤ 2 * m)
+  have hkR : (4 : ℝ) ≤ k := Nat.cast_le.mpr hk4
+  have hupper : 4 * Real.pi / k ≤ Real.pi := by
+    have h : 4 * Real.pi / k ≤ 4 * Real.pi / 4 :=
+      div_le_div_of_nonneg_left (by positivity) (by positivity) hkR
+    convert h using 1; ring
   nlinarith [hlt, hupper, Real.pi_pos]
 
-private theorem beal_window_n0_val_eq_four (m : ℕ) [NeZero (4 * m)]
-    (hm4 : 4 ≤ m) {δ : ℝ}
-    (hle : 2 * Real.pi / m ≤ δ) (hlt : δ < 5 * Real.pi / (2 * m)) :
-    ((pureBoostSeedOfRapidity (4 * m) δ).n 0).val = 4 := by
-  set N := 4 * m
-  have hmpos : 0 < m := Nat.zero_lt_of_lt hm4
-  have hδlt2π : δ < 2 * Real.pi := beal_window_delta_lt_two_pi m hm4 δ hlt
+theorem pureBoostSeedOfRapidity_eq_principal (N : ℕ) [NeZero N] {θ : ℝ}
+    (hθ : 0 ≤ θ) :
+    pureBoostSeedOfRapidity N θ =
+      pureBoostSeedOfRapidity N (principalRapidity θ) := by
+  refine congr_arg₂ DiscreteTorsion.mk ?_ rfl
+  funext i
+  fin_cases i
+  · change (quantizeRapidity N θ : ZMod N) =
+        (quantizeRapidity N (principalRapidity θ) : ZMod N)
+    exact quantizeRapidity_zmod_eq_principal N hθ
+  · rfl
+  · rfl
+
+private theorem beal_wide_n0_val_eq_one (k : ℕ) [NeZero k] (hk4 : 4 ≤ k) {δ : ℝ}
+    (hle : 2 * Real.pi / k ≤ δ) (hlt : δ < 4 * Real.pi / k) :
+    ((pureBoostSeedOfRapidity k δ).n 0).val = 1 := by
+  have hkpos : 0 < k := Nat.zero_lt_of_lt hk4
+  have hδlt2π : δ < 2 * Real.pi := beal_wide_delta_lt_two_pi k hk4 δ hlt
   have hδ0 : 0 ≤ δ :=
     le_trans
       (div_nonneg (mul_nonneg (by norm_num) Real.pi_pos.le) (Nat.cast_nonneg _)) hle
-  have hbounds := quantizeRapidity_of_lt_two_pi N δ hδ0 hδlt2π
-  have hfrac := beal_window_frac_bounds m hmpos δ hle hlt
-  have hfloor : quantizeRapidity N δ = 4 := by
-    have hle4 : (4 : ℤ) ≤ quantizeRapidity N δ := Int.le_floor.mpr hfrac.1
-    have hlt5 : quantizeRapidity N δ < (5 : ℤ) := Int.floor_lt.mpr hfrac.2
+  have hbounds := quantizeRapidity_of_lt_two_pi k δ hδ0 hδlt2π
+  have hfrac := beal_wide_frac_bounds k hkpos δ hle hlt
+  have hfloor : quantizeRapidity k δ = 1 := by
+    have hleZ : (1 : ℤ) ≤ quantizeRapidity k δ := by
+      have : ((1 : ℤ) : ℝ) ≤ δ * (k : ℝ) / (2 * Real.pi) := by
+        simpa using hfrac.1
+      exact Int.le_floor.mpr this
+    have hltZ : quantizeRapidity k δ < (2 : ℤ) := by
+      have : δ * (k : ℝ) / (2 * Real.pi) < ((2 : ℤ) : ℝ) := by
+        simpa using hfrac.2
+      exact Int.floor_lt.mpr this
     omega
-  have hvalZ : (((pureBoostSeedOfRapidity N δ).n 0).val : ℤ) = quantizeRapidity N δ :=
-    hbounds.2.2
+  have hvalZ : (((pureBoostSeedOfRapidity k δ).n 0).val : ℤ) =
+      quantizeRapidity k δ := hbounds.2.2
   rw [hfloor] at hvalZ
   exact_mod_cast hvalZ
 
-private theorem beal_window_smul_n0_eq_zero (m : ℕ) [NeZero (4 * m)]
-    (hm4 : 4 ≤ m) {δ : ℝ}
-    (hle : 2 * Real.pi / m ≤ δ) (hlt : δ < 5 * Real.pi / (2 * m)) :
-    m • (pureBoostSeedOfRapidity (4 * m) δ).n 0 = 0 := by
-  set N := 4 * m
-  set t := pureBoostSeedOfRapidity N δ
-  have hval : (t.n 0).val = 4 := beal_window_n0_val_eq_four m hm4 hle hlt
-  have h4lt : 4 < N :=
-    Nat.lt_of_lt_of_le (by decide : 4 < 16) (Nat.mul_le_mul_left 4 hm4)
-  have hn0 : t.n 0 = (4 : ZMod N) := by
-    have h4val : (4 : ZMod N).val = 4 % N := ZMod.val_natCast (n := N) 4
+private theorem beal_wide_smul_n0_eq_zero (k : ℕ) [NeZero k] (hk4 : 4 ≤ k) {δ : ℝ}
+    (hle : 2 * Real.pi / k ≤ δ) (hlt : δ < 4 * Real.pi / k) :
+    k • (pureBoostSeedOfRapidity k δ).n 0 = 0 := by
+  set t := pureBoostSeedOfRapidity k δ
+  have hval : (t.n 0).val = 1 := beal_wide_n0_val_eq_one k hk4 hle hlt
+  have h1lt : 1 < k := Nat.lt_of_lt_of_le (by decide : 1 < 4) hk4
+  have hn0 : t.n 0 = (1 : ZMod k) := by
     apply ZMod.val_injective
-    rw [hval, h4val, Nat.mod_eq_of_lt h4lt]
+    have : Fact (1 < k) := ⟨h1lt⟩
+    rw [hval, ZMod.val_one]
   rw [hn0, nsmul_eq_mul]
-  trans (↑(m * 4) : ZMod N)
-  · exact (Nat.cast_mul m 4).symm
-  · have : m * 4 = N := by ring
-    rw [this, ZMod.natCast_self]
+  change ((k : ℕ) : ZMod k) * (1 : ZMod k) = 0
+  rw [mul_one, ZMod.natCast_self]
 
 /--
-Unbalanced window: if `m ≥ 4` and the fractional gap lies in
-`[2π/m, 5π/(2m))`, the quantised seed on `N = 4m` is a modular winding witness.
+Wide principal window: if `4 ≤ k` and the gap lies in `[2π/k, 4π/k)`, the
+quantised seed on `N = k` is a modular winding witness with `n₀ = 1`.
 
-Depends only on the gap size (no solution / coprimality hypothesis).
-The `m = 3` case is empty for this window (`2π/3 > π/2`).
+Depends only on the gap size (no solution hypothesis). Includes `m = 3` via
+`k = bealAmpExp = 4` (window `[π/2, π)`).
 -/
 theorem beal_modularWitness_of_fracGap_window
-    (A C : ℤ) (x z m : ℕ) (hm4 : 4 ≤ m)
-    (hle : 2 * Real.pi / m ≤ bealFracLogGap A C x z m)
-    (hlt : bealFracLogGap A C x z m < 5 * Real.pi / (2 * m)) :
-    let N := 4 * m
+    (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
+    (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
+    (hlt : bealFracLogGap A C x z m < 4 * Real.pi / k) :
+    let N := k
     ∃ (hN : N ≠ 0),
       letI : NeZero N := ⟨hN⟩
       let t := quantizeBealMismatch N A C x z m
-      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t := by
-  set N := 4 * m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t := by
+  set N := k
   set δ := bealFracLogGap A C x z m
-  have hmpos : 0 < m := Nat.zero_lt_of_lt hm4
-  have hNne : N ≠ 0 := Nat.mul_ne_zero (by decide : (4 : ℕ) ≠ 0) (ne_of_gt hmpos)
+  have hkpos : 0 < k := Nat.zero_lt_of_lt hk4
+  have hNne : N ≠ 0 := ne_of_gt hkpos
   refine ⟨hNne, ?_⟩
   let : NeZero N := ⟨hNne⟩
   set t := quantizeBealMismatch N A C x z m
   have hp : IsPureBoostSeed t := quantizeBealMismatch_pureBoost N A C x z m
-  have hval : (t.n 0).val = 4 := by
-    simpa [t, quantizeBealMismatch] using beal_window_n0_val_eq_four m hm4 hle hlt
+  have hval : (t.n 0).val = 1 := by
+    simpa [t, quantizeBealMismatch] using beal_wide_n0_val_eq_one k hk4 hle hlt
   have hadm : IsAdmissible t :=
-    isAdmissible_of_pureBoost_n0_le t hp (by
-      simpa [hval] using Nat.mul_le_mul_left 4 hm4)
-  have hsmul : m • t.n 0 = 0 := by
-    simpa [t, quantizeBealMismatch] using beal_window_smul_n0_eq_zero m hm4 hle hlt
-  have hamp : IsAdmissible (amplifyDiscrete m t) :=
-    isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0 m t hp hsmul
-  have hδlt2π : δ < 2 * Real.pi := beal_window_delta_lt_two_pi m hm4 δ hlt
-  have hwind : windingTotal m t ≠ 0 :=
-    beal_has_winding_of_fracGap_ge N m hmpos A C x z hle hδlt2π ⟨4, by ring⟩
-  exact ⟨hadm, modularWitness_of_pureBoost_winding m t hp hadm hamp hwind, rfl⟩
+    isAdmissible_of_pureBoost_n0_le t hp (by simpa [hval] using hk4)
+  have hsmul : k • t.n 0 = 0 := by
+    simp [t, quantizeBealMismatch]
+  have hamp : IsAdmissible (amplifyDiscrete k t) :=
+    isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0 k t hp hsmul
+  have hδlt2π : δ < 2 * Real.pi := beal_wide_delta_lt_two_pi k hk4 δ hlt
+  have hwind : windingTotal k t ≠ 0 :=
+    beal_has_winding_of_fracGap_ge N k m hkpos A C x z hle hδlt2π ⟨1, by ring⟩
+  exact ⟨hadm, modularWitness_of_pureBoost_winding k t hp hadm hamp hwind, rfl⟩
+
+/-- Specialisation of the wide window to `k = bealAmpExp`. -/
+theorem beal_modularWitness_of_fracGap_window_ampExp
+    (A C : ℤ) (x y z : ℕ)
+    (hle : 2 * Real.pi / bealAmpExp x y z ≤
+      bealFracLogGap A C x z (bealMinExp x y z))
+    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
+      4 * Real.pi / bealAmpExp x y z) :
+    let m := bealMinExp x y z
+    let k := bealAmpExp x y z
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
+  beal_modularWitness_of_fracGap_window A C x z (bealMinExp x y z)
+    (bealAmpExp x y z) (bealAmpExp_ge_four x y z) hle hlt
+
+/--
+Torus fold: if the *principal* gap lies in the wide window, the quantised seed
+(using the unreduced gap) still yields a modular winding witness, because
+`quantizeRapidity` depends on `θ` only through its class mod `2π`.
+-/
+theorem beal_modularWitness_of_principal_fracGap_window
+    (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
+    (hδ0 : 0 ≤ bealFracLogGap A C x z m)
+    (hle : 2 * Real.pi / k ≤ principalRapidity (bealFracLogGap A C x z m))
+    (hlt : principalRapidity (bealFracLogGap A C x z m) < 4 * Real.pi / k) :
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t := by
+  set δ := bealFracLogGap A C x z m
+  set δp := principalRapidity δ
+  have hkpos : 0 < k := Nat.zero_lt_of_lt hk4
+  have hNne : k ≠ 0 := ne_of_gt hkpos
+  refine ⟨hNne, ?_⟩
+  let : NeZero k := ⟨hNne⟩
+  set t := quantizeBealMismatch k A C x z m
+  have ht : t = pureBoostSeedOfRapidity k δp := by
+    simp only [t, quantizeBealMismatch, δp]
+    exact pureBoostSeedOfRapidity_eq_principal k hδ0
+  have hp : IsPureBoostSeed t := quantizeBealMismatch_pureBoost k A C x z m
+  have hval : (t.n 0).val = 1 := by
+    have : ((pureBoostSeedOfRapidity k δp).n 0).val = 1 :=
+      beal_wide_n0_val_eq_one k hk4 hle hlt
+    simpa [ht] using this
+  have hadm : IsAdmissible t :=
+    isAdmissible_of_pureBoost_n0_le t hp (by simpa [hval] using hk4)
+  have hsmul : k • t.n 0 = 0 := by
+    have : k • (pureBoostSeedOfRapidity k δp).n 0 = 0 :=
+      beal_wide_smul_n0_eq_zero k hk4 hle hlt
+    simp [ht, this]
+  have hamp : IsAdmissible (amplifyDiscrete k t) :=
+    isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0 k t hp hsmul
+  have hδplt2π : δp < 2 * Real.pi := beal_wide_delta_lt_two_pi k hk4 δp hlt
+  have hδp0 : 0 ≤ δp := principalRapidity_nonneg hδ0
+  have hwind : windingTotal k t ≠ 0 := by
+    have hw0 : windingTotal k (pureBoostSeedOfRapidity k δp) ≠ 0 :=
+      windingTotal_ne_zero_of_rapidity_ge k k hkpos δp hδp0 hle hδplt2π ⟨1, by ring⟩
+    simpa [ht] using hw0
+  exact ⟨hadm, modularWitness_of_pureBoost_winding k t hp hadm hamp hwind, rfl⟩
+
 
 end Theorems
 

@@ -61,6 +61,21 @@ theorem conformalPoint_smul (c x : ℝ) :
 theorem pointVec_on_null_cone (x : ℝ) : CGA.Q21 (CGA1.pointVec x) = 0 :=
   CGA1.Q21_pointVec x
 
+/-- Dilation rapidity is injective for positive null-cone seeds (not a torus). -/
+theorem conformalPoint_dilation_injective {a : ℝ} (ha : 0 < a) :
+    Function.Injective fun δ : ℝ => CGA1.pointVec (Real.exp δ * a) :=
+  CGA1.pointVec_dilation_injective ha
+
+/-- CGA dilation is not `2π`-periodic — contrast with PGA rapidity quantisation. -/
+theorem conformalPoint_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) :
+    CGA1.pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
+      CGA1.pointVec (Real.exp δ * a) :=
+  CGA1.pointVec_dilation_not_two_pi_periodic ha δ
+
+theorem bilin21_conformalPoint_nInf (x : ℝ) :
+    CGA1.bilin21 (CGA1.pointVec x) CGA1.nInfVec = -1 :=
+  CGA1.bilin21_pointVec_nInf x
+
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a
 nonzero integer whose torsional height exceeds `M`.

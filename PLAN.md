@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（DST 代数境界整理 + Beal 危機路線維持）
+最終更新: 2026-08-13（Beal: k = max(m,4)・広い主値窓・トーラス折り畳み）
 
 ## 1. 三層アーキテクチャ
 
@@ -47,8 +47,8 @@ flowchart LR
 | `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealWindingBridge` | Beal（本命・数論半分） | 解 ⇒ `quantizeBealMismatch` が巻数 witness | **型付け済**；不均衡窓 `m≥4` は証明済 |
-| `BealCGAGauge` / `BealCGANoGo` | Beal（本命・幾何半分） | CGA 分数冪 null（PGA 錐と非同一） | Gauge は恒真寄り；NoGo は未証明 |
+| `BealWindingBridge` | Beal（本命・数論半分） | 解 ⇒ 巻数 witness（増幅 `k = bealAmpExp = max(m,4)`） | **型付け済**；広い主値窓・折り畳みは証明済 |
+| `BealCGAGauge` / `BealCGANoGo` | Beal（本命・幾何半分） | CGA 分数冪 null（PGA 錐と非同一） | Gauge / ペアリング / 非周期 dilation 済；NoGo は未証明 |
 | `BealModularBridge` | Beal（診断・旧 modular） | witness + `ConformalGaugeAdmissible` | **payload 矛盾**（`beal_modular_payload_incompatible`） |
 | `BealAdmissibleBridge` | Beal（連続・診断） | 連続増幅 no-go | 釣り合い型で種が `1/m²` 未満 |
 | `AbcAdmissibleBridge` | abc（連続・診断） | 品質天井 | **偽**（`AbcAdmissibleBridge_false`） |
@@ -97,8 +97,8 @@ flowchart LR
 
 ### 中実現性（現行の主対象）— Beal 危機路線
 
-1. **`BealCGANoGo` 本体:** CGA 分数冪ゲージ上で巻数付き witness を禁止する幾何定理（`m = 3` / 釣り合い型を含む）
-2. **`BealWindingBridge` の残り:** 不均衡窓外（`δ ≥ 2π` のトーラス折り畳み、釣り合い型）
+1. **`BealCGANoGo` 本体:** CGA 分数冪ゲージ上で巻数付き witness を禁止（釣り合い型を含む）
+2. **`BealWindingBridge` の残り:** 釣り合い型 `δ ≈ log 2 / m`（窓外；折り畳みでも届かない）
 3. modular 巻数誤差の数論的下限 — `JNormalized_scale = JNormalized_amplified + error(winding)`
 4. （後続）`FermatModularBridge` / `AbcModularBridge` への同型移植
 5. 有限証明書の拡大
@@ -156,10 +156,11 @@ flowchart LR
 - [x] 主値区間での `beal_has_winding_of_fracGap_ge`、釣り合い型連続診断
 - [x] 共通巻数ヘルパを `Algebra.ModularAmplification` へ抽出
 - [x] bridge 分割: `BealWindingBridge` + `BealCGAGauge` / `BealCGANoGo`
-- [x] 不均衡窓 `m≥4`, `2π/m ≤ δ < 5π/(2m)` ⇒ modular witness（gap のみ；解仮説なし）
-- [x] `m=3` で巻数閾値 > 種許容錐、釣り合い型 < 巻数閾値
-- [x] CGA 分数冪シード（`bealRootMag` / dilation；PGA 錐と非同一）
-- [ ] `BealWindingBridge` 本体（全解；窓外・`m=3`）
+- [x] `modularWitness_four_le`（`k < 4` なら空）と `bealAmpExp = max(m,4)`
+- [x] 広い主値窓 `N = k`, `2π/k ≤ δ < 4π/k`（`m = 3` 含む）⇒ modular witness
+- [x] `principalRapidity` トーラス折り畳みと主値窓への拡張
+- [x] CGA ペアリング / dilation の 2π 非周期性（PGA 錐と非同一）
+- [ ] `BealWindingBridge` 本体（全解；釣り合い型は窓外）
 - [ ] `BealCGANoGo` 本体（無条件 Beal 相当 — 主張しない）
 
 ### Gravity トラック（PGA–TEGR）
@@ -274,12 +275,12 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。
 
 ## 8. 次アクション
 
-1. **（主・Beal）** `BealCGANoGo`: CGA 分数冪ゲージ上で巻数 witness を禁止（`m=3` / 釣り合い型を含む）
-2. **（主・Beal）** `BealWindingBridge` を窓外・`m=3` まで拡張（トーラス折り畳み）
+1. **（主・Beal）** `BealCGANoGo`: CGA 分数冪ゲージ上で巻数 witness を禁止（釣り合い型を含む）
+2. **（主・Beal）** 釣り合い型 `δ ≈ log 2 / m` を捉える別経路（広い窓・折り畳みでは届かない）
 3. modular 巻数誤差の数論的下限
 4. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
 5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 7. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal winding/CGA 分割 + 不均衡窓 witness + 旧 modular payload 矛盾の固定 + DST 代数境界の正直な固定** まで固めた段階であり、無条件古典 Beal はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal winding/CGA 分割 + `k = max(m,4)` + 広い主値窓（`m=3` 含む）+ トーラス折り畳み + CGA 非周期 dilation + 旧 modular payload 矛盾の固定** まで固めた段階であり、無条件古典 Beal はまだ未達成である。

@@ -428,6 +428,60 @@ theorem ModularAmplificationWitness.nonempty_example :
     Nonempty (ModularAmplificationWitness 16 5) :=
   ⟨modularWitness_example⟩
 
+/--
+Admissibility (`4 · val ≤ N` on each axis) and nonzero winding
+(`N ≤ k · val` on some coordinate) force `4 ≤ k`. Consequently witnesses with
+`k < 4` are empty — in particular the old Beal payload with amplification
+factor `m = 3` was structurally vacuous.
+-/
+theorem modularWitness_four_le {N k : ℕ} [NeZero N]
+    (w : ModularAmplificationWitness N k) : 4 ≤ k := by
+  have hadm := (AdmissibleClass.isAdmissible_iff_four_le w.t.val).mp w.t.property
+  have hw : windingTotal k w.t.val ≠ 0 := w.has_winding
+  have hex :
+      ∃ a : Fin 3,
+        0 < windingCoord k (w.t.val.n a) ∨ 0 < windingCoord k (w.t.val.m a) := by
+    by_contra h
+    push Not at h
+    have hz : windingTotal k w.t.val = 0 := by
+      apply Finset.sum_eq_zero
+      intro a _
+      have ⟨hn, hm⟩ := h a
+      simp [Nat.eq_zero_of_le_zero hn, Nat.eq_zero_of_le_zero hm]
+    exact hw hz
+  obtain ⟨a, hpos⟩ := hex
+  cases hpos with
+  | inl hn =>
+    have hN : N ≤ k * (w.t.val.n a).val := (windingCoord_pos_iff k _).mp hn
+    have h4 : 4 * ((w.t.val.n a).val + (w.t.val.m a).val) ≤ N := hadm a
+    have hval : 0 < (w.t.val.n a).val := by
+      have : 0 < k * (w.t.val.n a).val := Nat.lt_of_lt_of_le (NeZero.pos N) hN
+      exact Nat.pos_of_mul_pos_left this
+    have h4n : 4 * (w.t.val.n a).val ≤ N :=
+      Nat.le_trans (Nat.mul_le_mul_left _ (Nat.le_add_right _ _)) h4
+    have : 4 * (w.t.val.n a).val ≤ k * (w.t.val.n a).val := h4n.trans hN
+    exact Nat.le_of_mul_le_mul_right this hval
+  | inr hm =>
+    have hN : N ≤ k * (w.t.val.m a).val := (windingCoord_pos_iff k _).mp hm
+    have h4 : 4 * ((w.t.val.n a).val + (w.t.val.m a).val) ≤ N := hadm a
+    have hval : 0 < (w.t.val.m a).val := by
+      have : 0 < k * (w.t.val.m a).val := Nat.lt_of_lt_of_le (NeZero.pos N) hN
+      exact Nat.pos_of_mul_pos_left this
+    have h4m : 4 * (w.t.val.m a).val ≤ N :=
+      Nat.le_trans (Nat.mul_le_mul_left _ (Nat.le_add_left _ _)) h4
+    have : 4 * (w.t.val.m a).val ≤ k * (w.t.val.m a).val := h4m.trans hN
+    exact Nat.le_of_mul_le_mul_right this hval
+
+/-- No modular winding witness exists when the amplification factor is below 4. -/
+theorem modularWitness_empty_of_lt_four {N k : ℕ} [NeZero N] (hk : k < 4) :
+    IsEmpty (ModularAmplificationWitness N k) :=
+  ⟨fun w => Nat.not_lt.mpr (modularWitness_four_le w) hk⟩
+
+/-- Specialisation: amplification factor `3` never yields a modular witness. -/
+theorem modularWitness_empty_of_eq_three {N : ℕ} [NeZero N] :
+    IsEmpty (ModularAmplificationWitness N 3) :=
+  modularWitness_empty_of_lt_four (by decide : (3 : ℕ) < 4)
+
 /-- Pure-boost lattice mismatch collapses to the axis-`0` square. -/
 theorem latticeMismatch_pureBoost (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
     latticeMismatch t = ((t.n 0).val : ℤ) ^ 2 := by

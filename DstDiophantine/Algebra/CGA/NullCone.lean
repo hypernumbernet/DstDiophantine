@@ -1,8 +1,12 @@
 import DstDiophantine.Algebra.CGA.QuadraticForm
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 
 /-!
 # Null pair and algebra API for 1D CGA
@@ -158,6 +162,55 @@ theorem point_mul (m n : ℤ) :
           + (1 / 2 * ((m : ℝ) * (n : ℝ)) ^ 2) • nInfVec) := by
   unfold point
   rw [pointVec_mul]
+
+/-! ### Polar pairing and injectivity -/
+
+/-- Symmetric bilinear form polarising `Q21`: `B(u,v) = -u₀v₀ + u₁v₁ + u₂v₂`. -/
+noncomputable def bilin21 (u v : Vec3) : ℝ :=
+  (Q21 (u + v) - Q21 u - Q21 v) / 2
+
+theorem bilin21_eq (u v : Vec3) :
+    bilin21 u v = -(u 0) * (v 0) + (u 1) * (v 1) + (u 2) * (v 2) := by
+  simp only [bilin21, Q21, QuadraticMap.weightedSumSquares_apply, w21, Pi.add_apply]
+  rw [Fin.sum_univ_three, Fin.sum_univ_three, Fin.sum_univ_three]
+  ring
+
+/-- Normalised conformal points pair with null infinity to `-1`. -/
+theorem bilin21_pointVec_nInf (x : ℝ) : bilin21 (pointVec x) nInfVec = -1 := by
+  simp only [bilin21_eq, pointVec, nInfVec]
+  ring
+
+/-- Normalised conformal points pair with null origin to `-x²/2`. -/
+theorem bilin21_pointVec_n0 (x : ℝ) : bilin21 (pointVec x) n0Vec = -(x ^ 2) / 2 := by
+  simp only [bilin21_eq, pointVec, n0Vec]
+  ring
+
+theorem pointVec_eLine (x : ℝ) : pointVec x eIndex = x := by
+  simp [pointVec, eIndex]
+
+theorem pointVec_injective : Function.Injective pointVec := by
+  intro x y h
+  have := congr_fun h eIndex
+  simpa [pointVec_eLine] using this
+
+/-- Dilation of a positive seed is injective in the rapidity (null-cone vectors). -/
+theorem pointVec_dilation_injective {a : ℝ} (ha : 0 < a) :
+    Function.Injective fun δ : ℝ => pointVec (Real.exp δ * a) := by
+  intro δ₁ δ₂ h
+  have hxy : Real.exp δ₁ * a = Real.exp δ₂ * a := by
+    simpa [pointVec_eLine] using congr_fun h eIndex
+  have : Real.exp δ₁ = Real.exp δ₂ :=
+    mul_right_cancel₀ (ne_of_gt ha) hxy
+  exact Real.exp_injective this
+
+/-- Unlike the rapidity torus, CGA dilation is not `2π`-periodic on null-cone seeds. -/
+theorem pointVec_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) :
+    pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
+      pointVec (Real.exp δ * a) := by
+  intro h
+  have hinj := pointVec_dilation_injective ha h
+  have : δ + 2 * Real.pi = δ := hinj
+  linarith [Real.pi_pos]
 
 end CGA1
 
