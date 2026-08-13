@@ -7,6 +7,10 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
+import DstDiophantine.Algebra.Operations
+import DstDiophantine.Algebra.Continuum
+import DstDiophantine.Algebra.UnitGroup
+import DstDiophantine.Algebra.Generators
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Abc
@@ -22,11 +26,16 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 
 Beal critical-path regressions (payload incompatibility, winding threshold,
 CGA null gauge) are included; Gravity remains intentionally out of scope.
+
+DST / discrete-companion algebraic core regressions (dual map, Killing
+dictionary, admissible bound, finite rotor image, continuum `J` approximation)
+are included below.
 -/
 
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification
+open Operations Continuum UnitGroup Generators
 open _root_.DstDiophantine.Embedding
 
 /-- Additive faithfulness. -/
@@ -224,5 +233,56 @@ example {N k : ℕ} [NeZero N] (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) 
 example {a b c : ℕ} (h : IsAbcTriple a b c) :
     abcRadical (a * b * c) = abcRadical a * abcRadical b * abcRadical c :=
   isAbcTriple_radical_mul h
+
+/-! ## DST / discrete-companion algebraic core -/
+
+/-- Pseudoscalar squares to `-1`. -/
+example : pseudoscalar * pseudoscalar = (-1 : PGA) :=
+  pseudoscalar_sq
+
+/-- Dual preserves Minkowski square (paper §2). -/
+example (v : Fin 4 → ℝ) :
+    dual (minkowskiVector v) * dual (minkowskiVector v) =
+      minkowskiVector v * minkowskiVector v :=
+  dual_minkowskiVector_sq v
+
+/-- Paper appendix Killing coefficient `8∑(α²-β²)` is false for `Ω = omegaTorsion`. -/
+example :
+    ∃ p : TorsionParams,
+      omegaTorsionGeneratorKilling p ≠
+        8 * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) :=
+  paper_appendix_killing_coeff_false
+
+/-- Same-axis generators commute; off-axis need not. -/
+example (a : Fin 3) : commutator (hyperbolic a) (cyclic a) = 0 :=
+  commutator_hyperbolic_cyclic_same a
+
+example : commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
+  commutator_hyperbolic0_cyclic1_ne_zero
+
+/-- Discrete admissibility ↔ continuous admissibility of the embedding. -/
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
+    IsAdmissible t ↔ IsAdmissibleContinuous (toTorsionParams t) :=
+  isAdmissible_iff_admissibleContinuous t
+
+/-- Admissible bound `|JNormalized| ≤ 1`. -/
+example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |JNormalized p| ≤ 1 :=
+  torsion_bound_continuous p h
+
+/-- Naive principal-branch bound remains false. -/
+example : ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| :=
+  torsion_bound_naive_false
+
+/-- Discrete rotor image is finite (not an integer-order unit group). -/
+example {N : ℕ} [NeZero N] : (DiscreteRotorImage N).Finite :=
+  discreteRotorImage_finite
+
+/-- Continuum approximation of `J`. -/
+example {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ} (hε : 0 < ε) :
+    ∃ (N : ℕ) (_ : NeZero N),
+      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+        |J p - J (toTorsionParams t)| < ε :=
+  exists_discrete_approx_J h hε
 
 end DstDiophantine.FoundationRegression

@@ -6,7 +6,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Order.Group.Abs
 
 /-!
-# Torsional invariants `J` and `J⁽⁵⁾
+# Torsional invariants `J` and `J⁽⁵⁾`
 
 The six-dimensional torsional scalar and its five-dimensional extension with the
 Minkowski translation term.
@@ -17,6 +17,14 @@ The raw paper claim `|J| ≤ 1` under `IsPrincipalBranch` alone is false for
 `J = (1/2) ∑ (α² - β²)`. On admissible configurations (`IsAdmissibleContinuous`:
 non-negative rapidities with `α + β ≤ π/2`) we prove `|J| ≤ 3π²/8` and
 `|JNormalized| ≤ 1` where `JNormalized = (8/(3π²)) J` matches the appendix extremals.
+
+## Killing-form dictionary (main paper App. B)
+
+Assume generator orthonormality `B(B⁺_a,B⁺_b)=8 δ_{ab}`, `B(B⁻_a,B⁻_b)=-8 δ_{ab}`
+and expand `Ω = omegaTorsion p = ∑ (α_a/2) B⁺_a + (β_a/2) B⁻_a`. Then
+`B(Ω,Ω) = 2 ∑(α²-β²)`, **not** the appendix claim `8 ∑(α²-β²)`.
+The project's `J = ½∑(α²-β²)` is the discrete-companion conclusion formula;
+it is **not** `(1/16) B(Ω,Ω)` under that expansion (which would be `⅛∑(α²-β²)`).
 -/
 
 namespace DstDiophantine
@@ -25,11 +33,47 @@ open Operations Motor Discrete Real
 
 namespace Invariant
 
-/-- Normalised Killing form on the six-dimensional torsion sector. -/
+/-- Parameter-space pairing matching generator norms `B(B⁺,B⁺)=8`, `B(B⁻,B⁻)=-8`. -/
 def killingForm (p q : TorsionParams) : ℝ :=
   8 * (∑ a : Fin 3, (p.alpha a * q.alpha a - p.beta a * q.beta a))
 
-/-- Original torsional scalar `J = (1/16) B_Killing(Ω, Ω)`. -/
+/--
+Generator Killing form evaluated on the half-angle coefficients of `omegaTorsion`:
+`∑_a 8 (α_a/2)² + (-8) (β_a/2)²`.
+-/
+noncomputable def omegaTorsionGeneratorKilling (p : TorsionParams) : ℝ :=
+  ∑ a : Fin 3, (8 * (p.alpha a / 2) ^ 2 + (-8) * (p.beta a / 2) ^ 2)
+
+theorem omegaTorsionGeneratorKilling_eq (p : TorsionParams) :
+    omegaTorsionGeneratorKilling p =
+      2 * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
+  unfold omegaTorsionGeneratorKilling
+  simp only [Fin.sum_univ_three]
+  ring_nf
+
+/-- Under generator orthonormality, `B(omegaTorsion p, omegaTorsion p)` equals
+`omegaTorsionGeneratorKilling p = 2 ∑(α²-β²)`. -/
+theorem omegaTorsion_killing_vs_param (p : TorsionParams) :
+    omegaTorsionGeneratorKilling p = (1 / 4) * killingForm p p := by
+  rw [omegaTorsionGeneratorKilling_eq]
+  unfold killingForm
+  simp only [Fin.sum_univ_three]
+  ring_nf
+
+/--
+Appendix claim `B(Ω,Ω) = 8 ∑(α²-β²)` for `Ω = ∑(α/2)iΓ+(β/2)Γ` is false:
+the generator expansion yields `2 ∑(α²-β²)` instead.
+-/
+theorem paper_appendix_killing_coeff_false :
+    ∃ p : TorsionParams,
+      omegaTorsionGeneratorKilling p ≠
+        8 * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
+  refine ⟨{ alpha := fun _ => 1, beta := fun _ => 0 }, ?_⟩
+  rw [omegaTorsionGeneratorKilling_eq]
+  simp only [Fin.sum_univ_three, one_pow, zero_pow (by norm_num : (2 : ℕ) ≠ 0), sub_zero]
+  norm_num
+
+/-- Discrete-companion / project conclusion formula for the torsional scalar. -/
 noncomputable def J (p : TorsionParams) : ℝ :=
   (1 / 16) * killingForm p p
 
@@ -37,6 +81,18 @@ theorem J_coef (p : TorsionParams) :
     J p = (1 / 2) * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
   unfold J killingForm
   simp only [Fin.sum_univ_three]
+  ring_nf
+
+/-- `(1/16) B(Ω,Ω)` under the generator expansion is `⅛∑(α²-β²)`, not `J`. -/
+theorem one_sixteenth_omegaKilling_eq (p : TorsionParams) :
+    (1 / 16) * omegaTorsionGeneratorKilling p =
+      (1 / 8) * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
+  rw [omegaTorsionGeneratorKilling_eq]
+  ring_nf
+
+theorem J_eq_four_times_one_sixteenth_omegaKilling (p : TorsionParams) :
+    J p = 4 * ((1 / 16) * omegaTorsionGeneratorKilling p) := by
+  rw [J_coef, one_sixteenth_omegaKilling_eq]
   ring_nf
 
 /-- Paper-normalized torsional scalar; equals `1` at appendix pure-boost extremals. -/

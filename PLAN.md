@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal 危機路線: winding/CGA 分割・不均衡窓 witness）
+最終更新: 2026-08-13（DST 代数境界整理 + Beal 危機路線維持）
 
 ## 1. 三層アーキテクチャ
 
@@ -176,7 +176,9 @@ flowchart LR
 ## 5. モジュール地図（現行）
 
 ```
+Algebra.lean             ← DST 代数コアのバレル（Theorems / Gravity 非依存）
 Algebra/
+  Admissible             ← IsPrincipalBranch / IsAdmissibleContinuous（パラメータ辞書）
   QuadraticForm, PGA, Cl31, Generators, Operations, Motor, Invariant
   Discrete, Continuum, UnitGroup
   Amplification          ← pureBoost / 実スケール
@@ -233,7 +235,44 @@ Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない�
 
 ---
 
-## 7. 次アクション
+## 7. DST / 離散論文へ返す欠点（2026-08-13）
+
+Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。`.tex` は別リポジトリのため、ここをフィードバック票とする。
+
+### 主論文 `double-spacetime-theory.tex`
+
+| 項目 | 内容 | Lean |
+|------|------|------|
+| App.B Killing 係数 | `Ω=∑(α/2)iΓ+(β/2)Γ` と `B(iΓ,iΓ)=8` なら `B(Ω,Ω)=2∑(α²-β²)`。付録の `8∑` は誤り | `paper_appendix_killing_coeff_false` |
+| `[iΓ_a,Γ_b]=0` | 同軸のみ。異軸は反例 | `commutator_hyperbolic_cyclic_same` / `…_ne_zero` |
+| `so(3,1)⊕so(3,1)` | 次元 12。生成子は 6。Poincaré 候補が妥当 | `Generators` docstring |
+| null dual 閉性 | grade で棄却 | `dual_null` |
+| `motor = exp(Ω_biv)` | 非可換時は偽。定義積 `R·T` のみ | `Motor` |
+| TEGR↔EH | 未証明の `J=½T+div` + 文献引用。変分なし | Gravity チャート切片のみ |
+| 連続体否定 vs `∫J d⁴x` | 論理的緊張（離散 companion も同様） | 形式化対象外 |
+
+### 離散 companion `discrete-dual-spacetime.tex`
+
+| 項目 | 内容 | Lean |
+|------|------|------|
+| 「整数環の有限単数群」 | 環が未定義。Lorentz 整数 order は無限単数になり得る。有限なのは `(ℤ/Nℤ)⁶` の rotor 像 | `DiscreteRotorImage` / `discreteUnit_finite` |
+| 許容条件 | 離散化からの帰結ではなく追加仮説。主枝だけでは `|J|≤1` は偽 | `torsion_bound_naive_false` vs `torsion_bound` |
+| Diophantine 重力・`A≲300` | 導出なし | 主張しない |
+| 文献プレースホルダ | `arXiv:xxxx.xxxxx` | — |
+
+### 今サイクルで強化した Lean 境界
+
+- `Algebra.lean` バレル + `Admissible.lean`（パラメータ辞書・許容述語）
+- 双対: `pseudoscalar_sq`, `minkowskiVector`, `dual_minkowskiVector_sq`, `dual_time`
+- Killing 辞書と付録誤り・異軸非可換の機械検証
+- `DiscreteUnit` = 有限像（`Units` ではない）+ `exists_discrete_approx_J`
+- `FoundationRegression` に DST コア例を追加
+
+Beal 危機路線の優先度は維持。上記は並列の代数整理。
+
+---
+
+## 8. 次アクション
 
 1. **（主・Beal）** `BealCGANoGo`: CGA 分数冪ゲージ上で巻数 witness を禁止（`m=3` / 釣り合い型を含む）
 2. **（主・Beal）** `BealWindingBridge` を窓外・`m=3` まで拡張（トーラス折り畳み）
@@ -241,5 +280,6 @@ Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない�
 4. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
 5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
+7. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal winding/CGA 分割 + 不均衡窓 witness + 旧 modular payload 矛盾の固定** まで固めた段階であり、無条件古典 Beal はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal winding/CGA 分割 + 不均衡窓 witness + 旧 modular payload 矛盾の固定 + DST 代数境界の正直な固定** まで固めた段階であり、無条件古典 Beal はまだ未達成である。

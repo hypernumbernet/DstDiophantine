@@ -1,17 +1,21 @@
-import DstDiophantine.Algebra.Operations
+import DstDiophantine.Algebra.Admissible
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # Discrete torsion torus `(ℤ/Nℤ)⁶`
 
-Rapidities are discretised as in the DST paper:
-`ω_a = 2π n_a / N`, `φ_a = 2π m_a / N` for `n_a, m_a ∈ ℤ/Nℤ`.
+Rapidities are discretised as in the DST discrete companion:
+`ω_a = 2π n_a / N`, `φ_a = 2π m_a / N` for `n_a, m_a ∈ ℤ/Nℤ`
+(Lean: `alpha` / `beta` via `toTorsionParams`).
+
+Admissibility predicates live in `Admissible`; this module only embeds the
+torus and characterises discrete admissibility.
 -/
 
 namespace DstDiophantine
 
-open Operations Real
+open Operations Real Admissible
 
 namespace Discrete
 
@@ -59,41 +63,47 @@ theorem toTorsionParams_beta_nonneg (t : DiscreteTorsion N) (a : Fin 3) :
   have hN : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
   exact div_nonneg (mul_nonneg (mul_nonneg (by norm_num) hπ) (Nat.cast_nonneg _)) hN.le
 
-/-- Principal-branch anti-synchronisation `|α_a + β_a| ≤ π/2`. -/
-def IsPrincipalBranch (p : TorsionParams) : Prop :=
-  ∀ a : Fin 3, |p.alpha a + p.beta a| ≤ Real.pi / 2
+/-- Backward-compatible aliases for continuous admissibility predicates. -/
+abbrev IsPrincipalBranch := Admissible.IsPrincipalBranch
+abbrev IsAdmissibleContinuous := Admissible.IsAdmissibleContinuous
 
-/-- Continuous admissible configuration: non-negative rapidities with anti-synchronisation. -/
-def IsAdmissibleContinuous (p : TorsionParams) : Prop :=
-  ∀ a : Fin 3, 0 ≤ p.alpha a ∧ 0 ≤ p.beta a ∧ p.alpha a + p.beta a ≤ Real.pi / 2
-
-/-- Admissible discrete configuration: embedded parameters lie on the principal branch. -/
+/-- Admissible discrete configuration: embedded parameters are continuously admissible. -/
 def IsAdmissible (t : DiscreteTorsion N) : Prop :=
-  IsPrincipalBranch (toTorsionParams t)
+  IsAdmissibleContinuous (toTorsionParams t)
 
+/-- Discrete admissibility coincides with continuous admissibility of the embedding. -/
+theorem isAdmissible_iff_admissibleContinuous (t : DiscreteTorsion N) :
+    IsAdmissible t ↔ IsAdmissibleContinuous (toTorsionParams t) :=
+  Iff.rfl
+
+/-- Legacy name: discrete admissibility implies the principal-branch condition. -/
 theorem admissible_continuous_of_discrete (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    IsAdmissibleContinuous (toTorsionParams t) := by
-  intro a
-  have hα := toTorsionParams_alpha_nonneg t a
-  have hβ := toTorsionParams_beta_nonneg t a
-  have hsum := h a
-  rw [abs_of_nonneg (add_nonneg hα hβ)] at hsum
-  exact ⟨hα, hβ, hsum⟩
+    IsAdmissibleContinuous (toTorsionParams t) :=
+  h
+
+theorem isAdmissible_iff_principalBranch (t : DiscreteTorsion N) :
+    IsAdmissible t ↔ IsPrincipalBranch (toTorsionParams t) := by
+  constructor
+  · intro h
+    exact admissibleContinuous_implies_principalBranch _ h
+  · intro h a
+    have hα := toTorsionParams_alpha_nonneg t a
+    have hβ := toTorsionParams_beta_nonneg t a
+    have hsum := h a
+    rw [abs_of_nonneg (add_nonneg hα hβ)] at hsum
+    exact ⟨hα, hβ, hsum⟩
 
 theorem admissible_sum_le (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
-    (toTorsionParams t).alpha a + (toTorsionParams t).beta a ≤ Real.pi / 2 := by
-  have hcont := admissible_continuous_of_discrete t h
-  exact (hcont a).2.2
+    (toTorsionParams t).alpha a + (toTorsionParams t).beta a ≤ Real.pi / 2 :=
+  admissibleContinuous_sum_le _ h a
 
 theorem admissible_alpha_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
-    (toTorsionParams t).alpha a ≤ Real.pi / 2 := by
-  have hβ := toTorsionParams_beta_nonneg t a
-  linarith [admissible_sum_le t h a]
+    (toTorsionParams t).alpha a ≤ Real.pi / 2 :=
+  admissibleContinuous_alpha_le_half_pi _ h a
 
 theorem admissible_beta_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
-    (toTorsionParams t).beta a ≤ Real.pi / 2 := by
-  have hα := toTorsionParams_alpha_nonneg t a
-  linarith [admissible_sum_le t h a]
+    (toTorsionParams t).beta a ≤ Real.pi / 2 :=
+  admissibleContinuous_beta_le_half_pi _ h a
 
 end Discrete
 

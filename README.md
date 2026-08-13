@@ -12,6 +12,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 このリポジトリでいま強調できる点は次のとおりです。
 
 - **コアは `sorry` なし。** Lean 4 + mathlib 上で、代数・増幅・層境界の中核が機械検証されています。
+- **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
 - **Beal 危機路線を分割した。** 旧 `BealModularBridge`（巻数 + PGA `ConformalGaugeAdmissible`）は方程式非依存に矛盾すると機械検証済みです。本命は `BealWindingBridge`（数論）と `BealCGAGauge` / `BealCGANoGo`（CGA・PGA 錐と非同一）です。

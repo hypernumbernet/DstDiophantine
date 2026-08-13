@@ -173,6 +173,140 @@ theorem cyclic_reverse (a : Fin 3) : reverse (cyclic a) = -cyclic a := by
   · exact reverse_ι_mul_ι 1 3 (by decide)
   · exact reverse_ι_mul_ι 2 1 (by decide)
 
+/-! ### Commutators of hyperbolic / cyclic generators
+
+The paper appendix writes `[iΓ_a, Γ_b] = 0` without restricting indices.
+Same-axis pairs commute; distinct axes need not.
+-/
+
+private theorem mul_hyperbolic0_cyclic0 :
+    hyperbolic 0 * cyclic 0 = ι 0 * ι 1 * ι 3 * ι 2 := by
+  simp [hyperbolic, cyclic, mul_assoc]
+
+private theorem mul_cyclic0_hyperbolic0 :
+    cyclic 0 * hyperbolic 0 = ι 0 * ι 1 * ι 3 * ι 2 := by
+  dsimp [hyperbolic, cyclic]
+  have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
+  have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  calc (ι 3 * ι 2) * (ι 0 * ι 1)
+      = ι 3 * (ι 2 * ι 0) * ι 1 := by simp [mul_assoc]
+    _ = ι 3 * (-(ι 0 * ι 2)) * ι 1 := by rw [h20]
+    _ = -(ι 3 * ι 0) * ι 2 * ι 1 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι 0 * ι 3)) * ι 2 * ι 1 := by rw [h30]
+    _ = ι 0 * ι 3 * (ι 2 * ι 1) := by simp [mul_assoc]
+    _ = ι 0 * ι 3 * (-(ι 1 * ι 2)) := by rw [h21]
+    _ = -(ι 0 * (ι 3 * ι 1) * ι 2) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * (-(ι 1 * ι 3)) * ι 2) := by rw [h31]
+    _ = ι 0 * ι 1 * ι 3 * ι 2 := by simp [mul_neg, mul_assoc]
+
+private theorem mul_hyperbolic1_cyclic1 :
+    hyperbolic 1 * cyclic 1 = ι 0 * ι 2 * ι 1 * ι 3 := by
+  simp [hyperbolic, cyclic, mul_assoc]
+
+private theorem mul_cyclic1_hyperbolic1 :
+    cyclic 1 * hyperbolic 1 = ι 0 * ι 2 * ι 1 * ι 3 := by
+  dsimp [hyperbolic, cyclic]
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+  calc (ι 1 * ι 3) * (ι 0 * ι 2)
+      = ι 1 * (ι 3 * ι 0) * ι 2 := by simp [mul_assoc]
+    _ = ι 1 * (-(ι 0 * ι 3)) * ι 2 := by rw [h30]
+    _ = -(ι 1 * ι 0) * ι 3 * ι 2 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι 0 * ι 1)) * ι 3 * ι 2 := by rw [h10]
+    _ = ι 0 * ι 1 * (ι 3 * ι 2) := by simp [mul_assoc]
+    _ = ι 0 * ι 1 * (-(ι 2 * ι 3)) := by rw [h32]
+    _ = -(ι 0 * (ι 1 * ι 2) * ι 3) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * (-(ι 2 * ι 1)) * ι 3) := by rw [h12]
+    _ = ι 0 * ι 2 * ι 1 * ι 3 := by simp [mul_neg, mul_assoc]
+
+private theorem mul_hyperbolic2_cyclic2 :
+    hyperbolic 2 * cyclic 2 = ι 0 * ι 3 * ι 2 * ι 1 := by
+  simp [hyperbolic, cyclic, mul_assoc]
+
+private theorem mul_cyclic2_hyperbolic2 :
+    cyclic 2 * hyperbolic 2 = ι 0 * ι 3 * ι 2 * ι 1 := by
+  dsimp [hyperbolic, cyclic]
+  have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  have h13 : ι 1 * ι 3 = -(ι 3 * ι 1) := e_mul_anticomm (by decide)
+  calc (ι 2 * ι 1) * (ι 0 * ι 3)
+      = ι 2 * (ι 1 * ι 0) * ι 3 := by simp [mul_assoc]
+    _ = ι 2 * (-(ι 0 * ι 1)) * ι 3 := by rw [h10]
+    _ = -(ι 2 * ι 0) * ι 1 * ι 3 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι 0 * ι 2)) * ι 1 * ι 3 := by rw [h20]
+    _ = ι 0 * ι 2 * (ι 1 * ι 3) := by simp [mul_assoc]
+    _ = ι 0 * ι 2 * (-(ι 3 * ι 1)) := by rw [h13]
+    _ = -(ι 0 * (ι 2 * ι 3) * ι 1) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * (-(ι 3 * ι 2)) * ι 1) := by rw [h23]
+    _ = ι 0 * ι 3 * ι 2 * ι 1 := by simp [mul_neg, mul_assoc]
+
+/-- Same-axis boost and rotation generators commute (paper: `[iΓ_a, Γ_a] = 0`). -/
+theorem commutator_hyperbolic_cyclic_same (a : Fin 3) :
+    commutator (hyperbolic a) (cyclic a) = 0 := by
+  fin_cases a
+  · simp [commutator, mul_hyperbolic0_cyclic0, mul_cyclic0_hyperbolic0]
+  · simp [commutator, mul_hyperbolic1_cyclic1, mul_cyclic1_hyperbolic1]
+  · simp [commutator, mul_hyperbolic2_cyclic2, mul_cyclic2_hyperbolic2]
+
+private theorem mul_hyperbolic0_cyclic1 :
+    hyperbolic 0 * cyclic 1 = ι 0 * ι 3 := by
+  dsimp [hyperbolic, cyclic]
+  calc (ι 0 * ι 1) * (ι 1 * ι 3)
+      = ι 0 * (ι 1 * ι 1) * ι 3 := by simp [mul_assoc]
+    _ = ι 0 * ι 3 := by simp [e1_sq]
+
+private theorem mul_cyclic1_hyperbolic0 :
+    cyclic 1 * hyperbolic 0 = -(ι 0 * ι 3) := by
+  dsimp [hyperbolic, cyclic]
+  have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  calc (ι 1 * ι 3) * (ι 0 * ι 1)
+      = ι 1 * (ι 3 * ι 0) * ι 1 := by simp [mul_assoc]
+    _ = ι 1 * (-(ι 0 * ι 3)) * ι 1 := by rw [h30]
+    _ = -(ι 1 * ι 0) * ι 3 * ι 1 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι 0 * ι 1)) * ι 3 * ι 1 := by rw [h10]
+    _ = ι 0 * ι 1 * (ι 3 * ι 1) := by simp [mul_assoc]
+    _ = ι 0 * ι 1 * (-(ι 1 * ι 3)) := by
+        rw [e_mul_anticomm (by decide : (3 : Fin 5) ≠ 1)]
+    _ = -(ι 0 * (ι 1 * ι 1) * ι 3) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι 3) := by simp [e1_sq]
+
+private theorem ι0_mul_ι3_ne_zero : ι 0 * ι 3 ≠ 0 := by
+  intro h
+  have hι : ι 0 = 0 := by
+    have e3s : ι 3 * ι 3 = (1 : PGA) := by
+      simpa [Q311_e5vec, w311] using e_sq (3 : Fin 5)
+    calc ι 0
+        = (ι 0 * ι 3) * ι 3 := by rw [mul_assoc, e3s, mul_one]
+      _ = 0 := by rw [h, zero_mul]
+  have : Invertible (2 : ℝ) := ⟨2⁻¹, by norm_num, by norm_num⟩
+  have h' : (CliffordAlgebra.equivExterior Q311) (ι 0) = 0 := by
+    rw [hι]; exact map_zero _
+  rw [show (CliffordAlgebra.equivExterior Q311) = CliffordAlgebra.changeFormEquiv
+      CliffordAlgebra.changeForm.associated_neg_proof from rfl,
+    CliffordAlgebra.changeFormEquiv_apply] at h'
+  unfold PGA.ι at h'
+  rw [CliffordAlgebra.changeForm_ι] at h'
+  exact absurd (Iff.mp (ExteriorAlgebra.ι_eq_zero_iff (e5vec 0)) h')
+    (by simp [e5vec, Pi.single])
+
+/-- Off-axis counterexample: `[e₀e₁, e₁e₃] ≠ 0` (paper's unrestricted commutativity fails). -/
+theorem commutator_hyperbolic0_cyclic1_ne_zero :
+    commutator (hyperbolic 0) (cyclic 1) ≠ 0 := by
+  intro h
+  rw [commutator, mul_hyperbolic0_cyclic1, mul_cyclic1_hyperbolic0, sub_neg_eq_add] at h
+  have h2 : ι 0 * ι 3 + ι 0 * ι 3 = 0 := h
+  have hsmul : (2 : ℝ) • (ι 0 * ι 3) = 0 := by
+    simpa [two_smul] using h2
+  have : ι 0 * ι 3 = 0 :=
+    (smul_eq_zero.mp hsmul).resolve_left (by norm_num : (2 : ℝ) ≠ 0)
+  exact ι0_mul_ι3_ne_zero this
+
 end Generators
 
 end DstDiophantine

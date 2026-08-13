@@ -139,7 +139,8 @@ Admissibility on the discrete torus is the integer inequality
 -/
 theorem isAdmissible_iff_four_le (t : DiscreteTorsion N) :
     IsAdmissible t ↔ ∀ a : Fin 3, 4 * ((t.n a).val + (t.m a).val) ≤ N := by
-  unfold IsAdmissible IsPrincipalBranch
+  rw [isAdmissible_iff_principalBranch]
+  unfold IsPrincipalBranch Admissible.IsPrincipalBranch
   constructor
   · intro h a
     have hα := toTorsionParams_alpha_nonneg t a

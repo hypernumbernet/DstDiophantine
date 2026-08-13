@@ -1,0 +1,82 @@
+/-
+Copyright (c) 2026 DstDiophantine contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: DstDiophantine contributors
+-/
+
+import DstDiophantine.Algebra.Admissible
+import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.Cl31
+import DstDiophantine.Algebra.Continuum
+import DstDiophantine.Algebra.Discrete
+import DstDiophantine.Algebra.Generators
+import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.ModularAmplification
+import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.Operations
+import DstDiophantine.Algebra.PGA
+import DstDiophantine.Algebra.QuadraticForm
+import DstDiophantine.Algebra.UnitGroup
+
+/-!
+# DST algebraic core barrel
+
+Re-exports the PGA / biquaternion / discrete-torus layer used by the main paper
+and the discrete companion. Diophantine theorems and Gravity chart modules are
+**not** imported here.
+-/
+
+namespace DstDiophantine
+
+export PGA (ι e4Index e4_sq_zero e4_anticomm e4_inner_anticomm)
+export Cl31 (ι toPGA toPGA_ι)
+export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
+  commutator commutator_null_null null_commute
+  commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero)
+export Operations (pseudoscalar dual TorsionParams daggerParams
+  e4_commute_pseudoscalar dual_null
+  pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
+  Q31_eq_minkowskiDot minkowskiVector_anticomm_pseudoscalar
+  dual_minkowskiVector_sq dual_time)
+export Admissible (IsPrincipalBranch IsAdmissibleContinuous
+  admissibleContinuous_implies_principalBranch)
+export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
+  toTorsionParams_alpha_nonneg toTorsionParams_beta_nonneg
+  isAdmissible_iff_admissibleContinuous isAdmissible_iff_principalBranch
+  admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
+  admissible_beta_le_half_pi)
+export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
+  omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary)
+export UnitGroup (discreteRotor DiscreteUnit DiscreteRotorImage discreteUnit_finite
+  discreteRotorImage_finite reverse_discreteRotor discreteRotor_mul_reverse
+  negTorsionParams)
+export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef J5_eq killingForm
+  omegaTorsionGeneratorKilling omegaTorsionGeneratorKilling_eq
+  omegaTorsion_killing_vs_param paper_appendix_killing_coeff_false
+  one_sixteenth_omegaKilling_eq J_eq_four_times_one_sixteenth_omegaKilling
+  axis_sq_diff_eq IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
+  torsion_bound_raw torsion_bound torsion_bound_continuous JNormalized_extremal
+  torsion_bound_naive_false)
+export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scale
+  J_scale JNormalized_scale J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
+  J_pow_amplify JNormalized_pow_amplify rotorTorsion_pureBoost_pow
+  isAdmissibleContinuous_pureBoost_iff)
+export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplifiedParams
+  ModularAmplificationWitness modularWitness_example
+  modularWitness_of_pureBoost modularWitness_of_pureBoost_winding
+  latticeMismatch_pureBoost latticeMismatch_ne_zero_of_winding_pureBoost
+  isAdmissible_of_pureBoost_n0_le isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0
+  mul_val_eq_val_add_winding scale_angle_eq_mod_plus_winding
+  J_scale_eq_J_amplified_add_error JNormalized_scale_eq_JNormalized_amplified_add_error
+  windingCoord_lt windingCoord_pos_iff
+  admissible_scale_implies_windingTotal_eq_zero
+  windingTotal_ne_zero_implies_not_admissible_scale
+  ModularAmplificationWitness.not_admissible_real_scale
+  ConformalGaugeAdmissible IsPureBoostSeed
+  windingTotal_pureBoost windingTotal_pureBoost_ne_zero_iff
+  pureBoostSeedOfRapidity pureBoostSeedOfRapidity_isPureBoost
+  quantizeRapidity_of_lt_two_pi windingTotal_ne_zero_of_rapidity_ge)
+export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
+  lattice_in_interval)
+
+end DstDiophantine
