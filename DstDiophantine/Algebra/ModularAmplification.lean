@@ -382,6 +382,58 @@ theorem windingTotal_ne_zero_of_rapidity_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     exact_mod_cast this
   exact (windingTotal_pureBoost_ne_zero_iff k t hp).mpr hmul
 
+/--
+Converse direction (no `k ∣ N` hypothesis): if `0 ≤ θ < 2π/k`, the pure-boost
+seed has total winding `0`. Consequently the balanced model gap
+`log 2 / m < 2π/k` never yields a modular winding witness on any lattice.
+-/
+theorem windingTotal_eq_zero_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
+    (θ : ℝ) (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi / k) :
+    windingTotal k (pureBoostSeedOfRapidity N θ) = 0 := by
+  set t := pureBoostSeedOfRapidity N θ
+  have hp : IsPureBoostSeed t := pureBoostSeedOfRapidity_isPureBoost N θ
+  have hθlt2π : θ < 2 * Real.pi := by
+    have hk1 : (1 : ℝ) ≤ k := Nat.one_le_cast.mpr (Nat.succ_le_of_lt hk)
+    have hupper : 2 * Real.pi / k ≤ 2 * Real.pi := by
+      have : 2 * Real.pi / k ≤ 2 * Real.pi / 1 :=
+        div_le_div_of_nonneg_left (by positivity) (by positivity) hk1
+      simpa using this
+    exact hlt.trans_le hupper
+  have hbounds := quantizeRapidity_of_lt_two_pi N θ h0 hθlt2π
+  have hfrac : θ * (N : ℝ) / (2 * Real.pi) < (N : ℝ) / k := by
+    have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
+    have hden : 0 < (2 * Real.pi : ℝ) := by positivity
+    have hN : (0 : ℝ) ≤ N := Nat.cast_nonneg _
+    calc θ * (N : ℝ) / (2 * Real.pi)
+        < (2 * Real.pi / k) * (N : ℝ) / (2 * Real.pi) :=
+          div_lt_div_of_pos_right
+            (mul_lt_mul_of_pos_right hlt (Nat.cast_pos.mpr (NeZero.pos N))) hden
+      _ = (N : ℝ) / k := by field_simp [hk0]
+  have hmul_lt : (k : ℝ) * ((t.n 0).val : ℝ) < (N : ℝ) := by
+    have hvalZ : ((t.n 0).val : ℤ) = quantizeRapidity N θ := hbounds.2.2
+    have hfloor_le : (quantizeRapidity N θ : ℝ) ≤
+        θ * (N : ℝ) / (2 * Real.pi) := Int.floor_le _
+    have : (k : ℝ) * (quantizeRapidity N θ : ℝ) < (N : ℝ) := by
+      have hkpos : (0 : ℝ) < k := Nat.cast_pos.mpr hk
+      calc (k : ℝ) * (quantizeRapidity N θ : ℝ)
+          ≤ (k : ℝ) * (θ * (N : ℝ) / (2 * Real.pi)) :=
+            mul_le_mul_of_nonneg_left hfloor_le hkpos.le
+        _ < (k : ℝ) * ((N : ℝ) / k) :=
+            mul_lt_mul_of_pos_left hfrac hkpos
+        _ = (N : ℝ) := by
+          field_simp [ne_of_gt (Nat.cast_pos.mpr hk)]
+    have hcast : ((t.n 0).val : ℝ) = (quantizeRapidity N θ : ℝ) := by
+      exact_mod_cast hvalZ
+    rwa [← hcast] at this
+  have hnot : ¬ N ≤ k * (t.n 0).val := by
+    intro hle
+    have : (N : ℝ) ≤ (k : ℝ) * ((t.n 0).val : ℝ) := by exact_mod_cast hle
+    exact not_le_of_gt hmul_lt this
+  have hw : ¬ windingTotal k t ≠ 0 := by
+    intro hne
+    exact hnot ((windingTotal_pureBoost_ne_zero_iff k t hp).mp hne)
+  exact of_not_not hw
+
 /-! ### Modular amplification witness (non-vacuous) -/
 
 /--
@@ -427,6 +479,28 @@ def modularWitness_example : ModularAmplificationWitness 16 5 where
 theorem ModularAmplificationWitness.nonempty_example :
     Nonempty (ModularAmplificationWitness 16 5) :=
   ⟨modularWitness_example⟩
+
+/-- No modular winding witness exists for a pure-boost rapidity below `2π/k`. -/
+theorem not_exists_modularWitness_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
+    (θ : ℝ) (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi / k)
+    (hw : ∃ w : ModularAmplificationWitness N k,
+      w.t.val = pureBoostSeedOfRapidity N θ) :
+    False := by
+  obtain ⟨w, heq⟩ := hw
+  have hwind : windingTotal k (pureBoostSeedOfRapidity N θ) ≠ 0 := by
+    simpa [heq] using w.has_winding
+  exact hwind (windingTotal_eq_zero_of_rapidity_lt N k hk θ h0 hlt)
+
+/-- Balanced model gap `log 2 / m` never produces a modular winding witness. -/
+theorem not_exists_modularWitness_of_balanced_gap (N m k : ℕ) [NeZero N]
+    (_hm : 0 < m) (hk : 0 < k)
+    (hgap : Real.log 2 / (m : ℝ) < 2 * Real.pi / (k : ℝ))
+    (hw : ∃ w : ModularAmplificationWitness N k,
+      w.t.val = pureBoostSeedOfRapidity N (Real.log 2 / (m : ℝ))) :
+    False := by
+  have h0 : 0 ≤ Real.log 2 / (m : ℝ) :=
+    div_nonneg (Real.log_nonneg (by norm_num : (1 : ℝ) ≤ 2)) (Nat.cast_nonneg _)
+  exact not_exists_modularWitness_of_rapidity_lt N k hk _ h0 hgap hw
 
 /--
 Admissibility (`4 · val ≤ N` on each axis) and nonzero winding

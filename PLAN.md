@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal: CGA 格子ゲージ・窓場合分け・診断 NoGo 固定）
+最終更新: 2026-08-13（Beal フェーズ 7d: CGA 冪格子降下・巻数空性）
 
 ## 1. 三層アーキテクチャ
 
@@ -47,8 +47,10 @@ flowchart LR
 | `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealWindingBridge` | Beal（本命・数論半分） | 解 ⇒ 巻数 witness（増幅 `k = bealAmpExp = max(m,4)`） | **型付け済**；**窓場合は証明済**；釣り合い型は未 |
-| `BealCGALatticeGauge` / `BealCGADilationNoGo` | Beal（本命・幾何半分） | DST 整数ヌル格子上の巻数禁止（PGA 錐と非同一） | 格子・三点冪和・ペアリング済；NoGo 本体は未証明 |
+| `BealCGADiscreteClosed` | Beal（本命・幾何） | 互素解 ⇒ k 倍 CGA 種が m 冪格子上 | **型付け済・未証明** |
+| `BealUnitBaseNoGo` | Beal（本命・残件） | `|A|=1` の互素解は存在しない | **型付け済・未証明**；`1+b³=c³` は有限断片あり |
+| `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
+| `BealCGALatticeGauge` / `BealCGADilationNoGo` | Beal（等指数切片・診断） | 整数ヌル格子上の巻数禁止 | 等指数で格子成立；混合は外れ；NoGo 本体未 |
 | `BealCGAGauge` / `BealCGANoGo` | Beal（診断） | 恒真 null ゲージ ⇒ 巻数禁止 | **ill-posed**（窓構成と衝突し得る）；関係補題のみ |
 | `BealModularBridge` | Beal（診断・旧 modular） | witness + `ConformalGaugeAdmissible` | **payload 矛盾**（`beal_modular_payload_incompatible`） |
 | `BealAdmissibleBridge` | Beal（連続・診断） | 連続増幅 no-go | 釣り合い型で種が `1/m²` 未満 |
@@ -82,7 +84,7 @@ flowchart LR
 | **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
 | **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
 
-**最優先軸:** 無条件 Beal 危機路線。窓側巻数は証明済。残りは釣り合い型への `BealWindingBridge` 拡張と `BealCGADilationNoGo`（整数ヌル格子上の幾何禁止）。旧 `BealCGANoGo` / `BealModularBridge` / PGA `ConformalGaugeAdmissible` 同一視は診断用。無条件 FLT / abc はその先の応用。
+**最優先軸:** 無条件 Beal 危機路線（フェーズ 7d）。窓側巻数と釣り合い型の巻数空性・対ごと互素・冪格子 k 倍降下は証明済。残りは `BealCGADiscreteClosed` と `BealUnitBaseNoGo`。旧巻数全解 bridge / 整数格子 NoGo / 恒真ゲージは診断用。無条件 FLT / abc はその先の応用。
 
 ---
 
@@ -96,11 +98,11 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）— Beal 危機路線
+### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7d）
 
-1. **`BealCGADilationNoGo` 本体:** DST 整数ヌル格子上で巻数付き witness を禁止（等指数を含む）
-2. **`BealWindingBridge` の残り:** 釣り合い型 `δ ≈ log 2 / m`（窓外；折り畳みでも届かない）— CGA mismatch `(2^{1/m}-1)^2` が取っ手
-3. modular 巻数誤差の数論的下限 — `JNormalized_scale = JNormalized_amplified + error(winding)`
+1. **`BealCGADiscreteClosed` 本体:** 互素解の k 倍 CGA 種が m 冪格子に留まる
+2. **`BealUnitBaseNoGo` 本体:** `|A|=1` 互素解の禁止（一般は Mihăilescu / Fermat–Catalan 規模）
+3. modular 巻数誤差の数論的下限 — `JNormalized_scale = JNormalized_amplified + error(winding)`（窓側補助）
 4. （後続）`FermatModularBridge` / `AbcModularBridge` への同型移植
 5. 有限証明書の拡大
 
@@ -150,7 +152,7 @@ flowchart LR
 - [ ] `AbcModularBridge` 本体（無条件 ABC 相当 — 主張しない）
 - [ ] 許容性・増幅後許容と共形ギャップの解消
 
-### フェーズ 7c（Beal modular — 危機路線進行中）
+### フェーズ 7c（Beal modular — 完了）
 
 - [x] `bealFracLogGap` と解のとき `m·δ = log(1+B^y/A^x)`、等指数退化
 - [x] `quantizeBealMismatch` / 旧 `BealModularBridge`（診断・payload 矛盾を機械検証）
@@ -164,8 +166,18 @@ flowchart LR
 - [x] 三点 `α^m+β^m=γ^m` と `BealCGALatticeGauge`（等指数で成立・混合で反例；恒真 Triple Prop は置かない）
 - [x] 窓に入る解 ⇒ 巻数 witness（`beal_winding_of_solution_window`）
 - [x] 旧 `BealCGANoGo` を診断化（ill-posed；窓との関係補題）
-- [ ] `BealWindingBridge` 本体（全解；釣り合い型は窓外）
-- [ ] `BealCGADilationNoGo` 本体（無条件 Beal 相当 — 主張しない）
+
+### フェーズ 7d（Beal CGA 冪格子降下 — 進行中）
+
+- [x] 対ごと互素（`beal_pairwise_coprime`）
+- [x] `IsCGAPowerLatticePoint` と整数格子包含・`2^{4/3}` 診断
+- [x] k 倍 dilation の m 乗等式・整除裁定・`|A|=1` 降下（無条件補題）
+- [x] `δ < 2π/k` で巻数 0 / 釣り合い型 modular witness 空性
+- [x] `BealWindingBridge` を窓レジーム診断へ降格
+- [x] `BealCGADiscreteClosed` + `BealUnitBaseNoGo` 型付けと条件付き古典 Beal
+- [x] 有限断片 `not_one_add_pow_three_eq_pow_three`
+- [ ] `BealCGADiscreteClosed` 本体（無条件 Beal 相当 — 主張しない）
+- [ ] `BealUnitBaseNoGo` 本体（一般残件 — 主張しない）
 
 ### Gravity トラック（PGA–TEGR）
 
@@ -279,12 +291,12 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。
 
 ## 8. 次アクション
 
-1. **（主・Beal）** `BealCGADilationNoGo`: DST 整数ヌル格子上で巻数 witness を禁止（等指数を含む）
-2. **（主・Beal）** 釣り合い型 `δ ≈ log 2 / m` を CGA mismatch `(2^{1/m}-1)^2` 経由で捉える
-3. modular 巻数誤差の数論的下限
+1. **（主・Beal）** `BealCGADiscreteClosed`: 互素解の k 倍 CGA 種が m 冪格子に留まることの証明
+2. **（主・Beal）** `BealUnitBaseNoGo`: `|A|=1` 互素解の一般禁止（または有限断片の拡大）
+3. modular 巻数誤差の数論的下限（窓側補助）
 4. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
 5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 7. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓場合の巻数証明 + CGA 格子/ペアリング/mismatch + 診断 NoGo の ill-posed 固定** まで固めた段階であり、無条件古典 Beal はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 釣り合い型巻数空性 + CGA 冪格子降下補題 + DiscreteClosed/UnitBase 条件付き帰結** まで固めた段階であり、無条件古典 Beal はまだ未達成である。

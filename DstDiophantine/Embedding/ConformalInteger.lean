@@ -144,6 +144,37 @@ theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
   rw [le_antisymm hle hge] at hk3
   norm_num at hk3
 
+/-! ### m-power null lattice (Beal fractional roots) -/
+
+/--
+Nonzero real whose `m`-th power is a nonzero integer:
+`∃ n ≠ 0, x^m = n`. Strictly coarser than `IsCGAIntegerPoint`
+(e.g. `2^{4/3}` is a 3-power lattice point with witness `16`).
+Do **not** use membership alone as a live no-go hypothesis — Beal root
+magnitudes always lie here; the live constraint is `k`-fold dilation closure.
+-/
+def IsCGAPowerLatticePoint (x : ℝ) (m : ℕ) : Prop :=
+  ∃ n : ℤ, n ≠ 0 ∧ x ^ m = (n : ℝ)
+
+theorem IsCGAIntegerPoint.isCGAPowerLatticePoint {x : ℝ} {m : ℕ}
+    (hx : IsCGAIntegerPoint x) (_hm : 0 < m) :
+    IsCGAPowerLatticePoint x m := by
+  obtain ⟨k, hk, heq⟩ := hx
+  refine ⟨k ^ m, pow_ne_zero m hk, ?_⟩
+  rw [heq, ← Int.cast_pow]
+
+/-- Diagnostic: `2^{4/3}` lies on the 3-power lattice even though it misses
+the integer lattice (`(2^{4/3})³ = 16`). -/
+theorem isCGAPowerLatticePoint_two_rpow_four_thirds :
+    IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 := by
+  refine ⟨16, by decide, ?_⟩
+  have hnn : (0 : ℝ) ≤ 2 := by norm_num
+  have hstep :
+      ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
+        (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
+    rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
+  rw [hstep]; norm_num
+
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a
 nonzero integer whose torsional height exceeds `M`.

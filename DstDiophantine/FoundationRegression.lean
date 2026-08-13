@@ -191,6 +191,44 @@ example (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
       1 < bealGcd A B C :=
   beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
 
+/-- Phase 7d: discrete closure + unit-base no-go recover classical Beal. -/
+example (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_of_discreteClosed_and_unitBaseNoGo hclosed hnogo
+
+/-- Three-way coprime Beal solutions are pairwise coprime. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.Coprime A.natAbs B.natAbs ∧
+      Nat.Coprime A.natAbs C.natAbs ∧
+        Nat.Coprime B.natAbs C.natAbs :=
+  beal_pairwise_coprime hA hB hC hx hy hz hgcd hsol
+
+/-- Beal roots always lie on the m-power null lattice. -/
+example (A : ℤ) (x m : ℕ) (hA : A ≠ 0) (hm : m ≠ 0) :
+    IsCGAPowerLatticePoint (bealRootMag A x m) m :=
+  bealRootMag_isCGAPowerLatticePoint A x m hA hm
+
+/-- Balanced model gap never yields a modular winding witness. -/
+example (N : ℕ) [NeZero N] {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
+    ¬ ∃ w : ModularAmplificationWitness N (bealAmpExp x y z),
+      w.t.val = pureBoostSeedOfRapidity N
+        (Real.log 2 / (bealMinExp x y z : ℝ)) :=
+  beal_balanced_gap_no_modularWitness N hx hy hz
+
+/-- Elementary unit-base fragment: no positive `1 + b³ = c³`. -/
+example {b c : ℤ} (hb : 0 < b) (hc : 0 < c) :
+    ¬ ((1 : ℤ) + b ^ 3 = c ^ 3) :=
+  not_one_add_pow_three_eq_pow_three hb hc
+
 /-- Equal exponents place roots on the DST integer null lattice. -/
 example (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :

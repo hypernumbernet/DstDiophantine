@@ -13,8 +13,9 @@ so the Diophantine path does not depend on these modules (same policy as
 * `Algebra.CGA.QuadraticForm` — `Cl(2,1)` quadratic form
 * `Algebra.CGA.NullCone` — null pair `n₀, n∞`, conformal point `X(x)² = 0`,
   point–point pairing, scale-invariant dilation mismatch
-* `Embedding.ConformalInteger` — integer null embedding, DST lattice predicate
-  `IsCGAIntegerPoint`, dilation weights, PGA `integerHeight` unboundedness
+* `Embedding.ConformalInteger` — integer null embedding, DST lattice predicates
+  `IsCGAIntegerPoint` / `IsCGAPowerLatticePoint`, dilation weights, PGA
+  `integerHeight` unboundedness
 -/
 
 namespace DstDiophantine
@@ -58,6 +59,15 @@ example {n : ℤ} (hn : n ≠ 0) : Embedding.IsCGAIntegerPoint (n : ℝ) :=
 /-- Regression: `2^{4/3}` is off the integer null lattice. -/
 example : ¬ Embedding.IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) :=
   Embedding.not_isCGAIntegerPoint_two_rpow_four_thirds
+
+/-- Regression: `2^{4/3}` lies on the 3-power lattice (`(2^{4/3})³ = 16`). -/
+example : Embedding.IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 :=
+  Embedding.isCGAPowerLatticePoint_two_rpow_four_thirds
+
+/-- Regression: integer lattice points are power-lattice points. -/
+example {x : ℝ} {m : ℕ} (hx : Embedding.IsCGAIntegerPoint x) (hm : 0 < m) :
+    Embedding.IsCGAPowerLatticePoint x m :=
+  Embedding.IsCGAIntegerPoint.isCGAPowerLatticePoint hx hm
 
 end CGA
 

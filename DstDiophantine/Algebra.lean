@@ -76,7 +76,10 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   ConformalGaugeAdmissible IsPureBoostSeed
   windingTotal_pureBoost windingTotal_pureBoost_ne_zero_iff
   pureBoostSeedOfRapidity pureBoostSeedOfRapidity_isPureBoost
-  quantizeRapidity_of_lt_two_pi windingTotal_ne_zero_of_rapidity_ge)
+  quantizeRapidity_of_lt_two_pi windingTotal_ne_zero_of_rapidity_ge
+  windingTotal_eq_zero_of_rapidity_lt
+  not_exists_modularWitness_of_rapidity_lt
+  not_exists_modularWitness_of_balanced_gap)
 export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
   lattice_in_interval)
 

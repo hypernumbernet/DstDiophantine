@@ -21,7 +21,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 5–7c: Beal's conjecture (problem-specific layer)
+# Phase 5–7d: Beal's conjecture (problem-specific layer)
 
 Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
 together with the faithful null-translator encoding of `A^x + B^y - C^z`.
@@ -29,16 +29,23 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme splits into:
+Classical Beal is **not** claimed unconditionally. The live programme (phase 7d)
+is power-lattice descent:
 
-* `BealWindingBridge` — full solution ⇒ winding witness (unproved; balanced
-  gap `log 2 / m` misses the modular window);
-* **Window case (proved):** solution whose gap lies in `[2π/k, 4π/k)` yields a
-  winding witness (`beal_winding_of_solution_window`);
-* `BealCGALatticeGauge` / `BealCGADilationNoGo` — non-tautological CGA integer
-  null lattice and residual geometric no-go (not PGA real-scale);
-* Diagnostic `BealCGAGauge` / `BealCGANoGo` — null-cone squaring is always true,
-  so the old NoGo is ill-posed against the window construction.
+* `BealCGADiscreteClosed` — coprime solution ⇒ `k`-fold CGA seed stays on the
+  `m`-power null lattice (unproved);
+* `BealUnitBaseNoGo` — no coprime solution with `|A| = 1` (unproved residual;
+  Mihăilescu / Fermat–Catalan scale);
+* **Proved descent:** power-lattice closure of the `k`-fold seed + pairwise
+  coprimality ⇒ `|A| = 1`;
+* **Window winding (proved):** gap in `[2π/k, 4π/k)` ⇒ modular witness
+  (`beal_winding_of_solution_window`);
+* `BealWindingBridge` — **window-regime diagnostic** (not full-solution live):
+  balanced gaps `log 2 / m < 2π/k` never yield a winding witness
+  (`windingTotal_eq_zero_of_rapidity_lt`);
+* Legacy integer-lattice `BealCGALatticeGauge` / `BealCGADilationNoGo` —
+  equal-exponent slice only; mixed exponents miss the integer lattice;
+* Diagnostic `BealCGAGauge` / `BealCGANoGo` — tautological / ill-posed.
 
 The legacy `BealModularBridge` (witness + `ConformalGaugeAdmissible`) is
 **diagnostic only**: those conjuncts are equation-independently incompatible
@@ -141,6 +148,133 @@ theorem exists_common_prime_of_bealGcd_gt_one {A B C : ℤ}
   · exact Nat.dvd_trans hdiv (bealGcd_dvd_left A B C)
   · exact Nat.dvd_trans hdiv (bealGcd_dvd_mid A B C)
   · exact Nat.dvd_trans hdiv (bealGcd_dvd_right A B C)
+
+/-! ### Pairwise coprimality from three-way gcd + the equation -/
+
+private theorem beal_prime_dvd_B_of_dvd_AC {A B C : ℤ} {x y z p : ℕ}
+    (hp : Nat.Prime p) (hx : 0 < x) (_hy : 0 < y) (hz : 0 < z)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hpA : p ∣ A.natAbs) (hpC : p ∣ C.natAbs) : p ∣ B.natAbs := by
+  have hAℤ : (p : ℤ) ∣ A := Int.natCast_dvd.mpr hpA
+  have hCℤ : (p : ℤ) ∣ C := Int.natCast_dvd.mpr hpC
+  have hAx : (p : ℤ) ∣ A ^ x := dvd_pow hAℤ (ne_of_gt hx)
+  have hCz : (p : ℤ) ∣ C ^ z := dvd_pow hCℤ (ne_of_gt hz)
+  have hBy : (p : ℤ) ∣ B ^ y := by
+    have hsub : (p : ℤ) ∣ C ^ z - A ^ x := dvd_sub hCz hAx
+    have heq : C ^ z - A ^ x = B ^ y := by
+      have := congrArg (fun t => t - A ^ x) hsol
+      simpa [add_sub_cancel_left] using this.symm
+    rwa [heq] at hsub
+  have hAbs : p ∣ (B ^ y).natAbs := Int.natCast_dvd.mp hBy
+  rw [Int.natAbs_pow] at hAbs
+  exact hp.dvd_of_dvd_pow hAbs
+
+private theorem beal_prime_dvd_C_of_dvd_AB {A B C : ℤ} {x y z p : ℕ}
+    (hp : Nat.Prime p) (hx : 0 < x) (hy : 0 < y) (_hz : 0 < z)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hpA : p ∣ A.natAbs) (hpB : p ∣ B.natAbs) : p ∣ C.natAbs := by
+  have hAℤ : (p : ℤ) ∣ A := Int.natCast_dvd.mpr hpA
+  have hBℤ : (p : ℤ) ∣ B := Int.natCast_dvd.mpr hpB
+  have hAx : (p : ℤ) ∣ A ^ x := dvd_pow hAℤ (ne_of_gt hx)
+  have hBy : (p : ℤ) ∣ B ^ y := dvd_pow hBℤ (ne_of_gt hy)
+  have hCz : (p : ℤ) ∣ C ^ z := by
+    have : (p : ℤ) ∣ A ^ x + B ^ y := dvd_add hAx hBy
+    rwa [hsol] at this
+  have hAbs : p ∣ (C ^ z).natAbs := Int.natCast_dvd.mp hCz
+  rw [Int.natAbs_pow] at hAbs
+  exact hp.dvd_of_dvd_pow hAbs
+
+private theorem beal_prime_dvd_A_of_dvd_BC {A B C : ℤ} {x y z p : ℕ}
+    (hp : Nat.Prime p) (_hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hpB : p ∣ B.natAbs) (hpC : p ∣ C.natAbs) : p ∣ A.natAbs := by
+  have hBℤ : (p : ℤ) ∣ B := Int.natCast_dvd.mpr hpB
+  have hCℤ : (p : ℤ) ∣ C := Int.natCast_dvd.mpr hpC
+  have hBy : (p : ℤ) ∣ B ^ y := dvd_pow hBℤ (ne_of_gt hy)
+  have hCz : (p : ℤ) ∣ C ^ z := dvd_pow hCℤ (ne_of_gt hz)
+  have hAx : (p : ℤ) ∣ A ^ x := by
+    have hsub : (p : ℤ) ∣ C ^ z - B ^ y := dvd_sub hCz hBy
+    have heq : C ^ z - B ^ y = A ^ x := by
+      have := congrArg (fun t => t - B ^ y) hsol
+      simpa [add_comm, add_sub_cancel_right] using this.symm
+    rwa [heq] at hsub
+  have hAbs : p ∣ (A ^ x).natAbs := Int.natCast_dvd.mp hAx
+  rw [Int.natAbs_pow] at hAbs
+  exact hp.dvd_of_dvd_pow hAbs
+
+/-- A three-way coprime Beal solution is pairwise coprime on absolute values. -/
+theorem beal_pairwise_coprime {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (_hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.Coprime A.natAbs B.natAbs ∧
+      Nat.Coprime A.natAbs C.natAbs ∧
+        Nat.Coprime B.natAbs C.natAbs := by
+  have hAC : Nat.Coprime A.natAbs C.natAbs := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    have hpos : 0 < Nat.gcd A.natAbs C.natAbs :=
+      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA)
+    have hgt : 1 < Nat.gcd A.natAbs C.natAbs :=
+      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
+    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
+    have hpA : p ∣ A.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
+    have hpC : p ∣ C.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
+    have hpB : p ∣ B.natAbs := beal_prime_dvd_B_of_dvd_AC hp hx hy hz hsol hpA hpC
+    have hpG : p ∣ bealGcd A B C :=
+      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
+    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
+  have hAB : Nat.Coprime A.natAbs B.natAbs := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    have hpos : 0 < Nat.gcd A.natAbs B.natAbs :=
+      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA)
+    have hgt : 1 < Nat.gcd A.natAbs B.natAbs :=
+      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
+    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
+    have hpA : p ∣ A.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
+    have hpB : p ∣ B.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
+    have hpC : p ∣ C.natAbs := beal_prime_dvd_C_of_dvd_AB hp hx hy hz hsol hpA hpB
+    have hpG : p ∣ bealGcd A B C :=
+      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
+    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
+  have hBC : Nat.Coprime B.natAbs C.natAbs := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    have hpos : 0 < Nat.gcd B.natAbs C.natAbs :=
+      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hB)
+    have hgt : 1 < Nat.gcd B.natAbs C.natAbs :=
+      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
+    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
+    have hpB : p ∣ B.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
+    have hpC : p ∣ C.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
+    have hpA : p ∣ A.natAbs := beal_prime_dvd_A_of_dvd_BC hp hx hy hz hsol hpB hpC
+    have hpG : p ∣ bealGcd A B C :=
+      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
+    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
+  exact ⟨hAB, hAC, hBC⟩
+
+theorem beal_coprime_ac {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hgcd : bealGcd A B C = 1) (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.Coprime A.natAbs C.natAbs :=
+  (beal_pairwise_coprime hA hB hC hx hy hz hgcd hsol).2.1
+
+theorem beal_coprime_ab {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hgcd : bealGcd A B C = 1) (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.Coprime A.natAbs B.natAbs :=
+  (beal_pairwise_coprime hA hB hC hx hy hz hgcd hsol).1
+
+theorem beal_coprime_bc {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hgcd : bealGcd A B C = 1) (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.Coprime B.natAbs C.natAbs :=
+  (beal_pairwise_coprime hA hB hC hx hy hz hgcd hsol).2.2
 
 /-! ### Fractional-power log gap (magnitude layer; no BCH) -/
 
@@ -431,8 +565,8 @@ theorem quantizeBealMismatch_pureBoost (N : ℕ) [NeZero N] (A C : ℤ) (x z m :
 The three conjuncts are equation-independently incompatible: a
 `ModularAmplificationWitness` with nonzero winding rules out
 `ConformalGaugeAdmissible` under the present PGA real-scale identification
-(`beal_modular_payload_incompatible`). Live programme: `BealWindingBridge` +
-`BealCGALatticeGauge` / `BealCGADilationNoGo`.
+(`beal_modular_payload_incompatible`). Live programme (phase 7d):
+`BealCGADiscreteClosed` + `BealUnitBaseNoGo`.
 -/
 def BealModularBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -501,15 +635,17 @@ theorem beal_has_winding_of_fracGap_ge (N k m : ℕ) [NeZero N] (hk : 0 < k)
     windingTotal_ne_zero_of_rapidity_ge
       N k hk (bealFracLogGap A C x z m) h0 hle hlt hdvd
 
-/-! ### Live winding bridge (number-theoretic half) -/
+/-! ### Window-regime winding bridge (diagnostic for full solutions) -/
 
 /--
-**Live** Beal winding bridge (unproved in full generality).
+**Window-regime** Beal winding bridge (not the live full-solution programme).
 
-A coprime solution yields some lattice `N` on which the quantised fractional
-gap is an admissible modular winding witness with amplification
-`k = bealAmpExp = max(m, 4)`. No PGA real-scale / `ConformalGaugeAdmissible`
-conjunct — that identification is the diagnostic obstruction.
+Asserts that a coprime solution yields some lattice `N` carrying an admissible
+modular winding witness with `k = bealAmpExp`. The **proved** half is the wide
+window construction (`beal_winding_of_solution_window`). Balanced gaps
+`δ ≈ log 2 / m < 2π/k` never wind (`windingTotal_eq_zero_of_rapidity_lt`), so
+this cannot be the live bridge for all solutions. Live programme (phase 7d):
+`BealCGADiscreteClosed` + `BealUnitBaseNoGo`.
 -/
 def BealWindingBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -582,6 +718,18 @@ theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
   have hsolR : (A : ℝ) ^ x + (B : ℝ) ^ y = (C : ℝ) ^ z := by exact_mod_cast hsol
   rw [bealRootMag_pow A x m hm, bealRootMag_pow B y m hm, bealRootMag_pow C z m hm,
     hAn, hBn, hCn, hsolR]
+
+/-- Beal root magnitudes always lie on the `m`-power null lattice. -/
+theorem bealRootMag_isCGAPowerLatticePoint (A : ℤ) (x m : ℕ)
+    (hA : A ≠ 0) (hm : m ≠ 0) :
+    IsCGAPowerLatticePoint (bealRootMag A x m) m := by
+  refine ⟨((A.natAbs : ℤ) ^ x), pow_ne_zero x
+      (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA)), ?_⟩
+  have hpow := bealRootMag_pow A x m hm
+  calc bealRootMag A x m ^ m
+      = (A.natAbs : ℝ) ^ x := hpow
+    _ = (((A.natAbs : ℤ) ^ x : ℤ) : ℝ) := by
+        rw [Int.cast_pow]; rfl
 
 /-- Scale-invariant CGA mismatch of the A–C Beal dilation. -/
 noncomputable def bealCGADilationMismatch (A C : ℤ) (x z m : ℕ) : ℝ :=
@@ -797,6 +945,213 @@ theorem beal_eq_exp_not_coprime_of_winding_and_cga_dilation_nogo
     exact BealCGALatticeGauge_of_eq_exp A B C p hp0 hA hB hC
   exact beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
     A B C p p p hp hp hp hA hB hC hlat hsol
+
+/-! ### Phase 7d: k-fold CGA power-lattice descent -/
+
+/--
+`k`-fold CGA dilation of the A-root seed along the A–C fractional gap:
+`α · e^{kδ}`. Equals `γ^k / α^{k-1}` when `α, γ > 0`.
+-/
+noncomputable def bealCGAKFoldMag (A C : ℤ) (x z m k : ℕ) : ℝ :=
+  bealRootMag A x m * Real.exp ((k : ℝ) * bealFracLogGap A C x z m)
+
+theorem bealCGAKFoldMag_eq_root_ratio (A C : ℤ) (x z m k : ℕ)
+    (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k) :
+    bealCGAKFoldMag A C x z m k =
+      bealRootMag C z m ^ k / bealRootMag A x m ^ (k - 1) := by
+  unfold bealCGAKFoldMag
+  set α := bealRootMag A x m
+  set γ := bealRootMag C z m
+  set δ := bealFracLogGap A C x z m
+  have hα : 0 < α := bealRootMag_pos hA x m
+  have hγ : 0 < γ := bealRootMag_pos hC z m
+  have hδ : δ = Real.log γ - Real.log α :=
+    bealFracLogGap_eq_log_rootMag A C x z m hA hC
+  have hexp : Real.exp ((k : ℝ) * δ) = γ ^ k / α ^ k := by
+    rw [hδ, mul_sub, Real.exp_sub, Real.exp_nat_mul, Real.exp_nat_mul,
+      Real.exp_log hγ, Real.exp_log hα]
+    try field_simp [ne_of_gt hα]
+  have hsucc : k = (k - 1) + 1 := (Nat.sub_add_cancel hk).symm
+  have hpow : α ^ k = α ^ ((k - 1) + 1) := by rw [← hsucc]
+  calc α * Real.exp ((k : ℝ) * δ)
+      = α * (γ ^ k / α ^ k) := by rw [hexp]
+    _ = γ ^ k / α ^ (k - 1) := by
+        rw [hpow, pow_succ]
+        field_simp [ne_of_gt hα]
+
+theorem bealCGAKFoldMag_pow (A C : ℤ) (x z m k : ℕ)
+    (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k) :
+    bealCGAKFoldMag A C x z m k ^ m =
+      (C.natAbs : ℝ) ^ (k * z) / (A.natAbs : ℝ) ^ (x * (k - 1)) := by
+  have hapow := bealRootMag_pow A x m hm
+  have hgpow := bealRootMag_pow C z m hm
+  have hr := bealCGAKFoldMag_eq_root_ratio A C x z m k hA hC hk
+  rw [hr, div_pow]
+  have h1 : (bealRootMag C z m ^ k) ^ m = (C.natAbs : ℝ) ^ (k * z) := by
+    rw [← pow_mul, mul_comm k m, pow_mul, hgpow, ← pow_mul, mul_comm z k]
+  have h2 : (bealRootMag A x m ^ (k - 1)) ^ m =
+      (A.natAbs : ℝ) ^ (x * (k - 1)) := by
+    rw [← pow_mul, mul_comm (k - 1) m, pow_mul, hapow, ← pow_mul]
+  rw [h1, h2]
+
+/--
+If the `k`-fold seed lies on the `m`-power lattice, then
+`|A|^{x(k-1)}` divides `|C|^{k z}` in `ℕ`.
+-/
+theorem beal_kFold_powerLattice_dvd (A C : ℤ) (x z m k : ℕ)
+    (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k)
+    (hlat : IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m) :
+    A.natAbs ^ (x * (k - 1)) ∣ C.natAbs ^ (k * z) := by
+  obtain ⟨n, _hn, heq⟩ := hlat
+  have hpow := bealCGAKFoldMag_pow A C x z m k hm hA hC hk
+  have ha : 0 < (A.natAbs : ℝ) :=
+    Nat.cast_pos.mpr (Int.natAbs_pos.mpr hA)
+  have hden : (0 : ℝ) < (A.natAbs : ℝ) ^ (x * (k - 1)) :=
+    pow_pos ha _
+  have hnpos : 0 < (n : ℝ) := by
+    have hmag : 0 < bealCGAKFoldMag A C x z m k := by
+      unfold bealCGAKFoldMag
+      exact mul_pos (bealRootMag_pos hA x m) (Real.exp_pos _)
+    have : 0 < (bealCGAKFoldMag A C x z m k) ^ m := pow_pos hmag _
+    rwa [heq] at this
+  have hn0 : 0 < n := Int.cast_pos.mp hnpos
+  have hdivR :
+      (C.natAbs : ℝ) ^ (k * z) =
+        (n : ℝ) * (A.natAbs : ℝ) ^ (x * (k - 1)) := by
+    have : (C.natAbs : ℝ) ^ (k * z) / (A.natAbs : ℝ) ^ (x * (k - 1)) =
+        (n : ℝ) := by
+      rw [← hpow, heq]
+    field_simp [ne_of_gt hden] at this ⊢
+    linarith [this]
+  refine ⟨n.toNat, ?_⟩
+  apply_fun (fun t : ℕ => (t : ℝ)) using Nat.cast_injective
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  have hnR : (n.toNat : ℝ) = (n : ℝ) := by
+    exact_mod_cast Int.toNat_of_nonneg hn0.le
+  rw [hnR, hdivR, mul_comm]
+
+/--
+Pairwise AC-coprimality + power-lattice closure of the `k`-fold seed
+(`k ≥ 2`) forces `|A| = 1`. Unconditional descent lemma (no bridge).
+-/
+theorem beal_natAbs_eq_one_of_kFold_powerLattice {A B C : ℤ} {x y z m k : ℕ}
+    (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hlat : IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m) :
+    A.natAbs = 1 := by
+  have hk1 : 1 ≤ k := Nat.le_trans (by decide : 1 ≤ 2) hk
+  have hdvd := beal_kFold_powerLattice_dvd A C x z m k hm hA hC hk1 hlat
+  have hac := beal_coprime_ac hA hB hC hx hy hz hgcd hsol
+  have hpow : 0 < x * (k - 1) := by
+    have : 0 < k - 1 := Nat.sub_pos_of_lt hk
+    exact Nat.mul_pos hx this
+  -- If a prime divides A, it divides C via the divisibility, contradicting hac.
+  rw [Nat.eq_one_iff_not_exists_prime_dvd]
+  intro p hp hpA
+  have hpC : p ∣ C.natAbs := by
+    have : p ∣ A.natAbs ^ (x * (k - 1)) :=
+      dvd_pow hpA (ne_of_gt hpow)
+    have : p ∣ C.natAbs ^ (k * z) := Nat.dvd_trans this hdvd
+    exact hp.dvd_of_dvd_pow this
+  exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
+
+/-- Balanced model rapidity never yields a modular winding witness on any `N`. -/
+theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
+    ¬ ∃ w : ModularAmplificationWitness N (bealAmpExp x y z),
+      w.t.val = pureBoostSeedOfRapidity N
+        (Real.log 2 / (bealMinExp x y z : ℝ)) := by
+  intro hw
+  exact not_exists_modularWitness_of_balanced_gap N (bealMinExp x y z)
+    (bealAmpExp x y z) (bealMinExp_pos hx hy hz) (bealAmpExp_pos x y z)
+    (beal_balanced_fracGap_lt_ampExp_threshold hx hy hz) hw
+
+/-! ### Live bridges: discrete closure + unit-base residual -/
+
+/--
+**Live** geometric half (unproved): a coprime Beal solution has its `k`-fold
+CGA seed on the `m`-power null lattice. Not the tautological statement that
+root magnitudes themselves lie on that lattice (`bealRootMag_isCGAPowerLatticePoint`).
+-/
+def BealCGADiscreteClosed : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    A ^ x + B ^ y = C ^ z →
+      IsCGAPowerLatticePoint
+        (bealCGAKFoldMag A C x z (bealMinExp x y z) (bealAmpExp x y z))
+        (bealMinExp x y z)
+
+/--
+**Live** residual half (unproved): no coprime Beal solution has `|A| = 1`.
+Elementary special cases (e.g. `1 + b³ = c³`) are available separately; the
+general statement is Mihăilescu / Fermat–Catalan scale and is not claimed here.
+-/
+def BealUnitBaseNoGo : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    A.natAbs = 1 →
+      ¬ A ^ x + B ^ y = C ^ z
+
+/-- Conditional classical Beal from discrete closure + unit-base no-go. -/
+theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
+    (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C := by
+  intro A B C x y z hx hy hz hA hB hC hsol
+  by_contra hnot
+  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
+  have hpos : 0 < bealGcd A B C := bealGcd_pos hA
+  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
+  have hlat := hclosed A B C x y z hx hy hz hA hB hC hcoprime hsol
+  have hm : bealMinExp x y z ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
+  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
+  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
+  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
+  have hk : 2 ≤ bealAmpExp x y z :=
+    Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z)
+  have hA1 : A.natAbs = 1 :=
+    beal_natAbs_eq_one_of_kFold_powerLattice hm hA hB hC hx0 hy0 hz0 hk
+      hcoprime hsol hlat
+  exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hA1 hsol
+
+/-- Elementary unit-base fragment: `1 + b^3 = c^3` has no positive solutions. -/
+theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
+    (hb : 0 < b) (hc : 0 < c) : ¬ ((1 : ℤ) + b ^ 3 = c ^ 3) := by
+  intro hsol
+  have hdiff : c ^ 3 - b ^ 3 = 1 := by linarith [hsol]
+  have hfac : (c - b) * (c ^ 2 + c * b + b ^ 2) = 1 := by
+    have : c ^ 3 - b ^ 3 = (c - b) * (c ^ 2 + c * b + b ^ 2) := by ring
+    linarith [this, hdiff]
+  have hcb_pos : 0 < c - b := by
+    have hbc : b < c := by
+      by_contra hle
+      push Not at hle
+      have : c ^ 3 ≤ b ^ 3 :=
+        pow_le_pow_left₀ (le_of_lt hc) hle 3
+      linarith [hdiff]
+    linarith
+  have hcb : c - b = 1 := by
+    have h1' : c - b ∣ (1 : ℤ) := ⟨c ^ 2 + c * b + b ^ 2, hfac.symm⟩
+    have hle : c - b ≤ 1 := Int.le_of_dvd (by decide : (0 : ℤ) < 1) h1'
+    have hge : 1 ≤ c - b := Int.add_one_le_of_lt hcb_pos
+    exact le_antisymm hle hge
+  have hpoly : 3 * b ^ 2 + 3 * b = 0 := by
+    have hc_eq : c = b + 1 := by linarith [hcb]
+    rw [hc_eq] at hdiff
+    ring_nf at hdiff
+    linarith [hdiff]
+  have : b * (b + 1) = 0 := by
+    have h3 : (3 : ℤ) ≠ 0 := by decide
+    have : (3 : ℤ) * (b * (b + 1)) = 0 := by linarith [hpoly]
+    exact (mul_eq_zero.mp this).resolve_left h3
+  exact (mul_eq_zero.mp this).elim (ne_of_gt hb) (by intro; linarith [hb])
 
 /-! ### Wide principal window (proved construction) -/
 

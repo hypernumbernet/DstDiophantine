@@ -15,10 +15,10 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線を場合分けした。** 旧 `BealModularBridge` と恒真ゲージ付き `BealCGANoGo` は診断専用。本命は `BealWindingBridge`（数論）と `BealCGALatticeGauge` / `BealCGADilationNoGo`（DST 整数ヌル格子・PGA 錐と非同一）です。
+- **Beal 危機路線をフェーズ 7d に進めた。** 本命は `BealCGADiscreteClosed`（k 倍冪格子閉性）と `BealUnitBaseNoGo`（`|A|=1` 残件）。旧巻数全解 bridge / 整数格子 NoGo / 恒真ゲージは診断専用。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
-- **広い主値窓の巻数 witness を証明した。** ギャップが窓に入る解については巻数証明書まで機械検証済み（`beal_winding_of_solution_window`）。釣り合い型は窓外のまま。
-- **1D CGA 分数冪シード。** 点対ペアリング、スケール不変 dilation mismatch、三点 `α^m+β^m=γ^m`、整数ヌル格子まで機械検証。PGA 高さと切り離しています。
+- **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
+- **CGA 冪格子降下。** 対ごと互素、`IsCGAPowerLatticePoint`、k 倍種の整除裁定、互素なら `|A|=1` まで機械検証。根そのものの冪格子所属は恒真に近く、閉性仮説だけを bridge にする。
 - **Fermat / abc modular bridge も型付け済み。** 無条件 FLT / Beal / abc は主張しません。
 - **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（広い主値窓・折り畳み）までです。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
@@ -93,7 +93,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | ファイル | いま入っているもの |
 |----------|-------------------|
 | `Fermat.lean` | 加法同値、`FermatModularBridge`、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
-| `Beal.lean` | 分数冪 gap、`bealAmpExp`、窓付き巻数、CGA 格子 / dilation NoGo、広い主値窓・折り畳み、旧 modular（診断） |
+| `Beal.lean` | 分数冪 gap、冪格子降下、DiscreteClosed / UnitBase、窓巻数、釣り合い型空性、旧格子 / modular（診断） |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
 | `Goldbach.lean` / `Polignac.lean` | 加法分解の motor 同値、候補の健全性、有限範囲の存在 |
@@ -122,15 +122,15 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 ## これからの見通し
 
-いまの焦点は **無条件 Beal** です。共通 no-go と modular 基盤はあり、窓側の巻数は
-証明済みです。残りは釣り合い型と CGA 格子上の幾何禁止です。
+いまの焦点は **無条件 Beal** です。共通 no-go・modular 基盤・窓巻数・釣り合い型の
+巻数空性・冪格子降下補題までは揃っています。残りは二つの bridge 本体です。
 
 - **主軸（Beal）**  
-  `BealCGADilationNoGo`（DST 整数ヌル格子上で巻数 witness を禁止）と、釣り合い型への
-  `BealWindingBridge` 拡張（CGA mismatch `(2^{1/m}-1)^2`）。旧 PGA
-  `ConformalGaugeAdmissible` / 恒真 `BealCGAGauge` 同一視は使わない。
+  `BealCGADiscreteClosed`（互素解の k 倍 CGA 種が m 冪格子に留まる）と
+  `BealUnitBaseNoGo`（`|A|=1` の互素解禁止）。降下補題により両者から古典 Beal が従う。
+  旧巻数全解 / 整数格子 / 恒真ゲージ経路は使わない。
 - **1D CGA**  
-  ペアリング・格子・三点冪和は接続済み。時空 CGA は後続です。
+  ペアリング・整数格子・冪格子・三点冪和は接続済み。時空 CGA は後続です。
 - **後続の冪和 / 品質型**  
   Fermat / abc modular への移植、巻数誤差の数論的下限。
 - **有限証明書の拡大**  
