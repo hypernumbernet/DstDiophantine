@@ -86,6 +86,10 @@ example {a c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0) :
       a.natAbs ∣ c.natAbs :=
   Embedding.IsCGAIntegerDilation_div_iff ha hc
 
+/-- Regression: Pythagorean `5/3` is not an integer CGA dilation. -/
+example : ¬ Embedding.IsCGAIntegerDilation ((5 : ℝ) / 3) :=
+  Embedding.not_isCGAIntegerDilation_five_div_three
+
 end CGA
 
 end DstDiophantine

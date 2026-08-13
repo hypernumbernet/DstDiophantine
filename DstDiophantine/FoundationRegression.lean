@@ -28,8 +28,9 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 `DstDiophantine.Basic`) to avoid a module cycle.
 
 Beal critical-path regressions (payload incompatibility, winding window,
-power-lattice descent, phase 7e realisation / Mihăilescu / DST config,
-diagnostic NoGo) are included; Gravity remains intentionally out of scope.
+power-lattice descent, phase 7e bookkeeping realisation / Mihăilescu / DST
+config, phase 7f exponent-gcd reduction / FLT hypothesis, diagnostic NoGo)
+are included; Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation)
@@ -229,7 +230,7 @@ example {A B C : ℤ} {x y z : ℕ}
     ¬ A ^ x + B ^ y = C ^ z :=
   bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1
 
-/-- Phase 7e: realisation + Mihăilescu recover positive classical Beal. -/
+/-- Phase 7e: realisation + Mihăilescu recover positive classical Beal (bookkeeping). -/
 example (hreal : BealCGARealization) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -237,6 +238,40 @@ example (hreal : BealCGARealization) :
       A ^ x + B ^ y = C ^ z →
       1 < bealGcd A B C :=
   beal_conjecture_pos_of_realization hreal
+
+/-- Phase 7f: equal-exponent integer dilation ↔ `|A| = 1` under AC-coprimality. -/
+example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0)
+    (hac : Nat.Coprime A.natAbs C.natAbs) :
+    IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
+      A.natAbs = 1 :=
+  beal_eq_exp_integerDilation_iff_natAbs_eq_one A C p hp hA hC hac
+
+/-- Phase 7f: Pythagorean `3²+4²=5²` misses integer A–C dilation. -/
+example : ¬ IsCGAIntegerDilation (bealRootMag (5 : ℤ) 2 2 / bealRootMag (3 : ℤ) 2 2) :=
+  not_beal_eq_exp_integerDilation_three_four_five
+
+/-- Phase 7f: exponent-gcd reduction to Fermat form. -/
+example (A B C : ℤ) (x y z : ℕ) :
+    let d := bealExpGcd x y z
+    A ^ x + B ^ y = C ^ z ↔
+      (A ^ (x / d)) ^ d + (B ^ (y / d)) ^ d = (C ^ (z / d)) ^ d :=
+  beal_eq_pow_mul_expGcd A B C x y z
+
+/-- Phase 7f: mathlib FLT forbids Beal solutions with `bealExpGcd ≥ 3`. -/
+example (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : 3 ≤ bealExpGcd x y z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hx hy hz hA hB hC hd
+
+/-- Phase 7f: modular Fermat bridge yields the gcd≥3 Beal slice. -/
+example (hbridge : FermatModularBridge) {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : 3 ≤ bealExpGcd x y z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_ge_three_of_modular_bridge hbridge hx hy hz hA hB hC hd
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :

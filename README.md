@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7e に進めた。** 本命は `BealCGARealization`（互素解 ⇒ A–C 根比が整数 CGA dilation）。`BealCGADiscreteClosed` は bookkeeping（冪格子 ⇔ `|A|=1`）。正の `|A|=1` は Mihăilescu axiom で閉じた。
+- **Beal 危機路線をフェーズ 7f に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping。指数 gcd 還元で `d≥3` は mathlib `FermatLastTheorem` 仮説へ落とす（axiom ではない）。残件は `d=1`（混合）と `d=2`（ピタゴラス冪）。正の `|A|=1` は Mihăilescu axiom で閉じた。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。
@@ -123,14 +123,14 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 ## これからの見通し
 
-いまの焦点は **無条件 Beal** です。共通 no-go・modular 基盤・窓巻数・釣り合い型の
-巻数空性・冪格子⇔`|A|=1`・正の UnitBase（Mihăilescu）・DST 配置の易しい方向までは
-揃っています。残りは `BealCGARealization` 本体です。
+いまの焦点は **無条件 Beal** です。共通 no-go・modular 基盤・窓巻数・bookkeeping 降下・
+Mihăilescu 正 UnitBase・指数 gcd 還元（`d≥3` → FLT 仮説）までは揃っています。
+残りは `bealExpGcd ∈ {1,2}` と FLT 本体です。
 
 - **主軸（Beal）**  
-  `BealCGARealization`（互素解 ⇒ A–C 根比が整数 CGA dilation）。これと Mihăilescu
-  から正の古典 Beal が従う。旧巻数全解 / DiscreteClosed bookkeeping / 整数格子 /
-  恒真ゲージ経路は使わない。
+  指数 gcd 還元。`d≥3` は mathlib `FermatLastTheorem`（`FermatModularBridge` から従う）
+  で条件付き閉鎖。残件は混合指数（`d=1`）とピタゴラス冪（`d=2`）。
+  Realization / DiscreteClosed は bookkeeping（幾何原理として証明しない）。
 - **1D CGA**  
   ペアリング・整数格子・冪格子・整数 dilation 群・三点冪和は接続済み。時空 CGA は後続です。
 - **後続の冪和 / 品質型**  

@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal フェーズ 7e: CGA 整数 dilation 実現・Mihăilescu）
+最終更新: 2026-08-13（Beal フェーズ 7f: Realization bookkeeping 化・指数 gcd 還元）
 
 ## 1. 三層アーキテクチャ
 
@@ -47,7 +47,8 @@ flowchart LR
 | `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealCGARealization` | Beal（本命・幾何） | 互素解 ⇒ A–C 根比が整数 CGA dilation | **型付け済・未証明**；等指数 rotor↔scale は証明済 |
+| `BealCGARealization` | Beal（bookkeeping） | 互素解 ⇒ A–C 根比が整数 CGA dilation | **≡ `|A|=1` ∧ `|C|^z` が m 乗**；独立幾何原理ではない |
+| `bealExpGcd` 還元 | Beal（本命分割） | `d=gcd(x,y,z)` | **d≥3 は mathlib `FermatLastTheorem` 仮説で禁止**；d=2 はピタゴラス冪；d=1 が残件 |
 | `BealCGADiscreteClosed` | Beal（bookkeeping） | 互素解 ⇒ k 倍種が m 冪格子上 | **≡ `|A|=1`**（`beal_kFold_powerLattice_iff_natAbs_eq_one`） |
 | `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` | Beal（残件） | `|A|=1` の互素解は存在しない | **正の基底は Mihăilescu axiom で証明済** |
 | `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
@@ -85,7 +86,7 @@ flowchart LR
 | **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
 | **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
 
-**最優先軸:** 無条件 Beal 危機路線（フェーズ 7e）。窓側巻数・釣り合い型巻数空性・対ごと互素・冪格子 ⇔ `|A|=1`・正の UnitBase（Mihăilescu）・DST 配置の易しい方向・等指数 rotor↔scale は証明済。残りは `BealCGARealization` 本体。旧巻数全解 / DiscreteClosed bookkeeping / 整数格子 NoGo / 恒真ゲージは診断用。無条件 FLT / abc はその先の応用。
+**最優先軸:** 無条件 Beal 危機路線（フェーズ 7f）。Realization / DiscreteClosed は bookkeeping。指数 gcd 還元で `d≥3` は mathlib `FermatLastTheorem` 仮説（axiom ではない；`FermatModularBridge` から従う）へ落とした。残件は **`d=1` の混合指数** と **`d=2` のピタゴラス冪**。窓巻数・Mihăilescu 正 UnitBase・等指数接続は証明済。無条件 FLT / abc はその先。
 
 ---
 
@@ -99,13 +100,13 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7e）
+### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7f）
 
-1. **`BealCGARealization` 本体:** 互素解の A–C 根比が整数 CGA dilation（唯一の未証明核）
-2. ~~`BealUnitBaseNoGo`（正）~~ — Mihăilescu axiom で完了；`BealCGADiscreteClosed` は bookkeeping
-3. modular 巻数誤差の数論的下限 — `JNormalized_scale = JNormalized_amplified + error(winding)`（窓側補助）
-4. （後続）`FermatModularBridge` / `AbcModularBridge` への同型移植
-5. 有限証明書の拡大
+1. ~~`BealCGARealization` を幾何原理として証明~~ — bookkeeping 化完了（循環を回避）
+2. **残件 `bealExpGcd = 1`:** 真に混合した指数の互素解
+3. **残件 `bealExpGcd = 2`:** ピタゴラス冪（パラメータ表示は未着手）
+4. ~~`d ≥ 3`~~ — mathlib `FermatLastTheorem` 仮説で条件付き閉鎖（本体は未証明）
+5. （後続）`FermatModularBridge` / `AbcModularBridge`；有限証明書の拡大
 
 ### 探索的（並列トラック）
 
@@ -178,7 +179,7 @@ flowchart LR
 - [x] `BealCGADiscreteClosed` + `BealUnitBaseNoGo` 型付けと条件付き古典 Beal
 - [x] 有限断片 `not_one_add_pow_three_eq_pow_three`
 
-### フェーズ 7e（Beal CGA 整数 dilation 実現 — 進行中）
+### フェーズ 7e（Beal CGA 整数 dilation 実現 — 完了→bookkeeping）
 
 - [x] 互素解で k 倍冪格子 ⇔ `|A|=1`（`BealCGADiscreteClosed` を bookkeeping 化）
 - [x] Mihăilescu axiom + 正の `bealUnitBaseNoGo_pos`
@@ -186,7 +187,17 @@ flowchart LR
 - [x] `IsDSTBealDiscreteConfig` + 互素 ⇒ `|A|=1`；正なら Mihăilescu で矛盾
 - [x] `BealCGARealization` 型付け；等指数 `mismatchRotor` ↔ CGA log-scale
 - [x] 条件付き正古典 Beal（`beal_conjecture_pos_of_realization`）
-- [ ] `BealCGARealization` 本体（無条件 Beal 相当 — 主張しない）
+- [x] Realization を独立幾何原理として扱わない（フェーズ 7f で確定）
+
+### フェーズ 7f（Realization bookkeeping + 指数 gcd 還元 — 進行中）
+
+- [x] `beal_integerDilation_iff_pow_eq` / 互素解での同値 / 等指数⇔`|A|=1`
+- [x] 診断 `3²+4²=5²`（比 `5/3` は整数 dilation でない）
+- [x] `bealExpGcd`・冪還元・`bealGcd_pow_eq_one`
+- [x] mathlib `FermatLastTheorem` 仮説で `d≥3` を条件付き閉鎖（axiom にしない）
+- [x] `FermatLastTheorem_of_modular_bridge`；等指数・ピタゴラス冪還元
+- [ ] 残件: `bealExpGcd = 1`（混合指数）と `= 2`（ピタゴラス冪の数論）
+- [ ] 無条件古典 Beal（主張しない）
 
 ### Gravity トラック（PGA–TEGR）
 
@@ -302,11 +313,11 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。
 
 ## 8. 次アクション
 
-1. **（主・Beal）** `BealCGARealization`: 互素解の A–C 根比が整数 CGA dilation であることの証明
-2. modular 巻数誤差の数論的下限（窓側補助）
+1. **（主・Beal）** `bealExpGcd ∈ {1,2}` 残件: 混合指数とピタゴラス冪
+2. （条件付き）mathlib / modular 経路での `FermatLastTheorem` 本体は別トラック
 3. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
 4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 釣り合い型巻数空性 + 冪格子⇔`|A|=1` + Mihăilescu 正 UnitBase + DST 配置易しい方向 + Realization 条件付き帰結** まで固めた段階であり、無条件古典 Beal は `BealCGARealization` 本体が閉じるまで未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元（d≥3 は FLT 仮説）** まで固めた段階であり、無条件古典 Beal は FLT 本体と `d∈{1,2}` が閉じるまで未達成である。

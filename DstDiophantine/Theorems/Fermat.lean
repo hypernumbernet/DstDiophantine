@@ -11,6 +11,7 @@ import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Generators
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.FieldSimp
@@ -335,6 +336,22 @@ theorem fermat_last_theorem_of_modular_bridge
     ModularAmplification.ModularAmplificationWitness.not_admissible_real_scale w
   rw [hw] at hnot
   exact hnot hconf
+
+/-! ### Mathlib FLT hypothesis (for Beal exponent-gcd reduction) -/
+
+/--
+Modular bridge implies mathlib's `FermatLastTheorem` (phase 7f).
+
+Not an `axiom`: Beal's exponent-gcd reduction takes `FermatLastTheorem` as an
+assumption. Mathlib states FLT over `ℕ`; we transport via
+`fermatLastTheoremFor_iff_int`.
+-/
+theorem FermatLastTheorem_of_modular_bridge
+    (hbridge : FermatModularBridge) : FermatLastTheorem := by
+  intro n hn
+  rw [fermatLastTheoremFor_iff_int]
+  intro a b c ha hb hc
+  exact fermat_last_theorem_of_modular_bridge hbridge a b c n hn ha hb hc
 
 end Theorems
 

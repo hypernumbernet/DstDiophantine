@@ -255,6 +255,40 @@ theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
     push_cast
     ring
 
+/-- Diagnostic: `5/3` is not an integer CGA dilation (Pythagorean `3²+4²=5²`). -/
+theorem not_isCGAIntegerDilation_five_div_three :
+    ¬ IsCGAIntegerDilation ((5 : ℝ) / 3) := by
+  intro ⟨n, hn, heq⟩
+  have hmul : (5 : ℝ) = (n : ℝ) * 3 := by
+    have := congrArg (fun t => t * (3 : ℝ)) heq
+    field_simp at this
+    linarith [this]
+  have hnR : (n : ℝ) = (5 : ℝ) / 3 := by
+    have h3 : (3 : ℝ) ≠ 0 := by norm_num
+    field_simp [h3] at hmul ⊢
+    linarith [hmul]
+  -- No integer equals `5/3`: nearest candidates are `1` and `2`.
+  have hne1 : (n : ℝ) ≠ 1 := by
+    intro h; rw [h] at hnR; norm_num at hnR
+  have hne2 : (n : ℝ) ≠ 2 := by
+    intro h; rw [h] at hnR; norm_num at hnR
+  have hlt : n ≤ 1 := by
+    by_contra h
+    have : (2 : ℤ) ≤ n := by omega
+    have : (2 : ℝ) ≤ (n : ℝ) := by exact_mod_cast this
+    have : (5 : ℝ) / 3 < 2 := by norm_num
+    linarith [hnR, this]
+  have hgt : 1 ≤ n ∨ n ≤ 0 := by omega
+  cases hgt with
+  | inl hge =>
+    have : n = 1 := le_antisymm hlt hge
+    exact hne1 (by exact_mod_cast this)
+  | inr hle =>
+    have hnpos : 0 < (n : ℝ) := by
+      have : (0 : ℝ) < (5 : ℝ) / 3 := by norm_num
+      rwa [← hnR] at this
+    exact absurd (Int.cast_pos.mp hnpos) (not_lt.mpr hle)
+
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a
 nonzero integer whose torsional height exceeds `M`.
