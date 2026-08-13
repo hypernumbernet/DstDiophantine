@@ -14,9 +14,11 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **コアは `sorry` なし。** Lean 4 + mathlib 上で、代数・増幅・層境界の中核が機械検証されています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Fermat / Beal / abc modular bridge を型付けした。** 解依存の量子化種と巻数付き witness、および共形ゲージの残ギャップ `ConformalGaugeAdmissible` を分けてあります。Beal は分数冪 log-gap（`bealFracLogGap`）まで機械検証済みです。abc の連続品質 bridge は偽だと機械検証済みです。無条件 FLT / Beal / abc は主張しません。
-- **1D CGA 探針を並列に入れた。** PGA の `integerHeight` は非有界ですが、`Cl(2,1)` の null 点埋め込みは斉次です（`Basic` には強制しません）。
-- **古典予想の無条件証明はまだ主張しない。** FLT / Beal / abc などは「bridge が正しければ従う」形で型付けしてあります。
+- **Beal 危機路線を分割した。** 旧 `BealModularBridge`（巻数 + PGA `ConformalGaugeAdmissible`）は方程式非依存に矛盾すると機械検証済みです。本命は `BealWindingBridge`（数論）と `BealCGAGauge` / `BealCGANoGo`（CGA・PGA 錐と非同一）です。
+- **不均衡窓の巻数 witness を証明した。** `m ≥ 4` かつ `2π/m ≤ δ < 5π/(2m)` なら、正の解から `ModularAmplificationWitness` を無条件に構成できます（`m = 3` はこの窓が空）。
+- **Fermat / abc modular bridge も型付け済み。** abc の連続品質 bridge は偽だと機械検証済みです。無条件 FLT / Beal / abc は主張しません。
+- **1D CGA 分数冪シード。** Beal の `|n|^{e/m}` を `Cl(2,1)` null 点に載せて PGA 高さと切り離しています。
+- **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（不均衡窓）までです。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
 
 ## 行ったこと
@@ -89,7 +91,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | ファイル | いま入っているもの |
 |----------|-------------------|
 | `Fermat.lean` | 加法同値、`FermatModularBridge`、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
-| `Beal.lean` | 分数冪 gap、`BealModularBridge`（条件付き）、連続 bridge（診断）、釣り合い型障害 |
+| `Beal.lean` | 分数冪 gap、`BealWindingBridge` / CGA 分割、不均衡窓 witness、旧 modular（診断・矛盾） |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
 | `Goldbach.lean` / `Polignac.lean` | 加法分解の motor 同値、候補の健全性、有限範囲の存在 |
@@ -118,24 +120,22 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 ## これからの見通し
 
-いまの焦点は「共通 no-go はあるが、解から証明書への橋がない」状態を埋めることです。
-Fermat / Beal / abc の modular bridge 型は置きましたが、本体と共形ゲージの再定義が残っています。
+いまの焦点は **無条件 Beal** です。共通 no-go と modular 基盤はあり、Beal は
+「巻数半分」と「CGA 幾何半分」に分けて進めます。
 
-- **主軸（冪和・品質型）**  
-  `ConformalGaugeAdmissible` を CGA 側で PGA 実スケールと切り離せるかを検証し、
-  modular の巻数誤差に数論的な下限を付ける。  
-  旧粗離散の単純コピーは空命題になるので、**解依存 payload** を優先します。無条件 FLT / Beal はその先の応用です。
-- **1D CGA 探針**  
-  `DstDiophantine.CGA` で null 点・dilation を診断中。時空 CGA は後続です。
+- **主軸（Beal）**  
+  `BealCGANoGo`（CGA 上で巻数 witness を禁止）と、窓外・`m = 3` への
+  `BealWindingBridge` 拡張。旧 PGA `ConformalGaugeAdmissible` 同一視は使わない。
+- **1D CGA**  
+  分数冪シードは Beal 経路に接続済み。時空 CGA は後続です。
+- **後続の冪和 / 品質型**  
+  Fermat / abc modular への移植、巻数誤差の数論的下限。
 - **有限証明書の拡大**  
-  Collatz / Goldbach / abc などの検証上限を上げ、回帰の厚みを増やす。
-- **別系列の bridge 診断**  
-  軌道型（Collatz）と加法分解型（Goldbach / Polignac）は、冪和型と同じ型に無理に押し込めず、別ルートで診断を続ける。Riemann は長期です。
-- **並列の Gravity**  
-  一般の `J⁵ ↔ T`、3-blade / dual-as-normal の一般定理を進める。TEGR↔EH の完全な変分同値は文献枠のまま据え置き。
+  Collatz / Goldbach / abc などの検証上限を上げる。
+- **別系列**  
+  軌道型・加法分解型は別ルート。Riemann は長期。Gravity は並列。
 - **長期目標**  
-  7 予想を「離散双対時空の内部で、許容される増幅証明書が存在しない」という単一原理から導くこと。  
-  現状はその共通原理の片側（no-go + modular 基盤 + Fermat modular の型付け）まで固めた段階で、無条件の古典定理は未達成です。
+  7 予想を単一原理から導く完全機械検証。無条件古典 Beal はまだ未達成です。
 
 ## ビルド
 

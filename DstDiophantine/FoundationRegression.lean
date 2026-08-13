@@ -10,6 +10,7 @@ import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Abc
+import DstDiophantine.Embedding.ConformalInteger
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -18,13 +19,15 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 These examples guard against export and dependency regressions in the shared
 amplification core. They import Framework / Algebra / Theorems directly (not
 `DstDiophantine.Basic`) to avoid a module cycle.
+
+Beal critical-path regressions (payload incompatibility, winding threshold,
+CGA null gauge) are included; Gravity remains intentionally out of scope.
 -/
 
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification
 open _root_.DstDiophantine.Embedding
--- CGA probe is intentionally not imported here (same policy as Gravity).
 
 /-- Additive faithfulness. -/
 example (a b c : ℤ) (p : ℕ) :
@@ -132,7 +135,7 @@ example {N : ℕ} [NeZero N] {x y z : ℕ}
     False :=
   beal_discrete_amplification_contradiction hx hy hz t hlb hadm
 
-/-- Modular Beal bridge recovers classical Beal conditionally. -/
+/-- Diagnostic modular Beal bridge recovers classical Beal conditionally. -/
 example (hbridge : BealModularBridge) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -141,11 +144,64 @@ example (hbridge : BealModularBridge) :
       1 < bealGcd A B C :=
   beal_conjecture_of_modular_bridge hbridge
 
+/-- Winding witness and PGA-identified conformal gauge are incompatible. -/
+example {N k : ℕ} [NeZero N] (w : ModularAmplificationWitness N k) :
+    ¬ ConformalGaugeAdmissible
+        (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
+  beal_modular_payload_incompatible w
+
+/-- At `m = 3` the winding threshold sits above the continuous seed cone. -/
+example {x y z : ℕ} (hm : bealMinExp x y z = 3) :
+    Real.pi / 2 < 2 * Real.pi / (bealMinExp x y z : ℝ) :=
+  beal_winding_threshold_gt_half_pi_of_minExp_eq_three hm
+
+/-- Balanced fractional gap misses the modular winding threshold. -/
+example {m : ℕ} (hm : 0 < m) :
+    Real.log 2 / (m : ℝ) < 2 * Real.pi / (m : ℝ) :=
+  beal_balanced_fracGap_lt_winding_threshold hm
+
+/-- Split winding + CGA no-go bridges recover classical Beal conditionally. -/
+example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_of_winding_and_cga_nogo hwind hnogo
+
+/-- CGA Beal gauge is null on both fractional-power seeds (not PGA real-scale). -/
+example (A C : ℤ) (x z m : ℕ) : BealCGAGauge A C x z m :=
+  BealCGAGauge_of_ne_zero A C x z m
+
+/-- Unbalanced window constructs a modular winding witness (gap hypothesis). -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hm4 : 4 ≤ bealMinExp x y z)
+    (hle : 2 * Real.pi / (bealMinExp x y z : ℝ) ≤
+      bealFracLogGap A C x z (bealMinExp x y z))
+    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
+      5 * Real.pi / (2 * (bealMinExp x y z : ℝ))) :
+    let m := bealMinExp x y z
+    let N := 4 * m
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t :=
+  beal_modularWitness_of_fracGap_window hx hy hz hA hB hC hsol hm4 hle hlt
+
 /-- Equal-exponent Beal fractional gap degenerates to Fermat log-mismatch. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
     bealFracLogGap A C p p p =
       Real.log (Int.natAbs C) - Real.log (Int.natAbs A) :=
   bealFracLogGap_eq_exp A C p hp
+
+/-- Fractional log-gap equals log-ratio of CGA root magnitudes. -/
+example (A C : ℤ) (x z m : ℕ) (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
+    bealFracLogGap A C x z m =
+      Real.log (bealRootMag C z m) - Real.log (bealRootMag A x m) :=
+  bealFracLogGap_eq_log_rootMag A C x z m hm hA hC
 
 /-- Continuous abc quality bridge is false (diagnostic obstruction). -/
 example : ¬ AbcAdmissibleBridge :=

@@ -428,6 +428,49 @@ theorem ModularAmplificationWitness.nonempty_example :
     Nonempty (ModularAmplificationWitness 16 5) :=
   ⟨modularWitness_example⟩
 
+/-- Pure-boost nonzero winding forces a nonzero lattice mismatch. -/
+theorem latticeMismatch_ne_zero_of_winding_pureBoost (k : ℕ) (t : DiscreteTorsion N)
+    (hp : IsPureBoostSeed t) (hw : windingTotal k t ≠ 0) :
+    latticeMismatch t ≠ 0 := by
+  have hpos : N ≤ k * (t.n 0).val :=
+    (windingTotal_pureBoost_ne_zero_iff k t hp).mp hw
+  have hval : 0 < (t.n 0).val := by
+    have hk : 0 < k * (t.n 0).val := Nat.lt_of_lt_of_le (NeZero.pos N) hpos
+    exact Nat.pos_of_mul_pos_left hk
+  have hn1 : t.n 1 = 0 := hp.1 1 (by decide)
+  have hn2 : t.n 2 = 0 := hp.1 2 (by decide)
+  have hm0 : t.m 0 = 0 := hp.2 0
+  have hm1 : t.m 1 = 0 := hp.2 1
+  have hm2 : t.m 2 = 0 := hp.2 2
+  have hform : latticeMismatch t = ((t.n 0).val : ℤ) ^ 2 := by
+    unfold latticeMismatch
+    simp only [Fin.sum_univ_three, hn1, hn2, hm0, hm1, hm2, ZMod.val_zero]
+    ring
+  rw [hform]
+  have hne : ((t.n 0).val : ℤ) ≠ 0 := by exact_mod_cast ne_of_gt hval
+  exact pow_ne_zero 2 hne
+
+/-- Assemble a modular witness from an already-checked pure-boost seed. -/
+def modularWitness_of_pureBoost (k : ℕ) (t : DiscreteTorsion N)
+    (_hp : IsPureBoostSeed t) (hadm : IsAdmissible t)
+    (hamp : IsAdmissible (amplifyDiscrete k t))
+    (hwind : windingTotal k t ≠ 0)
+    (hne : latticeMismatch t ≠ 0) :
+    ModularAmplificationWitness N k where
+  t := ⟨t, hadm⟩
+  nonzero_seed := hne
+  amplified_admissible := hamp
+  has_winding := hwind
+
+/-- Convenience: derive `nonzero_seed` from pure-boost winding. -/
+def modularWitness_of_pureBoost_winding (k : ℕ) (t : DiscreteTorsion N)
+    (hp : IsPureBoostSeed t) (hadm : IsAdmissible t)
+    (hamp : IsAdmissible (amplifyDiscrete k t))
+    (hwind : windingTotal k t ≠ 0) :
+    ModularAmplificationWitness N k :=
+  modularWitness_of_pureBoost k t hp hadm hamp hwind
+    (latticeMismatch_ne_zero_of_winding_pureBoost k t hp hwind)
+
 /-- A modular witness with nonzero winding is not continuously admissible after
 real `k`-scaling — it cannot be fed to `continuous_amplification_contradiction`. -/
 theorem ModularAmplificationWitness.not_admissible_real_scale
