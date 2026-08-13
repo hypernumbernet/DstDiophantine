@@ -2,7 +2,9 @@ import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.Height
+import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Operations
@@ -10,6 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -19,13 +22,12 @@ import Mathlib.Tactic.FieldSimp
 set_option linter.style.nativeDecide false
 
 /-!
-# Phase 5: abc conjecture (DST quality / height core)
+# Phase 5–7: abc conjecture (quality / modular bridge)
 
 We formalise Chapter 7 of `dst-diophantine.tex` as a **quality–torsional height**
 argument on the pure-boost mismatch model
 `Ω = pureBoost(2(log c − log rad(abc)))`, together with a finite computational
-certificate and a bridge hypothesis recovering the classical Oesterlé–Masser
-statement.
+certificate and bridges recovering the classical Oesterlé–Masser statement.
 
 ## Paper gap (not closed)
 
@@ -33,23 +35,22 @@ Classical abc (`∀ ε > 0, ∃ Cε, c ≤ Cε · rad(abc)^{1+ε}` for primitive
 **not** claimed unconditionally. Dual-sector rotors `R_dual(p)`, Lemma
 `radical-dual`, and the paper's `O(1)` error in
 `θ = 2 log rad · (q − 1) + O(1)` are left informal. The Lean model drops the
-`O(1)` term and treats quality–height as an exact pure-boost identity. Encoding a
-high-quality classical triple as an *admissible* continuous configuration (with
-quality already past the model ceiling) is `AbcAdmissibleBridge`. Continuum
-recovery of `Cε` via `Q(N) → ∞` is absorbed into that bridge rather than proved
-as a separate limit theorem.
+`O(1)` term and treats quality–height as an exact pure-boost identity.
 
-Legacy coarse real-scale witnesses are equation-independently empty; reusing
-that design stays vacuous. A modular / quality redesign needs a
-**solution-dependent** payload (cf. `FermatModularBridge`), not a bare
-inhabited modular witness.
+Continuous `AbcAdmissibleBridge` is **diagnostic only**: it asks for an
+admissible configuration already past the model quality ceiling, which is
+impossible (`AbcAdmissibleBridge_false`). The live programme is
+`AbcModularBridge`: a **solution-dependent** modular witness on
+`quantizeAbcMismatch`, together with the residual conformal-gauge gap
+`ConformalGaugeAdmissible` (provisionally identified with the PGA real-scale
+cone). Legacy coarse real-scale witnesses stay equation-independently empty.
 -/
 
 namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Discrete Invariant Operations Real
+open Amplification Discrete Invariant Operations Real ModularAmplification
 open Finset
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Framework
@@ -80,6 +81,26 @@ theorem two_le_abcRadical_of_one_lt {n : ℕ} (hn : 1 < n) : 2 ≤ abcRadical n 
     Finset.single_le_prod'
       (fun q hq => Nat.succ_le_of_lt (Nat.pos_of_mem_primeFactors hq)) hp
   exact le_trans hp2 hle
+
+theorem abcRadical_mul_of_coprime {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (hab : Nat.Coprime a b) :
+    abcRadical (a * b) = abcRadical a * abcRadical b := by
+  unfold abcRadical
+  have hdisj := hab.disjoint_primeFactors
+  rw [Nat.primeFactors_mul ha hb, Finset.prod_union hdisj]
+
+theorem abcRadical_mul_triple {a b c : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hab : Nat.Coprime a b) (hac : Nat.Coprime a c) (hbc : Nat.Coprime b c) :
+    abcRadical (a * b * c) = abcRadical a * abcRadical b * abcRadical c := by
+  have ha0 : a ≠ 0 := Nat.pos_iff_ne_zero.mp ha
+  have hb0 : b ≠ 0 := Nat.pos_iff_ne_zero.mp hb
+  have hc0 : c ≠ 0 := Nat.pos_iff_ne_zero.mp hc
+  have habc : Nat.Coprime (a * b) c := Nat.Coprime.mul_left hac hbc
+  have hmul_ab : a * b ≠ 0 := mul_ne_zero ha0 hb0
+  calc abcRadical (a * b * c)
+      = abcRadical (a * b) * abcRadical c := abcRadical_mul_of_coprime hmul_ab hc0 habc
+    _ = abcRadical a * abcRadical b * abcRadical c := by
+        rw [abcRadical_mul_of_coprime ha0 hb0 hab]
 
 /-! ### Classical abc triples -/
 
@@ -128,6 +149,12 @@ theorem isAbcTriple_gcd_one {a b c : ℕ} (h : IsAbcTriple a b c) :
   have hdiv : Nat.gcd a (Nat.gcd b c) ∣ Nat.gcd a b :=
     Nat.gcd_dvd_gcd_of_dvd_right _ (Nat.gcd_dvd_left b c)
   exact Nat.dvd_one.mp (hab ▸ hdiv)
+
+theorem isAbcTriple_radical_mul {a b c : ℕ} (h : IsAbcTriple a b c) :
+    abcRadical (a * b * c) =
+      abcRadical a * abcRadical b * abcRadical c :=
+  abcRadical_mul_triple h.1 h.2.1 (isAbcTriple_c_pos h)
+    h.2.2.2 (isAbcTriple_coprime_ac h) (isAbcTriple_coprime_bc h)
 
 /-! ### Motor encoding -/
 
@@ -289,6 +316,63 @@ theorem abc_amplification_contradiction {a b c : ℕ} (h : IsAbcTriple a b c)
     False :=
   not_le_of_gt hbig (abc_quality_bound_of_admissible h hadm)
 
+/-- Contrapositive form of the quality ceiling. -/
+theorem abc_quality_gt_ceiling_not_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hbig : abcQualityCeiling (abcRadical (a * b * c)) < abcQuality a b c) :
+    ¬ IsAdmissibleContinuous (abcMismatchParams a b c) :=
+  fun hadm => abc_amplification_contradiction h hadm hbig
+
+/-- Log-gap form of quality: `1 < q ↔ rad(abc) < c`. -/
+theorem one_lt_abcQuality_iff {a b c : ℕ} (h : IsAbcTriple a b c) :
+    1 < abcQuality a b c ↔ abcRadical (a * b * c) < c := by
+  set R := abcRadical (a * b * c)
+  have hRpos : 0 < (R : ℝ) := Nat.cast_pos.mpr (abcRadical_pos _)
+  have hLpos : 0 < Real.log (R : ℝ) := by
+    change 0 < Real.log (abcRadical (a * b * c) : ℝ)
+    exact log_radical_pos h
+  have hcpos : 0 < (c : ℝ) := Nat.cast_pos.mpr (isAbcTriple_c_pos h)
+  constructor
+  · intro hq
+    unfold abcQuality at hq
+    have hlog : Real.log (R : ℝ) < Real.log (c : ℝ) := (one_lt_div hLpos).mp hq
+    exact Nat.cast_lt.mp ((Real.log_lt_log_iff hRpos hcpos).mp hlog)
+  · intro hlt
+    unfold abcQuality
+    have hlog : Real.log (R : ℝ) < Real.log (c : ℝ) :=
+      (Real.log_lt_log_iff hRpos hcpos).mpr (Nat.cast_lt.mpr hlt)
+    exact (one_lt_div hLpos).mpr hlog
+
+/-- Pure-boost rapidity of an abc mismatch: `θ = 2 (q − 1) log rad`. -/
+theorem abcMismatch_rapidity {a b c : ℕ} (h : IsAbcTriple a b c) :
+    2 * (Real.log c - Real.log (abcRadical (a * b * c))) =
+      2 * (abcQuality a b c - 1) * Real.log (abcRadical (a * b * c)) := by
+  set R : ℝ := (abcRadical (a * b * c) : ℝ)
+  set L : ℝ := Real.log R
+  set Lc : ℝ := Real.log c
+  have hLne : L ≠ 0 := ne_of_gt (by
+    change 0 < Real.log (abcRadical (a * b * c))
+    exact log_radical_pos h)
+  have hdiff : Lc - L = L * (Lc / L - 1) := by field_simp [hLne]
+  unfold abcQuality
+  change 2 * (Lc - L) = 2 * (Lc / L - 1) * L
+  rw [hdiff]
+  ring
+
+/-- Continuous admissibility of the abc pure-boost seed. -/
+theorem isAdmissibleContinuous_abcMismatch_iff {a b c : ℕ} (_h : IsAbcTriple a b c) :
+    IsAdmissibleContinuous (abcMismatchParams a b c) ↔
+      0 ≤ Real.log c - Real.log (abcRadical (a * b * c)) ∧
+        Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 4 := by
+  set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
+  unfold abcMismatchParams
+  rw [isAdmissibleContinuous_pureBoost_iff]
+  change (0 ≤ 2 * δ ∧ 2 * δ ≤ Real.pi / 2) ↔ (0 ≤ δ ∧ δ ≤ Real.pi / 4)
+  constructor
+  · rintro ⟨h0, hπ⟩
+    exact ⟨by nlinarith, by nlinarith⟩
+  · rintro ⟨h0, hπ⟩
+    exact ⟨by nlinarith, by nlinarith⟩
+
 /-! ### Discrete ceiling (paper `Q(N)` shape) -/
 
 /--
@@ -353,15 +437,18 @@ theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
   allAbcRadicalPowBoundUpTo_sound
     (by native_decide : allAbcRadicalPowBoundUpTo 100 = true) a b c h hc
 
-/-! ### Classical abc under an explicit bridge hypothesis -/
+/-! ### Continuous bridge (diagnostic only) -/
 
 /--
-Continuous abc quality bridge.
+Continuous diagnostic abc quality bridge.
 
-* **Assumption (unproved):** a primitive triple with quality `> 1 + ε` yields an
-  admissible continuous pure-boost past the model quality ceiling.
+* **Assumption:** a primitive triple with quality `> 1 + ε` yields an
+  admissible continuous pure-boost already past the model quality ceiling.
 * **Proved core:** `abc_amplification_contradiction` /
   `torsion_bound_continuous`.
+* **Obstruction:** the two conjuncts cannot hold together
+  (`abc_quality_bound_of_admissible`). Explicitly `¬ AbcAdmissibleBridge`
+  via the triple `1 + 8 = 9`.
 * **Does not claim:** unconditional classical abc (Oesterlé–Masser).
 -/
 def AbcAdmissibleBridge : Prop :=
@@ -371,7 +458,7 @@ def AbcAdmissibleBridge : Prop :=
       IsAdmissibleContinuous (abcMismatchParams a b c) ∧
         abcQualityCeiling (abcRadical (a * b * c)) < abcQuality a b c
 
-/-- Conditional DST recovery of the classical abc conjecture. -/
+/-- Conditional DST recovery of the classical abc conjecture (vacuous bridge). -/
 theorem abc_conjecture_of_bridge (hbridge : AbcAdmissibleBridge) :
     ∀ (ε : ℝ), 0 < ε →
       ∃ C : ℝ, 0 < C ∧
@@ -388,8 +475,250 @@ theorem abc_conjecture_of_bridge (hbridge : AbcAdmissibleBridge) :
     obtain ⟨hadm, hbig⟩ := hbridge ε hε a b c h hlt
     exact (abc_amplification_contradiction h hadm hbig).elim
 
+theorem isAbcTriple_one_eight_nine : IsAbcTriple 1 8 9 := by
+  refine ⟨by decide, by decide, by decide, ?_⟩
+  decide
+
+theorem abcRadical_one_eight_nine : abcRadical (1 * 8 * 9) = 6 := by
+  native_decide
+
+theorem one_lt_abcQuality_one_eight_nine : 1 < abcQuality 1 8 9 := by
+  have h := isAbcTriple_one_eight_nine
+  rw [one_lt_abcQuality_iff h, abcRadical_one_eight_nine]
+  decide
+
+/-- The continuous quality bridge is false: it demands an impossible pair of
+conjuncts on any triple with quality `> 1` (e.g. `1 + 8 = 9`). -/
+theorem AbcAdmissibleBridge_false : ¬ AbcAdmissibleBridge := by
+  intro hbridge
+  set q := abcQuality 1 8 9
+  have hq : 1 < q := one_lt_abcQuality_one_eight_nine
+  set ε : ℝ := (q - 1) / 2
+  have hε : 0 < ε := by
+    unfold ε
+    linarith [hq]
+  have hlt : 1 + ε < q := by
+    unfold ε
+    linarith [hq]
+  obtain ⟨hadm, hbig⟩ := hbridge ε hε 1 8 9 isAbcTriple_one_eight_nine hlt
+  exact abc_amplification_contradiction isAbcTriple_one_eight_nine hadm hbig
+
+/-! ### Quality-seed quantisation (solution-dependent payload) -/
+
+/-- Quantise the abc log-gap `log c − log rad(abc)` to a pure-boost lattice seed. -/
+noncomputable def quantizeAbcMismatch (N : ℕ) [NeZero N] (a b c : ℕ)
+    (_h : IsAbcTriple a b c) : DiscreteTorsion N :=
+  Embedding.quantizeMismatch N (abcRadical (a * b * c) : ℤ) (c : ℤ)
+    (Int.natCast_ne_zero.mpr (abcRadical_ne_zero _))
+    (Int.natCast_ne_zero.mpr (isAbcTriple_c_ne_zero _h))
+
+theorem quantizeAbcMismatch_pureBoost (N : ℕ) [NeZero N] {a b c : ℕ}
+    (h : IsAbcTriple a b c) :
+    ModularAmplification.IsPureBoostSeed (quantizeAbcMismatch N a b c h) :=
+  Embedding.quantizeMismatch_pureBoost _ _ _ _
+
+theorem quantizeAbcMismatch_eq_quantizeRapidity (N : ℕ) [NeZero N] {a b c : ℕ}
+    (h : IsAbcTriple a b c) :
+    (quantizeAbcMismatch N a b c h).n 0 =
+      (quantizeRapidity N
+        (Real.log c - Real.log (abcRadical (a * b * c))) : ZMod N) := by
+  simp only [quantizeAbcMismatch, quantizeMismatch, Int.natAbs_natCast]
+
+theorem quantizeAbcMismatch_error (N : ℕ) [NeZero N] {a b c : ℕ}
+    (h : IsAbcTriple a b c) :
+    |(Real.log c - Real.log (abcRadical (a * b * c))) -
+        rapidityOfIndex N
+          (quantizeRapidity N
+            (Real.log c - Real.log (abcRadical (a * b * c))))| <
+      2 * Real.pi / N := by
+  have ha : (abcRadical (a * b * c) : ℤ) ≠ 0 :=
+    Int.natCast_ne_zero.mpr (abcRadical_ne_zero _)
+  have hc : (c : ℤ) ≠ 0 := Int.natCast_ne_zero.mpr (isAbcTriple_c_ne_zero h)
+  have herr := Embedding.quantizeMismatch_error (N := N)
+    (abcRadical (a * b * c) : ℤ) (c : ℤ) ha hc
+  simpa [logMismatch, pureBoost, Int.natAbs_natCast] using herr
+
+/-- Log gap `δ = log c − log rad(abc) = (q − 1) log rad`. -/
+noncomputable def abcLogGap (a b c : ℕ) : ℝ :=
+  Real.log c - Real.log (abcRadical (a * b * c))
+
+theorem abcLogGap_eq_quality {a b c : ℕ} (h : IsAbcTriple a b c) :
+    abcLogGap a b c =
+      (abcQuality a b c - 1) * Real.log (abcRadical (a * b * c)) := by
+  have hθ := abcMismatch_rapidity h
+  unfold abcLogGap
+  linarith [hθ]
+
+/-! ### Live modular bridge (solution-dependent payload) -/
+
+/--
+**Live modular abc bridge** (unproved).
+
+* **Payload (solution-dependent):** the quantised log-gap
+  `t := quantizeAbcMismatch N a b c` is admissible, carries a
+  `ModularAmplificationWitness N k` with `w.t.val = t`, and the powered
+  real-scale configuration is `ConformalGaugeAdmissible`.
+* **Unlike** `AbcAdmissibleBridge`: the continuous ceiling contradiction is
+  avoided; the witness type is inhabited in general, but the bridge demands
+  that the *triple's* quantised gap be that witness.
+* **Proved core used by the conditional wrapper:**
+  `ModularAmplificationWitness.not_admissible_real_scale`.
+* **Residual gap:** conformal / CGA gauge vs PGA real-scale cone (same as FLT).
+* **Does not claim:** unconditional classical abc.
+-/
+def AbcModularBridge : Prop :=
+  ∀ (ε : ℝ), 0 < ε → ∀ (a b c : ℕ) (h : IsAbcTriple a b c),
+    1 + ε < abcQuality a b c →
+      ∃ (N k : ℕ) (hN : N ≠ 0),
+        letI : NeZero N := ⟨hN⟩
+        let t := quantizeAbcMismatch N a b c h
+        IsAdmissible t ∧
+          (∃ w : ModularAmplificationWitness N k, w.t.val = t) ∧
+            ModularAmplification.ConformalGaugeAdmissible
+              (scaleTorsion (k : ℝ) (toTorsionParams t))
+
+/-- Conditional classical abc from the modular bridge. -/
+theorem abc_conjecture_of_modular_bridge (hbridge : AbcModularBridge) :
+    ∀ (ε : ℝ), 0 < ε →
+      ∃ C : ℝ, 0 < C ∧
+        ∀ (a b c : ℕ), IsAbcTriple a b c →
+          (c : ℝ) ≤ C * (abcRadical (a * b * c) : ℝ) ^ (1 + ε) := by
+  intro ε hε
+  refine ⟨1, by norm_num, ?_⟩
+  intro a b c h
+  by_cases hq : abcQuality a b c ≤ 1 + ε
+  · have ht : 0 ≤ 1 + ε := add_nonneg zero_le_one hε.le
+    have := (abcQuality_le_iff_rpow h ht).mp hq
+    simpa using this
+  · have hlt : 1 + ε < abcQuality a b c := lt_of_not_ge hq
+    obtain ⟨N, k, hN, _hadm, ⟨w, hw⟩, hconf⟩ := hbridge ε hε a b c h hlt
+    let : NeZero N := ⟨hN⟩
+    have hnot :=
+      ModularAmplification.ModularAmplificationWitness.not_admissible_real_scale w
+    rw [hw] at hnot
+    exact (hnot hconf).elim
+
+/-! ### Partial winding construction on the principal interval -/
+
+/-- Pure-boost lattice seed from a continuous rapidity on axis `0`. -/
+noncomputable def pureBoostSeedOfRapidity (N : ℕ) [NeZero N] (θ : ℝ) : DiscreteTorsion N where
+  n := fun i => match i with
+    | 0 => (quantizeRapidity N θ : ZMod N)
+    | _ => 0
+  m := fun _ => 0
+
+theorem pureBoostSeedOfRapidity_isPureBoost (N : ℕ) [NeZero N] (θ : ℝ) :
+    IsPureBoostSeed (pureBoostSeedOfRapidity N θ) := by
+  refine ⟨?_, ?_⟩
+  · intro a ha
+    fin_cases a <;> first | exact (ha rfl).elim | rfl
+  · intro a; rfl
+
+/--
+If `0 ≤ θ < 2π`, the floor index lies in `[0, N)` and agrees with the
+`ZMod` representative after casting.
+-/
+theorem quantizeRapidity_of_lt_two_pi (N : ℕ) [NeZero N] (θ : ℝ)
+    (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi) :
+    0 ≤ quantizeRapidity N θ ∧
+      quantizeRapidity N θ < (N : ℤ) ∧
+        ((quantizeRapidity N θ : ZMod N).val : ℤ) = quantizeRapidity N θ := by
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hden : 0 < (2 * Real.pi : ℝ) := by positivity
+  have hfrac0 : 0 ≤ θ * N / (2 * Real.pi) :=
+    div_nonneg (mul_nonneg h0 (Nat.cast_nonneg _)) hden.le
+  have hfrac_lt : θ * N / (2 * Real.pi) < (N : ℝ) := by
+    have : θ * N < 2 * Real.pi * N := mul_lt_mul_of_pos_right hlt hNpos
+    exact (div_lt_iff₀ hden).mpr (by linarith [this])
+  have hfloor0 : 0 ≤ quantizeRapidity N θ := Int.floor_nonneg.mpr hfrac0
+  have hfloor_lt : quantizeRapidity N θ < (N : ℤ) :=
+    Int.floor_lt.mpr hfrac_lt
+  refine ⟨hfloor0, hfloor_lt, ?_⟩
+  set k := quantizeRapidity N θ
+  have hk0 : 0 ≤ k := hfloor0
+  have hklt : k < (N : ℤ) := hfloor_lt
+  have htoNat : k.toNat < N := by
+    have : (k.toNat : ℤ) < N := by
+      rw [Int.toNat_of_nonneg hk0]; exact hklt
+    exact Nat.cast_lt.mp this
+  have hcast : (k : ZMod N) = (k.toNat : ZMod N) := by
+    rw [← Int.cast_natCast (R := ZMod N), Int.toNat_of_nonneg hk0]
+  calc ((k : ZMod N).val : ℤ)
+      = ((k.toNat : ZMod N).val : ℤ) := by rw [hcast]
+    _ = ↑(k.toNat % N) := by rw [ZMod.val_natCast]
+    _ = ↑k.toNat := by rw [Nat.mod_eq_of_lt htoNat]
+    _ = k := Int.toNat_of_nonneg hk0
+
+private theorem rapidity_frac_ge_of_ge (N k : ℕ) [NeZero N] (hk : 0 < k) (θ : ℝ)
+    (hle : 2 * Real.pi / k ≤ θ) :
+    (N : ℝ) / k ≤ θ * N / (2 * Real.pi) := by
+  have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
+  have hden : 0 < (2 * Real.pi : ℝ) := by positivity
+  calc (N : ℝ) / k
+      = (2 * Real.pi / k) * N / (2 * Real.pi) := by field_simp [hk0]
+    _ ≤ θ * N / (2 * Real.pi) :=
+        div_le_div_of_nonneg_right
+          (mul_le_mul_of_nonneg_right hle (Nat.cast_nonneg _)) hden.le
+
+/--
+Pure-boost quantisation of a rapidity in `[0, 2π)` winds under `k`-fold modular
+amplification whenever `2π / k ≤ θ` and `k ∣ N`.
+-/
+theorem windingTotal_ne_zero_of_rapidity_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
+    (θ : ℝ) (h0 : 0 ≤ θ) (hle : 2 * Real.pi / k ≤ θ) (hlt : θ < 2 * Real.pi)
+    (hdvd : k ∣ N) :
+    windingTotal k (pureBoostSeedOfRapidity N θ) ≠ 0 := by
+  set t := pureBoostSeedOfRapidity N θ
+  have hp : IsPureBoostSeed t := pureBoostSeedOfRapidity_isPureBoost N θ
+  have hbounds := quantizeRapidity_of_lt_two_pi N θ h0 hlt
+  obtain ⟨m, hm⟩ := hdvd
+  have hfrac := rapidity_frac_ge_of_ge N k hk θ hle
+  have hfloor : (m : ℤ) ≤ quantizeRapidity N θ := by
+    have hmR : (m : ℝ) = (N : ℝ) / k := by
+      have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
+      rw [hm, Nat.cast_mul]
+      exact (mul_div_cancel_left₀ (m : ℝ) hk0).symm
+    have hleR : (m : ℝ) ≤ θ * N / (2 * Real.pi) := by
+      rw [hmR]; exact hfrac
+    exact Int.le_floor.mpr hleR
+  have hvalZ : ((t.n 0).val : ℤ) = quantizeRapidity N θ := hbounds.2.2
+  have hmul : N ≤ k * (t.n 0).val := by
+    have hkN : (N : ℤ) = k * m := by rw [hm, Nat.cast_mul]
+    have hle' : (m : ℤ) ≤ (t.n 0).val := by
+      rw [hvalZ]; exact hfloor
+    have : (N : ℤ) ≤ (k : ℤ) * (t.n 0).val := by
+      rw [hkN]
+      exact mul_le_mul_of_nonneg_left hle' (Nat.cast_nonneg _)
+    exact_mod_cast this
+  exact (windingTotal_pureBoost_ne_zero_iff k t hp).mpr hmul
+
+/--
+Specialisation to abc log-gaps on the principal interval: if
+`2π/k ≤ δ < 2π` and `k ∣ N`, the quantised abc seed has nonzero total winding.
+-/
+theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
+    {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hle : 2 * Real.pi / k ≤ abcLogGap a b c)
+    (hlt : abcLogGap a b c < 2 * Real.pi)
+    (hdvd : k ∣ N) :
+    windingTotal k (quantizeAbcMismatch N a b c h) ≠ 0 := by
+  have hπk : 0 ≤ 2 * Real.pi / k :=
+    div_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) Real.pi_pos.le) (Nat.cast_nonneg _)
+  have h0 : 0 ≤ abcLogGap a b c := le_trans hπk hle
+  have heq :
+      quantizeAbcMismatch N a b c h = pureBoostSeedOfRapidity N (abcLogGap a b c) := by
+    -- `fin_cases` leaves some axes with unused simp lemmas; silence that linter here.
+    set_option linter.unusedSimpArgs false in
+    refine congr_arg₂ DiscreteTorsion.mk ?_ rfl
+    funext i
+    fin_cases i <;>
+      simp [quantizeAbcMismatch, quantizeMismatch, pureBoostSeedOfRapidity, abcLogGap,
+        Int.natAbs_natCast]
+  rw [heq]
+  exact windingTotal_ne_zero_of_rapidity_ge N k hk (abcLogGap a b c) h0 hle hlt hdvd
+
 -- FLT / Beal remain independent special cases (Ch.5–6); abc treats all
--- coprime sums `a + b = c`. See `fermat_last_theorem_of_bridge` /
+-- coprime sums `a + b = c`. See `fermat_last_theorem_of_modular_bridge` /
 -- `beal_conjecture_of_bridge`.
 
 end Theorems

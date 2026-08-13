@@ -258,6 +258,33 @@ theorem J_scale_eq_J_amplified_add_error_pureBoost (k : ℕ) (t : DiscreteTorsio
   have h2 := axisWindingError_pureBoost_of_ne_zero k t hp (by decide : (2 : Fin 3) ≠ 0)
   simp [h1, h2]
 
+/-! ### Pure-boost winding criterion -/
+
+theorem windingTotal_pureBoost (k : ℕ) (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
+    windingTotal k t = windingCoord k (t.n 0) := by
+  unfold windingTotal
+  simp only [Fin.sum_univ_three]
+  have hn1 : t.n 1 = 0 := hp.1 1 (by decide)
+  have hn2 : t.n 2 = 0 := hp.1 2 (by decide)
+  have hm0 : t.m 0 = 0 := hp.2 0
+  have hm1 : t.m 1 = 0 := hp.2 1
+  have hm2 : t.m 2 = 0 := hp.2 2
+  simp [hn1, hn2, hm0, hm1, hm2, windingCoord]
+
+theorem windingTotal_pureBoost_pos_iff (k : ℕ) (t : DiscreteTorsion N)
+    (hp : IsPureBoostSeed t) :
+    0 < windingTotal k t ↔ N ≤ k * (t.n 0).val := by
+  rw [windingTotal_pureBoost k t hp, windingCoord_pos_iff]
+
+theorem windingTotal_pureBoost_ne_zero_iff (k : ℕ) (t : DiscreteTorsion N)
+    (hp : IsPureBoostSeed t) :
+    windingTotal k t ≠ 0 ↔ N ≤ k * (t.n 0).val := by
+  constructor
+  · intro h
+    exact (windingTotal_pureBoost_pos_iff k t hp).mp (Nat.pos_of_ne_zero h)
+  · intro h
+    exact ne_of_gt ((windingTotal_pureBoost_pos_iff k t hp).mpr h)
+
 /-! ### Modular amplification witness (non-vacuous) -/
 
 /--

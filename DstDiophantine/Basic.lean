@@ -70,7 +70,8 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   admissible_scale_implies_windingTotal_eq_zero
   windingTotal_ne_zero_implies_not_admissible_scale
   ModularAmplificationWitness.not_admissible_real_scale
-  ConformalGaugeAdmissible IsPureBoostSeed)
+  ConformalGaugeAdmissible IsPureBoostSeed
+  windingTotal_pureBoost windingTotal_pureBoost_ne_zero_iff)
 export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
 export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
   nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
@@ -124,8 +125,13 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   abcHeightCoef abcQualityCeiling discreteAbcCeiling
   abc_sum_iff_motor abc_solution_iff_motor abcHeight_eq_quality
   abc_quality_bound_of_admissible abc_amplification_contradiction
+  abc_quality_gt_ceiling_not_admissible one_lt_abcQuality_iff
+  abcMismatch_rapidity isAdmissibleContinuous_abcMismatch_iff
   discrete_abc_bound abc_radical_pow_of_le_hundred
-  AbcAdmissibleBridge abc_conjecture_of_bridge
+  AbcAdmissibleBridge abc_conjecture_of_bridge AbcAdmissibleBridge_false
+  quantizeAbcMismatch quantizeAbcMismatch_pureBoost abcLogGap
+  AbcModularBridge abc_conjecture_of_modular_bridge
+  abc_has_winding_of_logGap_ge isAbcTriple_radical_mul
   primeRotor finitePrimeEnsemble criticalMismatchParams criticalHeight
   IsCriticalZeroEnsemble critical_zero_iff critical_dagger layerScale
   criticalBalanceOk critical_balance_of_le_twenty

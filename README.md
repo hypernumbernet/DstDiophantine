@@ -14,7 +14,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **コアは `sorry` なし。** Lean 4 + mathlib 上で、代数・増幅・層境界の中核が機械検証されています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Fermat modular bridge を型付けした。** 解依存の `quantizeMismatch` 種と巻数付き witness、および共形ゲージの残ギャップ `ConformalGaugeAdmissible` を分けてあります。無条件 FLT は主張しません。
+- **Fermat / abc modular bridge を型付けした。** 解依存の量子化種と巻数付き witness、および共形ゲージの残ギャップ `ConformalGaugeAdmissible` を分けてあります。abc の連続品質 bridge は偽だと機械検証済みです。無条件 FLT / abc は主張しません。
 - **1D CGA 探針を並列に入れた。** PGA の `integerHeight` は非有界ですが、`Cl(2,1)` の null 点埋め込みは斉次です（`Basic` には強制しません）。
 - **古典予想の無条件証明はまだ主張しない。** FLT / Beal / abc などは「bridge が正しければ従う」形で型付けしてあります。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
@@ -89,7 +89,8 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | ファイル | いま入っているもの |
 |----------|-------------------|
 | `Fermat.lean` | 加法同値、`FermatModularBridge`、釣り合い型の障害、連続／旧粗離散（legacy・診断用） |
-| `Beal.lean` / `Abc.lean` | 共通増幅 no-go の直利用、品質・高さの関係（abc） |
+| `Beal.lean` | 共通増幅 no-go の直利用、連続 bridge（条件付き） |
+| `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
 | `Goldbach.lean` / `Polignac.lean` | 加法分解の motor 同値、候補の健全性、有限範囲の存在 |
 | `Riemann.lean` | 臨界高さ・オフライン矛盾の骨格、有限格子上のバランス |

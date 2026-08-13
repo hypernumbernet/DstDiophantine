@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Fermat modular bridge + 1D CGA 探針）
+最終更新: 2026-08-13（ABC modular bridge 型付け・連続 bridge 棄却）
 
 ## 1. 三層アーキテクチャ
 
@@ -47,7 +47,8 @@ flowchart LR
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
 | `BealAdmissibleBridge` | Beal | 連続増幅 no-go | 旧 coarse の単純流用は空；modular は解依存 payload が要る |
-| `AbcAdmissibleBridge` | abc | 品質天井 | 同上 |
+| `AbcAdmissibleBridge` | abc（連続・診断） | 品質天井 | **偽**（`AbcAdmissibleBridge_false`） |
+| `AbcModularBridge` | abc（本命・modular） | 解依存 `quantizeAbcMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；部分巻数構成あり |
 | `CollatzAdmissibleBridge` | Collatz | 軌道・高さ | 別系列 |
 | `GoldbachAdmissibleBridge` | Goldbach | 分解候補 | 別系列 |
 | `PolignacAdmissibleBridge` | Polignac / 双子 | 強い回避 | 別系列 |
@@ -90,13 +91,15 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）
+### 中実現性（現行の主対象）— ABC 優先
 
-1. **残ギャップ:** `ConformalGaugeAdmissible` を PGA 実スケール錐と同一視せず、CGA ゲージで再定義できるか
-2. **modular 巻数誤差の数論的下限** — `JNormalized_scale = JNormalized_amplified + error(winding)` の右辺を制御
-3. `FermatModularBridge` 本体の部分証明（解 ⇒ `quantizeMismatch` が巻数付き witness）
-4. 成功パターンを Beal / abc へ個別再設計（解依存 payload）
-5. 有限証明書の拡大
+1. **`AbcModularBridge` 本体:** 高品質三つ組 ⇒ 解依存 `quantizeAbcMismatch` が巻数付き witness  
+   （主値区間 `2π/k ≤ δ < 2π` での `has_winding` は証明済；許容性・共形ギャップが残る）
+2. **残ギャップ:** `ConformalGaugeAdmissible` を PGA 実スケール錐と同一視せず、CGA ゲージで再定義できるか
+3. **modular 巻数誤差の数論的下限** — `JNormalized_scale = JNormalized_amplified + error(winding)` の右辺を制御
+4. `FermatModularBridge` 本体の部分証明（解 ⇒ `quantizeMismatch` が巻数付き witness）
+5. Beal への個別再設計（解依存 payload）
+6. 有限証明書の拡大
 
 ### 探索的（並列トラック）
 
@@ -135,6 +138,15 @@ flowchart LR
 - [ ] `FermatModularBridge` 本体（無条件 FLT 相当 — 主張しない）
 - [ ] 共形ゲージ ≠ PGA 実スケール の再定義
 
+### フェーズ 7b（ABC modular — 進行中）
+
+- [x] 連続 `AbcAdmissibleBridge` を診断用に落とし `AbcAdmissibleBridge_false` を証明
+- [x] `quantizeAbcMismatch` / `abcLogGap` / radical 乗法性
+- [x] `AbcModularBridge` と `abc_conjecture_of_modular_bridge`（条件付き）
+- [x] pure-boost 巻数判定と主値区間での `abc_has_winding_of_logGap_ge`
+- [ ] `AbcModularBridge` 本体（無条件 ABC 相当 — 主張しない）
+- [ ] 許容性・増幅後許容と共形ギャップの解消
+
 ### Gravity トラック（PGA–TEGR）
 
 - [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
@@ -163,7 +175,7 @@ Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
   ConformalInteger       ← CGA null 点埋め込み（診断）
 Theorems/
   Fermat                 ← FermatModularBridge + legacy / 連続診断
-  Beal, Abc, Collatz, Goldbach, Polignac, Riemann
+  Beal, Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）
 ```
@@ -207,11 +219,11 @@ Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない�
 
 ## 7. 次アクション
 
-1. **（主）** `ConformalGaugeAdmissible` を CGA ゲージで再定義し、巻数付き modular witness と両立させられるかを検証
-2. modular 巻数誤差の数論的下限と、解 ⇒ `quantizeMismatch` witness の部分構成
-3. 成功パターンを Beal（`m = min`）/ abc（品質）へ個別再設計（旧粗離散の単純流用は空になる点に注意）
+1. **（主・ABC）** `AbcModularBridge` 本体: 高品質 ⇒ `IsAdmissible` + 巻数 witness（主値区間の巻数は済；`δ ≥ 2π` の torus 折り畳みと許容両立が残ギャップ）
+2. **（主）** `ConformalGaugeAdmissible` を CGA ゲージで再定義し、巻数付き modular witness と両立させられるかを検証
+3. modular 巻数誤差の数論的下限と、Fermat / Beal への同型の解依存 payload
 4. 軌道型・加法分解型は別系列として bridge 診断を継続
 5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明、3-blade / dual-as-normal
 6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Fermat modular bridge の型付け + 1D CGA 診断** まで固めた段階であり、無条件古典定理はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Fermat/ABC modular bridge の型付け + ABC 連続 bridge 棄却 + 1D CGA 診断** まで固めた段階であり、無条件古典定理はまだ未達成である。

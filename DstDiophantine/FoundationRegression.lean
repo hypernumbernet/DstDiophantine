@@ -9,6 +9,7 @@ import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
+import DstDiophantine.Theorems.Abc
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
@@ -130,5 +131,27 @@ example {N : ℕ} [NeZero N] {x y z : ℕ}
         (scaleTorsion (bealMinExp x y z : ℝ) (AdmissibleClass.toParams t))) :
     False :=
   beal_discrete_amplification_contradiction hx hy hz t hlb hadm
+
+/-- Continuous abc quality bridge is false (diagnostic obstruction). -/
+example : ¬ AbcAdmissibleBridge :=
+  AbcAdmissibleBridge_false
+
+/-- Modular abc bridge recovers classical abc conditionally. -/
+example (hbridge : AbcModularBridge) :
+    ∀ (ε : ℝ), 0 < ε →
+      ∃ C : ℝ, 0 < C ∧
+        ∀ (a b c : ℕ), IsAbcTriple a b c →
+          (c : ℝ) ≤ C * (abcRadical (a * b * c) : ℝ) ^ (1 + ε) :=
+  abc_conjecture_of_modular_bridge hbridge
+
+/-- Pure-boost modular winding criterion. -/
+example {N k : ℕ} [NeZero N] (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
+    windingTotal k t ≠ 0 ↔ N ≤ k * (t.n 0).val :=
+  windingTotal_pureBoost_ne_zero_iff k t hp
+
+/-- Pairwise-coprime abc triples multiply radicals. -/
+example {a b c : ℕ} (h : IsAbcTriple a b c) :
+    abcRadical (a * b * c) = abcRadical a * abcRadical b * abcRadical c :=
+  isAbcTriple_radical_mul h
 
 end DstDiophantine.FoundationRegression
