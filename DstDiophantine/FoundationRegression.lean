@@ -278,19 +278,12 @@ example {x y z : ℕ} (hx : 3 ≤ x) :
     bealExpGcd x y z = 1 ∨ bealExpGcd x y z = 2 ∨ 3 ≤ bealExpGcd x y z :=
   bealExpGcd_eq_one_or_eq_two_or_ge_three hx
 
-/-- Phase 7g: unconditional — `3 ∣ bealExpGcd` forbids nonzero solutions. -/
+/-- Phase 7g: unconditional — `3 ∣ d` or `4 ∣ d` forbids nonzero solutions. -/
 example {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (hdvd : 3 ∣ bealExpGcd x y z) :
+    (hdvd : 3 ∣ bealExpGcd x y z ∨ 4 ∣ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
-  not_beal_sol_of_three_dvd_expGcd hA hB hC hdvd
-
-/-- Phase 7g: unconditional — `4 ∣ bealExpGcd` forbids nonzero solutions. -/
-example {A B C : ℤ} {x y z : ℕ}
-    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (hdvd : 4 ∣ bealExpGcd x y z) :
-    ¬ A ^ x + B ^ y = C ^ z :=
-  not_beal_sol_of_four_dvd_expGcd hA hB hC hdvd
+  not_beal_sol_of_three_or_four_dvd_expGcd hA hB hC hdvd
 
 /-- Phase 7g: unconditional equal-exponent slices p = 3 and p = 4. -/
 example {A B C : ℤ} (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :

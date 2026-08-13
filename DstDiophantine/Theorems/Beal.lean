@@ -1488,6 +1488,8 @@ theorem bealExpGcd_eq_of_eq_exp (p : ℕ) :
     bealExpGcd p p p = p := by
   simp [bealExpGcd]
 
+/-! ### Phase 7g: exponent-gcd trichotomy -/
+
 /-- Trichotomy for the Beal exponent gcd when at least one exponent is ≥ 3. -/
 theorem bealExpGcd_eq_one_or_eq_two_or_ge_three {x y z : ℕ} (hx : 3 ≤ x) :
     bealExpGcd x y z = 1 ∨ bealExpGcd x y z = 2 ∨ 3 ≤ bealExpGcd x y z := by
@@ -1498,39 +1500,36 @@ theorem bealExpGcd_eq_one_or_eq_two_or_ge_three {x y z : ℕ} (hx : 3 ≤ x) :
 theorem bealExpGcd_eq_one_implies_not_all_eq {x y z : ℕ}
     (hx : 3 ≤ x) (hd : bealExpGcd x y z = 1) : ¬ (x = y ∧ y = z) := by
   intro ⟨hxy, hyz⟩
-  have heq : bealExpGcd x y z = x := by
-    simp [bealExpGcd, hxy, hyz]
+  subst hxy; subst hyz
+  have : bealExpGcd x x x = x := bealExpGcd_eq_of_eq_exp x
   omega
 
+/-- When `bealExpGcd = 2`, each exponent is even. -/
+theorem bealExpGcd_eq_two_dvd {x y z : ℕ} (hd : bealExpGcd x y z = 2) :
+    2 ∣ x ∧ 2 ∣ y ∧ 2 ∣ z :=
+  ⟨by have := bealExpGcd_dvd_left x y z; rwa [hd] at this,
+    by have := bealExpGcd_dvd_mid x y z; rwa [hd] at this,
+    by have := bealExpGcd_dvd_right x y z; rwa [hd] at this⟩
+
 /--
-When `bealExpGcd = 2`, the reduced exponents are pairwise gcd-1:
+When `bealExpGcd = 2`, the reduced exponents satisfy
 `gcd(x/2, y/2, z/2) = 1`.
 -/
 theorem bealExpGcd_div_two_eq_one {x y z : ℕ}
     (hd : bealExpGcd x y z = 2) :
     bealExpGcd (x / 2) (y / 2) (z / 2) = 1 := by
-  have hxdiv : 2 ∣ x := by
-    have := bealExpGcd_dvd_left x y z; rwa [hd] at this
-  have hydiv : 2 ∣ y := by
-    have := bealExpGcd_dvd_mid x y z; rwa [hd] at this
-  have hzdiv : 2 ∣ z := by
-    have := bealExpGcd_dvd_right x y z; rwa [hd] at this
-  have hyz :
-      Nat.gcd y z = 2 * Nat.gcd (y / 2) (z / 2) := by
-    calc Nat.gcd y z
-        = Nat.gcd (2 * (y / 2)) (2 * (z / 2)) := by
-          rw [Nat.mul_div_cancel' hydiv, Nat.mul_div_cancel' hzdiv]
-      _ = 2 * Nat.gcd (y / 2) (z / 2) := Nat.gcd_mul_left _ _ _
-  have hxyz :
+  obtain ⟨hxdiv, hydiv, hzdiv⟩ := bealExpGcd_eq_two_dvd hd
+  have hmul :
       bealExpGcd x y z = 2 * bealExpGcd (x / 2) (y / 2) (z / 2) := by
     unfold bealExpGcd
-    rw [hyz]
-    calc Nat.gcd x (2 * Nat.gcd (y / 2) (z / 2))
-        = Nat.gcd (2 * (x / 2)) (2 * Nat.gcd (y / 2) (z / 2)) := by
-          rw [Nat.mul_div_cancel' hxdiv]
-      _ = 2 * Nat.gcd (x / 2) (Nat.gcd (y / 2) (z / 2)) := Nat.gcd_mul_left _ _ _
-  have : 2 * bealExpGcd (x / 2) (y / 2) (z / 2) = 2 := by
-    rwa [← hxyz]
+    calc Nat.gcd x (Nat.gcd y z)
+        = Nat.gcd (2 * (x / 2)) (Nat.gcd (2 * (y / 2)) (2 * (z / 2))) := by
+          rw [Nat.mul_div_cancel' hxdiv, Nat.mul_div_cancel' hydiv,
+            Nat.mul_div_cancel' hzdiv]
+      _ = Nat.gcd (2 * (x / 2)) (2 * Nat.gcd (y / 2) (z / 2)) := by
+          rw [Nat.gcd_mul_left]
+      _ = 2 * Nat.gcd (x / 2) (Nat.gcd (y / 2) (z / 2)) :=
+          Nat.gcd_mul_left _ _ _
   omega
 
 /-- Power sum form of a Beal equation after extracting the exponent gcd. -/
@@ -1672,19 +1671,11 @@ theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
     2 ≤ x' ∧ 2 ≤ y' ∧ 2 ≤ z' ∧
       (A ^ x') ^ 2 + (B ^ y') ^ 2 = (C ^ z') ^ 2 := by
   intro x' y' z'
-  have hxdiv : 2 ∣ x := by
-    have := bealExpGcd_dvd_left x y z; rwa [hd] at this
-  have hydiv : 2 ∣ y := by
-    have := bealExpGcd_dvd_mid x y z; rwa [hd] at this
-  have hzdiv : 2 ∣ z := by
-    have := bealExpGcd_dvd_right x y z; rwa [hd] at this
+  obtain ⟨hxdiv, hydiv, hzdiv⟩ := bealExpGcd_eq_two_dvd hd
   -- `3 ≤ n` and `2 ∣ n` force `4 ≤ n`, hence `2 ≤ n/2`.
-  have hx2 : 2 ≤ x / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
-    (by have := hxdiv; omega)
-  have hy2 : 2 ≤ y / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
-    (by have := hydiv; omega)
-  have hz2 : 2 ≤ z / 2 := (Nat.le_div_iff_mul_le (by decide : 0 < 2)).mpr
-    (by have := hzdiv; omega)
+  have hx2 : 2 ≤ x / 2 := by omega
+  have hy2 : 2 ≤ y / 2 := by omega
+  have hz2 : 2 ≤ z / 2 := by omega
   have hsol' := (beal_eq_pow_mul_expGcd A B C x y z).mp hsol
   simp only [hd] at hsol'
   exact ⟨hx2, hy2, hz2, hsol'⟩
@@ -1717,14 +1708,13 @@ theorem beal_pythagorean_legs_coprime_of_expGcd_eq_two {A B C : ℤ} {x y z : �
   have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
   have hab := beal_coprime_ab hA hB hC hx0 hy0 hz0 hgcd hsol
   obtain ⟨hx2, hy2, _, _⟩ := beal_pythagorean_of_expGcd_eq_two hx hy hz hd hsol
+  have hx2pos : 0 < x / 2 := Nat.lt_of_lt_of_le (by decide : 0 < 2) hx2
+  have hy2pos : 0 < y / 2 := Nat.lt_of_lt_of_le (by decide : 0 < 2) hy2
   have hpow : Nat.Coprime (A.natAbs ^ (x / 2)) (B.natAbs ^ (y / 2)) := by
-    rw [Nat.coprime_pow_left_iff (Nat.lt_of_lt_of_le (by decide : 0 < 2) hx2),
-      Nat.coprime_comm,
-      Nat.coprime_pow_left_iff (Nat.lt_of_lt_of_le (by decide : 0 < 2) hy2),
-      Nat.coprime_comm]
+    rw [Nat.coprime_pow_left_iff hx2pos, Nat.coprime_comm,
+      Nat.coprime_pow_left_iff hy2pos, Nat.coprime_comm]
     exact hab
-  simpa [Int.gcd, Int.natAbs_pow] using
-    (Nat.coprime_iff_gcd_eq_one.mp hpow)
+  simpa [Int.gcd, Int.natAbs_pow] using Nat.coprime_iff_gcd_eq_one.mp hpow
 
 /--
 Coprime `d = 2` solutions admit the classical primitive Pythagorean
