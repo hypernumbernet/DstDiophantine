@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
 - **Beal 危機路線を分割した。** 旧 `BealModularBridge`（巻数 + PGA `ConformalGaugeAdmissible`）は方程式非依存に矛盾すると機械検証済みです。本命は `BealWindingBridge`（数論）と `BealCGAGauge` / `BealCGANoGo`（CGA・PGA 錐と非同一）です。
-- **不均衡窓の巻数 witness を証明した。** `m ≥ 4` かつ `2π/m ≤ δ < 5π/(2m)` なら、正の解から `ModularAmplificationWitness` を無条件に構成できます（`m = 3` はこの窓が空）。
+- **不均衡窓の巻数 witness を証明した。** `m ≥ 4` かつ `2π/m ≤ δ < 5π/(2m)` なら、分数冪 gap だけから `ModularAmplificationWitness` を構成できます（解仮説不要；`m = 3` はこの窓が空）。
 - **Fermat / abc modular bridge も型付け済み。** abc の連続品質 bridge は偽だと機械検証済みです。無条件 FLT / Beal / abc は主張しません。
 - **1D CGA 分数冪シード。** Beal の `|n|^{e/m}` を `Cl(2,1)` null 点に載せて PGA 高さと切り離しています。
 - **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（不均衡窓）までです。

@@ -173,23 +173,16 @@ example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
 example (A C : ℤ) (x z m : ℕ) : BealCGAGauge A C x z m :=
   BealCGAGauge_of_ne_zero A C x z m
 
-/-- Unbalanced window constructs a modular winding witness (gap hypothesis). -/
-example {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hsol : A ^ x + B ^ y = C ^ z)
-    (hm4 : 4 ≤ bealMinExp x y z)
-    (hle : 2 * Real.pi / (bealMinExp x y z : ℝ) ≤
-      bealFracLogGap A C x z (bealMinExp x y z))
-    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
-      5 * Real.pi / (2 * (bealMinExp x y z : ℝ))) :
-    let m := bealMinExp x y z
+/-- Unbalanced window constructs a modular winding witness (gap hypothesis only). -/
+example (A C : ℤ) (x z m : ℕ) (hm4 : 4 ≤ m)
+    (hle : 2 * Real.pi / m ≤ bealFracLogGap A C x z m)
+    (hlt : bealFracLogGap A C x z m < 5 * Real.pi / (2 * m)) :
     let N := 4 * m
     ∃ (hN : N ≠ 0),
       letI : NeZero N := ⟨hN⟩
       let t := quantizeBealMismatch N A C x z m
       IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N m, w.t.val = t :=
-  beal_modularWitness_of_fracGap_window hx hy hz hA hB hC hsol hm4 hle hlt
+  beal_modularWitness_of_fracGap_window A C x z m hm4 hle hlt
 
 /-- Equal-exponent Beal fractional gap degenerates to Fermat log-mismatch. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
@@ -198,10 +191,17 @@ example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
   bealFracLogGap_eq_exp A C p hp
 
 /-- Fractional log-gap equals log-ratio of CGA root magnitudes. -/
-example (A C : ℤ) (x z m : ℕ) (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
+example (A C : ℤ) (x z m : ℕ) (hA : A ≠ 0) (hC : C ≠ 0) :
     bealFracLogGap A C x z m =
       Real.log (bealRootMag C z m) - Real.log (bealRootMag A x m) :=
-  bealFracLogGap_eq_log_rootMag A C x z m hm hA hC
+  bealFracLogGap_eq_log_rootMag A C x z m hA hC
+
+/-- Contrast: PGA integer-rotor height is globally unbounded; CGA points stay null. -/
+example (M : ℝ) : ∃ (n : ℤ) (hn : n ≠ 0), M < integerHeight n hn :=
+  exists_integerHeight_gt M
+
+example (x : ℝ) : conformalPoint x * conformalPoint x = 0 :=
+  conformalPoint_sq x
 
 /-- Continuous abc quality bridge is false (diagnostic obstruction). -/
 example : ¬ AbcAdmissibleBridge :=

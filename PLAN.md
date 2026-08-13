@@ -156,7 +156,7 @@ flowchart LR
 - [x] 主値区間での `beal_has_winding_of_fracGap_ge`、釣り合い型連続診断
 - [x] 共通巻数ヘルパを `Algebra.ModularAmplification` へ抽出
 - [x] bridge 分割: `BealWindingBridge` + `BealCGAGauge` / `BealCGANoGo`
-- [x] 不均衡窓 `m≥4`, `2π/m ≤ δ < 5π/(2m)` ⇒ modular witness（無条件構成）
+- [x] 不均衡窓 `m≥4`, `2π/m ≤ δ < 5π/(2m)` ⇒ modular witness（gap のみ；解仮説なし）
 - [x] `m=3` で巻数閾値 > 種許容錐、釣り合い型 < 巻数閾値
 - [x] CGA 分数冪シード（`bealRootMag` / dilation；PGA 錐と非同一）
 - [ ] `BealWindingBridge` 本体（全解；窓外・`m=3`）

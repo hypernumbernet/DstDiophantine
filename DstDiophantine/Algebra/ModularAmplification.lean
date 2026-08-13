@@ -428,6 +428,14 @@ theorem ModularAmplificationWitness.nonempty_example :
     Nonempty (ModularAmplificationWitness 16 5) :=
   ⟨modularWitness_example⟩
 
+/-- Pure-boost lattice mismatch collapses to the axis-`0` square. -/
+theorem latticeMismatch_pureBoost (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
+    latticeMismatch t = ((t.n 0).val : ℤ) ^ 2 := by
+  unfold latticeMismatch
+  simp only [Fin.sum_univ_three, hp.1 1 (by decide), hp.1 2 (by decide),
+    hp.2 0, hp.2 1, hp.2 2, ZMod.val_zero]
+  ring
+
 /-- Pure-boost nonzero winding forces a nonzero lattice mismatch. -/
 theorem latticeMismatch_ne_zero_of_winding_pureBoost (k : ℕ) (t : DiscreteTorsion N)
     (hp : IsPureBoostSeed t) (hw : windingTotal k t ≠ 0) :
@@ -437,22 +445,37 @@ theorem latticeMismatch_ne_zero_of_winding_pureBoost (k : ℕ) (t : DiscreteTors
   have hval : 0 < (t.n 0).val := by
     have hk : 0 < k * (t.n 0).val := Nat.lt_of_lt_of_le (NeZero.pos N) hpos
     exact Nat.pos_of_mul_pos_left hk
-  have hn1 : t.n 1 = 0 := hp.1 1 (by decide)
-  have hn2 : t.n 2 = 0 := hp.1 2 (by decide)
-  have hm0 : t.m 0 = 0 := hp.2 0
-  have hm1 : t.m 1 = 0 := hp.2 1
-  have hm2 : t.m 2 = 0 := hp.2 2
-  have hform : latticeMismatch t = ((t.n 0).val : ℤ) ^ 2 := by
-    unfold latticeMismatch
-    simp only [Fin.sum_univ_three, hn1, hn2, hm0, hm1, hm2, ZMod.val_zero]
-    ring
-  rw [hform]
-  have hne : ((t.n 0).val : ℤ) ≠ 0 := by exact_mod_cast ne_of_gt hval
-  exact pow_ne_zero 2 hne
+  rw [latticeMismatch_pureBoost t hp]
+  exact pow_ne_zero 2 (by exact_mod_cast ne_of_gt hval)
+
+/-- Discrete admissibility for a pure-boost seed is `4 · n₀.val ≤ N`. -/
+theorem isAdmissible_of_pureBoost_n0_le (t : DiscreteTorsion N)
+    (hp : IsPureBoostSeed t) (h : 4 * (t.n 0).val ≤ N) :
+    IsAdmissible t := by
+  rw [AdmissibleClass.isAdmissible_iff_four_le]
+  intro a
+  fin_cases a
+  · simpa [hp.2 0, ZMod.val_zero] using h
+  · simp [hp.1 1 (by decide), hp.2 1, ZMod.val_zero]
+  · simp [hp.1 2 (by decide), hp.2 2, ZMod.val_zero]
+
+/-- If modular amplification kills the pure-boost coordinate, the image is admissible. -/
+theorem isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0
+    (k : ℕ) (t : DiscreteTorsion N) (hp : IsPureBoostSeed t)
+    (h0 : k • t.n 0 = 0) :
+    IsAdmissible (amplifyDiscrete k t) := by
+  rw [AdmissibleClass.isAdmissible_iff_four_le]
+  intro a
+  fin_cases a
+  · simp [amplifyDiscrete_n, amplifyDiscrete_m, h0, hp.2 0, ZMod.val_zero]
+  · simp [amplifyDiscrete_n, amplifyDiscrete_m, hp.1 1 (by decide), hp.2 1,
+      ZMod.val_zero]
+  · simp [amplifyDiscrete_n, amplifyDiscrete_m, hp.1 2 (by decide), hp.2 2,
+      ZMod.val_zero]
 
 /-- Assemble a modular witness from an already-checked pure-boost seed. -/
 def modularWitness_of_pureBoost (k : ℕ) (t : DiscreteTorsion N)
-    (_hp : IsPureBoostSeed t) (hadm : IsAdmissible t)
+    (hadm : IsAdmissible t)
     (hamp : IsAdmissible (amplifyDiscrete k t))
     (hwind : windingTotal k t ≠ 0)
     (hne : latticeMismatch t ≠ 0) :
@@ -468,7 +491,7 @@ def modularWitness_of_pureBoost_winding (k : ℕ) (t : DiscreteTorsion N)
     (hamp : IsAdmissible (amplifyDiscrete k t))
     (hwind : windingTotal k t ≠ 0) :
     ModularAmplificationWitness N k :=
-  modularWitness_of_pureBoost k t hp hadm hamp hwind
+  modularWitness_of_pureBoost k t hadm hamp hwind
     (latticeMismatch_ne_zero_of_winding_pureBoost k t hp hwind)
 
 /-- A modular witness with nonzero winding is not continuously admissible after
