@@ -403,7 +403,6 @@ theorem windingTotal_eq_zero_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
   have hfrac : θ * (N : ℝ) / (2 * Real.pi) < (N : ℝ) / k := by
     have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
     have hden : 0 < (2 * Real.pi : ℝ) := by positivity
-    have hN : (0 : ℝ) ≤ N := Nat.cast_nonneg _
     calc θ * (N : ℝ) / (2 * Real.pi)
         < (2 * Real.pi / k) * (N : ℝ) / (2 * Real.pi) :=
           div_lt_div_of_pos_right
@@ -429,10 +428,8 @@ theorem windingTotal_eq_zero_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
     intro hle
     have : (N : ℝ) ≤ (k : ℝ) * ((t.n 0).val : ℝ) := by exact_mod_cast hle
     exact not_le_of_gt hmul_lt this
-  have hw : ¬ windingTotal k t ≠ 0 := by
-    intro hne
-    exact hnot ((windingTotal_pureBoost_ne_zero_iff k t hp).mp hne)
-  exact of_not_not hw
+  by_contra hne
+  exact hnot ((windingTotal_pureBoost_ne_zero_iff k t hp).mp hne)
 
 /-! ### Modular amplification witness (non-vacuous) -/
 
@@ -493,7 +490,7 @@ theorem not_exists_modularWitness_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 
 
 /-- Balanced model gap `log 2 / m` never produces a modular winding witness. -/
 theorem not_exists_modularWitness_of_balanced_gap (N m k : ℕ) [NeZero N]
-    (_hm : 0 < m) (hk : 0 < k)
+    (hk : 0 < k)
     (hgap : Real.log 2 / (m : ℝ) < 2 * Real.pi / (k : ℝ))
     (hw : ∃ w : ModularAmplificationWitness N k,
       w.t.val = pureBoostSeedOfRapidity N (Real.log 2 / (m : ℝ))) :

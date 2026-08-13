@@ -27,8 +27,8 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 `DstDiophantine.Basic`) to avoid a module cycle.
 
 Beal critical-path regressions (payload incompatibility, winding window,
-CGA lattice / pairing / diagnostic NoGo) are included; Gravity remains
-intentionally out of scope.
+power-lattice descent, DiscreteClosed / UnitBase, diagnostic NoGo) are
+included; Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation)

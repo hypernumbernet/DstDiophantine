@@ -110,6 +110,16 @@ theorem IsCGAIntegerPoint_of_eq {x : ℝ} {k : ℤ} (hk : k ≠ 0)
     (heq : x = (k : ℝ)) : IsCGAIntegerPoint x :=
   ⟨k, hk, heq⟩
 
+/-- Shared identity: `(2^{4/3})³ = 16`. -/
+private theorem two_rpow_four_thirds_pow_three :
+    ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
+  have hnn : (0 : ℝ) ≤ 2 := by norm_num
+  have hstep :
+      ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
+        (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
+    rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
+  rw [hstep]; norm_num
+
 /-- Diagnostic: `2^{4/3}` is not an integer null-lattice point. -/
 theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
     ¬ IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) := by
@@ -120,15 +130,8 @@ theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
     rwa [heq] at this
   have hk0 : 0 < k := Int.cast_pos.mp hkpos
   have h16R : (k : ℝ) ^ 3 = 16 := by
-    have hnn : (0 : ℝ) ≤ 2 := by norm_num
     have hpow : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (k : ℝ) ^ 3 := by rw [heq]
-    have hleft : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
-      have hstep :
-          ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
-            (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
-        rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
-      rw [hstep]; norm_num
-    linarith [hleft, hpow]
+    linarith [two_rpow_four_thirds_pow_three, hpow]
   have hk3 : k ^ 3 = (16 : ℤ) := by exact_mod_cast h16R
   -- No integer cube equals 16: 2³ = 8 < 16 < 27 = 3³.
   have hle : k ≤ 2 := by
@@ -166,14 +169,8 @@ theorem IsCGAIntegerPoint.isCGAPowerLatticePoint {x : ℝ} {m : ℕ}
 /-- Diagnostic: `2^{4/3}` lies on the 3-power lattice even though it misses
 the integer lattice (`(2^{4/3})³ = 16`). -/
 theorem isCGAPowerLatticePoint_two_rpow_four_thirds :
-    IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 := by
-  refine ⟨16, by decide, ?_⟩
-  have hnn : (0 : ℝ) ≤ 2 := by norm_num
-  have hstep :
-      ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
-        (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
-    rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
-  rw [hstep]; norm_num
+    IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 :=
+  ⟨16, by decide, two_rpow_four_thirds_pow_three⟩
 
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a

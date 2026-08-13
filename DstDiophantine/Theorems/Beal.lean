@@ -151,56 +151,69 @@ theorem exists_common_prime_of_bealGcd_gt_one {A B C : ℤ}
 
 /-! ### Pairwise coprimality from three-way gcd + the equation -/
 
+private theorem beal_natAbs_dvd_of_int_pow_dvd {n : ℤ} {e p : ℕ}
+    (hp : Nat.Prime p) (h : (p : ℤ) ∣ n ^ e) : p ∣ n.natAbs := by
+  have hAbs : p ∣ (n ^ e).natAbs := Int.natCast_dvd.mp h
+  rw [Int.natAbs_pow] at hAbs
+  exact hp.dvd_of_dvd_pow hAbs
+
 private theorem beal_prime_dvd_B_of_dvd_AC {A B C : ℤ} {x y z p : ℕ}
     (hp : Nat.Prime p) (hx : 0 < x) (_hy : 0 < y) (hz : 0 < z)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hpA : p ∣ A.natAbs) (hpC : p ∣ C.natAbs) : p ∣ B.natAbs := by
   have hAℤ : (p : ℤ) ∣ A := Int.natCast_dvd.mpr hpA
   have hCℤ : (p : ℤ) ∣ C := Int.natCast_dvd.mpr hpC
-  have hAx : (p : ℤ) ∣ A ^ x := dvd_pow hAℤ (ne_of_gt hx)
-  have hCz : (p : ℤ) ∣ C ^ z := dvd_pow hCℤ (ne_of_gt hz)
   have hBy : (p : ℤ) ∣ B ^ y := by
-    have hsub : (p : ℤ) ∣ C ^ z - A ^ x := dvd_sub hCz hAx
+    have hsub : (p : ℤ) ∣ C ^ z - A ^ x :=
+      dvd_sub (dvd_pow hCℤ (ne_of_gt hz)) (dvd_pow hAℤ (ne_of_gt hx))
     have heq : C ^ z - A ^ x = B ^ y := by
-      have := congrArg (fun t => t - A ^ x) hsol
-      simpa [add_sub_cancel_left] using this.symm
+      simpa [add_sub_cancel_left] using
+        (congrArg (fun t => t - A ^ x) hsol).symm
     rwa [heq] at hsub
-  have hAbs : p ∣ (B ^ y).natAbs := Int.natCast_dvd.mp hBy
-  rw [Int.natAbs_pow] at hAbs
-  exact hp.dvd_of_dvd_pow hAbs
+  exact beal_natAbs_dvd_of_int_pow_dvd hp hBy
 
 private theorem beal_prime_dvd_C_of_dvd_AB {A B C : ℤ} {x y z p : ℕ}
     (hp : Nat.Prime p) (hx : 0 < x) (hy : 0 < y) (_hz : 0 < z)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hpA : p ∣ A.natAbs) (hpB : p ∣ B.natAbs) : p ∣ C.natAbs := by
-  have hAℤ : (p : ℤ) ∣ A := Int.natCast_dvd.mpr hpA
-  have hBℤ : (p : ℤ) ∣ B := Int.natCast_dvd.mpr hpB
-  have hAx : (p : ℤ) ∣ A ^ x := dvd_pow hAℤ (ne_of_gt hx)
-  have hBy : (p : ℤ) ∣ B ^ y := dvd_pow hBℤ (ne_of_gt hy)
   have hCz : (p : ℤ) ∣ C ^ z := by
-    have : (p : ℤ) ∣ A ^ x + B ^ y := dvd_add hAx hBy
+    have : (p : ℤ) ∣ A ^ x + B ^ y :=
+      dvd_add (dvd_pow (Int.natCast_dvd.mpr hpA) (ne_of_gt hx))
+        (dvd_pow (Int.natCast_dvd.mpr hpB) (ne_of_gt hy))
     rwa [hsol] at this
-  have hAbs : p ∣ (C ^ z).natAbs := Int.natCast_dvd.mp hCz
-  rw [Int.natAbs_pow] at hAbs
-  exact hp.dvd_of_dvd_pow hAbs
+  exact beal_natAbs_dvd_of_int_pow_dvd hp hCz
 
 private theorem beal_prime_dvd_A_of_dvd_BC {A B C : ℤ} {x y z p : ℕ}
     (hp : Nat.Prime p) (_hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hpB : p ∣ B.natAbs) (hpC : p ∣ C.natAbs) : p ∣ A.natAbs := by
-  have hBℤ : (p : ℤ) ∣ B := Int.natCast_dvd.mpr hpB
-  have hCℤ : (p : ℤ) ∣ C := Int.natCast_dvd.mpr hpC
-  have hBy : (p : ℤ) ∣ B ^ y := dvd_pow hBℤ (ne_of_gt hy)
-  have hCz : (p : ℤ) ∣ C ^ z := dvd_pow hCℤ (ne_of_gt hz)
   have hAx : (p : ℤ) ∣ A ^ x := by
-    have hsub : (p : ℤ) ∣ C ^ z - B ^ y := dvd_sub hCz hBy
+    have hsub : (p : ℤ) ∣ C ^ z - B ^ y :=
+      dvd_sub (dvd_pow (Int.natCast_dvd.mpr hpC) (ne_of_gt hz))
+        (dvd_pow (Int.natCast_dvd.mpr hpB) (ne_of_gt hy))
     have heq : C ^ z - B ^ y = A ^ x := by
-      have := congrArg (fun t => t - B ^ y) hsol
-      simpa [add_comm, add_sub_cancel_right] using this.symm
+      simpa [add_comm, add_sub_cancel_right] using
+        (congrArg (fun t => t - B ^ y) hsol).symm
     rwa [heq] at hsub
-  have hAbs : p ∣ (A ^ x).natAbs := Int.natCast_dvd.mp hAx
-  rw [Int.natAbs_pow] at hAbs
-  exact hp.dvd_of_dvd_pow hAbs
+  exact beal_natAbs_dvd_of_int_pow_dvd hp hAx
+
+private theorem beal_pair_coprime_of
+    {A B C : ℤ} {u v : ℕ}
+    (hpos : 0 < Nat.gcd u v) (hgcd : bealGcd A B C = 1)
+    (hthird : ∀ p : ℕ, Nat.Prime p → p ∣ u → p ∣ v →
+      p ∣ A.natAbs ∧ p ∣ B.natAbs ∧ p ∣ C.natAbs) :
+    Nat.Coprime u v := by
+  rw [Nat.coprime_iff_gcd_eq_one]
+  by_contra hne
+  have hgt : 1 < Nat.gcd u v :=
+    lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
+  obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
+  obtain ⟨hpA, hpB, hpC⟩ :=
+    hthird p hp (Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _))
+      (Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _))
+  have hpG : p ∣ bealGcd A B C := Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
+  rw [hgcd] at hpG
+  exact Nat.Prime.not_dvd_one hp hpG
 
 /-- A three-way coprime Beal solution is pairwise coprime on absolute values. -/
 theorem beal_pairwise_coprime {A B C : ℤ} {x y z : ℕ}
@@ -211,49 +224,16 @@ theorem beal_pairwise_coprime {A B C : ℤ} {x y z : ℕ}
     Nat.Coprime A.natAbs B.natAbs ∧
       Nat.Coprime A.natAbs C.natAbs ∧
         Nat.Coprime B.natAbs C.natAbs := by
-  have hAC : Nat.Coprime A.natAbs C.natAbs := by
-    rw [Nat.coprime_iff_gcd_eq_one]
-    by_contra hne
-    have hpos : 0 < Nat.gcd A.natAbs C.natAbs :=
-      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA)
-    have hgt : 1 < Nat.gcd A.natAbs C.natAbs :=
-      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
-    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
-    have hpA : p ∣ A.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
-    have hpC : p ∣ C.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
-    have hpB : p ∣ B.natAbs := beal_prime_dvd_B_of_dvd_AC hp hx hy hz hsol hpA hpC
-    have hpG : p ∣ bealGcd A B C :=
-      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
-    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
-  have hAB : Nat.Coprime A.natAbs B.natAbs := by
-    rw [Nat.coprime_iff_gcd_eq_one]
-    by_contra hne
-    have hpos : 0 < Nat.gcd A.natAbs B.natAbs :=
-      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA)
-    have hgt : 1 < Nat.gcd A.natAbs B.natAbs :=
-      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
-    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
-    have hpA : p ∣ A.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
-    have hpB : p ∣ B.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
-    have hpC : p ∣ C.natAbs := beal_prime_dvd_C_of_dvd_AB hp hx hy hz hsol hpA hpB
-    have hpG : p ∣ bealGcd A B C :=
-      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
-    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
-  have hBC : Nat.Coprime B.natAbs C.natAbs := by
-    rw [Nat.coprime_iff_gcd_eq_one]
-    by_contra hne
-    have hpos : 0 < Nat.gcd B.natAbs C.natAbs :=
-      Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hB)
-    have hgt : 1 < Nat.gcd B.natAbs C.natAbs :=
-      lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hne)
-    obtain ⟨p, hp, hdiv⟩ := Nat.exists_prime_and_dvd (ne_of_gt hgt)
-    have hpB : p ∣ B.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_left _ _)
-    have hpC : p ∣ C.natAbs := Nat.dvd_trans hdiv (Nat.gcd_dvd_right _ _)
-    have hpA : p ∣ A.natAbs := beal_prime_dvd_A_of_dvd_BC hp hx hy hz hsol hpB hpC
-    have hpG : p ∣ bealGcd A B C :=
-      Nat.dvd_gcd hpA (Nat.dvd_gcd hpB hpC)
-    exact Nat.Prime.not_dvd_one hp (by simpa [hgcd] using hpG)
-  exact ⟨hAB, hAC, hBC⟩
+  refine ⟨?_, ?_, ?_⟩
+  · exact beal_pair_coprime_of (Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA))
+      hgcd fun p hp hpA hpB =>
+        ⟨hpA, hpB, beal_prime_dvd_C_of_dvd_AB hp hx hy hz hsol hpA hpB⟩
+  · exact beal_pair_coprime_of (Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hA))
+      hgcd fun p hp hpA hpC =>
+        ⟨hpA, beal_prime_dvd_B_of_dvd_AC hp hx hy hz hsol hpA hpC, hpC⟩
+  · exact beal_pair_coprime_of (Nat.gcd_pos_of_pos_left _ (Int.natAbs_pos.mpr hB))
+      hgcd fun p hp hpB hpC =>
+        ⟨beal_prime_dvd_A_of_dvd_BC hp hx hy hz hsol hpB hpC, hpB, hpC⟩
 
 theorem beal_coprime_ac {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -722,14 +702,12 @@ theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
 /-- Beal root magnitudes always lie on the `m`-power null lattice. -/
 theorem bealRootMag_isCGAPowerLatticePoint (A : ℤ) (x m : ℕ)
     (hA : A ≠ 0) (hm : m ≠ 0) :
-    IsCGAPowerLatticePoint (bealRootMag A x m) m := by
-  refine ⟨((A.natAbs : ℤ) ^ x), pow_ne_zero x
-      (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA)), ?_⟩
-  have hpow := bealRootMag_pow A x m hm
-  calc bealRootMag A x m ^ m
-      = (A.natAbs : ℝ) ^ x := hpow
-    _ = (((A.natAbs : ℤ) ^ x : ℤ) : ℝ) := by
-        rw [Int.cast_pow]; rfl
+    IsCGAPowerLatticePoint (bealRootMag A x m) m :=
+  ⟨(A.natAbs : ℤ) ^ x,
+    pow_ne_zero x (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA)),
+    by
+      rw [bealRootMag_pow A x m hm]
+      exact (Int.cast_pow (A.natAbs : ℤ) x).symm⟩
 
 /-- Scale-invariant CGA mismatch of the A–C Beal dilation. -/
 noncomputable def bealCGADilationMismatch (A C : ℤ) (x z m : ℕ) : ℝ :=
@@ -970,7 +948,6 @@ theorem bealCGAKFoldMag_eq_root_ratio (A C : ℤ) (x z m k : ℕ)
   have hexp : Real.exp ((k : ℝ) * δ) = γ ^ k / α ^ k := by
     rw [hδ, mul_sub, Real.exp_sub, Real.exp_nat_mul, Real.exp_nat_mul,
       Real.exp_log hγ, Real.exp_log hα]
-    try field_simp [ne_of_gt hα]
   have hsucc : k = (k - 1) + 1 := (Nat.sub_add_cancel hk).symm
   have hpow : α ^ k = α ^ ((k - 1) + 1) := by rw [← hsucc]
   calc α * Real.exp ((k : ℝ) * δ)
@@ -1065,7 +1042,7 @@ theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
         (Real.log 2 / (bealMinExp x y z : ℝ)) := by
   intro hw
   exact not_exists_modularWitness_of_balanced_gap N (bealMinExp x y z)
-    (bealAmpExp x y z) (bealMinExp_pos hx hy hz) (bealAmpExp_pos x y z)
+    (bealAmpExp x y z) (bealAmpExp_pos x y z)
     (beal_balanced_fracGap_lt_ampExp_threshold hx hy hz) hw
 
 /-! ### Live bridges: discrete closure + unit-base residual -/
