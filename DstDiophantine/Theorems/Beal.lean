@@ -33,7 +33,7 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme (phase 7g)
+Classical Beal is **not** claimed unconditionally. The live programme (phase 7h)
 is **exponent-gcd reduction** (not an independent CGA geometric principle):
 
 * `BealCGARealization` — **bookkeeping**: coprime solution ⇒ A–C root ratio is
@@ -44,9 +44,11 @@ is **exponent-gcd reduction** (not an independent CGA geometric principle):
   unconditional slices when `3 ∣ d` or `4 ∣ d` live in `BealSlice`
   (mathlib `fermatLastTheoremThree` / `Four`);
 * `d = 2` — Pythagorean powers; coprime solutions admit
-  `PythagoreanTriple.coprime_classification` parameters; further descent of
-  those parameters is residual (biquadratic `a⁴+b⁴=□` closed in `BealSlice`);
-* `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved);
+  `PythagoreanTriple.coprime_classification` parameters; fourth-divisibility
+  of at least two exponents is closed in `BealPythagorean` / `BealSlice`;
+  residual is `BealPythagoreanResidual` (at least two reduced exponents odd);
+* `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved), with
+  two-equal and all-distinct case splits recorded below;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
@@ -1738,12 +1740,12 @@ theorem beal_pythagorean_classification_of_expGcd_eq_two {A B C : ℤ} {x y z : 
     hA hB hC hgcd hd hsol
   exact (PythagoreanTriple.coprime_classification).mp ⟨htrip, hleg⟩
 
-/-! ### Phase 7g: mixed-exponent residual (type only) -/
+/-! ### Phase 7g/7h: mixed-exponent residual (type + case splits) -/
 
 /--
-**Residual** (phase 7g, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 1`. Type-level placeholder for the mixed-exponent case; not a live
-bridge and not claimed as a theorem.
+**Residual** (phase 7g/7h, unproved): no three-way-coprime Beal solution with
+`bealExpGcd = 1`. Logically the disjunction of the two-equal-exponent forms
+below and the fully distinct-exponent case; body not proved here.
 -/
 def BealMixedExpResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -1780,6 +1782,76 @@ theorem beal_eq_two_exp_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
     Nat.gcd x z = 1 ∧ x ≠ z ∧ A ^ x + B ^ x = C ^ z := by
   obtain ⟨hg, hne⟩ := beal_two_equal_exp_of_expGcd_eq_one hx hxy hd
   exact ⟨hg, hne, by simpa [hxy] using hsol⟩
+
+/-- Phase 7h: `y = z` with `d = 1` ⇒ `gcd(x, y) = 1` and `x ≠ y`. -/
+theorem beal_two_equal_exp_yz_of_expGcd_eq_one {x y z : ℕ}
+    (hy : 3 ≤ y) (hyz : y = z) (hd : bealExpGcd x y z = 1) :
+    Nat.gcd x y = 1 ∧ x ≠ y := by
+  have hd' : bealExpGcd x y y = 1 := by simpa [hyz] using hd
+  have hgcdxy : Nat.gcd x y = 1 := by
+    have : bealExpGcd x y y = Nat.gcd x y := by
+      unfold bealExpGcd
+      rw [Nat.gcd_comm y y, Nat.gcd_self, Nat.gcd_comm]
+    rwa [← this]
+  refine ⟨hgcdxy, ?_⟩
+  intro heq
+  have : bealExpGcd y y y = y := bealExpGcd_eq_of_eq_exp y
+  have hd'' : bealExpGcd y y y = 1 := by simpa [heq] using hd'
+  omega
+
+/-- Signature `(x, y, y)` with coprime unequal exponents under `d = 1`. -/
+theorem beal_eq_two_exp_yz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
+    (hy : 3 ≤ y) (hyz : y = z) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x y = 1 ∧ x ≠ y ∧ A ^ x + B ^ y = C ^ y := by
+  obtain ⟨hg, hne⟩ := beal_two_equal_exp_yz_of_expGcd_eq_one hy hyz hd
+  exact ⟨hg, hne, by simpa [hyz] using hsol⟩
+
+/-- Phase 7h: `x = z` with `d = 1` ⇒ `gcd(x, y) = 1` and `x ≠ y`. -/
+theorem beal_two_equal_exp_xz_of_expGcd_eq_one {x y z : ℕ}
+    (hx : 3 ≤ x) (hxz : x = z) (hd : bealExpGcd x y z = 1) :
+    Nat.gcd x y = 1 ∧ x ≠ y := by
+  have hd' : bealExpGcd x y x = 1 := by simpa [hxz] using hd
+  have hgcdxy : Nat.gcd x y = 1 := by
+    have : bealExpGcd x y x = Nat.gcd x y := by
+      unfold bealExpGcd
+      rw [Nat.gcd_comm y x, ← Nat.gcd_assoc, Nat.gcd_self]
+    rwa [← this]
+  refine ⟨hgcdxy, ?_⟩
+  intro heq
+  have : bealExpGcd x x x = x := bealExpGcd_eq_of_eq_exp x
+  have hd'' : bealExpGcd x x x = 1 := by simpa [heq] using hd'
+  omega
+
+/-- Signature `(x, y, x)` with coprime unequal exponents under `d = 1`. -/
+theorem beal_eq_two_exp_xz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hxz : x = z) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x y = 1 ∧ x ≠ y ∧ A ^ x + B ^ y = C ^ x := by
+  obtain ⟨hg, hne⟩ := beal_two_equal_exp_xz_of_expGcd_eq_one hx hxz hd
+  exact ⟨hg, hne, by simpa [hxz] using hsol⟩
+
+/--
+Phase 7h cut: under `d = 1`, either some two exponents agree, or all three
+differ. Pairwise gcds need not be 1 when all differ (only `gcd(x,y,z) = 1`).
+-/
+theorem beal_expGcd_eq_one_two_equal_or_all_distinct {x y z : ℕ}
+    (_hd : bealExpGcd x y z = 1) :
+    x = y ∨ y = z ∨ x = z ∨ (x ≠ y ∧ y ≠ z ∧ x ≠ z) := by
+  by_cases hxy : x = y
+  · exact Or.inl hxy
+  · by_cases hyz : y = z
+    · exact Or.inr (Or.inl hyz)
+    · by_cases hxz : x = z
+      · exact Or.inr (Or.inr (Or.inl hxz))
+      · exact Or.inr (Or.inr (Or.inr ⟨hxy, hyz, hxz⟩))
+
+/-- Fully distinct exponents with `d = 1` (still only `gcd(x,y,z) = 1`). -/
+theorem beal_all_distinct_exp_of_expGcd_eq_one {x y z : ℕ}
+    (hd : bealExpGcd x y z = 1)
+    (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
+    bealExpGcd x y z = 1 ∧ x ≠ y ∧ y ≠ z ∧ x ≠ z :=
+  ⟨hd, hxy, hyz, hxz⟩
 
 /-! ### Wide principal window (proved construction) -/
 

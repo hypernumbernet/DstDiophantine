@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal フェーズ 7g: 無条件 FLT スライス・ピタゴラス参数表示）
+最終更新: 2026-08-13（Beal フェーズ 7h: ピタゴラス UFD 降下）
 
 ## 1. 三層アーキテクチャ
 
@@ -48,7 +48,7 @@ flowchart LR
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
 | `BealCGARealization` | Beal（bookkeeping） | 互素解 ⇒ A–C 根比が整数 CGA dilation | **≡ `|A|=1` ∧ `|C|^z` が m 乗**；独立幾何原理ではない |
-| `bealExpGcd` 還元 | Beal（本命分割） | `d=gcd(x,y,z)` | **3∣d / 4∣d は無条件**（`BealSlice`）；一般 d≥3 は FLT 仮説；d=2 は参数表示済・双二次スライス無条件；d=1 が残件 |
+| `bealExpGcd` 還元 | Beal（本命分割） | `d=gcd(x,y,z)` | **3∣d / 4∣d は無条件**（`BealSlice`）；一般 d≥3 は FLT 仮説；d=2 は参数表示＋**4 整除 2 本以上を無条件閉鎖**（`BealPythagorean`）；残件は d=1 と還元指数が奇数 2 本以上の d=2 |
 | `BealCGADiscreteClosed` | Beal（bookkeeping） | 互素解 ⇒ k 倍種が m 冪格子上 | **≡ `|A|=1`**（`beal_kFold_powerLattice_iff_natAbs_eq_one`） |
 | `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` | Beal（残件） | `|A|=1` の互素解は存在しない | **正の基底は Mihăilescu axiom で証明済** |
 | `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
@@ -86,7 +86,7 @@ flowchart LR
 | **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
 | **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
 
-**最優先軸:** 無条件 Beal 危機路線（フェーズ 7g）。Realization / DiscreteClosed は bookkeeping。指数 gcd の三分法と、mathlib FLT n=3,4 による無条件スライス（`3∣d` / `4∣d` / 等指数 3,4 / `d=2`∧`4∣x`∧`4∣y`）まで固めた。残件は **`d=1` の混合指数** と **`d=2` の一般ピタゴラス冪降下**（参数表示は済）。一般 `d≥3` は引き続き FLT 仮説。無条件 FLT / abc はその先。
+**最優先軸:** 無条件 Beal 危機路線（フェーズ 7h）。Realization / DiscreteClosed は bookkeeping。指数 gcd の三分法と無条件スライス（`3∣d` / `4∣d` / 等指数 3,4 / `d=2` で `{x,y,z}` のうち 2 つ以上が 4 で割れる場合）まで固めた。残件は **`d=1` の混合指数**（二一致・全相異を切り出し済）と **`BealPythagoreanResidual`**（還元指数のうち 2 つ以上が奇数）。一般 `d≥3` は引き続き FLT 仮説。無条件 FLT / abc はその先。
 
 ---
 
@@ -100,14 +100,14 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7g）
+### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7h）
 
 1. ~~`BealCGARealization` を幾何原理として証明~~ — bookkeeping 化完了（循環を回避）
 2. ~~`3∣d` / `4∣d` / 等指数 3,4~~ — mathlib FLT で無条件閉鎖（`BealSlice`）
 3. ~~`d = 2` 原始ピタゴラス参数表示~~ — `coprime_classification` 接続済
-4. ~~`d = 2` ∧ `4∣x` ∧ `4∣y`~~ — `not_fermat_42` で無条件閉鎖
-5. **残件 `bealExpGcd = 1`:** 真に混合した指数（`BealMixedExpResidual` 型のみ）
-6. **残件 `d = 2` 一般:** 参数 `m,n` の冪降下（双二次以外）
+4. ~~`d = 2` で 4 整除が 2 本以上~~ — `BealPythagorean`（`not_fermat_42` + DiffFourth）で無条件閉鎖
+5. **残件 `bealExpGcd = 1`:** 二指数一致（3 位置）と全相異を切り出し；本体は `BealMixedExpResidual`
+6. **残件 `BealPythagoreanResidual`:** 還元指数のうち 2 つ以上が奇数（型固定；ℤ[i] 斜辺は準備のみ）
 7. ~~一般 `d ≥ 3`~~ — mathlib `FermatLastTheorem` 仮説で条件付き（本体は未証明）
 8. （後続）`FermatModularBridge` / `AbcModularBridge`；有限証明書の拡大
 
@@ -206,8 +206,17 @@ flowchart LR
 - [x] 互素 `d=2` ⇒ `PythagoreanTriple.coprime_classification`
 - [x] `BealSlice`: `3∣d` / `4∣d` / 等指数 3,4 を無条件閉鎖
 - [x] `d=2` ∧ `4∣x` ∧ `4∣y` を `not_fermat_42` で無条件閉鎖
-- [x] `BealMixedExpResidual` と二指数一致の切り出し（型のみ）
-- [ ] 残件: `d=1` 混合指数本体と `d=2` 一般パラメータ降下
+- [x] `BealMixedExpResidual` と二指数一致 `x=y` の切り出し（型のみ）
+
+### フェーズ 7h（ピタゴラス UFD 降下 — 完了）
+
+- [x] `BealPythagorean`: `a⁴ + b² ≠ c⁴`（DiffFourth 降下）と偶脚 UFD
+- [x] `d=2` ∧ (`4∣x`∧`4∣z` / `4∣y`∧`4∣z`) を無条件閉鎖；系として 4 整除 2 本以上
+- [x] `BealPythagoreanResidual`（還元指数のうち 2 つ以上が奇数）と iff
+- [x] ℤ[i] 斜辺冪の準備ラベル（完全降下は据え置き）
+- [x] `d=1`: 二指数一致を `y=z` / `x=z` に拡張し、全相異を切り出し
+- [x] 成功判定: 無条件 Beal ではなく「`d=2` の 4 整除 2 本以上を閉鎖 + 残件型の固定」
+- [ ] 残件本体: `BealMixedExpResidual` / `BealPythagoreanResidual` の証明
 - [ ] 無条件古典 Beal（主張しない）
 
 ### Gravity トラック（PGA–TEGR）
@@ -240,8 +249,9 @@ Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
   ConformalInteger       ← CGA null 点埋め込み（診断）
 Theorems/
   Fermat                 ← FermatModularBridge + legacy / 連続診断
-  Beal (exp-gcd 還元 + Realization bookkeeping + Mihăilescu),
-  BealSlice (無条件 FLT n=3,4 スライス + 双二次), Mihailescu,
+  Beal (exp-gcd 還元 + Realization bookkeeping + 混合指数切り出し),
+  BealSlice (無条件 FLT n=3,4 スライス + 双二次),
+  BealPythagorean (d=2 UFD / DiffFourth / 4 整除 2 本以上), Mihailescu,
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）
@@ -332,4 +342,4 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス（3∣d / 4∣d / 双二次）** まで固めた段階であり、無条件古典 Beal は FLT 本体と `d∈{1,2}` 残件が閉じるまで未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス（3∣d / 4∣d / 等指数 3,4 / d=2 で 4 整除 2 本以上）** まで固めた段階であり、無条件古典 Beal は FLT 本体と `BealMixedExpResidual` / `BealPythagoreanResidual` が閉じるまで未達成である。

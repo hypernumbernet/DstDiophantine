@@ -15,6 +15,7 @@ import DstDiophantine.Algebra.Motor
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
+import DstDiophantine.Theorems.BealPythagorean
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
 import DstDiophantine.Algebra.CGA.NullCone
@@ -31,8 +32,9 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 Beal critical-path regressions (payload incompatibility, winding window,
 power-lattice descent, phase 7e bookkeeping realisation / Mihăilescu / DST
 config, phase 7f exponent-gcd reduction / FLT hypothesis, phase 7g
-unconditional FLT slices / Pythagorean classification, diagnostic NoGo)
-are included; Gravity remains intentionally out of scope.
+unconditional FLT slices / Pythagorean classification, phase 7h Pythagorean
+UFD slices / mixed-exponent case splits, diagnostic NoGo) are included;
+Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation)
@@ -320,6 +322,63 @@ example {A B C : ℤ} {x y z : ℕ}
     (hsol : A ^ x + B ^ y = C ^ z) :
     Nat.gcd x z = 1 ∧ x ≠ z ∧ A ^ x + B ^ x = C ^ z :=
   beal_eq_two_exp_form_of_expGcd_eq_one hx hxy hd hsol
+
+/-- Phase 7h: d = 2 with `4 ∣ x ∧ 4 ∣ z` is unconditionally closed. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : bealExpGcd x y z = 2)
+    (hx4 : 4 ∣ x) (hz4 : 4 ∣ z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_eq_two_of_four_dvd_xz hx hy hz hA hB hC hd hx4 hz4
+
+/-- Phase 7h: any two of `{x,y,z}` divisible by 4 forbids a `d = 2` solution. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : bealExpGcd x y z = 2)
+    (h4 : (4 ∣ x ∧ 4 ∣ y) ∨ (4 ∣ x ∧ 4 ∣ z) ∨ (4 ∣ y ∧ 4 ∣ z)) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_eq_two_of_two_four_dvd hx hy hz hA hB hC hd h4
+
+/-- Phase 7h: even-leg UFD — coprime opposite-parity `2mn` a square ⇒ factors squares. -/
+example {m n k : ℕ}
+    (hcop : Nat.Coprime m n)
+    (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
+    (heq : 2 * m * n = k ^ 2) :
+    (Even m ∧ (∃ u v, n = u ^ 2 ∧ 2 * m = v ^ 2)) ∨
+      (Even n ∧ (∃ u v, m = u ^ 2 ∧ 2 * n = v ^ 2)) :=
+  exists_sq_of_two_mul_coprime_eq_sq hcop hpar heq
+
+/-- Phase 7h: residual type for `d = 2` outside fourth-divisibility slices. -/
+example : Prop := BealPythagoreanResidual
+
+/-- Phase 7h: residual iff at least two reduced exponents are odd. -/
+example {x y z : ℕ} (hd : bealExpGcd x y z = 2) :
+    (¬ (4 ∣ x ∧ 4 ∣ y) ∧ ¬ (4 ∣ x ∧ 4 ∣ z) ∧ ¬ (4 ∣ y ∧ 4 ∣ z)) ↔
+      (Odd (x / 2) ∧ Odd (y / 2)) ∨
+        (Odd (x / 2) ∧ Odd (z / 2)) ∨
+          (Odd (y / 2) ∧ Odd (z / 2)) :=
+  beal_pythagorean_residual_iff_two_odd_reduced hd
+
+/-- Phase 7h: d = 1 with `y = z` yields signature `(x, y, y)`. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hy : 3 ≤ y) (hyz : y = z) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x y = 1 ∧ x ≠ y ∧ A ^ x + B ^ y = C ^ y :=
+  beal_eq_two_exp_yz_form_of_expGcd_eq_one hy hyz hd hsol
+
+/-- Phase 7h: d = 1 with `x = z` yields signature `(x, y, x)`. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hxz : x = z) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x y = 1 ∧ x ≠ y ∧ A ^ x + B ^ y = C ^ x :=
+  beal_eq_two_exp_xz_form_of_expGcd_eq_one hx hxz hd hsol
+
+/-- Phase 7h: under d = 1, two exponents agree or all three differ. -/
+example {x y z : ℕ} (hd : bealExpGcd x y z = 1) :
+    x = y ∨ y = z ∨ x = z ∨ (x ≠ y ∧ y ≠ z ∧ x ≠ z) :=
+  beal_expGcd_eq_one_two_equal_or_all_distinct hd
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
