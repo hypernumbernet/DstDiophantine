@@ -11,9 +11,10 @@ so the Diophantine path does not depend on these modules (same policy as
 ## Contents
 
 * `Algebra.CGA.QuadraticForm` — `Cl(2,1)` quadratic form
-* `Algebra.CGA.NullCone` — null pair `n₀, n∞`, conformal point `X(x)² = 0`
-* `Embedding.ConformalInteger` — integer null embedding, dilation weights,
-  PGA `integerHeight` unboundedness diagnostic
+* `Algebra.CGA.NullCone` — null pair `n₀, n∞`, conformal point `X(x)² = 0`,
+  point–point pairing, scale-invariant dilation mismatch
+* `Embedding.ConformalInteger` — integer null embedding, DST lattice predicate
+  `IsCGAIntegerPoint`, dilation weights, PGA `integerHeight` unboundedness
 -/
 
 namespace DstDiophantine
@@ -33,6 +34,20 @@ example (n : ℤ) :
 example : ¬ ∃ M : ℝ, ∀ (n : ℤ) (hn : n ≠ 0),
     Embedding.integerHeight n hn ≤ M :=
   Embedding.integerHeight_not_globally_bounded
+
+/-- Regression: point–point polarisation. -/
+example (x y : ℝ) :
+    CGA1.bilin21 (CGA1.pointVec x) (CGA1.pointVec y) = -((x - y) ^ 2) / 2 :=
+  CGA1.bilin21_pointVec_pointVec x y
+
+/-- Regression: balanced dilation mismatch is positive. -/
+example (m : ℕ) (hm : 0 < m) :
+    0 < CGA1.cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
+  CGA1.cgaDilationMismatch_balanced_pos m hm
+
+/-- Regression: nonzero integers are CGA lattice points. -/
+example {n : ℤ} (hn : n ≠ 0) : Embedding.IsCGAIntegerPoint (n : ℝ) :=
+  Embedding.IsCGAIntegerPoint_conformalInteger hn
 
 end CGA
 

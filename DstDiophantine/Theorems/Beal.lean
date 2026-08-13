@@ -21,7 +21,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 5–7: Beal's conjecture (problem-specific layer)
+# Phase 5–7c: Beal's conjecture (problem-specific layer)
 
 Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
 together with the faithful null-translator encoding of `A^x + B^y - C^z`.
@@ -29,23 +29,24 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme splits the
-old modular payload into:
+Classical Beal is **not** claimed unconditionally. The live programme splits into:
 
-* `BealWindingBridge` — solution ⇒ quantised fractional gap carries a
-  `ModularAmplificationWitness` (number-theoretic half);
-* `BealCGAGauge` / `BealCGANoGo` — CGA fractional-power embedding and residual
-  geometric no-go (not identified with the PGA real-scale cone).
+* `BealWindingBridge` — full solution ⇒ winding witness (unproved; balanced
+  gap `log 2 / m` misses the modular window);
+* **Window case (proved):** solution whose gap lies in `[2π/k, 4π/k)` yields a
+  winding witness (`beal_winding_of_solution_window`);
+* `BealCGALatticeGauge` / `BealCGADilationNoGo` — non-tautological CGA integer
+  null lattice and residual geometric no-go (not PGA real-scale);
+* Diagnostic `BealCGAGauge` / `BealCGANoGo` — null-cone squaring is always true,
+  so the old NoGo is ill-posed against the window construction.
 
 The legacy `BealModularBridge` (witness + `ConformalGaugeAdmissible`) is
 **diagnostic only**: those conjuncts are equation-independently incompatible
 (`beal_modular_payload_incompatible`). Continuous `BealAdmissibleBridge` remains
 diagnostic (balanced seeds sit below `1/m²`).
 
-Amplification factor for modular witnesses is `k = bealAmpExp = max(m, 4)`:
-`ModularAmplificationWitness` forces `4 ≤ k`, so the old payload with `k = m = 3`
-was empty (`modularWitness_empty_of_eq_three`). Wide principal window:
-`2π/k ≤ {δ} < 4π/k` on `N = k` yields `n₀ = 1` (includes `m = 3`).
+Amplification factor for modular witnesses is `k = bealAmpExp = max(m, 4)`.
+Wide principal window: `2π/k ≤ {δ} < 4π/k` on `N = k` yields `n₀ = 1`.
 -/
 
 namespace DstDiophantine
@@ -522,7 +523,7 @@ def BealWindingBridge : Prop :=
         let t := quantizeBealMismatch N A C x z m
         IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t
 
-/-! ### CGA fractional-power gauge (geometric half) -/
+/-! ### CGA fractional-power magnitudes and triple Fermat form -/
 
 /-- Fractional-power magnitude `|n|^{e/m}` used as a 1D CGA null-cone seed. -/
 noncomputable def bealRootMag (n : ℤ) (e m : ℕ) : ℝ :=
@@ -532,6 +533,23 @@ theorem bealRootMag_pos {n : ℤ} (hn : n ≠ 0) (e m : ℕ) :
     0 < bealRootMag n e m := by
   unfold bealRootMag
   exact Real.rpow_pos_of_pos (Nat.cast_pos.mpr (Int.natAbs_pos.mpr hn)) _
+
+/-- Raising a fractional root magnitude to `m` recovers the integer power. -/
+theorem bealRootMag_pow (n : ℤ) (e m : ℕ) (hm : m ≠ 0) :
+    bealRootMag n e m ^ m = (n.natAbs : ℝ) ^ e := by
+  unfold bealRootMag
+  have hnn : (0 : ℝ) ≤ (n.natAbs : ℝ) := Nat.cast_nonneg _
+  have hm0 : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hm
+  have hmul : ((e : ℝ) / m) * m = e := by field_simp [hm0]
+  rw [← Real.rpow_natCast _ m, ← Real.rpow_mul hnn, hmul, Real.rpow_natCast]
+
+/-- Equal-exponent roots collapse to absolute values. -/
+theorem bealRootMag_eq_natAbs (n : ℤ) (p : ℕ) (hp : p ≠ 0) :
+    bealRootMag n p p = (n.natAbs : ℝ) := by
+  unfold bealRootMag
+  have hp0 : (p : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hp
+  have : (p : ℝ) / p = 1 := by field_simp [hp0]
+  rw [this, Real.rpow_one]
 
 /-- Fractional log-gap equals the log-ratio of fractional-power magnitudes. -/
 theorem bealFracLogGap_eq_log_rootMag (A C : ℤ) (x z m : ℕ)
@@ -546,8 +564,64 @@ theorem bealFracLogGap_eq_log_rootMag (A C : ℤ) (x z m : ℕ)
   rw [Real.log_rpow hCabs, Real.log_rpow hAabs]
 
 /--
-CGA gauge for Beal fractional powers: both root-magnitudes embed as null points
-in `Cl(2,1)`. **Not** identified with `IsAdmissibleContinuous` / PGA real scale.
+On a positive Beal solution the three root-magnitudes satisfy the Fermat-shaped
+identity `α^m + β^m = γ^m`. PGA additive faithfulness and CGA dilation are thus
+two faces of the same solution.
+-/
+theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
+    (hm : m ≠ 0) (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    bealRootMag A x m ^ m + bealRootMag B y m ^ m =
+      bealRootMag C z m ^ m := by
+  have hAn : (A.natAbs : ℝ) = (A : ℝ) := by
+    rw [← Int.cast_natCast A.natAbs, Int.natAbs_of_nonneg hA.le]
+  have hBn : (B.natAbs : ℝ) = (B : ℝ) := by
+    rw [← Int.cast_natCast B.natAbs, Int.natAbs_of_nonneg hB.le]
+  have hCn : (C.natAbs : ℝ) = (C : ℝ) := by
+    rw [← Int.cast_natCast C.natAbs, Int.natAbs_of_nonneg hC.le]
+  have hsolR : (A : ℝ) ^ x + (B : ℝ) ^ y = (C : ℝ) ^ z := by exact_mod_cast hsol
+  rw [bealRootMag_pow A x m hm, bealRootMag_pow B y m hm, bealRootMag_pow C z m hm,
+    hAn, hBn, hCn, hsolR]
+
+/-- Triple CGA null embedding of the three Beal root-magnitudes (always true). -/
+def BealCGATriple (A B C : ℤ) (x y z m : ℕ) : Prop :=
+  conformalPoint (bealRootMag A x m) * conformalPoint (bealRootMag A x m) = 0 ∧
+    conformalPoint (bealRootMag B y m) * conformalPoint (bealRootMag B y m) = 0 ∧
+      conformalPoint (bealRootMag C z m) * conformalPoint (bealRootMag C z m) = 0
+
+theorem BealCGATriple_of_ne_zero (A B C : ℤ) (x y z m : ℕ) :
+    BealCGATriple A B C x y z m :=
+  ⟨conformalPoint_sq _, conformalPoint_sq _, conformalPoint_sq _⟩
+
+/-- Scale-invariant CGA mismatch of the A–C Beal dilation. -/
+noncomputable def bealCGADilationMismatch (A C : ℤ) (x z m : ℕ) : ℝ :=
+  cgaDilationMismatch (bealFracLogGap A C x z m)
+
+theorem bealCGADilationMismatch_pos_of_solution {A B C : ℤ} {x y z m : ℕ}
+    (hm : m ≠ 0) (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    0 < bealCGADilationMismatch A C x z m := by
+  unfold bealCGADilationMismatch
+  have hδ : 0 < bealFracLogGap A C x z m :=
+    bealFracLogGap_pos_of_solution hm hA hB hC hsol
+  exact CGA.CGA1.cgaDilationMismatch_pos_of_ne_zero (ne_of_gt hδ)
+
+/-- Balanced model mismatch `(2^{1/m} − 1)²` — visible to CGA, missed by PGA window. -/
+theorem beal_balanced_cgaDilationMismatch (m : ℕ) (hm : 0 < m) :
+    cgaDilationMismatch (Real.log 2 / (m : ℝ)) =
+      ((2 : ℝ) ^ ((1 : ℝ) / m) - 1) ^ 2 :=
+  CGA.CGA1.cgaDilationMismatch_balanced m hm
+
+theorem beal_balanced_cgaDilationMismatch_pos (m : ℕ) (hm : 0 < m) :
+    0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
+  CGA.CGA1.cgaDilationMismatch_balanced_pos m hm
+
+/-! ### Diagnostic tautological CGA gauge (always true) -/
+
+/--
+**Diagnostic** CGA gauge: both root-magnitudes embed as null points.
+Always true (`BealCGAGauge_of_ne_zero`); do **not** use as a live no-go hypothesis.
+Live gauge: `BealCGALatticeGauge`.
 -/
 def BealCGAGauge (A C : ℤ) (x z m : ℕ) : Prop :=
   conformalPoint (bealRootMag A x m) * conformalPoint (bealRootMag A x m) = 0 ∧
@@ -576,10 +650,116 @@ theorem beal_cga_dilation_weights (A C : ℤ) (x z m : ℕ)
     field_simp [ne_of_gt ha]
   rw [← hexp, conformalPoint_smul]
 
+/-- `k`-fold CGA dilation of a Beal seed (non-toroidal; not `2π`-periodic). -/
+theorem beal_cga_k_fold_dilation (A C : ℤ) (x z m k : ℕ)
+    (_hA : A ≠ 0) (_hC : C ≠ 0) :
+    let δ := bealFracLogGap A C x z m
+    let a := bealRootMag A x m
+    CGA1.pointVec (Real.exp ((k : ℝ) * δ) * a) =
+      CGA1.pointVec (Real.exp δ ^ (k : ℕ) * a) := by
+  intro δ a
+  simpa using congrArg (fun t => CGA1.pointVec (t * a)) (Real.exp_nat_mul δ k)
+
+/-! ### Non-tautological DST integer null lattice gauge -/
+
 /--
-Residual geometric no-go (unproved): a coprime solution cannot carry a modular
-winding witness (amplification `bealAmpExp`) once the CGA fractional-power gauge
-is in force. Does **not** reuse `ConformalGaugeAdmissible` / PGA real-scale.
+**Live** CGA lattice gauge: all three root-magnitudes lie on the DST discrete
+integer null lattice `X(n)`, `n ≠ 0`. **Not** identified with PGA
+`IsAdmissibleContinuous`. Fails for typical mixed-exponent fractional powers.
+-/
+def BealCGALatticeGauge (A B C : ℤ) (x y z m : ℕ) : Prop :=
+  IsCGAIntegerPoint (bealRootMag A x m) ∧
+    IsCGAIntegerPoint (bealRootMag B y m) ∧
+      IsCGAIntegerPoint (bealRootMag C z m)
+
+/-- Equal exponents place all three roots on the integer null lattice. -/
+theorem BealCGALatticeGauge_of_eq_exp (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
+    BealCGALatticeGauge A B C p p p p := by
+  refine ⟨?_, ?_, ?_⟩
+  · refine ⟨(A.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hA), ?_⟩
+    simpa using bealRootMag_eq_natAbs A p hp
+  · refine ⟨(B.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hB), ?_⟩
+    simpa using bealRootMag_eq_natAbs B p hp
+  · refine ⟨(C.natAbs : ℤ), by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC), ?_⟩
+    simpa using bealRootMag_eq_natAbs C p hp
+
+/--
+Equal-exponent lattice solutions reduce to an integer Fermat equation
+`α^p + β^p = γ^p` (no unconditional FLT claimed).
+-/
+theorem beal_eq_exp_lattice_fermat_form {A B C : ℤ} {p : ℕ} (hp : p ≠ 0)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ p + B ^ p = C ^ p)
+    (hlat : BealCGALatticeGauge A B C p p p p) :
+    ∃ (α β γ : ℤ), α ≠ 0 ∧ β ≠ 0 ∧ γ ≠ 0 ∧
+      α ^ p + β ^ p = γ ^ p ∧
+        bealRootMag A p p = α ∧ bealRootMag B p p = β ∧
+          bealRootMag C p p = γ := by
+  obtain ⟨α, hα0, hα⟩ := hlat.1
+  obtain ⟨β, hβ0, hβ⟩ := hlat.2.1
+  obtain ⟨γ, hγ0, hγ⟩ := hlat.2.2
+  refine ⟨α, β, γ, hα0, hβ0, hγ0, ?_, hα, hβ, hγ⟩
+  have hpow := beal_rootMag_pow_sum_of_solution hp hA hB hC hsol
+  have : (α : ℝ) ^ p + (β : ℝ) ^ p = (γ : ℝ) ^ p := by
+    rw [← hα, ← hβ, ← hγ, hpow]
+  exact_mod_cast this
+
+/-- Diagnostic: `2^{4/3}` is not an integer null-lattice point. -/
+theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
+    ¬ IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) := by
+  rintro ⟨k, hk, heq⟩
+  have hkpos : 0 < (k : ℝ) := by
+    have : (0 : ℝ) < (2 : ℝ) ^ ((4 : ℝ) / 3) :=
+      Real.rpow_pos_of_pos (by norm_num) _
+    rwa [heq] at this
+  have hk0 : 0 < k := Int.cast_pos.mp hkpos
+  have hleft : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
+    have hnn : (0 : ℝ) ≤ 2 := by norm_num
+    have hstep :
+        ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) =
+          (2 : ℝ) ^ (((4 : ℝ) / 3) * (3 : ℝ)) := by
+      rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]
+      norm_cast
+    rw [hstep]
+    norm_num
+  have h16 : (k : ℝ) ^ 3 = 16 := by
+    have : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (k : ℝ) ^ 3 := by rw [heq]
+    linarith [hleft, this]
+  have hk3 : k ^ 3 = 16 := by exact_mod_cast h16
+  have hle : k ≤ 2 := by
+    by_contra h
+    have hkge : (3 : ℤ) ≤ k := by omega
+    have : (3 : ℤ) ^ 3 ≤ k ^ 3 :=
+      pow_le_pow_left₀ (by decide : (0 : ℤ) ≤ 3) hkge 3
+    omega
+  have hge : 2 ≤ k := by
+    by_contra h
+    have : k ^ 3 ≤ (1 : ℤ) ^ 3 :=
+      pow_le_pow_left₀ (le_of_lt hk0) (by omega : k ≤ 1) 3
+    omega
+  have hk_eq : k = 2 := le_antisymm hle hge
+  rw [hk_eq] at hk3
+  norm_num at hk3
+
+/-- Mixed-exponent seed `2^{4/3}` misses the integer lattice (diagnostic). -/
+theorem not_BealCGALatticeGauge_two_two_two_four_four_three :
+    ¬ BealCGALatticeGauge 2 2 2 4 4 3 3 := by
+  intro h
+  have : IsCGAIntegerPoint (bealRootMag 2 4 3) := h.1
+  unfold bealRootMag at this
+  change IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) at this
+  exact not_isCGAIntegerPoint_two_rpow_four_thirds this
+
+/-! ### Diagnostic / live CGA no-go predicates -/
+
+/--
+**Diagnostic** geometric no-go (ill-posed as a live bridge).
+
+Uses tautological `BealCGAGauge`, so together with the proved window construction
+it would forbid coprime solutions from ever entering the wide gap window —
+equation-independently over-strong. Kept for the logical relation lemma below.
+Live programme: `BealCGADilationNoGo`.
 -/
 def BealCGANoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -594,7 +774,27 @@ def BealCGANoGo : Prop :=
           let t := quantizeBealMismatch N A C x z m
           ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t)
 
-/-- Conditional classical Beal from the split winding + CGA no-go bridges. -/
+/--
+**Live** CGA dilation / lattice no-go (unproved).
+
+A coprime solution whose root-magnitudes lie on the DST integer null lattice
+cannot carry a modular winding witness. Uses `BealCGALatticeGauge` (fails for
+typical mixed exponents), not tautological `BealCGAGauge` / PGA real-scale.
+-/
+def BealCGADilationNoGo : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    A ^ x + B ^ y = C ^ z →
+      BealCGALatticeGauge A B C x y z (bealMinExp x y z) →
+        ∀ (N : ℕ) (hN : N ≠ 0),
+          letI : NeZero N := ⟨hN⟩
+          let m := bealMinExp x y z
+          let k := bealAmpExp x y z
+          let t := quantizeBealMismatch N A C x z m
+          ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t)
+
+/-- Conditional classical Beal from winding + diagnostic CGA no-go. -/
 theorem beal_conjecture_of_winding_and_cga_nogo
     (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
@@ -612,6 +812,43 @@ theorem beal_conjecture_of_winding_and_cga_nogo
   let : NeZero N := ⟨hN⟩
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hsol
     (BealCGAGauge_of_ne_zero A C x z (bealMinExp x y z)) N hN ⟨hadm, hw⟩
+
+/--
+Conditional classical Beal from winding + live lattice/dilation no-go, for
+solutions that satisfy the lattice gauge (includes equal exponents).
+-/
+theorem beal_conjecture_of_winding_and_cga_dilation_nogo
+    (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      BealCGALatticeGauge A B C x y z (bealMinExp x y z) →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C := by
+  intro A B C x y z hx hy hz hA hB hC hlat hsol
+  by_contra hnot
+  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
+  have hpos : 0 < bealGcd A B C := bealGcd_pos hA
+  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
+  obtain ⟨N, hN, hadm, hw⟩ :=
+    hwind A B C x y z hx hy hz hA hB hC hcoprime hsol
+  let : NeZero N := ⟨hN⟩
+  exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hsol hlat N hN ⟨hadm, hw⟩
+
+/-- Equal-exponent specialisation of the live lattice conditional. -/
+theorem beal_eq_exp_not_coprime_of_winding_and_cga_dilation_nogo
+    (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo)
+    (A B C : ℤ) (p : ℕ) (hp : 3 ≤ p)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hsol : A ^ p + B ^ p = C ^ p) :
+    1 < bealGcd A B C := by
+  have hp0 : p ≠ 0 := ne_of_gt (Nat.lt_of_lt_of_le (by decide : 0 < 3) hp)
+  have hlat : BealCGALatticeGauge A B C p p p (bealMinExp p p p) := by
+    have hm : bealMinExp p p p = p := by simp [bealMinExp]
+    rw [hm]
+    exact BealCGALatticeGauge_of_eq_exp A B C p hp0 hA hB hC
+  exact beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
+    A B C p p p hp hp hp hA hB hC hlat hsol
 
 /-! ### Wide principal window (proved construction) -/
 
@@ -797,6 +1034,76 @@ theorem beal_modularWitness_of_principal_fracGap_window
     simpa [ht] using hw0
   exact ⟨hadm, modularWitness_of_pureBoost_winding k t hp hadm hamp hwind, rfl⟩
 
+/-! ### Window case of the winding bridge (proved) -/
+
+/--
+Positive solution whose fractional gap lies in the wide principal window yields
+a modular winding witness. Specialises the gap-only construction; no coprimality
+hypothesis. Closes the window half of BealWindingBridge; the balanced regime
+δ ≈ log 2 / m < 2π/k remains open.
+-/
+theorem beal_winding_of_solution_window {A B C : ℤ} {x y z : ℕ}
+    (_hA : 0 < A) (_hB : 0 < B) (_hC : 0 < C)
+    (_hsol : A ^ x + B ^ y = C ^ z)
+    (hle : 2 * Real.pi / bealAmpExp x y z ≤
+      bealFracLogGap A C x z (bealMinExp x y z))
+    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
+      4 * Real.pi / bealAmpExp x y z) :
+    let m := bealMinExp x y z
+    let k := bealAmpExp x y z
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
+  beal_modularWitness_of_fracGap_window_ampExp A C x y z hle hlt
+
+/-- Torus-folded window case for a positive Beal-range solution. -/
+theorem beal_winding_of_solution_principal_window {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hle : 2 * Real.pi / bealAmpExp x y z ≤
+      principalRapidity (bealFracLogGap A C x z (bealMinExp x y z)))
+    (hlt : principalRapidity (bealFracLogGap A C x z (bealMinExp x y z)) <
+      4 * Real.pi / bealAmpExp x y z) :
+    let m := bealMinExp x y z
+    let k := bealAmpExp x y z
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t := by
+  have hm : bealMinExp x y z ≠ 0 :=
+    ne_of_gt (bealMinExp_pos hx hy hz)
+  have hδ0 : 0 ≤ bealFracLogGap A C x z (bealMinExp x y z) :=
+    (bealFracLogGap_pos_of_solution hm hA hB hC hsol).le
+  exact beal_modularWitness_of_principal_fracGap_window A C x z
+    (bealMinExp x y z) (bealAmpExp x y z) (bealAmpExp_ge_four x y z)
+    hδ0 hle hlt
+
+/--
+Diagnostic relation: the ill-posed BealCGANoGo plus the window construction
+implies that a coprime positive solution cannot lie in the wide gap window.
+(Does not prove BealCGANoGo; records the over-strength of the tautological gauge.)
+-/
+theorem beal_coprime_not_in_wide_window_of_cga_nogo
+    (hnogo : BealCGANoGo) {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hcoprime : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    ¬ (2 * Real.pi / bealAmpExp x y z ≤
+        bealFracLogGap A C x z (bealMinExp x y z) ∧
+      bealFracLogGap A C x z (bealMinExp x y z) <
+        4 * Real.pi / bealAmpExp x y z) := by
+  rintro ⟨hle, hlt⟩
+  obtain ⟨hN, hadm, hw⟩ :=
+    beal_winding_of_solution_window hA hB hC hsol hle hlt
+  let : NeZero (bealAmpExp x y z) := ⟨hN⟩
+  exact hnogo A B C x y z hx hy hz hA.ne' hB.ne' hC.ne' hcoprime hsol
+    (BealCGAGauge_of_ne_zero A C x z (bealMinExp x y z))
+    (bealAmpExp x y z) hN ⟨hadm, hw⟩
 
 end Theorems
 

@@ -76,6 +76,43 @@ theorem bilin21_conformalPoint_nInf (x : ℝ) :
     CGA1.bilin21 (CGA1.pointVec x) CGA1.nInfVec = -1 :=
   CGA1.bilin21_pointVec_nInf x
 
+theorem bilin21_conformalPoint_conformalPoint (x y : ℝ) :
+    CGA1.bilin21 (CGA1.pointVec x) (CGA1.pointVec y) = -((x - y) ^ 2) / 2 :=
+  CGA1.bilin21_pointVec_pointVec x y
+
+/-- Scale-invariant CGA dilation mismatch `(e^δ − 1)²`. -/
+noncomputable abbrev cgaDilationMismatch : ℝ → ℝ :=
+  CGA1.cgaDilationMismatch
+
+theorem cgaDilationMismatch_eq (a δ : ℝ) (ha : 0 < a) :
+    cgaDilationMismatch δ =
+      -2 * CGA1.bilin21 (CGA1.pointVec a) (CGA1.pointVec (Real.exp δ * a)) /
+        a ^ 2 :=
+  CGA1.cgaDilationMismatch_eq_of_pos a δ ha
+
+/--
+Nonzero real coordinate lying on the DST discrete null lattice:
+`∃ n ≠ 0, x = n` (i.e. the conformal point is `X(n)` for a nonzero integer).
+Not identified with PGA `IsAdmissibleContinuous`.
+-/
+def IsCGAIntegerPoint (x : ℝ) : Prop :=
+  ∃ n : ℤ, n ≠ 0 ∧ x = (n : ℝ)
+
+theorem IsCGAIntegerPoint_conformalInteger {n : ℤ} (hn : n ≠ 0) :
+    IsCGAIntegerPoint (n : ℝ) :=
+  ⟨n, hn, rfl⟩
+
+theorem IsCGAIntegerPoint_of_intCast {n : ℤ} (hn : n ≠ 0) :
+    IsCGAIntegerPoint (n : ℝ) :=
+  IsCGAIntegerPoint_conformalInteger hn
+
+/-- Fractional magnitude `|n|^{e/m}` is an integer lattice point when it equals
+a nonzero integer (typically a perfect power). -/
+theorem IsCGAIntegerPoint_bealRootMag_of_eq {n : ℤ} {e m : ℕ} {k : ℤ}
+    (hk : k ≠ 0) (heq : (n.natAbs : ℝ) ^ ((e : ℝ) / m) = (k : ℝ)) :
+    IsCGAIntegerPoint ((n.natAbs : ℝ) ^ ((e : ℝ) / m)) :=
+  ⟨k, hk, heq⟩
+
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a
 nonzero integer whose torsional height exceeds `M`.

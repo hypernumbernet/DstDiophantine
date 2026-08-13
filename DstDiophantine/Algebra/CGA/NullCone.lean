@@ -1,6 +1,8 @@
 import DstDiophantine.Algebra.CGA.QuadraticForm
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
@@ -211,6 +213,78 @@ theorem pointVec_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) 
   have hinj := pointVec_dilation_injective ha h
   have : δ + 2 * Real.pi = δ := hinj
   linarith [Real.pi_pos]
+
+/-! ### Point–point pairing and scale-invariant dilation mismatch -/
+
+/--
+Standard 1D CGA point–point polarisation:
+`B(X(x), X(y)) = −(x − y)² / 2`.
+-/
+theorem bilin21_pointVec_pointVec (x y : ℝ) :
+    bilin21 (pointVec x) (pointVec y) = -((x - y) ^ 2) / 2 := by
+  simp only [bilin21_eq, pointVec]
+  ring
+
+/--
+Scale-invariant CGA dilation mismatch of a positive seed `a` under rapidity `δ`:
+`−2 · B(X(a), X(e^δ a)) / a² = (e^δ − 1)²`.
+Independent of `a > 0`; contrasts with PGA rapidity tori that ignore small `δ`.
+-/
+noncomputable def cgaDilationMismatch (δ : ℝ) : ℝ :=
+  (Real.exp δ - 1) ^ 2
+
+theorem bilin21_pointVec_dilation (a δ : ℝ) (ha : 0 < a) :
+    bilin21 (pointVec a) (pointVec (Real.exp δ * a)) =
+      -(a ^ 2) * cgaDilationMismatch δ / 2 := by
+  have h := bilin21_pointVec_pointVec a (Real.exp δ * a)
+  have hdiff : a - Real.exp δ * a = a * (1 - Real.exp δ) := by ring
+  rw [h, hdiff]
+  unfold cgaDilationMismatch
+  have ha0 : a ≠ 0 := ne_of_gt ha
+  field_simp [ha0]
+  ring
+
+theorem cgaDilationMismatch_eq_of_pos (a δ : ℝ) (ha : 0 < a) :
+    cgaDilationMismatch δ =
+      -2 * bilin21 (pointVec a) (pointVec (Real.exp δ * a)) / a ^ 2 := by
+  have h := bilin21_pointVec_dilation a δ ha
+  have ha2 : a ^ 2 ≠ 0 := pow_ne_zero 2 (ne_of_gt ha)
+  unfold cgaDilationMismatch at h ⊢
+  field_simp [ha2] at h ⊢
+  linarith [h]
+
+theorem cgaDilationMismatch_pos_of_ne_zero {δ : ℝ} (hδ : δ ≠ 0) :
+    0 < cgaDilationMismatch δ := by
+  unfold cgaDilationMismatch
+  have : Real.exp δ ≠ 1 := by
+    intro heq
+    have : δ = 0 := Real.exp_injective (heq.trans (Real.exp_zero).symm)
+    exact hδ this
+  exact sq_pos_of_ne_zero (sub_ne_zero.mpr this)
+
+/-- Balanced Beal model `δ = log 2 / m` yields mismatch `(2^{1/m} − 1)²`. -/
+theorem cgaDilationMismatch_balanced (m : ℕ) (hm : 0 < m) :
+    cgaDilationMismatch (Real.log 2 / (m : ℝ)) =
+      ((2 : ℝ) ^ ((1 : ℝ) / m) - 1) ^ 2 := by
+  unfold cgaDilationMismatch
+  have hm0 : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hm)
+  have hlog : Real.log 2 / (m : ℝ) = Real.log (2 ^ ((1 : ℝ) / m)) := by
+    have h2 : (0 : ℝ) < 2 := by norm_num
+    rw [Real.log_rpow h2]
+    field_simp [hm0]
+  rw [hlog, Real.exp_log (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)]
+
+/--
+CGA sees the balanced gap: mismatch is strictly positive, while the PGA
+modular window threshold `2π/k` sits above `log 2 / m`.
+-/
+theorem cgaDilationMismatch_balanced_pos (m : ℕ) (hm : 0 < m) :
+    0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) := by
+  rw [cgaDilationMismatch_balanced m hm]
+  have hpow : (1 : ℝ) < (2 : ℝ) ^ ((1 : ℝ) / m) :=
+    Real.one_lt_rpow (by norm_num : (1 : ℝ) < 2)
+      (div_pos (by norm_num : (0 : ℝ) < 1) (Nat.cast_pos.mpr hm))
+  exact sq_pos_of_pos (sub_pos.mpr hpow)
 
 end CGA1
 

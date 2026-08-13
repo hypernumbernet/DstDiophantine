@@ -26,8 +26,9 @@ These examples guard against export and dependency regressions in the shared
 amplification core. They import Framework / Algebra / Theorems directly (not
 `DstDiophantine.Basic`) to avoid a module cycle.
 
-Beal critical-path regressions (payload incompatibility, winding threshold,
-CGA null gauge) are included; Gravity remains intentionally out of scope.
+Beal critical-path regressions (payload incompatibility, winding window,
+CGA lattice / pairing / diagnostic NoGo) are included; Gravity remains
+intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation)
@@ -171,7 +172,7 @@ example {m : ℕ} (hm : 0 < m) :
     Real.log 2 / (m : ℝ) < 2 * Real.pi / (m : ℝ) :=
   beal_balanced_fracGap_lt_winding_threshold hm
 
-/-- Split winding + CGA no-go bridges recover classical Beal conditionally. -/
+/-- Split winding + diagnostic CGA no-go recover classical Beal conditionally. -/
 example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -180,9 +181,77 @@ example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
       1 < bealGcd A B C :=
   beal_conjecture_of_winding_and_cga_nogo hwind hnogo
 
-/-- CGA Beal gauge is null on both fractional-power seeds (not PGA real-scale). -/
+/-- Live lattice/dilation no-go + winding recover Beal on lattice solutions. -/
+example (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      BealCGALatticeGauge A B C x y z (bealMinExp x y z) →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
+
+/-- Diagnostic CGA gauge is tautological (always true — not a live hypothesis). -/
 example (A C : ℤ) (x z m : ℕ) : BealCGAGauge A C x z m :=
   BealCGAGauge_of_ne_zero A C x z m
+
+/-- Equal exponents place roots on the DST integer null lattice. -/
+example (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
+    BealCGALatticeGauge A B C p p p p :=
+  BealCGALatticeGauge_of_eq_exp A B C p hp hA hB hC
+
+/-- Mixed-exponent seed misses the integer lattice. -/
+example : ¬ BealCGALatticeGauge 2 2 2 4 4 3 3 :=
+  not_BealCGALatticeGauge_two_two_two_four_four_three
+
+/-- CGA point–point pairing. -/
+example (x y : ℝ) :
+    CGA.CGA1.bilin21 (CGA.CGA1.pointVec x) (CGA.CGA1.pointVec y) =
+      -((x - y) ^ 2) / 2 :=
+  bilin21_conformalPoint_conformalPoint x y
+
+/-- Balanced CGA dilation mismatch is strictly positive. -/
+example (m : ℕ) (hm : 0 < m) :
+    0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) :=
+  beal_balanced_cgaDilationMismatch_pos m hm
+
+/-- Window solution yields a modular winding witness. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hle : 2 * Real.pi / bealAmpExp x y z ≤
+      bealFracLogGap A C x z (bealMinExp x y z))
+    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
+      4 * Real.pi / bealAmpExp x y z) :
+    let m := bealMinExp x y z
+    let k := bealAmpExp x y z
+    let N := k
+    ∃ (hN : N ≠ 0),
+      letI : NeZero N := ⟨hN⟩
+      let t := quantizeBealMismatch N A C x z m
+      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
+  beal_winding_of_solution_window hA hB hC hsol hle hlt
+
+/-- Diagnostic NoGo + window ⇒ coprime solutions miss the wide window. -/
+example (hnogo : BealCGANoGo) {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hcoprime : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    ¬ (2 * Real.pi / bealAmpExp x y z ≤
+        bealFracLogGap A C x z (bealMinExp x y z) ∧
+      bealFracLogGap A C x z (bealMinExp x y z) <
+        4 * Real.pi / bealAmpExp x y z) :=
+  beal_coprime_not_in_wide_window_of_cga_nogo hnogo hx hy hz hA hB hC hcoprime hsol
+
+/-- Triple root-magnitudes satisfy α^m + β^m = γ^m on a positive solution. -/
+example {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    bealRootMag A x m ^ m + bealRootMag B y m ^ m =
+      bealRootMag C z m ^ m :=
+  beal_rootMag_pow_sum_of_solution hm hA hB hC hsol
 
 /-- Amplification factor below 4 never yields a modular winding witness. -/
 example {N : ℕ} [NeZero N] : IsEmpty (ModularAmplificationWitness N 3) :=
