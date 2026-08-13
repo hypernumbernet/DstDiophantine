@@ -172,6 +172,89 @@ theorem isCGAPowerLatticePoint_two_rpow_four_thirds :
     IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 :=
   ⟨16, by decide, two_rpow_four_thirds_pow_three⟩
 
+/-! ### Integer CGA dilations (discrete multiplicative group) -/
+
+/--
+Nonzero real scale that is a nonzero integer: the discrete multiplicative
+group acting on the CGA null lattice by X(x) ↦ X(c x).
+-/
+def IsCGAIntegerDilation (c : ℝ) : Prop :=
+  ∃ n : ℤ, n ≠ 0 ∧ c = (n : ℝ)
+
+theorem IsCGAIntegerDilation_int {n : ℤ} (hn : n ≠ 0) :
+    IsCGAIntegerDilation (n : ℝ) :=
+  ⟨n, hn, rfl⟩
+
+theorem IsCGAIntegerDilation_one : IsCGAIntegerDilation (1 : ℝ) :=
+  ⟨1, by decide, by norm_cast⟩
+
+theorem IsCGAIntegerDilation_mul {c d : ℝ}
+    (hc : IsCGAIntegerDilation c) (hd : IsCGAIntegerDilation d) :
+    IsCGAIntegerDilation (c * d) := by
+  obtain ⟨n, hn, hnEq⟩ := hc
+  obtain ⟨m, hm, hmEq⟩ := hd
+  refine ⟨n * m, mul_ne_zero hn hm, ?_⟩
+  rw [hnEq, hmEq, Int.cast_mul]
+
+/-- Integer dilations preserve the integer null lattice. -/
+theorem IsCGAIntegerPoint_cgaDilation {x c : ℝ}
+    (hx : IsCGAIntegerPoint x) (hc : IsCGAIntegerDilation c) :
+    IsCGAIntegerPoint (c * x) := by
+  obtain ⟨n, hn, hnEq⟩ := hx
+  obtain ⟨m, hm, hmEq⟩ := hc
+  refine ⟨m * n, mul_ne_zero hm hn, ?_⟩
+  rw [hnEq, hmEq, Int.cast_mul]
+
+/-- Integer dilations preserve the m-power null lattice. -/
+theorem IsCGAPowerLatticePoint_cgaDilation {x c : ℝ} {m : ℕ}
+    (hx : IsCGAPowerLatticePoint x m) (hc : IsCGAIntegerDilation c)
+    (_hm : 0 < m) :
+    IsCGAPowerLatticePoint (c * x) m := by
+  obtain ⟨n, hn, hnEq⟩ := hx
+  obtain ⟨k, hk, hkEq⟩ := hc
+  refine ⟨k ^ m * n, mul_ne_zero (pow_ne_zero m hk) hn, ?_⟩
+  rw [mul_pow, hnEq, hkEq, Int.cast_mul, Int.cast_pow]
+
+/--
+Ratio of absolute values is an integer dilation iff the denominator divides
+the numerator in ℕ.
+-/
+theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
+    (hα : α ≠ 0) (hγ : γ ≠ 0) :
+    IsCGAIntegerDilation ((γ.natAbs : ℝ) / (α.natAbs : ℝ)) ↔
+      α.natAbs ∣ γ.natAbs := by
+  constructor
+  · intro ⟨n, hn, heq⟩
+    have hαpos : 0 < (α.natAbs : ℝ) :=
+      Nat.cast_pos.mpr (Int.natAbs_pos.mpr hα)
+    have hmul : (γ.natAbs : ℝ) = (n : ℝ) * (α.natAbs : ℝ) := by
+      have := congrArg (fun t => t * (α.natAbs : ℝ)) heq
+      field_simp [ne_of_gt hαpos] at this
+      linarith [this]
+    have hnpos : 0 < n := by
+      have hγpos : 0 < (γ.natAbs : ℝ) :=
+        Nat.cast_pos.mpr (Int.natAbs_pos.mpr hγ)
+      have hprod : 0 < (n : ℝ) * (α.natAbs : ℝ) := by rwa [← hmul]
+      exact Int.cast_pos.mp (pos_of_mul_pos_left hprod hαpos.le)
+    refine ⟨n.toNat, ?_⟩
+    apply_fun (fun t : ℕ => (t : ℝ)) using Nat.cast_injective
+    simp only [Nat.cast_mul]
+    have hnR : (n.toNat : ℝ) = (n : ℝ) := by
+      exact_mod_cast Int.toNat_of_nonneg hnpos.le
+    rw [hnR, hmul, mul_comm]
+  · intro ⟨k, hk⟩
+    refine ⟨(k : ℤ), ?_, ?_⟩
+    · intro hk0
+      have hk0N : k = 0 := Int.natCast_eq_zero.mp hk0
+      have : γ.natAbs = 0 := by simp [hk, hk0N]
+      exact absurd this (ne_of_gt (Int.natAbs_pos.mpr hγ))
+    · have hαpos : (α.natAbs : ℝ) ≠ 0 :=
+        Nat.cast_ne_zero.mpr (ne_of_gt (Int.natAbs_pos.mpr hα))
+      field_simp [hαpos]
+      rw [hk]
+      push_cast
+      ring
+
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a
 nonzero integer whose torsional height exceeds `M`.

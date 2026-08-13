@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal フェーズ 7d: CGA 冪格子降下・巻数空性）
+最終更新: 2026-08-13（Beal フェーズ 7e: CGA 整数 dilation 実現・Mihăilescu）
 
 ## 1. 三層アーキテクチャ
 
@@ -47,8 +47,9 @@ flowchart LR
 | `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
 | `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
 | `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealCGADiscreteClosed` | Beal（本命・幾何） | 互素解 ⇒ k 倍 CGA 種が m 冪格子上 | **型付け済・未証明** |
-| `BealUnitBaseNoGo` | Beal（本命・残件） | `|A|=1` の互素解は存在しない | **型付け済・未証明**；`1+b³=c³` は有限断片あり |
+| `BealCGARealization` | Beal（本命・幾何） | 互素解 ⇒ A–C 根比が整数 CGA dilation | **型付け済・未証明**；等指数 rotor↔scale は証明済 |
+| `BealCGADiscreteClosed` | Beal（bookkeeping） | 互素解 ⇒ k 倍種が m 冪格子上 | **≡ `|A|=1`**（`beal_kFold_powerLattice_iff_natAbs_eq_one`） |
+| `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` | Beal（残件） | `|A|=1` の互素解は存在しない | **正の基底は Mihăilescu axiom で証明済** |
 | `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
 | `BealCGALatticeGauge` / `BealCGADilationNoGo` | Beal（等指数切片・診断） | 整数ヌル格子上の巻数禁止 | 等指数で格子成立；混合は外れ；NoGo 本体未 |
 | `BealCGAGauge` / `BealCGANoGo` | Beal（診断） | 恒真 null ゲージ ⇒ 巻数禁止 | **ill-posed**（窓構成と衝突し得る）；関係補題のみ |
@@ -84,7 +85,7 @@ flowchart LR
 | **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
 | **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
 
-**最優先軸:** 無条件 Beal 危機路線（フェーズ 7d）。窓側巻数と釣り合い型の巻数空性・対ごと互素・冪格子 k 倍降下は証明済。残りは `BealCGADiscreteClosed` と `BealUnitBaseNoGo`。旧巻数全解 bridge / 整数格子 NoGo / 恒真ゲージは診断用。無条件 FLT / abc はその先の応用。
+**最優先軸:** 無条件 Beal 危機路線（フェーズ 7e）。窓側巻数・釣り合い型巻数空性・対ごと互素・冪格子 ⇔ `|A|=1`・正の UnitBase（Mihăilescu）・DST 配置の易しい方向・等指数 rotor↔scale は証明済。残りは `BealCGARealization` 本体。旧巻数全解 / DiscreteClosed bookkeeping / 整数格子 NoGo / 恒真ゲージは診断用。無条件 FLT / abc はその先の応用。
 
 ---
 
@@ -98,10 +99,10 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7d）
+### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7e）
 
-1. **`BealCGADiscreteClosed` 本体:** 互素解の k 倍 CGA 種が m 冪格子に留まる
-2. **`BealUnitBaseNoGo` 本体:** `|A|=1` 互素解の禁止（一般は Mihăilescu / Fermat–Catalan 規模）
+1. **`BealCGARealization` 本体:** 互素解の A–C 根比が整数 CGA dilation（唯一の未証明核）
+2. ~~`BealUnitBaseNoGo`（正）~~ — Mihăilescu axiom で完了；`BealCGADiscreteClosed` は bookkeeping
 3. modular 巻数誤差の数論的下限 — `JNormalized_scale = JNormalized_amplified + error(winding)`（窓側補助）
 4. （後続）`FermatModularBridge` / `AbcModularBridge` への同型移植
 5. 有限証明書の拡大
@@ -167,7 +168,7 @@ flowchart LR
 - [x] 窓に入る解 ⇒ 巻数 witness（`beal_winding_of_solution_window`）
 - [x] 旧 `BealCGANoGo` を診断化（ill-posed；窓との関係補題）
 
-### フェーズ 7d（Beal CGA 冪格子降下 — 進行中）
+### フェーズ 7d（Beal CGA 冪格子降下 — 完了）
 
 - [x] 対ごと互素（`beal_pairwise_coprime`）
 - [x] `IsCGAPowerLatticePoint` と整数格子包含・`2^{4/3}` 診断
@@ -176,8 +177,16 @@ flowchart LR
 - [x] `BealWindingBridge` を窓レジーム診断へ降格
 - [x] `BealCGADiscreteClosed` + `BealUnitBaseNoGo` 型付けと条件付き古典 Beal
 - [x] 有限断片 `not_one_add_pow_three_eq_pow_three`
-- [ ] `BealCGADiscreteClosed` 本体（無条件 Beal 相当 — 主張しない）
-- [ ] `BealUnitBaseNoGo` 本体（一般残件 — 主張しない）
+
+### フェーズ 7e（Beal CGA 整数 dilation 実現 — 進行中）
+
+- [x] 互素解で k 倍冪格子 ⇔ `|A|=1`（`BealCGADiscreteClosed` を bookkeeping 化）
+- [x] Mihăilescu axiom + 正の `bealUnitBaseNoGo_pos`
+- [x] `IsCGAIntegerDilation` / 格子保存 / 二点一意スケール / `|A|∣|C|` 同値
+- [x] `IsDSTBealDiscreteConfig` + 互素 ⇒ `|A|=1`；正なら Mihăilescu で矛盾
+- [x] `BealCGARealization` 型付け；等指数 `mismatchRotor` ↔ CGA log-scale
+- [x] 条件付き正古典 Beal（`beal_conjecture_pos_of_realization`）
+- [ ] `BealCGARealization` 本体（無条件 Beal 相当 — 主張しない）
 
 ### Gravity トラック（PGA–TEGR）
 
@@ -209,8 +218,8 @@ Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
   ConformalInteger       ← CGA null 点埋め込み（診断）
 Theorems/
   Fermat                 ← FermatModularBridge + legacy / 連続診断
-  Beal (BealModularBridge + frac gap), Abc (AbcModularBridge + continuous false),
-  Collatz, Goldbach, Polignac, Riemann
+  Beal (Realization + DST config + Mihăilescu), Mihailescu,
+  Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）
 ```
@@ -273,6 +282,8 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 | 項目 | 内容 | Lean |
 |------|------|------|
 | 「整数環の有限単数群」 | 環が未定義。Lorentz 整数 order は無限単数になり得る。有限なのは `(ℤ/Nℤ)⁶` の rotor 像 | `DiscreteRotorImage` / `discreteUnit_finite` |
+| 双曲 rapidity のトーラス量子化 | 釣り合い Beal gap が不可視（巻数 0）。乗法の正しい離散対象は CGA 整数 dilation / PGA `integerRotor` | `beal_balanced_gap_no_modularWitness` / `IsCGAIntegerDilation` |
+| `BealCGADiscreteClosed` を幾何原理としない | k 倍冪格子閉は互素解で `|A|=1` と同値（bookkeeping） | `beal_kFold_powerLattice_iff_natAbs_eq_one` |
 | 許容条件 | 離散化からの帰結ではなく追加仮説。主枝だけでは `|J|≤1` は偽 | `torsion_bound_naive_false` vs `torsion_bound` |
 | Diophantine 重力・`A≲300` | 導出なし | 主張しない |
 | 文献プレースホルダ | `arXiv:xxxx.xxxxx` | — |
@@ -291,12 +302,11 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。
 
 ## 8. 次アクション
 
-1. **（主・Beal）** `BealCGADiscreteClosed`: 互素解の k 倍 CGA 種が m 冪格子に留まることの証明
-2. **（主・Beal）** `BealUnitBaseNoGo`: `|A|=1` 互素解の一般禁止（または有限断片の拡大）
-3. modular 巻数誤差の数論的下限（窓側補助）
-4. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
-5. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
-6. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
-7. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
+1. **（主・Beal）** `BealCGARealization`: 互素解の A–C 根比が整数 CGA dilation であることの証明
+2. modular 巻数誤差の数論的下限（窓側補助）
+3. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
+4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
+5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
+6. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 釣り合い型巻数空性 + CGA 冪格子降下補題 + DiscreteClosed/UnitBase 条件付き帰結** まで固めた段階であり、無条件古典 Beal はまだ未達成である。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 釣り合い型巻数空性 + 冪格子⇔`|A|=1` + Mihăilescu 正 UnitBase + DST 配置易しい方向 + Realization 条件付き帰結** まで固めた段階であり、無条件古典 Beal は `BealCGARealization` 本体が閉じるまで未達成である。

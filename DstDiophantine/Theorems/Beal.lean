@@ -9,7 +9,9 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
+import DstDiophantine.Algebra.Motor
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Theorems.Mihailescu
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Nat.GCD.Basic
@@ -21,7 +23,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 5–7d: Beal's conjecture (problem-specific layer)
+# Phase 5–7e: Beal's conjecture (problem-specific layer)
 
 Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
 together with the faithful null-translator encoding of `A^x + B^y - C^z`.
@@ -29,20 +31,20 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme (phase 7d)
-is power-lattice descent:
+Classical Beal is **not** claimed unconditionally. The live programme (phase 7e)
+is CGA integer-dilation realisation + Mihăilescu:
 
-* `BealCGADiscreteClosed` — coprime solution ⇒ `k`-fold CGA seed stays on the
-  `m`-power null lattice (unproved);
-* `BealUnitBaseNoGo` — no coprime solution with `|A| = 1` (unproved residual;
-  Mihăilescu / Fermat–Catalan scale);
+* `BealCGARealization` — coprime solution ⇒ A–C root-magnitude ratio is an
+  integer CGA dilation (unproved live bridge);
+* `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
+  positive bases via the Mihăilescu axiom;
+* `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
+  by `beal_kFold_powerLattice_iff_natAbs_eq_one`;
 * **Proved descent:** power-lattice closure of the `k`-fold seed + pairwise
-  coprimality ⇒ `|A| = 1`;
+  coprimality ⇒ `|A| = 1` (and converse);
 * **Window winding (proved):** gap in `[2π/k, 4π/k)` ⇒ modular witness
   (`beal_winding_of_solution_window`);
-* `BealWindingBridge` — **window-regime diagnostic** (not full-solution live):
-  balanced gaps `log 2 / m < 2π/k` never yield a winding witness
-  (`windingTotal_eq_zero_of_rapidity_lt`);
+* `BealWindingBridge` — **window-regime diagnostic** (not full-solution live);
 * Legacy integer-lattice `BealCGALatticeGauge` / `BealCGADilationNoGo` —
   equal-exponent slice only; mixed exponents miss the integer lattice;
 * Diagnostic `BealCGAGauge` / `BealCGANoGo` — tautological / ill-posed.
@@ -60,7 +62,7 @@ namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Discrete Invariant Real ModularAmplification Framework
+open Amplification Discrete Invariant Real ModularAmplification Framework Motor
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.CGA
 open CliffordAlgebra
@@ -1034,6 +1036,38 @@ theorem beal_natAbs_eq_one_of_kFold_powerLattice {A B C : ℤ} {x y z m k : ℕ}
     exact hp.dvd_of_dvd_pow this
   exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
 
+/--
+Converse of the descent: `|A| = 1` places the `k`-fold seed on the `m`-power
+lattice (no coprimality needed). Witness is `|C|^{k z}`.
+-/
+theorem beal_kFold_powerLattice_of_natAbs_eq_one (A C : ℤ) (x z m k : ℕ)
+    (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k)
+    (hA1 : A.natAbs = 1) :
+    IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m := by
+  refine ⟨(C.natAbs : ℤ) ^ (k * z), ?_, ?_⟩
+  · exact pow_ne_zero _ (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC))
+  · have hpow := bealCGAKFoldMag_pow A C x z m k hm hA hC hk
+    rw [hpow, hA1]
+    simp [one_pow]
+
+/--
+For a three-way-coprime Beal solution with `k ≥ 2`, the `k`-fold CGA seed lies
+on the `m`-power lattice if and only if `|A| = 1`. Phase 7e diagnostic: the
+former `BealCGADiscreteClosed` bridge is bookkeeping for this equivalence.
+-/
+theorem beal_kFold_powerLattice_iff_natAbs_eq_one {A B C : ℤ} {x y z m k : ℕ}
+    (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m ↔ A.natAbs = 1 := by
+  constructor
+  · exact beal_natAbs_eq_one_of_kFold_powerLattice hm hA hB hC hx hy hz hk
+      hgcd hsol
+  · intro hA1
+    exact beal_kFold_powerLattice_of_natAbs_eq_one A C x z m k hm hA hC
+      (Nat.le_trans (by decide : 1 ≤ 2) hk) hA1
+
 /-- Balanced model rapidity never yields a modular winding witness on any `N`. -/
 theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
@@ -1045,12 +1079,15 @@ theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
     (bealAmpExp x y z) (bealAmpExp_pos x y z)
     (beal_balanced_fracGap_lt_ampExp_threshold hx hy hz) hw
 
-/-! ### Live bridges: discrete closure + unit-base residual -/
+/-! ### Bookkeeping discrete closure + unit-base residual (phase 7e) -/
 
 /--
-**Live** geometric half (unproved): a coprime Beal solution has its `k`-fold
-CGA seed on the `m`-power null lattice. Not the tautological statement that
-root magnitudes themselves lie on that lattice (`bealRootMag_isCGAPowerLatticePoint`).
+**Bookkeeping alias** (phase 7e): a coprime Beal solution has its `k`-fold
+CGA seed on the `m`-power null lattice.
+
+By `beal_kFold_powerLattice_iff_natAbs_eq_one` this is equivalent to
+“every coprime solution has `|A| = 1`”. Not an independent geometric principle;
+the live programme is `BealCGARealization` + Mihăilescu (`BealUnitBaseNoGo`).
 -/
 def BealCGADiscreteClosed : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -1062,9 +1099,9 @@ def BealCGADiscreteClosed : Prop :=
         (bealMinExp x y z)
 
 /--
-**Live** residual half (unproved): no coprime Beal solution has `|A| = 1`.
-Elementary special cases (e.g. `1 + b³ = c³`) are available separately; the
-general statement is Mihăilescu / Fermat–Catalan scale and is not claimed here.
+**Residual half:** no coprime Beal solution has `|A| = 1`.
+Positive bases are closed by `bealUnitBaseNoGo_pos` (Mihăilescu axiom);
+elementary `1 + b³ = c³` remains axiom-free.
 -/
 def BealUnitBaseNoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -1072,6 +1109,17 @@ def BealUnitBaseNoGo : Prop :=
     bealGcd A B C = 1 →
     A.natAbs = 1 →
       ¬ A ^ x + B ^ y = C ^ z
+
+/--
+Positive fragment of `BealUnitBaseNoGo`, proved from the Mihăilescu axiom.
+Coprimality is unused (Catalan needs only the unit base and positivity).
+-/
+theorem bealUnitBaseNoGo_pos {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (_hgcd : bealGcd A B C = 1) (hA1 : A.natAbs = 1) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_unitAbs_pow_add_pow_eq_pow_pos hA hB hC hA1 hx hy hz
 
 /-- Conditional classical Beal from discrete closure + unit-base no-go. -/
 theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
@@ -1097,6 +1145,34 @@ theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
     beal_natAbs_eq_one_of_kFold_powerLattice hm hA hB hC hx0 hy0 hz0 hk
       hcoprime hsol hlat
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hA1 hsol
+
+/--
+Positive classical Beal from bookkeeping discrete closure + Mihăilescu
+(no separate `BealUnitBaseNoGo` hypothesis).
+-/
+theorem beal_conjecture_pos_of_discreteClosed
+    (hclosed : BealCGADiscreteClosed) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      0 < A → 0 < B → 0 < C →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C := by
+  intro A B C x y z hx hy hz hA hB hC hsol
+  by_contra hnot
+  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
+  have hpos : 0 < bealGcd A B C := bealGcd_pos hA.ne'
+  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
+  have hlat := hclosed A B C x y z hx hy hz hA.ne' hB.ne' hC.ne' hcoprime hsol
+  have hm : bealMinExp x y z ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
+  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
+  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
+  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
+  have hk : 2 ≤ bealAmpExp x y z :=
+    Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z)
+  have hA1 : A.natAbs = 1 :=
+    beal_natAbs_eq_one_of_kFold_powerLattice hm hA.ne' hB.ne' hC.ne' hx0 hy0 hz0 hk
+      hcoprime hsol hlat
+  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hcoprime hA1 hsol
 
 /-- Elementary unit-base fragment: `1 + b^3 = c^3` has no positive solutions. -/
 theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
@@ -1129,6 +1205,161 @@ theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
     have : (3 : ℤ) * (b * (b + 1)) = 0 := by linarith [hpoly]
     exact (mul_eq_zero.mp this).resolve_left h3
   exact (mul_eq_zero.mp this).elim (ne_of_gt hb) (by intro; linarith [hb])
+
+/-! ### Phase 7e: DST discrete config + CGA realisation bridge -/
+
+/--
+Combined DST configuration: PGA additive faithfulness together with an
+integer CGA dilation along the A–C root-magnitude ratio.
+-/
+def IsDSTBealDiscreteConfig (A B C : ℤ) (x y z : ℕ) : Prop :=
+  powerSumMotor (bealEquation A B C x y z) = 1 ∧
+    IsCGAIntegerDilation
+      (bealRootMag C z (bealMinExp x y z) / bealRootMag A x (bealMinExp x y z))
+
+/-- Equal-exponent specialisation of the dilation scale. -/
+theorem bealRootMag_div_eq_natAbs_div (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
+    (_hA : A ≠ 0) (_hC : C ≠ 0) :
+    bealRootMag C p p / bealRootMag A p p =
+      (C.natAbs : ℝ) / (A.natAbs : ℝ) := by
+  rw [bealRootMag_eq_natAbs A p hp, bealRootMag_eq_natAbs C p hp]
+
+/--
+Easy direction: a discrete DST config that is three-way coprime forces `|A| = 1`.
+-/
+theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hcfg : IsDSTBealDiscreteConfig A B C x y z) :
+    A.natAbs = 1 := by
+  obtain ⟨hmotor, hdil⟩ := hcfg
+  have hsol : A ^ x + B ^ y = C ^ z :=
+    (beal_solution_iff_motor A B C x y z).mpr hmotor
+  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
+  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
+  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
+  have hac := beal_coprime_ac hA hB hC hx0 hy0 hz0 hgcd hsol
+  set m := bealMinExp x y z
+  have hm : m ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
+  obtain ⟨n, hn, heq⟩ := hdil
+  have hα : 0 < bealRootMag A x m := bealRootMag_pos hA x m
+  have hγ : 0 < bealRootMag C z m := bealRootMag_pos hC z m
+  -- Root magnitudes are positive, so the dilation scale `n` is positive.
+  have hnpos : 0 < n := by
+    have hscalePos : 0 < bealRootMag C z m / bealRootMag A x m :=
+      div_pos hγ hα
+    have : 0 < (n : ℝ) := by rwa [← heq]
+    exact Int.cast_pos.mp this
+  have hscale : bealRootMag C z m = (n : ℝ) * bealRootMag A x m := by
+    have := congrArg (fun t => t * bealRootMag A x m) heq
+    field_simp [ne_of_gt hα] at this
+    linarith [this]
+  have hpow : (C.natAbs : ℝ) ^ z =
+      (n : ℝ) ^ m * (A.natAbs : ℝ) ^ x := by
+    have hL := congrArg (fun t : ℝ => t ^ m) hscale
+    rw [mul_pow, bealRootMag_pow A x m hm, bealRootMag_pow C z m hm] at hL
+    exact hL
+  have hdvd : A.natAbs ^ x ∣ C.natAbs ^ z := by
+    refine ⟨n.toNat ^ m, ?_⟩
+    apply_fun (fun t : ℕ => (t : ℝ)) using Nat.cast_injective
+    simp only [Nat.cast_mul, Nat.cast_pow]
+    have hnR : (n.toNat : ℝ) = (n : ℝ) := by
+      exact_mod_cast Int.toNat_of_nonneg hnpos.le
+    rw [hnR, hpow, mul_comm]
+  rw [Nat.eq_one_iff_not_exists_prime_dvd]
+  intro p hp hpA
+  have hpC : p ∣ C.natAbs := by
+    have : p ∣ A.natAbs ^ x := dvd_pow hpA (ne_of_gt hx0)
+    have : p ∣ C.natAbs ^ z := Nat.dvd_trans this hdvd
+    exact hp.dvd_of_dvd_pow this
+  exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
+
+/-- Coprime DST discrete configs do not exist (positive bases + Mihăilescu). -/
+theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hgcd : bealGcd A B C = 1)
+    (hcfg : IsDSTBealDiscreteConfig A B C x y z) :
+    False := by
+  have hA1 := beal_natAbs_eq_one_of_dstDiscreteConfig hx hy hz
+    hA.ne' hB.ne' hC.ne' hgcd hcfg
+  obtain ⟨hmotor, _⟩ := hcfg
+  have hsol : A ^ x + B ^ y = C ^ z :=
+    (beal_solution_iff_motor A B C x y z).mpr hmotor
+  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hgcd hA1 hsol
+
+/--
+**Live** geometric bridge (phase 7e, unproved): a coprime Beal solution has
+A–C root-magnitude ratio in the integer CGA dilation group.
+-/
+def BealCGARealization : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    A ^ x + B ^ y = C ^ z →
+      IsCGAIntegerDilation
+        (bealRootMag C z (bealMinExp x y z) / bealRootMag A x (bealMinExp x y z))
+
+/-- Realisation produces a DST discrete config from a solution. -/
+theorem IsDSTBealDiscreteConfig_of_realization
+    (hreal : BealCGARealization) {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    IsDSTBealDiscreteConfig A B C x y z :=
+  ⟨(beal_solution_iff_motor A B C x y z).mp hsol,
+    hreal A B C x y z hx hy hz hA hB hC hgcd hsol⟩
+
+/-- Positive classical Beal from realisation + Mihăilescu. -/
+theorem beal_conjecture_pos_of_realization (hreal : BealCGARealization) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      0 < A → 0 < B → 0 < C →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C := by
+  intro A B C x y z hx hy hz hA hB hC hsol
+  by_contra hnot
+  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
+  have hpos : 0 < bealGcd A B C := bealGcd_pos hA.ne'
+  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
+  exact not_dstDiscreteConfig_coprime_pos hx hy hz hA hB hC hcoprime
+    (IsDSTBealDiscreteConfig_of_realization hreal hx hy hz
+      hA.ne' hB.ne' hC.ne' hcoprime hsol)
+
+/--
+Equal exponents: the PGA mismatch rotor rapidity equals the CGA log-scale
+`log(|C|/|A|)`. Connects `integerRotor` ratio to the dilation scale (no
+integer-membership claim).
+-/
+theorem beal_eq_exp_mismatchRotor_scale (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
+    (hA : A ≠ 0) (hC : C ≠ 0) :
+    mismatchRotor A C hA hC =
+      rotorTorsion
+        (pureBoost
+          (2 * Real.log (bealRootMag C p p / bealRootMag A p p))) := by
+  have hdiv := bealRootMag_div_eq_natAbs_div A C p hp hA hC
+  have hAabs : 0 < (A.natAbs : ℝ) :=
+    Nat.cast_pos.mpr (Int.natAbs_pos.mpr hA)
+  have hCabs : 0 < (C.natAbs : ℝ) :=
+    Nat.cast_pos.mpr (Int.natAbs_pos.mpr hC)
+  have hlog :
+      Real.log (bealRootMag C p p / bealRootMag A p p) =
+        Real.log (C.natAbs : ℝ) - Real.log (A.natAbs : ℝ) := by
+    rw [hdiv, Real.log_div (ne_of_gt hCabs) (ne_of_gt hAabs)]
+  rw [mismatchRotor_eq_rotorTorsion A C hA hC, hlog]
+
+/--
+Equal-exponent integer dilation of the root ratio is equivalent to
+`|A| ∣ |C|` (hence to `|A| = 1` under AC-coprimality).
+-/
+theorem beal_eq_exp_integerDilation_iff (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
+    (hA : A ≠ 0) (hC : C ≠ 0) :
+    IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
+      A.natAbs ∣ C.natAbs := by
+  rw [bealRootMag_div_eq_natAbs_div A C p hp hA hC]
+  exact IsCGAIntegerDilation_div_iff hA hC
 
 /-! ### Wide principal window (proved construction) -/
 

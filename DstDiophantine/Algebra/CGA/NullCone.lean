@@ -292,6 +292,34 @@ theorem cgaDilationMismatch_balanced_pos (m : ℕ) (hm : 0 < m) :
       (div_pos (by norm_num : (0 : ℝ) < 1) (Nat.cast_pos.mpr hm))
   exact sq_pos_of_pos (sub_pos.mpr hpow)
 
+/-! ### Integer dilation group on the null cone -/
+
+/-- Multiplicative dilation of a null-cone coordinate by scale `c`. -/
+noncomputable def cgaDilation (c x : ℝ) : Vec3 :=
+  pointVec (c * x)
+
+theorem cgaDilation_eq (c x : ℝ) :
+    cgaDilation c x = pointVec (c * x) :=
+  rfl
+
+theorem cgaDilation_smul_weights (c x : ℝ) :
+    cgaDilation c x =
+      n0Vec + c • (x • eLineVec) + (c ^ 2) • ((1 / 2 * x ^ 2) • nInfVec) :=
+  pointVec_smul_weights c x
+
+/-- The unique scale sending a positive seed `α` to `γ` is `γ / α`. -/
+theorem cgaDilation_scale_unique {α γ : ℝ} (hα : 0 < α) (_hγ : 0 < γ) :
+    cgaDilation (γ / α) α = pointVec γ := by
+  unfold cgaDilation
+  have : (γ / α) * α = γ := div_mul_cancel₀ γ (ne_of_gt hα)
+  rw [this]
+
+theorem cgaDilation_scale_of_eq {α γ c : ℝ} (hα : 0 < α)
+    (heq : cgaDilation c α = pointVec γ) : c = γ / α := by
+  have hxy : c * α = γ := by
+    simpa [cgaDilation, pointVec_eLine] using congr_fun heq eIndex
+  exact (eq_div_iff (ne_of_gt hα)).mpr hxy
+
 end CGA1
 
 end CGA

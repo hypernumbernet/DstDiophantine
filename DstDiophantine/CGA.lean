@@ -12,15 +12,17 @@ so the Diophantine path does not depend on these modules (same policy as
 
 * `Algebra.CGA.QuadraticForm` — `Cl(2,1)` quadratic form
 * `Algebra.CGA.NullCone` — null pair `n₀, n∞`, conformal point `X(x)² = 0`,
-  point–point pairing, scale-invariant dilation mismatch
+  point–point pairing, scale-invariant dilation mismatch, `cgaDilation`
 * `Embedding.ConformalInteger` — integer null embedding, DST lattice predicates
-  `IsCGAIntegerPoint` / `IsCGAPowerLatticePoint`, dilation weights, PGA
-  `integerHeight` unboundedness
+  `IsCGAIntegerPoint` / `IsCGAPowerLatticePoint` / `IsCGAIntegerDilation`,
+  dilation weights, PGA `integerHeight` unboundedness
 -/
 
 namespace DstDiophantine
 
 namespace CGA
+
+open CGA1
 
 /-- Regression: null-cone points square to zero. -/
 example (x : ℝ) : CGA1.point x * CGA1.point x = 0 :=
@@ -68,6 +70,27 @@ example : Embedding.IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 :=
 example {x : ℝ} {m : ℕ} (hx : Embedding.IsCGAIntegerPoint x) (hm : 0 < m) :
     Embedding.IsCGAPowerLatticePoint x m :=
   Embedding.IsCGAIntegerPoint.isCGAPowerLatticePoint hx hm
+
+/-- Regression: nonzero integers are integer dilations. -/
+example {n : ℤ} (hn : n ≠ 0) : Embedding.IsCGAIntegerDilation (n : ℝ) :=
+  Embedding.IsCGAIntegerDilation_int hn
+
+/-- Regression: integer dilations preserve the integer null lattice. -/
+example {x c : ℝ}
+    (hx : Embedding.IsCGAIntegerPoint x) (hc : Embedding.IsCGAIntegerDilation c) :
+    Embedding.IsCGAIntegerPoint (c * x) :=
+  Embedding.IsCGAIntegerPoint_cgaDilation hx hc
+
+/-- Regression: unique scale sending α to γ. -/
+example {α γ : ℝ} (hα : 0 < α) (hγ : 0 < γ) :
+    CGA1.cgaDilation (γ / α) α = CGA1.pointVec γ :=
+  CGA1.cgaDilation_scale_unique hα hγ
+
+/-- Regression: `|C|/|A|` is an integer dilation iff `|A| ∣ |C|`. -/
+example {α γ : ℤ} (hα : α ≠ 0) (hγ : γ ≠ 0) :
+    Embedding.IsCGAIntegerDilation ((γ.natAbs : ℝ) / (α.natAbs : ℝ)) ↔
+      α.natAbs ∣ γ.natAbs :=
+  Embedding.IsCGAIntegerDilation_div_iff hα hγ
 
 end CGA
 

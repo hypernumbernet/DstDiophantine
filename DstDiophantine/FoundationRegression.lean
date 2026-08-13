@@ -11,6 +11,7 @@ import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.UnitGroup
 import DstDiophantine.Algebra.Generators
+import DstDiophantine.Algebra.Motor
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.Abc
@@ -27,8 +28,8 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 `DstDiophantine.Basic`) to avoid a module cycle.
 
 Beal critical-path regressions (payload incompatibility, winding window,
-power-lattice descent, DiscreteClosed / UnitBase, diagnostic NoGo) are
-included; Gravity remains intentionally out of scope.
+power-lattice descent, phase 7e realisation / Mihăilescu / DST config,
+diagnostic NoGo) are included; Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation)
@@ -37,7 +38,7 @@ are included below.
 
 namespace DstDiophantine.FoundationRegression
 
-open Amplification Discrete Invariant Framework Theorems ModularAmplification
+open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
 open Operations Continuum UnitGroup Generators
 open _root_.DstDiophantine.Embedding
 
@@ -191,7 +192,7 @@ example (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
       1 < bealGcd A B C :=
   beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
 
-/-- Phase 7d: discrete closure + unit-base no-go recover classical Beal. -/
+/-- Bookkeeping discrete closure + unit-base no-go recover classical Beal. -/
 example (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -199,6 +200,49 @@ example (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
       A ^ x + B ^ y = C ^ z →
       1 < bealGcd A B C :=
   beal_conjecture_of_discreteClosed_and_unitBaseNoGo hclosed hnogo
+
+/-- Phase 7e: k-fold power lattice ↔ `|A| = 1` for coprime solutions. -/
+example {A B C : ℤ} {x y z m k : ℕ}
+    (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m ↔ A.natAbs = 1 :=
+  beal_kFold_powerLattice_iff_natAbs_eq_one hm hA hB hC hx hy hz hk hgcd hsol
+
+/-- Phase 7e: positive unit base via Mihăilescu axiom. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hgcd : bealGcd A B C = 1) (hA1 : A.natAbs = 1) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  bealUnitBaseNoGo_pos hx hy hz hA hB hC hgcd hA1
+
+/-- Phase 7e: realisation + Mihăilescu recover positive classical Beal. -/
+example (hreal : BealCGARealization) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      0 < A → 0 < B → 0 < C →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_pos_of_realization hreal
+
+/-- Phase 7e: DST discrete config + coprimality ⇒ `|A| = 1`. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hcfg : IsDSTBealDiscreteConfig A B C x y z) :
+    A.natAbs = 1 :=
+  beal_natAbs_eq_one_of_dstDiscreteConfig hx hy hz hA hB hC hgcd hcfg
+
+/-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
+example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
+    mismatchRotor A C hA hC =
+      rotorTorsion
+        (pureBoost
+          (2 * Real.log (bealRootMag C p p / bealRootMag A p p))) :=
+  beal_eq_exp_mismatchRotor_scale A C p hp hA hC
 
 /-- Three-way coprime Beal solutions are pairwise coprime. -/
 example {A B C : ℤ} {x y z : ℕ}
