@@ -176,7 +176,7 @@ theorem isCGAPowerLatticePoint_two_rpow_four_thirds :
 
 /--
 Nonzero real scale that is a nonzero integer: the discrete multiplicative
-group acting on the CGA null lattice by X(x) ↦ X(c x).
+group acting on the CGA null lattice by `X(x) ↦ X(c x)`.
 -/
 def IsCGAIntegerDilation (c : ℝ) : Prop :=
   ∃ n : ℤ, n ≠ 0 ∧ c = (n : ℝ)
@@ -217,7 +217,7 @@ theorem IsCGAPowerLatticePoint_cgaDilation {x c : ℝ} {m : ℕ}
 
 /--
 Ratio of absolute values is an integer dilation iff the denominator divides
-the numerator in ℕ.
+the numerator in `ℕ`.
 -/
 theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
     (hα : α ≠ 0) (hγ : γ ≠ 0) :
@@ -243,17 +243,17 @@ theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
       exact_mod_cast Int.toNat_of_nonneg hnpos.le
     rw [hnR, hmul, mul_comm]
   · intro ⟨k, hk⟩
-    refine ⟨(k : ℤ), ?_, ?_⟩
-    · intro hk0
-      have hk0N : k = 0 := Int.natCast_eq_zero.mp hk0
-      have : γ.natAbs = 0 := by simp [hk, hk0N]
+    have hkpos : 0 < k := by
+      by_contra hk0
+      have : γ.natAbs = 0 := by simp [hk, Nat.eq_zero_of_not_pos hk0]
       exact absurd this (ne_of_gt (Int.natAbs_pos.mpr hγ))
-    · have hαpos : (α.natAbs : ℝ) ≠ 0 :=
-        Nat.cast_ne_zero.mpr (ne_of_gt (Int.natAbs_pos.mpr hα))
-      field_simp [hαpos]
-      rw [hk]
-      push_cast
-      ring
+    refine ⟨(k : ℤ), by exact_mod_cast ne_of_gt hkpos, ?_⟩
+    have hαpos : (α.natAbs : ℝ) ≠ 0 :=
+      Nat.cast_ne_zero.mpr (ne_of_gt (Int.natAbs_pos.mpr hα))
+    field_simp [hαpos]
+    rw [hk]
+    push_cast
+    ring
 
 /--
 PGA integer-rotor height is unbounded: for every real bound `M` there is a

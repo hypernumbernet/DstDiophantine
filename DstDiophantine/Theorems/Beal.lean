@@ -1010,6 +1010,26 @@ theorem beal_kFold_powerLattice_dvd (A C : ℤ) (x z m k : ℕ)
   rw [hnR, hdivR, mul_comm]
 
 /--
+If `|A|^e` divides `|C|^f` with `e > 0` and `Nat.Coprime |A| |C|`, then `|A| = 1`.
+Shared by k-fold power-lattice descent and DST discrete-config descent.
+-/
+theorem beal_natAbs_eq_one_of_ac_pow_dvd {A C : ℤ} {e f : ℕ}
+    (he : 0 < e) (hac : Nat.Coprime A.natAbs C.natAbs)
+    (hdvd : A.natAbs ^ e ∣ C.natAbs ^ f) : A.natAbs = 1 := by
+  rw [Nat.eq_one_iff_not_exists_prime_dvd]
+  intro p hp hpA
+  have hpC : p ∣ C.natAbs := by
+    have : p ∣ A.natAbs ^ e := dvd_pow hpA (ne_of_gt he)
+    exact hp.dvd_of_dvd_pow (Nat.dvd_trans this hdvd)
+  exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
+
+/-- Recover `bealGcd = 1` from the negation of the classical conclusion. -/
+theorem bealGcd_eq_one_of_not_gt {A B C : ℤ} (hA : A ≠ 0)
+    (hnot : ¬ 1 < bealGcd A B C) : bealGcd A B C = 1 := by
+  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
+  exact le_antisymm hle (Nat.succ_le_of_lt (bealGcd_pos hA))
+
+/--
 Pairwise AC-coprimality + power-lattice closure of the `k`-fold seed
 (`k ≥ 2`) forces `|A| = 1`. Unconditional descent lemma (no bridge).
 -/
@@ -1023,18 +1043,9 @@ theorem beal_natAbs_eq_one_of_kFold_powerLattice {A B C : ℤ} {x y z m k : ℕ}
   have hk1 : 1 ≤ k := Nat.le_trans (by decide : 1 ≤ 2) hk
   have hdvd := beal_kFold_powerLattice_dvd A C x z m k hm hA hC hk1 hlat
   have hac := beal_coprime_ac hA hB hC hx hy hz hgcd hsol
-  have hpow : 0 < x * (k - 1) := by
-    have : 0 < k - 1 := Nat.sub_pos_of_lt hk
-    exact Nat.mul_pos hx this
-  -- If a prime divides A, it divides C via the divisibility, contradicting hac.
-  rw [Nat.eq_one_iff_not_exists_prime_dvd]
-  intro p hp hpA
-  have hpC : p ∣ C.natAbs := by
-    have : p ∣ A.natAbs ^ (x * (k - 1)) :=
-      dvd_pow hpA (ne_of_gt hpow)
-    have : p ∣ C.natAbs ^ (k * z) := Nat.dvd_trans this hdvd
-    exact hp.dvd_of_dvd_pow this
-  exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
+  have hpow : 0 < x * (k - 1) :=
+    Nat.mul_pos hx (Nat.sub_pos_of_lt hk)
+  exact beal_natAbs_eq_one_of_ac_pow_dvd hpow hac hdvd
 
 /--
 Converse of the descent: `|A| = 1` places the `k`-fold seed on the `m`-power
@@ -1117,9 +1128,37 @@ Coprimality is unused (Catalan needs only the unit base and positivity).
 theorem bealUnitBaseNoGo_pos {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (_hgcd : bealGcd A B C = 1) (hA1 : A.natAbs = 1) :
+    (hA1 : A.natAbs = 1) :
     ¬ A ^ x + B ^ y = C ^ z :=
   not_unitAbs_pow_add_pow_eq_pow_pos hA hB hC hA1 hx hy hz
+
+/-- Bookkeeping closure is exactly “coprime solution ⇒ `|A| = 1`”. -/
+theorem BealCGADiscreteClosed_iff_unitAbs :
+    BealCGADiscreteClosed ↔
+      ∀ (A B C : ℤ) (x y z : ℕ),
+        3 ≤ x → 3 ≤ y → 3 ≤ z →
+        A ≠ 0 → B ≠ 0 → C ≠ 0 →
+        bealGcd A B C = 1 →
+        A ^ x + B ^ y = C ^ z →
+          A.natAbs = 1 := by
+  constructor
+  · intro hclosed A B C x y z hx hy hz hA hB hC hgcd hsol
+    have hlat := hclosed A B C x y z hx hy hz hA hB hC hgcd hsol
+    exact (beal_kFold_powerLattice_iff_natAbs_eq_one
+      (ne_of_gt (bealMinExp_pos hx hy hz)) hA hB hC
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hx)
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hy)
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hz)
+      (Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z))
+      hgcd hsol).mp hlat
+  · intro hunit A B C x y z hx hy hz hA hB hC hgcd hsol
+    exact (beal_kFold_powerLattice_iff_natAbs_eq_one
+      (ne_of_gt (bealMinExp_pos hx hy hz)) hA hB hC
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hx)
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hy)
+      (Nat.lt_of_lt_of_le (by decide : 0 < 3) hz)
+      (Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z))
+      hgcd hsol).mpr (hunit A B C x y z hx hy hz hA hB hC hgcd hsol)
 
 /-- Conditional classical Beal from discrete closure + unit-base no-go. -/
 theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
@@ -1131,19 +1170,9 @@ theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
       1 < bealGcd A B C := by
   intro A B C x y z hx hy hz hA hB hC hsol
   by_contra hnot
-  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
-  have hpos : 0 < bealGcd A B C := bealGcd_pos hA
-  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
-  have hlat := hclosed A B C x y z hx hy hz hA hB hC hcoprime hsol
-  have hm : bealMinExp x y z ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
-  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
-  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
-  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
-  have hk : 2 ≤ bealAmpExp x y z :=
-    Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z)
-  have hA1 : A.natAbs = 1 :=
-    beal_natAbs_eq_one_of_kFold_powerLattice hm hA hB hC hx0 hy0 hz0 hk
-      hcoprime hsol hlat
+  have hcoprime := bealGcd_eq_one_of_not_gt hA hnot
+  have hA1 := BealCGADiscreteClosed_iff_unitAbs.mp hclosed
+    A B C x y z hx hy hz hA hB hC hcoprime hsol
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hA1 hsol
 
 /--
@@ -1159,20 +1188,10 @@ theorem beal_conjecture_pos_of_discreteClosed
       1 < bealGcd A B C := by
   intro A B C x y z hx hy hz hA hB hC hsol
   by_contra hnot
-  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
-  have hpos : 0 < bealGcd A B C := bealGcd_pos hA.ne'
-  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
-  have hlat := hclosed A B C x y z hx hy hz hA.ne' hB.ne' hC.ne' hcoprime hsol
-  have hm : bealMinExp x y z ≠ 0 := ne_of_gt (bealMinExp_pos hx hy hz)
-  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
-  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
-  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
-  have hk : 2 ≤ bealAmpExp x y z :=
-    Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z)
-  have hA1 : A.natAbs = 1 :=
-    beal_natAbs_eq_one_of_kFold_powerLattice hm hA.ne' hB.ne' hC.ne' hx0 hy0 hz0 hk
-      hcoprime hsol hlat
-  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hcoprime hA1 hsol
+  have hcoprime := bealGcd_eq_one_of_not_gt hA.ne' hnot
+  have hA1 := BealCGADiscreteClosed_iff_unitAbs.mp hclosed
+    A B C x y z hx hy hz hA.ne' hB.ne' hC.ne' hcoprime hsol
+  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1 hsol
 
 /-- Elementary unit-base fragment: `1 + b^3 = c^3` has no positive solutions. -/
 theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
@@ -1218,8 +1237,7 @@ def IsDSTBealDiscreteConfig (A B C : ℤ) (x y z : ℕ) : Prop :=
       (bealRootMag C z (bealMinExp x y z) / bealRootMag A x (bealMinExp x y z))
 
 /-- Equal-exponent specialisation of the dilation scale. -/
-theorem bealRootMag_div_eq_natAbs_div (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
-    (_hA : A ≠ 0) (_hC : C ≠ 0) :
+theorem bealRootMag_div_eq_natAbs_div (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
     bealRootMag C p p / bealRootMag A p p =
       (C.natAbs : ℝ) / (A.natAbs : ℝ) := by
   rw [bealRootMag_eq_natAbs A p hp, bealRootMag_eq_natAbs C p hp]
@@ -1245,12 +1263,8 @@ theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
   obtain ⟨n, hn, heq⟩ := hdil
   have hα : 0 < bealRootMag A x m := bealRootMag_pos hA x m
   have hγ : 0 < bealRootMag C z m := bealRootMag_pos hC z m
-  -- Root magnitudes are positive, so the dilation scale `n` is positive.
-  have hnpos : 0 < n := by
-    have hscalePos : 0 < bealRootMag C z m / bealRootMag A x m :=
-      div_pos hγ hα
-    have : 0 < (n : ℝ) := by rwa [← heq]
-    exact Int.cast_pos.mp this
+  have hnpos : 0 < n :=
+    Int.cast_pos.mp (heq ▸ div_pos hγ hα)
   have hscale : bealRootMag C z m = (n : ℝ) * bealRootMag A x m := by
     have := congrArg (fun t => t * bealRootMag A x m) heq
     field_simp [ne_of_gt hα] at this
@@ -1267,13 +1281,7 @@ theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
     have hnR : (n.toNat : ℝ) = (n : ℝ) := by
       exact_mod_cast Int.toNat_of_nonneg hnpos.le
     rw [hnR, hpow, mul_comm]
-  rw [Nat.eq_one_iff_not_exists_prime_dvd]
-  intro p hp hpA
-  have hpC : p ∣ C.natAbs := by
-    have : p ∣ A.natAbs ^ x := dvd_pow hpA (ne_of_gt hx0)
-    have : p ∣ C.natAbs ^ z := Nat.dvd_trans this hdvd
-    exact hp.dvd_of_dvd_pow this
-  exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
+  exact beal_natAbs_eq_one_of_ac_pow_dvd hx0 hac hdvd
 
 /-- Coprime DST discrete configs do not exist (positive bases + Mihăilescu). -/
 theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
@@ -1284,10 +1292,8 @@ theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
     False := by
   have hA1 := beal_natAbs_eq_one_of_dstDiscreteConfig hx hy hz
     hA.ne' hB.ne' hC.ne' hgcd hcfg
-  obtain ⟨hmotor, _⟩ := hcfg
-  have hsol : A ^ x + B ^ y = C ^ z :=
-    (beal_solution_iff_motor A B C x y z).mpr hmotor
-  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hgcd hA1 hsol
+  exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1
+    ((beal_solution_iff_motor A B C x y z).mpr hcfg.1)
 
 /--
 **Live** geometric bridge (phase 7e, unproved): a coprime Beal solution has
@@ -1321,9 +1327,7 @@ theorem beal_conjecture_pos_of_realization (hreal : BealCGARealization) :
       1 < bealGcd A B C := by
   intro A B C x y z hx hy hz hA hB hC hsol
   by_contra hnot
-  have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
-  have hpos : 0 < bealGcd A B C := bealGcd_pos hA.ne'
-  have hcoprime : bealGcd A B C = 1 := le_antisymm hle (Nat.succ_le_of_lt hpos)
+  have hcoprime := bealGcd_eq_one_of_not_gt hA.ne' hnot
   exact not_dstDiscreteConfig_coprime_pos hx hy hz hA hB hC hcoprime
     (IsDSTBealDiscreteConfig_of_realization hreal hx hy hz
       hA.ne' hB.ne' hC.ne' hcoprime hsol)
@@ -1339,7 +1343,6 @@ theorem beal_eq_exp_mismatchRotor_scale (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
       rotorTorsion
         (pureBoost
           (2 * Real.log (bealRootMag C p p / bealRootMag A p p))) := by
-  have hdiv := bealRootMag_div_eq_natAbs_div A C p hp hA hC
   have hAabs : 0 < (A.natAbs : ℝ) :=
     Nat.cast_pos.mpr (Int.natAbs_pos.mpr hA)
   have hCabs : 0 < (C.natAbs : ℝ) :=
@@ -1347,7 +1350,8 @@ theorem beal_eq_exp_mismatchRotor_scale (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
   have hlog :
       Real.log (bealRootMag C p p / bealRootMag A p p) =
         Real.log (C.natAbs : ℝ) - Real.log (A.natAbs : ℝ) := by
-    rw [hdiv, Real.log_div (ne_of_gt hCabs) (ne_of_gt hAabs)]
+    rw [bealRootMag_div_eq_natAbs_div A C p hp,
+      Real.log_div (ne_of_gt hCabs) (ne_of_gt hAabs)]
   rw [mismatchRotor_eq_rotorTorsion A C hA hC, hlog]
 
 /--
@@ -1358,7 +1362,7 @@ theorem beal_eq_exp_integerDilation_iff (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hC : C ≠ 0) :
     IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
       A.natAbs ∣ C.natAbs := by
-  rw [bealRootMag_div_eq_natAbs_div A C p hp hA hC]
+  rw [bealRootMag_div_eq_natAbs_div A C p hp]
   exact IsCGAIntegerDilation_div_iff hA hC
 
 /-! ### Wide principal window (proved construction) -/

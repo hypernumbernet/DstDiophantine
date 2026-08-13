@@ -71,26 +71,20 @@ example {x : ℝ} {m : ℕ} (hx : Embedding.IsCGAIntegerPoint x) (hm : 0 < m) :
     Embedding.IsCGAPowerLatticePoint x m :=
   Embedding.IsCGAIntegerPoint.isCGAPowerLatticePoint hx hm
 
-/-- Regression: nonzero integers are integer dilations. -/
-example {n : ℤ} (hn : n ≠ 0) : Embedding.IsCGAIntegerDilation (n : ℝ) :=
-  Embedding.IsCGAIntegerDilation_int hn
+/-- Regression: integer dilation group acts on the integer null lattice. -/
+example {x : ℝ} {n : ℤ} (hx : Embedding.IsCGAIntegerPoint x) (hn : n ≠ 0) :
+    Embedding.IsCGAIntegerPoint ((n : ℝ) * x) :=
+  Embedding.IsCGAIntegerPoint_cgaDilation hx (Embedding.IsCGAIntegerDilation_int hn)
 
-/-- Regression: integer dilations preserve the integer null lattice. -/
-example {x c : ℝ}
-    (hx : Embedding.IsCGAIntegerPoint x) (hc : Embedding.IsCGAIntegerDilation c) :
-    Embedding.IsCGAIntegerPoint (c * x) :=
-  Embedding.IsCGAIntegerPoint_cgaDilation hx hc
-
-/-- Regression: unique scale sending α to γ. -/
+/-- Regression: unique scale sending α to γ; ratio integer iff divisibility. -/
 example {α γ : ℝ} (hα : 0 < α) (hγ : 0 < γ) :
     CGA1.cgaDilation (γ / α) α = CGA1.pointVec γ :=
   CGA1.cgaDilation_scale_unique hα hγ
 
-/-- Regression: `|C|/|A|` is an integer dilation iff `|A| ∣ |C|`. -/
-example {α γ : ℤ} (hα : α ≠ 0) (hγ : γ ≠ 0) :
-    Embedding.IsCGAIntegerDilation ((γ.natAbs : ℝ) / (α.natAbs : ℝ)) ↔
-      α.natAbs ∣ γ.natAbs :=
-  Embedding.IsCGAIntegerDilation_div_iff hα hγ
+example {a c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0) :
+    Embedding.IsCGAIntegerDilation ((c.natAbs : ℝ) / (a.natAbs : ℝ)) ↔
+      a.natAbs ∣ c.natAbs :=
+  Embedding.IsCGAIntegerDilation_div_iff ha hc
 
 end CGA
 

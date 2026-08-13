@@ -210,13 +210,24 @@ example {A B C : ℤ} {x y z m k : ℕ}
     IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m ↔ A.natAbs = 1 :=
   beal_kFold_powerLattice_iff_natAbs_eq_one hm hA hB hC hx hy hz hk hgcd hsol
 
+/-- Phase 7e: bookkeeping closure ≡ coprime ⇒ `|A| = 1`. -/
+example :
+    BealCGADiscreteClosed ↔
+      ∀ (A B C : ℤ) (x y z : ℕ),
+        3 ≤ x → 3 ≤ y → 3 ≤ z →
+        A ≠ 0 → B ≠ 0 → C ≠ 0 →
+        bealGcd A B C = 1 →
+        A ^ x + B ^ y = C ^ z →
+          A.natAbs = 1 :=
+  BealCGADiscreteClosed_iff_unitAbs
+
 /-- Phase 7e: positive unit base via Mihăilescu axiom. -/
 example {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hgcd : bealGcd A B C = 1) (hA1 : A.natAbs = 1) :
+    (hA1 : A.natAbs = 1) :
     ¬ A ^ x + B ^ y = C ^ z :=
-  bealUnitBaseNoGo_pos hx hy hz hA hB hC hgcd hA1
+  bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1
 
 /-- Phase 7e: realisation + Mihăilescu recover positive classical Beal. -/
 example (hreal : BealCGARealization) :
@@ -226,15 +237,6 @@ example (hreal : BealCGARealization) :
       A ^ x + B ^ y = C ^ z →
       1 < bealGcd A B C :=
   beal_conjecture_pos_of_realization hreal
-
-/-- Phase 7e: DST discrete config + coprimality ⇒ `|A| = 1`. -/
-example {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (hgcd : bealGcd A B C = 1)
-    (hcfg : IsDSTBealDiscreteConfig A B C x y z) :
-    A.natAbs = 1 :=
-  beal_natAbs_eq_one_of_dstDiscreteConfig hx hy hz hA hB hC hgcd hcfg
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :

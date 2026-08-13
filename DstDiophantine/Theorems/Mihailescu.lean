@@ -55,31 +55,21 @@ theorem not_int_pow_sub_one_of_exponents_ge_three {a b : ℤ} {x y : ℕ}
   exact not_nat_pow_sub_one_of_exponents_ge_three haN hbN hx hy heqN
 
 /--
-Positive unit base: `1^x + B^y = C^z` is impossible for `B, C > 0` and
-exponents ≥ 3.
--/
-theorem not_one_pow_add_pos_pow_eq_pos_pow {B C : ℤ} {x y z : ℕ}
-    (hB : 0 < B) (hC : 0 < C) (_hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
-    ¬ ((1 : ℤ) ^ x + B ^ y = C ^ z) := by
-  intro hsol
-  have h1 : (1 : ℤ) ^ x = 1 := one_pow x
-  have hdiff : C ^ z - B ^ y = 1 := by linarith [hsol, h1]
-  exact not_int_pow_sub_one_of_exponents_ge_three hC hB hz hy hdiff
-
-/--
 Positive bases with `|A| = 1`: forbids the Beal equation via Mihăilescu.
 Classical Beal is usually stated for positive integers; this is the live residual.
 -/
 theorem not_unitAbs_pow_add_pow_eq_pow_pos {A B C : ℤ} {x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hA1 : A.natAbs = 1) (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
+    (hA1 : A.natAbs = 1) (_hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     ¬ A ^ x + B ^ y = C ^ z := by
   have hAeq : A = 1 := by
     have : (A.natAbs : ℤ) = A := Int.natAbs_of_nonneg hA.le
-    rw [hA1] at this
-    exact_mod_cast this.symm
-  rw [hAeq]
-  exact not_one_pow_add_pos_pow_eq_pos_pow hB hC hx hy hz
+    exact_mod_cast (hA1 ▸ this).symm
+  intro hsol
+  have h1 : (1 : ℤ) ^ x = 1 := one_pow x
+  have hdiff : C ^ z - B ^ y = 1 := by
+    rw [hAeq, h1] at hsol; linarith [hsol]
+  exact not_int_pow_sub_one_of_exponents_ge_three hC hB hz hy hdiff
 
 end Theorems
 
