@@ -71,7 +71,9 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   windingTotal_ne_zero_implies_not_admissible_scale
   ModularAmplificationWitness.not_admissible_real_scale
   ConformalGaugeAdmissible IsPureBoostSeed
-  windingTotal_pureBoost windingTotal_pureBoost_ne_zero_iff)
+  windingTotal_pureBoost windingTotal_pureBoost_ne_zero_iff
+  pureBoostSeedOfRapidity pureBoostSeedOfRapidity_isPureBoost
+  quantizeRapidity_of_lt_two_pi windingTotal_ne_zero_of_rapidity_ge)
 export Continuum (AdmissibleContinuous exists_discrete_approx lattice_in_interval)
 export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator nullTranslator_add
   nullTranslator_faithful translateBy logMismatch J_pow_amplify_int RotorClass integerClass
@@ -106,6 +108,12 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   beal_solution_iff_motor bealMinExp bealGcd beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge
   beal_conjecture_of_bridge beal_eq_exp_not_coprime_of_bridge
+  bealFracLogGap bealFracLogGap_mul bealFracLogGap_of_solution bealFracLogGap_eq_exp
+  beal_pos_pow_lt beal_balanced_seed_lt_threshold
+  quantizeBealMismatch quantizeBealMismatch_pureBoost
+  BealModularBridge beal_conjecture_of_modular_bridge
+  beal_eq_exp_not_coprime_of_modular_bridge beal_has_winding_of_fracGap_ge
+  exists_common_prime_of_bealGcd_gt_one
   collatzStep collatzIter ReachesOne collatzHeight collatzHeight_one
   collatzHeight_even_le collatz_odd_log_delta
   collatzHeight_le_one_implies_le_three IsCollatzCycle

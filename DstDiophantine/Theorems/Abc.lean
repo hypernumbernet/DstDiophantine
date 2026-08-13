@@ -600,101 +600,10 @@ theorem abc_conjecture_of_modular_bridge (hbridge : AbcModularBridge) :
 
 /-! ### Partial winding construction on the principal interval -/
 
-/-- Pure-boost lattice seed from a continuous rapidity on axis `0`. -/
-noncomputable def pureBoostSeedOfRapidity (N : ℕ) [NeZero N] (θ : ℝ) : DiscreteTorsion N where
-  n := fun i => match i with
-    | 0 => (quantizeRapidity N θ : ZMod N)
-    | _ => 0
-  m := fun _ => 0
-
-theorem pureBoostSeedOfRapidity_isPureBoost (N : ℕ) [NeZero N] (θ : ℝ) :
-    IsPureBoostSeed (pureBoostSeedOfRapidity N θ) := by
-  refine ⟨?_, ?_⟩
-  · intro a ha
-    fin_cases a <;> first | exact (ha rfl).elim | rfl
-  · intro a; rfl
-
-/--
-If `0 ≤ θ < 2π`, the floor index lies in `[0, N)` and agrees with the
-`ZMod` representative after casting.
--/
-theorem quantizeRapidity_of_lt_two_pi (N : ℕ) [NeZero N] (θ : ℝ)
-    (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi) :
-    0 ≤ quantizeRapidity N θ ∧
-      quantizeRapidity N θ < (N : ℤ) ∧
-        ((quantizeRapidity N θ : ZMod N).val : ℤ) = quantizeRapidity N θ := by
-  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
-  have hden : 0 < (2 * Real.pi : ℝ) := by positivity
-  have hfrac0 : 0 ≤ θ * N / (2 * Real.pi) :=
-    div_nonneg (mul_nonneg h0 (Nat.cast_nonneg _)) hden.le
-  have hfrac_lt : θ * N / (2 * Real.pi) < (N : ℝ) := by
-    have : θ * N < 2 * Real.pi * N := mul_lt_mul_of_pos_right hlt hNpos
-    exact (div_lt_iff₀ hden).mpr (by linarith [this])
-  have hfloor0 : 0 ≤ quantizeRapidity N θ := Int.floor_nonneg.mpr hfrac0
-  have hfloor_lt : quantizeRapidity N θ < (N : ℤ) :=
-    Int.floor_lt.mpr hfrac_lt
-  refine ⟨hfloor0, hfloor_lt, ?_⟩
-  set k := quantizeRapidity N θ
-  have hk0 : 0 ≤ k := hfloor0
-  have hklt : k < (N : ℤ) := hfloor_lt
-  have htoNat : k.toNat < N := by
-    have : (k.toNat : ℤ) < N := by
-      rw [Int.toNat_of_nonneg hk0]; exact hklt
-    exact Nat.cast_lt.mp this
-  have hcast : (k : ZMod N) = (k.toNat : ZMod N) := by
-    rw [← Int.cast_natCast (R := ZMod N), Int.toNat_of_nonneg hk0]
-  calc ((k : ZMod N).val : ℤ)
-      = ((k.toNat : ZMod N).val : ℤ) := by rw [hcast]
-    _ = ↑(k.toNat % N) := by rw [ZMod.val_natCast]
-    _ = ↑k.toNat := by rw [Nat.mod_eq_of_lt htoNat]
-    _ = k := Int.toNat_of_nonneg hk0
-
-private theorem rapidity_frac_ge_of_ge (N k : ℕ) [NeZero N] (hk : 0 < k) (θ : ℝ)
-    (hle : 2 * Real.pi / k ≤ θ) :
-    (N : ℝ) / k ≤ θ * N / (2 * Real.pi) := by
-  have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
-  have hden : 0 < (2 * Real.pi : ℝ) := by positivity
-  calc (N : ℝ) / k
-      = (2 * Real.pi / k) * N / (2 * Real.pi) := by field_simp [hk0]
-    _ ≤ θ * N / (2 * Real.pi) :=
-        div_le_div_of_nonneg_right
-          (mul_le_mul_of_nonneg_right hle (Nat.cast_nonneg _)) hden.le
-
-/--
-Pure-boost quantisation of a rapidity in `[0, 2π)` winds under `k`-fold modular
-amplification whenever `2π / k ≤ θ` and `k ∣ N`.
--/
-theorem windingTotal_ne_zero_of_rapidity_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
-    (θ : ℝ) (h0 : 0 ≤ θ) (hle : 2 * Real.pi / k ≤ θ) (hlt : θ < 2 * Real.pi)
-    (hdvd : k ∣ N) :
-    windingTotal k (pureBoostSeedOfRapidity N θ) ≠ 0 := by
-  set t := pureBoostSeedOfRapidity N θ
-  have hp : IsPureBoostSeed t := pureBoostSeedOfRapidity_isPureBoost N θ
-  have hbounds := quantizeRapidity_of_lt_two_pi N θ h0 hlt
-  obtain ⟨m, hm⟩ := hdvd
-  have hfrac := rapidity_frac_ge_of_ge N k hk θ hle
-  have hfloor : (m : ℤ) ≤ quantizeRapidity N θ := by
-    have hmR : (m : ℝ) = (N : ℝ) / k := by
-      have hk0 : (k : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hk)
-      rw [hm, Nat.cast_mul]
-      exact (mul_div_cancel_left₀ (m : ℝ) hk0).symm
-    have hleR : (m : ℝ) ≤ θ * N / (2 * Real.pi) := by
-      rw [hmR]; exact hfrac
-    exact Int.le_floor.mpr hleR
-  have hvalZ : ((t.n 0).val : ℤ) = quantizeRapidity N θ := hbounds.2.2
-  have hmul : N ≤ k * (t.n 0).val := by
-    have hkN : (N : ℤ) = k * m := by rw [hm, Nat.cast_mul]
-    have hle' : (m : ℤ) ≤ (t.n 0).val := by
-      rw [hvalZ]; exact hfloor
-    have : (N : ℤ) ≤ (k : ℤ) * (t.n 0).val := by
-      rw [hkN]
-      exact mul_le_mul_of_nonneg_left hle' (Nat.cast_nonneg _)
-    exact_mod_cast this
-  exact (windingTotal_pureBoost_ne_zero_iff k t hp).mpr hmul
-
 /--
 Specialisation to abc log-gaps on the principal interval: if
 `2π/k ≤ δ < 2π` and `k ∣ N`, the quantised abc seed has nonzero total winding.
+General rapidity helpers live in `Algebra.ModularAmplification`.
 -/
 theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -706,7 +615,8 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     div_nonneg (mul_nonneg (by norm_num : (0 : ℝ) ≤ 2) Real.pi_pos.le) (Nat.cast_nonneg _)
   have h0 : 0 ≤ abcLogGap a b c := le_trans hπk hle
   have heq :
-      quantizeAbcMismatch N a b c h = pureBoostSeedOfRapidity N (abcLogGap a b c) := by
+      quantizeAbcMismatch N a b c h =
+        pureBoostSeedOfRapidity N (abcLogGap a b c) := by
     -- `fin_cases` leaves some axes with unused simp lemmas; silence that linter here.
     set_option linter.unusedSimpArgs false in
     refine congr_arg₂ DiscreteTorsion.mk ?_ rfl
@@ -719,7 +629,7 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
 
 -- FLT / Beal remain independent special cases (Ch.5–6); abc treats all
 -- coprime sums `a + b = c`. See `fermat_last_theorem_of_modular_bridge` /
--- `beal_conjecture_of_bridge`.
+-- `beal_conjecture_of_modular_bridge`.
 
 end Theorems
 

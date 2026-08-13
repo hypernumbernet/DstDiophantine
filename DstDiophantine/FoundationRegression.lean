@@ -132,6 +132,21 @@ example {N : ℕ} [NeZero N] {x y z : ℕ}
     False :=
   beal_discrete_amplification_contradiction hx hy hz t hlb hadm
 
+/-- Modular Beal bridge recovers classical Beal conditionally. -/
+example (hbridge : BealModularBridge) :
+    ∀ (A B C : ℤ) (x y z : ℕ),
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      A ≠ 0 → B ≠ 0 → C ≠ 0 →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_of_modular_bridge hbridge
+
+/-- Equal-exponent Beal fractional gap degenerates to Fermat log-mismatch. -/
+example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
+    bealFracLogGap A C p p p =
+      Real.log (Int.natAbs C) - Real.log (Int.natAbs A) :=
+  bealFracLogGap_eq_exp A C p hp
+
 /-- Continuous abc quality bridge is false (diagnostic obstruction). -/
 example : ¬ AbcAdmissibleBridge :=
   AbcAdmissibleBridge_false
