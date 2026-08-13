@@ -14,6 +14,7 @@ import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
+import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
 import DstDiophantine.Algebra.CGA.NullCone
@@ -29,7 +30,8 @@ amplification core. They import Framework / Algebra / Theorems directly (not
 
 Beal critical-path regressions (payload incompatibility, winding window,
 power-lattice descent, phase 7e bookkeeping realisation / Mihăilescu / DST
-config, phase 7f exponent-gcd reduction / FLT hypothesis, diagnostic NoGo)
+config, phase 7f exponent-gcd reduction / FLT hypothesis, phase 7g
+unconditional FLT slices / Pythagorean classification, diagnostic NoGo)
 are included; Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
@@ -270,6 +272,61 @@ example (hbridge : FermatModularBridge) {A B C : ℤ} {x y z : ℕ}
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
   not_beal_sol_of_expGcd_ge_three_of_modular_bridge hbridge hA hB hC hd
+
+/-- Phase 7g: trichotomy of the exponent gcd. -/
+example {x y z : ℕ} (hx : 3 ≤ x) :
+    bealExpGcd x y z = 1 ∨ bealExpGcd x y z = 2 ∨ 3 ≤ bealExpGcd x y z :=
+  bealExpGcd_eq_one_or_eq_two_or_ge_three hx
+
+/-- Phase 7g: unconditional — `3 ∣ bealExpGcd` forbids nonzero solutions. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hdvd : 3 ∣ bealExpGcd x y z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_three_dvd_expGcd hA hB hC hdvd
+
+/-- Phase 7g: unconditional — `4 ∣ bealExpGcd` forbids nonzero solutions. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hdvd : 4 ∣ bealExpGcd x y z) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_four_dvd_expGcd hA hB hC hdvd
+
+/-- Phase 7g: unconditional equal-exponent slices p = 3 and p = 4. -/
+example {A B C : ℤ} (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
+    ¬ A ^ 3 + B ^ 3 = C ^ 3 ∧ ¬ A ^ 4 + B ^ 4 = C ^ 4 :=
+  ⟨not_beal_eq_exp_three hA hB hC, not_beal_eq_exp_four hA hB hC⟩
+
+/-- Phase 7g: biquadratic Pythagorean slice via `not_fermat_42`. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hd : bealExpGcd x y z = 2)
+    (hx4 : 4 ∣ x) (hy4 : 4 ∣ y) :
+    ¬ A ^ x + B ^ y = C ^ z :=
+  not_beal_sol_of_expGcd_eq_two_of_four_dvd_xy hx hy hz hA hB hC hd hx4 hy4
+
+/-- Phase 7g: coprime d = 2 solutions admit primitive Pythagorean parameters. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hd : bealExpGcd x y z = 2)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    ∃ m n : ℤ,
+      (A ^ (x / 2) = m ^ 2 - n ^ 2 ∧ B ^ (y / 2) = 2 * m * n ∨
+        A ^ (x / 2) = 2 * m * n ∧ B ^ (y / 2) = m ^ 2 - n ^ 2) ∧
+        (C ^ (z / 2) = m ^ 2 + n ^ 2 ∨ C ^ (z / 2) = -(m ^ 2 + n ^ 2)) ∧
+          Int.gcd m n = 1 ∧
+            (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) :=
+  beal_pythagorean_classification_of_expGcd_eq_two hx hy hz hA hB hC hgcd hd hsol
+
+/-- Phase 7g: d = 1 with equal first exponents yields a generalised Fermat form. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hxy : x = y) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x z = 1 ∧ x ≠ z ∧ A ^ x + B ^ x = C ^ z :=
+  beal_eq_two_exp_form_of_expGcd_eq_one hx hxy hd hsol
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :

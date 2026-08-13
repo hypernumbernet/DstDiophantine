@@ -17,6 +17,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.FieldSimp
@@ -24,7 +25,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 5–7f: Beal's conjecture (problem-specific layer)
+# Phase 5–7g: Beal's conjecture (problem-specific layer)
 
 Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
 together with the faithful null-translator encoding of `A^x + B^y - C^z`.
@@ -32,15 +33,20 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme (phase 7f)
+Classical Beal is **not** claimed unconditionally. The live programme (phase 7g)
 is **exponent-gcd reduction** (not an independent CGA geometric principle):
 
 * `BealCGARealization` — **bookkeeping**: coprime solution ⇒ A–C root ratio is
   an integer CGA dilation; under coprimality this forces `|A|=1` and an
   `m`-th-power condition on `|C|^z` (not a live geometric bridge);
-* `bealExpGcd` reduction — `d = gcd(x,y,z)`: `d ≥ 3` reduces to FLT
-  (`FermatLastTheorem` hypothesis, not an axiom); `d = 2` to Pythagorean
-  powers; `d = 1` is the mixed-exponent residual;
+* `bealExpGcd` reduction — `d = gcd(x,y,z)`: trichotomy `d ∈ {1,2}` or `d ≥ 3`;
+  `d ≥ 3` reduces to FLT (`FermatLastTheorem` hypothesis, not an axiom);
+  unconditional slices when `3 ∣ d` or `4 ∣ d` live in `BealSlice`
+  (mathlib `fermatLastTheoremThree` / `Four`);
+* `d = 2` — Pythagorean powers; coprime solutions admit
+  `PythagoreanTriple.coprime_classification` parameters; further descent of
+  those parameters is residual (biquadratic `a⁴+b⁴=□` closed in `BealSlice`);
+* `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved);
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
@@ -1482,6 +1488,51 @@ theorem bealExpGcd_eq_of_eq_exp (p : ℕ) :
     bealExpGcd p p p = p := by
   simp [bealExpGcd]
 
+/-- Trichotomy for the Beal exponent gcd when at least one exponent is ≥ 3. -/
+theorem bealExpGcd_eq_one_or_eq_two_or_ge_three {x y z : ℕ} (hx : 3 ≤ x) :
+    bealExpGcd x y z = 1 ∨ bealExpGcd x y z = 2 ∨ 3 ≤ bealExpGcd x y z := by
+  have hpos : 0 < bealExpGcd x y z := bealExpGcd_pos hx
+  omega
+
+/-- Equal exponents force `bealExpGcd = p`, so `d = 1` excludes the equal-exponent slice. -/
+theorem bealExpGcd_eq_one_implies_not_all_eq {x y z : ℕ}
+    (hx : 3 ≤ x) (hd : bealExpGcd x y z = 1) : ¬ (x = y ∧ y = z) := by
+  intro ⟨hxy, hyz⟩
+  have heq : bealExpGcd x y z = x := by
+    simp [bealExpGcd, hxy, hyz]
+  omega
+
+/--
+When `bealExpGcd = 2`, the reduced exponents are pairwise gcd-1:
+`gcd(x/2, y/2, z/2) = 1`.
+-/
+theorem bealExpGcd_div_two_eq_one {x y z : ℕ}
+    (hd : bealExpGcd x y z = 2) :
+    bealExpGcd (x / 2) (y / 2) (z / 2) = 1 := by
+  have hxdiv : 2 ∣ x := by
+    have := bealExpGcd_dvd_left x y z; rwa [hd] at this
+  have hydiv : 2 ∣ y := by
+    have := bealExpGcd_dvd_mid x y z; rwa [hd] at this
+  have hzdiv : 2 ∣ z := by
+    have := bealExpGcd_dvd_right x y z; rwa [hd] at this
+  have hyz :
+      Nat.gcd y z = 2 * Nat.gcd (y / 2) (z / 2) := by
+    calc Nat.gcd y z
+        = Nat.gcd (2 * (y / 2)) (2 * (z / 2)) := by
+          rw [Nat.mul_div_cancel' hydiv, Nat.mul_div_cancel' hzdiv]
+      _ = 2 * Nat.gcd (y / 2) (z / 2) := Nat.gcd_mul_left _ _ _
+  have hxyz :
+      bealExpGcd x y z = 2 * bealExpGcd (x / 2) (y / 2) (z / 2) := by
+    unfold bealExpGcd
+    rw [hyz]
+    calc Nat.gcd x (2 * Nat.gcd (y / 2) (z / 2))
+        = Nat.gcd (2 * (x / 2)) (2 * Nat.gcd (y / 2) (z / 2)) := by
+          rw [Nat.mul_div_cancel' hxdiv]
+      _ = 2 * Nat.gcd (x / 2) (Nat.gcd (y / 2) (z / 2)) := Nat.gcd_mul_left _ _ _
+  have : 2 * bealExpGcd (x / 2) (y / 2) (z / 2) = 2 := by
+    rwa [← hxyz]
+  omega
+
 /-- Power sum form of a Beal equation after extracting the exponent gcd. -/
 theorem beal_eq_pow_mul_expGcd (A B C : ℤ) (x y z : ℕ) :
     let d := bealExpGcd x y z
@@ -1637,6 +1688,108 @@ theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
   have hsol' := (beal_eq_pow_mul_expGcd A B C x y z).mp hsol
   simp only [hd] at hsol'
   exact ⟨hx2, hy2, hz2, hsol'⟩
+
+/--
+`d = 2` solutions yield a Pythagorean triple on the powered bases
+`(A^{x/2}, B^{y/2}, C^{z/2})`.
+-/
+theorem beal_pythagoreanTriple_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hd : bealExpGcd x y z = 2)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    PythagoreanTriple (A ^ (x / 2)) (B ^ (y / 2)) (C ^ (z / 2)) := by
+  obtain ⟨_, _, _, hsq⟩ := beal_pythagorean_of_expGcd_eq_two hx hy hz hd hsol
+  simpa [PythagoreanTriple, sq] using hsq
+
+/--
+Three-way coprimality of the original bases lifts to pairwise coprimality of the
+powered legs under `d = 2` (via pairwise AB coprimality of a solution).
+-/
+theorem beal_pythagorean_legs_coprime_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hd : bealExpGcd x y z = 2)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Int.gcd (A ^ (x / 2)) (B ^ (y / 2)) = 1 := by
+  have hx0 : 0 < x := Nat.lt_of_lt_of_le (by decide : 0 < 3) hx
+  have hy0 : 0 < y := Nat.lt_of_lt_of_le (by decide : 0 < 3) hy
+  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
+  have hab := beal_coprime_ab hA hB hC hx0 hy0 hz0 hgcd hsol
+  obtain ⟨hx2, hy2, _, _⟩ := beal_pythagorean_of_expGcd_eq_two hx hy hz hd hsol
+  have hpow : Nat.Coprime (A.natAbs ^ (x / 2)) (B.natAbs ^ (y / 2)) := by
+    rw [Nat.coprime_pow_left_iff (Nat.lt_of_lt_of_le (by decide : 0 < 2) hx2),
+      Nat.coprime_comm,
+      Nat.coprime_pow_left_iff (Nat.lt_of_lt_of_le (by decide : 0 < 2) hy2),
+      Nat.coprime_comm]
+    exact hab
+  simpa [Int.gcd, Int.natAbs_pow] using
+    (Nat.coprime_iff_gcd_eq_one.mp hpow)
+
+/--
+Coprime `d = 2` solutions admit the classical primitive Pythagorean
+parametrisation. Descent of the parameters `m, n` themselves to powers is a
+residual of phase 7g (not closed here).
+-/
+theorem beal_pythagorean_classification_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hd : bealExpGcd x y z = 2)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    ∃ m n : ℤ,
+      (A ^ (x / 2) = m ^ 2 - n ^ 2 ∧ B ^ (y / 2) = 2 * m * n ∨
+        A ^ (x / 2) = 2 * m * n ∧ B ^ (y / 2) = m ^ 2 - n ^ 2) ∧
+        (C ^ (z / 2) = m ^ 2 + n ^ 2 ∨ C ^ (z / 2) = -(m ^ 2 + n ^ 2)) ∧
+          Int.gcd m n = 1 ∧
+            (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
+  have htrip := beal_pythagoreanTriple_of_expGcd_eq_two hx hy hz hd hsol
+  have hleg := beal_pythagorean_legs_coprime_of_expGcd_eq_two hx hy hz
+    hA hB hC hgcd hd hsol
+  exact (PythagoreanTriple.coprime_classification).mp ⟨htrip, hleg⟩
+
+/-! ### Phase 7g: mixed-exponent residual (type only) -/
+
+/--
+**Residual** (phase 7g, unproved): no three-way-coprime Beal solution with
+`bealExpGcd = 1`. Type-level placeholder for the mixed-exponent case; not a live
+bridge and not claimed as a theorem.
+-/
+def BealMixedExpResidual : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    bealExpGcd x y z = 1 →
+      ¬ A ^ x + B ^ y = C ^ z
+
+/--
+When two exponents agree and `bealExpGcd = 1`, the third differs and is
+coprime to the common value. The equation specialises to `A^x + B^x = C^z`
+with `gcd(x, z) = 1` and `x ≠ z`.
+-/
+theorem beal_two_equal_exp_of_expGcd_eq_one {x y z : ℕ}
+    (hx : 3 ≤ x) (hxy : x = y) (hd : bealExpGcd x y z = 1) :
+    Nat.gcd x z = 1 ∧ x ≠ z := by
+  subst hxy
+  have hgcdxz : Nat.gcd x z = 1 := by
+    have : bealExpGcd x x z = Nat.gcd x z := by
+      unfold bealExpGcd
+      rw [← Nat.gcd_assoc, Nat.gcd_self]
+    rwa [← this]
+  refine ⟨hgcdxz, ?_⟩
+  intro heq
+  subst heq
+  have : bealExpGcd x x x = x := bealExpGcd_eq_of_eq_exp x
+  omega
+
+/-- Specialisation: equal first two exponents with `d = 1` yield a generalised
+Fermat equation of signature `(x, x, z)` with coprime unequal exponents. -/
+theorem beal_eq_two_exp_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hxy : x = y) (hd : bealExpGcd x y z = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    Nat.gcd x z = 1 ∧ x ≠ z ∧ A ^ x + B ^ x = C ^ z := by
+  obtain ⟨hg, hne⟩ := beal_two_equal_exp_of_expGcd_eq_one hx hxy hd
+  exact ⟨hg, hne, by simpa [hxy] using hsol⟩
 
 /-! ### Wide principal window (proved construction) -/
 

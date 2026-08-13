@@ -18,6 +18,7 @@ import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
+import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
@@ -118,7 +119,18 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   beal_fermat_of_expGcd_ge_three not_beal_sol_of_expGcd_ge_three_of_FLT
   beal_conjecture_of_expGcd_ge_three_of_FLT beal_eq_exp_not_sol_of_FLT
   not_beal_sol_of_expGcd_ge_three_of_modular_bridge
-  beal_pythagorean_of_expGcd_eq_two
+  bealExpGcd_eq_one_or_eq_two_or_ge_three bealExpGcd_eq_one_implies_not_all_eq
+  bealExpGcd_div_two_eq_one
+  beal_pythagorean_of_expGcd_eq_two beal_pythagoreanTriple_of_expGcd_eq_two
+  beal_pythagorean_legs_coprime_of_expGcd_eq_two
+  beal_pythagorean_classification_of_expGcd_eq_two
+  BealMixedExpResidual beal_two_equal_exp_of_expGcd_eq_one
+  beal_eq_two_exp_form_of_expGcd_eq_one
+  not_beal_sol_of_expGcd_dvd_FLT_for
+  not_beal_sol_of_three_dvd_expGcd not_beal_sol_of_four_dvd_expGcd
+  not_beal_sol_of_three_or_four_dvd_expGcd
+  not_beal_eq_exp_three not_beal_eq_exp_four
+  not_beal_sol_of_expGcd_eq_two_of_four_dvd_xy
   beal_conjecture_of_winding_and_cga_nogo
   beal_conjecture_of_winding_and_cga_dilation_nogo
   beal_eq_exp_not_coprime_of_winding_and_cga_dilation_nogo
