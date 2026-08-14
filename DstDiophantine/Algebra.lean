@@ -54,8 +54,12 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   omegaTorsionGeneratorKilling omegaTorsionGeneratorKilling_eq
   omegaTorsion_killing_vs_param paper_appendix_killing_coeff_false
   one_sixteenth_omegaKilling_eq J_eq_four_times_one_sixteenth_omegaKilling
-  axis_sq_diff_eq IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
-  torsion_bound_raw torsion_bound torsion_bound_continuous JNormalized_extremal
+  axis_sq_diff_eq sq_diff_le_half_pi_sq sq_diff_eq_half_pi_sq_iff
+  IsPureHyperbolic IsPureElliptic
+  IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
+  torsion_bound_raw torsion_bound_raw_continuous_pi_sq torsion_bound_raw_pi_sq
+  torsion_bound torsion_bound_continuous JNormalized_extremal JNormalized_extremal_neg
+  abs_JNormalized_eq_one_iff exists_admissible_JNormalized
   torsion_bound_naive_false)
 export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scale
   J_scale JNormalized_scale J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
@@ -81,6 +85,6 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   not_exists_modularWitness_of_rapidity_lt
   not_exists_modularWitness_of_balanced_gap)
 export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
-  lattice_in_interval)
+  lattice_in_interval dense_discrete_JNormalized)
 
 end DstDiophantine

@@ -109,6 +109,361 @@ theorem JNormalized_coef (p : TorsionParams) :
 /-- Axis-wise factorisation behind the Killing quadratic form. -/
 theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
 
+/-- Pure hyperbolic dominance on every axis (appendix positive extremal). -/
+def IsPureHyperbolic (p : TorsionParams) : Prop :=
+  ∀ a : Fin 3, p.alpha a = Real.pi / 2 ∧ p.beta a = 0
+
+/-- Pure elliptic dominance on every axis (appendix negative extremal). -/
+def IsPureElliptic (p : TorsionParams) : Prop :=
+  ∀ a : Fin 3, p.alpha a = 0 ∧ p.beta a = Real.pi / 2
+
+/-- Axis-wise bound under non-negativity and anti-synchronisation. -/
+theorem sq_diff_le_half_pi_sq {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
+  have hαle : α ≤ Real.pi / 2 := by linarith [hβ]
+  have hβle : β ≤ Real.pi / 2 := by linarith [hα]
+  rcases le_total α β with hle | hle
+  · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
+    rw [abs_of_nonpos hnonpos]
+    nlinarith [sq_nonneg (β - α)]
+  · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
+    rw [abs_of_nonneg hnonneg]
+    nlinarith [sq_nonneg (α - β)]
+
+/-- Equality in the axis-wise bound holds exactly at the two extremes. -/
+theorem sq_diff_eq_half_pi_sq_iff {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    |α ^ 2 - β ^ 2| = (Real.pi / 2) ^ 2 ↔
+      (α = Real.pi / 2 ∧ β = 0) ∨ (α = 0 ∧ β = Real.pi / 2) := by
+  constructor
+  · intro heq
+    have hαle : α ≤ Real.pi / 2 := by linarith [hβ]
+    have hβle : β ≤ Real.pi / 2 := by linarith [hα]
+    have hπ : 0 < Real.pi / 2 := by positivity
+    rcases le_total α β with hle | hle
+    · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
+      rw [abs_of_nonpos hnonpos] at heq
+      -- β² - α² = (π/2)² and β - α ≤ β + α ≤ π/2, so both factors saturate
+      have hfac : (β - α) * (α + β) = (Real.pi / 2) ^ 2 := by
+        have : β ^ 2 - α ^ 2 = (β - α) * (α + β) := by ring
+        linarith
+      have hprod_le : (β - α) * (α + β) ≤ (α + β) * (α + β) := by
+        nlinarith [sq_nonneg (β - α), hα]
+      have hsum_sq : (α + β) ^ 2 ≤ (Real.pi / 2) ^ 2 := by nlinarith [hsum]
+      have hsum_eq : α + β = Real.pi / 2 := by
+        have : (α + β) ^ 2 = (Real.pi / 2) ^ 2 := by nlinarith [hfac, hprod_le, hsum_sq]
+        exact (sq_eq_sq_iff_eq_or_eq_neg.mp this).resolve_right (by linarith [hα, hβ, hπ])
+      have hdiff_eq : β - α = Real.pi / 2 := by
+        have hsum_pos : 0 < α + β := by linarith [hπ, hsum_eq]
+        have : (β - α) * (α + β) = (Real.pi / 2) * (α + β) := by
+          rw [hfac, hsum_eq]; ring
+        exact (mul_left_inj' hsum_pos.ne').mp this
+      have hα0 : α = 0 := by linarith [hsum_eq, hdiff_eq]
+      have hβπ : β = Real.pi / 2 := by linarith [hsum_eq, hα0]
+      exact Or.inr ⟨hα0, hβπ⟩
+    · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
+      rw [abs_of_nonneg hnonneg] at heq
+      have hfac : (α - β) * (α + β) = (Real.pi / 2) ^ 2 := by
+        have : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
+        linarith
+      have hprod_le : (α - β) * (α + β) ≤ (α + β) * (α + β) := by
+        nlinarith [sq_nonneg (α - β), hβ]
+      have hsum_sq : (α + β) ^ 2 ≤ (Real.pi / 2) ^ 2 := by nlinarith [hsum]
+      have hsum_eq : α + β = Real.pi / 2 := by
+        have : (α + β) ^ 2 = (Real.pi / 2) ^ 2 := by nlinarith [hfac, hprod_le, hsum_sq]
+        exact (sq_eq_sq_iff_eq_or_eq_neg.mp this).resolve_right (by linarith [hα, hβ, hπ])
+      have hdiff_eq : α - β = Real.pi / 2 := by
+        have hsum_pos : 0 < α + β := by linarith [hπ, hsum_eq]
+        have : (α - β) * (α + β) = (Real.pi / 2) * (α + β) := by
+          rw [hfac, hsum_eq]; ring
+        exact (mul_left_inj' hsum_pos.ne').mp this
+      have hβ0 : β = 0 := by linarith [hsum_eq, hdiff_eq]
+      have hαπ : α = Real.pi / 2 := by linarith [hsum_eq, hβ0]
+      exact Or.inl ⟨hαπ, hβ0⟩
+  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
+    · simp only [zero_pow two_ne_zero, sub_zero, abs_of_nonneg (sq_nonneg (Real.pi / 2))]
+    · simp only [zero_pow two_ne_zero, zero_sub, abs_neg,
+        abs_of_nonneg (sq_nonneg (Real.pi / 2))]
+
+theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |J p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by
+  rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
+  have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ (Real.pi / 2) ^ 2 := fun a =>
+    sq_diff_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
+  have hsum : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * (Real.pi / 2) ^ 2 := by
+    simp only [Fin.sum_univ_three]
+    linarith [hbound 0, hbound 1, hbound 2]
+  have habs : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| ≤
+      ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+    Finset.abs_sum_le_sum_abs (s := Finset.univ) (f := fun a => p.alpha a ^ 2 - p.beta a ^ 2)
+  calc
+    (1 / 2 : ℝ) * |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)|
+        ≤ (1 / 2) * ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+      mul_le_mul_of_nonneg_left habs (by norm_num)
+    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by linarith [hsum]
+
+/-- Explicit raw ceiling `|J| ≤ 3π²/8` on admissible continuous configurations. -/
+theorem torsion_bound_raw_continuous_pi_sq (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    |J p| ≤ 3 * Real.pi ^ 2 / 8 := by
+  have hJ := torsion_bound_raw_continuous p h
+  convert hJ using 1
+  ring
+
+/-- Raw bound `|J| ≤ 3π²/8` on admissible discrete configurations. -/
+theorem torsion_bound_raw {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+  torsion_bound_raw_continuous _ (admissible_continuous_of_discrete t h)
+
+theorem torsion_bound_raw_pi_sq {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |J (toTorsionParams t)| ≤ 3 * Real.pi ^ 2 / 8 :=
+  torsion_bound_raw_continuous_pi_sq _ (admissible_continuous_of_discrete t h)
+
+/-- Normalized bound `|JNormalized| ≤ 1` on admissible continuous configurations. -/
+theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |JNormalized p| ≤ 1 := by
+  unfold JNormalized
+  have hJ := torsion_bound_raw_continuous p h
+  have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
+  rw [abs_mul, abs_of_nonneg hcoef]
+  calc
+    (8 / (3 * Real.pi ^ 2)) * |J p|
+        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * (Real.pi / 2) ^ 2 / 2) := by gcongr
+    _ = 1 := by field_simp; ring
+
+/-- Normalized bound on admissible discrete configurations. -/
+theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| ≤ 1 :=
+  torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
+
+/-- Appendix pure-boost extremal attains `JNormalized = 1`. -/
+theorem JNormalized_extremal :
+    JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
+  unfold JNormalized J killingForm
+  simp only [Fin.sum_univ_three, mul_zero, sub_zero]
+  field_simp [Real.pi_ne_zero]
+  ring_nf
+
+/-- Appendix pure-elliptic extremal attains `JNormalized = -1`. -/
+theorem JNormalized_extremal_neg :
+    JNormalized { alpha := fun _ => 0, beta := fun _ => Real.pi / 2 } = -1 := by
+  unfold JNormalized J killingForm
+  simp only [Fin.sum_univ_three, zero_sub, mul_zero]
+  field_simp [Real.pi_ne_zero]
+  ring_nf
+
+theorem isAdmissibleContinuous_pureHyperbolic :
+    IsAdmissibleContinuous { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } := by
+  intro a
+  constructor
+  · positivity
+  constructor
+  · exact le_refl 0
+  · linarith [Real.pi_pos.le]
+
+theorem isAdmissibleContinuous_pureElliptic :
+    IsAdmissibleContinuous { alpha := fun _ => 0, beta := fun _ => Real.pi / 2 } := by
+  intro a
+  constructor
+  · exact le_refl 0
+  constructor
+  · positivity
+  · linarith [Real.pi_pos.le]
+
+/-- Uniform scaling of all axes along the pure-boost ray. -/
+noncomputable def pureHyperbolicRay (t : ℝ) : TorsionParams where
+  alpha := fun _ => t * (Real.pi / 2)
+  beta := fun _ => 0
+
+/-- Uniform scaling of all axes along the pure-elliptic ray. -/
+noncomputable def pureEllipticRay (t : ℝ) : TorsionParams where
+  alpha := fun _ => 0
+  beta := fun _ => t * (Real.pi / 2)
+
+theorem JNormalized_pureHyperbolicRay (t : ℝ) :
+    JNormalized (pureHyperbolicRay t) = t ^ 2 := by
+  rw [JNormalized_coef]
+  simp only [pureHyperbolicRay, Fin.sum_univ_three]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+theorem JNormalized_pureEllipticRay (t : ℝ) :
+    JNormalized (pureEllipticRay t) = -t ^ 2 := by
+  rw [JNormalized_coef]
+  simp only [pureEllipticRay, Fin.sum_univ_three]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+theorem isAdmissibleContinuous_pureHyperbolicRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
+    IsAdmissibleContinuous (pureHyperbolicRay t) := by
+  intro a
+  have hπ : 0 ≤ Real.pi / 2 := by positivity
+  refine ⟨mul_nonneg ht0 hπ, le_rfl, ?_⟩
+  change t * (Real.pi / 2) + 0 ≤ Real.pi / 2
+  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+    calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
+      _ = Real.pi / 2 := one_mul _
+  linarith
+
+theorem isAdmissibleContinuous_pureEllipticRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
+    IsAdmissibleContinuous (pureEllipticRay t) := by
+  intro a
+  have hπ : 0 ≤ Real.pi / 2 := by positivity
+  refine ⟨le_rfl, mul_nonneg ht0 hπ, ?_⟩
+  change 0 + t * (Real.pi / 2) ≤ Real.pi / 2
+  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+    calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
+      _ = Real.pi / 2 := one_mul _
+  linarith
+
+/-- On the admissible cone, `JNormalized` attains every value in `[-1, 1]`. -/
+theorem exists_admissible_JNormalized (y : ℝ) (hy : |y| ≤ 1) :
+    ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ JNormalized p = y := by
+  rcases le_total 0 y with hy0 | hy0
+  · refine ⟨pureHyperbolicRay (Real.sqrt y), ?_, ?_⟩
+    · exact isAdmissibleContinuous_pureHyperbolicRay (Real.sqrt_nonneg _)
+        ((Real.sqrt_le_one).2 (abs_le.mp hy).2)
+    · rw [JNormalized_pureHyperbolicRay, Real.sq_sqrt hy0]
+  · refine ⟨pureEllipticRay (Real.sqrt (-y)), ?_, ?_⟩
+    · exact isAdmissibleContinuous_pureEllipticRay (Real.sqrt_nonneg _)
+        ((Real.sqrt_le_one).2 (by linarith [(abs_le.mp hy).1]))
+    · rw [JNormalized_pureEllipticRay, Real.sq_sqrt (neg_nonneg.mpr hy0), neg_neg]
+
+private theorem axis_sq_diff_eq_half_pi_sq_of_abs
+    {α β : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2)
+    (heq : |α ^ 2 - β ^ 2| = (Real.pi / 2) ^ 2) :
+    (α = Real.pi / 2 ∧ β = 0) ∨ (α = 0 ∧ β = Real.pi / 2) :=
+  (sq_diff_eq_half_pi_sq_iff hα hβ hsum).mp heq
+
+private theorem axis_diff_of_extreme {α β : ℝ}
+    (h : (α = Real.pi / 2 ∧ β = 0) ∨ (α = 0 ∧ β = Real.pi / 2)) :
+    α ^ 2 - β ^ 2 = (Real.pi / 2) ^ 2 ∨ α ^ 2 - β ^ 2 = -((Real.pi / 2) ^ 2) := by
+  rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+  · exact Or.inl (by simp)
+  · exact Or.inr (by simp)
+
+private theorem signed_sum_of_extremes
+    (d0 d1 d2 : ℝ) (c : ℝ)
+    (h0 : d0 = c ∨ d0 = -c) (h1 : d1 = c ∨ d1 = -c) (h2 : d2 = c ∨ d2 = -c)
+    (hc : 0 < c)
+    (hsum : |d0 + d1 + d2| = 3 * c) :
+    (d0 = c ∧ d1 = c ∧ d2 = c) ∨ (d0 = -c ∧ d1 = -c ∧ d2 = -c) := by
+  have habs_neg : |-c| = c := by rw [abs_neg, abs_of_nonneg hc.le]
+  rcases h0 with h0 | h0 <;> rcases h1 with h1 | h1 <;> rcases h2 with h2 | h2
+  · exact Or.inl ⟨h0, h1, h2⟩
+  · rw [h0, h1, h2] at hsum
+    have : |c + c + (-c)| = c := by ring_nf; exact abs_of_nonneg hc.le
+    linarith [this]
+  · rw [h0, h1, h2] at hsum
+    have : |c + (-c) + c| = c := by ring_nf; exact abs_of_nonneg hc.le
+    linarith [this]
+  · rw [h0, h1, h2] at hsum
+    have : |c + (-c) + (-c)| = c := by ring_nf; exact habs_neg
+    linarith [this]
+  · rw [h0, h1, h2] at hsum
+    have : |(-c) + c + c| = c := by ring_nf; exact abs_of_nonneg hc.le
+    linarith [this]
+  · rw [h0, h1, h2] at hsum
+    have : |(-c) + c + (-c)| = c := by ring_nf; exact habs_neg
+    linarith [this]
+  · rw [h0, h1, h2] at hsum
+    have : |(-c) + (-c) + c| = c := by ring_nf; exact habs_neg
+    linarith [this]
+  · exact Or.inr ⟨h0, h1, h2⟩
+
+private theorem abs_eq_of_sum_eq_three {x y z c : ℝ}
+    (hx : |x| ≤ c) (hy : |y| ≤ c) (hz : |z| ≤ c)
+    (hs : |x| + |y| + |z| = 3 * c) :
+    |x| = c ∧ |y| = c ∧ |z| = c := by
+  refine ⟨le_antisymm hx (by linarith), le_antisymm hy (by linarith),
+    le_antisymm hz (by linarith)⟩
+
+theorem JNormalized_of_pureHyperbolic (p : TorsionParams) (h : IsPureHyperbolic p) :
+    JNormalized p = 1 := by
+  rw [JNormalized_coef]
+  simp only [Fin.sum_univ_three]
+  have h0 := h 0; have h1 := h 1; have h2 := h 2
+  simp [h0.1, h0.2, h1.1, h1.2, h2.1, h2.2]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+theorem JNormalized_of_pureElliptic (p : TorsionParams) (h : IsPureElliptic p) :
+    JNormalized p = -1 := by
+  rw [JNormalized_coef]
+  simp only [Fin.sum_univ_three]
+  have h0 := h 0; have h1 := h 1; have h2 := h 2
+  simp [h0.1, h0.2, h1.1, h1.2, h2.1, h2.2]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+/-- `|JNormalized| = 1` on an admissible configuration iff pure hyperbolic or pure elliptic. -/
+theorem abs_JNormalized_eq_one_iff (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p := by
+  constructor
+  · intro heq
+    have hJabs : |J p| = 3 * (Real.pi / 2) ^ 2 / 2 := by
+      unfold JNormalized at heq
+      rw [abs_mul, abs_of_nonneg (by positivity : (0 : ℝ) ≤ 8 / (3 * Real.pi ^ 2))] at heq
+      have hcoef_ne : (8 / (3 * Real.pi ^ 2) : ℝ) ≠ 0 := by positivity
+      have hinv : |J p| = 3 * Real.pi ^ 2 / 8 := by
+        apply mul_left_cancel₀ hcoef_ne
+        rw [heq]
+        field_simp
+      rw [hinv]
+      ring
+    have haxis : ∀ a, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ (Real.pi / 2) ^ 2 := fun a =>
+      sq_diff_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
+    have habs_sum : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| ≤
+        ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+      Finset.abs_sum_le_sum_abs _ _
+    have hJcoef : |J p| = (1 / 2) * |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| := by
+      rw [J_coef, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 1 / 2)]
+    have hsum_eq : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| = 3 * (Real.pi / 2) ^ 2 := by
+      linarith [hJcoef, hJabs]
+    have hsum_abs_le : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * (Real.pi / 2) ^ 2 := by
+      simp only [Fin.sum_univ_three]
+      linarith [haxis 0, haxis 1, haxis 2]
+    have hsum_sat : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| = 3 * (Real.pi / 2) ^ 2 := by
+      linarith [habs_sum, hsum_eq, hsum_abs_le]
+    have hax_eq : ∀ a, |p.alpha a ^ 2 - p.beta a ^ 2| = (Real.pi / 2) ^ 2 := by
+      have hs : |p.alpha 0 ^ 2 - p.beta 0 ^ 2| + |p.alpha 1 ^ 2 - p.beta 1 ^ 2| +
+          |p.alpha 2 ^ 2 - p.beta 2 ^ 2| = 3 * (Real.pi / 2) ^ 2 := by
+        simpa only [Fin.sum_univ_three] using hsum_sat
+      have ⟨e0, e1, e2⟩ :=
+        abs_eq_of_sum_eq_three (haxis 0) (haxis 1) (haxis 2) hs
+      intro a; fin_cases a <;> assumption
+    have hext : ∀ a, (p.alpha a = Real.pi / 2 ∧ p.beta a = 0) ∨
+        (p.alpha a = 0 ∧ p.beta a = Real.pi / 2) := fun a =>
+      axis_sq_diff_eq_half_pi_sq_of_abs (h a).1 (h a).2.1 (h a).2.2 (hax_eq a)
+    set c := (Real.pi / 2) ^ 2 with hcdef
+    have hc : 0 < c := by positivity
+    have hd : ∀ a, p.alpha a ^ 2 - p.beta a ^ 2 = c ∨
+        p.alpha a ^ 2 - p.beta a ^ 2 = -c := fun a =>
+      axis_diff_of_extreme (hext a)
+    have hsum3 : |(p.alpha 0 ^ 2 - p.beta 0 ^ 2) + (p.alpha 1 ^ 2 - p.beta 1 ^ 2) +
+        (p.alpha 2 ^ 2 - p.beta 2 ^ 2)| = 3 * c := by
+      simpa only [Fin.sum_univ_three, hcdef] using hsum_eq
+    have hall := signed_sum_of_extremes _ _ _ c (hd 0) (hd 1) (hd 2) hc hsum3
+    rcases hall with ⟨hd0, hd1, hd2⟩ | ⟨hd0, hd1, hd2⟩
+    · refine Or.inl fun a => ?_
+      have ha : p.alpha a ^ 2 - p.beta a ^ 2 = c := by
+        fin_cases a <;> assumption
+      rcases hext a with hex | hex
+      · exact hex
+      · have : p.alpha a ^ 2 - p.beta a ^ 2 = -c := by simp [hex.1, hex.2, c]
+        linarith [ha, this, hc]
+    · refine Or.inr fun a => ?_
+      have ha : p.alpha a ^ 2 - p.beta a ^ 2 = -c := by
+        fin_cases a <;> assumption
+      rcases hext a with hex | hex
+      · have : p.alpha a ^ 2 - p.beta a ^ 2 = c := by simp [hex.1, hex.2, c]
+        linarith [ha, this, hc]
+      · exact hex
+  · rintro (hH | hE)
+    · rw [JNormalized_of_pureHyperbolic p hH, abs_one]
+    · rw [JNormalized_of_pureElliptic p hE, abs_neg, abs_one]
+
 /-- Extended invariant with translation sector. -/
 noncomputable def J5 (p : OmegaParams) : ℝ :=
   J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda
@@ -159,66 +514,6 @@ theorem minkowskiDot_le_sq (lam : Fin 4 → ℝ) (h0 : lam 0 = 0) :
   simp only [Fin.sum_univ_four, h0, pow_two]
   apply le_of_eq
   ring
-
-private theorem sq_diff_le_half_pi_sq {α β : ℝ}
-    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
-    |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
-  have hαle : α ≤ Real.pi / 2 := by linarith [hβ]
-  have hβle : β ≤ Real.pi / 2 := by linarith [hα]
-  rcases le_total α β with hle | hle
-  · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
-    rw [abs_of_nonpos hnonpos]
-    nlinarith [sq_nonneg (β - α)]
-  · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
-    rw [abs_of_nonneg hnonneg]
-    nlinarith [sq_nonneg (α - β)]
-
-private theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    |J p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by
-  rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
-  have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ (Real.pi / 2) ^ 2 := fun a =>
-    sq_diff_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
-  have hsum : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * (Real.pi / 2) ^ 2 := by
-    simp only [Fin.sum_univ_three]
-    linarith [hbound 0, hbound 1, hbound 2]
-  have habs : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| ≤
-      ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
-    Finset.abs_sum_le_sum_abs (s := Finset.univ) (f := fun a => p.alpha a ^ 2 - p.beta a ^ 2)
-  calc
-    (1 / 2 : ℝ) * |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)|
-        ≤ (1 / 2) * ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
-      mul_le_mul_of_nonneg_left habs (by norm_num)
-    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by linarith [hsum]
-
-/-- Raw bound `|J| ≤ 3π²/8` on admissible discrete configurations. -/
-theorem torsion_bound_raw {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
-  torsion_bound_raw_continuous _ (admissible_continuous_of_discrete t h)
-
-/-- Normalized bound `|JNormalized| ≤ 1` on admissible continuous configurations. -/
-theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    |JNormalized p| ≤ 1 := by
-  unfold JNormalized
-  have hJ := torsion_bound_raw_continuous p h
-  have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
-  rw [abs_mul, abs_of_nonneg hcoef]
-  calc
-    (8 / (3 * Real.pi ^ 2)) * |J p|
-        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * (Real.pi / 2) ^ 2 / 2) := by gcongr
-    _ = 1 := by field_simp; ring
-
-/-- Normalized bound on admissible discrete configurations. -/
-theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |JNormalized (toTorsionParams t)| ≤ 1 :=
-  torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
-
-/-- Appendix pure-boost extremal attains `JNormalized = 1`. -/
-theorem JNormalized_extremal :
-    JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
-  unfold JNormalized J killingForm
-  simp only [Fin.sum_univ_three, mul_zero, sub_zero]
-  field_simp [Real.pi_ne_zero]
-  ring_nf
 
 /-- Counterexample showing `IsPrincipalBranch` alone does not bound `J`. -/
 noncomputable def counterExampleParams : TorsionParams where

@@ -63,7 +63,14 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   goldbachEquation goldbachMotor_one_iff abcEquation abcMotor_one_iff
   gapEquation gapMotor_one_iff
   IsZeroHeight AdmissibleClass ExistsZeroHeight
-  latticeMismatch dagger_preserves_height DescentSchema latticeSearchSchema
+  latticeMismatch abs_latticeMismatch_le_of_admissible
+  JNormalized_eq_sixteen_lattice
+  torsion_bound_discrete_sharp torsion_bound_discrete_sharp_le_one
+  torsion_bound_discrete_strict
+  pureHyperbolicDiscrete pureEllipticDiscrete
+  pureHyperbolicDiscrete_admissible pureEllipticDiscrete_admissible
+  JNormalized_pureHyperbolicDiscrete JNormalized_pureEllipticDiscrete
+  dagger_preserves_height DescentSchema latticeSearchSchema
   findZeroHeight findZeroHeight_isSome phase4_layers
   amplification_implies_seed_le continuous_amplification_contradiction
   abs_latticeMismatch_ge_one discrete_nonzero_height_lb

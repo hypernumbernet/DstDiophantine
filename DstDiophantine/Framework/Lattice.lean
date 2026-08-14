@@ -3,9 +3,12 @@ import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Invariant
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Order.Group.Abs
 
 /-!
 # Admissible lattice and zero-height configurations
@@ -204,6 +207,205 @@ theorem existsZeroHeight_of_neZero (N : ℕ) [NeZero N] : ExistsZeroHeight N := 
   refine ⟨⟨Embedding.zeroTorsion N, (zero_admissible_zeroHeight N).1⟩, ?_⟩
   exact (AdmissibleClass.isZero_iff_latticeMismatch _).mpr <| by
     simp [latticeMismatch, Embedding.zeroTorsion]
+
+/-! ### Sharp discrete height bound via `⌊N/4⌋` -/
+
+private theorem nat_sq_diff_le_sum_sq (n m : ℕ) :
+    |(n : ℤ) ^ 2 - (m : ℤ) ^ 2| ≤ ((n + m : ℕ) : ℤ) ^ 2 := by
+  have hfac : (n : ℤ) ^ 2 - (m : ℤ) ^ 2 =
+      ((n : ℤ) - (m : ℤ)) * ((n : ℤ) + (m : ℤ)) := by ring
+  rw [hfac, abs_mul]
+  have hn : (0 : ℤ) ≤ n := Nat.cast_nonneg n
+  have hm : (0 : ℤ) ≤ m := Nat.cast_nonneg m
+  have hsum_nn : (0 : ℤ) ≤ (n : ℤ) + (m : ℤ) := add_nonneg hn hm
+  have hsum : (n : ℤ) + (m : ℤ) = ((n + m : ℕ) : ℤ) := by push_cast; rfl
+  rw [abs_of_nonneg hsum_nn, hsum]
+  have hdiff : |(n : ℤ) - (m : ℤ)| ≤ ((n + m : ℕ) : ℤ) := by
+    rw [← hsum]
+    rcases le_total (n : ℤ) (m : ℤ) with hle | hle
+    · rw [abs_of_nonpos (sub_nonpos.mpr hle)]; linarith
+    · rw [abs_of_nonneg (sub_nonneg.mpr hle)]; linarith
+  have hmul :
+      |(n : ℤ) - (m : ℤ)| * ((n + m : ℕ) : ℤ) ≤
+        ((n + m : ℕ) : ℤ) * ((n + m : ℕ) : ℤ) :=
+    mul_le_mul_of_nonneg_right hdiff (Nat.cast_nonneg (n + m))
+  simpa [pow_two] using hmul
+
+private theorem axis_mismatch_le_floor
+    {N : ℕ} [NeZero N] {n m : ℕ} (h : 4 * (n + m) ≤ N) :
+    |(n : ℤ) ^ 2 - (m : ℤ) ^ 2| ≤ ((N / 4 : ℕ) : ℤ) ^ 2 := by
+  have hsum : n + m ≤ N / 4 :=
+    (Nat.le_div_iff_mul_le (by decide : 0 < (4 : ℕ))).2 (by
+      have : 4 * (n + m) = (n + m) * 4 := by ring
+      rwa [this] at h)
+  exact (nat_sq_diff_le_sum_sq n m).trans <|
+    pow_le_pow_left₀ (Nat.cast_nonneg _) (by exact_mod_cast hsum) 2
+
+/-- On an admissible lattice point, `|latticeMismatch| ≤ 3 ⌊N/4⌋²`. -/
+theorem abs_latticeMismatch_le_of_admissible {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |latticeMismatch t| ≤ 3 * ((N / 4 : ℕ) : ℤ) ^ 2 := by
+  have hfour := (AdmissibleClass.isAdmissible_iff_four_le t).mp h
+  unfold latticeMismatch
+  simp only [Fin.sum_univ_three]
+  have h0 := axis_mismatch_le_floor (hfour 0)
+  have h1 := axis_mismatch_le_floor (hfour 1)
+  have h2 := axis_mismatch_le_floor (hfour 2)
+  have htri :
+      |((t.n 0).val : ℤ) ^ 2 - ((t.m 0).val : ℤ) ^ 2 +
+          (((t.n 1).val : ℤ) ^ 2 - ((t.m 1).val : ℤ) ^ 2) +
+          (((t.n 2).val : ℤ) ^ 2 - ((t.m 2).val : ℤ) ^ 2)| ≤
+        |((t.n 0).val : ℤ) ^ 2 - ((t.m 0).val : ℤ) ^ 2| +
+          |((t.n 1).val : ℤ) ^ 2 - ((t.m 1).val : ℤ) ^ 2| +
+          |((t.n 2).val : ℤ) ^ 2 - ((t.m 2).val : ℤ) ^ 2| := by
+    refine (abs_add_le _ _).trans ?_
+    gcongr
+    exact abs_add_le _ _
+  refine htri.trans ?_
+  linarith [h0, h1, h2]
+
+theorem JNormalized_eq_sixteen_lattice {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
+    JNormalized (toTorsionParams t) =
+      (16 : ℝ) / (3 * (N : ℝ) ^ 2) * (latticeMismatch t : ℝ) := by
+  unfold JNormalized
+  rw [J_toTorsionParams]
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  have hπ : Real.pi ≠ 0 := Real.pi_ne_zero
+  field_simp [hN, hπ]
+  ring
+
+/-- Sharp admissible discrete bound `|JNormalized| ≤ (4⌊N/4⌋/N)²`. -/
+theorem torsion_bound_discrete_sharp {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| ≤ ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by
+  have hlm := abs_latticeMismatch_le_of_admissible t h
+  have hcoef : 0 ≤ (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by positivity
+  rw [JNormalized_eq_sixteen_lattice, abs_mul, abs_of_nonneg hcoef]
+  have hlmR : |(latticeMismatch t : ℝ)| ≤ 3 * ((N / 4 : ℕ) : ℝ) ^ 2 := by
+    have h1 : ((|latticeMismatch t| : ℤ) : ℝ) ≤
+        ((3 * ((N / 4 : ℕ) : ℤ) ^ 2 : ℤ) : ℝ) :=
+      Int.cast_le.mpr hlm
+    have hrhs : ((3 * ((N / 4 : ℕ) : ℤ) ^ 2 : ℤ) : ℝ) =
+        3 * ((N / 4 : ℕ) : ℝ) ^ 2 := by norm_cast
+    rwa [Int.cast_abs, hrhs] at h1
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  set k : ℝ := ((N / 4 : ℕ) : ℝ) with hk
+  calc (16 : ℝ) / (3 * (N : ℝ) ^ 2) * |(latticeMismatch t : ℝ)|
+      ≤ (16 : ℝ) / (3 * (N : ℝ) ^ 2) * (3 * k ^ 2) := by gcongr
+    _ = (4 * k / N) ^ 2 := by
+        field_simp [hN]
+        ring
+    _ = ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by rw [hk]
+
+theorem torsion_bound_discrete_sharp_le_one {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| ≤ 1 := by
+  have hsharp := torsion_bound_discrete_sharp t h
+  have hfloor : (4 * (N / 4 : ℕ) : ℝ) ≤ N := by
+    exact_mod_cast Nat.mul_div_le N 4
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hfrac : (4 * (N / 4 : ℕ) : ℝ) / N ≤ 1 := (div_le_one hNpos).mpr hfloor
+  have hnn : 0 ≤ (4 * (N / 4 : ℕ) : ℝ) / N := div_nonneg (by positivity) hNpos.le
+  have hsq : ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 ≤ (1 : ℝ) ^ 2 :=
+    pow_le_pow_left₀ hnn hfrac 2
+  simpa using hsharp.trans hsq
+
+/-- When `4 ∣ N`, the pure-hyperbolic lattice point (all axes `n = N/4`). -/
+noncomputable def pureHyperbolicDiscrete (N : ℕ) [NeZero N] : DiscreteTorsion N where
+  n := fun _ => (↑(N / 4) : ZMod N)
+  m := fun _ => 0
+
+/-- When `4 ∣ N`, the pure-elliptic lattice point (all axes `m = N/4`). -/
+noncomputable def pureEllipticDiscrete (N : ℕ) [NeZero N] : DiscreteTorsion N where
+  n := fun _ => 0
+  m := fun _ => (↑(N / 4) : ZMod N)
+
+theorem zmod_val_of_div_four {N : ℕ} [NeZero N] (_h4 : 4 ∣ N) :
+    ((↑(N / 4) : ZMod N).val) = N / 4 := by
+  have hlt : N / 4 < N := Nat.div_lt_self (NeZero.pos N) (by decide : 1 < 4)
+  exact ZMod.val_natCast_of_lt hlt
+
+theorem pureHyperbolicDiscrete_admissible {N : ℕ} [NeZero N] (h4 : 4 ∣ N) :
+    IsAdmissible (pureHyperbolicDiscrete N) := by
+  rw [AdmissibleClass.isAdmissible_iff_four_le]
+  intro a
+  simp only [pureHyperbolicDiscrete, ZMod.val_zero, add_zero]
+  rw [zmod_val_of_div_four h4]
+  exact le_of_eq (Nat.mul_div_cancel' h4)
+
+theorem pureEllipticDiscrete_admissible {N : ℕ} [NeZero N] (h4 : 4 ∣ N) :
+    IsAdmissible (pureEllipticDiscrete N) := by
+  rw [AdmissibleClass.isAdmissible_iff_four_le]
+  intro a
+  simp only [pureEllipticDiscrete, ZMod.val_zero, zero_add]
+  rw [zmod_val_of_div_four h4]
+  exact le_of_eq (Nat.mul_div_cancel' h4)
+
+theorem JNormalized_pureHyperbolicDiscrete {N : ℕ} [NeZero N] (h4 : 4 ∣ N) :
+    JNormalized (toTorsionParams (pureHyperbolicDiscrete N)) = 1 := by
+  have hval := zmod_val_of_div_four (N := N) h4
+  have hmul : (4 * (N / 4) : ℕ) = N := Nat.mul_div_cancel' h4
+  have hNne : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  rw [JNormalized_eq_sixteen_lattice]
+  have hlm :
+      latticeMismatch (pureHyperbolicDiscrete N) = 3 * ((N / 4 : ℕ) : ℤ) ^ 2 := by
+    simp only [latticeMismatch, pureHyperbolicDiscrete, Fin.sum_univ_three,
+      ZMod.val_zero, hval]
+    ring
+  have hN4 : ((N / 4 : ℕ) : ℝ) = (N : ℝ) / 4 := by
+    have hcast : ((4 * (N / 4) : ℕ) : ℝ) = 4 * ((N / 4 : ℕ) : ℝ) := by norm_cast
+    rw [hmul] at hcast
+    have h4ne : (4 : ℝ) ≠ 0 := by norm_num
+    field_simp [h4ne]
+    linarith
+  rw [hlm]
+  have hcast : ((3 * ((N / 4 : ℕ) : ℤ) ^ 2 : ℤ) : ℝ) =
+      3 * ((N / 4 : ℕ) : ℝ) ^ 2 := by norm_cast
+  rw [hcast, hN4]
+  field_simp [hNne]
+  ring
+
+theorem JNormalized_pureEllipticDiscrete {N : ℕ} [NeZero N] (h4 : 4 ∣ N) :
+    JNormalized (toTorsionParams (pureEllipticDiscrete N)) = -1 := by
+  have hval := zmod_val_of_div_four (N := N) h4
+  have hmul : (4 * (N / 4) : ℕ) = N := Nat.mul_div_cancel' h4
+  have hNne : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  rw [JNormalized_eq_sixteen_lattice]
+  have hlm :
+      latticeMismatch (pureEllipticDiscrete N) = -(3 * ((N / 4 : ℕ) : ℤ) ^ 2) := by
+    simp only [latticeMismatch, pureEllipticDiscrete, Fin.sum_univ_three,
+      ZMod.val_zero, hval]
+    ring
+  have hN4 : ((N / 4 : ℕ) : ℝ) = (N : ℝ) / 4 := by
+    have hcast : ((4 * (N / 4) : ℕ) : ℝ) = 4 * ((N / 4 : ℕ) : ℝ) := by norm_cast
+    rw [hmul] at hcast
+    have h4ne : (4 : ℝ) ≠ 0 := by norm_num
+    field_simp [h4ne]
+    linarith
+  rw [hlm]
+  have hcast : ((-(3 * ((N / 4 : ℕ) : ℤ) ^ 2) : ℤ) : ℝ) =
+      -(3 * ((N / 4 : ℕ) : ℝ) ^ 2) := by norm_cast
+  rw [hcast, hN4]
+  field_simp [hNne]
+  ring
+
+/-- If `4` does not divide `N`, every admissible point has `|JNormalized| < 1`. -/
+theorem torsion_bound_discrete_strict {N : ℕ} [NeZero N]
+    (h4 : ¬ 4 ∣ N) (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| < 1 := by
+  have hsharp := torsion_bound_discrete_sharp t h
+  have hfloor : 4 * (N / 4) < N := by
+    have hle := Nat.mul_div_le N 4
+    refine lt_of_le_of_ne hle ?_
+    intro heq
+    exact h4 ⟨N / 4, heq.symm⟩
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hfrac : (4 * (N / 4 : ℕ) : ℝ) / N < 1 :=
+    (div_lt_one hNpos).mpr (by exact_mod_cast hfloor)
+  have hnn : 0 ≤ (4 * (N / 4 : ℕ) : ℝ) / N := div_nonneg (by positivity) hNpos.le
+  have hsq : ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 < (1 : ℝ) ^ 2 := by
+    nlinarith [hnn, hfrac]
+  exact lt_of_le_of_lt hsharp (by simpa using hsq)
 
 end Framework
 

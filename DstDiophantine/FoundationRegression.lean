@@ -40,8 +40,8 @@ equal-odd and even two-equal progress, diagnostic NoGo) are included;
 Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
-dictionary, admissible bound, finite rotor image, continuum `J` approximation)
-are included below.
+dictionary, admissible bound, finite rotor image, continuum `J` approximation,
+sharp discrete `|JNormalized|` range) are included below.
 -/
 
 namespace DstDiophantine.FoundationRegression
@@ -624,6 +624,21 @@ example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |JNormalized p| ≤ 1 :=
   torsion_bound_continuous p h
 
+/-- Raw admissible ceiling `|J| ≤ 3π²/8`. -/
+example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |J p| ≤ 3 * Real.pi ^ 2 / 8 :=
+  torsion_bound_raw_continuous_pi_sq p h
+
+/-- Equality `|JNormalized| = 1` characterises the two extremals. -/
+example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p :=
+  abs_JNormalized_eq_one_iff p h
+
+/-- Image of `JNormalized` on the admissible cone is all of `[-1, 1]`. -/
+example (y : ℝ) (hy : |y| ≤ 1) :
+    ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ JNormalized p = y :=
+  exists_admissible_JNormalized y hy
+
 /-- Naive principal-branch bound remains false. -/
 example : ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| :=
   torsion_bound_naive_false
@@ -638,5 +653,24 @@ example {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ} (hε : 0 <
       ∃ t : DiscreteTorsion N, IsAdmissible t ∧
         |J p - J (toTorsionParams t)| < ε :=
   exists_discrete_approx_J h hε
+
+/-- Discrete admissible values of `JNormalized` are dense in `[-1, 1]`. -/
+example {y ε : ℝ} (hy : |y| ≤ 1) (hε : 0 < ε) :
+    ∃ (N : ℕ) (_ : NeZero N),
+      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+        |JNormalized (toTorsionParams t) - y| < ε :=
+  dense_discrete_JNormalized hy hε
+
+/-- When `4 ∣ N`, the lattice attains `±1`. -/
+example : JNormalized (toTorsionParams (pureHyperbolicDiscrete 4)) = 1 :=
+  JNormalized_pureHyperbolicDiscrete (by decide : 4 ∣ 4)
+
+example : JNormalized (toTorsionParams (pureEllipticDiscrete 4)) = -1 :=
+  JNormalized_pureEllipticDiscrete (by decide : 4 ∣ 4)
+
+/-- When `¬ 4 ∣ N`, the admissible bound is strict. -/
+example (t : DiscreteTorsion 3) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| < 1 :=
+  torsion_bound_discrete_strict (by decide : ¬ 4 ∣ 3) t h
 
 end DstDiophantine.FoundationRegression

@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-13（Beal フェーズ 7i: FLT 公理と Gaussian UFD 降下）
+最終更新: 2026-08-14（J 範囲: 等号 iff・離散鋭い上界）
 
 ## 1. 三層アーキテクチャ
 
@@ -27,6 +27,8 @@ flowchart LR
 - PGA / Cl(3,1) / ヌル強消滅 / 定義積モーター `M:=RT` の単位性
 - `e₄` と pseudoscalar の可換、`dual_null`（grade 4；null bivector 閉性は**棄却**）
 - 許容配置上の `|JNormalized| ≤ 1`（naive 全配置有界性は**反例付きで棄却**）
+- 連続像はちょうど `[-1,1]`。`|JNormalized|=1` iff 全軸が純双曲または全軸が純楕円
+- 離散鋭い上界 `|JNormalized| ≤ (4⌊N/4⌋/N)²`。`4∣N` で ±1 達成、`¬4∣N` なら厳密。許容離散値は `[-1,1]` に稠密
 - 純ブーストの `k²` 増幅と連続種高さ上界
 - 離散非零高さ下限 `ε_N = 16/(3N²)` と粗トーラス高さ no-go
 - **旧 `CoarseAmplificationWitness` の構造的空性**（方程式非依存；`empty_of_coarse`）
@@ -306,42 +308,62 @@ Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない�
 
 ---
 
-## 7. DST / 離散論文へ返す欠点（2026-08-13）
+## 7. DST / 離散論文へ返す欠点（2026-08-14）
 
-Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。`.tex` は別リポジトリのため、ここをフィードバック票とする。
+Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc のため、ここをフィードバック票とする。このサイクルでは clone / 直接編集しない。
 
-### 主論文 `double-spacetime-theory.tex`
+### 優先（`|J|≤1` を無条件に使っている）
+
+| 論文 | 内容 | Lean |
+|------|------|------|
+| `dst-riemann-hypothesis.tex` | 要旨・§2 が `|J|≤1`。主枝だけでは偽。許容錐と `JNormalized` に置換 | `torsion_bound_naive_false` |
+| `dst-langlands-program.tex` | 「Torsion Boundedness `|J|≤1`」を任意アンサンブルのマスター定理にし、Langlands 全体を従わせている。許容なしでは成り立たない。無条件主張は落とす | 同上 |
+| `dst-4-valued-logic.tex` | 真理値を `J∈[-1,1]` と同一視し `J=+1` を False とする。これは `JNormalized`。生の `J` の極端は `±3π²/8` | `JNormalized_extremal` / `JNormalized_extremal_neg` |
+
+### 優先（生の J の有界の中身が食い違う）
+
+| 論文 | 内容 | Lean |
+|------|------|------|
+| `double-spacetime-theory.tex` App.B | `Ω=∑(α/2)iΓ+(β/2)Γ` と `B(iΓ,iΓ)=8` なら `B(Ω,Ω)=2∑(α²-β²)`。付録の `8∑` は誤り | `paper_appendix_killing_coeff_false` |
+| 同 App.B | `[iΓ_a,Γ_b]=0` は同軸のみ。異軸は反例 | `commutator_hyperbolic_cyclic_same` / `…_ne_zero` |
+| 同 | `so(3,1)⊕so(3,1)` は次元 12。生成子は 6。Poincaré 候補が妥当 | `Generators` docstring |
+| 同 §「J remains bounded」 | 許容＋`|J|≤3π²/8`（または `|JNormalized|≤1`）に限定 | `torsion_bound_raw_continuous_pi_sq` |
+| `dst-quantum-gravity.tex` | `|J| ≤ J_max ~ N^{-2}` と `|J| ≤ c⁴/G ℓ_P^{-2}` が並立し、許容錐の `3π²/8` とも矛盾。離散 `ε_N=16/(3N²)` は非零高さの**下限**であり上界ではない | `discrete_nonzero_height_lb` |
+
+### Jnorm 入りだが残件がある
+
+| 論文 | 残件 | Lean |
+|------|------|------|
+| `discrete-dual-spacetime.tex` | 許容は離散化の帰結ではなく追加仮説。「整数環の有限単数群」は `DiscreteRotorImage`。「`A≲300`」は導出なし。双曲 rapidity のトーラス量子化は釣り合い型で巻数 0 | `torsion_bound_naive_false` / `discreteRotorImage_finite` / `beal_balanced_gap_no_modularWitness` |
+| `dst-pga.tex` | `J⁵` 非有界の備考は既にある。残るのは `1/16 B` と生成子展開の係数、`motor=exp(Ω)` vs 定義積 `RT` | `J5_unbounded` / `Motor` |
+| 局所 / GitHub `dst-diophantine.tex` | 第3章・付録は 2026-08-14 に等号 iff・離散鋭い上界・Killing `2∑` 注記へ同期した。GitHub 本体へ未反映 | `abs_JNormalized_eq_one_iff` / `torsion_bound_discrete_sharp` |
+
+### J の定義が別物（範囲を流用しない）
+
+| 論文 | 内容 |
+|------|------|
+| `dst-particle-stability.tex` | `J(ℓ,w,δφ)=½ m ℓ (δφ)²` は Killing の J ではない。`|JNormalized|≤1` を流用できない |
+| `dst-iut.tex` | 数値上界は無いが `so(3,1)⊕so(3,1)` と `J=1/16 B` を引用。主論文の Killing 修正に追随 |
+| `dst-dynamic-equation.tex` / `dst-de-broglie-wave.tex` | 位相・振動子として J を使う。`|J|≤1` は書いていない。辞書が固まったら引用を揃える程度 |
+
+### 既出の非 J 範囲項目（維持）
 
 | 項目 | 内容 | Lean |
 |------|------|------|
-| App.B Killing 係数 | `Ω=∑(α/2)iΓ+(β/2)Γ` と `B(iΓ,iΓ)=8` なら `B(Ω,Ω)=2∑(α²-β²)`。付録の `8∑` は誤り | `paper_appendix_killing_coeff_false` |
-| `[iΓ_a,Γ_b]=0` | 同軸のみ。異軸は反例 | `commutator_hyperbolic_cyclic_same` / `…_ne_zero` |
-| `so(3,1)⊕so(3,1)` | 次元 12。生成子は 6。Poincaré 候補が妥当 | `Generators` docstring |
 | null dual 閉性 | grade で棄却 | `dual_null` |
 | `motor = exp(Ω_biv)` | 非可換時は偽。定義積 `R·T` のみ | `Motor` |
 | TEGR↔EH | 未証明の `J=½T+div` + 文献引用。変分なし | Gravity チャート切片のみ |
-| 連続体否定 vs `∫J d⁴x` | 論理的緊張（離散 companion も同様） | 形式化対象外 |
-
-### 離散 companion `discrete-dual-spacetime.tex`
-
-| 項目 | 内容 | Lean |
-|------|------|------|
-| 「整数環の有限単数群」 | 環が未定義。Lorentz 整数 order は無限単数になり得る。有限なのは `(ℤ/Nℤ)⁶` の rotor 像 | `DiscreteRotorImage` / `discreteUnit_finite` |
-| 双曲 rapidity のトーラス量子化 | 釣り合い Beal gap が不可視（巻数 0）。乗法の正しい離散対象は CGA 整数 dilation / PGA `integerRotor` | `beal_balanced_gap_no_modularWitness` / `IsCGAIntegerDilation` |
-| `BealCGADiscreteClosed` を幾何原理としない | k 倍冪格子閉は互素解で `|A|=1` と同値（bookkeeping） | `beal_kFold_powerLattice_iff_natAbs_eq_one` |
-| 許容条件 | 離散化からの帰結ではなく追加仮説。主枝だけでは `|J|≤1` は偽 | `torsion_bound_naive_false` vs `torsion_bound` |
-| Diophantine 重力・`A≲300` | 導出なし | 主張しない |
+| 連続体否定 vs `∫J d⁴x` | 論理的緊張 | 形式化対象外 |
+| `BealCGADiscreteClosed` | 幾何原理ではない（bookkeeping） | `beal_kFold_powerLattice_iff_natAbs_eq_one` |
 | 文献プレースホルダ | `arXiv:xxxx.xxxxx` | — |
 
-### 今サイクルで強化した Lean 境界
+### 今サイクルで強化した Lean 境界（J 範囲）
 
-- `Algebra.lean` バレル + `Admissible.lean`（パラメータ辞書・許容述語）
-- 双対: `pseudoscalar_sq`, `minkowskiVector`, `dual_minkowskiVector_sq`, `dual_time`
-- Killing 辞書と付録誤り・異軸非可換の機械検証
-- `DiscreteUnit` = 有限像（`Units` ではない）+ `exists_discrete_approx_J`
-- `FoundationRegression` に DST コア例を追加
+- 軸ごと上界の等号 iff、生の天井 `|J|≤3π²/8`、負の極端、`|JNormalized|=1` の大域等号、像 `[-1,1]`
+- 離散 `|JNormalized| ≤ (4⌊N/4⌋/N)²`、`4∣N` で ±1、`¬4∣N` で厳密、許容離散値の稠密
+- `Algebra.lean` / `Basic.lean` export と `FoundationRegression` の回帰 example
 
-Beal 危機路線の優先度は維持。上記は並列の代数整理。
+Beal 危機路線の優先度は維持。上記は並列の代数整理。7予想の無条件証明・dagger 降下・粗離散 witness・TEGR↔EH 変分は、J 範囲の辞書が固まってから別チケット。
 
 ---
 

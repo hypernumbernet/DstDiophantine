@@ -223,6 +223,31 @@ theorem exists_discrete_approx_J {p : TorsionParams} (h : IsAdmissibleContinuous
     _ = ε / 2 := hbound
     _ < ε := by linarith
 
+/-- Admissible discrete values of `JNormalized` are dense in `[-1, 1]`. -/
+theorem dense_discrete_JNormalized {y ε : ℝ} (hy : |y| ≤ 1) (hε : 0 < ε) :
+    ∃ (N : ℕ) (_ : NeZero N),
+      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+        |JNormalized (toTorsionParams t) - y| < ε := by
+  obtain ⟨p, hadm, hp⟩ := exists_admissible_JNormalized y hy
+  set δJ := ε * (3 * Real.pi ^ 2 / 8) with hδJ
+  have hδJpos : 0 < δJ := by
+    dsimp [δJ]; positivity
+  obtain ⟨N, hNe, t, ht, hJ⟩ := exists_discrete_approx_J hadm hδJpos
+  refine ⟨N, hNe, t, ht, ?_⟩
+  have hcoef : (0 : ℝ) ≤ 8 / (3 * Real.pi ^ 2) := by positivity
+  have hscale :
+      |JNormalized (toTorsionParams t) - y| =
+        (8 / (3 * Real.pi ^ 2)) * |J p - J (toTorsionParams t)| := by
+    rw [← hp]
+    unfold JNormalized
+    rw [← mul_sub, abs_mul, abs_of_nonneg hcoef, abs_sub_comm]
+  rw [hscale]
+  calc (8 / (3 * Real.pi ^ 2)) * |J p - J (toTorsionParams t)|
+      < (8 / (3 * Real.pi ^ 2)) * δJ := by gcongr
+    _ = ε := by
+        rw [hδJ]
+        field_simp [Real.pi_ne_zero]
+
 end Continuum
 
 end DstDiophantine
