@@ -12,7 +12,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Geometric operations on PQ4L amplitudes
+# Geometric operations on D4L amplitudes
 
 Parameter-space Killing pairing is the commutative overlap. The geometric
 commutator of torsion bivectors is the non-commutative interference term.
@@ -118,7 +118,7 @@ private theorem omegaTorsion_axis1Rotation :
   simp [omegaTorsion, axis1Rotation, Fin.sum_univ_three]
 
 /-- Distinct-axis torsion bivectors need not commute. This is the
-pseudo-quantum interference that the scalar `min`/`max` layer cannot see. -/
+geometric interference that the scalar `min`/`max` layer cannot see. -/
 theorem interfere_axis0_axis1_ne_zero :
     interfere axis0Boost axis1Rotation ≠ 0 := by
   unfold interfere

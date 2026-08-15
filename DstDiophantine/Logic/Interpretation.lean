@@ -13,15 +13,15 @@ import Mathlib.Tactic.Linarith
 /-!
 # Geometric-algebra reading of D4L
 
-The four states are not an extra semantic layer. They are the sign and
-saturation of `JNormalized`, itself the (normalised) Killing quadratic of the
-PGA torsion bivector `omegaTorsion`.
+The four states are the sign and saturation of `JNormalized`, itself the
+(normalised) Killing quadratic of the PGA torsion bivector `omegaTorsion`.
 
 Usual–dual swap `daggerParams` (`α ↔ β`) sends `JNormalized ↦ -JNormalized`,
 so signed negation is the algebra involution, not a new connective.
 
-This module does **not** identify the idea-note scale `λ` with CGA dilation or
-with `scaleTorsion` amplification. Those are three different scales.
+This module does **not** identify the scale `λ` of `Logic.Potential` with
+CGA dilation or with `scaleTorsion` amplification. Those are three
+different scales.
 -/
 
 namespace DstDiophantine
@@ -61,7 +61,7 @@ theorem ofParams_T_iff_zeroHeight {p : TorsionParams} (h : IsAdmissibleContinuou
     ofParams p h = .T ↔ IsZeroHeight p := by
   rw [ofParams_eq_T_iff, isZeroHeight_iff_JNormalized]
 
-/-- The torsion bivector is the PGA carrier of the height that D4L classifies.
+/-- The torsion bivector is the PGA carrier of the height that is classified.
 Coefficient dictionary: project `J` is *not* `(1/16) B(Ω,Ω)` under the
 generator expansion; see `paper_appendix_killing_coeff_false`. -/
 theorem J_of_omegaTorsion (p : TorsionParams) :

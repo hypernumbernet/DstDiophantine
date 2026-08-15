@@ -22,6 +22,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **Fermat / abc modular bridge も型付け済み。** 無条件 FLT / Beal / abc は主張しません。
 - **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（広い主値窓・折り畳み・Realization 条件付き）までです。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
+- **プロジェクトの論理は D4L 一つ。** 命題は許容ねじれ配置、測定は `JNormalized`、崩壊は四状態。Killing 重なりと幾何干渉まで機械検証。入口は `DstDiophantine.Logic`（`Basic` には入れません）。D4L 自体は Hilbert / Born / オーソモジュラーではありません（分離定理）。双対セクターの兄弟として \(\mathbb{C}^2\) とその部分空間格子を `Logic/Quantum/` に置きます。
 
 ## 行ったこと
 
@@ -156,4 +157,5 @@ Lean 4.34.0-rc1 と mathlib `v4.34.0-rc1` を使います。
 
 公開の入口は `DstDiophantine.Basic`、三層の境界や空性・modular の inhabited を固定する回帰例は
 `DstDiophantine.FoundationRegression` です。重力側だけ見る場合は `DstDiophantine.Gravity`、
-1D CGA 探針だけ見る場合は `DstDiophantine.CGA` を使います（いずれも `Basic` には強制しません）。
+1D CGA 探針だけ見る場合は `DstDiophantine.CGA`、論理だけ見る場合は
+`DstDiophantine.Logic`（`lake build DstDiophantine.Logic`）を使います（いずれも `Basic` には強制しません）。

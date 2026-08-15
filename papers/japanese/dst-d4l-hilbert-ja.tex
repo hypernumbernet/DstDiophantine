@@ -1,0 +1,293 @@
+\documentclass[dvipdfmx,11pt,a4paper]{jsarticle}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1.1in}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{proposition}[theorem]{命題}
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{corollary}[theorem]{系}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定義}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注意}
+
+\newcommand{\Jnorm}{J_{\rm norm}}
+
+\title{D4L とヒルベルト空間\\
+同一視ではなく兄弟構成}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+二重時空四値論理（D4L）は Birkhoff--von Neumann の量子論理ではない。
+パラメータ Killing 形式は符号 $(3,3)$ で不定であり、自己重なりは負に
+なり得るので Born 確率ではない。スカラー結合子 $\min/\max$ は分配的
+である。DST が供給するのは双対セクター運動学の本物のヒルベルト空間
+である。循環生成子は四元数の積表を満たし、符号を反転した双対対は
+$\mathbb{R}^3$ 上で Euclid であり、$-i\sigma_a$ がその生成子を
+$\mathbb{C}^2$ 上に表現する。$\mathbb{C}^2$ の閉部分空間格子は
+オーソモジュラーかつ非分配的である。四つの D4L ラベルをその空間の
+互いに直交する四本の光線と読むことはできない。以下の番号付き定理は
+すべて Lean~4 で機械検証されている。D4L をオーソモジュラー格子と
+同一視することはなく、$J$ から Born 則を導くこともない。
+\end{abstract}
+
+\section{位置づけ}
+\label{sec:pos}
+
+D4L \cite{D4L2026} は許容ねじれ配置を命題、$\Jnorm$ を観測量、
+$\min/\max/-$ をスカラー結合子とする。幾何層はパラメータ Killing
+形式と双ベクトル交換子を使う \cite{Diophantine2026}。これらは意図的に
+Hilbert 内積・Born 則・オーソモジュラー格子と呼ばれていない。
+
+本稿は、双対セクターがすでに含んでいるヒルベルト空間を構成し、D4L を
+Birkhoff--von Neumann 論理と読むことを禁じる分離を記録する。構成は
+D4L の兄弟であり、再ブランドではない。Lean の入口は
+$\texttt{DstDiophantine.Logic}$ のままである。新モジュールは
+$\texttt{Logic.Quantum}$ に置き、$\texttt{DstDiophantine.Basic}$ からは
+再エクスポートしない。
+
+古い量子重力草稿の同一視 $I\leftrightarrow i\sigma$ は
+$I\mapsto -i\sigma$ に置き換える。この符号で $IJ=K$ が $G(3,1,1)$ の
+循環積と一致し、双対ローターは標準的な $\mathrm{SU}(2)$ 因子
+$\exp(-i\beta\cdot\sigma/2)$ へ送られる。Lean を正とする。
+
+\section{分離}
+\label{sec:sep}
+
+$p=(\alpha_a,\beta_a)_{a=0,1,2}$ と書き、
+\[
+\texttt{killingForm}(p,q)
+= 8\sum_{a=0}^{2}\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr)
+\]
+とする。自己重なりは $\langle p\mid p\rangle=16\,J(p)$ である。
+
+\begin{theorem}[不定対]
+\label{thm:indef}
+$\texttt{killingForm}(p,p)>0$ となる配置と
+$\texttt{killingForm}(q,q)<0$ となる配置が存在する。とくにこの対は
+正定値ではない。Lean: $\texttt{killingForm\_indefinite}$。
+\end{theorem}
+
+証人は $\lvert\Jnorm\rvert=1$ に用いた純ブーストおよび純回転の端点
+である。
+
+\begin{theorem}[Born 確率ではない]
+\label{thm:born}
+$\langle p\mid p\rangle<0$ となる $p$ が存在する。符号付きの量は
+Born 確率になり得ない。Lean:
+$\texttt{overlap\_self\_not\_born\_probability}$。
+\end{theorem}
+
+量子重力姉妹論文の同一視 $\lvert\psi\rvert^2\propto B(\Omega,\Omega)$
+はここでは形式化しない。
+
+\begin{theorem}[分配的スカラー]
+\label{thm:dist}
+すべての $a,b,c\in\mathbb{R}$ について、$\wedge=\min$、$\vee=\max$
+のもとで $a\wedge(b\vee c)=(a\wedge b)\vee(a\wedge c)$。Lean:
+$\texttt{scalar\_connectives\_distributive}$。
+\end{theorem}
+
+分配的な束は、次元が $2$ 以上のヒルベルト空間の部分空間格子と同型に
+なり得ない。
+
+\section{双対セクターと通常セクター}
+\label{sec:sector}
+
+\begin{definition}
+$p$ は $\alpha=0$ のとき双対セクター、$\beta=0$ のとき通常セクターで
+ある。Euclid $\mathbb{R}^3$ からの埋め込みを $\texttt{ofDual}\,\beta$、
+$\texttt{ofUsual}\,\alpha$ と書く。
+\end{definition}
+
+\begin{theorem}[定値な制限]
+\label{thm:sector}
+双対セクター上では
+$\texttt{killingForm}(\texttt{ofDual}\,\beta,\texttt{ofDual}\,\gamma)
+=-8\langle\beta,\gamma\rangle_{\mathbb{R}^3}$
+であり、したがって負定値である。通常セクター上では対は
+$+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}$ で正定値である。
+Lean: $\texttt{killingForm\_ofDual}$、
+$\texttt{killingForm\_ofDual\_neg\_def}$。
+\end{theorem}
+
+内積空間は各セクターの線形包であり、許容立方体
+$\alpha_a,\beta_a\ge 0$、$\alpha_a+\beta_a\le\pi/2$ ではない。
+重ね合わせはその線形包についての主張である。
+
+\section{四元数の積表}
+\label{sec:quat}
+
+循環生成子はすでに $(\texttt{cyclic}\,a)^2=-1$ を満たす。非対角の積は
+新しい。
+
+\begin{theorem}[四元数の乗法]
+\label{thm:quat}
+\[
+\begin{aligned}
+\texttt{cyclic}\,0\cdot\texttt{cyclic}\,1&=\texttt{cyclic}\,2,\\
+\texttt{cyclic}\,1\cdot\texttt{cyclic}\,2&=\texttt{cyclic}\,0,\\
+\texttt{cyclic}\,2\cdot\texttt{cyclic}\,0&=\texttt{cyclic}\,1,
+\end{aligned}
+\qquad
+\begin{aligned}
+\texttt{cyclic}\,1\cdot\texttt{cyclic}\,0&=-\texttt{cyclic}\,2,\\
+\texttt{cyclic}\,2\cdot\texttt{cyclic}\,1&=-\texttt{cyclic}\,0,\\
+\texttt{cyclic}\,0\cdot\texttt{cyclic}\,2&=-\texttt{cyclic}\,1.
+\end{aligned}
+\]
+Lean: $\texttt{cyclic\_zero\_mul\_one}$ および同行の定理。
+\end{theorem}
+
+恒等式は $G(3,1,1)$ のベクトル反交換から計算する。純双対配置では
+$\Omega(\texttt{ofDual}\,\beta)=\sum(\beta_a/2)\,\texttt{cyclic}\,a$
+であり、軸 $0$ では $(\theta/2)\,\texttt{cyclic}\,0$ に落ちる。
+
+\section{スピノル・ヒルベルト空間}
+\label{sec:spinor}
+
+\begin{definition}[双対スピノル]
+$\texttt{DualSpinor}:=\mathbb{C}^2$ に標準 Hermite 内積を入れたもの。
+Pauli 行列 $\sigma_x,\sigma_y,\sigma_z$ は通常のもの。表現は
+$\texttt{cyclicRep}\,a:=-i\sigma_a$ である。
+\end{definition}
+
+\begin{theorem}[表現]
+\label{thm:rep}
+$(\texttt{cyclicRep}\,a)^2=-1$ かつ
+$\texttt{cyclicRep}\,0\cdot\texttt{cyclicRep}\,1=\texttt{cyclicRep}\,2$。
+各 $\texttt{cyclicRep}\,a$ は反 Hermite である。Lean:
+$\texttt{cyclicRep\_sq}$、$\texttt{cyclicRep\_zero\_mul\_one}$、
+$\texttt{cyclicRep\_conjTranspose}$。
+\end{theorem}
+
+双対ローターは行列指数
+\[
+\texttt{dualRotorMat}(\beta)
+=\exp\Bigl(\sum_a(\beta_a/2)(-i\sigma_a)\Bigr)
+=\exp(-i\beta\cdot\sigma/2)
+\]
+である。一軸では対応する生成子の $\exp$ そのものである。
+$G(3,1,1)$ の Banach 指数と行列指数の一般的な同一視は主張しない。
+それは $\texttt{Algebra.Motor}$ がすでに拒んでいる BCH 制御を要する。
+
+$\dim_{\mathbb{C}}\texttt{DualSpinor}=2$ なので、射影測定の直交結果は
+高々二つである。
+
+\section{$\mathbb{C}^2$ の量子論理}
+\label{sec:ql}
+
+\begin{definition}
+量子命題は $\texttt{DualSpinor}$ の線形部分空間である。交わりは共通
+部分、結びは和、否定は直交補空間。有限次元なのですべての部分空間は
+閉である。
+\end{definition}
+
+\begin{theorem}[オーソモジュラー法則]
+\label{thm:om}
+$A\le B$ ならば $A\vee(A^\perp\wedge B)=B$。Lean:
+$\texttt{orthomodular}$。
+\end{theorem}
+
+これは有限次元部分空間の直交分解であり、mathlib にすでに存在する。
+
+\begin{theorem}[非分配性]
+\label{thm:ndist}
+$e_0=(1,0)$、$e_1=(0,1)$、$d=(1,1)$ とし、$\ell_v$ を $\mathbb{C}v$
+と書く。このとき
+\[
+\ell_{e_0}\wedge(\ell_{e_1}\vee\ell_d)
+\neq
+(\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d).
+\]
+左辺は $\ell_{e_0}$、右辺は $\{0\}$ である。Lean:
+$\texttt{not\_distributive}$。
+\end{theorem}
+
+\begin{theorem}[直交原子は高々二つ]
+\label{thm:two}
+$\texttt{DualSpinor}$ の互いに直交する一次元部分空間を三つ取ることは
+できない。Lean: $\texttt{no\_three\_pairwise\_orthogonal\_lines}$。
+\end{theorem}
+
+\section{辞書}
+\label{sec:dict}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+D4L & 双対 Hilbert / 量子論理 \\
+\midrule
+純双対振幅 & $\beta\in\mathbb{R}^3$ と $U(\beta)\in\mathrm{U}(2)$ \\
+通常--双対スワップ & 双対セクターの外へ出す。Hilbert 随伴ではない \\
+Killing 重なり & スピノル内積とは別物 \\
+一軸で $\texttt{interfere}=0$ & 可換な生成子（必要条件のみ） \\
+$\Jnorm$ の四状態崩壊 & 連続スカラーの粗視化 \\
+$\min/\max$ & $L(\mathbb{C}^2)$ の交わり・和ではない \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{theorem}[四ラベルは PVM ではない]
+\label{thm:pvm}
+四つの D4L ラベルに $\texttt{DualSpinor}$ の一次元部分空間を割り当て、
+相異なるラベルを互いに直交させることはできない。Lean:
+$\texttt{four\_labels\_not\_orthogonal\_pvm}$。
+\end{theorem}
+
+\section{本稿が示すこと・示さないこと}
+\label{sec:claims}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \emph{示す}のは、D4L の対と結合子が Hilbert 内積、Born 則、
+        オーソモジュラー格子になり得ないことである。
+  \item \emph{示す}のは、Euclid 双対セクターと循環生成子の四元数表の
+        切り出しである。
+  \item \emph{示す}のは、その表の $\mathbb{C}^2$ 上の表現と、部分空間
+        格子のオーソモジュラー性および非分配性である。
+  \item \emph{示さない}のは、D4L と Birkhoff--von Neumann 論理の
+        同一視である。
+  \item \emph{示さない}のは、$J$ や Killing 重なりからの Born 則の
+        導出である。
+  \item \emph{示さない}のは、Dirac スピノル $\mathbb{C}^4$、位置・
+        運動量演算子、測定問題の解決である。
+  \item \emph{示さない}のは、D4L のスケール $\lambda$ と Hilbert
+        次元、CGA dilation、$\texttt{scaleTorsion}$ の同一視である。
+\end{itemize}
+
+Lean モジュールは $\texttt{DstDiophantine.Logic.Quantum}$ の下の
+$\texttt{Separation}$、$\texttt{DualSector}$、$\texttt{Quaternion}$、
+$\texttt{Spinor}$、$\texttt{QuantumLogic}$、$\texttt{Dictionary}$
+である。
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{D4L2026}
+Dual Spacetime 4-Valued Logic (D4L): Amplitudes, Four States, and
+Geometric Interference,
+\texttt{dst-4-valued-logic.tex} (2026).
+
+\bibitem{Diophantine2026}
+Discrete Biquaternionic Double Spacetime,
+\texttt{dst-diophantine.tex} (2026). Lean companion:
+\url{https://github.com/hypernumbernet/DstDiophantine}.
+
+\bibitem{BvN1936}
+G.~Birkhoff and J.~von Neumann, The logic of quantum mechanics,
+Ann.\ Math.\ 37 (1936).
+
+\end{thebibliography}
+
+\end{document}

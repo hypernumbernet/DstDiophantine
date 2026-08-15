@@ -7,10 +7,10 @@ import DstDiophantine.Logic.Interpretation
 import DstDiophantine.Algebra.Motor
 
 /-!
-# PQ4L amplitudes
+# D4L amplitudes
 
 A proposition's primary carrier is an admissible torsion configuration, not a
-scalar in `[-1,1]`. The four D4L labels appear only after measurement.
+scalar in `[-1,1]`. The four labels appear only after measurement.
 
 * `measure` is `JNormalized`.
 * `collapse` is the existing classifier `ofParams`.
@@ -32,7 +32,7 @@ open Admissible Invariant Motor Operations
     daggerParams (daggerParams p) = p :=
   rfl
 
-/-- Bundled admissible configuration: the PQ4L amplitude. -/
+/-- Bundled admissible configuration: the D4L amplitude. -/
 @[ext]
 structure Amplitude where
   params : TorsionParams
@@ -93,7 +93,7 @@ theorem measure_eq_one_iff (a : Amplitude) :
 
 end Amplitude
 
-/-- Every D4L label is realised by some amplitude. -/
+/-- Every label is realised by some amplitude. -/
 theorem exists_amplitude (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv := by
   obtain ⟨p, h, hp⟩ := exists_ofParams tv
   exact ⟨⟨p, h⟩, hp⟩

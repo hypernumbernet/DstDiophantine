@@ -1,86 +1,58 @@
 import DstDiophantine.Logic.TruthValue
-import DstDiophantine.Logic.DiscreteN4
 import DstDiophantine.Logic.Potential
 import DstDiophantine.Logic.Connective
 import DstDiophantine.Logic.Interpretation
 import DstDiophantine.Logic.Amplitude
 import DstDiophantine.Logic.Order
 import DstDiophantine.Logic.Geometric
+import DstDiophantine.Logic.Quantum.Separation
+import DstDiophantine.Logic.Quantum.DualSector
+import DstDiophantine.Logic.Quantum.Quaternion
+import DstDiophantine.Logic.Quantum.Spinor
+import DstDiophantine.Logic.Quantum.QuantumLogic
+import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Algebra.Invariant
-import DstDiophantine.Framework.Lattice
-import DstDiophantine.Embedding.RotorClass
 
 /-!
-# Scale-dependent 4-valued logic (D4L) and PQ4L — parallel track
+# Dual Spacetime 4-valued logic (D4L) — parallel track
 
-Semantic layer over the already-proved PGA invariant `JNormalized`.
+The project's logic. A proposition is an admissible torsion configuration.
+Measurement is the already-proved PGA invariant `JNormalized`; collapse
+yields four labels. Scalar connectives and geometric operations are two
+faces of the same system.
+
 **Not** re-exported from `DstDiophantine.Basic`, so the Diophantine path
 does not depend on these modules (same policy as `DstDiophantine.Gravity`
 and `DstDiophantine.CGA`).
 
 ## Contents
 
+* `Logic.Amplitude` — admissible configuration as the primary carrier
 * `Logic.TruthValue` — four states from `JNormalized ∈ [-1,1]`
-* `Logic.DiscreteN4` — 27-world census on the smallest complete clock
-* `Logic.Potential` — \(V_\lambda\), large-scale critical points, written-\(U\)
-  counterexamples
 * `Logic.Connective` — min/max/neg, non-explosion, softmin limits
 * `Logic.Interpretation` — usual–dual swap is signed negation
-* `Logic.Amplitude` — admissible configuration as PQ4L amplitude
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
+* `Logic.Potential` — \(V_\lambda\), large-scale critical points, written-\(U\)
+* `Logic.Quantum` — sibling Hilbert / quantum-logic layer (not D4L itself)
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
-Hilbert space, Born rule, and orthomodular quantum logic are **not** claimed.
+D4L is **not** a Hilbert space, a Born rule, or an orthomodular lattice.
+The dual-sector kinematics `DualSpinor ≃ ℂ²` and its subspace lattice are
+a sibling construction; see `Logic.Quantum.Separation` and
+`Logic.Quantum.Dictionary`.
 -/
 
 namespace DstDiophantine
 
 namespace Logic
 
-open Invariant Framework Discrete Operations
-open _root_.DstDiophantine.Embedding
+open Invariant Operations Generators Submodule
 
 /-- Regression: every D4L state is realised by an admissible configuration. -/
 example (tv : TruthValue) :
     ∃ (p : TorsionParams) (h : Admissible.IsAdmissibleContinuous p), ofParams p h = tv :=
   exists_ofParams tv
-
-/-- Regression: admissible \(N=4\) worlds number 27. -/
-example : Fintype.card World = 27 :=
-  card_world
-
-example : Fintype.card { t : DiscreteTorsion 4 // IsAdmissible t } = 27 :=
-  card_admissible_n4
-
-/-- Regression: state cardinalities on the \(N=4\) clock. -/
-example : Fintype.card { w : World // classifyWorld w = .T } = 7 :=
-  card_state_T
-
-example : Fintype.card { w : World // classifyWorld w = .U } = 9 :=
-  card_state_U
-
-example : Fintype.card { w : World // classifyWorld w = .F } = 1 :=
-  card_state_F
-
-example : Fintype.card { w : World // classifyWorld w = .B } = 10 :=
-  card_state_B
-
-/-- Regression: landmarks. -/
-example :
-    ofParams (toTorsionParams (pureHyperbolicDiscrete 4))
-      (admissible_continuous_of_discrete _ (pureHyperbolicDiscrete_admissible (by decide))) = .F :=
-  classify_pureHyperbolic_n4
-
-example :
-    ofParams (toTorsionParams (pureEllipticDiscrete 4))
-      (admissible_continuous_of_discrete _ (pureEllipticDiscrete_admissible (by decide))) = .B :=
-  classify_pureElliptic_n4
-
-example :
-    ofParams (toTorsionParams (zeroTorsion 4))
-      (admissible_continuous_of_discrete _ (zero_admissible_zeroHeight 4).1) = .T :=
-  classify_zero_n4
 
 /-- Regression: dual-swap flips `JNormalized`. -/
 example (p : TorsionParams) : JNormalized (daggerParams p) = -JNormalized p :=
@@ -116,11 +88,6 @@ example (lam α : ℝ) (hlam : 0 < lam) :
 /-- Regression: the two written \(U\) disagree by a factor of two on \(\{J>0\}\). -/
 example {j : ℝ} (h : 0 < j) : USmooth j = 2 * UPiece j :=
   USmooth_eq_two_UPiece_of_pos h
-
-/-- Regression: paper ODE on \((-1,1)\setminus\{0\}\) flows toward \(0\). -/
-example {j : ℝ} (hlo : -1 < j) (hhi : j < 1) (hne : j ≠ 0) :
-    paperFlow j * j < 0 :=
-  paperFlow_towards_zero hlo hhi hne
 
 /-- Regression: large-scale potential recovers \(V_\infty\). -/
 example (U : ℝ → ℝ) (α j : ℝ) :
@@ -170,6 +137,40 @@ example :
         classifyOfMem (negJ j₁) (by simpa [negJ, abs_neg] using h₁) ≠
           classifyOfMem (negJ j₂) (by simpa [negJ, abs_neg] using h₂) :=
   neg_not_a_function_of_TruthValue
+
+/-- Regression: Killing form is indefinite, hence not a Hilbert inner product. -/
+example :
+    (∃ p : TorsionParams, 0 < killingForm p p) ∧
+      (∃ q : TorsionParams, killingForm q q < 0) :=
+  killingForm_indefinite
+
+/-- Regression: self-overlap is not a Born probability. -/
+example : ¬ ∀ p : TorsionParams, 0 ≤ overlap p p :=
+  overlap_self_not_born_probability
+
+/-- Regression: dual-sector cyclic generators satisfy `I J = K`. -/
+example : cyclic 0 * cyclic 1 = cyclic 2 :=
+  cyclic_zero_mul_one
+
+/-- Regression: dual-sector pairing is negative definite. -/
+example {β : DualRapidity} (h : killingForm (ofDual β) (ofDual β) = 0) : β = 0 :=
+  killingForm_ofDual_neg_def h
+
+/-- Regression: `ℂ²` subspace lattice is orthomodular and not distributive. -/
+example {A B : QProp} (h : A ≤ B) : A ⊔ Aᗮ ⊓ B = B :=
+  orthomodular h
+
+example :
+    (lineE0 ⊓ (lineE1 ⊔ lineD) : QProp) ≠
+      ((lineE0 ⊓ lineE1) ⊔ (lineE0 ⊓ lineD) : QProp) :=
+  not_distributive
+
+/-- Regression: four D4L labels are not four orthogonal rays in `ℂ²`. -/
+example :
+    ¬ ∃ L : TruthValue → QProp,
+        (∀ tv, Module.finrank ℂ (L tv) = 1) ∧
+          (∀ tv₁ tv₂, tv₁ ≠ tv₂ → L tv₁ ⟂ L tv₂) :=
+  four_labels_not_orthogonal_pvm
 
 end Logic
 

@@ -18,7 +18,7 @@ Algebraic operations live on `JNormalized ∈ [-1,1]`, not on the four labels:
 state-level negation is not a function of `TruthValue` (deepest `B` maps to
 `F`, interior `B` maps to `U`).
 
-The scale-deformed conjunction is the softmin of the idea note. Large
+The scale-deformed conjunction is the softmin. Large
 inverse-temperature recovers `min`. Small inverse-temperature diverges to
 \(-\infty\); it is not a binary hard decision.
 -/

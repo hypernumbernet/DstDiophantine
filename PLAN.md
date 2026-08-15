@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-15（PQ4L: 振幅・幾何干渉）
+最終更新: 2026-08-15（D4L: 振幅・四状態・幾何干渉 + 双対 Hilbert 兄弟層）
 
 ## 1. 三層アーキテクチャ
 
@@ -116,11 +116,11 @@ flowchart LR
 ### 探索的（並列トラック）
 
 - **1D CGA 探針**（`Algebra/CGA`, `CGA.lean`）: `Cl(2,1)` null 点・dilation。時空 CGA は未着手
-- **D4L / スケール依存四値論理**（`Logic/`, `Logic.lean`）: `JNormalized` の四状態、\(N=4\) センサス、
-  \(V_\lambda\) の大規模臨界点、書かれた \(U\) では小スケール収縮が偽。Basic 非依存
-- **PQ4L / 疑似量子型四値論理**（`Logic/Amplitude`, `Order`, `Geometric`）:
-  許容配置を振幅とし、Killing 重なり・異軸交換子・情報/高さ順序を機械検証。
-  Hilbert / Born / オーソモジュラーは主張しない。Basic 非依存
+- **D4L / 二重時空四値論理**（`Logic/`, `Logic.lean`）:
+  許容配置を振幅とし、`JNormalized` の四状態、\(\min/\max/-\)、Killing 重なり・異軸干渉、
+  高さ/情報順序、\(V_\lambda\) の大規模臨界点を機械検証。書かれた \(U\) では小スケール収縮が偽。
+  D4L 自体は Hilbert / Born / オーソモジュラーではない（分離定理）。双対セクターの兄弟
+  \(\mathbb{C}^2\) と部分空間格子は `Logic/Quantum/`（フェーズ Q0–Q5）。Basic 非依存
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
   動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
@@ -274,7 +274,8 @@ Theorems/
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
-Logic/                   ← D4L + PQ4L（JNormalized の四状態、振幅、幾何演算）
+Logic/                   ← D4L（振幅、JNormalized の四状態、幾何演算）
+Logic/Quantum/           ← 兄弟: 分離、双対扇、四元数、C2、部分空間格子、辞書
 ```
 
 ---
@@ -324,7 +325,6 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 |------|------|------|
 | `dst-riemann-hypothesis.tex` | 要旨・§2 が `|J|≤1`。主枝だけでは偽。許容錐と `JNormalized` に置換 | `torsion_bound_naive_false` |
 | `dst-langlands-program.tex` | 「Torsion Boundedness `|J|≤1`」を任意アンサンブルのマスター定理にし、Langlands 全体を従わせている。許容なしでは成り立たない。無条件主張は落とす | 同上 |
-| `dst-4-valued-logic.tex` | 真理値を `J∈[-1,1]` と同一視し `J=+1` を False とする。これは `JNormalized`。生の `J` の極端は `±3π²/8` | `JNormalized_extremal` / `JNormalized_extremal_neg` |
 
 ### 優先（生の J の有界の中身が食い違う）
 
@@ -381,5 +381,6 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。7予�
 4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
+7. **（並列・D4L Hilbert）** `Logic/Quantum/` と `dst-d4l-hilbert.tex`。D4L との同一視はしない。Dirac \(\mathbb{C}^4\) は後続
 
 **最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD 進捗** まで固めた段階であり、無条件古典 Beal は残件（混合指数 / ピタゴラス奇数還元 / equal-odd 二因子 / 偶二一致）が閉じるまで未達成である。FLT 公理は mathlib 未形式化の古典定理の明示的仮定であり、Wiles の Lean 証明ではない。

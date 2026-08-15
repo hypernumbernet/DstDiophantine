@@ -12,8 +12,8 @@ import Mathlib.Algebra.Order.Group.Abs
 # Four D4L states from `JNormalized`
 
 Truth values are the sign and saturation of the already-proved normalised
-torsional scalar. The idea note writes \(J\in[-1,1]\); that interval belongs
-to `JNormalized`, not raw `J` (whose admissible ceiling is \(3\pi^2/8\)).
+torsional scalar. The interval \([-1,1]\) belongs to `JNormalized`, not raw
+`J` (whose admissible ceiling is \(3\pi^2/8\)).
 
 Outside `[-1, 1]` classification is refused. On the admissible cone the bound
 `|JNormalized| ≤ 1` makes the classifier total.

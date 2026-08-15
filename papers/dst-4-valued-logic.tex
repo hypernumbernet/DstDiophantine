@@ -5,8 +5,6 @@
 \usepackage{enumitem}
 \usepackage{booktabs}
 \usepackage{mathtools}
-\usepackage[dvipdfmx]{graphicx}
-\usepackage{tikz}
 \usepackage[dvipdfmx]{hyperref}
 \usepackage[nameinlink,noabbrev]{cleveref}
 
@@ -14,7 +12,6 @@
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{claim}[theorem]{Claim}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{example}[theorem]{Example}
@@ -24,8 +21,8 @@
 \newcommand{\Jnorm}{J_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
 
-\title{Dual Spacetime 4-Valued Paraconsistent Logic (D4L):\\
-Four Truth Values from the Smallest Admissible Torus \(N=4\)}
+\title{Dual Spacetime 4-Valued Logic (D4L):\\
+Amplitudes, Four States, and Geometric Interference}
 
 \author{https://github.com/hypernumbernet}
 \date{\today}
@@ -34,57 +31,60 @@ Four Truth Values from the Smallest Admissible Torus \(N=4\)}
 \maketitle
 
 \begin{abstract}
-We introduce D4L (Dual Spacetime 4-Valued Logic) by starting from the smallest
-discrete dual-spacetime model in which the four logical states are actually
-attained. Dual Spacetime Theory encodes every massive configuration by six
-rapidity ticks on a torus \((\mathbb{Z}/N\mathbb{Z})^6\). The compactification
-\(N=4\) is the first value for which the anti-synchronisation cutoff
-\(\pi/2\) is itself a lattice point. After discarding non-admissible ticks,
-only \(3^3=27\) configurations remain. Their normalized torsion
-\(\Jnorm\) takes the seven values
-\(-1,-2/3,-1/3,0,1/3,2/3,+1\), which partition into the four D4L states
-\(\lvert T\rangle\), \(\lvert U\rangle\), \(\lvert F\rangle\), \(\lvert B\rangle\).
-
-Truth values are therefore not an extra semantic layer: they are the sign and
-saturation of a height already present in the algebra. The continuous bound
-\(|\Jnorm|\le 1\) on admissible configurations, and the fact that \(N=4\)
-attains both extremes, are machine-checked in Lean~4. The remainder of the
-note reads the G\"odel sentence against this four-state lattice.
+We fix Dual Spacetime 4-Valued Logic (D4L) as the logic of Dual Spacetime
+Theory. A proposition is an admissible torsion configuration, equivalently
+its PGA bivector \(\Omega\) and rotor \(R=\exp\Omega\). Measurement is the
+normalised height \(\Jnorm\in[-1,1]\); collapse yields four labels
+\(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\).
+Scalar connectives are \(\min/\max/-\). Commutative overlap is the
+parameter Killing form; non-commutative interference is the geometric
+commutator of torsion bivectors. Two preorders on \([-1,1]\) separate
+height from saturation. None of this is Birkhoff--von Neumann quantum
+logic. Hilbert space, the Born rule, and an orthomodular lattice are not
+claimed as D4L (a sibling dual-sector construction is recorded in
+\texttt{dst-d4l-hilbert.tex}). The statements listed as theorems below are
+machine-checked in Lean~4.
 \end{abstract}
 
-\section{How to read this note}
+\section{Position}
+\label{sec:position}
 
-A first-time reader need not know Dual Spacetime Theory, Clifford algebras, or
-paraconsistent logic in advance. The only geometric picture required is this:
+Dual Spacetime Theory encodes every massive configuration by six
+rapidities \((\alpha_a,\beta_a)_{a=1,2,3}\): a usual-sector boost and a
+dual-sector rotation on each spatial axis \cite{DST2025,Diophantine2026}.
+The already-proved invariant of that pair is a signed height. D4L reads
+the admissible configurations themselves as propositions, the height as
+an observable, and the sign and saturation of the height as four truth
+values.
 
-\begin{itemize}[leftmargin=1.4em]
-  \item Every configuration has \emph{three spatial axes}.
-  \item On each axis there are two angles: a usual-sector boost \(\alpha_a\)
-        and a dual-sector rotation \(\beta_a\).
-  \item Those six angles are not continuous at the outset. They sit on a
-        finite clock with \(N\) hours, \(N=4\) being the smallest clock that
-        already contains the physically allowed maximum \(\pi/2\).
-\end{itemize}
+The scalar operations \(\min/\max/-\) are distributive. They cannot see
+the geometric product already present in the PGA core. Geometric overlap
+and interference are therefore part of the same logic, not a second
+system. The analogy with pseudo-quantum methods is only heuristic: there
+is an amplitude, a pairing, an interference term, and a collapse, but
+there is no \(\hbar\) and no claim to orthomodularity.
 
-Section~\ref{sec:n4} works entirely with this clock. The four truth values
-appear as a grouping of the \(27\) allowed settings. Later sections translate
-the same grouping into the continuous language of the companion papers
-\cite{DST2025,Diophantine2026} and then interpret self-reference.
+The module is a parallel track. It is not re-exported from
+\(\texttt{DstDiophantine.Basic}\). The Lean entry is
+\(\texttt{DstDiophantine.Logic}\).
 
-\section{The smallest model: \texorpdfstring{\(N=4\)}{N=4}}
-\label{sec:n4}
+\section{Torsion and the admissible cone}
+\label{sec:torsion}
 
-\subsection{Six ticks on a four-hour clock}
-
-Discretize the six rapidities by
+\begin{definition}[Torsion scalar]
+\label{def:J}
+For a rotor pair write \(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) and
+let \(\Omega_{\rm biv}\) be a principal logarithm. The parameter form used
+throughout this note is
 \begin{equation}
-\label{eq:n4-embed}
-\alpha_a = \frac{2\pi n_a}{4} = \frac{\pi n_a}{2},\qquad
-\beta_a  = \frac{2\pi m_a}{4} = \frac{\pi m_a}{2},
-\qquad a=1,2,3,
+\label{eq:J-raw}
+J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr).
 \end{equation}
-with integers \(n_a,m_a\in\{0,1,2,3\}\). The full torus therefore has
-\(4^6=4096\) points. Most of them are \emph{not} used as logical states.
+The combination \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) appearing
+in older drafts differs from \eqref{eq:J-raw} by a constant factor under
+the standard generator expansion; boundedness statements here always
+refer to \(J\) and \(\Jnorm\) \cite{Diophantine2026}.
+\end{definition}
 
 \begin{definition}[Admissible configuration]
 \label{def:admissible}
@@ -92,325 +92,313 @@ A configuration is \emph{admissible} when, on every axis,
 \[
 \alpha_a\ge 0,\qquad \beta_a\ge 0,\qquad \alpha_a+\beta_a\le \frac{\pi}{2}.
 \]
-Equivalently, in the integer labels of \eqref{eq:n4-embed},
-\[
-n_a+m_a\le 1.
-\]
 \end{definition}
 
-The cutoff \(\pi/2\) is the anti-synchronisation bound of the dual map: usual
-and dual rapidities on one axis are not allowed to add past a right angle.
-For \(N=4\) that cutoff is exactly one tick, which is why \(N=4\) is the
-natural first model. For \(N=3\) the same cutoff is not a lattice point, and
-the extremes \(\Jnorm=\pm 1\) are never attained \cite{Diophantine2026}.
-
-\subsection{Three allowed ticks per axis}
-
-The inequality \(n_a+m_a\le 1\) leaves only three pairs per axis:
-
-\begin{center}
-\begin{tabular}{cccccl}
-\toprule
-\((n_a,m_a)\) & \((\alpha_a,\beta_a)\) & \(\alpha_a^2-\beta_a^2\) & sign \(e_a\) & name \\
-\midrule
-\((0,0)\) & \((0,0)\) & \(0\) & \(0\) & rest \\
-\((1,0)\) & \((\pi/2,\,0)\) & \(+(\pi/2)^2\) & \(+1\) & pure boost \\
-\((0,1)\) & \((0,\,\pi/2)\) & \(-(\pi/2)^2\) & \(-1\) & pure rotation \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Ticks with \(n_a\ge 2\) or \(m_a\ge 2\), and the mixed tick \((1,1)\), lie
-outside the admissible cone. Three independent axes therefore give
-\[
-3^3 = 27
-\]
-admissible worlds, and nothing else.
-
-\subsection{Height of a configuration}
-
-The raw torsional scalar of Dual Spacetime Theory is the elementary quadratic
-\begin{equation}
-\label{eq:J-raw}
-J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr).
-\end{equation}
-On an admissible configuration one has \(|J|\le\Jbound\), with equality only
-when every axis is the same extremal tick. The \emph{normalized} height
-\begin{equation}
-\label{eq:Jnorm}
-\Jnorm := \frac{8}{3\pi^2}\,J
-\end{equation}
-rescales that ceiling to \(1\). Substituting the \(N=4\) ticks
-\eqref{eq:n4-embed} collapses both formulae to an integer count:
-\begin{equation}
-\label{eq:n4-height}
-J = \Jbound\cdot\frac{e_1+e_2+e_3}{3},\qquad
-\Jnorm = \frac{e_1+e_2+e_3}{3},\qquad
-e_a\in\{-1,0,+1\}.
-\end{equation}
-Thus \(\Jnorm\) on the \(N=4\) lattice is just the average of three votes,
-each vote being ``boost'', ``rest'', or ``rotation''.
-
-\begin{example}[Worked values]
-\label{ex:n4-work}
-The all-rest vote \((0,0,0)\) gives \(\Jnorm=0\).
-The all-boost vote \((+1,+1,+1)\) gives \(\Jnorm=+1\) and raw height \(J=\Jbound\).
-The all-rotation vote \((-1,-1,-1)\) gives \(\Jnorm=-1\).
-A single boost \((+1,0,0)\) gives \(\Jnorm=1/3\).
-\end{example}
-
-The same two extremes are the \(N=4\) instances of the general lattice points
-that Lean records as \texttt{pureHyperbolicDiscrete} and
-\texttt{pureEllipticDiscrete} \cite{Diophantine2026}.
-
-\subsection{The seven attainable heights}
-
-Because \(e_1+e_2+e_3\) ranges through \(\{-3,-2,-1,0,1,2,3\}\), the
-admissible \(N=4\) torus realises exactly seven heights. Their multiplicities
-are the number of ways to write each sum with three votes in \(\{-1,0,+1\}\):
-
-\begin{center}
-\begin{tabular}{crrl}
-\toprule
-\(\Jnorm\) & \(\#\) worlds & \(J\) & D4L state \\
-\midrule
-\(+1\)     & \(1\)  & \(+\Jbound\) & \(\lvert F\rangle\) False \\
-\(+2/3\)   & \(3\)  & \(+\frac23\Jbound\) & \(\lvert U\rangle\) Undetermined \\
-\(+1/3\)   & \(6\)  & \(+\frac13\Jbound\) & \(\lvert U\rangle\) Undetermined \\
-\(0\)      & \(7\)  & \(0\) & \(\lvert T\rangle\) True \\
-\(-1/3\)   & \(6\)  & \(-\frac13\Jbound\) & \(\lvert B\rangle\) Both \\
-\(-2/3\)   & \(3\)  & \(-\frac23\Jbound\) & \(\lvert B\rangle\) Both \\
-\(-1\)     & \(1\)  & \(-\Jbound\) & \(\lvert B\rangle\) Both (deepest) \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-The seven cardinalities sum to \(1+3+6+7+6+3+1=27\). No admissible
-\(N=4\) point produces any other value, and none violates \(|\Jnorm|\le 1\).
-
-\begin{center}
-\begin{tikzpicture}[x=2.15cm,y=1cm]
-  \draw[-] (-1.15,0) -- (1.15,0);
-  \draw (-1,0.08) -- (-1,-0.08) node[below] {\small $-1$};
-  \draw (-0.666,0.08) -- (-0.666,-0.08) node[below] {\small $-\frac{2}{3}$};
-  \draw (-0.333,0.08) -- (-0.333,-0.08) node[below] {\small $-\frac{1}{3}$};
-  \draw (0,0.08) -- (0,-0.08) node[below] {\small $0$};
-  \draw (0.333,0.08) -- (0.333,-0.08) node[below] {\small $\frac{1}{3}$};
-  \draw (0.666,0.08) -- (0.666,-0.08) node[below] {\small $\frac{2}{3}$};
-  \draw (1,0.08) -- (1,-0.08) node[below] {\small $+1$};
-  \node[above,align=center] at (-1,0.18) {\small \(\lvert B\rangle\)\\[-1pt]\small deepest};
-  \node[above] at (-0.5,0.18) {\small \(\lvert B\rangle\)};
-  \node[above] at (0,0.18) {\small \(\lvert T\rangle\)};
-  \node[above] at (0.5,0.18) {\small \(\lvert U\rangle\)};
-  \node[above,align=center] at (1,0.18) {\small \(\lvert F\rangle\)\\[-1pt]\small unique};
-\end{tikzpicture}
-\end{center}
-
-\subsection{Four logical states as a partition}
-
-\begin{definition}[D4L states on \(N=4\)]
-\label{def:d4l-n4}
-Group the twenty-seven worlds by the sign and saturation of \(\Jnorm\):
-\begin{align*}
-\lvert T\rangle &\colon \Jnorm = 0
-  &&\text{\(7\) worlds: perfect usual--dual balance,}\\
-\lvert U\rangle &\colon 0 < \Jnorm < 1
-  &&\text{\(9\) worlds: boost-dominant, not saturated,}\\
-\lvert F\rangle &\colon \Jnorm = +1
-  &&\text{\(1\) world: all three axes pure boost,}\\
-\lvert B\rangle &\colon -1\le \Jnorm < 0
-  &&\text{\(10\) worlds: rotation-dominant, including the unique}\\
-&&& \text{all-rotation point \(\Jnorm=-1\).}
-\end{align*}
-\end{definition}
-
-Two asymmetries are already visible and should not be papered over.
-
-\begin{enumerate}[leftmargin=1.4em]
-  \item The positive extreme is a singleton named False; the negative extreme
-        is kept inside Both. That is a logical convention, not a gap in the
-        lattice: both extremes exist and are unique.
-  \item Mixed extrema --- one axis boost, another rotation --- never reach
-        \(|\Jnorm|=1\). For instance \((+1,+1,-1)\) has \(\Jnorm=1/3\) and
-        sits in \(\lvert U\rangle\). Saturation requires \emph{every} axis
-        to vote the same way.
-\end{enumerate}
-
-This is the whole discrete semantics. The next section only says the same
-thing in the continuous notation used by the gravitational papers.
-
-\section{From the \texorpdfstring{\(N=4\)}{N=4} clock to the continuous bound}
-\label{sec:continuous}
-
-\begin{definition}[Torsion scalar]
-\label{def:J}
-For a rotor pair \(R=R_{\rm usual}R_{\rm dual}\) set
-\(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) and write \(\Omega_{\rm biv}\)
-for a principal logarithm. The parameter form used throughout this note is
-\eqref{eq:J-raw}, equivalently
-\[
-J=\frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
-\]
-together with the normalization \eqref{eq:Jnorm}. The combination
-\(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) appearing in older drafts
-differs from \eqref{eq:J-raw} by a constant factor under the standard
-generator expansion; boundedness statements here always refer to \(J\) and
-\(\Jnorm\) \cite{Diophantine2026}.
-\end{definition}
+The cutoff \(\pi/2\) is the anti-synchronisation bound of the dual map:
+usual and dual rapidities on one axis are not allowed to add past a right
+angle.
 
 \begin{theorem}[Torsion bound]
 \label{thm:torsion-bound}
 On the admissible cone of Definition~\ref{def:admissible},
 \[
-|J|\le\Jbound,\qquad |\Jnorm|\le 1.
+|J|\le\Jbound,\qquad |\Jnorm|\le 1,
 \]
+where
+\begin{equation}
+\label{eq:Jnorm}
+\Jnorm := \frac{8}{3\pi^2}\,J.
+\end{equation}
 Equality \(|\Jnorm|=1\) holds if and only if every axis is pure boost, or
 every axis is pure rotation. The image of \(\Jnorm\) on the admissible cone
 is the whole interval \([-1,1]\). The bound is false if one keeps only the
-principal-branch condition \(|\alpha_a+\beta_a|\le\pi/2\) and allows negative
-rapidities.
+principal-branch condition \(|\alpha_a+\beta_a|\le\pi/2\) and allows
+negative rapidities.
 \end{theorem}
 
-For a general compactification \(N\) the discrete bound is sharper
+For a compactification \(N\) the discrete bound is sharper
 \cite{Diophantine2026}:
 \[
 |\Jnorm|\le\Bigl(\frac{4\lfloor N/4\rfloor}{N}\Bigr)^2.
 \]
-When \(4\mid N\) --- in particular when \(N=4\) --- the right-hand side is
-\(1\) and both signs are attained. When \(4\nmid N\) every admissible point
-satisfies the strict inequality \(|\Jnorm|<1\), so the states
-\(\lvert F\rangle\) and deepest \(\lvert B\rangle\) are missing. That is the
-precise sense in which \(N=4\) is the smallest complete logical clock.
+When \(4\mid N\) the right-hand side is \(1\) and both signs are attained.
+When \(4\nmid N\) every admissible point satisfies the strict inequality
+\(|\Jnorm|<1\).
 
-\begin{definition}[Truth value]
-\label{def:truth}
-The truth value of a proposition \(p\) is
-\(v(p):=\Jnorm(R_p)\in[-1,1]\), where \(R_p\) is a rotor (or a finite
-ensemble of rotors) encoding the proof data of \(p\). On the \(N=4\)
-clock this is exactly the average \eqref{eq:n4-height}.
+\section{Amplitudes}
+\label{sec:amp}
+
+\begin{definition}[Amplitude]
+\label{def:amp}
+An \emph{amplitude} is an admissible continuous torsion configuration
+\(p=(\alpha_a,\beta_a)\). Write
+\[
+\Omega(p)=\texttt{omegaTorsion}\,p,\qquad
+R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p).
+\]
+Measurement and collapse are
+\[
+\langle p\rangle:=\Jnorm(p),\qquad
+\mathrm{collapse}(p):=\texttt{ofParams}\,p
+\in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}.
+\]
+The adjoint is the usual--dual swap \(p^\dagger=\texttt{daggerParams}\,p\).
 \end{definition}
+
+\begin{theorem}[Adjoint]
+\label{thm:adjoint}
+The swap is an involution and flips the observable:
+\( (p^\dagger)^\dagger=p \) and \(\langle p^\dagger\rangle=-\langle p\rangle\).
+Every label is realised by some amplitude.
+\end{theorem}
+
+The four names are not a function of each other under adjoint: deepest
+\(\lvert B\rangle\) maps to \(\lvert F\rangle\), interior \(\lvert B\rangle\)
+maps to \(\lvert U\rangle\).
+
+\section{Four states}
+\label{sec:states}
+
+\begin{definition}[D4L states]
+\label{def:states}
+On \(\Jnorm\in[-1,1]\),
+\begin{align*}
+\lvert T\rangle &\colon \Jnorm = 0
+  &&\text{perfect usual--dual balance,}\\
+\lvert U\rangle &\colon 0 < \Jnorm < 1
+  &&\text{boost-dominant, not saturated,}\\
+\lvert F\rangle &\colon \Jnorm = +1
+  &&\text{every axis pure boost,}\\
+\lvert B\rangle &\colon -1\le \Jnorm < 0
+  &&\text{rotation-dominant, including the}\\
+&&& \text{deepest point \(\Jnorm=-1\).}
+\end{align*}
+\end{definition}
+
+The positive extreme is a singleton named False; the negative extreme is
+kept inside Both. That is a logical convention, not a gap in the cone:
+both extremes exist and are unique. Mixed extrema --- one axis boost,
+another rotation --- never reach \(|\Jnorm|=1\). Saturation requires every
+axis to vote the same way.
+
+\begin{theorem}[Extremal labels]
+\label{thm:extremal}
+On an admissible configuration, \(\mathrm{collapse}(p)=\lvert F\rangle\)
+if and only if \(p\) is purely hyperbolic, and \(\Jnorm(p)=-1\) if and
+only if \(p\) is purely elliptic.
+\end{theorem}
+
+Interior \(\lvert B\rangle\) is a range, not a single fixed point. The
+stable point of the large-scale potential in Section~\ref{sec:potential}
+is the wall \(\Jnorm=-1\).
+
+\section{Connectives}
+\label{sec:conn}
 
 \begin{definition}[Logical operations]
+\label{def:ops}
+On the signed height,
 \[
-\neg p = -v(p),\qquad
-p\wedge q = \min\bigl(v(p),v(q)\bigr),\qquad
-p\vee q = \max\bigl(v(p),v(q)\bigr).
+\neg j = -j,\qquad
+j\wedge k = \min(j,k),\qquad
+j\vee k = \max(j,k).
 \]
-Negation is the usual--dual swap \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\),
-which sends \(J\mapsto -J\) and therefore \(\Jnorm\mapsto-\Jnorm\). In
-particular it exchanges \(\lvert F\rangle\) with deepest \(\lvert B\rangle\)
-and fixes \(\lvert T\rangle\).
+Negation is the usual--dual swap
+\((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\), which sends
+\(J\mapsto -J\) and therefore \(\Jnorm\mapsto-\Jnorm\).
 \end{definition}
 
-\begin{remark}
-An earlier draft wrote \(\neg p=1-p\) after identifying truth values with a
-raw scalar already forced into \([0,1]\). That convention collides with the
-signed interval \([-1,1]\) of \(\Jnorm\). The dual-swap negation above is the
-one induced by the algebra.
-\end{remark}
-
-\section{The G\"odel sentence on the four-state lattice}
-
-Let \(G\) be the G\"odel sentence: ``\(G\) is not provable in the system.''
-Classically this is a paradox. In D4L we read provability as a drive toward
-synchrony \(\Jnorm\to 0\), i.e.\ toward \(\lvert T\rangle\).
-
-\begin{theorem}[G\"odel reading in D4L]
-\label{thm:godel-eq}
-If one pretends that ``not provable'' is an affine complement inside a
-one-sided interval, one is led to a midpoint \(\Jnorm(G)=1/2\). That point
-is \emph{not} an \(N=4\) lattice value; the nearest undetermined ticks are
-\(\Jnorm=1/3\) and \(\Jnorm=2/3\), both in \(\lvert U\rangle\). Under the
-full signed dynamics the honest constraint is only
+\begin{theorem}[Non-explosion]
+\label{thm:nexplosion}
+For every \(j\in[-1,1]\),
 \[
-\Jnorm(G)<1
+j\wedge\neg j = -|j|\le 0.
 \]
-(``not the unique all-boost world \(\lvert F\rangle\)'').
+Hence \(p\wedge\neg p\) is \(\lvert T\rangle\) or \(\lvert B\rangle\), and
+never saturates \(\lvert F\rangle\). De Morgan duality and distributivity
+hold as they do for \(\min/\max\) on \(\mathbb{R}\).
 \end{theorem}
 
-\begin{theorem}[Three attractors, one forbidden wall]
-\label{thm:attractors}
-A minimal flow compatible with the Killing sign asymmetry is
+State-level negation is not a function of the four labels: deepest
+\(\lvert B\rangle\) maps to \(\lvert F\rangle\), while interior
+\(\lvert B\rangle\) maps to \(\lvert U\rangle\).
+
+A scale-deformed conjunction is the softmin
 \[
-\frac{d\Jnorm}{dt}=-\sin(\pi\,\Jnorm).
+a\land_\beta b =
+-\frac1\beta\log\bigl(e^{-\beta a}+e^{-\beta b}\bigr),\qquad \beta>0.
 \]
-Its rest points on \([-1,1]\) are \(\Jnorm=0\) (\(\lvert T\rangle\),
-classically true) and the endpoints \(\Jnorm=\pm 1\). The open interval
-\((0,1)\) is undetermined and, under this flow, unstable toward
-\(\lvert T\rangle\). The half-interval \([-1,0)\) is rotation-dominant and
-attracting toward deepest \(\lvert B\rangle\). The wall \(\Jnorm=+1\) is
-admissible as a lattice point but is not an interior attractor of the
-negative-torsion basin.
+As \(\beta\to\infty\) one recovers \(\min(a,b)\). For every finite
+\(\beta>0\) the softmin is strictly below \(\min\); the small-\(\beta\)
+regime is not a binary hard decision.
+
+\section{Two orders, not Belnap FOUR}
+\label{sec:order}
+
+\begin{definition}
+On \(\mathbb{R}\), and then by restriction on \([-1,1]\),
+\[
+j\preceq_\tau k \iff j\le k,
+\qquad
+j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert.
+\]
+The first is the height (boost-versus-rotation) order. The second is
+the information (saturation) order.
+\end{definition}
+
+\begin{theorem}[Information bottom and tops]
+\label{thm:info}
+On \([-1,1]\), \(j=0\) is the unique information bottom, and the
+information tops are exactly the walls \(j=\pm 1\). Equivalently, the
+information bottom is the label \(\lvert T\rangle\), and the two tops
+are \(\lvert F\rangle\) and deepest \(\lvert B\rangle\).
 \end{theorem}
 
-\begin{proof}[Sketch]
-The quadratic \eqref{eq:J-raw} receives a positive contribution from each
-boost tick and a negative contribution from each rotation tick. Self-reference
-that is forbidden from sitting at \(\lvert F\rangle\) is driven toward the
-rotation side until compactness stops it at \(\Jnorm=-1\). On the \(N=4\)
-clock this is exactly the unique all-rotation world. The flow itself is a
-modelling choice, not a Lean theorem; the census of the twenty-seven worlds
-and the bound \(|\Jnorm|\le 1\) are.
-\end{proof}
+Interior \(\lvert B\rangle\) is strictly below deepest \(\lvert B\rangle\)
+in the information order. The labels do not match Belnap's
+\(\{\bot,t,f,\top\}\); no bilattice isomorphism is claimed.
 
-\begin{corollary}
-Read in D4L, the sentence \(G\) is not required to choose between ``true''
-and ``false''. It is allowed to occupy \(\lvert B\rangle\): both, in the
-precise sense of a rotation-dominant admissible height.
-\end{corollary}
+\section{Geometric operations}
+\label{sec:geo}
 
-\section{Completeness talk, with the lattice in view}
+\begin{definition}[Overlap and interference]
+\label{def:geo}
+\[
+\langle p\mid q\rangle := \texttt{killingForm}\,p\,q
+= 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
+\qquad
+[\Omega(p),\Omega(q)] := \Omega(p)\Omega(q)-\Omega(q)\Omega(p).
+\]
+Rotor composition \(R(p)R(q)\) is a product in the PGA. It is not
+pulled back through the Baker--Campbell--Hausdorff formula to a third
+torsion configuration.
+\end{definition}
 
-\begin{theorem}[Interpretation over the negative-torsion sector]
-\label{thm:hilbert}
-Let \(\mathcal{S}\) be a formal system containing Peano arithmetic, and
-interpret sentences of \(\mathcal{S}\) as admissible rotors. In the sector
-\(\Jnorm<0\) every such sentence receives one of the ten \(N=4\) labels
-that make up \(\lvert B\rangle\), or a continuous interpolation thereof for
-larger \(N\). Conjunction does not explode: two negative heights remain
-negative. This is a semantics for \(\mathcal{S}\), not a proof that the
-classical Hilbert programme is completed inside first-order Peano arithmetic.
+\begin{theorem}[Pairing and non-commutativity]
+\label{thm:geo}
+The overlap is symmetric, and \(\langle p\mid p\rangle=16\,J(p)\),
+equivalently a constant multiple of \(\Jnorm(p)\). Distinct-axis
+torsion bivectors need not commute: if \(p\) is a pure boost on axis
+\(0\) and \(q\) a pure rotation on axis \(1\), then
+\([\Omega(p),\Omega(q)]\ne 0\). Same-axis hyperbolic and cyclic
+generators do commute, so the corresponding one-axis interference
+vanishes.
 \end{theorem}
 
-\begin{proof}[Sketch]
-Self-referential sentences are excluded from \(\lvert F\rangle\) by
-\cref{thm:godel-eq} and therefore land in \(\lvert U\rangle\) or
-\(\lvert B\rangle\). The signed negation of \cref{sec:continuous} sends a
-negative height to a positive one and back, so \(p\wedge\neg p\) is the
-minimum of a height and its opposite, hence non-positive, and never forces
-every sentence to \(\lvert F\rangle\). Decidability on \(N=4\) is literal
-finiteness: twenty-seven worlds.
-\end{proof}
+The overlap is not a Born probability. Sandwich evaluation
+\(R(p)\,v\,R(p)^\sim\) is restated independently of the gravity chart
+layer; preservation of the degenerate quadratic form is not claimed.
+Geometric composition is associative as a PGA product and is not claimed
+to be a lattice operation.
 
-\begin{remark}
-Larger \(N\) with \(4\mid N\) refine the same four bins by inserting more
-interior heights, still bounded by \(|\Jnorm|\le 1\). The four names do not
-multiply. That is why the logic is four-valued rather than \(N\)-valued.
-\end{remark}
+\section{Scale and potential}
+\label{sec:potential}
 
-\section{What \texorpdfstring{\(N=4\)}{N=4} does and does not show}
+Let \(\lambda>0\) be a scale parameter and \(\alpha>0\) a coupling.
+The effective potential is
+\begin{equation}
+\label{eq:Vlam}
+V_\lambda(J) = -\cos(2\pi J) + \frac{\alpha}{\lambda}\, U(J),
+\end{equation}
+with written candidates
+\[
+U_{\mathrm{piece}}(J)=\begin{cases}0&J<0\\ J^2&J\ge 0\end{cases},\qquad
+U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2.
+\]
+These two functions disagree by a factor of two on \(\{J>0\}\). The
+gradient flow is \(\dot J=-\partial V_\lambda/\partial J\).
+
+\begin{theorem}[Large-scale skeleton]
+\label{thm:Vinf}
+As \(\lambda\to\infty\), \(V_\lambda\) tends to
+\(V_\infty(J)=-\cos(2\pi J)\). Critical points are \(J=k/2\) for
+\(k\in\mathbb{Z}\). On \([-1,1]\) the locally stable points are
+\(\{-1,0,+1\}\) and the saddles are \(\{\pm 1/2\}\). The basins of
+\(\dot J=-V_\infty'(J)\) are
+\[
+(-1,-1/2)\to -1,\qquad
+(-1/2,1/2)\to 0,\qquad
+(1/2,1)\to +1.
+\]
+\end{theorem}
+
+Thus \(\lvert U\rangle\) is a label, not an attractor. The
+negative-torsion attractor basin is \([-1,-1/2)\), not the whole of
+\([-1,0)\).
+
+\begin{theorem}[Written \(U\) leaves the \(B\) well]
+\label{thm:Uwritten}
+On \(\{J<0\}\) both written candidates vanish, so
+\(V_\lambda=V_\infty\) throughout the negative half-line. In particular
+\(V_\lambda''(-1)=4\pi^2>0\) at every \(\lambda>0\). There is no
+critical scale at which the written \(U\) destroys the local minimum at
+\(\Jnorm=-1\).
+\end{theorem}
+
+A four-to-two contraction at small scale is therefore not a theorem of
+\eqref{eq:Vlam} with the written \(U\). A linear bias \(\gamma J\),
+minimised, lowers the side opposite to \(\gamma\): \(\gamma>0\)
+stabilises negative torsion.
+
+The scale \(\lambda\) is distinct from CGA dilation
+and from \(\texttt{scaleTorsion}\).
+
+\section{Self-reference}
+\label{sec:godel}
+
+Let \(G\) be the G\"odel sentence: ``\(G\) is not provable in the
+system.'' In D4L, provability is read as a drive toward synchrony
+\(\Jnorm\to 0\), i.e.\ toward \(\lvert T\rangle\). The honest constraint
+on a sentence forbidden from sitting at the unique all-boost world is
+only
+\[
+\Jnorm(G)<1.
+\]
+Under the large-scale flow of Theorem~\ref{thm:Vinf}, that constraint
+leaves \(G\) in \(\lvert U\rangle\) or \(\lvert B\rangle\). Conjunction
+does not explode: two non-positive heights remain non-positive.
+
+This is a change of semantics, not a proof that G\"odel's theorems fail
+in classical arithmetic. Completeness talk over the negative-torsion
+sector is likewise a reading of admissible rotors, not a completion of
+the Hilbert programme inside first-order Peano arithmetic.
+
+\section{What D4L does and does not show}
+\label{sec:claims}
 
 \begin{itemize}[leftmargin=1.4em]
-  \item It \emph{does} exhibit four named states as a partition of a finite,
-        completely listed admissible set.
-  \item It \emph{does} attain both walls \(\Jnorm=\pm 1\), which no
-        \(N\not\equiv 0\pmod{4}\) can do.
-  \item It \emph{does} make negation geometric: swap boost ticks with
-        rotation ticks.
-  \item It does \emph{not}, by itself, prove G\"odel's theorems false in
-        classical arithmetic. The D4L reading is a change of semantics.
-  \item It does \emph{not} identify raw \(J\) with a value in \([-1,1]\).
-        The interval \([-1,1]\) belongs to \(\Jnorm\); the raw ceiling is
-        \(\Jbound\).
+  \item It \emph{does} take admissible torsion configurations as the
+        carriers of propositions, with \(\Jnorm\) as the observable.
+  \item It \emph{does} partition \([-1,1]\) into four named states, with
+        both walls attained on the admissible cone.
+  \item It \emph{does} make negation geometric: the usual--dual swap.
+  \item It \emph{does} exhibit a commutative pairing and a
+        non-commutative interference term already proved in the
+        algebra.
+  \item It \emph{does} separate height from saturation by two
+        preorders on \([-1,1]\).
+  \item It \emph{does} keep \(p\wedge\neg p\) out of \(\lvert F\rangle\).
+  \item It does \emph{not} construct a Hilbert space, a Born rule, or
+        an orthomodular lattice \emph{as D4L}. A sibling dual-sector
+        Hilbert space $\mathbb{C}^2$ and its subspace lattice are
+        recorded separately in \texttt{dst-d4l-hilbert.tex}; they are
+        not identified with the four labels or with $\min/\max$.
+  \item It does \emph{not} identify \(\lambda\) with CGA dilation or
+        with \(\texttt{scaleTorsion}\).
+  \item It does \emph{not} obtain a four-to-two collapse from the
+        written potential \(U\).
+  \item It does \emph{not} refute G\"odel's theorems in classical
+        arithmetic.
+  \item It does \emph{not} pull \(R(p)R(q)\) back to a torsion
+        configuration when \([\Omega(p),\Omega(q)]\ne 0\).
+  \item It does \emph{not} identify raw \(J\) with a value in
+        \([-1,1]\). That interval belongs to \(\Jnorm\); the raw
+        ceiling is \(\Jbound\).
 \end{itemize}
 
-The continuum hypothesis, consciousness, and large-language-model
-hallucinations are not consequences of the \(N=4\) census. They remain
-speculative glosses on the same signed height.
-
-Geometric product and Killing overlap are developed in the companion
-note on pseudo-quantum type logic \cite{PQ4L2026}. They do not change
-the four-state census of this paper.
+The Lean modules are \(\texttt{Amplitude}\), \(\texttt{TruthValue}\),
+\(\texttt{Connective}\), \(\texttt{Interpretation}\), \(\texttt{Order}\),
+\(\texttt{Geometric}\), and \(\texttt{Potential}\).
 
 \begin{thebibliography}{9}
 \raggedright
@@ -432,10 +420,6 @@ und verwandter Systeme~I, Monatshefte Math.\ Phys.\ 38 (1931).
 \bibitem{Priest2006}
 G.~Priest, \emph{In Contradiction: A Study of the Transconsistent},
 Oxford University Press (2006).
-
-\bibitem{PQ4L2026}
-Pseudo-Quantum Dual-Spacetime 4-Valued Logic (PQ4L),
-\texttt{dst-pseudo-quantum-logic.tex} (2026).
 
 \end{thebibliography}
 

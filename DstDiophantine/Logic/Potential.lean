@@ -15,9 +15,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Scale-dependent potential from the idea note
+# Scale-dependent potential
 
-The note writes
+The D4L potential is
 \[
 V_\lambda(J)=-\cos(2\pi J)+\frac{\alpha}{\lambda}U(J)
 \]
@@ -227,41 +227,12 @@ theorem written_U_no_critical_scale (lam α : ℝ) (hlam : 0 < lam) :
       0 < (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (-1 : ℝ)) :=
   written_U_B_well_survives lam α hlam
 
-/-- Paper ODE \(\dot J=-\sin(\pi J)\) (distinct from the idea-note potential). -/
-noncomputable def paperFlow (j : ℝ) : ℝ :=
-  -Real.sin (Real.pi * j)
-
-/-- On the open interval \((-1,1)\setminus\{0\}\) the paper flow points toward \(0\).
-The endpoints \(\pm 1\) are rest points but are not interior attractors, and
-\([-1,0)\) is *not* a basin of \(|B\rangle\). -/
-theorem paperFlow_towards_zero {j : ℝ} (hlo : -1 < j) (hhi : j < 1) (hne : j ≠ 0) :
-    paperFlow j * j < 0 := by
-  unfold paperFlow
-  rcases lt_or_gt_of_ne hne with hneg | hpos
-  · have hsin : Real.sin (Real.pi * j) < 0 := by
-      have : Real.sin (Real.pi * j) = -Real.sin (Real.pi * (-j)) := by
-        rw [← Real.sin_neg]; ring_nf
-      have hpos' : 0 < Real.sin (Real.pi * (-j)) := by
-        apply Real.sin_pos_of_mem_Ioo
-        constructor <;> nlinarith [Real.pi_pos]
-      linarith
-    nlinarith
-  · have hsin : 0 < Real.sin (Real.pi * j) := by
-      apply Real.sin_pos_of_mem_Ioo
-      constructor <;> nlinarith [Real.pi_pos]
-    nlinarith
-
-theorem paperFlow_zero_endpoints :
-    paperFlow 0 = 0 ∧ paperFlow 1 = 0 ∧ paperFlow (-1) = 0 := by
-  simp [paperFlow, Real.sin_zero, Real.sin_pi, mul_neg, Real.sin_neg]
-
 theorem VBias_sub (U : ℝ → ℝ) (lam α γ j : ℝ) :
     VBias U lam α γ j - V U lam α j = γ * j := by
   simp [VBias]
 
 /-- Under energy minimisation, a linear bias \(\gamma J\) favours the sign
-*opposite* to \(\gamma\). The idea note's gloss (\(\gamma>0\) prefers positive
-torsion) is the opposite convention. -/
+*opposite* to \(\gamma\). -/
 theorem bias_lowers_opposite_sign (U : ℝ → ℝ) (lam α γ j : ℝ) (h : γ * j < 0) :
     VBias U lam α γ j < V U lam α j := by
   linarith [VBias_sub U lam α γ j]
