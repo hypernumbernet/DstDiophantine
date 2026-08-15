@@ -20,8 +20,8 @@ The cyclic generators are represented by `-i σ_a`. This sign is chosen so that
 `exp(-i/2 β · σ)`. The paper draft `I ↔ i σ` differs by a global sign of `i`;
 Lean is authoritative.
 
-This Hilbert space is dual-sector kinematics. It is not the space of D4L
-propositions.
+This Hilbert space is D4L's dual-sector kinematics. It is not the space
+of scalar-layer propositions `{T,U,F,B}`.
 -/
 
 namespace DstDiophantine

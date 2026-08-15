@@ -22,7 +22,8 @@
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
 
 \title{Dual Spacetime 4-Valued Logic (D4L):\\
-Amplitudes, Four States, and Geometric Interference}
+Amplitudes, Four States, Geometric Interference,\\
+and Dual Hilbert Space}
 
 \author{https://github.com/hypernumbernet}
 \date{\today}
@@ -39,11 +40,16 @@ normalised height \(\Jnorm\in[-1,1]\); collapse yields four labels
 Scalar connectives are \(\min/\max/-\). Commutative overlap is the
 parameter Killing form; non-commutative interference is the geometric
 commutator of torsion bivectors. Two preorders on \([-1,1]\) separate
-height from saturation. None of this is Birkhoff--von Neumann quantum
-logic. Hilbert space, the Born rule, and an orthomodular lattice are not
-claimed as D4L (a sibling dual-sector construction is recorded in
-\texttt{dst-d4l-hilbert.tex}). The statements listed as theorems below are
-machine-checked in Lean~4.
+height from saturation. The dual sector carries a Hilbert space \(\mathbb{C}^2\): cyclic
+generators obey the quaternion table, the flipped dual pairing is
+Euclidean on \(\mathbb{R}^3\), and \(-i\sigma_a\) represents those
+generators. The closed-subspace lattice of \(\mathbb{C}^2\) is
+orthomodular and non-distributive. Amplitude geometry and this Hilbert
+space are two layers of one logic, related by an internal dictionary;
+their operations are not identified. In particular the Killing form is
+indefinite, self-overlap is not a Born probability, and the four labels
+are not a PVM of \(\mathbb{C}^2\). Theorems below are machine-checked
+in Lean~4.
 \end{abstract}
 
 \section{Position}
@@ -52,21 +58,29 @@ machine-checked in Lean~4.
 Dual Spacetime Theory encodes every massive configuration by six
 rapidities \((\alpha_a,\beta_a)_{a=1,2,3}\): a usual-sector boost and a
 dual-sector rotation on each spatial axis \cite{DST2025,Diophantine2026}.
-The already-proved invariant of that pair is a signed height. D4L reads
-the admissible configurations themselves as propositions, the height as
-an observable, and the sign and saturation of the height as four truth
-values.
+The already-proved invariant of that pair is a signed height. D4L is the
+logic of that geometry, in two layers.
 
-The scalar operations \(\min/\max/-\) are distributive. They cannot see
-the geometric product already present in the PGA core. Geometric overlap
-and interference are therefore part of the same logic, not a second
-system. The analogy with pseudo-quantum methods is only heuristic: there
-is an amplitude, a pairing, an interference term, and a collapse, but
-there is no \(\hbar\) and no claim to orthomodularity.
+The amplitude layer takes admissible configurations as propositions,
+\(\Jnorm\) as the observable, and \(\min/\max/-\) as scalar connectives.
+Killing overlap and the bivector commutator belong here: they act on
+torsion parameters already present in the PGA core.
 
-The module is a parallel track. It is not re-exported from
-\(\texttt{DstDiophantine.Basic}\). The Lean entry is
-\(\texttt{DstDiophantine.Logic}\).
+The dual Hilbert layer is the kinematics of the dual sector: a Euclidean
+pairing on \(\mathbb{R}^3\), the quaternion table of the cyclic
+generators, and their representation on \(\mathbb{C}^2\). The
+closed-subspace lattice is the Birkhoff--von Neumann logic of a
+two-dimensional spinor \cite{BvN1936}.
+
+An internal dictionary relates the layers. Their operations are not
+identified: the Killing form is not the spinor inner product,
+\(\min/\max\) is not the meet and join of \(L(\mathbb{C}^2)\), and the
+four labels are not a PVM. There is no \(\hbar\) and no derivation of
+the Born rule from \(J\).
+
+The Lean entry is \(\texttt{DstDiophantine.Logic}\), not re-exported
+from \(\texttt{Basic}\). Dual-layer modules live under
+\(\texttt{Logic.Quantum}\).
 
 \section{Torsion and the admissible cone}
 \label{sec:torsion}
@@ -75,7 +89,7 @@ The module is a parallel track. It is not re-exported from
 \label{def:J}
 For a rotor pair write \(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) and
 let \(\Omega_{\rm biv}\) be a principal logarithm. The parameter form used
-throughout this note is
+throughout this paper is
 \begin{equation}
 \label{eq:J-raw}
 J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr).
@@ -219,9 +233,7 @@ never saturates \(\lvert F\rangle\). De Morgan duality and distributivity
 hold as they do for \(\min/\max\) on \(\mathbb{R}\).
 \end{theorem}
 
-State-level negation is not a function of the four labels: deepest
-\(\lvert B\rangle\) maps to \(\lvert F\rangle\), while interior
-\(\lvert B\rangle\) maps to \(\lvert U\rangle\).
+Lean: \(\texttt{scalar\_connectives\_distributive}\).
 
 A scale-deformed conjunction is the softmin
 \[
@@ -285,11 +297,201 @@ generators do commute, so the corresponding one-axis interference
 vanishes.
 \end{theorem}
 
-The overlap is not a Born probability. Sandwich evaluation
-\(R(p)\,v\,R(p)^\sim\) is restated independently of the gravity chart
-layer; preservation of the degenerate quadratic form is not claimed.
-Geometric composition is associative as a PGA product and is not claimed
-to be a lattice operation.
+\begin{theorem}[Indefinite pairing]
+\label{thm:indef}
+There exist configurations with \(\texttt{killingForm}(p,p)>0\) and with
+\(\texttt{killingForm}(q,q)<0\). In particular the pairing is not
+positive definite. Lean: \(\texttt{killingForm\_indefinite}\).
+\end{theorem}
+
+The witnesses are the pure-boost and pure-rotation extremals already
+used for \(\lvert\Jnorm\rvert=1\).
+
+\begin{theorem}[Not a Born probability]
+\label{thm:born}
+There exists \(p\) with \(\langle p\mid p\rangle<0\). A signed quantity
+cannot be a Born probability. Lean:
+\(\texttt{overlap\_self\_not\_born\_probability}\).
+\end{theorem}
+
+The pairing is not the spinor inner product
+(Section~\ref{sec:spinor}). Sandwich evaluation of rotors is
+independent of the gravity chart; preservation of the degenerate
+quadratic form is not claimed. Geometric composition is associative as
+a PGA product and is not a lattice operation.
+
+\section{Dual Hilbert layer}
+\label{sec:hilbert}
+
+The dual sector already contains a Euclidean three-space, a quaternion
+table, and a spinor representation on \(\mathbb{C}^2\). This section
+records that kinematics and the dictionary that relates it to the
+amplitude layer. Lean indexes the three spatial axes by \(\texttt{Fin}\,3\),
+written \(a=0,1,2\) below.
+
+\subsection{Dual and usual sectors}
+\label{sec:sector}
+
+\begin{definition}
+\(p\) is dual-sector when \(\alpha=0\), usual-sector when \(\beta=0\).
+Write \(\texttt{ofDual}\,\beta\) and \(\texttt{ofUsual}\,\alpha\) for the
+corresponding embeddings of Euclidean \(\mathbb{R}^3\).
+\end{definition}
+
+\begin{theorem}[Definite restrictions]
+\label{thm:sector}
+On the dual sector,
+\[
+\texttt{killingForm}(\texttt{ofDual}\,\beta,\texttt{ofDual}\,\gamma)
+=-8\langle\beta,\gamma\rangle_{\mathbb{R}^3},
+\]
+hence negative definite. On the usual sector the pairing is
+\(+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}\), hence positive
+definite. Lean: \(\texttt{killingForm\_ofDual}\),
+\(\texttt{killingForm\_ofDual\_neg\_def}\).
+\end{theorem}
+
+The inner-product space is the linear span of each sector, not the
+admissible cube \(\alpha_a,\beta_a\ge 0\), \(\alpha_a+\beta_a\le\pi/2\).
+Superposition is a statement about that span.
+
+\subsection{Quaternion table}
+\label{sec:quat}
+
+The cyclic generators satisfy
+\((\texttt{cyclic}\,a)^2=-1\) and the off-diagonal products below.
+
+\begin{theorem}[Quaternion multiplication]
+\label{thm:quat}
+\[
+\begin{aligned}
+\texttt{cyclic}\,0\cdot\texttt{cyclic}\,1&=\texttt{cyclic}\,2,\\
+\texttt{cyclic}\,1\cdot\texttt{cyclic}\,2&=\texttt{cyclic}\,0,\\
+\texttt{cyclic}\,2\cdot\texttt{cyclic}\,0&=\texttt{cyclic}\,1,
+\end{aligned}
+\qquad
+\begin{aligned}
+\texttt{cyclic}\,1\cdot\texttt{cyclic}\,0&=-\texttt{cyclic}\,2,\\
+\texttt{cyclic}\,2\cdot\texttt{cyclic}\,1&=-\texttt{cyclic}\,0,\\
+\texttt{cyclic}\,0\cdot\texttt{cyclic}\,2&=-\texttt{cyclic}\,1.
+\end{aligned}
+\]
+Lean: \(\texttt{cyclic\_zero\_mul\_one}\) and companions.
+\end{theorem}
+
+The identities are computed from the vector anticommutators in
+\(G(3,1,1)\). For a pure dual configuration
+\[
+\Omega(\texttt{ofDual}\,\beta)=\sum(\beta_a/2)\,\texttt{cyclic}\,a,
+\]
+and on axis \(0\) this collapses to \((\theta/2)\,\texttt{cyclic}\,0\).
+
+\subsection{Spinor Hilbert space}
+\label{sec:spinor}
+
+\begin{definition}[Dual spinor]
+\(\texttt{DualSpinor}:=\mathbb{C}^2\) with the standard Hermitian
+product. Pauli matrices \(\sigma_x,\sigma_y,\sigma_z\) are the usual
+ones. The representation is
+\(\texttt{cyclicRep}\,a:=-i\sigma_a\).
+That sign makes \(IJ=K\) agree with the cyclic products in \(G(3,1,1)\)
+and sends the dual rotor to the standard \(\mathrm{SU}(2)\) factor
+\(\exp(-i\beta\cdot\sigma/2)\). Lean is authoritative.
+\end{definition}
+
+\begin{theorem}[Representation]
+\label{thm:rep}
+\((\texttt{cyclicRep}\,a)^2=-1\) and
+\(\texttt{cyclicRep}\,0\cdot\texttt{cyclicRep}\,1=\texttt{cyclicRep}\,2\).
+Each \(\texttt{cyclicRep}\,a\) is anti-Hermitian.
+\end{theorem}
+
+Lean: \(\texttt{cyclicRep\_sq}\), \(\texttt{cyclicRep\_zero\_mul\_one}\),
+\(\texttt{cyclicRep\_conjTranspose}\).
+
+The dual rotor is the matrix exponential
+\[
+\texttt{dualRotorMat}(\beta)
+=\exp\Bigl(\sum_a(\beta_a/2)(-i\sigma_a)\Bigr)
+=\exp(-i\beta\cdot\sigma/2).
+\]
+On a single axis this is exactly \(\exp\) of the corresponding generator.
+A general identification of the Banach exponential in \(G(3,1,1)\) with
+the matrix exponential is not claimed; that would require BCH control
+already refused by \(\texttt{Algebra.Motor}\).
+
+\(\dim_{\mathbb{C}}\texttt{DualSpinor}=2\), so a projective measurement
+has at most two orthogonal outcomes.
+
+\subsection[Quantum logic of C2]{Quantum logic of \(\mathbb{C}^2\)}
+\label{sec:ql}
+
+\begin{definition}
+A quantum proposition is a linear subspace of \(\texttt{DualSpinor}\).
+Meet is intersection, join is the sum, negation is the orthogonal
+complement. Finite dimension makes every subspace closed.
+\end{definition}
+
+\begin{theorem}[Orthomodular law]
+\label{thm:om}
+If \(A\le B\) then \(A\vee(A^\perp\wedge B)=B\). Lean:
+\(\texttt{orthomodular}\).
+\end{theorem}
+
+This is the orthogonal decomposition of a finite-dimensional subspace,
+already in mathlib.
+
+\begin{theorem}[Non-distributivity]
+\label{thm:ndist}
+Let \(e_0=(1,0)\), \(e_1=(0,1)\), \(d=(1,1)\), and write \(\ell_v\) for
+\(\mathbb{C}v\). Then
+\[
+\ell_{e_0}\wedge(\ell_{e_1}\vee\ell_d)
+\neq
+(\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d).
+\]
+The left side is \(\ell_{e_0}\); the right side is \(\{0\}\). Lean:
+\(\texttt{not\_distributive}\).
+\end{theorem}
+
+The scalar connectives of Section~\ref{sec:conn} distribute. A
+distributive lattice cannot be isomorphic to the subspace lattice of a
+Hilbert space of dimension at least two.
+
+\begin{theorem}[At most two orthogonal atoms]
+\label{thm:two}
+There do not exist three pairwise orthogonal one-dimensional subspaces
+of \(\texttt{DualSpinor}\).
+\end{theorem}
+
+Lean: \(\texttt{no\_three\_pairwise\_orthogonal\_lines}\).
+
+\subsection{Internal dictionary}
+\label{sec:dict}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Amplitude layer & Dual Hilbert layer \\
+\midrule
+pure dual amplitude & \(\beta\in\mathbb{R}^3\) and \(U(\beta)\in\mathrm{U}(2)\) \\
+usual--dual swap & leaves the dual sector; not a Hilbert adjoint \\
+Killing overlap & distinct from the spinor inner product \\
+\(\texttt{interfere}=0\) on one axis & commuting generators (necessary only) \\
+\(\Jnorm\) four-state collapse & coarse-graining of a continuous scalar \\
+\(\min/\max\) & not the meet/join of \(L(\mathbb{C}^2)\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{theorem}[Four labels are not a PVM]
+\label{thm:pvm}
+There is no assignment of one-dimensional subspaces of
+\(\texttt{DualSpinor}\) to the four D4L labels that makes distinct
+labels pairwise orthogonal.
+\end{theorem}
+
+Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\).
 
 \section{Scale and potential}
 \label{sec:potential}
@@ -340,8 +542,8 @@ A four-to-two contraction at small scale is therefore not a theorem of
 minimised, lowers the side opposite to \(\gamma\): \(\gamma>0\)
 stabilises negative torsion.
 
-The scale \(\lambda\) is distinct from CGA dilation
-and from \(\texttt{scaleTorsion}\).
+The scale \(\lambda\) is distinct from CGA dilation, from
+\(\texttt{scaleTorsion}\), and from Hilbert dimension.
 
 \section{Self-reference}
 \label{sec:godel}
@@ -378,13 +580,23 @@ the Hilbert programme inside first-order Peano arithmetic.
   \item It \emph{does} separate height from saturation by two
         preorders on \([-1,1]\).
   \item It \emph{does} keep \(p\wedge\neg p\) out of \(\lvert F\rangle\).
-  \item It does \emph{not} construct a Hilbert space, a Born rule, or
-        an orthomodular lattice \emph{as D4L}. A sibling dual-sector
-        Hilbert space $\mathbb{C}^2$ and its subspace lattice are
-        recorded separately in \texttt{dst-d4l-hilbert.tex}; they are
-        not identified with the four labels or with $\min/\max$.
-  \item It does \emph{not} identify \(\lambda\) with CGA dilation or
-        with \(\texttt{scaleTorsion}\).
+  \item It \emph{does} prove that the Killing pairing is indefinite and
+        that self-overlap is not a Born probability.
+  \item It \emph{does} extract a Euclidean dual sector and a quaternion
+        table for the cyclic generators.
+  \item It \emph{does} represent that table on the Hilbert space
+        \(\mathbb{C}^2\) and record the orthomodular, non-distributive
+        lattice of its subspaces.
+  \item It does \emph{not} identify the scalar connectives with the
+        meet and join of \(L(\mathbb{C}^2)\), nor the four labels with
+        a PVM.
+  \item It does \emph{not} derive the Born rule from \(J\) or from
+        Killing overlap.
+  \item It does \emph{not} construct the Dirac spinor \(\mathbb{C}^4\),
+        position/momentum operators, or a solution of the measurement
+        problem.
+  \item It does \emph{not} identify \(\lambda\) with CGA dilation,
+        \(\texttt{scaleTorsion}\), or Hilbert dimension.
   \item It does \emph{not} obtain a four-to-two collapse from the
         written potential \(U\).
   \item It does \emph{not} refute G\"odel's theorems in classical
@@ -398,7 +610,10 @@ the Hilbert programme inside first-order Peano arithmetic.
 
 The Lean modules are \(\texttt{Amplitude}\), \(\texttt{TruthValue}\),
 \(\texttt{Connective}\), \(\texttt{Interpretation}\), \(\texttt{Order}\),
-\(\texttt{Geometric}\), and \(\texttt{Potential}\).
+\(\texttt{Geometric}\), and \(\texttt{Potential}\). Under
+\(\texttt{DstDiophantine.Logic.Quantum}\) the dual-layer modules are
+\(\texttt{Separation}\), \(\texttt{DualSector}\), \(\texttt{Quaternion}\),
+\(\texttt{Spinor}\), \(\texttt{QuantumLogic}\), and \(\texttt{Dictionary}\).
 
 \begin{thebibliography}{9}
 \raggedright
@@ -412,6 +627,10 @@ Discrete Biquaternionic Double Spacetime: Rigorous Proofs of Diophantine
 Conjectures via Torsional Mismatch and PGA Embedding,
 \texttt{dst-diophantine.tex} (2026). Lean companion:
 \url{https://github.com/hypernumbernet/DstDiophantine}.
+
+\bibitem{BvN1936}
+G.~Birkhoff and J.~von Neumann, The logic of quantum mechanics,
+Ann.\ Math.\ 37 (1936).
 
 \bibitem{Godel1931}
 K.~G\"odel, \"Uber formal unentscheidbare S\"atze der Principia Mathematica

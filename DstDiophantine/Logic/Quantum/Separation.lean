@@ -21,8 +21,9 @@ Self-overlap can be negative, so it is not a Born probability. The scalar
 connectives `min`/`max` are distributive, so they cannot present the
 non-distributive subspace lattice of a Hilbert space of dimension ≥ 2.
 
-These theorems are the reason the dual-sector Hilbert space is a *sibling*
-of D4L, not a rebranding of it.
+These theorems record the relation between D4L's two layers: the Killing
+form is not a Hilbert inner product, and `min`/`max` is not the subspace
+lattice of `ℂ²`.
 -/
 
 namespace DstDiophantine

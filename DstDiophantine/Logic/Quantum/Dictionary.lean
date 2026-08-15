@@ -11,7 +11,7 @@ import DstDiophantine.Logic.Interpretation
 import Mathlib.Tactic.Linarith
 
 /-!
-# Dictionary between D4L amplitudes and the dual-sector Hilbert space
+# Dictionary between the D4L amplitude layer and the dual Hilbert layer
 
 Maps are explicit and one-way. None of them is a lattice isomorphism,
 a Born rule, or a Hilbert-space adjoint.

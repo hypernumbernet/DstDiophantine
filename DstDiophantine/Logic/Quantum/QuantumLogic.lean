@@ -17,8 +17,8 @@ intersection, join is the sum, negation is the orthogonal complement.
 The orthomodular law is the orthogonal decomposition of a finite-dimensional
 subspace.
 
-This lattice is a sibling of D4L. It is not identified with `{T,U,F,B}`
-or with `min`/`max`.
+This lattice is D4L's dual Hilbert layer. It is not identified with
+`{T,U,F,B}` or with `min`/`max`.
 -/
 
 namespace DstDiophantine

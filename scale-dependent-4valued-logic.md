@@ -268,7 +268,7 @@ V_{\lambda,\gamma}(J) = -\cos(2\pi J) + \frac{\alpha}{\lambda} U(J) + \gamma\, J
 
 情報順序では `T`（\(j=0\)）が唯一の底、頂は壁 \(\pm 1\)、すなわち `F` と最深 `B` です。内部の `B` は最深 `B` より情報的に真に小さいです。ラベル対応が違うので Belnap 同型は主張しません。
 
-大規模極限では中間状態が豊かになり、真理値の格子構造が非分配的な特徴を帯びやすくなります。これは量子論理（オーソモジュラー格子）への連続的接近と**解釈**できますが、D4L のスカラー層では主張しません。実数上の \(\min/\max\) は分配的です。非分配性は兄弟である \(\mathbb{C}^2\) の部分空間格子（`Logic/Quantum/`）にあります。D4L の Killing 重なりは Hilbert 内積ではありません。
+大規模極限では中間状態が豊かになり、真理値の格子構造が非分配的な特徴を帯びやすくなります。これは量子論理（オーソモジュラー格子）への連続的接近と**解釈**できますが、D4L の振幅層では主張しません。実数上の \(\min/\max\) は分配的です。非分配性は同じ論理の双対 Hilbert 層、\(\mathbb{C}^2\) の部分空間格子（`Logic/Quantum/`）にあります。Killing 重なりは Hilbert 内積ではありません。
 
 ---
 
@@ -376,14 +376,14 @@ softmin は \(\beta\to\infty\) で \(\min\) に収束し、有限の \(\beta>0\)
 - 量子論理（オーソモジュラー格子）への連続的接近
 - ゲーデル文が古典算術で偽であること
 - 無条件の FLT / Beal / abc
-- D4L としての Hilbert 空間、Born 則（Killing 自己対は負になり得る）
+- 振幅層の演算と双対 Hilbert 層の演算の同一視、および \(J\) からの Born 則（Killing 自己対は負になり得る）
 - \(R(p)R(q)\) が常にねじれローターへ戻ること
 
-双対セクターの兄弟構成（\(\mathbb{C}^2\)、四元数表、部分空間格子、四ラベルは PVM でない）は `DstDiophantine/Logic/Quantum/` と論文 `dst-d4l-hilbert.tex` にある。D4L との同一視ではない。
+双対セクターの Hilbert 層（\(\mathbb{C}^2\)、四元数表、部分空間格子、四ラベルは PVM でない）は `DstDiophantine/Logic/Quantum/` と代表論文 `dst-4-valued-logic.tex` にある。スカラー結合子や四ラベルとは同一視しない。
 
 相転移を残したい場合の次の仕事は、負領域で凹な修正 \(U\)、または周期項の前に \(\lambda\) が乗る Landau 型を、別モジュールに置くことです。
 
-論文は `dst-4-valued-logic.tex`（日本語 `dst-4-valued-logic-ja.tex`）です。Hilbert 兄弟層は `dst-d4l-hilbert.tex`。
+論文は `dst-4-valued-logic.tex`（日本語 `dst-4-valued-logic-ja.tex`）です。
 
 ---
 

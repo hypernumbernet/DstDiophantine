@@ -18,8 +18,9 @@ import DstDiophantine.Algebra.Invariant
 
 The project's logic. A proposition is an admissible torsion configuration.
 Measurement is the already-proved PGA invariant `JNormalized`; collapse
-yields four labels. Scalar connectives and geometric operations are two
-faces of the same system.
+yields four labels. The amplitude layer (connectives, orders, Killing
+geometry) and the dual Hilbert layer (`Logic.Quantum`) belong to the
+same logic.
 
 **Not** re-exported from `DstDiophantine.Basic`, so the Diophantine path
 does not depend on these modules (same policy as `DstDiophantine.Gravity`
@@ -34,12 +35,14 @@ and `DstDiophantine.CGA`).
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Potential` — \(V_\lambda\), large-scale critical points, written-\(U\)
-* `Logic.Quantum` — sibling Hilbert / quantum-logic layer (not D4L itself)
+* `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
+  `ℂ²`, subspace lattice, internal dictionary)
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
-D4L is **not** a Hilbert space, a Born rule, or an orthomodular lattice.
-The dual-sector kinematics `DualSpinor ≃ ℂ²` and its subspace lattice are
-a sibling construction; see `Logic.Quantum.Separation` and
+The amplitude layer is not a Hilbert space, a Born rule, or an
+orthomodular lattice. `DualSpinor ≃ ℂ²` and its subspace lattice belong
+to the same logic; their operations are not identified with the four
+labels or with `min`/`max`. See `Logic.Quantum.Separation` and
 `Logic.Quantum.Dictionary`.
 -/
 

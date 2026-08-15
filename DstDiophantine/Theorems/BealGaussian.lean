@@ -79,7 +79,7 @@ theorem isUnit_I : IsUnit (⟨0, 1⟩ : ℤ[i]) :=
 
 theorem two_eq_neg_I_mul_one_add_I_sq :
     (2 : ℤ[i]) = -(⟨0, 1⟩ : ℤ[i]) * (⟨1, 1⟩ : ℤ[i]) ^ 2 := by
-  ext <;> simp [pow_two, re_mul, im_mul] <;> ring
+  ext <;> simp [pow_two, re_mul, im_mul]
 
 theorem one_add_I_dvd_two : (⟨1, 1⟩ : ℤ[i]) ∣ (2 : ℤ[i]) := by
   refine ⟨-(⟨0, 1⟩ : ℤ[i]) * ⟨1, 1⟩, ?_⟩
@@ -90,13 +90,23 @@ theorem one_add_I_dvd_two : (⟨1, 1⟩ : ℤ[i]) ∣ (2 : ℤ[i]) := by
 /-! ### Coprimality to the conjugate -/
 
 private theorem mk_add_star (m n : ℤ) :
-    (⟨m, n⟩ : ℤ[i]) + star (⟨m, n⟩ : ℤ[i]) = (2 * m : ℤ[i]) := by
-  simp [star_mk]; ext <;> simp <;> ring
+    (⟨m, n⟩ : ℤ[i]) + star (⟨m, n⟩ : ℤ[i]) = (2 * m : ℤ[i]) :=
+  calc (⟨m, n⟩ : ℤ[i]) + star ⟨m, n⟩
+      = (⟨m, n⟩ : ℤ[i]) + ⟨m, -n⟩ := by rw [star_mk]
+    _ = ⟨m + m, n + -n⟩ := rfl
+    _ = ⟨2 * m, 0⟩ := by simp [two_mul]
+    _ = (2 * m : ℤ[i]) := by
+        ext <;> simp [re_mul, im_mul]
 
 private theorem mk_sub_star (m n : ℤ) :
     (⟨m, n⟩ : ℤ[i]) - star (⟨m, n⟩ : ℤ[i]) =
-      (2 * n : ℤ[i]) * (⟨0, 1⟩ : ℤ[i]) := by
-  simp [star_mk]; ext <;> simp [re_mul, im_mul] <;> ring
+      (2 * n : ℤ[i]) * (⟨0, 1⟩ : ℤ[i]) :=
+  calc (⟨m, n⟩ : ℤ[i]) - star ⟨m, n⟩
+      = (⟨m, n⟩ : ℤ[i]) - ⟨m, -n⟩ := by rw [star_mk]
+    _ = ⟨m - m, n - -n⟩ := rfl
+    _ = ⟨0, 2 * n⟩ := by simp [two_mul]
+    _ = (2 * n : ℤ[i]) * ⟨0, 1⟩ := by
+        ext <;> simp [re_mul, im_mul]
 
 private theorem dvd_two_of_dvd_two_mul_coprime {δ : ℤ[i]} {m n : ℤ}
     (hcop : Int.gcd m n = 1)
@@ -503,11 +513,11 @@ private theorem sq_emod_four_ne_two (a : ℤ) : a ^ 2 % 4 ≠ 2 := by
 
 private theorem bealExpGcd_comm_left (x y z : ℕ) :
     bealExpGcd y x z = bealExpGcd x y z := by
-  simp [bealExpGcd, Nat.gcd_comm, Nat.gcd_assoc, Nat.gcd_left_comm]
+  simp [bealExpGcd, Nat.gcd_left_comm]
 
 private theorem bealGcd_comm_left (A B C : ℤ) :
     bealGcd B A C = bealGcd A B C := by
-  simp [bealGcd, Nat.gcd_comm, Nat.gcd_assoc, Nat.gcd_left_comm]
+  simp [bealGcd, Nat.gcd_left_comm]
 
 theorem not_both_odd_bases_of_expGcd_eq_two_of_eq_odd_yz {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -568,7 +578,7 @@ theorem not_eq_odd_pure_coords {m n C : ℤ} {e : ℕ}
         rw [← pow_mul, ← pow_mul]; simp [mul_comm]
     _ = (n.natAbs : ℤ) ^ 2 + (m.natAbs : ℤ) ^ 2 := by rw [hn', hm']
     _ = m ^ 2 + n ^ 2 := by
-        simp [sq, Int.natAbs_mul_self', add_comm]
+        simp [sq, add_comm]
     _ = (C.natAbs : ℤ) ^ e := heq
 
 def BealEqualOddTwoFactorResidual : Prop :=
@@ -584,13 +594,13 @@ def BealEqualOddTwoFactorResidual : Prop :=
 theorem not_beal_sol_of_expGcd_eq_two_of_eq_odd_yz
     (hRes : BealEqualOddTwoFactorResidual)
     {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (hgcd : bealGcd A B C = 1)
+    (_hx : 3 ≤ x) (hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0)
+    (_hgcd : bealGcd A B C = 1)
     (hd : bealExpGcd x y z = 2)
     (hyz : y = z)
     (hodd : Odd (y / 2))
-    (hsol : A ^ x + B ^ y = C ^ z)
+    (_hsol : A ^ x + B ^ y = C ^ z)
     (hBeven :
       ∃ m n : ℤ,
         A ^ (x / 2) = m ^ 2 - n ^ 2 ∧
@@ -754,7 +764,7 @@ theorem beal_two_equal_xy_even_opposite_parity_of_odd_C {A B C : ℤ} {x y z : �
 theorem beal_two_equal_xy_even_C_odd {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hz : 3 ≤ z) (hxy : x = y) (hd : bealExpGcd x y z = 1)
     (hxeven : Even x)
-    (hA : A ≠ 0) (hB : B ≠ 0) (_hC : C ≠ 0)
+    (hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
     (hsol : A ^ x + B ^ y = C ^ z) : Odd C := by
   subst hxy
