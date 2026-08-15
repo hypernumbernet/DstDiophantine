@@ -1,0 +1,686 @@
+\documentclass[dvipdfmx,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{geometry}
+\geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{pxjahyper}
+
+\title{二重時空ねじれ不整合の \texorpdfstring{\(G(3,1,1)\)}{G(3,1,1)} 拡張：10次元生成元構造と平面ベース括弧積}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\theoremstyle{definition}
+\newtheorem{definition}{定義}
+\newtheorem{conjecture}{予想}
+\theoremstyle{plain}
+\newtheorem{theorem}{定理}
+\theoremstyle{remark}
+\newtheorem{remark}{注意}
+\renewcommand{\proofname}{証明}
+\renewcommand{\refname}{参考文献}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+二重時空構造を、\(\mathrm{Cl}(3,1)\) の双四元数基底に追加の零ベクトル \(e_{4}\) を付加することにより、射影幾何代数 \(G(3,1,1)\) へ埋め込む。得られるねじれ不整合は、3つの双曲型生成元（\(iI, iJ, iK\)）、3つの巡回生成元（\(I, J, K\)）、および \(e_{4}\) と4つの通常時空ベクトル生成元 \(\{j, kI, kJ, kK\}\) から構成される4つの零生成元 \(N_{\mu} := e_{4}\wedge e_{\mu}\)（\(\mu=0,1,2,3\)）からなる10次元バイベクトル空間によって生成される。この空間は ポアンカレ代数 \(\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) の構造的候補である：6つの双曲型--巡回バイベクトルは ローレンツコピー \(\mathfrak{so}(3,1)\) を張り、4つの零バイベクトルは幾何積の下で可換な並進イデアルをなす。
+
+ねじれ＋並進パラメータ上の二次形式 \(J^{(5)}\) は、6つのねじれ係数上の カルタン--キリング 二次形式と並進係数上の ミンコフスキー計量とを結合したものであり、パラメータ空間上のスカラー診断量として用いる。三ブレード上の平面ベース括弧積および双対＝法線対応は、未完の幾何学的プログラムとして残す（付録~B は代表的な計算を与える）。すべての零生成元 \(N_{\mu}\) が平方零かつ反転奇数（\(\widetilde{N_{\mu}}=-N_{\mu}\)）のバイベクトルであるため、積 \(M:=RT\)（\(R=\exp(\Omega_{\mathrm{torsion}})\)、\(T=1+\Omega_{\mathrm{trans}}\)）によって定義されるモーターはユニタリであり、\(M\widetilde{M}=1\) である。\([\Omega_{\mathrm{torsion}},\Omega_{\mathrm{trans}}]\neq 0\) のとき、この積と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との関係は後続の研究に残す。
+\end{abstract}
+ 
+\section{はじめに}
+\label{sec:introduction}
+
+二重時空の枠組みは、重力と慣性を、各質量粒子が運ぶ内在的に対をなす二つの ミンコフスキー構造の間のねじれ不整合として記述する。並進の自由度を幾何学的に自然な仕方で取り込むため、構成を射影幾何代数 \(G(3,1,1)\)~\cite{Gunn2017,Lengyel2024,DeKeninckDorst2019,GunnDeKeninck2020} へ持ち上げる。その生成ベクトル空間は5次元であり、完全な クリフォード代数は \(2^{5}=32\) 次元である。平方が消える退化ベクトルを用いて並進をバイベクトルとして符号化することは、共形／射影 クリフォード代数における剛体運動学の Selig の扱い~\cite{Selig2005} に遡り、いまや ユークリッド符号および ミンコフスキー符号の双方に対する標準的 PGA 規約である~\cite{Lengyel2024,GunnDeKeninck2020}。付加された零ベクトル \(e_{4}\) は4つの \(\mathrm{Cl}(3,1)\) ベクトル生成元 \(\{j, kI, kJ, kK\}\)~\cite{Hestenes2015,DoranLasenby2003} と反可換であり、\(e_{4}^{2}=0\) を満たす。さらに双四元数的擬スカラー \(i=jkI\,kJ\,kK\)~\cite{ConwaySmith2003} と可換であるため、双対写像 \(X\mapsto Xi\) は親理論と同じ仕方で \(\mathrm{Cl}(3,1)\) 部分代数に作用し、新たな零方向は無傷のまま残す。
+
+不整合バイベクトルは3つの相異なる類に分割される。3つの双曲型生成元 \(iI, iJ, iK\) は平方が \(+1\) であり、\(\mathfrak{so}(3,1)\) のブーストセクターを張る。3つの巡回生成元 \(I, J, K\) は平方が \(-1\) であり、同一の ローレンツコピーの回転セクターを張る（DST 双対性は符号を除いて二つのセクターを交換する）。4つの零生成元 \(N_{\mu} := e_{4}\wedge e_{\mu}\)（\(\mu=0,1,2,3\)）は \(e_{4}\) と4つの Cl(3,1) ベクトル生成元から構成され、平方零であり、可換な並進イデアルをなす。これにより ポアンカレ代数 \(\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\)~\cite{Weinberg1995,Tung1985} の次元に一致する10次元バイベクトル空間が得られる。この一致は構造的候補として扱う。完全な リー括弧同型は本稿の範囲を超える。したがって並進は補助ゲージ場なしに零セクターから直接現れ、得られる拡張不整合バイベクトルは、もとのねじれ自由度と並進自由度とを単一の代数的対象の内部で統一する。
+
+第二の主題は \(G(3,1,1)\) の平面幾何である。三ブレード上の平面ベース括弧積は、双対時空を法線束として読む幾何学的解釈を示唆する。付録~B は代表的な計算を記録するが、一般の法線写像定理は未解決のままである。
+
+各零バイベクトルが平方零であり、かつすべての \(\mu,\nu\) に対して \(N_{\mu}N_{\nu}=0\) を満たすため、零部分の指数は次数1の有限多項式である。すべてのバイベクトルの反転奇数性 \(\widetilde{N_{\mu}}=-N_{\mu}\) と合わせると、積 \(M:=RT\) によって定義されるモーターのユニタリ性 \(M\widetilde{M}=1\) が保証される。\(G(3,1,1)\) の完全な退化計量に関するサンドイッチ、および因子が可換でないときの \(M\) と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との同一視は、ここでは脇に置く。
+
+本稿の構成は以下のとおりである。第2節では二重時空の \(G(3,1,1)\) への埋め込みを定義し、10個の生成元を分類する。第3節では拡張不整合バイベクトルを構成し、零指数の多項式形を証明し、パラメータ空間形式 \(J^{(5)}\) を導入する。第4節では平面ベース括弧積のプログラムを概説する。第5節では積モーター \(M:=RT\) のユニタリ性を確立する。第6節では固定チャート上の PGA--TEGR 対応を展開し、シュヴァルツシルト対角アンザッツおよび \(J^{(5)}\) と遠平行スカラー \(T\) との同一視を扱う。結論は第7節で述べる。
+
+\section{10次元生成元構造}
+
+\subsection{ベクトル基底と \texorpdfstring{\(e_{4}\)}{e4} の付加}
+
+親理論は4つの \(\mathrm{Cl}(3,1)\) ベクトル生成元を双四元数要素
+\[
+e_{0}=j,\qquad e_{1}=kI,\qquad e_{2}=kJ,\qquad e_{3}=kK,
+\]
+と同一視し、ミンコフスキー符号 \((-,+,+,+)\) を満たす：
+\[
+e_{0}^{2}=-1,\qquad e_{1}^{2}=e_{2}^{2}=e_{3}^{2}=+1,\qquad \{e_{\mu},e_{\nu}\}=0\ (\mu\neq\nu).
+\]
+ねじれ的性格を保ちつつ並進の自由度を取り込むため、単一の新たなベクトル生成元 \(e_{4}\) を付加してこの構造を \(G(3,1,1)\) へ持ち上げる。\(e_{4}\) は
+\begin{equation}
+e_{4}^{2}=0,\qquad \{e_{4},e_{\mu}\}=0\quad (\mu=0,1,2,3).
+\label{eq:e4-defs}
+\end{equation}
+によって特徴づけられる。
+完全な クリフォード代数 \(G(3,1,1)\) は次元 \(2^{5}=32\) をもつ。もとの16次元双四元数代数は \(\{e_{0},e_{1},e_{2},e_{3}\}\) によって生成される部分代数として回復される。
+
+
+\subsection{双四元数双対写像との両立}
+
+親理論の双四元数的擬スカラーは
+\[
+i = e_{0}e_{1}e_{2}e_{3} = j\,(kI)(kJ)(kK),
+\]
+であり、二重時空の双対写像は \(X\mapsto Xi\) として作用する。\(\{e_{4},e_{\mu}\}=0\) を繰り返し用いると、
+\[
+e_{4}\,i \;=\; e_{4}\,e_{0}e_{1}e_{2}e_{3} \;=\; (-1)^{4}\,e_{0}e_{1}e_{2}e_{3}\,e_{4} \;=\; i\,e_{4},
+\]
+したがって \(e_{4}\) は \(i\) と可換である。その結果、双対写像 \(X\mapsto Xi\) は親論文と全く同様に \(\mathrm{Cl}(3,1)\) 部分代数上で働き、\(e_{4}\) は独立な零方向として無傷のまま残される。これが、双対性が「\(e_{4}\) の零的性格を保ちつつ」 \(G(3,1,1)\) へ拡張されることの正確な意味である。
+
+\subsection{10個のバイベクトル生成元の分類}
+
+\(G(3,1,1)\) のバイベクトル空間は次元 \(\binom{5}{2}=10\) をもつ。6つの \(\mathrm{Cl}(3,1)\) バイベクトルと \(e_{4}\) を含む4つのバイベクトルとを合わせると、拡張ねじれ不整合の生成元は、その平方の符号に従って3つの相異なる類に分かれる：
+
+\begin{itemize}
+  \item \textbf{双曲型生成元}（平方が \(+1\)）：
+  \[
+  iI = e_{0}e_{1},\qquad iJ = e_{0}e_{2},\qquad iK = e_{0}e_{3}.
+  \]
+  これら3つの要素は \(\mathfrak{so}(3,1)\) のブーストセクターを張る。
+
+  \item \textbf{巡回生成元}（平方が \(-1\)）：
+  \[
+  I = e_{3}e_{2},\qquad J = e_{1}e_{3},\qquad K = e_{2}e_{1}.
+  \]
+  これら3つの要素は同一の ローレンツコピー \(\mathfrak{so}(3,1)\) の回転セクターを張る。
+
+  \item \textbf{零生成元}（平方が \(0\)）：\(e_{4}\) と4つの \(\mathrm{Cl}(3,1)\) ベクトル生成元から構成される4つのバイベクトル、
+  \[
+  N_{0} = e_{4}\wedge e_{0} = e_{4}\,j,\qquad
+  N_{1} = e_{4}\wedge e_{1} = e_{4}\,(kI),
+  \]
+  \[
+  N_{2} = e_{4}\wedge e_{2} = e_{4}\,(kJ),\qquad
+  N_{3} = e_{4}\wedge e_{3} = e_{4}\,(kK).
+  \]
+  \eqref{eq:e4-defs} を用いると、任意の \(\mu,\nu\in\{0,1,2,3\}\) に対して
+  \begin{equation}
+  N_{\mu}N_{\nu} \;=\; (e_{4}e_{\mu})(e_{4}e_{\nu}) \;=\; -\,e_{4}^{2}\,e_{\mu}e_{\nu} \;=\; 0,
+  \label{eq:null-strong-vanishing}
+  \end{equation}
+  したがって各 \(N_{\mu}\) は平方零であり（\(\mu=\nu\) の場合）、\emph{零生成元の任意の対ごとの積}もまた消える。4つの \(N_{\mu}\) は10次元代数の可換な並進イデアルを張る。
+\end{itemize}
+
+全体として、これらの類は10次元バイベクトル空間を与える：
+\[
+\dim \;=\; 3 \text{（双曲型）} \;+\; 3 \text{（巡回）} \;+\; 4 \text{（零）} \;=\; 10,
+\]
+これは ポアンカレ代数 \(\mathfrak{iso}(3,1)\) の次元に一致する。ローレンツ部分 \(\mathfrak{so}(3,1)\) は6つの双曲型--巡回バイベクトルによって生成され、4つの零バイベクトル \(N_{\mu}\) は幾何積の下で並進生成元 \(P_{\mu}\) を可換イデアルとして実現する。したがってこの構成は \(\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) に対する次元的かつ構造的な候補である。ここでは完全な リー同型定理は展開しない。
+
+\subsection{零セクターと並進}
+
+零セクターは時空並進を直接符号化する。実際、任意の並進パラメータ \(a^{\mu}\)（\(\mu=0,1,2,3\)）に対し、結合 \(T(a):=\tfrac{1}{2}a^{\mu}N_{\mu}\)（Einstein の和の規約）は零セクターのみから構成されるバイベクトルである。\eqref{eq:null-strong-vanishing} により \(T(a)^{2}=0\) であるから、指数化
+\[
+\exp\bigl(T(a)\bigr) \;=\; 1 + \tfrac{1}{2}\,a^{\mu}N_{\mu}
+\]
+は一次で打ち切られる。その結果、並進作用は追加の曲率や高次項を導入することなく純シフトとして現れる。とくに光的並進は、4次元パラメータ空間内部の錐 \(\eta_{\mu\nu}a^{\mu}a^{\nu}=0\) に対応する。
+
+\subsection{零生成元上の双対性}
+
+双対写像 \(X\mapsto Xi\) は親論文と全く同様に \(\mathrm{Cl}(3,1)\) 部分代数上で作用するため、ブースト生成元 \(\{iI,iJ,iK\}\) と回転生成元 \(\{I,J,K\}\) とを符号を除いて交換する。さらに \(e_{4}\) が \(i\) と可換であるため、
+\[
+N_{\mu}\,i \;=\; (e_{4}e_{\mu})\,i \;=\; e_{4}\,(e_{\mu}\,i).
+\]
+ここで \(e_{\mu}i\) は Cl(3,1) 部分代数において次数3であるから、\(N_{\mu}i\) は \(G(3,1,1)\) において次数4である。したがって双対性は各零生成元をバイベクトル次数の外へ写す：4次元の零バイベクトルイデアルは双対閉ではなく、一方6次元のねじれセクターは次数2の内部で双対性の下に閉じたままである。
+
+要約すると、\(G(3,1,1)\) への埋め込みは拡張不整合を ポアンカレ型 \(\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) の10次元バイベクトル空間（構造的候補として）に組織し、そこでは並進が \(e_{4}\) と通常時空ベクトル生成元から構成される4次元零セクターから自然に現れる。
+
+\section{拡張ねじれ不整合の構成}
+
+前節で導入した10次元生成元空間上に、拡張ねじれ不整合バイベクトルを構成する。\(\Omega_{\text{biv}}^{(5)}\) を拡張モーターの無限小生成元とする。これを3つの生成元の類に従って分解する：
+
+\begin{equation}
+\Omega_{\text{biv}}^{(5)}
+= \underbrace{\sum_{a=1}^{3} \Bigl( \frac{\alpha_{a}}{2}\, B_{a}^{+} + \frac{\beta_{a}}{2}\, B_{a}^{-} \Bigr)}_{\Omega_{\text{torsion}}\ :\ \text{双曲型 + 巡回（6D）}}
+\;+\;
+\underbrace{\sum_{\mu=0}^{3} \frac{\lambda^{\mu}}{2}\, N_{\mu}}_{\Omega_{\text{trans}}\ :\ \text{零セクター（4D）}},
+\label{eq:Omega-decomp}
+\end{equation}
+
+ここで \(B_{a}^{+}\) は双曲型生成元（\(iI, iJ, iK\)）、\(B_{a}^{-}\) は巡回生成元（\(I, J, K\)）、\(N_{\mu}=e_{4}\wedge e_{\mu}\)（\(\mu=0,1,2,3\)）は第2節で構成した4つの零バイベクトルである。
+
+係数 \(\alpha_{a}\) および \(\beta_{a}\) は通常セクターと双対セクターの間のもとのねじれ不整合をパラメータ化し、4つの係数 \(\lambda^{\mu}\) は並進不整合を ローレンツ四ベクトルとして符号化する。光的並進は、4次元パラメータ空間内部の錐 \(\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}=0\) に対応する。
+
+\subsection{零指数の厳密な打ち切り}
+
+強い消滅性 \eqref{eq:null-strong-vanishing} は、単に \(\mu=\nu\) のみならず\emph{すべての}対 \((\mu,\nu)\) に対して \(N_{\mu}N_{\nu}=0\) を保証するため、
+\begin{equation}
+\left(\sum_{\mu=0}^{3}\frac{\lambda^{\mu}}{2}N_{\mu}\right)^{\!\!2}
+\;=\;\frac{1}{4}\sum_{\mu,\nu=0}^{3}\lambda^{\mu}\lambda^{\nu}\,N_{\mu}N_{\nu}
+\;=\;0,
+\end{equation}
+したがって零部分の指数は一次で打ち切られる：
+\begin{equation}
+\exp\!\Bigl( \Omega_{\text{trans}} \Bigr)
+\;=\;\exp\!\Bigl(\sum_{\mu=0}^{3}\frac{\lambda^{\mu}}{2}N_{\mu}\Bigr)
+\;=\;1+\sum_{\mu=0}^{3}\frac{\lambda^{\mu}}{2}N_{\mu}.
+\label{eq:exp-truncation}
+\end{equation}
+\eqref{eq:exp-truncation} の妥当性は対角平方 \(N_{\mu}^{2}=0\) のみならず、\emph{すべての}混合積 \(N_{\mu}N_{\nu}\) の消滅を要求することを強調する。強い消滅性 \eqref{eq:null-strong-vanishing} がまさにこれを供給する。
+
+\subsection{モーターの因数分解}
+
+すべての \(N_{\mu}\) が \(N_{\mu}N_{\nu}=0\) を満たすため、4つの零生成元は可換である。しかし交叉交換子 \([B_{a}^{\pm},N_{\mu}]\) は一般に非零であり、したがって \(\Omega_{\text{torsion}}\) と \(\Omega_{\text{trans}}\) は一般には可換でない。それゆえ順序付き積
+\begin{equation}
+M \;:=\; R\,T,
+\qquad
+R := \exp\!\bigl(\Omega_{\text{torsion}}\bigr),\qquad
+T := \exp\!\bigl(\Omega_{\text{trans}}\bigr)=1+\Omega_{\text{trans}},
+\end{equation}
+によって定義されるモーターを用いる。第5節で \(M\widetilde{M}=1\) を証明する。因子が可換でないとき、\(\exp(\Omega_{\text{biv}}^{(5)})\) は一般に \(RT\) と異なる。その同一視（および任意の共役再パラメータ化 \(T=\exp(\Omega'_{\text{trans}})\)）は延期する。
+
+\subsection{双対性の再訪}
+
+双曲型成分と巡回成分は、親論文の仕方で双対性の下に互いに変換する。第2節に記録したとおり、双対性は各零生成元 \(N_{\mu}\) を次数4の要素へ送るため、並進パラメータは双対化されたねじれセクターとは別に追跡しなければならない。
+
+\subsection{10次元空間上の二次不変量}
+
+ポアンカレ代数 \(\mathfrak{iso}(3,1)\) 上の カルタン--キリング 形式が\emph{退化}していることはよく知られている~\cite{FultonHarris1991,Humphreys1972}：並進生成元 \(P_{\mu}\) に対して
+\[
+B_{\text{Killing}}(P_{\mu},P_{\nu})\;=\;0.
+\]
+したがってキリング形式のみでは並進不整合を検出する二次不変量を供給できない。それゆえ ローレンツセクターのキリング形式を並進セクター上の ミンコフスキー計量によって拡張し、10次元生成元空間上の非退化双一次形式を得る。明示的には
+\begin{equation}
+\boxed{\;
+J^{(5)}
+\;:=\;
+\tfrac{1}{16}\,B_{\text{Killing}}\!\bigl(\Omega_{\text{torsion}},\Omega_{\text{torsion}}\bigr)
+\;+\;
+\tfrac{1}{2}\,\eta_{\mu\nu}\,\lambda^{\mu}\lambda^{\nu},
+\;}
+\label{eq:J5-invariant}
+\end{equation}
+とおく。ここで \(B_{\text{Killing}}\) は6次元ねじれ（ローレンツ）係数上の カルタン--キリング 型二次形式を表す。半角展開 \(\Omega_{\text{torsion}}=\sum_a\bigl(\frac{\alpha_a}{2}B_a^++\frac{\beta_a}{2}B_a^-\bigr)\) のもとで \(B(B_a^+,B_a^+)=+8\) および \(B(B_a^-,B_a^-)=-8\) とすると、\(B_{\text{Killing}}(\Omega_{\text{torsion}},\Omega_{\text{torsion}})=2\sum_a(\alpha_a^2-\beta_a^2)\) となり、したがって第一項は \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\) に等しい。離散的な伴う論文のパラメータ空間スカラーは \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) であり、これはその第一項の4倍である。伴う論文における有界性の主張は、この \(J\) および \(J_{\rm norm}=\frac8{3\pi^2}J\) に言及するものであり、\(\frac1{16}B_{\text{Killing}}(\Omega_{\text{torsion}},\Omega_{\text{torsion}})\) そのものには言及しない。第二項は並進不整合の ローレンツ不変な二次測度を与え、並進が零となる光錐 \(\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}=0\) 上でまさに消える。二つの寄与が分離されるのは、\(\mathfrak{iso}(3,1)\) 上のキリング形式が半単純生成元と並進生成元の間で消えるからである。
+
+\begin{remark}[\(J^{(5)}\) の有界性]
+\label{rem:J5-bounded}
+並進寄与 \(\tfrac{1}{2}\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}\) は \(\lambda^{\mu}\) が制約されないとき非有界である：零条件 \(\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}=0\) のみがそれを消滅させる。離散ディオファントスの伴う論文における有界性定理は、許容構成上のねじれ部分 \(J\)（同値に正規化スカラー \(J_{\rm norm}=\frac{8}{3\pi^2}J\)）に適用され、完全な形式 \(J^{(5)}\) へ自動的には拡張されない。
+\end{remark}
+
+このように、拡張ねじれ不整合バイベクトル \(\Omega_{\text{biv}}^{(5)}\) は、もとの6次元ねじれ自由度と4次元並進セクターとを単一の10次元代数的対象の内部で統一し、自然な非退化二次不変量 \eqref{eq:J5-invariant} は両セクターに結合する。
+
+\section{平面ベース括弧積}
+\label{sec:brackets-open}
+
+\subsection{括弧積とその次数内容}
+
+\(G(3,1,1)\) において、平面は三ブレードによって表される。二つの三ブレード \(A\) および \(B\) に対し、\emph{平面ベース括弧積}を幾何積の反対称部分および対称部分として定義する、
+\begin{equation}
+A \mathbin{\underline{\vee}} B \;:=\; \tfrac{1}{2}(AB - BA),
+\qquad
+A \mathbin{\overline{\vee}} B \;:=\; \tfrac{1}{2}(AB + BA),
+\label{eq:bracket-def}
+\end{equation}
+ここで右辺の積は代数の幾何積である。\footnote{記号 \(\underline{\vee}\) および \(\overline{\vee}\) はここでは \eqref{eq:bracket-def} で定義された括弧積に用いる。これは標準的射影幾何代数の「反内積」および「反外積」と混同してはならない~\cite{Lengyel2024,DorstFontijneMann2007}。}
+
+5ベクトル代数 \(G(3,1,1)\) における次数3の二つの斉次マルチベクトルに対し、幾何積の次数内容は
+\[
+A_{3}B_{3} \;=\; \langle A_{3}B_{3}\rangle_{0} \;+\; \langle A_{3}B_{3}\rangle_{2} \;+\; \langle A_{3}B_{3}\rangle_{4},
+\]
+である。5次元ベクトル空間には次数6成分が存在しないからである。付録~B は代表例の上で対称性パターン
+\[
+\langle A_{3}B_{3}\rangle_{0} = \langle B_{3}A_{3}\rangle_{0},
+\qquad
+\langle A_{3}B_{3}\rangle_{2} = -\,\langle B_{3}A_{3}\rangle_{2},
+\qquad
+\langle A_{3}B_{3}\rangle_{4} = \langle B_{3}A_{3}\rangle_{4}
+\]
+を検証する。任意の三ブレードに対する定理は未解決のままである。
+
+\subsection{双対＝法線対応}
+
+\(P\) を通常時空ベクトル生成元から構成された三ブレードとし、\(D\) を双対時空セクターの要素とする。自然な予想は、\(D\) が \(P\) の法線方向の双対であるとき、
+\begin{equation}
+P \mathbin{\underline{\vee}} D \;=\; \kappa \, (e_{4}\wedge n),
+\label{eq:normal-correspondence}
+\end{equation}
+が法線ベクトル \(n\) および係数 \(\kappa\) に対して成り立つ、というものである。付録~B は代表的な場合を計算する。一般的主張は未解決のまま残す。
+
+\subsection{反交換子を通じた並進不整合}
+
+零寄与を含む \(P\mathbin{\overline{\vee}}D\) の展開は、\(e_{4}\wedge n\wedge e_{\mu}\) の形の次数4担体を示唆する。これらの括弧積を \(\Omega_{\text{biv}}^{(5)}\) へ結ぶ完全な算法は今後の課題である。
+
+\section{モーター \texorpdfstring{\(M:=RT\)}{M:=RT} のユニタリ性}
+
+\subsection{バイベクトル生成元の反転奇数性}
+
+\(G(3,1,1)\) 上の反転演算 \(\,\tilde{}\,\) は次数2の要素をその負へ送る。\(\mu\neq\nu\) に対して \((e_{\mu}e_{\nu})^{\sim} = e_{\nu}e_{\mu} = -e_{\mu}e_{\nu}\) だからである。とくに第2節で導入した10個のバイベクトル生成元はすべて反転奇数である：
+\begin{equation}
+\widetilde{B_{a}^{+}} = -B_{a}^{+},\qquad
+\widetilde{B_{a}^{-}} = -B_{a}^{-},\qquad
+\widetilde{N_{\mu}}   = -N_{\mu}.
+\label{eq:rev-odd}
+\end{equation}
+\(N_{\mu}\) の反転奇数性が、\(N_{\mu}\) が\emph{バイベクトル} \(e_{4}\wedge e_{\mu}\) であることに決定的に依存することを強調する。並進生成元として次数1の零ベクトルを取ろうとしたならば、それは反転偶数となり、下記のユニタリ性論証は失敗したであろう。\footnote{これが、射影幾何代数において並進生成元として零\emph{ベクトル}ではなく零\emph{バイベクトル}を採用する幾何学的理由である。同一の規約が、ユークリッド符号および ミンコフスキー符号の双方に対する標準的 PGA 文献で用いられている~\cite{Gunn2017,Lengyel2024,GunnDeKeninck2020}。}
+
+\subsection{\texorpdfstring{\(M:=RT\)}{M:=RT} に対する明示的ユニタリ性計算}
+
+積モーター \(M:=R\,T\) を考える。ねじれローターに対しては、反転奇数性 \eqref{eq:rev-odd} が標準的ユニタリ性
+\[
+R \, \widetilde{R} \;=\; \exp(\Omega_{\text{torsion}})\,\exp(\widetilde{\Omega_{\text{torsion}}})
+\;=\; \exp(\Omega_{\text{torsion}})\,\exp(-\Omega_{\text{torsion}}) \;=\; 1,
+\]
+を与える。これは親理論のユニタリ性 \(R\widetilde{R}=1\) を6次元ねじれセクターに制限したものである。零トランスレータに対しては \eqref{eq:exp-truncation} と \eqref{eq:rev-odd} を用いる：
+\begin{align}
+T \, \widetilde{T}
+&= \left(1+\sum_{\mu}\frac{\lambda^{\mu}}{2}N_{\mu}\right)\!\left(1+\sum_{\nu}\frac{\lambda^{\nu}}{2}\widetilde{N_{\nu}}\right) \notag\\
+&= \left(1+\sum_{\mu}\frac{\lambda^{\mu}}{2}N_{\mu}\right)\!\left(1-\sum_{\nu}\frac{\lambda^{\nu}}{2}N_{\nu}\right) \notag\\
+&= 1 \;-\; \underbrace{\left(\sum_{\mu}\frac{\lambda^{\mu}}{2}N_{\mu}\right)^{\!\!2}}_{=\,0\ \text{\eqref{eq:null-strong-vanishing} による}}
+\;=\; 1.
+\label{eq:null-unitarity}
+\end{align}
+反転が反準同型（\(\widetilde{R\,T}=\widetilde{T}\,\widetilde{R}\)）であるため、
+\begin{equation}
+M\,\widetilde{M}
+\;=\; R\,T\,\widetilde{T}\,\widetilde{R}
+\;=\; R\,\widetilde{R}
+\;=\; 1.
+\end{equation}
+これで順序付き積 \(M=RT\) のユニタリ性が確立される。\(\Omega_{\text{torsion}}\) と \(\Omega_{\text{trans}}\) が可換でないとき、\(M\) は \(\exp(\Omega_{\text{biv}}^{(5)})\) と一致する必要はない。\(G(3,1,1)\) の完全な退化計量に関するサンドイッチも同様に脇に置く。
+
+\subsection{統一的代数記述}
+
+この積モーターの枠組みにおいて、光的並進（\(\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}=0\)）とねじれ不整合は、\(J^{(5)}\) によって測られる同一の10次元パラメータ空間に位置する。双対性が零バイベクトルイデアルを閉じない（第2節）ため、並進パラメータは双対化されたねじれデータとは別に追跡される。
+
+\section{PGA--TEGR 対応}
+\label{sec:pga-tegr}
+\label{sec:schwarzschild-pga}
+
+\subsection{範囲}
+
+親である二重時空理論は遠平行重力の実現を目指す：幾何は非零の曲率テンソルではなくねじれによって担われる。射影拡張 \(G(3,1,1)\) において、そのプログラムを固定座標チャート上で展開する。終始 ポアンカレ候補 \(\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) を扱い（12次元のラベル \(\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)\) は扱わない）。本節ではモーター誘起テトラッドを構成し、ヴァイツェンベックねじれを記録し、外部 シュヴァルツシルト対角アンザッツに特殊化し、パラメータ空間形式 \(J\)、\(J^{(5)}\) と遠平行スカラー \(T\) との同一視の現状を述べる。一般多様体上の TEGR と アインシュタイン--ヒルベルト 作用との完全な変分等価性は TEGR 文献~\cite{maluf2013} から取り、ここでは再導出しない。
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.42\textwidth}p{0.26\textwidth}l@{}}
+\hline
+主張 & 現状 & 形式化 \\
+\hline
+モーター \(M:=RT\) のユニタリ性 & 証明済（第5節） & Lean \texttt{Motor} \\
+対角 シュヴァルツシルトテトラッドからの誘導計量 & 証明済（チャート） & Lean \texttt{Gravity.Schwarzschild} \\
+外部チャート上の ヴァイツェンベック\(T^{a}{}_{\mu\nu}\) およびスカラー \(T\) & 証明済（チャート） & Lean \texttt{Gravity.Weitzenbock} \\
+動径ブーストのスケール因子が シュヴァルツシルト赤方偏移に一致 & 証明済 & Lean \texttt{Gravity.Sandwich} \\
+静的対角ゲージに対する \(J=\tfrac12 T+\nabla\cdot B\) & 証明済（チャート切片） & Lean \texttt{Gravity.Identification} \\
+任意モーターに対する一般の \(J^{(5)}\leftrightarrow T\) & 予想 & 下記 \\
+TEGR \(\Leftrightarrow\) アインシュタイン--ヒルベルト（変分） & 外部入力 & \cite{maluf2013} \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{モーター誘起テトラッド}
+
+\begin{definition}[参照コフレームとサンドイッチ]
+\(G(3,1,1)\) 内部の Cl(3,1) ベクトル生成元 \(\{\mathring{e}^{a}\}_{a=0}^{3}\) を固定する。ユニタリモーター \(M\)（第5節）に対し、サンドイッチされたベクトルを
+\begin{equation}
+e^{a} \;:=\; \bigl\langle M\,\mathring{e}^{a}\,\widetilde{M}\bigr\rangle_{1}.
+\label{eq:motor-tetrad}
+\end{equation}
+と定義する。座標チャート \((x^{\mu})\) 上で成分場 \(e^{a}{}_{\mu}(x)\) および誘導計量
+\begin{equation}
+g_{\mu\nu} \;=\; \eta_{ab}\, e^{a}{}_{\mu}\, e^{b}{}_{\nu},
+\label{eq:induced-metric}
+\end{equation}
+を書く。ここで \(\eta=\mathrm{diag}(-1,+1,+1,+1)\) である。
+\end{definition}
+
+\(M=R=\exp(\Omega_{\mathrm{torsion}})\) が純 ローレンツローターであるとき、サンドイッチは参照ベクトル上の局所 ローレンツ作用を実現する。零並進 \(T=1+\Omega_{\mathrm{trans}}\) は完全モーター \(M=RT\) に入るが、それ自体では古典的 シュヴァルツシルト対角ゲージを供給しない。それらは \(J^{(5)}\) によって測られる並進不整合の診断量として利用可能なままである。
+
+\subsection{固定チャート上の ヴァイツェンベックねじれ}
+
+\begin{definition}[チャート ヴァイツェンベックねじれ]
+固定チャート上で、コフレーム \(e^{a}{}_{\mu}\) の ヴァイツェンベックねじれは
+\begin{equation}
+T^{a}{}_{\mu\nu} \;=\; \partial_{\mu} e^{a}{}_{\nu} - \partial_{\nu} e^{a}{}_{\mu}.
+\label{eq:weitzenbock-torsion}
+\end{equation}
+である。逆テトラッド \(e_{a}{}^{\mu}\) および \(g_{\mu\nu}\) によって下げられた時空添字のもとで、遠平行ねじれスカラーは
+\begin{equation}
+T \;=\; \tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu} + \tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho} - T_{\rho}T^{\rho},
+\label{eq:teleparallel-T}
+\end{equation}
+である。ここで \(T_{\rho}=T^{\sigma}{}_{\rho\sigma}\) である。
+\end{definition}
+
+この段階では計量適合 Levi-Civita 接続の曲率テンソルは不要である：遠平行記述は幾何を \(T^{a}{}_{\mu\nu}\) に格納する。
+
+\subsection{シュヴァルツシルトアンザッツ}
+
+\begin{definition}[外部 シュヴァルツシルト対角テトラッド]
+\(r_{s}=2GM/c^{2}>0\) とし、外部領域 \(r>r_{s}\) で作業する。対角コフレーム（単位 \(c=1\)）は
+\begin{align}
+e^{0} &= \sqrt{1-\frac{r_{s}}{r}}\,dt,\nonumber\\
+e^{1} &= \bigl(1-\frac{r_{s}}{r}\bigr)^{-1/2}\,dr,\nonumber\\
+e^{2} &= r\,d\theta,\nonumber\\
+e^{3} &= r\sin\theta\,d\phi.
+\label{eq:schwarzschild-tetrad}
+\end{align}
+である。
+\end{definition}
+
+\begin{definition}[動径ブーストラピディティ]
+\(A(r):=1-r_{s}/r\) とおき、
+\begin{equation}
+\varphi(r) \;:=\; -\log\sqrt{A(r)} \;=\; -\tfrac12\log A(r)
+\qquad(r>r_{s}).
+\label{eq:radial-rapidity}
+\end{equation}
+とする。このとき \(e^{-\varphi}=\sqrt{A}\) および \(e^{\varphi}=A^{-1/2}\) であり、したがって~\eqref{eq:schwarzschild-tetrad} の \((t,r)\) 対角係数は \(B^{+}_{1}=e_{0}\wedge e_{1}\) によって生成される純双曲型ローターのブーストスケール因子である。角脚 \(e^{2},e^{3}\) は球面参照コフレームから取る。対応するねじれパラメータは純ブースト \(\Omega_{\mathrm{torsion}}=(\varphi/2)B^{+}_{1}\) であり、対角ゲージでは零パラメータ \(\lambda^{\mu}=0\) である。
+\end{definition}
+
+\subsection{\texorpdfstring{\(J\) および \(J^{(5)}\) と \(T\)}{J および J(5) と T} との同一視}
+
+\begin{theorem}[チャート水準の主張]
+~\eqref{eq:schwarzschild-tetrad} をもつ外部チャート上で：
+\begin{enumerate}
+\item 誘導計量~\eqref{eq:induced-metric} は シュヴァルツシルト計量である；
+\item ヴァイツェンベックねじれおよびスカラー \(T\) は閉形式の表示をもつ；
+\item 動径ラピディティ~\eqref{eq:radial-rapidity} に対し、パラメータ空間不変量は
+\(J(\varphi)=\tfrac12\varphi(r)^{2}\) を満たし、場の恒等式
+\(T=\tfrac12 T_{\mathrm{bulk}}+ \nabla_{\mu}B^{\mu}\)
+は明示的に構成された動径カレント \(B^{\mu}\) とともに成り立つ（静的、対角ゲージされた切片）。
+\end{enumerate}
+\end{theorem}
+
+\begin{conjecture}[一般モーター同一視]
+チャート上の一般の滑らかなモーター場 \(M(x)=R(x)T(x)\) に対し、\((\Omega_{\mathrm{torsion}},\lambda)\) から構成される拡張診断量 \(J^{(5)}\) は、全発散を除いて遠平行スカラー~\eqref{eq:teleparallel-T} と一致する：
+\begin{equation}
+J^{(5)} \;=\; \tfrac12\, T \;+\; \nabla_{\mu}B^{\mu}.
+\label{eq:J5-T-conjecture}
+\end{equation}
+\end{conjecture}
+
+この予想は \(\lambda^{\mu}=0\) の静的対角 シュヴァルツシルト切片上で上記の定理に還元される。任意モーターに対する証明は、ここで用いたチャート算法を超えて、\(\Omega_{\mathrm{biv}}^{(5)}\) と ヴァイツェンベックコントルションとの完全な辞書を必要とするであろう。
+
+\subsection{アインシュタイン--ヒルベルト との関係}
+
+積分恒等式 \(\int T\,e\,d^{4}x=-\int R\sqrt{-g}\,d^{4}x+(\text{境界})\) およびそれに続く Einstein 方程式との変分等価性は TEGR において標準的である~\cite{maluf2013}。これらを外部入力として用い、一般時空算法はここでは再導出しない。\(G(3,1,1)\) の完全な退化計量に関するサンドイッチ、および \([\Omega_{\mathrm{torsion}},\Omega_{\mathrm{trans}}]\neq0\) のときの \(M\) と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との同一視は、第5節と同様に未解決のままである。
+
+\section{結論}
+
+二重時空構造を、\(\mathrm{Cl}(3,1)\) の双四元数ベクトル基底 \(\{j, kI, kJ, kK\}\) に新たな零ベクトル \(e_{4}\) を付加することにより、射影幾何代数 \(G(3,1,1)\) へ埋め込んだ。拡張ねじれ不整合の生成元は、3つの双曲型生成元 \(\{iI,iJ,iK\}\)、3つの巡回生成元 \(\{I,J,K\}\)、および4つの零バイベクトル \(N_{\mu}=e_{4}\wedge e_{\mu}\)（\(\mu=0,1,2,3\)）からなる10次元バイベクトル空間に自らを組織する。この空間は \(\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) の構造的候補である。
+
+すべての \(\mu,\nu\) に対する強い消滅性 \(N_{\mu}N_{\nu}=0\) は、零部分の指数が次数1の有限多項式であることを保証し、反転奇数性 \(\widetilde{N_{\mu}}=-N_{\mu}\) は積モーター \(M:=RT\) のユニタリ性 \(M\widetilde{M}=1\) を与える。因子が可換でないとき、\(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との関係および完全な退化計量のサンドイッチは未解決のままである。
+
+パラメータ空間形式
+\[
+J^{(5)} \;=\; \tfrac{1}{16}B_{\text{Killing}}\!\bigl(\Omega_{\text{torsion}},\Omega_{\text{torsion}}\bigr) \;+\; \tfrac{1}{2}\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}
+\]
+はねじれ＋並進係数上のスカラー診断量として働く。半角展開のもとで第一項は \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\) であり、離散的な伴う論文の \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) より4倍小さい。双対性は6次元ねじれバイベクトルセクターを閉じ、一方各零生成元は次数4へ送られる。平面ベース括弧積および双対＝法線幾何は未完のプログラムをなす（付録~B）。第6節は固定チャート上の PGA--TEGR 対応を展開する：モーター誘起テトラッド、ヴァイツェンベックねじれ、シュヴァルツシルト対角アンザッツ、および \(J\) と \(T\) とのチャート水準の連関。一般の \(J^{(5)}\leftrightarrow T\) 同一視は予想として残し、TEGR/アインシュタイン--ヒルベルト 変分等価性は文献から取る。
+
+\appendix
+
+\section{10次元生成元の明示的対応}
+
+拡張ねじれ不整合は、3つの類に分解する10次元バイベクトル空間によって生成される。以下では、親理論の双四元数ベクトル基底 \(\{e_{0}=j,\ e_{1}=kI,\ e_{2}=kJ,\ e_{3}=kK\}\) と付加された零ベクトル \(e_{4}\)（\(e_{4}^{2}=0\)、\(\{e_{4},e_{\mu}\}=0\)）とを用いて、\(G(3,1,1)\) 設定における明示的代数代表元を与える。
+
+\subsection{双曲型生成元（平方が \texorpdfstring{\(+1\)}{+1}）}
+
+これら3つの生成元はブースト様変換に付随する：
+
+\begin{align*}
+B_{1}^{+} &= iI = e_{0}\wedge e_{1}, \\
+B_{2}^{+} &= iJ = e_{0}\wedge e_{2}, \\
+B_{3}^{+} &= iK = e_{0}\wedge e_{3}.
+\end{align*}
+
+各々は \((B_{a}^{+})^{2} = +1\) を満たす。
+
+\subsection{巡回生成元（平方が \texorpdfstring{\(-1\)}{-1}）}
+
+これら3つの生成元は双対時空における回転様変換に付随する：
+
+\begin{align*}
+B_{1}^{-} &= I = e_{3}\wedge e_{2}, \\
+B_{2}^{-} &= J = e_{1}\wedge e_{3}, \\
+B_{3}^{-} &= K = e_{2}\wedge e_{1}.
+\end{align*}
+
+各々は \((B_{a}^{-})^{2} = -1\) を満たす。
+
+\subsection{零生成元（平方が \texorpdfstring{\(0\)}{0}）}
+
+零生成元は、付加された零ベクトル \(e_{4}\) と4つの \(\mathrm{Cl}(3,1)\) ベクトル生成元から構成される4つのバイベクトルである：
+\begin{align*}
+N_{0} &= e_{4}\wedge e_{0} = e_{4}\,j,         &\quad& \text{（時間並進生成元）}\\
+N_{1} &= e_{4}\wedge e_{1} = e_{4}\,(kI),      &\quad& \text{（}x\text{ 並進生成元）}\\
+N_{2} &= e_{4}\wedge e_{2} = e_{4}\,(kJ),      &\quad& \text{（}y\text{ 並進生成元）}\\
+N_{3} &= e_{4}\wedge e_{3} = e_{4}\,(kK),      &\quad& \text{（}z\text{ 並進生成元）}
+\end{align*}
+\(e_{4}^{2}=0\) および \(\{e_{4},e_{\mu}\}=0\) を用いると、\emph{任意の} \(\mu,\nu\in\{0,1,2,3\}\) に対して直接
+\[
+N_{\mu}\,N_{\nu} \;=\; (e_{4}e_{\mu})(e_{4}e_{\nu}) \;=\; -\,e_{4}^{2}\,e_{\mu}e_{\nu} \;=\; 0.
+\]
+が得られる。したがって各 \(N_{\mu}\) は平方零であり（\(\mu=\nu\) の場合）、任意の対ごとの積もまた消える。4つの \(N_{\mu}\) は ポアンカレ代数 \(\mathfrak{iso}(3,1)\) の並進生成元 \(P_{\mu}\) を実現する可換な並進イデアルをなす。その反転は \(\widetilde{N_{\mu}}=-N_{\mu}\) であり、これはモーターのユニタリ性に本質的である（第5節）。
+
+\paragraph{通常時空の光的ベクトルとの関係。}
+親理論の光的ベクトルとの連関は直接的である。通常時空における一般の光的ベクトルは
+\[
+L \;=\; ct\,j + x\,kI + y\,kJ + z\,kK \;=\; ct\,e_{0} + x\,e_{1} + y\,e_{2} + z\,e_{3},
+\]
+であり、ミンコフスキー符号の零条件
+\[
+L^{2} \;=\; -(ct)^{2} + x^{2} + y^{2} + z^{2} \;=\; 0,
+\]
+を、親論文の符号 \((-,+,+,+)\) のもとで満たす。この方向 \(L\) に\emph{沿う}並進は零バイベクトル
+\[
+T_{L} \;:=\; e_{4}\wedge L \;=\; ct\,N_{0} + x\,N_{1} + y\,N_{2} + z\,N_{3},
+\]
+によって生成される。これは4つの零バイベクトルの線形結合であり、\(N_{\mu}N_{\nu}\) の強い消滅性によりそれ自身平方零である。並進方向の光的性格は、したがって4つの並進パラメータ \(\lambda^{\mu}=(ct,x,y,z)\) 上の錐条件
+\[
+\eta_{\mu\nu}\,\lambda^{\mu}\lambda^{\nu} \;=\; -(ct)^{2}+x^{2}+y^{2}+z^{2} \;=\; 0
+\]
+として表され、生成元自身に対する代数的制約として\emph{ではない}。4つの \(N_{\mu}\) は線形独立であり、並進セクターは真に4次元のままである。
+
+\subsection{要約}
+
+10個の生成元の完全な集合とその代数的性質を表~\ref{tab:generators} に要約する。
+
+\begin{table}[htbp]
+\centering
+\caption{10次元生成元構造}
+\label{tab:generators}
+\begin{tabular}{llcl}
+\hline
+類          & 生成元                                                            & 個数 & 平方 \\
+\hline
+双曲型     & \(B_{1}^{+}=iI,\ B_{2}^{+}=iJ,\ B_{3}^{+}=iK\)                        & 3     & \(+1\) \\
+巡回         & \(B_{1}^{-}=I,\ \ B_{2}^{-}=J,\ \ B_{3}^{-}=K\)                       & 3     & \(-1\) \\
+零           & \(N_{0}=e_{4}j,\ N_{1}=e_{4}(kI),\ N_{2}=e_{4}(kJ),\ N_{3}=e_{4}(kK)\) & 4     & \(\phantom{+}0\) \\
+\hline
+\end{tabular}
+\end{table}
+
+この10次元基底は拡張ねじれ不整合バイベクトル \(\Omega_{\text{biv}}^{(5)}\) の生成元空間をなす。双対性 \(X\mapsto Xi\) は6つの双曲型--巡回生成元をバイベクトル次数の内部で閉じ（かつ \(e_{4}\) は双四元数的擬スカラー \(i\) と可換である）、一方各零生成元 \(N_{\mu}\) は次数4へ送られる。並進は \(e_{4}\) と通常時空ベクトル生成元から構成される4次元零セクターによって内在的に生成され、光的並進は4次元並進パラメータ空間における錐 \(\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}=0\) に対応する。
+
+\section{平面ベース括弧積と双対時空対応の詳細}
+
+本付録では、第4節における平面ベース括弧積および双対時空の法線性の議論を補う明示的計算を与える。
+
+\subsection{括弧積の定義とその次数内容}
+
+\(G(3,1,1)\) における二つの三ブレード \(A\) および \(B\) に対し、平面ベース括弧積は
+\[
+A \mathbin{\underline{\vee}} B \;=\; \tfrac12 (AB - BA), \qquad
+A \mathbin{\overline{\vee}} B \;=\; \tfrac12 (AB + BA).
+\]
+によって定義される。第4節（脚注）で説明したとおり、これらの記号は \eqref{eq:bracket-def} の意味での括弧積を表し、反スカラー単位を通じて定義される標準的 PGA の「反積」とは一致しない。
+
+5ベクトル代数 \(G(3,1,1)\) において、二つの三ブレードの幾何積は次数内容
+\[
+A_{3}B_{3} \;=\; \langle A_{3}B_{3}\rangle_{0} \;+\; \langle A_{3}B_{3}\rangle_{2} \;+\; \langle A_{3}B_{3}\rangle_{4}.
+\]
+をもつ。交換 \(A\leftrightarrow B\) のもとで、各次数成分は確定した対称性をもつことが期待される：
+\begin{equation}
+\langle A_{3}B_{3}\rangle_{0} = +\langle B_{3}A_{3}\rangle_{0},
+\quad
+\langle A_{3}B_{3}\rangle_{2} = -\langle B_{3}A_{3}\rangle_{2},
+\quad
+\langle A_{3}B_{3}\rangle_{4} = +\langle B_{3}A_{3}\rangle_{4}.
+\label{eq:grade-symmetry}
+\end{equation}
+
+
+\paragraph{明示例による検証。}
+\(G(3,1,1)\) において \(A=e_{1}e_{2}e_{3}\) および \(B=e_{1}e_{2}e_{4}\) を取り、\(e_{1}^{2}=e_{2}^{2}=e_{3}^{2}=+1\)、\(e_{4}^{2}=0\)、すべての生成元は反可換とする。直接計算により、\(e_{3}\) を \(e_{1}e_{2}\) の向こうへ反可換に動かし \(e_{1}e_{2}e_{1}e_{2}=-1\) を用いると、
+\[
+AB \;=\; e_{1}e_{2}e_{3}\,e_{1}e_{2}e_{4} \;=\; -\,e_{3}e_{4},
+\]
+が得られ、これは純次数2である。同様に、
+\[
+BA \;=\; e_{1}e_{2}e_{4}\,e_{1}e_{2}e_{3} \;=\; -\,e_{4}e_{3} \;=\; +\,e_{3}e_{4}.
+\]
+したがって
+\[
+A\mathbin{\underline{\vee}}B \;=\; \tfrac{1}{2}(AB-BA) \;=\; -\,e_{3}e_{4} \;\in\; \text{次数2},
+\quad
+A\mathbin{\overline{\vee}}B \;=\; \tfrac{1}{2}(AB+BA) \;=\; 0,
+\]
+となり、\eqref{eq:grade-symmetry} と一致する。
+
+\paragraph{非零次数4の場合の検証。}
+\(A=e_{1}e_{2}e_{3}\) および \(B=A=e_{1}e_{2}e_{3}\) を取る。このとき \(AB=A^{2}=(e_{1}e_{2}e_{3})^{2}=-1\) であり、これは次数0である。\(BA=A^{2}=-1\)。したがって \(A\mathbin{\overline{\vee}}A=-1\)（スカラー）および \(A\mathbin{\underline{\vee}}A=0\) である。次数4の例として、\(A=e_{0}e_{1}e_{2}\) および \(B=e_{0}e_{3}e_{4}\) を取る。\(AB=(e_{0}e_{1}e_{2})(e_{0}e_{3}e_{4})\) であり、その次数4成分は非零の \(e_{1}e_{2}e_{3}e_{4}\)（または生成元の順序に依存する関連する四ブレード）である。これらの計算は考察した例の上で次数パターンを支持する。任意の三ブレードに対する一般定理は未解決のままである。
+
+\subsection{双対時空法線との対応}
+
+\(P\) を通常時空ベクトル生成元から構成された三ブレードとし、\(D\) を双対時空セクターの要素とする。代表的な構成の上で
+\begin{equation}
+P \mathbin{\underline{\vee}} D \;=\; \kappa\,(e_{4}\wedge n),
+\label{eq:appB-normal}
+\end{equation}
+が見出される。ここで \(n\) は \(P\) によって表される平面への法線ベクトル（通常時空の意味で）、\(e_{4}\wedge n\) は \(\{N_{0},N_{1},N_{2},N_{3}\}\) によって張られる4次元零セクター内の零バイベクトル、\(\kappa\) は \(P\) および \(D\) の正規化によって決まる実係数である。両辺は次数2であり、\eqref{eq:grade-symmetry} と整合する。
+
+\paragraph{計算済み代表例。}
+\(P = e_{4}\wedge e_{1}\wedge e_{2}\)（一つの \(e_{4}\) 因子と \(e_{1},e_{2}\) によって張られる2平面を含む三ブレード）および \(D=jI\)（親理論の双対時空セクターの要素）を取る。\(jI=-e_{0}e_{3}e_{2}\)（親理論における双対基底の次数3同一視から）および反交換 \(\{e_{4},e_{\mu}\}=0\) を用いると、
+\[
+PD \;=\; (e_{4}e_{1}e_{2})\,(-e_{0}e_{3}e_{2}) \;=\; -\,e_{4}e_{1}e_{2}e_{0}e_{3}e_{2}.
+\]
+が得られる。\(e_{2}\) をそれ自身の向こうへ反可換に動かすと因子が消去され（\(e_{2}^{2}=+1\) による）、並べ替えの後に \(PD-DP\) が \(e_{4}\wedge e_{3}\) の非零倍数、すなわち \(N_{3}=e_{4}\wedge e_{3}\) に比例する零セクターの非零要素に還元されることが分かる。方向 \(e_{3}\) はまさに2平面 \(e_{1}\wedge e_{2}\) への単位法線である（空間部分において）。したがって \(\kappa\cdot(e_{4}\wedge n) = \kappa\,N_{3}\)（\(n=e_{3}\)）である。これはこの代表例に対して \eqref{eq:appB-normal} を確認する。
+
+決定的なことに、\eqref{eq:appB-normal} の右辺は \(e_{4}\wedge(\text{ベクトル})\) の形のバイベクトル、すなわち零並進イデアルの要素である。したがって双対時空要素 \(D\) は法線方向の担体として作用し、括弧積 \(P\mathbin{\underline{\vee}}D\) はその法線に沿う並進の生成元を生じる。
+
+\subsection{並進不整合の出現}
+
+三ブレード \(P\) が零セクターからの寄与を含むよう拡大されるとき、
+\[
+P \;\to\; P \;+\; \sum_{\mu=0}^{3}\lambda^{\mu}\,P^{(\mu)}_{\text{零}},
+\qquad
+P^{(\mu)}_{\text{零}} \;:=\; N_{\mu}\wedge n,
+\]
+反交換子括弧積 \(P\mathbin{\overline{\vee}}D\) は並進パラメータに線形な追加項を獲得する：
+\[
+P \mathbin{\overline{\vee}} D
+\;=\; \bigl(P\mathbin{\overline{\vee}}D\bigr)_{\text{ねじれ}}
+\;+\; \sum_{\mu=0}^{3} c_{\mu}\,\lambda^{\mu}\,(e_{4}\wedge n\wedge e_{\mu}),
+\]
+ここで次数4の四ブレード \(e_{4}\wedge n\wedge e_{\mu}\) は並進不整合の幾何学的担体である。係数 \(c_{\mu}\) は平面と双対法線との相対方位によって決まる。並進項はすべての \(\lambda^{\mu}=0\) のとき恒等的に消え、純ねじれの場合を回復する。とくに \(N_{\mu}\cdot e_{4}\) の形の縮約（\(e_{4}^{2}=0\) であるため消えるであろう）はここでは現れない。正しい幾何学的対象は次数4の四ブレード \(e_{4}\wedge n\wedge e_{\mu}\) である。
+
+\subsection{双対性の下での整合性}
+
+双対写像 \(X\mapsto Xi\) は標準的な仕方で \(\mathrm{Cl}(3,1)\) 部分代数上で作用し、\(e_{4}i=ie_{4}\) であるため \(e_{4}\) 因子を通り抜けて可換である。零バイベクトル \(N_{\mu}\) の双対化は次数4の要素を与える（第2節）。したがって零セクター上の完全に双対共変な括弧積算法は未解決のままである。
+
+これらの計算はねじれ不整合および並進不整合の幾何学的読みを例示し、第4節の一般プログラムを後続の研究に残す。
+
+\begin{thebibliography}{99}
+
+\bibitem{Gunn2017}
+C.~Gunn,
+\textit{Geometric algebras for Euclidean geometry},
+Advances in Applied Clifford Algebras \textbf{27} (1), 185--208 (2017).
+
+\bibitem{Lengyel2024}
+E.~Lengyel,
+\textit{Projective Geometric Algebra Illuminated},
+Terathon Software LLC (2024).
+
+\bibitem{DeKeninckDorst2019}
+S.~De Keninck and L.~Dorst,
+\textit{Projective geometric algebra: A new framework for doing Euclidean geometry},
+arXiv:1901.05873 (2019).
+
+\bibitem{GunnDeKeninck2020}
+C.~Gunn and S.~De Keninck,
+\textit{Geometric algebra and computer graphics},
+in: SIGGRAPH 2019 Courses, ACM, New York (2019).
+See also: \texttt{https://bivector.net/}.
+
+\bibitem{DorstFontijneMann2007}
+L.~Dorst, D.~Fontijne, and S.~Mann,
+\textit{Geometric Algebra for Computer Science: An Object-Oriented Approach to Geometry},
+Morgan Kaufmann, San Francisco (2007).
+
+\bibitem{DoranLasenby2003}
+C.~Doran and A.~Lasenby,
+\textit{Geometric Algebra for Physicists},
+Cambridge University Press, Cambridge (2003).
+
+\bibitem{Hestenes2015}
+D.~Hestenes,
+\textit{Space-Time Algebra}, 2nd ed.,
+Birkh\"{a}user, Basel (2015).
+
+\bibitem{HestenesSobczyk1984}
+D.~Hestenes and G.~Sobczyk,
+\textit{Clifford Algebra to Geometric Calculus: A Unified Language for Mathematics and Physics},
+Reidel, Dordrecht (1984).
+
+\bibitem{Lounesto2001}
+P.~Lounesto,
+\textit{Clifford Algebras and Spinors}, 2nd ed.,
+London Mathematical Society Lecture Note Series \textbf{286},
+Cambridge University Press, Cambridge (2001).
+
+\bibitem{ConwaySmith2003}
+J.~H.~Conway and D.~A.~Smith,
+\textit{On Quaternions and Octonions: Their Geometry, Arithmetic, and Symmetry},
+A K Peters, Natick, MA (2003).
+
+\bibitem{Selig2005}
+J.~M.~Selig,
+\textit{Geometric Fundamentals of Robotics}, 2nd ed.,
+Monographs in Computer Science, Springer, New York (2005).
+
+\bibitem{Weinberg1995}
+S.~Weinberg,
+\textit{The Quantum Theory of Fields, Volume I: Foundations},
+Cambridge University Press, Cambridge (1995).
+
+\bibitem{Tung1985}
+W.-K.~Tung,
+\textit{Group Theory in Physics},
+World Scientific, Singapore (1985).
+
+\bibitem{FultonHarris1991}
+W.~Fulton and J.~Harris,
+\textit{Representation Theory: A First Course},
+Graduate Texts in Mathematics \textbf{129},
+Springer, New York (1991).
+
+\bibitem{Humphreys1972}
+J.~E.~Humphreys,
+\textit{Introduction to Lie Algebras and Representation Theory},
+Graduate Texts in Mathematics \textbf{9},
+Springer, New York (1972).
+
+\bibitem{maluf2013}
+J.~W.~Maluf,
+\textit{The teleparallel equivalent of general relativity},
+Annalen der Physik \textbf{525} (5--6), 339--357 (2013).
+
+\end{thebibliography}
+
+\end{document}

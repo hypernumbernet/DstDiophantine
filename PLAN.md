@@ -116,6 +116,8 @@ flowchart LR
 ### 探索的（並列トラック）
 
 - **1D CGA 探針**（`Algebra/CGA`, `CGA.lean`）: `Cl(2,1)` null 点・dilation。時空 CGA は未着手
+- **D4L / スケール依存四値論理**（`Logic/`, `Logic.lean`）: `JNormalized` の四状態、\(N=4\) センサス、
+  \(V_\lambda\) の大規模臨界点、書かれた \(U\) では小スケール収縮が偽。Basic 非依存
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
   動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
@@ -268,7 +270,8 @@ Theorems/
   BealGaussian (ℤ[i] UFD / equal-odd / 偶二一致進捗), FermatLast (FLT 公理), Mihailescu,
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
-Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない）
+Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
+Logic/                   ← D4L / スケール依存四値論理（JNormalized の四状態）
 ```
 
 ---
@@ -310,7 +313,7 @@ Gravity.lean / CGA.lean  ← 並列入口（Basic には強制 import しない�
 
 ## 7. DST / 離散論文へ返す欠点（2026-08-14）
 
-Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc のため、ここをフィードバック票とする。このサイクルでは clone / 直接編集しない。
+Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc。ローカル `References/` のコピーは 2026-08-14 に本表へ合わせて改訂した。GitHub 本体へは未反映。フォルダに無い `dst-riemann-hypothesis.tex` / `dst-langlands-program.tex` / `dst-particle-stability.tex` / `dst-iut.tex` は未着手。
 
 ### 優先（`|J|≤1` を無条件に使っている）
 
@@ -374,6 +377,6 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。7予�
 3. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
 4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
-6. **（論文フィードバック）** 上表を dual-spacetime-doc 側へ反映
+6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
 
 **最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD 進捗** まで固めた段階であり、無条件古典 Beal は残件（混合指数 / ピタゴラス奇数還元 / equal-odd 二因子 / 偶二一致）が閉じるまで未達成である。FLT 公理は mathlib 未形式化の古典定理の明示的仮定であり、Wiles の Lean 証明ではない。

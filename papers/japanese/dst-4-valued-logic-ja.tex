@@ -1,0 +1,332 @@
+\documentclass[dvipdfmx,11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1.1in}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{pxjahyper}
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{proposition}[theorem]{命題}
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{corollary}[theorem]{系}
+\newtheorem{claim}[theorem]{主張}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{example}[theorem]{例}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注意}
+\renewcommand{\proofname}{証明}
+
+\newcommand{\Jnorm}{J_{\rm norm}}
+\newcommand{\Jbound}{\frac{3\pi^2}{8}}
+
+\title{二重時空4値矛盾許容論理（D4L）：\\
+最小許容トーラス \(N=4\) から生じる四つの真理値}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+四つの論理状態が実際に達成される最小の離散二重時空模型から出発して、D4L（二重時空4値論理）を導入する。二重時空理論は、すべての質量構成をトーラス \((\mathbb{Z}/N\mathbb{Z})^6\) 上の六つのラピディティ目盛りによって符号化する。コンパクト化 \(N=4\) は、反同期の切断 \(\pi/2\) 自体が格子点となる最初の値である。非許容目盛りを捨てると、残る構成は \(3^3=27\) 個のみである。それらの正規化ねじれ \(\Jnorm\) は七つの値
+\(-1,-2/3,-1/3,0,1/3,2/3,+1\) をとり、これが四つの D4L 状態
+\(\lvert T\rangle\)、\(\lvert U\rangle\)、\(\lvert F\rangle\)、\(\lvert B\rangle\) に分割される。
+
+したがって真理値は追加の意味論的層ではない：それらは代数にすでに存在する高さの符号と飽和である。許容構成上の連続上限 \(|\Jnorm|\le 1\)、および \(N=4\) が両極端を達成するという事実は、Lean~4 で機械検証されている。本稿の残りはこの四状態格子に対してゲーデル文を読む。
+\end{abstract}
+
+\section{本稿の読み方}
+
+初読者は、二重時空理論、クリフォード代数、矛盾許容論理をあらかじめ知る必要はない。必要な幾何的描像は次だけである：
+
+\begin{itemize}[leftmargin=1.4em]
+  \item すべての構成は\emph{三つの空間軸}をもつ。
+  \item 各軸には二つの角がある：通常セクターのブースト \(\alpha_a\) と双対セクターの回転 \(\beta_a\)。
+  \item これら六つの角は当初から連続ではない。それらは \(N\) 時の有限時計の上にあり、物理的に許される最大値 \(\pi/2\) をすでに含む最小の時計が \(N=4\) である。
+\end{itemize}
+
+第~\ref{sec:n4}節はこの時計だけで進む。四つの真理値は、\(27\) 個の許容設定のグループ分けとして現れる。後続の節は同じグループ分けを伴う論文 \cite{DST2025,Diophantine2026} の連続言語へ翻訳し、そのうえで自己言及を解釈する。
+
+\section{最小模型：\texorpdfstring{\(N=4\)}{N=4}}
+\label{sec:n4}
+
+\subsection{4時間時計上の六つの目盛り}
+
+六つのラピディティを
+\begin{equation}
+\label{eq:n4-embed}
+\alpha_a = \frac{2\pi n_a}{4} = \frac{\pi n_a}{2},\qquad
+\beta_a  = \frac{2\pi m_a}{4} = \frac{\pi m_a}{2},
+\qquad a=1,2,3,
+\end{equation}
+により離散化する。ここで \(n_a,m_a\in\{0,1,2,3\}\) は整数である。したがって全トーラスは \(4^6=4096\) 点をもつ。その大半は論理状態としては\emph{用いられない}。
+
+\begin{definition}[許容構成]
+\label{def:admissible}
+構成が\emph{許容}であるとは、すべての軸で
+\[
+\alpha_a\ge 0,\qquad \beta_a\ge 0,\qquad \alpha_a+\beta_a\le \frac{\pi}{2}
+\]
+が成り立つことである。\eqref{eq:n4-embed} の整数ラベルでは、同値に
+\[
+n_a+m_a\le 1
+\]
+である。
+\end{definition}
+
+切断 \(\pi/2\) は双対写像の反同期上限である：同一軸上の通常ラピディティと双対ラピディティは直角を超えて加算してはならない。\(N=4\) ではその切断はちょうど一目盛りであり、それゆえ \(N=4\) が自然な最初の模型となる。\(N=3\) では同じ切断は格子点ではなく、極端 \(\Jnorm=\pm 1\) は決して達成されない \cite{Diophantine2026}。
+
+\subsection{各軸の三つの許容目盛り}
+
+不等式 \(n_a+m_a\le 1\) が各軸に残す対は三つだけである：
+
+\begin{center}
+\begin{tabular}{cccccl}
+\toprule
+\((n_a,m_a)\) & \((\alpha_a,\beta_a)\) & \(\alpha_a^2-\beta_a^2\) & 符号 \(e_a\) & 名称 \\
+\midrule
+\((0,0)\) & \((0,0)\) & \(0\) & \(0\) & 静止 \\
+\((1,0)\) & \((\pi/2,\,0)\) & \(+(\pi/2)^2\) & \(+1\) & 純ブースト \\
+\((0,1)\) & \((0,\,\pi/2)\) & \(-(\pi/2)^2\) & \(-1\) & 純回転 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\(n_a\ge 2\) または \(m_a\ge 2\) の目盛り、および混合目盛り \((1,1)\) は許容錐の外にある。独立な三軸はしたがって
+\[
+3^3 = 27
+\]
+個の許容世界を与え、それ以外はない。
+
+\subsection{構成の高さ}
+
+二重時空理論の生のねじれスカラーは初等二次形式
+\begin{equation}
+\label{eq:J-raw}
+J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr)
+\end{equation}
+である。許容構成上では \(|J|\le\Jbound\) であり、等号はすべての軸が同一の極値目盛りであるときに限る。\emph{正規化}高さ
+\begin{equation}
+\label{eq:Jnorm}
+\Jnorm := \frac{8}{3\pi^2}\,J
+\end{equation}
+はその天井を \(1\) に再スケールする。\(N=4\) の目盛り \eqref{eq:n4-embed} を代入すると、両公式は整数の計数に潰れる：
+\begin{equation}
+\label{eq:n4-height}
+J = \Jbound\cdot\frac{e_1+e_2+e_3}{3},\qquad
+\Jnorm = \frac{e_1+e_2+e_3}{3},\qquad
+e_a\in\{-1,0,+1\}.
+\end{equation}
+したがって \(N=4\) 格子上の \(\Jnorm\) は三票の平均にすぎず、各票は「ブースト」「静止」「回転」のいずれかである。
+
+\begin{example}[計算例]
+\label{ex:n4-work}
+全静止票 \((0,0,0)\) は \(\Jnorm=0\) を与える。
+全ブースト票 \((+1,+1,+1)\) は \(\Jnorm=+1\) および生の高さ \(J=\Jbound\) を与える。
+全回転票 \((-1,-1,-1)\) は \(\Jnorm=-1\) を与える。
+単一ブースト \((+1,0,0)\) は \(\Jnorm=1/3\) を与える。
+\end{example}
+
+同じ二つの極端は、Lean が \texttt{pureHyperbolicDiscrete} および \texttt{pureEllipticDiscrete} として記録する一般格子点の \(N=4\) の場合である \cite{Diophantine2026}。
+
+\subsection{到達可能な七つの高さ}
+
+\(e_1+e_2+e_3\) は \(\{-3,-2,-1,0,1,2,3\}\) を走るから、許容 \(N=4\) トーラスはちょうど七つの高さを実現する。その多重度は、各和を \(\{-1,0,+1\}\) の三票で書く方法の数である：
+
+\begin{center}
+\begin{tabular}{crrl}
+\toprule
+\(\Jnorm\) & 構成数 & \(J\) & D4L 状態 \\
+\midrule
+\(+1\)     & \(1\)  & \(+\Jbound\) & \(\lvert F\rangle\) 偽 \\
+\(+2/3\)   & \(3\)  & \(+\frac23\Jbound\) & \(\lvert U\rangle\) 未定 \\
+\(+1/3\)   & \(6\)  & \(+\frac13\Jbound\) & \(\lvert U\rangle\) 未定 \\
+\(0\)      & \(7\)  & \(0\) & \(\lvert T\rangle\) 真 \\
+\(-1/3\)   & \(6\)  & \(-\frac13\Jbound\) & \(\lvert B\rangle\) 両方 \\
+\(-2/3\)   & \(3\)  & \(-\frac23\Jbound\) & \(\lvert B\rangle\) 両方 \\
+\(-1\)     & \(1\)  & \(-\Jbound\) & \(\lvert B\rangle\) 両方（最深） \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+七つの濃度の和は \(1+3+6+7+6+3+1=27\) である。いかなる許容 \(N=4\) 点も他の値を生じず、いずれも \(|\Jnorm|\le 1\) を破らない。
+
+\begin{center}
+\begin{tikzpicture}[x=2.15cm,y=1cm]
+  \draw[-] (-1.15,0) -- (1.15,0);
+  \draw (-1,0.08) -- (-1,-0.08) node[below] {\small $-1$};
+  \draw (-0.666,0.08) -- (-0.666,-0.08) node[below] {\small $-\frac{2}{3}$};
+  \draw (-0.333,0.08) -- (-0.333,-0.08) node[below] {\small $-\frac{1}{3}$};
+  \draw (0,0.08) -- (0,-0.08) node[below] {\small $0$};
+  \draw (0.333,0.08) -- (0.333,-0.08) node[below] {\small $\frac{1}{3}$};
+  \draw (0.666,0.08) -- (0.666,-0.08) node[below] {\small $\frac{2}{3}$};
+  \draw (1,0.08) -- (1,-0.08) node[below] {\small $+1$};
+  \node[above,align=center] at (-1,0.18) {\small \(\lvert B\rangle\)\\[-1pt]\small 最深};
+  \node[above] at (-0.5,0.18) {\small \(\lvert B\rangle\)};
+  \node[above] at (0,0.18) {\small \(\lvert T\rangle\)};
+  \node[above] at (0.5,0.18) {\small \(\lvert U\rangle\)};
+  \node[above,align=center] at (1,0.18) {\small \(\lvert F\rangle\)\\[-1pt]\small 一意};
+\end{tikzpicture}
+\end{center}
+
+\subsection{分割としての四つの論理状態}
+
+\begin{definition}[\(N=4\) 上の D4L 状態]
+\label{def:d4l-n4}
+二十七の世界を \(\Jnorm\) の符号と飽和によってグループ分けする：
+\begin{align*}
+\lvert T\rangle &\colon \Jnorm = 0
+  &&\text{\(7\) 世界：通常・双対の完全均衡、}\\
+\lvert U\rangle &\colon 0 < \Jnorm < 1
+  &&\text{\(9\) 世界：ブースト優勢、未飽和、}\\
+\lvert F\rangle &\colon \Jnorm = +1
+  &&\text{\(1\) 世界：三軸すべてが純ブースト、}\\
+\lvert B\rangle &\colon -1\le \Jnorm < 0
+  &&\text{\(10\) 世界：回転優勢。一意の}\\
+&&& \text{全回転点 \(\Jnorm=-1\) を含む。}
+\end{align*}
+\end{definition}
+
+二つの非対称性はすでに可視であり、覆い隠すべきではない。
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item 正の極端は偽と名付けられた単元であり、負の極端は両方の内部に留められる。これは論理的な規約であり、格子の欠落ではない：両極端は存在し、かつ一意である。
+  \item 混合極値——一軸がブースト、別軸が回転——は決して \(|\Jnorm|=1\) に達しない。例えば \((+1,+1,-1)\) は \(\Jnorm=1/3\) をもち、\(\lvert U\rangle\) に属する。飽和には\emph{すべての}軸が同じ票を投じることが必要である。
+\end{enumerate}
+
+これが離散意味論の全体である。次節は、重力論文が用いる連続記法で同じことを述べるにすぎない。
+
+\section{\texorpdfstring{\(N=4\)}{N=4} 時計から連続上限へ}
+\label{sec:continuous}
+
+\begin{definition}[ねじれスカラー]
+\label{def:J}
+ローター対 \(R=R_{\rm usual}R_{\rm dual}\) に対して \(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) とし、\(\Omega_{\rm biv}\) を主対数とする。本稿を通じて用いるパラメータ形は \eqref{eq:J-raw}、同値に
+\[
+J=\frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
+\]
+および正規化 \eqref{eq:Jnorm} である。旧稿に現れる結合 \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) は、標準生成元展開の下で \eqref{eq:J-raw} と定数倍だけ異なる。ここでの有界性の主張は常に \(J\) および \(\Jnorm\) を指す \cite{Diophantine2026}。
+\end{definition}
+
+\begin{theorem}[ねじれ有界性]
+\label{thm:torsion-bound}
+定義~\ref{def:admissible} の許容錐上で
+\[
+|J|\le\Jbound,\qquad |\Jnorm|\le 1.
+\]
+等号 \(|\Jnorm|=1\) は、すべての軸が純ブーストであるか、すべての軸が純回転であるときに限り成り立つ。許容錐上の \(\Jnorm\) の像は区間 \([-1,1]\) 全体である。主枝条件 \(|\alpha_a+\beta_a|\le\pi/2\) のみを保ち負のラピディティを許すと、上限は偽になる。
+\end{theorem}
+
+一般のコンパクト化 \(N\) では離散上限はより鋭い \cite{Diophantine2026}：
+\[
+|\Jnorm|\le\Bigl(\frac{4\lfloor N/4\rfloor}{N}\Bigr)^2.
+\]
+\(4\mid N\) のとき——とくに \(N=4\) のとき——右辺は \(1\) であり、両符号が達成される。\(4\nmid N\) のとき、すべての許容点は厳密不等式 \(|\Jnorm|<1\) を満たすので、状態 \(\lvert F\rangle\) および最深の \(\lvert B\rangle\) は欠ける。これが、\(N=4\) が最小の完全な論理時計であることの正確な意味である。
+
+\begin{definition}[真理値]
+\label{def:truth}
+命題 \(p\) の真理値は
+\(v(p):=\Jnorm(R_p)\in[-1,1]\) である。ここで \(R_p\) は \(p\) の証明データを符号化するローター（またはローターの有限集団）である。\(N=4\) 時計上ではこれはちょうど平均 \eqref{eq:n4-height} である。
+\end{definition}
+
+\begin{definition}[論理演算]
+\[
+\neg p = -v(p),\qquad
+p\wedge q = \min\bigl(v(p),v(q)\bigr),\qquad
+p\vee q = \max\bigl(v(p),v(q)\bigr).
+\]
+否定は通常・双対の交換 \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\) であり、これは \(J\mapsto -J\)、したがって \(\Jnorm\mapsto-\Jnorm\) を送る。とくに \(\lvert F\rangle\) と最深の \(\lvert B\rangle\) を交換し、\(\lvert T\rangle\) を固定する。
+\end{definition}
+
+\begin{remark}
+旧稿は、すでに \([0,1]\) へ押し込まれた生スカラーと真理値を同一視したうえで \(\neg p=1-p\) と書いた。その規約は \(\Jnorm\) の符号付き区間 \([-1,1]\) と衝突する。上の双対交換による否定が、代数が誘導する否定である。
+\end{remark}
+
+\section{四状態格子上のゲーデル文}
+
+\(G\) をゲーデル文とする：「\(G\) は当該体系において証明不可能である。」
+古典的にはこれは逆説である。D4L では、証明可能性を同期 \(\Jnorm\to 0\)、すなわち \(\lvert T\rangle\) への駆動として読む。
+
+\begin{theorem}[D4L におけるゲーデル読み]
+\label{thm:godel-eq}
+「証明不可能」を片側区間内部のアフィン補元であるかのように装うと、中点 \(\Jnorm(G)=1/2\) に導かれる。その点は \(N=4\) の格子値では\emph{ない}；最も近い未定目盛りは \(\Jnorm=1/3\) と \(\Jnorm=2/3\) であり、ともに \(\lvert U\rangle\) に属する。完全な符号付き動力学の下での誠実な制約は
+\[
+\Jnorm(G)<1
+\]
+のみである（「一意の全ブースト世界 \(\lvert F\rangle\) ではない」）。
+\end{theorem}
+
+\begin{theorem}[三つのアトラクタと一つの禁止壁]
+\label{thm:attractors}
+キリング形式の符号非対称性と両立する最小の流れは
+\[
+\frac{d\Jnorm}{dt}=-\sin(\pi\,\Jnorm)
+\]
+である。\([-1,1]\) 上の静止点は \(\Jnorm=0\)（\(\lvert T\rangle\)、古典的に真）および端点 \(\Jnorm=\pm 1\) である。開区間 \((0,1)\) は未定であり、この流れの下では \(\lvert T\rangle\) へ向かって不安定である。半区間 \([-1,0)\) は回転優勢であり、最深の \(\lvert B\rangle\) へ吸引する。壁 \(\Jnorm=+1\) は格子点としては許容であるが、負ねじれ吸引域の内部アトラクタではない。
+\end{theorem}
+
+\begin{proof}[概略]
+二次形式 \eqref{eq:J-raw} は各ブースト目盛りから正の寄与を、各回転目盛りから負の寄与を受ける。\(\lvert F\rangle\) に坐ることを禁じられた自己言及は、コンパクト性が \(\Jnorm=-1\) で止めるまで回転側へ駆動される。\(N=4\) 時計上ではこれはちょうど一意の全回転世界である。流れ自体は模型化の選択であり、Lean の定理ではない；二十七世界のセンサスと上限 \(|\Jnorm|\le 1\) は Lean の定理である。
+\end{proof}
+
+\begin{corollary}
+D4L で読むとき、文 \(G\) は「真」と「偽」のあいだで選ぶことを要求されない。それは \(\lvert B\rangle\) を占めてよい：両方、すなわち回転優勢な許容高さという正確な意味において。
+\end{corollary}
+
+\section{格子を踏まえた完全性の議論}
+
+\begin{theorem}[負ねじれセクター上の解釈]
+\label{thm:hilbert}
+\(\mathcal{S}\) をペアノ算術を含む形式体系とし、\(\mathcal{S}\) の文を許容ローターとして解釈する。セクター \(\Jnorm<0\) では、そのような各文は \(\lvert B\rangle\) をなす十個の \(N=4\) ラベルの一つ、またはより大きな \(N\) に対するその連続補間を受け取る。連言は爆発しない：二つの負の高さは負のままである。これは \(\mathcal{S}\) に対する意味論であり、古典的ヒルベルト計画が一次ペアノ算術の内部で完了したことの証明ではない。
+\end{theorem}
+
+\begin{proof}[概略]
+自己言及文は定理~\ref{thm:godel-eq} により \(\lvert F\rangle\) から排除され、したがって \(\lvert U\rangle\) または \(\lvert B\rangle\) に落ちる。第~\ref{sec:continuous}節の符号付き否定は負の高さを正へ、またその逆へ送るので、\(p\wedge\neg p\) はある高さとその反対の最小であり、したがって非正であり、すべての文を \(\lvert F\rangle\) へ強制することはない。\(N=4\) 上の決定可能性は文字どおりの有限性である：二十七の世界。
+\end{proof}
+
+\begin{remark}
+\(4\mid N\) なるより大きな \(N\) は、同じ四つの箱を、なお \(|\Jnorm|\le 1\) で有界なより多くの内部高さを挿入することで細分する。四つの名称は増えない。それゆえ論理は \(N\) 値ではなく4値である。
+\end{remark}
+
+\section{\texorpdfstring{\(N=4\)}{N=4} が示すこと・示さないこと}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \emph{示す}のは、有限で完全に列挙された許容集合の分割としての四つの名付けられた状態である。
+  \item \emph{示す}のは、両壁 \(\Jnorm=\pm 1\) の達成である。\(N\not\equiv 0\pmod{4}\) ではこれは不可能である。
+  \item \emph{示す}のは、否定の幾何化である：ブースト目盛りと回転目盛りを交換する。
+  \item \emph{示さない}のは、それ自体でゲーデルの定理が古典算術において偽であることの証明である。D4L 読みは意味論の変更である。
+  \item \emph{示さない}のは、生の \(J\) を \([-1,1]\) の値と同一視することである。区間 \([-1,1]\) は \(\Jnorm\) に属し、生の天井は \(\Jbound\) である。
+\end{itemize}
+
+連続体仮説、意識、大規模言語モデルの幻覚は、\(N=4\) のセンサスの帰結ではない。それらは同じ符号付き高さに対する思弁的な注釈のままである。
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{DST2025}
+二重時空理論：双対時空間のねじれとしての重力 (2025),
+arXiv:2512.xxxxx.
+
+\bibitem{Diophantine2026}
+離散双四元数二重時空：ねじれ不整合・PGA埋め込みによるディオファントス予想の厳密証明,
+\texttt{dst-diophantine.tex} (2026).
+Lean 伴走：\url{https://github.com/hypernumbernet/DstDiophantine}.
+
+\bibitem{Godel1931}
+K.~G\"odel, \"Uber formal unentscheidbare S\"atze der Principia Mathematica
+und verwandter Systeme~I, Monatshefte Math.\ Phys.\ 38 (1931).
+
+\bibitem{Priest2006}
+G.~Priest, \emph{In Contradiction: A Study of the Transconsistent},
+Oxford University Press (2006).
+
+\end{thebibliography}
+
+\end{document}

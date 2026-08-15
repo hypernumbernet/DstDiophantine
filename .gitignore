@@ -1,2 +1,9 @@
 /.lake
 /References
+
+# LaTeX intermediate files
+*.aux
+*.log
+*.out
+*.toc
+*.pdf

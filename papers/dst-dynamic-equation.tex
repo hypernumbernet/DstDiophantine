@@ -1,0 +1,106 @@
+\documentclass[dvipdfmx,11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
+\usepackage[dvipdfmx]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+
+\title{Derivation of Dual-Rotor Dynamics in Double Spacetime Theory:\\ 
+A Harmonic Oscillator Model from Torsional Mismatch Potential}
+
+\author{\texttt{https://github.com/hypernumbernet}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+In the double spacetime theory, every massive particle carries an intrinsic pair of usual and dual spacetimes encoded in the 16-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$. Gravity arises from the torsional mismatch between the usual rotor $R_{\text{usual}}$ and the dual rotor $R_{\text{dual}}$. Here we derive a rigorous dynamical equation for the torsional mismatch angle by promoting the Killing-form invariant $J$ to a particle-intrinsic potential. Variation of the resulting action yields a simple harmonic oscillator equation $\ddot{\delta\theta}_a + m \delta\theta_a = 0$, where $m$ is the rest mass. In the low-energy regime, this naturally reproduces the de Broglie phase, providing a geometric origin for quantum matter waves while preserving classical equivalence to teleparallel gravity.
+\end{abstract}
+
+\section{Introduction}
+
+The double spacetime theory posits that spacetime is not a shared continuum but a particle-local pair of compactified Minkowski spacetimes described by biquaternions $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. The complete rotor is
+\[
+R_{\text{total}} = R_{\text{usual}} R_{\text{dual}}
+= \exp\!\left[\sum_{a=1}^3 \left(\frac{\theta_a}{2} i\Gamma_a + \frac{\phi_a}{2}\Gamma_a\right)\right],
+\]
+where $\Gamma_1=I$, $\Gamma_2=J$, $\Gamma_3=K$. The classical gravitational action is proportional to the Killing-form scalar $J$ constructed from the bivector $\Omega_{\text{biv}} = \log(R_{\text{usual}}^\dagger R_{\text{dual}})$. The $J$ of this note is a small-angle oscillator potential, not the parameter-space Killing quadratic of the main paper; the admissible ceiling $|J_{\rm norm}|\le 1$ must not be transplanted here.
+
+In this paper, we treat $J$ as an intrinsic potential for individual particles and derive the exact dynamics of the torsional mismatch angle $\delta\theta_a = \theta_a - \phi_a$. The resulting equation is a mass-proportional harmonic oscillator, yielding the de Broglie phase in the linear regime.
+
+\section{Torsional Mismatch Potential in the Small-Angle Approximation}
+
+Define the relative rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$. For small mismatch angles,
+\[
+\Omega \approx 1 + \frac{1}{2}\sum_{a=1}^3 \delta\theta_a (i\Gamma_a + \Gamma_a).
+\]
+The bivector $\Omega_{\text{biv}} = \log\Omega$ yields, after cancellation of cross terms and proper normalization,
+\[
+J \approx \frac{1}{2} \sum_{a=1}^3 \delta\theta_a^2.
+\]
+Incorporating the rest mass $m$ as the stiffness of the dual sector, we write the oscillator potential
+\[
+J_{\mathrm{osc}} = \frac{1}{2} m \sum_{a=1}^3 \delta\theta_a^2.
+\]
+This \(J_{\mathrm{osc}}\) is not the Killing quadratic of the main paper.
+
+\section{Particle-Intrinsic Action Principle}
+
+We propose an effective action for the intrinsic degrees of freedom of a single particle:
+\[
+S_{\text{particle}} = \int \left[ \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
+- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
+- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2 \right] dt.
+\]
+The kinetic terms reflect boost freedom in the usual sector and the time-reversed character of the dual sector; the potential is the oscillator \(J_{\mathrm{osc}}\). Collective averaging over many particles is formally written as recovering a teleparallel action, but that identification is not a theorem of this note.
+
+\section{Derivation of the Equations of Motion}
+
+The Lagrangian is
+\[
+L = \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
+- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
+- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2.
+\]
+The Euler--Lagrange equations read
+\begin{align}
+\ddot{\theta}_a - m (\theta_a - \phi_a) &= 0, \\
+-\ddot{\phi}_a - m (\theta_a - \phi_a) &= 0.
+\end{align}
+Introducing the torsional mismatch angle $\delta\theta_a = \theta_a - \phi_a$, we obtain
+\begin{equation}
+\ddot{\delta\theta}_a + m \delta\theta_a = 0.
+\label{eq:harmonic}
+\end{equation}
+This is a harmonic oscillator with angular frequency $\sqrt{m}$.
+
+\section{Solution for Free Particles and the de Broglie Phase}
+
+For a free particle, $\dot{\theta}_a = \gamma v_a/c$ (constant). The general solution of Eq.~\eqref{eq:harmonic} is
+\[
+\delta\theta_a(t) = A \sin(\sqrt{m}\, t) + B \cos(\sqrt{m}\, t).
+\]
+In the low-energy (Compton-scale) regime, rapid oscillations average out, leaving linear accumulation
+\[
+\delta\theta_a(t) \approx \dot{\delta\theta}_a(0)\, t,
+\]
+with initial rate $\dot{\delta\theta}_a(0) \propto \gamma v_a$. Integrating gives the accumulated phase
+\[
+\int \delta\theta_a\, dt \propto (\gamma m c^2 t - \gamma m v_a x)/\hbar,
+\]
+which, after transformation to laboratory coordinates, is precisely the de Broglie phase $(Et - \mathbf{p}\cdot\mathbf{x})/\hbar$.
+
+\section{Connection to Quantum Effective Theory}
+
+Averaging over Compton-frequency oscillations retains only the slowly varying component of $\delta\theta_a$, yielding $\phi_a \approx -\theta_a +$ (slow lag). This linear phase evolution corresponds to the phase $S(x,t)/\hbar$ of the quantum wave function, naturally emerging as the low-energy effective theory.
+
+\section{Conclusion}
+
+By elevating a small-angle oscillator potential built from the mismatch angle (not the parameter-space Killing quadratic of the main paper) to a particle-intrinsic potential, we have derived the exact dynamical equation $\ddot{\delta\theta}_a + m \delta\theta_a = 0$ from an action principle. This simple harmonic oscillator governs dual-rotor lag, reproduces the de Broglie phase geometrically, and provides the most consistent, background-independent mechanism for the dual-rotor dynamics in double spacetime theory.
+
+\end{document}

@@ -1,0 +1,127 @@
+\documentclass[dvipdfmx,11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsbsy}
+\usepackage{amsthm}
+\usepackage{geometry}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{pxjahyper}
+\usepackage{enumitem}
+
+\newcommand{\Jnorm}{J_{\rm norm}}
+\newcommand{\Jbound}{\frac{3\pi^2}{8}}
+
+\title{離散二重時空：\\
+有界ねじれスカラーと有限離散ローター像}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+二重時空理論は連続体仮説を完全に棄却し、各質量粒子が $\mathrm{Cl}(3,1)$ と同型の16実次元双四元数代数に符号化された一対の内在的にコンパクト化されたミンコフスキー時空を運ぶと定式化する。本伴う論文では、双対写像 $X \mapsto Xi$ により誘導される自然なコンパクト性から生じるラピディティパラメータの離散化を形式化する。この離散化によりねじれ不整合ローターは周期的となる。許容性（各軸で非負埋め込みラピディティと反同期 $\alpha_a+\beta_a\leq\pi/2$）は追加の仮説であり、トーラスを離散化した帰結ではない。その錐上で正規化ねじれスカラーは $|\Jnorm|\leq 1$、同値に $|J|\leq 3\pi^2/8$ を満たす。有限なのはねじれローター写像の下での $(\mathbb{Z}/N\mathbb{Z})^6$ の像であり、未指定の整数双四元数次数の単数群ではない。重力解に対する結果としてのディオファントス制約は、連続極限における一般相対性理論との厳密な等価性を保ちつつ、量子重力効果の厳密な数論的基礎を供給する。物理的含意には、自然な紫外カットオフ、強場における離散的なねじれスペクトル、安定核状態の有限個数が含まれる。
+\end{abstract}
+
+\section{はじめに}
+\label{sec:intro}
+
+二重時空理論は、文献~\cite{main-paper} で示されるように、双四元数を用いて一般相対性理論を遠平行等価理論（TEGR）として厳密な代数的再定式化を達成し、重力と慣性を粒子内在的な通常時空と双対時空の間のねじれ不整合として解釈する。中心的な哲学的原理は、時空連続体仮説の完全な棄却である：共有される微分可能多様体は存在せず、時空の自由度は粒子の内部属性へと降格される。
+
+この棄却は、基本的スケールにおける離散構造を自然に招く。双四元数代数 $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$ は、すでに疑似スカラー $i$（$i^2 = -1$）と双対写像 $X \mapsto Xi$ を通じてコンパクト性を符号化しており、後者はミンコフスキーノルムを保存しつつ時間矢を反転する。ローター指数写像の周期性はさらに、ラピディティパラメータ $\omega_a$ と $\phi_a$ がコンパクトな円上の角変数であることを示唆する。
+
+本論文では、この離散化を厳密に展開する。ラピディティパラメータを $2\pi/N$ 単位で量子化することで——ここで $N$ は粒子のコンパクト化スケールに関連する大きな整数——次を得る：
+\begin{itemize}
+  \item キリング形式の符号非対称性に加え、追加の許容錐仮説（非負ラピディティと反同期）により、許容構成上で有界な正規化ねじれスカラー $|\Jnorm| \leq 1$（同値に $|J| \leq 3\pi^2/8$）。トーラスの離散化だけでは上限は導かれない、
+  \item 有限な\emph{離散ローター像}：$t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$ の下での $(\mathbb{Z}/N\mathbb{Z})^6$ の像。これは整数双四元数次数の単数群ではなく、後者は無限でありうる（ペル型）、
+  \item 許容されるねじれ構成を支配するディオファントス方程式。双曲型ラピディティを $2\pi$-トーラスへ量子化することは模型化の選択である。平衡型の種はモジュラー巻き数が消えるため、その軌跡上ではトーラス巻き数による障害は発火しえない。
+\end{itemize}
+すべての古典的予測は連続極限 $N \to \infty$ で回復される。本枠組みは、追加の構造を導入することなく量子重力への自然な架け橋を供給する。
+
+\section{連続二重時空の復習}
+\label{sec:review}
+
+各粒子は通常時空ベクトル $X = ct j + x kI + y kJ + z kK$ と双対ベクトル $X' = ct' k + x' jI + y' jJ + z' jK$ を運び、$X' = Xi$ で関連づけられる。完全ローターは
+\[
+R_\text{total} = \exp\left( \sum_{a=1}^3 \frac{\omega_a}{2} i\Gamma_a + \frac{\phi_a}{2} \Gamma_a \right), \quad \Gamma_1 = I,\ \Gamma_2 = J,\ \Gamma_3 = K.
+\]
+ねじれ不整合ローター $\Omega = R_\text{usual}^\dagger R_\text{dual}$ は二重ベクトル $\Omega_\text{biv} = \log \Omega$ を与え、スカラー
+\[
+J = \frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
+\]
+を定義する。ここで $\Jnorm=\frac8{3\pi^2}J$ である。半角展開 $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ および $B(i\Gamma_a,i\Gamma_a)=+8$、$B(\Gamma_a,\Gamma_a)=-8$ の下で、$B(\Omega_\text{biv},\Omega_\text{biv})=2\sum_a(\alpha_a^2-\beta_a^2)$ となるので、$J$ は $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$ の4倍である。六つの生成元が張るのはローレンツ候補 $\mathfrak{so}(3,1)$ であり、$\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$ ではない。
+
+\section{ラピディティパラメータの離散化}
+\label{sec:discretization}
+
+双対写像 $X \mapsto Xi$ は、時間方向と円との内在的同一視を意味する：双対写像を2回連続適用すると符号反転（$Xi i = -X$）が返り、コンパクト化を示唆する。ローターの指数写像は本質的に周期的である：
+\[
+\exp(\theta \Gamma_a) = \exp((\theta + 2\pi k) \Gamma_a), \quad k \in \mathbb{Z}.
+\]
+したがって
+\[
+\omega_a = \frac{2\pi n_a}{N}, \quad \phi_a = \frac{2\pi m_a}{N}, \quad n_a, m_a \in \mathbb{Z},
+\]
+と離散化する。ここで $N \gg 1$ はコンパクト方向における有効状態数である。物理的には $N \propto m c^2 / E_0$ であり、$E_0$ は基本エネルギー（プランク的または粒子固有）である。
+
+不整合ローター $\Omega$ は、相対角の位相空間がトーラス $(\mathbb{Z}/N\mathbb{Z})^6$ であるため、有限集合に値をとる。
+
+\section{許容構成上の有界ねじれスカラー}
+\label{sec:bounded}
+
+離散構成を\emph{許容}と呼ぶのは、埋め込みラピディティが各軸 $a=1,2,3$ で $\alpha_a,\beta_a\geq 0$ かつ $\alpha_a+\beta_a\leq\pi/2$ を満たすときである（完全な定義は文献~\cite{diophantine-paper} を参照）。許容性は追加の仮説である：六つのラピディティを $(\mathbb{Z}/N\mathbb{Z})^6$ に置くことからは導かれない。主枝条件 $|\alpha_a+\beta_a|\le\pi/2$ だけでは $J$ は有界にならない。キリング形式の非対称性は、通常ブーストが支配的（$\alpha_a \gg \beta_a$）なとき最大の引力、双対回転が支配的なとき最大の反発を意味する。許容構成上の極値は、純双曲型支配（すべての $a$ で $\alpha_a=\pi/2$、$\beta_a=0$）により $J=\Jbound$、$\Jnorm=1$、または純楕円型支配（$\alpha_a=0$、$\beta_a=\pi/2$）により $J=-\Jbound$、$\Jnorm=-1$ である。等号 $|\Jnorm|=1$ は、すべての軸が同一の極値型であるときに限り成り立つ。
+
+小さな $N$（例：$N=4,8$）に対する明示的計算は、トーラスの許容部分集合上で $\Jnorm$ が $[-1,1]$ 内の格子に閉じ込められることを示す。形式的には
+\[
+|J| \leq \Jbound, \qquad |\Jnorm| \leq 1,
+\]
+であり、上記の純ブーストまたは回転支配構成で等号が成立する。許容性を破る構成（例：$|\delta_a|\leq\pi/2$ ながら埋め込みラピディティが負）は、この上限を満たす必要はない。
+
+連続極限 $N \to \infty$ では、許容包絡 $\alpha_a,\beta_a\in[0,\pi/2]$ かつ $\alpha_a+\beta_a\leq\pi/2$ は保存される；したがって離散上限 $|\Jnorm|\leq 1$ はその領域上の極限理論でも有効であり、TEGR 等価性は局所的に回復される。
+
+\section{整数双四元数環と有限単数群}
+\label{sec:integer}
+
+整数双四元数環を、各四元数セクターにガウス/Hurwitz 整数係数をもつ基底の $\mathbb{Z}$-張成として定義する（正確な次数は分類される）。その次数はここでは構成されず、ローレンツ的整数次数は無限個の単数をもちうる（ペル型）。
+
+有限なのは——そして離散トーラスが供給するのはそれだけである——\emph{離散ローター像}である：ねじれローター写像 $t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$ の下での $(\mathbb{Z}/N\mathbb{Z})^6$ の像。定義域の有限性は像の有限性を意味する。列挙も、整数次数の $R^\times$ との同一視も必要ではない。双曲型ラピディティを $2\pi$-トーラスへ量子化することは、なお模型化の選択である。平衡型の種ではモジュラー巻き数が消えるため、そのトーラス上の巻き数障害は発火しえない。
+
+\section{重力解に対するディオファントス制約}
+\label{sec:diophantine}
+
+離散理論における場の方程式は、作用原理から導かれるディオファントス方程式を満たす整数解 $(n_a, m_a)$ を求める問題に還元される。例えば、球対称解は径方向ねじれ分布をパラメータ化する楕円曲線上の整数点に対応する。
+
+層状ねじれ構造（引力/反発の交替）は有限共鳴条件として現れ、安定核の有限個数と超重元素の不在を自然に説明する。
+
+\section{物理的・観測的含意}
+\label{sec:implications}
+
+\begin{itemize}
+  \item \textbf{紫外カットオフ}：許容構成上の最大 $|\Jnorm| = 1$（同値に $|J| = 3\pi^2/8$）は加速度の有界性を意味し、特異点を除去する。
+  \item \textbf{離散スペクトル}：重力波エコーと核エネルギー準位は離散的なねじれ寄与を獲得する。
+  \item \textbf{核チャート}：離散ローター像の有限性は、各 $N$ において許容ローター類が有限個であることだけを意味する。数値的上限 $A\lesssim 300$ は未導出の発見的主張であり、離散代数の定理ではない。
+  \item \textbf{実験的検証}：LIGO/Virgo データにおける離散的なねじれエコーの探索；惑星核における厳密な $J=0$ 相殺を探る精密時計ネットワーク。
+\end{itemize}
+
+\section{結論と展望}
+\label{sec:conclusions}
+
+二重時空の離散化は連続体の棄却を完成させ、許容錐上の有界ねじれスカラー、有限離散ローター像、ディオファントス探索空間をもたらす。今後の課題には、実際の整数次数の構成（その単数群は有限である必要はない）と、巨視的 GR 解をプランクスケール整数構成へ結ぶ下降論証の明示的構成が含まれる。許容性、ローター像の有限性、および核チャートのいかなる上限も、互いに論理的に独立なままである。
+
+本枠組みは、古典的代数幾何と数論に根ざした量子重力の候補として二重時空理論を位置づける。
+
+\bibliographystyle{unsrt}
+\begin{thebibliography}{2}
+\bibitem{main-paper}
+Hypernumbernet Collaboration,
+「双対時空の間のねじれとしての重力：一般相対性理論の双四元数的再定式化,''
+arXiv:xxxx.xxxxx [gr-qc] (2025).
+\bibitem{diophantine-paper}
+Hypernumbernet Collaboration,
+「離散双四元数二重時空：ねじれ不整合・PGA埋め込みによるディオファントス予想の厳密証明,''
+(2025).
+\end{thebibliography}
+
+\end{document}
