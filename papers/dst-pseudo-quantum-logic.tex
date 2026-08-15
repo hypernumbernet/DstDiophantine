@@ -1,0 +1,196 @@
+\documentclass[dvipdfmx,11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1.1in}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Jnorm}{J_{\rm norm}}
+\newcommand{\Jbound}{\frac{3\pi^2}{8}}
+
+\title{Pseudo-Quantum Dual-Spacetime 4-Valued Logic (PQ4L):\\
+Amplitudes and Geometric Interference}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We fix a named formal system, PQ4L, on top of the already-checked Dual
+Spacetime 4-valued logic (D4L). A proposition's primary carrier is an
+admissible torsion configuration, equivalently its PGA bivector
+\(\Omega\) and rotor \(R=\exp\Omega\). The four labels
+\(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\)
+appear only after measuring the normalised height \(\Jnorm\).
+Commutative overlap is the parameter Killing form; non-commutative
+interference is the geometric commutator of torsion bivectors. Two
+preorders on \([-1,1]\) separate height from saturation. None of this
+is Birkhoff--von Neumann quantum logic. Hilbert space, the Born rule,
+and an orthomodular lattice are not claimed. The statements listed as
+theorems below are machine-checked in Lean~4.
+\end{abstract}
+
+\section{Position}
+
+D4L \cite{D4L2026} classifies admissible configurations by the sign and
+saturation of \(\Jnorm\in[-1,1]\) and equips the interval with
+\(\min/\max/-\). Those connectives are distributive. They cannot see
+the geometric product already present in the PGA core \cite{Diophantine2026}.
+
+PQ4L does not replace that scalar layer. It raises the carrier one
+step, to the configuration itself, and reads DST operations as logical
+ones. The analogy is the same as pseudo-quantum methods in annealing:
+there is an amplitude, a pairing, an interference term, and a
+collapse, but there is no \(\hbar\) and no claim to orthomodularity.
+
+The Phase~1 definitions \(\texttt{classifyOfMem}\), \(\min/\max\), and
+the written potential \(U\) are left untouched. The module is a
+parallel track: it is not re-exported from \(\texttt{DstDiophantine.Basic}\).
+
+\section{Amplitudes}
+
+\begin{definition}[Amplitude]
+\label{def:amp}
+An \emph{amplitude} is an admissible continuous torsion configuration
+\(p=(\alpha_a,\beta_a)\). Write
+\[
+\Omega(p)=\texttt{omegaTorsion}\,p,\qquad
+R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p).
+\]
+Measurement and collapse are the existing maps
+\[
+\langle p\rangle:=\Jnorm(p),\qquad
+\mathrm{collapse}(p):=\texttt{ofParams}\,p\in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}.
+\]
+The adjoint is the usual--dual swap \(p^\dagger=\texttt{daggerParams}\,p\).
+\end{definition}
+
+\begin{theorem}[Adjoint]
+\label{thm:adjoint}
+The swap is an involution and flips the observable:
+\( (p^\dagger)^\dagger=p \) and \(\langle p^\dagger\rangle=-\langle p\rangle\).
+Every D4L label is realised by some amplitude.
+\end{theorem}
+
+The four names are still not a function of each other under adjoint:
+deepest \(\lvert B\rangle\) maps to \(\lvert F\rangle\), interior
+\(\lvert B\rangle\) maps to \(\lvert U\rangle\) \cite{D4L2026}. Scalar
+conjunction remains non-explosive: \(j\wedge\neg j=-|j|\) never
+saturates \(\lvert F\rangle\).
+
+\section{Two orders, not Belnap FOUR}
+
+\begin{definition}
+On \(\mathbb{R}\), and then by restriction on \([-1,1]\),
+\[
+j\preceq_\tau k \iff j\le k,
+\qquad
+j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert.
+\]
+The first is the height (boost-versus-rotation) order. The second is
+the information (saturation) order.
+\end{definition}
+
+\begin{theorem}[Information bottom and tops]
+\label{thm:info}
+On \([-1,1]\), \(j=0\) is the unique information bottom, and the
+information tops are exactly the walls \(j=\pm 1\). Equivalently, the
+information bottom is the label \(\lvert T\rangle\), and the two tops
+are \(\lvert F\rangle\) and deepest \(\lvert B\rangle\).
+\end{theorem}
+
+Interior \(\lvert B\rangle\) is strictly below deepest \(\lvert B\rangle\)
+in the information order. The labels do not match Belnap's
+\(\{\bot,t,f,\top\}\); no bilattice isomorphism is claimed.
+
+\section{Geometric operations}
+
+\begin{definition}[Overlap and interference]
+\[
+\langle p\mid q\rangle := \texttt{killingForm}\,p\,q
+= 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
+\qquad
+[\Omega(p),\Omega(q)] := \Omega(p)\Omega(q)-\Omega(q)\Omega(p).
+\]
+Rotor composition \(R(p)R(q)\) is a product in the PGA. It is not
+pulled back through the Baker--Campbell--Hausdorff formula to a third
+torsion configuration.
+\end{definition}
+
+\begin{theorem}[Pairing and non-commutativity]
+\label{thm:geo}
+The overlap is symmetric, and \(\langle p\mid p\rangle=16\,J(p)\),
+equivalently a constant multiple of \(\Jnorm(p)\). Distinct-axis
+torsion bivectors need not commute: if \(p\) is a pure boost on axis
+\(0\) and \(q\) a pure rotation on axis \(1\), then
+\([\Omega(p),\Omega(q)]\ne 0\). Same-axis hyperbolic and cyclic
+generators do commute, so the corresponding one-axis interference
+vanishes.
+\end{theorem}
+
+The overlap is not a Born probability. Sandwich evaluation
+\(R(p)\,v\,R(p)^\sim\) is restated independently of the gravity chart
+layer; preservation of the degenerate quadratic form is not claimed.
+
+The scalar connectives remain \(\neg j=-j\), \(j\wedge k=\min(j,k)\),
+\(j\vee k=\max(j,k)\). They are distributive and non-explosive
+\cite{D4L2026}. Geometric composition is associative as a PGA product
+and is not claimed to be a lattice operation.
+
+\section{What PQ4L does and does not show}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item It \emph{does} make the PGA torsion bivector and rotor the
+        carriers of a proposition, with \(\Jnorm\) as the observable.
+  \item It \emph{does} exhibit a commutative pairing and a
+        non-commutative interference term already proved in the
+        algebra.
+  \item It \emph{does} separate height from saturation by two
+        preorders on \([-1,1]\).
+  \item It does \emph{not} construct a Hilbert space, a Born rule, or
+        an orthomodular lattice.
+  \item It does \emph{not} identify the idea-note scale \(\lambda\)
+        with CGA dilation or with \(\texttt{scaleTorsion}\).
+  \item It does \emph{not} obtain a four-to-two collapse from the
+        written potential \(U\), and it does \emph{not} refute
+        G\"odel's theorems in classical arithmetic.
+  \item It does \emph{not} pull \(R(p)R(q)\) back to a torsion
+        configuration when \([\Omega(p),\Omega(q)]\ne 0\).
+\end{itemize}
+
+The Lean entry is \(\texttt{DstDiophantine.Logic}\). The PQ4L modules
+are \(\texttt{Amplitude}\), \(\texttt{Order}\), and \(\texttt{Geometric}\).
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{D4L2026}
+Dual Spacetime 4-Valued Paraconsistent Logic (D4L),
+\texttt{dst-4-valued-logic.tex} (2026).
+
+\bibitem{Diophantine2026}
+Discrete Biquaternionic Double Spacetime,
+\texttt{dst-diophantine.tex} (2026). Lean companion:
+\url{https://github.com/hypernumbernet/DstDiophantine}.
+
+\bibitem{DST2025}
+Dual Spacetime Theory: Gravity as Torsion between Dual Spacetimes (2025).
+
+\end{thebibliography}
+
+\end{document}

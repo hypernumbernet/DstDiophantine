@@ -1,0 +1,183 @@
+\documentclass[dvipdfmx,11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm,amsfonts}
+\usepackage{geometry}
+\geometry{margin=1.1in}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage[dvipdfmx]{hyperref}
+\usepackage{pxjahyper}
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{proposition}[theorem]{命題}
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{corollary}[theorem]{系}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{example}[theorem]{例}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注意}
+\renewcommand{\proofname}{証明}
+
+\newcommand{\Jnorm}{J_{\rm norm}}
+\newcommand{\Jbound}{\frac{3\pi^2}{8}}
+
+\title{疑似量子型二重時空四値論理（PQ4L）：\\
+振幅と幾何干渉}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+すでに機械検証済みの二重時空四値論理（D4L）の上に、名前付きの形式体系
+PQ4L を固定する。命題の一次対象は許容ねじれ配置であり、同値に PGA
+双ベクトル \(\Omega\) およびローター \(R=\exp\Omega\) である。四つのラベル
+\(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\)
+は、正規化高さ \(\Jnorm\) を測ったあとでのみ現れる。可換な重なりは
+パラメータ Killing 形式、非可換な干渉はねじれ双ベクトルの幾何交換子である。
+区間 \([-1,1]\) 上の二つの前順序が高さと飽和を分ける。これは
+Birkhoff--von Neumann の量子論理ではない。Hilbert 空間、Born 則、
+オーソモジュラー格子は主張しない。以下に定理として書いた主張は Lean~4
+で機械検証されている。
+\end{abstract}
+
+\section{位置づけ}
+
+D4L \cite{D4L2026} は許容配置を \(\Jnorm\in[-1,1]\) の符号と飽和で分類し、
+区間に \(\min/\max/-\) を載せる。これらの結合子は分配的であり、PGA
+コア \cite{Diophantine2026} にすでに存在する幾何積を見ない。
+
+PQ4L はそのスカラー層を置き換えない。担体を配置そのものへ一段上げ、
+DST の演算を論理演算として読む。比喩は量子アニーリングに対する疑似量子手法と
+同じである：振幅・対・干渉・崩壊はあるが、\(\hbar\) もオーソモジュラー性の
+主張もない。
+
+フェーズ 1 の定義 \(\texttt{classifyOfMem}\)、\(\min/\max\)、書かれた
+ポテンシャル \(U\) は上書きしない。モジュールは並列トラックであり、
+\(\texttt{DstDiophantine.Basic}\) からは再エクスポートしない。
+
+\section{振幅}
+
+\begin{definition}[振幅]
+\label{def:amp}
+\emph{振幅}とは、許容連続ねじれ配置 \(p=(\alpha_a,\beta_a)\) である。
+\[
+\Omega(p)=\texttt{omegaTorsion}\,p,\qquad
+R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p)
+\]
+と書く。測定と崩壊は既存の写像
+\[
+\langle p\rangle:=\Jnorm(p),\qquad
+\mathrm{collapse}(p):=\texttt{ofParams}\,p\in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}
+\]
+である。随伴は通常–双対スワップ \(p^\dagger=\texttt{daggerParams}\,p\) である。
+\end{definition}
+
+\begin{theorem}[随伴]
+\label{thm:adjoint}
+スワップは対合であり、観測量の符号を反転する：
+\((p^\dagger)^\dagger=p\) かつ \(\langle p^\dagger\rangle=-\langle p\rangle\)。
+すべての D4L ラベルはある振幅によって実現される。
+\end{theorem}
+
+四つの名前の上では随伴は関数にならない：最深の \(\lvert B\rangle\) は
+\(\lvert F\rangle\) へ、内部の \(\lvert B\rangle\) は \(\lvert U\rangle\)
+へ行く \cite{D4L2026}。スカラー合接は爆発しない：\(j\wedge\neg j=-|j|\) は
+決して \(\lvert F\rangle\) に飽和しない。
+
+\section{二つの順序（Belnap FOUR ではない）}
+
+\begin{definition}
+\(\mathbb{R}\) 上、したがって制限として \([-1,1]\) 上で
+\[
+j\preceq_\tau k \iff j\le k,
+\qquad
+j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert
+\]
+と置く。前者は高さ（ブースト対回転）順序、後者は情報（飽和）順序である。
+\end{definition}
+
+\begin{theorem}[情報の底と頂]
+\label{thm:info}
+\([-1,1]\) 上、\(j=0\) は一意の情報底であり、情報の頂はちょうど壁
+\(j=\pm 1\) である。同値に、情報底はラベル \(\lvert T\rangle\)、二つの頂は
+\(\lvert F\rangle\) と最深の \(\lvert B\rangle\) である。
+\end{theorem}
+
+内部の \(\lvert B\rangle\) は情報順序で最深の \(\lvert B\rangle\) より
+真に小さい。ラベルは Belnap の \(\{\bot,t,f,\top\}\) と一致しない。
+双格子同型は主張しない。
+
+\section{幾何演算}
+
+\begin{definition}[重なりと干渉]
+\[
+\langle p\mid q\rangle := \texttt{killingForm}\,p\,q
+= 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
+\qquad
+[\Omega(p),\Omega(q)] := \Omega(p)\Omega(q)-\Omega(q)\Omega(p).
+\]
+ローター合成 \(R(p)R(q)\) は PGA の積である。BCH 公式を通して第三の
+ねじれ配置へは引き戻さない。
+\end{definition}
+
+\begin{theorem}[対と非可換性]
+\label{thm:geo}
+重なりは対称であり、\(\langle p\mid p\rangle=16\,J(p)\)、したがって
+\(\Jnorm(p)\) の定数倍である。異軸のねじれ双ベクトルは一般に可換でない：
+\(p\) が軸 \(0\) の純ブースト、\(q\) が軸 \(1\) の純回転なら
+\([\Omega(p),\Omega(q)]\ne 0\)。同軸の双曲生成子と循環生成子は可換なので、
+対応する一軸干渉は消える。
+\end{theorem}
+
+重なりは Born 確率ではない。sandwich 評価 \(R(p)\,v\,R(p)^\sim\) は
+重力チャート層とは独立に再掲する。退化二次形式の保存は主張しない。
+
+スカラー結合子はこれまでどおり \(\neg j=-j\)、\(j\wedge k=\min(j,k)\)、
+\(j\vee k=\max(j,k)\) である。分配的であり、爆発しない \cite{D4L2026}。
+幾何合成は PGA 積として結合的であり、格子演算であるとは主張しない。
+
+\section{PQ4L が示すこと・示さないこと}
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \emph{示す}のは、PGA のねじれ双ベクトルとローターを命題の担体とし、
+        \(\Jnorm\) を観測量とすることである。
+  \item \emph{示す}のは、代数にすでに証明されている可換な対と非可換な
+        干渉項である。
+  \item \emph{示す}のは、\([-1,1]\) 上の二つの前順序による高さと飽和の
+        分離である。
+  \item \emph{示さない}のは、Hilbert 空間、Born 則、オーソモジュラー格子
+        の構成である。
+  \item \emph{示さない}のは、アイデア文書のスケール \(\lambda\) と CGA
+        dilation および \(\texttt{scaleTorsion}\) の同一視である。
+  \item \emph{示さない}のは、書かれた \(U\) からの四値→二値収縮、および
+        古典算術におけるゲーデル定理の否定である。
+  \item \emph{示さない}のは、\([\Omega(p),\Omega(q)]\ne 0\) のときに
+        \(R(p)R(q)\) をねじれ配置へ戻すことである。
+\end{itemize}
+
+Lean の入口は \(\texttt{DstDiophantine.Logic}\) である。PQ4L のモジュールは
+\(\texttt{Amplitude}\)、\(\texttt{Order}\)、\(\texttt{Geometric}\) である。
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{D4L2026}
+二重時空4値矛盾許容論理（D4L）,
+\texttt{dst-4-valued-logic-ja.tex} (2026).
+
+\bibitem{Diophantine2026}
+離散双四元数二重時空,
+\texttt{dst-diophantine.tex} (2026). Lean 伴走：
+\url{https://github.com/hypernumbernet/DstDiophantine}.
+
+\bibitem{DST2025}
+二重時空理論：双対時空間のねじれとしての重力 (2025).
+
+\end{thebibliography}
+
+\end{document}

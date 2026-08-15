@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-14（J 範囲: 等号 iff・離散鋭い上界）
+最終更新: 2026-08-15（PQ4L: 振幅・幾何干渉）
 
 ## 1. 三層アーキテクチャ
 
@@ -118,6 +118,9 @@ flowchart LR
 - **1D CGA 探針**（`Algebra/CGA`, `CGA.lean`）: `Cl(2,1)` null 点・dilation。時空 CGA は未着手
 - **D4L / スケール依存四値論理**（`Logic/`, `Logic.lean`）: `JNormalized` の四状態、\(N=4\) センサス、
   \(V_\lambda\) の大規模臨界点、書かれた \(U\) では小スケール収縮が偽。Basic 非依存
+- **PQ4L / 疑似量子型四値論理**（`Logic/Amplitude`, `Order`, `Geometric`）:
+  許容配置を振幅とし、Killing 重なり・異軸交換子・情報/高さ順序を機械検証。
+  Hilbert / Born / オーソモジュラーは主張しない。Basic 非依存
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
   動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
@@ -271,7 +274,7 @@ Theorems/
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
-Logic/                   ← D4L / スケール依存四値論理（JNormalized の四状態）
+Logic/                   ← D4L + PQ4L（JNormalized の四状態、振幅、幾何演算）
 ```
 
 ---

@@ -3,12 +3,15 @@ import DstDiophantine.Logic.DiscreteN4
 import DstDiophantine.Logic.Potential
 import DstDiophantine.Logic.Connective
 import DstDiophantine.Logic.Interpretation
+import DstDiophantine.Logic.Amplitude
+import DstDiophantine.Logic.Order
+import DstDiophantine.Logic.Geometric
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Embedding.RotorClass
 
 /-!
-# Scale-dependent 4-valued logic (D4L) — parallel track
+# Scale-dependent 4-valued logic (D4L) and PQ4L — parallel track
 
 Semantic layer over the already-proved PGA invariant `JNormalized`.
 **Not** re-exported from `DstDiophantine.Basic`, so the Diophantine path
@@ -23,8 +26,12 @@ and `DstDiophantine.CGA`).
   counterexamples
 * `Logic.Connective` — min/max/neg, non-explosion, softmin limits
 * `Logic.Interpretation` — usual–dual swap is signed negation
+* `Logic.Amplitude` — admissible configuration as PQ4L amplitude
+* `Logic.Order` — height and information preorders (not Belnap FOUR)
+* `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
+Hilbert space, Born rule, and orthomodular quantum logic are **not** claimed.
 -/
 
 namespace DstDiophantine
@@ -124,6 +131,37 @@ example (U : ℝ → ℝ) (α j : ℝ) :
 example (a b : ℝ) :
     Filter.Tendsto (fun β : ℝ => softmin β a b) Filter.atTop (nhds (min a b)) :=
   tendsto_softmin_atTop a b
+
+/-- Regression: every label is realised by an amplitude. -/
+example (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv :=
+  exists_amplitude tv
+
+/-- Regression: adjoint is involutive and flips the observable. -/
+example (a : Amplitude) : a.adjoint.adjoint = a :=
+  a.adjoint_involutive
+
+example (a : Amplitude) : a.adjoint.measure = -a.measure :=
+  a.measure_adjoint
+
+/-- Regression: information bottom is `T`; tops are the walls `±1`. -/
+example {j : ℝ} (hj : |j| ≤ 1) :
+    classifyOfMem j hj = .T ↔ ∀ k : ℝ, |k| ≤ 1 → InfoLE j k :=
+  classify_T_iff_info_bottom hj
+
+example {j : ℝ} (hj : |j| ≤ 1) :
+    (∀ k : ℝ, |k| ≤ 1 → InfoLE k j) ↔ j = 1 ∨ j = -1 :=
+  info_top_iff hj
+
+/-- Regression: Killing overlap is symmetric; self-overlap is `16 J`. -/
+example (p q : TorsionParams) : overlap p q = overlap q p :=
+  overlap_symm p q
+
+example (p : TorsionParams) : overlap p p = 16 * J p :=
+  overlap_self p
+
+/-- Regression: distinct-axis torsion bivectors need not commute. -/
+example : interfere axis0Boost axis1Rotation ≠ 0 :=
+  interfere_axis0_axis1_ne_zero
 
 /-- Regression: state-level negation is not a function of the four labels. -/
 example :

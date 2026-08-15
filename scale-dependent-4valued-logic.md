@@ -3,7 +3,7 @@
 スケールが大きくなると理想的な四値論理が現れ、小さくなると二値論理に収縮する——  
 この文書では、そのアイデアを入門から数理的定式化まで説明し、続けて Lean で機械検証した結果を整理します。
 
-**検証の現状（2026-08-15）。** 四状態の定義、\(N=4\) センサス、結合子の非爆発、大規模ポテンシャルの臨界点は証明済みです。一方、書かれたポテンシャルからは「小スケールで四値から二値へ収縮する」は従いません。詳細は [§13](#13-lean-検証で分かったこと) にあります。入口は `DstDiophantine/Logic.lean`（`Basic.lean` には入れません）。
+**検証の現状（2026-08-15）。** 四状態の定義、\(N=4\) センサス、結合子の非爆発、大規模ポテンシャルの臨界点は証明済みです。PQ4L（振幅・二つの順序・Killing 重なり・異軸干渉）も機械検証済みです。一方、書かれたポテンシャルからは「小スケールで四値から二値へ収縮する」は従いません。詳細は [§13](#13-lean-検証で分かったこと) と [§14](#14-pq4l疑似量子型四値論理) にあります。入口は `DstDiophantine/Logic.lean`（`Basic.lean` には入れません）。
 
 ---
 
@@ -254,7 +254,7 @@ V_{\lambda,\gamma}(J) = -\cos(2\pi J) + \frac{\alpha}{\lambda} U(J) + \gamma\, J
 
 大規模極限 \(\lambda\to\infty\) では、中間状態が豊かになり、真理値の格子構造が非分配的な特徴を帯びやすくなります。これは量子論理（オーソモジュラー格子）への連続的接近と**解釈**できますが、Lean では主張していません。実数上の \(\min/\max\) は分配的です。非分配性を出すなら、結合子を別のものに替える必要があります。
 
-一方、有限の \(\lambda\) での softmin は、\(\min\) の計算可能な下界として「疑似四値」的に使えます。量子アニーリングの疑似量子手法との並行は、比喩のままです。
+有限の \(\lambda\) での softmin は、\(\min\) の計算可能な下界として使えます。一方、疑似量子の中身そのものは softmin ではなく、振幅・Killing 重なり・幾何交換子として [§14](#14-pq4l疑似量子型四値論理) に固定しました。Hilbert 空間・Born 則・オーソモジュラー格子は置いていません。
 
 ---
 
@@ -380,4 +380,43 @@ softmin は \(\beta\to\infty\) で \(\min\) に収束し、有限の \(\beta>0\)
 
 ---
 
-*この文書は Dual Spacetime Theory（二重時空理論）および D4L（Dual Spacetime 4-Valued Logic）の議論に基づき、`DstDiophantine.Logic` の機械検証で改訂しています。*
+## 14. PQ4L：疑似量子型四値論理
+
+D4L のスカラー層（四状態、\(\min/\max/-\)）はそのまま残し、命題の一次対象を許容ねじれ配置に上げたものが **PQ4L**（Pseudo-Quantum Dual-Spacetime 4-valued Logic）です。新しい Clifford 代数は足していません。入口はこれまでどおり `DstDiophantine.Logic` です。
+
+### 14.1 二層
+
+| 層 | 担体 | Lean |
+|----|------|------|
+| スカラー D4L | \(J_{\mathrm{norm}}\in[-1,1]\) → `{T,U,F,B}` | `TruthValue`, `Connective` |
+| 幾何振幅 | 許容配置 \(p\)、\(\Omega(p)\)、\(R(p)=\exp\Omega(p)\) | `Amplitude`, `Order`, `Geometric` |
+
+測定は \(\langle p\rangle=J_{\mathrm{norm}}(p)\)、崩壊は既存の `ofParams`、随伴は `daggerParams`（符号反転・対合）です。
+
+### 14.2 幾何演算（分配的な \(\min/\max\) の外）
+
+- **重なり** \(\langle p\mid q\rangle=\texttt{killingForm}\,p\,q\)。対称。自己対は \(16J\)（`overlap_self`）。Hilbert 内積ではない。
+- **干渉** \([\Omega(p),\Omega(q)]\)。異軸では一般に 0 でない（`interfere_axis0_axis1_ne_zero`）。同軸では消える（`interfere_axis0_self`）。
+- **合成** \(R(p)R(q)\) は PGA に留める。BCH で `TorsionParams` へは戻さない。
+- **評価** `sandwich` を Gravity 非依存で再掲。退化計量の保存は主張しない。
+
+### 14.3 二つの順序（Belnap FOUR ではない）
+
+- 高さ順序 \(j\preceq_\tau k\iff j\le k\)
+- 情報順序 \(j\preceq_\iota k\iff |j|\le|k|\)
+
+`T`（\(j=0\)）は情報の唯一の底。情報の頂は壁 \(\pm 1\)、すなわち `F` と最深 `B` です。内部の `B` は最深 `B` より情報的に真に小さいです。ラベル対応が違うので Belnap 同型は主張しません。
+
+### 14.4 主張しないこと
+
+- オーソモジュラー格子、Hilbert 空間、Born 則
+- \(\lambda\) と CGA dilation / `scaleTorsion` の同一視
+- 書かれた \(U\) による四値→二値相転移
+- ゲーデル文が古典算術で偽であること
+- `R(p)R(q)` が常にねじれローターへ戻ること
+
+詳細は companion 論文 `dst-pseudo-quantum-logic.tex`（日本語 `dst-pseudo-quantum-logic-ja.tex`）にあります。
+
+---
+
+*この文書は Dual Spacetime Theory（二重時空理論）、D4L、および PQ4L の議論に基づき、`DstDiophantine.Logic` の機械検証で改訂しています。*
