@@ -22,6 +22,7 @@
 
 \newcommand{\Jnorm}{J_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
+\newcommand{\leancite}[1]{{\raggedright\smallskip\noindent Lean: #1\par}}
 
 \title{二重時空4値論理（D4L）：\\
 振幅・四状態・幾何干渉・双対 Hilbert 空間}
@@ -437,16 +438,133 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
 
 スケール \(\lambda\) は CGA dilation、増幅写像 \(\texttt{scaleTorsion}\)、Hilbert 次元とは同一視しない。
 
+\section{指定値と帰結}
+\label{sec:cons}
+
+四つのラベルは、どの高さが\emph{成り立つ}かを言わなければ論理にならない。D4L は \(\Jnorm\in[-1,1]\) の上に指定述語を一つではなく二つ置く。
+
+\begin{definition}[指定値]
+\label{def:desig}
+\[
+\mathrm{HoldsT}(j)\iff j=0,
+\qquad
+\mathrm{HoldsNotF}(j)\iff j<1.
+\]
+前者は同期（ラベル \(\lvert T\rangle\)）、後者は非反駁（\(\lvert F\rangle\) 以外のすべてのラベル）である。
+\end{definition}
+
+論理式は原子、\(\neg\)、\(\wedge\)、\(\vee\) から生成し、
+\(\texttt{negJ}/\texttt{conjJ}/\texttt{disjJ}\) で評価する。含意結合子は置かない。以下の例はそれを必要とせず、\(\min\) の剰余の頂は \(+1=\lvert F\rangle\) になってしまう。
+
+\begin{definition}[帰結]
+\label{def:entail}
+付値は各原子に \([-1,1]\) の高さを与える。\(\Gamma\models_T\psi\) は、\(\Gamma\) を同期するすべての付値が \(\psi\) を同期することである。\(\Gamma\models_{\lnot F}\psi\) は同じ条項を非反駁で書いたものである。
+\end{definition}
+
+区間の二値\emph{制限}は一意ではない。D4L の名前 \(\lvert T\rangle,\lvert F\rangle\) は古典の真／偽ではないからである。
+
+\begin{definition}[二つのフラグメント]
+\label{def:frag}
+\emph{名前}フラグメントは \(\{0,1\}=\{\lvert T\rangle,\lvert F\rangle\}\) である。
+\emph{壁}フラグメントは \(\{-1,+1\}=\{\text{最深の }\lvert B\rangle,\lvert F\rangle\}\) である。
+\end{definition}
+
+\begin{theorem}[名前フラグメントはブールではない]
+\label{thm:named-not-bool}
+\(\neg 0=0\) なので、名前フラグメントは否定の固定点を含む。\(\neg\) で閉じていない：\(\neg 1=-1\) は \(\{0,1\}\) を出る。
+\end{theorem}
+
+\leancite{\texttt{negJ\_zero}、\texttt{namedTwo\_not\_closed\_under\_neg}。}
+
+\begin{theorem}[壁は入れ替わる]
+\label{thm:wall-swap}
+\(j\in\{-1,+1\}\) ならば \(\neg j\in\{-1,+1\}\) かつ \(j\neq\neg j\)。
+\end{theorem}
+
+\leancite{\texttt{wallTwo\_neg}、\texttt{wallTwo\_not\_negFixed}。}
+
+壁フラグメントが古典2値の忠実な核である。名前フラグメントはラベルと揃うが、すでに古典ではない。
+
+\section{二値論理が担えない例}
+\label{sec:examples}
+
+これらは意味論の変更であり、ペアノ算術の新しい定理ではない。無条件の FLT / Beal およびゲーデル定理の反証は主張しない。
+
+\subsection{否定の固定点}
+\label{sec:ex-fp}
+
+\begin{theorem}[否定の固定点]
+\label{thm:ex-fp}
+条件 \(j=\neg j\) は \(j=0\) と同値である。壁フラグメントでは充足不能であり、D4L では \(\lvert T\rangle\) によって一意に実現される（振幅でも実現される）。
+\end{theorem}
+
+\leancite{\texttt{isNegFixed\_iff\_zero}、
+\texttt{not\_exists\_wall\_negFixed}、
+\texttt{exists\_amplitude\_negFixed}。}
+
+古典では \(P\leftrightarrow\neg P\) にモデルがない。D4L はそれを完全な通常–双対バランスに置く。これはゲーデル文ではない。
+
+\subsection{爆発しない矛盾}
+\label{sec:ex-efq}
+
+\begin{theorem}[ブールの EFQ は空虚]
+\label{thm:bool-efq}
+\(\mathrm{Bool}\) の上で \(P\) と \(\neg P\) がともに \(\mathtt{true}\) にはなれない。壁の上で \(j\) と \(\neg j\) がともに \(+1\) にはなれない。
+\end{theorem}
+
+\leancite{\texttt{bool\_efq}、\texttt{wall\_not\_both\_pos}。}
+
+\begin{theorem}[D4L は爆発しない]
+\label{thm:d4l-efq}
+\(P\) を原子 \(0\)、\(Q\) を原子 \(1\) とする。このとき
+\(\{P,\neg P\}\not\models_T Q\) かつ
+\(\{P,\neg P\}\not\models_{\lnot F} Q\) である。証人は \(P\) を \(0\)、\(Q\) を \(1\) に送る。第二の証人は \(P\) を \(-\tfrac12\)（内部の \(\lvert B\rangle\)）、\(Q\) を \(1\) に送る。連言 \(j\wedge\neg j\) は常に非反駁である。
+\end{theorem}
+
+\leancite{\texttt{contradict\_not\_entailsT\_atom}、
+\texttt{contradict\_not\_entailsNotF\_atom}、
+\texttt{conj\_neg\_holdsNotF}。}
+
+したがって矛盾した観測の対は、無関係な原子を正の壁へ強制しない。
+
+\subsection{\texorpdfstring{制約 \(\Jnorm<1\)}{制約 Jnorm < 1}}
+\label{sec:ex-notF}
+
+\begin{theorem}[名前フラグメントの残りは単元]
+\label{thm:named-notF}
+名前フラグメントの上では \(\mathrm{HoldsNotF}\) は \(\mathrm{HoldsT}\) に潰れる。D4L では同じ制約が \(\lvert T\rangle\)、\(\lvert U\rangle\)、\(\lvert B\rangle\) によって実現される。
+\end{theorem}
+
+\leancite{\texttt{namedTwo\_notF\_only\_T}、
+\texttt{exists\_three\_notF\_labels}。}
+
+\(\lvert U\rangle\) はラベルのままであり、\(V_\infty\) のアトラクタではない（定理~\ref{thm:Vinf}）。
+\leancite{\texttt{notF\_inhabits\_U\_not\_attractor}。}
+
+\subsection{相補性}
+\label{sec:ex-comp}
+
+\begin{theorem}[相補的な光線へのブール割り当てはない]
+\label{thm:ex-comp}
+\(\mathbb{C}^2\) の部分空間格子は分配的でなく、したがってブール代数ではない。互いに直交する原子は高々二つである。四つの D4L ラベルは PVM ではない。分配的なスカラー結合子はその格子を表示できない。
+\end{theorem}
+
+これらは双対層の既存定理であり、例専用のモジュールは置かない。
+\leancite{\texttt{not\_distributive}、
+\texttt{no\_three\_pairwise\_orthogonal\_lines}、
+\texttt{four\_labels\_not\_orthogonal\_pvm}、
+\texttt{scalar\_lattice\_not\_iso\_qprop}。}
+
 \section{自己言及}
 \label{sec:godel}
 
-\(G\) をゲーデル文とする：「\(G\) はこの体系で証明可能ではない」。D4L では、証明可能性を同期 \(\Jnorm\to 0\)、すなわち \(\lvert T\rangle\) への駆動として読む。一意の全ブースト世界に坐ることを禁じられた文に対する誠実な制約は
+\(G\) をゲーデル文とする：「\(G\) はこの体系で証明可能ではない」。D4L では、証明可能性を同期 \(\Jnorm\to 0\)、すなわち \(\lvert T\rangle\) への駆動として読む。一意の全ブースト世界に坐ることを禁じられた文に対する誠実な制約は、第~\ref{sec:ex-notF}節の \(\mathrm{HoldsNotF}\) そのものである：
 \[
-\Jnorm(G)<1
+\Jnorm(G)<1.
 \]
-だけである。定理~\ref{thm:Vinf} の大規模流のもとで、この制約は \(G\) を \(\lvert U\rangle\) または \(\lvert B\rangle\) に残す。連言は爆発しない：二つの非正の高さは非正のままである。
+定理~\ref{thm:Vinf} の大規模流のもとで、この制約は \(G\) をラベルとして \(\lvert U\rangle\) または \(\lvert B\rangle\) に残す。さらに同期を要求するなら \(\lvert T\rangle\) である。連言は爆発しない（定理~\ref{thm:d4l-efq}）。
 
-これは意味論の変更であり、ゲーデルの定理が古典算術において失敗することの証明ではない。負ねじれセクター上の完全性の話も、許容ローターの読みであって、一次ペアノ算術の内部でのヒルベルト計画の完了ではない。
+これは意味論の変更であり、ゲーデルの定理が古典算術において失敗することの証明ではない。負ねじれセクター上の完全性の話も、許容ローターの読みであって、一次ペアノ算術の内部でのヒルベルト計画の完了ではない。第~\ref{sec:examples}節の Lean 定理が固定された内容であり、本節の読みは新しい不完全性定理ではない。
 
 \section{D4L が示すこと・示さないこと}
 \label{sec:claims}
@@ -458,6 +576,8 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
   \item \emph{示す}のは、代数ですでに証明済みの可換な対と非可換な干渉項である。
   \item \emph{示す}のは、\([-1,1]\) 上の二つの前順序による高さと飽和の分離である。
   \item \emph{示す}のは、\(p\wedge\neg p\) を \(\lvert F\rangle\) の外に保つことである。
+  \item \emph{示す}のは、二つの指定述語（\(\mathrm{HoldsT}\)、\(\mathrm{HoldsNotF}\)）と二つの二値フラグメント（名前と壁）の区別である。
+  \item \emph{示す}のは、\(P=\neg P\) を \(\lvert T\rangle\) に一意に置くこと、\(\{P,\neg P\}\) が爆発しないこと、および \(\Jnorm<1\) が三ラベルで実現されることである。
   \item \emph{示す}のは、Killing 対が不定であること、および自己重なりが Born 確率ではないことである。
   \item \emph{示す}のは、Euclid 双対セクターと循環生成子の四元数表の切り出しである。
   \item \emph{示す}のは、その表の \(\mathbb{C}^2\) 上の表現と、部分空間格子のオーソモジュラー性および非分配性である。
@@ -479,15 +599,23 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
 \(\texttt{Interpretation}\)、
 \(\texttt{Order}\)、
 \(\texttt{Geometric}\)、
-\(\texttt{Potential}\)
+\(\texttt{Potential}\)、
+\(\texttt{Formula}\)、
+\(\texttt{Valuation}\)、
+\(\texttt{Consequence}\)
 である。
-双対層は \(\texttt{Logic.Quantum}\) の
+例は \(\texttt{Logic.Example}\) の
+\(\texttt{FixedPoint}\)、
+\(\texttt{Explosion}\)、
+\(\texttt{NotFalse}\)
+である。相補性は双対層の
+\(\texttt{QuantumLogic}\) /
+\(\texttt{Dictionary}\)
+である。残る双対層は
 \(\texttt{Separation}\)、
 \(\texttt{DualSector}\)、
 \(\texttt{Quaternion}\)、
-\(\texttt{Spinor}\)、
-\(\texttt{QuantumLogic}\)、
-\(\texttt{Dictionary}\)
+\(\texttt{Spinor}\)
 である。
 \par}
 

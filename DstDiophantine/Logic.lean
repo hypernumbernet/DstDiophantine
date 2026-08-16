@@ -5,6 +5,12 @@ import DstDiophantine.Logic.Interpretation
 import DstDiophantine.Logic.Amplitude
 import DstDiophantine.Logic.Order
 import DstDiophantine.Logic.Geometric
+import DstDiophantine.Logic.Formula
+import DstDiophantine.Logic.Valuation
+import DstDiophantine.Logic.Consequence
+import DstDiophantine.Logic.Example.FixedPoint
+import DstDiophantine.Logic.Example.Explosion
+import DstDiophantine.Logic.Example.NotFalse
 import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Quantum.DualSector
 import DstDiophantine.Logic.Quantum.Quaternion
@@ -37,6 +43,10 @@ and `DstDiophantine.CGA`).
 * `Logic.Potential` — \(V_\lambda\), large-scale critical points, written-\(U\)
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
   `ℂ²`, subspace lattice, internal dictionary)
+* `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
+  `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
+* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`
+  (complementarity is the existing `ℂ²` lattice theorems)
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
 The amplitude layer is not a Hilbert space, a Born rule, or an
@@ -174,6 +184,33 @@ example :
         (∀ tv, Module.finrank ℂ (L tv) = 1) ∧
           (∀ tv₁ tv₂, tv₁ ≠ tv₂ → L tv₁ ⟂ L tv₂) :=
   four_labels_not_orthogonal_pvm
+
+/-- Regression: wall two-valued logic cannot host `P = ¬P`. -/
+example : ¬ ∃ v : Valuation,
+    IsWallTwo (v.assign 0) ∧
+      IsNegFixed ((Formula.atom 0).eval v.assign) :=
+  not_exists_wall_negFixed
+
+/-- Regression: D4L realises the negation fixed point at `T`. -/
+example : ∃ v : Valuation, IsNegFixed ((Formula.atom 0).eval v.assign) :=
+  exists_negFixed_valuation
+
+/-- Regression: `{P, ¬P}` does not explode to an unrelated atom. -/
+example : ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1) :=
+  contradict_not_entailsT_atom
+
+example : ¬ EntailsNotF (contradict (Formula.atom 0)) (Formula.atom 1) :=
+  contradict_not_entailsNotF_atom
+
+/-- Regression: named two-valued ∩ not-`F` is only `T`; D4L has three labels. -/
+example {j : ℝ} : IsNamedTwo j ∧ HoldsNotF j ↔ j = 0 :=
+  namedTwo_notF_only_T
+
+example :
+    (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .T ∧ HoldsNotF j) ∧
+      (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .U ∧ HoldsNotF j) ∧
+        (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .B ∧ HoldsNotF j) :=
+  exists_three_notF_labels
 
 end Logic
 

@@ -156,6 +156,14 @@ theorem VInf_second_neg_at_neg_half :
 noncomputable def flowInf (j : ℝ) : ℝ :=
   -VInfDeriv j
 
+theorem flowInf_eq_zero_iff (j : ℝ) :
+    flowInf j = 0 ↔ ∃ k : ℤ, j = (k : ℝ) / 2 := by
+  unfold flowInf
+  rw [neg_eq_zero, VInfDeriv_eq_zero_iff]
+
+theorem flowInf_eq_zero_at_half : flowInf (1 / 2 : ℝ) = 0 :=
+  (flowInf_eq_zero_iff _).mpr ⟨1, by norm_num⟩
+
 private theorem sin_pos_of_mem_Ioo_neg_period {j : ℝ}
     (hlo : -1 < j) (hhi : j < -1 / 2) :
     0 < Real.sin (2 * Real.pi * j) := by
