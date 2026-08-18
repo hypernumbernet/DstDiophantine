@@ -204,8 +204,7 @@ only if \(p\) is purely elliptic.
 \end{theorem}
 
 Interior \(\lvert B\rangle\) is a range, not a single fixed point. The
-stable point of the large-scale potential in Section~\ref{sec:potential}
-is the wall \(\Jnorm=-1\).
+deepest point of that range is the wall \(\Jnorm=-1\).
 
 \section{Connectives}
 \label{sec:conn}
@@ -235,15 +234,6 @@ hold as they do for \(\min/\max\) on \(\mathbb{R}\).
 \end{theorem}
 
 Lean: \(\texttt{scalar\_connectives\_distributive}\).
-
-A scale-deformed conjunction is the softmin
-\[
-a\land_\beta b =
--\frac1\beta\log\bigl(e^{-\beta a}+e^{-\beta b}\bigr),\qquad \beta>0.
-\]
-As \(\beta\to\infty\) one recovers \(\min(a,b)\). For every finite
-\(\beta>0\) the softmin is strictly below \(\min\); the small-\(\beta\)
-regime is not a binary hard decision.
 
 \section{Two orders, not Belnap FOUR}
 \label{sec:order}
@@ -494,58 +484,6 @@ labels pairwise orthogonal.
 
 Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\).
 
-\section{Scale and potential}
-\label{sec:potential}
-
-Let \(\lambda>0\) be a scale parameter and \(\alpha>0\) a coupling.
-The effective potential is
-\begin{equation}
-\label{eq:Vlam}
-V_\lambda(J) = -\cos(2\pi J) + \frac{\alpha}{\lambda}\, U(J),
-\end{equation}
-with written candidates
-\[
-U_{\mathrm{piece}}(J)=\begin{cases}0&J<0\\ J^2&J\ge 0\end{cases},\qquad
-U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2.
-\]
-These two functions disagree by a factor of two on \(\{J>0\}\). The
-gradient flow is \(\dot J=-\partial V_\lambda/\partial J\).
-
-\begin{theorem}[Large-scale skeleton]
-\label{thm:Vinf}
-As \(\lambda\to\infty\), \(V_\lambda\) tends to
-\(V_\infty(J)=-\cos(2\pi J)\). Critical points are \(J=k/2\) for
-\(k\in\mathbb{Z}\). On \([-1,1]\) the locally stable points are
-\(\{-1,0,+1\}\) and the saddles are \(\{\pm 1/2\}\). The basins of
-\(\dot J=-V_\infty'(J)\) are
-\[
-(-1,-1/2)\to -1,\qquad
-(-1/2,1/2)\to 0,\qquad
-(1/2,1)\to +1.
-\]
-\end{theorem}
-
-Thus \(\lvert U\rangle\) is a label, not an attractor. The
-negative-torsion attractor basin is \([-1,-1/2)\), not the whole of
-\([-1,0)\).
-
-\begin{theorem}[Written \(U\) leaves the \(B\) well]
-\label{thm:Uwritten}
-On \(\{J<0\}\) both written candidates vanish, so
-\(V_\lambda=V_\infty\) throughout the negative half-line. In particular
-\(V_\lambda''(-1)=4\pi^2>0\) at every \(\lambda>0\). There is no
-critical scale at which the written \(U\) destroys the local minimum at
-\(\Jnorm=-1\).
-\end{theorem}
-
-A four-to-two contraction at small scale is therefore not a theorem of
-\eqref{eq:Vlam} with the written \(U\). A linear bias \(\gamma J\),
-minimised, lowers the side opposite to \(\gamma\): \(\gamma>0\)
-stabilises negative torsion.
-
-The scale \(\lambda\) is distinct from CGA dilation, from
-\(\texttt{scaleTorsion}\), and from Hilbert dimension.
-
 \section{Designated values and consequence}
 \label{sec:cons}
 
@@ -670,10 +608,6 @@ On the named fragment, \(\mathrm{HoldsNotF}\) collapses to
 \leancite{\texttt{namedTwo\_notF\_only\_T},
 \texttt{exists\_three\_notF\_labels}.}
 
-\(\lvert U\rangle\) remains a label, not an attractor of \(V_\infty\)
-(Theorem~\ref{thm:Vinf}).
-\leancite{\texttt{notF\_inhabits\_U\_not\_attractor}.}
-
 \subsection{Complementarity}
 \label{sec:ex-comp}
 
@@ -703,10 +637,10 @@ exactly \(\mathrm{HoldsNotF}\) of Section~\ref{sec:ex-notF}:
 \[
 \Jnorm(G)<1.
 \]
-Under the large-scale flow of Theorem~\ref{thm:Vinf}, that constraint
-leaves \(G\) in \(\lvert U\rangle\) or \(\lvert B\rangle\) as labels,
-or at \(\lvert T\rangle\) if one further demands synchrony. Conjunction
-does not explode (Theorem~\ref{thm:d4l-efq}).
+That constraint leaves \(G\) in \(\lvert T\rangle\), \(\lvert U\rangle\),
+or \(\lvert B\rangle\) as labels, or at \(\lvert T\rangle\) if one
+further demands synchrony. Conjunction does not explode
+(Theorem~\ref{thm:d4l-efq}).
 
 This is a change of semantics, not a proof that G\"odel's theorems fail
 in classical arithmetic. Completeness talk over the negative-torsion
@@ -751,10 +685,6 @@ reading in this section is not a new incompleteness theorem.
   \item It does \emph{not} construct the Dirac spinor \(\mathbb{C}^4\),
         position/momentum operators, or a solution of the measurement
         problem.
-  \item It does \emph{not} identify \(\lambda\) with CGA dilation,
-        \(\texttt{scaleTorsion}\), or Hilbert dimension.
-  \item It does \emph{not} obtain a four-to-two collapse from the
-        written potential \(U\).
   \item It does \emph{not} refute G\"odel's theorems in classical
         arithmetic.
   \item It does \emph{not} pull \(R(p)R(q)\) back to a torsion
@@ -766,7 +696,7 @@ reading in this section is not a new incompleteness theorem.
 
 The Lean modules are \(\texttt{Amplitude}\), \(\texttt{TruthValue}\),
 \(\texttt{Connective}\), \(\texttt{Interpretation}\), \(\texttt{Order}\),
-\(\texttt{Geometric}\), \(\texttt{Potential}\), \(\texttt{Formula}\),
+\(\texttt{Geometric}\), \(\texttt{Formula}\),
 \(\texttt{Valuation}\), and \(\texttt{Consequence}\). The first three
 examples live under \(\texttt{Logic.Example}\)
 (\(\texttt{FixedPoint}\), \(\texttt{Explosion}\), \(\texttt{NotFalse}\)).

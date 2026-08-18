@@ -151,7 +151,7 @@ R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p)
 許容配置の上で、\(\mathrm{collapse}(p)=\lvert F\rangle\) であることと \(p\) が純双曲であることは同値であり、\(\Jnorm(p)=-1\) であることと \(p\) が純楕円であることは同値である。
 \end{theorem}
 
-内部の \(\lvert B\rangle\) は範囲であり、単一の固定点ではない。第~\ref{sec:potential}節の大規模ポテンシャルの安定点は壁 \(\Jnorm=-1\) である。
+内部の \(\lvert B\rangle\) は範囲であり、単一の固定点ではない。その範囲の最深点は壁 \(\Jnorm=-1\) である。
 
 \section{結合子}
 \label{sec:conn}
@@ -179,13 +179,6 @@ j\wedge\neg j = -|j|\le 0
 \end{theorem}
 
 Lean: \(\texttt{scalar\_connectives\_distributive}\)。
-
-スケール変形した合接は softmin
-\[
-a\land_\beta b =
--\frac1\beta\log\bigl(e^{-\beta a}+e^{-\beta b}\bigr),\qquad \beta>0
-\]
-である。\(\beta\to\infty\) で \(\min(a,b)\) を回復する。有限の \(\beta>0\) では softmin は \(\min\) より真に小さい。小さな \(\beta\) のレジームは二値的なハード判定ではない。
 
 \section{二つの順序、Belnap FOUR ではない}
 \label{sec:order}
@@ -399,45 +392,6 @@ Killing 重なり & スピノル内積とは別物 \\
 
 Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 
-\section{スケールとポテンシャル}
-\label{sec:potential}
-
-\(\lambda>0\) をスケールパラメータ、\(\alpha>0\) を結合とする。有効ポテンシャルは
-\begin{equation}
-\label{eq:Vlam}
-V_\lambda(J) = -\cos(2\pi J) + \frac{\alpha}{\lambda}\, U(J)
-\end{equation}
-であり、書かれた候補は
-\[
-U_{\mathrm{piece}}(J)=\begin{cases}0&J<0\\ J^2&J\ge 0\end{cases},\qquad
-U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
-\]
-である。この二つの関数は \(\{J>0\}\) で定数倍だけ異なる。勾配流は \(\dot J=-\partial V_\lambda/\partial J\) である。
-
-\begin{theorem}[大規模骨格]
-\label{thm:Vinf}
-\(\lambda\to\infty\) のとき \(V_\lambda\) は \(V_\infty(J)=-\cos(2\pi J)\) に収束する。臨界点は \(k\in\mathbb{Z}\) に対する \(J=k/2\) である。\([-1,1]\) 上の局所安定点は \(\{-1,0,+1\}\)、鞍点は \(\{\pm 1/2\}\) である。流れ \(\dot J=-V_\infty'(J)\) の盆地は
-\[
-(-1,-1/2)\to -1,\qquad
-(-1/2,1/2)\to 0,\qquad
-(1/2,1)\to +1
-\]
-である。
-\end{theorem}
-
-したがって \(\lvert U\rangle\) はラベルであり、アトラクタではない。
-負ねじれ側のアトラクタ盆地は区間 \([-1,-1/2)\) に限る。
-\([-1,0)\) 全体ではない。
-
-\begin{theorem}[書かれた \(U\) は \(B\) 井戸を残す]
-\label{thm:Uwritten}
-\(\{J<0\}\) では両方の書かれた候補が消えるので、負半直線全体で \(V_\lambda=V_\infty\) である。とくにすべての \(\lambda>0\) で \(V_\lambda''(-1)=4\pi^2>0\) である。書かれた \(U\) が \(\Jnorm=-1\) の局所最小を壊す臨界スケールは存在しない。
-\end{theorem}
-
-したがって小スケールでの四値から二値への収縮は、書かれた \(U\) をもつ \eqref{eq:Vlam} の定理ではない。線形バイアス \(\gamma J\) を最小化すると、\(\gamma\) と逆符号の側が下がる：\(\gamma>0\) は負ねじれを安定化する。
-
-スケール \(\lambda\) は CGA dilation、増幅写像 \(\texttt{scaleTorsion}\)、Hilbert 次元とは同一視しない。
-
 \section{指定値と帰結}
 \label{sec:cons}
 
@@ -538,9 +492,6 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
 \leancite{\texttt{namedTwo\_notF\_only\_T}、
 \texttt{exists\_three\_notF\_labels}。}
 
-\(\lvert U\rangle\) はラベルのままであり、\(V_\infty\) のアトラクタではない（定理~\ref{thm:Vinf}）。
-\leancite{\texttt{notF\_inhabits\_U\_not\_attractor}。}
-
 \subsection{相補性}
 \label{sec:ex-comp}
 
@@ -562,7 +513,7 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
 \[
 \Jnorm(G)<1.
 \]
-定理~\ref{thm:Vinf} の大規模流のもとで、この制約は \(G\) をラベルとして \(\lvert U\rangle\) または \(\lvert B\rangle\) に残す。さらに同期を要求するなら \(\lvert T\rangle\) である。連言は爆発しない（定理~\ref{thm:d4l-efq}）。
+この制約は \(G\) をラベルとして \(\lvert T\rangle\)、\(\lvert U\rangle\)、または \(\lvert B\rangle\) に残す。さらに同期を要求するなら \(\lvert T\rangle\) である。連言は爆発しない（定理~\ref{thm:d4l-efq}）。
 
 これは意味論の変更であり、ゲーデルの定理が古典算術において失敗することの証明ではない。負ねじれセクター上の完全性の話も、許容ローターの読みであって、一次ペアノ算術の内部でのヒルベルト計画の完了ではない。第~\ref{sec:examples}節の Lean 定理が固定された内容であり、本節の読みは新しい不完全性定理ではない。
 
@@ -584,8 +535,6 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
   \item \emph{示さない}のは、スカラー結合子と \(L(\mathbb{C}^2)\) の交わり・和の同一視、および四ラベルと PVM の同一視である。
   \item \emph{示さない}のは、\(J\) や Killing 重なりからの Born 則の導出である。
   \item \emph{示さない}のは、Dirac スピノル \(\mathbb{C}^4\)、位置・運動量演算子、測定問題の解決である。
-  \item \emph{示さない}のは、\(\lambda\) と CGA dilation、\(\texttt{scaleTorsion}\)、Hilbert 次元の同一視である。
-  \item \emph{示さない}のは、書かれたポテンシャル \(U\) からの四値から二値への崩壊である。
   \item \emph{示さない}のは、古典算術におけるゲーデルの定理の反証である。
   \item \emph{示さない}のは、\([\Omega(p),\Omega(q)]\ne 0\) のとき \(R(p)R(q)\) をねじれ配置へ引き戻すことである。
   \item \emph{示さない}のは、生の \(J\) を \([-1,1]\) の値と同一視することである。その区間は \(\Jnorm\) のものであり、生の天井は \(\Jbound\) である。
@@ -599,7 +548,6 @@ U_{\mathrm{smooth}}(J)=\tfrac12\bigl(J+|J|\bigr)^2
 \(\texttt{Interpretation}\)、
 \(\texttt{Order}\)、
 \(\texttt{Geometric}\)、
-\(\texttt{Potential}\)、
 \(\texttt{Formula}\)、
 \(\texttt{Valuation}\)、
 \(\texttt{Consequence}\)

@@ -1,5 +1,4 @@
 import DstDiophantine.Logic.TruthValue
-import DstDiophantine.Logic.Potential
 import DstDiophantine.Logic.Connective
 import DstDiophantine.Logic.Interpretation
 import DstDiophantine.Logic.Amplitude
@@ -36,11 +35,10 @@ and `DstDiophantine.CGA`).
 
 * `Logic.Amplitude` — admissible configuration as the primary carrier
 * `Logic.TruthValue` — four states from `JNormalized ∈ [-1,1]`
-* `Logic.Connective` — min/max/neg, non-explosion, softmin limits
+* `Logic.Connective` — min/max/neg, non-explosion
 * `Logic.Interpretation` — usual–dual swap is signed negation
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
-* `Logic.Potential` — \(V_\lambda\), large-scale critical points, written-\(U\)
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
   `ℂ²`, subspace lattice, internal dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -75,42 +73,6 @@ example (p : TorsionParams) : JNormalized (daggerParams p) = -JNormalized p :=
 example {j : ℝ} (hj : |j| ≤ 1) :
     classifyOfMem (conjJ j (negJ j)) (abs_conj_neg_le hj) ≠ .F :=
   classify_conj_neg_ne_F hj
-
-/-- Regression: \(V_\infty\) is stable at \(0,\pm 1\) and unstable at \(\pm 1/2\). -/
-example : (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (0 : ℝ)) > 0 :=
-  VInf_second_pos_at_zero
-
-example : (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (1 : ℝ)) > 0 :=
-  VInf_second_pos_at_one
-
-example : (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (-1 : ℝ)) > 0 :=
-  VInf_second_pos_at_neg_one
-
-example : (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (1 / 2 : ℝ)) < 0 :=
-  VInf_second_neg_at_half
-
-example : (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (-(1 / 2) : ℝ)) < 0 :=
-  VInf_second_neg_at_neg_half
-
-/-- Regression: written \(U\) never destroys the \(B\) well. -/
-example (lam α : ℝ) (hlam : 0 < lam) :
-    VPiece lam α (-1) = VInf (-1) ∧
-      0 < (2 * Real.pi) ^ 2 * Real.cos (2 * Real.pi * (-1 : ℝ)) :=
-  written_U_no_critical_scale lam α hlam
-
-/-- Regression: the two written \(U\) disagree by a factor of two on \(\{J>0\}\). -/
-example {j : ℝ} (h : 0 < j) : USmooth j = 2 * UPiece j :=
-  USmooth_eq_two_UPiece_of_pos h
-
-/-- Regression: large-scale potential recovers \(V_\infty\). -/
-example (U : ℝ → ℝ) (α j : ℝ) :
-    Filter.Tendsto (fun lam : ℝ => V U lam α j) Filter.atTop (nhds (VInf j)) :=
-  tendsto_V_atTop U α j
-
-/-- Regression: softmin recovers \(\min\) at infinite inverse temperature. -/
-example (a b : ℝ) :
-    Filter.Tendsto (fun β : ℝ => softmin β a b) Filter.atTop (nhds (min a b)) :=
-  tendsto_softmin_atTop a b
 
 /-- Regression: every label is realised by an amplitude. -/
 example (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv :=

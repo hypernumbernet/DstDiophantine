@@ -18,10 +18,6 @@ The four states are the sign and saturation of `JNormalized`, itself the
 
 Usual–dual swap `daggerParams` (`α ↔ β`) sends `JNormalized ↦ -JNormalized`,
 so signed negation is the algebra involution, not a new connective.
-
-This module does **not** identify the scale `λ` of `Logic.Potential` with
-CGA dilation or with `scaleTorsion` amplification. Those are three
-different scales.
 -/
 
 namespace DstDiophantine
