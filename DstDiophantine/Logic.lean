@@ -10,6 +10,11 @@ import DstDiophantine.Logic.Consequence
 import DstDiophantine.Logic.Example.FixedPoint
 import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
+import DstDiophantine.Logic.Regime
+import DstDiophantine.Logic.Example.Regime
+import DstDiophantine.Logic.DiscreteAmplitude
+import DstDiophantine.Logic.Dynamics
+import DstDiophantine.Logic.Winding
 import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Quantum.DualSector
 import DstDiophantine.Logic.Quantum.Quaternion
@@ -43,8 +48,12 @@ and `DstDiophantine.CGA`).
   `ℂ²`, subspace lattice, internal dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
-* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`
-  (complementarity is the existing `ℂ²` lattice theorems)
+* `Logic.Regime` — discrete proof-status algebra and implication table
+* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
+  Diophantine regimes (complementarity is the existing `ℂ²` lattice theorems)
+* `Logic.DiscreteAmplitude` — torus amplitudes; `¬4 ∣ N` forbids `F`
+* `Logic.Dynamics` — amplification as a partial map on labels
+* `Logic.Winding` — height and winding are incompatible measurements
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
 The amplitude layer is not a Hilbert space, a Born rule, or an
@@ -173,6 +182,60 @@ example :
       (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .U ∧ HoldsNotF j) ∧
         (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .B ∧ HoldsNotF j) :=
   exists_three_notF_labels
+
+/-- Regression: named two-valued logic cannot host the three-layer split. -/
+example :
+    ¬ ∃ v : RegimeValuation,
+        IsNamedRegime (v.assign 0) ∧
+          IsNamedRegime (v.assign 1) ∧
+            IsNamedRegime (v.assign 2) ∧
+              (RegimeFormula.atom 2).eval v.assign = .U :=
+  not_exists_named_three_layer
+
+/-- Regression: D4L realises core `T`, diagnostic `F`, live `U`. -/
+example :
+    ∃ v : RegimeValuation,
+      (RegimeFormula.atom 0).eval v.assign = .T ∧
+        (RegimeFormula.atom 1).eval v.assign = .F ∧
+          (RegimeFormula.atom 2).eval v.assign = .U ∧
+            (RegimeFormula.atom 3).eval v.assign = .U :=
+  exists_three_layer_valuation
+
+/-- Regression: core does not T-entail a classical conjecture. -/
+example : ¬ EntailsTR {RegimeFormula.atom 0} (RegimeFormula.atom 3) :=
+  core_not_entailsTR_conjecture
+
+/-- Regression: window ∧ ill-posed NoGo does not force the conjecture. -/
+example :
+    ¬ EntailsNotFR {RegimeFormula.atom 0, RegimeFormula.atom 1}
+        (RegimeFormula.atom 3) :=
+  window_nogo_not_entailsNotFR_conjecture
+
+/-- Regression: `U → T` is not designated. -/
+example : impR .U .T = .U :=
+  impR_U_T
+
+/-- Regression: regime `s ∧ ¬s` never saturates `F`. -/
+example (s : TruthValue) : conjR s (negR s) ≠ .F :=
+  conjR_negR_ne_F s
+
+/-- Regression: `¬ 4 ∣ N` forbids discrete `F`. -/
+example {N : ℕ} [NeZero N] (h4 : ¬ 4 ∣ N) (a : DiscreteAmplitude N) :
+    a.collapse ≠ .F :=
+  DiscreteAmplitude.collapse_ne_F_of_not_four_dvd h4 a
+
+/-- Regression: a `U` seed can be scaled onto `F`. -/
+example {k : ℕ} (hk : 2 ≤ k) :
+    (⟨Amplification.scaleTorsion (k : ℝ) (seedU_to_F hk).params,
+        seedU_to_F_scale_admissible hk⟩ : Amplitude).collapse = .F :=
+  seedU_to_F_scales_to_F hk
+
+/-- Regression: real-scale admissibility and nonzero winding are incompatible. -/
+example {N : ℕ} [NeZero N] (k : ℕ) (t : Discrete.DiscreteTorsion N) :
+    ¬ (Admissible.IsAdmissibleContinuous
+          (Amplification.scaleTorsion (k : ℝ) (Discrete.toTorsionParams t)) ∧
+        ModularAmplification.windingTotal k t ≠ 0) :=
+  not_both_admissibleScale_and_winding k t
 
 end Logic
 

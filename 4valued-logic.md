@@ -14,7 +14,7 @@
 
 機械検証で差が出るのは、**古典二値（およびその二つの制限）がホストできない充足・帰結・格子の問題を、D4L がホストする**ことです。Lean は同じ問題文に対し、二値側の空性（または空虚さ、単元への潰れ）と D4L 側の実現を対で固定しています。
 
-**検証の現状。** 振幅、四状態、結合子の非爆発、二つの順序、Killing 重なり、異軸干渉は証明済みです。構文・指定値・帰結と、二値が担えない四つの例（否定固定点、非爆発、`J_norm < 1`、相補性）も機械検証しました。入口は `DstDiophantine/Logic.lean` です（`Basic.lean` には入れません）。代表論文は `papers/dst-4-valued-logic.tex`（日本語 `papers/japanese/dst-4-valued-logic-ja.tex`）です。
+**検証の現状。** 振幅、四状態、結合子の非爆発、二つの順序、Killing 重なり、異軸干渉は証明済みです。構文・指定値・帰結と、二値が担えない五つの例（否定固定点、非爆発、`J_norm < 1`、相補性、ディオファントス・レジーム）も機械検証しました。離散振幅・増幅力学・巻数の二測定まで含みます。入口は `DstDiophantine/Logic.lean` です（`Basic.lean` には入れません）。代表論文は `papers/dst-4-valued-logic.tex`（日本語 `papers/japanese/dst-4-valued-logic-ja.tex`）です。
 
 ---
 
@@ -130,7 +130,7 @@ J_norm  ↦  −J_norm
 
 ### 指定値と帰結
 
-論理式は原子、否定 ¬、合接 ∧、選言 ∨ から生成し、`negJ` / `conjJ` / `disjJ` で評価します。含意結合子は置いていません。min の剰余の頂は +1 = |F⟩ になってしまうので、含意を足すなら指定値の設計からやり直す必要があります。
+論理式は原子、否定 ¬、合接 ∧、選言 ∨ から生成し、`negJ` / `conjJ` / `disjJ` で評価します。振幅の高さに含意は置きません。min の剰余の頂は +1 = |F⟩ になってしまうからです。含意は離散の証明ステータス層（`Logic/Regime.lean`、例5）にあります。
 
 付値は各原子に区間 [-1, 1] の高さを与えます。指定述語は二つです。
 
@@ -264,6 +264,26 @@ J_norm(G) < 1
 
 ---
 
+## 7b. 例5：ディオファントス・レジーム
+
+**問題。** DST の三層——証明済みの核、棄却済み診断、未閉鎖の本命 bridge——を二値が同時にホストできるか。
+
+名前フラグメント `{T, F}` には `U` がありません。壁フラグメント `{B, F}` には核の `T` がありません。D4L のレジーム層は核 `T`、診断 `F`、本命 `U`、古典予想 `U` を同時に実現します。核だけでは予想を T-含意せず、窓 `T` と ill-posed NoGo `B` は予想を `F` の外へ追い出しません。含意 `U → T` は指定値ではありません。
+
+含意は振幅の min 剰余ではなく、この離散層の表です。無条件の FLT / Beal / abc は主張しません。
+
+| 側 | 内容 | Lean |
+|----|------|------|
+| 名前では空 | 本命 `U` をホストできない | `not_exists_named_three_layer` |
+| 壁では空 | 核 `T` をホストできない | `not_exists_wall_core` |
+| D4L では実現 | 三層の割り当て | `exists_three_layer_valuation` |
+| 核は予想を含意しない | `{core} ⊭_T` 古典予想 | `core_not_entailsTR_conjecture` |
+| 窓と NoGo は爆発しない | `⊭_{¬F}` 古典予想 | `window_nogo_not_entailsNotFR_conjecture` |
+
+場所は `Logic/Regime.lean` と `Logic/Example/Regime.lean` です。離散振幅（`¬4∣N` なら F 不在）は `Logic/DiscreteAmplitude.lean`、増幅によるラベルの動きは `Logic/Dynamics.lean`、高さと巻数の両立不可能性は `Logic/Winding.lean` です。
+
+---
+
 ## 8. 振幅・順序・幾何
 
 命題の一次対象は、区間上のスカラーではなく許容ねじれ配置です。測定 ⟨p⟩ = J_norm(p) のあとで四つのラベルが現れます。新しい Clifford 代数は足していません。
@@ -273,6 +293,7 @@ J_norm(G) < 1
 | 振幅 | 許容配置 p、Ω(p)、R(p) = exp Ω(p) | `Amplitude` |
 | 四状態 | J_norm ∈ [-1, 1] → {T, U, F, B} | `TruthValue`、`Connective` |
 | 構文・指定値・帰結 | 論理式、`HoldsT` / `HoldsNotF`、二つのフラグメント | `Formula`、`Valuation`、`Consequence` |
+| レジーム | 証明ステータス、含意表、`meetR` | `Regime` |
 | 順序 | 高さ j ≼_τ k ⇔ j ≤ k、情報 j ≼_ι k ⇔ \|j\| ≤ \|k\| | `Order` |
 | 幾何 | Killing 重なり、交換子、PGA 合成 | `Geometric` |
 | 双対 Hilbert | C²、四元数表、部分空間格子 | `Logic/Quantum/` |
@@ -298,6 +319,8 @@ J_norm(G) < 1
 - `p ∧ ¬p` を |F⟩ の外に保つこと
 - 二つの指定述語（`HoldsT`、`HoldsNotF`）と二つの二値フラグメント（名前と壁）の区別
 - P = ¬P を |T⟩ に一意に置くこと、{P, ¬P} が爆発しないこと、`J_norm < 1` が三ラベルで実現されること
+- DST 三層（核 T / 診断 F / 本命 U）をホストし、核や診断から古典予想が従わないこと
+- レジーム含意 `U → T = U`、離散で `¬4∣N` なら F 不在、増幅が U を F または未分類へ動かすこと
 - C² の部分空間格子のオーソモジュラー性と非分配性、四ラベルが PVM でないこと
 - Killing 対が不定であること、自己重なりが Born 確率でないこと
 
@@ -312,7 +335,7 @@ J_norm(G) < 1
 - Belnap FOUR 同型
 - Dirac スピノル C⁴、位置・運動量演算子、測定問題の解決
 
-含意結合子とディオファントスのレジーム分類（例5）は後続です。
+含意はレジーム層にあり、ディオファントスのレジーム分類は例5として機械検証済みです。Dirac \(\mathbb{C}^4\) は後続です。
 
 ---
 
@@ -347,6 +370,10 @@ J_norm(G) < 1
 | 例2 非爆発 | `Logic/Example/Explosion.lean` |
 | 例3 J_norm < 1 | `Logic/Example/NotFalse.lean` |
 | 例4 相補性 | `Logic/Quantum/QuantumLogic.lean`、`Dictionary.lean` |
+| 例5 ディオファントス・レジーム | `Logic/Regime.lean`、`Logic/Example/Regime.lean` |
+| 離散振幅 | `Logic/DiscreteAmplitude.lean` |
+| 増幅力学 | `Logic/Dynamics.lean` |
+| 巻数との二測定 | `Logic/Winding.lean` |
 | 層の分離 | `Logic/Quantum/Separation.lean` |
 
 回帰 example は `DstDiophantine/Logic.lean` にあります。
@@ -363,7 +390,7 @@ D4L は、許容配置を命題とする一つの論理です。機械検証で�
 - 二値が担えない四つの問題——否定固定点、非爆発、`J_norm < 1`、相補性——を、空性と実現の対として固定した
 - Killing 重なりは対称、異軸のねじれ双ベクトルは一般に非可換
 
-いま四値が二値より多く担っているのは、§4–§7 の四つの問題です。
+いま四値が二値より多く担っているのは、§4–§7 の四つの問題と、例5の三層分割です。
 
 ---
 

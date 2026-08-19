@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-18（D4L: 四状態と例1–4）
+最終更新: 2026-08-19（D4L: 例5 レジーム層・離散振幅・増幅力学）
 
 ## 1. 三層アーキテクチャ
 
@@ -121,9 +121,10 @@ flowchart LR
   高さ/情報順序、双対セクターの \(\mathbb{C}^2\) と部分空間格子を機械検証。
   振幅層と双対 Hilbert 層は同じ論理（分離定理は層間の関係）。`Logic/Quantum/`（フェーズ Q0–Q5）。
   **構文・指定値・帰結**（`Formula` / `Valuation` / `Consequence`）と、
-  2値が担えない例（否定固定点、非爆発、`Jnorm<1`）を `Logic/Example/` に固定。
-  相補性は双対層の既存定理。含意結合子とディオファントス・レジーム分類（例5）は後続。
-  Basic 非依存
+  2値が担えない例1–5（否定固定点、非爆発、`Jnorm<1`、相補性、ディオファントス・レジーム）を固定。
+  **レジーム層**（`Logic/Regime`）に離散ステータスと含意表。振幅の min 剰余は使わない。
+  離散振幅（`¬4∣N` なら F 不在）、増幅力学、巻数との二測定まで機械検証。
+  Basic 非依存。`Theorems` は import しない。薄い解釈（L4）は後続。
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
   動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
 - Lie 括弧による `iso(3,1)` 同型の完備化
@@ -277,8 +278,9 @@ Theorems/
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
-Logic/                   ← D4L（振幅、JNormalized の四状態、幾何演算、構文、指定値、帰結）
-Logic/Example/           ← 2値が担えない例（固定点、非爆発、Jnorm<1）
+Logic/                   ← D4L（振幅、JNormalized の四状態、幾何演算、構文、指定値、帰結、
+                           レジーム、離散振幅、増幅力学、巻数二測定）
+Logic/Example/           ← 2値が担えない例（固定点、非爆発、Jnorm<1、レジーム）
 Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元数、C2、部分空間格子、辞書
 ```
 
@@ -385,6 +387,6 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。7予�
 4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
-7. **（並列・D4L）** 代表論文は `dst-4-valued-logic.tex`。構文・指定値・帰結と例1–4は固定済。次はディオファントス・レジーム分類（例5）。含意結合子と Dirac \(\mathbb{C}^4\) は後続。ゲーデル否定は主張しない
+7. **（並列・D4L）** 代表論文は `dst-4-valued-logic.tex`。例1–5、レジーム含意、離散振幅、増幅力学、巻数二測定は固定済。次は Theorems からの薄いステータス解釈（L4）。Dirac \(\mathbb{C}^4\) は後続。ゲーデル否定は主張しない
 
 **最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD 進捗** まで固めた段階であり、無条件古典 Beal は残件（混合指数 / ピタゴラス奇数還元 / equal-odd 二因子 / 偶二一致）が閉じるまで未達成である。FLT 公理は mathlib 未形式化の古典定理の明示的仮定であり、Wiles の Lean 証明ではない。

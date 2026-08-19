@@ -4,7 +4,7 @@
 
 機械検証で差が出るのは、**古典二値（およびその二つの制限）がホストできない充足・帰結・格子の問題を、D4L がホストする**ことです。Lean は同じ問題文に対し、二値側の空性（または空虚さ、単元への潰れ）と D4L 側の実現を対で固定しています。
 
-**検証の現状。** 振幅、四状態、結合子の非爆発、二つの順序、Killing 重なり、異軸干渉は証明済みです。構文・指定値・帰結と、二値が担えない四つの例（否定固定点、非爆発、 $J_{\mathrm{norm}}<1 $、相補性）も機械検証しました。入口は `DstDiophantine/Logic.lean` です（`Basic.lean` には入れません）。代表論文は `papers/dst-4-valued-logic.tex`（日本語 `papers/japanese/dst-4-valued-logic-ja.tex`）です。
+**検証の現状。** 振幅、四状態、結合子の非爆発、二つの順序、Killing 重なり、異軸干渉は証明済みです。構文・指定値・帰結と、二値が担えない五つの例（否定固定点、非爆発、 $J_{\mathrm{norm}}<1 $、相補性、ディオファントス・レジーム）も機械検証しました。離散振幅・増幅力学・巻数の二測定まで含みます。入口は `DstDiophantine/Logic.lean` です（`Basic.lean` には入れません）。代表論文は `papers/dst-4-valued-logic.tex`（日本語 `papers/japanese/dst-4-valued-logic-ja.tex`）です。
 
 ---
 
@@ -100,7 +100,7 @@ $$
 
 ### 指定値と帰結
 
-論理式は原子、 $\neg $、 $\wedge $、 $\vee $ から生成し、`negJ` / `conjJ` / `disjJ` で評価します。含意結合子は置いていません。 $\min $ の剰余の頂は  $+1=\lvert F\rangle $ になってしまうので、含意を足すなら指定値の設計からやり直す必要があります。
+論理式は原子、 $\neg $、 $\wedge $、 $\vee $ から生成し、`negJ` / `conjJ` / `disjJ` で評価します。振幅の高さに含意は置きません。 $\min $ の剰余の頂は  $+1=\lvert F\rangle $ になってしまうからです。含意は離散の証明ステータス層（`Logic/Regime.lean`、例5）にあります。
 
 付値は各原子に  $[-1,1] $ の高さを与えます。指定述語は二つです。
 
@@ -277,7 +277,7 @@ $$
 - Belnap FOUR 同型
 - Dirac スピノル  $\mathbb{C}^4 $、位置・運動量演算子、測定問題の解決
 
-含意結合子とディオファントスのレジーム分類（例5）は後続です。
+含意はレジーム層にあり、ディオファントスのレジーム分類は例5として機械検証済みです。Dirac \(\mathbb{C}^4\) は後続です。
 
 ---
 
@@ -312,6 +312,10 @@ $$
 | 例2 非爆発 | `Logic/Example/Explosion.lean` |
 | 例3  $J_{\mathrm{norm}}<1 $ | `Logic/Example/NotFalse.lean` |
 | 例4 相補性 | `Logic/Quantum/QuantumLogic.lean`、`Dictionary.lean` |
+| 例5 ディオファントス・レジーム | `Logic/Regime.lean`、`Logic/Example/Regime.lean` |
+| 離散振幅 | `Logic/DiscreteAmplitude.lean` |
+| 増幅力学 | `Logic/Dynamics.lean` |
+| 巻数との二測定 | `Logic/Winding.lean` |
 | 層の分離 | `Logic/Quantum/Separation.lean` |
 
 回帰 example は `DstDiophantine/Logic.lean` にあります。
@@ -328,7 +332,7 @@ D4L は、許容配置を命題とする一つの論理です。機械検証で�
 - 二値が担えない四つの問題——否定固定点、非爆発、 $J_{\mathrm{norm}}<1 $、相補性——を、空性と実現の対として固定した
 - Killing 重なりは対称、異軸のねじれ双ベクトルは一般に非可換
 
-いま四値が二値より多く担っているのは、§4–§7 の四つの問題です。
+いま四値が二値より多く担っているのは、§4–§7 の四つの問題と、例5の三層分割です。
 
 ---
 

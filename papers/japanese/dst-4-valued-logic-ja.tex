@@ -408,7 +408,7 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \end{definition}
 
 論理式は原子、\(\neg\)、\(\wedge\)、\(\vee\) から生成し、
-\(\texttt{negJ}/\texttt{conjJ}/\texttt{disjJ}\) で評価する。含意結合子は置かない。以下の例はそれを必要とせず、\(\min\) の剰余の頂は \(+1=\lvert F\rangle\) になってしまう。
+\(\texttt{negJ}/\texttt{conjJ}/\texttt{disjJ}\) で評価する。振幅の高さに含意結合子は置かない。\(\min\) の剰余の頂は \(+1=\lvert F\rangle\) になってしまう。含意は離散の証明ステータス層（第~\ref{sec:regime}節）に置く。
 
 \begin{definition}[帰結]
 \label{def:entail}
@@ -506,6 +506,63 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \texttt{four\_labels\_not\_orthogonal\_pvm}、
 \texttt{scalar\_lattice\_not\_iso\_qprop}。}
 
+\section{証明ステータス層}
+\label{sec:regime}
+
+DST の証明対象——核補題、本命の bridge、棄却済み診断、bookkeeping の等式——はねじれ配置ではない。離散のステータスを持ち、四つの名前は再利用するが、観測量は \(\Jnorm\) ではない。この担体の上では否定は四ラベルの関数であり、含意は表であって \(\min\) の剰余ではない。
+
+\begin{definition}[レジーム演算]
+\label{def:regime}
+否定と格子演算は振幅の代表元
+\(\lvert T\rangle\mapsto 0\)、\(\lvert U\rangle\mapsto 1/2\)、
+\(\lvert F\rangle\mapsto 1\)、\(\lvert B\rangle\mapsto -1/2\)
+に従う。とくに \(F\wedge\neg F=B\) である。第二の演算である確立度の交わり \(\texttt{meetR}\) は、二つの対象を \(F<B<U<T\) に沿って梱包する。証明済みの核と未閉鎖の bridge の複合は、なお未閉鎖である：
+\(\texttt{meetR}(T,U)=U\)。
+含意は
+\[
+\begin{aligned}
+T\to\phi&=\phi,\\
+F\to\phi&=T,\\
+U\to T&=U,\\
+B\to T&=U
+\end{aligned}
+\]
+である。後ろの二式が要点である：開いた、あるいは両立しないプログラムは定理を確立しない。Belnap FOUR 同型は主張しない。
+\end{definition}
+
+ステータス上の指定述語は同じ二つの名前である。\(\mathrm{HoldsT}_R\) はステータス \(T\)、\(\mathrm{HoldsNotF}_R\) はステータス \(\ne F\) である。
+
+\section{離散振幅と増幅}
+\label{sec:discrete-dyn}
+
+有限トーラス上で \(4\nmid N\) のとき、鋭い離散上界は厳密であり、許容点は \(\lvert F\rangle\) に飽和しない。\(4\mid N\) のとき両壁が達成される。
+
+純ブーストのスケールは \(\Jnorm\) を \(k^2\) 倍する。同期は不動点である。ラベル \(\lvert U\rangle\) は \(\lvert F\rangle\) へ、または許容錐の外へ追い込まれ得る。錐の外では \(\texttt{classify?}\) は何も返さない。これが共通 no-go の論理的な読みであり、新しい数論ではない。
+
+高さと modular 巻数は二つの測定である。実スケール許容と非零巻数は同時には成り立たない。この両立不可能性は観測量の分離であり、一つの観測量の Both 状態ではない。
+
+\leancite{\texttt{DiscreteAmplitude.collapse\_ne\_F\_of\_not\_four\_dvd}、
+\texttt{seedU\_to\_F\_scales\_to\_F}、
+\texttt{seedU\_exits\_unclassified}、
+\texttt{not\_both\_admissibleScale\_and\_winding}。}
+
+\subsection{ディオファントス・レジーム}
+\label{sec:ex-regime}
+
+\begin{theorem}[三層の分割]
+\label{thm:ex-regime}
+原子 \(0\) を証明済みの核、原子 \(1\) を診断、原子 \(2\) を本命の未閉鎖 bridge、原子 \(3\) を古典予想とする。名前の二値 \(\{T,F\}\) は未閉鎖の状態 \(U\) をホストできない。壁フラグメント \(\{B,F\}\) は核 \(T\) をホストできない。D4L は核 \(T\)、診断 \(F\)、本命 \(U\)、予想 \(U\) の割り当てを実現する。核だけでは予想を \(T\)-含意しない。窓の \(T\) と ill-posed な NoGo の \(B\) は、予想を \(F\) の外へ強制しない。含意 \(U\to T\) は指定値ではない。
+\end{theorem}
+
+\leancite{\texttt{exists\_three\_layer\_valuation}、
+\texttt{not\_exists\_named\_three\_layer}、
+\texttt{not\_exists\_wall\_core}、
+\texttt{core\_not\_entailsTR\_conjecture}、
+\texttt{window\_nogo\_not\_entailsNotFR\_conjecture}、
+\texttt{impR\_U\_T}。}
+
+これが、DST が単一の有界や棄却済み診断から七つの古典予想を従わせてはならない理由である。レジーム層はその禁止を記録する。未証明の bridge を証明せず、無条件の FLT / Beal / abc も主張しない。
+
 \section{自己言及}
 \label{sec:godel}
 
@@ -528,7 +585,9 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
   \item \emph{示す}のは、\([-1,1]\) 上の二つの前順序による高さと飽和の分離である。
   \item \emph{示す}のは、\(p\wedge\neg p\) を \(\lvert F\rangle\) の外に保つことである。
   \item \emph{示す}のは、二つの指定述語（\(\mathrm{HoldsT}\)、\(\mathrm{HoldsNotF}\)）と二つの二値フラグメント（名前と壁）の区別である。
-  \item \emph{示す}のは、\(P=\neg P\) を \(\lvert T\rangle\) に一意に置くこと、\(\{P,\neg P\}\) が爆発しないこと、および \(\Jnorm<1\) が三ラベルで実現されることである。
+  \item \emph{示す}のは、\(P=\neg P\) を \(\lvert T\rangle\) に一意に置くこと、\(\{P,\neg P\}\) が爆発しないこと、\(\Jnorm<1\) が三ラベルで実現されること、および DST の三層分割が離散の証明ステータス代数にホストされることである。
+  \item \emph{示す}のは、そのステータス代数への含意（\(U\to T=U\)）と、高さ上の \(\min\) 剰余の拒否である。
+  \item \emph{示す}のは、\(4\nmid N\) のとき離散の \(\lvert F\rangle\) が禁止されること、および \(k\) 倍増幅をラベル上の部分写像として読むことである。
   \item \emph{示す}のは、Killing 対が不定であること、および自己重なりが Born 確率ではないことである。
   \item \emph{示す}のは、Euclid 双対セクターと循環生成子の四元数表の切り出しである。
   \item \emph{示す}のは、その表の \(\mathbb{C}^2\) 上の表現と、部分空間格子のオーソモジュラー性および非分配性である。
@@ -550,12 +609,17 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \(\texttt{Geometric}\)、
 \(\texttt{Formula}\)、
 \(\texttt{Valuation}\)、
-\(\texttt{Consequence}\)
+\(\texttt{Consequence}\)、
+\(\texttt{Regime}\)、
+\(\texttt{DiscreteAmplitude}\)、
+\(\texttt{Dynamics}\)、
+\(\texttt{Winding}\)
 である。
 例は \(\texttt{Logic.Example}\) の
 \(\texttt{FixedPoint}\)、
 \(\texttt{Explosion}\)、
-\(\texttt{NotFalse}\)
+\(\texttt{NotFalse}\)、
+\(\texttt{Regime}\)
 である。相補性は双対層の
 \(\texttt{QuantumLogic}\) /
 \(\texttt{Dictionary}\)
