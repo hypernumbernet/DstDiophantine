@@ -643,6 +643,17 @@ example (y : ℝ) (hy : |y| ≤ 1) :
 example : ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| :=
   torsion_bound_naive_false
 
+/-- Unsigned mass is bounded on the admissible cone. -/
+example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    massNormalized p ≤ 1 :=
+  massNormalized_bound_continuous p h
+
+/-- Paper Ch.6 step “`J = 0` ⇒ vacuum / trivial bases” is false. -/
+example :
+    ∃ p : TorsionParams,
+      IsAdmissibleContinuous p ∧ JNormalized p = 0 ∧ 0 < mass p :=
+  JNormalized_zero_not_implies_vacuum
+
 /-- Discrete rotor image is finite (not an integer-order unit group). -/
 example {N : ℕ} [NeZero N] : (DiscreteRotorImage N).Finite :=
   discreteRotorImage_finite

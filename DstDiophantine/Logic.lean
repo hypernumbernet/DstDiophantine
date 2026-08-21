@@ -38,7 +38,9 @@ and `DstDiophantine.CGA`).
 
 ## Contents
 
-* `Logic.Amplitude` — admissible configuration as the primary carrier
+* `Logic.Amplitude` — admissible configuration as the primary carrier;
+  second observable `mass`; predicates `IsVacuum` / `IsBalancedMassive`
+  (not a fifth label)
 * `Logic.TruthValue` — four states from `JNormalized ∈ [-1,1]`
 * `Logic.Connective` — min/max/neg, non-explosion
 * `Logic.Interpretation` — usual–dual swap is signed negation
@@ -52,7 +54,9 @@ and `DstDiophantine.CGA`).
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes (complementarity is the existing `ℂ²` lattice theorems)
 * `Logic.DiscreteAmplitude` — torus amplitudes; `¬4 ∣ N` forbids `F`
-* `Logic.Dynamics` — amplification as a partial map on labels
+* `Logic.Dynamics` — amplification as a partial map on labels;
+  vacuum is a fixed point; balanced massive can stay `T` or leave the cone
+  invisibly to `classify?`
 * `Logic.Winding` — height and winding are incompatible measurements
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
@@ -229,6 +233,36 @@ example {k : ℕ} (hk : 2 ≤ k) :
     (⟨Amplification.scaleTorsion (k : ℝ) (seedU_to_F hk).params,
         seedU_to_F_scale_admissible hk⟩ : Amplitude).collapse = .F :=
   seedU_to_F_scales_to_F hk
+
+/-- Regression: label `T` splits into vacuum and balanced massive. -/
+example :
+    (∃ a : Amplitude, a.collapse = .T ∧ a.IsVacuum) ∧
+      (∃ b : Amplitude, b.collapse = .T ∧ b.IsBalancedMassive) :=
+  T_splits_vacuum_and_balancedMassive
+
+/-- Regression: vacuum stays vacuum under admissible scaling. -/
+example {k : ℕ} (h : Admissible.IsAdmissibleContinuous
+    (Amplification.scaleTorsion (k : ℝ) vacuumAmplitude.params)) :
+    (⟨Amplification.scaleTorsion (k : ℝ) vacuumAmplitude.params, h⟩ : Amplitude).IsVacuum :=
+  scale_vacuum_stays_vacuum vacuumAmplitude_isVacuum h
+
+/-- Regression: a small balanced seed stays balanced massive after `k`-fold scaling. -/
+example {k : ℕ} (hk : 1 ≤ k) :
+    (⟨Amplification.scaleTorsion (k : ℝ) (seedBalanced_stays hk).params,
+        seedBalanced_stays_scale_admissible hk⟩ : Amplitude).IsBalancedMassive :=
+  seedBalanced_stays_scales_balanced hk
+
+/-- Regression: full balanced ray exits the cone under 2-fold scaling. -/
+example :
+    ¬ Admissible.IsAdmissibleContinuous
+        (Amplification.scaleTorsion (2 : ℝ) balancedAmplitude.params) :=
+  balancedAmplitude_exits_not_admissible
+
+/-- Regression: that cone exit is invisible to the signed-height classifier. -/
+example :
+    classify? (JNormalized (Amplification.scaleTorsion (2 : ℝ) balancedAmplitude.params)) =
+      some .T :=
+  balancedAmplitude_scale_classify_T
 
 /-- Regression: real-scale admissibility and nonzero winding are incompatible. -/
 example {N : ℕ} [NeZero N] (k : ℕ) (t : Discrete.DiscreteTorsion N) :

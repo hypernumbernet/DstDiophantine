@@ -15,6 +15,8 @@ scalar in `[-1,1]`. The four labels appear only after measurement.
 * `measure` is `JNormalized`.
 * `collapse` is the existing classifier `ofParams`.
 * `adjoint` is the usual–dual swap, already known to flip the sign of `J`.
+* `mass` is the unsigned second observable. `IsVacuum` / `IsBalancedMassive`
+  split label `T`; they are predicates, not a fifth name.
 
 This module does **not** introduce a Hilbert space, a Born rule, or a new
 Clifford algebra. The PGA objects `omega` / `rotor` are the ones already
@@ -91,12 +93,101 @@ theorem measure_eq_one_iff (a : Amplitude) :
     a.measure = 1 ↔ a.collapse = .F :=
   (ofParams_eq_F_iff a.admissible).symm
 
+/-- Unsigned mass of the underlying torsion configuration. -/
+noncomputable def mass (a : Amplitude) : ℝ :=
+  Invariant.mass a.params
+
+noncomputable def massNormalized (a : Amplitude) : ℝ :=
+  Invariant.massNormalized a.params
+
+theorem mass_nonneg (a : Amplitude) : 0 ≤ a.mass :=
+  Invariant.mass_nonneg a.params
+
+theorem massNormalized_nonneg (a : Amplitude) : 0 ≤ a.massNormalized :=
+  Invariant.massNormalized_nonneg a.params
+
+theorem massNormalized_le_one (a : Amplitude) : a.massNormalized ≤ 1 :=
+  massNormalized_bound_continuous a.params a.admissible
+
+theorem mass_adjoint (a : Amplitude) : a.adjoint.mass = a.mass :=
+  mass_dagger a.params
+
+/--
+Vacuum: label `T` with vanishing mass. A predicate on amplitudes, not a
+fifth D4L name. Equivalent to all six rapidities being zero.
+-/
+def IsVacuum (a : Amplitude) : Prop :=
+  a.collapse = .T ∧ a.mass = 0
+
+/--
+Balanced massive: label `T` with positive mass. The geometric seat of
+balanced Beal seeds, conflated with vacuum by signed height alone.
+-/
+def IsBalancedMassive (a : Amplitude) : Prop :=
+  a.collapse = .T ∧ 0 < a.mass
+
+theorem isVacuum_iff_mass_eq_zero (a : Amplitude) :
+    a.IsVacuum ↔ a.mass = 0 := by
+  constructor
+  · exact And.right
+  · intro hM
+    refine ⟨a.measure_eq_zero_iff.mp ?_, hM⟩
+    have hJ : J a.params = 0 := J_eq_zero_of_mass_eq_zero hM
+    simp [Amplitude.measure, JNormalized, hJ]
+
+theorem isVacuum_iff_zero_rapidities (a : Amplitude) :
+    a.IsVacuum ↔ ∀ ax : Fin 3, a.params.alpha ax = 0 ∧ a.params.beta ax = 0 := by
+  rw [isVacuum_iff_mass_eq_zero, Amplitude.mass, mass_eq_zero_iff]
+
+theorem isBalancedMassive_iff (a : Amplitude) :
+    a.IsBalancedMassive ↔ a.measure = 0 ∧ 0 < a.mass := by
+  constructor
+  · intro h
+    exact ⟨a.measure_eq_zero_iff.mpr h.1, h.2⟩
+  · intro h
+    exact ⟨a.measure_eq_zero_iff.mp h.1, h.2⟩
+
+theorem not_vacuum_of_balancedMassive {a : Amplitude} (h : a.IsBalancedMassive) :
+    ¬ a.IsVacuum := by
+  intro hv
+  exact (not_le.mpr h.2) (le_of_eq hv.2)
+
 end Amplitude
 
 /-- Every label is realised by some amplitude. -/
 theorem exists_amplitude (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv := by
   obtain ⟨p, h, hp⟩ := exists_ofParams tv
   exact ⟨⟨p, h⟩, hp⟩
+
+/-- Vacuum is inhabited (the origin of the admissible cone). -/
+noncomputable def vacuumAmplitude : Amplitude :=
+  ⟨pureHyperbolicRay 0, isAdmissibleContinuous_pureHyperbolicRay (by norm_num) (by norm_num)⟩
+
+theorem vacuumAmplitude_isVacuum : vacuumAmplitude.IsVacuum :=
+  (Amplitude.isVacuum_iff_mass_eq_zero _).mpr <|
+    (mass_eq_zero_iff _).mpr fun _ => by simp [vacuumAmplitude, pureHyperbolicRay]
+
+/-- Balanced massive configurations inhabit label `T` with positive mass. -/
+noncomputable def balancedAmplitude : Amplitude :=
+  ⟨balancedRay 1, isAdmissibleContinuous_balancedRay (by norm_num) (by norm_num)⟩
+
+theorem balancedAmplitude_isBalancedMassive : balancedAmplitude.IsBalancedMassive := by
+  refine ⟨?_, ?_⟩
+  · exact (Amplitude.measure_eq_zero_iff _).mp <| by
+      simpa [Amplitude.measure, balancedAmplitude] using JNormalized_balancedRay 1
+  · simpa [Amplitude.mass, balancedAmplitude] using
+      mass_balancedRay_pos (by norm_num : (1 : ℝ) ≠ 0)
+
+theorem exists_balancedMassive : ∃ a : Amplitude, a.IsBalancedMassive :=
+  ⟨balancedAmplitude, balancedAmplitude_isBalancedMassive⟩
+
+/-- Label `T` is not a single geometric point: vacuum and balanced massive coexist. -/
+theorem T_splits_vacuum_and_balancedMassive :
+    (∃ a : Amplitude, a.collapse = .T ∧ a.IsVacuum) ∧
+      (∃ b : Amplitude, b.collapse = .T ∧ b.IsBalancedMassive) :=
+  ⟨⟨vacuumAmplitude, vacuumAmplitude_isVacuum.1, vacuumAmplitude_isVacuum⟩,
+    ⟨balancedAmplitude, balancedAmplitude_isBalancedMassive.1,
+      balancedAmplitude_isBalancedMassive⟩⟩
 
 end Logic
 

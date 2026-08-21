@@ -361,13 +361,15 @@ J_{\rm Beal} \geq m^2 \varepsilon > \Jbound
 \]
 whenever \( \varepsilon > \Jbound / m^2 \). But the torsion boundedness theorem (Chapter~3) asserts that every physically admissible configuration satisfies \( |\Jnorm| \leq 1 \). This is a contradiction.
 
-The only remaining possibility is \( \varepsilon = 0 \), in which case the rotors are perfectly anti-synchronized and \( A = B = C = 0 \), contradicting positivity. Therefore \( \gcd(A,B,C) > 1 \): the three bases must share a common prime factor.
+The remaining case \(\varepsilon = 0\) is \emph{not} vacuum. Signed height \(\Jnorm=0\) also holds on balanced massive configurations (\(M>0\)), machine-checked as \texttt{JNormalized\_zero\_not\_implies\_vacuum}. Those seeds sit below the continuous threshold \(1/m^2\) and remain admissible after \(m\)-fold scaling. The argument therefore does not close for the balanced residual; it is a programme, not a proof.
+
+When the seed is large enough to leave the admissible cone, or when the fractional gap sits in the principal window \(2\pi/k\le\delta<4\pi/k\), a modular winding witness is available. Neither of those covers the balanced residual. Unconditional classical Beal is not claimed.
 
 \subsection{Recovery of Fermat's Last Theorem}
 
 When \( x = y = z = p \geq 3 \) for a prime \( p \), Beal’s conjecture reduces to the statement that any solution of \( A^p + B^p = C^p \) requires a common prime factor. Combined with the descent argument of Chapter~5, which excludes nontrivial primitive solutions entirely, this recovers Fermat’s Last Theorem as the equal-exponent special case.
 
-This completes the proof of Beal’s conjecture within the discrete double spacetime framework.
+This records the DST amplification programme for Beal’s conjecture. The live residuals are mixed exponents (\(d=1\)) and Pythagorean powers with at least two odd reduced exponents (\(d=2\)); see the companion Lean development. Unconditional classical Beal is not claimed.
 
 \section{Proof of the abc Conjecture}
 

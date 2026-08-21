@@ -55,6 +55,14 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   omegaTorsion_killing_vs_param paper_appendix_killing_coeff_false
   one_sixteenth_omegaKilling_eq J_eq_four_times_one_sixteenth_omegaKilling
   axis_sq_diff_eq sq_diff_le_half_pi_sq sq_diff_eq_half_pi_sq_iff
+  euclideanForm mass massNormalized mass_coef mass_nonneg mass_eq_zero_iff
+  J_eq_zero_of_mass_eq_zero mass_dagger massNormalized_coef massNormalized_nonneg
+  massNormalized_eq_zero_iff JNormalized_eq_zero_of_massNormalized_eq_zero
+  sq_sum_le_half_pi_sq sq_sum_eq_half_pi_sq_iff
+  mass_bound_raw_continuous massNormalized_bound_continuous
+  balancedRay JNormalized_balancedRay mass_balancedRay massNormalized_balancedRay
+  mass_balancedRay_pos isAdmissibleContinuous_balancedRay
+  not_admissible_balancedRay_of_one_lt JNormalized_zero_not_implies_vacuum
   IsPureHyperbolic IsPureElliptic
   IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
   torsion_bound_raw torsion_bound_raw_continuous_pi_sq torsion_bound_raw_pi_sq
@@ -62,7 +70,8 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   abs_JNormalized_eq_one_iff exists_admissible_JNormalized
   torsion_bound_naive_false)
 export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scale
-  J_scale JNormalized_scale J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
+  J_scale JNormalized_scale mass_scale massNormalized_scale scaleTorsion_balancedRay
+  J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
   J_pow_amplify JNormalized_pow_amplify rotorTorsion_pureBoost_pow
   isAdmissibleContinuous_pureBoost_iff)
 export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplifiedParams

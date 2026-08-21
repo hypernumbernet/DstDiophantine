@@ -34,6 +34,23 @@ theorem JNormalized_scale (c : ℝ) (p : TorsionParams) :
   rw [J_scale]
   ring_nf
 
+theorem mass_scale (c : ℝ) (p : TorsionParams) :
+    mass (scaleTorsion c p) = c ^ 2 * mass p := by
+  rw [mass_coef, mass_coef]
+  simp only [scaleTorsion, Fin.sum_univ_three, mul_pow]
+  ring_nf
+
+theorem massNormalized_scale (c : ℝ) (p : TorsionParams) :
+    massNormalized (scaleTorsion c p) = c ^ 2 * massNormalized p := by
+  unfold massNormalized
+  rw [mass_scale]
+  ring_nf
+
+theorem scaleTorsion_balancedRay (c t : ℝ) :
+    scaleTorsion c (balancedRay t) = balancedRay (c * t) := by
+  dsimp [scaleTorsion, balancedRay]
+  congr <;> funext _ <;> ring
+
 def pureBoost (θ : ℝ) : TorsionParams where
   alpha := fun a => match a with | 0 => θ | _ => 0
   beta := fun _ => 0

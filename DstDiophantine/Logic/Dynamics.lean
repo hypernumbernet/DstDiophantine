@@ -133,6 +133,89 @@ theorem seedU_exits_unclassified :
     norm_num
   simp [classify?, hJ]
 
+/-! ### Vacuum vs balanced-massive dynamics -/
+
+theorem mass_scale_amplitude (k : ℕ) (a : Amplitude)
+    (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
+    Amplitude.mass ⟨scaleTorsion (k : ℝ) a.params, h⟩ = (k : ℝ) ^ 2 * a.mass := by
+  simp [Amplitude.mass, mass_scale]
+
+/-- Vacuum is a fixed point of every admissible scaling (label and mass). -/
+theorem scale_vacuum_stays_vacuum {k : ℕ} {a : Amplitude} (ha : a.IsVacuum)
+    (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
+    (⟨scaleTorsion (k : ℝ) a.params, h⟩ : Amplitude).IsVacuum := by
+  refine ⟨scale_T_stays_T ha.1 h, ?_⟩
+  simp [mass_scale_amplitude k a h, ha.2]
+
+/-- For `k ≥ 1`, balanced massive stays balanced massive: `T` with mass `k² M`. -/
+theorem scale_balancedMassive_stays_balanced {k : ℕ} (hk : 1 ≤ k) {a : Amplitude}
+    (ha : a.IsBalancedMassive)
+    (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
+    (⟨scaleTorsion (k : ℝ) a.params, h⟩ : Amplitude).IsBalancedMassive := by
+  refine ⟨scale_T_stays_T ha.1 h, ?_⟩
+  have hM := mass_scale_amplitude k a h
+  have hkpos : (0 : ℝ) < k := Nat.cast_pos.mpr (Nat.succ_le_iff.mp hk)
+  have : 0 < (k : ℝ) ^ 2 * a.mass := mul_pos (sq_pos_of_pos hkpos) ha.2
+  simpa [hM] using this
+
+/-- Small balanced seed: `balancedRay (1/k)` is admissible and balanced massive. -/
+noncomputable def seedBalanced_stays {k : ℕ} (hk : 1 ≤ k) : Amplitude :=
+  ⟨balancedRay (1 / (k : ℝ)), by
+    have hk0 : 0 ≤ (1 : ℝ) / k := by positivity
+    have hk1 : (1 : ℝ) / k ≤ 1 := by
+      have : (1 : ℝ) ≤ k := Nat.one_le_cast.mpr hk
+      exact (div_le_one (lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1) this)).mpr this
+    exact isAdmissibleContinuous_balancedRay hk0 hk1⟩
+
+theorem seedBalanced_stays_isBalancedMassive {k : ℕ} (hk : 1 ≤ k) :
+    (seedBalanced_stays hk).IsBalancedMassive := by
+  have hk0 : (k : ℝ) ≠ 0 :=
+    Nat.cast_ne_zero.mpr (ne_of_gt (Nat.succ_le_iff.mp hk))
+  refine ⟨?_, ?_⟩
+  · exact (Amplitude.measure_eq_zero_iff _).mp <| by
+      simpa [seedBalanced_stays, Amplitude.measure] using
+        JNormalized_balancedRay (1 / (k : ℝ))
+  · simpa [seedBalanced_stays, Amplitude.mass] using
+      mass_balancedRay_pos (one_div_ne_zero hk0)
+
+theorem seedBalanced_stays_scale_admissible {k : ℕ} (hk : 1 ≤ k) :
+    IsAdmissibleContinuous (scaleTorsion (k : ℝ) (seedBalanced_stays hk).params) := by
+  have hkpos : (k : ℝ) ≠ 0 :=
+    Nat.cast_ne_zero.mpr (ne_of_gt (Nat.succ_le_iff.mp hk))
+  have hparams :
+      scaleTorsion (k : ℝ) (seedBalanced_stays hk).params = balancedRay 1 := by
+    simp [seedBalanced_stays, scaleTorsion_balancedRay]
+    field_simp [hkpos]
+  simpa [hparams] using
+    isAdmissibleContinuous_balancedRay (by norm_num : (0 : ℝ) ≤ 1) (by norm_num)
+
+/-- Small balanced seed remains `T` and admissible after `k`-fold scaling. -/
+theorem seedBalanced_stays_scales_balanced {k : ℕ} (hk : 1 ≤ k) :
+    (⟨scaleTorsion (k : ℝ) (seedBalanced_stays hk).params,
+        seedBalanced_stays_scale_admissible hk⟩ : Amplitude).IsBalancedMassive :=
+  scale_balancedMassive_stays_balanced hk (seedBalanced_stays_isBalancedMassive hk)
+    (seedBalanced_stays_scale_admissible hk)
+
+/-- Full balanced ray `t = 1` leaves the cone under 2-fold scaling. -/
+theorem balancedAmplitude_exits_not_admissible :
+    ¬ IsAdmissibleContinuous (scaleTorsion (2 : ℝ) balancedAmplitude.params) := by
+  have heq : scaleTorsion (2 : ℝ) balancedAmplitude.params = balancedRay 2 := by
+    simp [balancedAmplitude, scaleTorsion_balancedRay]
+  simpa [heq] using not_admissible_balancedRay_of_one_lt (by norm_num : (1 : ℝ) < 2)
+
+/--
+Cone exit of a balanced seed is invisible to the signed-height classifier:
+`J` stays 0, so `classify?` still returns `T`. Mass and the cone predicate
+are the observables that see the exit.
+-/
+theorem balancedAmplitude_scale_classify_T :
+    classify? (JNormalized (scaleTorsion (2 : ℝ) balancedAmplitude.params)) =
+      some .T := by
+  have hJ : JNormalized (scaleTorsion (2 : ℝ) balancedAmplitude.params) = 0 := by
+    rw [JNormalized_scale]
+    simpa [balancedAmplitude] using JNormalized_balancedRay 1
+  simp [classify?, classifyOfMem, hJ]
+
 end Logic
 
 end DstDiophantine

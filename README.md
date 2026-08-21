@@ -22,7 +22,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **Fermat / abc modular bridge も型付け済み。** 無条件 FLT / Beal / abc は主張しません。
 - **古典予想の無条件証明はまだ主張しない。** 「bridge が正しければ従う」形と部分構成（広い主値窓・折り畳み・Realization 条件付き）までです。
 - **数論と独立に、重力側（PGA–TEGR）もチャート固定で動かしている。** Schwarzschild 計量まわりまで Lean に載っています。
-- **プロジェクトの論理は D4L 一つ。** 命題は許容ねじれ配置、測定は `JNormalized`、崩壊は四状態。Killing 重なりと幾何干渉、双対セクターの \(\mathbb{C}^2\) とその部分空間格子まで機械検証。証明ステータス層（例5）が三層を混ぜないことをホストし、含意 `U → T = U` を機械検証。離散では `¬4∣N` のとき `F` 不在。入口は `DstDiophantine.Logic`（`Basic` には入れません）。振幅層と双対 Hilbert 層は同じ論理であり、演算は同一視しない（分離定理）。代表論文は `papers/dst-4-valued-logic.tex`。
+- **プロジェクトの論理は D4L 一つ。** 命題は許容ねじれ配置、測定は `JNormalized`、崩壊は四状態。第二測定 `mass` がラベル `T` を真空と釣り合い質量に分ける（第五ラベルではない）。論文第6章の `J=0 ⇒` 自明は反例で棄却。Killing 重なりと幾何干渉、双対セクターの \(\mathbb{C}^2\) とその部分空間格子まで機械検証。証明ステータス層（例5）が三層を混ぜないことをホストし、含意 `U → T = U` を機械検証。離散では `¬4∣N` のとき `F` 不在。入口は `DstDiophantine.Logic`（`Basic` には入れません）。振幅層と双対 Hilbert 層は同じ論理であり、演算は同一視しない（分離定理）。代表論文は `papers/dst-4-valued-logic.tex`。
 
 ## 行ったこと
 

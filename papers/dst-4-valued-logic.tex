@@ -206,6 +206,47 @@ only if \(p\) is purely elliptic.
 Interior \(\lvert B\rangle\) is a range, not a single fixed point. The
 deepest point of that range is the wall \(\Jnorm=-1\).
 
+Label \(\lvert T\rangle\) is likewise not a single geometric point.
+The signed height \(\Jnorm=0\) holds both at the origin of the cone
+and on a positive-mass balanced configuration \(\alpha_a=\beta_a\).
+Those two are distinguished by a second observable, not by a fifth
+name.
+
+\begin{definition}[Mass]
+\label{def:mass}
+The unsigned torsional mass is
+\[
+M(p)=\frac12\sum_{a=1}^3\bigl(\alpha_a^2+\beta_a^2\bigr),\qquad
+M_{\mathrm{norm}}=\frac{8}{3\pi^2}\,M.
+\]
+On the admissible cone \(0\le M_{\mathrm{norm}}\le 1\). Usual--dual
+swap preserves \(M\). Uniform scaling multiplies \(M\) by \(k^2\).
+\end{definition}
+
+\begin{definition}[Vacuum and balanced massive]
+\label{def:vacuum}
+These are predicates on amplitudes, not extra D4L labels.
+\begin{align*}
+\mathrm{IsVacuum}(p)
+  &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge M(p)=0,\\
+\mathrm{IsBalancedMassive}(p)
+  &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge 0<M(p).
+\end{align*}
+\(\mathrm{IsVacuum}\) is equivalent to all six rapidities vanishing,
+and implies \(\Jnorm=0\). The converse is false.
+\end{definition}
+
+\begin{theorem}[Zero height is not vacuum]
+\label{thm:T-split}
+There exists an admissible configuration with \(\Jnorm=0\) and
+\(M>0\). Consequently the paper step ``\(\Jnorm=0\) implies trivial
+bases'' is false. Vacuum and balanced massive both inhabit
+\(\lvert T\rangle\).
+\end{theorem}
+\leancite{\texttt{JNormalized\_zero\_not\_implies\_vacuum},
+\texttt{T\_splits\_vacuum\_and\_balancedMassive},
+\texttt{massNormalized\_bound\_continuous}.}
+
 \section{Connectives}
 \label{sec:conn}
 
@@ -676,6 +717,15 @@ fixed point. A label \(\lvert U\rangle\) can be driven onto
 \(\texttt{classify?}\) returns nothing. That is the logical reading of
 the shared no-go; it is not new arithmetic.
 
+Vacuum is a fixed point of every admissible scaling. A small
+balanced-massive seed stays at \(\lvert T\rangle\) with mass
+\(k^2 M\) and may remain admissible; a large balanced seed leaves
+the cone. That cone exit is invisible to the signed-height
+classifier: \(\Jnorm\) stays \(0\), so \(\texttt{classify?}\) still
+returns \(\lvert T\rangle\). Mass and the cone predicate are the
+observables that see it. This is why a Beal balanced seed
+\(\theta=\log 2/m\) can survive \(m\)-fold scaling inside the cone.
+
 Height and modular winding are two measurements. Real-scale
 admissibility and nonzero winding cannot hold together. That
 incompatibility is a separation of observables, not a Both-status on
@@ -684,6 +734,10 @@ one observable.
 \leancite{\texttt{DiscreteAmplitude.collapse\_ne\_F\_of\_not\_four\_dvd},
 \texttt{seedU\_to\_F\_scales\_to\_F},
 \texttt{seedU\_exits\_unclassified},
+\texttt{scale\_vacuum\_stays\_vacuum},
+\texttt{seedBalanced\_stays\_scales\_balanced},
+\texttt{balancedAmplitude\_exits\_not\_admissible},
+\texttt{balancedAmplitude\_scale\_classify\_T},
 \texttt{not\_both\_admissibleScale\_and\_winding}.}
 
 \subsection{Diophantine regimes}
@@ -760,9 +814,13 @@ reading in this section is not a new incompleteness theorem.
         split on a discrete proof-status algebra.
   \item It \emph{does} put implication on that status algebra, with
         \(U\to T=U\), and refuse the residuum of \(\min\) on heights.
+  \item It \emph{does} split label \(\lvert T\rangle\) by a second
+        observable \(M\): vacuum versus balanced massive, without a
+        fifth name.
   \item It \emph{does} forbid discrete \(\lvert F\rangle\) when
         \(4\nmid N\), and read \(k\)-fold amplification as a partial
-        map on labels.
+        map on labels, including cone exit of balanced massive that
+        the height classifier cannot see.
   \item It \emph{does} prove that the Killing pairing is indefinite and
         that self-overlap is not a Born probability.
   \item It \emph{does} extract a Euclidean dual sector and a quaternion
@@ -780,6 +838,9 @@ reading in this section is not a new incompleteness theorem.
         problem.
   \item It does \emph{not} refute G\"odel's theorems in classical
         arithmetic.
+  \item It does \emph{not} claim unconditional Beal (or FLT, abc)
+        from the \(T\)-split or from mass scaling. Balanced massive
+        seeds may remain admissible after amplification.
   \item It does \emph{not} pull \(R(p)R(q)\) back to a torsion
         configuration when \([\Omega(p),\Omega(q)]\ne 0\).
   \item It does \emph{not} identify raw \(J\) with a value in

@@ -153,6 +153,38 @@ R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p)
 
 内部の \(\lvert B\rangle\) は範囲であり、単一の固定点ではない。その範囲の最深点は壁 \(\Jnorm=-1\) である。
 
+ラベル \(\lvert T\rangle\) も、幾何的には一点ではない。符号付き高さ \(\Jnorm=0\) は錐の原点でも、正の質量をもつ釣り合い配置 \(\alpha_a=\beta_a\) でも成り立つ。この二つは第五の名前ではなく、第二の観測量で区別する。
+
+\begin{definition}[質量]
+\label{def:mass}
+符号なしのねじれ質量は
+\[
+M(p)=\frac12\sum_{a=1}^3\bigl(\alpha_a^2+\beta_a^2\bigr),\qquad
+M_{\mathrm{norm}}=\frac{8}{3\pi^2}\,M
+\]
+である。許容錐上で \(0\le M_{\mathrm{norm}}\le 1\)。通常–双対スワップは \(M\) を保つ。一様スケールは \(M\) を \(k^2\) 倍する。
+\end{definition}
+
+\begin{definition}[真空と釣り合い質量]
+\label{def:vacuum}
+これらは振幅上の述語であり、D4L の追加ラベルではない。
+\begin{align*}
+\mathrm{IsVacuum}(p)
+  &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge M(p)=0,\\
+\mathrm{IsBalancedMassive}(p)
+  &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge 0<M(p).
+\end{align*}
+\(\mathrm{IsVacuum}\) は六つのラピディティがすべて消えることと同値であり、\(\Jnorm=0\) を含意する。逆は偽である。
+\end{definition}
+
+\begin{theorem}[高さゼロは真空ではない]
+\label{thm:T-split}
+\(\Jnorm=0\) かつ \(M>0\) の許容配置が存在する。したがって論文第6章のステップ「\(\Jnorm=0\) なら自明な基底」は偽である。真空と釣り合い質量はともに \(\lvert T\rangle\) に住む。
+\end{theorem}
+\leancite{\texttt{JNormalized\_zero\_not\_implies\_vacuum}、
+\texttt{T\_splits\_vacuum\_and\_balancedMassive}、
+\texttt{massNormalized\_bound\_continuous}。}
+
 \section{結合子}
 \label{sec:conn}
 
@@ -539,11 +571,17 @@ B\to T&=U
 
 純ブーストのスケールは \(\Jnorm\) を \(k^2\) 倍する。同期は不動点である。ラベル \(\lvert U\rangle\) は \(\lvert F\rangle\) へ、または許容錐の外へ追い込まれ得る。錐の外では \(\texttt{classify?}\) は何も返さない。これが共通 no-go の論理的な読みであり、新しい数論ではない。
 
+真空は、許容なスケールの不動点である。小さな釣り合い質量の種は \(\lvert T\rangle\) に留まり質量は \(k^2 M\) になるが、許容に残り得る。大きな釣り合い種は錐を出る。その錐外化は符号付き高さの分類器には見えない：\(\Jnorm\) は \(0\) のままなので \(\texttt{classify?}\) はなお \(\lvert T\rangle\) を返す。見えるのは質量と錐の述語である。これが、Beal の釣り合い種 \(\theta=\log 2/m\) が \(m\) 倍しても錐内に残り得る理由である。
+
 高さと modular 巻数は二つの測定である。実スケール許容と非零巻数は同時には成り立たない。この両立不可能性は観測量の分離であり、一つの観測量の Both 状態ではない。
 
 \leancite{\texttt{DiscreteAmplitude.collapse\_ne\_F\_of\_not\_four\_dvd}、
 \texttt{seedU\_to\_F\_scales\_to\_F}、
 \texttt{seedU\_exits\_unclassified}、
+\texttt{scale\_vacuum\_stays\_vacuum}、
+\texttt{seedBalanced\_stays\_scales\_balanced}、
+\texttt{balancedAmplitude\_exits\_not\_admissible}、
+\texttt{balancedAmplitude\_scale\_classify\_T}、
 \texttt{not\_both\_admissibleScale\_and\_winding}。}
 
 \subsection{ディオファントス・レジーム}
@@ -587,7 +625,8 @@ B\to T&=U
   \item \emph{示す}のは、二つの指定述語（\(\mathrm{HoldsT}\)、\(\mathrm{HoldsNotF}\)）と二つの二値フラグメント（名前と壁）の区別である。
   \item \emph{示す}のは、\(P=\neg P\) を \(\lvert T\rangle\) に一意に置くこと、\(\{P,\neg P\}\) が爆発しないこと、\(\Jnorm<1\) が三ラベルで実現されること、および DST の三層分割が離散の証明ステータス代数にホストされることである。
   \item \emph{示す}のは、そのステータス代数への含意（\(U\to T=U\)）と、高さ上の \(\min\) 剰余の拒否である。
-  \item \emph{示す}のは、\(4\nmid N\) のとき離散の \(\lvert F\rangle\) が禁止されること、および \(k\) 倍増幅をラベル上の部分写像として読むことである。
+  \item \emph{示す}のは、ラベル \(\lvert T\rangle\) を第二の観測量 \(M\) で真空と釣り合い質量に分けることである。第五の名前は置かない。
+  \item \emph{示す}のは、\(4\nmid N\) のとき離散の \(\lvert F\rangle\) が禁止されること、および \(k\) 倍増幅をラベル上の部分写像として読むことである。釣り合い質量の錐外化は高さ分類器には見えない。
   \item \emph{示す}のは、Killing 対が不定であること、および自己重なりが Born 確率ではないことである。
   \item \emph{示す}のは、Euclid 双対セクターと循環生成子の四元数表の切り出しである。
   \item \emph{示す}のは、その表の \(\mathbb{C}^2\) 上の表現と、部分空間格子のオーソモジュラー性および非分配性である。
@@ -595,6 +634,7 @@ B\to T&=U
   \item \emph{示さない}のは、\(J\) や Killing 重なりからの Born 則の導出である。
   \item \emph{示さない}のは、Dirac スピノル \(\mathbb{C}^4\)、位置・運動量演算子、測定問題の解決である。
   \item \emph{示さない}のは、古典算術におけるゲーデルの定理の反証である。
+  \item \emph{示さない}のは、\(T\) の内部分割や質量スケールからの無条件 Beal（および FLT、abc）である。釣り合い質量の種は増幅後も許容に残り得る。
   \item \emph{示さない}のは、\([\Omega(p),\Omega(q)]\ne 0\) のとき \(R(p)R(q)\) をねじれ配置へ引き戻すことである。
   \item \emph{示さない}のは、生の \(J\) を \([-1,1]\) の値と同一視することである。その区間は \(\Jnorm\) のものであり、生の天井は \(\Jbound\) である。
 \end{itemize}

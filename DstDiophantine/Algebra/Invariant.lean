@@ -6,10 +6,11 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Order.Group.Abs
 
 /-!
-# Torsional invariants `J` and `J⁽⁵⁾`
+# Torsional invariants `J`, `J⁽⁵⁾`, and unsigned mass `M`
 
-The six-dimensional torsional scalar and its five-dimensional extension with the
-Minkowski translation term.
+The six-dimensional torsional scalar, its five-dimensional extension with the
+Minkowski translation term, and the unsigned Euclidean mass that splits
+label `T` into vacuum versus balanced massive.
 
 ## Boundedness note
 
@@ -106,6 +107,89 @@ theorem JNormalized_coef (p : TorsionParams) :
   rw [J_coef]
   ring_nf
 
+/-- Euclidean pairing with the cyclic sign of `killingForm` flipped. -/
+def euclideanForm (p q : TorsionParams) : ℝ :=
+  8 * (∑ a : Fin 3, (p.alpha a * q.alpha a + p.beta a * q.beta a))
+
+/--
+Unsigned torsional mass `M = ½∑(α²+β²)`. Same normalisation coefficient as
+`J`, so a pure-boost extremal has `massNormalized = 1 = JNormalized`.
+This is a second observable, not a fifth D4L label.
+-/
+noncomputable def mass (p : TorsionParams) : ℝ :=
+  (1 / 16) * euclideanForm p p
+
+theorem mass_coef (p : TorsionParams) :
+    mass p = (1 / 2) * ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) := by
+  unfold mass euclideanForm
+  simp only [Fin.sum_univ_three]
+  ring_nf
+
+theorem mass_nonneg (p : TorsionParams) : 0 ≤ mass p := by
+  rw [mass_coef]
+  exact mul_nonneg (by norm_num) <|
+    Finset.sum_nonneg fun _ _ => add_nonneg (sq_nonneg _) (sq_nonneg _)
+
+theorem mass_eq_zero_iff (p : TorsionParams) :
+    mass p = 0 ↔ ∀ a : Fin 3, p.alpha a = 0 ∧ p.beta a = 0 := by
+  have hnn : ∀ a ∈ (Finset.univ : Finset (Fin 3)),
+      0 ≤ p.alpha a ^ 2 + p.beta a ^ 2 := fun _ _ =>
+    add_nonneg (sq_nonneg _) (sq_nonneg _)
+  constructor
+  · intro hM
+    have hsum : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) = 0 := by
+      have h2 := congrArg (fun t : ℝ => 2 * t) hM
+      rw [mass_coef] at h2
+      linarith
+    intro a
+    have ha : p.alpha a ^ 2 + p.beta a ^ 2 = 0 :=
+      (Finset.sum_eq_zero_iff_of_nonneg hnn).mp hsum a (Finset.mem_univ a)
+    refine ⟨sq_eq_zero_iff.mp ?_, sq_eq_zero_iff.mp ?_⟩ <;>
+      nlinarith [sq_nonneg (p.alpha a), sq_nonneg (p.beta a)]
+  · intro h
+    rw [mass_coef]
+    have : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) = 0 :=
+      Finset.sum_eq_zero fun a _ => by simp [(h a).1, (h a).2]
+    simp [this]
+
+theorem J_eq_zero_of_mass_eq_zero {p : TorsionParams} (h : mass p = 0) :
+    J p = 0 := by
+  have hz := (mass_eq_zero_iff p).mp h
+  rw [J_coef]
+  simp [Fin.sum_univ_three, (hz 0).1, (hz 0).2, (hz 1).1, (hz 1).2, (hz 2).1, (hz 2).2]
+
+/-- Usual–dual swap preserves unsigned mass. -/
+theorem mass_dagger (p : TorsionParams) : mass (daggerParams p) = mass p := by
+  rw [mass_coef, mass_coef]
+  simp only [daggerParams, Fin.sum_univ_three]
+  ring
+
+/-- Paper-normalized mass; equals `1` at either appendix wall. -/
+noncomputable def massNormalized (p : TorsionParams) : ℝ :=
+  (8 / (3 * Real.pi ^ 2)) * mass p
+
+theorem massNormalized_coef (p : TorsionParams) :
+    massNormalized p =
+      (4 / (3 * Real.pi ^ 2)) * ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) := by
+  unfold massNormalized
+  rw [mass_coef]
+  ring_nf
+
+theorem massNormalized_nonneg (p : TorsionParams) : 0 ≤ massNormalized p := by
+  unfold massNormalized
+  have := mass_nonneg p
+  positivity
+
+theorem massNormalized_eq_zero_iff (p : TorsionParams) :
+    massNormalized p = 0 ↔ mass p = 0 := by
+  have hcoef : (8 / (3 * Real.pi ^ 2) : ℝ) ≠ 0 := by positivity
+  simp [massNormalized, mul_eq_zero, hcoef]
+
+theorem JNormalized_eq_zero_of_massNormalized_eq_zero {p : TorsionParams}
+    (h : massNormalized p = 0) : JNormalized p = 0 := by
+  unfold JNormalized
+  simp [J_eq_zero_of_mass_eq_zero ((massNormalized_eq_zero_iff p).mp h)]
+
 /-- Axis-wise factorisation behind the Killing quadratic form. -/
 theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
 
@@ -130,6 +214,34 @@ theorem sq_diff_le_half_pi_sq {α β : ℝ}
   · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
     rw [abs_of_nonneg hnonneg]
     nlinarith [sq_nonneg (α - β)]
+
+/-- Unsigned axis mass is bounded by the same cone ceiling as the signed gap. -/
+theorem sq_sum_le_half_pi_sq {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    α ^ 2 + β ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+  nlinarith [sq_nonneg (α + β), mul_nonneg hα hβ]
+
+/-- Equality in the unsigned axis bound is the same pair of extremes. -/
+theorem sq_sum_eq_half_pi_sq_iff {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    α ^ 2 + β ^ 2 = (Real.pi / 2) ^ 2 ↔
+      (α = Real.pi / 2 ∧ β = 0) ∨ (α = 0 ∧ β = Real.pi / 2) := by
+  constructor
+  · intro heq
+    have hπ : 0 < Real.pi / 2 := by positivity
+    have hsum_sq_le : (α + β) ^ 2 ≤ (Real.pi / 2) ^ 2 := by nlinarith [hsum]
+    have hsum_sq_ge : (Real.pi / 2) ^ 2 ≤ (α + β) ^ 2 := by
+      nlinarith [mul_nonneg hα hβ]
+    have hsum_sq_eq : (α + β) ^ 2 = (Real.pi / 2) ^ 2 :=
+      le_antisymm hsum_sq_le hsum_sq_ge
+    have hsum_eq : α + β = Real.pi / 2 :=
+      (sq_eq_sq_iff_eq_or_eq_neg.mp hsum_sq_eq).resolve_right
+        (by linarith [hα, hβ, hπ])
+    have hαβ : α * β = 0 := by nlinarith [hsum_eq, heq]
+    rcases mul_eq_zero.mp hαβ with hα0 | hβ0
+    · exact Or.inr ⟨hα0, by linarith [hsum_eq]⟩
+    · exact Or.inl ⟨by linarith [hsum_eq], hβ0⟩
+  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
 
 /-- Equality in the axis-wise bound holds exactly at the two extremes. -/
 theorem sq_diff_eq_half_pi_sq_iff {α β : ℝ}
@@ -237,6 +349,33 @@ theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmiss
     |JNormalized (toTorsionParams t)| ≤ 1 :=
   torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
 
+/-- Raw mass ceiling `M ≤ 3π²/8` on the admissible cone. -/
+theorem mass_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    mass p ≤ 3 * Real.pi ^ 2 / 8 := by
+  rw [mass_coef]
+  have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ (Real.pi / 2) ^ 2 := fun a =>
+    sq_sum_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
+  have hsum : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤ 3 * (Real.pi / 2) ^ 2 := by
+    simp only [Fin.sum_univ_three]
+    linarith [haxis 0, haxis 1, haxis 2]
+  have : (1 / 2 : ℝ) * ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤
+      (1 / 2) * (3 * (Real.pi / 2) ^ 2) :=
+    mul_le_mul_of_nonneg_left hsum (by norm_num)
+  convert this using 1
+  ring
+
+/-- Normalized mass `0 ≤ M_norm ≤ 1` on the admissible cone. -/
+theorem massNormalized_bound_continuous (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    massNormalized p ≤ 1 := by
+  unfold massNormalized
+  have hM := mass_bound_raw_continuous p h
+  have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
+  calc
+    (8 / (3 * Real.pi ^ 2)) * mass p
+        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * Real.pi ^ 2 / 8) := by gcongr
+    _ = 1 := by field_simp
+
 /-- Appendix pure-boost extremal attains `JNormalized = 1`. -/
 theorem JNormalized_extremal :
     JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
@@ -281,6 +420,14 @@ noncomputable def pureEllipticRay (t : ℝ) : TorsionParams where
   alpha := fun _ => 0
   beta := fun _ => t * (Real.pi / 2)
 
+/--
+Uniform equal usual–dual rapidity on every axis. Label `T` with positive
+mass when `t ≠ 0`: the geometric seat of balanced Beal seeds.
+-/
+noncomputable def balancedRay (t : ℝ) : TorsionParams where
+  alpha := fun _ => t * (Real.pi / 4)
+  beta := fun _ => t * (Real.pi / 4)
+
 theorem JNormalized_pureHyperbolicRay (t : ℝ) :
     JNormalized (pureHyperbolicRay t) = t ^ 2 := by
   rw [JNormalized_coef]
@@ -316,6 +463,59 @@ theorem isAdmissibleContinuous_pureEllipticRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : 
     calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
       _ = Real.pi / 2 := one_mul _
   linarith
+
+theorem JNormalized_balancedRay (t : ℝ) : JNormalized (balancedRay t) = 0 := by
+  rw [JNormalized_coef]
+  simp only [balancedRay, Fin.sum_univ_three]
+  ring
+
+theorem mass_balancedRay (t : ℝ) :
+    mass (balancedRay t) = 3 * t ^ 2 * Real.pi ^ 2 / 16 := by
+  rw [mass_coef]
+  simp only [balancedRay, Fin.sum_univ_three]
+  ring
+
+theorem massNormalized_balancedRay (t : ℝ) :
+    massNormalized (balancedRay t) = t ^ 2 / 2 := by
+  unfold massNormalized
+  rw [mass_balancedRay]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+theorem isAdmissibleContinuous_balancedRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
+    IsAdmissibleContinuous (balancedRay t) := by
+  intro a
+  have hπ4 : 0 ≤ Real.pi / 4 := by linarith [Real.pi_pos]
+  have hα : 0 ≤ t * (Real.pi / 4) := mul_nonneg ht0 hπ4
+  refine ⟨hα, hα, ?_⟩
+  have hπ2 : 0 ≤ Real.pi / 2 := by positivity
+  calc t * (Real.pi / 4) + t * (Real.pi / 4)
+      = t * (Real.pi / 2) := by ring
+    _ ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ2
+    _ = Real.pi / 2 := one_mul _
+
+theorem mass_balancedRay_pos {t : ℝ} (ht : t ≠ 0) : 0 < mass (balancedRay t) := by
+  rw [mass_balancedRay]
+  have : 0 < t ^ 2 := sq_pos_of_ne_zero ht
+  positivity
+
+theorem not_admissible_balancedRay_of_one_lt {t : ℝ} (ht : 1 < t) :
+    ¬ IsAdmissibleContinuous (balancedRay t) := by
+  intro h
+  have hsum := (h (0 : Fin 3)).2.2
+  have hαβ :
+      (balancedRay t).alpha 0 + (balancedRay t).beta 0 = t * (Real.pi / 2) := by
+    simp [balancedRay]; ring
+  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by rwa [← hαβ]
+  have hπ : 0 < Real.pi / 2 := by positivity
+  nlinarith
+
+/-- Paper Ch.6 step “`J = 0` ⇒ vacuum / trivial bases” is false. -/
+theorem JNormalized_zero_not_implies_vacuum :
+    ∃ p : TorsionParams,
+      IsAdmissibleContinuous p ∧ JNormalized p = 0 ∧ 0 < mass p :=
+  ⟨balancedRay 1, isAdmissibleContinuous_balancedRay (by norm_num) (by norm_num),
+    JNormalized_balancedRay 1, mass_balancedRay_pos (by norm_num)⟩
 
 /-- On the admissible cone, `JNormalized` attains every value in `[-1, 1]`. -/
 theorem exists_admissible_JNormalized (y : ℝ) (hy : |y| ≤ 1) :
