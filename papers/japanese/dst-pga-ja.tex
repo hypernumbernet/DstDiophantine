@@ -1,4 +1,5 @@
-\documentclass[dvipdfmx,a4paper]{article}
+\documentclass[a4paper]{article}
+\usepackage{luatexja}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
@@ -6,9 +7,7 @@
 \usepackage{bm}
 \usepackage{geometry}
 \geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
-\usepackage[utf8]{inputenc}
-\usepackage[dvipdfmx]{hyperref}
-\usepackage{pxjahyper}
+\usepackage{hyperref}
 
 \title{二重時空ねじれ不整合の \texorpdfstring{\(G(3,1,1)\)}{G(3,1,1)} 拡張：10次元生成元構造と平面ベース括弧積}
 
@@ -315,6 +314,8 @@ M\,\widetilde{M}
 対角 シュヴァルツシルトテトラッドからの誘導計量 & 証明済（チャート） & Lean \texttt{Gravity.Schwarzschild} \\
 外部チャート上の ヴァイツェンベック\(T^{a}{}_{\mu\nu}\) およびスカラー \(T\) & 証明済（チャート） & Lean \texttt{Gravity.Weitzenbock} \\
 動径ブーストのスケール因子が シュヴァルツシルト赤方偏移に一致 & 証明済 & Lean \texttt{Gravity.Sandwich} \\
+純ブーストサンドイッチの \(\iota\mu\) 成分展開と光円錐固有値 & 証明済 & Lean \texttt{Algebra.Sandwich} \\
+完全な退化計量 \(G(3,1,1)\) に関するサンドイッチ & 未解決 & --- \\
 静的対角ゲージに対する \(J=\tfrac12 T+\nabla\cdot B\) & 証明済（チャート切片） & Lean \texttt{Gravity.Identification} \\
 任意モーターに対する一般の \(J^{(5)}\leftrightarrow T\) & 予想 & 下記 \\
 TEGR \(\Leftrightarrow\) アインシュタイン--ヒルベルト（変分） & 外部入力 & \cite{maluf2013} \\

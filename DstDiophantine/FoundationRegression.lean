@@ -12,6 +12,8 @@ import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.UnitGroup
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.Sandwich
+import DstDiophantine.Algebra.PGA
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
@@ -42,12 +44,15 @@ Gravity remains intentionally out of scope.
 DST / discrete-companion algebraic core regressions (dual map, Killing
 dictionary, admissible bound, finite rotor image, continuum `J` approximation,
 sharp discrete `|JNormalized|` range) are included below.
+
+Algebraic sandwich surface regressions (composition, pure-boost `ι 2`
+invariance, light-cone eigenvalues) are included; Gravity remains out of scope.
 -/
 
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
-open Operations Continuum UnitGroup Generators
+open Operations Continuum UnitGroup Generators Sandwich PGA
 open _root_.DstDiophantine.Embedding
 
 /-- Additive faithfulness. -/
@@ -683,5 +688,29 @@ example : JNormalized (toTorsionParams (pureEllipticDiscrete 4)) = -1 :=
 example (t : DiscreteTorsion 3) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| < 1 :=
   torsion_bound_discrete_strict (by decide : ¬ 4 ∣ 3) t h
+
+/-! ### Algebraic sandwich surface (Gravity intentionally out of scope) -/
+
+/-- Sandwich composition law. -/
+example (m n v : PGA) :
+    sandwich (m * n) v = sandwich m (sandwich n v) :=
+  sandwich_comp m n v
+
+/-- Pure boost leaves the orthogonal leg `ι 2` invariant. -/
+example (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (ι 2) = ι 2 :=
+  sandwich_pureBoost_ι2 φ
+
+/-- Lightlike plus eigenvector of a pure boost. -/
+example (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (ι 0 + ι 1) =
+      Real.exp φ • (ι 0 + ι 1) :=
+  sandwich_pureBoost_lightlike_plus φ
+
+/-- Lightlike minus eigenvector of a pure boost. -/
+example (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (ι 0 - ι 1) =
+      Real.exp (-φ) • (ι 0 - ι 1) :=
+  sandwich_pureBoost_lightlike_minus φ
 
 end DstDiophantine.FoundationRegression

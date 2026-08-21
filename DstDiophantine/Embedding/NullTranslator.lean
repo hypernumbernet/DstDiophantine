@@ -55,8 +55,42 @@ theorem nullTranslator_unitary (a : ℤ) :
     nullTranslator a * reverse (nullTranslator a) = 1 :=
   expTrans_unitary ⟨minkowskiOfInt a⟩
 
+theorem nullTranslator_neg (a : ℤ) :
+    nullTranslator (-a) = reverse (nullTranslator a) := by
+  have hlam : minkowskiOfInt (-a) = fun μ => -minkowskiOfInt a μ := by
+    funext μ
+    fin_cases μ <;> simp [minkowskiOfInt]
+  have hω : omegaTrans ⟨minkowskiOfInt (-a)⟩ = -omegaTrans ⟨minkowskiOfInt a⟩ := by
+    simp only [omegaTrans, hlam]
+    rw [← Finset.sum_neg_distrib]
+    congr 1
+    ext μ
+    rw [neg_div, neg_smul]
+  have hrev : reverse (omegaTrans ⟨minkowskiOfInt a⟩) = -omegaTrans ⟨minkowskiOfInt a⟩ := by
+    simp only [omegaTrans, map_sum, map_smul, null_reverse]
+    rw [← Finset.sum_neg_distrib]
+    congr 1
+    ext μ
+    rw [smul_neg]
+  simp only [nullTranslator, expTrans, hω, CliffordAlgebra.reverse.map_add,
+    CliffordAlgebra.reverse.map_one, hrev]
+
+theorem reverse_nullTranslator (a : ℤ) :
+    reverse (nullTranslator a) = nullTranslator (-a) :=
+  (nullTranslator_neg a).symm
+
 noncomputable def translateBy (R : PGA) (a : ℤ) : PGA :=
   R * nullTranslator a * reverse R
+
+theorem translateBy_one (a : ℤ) : translateBy 1 a = nullTranslator a := by
+  simp [translateBy]
+
+theorem translateBy_zero (R : PGA) : translateBy R 0 = R * reverse R := by
+  simp [translateBy, nullTranslator_zero]
+
+theorem translateBy_zero_of_unitary {R : PGA} (hR : R * reverse R = 1) :
+    translateBy R 0 = 1 := by
+  rw [translateBy_zero, hR]
 
 private theorem castAdd_one_eq_one : Fin.castAdd 1 (1 : Fin 4) = (1 : Fin 5) := by decide
 

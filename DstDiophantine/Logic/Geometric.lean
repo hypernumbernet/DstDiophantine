@@ -6,6 +6,7 @@ Authors: DstDiophantine contributors
 import DstDiophantine.Logic.Amplitude
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.Invariant
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Tactic.Ring
@@ -22,8 +23,8 @@ Rotor composition stays in `PGA`. It is **not** pulled back through BCH to
 `exp(Ω(p)) exp(Ω(q)) ≠ exp(Ω(p)+Ω(q))` in general (same boundary as
 `Algebra.Motor`).
 
-Sandwich is restated here so `Logic` does not depend on `Gravity`.
-Metric preservation of the degenerate quadratic form is not claimed.
+Sandwich is imported from `Algebra.Sandwich` so `Logic` does not depend on
+`Gravity`. Metric preservation of the degenerate quadratic form is not claimed.
 -/
 
 namespace DstDiophantine
@@ -31,6 +32,9 @@ namespace DstDiophantine
 namespace Logic
 
 open Admissible Generators Invariant Motor Operations CliffordAlgebra
+open Sandwich (sandwich)
+
+export Sandwich (sandwich sandwich_one)
 
 /-- Commutative overlap: the already-defined parameter Killing form. -/
 def overlap (p q : TorsionParams) : ℝ :=
@@ -65,13 +69,6 @@ theorem interfere_antisymm (p q : TorsionParams) :
 /-- Rotor composition in `PGA`. Not a binary operation on `TorsionParams`. -/
 noncomputable def composeRotor (p q : TorsionParams) : PGA :=
   rotorTorsion p * rotorTorsion q
-
-/-- Thin sandwich, independent of `Gravity`. -/
-noncomputable def sandwich (m v : PGA) : PGA :=
-  m * v * reverse m
-
-@[simp] theorem sandwich_one (v : PGA) : sandwich 1 v = v := by
-  simp [sandwich]
 
 /-- Evaluate a test vector in the frame of a torsion rotor. -/
 noncomputable def eval (p : TorsionParams) (v : PGA) : PGA :=

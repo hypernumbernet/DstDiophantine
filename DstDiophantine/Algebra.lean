@@ -16,6 +16,7 @@ import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.PGA
 import DstDiophantine.Algebra.QuadraticForm
+import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.UnitGroup
 
 /-!
@@ -46,7 +47,13 @@ export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
   admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
   admissible_beta_le_half_pi)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
-  omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary)
+  omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
+  reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one)
+export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp sandwich_reverse
+  sandwich_mul sandwich_sq sandwich_minkowskiVector_sq
+  rotorTorsion_pureBoost_closed sandwich_pureBoost_ι0 sandwich_pureBoost_ι1
+  sandwich_pureBoost_ι2 sandwich_pureBoost_lightlike_plus sandwich_pureBoost_lightlike_minus
+  rotorTorsion_pureRotation_closed)
 export UnitGroup (discreteRotor DiscreteUnit DiscreteRotorImage discreteUnit_finite
   discreteRotorImage_finite reverse_discreteRotor discreteRotor_mul_reverse
   negTorsionParams)

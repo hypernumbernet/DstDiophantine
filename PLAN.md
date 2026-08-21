@@ -129,7 +129,8 @@ flowchart LR
   離散振幅（`¬4∣N` なら F 不在）、増幅力学、巻数との二測定まで機械検証。
   Basic 非依存。`Theorems` は import しない。L2 モーター命題、L3 残件クラス、L4 薄い解釈は後続。
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
-  動径ブースト尺度、チャート上 `J`/`T` 同定。一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き
+  動径ブースト尺度、チャート上 `J`/`T` 同定。純ブースト成分展開は `Algebra.Sandwich`。
+  一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き、退化計量サンドイッチは未解決
 - Lie 括弧による `iso(3,1)` 同型の完備化
 - 3-blade bracket / dual-as-normal の一般定理
 - `exp(Ω⁽⁵⁾)` と定義積 `RT` の関係
@@ -260,6 +261,7 @@ flowchart LR
 - [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
 - [x] チャート上 Weitzenböck ねじれ成分と `T = r⁻² DivClosed`
 - [x] 動径ブースト尺度 `e^{±φ}` と Schwarzschild redshift の一致
+- [x] 純ブースト成分展開（代数層）: `Algebra.Sandwich` の `ι μ` 展開・光円錐固有値、Gravity チャート橋
 - [x] 静的対角切片での `J` / `J⁵` と `T` のチャート同定パッケージ
 - [ ] 一般 motor 場の `J⁵ = ½ T + div`（予想）
 - [ ] TEGR↔EH 変分同値（据え置き・文献）
@@ -276,9 +278,10 @@ Algebra/
   Discrete, Continuum, UnitGroup
   Amplification          ← pureBoost / 実スケール
   ModularAmplification   ← ZMod 倍写・巻数・非空 witness・共形ギャップラベル
+  Sandwich               ← 共役 `m v m̃`・純ブースト成分・光円錐固有値
   CGA/                   ← 1D Cl(2,1) 探針（Basic 非依存）
 Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
-  Coframe, Sandwich, Schwarzschild, Weitzenbock, Identification
+  Coframe, Sandwich（チャート尺度橋）, Schwarzschild, Weitzenbock, Identification
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch

@@ -1,6 +1,11 @@
 import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.PGA.Normed
 import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 # Motors, Ω decomposition, and null exponential truncation
@@ -13,6 +18,8 @@ strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra expo
 * **Proved here:** the *definitional* factorisation `motor p := rotorTorsion *
   expTrans`, together with `rotor_unitary`, `expTrans_unitary`, and
   `motor_unitary` for that product.
+* **Proved here:** closed forms `exp(t • x)` when `x * x = ±1`, and the
+  left-inverse ⇒ right-inverse lemma for unitary motors (`m * reverse m = 1`).
 * **Not identified:** `motor p` with `exp(omegaBiv p)`.  When
   `[Ω_torsion, Ω_trans] ≠ 0`, the exponential of the sum differs from the
   product of exponentials; the paper’s conjugated re-parameterisation
@@ -99,6 +106,150 @@ theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
     _ = (exp (MulOpposite.op (reverse x))).unop := by rw [CliffordAlgebra.op_reverse (Q := Q311)]
     _ = (exp (MulOpposite.op (-x))).unop := by rw [hx]
     _ = exp (-x) := by rw [← MulOpposite.unop_op (exp (-x)), ← exp_op (-x)]
+
+/-! ### Left inverse implies right inverse for unitary motors -/
+
+/-- If `m * reverse m = 1`, then also `reverse m * m = 1`
+(finite-dimensional: left-invertible ⇒ right-invertible). -/
+theorem reverse_mul_of_mul_reverse {m : PGA} (h : m * reverse m = 1) :
+    reverse m * m = 1 := by
+  have hsurj : Function.Surjective (LinearMap.mulLeft ℝ m) := by
+    intro y
+    refine ⟨reverse m * y, ?_⟩
+    simp [LinearMap.mulLeft_apply, ← mul_assoc, h]
+  have hinj : Function.Injective (LinearMap.mulLeft ℝ m) :=
+    (LinearMap.injective_iff_surjective (f := LinearMap.mulLeft ℝ m)).2 hsurj
+  have : LinearMap.mulLeft ℝ m (reverse m * m) = LinearMap.mulLeft ℝ m 1 := by
+    simp [LinearMap.mulLeft_apply, ← mul_assoc, h]
+  exact hinj this
+
+/-! ### Closed-form exponentials for generators with `x² = ±1` -/
+
+private theorem hasDerivAt_exp_neg_smul (x : PGA) (u : ℝ) :
+    HasDerivAt (fun v : ℝ => exp ((-v) • x)) (exp ((-u) • x) * (-x)) u := by
+  have h : HasDerivAt (fun v : ℝ => exp (v • (-x))) (exp (u • (-x)) * (-x)) u :=
+    hasDerivAt_exp_smul_const (-x) u
+  have hfun : (fun v : ℝ => exp ((-v) • x)) = fun v : ℝ => exp (v • (-x)) :=
+    funext fun v => by rw [neg_smul, smul_neg]
+  simpa [hfun, neg_smul, smul_neg] using h
+
+private theorem exp_smul_mul_exp_neg_smul (x : PGA) (t : ℝ) :
+    exp (t • x) * exp ((-t) • x) = 1 := by
+  have hc : Commute (t • x) ((-t) • x) :=
+    ((Commute.refl x).smul_left t).smul_right (-t)
+  rw [← exp_add_of_commute hc, ← add_smul, add_neg_cancel, zero_smul, exp_zero]
+
+/-- Hyperbolic closed form: `x² = 1 ⇒ exp(t • x) = cosh t + sinh t • x`. -/
+theorem exp_of_sq_one {x : PGA} (hx : x * x = 1) (t : ℝ) :
+    exp (t • x) = Real.cosh t • (1 : PGA) + Real.sinh t • x := by
+  let R : ℝ → PGA := fun u => Real.cosh u • (1 : PGA) + Real.sinh u • x
+  let f : ℝ → PGA := fun u => exp ((-u) • x) * R u
+  have hRx (u : ℝ) : x * R u = Real.sinh u • (1 : PGA) + Real.cosh u • x := by
+    simp only [R, mul_add]
+    have h1 : x * (Real.cosh u • (1 : PGA)) = Real.cosh u • x := by
+      rw [mul_smul_comm, mul_one]
+    have h2 : x * (Real.sinh u • x) = Real.sinh u • (1 : PGA) := by
+      rw [mul_smul_comm, hx]
+    rw [h1, h2, add_comm]
+  have hR' (u : ℝ) :
+      HasDerivAt R (Real.sinh u • (1 : PGA) + Real.cosh u • x) u := by
+    exact ((Real.hasDerivAt_cosh u).smul_const (1 : PGA)).add
+      ((Real.hasDerivAt_sinh u).smul_const x)
+  have hf' (u : ℝ) : HasDerivAt f 0 u := by
+    have hexp := hasDerivAt_exp_neg_smul x u
+    have hmul :
+        HasDerivAt ((fun v => exp ((-v) • x)) * R)
+          (exp ((-u) • x) * (-x) * R u +
+            exp ((-u) • x) * (Real.sinh u • (1 : PGA) + Real.cosh u • x)) u :=
+      hexp.mul (hR' u)
+    have hzero :
+        exp ((-u) • x) * (-x) * R u +
+          exp ((-u) • x) * (Real.sinh u • (1 : PGA) + Real.cosh u • x) = 0 := by
+      calc
+        exp ((-u) • x) * (-x) * R u +
+              exp ((-u) • x) * (Real.sinh u • (1 : PGA) + Real.cosh u • x)
+            = exp ((-u) • x) * ((-x) * R u) + exp ((-u) • x) * (x * R u) := by
+              rw [mul_assoc, hRx]
+        _ = exp ((-u) • x) * ((-x) * R u + x * R u) := by
+              rw [← mul_add]
+        _ = exp ((-u) • x) * (-(x * R u) + x * R u) := by
+              rw [neg_mul]
+        _ = exp ((-u) • x) * 0 := by
+              rw [neg_add_cancel]
+        _ = 0 := mul_zero _
+    convert hmul using 2
+    · rfl
+    · exact hzero.symm
+  have hf0 : f 0 = 1 := by
+    simp only [f, R, neg_zero, zero_smul, exp_zero, Real.cosh_zero, Real.sinh_zero,
+      one_smul, zero_smul, add_zero, mul_one]
+  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
+  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
+  have hf_one : ∀ u, f u = 1 := fun u =>
+    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
+  have : exp ((-t) • x) * R t = 1 := hf_one t
+  calc
+    exp (t • x) = exp (t • x) * 1 := (mul_one _).symm
+    _ = exp (t • x) * (exp ((-t) • x) * R t) := by rw [this]
+    _ = (exp (t • x) * exp ((-t) • x)) * R t := by rw [mul_assoc]
+    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
+    _ = R t := one_mul _
+
+/-- Circular closed form: `x² = -1 ⇒ exp(t • x) = cos t + sin t • x`. -/
+theorem exp_of_sq_neg_one {x : PGA} (hx : x * x = -1) (t : ℝ) :
+    exp (t • x) = Real.cos t • (1 : PGA) + Real.sin t • x := by
+  let R : ℝ → PGA := fun u => Real.cos u • (1 : PGA) + Real.sin u • x
+  let f : ℝ → PGA := fun u => exp ((-u) • x) * R u
+  have hRx (u : ℝ) : x * R u = (-Real.sin u) • (1 : PGA) + Real.cos u • x := by
+    simp only [R, mul_add]
+    have h1 : x * (Real.cos u • (1 : PGA)) = Real.cos u • x := by
+      rw [mul_smul_comm, mul_one]
+    have h2 : x * (Real.sin u • x) = (-Real.sin u) • (1 : PGA) := by
+      rw [mul_smul_comm, hx, smul_neg, neg_smul]
+    rw [h1, h2, add_comm]
+  have hR' (u : ℝ) :
+      HasDerivAt R ((-Real.sin u) • (1 : PGA) + Real.cos u • x) u :=
+    ((Real.hasDerivAt_cos u).smul_const (1 : PGA)).add
+      ((Real.hasDerivAt_sin u).smul_const x)
+  have hf' (u : ℝ) : HasDerivAt f 0 u := by
+    have hexp := hasDerivAt_exp_neg_smul x u
+    have hmul :
+        HasDerivAt ((fun v => exp ((-v) • x)) * R)
+          (exp ((-u) • x) * (-x) * R u +
+            exp ((-u) • x) * ((-Real.sin u) • (1 : PGA) + Real.cos u • x)) u :=
+      hexp.mul (hR' u)
+    have hzero :
+        exp ((-u) • x) * (-x) * R u +
+          exp ((-u) • x) * ((-Real.sin u) • (1 : PGA) + Real.cos u • x) = 0 := by
+      calc
+        exp ((-u) • x) * (-x) * R u +
+              exp ((-u) • x) * ((-Real.sin u) • (1 : PGA) + Real.cos u • x)
+            = exp ((-u) • x) * ((-x) * R u) + exp ((-u) • x) * (x * R u) := by
+              rw [mul_assoc, hRx]
+        _ = exp ((-u) • x) * ((-x) * R u + x * R u) := by
+              rw [← mul_add]
+        _ = exp ((-u) • x) * (-(x * R u) + x * R u) := by
+              rw [neg_mul]
+        _ = exp ((-u) • x) * 0 := by
+              rw [neg_add_cancel]
+        _ = 0 := mul_zero _
+    convert hmul using 2
+    · rfl
+    · exact hzero.symm
+  have hf0 : f 0 = 1 := by
+    simp only [f, R, neg_zero, zero_smul, exp_zero, Real.cos_zero, Real.sin_zero,
+      one_smul, zero_smul, add_zero, mul_one]
+  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
+  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
+  have hf_one : ∀ u, f u = 1 := fun u =>
+    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
+  have : exp ((-t) • x) * R t = 1 := hf_one t
+  calc
+    exp (t • x) = exp (t • x) * 1 := (mul_one _).symm
+    _ = exp (t • x) * (exp ((-t) • x) * R t) := by rw [this]
+    _ = (exp (t • x) * exp ((-t) • x)) * R t := by rw [mul_assoc]
+    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
+    _ = R t := one_mul _
 
 theorem rotor_unitary (p : TorsionParams) :
     rotorTorsion p * reverse (rotorTorsion p) = 1 := by

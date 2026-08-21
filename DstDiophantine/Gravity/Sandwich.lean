@@ -1,4 +1,5 @@
 import DstDiophantine.Gravity.Coframe
+import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Generators
@@ -8,22 +9,21 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.Positivity
 
 /-!
-# Motor sandwich and radial-boost scale factors
+# Chart-level sandwich scales and Schwarzschild radial boost
 
 ## Proved
 
-* Sandwich operator `m * v * reverse m`.
+* Re-exports the algebraic sandwich from `Algebra.Sandwich`.
 * Radial rapidity `φ = -½ log(1 - rₛ/r)` and `e^{±φ}` matching Schwarzschild
   redshift / radial stretch.
 * Light-cone identities `cosh φ ± sinh φ = e^{±φ}` as the Lorentz-boost eigenvalue
   bridge to the diagonal `(t,r)` tetrad scales.
+* Clifford sandwich of the radial boost on `ι 0 ± ι 1` recovers those scales.
 
 ## Not claimed here
 
-* Full component expansion of `sandwich (rotorTorsion _) (ι μ)` (deferred to a
-  follow-up; the eigenvalue bridge above is the chart-level content used by
-  Schwarzschild identification).
 * Degenerate-metric sandwich preservation for full `G(3,1,1)`.
+* Grade-1 projection of a general motor-induced tetrad.
 -/
 
 namespace DstDiophantine
@@ -31,13 +31,9 @@ namespace DstDiophantine
 namespace Gravity
 
 open PGA Generators Motor Amplification Real CliffordAlgebra
+open Sandwich (sandwich)
 
-/-- Geometric sandwich `M v M˜`. -/
-noncomputable def sandwich (m v : PGA) : PGA :=
-  m * v * reverse m
-
-@[simp] theorem sandwich_one (v : PGA) : sandwich 1 v = v := by
-  simp [sandwich]
+export Sandwich (sandwich sandwich_one)
 
 theorem sandwich_rotorTorsion (p : Operations.TorsionParams) (v : PGA) :
     sandwich (rotorTorsion p) v =
@@ -120,6 +116,30 @@ theorem boost_eigenvalues_eq_schwarzschild_scales {rs r : ℝ}
   constructor
   · rw [cosh_sub_sinh, exp_neg_schwarzschildRapidity hrs hr]
   · rw [cosh_add_sinh, exp_schwarzschildRapidity hrs hr]
+
+/-- Clifford sandwich of the radial boost recovers the lightlike Schwarzschild scales. -/
+theorem sandwich_radialBoost_lightlike_plus (rs r : ℝ) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (ι 0 + ι 1) =
+      Real.exp (schwarzschildRapidity rs r) • (ι 0 + ι 1) := by
+  simpa [radialBoostParams] using
+    Sandwich.sandwich_pureBoost_lightlike_plus (schwarzschildRapidity rs r)
+
+theorem sandwich_radialBoost_lightlike_minus (rs r : ℝ) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (ι 0 - ι 1) =
+      Real.exp (-schwarzschildRapidity rs r) • (ι 0 - ι 1) := by
+  simpa [radialBoostParams] using
+    Sandwich.sandwich_pureBoost_lightlike_minus (schwarzschildRapidity rs r)
+
+/-- Exterior chart: sandwich eigenvalues equal Schwarzschild `(t,r)` scale factors. -/
+theorem sandwich_radialBoost_eigenvalues_eq_schwarzschild {rs r : ℝ}
+    (hrs : 0 < rs) (hr : rs < r) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (ι 0 + ι 1) =
+      (Real.sqrt (1 - rs / r))⁻¹ • (ι 0 + ι 1) ∧
+      sandwich (rotorTorsion (radialBoostParams rs r)) (ι 0 - ι 1) =
+        Real.sqrt (1 - rs / r) • (ι 0 - ι 1) := by
+  refine ⟨?_, ?_⟩
+  · rw [sandwich_radialBoost_lightlike_plus, exp_schwarzschildRapidity hrs hr]
+  · rw [sandwich_radialBoost_lightlike_minus, exp_neg_schwarzschildRapidity hrs hr]
 
 end Gravity
 
