@@ -20,6 +20,8 @@ import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
 import DstDiophantine.Theorems.BealGaussian
 import DstDiophantine.Theorems.BealMixed
+import DstDiophantine.Theorems.BealEven
+import DstDiophantine.Theorems.BealGaussianCube
 import DstDiophantine.Theorems.BealFinite
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatLast
@@ -28,6 +30,7 @@ import DstDiophantine.Embedding.ConformalInteger
 import DstDiophantine.Algebra.CGA.NullCone
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 /-!
 # Public-API / layering regression examples
@@ -461,15 +464,42 @@ example {A B C : ℤ} {x y z : ℕ}
     IsGaussianHypotenusePower (A ^ (x / 2)) (B ^ (x / 2)) z :=
   (exists_gaussian_hyp_pow_of_two_equal_xy_even hx hz hxy hd hxeven hA hB hC hgcd hsol).2.2.1
 
-/-- Phase 7j: Darmon–Merel axiom closes `(n,n,3)` two-equal with `n ≥ 4`. -/
+/-- Phase 7k: Darmon–Merel cube slice covers all three two-equal positions. -/
 example {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
     (hd : bealExpGcd x y z = 1)
-    (hxy : x = y) (hz3 : z = 3)
+    (hpair :
+      (x = y ∧ z = 3) ∨
+        (y = z ∧ x = 3 ∧ Odd y) ∨
+          (x = z ∧ y = 3 ∧ Odd x))
     (hsol : A ^ x + B ^ y = C ^ z) : False :=
-  not_beal_two_equal_third_three hx hy hz hA hB hC hgcd hd hxy hz3 hsol
+  not_beal_two_equal_cube_slice hx hy hz hA hB hC hgcd hd hpair hsol
+
+/-- Phase 7k: even two-equal sum+diff assemble to `BealTwoEqualEvenResidual`. -/
+example (hSum : BealTwoEqualEvenSumResidual) (hDiff : BealTwoEqualEvenDiffResidual) :
+    BealTwoEqualEvenResidual :=
+  beal_two_equal_even_of_sum_diff hSum hDiff
+
+/-- Phase 7k: Gaussian cube expansion. -/
+example (a b : ℤ) :
+    (⟨a, b⟩ : GaussianInt) ^ 3 =
+      ⟨a ^ 3 - 3 * a * b ^ 2, 3 * a ^ 2 * b - b ^ 3⟩ :=
+  gaussian_cube_eq a b
+
+/-- Phase 7k: mod-8 forbids `2 * odd = cube`. -/
+example {m v : ℕ} (hm : Odd m) : ¬ 2 * m = v ^ 3 :=
+  not_two_mul_odd_eq_cube hm
+
+/-- Phase 7k: two-factor `e = 3` with pure-cube abs 1 is impossible. -/
+example {m n : ℤ} {c : ℕ}
+    (hm0 : m ≠ 0) (hn0 : n ≠ 0)
+    (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ 3)
+    (hform :
+      (∃ v : ℕ, n.natAbs = 1 ∧ 2 * m.natAbs = v ^ 3) ∨
+        (∃ v : ℕ, m.natAbs = 1 ∧ 2 * n.natAbs = v ^ 3)) : False :=
+  not_eq_odd_two_factor_of_exp_three_abs_one hm0 hn0 heq hform
 
 /-- Phase 7j: no coprime Beal solution with bases ≤ 8 and exponents in 3…5. -/
 example {A B C x y z : ℕ}
@@ -481,6 +511,17 @@ example {A B C x y z : ℕ}
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   beal_no_coprime_of_le_eight_five hA hB hC hAmax hBmax hCmax hx hy hz hxE hyE hzE hsol hgcd
 
+/-- Phase 7k: no coprime perfect-power Beal with bases ≤ 12 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 12) (hBmax : B ≤ 12)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twelve_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
 /-- Phase 7j: known non-coprime solution `3³ + 6³ = 3⁵` (not a counterexample). -/
 example : (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 :=
   beal_known_noncoprime_three_six
@@ -488,6 +529,10 @@ example : (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 :=
 /-- Phase 7j: known non-coprime solution `2³ + 2³ = 2⁴`. -/
 example : (2 : ℤ) ^ 3 + 2 ^ 3 = 2 ^ 4 ∧ bealGcd 2 2 2 = 2 :=
   beal_known_noncoprime_two_two
+
+/-- Phase 7k: known non-coprime sum is a perfect 5th power. -/
+example : isNthPower (3 ^ 3 + 6 ^ 3) 5 = true :=
+  beal_known_noncoprime_is_perfect_power
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :

@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7j に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元（`TwoEqualEven` / `TwoEqualOdd` / `AllDistinct` / `EqualOddTwoFactor` / `UnequalOdd`）。`(n,n,3)` 二一致は Darmon–Merel 公理で閉鎖。有限箱（底 ≤8・指数 3…5）に互素解なしを `native_decide` で証明。無条件古典 Beal は主張しない。
+- **Beal 危機路線をフェーズ 7k に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元。Darmon–Merel 公理は二一致立方切片を 3 位置（奇数の差型含む）まで閉鎖。偶二一致は和型／差型に分割。equal-odd `e=3` は立方展開・mod-8・`|·|=1` Mihăilescu 切片。有限箱（底 ≤8・指数 3…5）に加え、冪判定探索（底 ≤12・指数 3…6・`C` 非有界）で互素解なしを `native_decide` で証明。無条件古典 Beal は主張しない。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。
@@ -99,8 +99,10 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | `BealPythagorean.lean` | `d=2` UFD / DiffFourth；`4∣` が 2 本以上の無条件閉鎖；`BealPythagoreanResidual` |
 | `BealGaussian.lean` | ℤ[i] UFD；equal-odd / 偶二一致進捗；`beal_conjecture_pos_of_residuals` |
 | `BealMixed.lean` | フェーズ 7j：細残件型・組立・Gaussian 偶二一致持ち上げ・Darmon–Merel `(n,n,3)` |
-| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）に互素解なし；既知非互素解の回帰 |
-| `DarmonMerel.lean` | Darmon–Merel `(n,n,3)` 公理（Lean 証明ではない） |
+| `BealEven.lean` | フェーズ 7k：偶二一致の和型／差型分割と組立 |
+| `BealGaussianCube.lean` | フェーズ 7k：equal-odd `e=3` 立方展開・mod-8・`|·|=1` 切片 |
+| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）＋冪判定（底 ≤12・指数 3…6・`C` 非有界）；既知非互素解の回帰 |
+| `DarmonMerel.lean` | Darmon–Merel `(n,n,3)` 公理と奇数置換スライス（Lean 証明ではない） |
 | `Mihailescu.lean` | Catalan / Mihăilescu axiom と正の unit-base 断片 |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |
@@ -134,12 +136,12 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 いまの焦点は **無条件 Beal** です。共通 no-go・modular 基盤・窓巻数・bookkeeping 降下・
 Mihăilescu 正 UnitBase・指数 gcd 還元・無条件 FLT スライス・細残件組立・Darmon–Merel
-立方切片・有限箱までは揃っています。
+3位置・偶二一致分割・equal-odd 立方切片・有限箱／冪判定までは揃っています。
 残りは細残件本体と、一般 `d≥3` 向けの FLT 本体です。
 
 - **主軸（Beal）**  
   指数 gcd 還元。`3∣d` / `4∣d` / 等指数 3,4 / 双二次は mathlib で無条件。
-  一般 `d≥3` は FLT 公理。`(n,n,3)` 二一致は Darmon–Merel 公理。
+  一般 `d≥3` は FLT 公理。二一致立方は Darmon–Merel 公理（3位置）。
   残件は偶／奇二一致・全相異（`d=1`）と equal-odd 二因子／unequal-odd（`d=2`）。
   Realization / DiscreteClosed は bookkeeping（幾何原理として証明しない）。
 - **1D CGA**  

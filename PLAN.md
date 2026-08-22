@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-22（フェーズ 7j: Beal 細残件分割・Darmon–Merel・有限証明書）
+最終更新: 2026-08-22（フェーズ 7k: DM 3位置・偶二一致分割・立方二因子切片・冪判定探索）
 
 ## 1. 三層アーキテクチャ
 
@@ -53,8 +53,9 @@ flowchart LR
 | `bealExpGcd` 還元 | Beal（本命分割） | `d=gcd(x,y,z)` | **3∣d / 4∣d は無条件**（`BealSlice`）；一般 d≥3 は **FLT 公理**（`FermatLast` / フェーズ 7i）；d=2 は参数表示＋**4 整除 2 本以上を無条件閉鎖**（`BealPythagorean`）＋ equal-odd は Gaussian で二因子残件へ；残件は `BealTwoEqualEven` / `TwoEqualOdd` / `AllDistinct`（`d=1`）と `EqualOddTwoFactor` / `UnequalOdd`（`d=2`；フェーズ 7j） |
 | `BealCGADiscreteClosed` | Beal（bookkeeping） | 互素解 ⇒ k 倍種が m 冪格子上 | **≡ `|A|=1`**（`beal_kFold_powerLattice_iff_natAbs_eq_one`） |
 | `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` | Beal（残件） | `|A|=1` の互素解は存在しない | **正の基底は Mihăilescu axiom で証明済** |
-| `darmonMerelCube` | Beal（公理スライス） | `(n,n,3)` 二一致 `n≥4` | **公理**（Darmon–Merel；Lean 証明ではない）；`not_beal_two_equal_third_three` |
+| `darmonMerelCube` | Beal（公理スライス） | `(n,n,3)` および奇数 `(3,n,n)` / `(n,3,n)` | **公理**（Darmon–Merel；Lean 証明ではない）；フェーズ 7k で 3 位置へ |
 | 有限箱 `noCoprimeBealUpTo` | Beal（計算証明書） | 底 ≤8・指数 3…5 に互素解なし | **証明済**（`beal_no_coprime_of_le_eight_five`） |
+| 冪判定箱 | Beal（計算証明書） | 底 ≤12・指数 3…6・`C` 非有界 | **証明済**（`beal_no_coprime_perfect_power_of_le_twelve_six`） |
 | `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
 | `BealCGALatticeGauge` / `BealCGADilationNoGo` | Beal（等指数切片・診断） | 整数ヌル格子上の巻数禁止 | 等指数で格子成立；混合は外れ；NoGo 本体未 |
 | `BealCGAGauge` / `BealCGANoGo` | Beal（診断） | 恒真 null ゲージ ⇒ 巻数禁止 | **ill-posed**（窓構成と衝突し得る）；関係補題のみ |
@@ -90,7 +91,7 @@ flowchart LR
 | **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
 | **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
 
-**最優先軸:** 無条件 Beal 危機路線（フェーズ 7j）。Realization / DiscreteClosed は bookkeeping。指数 gcd の三分法、無条件スライス、**FLT 公理による `d≥3`**、Gaussian UFD、細残件組立、**(n,n,3) Darmon–Merel**、有限箱まで固めた。残件本体は **`BealTwoEqualEvenResidual`**、**`BealTwoEqualOddResidual`**（立方以外）、**`BealAllDistinctExpResidual`**、**`BealEqualOddTwoFactorResidual`**、**`BealPythagoreanUnequalOddResidual`**。無条件古典 Beal は主張しない。CGA Realization は幾何原理としては使わない。
+**最優先軸:** 無条件 Beal 危機路線（フェーズ 7k）。Realization / DiscreteClosed は bookkeeping。指数 gcd の三分法、無条件スライス、**FLT 公理による `d≥3`**、Gaussian UFD、細残件組立、**Darmon–Merel 3位置**、偶二一致分割、equal-odd 立方切片、有限箱／冪判定まで固めた。残件本体は **`BealTwoEqualEvenResidual`**、**`BealTwoEqualOddResidual`**（立方以外）、**`BealAllDistinctExpResidual`**、**`BealEqualOddTwoFactorResidual`**、**`BealPythagoreanUnequalOddResidual`**。無条件古典 Beal は主張しない。CGA Realization は幾何原理としては使わない。
 
 ---
 
@@ -104,7 +105,7 @@ flowchart LR
 4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
 5. **旧 coarse witness の空性証明と modular 基盤**
 
-### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7j）
+### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7k）
 
 1. ~~`BealCGARealization` を幾何原理として証明~~ — bookkeeping 化完了（循環を回避）
 2. ~~`3∣d` / `4∣d` / 等指数 3,4~~ — mathlib FLT で無条件閉鎖（`BealSlice`）
@@ -112,10 +113,12 @@ flowchart LR
 4. ~~`d = 2` で 4 整除が 2 本以上~~ — `BealPythagorean`（`not_fermat_42` + DiffFourth）で無条件閉鎖
 5. ~~一般 `d ≥ 3`~~ — FLT 公理で条件付き閉鎖（フェーズ 7i）
 6. ~~細残件組立~~ — `beal_conjecture_pos_of_fine_residuals`（フェーズ 7j）
-7. ~~`(n,n,3)` 二一致~~ — Darmon–Merel 公理（フェーズ 7j）
-8. ~~有限箱 底≤8・指数 3…5~~ — `beal_no_coprime_of_le_eight_five`
-9. **残件本体:** `TwoEqualEven` / `TwoEqualOdd` / `AllDistinct` / `EqualOddTwoFactor` / `UnequalOdd`
-10. （後続）`FermatModularBridge` / `AbcModularBridge`；有限箱の拡大
+7. ~~`(n,n,3)` 二一致~~ — Darmon–Merel 公理（フェーズ 7j）；~~奇数 `(3,n,n)` / `(n,3,n)`~~（フェーズ 7k）
+8. ~~有限箱 底≤8・指数 3…5~~ — `beal_no_coprime_of_le_eight_five`；~~冪判定 底≤12・指数 3…6~~（フェーズ 7k）
+9. ~~偶二一致の和型／差型分割~~ — `BealEven`（フェーズ 7k）
+10. ~~equal-odd 立方切片（`|·|=1` / mod-8）~~ — `BealGaussianCube`（フェーズ 7k）
+11. **残件本体:** `TwoEqualEven`（一般） / `TwoEqualOdd`（立方以外） / `AllDistinct` / `EqualOddTwoFactor`（`e≥5` および `|u|≥3`） / `UnequalOdd`
+12. （後続）`FermatModularBridge` / `AbcModularBridge`；有限箱の拡大
 
 ### 探索的（並列トラック）
 
@@ -258,7 +261,19 @@ flowchart LR
 - [x] `darmonMerelCube` 公理と `not_beal_two_equal_third_three`
 - [x] 有限箱 `beal_no_coprime_of_le_eight_five`（底 ≤8・指数 3…5）と既知非互素解
 - [x] 成功判定: 無条件古典 Beal ではなく「細残件組立 + 立方スライス + 有限箱」
-- [ ] 残件本体: `BealTwoEqualEvenResidual` / `BealTwoEqualOddResidual` /
+- [ ] 残件本体（7k で切片閉鎖を追加；本体は未）
+- [ ] 無条件古典 Beal（主張しない）
+
+### フェーズ 7k（DM 3位置・偶分割・立方切片・冪判定 — 完了）
+
+- [x] Darmon–Merel を奇数 `(3,n,n)` / `(n,3,n)` へ符号書き換えで適用
+  （`not_beal_two_equal_cube_slice`）
+- [x] `BealTwoEqualEvenSumResidual` / `BealTwoEqualEvenDiffResidual` と組立
+- [x] 和型 `z=3` を DM で閉鎖；Gaussian 両座標冪パッケージ
+- [x] equal-odd `e=3`: 立方展開・mod-8・`|·|=1` Mihăilescu 切片
+- [x] 冪判定有限探索 `beal_no_coprime_perfect_power_of_le_twelve_six`（底 ≤12・指数 3…6・`C` 非有界）
+- [x] 成功判定: 無条件古典 Beal ではなく「切片閉鎖 + 冪判定証明書」
+- [ ] 残件本体: `BealTwoEqualEvenResidual`（一般） / `BealTwoEqualOddResidual` /
   `BealAllDistinctExpResidual` / `BealEqualOddTwoFactorResidual` /
   `BealPythagoreanUnequalOddResidual`
 - [ ] 無条件古典 Beal（主張しない）
@@ -314,7 +329,9 @@ Theorems/
   BealPythagorean (d=2 UFD / DiffFourth / 4 整除 2 本以上),
   BealGaussian (ℤ[i] UFD / equal-odd / 偶二一致進捗),
   BealMixed (細残件組立 / Gaussian 偶持ち上げ / Darmon–Merel 適用),
-  BealFinite (有限箱), DarmonMerel / FermatLast / Mihailescu (公理),
+  BealEven (偶二一致 和型／差型分割),
+  BealGaussianCube (equal-odd e=3 切片),
+  BealFinite (有限箱 + 冪判定), DarmonMerel / FermatLast / Mihailescu (公理),
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
@@ -421,12 +438,12 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。7予�
 
 ## 8. 次アクション
 
-1. **（主・Beal）** 細残件本体（偶／奇二一致・全相異・equal-odd 二因子・unequal-odd）
-2. （条件付き）一般 `d≥3` は FLT 本体トラック；`(n,n,3)` は Darmon–Merel 公理済
-3. （後続）Fermat / abc modular への移植；有限箱の拡大；軌道型・加法分解型は別系列
+1. **（主・Beal）** 細残件本体（偶／奇二一致・全相異・equal-odd 二因子・unequal-odd）の一般場合
+2. （条件付き）一般 `d≥3` は FLT 本体トラック；立方二一致は Darmon–Merel 3位置まで適用済
+3. （後続）Fermat / abc modular への移植；冪判定有限箱の拡大；軌道型・加法分解型は別系列
 4. **（並列）** Gravity: 修正された `J_field↔T` 辞書（一般モーター；素朴特殊化は棄却済）
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
 7. **（並列・D4L）** L1（質量／真空／釣り合い）は固定済。次はモーター命題（L2）、`BalancedResidualClass`（L3）、Theorems からの薄いステータス解釈（L4）。Dirac \(\mathbb{C}^4\) は後続。ゲーデル否定・無条件 Beal は主張しない
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD + 細残件組立 + Darmon–Merel `(n,n,3)` + 有限箱** まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD + 細残件組立 + Darmon–Merel 3位置 + 偶二一致分割 + equal-odd 立方切片 + 有限箱／冪判定** まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。
