@@ -118,11 +118,13 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 数論の主軸とは独立に、`DstDiophantine.Gravity` で TEGR 寄りの骨格をチャート固定で形式化しています（`Basic` には強制 import しません）。
 
 - 外域の対角テトラッドから、誘導計量が Schwarzschild 計量になること
-- Weitzenböck のねじれ成分と、発散形 `T = r⁻² DivClosed`
+- Weitzenböck のねじれ成分と、発散形 `T = -r⁻² formal∂_r(r² B^r)`
 - 動径ブーストの尺度と redshift の一致
-- 静的対角切片での `J` / `J⁵` と `T` の同定パッケージ
+- モーター誘起フレーム（純ブーストの `(t,r)` 混合、純並進は恒等でないこと）
+- 辞書: 有限角 `J(φ)=½φ²`、場の種 `J_field=½(φ')²`、遠平行 `T` を区別
+- 素朴な点同一視（有限角 / パラメータ `J5` / `J_field=½T`）の機械検証による棄却
 
-一般のモーター場での `J⁵ ↔ T` や、TEGR と Einstein–Hilbert の変分同値まではまだです（見通しを参照）。
+一般のモーター場での修正された `J_field ↔ T` や、TEGR と Einstein–Hilbert の変分同値まではまだです（見通しを参照）。
 
 ## これからの見通し
 

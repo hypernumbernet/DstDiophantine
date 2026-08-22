@@ -129,8 +129,8 @@ flowchart LR
   離散振幅（`¬4∣N` なら F 不在）、増幅力学、巻数との二測定まで機械検証。
   Basic 非依存。`Theorems` は import しない。L2 モーター命題、L3 残件クラス、L4 薄い解釈は後続。
 - **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
-  動径ブースト尺度、チャート上 `J`/`T` 同定。純ブースト成分展開は `Algebra.Sandwich`。
-  一般 `J⁵↔T` は予想、TEGR↔EH 変分同値は据え置き、退化計量サンドイッチは未解決
+  動径ブースト尺度、モーター誘起フレーム、場の種 `J_field`。有限角 `J`/`J⁵` と `T` の
+  素朴な点同一視は棄却。一般 `J_field↔T` は予想、TEGR↔EH 変分同値は据え置き、退化計量サンドイッチは未解決
 - Lie 括弧による `iso(3,1)` 同型の完備化
 - 3-blade bracket / dual-as-normal の一般定理
 - `exp(Ω⁽⁵⁾)` と定義積 `RT` の関係
@@ -259,11 +259,13 @@ flowchart LR
 ### Gravity トラック（PGA–TEGR）
 
 - [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
-- [x] チャート上 Weitzenböck ねじれ成分と `T = r⁻² DivClosed`
+- [x] チャート上 Weitzenböck ねじれ成分と `T = -r⁻² formal∂_r(r² B^r)`
 - [x] 動径ブースト尺度 `e^{±φ}` と Schwarzschild redshift の一致
 - [x] 純ブースト成分展開（代数層）: `Algebra.Sandwich` の `ι μ` 展開・光円錐固有値、Gravity チャート橋
-- [x] 静的対角切片での `J` / `J⁵` と `T` のチャート同定パッケージ
-- [ ] 一般 motor 場の `J⁵ = ½ T + div`（予想）
+- [x] モーター誘起フレーム `Gravity.Tetrad`；純並進は恒等モーターでない
+- [x] 辞書固定: 有限角 `J(φ)=½φ²` ≠ 場の種 `J_field=½(φ')²` ≠ 遠平行 `T`
+- [x] 素朴な点同一視の棄却（定数ブースト / 純並進 / `J_field=½T` at (2,4)）
+- [ ] 一般 motor 場の修正された `J_field = ½ T + div`（予想；TEGR カレント特殊化は棄却済）
 - [ ] TEGR↔EH 変分同値（据え置き・文献）
 
 ---
@@ -281,7 +283,8 @@ Algebra/
   Sandwich               ← 共役 `m v m̃`・純ブースト成分・光円錐固有値
   CGA/                   ← 1D Cl(2,1) 探針（Basic 非依存）
 Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
-  Coframe, Sandwich（チャート尺度橋）, Schwarzschild, Weitzenbock, Identification
+  Coframe, Sandwich（チャート尺度橋）, Schwarzschild, Weitzenbock,
+  Tetrad（モーター誘起フレーム）, Identification（辞書・棄却）
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
@@ -333,8 +336,8 @@ Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元
 ### フェーズ 8 — PGA–TEGR チャート層（進行中）
 
 - `dst-pga.tex` §6 を独立節「PGA–TEGR Correspondence」へ再構成
-- Lean `Gravity/`: コフレーム・Schwarzschild・Weitzenböck・`J`/`T` 同定
-- 数論主軸（modular bridge）と並列；TEGR↔EH は据え置き
+- Lean `Gravity/`: コフレーム・Schwarzschild・Weitzenböck・`J_field`・同一視棄却・`Tetrad`
+- 数論主軸（modular bridge）と並列；TEGR↔EH は据え置き；修正場辞書は未解決
 
 ---
 
@@ -381,7 +384,7 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 |------|------|------|
 | null dual 閉性 | grade で棄却 | `dual_null` |
 | `motor = exp(Ω_biv)` | 非可換時は偽。定義積 `R·T` のみ | `Motor` |
-| TEGR↔EH | 未証明の `J=½T+div` + 文献引用。変分なし | Gravity チャート切片のみ |
+| TEGR↔EH | 未証明の修正場辞書 + 文献引用。素朴な `J=½T` は棄却。変分なし | Gravity チャート切片 + 棄却 |
 | 連続体否定 vs `∫J d⁴x` | 論理的緊張 | 形式化対象外 |
 | `BealCGADiscreteClosed` | 幾何原理ではない（bookkeeping） | `beal_kFold_powerLattice_iff_natAbs_eq_one` |
 | 文献プレースホルダ | `arXiv:xxxx.xxxxx` | — |
@@ -401,7 +404,7 @@ Beal 危機路線の優先度は維持。上記は並列の代数整理。7予�
 1. **（主・Beal）** `d=1` 混合指数（`BealMixedExpResidual`）と `d=2` 一般ピタゴラス冪降下
 2. （条件付き）一般 `d≥3`（3 でも 4 でも割れない）は FLT 本体トラック
 3. （後続）Fermat / abc modular への移植；軌道型・加法分解型は別系列
-4. **（並列）** Gravity: 一般 `J⁵↔T` 予想の部分証明
+4. **（並列）** Gravity: 修正された `J_field↔T` 辞書（一般モーター；素朴特殊化は棄却済）
 5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
 6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
 7. **（並列・D4L）** L1（質量／真空／釣り合い）は固定済。次はモーター命題（L2）、`BalancedResidualClass`（L3）、Theorems からの薄いステータス解釈（L4）。Dirac \(\mathbb{C}^4\) は後続。ゲーデル否定・無条件 Beal は主張しない

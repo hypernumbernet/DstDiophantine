@@ -42,7 +42,7 @@ A second theme is the plane geometry of \(G(3,1,1)\). Plane-based bracket produc
 
 Because each null bivector squares to zero \emph{and} satisfies \(N_{\mu}N_{\nu}=0\) for every \(\mu,\nu\), the exponential of the null part is a finite polynomial of degree one. Combined with the reversal-odd character \(\widetilde{N_{\mu}}=-N_{\mu}\) of all bivectors, this guarantees the unitarity \(M\widetilde{M}=1\) of the motor defined by the product \(M:=RT\). Sandwiching with respect to the full degenerate metric of \(G(3,1,1)\), and the identification of \(M\) with \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) when the factors fail to commute, are left aside here.
 
-The paper is organised as follows. Section~2 defines the embedding of the double spacetime into \(G(3,1,1)\) and classifies the ten generators. Section~3 constructs the extended mismatch bivector, proves the polynomial form of the null exponential, and introduces the parameter-space form \(J^{(5)}\). Section~4 outlines the plane-based bracket programme. Section~5 establishes unitarity of the product motor \(M:=RT\). Section~6 develops the PGA--TEGR correspondence on a fixed chart, with the Schwarzschild diagonal ansatz and the identification of \(J^{(5)}\) with the teleparallel scalar \(T\). Conclusions are drawn in Section~7.
+The paper is organised as follows. Section~2 defines the embedding of the double spacetime into \(G(3,1,1)\) and classifies the ten generators. Section~3 constructs the extended mismatch bivector, proves the polynomial form of the null exponential, and introduces the parameter-space form \(J^{(5)}\). Section~4 outlines the plane-based bracket programme. Section~5 establishes unitarity of the product motor \(M:=RT\). Section~6 develops the PGA--TEGR correspondence on a fixed chart, with the Schwarzschild diagonal ansatz, the dictionary separating finite-angle \(J\) from the field seed \(J_{\mathrm{field}}\) and the teleparallel scalar \(T\), and Lean-checked rejections of naive point identifications. Conclusions are drawn in Section~7.
 
 \section{The Ten-Dimensional Generator Structure}
 
@@ -309,11 +309,16 @@ Claim & Status & Formalisation \\
 Motor \(M:=RT\) unitarity & proved (Sec.~5) & Lean \texttt{Motor} \\
 Induced metric from diagonal Schwarzschild tetrad & proved (chart) & Lean \texttt{Gravity.Schwarzschild} \\
 Weitzenb\"{o}ck \(T^{a}{}_{\mu\nu}\) and scalar \(T\) on the exterior chart & proved (chart) & Lean \texttt{Gravity.Weitzenbock} \\
+\(T=-r^{-2}\,\partial_r(r^{2}B^{r})\) with TEGR radial current & proved (chart) & Lean \texttt{Gravity.Weitzenbock} \\
 Radial-boost scale factors match Schwarzschild redshift & proved & Lean \texttt{Gravity.Sandwich} \\
 Pure-boost sandwich on \(\iota\mu\) and light-cone eigenvalues & proved & Lean \texttt{Algebra.Sandwich} \\
+Motor-induced frame vectors; pure translator \(\neq 1\) & proved & Lean \texttt{Gravity.Tetrad} \\
 Degenerate-metric sandwich for full \(G(3,1,1)\) & open & --- \\
-\(J=\tfrac12 T+\nabla\cdot B\) for the static diagonal gauge & proved (chart slice) & Lean \texttt{Gravity.Identification} \\
-General \(J^{(5)}\leftrightarrow T\) for arbitrary motors & conjecture & below \\
+Finite-angle \(J(\varphi)=\tfrac12\varphi^{2}\) (parameter diagnostic) & proved & Lean \texttt{Gravity.Identification} \\
+Field seed \(J_{\mathrm{field}}=\tfrac12(\varphi')^{2}\) & defined & Lean \texttt{Gravity.Weitzenbock} \\
+Naive \(J(\varphi)=\tfrac12 T\) / parametric \(J^{(5)}=\tfrac12 T\) & \textbf{rejected} & Lean \texttt{Gravity.Identification} \\
+Naive \(J_{\mathrm{field}}=\tfrac12 T\) on Schwarzschild & \textbf{rejected} & Lean \texttt{Gravity.Identification} \\
+Corrected field dictionary for general motors & open & --- \\
 TEGR \(\Leftrightarrow\) Einstein--Hilbert (variational) & external input & \cite{maluf2013} \\
 \hline
 \end{tabular}
@@ -380,27 +385,54 @@ Then \(e^{-\varphi}=\sqrt{A}\) and \(e^{\varphi}=A^{-1/2}\), so the \((t,r)\) di
 
 \subsection{Identification of \texorpdfstring{\(J\) and \(J^{(5)}\) with \(T\)}{J and J(5) with T}}
 
+\paragraph{Dictionary.}
+The finite-angle parameter diagnostic
+\[
+J(\varphi)=\tfrac12\varphi(r)^{2}
+\]
+(Lean discrete-companion formula; the paper's raw \(\tfrac1{16}B_{\mathrm{Killing}}\) equals \(J/4\) under the half-angle expansion) is \emph{not} the same object as the teleparallel field density \(T\). The dimensionally matching field seed on the radial-boost slice is
+\begin{equation}
+J_{\mathrm{field}}(r)\;:=\;\tfrac12\bigl(\varphi'(r)\bigr)^{2},
+\label{eq:J-field}
+\end{equation}
+with \(\varphi'=-r_{s}/(2r^{2}A)\). Lean's extended diagnostic is
+\(J^{(5)}=J+\tfrac12\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}\) (same \(J\)).
+
 \begin{theorem}[Chart-level statements]
 On the exterior chart with~\eqref{eq:schwarzschild-tetrad}:
 \begin{enumerate}
 \item the induced metric~\eqref{eq:induced-metric} is the Schwarzschild metric;
-\item the Weitzenb\"{o}ck torsion and the scalar \(T\) admit closed-form expressions;
-\item for the radial rapidity~\eqref{eq:radial-rapidity}, the parameter-space invariant satisfies
-\(J(\varphi)=\tfrac12\varphi(r)^{2}\), and the field identity
-\(T=\tfrac12 T_{\mathrm{bulk}}+ \nabla_{\mu}B^{\mu}\)
-holds with an explicitly constructed radial current \(B^{\mu}\) (static, diagonally gauged slice).
+\item the Weitzenb\"{o}ck torsion admits closed-form principal components, and the teleparallel scalar equals
+\(T=(2/r^{2})(1-\sqrt{A})^{2}/\sqrt{A}\);
+\item with the TEGR radial current \(B^{r}=4(1-\sqrt{A})/r\),
+\[
+T=-r^{-2}\,\partial_{r}(r^{2}B^{r})
+\]
+(so \(T\) is a pure radial divergence on this vacuum chart);
+\item the parameter diagnostic satisfies \(J(\varphi)=\tfrac12\varphi(r)^{2}\), while
+\(\partial_{r}\sqrt{A}=-\varphi'\sqrt{A}\) relates the boost torsion leg to \(\varphi'\).
 \end{enumerate}
 \end{theorem}
 
-\begin{conjecture}[General motor identification]
-For a general smooth motor field \(M(x)=R(x)T(x)\) on a chart, the extended diagnostic \(J^{(5)}\) built from \((\Omega_{\mathrm{torsion}},\lambda)\) coincides with the teleparallel scalar~\eqref{eq:teleparallel-T} up to a total divergence:
-\begin{equation}
-J^{(5)} \;=\; \tfrac12\, T \;+\; \nabla_{\mu}B^{\mu}.
+\begin{theorem}[Rejection of naive point identification]
+The following readings are false (Lean-checked):
+\begin{enumerate}
+\item finite-angle \(J(\varphi)=\tfrac12 T\) (constant nonzero boost has \(J\neq0\) while a flat chart has \(T=0\));
+\item parametric \(J^{(5)}=\tfrac12 T\) on Minkowski with pure spatial translation (\(J^{(5)}\neq0\), \(T=0\));
+\item field-seed specialisation \(J_{\mathrm{field}}=\tfrac12 T\) at the exterior point \((r_{s},r)=(2,4)\).
+\end{enumerate}
+Consequently the earlier status claim ``\(J=\tfrac12 T+\nabla\cdot B\) proved on the static diagonal gauge'' is withdrawn: an arbitrary divergence filler makes a radial scalar identity vacuous, while the TEGR current that reproduces \(T\) itself does not identify \(J_{\mathrm{field}}\) with \(\tfrac12 T\).
+\end{theorem}
+
+\begin{conjecture}[Corrected field dictionary for general motors]
 \label{eq:J5-T-conjecture}
+For a general smooth motor field \(M(x)=R(x)T(x)\), a contorsion-derived field seed \(J_{\mathrm{field}}[M]\) (built from derivatives of \((\Omega_{\mathrm{torsion}},\lambda)\), not from finite angles alone) coincides with the teleparallel scalar~\eqref{eq:teleparallel-T} up to a systematically constructed total divergence:
+\begin{equation}
+J_{\mathrm{field}}[M] \;=\; \tfrac12\, T[M] \;+\; \nabla_{\mu}B^{\mu}[M].
 \end{equation}
 \end{conjecture}
 
-The conjecture reduces to the theorem above on the static diagonal Schwarzschild slice with \(\lambda^{\mu}=0\). A proof for arbitrary motors would require a complete dictionary between \(\Omega_{\mathrm{biv}}^{(5)}\) and Weitzenb\"{o}ck contorsion beyond the chart calculus used here.
+A proof requires a complete dictionary between \(\Omega_{\mathrm{biv}}^{(5)}\) and Weitzenb\"{o}ck contorsion beyond the chart calculus used here. The rejected specialisations above show that the left-hand side cannot be the finite-angle \(J\) or \(J^{(5)}\).
 
 \subsection{Relation to Einstein--Hilbert}
 
@@ -416,7 +448,7 @@ The parameter-space form
 \[
 J^{(5)} \;=\; \tfrac{1}{16}B_{\text{Killing}}\!\bigl(\Omega_{\text{torsion}},\Omega_{\text{torsion}}\bigr) \;+\; \tfrac{1}{2}\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}
 \]
-serves as a scalar diagnostic on torsion-plus-translation coefficients. Under the half-angle expansion the first term is \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\), four times smaller than the discrete companion's \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\). Duality closes the six-dimensional torsional bivector sector, while each null generator is sent to grade~4. Plane-based brackets and dual-as-normal geometry form an open programme (Appendix~B). Section~6 develops the PGA--TEGR correspondence on a fixed chart: motor-induced tetrads, Weitzenb\"{o}ck torsion, the Schwarzschild diagonal ansatz, and a chart-level link between \(J\) and \(T\), with the general \(J^{(5)}\leftrightarrow T\) identification left as a conjecture and the TEGR/Einstein--Hilbert variational equivalence taken from the literature.
+serves as a scalar diagnostic on torsion-plus-translation coefficients. Under the half-angle expansion the first term is \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\), four times smaller than the discrete companion's \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\). Duality closes the six-dimensional torsional bivector sector, while each null generator is sent to grade~4. Plane-based brackets and dual-as-normal geometry form an open programme (Appendix~B). Section~6 develops the PGA--TEGR correspondence on a fixed chart: motor-induced tetrads, Weitzenb\"{o}ck torsion, the Schwarzschild diagonal ansatz, the parameter diagnostic \(J(\varphi)=\tfrac12\varphi^{2}\), the field seed \(J_{\mathrm{field}}=\tfrac12(\varphi')^{2}\), and the divergence form of \(T\). Naive point identifications of finite-angle \(J\)/\(J^{(5)}\) (or even \(J_{\mathrm{field}}\)) with \(\tfrac12 T\) are rejected; a corrected field dictionary for general motors remains open, and the TEGR/Einstein--Hilbert variational equivalence is taken from the literature.
 
 \appendix
 

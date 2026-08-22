@@ -23,7 +23,7 @@ import Mathlib.Tactic.Positivity
 ## Not claimed here
 
 * Degenerate-metric sandwich preservation for full `G(3,1,1)`.
-* Grade-1 projection of a general motor-induced tetrad.
+* General grade-1 projection (motor-induced frame bridge: `Gravity.Tetrad`).
 -/
 
 namespace DstDiophantine

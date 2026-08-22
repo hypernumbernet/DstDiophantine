@@ -45,7 +45,7 @@
 
 各零バイベクトルが平方零であり、かつすべての \(\mu,\nu\) に対して \(N_{\mu}N_{\nu}=0\) を満たすため、零部分の指数は次数1の有限多項式である。すべてのバイベクトルの反転奇数性 \(\widetilde{N_{\mu}}=-N_{\mu}\) と合わせると、積 \(M:=RT\) によって定義されるモーターのユニタリ性 \(M\widetilde{M}=1\) が保証される。\(G(3,1,1)\) の完全な退化計量に関するサンドイッチ、および因子が可換でないときの \(M\) と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との同一視は、ここでは脇に置く。
 
-本稿の構成は以下のとおりである。第2節では二重時空の \(G(3,1,1)\) への埋め込みを定義し、10個の生成元を分類する。第3節では拡張不整合バイベクトルを構成し、零指数の多項式形を証明し、パラメータ空間形式 \(J^{(5)}\) を導入する。第4節では平面ベース括弧積のプログラムを概説する。第5節では積モーター \(M:=RT\) のユニタリ性を確立する。第6節では固定チャート上の PGA--TEGR 対応を展開し、シュヴァルツシルト対角アンザッツおよび \(J^{(5)}\) と遠平行スカラー \(T\) との同一視を扱う。結論は第7節で述べる。
+本稿の構成は以下のとおりである。第2節では二重時空の \(G(3,1,1)\) への埋め込みを定義し、10個の生成元を分類する。第3節では拡張不整合バイベクトルを構成し、零指数の多項式形を証明し、パラメータ空間形式 \(J^{(5)}\) を導入する。第4節では平面ベース括弧積のプログラムを概説する。第5節では積モーター \(M:=RT\) のユニタリ性を確立する。第6節では固定チャート上の PGA--TEGR 対応を展開し、シュヴァルツシルト対角アンザッツ、有限角 \(J\) と場の種 \(J_{\mathrm{field}}\) および遠平行スカラー \(T\) を分ける辞書、ならびに素朴な点同一視の Lean による棄却を扱う。結論は第7節で述べる。
 
 \section{10次元生成元構造}
 
@@ -313,11 +313,16 @@ M\,\widetilde{M}
 モーター \(M:=RT\) のユニタリ性 & 証明済（第5節） & Lean \texttt{Motor} \\
 対角 シュヴァルツシルトテトラッドからの誘導計量 & 証明済（チャート） & Lean \texttt{Gravity.Schwarzschild} \\
 外部チャート上の ヴァイツェンベック\(T^{a}{}_{\mu\nu}\) およびスカラー \(T\) & 証明済（チャート） & Lean \texttt{Gravity.Weitzenbock} \\
+TEGR 動径カレントによる \(T=-r^{-2}\,\partial_r(r^{2}B^{r})\) & 証明済（チャート） & Lean \texttt{Gravity.Weitzenbock} \\
 動径ブーストのスケール因子が シュヴァルツシルト赤方偏移に一致 & 証明済 & Lean \texttt{Gravity.Sandwich} \\
 純ブーストサンドイッチの \(\iota\mu\) 成分展開と光円錐固有値 & 証明済 & Lean \texttt{Algebra.Sandwich} \\
+モーター誘起フレームベクトル；純並進 \(\neq 1\) & 証明済 & Lean \texttt{Gravity.Tetrad} \\
 完全な退化計量 \(G(3,1,1)\) に関するサンドイッチ & 未解決 & --- \\
-静的対角ゲージに対する \(J=\tfrac12 T+\nabla\cdot B\) & 証明済（チャート切片） & Lean \texttt{Gravity.Identification} \\
-任意モーターに対する一般の \(J^{(5)}\leftrightarrow T\) & 予想 & 下記 \\
+有限角 \(J(\varphi)=\tfrac12\varphi^{2}\)（パラメータ診断） & 証明済 & Lean \texttt{Gravity.Identification} \\
+場の種 \(J_{\mathrm{field}}=\tfrac12(\varphi')^{2}\) & 定義済 & Lean \texttt{Gravity.Weitzenbock} \\
+素朴な \(J(\varphi)=\tfrac12 T\) / パラメータ \(J^{(5)}=\tfrac12 T\) & \textbf{棄却} & Lean \texttt{Gravity.Identification} \\
+シュヴァルツシルト上の素朴な \(J_{\mathrm{field}}=\tfrac12 T\) & \textbf{棄却} & Lean \texttt{Gravity.Identification} \\
+一般モーター向けの修正された場の辞書 & 未解決 & --- \\
 TEGR \(\Leftrightarrow\) アインシュタイン--ヒルベルト（変分） & 外部入力 & \cite{maluf2013} \\
 \hline
 \end{tabular}
@@ -385,27 +390,53 @@ e^{3} &= r\sin\theta\,d\phi.
 
 \subsection{\texorpdfstring{\(J\) および \(J^{(5)}\) と \(T\)}{J および J(5) と T} との同一視}
 
+\paragraph{辞書.}
+有限角のパラメータ診断量
+\[
+J(\varphi)=\tfrac12\varphi(r)^{2}
+\]
+（Lean の離散伴論文公式。論文の生の \(\tfrac1{16}B_{\mathrm{Killing}}\) は半角展開のもとで \(J/4\) に等しい）は、遠平行場密度 \(T\) と同じ対象ではない。動径ブースト切片上で次元が合う場の種は
+\begin{equation}
+J_{\mathrm{field}}(r)\;:=\;\tfrac12\bigl(\varphi'(r)\bigr)^{2},
+\label{eq:J-field}
+\end{equation}
+であり、\(\varphi'=-r_{s}/(2r^{2}A)\) である。Lean の拡張診断量は \(J^{(5)}=J+\tfrac12\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}\)（同じ \(J\)）である。
+
 \begin{theorem}[チャート水準の主張]
 ~\eqref{eq:schwarzschild-tetrad} をもつ外部チャート上で：
 \begin{enumerate}
 \item 誘導計量~\eqref{eq:induced-metric} は シュヴァルツシルト計量である；
-\item ヴァイツェンベックねじれおよびスカラー \(T\) は閉形式の表示をもつ；
-\item 動径ラピディティ~\eqref{eq:radial-rapidity} に対し、パラメータ空間不変量は
-\(J(\varphi)=\tfrac12\varphi(r)^{2}\) を満たし、場の恒等式
-\(T=\tfrac12 T_{\mathrm{bulk}}+ \nabla_{\mu}B^{\mu}\)
-は明示的に構成された動径カレント \(B^{\mu}\) とともに成り立つ（静的、対角ゲージされた切片）。
+\item ヴァイツェンベックねじれは閉形式の主要成分をもち、遠平行スカラーは
+\(T=(2/r^{2})(1-\sqrt{A})^{2}/\sqrt{A}\) に等しい；
+\item TEGR 動径カレント \(B^{r}=4(1-\sqrt{A})/r\) のもとで
+\[
+T=-r^{-2}\,\partial_{r}(r^{2}B^{r})
+\]
+（したがってこの真空チャート上で \(T\) は純動径発散である）；
+\item パラメータ診断量は \(J(\varphi)=\tfrac12\varphi(r)^{2}\) を満たし、
+\(\partial_{r}\sqrt{A}=-\varphi'\sqrt{A}\) がブーストねじれ脚を \(\varphi'\) に結ぶ。
 \end{enumerate}
 \end{theorem}
 
-\begin{conjecture}[一般モーター同一視]
-チャート上の一般の滑らかなモーター場 \(M(x)=R(x)T(x)\) に対し、\((\Omega_{\mathrm{torsion}},\lambda)\) から構成される拡張診断量 \(J^{(5)}\) は、全発散を除いて遠平行スカラー~\eqref{eq:teleparallel-T} と一致する：
-\begin{equation}
-J^{(5)} \;=\; \tfrac12\, T \;+\; \nabla_{\mu}B^{\mu}.
+\begin{theorem}[素朴な点同一視の棄却]
+次の読みは偽である（Lean で機械検証）：
+\begin{enumerate}
+\item 有限角 \(J(\varphi)=\tfrac12 T\)（定数の非零ブーストは \(J\neq0\)、平坦チャートは \(T=0\)）；
+\item ミンコフスキー上の純空間並進に対するパラメータ \(J^{(5)}=\tfrac12 T\)（\(J^{(5)}\neq0\)、\(T=0\)）；
+\item 外部点 \((r_{s},r)=(2,4)\) における場の種の特殊化 \(J_{\mathrm{field}}=\tfrac12 T\)。
+\end{enumerate}
+したがって以前の現状主張「静的対角ゲージで \(J=\tfrac12 T+\nabla\cdot B\) が証明済」は撤回する：任意の発散フィラーは動径スカラー恒等式を空虚にし、\(T\) 自身を再現する TEGR カレントは \(J_{\mathrm{field}}\) を \(\tfrac12 T\) と同一視しない。
+\end{theorem}
+
+\begin{conjecture}[一般モーター向けの修正された場の辞書]
 \label{eq:J5-T-conjecture}
+一般の滑らかなモーター場 \(M(x)=R(x)T(x)\) に対し、コントルションから導かれる場の種 \(J_{\mathrm{field}}[M]\)（有限角だけでなく \((\Omega_{\mathrm{torsion}},\lambda)\) の導関数から構成）は、系統的に構成された全発散を除いて遠平行スカラー~\eqref{eq:teleparallel-T} と一致する：
+\begin{equation}
+J_{\mathrm{field}}[M] \;=\; \tfrac12\, T[M] \;+\; \nabla_{\mu}B^{\mu}[M].
 \end{equation}
 \end{conjecture}
 
-この予想は \(\lambda^{\mu}=0\) の静的対角 シュヴァルツシルト切片上で上記の定理に還元される。任意モーターに対する証明は、ここで用いたチャート算法を超えて、\(\Omega_{\mathrm{biv}}^{(5)}\) と ヴァイツェンベックコントルションとの完全な辞書を必要とするであろう。
+証明には、ここで用いたチャート算法を超えて、\(\Omega_{\mathrm{biv}}^{(5)}\) と ヴァイツェンベックコントルションとの完全な辞書が必要である。上記の棄却された特殊化は、左辺が有限角の \(J\) や \(J^{(5)}\) ではあり得ないことを示す。
 
 \subsection{アインシュタイン--ヒルベルト との関係}
 
@@ -421,7 +452,7 @@ J^{(5)} \;=\; \tfrac12\, T \;+\; \nabla_{\mu}B^{\mu}.
 \[
 J^{(5)} \;=\; \tfrac{1}{16}B_{\text{Killing}}\!\bigl(\Omega_{\text{torsion}},\Omega_{\text{torsion}}\bigr) \;+\; \tfrac{1}{2}\eta_{\mu\nu}\lambda^{\mu}\lambda^{\nu}
 \]
-はねじれ＋並進係数上のスカラー診断量として働く。半角展開のもとで第一項は \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\) であり、離散的な伴う論文の \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) より4倍小さい。双対性は6次元ねじれバイベクトルセクターを閉じ、一方各零生成元は次数4へ送られる。平面ベース括弧積および双対＝法線幾何は未完のプログラムをなす（付録~B）。第6節は固定チャート上の PGA--TEGR 対応を展開する：モーター誘起テトラッド、ヴァイツェンベックねじれ、シュヴァルツシルト対角アンザッツ、および \(J\) と \(T\) とのチャート水準の連関。一般の \(J^{(5)}\leftrightarrow T\) 同一視は予想として残し、TEGR/アインシュタイン--ヒルベルト 変分等価性は文献から取る。
+はねじれ＋並進係数上のスカラー診断量として働く。半角展開のもとで第一項は \(\frac18\sum_a(\alpha_a^2-\beta_a^2)\) であり、離散的な伴う論文の \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) より4倍小さい。双対性は6次元ねじれバイベクトルセクターを閉じ、一方各零生成元は次数4へ送られる。平面ベース括弧積および双対＝法線幾何は未完のプログラムをなす（付録~B）。第6節は固定チャート上の PGA--TEGR 対応を展開する：モーター誘起テトラッド、ヴァイツェンベックねじれ、シュヴァルツシルト対角アンザッツ、パラメータ診断 \(J(\varphi)=\tfrac12\varphi^{2}\)、場の種 \(J_{\mathrm{field}}=\tfrac12(\varphi')^{2}\)、および \(T\) の発散形。有限角 \(J\)/\(J^{(5)}\)（あるいは \(J_{\mathrm{field}}\)）と \(\tfrac12 T\) の素朴な点同一視は棄却する。一般モーター向けの修正された場の辞書は未解決のまま残し、TEGR/アインシュタイン--ヒルベルト 変分等価性は文献から取る。
 
 \appendix
 
