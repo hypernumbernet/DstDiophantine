@@ -501,6 +501,29 @@ example {m n : ℤ} {c : ℕ}
         (∃ v : ℕ, m.natAbs = 1 ∧ 2 * n.natAbs = v ^ 3)) : False :=
   not_eq_odd_two_factor_of_exp_three_abs_one hm0 hn0 heq hform
 
+/-- Phase 7l: positive-cube residual + e≥5 assemble equal-odd two-factor. -/
+example (hCube : BealPosCubeAddTwoCubeResidual)
+    (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
+    BealEqualOddTwoFactorResidual :=
+  BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five hCube hGe5
+
+/-- Phase 7l: even-difference factorization residual implies Diff residual. -/
+example (hFac : BealTwoEqualEvenDiffFactorResidual) :
+    BealTwoEqualEvenDiffResidual :=
+  BealTwoEqualEvenDiffResidual_of_factor hFac
+
+/-- Phase 7l: sum residual from z=5 and z≥7 splits. -/
+example (h5 : BealTwoEqualEvenSumExpFiveResidual)
+    (h7 : BealTwoEqualEvenSumExpGeSevenResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_five_ge_seven h5 h7
+
+/-- Phase 7l: even-power difference factorization. -/
+example {C B : ℤ} {y : ℕ} (hyeven : Even y) :
+    C ^ y - B ^ y =
+      (C ^ (y / 2) - B ^ (y / 2)) * (C ^ (y / 2) + B ^ (y / 2)) :=
+  even_pow_sub_eq_mul hyeven
+
 /-- Phase 7j: no coprime Beal solution with bases ≤ 8 and exponents in 3…5. -/
 example {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -520,6 +543,17 @@ example {A B C x y z : ℕ}
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   beal_no_coprime_perfect_power_of_le_twelve_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Phase 7l: no coprime perfect-power Beal with bases ≤ 13 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 13) (hBmax : B ≤ 13)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_thirteen_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
 /-- Phase 7j: known non-coprime solution `3³ + 6³ = 3⁵` (not a counterexample). -/

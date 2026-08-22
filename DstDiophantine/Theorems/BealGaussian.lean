@@ -581,21 +581,26 @@ theorem not_eq_odd_pure_coords {m n C : ℤ} {e : ℕ}
         simp [sq, add_comm]
     _ = (C.natAbs : ℤ) ^ e := heq
 
+/--
+Equal-odd two-factor residual. The witnesses `u,v` are required positive so that
+the degenerate associate-cube `⟨0,1⟩` (with `v = 0`) is excluded; Beal call sites
+always have `2 m n = K^e` with `K ≠ 0`, hence `u,v > 0`.
+-/
 def BealEqualOddTwoFactorResidual : Prop :=
   ∀ (m n : ℤ) (e : ℕ),
     3 ≤ e → Odd e →
     Int.gcd m n = 1 →
     ((Even m ∧ Odd n) ∨ (Odd m ∧ Even n)) →
     (∃ g : ℤ[i], Associated (g ^ e) (⟨m, n⟩ : ℤ[i])) →
-    ((∃ u v : ℕ, n.natAbs = u ^ e ∧ 2 * m.natAbs = v ^ e) ∨
-      (∃ u v : ℕ, m.natAbs = u ^ e ∧ 2 * n.natAbs = v ^ e)) →
+    ((∃ u v : ℕ, 0 < u ∧ 0 < v ∧ n.natAbs = u ^ e ∧ 2 * m.natAbs = v ^ e) ∨
+      (∃ u v : ℕ, 0 < u ∧ 0 < v ∧ m.natAbs = u ^ e ∧ 2 * n.natAbs = v ^ e)) →
     False
 
 theorem not_beal_sol_of_expGcd_eq_two_of_eq_odd_yz
     (hRes : BealEqualOddTwoFactorResidual)
     {A B C : ℤ} {x y z : ℕ}
     (_hx : 3 ≤ x) (hy : 3 ≤ y) (_hz : 3 ≤ z)
-    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0)
+    (_hA : A ≠ 0) (hB : B ≠ 0) (_hC : C ≠ 0)
     (_hgcd : bealGcd A B C = 1)
     (hd : bealExpGcd x y z = 2)
     (hyz : y = z)
@@ -620,10 +625,37 @@ theorem not_beal_sol_of_expGcd_eq_two_of_eq_odd_yz
   obtain ⟨g, hg⟩ := exists_associated_pow_of_hyp_eq_pow he hmn hparE heq
   have hKeq : 2 * m * n = B ^ (y / 2) := by simpa [mul_assoc] using hBleg.symm
   have hdat := exists_natAbs_pow_of_two_mul_eq_pow hmn hparE hKeq he
+  have hKne : B ^ (y / 2) ≠ 0 := pow_ne_zero (y / 2) hB
+  have hm0 : m ≠ 0 := fun hm => hKne (by rw [← hKeq, hm]; ring)
+  have hn0 : n ≠ 0 := fun hn => hKne (by rw [← hKeq, hn]; ring)
   exact hRes m n (y / 2) he3 hodd hmn hparE ⟨g, hg⟩ (by
     rcases hdat with ⟨_, u, v, hn, hm⟩ | ⟨_, u, v, hm, hn⟩
-    · exact Or.inl ⟨u, v, hn, hm⟩
-    · exact Or.inr ⟨u, v, hm, hn⟩)
+    · have hv0 : 0 < v := by
+        refine Nat.pos_of_ne_zero ?_
+        intro hv; subst hv
+        have hpow : (0 : ℕ) ^ (y / 2) = 0 := Nat.zero_pow he
+        have : 2 * m.natAbs = 0 := by rw [hm, hpow]
+        have : m.natAbs = 0 := by omega
+        exact hm0 (Int.natAbs_eq_zero.mp this)
+      have hu0 : 0 < u := by
+        refine Nat.pos_of_ne_zero ?_
+        intro hu; subst hu
+        have hpow : (0 : ℕ) ^ (y / 2) = 0 := Nat.zero_pow he
+        exact hn0 (Int.natAbs_eq_zero.mp (by rw [hn, hpow]))
+      exact Or.inl ⟨u, v, hu0, hv0, hn, hm⟩
+    · have hv0 : 0 < v := by
+        refine Nat.pos_of_ne_zero ?_
+        intro hv; subst hv
+        have hpow : (0 : ℕ) ^ (y / 2) = 0 := Nat.zero_pow he
+        have : 2 * n.natAbs = 0 := by rw [hn, hpow]
+        have : n.natAbs = 0 := by omega
+        exact hn0 (Int.natAbs_eq_zero.mp this)
+      have hu0 : 0 < u := by
+        refine Nat.pos_of_ne_zero ?_
+        intro hu; subst hu
+        have hpow : (0 : ℕ) ^ (y / 2) = 0 := Nat.zero_pow he
+        exact hm0 (Int.natAbs_eq_zero.mp (by rw [hm, hpow]))
+      exact Or.inr ⟨u, v, hu0, hv0, hm, hn⟩)
 
 theorem not_beal_sol_of_expGcd_eq_two_of_eq_odd_xz
     (hRes : BealEqualOddTwoFactorResidual)
