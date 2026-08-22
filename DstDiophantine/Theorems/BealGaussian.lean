@@ -663,7 +663,13 @@ def BealTwoEqualEvenResidual : Prop :=
     ((x = y ∧ Even x) ∨ (y = z ∧ Even y) ∨ (x = z ∧ Even x)) →
     ¬ A ^ x + B ^ y = C ^ z
 
-private theorem odd_z_of_even_x_coprime {x z : ℕ}
+private theorem even_pow_of_even {a : ℤ} {n : ℕ} (ha : Even a) (hn : n ≠ 0) :
+    Even (a ^ n) := by
+  rw [even_iff_two_dvd] at ha ⊢
+  exact dvd_pow ha hn
+
+/-- If `x` is even and `gcd(x, z) = 1`, then `z` is odd. -/
+theorem odd_of_even_coprime {x z : ℕ}
     (hxeven : Even x) (hgcd : Nat.gcd x z = 1) : Odd z := by
   have hx2 : 2 ∣ x := even_iff_two_dvd.mp hxeven
   have : ¬ (2 ∣ z) := by
@@ -671,11 +677,6 @@ private theorem odd_z_of_even_x_coprime {x z : ℕ}
     have : 2 ∣ Nat.gcd x z := Nat.dvd_gcd hx2 hz2
     omega
   exact Nat.not_even_iff_odd.1 (fun h => this (even_iff_two_dvd.mp h))
-
-private theorem even_pow_of_even {a : ℤ} {n : ℕ} (ha : Even a) (hn : n ≠ 0) :
-    Even (a ^ n) := by
-  rw [even_iff_two_dvd] at ha ⊢
-  exact dvd_pow ha hn
 
 private theorem odd_of_odd_pow {a : ℤ} {n : ℕ} (hn : n ≠ 0) (h : Odd (a ^ n)) :
     Odd a := by
@@ -689,7 +690,7 @@ theorem beal_two_equal_xy_even_not_both_odd {A B C : ℤ} {x y z : ℕ}
     (hsol : A ^ x + B ^ y = C ^ z) : False := by
   subst hxy
   obtain ⟨hg, _⟩ := beal_two_equal_exp_of_expGcd_eq_one hx rfl hd
-  have hzodd : Odd z := odd_z_of_even_x_coprime hxeven hg
+  have hzodd : Odd z := odd_of_even_coprime hxeven hg
   obtain ⟨t, ht⟩ := even_iff_two_dvd.mp hxeven
   have hform : (A ^ t) ^ 2 + (B ^ t) ^ 2 = C ^ z := by
     calc (A ^ t) ^ 2 + (B ^ t) ^ 2

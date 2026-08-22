@@ -21,6 +21,9 @@ import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
 import DstDiophantine.Theorems.BealGaussian
+import DstDiophantine.Theorems.BealMixed
+import DstDiophantine.Theorems.BealFinite
+import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
@@ -148,6 +151,16 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   isCoprime_mk_star_of_coprime_opposite_parity
   beal_conjecture_pos_of_residuals
   BealEqualOddTwoFactorResidual BealTwoEqualEvenResidual
+  BealTwoEqualOddResidual BealAllDistinctExpResidual
+  BealPythagoreanUnequalOddResidual
+  beal_mixed_exp_of_subresiduals beal_pythagorean_of_subresiduals
+  beal_conjecture_pos_of_fine_residuals
+  not_beal_sol_eq_odd_yz_of_two_factor not_beal_sol_eq_odd_xz_of_two_factor
+  exists_gaussian_hyp_pow_of_two_equal_xy_even odd_of_even_coprime
+  darmonMerelCube not_beal_two_equal_third_three_of_DM not_beal_two_equal_third_three
+  isCoprimeBeal hasCoprimeBealUpTo noCoprimeBealUpTo
+  noCoprimeBealUpTo_sound beal_no_coprime_of_le_eight_five
+  beal_known_noncoprime_three_six beal_known_noncoprime_two_two
   not_both_odd_bases_of_expGcd_eq_two_of_eq_odd_yz
   not_beal_sol_of_expGcd_eq_two_of_eq_odd_yz
   not_beal_sol_of_expGcd_eq_two_of_eq_odd_xz

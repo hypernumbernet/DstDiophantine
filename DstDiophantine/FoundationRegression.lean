@@ -19,6 +19,9 @@ import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
 import DstDiophantine.Theorems.BealGaussian
+import DstDiophantine.Theorems.BealMixed
+import DstDiophantine.Theorems.BealFinite
+import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -426,6 +429,65 @@ example {A B C : ℤ} {x y z : ℕ}
       ((Even A ∧ Odd B) ∨ (Odd A ∧ Even B)) ∧
         (A ^ (x / 2)) ^ 2 + (B ^ (x / 2)) ^ 2 = C ^ z :=
   beal_two_equal_xy_even_progress hx hz hxy hd hxeven hA hB hC hgcd hsol
+
+/-- Phase 7j: `d = 1` sub-residuals assemble to `BealMixedExpResidual`. -/
+example (hEven : BealTwoEqualEvenResidual) (hOdd : BealTwoEqualOddResidual)
+    (hDist : BealAllDistinctExpResidual) : BealMixedExpResidual :=
+  beal_mixed_exp_of_subresiduals hEven hOdd hDist
+
+/-- Phase 7j: equal-odd + unequal-odd assemble to `BealPythagoreanResidual`. -/
+example (hEq : BealEqualOddTwoFactorResidual)
+    (hUneq : BealPythagoreanUnequalOddResidual) : BealPythagoreanResidual :=
+  beal_pythagorean_of_subresiduals hEq hUneq
+
+/-- Phase 7j: five fine residuals (+ FLT axiom) imply positive classical Beal. -/
+example (hEven : BealTwoEqualEvenResidual) (hOdd : BealTwoEqualOddResidual)
+    (hDist : BealAllDistinctExpResidual) (hEq : BealEqualOddTwoFactorResidual)
+    (hUneq : BealPythagoreanUnequalOddResidual) :
+    ∀ {A B C : ℤ} {x y z : ℕ},
+      3 ≤ x → 3 ≤ y → 3 ≤ z →
+      0 < A → 0 < B → 0 < C →
+      A ^ x + B ^ y = C ^ z →
+      1 < bealGcd A B C :=
+  beal_conjecture_pos_of_fine_residuals hEven hOdd hDist hEq hUneq
+
+/-- Phase 7j: even two-equal `x = y` lifts to a Gaussian hypotenuse power. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hz : 3 ≤ z) (hxy : x = y) (hd : bealExpGcd x y z = 1)
+    (hxeven : Even x)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ x + B ^ y = C ^ z) :
+    IsGaussianHypotenusePower (A ^ (x / 2)) (B ^ (x / 2)) z :=
+  (exists_gaussian_hyp_pow_of_two_equal_xy_even hx hz hxy hd hxeven hA hB hC hgcd hsol).2.2.1
+
+/-- Phase 7j: Darmon–Merel axiom closes `(n,n,3)` two-equal with `n ≥ 4`. -/
+example {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hd : bealExpGcd x y z = 1)
+    (hxy : x = y) (hz3 : z = 3)
+    (hsol : A ^ x + B ^ y = C ^ z) : False :=
+  not_beal_two_equal_third_three hx hy hz hA hB hC hgcd hd hxy hz3 hsol
+
+/-- Phase 7j: no coprime Beal solution with bases ≤ 8 and exponents in 3…5. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 8) (hBmax : B ≤ 8) (hCmax : C ≤ 8)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 5) (hyE : y ≤ 5) (hzE : z ≤ 5)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_of_le_eight_five hA hB hC hAmax hBmax hCmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Phase 7j: known non-coprime solution `3³ + 6³ = 3⁵` (not a counterexample). -/
+example : (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 :=
+  beal_known_noncoprime_three_six
+
+/-- Phase 7j: known non-coprime solution `2³ + 2³ = 2⁴`. -/
+example : (2 : ℤ) ^ 3 + 2 ^ 3 = 2 ^ 4 ∧ bealGcd 2 2 2 = 2 :=
+  beal_known_noncoprime_two_two
 
 /-- Phase 7e: equal-exponent mismatch rotor ↔ CGA log-scale. -/
 example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
