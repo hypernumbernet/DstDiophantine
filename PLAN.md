@@ -1,6 +1,18 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-22（フェーズ 7k: DM 3位置・偶二一致分割・立方二因子切片・冪判定探索）
+最終更新: 2026-08-22（見通し再編: 北極星と実行キューの分離、完了アーカイブ圧縮）
+
+## 0. いまの見通し
+
+**北極星:** 細残件 5 つが閉じれば、FLT 公理のもとで正の古典 Beal（`bealGcd > 1`）が従う。無条件古典 Beal は主張しない。
+
+**閉じたもの:** 加法忠実化・共通 no-go・旧 coarse 空性・modular 基盤。Beal は指数 gcd 三分法まで還元済み。組立 `beal_conjecture_pos_of_fine_residuals` / `_even_split` は sorry なし。公理は明示 3 本のみ（`fermatLastTheorem` / `mihailescu` / `darmonMerelCube`）。`sorry` は 0。
+
+**開いているもの:** 残件本体 5 つ（下記地図）。Fermat/abc modular bridge 本体。D4L L2–L4。Gravity 一般モーター辞書。
+
+**実行原則:** デフォルトの作業は残件本体の正面突破ではない。切片・有限証明書・診断定理で成果を出し、アイデアが立ったときだけ本体へ戻る。
+
+---
 
 ## 1. 三層アーキテクチャ
 
@@ -25,281 +37,112 @@ flowchart LR
 ### 確立済み（機械検証済み・sorry なし）
 
 - PGA / Cl(3,1) / ヌル強消滅 / 定義積モーター `M:=RT` の単位性
-- `e₄` と pseudoscalar の可換、`dual_null`（grade 4；null bivector 閉性は**棄却**）
 - 許容配置上の `|JNormalized| ≤ 1`（naive 全配置有界性は**反例付きで棄却**）
-- 連続像はちょうど `[-1,1]`。`|JNormalized|=1` iff 全軸が純双曲または全軸が純楕円
-- 離散鋭い上界 `|JNormalized| ≤ (4⌊N/4⌋/N)²`。`4∣N` で ±1 達成、`¬4∣N` なら厳密。許容離散値は `[-1,1]` に稠密
-- 純ブーストの `k²` 増幅と連続種高さ上界
-- 離散非零高さ下限 `ε_N = 16/(3N²)` と粗トーラス高さ no-go
-- **旧 `CoarseAmplificationWitness` の構造的空性**（方程式非依存；`empty_of_coarse`）
+- 離散鋭い上界・粗トーラス高さ no-go・旧 `CoarseAmplificationWitness` の構造的空性
 - 加法 null 忠実性（Fermat / Beal / abc / Goldbach / Polignac の骨格）
-- modular 巻数恒等式と `ModularAmplificationWitness` の具体例（`N=16,k=5`）
-- **実スケール許容 ⇒ `windingTotal = 0`**（modular witness は連続 no-go に直接渡せない）
-- `quantizeMismatch` / `quantizeInt` 補題とフロア誤差
-- **`FermatModularBridge` の型付け**と条件付き FLT（解依存 payload；bridge 本体は未証明）
-- **`BealModularBridge` の型付け**と分数冪 gap（`bealFracLogGap` / 解のとき `log(1+B^y/A^x)`；bridge 本体は未証明）
-- 1D CGA `Cl(2,1)`: `X(x)² = 0`、dilation 重み、`integerHeight` 非有界診断
-- 有限計算証明書（Collatz ≤20、Goldbach ≤100、abc ≤100、RH 有理格子 ≤20、
-  Polignac 双子 ≤20 / gap4·6 ≤30）
+- modular 巻数恒等式・実スケール許容 ⇒ `windingTotal = 0`
+- `FermatModularBridge` / `BealModularBridge` / `AbcModularBridge` の型付けと条件付き古典主張
+- Beal: 指数 gcd 還元・無条件スライス・FLT 公理で `d≥3`・Gaussian UFD・細残件組立・Darmon–Merel 3位置・偶分割・立方切片・有限箱／冪判定
+- 1D CGA・有限計算証明書（Collatz / Goldbach / abc / RH / Polignac）・D4L L1・Gravity チャート
 
-### 未証明（明示的 bridge・無条件主張しない）
+### 未証明 Bridge（診断・空・本命）
 
-| Bridge | 問題 | 核との接続 | 備考 |
-|--------|------|------------|------|
-| `FermatModularBridge` | FLT（本命・modular） | 解依存 `quantizeMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；`ConformalGaugeAdmissible` が残ギャップ |
-| `FermatAdmissibleBridge` | FLT（連続・診断用） | 釣り合い型で偽になり得る | 診断専用 |
-| `FermatCoarseDiscreteBridge` | FLT（旧粗離散） | ペイロードが構造的空 | legacy / 診断用（単純流用は空のまま） |
-| `BealCGARealization` | Beal（bookkeeping） | 互素解 ⇒ A–C 根比が整数 CGA dilation | **≡ `|A|=1` ∧ `|C|^z` が m 乗**；独立幾何原理ではない |
-| `bealExpGcd` 還元 | Beal（本命分割） | `d=gcd(x,y,z)` | **3∣d / 4∣d は無条件**（`BealSlice`）；一般 d≥3 は **FLT 公理**（`FermatLast` / フェーズ 7i）；d=2 は参数表示＋**4 整除 2 本以上を無条件閉鎖**（`BealPythagorean`）＋ equal-odd は Gaussian で二因子残件へ；残件は `BealTwoEqualEven` / `TwoEqualOdd` / `AllDistinct`（`d=1`）と `EqualOddTwoFactor` / `UnequalOdd`（`d=2`；フェーズ 7j） |
-| `BealCGADiscreteClosed` | Beal（bookkeeping） | 互素解 ⇒ k 倍種が m 冪格子上 | **≡ `|A|=1`**（`beal_kFold_powerLattice_iff_natAbs_eq_one`） |
-| `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` | Beal（残件） | `|A|=1` の互素解は存在しない | **正の基底は Mihăilescu axiom で証明済** |
-| `darmonMerelCube` | Beal（公理スライス） | `(n,n,3)` および奇数 `(3,n,n)` / `(n,3,n)` | **公理**（Darmon–Merel；Lean 証明ではない）；フェーズ 7k で 3 位置へ |
-| 有限箱 `noCoprimeBealUpTo` | Beal（計算証明書） | 底 ≤8・指数 3…5 に互素解なし | **証明済**（`beal_no_coprime_of_le_eight_five`） |
-| 冪判定箱 | Beal（計算証明書） | 底 ≤12・指数 3…6・`C` 非有界 | **証明済**（`beal_no_coprime_perfect_power_of_le_twelve_six`） |
-| `BealWindingBridge` | Beal（窓レジーム・診断） | 解 ⇒ 巻数 witness | **窓場合は証明済**；釣り合い型は構造的空（`windingTotal_eq_zero_of_rapidity_lt`） |
-| `BealCGALatticeGauge` / `BealCGADilationNoGo` | Beal（等指数切片・診断） | 整数ヌル格子上の巻数禁止 | 等指数で格子成立；混合は外れ；NoGo 本体未 |
-| `BealCGAGauge` / `BealCGANoGo` | Beal（診断） | 恒真 null ゲージ ⇒ 巻数禁止 | **ill-posed**（窓構成と衝突し得る）；関係補題のみ |
-| `BealModularBridge` | Beal（診断・旧 modular） | witness + `ConformalGaugeAdmissible` | **payload 矛盾**（`beal_modular_payload_incompatible`） |
-| `BealAdmissibleBridge` | Beal（連続・診断） | 連続増幅 no-go | 釣り合い型で種が `1/m²` 未満 |
-| `AbcAdmissibleBridge` | abc（連続・診断） | 品質天井 | **偽**（`AbcAdmissibleBridge_false`） |
-| `AbcModularBridge` | abc（本命・modular） | 解依存 `quantizeAbcMismatch` + 巻数 witness + 共形ギャップ | **型付け済・未証明**；部分巻数構成あり |
-| `CollatzAdmissibleBridge` | Collatz | 軌道・高さ | 別系列 |
-| `GoldbachAdmissibleBridge` | Goldbach | 分解候補 | 別系列 |
-| `PolignacAdmissibleBridge` | Polignac / 双子 | 強い回避 | 別系列 |
-| `RiemannAdmissibleBridge` | RH | 臨界アンサンブル | 長期 |
+| Bridge | 印 | 備考 |
+|--------|----|------|
+| `FermatModularBridge` | **本命・未証明** | 共形ギャップ；診断 `FermatAdmissibleBridge` は釣り合いで偽になり得る（`false` 定理は P0） |
+| `FermatCoarseDiscreteBridge` | 空 | legacy；payload 構造的空 |
+| `BealCGARealization` / `BealCGADiscreteClosed` | bookkeeping | 幾何原理ではない（≡ `|A|=1` 系） |
+| `BealUnitBaseNoGo`（正） | 切片閉鎖 | Mihăilescu 公理 |
+| 細残件 5 本 | **本命・未証明** | 組立に必要な仮説；切片は下記地図 |
+| `BealWindingBridge` | 診断 | 窓場合は証明済；釣り合いは空 |
+| `BealModularBridge` | 診断 | payload 矛盾を機械検証 |
+| `AbcModularBridge` | **本命・未証明** | 連続版は `AbcAdmissibleBridge_false` |
+| Collatz / Goldbach / Polignac / RH `*AdmissibleBridge` | 別系列 | 有限箱のみ証明済 |
 
 ### 反例で棄却済み（再設計しない）
 
-- 主枝のみでの `|J| ≤ 1`（`torsion_bound_naive_false`）
-- dagger による `J` 厳密減少（`dagger_preserves_height`）
-- 現行連続 FLT 閾値「任意解 ⇒ 種 > 1/p²」（`fermat_balanced_seed_lt_threshold`）
-- 許容錐への単純折り返し（`p²` 増幅破壊）
-- `J5` 単独での bridge 閉鎖（解では `λ = 0`）
-- **実スケール粗離散 witness**（`CoarseAmplificationWitness.empty_of_coarse`）
-- **duality による null bivector sector 閉性**（`dual_null` は grade 4）
-- 論文表現 `so(3,1)⊕so(3,1)`（6 生成子に対して次元不一致）
+- 主枝のみでの `|J| ≤ 1`、dagger 厳密減少、現行連続 FLT 閾値、許容錐への単純折り返し
+- 実スケール粗離散 witness、duality による null bivector 閉性、`so(3,1)⊕so(3,1)`
+- Gravity: 素朴な `J`/`J5`/`J_field=½T` 同一視；`conjectured_J_field_eq_half_T_plus_div`（TEGR カレント特殊化）
 
 ---
 
-## 2. 問題類型と再利用パターン
+## 2. Beal 還元地図
 
-| 類型 | 代表 | 加法 | 乗法 / 高さ | 次の数学課題 |
-|------|------|------|-------------|--------------|
-| **冪和増幅型** | FLT, Beal | null motor | modular 巻数誤差の下限 | 解 ⇒ modular witness |
-| **品質型** | abc | null motor | `H = c₁(q−1)²` | 高品質 ⇒ modular / 許容配置 |
-| **軌道型** | Collatz | — | ログ高さ単調 | 軌道 ⇔ 許容流 |
-| **加法分解型** | Goldbach, Polignac | null motor | 候補最小 J / 過剰項 | 論理混同の解消 |
-| **解析型** | RH | — | 臨界バランス | ζ 接続（長期） |
+```mermaid
+flowchart TD
+  BealPos["正の古典 Beal"] --> FLT["d>=3: FLT公理で閉鎖"]
+  BealPos --> D2["d=2"]
+  BealPos --> D1["d=1"]
+  D2 --> Fourth["4整除2本以上: 無条件閉鎖"]
+  D2 --> EqOdd["EqualOddTwoFactor"]
+  D2 --> Uneq["UnequalOdd 本体"]
+  EqOdd --> CubeClosed["e=3 |u|=1 / mod-8 / 純冪FLT / 両奇mod4: 閉鎖"]
+  EqOdd --> CubeOpen["e=3 かつ |u|>=3 / e>=5: 未"]
+  D1 --> Even["TwoEqualEven"]
+  D1 --> Odd["TwoEqualOdd"]
+  D1 --> Dist["AllDistinct 本体"]
+  Even --> Sum["和型 x=y"]
+  Even --> Diff["差型 y=z または x=z"]
+  Sum --> DMz3["z=3: Darmon-Merel 閉鎖"]
+  Odd --> DMpos["立方3位置: Darmon-Merel 閉鎖"]
+```
 
-**最優先軸:** 無条件 Beal 危機路線（フェーズ 7k）。Realization / DiscreteClosed は bookkeeping。指数 gcd の三分法、無条件スライス、**FLT 公理による `d≥3`**、Gaussian UFD、細残件組立、**Darmon–Merel 3位置**、偶二一致分割、equal-odd 立方切片、有限箱／冪判定まで固めた。残件本体は **`BealTwoEqualEvenResidual`**、**`BealTwoEqualOddResidual`**（立方以外）、**`BealAllDistinctExpResidual`**、**`BealEqualOddTwoFactorResidual`**、**`BealPythagoreanUnequalOddResidual`**。無条件古典 Beal は主張しない。CGA Realization は幾何原理としては使わない。
+**組立（sorry なし）:** `beal_conjecture_pos_of_fine_residuals`（5 残件）／`beal_conjecture_pos_of_fine_residuals_even_split`（Sum+Diff 版）。`beal_mixed_exp_of_subresiduals`・`beal_pythagorean_of_subresiduals`・`beal_two_equal_even_of_sum_diff`。
 
----
+| 残件 | 閉鎖切片 | 本体（未） | 主な場所 |
+|------|----------|------------|----------|
+| `BealTwoEqualEvenSumResidual` | `z=3`（DM）；`…_of_outside_cube` | `z≠3` | `BealEven` |
+| `BealTwoEqualEvenDiffResidual` | なし（偶指数は DM 不可） | 差型全体 | `BealEven` |
+| `BealTwoEqualOddResidual` | 立方 3 位置（DM） | 立方以外 | `BealMixed` / `DarmonMerel` |
+| `BealAllDistinctExpResidual` | なし | 全相異 | `BealMixed` |
+| `BealEqualOddTwoFactorResidual` | `|·|=1` / mod-8 / 純冪 FLT / 両奇 mod-4 | `e=3` かつ `|u|≥3`；`e≥5` | `BealGaussian` / `BealGaussianCube` |
+| `BealPythagoreanUnequalOddResidual` | なし（4 整除は残件外で無条件閉鎖） | unequal-odd | `BealMixed` |
 
-## 3. 研究優先度
-
-### 高実現性（基盤整備）— 完了
-
-1. 増幅証明書 / no-go の Framework 化
-2. pureBoost 代数 API の集約
-3. bridge 責務の docstring / 型境界の統一
-4. 公開 API（`Basic.lean`）と回帰例（`FoundationRegression.lean`）
-5. **旧 coarse witness の空性証明と modular 基盤**
-
-### 中実現性（現行の主対象）— Beal 危機路線（フェーズ 7k）
-
-1. ~~`BealCGARealization` を幾何原理として証明~~ — bookkeeping 化完了（循環を回避）
-2. ~~`3∣d` / `4∣d` / 等指数 3,4~~ — mathlib FLT で無条件閉鎖（`BealSlice`）
-3. ~~`d = 2` 原始ピタゴラス参数表示~~ — `coprime_classification` 接続済
-4. ~~`d = 2` で 4 整除が 2 本以上~~ — `BealPythagorean`（`not_fermat_42` + DiffFourth）で無条件閉鎖
-5. ~~一般 `d ≥ 3`~~ — FLT 公理で条件付き閉鎖（フェーズ 7i）
-6. ~~細残件組立~~ — `beal_conjecture_pos_of_fine_residuals`（フェーズ 7j）
-7. ~~`(n,n,3)` 二一致~~ — Darmon–Merel 公理（フェーズ 7j）；~~奇数 `(3,n,n)` / `(n,3,n)`~~（フェーズ 7k）
-8. ~~有限箱 底≤8・指数 3…5~~ — `beal_no_coprime_of_le_eight_five`；~~冪判定 底≤12・指数 3…6~~（フェーズ 7k）
-9. ~~偶二一致の和型／差型分割~~ — `BealEven`（フェーズ 7k）
-10. ~~equal-odd 立方切片（`|·|=1` / mod-8）~~ — `BealGaussianCube`（フェーズ 7k）
-11. **残件本体:** `TwoEqualEven`（一般） / `TwoEqualOdd`（立方以外） / `AllDistinct` / `EqualOddTwoFactor`（`e≥5` および `|u|≥3`） / `UnequalOdd`
-12. （後続）`FermatModularBridge` / `AbcModularBridge`；有限箱の拡大
-
-### 探索的（並列トラック）
-
-- **1D CGA 探針**（`Algebra/CGA`, `CGA.lean`）: `Cl(2,1)` null 点・dilation。時空 CGA は未着手
-- **D4L / 二重時空四値論理**（`Logic/`, `Logic.lean`、代表論文 `dst-4-valued-logic.tex`）:
-  許容配置を振幅とし、`JNormalized` の四状態、\(\min/\max/-\)、Killing 重なり・異軸干渉、
-  高さ/情報順序、双対セクターの \(\mathbb{C}^2\) と部分空間格子を機械検証。
-  **第二測定 `mass` / `massNormalized`**（フェーズ L1）。ラベル `T` を真空と釣り合い質量に分ける述語
-  （第五ラベルではない）。論文第6章の `J=0 ⇒` 自明は反例で棄却。
-  釣り合い質量の小種は `k` 倍後も `T` かつ許容、大種は錐外（高さ分類器には `T` のまま）。
-  振幅層と双対 Hilbert 層は同じ論理（分離定理は層間の関係）。`Logic/Quantum/`（フェーズ Q0–Q5）。
-  **構文・指定値・帰結**（`Formula` / `Valuation` / `Consequence`）と、
-  2値が担えない例1–5（否定固定点、非爆発、`Jnorm<1`、相補性、ディオファントス・レジーム）を固定。
-  **レジーム層**（`Logic/Regime`）に離散ステータスと含意表。振幅の min 剰余は使わない。
-  離散振幅（`¬4∣N` なら F 不在）、増幅力学、巻数との二測定まで機械検証。
-  Basic 非依存。`Theorems` は import しない。L2 モーター命題、L3 残件クラス、L4 薄い解釈は後続。
-- **PGA–TEGR チャート形式化**（`Gravity/`）: Schwarzschild 対角テトラッド、Weitzenböck `T`、
-  動径ブースト尺度、モーター誘起フレーム、場の種 `J_field`。有限角 `J`/`J⁵` と `T` の
-  素朴な点同一視は棄却。一般 `J_field↔T` は予想、TEGR↔EH 変分同値は据え置き、退化計量サンドイッチは未解決
-- Lie 括弧による `iso(3,1)` 同型の完備化
-- 3-blade bracket / dual-as-normal の一般定理
-- `exp(Ω⁽⁵⁾)` と定義積 `RT` の関係
-- coprimality の局所・付値層
-
-### 棄却 / 保留
-
-- 現行連続 FLT bridge をそのまま証明する
-- 旧 `CoarseAmplificationWitness` を本命の量子化写像として扱うこと（構造的に空；Beal/abc でも単純流用すれば同様）
-- dagger 厳密降下・単純折り返し・`J5` 単独解決
-- 一般多様体上の TEGR↔Einstein–Hilbert 変分同値の完全形式化（文献引用のまま据え置き）
+公理（Lean 証明ではない）: `fermatLastTheorem`・`mihailescu`・`darmonMerelCube`。
 
 ---
 
-## 4. 成功判定（本サイクル）
+## 3. 実行優先度（成果しやすさ順）
 
-- [x] `CoarseAmplificationWitness.empty_of_coarse` を機械検証
-- [x] `ModularAmplificationWitness` が具体例で inhabited
-- [x] 巻数恒等式と `J` 誤差恒等式を定式化
-- [x] duality / motor / Lie ラベルの Lean・論文境界を修正
-- [x] 無条件 FLT や他予想の達成を主張しない
-- [x] `lake build` と Docker LaTeX（検証ステップで確認）
+### P0 — すぐ閉じる（次サイクルの既定）
 
-### フェーズ 7（modular + CGA 探針）
+- **equal-odd `e=3` の次切片**（`BealGaussianCube`）: 合同（mod 7/9）や `|u|` 有限探索。本体 `e≥5` には手を出さない。
+- **Fermat 診断の Abc 揃え**（`Fermat`）: `fermat_has_winding_of_logGap_ge` と `FermatAdmissibleBridge_false`。
+- **有限証明書の一段拡大**: Beal 箱（底 ≤8・指数 3…5）／冪判定（底 ≤12・指数 3…6）；Collatz ≤20 / Goldbach ≤100 / Polignac 双子 ≤20。`native_decide` 不成立なら上限を戻し本節に記録。
+- **偶二一致和型**: `z=3` 済。固定 `z` に古典定理があれば公理化。一般和型は P2。
 
-- [x] `admissible_scale_implies_windingTotal_eq_zero` と対偶
-- [x] `quantizeMismatch` / フロア誤差補題
-- [x] `FermatModularBridge` と `fermat_last_theorem_of_modular_bridge`（条件付き）
-- [x] 1D CGA: `point_sq` / dilation 重み / `integerHeight` 非有界
-- [ ] `FermatModularBridge` 本体（無条件 FLT 相当 — 主張しない）
-- [ ] 共形ゲージ ≠ PGA 実スケール の再定義
+### P1 — 設計は要るが閉塞していない
 
-### フェーズ 7b（ABC modular — 進行中）
+- **D4L L4 の薄い拡充が L2 より先**: `Logic/Regime` の抽象原子に診断写像の例を足す（`Theorems` を import しない）。L2 モーター命題は新規モジュール。L3 は P2。
+- **ローカル論文同期**: `papers/dst-diophantine.tex` と Lean 境界。GitHub `dual-spacetime-doc` とフォルダに無い RH / Langlands は据え置き。
+- **偶二一致差型の形の固定**（`BealEven`）: `C^n − B^n = A^x` の補題整理まで。
 
-- [x] 連続 `AbcAdmissibleBridge` を診断用に落とし `AbcAdmissibleBridge_false` を証明
-- [x] `quantizeAbcMismatch` / `abcLogGap` / radical 乗法性
-- [x] `AbcModularBridge` と `abc_conjecture_of_modular_bridge`（条件付き）
-- [x] pure-boost 巻数判定と主値区間での `abc_has_winding_of_logGap_ge`
-- [ ] `AbcModularBridge` 本体（無条件 ABC 相当 — 主張しない）
-- [ ] 許容性・増幅後許容と共形ギャップの解消
+### P2 — 本命だが重い（切片のアイデアが立ったときだけ）
 
-### フェーズ 7c（Beal modular — 完了）
+- 残件本体: Sum の `z≠3`、Diff 全体、Odd（立方外）、AllDistinct、EqualOdd（`|u|≥3` / `e≥5`）、UnequalOdd。
+- `FermatModularBridge` / `AbcModularBridge` 本体（`ConformalGaugeAdmissible`）。
+- Gravity 一般モーターの修正辞書；D4L L3 `BalancedResidualClass`（コード未作成）。
 
-- [x] `bealFracLogGap` と解のとき `m·δ = log(1+B^y/A^x)`、等指数退化
-- [x] `quantizeBealMismatch` / 旧 `BealModularBridge`（診断・payload 矛盾を機械検証）
-- [x] 主値区間での `beal_has_winding_of_fracGap_ge`、釣り合い型連続診断
-- [x] 共通巻数ヘルパを `Algebra.ModularAmplification` へ抽出
-- [x] bridge 分割: `BealWindingBridge` + `BealCGALatticeGauge` / `BealCGADilationNoGo`
-- [x] `modularWitness_four_le`（`k < 4` なら空）と `bealAmpExp = max(m,4)`
-- [x] 広い主値窓 `N = k`, `2π/k ≤ δ < 4π/k`（`m = 3` 含む）⇒ modular witness
-- [x] `principalRapidity` トーラス折り畳みと主値窓への拡張
-- [x] CGA 点対ペアリング / スケール不変 dilation mismatch / 2π 非周期性
-- [x] 三点 `α^m+β^m=γ^m` と `BealCGALatticeGauge`（等指数で成立・混合で反例；恒真 Triple Prop は置かない）
-- [x] 窓に入る解 ⇒ 巻数 witness（`beal_winding_of_solution_window`）
-- [x] 旧 `BealCGANoGo` を診断化（ill-posed；窓との関係補題）
+### P3 — 据え置き / 再設計しない
 
-### フェーズ 7d（Beal CGA 冪格子降下 — 完了）
+無条件古典 Beal、TEGR↔EH 変分、時空 CGA、mathlib PGA contrib、旧 coarse / 連続 FLT bridge / dagger、GitHub 側 RH・Langlands・particle-stability・IUT（フォルダに無い）。
 
-- [x] 対ごと互素（`beal_pairwise_coprime`）
-- [x] `IsCGAPowerLatticePoint` と整数格子包含・`2^{4/3}` 診断
-- [x] k 倍 dilation の m 乗等式・整除裁定・`|A|=1` 降下（無条件補題）
-- [x] `δ < 2π/k` で巻数 0 / 釣り合い型 modular witness 空性
-- [x] `BealWindingBridge` を窓レジーム診断へ降格
-- [x] `BealCGADiscreteClosed` + `BealUnitBaseNoGo` 型付けと条件付き古典 Beal
-- [x] 有限断片 `not_one_add_pow_three_eq_pow_three`
+### 問題類型（再利用パターン）
 
-### フェーズ 7e（Beal CGA 整数 dilation 実現 — 完了→bookkeeping）
+| 類型 | 代表 | 次の数学課題 |
+|------|------|--------------|
+| **冪和増幅型** | FLT, Beal | 解 ⇒ modular witness / 残件本体 |
+| **品質型** | abc | 高品質 ⇒ modular / 許容配置 |
+| **軌道型 / 加法分解型 / 解析型** | Collatz, Goldbach, Polignac, RH | 別系列；有限箱は P0 |
 
-- [x] 互素解で k 倍冪格子 ⇔ `|A|=1`（`BealCGADiscreteClosed` を bookkeeping 化）
-- [x] Mihăilescu axiom + 正の `bealUnitBaseNoGo_pos`
-- [x] `IsCGAIntegerDilation` / 格子保存 / 二点一意スケール / `|A|∣|C|` 同値
-- [x] `IsDSTBealDiscreteConfig` + 互素 ⇒ `|A|=1`；正なら Mihăilescu で矛盾
-- [x] `BealCGARealization` 型付け；等指数 `mismatchRotor` ↔ CGA log-scale
-- [x] 条件付き正古典 Beal（`beal_conjecture_pos_of_realization`）
-- [x] Realization を独立幾何原理として扱わない（フェーズ 7f で確定）
+---
 
-### フェーズ 7f（Realization bookkeeping + 指数 gcd 還元 — 完了）
+## 4. 成功判定（次サイクル）
 
-- [x] `beal_integerDilation_iff_pow_eq` / 互素解での同値 / 等指数⇔`|A|=1`
-- [x] 診断 `3²+4²=5²`（比 `5/3` は整数 dilation でない）
-- [x] `bealExpGcd`・冪還元・`bealGcd_pow_eq_one`
-- [x] mathlib `FermatLastTheorem` 仮説版（残置）と、フェーズ 7i の FLT **公理**版で `d≥3` 閉鎖
-- [x] `FermatLastTheorem_of_modular_bridge`；等指数・ピタゴラス冪還元
-
-### フェーズ 7g（無条件 FLT スライス + ピタゴラス参数表示 — 完了）
-
-- [x] `bealExpGcd` 三分法・`d=2` で還元指数の gcd=1
-- [x] 互素 `d=2` ⇒ `PythagoreanTriple.coprime_classification`
-- [x] `BealSlice`: `3∣d` / `4∣d` / 等指数 3,4 を無条件閉鎖
-- [x] `d=2` ∧ `4∣x` ∧ `4∣y` を `not_fermat_42` で無条件閉鎖
-- [x] `BealMixedExpResidual` と二指数一致 `x=y` の切り出し（型のみ）
-
-### フェーズ 7h（ピタゴラス UFD 降下 — 完了）
-
-- [x] `BealPythagorean`: `a⁴ + b² ≠ c⁴`（DiffFourth 降下）と偶脚 UFD
-- [x] `d=2` ∧ (`4∣x`∧`4∣z` / `4∣y`∧`4∣z`) を無条件閉鎖；系として 4 整除 2 本以上
-- [x] `BealPythagoreanResidual`（還元指数のうち 2 つ以上が奇数）と iff
-- [x] ℤ[i] 斜辺冪の準備ラベル（完全降下は据え置き）
-- [x] `d=1`: 二指数一致を `y=z` / `x=z` に拡張し、全相異を切り出し
-- [x] 成功判定: 無条件 Beal ではなく「`d=2` の 4 整除 2 本以上を閉鎖 + 残件型の固定」
-
-### フェーズ 7i（FLT 公理と Gaussian UFD 降下 — 完了）
-
-- [x] `FermatLast.lean`: `axiom fermatLastTheorem`（Wiles の Lean 証明ではない旨明記）
-- [x] `not_beal_sol_of_expGcd_ge_three`（仮説なし・公理依存）で `d≥3` を閉鎖
-- [x] `beal_conjecture_pos_of_residuals`: 正の基底で古典 Beal を残件 2 つへ還元（sorry なし）
-- [x] `BealGaussian`: 互素・反対偶奇 ⇒ `m+ni` が単数倍の冪；`IsGaussianHypotenusePower` 定理化
-- [x] equal-odd（偶脚＝斜辺の同じ奇数還元指数）を `BealEqualOddTwoFactorResidual` へ還元
-- [x] `d=1` 偶二一致: mod 4 + 平方和形への進捗（`BealTwoEqualEvenResidual`）
-- [x] 成功判定: 無条件古典 Beal を主張しない；還元と Gaussian 進捗が sorry なし
-- [ ] 残件本体: `BealMixedExpResidual` / `BealPythagoreanResidual` /
-  `BealEqualOddTwoFactorResidual` / `BealTwoEqualEvenResidual`
-- [ ] 無条件古典 Beal（主張しない）
-
-### フェーズ 7j（細残件分割・Darmon–Merel・有限証明書 — 完了）
-
-- [x] `BealTwoEqualOddResidual` / `BealAllDistinctExpResidual` / `BealPythagoreanUnequalOddResidual`
-- [x] `beal_mixed_exp_of_subresiduals` / `beal_pythagorean_of_subresiduals` /
-  `beal_conjecture_pos_of_fine_residuals`
-- [x] 偶二一致 `x=y` → Gaussian 斜辺冪（`exists_gaussian_hyp_pow_of_two_equal_xy_even`）
-- [x] `darmonMerelCube` 公理と `not_beal_two_equal_third_three`
-- [x] 有限箱 `beal_no_coprime_of_le_eight_five`（底 ≤8・指数 3…5）と既知非互素解
-- [x] 成功判定: 無条件古典 Beal ではなく「細残件組立 + 立方スライス + 有限箱」
-- [ ] 残件本体（7k で切片閉鎖を追加；本体は未）
-- [ ] 無条件古典 Beal（主張しない）
-
-### フェーズ 7k（DM 3位置・偶分割・立方切片・冪判定 — 完了）
-
-- [x] Darmon–Merel を奇数 `(3,n,n)` / `(n,3,n)` へ符号書き換えで適用
-  （`not_beal_two_equal_cube_slice`）
-- [x] `BealTwoEqualEvenSumResidual` / `BealTwoEqualEvenDiffResidual` と組立
-- [x] 和型 `z=3` を DM で閉鎖；Gaussian 両座標冪パッケージ
-- [x] equal-odd `e=3`: 立方展開・mod-8・`|·|=1` Mihăilescu 切片
-- [x] 冪判定有限探索 `beal_no_coprime_perfect_power_of_le_twelve_six`（底 ≤12・指数 3…6・`C` 非有界）
-- [x] 成功判定: 無条件古典 Beal ではなく「切片閉鎖 + 冪判定証明書」
-- [ ] 残件本体: `BealTwoEqualEvenResidual`（一般） / `BealTwoEqualOddResidual` /
-  `BealAllDistinctExpResidual` / `BealEqualOddTwoFactorResidual` /
-  `BealPythagoreanUnequalOddResidual`
-- [ ] 無条件古典 Beal（主張しない）
-
-### フェーズ L1（D4L 質量／真空／釣り合い — 完了）
-
-- [x] `mass` / `massNormalized`、錐上 `0 ≤ M_norm ≤ 1`
-- [x] `IsVacuum` / `IsBalancedMassive`（述語。第五ラベルではない）
-- [x] 真空はスケールの不動点；小釣り合い種は `T` のまま許容；大種は錐外
-- [x] 錐外化は `classify?` には `T` のまま（高さ分類器は見えない）
-- [x] `JNormalized_zero_not_implies_vacuum`（論文第6章の `J=0 ⇒` 自明を棄却）
-- [ ] L2 モーター命題
-- [ ] L3 `BalancedResidualClass` と質量版粗証明書
-- [ ] L4 Theorems 薄い解釈
-
-### Gravity トラック（PGA–TEGR）
-
-- [x] Schwarzschild 対角テトラッド ⇒ 誘導計量が Schwarzschild 計量
-- [x] チャート上 Weitzenböck ねじれ成分と `T = -r⁻² formal∂_r(r² B^r)`
-- [x] 動径ブースト尺度 `e^{±φ}` と Schwarzschild redshift の一致
-- [x] 純ブースト成分展開（代数層）: `Algebra.Sandwich` の `ι μ` 展開・光円錐固有値、Gravity チャート橋
-- [x] モーター誘起フレーム `Gravity.Tetrad`；純並進は恒等モーターでない
-- [x] 辞書固定: 有限角 `J(φ)=½φ²` ≠ 場の種 `J_field=½(φ')²` ≠ 遠平行 `T`
-- [x] 素朴な点同一視の棄却（定数ブースト / 純並進 / `J_field=½T` at (2,4)）
-- [ ] 一般 motor 場の修正された `J_field = ½ T + div`（予想；TEGR カレント特殊化は棄却済）
-- [ ] TEGR↔EH 変分同値（据え置き・文献）
+- [ ] equal-odd `e=3` に合同または有限 `|u|` の新切片がある、**または** `FermatAdmissibleBridge_false` / `fermat_has_winding_of_logGap_ge` の少なくとも一方がある
+- [ ] Beal 有限箱・冪判定、あるいは Collatz / Goldbach / Polignac の上限が一段上がっている（または `native_decide` 不成立を記録している）
+- [ ] 無条件古典 Beal を主張していない
 
 ---
 
@@ -343,19 +186,35 @@ Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元
 
 ---
 
-## 6. 実装進捗ログ（要約）
+## 6. 完了アーカイブ
 
-### フェーズ 0–5 — 完了
+**基盤完了条件（達成済）:** `CoarseAmplificationWitness.empty_of_coarse`、modular witness inhabited、巻数／J 誤差恒等式、duality・motor・Lie ラベル境界、無条件予想を主張しない、`lake build`。
 
-環境、PGA コア、離散有界性、整数埋め込み、統一枠組み、条件付き 7 予想。
+### フェーズ 0–6
 
-### フェーズ 6 — 基盤再構成（完了） + 旧量子化の診断的棄却
+環境、PGA コア、離散有界、整数埋め込み、条件付き 7 予想。Framework 抽出。釣り合い型で連続 bridge が破綻し得ることを機械検証。旧粗離散 witness の方程式非依存空性。
 
-- 釣り合い型で連続 bridge が破綻し得ることを機械検証
-- 問題非依存核を `Framework/Amplification` へ抽出
-- **旧粗離散 witness が方程式非依存に空**であることを直接証明
+### フェーズ 7–7c
 
-### フェーズ 7 — modular 再設計（進行中）+ 1D CGA 探針
+modular 再設計と巻数ギャップ（`admissible_scale_implies_windingTotal_eq_zero`）。`FermatModularBridge` / `AbcModularBridge` / 旧 `BealModularBridge` の型付け。Beal 窓巻数・payload 矛盾・主値窓。1D CGA 探針。
+
+### フェーズ 7d–7f
+
+CGA 冪格子／Realization を bookkeeping 化（幾何原理として使わない）。Mihăilescu 正 UnitBase。指数 gcd 還元と `bealExpGcd` 三分法の準備。
+
+### フェーズ 7g–7k
+
+無条件スライス（`BealSlice`）。`d=2` の 4 整除 2 本以上（`BealPythagorean`）。FLT 公理で `d≥3`。Gaussian UFD・equal-odd／偶二一致進捗（`BealGaussian`）。細残件組立（`BealMixed`）。Darmon–Merel 3位置。偶和／差分割（`BealEven`）。equal-odd `e=3` 切片（`BealGaussianCube`）。有限箱・冪判定（`BealFinite`）。
+
+### フェーズ L1（D4L）
+
+`mass` / `massNormalized`、`IsVacuum` / `IsBalancedMassive`。論文第6章の `J=0 ⇒` 自明を棄却。L2 モーター命題・L3 `BalancedResidualClass`・L4 Theorems 解釈は後続（L4 拡充が L2 より先）。
+
+### Gravity チャート
+
+Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モーター誘起フレーム、辞書分離。素朴同一視の棄却と `conjectured_J_field_eq_half_T_plus_div` の反証。TEGR↔EH は文献据え置き。一般モーター修正辞書は未決。
+
+### modular 経路（診断図）
 
 ```
 解 a^p+b^p=c^p ──► null translator = 1          （加法・証明済）
@@ -365,22 +224,16 @@ Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元
                 ModularAmplificationWitness（解依存・未証明）
                          │ has_winding ⇒ ¬ 実スケール許容（証明済）
                          ▼
-                ConformalGaugeAdmissible（残ギャップ / CGA 探針）
+                ConformalGaugeAdmissible（残ギャップ）
                          ▼
                    条件付き FLT（fermat_last_theorem_of_modular_bridge）
 ```
-
-### フェーズ 8 — PGA–TEGR チャート層（進行中）
-
-- `dst-pga.tex` §6 を独立節「PGA–TEGR Correspondence」へ再構成
-- Lean `Gravity/`: コフレーム・Schwarzschild・Weitzenböck・`J_field`・同一視棄却・`Tetrad`
-- 数論主軸（modular bridge）と並列；TEGR↔EH は据え置き；修正場辞書は未解決
 
 ---
 
 ## 7. DST / 離散論文へ返す欠点（2026-08-14）
 
-Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc。ローカル `References/` のコピーは 2026-08-14 に本表へ合わせて改訂した。GitHub 本体へは未反映。フォルダに無い `dst-riemann-hypothesis.tex` / `dst-langlands-program.tex` / `dst-particle-stability.tex` / `dst-iut.tex` は未着手。
+Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc。**同期先はリポジトリ内 `papers/`**（作業ツリーに `References/` フォルダは無い）。GitHub 本体へは未反映。フォルダに無い `dst-riemann-hypothesis.tex` / `dst-langlands-program.tex` / `dst-particle-stability.tex` / `dst-iut.tex` は未着手。
 
 ### 優先（`|J|≤1` を無条件に使っている）
 
@@ -426,24 +279,20 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 | `BealCGADiscreteClosed` | 幾何原理ではない（bookkeeping） | `beal_kFold_powerLattice_iff_natAbs_eq_one` |
 | 文献プレースホルダ | `arXiv:xxxx.xxxxx` | — |
 
-### 今サイクルで強化した Lean 境界（J 範囲）
+### Lean 境界（J 範囲・固定済）
 
-- 軸ごと上界の等号 iff、生の天井 `|J|≤3π²/8`、負の極端、`|JNormalized|=1` の大域等号、像 `[-1,1]`
+- 軸ごと上界の等号 iff、生の天井 `|J|≤3π²/8`、`|JNormalized|=1` の大域等号、像 `[-1,1]`
 - 離散 `|JNormalized| ≤ (4⌊N/4⌋/N)²`、`4∣N` で ±1、`¬4∣N` で厳密、許容離散値の稠密
 - `Algebra.lean` / `Basic.lean` export と `FoundationRegression` の回帰 example
-
-Beal 危機路線の優先度は維持。上記は並列の代数整理。7予想の無条件証明・dagger 降下・粗離散 witness・TEGR↔EH 変分は、J 範囲の辞書が固まってから別チケット。
 
 ---
 
 ## 8. 次アクション
 
-1. **（主・Beal）** 細残件本体（偶／奇二一致・全相異・equal-odd 二因子・unequal-odd）の一般場合
-2. （条件付き）一般 `d≥3` は FLT 本体トラック；立方二一致は Darmon–Merel 3位置まで適用済
-3. （後続）Fermat / abc modular への移植；冪判定有限箱の拡大；軌道型・加法分解型は別系列
-4. **（並列）** Gravity: 修正された `J_field↔T` 辞書（一般モーター；素朴特殊化は棄却済）
-5. 長期: mathlib PGA contrib；時空 CGA / TEGR↔EH は文献枠または後続
-6. **（論文フィードバック）** ローカル `References/` は本表へ合わせて改訂済。GitHub `dual-spacetime-doc` 本体と、フォルダに無い RH / Langlands / particle-stability / IUT は未反映
-7. **（並列・D4L）** L1（質量／真空／釣り合い）は固定済。次はモーター命題（L2）、`BalancedResidualClass`（L3）、Theorems からの薄いステータス解釈（L4）。Dirac \(\mathbb{C}^4\) は後続。ゲーデル否定・無条件 Beal は主張しない
+1. **（P0）** equal-odd `e=3` 次切片、または Fermat 診断（`FermatAdmissibleBridge_false` / `fermat_has_winding_of_logGap_ge`）
+2. **（P0）** Beal／Collatz／Goldbach／Polignac の有限証明書を一段拡大（不成立なら記録）
+3. **（P1）** D4L L4 Regime 例の拡充；差型形の補題整理；`papers/` と Lean 境界の同期
+4. **（P2）** 残件本体・modular bridge 本体・Gravity 修正辞書・L3（切片のアイデアが立ったとき）
+5. **（P3）** 無条件古典 Beal／TEGR↔EH／時空 CGA／GitHub 側未同梱論文は据え置き
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は **共通 no-go + modular 基盤 + Beal 窓巻数 + 冪格子/Realization bookkeeping + Mihăilescu 正 UnitBase + 指数 gcd 還元 + 無条件スライス + FLT 公理による d≥3 + Gaussian UFD + 細残件組立 + Darmon–Merel 3位置 + 偶二一致分割 + equal-odd 立方切片 + 有限箱／冪判定** まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は共通 no-go・modular 基盤・Beal 還元組立・切片・有限箱まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。

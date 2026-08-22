@@ -134,26 +134,18 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 ## これからの見通し
 
-いまの焦点は **無条件 Beal** です。共通 no-go・modular 基盤・窓巻数・bookkeeping 降下・
-Mihăilescu 正 UnitBase・指数 gcd 還元・無条件 FLT スライス・細残件組立・Darmon–Merel
-3位置・偶二一致分割・equal-odd 立方切片・有限箱／冪判定までは揃っています。
-残りは細残件本体と、一般 `d≥3` 向けの FLT 本体です。
+北極星は Beal 残件還元（FLT 公理のもとで正の古典 Beal）です。実行の既定は残件本体ではなく、
+**すぐ閉じる切片・診断・有限証明書**です。詳細は [`PLAN.md`](PLAN.md)。
 
-- **主軸（Beal）**  
-  指数 gcd 還元。`3∣d` / `4∣d` / 等指数 3,4 / 双二次は mathlib で無条件。
-  一般 `d≥3` は FLT 公理。二一致立方は Darmon–Merel 公理（3位置）。
-  残件は偶／奇二一致・全相異（`d=1`）と equal-odd 二因子／unequal-odd（`d=2`）。
-  Realization / DiscreteClosed は bookkeeping（幾何原理として証明しない）。
-- **1D CGA**  
-  ペアリング・整数格子・冪格子・整数 dilation 群・三点冪和は接続済み。時空 CGA は後続です。
-- **後続の冪和 / 品質型**  
-  Fermat / abc modular への移植、巻数誤差の数論的下限。
-- **有限証明書の拡大**  
-  Collatz / Goldbach / abc などの検証上限を上げる。
-- **別系列**  
-  軌道型・加法分解型は別ルート。Riemann は長期。Gravity は並列。
-- **長期目標**  
-  7 予想を単一原理から導く完全機械検証。無条件古典 Beal はまだ未達成です。
+- **P0（次サイクルの既定）**  
+  equal-odd `e=3` の次切片、Fermat 診断の Abc 揃え（`FermatAdmissibleBridge_false` 等）、
+  Beal／Collatz／Goldbach／Polignac の有限箱一段拡大。
+- **還元の現状**  
+  組立は sorry なし。閉じた切片は Darmon–Merel 3位置、偶和型 `z=3`、`e=3` の `|·|=1`／mod-8 など。
+  開いているのは細残件本体 5 つ。無条件古典 Beal は主張しません。
+- **P1 以降**  
+  D4L L4（Regime）拡充、論文 `papers/` 同期、差型形の整理。本体・modular bridge・Gravity
+  修正辞書は切片のアイデアが立ったとき。TEGR↔EH・時空 CGA は据え置き。
 
 ## ビルド
 
