@@ -1,12 +1,17 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-23（Phase 7o: 有限箱一段拡大、偶差完全冪抽出、Affine↔Mordell 包装）
+最終更新: 2026-08-23（Phase 7p: D4L ビール残件地図、有限箱一段拡大）
 
 ## 0. いまの見通し
 
 **北極星:** 細残件が閉じれば、FLT 公理のもとで正の古典 Beal（`bealGcd > 1`）が従う。無条件古典 Beal は主張しない。
 
 **閉じたもの:** 加法忠実化・共通 no-go・旧 coarse 空性・modular 基盤。Beal は指数 gcd 三分法まで還元済み。組立 `beal_conjecture_pos_of_fine_residuals` / `_even_split` は sorry なし。公理は明示 3 本のみ（`fermatLastTheorem` / `mihailescu` / `darmonMerelCube`）。`sorry` は 0。
+
+**Phase 7p 進捗:**
+- D4L レジーム: `RegimeValuation.ofList` / `meetRList`；抽象ビール地図 `Logic/Example/BealRegime`（切片 T / 診断 F / book B / 残件 U）；`{切片} ⊭_T` 古典 Beal
+- 証人 `Theorems/BealRegime`（Basic 非依存）: 実定理 ↔ ラベル；`isOpenResidualExponents ↔ U`；釣り合い種 ↔ `IsBalancedMassive` の薄いリンク
+- 古典冪判定を底 ≤17・指数 3…6 まで拡大；正立方核 ≤60；開残件フィルタ ≤30
 
 **Phase 7o 進捗:**
 - 古典冪判定を底 ≤16・指数 3…6 まで拡大；正立方核 ≤50；開残件フィルタ ≤25
@@ -23,9 +28,9 @@
 - 立方残件 `α³+2β³=γ³` を原始化・パリティ・差の因数（gcd|3）・2-進へ整形；有理点残件 `BealAffineCubeAddTwoResidual`（`X³+2Y³=1` の有理点は `(1,0),(-1,1)` のみ）から正方程式残件への組立を証明。素朴 2-進下降はこの方程式には使えない（符号つき解あり）
 - equal-odd `|u|=1` を奇数 `e≥3` へ一般化し Mihăilescu で閉鎖；`e≥5` 残件は `1 < u`（`|u|≥3`）に狭め
 - 偶差因数核に `gcd(|D|,|E|)∣2`・反対パリティで gcd=1・両奇で gcd=2・2-進付値の一方が 1、の補題を追加
-- 冪判定有限箱を底 ≤14・指数 3…6 まで拡大（反例なし）→ 7n で ≤15 → 7o で ≤16
+- 冪判定有限箱を底 ≤14・指数 3…6 まで拡大（反例なし）→ 7n で ≤15 → 7o で ≤16 → 7p で ≤17
 
-**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L4。Gravity 一般モーター辞書。
+**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L3。Gravity 一般モーター辞書。
 
 **実行原則:** デフォルトの作業は残件本体の正面突破ではない。切片・有限証明書・診断定理で成果を出し、アイデアが立ったときだけ本体へ戻る。
 
@@ -126,14 +131,14 @@ flowchart TD
 
 ### P0 — すぐ閉じる（次サイクルの既定）
 
-- **Mordell `y²=x³-1728` 階数 / `BealMordellCubeAddTwoResidual`**: Affine 組立は 7o で済。閉じれば正立方残件が従う。mathlib に階数は無い。有限切片: 原始正解は底 ≤50 で無し（7o）。
+- **Mordell `y²=x³-1728` 階数 / `BealMordellCubeAddTwoResidual`**: Affine 組立は 7o で済。閉じれば正立方残件が従う。mathlib に階数は無い。有限切片: 原始正解は底 ≤60 で無し（7p）。
 - **偶差完全冪の一般 Fermat 下降**: 抽出・Factor 組立は 7o で済；`±u^x ± v^x = 2 C^k` 本体は未。
-- **有限証明書の一段拡大**: 冪判定は底 ≤16・指数 3…6（7o）。次は底 17 または指数 7；`native_decide` 不成立なら上限を戻し本節に記録。開残件フィルタは底 ≤25 まで。
+- **有限証明書の一段拡大**: 冪判定は底 ≤17・指数 3…6（7p）。次は底 18 または指数 7；`native_decide` 不成立なら上限を戻し本節に記録。開残件フィルタは底 ≤30 まで。
 - **偶二一致和型**: `z=3` 済、`z=5`/`≥7` 分割済。固定 `z` に古典定理があれば公理化（`(n,n,5)` の完全定理化はしない）。
 
 ### P1 — 設計は要るが閉塞していない
 
-- **D4L L4 の薄い拡充が L2 より先**: `Logic/Regime` の抽象原子に診断写像の例を足す（`Theorems` を import しない）。L2 モーター命題は新規モジュール。L3 は P2。
+- **D4L L2 モーター命題**（新規モジュール）。L3 `BalancedResidualClass` は釣り合い種の薄いリンク（7p）のあと。
 - **ローカル論文同期**: `papers/dst-diophantine.tex` と Lean 境界。GitHub `dual-spacetime-doc` とフォルダに無い RH / Langlands は据え置き。
 - **偶二一致差型の形の固定**（`BealEven`）: `C^n − B^n = A^x` の補題整理まで。
 
@@ -141,7 +146,7 @@ flowchart TD
 
 - 残件本体: Sum の `z≠3`、Diff 全体、Odd（立方外）、AllDistinct、EqualOdd（`|u|≥3` / `e≥5`）、UnequalOdd。
 - `FermatModularBridge` / `AbcModularBridge` 本体（`ConformalGaugeAdmissible`）。
-- Gravity 一般モーターの修正辞書；D4L L3 `BalancedResidualClass`（コード未作成）。
+- Gravity 一般モーターの修正辞書；D4L L3 `BalancedResidualClass`（薄いリンクは 7p 済；専用モジュールは未）。
 
 ### P3 — 据え置き / 再設計しない
 
@@ -164,6 +169,7 @@ flowchart TD
 - [x] Beal 冪判定が底 ≤14 または指数 ≤7 に一段上がっている（底 ≤14・指数 3…6）
 - [x] Phase 7n: ファインダ API・正立方核有限箱 ≤40・開残件フィルタ ≤20・冪判定 ≤15
 - [x] Phase 7o: 冪判定 ≤16・立方核 ≤50・開残件 ≤25；偶差完全冪抽出＋Factor 組立；Affine←Mordell `y²=x³-1728` 包装
+- [x] Phase 7p: D4L ビール残件地図（`{切片} ⊭_T`）；証人 `BealRegime`；冪判定 ≤17・立方核 ≤60・開残件 ≤30；`isOpenResidual ↔ U`
 - [x] 無条件古典 Beal を主張していない
 
 ---
@@ -197,13 +203,14 @@ Theorems/
   BealEven (偶二一致 和型／差型分割),
   BealGaussianCube (equal-odd e=3 切片 + Affine↔Mordell 包装),
   BealFinite (有限箱 + 冪判定 + ファインダ), BealResidualSearch (立方核 / 開残件フィルタ),
+  BealRegime (Phase 7p: D4L 証人；Basic 非依存),
   DarmonMerel / FermatLast / Mihailescu (公理),
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
 Logic/                   ← D4L（振幅、JNormalized の四状態、質量／真空／釣り合い、幾何演算、
                            構文、指定値、帰結、レジーム、離散振幅、増幅力学、巻数二測定）
-Logic/Example/           ← 2値が担えない例（固定点、非爆発、Jnorm<1、レジーム）
+Logic/Example/           ← 2値が担えない例（固定点、非爆発、Jnorm<1、レジーム、Beal残件地図）
 Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元数、C2、部分空間格子、辞書
 ```
 
@@ -231,7 +238,7 @@ CGA 冪格子／Realization を bookkeeping 化（幾何原理として使わな
 
 ### フェーズ L1（D4L）
 
-`mass` / `massNormalized`、`IsVacuum` / `IsBalancedMassive`。論文第6章の `J=0 ⇒` 自明を棄却。L2 モーター命題・L3 `BalancedResidualClass`・L4 Theorems 解釈は後続（L4 拡充が L2 より先）。
+`mass` / `massNormalized`、`IsVacuum` / `IsBalancedMassive`。論文第6章の `J=0 ⇒` 自明を棄却。L2 モーター命題は後続。L4 ビール残件地図は Phase 7p で閉じた（`Logic/Example/BealRegime` + `Theorems/BealRegime`）。L3 `BalancedResidualClass` は薄いリンクのみ（専用モジュール未）。
 
 ### Gravity チャート
 
@@ -313,8 +320,8 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 ## 8. 次アクション
 
 1. **（P0）** `BealMordellCubeAddTwoResidual`（`y²=x³-1728` 階数）または正立方残件のさらなる有限拡大
-2. **（P0）** 偶差完全冪の一般 Fermat 下降；有限箱を底 17 または指数 7 へ
-3. **（P1）** D4L L4 Regime 例の拡充；`papers/` と Lean 境界の同期
+2. **（P0）** 偶差完全冪の一般 Fermat 下降；有限箱を底 18 または指数 7 へ
+3. **（P1）** D4L L2 モーター命題；`papers/` と Lean 境界の同期
 4. **（P2）** 残件本体（`e≥5`、Sum z=5/≥7、Odd、AllDistinct、UnequalOdd）・modular bridge 本体
 5. **（P3）** 無条件古典 Beal／TEGR↔EH／時空 CGA／GitHub 側未同梱論文は据え置き
 

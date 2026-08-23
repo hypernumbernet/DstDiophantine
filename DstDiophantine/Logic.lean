@@ -12,6 +12,7 @@ import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
 import DstDiophantine.Logic.Regime
 import DstDiophantine.Logic.Example.Regime
+import DstDiophantine.Logic.Example.BealRegime
 import DstDiophantine.Logic.DiscreteAmplitude
 import DstDiophantine.Logic.Dynamics
 import DstDiophantine.Logic.Winding
@@ -52,7 +53,8 @@ and `DstDiophantine.CGA`).
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
-  Diophantine regimes (complementarity is the existing `ℂ²` lattice theorems)
+  Diophantine regimes, Beal residual atlas (complementarity is the existing
+  `ℂ²` lattice theorems)
 * `Logic.DiscreteAmplitude` — torus amplitudes; `¬4 ∣ N` forbids `F`
 * `Logic.Dynamics` — amplification as a partial map on labels;
   vacuum is a fixed point; balanced massive can stay `T` or leave the cone
@@ -214,6 +216,25 @@ example :
     ¬ EntailsNotFR {RegimeFormula.atom 0, RegimeFormula.atom 1}
         (RegimeFormula.atom 3) :=
   window_nogo_not_entailsNotFR_conjecture
+
+/-- Regression: Beal atlas realises closed `T`, diagnostic `F`, bookkeeping `B`, live `U`. -/
+example :
+    ∃ v : RegimeValuation,
+      sliceFLT.eval v.assign = .T ∧
+        diagModular.eval v.assign = .F ∧
+          bookRealization.eval v.assign = .B ∧
+            liveMordell.eval v.assign = .U ∧
+              bealConjecture.eval v.assign = .U :=
+  exists_beal_atlas_valuation
+
+/-- Regression: closed Beal slices do not T-entail classical Beal. -/
+example :
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture :=
+  closed_slices_not_entailsTR_beal
+
+/-- Regression: closed slices packaged with a live residual stay live. -/
+example : meetRList (closedSliceStatuses ++ [.U]) = .U :=
+  meetRList_closed_with_live
 
 /-- Regression: `U → T` is not designated. -/
 example : impR .U .T = .U :=

@@ -24,6 +24,7 @@ import DstDiophantine.Theorems.BealEven
 import DstDiophantine.Theorems.BealGaussianCube
 import DstDiophantine.Theorems.BealFinite
 import DstDiophantine.Theorems.BealResidualSearch
+import DstDiophantine.Theorems.BealRegime
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
@@ -47,7 +48,8 @@ power-lattice descent, phase 7e bookkeeping realisation / Mihăilescu / DST
 config, phase 7f exponent-gcd reduction / FLT hypothesis, phase 7g
 unconditional FLT slices / Pythagorean classification, phase 7h Pythagorean
 UFD slices / mixed-exponent case splits, phase 7i FLT axiom / Gaussian UFD /
-equal-odd and even two-equal progress, diagnostic NoGo) are included;
+equal-odd and even two-equal progress, diagnostic NoGo, phase 7p D4L Beal
+regime atlas / open-residual ↔ `U`) are included;
 Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
@@ -63,6 +65,7 @@ namespace DstDiophantine.FoundationRegression
 open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
 open Operations Continuum UnitGroup Generators Sandwich PGA
 open _root_.DstDiophantine.Embedding
+open _root_.DstDiophantine.Logic
 
 /-- Additive faithfulness. -/
 example (a b c : ℤ) (p : ℕ) :
@@ -592,6 +595,17 @@ example {A B C x y z : ℕ}
   beal_no_coprime_perfect_power_of_le_sixteen_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
+/-- Phase 7p: no coprime perfect-power Beal with bases ≤ 17 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 17) (hBmax : B ≤ 17)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_seventeen_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
 /-- Phase 7n: perfect-power finder returns none on the closed 14×6 box. -/
 example : findCoprimeBealPerfectPowerUpTo 14 6 = none := by native_decide
 
@@ -613,6 +627,16 @@ example {α β γ : ℕ}
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
   no_pos_cube_add_two_primitive_of_le_fifty
+    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+
+/-- Phase 7p: no primitive positive `α³+2β³=γ³` with α,β ≤ 60. -/
+example {α β γ : ℕ}
+    (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hαN : α ≤ 60) (hβN : β ≤ 60)
+    (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
+  no_pos_cube_add_two_primitive_of_le_sixty
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
 /-- Phase 7n: no open-residual coprime perfect-power Beal with bases ≤ 20, exp 3…6. -/
@@ -638,6 +662,33 @@ example {A B C x y z : ℕ}
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   beal_no_open_residual_perfect_power_of_le_twentyfive_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
+/-- Phase 7p: no open-residual coprime perfect-power Beal with bases ≤ 30, exp 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 30) (hBmax : B ≤ 30)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_open_residual_perfect_power_of_le_thirty_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
+/-- Phase 7p: open-residual Bool ↔ regime label `U`. -/
+example {x y z : ℕ} :
+    classifyBealExponents x y z = .U ↔
+      isOpenResidualExponents x y z = true :=
+  classifyBealExponents_eq_U_iff
+
+/-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
+example :
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture :=
+  closed_slices_not_entailsTR_beal
+
+/-- Phase 7p: balanced Beal seat is `IsBalancedMassive`, not vacuum. -/
+example : balancedAmplitude.IsBalancedMassive ∧ ¬ balancedAmplitude.IsVacuum :=
+  beal_balanced_diagnostic_seat
 
 /-- Phase 7m: Affine residual assembles the positive cube residual. -/
 example (hAff : BealAffineCubeAddTwoResidual) :

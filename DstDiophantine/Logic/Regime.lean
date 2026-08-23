@@ -251,7 +251,60 @@ def quad (c d l k : TruthValue) : RegimeValuation where
     (quad c d l k).assign 3 = k := by
   simp [quad]
 
+/--
+Atoms `0, …, xs.length - 1` from the list; remaining atoms are `T`.
+Extends `quad` when more than four independent statuses are needed.
+-/
+def ofList (xs : List TruthValue) : RegimeValuation where
+  assign := fun n => xs.getD n .T
+
+theorem ofList_get (xs : List TruthValue) (n : ℕ) (hn : n < xs.length) :
+    (ofList xs).assign n = xs[n] := by
+  simp [ofList, List.getD, hn]
+
+theorem ofList_default (xs : List TruthValue) (n : ℕ) (hn : xs.length ≤ n) :
+    (ofList xs).assign n = .T := by
+  simp [ofList, List.getD, Nat.not_lt.mpr hn]
+
+@[simp] theorem ofList_nil_assign (n : ℕ) : (ofList []).assign n = .T := by
+  simp [ofList]
+
+theorem ofList_cons_zero (s : TruthValue) (xs : List TruthValue) :
+    (ofList (s :: xs)).assign 0 = s := by
+  simp [ofList]
+
 end RegimeValuation
+
+/-- Finite fold of `meetR` (establishedness meet). Empty list is `T`. -/
+def meetRList : List TruthValue → TruthValue
+  | [] => .T
+  | a :: as => meetR a (meetRList as)
+
+@[simp] theorem meetRList_nil : meetRList [] = .T :=
+  rfl
+
+@[simp] theorem meetRList_cons (a : TruthValue) (as : List TruthValue) :
+    meetRList (a :: as) = meetR a (meetRList as) :=
+  rfl
+
+theorem meetRList_all_T : ∀ n : ℕ, meetRList (List.replicate n .T) = .T
+  | 0 => rfl
+  | n + 1 => by
+    simp [List.replicate_succ, meetR, regimeRank, meetRList_all_T n]
+
+theorem meetR_T_left (a : TruthValue) : meetR .T a = a := by
+  cases a <;> rfl
+
+theorem meetR_T_right (a : TruthValue) : meetR a .T = a := by
+  cases a <;> rfl
+
+/-- Packaging any established (`T`) slices with a live residual stays live. -/
+theorem meetRList_T_append_U (n : ℕ) :
+    meetRList (List.replicate n .T ++ [.U]) = .U := by
+  induction n with
+  | zero => simp [meetR, regimeRank]
+  | succ n ih =>
+    simp [List.replicate_succ, meetR_T_left, ih]
 
 def ModelsTR (v : RegimeValuation) (Γ : Set RegimeFormula) : Prop :=
   ∀ φ ∈ Γ, HoldsTR (φ.eval v.assign)

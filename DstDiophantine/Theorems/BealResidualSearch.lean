@@ -10,10 +10,11 @@ counterexample could still hide. This module is diagnostic / computational;
 it does **not** close residual bodies (`BealPosCubeAddTwoCubeResidual`, etc.).
 
 * **Positive cube kernel** `α³ + 2β³ = γ³` (live equal-odd `e = 3` residue);
-  phase 7n closes bases `≤ 40`, phase 7o raises to `≤ 50`.
+  phase 7n closes bases `≤ 40`, phase 7o raises to `≤ 50`, phase 7p to `≤ 60`.
 * **Open-residual filter** on classical coprime `A^x+B^y=C^z`: skips closed
   slices (`d ≥ 3`, two exponents divisible by 4, Darmon–Merel cube positions);
-  phase 7n closes bases `≤ 20`, phase 7o raises to `≤ 25` (exponents `3…6`).
+  phase 7n closes bases `≤ 20`, phase 7o raises to `≤ 25`, phase 7p to `≤ 30`
+  (exponents `3…6`).
 
 Classical Beal is **not** claimed unconditionally.
 -/
@@ -131,6 +132,21 @@ theorem no_pos_cube_add_two_primitive_of_le_fifty
     (by native_decide : noPosCubeAddTwoPrimitiveUpTo 50 = true)
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
+/--
+Phase 7p: no primitive positive solution of `α³ + 2β³ = γ³` with
+`α,β ≤ 60` (odd `α`, three-way gcd 1). Finite slice only.
+-/
+theorem no_pos_cube_add_two_primitive_of_le_sixty
+    {α β γ : ℕ}
+    (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hαN : α ≤ 60) (hβN : β ≤ 60)
+    (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
+  noPosCubeAddTwoPrimitiveUpTo_sound
+    (by native_decide : noPosCubeAddTwoPrimitiveUpTo 60 = true)
+    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+
 /-! ### Open-residual filter on classical Beal -/
 
 /--
@@ -245,6 +261,23 @@ theorem beal_no_open_residual_perfect_power_of_le_twentyfive_six
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   noOpenResidualBealPerfectPowerUpTo_sound
     (by native_decide : noOpenResidualBealPerfectPowerUpTo 25 6 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
+/--
+Phase 7p: no open-residual coprime perfect-power Beal solution with bases
+`≤ 30` and exponents in `3…6` (`C` unbounded).
+-/
+theorem beal_no_open_residual_perfect_power_of_le_thirty_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 30) (hBmax : B ≤ 30)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noOpenResidualBealPerfectPowerUpTo_sound
+    (by native_decide : noOpenResidualBealPerfectPowerUpTo 30 6 = true)
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
 
 end Theorems
