@@ -23,6 +23,13 @@ import Mathlib.Tactic.Ring
 Lean `J5` uses the discrete-companion `J = ½∑(α²−β²)`, **not** the paper's raw
 `(1/16) B_Killing` (= `J/4` under the half-angle expansion).
 
+**Quantity-class note.** Algebraic `J` / `JNormalized` are dimensionless
+parameter-space diagnostics. They must **not** be identified with the
+dimensionful Planck curvature scale \(c^4/(G\,\ell_P^{-2})\), nor with the
+TEGR Lagrangian density \(T\). Exploratory SI bridging lives in
+`Gravity.SI` / `Gravity.NewtonFromLight` and does **not** claim that DST
+derives \(G\) from \(c\).
+
 ## Proved / rejected
 
 * `J(φ) = ½ φ²`, `T = -r⁻² formal∂_r(r² B^r)`, Minkowski `T = J_field = 0`.
