@@ -5,11 +5,12 @@ import Mathlib.Tactic.NormNum
 set_option linter.style.nativeDecide false
 
 /-!
-# Phase 7j / 7k: finite Beal certificates
+# Phase 7j / 7k / 7m: finite Beal certificates
 
 * **Box search** (phase 7j): bases and `C` all `≤ Amax`, exponents in `3…Emax`.
-* **Perfect-power search** (phase 7k): bases `≤ Amax`, exponents in `3…Emax`,
+* **Perfect-power search** (phase 7k–7m): bases `≤ Amax`, exponents in `3…Emax`,
   but `C` is recovered as a positive `z`-th root of `A^x + B^y` (unbounded).
+  Phase 7m raises the certificate to bases `≤ 14` (exponents `3…6`).
 
 Known **non-coprime** solutions are kept as regression witnesses (they are not
 Beal counterexamples). Classical Beal is **not** claimed unconditionally.
@@ -294,6 +295,22 @@ theorem beal_no_coprime_perfect_power_of_le_thirteen_six
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   noCoprimeBealPerfectPowerUpTo_sound
     (by native_decide : noCoprimeBealPerfectPowerUpTo 13 6 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/--
+Phase 7m: no positive coprime Beal solution with bases `≤ 14` and exponents in
+`3…6`, allowing unbounded `C` recovered as a perfect power.
+-/
+theorem beal_no_coprime_perfect_power_of_le_fourteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 14) (hBmax : B ≤ 14)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealPerfectPowerUpTo_sound
+    (by native_decide : noCoprimeBealPerfectPowerUpTo 14 6 = true)
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
 /-! ### Known non-coprime solutions (not counterexamples) -/

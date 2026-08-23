@@ -1,6 +1,8 @@
 import DstDiophantine.Theorems.BealGaussian
 import DstDiophantine.Theorems.BealMixed
 import DstDiophantine.Theorems.DarmonMerel
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Linarith
 
@@ -200,6 +202,160 @@ theorem beal_two_equal_even_diff_xz_progress
   have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
   have hac := beal_coprime_ac hA hB hC hx0 hy0 hz0 hgcd hsol
   exact ⟨hyodd, hdiff, hfac, hac⟩
+
+/-! ### Even-difference factor kernel: `gcd ∣ 2` and 2-adic packaging -/
+
+/--
+`Int.gcd (C^k − B^k) (C^k + B^k)` divides `2` when `B, C` are coprime in absolute
+value. Odd common prime factors would divide both `B` and `C`.
+-/
+theorem int_gcd_pow_diff_sum_dvd_two {B C : ℤ} {k : ℕ}
+    (hcop : Nat.Coprime B.natAbs C.natAbs) :
+    Int.gcd (C ^ k - B ^ k) (C ^ k + B ^ k) ∣ 2 := by
+  set D := C ^ k - B ^ k
+  set E := C ^ k + B ^ k
+  have hED : E - D = 2 * B ^ k := by ring
+  have hDE : D + E = 2 * C ^ k := by ring
+  have hgcdD : Int.gcd D E = Int.gcd D (2 * B ^ k) := by
+    rw [← hED, Int.gcd_sub_self_right]
+  have hgcdE : Int.gcd D E = Int.gcd (2 * C ^ k) E := by
+    rw [← hDE, ← Int.gcd_add_self_left]
+  have hdB : (Int.gcd D E : ℤ) ∣ 2 * B ^ k := by
+    rw [hgcdD]; exact Int.gcd_dvd_right _ _
+  have hdC : (Int.gcd D E : ℤ) ∣ 2 * C ^ k := by
+    rw [hgcdE]; exact Int.gcd_dvd_left _ _
+  have hgB : Int.gcd D E ∣ (2 * B ^ k).natAbs := Int.natCast_dvd.mp hdB
+  have hgC : Int.gcd D E ∣ (2 * C ^ k).natAbs := Int.natCast_dvd.mp hdC
+  have h2B : (2 * B ^ k).natAbs = 2 * B.natAbs ^ k := by
+    rw [Int.natAbs_mul, Int.natAbs_pow]; rfl
+  have h2C : (2 * C ^ k).natAbs = 2 * C.natAbs ^ k := by
+    rw [Int.natAbs_mul, Int.natAbs_pow]; rfl
+  rw [h2B] at hgB; rw [h2C] at hgC
+  have hdiv : Int.gcd D E ∣ Nat.gcd (2 * B.natAbs ^ k) (2 * C.natAbs ^ k) :=
+    Nat.dvd_gcd hgB hgC
+  have hgcd2 : Nat.gcd (2 * B.natAbs ^ k) (2 * C.natAbs ^ k) = 2 := by
+    have hpow : Nat.gcd (B.natAbs ^ k) (C.natAbs ^ k) = 1 :=
+      Nat.pow_gcd_pow_of_gcd_eq_one (Nat.coprime_iff_gcd_eq_one.mp hcop)
+    calc Nat.gcd (2 * B.natAbs ^ k) (2 * C.natAbs ^ k)
+        = 2 * Nat.gcd (B.natAbs ^ k) (C.natAbs ^ k) := Nat.gcd_mul_left _ _ _
+      _ = 2 := by rw [hpow]
+  rwa [hgcd2] at hdiv
+
+/-- Absolute-value form of the gcd bound. -/
+theorem nat_gcd_pow_diff_sum_dvd_two {B C : ℤ} {k : ℕ}
+    (hcop : Nat.Coprime B.natAbs C.natAbs) :
+    Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs ∣ 2 := by
+  simpa [Int.gcd] using int_gcd_pow_diff_sum_dvd_two (B := B) (C := C) (k := k) hcop
+
+/-- Opposite parity of `B, C` with `k > 0` forces both conjugate factors odd. -/
+theorem odd_pow_diff_sum_of_opposite_parity {B C : ℤ} {k : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C)) :
+    Odd (C ^ k - B ^ k) ∧ Odd (C ^ k + B ^ k) := by
+  have hk0 : k ≠ 0 := Nat.pos_iff_ne_zero.mp hk
+  rcases hpar with ⟨hBe, hCo⟩ | ⟨hBo, hCe⟩
+  · have hBk : Even (B ^ k) := hBe.pow_of_ne_zero hk0
+    have hCk : Odd (C ^ k) := Odd.pow (n := k) hCo
+    exact ⟨hCk.sub_even hBk, hCk.add_even hBk⟩
+  · have hBk : Odd (B ^ k) := Odd.pow (n := k) hBo
+    have hCk : Even (C ^ k) := hCe.pow_of_ne_zero hk0
+    exact ⟨hCk.sub_odd hBk, hCk.add_odd hBk⟩
+
+/-- Opposite parity of `B, C` forces gcd of absolute values to be `1`. -/
+theorem nat_gcd_pow_diff_sum_eq_one_of_opposite_parity {B C : ℤ} {k : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C))
+    (hcop : Nat.Coprime B.natAbs C.natAbs) :
+    Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs = 1 := by
+  obtain ⟨hDo, _hEo⟩ := odd_pow_diff_sum_of_opposite_parity hk hpar
+  have hdiv := nat_gcd_pow_diff_sum_dvd_two (B := B) (C := C) (k := k) hcop
+  have hoddg : Odd (Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs) := by
+    refine Nat.not_even_iff_odd.mp ?_
+    intro he
+    have h2 : 2 ∣ Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs :=
+      even_iff_two_dvd.mp he
+    have : 2 ∣ (C ^ k - B ^ k).natAbs :=
+      dvd_trans h2 (Nat.gcd_dvd_left _ _)
+    exact Nat.not_odd_iff_even.mpr (even_iff_two_dvd.mpr this) (Int.natAbs_odd.mpr hDo)
+  rcases (Nat.dvd_prime Nat.prime_two).1 hdiv with h1 | h2
+  · exact h1
+  · exact False.elim (Nat.not_odd_iff_even.mpr (by rw [h2]; decide) hoddg)
+
+/-- Both `B, C` odd forces both conjugate factors even and gcd exactly `2`. -/
+theorem nat_gcd_pow_diff_sum_eq_two_of_both_odd {B C : ℤ} {k : ℕ}
+    (hB : Odd B) (hC : Odd C)
+    (hcop : Nat.Coprime B.natAbs C.natAbs) :
+    Even (C ^ k - B ^ k) ∧ Even (C ^ k + B ^ k) ∧
+      Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs = 2 := by
+  have hDe : Even (C ^ k - B ^ k) :=
+    (Odd.pow (n := k) hC).sub_odd (Odd.pow (n := k) hB)
+  have hEe : Even (C ^ k + B ^ k) :=
+    (Odd.pow (n := k) hC).add_odd (Odd.pow (n := k) hB)
+  refine ⟨hDe, hEe, ?_⟩
+  have hdiv := nat_gcd_pow_diff_sum_dvd_two (B := B) (C := C) (k := k) hcop
+  have h2D : 2 ∣ (C ^ k - B ^ k).natAbs :=
+    Int.natCast_dvd.mp (even_iff_two_dvd.mp hDe)
+  have h2E : 2 ∣ (C ^ k + B ^ k).natAbs :=
+    Int.natCast_dvd.mp (even_iff_two_dvd.mp hEe)
+  have h2g : 2 ∣ Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs :=
+    Nat.dvd_gcd h2D h2E
+  rcases (Nat.dvd_prime Nat.prime_two).1 hdiv with h1 | h2
+  · exact False.elim ((by decide : ¬ 2 ∣ (1 : ℕ)) (by rwa [h1] at h2g))
+  · exact h2
+
+/--
+When both bases are odd, the conjugate factors cannot both be divisible by `4`,
+so at least one has 2-adic valuation exactly `1`.
+-/
+theorem exists_padicValNat_two_eq_one_of_both_odd {B C : ℤ} {k : ℕ}
+    (hB : Odd B) (hC : Odd C) (hk : 0 < k)
+    (hD0 : C ^ k - B ^ k ≠ 0) (hE0 : C ^ k + B ^ k ≠ 0) :
+    padicValNat 2 (C ^ k - B ^ k).natAbs = 1 ∨
+      padicValNat 2 (C ^ k + B ^ k).natAbs = 1 := by
+  have : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+  have hDe : Even (C ^ k - B ^ k) :=
+    (Odd.pow (n := k) hC).sub_odd (Odd.pow (n := k) hB)
+  have hEe : Even (C ^ k + B ^ k) :=
+    (Odd.pow (n := k) hC).add_odd (Odd.pow (n := k) hB)
+  have h2D : 2 ∣ (C ^ k - B ^ k).natAbs :=
+    Int.natCast_dvd.mp (even_iff_two_dvd.mp hDe)
+  have h2E : 2 ∣ (C ^ k + B ^ k).natAbs :=
+    Int.natCast_dvd.mp (even_iff_two_dvd.mp hEe)
+  have hDne : (C ^ k - B ^ k).natAbs ≠ 0 := Int.natAbs_ne_zero.mpr hD0
+  have hEne : (C ^ k + B ^ k).natAbs ≠ 0 := Int.natAbs_ne_zero.mpr hE0
+  have hgeD : 1 ≤ padicValNat 2 (C ^ k - B ^ k).natAbs :=
+    (padicValNat_dvd_iff_le hDne (n := 1)).mp h2D
+  have hgeE : 1 ≤ padicValNat 2 (C ^ k + B ^ k).natAbs :=
+    (padicValNat_dvd_iff_le hEne (n := 1)).mp h2E
+  have hnot4 : ¬ (4 ∣ (C ^ k - B ^ k).natAbs ∧ 4 ∣ (C ^ k + B ^ k).natAbs) := by
+    intro ⟨h4D, h4E⟩
+    have h4Dz : (4 : ℤ) ∣ C ^ k - B ^ k := Int.natCast_dvd.mpr h4D
+    have h4Ez : (4 : ℤ) ∣ C ^ k + B ^ k := Int.natCast_dvd.mpr h4E
+    have h4diff : (4 : ℤ) ∣ (C ^ k + B ^ k) - (C ^ k - B ^ k) := dvd_sub h4Ez h4Dz
+    have hED : (C ^ k + B ^ k) - (C ^ k - B ^ k) = 2 * B ^ k := by ring
+    rw [hED] at h4diff
+    have h2Bk : (2 : ℤ) ∣ B ^ k := by
+      obtain ⟨t, ht⟩ := h4diff
+      refine ⟨t, mul_left_cancel₀ (by decide : (2 : ℤ) ≠ 0) ?_⟩
+      calc (2 : ℤ) * B ^ k = 4 * t := ht
+        _ = 2 * (2 * t) := by ring
+    have h2B : (2 : ℤ) ∣ B :=
+      (Int.prime_two.dvd_pow_iff_dvd (Nat.pos_iff_ne_zero.mp hk)).mp h2Bk
+    exact Int.not_odd_iff_even.mpr (even_iff_two_dvd.mpr h2B) hB
+  by_cases h4D : 4 ∣ (C ^ k - B ^ k).natAbs
+  · have h4E : ¬ 4 ∣ (C ^ k + B ^ k).natAbs := fun h => hnot4 ⟨h4D, h⟩
+    refine Or.inr ?_
+    have hlt : padicValNat 2 (C ^ k + B ^ k).natAbs < 2 := by
+      rw [← not_le]
+      intro hle
+      exact h4E ((padicValNat_dvd_iff_le hEne (n := 2)).mpr hle)
+    omega
+  · refine Or.inl ?_
+    have hlt : padicValNat 2 (C ^ k - B ^ k).natAbs < 2 := by
+      rw [← not_le]
+      intro hle
+      exact h4D ((padicValNat_dvd_iff_le hDne (n := 2)).mpr hle)
+    omega
 
 /--
 **Residual** (phase 7l): the even-difference factorization kernel —

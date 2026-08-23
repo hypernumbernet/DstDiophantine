@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-22（Phase 7l: equal-odd e=3→α³+2β³=γ³ 還元、偶差因数分解、有限箱≤13）
+最終更新: 2026-08-23（Phase 7m: 立方有理点残件組立、|u|=1 一般化、偶差 gcd|2、有限箱≤14）
 
 ## 0. いまの見通し
 
@@ -8,13 +8,13 @@
 
 **閉じたもの:** 加法忠実化・共通 no-go・旧 coarse 空性・modular 基盤。Beal は指数 gcd 三分法まで還元済み。組立 `beal_conjecture_pos_of_fine_residuals` / `_even_split` は sorry なし。公理は明示 3 本のみ（`fermatLastTheorem` / `mihailescu` / `darmonMerelCube`）。`sorry` は 0。
 
-**Phase 7l 進捗:**
-- equal-odd `e=3` 本体を正の `α³ + 2β³ = γ³`（`BealPosCubeAddTwoCubeResidual`）へ還元；mod 7/9 診断切片；`e≥5` 残件へ分割組立
-- 偶差型を因数分解核 `BealTwoEqualEvenDiffFactorResidual` へ落とし（`D·E = A^x`）
-- 偶和型を `z=5` / `z≥7` に分割
-- 冪判定有限箱を底 ≤13・指数 3…6 まで拡大（反例なし）
+**Phase 7m 進捗:**
+- 立方残件 `α³+2β³=γ³` を原始化・パリティ・差の因数（gcd|3）・2-進へ整形；有理点残件 `BealAffineCubeAddTwoResidual`（`X³+2Y³=1` の有理点は `(1,0),(-1,1)` のみ）から正方程式残件への組立を証明。素朴 2-進下降はこの方程式には使えない（符号つき解あり）
+- equal-odd `|u|=1` を奇数 `e≥3` へ一般化し Mihăilescu で閉鎖；`e≥5` 残件は `1 < u`（`|u|≥3`）に狭め
+- 偶差因数核に `gcd(|D|,|E|)∣2`・反対パリティで gcd=1・両奇で gcd=2・2-進付値の一方が 1、の補題を追加
+- 冪判定有限箱を底 ≤14・指数 3…6 まで拡大（反例なし）
 
-**開いているもの:** `BealPosCubeAddTwoCubeResidual`（正立方方程式本体）、`BealEqualOddTwoFactorExpGeFiveResidual`、偶差因数核、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L4。Gravity 一般モーター辞書。
+**開いているもの:** Affine 残件本体（Mordell `y²=x³-27` の階数は mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差因数核の完全冪段階、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L4。Gravity 一般モーター辞書。
 
 **実行原則:** デフォルトの作業は残件本体の正面突破ではない。切片・有限証明書・診断定理で成果を出し、アイデアが立ったときだけ本体へ戻る。
 
@@ -84,7 +84,7 @@ flowchart TD
   D2 --> EqOdd["EqualOddTwoFactor"]
   D2 --> Uneq["UnequalOdd 本体"]
   EqOdd --> CubeClosed["e=3 |u|=1 / mod-8 / 純冪FLT / 両奇mod4: 閉鎖"]
-  EqOdd --> CubeOpen["e=3 かつ |u|>=3 / e>=5: 未"]
+  EqOdd --> CubeOpen["e=3 Affine有理点 / e>=5 かつ |u|>=3: 未"]
   D1 --> Even["TwoEqualEven"]
   D1 --> Odd["TwoEqualOdd"]
   D1 --> Dist["AllDistinct 本体"]
@@ -94,15 +94,15 @@ flowchart TD
   Odd --> DMpos["立方3位置: Darmon-Merel 閉鎖"]
 ```
 
-**組立（sorry なし）:** `beal_conjecture_pos_of_fine_residuals`（5 残件）／`beal_conjecture_pos_of_fine_residuals_even_split`（Sum+Diff 版）。`beal_mixed_exp_of_subresiduals`・`beal_pythagorean_of_subresiduals`・`beal_two_equal_even_of_sum_diff`。
+**組立（sorry なし）:** `beal_conjecture_pos_of_fine_residuals`（5 残件）／`beal_conjecture_pos_of_fine_residuals_even_split`（Sum+Diff 版）。`beal_mixed_exp_of_subresiduals`・`beal_pythagorean_of_subresiduals`・`beal_two_equal_even_of_sum_diff`。`BealPosCubeAddTwoCubeResidual_of_affine`。`BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five`（`|u|=1` は Mihăilescu で全奇数 `e≥3` 閉鎖）。
 
 | 残件 | 閉鎖切片 | 本体（未） | 主な場所 |
 |------|----------|------------|----------|
 | `BealTwoEqualEvenSumResidual` | `z=3`（DM）；`…_of_outside_cube`；`z=5`/`z≥7` 分割組立 | `z=5` と `z≥7` 本体 | `BealEven` |
-| `BealTwoEqualEvenDiffResidual` | 因数分解 progress；`…_of_factor` | `BealTwoEqualEvenDiffFactorResidual` 核 | `BealEven` |
+| `BealTwoEqualEvenDiffResidual` | 因数分解 progress；`gcd∣2` / 2-進補題；`…_of_factor` | 完全冪 ⇒ より小さい Fermat 段階 | `BealEven` |
 | `BealTwoEqualOddResidual` | 立方 3 位置（DM） | 立方以外 | `BealMixed` / `DarmonMerel` |
 | `BealAllDistinctExpResidual` | なし | 全相異 | `BealMixed` |
-| `BealEqualOddTwoFactorResidual` | `|·|=1` / mod-8 / 純冪 FLT / 両奇 mod-4；**e=3→`α³+2β³=γ³` 還元＋組立**；`u,v>0` 明記 | `BealPosCubeAddTwoCubeResidual`；`e≥5` | `BealGaussian` / `BealGaussianCube` |
+| `BealEqualOddTwoFactorResidual` | `|·|=1`（全奇数 `e≥3`）/ mod-8 / 純冪 FLT / 両奇 mod-4；**e=3→正立方＋Affine 組立**；`e≥5` は `1<u` に狭め | Affine 有理点；`e≥5` かつ `|u|≥3` | `BealGaussian` / `BealGaussianCube` |
 | `BealPythagoreanUnequalOddResidual` | なし（4 整除は残件外で無条件閉鎖） | unequal-odd | `BealMixed` |
 
 公理（Lean 証明ではない）: `fermatLastTheorem`・`mihailescu`・`darmonMerelCube`。
@@ -113,10 +113,10 @@ flowchart TD
 
 ### P0 — すぐ閉じる（次サイクルの既定）
 
-- **`BealPosCubeAddTwoCubeResidual`**: 正の `α³ + 2β³ = γ³` を無限下降で閉じる（符号つき解 `(-k,k,k)` は除外済み）。閉じれば equal-odd `e=3` が完全閉鎖。
-- **偶差因数核**（`BealTwoEqualEvenDiffFactorResidual`）: gcd(D,E)|2 と 2-進付値の完備化。
-- **有限証明書の一段拡大**: 冪判定は底 ≤13・指数 3…6 まで達成。次は底 14 または指数 7；`native_decide` 不成立なら上限を戻し本節に記録。
-- **偶二一致和型**: `z=3` 済、`z=5`/`≥7` 分割済。固定 `z` に古典定理があれば公理化。
+- **`BealAffineCubeAddTwoResidual`**: `X³+2Y³=1` の有理点が `(1,0),(-1,1)` のみであること（Mordell `y²=x³-27`）。閉じれば正立方残件が従う。素朴 2-進下降は棄却済み。
+- **偶差因数核の完全冪段階**: gcd|2 / 2-進は 7m で整備済み；各因子が符号つき `x` 乗 ⇒ より小さい一般 Fermat。
+- **有限証明書の一段拡大**: 冪判定は底 ≤14・指数 3…6 まで達成。次は底 15 または指数 7；`native_decide` 不成立なら上限を戻し本節に記録。
+- **偶二一致和型**: `z=3` 済、`z=5`/`≥7` 分割済。固定 `z` に古典定理があれば公理化（`(n,n,5)` の完全定理化はしない）。
 
 ### P1 — 設計は要るが閉塞していない
 
@@ -146,9 +146,10 @@ flowchart TD
 
 ## 4. 成功判定（次サイクル）
 
-- [ ] `BealPosCubeAddTwoCubeResidual` が閉じる、**または** 偶差因数核に gcd/2-進の新補題がある
-- [ ] Beal 冪判定が底 ≤14 または指数 ≤7 に一段上がっている（または `native_decide` 不成立を記録している）
-- [ ] 無条件古典 Beal を主張していない
+- [x] `BealPosCubeAddTwoCubeResidual_of_affine` が閉じる、**または** 偶差核に `gcd∣2` / 2-進の新補題がある（7m: 両方）
+- [x] equal-odd `|u|=1` がすべての奇数 `e≥3` で閉じている
+- [x] Beal 冪判定が底 ≤14 または指数 ≤7 に一段上がっている（底 ≤14・指数 3…6）
+- [x] 無条件古典 Beal を主張していない
 
 ---
 

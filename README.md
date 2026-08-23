@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7l に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元。Darmon–Merel 公理は二一致立方切片を 3 位置（奇数の差型含む）まで閉鎖。偶二一致は和型／差型に分割し、差型は因数分解核へ、和型は `z=5`/`≥7` に分割。equal-odd `e=3` は正の `α³+2β³=γ³` 残件へ還元（mod 7/9 診断あり）し `e≥5` と組立。有限箱（底 ≤8・指数 3…5）に加え、冪判定探索（底 ≤13・指数 3…6・`C` 非有界）で互素解なしを `native_decide` で証明。無条件古典 Beal は主張しない。
+- **Beal 危機路線をフェーズ 7m に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元。Darmon–Merel 公理は二一致立方切片を 3 位置（奇数の差型含む）まで閉鎖。偶二一致は和型／差型に分割し、差型は因数分解核（`gcd∣2`・2-進補題付き）へ、和型は `z=5`/`≥7` に分割。equal-odd `e=3` は正の `α³+2β³=γ³` へ還元し Affine 有理点残件から組立；`|u|=1` は奇数 `e≥3` で Mihăilescu 閉鎖、`e≥5` は `|u|≥3` に狭め。有限箱（底 ≤8・指数 3…5）に加え、冪判定探索（底 ≤14・指数 3…6・`C` 非有界）で互素解なしを `native_decide` で証明。無条件古典 Beal は主張しない。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。
@@ -99,9 +99,9 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | `BealPythagorean.lean` | `d=2` UFD / DiffFourth；`4∣` が 2 本以上の無条件閉鎖；`BealPythagoreanResidual` |
 | `BealGaussian.lean` | ℤ[i] UFD；equal-odd / 偶二一致進捗；`beal_conjecture_pos_of_residuals` |
 | `BealMixed.lean` | フェーズ 7j：細残件型・組立・Gaussian 偶二一致持ち上げ・Darmon–Merel `(n,n,3)` |
-| `BealEven.lean` | フェーズ 7k：偶二一致の和型／差型分割と組立 |
-| `BealGaussianCube.lean` | フェーズ 7k：equal-odd `e=3` 立方展開・mod-8・`|·|=1` 切片 |
-| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）＋冪判定（底 ≤12・指数 3…6・`C` 非有界）；既知非互素解の回帰 |
+| `BealEven.lean` | フェーズ 7k–7m：偶二一致の和型／差型分割と組立；差因数 `gcd∣2`・2-進 |
+| `BealGaussianCube.lean` | フェーズ 7k–7m：equal-odd 立方切片・Affine 組立・`|u|=1` 一般化 |
+| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）＋冪判定（底 ≤14・指数 3…6・`C` 非有界）；既知非互素解の回帰 |
 | `DarmonMerel.lean` | Darmon–Merel `(n,n,3)` 公理と奇数置換スライス（Lean 証明ではない） |
 | `Mihailescu.lean` | Catalan / Mihăilescu axiom と正の unit-base 断片 |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |

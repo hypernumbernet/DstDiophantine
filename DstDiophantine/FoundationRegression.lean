@@ -556,6 +556,36 @@ example {A B C x y z : ℕ}
   beal_no_coprime_perfect_power_of_le_thirteen_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
+/-- Phase 7m: no coprime perfect-power Beal with bases ≤ 14 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 14) (hBmax : B ≤ 14)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_fourteen_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Phase 7m: Affine residual assembles the positive cube residual. -/
+example (hAff : BealAffineCubeAddTwoResidual) :
+    BealPosCubeAddTwoCubeResidual :=
+  BealPosCubeAddTwoCubeResidual_of_affine hAff
+
+/-- Phase 7m: even-diff conjugate factors have gcd dividing 2. -/
+example {B C : ℤ} {k : ℕ} (hcop : Nat.Coprime B.natAbs C.natAbs) :
+    Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs ∣ 2 :=
+  nat_gcd_pow_diff_sum_dvd_two hcop
+
+/-- Phase 7m: `|u|=1` closed for odd `e ≥ 3` via Mihăilescu. -/
+example {m n : ℤ} {c e : ℕ}
+    (hm0 : m ≠ 0) (hn0 : n ≠ 0) (he : 3 ≤ e)
+    (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ e)
+    (hform :
+      (∃ v : ℕ, n.natAbs = 1 ∧ 2 * m.natAbs = v ^ e) ∨
+        (∃ v : ℕ, m.natAbs = 1 ∧ 2 * n.natAbs = v ^ e)) : False :=
+  not_eq_odd_two_factor_of_exp_ge_three_abs_one hm0 hn0 he heq hform
+
 /-- Phase 7j: known non-coprime solution `3³ + 6³ = 3⁵` (not a counterexample). -/
 example : (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 :=
   beal_known_noncoprime_three_six
