@@ -189,8 +189,9 @@ Algebra/
 Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
   Coframe, Sandwich（チャート尺度橋）, Schwarzschild, Weitzenbock,
   Tetrad（モーター誘起フレーム）, Identification（辞書・棄却）,
-  SI（CODATA 有理近似）, NewtonFromLight（c→G 仮説探索・導出主張なし）,
-  EventBoundary（許容天井↔準地平カットオフ・ラベル付き同一視・導出なし）
+  SI（CODATA 有理近似 + 共有 ε_N）, NewtonFromLight（c→G 仮説探索・導出主張なし）,
+  EventBoundary（許容天井↔準地平カットオフ・ラベル付き同一視・導出なし）,
+  CoulombFromDual（α↔ε_N 仮説・導出なし）, ElectronShell（γ_s・等スケール診断・λ 区間）
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
@@ -259,9 +260,11 @@ CGA 冪格子／Realization を bookkeeping 化（幾何原理として使わな
 
 Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モーター誘起フレーム、辞書分離。素朴同一視の棄却と `conjectured_J_field_eq_half_T_plus_div` の反証。TEGR↔EH は文献据え置き。一般モーター修正辞書は未決。
 
-**c→G 仮説探索（導出は主張しない）:** `Gravity/SI` に CODATA 有理近似、`Gravity/NewtonFromLight` に \(\varepsilon_N=16/(3N^2)\) をプランク橋へ載せる作業仮説 \(G_{\mathrm{hyp}}=\varepsilon_N\,\hbar c/m^2\)。電子・陽子で \(N_*\) 有理区間を機械検証；\(N=m_P/m\) なら比は正確に \(16/3\)。\(N=1\) や代数定数だけでは \(10^{44}\) 桁ずれ。無次元 \(|J|\le 3\pi^2/8\) と \(c^4/G\,\ell_P^{-2}\) の同一視は棄却ラベル。
+**c→G 仮説探索（導出は主張しない）:** `Gravity/SI` に CODATA 有理近似と共有の \(\varepsilon_N=16/(3N^2)\)、`Gravity/NewtonFromLight` にプランク橋へ載せる作業仮説 \(G_{\mathrm{hyp}}=\varepsilon_N\,\hbar c/m^2\)。電子・陽子で \(N_*\) 有理区間を機械検証；\(N=m_P/m\) なら比は正確に \(16/3\)。\(N=1\) や代数定数だけでは \(10^{44}\) 桁ずれ。無次元 \(|J|\le 3\pi^2/8\) と \(c^4/G\,\ell_P^{-2}\) の同一視は棄却ラベル。
 
 **事象境界カットオフ（ラベル付き同一視・導出なし）:** `Gravity/EventBoundary` が許容天井 \(|J|=3\pi^2/8\)（\(|J_{\mathrm{norm}}|=1\)）を準地平と同一視し、\(\varphi_{\max}=\pi\sqrt{3}/2\)、\(A_{\min}=e^{-\pi\sqrt{3}}\)、\(r_\star=r_s/(1-A_{\min})\) を記録。`pureBoost φ_max` は単軸許容錐の外（`¬ IsAdmissibleContinuous`）。\(G\) の導出や Planck 曲率同一視は主張しない。
+
+**電磁・電子殻（導出は主張しない）:** `Gravity/SI` に \(e,\alpha\) と π 無しの \(k,a_0,E_I\)。`Gravity/CoulombFromDual` は同一 \(\varepsilon_N\) を \(\alpha_{\mathrm{hyp}}\) とし \(729<N_*^2<732\)（\(N_*\sim 27\)）と \(N=1\) 棄却。`Gravity/ElectronShell` は \(\gamma_s\) 共鳴、\(Z\) 収縮、等スケール根の一意性（\(\tfrac12<x_1<1\)）、\(\lambda=2x_1 a_0\) の粗い区間、および等スケールが \(\Theta(1/n)\) であり Bohr の \(n^2\) とは別簿記であることの診断。
 
 ### modular 経路（診断図）
 
@@ -282,7 +285,7 @@ Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モー
 
 ## 7. DST / 離散論文へ返す欠点（2026-08-14）
 
-Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc。**同期先はリポジトリ内 `papers/`**（作業ツリーに `References/` フォルダは無い）。GitHub 本体へは未反映。フォルダに無い `dst-riemann-hypothesis.tex` / `dst-langlands-program.tex` / `dst-particle-stability.tex` / `dst-iut.tex` は未着手。
+Lean 代数コアの整理で機械検証した（または棄却した）論文側の問題。本体 `.tex` は https://github.com/hypernumbernet/dual-spacetime-doc 。**同期先はリポジトリ内 `papers/`**（作業ツリーに `References/` フォルダは無い）。GitHub 本体へは未反映。フォルダに無い `dst-riemann-hypothesis.tex` / `dst-langlands-program.tex` / `dst-particle-stability.tex` / `dst-iut.tex` は未着手。
 
 ### 優先（`|J|≤1` を無条件に使っている）
 
@@ -299,6 +302,7 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 | 同 App.B | `[iΓ_a,Γ_b]=0` は同軸のみ。異軸は反例 | `commutator_hyperbolic_cyclic_same` / `…_ne_zero` |
 | 同 | `so(3,1)⊕so(3,1)` は次元 12。生成子は 6。Poincaré 候補が妥当 | `Generators` docstring |
 | 同 §「J remains bounded」 | 許容＋`|J|≤3π²/8`（または `|JNormalized|≤1`）に限定 | `torsion_bound_raw_continuous_pi_sq` |
+| 同 §electronshells | 等スケール \(\alpha=\beta=\lambda/r\) の共鳴は \(r_n=\Theta(1/n)\)。論文のリュードベリ \(n^2\) は Bohr 簿記の別置き | `ElectronShell`（`equalScale_radius_O_of_one_over_n`） |
 | `dst-quantum-gravity.tex` | `|J| ≤ J_max ~ N^{-2}` と `|J| ≤ c⁴/G ℓ_P^{-2}` が並立し、許容錐の `3π²/8` とも矛盾。離散 `ε_N=16/(3N²)` は非零高さの**下限**であり上界ではない | `discrete_nonzero_height_lb` |
 
 ### Jnorm 入りだが残件がある

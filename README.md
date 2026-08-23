@@ -131,6 +131,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - モーター誘起フレーム（純ブーストの `(t,r)` 混合、純並進は恒等でないこと）
 - 辞書: 有限角 `J(φ)=½φ²`、場の種 `J_field=½(φ')²`、遠平行 `T` を区別
 - 素朴な点同一視（有限角 / パラメータ `J5` / `J_field=½T`）の機械検証による棄却
+- 電磁探索: `CoulombFromDual`（\(\alpha\leftrightarrow\varepsilon_N\)、\(N_*\sim 27\)）、`ElectronShell`（\(\gamma_s\)、等スケール \(\Theta(1/n)\) 診断）。導出は主張しない
 
 一般のモーター場での修正された `J_field ↔ T` や、TEGR と Einstein–Hilbert の変分同値まではまだです（見通しを参照）。
 

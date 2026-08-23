@@ -14,8 +14,9 @@ set_option linter.style.nativeDecide false
 DST does **not** derive \(G\) from \(c\) alone. The action inserts \(G\) as an
 external coupling; \(c\) alone lacks a mass dimension. This module explores a
 **labelled hypothesis** that pairs the already-proved dimensionless lattice
-floor \(\varepsilon_N = 16/(3N^2)\) (`Framework.discrete_nonzero_height_lb`)
-with the Planck bridge \(G = \ell^2 c^3/\hbar\).
+floor \(\varepsilon_N = 16/(3N^2)\) (`SI.epsN`, matching
+`Framework.discrete_nonzero_height_lb`) with the Planck bridge
+\(G = \ell^2 c^3/\hbar\).
 
 ## Working hypothesis (not a derivation)
 
@@ -37,14 +38,6 @@ namespace DstDiophantine
 namespace Gravity
 
 open SI
-
-/-- Dimensionless discrete height \(\varepsilon_N = 16/(3N^2)\). -/
-def epsN (N : ℕ) : ℚ := 16 / (3 * (N : ℚ) ^ 2)
-
-theorem epsN_pos {N : ℕ} (hN : 0 < N) : (0 : ℚ) < epsN N := by
-  unfold epsN
-  have : (0 : ℚ) < (N : ℚ) := Nat.cast_pos.mpr hN
-  positivity
 
 /-- Hypothesised Newton constant from lattice height and reference mass. -/
 def G_hyp (N : ℕ) (m : ℚ) : ℚ :=

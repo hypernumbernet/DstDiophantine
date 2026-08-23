@@ -30,6 +30,10 @@ TEGR Lagrangian density \(T\). Exploratory SI bridging lives in
 `Gravity.SI` / `Gravity.NewtonFromLight` and does **not** claim that DST
 derives \(G\) from \(c\). The labelled quasi-horizon cutoff
 (`Gravity.EventBoundary`) likewise does not derive \(G\).
+Electromagnetic stand-ins and hypotheses live in `Gravity.CoulombFromDual`
+(\(\alpha\leftrightarrow\varepsilon_N\)) and `Gravity.ElectronShell`
+(\(\gamma_s\), equal-scale \(\Theta(1/n)\) diagnostic); neither derives
+\(\alpha\) or \(\lambda\) from the dual-rotor algebra.
 
 ## Proved / rejected
 
