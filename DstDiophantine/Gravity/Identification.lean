@@ -28,7 +28,8 @@ parameter-space diagnostics. They must **not** be identified with the
 dimensionful Planck curvature scale \(c^4/(G\,\ell_P^{-2})\), nor with the
 TEGR Lagrangian density \(T\). Exploratory SI bridging lives in
 `Gravity.SI` / `Gravity.NewtonFromLight` and does **not** claim that DST
-derives \(G\) from \(c\).
+derives \(G\) from \(c\). The labelled quasi-horizon cutoff
+(`Gravity.EventBoundary`) likewise does not derive \(G\).
 
 ## Proved / rejected
 

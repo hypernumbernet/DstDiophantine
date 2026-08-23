@@ -30,7 +30,7 @@
 - 偶差因数核に `gcd(|D|,|E|)∣2`・反対パリティで gcd=1・両奇で gcd=2・2-進付値の一方が 1、の補題を追加
 - 冪判定有限箱を底 ≤14・指数 3…6 まで拡大（反例なし）→ 7n で ≤15 → 7o で ≤16 → 7p で ≤17
 
-**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L3。Gravity 一般モーター辞書（c→G は仮説探索のみ・導出主張なし）。
+**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。D4L L2–L3。Gravity 一般モーター辞書（c→G と事象境界カットオフは仮説／ラベル付き同一視のみ・導出主張なし）。
 
 **実行原則:** デフォルトの作業は残件本体の正面突破ではない。切片・有限証明書・診断定理で成果を出し、アイデアが立ったときだけ本体へ戻る。
 
@@ -189,7 +189,8 @@ Algebra/
 Gravity/                 ← PGA–TEGR チャート層（数論経路とは独立）
   Coframe, Sandwich（チャート尺度橋）, Schwarzschild, Weitzenbock,
   Tetrad（モーター誘起フレーム）, Identification（辞書・棄却）,
-  SI（CODATA 有理近似）, NewtonFromLight（c→G 仮説探索・導出主張なし）
+  SI（CODATA 有理近似）, NewtonFromLight（c→G 仮説探索・導出主張なし）,
+  EventBoundary（許容天井↔準地平カットオフ・ラベル付き同一視・導出なし）
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
@@ -259,6 +260,8 @@ CGA 冪格子／Realization を bookkeeping 化（幾何原理として使わな
 Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モーター誘起フレーム、辞書分離。素朴同一視の棄却と `conjectured_J_field_eq_half_T_plus_div` の反証。TEGR↔EH は文献据え置き。一般モーター修正辞書は未決。
 
 **c→G 仮説探索（導出は主張しない）:** `Gravity/SI` に CODATA 有理近似、`Gravity/NewtonFromLight` に \(\varepsilon_N=16/(3N^2)\) をプランク橋へ載せる作業仮説 \(G_{\mathrm{hyp}}=\varepsilon_N\,\hbar c/m^2\)。電子・陽子で \(N_*\) 有理区間を機械検証；\(N=m_P/m\) なら比は正確に \(16/3\)。\(N=1\) や代数定数だけでは \(10^{44}\) 桁ずれ。無次元 \(|J|\le 3\pi^2/8\) と \(c^4/G\,\ell_P^{-2}\) の同一視は棄却ラベル。
+
+**事象境界カットオフ（ラベル付き同一視・導出なし）:** `Gravity/EventBoundary` が許容天井 \(|J|=3\pi^2/8\)（\(|J_{\mathrm{norm}}|=1\)）を準地平と同一視し、\(\varphi_{\max}=\pi\sqrt{3}/2\)、\(A_{\min}=e^{-\pi\sqrt{3}}\)、\(r_\star=r_s/(1-A_{\min})\) を記録。`pureBoost φ_max` は単軸許容錐の外（`¬ IsAdmissibleContinuous`）。\(G\) の導出や Planck 曲率同一視は主張しない。
 
 ### modular 経路（診断図）
 

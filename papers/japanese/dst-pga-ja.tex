@@ -386,6 +386,15 @@ e^{3} &= r\sin\theta\,d\phi.
 \label{eq:radial-rapidity}
 \end{equation}
 とする。このとき \(e^{-\varphi}=\sqrt{A}\) および \(e^{\varphi}=A^{-1/2}\) であり、したがって~\eqref{eq:schwarzschild-tetrad} の \((t,r)\) 対角係数は \(B^{+}_{1}=e_{0}\wedge e_{1}\) によって生成される純双曲型ローターのブーストスケール因子である。角脚 \(e^{2},e^{3}\) は球面参照コフレームから取る。対応するねじれパラメータは純ブースト \(\Omega_{\mathrm{torsion}}=(\varphi/2)B^{+}_{1}\) であり、対角ゲージでは零パラメータ \(\lambda^{\mu}=0\) である。
+
+\paragraph{作業仮説（準地平カットオフ）.}
+古典的な \(r\to r_{s}^{+}\) における \(\varphi\to\infty\)（\(A\to 0\)）は、許容天井 \(|J|\le 3\pi^{2}/8\)（\(|J_{\rm norm}|\le 1\)）を DST の準地平と同一視し、純ブースト切片 \(J=\tfrac12\varphi^{2}\) 上で反転して得られる有限カットオフに置き換える：
+\[
+\varphi_{\max}=\pi\sqrt{3}/2,\qquad
+A_{\min}=e^{-\pi\sqrt{3}},\qquad
+r_{\star}=r_{s}/(1-A_{\min}).
+\]
+Lean \texttt{Gravity.EventBoundary}。\(\varphi_{\max}\) は単軸許容錐 \(\varphi\le\pi/2\) の外側にある。
 \end{definition}
 
 \subsection{\texorpdfstring{\(J\) および \(J^{(5)}\) と \(T\)}{J および J(5) と T} との同一視}
