@@ -49,25 +49,39 @@ In this algebraic reformulation, quantum gravity ceases to be a quantization of 
 
 The biquaternion algebra $\mathbb{H} \oplus \mathbb{H}$, canonically isomorphic to the Clifford algebra $\mathrm{Cl}(3,1)$ of Minkowski spacetime with signature $(-,+,+,+)$, provides a natural and minimal realization of Dirac spinors. Unlike conventional approaches that introduce spinors as an external representation space, here the spinor emerges directly as an element of the algebra itself.
 
-A primitive idempotent that projects onto an irreducible representation is given by
+A primitive idempotent that projects onto an irreducible representation must be built from generators that square to $+1$. If $g$ satisfies $g^2=+1$, then
 \[
-P = \frac{1+j}{2} \cdot \frac{1+i}{2} = \frac{1 + j + i - k}{4}.
+\frac{1+g}{2}
 \]
-This element satisfies $P^2 = P$ and is minimal in the sense that the left ideal it generates cannot be decomposed further. The corresponding minimal left ideal is
+is idempotent. Working factors used in the formal development are the hyperbolic projector
+\[
+P_{\mathrm{spin}} = \frac{1+j}{2}
+\]
+(with $j^2=+1$) and a complementary spatial chirality pair
+\[
+P_L = \frac{1-e_1}{2},\qquad P_R = \frac{1+e_1}{2}
+\]
+(with $e_1^2=+1$), which satisfy $P_L^2=P_L$, $P_R^2=P_R$, and $P_L+P_R=1$. A composite primitive idempotent may then be taken in the product form
+\[
+P = P_{\mathrm{spin}}\, P_R
+\]
+when the factors commute (or otherwise associate) appropriately; the left ideal it generates is the spinor carrier
 \[
 \mathcal{S} = (\mathbb{H} \oplus \mathbb{H}) P,
 \]
 which is four-complex-dimensional and therefore matches the dimension of the Dirac spinor space.
 
+By contrast, the naive formulae built from the $\mathrm{Cl}(3,1)$ pseudoscalar $i$ alone,
+\[
+\frac{1\pm i}{2}\qquad(i^2=-1),
+\]
+are \emph{not} idempotent: $\bigl((1-i)/2\bigr)^2=-i/2$. Composites such as $i\gamma_1\gamma_2$ that square to $+1$ remain admissible building blocks; the bare pseudoscalar does not.
+
 A general element of $\mathcal{S}$ takes the explicit form
 \[
 \psi = \bigl( a_0 + a_1 i + b_1 kI + b_2 kJ + b_3 kK + c_1 jI + c_2 jJ + c_3 jK \bigr) P,
 \]
-where $a_0,a_1,b_i,c_i \in \mathbb{R}$. Identifying the pseudoscalar $i$ with the imaginary unit of quantum mechanics, $\psi$ becomes a standard four-component complex column spinor in the Weyl basis. The first two components correspond to the usual-spacetime (left-handed) sector, while the remaining components encode the dual-spacetime (right-handed) sector. The time-reversal property of the dual map $X \mapsto X i$ automatically implements the chiral projectors
-\[
-P_L = \frac{1 - i}{2}, \qquad P_R = \frac{1 + i}{2},
-\]
-without any additional algebraic machinery.
+where $a_0,a_1,b_i,c_i \in \mathbb{R}$. Identifying the pseudoscalar $i$ with the imaginary unit of quantum mechanics, $\psi$ becomes a standard four-component complex column spinor in the Weyl basis. The first two components correspond to the usual-spacetime (left-handed) sector, while the remaining components encode the dual-spacetime (right-handed) sector. The dual map $X \mapsto X i$ still reverses time orientation and encodes chirality geometrically, but the algebraic projectors themselves are the square-$+1$ factors $P_L$, $P_R$ above—not $(1\pm i)/2$.
 
 The action of the complete rotor group $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$ on $\psi$ is realized by left multiplication:
 \[
@@ -195,11 +209,7 @@ m \propto \langle \delta\phi \rangle.
 \]
 Thus fermion mass is the energetic cost of maintaining torsional misalignment between the two intrinsic spacetimes carried by the particle.
 
-The dual map $X \mapsto X i$ reverses the time orientation and induces the chiral projectors
-\[
-P_L = \frac{1-i}{2}, \qquad P_R = \frac{1+i}{2}
-\]
-directly on the spinor space. Consequently, the left-handed components couple preferentially to the usual-sector boosts while the right-handed components couple to the dual-sector rotations. This chiral asymmetry is not an additional assumption but a direct consequence of the time-reversed geometry of the dual spacetime.
+The dual map $X \mapsto X i$ reverses the time orientation; together with the square-$+1$ projectors $P_L=(1-e_1)/2$ and $P_R=(1+e_1)/2$ of Section~\ref{sec:spinor}, it organises the spinor space into chiral sectors. Consequently, the left-handed components couple preferentially to the usual-sector boosts while the right-handed components couple to the dual-sector rotations. This chiral asymmetry is not an additional assumption but a direct consequence of the time-reversed geometry of the dual spacetime, once the projectors are formed from generators with square $+1$.
 
 Because the entire construction is algebraic and background-independent, the Dirac equation is obtained without reference to a spacetime manifold, a metric, or a connection. The equation is simply the statement that the biquaternion spinor evolves covariantly under the intrinsic rotor dynamics of double spacetime. In this sense, the Dirac equation is not a quantum field equation imposed on curved spacetime; it is the kinematic law governing excitations of the dual rotor itself.
 

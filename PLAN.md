@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-23（Phase 7p: D4L ビール残件地図、有限箱一段拡大）
+最終更新: 2026-08-23（弦→SM 再構成 Lean 切片: Cl91 / MW16 / LevelMatch）
 
 ## 0. いまの見通し
 
@@ -211,8 +211,21 @@ Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 impo
 Logic/                   ← D4L（振幅、JNormalized の四状態、質量／真空／釣り合い、幾何演算、
                            構文、指定値、帰結、レジーム、離散振幅、増幅力学、巻数二測定）
 Logic/Example/           ← 2値が担えない例（固定点、非爆発、Jnorm<1、レジーム、Beal残件地図）
-Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元数、C2、部分空間格子、辞書
+Logic/Quantum/           ← D4L 双対 Hilbert 層: 分離、双対扇、四元数、C2、部分空間格子、辞書、
+                           弦比較（Cl91 / MW16 / スペクトル標識 / レベルマッチ辞書 / 棄却）
 ```
+
+### 並列トラック: 弦→SM 再構成（Basic 非依存）
+
+仕様 [`DST-string theory.md`](DST-string theory.md) §3–4。Beal P0 は据え置き。
+
+- `Algebra/Cl91`・`LorentzDim`・`Q91`: Cl(3,1)↪Cl(9,1)、実次元 16≠1024
+- `Logic/Quantum/Spinor10`: MW16 ≃_ℝ WeylSU4（Spin 同変なし）
+- `MinimalIdeal`: 作業用冪等元；論文 `(1±i)/2` は `i²=-1` で非冪等として棄却
+- `LevelMatch`: `IsLevelMatched := J=0`；釣り合い配置
+- `LorentzDim` / `StringSpectrum`: 8+8 ≠ 6（正本は `lightCone_ne_torsionGenerators`）
+- `StringCompare`: 偽同一視の閉鎖。ヘテロティック格子対応は次サイクル
+- 無条件に「DST が SM を導く」「3世代」とは主張しない
 
 ---
 

@@ -22,7 +22,14 @@ import DstDiophantine.Logic.Quantum.Quaternion
 import DstDiophantine.Logic.Quantum.Spinor
 import DstDiophantine.Logic.Quantum.QuantumLogic
 import DstDiophantine.Logic.Quantum.Dictionary
+import DstDiophantine.Logic.Quantum.Spinor10
+import DstDiophantine.Logic.Quantum.StringSpectrum
+import DstDiophantine.Logic.Quantum.MinimalIdeal
+import DstDiophantine.Logic.Quantum.LevelMatch
+import DstDiophantine.Logic.Quantum.StringCompare
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.Cl91
+import DstDiophantine.Algebra.LorentzDim
 
 /-!
 # Dual Spacetime 4-valued logic (D4L) — parallel track
@@ -48,7 +55,8 @@ and `DstDiophantine.CGA`).
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
-  `ℂ²`, subspace lattice, internal dictionary)
+  `ℂ²`, subspace lattice, internal dictionary) plus the string-comparison
+  slice (`Cl91`, MW16, spectrum labels, level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
 * `Logic.Regime` — discrete proof-status algebra and implication table
@@ -285,12 +293,46 @@ example :
       some .T :=
   balancedAmplitude_scale_classify_T
 
-/-- Regression: real-scale admissibility and nonzero winding are incompatible. -/
+/-- Regression: height and winding are incompatible measurements. -/
 example {N : ℕ} [NeZero N] (k : ℕ) (t : Discrete.DiscreteTorsion N) :
     ¬ (Admissible.IsAdmissibleContinuous
           (Amplification.scaleTorsion (k : ℝ) (Discrete.toTorsionParams t)) ∧
         ModularAmplification.windingTotal k t ≠ 0) :=
   not_both_admissibleScale_and_winding k t
+
+/-- Regression: Cl(3,1) and Cl(9,1) have different real dimensions. -/
+example : Module.finrank ℝ Cl31 = 16 ∧ Module.finrank ℝ Cl91 = 1024 :=
+  ⟨Cl91.finrank_cl31, Cl91.finrank_cl91⟩
+
+/-- Regression: the algebras are not isomorphic. -/
+example : ¬ Nonempty (Cl31 ≃ₐ[ℝ] Cl91) :=
+  not_cl31_algEquiv_cl91
+
+/-- Regression: working chirality / spinor projectors are idempotent. -/
+example : chiralityL * chiralityL = chiralityL ∧
+    chiralityR * chiralityR = chiralityR ∧
+      spinorIdem * spinorIdem = spinorIdem :=
+  ⟨chiralityL_sq, chiralityR_sq, spinorIdem_sq⟩
+
+/-- Regression: paper `(1-i)/2` is not idempotent when `i² = -1`. -/
+example : paperChiralityL * paperChiralityL ≠ paperChiralityL :=
+  paper_chirality_rejected
+
+/-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
+example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
+  majorana_dim_eq_weylSU4_real
+
+/-- Regression: light-cone 8+8 ≠ DST torsion 6; Super-Poincaré ≠ PGA 10. -/
+example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
+  ⟨LorentzDim.lightCone_ne_torsionGenerators, superPoincare_ne_pga⟩
+
+/-- Regression: balanced ray is level-matched (`J = 0`). -/
+example : IsLevelMatched (Invariant.balancedRay 1) :=
+  isLevelMatched_balancedRay 1
+
+/-- Regression: discrete rotor image is finite (not a generation count). -/
+example {N : ℕ} [NeZero N] : (UnitGroup.DiscreteRotorImage N).Finite :=
+  discreteRotorImage_finite_not_generations
 
 end Logic
 

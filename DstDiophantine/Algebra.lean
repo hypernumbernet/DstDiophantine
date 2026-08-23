@@ -7,10 +7,12 @@ Authors: DstDiophantine contributors
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Cl31
+import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.LorentzDim
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Operations
@@ -31,6 +33,13 @@ namespace DstDiophantine
 
 export PGA (ι e4Index e4_sq_zero e4_anticomm e4_inner_anticomm)
 export Cl31 (ι toPGA toPGA_ι)
+-- `Cl91` / `Q91` / `Cl31.toCl91` / finrank facts are available via the import
+-- above; they are not re-exported here to avoid clashing with `PGA`/`Cl31` `ι`.
+export LorentzDim (soDim isoDim so31Dim so91Dim so8Dim iso31Dim iso91Dim
+  so31Dim_eq so91Dim_eq so8Dim_eq iso31Dim_eq iso91Dim_eq
+  so31Dim_ne_so91Dim iso31Dim_ne_iso91Dim
+  pgaGeneratorCount_eq_iso31Dim pgaGeneratorCount_ne_iso91Dim
+  lightCone_ne_torsionGenerators)
 export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
   commutator commutator_null_null null_commute
   commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero)
