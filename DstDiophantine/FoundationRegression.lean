@@ -23,6 +23,7 @@ import DstDiophantine.Theorems.BealMixed
 import DstDiophantine.Theorems.BealEven
 import DstDiophantine.Theorems.BealGaussianCube
 import DstDiophantine.Theorems.BealFinite
+import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
@@ -31,6 +32,8 @@ import DstDiophantine.Algebra.CGA.NullCone
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+
+set_option linter.style.nativeDecide false
 
 /-!
 # Public-API / layering regression examples
@@ -567,6 +570,42 @@ example {A B C x y z : ℕ}
   beal_no_coprime_perfect_power_of_le_fourteen_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
+/-- Phase 7n: no coprime perfect-power Beal with bases ≤ 15 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 15) (hBmax : B ≤ 15)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_fifteen_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Phase 7n: perfect-power finder returns none on the closed 14×6 box. -/
+example : findCoprimeBealPerfectPowerUpTo 14 6 = none := by native_decide
+
+/-- Phase 7n: no primitive positive `α³+2β³=γ³` with α,β ≤ 40. -/
+example {α β γ : ℕ}
+    (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hαN : α ≤ 40) (hβN : β ≤ 40)
+    (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
+  no_pos_cube_add_two_primitive_of_le_forty
+    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+
+/-- Phase 7n: no open-residual coprime perfect-power Beal with bases ≤ 20, exp 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 20) (hBmax : B ≤ 20)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_open_residual_perfect_power_of_le_twenty_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
 /-- Phase 7m: Affine residual assembles the positive cube residual. -/
 example (hAff : BealAffineCubeAddTwoResidual) :
     BealPosCubeAddTwoCubeResidual :=
@@ -593,6 +632,22 @@ example : (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 :=
 /-- Phase 7j: known non-coprime solution `2³ + 2³ = 2⁴`. -/
 example : (2 : ℤ) ^ 3 + 2 ^ 3 = 2 ^ 4 ∧ bealGcd 2 2 2 = 2 :=
   beal_known_noncoprime_two_two
+
+/-- Phase 7n: known non-coprime solution `7³ + 7⁴ = 14³`. -/
+example : (7 : ℤ) ^ 3 + 7 ^ 4 = 14 ^ 3 ∧ bealGcd 7 7 14 = 7 :=
+  beal_known_noncoprime_seven_fourteen
+
+/-- Phase 7n: known non-coprime solution `2⁵ + 2⁵ = 2⁶`. -/
+example : (2 : ℤ) ^ 5 + 2 ^ 5 = 2 ^ 6 ∧ bealGcd 2 2 2 = 2 :=
+  beal_known_noncoprime_two_five
+
+/-- Phase 7n: known non-coprime solutions are not coprime Beal hits. -/
+example :
+    isCoprimeBeal 3 6 3 3 3 5 = false ∧
+      isCoprimeBeal 2 2 2 3 3 4 = false ∧
+        isCoprimeBeal 7 7 14 3 4 3 = false ∧
+          isCoprimeBeal 2 2 2 5 5 6 = false :=
+  known_noncoprime_not_isCoprimeBeal
 
 /-- Phase 7k: known non-coprime sum is a perfect 5th power. -/
 example : isNthPower (3 ^ 3 + 6 ^ 3) 5 = true :=
