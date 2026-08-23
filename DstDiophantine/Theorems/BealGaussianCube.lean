@@ -22,12 +22,15 @@ exponent 3:
 * mod-7 / mod-9 diagnostic slices for that equation;
 * split assembly `e = 3` vs `e ≥ 5`;
 * phase 7m: primitivity / parity / difference-factor / 2-adic packaging for
-  `α³ + 2β³ = γ³`, and assembly from the affine residual `X³ + 2Y³ = 1`.
+  `α³ + 2β³ = γ³`, and assembly from the affine residual `X³ + 2Y³ = 1`;
+* phase 7o: birational packaging of that Affine curve onto the Mordell model
+  `y² = x³ - 1728`, with assembly `BealMordellCubeAddTwoResidual → Affine`.
 
 The positive cube equation `α³ + 2β³ = γ³` is the live residual for `e = 3`
 (no new axiom; classical Beal is **not** claimed unconditionally). The naive
 2-adic descent used for `x³ + 2y³ = 4z³` does **not** apply here (signed
-solutions such as `(-1)³ + 2·1³ = 1³` exist).
+solutions such as `(-1)³ + 2·1³ = 1³` exist). The Mordell rank is not in
+mathlib; phase 7o does **not** close it.
 -/
 
 namespace DstDiophantine
@@ -575,6 +578,103 @@ theorem padicValNat_two_gamma_sub_alpha_of_odd
     _ = padicValNat 2 (2 * β ^ 3) := by rw [hfac]
     _ = 1 + 3 * padicValNat 2 β := hrhs
 
+/-! ### Phase 7o: Weierstrass model of `X³ + 2Y³ = 1` -/
+
+/--
+Forward map (for `X ≠ 1`):
+`x = 24 Y / (1 - X)`, `y = 72 (1 + X) / (1 - X)`.
+On solutions of `X³ + 2Y³ = 1` this lands on the Mordell curve
+`y² = x³ - 1728` (equivalently `y² = x³ - 432 · 2²`).
+-/
+def affineCubeAddTwoToMordell (X Y : ℚ) : ℚ × ℚ :=
+  (24 * Y / (1 - X), 72 * (1 + X) / (1 - X))
+
+/--
+Algebraic identity underlying the forward map: on `X³ + 2Y³ = 1`,
+`8Y³ - (1-X)³ = 3(1-X)(1+X)²`.
+-/
+theorem eight_Y_cube_sub_one_sub_X_cube
+    {X Y : ℚ} (heq : X ^ 3 + 2 * Y ^ 3 = 1) :
+    8 * Y ^ 3 - (1 - X) ^ 3 = 3 * (1 - X) * (1 + X) ^ 2 := by
+  have hY3 : 2 * Y ^ 3 = 1 - X ^ 3 := by linarith
+  have h8 : 8 * Y ^ 3 = 4 * (1 - X ^ 3) := by linarith [hY3]
+  rw [h8, show 1 - X ^ 3 = (1 - X) * (1 + X + X ^ 2) by ring]
+  ring
+
+/--
+Identity: if `X³ + 2Y³ = 1` and `X ≠ 1`, then the forward image lies on
+`y² = x³ - 1728`.
+-/
+theorem mordell_of_affine_cube_add_two
+    {X Y : ℚ} (heq : X ^ 3 + 2 * Y ^ 3 = 1) (hX : X ≠ 1) :
+    let p := affineCubeAddTwoToMordell X Y
+    p.2 ^ 2 = p.1 ^ 3 - 1728 := by
+  have hne : (1 - X : ℚ) ≠ 0 := sub_ne_zero.mpr (Ne.symm hX)
+  have h8 := eight_Y_cube_sub_one_sub_X_cube heq
+  -- Clear a common denominator `(1-X)³`.
+  have hclear :
+      ((72 * (1 + X) / (1 - X)) ^ 2 - ((24 * Y / (1 - X)) ^ 3 - 1728)) *
+        (1 - X) ^ 3 = 0 := by
+    field_simp [hne]
+    -- Goal becomes a polynomial identity using h8.
+    have := congrArg (· * (1 - X) ^ 3) h8
+    ring_nf at this ⊢
+    linarith
+  have hden : (1 - X) ^ 3 ≠ 0 := pow_ne_zero 3 hne
+  have : (72 * (1 + X) / (1 - X)) ^ 2 -
+      ((24 * Y / (1 - X)) ^ 3 - 1728) = 0 :=
+    (mul_eq_zero.mp hclear).resolve_right hden
+  simpa [affineCubeAddTwoToMordell, sub_eq_zero] using this
+
+/-- Forward map sends `(-1, 1)` to the 2-torsion point `(12, 0)`. -/
+theorem affineCubeAddTwoToMordell_neg_one_one :
+    affineCubeAddTwoToMordell (-1) 1 = (12, 0) := by
+  simp [affineCubeAddTwoToMordell]; norm_num
+
+/--
+If the forward image is `(12, 0)`, the Affine point is `(-1, 1)`.
+-/
+theorem eq_neg_one_one_of_affine_to_mordell_twelve
+    {X Y : ℚ} (hX : X ≠ 1)
+    (hx : (affineCubeAddTwoToMordell X Y).1 = 12)
+    (hy : (affineCubeAddTwoToMordell X Y).2 = 0) :
+    X = -1 ∧ Y = 1 := by
+  have hne : (1 - X : ℚ) ≠ 0 := sub_ne_zero.mpr (Ne.symm hX)
+  have hy' : 72 * (1 + X) / (1 - X) = 0 := by
+    simpa [affineCubeAddTwoToMordell] using hy
+  have hX' : X = -1 := by
+    have : 72 * (1 + X) = 0 := by
+      field_simp [hne] at hy'
+      simpa using hy'
+    have : 1 + X = 0 := by linarith
+    linarith
+  refine ⟨hX', ?_⟩
+  have hx' : 24 * Y / (1 - X) = 12 := by
+    simpa [affineCubeAddTwoToMordell] using hx
+  subst hX'
+  field_simp at hx'
+  linarith
+
+/--
+If `Y = 0` on `X³ + 2Y³ = 1`, then `X = 1` (only rational cube root of 1).
+-/
+theorem eq_one_of_affine_cube_add_two_Y_zero
+    {X : ℚ} (heq : X ^ 3 + 2 * (0 : ℚ) ^ 3 = 1) : X = 1 := by
+  have hX3 : X ^ 3 = 1 := by simpa using heq
+  have hfac : (X - 1) * (X ^ 2 + X + 1) = 0 := by
+    have : X ^ 3 - 1 = 0 := by linarith [hX3]
+    have hId : X ^ 3 - 1 = (X - 1) * (X ^ 2 + X + 1) := by ring
+    linarith [this, hId]
+  rcases mul_eq_zero.mp hfac with h | h
+  · linarith
+  · have hdisc : ¬ ∃ r : ℚ, r ^ 2 + r + 1 = 0 := by
+      intro ⟨r, hr⟩
+      have h4 : (2 * r + 1) ^ 2 + 3 = 4 * (r ^ 2 + r + 1) := by ring
+      have : (2 * r + 1) ^ 2 + 3 = 0 := by linarith [h4, hr]
+      have hnn : (0 : ℚ) ≤ (2 * r + 1) ^ 2 := sq_nonneg _
+      linarith
+    exact False.elim (hdisc ⟨X, h⟩)
+
 /--
 **Residual** (phase 7m, unproved): the only rational points on
 `X³ + 2Y³ = 1` are `(1, 0)` and `(-1, 1)`.
@@ -582,6 +682,38 @@ theorem padicValNat_two_gamma_sub_alpha_of_odd
 def BealAffineCubeAddTwoResidual : Prop :=
   ∀ (X Y : ℚ), X ^ 3 + 2 * Y ^ 3 = 1 →
     (X = 1 ∧ Y = 0) ∨ (X = -1 ∧ Y = 1)
+
+/--
+**Residual** (phase 7o, unproved): the only rational point on the Mordell curve
+`y² = x³ - 1728` is the 2-torsion point `(12, 0)`.
+(The point at infinity corresponds to the Affine point `(1, 0)` under the
+birational map above; it is not an affine Weierstrass point.)
+mathlib does not contain the rank of this curve; this is **not** a Lean proof
+of Selmer's theorem.
+-/
+def BealMordellCubeAddTwoResidual : Prop :=
+  ∀ (x y : ℚ), y ^ 2 = x ^ 3 - 1728 → x = 12 ∧ y = 0
+
+/--
+The Mordell residual implies the Affine residual via the birational map
+`affineCubeAddTwoToMordell`.
+-/
+theorem BealAffineCubeAddTwoResidual_of_mordell
+    (hMor : BealMordellCubeAddTwoResidual) :
+    BealAffineCubeAddTwoResidual := by
+  intro X Y heq
+  by_cases hY : Y = 0
+  · subst hY
+    exact Or.inl ⟨eq_one_of_affine_cube_add_two_Y_zero heq, rfl⟩
+  · by_cases hX : X = 1
+    · subst hX
+      have : 2 * Y ^ 3 = 0 := by simpa using heq
+      have hY3 : Y ^ 3 = 0 := by linarith
+      have : Y = 0 := (pow_eq_zero_iff (by decide : 3 ≠ 0)).1 hY3
+      exact absurd this hY
+    · have hlm := mordell_of_affine_cube_add_two heq hX
+      obtain ⟨hx, hy⟩ := hMor _ _ hlm
+      exact Or.inr (eq_neg_one_one_of_affine_to_mordell_twelve hX hx hy)
 
 /--
 The affine residual implies there are no positive integer solutions of
@@ -605,6 +737,13 @@ theorem BealPosCubeAddTwoCubeResidual_of_affine
     have : (0 : ℚ) < α := by exact_mod_cast hα0
     have : (0 : ℚ) < γ := by exact_mod_cast hγ0
     linarith
+
+/-- Mordell residual ⇒ positive-cube residual (via Affine). -/
+theorem BealPosCubeAddTwoCubeResidual_of_mordell
+    (hMor : BealMordellCubeAddTwoResidual) :
+    BealPosCubeAddTwoCubeResidual :=
+  BealPosCubeAddTwoCubeResidual_of_affine
+    (BealAffineCubeAddTwoResidual_of_mordell hMor)
 
 /-! ### Mod-7 / mod-9 diagnostic slices -/
 

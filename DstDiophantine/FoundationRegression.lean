@@ -581,6 +581,17 @@ example {A B C x y z : ℕ}
   beal_no_coprime_perfect_power_of_le_fifteen_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
+/-- Phase 7o: no coprime perfect-power Beal with bases ≤ 16 and exponents 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 16) (hBmax : B ≤ 16)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_sixteen_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
 /-- Phase 7n: perfect-power finder returns none on the closed 14×6 box. -/
 example : findCoprimeBealPerfectPowerUpTo 14 6 = none := by native_decide
 
@@ -592,6 +603,16 @@ example {α β γ : ℕ}
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
   no_pos_cube_add_two_primitive_of_le_forty
+    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+
+/-- Phase 7o: no primitive positive `α³+2β³=γ³` with α,β ≤ 50. -/
+example {α β γ : ℕ}
+    (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hαN : α ≤ 50) (hβN : β ≤ 50)
+    (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
+  no_pos_cube_add_two_primitive_of_le_fifty
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
 /-- Phase 7n: no open-residual coprime perfect-power Beal with bases ≤ 20, exp 3…6. -/
@@ -606,10 +627,47 @@ example {A B C x y z : ℕ}
   beal_no_open_residual_perfect_power_of_le_twenty_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
 
+/-- Phase 7o: no open-residual coprime perfect-power Beal with bases ≤ 25, exp 3…6. -/
+example {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 25) (hBmax : B ≤ 25)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_open_residual_perfect_power_of_le_twentyfive_six
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
 /-- Phase 7m: Affine residual assembles the positive cube residual. -/
 example (hAff : BealAffineCubeAddTwoResidual) :
     BealPosCubeAddTwoCubeResidual :=
   BealPosCubeAddTwoCubeResidual_of_affine hAff
+
+/-- Phase 7o: Mordell residual assembles the Affine residual. -/
+example (hMor : BealMordellCubeAddTwoResidual) :
+    BealAffineCubeAddTwoResidual :=
+  BealAffineCubeAddTwoResidual_of_mordell hMor
+
+/-- Phase 7o: forward map sends `(-1,1)` to Mordell 2-torsion `(12,0)`. -/
+example : affineCubeAddTwoToMordell (-1) 1 = (12, 0) :=
+  affineCubeAddTwoToMordell_neg_one_one
+
+/-- Phase 7o: perfect-power residual assembles the even-diff factor residual. -/
+example (hPow : BealTwoEqualEvenDiffPerfectPowerResidual) :
+    BealTwoEqualEvenDiffFactorResidual :=
+  BealTwoEqualEvenDiffFactorResidual_of_perfect_power hPow
+
+/-- Phase 7o: opposite-parity conjugate factors are absolute `x`-th powers. -/
+example {B C A : ℤ} {k x : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C))
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (heq : (C ^ k - B ^ k) * (C ^ k + B ^ k) = A ^ x) :
+    ∃ u v : ℕ,
+      (C ^ k - B ^ k).natAbs = u ^ x ∧
+        (C ^ k + B ^ k).natAbs = v ^ x :=
+  exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity hk hpar hcop heq
 
 /-- Phase 7m: even-diff conjugate factors have gcd dividing 2. -/
 example {B C : ℤ} {k : ℕ} (hcop : Nat.Coprime B.natAbs C.natAbs) :

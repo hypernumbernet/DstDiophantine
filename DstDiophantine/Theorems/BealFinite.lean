@@ -14,6 +14,7 @@ set_option linter.style.nativeDecide false
 * **Finders** (phase 7n): `findCoprimeBealUpTo` / `findCoprimeBealPerfectPowerUpTo`
   return the first hit (for `#eval` / diagnostics), with soundness and completeness.
 * **Phase 7n perfect-power**: bases `≤ 15` (exponents `3…6`).
+* **Phase 7o perfect-power**: bases `≤ 16` (exponents `3…6`).
 
 Known **non-coprime** solutions are kept as regression witnesses (they are not
 Beal counterexamples). Classical Beal is **not** claimed unconditionally.
@@ -521,6 +522,22 @@ theorem beal_no_coprime_perfect_power_of_le_fifteen_six
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   noCoprimeBealPerfectPowerUpTo_sound
     (by native_decide : noCoprimeBealPerfectPowerUpTo 15 6 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/--
+Phase 7o: no positive coprime Beal solution with bases `≤ 16` and exponents in
+`3…6`, allowing unbounded `C` recovered as a perfect power.
+-/
+theorem beal_no_coprime_perfect_power_of_le_sixteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 16) (hBmax : B ≤ 16)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealPerfectPowerUpTo_sound
+    (by native_decide : noCoprimeBealPerfectPowerUpTo 16 6 = true)
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
 /-! ### Known non-coprime solutions (not counterexamples) -/

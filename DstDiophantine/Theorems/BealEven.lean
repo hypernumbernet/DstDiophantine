@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Linarith
 
 /-!
-# Phase 7k: even two-equal residual split (sum vs difference)
+# Phase 7k / 7m / 7o: even two-equal residual split (sum vs difference)
 
 Splits `BealTwoEqualEvenResidual` into:
 
@@ -16,8 +16,10 @@ Splits `BealTwoEqualEvenResidual` into:
 * **difference form** `y = z` or `x = z` with even common exponent —
   `C^n − B^n = A^x` (does **not** lift to a Gaussian hypotenuse power).
 
-The sum form with `z = 3` is closed by Darmon–Merel. Classical Beal is **not**
-claimed unconditionally.
+The sum form with `z = 3` is closed by Darmon–Merel. Phase 7o extracts signed
+/`2`-stripped perfect powers from the difference factor kernel and packages the
+live body as `BealTwoEqualEvenDiffPerfectPowerResidual`. Classical Beal is
+**not** claimed unconditionally.
 -/
 
 namespace DstDiophantine
@@ -357,6 +359,186 @@ theorem exists_padicValNat_two_eq_one_of_both_odd {B C : ℤ} {k : ℕ}
       exact h4D ((padicValNat_dvd_iff_le hDne (n := 2)).mpr hle)
     omega
 
+/-! ### Phase 7o: perfect-power extraction from the factor kernel -/
+
+/--
+If absolute values are coprime and their product is an `x`-th power, each is an
+`x`-th power (ℕ UFD).
+-/
+theorem exists_natAbs_pow_of_mul_eq_pow_of_coprime_abs {D E A : ℤ} {x : ℕ}
+    (hcop : Nat.Coprime D.natAbs E.natAbs)
+    (heq : D * E = A ^ x) :
+    ∃ u v : ℕ, D.natAbs = u ^ x ∧ E.natAbs = v ^ x := by
+  have hprod : D.natAbs * E.natAbs = A.natAbs ^ x := by
+    have := congrArg Int.natAbs heq
+    simpa [Int.natAbs_mul, Int.natAbs_pow] using this
+  obtain ⟨u, hu⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime hcop hprod
+  obtain ⟨v, hv⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime_right hcop hprod
+  exact ⟨u, v, hu, hv⟩
+
+/--
+Signed form: `n.natAbs = u^e` yields `n = ± (u : ℤ)^e`.
+-/
+theorem exists_signed_pow_of_natAbs_eq_pow {n : ℤ} {u e : ℕ}
+    (h : n.natAbs = u ^ e) :
+    n = (u : ℤ) ^ e ∨ n = -((u : ℤ) ^ e) := by
+  have : n.natAbs = ((u : ℤ) ^ e).natAbs := by
+    rw [h, Int.natAbs_pow, Int.natAbs_natCast]
+  exact (Int.natAbs_eq_natAbs_iff).1 this
+
+/--
+Opposite-parity conjugate factors with product an `x`-th power are each
+absolute `x`-th powers (`gcd` of absolute values is 1).
+-/
+theorem exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity
+    {B C A : ℤ} {k x : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C))
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (heq : (C ^ k - B ^ k) * (C ^ k + B ^ k) = A ^ x) :
+    ∃ u v : ℕ,
+      (C ^ k - B ^ k).natAbs = u ^ x ∧
+        (C ^ k + B ^ k).natAbs = v ^ x := by
+  have hgcd1 :=
+    nat_gcd_pow_diff_sum_eq_one_of_opposite_parity hk hpar hcop
+  exact exists_natAbs_pow_of_mul_eq_pow_of_coprime_abs
+    (Nat.coprime_iff_gcd_eq_one.mpr hgcd1) heq
+
+/--
+Both-odd conjugate factors: absolute gcd is exactly 2, and at least one factor
+has 2-adic valuation exactly 1.
+-/
+theorem diff_sum_mul_eq_pow_both_odd_gcd_padic
+    {B C : ℤ} {k : ℕ}
+    (hk : 0 < k)
+    (hB : Odd B) (hC : Odd C)
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (hD0 : C ^ k - B ^ k ≠ 0) (hE0 : C ^ k + B ^ k ≠ 0) :
+    Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs = 2 ∧
+      (padicValNat 2 (C ^ k - B ^ k).natAbs = 1 ∨
+        padicValNat 2 (C ^ k + B ^ k).natAbs = 1) := by
+  exact ⟨(nat_gcd_pow_diff_sum_eq_two_of_both_odd hB hC hcop).2.2,
+    exists_padicValNat_two_eq_one_of_both_odd hB hC hk hD0 hE0⟩
+
+/--
+If `D * E = A^x` with `Nat.gcd D E = 2` and both nonzero, the 2-free parts of
+`D` and `E` are each `x`-th powers.
+-/
+theorem exists_odd_parts_pow_of_mul_eq_pow_gcd_two
+    {D E A x : ℕ} (_hx : 0 < x)
+    (hgcd : Nat.gcd D E = 2)
+    (hD0 : D ≠ 0) (hE0 : E ≠ 0)
+    (hprod : D * E = A ^ x) :
+    ∃ u v : ℕ,
+      D / 2 ^ padicValNat 2 D = u ^ x ∧
+        E / 2 ^ padicValNat 2 E = v ^ x := by
+  have : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+  set a := padicValNat 2 D
+  set b := padicValNat 2 E
+  set d' := D / 2 ^ a
+  set e' := E / 2 ^ b
+  have hDa : 2 ^ a * d' = D := Nat.ordProj_mul_ordCompl_eq_self D 2
+  have hEb : 2 ^ b * e' = E := Nat.ordProj_mul_ordCompl_eq_self E 2
+  have hd'odd : ¬ 2 ∣ d' := by
+    intro h2
+    have hpow : 2 ^ (a + 1) = 2 ^ a * 2 := by rw [pow_succ]
+    have : 2 ^ (a + 1) ∣ D := by
+      rw [← hDa, hpow]
+      exact mul_dvd_mul_left _ h2
+    have : a + 1 ≤ padicValNat 2 D :=
+      (padicValNat_dvd_iff_le hD0 (n := a + 1)).mp this
+    omega
+  have he'odd : ¬ 2 ∣ e' := by
+    intro h2
+    have hpow : 2 ^ (b + 1) = 2 ^ b * 2 := by rw [pow_succ]
+    have : 2 ^ (b + 1) ∣ E := by
+      rw [← hEb, hpow]
+      exact mul_dvd_mul_left _ h2
+    have : b + 1 ≤ padicValNat 2 E :=
+      (padicValNat_dvd_iff_le hE0 (n := b + 1)).mp this
+    omega
+  have hcopde : Nat.Coprime d' e' := by
+    -- Any common prime dividing d' and e' divides gcd(D,E)=2, but d',e' are odd.
+    refine Nat.coprime_iff_gcd_eq_one.mpr ?_
+    have hdiv : Nat.gcd d' e' ∣ Nat.gcd D E := by
+      have hdD : Nat.gcd d' e' ∣ D := by
+        have : Nat.gcd d' e' ∣ d' := Nat.gcd_dvd_left _ _
+        have : Nat.gcd d' e' ∣ 2 ^ a * d' := dvd_mul_of_dvd_right this _
+        rwa [hDa] at this
+      have heE : Nat.gcd d' e' ∣ E := by
+        have : Nat.gcd d' e' ∣ e' := Nat.gcd_dvd_right _ _
+        have : Nat.gcd d' e' ∣ 2 ^ b * e' := dvd_mul_of_dvd_right this _
+        rwa [hEb] at this
+      exact Nat.dvd_gcd hdD heE
+    have hdiv2 : Nat.gcd d' e' ∣ 2 := by rwa [hgcd] at hdiv
+    have hodd : ¬ 2 ∣ Nat.gcd d' e' := by
+      intro h2
+      exact hd'odd (dvd_trans h2 (Nat.gcd_dvd_left _ _))
+    rcases (Nat.dvd_prime Nat.prime_two).1 hdiv2 with h1 | h2
+    · exact h1
+    · exact False.elim (hodd (by rw [h2]))
+  have h2copd : Nat.Coprime (2 ^ (a + b)) d' :=
+    (Nat.Prime.coprime_iff_not_dvd Nat.prime_two).2 hd'odd |>.pow_left _
+  have h2cope : Nat.Coprime (2 ^ (a + b)) e' :=
+    (Nat.Prime.coprime_iff_not_dvd Nat.prime_two).2 he'odd |>.pow_left _
+  have hcop2de : Nat.Coprime (2 ^ (a + b)) (d' * e') :=
+    Nat.Coprime.mul_right h2copd h2cope
+  have hprod' : 2 ^ (a + b) * (d' * e') = A ^ x := by
+    calc 2 ^ (a + b) * (d' * e')
+        = (2 ^ a * d') * (2 ^ b * e') := by
+            rw [pow_add]; ring
+      _ = D * E := by rw [hDa, hEb]
+      _ = A ^ x := hprod
+  obtain ⟨t, ht⟩ :=
+    nat_eq_pow_of_mul_eq_pow_of_coprime_right hcop2de hprod'
+  obtain ⟨u, hu⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime hcopde ht
+  obtain ⟨v, hv⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime_right hcopde ht
+  exact ⟨u, v, hu, hv⟩
+
+/--
+Both-odd conjugate factors with product an `x`-th power: gcd = 2, one
+valuation is exactly 1, and the 2-free parts are `x`-th powers.
+-/
+theorem exists_odd_pow_parts_of_diff_sum_mul_eq_pow_both_odd
+    {B C A : ℤ} {k x : ℕ}
+    (hk : 0 < k) (hx : 0 < x)
+    (hB : Odd B) (hC : Odd C)
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (hD0 : C ^ k - B ^ k ≠ 0) (hE0 : C ^ k + B ^ k ≠ 0)
+    (heq : (C ^ k - B ^ k) * (C ^ k + B ^ k) = A ^ x) :
+    Nat.gcd (C ^ k - B ^ k).natAbs (C ^ k + B ^ k).natAbs = 2 ∧
+      (padicValNat 2 (C ^ k - B ^ k).natAbs = 1 ∨
+        padicValNat 2 (C ^ k + B ^ k).natAbs = 1) ∧
+        ∃ u v : ℕ,
+          (C ^ k - B ^ k).natAbs /
+              2 ^ padicValNat 2 (C ^ k - B ^ k).natAbs = u ^ x ∧
+            (C ^ k + B ^ k).natAbs /
+                2 ^ padicValNat 2 (C ^ k + B ^ k).natAbs = v ^ x := by
+  obtain ⟨hgcd2, hv2⟩ :=
+    diff_sum_mul_eq_pow_both_odd_gcd_padic hk hB hC hcop hD0 hE0
+  refine ⟨hgcd2, hv2, ?_⟩
+  have hprod : (C ^ k - B ^ k).natAbs * (C ^ k + B ^ k).natAbs =
+      A.natAbs ^ x := by
+    have := congrArg Int.natAbs heq
+    simpa [Int.natAbs_mul, Int.natAbs_pow] using this
+  exact exists_odd_parts_pow_of_mul_eq_pow_gcd_two hx hgcd2
+    (Int.natAbs_ne_zero.mpr hD0) (Int.natAbs_ne_zero.mpr hE0) hprod
+
+/--
+**Residual** (phase 7o): no even-difference conjugate configuration in the
+opposite-parity or both-odd branches (the only branches compatible with
+`Nat.Coprime B.natAbs C.natAbs`). Extraction shows those branches yield signed
+/`2`-stripped perfect `x`-th powers; this residual packages that live body.
+It does **not** close the descent to a smaller Fermat equation.
+-/
+def BealTwoEqualEvenDiffPerfectPowerResidual : Prop :=
+  ∀ (A B C : ℤ) (x n : ℕ),
+    3 ≤ x → 4 ≤ n → Even n → Odd x →
+    A ≠ 0 → B ≠ 0 → C ≠ 0 →
+    Nat.Coprime B.natAbs C.natAbs →
+    (C ^ (n / 2) - B ^ (n / 2)) * (C ^ (n / 2) + B ^ (n / 2)) = A ^ x →
+      ¬ (((Even B ∧ Odd C) ∨ (Odd B ∧ Even C)) ∨ (Odd B ∧ Odd C))
+
 /--
 **Residual** (phase 7l): the even-difference factorization kernel —
 no coprime solution of `D * E = A^x` arising from
@@ -370,6 +552,41 @@ def BealTwoEqualEvenDiffFactorResidual : Prop :=
     Nat.Coprime B.natAbs C.natAbs →
     (C ^ (n / 2) - B ^ (n / 2)) * (C ^ (n / 2) + B ^ (n / 2)) = A ^ x →
       False
+
+/--
+Phase 7o assembly: perfect-power residual (opposite-parity / both-odd) implies
+the factorization residual. Both-even bases contradict
+`Nat.Coprime B.natAbs C.natAbs`.
+-/
+theorem BealTwoEqualEvenDiffFactorResidual_of_perfect_power
+    (hPow : BealTwoEqualEvenDiffPerfectPowerResidual) :
+    BealTwoEqualEvenDiffFactorResidual := by
+  intro A B C x n hx hn hne hxodd hA hB hC hcop heq
+  have hpar :
+      ((Even B ∧ Odd C) ∨ (Odd B ∧ Even C)) ∨ (Odd B ∧ Odd C) ∨
+        (Even B ∧ Even C) := by
+    cases Nat.even_or_odd B.natAbs with
+    | inl hBe =>
+      cases Nat.even_or_odd C.natAbs with
+      | inl hCe =>
+        exact Or.inr (Or.inr ⟨Int.natAbs_even.mp hBe, Int.natAbs_even.mp hCe⟩)
+      | inr hCo =>
+        exact Or.inl (Or.inl ⟨Int.natAbs_even.mp hBe, Int.natAbs_odd.mp hCo⟩)
+    | inr hBo =>
+      cases Nat.even_or_odd C.natAbs with
+      | inl hCe =>
+        exact Or.inl (Or.inr ⟨Int.natAbs_odd.mp hBo, Int.natAbs_even.mp hCe⟩)
+      | inr hCo =>
+        exact Or.inr (Or.inl ⟨Int.natAbs_odd.mp hBo, Int.natAbs_odd.mp hCo⟩)
+  rcases hpar with h | h | ⟨hBe, hCe⟩
+  · exact hPow A B C x n hx hn hne hxodd hA hB hC hcop heq (Or.inl h)
+  · exact hPow A B C x n hx hn hne hxodd hA hB hC hcop heq (Or.inr h)
+  · have h2B : 2 ∣ B.natAbs := even_iff_two_dvd.mp (Int.natAbs_even.mpr hBe)
+    have h2C : 2 ∣ C.natAbs := even_iff_two_dvd.mp (Int.natAbs_even.mpr hCe)
+    have : 2 ∣ Nat.gcd B.natAbs C.natAbs := Nat.dvd_gcd h2B h2C
+    have h1 : Nat.gcd B.natAbs C.natAbs = 1 :=
+      Nat.coprime_iff_gcd_eq_one.mp hcop
+    exact absurd (by rwa [h1] at this) (by decide : ¬ 2 ∣ (1 : ℕ))
 
 /--
 The factorization residual implies the full even-difference Beal residual
@@ -393,8 +610,6 @@ theorem BealTwoEqualEvenDiffResidual_of_factor
       have : x ≠ 3 := fun h => by
         subst h; exact Nat.not_even_iff_odd.mpr (by decide : Odd 3) hxe
       omega
-    -- Factor residual expects `Nat.Coprime B.natAbs C.natAbs`; here bases are A,C
-    -- after swapping roles to `D*E = B^y` with legs A,C.
     have hac' : Nat.Coprime A.natAbs C.natAbs := hac
     exact hFac B A C y x hy hn4 hxe hyodd hB hA hC hac' hfac
 
