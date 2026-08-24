@@ -8,12 +8,14 @@ import Mathlib.Tactic.NormNum
 spacetime algebra. The DST action writes \(G\) as a coupling constant in
 \(S = (c^4/(16\pi G))\int J\,d^4x\); the present module records CODATA-style
 placeholders so that exploratory numerical comparisons in `NewtonFromLight`,
-`CoulombFromDual`, `ElectronShell`, and `CompactS3` can be machine-checked
-without `Float`.
+`CoulombFromDual`, `ElectronShell`, `CompactS3`, and `NuclearLayer` can be
+machine-checked without `Float`.
 
 Units (SI): \(c\) in m/s, \(\hbar\) in J·s, \(G\) in m³·kg⁻¹·s⁻², masses in kg,
 elementary charge in C. Fine-structure \(\alpha\) is dimensionless.
 Galaxy-scale inputs: \(M_\odot\) in kg, kpc in m, MOND \(a_0\) in m/s².
+Nuclear-scale inputs: fm, MeV, pion/proton mass in MeV, saturation density,
+binding energy per nucleon (all external; not derived).
 
 Mantissas are exposed as `ℕ` so cleared-denominator witnesses can reuse them
 without duplicating decimal literals.
@@ -197,6 +199,94 @@ theorem mondAccelApprox_pos : (0 : ℚ) < mondAccelApprox := by
 theorem milkyWayMassApprox_pos : (0 : ℚ) < milkyWayMassApprox := by
   unfold milkyWayMassApprox milkyWayMassCoeff
   exact mul_pos (by norm_num) solarMassApprox_pos
+
+/-! ### Nuclear-scale external inputs (NuclearLayer; not derived) -/
+
+/-- Exact SI femtometer \(1\,\mathrm{fm} = 10^{-15}\) m. -/
+def femtometerApprox : ℚ := 1 / (10 : ℚ) ^ 15
+
+/-- \(1\,\mathrm{MeV} = 10^6 e\) joules (2019 SI elementary charge). -/
+def MeVApprox : ℚ :=
+  elementaryCharge * (10 : ℚ) ^ 6
+
+/-- Mantissa of charged-pion mass \(\approx 139.57039\) MeV/\(c^2\). -/
+def pionMassMeVMantissa : ℕ := 13957039
+
+def pionMassMeVScale : ℕ := 5
+
+def pionMassMeVApprox : ℚ :=
+  pionMassMeVMantissa / (10 : ℚ) ^ pionMassMeVScale
+
+/-- Mantissa of proton mass \(\approx 938.272088\) MeV/\(c^2\) (CODATA-style). -/
+def protonMassMeVMantissa : ℕ := 938272088
+
+def protonMassMeVScale : ℕ := 6
+
+def protonMassMeVApprox : ℚ :=
+  protonMassMeVMantissa / (10 : ℚ) ^ protonMassMeVScale
+
+/-- Empirical nuclear saturation density \(n_0 = 0.16\,\mathrm{fm}^{-3}\). -/
+def saturationDensityFm3Mantissa : ℕ := 16
+
+def saturationDensityFm3Scale : ℕ := 2
+
+def saturationDensityFm3Approx : ℚ :=
+  saturationDensityFm3Mantissa / (10 : ℚ) ^ saturationDensityFm3Scale
+
+/-- Empirical nuclear radius coefficient \(r_0 = 1.2\) fm. -/
+def nuclearRadiusCoeffFmMantissa : ℕ := 12
+
+def nuclearRadiusCoeffFmScale : ℕ := 1
+
+def nuclearRadiusCoeffFmApprox : ℚ :=
+  nuclearRadiusCoeffFmMantissa / (10 : ℚ) ^ nuclearRadiusCoeffFmScale
+
+/-- Empirical binding energy per nucleon near \(^{56}\mathrm{Fe}\): \(8.8\) MeV. -/
+def bindingEnergyPerNucleonMeVMantissa : ℕ := 88
+
+def bindingEnergyPerNucleonMeVScale : ℕ := 1
+
+def bindingEnergyPerNucleonMeVApprox : ℚ :=
+  bindingEnergyPerNucleonMeVMantissa /
+    (10 : ℚ) ^ bindingEnergyPerNucleonMeVScale
+
+/-- Optical-model well depth stand-in \(45\) MeV (external; not BE/\(A\)). -/
+def nuclearWellDepthMeVApprox : ℚ := 45
+
+theorem femtometerApprox_pos : (0 : ℚ) < femtometerApprox := by
+  unfold femtometerApprox; norm_num
+
+theorem MeVApprox_pos : (0 : ℚ) < MeVApprox := by
+  unfold MeVApprox
+  exact mul_pos elementaryCharge_pos (by norm_num)
+
+theorem pionMassMeVApprox_pos : (0 : ℚ) < pionMassMeVApprox := by
+  unfold pionMassMeVApprox pionMassMeVMantissa pionMassMeVScale; norm_num
+
+theorem protonMassMeVApprox_pos : (0 : ℚ) < protonMassMeVApprox := by
+  unfold protonMassMeVApprox protonMassMeVMantissa protonMassMeVScale; norm_num
+
+theorem saturationDensityFm3Approx_pos :
+    (0 : ℚ) < saturationDensityFm3Approx := by
+  unfold saturationDensityFm3Approx saturationDensityFm3Mantissa
+    saturationDensityFm3Scale
+  norm_num
+
+theorem nuclearRadiusCoeffFmApprox_pos :
+    (0 : ℚ) < nuclearRadiusCoeffFmApprox := by
+  unfold nuclearRadiusCoeffFmApprox nuclearRadiusCoeffFmMantissa
+    nuclearRadiusCoeffFmScale
+  norm_num
+
+theorem bindingEnergyPerNucleonMeVApprox_pos :
+    (0 : ℚ) < bindingEnergyPerNucleonMeVApprox := by
+  unfold bindingEnergyPerNucleonMeVApprox bindingEnergyPerNucleonMeVMantissa
+    bindingEnergyPerNucleonMeVScale
+  norm_num
+
+theorem nuclearWellDepthMeVApprox_pos :
+    (0 : ℚ) < nuclearWellDepthMeVApprox := by
+  unfold nuclearWellDepthMeVApprox; norm_num
 
 end SI
 

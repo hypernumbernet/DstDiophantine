@@ -1,6 +1,6 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-23（弦→SM 再構成 Lean 切片: Cl91 / MW16 / LevelMatch）
+最終更新: 2026-08-24（核力スケール Lean：NuclearLayer / §nuclear 論文同期）
 
 ## 0. いまの見通し
 
@@ -191,7 +191,8 @@ Gravity/                 ← PGA–TEGR チャート層（数論経路とは独�
   Tetrad（モーター誘起フレーム）, Identification（辞書・棄却）,
   SI（CODATA 有理近似 + 共有 ε_N）, NewtonFromLight（c→G 仮説探索・導出主張なし）,
   EventBoundary（許容天井↔準地平カットオフ・ラベル付き同一視・導出なし）,
-  CoulombFromDual（α↔ε_N 仮説・導出なし）, ElectronShell（γ_s・等スケール診断・λ 区間）
+  CoulombFromDual（α↔ε_N 仮説・導出なし）, ElectronShell（γ_s・等スケール診断・λ 区間）,
+  NuclearLayer（核力スケール診断・導出なし・論文 10¹⁸ / BE/A=40–50 棄却）
 Framework/
   Representation, Lattice, Amplification, Descent, Search
 Embedding/               ← R(n), T(a), Height, quantizeInt / quantizeMismatch
@@ -268,6 +269,8 @@ Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モー
 
 **銀河 S³ 余切重力（導出は主張しない）:** `Gravity/SI` に \(M_\odot\)・kpc・MOND \(a_0\)・銀河系質量係数。`Gravity/CompactS3` は余切ポテンシャル・Gauss・\(\eta/f\)・\(\tan x=2x\) の一意根（\(1.14<x_0<1.2\)）・臨界 \(f_0=x_0+1/(4x_0)\) の有理窓（\(1.35<f_0<1.41\)）・Tully–Fisher 代数・銀河系 \(R^2=GM/a_0\) の \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\) 窓。論文の \(f_0\approx 1.10\) と \(R\approx 27\,\mathrm{kpc}\) は棄却。\(a_0\) は外部入力であり無次元 \(J\) や \(\mathcal{J}\) と混同しない。`dst_derives_a0` / `dst_derives_G` は置かない。
 
+**核力スケール（導出は主張しない）:** `Gravity/SI` に fm・MeV・パイオン／陽子質量・飽和密度・BE/\(A\)・井戸深さ。`Gravity/NuclearLayer` は \(\hbar c\) 窓・パイオン／陽子 Compton・等スケール層比 \(r_2/r_1\in(1/(3\pi),1/\pi)\)・\(\rho_0\in(2,3)\times 10^{14}\) g/cm³・BE/\(A\in(7,9)\) MeV・\(\alpha_G\in(10^{-39},10^{-38})\)。論文の核内 \(10^{18}\) g/cm³ と「40–50 MeV per nucleon」を BE/\(A\) と読む解釈は棄却。\(A\sim 300\) とパイオン \(\ell\) 仮説は未導出。`dst_derives_alpha_s` は置かない。
+
 ### modular 経路（診断図）
 
 ```
@@ -307,6 +310,7 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 | 同 §electronshells | 等スケール \(\alpha=\beta=\lambda/r\) の共鳴は \(r_n=\Theta(1/n)\)。論文のリュードベリ \(n^2\) は Bohr 簿記の別置き | `ElectronShell`（`equalScale_radius_O_of_one_over_n`） |
 | 同 §darkmatter | 臨界増強 \(f_0=\min x/\sin^2 x\) は \(f_0=x_0+1/(4x_0)\approx 1.38\)（窓 \(1.35<f_0<1.41\)）。旧稿の \(\approx 1.10\) は誤り（`papers/` 同期済） | `CompactS3.paper_f0_1_10_false` |
 | 同 §darkmatter | 銀河系 \(R=\sqrt{GM/a_0}\)（\(M=6\times 10^{10}M_\odot\)）は \(\approx 8.3\,\mathrm{kpc}\)（窓 \(8\)–\(9\,\mathrm{kpc}\)）。旧稿の \(\approx 27\,\mathrm{kpc}\) は誤り（`papers/` 同期済） | `CompactS3.paper_R_MW_27_kpc_false` |
+| 同 §nuclear | 核飽和 \(\rho_0\sim(2\)–\(3)\times 10^{14}\) g/cm³。旧稿の核内 \(10^{18}\) は過大。束縛は BE/\(A\sim 8\) MeV と井戸深さ 40–50 MeV を分離。層長は経験的 NN スケール＋等スケール \(\Theta(1/n)\) 別簿記。\(A\sim 300\) は未導出ヒューリスティック | `NuclearLayer.paper_density_1e18_false` / `paper_binding_40_50_as_BE_A_false` |
 | `dst-quantum-gravity.tex` | `|J| ≤ J_max ~ N^{-2}` と `|J| ≤ c⁴/G ℓ_P^{-2}` が並立し、許容錐の `3π²/8` とも矛盾。離散 `ε_N=16/(3N²)` は非零高さの**下限**であり上界ではない | `discrete_nonzero_height_lb` |
 
 ### Jnorm 入りだが残件がある

@@ -133,6 +133,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - 素朴な点同一視（有限角 / パラメータ `J5` / `J_field=½T`）の機械検証による棄却
 - 電磁探索: `CoulombFromDual`（\(\alpha\leftrightarrow\varepsilon_N\)、\(N_*\sim 27\)）、`ElectronShell`（\(\gamma_s\)、等スケール \(\Theta(1/n)\) 診断）。導出は主張しない
 - 銀河 S³ 探索: `CompactS3`（余切重力・\(f_0\) 窓・論文の \(1.10\) / \(27\,\mathrm{kpc}\) 棄却）。\(a_0\) は外部入力。導出は主張しない
+- 核力スケール探索: `NuclearLayer`（Compton 窓・等スケール層比・\(\rho_0\)・BE/\(A\)・\(\alpha_G\)；論文の \(10^{18}\) / BE/\(A{=}40\)–\(50\) 棄却）。導出は主張しない
 
 一般のモーター場での修正された `J_field ↔ T` や、TEGR と Einstein–Hilbert の変分同値まではまだです（見通しを参照）。
 

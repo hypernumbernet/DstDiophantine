@@ -39,6 +39,11 @@ Galactic S³ exploratory quantities live in `Gravity.CompactS3`
 \(R\) windows). The MOND scale \(a_0\) is an **external** observational
 input in `Gravity.SI`; it must **not** be identified with the dimensionless
 Jacobian \(\mathcal{J}=1/\eta\) or with algebraic \(J\).
+Nuclear-scale exploratory diagnostics live in `Gravity.NuclearLayer`
+(Compton windows, equal-scale layer ratios, saturation \(\rho_0\), BE/\(A\)
+vs optical well depth, \(\alpha_G\)); no theorem asserts
+`dst_derives_alpha_s` / `dst_derives_lambdaN` / `dst_derives_Amax`.
+QCD \(\alpha_s\) is not paired with `epsN`.
 
 ## Proved / rejected
 
