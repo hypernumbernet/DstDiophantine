@@ -266,6 +266,8 @@ Schwarzschild 対角テトラッド、Weitzenböck、動径ブースト、モー
 
 **電磁・電子殻（導出は主張しない）:** `Gravity/SI` に \(e,\alpha\) と π 無しの \(k,a_0,E_I\)。`Gravity/CoulombFromDual` は同一 \(\varepsilon_N\) を \(\alpha_{\mathrm{hyp}}\) とし \(729<N_*^2<732\)（\(N_*\sim 27\)）と \(N=1\) 棄却。`Gravity/ElectronShell` は \(\gamma_s\) 共鳴、\(Z\) 収縮、等スケール根の一意性（\(\tfrac12<x_1<1\)）、\(\lambda=2x_1 a_0\) の粗い区間、および等スケールが \(\Theta(1/n)\) であり Bohr の \(n^2\) とは別簿記であることの診断。
 
+**銀河 S³ 余切重力（導出は主張しない）:** `Gravity/SI` に \(M_\odot\)・kpc・MOND \(a_0\)・銀河系質量係数。`Gravity/CompactS3` は余切ポテンシャル・Gauss・\(\eta/f\)・\(\tan x=2x\) の一意根（\(1.14<x_0<1.2\)）・臨界 \(f_0=x_0+1/(4x_0)\) の有理窓（\(1.35<f_0<1.41\)）・Tully–Fisher 代数・銀河系 \(R^2=GM/a_0\) の \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\) 窓。論文の \(f_0\approx 1.10\) と \(R\approx 27\,\mathrm{kpc}\) は棄却。\(a_0\) は外部入力であり無次元 \(J\) や \(\mathcal{J}\) と混同しない。`dst_derives_a0` / `dst_derives_G` は置かない。
+
 ### modular 経路（診断図）
 
 ```
@@ -303,6 +305,8 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 | 同 | `so(3,1)⊕so(3,1)` は次元 12。生成子は 6。Poincaré 候補が妥当 | `Generators` docstring |
 | 同 §「J remains bounded」 | 許容＋`|J|≤3π²/8`（または `|JNormalized|≤1`）に限定 | `torsion_bound_raw_continuous_pi_sq` |
 | 同 §electronshells | 等スケール \(\alpha=\beta=\lambda/r\) の共鳴は \(r_n=\Theta(1/n)\)。論文のリュードベリ \(n^2\) は Bohr 簿記の別置き | `ElectronShell`（`equalScale_radius_O_of_one_over_n`） |
+| 同 §darkmatter | 臨界増強 \(f_0=\min x/\sin^2 x\) は \(f_0=x_0+1/(4x_0)\approx 1.38\)（窓 \(1.35<f_0<1.41\)）。旧稿の \(\approx 1.10\) は誤り（`papers/` 同期済） | `CompactS3.paper_f0_1_10_false` |
+| 同 §darkmatter | 銀河系 \(R=\sqrt{GM/a_0}\)（\(M=6\times 10^{10}M_\odot\)）は \(\approx 8.3\,\mathrm{kpc}\)（窓 \(8\)–\(9\,\mathrm{kpc}\)）。旧稿の \(\approx 27\,\mathrm{kpc}\) は誤り（`papers/` 同期済） | `CompactS3.paper_R_MW_27_kpc_false` |
 | `dst-quantum-gravity.tex` | `|J| ≤ J_max ~ N^{-2}` と `|J| ≤ c⁴/G ℓ_P^{-2}` が並立し、許容錐の `3π²/8` とも矛盾。離散 `ε_N=16/(3N²)` は非零高さの**下限**であり上界ではない | `discrete_nonzero_height_lb` |
 
 ### Jnorm 入りだが残件がある

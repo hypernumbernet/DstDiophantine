@@ -8,10 +8,12 @@ import Mathlib.Tactic.NormNum
 spacetime algebra. The DST action writes \(G\) as a coupling constant in
 \(S = (c^4/(16\pi G))\int J\,d^4x\); the present module records CODATA-style
 placeholders so that exploratory numerical comparisons in `NewtonFromLight`,
-`CoulombFromDual`, and `ElectronShell` can be machine-checked without `Float`.
+`CoulombFromDual`, `ElectronShell`, and `CompactS3` can be machine-checked
+without `Float`.
 
 Units (SI): \(c\) in m/s, \(\hbar\) in J·s, \(G\) in m³·kg⁻¹·s⁻², masses in kg,
 elementary charge in C. Fine-structure \(\alpha\) is dimensionless.
+Galaxy-scale inputs: \(M_\odot\) in kg, kpc in m, MOND \(a_0\) in m/s².
 
 Mantissas are exposed as `ℕ` so cleared-denominator witnesses can reuse them
 without duplicating decimal literals.
@@ -150,6 +152,51 @@ theorem hydrogenIonisationApprox_pos : (0 : ℚ) < hydrogenIonisationApprox := b
   refine mul_pos (mul_pos (mul_pos ?_ electronMassApprox_pos)
       (pow_pos speedOfLight_pos 2)) (pow_pos fineStructureApprox_pos 2)
   norm_num
+
+/-! ### Galaxy-scale external inputs (CompactS3; not derived) -/
+
+/-- Mantissa of \(M_\odot \approx 1.98847\times 10^{30}\) kg. -/
+def solarMassMantissa : ℕ := 198847
+
+def solarMassScale : ℕ := 5
+
+/-- \(M_\odot\) stand-in: mantissa × \(10^{30}\) / \(10^{\mathrm{scale}}\). -/
+def solarMassApprox : ℚ :=
+  solarMassMantissa * (10 : ℚ) ^ 30 / (10 : ℚ) ^ solarMassScale
+
+/-- Mantissa of \(1\,\mathrm{kpc} \approx 3.085677581\times 10^{19}\) m. -/
+def kiloparsecMantissa : ℕ := 3085677581
+
+def kiloparsecScale : ℕ := 9
+
+def kiloparsecApprox : ℚ :=
+  kiloparsecMantissa * (10 : ℚ) ^ 19 / (10 : ℚ) ^ kiloparsecScale
+
+/-- Paper MOND acceleration \(a_0 = 1.2\times 10^{-10}\) m/s². -/
+def mondAccelMantissa : ℕ := 12
+
+def mondAccelScale : ℕ := 11
+
+def mondAccelApprox : ℚ :=
+  mondAccelMantissa / (10 : ℚ) ^ mondAccelScale
+
+/-- Paper Milky-Way baryonic mass coefficient \(6\times 10^{10}\,M_\odot\). -/
+def milkyWayMassCoeff : ℕ := 6 * 10 ^ 10
+
+def milkyWayMassApprox : ℚ := milkyWayMassCoeff * solarMassApprox
+
+theorem solarMassApprox_pos : (0 : ℚ) < solarMassApprox := by
+  unfold solarMassApprox solarMassMantissa solarMassScale; norm_num
+
+theorem kiloparsecApprox_pos : (0 : ℚ) < kiloparsecApprox := by
+  unfold kiloparsecApprox kiloparsecMantissa kiloparsecScale; norm_num
+
+theorem mondAccelApprox_pos : (0 : ℚ) < mondAccelApprox := by
+  unfold mondAccelApprox mondAccelMantissa mondAccelScale; norm_num
+
+theorem milkyWayMassApprox_pos : (0 : ℚ) < milkyWayMassApprox := by
+  unfold milkyWayMassApprox milkyWayMassCoeff
+  exact mul_pos (by norm_num) solarMassApprox_pos
 
 end SI
 

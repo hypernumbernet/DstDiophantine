@@ -777,7 +777,7 @@ exceeds the flat-space Newtonian acceleration $g_{\text{N}} = -GM/r^2$ by the en
 \]
 This factor is precisely the square of the metric distortion of the azimuthal equidistant projection: gravitational flux through a sphere of geodesic radius $r$ on $S^3$ subtends an area $4\pi R^2 \sin^2(r/R)$, which is smaller than the flat-space area $4\pi r^2$. The flux is concentrated, and gravity is strengthened --- not by invisible matter, but by the curvature of the compact dual spacetime.
 
-Representative values: $\eta = 1.003$ at $r/R = 0.1$; $\eta = 1.41$ at $r/R = 1.0$; $\eta = 2.26$ at $r/R = 1.5$; $\eta = 4.84$ at $r/R = 2.0$.
+Representative approximate values: $\eta \approx 1.003$ at $r/R = 0.1$; $\eta \approx 1.41$ at $r/R = 1.0$; $\eta \approx 2.26$ at $r/R = 1.5$; $\eta \approx 4.84$ at $r/R = 2.0$.
 
 \subsection{Emergence of Flat Rotation Curves}
 
@@ -787,7 +787,7 @@ v^2(r) = \frac{GM(r)}{r} \cdot \eta(r) = \frac{GM(r)}{r} \cdot \left[\frac{r/R}{
 \]
 Outside the luminous disk ($r > r_{\text{disk}}$), where $M(r) \approx M_{\text{tot}}$, the flat-space Keplerian velocity $v_K^2 = GM_{\text{tot}}/r$ declines as $r^{-1}$. The $S^3$ enhancement factor $\eta(r)$, growing monotonically with $r$, counteracts this decline.
 
-The combined dimensionless function $f(x) \equiv x / \sin^2 x$ (where $x = r/R$) governs the shape of the rotation curve. It possesses a broad minimum at $x_0 \approx 1.17$, the solution of $\tan x = 2x$, producing an extended plateau:
+The combined dimensionless function $f(x) \equiv x / \sin^2 x$ (where $x = r/R$) governs the shape of the rotation curve. It possesses a broad minimum at $x_0 \approx 1.17$, the unique root of $\tan x = 2x$ in $(\pi/4,\pi/2)$; at this critical point $f(x_0)=x_0+1/(4x_0)\approx 1.38$, producing an extended plateau:
 \begin{itemize}
   \item \textbf{Inner region} ($r \ll R$): Keplerian behavior modified by the rising $M(r)$, reproducing the observed solid-body rise.
   \item \textbf{Transition region} ($r \sim R$): the declining Keplerian factor is balanced by the growing $\eta(r)$, yielding a nearly flat plateau whose breadth is set by the width of the minimum of $f(x)$.
@@ -800,21 +800,21 @@ The asymptotic circular velocity at the plateau satisfies
 \[
 v_{\text{flat}}^2 \sim \frac{GM_{\text{tot}}}{R} \cdot f_0,
 \]
-where $f_0 \equiv \min_x [x/\sin^2 x] \approx 1.10$ is an order-unity geometric constant. If the compactification radius scales with the total enclosed mass as
+where $f_0 \equiv \min_x [x/\sin^2 x] = x_0 + 1/(4x_0) \approx 1.38$ is an order-unity geometric constant. If the compactification radius scales with the total enclosed mass as
 \[
 R = \sqrt{\frac{GM_{\text{tot}}}{a_0}},
 \]
-where $a_0$ is a fundamental acceleration set by the dual-spacetime compactification scale, then
+where $a_0 \approx 1.2 \times 10^{-10}\;\mathrm{m/s^2}$ is an external observational acceleration scale (the baryonic Tully--Fisher / MOND scale), treated here as an input rather than a quantity derived from the dual-rotor algebra, then
 \[
 v_{\text{flat}}^4 = G M_{\text{tot}} \, a_0 \, f_0^2,
 \]
-which is precisely the baryonic Tully-Fisher relation (McGaugh et al.\ 2016), with $a_0 \approx 1.2 \times 10^{-10}\;\mathrm{m/s^2}$. The scaling $R \propto M^{1/2}$ implies that more massive galaxies possess larger dual-spacetime patches, a physically natural consequence of greater total torsional charge.
+which is precisely the baryonic Tully-Fisher relation (McGaugh et al.\ 2016). The scaling $R \propto M^{1/2}$ implies that more massive galaxies possess larger dual-spacetime patches, a physically natural consequence of greater total torsional charge.
 
 For the Milky Way ($M_{\text{tot}} \approx 6 \times 10^{10}\,M_\odot$), this yields
 \[
-R = \sqrt{\frac{G \times 6 \times 10^{10}\,M_\odot}{1.2 \times 10^{-10}\;\mathrm{m/s^2}}} \approx 27\;\mathrm{kpc},
+R = \sqrt{\frac{G \times 6 \times 10^{10}\,M_\odot}{1.2 \times 10^{-10}\;\mathrm{m/s^2}}} \approx 8.3\;\mathrm{kpc},
 \]
-in striking agreement with the observed radial extent of the flat rotation curve. The acceleration scale $a_0$ is thus identified as the characteristic gravitational acceleration at the $S^3$ boundary of a typical galaxy, and its origin lies in the discrete compactification structure of the dual spacetime (Section~\ref{sec:discretetime}).
+so that the geometric plateau of $f(x)$ sits near the inner--mid disk scale ($r\sim R$), while the torsional reversal lies at $r=\pi R/2\approx 13\;\mathrm{kpc}$. Identifying $a_0$ with a characteristic acceleration on the $S^3$ patch remains a working hypothesis pending a derivation from the discrete compactification structure (Section~\ref{sec:discretetime}).
 
 \subsection{Torsional Reversal and the Finite Range of Gravity}
 
@@ -849,7 +849,7 @@ Full $N$-body integrations incorporating the exact $S^3$ cotangent potential are
 
 Key predictions distinguishing this theory from $\Lambda$CDM and MOND include:
 \begin{itemize}
-  \item \textbf{Outer rotation curve upturn and reversal}: Isolated galaxies should exhibit a gentle upturn beyond $r \gtrsim 2R$, transitioning to declining and eventually repulsive gravity at $r \approx \pi R/2$, detectable via deep 21-cm HI observations extending to $\sim 100\;\mathrm{kpc}$.
+  \item \textbf{Outer rotation curve upturn and reversal}: Isolated galaxies should exhibit a gentle upturn beyond $r \gtrsim 2R$, transitioning to declining and eventually repulsive gravity at $r \approx \pi R/2$. For Milky Way--type masses ($R\approx 8.3\;\mathrm{kpc}$) this places $2R\approx 17\;\mathrm{kpc}$ and $\pi R/2\approx 13\;\mathrm{kpc}$, so the signatures are accessible to deep 21-cm HI observations beyond the optical disk rather than exclusively at $\sim 100\;\mathrm{kpc}$.
   \item \textbf{Lensing sign reversal}: Galaxy-galaxy weak lensing should weaken and reverse sign at projected separations exceeding $\pi R/2$, in sharp contrast to the monotonic NFW profiles predicted by $\Lambda$CDM.
   \item \textbf{Cotangent vs.\ MOND interpolation}: The precise form of the radial acceleration relation should follow the cotangent-derived enhancement $g_{\text{obs}} = g_{\text{bar}} \cdot \eta(r)$ rather than the standard MOND interpolation function $\nu(g_{\text{bar}}/a_0)$, with measurable deviations at $g \lesssim a_0/10$.
   \item \textbf{Diversity from $R(M)$}: The observed diversity of rotation curve shapes --- from slowly rising (low-surface-brightness dwarfs with $r_{\text{disk}} \ll R$) to flat (Milky Way-type) to gently declining (high-surface-brightness spirals with $r_{\text{disk}} \sim R$) --- is reproduced by the single relation $R = \sqrt{GM/a_0}$ without additional free parameters.

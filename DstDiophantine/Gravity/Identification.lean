@@ -34,6 +34,11 @@ Electromagnetic stand-ins and hypotheses live in `Gravity.CoulombFromDual`
 (\(\alpha\leftrightarrow\varepsilon_N\)) and `Gravity.ElectronShell`
 (\(\gamma_s\), equal-scale \(\Theta(1/n)\) diagnostic); neither derives
 \(\alpha\) or \(\lambda\) from the dual-rotor algebra.
+Galactic S³ exploratory quantities live in `Gravity.CompactS3`
+(cotangent potential, \(\eta\), \(f_0\), Tully–Fisher algebra, Milky Way
+\(R\) windows). The MOND scale \(a_0\) is an **external** observational
+input in `Gravity.SI`; it must **not** be identified with the dimensionless
+Jacobian \(\mathcal{J}=1/\eta\) or with algebraic \(J\).
 
 ## Proved / rejected
 
