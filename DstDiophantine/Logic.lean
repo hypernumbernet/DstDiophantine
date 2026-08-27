@@ -16,6 +16,8 @@ import DstDiophantine.Logic.Example.BealRegime
 import DstDiophantine.Logic.DiscreteAmplitude
 import DstDiophantine.Logic.Dynamics
 import DstDiophantine.Logic.Winding
+import DstDiophantine.Logic.MotorProp
+import DstDiophantine.Logic.BalancedResidual
 import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Quantum.DualSector
 import DstDiophantine.Logic.Quantum.Quaternion
@@ -68,6 +70,8 @@ and `DstDiophantine.CGA`).
   vacuum is a fixed point; balanced massive can stay `T` or leave the cone
   invisibly to `classify?`
 * `Logic.Winding` — height and winding are incompatible measurements
+* `Logic.MotorProp` — L2: additive motor ≠ multiplicative amplitude
+* `Logic.BalancedResidual` — L3: `BalancedResidualClass` vs window seeds
 
 Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
 The amplitude layer is not a Hilbert space, a Born rule, or an
@@ -232,7 +236,10 @@ example :
         diagModular.eval v.assign = .F ∧
           bookRealization.eval v.assign = .B ∧
             liveMordell.eval v.assign = .U ∧
-              bealConjecture.eval v.assign = .U :=
+              liveOdd.eval v.assign = .U ∧
+                liveAllDistinct.eval v.assign = .U ∧
+                  liveUnequalOdd.eval v.assign = .U ∧
+                    bealConjecture.eval v.assign = .U :=
   exists_beal_atlas_valuation
 
 /-- Regression: closed Beal slices do not T-entail classical Beal. -/
@@ -243,6 +250,21 @@ example :
 /-- Regression: closed slices packaged with a live residual stay live. -/
 example : meetRList (closedSliceStatuses ++ [.U]) = .U :=
   meetRList_closed_with_live
+
+/-- Regression: L2 pure-translation torsion amplitude is vacuum. -/
+example :
+    (⟨zeroTorsion, isAdmissibleContinuous_zeroTorsion⟩ : Amplitude).IsVacuum :=
+  pure_translation_torsion_isVacuum
+
+/-- Regression: L2 additive vacuum ≠ multiplicative balanced massive. -/
+example :
+    vacuumAmplitude.IsVacuum ∧ balancedAmplitude.IsBalancedMassive ∧
+      ¬ vacuumAmplitude.IsBalancedMassive ∧ ¬ balancedAmplitude.IsVacuum :=
+  additive_vacuum_ne_multiplicative_balanced
+
+/-- Regression: L3 balanced residual class excludes window seeds. -/
+example : BalancedResidualClass balancedAmplitude ∧ ¬ BalancedResidualClass halfWindowSeed :=
+  ⟨balancedAmplitude_mem_balancedResidualClass, halfWindowSeed_not_balanced⟩
 
 /-- Regression: `U → T` is not designated. -/
 example : impR .U .T = .U :=

@@ -290,19 +290,19 @@ J_norm(G) < 1
 
 場所は `Logic/Regime.lean` と `Logic/Example/Regime.lean` です。離散振幅（`¬4∣N` なら F 不在）は `Logic/DiscreteAmplitude.lean`、増幅によるラベルの動きは `Logic/Dynamics.lean`、高さと巻数の両立不可能性は `Logic/Winding.lean` です。
 
-### ビール残件地図（Phase 7p）
+### ビール残件地図・L2/L3（Phase 7p / 7r）
 
-例5の抽象原子を、ビール予想の閉じた切片・診断・bookkeeping・未閉鎖残件に具体化したのが `Logic/Example/BealRegime.lean` です。honest valuation は閉じた切片を `T`、診断を `F`、Realization bookkeeping を `B`、細残件と古典予想を `U` に置きます。閉じた切片の有限 `meetR` は `T` ですが、任意の U 残件を積むと `U` のままです（`{切片} ⊭_T` 古典 Beal）。
+`Logic/Example/BealRegime.lean` が切片 T / 診断 F / book B / 残件 U（Odd・AllDistinct・UnequalOdd は別原子）をホストし、`{切片} ⊭_T` 古典 Beal を固定します。証人は `Theorems/BealRegime.lean`（`Basic` 非 export）。開残件 Bool ↔ `U` だが、**釣り合い座席の十分条件ではない**。
 
-実定理への証人は `Theorems/BealRegime.lean` にあり、`Basic` からは export しません（Logic を数論入口に混ぜない）。開残件 Bool `isOpenResidualExponents` はレジームラベル `U` と同値です。無条件古典 Beal は主張しません。
+| 側 | Lean |
+|----|------|
+| 地図・非含意 | `exists_beal_atlas_valuation` / `closed_slices_not_entailsTR_beal` |
+| 開残件 ↔ U | `classifyBealExponents_eq_U_iff` |
+| 開残件 ⇏ 座席 | `open_residual_U_not_implies_balancedSeat` |
+| L2 加法≠乗法 | `Logic/MotorProp.lean` |
+| L3 釣り合い vs 窓 | `Logic/BalancedResidual.lean` |
 
-| 側 | 内容 | Lean |
-|----|------|------|
-| 地図の実現 | 切片 T / 診断 F / book B / 残件 U | `exists_beal_atlas_valuation` |
-| 切片では空 | `{切片} ⊭_T` 古典 Beal | `closed_slices_not_entailsTR_beal` |
-| 名前・壁では空 | 本命 U と核 T を同時に持てない | `not_exists_named_beal_live` / `not_exists_wall_beal_slice` |
-| 開残件 ↔ U | Bool フィルタのラベル読み | `classifyBealExponents_eq_U_iff` |
-| 釣り合い席 | `T` かつ質量 > 0（真空ではない） | `beal_balanced_diagnostic_seat` |
+意味論の変更であり、ペアノの新定理ではない。無条件古典 Beal は主張しません。
 
 ---
 
@@ -393,7 +393,9 @@ J_norm(G) < 1
 | 例3 J_norm < 1 | `Logic/Example/NotFalse.lean` |
 | 例4 相補性 | `Logic/Quantum/QuantumLogic.lean`、`Dictionary.lean` |
 | 例5 ディオファントス・レジーム | `Logic/Regime.lean`、`Logic/Example/Regime.lean` |
-| ビール残件地図（Phase 7p） | `Logic/Example/BealRegime.lean`、`Theorems/BealRegime.lean` |
+| ビール残件地図（Phase 7p/7r） | `Logic/Example/BealRegime.lean`、`Theorems/BealRegime.lean` |
+| L2 モーター命題 | `Logic/MotorProp.lean` |
+| L3 釣り合い残件 | `Logic/BalancedResidual.lean` |
 | 離散振幅 | `Logic/DiscreteAmplitude.lean` |
 | 増幅力学 | `Logic/Dynamics.lean` |
 | 巻数との二測定 | `Logic/Winding.lean` |

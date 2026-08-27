@@ -1,13 +1,14 @@
 import DstDiophantine.Theorems.BealGaussian
 import DstDiophantine.Theorems.BealMixed
 import DstDiophantine.Theorems.DarmonMerel
+import DstDiophantine.Logic.Geometric
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Linarith
 
 /-!
-# Phase 7k / 7m / 7o: even two-equal residual split (sum vs difference)
+# Phase 7k / 7m / 7o / 7r: even two-equal residual split (sum vs difference)
 
 Splits `BealTwoEqualEvenResidual` into:
 
@@ -18,8 +19,9 @@ Splits `BealTwoEqualEvenResidual` into:
 
 The sum form with `z = 3` is closed by Darmon–Merel. Phase 7o extracts signed
 /`2`-stripped perfect powers from the difference factor kernel and packages the
-live body as `BealTwoEqualEvenDiffPerfectPowerResidual`. Classical Beal is
-**not** claimed unconditionally.
+live body as `BealTwoEqualEvenDiffPerfectPowerResidual`. Phase 7r records that
+sum (Gaussian / cyclic) and diff (hyperbolic factor) interfere and must not
+share a CGA dilation no-go. Classical Beal is **not** claimed unconditionally.
 -/
 
 namespace DstDiophantine
@@ -683,6 +685,21 @@ theorem beal_conjecture_pos_of_fine_residuals_even_split
       1 < bealGcd A B C :=
   beal_conjecture_pos_of_fine_residuals
     (beal_two_equal_even_of_sum_diff hSum hDiff) hOdd hDist hEq hUneq
+
+/-! ### Phase 7r: sector diagnostics (sum = cyclic, diff = hyperbolic) -/
+
+/-
+Even-sum already packages as Gaussian hypotenuse
+(`beal_two_equal_even_sum_gaussian` — cyclic / rotation sector).
+Even-diff packages as hyperbolic factors
+(`beal_two_equal_even_diff_yz_progress`). Distinct axes interfere, so the
+two forms must not share a single CGA dilation no-go.
+-/
+
+/-- Hyperbolic and cyclic generators on distinct axes do not commute. -/
+theorem beal_even_sum_diff_sectors_interfere :
+    Logic.interfere Logic.axis0Boost Logic.axis1Rotation ≠ 0 :=
+  Logic.interfere_axis0_axis1_ne_zero
 
 end Theorems
 

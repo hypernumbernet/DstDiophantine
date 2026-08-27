@@ -6,24 +6,12 @@ Authors: DstDiophantine contributors
 import DstDiophantine.Logic.Regime
 
 /-!
-# Phase 7p: abstract Beal residual atlas (D4L regime layer)
+# Phase 7p / 7r: abstract Beal residual atlas (D4L regime layer)
 
-Extends Example 5 with a Beal-shaped honest valuation. Atoms are **names
-only** — this module does not import `Theorems`. Witnesses that touch the
-Bool open-residual filter live in `Theorems.BealRegime` (not re-exported
-from `Basic`).
-
-Atom layout (`bealAtlasStatuses` / `ofList`):
-
-* `0`–`3` — closed slices (`T`): `d ≥ 3` / Darmon–Merel cube / `|u| = 1` /
-  two exponents divisible by 4
-* `4`–`5` — diagnostics (`F`): modular payload incompatible / balanced seed
-* `6` — bookkeeping (`B`): CGA Realization ≡ `|A| = 1`
-* `7`–`11` — live residuals (`U`): Mordell / `e ≥ 5` / even-diff perfect power /
-  sum `z ≠ 3` / Odd+AllDistinct+UnequalOdd package
-* `12` — classical Beal conjecture (`U`)
-
-Unconditional classical Beal is **not** claimed.
+Atoms are names only (no `Theorems` import). Witnesses live in
+`Theorems.BealRegime`. Layout: slices `T` (0–3), diagnostics `F` (4–5),
+bookkeeping `B` (6), live residuals `U` (7–13; Odd/AllDistinct/UnequalOdd
+split at 11–13), conjecture `U` (14). Unconditional classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -59,24 +47,28 @@ def liveGeFive : RegimeFormula := atom 8
 def liveDiffPP : RegimeFormula := atom 9
 /-- Live residual: even-sum outside cube (`z = 5` / `z ≥ 7`). -/
 def liveSumOut : RegimeFormula := atom 10
-/-- Live residual: Odd / AllDistinct / UnequalOdd package. -/
-def liveOddDist : RegimeFormula := atom 11
+/-- Live residual: odd two-equal (outside Darmon–Merel cubes). -/
+def liveOdd : RegimeFormula := atom 11
+/-- Live residual: all-distinct mixed exponents. -/
+def liveAllDistinct : RegimeFormula := atom 12
+/-- Live residual: Pythagorean unequal-odd. -/
+def liveUnequalOdd : RegimeFormula := atom 13
 
 /-- Classical Beal conjecture (positive coprime form). -/
-def bealConjecture : RegimeFormula := atom 12
+def bealConjecture : RegimeFormula := atom 14
 
 /-- Honest atlas status list (indices match the atoms above). -/
 def bealAtlasStatuses : List TruthValue :=
-  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U]
+  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U]
 
 /-- Honest Beal atlas valuation. -/
 def bealAtlasVal : RegimeValuation :=
   RegimeValuation.ofList bealAtlasStatuses
 
-private theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 13 := by
+private theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 15 := by
   simp [bealAtlasStatuses]
 
-private theorem bealAtlasVal_at (n : ℕ) (hn : n < 13) :
+private theorem bealAtlasVal_at (n : ℕ) (hn : n < 15) :
     bealAtlasVal.assign n = bealAtlasStatuses[n] :=
   RegimeValuation.ofList_get _ _ (by rw [bealAtlasStatuses_length]; exact hn)
 
@@ -93,8 +85,19 @@ theorem bealAtlasVal_bookRealization :
 theorem bealAtlasVal_liveMordell : liveMordell.eval bealAtlasVal.assign = .U :=
   bealAtlasVal_at 7 (by decide)
 
-theorem bealAtlasVal_conjecture : bealConjecture.eval bealAtlasVal.assign = .U :=
+theorem bealAtlasVal_liveOdd : liveOdd.eval bealAtlasVal.assign = .U :=
+  bealAtlasVal_at 11 (by decide)
+
+theorem bealAtlasVal_liveAllDistinct :
+    liveAllDistinct.eval bealAtlasVal.assign = .U :=
   bealAtlasVal_at 12 (by decide)
+
+theorem bealAtlasVal_liveUnequalOdd :
+    liveUnequalOdd.eval bealAtlasVal.assign = .U :=
+  bealAtlasVal_at 13 (by decide)
+
+theorem bealAtlasVal_conjecture : bealConjecture.eval bealAtlasVal.assign = .U :=
+  bealAtlasVal_at 14 (by decide)
 
 /-- Closed-slice statuses under the honest atlas. -/
 def closedSliceStatuses : List TruthValue :=
@@ -133,9 +136,14 @@ theorem exists_beal_atlas_valuation :
         diagModular.eval v.assign = .F ∧
           bookRealization.eval v.assign = .B ∧
             liveMordell.eval v.assign = .U ∧
-              bealConjecture.eval v.assign = .U :=
+              liveOdd.eval v.assign = .U ∧
+                liveAllDistinct.eval v.assign = .U ∧
+                  liveUnequalOdd.eval v.assign = .U ∧
+                    bealConjecture.eval v.assign = .U :=
   ⟨bealAtlasVal, bealAtlasVal_sliceFLT, bealAtlasVal_diagModular,
-    bealAtlasVal_bookRealization, bealAtlasVal_liveMordell, bealAtlasVal_conjecture⟩
+    bealAtlasVal_bookRealization, bealAtlasVal_liveMordell, bealAtlasVal_liveOdd,
+    bealAtlasVal_liveAllDistinct, bealAtlasVal_liveUnequalOdd,
+    bealAtlasVal_conjecture⟩
 
 /-- Closed slices alone do not T-entail classical Beal. -/
 theorem closed_slices_not_entailsTR_beal :
@@ -159,7 +167,7 @@ force the conjecture off `F` (non-explosion of status packaging).
 -/
 def bealWindowBookVal : RegimeValuation :=
   RegimeValuation.ofList
-    (bealAtlasStatuses.set 12 .F)
+    (bealAtlasStatuses.set 14 .F)
 
 theorem window_book_not_entailsNotFR_beal :
     ¬ EntailsNotFR {sliceFLT, bookRealization} bealConjecture := by
