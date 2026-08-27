@@ -18,7 +18,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
-# Phase 5–7: Fermat's Last Theorem (problem-specific layer)
+# Phase 5–7 / dual-axis: Fermat's Last Theorem (problem-specific layer)
 
 Additive null encoding and Fermat-specific bridges / balanced-seed diagnostics.
 Shared amplification no-go theorems live in `Framework.Amplification`; pure-boost
@@ -29,10 +29,11 @@ algebra lives in `Algebra.Amplification`.
 Classical FLT is **not** claimed unconditionally. Continuous
 `FermatAdmissibleBridge` is only a diagnostic device (false on the balanced
 scale). The legacy `FermatCoarseDiscreteBridge` uses a structurally empty
-payload (`CoarseAmplificationWitness.empty_of_coarse`). The live programme is
-`FermatModularBridge`: a **solution-dependent** modular witness on
-`quantizeMismatch`, together with the residual conformal-gauge gap
-`ConformalGaugeAdmissible`.
+payload (`CoarseAmplificationWitness.empty_of_coarse`). The single-axis
+`FermatModularBridge` is **demoted to diagnostic**: geometric FLT seeds with
+the larger base have winding `0` (`fermat_larger_base_no_modularWitness`).
+The live programme is the dual-axis Fermat motor
+(`Embedding.FermatMotor`, `FermatMixedMotorResidual`).
 -/
 
 namespace DstDiophantine
@@ -287,27 +288,23 @@ theorem fermat_last_theorem_of_bridge (hbridge : FermatAdmissibleBridge) :
   have hp1 : 1 ≤ p := Nat.le_trans (by decide : 1 ≤ 3) hp
   exact fermat_amplification_contradiction ha hc hp1 hadm hbig
 
-/-! ### Live modular bridge (solution-dependent payload) -/
+/-! ### Modular bridge (diagnostic / demoted from live programme) -/
 
 /--
-**Live modular bridge** (unproved).
+**Diagnostic modular bridge** (demoted; unproved as a live path).
 
 * **Payload (solution-dependent):** the quantised log-mismatch
   `t := quantizeMismatch N a c` is admissible, carries a
   `ModularAmplificationWitness N p` with `w.t.val = t`, and the powered
   real-scale configuration is `ConformalGaugeAdmissible`.
-* **Unlike** `FermatCoarseDiscreteBridge`: the witness type is inhabited in
-  general (`ModularAmplificationWitness.nonempty_example`), but the bridge
-  demands that the *solution's* quantised mismatch be that witness — not a
-  fixed unrelated seed.
-* **Unlike** merely asserting `Nonempty (ModularAmplificationWitness 16 5)`:
-  the seed is tied to `(a,c)` via `quantizeMismatch`.
-* **Proved core used by the conditional wrapper:**
-  `ModularAmplificationWitness.not_admissible_real_scale` — nonzero winding
-  rules out `ConformalGaugeAdmissible` under the present identification of
-  conformal gauge with the PGA real-scale cone.
-* **Residual gap:** whether a conformal / CGA gauge can make the third
-  conjunct hold without collapsing to that obstruction (see `Algebra.CGA`).
+* **Why demoted:** on the geometric FLT scale with the *larger* base
+  (`a ≤ b` ⇒ `log(c/b) ≤ (log 2)/p < 2π/p`), the solution-tied pure-boost
+  seed has total winding `0` (`fermat_larger_base_no_modularWitness`).
+  Nonzero winding is the only modular no-go hook; balanced / near-balanced
+  seeds never fire it.
+* **Conditional wrapper retained** for regression / Beal transport only.
+* **Live programme:** dual-axis Fermat motor
+  (`Embedding.FermatMotor`, `FermatMixedMotorResidual`).
 * **Does not claim:** unconditional classical FLT.
 -/
 def FermatModularBridge : Prop :=
@@ -336,6 +333,110 @@ theorem fermat_last_theorem_of_modular_bridge
     ModularAmplification.ModularAmplificationWitness.not_admissible_real_scale w
   rw [hw] at hnot
   exact hnot hconf
+
+/-! ### Single-axis winding obstruction (geometric FLT scale) -/
+
+private theorem natAbs_coe_eq_coe_of_pos {z : ℤ} (hz : 0 < z) :
+    (z.natAbs : ℝ) = (z : ℝ) := by
+  have h : (z.natAbs : ℤ) = z := Int.natAbs_of_nonneg (le_of_lt hz)
+  calc (z.natAbs : ℝ) = ((z.natAbs : ℤ) : ℝ) := rfl
+    _ = (z : ℝ) := by rw [h]
+
+/--
+On a positive Fermat solution with `a ≤ b`, the larger-base log-mismatch is at
+most the balanced scale `(log 2)/p`.
+-/
+theorem fermat_larger_base_log_le {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
+    (hsol : a ^ p + b ^ p = c ^ p) :
+    Real.log (Int.natAbs c) - Real.log (Int.natAbs b) ≤
+      Real.log 2 / (p : ℝ) := by
+  have hb0 : (0 : ℝ) < b := by exact_mod_cast hb
+  have hc0 : (0 : ℝ) < c := by exact_mod_cast hc
+  have ha0 : (0 : ℝ) ≤ a := by exact_mod_cast (le_of_lt ha)
+  have hbAbs := natAbs_coe_eq_coe_of_pos hb
+  have hcAbs := natAbs_coe_eq_coe_of_pos hc
+  have hpow : (c : ℝ) ^ p ≤ (2 : ℝ) * (b : ℝ) ^ p := by
+    have h1 : (a : ℝ) ^ p + (b : ℝ) ^ p = (c : ℝ) ^ p := by exact_mod_cast hsol
+    have h2 : (a : ℝ) ^ p ≤ (b : ℝ) ^ p :=
+      pow_le_pow_left₀ ha0 (by exact_mod_cast hle) p
+    nlinarith [pow_nonneg (le_of_lt hb0) p, h1, h2]
+  have hdiv : ((c : ℝ) / b) ^ p ≤ 2 := by
+    have := (div_le_iff₀ (pow_pos hb0 p)).mpr hpow
+    rwa [← div_pow] at this
+  have hratio_pos : (0 : ℝ) < c / b := div_pos hc0 hb0
+  have hlog : Real.log ((c / b) ^ p) ≤ Real.log 2 :=
+    Real.log_le_log (pow_pos hratio_pos p) hdiv
+  have hp0 : (0 : ℝ) < p := Nat.cast_pos.mpr hp
+  have hrewrite :
+      Real.log (c.natAbs) - Real.log (b.natAbs) =
+        Real.log ((c : ℝ) / b) := by
+    rw [hbAbs, hcAbs, Real.log_div (ne_of_gt hc0) (ne_of_gt hb0)]
+  have hlog' : Real.log (c / b) * (p : ℝ) ≤ Real.log 2 := by
+    have := (by rwa [Real.log_pow] at hlog :
+      (p : ℝ) * Real.log (c / b) ≤ Real.log 2)
+    linarith
+  have : Real.log (c / b) ≤ Real.log 2 / (p : ℝ) :=
+    (le_div_iff₀ hp0).mpr hlog'
+  rwa [hrewrite]
+
+/-- Balanced scale is strictly below the modular wrap threshold `2π/p`. -/
+theorem fermat_balanced_scale_lt_wrap {p : ℕ} (hp : 0 < p) :
+    Real.log 2 / (p : ℝ) < 2 * Real.pi / (p : ℝ) := by
+  have hp0 : (0 : ℝ) < p := Nat.cast_pos.mpr hp
+  have h1 : Real.log 2 < 1 := by
+    have h := Real.log_lt_sub_one_of_pos (by norm_num : (0 : ℝ) < 2) (by norm_num)
+    linarith [h]
+  have h2 : (1 : ℝ) < 2 * Real.pi := by nlinarith [Real.pi_gt_three]
+  exact (div_lt_div_iff_of_pos_right hp0).mpr (h1.trans h2)
+
+private theorem fermat_larger_base_log_nonneg {a b c : ℤ} {p : ℕ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ p + b ^ p = c ^ p) :
+    0 ≤ Real.log c.natAbs - Real.log b.natAbs := by
+  have hbc : b < c := by
+    have hap : 0 < a ^ p := pow_pos ha p
+    have hlt : b ^ p < c ^ p := by
+      have : b ^ p < a ^ p + b ^ p := lt_add_of_pos_left _ hap
+      rwa [hsol] at this
+    exact lt_of_pow_lt_pow_left₀ p (le_of_lt hc) hlt
+  have : (b : ℝ) < c := by exact_mod_cast hbc
+  rw [natAbs_coe_eq_coe_of_pos hb, natAbs_coe_eq_coe_of_pos hc, sub_nonneg]
+  exact Real.log_le_log (by exact_mod_cast hb) this.le
+
+/-- Larger-base geometric seed never yields a modular winding witness. -/
+theorem fermat_larger_base_no_modularWitness
+    (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
+    (hsol : a ^ p + b ^ p = c ^ p) :
+    ¬ ∃ w : ModularAmplificationWitness N p,
+      w.t.val = Embedding.quantizeMismatch N b c (ne_of_gt hb) (ne_of_gt hc) := by
+  intro hw
+  have hθle := fermat_larger_base_log_le hp ha hb hc hle hsol
+  have hθlt :=
+    lt_of_le_of_lt hθle (fermat_balanced_scale_lt_wrap (Nat.succ_le_iff.mp hp))
+  have h0 := fermat_larger_base_log_nonneg ha hb hc hsol
+  change ∃ w : ModularAmplificationWitness N p,
+      w.t.val = pureBoostSeedOfRapidity N
+        (Real.log c.natAbs - Real.log b.natAbs) at hw
+  exact not_exists_modularWitness_of_rapidity_lt N p
+    (Nat.succ_le_iff.mp hp) _ h0 hθlt hw
+
+/-- `quantizeMismatch` of the larger base is a pure-boost seed with winding 0. -/
+theorem fermat_larger_base_windingTotal_eq_zero
+    (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
+    (hsol : a ^ p + b ^ p = c ^ p) :
+    windingTotal p
+        (Embedding.quantizeMismatch N b c (ne_of_gt hb) (ne_of_gt hc)) = 0 := by
+  have hθle := fermat_larger_base_log_le hp ha hb hc hle hsol
+  have hθlt :=
+    lt_of_le_of_lt hθle (fermat_balanced_scale_lt_wrap (Nat.succ_le_iff.mp hp))
+  have h0 := fermat_larger_base_log_nonneg ha hb hc hsol
+  change windingTotal p
+      (pureBoostSeedOfRapidity N (Real.log c.natAbs - Real.log b.natAbs)) = 0
+  exact windingTotal_eq_zero_of_rapidity_lt N p
+    (Nat.succ_le_iff.mp hp) _ h0 hθlt
 
 /-! ### Mathlib FLT hypothesis (for Beal exponent-gcd reduction) -/
 

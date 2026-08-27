@@ -17,6 +17,8 @@ import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Theorems.FermatMixed
+import DstDiophantine.Embedding.FermatMotor
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
@@ -96,6 +98,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   fermat_last_theorem_of_coarse_discrete_bridge
   FermatModularBridge fermat_last_theorem_of_modular_bridge
   FermatLastTheorem_of_modular_bridge
+  fermat_larger_base_log_le fermat_larger_base_no_modularWitness
+  fermat_larger_base_windingTotal_eq_zero
+  FermatMixedMotorResidual fermat_pos_of_mixed_motor_residual
+  FermatLastTheorem_of_mixed_motor_residual
+  isMixedFermatMotor_of_sol fermatBoost_eq_zero_iff_pythagorean
   beal_solution_iff_motor bealMinExp bealAmpExp bealExpGcd bealGcd
   beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge

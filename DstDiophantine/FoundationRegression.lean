@@ -15,6 +15,7 @@ import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.PGA
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Theorems.FermatMixed
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
 import DstDiophantine.Theorems.BealPythagorean
@@ -149,11 +150,24 @@ example {N : ℕ} [NeZero N] (n : ℤ) (hn : n ≠ 0) (habs : Int.natAbs n = 1) 
     quantizeInt N n hn = zeroTorsion N :=
   quantizeInt_one n hn habs
 
-/-- Modular bridge recovers classical FLT conditionally (solution-dependent payload). -/
+/-- Modular bridge recovers classical FLT conditionally (solution-dependent payload).
+Diagnostic / demoted: geometric larger-base seeds have winding 0. -/
 example (hbridge : FermatModularBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
       ¬ (a ^ p + b ^ p = c ^ p) :=
   fermat_last_theorem_of_modular_bridge hbridge
+
+/-- Geometric FLT larger-base seed never yields a modular winding witness. -/
+example (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
+    (hsol : a ^ p + b ^ p = c ^ p) :
+    ¬ ∃ w : ModularAmplificationWitness N p,
+      w.t.val = quantizeMismatch N b c (ne_of_gt hb) (ne_of_gt hc) :=
+  fermat_larger_base_no_modularWitness N hp ha hb hc hle hsol
+
+/-- Dual-axis residual recovers classical FLT conditionally. -/
+example (hres : FermatMixedMotorResidual) : FermatLastTheorem :=
+  FermatLastTheorem_of_mixed_motor_residual hres
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :

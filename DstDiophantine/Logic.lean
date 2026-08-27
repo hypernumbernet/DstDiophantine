@@ -13,6 +13,7 @@ import DstDiophantine.Logic.Example.NotFalse
 import DstDiophantine.Logic.Regime
 import DstDiophantine.Logic.Example.Regime
 import DstDiophantine.Logic.Example.BealRegime
+import DstDiophantine.Logic.Example.FermatRegime
 import DstDiophantine.Logic.DiscreteAmplitude
 import DstDiophantine.Logic.Dynamics
 import DstDiophantine.Logic.Winding
@@ -63,8 +64,8 @@ and `DstDiophantine.CGA`).
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
-  Diophantine regimes, Beal residual atlas (complementarity is the existing
-  `ℂ²` lattice theorems)
+  Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
+  (complementarity is the existing `ℂ²` lattice theorems)
 * `Logic.DiscreteAmplitude` — torus amplitudes; `¬4 ∣ N` forbids `F`
 * `Logic.Dynamics` — amplification as a partial map on labels;
   vacuum is a fixed point; balanced massive can stay `T` or leave the cone
@@ -246,6 +247,21 @@ example :
 example :
     ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture :=
   closed_slices_not_entailsTR_beal
+
+/-- Regression: FLT atlas realises closed `T`, diagnostic `F`, live `U`. -/
+example :
+    ∃ v : RegimeValuation,
+      sliceCore.eval v.assign = .T ∧
+        sliceLp.eval v.assign = .T ∧
+          diagSingleAxisModular.eval v.assign = .F ∧
+            diagBalancedSeed.eval v.assign = .F ∧
+              liveMixedMotor.eval v.assign = .U ∧
+                fltConjecture.eval v.assign = .U :=
+  exists_fermat_atlas_valuation
+
+/-- Regression: closed FLT slices do not T-entail classical FLT. -/
+example : ¬ EntailsTR {sliceCore, sliceLp} fltConjecture :=
+  closed_slices_not_entailsTR_flt
 
 /-- Regression: closed slices packaged with a live residual stay live. -/
 example : meetRList (closedSliceStatuses ++ [.U]) = .U :=
