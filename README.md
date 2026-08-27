@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7p に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元。Darmon–Merel 公理は二一致立方切片を 3 位置（奇数の差型含む）まで閉鎖。偶二一致は和型／差型に分割し、差型は因数分解核（`gcd∣2`・2-進補題・完全冪抽出・PerfectPower→Factor 組立）へ、和型は `z=5`/`≥7` に分割。equal-odd `e=3` は正の `α³+2β³=γ³` へ還元し Affine 有理点残件から組立；Affine は Mordell `y²=x³-1728` へ双有理包装（階数は未）；`|u|=1` は奇数 `e≥3` で Mihăilescu 閉鎖、`e≥5` は `|u|≥3` に狭め。有限箱（底 ≤8・指数 3…5）に加え、冪判定探索（底 ≤17・指数 3…6・`C` 非有界）で互素解なしを `native_decide` で証明。正立方核 ≤60、開残件フィルタ ≤30。D4L レジームでビール残件地図（切片 T / 診断 F / book B / 残件 U）を固定し、開残件 Bool ↔ ラベル `U`；証人は `Theorems/BealRegime`（`Basic` 非依存）。無条件古典 Beal は主張しない。
+- **Beal 危機路線をフェーズ 7q に進めた。** `BealCGARealization` / `BealCGADiscreteClosed` は bookkeeping（幾何原理としては使わない）。`d≥3` は FLT 公理 `fermatLastTheorem`（Wiles の Lean 証明ではない）で閉鎖。正の古典 Beal は `beal_conjecture_pos_of_fine_residuals` で細残件へ還元。Darmon–Merel 公理は二一致立方切片を 3 位置（奇数の差型含む）まで閉鎖。偶二一致は和型／差型に分割し、差型は因数分解核（`gcd∣2`・2-進補題・完全冪抽出・PerfectPower→Factor 組立）へ、和型は `z=5`/`≥7` に分割。equal-odd `e=3` は正の `α³+2β³=γ³` へ還元し Affine 有理点残件から組立；Affine は Mordell `y²=x³-1728` へ双有理包装（階数は未）；`|u|=1` は奇数 `e≥3` で Mihăilescu 閉鎖、`e≥5` は `|u|≥3` に狭め。有限箱（底 ≤8・指数 3…5）に加え、冪判定探索（底 ≤19・指数 3…6・`C` 非有界）で互素解なしを `native_decide` で証明。正立方核 ≤80、開残件フィルタ ≤40。D4L レジームでビール残件地図（切片 T / 診断 F / book B / 残件 U）を固定し、開残件 Bool ↔ ラベル `U`；証人は `Theorems/BealRegime`（`Basic` 非依存）。無条件古典 Beal は主張しない。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。
@@ -101,8 +101,8 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | `BealMixed.lean` | フェーズ 7j：細残件型・組立・Gaussian 偶二一致持ち上げ・Darmon–Merel `(n,n,3)` |
 | `BealEven.lean` | フェーズ 7k–7o：偶二一致の和型／差型分割と組立；差因数 `gcd∣2`・2-進・完全冪抽出 |
 | `BealGaussianCube.lean` | フェーズ 7k–7o：equal-odd 立方切片・Affine 組立・Mordell `y²=x³-1728` 包装・`|u|=1` 一般化 |
-| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）＋冪判定（底 ≤17・指数 3…6・`C` 非有界）＋ファインダ；既知非互素解の回帰 |
-| `BealResidualSearch.lean` | フェーズ 7n–7p：正立方核有限箱（≤60）＋開残件フィルタ冪判定（≤30） |
+| `BealFinite.lean` | 有限箱（底 ≤8・指数 3…5）＋冪判定（底 ≤19・指数 3…6・`C` 非有界）＋ファインダ；既知非互素解の回帰 |
+| `BealResidualSearch.lean` | フェーズ 7n–7q：正立方核有限箱（≤80）＋開残件フィルタ冪判定（≤40） |
 | `BealRegime.lean` | フェーズ 7p：D4L 証人（切片/診断/book/残件 ↔ T/F/B/U）；`Basic` 非依存 |
 | `DarmonMerel.lean` | Darmon–Merel `(n,n,3)` 公理と奇数置換スライス（Lean 証明ではない） |
 | `Mihailescu.lean` | Catalan / Mihăilescu axiom と正の unit-base 断片 |
@@ -144,11 +144,11 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 
 - **P0（次サイクルの既定）**  
   Mordell `y²=x³-1728` 階数、偶差完全冪の一般 Fermat 下降、
-  Beal 有限箱の一段拡大（底 18 または指数 7）、開残件フィルタの拡大。
+  Beal 有限箱の一段拡大（底 20 または指数 7）、開残件フィルタの拡大。
 - **還元の現状**  
   組立は sorry なし。閉じた切片は Darmon–Merel 3位置、偶和型 `z=3`、`e=3` の `|·|=1`／mod-8 など。
   Affine←Mordell 包装と偶差完全冪抽出は 7o で組立済み（本体の階数・Fermat 下降は未）。
-  有限探索は古典冪判定 ≤17、正立方核 ≤60、開残件 ≤30。D4L ビール残件地図で未閉鎖 U を固定。
+  有限探索は古典冪判定 ≤19、正立方核 ≤80、開残件 ≤40。D4L ビール残件地図で未閉鎖 U を固定。
   開いているのは細残件本体。無条件古典 Beal は主張しません。
 - **P1 以降**  
   D4L L2 モーター命題、論文 `papers/` 同期、差型形の整理。本体・modular bridge・Gravity

@@ -5,17 +5,15 @@ import Mathlib.Tactic.NormNum
 set_option linter.style.nativeDecide false
 
 /-!
-# Phase 7j / 7k / 7m / 7n: finite Beal certificates
+# Phase 7j–7q: finite Beal certificates
 
 * **Box search** (phase 7j): bases and `C` all `≤ Amax`, exponents in `3…Emax`.
-* **Perfect-power search** (phase 7k–7m): bases `≤ Amax`, exponents in `3…Emax`,
+* **Perfect-power search** (phase 7k–7q): bases `≤ Amax`, exponents in `3…Emax`,
   but `C` is recovered as a positive `z`-th root of `A^x + B^y` (unbounded).
-  Phase 7m raises the certificate to bases `≤ 14` (exponents `3…6`).
+  Current certificate: bases `≤ 19`, exponents `3…6` (weaker named bounds
+  follow by monotonicity).
 * **Finders** (phase 7n): `findCoprimeBealUpTo` / `findCoprimeBealPerfectPowerUpTo`
   return the first hit (for `#eval` / diagnostics), with soundness and completeness.
-* **Phase 7n perfect-power**: bases `≤ 15` (exponents `3…6`).
-* **Phase 7o perfect-power**: bases `≤ 16` (exponents `3…6`).
-* **Phase 7p perfect-power**: bases `≤ 17` (exponents `3…6`).
 
 Known **non-coprime** solutions are kept as regression witnesses (they are not
 Beal counterexamples). Classical Beal is **not** claimed unconditionally.
@@ -462,9 +460,22 @@ theorem noCoprimeBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
   exact absurd hany (by simp [this])
 
 /--
-Phase 7k: no positive coprime Beal solution with bases `≤ 12` and exponents in
+Phase 7q: no positive coprime Beal solution with bases `≤ 19` and exponents in
 `3…6`, allowing unbounded `C` recovered as a perfect power.
 -/
+theorem beal_no_coprime_perfect_power_of_le_nineteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 19) (hBmax : B ≤ 19)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealPerfectPowerUpTo_sound
+    (by native_decide : noCoprimeBealPerfectPowerUpTo 19 6 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Weaker perfect-power certificates (phases 7k–7p); follow from ≤ 19. -/
 theorem beal_no_coprime_perfect_power_of_le_twelve_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -473,14 +484,9 @@ theorem beal_no_coprime_perfect_power_of_le_twelve_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 12 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
-/--
-Phase 7l probe: no positive coprime Beal solution with bases `≤ 13` and
-exponents in `3…6`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_thirteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -489,14 +495,9 @@ theorem beal_no_coprime_perfect_power_of_le_thirteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 13 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
-/--
-Phase 7m: no positive coprime Beal solution with bases `≤ 14` and exponents in
-`3…6`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_fourteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -505,14 +506,9 @@ theorem beal_no_coprime_perfect_power_of_le_fourteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 14 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
-/--
-Phase 7n: no positive coprime Beal solution with bases `≤ 15` and exponents in
-`3…6`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_fifteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -521,14 +517,9 @@ theorem beal_no_coprime_perfect_power_of_le_fifteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 15 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
-/--
-Phase 7o: no positive coprime Beal solution with bases `≤ 16` and exponents in
-`3…6`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_sixteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -537,14 +528,9 @@ theorem beal_no_coprime_perfect_power_of_le_sixteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 16 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
-/--
-Phase 7p: no positive coprime Beal solution with bases `≤ 17` and exponents in
-`3…6`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_seventeen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -553,9 +539,8 @@ theorem beal_no_coprime_perfect_power_of_le_seventeen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 17 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_nineteen_six
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
 /-! ### Known non-coprime solutions (not counterexamples) -/
 
