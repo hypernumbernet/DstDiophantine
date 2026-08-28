@@ -1,8 +1,3 @@
-/-
-Copyright (c) 2026 DstDiophantine contributors. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: DstDiophantine contributors
--/
 import DstDiophantine.Logic.Quantum.Spinor
 import DstDiophantine.Algebra.Cl91
 import Mathlib.Analysis.InnerProductSpace.PiL2

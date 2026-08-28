@@ -1,8 +1,3 @@
-/-
-Copyright (c) 2026 DstDiophantine contributors. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: DstDiophantine contributors
--/
 import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.UnitGroup
