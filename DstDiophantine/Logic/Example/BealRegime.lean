@@ -6,12 +6,13 @@ Authors: DstDiophantine contributors
 import DstDiophantine.Logic.Regime
 
 /-!
-# Phase 7p / 7r: abstract Beal residual atlas (D4L regime layer)
+# Phase 7p / 7r / 7s: abstract Beal residual atlas (D4L regime layer)
 
 Atoms are names only (no `Theorems` import). Witnesses live in
 `Theorems.BealRegime`. Layout: slices `T` (0–3), diagnostics `F` (4–5),
 bookkeeping `B` (6), live residuals `U` (7–13; Odd/AllDistinct/UnequalOdd
-split at 11–13), conjecture `U` (14). Unconditional classical Beal is not claimed.
+split at 11–13), conjecture `U` (14), closed `(n,n,5)` slice `T` (15).
+Unconditional classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -45,7 +46,7 @@ def liveMordell : RegimeFormula := atom 7
 def liveGeFive : RegimeFormula := atom 8
 /-- Live residual: even-difference perfect-power descent. -/
 def liveDiffPP : RegimeFormula := atom 9
-/-- Live residual: even-sum outside cube (`z = 5` / `z ≥ 7`). -/
+/-- Live residual: even-sum `z ≥ 7` (phase 7s: `z = 5` closed by `(n,n,5)`). -/
 def liveSumOut : RegimeFormula := atom 10
 /-- Live residual: odd two-equal (outside Darmon–Merel cubes). -/
 def liveOdd : RegimeFormula := atom 11
@@ -57,18 +58,21 @@ def liveUnequalOdd : RegimeFormula := atom 13
 /-- Classical Beal conjecture (positive coprime form). -/
 def bealConjecture : RegimeFormula := atom 14
 
+/-- Closed slice: generalised Fermat signature `(n,n,5)` (phase 7s). -/
+def sliceNN5 : RegimeFormula := atom 15
+
 /-- Honest atlas status list (indices match the atoms above). -/
 def bealAtlasStatuses : List TruthValue :=
-  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U]
+  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U, .T]
 
 /-- Honest Beal atlas valuation. -/
 def bealAtlasVal : RegimeValuation :=
   RegimeValuation.ofList bealAtlasStatuses
 
-private theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 15 := by
+private theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 16 := by
   simp [bealAtlasStatuses]
 
-private theorem bealAtlasVal_at (n : ℕ) (hn : n < 15) :
+private theorem bealAtlasVal_at (n : ℕ) (hn : n < 16) :
     bealAtlasVal.assign n = bealAtlasStatuses[n] :=
   RegimeValuation.ofList_get _ _ (by rw [bealAtlasStatuses_length]; exact hn)
 
@@ -99,7 +103,10 @@ theorem bealAtlasVal_liveUnequalOdd :
 theorem bealAtlasVal_conjecture : bealConjecture.eval bealAtlasVal.assign = .U :=
   bealAtlasVal_at 14 (by decide)
 
-/-- Closed-slice statuses under the honest atlas. -/
+theorem bealAtlasVal_sliceNN5 : sliceNN5.eval bealAtlasVal.assign = .T :=
+  bealAtlasVal_at 15 (by decide)
+
+/-- Closed-slice statuses under the honest atlas (atoms 0–3). -/
 def closedSliceStatuses : List TruthValue :=
   List.replicate 4 .T
 
@@ -139,25 +146,28 @@ theorem exists_beal_atlas_valuation :
               liveOdd.eval v.assign = .U ∧
                 liveAllDistinct.eval v.assign = .U ∧
                   liveUnequalOdd.eval v.assign = .U ∧
-                    bealConjecture.eval v.assign = .U :=
+                    bealConjecture.eval v.assign = .U ∧
+                      sliceNN5.eval v.assign = .T :=
   ⟨bealAtlasVal, bealAtlasVal_sliceFLT, bealAtlasVal_diagModular,
     bealAtlasVal_bookRealization, bealAtlasVal_liveMordell, bealAtlasVal_liveOdd,
     bealAtlasVal_liveAllDistinct, bealAtlasVal_liveUnequalOdd,
-    bealAtlasVal_conjecture⟩
+    bealAtlasVal_conjecture, bealAtlasVal_sliceNN5⟩
 
-/-- Closed slices alone do not T-entail classical Beal. -/
+/-- Closed slices alone (including `(n,n,5)`) do not T-entail classical Beal. -/
 theorem closed_slices_not_entailsTR_beal :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture := by
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+        bealConjecture := by
   intro h
   have hmod : ModelsTR bealAtlasVal
-      {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} := by
+      {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5} := by
     intro φ hφ
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hφ
-    rcases hφ with rfl | rfl | rfl | rfl
+    rcases hφ with rfl | rfl | rfl | rfl | rfl
     · exact bealAtlasVal_sliceFLT
     · exact bealAtlasVal_at 1 (by decide)
     · exact bealAtlasVal_at 2 (by decide)
     · exact bealAtlasVal_at 3 (by decide)
+    · exact bealAtlasVal_sliceNN5
   have := h bealAtlasVal hmod
   simp [HoldsTR, bealAtlasVal_conjecture] at this
 

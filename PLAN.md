@@ -1,12 +1,17 @@
 # PGA-DST ディオファントス証明基盤 — 研究計画
 
-最終更新: 2026-08-27（Phase 7r: D4L L2/L3 + Beal 有限証明書拡大）
+最終更新: 2026-08-28（Phase 7s: `(n,n,5)` 公理 + 有限証明書拡大 + 偶差包装）
 
 ## 0. いまの見通し
 
 **北極星:** 細残件が閉じれば、FLT 公理のもとで正の古典 Beal（`bealGcd > 1`）が従う。無条件古典 Beal は主張しない。
 
-**閉じたもの:** 加法忠実化・共通 no-go・旧 coarse 空性・modular 基盤。Beal は指数 gcd 三分法まで還元済み。組立 `beal_conjecture_pos_of_fine_residuals` / `_even_split` は sorry なし。公理は明示 3 本のみ（`fermatLastTheorem` / `mihailescu` / `darmonMerelCube`）。`sorry` は 0。
+**閉じたもの:** 加法忠実化・共通 no-go・旧 coarse 空性・modular 基盤。Beal は指数 gcd 三分法まで還元済み。組立 `beal_conjecture_pos_of_fine_residuals` / `_even_split` は sorry なし。公理は明示 4 本（`fermatLastTheorem` / `mihailescu` / `darmonMerelCube` / `fermatSignatureNN5`）。`sorry` は 0。
+
+**Phase 7s 進捗:**
+- 第 4 公理 `fermatSignatureNN5`（一般 Fermat 符号 `(n,n,5)`, `n≥4`）; 偶和 `z=5` 閉鎖; 偶和未証明は `z≥7` のみ
+- 有限証明書: 冪判定 ≤21·6 / ≤20·7 / ≤19·8; 立方核 ≤120; 開残件 ≤60（フィルタに `(n,n,5)` スキップ）
+- 偶差: 反対パリティ枝で `2 C^k = ±u^x ± v^x` 包装（下降本体は未）
 
 **Phase 7r 進捗:**
 - D4L L2/L3: `MotorProp`（加法モーター ≠ 乗法振幅）、`BalancedResidualClass` と窓種の排他
@@ -16,7 +21,7 @@
 
 **Phase 7q–7m（要約）:** 冪判定 ≤14→19、立方核 ≤40→80、開残件 ≤20→40；偶差完全冪抽出・Affine←Mordell 包装；D4L ビール地図（7p）；ファインダ API（7n）。詳細は §6 アーカイブ。
 
-**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 z=5/≥7、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。Gravity 一般モーター辞書（c→G と事象境界カットオフは仮説／ラベル付き同一視のみ・導出主張なし）。
+**開いているもの:** Mordell `y²=x³-1728` の階数（mathlib に無い）、`BealEqualOddTwoFactorExpGeFiveResidual`（`|u|≥3`）、偶差完全冪の一般 Fermat 下降本体、和型 `z≥7`、Odd / AllDistinct / UnequalOdd。Fermat/abc modular bridge 本体。Gravity 一般モーター辞書（c→G と事象境界カットオフは仮説／ラベル付き同一視のみ・導出主張なし）。
 
 **実行原則:** デフォルトの作業は残件本体の正面突破ではない。切片・有限証明書・診断定理で成果を出し、アイデアが立ったときだけ本体へ戻る。
 
@@ -93,6 +98,8 @@ flowchart TD
   Even --> Sum["和型 x=y"]
   Even --> Diff["差型 y=z または x=z"]
   Sum --> DMz3["z=3: Darmon-Merel 閉鎖"]
+  Sum --> NN5z5["z=5: (n,n,5) 公理閉鎖"]
+  Sum --> Zge7["z≥7: 未"]
   Odd --> DMpos["立方3位置: Darmon-Merel 閉鎖"]
 ```
 
@@ -100,8 +107,8 @@ flowchart TD
 
 | 残件 | 閉鎖切片 | 本体（未） | 主な場所 |
 |------|----------|------------|----------|
-| `BealTwoEqualEvenSumResidual` | `z=3`（DM）；`…_of_outside_cube`；`z=5`/`z≥7` 分割組立 | `z=5` と `z≥7` 本体 | `BealEven` |
-| `BealTwoEqualEvenDiffResidual` | 因数分解 progress；`gcd∣2` / 2-進補題；完全冪抽出（反対パリティ・両奇）；`…_of_factor` / PerfectPower→Factor 組立 | 完全冪 ⇒ より小さい Fermat 段階 | `BealEven` |
+| `BealTwoEqualEvenSumResidual` | `z=3`（DM）；`z=5`（`(n,n,5)` 公理）；`…_of_ge_seven` | `z≥7` 本体 | `BealEven` / `FermatNN5` |
+| `BealTwoEqualEvenDiffResidual` | 因数分解 progress；`gcd∣2` / 2-進補題；完全冪抽出；`2C^k=±u^x±v^x` 包装；`…_of_factor` / PerfectPower→Factor 組立 | 完全冪 ⇒ より小さい Fermat 段階 | `BealEven` |
 
 | `BealTwoEqualOddResidual` | 立方 3 位置（DM） | 立方以外 | `BealMixed` / `DarmonMerel` |
 | `BealAllDistinctExpResidual` | なし | 全相異 | `BealMixed` |
@@ -109,7 +116,7 @@ flowchart TD
 
 | `BealPythagoreanUnequalOddResidual` | なし（4 整除は残件外で無条件閉鎖） | unequal-odd | `BealMixed` |
 
-公理（Lean 証明ではない）: `fermatLastTheorem`・`mihailescu`・`darmonMerelCube`。
+公理（Lean 証明ではない）: `fermatLastTheorem`・`mihailescu`・`darmonMerelCube`・`fermatSignatureNN5`。
 
 ---
 
@@ -117,19 +124,19 @@ flowchart TD
 
 ### P0 — すぐ閉じる（次サイクルの既定）
 
-- **Mordell `y²=x³-1728` 階数 / `BealMordellCubeAddTwoResidual`**: Affine 組立は 7o で済。閉じれば正立方残件が従う。mathlib に階数は無い。有限切片: 原始正解は底 ≤100 で無し（7r）。
-- **偶差完全冪の一般 Fermat 下降**: 抽出・Factor 組立は 7o で済；`±u^x ± v^x = 2 C^k` 本体は未。セクター診断（7r）は和=循環／差=双曲を固定。
-- **有限証明書の一段拡大**: 冪判定は底 ≤20・指数 3…6 および ≤19・指数 3…7（7r）。次は底 21 または指数 8；`native_decide` 不成立なら上限を戻し本節に記録。開残件フィルタは底 ≤50 まで。
-- **偶二一致和型**: `z=3` 済、`z=5`/`≥7` 分割済。固定 `z` に古典定理があれば公理化（`(n,n,5)` の完全定理化はしない）。
+- **Mordell `y²=x³-1728` 階数 / `BealMordellCubeAddTwoResidual`**: Affine 組立は 7o で済。閉じれば正立方残件が従う。mathlib に階数は無い。有限切片: 原始正解は底 ≤120 で無し（7s）。
+- **偶差完全冪の一般 Fermat 下降**: 抽出・Factor 組立・`2C^k=±u^x±v^x` 包装は 7s で済；下降本体は未。セクター診断（7r）は和=循環／差=双曲を固定。
+- **有限証明書の一段拡大**: 冪判定は底 ≤21・指数 3…6、≤20・3…7、≤19・3…8（7s）。次は底 22 または指数 9；`native_decide` 不成立なら上限を戻し本節に記録。開残件フィルタは底 ≤60 まで。
+- **偶二一致和型**: `z=3`/`z=5` 済。未は `z≥7`（固定 `z` に古典定理があれば公理化）。
 
 ### P1 — 設計は要るが閉塞していない
 
 - **ローカル論文同期**: `papers/dst-diophantine.tex` と Lean 境界。GitHub `dual-spacetime-doc` とフォルダに無い RH / Langlands は据え置き。
-- **偶二一致差型の形の固定**（`BealEven`）: `C^n − B^n = A^x` の補題整理まで（セクター診断は 7r 済）。
+- **偶二一致差型の形の固定**（`BealEven`）: 包装補題は 7s 済；下降への接続整理。
 
 ### P2 — 本命だが重い（切片のアイデアが立ったときだけ）
 
-- 残件本体: Sum の `z≠3`、Diff 全体、Odd（立方外）、AllDistinct、EqualOdd（`|u|≥3` / `e≥5`）、UnequalOdd。
+- 残件本体: Sum の `z≥7`、Diff 全体、Odd（立方外）、AllDistinct、EqualOdd（`|u|≥3` / `e≥5`）、UnequalOdd。
 - `FermatModularBridge` / `AbcModularBridge` 本体（`ConformalGaugeAdmissible`）。
 - Gravity 一般モーターの修正辞書。
 
@@ -157,6 +164,7 @@ flowchart TD
 - [x] Phase 7p: D4L ビール残件地図（`{切片} ⊭_T`）；証人 `BealRegime`；冪判定 ≤17・立方核 ≤60・開残件 ≤30；`isOpenResidual ↔ U`
 - [x] Phase 7q: 冪判定 ≤19・立方核 ≤80・開残件 ≤40（指数は 3…6 のまま；弱い上限は導出；指数 7 は未試行）
 - [x] Phase 7r: D4L L2/L3；地図原子分割；開残件 U ⇏ 釣り合い座席；偶セクター診断；冪判定 ≤20 / ≤19·7；立方核 ≤100；開残件 ≤50
+- [x] Phase 7s: `(n,n,5)` 公理で偶和 `z=5` 閉鎖；冪判定 ≤21 / ≤20·7 / ≤19·8；立方核 ≤120；開残件 ≤60；偶差 `2C^k=±u^x±v^x` 包装
 - [x] 無条件古典 Beal を主張していない
 
 ---
@@ -195,7 +203,7 @@ Theorems/
   BealGaussianCube (equal-odd e=3 切片 + Affine↔Mordell 包装),
   BealFinite (有限箱 + 冪判定 + ファインダ), BealResidualSearch (立方核 / 開残件フィルタ),
   BealRegime (Phase 7p/7r: D4L 証人；Basic 非依存),
-  DarmonMerel / FermatLast / Mihailescu (公理),
+  DarmonMerel / FermatLast / Mihailescu / FermatNN5 (公理),
   Abc (AbcModularBridge + continuous false), Collatz, Goldbach, Polignac, Riemann
 Basic.lean / FoundationRegression.lean
 Gravity.lean / CGA.lean / Logic.lean  ← 並列入口（Basic には強制 import しない）
@@ -344,9 +352,9 @@ Lean 代数コアの整理で機械検証した（または棄却した）論文
 ## 8. 次アクション
 
 1. **（P0）** `BealMordellCubeAddTwoResidual`（`y²=x³-1728` 階数）または正立方残件のさらなる有限拡大
-2. **（P0）** 偶差完全冪の一般 Fermat 下降；有限箱を底 21 または指数 8 へ
-3. **（P1）** `papers/` と Lean 境界の同期；差型形の整理
-4. **（P2）** 残件本体（`e≥5`、Sum z=5/≥7、Odd、AllDistinct、UnequalOdd）・modular bridge 本体
+2. **（P0）** 偶差完全冪の一般 Fermat 下降；有限箱を底 22 または指数 9 へ；偶和 `z≥7`
+3. **（P1）** `papers/` と Lean 境界の同期；差型下降への接続整理
+4. **（P2）** 残件本体（`e≥5`、Sum z≥7、Odd、AllDistinct、UnequalOdd）・modular bridge 本体
 5. **（P3）** 無条件古典 Beal／TEGR↔EH／時空 CGA／GitHub 側未同梱論文は据え置き
 
-**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は共通 no-go・modular 基盤・Beal 還元組立・切片・有限箱まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。
+**最終目標（長期）:** 7 予想を「離散双対時空代数の内部で許容増幅証明書が存在しない」という単一原理から導く完全機械検証。現状は共通 no-go・modular 基盤・Beal 還元組立・切片・有限箱まで固めた段階であり、無条件古典 Beal は細残件本体が閉じるまで未達成である。FLT / Darmon–Merel / Mihăilescu / `(n,n,5)` 公理は mathlib 未形式化の古典定理の明示的仮定であり、それぞれの Lean 証明ではない。

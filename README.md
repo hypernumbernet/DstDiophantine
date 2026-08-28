@@ -15,7 +15,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 - **DST / 離散 companion の代数境界を固定。** `DstDiophantine.Algebra` バレル、許容錐上の `|JNormalized|≤1`、双対のノルム保存、付録 Killing 係数誤り・異軸非可換の機械検証、有限ロータ像（整数環の単数群ではない）まで揃えています。
 - **証明の骨格が三層に分かれている。** 「方程式を代数に写す層」と「増幅が許されないという共通禁止」は証明済みです。足りないのは、各予想ごとの「解から増幅証明書への橋渡し」（bridge）です。
 - **行き止まりも証明した。** 旧い粗離散の増幅証明書は、方程式の種類に関係なく構造的に空だと示しました。いまの本命は、非空な例がある modular（剰余・巻数）増幅です。
-- **Beal 危機路線をフェーズ 7r に進めた。** 正の古典 Beal は細残件へ還元（組立 sorry なし；無条件主張なし）。`d≥3` は FLT 公理、Darmon–Merel で立方切片、偶二一致は和／差分割（差は因数核、和は `z=5`/`≥7`）。CGA Realization は bookkeeping。有限証明書: 冪判定 ≤20·6 および ≤19·7、立方核 ≤100、開残件 ≤50。D4L で残件地図（T/F/B/U）と L2/L3（加法モーター ≠ 乗法振幅、釣り合い座席 vs 窓種；開残件 U ⇏ 座席）。詳細は [`PLAN.md`](PLAN.md)。
+- **Beal 危機路線をフェーズ 7s に進めた。** 正の古典 Beal は細残件へ還元（組立 sorry なし；無条件主張なし）。公理は明示 4 本（FLT / Mihăilescu / Darmon–Merel / `(n,n,5)`）。`d≥3` は FLT、立方切片は Darmon–Merel、偶和 `z=5` は `(n,n,5)`。偶二一致は和／差分割（差は因数核＋`2C^k` 包装、和の未証明は `z≥7`）。CGA Realization は bookkeeping。有限証明書: 冪判定 ≤21·6 / ≤20·7 / ≤19·8、立方核 ≤120、開残件 ≤60。D4L で残件地図（T/F/B/U）と L2/L3。詳細は [`PLAN.md`](PLAN.md)。
 - **増幅次数を `k = max(m, 4)` にした。** `ModularAmplificationWitness` は `k < 4` で空（`modularWitness_four_le`）。`m = 3` は `k = 4` に持ち上げる。
 - **広い主値窓の巻数と釣り合い型の空性を証明した。** 窓内は `beal_winding_of_solution_window`、釣り合い型 `log 2 / m < 2π/k` は任意格子で巻数 0。
 - **CGA 整数 dilation 群。** `IsCGAIntegerDilation`、格子保存、二点一意スケール、DST 結合配置の易しい方向、等指数 `mismatchRotor` ↔ CGA log-scale まで機械検証。
@@ -105,6 +105,7 @@ Double Spacetime Theory（DST）を、Lean で機械検証するプロジェク�
 | `BealResidualSearch.lean` | フェーズ 7n–7r：正立方核有限箱（≤100）＋開残件フィルタ冪判定（≤50） |
 | `BealRegime.lean` | フェーズ 7p/7r：D4L 証人（切片/診断/book/残件 ↔ T/F/B/U；L3 座席）；`Basic` 非依存 |
 | `DarmonMerel.lean` | Darmon–Merel `(n,n,3)` 公理と奇数置換スライス（Lean 証明ではない） |
+| `FermatNN5.lean` | 一般 Fermat 符号 `(n,n,5)` 公理と偶和 `z=5` スライス（Lean 証明ではない） |
 | `Mihailescu.lean` | Catalan / Mihăilescu axiom と正の unit-base 断片 |
 | `Abc.lean` | 品質–高さ、連続 bridge 棄却、`AbcModularBridge`（条件付き古典 ABC） |
 | `Collatz.lean` | 軌道の高さ単調、421 サイクル、有限範囲の到達 |

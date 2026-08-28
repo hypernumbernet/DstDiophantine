@@ -27,6 +27,7 @@ import DstDiophantine.Theorems.BealFinite
 import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Theorems.BealRegime
 import DstDiophantine.Theorems.DarmonMerel
+import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -538,6 +539,28 @@ example (h5 : BealTwoEqualEvenSumExpFiveResidual)
     BealTwoEqualEvenSumResidual :=
   BealTwoEqualEvenSumResidual_of_five_ge_seven h5 h7
 
+/-- Phase 7s: `(n,n,5)` axiom closes even-sum z=5; full sum from z≥7 alone. -/
+example (h7 : BealTwoEqualEvenSumExpGeSevenResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_ge_seven h7
+
+/-- Phase 7s: opposite-parity factors package to `2 C^k = ±u^x ± v^x`. -/
+example {B C A : ℤ} {k x : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C))
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (heq : (C ^ k - B ^ k) * (C ^ k + B ^ k) = A ^ x) :
+    ∃ u v : ℕ,
+      (2 * C ^ k = (u : ℤ) ^ x + (v : ℤ) ^ x ∨
+        2 * C ^ k = (u : ℤ) ^ x + -((v : ℤ) ^ x) ∨
+          2 * C ^ k = -((u : ℤ) ^ x) + (v : ℤ) ^ x ∨
+            2 * C ^ k = -((u : ℤ) ^ x) + -((v : ℤ) ^ x)) ∧
+        (2 * B ^ k = (v : ℤ) ^ x - (u : ℤ) ^ x ∨
+          2 * B ^ k = -((v : ℤ) ^ x) - (u : ℤ) ^ x ∨
+            2 * B ^ k = (v : ℤ) ^ x - -((u : ℤ) ^ x) ∨
+              2 * B ^ k = -((v : ℤ) ^ x) - -((u : ℤ) ^ x)) :=
+  exists_two_mul_pow_eq_signed_pow_add_opposite_parity hk hpar hcop heq
+
 /-- Phase 7l: even-power difference factorization. -/
 example {C B : ℤ} {y : ℕ} (hyeven : Even y) :
     C ^ y - B ^ y =
@@ -554,40 +577,40 @@ example {A B C x y z : ℕ}
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   beal_no_coprime_of_le_eight_five hA hB hC hAmax hBmax hCmax hx hy hz hxE hyE hzE hsol hgcd
 
-/-- Phase 7r: no coprime perfect-power Beal with bases ≤ 20 and exponents 3…6. -/
+/-- Phase 7s: no coprime perfect-power Beal with bases ≤ 21 and exponents 3…6. -/
 example {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hAmax : A ≤ 20) (hBmax : B ≤ 20)
+    (hAmax : A ≤ 21) (hBmax : B ≤ 21)
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twenty_six
+  beal_no_coprime_perfect_power_of_le_twentyone_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
 /-- Phase 7n: perfect-power finder returns none on the closed 14×6 box. -/
 example : findCoprimeBealPerfectPowerUpTo 14 6 = none := by native_decide
 
-/-- Phase 7r: no primitive positive `α³+2β³=γ³` with α,β ≤ 100. -/
+/-- Phase 7s: no primitive positive `α³+2β³=γ³` with α,β ≤ 120. -/
 example {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
-    (hαN : α ≤ 100) (hβN : β ≤ 100)
+    (hαN : α ≤ 120) (hβN : β ≤ 120)
     (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
-  no_pos_cube_add_two_primitive_of_le_hundred
+  no_pos_cube_add_two_primitive_of_le_hundredtwenty
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
-/-- Phase 7r: no open-residual coprime perfect-power Beal with bases ≤ 50, exp 3…6. -/
+/-- Phase 7s: no open-residual coprime perfect-power Beal with bases ≤ 60, exp 3…6. -/
 example {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hAmax : A ≤ 50) (hBmax : B ≤ 50)
+    (hAmax : A ≤ 60) (hBmax : B ≤ 60)
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hopen : isOpenResidualExponents x y z = true)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_open_residual_perfect_power_of_le_fifty_six
+  beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
 
 /-- Phase 7p: open-residual Bool ↔ regime label `U`. -/
@@ -598,7 +621,8 @@ example {x y z : ℕ} :
 
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture :=
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+        bealConjecture :=
   closed_slices_not_entailsTR_beal
 
 /-- Phase 7p: balanced Beal seat is `IsBalancedMassive`, not vacuum. -/

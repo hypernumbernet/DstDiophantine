@@ -1,6 +1,7 @@
 import DstDiophantine.Theorems.BealGaussian
 import DstDiophantine.Theorems.BealMixed
 import DstDiophantine.Theorems.DarmonMerel
+import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Logic.Geometric
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
@@ -8,7 +9,7 @@ import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Linarith
 
 /-!
-# Phase 7k / 7m / 7o / 7r: even two-equal residual split (sum vs difference)
+# Phase 7k / 7m / 7o / 7r / 7s: even two-equal residual split (sum vs difference)
 
 Splits `BealTwoEqualEvenResidual` into:
 
@@ -17,11 +18,12 @@ Splits `BealTwoEqualEvenResidual` into:
 * **difference form** `y = z` or `x = z` with even common exponent —
   `C^n − B^n = A^x` (does **not** lift to a Gaussian hypotenuse power).
 
-The sum form with `z = 3` is closed by Darmon–Merel. Phase 7o extracts signed
-/`2`-stripped perfect powers from the difference factor kernel and packages the
-live body as `BealTwoEqualEvenDiffPerfectPowerResidual`. Phase 7r records that
-sum (Gaussian / cyclic) and diff (hyperbolic factor) interfere and must not
-share a CGA dilation no-go. Classical Beal is **not** claimed unconditionally.
+The sum form with `z = 3` is closed by Darmon–Merel; `z = 5` by the
+`(n,n,5)` axiom (phase 7s). Phase 7o extracts signed / `2`-stripped perfect
+powers from the difference factor kernel and packages the live body as
+`BealTwoEqualEvenDiffPerfectPowerResidual`. Phase 7r records that sum
+(Gaussian / cyclic) and diff (hyperbolic factor) interfere and must not share
+a CGA dilation no-go. Classical Beal is **not** claimed unconditionally.
 -/
 
 namespace DstDiophantine
@@ -407,6 +409,68 @@ theorem exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity
     (Nat.coprime_iff_gcd_eq_one.mpr hgcd1) heq
 
 /--
+Phase 7s packaging (opposite-parity branch): absolute `x`-th powers on the
+conjugate factors rearrange to `2 C^k = ± u^x ± v^x` and
+`2 B^k = ± v^x ∓ u^x` (sign cases). Does **not** close the Fermat descent.
+-/
+theorem two_mul_pow_eq_signed_pow_add_of_diff_sum_abs
+    {B C : ℤ} {k x : ℕ} {u v : ℕ}
+    (hD : (C ^ k - B ^ k).natAbs = u ^ x)
+    (hE : (C ^ k + B ^ k).natAbs = v ^ x) :
+    (2 * C ^ k = (u : ℤ) ^ x + (v : ℤ) ^ x ∨
+      2 * C ^ k = (u : ℤ) ^ x + -((v : ℤ) ^ x) ∨
+        2 * C ^ k = -((u : ℤ) ^ x) + (v : ℤ) ^ x ∨
+          2 * C ^ k = -((u : ℤ) ^ x) + -((v : ℤ) ^ x)) ∧
+      (2 * B ^ k = (v : ℤ) ^ x - (u : ℤ) ^ x ∨
+        2 * B ^ k = -((v : ℤ) ^ x) - (u : ℤ) ^ x ∨
+          2 * B ^ k = (v : ℤ) ^ x - -((u : ℤ) ^ x) ∨
+            2 * B ^ k = -((v : ℤ) ^ x) - -((u : ℤ) ^ x)) := by
+  have hDs := exists_signed_pow_of_natAbs_eq_pow hD
+  have hEs := exists_signed_pow_of_natAbs_eq_pow hE
+  constructor
+  · -- 2 C^k = (C^k - B^k) + (C^k + B^k)
+    have hsum : 2 * C ^ k = (C ^ k - B ^ k) + (C ^ k + B ^ k) := by ring
+    rcases hDs with hDp | hDm
+    · rcases hEs with hEp | hEm
+      · left; rw [hsum, hDp, hEp]
+      · right; left; rw [hsum, hDp, hEm]
+    · rcases hEs with hEp | hEm
+      · right; right; left; rw [hsum, hDm, hEp]
+      · right; right; right; rw [hsum, hDm, hEm]
+  · -- 2 B^k = (C^k + B^k) - (C^k - B^k)
+    have hdiff : 2 * B ^ k = (C ^ k + B ^ k) - (C ^ k - B ^ k) := by ring
+    rcases hDs with hDp | hDm
+    · rcases hEs with hEp | hEm
+      · left; rw [hdiff, hEp, hDp]
+      · right; left; rw [hdiff, hEm, hDp]
+    · rcases hEs with hEp | hEm
+      · right; right; left; rw [hdiff, hEp, hDm]
+      · right; right; right; rw [hdiff, hEm, hDm]
+
+/--
+Phase 7s: opposite-parity extraction packages to signed
+`2 C^k = ± u^x ± v^x` form (live body for Fermat descent; not closed).
+-/
+theorem exists_two_mul_pow_eq_signed_pow_add_opposite_parity
+    {B C A : ℤ} {k x : ℕ}
+    (hk : 0 < k)
+    (hpar : (Even B ∧ Odd C) ∨ (Odd B ∧ Even C))
+    (hcop : Nat.Coprime B.natAbs C.natAbs)
+    (heq : (C ^ k - B ^ k) * (C ^ k + B ^ k) = A ^ x) :
+    ∃ u v : ℕ,
+      (2 * C ^ k = (u : ℤ) ^ x + (v : ℤ) ^ x ∨
+        2 * C ^ k = (u : ℤ) ^ x + -((v : ℤ) ^ x) ∨
+          2 * C ^ k = -((u : ℤ) ^ x) + (v : ℤ) ^ x ∨
+            2 * C ^ k = -((u : ℤ) ^ x) + -((v : ℤ) ^ x)) ∧
+        (2 * B ^ k = (v : ℤ) ^ x - (u : ℤ) ^ x ∨
+          2 * B ^ k = -((v : ℤ) ^ x) - (u : ℤ) ^ x ∨
+            2 * B ^ k = (v : ℤ) ^ x - -((u : ℤ) ^ x) ∨
+              2 * B ^ k = -((v : ℤ) ^ x) - -((u : ℤ) ^ x)) := by
+  obtain ⟨u, v, hu, hv⟩ :=
+    exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity hk hpar hcop heq
+  exact ⟨u, v, two_mul_pow_eq_signed_pow_add_of_diff_sum_abs hu hv⟩
+
+/--
 Both-odd conjugate factors: absolute gcd is exactly 2, and at least one factor
 has 2-adic valuation exactly 1.
 -/
@@ -634,6 +698,15 @@ def BealTwoEqualEvenSumExpFiveResidual : Prop :=
     x = y → Even x → z = 5 →
       ¬ A ^ x + B ^ y = C ^ z
 
+/--
+Phase 7s: the `(n,n,5)` axiom closes the even-sum residual at `z = 5`.
+-/
+theorem BealTwoEqualEvenSumExpFiveResidual_of_NN5 :
+    BealTwoEqualEvenSumExpFiveResidual := by
+  intro A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz5 hsol
+  exact not_beal_two_equal_third_five_even hx hy hz hA hB hC hgcd hd hxy hz5
+    hxeven hsol
+
 def BealTwoEqualEvenSumExpGeSevenResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -666,6 +739,16 @@ theorem BealTwoEqualEvenSumResidual_of_five_ge_seven
     BealTwoEqualEvenSumResidual :=
   BealTwoEqualEvenSumResidual_of_outside_cube
     (BealTwoEqualEvenSumOutsideCubeResidual_of_five_ge_seven h5 h7)
+
+/--
+Phase 7s: with `z = 5` closed by the `(n,n,5)` axiom, the full even-sum
+residual follows from the `z ≥ 7` residual alone.
+-/
+theorem BealTwoEqualEvenSumResidual_of_ge_seven
+    (h7 : BealTwoEqualEvenSumExpGeSevenResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_five_ge_seven
+    BealTwoEqualEvenSumExpFiveResidual_of_NN5 h7
 
 /--
 Phase 7k: five fine residuals with even residual replaced by sum+diff still

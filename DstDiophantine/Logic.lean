@@ -240,12 +240,14 @@ example :
               liveOdd.eval v.assign = .U ∧
                 liveAllDistinct.eval v.assign = .U ∧
                   liveUnequalOdd.eval v.assign = .U ∧
-                    bealConjecture.eval v.assign = .U :=
+                    bealConjecture.eval v.assign = .U ∧
+                      sliceNN5.eval v.assign = .T :=
   exists_beal_atlas_valuation
 
 /-- Regression: closed Beal slices do not T-entail classical Beal. -/
 example :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth} bealConjecture :=
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+        bealConjecture :=
   closed_slices_not_entailsTR_beal
 
 /-- Regression: FLT atlas realises closed `T`, diagnostic `F`, live `U`. -/
