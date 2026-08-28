@@ -19,9 +19,7 @@
 \begin{abstract}
 General relativity successfully describes gravity as the curvature of a single spacetime continuum, yet its reconciliation with quantum mechanics remains elusive, plagued by singularities, the continuum hypothesis, and the absence of a microscopic origin for curvature. This paper develops the quantum sector of the Double Spacetime Theory (DST) introduced in the companion work, where spacetime is not a shared manifold but a pair of compactified Minkowski spacetimes intrinsically attached to every massive particle and encoded in the 16-real-dimensional biquaternion algebra $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$.
 
-We demonstrate that quantum states are rotations in the compact dual spacetime: the dual rotor is mathematically identical to the $\mathrm{SU}(2)$ spin-1/2 rotation operator, and the Hilbert space emerges directly from dual-rotor phases. The Dirac equation arises covariantly from the action of the complete rotor group on the biquaternion minimal left ideal, with fermion masses originating geometrically from torsional rigidity. Gravity and inertia are unified as torsional mismatch between the usual and dual rotors. Variational equivalence with the Einstein--Hilbert action is taken from the TEGR literature after a rotor-to-tetrad dictionary is fixed; it is not re-derived here.
-
-The compactness of the dual spacetime discretizes rotor angles, forbidding singularities and event horizons. Strong-field deviations, gravitational-wave echoes, and a pathway to gravitational engineering via coherent dual-rotor excitation are predicted. By abandoning the continuum hypothesis entirely, the theory completes general relativity algebraically while rendering both quantum mechanics and gravity as different aspects of the same 16-dimensional structure carried by every massive particle.
+On admissible configurations the torsional scalar obeys $|J|\le 3\pi^2/8$, or equivalently $|J_{\mathrm{norm}}|\le 1$. Square-$+1$ generators yield idempotent projectors $P_L$, $P_R$ and $P_{\mathrm{spin}}$; the naive factors $(1\pm i)/2$ with $i^2=-1$ do not, nor does the composite $P_{\mathrm{spin}}P_R$. Usual and dual generators commute on a common axis and need not commute off-axis. The cyclic generators satisfy $IJ=K$ and act on $\mathbb{C}^2$ by $-i\sigma_a$; along a single axis the dual rotor is the Rodrigues matrix of $\mathrm{SU}(2)$, which is unitary of determinant one. The grade-1 generators of $\mathrm{Cl}(3,1)$ obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ with $\eta=\mathrm{diag}(-1,+1,+1,+1)$, and $\gamma^0$ is not the hyperbolic generator $j$ used for $P_{\mathrm{spin}}$. The Killing self-pairing is indefinite and is not a Born probability~\cite{dst-d4l}. The algebras $\mathrm{Cl}(3,1)$ and $\mathrm{Cl}(9,1)$ are not isomorphic, and the dual spinor space is not the Majorana--Weyl module of ten-dimensional spacetime. Variational equivalence of TEGR with the Einstein--Hilbert action is taken from the literature after a rotor-to-tetrad dictionary is fixed. The Dirac equation, mass as torsion, the Higgs mechanism, measurement, and the path integral are left as geometric hypotheses.
 \end{abstract}
 
 \section{Introduction: An Algebraic Approach to Quantum Gravity}
@@ -30,19 +28,19 @@ The reconciliation of general relativity with quantum mechanics remains one of t
 
 This assumption, while extraordinarily successful at macroscopic scales, leads to severe difficulties at the quantum level: ultraviolet divergences on curved backgrounds, the black hole information paradox, cosmological singularities, and—most fundamentally—the absence of any physical mechanism explaining why or how matter should curve spacetime. Mach's principle remains unfulfilled; spacetime behaves as an autonomous entity rather than a relational structure determined by the distribution of matter.
 
-In this paper we develop a radically different approach. We demonstrate that quantum gravity can be constructed entirely within the 16-real-dimensional biquaternion algebra isomorphic to the Clifford algebra $\mathrm{Cl}(3,1)$, without invoking a background manifold, Christoffel symbols, Riemann curvature, or any continuum structure. The sole physical realities are the intrinsic dual rotors carried by every massive particle: the usual-sector rotor $R_\text{usual}$ and its dual-sector counterpart $R_\text{dual}$. Quantum states emerge directly as rotations in the compact dual spacetime, while gravitational and inertial phenomena arise as torsional mismatch between the two rotors. The Lorentz-invariant scalar constructed from the Killing form on the relative Lie-algebra element $\Omega_\text{biv} = \log(R_\text{usual}^\dagger R_\text{dual})$ is the parameter-space form $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$. Its identification with the teleparallel scalar, and the ensuing Einstein--Hilbert equivalence, are taken from the TEGR literature after a rotor-to-tetrad dictionary is fixed.
+In this paper we develop a different approach. The underlying algebra is the $16$-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$; a background manifold and Riemann curvature are not required for the identities recorded below. The physical picture is the pair of rotors $R_\text{usual}$ and $R_\text{dual}$. Dual-sector kinematics is the representation on $\mathbb{C}^2$; gravitational phenomenology is torsional mismatch measured by $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$. Identification of $J$ with the teleparallel scalar, and Einstein--Hilbert equivalence, are taken from the TEGR literature after a rotor-to-tetrad dictionary is fixed.
 
-The central claim of this work is that the dual rotor
+Along a single axis the dual rotor
 \[
-R_\text{dual} = \exp\left( \sum_{a=1}^3 \frac{\phi_a}{2} \Gamma_a \right),
+R_\text{dual}(\theta\,e_0) = \exp\bigl(\tfrac{\theta}{2}\Gamma_0\bigr)
 \]
-where $\Gamma_a$ are the dual generators satisfying $\Gamma_a^2 = -1$, is mathematically identical to the $\mathrm{SU}(2)$ spin-1/2 rotation operator. Consequently, the quantum Hilbert space of a spin-1/2 particle is nothing but the space of dual-spacetime rotor phases. Position and momentum operators, the canonical commutation relations, Born's rule, and the Dirac equation all emerge as natural consequences of this identification. Mass itself acquires a purely torsional origin: it is the rigidity with which the dual rotor resists excitation relative to the usual rotor.
+equals the Rodrigues matrix $\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_x)$, which is unitary of determinant $1$. We do not claim a group isomorphism for general angles. The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators of $\mathrm{Cl}(3,1)$; they obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ and are not the hyperbolic bivectors used for $P_{\mathrm{spin}}$. Born's rule is not the Killing self-pairing: that pairing has signature $(3,3)$ and is negative on pure elliptic configurations~\cite{dst-d4l}. Position and momentum operators, the Dirac equation, and mass as torsion are not derived here.
 
 By abandoning the continuum hypothesis entirely, the theory automatically resolves the singularities of classical general relativity. The compactness of the dual spacetime discretizes the rotor angles. On admissible configurations the algebraic ceiling is $|J|\le 3\pi^2/8$ (equivalently $|J_{\rm norm}|\le 1$); this forbids the unbounded curvature that would otherwise appear at $r=0$ or at the Big Bang, provided the configuration remains admissible. Event horizons are likewise absent: light rays traverse finite torsional layers via resonance tunneling. Strong-field deviations from general relativity become observable in principle, and the framework opens a concrete pathway to gravitational engineering through coherent control of dual-rotor phases.
 
-The remainder of the paper is organized as follows. Section~\ref{sec:spinor} constructs the biquaternion spinor and the minimal left ideal that realizes the Dirac representation. Section~\ref{sec:quantumstates} establishes the precise isomorphism between dual rotors and quantum states, deriving the Hilbert space structure, operators, and uncertainty relations from torsional coherence. Section~\ref{sec:dirac} derives the Dirac equation covariantly from the action of the complete rotor group. Section~\ref{sec:mass} shows that fermion masses arise geometrically from dual-rotor rigidity, providing a torsional realization of the Higgs mechanism. Section~\ref{sec:dynamics} unifies quantum mechanics and gravity at the level of rotor dynamics and resolves the measurement problem. Section~\ref{sec:predictions} presents concrete, falsifiable predictions, including the absence of singularities and event horizons, strong-field corrections, and gravitational-wave echoes. Section~\ref{sec:comparison} compares the framework with loop quantum gravity, string theory, and other approaches. Section~\ref{sec:experiments} outlines near-term experimental tests based on dual-rotor resonance. Section~\ref{sec:conclusions} summarizes the results and discusses future directions.
+The remainder of the paper is organized as follows. Section~\ref{sec:spinor} constructs square-$+1$ projectors and shows that the composite $P_{\mathrm{spin}}P_R$ is not idempotent. Section~\ref{sec:quantumstates} identifies dual generators with $-i\sigma_a$ and the axis-$0$ dual rotor with an $\mathrm{SU}(2)$ matrix, and shows that the Killing pairing is not Born's rule. Section~\ref{sec:dirac} records the Clifford relations of $\mathrm{Cl}(3,1)$ and distinguishes $\gamma^0$ from the hyperbolic generator $j$. Sections~\ref{sec:mass}--\ref{sec:dynamics} discuss mass, the Higgs mechanism, measurement, and the path integral as geometric hypotheses. Section~\ref{sec:predictions} presents conjectural predictions bounded by the admissible ceiling. Section~\ref{sec:comparison} compares the framework with other programmes, distinguishing internal duality from ten-dimensional spacetime supersymmetry. Section~\ref{sec:experiments} outlines near-term tests. Section~\ref{sec:status} collects the algebraic statements. Section~\ref{sec:conclusions} summarizes.
 
-In this algebraic reformulation, quantum gravity ceases to be a quantization of classical geometry. Instead, both quantum mechanics and gravity emerge as different aspects of the same 16-dimensional biquaternion structure carried intrinsically by every massive particle. The continuum was a useful classical approximation; reality, at the deepest level, is discrete, particle-local, and doubly temporal.
+Quantum gravity is not claimed to follow in full from $\mathrm{Cl}(3,1)$. The results of this paper are algebraic identities in the $16$-dimensional algebra; continuum dynamics remains a classical approximation.
 
 \section{Biquaternion Spinors and the Minimal Left Ideal}
 \label{sec:spinor}
@@ -53,104 +51,65 @@ A primitive idempotent that projects onto an irreducible representation must be 
 \[
 \frac{1+g}{2}
 \]
-is idempotent. Working factors used in the formal development are the hyperbolic projector
+is idempotent. Write $j:=e_0 e_1$ for the hyperbolic generator of axis~$0$ (so $j^2=+1$). This $j$ is \emph{not} the time vector $\gamma^0=e_0$, which squares to $-1$ in signature $(-,+,+,+)$ (Section~\ref{sec:dirac}). The working projectors are
 \[
-P_{\mathrm{spin}} = \frac{1+j}{2}
+P_{\mathrm{spin}} = \frac{1+j}{2}=\frac{1+e_0 e_1}{2}
 \]
-(with $j^2=+1$) and a complementary spatial chirality pair
+and the complementary spatial chirality pair
 \[
 P_L = \frac{1-e_1}{2},\qquad P_R = \frac{1+e_1}{2}
 \]
-(with $e_1^2=+1$), which satisfy $P_L^2=P_L$, $P_R^2=P_R$, and $P_L+P_R=1$. A composite primitive idempotent may then be taken in the product form
+(with $e_1^2=+1$). They satisfy $P_L^2=P_L$, $P_R^2=P_R$, and $P_L+P_R=1$.
+
+The product
 \[
 P = P_{\mathrm{spin}}\, P_R
 \]
-when the factors commute (or otherwise associate) appropriately; the left ideal it generates is the spinor carrier
-\[
-\mathcal{S} = (\mathbb{H} \oplus \mathbb{H}) P,
-\]
-which is four-complex-dimensional and therefore matches the dimension of the Dirac spinor space.
+is not idempotent: $e_0 e_1$ and $e_1$ anticommute, the factors do not commute, and $(P_{\mathrm{spin}}P_R)^2\neq P_{\mathrm{spin}}P_R$. A commuting square-$+1$ pair is $e_1$ with the off-axis boost $e_0 e_2$; their product projector is idempotent. Whether the resulting left ideal is irreducible, and whether it is four-complex-dimensional, is left open.
 
 By contrast, the naive formulae built from the $\mathrm{Cl}(3,1)$ pseudoscalar $i$ alone,
 \[
 \frac{1\pm i}{2}\qquad(i^2=-1),
 \]
-are \emph{not} idempotent: $\bigl((1-i)/2\bigr)^2=-i/2$. Composites such as $i\gamma_1\gamma_2$ that square to $+1$ remain admissible building blocks; the bare pseudoscalar does not.
+are not idempotent: $\bigl((1-i)/2\bigr)^2=-i/2$. Composites such as $i\gamma_1\gamma_2$ that square to $+1$ remain admissible building blocks; the bare pseudoscalar does not.
 
-A general element of $\mathcal{S}$ takes the explicit form
+A general element of a candidate spinor space takes the explicit form
 \[
 \psi = \bigl( a_0 + a_1 i + b_1 kI + b_2 kJ + b_3 kK + c_1 jI + c_2 jJ + c_3 jK \bigr) P,
 \]
-where $a_0,a_1,b_i,c_i \in \mathbb{R}$. Identifying the pseudoscalar $i$ with the imaginary unit of quantum mechanics, $\psi$ becomes a standard four-component complex column spinor in the Weyl basis. The first two components correspond to the usual-spacetime (left-handed) sector, while the remaining components encode the dual-spacetime (right-handed) sector. The dual map $X \mapsto X i$ still reverses time orientation and encodes chirality geometrically, but the algebraic projectors themselves are the square-$+1$ factors $P_L$, $P_R$ above—not $(1\pm i)/2$.
+where $a_0,a_1,b_i,c_i \in \mathbb{R}$ and $P$ is a square-$+1$ projector (not $P_{\mathrm{spin}}P_R$). Identifying the pseudoscalar $i$ with the imaginary unit of quantum mechanics is a dictionary, not a proof that the carrier is the Dirac module. The dual map $X \mapsto X i$ still reverses time orientation; the algebraic projectors themselves are $P_L$ and $P_R$ above, not $(1\pm i)/2$.
 
-The action of the complete rotor group $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$ on $\psi$ is realized by left multiplication:
-\[
-\psi' = R_\text{total} \, \psi,
-\]
-where
-\[
-R_\text{total} = R_\text{usual} R_\text{dual} = \exp\left( \sum_{a=1}^3 \frac{\theta_a}{2} i\Gamma_a + \frac{\phi_a}{2} \Gamma_a \right).
-\]
-Because the dual generators $\Gamma_a = I,J,K$ commute with the usual-sector generators $i\Gamma_a$, the transformation factorizes cleanly into independent actions on the two chiral sectors. This factorization is the algebraic origin of the chiral asymmetry observed in the weak interaction.
+The action of rotors on algebra elements is left multiplication. Same-axis usual and dual generators commute; off-axis pairs need not. In particular $\Gamma_a$ does not commute with every usual-sector generator $i\Gamma_b$, so a chiral factorization of $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$ is not an identity for arbitrary axes.
 
-Crucially, the Dirac bilinear $\bar{\psi}\psi$ acquires a direct physical interpretation within the double-spacetime framework. Up to normalization it is proportional to the trace of the torsional mismatch bivector:
-\[
-\bar{\psi}\psi \propto \operatorname{Tr}(\Omega_\text{biv}),
-\]
-where $\Omega_\text{biv} = \log(R_\text{usual}^\dagger R_\text{dual})$. Thus the scalar mass term in the Dirac Lagrangian is not an ad-hoc parameter but the expectation value of the relative angle between the usual and dual rotors. This establishes the first link between the spinorial description of fermions and the torsional origin of gravity that will be developed in later sections.
-
-The construction is completely intrinsic: no external Hilbert space, no gamma matrices introduced by hand, and no continuum manifold are required. The entire fermionic sector of the Standard Model, including its chiral structure, emerges as a natural consequence of the 16-dimensional biquaternion algebra carried by every massive particle.
+The bilinear $\bar{\psi}\psi\propto\operatorname{Tr}(\Omega_{\mathrm{biv}})$ and the emergence of the full fermionic Standard Model from the $16$-dimensional algebra are not established here. What follows from the algebra is the projector calculus above.
 
 \section{Quantum States as Dual-Spacetime Rotations}
 \label{sec:quantumstates}
 
-The most profound consequence of the double spacetime framework is the realization that quantum mechanical states are nothing but rotations in the particle-intrinsic dual spacetime. The dual rotor
+The dual rotor
 \[
 R_\text{dual} = \exp\left( \sum_{a=1}^3 \frac{\phi_a}{2} \Gamma_a \right),
 \]
-where $\Gamma_1 = I$, $\Gamma_2 = J$, $\Gamma_3 = K$ satisfy the quaternion relations $\Gamma_a^2 = -1$ and the cyclic commutation rules, is algebraically identical to the $\mathrm{SU}(2)$ rotation operator for spin-$1/2$ systems.
+where $\Gamma_1 = I$, $\Gamma_2 = J$, $\Gamma_3 = K$ satisfy the quaternion relations $\Gamma_a^2 = -1$ and $IJ=K$, is represented on $\mathbb{C}^2$ by $-i\sigma_a$. The alternative dictionary $I\leftrightarrow i\sigma$ is incompatible with $IJ=K$.
 
-To see this explicitly, let $\vec{\phi}=(\phi_1,\phi_2,\phi_3)$ with magnitude $|\vec{\phi}|=\sqrt{\phi_1^2+\phi_2^2+\phi_3^2}$, and introduce the unit vector $\hat{n}=\vec{\phi}/|\vec{\phi}|$. Then
+Along axis~$0$ the exponential is the Rodrigues formula
 \[
-R_\text{dual} = \cos\left( \frac{|\vec{\phi}|}{2} \right) + \hat{n} \cdot (I, J, K) \sin\left( \frac{|\vec{\phi}|}{2} \right).
+\exp\bigl(\tfrac{\theta}{2}\Gamma_0\bigr)
+=\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_x),
 \]
-Under the identification $I \leftrightarrow i\sigma_1$, $J \leftrightarrow i\sigma_2$, $K \leftrightarrow i\sigma_3$ (where $\sigma_a$ are the Pauli matrices), this expression coincides exactly with the standard spin-1/2 rotation operator
-\[
-U(\vec{\phi}) = \exp\left( -\frac{i}{2} \vec{\phi} \cdot \vec{\sigma} \right).
-\]
-The compact topology of the dual spacetime ($\phi_a \bmod 4\pi$) ensures that the space of physically distinct rotors is the three-sphere $S^3 \cong \mathrm{SU}(2)$, which is precisely the manifold on which spin-1/2 states live.
+and that matrix is unitary of determinant $1$. A closed form for a general angle $\vec{\phi}$, and an isomorphism of compact Lie groups with $\mathrm{SU}(2)$, are not claimed.
 
-Consequently, the quantum state $|\psi\rangle$ of a spin-1/2 particle is completely parameterized by the three real angles $\phi_a$ of the dual rotor. The two-dimensional complex Hilbert space arises as the fundamental representation of the rotation group generated by $I, J, K$. For a fermion at rest in the usual spacetime (vanishing usual-sector parameters $\theta_a$), its entire quantum information resides in these dual phases.
+The compact topology of the dual spacetime ($\phi_a \bmod 4\pi$) suggests that the space of rotors is $S^3\cong\mathrm{SU}(2)$; we do not prove that identification of manifolds here.
 
-Position and momentum operators emerge directly from the geometry of the dual rotor. The spatial expectation value in the usual spacetime is obtained by projecting the dual vector $X' = x' jI + y' jJ + z' jK$ via the sandwich product:
-\[
-\langle x^i \rangle \propto \operatorname{Tr}\Bigl( R_\text{dual}^\dagger \, (j \cdot \Gamma) \, R_\text{dual} \Bigr).
-\]
-The momentum operator is the generator of infinitesimal dual rotations:
-\[
-p_i = \hbar \frac{\partial}{\partial \phi_i}.
-\]
-Because the dual generators $I, J, K$ are non-commuting, the canonical commutation relations
-\[
-[x^i, p^j] = i\hbar \delta^{ij}
-\]
-are satisfied automatically as an algebraic identity, without any quantization postulate.
+Position and momentum operators, the canonical commutation relations, and the uncertainty bound $\Delta\phi\cdot\Delta\theta\ge 1/2$ are geometric hypotheses.
 
-The probabilistic interpretation of quantum mechanics also acquires a geometric origin. The Born rule probability density is identified with the squared norm of the torsional mismatch bivector:
+The probabilistic interpretation is not the Killing self-pairing. The identification
 \[
-|\psi|^2 \propto \frac{1}{2} |\Omega_\text{biv}|^2 = \frac{1}{2} B(\Omega_\text{biv}, \Omega_\text{biv}),
+|\psi|^2 \propto \tfrac12 B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})
 \]
-where $\Omega_\text{biv} = \log(R_\text{usual}^\dagger R_\text{dual})$. Thus $|\psi|^2$ measures the local deviation from perfect parallelism between the usual and dual rotors. When the rotors are perfectly aligned ($\Omega = 1$), the probability density vanishes and the particle behaves classically; maximal mismatch corresponds to the highest quantum uncertainty.
+fails: the Killing pairing has signature $(3,3)$ and is negative on pure elliptic configurations. Self-overlap is therefore not a probability. Born's rule belongs to the Hilbert layer and is not a consequence of $J$~\cite{dst-d4l}.
 
-This identification yields a natural derivation of the uncertainty principle from torsional coherence. The dual rotor angles $\phi_a$ and the usual-sector boost angles $\theta_a$ cannot be simultaneously sharp. Their commutator in the Lie algebra produces the fundamental bound
-\[
-\Delta\phi \cdot \Delta\theta \geq \frac{1}{2},
-\]
-which is the torsional analogue of the Heisenberg relation. The compactness of the dual sector further implies that position cannot be localized more sharply than the Compton wavelength without exciting higher torsional modes, automatically incorporating the Newton--Wigner localization problem.
-
-The measurement process itself receives a purely geometric interpretation: wave-function collapse corresponds to the forced synchronization of dual rotors across an entangled system, driven by the global minimization of the torsional mismatch scalar $J$. Entanglement arises when multiple particles share correlated dual phases $\phi_a$, enforced by the requirement that the collective torsional energy be minimized.
-
-In this framework, quantum mechanics is not an additional layer imposed on spacetime; it is the kinematics of rotations in the compact dual spacetime that every massive particle carries intrinsically. Gravity, as we shall see, is the dynamical consequence of the same rotors falling out of alignment.
+Measurement, entanglement, and collapse as torsional synchronization are likewise left open. Dual-sector kinematics in this paper means the $\mathbb{C}^2$ representation of the cyclic generators.
 
 \section{Dual Spacetime as Intrinsic Supersymmetry}
 \label{sec:susy}
@@ -165,60 +124,30 @@ The Double Spacetime Theory resolves the crisis by revealing that supersymmetry 
 
 The six generators of the underlying Lorentz candidate \(\mathfrak{so}(3,1)\) (not the twelve-dimensional sum \(\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)\)) partition into two sectors distinguished by the sign of their quadratic form: the hyperbolic sector, whose generators square to \(+1\), and the cyclic sector, whose generators square to \(-1\). Same-axis generators commute; off-axis commutators need not vanish. The complete rotor \(R_\text{total}\) acts on both sectors simultaneously. The dual map \(X \mapsto Xi\) interchanges the two sectors up to signs while reversing time orientation. This interchange constitutes an internal automorphism of the algebra itself; it does not map a particle onto a distinct species but merely exchanges two permanently coupled aspects of one and the same 16-dimensional object. Consequently, the supersymmetric partner of any bosonic excitation is already present as the dual-sector component. There is no external superpartner to discover.
 
-The scalar \(J\) is the parameter-space quadratic \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) built from the mismatch bivector \(\Omega_\text{biv}\). Because the Killing form takes opposite values on the hyperbolic sector (\(+8\)) and the cyclic sector (\(-8\)), bosonic and fermionic contributions enter with opposite signs. When the two sectors are aligned, these contributions cancel exactly. The residual vacuum value of \(J\) is generated exclusively by quantum fluctuations of the dual-sector angles. The cyclic generators square to \(-1\), rendering the dual spacetime elliptic: its rotor manifold is the compact three-sphere \(S^3 \cong \mathrm{SU}(2)\). The angles are therefore periodic and discretely sampled, \(\theta_a \in (2\pi/N)\mathbb{Z}\) for large integer \(N\). Compactness does \emph{not} force an algebraic upper bound of order \(N^{-2}\). On admissible configurations the machine-checked ceiling is \(|J|\le 3\pi^2/8\), or \(|J_{\rm norm}|\le 1\) with \(J_{\rm norm}=\frac8{3\pi^2}J\). The discrete quantity \(\varepsilon_N=16/(3N^2)\) is a \emph{lower} bound on the nonzero normalized height, not an upper bound: every non-rest admissible lattice point satisfies \(|J_{\rm norm}|\ge\varepsilon_N\). Vacuum suppression, if it occurs, must come from a dynamical cancellation between sectors, not from writing \(|J|\le J_{\max}\sim N^{-2}\).
+The scalar \(J\) is the parameter-space quadratic \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) built from the mismatch bivector \(\Omega_\text{biv}\). Because the Killing form takes opposite values on the hyperbolic sector (\(+8\)) and the cyclic sector (\(-8\)), bosonic and fermionic contributions enter with opposite signs. When the two sectors are aligned, these contributions cancel exactly. The residual vacuum value of \(J\) is generated exclusively by quantum fluctuations of the dual-sector angles. The cyclic generators square to \(-1\), rendering the dual spacetime elliptic: its rotor manifold is the compact three-sphere \(S^3 \cong \mathrm{SU}(2)\). The angles are therefore periodic and discretely sampled, \(\theta_a \in (2\pi/N)\mathbb{Z}\) for large integer \(N\). Compactness does \emph{not} force an algebraic upper bound of order \(N^{-2}\). On admissible configurations \(|J|\le 3\pi^2/8\), or \(|J_{\rm norm}|\le 1\) with \(J_{\rm norm}=\frac8{3\pi^2}J\). The discrete quantity \(\varepsilon_N=16/(3N^2)\) is a \emph{lower} bound on the nonzero normalized height, not an upper bound: every non-rest admissible lattice point satisfies \(|J_{\rm norm}|\ge\varepsilon_N\). Vacuum suppression, if it occurs, must come from a dynamical cancellation between sectors, not from writing \(|J|\le J_{\max}\sim N^{-2}\).
 
-Because the dual rotor is identical to the \(\mathrm{SU}(2)\) spin-\(1/2\) rotation operator, the fermionic degrees of freedom of the Standard Model arise directly as phases in the compact dual spacetime. The supersymmetry transformation is the internal automorphism generated by the dual map; it is an algebraic identity, not a dynamical symmetry that can be broken at some high scale. Any attempt to excite the dual sector independently would violate the closure of the single 16-dimensional algebra. The superpartner is therefore not hidden behind a large breaking scale; it is hidden because it is an inseparable constituent of the particle’s own algebraic identity. This is the precise mathematical origin of the statement that supersymmetry “already exists as the essence of every particle and is realized in an unobservable form.”
+Because the dual rotor matches the $\mathrm{SU}(2)$ Rodrigues formula on a single axis, the dual sector can host spin-$1/2$ kinematics; a full identification of Standard Model fermions with dual phases is not claimed. The dual map $X\mapsto Xi$ is an internal automorphism of the algebra. It is not spacetime supersymmetry of a ten-dimensional string: $\mathrm{Cl}(3,1)\not\cong\mathrm{Cl}(9,1)$, the dual spinor space is not the Majorana--Weyl module of $\mathrm{Cl}(9,1)$, and the Super-Poincar\'e generator count is not the ten generators of the projective geometric algebra.
 
 The same mechanism simultaneously addresses the hierarchy problem. The dual-sector rigidity that enforces the bosonic–fermionic cancellation in the vacuum also generates the observed particle masses. Both the extreme smallness of the cosmological constant and the origin of fermion masses descend from one and the same compact dual spacetime intrinsic to every massive particle.
 
 In this framework supersymmetry is not an optional extension that may or may not be realized in nature. It is the inevitable geometric consequence of an algebra whose two sectors possess quadratic forms of opposite signature and whose dual sector is compact. The vacuum catastrophe is not solved by adding new symmetries; it is dissolved by recognizing that the 16-dimensional biquaternion structure already contains, in its opposing signatures and intrinsic compactness, the exact cancellation required by observation.
 
-\section{Derivation of the Dirac Equation from Rotor Covariance}
+\section{Clifford relations and the Dirac matrices}
 \label{sec:dirac}
 
-The Dirac equation emerges covariantly from the requirement that the biquaternion spinor $\psi \in \mathcal{S}$ transforms consistently under the complete rotor group $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$. No external quantization procedure or gamma-matrix algebra is imposed; the equation follows directly from the algebraic structure of the double spacetime.
+The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators $\gamma^\mu$ of $\mathrm{Cl}(3,1)$. They obey
+\[
+\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu},\qquad
+\eta=\mathrm{diag}(-1,+1,+1,+1).
+\]
+In particular $(\gamma^0)^2=-1$. The hyperbolic generator $j=e_0 e_1$ used for $P_{\mathrm{spin}}$ squares to $+1$, so $\gamma^0\neq j$. The dictionary $\gamma^0\leftrightarrow j$, $\gamma^i\leftrightarrow kI,\ldots$ is therefore replaced by this grade-1 basis.
 
-The momentum operator in the usual spacetime is represented by the directional derivative along the grade-1 basis vectors. The corresponding Dirac operator is the vector part of the biquaternion gradient:
-\[
-\not\!\partial = j \partial_{ct} + kI \partial_x + kJ \partial_y + kK \partial_z.
-\]
-Acting on a spinor $\psi$ belonging to the minimal left ideal $\mathcal{S}$, this operator reproduces the standard Clifford algebra relations
-\[
-\{\gamma^\mu, \gamma^\nu\} = 2\eta^{\mu\nu},
-\]
-with the explicit identification
-\[
-\gamma^0 \leftrightarrow j, \quad \gamma^1 \leftrightarrow kI, \quad \gamma^2 \leftrightarrow kJ, \quad \gamma^3 \leftrightarrow kK.
-\]
-The free-particle dynamics is obtained by demanding invariance under infinitesimal rotor transformations generated by the complete rotor
-\[
-R_\text{total} = \exp\left( \sum_{a=1}^3 \frac{\theta_a}{2} i\Gamma_a + \frac{\phi_a}{2} \Gamma_a \right).
-\]
-The unique first-order equation that is covariant under this group action and reduces to the Klein--Gordon equation upon squaring is
-\[
-(\not\!\partial + m)\psi = 0.
-\]
-
-The mass term $m\psi$ is not inserted by hand. It arises geometrically from the intrinsic rigidity between the usual and dual rotors. When the dual rotor lags behind the usual rotor by a relative angle $\delta\phi_a = \phi_a - \theta_a$, the torsional mismatch bivector $\Omega_\text{biv}$ acquires a non-vanishing scalar component. The bilinear
-\[
-\bar{\psi}\psi \propto \operatorname{Tr}(\Omega_\text{biv})
-\]
-then generates an effective mass proportional to the expectation value of this mismatch:
-\[
-m \propto \langle \delta\phi \rangle.
-\]
-Thus fermion mass is the energetic cost of maintaining torsional misalignment between the two intrinsic spacetimes carried by the particle.
-
-The dual map $X \mapsto X i$ reverses the time orientation; together with the square-$+1$ projectors $P_L=(1-e_1)/2$ and $P_R=(1+e_1)/2$ of Section~\ref{sec:spinor}, it organises the spinor space into chiral sectors. Consequently, the left-handed components couple preferentially to the usual-sector boosts while the right-handed components couple to the dual-sector rotations. This chiral asymmetry is not an additional assumption but a direct consequence of the time-reversed geometry of the dual spacetime, once the projectors are formed from generators with square $+1$.
-
-Because the entire construction is algebraic and background-independent, the Dirac equation is obtained without reference to a spacetime manifold, a metric, or a connection. The equation is simply the statement that the biquaternion spinor evolves covariantly under the intrinsic rotor dynamics of double spacetime. In this sense, the Dirac equation is not a quantum field equation imposed on curved spacetime; it is the kinematic law governing excitations of the dual rotor itself.
-
-This derivation completes the unification of quantum mechanics and gravity at the algebraic level: both the fermionic wave equation and the gravitational action arise from the same 16-dimensional biquaternion structure, differing only in whether one considers the rotor action on spinors or the relative misalignment between rotors.
+The Dirac equation $(\not\partial+m)\psi=0$, the mass term as dual-rotor lag, and covariance under the full rotor group are not derived here. Square-$+1$ projectors $P_L=(1-e_1)/2$ and $P_R=(1+e_1)/2$ organise a chiral split in the algebra; they do not by themselves yield the Standard Model weak interaction.
 
 \section{Torsional Origin of Fermion Masses and the Higgs Mechanism}
 \label{sec:mass}
 
-In the preceding section we derived the Dirac equation covariantly from the action of the complete rotor group. We now show that the mass term itself is not an arbitrary parameter but arises geometrically from the intrinsic rigidity between the usual and dual rotors.
+The Dirac equation is not derived in Section~\ref{sec:dirac}. The following discussion of mass and the Higgs mechanism is a geometric hypothesis.
 
 The torsional mismatch between the usual-sector rotor $R_\text{usual}$ and the dual-sector rotor $R_\text{dual}$ is quantified by the relative angle $\delta\phi_a = \phi_a - \theta_a$. When this angle is non-zero, the particle experiences a restoring “stiffness” proportional to its rest mass $m$. In the low-energy limit, the effective potential energy stored in the torsional mismatch is
 \[
@@ -237,7 +166,7 @@ Because the mass originates from the compact dual spacetime, it is automatically
 \section{Unified Dynamics of Quantum Mechanics and Gravity}
 \label{sec:dynamics}
 
-Having established that quantum states are dual-spacetime rotations and that the Dirac equation follows covariantly from rotor transformations, we now demonstrate that the full dynamics of quantum mechanics and gravity emerge from a single rotor Lagrangian. In this framework, quantum mechanics describes the kinematics of dual rotors, while gravity describes their dynamical misalignment.
+The rotor Lagrangian, Schrödinger evolution, measurement as synchronization, entanglement, and the path integral below are geometric hypotheses. In that picture, dual-rotor kinematics is the quantum side and usual--dual misalignment is the gravitational side.
 
 Consider a single massive particle whose complete rotor is $R_\text{total} = R_\text{usual} R_\text{dual}$. The effective action governing the intrinsic rotor angles is
 \[
@@ -323,7 +252,7 @@ All of the above predictions are falsifiable within the next decade. Non-observa
 \section{Comparison with Other Quantum Gravity Approaches}
 \label{sec:comparison}
 
-The double spacetime theory occupies a distinctive position among quantum gravity candidates. While most frameworks attempt to quantize or discretize an a priori continuum geometry, the present approach derives both quantum mechanics and gravity from the intrinsic 16-dimensional biquaternion algebra carried by every massive particle. Below we compare the theory with the principal existing approaches, highlighting the conceptual and technical differences.
+The double spacetime theory occupies a distinctive position among quantum gravity candidates. Most frameworks quantize or discretize an a priori continuum geometry. The results collected here are algebraic identities in $\mathrm{Cl}(3,1)$ and $G(3,1,1)$, not a derivation of quantum mechanics and gravity from that algebra. Below we compare the programme with existing approaches and record why it does not identify with a ten-dimensional string.
 
 \subsection{Loop Quantum Gravity}
 
@@ -335,7 +264,9 @@ In contrast, the double spacetime theory imposes discreteness directly on the du
 
 String theory unifies forces by embedding gravity in a ten- or eleven-dimensional spacetime populated by vibrating strings and requiring supersymmetry. While mathematically elegant, it suffers from a vast landscape of vacua and lacks unique low-energy predictions.
 
-The double spacetime theory achieves complete unification within fixed four-dimensional $\mathrm{Cl}(3,1)$ without extra dimensions or supersymmetry. Gravity (usual-dual boost mismatch), electromagnetism (dual rotation gauge coupling), the weak force (chiral dual gauge), and the strong force (layered torsional dynamics) all emerge as different modes of the same rotor algebra. No Calabi--Yau compactification or brane constructions are required; the dual spacetime is intrinsically compactified at the particle level.
+The algebras $\mathrm{Cl}(3,1)$ and $\mathrm{Cl}(9,1)$ are not isomorphic, and the dual spinor space $\mathbb{C}^2$ is not the sixteen-real-dimensional Majorana--Weyl module of ten-dimensional spacetime. Unification inside four-dimensional $\mathrm{Cl}(3,1)$ is a statement about one algebra, not a proof that extra dimensions are physically absent. The dual map is an internal automorphism; it is not spacetime supersymmetry. Gravity, electromagnetism, and the nuclear forces as modes of a single rotor algebra remain hypotheses.
+
+No Calabi--Yau compactification is used; compactness of the dual sector at the particle level is a geometric hypothesis, not a string compactification.
 
 \subsection{Canonical and Ashtekar Approaches}
 
@@ -349,7 +280,7 @@ Emergent gravity approaches treat spacetime as a thermodynamic or entropic pheno
 
 The double spacetime theory recovers the Einstein equations precisely through its equivalence with teleparallel gravity, while fermions arise naturally as excitations of the biquaternion minimal left ideal. Discreteness is algebraic (Diophantine constraints on rotor angles) rather than set-theoretic, and causality is preserved by the lightlike $J=0$ resonance condition. No thermodynamic analogy is invoked; the emergence of spacetime is a collective effect of torsional alignment among particle-intrinsic dual rotors.
 
-In summary, existing quantum gravity programs extend or quantize the continuum manifold while retaining curvature as fundamental. The double spacetime theory abandons both the manifold and curvature, deriving spacetime, gravity, and quantum states from the single algebraic structure of dual rotors in $\mathrm{Cl}(3,1)$. It thereby resolves singularities, unifies all interactions, and renders gravity controllable without introducing new dimensions, supersymmetry, or additional fields.
+In summary, existing quantum gravity programs extend or quantize the continuum manifold while retaining curvature as fundamental. The present paper records algebraic identities in $\mathrm{Cl}(3,1)$ and $G(3,1,1)$ and discards several identifications that do not hold. It does not derive spacetime, all interactions, or a controllable theory of gravity from those identities.
 
 \section{Experimental Testability from the Quantum Perspective}
 \label{sec:experiments}
@@ -391,24 +322,58 @@ If dual-rotor control proves feasible, the same mechanism offers pathways to nuc
 
 In summary, the double spacetime theory transforms gravity from an immutable geometric constraint into a controllable torsional degree of freedom whose quantum sector is already within experimental reach. The coming decade will decide whether nature has granted us access to this new degree of freedom.
 
+\section{Summary of algebraic results}
+\label{sec:status}
+
+The following statements are established in the algebra, shown to fail, or left open. The Hilbert-layer pairing is treated in~\cite{dst-d4l}.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{0.62\textwidth}p{0.30\textwidth}@{}}
+\hline
+Statement & Status \\
+\hline
+On admissible configurations, $|J|\le 3\pi^2/8$ and $|J_{\mathrm{norm}}|\le 1$ & holds \\
+$\varepsilon_N=16/(3N^2)$ is a lower bound on nonzero normalized height, not an upper bound & holds \\
+$(1\pm i)/2$ is idempotent when $i^2=-1$ & false \\
+$P_L$, $P_R$, and $P_{\mathrm{spin}}$ are idempotent & holds \\
+$P_{\mathrm{spin}}P_R$ is idempotent & false \\
+The product of $(1+e_1)/2$ with $(1+e_0 e_2)/2$ is idempotent & holds \\
+Same-axis usual and dual generators commute & holds \\
+Off-axis usual and dual generators always commute & false \\
+$IJ=K$; cyclic generators act by $-i\sigma_a$ & holds \\
+$I\leftrightarrow i\sigma$ & false \\
+Axis-$0$ dual rotor is the Rodrigues $\mathrm{SU}(2)$ matrix (unitary, $\det=1$) & holds \\
+General-angle isomorphism with $\mathrm{SU}(2)$ & open \\
+$\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ in $\mathrm{Cl}(3,1)$ & holds \\
+$\gamma^0$ equals the hyperbolic generator $j$ & false \\
+$|\Omega|^2$ is a Born probability & false~\cite{dst-d4l} \\
+$\mathrm{Cl}(3,1)\cong\mathrm{Cl}(9,1)$, or the dual spinor space is the $10$D Majorana--Weyl module & false \\
+Dirac equation, mass as torsion, Higgs mechanism, measurement, path integral & open \\
+Irreducibility of the left ideal; complex dimension $4$ & open \\
+TEGR equivalent to Einstein--Hilbert (variational) & literature~\cite{maluf2013} \\
+\hline
+\end{tabular}
+\end{center}
+
 \section{Conclusions}
 \label{sec:conclusions}
 
-The double spacetime theory presented in this work offers a complete algebraic framework for quantum gravity. By recognizing that every massive particle carries an intrinsic pair of compactified Minkowski spacetimes encoded in the 16-dimensional biquaternion algebra $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$, we have derived both quantum mechanics and gravity from a single geometric structure without invoking a background manifold, Christoffel symbols, or Riemann curvature.
+The double spacetime theory supplies an algebraic setting for quantum gravity, not a completed derivation. Every massive particle is encoded in the $16$-dimensional biquaternion algebra $\mathbb{H}\oplus\mathbb{H}\cong\mathrm{Cl}(3,1)$. The identities collected in Section~\ref{sec:status} include the admissible ceiling on $J$, the square-$+1$ projectors, on-axis commutativity only, the representation $-i\sigma$, the axis-$0$ Rodrigues matrix of $\mathrm{SU}(2)$, and the Clifford relations of $\mathrm{Cl}(3,1)$. Several natural identifications fail: the Killing pairing is not Born's rule, $I$ is not $i\sigma$, $\gamma^0$ is not $j$, $P_{\mathrm{spin}}P_R$ is not a projector, and $\mathrm{Cl}(3,1)$ is not $\mathrm{Cl}(9,1)$.
 
-Quantum states have been shown to be rotations in the compact dual spacetime: the dual rotor $R_\text{dual}$ is mathematically identical to the $\mathrm{SU}(2)$ spin-1/2 rotation operator, and the Hilbert space emerges directly from the space of dual-rotor phases. The Dirac equation arises covariantly from the action of the complete rotor group on the biquaternion minimal left ideal, with fermion masses originating from torsional rigidity between the usual and dual rotors. The measurement problem and entanglement receive purely geometric interpretations as torsional synchronization and correlated dual phases, respectively.
+The Dirac equation, fermion mass as torsional rigidity, the Higgs mechanism, measurement, and entanglement are not theorems of this paper. Gravity as misalignment of usual and dual rotors remains the programme of the companion gravity papers; TEGR equivalence with Einstein--Hilbert is taken from the literature. The bound $|J|\le 3\pi^2/8$ constrains torsion on admissible configurations; it does not by itself forbid astrophysical singularities.
 
-Gravity itself is reinterpreted as the dynamical cost of misalignment between the usual and dual rotors. The Lorentz-invariant scalar $J$ constructed from the Killing form on the torsional mismatch bivector is identified with the teleparallel scalar only up to a total divergence after a rotor-to-tetrad dictionary is fixed; variational equivalence with the Einstein--Hilbert action is taken from the TEGR literature and is not re-derived here. Singularities are forbidden by the admissible ceiling $|J|\le 3\pi^2/8$, and event horizons do not form because light rays can tunnel through finite torsional layers.
-
-In this framework, general relativity is not superseded but completed. Its empirical successes are preserved exactly in the classical limit, while its conceptual difficulties—singularities, the origin of inertia, the measurement problem, and the nature of spacetime itself—are resolved at the algebraic foundation. Quantum mechanics and gravity are revealed as two aspects of the same 16-dimensional structure: quantum mechanics is the kinematics of dual-spacetime rotations, and gravity is the dynamics of their relative misalignment.
-
-The continuum was a brilliant classical approximation. Reality, at the deepest level, is discrete, particle-local, and doubly temporal. Spacetime does not curve matter; matter misaligns its own intrinsic dual spacetimes, and this misalignment, collectively perceived, is what we have called gravity.
-
-With this reformulation, the century-long quest for quantum gravity reaches its geometric conclusion within the 16 dimensions of the biquaternion algebra.
+Dual-sector kinematics is the $\mathbb{C}^2$ representation described in~\cite{dst-d4l}; the gravitational scalar is the parameter-space quantity $J$ with the bound above. The continuum remains a classical approximation. The $16$-dimensional algebra is the setting, not a finished theory of quantum gravity.
 
 \bibliographystyle{unsrt}
 \begin{thebibliography}{99}
 \raggedright
+
+\bibitem{dst-d4l}
+Anonymous,
+``Dual Spacetime 4-Valued Logic (D4L): Amplitudes, Four States, Geometric Interference, and Dual Hilbert Space'' (2026).
+\url{https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/dst-4-valued-logic.tex}.
 
 % --- Companion / DST internal papers ---
 \bibitem{dst-main}

@@ -28,11 +28,14 @@ import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
 import DstDiophantine.Logic.Quantum.StringSpectrum
 import DstDiophantine.Logic.Quantum.MinimalIdeal
+import DstDiophantine.Logic.Quantum.CompositeProjector
+import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.LorentzDim
+import Mathlib.Data.Matrix.Basic
 
 /-!
 # Dual Spacetime 4-valued logic (D4L) — parallel track
@@ -357,6 +360,40 @@ example : chiralityL * chiralityL = chiralityL ∧
 /-- Regression: paper `(1-i)/2` is not idempotent when `i² = -1`. -/
 example : paperChiralityL * paperChiralityL ≠ paperChiralityL :=
   paper_chirality_rejected
+
+/-- Regression: paper composite `P_spin P_R` is not idempotent. -/
+example : (spinorIdem * chiralityR) * (spinorIdem * chiralityR) ≠
+    spinorIdem * chiralityR :=
+  paperComposite_not_idempotent
+
+/-- Regression: commuting square-+1 pair yields an idempotent composite. -/
+example : (chiralityR * spinorIdemAxis1) * (chiralityR * spinorIdemAxis1) =
+    chiralityR * spinorIdemAxis1 :=
+  chiralityR_mul_spinorIdemAxis1_sq
+
+/-- Regression: Cl(3,1) Dirac gammas obey `{γ^μ,γ^ν}=2η^{μν}`. -/
+example (μ ν : Fin 4) :
+    diracGamma μ * diracGamma ν + diracGamma ν * diracGamma μ =
+      algebraMap ℝ Cl31 (2 * minkowskiEta μ ν) :=
+  diracGamma_clifford μ ν
+
+/-- Regression: `γ⁰` is not the hyperbolic generator `j`. -/
+example : Cl31.toPGA (diracGamma 0) ≠ Generators.hyperbolic 0 :=
+  paper_gamma0_not_hyperbolic
+
+/-- Regression: axis-0 dual rotor is the Rodrigues SU(2) matrix. -/
+example (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) =
+      Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.sin (θ / 2) • cyclicRep 0 :=
+  dualRotorMat_axis0_rodrigues θ
+
+/-- Regression: axis-0 dual rotor is unitary with determinant 1. -/
+example (θ : ℝ) :
+    (dualRotorMat (EuclideanSpace.single 0 θ)).conjTranspose *
+        dualRotorMat (EuclideanSpace.single 0 θ) = 1 ∧
+      (dualRotorMat (EuclideanSpace.single 0 θ)).det = 1 :=
+  ⟨dualRotorMat_axis0_unitary θ, dualRotorMat_axis0_det θ⟩
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

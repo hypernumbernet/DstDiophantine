@@ -13,7 +13,8 @@ Working projectors use generators that square to `+1`:
 * spatial `e₁` (`ι 1`) for a complementary pair `chiralityL` / `chiralityR`;
 * hyperbolic `e₀e₁` for `spinorIdem`.
 
-Irreducibility of the left ideal is deferred.
+The paper composite `P_spin P_R` with those two factors is not idempotent
+(`Logic.Quantum.CompositeProjector`). Irreducibility of the left ideal is deferred.
 -/
 
 namespace DstDiophantine

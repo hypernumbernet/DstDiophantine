@@ -2,8 +2,14 @@ import DstDiophantine.Logic.Quantum.Quaternion
 import DstDiophantine.Logic.Quantum.DualSector
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.Normed.Algebra.MatrixExponential
+import Mathlib.Analysis.Normed.Algebra.Exponential
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Data.Complex.Basic
 
 
@@ -23,7 +29,7 @@ namespace DstDiophantine
 
 namespace Logic
 
-open Matrix Complex
+open Matrix Complex NormedSpace
 
 /-- Dual-sector spinor: the Hilbert space `ℂ²`. -/
 abbrev DualSpinor := EuclideanSpace ℂ (Fin 2)
@@ -161,6 +167,232 @@ theorem cyclicRep_conjTranspose (a : Fin 3) :
 /-- A projective measurement on `DualSpinor` has at most two orthogonal outcomes. -/
 theorem dualSpinor_finrank : Module.finrank ℂ DualSpinor = 2 := by
   simp
+
+/-! ### Axis-0 Rodrigues formula and SU(2) unitarity -/
+
+open scoped Matrix
+
+noncomputable local instance :
+    NormedRing (Matrix (Fin 2) (Fin 2) ℂ) :=
+  Matrix.linftyOpNormedRing
+
+noncomputable local instance :
+    NormedAlgebra ℂ (Matrix (Fin 2) (Fin 2) ℂ) :=
+  Matrix.linftyOpNormedAlgebra
+
+noncomputable local instance :
+    NormedAlgebra ℝ (Matrix (Fin 2) (Fin 2) ℂ) :=
+  NormedAlgebra.restrictScalars ℝ ℂ (Matrix (Fin 2) (Fin 2) ℂ)
+
+noncomputable local instance :
+    NormedAlgebra ℚ (Matrix (Fin 2) (Fin 2) ℂ) :=
+  NormedAlgebra.restrictScalars ℚ ℝ (Matrix (Fin 2) (Fin 2) ℂ)
+
+theorem axis0Gen_eq_real_smul (θ : ℝ) :
+    axis0Gen θ = (θ / 2 : ℝ) • cyclicRep 0 := by
+  unfold axis0Gen cyclicRep
+  have h : (θ / 2 : ℂ) = ↑(θ / 2) := by
+    simp [Complex.ofReal_div]
+  rw [h]
+  rfl
+
+private theorem hasDerivAt_exp_neg_smul_mat
+    (x : Matrix (Fin 2) (Fin 2) ℂ) (u : ℝ) :
+    HasDerivAt (fun v : ℝ => NormedSpace.exp ((-v) • x))
+      (NormedSpace.exp ((-u) • x) * (-x)) u := by
+  have h : HasDerivAt (fun v : ℝ => NormedSpace.exp (v • (-x)))
+      (NormedSpace.exp (u • (-x)) * (-x)) u :=
+    hasDerivAt_exp_smul_const (-x) u
+  have hfun : (fun v : ℝ => NormedSpace.exp ((-v) • x)) =
+      fun v : ℝ => NormedSpace.exp (v • (-x)) :=
+    funext fun v => by rw [neg_smul, smul_neg]
+  simpa [hfun, neg_smul, smul_neg] using h
+
+private theorem exp_smul_mul_exp_neg_smul_mat
+    (x : Matrix (Fin 2) (Fin 2) ℂ) (t : ℝ) :
+    NormedSpace.exp (t • x) * NormedSpace.exp ((-t) • x) = 1 := by
+  have hneg : (-t) • x = -(t • x) := neg_smul t x
+  rw [hneg]
+  have hc : Commute (t • x) (-(t • x)) := Commute.neg_right (Commute.refl _)
+  have h := (NormedSpace.exp_add_of_commute hc).symm
+  rw [add_neg_cancel, NormedSpace.exp_zero] at h
+  exact h
+
+/-- Circular closed form on `M₂(ℂ)`: `x² = -1 ⇒ exp(t • x) = cos t + sin t • x`. -/
+theorem exp_mat_of_sq_neg_one {x : Matrix (Fin 2) (Fin 2) ℂ}
+    (hx : x * x = -1) (t : ℝ) :
+    NormedSpace.exp (t • x) =
+      Real.cos t • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.sin t • x := by
+  let R : ℝ → Matrix (Fin 2) (Fin 2) ℂ :=
+    fun u => Real.cos u • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.sin u • x
+  let f : ℝ → Matrix (Fin 2) (Fin 2) ℂ :=
+    fun u => NormedSpace.exp ((-u) • x) * R u
+  have hRx (u : ℝ) : x * R u = (-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+      Real.cos u • x := by
+    simp only [R, mul_add]
+    have h1 : x * (Real.cos u • (1 : Matrix (Fin 2) (Fin 2) ℂ)) = Real.cos u • x := by
+      rw [mul_smul_comm, mul_one]
+    have h2 : x * (Real.sin u • x) = (-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
+      rw [mul_smul_comm, hx, smul_neg, neg_smul]
+    rw [h1, h2, add_comm]
+  have hR' (u : ℝ) :
+      HasDerivAt R ((-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.cos u • x) u :=
+    ((Real.hasDerivAt_cos u).smul_const (1 : Matrix (Fin 2) (Fin 2) ℂ)).add
+      ((Real.hasDerivAt_sin u).smul_const x)
+  have hf' (u : ℝ) : HasDerivAt f 0 u := by
+    have hexp := hasDerivAt_exp_neg_smul_mat x u
+    have hmul :
+        HasDerivAt ((fun v => NormedSpace.exp ((-v) • x)) * R)
+          (NormedSpace.exp ((-u) • x) * (-x) * R u +
+            NormedSpace.exp ((-u) • x) *
+              ((-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.cos u • x)) u :=
+      hexp.mul (hR' u)
+    have hzero :
+        NormedSpace.exp ((-u) • x) * (-x) * R u +
+          NormedSpace.exp ((-u) • x) *
+            ((-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.cos u • x) = 0 := by
+      calc
+        NormedSpace.exp ((-u) • x) * (-x) * R u +
+              NormedSpace.exp ((-u) • x) *
+                ((-Real.sin u) • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.cos u • x)
+            = NormedSpace.exp ((-u) • x) * ((-x) * R u) +
+                NormedSpace.exp ((-u) • x) * (x * R u) := by
+              rw [mul_assoc, hRx]
+        _ = NormedSpace.exp ((-u) • x) * ((-x) * R u + x * R u) := by
+              rw [← mul_add]
+        _ = NormedSpace.exp ((-u) • x) * (-(x * R u) + x * R u) := by
+              rw [neg_mul]
+        _ = NormedSpace.exp ((-u) • x) * 0 := by
+              rw [neg_add_cancel]
+        _ = 0 := mul_zero _
+    convert hmul using 2
+    · rfl
+    · exact hzero.symm
+  have hf0 : f 0 = 1 := by
+    simp only [f, R, neg_zero, zero_smul, NormedSpace.exp_zero, Real.cos_zero,
+      Real.sin_zero, one_smul, zero_smul, add_zero, mul_one]
+  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
+  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
+  have hf_one : ∀ u, f u = 1 := fun u =>
+    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
+  have : NormedSpace.exp ((-t) • x) * R t = 1 := hf_one t
+  calc
+    NormedSpace.exp (t • x) = NormedSpace.exp (t • x) * 1 := (mul_one _).symm
+    _ = NormedSpace.exp (t • x) * (NormedSpace.exp ((-t) • x) * R t) := by rw [this]
+    _ = (NormedSpace.exp (t • x) * NormedSpace.exp ((-t) • x)) * R t := by rw [mul_assoc]
+    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul_mat]
+    _ = R t := one_mul _
+
+/-- Axis-0 dual rotor: `exp(-i θ/2 σ_x) = cos(θ/2) I + sin(θ/2) (-i σ_x)`. -/
+theorem dualRotorMat_axis0_rodrigues (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) =
+      Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.sin (θ / 2) • cyclicRep 0 := by
+  rw [dualRotorMat_axis0, axis0Gen_eq_real_smul]
+  exact exp_mat_of_sq_neg_one (cyclicRep_sq 0) (θ / 2)
+
+theorem cyclicRep_zero_eq : cyclicRep 0 = !![0, -I; -I, 0] := by
+  unfold cyclicRep pauli pauliX
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp
+
+private theorem ofReal_cos_sin_sq (θ : ℝ) :
+    (↑(Real.cos θ) : ℂ) * ↑(Real.cos θ) + ↑(Real.sin θ) * ↑(Real.sin θ) = 1 := by
+  rw [← Complex.ofReal_mul, ← Complex.ofReal_mul, ← Complex.ofReal_add]
+  rw [← pow_two, ← pow_two, Real.cos_sq_add_sin_sq]
+  simp
+
+private theorem dualRotorMat_axis0_entries (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) =
+      !![↑(Real.cos (θ / 2)), -I * ↑(Real.sin (θ / 2));
+         -I * ↑(Real.sin (θ / 2)), ↑(Real.cos (θ / 2))] := by
+  rw [dualRotorMat_axis0_rodrigues, cyclicRep_zero_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.add_apply, Matrix.smul_apply, mul_comm]
+
+/-- Axis-0 dual rotor is unitary. -/
+theorem dualRotorMat_axis0_unitary (θ : ℝ) :
+    (dualRotorMat (EuclideanSpace.single 0 θ)).conjTranspose *
+      dualRotorMat (EuclideanSpace.single 0 θ) = 1 := by
+  rw [dualRotorMat_axis0_rodrigues]
+  set c := Real.cos (θ / 2)
+  set s := Real.sin (θ / 2)
+  have hRℂ (r : ℝ) (m : Matrix (Fin 2) (Fin 2) ℂ) :
+      r • m = (r : ℂ) • m := (algebraMap_smul ℂ r m).symm
+  rw [hRℂ c, hRℂ s]
+  have hG : (cyclicRep 0).conjTranspose = -cyclicRep 0 := cyclicRep_conjTranspose 0
+  have hstar :
+      ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) + (s : ℂ) • cyclicRep 0).conjTranspose =
+        (c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) - (s : ℂ) • cyclicRep 0 := by
+    simp [Matrix.conjTranspose_add, Matrix.conjTranspose_smul, Matrix.conjTranspose_one,
+      hG, smul_neg, sub_eq_add_neg]
+  rw [hstar]
+  have hCC : ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) *
+        ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) =
+      ((c : ℂ) * c) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
+    calc ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) *
+          ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ))
+        = (c : ℂ) • ((1 : Matrix (Fin 2) (Fin 2) ℂ) *
+            ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ))) := by
+          rw [smul_mul_assoc]
+      _ = (c : ℂ) • ((c : ℂ) • ((1 : Matrix (Fin 2) (Fin 2) ℂ) * 1)) := by
+          rw [mul_smul_comm]
+      _ = ((c : ℂ) * c) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
+          rw [smul_smul, one_mul]
+  have hGG : ((s : ℂ) • cyclicRep 0) * ((s : ℂ) • cyclicRep 0) =
+      ((s : ℂ) * s) • (cyclicRep 0 * cyclicRep 0) := by
+    calc ((s : ℂ) • cyclicRep 0) * ((s : ℂ) • cyclicRep 0)
+        = (s : ℂ) • (cyclicRep 0 * ((s : ℂ) • cyclicRep 0)) := by
+          rw [smul_mul_assoc]
+      _ = (s : ℂ) • ((s : ℂ) • (cyclicRep 0 * cyclicRep 0)) := by
+          rw [mul_smul_comm]
+      _ = ((s : ℂ) * s) • (cyclicRep 0 * cyclicRep 0) := by
+          rw [smul_smul]
+  have hCG : ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) * ((s : ℂ) • cyclicRep 0) =
+      ((c : ℂ) * s) • cyclicRep 0 := by
+    calc ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) * ((s : ℂ) • cyclicRep 0)
+        = (c : ℂ) • ((1 : Matrix (Fin 2) (Fin 2) ℂ) * ((s : ℂ) • cyclicRep 0)) := by
+          rw [smul_mul_assoc]
+      _ = (c : ℂ) • ((s : ℂ) • ((1 : Matrix (Fin 2) (Fin 2) ℂ) * cyclicRep 0)) := by
+          rw [mul_smul_comm]
+      _ = ((c : ℂ) * s) • cyclicRep 0 := by
+          rw [smul_smul, one_mul]
+  have hGC : ((s : ℂ) • cyclicRep 0) * ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ)) =
+      ((s : ℂ) * c) • cyclicRep 0 := by
+    calc ((s : ℂ) • cyclicRep 0) * ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ))
+        = (s : ℂ) • (cyclicRep 0 * ((c : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ))) := by
+          rw [smul_mul_assoc]
+      _ = (s : ℂ) • ((c : ℂ) • (cyclicRep 0 * 1)) := by
+          rw [mul_smul_comm]
+      _ = ((s : ℂ) * c) • cyclicRep 0 := by
+          rw [smul_smul, mul_one]
+  rw [sub_mul, mul_add, mul_add, hCC, hGG, hCG, hGC, cyclicRep_sq,
+    mul_comm (s : ℂ) c]
+  have htrig : ((c : ℂ) * c + (s : ℂ) * s) • (1 : Matrix (Fin 2) (Fin 2) ℂ) = 1 := by
+    have : (c : ℂ) * c + (s : ℂ) * s = 1 := ofReal_cos_sin_sq (θ / 2)
+    simp [this]
+  convert htrig using 1
+  simp [smul_neg, add_smul, sub_eq_add_neg]
+  abel
+
+/-- Axis-0 dual rotor has determinant `1`. -/
+theorem dualRotorMat_axis0_det (θ : ℝ) :
+    (dualRotorMat (EuclideanSpace.single 0 θ)).det = 1 := by
+  rw [dualRotorMat_axis0_entries, Matrix.det_fin_two]
+  set c := (↑(Real.cos (θ / 2)) : ℂ)
+  set s := (↑(Real.sin (θ / 2)) : ℂ)
+  have hcs : c * c + s * s = 1 := ofReal_cos_sin_sq (θ / 2)
+  have hI : (-I : ℂ) * s * ((-I) * s) = - (s * s) := by
+    calc (-I) * s * ((-I) * s)
+        = ((-I) * (-I)) * (s * s) := by ring
+      _ = (I * I) * (s * s) := by simp
+      _ = (-1) * (s * s) := by simp [I_mul_I]
+      _ = -(s * s) := by ring
+  -- det = c*c - ((-I)s)*((-I)s)
+  change c * c - ((-I) * s) * ((-I) * s) = 1
+  rw [hI, sub_neg_eq_add, hcs]
 
 end Logic
 
