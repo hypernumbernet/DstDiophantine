@@ -66,7 +66,8 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   one_sixteenth_omegaKilling_eq J_eq_four_times_one_sixteenth_omegaKilling
   axis_sq_diff_eq sq_diff_le_half_pi_sq sq_diff_eq_half_pi_sq_iff
   euclideanForm mass massNormalized mass_coef mass_nonneg mass_eq_zero_iff
-  J_eq_zero_of_mass_eq_zero mass_dagger massNormalized_coef massNormalized_nonneg
+  J_eq_zero_of_mass_eq_zero J_dagger JNormalized_dagger mass_dagger
+  massNormalized_coef massNormalized_nonneg
   massNormalized_eq_zero_iff JNormalized_eq_zero_of_massNormalized_eq_zero
   sq_sum_le_half_pi_sq sq_sum_eq_half_pi_sq_iff
   mass_bound_raw_continuous massNormalized_bound_continuous

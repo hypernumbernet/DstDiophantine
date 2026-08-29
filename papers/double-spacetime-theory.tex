@@ -8,10 +8,13 @@
 \usepackage{wrapfig}
 \usepackage{docmute}
 \usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{hyperref}
+\newtheorem{proposition}{Proposition}
 \DeclareMathOperator\arctanh{arctanh}
 \DeclareMathOperator\arccosh{arccosh}
 \newcommand{\Jnorm}{J_{\rm norm}}
+\newcommand{\Mnorm}{M_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
 
 \title{Double Spacetime Theory:\\ Gravity as Torsion between Usual and Dual Spacetime}
@@ -32,7 +35,7 @@ The complete rotor is $R_\text{total} = \exp[(\phi_1/2)iI + (\phi_2/2)iJ + (\phi
 The torsional mismatch rotor $\Omega = R^\dagger_\text{usual} R_\text{dual}$ yields the torsion bivector $\Omega_\text{biv} = \log \Omega$.
 The unique Lorentz-invariant scalar used throughout is the parameter-space form $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ on the six-generator Lorentz candidate $\mathfrak{so}(3,1)$ (not the twelve-dimensional sum $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$). Under the half-angle expansion $\Omega_{\mathrm{biv}}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ one has $B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})=2\sum_a(\alpha_a^2-\beta_a^2)$, so $J$ is four times $\frac1{16}B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})$. On admissible configurations, $|J|\le\Jbound$ or equivalently $|\Jnorm|\le 1$ with $\Jnorm=\frac8{3\pi^2}J$.
 
-The action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is shown to be dynamically equivalent to the Einstein-Hilbert action, reproducing GR exactly while eliminating Christoffel symbols, Riemann curvature, and the continuum spacetime hypothesis altogether. The theory is the biquaternionic realization of the Teleparallel Equivalent of GR (TEGR), with torsion now physically interpreted as dual-spacetime torsion.
+The proposed action is $S = \frac{c^4}{16\pi G} \int J \, d^4x$. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock torsion scalar $T$ of teleparallel gravity. On the exterior Schwarzschild chart, $T$ is obtained in closed form as a radial divergence, while the finite-angle identifications $J=\tfrac12 T$ and $J_{\mathrm{field}}=\tfrac12 T$ fail. Teleparallel gravity identifies $\int T$ with the Einstein--Hilbert integral up to a boundary; that identity is not transferred automatically to algebraic $J$. Torsion is interpreted physically as dual-spacetime mismatch.
 
 Crucially, since $J$ depends only on the relative angle between particle-intrinsic dual rotors, coherent excitation of the dual-spacetime components $\theta_a$ offers a direct pathway to gravitational engineering: gravity shielding, inertial mass reduction, and even antigravity become, for the first time, questions of rotor synchronization rather than violations of fundamental law.
 
@@ -50,11 +53,11 @@ The present work breaks radically with this tradition.
 
 We propose that the spacetime continuum hypothesis is fundamentally incorrect. There is no single, shared spacetime manifold. Instead, each individual particle carries its own pair of intrinsically double spacetimes—a compactified 16-real-dimensional structure encoded in the biquaternion algebra isomorphic to the Clifford algebra Cl(3,1). The usual spacetime (with basis j, kI, kJ, kK) and its dual (with basis k, jI, jJ, jK) are related by right-multiplication by $i$, a transformation that reverses the arrow of time while preserving the Minkowski norm. Gravity and inertia arise not from curvature of a background manifold, but from the torsional mismatch angle between these two particle-intrinsic spacetimes when parallel transport is demanded across different particles.
 
-This philosophical shift is profound. In standard GR, spacetime is an autonomous entity that tells matter how to move, while matter tells spacetime how to curve (Wheeler's famous phrase). In the double spacetime theory, there is no autonomous spacetime at all. Spacetime degrees of freedom are demoted to internal attributes of particles themselves—much like spin or charge—and the apparent curvature of the macroscopic world emerges only as a collective effect of the torsional misalignment among the dual rotors of neighboring particles. The Einstein equations are recovered exactly, yet Christoffel symbols, covariant derivatives, and the Riemann tensor are entirely eliminated: they are replaced by simple algebraic operations (rotor exponentiation, logarithm, and the Killing form trace) on biquaternions.
+This philosophical shift is profound. In standard GR, spacetime is an autonomous entity that tells matter how to move, while matter tells spacetime how to curve (Wheeler's famous phrase). In the double spacetime theory, there is no autonomous spacetime at all. Spacetime degrees of freedom are demoted to internal attributes of particles themselves—much like spin or charge—and the apparent curvature of the macroscopic world emerges only as a collective effect of the torsional misalignment among the dual rotors of neighboring particles. The Einstein equations belong to teleparallel gravity for the Weitzenb\"ock scalar $T$. Christoffel symbols, covariant derivatives, and the Riemann tensor are not used as primitive objects: they are replaced by algebraic operations (rotor exponentiation, logarithm, and the Killing form) on biquaternions. Algebraic $J$ is not identified with $T$.
 
 The theory therefore achieves three revolutionary outcomes simultaneously:
 
-1. Exact equivalence with GR in all observable predictions, including the Newtonian limit, black holes, cosmology, and gravitational waves—yet without any geometric curvature in the traditional sense.
+1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$.
 
 2. Natural unification of gravity and inertia: the equivalence principle emerges as the requirement that the usual and dual rotors remain parallel in free fall; acceleration violates this parallelism, producing inertial forces as the same torsional phenomenon as gravity.
 
@@ -68,7 +71,7 @@ Section~\ref{sec:math} establishes the mathematical foundation by introducing th
 
 Section~\ref{sec:kinematics} develops the complete rotor formalism that unifies Lorentz boosts, rotations, and parallel transport without matrices or Christoffel symbols.
 
-Section~\ref{sec:gravity} demonstrates that the torsional mismatch scalar $J$, constructed solely from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, yields an action dynamically equivalent to the Einstein-Hilbert action, revealing the theory as the biquaternionic realization of Teleparallel Gravity.
+Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records its admissible bounds and dual-map properties, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, and the distinction among $J$, $J_{\mathrm{field}}$, and $T$.
 
 Section~\ref{sec:unified} shows that inertia and gravity are identical phenomena arising from the same dual-rotor rigidity, with the equivalence principle emerging as an algebraic identity.
 
@@ -94,7 +97,7 @@ Section~\ref{sec:dualrotordynamics} develops the dynamics of dual rotors under e
 
 Section~\ref{sec:quantumgravity} extends the theory to quantum gravity, identifying quantum states with dual-spacetime rotor phases and deriving uncertainty relations from torsional coherence conditions.
 
-Section~\ref{sec:conclusions} summarizes the unification of all forces within the 16-dimensional biquaternion algebra and outlines near-term experimental tests that can confirm or falsify the theory within this decade.
+Section~\ref{sec:conclusions} records the established algebraic and chart facts, lists the remaining hypotheses, and notes observational distinctions from continuum GR.
 
 With this reformulation, GR is liberated from the prison of the continuum and elevated to a theory in which gravity is, for the first time, controllable in principle.
 
@@ -261,7 +264,7 @@ This single operation preserves the Minkowski norm ($X^2 = \tilde{X}^2$) and act
 \section{Gravity as Torsional Mismatch between Dual Spacetime}
 \label{sec:gravity}
 
-In this central section, we establish that gravity is neither spacetime curvature nor an external force, but the torsional mismatch between the usual and dual spacetimes intrinsically carried by every massive particle. The Einstein-Hilbert action emerges algebraically from this mismatch, without Christoffel symbols, Riemann tensors, or any reference to a continuous manifold. The resulting theory is mathematically equivalent to the TEGR, yet provides a profound physical reinterpretation: torsion is now the relative rotation angle between particle-local dual rotors.
+In this central section, we establish that gravity is neither spacetime curvature nor an external force, but the torsional mismatch between the usual and dual spacetimes intrinsically carried by every massive particle. Christoffel symbols, Riemann tensors, and a continuous manifold are not primitive objects. Torsion is the relative rotation angle between particle-local dual rotors. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock scalar $T$.
 
 \subsection{Definition of the Torsional Mismatch Rotor}
 
@@ -316,25 +319,53 @@ not the factor $8\sum$ of earlier drafts. The parameter-space scalar used throug
 \[
 J=\frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
 \]
-which is four times $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$ under this expansion. Boundedness statements refer to this $J$ and to $\Jnorm=\frac8{3\pi^2}J$: on admissible configurations (non-negative rapidities with $\alpha_a+\beta_a\le\pi/2$) one has $|J|\le\Jbound$ and $|\Jnorm|\le 1$. The bound fails if only a principal-branch condition is imposed.
+which is four times $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$ under this expansion. Boundedness statements refer to this $J$ and to $\Jnorm=\frac8{3\pi^2}J$. Write $M=\frac12\sum_a(\alpha_a^2+\beta_a^2)$ for the unsigned torsional mass, with the same normalisation $\Mnorm=\frac8{3\pi^2}M$.
 
-$J = 0$ in vacuum, $J > 0$ for ordinary attractive gravity (usual-spacetime boosts dominate), and $J < 0$ is possible when dual-spacetime rotations dominate (repulsive gravity).
+\begin{proposition}[Admissible bound]
+\label{prop:admissible-bound}
+On admissible configurations (non-negative rapidities with $\alpha_a+\beta_a\le\pi/2$ for each axis) one has $|J|\le\Jbound$ and $|\Jnorm|\le 1$, and likewise $0\le\Mnorm\le 1$. The image of $\Jnorm$ on this cone is the whole interval $[-1,1]$. The bound fails if only a principal-branch condition $|\alpha_a+\beta_a|\le\pi/2$ is imposed. Equality $|\Jnorm|=1$ holds if and only if the configuration is purely hyperbolic ($\alpha_a=\pi/2$, $\beta_a=0$ on every axis) or purely elliptic ($\alpha_a=0$, $\beta_a=\pi/2$ on every axis).
+\end{proposition}
 
-\subsection{Exact Equivalence to the Einstein-Hilbert Action}
+The sign of $J$ distinguishes ordinary attractive gravity ($J>0$: usual-spacetime boosts dominate) from dual-dominated repulsion ($J<0$). The vanishing locus is larger than vacuum:
+
+\begin{proposition}[Vanishing $J$ and the dual map]
+\label{prop:J-zero-dual}
+If $M=0$, then $J=0$ (vacuum: all rapidities vanish). The converse is false: there exist admissible configurations with $J=0$ and $M>0$ (balanced massive states, equal usual and dual rapidities). The usual--dual swap $\alpha\leftrightarrow\beta$ sends $J\mapsto -J$ and leaves $M$ invariant.
+\end{proposition}
+
+\subsection{\texorpdfstring{Schwarzschild Chart and the Distinction among $J$, $J_{\mathrm{field}}$, and $T$}{Schwarzschild Chart and J, J field, and T}}
+\label{subsec:schwarzschild-chart}
+
+On the exterior Schwarzschild domain $r>r_s>0$ the radial pure-boost rapidity is
+\[
+\varphi(r) = -\tfrac12\log\bigl(1-r_s/r\bigr).
+\]
+The associated sandwich scales reproduce the diagonal tetrad legs:
+\[
+\mathrm{e}^{-\varphi}=\sqrt{A},\qquad \mathrm{e}^{\varphi}=A^{-1/2},\qquad A(r)=1-r_s/r.
+\]
+The coframe $\bigl(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta\bigr)$ induces the Schwarzschild metric $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$. The Weitzenb\"ock torsion $T^a{}_{\mu\nu}=\partial_\mu e^a{}_\nu-\partial_\nu e^a{}_\mu$ of this coframe yields the teleparallel scalar
+\begin{equation}
+\label{eq:schwarzschild-T}
+T = \frac{2}{r^2}\frac{(1-\sqrt{A})^2}{\sqrt{A}} = -\frac{1}{r^2}\,\partial_r\bigl(r^2 B^r\bigr),\qquad B^r=\frac{4(1-\sqrt{A})}{r}.
+\end{equation}
+Three quadratic quantities appear on this chart and must not be conflated:
+\[
+J=\tfrac12\varphi^2,\qquad J_{\mathrm{field}}=\tfrac12(\varphi')^2,\qquad T\text{ as in }\eqref{eq:schwarzschild-T}.
+\]
+The first is a finite-angle parameter diagnostic; the second is a field seed built from $\partial_r\varphi$; the third is the TEGR Lagrangian density. In particular, a constant nonzero boost has $J\neq 0$ with vanishing $T$ on flat space, so $J=\tfrac12 T$ fails, and at the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. A corrected dictionary for a general motor field remains open.
+
+\subsection{Proposed Action}
 
 We propose the action
 \[
-S = \frac{c^4}{16\pi G} \int J \, d^4x.
+S = \frac{c^4}{16\pi G} \int J \, d^4x
 \]
-This action is purely algebraic and background-independent.
-
-The scalar $J$ is identified with the torsion scalar $T$ of TEGR only up to a total divergence and only after a rotor-to-tetrad dictionary is fixed; the identification $J=\tfrac12 T+\mathrm{div}$ is not re-derived here. It is a standard result in the TEGR literature that
+as a DST Lagrangian density in the parameter-space scalar $J$. This expression is algebraic and background-independent. It is \emph{not} identified with the teleparallel integral of $T$. For the Weitzenb\"ock scalar itself, teleparallel gravity gives
 \[
 \int T \, e \, d^4x = -\int R \, \sqrt{-g} \, d^4x + \mathrm{boundary},
 \]
-so the vacuum and matter-coupled field equations are exactly the Einstein equations. All solutions of GR (Schwarzschild, Kerr, FLRW, gravitational waves, etc.) are recovered precisely.
-
-Thus, GR is reproduced in full, yet gravity is demoted to a torsional mismatch angle between particle-intrinsic dual spacetimes.
+so the Einstein equations belong to $T$, not to algebraic $J$. Gravity in the present theory remains a torsional mismatch angle between particle-intrinsic dual spacetimes; the field equations of GR are recovered only after a future dictionary relating $J$ to $T$ is established.
 
 \subsection{Weak-Field and Newtonian Limit}
 
@@ -342,11 +373,11 @@ In the linearized regime,
 \[
 R_\text{usual} \approx 1 + \frac{1}{2} \sum \alpha_a \, i\Gamma_a, \quad R_\text{dual} \approx 1,
 \]
-yielding $\Omega_\text{biv} \approx \sum \alpha_a \, i\Gamma_a$ and $J \approx \frac{1}{2} \sum \alpha_a^2$. Standard TEGR linearization shows $\alpha_a \propto \partial_a (\Phi/c^2)$, leading to Poisson's equation
+yielding $\Omega_\text{biv} \approx \sum \alpha_a \, i\Gamma_a$ and $J \approx \frac{1}{2} \sum \alpha_a^2$. If the boost parameters track the Newtonian potential as $\alpha_a \propto \partial_a (\Phi/c^2)$, Poisson's equation
 \[
 \nabla^2 \Phi = 4\pi G \rho
 \]
-with the correct coefficient. Post-Newtonian parameters are identical to GR ($\gamma = \beta = 1$, etc.).
+is recovered with the standard coefficient. This matching is a linearized hypothesis, not a derivation of $G$ from the dual-rotor algebra.
 
 \subsection{Rotor Action in the Dual Spacetime}
 \label{subsec:dual-rotors}
@@ -436,7 +467,7 @@ The double spacetime theory predicts, as one of its central falsifiable conseque
 
 For proper accelerations $a < a_\text{crit}$, the dual phase $\theta$ tracks $\phi$ smoothly and the familiar Newtonian relation $F = ma$ is recovered. At the instant $a$ approaches $a_\text{crit}$, however, $\theta$ is driven through the compact boundary at $4\pi$ and undergoes a topological wrap-around: the dual rotor re-sutures its phase on the opposite side of the $S^3$-like dual sector. This wrap inverts the sign of the torsional mismatch bivector $\Omega_\text{biv}$, and therefore reverses the direction of the inertial response over a single dual cycle. We refer to this as the inertial reversal (or acceleration reversal) phenomenon: a sudden, discrete flip of the effective $F = ma$ vector triggered when the applied acceleration crosses $a_\text{crit}$. The torsional strain energy that was being stored in the rigid dual sector just below threshold is released abruptly during the wrap, producing an impulsive burst of internal energy in addition to the kinematic reversal itself.
 
-We propose that this mechanism is observationally realised in the anomalous airbursts of large meteoroids. The hypersonic deceleration experienced by bolides entering the Earth's atmosphere can reach values that, for the constituent atoms of the body, are plausibly of order $a_\text{crit}$. Long-standing puzzles in the bolide community---most prominently the Tunguska event (1908) and the Chelyabinsk superbolide (2013), whose disintegration altitudes and total radiated energies are notoriously difficult to reconcile with kinetic-energy dissipation models based on aerodynamic ablation and fragmentation alone---are naturally explained as collective inertial reversals: when the deceleration of the meteoroid crosses the material-specific $a_\text{crit}$, the dual phases of its constituent atoms wrap simultaneously, dumping the accumulated torsional strain energy as an explosive, predominantly radiative pulse. The dependence of $a_\text{crit}$ on composition would also account for the observed variability in airburst altitudes and yields between different meteorite classes (e.g.\ carbonaceous versus ordinary chondrites). A quantitative derivation of $a_\text{crit}$ from the particle-intrinsic compactification scale, together with a detailed comparison against the bolide observational record, will be presented in a companion paper.
+We propose that this mechanism is observationally realised in the anomalous airbursts of large meteoroids. The hypersonic deceleration experienced by bolides entering the Earth's atmosphere can reach values that, for the constituent atoms of the body, are plausibly of order $a_\text{crit}$. Long-standing puzzles in the bolide community---most prominently the Tunguska event (1908) and the Chelyabinsk superbolide (2013), whose disintegration altitudes and total radiated energies are notoriously difficult to reconcile with kinetic-energy dissipation models based on aerodynamic ablation and fragmentation alone---are naturally explained as collective inertial reversals: when the deceleration of the meteoroid crosses the material-specific $a_\text{crit}$, the dual phases of its constituent atoms wrap simultaneously, dumping the accumulated torsional strain energy as an explosive, predominantly radiative pulse. The dependence of $a_\text{crit}$ on composition would also account for the observed variability in airburst altitudes and yields between different meteorite classes (e.g.\ carbonaceous versus ordinary chondrites). A quantitative derivation of $a_\text{crit}$ from the particle-intrinsic compactification scale remains open.
 
 \section{Strong-Field Regime: Layered Gravitational Reversal and the New Black Hole Paradigm}
 \label{sec:strongfield}
@@ -445,17 +476,29 @@ The double spacetime theory predicts a radically new structure for the endpoints
 
 \subsection{Layered Torsional Structure from the Killing Form}
 
-The scalar $J = \frac{1}{16} B(\Omega_\text{biv}, \Omega_\text{biv})$ changes sign each time the dominant contribution flips from $i\Gamma_a$ (boost-like, $+$) to $\Gamma_a$ (rotation-like, $-$). At extreme densities, the dual rotor parameters $\theta$ grow nonlinearly, driving successive resonances that flip the sign of $J$ repeatedly as radius decreases.
+The scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$ changes sign each time the dominant contribution flips from $i\Gamma_a$ (boost-like, $+$) to $\Gamma_a$ (rotation-like, $-$). At extreme densities, the dual rotor parameters $\theta$ grow nonlinearly, driving successive resonances that flip the sign of $J$ repeatedly as radius decreases.
 
 The resulting effective potential features:
 \begin{itemize}
 \item Outer layers: standard attractive gravity ($J > 0$),
 \item First reversal: repulsive shell ($J < 0$) that halts infall (core bounce in supernovae),
-\item Deeper layers: ultra-strong attractive zones ($J \gg 0$) that re-accelerate matter inward,
-\item Alternating deeper shells with increasing $|J|$, culminating in chaotic torsional turbulence.
+\item Deeper layers: ultra-strong attractive zones that re-accelerate matter inward,
+\item Alternating deeper shells, culminating in chaotic torsional turbulence.
 \end{itemize}
+On the admissible cone $|J|$ cannot exceed $\Jbound$. Apparent ``unbounded'' growth of the mismatch is therefore a chart artefact: the classical radial rapidity $\varphi\to\infty$ as $r\to r_s^+$ leaves the cone.
 
-This layered structure prevents both singularities and event horizons. A light-speed-inescapable boundary exists — a quasi-horizon where the integrated torsional barrier becomes infinitely steep — but matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
+\subsection{Quasi-Horizon Cutoff}
+\label{subsec:quasi-horizon}
+
+Classical Schwarzschild has $\varphi\to\infty$ and $A\to 0$ as $r\to r_s^+$. Identifying the three-axis admissible ceiling $|J|=\Jbound$ with a radial pure-boost slice $J=\tfrac12\varphi^2$ inverts to the finite cutoff
+\[
+\varphi_{\max}=\frac{\pi\sqrt{3}}{2},\qquad A_{\min}=\mathrm{e}^{-2\varphi_{\max}}=\mathrm{e}^{-\pi\sqrt{3}}.
+\]
+The corresponding radius is $r_\star=r_s/(1-A_{\min})$, equivalently $r_\star/r_s=(1-A_{\min})^{-1}$. One has $0<A_{\min}<10^{-2}$ and $1<r_\star/r_s<1.005$. The saturated chart freezes $\varphi=\varphi_{\max}$ and $A=A_{\min}$ for $r\le r_\star$, and uses the classical formulae for $r>r_\star$. At $r=r_\star$ the two descriptions agree. The saturated factor $A$ remains strictly positive: a true one-way horizon $A=0$ does not form. (By contrast the classical factor vanishes at $r=r_s$.)
+
+This cutoff is a chart reading of the three-axis ceiling on a single boost axis. A one-axis admissible boost saturates only at $\varphi=\pi/2$, where $J=\pi^2/8=\Jbound/3$. The inverted value $\varphi_{\max}>\pi/2$ therefore lies outside the admissible cone. The construction saturates the three-axis bound, not the single-axis cone.
+
+This layered structure prevents both singularities and event horizons. Matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
 
 Conventional Kerr-type rotating black holes are ruled out: the theory forbids global frame-dragging of the required magnitude, as angular momentum is redistributed into dual rotor longitudinal modes rather than spacetime rotation.
 
@@ -622,7 +665,7 @@ Every atomic nucleus is a microscopic analog of the torsion stars described in S
 \item Outermost repulsive barrier: generates the hard-core repulsion in NN scattering.
 \end{itemize}
 
-Charge independence of the nuclear force, spin--orbit coupling, and magic numbers are \emph{interpreted} as resonance conditions in the dual rotor spectrum; they are not machine-derived theorems of the present algebra. Discrete finiteness of the rotor image at fixed compactification parameter \(N\) yields only \(A_{\max}(N)<\infty\). The numerical estimate \(A\sim 300\) for the termination of the nuclear chart remains an \emph{underived heuristic} (cf.\ the discrete companion), not a Lean-checked bound.
+Charge independence of the nuclear force, spin--orbit coupling, and magic numbers are \emph{interpreted} as resonance conditions in the dual rotor spectrum; they are not theorems of the present algebra. Discrete finiteness of the rotor image at fixed compactification parameter \(N\) yields only \(A_{\max}(N)<\infty\). The numerical estimate \(A\sim 300\) for the termination of the nuclear chart remains an underived heuristic.
 
 Nuclear fission and fusion are torsional layer transitions: fission occurs when an excited dual mode flips $J$ from positive to negative, explosively repelling fragments; fusion succeeds when two nuclei tunnel through the outer repulsive barrier into the deeper attractive well.
 
@@ -722,7 +765,7 @@ Unification occurs in the full torsional bivector:
 \[
 \Omega_{\text{biv}} = \log\left( R_{\text{usual}}^\dagger R_{\text{dual}}^{\text{EM+weak}} \right) \approx \sum_a (\theta_a + q A_a + g_W W_a P_L - \phi_a i) \Gamma_a.
 \]
-The scalar $J = \frac{1}{16} B(\Omega_{\text{biv}}, \Omega_{\text{biv}})$ now includes electromagnetic and weak contributions, with the electroweak symmetry emerging as a subgroup of $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$. Mass generation via rotor rigidity unifies with the Higgs mechanism, eliminating fine-tuning.
+The scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$ now includes electromagnetic and weak contributions, with the electroweak symmetry emerging as a subgroup of $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$. Mass generation via rotor rigidity unifies with the Higgs mechanism, eliminating fine-tuning.
 
 This embedding recovers the Standard Model electroweak sector at low energies while resolving hierarchy problems through dual compactness, paving the way for full unification with strong and gravitational forces.
 
@@ -811,13 +854,13 @@ where $a_0 \approx 1.2 \times 10^{-10}\;\mathrm{m/s^2}$ is an external observati
 \[
 v_{\text{flat}}^4 = G M_{\text{tot}} \, a_0 \, f_0^2,
 \]
-which is precisely the baryonic Tully-Fisher relation (McGaugh et al.\ 2016). The scaling $R \propto M^{1/2}$ implies that more massive galaxies possess larger dual-spacetime patches, a physically natural consequence of greater total torsional charge.
+which is the baryonic Tully--Fisher relation. The scaling $R \propto M^{1/2}$ implies that more massive galaxies possess larger dual-spacetime patches, a physically natural consequence of greater total torsional charge.
 
 For the Milky Way ($M_{\text{tot}} \approx 6 \times 10^{10}\,M_\odot$), this yields
 \[
 R = \sqrt{\frac{G \times 6 \times 10^{10}\,M_\odot}{1.2 \times 10^{-10}\;\mathrm{m/s^2}}} \approx 8.3\;\mathrm{kpc},
 \]
-so that the geometric plateau of $f(x)$ sits near the inner--mid disk scale ($r\sim R$), while the torsional reversal lies at $r=\pi R/2\approx 13\;\mathrm{kpc}$. Identifying $a_0$ with a characteristic acceleration on the $S^3$ patch remains a working hypothesis pending a derivation from the discrete compactification structure (Section~\ref{sec:discretetime}).
+so that the geometric plateau of $f(x)$ sits near the inner--mid disk scale ($r\sim R$), while the torsional reversal lies at $r=\pi R/2\approx 13\;\mathrm{kpc}$. Identifying $a_0$ with a characteristic acceleration on the $S^3$ patch remains a working hypothesis; a derivation of $a_0$ from the dual-rotor algebra is not claimed.
 
 \subsection{Torsional Reversal and the Finite Range of Gravity}
 
@@ -863,7 +906,7 @@ Dark matter is rendered superfluous --- an artifact of projecting the compact $S
 \section{Gravitational Engineering: Coherent Excitation of Dual-Spacetime Rotors}
 \label{sec:gravitycontrol}
 
-The double spacetime theory transforms gravity from an inviolable geometric constraint into an engineerable torsional degree of freedom. The torsion scalar $J = \frac{1}{16} B(\Omega_{\text{biv}}, \Omega_{\text{biv}})$, with $\Omega_{\text{biv}} = \log(R_{\text{usual}}^\dagger R_{\text{dual}})$, depends solely on the relative misalignment between the particle-intrinsic usual and dual rotors. External fields capable of coherently modulating the dual rotor parameters $\theta_a$ can therefore reduce $J \to 0$ (gravitational shielding or inertial mass reduction) or drive $J < 0$ (repulsive gravity).
+The double spacetime theory transforms gravity from an inviolable geometric constraint into an engineerable torsional degree of freedom. The torsion scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$, with $\Omega_{\text{biv}} = \log(R_{\text{usual}}^\dagger R_{\text{dual}})$, depends solely on the relative misalignment between the particle-intrinsic usual and dual rotors. External fields capable of coherently modulating the dual rotor parameters $\theta_a$ can therefore reduce $J \to 0$ (gravitational shielding or inertial mass reduction) or drive $J < 0$ (repulsive gravity).
 
 \subsection{Theoretical Coupling of Circularly Polarized Electromagnetic Fields to Dual Rotors}
 
@@ -949,7 +992,7 @@ To extract the resulting torsional mismatch, we apply the dual conversion $\thet
 \]
 structurally identical to the weak-field linearization of \S\ref{sec:gravity}. The Killing-form values established there ($B(i\Gamma_a, i\Gamma_b) = +8\,\delta_{ab}$) then yield directly
 \[
-J = \frac{1}{16} B(\Omega_\text{biv}, \Omega_\text{biv}) = \frac{1}{2}\sum_a \delta_a^2 = \frac{\delta^2}{2} > 0.
+J = \frac{1}{2}\sum_a \delta_a^2 = \frac{\delta^2}{2} > 0.
 \]
 This breaks the particle--antiparticle symmetry at the algebraic core. For usual-dominant modes (matter), the torsional mismatch is positive ($J > 0$) and produces attractive gravitational binding. For dual-dominant modes (antimatter), the usual/dual role assignment is inverted: the inverse conversion $\phi \mapsto -\phi\, i$ maps the chiral phase $\delta$ into the rotation direction rather than the boost direction, so the mismatch becomes $\Omega_\text{biv} \approx \sum_a \delta_a\, \Gamma_a$. The Killing-form value $B(\Gamma_a, \Gamma_b) = -8\,\delta_{ab}$ then gives $J = -\delta^2/2 < 0$, a repulsive torsional layer that dynamically excludes such modes from the cosmological vacuum.
 
@@ -992,10 +1035,10 @@ where $N \gg 1$ is a very large integer determining the compactification scale o
 This asymmetry is required for theoretical consistency:
 \begin{itemize}
   \item The dual spacetime is elliptic ($\hat{q}^2 = -1$), inherently compact, and its discretization directly reflects the $4\pi$-periodic topology of $S^3$ parameterized by $R_{\text{dual}}$. This provides the finite phase volume essential for resolving the Newton–Wigner localization problem and yielding natural quantum discreteness.
-  \item The usual spacetime is hyperbolic ($\hat{p}^2 = +1$), intrinsically non-compact, so continuity of $\phi$ preserves the full Lorentz group and ensures exact equivalence with classical general relativity in the macroscopic limit.
+  \item The usual spacetime is hyperbolic ($\hat{p}^2 = +1$), intrinsically non-compact, so continuity of $\phi$ preserves the full Lorentz group in the macroscopic limit.
 \end{itemize}
 
-The torsional mismatch rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ thus combines a continuous usual component with a discrete dual component. The parameter-space scalar $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ is bounded by $|J|\le\Jbound$ (equivalently $|\Jnorm|\le 1$) only on admissible configurations. Discretizing the dual angle alone does not imply the bound: a principal-branch condition without non-negative rapidities admits counterexamples, and the continuous usual-sector rapidity is unbounded. Continuum-induced singularities are therefore excluded only after the admissible cone is imposed.
+The torsional mismatch rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ thus combines a continuous usual component with a discrete dual component. The parameter-space scalar $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ is bounded by $|J|\le\Jbound$ (equivalently $|\Jnorm|\le 1$) only on admissible configurations. Discretizing the dual angle alone does not imply the bound: a principal-branch condition without non-negative rapidities admits counterexamples, and the continuous usual-sector rapidity is unbounded. Continuum-induced singularities are therefore excluded only after the admissible cone is imposed. On the discrete torus $(\mathbb{Z}/N\mathbb{Z})^6$ the rotor image is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
 
 A critical issue arises in the effective Lorentz factor across torsional layers, which typically appears as a synchronization function of the form
 \[
@@ -1009,15 +1052,7 @@ At every such point the numerator $\sin(N \cdot k\pi)$ also vanishes (for any in
 \]
 so the synchronization function is bounded on the entire compact lattice and the classical continuum limit $N \to \infty$ is recovered without pathology.
 
-Thus the boundedness of the torsional dynamics is a structural property of the Dirichlet kernel and does not require $N$ to be prime; any large positive integer $N$ suffices to suppress spurious singularities while preserving the continuum limit. The number-theoretic structure of the dual-spacetime compactification---in particular, the relation between $N$ and particle mass spectra---remains a natural extension of the framework and is developed in detail in a companion paper on the discrete dual spacetime model.
-
-Although the Dirichlet-kernel argument demonstrates that primality of \(N\) is not strictly required for boundedness of the torsional dynamics, the deeper arithmetic structure of the dual-spacetime compactification is substantially enriched when \(N\) is chosen to be an odd prime (or a controlled product of sufficiently large odd primes). In this case the biquaternion integer ring inherits unique factorization, and the allowed torsional layers and mass spectra become solutions of Diophantine equations generated by prime elements. This ``odd-prime discretization'' ensures that the discrete compactification admits a well-defined arithmetic structure while preserving the bounded torsional dynamics established above.
-
-The same discrete--continuous complementarity is made precise through zeta-function regularization. The regularized infinite product over all primes
-\[
-\prod_p p \;\overset{\text{zeta regularization}}{\longrightarrow}\; 4\pi^2
-\]
-originates from the analytic continuation of the Euler product, in which the discrete multiplicative structure of the primes is complemented by the continuous factors \(\pi\) and \(\Gamma\) appearing in the functional equation. In the double spacetime framework this numerical factor arises geometrically as the square of the fundamental angular period \(2\pi\) that governs the dual-spacetime rotor phases. Because the dual rotor is defined via half-angles (\(\theta/2\)) and the three independent rotation planes contribute through the Killing form, the effective periodicity \(2\pi\) is squared, yielding precisely \(4\pi^2\). This furnishes a direct geometric realization of the same constant that appears in the zeta regularization of the prime product. Consequently, choosing \(N\) to be an odd prime ensures that the discrete--continuous duality produces a well-defined, finite, and physically meaningful regularization of quantities that would otherwise diverge.
+Thus the Dirichlet kernel is bounded for any large positive integer $N$; primality is not required. The relation between $N$ and particle mass spectra, and the zeta-regularized product $\prod_p p\to 4\pi^2$, remain open within the present paper. The geometric reading of $4\pi^2$ as the square of the dual-rotor period $2\pi$ is a consistency remark, not a derivation of mass spectra.
 
 \section{Dual-Rotor Dynamics and the Geometric Origin of the de Broglie Phase}
 \label{sec:dualrotordynamics}
@@ -1063,26 +1098,40 @@ which is precisely the de Broglie phase of the matter wave.
 
 Thus, the quantum mechanical wave function phase $S(x,t)/\hbar$ emerges geometrically as the slowly varying component of the dual-rotor lag relative to the usual rotor. This provides a fully background-independent, algebraic origin for quantum matter waves within the double spacetime framework, without invoking additional postulates.
 
-Collective averaging of this particle-intrinsic action over many particles recovers the classical teleparallel action $\int J \, d^4x$, ensuring complete consistency with general relativity at macroscopic scales while revealing the microscopic quantum dynamics of the dual spacetime degrees of freedom.
+Collective averaging of this particle-intrinsic action over many particles is proposed to recover a macroscopic integral of $J$. That averaging is a working hypothesis, not an identification of $J$ with the Weitzenb\"ock density $T$.
 
 This harmonic oscillator dynamics constitutes the bridge between the classical torsional description of gravity and the full quantum theory developed in the following section.
 
 \section{Towards Quantum Gravity and Full Unification}
 \label{sec:quantumgravity}
 
-The classical formulation presented thus far demonstrates that gravity emerges as torsional mismatch between the particle-intrinsic usual and dual spacetimes, encoded in the 16-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$. The action $S$ yields exact equivalence to the Einstein-Hilbert action while abandoning the continuum hypothesis and Riemannian curvature.
+The classical formulation presented thus far treats gravity as torsional mismatch between the particle-intrinsic usual and dual spacetimes, encoded in $\mathbb{H}\otimes_{\mathbb{R}}\mathbb{H}\cong\mathrm{Cl}(3,1)$. The proposed action uses the parameter-space scalar $J$; it is not identified with the Einstein--Hilbert integral.
 
-A profound extension arises from recognizing that the dual rotor $R_\text{dual}$ is mathematically identical to the SU(2) spin-1/2 rotation operator. The dual-sector phases $\theta$ thus directly parameterize quantum states. Due to the intrinsic compactness of the dual spacetime ($\theta \mod 4\pi$), these phases live on a compact manifold, naturally yielding a Hilbert space structure where each particle's quantum state $|\psi\rangle$ corresponds to the unitary phase part of $R_\text{dual}$.
+The dual rotor $R_\text{dual}=\exp(\theta/2\,\hat q)$ is the spin-$1/2$ rotation operator of $\mathrm{SU}(2)$. Dual-sector phases $\theta$ therefore parameterize quantum states. The cyclic generators of the dual sector are represented on the spinor space $\mathbb{C}^2$ by $-i\sigma_a$, so that the standard rotation is $\exp(-i\beta\cdot\sigma/2)$. Due to the compactness of the dual spacetime ($\theta\bmod 4\pi$), these phases live on a compact manifold: each particle's state $|\psi\rangle$ corresponds to the unitary phase part of $R_\text{dual}$.
 
-Position and momentum operators emerge as projections of dual rotor angles, while forces—including gravity itself—manifest as modulations of relative rotor phases. This identifies quantum mechanics with dual spacetime rotations and gravity with torsional mismatch in the same algebraic framework, eliminating singularities via bounded discrete torsion layers.
+Position and momentum operators are interpreted as projections of dual rotor angles, while forces---including gravity---manifest as modulations of relative rotor phases. This identifies quantum kinematics with dual spacetime rotations and gravity with torsional mismatch in the same algebra. Singularities are excluded on the admissible cone by the bound of Proposition~\ref{prop:admissible-bound}, and on the saturated Schwarzschild chart by the quasi-horizon of Section~\ref{subsec:quasi-horizon}.
 
-The full quantum gravity framework, including explicit Hilbert space construction, spinor embedding in minimal left ideals of $\mathrm{Cl}(3,1)$, unification of all interactions, and resolution of baryon asymmetry through Planck-era time-arrow fixation, is developed in detail in the companion paper ``Quantum Gravity as Torsional Mismatch in Biquaternion Double Spacetime'' \cite{dst-quantum-gravity}.
+An explicit Hilbert space of $\mathrm{Cl}(3,1)$ spinors as minimal left ideals, and a complete quantization of the mismatch dynamics, remain open. The present section records only the $\mathrm{SU}(2)$ identification and the $\mathbb{C}^2$ representation. Baryon asymmetry through Planck-era time-arrow fixation is the hypothesis of Section~\ref{sec:baryonasymmetry}, not a derived theorem.
 
-This extension completes the theory: General Relativity is preserved classically, yet quantum gravity emerges algebraically without extra dimensions or ad-hoc quantization—solely from the double spacetime structure intrinsic to every massive particle.
+Quantum gravity is therefore not a separate theory: it is the dual-rotor kinematics of the same 16-dimensional algebra, still incomplete as a Hilbert-space construction.
 
 \section{Conclusions}
 \label{sec:conclusions}
-The double spacetime theory, grounded in the biquaternionic algebra $\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)$, offers a transformative framework for understanding gravity, inertia, and fundamental interactions. By embedding each particle within a pair of intertwined Minkowski spacetimes—one usual and one dual—the theory reinterprets gravitational phenomena as manifestations of torsional misalignment between these sectors. This paradigm shift resolves longstanding paradoxes in gravitational physics, unifies the strong nuclear force as a manifestation of layered torsional dynamics, and provides a natural mechanism for baryon asymmetry through intrinsic chirality and time arrow fixation. The theory's predictions, from gravity control via dual rotor synchronization to the reinterpretation of atomic nuclei as primordial torsion stars, open new avenues for experimental verification and technological innovation. As we stand on the cusp of a new era in gravitational physics, the dual spacetime framework beckons us to rethink our understanding of the cosmos and our place within it.
+
+The double spacetime theory treats gravity as torsional mismatch between particle-intrinsic usual and dual Minkowski sectors in $\mathbb{H}\otimes_{\mathbb{R}}\mathbb{H}\cong\mathrm{Cl}(3,1)$. The following statements are established in the body of the paper.
+
+\begin{itemize}
+\item On the admissible cone, $|J|\le\Jbound$ and $|\Jnorm|\le 1$, with image $[-1,1]$. The bound fails under a principal-branch condition alone.
+\item The usual--dual swap sends $J\mapsto -J$ and preserves unsigned mass $M$. Vanishing $J$ includes vacuum and balanced massive configurations.
+\item On the exterior Schwarzschild chart, the radial pure-boost sandwich reproduces the diagonal tetrad scales, the induced metric is Schwarzschild, and the Weitzenb\"ock scalar is $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}$. Parameter $J$, field seed $J_{\mathrm{field}}$, and $T$ are distinct; $J=\tfrac12 T$ fails.
+\item The saturated chart with $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ matches classical Schwarzschild at $r_\star$ and never reaches $A=0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone.
+\item The $S^3$ cotangent potential obeys the Gauss law on the three-sphere. The rotation-curve shape $f(x)=x/\sin^2 x$ has a unique plateau root of $\tan x=2x$ in $(\pi/4,\pi/2)$. The acceleration $a_0$ and Newton $G$ are external inputs.
+\item The discrete rotor image at fixed $N$ is finite. Nonzero winding is incompatible with real-scale admissibility. Dual-sector kinematics is $\mathrm{SU}(2)$ on $\mathbb{C}^2$.
+\end{itemize}
+
+The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a general-motor dictionary between $J$ and $T$; derivation of $G$, $a_0$, $\alpha_s$, or $a_{\mathrm{crit}}$; nuclear and electromagnetic layer identifications; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; and a complete Hilbert-space quantization.
+
+Observable distinctions from continuum GR that can be tested without those open derivations include a finite redshift floor $A_{\min}>0$ in place of a true horizon, vanishing gravitational time dilation at the centre of a spherically symmetric torsion star, and a geometric rotation-curve plateau from the $S^3$ map rather than from unseen mass.
 
 \bibliographystyle{unsrt}
 \begin{thebibliography}{1}
@@ -1113,11 +1162,6 @@ J.~W. Maluf,
 ``The teleparallel equivalent of general relativity,''
 \textit{Ann.\ Phys.\ (Berlin)} \textbf{525}, 339--359 (2013).
 doi:10.1002/andp.201200272
-
-\bibitem{dst-quantum-gravity}
-Anonymous,
-``Quantum Gravity as Torsional Mismatch in Biquaternion Double Spacetime'' (2025).
-\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/dst-quantum-gravity.pdf}.
 
 \end{thebibliography}
 
@@ -1176,7 +1220,7 @@ Anonymous,
 \end{table}
 These are indeed the same results and are isomorphic.
 \clearpage
-\section{Equivalence of the Torsional Mismatch Scalar J to the Teleparallel Torsion Scalar T of TEGR}
+\section{Torsional Scalar, Schwarzschild Chart, and Teleparallel Density}
 \label{app:TEGR-equivalence}
 
 The torsional mismatch bivector is
@@ -1191,46 +1235,27 @@ Evaluating the Killing-type pairing \( B(i\Gamma_a, i\Gamma_a) = +8 \), \( B(\Ga
 \[
 B(\Omega_{\rm biv}, \Omega_{\rm biv}) = 2 \sum_{a=1}^3 (\alpha_a^2 - \beta_a^2),
 \]
-not the factor \(8\sum\) written in earlier drafts of this appendix. The parameter-space torsional scalar used in the discrete companion and in Lean is
+not the factor \(8\sum\) of earlier drafts. The parameter-space scalar used throughout is
 \[
 J = \frac12 \sum_{a=1}^3 (\alpha_a^2 - \beta_a^2),
 \]
-which is four times \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) under this expansion. Boundedness statements refer to this \(J\) and to \(\Jnorm=\frac8{3\pi^2}J\): on admissible configurations (non-negative rapidities with \(\alpha_a+\beta_a\le\pi/2\)) one has \(|J|\le\Jbound\) and \(|\Jnorm|\le 1\). The bound fails if only a principal-branch condition is imposed.
+which is four times \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) under this expansion. Proposition~\ref{prop:admissible-bound} records the admissible bound; Proposition~\ref{prop:J-zero-dual} records the dual map and the splitting of \(J=0\).
 
-To compare this invariant with TEGR we must first specify the geometric correspondence between the rotor field and the tetrad. Concretely, the total rotor field $R_{\rm total}(x) = R_{\rm usual}(x)\, R_{\rm dual}(x)$ acts on a fixed reference tetrad $\{\mathring{e}^a\}$ by the spinor sandwich product
+The total rotor field $R_{\rm total}(x) = R_{\rm usual}(x)\, R_{\rm dual}(x)$ acts on a fixed reference tetrad $\{\mathring{e}^a\}$ by the sandwich product
 \[
-e^a{}_\mu(x) \;=\; \langle R_{\rm total}(x)\, \mathring{e}^a\, R_{\rm total}^\dagger(x) \rangle_{1,\mu},
+e^a{}_\mu(x) \;=\; \langle R_{\rm total}(x)\, \mathring{e}^a\, R_{\rm total}^\dagger(x) \rangle_{1,\mu}.
 \]
-where $\langle \cdot \rangle_{1,\mu}$ extracts the grade-1 (vector) component along the coordinate basis. This identification promotes $R_{\rm total}$ to a tetrad field $e^a{}_\mu$ with metric $g_{\mu\nu} = \eta_{ab}\, e^a{}_\mu e^b{}_\nu$, and renders the dual-mismatch bivector $\Omega_{\rm biv}$ proportional to the contorsion of the Weitzenb\"ock connection associated with $e^a{}_\mu$:
+This promotes $R_{\rm total}$ to a tetrad $e^a{}_\mu$ with metric $g_{\mu\nu} = \eta_{ab}\, e^a{}_\mu e^b{}_\nu$. On the exterior Schwarzschild domain the radial pure-boost sandwich reproduces the diagonal legs $\sqrt{A}$ and $A^{-1/2}$, and the induced metric is the Schwarzschild metric (Section~\ref{subsec:schwarzschild-chart}). The Weitzenb\"ock torsion of that coframe has teleparallel scalar
 \[
-\Omega_{\rm biv}\big|_{\mu\nu}^{ab} \;\propto\; K^{ab}{}_\mu\, dx^\mu \wedge dx^\nu,
-\qquad
-T^a{}_{\mu\nu} \;=\; \partial_\mu e^a{}_\nu - \partial_\nu e^a{}_\mu.
+T = \frac14 T_{\rho\mu\nu}T^{\rho\mu\nu} + \frac12 T_{\rho\mu\nu}T^{\nu\mu\rho} - T_\rho T^\rho
+= \frac{2}{r^2}\frac{(1-\sqrt{A})^2}{\sqrt{A}} = -\frac{1}{r^2}\,\partial_r\bigl(r^2 B^r\bigr),
 \]
-Under this identification the quadratic invariant $J$ is conjectured to correspond (up to a total divergence) to the teleparallel torsion scalar
-\[
-T = \frac14 T_{\rho\mu\nu}T^{\rho\mu\nu} + \frac12 T_{\rho\mu\nu}T^{\nu\mu\rho} - T_\rho T^\rho,
-\]
-in the form
-\[
-J = \frac12 T + \nabla_\mu B^\mu.
-\]
-This identity is not re-derived here: only a chart-level Schwarzschild slice is formalised in the companion PGA paper, and the variational TEGR/Einstein--Hilbert equivalence is taken from the literature.
+with $B^r=4(1-\sqrt{A})/r$. The three quantities $J=\tfrac12\varphi^2$, $J_{\mathrm{field}}=\tfrac12(\varphi')^2$, and this $T$ are distinct: $J=\tfrac12 T$ fails on a constant boost, and $J_{\mathrm{field}}=\tfrac12 T$ fails at the exterior point $(r_s,r)=(2,4)$. A general-motor dictionary remains open.
 
-It is a standard result of TEGR \cite{maluf2013} that, for the same underlying tetrad,
+For the Weitzenb\"ock scalar itself, teleparallel gravity \cite{maluf2013} gives
 \[
-\int T\, e\, d^4x = -\int R\sqrt{-g}\, d^4x + \int \partial_\mu(\sqrt{-g}\, V^\mu)\, d^4x,
+\int T\, e\, d^4x = -\int R\sqrt{-g}\, d^4x + \int \partial_\mu(\sqrt{-g}\, V^\mu)\, d^4x.
 \]
-i.e.\ $T$ and $-R$ differ only by a total divergence. Substituting the relation for $J$ gives
-\[
-S = \frac{c^4}{16\pi G} \int J \, d^4x = -\frac{c^4}{16\pi G} \int R \sqrt{-g}\, d^4x + (\text{boundary terms}).
-\]
-
-The variation of $S$ is taken with the tetrad $e^a{}_\mu$ (or equivalently the rotor field $R_{\rm total}$) as the independent dynamical variable, with the standard boundary condition that all field variations $\delta e^a{}_\mu$ vanish on the boundary $\partial\mathcal{M}$ of the integration region. Under this condition the total-divergence terms above do not contribute to the variational equations, and the variation of the remainder reproduces the Einstein equations
-\[
-G_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}.
-\]
-
-Thus, with the rotor-to-tetrad identification stated above and the standard variational boundary condition, the Double Spacetime action is dynamically equivalent to the Einstein--Hilbert action in the classical limit.
+That identity concerns $T$, not algebraic $J$. The proposed DST action $S\propto\int J$ is therefore not identified with the Einstein--Hilbert integral. The Einstein equations belong to $T$ after the standard tetrad variation with vanishing boundary variations $\delta e^a{}_\mu$.
 
 \end{document}

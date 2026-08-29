@@ -238,6 +238,91 @@ theorem saturatedA_pos {rs r : ℝ} (hrs : 0 < rs) :
     simpa [hr] using
       A_pos_of_exterior hrs ((rs_lt_eventBoundaryRadius hrs).trans hr)
 
+theorem saturatedA_ne_zero {rs r : ℝ} (hrs : 0 < rs) :
+    saturatedA rs r ≠ 0 :=
+  (saturatedA_pos hrs).ne'
+
+/-- The saturated factor never reaches the classical horizon value `A = 0`. -/
+theorem saturatedA_ne_horizon {rs r : ℝ} (hrs : 0 < rs) :
+    saturatedA rs r ≠ 0 :=
+  saturatedA_ne_zero hrs
+
+/-! ### Saturated chart matches classical Schwarzschild at `r_★` -/
+
+theorem saturatedA_at_boundary {rs : ℝ} (_hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) = AMin :=
+  saturatedA_of_le le_rfl
+
+theorem classicalA_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    1 - rs / eventBoundaryRadius rs = AMin :=
+  (A_eq_AMin_iff_eq_eventBoundaryRadius hrs (eventBoundaryRadius_pos hrs)).mpr rfl
+
+theorem saturatedA_eq_classical_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) =
+      1 - rs / eventBoundaryRadius rs := by
+  rw [saturatedA_at_boundary hrs, classicalA_at_boundary hrs]
+
+theorem saturatedRapidity_at_boundary {rs : ℝ} (_hrs : 0 < rs) :
+    saturatedRapidity rs (eventBoundaryRadius rs) = phiMax :=
+  saturatedRapidity_of_le le_rfl
+
+theorem classicalRapidity_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    schwarzschildRapidity rs (eventBoundaryRadius rs) = phiMax :=
+  (schwarzschildRapidity_eq_phiMax_iff_eventBoundaryRadius hrs
+    (rs_lt_eventBoundaryRadius hrs)).mpr rfl
+
+theorem saturatedRapidity_eq_classical_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    saturatedRapidity rs (eventBoundaryRadius rs) =
+      schwarzschildRapidity rs (eventBoundaryRadius rs) := by
+  rw [saturatedRapidity_at_boundary hrs, classicalRapidity_at_boundary hrs]
+
+/-- Classical Schwarzschild factor vanishes at `r = rₛ`. -/
+theorem classicalA_eq_zero_at_horizon {rs : ℝ} (hrs : 0 < rs) :
+    1 - rs / rs = 0 := by
+  rw [div_self hrs.ne']
+  ring
+
+/-! ### Three-axis ceiling versus single-axis radial gauge -/
+
+/-- The three-axis pure-boost wall saturates the raw admissible ceiling. -/
+theorem J_threeAxisPureHyperbolic :
+    J { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = JMax := by
+  unfold JMax
+  rw [J_coef]
+  simp only [Fin.sum_univ_three]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+/-- Single-axis admissible maximum: `J(pureBoost (π/2)) = π²/8`. -/
+theorem J_pureBoost_half_pi :
+    J (pureBoost (Real.pi / 2)) = Real.pi ^ 2 / 8 := by
+  rw [J_pureBoost]
+  field_simp
+  ring
+
+theorem JMax_eq_three_single_axis :
+    JMax = 3 * J (pureBoost (Real.pi / 2)) := by
+  rw [J_pureBoost_half_pi]
+  unfold JMax
+  ring
+
+/-- An admissible one-axis boost cannot exceed one third of the three-axis ceiling. -/
+theorem J_pureBoost_of_admissible {θ : ℝ}
+    (h : IsAdmissibleContinuous (pureBoost θ)) :
+    J (pureBoost θ) ≤ Real.pi ^ 2 / 8 := by
+  have hθ := (isAdmissibleContinuous_pureBoost_iff θ).mp h
+  rw [J_pureBoost]
+  have : θ ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+    nlinarith [hθ.1, hθ.2, Real.pi_pos]
+  nlinarith
+
+/-- Inverting the three-axis ceiling on a single boost axis yields `φ_max`,
+which lies outside the admissible cone. -/
+theorem phiMax_inverts_three_axis_ceiling_on_one_axis :
+    J (pureBoost phiMax) = JMax ∧
+      ¬ IsAdmissibleContinuous (pureBoost phiMax) :=
+  ⟨J_pureBoost_phiMax, not_admissible_pureBoost_phiMax⟩
+
 /-! ### Rational envelopes (machine-checked numerics) -/
 
 private theorem sqrt_three_gt_173_100 :

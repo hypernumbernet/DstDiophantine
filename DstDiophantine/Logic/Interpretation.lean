@@ -22,16 +22,12 @@ namespace Logic
 open Admissible Invariant Motor Operations Real Framework
 
 /-- Dagger / usual–dual swap flips the sign of raw and normalised \(J\). -/
-theorem J_dagger (p : TorsionParams) : J (daggerParams p) = -J p := by
-  rw [J_coef, J_coef]
-  simp only [daggerParams, Fin.sum_univ_three]
-  ring
+theorem J_dagger (p : TorsionParams) : J (daggerParams p) = -J p :=
+  Invariant.J_dagger p
 
 theorem JNormalized_dagger (p : TorsionParams) :
-    JNormalized (daggerParams p) = -JNormalized p := by
-  unfold JNormalized
-  rw [J_dagger]
-  ring
+    JNormalized (daggerParams p) = -JNormalized p :=
+  Invariant.JNormalized_dagger p
 
 theorem isAdmissibleContinuous_dagger {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :

@@ -158,10 +158,22 @@ theorem J_eq_zero_of_mass_eq_zero {p : TorsionParams} (h : mass p = 0) :
   rw [J_coef]
   simp [Fin.sum_univ_three, (hz 0).1, (hz 0).2, (hz 1).1, (hz 1).2, (hz 2).1, (hz 2).2]
 
+/-- Usual–dual swap flips the sign of `J`. -/
+theorem J_dagger (p : TorsionParams) : J (daggerParams p) = -J p := by
+  rw [J_coef, J_coef]
+  simp only [daggerParams, Fin.sum_univ_three]
+  ring
+
 /-- Usual–dual swap preserves unsigned mass. -/
 theorem mass_dagger (p : TorsionParams) : mass (daggerParams p) = mass p := by
   rw [mass_coef, mass_coef]
   simp only [daggerParams, Fin.sum_univ_three]
+  ring
+
+theorem JNormalized_dagger (p : TorsionParams) :
+    JNormalized (daggerParams p) = -JNormalized p := by
+  unfold JNormalized
+  rw [J_dagger]
   ring
 
 /-- Paper-normalized mass; equals `1` at either appendix wall. -/

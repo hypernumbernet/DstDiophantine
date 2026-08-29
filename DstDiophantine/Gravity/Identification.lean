@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.Weitzenbock
 import DstDiophantine.Gravity.Sandwich
+import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Motor
@@ -196,6 +197,23 @@ theorem conjectured_J_field_eq_half_T_plus_div_false :
 /-- Legacy name of the rejected stub. -/
 abbrev conjectured_J5_eq_half_T_plus_div : Prop :=
   conjectured_J_field_eq_half_T_plus_div
+
+/-! ### Dual-map dictionary (parameter space) -/
+
+/-- Usual–dual swap flips `J` and preserves unsigned mass. -/
+theorem J_dagger_neg (p : Operations.TorsionParams) :
+    J (Operations.daggerParams p) = -J p :=
+  Invariant.J_dagger p
+
+theorem mass_dagger_eq (p : Operations.TorsionParams) :
+    mass (Operations.daggerParams p) = mass p :=
+  Invariant.mass_dagger p
+
+/-- `J = 0` does not imply vacuum: balanced massive configurations exist. -/
+theorem J_zero_not_vacuum :
+    ∃ p : Operations.TorsionParams,
+      Admissible.IsAdmissibleContinuous p ∧ JNormalized p = 0 ∧ 0 < mass p :=
+  JNormalized_zero_not_implies_vacuum
 
 end Gravity
 
