@@ -80,7 +80,7 @@ GR は置き換えられない。完成され、重力は原理上制御可能�
 
 第\ref{sec:timedilation}節では、ねじれ不整合から時間膨張効果を導き、強重力場および惑星内部で GR からの測定可能なずれを予測する。
 
-第\ref{sec:nuclear}節では、ねじれ層のスケール不変性を証明し、核力を層をもつ重力として同定し、原子核を原始ねじれ星とみなす。
+第\ref{sec:nuclear}節では、ねじれ層のスケール不変性を作業仮説として述べ、核力を層をもつ重力として同定し、原子核を原始ねじれ星とみなす。
 
 第\ref{sec:electronshells}節では、電子殻を電気反転層としてモデル化し、微視的スケールの電磁気学の観点から電子軌道と原子間力を説明する。
 
@@ -355,7 +355,17 @@ T = \frac{2}{r^2}\frac{(1-\sqrt{A})^2}{\sqrt{A}} = -\frac{1}{r^2}\,\partial_r\bi
 \[
 J=\tfrac12\varphi^2,\qquad J_{\mathrm{field}}=\tfrac12(\varphi')^2,\qquad T\text{（}\eqref{eq:schwarzschild-T}\text{）}.
 \]
-第一は有限角のパラメータ診断、第二は $\partial_r\varphi$ から作る場の種、第三は TEGR ラグランジアン密度である。とくに定数の非零ブーストは平坦空間で $J\neq 0$ かつ $T=0$ となり $J=\tfrac12 T$ は失敗し、外域点 $(r_s,r)=(2,4)$ では $J_{\mathrm{field}}\neq\tfrac12 T$ である。一般モーター場に対する訂正済み辞書は未解決である。
+第一は有限角のパラメータ診断、第二は $\partial_r\varphi$ から作る場の種、第三は TEGR ラグランジアン密度である。
+
+\begin{proposition}[外域シュヴァルツシルトのサンドイッチと Weitzenb\"ock スカラー]
+\label{prop:schwarzschild-chart}
+外域 $r>r_s>0$ において、動径純ブーストのサンドイッチ尺度は $A=1-r_s/r$ に対し $\mathrm{e}^{-\varphi}=\sqrt{A}$ および $\mathrm{e}^{\varphi}=A^{-1/2}$ である。余枠 $(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta)$ はシュヴァルツシルト計量 $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$ を誘導する。その Weitzenb\"ock スカラーは $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}=-\frac{1}{r^2}\partial_r(r^2 B^r)$、$B^r=4(1-\sqrt{A})/r$ である。
+\end{proposition}
+
+\begin{proposition}[$J=\tfrac12 T$ の拒否]
+\label{prop:identification-rejected}
+定数の非零ブーストは平坦空間で $J\neq 0$ かつ Weitzenb\"ock $T=0$ となり、$J=\tfrac12 T$ は失敗する。外域点 $(r_s,r)=(2,4)$ では $J_{\mathrm{field}}\neq\tfrac12 T$ である。一般モーター場に対する訂正済み辞書は未解決である。
+\end{proposition}
 
 \subsection{提案する作用}
 
@@ -499,6 +509,16 @@ R_\text{total} = \exp\left( \frac{\phi}{2} \hat{p} + \frac{\theta}{2} \hat{q} \r
 が得られる。対応する半径は $r_\star=r_s/(1-A_{\min})$、すなわち $r_\star/r_s=(1-A_{\min})^{-1}$ である。$0<A_{\min}<10^{-2}$ かつ $1<r_\star/r_s<1.005$ である。飽和チャートは $r\le r_\star$ で $\varphi=\varphi_{\max}$、$A=A_{\min}$ に凍結し、$r>r_\star$ では古典公式を用いる。$r=r_\star$ で二つの記述は一致する。飽和因子 $A$ は厳密に正のままである。真の一方通行地平 $A=0$ は形成されない（対照的に古典因子は $r=r_s$ で消える）。
 
 この切断は三軸上限を単一ブースト軸へ読み替えたチャートである。一軸の許容ブーストは $\varphi=\pi/2$ で飽和し、そこでは $J=\pi^2/8=\Jbound/3$ である。したがって反転値 $\varphi_{\max}>\pi/2$ は許容錐の外にある。構成は三軸上界を飽和させ、単軸錐を飽和させるのではない。
+
+\begin{proposition}[準地平の切断]
+\label{prop:quasi-horizon}
+三軸上限 $|J|=\Jbound$ を動径純ブースト切片 $J=\tfrac12\varphi^2$ と同一視すると $\varphi_{\max}=\pi\sqrt{3}/2$ および $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ が得られ、$r_\star=r_s/(1-A_{\min})$ に対し $0<A_{\min}<10^{-2}$ かつ $1<r_\star/r_s<1.005$ である。飽和チャートと古典チャートは $r=r_\star$ で一致し、$A_{\min}>0$ である。値 $\varphi_{\max}$ は単軸許容錐の外にある。
+\end{proposition}
+
+\begin{proposition}[飽和内部：場の種の消滅と残るねじれ]
+\label{prop:saturated-interior}
+飽和内部 $r\le r_\star$ では赤方偏移床 $A=A_{\min}>0$ が固定されるため、場の種 $J_{\mathrm{field}}$ は消える。定数 $A$ の余枠はなお角方向の Weitzenb\"ock ねじれを運び（とくに $T^2{}_{r\theta}=1$）、したがって $T$ は消えない。凍結した $A_{\min}$ を外域の閉形式 $T$ に代入しても、凍結発散形とは一致しない。よって $J_{\mathrm{field}}=0$ かつ $T\neq 0$ であり、定数ブーストの反例 $J\neq 0$、$T=0$ の双対である。
+\end{proposition}
 
 この層状構造は特異点と事象地平の両方を防ぐ。物質は中心特異点に到達しない。代わりにコアは、極端密度のねじれエネルギーの準安定なカオス凝縮体へと落ち着き、引力相と斥力相の間で連続的に振動する。
 
@@ -746,6 +766,11 @@ P_L = \frac{1 - e_1}{2},\qquad P_R = \frac{1 + e_1}{2}.
 \]
 これらは冪等かつ相補的である。$i^2=-1$ の素朴な式 $(1\pm i)/2$ は冪等でなく、棄却する。
 
+\begin{proposition}[可換な平方 $+1$ 対と非零左イデアル]
+\label{prop:commuting-left-ideal}
+$e_1^2=+1$ から作る相補対 $P_{L,R}=(1\pm e_1)/2$ は冪等であり、擬スカラー公式 $(1\pm i)/2$ は冪等でない。可換な平方 $+1$ 対 $e_1$ と $e_0e_2$ の積は冪等かつ非零であり、非零の左イデアルを生成する。そのイデアルのスピノル加群としての既約性は主張しない。
+\end{proposition}
+
 電磁気は双対セクターにおけるベクトルポテンシャル $A_a$ への最小結合から生じ、回転パラメーターをずらす。
 \[
 \theta_a \mapsto \theta_a + q A_a,
@@ -811,6 +836,15 @@ g(r) \cdot 4\pi R^2 \sin^2\!\left(\frac{r}{R}\right) = -\frac{GM}{R^2 \sin^2(r/R
 \]
 によって確認される。
 
+\begin{proposition}[$S^3$ の Gauss 則]
+\label{prop:s3-gauss}
+余接ポテンシャル $\Phi(r)=-(GM/R)\cot(r/R)$ は $S^3$ 上で半径方向に調和であり、
+\[
+g(r)\cdot 4\pi R^2\sin^2(r/R)=-4\pi GM
+\]
+である。
+\end{proposition}
+
 $r \ll R$ の極限では、余接は
 \[
 \cot\!\left(\frac{r}{R}\right) = \frac{R}{r} - \frac{r}{3R} - \frac{r^3}{45R^3} - \cdots\,,
@@ -844,6 +878,11 @@ v^2(r) = \frac{GM(r)}{r} \cdot \eta(r) = \frac{GM(r)}{r} \cdot \left[\frac{r/R}{
 を満たす。光度円盤の外側（$r > r_{\text{disk}}$）では $M(r) \approx M_{\text{tot}}$ であり、平坦空間ケプラー速度 $v_K^2 = GM_{\text{tot}}/r$ は $r^{-1}$ で減少する。$r$ とともに単調に増大する $S^3$ 増強因子 $\eta(r)$ がこの減少に対抗する。
 
 結合無次元関数 $f(x) \equiv x / \sin^2 x$（ここで $x = r/R$）が回転曲線の形状を支配する。それは $x_0 \approx 1.17$、すなわち区間 $(\pi/4,\pi/2)$ における $\tan x = 2x$ の一意根に広い極小をもち、臨界点では $f(x_0)=x_0+1/(4x_0)\approx 1.38$ となり、延長された台地を生じる。
+
+\begin{proposition}[一意なプラトー根]
+\label{prop:plateau-root}
+形状関数 $f(x)=x/\sin^2 x$ は $(\pi/4,\pi/2)$ において $\tan x=2x$ の一意根をもつ。その根 $x_0$ において $f(x_0)=x_0+1/(4x_0)$ である。
+\end{proposition}
 \begin{itemize}
   \item \textbf{内側領域}（$r \ll R$）：上昇する $M(r)$ によって修正されたケプラー振る舞い。観測される剛体的上昇を再現する。
   \item \textbf{遷移領域}（$r \sim R$）：減少するケプラー因子が成長する $\eta(r)$ によって釣り合い、ほぼ平坦な台地を与える。その幅は $f(x)$ の極小の幅によって定まる。
@@ -1053,6 +1092,11 @@ J = \frac{1}{2}\sum_a \delta_a^2 = \frac{\delta^2}{2} > 0
 
 ねじれ不整合ローター $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ はしたがって連続な通常成分と離散な双対成分を結合する。パラメータ空間スカラー $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ は、許容配置上でのみ $|J|\le\Jbound$（同値に $|\Jnorm|\le 1$）で有界である。双対角のみの離散化は有界を含意しない。非負ラピディティなしの主枝条件は反例を許し、連続な通常セクターラピディティは非有界である。したがって連続体誘起の特異点が排除されるのは、許容錐が課された後に限られる。離散トーラス $(\mathbb{Z}/N\mathbb{Z})^6$ 上のローター像は有限である。スケールした格子配置の非零巻数は実スケール許容と両立しない。$4\mid N$ のとき格子は端点 $\Jnorm=\pm 1$ に達し、そうでなければ許容上界は厳密である。
 
+\begin{proposition}[有限な離散ローター像]
+\label{prop:discrete-rotor-image}
+固定コンパクト化 $N$ において、トーラスの離散ローター像は有限である。スケールした格子配置の非零巻数は実スケール許容と両立しない。$4\mid N$ のとき格子は端点 $\Jnorm=\pm 1$ に達し、そうでなければ許容上界は厳密である。
+\end{proposition}
+
 ねじれ層にわたる有効ローレンツ因子において臨界的問題が生じる。それは典型的に
 \[
 \gamma_{\text{eff}} \propto D_N(\delta\theta) \equiv \frac{\sin(N \delta\theta / 2)}{N \sin(\delta\theta / 2)}
@@ -1066,6 +1110,15 @@ J = \frac{1}{2}\sum_a \delta_a^2 = \frac{\delta^2}{2} > 0
 を与える。したがって同期関数はコンパクト格子全体で有界であり、古典連続体極限 $N \to \infty$ は病理なしに回復される。
 
 したがってディリクレ核は任意の大きな正整数 $N$ に対して有界であり、素数性は要求されない。$N$ と粒子質量スペクトルの関係、およびゼータ正則化積 $\prod_p p\to 4\pi^2$ は本稿では未解決である。$4\pi^2$ を双対ローター周期 $2\pi$ の平方と読むことは整合性の注記であり、質量スペクトルの導出ではない。
+
+\begin{proposition}[正規化ディリクレ核]
+\label{prop:dirichlet-kernel}
+任意の正整数 $N$ に対し、除去可能特異点をロピタル値で埋めた正規化核
+\[
+D_N(\theta)=\frac{\sin(N\theta/2)}{N\sin(\theta/2)}
+\]
+は $|D_N(\theta)|\le 1$ を満たす。格子点 $\theta=2\pi k$ では $D_N=\pm 1$ である。
+\end{proposition}
 
 \section{双対ローター動力学とド・ブロイ位相の幾何的起源}
 \label{sec:dualrotordynamics}
@@ -1123,6 +1176,15 @@ S_{\text{particle}} = \int \left[ \frac{1}{2} \sum_{a=1}^3 \dot{\phi}_a^2 - \fra
 
 双対ローター $R_\text{dual}=\exp(\theta/2\,\hat q)$ は $\mathrm{SU}(2)$ のスピン $1/2$ 回転演算子である。したがって双対セクター位相 $\theta$ は量子状態をパラメトライズする。双対セクターの巡回生成子はスピノル空間 $\mathbb{C}^2$ 上で $-i\sigma_a$ により表現され、標準回転は $\exp(-i\beta\cdot\sigma/2)$ である。双対時空のコンパクト性（$\theta\bmod 4\pi$）により、これらの位相はコンパクト多様体上に住む。各粒子の状態 $|\psi\rangle$ は $R_\text{dual}$ のユニタリ位相部分に対応する。
 
+\begin{proposition}[双対ローターの $\mathrm{SU}(2)$]
+\label{prop:dual-rotor-su2}
+双対ローター
+\[
+R_{\mathrm{dual}}=\exp\Bigl(\sum_a\frac{\theta_a}{2}\Gamma_a\Bigr)
+\]
+は $\mathbb{C}^2$ 上で $\exp\bigl(\sum_a(\theta_a/2)(-i\sigma_a)\bigr)$ として表現され、ユニタリかつ行列式 $1$ であり、したがって $\mathrm{SU}(2)$ の元である。$\mathrm{Cl}(3,1)$ 極小左イデアルのヒルベルト空間完備化は主張しない。
+\end{proposition}
+
 位置および運動量演算子は双対ローター角の射影として解釈され、重力を含む力は相対ローター位相の変調として現れる。これは量子運動学を双対時空回転と、重力を同一代数におけるねじれ不整合と同定する。特異点は命題\ref{prop:admissible-bound}の上界により許容錐上で排除され、飽和シュヴァルツシルトチャート上では第\ref{subsec:quasi-horizon}節の準地平により排除される。
 
 $\mathrm{Cl}(3,1)$ スピノルを極小左イデアルとする明示的ヒルベルト空間、および不整合動力学の完全な量子化は未解決である。本節は $\mathrm{SU}(2)$ 同定と $\mathbb{C}^2$ 表現のみを記録する。プランク期時間矢固定によるバリオン非対称は第\ref{sec:baryonasymmetry}節の仮説であり、導出定理ではない。
@@ -1141,6 +1203,9 @@ $\mathrm{Cl}(3,1)$ スピノルを極小左イデアルとする明示的ヒル�
 \item $\varphi_{\max}=\pi\sqrt{3}/2$、$A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ の飽和チャートは $r_\star$ で古典シュヴァルツシルトと一致し、$A=0$ に達しない。値 $\varphi_{\max}$ は単軸許容錐の外にある。
 \item $S^3$ 余接ポテンシャルは三次元球面の Gauss 則を満たす。回転曲線の形 $f(x)=x/\sin^2 x$ は $(\pi/4,\pi/2)$ において $\tan x=2x$ の一意なプラトー根をもつ。加速度 $a_0$ とニュートン $G$ は外部入力である。
 \item 固定 $N$ における離散ローター像は有限である。非零巻数は実スケール許容と両立しない。双対セクター運動学は $\mathbb{C}^2$ 上の $\mathrm{SU}(2)$ である。
+\item 飽和内部では場の種 $J_{\mathrm{field}}$ が消え、角方向の Weitzenb\"ock ねじれは残る。したがってそこでも $J_{\mathrm{field}}\neq\tfrac12 T$ である。
+\item 可換な平方 $+1$ 対は非零左イデアルを生成する。スピノル加群としての既約性は主張しない。
+\item 正規化ディリクレ核は任意の正整数 $N$ に対し $1$ で有界であり、格子値は $\pm 1$ である。
 \end{itemize}
 
 次は本稿の仮説として残る。場のラグランジアンとしての提案作用 $S\propto\int J$；$J$ と $T$ の一般モーター辞書；$G$、$a_0$、$\alpha_s$、$a_{\mathrm{crit}}$ の導出；核および電磁層の同定；コヒーレント双対励起による重力工学；時間矢固定によるバリオン非対称；完全なヒルベルト空間量子化。

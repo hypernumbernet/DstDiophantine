@@ -1,3 +1,4 @@
+import DstDiophantine.Gravity.Weitzenbock
 import DstDiophantine.Gravity.Sandwich
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Amplification
@@ -35,6 +36,9 @@ that a true one-way horizon (`A = 0`) does not form.
   admissibility requires `φ ≤ π/2 < φ_max`; the ceiling `JNormalized = 1`
   comes from the three-axis normalisation inverted on one boost axis).
 * Rewriting the exterior Schwarzschild metric theorems.
+* A general-motor \(J\)–\(T\) dictionary (the saturated interior only
+  supplies an additional identification failure: frozen \(\varphi\)
+  forces \(J_{\mathrm{field}}=0\) while angular Weitzenböck torsion remains).
 -/
 
 namespace DstDiophantine
@@ -417,6 +421,114 @@ theorem radiusRatio_bounds :
     (inv_lt_inv₀ one_sub_AMin_pos (by norm_num)).mpr hbound
   have hsimp : ((200 : ℝ) / 201)⁻¹ = (1005 : ℝ) / 1000 := by norm_num
   simpa [radiusRatio, hsimp] using hinv
+
+/-! ### Saturated interior coframe: frozen boost legs, angular torsion remains -/
+
+/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing
+radial derivatives; angular legs match the Schwarzschild coframe. -/
+noncomputable def constantAPartials (r θ : ℝ) : CoframePartials :=
+  fun μ a ν =>
+    if μ = 1 ∧ a = 2 ∧ ν = 2 then 1
+    else if μ = 1 ∧ a = 3 ∧ ν = 3 then Real.sin θ
+    else if μ = 2 ∧ a = 3 ∧ ν = 3 then r * Real.cos θ
+    else 0
+
+theorem constantA_torsion_boost_leg_zero (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 0 1 0 = 0 := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+theorem constantA_torsion_T2_r_theta (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 2 1 2 = 1 := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+theorem constantA_torsion_T3_r_phi (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 3 1 3 = Real.sin θ := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+/-- Field seed of a frozen rapidity: \(\varphi' = 0\) on \(r \le r_\star\). -/
+noncomputable def saturatedJ_field (rs r : ℝ) : ℝ :=
+  if r ≤ eventBoundaryRadius rs then 0 else J_field rs r
+
+@[simp] theorem saturatedJ_field_of_le {rs r : ℝ}
+    (h : r ≤ eventBoundaryRadius rs) :
+    saturatedJ_field rs r = 0 := by
+  simp [saturatedJ_field, h]
+
+@[simp] theorem saturatedJ_field_of_gt {rs r : ℝ}
+    (h : eventBoundaryRadius rs < r) :
+    saturatedJ_field rs r = J_field rs r := by
+  simp [saturatedJ_field, not_le_of_gt h]
+
+/-- Exterior closed-form \(T\) evaluated at a constant factor \(A\). -/
+noncomputable def pluggedConstantAT (A r : ℝ) : ℝ :=
+  (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
+
+/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)):
+\(T = -4(1-\sqrt{A})/r^2\). -/
+noncomputable def frozenDivT (A r : ℝ) : ℝ :=
+  -(4 / r ^ 2) * (1 - Real.sqrt A)
+
+theorem sqrt_AMin_pos : (0 : ℝ) < Real.sqrt AMin :=
+  Real.sqrt_pos.mpr AMin_pos
+
+theorem sqrt_AMin_lt_one : Real.sqrt AMin < 1 := by
+  have : Real.sqrt AMin < Real.sqrt 1 := Real.sqrt_lt_sqrt AMin_pos.le AMin_lt_one
+  simpa using this
+
+theorem one_sub_sqrt_AMin_pos : (0 : ℝ) < 1 - Real.sqrt AMin :=
+  sub_pos.mpr sqrt_AMin_lt_one
+
+theorem pluggedConstantAT_AMin_pos {r : ℝ} (hr : r ≠ 0) :
+    0 < pluggedConstantAT AMin r := by
+  unfold pluggedConstantAT
+  have hs := sqrt_AMin_pos
+  have h1 := one_sub_sqrt_AMin_pos
+  have hr2 : 0 < r ^ 2 := sq_pos_of_ne_zero hr
+  positivity
+
+/-- Blindly substituting \(A_{\min}\) into the exterior \(T\) formula does not
+reproduce the frozen-divergence expression. -/
+theorem pluggedConstantAT_ne_frozenDivT {r : ℝ} (hr : r ≠ 0) :
+    pluggedConstantAT AMin r ≠ frozenDivT AMin r := by
+  intro h
+  set s := Real.sqrt AMin
+  have hs0 : s ≠ 0 := sqrt_AMin_pos.ne'
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have h1 : 1 - s ≠ 0 := one_sub_sqrt_AMin_pos.ne'
+  unfold pluggedConstantAT frozenDivT at h
+  have hmul := congrArg (fun x : ℝ => x * s * r ^ 2) h
+  field_simp [hr2, hs0] at hmul
+  have heq : 2 * (1 - s) ^ 2 / s = -4 * (1 - s) := by
+    simpa [s, mul_comm] using hmul
+  have hmul2 : 2 * (1 - s) ^ 2 = (-4 * (1 - s)) * s := by
+    rwa [div_eq_iff hs0] at heq
+  have hfac : (1 - s) * (2 * (1 - s) + 4 * s) = 0 := by
+    have := hmul2
+    ring_nf at this ⊢
+    linarith
+  have : s = -1 := by
+    have : 2 * (1 - s) + 4 * s = 0 := (mul_eq_zero.mp hfac).resolve_left h1
+    linarith
+  nlinarith [sqrt_AMin_pos]
+
+/-- On the saturated interior the field seed vanishes while the coframe still
+carries angular Weitzenböck torsion. -/
+theorem saturated_interior_J_field_zero_of_angular_torsion {rs r θ : ℝ}
+    (_hrs : 0 < rs) (hr : 0 < r) (hle : r ≤ eventBoundaryRadius rs) :
+    saturatedJ_field rs r = 0 ∧
+      weitzenbockTorsion (constantAPartials r θ) 2 1 2 = 1 ∧
+      saturatedJ_field rs r ≠ (1 / 2) * pluggedConstantAT AMin r := by
+  refine ⟨saturatedJ_field_of_le hle, constantA_torsion_T2_r_theta r θ, ?_⟩
+  rw [saturatedJ_field_of_le hle]
+  have hpos := pluggedConstantAT_AMin_pos hr.ne'
+  exact (mul_ne_zero (by norm_num : (1 / 2 : ℝ) ≠ 0) hpos.ne').symm
+
+/-- \(C^0\) matching of the saturated factor at \(r_\star\) together with a
+strictly positive redshift floor. -/
+theorem saturated_interior_redshift_floor {rs : ℝ} (hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) = AMin ∧
+      0 < AMin ∧ AMin < 1 :=
+  ⟨saturatedA_at_boundary hrs, AMin_pos, AMin_lt_one⟩
 
 end Gravity
 

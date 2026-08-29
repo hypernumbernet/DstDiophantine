@@ -79,7 +79,7 @@ Section~\ref{sec:strongfield} reinterprets stellar remnants as torsion stars wit
 
 Section~\ref{sec:timedilation} derives time dilation effects from torsional mismatch, predicting measurable deviations from GR in strong gravitational fields and planetary interiors.
 
-Section~\ref{sec:nuclear} proves scale invariance of the torsional layers, identifying the nuclear force as gravity with layers, and atomic nuclei as primordial torsion stars.
+Section~\ref{sec:nuclear} states scale invariance of the torsional layers as a working hypothesis, identifying the nuclear force as gravity with layers, and atomic nuclei as primordial torsion stars.
 
 Section~\ref{sec:electronshells} models the electron shell as an electrical inversion layer, explaining electron orbitals and interatomic forces from the perspective of microscopic-scale electromagnetism.
 
@@ -353,7 +353,17 @@ Three quadratic quantities appear on this chart and must not be conflated:
 \[
 J=\tfrac12\varphi^2,\qquad J_{\mathrm{field}}=\tfrac12(\varphi')^2,\qquad T\text{ as in }\eqref{eq:schwarzschild-T}.
 \]
-The first is a finite-angle parameter diagnostic; the second is a field seed built from $\partial_r\varphi$; the third is the TEGR Lagrangian density. In particular, a constant nonzero boost has $J\neq 0$ with vanishing $T$ on flat space, so $J=\tfrac12 T$ fails, and at the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. A corrected dictionary for a general motor field remains open.
+The first is a finite-angle parameter diagnostic; the second is a field seed built from $\partial_r\varphi$; the third is the TEGR Lagrangian density.
+
+\begin{proposition}[Exterior Schwarzschild sandwich and Weitzenb\"ock scalar]
+\label{prop:schwarzschild-chart}
+On the exterior domain $r>r_s>0$, the radial pure-boost sandwich scales are $\mathrm{e}^{-\varphi}=\sqrt{A}$ and $\mathrm{e}^{\varphi}=A^{-1/2}$ with $A=1-r_s/r$. The coframe $(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta)$ induces the Schwarzschild metric $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$. Its Weitzenb\"ock scalar is $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}=-\frac{1}{r^2}\partial_r(r^2 B^r)$ with $B^r=4(1-\sqrt{A})/r$.
+\end{proposition}
+
+\begin{proposition}[Rejection of $J=\tfrac12 T$]
+\label{prop:identification-rejected}
+A constant nonzero boost has $J\neq 0$ with vanishing Weitzenb\"ock $T$ on flat space, so $J=\tfrac12 T$ fails. At the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. A corrected dictionary for a general motor field remains open.
+\end{proposition}
 
 \subsection{Proposed Action}
 
@@ -497,6 +507,16 @@ Classical Schwarzschild has $\varphi\to\infty$ and $A\to 0$ as $r\to r_s^+$. Ide
 The corresponding radius is $r_\star=r_s/(1-A_{\min})$, equivalently $r_\star/r_s=(1-A_{\min})^{-1}$. One has $0<A_{\min}<10^{-2}$ and $1<r_\star/r_s<1.005$. The saturated chart freezes $\varphi=\varphi_{\max}$ and $A=A_{\min}$ for $r\le r_\star$, and uses the classical formulae for $r>r_\star$. At $r=r_\star$ the two descriptions agree. The saturated factor $A$ remains strictly positive: a true one-way horizon $A=0$ does not form. (By contrast the classical factor vanishes at $r=r_s$.)
 
 This cutoff is a chart reading of the three-axis ceiling on a single boost axis. A one-axis admissible boost saturates only at $\varphi=\pi/2$, where $J=\pi^2/8=\Jbound/3$. The inverted value $\varphi_{\max}>\pi/2$ therefore lies outside the admissible cone. The construction saturates the three-axis bound, not the single-axis cone.
+
+\begin{proposition}[Quasi-horizon cutoff]
+\label{prop:quasi-horizon}
+Identifying the three-axis ceiling $|J|=\Jbound$ with a radial pure-boost slice $J=\tfrac12\varphi^2$ yields $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$, with $0<A_{\min}<10^{-2}$ and $1<r_\star/r_s<1.005$ where $r_\star=r_s/(1-A_{\min})$. The saturated and classical charts agree at $r=r_\star$, and $A_{\min}>0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone.
+\end{proposition}
+
+\begin{proposition}[Saturated interior: vanishing field seed, residual torsion]
+\label{prop:saturated-interior}
+On the saturated interior $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so the field seed $J_{\mathrm{field}}$ vanishes. The constant-$A$ coframe still carries angular Weitzenb\"ock torsion (in particular $T^2{}_{r\theta}=1$), hence $T$ does not vanish. Substituting the frozen $A_{\min}$ into the exterior closed form for $T$ does not reproduce the frozen-divergence expression. Thus $J_{\mathrm{field}}=0$ while $T\neq 0$, the dual of the constant-boost counterexample $J\neq 0$, $T=0$.
+\end{proposition}
 
 This layered structure prevents both singularities and event horizons. Matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
 
@@ -741,6 +761,11 @@ P_L = \frac{1 - e_1}{2},\qquad P_R = \frac{1 + e_1}{2},
 \]
 which are idempotent and complementary. The naive formulae $(1\pm i)/2$ with $i^2=-1$ are \emph{not} idempotent and are discarded.
 
+\begin{proposition}[Commuting square-$+1$ pair and a nonzero left ideal]
+\label{prop:commuting-left-ideal}
+The complementary pair $P_{L,R}=(1\pm e_1)/2$ built from $e_1^2=+1$ is idempotent; the pseudoscalar formulae $(1\pm i)/2$ are not. The product of the commuting square-$+1$ pair $e_1$ and $e_0e_2$ is idempotent and nonzero, and generates a nonzero left ideal. Irreducibility of that ideal as a spinor module is not claimed.
+\end{proposition}
+
 Electromagnetism arises from minimal coupling to the vector potential $A_a$ in the dual sector, shifting the rotation parameters:
 \[
 \theta_a \mapsto \theta_a + q A_a,
@@ -801,6 +826,11 @@ That this satisfies the Laplace equation on $S^3$ can be verified directly: in g
 g(r) \cdot 4\pi R^2 \sin^2\!\left(\frac{r}{R}\right) = -\frac{GM}{R^2 \sin^2(r/R)} \cdot 4\pi R^2 \sin^2\!\left(\frac{r}{R}\right) = -4\pi GM.
 \]
 
+\begin{proposition}[$S^3$ Gauss law]
+\label{prop:s3-gauss}
+The cotangent potential $\Phi(r)=-(GM/R)\cot(r/R)$ is radially harmonic on $S^3$, and $g(r)\cdot 4\pi R^2\sin^2(r/R)=-4\pi GM$.
+\end{proposition}
+
 In the limit $r \ll R$, the cotangent expands as
 \[
 \cot\!\left(\frac{r}{R}\right) = \frac{R}{r} - \frac{r}{3R} - \frac{r^3}{45R^3} - \cdots\,,
@@ -834,6 +864,11 @@ v^2(r) = \frac{GM(r)}{r} \cdot \eta(r) = \frac{GM(r)}{r} \cdot \left[\frac{r/R}{
 Outside the luminous disk ($r > r_{\text{disk}}$), where $M(r) \approx M_{\text{tot}}$, the flat-space Keplerian velocity $v_K^2 = GM_{\text{tot}}/r$ declines as $r^{-1}$. The $S^3$ enhancement factor $\eta(r)$, growing monotonically with $r$, counteracts this decline.
 
 The combined dimensionless function $f(x) \equiv x / \sin^2 x$ (where $x = r/R$) governs the shape of the rotation curve. It possesses a broad minimum at $x_0 \approx 1.17$, the unique root of $\tan x = 2x$ in $(\pi/4,\pi/2)$; at this critical point $f(x_0)=x_0+1/(4x_0)\approx 1.38$, producing an extended plateau:
+
+\begin{proposition}[Unique plateau root]
+\label{prop:plateau-root}
+The shape function $f(x)=x/\sin^2 x$ has a unique root of $\tan x=2x$ in $(\pi/4,\pi/2)$. At that root $x_0$ one has $f(x_0)=x_0+1/(4x_0)$.
+\end{proposition}
 \begin{itemize}
   \item \textbf{Inner region} ($r \ll R$): Keplerian behavior modified by the rising $M(r)$, reproducing the observed solid-body rise.
   \item \textbf{Transition region} ($r \sim R$): the declining Keplerian factor is balanced by the growing $\eta(r)$, yielding a nearly flat plateau whose breadth is set by the width of the minimum of $f(x)$.
@@ -1040,6 +1075,11 @@ This asymmetry is required for theoretical consistency:
 
 The torsional mismatch rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ thus combines a continuous usual component with a discrete dual component. The parameter-space scalar $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ is bounded by $|J|\le\Jbound$ (equivalently $|\Jnorm|\le 1$) only on admissible configurations. Discretizing the dual angle alone does not imply the bound: a principal-branch condition without non-negative rapidities admits counterexamples, and the continuous usual-sector rapidity is unbounded. Continuum-induced singularities are therefore excluded only after the admissible cone is imposed. On the discrete torus $(\mathbb{Z}/N\mathbb{Z})^6$ the rotor image is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
 
+\begin{proposition}[Finite discrete rotor image]
+\label{prop:discrete-rotor-image}
+At fixed compactification $N$, the discrete rotor image of the torus is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
+\end{proposition}
+
 A critical issue arises in the effective Lorentz factor across torsional layers, which typically appears as a synchronization function of the form
 \[
 \gamma_{\text{eff}} \propto D_N(\delta\theta) \equiv \frac{\sin(N \delta\theta / 2)}{N \sin(\delta\theta / 2)},
@@ -1053,6 +1093,15 @@ At every such point the numerator $\sin(N \cdot k\pi)$ also vanishes (for any in
 so the synchronization function is bounded on the entire compact lattice and the classical continuum limit $N \to \infty$ is recovered without pathology.
 
 Thus the Dirichlet kernel is bounded for any large positive integer $N$; primality is not required. The relation between $N$ and particle mass spectra, and the zeta-regularized product $\prod_p p\to 4\pi^2$, remain open within the present paper. The geometric reading of $4\pi^2$ as the square of the dual-rotor period $2\pi$ is a consistency remark, not a derivation of mass spectra.
+
+\begin{proposition}[Normalised Dirichlet kernel]
+\label{prop:dirichlet-kernel}
+For every positive integer $N$, filling removable singularities of
+\[
+D_N(\theta)=\frac{\sin(N\theta/2)}{N\sin(\theta/2)}
+\]
+by the L'H\^{o}pital value yields $|D_N(\theta)|\le 1$. At every lattice point $\theta=2\pi k$ one has $D_N=\pm 1$.
+\end{proposition}
 
 \section{Dual-Rotor Dynamics and the Geometric Origin of the de Broglie Phase}
 \label{sec:dualrotordynamics}
@@ -1109,6 +1158,15 @@ The classical formulation presented thus far treats gravity as torsional mismatc
 
 The dual rotor $R_\text{dual}=\exp(\theta/2\,\hat q)$ is the spin-$1/2$ rotation operator of $\mathrm{SU}(2)$. Dual-sector phases $\theta$ therefore parameterize quantum states. The cyclic generators of the dual sector are represented on the spinor space $\mathbb{C}^2$ by $-i\sigma_a$, so that the standard rotation is $\exp(-i\beta\cdot\sigma/2)$. Due to the compactness of the dual spacetime ($\theta\bmod 4\pi$), these phases live on a compact manifold: each particle's state $|\psi\rangle$ corresponds to the unitary phase part of $R_\text{dual}$.
 
+\begin{proposition}[Dual rotor as $\mathrm{SU}(2)$]
+\label{prop:dual-rotor-su2}
+The dual rotor
+\[
+R_{\mathrm{dual}}=\exp\Bigl(\sum_a\frac{\theta_a}{2}\Gamma_a\Bigr),
+\]
+represented on $\mathbb{C}^2$ by $\exp\bigl(\sum_a(\theta_a/2)(-i\sigma_a)\bigr)$, is unitary with determinant $1$, hence an element of $\mathrm{SU}(2)$. A Hilbert-space completion of a $\mathrm{Cl}(3,1)$ minimal left ideal is not claimed.
+\end{proposition}
+
 Position and momentum operators are interpreted as projections of dual rotor angles, while forces---including gravity---manifest as modulations of relative rotor phases. This identifies quantum kinematics with dual spacetime rotations and gravity with torsional mismatch in the same algebra. Singularities are excluded on the admissible cone by the bound of Proposition~\ref{prop:admissible-bound}, and on the saturated Schwarzschild chart by the quasi-horizon of Section~\ref{subsec:quasi-horizon}.
 
 An explicit Hilbert space of $\mathrm{Cl}(3,1)$ spinors as minimal left ideals, and a complete quantization of the mismatch dynamics, remain open. The present section records only the $\mathrm{SU}(2)$ identification and the $\mathbb{C}^2$ representation. Baryon asymmetry through Planck-era time-arrow fixation is the hypothesis of Section~\ref{sec:baryonasymmetry}, not a derived theorem.
@@ -1127,6 +1185,9 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item The saturated chart with $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ matches classical Schwarzschild at $r_\star$ and never reaches $A=0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone.
 \item The $S^3$ cotangent potential obeys the Gauss law on the three-sphere. The rotation-curve shape $f(x)=x/\sin^2 x$ has a unique plateau root of $\tan x=2x$ in $(\pi/4,\pi/2)$. The acceleration $a_0$ and Newton $G$ are external inputs.
 \item The discrete rotor image at fixed $N$ is finite. Nonzero winding is incompatible with real-scale admissibility. Dual-sector kinematics is $\mathrm{SU}(2)$ on $\mathbb{C}^2$.
+\item On the saturated interior the field seed $J_{\mathrm{field}}$ vanishes while angular Weitzenb\"ock torsion remains, so $J_{\mathrm{field}}\neq\tfrac12 T$ there as well.
+\item A commuting square-$+1$ pair generates a nonzero left ideal; irreducibility as a spinor module is not claimed.
+\item The normalised Dirichlet kernel is bounded by $1$ for every positive integer $N$, with lattice values $\pm 1$.
 \end{itemize}
 
 The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a general-motor dictionary between $J$ and $T$; derivation of $G$, $a_0$, $\alpha_s$, or $a_{\mathrm{crit}}$; nuclear and electromagnetic layer identifications; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; and a complete Hilbert-space quantization.

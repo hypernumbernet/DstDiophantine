@@ -4,6 +4,7 @@ import DstDiophantine.Algebra.Cl31
 import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
+import DstDiophantine.Algebra.DirichletKernel
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.LorentzDim
@@ -49,6 +50,8 @@ export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
   isAdmissible_iff_admissibleContinuous isAdmissible_iff_principalBranch
   admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
   admissible_beta_le_half_pi)
+export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
+  dirichletKernel_two_pi abs_dirichletKernel_lattice)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
   reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one)
@@ -106,5 +109,10 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   not_exists_modularWitness_of_balanced_gap)
 export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
   lattice_in_interval dense_discrete_JNormalized)
+
+/-- Regression: normalised Dirichlet kernel is bounded by 1. -/
+example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
+    |dirichletKernel N θ| ≤ 1 :=
+  abs_dirichletKernel_le_one hN θ
 
 end DstDiophantine

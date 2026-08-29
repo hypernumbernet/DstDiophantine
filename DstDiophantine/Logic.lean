@@ -395,6 +395,18 @@ example (θ : ℝ) :
       (dualRotorMat (EuclideanSpace.single 0 θ)).det = 1 :=
   ⟨dualRotorMat_axis0_unitary θ, dualRotorMat_axis0_det θ⟩
 
+/-- Regression: three-axis dual rotor is SU(2). -/
+example (β : DualRapidity) :
+    (dualRotorMat β).conjTranspose * dualRotorMat β = 1 ∧
+      (dualRotorMat β).det = 1 :=
+  ⟨dualRotorMat_unitary β, dualRotorMat_det β⟩
+
+/-- Regression: commuting projector is nonzero and generates a nonzero left ideal. -/
+example :
+    commutingSpinorIdem ≠ 0 ∧
+      ∃ x ∈ leftIdealOf commutingSpinorIdem, x ≠ 0 :=
+  ⟨commutingSpinorIdem_ne_zero, leftIdeal_commutingSpinorIdem_nontrivial⟩
+
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
   majorana_dim_eq_weylSU4_real

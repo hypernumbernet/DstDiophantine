@@ -9,6 +9,7 @@ import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Data.Complex.Basic
 
@@ -393,6 +394,178 @@ theorem dualRotorMat_axis0_det (θ : ℝ) :
   -- det = c*c - ((-I)s)*((-I)s)
   change c * c - ((-I) * s) * ((-I) * s) = 1
   rw [hI, sub_neg_eq_add, hcs]
+
+/-! ### Three-axis dual rotor: \(\mathrm{SU}(2)\) on \(\mathbb{C}^2\) -/
+
+/-- Generator of the dual rotor: \(\sum (\beta_a/2)(-i\sigma_a)\). -/
+noncomputable def dualRotorGen (β : DualRapidity) : Matrix (Fin 2) (Fin 2) ℂ :=
+  ∑ a : Fin 3, (β a / 2 : ℂ) • cyclicRep a
+
+theorem dualRotorMat_eq_exp_gen (β : DualRapidity) :
+    dualRotorMat β = NormedSpace.exp (dualRotorGen β) :=
+  rfl
+
+theorem dualRotorGen_conjTranspose (β : DualRapidity) :
+    (dualRotorGen β).conjTranspose = -dualRotorGen β := by
+  unfold dualRotorGen
+  rw [Matrix.conjTranspose_sum]
+  have hterm : ∀ a ∈ (Finset.univ : Finset (Fin 3)),
+      ((β a / 2 : ℂ) • cyclicRep a).conjTranspose =
+        -((β a / 2 : ℂ) • cyclicRep a) := by
+    intro a _
+    have hr : star (β a / 2 : ℂ) = (β a / 2 : ℂ) := by simp
+    rw [Matrix.conjTranspose_smul, cyclicRep_conjTranspose, hr, smul_neg]
+  rw [Finset.sum_congr rfl hterm, Finset.sum_neg_distrib]
+
+/-- Three-axis dual rotor is unitary. -/
+theorem dualRotorMat_unitary (β : DualRapidity) :
+    (dualRotorMat β).conjTranspose * dualRotorMat β = 1 := by
+  rw [dualRotorMat_eq_exp_gen]
+  have hCT : (NormedSpace.exp (dualRotorGen β)).conjTranspose =
+      NormedSpace.exp (dualRotorGen β).conjTranspose :=
+    (Matrix.exp_conjTranspose (dualRotorGen β)).symm
+  rw [hCT, dualRotorGen_conjTranspose]
+  have hc : Commute (-dualRotorGen β) (dualRotorGen β) :=
+    Commute.neg_left (Commute.refl _)
+  have h := Matrix.exp_add_of_commute (-dualRotorGen β) (dualRotorGen β) hc
+  rw [neg_add_cancel, NormedSpace.exp_zero] at h
+  exact h.symm
+
+theorem pauliX_mul_pauliZ : pauliX * pauliZ = -I • pauliY := by
+  ext i j; fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+
+theorem pauliZ_mul_pauliX : pauliZ * pauliX = I • pauliY := by
+  ext i j; fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+
+theorem pauliY_mul_pauliZ : pauliY * pauliZ = I • pauliX := by
+  ext i j; fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+
+theorem pauliZ_mul_pauliY : pauliZ * pauliY = -I • pauliX := by
+  ext i j; fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+
+theorem pauliY_mul_pauliX : pauliY * pauliX = -I • pauliZ := by
+  ext i j; fin_cases i <;> fin_cases j <;>
+    simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
+
+/-- \((\vec n\cdot\vec\sigma)^2 = \|\vec n\|^2 I\). -/
+theorem pauli_dot_sq (n : Fin 3 → ℝ) :
+    (∑ a : Fin 3, (n a : ℂ) • pauli a) * (∑ a : Fin 3, (n a : ℂ) • pauli a) =
+      ((n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 : ℂ) • 1 := by
+  simp only [Fin.sum_univ_three, pauli]
+  simp [mul_add, add_mul, pauliX_sq, pauliY_sq, pauliZ_sq,
+    pauliX_mul_pauliY, pauliY_mul_pauliX, pauliY_mul_pauliZ, pauliZ_mul_pauliY,
+    pauliZ_mul_pauliX, pauliX_mul_pauliZ]
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [pauliX, pauliY, pauliZ] <;> ring
+
+theorem cyclicRep_dot_sq (n : Fin 3 → ℝ) :
+    (∑ a : Fin 3, (n a : ℂ) • cyclicRep a) *
+      (∑ a : Fin 3, (n a : ℂ) • cyclicRep a) =
+      -(((n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 : ℂ) • 1) := by
+  have h :
+      (∑ a : Fin 3, (n a : ℂ) • cyclicRep a) =
+        (-I : ℂ) • (∑ a : Fin 3, (n a : ℂ) • pauli a) := by
+    simp only [cyclicRep, Fin.sum_univ_three, smul_add, smul_smul]
+    ring_nf
+  rw [h, smul_mul_smul_comm, pauli_dot_sq]
+  simp [smul_smul, I_mul_I]
+  ext i j
+  simp [Matrix.neg_apply, Matrix.smul_apply]
+  ring
+
+/-- Three-axis dual rotor has determinant `1`. -/
+theorem dualRotorMat_det (β : DualRapidity) :
+    (dualRotorMat β).det = 1 := by
+  rw [dualRotorMat_eq_exp_gen]
+  by_cases hr : β = 0
+  · subst hr
+    have hgen : dualRotorGen 0 = 0 := by
+      unfold dualRotorGen
+      simp
+    rw [hgen, NormedSpace.exp_zero, Matrix.det_one]
+  · set r := ‖(β : EuclideanSpace ℝ (Fin 3))‖
+    have hrpos : 0 < r := norm_pos_iff.mpr hr
+    set n : Fin 3 → ℝ := fun a => β a / r
+    have hn : (n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 = 1 := by
+      have hnorm : r ^ 2 = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
+        have h1 := (real_inner_self_eq_norm_sq (F := DualRapidity) β).symm
+        have h2 : inner ℝ β β = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
+          simp [inner, Fin.sum_univ_three, sq]
+        exact h1.trans h2
+      have hr0 : r ≠ 0 := hrpos.ne'
+      unfold n
+      have hdiv :
+          (β 0 / r) ^ 2 + (β 1 / r) ^ 2 + (β 2 / r) ^ 2 =
+            ((β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2) / r ^ 2 := by
+        field_simp [hr0]
+        try ring
+      rw [hdiv, ← hnorm, div_self (pow_ne_zero 2 hr0)]
+    have hgen : dualRotorGen β = (r / 2 : ℝ) • ∑ a : Fin 3, (n a : ℂ) • cyclicRep a := by
+      unfold dualRotorGen n
+      simp only [Fin.sum_univ_three, smul_add]
+      have hr0 : r ≠ 0 := hrpos.ne'
+      have hterm (v : ℝ) (G : Matrix (Fin 2) (Fin 2) ℂ) :
+          (v / 2 : ℂ) • G = (r / 2 : ℝ) • ((v / r : ℂ) • G) := by
+        ext i j
+        simp [Matrix.smul_apply]
+        field_simp [hr0]
+        try ring
+      have hcast (v : ℝ) : (v / r : ℂ) = ((v / r : ℝ) : ℂ) := by
+        simp [Complex.ofReal_div]
+      rw [hterm (β 0), hterm (β 1), hterm (β 2), hcast (β 0), hcast (β 1), hcast (β 2)]
+    set U := ∑ a : Fin 3, (n a : ℂ) • cyclicRep a
+    have hUsq : U * U = -1 := by
+      have h := cyclicRep_dot_sq n
+      have hnC : ((n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 : ℂ) = 1 := by
+        rw [← Complex.ofReal_one]
+        norm_cast
+      simpa [U, hnC, one_smul] using h
+    have hexp : NormedSpace.exp (dualRotorGen β) =
+        Real.cos (r / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+          Real.sin (r / 2) • U := by
+      rw [hgen]
+      exact exp_mat_of_sq_neg_one hUsq (r / 2)
+    rw [hexp]
+    set c := Real.cos (r / 2)
+    set s := Real.sin (r / 2)
+    have hRℂ (t : ℝ) (m : Matrix (Fin 2) (Fin 2) ℂ) :
+        t • m = (t : ℂ) • m := (algebraMap_smul ℂ t m).symm
+    rw [hRℂ c, hRℂ s]
+    have h11 : U 1 1 = -U 0 0 := by
+      have hU :
+          U = (n 0 : ℂ) • cyclicRep 0 + (n 1 : ℂ) • cyclicRep 1 +
+            (n 2 : ℂ) • cyclicRep 2 := by
+        simp [U, Fin.sum_univ_three]
+      have h0 : cyclicRep 0 0 0 = 0 ∧ cyclicRep 0 1 1 = 0 := by
+        unfold cyclicRep pauli pauliX; simp
+      have h1 : cyclicRep 1 0 0 = 0 ∧ cyclicRep 1 1 1 = 0 := by
+        unfold cyclicRep pauli pauliY; simp
+      have h2 : cyclicRep 2 0 0 = -I ∧ cyclicRep 2 1 1 = I := by
+        unfold cyclicRep pauli pauliZ; simp
+      simp [hU, Matrix.add_apply, Matrix.smul_apply, h0, h1, h2]
+    have hUU00 : (U * U) 0 0 = U 0 0 * U 0 0 + U 0 1 * U 1 0 := by
+      simp [Matrix.mul_apply, Fin.sum_univ_two]
+    have hpq : U 0 0 * U 0 0 + U 0 1 * U 1 0 = -1 := by
+      have : (U * U) 0 0 = (-1 : Matrix (Fin 2) (Fin 2) ℂ) 0 0 := by rw [hUsq]
+      simpa [Matrix.neg_apply, Matrix.one_apply] using hUU00.symm.trans this
+    have hcs : (c : ℂ) * c + (s : ℂ) * s = 1 := ofReal_cos_sin_sq (r / 2)
+    rw [Matrix.det_fin_two]
+    simp only [Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply]
+    rw [h11]
+    calc ((c : ℂ) * 1 + s * U 0 0) * ((c : ℂ) * 1 + s * (-U 0 0)) -
+          ((c : ℂ) * 0 + s * U 0 1) * ((c : ℂ) * 0 + s * U 1 0)
+        = ((c : ℂ) + s * U 0 0) * (c + -(s * U 0 0)) - (s * U 0 1) * (s * U 1 0) := by
+          simp
+        _ = ((c : ℂ) + s * U 0 0) * (c - s * U 0 0) - s * s * (U 0 1 * U 1 0) := by
+          rw [sub_eq_add_neg]; ring
+        _ = c * c - s * s * (U 0 0 * U 0 0 + U 0 1 * U 1 0) := by ring
+        _ = c * c - s * s * (-1) := by rw [hpq]
+        _ = c * c + s * s := by ring
+        _ = 1 := hcs
 
 end Logic
 
