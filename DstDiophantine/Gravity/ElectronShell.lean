@@ -65,6 +65,146 @@ theorem gammaEff_of_beta_zero (α : ℝ) : gammaEff α 0 = cosh α := by
   unfold gammaEff gammaS gammaB
   simp [cosh_half_sq_add]
 
+private theorem sinh_half_two (φ : ℝ) :
+    2 * sinh (φ / 2) * cosh (φ / 2) = sinh φ := by
+  simpa [mul_div_cancel₀ φ (by norm_num : (2 : ℝ) ≠ 0)] using
+    (sinh_two_mul (φ / 2)).symm
+
+private theorem sin_half_two (φ : ℝ) :
+    2 * sin (φ / 2) * cos (φ / 2) = sin φ := by
+  simpa [mul_div_cancel₀ φ (by norm_num : (2 : ℝ) ≠ 0)] using
+    (sin_two_mul (φ / 2)).symm
+
+/-- Closed form \(\gamma_{\mathrm{eff}}=\cosh\alpha-\sinh\alpha\sin\beta\). -/
+theorem gammaEff_closed (α β : ℝ) :
+    gammaEff α β = cosh α - sinh α * sin β := by
+  unfold gammaEff gammaS gammaB
+  set c := cosh (α / 2)
+  set s := sinh (α / 2)
+  set C := cos (β / 2)
+  set S := sin (β / 2)
+  have hexpand :
+      (c * C - s * S) ^ 2 + (-c * S + s * C) ^ 2 =
+        (c ^ 2 + s ^ 2) * (C ^ 2 + S ^ 2) - 4 * c * s * C * S := by
+    ring
+  have hCS : C ^ 2 + S ^ 2 = 1 := by simp [C, S]
+  have hC : c ^ 2 + s ^ 2 = cosh α := by
+    simpa [c, s] using cosh_half_sq_add α
+  have hS : 2 * s * c = sinh α := by
+    simpa [c, s, mul_comm] using sinh_half_two α
+  have hsin : 2 * S * C = sin β := by
+    simpa [C, S, mul_comm] using sin_half_two β
+  rw [hexpand, hCS, mul_one, hC]
+  have hcross : 4 * c * s * C * S = sinh α * sin β := by
+    have : 4 * c * s * C * S = (2 * s * c) * (2 * S * C) := by ring
+    rw [this, hS, hsin]
+  rw [hcross]
+
+/-- \(\gamma_{\mathrm{eff}}\ge e^{-|\alpha|}>0\). In particular it never vanishes. -/
+theorem gammaEff_pos (α β : ℝ) : 0 < gammaEff α β := by
+  rw [gammaEff_closed]
+  have habs : |sinh α * sin β| ≤ |sinh α| :=
+    calc |sinh α * sin β|
+        = |sinh α| * |sin β| := abs_mul _ _
+      _ ≤ |sinh α| * 1 :=
+        mul_le_mul_of_nonneg_left (abs_sin_le_one β) (abs_nonneg _)
+      _ = |sinh α| := by simp
+  have hprod : sinh α * sin β ≤ |sinh α| := (abs_le.mp habs).2
+  have hid : cosh α - |sinh α| = exp (-|α|) := by
+    rcases le_total 0 α with hα | hα
+    · have hsinh : 0 ≤ sinh α := by
+        rcases eq_or_lt_of_le hα with rfl | hα
+        · simp
+        · exact (sinh_pos_iff.mpr hα).le
+      rw [abs_of_nonneg hα, abs_of_nonneg hsinh, cosh_sub_sinh]
+    · have hsinh : sinh α ≤ 0 := by
+        rcases eq_or_lt_of_le hα with rfl | hα
+        · simp
+        · exact sinh_nonpos_iff.mpr hα.le
+      rw [abs_of_nonpos hα, abs_of_nonpos hsinh, neg_neg, sub_neg_eq_add,
+        cosh_add_sinh]
+  have hlower : exp (-|α|) ≤ cosh α - sinh α * sin β := by
+    have : cosh α - |sinh α| ≤ cosh α - sinh α * sin β := by linarith [hprod]
+    rwa [hid] at this
+  exact lt_of_lt_of_le (exp_pos _) hlower
+
+theorem gammaEff_eq_one_of_alpha_zero (β : ℝ) : gammaEff 0 β = 1 := by
+  rw [gammaEff_closed]
+  simp
+
+/-- Balanced kinematics \(\alpha=\beta\) is not the special-relativistic factor \(\cosh\alpha\). -/
+theorem gammaEff_balanced_ne_cosh {α : ℝ} (hα : sin α ≠ 0) (hs : sinh α ≠ 0) :
+    gammaEff α α ≠ cosh α := by
+  rw [gammaEff_closed]
+  intro h
+  have : sinh α * sin α = 0 := by linarith
+  rcases mul_eq_zero.mp this with h | h
+  · exact hs h
+  · exact hα h
+
+private theorem tanh_half_eq_of_sinh_ne (x : ℝ) :
+    tanh (x / 2) = (cosh x - 1) / sinh x := by
+  have htwo : (2 : ℝ) * (x / 2) = x := by ring
+  have hsinh : sinh x = 2 * sinh (x / 2) * cosh (x / 2) := by
+    simpa [htwo] using sinh_two_mul (x / 2)
+  have hcosh : cosh x - 1 = 2 * sinh (x / 2) ^ 2 := by
+    have hid : cosh (2 * (x / 2)) = 1 + 2 * sinh (x / 2) ^ 2 := by
+      rw [cosh_two_mul]
+      nlinarith [cosh_sq (x / 2)]
+    have := hid
+    rw [htwo] at this
+    linarith
+  have hden : cosh (x / 2) ≠ 0 := (cosh_pos _).ne'
+  rw [tanh_eq_sinh_div_cosh, hcosh, hsinh]
+  field_simp [hden]
+
+private theorem tanh_half_one_lt_half : tanh ((1 : ℝ) / 2) < 1 / 2 := by
+  have hpos : exp ((1 : ℝ) / 2) ≠ 0 := (exp_pos _).ne'
+  have h1 : exp ((1 : ℝ) / 2) * exp ((1 : ℝ) / 2) = exp 1 := by
+    rw [← exp_add]; ring_nf
+  have h2 : exp ((1 : ℝ) / 2) * exp (-((1 : ℝ) / 2)) = (1 : ℝ) := by
+    rw [← exp_add, add_neg_cancel, exp_zero]
+  have hform : tanh ((1 : ℝ) / 2) = (exp 1 - 1) / (exp 1 + 1) := by
+    rw [tanh_eq, ← mul_div_mul_left _ _ hpos, mul_sub, mul_add, h1, h2]
+  have he : exp 1 < (3 : ℝ) := lt_trans Real.exp_one_lt_d9 (by norm_num)
+  rw [hform, div_lt_iff₀ (by linarith [exp_pos (1 : ℝ)])]
+  linarith [exp_pos (1 : ℝ), he]
+
+private theorem one_lt_pi_div_two' : (1 : ℝ) < π / 2 := by
+  linarith [pi_gt_three]
+
+private theorem pi_div_six_lt_one : π / 6 < (1 : ℝ) := by
+  linarith [pi_lt_four]
+
+theorem sin_one_gt_half : (1 / 2 : ℝ) < sin 1 := by
+  have hmono := strictMonoOn_sin
+    ⟨le_of_lt (lt_trans (neg_lt_zero.mpr pi_div_two_pos) (div_pos pi_pos (by norm_num))),
+      le_of_lt (by linarith [pi_gt_three] : π / 6 < π / 2)⟩
+    ⟨le_of_lt (lt_trans (neg_lt_zero.mpr pi_div_two_pos) (by norm_num : (0 : ℝ) < 1)),
+      le_of_lt one_lt_pi_div_two'⟩
+    pi_div_six_lt_one
+  simpa [sin_pi_div_six] using hmono
+
+/-- Balanced kinematics is not the vacuum factor \(1\), already at \(\alpha=\beta=1\). -/
+theorem gammaEff_balanced_one_ne_one : gammaEff 1 1 ≠ 1 := by
+  rw [gammaEff_closed]
+  intro h
+  have hs : (0 : ℝ) < sinh 1 := sinh_pos_iff.mpr (by norm_num)
+  have hsin : sin 1 = (cosh 1 - 1) / sinh 1 :=
+    (eq_div_iff hs.ne').mpr (by linarith)
+  have hth : (cosh 1 - 1) / sinh 1 = tanh ((1 : ℝ) / 2) :=
+    (tanh_half_eq_of_sinh_ne 1).symm
+  have : (1 / 2 : ℝ) < tanh ((1 : ℝ) / 2) := by
+    linarith [sin_one_gt_half, hsin, hth]
+  exact (lt_irrefl _ (this.trans tanh_half_one_lt_half))
+
+/-- Special relativity is the unexcited dual sector \(\beta=0\), not the locus \(J=0\). -/
+theorem gammaEff_sr_is_beta_zero (α : ℝ) :
+    gammaEff α 0 = cosh α :=
+  gammaEff_of_beta_zero α
+
+
+
 theorem gammaS_eq_zero_iff (α β : ℝ) (hc : cos (β / 2) ≠ 0) :
     gammaS α β = 0 ↔ tanh (α / 2) * tan (β / 2) = 1 := by
   have hcosh : cosh (α / 2) ≠ 0 := (cosh_pos _).ne'

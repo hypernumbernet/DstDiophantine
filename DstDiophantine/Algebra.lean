@@ -5,6 +5,7 @@ import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.DirichletKernel
+import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.LorentzDim
@@ -109,10 +110,27 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   not_exists_modularWitness_of_balanced_gap)
 export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
   lattice_in_interval dense_discrete_JNormalized)
+export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
+  omegaTorsion_eq_add rotorUsual_unitary rotorDual_unitary relativeRotor_eq_one_iff
+  axisParams rotorTorsion_axis_factor commute_hyperbolic_cyclic_same
+  paper_unrestricted_commutator_false PaperVacuumSync
+  relativeRotor_of_paperVacuumSync paperVacuumSync_axis
+  not_paperVacuumSync_pureBoost J_axisParams_balanced
+  J_zero_not_relativeRotor_one)
 
 /-- Regression: normalised Dirichlet kernel is bounded by 1. -/
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=
   abs_dirichletKernel_le_one hN θ
+
+/-- Regression: the relative rotor is the identity iff the two rotors coincide. -/
+example (p : Operations.TorsionParams) :
+    relativeRotor p = 1 ↔ rotorDual p = rotorUsual p :=
+  relativeRotor_eq_one_iff p
+
+/-- Regression: vanishing \(J\) does not force \(\Omega=1\). -/
+example : ∃ p : Operations.TorsionParams,
+    Invariant.J p = 0 ∧ 0 < Invariant.mass p ∧ relativeRotor p ≠ 1 :=
+  J_zero_not_relativeRotor_one
 
 end DstDiophantine
