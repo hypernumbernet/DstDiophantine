@@ -3,6 +3,7 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Operations
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Geometric sandwich `M v M˜`
@@ -345,6 +346,81 @@ theorem sandwich_pureBoost_lightlike_minus (φ : ℝ) :
         (Real.cosh φ - Real.sinh φ) • (ι 0 - ι 1) := by
     module
   rw [h, cosh_sub_sinh]
+
+/-! ### Pure-boost sandwich on null translators -/
+
+theorem sandwich_pureBoost_null0 (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 0) =
+      Real.cosh φ • null 0 + Real.sinh φ • null 1 := by
+  have hm := rotor_unitary (pureBoost φ)
+  have hnull : null 0 = ι e4Index * ι 0 := by simp [null]
+  rw [hnull, sandwich_mul hm, sandwich_pureBoost_ι4, sandwich_pureBoost_ι0, mul_add]
+  simp only [mul_smul_comm]
+  simp [null]
+
+theorem sandwich_pureBoost_null1 (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 1) =
+      Real.sinh φ • null 0 + Real.cosh φ • null 1 := by
+  have hm := rotor_unitary (pureBoost φ)
+  have hnull : null 1 = ι e4Index * ι 1 := by simp [null]
+  rw [hnull, sandwich_mul hm, sandwich_pureBoost_ι4, sandwich_pureBoost_ι1, mul_add]
+  simp only [mul_smul_comm]
+  simp [null]
+
+theorem sandwich_pureBoost_null2 (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 2) = null 2 := by
+  have hm := rotor_unitary (pureBoost φ)
+  have hnull : null 2 = ι e4Index * ι 2 := by simp [null]
+  rw [hnull, sandwich_mul hm, sandwich_pureBoost_ι4, sandwich_pureBoost_ι2]
+
+theorem sandwich_pureBoost_null3 (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 3) = null 3 := by
+  have hm := rotor_unitary (pureBoost φ)
+  have hnull : null 3 = ι e4Index * ι 3 := by simp [null]
+  rw [hnull, sandwich_mul hm, sandwich_pureBoost_ι4, sandwich_pureBoost_ι3]
+
+/-- Lorentz action on translation coefficients in the radial-boost plane. -/
+noncomputable def boostConjLambda (φ : ℝ) (lam : Fin 4 → ℝ) : Fin 4 → ℝ
+  | 0 => lam 0 * Real.cosh φ + lam 1 * Real.sinh φ
+  | 1 => lam 0 * Real.sinh φ + lam 1 * Real.cosh φ
+  | 2 => lam 2
+  | 3 => lam 3
+
+theorem sandwich_pureBoost_omegaTrans (φ : ℝ) (p : TransParams) :
+    sandwich (rotorTorsion (pureBoost φ)) (omegaTrans p) =
+      omegaTrans ⟨boostConjLambda φ p.lambda⟩ := by
+  simp only [omegaTrans, sandwich_add, sandwich_smul, Fin.sum_univ_four]
+  rw [sandwich_pureBoost_null0, sandwich_pureBoost_null1,
+    sandwich_pureBoost_null2, sandwich_pureBoost_null3]
+  simp only [boostConjLambda]
+  module
+
+theorem sandwich_pureBoost_expTrans (φ : ℝ) (p : TransParams) :
+    sandwich (rotorTorsion (pureBoost φ)) (expTrans p) =
+      expTrans ⟨boostConjLambda φ p.lambda⟩ := by
+  have h1 : sandwich (rotorTorsion (pureBoost φ)) 1 = 1 := by
+    simp [sandwich, rotor_unitary]
+  rw [expTrans, sandwich_add, sandwich_pureBoost_omegaTrans, h1]
+  rfl
+
+theorem reverse_rotorTorsion_pureBoost_eq (φ : ℝ) :
+    reverse (rotorTorsion (pureBoost φ)) = rotorTorsion (pureBoost (-φ)) := by
+  rw [reverse_rotorTorsion_pureBoost, rotorTorsion_pureBoost_closed]
+  have hc : Real.cosh (-φ / 2) = Real.cosh (φ / 2) := by
+    rw [show -φ / 2 = -(φ / 2) by ring, Real.cosh_neg]
+  have hs : Real.sinh (-φ / 2) = -Real.sinh (φ / 2) := by
+    rw [show -φ / 2 = -(φ / 2) by ring, Real.sinh_neg]
+  rw [hc, hs, sub_eq_add_neg, neg_smul]
+
+theorem rotorTorsion_pureBoost_mul (φ ψ : ℝ) :
+    rotorTorsion (pureBoost φ) * rotorTorsion (pureBoost ψ) =
+      rotorTorsion (pureBoost (φ + ψ)) := by
+  rw [rotorTorsion_pureBoost, rotorTorsion_pureBoost, rotorTorsion_pureBoost]
+  have hc : Commute ((φ / 2) • hyperbolic 0) ((ψ / 2) • hyperbolic 0) :=
+    ((Commute.refl (hyperbolic 0)).smul_left _).smul_right _
+  rw [← exp_add_of_commute hc, ← add_smul]
+  have hcoeff : φ / 2 + ψ / 2 = (φ + ψ) / 2 := by ring
+  rw [hcoeff]
 
 /-- Circular closed form for a pure spatial rotation about axis 0 (`cyclic 0`). -/
 theorem rotorTorsion_pureRotation_closed (θ : ℝ) :

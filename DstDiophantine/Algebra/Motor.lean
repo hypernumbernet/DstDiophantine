@@ -20,10 +20,12 @@ strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra expo
   `motor_unitary` for that product.
 * **Proved here:** closed forms `exp(t • x)` when `x * x = ±1`, and the
   left-inverse ⇒ right-inverse lemma for unitary motors (`m * reverse m = 1`).
-* **Not identified:** `motor p` with `exp(omegaBiv p)`.  When
-  `[Ω_torsion, Ω_trans] ≠ 0`, the exponential of the sum differs from the
-  product of exponentials; the paper’s conjugated re-parameterisation
-  `T = exp(Ω'_trans)` is not formalised.
+* **Proved here:** the Banach exponential truncates, `exp(Ω_trans) = 1 + Ω_trans`,
+  translators multiply by adding coefficients, and `exp(Ω_biv) = RT` whenever
+  torsion and translation commute.
+* **Not identified in general:** `motor p` with `exp(omegaBiv p)` when
+  `[Ω_torsion, Ω_trans] ≠ 0`.  A closed motor product law for mixed
+  torsion-plus-translation parameters is likewise not claimed.
 * Sandwich metric preservation for the full degenerate quadratic form is likewise
   not claimed.
 -/
@@ -290,6 +292,82 @@ theorem motor_unitary (p : OmegaParams) :
 
 theorem motor_factorization (p : OmegaParams) :
     motor p = rotorTorsion p.torsion * expTrans p.trans := rfl
+
+/-! ### Null exponential is the Banach exponential -/
+
+theorem omegaTrans_smul_mul (p : TransParams) (t u : ℝ) :
+    (t • omegaTrans p) * (u • omegaTrans p) = 0 := by
+  rw [mul_smul_comm, smul_mul_assoc, omegaTrans_sq, smul_zero, smul_zero]
+
+/-- First-order truncation: \(\exp(t\,\Omega_{\mathrm{trans}})=1+t\,\Omega_{\mathrm{trans}}\). -/
+theorem exp_smul_omegaTrans (p : TransParams) (t : ℝ) :
+    exp (t • omegaTrans p) = (1 : PGA) + t • omegaTrans p := by
+  set Ω := omegaTrans p
+  have hsq : Ω * Ω = 0 := omegaTrans_sq p
+  let R : ℝ → PGA := fun u => (1 : PGA) + u • Ω
+  let f : ℝ → PGA := fun u => exp ((-u) • Ω) * R u
+  have hRΩ (u : ℝ) : Ω * R u = Ω := by
+    simp only [R, mul_add, mul_one]
+    rw [mul_smul_comm, hsq, smul_zero, add_zero]
+  have hR' (u : ℝ) : HasDerivAt R Ω u := by
+    have hconst : HasDerivAt (fun _ : ℝ => (1 : PGA)) 0 u := hasDerivAt_const u (1 : PGA)
+    have hid : HasDerivAt (fun v : ℝ => v • Ω) Ω u := by
+      simpa using (hasDerivAt_id u).smul_const Ω
+    have hsum : R = (fun _ : ℝ => (1 : PGA)) + fun v => v • Ω := rfl
+    rw [hsum]
+    have hadd := hconst.add hid
+    simpa using hadd
+  have hf' (u : ℝ) : HasDerivAt f 0 u := by
+    have hexp := hasDerivAt_exp_neg_smul Ω u
+    have hmul :
+        HasDerivAt ((fun v => exp ((-v) • Ω)) * R)
+          (exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω) u :=
+      hexp.mul (hR' u)
+    have hzero :
+        exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω = 0 := by
+      calc
+        exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω
+            = exp ((-u) • Ω) * ((-Ω) * R u) + exp ((-u) • Ω) * Ω := by
+              rw [mul_assoc]
+        _ = exp ((-u) • Ω) * ((-Ω) * R u + Ω) := by rw [← mul_add]
+        _ = exp ((-u) • Ω) * (-(Ω * R u) + Ω) := by rw [neg_mul]
+        _ = exp ((-u) • Ω) * (-Ω + Ω) := by rw [hRΩ]
+        _ = exp ((-u) • Ω) * 0 := by rw [neg_add_cancel]
+        _ = 0 := mul_zero _
+    convert hmul using 2
+    · rfl
+    · exact hzero.symm
+  have hf0 : f 0 = 1 := by
+    simp only [f, R, neg_zero, zero_smul, exp_zero, zero_smul, add_zero, mul_one]
+  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
+  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
+  have hf_one : ∀ u, f u = 1 := fun u =>
+    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
+  have : exp ((-t) • Ω) * R t = 1 := hf_one t
+  calc
+    exp (t • Ω) = exp (t • Ω) * 1 := (mul_one _).symm
+    _ = exp (t • Ω) * (exp ((-t) • Ω) * R t) := by rw [this]
+    _ = (exp (t • Ω) * exp ((-t) • Ω)) * R t := by rw [mul_assoc]
+    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
+    _ = R t := one_mul _
+
+/-- The Banach exponential of a null generator truncates at first order. -/
+theorem exp_omegaTrans (p : TransParams) :
+    exp (omegaTrans p) = expTrans p := by
+  simpa [expTrans, one_smul] using exp_smul_omegaTrans p 1
+
+/-- Translators form an abelian group: coefficients add. -/
+theorem expTrans_mul (p q : TransParams) :
+    expTrans p * expTrans q =
+      expTrans ⟨fun μ => p.lambda μ + q.lambda μ⟩ := by
+  simp only [expTrans, mul_add, add_mul, mul_one, one_mul, omegaTrans_mul, add_zero]
+  rw [add_assoc, omegaTrans_add]
+
+/-- When torsion and translation commute, \(\exp(\Omega_{\mathrm{biv}})=RT\). -/
+theorem exp_omegaBiv_eq_motor_of_commute (p : OmegaParams)
+    (h : Commute (omegaTorsion p.torsion) (omegaTrans p.trans)) :
+    exp (omegaBiv p) = motor p := by
+  rw [omegaBiv, motor, rotorTorsion, exp_add_of_commute h, exp_omegaTrans]
 
 end Motor
 

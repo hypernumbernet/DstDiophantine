@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.PGA
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Ten bivector generators of G(3,1,1)
@@ -306,6 +307,260 @@ theorem commutator_hyperbolic0_cyclic1_ne_zero :
   have : ι 0 * ι 3 = 0 :=
     (smul_eq_zero.mp hsmul).resolve_left (by norm_num : (2 : ℝ) ≠ 0)
   exact ι0_mul_ι3_ne_zero this
+
+/-! ### Poincaré action: `[B^±, N_μ]` lands in the null span -/
+
+private theorem e2_sq : ι 2 * ι 2 = (1 : PGA) := by
+  simp [e_sq, Q311_e5vec, w311]
+
+private theorem e3_sq : ι 3 * ι 3 = (1 : PGA) := by
+  simp [e_sq, Q311_e5vec, w311]
+
+private theorem mul_hyperbolic0_null0 :
+    hyperbolic 0 * null 0 = null 1 := by
+  dsimp [hyperbolic, null]
+  have h14 : ι 1 * ι e4Index = -(ι e4Index * ι 1) := e4_inner_anticomm 1
+  have h04 : ι 0 * ι e4Index = -(ι e4Index * ι 0) := e4_inner_anticomm 0
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  calc (ι 0 * ι 1) * (ι e4Index * ι 0)
+      = ι 0 * (ι 1 * ι e4Index) * ι 0 := by simp [mul_assoc]
+    _ = ι 0 * (-(ι e4Index * ι 1)) * ι 0 := by rw [h14]
+    _ = -(ι 0 * ι e4Index * ι 1 * ι 0) := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι e4Index * ι 0) * ι 1 * ι 0) := by rw [h04]
+    _ = ι e4Index * ι 0 * ι 1 * ι 0 := by simp [mul_assoc]
+    _ = ι e4Index * (ι 0 * (ι 1 * ι 0)) := by simp [mul_assoc]
+    _ = ι e4Index * (ι 0 * (-(ι 0 * ι 1))) := by rw [h10]
+    _ = -(ι e4Index * (ι 0 * ι 0) * ι 1) := by simp [mul_neg, mul_assoc]
+    _ = ι e4Index * ι 1 := by simp [e0_sq]
+    _ = null 1 := by simp [null]
+
+private theorem mul_null0_hyperbolic0 :
+    null 0 * hyperbolic 0 = -null 1 := by
+  dsimp [hyperbolic, null]
+  calc (ι e4Index * ι 0) * (ι 0 * ι 1)
+      = ι e4Index * (ι 0 * ι 0) * ι 1 := by simp [mul_assoc]
+    _ = -(ι e4Index * ι 1) := by simp [e0_sq]
+    _ = -null 1 := by simp [null]
+
+private theorem mul_hyperbolic0_null1 :
+    hyperbolic 0 * null 1 = null 0 := by
+  dsimp [hyperbolic, null]
+  have h14 : ι 1 * ι e4Index = -(ι e4Index * ι 1) := e4_inner_anticomm 1
+  calc (ι 0 * ι 1) * (ι e4Index * ι 1)
+      = ι 0 * (ι 1 * ι e4Index) * ι 1 := by simp [mul_assoc]
+    _ = ι 0 * (-(ι e4Index * ι 1)) * ι 1 := by rw [h14]
+    _ = -(ι 0 * ι e4Index * (ι 1 * ι 1)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι e4Index) := by simp [e1_sq]
+    _ = ι e4Index * ι 0 := (e4_mul_anticomm 0).symm
+    _ = null 0 := by simp [null]
+
+private theorem mul_null1_hyperbolic0 :
+    null 1 * hyperbolic 0 = -null 0 := by
+  dsimp [hyperbolic, null]
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  calc (ι e4Index * ι 1) * (ι 0 * ι 1)
+      = ι e4Index * (ι 1 * ι 0) * ι 1 := by simp [mul_assoc]
+    _ = ι e4Index * (-(ι 0 * ι 1)) * ι 1 := by rw [h10]
+    _ = -(ι e4Index * ι 0 * (ι 1 * ι 1)) := by simp [mul_neg, mul_assoc]
+    _ = -null 0 := by simp [null, e1_sq]
+
+private theorem commute_simple_bivector_ι {i j μ : Fin 5}
+    (_hij : i ≠ j) (hi : μ ≠ i) (hj : μ ≠ j) :
+    Commute (ι i * ι j) (ι μ) := by
+  unfold Commute SemiconjBy
+  have hμi : ι μ * ι i = -(ι i * ι μ) := e_mul_anticomm hi
+  have hjμ : ι j * ι μ = -(ι μ * ι j) := e_mul_anticomm hj.symm
+  calc (ι i * ι j) * ι μ
+      = ι i * (ι j * ι μ) := by rw [mul_assoc]
+    _ = ι i * (-(ι μ * ι j)) := by rw [hjμ]
+    _ = -(ι i * ι μ) * ι j := by simp [mul_neg, mul_assoc]
+    _ = (ι μ * ι i) * ι j := by rw [← hμi]
+    _ = ι μ * (ι i * ι j) := by simp [mul_assoc]
+
+private theorem commute_hyperbolic0_ι {μ : Fin 5} (h0 : μ ≠ 0) (h1 : μ ≠ 1) :
+    Commute (hyperbolic 0) (ι μ) := by
+  simpa [hyperbolic] using
+    commute_simple_bivector_ι (by decide : (0 : Fin 5) ≠ 1) h0 h1
+
+private theorem commute_hyperbolic0_null_off {μ : Fin 4}
+    (h0 : Fin.castAdd 1 μ ≠ 0) (h1 : Fin.castAdd 1 μ ≠ 1) :
+    Commute (hyperbolic 0) (null μ) := by
+  dsimp [null]
+  exact (commute_hyperbolic0_ι (by decide : (e4Index : Fin 5) ≠ 0)
+      (by decide : (e4Index : Fin 5) ≠ 1)).mul_right
+    (commute_hyperbolic0_ι h0 h1)
+
+private theorem mul_hyperbolic0_null2 :
+    hyperbolic 0 * null 2 = null 2 * hyperbolic 0 :=
+  commute_hyperbolic0_null_off (by decide) (by decide)
+
+private theorem mul_hyperbolic0_null3 :
+    hyperbolic 0 * null 3 = null 3 * hyperbolic 0 :=
+  commute_hyperbolic0_null_off (by decide) (by decide)
+
+/-- Radial boost mixes time and \(x\) translations: \([B^{+}_{0},N_{0}]=2N_{1}\). -/
+theorem commutator_hyperbolic0_null0 :
+    commutator (hyperbolic 0) (null 0) = (2 : ℝ) • null 1 := by
+  simp only [commutator, mul_hyperbolic0_null0, mul_null0_hyperbolic0, sub_neg_eq_add, two_smul]
+
+/-- \([B^{+}_{0},N_{1}]=2N_{0}\). -/
+theorem commutator_hyperbolic0_null1 :
+    commutator (hyperbolic 0) (null 1) = (2 : ℝ) • null 0 := by
+  simp only [commutator, mul_hyperbolic0_null1, mul_null1_hyperbolic0, sub_neg_eq_add, two_smul]
+
+/-- Off-plane translations are invariant: \([B^{+}_{0},N_{2}]=0\). -/
+theorem commutator_hyperbolic0_null2 :
+    commutator (hyperbolic 0) (null 2) = 0 := by
+  simp [commutator, mul_hyperbolic0_null2, sub_self]
+
+theorem commutator_hyperbolic0_null3 :
+    commutator (hyperbolic 0) (null 3) = 0 := by
+  simp [commutator, mul_hyperbolic0_null3, sub_self]
+
+/-- Closed commutator table of the radial boost with the four null generators. -/
+theorem commutator_hyperbolic0_null (μ : Fin 4) :
+    commutator (hyperbolic 0) (null μ) =
+      match μ with
+      | 0 => (2 : ℝ) • null 1
+      | 1 => (2 : ℝ) • null 0
+      | 2 => 0
+      | 3 => 0 := by
+  match μ with
+  | 0 => exact commutator_hyperbolic0_null0
+  | 1 => exact commutator_hyperbolic0_null1
+  | 2 => exact commutator_hyperbolic0_null2
+  | 3 => exact commutator_hyperbolic0_null3
+
+/-- Null translations form an \(\mathrm{ad}\)-invariant subspace under the radial boost. -/
+theorem commutator_hyperbolic0_null_mem_span (μ : Fin 4) :
+    commutator (hyperbolic 0) (null μ) ∈
+      Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) := by
+  match μ with
+  | 0 =>
+    rw [commutator_hyperbolic0_null0]
+    exact (Submodule.span ℝ _).smul_mem _ (Submodule.subset_span ⟨1, rfl⟩)
+  | 1 =>
+    rw [commutator_hyperbolic0_null1]
+    exact (Submodule.span ℝ _).smul_mem _ (Submodule.subset_span ⟨0, rfl⟩)
+  | 2 =>
+    rw [commutator_hyperbolic0_null2]
+    exact Submodule.zero_mem _
+  | 3 =>
+    rw [commutator_hyperbolic0_null3]
+    exact Submodule.zero_mem _
+
+/-! Cyclic/null: rotation in the \(yz\)-plane mixes \(N_{2},N_{3}\). -/
+
+private theorem mul_cyclic0_null2 :
+    cyclic 0 * null 2 = null 3 := by
+  dsimp [cyclic, null]
+  have h24 : ι 2 * ι e4Index = -(ι e4Index * ι 2) := e4_inner_anticomm 2
+  calc (ι 3 * ι 2) * (ι e4Index * ι 2)
+      = ι 3 * (ι 2 * ι e4Index) * ι 2 := by simp [mul_assoc]
+    _ = ι 3 * (-(ι e4Index * ι 2)) * ι 2 := by rw [h24]
+    _ = -(ι 3 * ι e4Index * (ι 2 * ι 2)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 3 * ι e4Index) := by simp [e2_sq]
+    _ = ι e4Index * ι 3 := (e4_mul_anticomm 3).symm
+    _ = null 3 := by simp [null]
+
+private theorem mul_null2_cyclic0 :
+    null 2 * cyclic 0 = -null 3 := by
+  dsimp [cyclic, null]
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc (ι e4Index * ι 2) * (ι 3 * ι 2)
+      = ι e4Index * (ι 2 * ι 3) * ι 2 := by simp [mul_assoc]
+    _ = ι e4Index * (-(ι 3 * ι 2)) * ι 2 := by rw [h23]
+    _ = -(ι e4Index * ι 3 * (ι 2 * ι 2)) := by simp [mul_neg, mul_assoc]
+    _ = -null 3 := by simp [null, e2_sq]
+
+private theorem mul_cyclic0_null3 :
+    cyclic 0 * null 3 = -null 2 := by
+  dsimp [cyclic, null]
+  have h24 : ι 2 * ι e4Index = -(ι e4Index * ι 2) := e4_inner_anticomm 2
+  have h34 : ι 3 * ι e4Index = -(ι e4Index * ι 3) := e4_inner_anticomm 3
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc (ι 3 * ι 2) * (ι e4Index * ι 3)
+      = ι 3 * (ι 2 * ι e4Index) * ι 3 := by simp [mul_assoc]
+    _ = ι 3 * (-(ι e4Index * ι 2)) * ι 3 := by rw [h24]
+    _ = -(ι 3 * ι e4Index) * ι 2 * ι 3 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι e4Index * ι 3)) * ι 2 * ι 3 := by rw [h34]
+    _ = ι e4Index * (ι 3 * (ι 2 * ι 3)) := by simp [mul_assoc]
+    _ = ι e4Index * (ι 3 * (-(ι 3 * ι 2))) := by rw [h23]
+    _ = -(ι e4Index * (ι 3 * ι 3) * ι 2) := by simp [mul_neg, mul_assoc]
+    _ = -null 2 := by simp [null, e3_sq]
+
+private theorem mul_null3_cyclic0 :
+    null 3 * cyclic 0 = null 2 := by
+  dsimp [cyclic, null]
+  calc (ι e4Index * ι 3) * (ι 3 * ι 2)
+      = ι e4Index * (ι 3 * ι 3) * ι 2 := by simp [mul_assoc]
+    _ = null 2 := by simp [null, e3_sq]
+
+theorem commutator_cyclic0_null2 :
+    commutator (cyclic 0) (null 2) = (2 : ℝ) • null 3 := by
+  simp only [commutator, mul_cyclic0_null2, mul_null2_cyclic0, sub_neg_eq_add, two_smul]
+
+theorem commutator_cyclic0_null3 :
+    commutator (cyclic 0) (null 3) = (-2 : ℝ) • null 2 := by
+  simp only [commutator, mul_cyclic0_null3, mul_null3_cyclic0]
+  module
+
+private theorem commute_cyclic0_ι {μ : Fin 5} (h2 : μ ≠ 2) (h3 : μ ≠ 3) :
+    Commute (cyclic 0) (ι μ) := by
+  simpa [cyclic] using
+    commute_simple_bivector_ι (by decide : (3 : Fin 5) ≠ 2) h3 h2
+
+private theorem commute_cyclic0_null_off {μ : Fin 4}
+    (h2 : Fin.castAdd 1 μ ≠ 2) (h3 : Fin.castAdd 1 μ ≠ 3) :
+    Commute (cyclic 0) (null μ) := by
+  dsimp [null]
+  exact (commute_cyclic0_ι (by decide : (e4Index : Fin 5) ≠ 2)
+      (by decide : (e4Index : Fin 5) ≠ 3)).mul_right
+    (commute_cyclic0_ι h2 h3)
+
+private theorem mul_cyclic0_null0 :
+    cyclic 0 * null 0 = null 0 * cyclic 0 :=
+  commute_cyclic0_null_off (by decide) (by decide)
+
+private theorem mul_cyclic0_null1 :
+    cyclic 0 * null 1 = null 1 * cyclic 0 :=
+  commute_cyclic0_null_off (by decide) (by decide)
+
+theorem commutator_cyclic0_null0 :
+    commutator (cyclic 0) (null 0) = 0 := by
+  simp [commutator, mul_cyclic0_null0, sub_self]
+
+theorem commutator_cyclic0_null1 :
+    commutator (cyclic 0) (null 1) = 0 := by
+  simp [commutator, mul_cyclic0_null1, sub_self]
+
+theorem commutator_cyclic0_null (μ : Fin 4) :
+    commutator (cyclic 0) (null μ) =
+      match μ with
+      | 0 => 0
+      | 1 => 0
+      | 2 => (2 : ℝ) • null 3
+      | 3 => (-2 : ℝ) • null 2 := by
+  match μ with
+  | 0 => exact commutator_cyclic0_null0
+  | 1 => exact commutator_cyclic0_null1
+  | 2 => exact commutator_cyclic0_null2
+  | 3 => exact commutator_cyclic0_null3
+
+theorem commutator_cyclic0_null_mem_span (μ : Fin 4) :
+    commutator (cyclic 0) (null μ) ∈
+      Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) := by
+  match μ with
+  | 0 =>
+    rw [commutator_cyclic0_null0]; exact Submodule.zero_mem _
+  | 1 =>
+    rw [commutator_cyclic0_null1]; exact Submodule.zero_mem _
+  | 2 =>
+    rw [commutator_cyclic0_null2]
+    exact (Submodule.span ℝ _).smul_mem _ (Submodule.subset_span ⟨3, rfl⟩)
+  | 3 =>
+    rw [commutator_cyclic0_null3]
+    exact (Submodule.span ℝ _).smul_mem _ (Submodule.subset_span ⟨2, rfl⟩)
 
 end Generators
 

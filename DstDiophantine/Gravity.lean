@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.Identification
 import DstDiophantine.Gravity.JTDictionary
+import DstDiophantine.Gravity.GaugeDictionary
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
@@ -14,8 +15,9 @@ import DstDiophantine.Gravity.DualRotorDynamics
 
 Re-exports the chart-level TEGR scaffolding (coframe, sandwich scales,
 Schwarzschild tetrad, Weitzenböck torsion, motor-induced frame vectors,
-and the `J` / `J_field` / `T` dictionary with naive-identification rejections
-and the closed radial-boost form in `JTDictionary`),
+and the `J` / `J_field` / `T` dictionary with naive-identification rejections,
+the closed radial-boost form in `JTDictionary`, and the gauge-level
+generalisation in `GaugeDictionary`),
 plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
 the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
 exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
@@ -37,6 +39,28 @@ example {rs r : ℝ} (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =
       teleparallelTofJ (J (radialBoostParams rs r)) r :=
   schwarzschild_T_eq_teleparallelTofJ h
+
+/-- Regression: the same dictionary holds for any static radial-boost gauge. -/
+example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofA A r =
+      4 * (Real.cosh (Real.sqrt (2 * J (gaugeBoostParams A))) - 1) :=
+  r_sq_T_ofA_eq_four_cosh_sqrt hA hr
+
+/-- Regression: a real radial boost cannot produce \(T<0\). -/
+example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
+    ¬ teleparallelTofA A r < 0 :=
+  teleparallelTofA_not_lt_zero hA hr
+
+/-- Regression: \(T<0\) on the admissible cone requires the elliptic sector. -/
+example {Jval r : ℝ} (hr : r ≠ 0)
+    (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) :
+    Jval < 0 :=
+  repulsive_requires_negative_J hr hbound hT
+
+/-- Regression: TEGR density dominates the algebraic density. -/
+example {A r θ : ℝ} (hA : 0 < A) (hr : r ≠ 0) (hsin : 0 ≤ Real.sin θ) :
+    algebraicDensity A r θ ≤ tegrDensity A r θ :=
+  algebraicDensity_le_tegrDensity hA hr hsin
 
 /-- Regression: sandwich \(4J\le r^2 T\) and \(T\le 4J_{\mathrm{field}}\). -/
 example {rs r : ℝ} (h : IsExterior rs r) :

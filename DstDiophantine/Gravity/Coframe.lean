@@ -60,6 +60,10 @@ def zeroCoframe : Coframe := fun _ _ => 0
 def diagonalCoframe (d : Fin 4 → ℝ) : Coframe :=
   fun a μ => if a = μ then d a else 0
 
+/-- Product of the four diagonal coframe legs (chart volume factor). -/
+def coframeDet (d : Fin 4 → ℝ) : ℝ :=
+  d 0 * d 1 * d 2 * d 3
+
 theorem inducedMetric_diagonal (d : Fin 4 → ℝ) (μ ν : Fin 4) :
     inducedMetric (diagonalCoframe d) μ ν =
       (if μ = ν then w31 μ * (d μ) ^ 2 else 0) := by

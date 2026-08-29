@@ -38,7 +38,9 @@ export LorentzDim (soDim isoDim so31Dim so91Dim so8Dim iso31Dim iso91Dim
   lightCone_ne_torsionGenerators)
 export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
   commutator commutator_null_null null_commute
-  commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero)
+  commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero
+  commutator_hyperbolic0_null commutator_hyperbolic0_null_mem_span
+  commutator_cyclic0_null commutator_cyclic0_null_mem_span)
 export Operations (pseudoscalar dual TorsionParams daggerParams
   e4_commute_pseudoscalar dual_null
   pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
@@ -55,12 +57,14 @@ export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
   dirichletKernel_two_pi abs_dirichletKernel_lattice)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
-  reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one)
+  reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one
+  exp_omegaTrans expTrans_mul exp_omegaBiv_eq_motor_of_commute)
 export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp sandwich_reverse
   sandwich_mul sandwich_sq sandwich_minkowskiVector_sq
   rotorTorsion_pureBoost_closed sandwich_pureBoost_ι0 sandwich_pureBoost_ι1
   sandwich_pureBoost_ι2 sandwich_pureBoost_lightlike_plus sandwich_pureBoost_lightlike_minus
-  rotorTorsion_pureRotation_closed)
+  rotorTorsion_pureRotation_closed sandwich_pureBoost_null0 sandwich_pureBoost_expTrans
+  reverse_rotorTorsion_pureBoost_eq rotorTorsion_pureBoost_mul boostConjLambda)
 export UnitGroup (discreteRotor DiscreteUnit DiscreteRotorImage discreteUnit_finite
   discreteRotorImage_finite reverse_discreteRotor discreteRotor_mul_reverse
   negTorsionParams)
@@ -132,5 +136,33 @@ example (p : Operations.TorsionParams) :
 example : ∃ p : Operations.TorsionParams,
     Invariant.J p = 0 ∧ 0 < Invariant.mass p ∧ relativeRotor p ≠ 1 :=
   J_zero_not_relativeRotor_one
+
+/-- Regression: the Banach exponential of a null generator truncates. -/
+example (p : Motor.TransParams) :
+    NormedSpace.exp (omegaTrans p) = expTrans p :=
+  exp_omegaTrans p
+
+/-- Regression: translators multiply by adding coefficients. -/
+example (p q : Motor.TransParams) :
+    expTrans p * expTrans q = expTrans ⟨fun μ => p.lambda μ + q.lambda μ⟩ :=
+  expTrans_mul p q
+
+/-- Regression: null translations are ad-invariant under the radial boost. -/
+example (μ : Fin 4) :
+    commutator (hyperbolic 0) (null μ) ∈
+      Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) :=
+  commutator_hyperbolic0_null_mem_span μ
+
+/-- Regression: a pure boost conjugates a translator to a translator. -/
+example (φ : ℝ) (p : Motor.TransParams) :
+    sandwich (rotorTorsion (pureBoost φ)) (expTrans p) =
+      expTrans ⟨boostConjLambda φ p.lambda⟩ :=
+  sandwich_pureBoost_expTrans φ p
+
+/-- Regression: commuting torsion and translation give \(\exp(\Omega_{\mathrm{biv}})=RT\). -/
+example (p : Motor.OmegaParams)
+    (h : Commute (omegaTorsion p.torsion) (omegaTrans p.trans)) :
+    NormedSpace.exp (omegaBiv p) = motor p :=
+  exp_omegaBiv_eq_motor_of_commute p h
 
 end DstDiophantine
