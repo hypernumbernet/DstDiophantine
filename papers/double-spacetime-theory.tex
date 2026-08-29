@@ -36,7 +36,7 @@ Employing the biquaternion algebra, we define the usual spacetime with basis $(j
 
 The unique Lorentz-invariant scalar used throughout is the parameter-space form $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ on the six-generator Lorentz candidate $\mathfrak{so}(3,1)$ (not the twelve-dimensional sum $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$). Under the half-angle expansion $\Omega_{\mathrm{biv}}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ one has $B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})=2\sum_a(\alpha_a^2-\beta_a^2)$, so $J$ is four times $\frac1{16}B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})$. On admissible configurations, $|J|\le\Jbound$ or equivalently $|\Jnorm|\le 1$ with $\Jnorm=\frac8{3\pi^2}J$. The loci $\Omega=1$, $J=0$, and vanishing unsigned mass $M=0$ are distinct.
 
-The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working hypothesis. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock torsion scalar $T$ of teleparallel gravity. On the exterior Schwarzschild chart, $T$ is obtained in closed form as a radial divergence, while the finite-angle identifications $J=\tfrac12 T$ and $J_{\mathrm{field}}=\tfrac12 T$ fail. The closed dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ and the lower sandwich $4J/r^2\le T$ hold on every static radial-boost gauge (of which Schwarzschild is the classical special case). A real radial boost cannot produce $T<0$; repulsive layers $T<0$ require the elliptic sector. On that gauge the teleparallel density dominates the algebraic density, with equality only in the flat limit. Teleparallel gravity identifies $\int T$ with the Einstein--Hilbert integral up to a boundary; that identity is not transferred automatically to algebraic $J$ for a general tetrad field.
+The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working hypothesis. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock torsion scalar $T$ of teleparallel gravity. On the exterior Schwarzschild chart, $T$ is obtained in closed form as a radial divergence, while the finite-angle identifications $J=\tfrac12 T$ and $J_{\mathrm{field}}=\tfrac12 T$ fail. The closed dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ and the lower sandwich $4J/r^2\le T$ hold on every static radial-boost gauge, of which the exterior factor $A=1-r_s/r$ is the unique vacuum specialisation. A real radial boost cannot produce $T<0$; repulsive layers $T<0$ require the elliptic sector. On that gauge the teleparallel density dominates the algebraic density, with equality only in the flat limit. Teleparallel gravity identifies $\int T$ with the Einstein--Hilbert integral up to a boundary; that identity is not transferred automatically to algebraic $J$ for a general tetrad field.
 
 Coherent excitation of the dual-sector angles $\theta_a$ as a route to gravitational engineering is a working hypothesis, not a theorem of the dual-rotor algebra.
 \end{abstract}
@@ -56,7 +56,7 @@ This philosophical shift is profound. In standard GR, spacetime is an autonomous
 
 The theory therefore achieves three revolutionary outcomes simultaneously:
 
-1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart and the dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$ for a general tetrad field.
+1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart and the dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, of which $A=1-r_s/r$ is the unique vacuum specialisation, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$ for a general tetrad field.
 
 2. Natural unification of gravity and inertia: the equivalence principle emerges as the requirement that the usual and dual rotors remain parallel in free fall; acceleration violates this parallelism, producing inertial forces as the same torsional phenomenon as gravity.
 
@@ -70,7 +70,7 @@ Section~\ref{sec:math} establishes the mathematical foundation by introducing th
 
 Section~\ref{sec:kinematics} develops the rotor formalism. Same-axis generators commute, so a one-axis exponential factorises; off-axis generators need not commute, so a six-parameter exponential does not factor unconditionally.
 
-Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records the identity $\Omega=1$ if and only if $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, distinguishes $\Omega=1$, $J=0$, and vanishing mass, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, the closed $J$--$T$ dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, and the sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$.
+Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records the identity $\Omega=1$ if and only if $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, distinguishes $\Omega=1$, $J=0$, and vanishing mass, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, the closed $J$--$T$ dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, of which $A=1-r_s/r$ is the unique vacuum specialisation, and the sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$.
 
 Section~\ref{sec:unified} shows that inertia and gravity are identical phenomena arising from the same dual-rotor rigidity, with the equivalence principle emerging as an algebraic identity.
 
@@ -421,7 +421,7 @@ Equivalently
 \[
 r^2 T=4\bigl(\cosh\sqrt{2J}-1\bigr)=4J+\tfrac23 J^2+\tfrac{2}{45}J^3+\cdots.
 \]
-In the weak-field limit $\varphi\to 0$ one has $r^2 T/(4J)\to 1$. The exterior Schwarzschild factor $A=1-r_s/r$ is the classical special case (Proposition~\ref{prop:schwarzschild-chart}).
+In the weak-field limit $\varphi\to 0$ one has $r^2 T/(4J)\to 1$. The exterior Schwarzschild factor $A=1-r_s/r$ is the unique vacuum specialisation of this gauge (Propositions~\ref{prop:schwarzschild-chart} and~\ref{prop:schwarzschild-vacuum}).
 \end{proposition}
 
 \begin{proposition}[$J$--$T$ sandwich]
@@ -451,6 +451,45 @@ The analytic continuation $E(J)=\cosh\sqrt{2J}-1$ is entire. For $J<0$ one has $
 \begin{proposition}[Real boosts cannot produce $T<0$]
 \label{prop:repulsive-nogo}
 On a static radial-boost gauge with $A>0$ and $r\neq 0$ one has $T\ge 0$, with $T=0$ if and only if $A=1$. A real (hyperbolic) radial boost therefore cannot realise a repulsive layer $T<0$. On the admissible cone, Proposition~\ref{prop:jt-dictionary} together with $\operatorname{sign} T=\operatorname{sign} J$ forces $T<0$ to require $J<0$, i.e.\ the elliptic sector. The cosine branch of $E(J)$ is consequently not a mere analytic continuation: it is the sector in which repulsive layers can occur.
+\end{proposition}
+
+The vacuum condition $\frac{d}{dr}(rA)=1$ selects a unique member of the static radial-boost family. On that member the Newtonian potential, the far-field coefficients of $T$ and $J$, and the exterior layering are then explicit.
+
+\begin{proposition}[Vacuum characterisation of the Schwarzschild factor]
+\label{prop:schwarzschild-vacuum}
+Let $A$ be the time-leg of a static radial-boost gauge. If $\frac{d}{dr}(rA)=1$ on an open ray $r>c\ge 0$, then $A(r)=1-r_s/r$ for a unique radius $r_s=r(1-A(r))$. Thus among all static radial-boost gauges, the exterior factor $A=1-r_s/r$ is the unique vacuum specialisation.
+\end{proposition}
+
+\begin{proposition}[Newtonian sandwich]
+\label{prop:schwarzschild-newtonian}
+On the exterior domain $r>r_s>0$,
+\[
+\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}.
+\]
+In particular $r\varphi\to r_s/2$ as $r\to\infty$, so the finite-angle rapidity tracks the Newtonian potential at infinity.
+\end{proposition}
+
+\begin{proposition}[Far-field coefficients]
+\label{prop:schwarzschild-farfield}
+On the exterior domain, as $r\to\infty$,
+\[
+r^4 T\to\frac{r_s^2}{2},\qquad 4r^2 J\to\frac{r_s^2}{2}.
+\]
+The teleparallel and algebraic chart densities therefore share the same leading coefficient at infinity.
+\end{proposition}
+
+\begin{proposition}[Exterior layering]
+\label{prop:schwarzschild-layering}
+On $r>r_s>0$ the factor $A$ is strictly increasing, while $\varphi$, $J$, $T$, and $r^2T$ are strictly decreasing. As $r\to r_s^+$ one has $A\to 0^+$, $\varphi\to\infty$, and $T\to\infty$.
+\end{proposition}
+
+\begin{proposition}[Reference sphere]
+\label{prop:schwarzschild-reference-sphere}
+At the sphere $r=\tfrac43 r_s$ one has the exact values
+\[
+A=\tfrac14,\qquad \varphi=\log 2,\qquad r^2 T=1,\qquad 4J=2\log^2 2,\qquad r^2 J_{\mathrm{field}}=\tfrac98.
+\]
+In particular $2\log^2 2<1$, so the sandwiches $4J<r^2 T$ and $T<4J_{\mathrm{field}}$ are strict at this sphere, with field-seed ratio $J_{\mathrm{field}}/T=\tfrac98$.
 \end{proposition}
 
 \subsection{Proposed Action}
@@ -1321,7 +1360,7 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item The usual--dual swap sends $J\mapsto -J$ and preserves unsigned mass $M$. Vanishing $J$ includes vacuum and balanced massive configurations; $J=0$ does not force $\Omega=1$.
 \item The effective Lorentz factor is $\gamma_{\mathrm{eff}}=\cosh\alpha-\sinh\alpha\sin\beta$, strictly positive. Special relativity is the unexcited dual sector $\beta=0$, not the locus $J=0$.
 \item The written particle action has Euler--Lagrange equations $\ddot\phi=\ddot\theta=-m(\phi-\theta)$, so the mismatch is free. A same-sign working model yields $\ddot\delta+2m\delta=0$.
-\item On every static radial-boost gauge the closed dictionary is $r^2 T=4(\cosh\sqrt{2J}-1)$, with sandwich $4J/r^2\le T$ and equality only when $A=1$. The exterior Schwarzschild chart is the classical special case: the induced metric is Schwarzschild, $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}$, and $T\le 4J_{\mathrm{field}}$ with exact ratio $J_{\mathrm{field}}/T=(1+\sqrt{A})^2/(16 A^{3/2})$. Parameter $J$, field seed $J_{\mathrm{field}}$, and $T$ are distinct; $J=\tfrac12 T$ fails. A real radial boost cannot produce $T<0$; repulsive layers require the elliptic sector. The teleparallel chart density dominates the algebraic density, with equality only in the flat limit.
+\item On every static radial-boost gauge the closed dictionary is $r^2 T=4(\cosh\sqrt{2J}-1)$, with sandwich $4J/r^2\le T$ and equality only when $A=1$. The exterior Schwarzschild chart is the unique vacuum specialisation of that gauge: $\frac{d}{dr}(rA)=1$ forces $A=1-r_s/r$. The induced metric is Schwarzschild, $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}$, and $T\le 4J_{\mathrm{field}}$ with exact ratio $J_{\mathrm{field}}/T=(1+\sqrt{A})^2/(16 A^{3/2})$. On the exterior, $\frac{r_s}{2r}\le\varphi\le\frac{r_s}{2rA}$ with $r\varphi\to r_s/2$, while $r^4 T$ and $4r^2 J$ share the far-field coefficient $r_s^2/2$. The factor $A$ is strictly increasing and $\varphi,J,T,r^2T$ are strictly decreasing, with $A\to 0^+$ and $\varphi\to\infty$ as $r\to r_s^+$. At $r=\tfrac43 r_s$ one has $A=\tfrac14$, $\varphi=\log 2$, $r^2 T=1$, and $4J=2\log^2 2<1$. Parameter $J$, field seed $J_{\mathrm{field}}$, and $T$ are distinct; $J=\tfrac12 T$ fails. A real radial boost cannot produce $T<0$; repulsive layers require the elliptic sector. The teleparallel chart density dominates the algebraic density, with equality only in the flat limit.
 \item On the admissible cone, $\operatorname{sign} T=\operatorname{sign} J$. Under $\varphi\le\varphi_{\max}$ one has $r^2 T\le 4(\cosh\varphi_{\max}-1)$ with numerical envelope $26<\cdots<27$; a one-axis boost gives $r^2 T<6.1$. Classical Schwarzschild has unbounded $r^2 T$ as $r\to r_s^+$.
 \item The saturated chart with $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ matches classical Schwarzschild at $r_\star$ and never reaches $A=0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone. The cutoff is a working identification.
 \item The $S^3$ cotangent potential obeys the Gauss law on the three-sphere. The rotation-curve shape $f(x)=x/\sin^2 x$ has a unique plateau root of $\tan x=2x$ in $(\pi/4,\pi/2)$. The acceleration $a_0$ and Newton $G$ are external inputs.

@@ -1,6 +1,7 @@
 import DstDiophantine.Gravity.Identification
 import DstDiophantine.Gravity.JTDictionary
 import DstDiophantine.Gravity.GaugeDictionary
+import DstDiophantine.Gravity.ClassicalSchwarzschild
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
@@ -16,8 +17,9 @@ import DstDiophantine.Gravity.DualRotorDynamics
 Re-exports the chart-level TEGR scaffolding (coframe, sandwich scales,
 Schwarzschild tetrad, Weitzenböck torsion, motor-induced frame vectors,
 and the `J` / `J_field` / `T` dictionary with naive-identification rejections,
-the closed radial-boost form in `JTDictionary`, and the gauge-level
-generalisation in `GaugeDictionary`),
+the closed radial-boost form in `JTDictionary`, the gauge-level
+generalisation in `GaugeDictionary`, and the classical specialisation
+`A=1-rₛ/r` in `ClassicalSchwarzschild`),
 plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
 the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
 exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
@@ -82,6 +84,22 @@ example {rs r : ℝ} (h : IsExterior rs r)
     (hφ : schwarzschildRapidity rs r ≤ phiMax) :
     r ^ 2 * schwarzschildTeleparallelT rs r < 27 :=
   lt_of_le_of_lt (r_sq_T_le_ceiling h hφ) four_cosh_phiMax_sub_one_bounds.2
+
+/-- Regression: exterior Schwarzschild is the vacuum specialisation of the gauge. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    HasDerivAt (fun x => x * schwarzschildA rs x) 1 r :=
+  hasDerivAt_r_mul_schwarzschildA rs r (lt_trans h.1 h.2).ne'
+
+/-- Regression: Newtonian sandwich and far-field coefficient. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    rs / (2 * r) ≤ schwarzschildRapidity rs r :=
+  (schwarzschildRapidity_sandwich h).1
+
+/-- Regression: exact witness \(r=\frac43 r_s\) has \(r^2 T=1\). -/
+example {rs : ℝ} (hrs : 0 < rs) :
+    referenceRadius rs ^ 2 *
+      schwarzschildTeleparallelT rs (referenceRadius rs) = 1 :=
+  r_sq_T_reference hrs
 
 /-- Regression: the proper-time factor is strictly positive. -/
 example (α β : ℝ) : 0 < gammaEff α β :=

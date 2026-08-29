@@ -300,7 +300,7 @@ theorem r_sq_T_div_four_J_eq {rs r : ℝ} (h : IsExterior rs r) :
   field_simp [hne, hhalf]
   ring
 
-private theorem tendsto_sinh_div_id :
+theorem tendsto_sinh_div_self :
     Tendsto (fun x : ℝ => sinh x / x) (𝓝[≠] 0) (𝓝 1) := by
   have h := (hasDerivAt_sinh (0 : ℝ)).tendsto_slope
   simp only [cosh_zero] at h
@@ -340,7 +340,7 @@ theorem tendsto_r_sq_T_div_four_J {rs : ℝ} (hrs : 0 < rs) :
   have hsinh : Tendsto (fun r : ℝ =>
       sinh (schwarzschildRapidity rs r / 2) /
         (schwarzschildRapidity rs r / 2)) atTop (𝓝 1) :=
-    tendsto_sinh_div_id.comp hψ
+    tendsto_sinh_div_self.comp hψ
   have hsq : Tendsto (fun r : ℝ =>
       (sinh (schwarzschildRapidity rs r / 2) /
         (schwarzschildRapidity rs r / 2)) ^ 2) atTop (𝓝 1) := by
