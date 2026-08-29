@@ -36,7 +36,7 @@ Employing the biquaternion algebra, we define the usual spacetime with basis $(j
 
 The unique Lorentz-invariant scalar used throughout is the parameter-space form $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ on the six-generator Lorentz candidate $\mathfrak{so}(3,1)$ (not the twelve-dimensional sum $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$). Under the half-angle expansion $\Omega_{\mathrm{biv}}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ one has $B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})=2\sum_a(\alpha_a^2-\beta_a^2)$, so $J$ is four times $\frac1{16}B(\Omega_{\mathrm{biv}},\Omega_{\mathrm{biv}})$. On admissible configurations, $|J|\le\Jbound$ or equivalently $|\Jnorm|\le 1$ with $\Jnorm=\frac8{3\pi^2}J$. The loci $\Omega=1$, $J=0$, and vanishing unsigned mass $M=0$ are distinct.
 
-The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working hypothesis. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock torsion scalar $T$ of teleparallel gravity. On the exterior Schwarzschild chart, $T$ is obtained in closed form as a radial divergence, while the finite-angle identifications $J=\tfrac12 T$ and $J_{\mathrm{field}}=\tfrac12 T$ fail. Teleparallel gravity identifies $\int T$ with the Einstein--Hilbert integral up to a boundary; that identity is not transferred automatically to algebraic $J$.
+The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working hypothesis. The parameter-space scalar $J$ is distinct from the Weitzenb\"ock torsion scalar $T$ of teleparallel gravity. On the exterior Schwarzschild chart, $T$ is obtained in closed form as a radial divergence, while the finite-angle identifications $J=\tfrac12 T$ and $J_{\mathrm{field}}=\tfrac12 T$ fail. The radial pure-boost gauge nevertheless supplies the closed dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ and the sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$. Teleparallel gravity identifies $\int T$ with the Einstein--Hilbert integral up to a boundary; that identity is not transferred automatically to algebraic $J$ for a general motor field.
 
 Coherent excitation of the dual-sector angles $\theta_a$ as a route to gravitational engineering is a working hypothesis, not a theorem of the dual-rotor algebra.
 \end{abstract}
@@ -56,7 +56,7 @@ This philosophical shift is profound. In standard GR, spacetime is an autonomous
 
 The theory therefore achieves three revolutionary outcomes simultaneously:
 
-1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$.
+1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart and the dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$ for a general motor field.
 
 2. Natural unification of gravity and inertia: the equivalence principle emerges as the requirement that the usual and dual rotors remain parallel in free fall; acceleration violates this parallelism, producing inertial forces as the same torsional phenomenon as gravity.
 
@@ -70,7 +70,7 @@ Section~\ref{sec:math} establishes the mathematical foundation by introducing th
 
 Section~\ref{sec:kinematics} develops the rotor formalism. Same-axis generators commute, so a one-axis exponential factorises; off-axis generators need not commute, so a six-parameter exponential does not factor unconditionally.
 
-Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records the identity $\Omega=1$ if and only if $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, distinguishes $\Omega=1$, $J=0$, and vanishing mass, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, and the distinction among $J$, $J_{\mathrm{field}}$, and $T$.
+Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records the identity $\Omega=1$ if and only if $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, distinguishes $\Omega=1$, $J=0$, and vanishing mass, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, the closed $J$--$T$ dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$, and the sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$.
 
 Section~\ref{sec:unified} shows that inertia and gravity are identical phenomena arising from the same dual-rotor rigidity, with the equivalence principle emerging as an algebraic identity.
 
@@ -402,8 +402,47 @@ On the exterior domain $r>r_s>0$, the radial pure-boost sandwich scales are $\ma
 
 \begin{proposition}[Rejection of $J=\tfrac12 T$]
 \label{prop:identification-rejected}
-A constant nonzero boost has $J\neq 0$ with vanishing Weitzenb\"ock $T$ on flat space, so $J=\tfrac12 T$ fails. At the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. A corrected dictionary for a general motor field remains open.
+A constant nonzero boost has $J\neq 0$ with vanishing Weitzenb\"ock $T$ on flat space, so $J=\tfrac12 T$ fails. At the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. On the radial pure-boost gauge the closed dictionary of Propositions~\ref{prop:jt-dictionary}--\ref{prop:jt-field-ratio} holds; a corrected dictionary for a general motor field remains open.
 \end{proposition}
+
+Substituting $\sqrt{A}=\mathrm{e}^{-\varphi}$ into~\eqref{eq:schwarzschild-T} yields
+\[
+\frac{(1-\sqrt{A})^2}{\sqrt{A}}=\mathrm{e}^{\varphi}-2+\mathrm{e}^{-\varphi}=2(\cosh\varphi-1).
+\]
+The two independent reasons the naive coefficient $\tfrac12$ fails are then visible: a missing length scale $r^2$, and a leading coefficient $4$ rather than $\tfrac12$.
+
+\begin{proposition}[Closed-form $J$--$T$ dictionary]
+\label{prop:jt-dictionary}
+On the exterior domain $r>r_s>0$,
+\[
+T=\frac{4}{r^2}(\cosh\varphi-1)=\frac{8}{r^2}\sinh^2\frac{\varphi}{2}.
+\]
+With $J=\tfrac12\varphi^2$ this is
+\[
+r^2 T=4\bigl(\cosh\sqrt{2J}-1\bigr)=4J+\tfrac23 J^2+\tfrac{2}{45}J^3+\cdots.
+\]
+In the weak-field limit $r\to\infty$ one has $r^2 T/(4J)\to 1$.
+\end{proposition}
+
+\begin{proposition}[$J$--$T$ sandwich]
+\label{prop:jt-sandwich}
+On the exterior domain $r>r_s>0$,
+\[
+\frac{4J}{r^2}\le T\le 4J_{\mathrm{field}},
+\]
+with both inequalities strict. Equality holds only in the flat limit. The same universal constant $4$ appears at both ends.
+\end{proposition}
+
+\begin{proposition}[Exact field-seed ratio]
+\label{prop:jt-field-ratio}
+On the exterior domain $r>r_s>0$,
+\[
+\frac{J_{\mathrm{field}}}{T}=\frac{(1+\sqrt{A})^2}{16 A^{3/2}}=\frac{\mathrm{e}^{2\varphi}\cosh^2(\varphi/2)}{4}.
+\]
+The ratio is strictly increasing in $\varphi$ and has infimum $\tfrac14$. Consequently the naive identification $J_{\mathrm{field}}=\tfrac12 T$ can hold on at most one sphere.
+\end{proposition}
+
+The analytic continuation $E(J)=\cosh\sqrt{2J}-1$ is entire. For $J<0$ one has $E(J)=\cos\sqrt{-2J}-1$. On the admissible cone $|J|\le\Jbound$ the argument satisfies $\sqrt{-2J}\le\pi\sqrt{3}/2<\pi$, so $E(J)<0$ whenever $J<0$. Thus $\operatorname{sign} T=\operatorname{sign} J$ on that cone, confirming the reading $J>0$ attractive / $J<0$ repulsive on the $T$ side.
 
 \subsection{Proposed Action}
 
@@ -415,7 +454,7 @@ as a DST Lagrangian density in the parameter-space scalar $J$. This expression i
 \[
 \int T \, e \, d^4x = -\int R \, \sqrt{-g} \, d^4x + \int \partial_\mu(\sqrt{-g}\, V^\mu)\, d^4x
 \]
-holds after the standard tetrad variation with vanishing boundary variations $\delta e^a{}_\mu$. The Einstein equations therefore belong to $T$, not to algebraic $J$. Gravity in the present theory remains a torsional mismatch angle between particle-intrinsic dual spacetimes; the field equations of GR are recovered only after a future dictionary relating $J$ to $T$ is established.
+holds after the standard tetrad variation with vanishing boundary variations $\delta e^a{}_\mu$. The Einstein equations therefore belong to $T$, not to algebraic $J$. Gravity in the present theory remains a torsional mismatch angle between particle-intrinsic dual spacetimes. On the radial pure-boost gauge the dictionary of Proposition~\ref{prop:jt-dictionary} relates $J$ to $T$; a dictionary for a general motor field remains open, and the field equations of GR are recovered from algebraic $J$ only after that general dictionary is established.
 
 \subsection{Weak-Field and Newtonian Limit}
 
@@ -548,6 +587,17 @@ Classical Schwarzschild has $\varphi\to\infty$ and $A\to 0$ as $r\to r_s^+$. Ide
 The corresponding radius is $r_\star=r_s/(1-A_{\min})$, equivalently $r_\star/r_s=(1-A_{\min})^{-1}$. One has $0<A_{\min}<10^{-2}$ and $1<r_\star/r_s<1.005$. The saturated chart freezes $\varphi=\varphi_{\max}$ and $A=A_{\min}$ for $r\le r_\star$, and uses the classical formulae for $r>r_\star$. At $r=r_\star$ the two descriptions agree. The saturated factor $A$ remains strictly positive: a true one-way horizon $A=0$ does not form. (By contrast the classical factor vanishes at $r=r_s$.)
 
 This cutoff is a working identification of the three-axis ceiling on a single boost axis. A one-axis admissible boost saturates only at $\varphi=\pi/2$, where $J=\pi^2/8=\Jbound/3$. The inverted value $\varphi_{\max}>\pi/2$ therefore lies outside the admissible cone. The construction saturates the three-axis bound, not the single-axis cone.
+
+On the same radial slice the dictionary of Proposition~\ref{prop:jt-dictionary} converts the rapidity ceiling into a finite envelope for the Weitzenb\"ock scalar: $\varphi\le\varphi_{\max}$ implies $r^2 T\le 4(\cosh\varphi_{\max}-1)$, and
+\[
+26<4\bigl(\cosh(\pi\sqrt{3}/2)-1\bigr)<27.
+\]
+A one-axis admissible boost $\varphi\le\pi/2$ yields the tighter envelope $r^2 T<6.1$. Classical Schwarzschild has $r^2 T\to\infty$ as $r\to r_s^+$. The quasi-horizon cutoff therefore cuts off $T$ as well as $\varphi$.
+
+\begin{proposition}[Finite ceiling on $r^2 T$]
+\label{prop:r2T-ceiling}
+If $\varphi\le\varphi_{\max}$, then $r^2 T\le 4(\cosh\varphi_{\max}-1)$ and $26<4(\cosh(\pi\sqrt{3}/2)-1)<27$. If $\varphi\le\pi/2$, then $r^2 T<6.1$. Classical Schwarzschild has unbounded $r^2 T$ as $r\to r_s^+$.
+\end{proposition}
 
 \begin{proposition}[Quasi-horizon cutoff]
 \label{prop:quasi-horizon}
@@ -1258,7 +1308,8 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item The usual--dual swap sends $J\mapsto -J$ and preserves unsigned mass $M$. Vanishing $J$ includes vacuum and balanced massive configurations; $J=0$ does not force $\Omega=1$.
 \item The effective Lorentz factor is $\gamma_{\mathrm{eff}}=\cosh\alpha-\sinh\alpha\sin\beta$, strictly positive. Special relativity is the unexcited dual sector $\beta=0$, not the locus $J=0$.
 \item The written particle action has Euler--Lagrange equations $\ddot\phi=\ddot\theta=-m(\phi-\theta)$, so the mismatch is free. A same-sign working model yields $\ddot\delta+2m\delta=0$.
-\item On the exterior Schwarzschild chart, the radial pure-boost sandwich reproduces the diagonal tetrad scales, the induced metric is Schwarzschild, and the Weitzenb\"ock scalar is $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}$. Parameter $J$, field seed $J_{\mathrm{field}}$, and $T$ are distinct; $J=\tfrac12 T$ fails.
+\item On the exterior Schwarzschild chart, the radial pure-boost sandwich reproduces the diagonal tetrad scales, the induced metric is Schwarzschild, and the Weitzenb\"ock scalar is $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}$. Parameter $J$, field seed $J_{\mathrm{field}}$, and $T$ are distinct; $J=\tfrac12 T$ fails. The closed dictionary is $r^2 T=4(\cosh\sqrt{2J}-1)$, with sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$ and exact ratio $J_{\mathrm{field}}/T=(1+\sqrt{A})^2/(16 A^{3/2})$.
+\item On the admissible cone, $\operatorname{sign} T=\operatorname{sign} J$. Under $\varphi\le\varphi_{\max}$ one has $r^2 T\le 4(\cosh\varphi_{\max}-1)$ with numerical envelope $26<\cdots<27$; a one-axis boost gives $r^2 T<6.1$. Classical Schwarzschild has unbounded $r^2 T$ as $r\to r_s^+$.
 \item The saturated chart with $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$ matches classical Schwarzschild at $r_\star$ and never reaches $A=0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone. The cutoff is a working identification.
 \item The $S^3$ cotangent potential obeys the Gauss law on the three-sphere. The rotation-curve shape $f(x)=x/\sin^2 x$ has a unique plateau root of $\tan x=2x$ in $(\pi/4,\pi/2)$. The acceleration $a_0$ and Newton $G$ are external inputs.
 \item The discrete rotor image at fixed $N$ is finite. Nonzero winding is incompatible with real-scale admissibility. Dual-sector kinematics is $\mathrm{SU}(2)$ on $\mathbb{C}^2$.
@@ -1267,7 +1318,7 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item The normalised Dirichlet kernel is bounded by $1$ for every positive integer $N$, with lattice values $\pm 1$.
 \end{itemize}
 
-The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a general-motor dictionary between $J$ and $T$; derivation of $G$, $a_0$, $\alpha_s$, or $a_{\mathrm{crit}}$; nuclear and electromagnetic layer identifications; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.
+The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a general-motor dictionary between $J$ and $T$ (the radial pure-boost dictionary is established); derivation of $G$, $a_0$, $\alpha_s$, or $a_{\mathrm{crit}}$; nuclear and electromagnetic layer identifications; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.
 
 Observable distinctions from continuum GR that can be tested without those open derivations include a finite redshift floor $A_{\min}>0$ in place of a true horizon, vanishing gravitational time dilation at the centre of a spherically symmetric torsion star, and a geometric rotation-curve plateau from the $S^3$ map rather than from unseen mass.
 

@@ -36,9 +36,10 @@ that a true one-way horizon (`A = 0`) does not form.
   admissibility requires `φ ≤ π/2 < φ_max`; the ceiling `JNormalized = 1`
   comes from the three-axis normalisation inverted on one boost axis).
 * Rewriting the exterior Schwarzschild metric theorems.
-* A general-motor \(J\)–\(T\) dictionary (the saturated interior only
-  supplies an additional identification failure: frozen \(\varphi\)
-  forces \(J_{\mathrm{field}}=0\) while angular Weitzenböck torsion remains).
+* A general-motor \(J\)–\(T\) dictionary (the radial pure-boost dictionary
+  is in `Gravity.JTDictionary`; the saturated interior only supplies an
+  additional identification failure: frozen \(\varphi\) forces
+  \(J_{\mathrm{field}}=0\) while angular Weitzenböck torsion remains).
 -/
 
 namespace DstDiophantine

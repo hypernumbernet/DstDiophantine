@@ -52,6 +52,8 @@ QCD \(\alpha_s\) is not paired with `epsN`.
 * Boost leg: `∂_r √A = - φ' · √A`.
 * **Rejected:** finite-angle `J = ½ T`; parametric `J5 = ½ T` on flat space;
   `J_field = ½ T` on Schwarzschild (concrete point).
+* On the radial pure-boost gauge, `Gravity.JTDictionary` supplies the closed
+  form `r² T = 4(cosh √(2J) − 1)` with sandwich `4J/r² ≤ T ≤ 4 J_field`.
 * Corrected field dictionary for general motors remains open.
 -/
 
@@ -185,7 +187,8 @@ def FieldSeedEqualsHalfT (rs r : ℝ) : Prop :=
   J_field rs r = (1 / 2) * schwarzschildTeleparallelT rs r
 
 /-- Former vacuous stub, now the rejected reading `∀ exterior, J_field = ½ T`.
-A corrected dictionary for general motor fields remains open. -/
+The radial-boost closed dictionary is `Gravity.JTDictionary`; a corrected
+dictionary for general motor fields remains open. -/
 def conjectured_J_field_eq_half_T_plus_div : Prop :=
   ∀ rs r : ℝ, IsExterior rs r → FieldSeedEqualsHalfT rs r
 
