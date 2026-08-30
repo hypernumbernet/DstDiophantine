@@ -14,6 +14,7 @@ import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
+import DstDiophantine.Gravity.CircularPolarization
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -43,12 +44,16 @@ ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
 quadratic \(J=\tfrac12(E^2-B^2)\), null circular snapshots with \(J=0\) and
 \(M>0\), Hodge period 4 versus the period-2 parameter swap and laboratory
 \(T\), sandwich commutator versus the paper wedge on rest and on a
-\(y\)-velocity; Maxwell is not derived), and the electroweak skeleton of
+\(y\)-velocity, rest sandwich of every dual Faraday field vanishes;
+Maxwell is not derived), the electroweak skeleton of
 `Electroweak` (dual map is not a Weyl projector; Faraday \(3+3\) split
 relative to \(e_1\); same-projector sandwich kills the anticommuting
 summand; mix \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\) with duality
 at \(\omega=\pi/2\); pure \(E\) has \(J\ge 0\), pure \(B\) has \(J\le 0\);
-no Weinberg angle, no \(W/Z\) masses).
+no Weinberg angle, no \(W/Z\) masses), and the circular-wave identities of
+`CircularPolarization` (null at every phase, Poynting \(\sigma E_0^2\),
+vanishing four-phase mean of linear coefficients, superposition does not
+shift mean \(J\), mix cannot create \(J\); no helicity drive of \(J\)).
 -/
 
 namespace DstDiophantine
@@ -371,6 +376,43 @@ example {ω : ℝ} {p : FaradayParams} (h : faradayDot p = 0) :
 example (Ex Bx : ℝ) :
     0 ≤ J (toTorsion (pureE Ex)) ∧ J (toTorsion (pureB Bx)) ≤ 0 :=
   ⟨J_pureE_nonneg Ex, J_pureB_nonpos Bx⟩
+
+/-- Regression: a circular wave is null at every phase. -/
+example {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (circularWave σ E0 ψ)) = 0 :=
+  circularWave_J hσ
+
+/-- Regression: helicity Poynting is constant. -/
+example (σ E0 ψ : ℝ) :
+    poyntingZ (circularWave σ E0 ψ) = σ * E0 ^ 2 :=
+  poyntingZ_circularWave σ E0 ψ
+
+/-- Regression: four-phase mean of a linear circular coefficient vanishes. -/
+example (σ E0 : ℝ) :
+    quadMean (fun ψ => (circularWave σ E0 ψ).E 0) = 0 :=
+  quadMean_circularWave_E σ E0 0
+
+/-- Regression: superposition does not shift mean \(J\). -/
+example (p : FaradayParams) {σ E0 : ℝ} (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (toTorsion (p + circularWave σ E0 ψ))) =
+      J (toTorsion p) :=
+  quadMean_J_add_circularWave p hσ
+
+/-- Regression: mix cannot create \(J\) from a circular wave. -/
+example (ω : ℝ) {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (mixFaradayParams ω (circularWave σ E0 ψ))) = 0 :=
+  J_mix_circularWave ω hσ
+
+/-- Regression: laboratory \(T\) flips Poynting; duality preserves it. -/
+example (p : FaradayParams) :
+    poyntingZ (timeReverseFaradayParams p) = -poyntingZ p ∧
+      poyntingZ (dualFaradayParams p) = poyntingZ p :=
+  ⟨poyntingZ_timeReverse p, poyntingZ_dual p⟩
+
+/-- Regression: rest sandwich of every dual Faraday field vanishes. -/
+example (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (ι 0) = 0 :=
+  sandwichIncrement_rest_faradayDual p
 
 end Gravity
 

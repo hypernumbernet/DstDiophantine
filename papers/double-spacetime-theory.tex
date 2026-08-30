@@ -78,7 +78,7 @@ Section~\ref{sec:nuclear} establishes the closed-form spectrum of the equal-scal
 
 Section~\ref{sec:electronshells} models the electron shell as an electrical inversion layer, explaining electron orbitals and interatomic forces from the perspective of microscopic-scale electromagnetism.
 
-Section~\ref{sec:unification} records the Faraday 6-space, the distinction between the dual map and axis chirality, the $3{+}3$ split of Faraday generators relative to $e_1$, the same-projector sandwich selection rule, and the one-parameter mix of $(E,B)$. Gauge identifications and a Weinberg angle are not derived.
+Section~\ref{sec:unification} records the Faraday 6-space, the distinction between the dual map and axis chirality, the $3{+}3$ split of Faraday generators relative to $e_1$, the same-projector sandwich selection rule, the one-parameter mix of $(E,B)$, and the circular-wave identities of $J$, Poynting, and superposition. Gauge identifications and a Weinberg angle are not derived.
 
 Section~\ref{sec:darkmatter}, after the unification of the gravitational and electromagnetic channels, derives flat galactic rotation curves from galaxy-scale dual-spacetime compactness and the geometric distortion of the compact-to-flat map, eliminating the need for dark matter.
 
@@ -1116,7 +1116,12 @@ On the identification of Faraday coefficients with torsion parameters, the torsi
 \[
 J(F)=\tfrac12(E^2-B^2),
 \]
-and the unsigned mass is $M(F)=\tfrac12(E^2+B^2)$. Fields with $E^2=B^2$ have $J=0$. A circular snapshot with helicity $\sigma=\pm 1$ (units $c=1$) further has $E\cdot B=0$, yet $M=E_0^2>0$ whenever $E_0\neq 0$: a null Faraday field occupies the balanced massive locus, not the vacuum $M=0$.
+and the unsigned mass is $M(F)=\tfrac12(E^2+B^2)$. Fields with $E^2=B^2$ have $J=0$. A circularly polarised wave of helicity $\sigma=\pm 1$ (units $c=1$), at every phase $\psi=kz-\omega t$,
+\[
+\mathbf{E}=E_0(\hat{x}\cos\psi+\sigma\hat{y}\sin\psi),\qquad
+\mathbf{B}=E_0(-\hat{x}\sin\psi+\sigma\hat{y}\cos\psi),
+\]
+is likewise null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$. The circular snapshot is the special case $\psi=0$. A null Faraday field occupies the balanced massive locus, not the vacuum $M=0$.
 \end{proposition}
 
 \begin{proposition}[Sector signature]
@@ -1127,6 +1132,11 @@ A pure electric configuration has $J=\tfrac12 E^2\ge 0$, vanishing if and only i
 \begin{proposition}[Three maps on the Faraday 6-space]
 \label{prop:faraday-maps}
 Pseudoscalar duality $X\mapsto Xi$ acts by $(E,B)\mapsto(B,-E)$, sends $J\mapsto -J$ and $E\cdot B\mapsto -E\cdot B$, preserves $M$, and has period 4 ($F\mapsto -F\mapsto F$). The usual--dual parameter swap $(\alpha,\beta)\mapsto(\beta,\alpha)$ likewise sends $J\mapsto -J$ and preserves $M$, but has period 2 and coincides with duality only on a pure magnetic field. Laboratory time reversal $(E,B)\mapsto(E,-B)$ preserves $J$, flips $E\cdot B$, and is neither map.
+\end{proposition}
+
+\begin{proposition}[Helicity Poynting of a circular wave]
+\label{prop:circular-poynting}
+For the circular wave of Proposition~\ref{prop:faraday-quadratic} the signed Poynting component along the propagation axis equals $\sigma E_0^2$ at every phase. Laboratory time reversal reverses that sign; duality $(E,B)\mapsto(B,-E)$ preserves it. A linearly polarised travelling wave $E=E_0\cos\psi\,\hat{x}$, $B=E_0\cos\psi\,\hat{y}$ is also null, but its Poynting component is $E_0^2\cos^2\psi\ge 0$ and carries no helicity sign, while $M$ oscillates as $E_0^2\cos^2\psi$. The two local Faraday invariants $J$ and $E\cdot B$ vanish identically on the circular wave, so a helicity-odd scalar cannot be a polynomial in those invariants.
 \end{proposition}
 
 Relative to the chirality axis $e_1$, the six Faraday generators split evenly.
@@ -1158,11 +1168,22 @@ J(\omega)=J\cos 2\omega+(E\cdot B)\sin 2\omega.
 If $E\cdot B=0$, this reduces to $J(\omega)=J\cos 2\omega$. Duality $(E,B)\mapsto(B,-E)$ is the special angle $\omega=\pi/2$.
 \end{proposition}
 
-The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and a pure magnetic generator produces none. On a particle with velocity along $y$, a pure $B_x$ generator produces a kick along $z$. The outer product $F\wedge X$ is nonzero on the magnetic rest case and vanishes on that moving magnetic case.
+Componentwise superposition of Faraday fields is bilinear in the coefficients.
+
+\begin{proposition}[Superposition and mix of a circular wave]
+\label{prop:circular-superposition}
+If $p$ and $q$ are Faraday configurations, then
+\[
+J(p+q)=J(p)+J(q)+(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q).
+\]
+Superposing the circular wave of Proposition~\ref{prop:faraday-quadratic} onto a background therefore shifts $J$ by a first harmonic in the phase. The four-phase mean of $J$ is the background value: linear superposition does not displace mean mismatch. The Faraday mix of Proposition~\ref{prop:faraday-mix} applied to that circular wave still yields $J=0$.
+\end{proposition}
+
+The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and every magnetic generator produces none, so the dual Faraday summand never kicks a rest frame. On a particle with velocity along $y$, a pure $B_x$ generator produces a kick along $z$. The outer product $F\wedge X$ is nonzero on the magnetic rest case and vanishes on that moving magnetic case.
 
 \begin{proposition}[Sandwich increment versus the written wedge]
 \label{prop:faraday-sandwich}
-The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. A rest electric generator and a moving magnetic generator each produce a spatial kick; a rest magnetic generator produces none. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
+The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. A rest electric generator and a moving magnetic generator each produce a spatial kick; every rest magnetic generator produces none, so the dual Faraday summand of an arbitrary field---a circular wave included---vanishes on a rest frame at first order. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
 \end{proposition}
 
 The algebraic relation between the electromagnetic and weak channels is therefore this: both live in the Faraday 6-space; the dual map exchanges the two sectors and is not a chirality projector; an axis $e_1$ splits the six generators into a commuting triple and an anticommuting triple, of which only the former survives the same-projector sandwich; same-axis $E$ and $B$ mix by a single angle whose quadratic law contains duality as a special value; and the sign of $J$ distinguishes the noncompact electric sector from the compact magnetic sector.
@@ -1349,11 +1370,13 @@ For a circularly polarized wave propagating along $z$ with helicity $\sigma = \p
 \mathbf{E} = E_0 (\hat{x} \cos(kz - \omega t) + \sigma \hat{y} \sin(kz - \omega t)), \quad \mathbf{B} = \frac{E_0}{c} (-\hat{x} \sin(kz - \omega t) + \sigma \hat{y} \cos(kz - \omega t)).
 \]
 
-An instantaneous circular snapshot with helicity $\sigma=\pm 1$ is a null field: $J=0$ and $E\cdot B=0$, with unsigned mass $M=E_0^2>0$ whenever $E_0\neq 0$ (Proposition~\ref{prop:faraday-quadratic}). Time-averaging is conjectured, in the working model of Hypothesis~\ref{hyp:coherent-excitation}, to cancel the oscillatory usual-sector contribution and leave a dual-sector drive
+At every phase that wave is null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$ (Proposition~\ref{prop:faraday-quadratic}). Each linear Faraday coefficient is a first harmonic of the phase, so the four-phase means vanish,
 \[
-\langle F_{\text{dual}} \rangle \propto \sigma E_0^2 \, K.
+\langle F_{\mathrm{usual}}\rangle=\langle F_{\mathrm{dual}}\rangle=0.
 \]
-The helicity $\sigma$ is conjectured to select the sign of that drive: right-handed polarisation ($\sigma = +1$) reinforcing attractive mismatch ($J > 0$), left-handed polarisation ($\sigma = -1$) opposing it. That average, the helicity-dependent sign, and the subsequent phase equation are not theorems of the dual-rotor algebra.
+There is in particular no mean dual field proportional to $\sigma E_0^2 K$. What is helicity-odd and constant is the bilinear Poynting component $(E\times B)_z=\sigma E_0^2$ (Proposition~\ref{prop:circular-poynting}). Superposition of the wave onto a background torsion does not shift the mean of $J$, and the Faraday mix cannot create $J$ from the wave (Proposition~\ref{prop:circular-superposition}). A first-order rest sandwich of the dual summand vanishes for every Faraday field, circular waves included (Proposition~\ref{prop:faraday-sandwich}).
+
+A helicity-dependent drive of the particle mismatch is therefore not a local scalar of $F$, nor a linear superposition on the Faraday 6-space, nor a first-order rest sandwich of $F_{\mathrm{dual}}$. Any such drive requires extra structure---a preferred axis, a potential, or the particle's dual phase---and belongs to Hypothesis~\ref{hyp:coherent-excitation}. In that working model the helicity-odd bilinear $(E\times B)_z=\sigma E_0^2$ is the candidate source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it.
 
 The coupling in the working model is written as a path-ordered exponential
 
@@ -1592,7 +1615,7 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item A commuting square-$+1$ pair generates a nonzero left ideal; irreducibility as a spinor module is not claimed.
 \item The normalised Dirichlet kernel is bounded by $1$ for every positive integer $N$, with lattice values $\pm 1$.
 \item On the equal-scale electromagnetic channel the first Coulombic node satisfies $\pi/4<x_1<1$. Identifying that node with $a_0$ forces $\pi a_0/2<\lambda<2a_0$. The written circular speed $v^2=ke^2/(m\gamma_s r)$ is positive only for $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. The first two equal-scale radii obey $r_2/r_1\in(1/6,4/(5\pi))$, which cannot equal the Bohr ratio $4$. The map $\ell\mapsto\ell/Z$ contracts every layer radius by $Z$; $\alpha\propto Z/r$ at fixed $\ell$ expands nodes outward by $Z$.
-\item Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, with the split $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$, $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. On that identification $J=\tfrac12(E^2-B^2)$ and $M=\tfrac12(E^2+B^2)$; a circular snapshot with helicity $\pm 1$ is null ($J=0$, $E\cdot B=0$) yet massive. Duality $(E,B)\mapsto(B,-E)$ has period 4 and sends $J\mapsto -J$; the usual--dual swap also sends $J\mapsto -J$ but has period 2; laboratory $T$ preserves $J$. A one-parameter mix rotating $(E,B)$ acts by $J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega$, of which duality is $\omega=\pi/2$. Pure electric configurations have $J\ge 0$; pure magnetic ones have $J\le 0$. The dual map is not a chirality projector: $(1\pm i)/2$ is not idempotent, while $P_{L,R}=(1\pm e_1)/2$ are complementary idempotents, and duality does not preserve the axis $e_1$ as a real line. Relative to $e_1$ the six Faraday generators split $3{+}3$; the same-projector sandwich $P_R X P_R$ retains only the commuting summand. The first-order sandwich increment is the commutator: a rest electric generator and a moving magnetic generator each produce a spatial kick. The outer product $F\wedge X$ is not the Lorentz increment.
+\item Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, with the split $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$, $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. On that identification $J=\tfrac12(E^2-B^2)$ and $M=\tfrac12(E^2+B^2)$. A circularly polarised wave of helicity $\pm 1$ is null at every phase ($J=0$, $E\cdot B=0$) yet massive, with constant signed Poynting $(E\times B)_z=\sigma E_0^2$; laboratory $T$ reverses that sign and duality preserves it. Linear polarisation is also null but carries no helicity sign. Linear superposition of a circular wave onto a background does not shift mean $J$; the Faraday mix cannot create $J$ from the wave; the dual Faraday summand never kicks a rest frame at first order. Duality $(E,B)\mapsto(B,-E)$ has period 4 and sends $J\mapsto -J$; the usual--dual swap also sends $J\mapsto -J$ but has period 2; laboratory $T$ preserves $J$. A one-parameter mix rotating $(E,B)$ acts by $J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega$, of which duality is $\omega=\pi/2$. Pure electric configurations have $J\ge 0$; pure magnetic ones have $J\le 0$. The dual map is not a chirality projector: $(1\pm i)/2$ is not idempotent, while $P_{L,R}=(1\pm e_1)/2$ are complementary idempotents, and duality does not preserve the axis $e_1$ as a real line. Relative to $e_1$ the six Faraday generators split $3{+}3$; the same-projector sandwich $P_R X P_R$ retains only the commuting summand. The first-order sandwich increment is the commutator: a rest electric generator and a moving magnetic generator each produce a spatial kick. The outer product $F\wedge X$ is not the Lorentz increment.
 \end{itemize}
 
 The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a dictionary between $J$ and $T$ for a general tetrad field (the static radial-boost dictionary is established, together with a one-sided density inequality); derivation of $G$, $a_0$, $\alpha$, $\alpha_s$, $\ell$, $A_{\max}$, or $a_{\mathrm{crit}}$; the identification of the layered phase with the strong force and of the electromagnetic channel with atomic shells (the layer spectrum itself is established; its absolute scale is not); the lattice-floor pairing $\alpha_{\mathrm{hyp}}(N)=\varepsilon_N$; Maxwell's equations and minimal coupling; a Lorentz-invariant Weyl chirality, a V--A gauge coupling, a Weinberg angle, and a Higgs identification of rotor rigidity; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.

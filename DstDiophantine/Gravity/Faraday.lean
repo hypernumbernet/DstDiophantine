@@ -5,6 +5,7 @@ import DstDiophantine.Algebra.Invariant
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Abel
 
 /-!
 # Faraday bivector in the dual-rotor 6-space
@@ -17,8 +18,8 @@ This module records coefficient-level identities on the same six generators
 that carry the dual-rotor torsion.
 
 No theorem asserts a derivation of Maxwell or of the Lorentz force from the
-DST action. Circular-polarisation time averages and helicity drive of \(J\)
-are not theorems.
+DST action. Helicity drive of \(J\) is not a theorem. Phase-dependent
+circular-wave identities live in `CircularPolarization`.
 
 ## What is proved
 
@@ -39,12 +40,15 @@ are not theorems.
   preserving \(M\). The usual--dual parameter swap \((\alpha,\beta)\mapsto(\beta,\alpha)\)
   also sends \(J\mapsto -J\) but has period 2 and is not Hodge. Laboratory
   \(T:(E,B)\mapsto(E,-B)\) preserves \(J\) and is neither map.
+* Superposition of Faraday coefficients is componentwise: \(J\) of a sum
+  is \(J(p)+J(q)\) plus the interference \(\mathbf{E}_p\cdot\mathbf{E}_q
+  -\mathbf{B}_p\cdot\mathbf{B}_q\).
 * First-order sandwich increment is the commutator \(\Omega X-X\Omega\).
   On a rest particle a pure electric generator produces a spatial kick
-  and a pure magnetic generator produces none. On a \(y\)-velocity a pure
-  \(B_x\) generator produces a \(z\)-kick; the paper wedge vanishes on that
-  moving case. The outer product \(F\wedge X\) is therefore not the Lorentz
-  increment.
+  and every magnetic generator produces none, so the dual Faraday summand
+  never kicks a rest frame. On a \(y\)-velocity a pure \(B_x\) generator
+  produces a \(z\)-kick; the paper wedge vanishes on that moving case.
+  The outer product \(F\wedge X\) is therefore not the Lorentz increment.
 -/
 
 namespace DstDiophantine
@@ -59,6 +63,17 @@ open PGA Generators Operations Motor RelativeRotor Invariant
 structure FaradayParams where
   E : Fin 3 → ℝ
   B : Fin 3 → ℝ
+
+instance : Add FaradayParams where
+  add p q := ⟨fun a => p.E a + q.E a, fun a => p.B a + q.B a⟩
+
+@[simp] theorem add_E (p q : FaradayParams) (a : Fin 3) :
+    (p + q).E a = p.E a + q.E a :=
+  rfl
+
+@[simp] theorem add_B (p q : FaradayParams) (a : Fin 3) :
+    (p + q).B a = p.B a + q.B a :=
+  rfl
 
 /-- Section 12 split: \(E\) on boost generators, \(B\) on rotation generators. -/
 def toTorsion (p : FaradayParams) : TorsionParams where
@@ -161,6 +176,33 @@ theorem mass_pos_of_null {p : FaradayParams}
     (h : energySq p = magneticSq p) (hE : energySq p ≠ 0) :
     0 < mass (toTorsion p) :=
   (mass_eq_energySq_of_null h).symm ▸ lt_of_le_of_ne (energySq_nonneg p) hE.symm
+
+/-- Interference of two Faraday configurations:
+\(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q\). -/
+def faradayCross (p q : FaradayParams) : ℝ :=
+  (∑ a : Fin 3, p.E a * q.E a) - (∑ a : Fin 3, p.B a * q.B a)
+
+theorem energySq_add (p q : FaradayParams) :
+    energySq (p + q) =
+      energySq p + energySq q + 2 * ∑ a : Fin 3, p.E a * q.E a := by
+  unfold energySq
+  simp only [add_E, Fin.sum_univ_three]
+  ring
+
+theorem magneticSq_add (p q : FaradayParams) :
+    magneticSq (p + q) =
+      magneticSq p + magneticSq q + 2 * ∑ a : Fin 3, p.B a * q.B a := by
+  unfold magneticSq
+  simp only [add_B, Fin.sum_univ_three]
+  ring
+
+theorem J_add (p q : FaradayParams) :
+    J (toTorsion (p + q)) =
+      J (toTorsion p) + J (toTorsion q) + faradayCross p q := by
+  rw [J_faraday, J_faraday, J_faraday, energySq_add, magneticSq_add]
+  unfold faradayCross
+  simp only [Fin.sum_univ_three]
+  ring
 
 /-! ### Hodge dual, usual--dual swap, and laboratory \(T\) -/
 
@@ -427,6 +469,69 @@ theorem sandwichIncrement_rest_pureB :
     sandwichIncrement (cyclic 0) (ι 0) = 0 := by
   unfold sandwichIncrement
   rw [cyclic0_mul_ι0]
+  simp
+
+private theorem cyclic1_mul_ι0 :
+    cyclic 1 * ι 0 = ι 0 * cyclic 1 := by
+  unfold cyclic
+  have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  calc ι 1 * ι 3 * ι 0
+      = ι 1 * (ι 3 * ι 0) := by simp [mul_assoc]
+    _ = ι 1 * (-(ι 0 * ι 3)) := by rw [h30]
+    _ = -((ι 1 * ι 0) * ι 3) := by simp [mul_neg, mul_assoc]
+    _ = -((-(ι 0 * ι 1)) * ι 3) := by rw [h10]
+    _ = ι 0 * (ι 1 * ι 3) := by simp [mul_assoc]
+    _ = ι 0 * cyclic 1 := rfl
+
+private theorem cyclic2_mul_ι0 :
+    cyclic 2 * ι 0 = ι 0 * cyclic 2 := by
+  unfold cyclic
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
+  calc ι 2 * ι 1 * ι 0
+      = ι 2 * (ι 1 * ι 0) := by simp [mul_assoc]
+    _ = ι 2 * (-(ι 0 * ι 1)) := by rw [h10]
+    _ = -((ι 2 * ι 0) * ι 1) := by simp [mul_neg, mul_assoc]
+    _ = -((-(ι 0 * ι 2)) * ι 1) := by rw [h20]
+    _ = ι 0 * (ι 2 * ι 1) := by simp [mul_assoc]
+    _ = ι 0 * cyclic 2 := rfl
+
+/-- Every magnetic generator commutes with the rest frame \(e_0\). -/
+theorem sandwichIncrement_rest_cyclic (a : Fin 3) :
+    sandwichIncrement (cyclic a) (ι 0) = 0 := by
+  match a with
+  | 0 => exact sandwichIncrement_rest_pureB
+  | 1 =>
+    unfold sandwichIncrement
+    rw [cyclic1_mul_ι0]
+    simp
+  | 2 =>
+    unfold sandwichIncrement
+    rw [cyclic2_mul_ι0]
+    simp
+
+theorem sandwichIncrement_add (Ω₁ Ω₂ X : PGA) :
+    sandwichIncrement (Ω₁ + Ω₂) X =
+      sandwichIncrement Ω₁ X + sandwichIncrement Ω₂ X := by
+  simp only [sandwichIncrement, mul_add, add_mul]
+  abel
+
+theorem sandwichIncrement_smul (c : ℝ) (Ω X : PGA) :
+    sandwichIncrement (c • Ω) X = c • sandwichIncrement Ω X := by
+  simp [sandwichIncrement, Algebra.smul_mul_assoc, smul_sub]
+
+private theorem sandwichIncrement_sum_fin3 (f : Fin 3 → PGA) (X : PGA) :
+    sandwichIncrement (∑ a, f a) X = ∑ a, sandwichIncrement (f a) X := by
+  simp [Fin.sum_univ_three, sandwichIncrement_add]
+
+/-- The dual Faraday summand never kicks a rest frame at first order. -/
+theorem sandwichIncrement_rest_faradayDual (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (ι 0) = 0 := by
+  unfold faradayDual toTorsion omegaDual
+  rw [sandwichIncrement_sum_fin3]
+  refine Finset.sum_eq_zero fun a _ => ?_
+  rw [sandwichIncrement_smul, sandwichIncrement_rest_cyclic]
   simp
 
 private theorem hyperbolic0_mul_ι0 :
