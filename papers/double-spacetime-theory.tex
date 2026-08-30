@@ -40,7 +40,7 @@ The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working 
 
 The layered structure invoked for nuclei and for stellar remnants is settled in closed form. On the equal-scale locus $\alpha_a=\beta_a$ the parameter scalar $J$ vanishes identically while the interference factor $\gamma_s=\cosh x\cos x-\sinh x\sin x$, with $x=\ell/(2r)$, still alternates, so the layer order parameter is $\gamma_s$ and not $J$. That factor has derivative $-2\cosh x\sin x$, extremal values $(-1)^n\cosh(n\pi)$, and exactly one node in each interval $(n\pi,(n+1)\pi)$; every node is localised in $(n\pi+\pi/4,\,n\pi+\pi/2)$, hence $\ell/((2n+1)\pi)<r_n<2\ell/((4n+1)\pi)$ and $r_2/r_1\in(1/6,\,4/(5\pi))$ independently of $\ell$. Successive plateau amplitudes grow at least like $(\cosh\pi)^n$ with $\cosh\pi>11$ and never exceed $\mathrm{e}^{n\pi}$, the per-layer amplification being capped by $\mathrm{e}^\pi\approx 23.14$ with exact shortfall $\sinh\pi\,\mathrm{e}^{-a}$, so the mid-layer force $4\pi^2n^2k/(\ell^2\cosh n\pi)$ decays inward: the barriers sharpen while the interior between them is exponentially screened, contrary to the earlier reading of monotonically increasing inward amplitude. At a barrier the proper-time factor reduces to $\gamma_b^2>0$, so a barrier is a force divergence and not a clock freeze. The pion identification $\ell=\lambda_\pi$ places every node below $1\,\mathrm{fm}$, with the outermost between $0.44$ and $0.91\,\mathrm{fm}$; a $1$--$2\,\mathrm{fm}$ outermost shell requires $\ell>\pi/2\,\mathrm{fm}>\lambda_\pi$. Constant nuclear density is exactly the $A^{1/3}$ radius law, and $r_0=1.2\,\mathrm{fm}$ corresponds to $0.13$--$0.14\,\mathrm{fm}^{-3}$ rather than to $n_0=0.16\,\mathrm{fm}^{-3}$, whose matching coefficient lies between $1.14$ and $1.15\,\mathrm{fm}$. No finite $A_{\max}$ follows from this geometry.
 
-The same layer algebra governs the electromagnetic channel. The first equal-scale Coulombic node lies in $(\pi/4,1)$; placing that node at the Bohr radius $a_0$ forces $\pi a_0/2<\lambda<2a_0$. Coulombic circular balance $mv^2/r=ke^2/(\gamma_s r^2)$ yields a real speed only on attractive layers $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. Equal-scale $r_2/r_1$ lies in $(1/6,4/(5\pi))$ and cannot equal the Bohr ratio $4$. Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, split as $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$ and $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$, with duality sending $(E,B)\mapsto(B,-E)$. The first-order sandwich increment is the commutator; the written outer product $F\wedge X$ is not the Lorentz increment. Maxwell's equations, $\alpha$, and $\lambda$ are not derived.
+The same layer algebra governs the electromagnetic channel. The first equal-scale Coulombic node lies in $(\pi/4,1)$; placing that node at the Bohr radius $a_0$ forces $\pi a_0/2<\lambda<2a_0$. Coulombic circular balance $mv^2/r=ke^2/(\gamma_s r^2)$ yields a real speed only on attractive layers $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. Equal-scale $r_2/r_1$ lies in $(1/6,4/(5\pi))$ and cannot equal the Bohr ratio $4$. Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, split as $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$ and $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. On that identification $J=\tfrac12(E^2-B^2)$; a circular snapshot is null ($J=0$) yet massive. Duality $(E,B)\mapsto(B,-E)$ has period 4 and flips $J$; the usual--dual swap also flips $J$ but has period 2; laboratory $T$ preserves $J$. The first-order sandwich increment is the commutator: a rest electric generator and a moving magnetic generator each produce a spatial kick. The written outer product $F\wedge X$ is not the Lorentz increment. Maxwell's equations, $\alpha$, and $\lambda$ are not derived.
 
 Coherent excitation of the dual-sector angles $\theta_a$ as a route to gravitational engineering is a working hypothesis, not a theorem of the dual-rotor algebra.
 \end{abstract}
@@ -1118,13 +1118,27 @@ The pair $(E,B)$ lives in the same six-generator space as $(\alpha,\beta)$. Dual
 \]
 \end{proposition}
 
+\begin{proposition}[Faraday quadratic and null fields]
+\label{prop:faraday-quadratic}
+On the identification of Faraday coefficients with torsion parameters, the torsional scalar is the Faraday quadratic
+\[
+J(F)=\tfrac12(E^2-B^2),
+\]
+and the unsigned mass is $M(F)=\tfrac12(E^2+B^2)$. Fields with $E^2=B^2$ have $J=0$. A circular snapshot with helicity $\sigma=\pm 1$ (units $c=1$) further has $E\cdot B=0$, yet $M=E_0^2>0$ whenever $E_0\neq 0$: a null Faraday field occupies the balanced massive locus, not the vacuum $M=0$.
+\end{proposition}
+
+\begin{proposition}[Three maps on the Faraday 6-space]
+\label{prop:faraday-maps}
+Pseudoscalar duality $X\mapsto Xi$ acts by $(E,B)\mapsto(B,-E)$, sends $J\mapsto -J$ and $E\cdot B\mapsto -E\cdot B$, preserves $M$, and has period 4 ($F\mapsto -F\mapsto F$). The usual--dual parameter swap $(\alpha,\beta)\mapsto(\beta,\alpha)$ likewise sends $J\mapsto -J$ and preserves $M$, but has period 2 and coincides with duality only on a pure magnetic field. Laboratory time reversal $(E,B)\mapsto(E,-B)$ preserves $J$, flips $E\cdot B$, and is neither map.
+\end{proposition}
+
 Minimal coupling to a vector potential $A_a$ in the dual sector, $\theta_a\mapsto\theta_a+q A_a$, remains a working hypothesis, as does the extended rotor built from $\int F\,ds$. Maxwell's equations are not derived.
 
-The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and a pure magnetic generator produces none, matching the STA Lorentz 3-force $q(E+v\times B)$ at vanishing velocity. The outer product $F\wedge X$ is nonzero on that magnetic rest case.
+The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and a pure magnetic generator produces none. On a particle with velocity along $y$, a pure $B_x$ generator produces a kick along $z$. The outer product $F\wedge X$ is nonzero on the magnetic rest case and vanishes on that moving magnetic case.
 
 \begin{proposition}[Sandwich increment versus the written wedge]
 \label{prop:faraday-sandwich}
-The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
+The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. A rest electric generator and a moving magnetic generator each produce a spatial kick; a rest magnetic generator produces none. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
 \end{proposition}
 
 The weak force is incorporated via chiral asymmetry, coupling only to left-handed components:
@@ -1143,7 +1157,7 @@ Unification occurs in the full torsional bivector:
 \]
 The scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$ now includes electromagnetic and weak contributions, with the electroweak symmetry emerging as a subgroup of $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$. Mass generation via rotor rigidity unifies with the Higgs mechanism, eliminating fine-tuning.
 
-The remaining electroweak narrative---chiral rotors, V--A structure, and a Higgs identification of rotor rigidity---is a working hypothesis. The algebraic facts established above are the 6-space split, the dual map on $(E,B)$, and the distinction between the sandwich commutator and the written wedge. Maxwell's equations are not derived.
+The remaining electroweak narrative---chiral rotors, V--A structure, and a Higgs identification of rotor rigidity---is a working hypothesis. The algebraic facts established above are the 6-space split, the Faraday quadratic $J=\tfrac12(E^2-B^2)$, null circular snapshots on the balanced locus, the distinction among Hodge duality, the parameter swap, and laboratory $T$, and the distinction between the sandwich commutator and the written wedge. Maxwell's equations are not derived.
 
 \section{Dark Matter-Free Galactic Rotation Curves from Dual-Spacetime Compactness}
 \label{sec:darkmatter}
@@ -1317,7 +1331,7 @@ F_{\text{usual}} = \mathbf{E} \cdot (iI, iJ, iK) \quad (\hat{p}^2 = +1:\ \text{b
 F_{\text{dual}} = \mathbf{B} \cdot (I, J, K) \quad (\hat{q}^2 = -1:\ \text{rotation-like, compact}).
 \]
 
-The electric component $\mathbf{E}$ couples primarily to the usual-spacetime boost generators, while the magnetic component $\mathbf{B}$ couples exclusively to the dual-spacetime rotation generators. This algebraic separation is the geometric origin of the distinct transformation properties under time reversal ($T$: $\mathbf{E} \to \mathbf{E}$, $\mathbf{B} \to -\mathbf{B}$): the dual spacetime is intrinsically time-reversed.
+The electric component $\mathbf{E}$ occupies the usual-spacetime boost generators, while the magnetic component $\mathbf{B}$ occupies the dual-spacetime rotation generators, as in Proposition~\ref{prop:faraday-split}. Laboratory time reversal $(E,B)\mapsto(E,-B)$ is a distinct involution from both pseudoscalar duality and the usual--dual parameter swap (Proposition~\ref{prop:faraday-maps}); it is not identified with either.
 
 For a circularly polarized wave propagating along $z$ with helicity $\sigma = \pm 1$,
 
@@ -1325,27 +1339,25 @@ For a circularly polarized wave propagating along $z$ with helicity $\sigma = \p
 \mathbf{E} = E_0 (\hat{x} \cos(kz - \omega t) + \sigma \hat{y} \sin(kz - \omega t)), \quad \mathbf{B} = \frac{E_0}{c} (-\hat{x} \sin(kz - \omega t) + \sigma \hat{y} \cos(kz - \omega t)).
 \]
 
-Time-averaging eliminates the oscillatory boost-like contribution of $\mathbf{E}$, leaving a pure dual-spacetime rotational excitation:
-
+An instantaneous circular snapshot with helicity $\sigma=\pm 1$ is a null field: $J=0$ and $E\cdot B=0$, with unsigned mass $M=E_0^2>0$ whenever $E_0\neq 0$ (Proposition~\ref{prop:faraday-quadratic}). Time-averaging is conjectured, in the working model of Hypothesis~\ref{hyp:coherent-excitation}, to cancel the oscillatory usual-sector contribution and leave a dual-sector drive
 \[
 \langle F_{\text{dual}} \rangle \propto \sigma E_0^2 \, K.
 \]
+The helicity $\sigma$ is conjectured to select the sign of that drive: right-handed polarisation ($\sigma = +1$) reinforcing attractive mismatch ($J > 0$), left-handed polarisation ($\sigma = -1$) opposing it. That average, the helicity-dependent sign, and the subsequent phase equation are not theorems of the dual-rotor algebra.
 
-The helicity $\sigma$ directly determines the direction of dual-rotor drive: right-handed polarization ($\sigma = +1$) reinforces attractive torsional mismatch ($J > 0$), while left-handed polarization ($\sigma = -1$) opposes it, reducing or reversing the scalar $J$. This helicity selectivity is the sharpest manifestation of the theory: gravity is not merely modulated but chirally addressed via the intrinsic time-reversal asymmetry of the dual spacetime.
-
-The coupling is minimal and gauge-invariant:
+The coupling in the working model is written as a path-ordered exponential
 
 \[
 R_{\text{dual}} \to \mathcal{P} \exp\!\left( \frac{1}{2} \int (\theta_a \Gamma_a + e \lambda A_a \Gamma_a) \, ds \right),
 \]
 
-where the dual generators $\Gamma_a$ mediate the interaction. Near resonance, the dual phase evolves as
+where the dual generators $\Gamma_a$ mediate the interaction. Near resonance, the dual phase is modelled as
 
 \[
 \dot{\theta} = \kappa \sigma E_0^2 \sin(\omega t - \theta + \delta_\sigma),
 \]
 
-yielding coherent excitation of the torsional mismatch angle.
+yielding coherent excitation of the torsional mismatch angle only as part of Hypothesis~\ref{hyp:coherent-excitation}.
 
 \subsection{Resonance Frequencies and the Role of Superconductors}
 
@@ -1570,7 +1582,7 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item A commuting square-$+1$ pair generates a nonzero left ideal; irreducibility as a spinor module is not claimed.
 \item The normalised Dirichlet kernel is bounded by $1$ for every positive integer $N$, with lattice values $\pm 1$.
 \item On the equal-scale electromagnetic channel the first Coulombic node satisfies $\pi/4<x_1<1$. Identifying that node with $a_0$ forces $\pi a_0/2<\lambda<2a_0$. The written circular speed $v^2=ke^2/(m\gamma_s r)$ is positive only for $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. The first two equal-scale radii obey $r_2/r_1\in(1/6,4/(5\pi))$, which cannot equal the Bohr ratio $4$. The map $\ell\mapsto\ell/Z$ contracts every layer radius by $Z$; $\alpha\propto Z/r$ at fixed $\ell$ expands nodes outward by $Z$.
-\item Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, with the split $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$, $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. Duality sends $(E,B)\mapsto(B,-E)$. The first-order sandwich increment is the commutator, not the outer product $F\wedge X$.
+\item Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, with the split $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$, $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. On that identification $J=\tfrac12(E^2-B^2)$ and $M=\tfrac12(E^2+B^2)$; a circular snapshot with helicity $\pm 1$ is null ($J=0$, $E\cdot B=0$) yet massive. Duality $(E,B)\mapsto(B,-E)$ has period 4 and sends $J\mapsto -J$; the usual--dual swap also sends $J\mapsto -J$ but has period 2; laboratory $T$ preserves $J$. The first-order sandwich increment is the commutator: a rest electric generator and a moving magnetic generator each produce a spatial kick. The outer product $F\wedge X$ is not the Lorentz increment.
 \end{itemize}
 
 The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a dictionary between $J$ and $T$ for a general tetrad field (the static radial-boost dictionary is established, together with a one-sided density inequality); derivation of $G$, $a_0$, $\alpha$, $\alpha_s$, $\ell$, $A_{\max}$, or $a_{\mathrm{crit}}$; the identification of the layered phase with the strong force and of the electromagnetic channel with atomic shells (the layer spectrum itself is established; its absolute scale is not); the lattice-floor pairing $\alpha_{\mathrm{hyp}}(N)=\varepsilon_N$; Maxwell's equations and minimal coupling; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.

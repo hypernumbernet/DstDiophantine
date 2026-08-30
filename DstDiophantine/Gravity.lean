@@ -38,8 +38,11 @@ the closed form of `gammaEff`, the Euler–Lagrange identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
 ratio \(4\); no `dst_derives_lambda`), and the Faraday 6-space audit of
-`Faraday` (Section 10/12 split, dual map \((E,B)\mapsto(B,-E)\), sandwich
-commutator versus the paper wedge; Maxwell is not derived).
+`Faraday` (Section 10/12 split, dual map \((E,B)\mapsto(B,-E)\), Faraday
+quadratic \(J=\tfrac12(E^2-B^2)\), null circular snapshots with \(J=0\) and
+\(M>0\), Hodge period 4 versus the period-2 parameter swap and laboratory
+\(T\), sandwich commutator versus the paper wedge on rest and on a
+\(y\)-velocity; Maxwell is not derived).
 -/
 
 namespace DstDiophantine
@@ -284,11 +287,48 @@ example (p : FaradayParams) :
     Operations.dual (faraday p) = faraday (dualFaradayParams p) :=
   dual_faraday p
 
+/-- Regression: the Faraday quadratic is the torsional scalar. -/
+example (p : FaradayParams) :
+    J (toTorsion p) = (1 / 2) * (energySq p - magneticSq p) :=
+  J_faraday p
+
+/-- Regression: a circular snapshot with helicity \(\pm 1\) is null and massive. -/
+example {E0 : ℝ} (hE : E0 ≠ 0) :
+    J (toTorsion (circularSnapshot 1 E0)) = 0 ∧
+      0 < mass (toTorsion (circularSnapshot 1 E0)) :=
+  ⟨(circularSnapshot_J (by norm_num : (1 : ℝ) ^ 2 = 1)),
+    circularSnapshot_mass_pos (by norm_num) hE⟩
+
+/-- Regression: Hodge duality flips \(J\); laboratory \(T\) does not. -/
+example (p : FaradayParams) :
+    J (toTorsion (dualFaradayParams p)) = -J (toTorsion p) ∧
+      J (toTorsion (timeReverseFaradayParams p)) = J (toTorsion p) :=
+  ⟨J_dualFaraday p, J_timeReverse p⟩
+
+/-- Regression: Hodge, parameter swap, and laboratory \(T\) are pairwise distinct. -/
+example :
+    dualFaradayParams (pureE 1) ≠ swapFaradayParams (pureE 1) ∧
+      dualFaradayParams (pureE 1) ≠ timeReverseFaradayParams (pureE 1) ∧
+      swapFaradayParams (pureE 1) ≠ timeReverseFaradayParams (pureE 1) :=
+  ⟨dual_ne_swap_of_pureE, dual_ne_timeReverse_of_pureE, swap_ne_timeReverse_of_pureE⟩
+
+/-- Regression: Hodge duality has period 4 on the Faraday bivector. -/
+example (p : FaradayParams) :
+    Operations.dual (Operations.dual (faraday p)) = -faraday p :=
+  dual_dual_faraday p
+
 /-- Regression: the paper wedge is not the first-order sandwich increment. -/
 example :
     sandwichIncrement (cyclic 0) (ι 0) = 0 ∧
       paperWedgeIncrement (cyclic 0) (ι 0) ≠ 0 :=
   paper_wedge_ne_lorentz_increment
+
+/-- Regression: a \(y\)-velocity against \(B_x\) yields a \(z\)-kick; the wedge
+vanishes. -/
+example :
+    sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 ∧
+      paperWedgeIncrement (cyclic 0) (ι 2) = 0 :=
+  sandwich_moving_pureB_ne_wedge
 
 end Gravity
 
