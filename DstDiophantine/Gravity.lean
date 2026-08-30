@@ -29,7 +29,10 @@ classical specialisation `A=1-rₛ/r` in `ClassicalSchwarzschild`),
 plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
 the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
 exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
-S³ cotangent exploratory layer (`CompactS3`; no `dst_derives_a0` / `dst_derives_G`),
+S³ cotangent layer (`CompactS3`: \(v^2=(GM/R)f\), unique minimum of \(f\) on
+\((0,\pi/2)\) with \(1.35<f_0<1.41\), strictly increasing \(\eta\), attractive
+patch ending before \(r=2R\), Milky-Way windows \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\);
+no `dst_derives_a0` / `dst_derives_G`),
 the closed-form layer spectrum of `TorsionalLayer` (exact derivative, plateau
 extrema `(-1)^n cosh(nπ)`, one node per `π`-interval, sharpened branch
 `(nπ+π/4, nπ+π/2)`, exponential inward screening), and the nuclear-layer
@@ -482,6 +485,59 @@ example (σ E0 : ℝ) (a : Fin 3) :
 example (σ E0 ψ vz : ℝ) :
     sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 :=
   sandwichForce_circularWave_zVelocity_transverse σ E0 ψ vz
+
+/-- Regression: circular \(v^2=(GM/R)\,f(r/R)\) on the \(S^3\) chart. -/
+example (G M R r : ℝ) (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    s3CircularSpeedSq G M R r = (G * M / R) * rotationShape (r / R) :=
+  s3CircularSpeedSq_eq_shape G M R r hR hs
+
+/-- Regression: unique minimum of the rotation-curve shape on \((0,\pi/2)\). -/
+example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) (Real.pi / 2)) :
+    f0 ≤ rotationShape x ∧ (rotationShape x = f0 ↔ x = plateauRoot) :=
+  rotationShape_min hx
+
+/-- Regression: \(1.35<f_0<1.41\). -/
+example : (135 / 100 : ℝ) < f0 ∧ f0 < (141 / 100 : ℝ) :=
+  f0_bounds
+
+/-- Regression: the attractive patch ends strictly before \(r=2R\). -/
+example : plateauRoot < Real.pi / 2 ∧ Real.pi / 2 < (2 : ℝ) :=
+  attractive_patch_before_two
+
+/-- Regression: \(\eta\) is strictly increasing on \((0,\pi)\). -/
+example : StrictMonoOn enhancement (Set.Ioo (0 : ℝ) Real.pi) :=
+  strictMonoOn_enhancement
+
+/-- Regression: enhancement at the potential zero is \(\pi^2/4\). -/
+example : enhancement (Real.pi / 2) = Real.pi ^ 2 / 4 :=
+  enhancement_pi_div_two
+
+/-- Regression: SI Milky-Way compactification radius, \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\). -/
+example : (8 : ℝ) < milkyWayROverKpc ∧ milkyWayROverKpc < (9 : ℝ) :=
+  milkyWayROverKpc_bounds
+
+/-- Regression: geometric plateau inside the optical disk. -/
+example : (9 : ℝ) < milkyWayPlateauOverKpc ∧ milkyWayPlateauOverKpc < (11 : ℝ) :=
+  milkyWayPlateauOverKpc_bounds
+
+/-- Regression: reversal after the plateau, still well inside \(15\,\mathrm{kpc}\). -/
+example :
+    (12 : ℝ) < milkyWayReversalOverKpc ∧ milkyWayReversalOverKpc < (15 : ℝ) ∧
+      milkyWayPlateauOverKpc < milkyWayReversalOverKpc :=
+  ⟨milkyWayReversalOverKpc_bounds.1, milkyWayReversalOverKpc_bounds.2,
+    milkyWayPlateau_lt_reversal⟩
+
+/-- Regression: Gauss flux on \(S^3\). -/
+example (G M R r : ℝ) (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    s3Accel G M R r * (4 * Real.pi * R ^ 2 * Real.sin (r / R) ^ 2) =
+      -4 * Real.pi * G * M :=
+  s3Accel_gauss G M R r hR hs
+
+/-- Regression: Tully–Fisher algebra given \(R^2=GM/a_0\). -/
+example {G M R a0 : ℝ} (hR : R ≠ 0) (hscale : R ^ 2 = G * M / a0)
+    (ha0 : a0 ≠ 0) :
+    (vFlatSq G M R) ^ 2 = G * M * a0 * f0 ^ 2 :=
+  tullyFisher_of_scaling hR hscale ha0
 
 end Gravity
 

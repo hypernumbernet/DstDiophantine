@@ -5,6 +5,10 @@ import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Tactic.NormNum
@@ -28,6 +32,14 @@ algebra. No theorem asserts `dst_derives_a0`.
 
 Paper claims \(f_0\approx 1.10\) and Milky-Way \(R\approx 27\,\mathrm{kpc}\) are
 machine-rejected on the SI stand-ins.
+
+Of the \(S^3\) chart the following are theorems (not a derivation of \(a_0\)):
+the cotangent potential differentiates to the Gauss acceleration; circular
+\(v^2=(GM/R)\,f(r/R)\); \(f\) has a unique minimum on \((0,\pi/2)\) at the
+plateau root, with \(1.35<f_0<1.41\); \(\eta\) is strictly increasing on
+\((0,\pi)\); the attractive patch ends at \(\pi R/2\), which lies strictly
+before \(r=2R\); on the SI stand-ins the Milky-Way compactification radius
+satisfies \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
 -/
 
 namespace DstDiophantine
@@ -145,6 +157,9 @@ private theorem one_lt_pi_div_two : (1 : ℝ) < π / 2 := by
 
 private theorem pi_div_four_lt_one : π / 4 < (1 : ℝ) := by
   linarith [pi_lt_four]
+
+private theorem pi_div_four_lt_pi_div_two : π / 4 < π / 2 := by
+  linarith [pi_pos]
 
 theorem plateauProbe_pi_div_four : plateauProbe (π / 4) < 0 := by
   simp [plateauProbe, Pi.sub_apply, id, tan_pi_div_four]; linarith [pi_gt_three]
@@ -311,6 +326,15 @@ private theorem plateauRoot_spec :
 theorem plateauRoot_bounds :
     (57 / 50 : ℝ) < plateauRoot ∧ plateauRoot < (6 / 5) :=
   mem_Ioo.mp plateauRoot_spec.1
+
+private theorem plateauRoot_mem_Ioo_pi4_pi2 :
+    plateauRoot ∈ Ioo (π / 4) (π / 2) := by
+  have ⟨hlo, hhi⟩ := plateauRoot_bounds
+  exact ⟨lt_trans (lt_trans pi_div_four_lt_one (by norm_num : (1 : ℝ) < 57 / 50)) hlo,
+    lt_trans hhi six_fifths_lt_pi_div_two⟩
+
+theorem plateauRoot_lt_pi_div_two : plateauRoot < π / 2 :=
+  plateauRoot_mem_Ioo_pi4_pi2.2
 
 theorem plateauRoot_tan : tan plateauRoot = 2 * plateauRoot := by
   have := plateauRoot_spec.2
@@ -545,6 +569,374 @@ theorem enhancement_two_bounds :
     have : (1 / 2 : ℝ) < (2 * (247 / 300) * (43 / 96)) ^ 2 := by norm_num
     rw [div_pow, div_lt_iff₀ (sq_pos_of_pos hspos)]
     nlinarith [hlb]
+
+/-! ### Potential–acceleration dictionary and circular speed -/
+
+private theorem hasDerivAt_cot {x : ℝ} (hs : sin x ≠ 0) :
+    HasDerivAt cot (-(1 / sin x ^ 2)) x := by
+  have hfun : cot = fun y => cos y / sin y := by
+    funext y; exact cot_eq_cos_div_sin y
+  rw [hfun]
+  have h := (hasDerivAt_cos x).div (hasDerivAt_sin x) hs
+  have heq : ((-sin x) * sin x - cos x * cos x) / sin x ^ 2 = -(1 / sin x ^ 2) := by
+    have hnum : (-sin x) * sin x - cos x * cos x = -(sin x ^ 2 + cos x ^ 2) := by ring
+    rw [hnum, sin_sq_add_cos_sq, neg_div, one_div]
+  rwa [heq] at h
+
+/-- \(\Phi'(r)=-g(r)\): the written \(S^3\) acceleration is minus the radial
+derivative of the cotangent potential. -/
+theorem hasDerivAt_cotPotential (G M R r : ℝ) (hR : R ≠ 0)
+    (hs : sin (r / R) ≠ 0) :
+    HasDerivAt (cotPotential G M R) (-s3Accel G M R r) r := by
+  have hinner : HasDerivAt (fun t : ℝ => t / R) (1 / R) r :=
+    (hasDerivAt_id r).div_const R
+  have hcomp := (hasDerivAt_cot hs).comp r hinner
+  have hmul := hcomp.const_mul (-(G * M / R))
+  have hf : cotPotential G M R =
+      fun t => -(G * M / R) * (cot ∘ fun s : ℝ => s / R) t := by
+    funext t; rfl
+  have heq : -(G * M / R) * (-(1 / sin (r / R) ^ 2) * (1 / R)) =
+      -s3Accel G M R r := by
+    unfold s3Accel; field_simp [hR, hs]
+  rw [hf]
+  exact heq ▸ hmul
+
+/-- Circular \(v^2=r\,|g|\) on the \(S^3\) chart. -/
+noncomputable def s3CircularSpeedSq (G M R r : ℝ) : ℝ :=
+  r * (-s3Accel G M R r)
+
+/-- Compactness-to-shape identity: \(v^2=(GM/R)\,f(r/R)\). -/
+theorem s3CircularSpeedSq_eq_shape (G M R r : ℝ) (hR : R ≠ 0)
+    (hs : sin (r / R) ≠ 0) :
+    s3CircularSpeedSq G M R r = (G * M / R) * rotationShape (r / R) := by
+  unfold s3CircularSpeedSq s3Accel rotationShape
+  field_simp [hR, hs]
+
+theorem s3CircularSpeedSq_eq_newton_mul_enhancement (G M R r : ℝ)
+    (hR : R ≠ 0) (hr : r ≠ 0) (hs : sin (r / R) ≠ 0) :
+    s3CircularSpeedSq G M R r = (G * M / r) * enhancement (r / R) := by
+  rw [s3CircularSpeedSq_eq_shape G M R r hR hs,
+    enhancement_eq_x_mul_rotationShape (r / R) hs]
+  field_simp [hR, hr]
+
+/-! ### Unique minimum of \(f\) on \((0,\pi/2)\) -/
+
+private theorem sin_pos_of_mem_Ioo_zero_pi2 {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (π / 2)) : 0 < sin x :=
+  sin_pos_of_mem_Ioo ⟨hx.1, lt_trans hx.2 (by linarith [pi_pos])⟩
+
+private theorem cos_pos_of_mem_Ioo_zero_pi2 {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (π / 2)) : 0 < cos x :=
+  cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr pi_div_two_pos) hx.1, hx.2⟩
+
+theorem hasDerivAt_rotationShape {x : ℝ} (hs : sin x ≠ 0) :
+    HasDerivAt rotationShape ((sin x - 2 * x * cos x) / sin x ^ 3) x := by
+  have hsin2 : HasDerivAt (fun y => sin y * sin y)
+      (cos x * sin x + sin x * cos x) x :=
+    (hasDerivAt_sin x).mul (hasDerivAt_sin x)
+  rw [show cos x * sin x + sin x * cos x = 2 * sin x * cos x by ring] at hsin2
+  rw [show (fun y => sin y * sin y) = fun y => sin y ^ 2 from
+    funext fun y => (pow_two _).symm] at hsin2
+  have hdiv := (hasDerivAt_id x).div hsin2 (pow_ne_zero 2 hs)
+  have heq :
+      ((1 : ℝ) * sin x ^ 2 - x * (2 * sin x * cos x)) / (sin x ^ 2) ^ 2 =
+        (sin x - 2 * x * cos x) / sin x ^ 3 := by
+    field_simp [hs]
+  have hf : rotationShape = id / fun y => sin y ^ 2 := by
+    funext y; simp [rotationShape, Pi.div_apply]
+  rw [hf]
+  exact heq ▸ hdiv
+
+private theorem sin_sub_two_mul_x_cos {x : ℝ} (hc : cos x ≠ 0) :
+    sin x - 2 * x * cos x = cos x * plateauProbe x := by
+  simp [plateauProbe, Pi.sub_apply, id, tan_eq_sin_div_cos]
+  field_simp [hc]
+
+private theorem deriv_rotationShape_eq_cos_mul_probe {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (π / 2)) :
+    deriv rotationShape x = cos x * plateauProbe x / sin x ^ 3 := by
+  have hs := (sin_pos_of_mem_Ioo_zero_pi2 hx).ne'
+  have hc := (cos_pos_of_mem_Ioo_zero_pi2 hx).ne'
+  rw [(hasDerivAt_rotationShape hs).deriv, sin_sub_two_mul_x_cos hc]
+
+theorem deriv_rotationShape_eq_zero_iff {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (π / 2)) :
+    deriv rotationShape x = 0 ↔ tan x = 2 * x := by
+  have hc := (cos_pos_of_mem_Ioo_zero_pi2 hx).ne'
+  have hs := (sin_pos_of_mem_Ioo_zero_pi2 hx).ne'
+  rw [deriv_rotationShape_eq_cos_mul_probe hx]
+  have hden : sin x ^ 3 ≠ 0 := pow_ne_zero 3 hs
+  constructor
+  · intro h
+    have hnum : cos x * plateauProbe x = 0 :=
+      (div_eq_zero_iff.mp h).resolve_right hden
+    have hprobe : plateauProbe x = 0 := (mul_eq_zero.mp hnum).resolve_left hc
+    simp [plateauProbe, Pi.sub_apply, id] at hprobe
+    linarith
+  · intro htan
+    have hprobe : plateauProbe x = 0 := by
+      simp [plateauProbe, Pi.sub_apply, id]; linarith
+    simp [hprobe]
+
+theorem two_gt_pi_div_two : π / 2 < (2 : ℝ) := by
+  linarith [pi_lt_four]
+
+/-- The attractive patch \(r<\pi R/2\) ends strictly before \(r=2R\). -/
+theorem attractive_patch_before_two :
+    plateauRoot < π / 2 ∧ π / 2 < (2 : ℝ) :=
+  ⟨plateauRoot_lt_pi_div_two, two_gt_pi_div_two⟩
+
+private theorem strictAntiOn_plateauProbe_zero_pi4 :
+    StrictAntiOn plateauProbe (Icc (0 : ℝ) (π / 4)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _) ?_ ?_
+  · unfold plateauProbe
+    refine ContinuousOn.sub (continuousOn_tan.mono ?_)
+        ((continuous_const.mul continuous_id).continuousOn)
+    intro x hx
+    exact (cos_pos_of_mem_Ioo ⟨lt_of_lt_of_le (neg_lt_zero.mpr pi_div_two_pos) hx.1,
+      lt_of_le_of_lt hx.2 pi_div_four_lt_pi_div_two⟩).ne'
+  · intro x hx
+    have hxI : x ∈ Ioo (0 : ℝ) (π / 4) := by simpa [interior_Icc] using hx
+    have hcos : (0 : ℝ) < cos x :=
+      cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr pi_div_two_pos) hxI.1,
+        lt_trans hxI.2 pi_div_four_lt_pi_div_two⟩
+    have hder := (hasDerivAt_plateauProbe x hcos.ne').deriv
+    rw [hder]
+    have htan : tan x < (1 : ℝ) := by
+      have hcmp := tan_lt_tan_of_nonneg_of_lt_pi_div_two
+        hxI.1.le pi_div_four_lt_pi_div_two hxI.2
+      simpa [tan_pi_div_four] using hcmp
+    have : 1 / cos x ^ 2 = 1 + tan x ^ 2 := by
+      rw [tan_eq_sin_div_cos]; field_simp [hcos.ne']
+      rw [add_comm]; exact (sin_sq_add_cos_sq x).symm
+    have htpos : (0 : ℝ) ≤ tan x :=
+      le_of_lt (lt_trans hxI.1 (lt_tan hxI.1 (lt_trans hxI.2 pi_div_four_lt_pi_div_two)))
+    nlinarith [htan, htpos]
+
+private theorem plateauProbe_neg_of_mem_Ioo_zero_pi4 {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (π / 4)) : plateauProbe x < 0 := by
+  have h0 : plateauProbe 0 = 0 := by simp [plateauProbe, tan_zero]
+  have := strictAntiOn_plateauProbe_zero_pi4
+    ⟨le_rfl, (div_pos pi_pos (by norm_num)).le⟩ ⟨hx.1.le, hx.2.le⟩ hx.1
+  simpa [h0] using this
+
+private theorem plateauProbe_neg_of_lt_plateauRoot {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) plateauRoot) : plateauProbe x < 0 := by
+  have hx' := mem_Ioo.mp hx
+  have hroot := plateauRoot_mem_Ioo_pi4_pi2
+  rcases lt_trichotomy x (π / 4) with h | h | h
+  · exact plateauProbe_neg_of_mem_Ioo_zero_pi4 ⟨hx'.1, h⟩
+  · rw [h]; exact plateauProbe_pi_div_four
+  · have hxmem : x ∈ Ioo (π / 4) (π / 2) := ⟨h, lt_trans hx'.2 hroot.2⟩
+    have := strictMonoOn_plateauProbe_pi4_pi2 hxmem hroot hx'.2
+    simpa [plateauRoot_spec.2] using this
+
+private theorem plateauProbe_pos_of_gt_plateauRoot {x : ℝ}
+    (hx : x ∈ Ioo plateauRoot (π / 2)) : (0 : ℝ) < plateauProbe x := by
+  have hx' := mem_Ioo.mp hx
+  have hroot := plateauRoot_mem_Ioo_pi4_pi2
+  have hymem : x ∈ Ioo (π / 4) (π / 2) := ⟨lt_trans hroot.1 hx'.1, hx'.2⟩
+  have := strictMonoOn_plateauProbe_pi4_pi2 hroot hymem hx'.1
+  simpa [plateauRoot_spec.2] using this
+
+private theorem deriv_rotationShape_neg_of_lt_root {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) plateauRoot) : deriv rotationShape x < 0 := by
+  have hxπ : x ∈ Ioo (0 : ℝ) (π / 2) :=
+    ⟨hx.1, lt_trans hx.2 plateauRoot_lt_pi_div_two⟩
+  rw [deriv_rotationShape_eq_cos_mul_probe hxπ]
+  exact div_neg_of_neg_of_pos
+    (mul_neg_of_pos_of_neg (cos_pos_of_mem_Ioo_zero_pi2 hxπ)
+      (plateauProbe_neg_of_lt_plateauRoot hx))
+    (pow_pos (sin_pos_of_mem_Ioo_zero_pi2 hxπ) 3)
+
+private theorem deriv_rotationShape_pos_of_gt_root {x : ℝ}
+    (hx : x ∈ Ioo plateauRoot (π / 2)) : (0 : ℝ) < deriv rotationShape x := by
+  have hxπ : x ∈ Ioo (0 : ℝ) (π / 2) :=
+    ⟨lt_trans (lt_trans (by norm_num) plateauRoot_bounds.1) hx.1, hx.2⟩
+  rw [deriv_rotationShape_eq_cos_mul_probe hxπ]
+  exact div_pos
+    (mul_pos (cos_pos_of_mem_Ioo_zero_pi2 hxπ)
+      (plateauProbe_pos_of_gt_plateauRoot hx))
+    (pow_pos (sin_pos_of_mem_Ioo_zero_pi2 hxπ) 3)
+
+private theorem continuousOn_rotationShape_Icc {a b : ℝ}
+    (ha : 0 < a) (hb : b < π / 2) :
+    ContinuousOn rotationShape (Icc a b) := by
+  unfold rotationShape
+  refine ContinuousOn.div continuousOn_id (continuousOn_sin.pow 2) ?_
+  intro x hx
+  exact pow_ne_zero 2 (sin_pos_of_mem_Ioo_zero_pi2
+    ⟨lt_of_lt_of_le ha hx.1, lt_of_le_of_lt hx.2 hb⟩).ne'
+
+private theorem rotationShape_gt_f0_of_lt_root {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) plateauRoot) : f0 < rotationShape x := by
+  have hanti : StrictAntiOn rotationShape (Icc x plateauRoot) := by
+    refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+      (continuousOn_rotationShape_Icc hx.1 plateauRoot_lt_pi_div_two) ?_
+    intro y hy
+    have hyI : y ∈ Ioo x plateauRoot := by simpa [interior_Icc] using hy
+    exact deriv_rotationShape_neg_of_lt_root ⟨lt_trans hx.1 hyI.1, hyI.2⟩
+  have := hanti ⟨le_rfl, hx.2.le⟩ ⟨hx.2.le, le_rfl⟩ hx.2
+  simpa [f0] using this
+
+private theorem rotationShape_gt_f0_of_gt_root {x : ℝ}
+    (hx : x ∈ Ioo plateauRoot (π / 2)) : f0 < rotationShape x := by
+  have ha : (0 : ℝ) < plateauRoot := lt_trans (by norm_num) plateauRoot_bounds.1
+  have hmono : StrictMonoOn rotationShape (Icc plateauRoot x) := by
+    refine strictMonoOn_of_deriv_pos (convex_Icc _ _)
+      (continuousOn_rotationShape_Icc ha hx.2) ?_
+    intro y hy
+    have hyI : y ∈ Ioo plateauRoot x := by simpa [interior_Icc] using hy
+    exact deriv_rotationShape_pos_of_gt_root ⟨hyI.1, lt_trans hyI.2 hx.2⟩
+  have := hmono ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
+  simpa [f0] using this
+
+/-- Unique minimum of the rotation-curve shape on the attractive interval. -/
+theorem rotationShape_min {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) (π / 2)) :
+    f0 ≤ rotationShape x ∧ (rotationShape x = f0 ↔ x = plateauRoot) := by
+  rcases lt_trichotomy x plateauRoot with h | h | h
+  · have hgt := rotationShape_gt_f0_of_lt_root ⟨hx.1, h⟩
+    exact ⟨hgt.le, ⟨fun heq => (hgt.ne heq.symm).elim, fun hxeq => (h.ne hxeq).elim⟩⟩
+  · subst h; exact ⟨le_rfl, ⟨fun _ => rfl, fun _ => rfl⟩⟩
+  · have hgt := rotationShape_gt_f0_of_gt_root ⟨h, hx.2⟩
+    exact ⟨hgt.le, ⟨fun heq => (hgt.ne heq.symm).elim, fun hxeq => (h.ne' hxeq).elim⟩⟩
+
+theorem rotationShape_one_bounds :
+    (140 / 100 : ℝ) < rotationShape 1 ∧ rotationShape 1 < (148 / 100 : ℝ) := by
+  have hs : sin (1 : ℝ) ≠ 0 := (sin_pos_of_pos_of_le_one (by norm_num) le_rfl).ne'
+  simpa [enhancement_eq_x_mul_rotationShape 1 hs] using enhancement_one_bounds
+
+/-! ### Strict increase of \(\eta\) on \((0,\pi)\) -/
+
+private theorem hasDerivAt_sin_sub_x_cos (x : ℝ) :
+    HasDerivAt (fun y => sin y - y * cos y) (x * sin x) x := by
+  have hmul : HasDerivAt (fun y => y * cos y) (1 * cos x + x * (-sin x)) x :=
+    (hasDerivAt_id x).mul (hasDerivAt_cos x)
+  have h := (hasDerivAt_sin x).sub hmul
+  have heq : cos x - (1 * cos x + x * (-sin x)) = x * sin x := by ring
+  rwa [heq] at h
+
+private theorem sin_sub_x_cos_pos {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) π) :
+    0 < sin x - x * cos x := by
+  have hmono : StrictMonoOn (fun y => sin y - y * cos y) (Icc (0 : ℝ) π) := by
+    refine strictMonoOn_of_deriv_pos (convex_Icc _ _) ?_ ?_
+    · exact (continuousOn_sin.sub (continuousOn_id.mul continuousOn_cos))
+    · intro y hy
+      have hyI : y ∈ Ioo (0 : ℝ) π := by simpa [interior_Icc] using hy
+      have hder := (hasDerivAt_sin_sub_x_cos y).deriv
+      rw [hder]
+      exact mul_pos hyI.1 (sin_pos_of_mem_Ioo hyI)
+  have h0 : (fun y => sin y - y * cos y) 0 = 0 := by simp
+  have hxIcc : x ∈ Icc (0 : ℝ) π := ⟨hx.1.le, hx.2.le⟩
+  have h00 : (0 : ℝ) ∈ Icc 0 π := ⟨le_rfl, pi_pos.le⟩
+  have := hmono h00 hxIcc hx.1
+  simpa [h0] using this
+
+theorem hasDerivAt_enhancement {x : ℝ} (hs : sin x ≠ 0) :
+    HasDerivAt enhancement
+      (2 * (x / sin x) * ((sin x - x * cos x) / sin x ^ 2)) x := by
+  have hu : HasDerivAt (fun y => y / sin y)
+      ((1 * sin x - x * cos x) / sin x ^ 2) x :=
+    (hasDerivAt_id x).div (hasDerivAt_sin x) hs
+  have hpow := hu.pow 2
+  have hfun : (fun y => (y / sin y) ^ 2) = (fun y => y / sin y) ^ 2 := by
+    funext y; simp [Pi.pow_apply]
+  rw [← hfun] at hpow
+  unfold enhancement
+  simpa [pow_one] using hpow
+
+theorem strictMonoOn_enhancement :
+    StrictMonoOn enhancement (Ioo (0 : ℝ) π) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ioo _ _) ?_ ?_
+  · unfold enhancement
+    refine ContinuousOn.pow (ContinuousOn.div continuousOn_id continuousOn_sin ?_) 2
+    intro x hx
+    exact (sin_pos_of_mem_Ioo hx).ne'
+  · intro x hx
+    have hxI : x ∈ Ioo (0 : ℝ) π := by simpa [interior_Ioo] using hx
+    have hspos := sin_pos_of_mem_Ioo hxI
+    have hder := (hasDerivAt_enhancement hspos.ne').deriv
+    rw [hder]
+    have hu : (0 : ℝ) < x / sin x := div_pos hxI.1 hspos
+    have hw := sin_sub_x_cos_pos hxI
+    exact mul_pos (mul_pos (by norm_num) hu) (div_pos hw (pow_pos hspos 2))
+
+theorem enhancement_pi_div_two : enhancement (π / 2) = π ^ 2 / 4 := by
+  unfold enhancement
+  simp [sin_pi_div_two]
+  ring
+
+/-! ### Milky-Way geometric radii on SI stand-ins -/
+
+private theorem mul_lt_mul_of_pos_windows {a b c d : ℝ}
+    (ha : 0 < a) (hc : 0 < c) (hab : a < b) (hcd : c < d) : a * c < b * d :=
+  (mul_lt_mul_of_pos_right hab hc).trans
+    (mul_lt_mul_of_pos_left hcd (lt_trans ha hab))
+
+noncomputable def milkyWayROverKpc : ℝ :=
+  Real.sqrt (milkyWayRsqOverKpc2 : ℝ)
+
+theorem milkyWayROverKpc_bounds :
+    (8 : ℝ) < milkyWayROverKpc ∧ milkyWayROverKpc < (9 : ℝ) := by
+  have ⟨hlo, hhi⟩ := milkyWayRsqOverKpc2_bounds
+  have h64 : (64 : ℝ) < (milkyWayRsqOverKpc2 : ℝ) := mod_cast hlo
+  have h81 : (milkyWayRsqOverKpc2 : ℝ) < (81 : ℝ) := mod_cast hhi
+  unfold milkyWayROverKpc
+  constructor
+  · rw [Real.lt_sqrt (by norm_num : (0 : ℝ) ≤ 8)]
+    convert h64 using 1
+    norm_num
+  · rw [Real.sqrt_lt' (by norm_num : (0 : ℝ) < 9)]
+    convert h81 using 1
+    norm_num
+
+noncomputable def milkyWayPlateauOverKpc : ℝ :=
+  plateauRoot * milkyWayROverKpc
+
+theorem milkyWayPlateauOverKpc_bounds :
+    (9 : ℝ) < milkyWayPlateauOverKpc ∧ milkyWayPlateauOverKpc < (11 : ℝ) := by
+  have ⟨hRlo, hRhi⟩ := milkyWayROverKpc_bounds
+  have ⟨hxlo, hxhi⟩ := plateauRoot_bounds
+  unfold milkyWayPlateauOverKpc
+  constructor
+  · have := mul_lt_mul_of_pos_windows (by norm_num : (0 : ℝ) < 57 / 50)
+      (by norm_num : (0 : ℝ) < 8) hxlo hRlo
+    have : (9 : ℝ) < (57 / 50) * 8 := by norm_num
+    linarith
+  · have := mul_lt_mul_of_pos_windows
+      (lt_trans (by norm_num) plateauRoot_bounds.1) (lt_trans (by norm_num) hRlo)
+      hxhi hRhi
+    have : (6 / 5 : ℝ) * 9 < 11 := by norm_num
+    linarith
+
+noncomputable def milkyWayReversalOverKpc : ℝ :=
+  π / 2 * milkyWayROverKpc
+
+theorem milkyWayReversalOverKpc_bounds :
+    (12 : ℝ) < milkyWayReversalOverKpc ∧ milkyWayReversalOverKpc < (15 : ℝ) := by
+  have ⟨hRlo, hRhi⟩ := milkyWayROverKpc_bounds
+  unfold milkyWayReversalOverKpc
+  constructor
+  · have := mul_lt_mul_of_pos_windows (by norm_num : (0 : ℝ) < 3 / 2)
+      (by norm_num : (0 : ℝ) < 8)
+      (by linarith [pi_gt_three] : (3 / 2 : ℝ) < π / 2) hRlo
+    have : (3 / 2 : ℝ) * 8 = 12 := by norm_num
+    linarith
+  · have hpi : π < (315 / 100 : ℝ) := by
+      convert Real.pi_lt_d2 using 1
+      norm_num
+    have hhalf : π / 2 < (315 / 200 : ℝ) := by linarith
+    have := mul_lt_mul_of_pos_windows (div_pos pi_pos (by norm_num))
+      (lt_trans (by norm_num) hRlo) hhalf hRhi
+    have : (315 / 200 : ℝ) * 9 < 15 := by norm_num
+    linarith
+
+theorem milkyWayPlateau_lt_reversal :
+    milkyWayPlateauOverKpc < milkyWayReversalOverKpc := by
+  unfold milkyWayPlateauOverKpc milkyWayReversalOverKpc
+  have hRpos : (0 : ℝ) < milkyWayROverKpc :=
+    lt_trans (by norm_num) milkyWayROverKpc_bounds.1
+  exact mul_lt_mul_of_pos_right plateauRoot_lt_pi_div_two hRpos
 
 end Gravity
 
