@@ -5,6 +5,8 @@ import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Amplification
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Slope
@@ -53,6 +55,14 @@ on \(r^2 T\).
 * Under \(\varphi\le\varphi_{\max}\), \(r^2 T\le 4(\cosh\varphi_{\max}-1)\) with
   numerical envelope \(26<\cdots<27\). Classical Schwarzschild has unbounded
   \(r^2 T\) as \(r\to r_s^+\).
+* Two-sided window on the admissible cone:
+  \(4(\cos\varphi_{\max}-1)\le r^2 T\le 4(\cosh\varphi_{\max}-1)\), with
+  \(-7.7<4(\cos\varphi_{\max}-1)<-7.6\); both ends are attained at
+  \(J=\mp J_{\max}\), so \(-8<r^2 T<27\) is sharp in that sense.
+* \(E\) is strictly monotone on the cone, hence \(T\) at a fixed radius
+  determines \(J\), and the dictionary inverts in closed form as
+  \(J=\tfrac12(\operatorname{arcosh}(1+\tfrac14 r^2 T))^2\) on the hyperbolic
+  branch and \(J=-\tfrac12(\arccos(1+\tfrac14 r^2 T))^2\) on the elliptic one.
 
 ## Not claimed
 
@@ -575,28 +585,36 @@ theorem phiMax_lt_pi : phiMax < Real.pi := by
   unfold phiMax
   nlinarith [Real.pi_pos, sqrt_three_lt_two]
 
+theorem JMax_pos : (0 : ℝ) < JMax := by
+  unfold JMax
+  positivity
+
+/-- The admissible ceiling inverts to exactly the quasi-horizon rapidity. -/
+theorem sqrt_two_JMax : Real.sqrt (2 * JMax) = phiMax := by
+  unfold JMax phiMax
+  have hsq : (Real.pi * Real.sqrt 3 / 2) ^ 2 = 2 * (3 * Real.pi ^ 2 / 8) := by
+    field_simp
+    rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+    ring
+  exact (Real.sqrt_eq_iff_eq_sq (by positivity) (by positivity)).mpr hsq.symm
+
+/-- On the admissible cone the dictionary argument never leaves `[0, φ_max]`. -/
+theorem sqrt_two_abs_le_phiMax {J : ℝ} (hbound : |J| ≤ JMax) :
+    Real.sqrt (2 * |J|) ≤ phiMax := by
+  rw [← sqrt_two_JMax]
+  exact Real.sqrt_le_sqrt (by linarith)
+
 theorem coshDefect_neg_of_admissible {J : ℝ}
     (hJ : J < 0) (hbound : |J| ≤ JMax) :
     coshDefect J < 0 := by
   rw [coshDefect_of_neg hJ]
-  unfold JMax at hbound
-  have habs : |J| = -J := abs_of_neg hJ
+  have habs : -(2 * J) = 2 * |J| := by
+    rw [abs_of_neg hJ]; ring
   have hθ0 : 0 < Real.sqrt (-(2 * J)) :=
-    Real.sqrt_pos.mpr (by nlinarith)
+    Real.sqrt_pos.mpr (by linarith)
   have hθle : Real.sqrt (-(2 * J)) ≤ phiMax := by
-    unfold phiMax
-    have hle : -(2 * J) ≤ 3 * Real.pi ^ 2 / 4 := by
-      have : -J ≤ 3 * Real.pi ^ 2 / 8 := by
-        rwa [← habs]
-      nlinarith
-    have hrhs : Real.sqrt (3 * Real.pi ^ 2 / 4) = Real.pi * Real.sqrt 3 / 2 := by
-      have hsq : (Real.pi * Real.sqrt 3 / 2) ^ 2 = 3 * Real.pi ^ 2 / 4 := by
-        field_simp
-        rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
-        ring
-      exact (Real.sqrt_eq_iff_eq_sq (by positivity) (by positivity)).mpr hsq.symm
-    have := Real.sqrt_le_sqrt hle
-    rwa [hrhs] at this
+    rw [habs]
+    exact sqrt_two_abs_le_phiMax hbound
   have hθπ : Real.sqrt (-(2 * J)) ≤ Real.pi :=
     le_of_lt (lt_of_le_of_lt hθle phiMax_lt_pi)
   have hcos : cos (Real.sqrt (-(2 * J))) < cos 0 :=
@@ -836,6 +854,231 @@ theorem classical_r_sq_T_unbounded {rs : ℝ} (hrs : 0 < rs) (M : ℝ) :
     rw [hval2]
     linarith [le_abs_self M, abs_nonneg M]
   exact ⟨r, hr, hval ▸ lt_of_lt_of_le hM hlower⟩
+
+/-! ### Two-sided admissible window on \(r^2 T\)
+
+The rapidity ceiling above caps \(r^2 T\) from one side only. On the admissible
+cone the elliptic branch supplies the matching floor: `sqrt_two_abs_le_phiMax`
+keeps the cosine argument inside `[0, φ_max]` with `φ_max < π`, where the cosine
+is still strictly decreasing. Repulsion is therefore no deeper than
+\(4(\cos\varphi_{\max}-1)\), and both ends are attained at \(J=\pm J_{\max}\).
+-/
+
+theorem coshDefect_le_cosh_phiMax {J : ℝ} (hbound : |J| ≤ JMax) :
+    coshDefect J ≤ cosh phiMax - 1 := by
+  rcases lt_or_ge J 0 with hJ | hJ
+  · have hneg := coshDefect_neg_of_admissible hJ hbound
+    linarith [one_le_cosh phiMax]
+  · rw [coshDefect_of_nonneg hJ]
+    have habs : (2 : ℝ) * J = 2 * |J| := by rw [abs_of_nonneg hJ]
+    have hθ : Real.sqrt (2 * J) ≤ phiMax := by
+      rw [habs]
+      exact sqrt_two_abs_le_phiMax hbound
+    have hθ0 : 0 ≤ Real.sqrt (2 * J) := Real.sqrt_nonneg _
+    have hch : cosh (Real.sqrt (2 * J)) ≤ cosh phiMax :=
+      cosh_le_cosh.mpr (by rwa [abs_of_nonneg hθ0, abs_of_nonneg (hθ0.trans hθ)])
+    linarith
+
+theorem coshDefect_ge_cos_phiMax {J : ℝ} (hbound : |J| ≤ JMax) :
+    cos phiMax - 1 ≤ coshDefect J := by
+  rcases lt_or_ge J 0 with hJ | hJ
+  · rw [coshDefect_of_neg hJ]
+    have habs : -(2 * J) = 2 * |J| := by
+      rw [abs_of_neg hJ]; ring
+    have hθ : Real.sqrt (-(2 * J)) ≤ phiMax := by
+      rw [habs]
+      exact sqrt_two_abs_le_phiMax hbound
+    have hθ0 : 0 ≤ Real.sqrt (-(2 * J)) := Real.sqrt_nonneg _
+    have hπ : phiMax ≤ Real.pi := phiMax_lt_pi.le
+    have hcos : cos phiMax ≤ cos (Real.sqrt (-(2 * J))) :=
+      Real.strictAntiOn_cos.antitoneOn ⟨hθ0, hθ.trans hπ⟩ ⟨hθ0.trans hθ, hπ⟩ hθ
+    linarith
+  · have hnn : 0 ≤ coshDefect J := by
+      rcases eq_or_lt_of_le hJ with h | h
+      · rw [← h, coshDefect_zero]
+      · exact (coshDefect_pos_of_pos h).le
+    linarith [cos_le_one phiMax]
+
+/-! Both ends of the window are attained, so neither bound can be improved. -/
+
+theorem coshDefect_JMax : coshDefect JMax = cosh phiMax - 1 := by
+  rw [coshDefect_of_nonneg JMax_pos.le, sqrt_two_JMax]
+
+theorem coshDefect_neg_JMax : coshDefect (-JMax) = cos phiMax - 1 := by
+  rw [coshDefect_of_neg (neg_neg_of_pos JMax_pos)]
+  rw [show -(2 * -JMax) = 2 * JMax by ring, sqrt_two_JMax]
+
+/-! ### Numeric envelope for the repulsive floor -/
+
+private theorem pi_sub_phiMax_lower : (418 : ℝ) / 1000 < Real.pi - phiMax := by
+  unfold phiMax
+  rw [show Real.pi - Real.pi * Real.sqrt 3 / 2
+      = Real.pi * (2 - Real.sqrt 3) / 2 from by ring]
+  have h1 : (267 : ℝ) / 1000 < 2 - Real.sqrt 3 := by linarith [sqrt_three_lt_1733]
+  have hmul : (314 : ℝ) / 100 * (267 / 1000) < Real.pi * (2 - Real.sqrt 3) :=
+    mul_lt_mul pi_gt_314 h1.le (by norm_num) Real.pi_pos.le
+  linarith
+
+private theorem pi_sub_phiMax_upper : Real.pi - phiMax < (422 : ℝ) / 1000 := by
+  unfold phiMax
+  rw [show Real.pi - Real.pi * Real.sqrt 3 / 2
+      = Real.pi * (2 - Real.sqrt 3) / 2 from by ring]
+  have h1 : 2 - Real.sqrt 3 < (268 : ℝ) / 1000 := by linarith [sqrt_three_gt_1732]
+  have hpos : (0 : ℝ) < 2 - Real.sqrt 3 := by linarith [sqrt_three_lt_two]
+  have hmul : Real.pi * (2 - Real.sqrt 3) < (31416 / 10000 : ℝ) * (268 / 1000) :=
+    mul_lt_mul pi_lt_31416 h1.le hpos (by norm_num)
+  linarith
+
+theorem four_cos_phiMax_sub_one_bounds :
+    -(77 : ℝ) / 10 < 4 * (cos phiMax - 1) ∧ 4 * (cos phiMax - 1) < -(76 : ℝ) / 10 := by
+  have hxlo : (418 : ℝ) / 1000 < Real.pi - phiMax := pi_sub_phiMax_lower
+  have hxhi : Real.pi - phiMax < (422 : ℝ) / 1000 := pi_sub_phiMax_upper
+  set x := Real.pi - phiMax with hxdef
+  have hxpos : (0 : ℝ) < x := by linarith
+  have habs : |x| = x := abs_of_pos hxpos
+  have hbound : |cos x - (1 - x ^ 2 / 2)| ≤ x ^ 4 * (5 / 96) := by
+    simpa [habs] using Real.cos_bound (by rw [habs]; linarith : |x| ≤ 1)
+  obtain ⟨hlo, hhi⟩ := abs_le.mp hbound
+  have hcos : cos phiMax = -cos x := by
+    have hps := Real.cos_pi_sub phiMax
+    rw [← hxdef] at hps
+    linarith
+  have hx2hi : x ^ 2 < (178084 : ℝ) / 1000000 := by nlinarith
+  have hx2lo : (174724 : ℝ) / 1000000 < x ^ 2 := by nlinarith
+  have hx4hi : x ^ 4 < (31714 : ℝ) / 1000000 := by
+    rw [show x ^ 4 = (x ^ 2) ^ 2 from by ring]
+    nlinarith [sq_nonneg x]
+  rw [hcos]
+  exact ⟨by linarith, by linarith⟩
+
+/-! ### The window itself -/
+
+theorem r_sq_mul_teleparallelTofJ {Jval r : ℝ} (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofJ Jval r = 4 * coshDefect Jval := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  unfold teleparallelTofJ
+  rw [show r ^ 2 * (4 / r ^ 2 * coshDefect Jval)
+      = r ^ 2 / r ^ 2 * (4 * coshDefect Jval) from by ring,
+    div_self hr2, one_mul]
+
+theorem r_sq_teleparallelTofJ_window {Jval r : ℝ} (hr : r ≠ 0)
+    (hbound : |Jval| ≤ JMax) :
+    4 * (cos phiMax - 1) ≤ r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r ≤ 4 * (cosh phiMax - 1) := by
+  rw [r_sq_mul_teleparallelTofJ hr]
+  exact ⟨by linarith [coshDefect_ge_cos_phiMax hbound],
+    by linarith [coshDefect_le_cosh_phiMax hbound]⟩
+
+/-- Both window ends are realised, at `J = -JMax` and `J = JMax` respectively. -/
+theorem r_sq_teleparallelTofJ_window_sharp {r : ℝ} (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofJ (-JMax) r = 4 * (cos phiMax - 1) ∧
+      r ^ 2 * teleparallelTofJ JMax r = 4 * (cosh phiMax - 1) := by
+  rw [r_sq_mul_teleparallelTofJ hr, r_sq_mul_teleparallelTofJ hr,
+    coshDefect_neg_JMax, coshDefect_JMax]
+  exact ⟨rfl, rfl⟩
+
+/-- Numeric form of the window: admissible torsion confines `r² T` to `(-8, 27)`. -/
+theorem r_sq_teleparallelTofJ_bounds {Jval r : ℝ} (hr : r ≠ 0)
+    (hbound : |Jval| ≤ JMax) :
+    -8 < r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r < 27 := by
+  obtain ⟨hwlo, hwhi⟩ := r_sq_teleparallelTofJ_window hr hbound
+  obtain ⟨hflo, _⟩ := four_cos_phiMax_sub_one_bounds
+  obtain ⟨_, hchi⟩ := four_cosh_phiMax_sub_one_bounds
+  exact ⟨by linarith, by linarith⟩
+
+/-! ### The dictionary is strictly monotone, hence \(T\) determines \(J\) -/
+
+theorem coshDefect_strictMonoOn :
+    StrictMonoOn coshDefect (Icc (-JMax) JMax) := by
+  intro a ha b hb hab
+  have habs_a : |a| ≤ JMax := abs_le.mpr ⟨ha.1, ha.2⟩
+  rcases lt_or_ge a 0 with ha0 | ha0
+  · rcases lt_or_ge b 0 with hb0 | hb0
+    · rw [coshDefect_of_neg ha0, coshDefect_of_neg hb0]
+      have hlt : Real.sqrt (-(2 * b)) < Real.sqrt (-(2 * a)) :=
+        Real.sqrt_lt_sqrt (by linarith) (by linarith)
+      have hπ : Real.sqrt (-(2 * a)) ≤ Real.pi := by
+        have habs : -(2 * a) = 2 * |a| := by rw [abs_of_neg ha0]; ring
+        rw [habs]
+        exact (sqrt_two_abs_le_phiMax habs_a).trans phiMax_lt_pi.le
+      have hcos := cos_lt_cos_of_nonneg_of_le_pi (Real.sqrt_nonneg _) hπ hlt
+      linarith
+    · have hlt := coshDefect_neg_of_admissible ha0 habs_a
+      have hge : 0 ≤ coshDefect b := by
+        rcases eq_or_lt_of_le hb0 with h | h
+        · rw [← h, coshDefect_zero]
+        · exact (coshDefect_pos_of_pos h).le
+      linarith
+  · have hb0 : 0 ≤ b := ha0.trans hab.le
+    rw [coshDefect_of_nonneg ha0, coshDefect_of_nonneg hb0]
+    have hlt : Real.sqrt (2 * a) < Real.sqrt (2 * b) :=
+      Real.sqrt_lt_sqrt (by linarith) (by linarith)
+    have hch : cosh (Real.sqrt (2 * a)) < cosh (Real.sqrt (2 * b)) :=
+      cosh_lt_cosh.mpr <| by
+        rwa [abs_of_nonneg (Real.sqrt_nonneg _), abs_of_nonneg (Real.sqrt_nonneg _)]
+    linarith
+
+theorem coshDefect_injOn : Set.InjOn coshDefect (Icc (-JMax) JMax) :=
+  coshDefect_strictMonoOn.injOn
+
+/-- At a fixed radius the teleparallel density determines the algebraic scalar. -/
+theorem J_unique_of_teleparallelTofJ_eq {J₁ J₂ r : ℝ} (hr : r ≠ 0)
+    (h₁ : |J₁| ≤ JMax) (h₂ : |J₂| ≤ JMax)
+    (heq : teleparallelTofJ J₁ r = teleparallelTofJ J₂ r) : J₁ = J₂ := by
+  have hr2 : (0 : ℝ) < r ^ 2 := lt_of_le_of_ne (sq_nonneg r) (pow_ne_zero 2 hr).symm
+  have hcoef : (0 : ℝ) < 4 / r ^ 2 := div_pos (by norm_num) hr2
+  have hcd : coshDefect J₁ = coshDefect J₂ := by
+    unfold teleparallelTofJ at heq
+    exact mul_left_cancel₀ hcoef.ne' heq
+  exact coshDefect_injOn
+    (mem_Icc.mpr ⟨neg_le_of_abs_le h₁, le_of_abs_le h₁⟩)
+    (mem_Icc.mpr ⟨neg_le_of_abs_le h₂, le_of_abs_le h₂⟩) hcd
+
+/-! ### Closed-form inversion of the dictionary -/
+
+theorem arcosh_one_add_quarter_r_sq_T {Jval r : ℝ} (hr : r ≠ 0) (hJ : 0 ≤ Jval) :
+    Real.arcosh (1 + r ^ 2 * teleparallelTofJ Jval r / 4) =
+      Real.sqrt (2 * Jval) := by
+  rw [r_sq_mul_teleparallelTofJ hr, coshDefect_of_nonneg hJ,
+    show (1 : ℝ) + 4 * (cosh (Real.sqrt (2 * Jval)) - 1) / 4
+      = cosh (Real.sqrt (2 * Jval)) from by ring]
+  exact Real.arcosh_cosh (Real.sqrt_nonneg _)
+
+/-- Hyperbolic branch: the algebraic scalar is recovered from `r² T` in closed form. -/
+theorem J_eq_half_arcosh_sq {Jval r : ℝ} (hr : r ≠ 0) (hJ : 0 ≤ Jval) :
+    (1 / 2) * Real.arcosh (1 + r ^ 2 * teleparallelTofJ Jval r / 4) ^ 2 = Jval := by
+  rw [arcosh_one_add_quarter_r_sq_T hr hJ,
+    Real.sq_sqrt (by linarith : (0 : ℝ) ≤ 2 * Jval)]
+  ring
+
+/-- Elliptic branch: the same inversion with the cosine reading of the kernel. -/
+theorem J_eq_neg_half_arccos_sq {Jval r : ℝ} (hr : r ≠ 0) (hJ : Jval < 0)
+    (hbound : |Jval| ≤ JMax) :
+    -(1 / 2) * Real.arccos (1 + r ^ 2 * teleparallelTofJ Jval r / 4) ^ 2 = Jval := by
+  have habs : -(2 * Jval) = 2 * |Jval| := by
+    rw [abs_of_neg hJ]; ring
+  have hπ : Real.sqrt (-(2 * Jval)) ≤ Real.pi := by
+    rw [habs]
+    exact (sqrt_two_abs_le_phiMax hbound).trans phiMax_lt_pi.le
+  rw [r_sq_mul_teleparallelTofJ hr, coshDefect_of_neg hJ,
+    show (1 : ℝ) + 4 * (cos (Real.sqrt (-(2 * Jval))) - 1) / 4
+      = cos (Real.sqrt (-(2 * Jval))) from by ring,
+    Real.arccos_cos (Real.sqrt_nonneg _) hπ,
+    Real.sq_sqrt (by linarith : (0 : ℝ) ≤ -(2 * Jval))]
+  ring
+
+/-- Exterior Schwarzschild specialisation of the closed-form inversion. -/
+theorem J_radialBoostParams_eq_half_arcosh_sq {rs r : ℝ} (h : IsExterior rs r) :
+    (1 / 2) *
+        Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =
+      J (radialBoostParams rs r) := by
+  have hr : r ≠ 0 := (lt_trans h.1 h.2).ne'
+  have hJ : 0 ≤ J (radialBoostParams rs r) := by
+    rw [J_radialBoostParams]
+    positivity
+  rw [schwarzschild_T_eq_teleparallelTofJ h]
+  exact J_eq_half_arcosh_sq hr hJ
 
 end Gravity
 

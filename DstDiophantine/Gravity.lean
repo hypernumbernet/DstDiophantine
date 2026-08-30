@@ -17,9 +17,10 @@ import DstDiophantine.Gravity.DualRotorDynamics
 Re-exports the chart-level TEGR scaffolding (coframe, sandwich scales,
 Schwarzschild tetrad, Weitzenböck torsion, motor-induced frame vectors,
 and the `J` / `J_field` / `T` dictionary with naive-identification rejections,
-the closed radial-boost form in `JTDictionary`, the gauge-level
-generalisation in `GaugeDictionary`, and the classical specialisation
-`A=1-rₛ/r` in `ClassicalSchwarzschild`),
+the closed radial-boost form in `JTDictionary` together with its strict
+monotonicity, closed-form inversion, and finite two-sided window on the
+admissible cone, the gauge-level generalisation in `GaugeDictionary`, and the
+classical specialisation `A=1-rₛ/r` in `ClassicalSchwarzschild`),
 plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
 the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
 exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
@@ -84,6 +85,36 @@ example {rs r : ℝ} (h : IsExterior rs r)
     (hφ : schwarzschildRapidity rs r ≤ phiMax) :
     r ^ 2 * schwarzschildTeleparallelT rs r < 27 :=
   lt_of_le_of_lt (r_sq_T_le_ceiling h hφ) four_cosh_phiMax_sub_one_bounds.2
+
+/-- Regression: on the admissible cone \(r^2 T\) lies in a finite two-sided window. -/
+example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
+    4 * (Real.cos phiMax - 1) ≤ r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r ≤ 4 * (Real.cosh phiMax - 1) :=
+  r_sq_teleparallelTofJ_window hr hbound
+
+/-- Regression: numeric envelope of that window, \(-8<r^2 T<27\). -/
+example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
+    -8 < r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r < 27 :=
+  r_sq_teleparallelTofJ_bounds hr hbound
+
+/-- Regression: both window ends are attained, so neither bound is improvable. -/
+example {r : ℝ} (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofJ (-JMax) r = 4 * (Real.cos phiMax - 1) ∧
+      r ^ 2 * teleparallelTofJ JMax r = 4 * (Real.cosh phiMax - 1) :=
+  r_sq_teleparallelTofJ_window_sharp hr
+
+/-- Regression: at a fixed radius the teleparallel density determines \(J\). -/
+example {J₁ J₂ r : ℝ} (hr : r ≠ 0) (h₁ : |J₁| ≤ JMax) (h₂ : |J₂| ≤ JMax)
+    (heq : teleparallelTofJ J₁ r = teleparallelTofJ J₂ r) : J₁ = J₂ :=
+  J_unique_of_teleparallelTofJ_eq hr h₁ h₂ heq
+
+/-- Regression: closed-form inversion of the dictionary on the exterior chart. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    (1 / 2) *
+        Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =
+      J (radialBoostParams rs r) :=
+  J_radialBoostParams_eq_half_arcosh_sq h
 
 /-- Regression: exterior Schwarzschild is the vacuum specialisation of the gauge. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
