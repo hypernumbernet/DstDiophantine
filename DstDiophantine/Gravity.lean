@@ -11,6 +11,8 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
+import DstDiophantine.Gravity.ElectronOrbit
+import DstDiophantine.Gravity.Faraday
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -31,15 +33,20 @@ extrema `(-1)^n cosh(nπ)`, one node per `π`-interval, sharpened branch
 `(nπ+π/4, nπ+π/2)`, exponential inward screening), and the nuclear-layer
 exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
 `dst_derives_lambdaN` / `dst_derives_Amax`),
-the closed form of `gammaEff`, and the Euler–Lagrange identities of
-`DualRotorDynamics`.
+the closed form of `gammaEff`, the Euler–Lagrange identities of
+`DualRotorDynamics`, the Coulombic circular-orbit identities of
+`ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
+no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
+ratio \(4\); no `dst_derives_lambda`), and the Faraday 6-space audit of
+`Faraday` (Section 10/12 split, dual map \((E,B)\mapsto(B,-E)\), sandwich
+commutator versus the paper wedge; Maxwell is not derived).
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-open Invariant
+open Invariant PGA Generators
 
 /-- Regression: closed-form dictionary \(T=(4/r^2)(\cosh\sqrt{2J}-1)\). -/
 example {rs r : ℝ} (h : IsExterior rs r) :
@@ -246,6 +253,42 @@ example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
 /-- Regression: `r₀ = 1.2` fm is not consistent with `n₀ = 0.16` fm⁻³. -/
 example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
   numberDensity_radiusCoeff_1_2_ne_saturation
+
+/-- Regression: first Coulombic node lies in \((\pi/4,1)\). -/
+example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
+  firstNode_window
+
+/-- Regression: repulsive Coulombic layers yield no real circular speed. -/
+example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
+    (hγ : γs < 0) (hr : 0 < r) :
+    circularSpeedSq k e m γs r < 0 :=
+  circularSpeedSq_neg_of_repulsive hk he hm hγ hr
+
+/-- Regression: equal-scale radius ratio cannot equal the Bohr ratio \(4\). -/
+example {x₂ : ℝ} (hx₂ : x₂ ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
+    resonanceRoot1 / x₂ ≠ bohrShellRadius 2 / bohrShellRadius 1 :=
+  equalScale_ratio_ne_bohr hx₂
+
+/-- Regression: \(\ell\mapsto\ell/Z\) contracts every equal-scale radius. -/
+example {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
+    layerRadius (ℓ / Z) x = layerRadius ℓ x / Z :=
+  Z_contracts_layerRadius hZ
+
+/-- Regression: Faraday is the Section 12 usual-plus-dual split. -/
+example (p : FaradayParams) :
+    faraday p = faradayUsual p + faradayDual p :=
+  faraday_eq_add p
+
+/-- Regression: duality sends \((E,B)\) to \((B,-E)\). -/
+example (p : FaradayParams) :
+    Operations.dual (faraday p) = faraday (dualFaradayParams p) :=
+  dual_faraday p
+
+/-- Regression: the paper wedge is not the first-order sandwich increment. -/
+example :
+    sandwichIncrement (cyclic 0) (ι 0) = 0 ∧
+      paperWedgeIncrement (cyclic 0) (ι 0) ≠ 0 :=
+  paper_wedge_ne_lorentz_increment
 
 end Gravity
 

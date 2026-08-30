@@ -40,6 +40,8 @@ The proposed field action $S = \frac{c^4}{16\pi G} \int J \, d^4x$ is a working 
 
 The layered structure invoked for nuclei and for stellar remnants is settled in closed form. On the equal-scale locus $\alpha_a=\beta_a$ the parameter scalar $J$ vanishes identically while the interference factor $\gamma_s=\cosh x\cos x-\sinh x\sin x$, with $x=\ell/(2r)$, still alternates, so the layer order parameter is $\gamma_s$ and not $J$. That factor has derivative $-2\cosh x\sin x$, extremal values $(-1)^n\cosh(n\pi)$, and exactly one node in each interval $(n\pi,(n+1)\pi)$; every node is localised in $(n\pi+\pi/4,\,n\pi+\pi/2)$, hence $\ell/((2n+1)\pi)<r_n<2\ell/((4n+1)\pi)$ and $r_2/r_1\in(1/6,\,4/(5\pi))$ independently of $\ell$. Successive plateau amplitudes grow at least like $(\cosh\pi)^n$ with $\cosh\pi>11$ and never exceed $\mathrm{e}^{n\pi}$, the per-layer amplification being capped by $\mathrm{e}^\pi\approx 23.14$ with exact shortfall $\sinh\pi\,\mathrm{e}^{-a}$, so the mid-layer force $4\pi^2n^2k/(\ell^2\cosh n\pi)$ decays inward: the barriers sharpen while the interior between them is exponentially screened, contrary to the earlier reading of monotonically increasing inward amplitude. At a barrier the proper-time factor reduces to $\gamma_b^2>0$, so a barrier is a force divergence and not a clock freeze. The pion identification $\ell=\lambda_\pi$ places every node below $1\,\mathrm{fm}$, with the outermost between $0.44$ and $0.91\,\mathrm{fm}$; a $1$--$2\,\mathrm{fm}$ outermost shell requires $\ell>\pi/2\,\mathrm{fm}>\lambda_\pi$. Constant nuclear density is exactly the $A^{1/3}$ radius law, and $r_0=1.2\,\mathrm{fm}$ corresponds to $0.13$--$0.14\,\mathrm{fm}^{-3}$ rather than to $n_0=0.16\,\mathrm{fm}^{-3}$, whose matching coefficient lies between $1.14$ and $1.15\,\mathrm{fm}$. No finite $A_{\max}$ follows from this geometry.
 
+The same layer algebra governs the electromagnetic channel. The first equal-scale Coulombic node lies in $(\pi/4,1)$; placing that node at the Bohr radius $a_0$ forces $\pi a_0/2<\lambda<2a_0$. Coulombic circular balance $mv^2/r=ke^2/(\gamma_s r^2)$ yields a real speed only on attractive layers $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. Equal-scale $r_2/r_1$ lies in $(1/6,4/(5\pi))$ and cannot equal the Bohr ratio $4$. Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, split as $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$ and $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$, with duality sending $(E,B)\mapsto(B,-E)$. The first-order sandwich increment is the commutator; the written outer product $F\wedge X$ is not the Lorentz increment. Maxwell's equations, $\alpha$, and $\lambda$ are not derived.
+
 Coherent excitation of the dual-sector angles $\theta_a$ as a route to gravitational engineering is a working hypothesis, not a theorem of the dual-rotor algebra.
 \end{abstract}
 
@@ -1011,15 +1013,66 @@ The hyperbolic-trigonometric form of \(\gamma_s\) introduces extreme oscillatory
   \item At smaller radii, the interference term generates points where \(\gamma_s = 0\) (infinite repulsion) and regions where \(\gamma_s < 0\) (force reversal to repulsion).
   \item These discrete radii \(r_n\) satisfy the resonance condition
   \[
-  \tanh\!\left(\frac{\alpha(r_n)}{2}\right) \tan\!\left(\frac{\beta(r_n)}{2}\right) = 1,
+  \tanh\!\left(\frac{\alpha(r_n)}{2}\right) \tan\!\left(\frac{\beta(r_n)}{2}\right) = 1.
   \]
-  yielding stable circular orbits due to the infinite repulsive barriers separating attractive wells.
 \end{itemize}
 
-\paragraph{Equal-scale ansatz versus Bohr bookkeeping.}
-Under the equal-scale working hypothesis \(\alpha(r)=\beta(r)=\lambda/r\), the resonance condition reduces to \(\tanh x\cdot\tan x=1\) with dimensionless \(x=\lambda/(2r)\). This is the same condition as \(\gamma_s=0\), so the closed-form layer spectrum of Section~\ref{subsec:layer-spectrum} applies verbatim to the electromagnetic channel: positive roots lie in the sharpened branches \((n\pi+\pi/4,\,n\pi+\pi/2)\) of Proposition~\ref{prop:layer-sharp-branch}, one per period, and the associated radii scale as \(r_n=\lambda/(2x_n)=\Theta(1/n)\), \emph{not} as \(\Theta(n^2)\). Consequently the equal-scale \(\gamma_s=0\) loci alone do \emph{not} reproduce the Rydberg \(n^2\) spectrum. The Bohr radii \(r_n=n^2 a_0\) (and the energy differences \(\Delta E_{n\to m}\propto n^{-2}-m^{-2}\)) must be introduced as a separate bookkeeping ansatz if one wishes to match the observed hydrogen lines; they are not theorems of the equal-scale torsional resonance.
+The written force is undefined at a node. A node is a force divergence and not a clock freeze: the proper-time factor remains \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by Proposition~\ref{prop:gamma-eff-closed}. Infinite barriers therefore separate neighbouring wells, but they do not by themselves supply a circular orbit.
 
-For multi-electron atoms (\(Z > 1\)), the scaling \(\alpha(r),\beta(r) \propto Z/r\) contracts the torsional layers inward, explaining the observed shrinkage of electron shells with increasing nuclear charge.
+\subsection{First Coulombic node and labelled characteristic length}
+
+\begin{proposition}[First equal-scale Coulombic node]
+\label{prop:em-first-node}
+Under \(\alpha(r)=\beta(r)=\lambda/r\), the first positive node of \(\gamma_s\) lies in
+\[
+\frac\pi4<x_1<1,\qquad x=\frac{\lambda}{2r}.
+\]
+If that outermost node is identified with the Bohr radius \(a_0\), the characteristic length is confined to
+\[
+\frac\pi2\,a_0<\lambda<2a_0.
+\]
+The identification \(r_1=a_0\) is a labelled hypothesis; \(a_0\) itself is an external input.
+\end{proposition}
+
+\subsection{Coulombic circular orbits}
+
+The centripetal balance \(mv^2/r=ke^2/(\gamma_s r^2)\) rearranges to
+\[
+v^2=\frac{ke^2}{m\,\gamma_s\,r}.
+\]
+
+\begin{proposition}[Circular speed of the written Coulombic force]
+\label{prop:em-circular}
+If \(k>0\), \(e\neq 0\), \(m>0\), and \(r>0\), then \(v^2>0\) if and only if \(\gamma_s>0\). On a repulsive layer \(\gamma_s<0\) the written circular \(v^2\) is negative. In the Coulomb limit \(\gamma_s=1\) one recovers \(v^2=ke^2/(mr)\).
+\end{proposition}
+
+On the equal-scale locus the outermost well \(0<x<x_1\) is attractive and the first inner interval \(x_1<x<\pi\) is repulsive. Bound circular orbits of the written force therefore exist only in attractive layers---the exterior Coulomb well \(r>r_1\) and the inward attractive strata between later barriers. They do not exist in the repulsive shells.
+
+\paragraph{Equal-scale ansatz versus Bohr bookkeeping.}
+Under the equal-scale working hypothesis \(\alpha(r)=\beta(r)=\lambda/r\), the resonance condition reduces to \(\tanh x\cdot\tan x=1\) with dimensionless \(x=\lambda/(2r)\). This is the same condition as \(\gamma_s=0\), so the closed-form layer spectrum of Section~\ref{subsec:layer-spectrum} applies verbatim to the electromagnetic channel: positive roots lie in the sharpened branches \((n\pi+\pi/4,\,n\pi+\pi/2)\) of Proposition~\ref{prop:layer-sharp-branch}, one per period, and the associated radii scale as \(r_n=\lambda/(2x_n)=\Theta(1/n)\), \emph{not} as \(\Theta(n^2)\).
+
+\begin{proposition}[Equal-scale radius ratio is not the Bohr ratio]
+\label{prop:em-bohr-ratio}
+The first two equal-scale Coulombic nodes satisfy
+\[
+\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255,
+\]
+hence \(r_2/r_1<1\). The Bohr bookkeeping \(r_n=n^2 a_0\) gives \(r_2/r_1=4\). These cannot be the same radius sequence: the equal-scale tower is inward, while Bohr shells are outward.
+\end{proposition}
+
+Consequently the equal-scale \(\gamma_s=0\) loci alone do \emph{not} reproduce the Rydberg \(n^2\) spectrum. The Bohr radii \(r_n=n^2 a_0\) (and the energy differences \(\Delta E_{n\to m}\propto n^{-2}-m^{-2}\)) must be introduced as a separate bookkeeping ansatz if one wishes to match the observed hydrogen lines; they are not theorems of the equal-scale torsional resonance.
+
+\subsection{\(Z\)-contraction}
+
+\begin{proposition}[\(Z\)-scaling of equal-scale radii]
+\label{prop:em-Z}
+On the equal-scale locus, \(\ell\mapsto\ell/Z\) contracts every layer radius by \(Z\), while \(\ell\mapsto Z\ell\) expands every layer radius by \(Z\). The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the expanding map: it evaluates the \(Z=1\) rapidity profile at \(r/Z\) and therefore moves nodes \emph{outward} by \(Z\). Observed shrinkage of electron shells with nuclear charge is the labelled identification \(\ell(Z)=\ell/Z\), not a theorem of \(\alpha\propto Z/r\) at fixed \(\ell\).
+\end{proposition}
+
+\begin{hypothesis}[Lattice-floor diagnostic for \(\alpha\)]
+\label{hyp:alpha-lattice}
+The shared discrete floor \(\varepsilon_N=16/(3N^2)\) may be paired with the electromagnetic coupling as \(\alpha_{\mathrm{hyp}}(N)=\varepsilon_N\). Matching CODATA \(\alpha\) then forces \(729<N_*^2<732\), so \(N_*\) lies between \(27\) and \(28\), and \(\alpha_{\mathrm{hyp}}(27)=16/2187\) overshoots \(\alpha\) by a relative factor in \((1,\,732/729)\). This is a labelled diagnostic, not a derivation of \(\alpha\). It is a different channel from the gravitational height of the electron, which yields \(N_*^2\sim 10^{45}\).
+\end{hypothesis}
 
 \subsection{Energy Conservation in the Dual Structure}
 
@@ -1033,7 +1086,7 @@ The true potential \(V_\text{true}\) is proportional to the torsional mismatch s
 
 Photon emission corresponds to the release of stored dual-phase energy when the rotor unwinds into a lower torsional state. This dual bookkeeping ensures strict energy conservation without violating the discrete, particle-local nature of spacetime. Observed spectral differences require the separate Bohr bookkeeping of shell radii discussed above; they are not implied by equal-scale \(\gamma_s=0\) alone.
 
-This formulation accounts for atomic stability and discrete torsional shell barriers from the geometric dynamics of double spacetime applied to the Coulomb field, without ad-hoc wave-function postulates. Matching the empirical Rydberg series further requires an independent radius law such as \(r_n=n^2 a_0\). The electron shells remain natural resonance states of the dual-spacetime torsional mismatch, unifying electromagnetic binding with the same algebraic mechanism that governs gravity.
+The written Coulombic force therefore accounts for discrete torsional barriers and for circular orbits in attractive layers, without a wave-function postulate. Matching the empirical Rydberg series further requires an independent radius law such as \(r_n=n^2 a_0\). Identifying those barriers with atomic electron shells remains a working hypothesis: the layer spectrum itself is established, its absolute scale and the Bohr bookkeeping are not.
 
 \section{Unification of Electromagnetism and the Weak Force in Dual Spacetime}
 \label{sec:unification}
@@ -1049,15 +1102,30 @@ which are idempotent and complementary. The naive formulae $(1\pm i)/2$ with $i^
 The complementary pair $P_{L,R}=(1\pm e_1)/2$ built from $e_1^2=+1$ is idempotent; the pseudoscalar formulae $(1\pm i)/2$ are not. The product of the commuting square-$+1$ pair $e_1$ and $e_0e_2$ is idempotent and nonzero, and generates a nonzero left ideal. Irreducibility of that ideal as a spinor module is not claimed.
 \end{proposition}
 
-Electromagnetism arises from minimal coupling to the vector potential $A_a$ in the dual sector, shifting the rotation parameters:
+The Faraday coefficients $(E_a,B_a)$ occupy the same six-generator space as the dual-rotor bivector $\Omega_{\mathrm{biv}}$. The compatible split, used also in Section~\ref{sec:gravitycontrol}, is
 \[
-\theta_a \mapsto \theta_a + q A_a,
+F = F_{\mathrm{usual}}+F_{\mathrm{dual}},\qquad
+F_{\mathrm{usual}}=\sum_a E_a\,i\Gamma_a,\qquad
+F_{\mathrm{dual}}=\sum_a B_a\,\Gamma_a.
 \]
-yielding the extended rotor
+The single symbol $F_{\mathrm{dual}}=\sum_a(E_a i\Gamma_a+B_a\Gamma_a)$ written in earlier drafts mixed the two sectors; it names the \emph{full} Faraday bivector $F$, not the dual summand.
+
+\begin{proposition}[Faraday 6-space and duality]
+\label{prop:faraday-split}
+The pair $(E,B)$ lives in the same six-generator space as $(\alpha,\beta)$. Duality $X\mapsto Xi$ sends hyperbolic generators to cyclic ones and conversely, and acts on coefficients by
 \[
-R_{\text{dual}}^{\text{EM}} = \exp\left( \frac{1}{2} \sum_a (\theta_a + q A_a) \Gamma_a + \frac{q}{2} \int F_{\text{dual}} \, ds \right),
+(E,B)\mapsto(B,-E).
 \]
-where $F_{\text{dual}} = \sum_a (E_a i \Gamma_a + B_a \Gamma_a)$ is the electromagnetic bivector. The Lorentz force emerges from the sandwich product $\tilde{X}' = R_{\text{dual}}^{\text{EM}} X' (R_{\text{dual}}^{\text{EM}})^\dagger \approx X' + q F_{\text{dual}} \wedge X'$.
+\end{proposition}
+
+Minimal coupling to a vector potential $A_a$ in the dual sector, $\theta_a\mapsto\theta_a+q A_a$, remains a working hypothesis, as does the extended rotor built from $\int F\,ds$. Maxwell's equations are not derived.
+
+The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and a pure magnetic generator produces none, matching the STA Lorentz 3-force $q(E+v\times B)$ at vanishing velocity. The outer product $F\wedge X$ is nonzero on that magnetic rest case.
+
+\begin{proposition}[Sandwich increment versus the written wedge]
+\label{prop:faraday-sandwich}
+The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
+\end{proposition}
 
 The weak force is incorporated via chiral asymmetry, coupling only to left-handed components:
 \[
@@ -1075,7 +1143,7 @@ Unification occurs in the full torsional bivector:
 \]
 The scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$ now includes electromagnetic and weak contributions, with the electroweak symmetry emerging as a subgroup of $\mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1)$. Mass generation via rotor rigidity unifies with the Higgs mechanism, eliminating fine-tuning.
 
-This embedding recovers the Standard Model electroweak sector at low energies while resolving hierarchy problems through dual compactness, paving the way for full unification with strong and gravitational forces.
+The remaining electroweak narrative---chiral rotors, V--A structure, and a Higgs identification of rotor rigidity---is a working hypothesis. The algebraic facts established above are the 6-space split, the dual map on $(E,B)$, and the distinction between the sandwich commutator and the written wedge. Maxwell's equations are not derived.
 
 \section{Dark Matter-Free Galactic Rotation Curves from Dual-Spacetime Compactness}
 \label{sec:darkmatter}
@@ -1501,9 +1569,11 @@ The double spacetime theory treats gravity as torsional mismatch between particl
 \item On the saturated interior the field seed $J_{\mathrm{field}}$ vanishes while angular Weitzenb\"ock torsion remains, so $J_{\mathrm{field}}\neq\tfrac12 T$ there as well.
 \item A commuting square-$+1$ pair generates a nonzero left ideal; irreducibility as a spinor module is not claimed.
 \item The normalised Dirichlet kernel is bounded by $1$ for every positive integer $N$, with lattice values $\pm 1$.
+\item On the equal-scale electromagnetic channel the first Coulombic node satisfies $\pi/4<x_1<1$. Identifying that node with $a_0$ forces $\pi a_0/2<\lambda<2a_0$. The written circular speed $v^2=ke^2/(m\gamma_s r)$ is positive only for $\gamma_s>0$; repulsive layers give $v^2<0$, and a node is a force divergence rather than a clock freeze. The first two equal-scale radii obey $r_2/r_1\in(1/6,4/(5\pi))$, which cannot equal the Bohr ratio $4$. The map $\ell\mapsto\ell/Z$ contracts every layer radius by $Z$; $\alpha\propto Z/r$ at fixed $\ell$ expands nodes outward by $Z$.
+\item Faraday coefficients $(E,B)$ occupy the same six-generator space as the dual rotor, with the split $F_{\mathrm{usual}}\leftrightarrow\mathbf{E}$, $F_{\mathrm{dual}}\leftrightarrow\mathbf{B}$. Duality sends $(E,B)\mapsto(B,-E)$. The first-order sandwich increment is the commutator, not the outer product $F\wedge X$.
 \end{itemize}
 
-The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a dictionary between $J$ and $T$ for a general tetrad field (the static radial-boost dictionary is established, together with a one-sided density inequality); derivation of $G$, $a_0$, $\alpha_s$, $\ell$, $A_{\max}$, or $a_{\mathrm{crit}}$; the identification of the layered phase with the strong force and of the electromagnetic channel with atomic shells (the layer spectrum itself is established; its absolute scale is not); gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.
+The following remain hypotheses of this paper: the proposed action $S\propto\int J$ as a field Lagrangian; a dictionary between $J$ and $T$ for a general tetrad field (the static radial-boost dictionary is established, together with a one-sided density inequality); derivation of $G$, $a_0$, $\alpha$, $\alpha_s$, $\ell$, $A_{\max}$, or $a_{\mathrm{crit}}$; the identification of the layered phase with the strong force and of the electromagnetic channel with atomic shells (the layer spectrum itself is established; its absolute scale is not); the lattice-floor pairing $\alpha_{\mathrm{hyp}}(N)=\varepsilon_N$; Maxwell's equations and minimal coupling; gravity engineering by coherent dual excitation; baryon asymmetry by time-arrow fixation; the de Broglie reading of the mismatch oscillator; and a complete Hilbert-space quantization. Uncertainty relations are not derived.
 
 Observable distinctions from continuum GR that can be tested without those open derivations include a finite redshift floor $A_{\min}>0$ in place of a true horizon, vanishing gravitational time dilation at the centre of a spherically symmetric torsion star, a geometric rotation-curve plateau from the $S^3$ map rather than from unseen mass, and a barrier-radius ratio that is a pure number, the same at nuclear and at stellar scales because the characteristic length cancels from it.
 
