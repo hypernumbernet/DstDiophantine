@@ -68,6 +68,38 @@ theorem J_toTorsionParams (t : DiscreteTorsion N) :
   push_cast
   ring_nf
 
+/-- Integer unsigned mass of a discrete torus point. -/
+def latticeMass (t : DiscreteTorsion N) : ℕ :=
+  ∑ a : Fin 3, ((t.n a).val ^ 2 + (t.m a).val ^ 2)
+
+private theorem axis_sq_sum_factor (n m N : ℕ) [NeZero N] :
+    (2 * Real.pi * n / N) ^ 2 + (2 * Real.pi * m / N) ^ 2 =
+      (2 * Real.pi / N) ^ 2 * ((n : ℝ) ^ 2 + (m : ℝ) ^ 2) := by
+  field_simp
+
+theorem mass_toTorsionParams (t : DiscreteTorsion N) :
+    mass (toTorsionParams t) =
+      (1 / 2) * (2 * Real.pi / N) ^ 2 * (latticeMass t : ℝ) := by
+  rw [mass_coef]
+  simp only [toTorsionParams_alpha, toTorsionParams_beta, latticeMass]
+  have hfac (a : Fin 3) :
+      (2 * Real.pi * (t.n a).val / N) ^ 2 + (2 * Real.pi * (t.m a).val / N) ^ 2 =
+        (2 * Real.pi / N) ^ 2 * (((t.n a).val : ℝ) ^ 2 + ((t.m a).val : ℝ) ^ 2) :=
+    axis_sq_sum_factor (t.n a).val (t.m a).val N
+  simp_rw [hfac, ← Finset.mul_sum]
+  push_cast
+  ring_nf
+
+theorem massNormalized_eq_sixteen_lattice {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
+    massNormalized (toTorsionParams t) =
+      (16 : ℝ) / (3 * (N : ℝ) ^ 2) * (latticeMass t : ℝ) := by
+  unfold massNormalized
+  rw [mass_toTorsionParams]
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  have hπ : Real.pi ≠ 0 := Real.pi_ne_zero
+  field_simp [hN, hπ]
+  ring
+
 theorem isZeroHeight_toTorsionParams_iff (t : DiscreteTorsion N) :
     IsZeroHeight (toTorsionParams t) ↔ latticeMismatch t = 0 := by
   rw [isZeroHeight_iff_J, J_toTorsionParams]
@@ -388,6 +420,112 @@ theorem JNormalized_pureEllipticDiscrete {N : ℕ} [NeZero N] (h4 : 4 ∣ N) :
   rw [hcast, hN4]
   field_simp [hNne]
   ring
+
+private theorem axis_mass_le_floor
+    {N : ℕ} [NeZero N] {n m : ℕ} (h : 4 * (n + m) ≤ N) :
+    n ^ 2 + m ^ 2 ≤ (N / 4 : ℕ) ^ 2 := by
+  have hsum : n + m ≤ N / 4 :=
+    (Nat.le_div_iff_mul_le (by decide : 0 < (4 : ℕ))).2 (by
+      have : 4 * (n + m) = (n + m) * 4 := by ring
+      rwa [this] at h)
+  have hsq : n ^ 2 + m ^ 2 ≤ (n + m) ^ 2 := by nlinarith
+  exact hsq.trans (Nat.pow_le_pow_left hsum 2)
+
+/-- On an admissible lattice point, `latticeMass ≤ 3 ⌊N/4⌋²`. -/
+theorem latticeMass_le_of_admissible {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    latticeMass t ≤ 3 * (N / 4) ^ 2 := by
+  have hfour := (AdmissibleClass.isAdmissible_iff_four_le t).mp h
+  unfold latticeMass
+  simp only [Fin.sum_univ_three]
+  have h0 := axis_mass_le_floor (hfour 0)
+  have h1 := axis_mass_le_floor (hfour 1)
+  have h2 := axis_mass_le_floor (hfour 2)
+  linarith
+
+/-- Sharp admissible discrete mass bound `M_norm ≤ (4⌊N/4⌋/N)²`. -/
+theorem massNormalized_discrete_sharp {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    massNormalized (toTorsionParams t) ≤ ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by
+  have hlm := latticeMass_le_of_admissible t h
+  have hcoef : 0 ≤ (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by positivity
+  rw [massNormalized_eq_sixteen_lattice]
+  have hlmR : (latticeMass t : ℝ) ≤ 3 * ((N / 4 : ℕ) : ℝ) ^ 2 := by
+    exact_mod_cast hlm
+  have hN : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  set k : ℝ := ((N / 4 : ℕ) : ℝ) with hk
+  calc (16 : ℝ) / (3 * (N : ℝ) ^ 2) * (latticeMass t : ℝ)
+      ≤ (16 : ℝ) / (3 * (N : ℝ) ^ 2) * (3 * k ^ 2) := by gcongr
+    _ = (4 * k / N) ^ 2 := by
+        field_simp [hN]
+        ring
+    _ = ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by rw [hk]
+
+theorem massNormalized_discrete_le_one {N : ℕ} [NeZero N]
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    massNormalized (toTorsionParams t) ≤ 1 := by
+  have hsharp := massNormalized_discrete_sharp t h
+  have hfloor : (4 * (N / 4 : ℕ) : ℝ) ≤ N := by
+    exact_mod_cast Nat.mul_div_le N 4
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hfrac : (4 * (N / 4 : ℕ) : ℝ) / N ≤ 1 := (div_le_one hNpos).mpr hfloor
+  have hnn : 0 ≤ (4 * (N / 4 : ℕ) : ℝ) / N := div_nonneg (by positivity) hNpos.le
+  have hsq : ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 ≤ (1 : ℝ) ^ 2 :=
+    pow_le_pow_left₀ hnn hfrac 2
+  simpa using hsharp.trans hsq
+
+/-- If `N < 4`, the only admissible lattice point is the origin. -/
+theorem admissible_eq_zero_of_lt_four {N : ℕ} [NeZero N] (hN : N < 4)
+    (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
+    t.n a = 0 ∧ t.m a = 0 := by
+  have hfour := (AdmissibleClass.isAdmissible_iff_four_le t).mp h a
+  have hsum : (t.n a).val + (t.m a).val = 0 := by
+    have : 4 * ((t.n a).val + (t.m a).val) < 4 := lt_of_le_of_lt hfour hN
+    omega
+  have hn : (t.n a).val = 0 := by omega
+  have hm : (t.m a).val = 0 := by omega
+  exact ⟨(ZMod.val_eq_zero (t.n a)).mp hn, (ZMod.val_eq_zero (t.m a)).mp hm⟩
+
+theorem JNormalized_eq_zero_of_lt_four {N : ℕ} [NeZero N] (hN : N < 4)
+    (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    JNormalized (toTorsionParams t) = 0 := by
+  rw [JNormalized_eq_sixteen_lattice]
+  have hz : latticeMismatch t = 0 := by
+    unfold latticeMismatch
+    apply Finset.sum_eq_zero
+    intro a _
+    have ha := admissible_eq_zero_of_lt_four hN t h a
+    simp [ha.1, ha.2]
+  simp [hz]
+
+/-- For `N ≥ 8` there is an admissible balanced point with vanishing `J` and positive mass. -/
+theorem exists_admissible_balanced_massive {N : ℕ} [NeZero N] (hN : 8 ≤ N) :
+    ∃ t : DiscreteTorsion N, IsAdmissible t ∧ latticeMismatch t = 0 ∧
+      0 < mass (toTorsionParams t) := by
+  let t : DiscreteTorsion N := { n := fun _ => (1 : ZMod N), m := fun _ => (1 : ZMod N) }
+  have hval : (1 : ZMod N).val = 1 := by
+    have hlt : (1 : ℕ) < N := lt_of_lt_of_le (by decide : 1 < 8) hN
+    rw [ZMod.val_one_eq_one_mod]
+    exact Nat.mod_eq_of_lt hlt
+  have hadm : IsAdmissible t := by
+    rw [AdmissibleClass.isAdmissible_iff_four_le]
+    intro a
+    simp only [t, hval]
+    linarith
+  have hmis : latticeMismatch t = 0 := by
+    unfold latticeMismatch
+    simp [t, hval]
+  have hmass : 0 < mass (toTorsionParams t) := by
+    rw [mass_toTorsionParams]
+    have hcoef : 0 < (1 / 2 : ℝ) * (2 * Real.pi / N) ^ 2 := by positivity
+    have hL : (0 : ℝ) < (latticeMass t : ℝ) := by
+      have : 0 < latticeMass t := by
+        unfold latticeMass
+        simp only [t, Fin.sum_univ_three, hval]
+        norm_num
+      exact_mod_cast this
+    exact mul_pos hcoef hL
+  exact ⟨t, hadm, hmis, hmass⟩
 
 /-- If `4` does not divide `N`, every admissible point has `|JNormalized| < 1`. -/
 theorem torsion_bound_discrete_strict {N : ℕ} [NeZero N]

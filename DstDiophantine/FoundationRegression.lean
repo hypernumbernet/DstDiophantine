@@ -1,6 +1,8 @@
 import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
+import DstDiophantine.Framework.DiscreteCount
+import DstDiophantine.Algebra.Periodicity
 import DstDiophantine.Embedding.Height
 import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Amplification
@@ -35,6 +37,7 @@ import DstDiophantine.Algebra.CGA.NullCone
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
+import Mathlib.Data.Fintype.Card
 
 set_option linter.style.nativeDecide false
 
@@ -65,7 +68,7 @@ invariance, light-cone eigenvalues) are included; Gravity remains out of scope.
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
-open Operations Continuum UnitGroup Generators Sandwich PGA
+open Operations Continuum UnitGroup Generators Sandwich PGA Periodicity
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Logic
 
@@ -962,6 +965,58 @@ example : JNormalized (toTorsionParams (pureEllipticDiscrete 4)) = -1 :=
 example (t : DiscreteTorsion 3) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| < 1 :=
   torsion_bound_discrete_strict (by decide : ¬ 4 ∣ 3) t h
+
+/-- Cyclic rotor exponentials are `2π`-periodic. -/
+example (a : Fin 3) (θ : ℝ) (k : ℤ) :
+    NormedSpace.exp ((θ + 2 * Real.pi * k) • cyclic a) =
+      NormedSpace.exp (θ • cyclic a) :=
+  exp_cyclic_add_int_mul_two_pi a θ k
+
+/-- Hyperbolic rotor exponentials are nowhere `2π`-periodic. -/
+example (a : Fin 3) (θ : ℝ) :
+    NormedSpace.exp ((θ + 2 * Real.pi) • hyperbolic a) ≠
+      NormedSpace.exp (θ • hyperbolic a) :=
+  exp_hyperbolic_add_two_pi_ne a θ
+
+/-- The discrete torus has cardinality `N⁶`. -/
+example {N : ℕ} [NeZero N] : Fintype.card (DiscreteTorsion N) = N ^ 6 :=
+  card_discreteTorsion
+
+/-- Admissible embeddings land in `[0, 2π)`. -/
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (a : Fin 3) :
+    0 ≤ (toTorsionParams t).alpha a ∧ (toTorsionParams t).alpha a < 2 * Real.pi :=
+  ⟨toTorsionParams_alpha_nonneg t a, toTorsionParams_alpha_lt_two_pi t a⟩
+
+/-- For `N < 4` the admissible cone is only the origin, hence `JNormalized = 0`. -/
+example (t : DiscreteTorsion 3) (h : IsAdmissible t) :
+    JNormalized (toTorsionParams t) = 0 :=
+  JNormalized_eq_zero_of_lt_four (by decide : 3 < 4) t h
+
+/-- For `N ≥ 8` a balanced admissible point can have vanishing `J` and positive mass. -/
+example : ∃ t : DiscreteTorsion 8, IsAdmissible t ∧ latticeMismatch t = 0 ∧
+    0 < mass (toTorsionParams t) :=
+  exists_admissible_balanced_massive (by decide : 8 ≤ 8)
+
+/-- Admissible discrete rotors form a finite subset of the discrete rotor image. -/
+example {N : ℕ} [NeZero N] :
+    AdmissibleRotorImage N ⊆ DiscreteRotorImage N ∧ (AdmissibleRotorImage N).Finite :=
+  ⟨admissibleRotorImage_subset_discrete, admissibleRotorImage_finite⟩
+
+/-- Sharp discrete mass ceiling. -/
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    massNormalized (toTorsionParams t) ≤ ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 :=
+  massNormalized_discrete_sharp t h
+
+/-- Admissible cardinality is the cube of the triangular number `T(⌊N/4⌋)`. -/
+example {N : ℕ} [NeZero N] :
+    Fintype.card (AdmissibleClass N) = triangleNum (N / 4) ^ 3 :=
+  card_admissibleClass
+
+example : Fintype.card (AdmissibleClass 4) = 27 :=
+  card_admissibleClass_four
+
+example : Fintype.card (AdmissibleClass 8) = 216 :=
+  card_admissibleClass_eight
 
 /-! ### Algebraic sandwich surface (Gravity intentionally out of scope) -/
 

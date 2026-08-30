@@ -6,8 +6,18 @@
 \usepackage{enumitem}
 \usepackage{hyperref}
 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
 \newcommand{\Jnorm}{J_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
+\newcommand{\Mnorm}{M_{\rm norm}}
 
 \title{Discrete Dual Spacetime: Bounded Torsion Scalar and Finite Discrete Rotor Image}
 
@@ -19,7 +29,7 @@
 \maketitle
 
 \begin{abstract}
-The dual spacetime theory rejects the continuum hypothesis entirely, positing that each massive particle carries a pair of intrinsically compactified Minkowski spacetimes encoded in the 16-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$. In this companion paper, we formalize the discretization of the rapidity parameters arising from the natural compactness induced by the dual map $X \mapsto Xi$. This discretization renders the torsional mismatch rotor periodic. Admissibility (non-negative embedded rapidities with anti-synchronisation $\alpha_a+\beta_a\leq\pi/2$ per axis) is an additional hypothesis, not a consequence of discretizing the torus. On that cone the normalized torsion scalar satisfies $|\Jnorm|\leq 1$, equivalently $|J|\leq 3\pi^2/8$. What is finite is the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under the torsion-rotor map, not the unit group of an unspecified integer biquaternion order. The resulting Diophantine constraints on gravitational solutions provide a rigorous number-theoretic foundation for quantum gravity effects while preserving exact equivalence to General Relativity in the continuum limit. Physical implications include a natural ultraviolet cutoff, discrete torsional spectra in strong fields, and a finite number of stable nuclear states.
+The dual spacetime theory rejects the continuum hypothesis entirely, positing that each massive particle carries a pair of intrinsically compactified Minkowski spacetimes encoded in the 16-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$. In this companion paper, we formalize the discretization of the rapidity parameters arising from the dual map $X \mapsto Xi$. Cyclic (elliptic) rotor exponentials are $2\pi$-periodic; hyperbolic (boost) exponentials are nowhere $2\pi$-periodic, so placing boosts on a $2\pi$-torus is a modelling choice rather than a consequence of the exponential map. Admissibility---non-negative embedded rapidities with anti-synchronisation $\alpha_a+\beta_a\leq\pi/2$ per axis---is an additional hypothesis, not a consequence of discretizing the torus. On that cone the normalized torsion scalar satisfies $|\Jnorm|\leq 1$, equivalently $|J|\leq 3\pi^2/8$. The admissible locus itself is a product of three triangular cones of side $\lfloor N/4\rfloor$, of cardinality $T(\lfloor N/4\rfloor)^3$ with $T(K)=(K+1)(K+2)/2$, and $\Jnorm$ takes values in a finite rational lattice of spacing $16/(3N^2)$. What is finite is the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under the torsion-rotor map, not the unit group of an unspecified integer biquaternion order. The resulting Diophantine constraints on gravitational solutions provide a number-theoretic foundation for quantum gravity effects while preserving exact equivalence to General Relativity in the continuum limit.
 \end{abstract}
 
 \section{Introduction}
@@ -27,12 +37,14 @@ The dual spacetime theory rejects the continuum hypothesis entirely, positing th
 
 The dual spacetime theory, as presented in Ref.~\cite{main-paper}, achieves an exact algebraic reformulation of General Relativity as the teleparallel equivalent (TEGR) using biquaternions, while interpreting gravity and inertia as torsional mismatch between particle-intrinsic usual and dual spacetimes. A central philosophical tenet is the complete rejection of the spacetime continuum hypothesis: no shared differentiable manifold exists; spacetime degrees of freedom are demoted to internal attributes of particles.
 
-This rejection naturally invites a discrete structure at the fundamental scale. The biquaternion algebra $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$ already encodes compactness through the pseudoscalar $i$ ($i^2 = -1$) and the dual map $X \mapsto Xi$, which reverses the temporal arrow while preserving the Minkowski norm. The periodicity of rotor exponentials further suggests that the rapidity parameters $\omega_a$ and $\phi_a$ are angular variables on compact circles.
+This rejection naturally invites a discrete structure at the fundamental scale. The biquaternion algebra $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$ already encodes compactness through the pseudoscalar $i$ ($i^2 = -1$) and the dual map $X \mapsto Xi$, which reverses the temporal arrow while preserving the Minkowski norm. Only the cyclic sector of the rotor exponential is intrinsically periodic; the hyperbolic sector is not.
 
-In this paper, we rigorously develop this discretization. By quantizing the rapidity parameters in units of $2\pi/N$, where $N$ is a large integer related to the particle's compactification scale, we obtain:
+In this paper, we develop this discretization. By placing the six rapidity coordinates on the finite torus $(\mathbb{Z}/N\mathbb{Z})^6$, where $N$ is a large integer related to the particle's compactification scale, we obtain:
 \begin{itemize}
-  \item A bounded normalized torsion scalar $|\Jnorm| \leq 1$ on admissible configurations (equivalently $|J| \leq 3\pi^2/8$), due to the sign asymmetry of the Killing form together with the extra admissible-cone hypotheses (non-negative rapidities and anti-synchronisation). Discretization of the torus alone does not imply the bound,
-  \item A finite \emph{discrete rotor image}: the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under $t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$. This is not the unit group of an integer biquaternion order, which may be infinite (Pell-type),
+  \item A bounded normalized torsion scalar $|\Jnorm| \leq 1$ on admissible configurations (equivalently $|J| \leq 3\pi^2/8$), due to the sign asymmetry of the Killing form together with the extra admissible-cone hypotheses (non-negative rapidities and anti-synchronisation). Discretization of the torus alone does not imply the bound.
+  \item A sharp discrete refinement $|\Jnorm|\leq (4\lfloor N/4\rfloor/N)^2$, with equality $\pm 1$ attained if and only if $4\mid N$. When $N<4$ the admissible cone is a singleton and $\Jnorm=0$.
+  \item An explicit count of admissible points, $T(\lfloor N/4\rfloor)^3$, and a rational spectrum $\Jnorm=16\Delta/(3N^2)$ for an integer mismatch $\Delta$.
+  \item A finite \emph{discrete rotor image}: the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under $t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$. This is not the unit group of an integer biquaternion order, which may be infinite (Pell-type).
   \item Diophantine equations governing allowable torsional configurations. Quantizing hyperbolic rapidities onto a $2\pi$-torus is a modelling choice; balanced-type seeds have vanishing modular winding, so a torus-winding obstruction cannot fire on that locus.
 \end{itemize}
 All classical predictions are recovered in the continuum limit $N \to \infty$. The framework provides a natural bridge to quantum gravity without invoking additional structures.
@@ -50,62 +62,163 @@ J = \frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
 \]
 with $\Jnorm=\frac8{3\pi^2}J$. Under the half-angle expansion $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ and $B(i\Gamma_a,i\Gamma_a)=+8$, $B(\Gamma_a,\Gamma_a)=-8$, one has $B(\Omega_\text{biv},\Omega_\text{biv})=2\sum_a(\alpha_a^2-\beta_a^2)$, so $J$ is four times $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$. The six generators span a Lorentz candidate $\mathfrak{so}(3,1)$, not $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$.
 
+The same quadratic data determine an unsigned mass
+\[
+M = \frac12\sum_{a=1}^3(\alpha_a^2+\beta_a^2),\qquad \Mnorm=\frac8{3\pi^2}M.
+\]
+Vanishing of $J$ does not force vanishing of $M$: the balanced ray $\alpha_a=\beta_a$ has $\Jnorm=0$ with $\Mnorm>0$ whenever the common rapidity is nonzero. Usual--dual interchange sends $J\mapsto -J$ and preserves $M$.
+
 \section{Discretization of Rapidity Parameters}
 \label{sec:discretization}
 
-The dual map $X \mapsto Xi$ implies an intrinsic identification of the time direction with a circle: successive applications of the dual map twice return a sign flip ($Xi i = -X$), suggesting compactification. The exponential map for rotors is inherently periodic:
-\[
-\exp(\theta \Gamma_a) = \exp((\theta + 2\pi k) \Gamma_a), \quad k \in \mathbb{Z}.
-\]
-We therefore discretize
-\[
-\omega_a = \frac{2\pi n_a}{N}, \quad \phi_a = \frac{2\pi m_a}{N}, \quad n_a, m_a \in \mathbb{Z},
-\]
-where $N \gg 1$ is the effective number of states in the compact direction. Physically, $N \propto m c^2 / E_0$ with $E_0$ a fundamental energy (Planckian or particle-specific).
+The dual map $X \mapsto Xi$ implies an intrinsic identification of the time direction with a circle: successive applications of the dual map twice return a sign flip ($Xi i = -X$), suggesting compactification. This compactness of the dual identification must not be confused with periodicity of every rotor exponential.
 
-The mismatch rotor $\Omega$ now takes values in a finite set, as the phase space of relative angles is the torus $(\mathbb{Z}/N\mathbb{Z})^6$.
+\begin{theorem}[Sectorial periodicity]
+\label{thm:periodicity}
+Let $B^-_a$ be a cyclic generator ($B^-_a{}^2=-1$) and $B^+_a$ a hyperbolic generator ($B^+_a{}^2=+1$). Then, for every real $\theta$ and every $k\in\mathbb{Z}$,
+\[
+\exp\bigl((\theta+2\pi k)B^-_a\bigr)=\exp(\theta B^-_a),
+\]
+while
+\[
+\exp\bigl((\theta+2\pi)B^+_a\bigr)\neq\exp(\theta B^+_a).
+\]
+In particular $\exp(2\pi B^-_a)=1$ and $\exp(2\pi B^+_a)\neq 1$.
+\end{theorem}
+
+Thus only the elliptic (dual-rotation) sector is intrinsically $2\pi$-periodic. Placing hyperbolic rapidities on a $2\pi$-torus remains a modelling choice, justified by the dual-map compactification rather than by the exponential of a boost.
+
+We nevertheless discretize both sectors uniformly,
+\[
+\omega_a = \frac{2\pi n_a}{N}, \quad \phi_a = \frac{2\pi m_a}{N}, \quad n_a, m_a \in \mathbb{Z}/N\mathbb{Z},
+\]
+where $N \gg 1$ is the effective number of states in the compact direction. Physically, $N \propto m c^2 / E_0$ with $E_0$ a fundamental energy (Planckian or particle-specific). Canonical representatives satisfy $0\leq n_a,m_a<N$, hence the embedded rapidities lie in $[0,2\pi)$.
+
+\begin{proposition}
+\label{prop:torus-card}
+The discrete phase space $(\mathbb{Z}/N\mathbb{Z})^6$ has cardinality $N^6$.
+\end{proposition}
+
+The mismatch rotor $\Omega$ therefore takes values in a finite set, namely the image of this torus under the torsion-rotor exponential. Every discrete rotor is unitary: $R\,\widetilde{R}=1$.
 
 \section{Bounded Torsion Scalar on Admissible Configurations}
 \label{sec:bounded}
 
-We call a discrete configuration \emph{admissible} when the embedded rapidities satisfy $\alpha_a,\beta_a\geq 0$ and $\alpha_a+\beta_a\leq\pi/2$ for each axis $a=1,2,3$ (see Ref.~\cite{diophantine-paper} for the full definition). Admissibility is an extra hypothesis: it is not implied by placing the six rapidities on $(\mathbb{Z}/N\mathbb{Z})^6$. The principal-branch condition $|\alpha_a+\beta_a|\le\pi/2$ alone does not bound $J$. The Killing form asymmetry implies that maximal attraction occurs when usual boosts dominate ($\alpha_a \gg \beta_a$), and maximal repulsion when dual rotations dominate. On admissible configurations the extremal values are pure hyperbolic dominance ($\alpha_a=\pi/2$, $\beta_a=0$, all $a$), giving $J=\Jbound$ and $\Jnorm=1$, or pure elliptic dominance ($\alpha_a=0$, $\beta_a=\pi/2$), giving $J=-\Jbound$ and $\Jnorm=-1$. Equality $|\Jnorm|=1$ holds if and only if every axis is of the same extremal type.
+\begin{definition}[Admissible configuration]
+\label{def:admissible}
+A discrete configuration is \emph{admissible} when the embedded rapidities satisfy $\alpha_a,\beta_a\geq 0$ and $\alpha_a+\beta_a\leq\pi/2$ for each axis $a=1,2,3$ (see Ref.~\cite{diophantine-paper} for the surrounding discussion).
+\end{definition}
 
-Explicit computation for small $N$ (e.g., $N=4,8$) shows $\Jnorm$ confined to a lattice within $[-1,1]$ on the admissible subset of the torus. Formally,
+Admissibility is an extra hypothesis: it is not implied by placing the six rapidities on $(\mathbb{Z}/N\mathbb{Z})^6$. Non-negativity of the embedding is automatic for canonical torus representatives, so the content of the hypothesis is the anti-synchronisation inequality. Equivalently, on each axis,
+\begin{equation}
+\label{eq:four-le}
+4(n_a+m_a)\leq N.
+\end{equation}
+The principal-branch condition $|\alpha_a+\beta_a|\le\pi/2$ alone does not bound $J$.
+
+The Killing form asymmetry implies that maximal attraction occurs when usual boosts dominate ($\alpha_a \gg \beta_a$), and maximal repulsion when dual rotations dominate. On the continuous admissible cone the extremal values are pure hyperbolic dominance ($\alpha_a=\pi/2$, $\beta_a=0$, all $a$), giving $J=\Jbound$ and $\Jnorm=1$, or pure elliptic dominance ($\alpha_a=0$, $\beta_a=\pi/2$), giving $J=-\Jbound$ and $\Jnorm=-1$. Equality $|\Jnorm|=1$ holds if and only if every axis is of the same extremal type. The unsigned mass obeys the same ceiling: $0\leq\Mnorm\leq 1$, with equality at either wall.
+
+\begin{theorem}[Continuous admissible bound]
+\label{thm:continuous-bound}
+For every admissible continuous configuration,
 \[
-|J| \leq \Jbound, \qquad |\Jnorm| \leq 1,
+|J| \leq \Jbound, \qquad |\Jnorm| \leq 1, \qquad 0\leq \Mnorm\leq 1.
 \]
-with equality at the pure boost or rotation dominance configurations above. Configurations that violate admissibility (e.g.\ negative embedded rapidities while $|\delta_a|\leq\pi/2$) need not satisfy this bound.
+The image of $\Jnorm$ on that cone is exactly $[-1,1]$.
+\end{theorem}
 
-In the continuum limit $N \to \infty$, the admissible envelope $\alpha_a,\beta_a\in[0,\pi/2]$ with $\alpha_a+\beta_a\leq\pi/2$ persists; the discrete bound $|\Jnorm|\leq 1$ therefore remains valid in the limiting theory on that domain, while TEGR equivalence is recovered locally.
+Configurations that violate admissibility (e.g.\ negative embedded rapidities while $|\delta_a|\leq\pi/2$) need not satisfy this bound.
 
-\section{Integer Biquaternion Ring and Finite Unit Group}
+\subsection{Integer mismatch and the discrete spectrum}
+
+Write
+\[
+\Delta(t)=\sum_{a=1}^3\bigl(n_a^2-m_a^2\bigr),\qquad
+\Sigma(t)=\sum_{a=1}^3\bigl(n_a^2+m_a^2\bigr)
+\]
+for a torus point $t=(n_a,m_a)$. The torsional scalars are then exactly the rational multiples
+\begin{equation}
+\label{eq:spectrum}
+\begin{aligned}
+J&=\tfrac12\bigl(2\pi/N\bigr)^2\Delta(t),
+&
+\Jnorm&=\frac{16}{3N^2}\Delta(t),\\
+M&=\tfrac12\bigl(2\pi/N\bigr)^2\Sigma(t),
+&
+\Mnorm&=\frac{16}{3N^2}\Sigma(t).
+\end{aligned}
+\end{equation}
+In particular $\Jnorm=0$ if and only if $\Delta(t)=0$. Balanced axes $n_a=m_a$ give a sufficient condition for vanishing $J$, but not a necessary one.
+
+\begin{theorem}[Sharp discrete bound]
+\label{thm:sharp}
+On every admissible discrete configuration,
+\[
+\bigl|\Delta(t)\bigr|\leq 3\bigl\lfloor N/4\bigr\rfloor^2,\qquad
+\Sigma(t)\leq 3\bigl\lfloor N/4\bigr\rfloor^2,
+\]
+and therefore
+\[
+|\Jnorm|\leq\Bigl(\frac{4\lfloor N/4\rfloor}{N}\Bigr)^2,\qquad
+\Mnorm\leq\Bigl(\frac{4\lfloor N/4\rfloor}{N}\Bigr)^2\leq 1.
+\]
+If $4\mid N$, both signs $\Jnorm=\pm 1$ are attained, at the pure-hyperbolic lattice point $n_a=N/4$, $m_a=0$ and the pure-elliptic point $n_a=0$, $m_a=N/4$ respectively. If $4\nmid N$, every admissible point satisfies $|\Jnorm|<1$.
+\end{theorem}
+
+\begin{corollary}
+\label{cor:small-N}
+If $N<4$, the only admissible point is the origin, and $\Jnorm=0$ identically on the admissible cone.
+\end{corollary}
+
+For $N\geq 8$ the balanced lattice point $n_a=m_a=1$ (all axes) is admissible, has $\Delta=0$, and has strictly positive mass. Thus vanishing $J$ on the discrete cone does not force the vacuum.
+
+\subsection{Cardinality of the admissible cone}
+
+Inequality~\eqref{eq:four-le} factorizes across axes. On each axis the pairs $(n,m)$ with $n+m\leq\lfloor N/4\rfloor$ form a triangular region of cardinality $T(K)=(K+1)(K+2)/2$ with $K=\lfloor N/4\rfloor$.
+
+\begin{theorem}[Admissible cardinality]
+\label{thm:card}
+The number of admissible configurations is
+\[
+T\bigl(\lfloor N/4\rfloor\bigr)^3=\Biggl(\frac{\bigl(\lfloor N/4\rfloor+1\bigr)\bigl(\lfloor N/4\rfloor+2\bigr)}{2}\Biggr)^3.
+\]
+In particular the count depends on $N$ only through $\lfloor N/4\rfloor$. For $N<4$ it equals $1$; for $N=4$ it equals $27$; for $N=8$ it equals $216$.
+\end{theorem}
+
+The admissible values of $\Jnorm$ therefore form a finite subset of the scaled integer lattice $\frac{16}{3N^2}\mathbb{Z}$, lying in the interval determined by Theorem~\ref{thm:sharp}. As $N\to\infty$ through multiples of $4$, this discrete image becomes dense in $[-1,1]$: every value in $[-1,1]$ is approximated arbitrarily closely by $\Jnorm$ of an admissible torus point.
+
+In the continuum limit the admissible envelope $\alpha_a,\beta_a\in[0,\pi/2]$ with $\alpha_a+\beta_a\leq\pi/2$ persists; the bound $|\Jnorm|\leq 1$ therefore remains valid in the limiting theory on that domain, while TEGR equivalence is recovered locally.
+
+\section{Integer Biquaternion Ring and Finite Rotor Image}
 \label{sec:integer}
 
 Define the integer biquaternion ring as the $\mathbb{Z}$-span of the basis with Gaussian/Hurwitz integer coefficients in each quaternion sector (precise order to be classified). That order is not constructed here, and a Lorentzian integer order may have infinitely many units (Pell-type).
 
-What is finite---and all that the discrete torus supplies---is the \emph{discrete rotor image}: the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under the torsion-rotor map $t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$. Finiteness of the domain implies finiteness of the image; no enumeration, and no identification with $R^\times$ of an integer order, is required. Quantizing hyperbolic rapidities onto a $2\pi$-torus remains a modelling choice. For balanced-type seeds the modular winding number vanishes, so a winding obstruction on that torus cannot fire.
+What is finite---and all that the discrete torus supplies---is the \emph{discrete rotor image}: the image of $(\mathbb{Z}/N\mathbb{Z})^6$ under the torsion-rotor map $t\mapsto\exp(\Omega_{\mathrm{torsion}}(t))$. Finiteness of the domain implies finiteness of the image; no enumeration, and no identification with $R^\times$ of an integer order, is required. The image of the admissible subclass is a finite subset of that rotor image.
+
+Quantizing hyperbolic rapidities onto a $2\pi$-torus remains a modelling choice, as Theorem~\ref{thm:periodicity} records. For balanced-type seeds the modular winding number vanishes, so a winding obstruction on that torus cannot fire.
 
 \section{Diophantine Constraints on Gravitational Solutions}
 \label{sec:diophantine}
 
-The field equations in the discrete theory reduce to finding integer solutions $(n_a, m_a)$ satisfying Diophantine equations derived from the action principle. For example, spherically symmetric solutions correspond to integer points on elliptic curves parameterizing radial torsional profiles.
+The field equations in the discrete theory reduce to finding integer solutions $(n_a, m_a)$ satisfying Diophantine equations derived from the action principle, searched over the admissible cone of Theorem~\ref{thm:card}. Zero torsional height is the integer condition $\Delta(t)=0$. For example, spherically symmetric solutions correspond to integer points on elliptic curves parameterizing radial torsional profiles.
 
-The layered torsional structure (attractive/repulsive alternations) manifests as finite resonance conditions, naturally explaining the finite number of stable nuclei and the absence of superheavy elements.
+The layered torsional structure (attractive/repulsive alternations) manifests as finite resonance conditions. Finiteness of the admissible rotor classes at each $N$ is a theorem; a numerical nuclear cutoff is not.
 
 \section{Physical and Observational Implications}
 \label{sec:implications}
 
 \begin{itemize}
-  \item \textbf{Ultraviolet cutoff}: Maximal $|\Jnorm| = 1$ (equivalently $|J| = 3\pi^2/8$) on admissible configurations implies bounded acceleration, eliminating singularities.
-  \item \textbf{Discrete spectra}: Gravitational wave echoes and nuclear energy levels acquire discrete torsional contributions.
-  \item \textbf{Nuclear chart}: Finiteness of the discrete rotor image implies only that there are finitely many admissible rotor classes at each $N$. A numerical cutoff $A\lesssim 300$ is an underived heuristic, not a theorem of the discrete algebra.
-  \item \textbf{Experimental tests}: Search for discrete torsional echoes in LIGO/Virgo data; precision clock networks probing planetary cores for exact $J=0$ cancellation.
+  \item \textbf{Ultraviolet cutoff}: Maximal $|\Jnorm| = 1$ (equivalently $|J| = 3\pi^2/8$) on admissible configurations implies bounded acceleration, eliminating singularities. At finite $N$ the effective ceiling is the stricter value $(4\lfloor N/4\rfloor/N)^2$.
+  \item \textbf{Discrete spectra}: Gravitational wave echoes and nuclear energy levels acquire discrete torsional contributions, spaced by the lattice~\eqref{eq:spectrum}.
+  \item \textbf{Nuclear chart}: Finiteness of the discrete rotor image implies only that there are finitely many admissible rotor classes at each $N$, namely at most $T(\lfloor N/4\rfloor)^3$ of them. A numerical cutoff $A\lesssim 300$ is an underived heuristic, not a theorem of the discrete algebra.
+  \item \textbf{Experimental tests}: Search for discrete torsional echoes in LIGO/Virgo data; precision clock networks probing planetary cores for exact $J=0$ cancellation. A $J=0$ detection would not by itself imply vanishing mass.
 \end{itemize}
 
 \section{Conclusions and Outlook}
 \label{sec:conclusions}
 
-The discretization of dual spacetime completes the rejection of the continuum, yielding a bounded torsion scalar on the admissible cone, a finite discrete rotor image, and a Diophantine search space. Future work includes constructing an actual integer order (whose unit group need not be finite) and explicit descent arguments connecting macroscopic GR solutions to Planck-scale integer configurations. Admissibility, the rotor-image finiteness, and any nuclear-chart cutoff remain logically independent of one another.
+The discretization of dual spacetime completes the rejection of the continuum, yielding a bounded torsion scalar on the admissible cone, a sharp discrete ceiling governed by $\lfloor N/4\rfloor$, an explicit triangular count of admissible points, a finite discrete rotor image, and a Diophantine search space. Cyclic rotor exponentials are $2\pi$-periodic; hyperbolic ones are not, so torus quantization of boosts remains a modelling choice. Future work includes constructing an actual integer order (whose unit group need not be finite) and explicit descent arguments connecting macroscopic GR solutions to Planck-scale integer configurations. Admissibility, the rotor-image finiteness, and any nuclear-chart cutoff remain logically independent of one another.
 
 This framework elevates dual spacetime theory to a candidate for quantum gravity grounded in classical algebraic geometry and number theory.
 

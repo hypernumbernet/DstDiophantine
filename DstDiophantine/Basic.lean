@@ -8,6 +8,7 @@ import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Descent
 import DstDiophantine.Framework.Lattice
+import DstDiophantine.Framework.DiscreteCount
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
@@ -66,10 +67,17 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   goldbachEquation goldbachMotor_one_iff abcEquation abcMotor_one_iff
   gapEquation gapMotor_one_iff
   IsZeroHeight AdmissibleClass ExistsZeroHeight
-  latticeMismatch abs_latticeMismatch_le_of_admissible
-  JNormalized_eq_sixteen_lattice
+  latticeMismatch latticeMass abs_latticeMismatch_le_of_admissible
+  latticeMass_le_of_admissible
+  JNormalized_eq_sixteen_lattice massNormalized_eq_sixteen_lattice
   torsion_bound_discrete_sharp torsion_bound_discrete_sharp_le_one
-  torsion_bound_discrete_strict
+  torsion_bound_discrete_strict massNormalized_discrete_sharp
+  massNormalized_discrete_le_one
+  admissible_eq_zero_of_lt_four JNormalized_eq_zero_of_lt_four
+  exists_admissible_balanced_massive
+  AxisPair triangleNum card_axisPair card_admissibleClass
+  card_admissibleClass_eq_of_div_four card_admissibleClass_one_of_lt_four
+  card_admissibleClass_four card_admissibleClass_eight
   pureHyperbolicDiscrete pureEllipticDiscrete
   pureHyperbolicDiscrete_admissible pureEllipticDiscrete_admissible
   JNormalized_pureHyperbolicDiscrete JNormalized_pureEllipticDiscrete

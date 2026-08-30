@@ -1,6 +1,10 @@
 import DstDiophantine.Algebra.Admissible
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Tactic.Positivity
 
 /-!
 # Discrete torsion torus `(ℤ/Nℤ)⁶`
@@ -38,6 +42,12 @@ noncomputable instance : Fintype (DiscreteTorsion N) :=
 instance : Finite (DiscreteTorsion N) :=
   inferInstance
 
+/-- The discrete phase space is the six-torus of cardinality `N⁶`. -/
+theorem card_discreteTorsion : Fintype.card (DiscreteTorsion N) = N ^ 6 := by
+  rw [Fintype.card_congr discreteEquiv, Fintype.card_prod]
+  simp [Fintype.card_fin, ZMod.card]
+  ring
+
 /-- Embed discrete rapidities into continuous torsion parameters. -/
 noncomputable def toTorsionParams (t : DiscreteTorsion N) : TorsionParams where
   alpha := fun a => 2 * Real.pi * (t.n a).val / N
@@ -62,6 +72,24 @@ theorem toTorsionParams_beta_nonneg (t : DiscreteTorsion N) (a : Fin 3) :
   have hπ : 0 ≤ Real.pi := Real.pi_pos.le
   have hN : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
   exact div_nonneg (mul_nonneg (mul_nonneg (by norm_num) hπ) (Nat.cast_nonneg _)) hN.le
+
+theorem toTorsionParams_alpha_lt_two_pi (t : DiscreteTorsion N) (a : Fin 3) :
+    (toTorsionParams t).alpha a < 2 * Real.pi := by
+  simp only [toTorsionParams_alpha]
+  have hN : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hval : ((t.n a).val : ℝ) < N := Nat.cast_lt.mpr (ZMod.val_lt _)
+  have hmul : 2 * Real.pi * ((t.n a).val : ℝ) < 2 * Real.pi * N :=
+    mul_lt_mul_of_pos_left hval (by positivity)
+  rwa [div_lt_iff₀ hN]
+
+theorem toTorsionParams_beta_lt_two_pi (t : DiscreteTorsion N) (a : Fin 3) :
+    (toTorsionParams t).beta a < 2 * Real.pi := by
+  simp only [toTorsionParams_beta]
+  have hN : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hval : ((t.m a).val : ℝ) < N := Nat.cast_lt.mpr (ZMod.val_lt _)
+  have hmul : 2 * Real.pi * ((t.m a).val : ℝ) < 2 * Real.pi * N :=
+    mul_lt_mul_of_pos_left hval (by positivity)
+  rwa [div_lt_iff₀ hN]
 
 /-- Backward-compatible aliases for continuous admissibility predicates. -/
 abbrev IsPrincipalBranch := Admissible.IsPrincipalBranch

@@ -89,6 +89,23 @@ theorem reverse_discreteRotor_zero_mem
   rw [reverse_discreteRotor, h0]
   simp [negTorsionParams, rotorTorsion, omegaTorsion, h]
 
+/-- Image of *admissible* discrete rotors. A subset of `DiscreteRotorImage`. -/
+def AdmissibleRotorImage (N : ℕ) [NeZero N] : Set PGA :=
+  { x | ∃ t : DiscreteTorsion N, IsAdmissible t ∧ discreteRotor t = x }
+
+theorem mem_admissibleRotorImage_iff {x : PGA} :
+    x ∈ AdmissibleRotorImage N ↔
+      ∃ t : DiscreteTorsion N, IsAdmissible t ∧ discreteRotor t = x :=
+  Iff.rfl
+
+theorem admissibleRotorImage_subset_discrete :
+    AdmissibleRotorImage N ⊆ DiscreteRotorImage N := by
+  rintro x ⟨t, _, rfl⟩
+  exact ⟨t, rfl⟩
+
+theorem admissibleRotorImage_finite : (AdmissibleRotorImage N).Finite :=
+  discreteUnit_finite.subset admissibleRotorImage_subset_discrete
+
 end UnitGroup
 
 end DstDiophantine

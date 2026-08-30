@@ -12,6 +12,7 @@ import DstDiophantine.Algebra.LorentzDim
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Operations
+import DstDiophantine.Algebra.Periodicity
 import DstDiophantine.Algebra.PGA
 import DstDiophantine.Algebra.QuadraticForm
 import DstDiophantine.Algebra.Sandwich
@@ -50,6 +51,8 @@ export Admissible (IsPrincipalBranch IsAdmissibleContinuous
   admissibleContinuous_implies_principalBranch)
 export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
   toTorsionParams_alpha_nonneg toTorsionParams_beta_nonneg
+  toTorsionParams_alpha_lt_two_pi toTorsionParams_beta_lt_two_pi
+  card_discreteTorsion
   isAdmissible_iff_admissibleContinuous isAdmissible_iff_principalBranch
   admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
   admissible_beta_le_half_pi)
@@ -67,7 +70,8 @@ export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp 
   reverse_rotorTorsion_pureBoost_eq rotorTorsion_pureBoost_mul boostConjLambda)
 export UnitGroup (discreteRotor DiscreteUnit DiscreteRotorImage discreteUnit_finite
   discreteRotorImage_finite reverse_discreteRotor discreteRotor_mul_reverse
-  negTorsionParams)
+  negTorsionParams AdmissibleRotorImage admissibleRotorImage_subset_discrete
+  admissibleRotorImage_finite)
 export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef J5_eq killingForm
   omegaTorsionGeneratorKilling omegaTorsionGeneratorKilling_eq
   omegaTorsion_killing_vs_param paper_appendix_killing_coeff_false
@@ -112,6 +116,8 @@ export ModularAmplification (windingCoord amplifyDiscrete windingTotal amplified
   windingTotal_eq_zero_of_rapidity_lt
   not_exists_modularWitness_of_rapidity_lt
   not_exists_modularWitness_of_balanced_gap)
+export Periodicity (exp_cyclic_add_int_mul_two_pi exp_cyclic_two_pi
+  exp_hyperbolic_add_two_pi_ne exp_hyperbolic_two_pi_ne_one hyperbolic_ne_zero)
 export Continuum (AdmissibleContinuous exists_discrete_approx exists_discrete_approx_J
   lattice_in_interval dense_discrete_JNormalized)
 export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
@@ -136,6 +142,12 @@ example (p : Operations.TorsionParams) :
 example : ∃ p : Operations.TorsionParams,
     Invariant.J p = 0 ∧ 0 < Invariant.mass p ∧ relativeRotor p ≠ 1 :=
   J_zero_not_relativeRotor_one
+
+/-- Regression: cyclic generators give a \(2\pi\)-periodic exponential. -/
+example (a : Fin 3) :
+    NormedSpace.exp ((2 * Real.pi) • hyperbolic a) ≠ (1 : PGA) ∧
+      NormedSpace.exp ((2 * Real.pi) • cyclic a) = 1 :=
+  ⟨exp_hyperbolic_two_pi_ne_one a, exp_cyclic_two_pi a⟩
 
 /-- Regression: the Banach exponential of a null generator truncates. -/
 example (p : Motor.TransParams) :
