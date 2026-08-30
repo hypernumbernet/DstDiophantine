@@ -17,7 +17,7 @@ import Mathlib.Tactic.Abel
 Maxwell's equations, a Weinberg angle, \(W/Z\) masses, and a Lorentz-invariant
 Weyl V--A gauge theory are **not** derived. The dual map \(X\mapsto Xi\) is
 not a chirality projector. Axis-dependent sandwich selection is not identified
-with the Standard Model.
+with the Standard Model, nor with photon helicity.
 
 ## What is proved
 
@@ -29,6 +29,10 @@ with the Standard Model.
   \(3+3\): \(\Gamma_0,\,i\Gamma_1,\,i\Gamma_2\) commute with \(e_1\);
   \(i\Gamma_0,\,\Gamma_1,\,\Gamma_2\) anticommute. Same-projector sandwich
   \(P_R X P_R\) kills the anticommuting summand and retains the commuting one.
+  The coefficient split \(p=\mathrm{Cartan}+\mathrm{Charged}\) realises that
+  decomposition on \(E,B\); the \(z\)-Poynting cross of Cartan against Charged
+  vanishes. The left sandwich \(P_L X P_L\) likewise kills the anticommuting
+  summand, so \(P_{L,R}\) do not select a helicity sign.
 * A one-parameter mix rotating \((E,B)\) in every axis acts on the
   Faraday quadratic by \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\).
   Hodge duality is the special angle \(\omega=\pi/2\). Same-axis \(E_a,B_a\)
@@ -386,6 +390,54 @@ noncomputable def faradayCharged (p : FaradayParams) : PGA :=
   (p.E 0 / 2) • hyperbolic 0 + (p.B 1 / 2) • cyclic 1 +
     (p.B 2 / 2) • cyclic 2
 
+/-- Coefficient Cartan summand: commuting triple \((B_x,E_y,E_z)\). -/
+def cartanParams (p : FaradayParams) : FaradayParams where
+  E := fun
+    | 0 => 0
+    | 1 => p.E 1
+    | 2 => p.E 2
+  B := fun
+    | 0 => p.B 0
+    | _ => 0
+
+/-- Coefficient charged summand: anticommuting triple \((E_x,B_y,B_z)\). -/
+def chargedParams (p : FaradayParams) : FaradayParams where
+  E := fun
+    | 0 => p.E 0
+    | _ => 0
+  B := fun
+    | 0 => 0
+    | 1 => p.B 1
+    | 2 => p.B 2
+
+theorem cartanParams_add_chargedParams (p : FaradayParams) :
+    cartanParams p + chargedParams p = p := by
+  ext a <;> fin_cases a <;> simp [cartanParams, chargedParams]
+
+theorem faraday_cartanParams (p : FaradayParams) :
+    faraday (cartanParams p) = faradayCartan p := by
+  rw [faraday_eq_add]
+  unfold faradayUsual faradayDual faradayCartan toTorsion cartanParams
+    omegaUsual omegaDual
+  simp only [Fin.sum_univ_three]
+  simp [zero_div, zero_smul]
+  abel
+
+theorem faraday_chargedParams (p : FaradayParams) :
+    faraday (chargedParams p) = faradayCharged p := by
+  rw [faraday_eq_add]
+  unfold faradayUsual faradayDual faradayCharged toTorsion chargedParams
+    omegaUsual omegaDual
+  simp only [Fin.sum_univ_three]
+  simp [zero_div, zero_smul]
+  abel
+
+/-- The \(z\)-Poynting cross of a Cartan field against a charged field vanishes. -/
+theorem cross_z_cartan_charged (p q : FaradayParams) :
+    cross (cartanParams p).E (chargedParams q).B 2 = 0 ∧
+      cross (chargedParams q).E (cartanParams p).B 2 = 0 := by
+  constructor <;> simp [cross, cartanParams, chargedParams]
+
 theorem faraday_eq_cartan_add_charged (p : FaradayParams) :
     faraday p = faradayCartan p + faradayCharged p := by
   rw [faraday_eq_add]
@@ -416,6 +468,86 @@ theorem chiralSandwich_faraday (p : FaradayParams) :
     chiralSandwich (faraday p) = chiralityR * faradayCartan p := by
   rw [faraday_eq_cartan_add_charged, chiralSandwich_add,
     chiralSandwich_cartan, chiralSandwich_charged, add_zero]
+
+/-! ### Left sandwich \(P_L X P_L\) also kills the charged summand -/
+
+/-- \(P_L X P_L\). Linear in \(X\). -/
+noncomputable def chiralSandwichL (x : PGA) : PGA :=
+  chiralityL * x * chiralityL
+
+theorem chiralSandwichL_add (x y : PGA) :
+    chiralSandwichL (x + y) = chiralSandwichL x + chiralSandwichL y := by
+  unfold chiralSandwichL
+  noncomm_ring
+
+theorem chiralSandwichL_smul (c : ℝ) (x : PGA) :
+    chiralSandwichL (c • x) = c • chiralSandwichL x := by
+  unfold chiralSandwichL
+  rw [mul_smul_comm, smul_mul_assoc]
+
+private theorem chiralSandwichL_expand (x : PGA) :
+    chiralSandwichL x =
+      ((1 : PGA) - chiralityGen) * x * ((1 : PGA) - chiralityGen) *
+        (half * half) := by
+  unfold chiralSandwichL chiralityL
+  have hhalfx : half * x = x * half := half_comm x
+  calc ((1 : PGA) - chiralityGen) * half * x *
+        (((1 : PGA) - chiralityGen) * half)
+      = ((1 : PGA) - chiralityGen) * (half * x) *
+          ((1 : PGA) - chiralityGen) * half := by simp [mul_assoc]
+    _ = ((1 : PGA) - chiralityGen) * (x * half) *
+          ((1 : PGA) - chiralityGen) * half := by rw [hhalfx]
+    _ = ((1 : PGA) - chiralityGen) * x *
+          (half * ((1 : PGA) - chiralityGen)) * half := by simp [mul_assoc]
+    _ = ((1 : PGA) - chiralityGen) * x *
+          (((1 : PGA) - chiralityGen) * half) * half := by rw [half_comm]
+    _ = ((1 : PGA) - chiralityGen) * x * ((1 : PGA) - chiralityGen) *
+          (half * half) := by simp [mul_assoc]
+
+private theorem one_sub_mul_anticomm {g x : PGA} (hg : g * g = 1)
+    (hanti : g * x = -(x * g)) :
+    ((1 : PGA) - g) * x * ((1 : PGA) - g) = 0 := by
+  have hneg : (-g) * (-g) = (1 : PGA) := by
+    simp [neg_mul, mul_neg, hg]
+  have hanti' : (-g) * x = -(x * (-g)) := by
+    calc (-g) * x = -(g * x) := by simp [neg_mul]
+      _ = -(-(x * g)) := by rw [hanti]
+      _ = x * g := by simp
+      _ = -(x * (-g)) := by simp [mul_neg]
+  have h := one_add_mul_anticomm hneg hanti'
+  simpa [sub_eq_add_neg] using h
+
+theorem chiralSandwichL_eq_zero_of_anticomm {x : PGA}
+    (hanti : chiralityGen * x = -(x * chiralityGen)) :
+    chiralSandwichL x = 0 := by
+  rw [chiralSandwichL_expand, one_sub_mul_anticomm chiralityGen_sq hanti,
+    zero_mul]
+
+theorem chiralSandwichL_hyperbolic0 :
+    chiralSandwichL (hyperbolic 0) = 0 :=
+  chiralSandwichL_eq_zero_of_anticomm chiralityGen_anticomm_hyperbolic0
+
+theorem chiralSandwichL_cyclic1 :
+    chiralSandwichL (cyclic 1) = 0 :=
+  chiralSandwichL_eq_zero_of_anticomm chiralityGen_anticomm_cyclic1
+
+theorem chiralSandwichL_cyclic2 :
+    chiralSandwichL (cyclic 2) = 0 :=
+  chiralSandwichL_eq_zero_of_anticomm chiralityGen_anticomm_cyclic2
+
+/-- The left sandwich likewise kills the anticommuting Faraday summand. -/
+theorem chiralSandwichL_charged (p : FaradayParams) :
+    chiralSandwichL (faradayCharged p) = 0 := by
+  unfold faradayCharged
+  rw [chiralSandwichL_add, chiralSandwichL_add, chiralSandwichL_smul,
+    chiralSandwichL_smul, chiralSandwichL_smul, chiralSandwichL_hyperbolic0,
+    chiralSandwichL_cyclic1, chiralSandwichL_cyclic2]
+  simp
+
+theorem chiralSandwichL_faraday (p : FaradayParams) :
+    chiralSandwichL (faraday p) = chiralSandwichL (faradayCartan p) := by
+  rw [faraday_eq_cartan_add_charged, chiralSandwichL_add,
+    chiralSandwichL_charged, add_zero]
 
 /-! ### Same-axis mix and the Faraday quadratic -/
 

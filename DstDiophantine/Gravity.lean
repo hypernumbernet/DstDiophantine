@@ -45,7 +45,9 @@ quadratic \(J=\tfrac12(E^2-B^2)\), null circular snapshots with \(J=0\) and
 \(M>0\), Hodge period 4 versus the period-2 parameter swap and laboratory
 \(T\), sandwich commutator versus the paper wedge on rest and on a
 \(y\)-velocity, rest sandwich of every dual Faraday field vanishes;
-Maxwell is not derived), the electroweak skeleton of
+the commutator of the Faraday bivector on \(e_0+v\) is the 4-kick
+\((E\cdot v)\,e_0+(E-v\times B)\), i.e.\ the Lorentz 4-force of
+laboratory time-reversed \((E,-B)\); Maxwell is not derived), the electroweak skeleton of
 `Electroweak` (dual map is not a Weyl projector; Faraday \(3+3\) split
 relative to \(e_1\); same-projector sandwich kills the anticommuting
 summand; mix \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\) with duality
@@ -53,7 +55,12 @@ at \(\omega=\pi/2\); pure \(E\) has \(J\ge 0\), pure \(B\) has \(J\le 0\);
 no Weinberg angle, no \(W/Z\) masses), and the circular-wave identities of
 `CircularPolarization` (null at every phase, Poynting \(\sigma E_0^2\),
 vanishing four-phase mean of linear coefficients, superposition does not
-shift mean \(J\), mix cannot create \(J\); no helicity drive of \(J\)).
+shift mean \(J\), mix cannot create \(J\); axis \(e_1\) splits a circular
+wave into null Cartan and charged linear pieces whose Poynting parts add
+without a cross term; both \(P_{L,R}\) kill the charged summand, so axis
+chirality is not photon helicity; rest electric kick has vanishing
+four-phase mean; a beam-direction velocity yields a transverse sandwich
+force; no helicity drive of \(J\)).
 -/
 
 namespace DstDiophantine
@@ -413,6 +420,68 @@ example (p : FaradayParams) :
 example (p : FaradayParams) :
     sandwichIncrement (faradayDual p) (ι 0) = 0 :=
   sandwichIncrement_rest_faradayDual p
+
+/-- Regression: Faraday coefficients split as Cartan plus charged. -/
+example (p : FaradayParams) :
+    cartanParams p + chargedParams p = p :=
+  cartanParams_add_chargedParams p
+
+/-- Regression: the coefficient Cartan summand embeds as `faradayCartan`. -/
+example (p : FaradayParams) :
+    faraday (cartanParams p) = faradayCartan p :=
+  faraday_cartanParams p
+
+/-- Regression: both axis sandwiches kill the charged Faraday summand. -/
+example (p : FaradayParams) :
+    chiralSandwich (faradayCharged p) = 0 ∧
+      chiralSandwichL (faradayCharged p) = 0 :=
+  ⟨chiralSandwich_charged p, chiralSandwichL_charged p⟩
+
+/-- Regression: Cartan and charged pieces of a circular wave are null. -/
+example {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (cartanParams (circularWave σ E0 ψ))) = 0 ∧
+      J (toTorsion (chargedParams (circularWave σ E0 ψ))) = 0 :=
+  ⟨circularWave_cartan_J hσ, circularWave_charged_J hσ⟩
+
+/-- Regression: Poynting of a circular wave splits without a Cartan–charged
+cross term. -/
+example (σ E0 ψ : ℝ) :
+    poyntingZ (cartanParams (circularWave σ E0 ψ)) +
+        poyntingZ (chargedParams (circularWave σ E0 ψ)) =
+      poyntingZ (circularWave σ E0 ψ) :=
+  poyntingZ_circularWave_cartan_add_charged σ E0 ψ
+
+/-- Regression: the circular snapshot is annihilated by the right sandwich. -/
+example (σ E0 : ℝ) :
+    chiralSandwich (faraday (circularWave σ E0 0)) = 0 :=
+  chiralSandwich_circularWave_zero σ E0
+
+/-- Regression: Faraday sandwich on \(e_0+v\) is the written 4-kick. -/
+example (p : FaradayParams) (v : Fin 3 → ℝ) :
+    sandwichIncrement (faraday p) (minkowskiVec v) = lorentzKick p v :=
+  sandwichIncrement_faraday_minkowski p v
+
+/-- Regression: the spatial kick is the Lorentz 3-force of \((E,-B)\). -/
+example (p : FaradayParams) (v : Fin 3 → ℝ) :
+    sandwichForce p v = lorentzForce 1 (timeReverseFaradayParams p) v :=
+  sandwichForce_eq_lorentzForce_timeReverse p v
+
+/-- Regression: rest sandwich is the electric 3-vector. -/
+example (p : FaradayParams) :
+    sandwichIncrement (faraday p) (ι 0) =
+      p.E 0 • ι 1 + p.E 1 • ι 2 + p.E 2 • ι 3 :=
+  sandwichIncrement_rest_faraday p
+
+/-- Regression: four-phase mean of the circular rest kick vanishes. -/
+example (σ E0 : ℝ) (a : Fin 3) :
+    quadMean (fun ψ =>
+      sandwichForce (circularWave σ E0 ψ) restVelocity a) = 0 :=
+  quadMean_sandwichForce_circularWave_rest σ E0 a
+
+/-- Regression: a beam-direction velocity yields a transverse kick. -/
+example (σ E0 ψ vz : ℝ) :
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 :=
+  sandwichForce_circularWave_zVelocity_transverse σ E0 ψ vz
 
 end Gravity
 

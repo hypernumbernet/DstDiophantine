@@ -13,10 +13,10 @@ import Mathlib.Tactic.LinearCombination
 
 Maxwell's equations, a laboratory electromagnetic identification, a
 path-ordered dual-rotor coupling, a resonance frequency, and helicity
-drive of the particle mismatch \(J\) are **not** derived. The linear
-quadrature mean of a circular Faraday field vanishes, so a dual-sector
-drive proportional to a mean \(F_{\mathrm{dual}}\) is not a coefficient
-identity.
+drive of the particle mismatch \(J\) are **not** derived. Axis chirality
+is not photon helicity. The linear quadrature mean of a circular Faraday
+field vanishes, so a dual-sector drive proportional to a mean
+\(F_{\mathrm{dual}}\) is not a coefficient identity.
 
 ## What is proved
 
@@ -35,6 +35,16 @@ identity.
   first harmonic in the phase; the four-phase mean of \(J\) is the
   background value. Helicity enters only the phase of that harmonic.
 * The Faraday mix cannot create \(J\) from a circular wave.
+* Relative to \(e_1\), the wave is the phase quadrature of the Cartan
+  and charged triples. Both summands are null; their \(z\)-Poynting
+  parts are \(\sigma E_0^2\sin^2\psi\) and \(\sigma E_0^2\cos^2\psi\),
+  and add without a cross term. Same-projector sandwiches \(P_{L,R}\)
+  kill the charged summand, so the snapshot \(\psi=0\) is annihilated
+  and neither projector selects \(\sigma=\pm 1\).
+* The rest sandwich of a circular wave is the oscillating electric
+  kick; its four-phase mean vanishes. A velocity along the beam yields
+  a transverse sandwich force \(E-v\times B\) with vanishing \(z\)
+  component, not a helicity-odd scalar \(J\).
 -/
 
 namespace DstDiophantine
@@ -42,6 +52,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open PGA Generators Operations RelativeRotor Invariant
+open Logic
 open scoped Real
 
 /-! ### Circular and linear travelling waves -/
@@ -308,6 +319,192 @@ theorem J_mix_circularWave (ω : ℝ) {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
 theorem sandwichIncrement_rest_circularWave_dual (σ E0 ψ : ℝ) :
     sandwichIncrement (faradayDual (circularWave σ E0 ψ)) (ι 0) = 0 :=
   sandwichIncrement_rest_faradayDual _
+
+/-! ### Axis chirality is not photon helicity -/
+
+theorem poyntingZ_add (p q : FaradayParams) :
+    poyntingZ (p + q) =
+      poyntingZ p + poyntingZ q +
+        (cross p.E q.B 2 + cross q.E p.B 2) := by
+  simp [poyntingZ, cross, add_E, add_B]
+  ring
+
+theorem poyntingZ_cartan_add_charged (p : FaradayParams) :
+    poyntingZ p =
+      poyntingZ (cartanParams p) + poyntingZ (chargedParams p) := by
+  have hcross := cross_z_cartan_charged p p
+  calc poyntingZ p
+      = poyntingZ (cartanParams p + chargedParams p) := by
+          rw [cartanParams_add_chargedParams]
+    _ = poyntingZ (cartanParams p) + poyntingZ (chargedParams p) +
+          (cross (cartanParams p).E (chargedParams p).B 2 +
+            cross (chargedParams p).E (cartanParams p).B 2) :=
+          poyntingZ_add _ _
+    _ = poyntingZ (cartanParams p) + poyntingZ (chargedParams p) +
+          (0 + 0) := by rw [hcross.1, hcross.2]
+    _ = poyntingZ (cartanParams p) + poyntingZ (chargedParams p) := by
+          ring
+
+theorem circularWave_cartan_energy {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    energySq (cartanParams (circularWave σ E0 ψ)) =
+      E0 ^ 2 * Real.sin ψ ^ 2 := by
+  unfold energySq cartanParams circularWave
+  simp only [Fin.sum_univ_three]
+  calc (0 : ℝ) ^ 2 + (σ * E0 * Real.sin ψ) ^ 2 + (0 : ℝ) ^ 2
+      = σ ^ 2 * E0 ^ 2 * Real.sin ψ ^ 2 := by ring
+    _ = E0 ^ 2 * Real.sin ψ ^ 2 := by rw [hσ, one_mul]
+
+theorem circularWave_cartan_magnetic (σ E0 ψ : ℝ) :
+    magneticSq (cartanParams (circularWave σ E0 ψ)) =
+      E0 ^ 2 * Real.sin ψ ^ 2 := by
+  unfold magneticSq cartanParams circularWave
+  simp only [Fin.sum_univ_three]
+  ring
+
+theorem circularWave_cartan_energy_eq_magnetic {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    energySq (cartanParams (circularWave σ E0 ψ)) =
+      magneticSq (cartanParams (circularWave σ E0 ψ)) := by
+  rw [circularWave_cartan_energy hσ, circularWave_cartan_magnetic]
+
+theorem circularWave_cartan_J {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (cartanParams (circularWave σ E0 ψ))) = 0 :=
+  J_eq_zero_of_energy_eq_magnetic (circularWave_cartan_energy_eq_magnetic hσ)
+
+theorem circularWave_cartan_dot (σ E0 ψ : ℝ) :
+    faradayDot (cartanParams (circularWave σ E0 ψ)) = 0 := by
+  simp [faradayDot, cartanParams, circularWave, Fin.sum_univ_three]
+
+theorem circularWave_charged_energy (σ E0 ψ : ℝ) :
+    energySq (chargedParams (circularWave σ E0 ψ)) =
+      E0 ^ 2 * Real.cos ψ ^ 2 := by
+  unfold energySq chargedParams circularWave
+  simp only [Fin.sum_univ_three]
+  ring
+
+theorem circularWave_charged_magnetic {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    magneticSq (chargedParams (circularWave σ E0 ψ)) =
+      E0 ^ 2 * Real.cos ψ ^ 2 := by
+  unfold magneticSq chargedParams circularWave
+  simp only [Fin.sum_univ_three]
+  calc (0 : ℝ) ^ 2 + (σ * E0 * Real.cos ψ) ^ 2 + (0 : ℝ) ^ 2
+      = σ ^ 2 * E0 ^ 2 * Real.cos ψ ^ 2 := by ring
+    _ = E0 ^ 2 * Real.cos ψ ^ 2 := by rw [hσ, one_mul]
+
+theorem circularWave_charged_energy_eq_magnetic {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    energySq (chargedParams (circularWave σ E0 ψ)) =
+      magneticSq (chargedParams (circularWave σ E0 ψ)) := by
+  rw [circularWave_charged_energy, circularWave_charged_magnetic hσ]
+
+theorem circularWave_charged_J {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (chargedParams (circularWave σ E0 ψ))) = 0 :=
+  J_eq_zero_of_energy_eq_magnetic (circularWave_charged_energy_eq_magnetic hσ)
+
+theorem circularWave_charged_dot (σ E0 ψ : ℝ) :
+    faradayDot (chargedParams (circularWave σ E0 ψ)) = 0 := by
+  simp [faradayDot, chargedParams, circularWave, Fin.sum_univ_three]
+
+theorem poyntingZ_circularWave_cartan (σ E0 ψ : ℝ) :
+    poyntingZ (cartanParams (circularWave σ E0 ψ)) =
+      σ * E0 ^ 2 * Real.sin ψ ^ 2 := by
+  simp [poyntingZ, cross, cartanParams, circularWave]
+  ring
+
+theorem poyntingZ_circularWave_charged (σ E0 ψ : ℝ) :
+    poyntingZ (chargedParams (circularWave σ E0 ψ)) =
+      σ * E0 ^ 2 * Real.cos ψ ^ 2 := by
+  simp [poyntingZ, cross, chargedParams, circularWave]
+  ring
+
+theorem poyntingZ_circularWave_cartan_add_charged (σ E0 ψ : ℝ) :
+    poyntingZ (cartanParams (circularWave σ E0 ψ)) +
+        poyntingZ (chargedParams (circularWave σ E0 ψ)) =
+      poyntingZ (circularWave σ E0 ψ) :=
+  (poyntingZ_cartan_add_charged (circularWave σ E0 ψ)).symm
+
+/-- Phase-zero circular snapshot is purely charged: Cartan coefficients vanish. -/
+theorem cartanParams_circularWave_zero (σ E0 : ℝ) :
+    cartanParams (circularWave σ E0 0) =
+      { E := fun _ => 0, B := fun _ => 0 } := by
+  ext a <;> fin_cases a <;> simp [cartanParams, circularWave, Real.sin_zero]
+
+theorem faradayCartan_circularWave_zero (σ E0 : ℝ) :
+    faradayCartan (circularWave σ E0 0) = 0 := by
+  simp [faradayCartan, circularWave, Real.sin_zero]
+
+/-- Same-projector sandwich annihilates the circular snapshot. -/
+theorem chiralSandwich_circularWave_zero (σ E0 : ℝ) :
+    chiralSandwich (faraday (circularWave σ E0 0)) = 0 := by
+  rw [chiralSandwich_faraday, faradayCartan_circularWave_zero, mul_zero]
+
+theorem chargedParams_circularWave_pi_div_two (σ E0 : ℝ) :
+    chargedParams (circularWave σ E0 (Real.pi / 2)) =
+      { E := fun _ => 0, B := fun _ => 0 } := by
+  ext a <;> fin_cases a <;>
+    simp [chargedParams, circularWave, Real.cos_pi_div_two]
+
+theorem faradayCharged_circularWave_pi_div_two (σ E0 : ℝ) :
+    faradayCharged (circularWave σ E0 (Real.pi / 2)) = 0 := by
+  simp [faradayCharged, circularWave, Real.cos_pi_div_two]
+
+/-- At quadrature the wave is purely Cartan, so the sandwich retains it. -/
+theorem chiralSandwich_circularWave_pi_div_two (σ E0 : ℝ) :
+    chiralSandwich (faraday (circularWave σ E0 (Real.pi / 2))) =
+      chiralityR * faraday (circularWave σ E0 (Real.pi / 2)) := by
+  rw [chiralSandwich_faraday, faraday_eq_cartan_add_charged,
+    faradayCharged_circularWave_pi_div_two, add_zero]
+
+theorem chiralSandwich_circularWave (σ E0 ψ : ℝ) :
+    chiralSandwich (faraday (circularWave σ E0 ψ)) =
+      chiralityR * faradayCartan (circularWave σ E0 ψ) :=
+  chiralSandwich_faraday _
+
+theorem chiralSandwichL_circularWave_charged (σ E0 ψ : ℝ) :
+    chiralSandwichL (faradayCharged (circularWave σ E0 ψ)) = 0 :=
+  chiralSandwichL_charged _
+
+/-- Both left and right axis sandwiches kill the charged summand of a circular
+wave: neither projector selects a helicity sign. -/
+theorem chiralSandwichL_circularWave (σ E0 ψ : ℝ) :
+    chiralSandwichL (faraday (circularWave σ E0 ψ)) =
+      chiralSandwichL (faradayCartan (circularWave σ E0 ψ)) :=
+  chiralSandwichL_faraday _
+
+/-! ### Rest kick and beam-direction sandwich force -/
+
+theorem sandwichIncrement_rest_circularWave (σ E0 ψ : ℝ) :
+    sandwichIncrement (faraday (circularWave σ E0 ψ)) (ι 0) =
+      (E0 * Real.cos ψ) • ι 1 + (σ * E0 * Real.sin ψ) • ι 2 := by
+  rw [sandwichIncrement_rest_faraday]
+  simp [circularWave]
+
+theorem sandwichForce_circularWave_rest (σ E0 ψ : ℝ) (a : Fin 3) :
+    sandwichForce (circularWave σ E0 ψ) restVelocity a =
+      (circularWave σ E0 ψ).E a := by
+  fin_cases a <;> simp [sandwichForce, restVelocity, cross, circularWave]
+
+theorem quadMean_sandwichForce_circularWave_rest (σ E0 : ℝ) (a : Fin 3) :
+    quadMean (fun ψ =>
+      sandwichForce (circularWave σ E0 ψ) restVelocity a) = 0 := by
+  simp_rw [sandwichForce_circularWave_rest]
+  exact quadMean_circularWave_E σ E0 a
+
+/-- Velocity along the propagation axis \(z\). -/
+def zVelocity (vz : ℝ) : Fin 3 → ℝ
+  | 2 => vz
+  | _ => 0
+
+/-- A beam-direction velocity yields a transverse kick: no \(z\)-component. -/
+theorem sandwichForce_circularWave_zVelocity_transverse (σ E0 ψ vz : ℝ) :
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 := by
+  simp [sandwichForce, circularWave, zVelocity, cross]
+
+theorem sandwichForce_circularWave_zVelocity (σ E0 ψ vz : ℝ) :
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 0 =
+      E0 * Real.cos ψ + vz * (σ * E0 * Real.cos ψ) ∧
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 1 =
+      σ * E0 * Real.sin ψ + vz * (E0 * Real.sin ψ) ∧
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 := by
+  simp [sandwichForce, circularWave, zVelocity, cross]
 
 end Gravity
 

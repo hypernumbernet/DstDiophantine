@@ -6,6 +6,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Module
 
 /-!
 # Faraday bivector in the dual-rotor 6-space
@@ -49,6 +50,11 @@ circular-wave identities live in `CircularPolarization`.
   never kicks a rest frame. On a \(y\)-velocity a pure \(B_x\) generator
   produces a \(z\)-kick; the paper wedge vanishes on that moving case.
   The outer product \(F\wedge X\) is therefore not the Lorentz increment.
+* On the Minkowski vector \(X=e_0+v\) the same commutator of the Faraday
+  bivector is the 4-vector \((E\cdot v)\,e_0+(E-v\times B)\). That is the
+  Lorentz 4-force of the laboratory time-reversed field \((E,-B)\); the
+  coefficient 3-force \(q(E+v\times B)\) differs by the sign of \(B\).
+  Maxwell is not derived; this is kinematics of the written sandwich.
 -/
 
 namespace DstDiophantine
@@ -647,6 +653,469 @@ theorem paper_wedge_ne_lorentz_increment :
     sandwichIncrement (cyclic 0) (ι 0) = 0 ∧
       paperWedgeIncrement (cyclic 0) (ι 0) ≠ 0 :=
   ⟨sandwichIncrement_rest_pureB, paperWedge_rest_pureB_ne_zero⟩
+
+/-! ### Sandwich increment is the Lorentz 4-force of \((E,-B)\) -/
+
+theorem sandwichIncrement_add_right (Ω X Y : PGA) :
+    sandwichIncrement Ω (X + Y) =
+      sandwichIncrement Ω X + sandwichIncrement Ω Y := by
+  simp [sandwichIncrement, mul_add, add_mul, sub_eq_add_neg]
+  abel
+
+theorem sandwichIncrement_smul_right (Ω : PGA) (c : ℝ) (X : PGA) :
+    sandwichIncrement Ω (c • X) = c • sandwichIncrement Ω X := by
+  simp [sandwichIncrement, Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_sub]
+
+/-- Spatial frame vector \(e_{a+1}\). -/
+noncomputable def spatialVec : Fin 3 → PGA
+  | 0 => ι 1
+  | 1 => ι 2
+  | 2 => ι 3
+
+/-- Non-relativistic Minkowski vector \(e_0+v\). -/
+noncomputable def minkowskiVec (v : Fin 3 → ℝ) : PGA :=
+  ι 0 + v 0 • ι 1 + v 1 • ι 2 + v 2 • ι 3
+
+/-- Spatial sandwich kick \(E-v\times B\). -/
+def sandwichForce (p : FaradayParams) (v : Fin 3 → ℝ) : Fin 3 → ℝ :=
+  fun a => p.E a - cross v p.B a
+
+/-- Written 4-kick of the sandwich: \((E\cdot v)\,e_0+(E-v\times B)\). -/
+noncomputable def lorentzKick (p : FaradayParams) (v : Fin 3 → ℝ) : PGA :=
+  lorentzPower 1 p v • ι 0 +
+    sandwichForce p v 0 • ι 1 +
+    sandwichForce p v 1 • ι 2 +
+    sandwichForce p v 2 • ι 3
+
+theorem hyperbolic_eq_ι0_mul_spatial (a : Fin 3) :
+    hyperbolic a = ι 0 * spatialVec a := by
+  fin_cases a <;> rfl
+
+private theorem spatial_sq (a : Fin 3) :
+    spatialVec a * spatialVec a = (1 : PGA) := by
+  fin_cases a
+  · exact e1_sq
+  · change ι 2 * ι 2 = 1
+    simpa [Q311_e5vec, w311] using e_sq (2 : Fin 5)
+  · change ι 3 * ι 3 = 1
+    simpa [Q311_e5vec, w311] using e_sq (3 : Fin 5)
+
+private theorem spatial_ι0_anticomm (a : Fin 3) :
+    spatialVec a * ι 0 = -(ι 0 * spatialVec a) := by
+  fin_cases a <;> exact e_mul_anticomm (by decide)
+
+private theorem spatial_anticomm {a b : Fin 3} (h : a ≠ b) :
+    spatialVec a * spatialVec b = -(spatialVec b * spatialVec a) := by
+  fin_cases a <;> fin_cases b <;>
+    (first | cases h rfl | exact e_mul_anticomm (by decide))
+
+private theorem hyperbolic_mul_ι0 (a : Fin 3) :
+    hyperbolic a * ι 0 = spatialVec a := by
+  rw [hyperbolic_eq_ι0_mul_spatial]
+  have hanti := spatial_ι0_anticomm a
+  calc ι 0 * spatialVec a * ι 0
+      = ι 0 * (spatialVec a * ι 0) := by simp [mul_assoc]
+    _ = ι 0 * (-(ι 0 * spatialVec a)) := by rw [hanti]
+    _ = -((ι 0 * ι 0) * spatialVec a) := by simp [mul_neg, mul_assoc]
+    _ = -((algebraMap ℝ PGA (-1 : ℝ)) * spatialVec a) := by rw [e0_sq]
+    _ = spatialVec a := by simp [map_neg]
+
+private theorem ι0_mul_hyperbolic (a : Fin 3) :
+    ι 0 * hyperbolic a = -spatialVec a := by
+  rw [hyperbolic_eq_ι0_mul_spatial]
+  calc ι 0 * (ι 0 * spatialVec a)
+      = (ι 0 * ι 0) * spatialVec a := by simp [mul_assoc]
+    _ = algebraMap ℝ PGA (-1 : ℝ) * spatialVec a := by rw [e0_sq]
+    _ = -spatialVec a := by simp [map_neg]
+
+theorem sandwichIncrement_rest_hyperbolic (a : Fin 3) :
+    sandwichIncrement (hyperbolic a) (ι 0) = (2 : ℝ) • spatialVec a := by
+  unfold sandwichIncrement
+  rw [hyperbolic_mul_ι0, ι0_mul_hyperbolic]
+  simp [two_smul]
+
+private theorem hyperbolic_mul_own_spatial (a : Fin 3) :
+    hyperbolic a * spatialVec a = ι 0 := by
+  rw [hyperbolic_eq_ι0_mul_spatial]
+  calc ι 0 * spatialVec a * spatialVec a
+      = ι 0 * (spatialVec a * spatialVec a) := by simp [mul_assoc]
+    _ = ι 0 * (1 : PGA) := by rw [spatial_sq]
+    _ = ι 0 := by simp
+
+private theorem own_spatial_mul_hyperbolic (a : Fin 3) :
+    spatialVec a * hyperbolic a = -ι 0 := by
+  rw [hyperbolic_eq_ι0_mul_spatial]
+  have hanti := spatial_ι0_anticomm a
+  calc spatialVec a * (ι 0 * spatialVec a)
+      = (spatialVec a * ι 0) * spatialVec a := by simp [mul_assoc]
+    _ = (-(ι 0 * spatialVec a)) * spatialVec a := by rw [hanti]
+    _ = -(ι 0 * (spatialVec a * spatialVec a)) := by simp [mul_assoc]
+    _ = -(ι 0 * (1 : PGA)) := by rw [spatial_sq]
+    _ = -ι 0 := by simp
+
+theorem sandwichIncrement_hyperbolic_own (a : Fin 3) :
+    sandwichIncrement (hyperbolic a) (spatialVec a) = (2 : ℝ) • ι 0 := by
+  unfold sandwichIncrement
+  rw [hyperbolic_mul_own_spatial, own_spatial_mul_hyperbolic]
+  simp [two_smul]
+
+theorem sandwichIncrement_hyperbolic_off {a b : Fin 3} (h : a ≠ b) :
+    sandwichIncrement (hyperbolic a) (spatialVec b) = 0 := by
+  unfold sandwichIncrement
+  rw [hyperbolic_eq_ι0_mul_spatial]
+  have hba := spatial_ι0_anticomm b
+  have hab := spatial_anticomm h
+  have hsum : spatialVec a * spatialVec b + spatialVec b * spatialVec a = 0 := by
+    rw [hab]; simp
+  calc ι 0 * spatialVec a * spatialVec b - spatialVec b * (ι 0 * spatialVec a)
+      = ι 0 * (spatialVec a * spatialVec b) -
+          (spatialVec b * ι 0) * spatialVec a := by simp [mul_assoc]
+    _ = ι 0 * (spatialVec a * spatialVec b) -
+          (-(ι 0 * spatialVec b)) * spatialVec a := by rw [hba]
+    _ = ι 0 * (spatialVec a * spatialVec b) +
+          (ι 0 * spatialVec b) * spatialVec a := by simp [sub_eq_add_neg]
+    _ = ι 0 * (spatialVec a * spatialVec b + spatialVec b * spatialVec a) := by
+        simp [mul_add, mul_assoc]
+    _ = ι 0 * 0 := by rw [hsum]
+    _ = 0 := by simp
+
+theorem sandwichIncrement_hyperbolic_spatial (a b : Fin 3) :
+    sandwichIncrement (hyperbolic a) (spatialVec b) =
+      if a = b then (2 : ℝ) • ι 0 else 0 := by
+  split_ifs with h
+  · subst h; exact sandwichIncrement_hyperbolic_own a
+  · exact sandwichIncrement_hyperbolic_off h
+
+/-! #### Cyclic generators on spatial vectors: \(2\,\hat e_a\times\hat e_b\) -/
+
+private theorem cyclic0_mul_ι1 :
+    cyclic 0 * ι 1 = ι 1 * cyclic 0 := by
+  unfold cyclic
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  calc ι 3 * ι 2 * ι 1
+      = ι 3 * (ι 2 * ι 1) := by simp [mul_assoc]
+    _ = ι 3 * (-(ι 1 * ι 2)) := by rw [h21]
+    _ = -((ι 3 * ι 1) * ι 2) := by simp [mul_neg, mul_assoc]
+    _ = -((-(ι 1 * ι 3)) * ι 2) := by rw [h31]
+    _ = ι 1 * (ι 3 * ι 2) := by simp [mul_assoc]
+    _ = ι 1 * cyclic 0 := rfl
+
+theorem sandwichIncrement_cyclic0_ι1 :
+    sandwichIncrement (cyclic 0) (ι 1) = 0 := by
+  unfold sandwichIncrement
+  rw [cyclic0_mul_ι1]
+  simp
+
+private theorem cyclic0_mul_ι3 :
+    cyclic 0 * ι 3 = -ι 2 := by
+  unfold cyclic
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc ι 3 * ι 2 * ι 3
+      = ι 3 * (ι 2 * ι 3) := by simp [mul_assoc]
+    _ = ι 3 * (-(ι 3 * ι 2)) := by rw [h23]
+    _ = -((ι 3 * ι 3) * ι 2) := by simp [mul_neg, mul_assoc]
+    _ = -((1 : PGA) * ι 2) := by rw [e3_sq']
+    _ = -ι 2 := by simp
+
+private theorem ι3_mul_cyclic0 :
+    ι 3 * cyclic 0 = ι 2 := by
+  unfold cyclic
+  calc ι 3 * (ι 3 * ι 2)
+      = (ι 3 * ι 3) * ι 2 := by simp [mul_assoc]
+    _ = (1 : PGA) * ι 2 := by rw [e3_sq']
+    _ = ι 2 := by simp
+
+theorem sandwichIncrement_cyclic0_ι3 :
+    sandwichIncrement (cyclic 0) (ι 3) = -((2 : ℝ) • ι 2) := by
+  unfold sandwichIncrement
+  rw [cyclic0_mul_ι3, ι3_mul_cyclic0]
+  simp [two_smul, sub_eq_add_neg]
+
+private theorem cyclic1_mul_ι1 :
+    cyclic 1 * ι 1 = -ι 3 := by
+  unfold cyclic
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  calc ι 1 * ι 3 * ι 1
+      = ι 1 * (ι 3 * ι 1) := by simp [mul_assoc]
+    _ = ι 1 * (-(ι 1 * ι 3)) := by rw [h31]
+    _ = -((ι 1 * ι 1) * ι 3) := by simp [mul_neg, mul_assoc]
+    _ = -((1 : PGA) * ι 3) := by rw [e1_sq]
+    _ = -ι 3 := by simp
+
+private theorem ι1_mul_cyclic1 :
+    ι 1 * cyclic 1 = ι 3 := by
+  unfold cyclic
+  calc ι 1 * (ι 1 * ι 3)
+      = (ι 1 * ι 1) * ι 3 := by simp [mul_assoc]
+    _ = (1 : PGA) * ι 3 := by rw [e1_sq]
+    _ = ι 3 := by simp
+
+theorem sandwichIncrement_cyclic1_ι1 :
+    sandwichIncrement (cyclic 1) (ι 1) = -((2 : ℝ) • ι 3) := by
+  unfold sandwichIncrement
+  rw [cyclic1_mul_ι1, ι1_mul_cyclic1]
+  simp [two_smul, sub_eq_add_neg]
+
+private theorem cyclic1_mul_ι2 :
+    cyclic 1 * ι 2 = ι 2 * cyclic 1 := by
+  unfold cyclic
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+  calc ι 1 * ι 3 * ι 2
+      = ι 1 * (ι 3 * ι 2) := by simp [mul_assoc]
+    _ = ι 1 * (-(ι 2 * ι 3)) := by rw [h32]
+    _ = -((ι 1 * ι 2) * ι 3) := by simp [mul_neg, mul_assoc]
+    _ = -((-(ι 2 * ι 1)) * ι 3) := by rw [h12]
+    _ = ι 2 * (ι 1 * ι 3) := by simp [mul_assoc]
+    _ = ι 2 * cyclic 1 := rfl
+
+theorem sandwichIncrement_cyclic1_ι2 :
+    sandwichIncrement (cyclic 1) (ι 2) = 0 := by
+  unfold sandwichIncrement
+  rw [cyclic1_mul_ι2]
+  simp
+
+private theorem cyclic1_mul_ι3 :
+    cyclic 1 * ι 3 = ι 1 := by
+  unfold cyclic
+  calc ι 1 * ι 3 * ι 3
+      = ι 1 * (ι 3 * ι 3) := by simp [mul_assoc]
+    _ = ι 1 * (1 : PGA) := by rw [e3_sq']
+    _ = ι 1 := by simp
+
+private theorem ι3_mul_cyclic1 :
+    ι 3 * cyclic 1 = -ι 1 := by
+  unfold cyclic
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  calc ι 3 * (ι 1 * ι 3)
+      = (ι 3 * ι 1) * ι 3 := by simp [mul_assoc]
+    _ = (-(ι 1 * ι 3)) * ι 3 := by rw [h31]
+    _ = -(ι 1 * (ι 3 * ι 3)) := by simp [mul_assoc]
+    _ = -(ι 1 * (1 : PGA)) := by rw [e3_sq']
+    _ = -ι 1 := by simp
+
+theorem sandwichIncrement_cyclic1_ι3 :
+    sandwichIncrement (cyclic 1) (ι 3) = (2 : ℝ) • ι 1 := by
+  unfold sandwichIncrement
+  rw [cyclic1_mul_ι3, ι3_mul_cyclic1]
+  simp [two_smul]
+
+private theorem cyclic2_mul_ι1 :
+    cyclic 2 * ι 1 = ι 2 := by
+  unfold cyclic
+  calc ι 2 * ι 1 * ι 1
+      = ι 2 * (ι 1 * ι 1) := by simp [mul_assoc]
+    _ = ι 2 * (1 : PGA) := by rw [e1_sq]
+    _ = ι 2 := by simp
+
+private theorem ι1_mul_cyclic2 :
+    ι 1 * cyclic 2 = -ι 2 := by
+  unfold cyclic
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  calc ι 1 * (ι 2 * ι 1)
+      = (ι 1 * ι 2) * ι 1 := by simp [mul_assoc]
+    _ = (-(ι 2 * ι 1)) * ι 1 := by rw [h12]
+    _ = -(ι 2 * (ι 1 * ι 1)) := by simp [mul_assoc]
+    _ = -(ι 2 * (1 : PGA)) := by rw [e1_sq]
+    _ = -ι 2 := by simp
+
+theorem sandwichIncrement_cyclic2_ι1 :
+    sandwichIncrement (cyclic 2) (ι 1) = (2 : ℝ) • ι 2 := by
+  unfold sandwichIncrement
+  rw [cyclic2_mul_ι1, ι1_mul_cyclic2]
+  simp [two_smul]
+
+private theorem cyclic2_mul_ι2 :
+    cyclic 2 * ι 2 = -ι 1 := by
+  unfold cyclic
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  calc ι 2 * ι 1 * ι 2
+      = ι 2 * (ι 1 * ι 2) := by simp [mul_assoc]
+    _ = ι 2 * (-(ι 2 * ι 1)) := by rw [h12]
+    _ = -((ι 2 * ι 2) * ι 1) := by simp [mul_neg, mul_assoc]
+    _ = -((1 : PGA) * ι 1) := by rw [e2_sq']
+    _ = -ι 1 := by simp
+
+private theorem ι2_mul_cyclic2 :
+    ι 2 * cyclic 2 = ι 1 := by
+  unfold cyclic
+  calc ι 2 * (ι 2 * ι 1)
+      = (ι 2 * ι 2) * ι 1 := by simp [mul_assoc]
+    _ = (1 : PGA) * ι 1 := by rw [e2_sq']
+    _ = ι 1 := by simp
+
+theorem sandwichIncrement_cyclic2_ι2 :
+    sandwichIncrement (cyclic 2) (ι 2) = -((2 : ℝ) • ι 1) := by
+  unfold sandwichIncrement
+  rw [cyclic2_mul_ι2, ι2_mul_cyclic2]
+  simp [two_smul, sub_eq_add_neg]
+
+private theorem cyclic2_mul_ι3 :
+    cyclic 2 * ι 3 = ι 3 * cyclic 2 := by
+  unfold cyclic
+  have h13 : ι 1 * ι 3 = -(ι 3 * ι 1) := e_mul_anticomm (by decide)
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc ι 2 * ι 1 * ι 3
+      = ι 2 * (ι 1 * ι 3) := by simp [mul_assoc]
+    _ = ι 2 * (-(ι 3 * ι 1)) := by rw [h13]
+    _ = -((ι 2 * ι 3) * ι 1) := by simp [mul_neg, mul_assoc]
+    _ = -((-(ι 3 * ι 2)) * ι 1) := by rw [h23]
+    _ = ι 3 * (ι 2 * ι 1) := by simp [mul_assoc]
+    _ = ι 3 * cyclic 2 := rfl
+
+theorem sandwichIncrement_cyclic2_ι3 :
+    sandwichIncrement (cyclic 2) (ι 3) = 0 := by
+  unfold sandwichIncrement
+  rw [cyclic2_mul_ι3]
+  simp
+
+theorem sandwichIncrement_cyclic_spatial (a b : Fin 3) :
+    sandwichIncrement (cyclic a) (spatialVec b) =
+      match a, b with
+      | 0, 0 => 0
+      | 0, 1 => (2 : ℝ) • ι 3
+      | 0, 2 => -((2 : ℝ) • ι 2)
+      | 1, 0 => -((2 : ℝ) • ι 3)
+      | 1, 1 => 0
+      | 1, 2 => (2 : ℝ) • ι 1
+      | 2, 0 => (2 : ℝ) • ι 2
+      | 2, 1 => -((2 : ℝ) • ι 1)
+      | 2, 2 => 0 := by
+  fin_cases a <;> fin_cases b
+  · exact sandwichIncrement_cyclic0_ι1
+  · exact sandwichIncrement_moving_pureB
+  · exact sandwichIncrement_cyclic0_ι3
+  · exact sandwichIncrement_cyclic1_ι1
+  · exact sandwichIncrement_cyclic1_ι2
+  · exact sandwichIncrement_cyclic1_ι3
+  · exact sandwichIncrement_cyclic2_ι1
+  · exact sandwichIncrement_cyclic2_ι2
+  · exact sandwichIncrement_cyclic2_ι3
+
+private theorem smul_two_spatial (c : ℝ) (x : PGA) :
+    (c / 2) • ((2 : ℝ) • x) = c • x := by
+  rw [smul_smul]
+  ring_nf
+
+private theorem smul_two_spatial_neg (c : ℝ) (x : PGA) :
+    (c / 2) • (-((2 : ℝ) • x)) = -(c • x) := by
+  rw [smul_neg, smul_two_spatial]
+
+theorem sandwichIncrement_rest_faradayUsual (p : FaradayParams) :
+    sandwichIncrement (faradayUsual p) (ι 0) =
+      p.E 0 • ι 1 + p.E 1 • ι 2 + p.E 2 • ι 3 := by
+  unfold faradayUsual toTorsion omegaUsual
+  rw [sandwichIncrement_sum_fin3]
+  simp only [sandwichIncrement_smul, sandwichIncrement_rest_hyperbolic]
+  simp [spatialVec, Fin.sum_univ_three, smul_two_spatial]
+
+theorem sandwichIncrement_rest_faraday (p : FaradayParams) :
+    sandwichIncrement (faraday p) (ι 0) =
+      p.E 0 • ι 1 + p.E 1 • ι 2 + p.E 2 • ι 3 := by
+  rw [faraday_eq_add, sandwichIncrement_add, sandwichIncrement_rest_faradayDual,
+    add_zero, sandwichIncrement_rest_faradayUsual]
+
+theorem sandwichIncrement_faradayUsual_spatial (p : FaradayParams) (b : Fin 3) :
+    sandwichIncrement (faradayUsual p) (spatialVec b) = p.E b • ι 0 := by
+  unfold faradayUsual toTorsion omegaUsual
+  rw [sandwichIncrement_sum_fin3]
+  simp only [sandwichIncrement_smul, sandwichIncrement_hyperbolic_spatial]
+  fin_cases b <;> simp [smul_two_spatial]
+
+private theorem sandwichIncrement_faradayDual_spatial0 (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (spatialVec 0) =
+      p.B 2 • ι 2 - p.B 1 • ι 3 := by
+  unfold faradayDual toTorsion omegaDual spatialVec
+  rw [sandwichIncrement_sum_fin3]
+  simp only [sandwichIncrement_smul, Fin.sum_univ_three]
+  rw [sandwichIncrement_cyclic0_ι1, sandwichIncrement_cyclic1_ι1,
+    sandwichIncrement_cyclic2_ι1, smul_zero, smul_two_spatial_neg,
+    smul_two_spatial]
+  module
+
+private theorem sandwichIncrement_faradayDual_spatial1 (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (spatialVec 1) =
+      p.B 0 • ι 3 - p.B 2 • ι 1 := by
+  unfold faradayDual toTorsion omegaDual spatialVec
+  rw [sandwichIncrement_sum_fin3]
+  simp only [sandwichIncrement_smul, Fin.sum_univ_three]
+  rw [sandwichIncrement_moving_pureB, sandwichIncrement_cyclic1_ι2,
+    sandwichIncrement_cyclic2_ι2, smul_zero, smul_two_spatial,
+    smul_two_spatial_neg]
+  module
+
+private theorem sandwichIncrement_faradayDual_spatial2 (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (spatialVec 2) =
+      p.B 1 • ι 1 - p.B 0 • ι 2 := by
+  unfold faradayDual toTorsion omegaDual spatialVec
+  rw [sandwichIncrement_sum_fin3]
+  simp only [sandwichIncrement_smul, Fin.sum_univ_three]
+  rw [sandwichIncrement_cyclic0_ι3, sandwichIncrement_cyclic1_ι3,
+    sandwichIncrement_cyclic2_ι3, smul_zero, smul_two_spatial_neg,
+    smul_two_spatial]
+  module
+
+theorem sandwichIncrement_faradayDual_spatial (p : FaradayParams) (b : Fin 3) :
+    sandwichIncrement (faradayDual p) (spatialVec b) =
+      -(cross (fun i => if i = b then (1 : ℝ) else 0) p.B 0) • ι 1 +
+        -(cross (fun i => if i = b then (1 : ℝ) else 0) p.B 1) • ι 2 +
+        -(cross (fun i => if i = b then (1 : ℝ) else 0) p.B 2) • ι 3 := by
+  fin_cases b <;>
+    (simp [cross, sandwichIncrement_faradayDual_spatial0,
+      sandwichIncrement_faradayDual_spatial1,
+      sandwichIncrement_faradayDual_spatial2, sub_eq_add_neg] <;> try abel)
+
+theorem sandwichIncrement_faraday_spatial (p : FaradayParams) (b : Fin 3) :
+    sandwichIncrement (faraday p) (spatialVec b) =
+      p.E b • ι 0 +
+        sandwichIncrement (faradayDual p) (spatialVec b) := by
+  rw [faraday_eq_add, sandwichIncrement_add, sandwichIncrement_faradayUsual_spatial]
+
+theorem minkowskiVec_eq (v : Fin 3 → ℝ) :
+    minkowskiVec v = ι 0 + v 0 • spatialVec 0 + v 1 • spatialVec 1 +
+      v 2 • spatialVec 2 := by
+  simp [minkowskiVec, spatialVec]
+
+theorem sandwichIncrement_faraday_minkowski (p : FaradayParams) (v : Fin 3 → ℝ) :
+    sandwichIncrement (faraday p) (minkowskiVec v) = lorentzKick p v := by
+  rw [minkowskiVec_eq]
+  simp only [sandwichIncrement_add_right, sandwichIncrement_smul_right]
+  rw [sandwichIncrement_rest_faraday, sandwichIncrement_faraday_spatial,
+    sandwichIncrement_faraday_spatial, sandwichIncrement_faraday_spatial]
+  rw [sandwichIncrement_faradayDual_spatial, sandwichIncrement_faradayDual_spatial,
+    sandwichIncrement_faradayDual_spatial]
+  unfold lorentzKick sandwichForce lorentzPower
+  simp [cross, Fin.sum_univ_three]
+  module
+
+theorem sandwichForce_eq_lorentzForce_timeReverse (p : FaradayParams)
+    (v : Fin 3 → ℝ) :
+    sandwichForce p v = lorentzForce 1 (timeReverseFaradayParams p) v := by
+  funext a
+  fin_cases a <;> simp [sandwichForce, lorentzForce, timeReverseFaradayParams, cross]
+  <;> ring
+
+theorem lorentzPower_timeReverse (p : FaradayParams) (v : Fin 3 → ℝ) :
+    lorentzPower 1 (timeReverseFaradayParams p) v = lorentzPower 1 p v :=
+  rfl
+
+theorem sandwichIncrement_rest_eq_lorentzKick (p : FaradayParams) :
+    sandwichIncrement (faraday p) (minkowskiVec restVelocity) =
+      lorentzKick p restVelocity :=
+  sandwichIncrement_faraday_minkowski p restVelocity
+
+theorem lorentzKick_rest (p : FaradayParams) :
+    lorentzKick p restVelocity = p.E 0 • ι 1 + p.E 1 • ι 2 + p.E 2 • ι 3 := by
+  unfold lorentzKick sandwichForce lorentzPower restVelocity
+  simp [cross]
+
+theorem sandwichIncrement_rest_faraday_eq_E (p : FaradayParams) :
+    sandwichIncrement (faraday p) (ι 0) =
+      sandwichIncrement (faraday p) (minkowskiVec restVelocity) := by
+  have h : minkowskiVec restVelocity = ι 0 := by
+    simp [minkowskiVec, restVelocity]
+  rw [h]
 
 end Gravity
 
