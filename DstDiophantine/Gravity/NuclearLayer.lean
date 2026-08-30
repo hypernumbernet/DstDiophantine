@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.SI
 import DstDiophantine.Gravity.ElectronShell
+import DstDiophantine.Gravity.TorsionalLayer
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -41,6 +42,26 @@ heuristic, as in `discrete-dual-spacetime.tex`.
   rejected (optical well depth is a separate external label).
 * Gravity fine-structure \(\alpha_G = G m_p^2/\hbar c \in (10^{-39},10^{-38})\);
   not to be identified with \(O(1)\) nuclear strength or with `epsN 1`.
+
+## Nuclear consequences of the sharpened layer window
+
+Using `TorsionalLayer` (sharpened branch `(nπ+π/4, nπ+π/2)` and radius window
+`ℓ/((2n+1)π) < r < 2ℓ/((4n+1)π)`):
+
+* \(\lambda_\pi < \pi/2\) fm, hence under \(\ell=\lambda_\pi\) **every** node
+  satisfies \(r<1\) fm, and the outermost node lies in the hard-core band
+  \(0.44\,\mathrm{fm}<r_1<0.91\,\mathrm{fm}\). The paper's \(1\)–\(2\) fm
+  outermost shell is therefore **incompatible** with \(\ell=\lambda_\pi\); it
+  requires \(\ell>\pi/2\) fm.
+* Sharpened ratio window \(r_2/r_1\in(1/6,\,4/(5\pi))\), strictly inside the
+  previous \((1/(3\pi),1/\pi)\).
+* Constant nucleon number density is exactly the \(A^{1/3}\) radius law, and
+  \(3/(4\pi r_0^3)\in(0.13,0.14)\,\mathrm{fm}^{-3}\) for \(r_0=1.2\) fm — so
+  \(r_0=1.2\) fm is **not** consistent with \(n_0=0.16\,\mathrm{fm}^{-3}\); the
+  matching coefficient satisfies \((1.14)^3<3/(4\pi n_0)<(1.15)^3\).
+* No finite \(A_{\max}\) follows: with \(\ell\propto A^{1/3}\) the
+  surface-to-node ratio is \(A\)-independent, and with \(\ell\) fixed the
+  surface already lies outside every node at \(A=1\).
 -/
 
 namespace DstDiophantine
@@ -147,6 +168,31 @@ theorem pionComptonFm_lt_nine_fifths : pionComptonFm < (9 / 5 : ℚ) := by
     rw [div_lt_div_iff₀ hden (by norm_num)]
     exact_mod_cast hnat
   simpa using this
+
+/-- Sharper window used for the `π/2` fm comparison: \(1.4<\lambda_\pi<1.42\). -/
+theorem pionComptonFm_tight_bounds :
+    (7 / 5 : ℚ) < pionComptonFm ∧ pionComptonFm < (71 / 50 : ℚ) := by
+  rw [pionComptonFm_eq_num_div_den]
+  have hden := pionComptonFm_den_pos
+  constructor
+  · have hnat : 7 * pionComptonFm_den < 5 * pionComptonFm_num := by
+      unfold pionComptonFm_num pionComptonFm_den hbarC_MeVfm_num hbarC_MeVfm_den
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+        pionMassMeVMantissa pionMassMeVScale
+      native_decide
+    have : (7 : ℚ) / 5 < (pionComptonFm_num : ℚ) / pionComptonFm_den := by
+      rw [div_lt_div_iff₀ (by norm_num : (0 : ℚ) < 5) hden]
+      exact_mod_cast hnat
+    simpa using this
+  · have hnat : 50 * pionComptonFm_num < 71 * pionComptonFm_den := by
+      unfold pionComptonFm_num pionComptonFm_den hbarC_MeVfm_num hbarC_MeVfm_den
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+        pionMassMeVMantissa pionMassMeVScale
+      native_decide
+    have : (pionComptonFm_num : ℚ) / pionComptonFm_den < (71 : ℚ) / 50 := by
+      rw [div_lt_div_iff₀ hden (by norm_num : (0 : ℚ) < 50)]
+      exact_mod_cast hnat
+    simpa using this
 
 /-- Proton Compton wavelength \(\lambda_p = \hbar c / (m_p c^2)\) in fm. -/
 def protonComptonFm : ℚ := hbarC_MeVfm / protonMassMeVApprox
@@ -436,6 +482,206 @@ theorem nuclear_equalScale_radius_O_of_one_over_n
     (hx : x ∈ resonanceBranch n) (hℓ : 0 < ℓ) :
     ℓ / (2 * x) < ℓ / (2 * (n : ℝ) * π) :=
   equalScale_radius_O_of_one_over_n ℓ n hn x hx hℓ
+
+/-! ### Pion hypothesis versus the sharpened layer window -/
+
+theorem equalScaleLayerRadius_eq_layerRadius (ℓ x : ℝ) :
+    equalScaleLayerRadius ℓ x = layerRadius ℓ x := rfl
+
+private theorem pionComptonFm_real_pos : (0 : ℝ) < (pionComptonFm : ℝ) := by
+  exact_mod_cast lt_trans (by norm_num : (0 : ℚ) < 1) pionComptonFm_bounds.1
+
+private theorem pionComptonFm_real_lt : (pionComptonFm : ℝ) < 71 / 50 := by
+  rw [show (71 / 50 : ℝ) = ((71 / 50 : ℚ) : ℝ) by norm_num]
+  exact_mod_cast pionComptonFm_tight_bounds.2
+
+private theorem pionComptonFm_real_gt : (7 / 5 : ℝ) < (pionComptonFm : ℝ) := by
+  rw [show (7 / 5 : ℝ) = ((7 / 5 : ℚ) : ℝ) by norm_num]
+  exact_mod_cast pionComptonFm_tight_bounds.1
+
+/-- The pion Compton wavelength is below `π/2` fm. -/
+theorem pionComptonFm_lt_pi_div_two : (pionComptonFm : ℝ) < π / 2 := by
+  have h := pionComptonFm_real_lt
+  linarith [pi_gt_d2]
+
+/-- Under the pion hypothesis **every** equal-scale node lies below `1` fm. -/
+theorem pionLambda_node_lt_one_fm (n : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < 1 := by
+  have hupper := layerRadius_lt_two_ell_div_pi pionComptonFm_real_pos n hx
+  have hbound : 2 * (pionComptonFm : ℝ) / π < 1 := by
+    rw [div_lt_one pi_pos]
+    linarith [pionComptonFm_real_lt, pi_gt_d2]
+  linarith
+
+/-- Outermost node under the pion hypothesis: the hard-core band
+`0.44 fm < r₁ < 0.91 fm`, not `1`–`2` fm. -/
+theorem pionLambda_outer_node_band {x : ℝ} (hx : x ∈ Ioo (π / 4) (π / 2)) :
+    (44 / 100 : ℝ) < layerRadius (pionComptonFm : ℝ) x ∧
+      layerRadius (pionComptonFm : ℝ) x < 91 / 100 := by
+  obtain ⟨hlo, hhi⟩ := layerRadius_window_zero pionComptonFm_real_pos hx
+  have hπlo := pi_gt_d2
+  have hπhi := pi_lt_d2
+  refine ⟨lt_of_lt_of_le ?_ hlo.le, lt_of_lt_of_le hhi ?_⟩
+  · rw [lt_div_iff₀ pi_pos]
+    nlinarith [pionComptonFm_real_gt, hπhi]
+  · rw [div_le_iff₀ pi_pos]
+    nlinarith [pionComptonFm_real_lt, hπlo]
+
+/-- The paper's `1`–`2` fm outermost repulsive shell is incompatible with
+`ℓ = λ_π`. -/
+theorem paper_outer_layer_1_2_fm_incompatible_with_pionLambda (n : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
+    ¬ (1 < layerRadius (pionComptonFm : ℝ) x ∧
+        layerRadius (pionComptonFm : ℝ) x < 2) := by
+  intro h
+  have hlt := pionLambda_node_lt_one_fm n hx
+  linarith [h.1]
+
+/-- Conversely, an outermost node at `1` fm or beyond forces the characteristic
+length above `π/2` fm, hence strictly above `λ_π`. -/
+theorem outer_node_one_fm_forces_ell_gt_pi_div_two
+    {ℓ x : ℝ} (hℓ : 0 < ℓ) (hx : x ∈ Ioo (π / 4) (π / 2))
+    (h1 : 1 ≤ layerRadius ℓ x) : π / 2 < ℓ := by
+  have hhi := (layerRadius_window_zero hℓ hx).2
+  have hπ := pi_pos
+  have : (1 : ℝ) < 2 * ℓ / π := lt_of_le_of_lt h1 hhi
+  rw [lt_div_iff₀ hπ] at this
+  linarith
+
+/-! ### Sharpened layer-radius ratio -/
+
+/-- Sharpened window `r₂/r₁ = x₁/x₂ ∈ (1/6, 4/(5π))`. -/
+theorem equalScale_layer_ratio_sharp
+    {x₁ x₂ : ℝ} (hx₁ : x₁ ∈ Ioo (π / 4) 1)
+    (hx₂ : x₂ ∈ Ioo (π + π / 4) (π + π / 2)) :
+    x₁ / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
+  simp only [mem_Ioo] at hx₁ hx₂ ⊢
+  have hπ := pi_pos
+  have hx₂pos : (0 : ℝ) < x₂ := by linarith
+  constructor
+  · rw [div_lt_div_iff₀ (by norm_num) hx₂pos]
+    nlinarith [hx₁.1, hx₂.2]
+  · rw [div_lt_div_iff₀ hx₂pos (by positivity)]
+    nlinarith [hx₁.2, hx₂.1]
+
+/-- Concrete instance: the first two nodes exist and their radius ratio lies in
+the sharpened window. -/
+theorem layer_ratio_first_second_sharp :
+    ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 ∧
+      resonanceRoot1 / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
+  obtain ⟨x₂, hx₂, hzero⟩ := exists_second_node_sharp
+  obtain ⟨hlo, hhi⟩ := resonanceRoot1_sharp_bounds
+  exact ⟨x₂, hx₂, hzero, equalScale_layer_ratio_sharp ⟨hlo, hhi⟩ hx₂⟩
+
+/-- The sharpened window sits strictly inside the previous one. -/
+theorem equalScale_layer_ratio_sharp_refines :
+    (1 / (3 * π) : ℝ) < 1 / 6 ∧ (4 / (5 * π) : ℝ) < 1 / π := by
+  have hπ := pi_pos
+  constructor
+  · rw [div_lt_div_iff₀ (by positivity) (by norm_num)]
+    nlinarith [pi_gt_d2]
+  · rw [div_lt_div_iff₀ (by positivity) hπ]
+    nlinarith [hπ]
+
+/-! ### Saturation density versus the `A^{1/3}` radius law -/
+
+/-- Nucleon number density of a uniform sphere of radius `r₀ A^{1/3}`,
+parameterised by `s = A^{1/3}`. -/
+noncomputable def nucleonNumberDensity (r0 s : ℝ) : ℝ :=
+  s ^ 3 / ((4 / 3) * π * (r0 * s) ^ 3)
+
+/-- Constant-density limit `3/(4π r₀³)`. -/
+noncomputable def numberDensityOfRadiusCoeff (r0 : ℝ) : ℝ := 3 / (4 * π * r0 ^ 3)
+
+/-- Saturation of nuclear density is exactly the `A^{1/3}` radius law: the
+density is independent of `A`. -/
+theorem nucleonNumberDensity_eq_const {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
+    nucleonNumberDensity r0 s = numberDensityOfRadiusCoeff r0 := by
+  unfold nucleonNumberDensity numberDensityOfRadiusCoeff
+  have hπ : π ≠ 0 := pi_ne_zero
+  field_simp
+
+/-- `r₀ = 1.2` fm gives `0.13 < n < 0.14` fm⁻³. -/
+theorem numberDensity_radiusCoeff_1_2_window :
+    (13 / 100 : ℝ) < numberDensityOfRadiusCoeff (6 / 5) ∧
+      numberDensityOfRadiusCoeff (6 / 5) < 14 / 100 := by
+  unfold numberDensityOfRadiusCoeff
+  have hπ := pi_pos
+  constructor
+  · rw [lt_div_iff₀ (by positivity)]
+    nlinarith [pi_lt_d2]
+  · rw [div_lt_iff₀ (by positivity)]
+    nlinarith [pi_gt_d2]
+
+/-- `r₀ = 1.2` fm is **not** consistent with `n₀ = 0.16` fm⁻³. -/
+theorem numberDensity_radiusCoeff_1_2_ne_saturation :
+    numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 := by
+  intro h
+  have hhi := numberDensity_radiusCoeff_1_2_window.2
+  rw [h] at hhi
+  norm_num at hhi
+
+/-- The radius coefficient matching `n₀ = 0.16` fm⁻³ satisfies
+`(1.14)³ < 3/(4π n₀) < (1.15)³`, i.e. `r₀* ≈ 1.14` fm. -/
+theorem saturation_matching_radiusCoeff_cube_window :
+    (114 / 100 : ℝ) ^ 3 < 3 / (4 * π * (4 / 25)) ∧
+      3 / (4 * π * (4 / 25)) < (115 / 100 : ℝ) ^ 3 := by
+  have hπ := pi_pos
+  constructor
+  · rw [lt_div_iff₀ (by positivity)]
+    nlinarith [pi_lt_d2]
+  · rw [div_lt_iff₀ (by positivity)]
+    nlinarith [pi_gt_d2]
+
+/-! ### No finite `A_max` from the equal-scale layer geometry -/
+
+/-- With a collective `ℓ ∝ A^{1/3}` the surface-to-node ratio is
+`A`-independent, so no mass number is singled out. -/
+theorem surface_to_node_ratio_scale_free
+    {r0 c x s : ℝ} (hc : c ≠ 0) (hx : x ≠ 0) (hs : s ≠ 0) :
+    (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c := by
+  unfold layerRadius
+  field_simp
+
+/-- With `ℓ` independent of `A` the nuclear surface already lies outside every
+torsional node at `A = 1`, so again no cutoff appears. -/
+theorem nuclearSurface_outside_every_node_at_A_one (n : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < (nuclearRadiusCoeffFmApprox : ℝ) := by
+  have hlt := pionLambda_node_lt_one_fm n hx
+  have hr0 : (nuclearRadiusCoeffFmApprox : ℝ) = 6 / 5 := by
+    unfold nuclearRadiusCoeffFmApprox nuclearRadiusCoeffFmMantissa
+      nuclearRadiusCoeffFmScale
+    norm_num
+  rw [hr0]
+  linarith
+
+/-- The heuristic `A ≈ 300` is not forced: the layer geometry provides no finite
+termination of the nuclear chart. -/
+theorem paper_Amax_300_not_forced_by_equalScale_layers :
+    (∀ r0 c x s : ℝ, c ≠ 0 → x ≠ 0 → s ≠ 0 →
+        (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c) ∧
+      ∀ (n : ℕ) (x : ℝ), x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2) →
+        layerRadius (pionComptonFm : ℝ) x < (nuclearRadiusCoeffFmApprox : ℝ) :=
+  ⟨fun _ _ _ _ hc hx hs => surface_to_node_ratio_scale_free hc hx hs,
+    fun n _ hx => nuclearSurface_outside_every_node_at_A_one n hx⟩
+
+/-! ### Proper time does not freeze at a torsional barrier -/
+
+/-- At a node the interference factor vanishes but the proper-time factor is
+carried entirely by the bivector part. -/
+theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
+    gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 := by
+  have hs : gammaS (2 * x) (2 * x) = 0 := by
+    rw [← gammaSEqual_eq_gammaS]; exact h
+  unfold gammaEff
+  rw [hs]
+  ring
+
+/-- Proper time never freezes at a torsional barrier. -/
+theorem gammaEff_pos_at_node (x : ℝ) : 0 < gammaEff (2 * x) (2 * x) :=
+  gammaEff_pos _ _
 
 end Gravity
 

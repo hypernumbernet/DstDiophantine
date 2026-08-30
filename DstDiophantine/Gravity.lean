@@ -8,6 +8,7 @@ import DstDiophantine.Gravity.EventBoundary
 import DstDiophantine.Gravity.CoulombFromDual
 import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
+import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
 
@@ -25,8 +26,11 @@ plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
 the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
 exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
 S³ cotangent exploratory layer (`CompactS3`; no `dst_derives_a0` / `dst_derives_G`),
-and the nuclear-layer exploratory diagnostics (`NuclearLayer`; no
-`dst_derives_alpha_s` / `dst_derives_lambdaN` / `dst_derives_Amax`),
+the closed-form layer spectrum of `TorsionalLayer` (exact derivative, plateau
+extrema `(-1)^n cosh(nπ)`, one node per `π`-interval, sharpened branch
+`(nπ+π/4, nπ+π/2)`, exponential inward screening), and the nuclear-layer
+exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
+`dst_derives_lambdaN` / `dst_derives_Amax`),
 the closed form of `gammaEff`, and the Euler–Lagrange identities of
 `DualRotorDynamics`.
 -/
@@ -145,6 +149,103 @@ example {m φ θ φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
     φddot - θddot = 0 :=
   paperActualEL_free_mismatch h
+
+/-- Regression: exact derivative of the equal-scale interference factor. -/
+example (x : ℝ) :
+    HasDerivAt gammaSEqual (-2 * Real.cosh x * Real.sin x) x :=
+  hasDerivAt_gammaSEqual x
+
+/-- Regression: critical points are exactly the zeros of `sin`. -/
+example (x : ℝ) : deriv gammaSEqual x = 0 ↔ Real.sin x = 0 :=
+  deriv_gammaSEqual_eq_zero_iff x
+
+/-- Regression: plateau amplitudes are `(-1)^n cosh(nπ)`. -/
+example (n : ℕ) :
+    gammaSEqual ((n : ℝ) * Real.pi) = (-1) ^ n * Real.cosh ((n : ℝ) * Real.pi) :=
+  gammaSEqual_nat_mul_pi n
+
+/-- Regression: exactly one torsional node per `π`-interval. -/
+example (n : ℕ) :
+    ∃! x : ℝ,
+      x ∈ Set.Ioo ((n : ℝ) * Real.pi) ((n : ℝ) * Real.pi + Real.pi) ∧
+        gammaSEqual x = 0 :=
+  exists_unique_node_branch n
+
+/-- Regression: sharpened branch localisation of a node. -/
+example (n : ℕ) {x : ℝ}
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi) ((n : ℝ) * Real.pi + Real.pi))
+    (h : gammaSEqual x = 0) :
+    x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2) :=
+  node_mem_sharp_branch n hx h
+
+/-- Regression: layer radius window from the sharpened branch. -/
+example {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2)) :
+    ℓ / ((2 * (n : ℝ) + 1) * Real.pi) < layerRadius ℓ x ∧
+      layerRadius ℓ x < 2 * ℓ / ((4 * (n : ℝ) + 1) * Real.pi) :=
+  layerRadius_window hℓ n hx
+
+/-- Regression: amplitudes grow at least like `11^n`. -/
+example (n : ℕ) : (11 : ℝ) ^ n ≤ Real.cosh ((n : ℝ) * Real.pi) :=
+  eleven_pow_le_cosh_nat_mul_pi n
+
+/-- Regression: per-layer amplification never reaches `e^π`. -/
+example (a : ℝ) : Real.cosh (a + Real.pi) < Real.exp Real.pi * Real.cosh a :=
+  cosh_add_pi_lt_exp_pi_mul a
+
+/-- Regression: exact shortfall below the `e^π` ceiling. -/
+example (a : ℝ) :
+    Real.exp Real.pi * Real.cosh a - Real.cosh (a + Real.pi) =
+      Real.sinh Real.pi * Real.exp (-a) :=
+  exp_pi_mul_cosh_sub_cosh_add_pi a
+
+/-- Regression: the amplification ratio is strictly increasing. -/
+example {a b : ℝ} (hab : a < b) :
+    Real.cosh (a + Real.pi) * Real.cosh b <
+      Real.cosh (b + Real.pi) * Real.cosh a :=
+  cosh_add_pi_ratio_strictMono hab
+
+/-- Regression: plateau amplitudes grow no faster than `e^{nπ}`. -/
+example (n : ℕ) :
+    Real.cosh ((n : ℝ) * Real.pi) ≤ Real.exp ((n : ℝ) * Real.pi) :=
+  cosh_nat_mul_pi_le_exp n
+
+/-- Regression: the mid-layer force factor decreases inward. -/
+example (n : ℕ) (hn : 1 ≤ n) :
+    plateauForceFactor (n + 1) < plateauForceFactor n :=
+  plateauForceFactor_strictAnti n hn
+
+/-- Regression: the equal-scale locus is the balanced locus `J = 0`. -/
+example (α : Fin 3 → ℝ) : J (equalScaleParams α) = 0 :=
+  J_equalScaleParams α
+
+/-- Regression: that locus is nonetheless massive. -/
+example {α : Fin 3 → ℝ} (h : ∃ a, α a ≠ 0) : 0 < mass (equalScaleParams α) :=
+  mass_equalScaleParams_pos h
+
+/-- Regression: under `ℓ = λ_π` every node sits below `1` fm. -/
+example (n : ℕ) {x : ℝ}
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < 1 :=
+  pionLambda_node_lt_one_fm n hx
+
+/-- Regression: a `1`-fm outermost node forces `ℓ > π/2` fm. -/
+example {ℓ x : ℝ} (hℓ : 0 < ℓ)
+    (hx : x ∈ Set.Ioo (Real.pi / 4) (Real.pi / 2))
+    (h1 : 1 ≤ layerRadius ℓ x) : Real.pi / 2 < ℓ :=
+  outer_node_one_fm_forces_ell_gt_pi_div_two hℓ hx h1
+
+/-- Regression: constant nucleon density is exactly the `A^{1/3}` radius law. -/
+example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
+    nucleonNumberDensity r0 s = numberDensityOfRadiusCoeff r0 :=
+  nucleonNumberDensity_eq_const hr0 hs
+
+/-- Regression: `r₀ = 1.2` fm is not consistent with `n₀ = 0.16` fm⁻³. -/
+example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
+  numberDensity_radiusCoeff_1_2_ne_saturation
 
 end Gravity
 
