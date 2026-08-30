@@ -13,6 +13,7 @@ import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
+import DstDiophantine.Gravity.Electroweak
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -37,19 +38,24 @@ the closed form of `gammaEff`, the Euler–Lagrange identities of
 `DualRotorDynamics`, the Coulombic circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
-ratio \(4\); no `dst_derives_lambda`), and the Faraday 6-space audit of
+ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
 `Faraday` (Section 10/12 split, dual map \((E,B)\mapsto(B,-E)\), Faraday
 quadratic \(J=\tfrac12(E^2-B^2)\), null circular snapshots with \(J=0\) and
 \(M>0\), Hodge period 4 versus the period-2 parameter swap and laboratory
 \(T\), sandwich commutator versus the paper wedge on rest and on a
-\(y\)-velocity; Maxwell is not derived).
+\(y\)-velocity; Maxwell is not derived), and the electroweak skeleton of
+`Electroweak` (dual map is not a Weyl projector; Faraday \(3+3\) split
+relative to \(e_1\); same-projector sandwich kills the anticommuting
+summand; mix \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\) with duality
+at \(\omega=\pi/2\); pure \(E\) has \(J\ge 0\), pure \(B\) has \(J\le 0\);
+no Weinberg angle, no \(W/Z\) masses).
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-open Invariant PGA Generators
+open Invariant PGA Generators Logic
 
 /-- Regression: closed-form dictionary \(T=(4/r^2)(\cosh\sqrt{2J}-1)\). -/
 example {rs r : ℝ} (h : IsExterior rs r) :
@@ -329,6 +335,42 @@ example :
     sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 ∧
       paperWedgeIncrement (cyclic 0) (ι 2) = 0 :=
   sandwich_moving_pureB_ne_wedge
+
+/-- Regression: complementary axis projectors multiply to zero. -/
+example : chiralityL * chiralityR = 0 :=
+  chiralityL_mul_chiralityR
+
+/-- Regression: duality does not preserve the chirality axis. -/
+example : ¬ ∃ c : ℝ, Operations.dual chiralityGen = c • chiralityGen :=
+  dual_chiralityGen_not_real_span
+
+/-- Regression: Faraday 3+3 split relative to \(e_1\). -/
+example :
+    Commute chiralityGen (cyclic 0) ∧
+      chiralityGen * hyperbolic 0 = -(hyperbolic 0 * chiralityGen) :=
+  ⟨commute_chiralityGen_cyclic0, chiralityGen_anticomm_hyperbolic0⟩
+
+/-- Regression: same-projector sandwich kills the anticommuting summand. -/
+example (p : FaradayParams) :
+    chiralSandwich (faradayCharged p) = 0 ∧
+      chiralSandwich (faraday p) = chiralityR * faradayCartan p :=
+  ⟨chiralSandwich_charged p, chiralSandwich_faraday p⟩
+
+/-- Regression: Hodge duality is the mix at \(\omega=\pi/2\). -/
+example (p : FaradayParams) :
+    mixFaradayParams (Real.pi / 2) p = dualFaradayParams p :=
+  mixFaradayParams_pi_div_two p
+
+/-- Regression: orthogonal mix scales \(J\) by \(\cos 2\omega\). -/
+example {ω : ℝ} {p : FaradayParams} (h : faradayDot p = 0) :
+    J (toTorsion (mixFaradayParams ω p)) =
+      Real.cos (2 * ω) * J (toTorsion p) :=
+  J_mixFaraday_of_orthogonal h
+
+/-- Regression: pure electric \(J\ge 0\), pure magnetic \(J\le 0\). -/
+example (Ex Bx : ℝ) :
+    0 ≤ J (toTorsion (pureE Ex)) ∧ J (toTorsion (pureB Bx)) ≤ 0 :=
+  ⟨J_pureE_nonneg Ex, J_pureB_nonpos Bx⟩
 
 end Gravity
 
