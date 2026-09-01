@@ -8,10 +8,7 @@
 \usepackage{wrapfig}
 \usepackage{docmute}
 \usepackage{amssymb}
-\usepackage{amsthm}
 \usepackage{hyperref}
-\newtheorem{proposition}{Proposition}
-\newtheorem{hypothesis}{Working Hypothesis}
 \DeclareMathOperator\arctanh{arctanh}
 \DeclareMathOperator\arccosh{arccosh}
 \newcommand{\Jnorm}{J_{\rm norm}}
@@ -28,73 +25,27 @@
 \maketitle
 
 \begin{abstract}
-General Relativity has taught us to see gravity as the curvature of a single spacetime continuum. That teaching accounts for the motion of planets, the delay of light, and the ringing of black holes. It does not say why a continuum should curve, nor why the same phenomenon should appear as inertia under acceleration. The present work answers those questions by refusing the continuum as a primitive. Spacetime is not an autonomous stage. Each massive particle carries, within the sixteen-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$, a pair of Minkowski sectors---the usual and the dual. A map between them reverses the arrow of time and leaves the Minkowski norm untouched. Gravity is the torsion of that pair: the mismatch of two rotors that belong to the particle itself.
+General Relativity has taught us to see gravity as the curvature of a single spacetime continuum. That teaching accounts for the motion of planets, the delay of light, and the ringing of black holes. It does not say why a continuum should curve, nor why the same phenomenon should appear as inertia under acceleration. The present work answers those questions by refusing the continuum as a primitive. Spacetime is not an autonomous stage. Each massive particle carries a pair of Minkowski frames---the usual, in which we live and measure, and a dual, time-reversed relative to the first, with the same interval. Gravity is the torsion of that pair: a mismatch that belongs to the particle itself.
 
-Two layers of claim are kept distinct. Of the algebra and of the charts constructed from it, the following are theorems. The relative rotor $\Omega=R_{\mathrm{usual}}^\dagger R_{\mathrm{dual}}$ is the identity precisely when the two rotors coincide. A unique Lorentz-invariant scalar $J$ measures the mismatch and is bounded on the admissible cone. On every static radial-boost gauge, $J$ stands in a closed dictionary with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum specialisation. The written particle action has Euler--Lagrange equations, and the equal-scale torsional layers possess a closed spectrum. On the three-sphere chart the circular speed is \(v^2=(GM/R)f(r/R)\) and the shape \(f\) has a unique minimum on the attractive interval. Of physics, the following remain working hypotheses: that the layered phase is the strong force; that galaxies are such three-sphere patches, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; and that early dual dynamics sources baryon asymmetry. None of these is a theorem of the algebra.
-
-The scalar $J$ is not $T$. Their dictionary is monotone and invertible, yet they agree only in the flat limit; a real radial boost cannot produce repulsion, whose layers are elliptic and of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers are ordered by that interference and not by $J$. The same algebra houses the electromagnetic channel: Faraday coefficients occupy the six-generator space of the dual rotor. Maxwell's equations, a Weinberg angle, and the constants of coupling are not derived. Controllability of gravity is a conjecture, not an identity.
-
-If this ontology is sound, then the geometry of the world is not prior to matter. It is an attribute of particles, as spin and charge are attributes, and the apparent curvature of the heavens is the collective torsion of their dual rotors.
+From this picture two things follow at once. The geometry outside a spherical mass is recovered as a mismatch of the two frames, without taking curvature as a primitive. Gravity and inertia become the same phenomenon: free fall is the state in which the two frames stay aligned, and acceleration is the same misalignment when it is sourced by surrounding mass. If the ontology is sound, then the geometry of the world is not prior to matter. It is an attribute of particles, as spin and charge are attributes, and the apparent curvature of the heavens is the collective torsion of their dual frames.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
 
-The theory of GR, since its inception in 1915, has stood as one of the most successful descriptions of gravitation in physics. Yet, despite its empirical triumphs—from the perihelion precession of Mercury to gravitational waves and black hole imaging—a profound philosophical unease persists: why does matter curve spacetime, and why does curved spacetime, in turn, dictate the motion of matter? The Einstein field equations tell us how gravity works with exquisite precision, but they offer no deeper reason for the origin of curvature itself. This explanatory gap becomes particularly acute when confronting Mach's principle: the inertia of a body should be determined by the totality of matter in the universe, yet GR treats spacetime as an independent, continuous entity that can exist even in complete emptiness.
+Since 1915, general relativity has been the most successful description of gravitation we possess. The perihelion of Mercury, the delay of light, gravitational waves, and the imaging of black holes all speak for it. Yet a philosophical unease remains: why does matter curve spacetime, and why does curved spacetime dictate the motion of matter? The Einstein equations tell us how gravity works with exquisite precision. They do not say why a continuum should curve at all. The unease sharpens against Mach's principle. The inertia of a body ought to be determined by the totality of matter in the universe, yet general relativity treats spacetime as an independent continuum that can exist even in complete emptiness.
 
-A century of attempts to resolve these issues has left the continuum hypothesis intact: spacetime is taken to be a smooth, differentiable manifold a priori, and gravity is effected through the metric's deviation from flatness via Christoffel symbols and the Riemann tensor.
+A century of attempts to close this gap has left the continuum itself untouched. Spacetime is taken to be a smooth manifold a priori, and gravity is the metric's deviation from flatness.
 
-The present work breaks with this tradition. The claims below are of two kinds. Propositions record identities of the biquaternion algebra and of explicit charts. Working hypotheses and observational predictions are labelled as such and are not deduced from those identities.
+The present work refuses that primitive. There is no single shared spacetime. Each massive particle carries its own pair of Minkowski frames. One is the usual spacetime, in which we live and measure. The other is a dual spacetime: time-reversed relative to the first, with the same interval. Gravity and inertia are not curvature of a background. They are the mismatch of these two frames when one particle is asked to stay parallel to another.
 
-We propose that the spacetime continuum hypothesis is fundamentally incorrect. There is no single, shared spacetime manifold. Instead, each individual particle carries its own pair of intrinsically double spacetimes—a compactified 16-real-dimensional structure encoded in the biquaternion algebra isomorphic to the Clifford algebra Cl(3,1). The usual spacetime (with basis j, kI, kJ, kK) and its dual (with basis k, jI, jJ, jK) are related by right-multiplication by $i$, a transformation that reverses the arrow of time while preserving the Minkowski norm. Gravity and inertia arise not from curvature of a background manifold, but from the torsional mismatch angle between these two particle-intrinsic spacetimes when parallel transport is demanded across different particles.
+The shift is ontological. In the standard picture, spacetime tells matter how to move and matter tells spacetime how to curve. Here there is no autonomous spacetime at all. The degrees of freedom we call spacetime are internal attributes of particles, as spin and charge are attributes. The apparent curvature of the macroscopic world is the collective mismatch of neighboring particles.
 
-This philosophical shift is profound. In standard GR, spacetime is an autonomous entity that tells matter how to move, while matter tells spacetime how to curve (Wheeler's famous phrase). In the double spacetime theory, there is no autonomous spacetime at all. Spacetime degrees of freedom are demoted to internal attributes of particles themselves—much like spin or charge—and the apparent curvature of the macroscopic world emerges only as a collective effect of the torsional misalignment among the dual rotors of neighboring particles. The Einstein equations belong to teleparallel gravity for the Weitzenb\"ock scalar $T$. Christoffel symbols, covariant derivatives, and the Riemann tensor are not used as primitive objects: they are replaced by algebraic operations (rotor exponentiation, logarithm, and the Killing form) on biquaternions. Algebraic $J$ is not identified with $T$.
+Two consequences follow at once, and they can be stated before any formula is written. First, the geometry outside a spherical mass is recovered as a mismatch of the two frames, without taking curvature as a primitive. Second, gravity and inertia are the same phenomenon. Free fall is the state in which the two frames stay aligned. Acceleration breaks that alignment, and the resulting mismatch is the inertial force---the same torsion that we call gravity when it is sourced by surrounding mass.
 
-The theory therefore achieves three revolutionary outcomes simultaneously:
+This is not a modification of general relativity. It is a proposed completion: the continuum remains a useful macroscopic fiction, while spacetime degrees of freedom are treated as paired and particle-local.
 
-1. Recovery of the exterior Schwarzschild geometry from a radial pure-boost sandwich, together with a closed evaluation of the Weitzenb\"ock scalar $T$ on that chart and the dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, of which $A=1-r_s/r$ is the unique vacuum specialisation, without invoking Christoffel symbols or a background Riemannian curvature. The Einstein equations themselves belong to teleparallel gravity for $T$, not to an identification of $T$ with algebraic $J$ for a general tetrad field.
-
-2. Natural unification of gravity and inertia: the equivalence principle emerges as the requirement that the usual and dual rotors remain parallel in free fall; acceleration violates this parallelism, producing inertial forces as the same torsional phenomenon as gravity.
-
-3. A working hypothesis of controllability: because the scalar invariant $J$ depends only on the relative rotor, external fields capable of coherently exciting the dual-spacetime components $\theta_a$ are conjectured to reduce, cancel, or reverse gravitational interaction. This is not a theorem of the dual-rotor algebra.
-
-This is not a modification of GR; it is a proposed completion whose algebraic core is stated independently of that physical reading. The continuum remains a useful macroscopic fiction. Once spacetime degrees of freedom are treated as paired and particle-local, the remaining physical sections of this paper interpret the mismatch as gravity. That interpretation, and the engineering claims built on it, are hypotheses.
-
-The remainder of this paper is organized as follows.
-
-Section~\ref{sec:math} establishes the mathematical foundation by introducing the biquaternion algebra isomorphic to Cl(3,1) and constructing the dual spacetime pair intrinsic to every particle.
-
-Section~\ref{sec:kinematics} develops the rotor formalism. Same-axis generators commute, so a one-axis exponential factorises; off-axis generators need not commute, so a six-parameter exponential does not factor unconditionally.
-
-Section~\ref{sec:gravity} constructs the torsional mismatch scalar $J$ from the relative rotor $\Omega = R_\text{usual}^\dagger R_{\text{dual}}$, records the identity $\Omega=1$ if and only if $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, distinguishes $\Omega=1$, $J=0$, and vanishing mass, and evaluates the Schwarzschild chart: sandwich scales, Weitzenb\"ock $T$, the closed $J$--$T$ dictionary $r^2 T=4(\cosh\sqrt{2J}-1)$ on every static radial-boost gauge, of which $A=1-r_s/r$ is the unique vacuum specialisation, and the sandwich $4J/r^2\le T\le 4J_{\mathrm{field}}$. It also records the closed-form inversion of that dictionary and the finite two-sided window that the admissible cone imposes on $r^2 T$.
-
-Section~\ref{sec:unified} shows that inertia and gravity are identical phenomena arising from the same dual-rotor rigidity, with the equivalence principle emerging as an algebraic identity.
-
-Section~\ref{sec:strongfield} reinterprets stellar remnants as torsion stars with multi-layered attractive-repulsive structure, forbidding both singularities and event horizons.
-
-Section~\ref{sec:timedilation} records the closed form of the effective Lorentz factor and separates the special-relativistic limit $\theta=0$ from the balanced locus $J=0$.
-
-Section~\ref{sec:nuclear} establishes the closed-form spectrum of the equal-scale torsional layers---one barrier per period of the interference factor, plateau values $(-1)^n\cosh(n\pi)$, sharpened node windows, and exponential inward screening---and separates those facts from the working identification of the nuclear force as gravity with layers and of atomic nuclei as primordial torsion stars.
-
-Section~\ref{sec:electronshells} models the electron shell as an electrical inversion layer, explaining electron orbitals and interatomic forces from the perspective of microscopic-scale electromagnetism.
-
-Section~\ref{sec:unification} records the Faraday 6-space, the distinction between the dual map and axis chirality, the $3{+}3$ split of Faraday generators relative to $e_1$, the same-projector sandwich selection rule, the one-parameter mix of $(E,B)$, the circular-wave identities of $J$, Poynting, and superposition, the fact that axis chirality is not photon helicity, and the identity of the Faraday sandwich on $e_0+v$ with the Lorentz 4-force of $(E,-B)$. Gauge identifications and a Weinberg angle are not derived.
-
-Section~\ref{sec:darkmatter}, after the unification of the gravitational and electromagnetic channels, records the three-sphere chart: Gauss flux, the circular-speed identity \(v^2=(GM/R)f\), the unique minimum of \(f\) that produces a plateau, and the fact that attraction ends at \(\pi R/2\), strictly before \(r=2R\). That galaxies are such patches, and that this compactness therefore accounts for flat rotation curves without dark matter, remains a working identification.
-
-Section~\ref{sec:gravitycontrol} details practical mechanisms for gravitational engineering via coherent excitation of dual-spacetime rotors using circularly polarized electromagnetic fields.
-
-Section~\ref{sec:baryonasymmetry} proposes a mechanism for baryon asymmetry based on dual-spacetime torsion dynamics in the early universe.
-
-Section~\ref{sec:discretetime} introduces a discrete model of dual spacetime, where the dual-sector angles are quantized. Boundedness of \(J\) holds only on the admissible cone, and what is finite is the discrete rotor image of the torus, not the unit group of an integer order.
-
-Section~\ref{sec:dualrotordynamics} computes the Euler--Lagrange equations of the written particle action and isolates a same-sign working model that does oscillate.
-
-Section~\ref{sec:quantumgravity} records the dual rotor as an $\mathrm{SU}(2)$ element on $\mathbb{C}^2$. A Hilbert-space quantization and uncertainty relations are not derived.
-
-Section~\ref{sec:conclusions} returns to the ontology of the theory, distinguishes what the algebra has established from what remains hypothesis, and names the observations by which the continuum reading may be tested.
-
-With this reformulation, the algebraic core of the theory stands independently of the continuum hypothesis. Controllability of gravity remains a working hypothesis.
+The paper proceeds in that order. Sections~\ref{sec:math} and~\ref{sec:kinematics} introduce the two sectors and the transformations that move them. Section~\ref{sec:gravity} defines gravity as their mismatch and recovers the exterior of a spherical mass. Section~\ref{sec:unified} reads inertia from the same mismatch, so that the equivalence principle is no longer a postulate. With that picture in hand, later sections take the geometry to strong fields, to nuclear and atomic scales, to electromagnetism, and to galaxies. Those readings are built on the picture; they are not its foundation. Section~\ref{sec:conclusions} returns to the ontology and to the observations that would test it.
 
 \section{Mathematical Foundation: The 16-Dimensional Biquaternion Algebra}
 \label{sec:math}
@@ -212,27 +163,12 @@ The most general six-parameter exponential on this basis is
 \[
 R_\text{total} = \exp\left( \frac{\phi_1}{2} iI + \frac{\phi_2}{2} iJ + \frac{\phi_3}{2} iK + \frac{\theta_1}{2} I + \frac{\theta_2}{2} J + \frac{\theta_3}{2} K \right),
 \]
-where the parameters $\phi_a$ govern usual-sector boosts and $\theta_a$ dual-sector rotations. Write $\Gamma_1=I$, $\Gamma_2=J$, $\Gamma_3=K$ for the spatial bivectors of Section~\ref{sec:math}. Factorisation $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$ is not automatic: it requires the two summands to commute.
-
-\begin{proposition}[Same-axis factorisation]
-\label{prop:same-axis-factor}
-For each axis $a$, the generators commute, $[i\Gamma_a,\Gamma_a]=0$. Consequently a one-axis exponential factorises:
+where the parameters $\phi_a$ govern usual-sector boosts and $\theta_a$ dual-sector rotations. Write $\Gamma_1=I$, $\Gamma_2=J$, $\Gamma_3=K$ for the spatial bivectors of Section~\ref{sec:math}. Factorisation $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$ is not automatic: it requires the two summands to commute. About a single axis they do: $[i\Gamma_a,\Gamma_a]=0$, so
 \[
 \exp\Bigl(\tfrac{\phi}{2}i\Gamma_a+\tfrac{\theta}{2}\Gamma_a\Bigr)
 =\exp\bigl(\tfrac{\phi}{2}i\Gamma_a\bigr)\,\exp\bigl(\tfrac{\theta}{2}\Gamma_a\bigr).
 \]
-\end{proposition}
-
-\begin{proposition}[Off-axis commutator]
-\label{prop:off-axis-commutator}
-Distinct-axis generators need not commute: $[iI,J]\neq 0$. The unrestricted six-parameter identity
-\[
-\exp\Bigl(\sum_a\tfrac{\phi_a}{2}i\Gamma_a+\sum_a\tfrac{\theta_a}{2}\Gamma_a\Bigr)
-=\Bigl(\prod_a\exp\tfrac{\phi_a}{2}i\Gamma_a\Bigr)
-\Bigl(\prod_a\exp\tfrac{\theta_a}{2}\Gamma_a\Bigr)
-\]
-is therefore not justified by the same-axis commutators.
-\end{proposition}
+About different axes they need not. In particular $[iI,J]\neq 0$, and the six-parameter exponential does not factor into a product of one-axis rotors without that extra assumption. In what follows we work on a single axis whenever we write $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$.
 
 To make the geometric meaning more transparent on a single axis, we now introduce the bivector form of the rotor, which separates magnitudes from directions.
 
@@ -252,7 +188,7 @@ The complete rotor then takes the bivector-exponential form
 \[
 R_\text{total} = \exp\!\left( \frac{\phi}{2} \hat{p} + \frac{\theta}{2} \hat{q} \right).
 \]
-When $\hat{p}$ and $\hat{q}$ are aligned on a single axis, Proposition~\ref{prop:same-axis-factor} gives $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$, with
+When $\hat{p}$ and $\hat{q}$ are aligned on a single axis the exponential factorises, $R_{\mathrm{total}}=R_{\mathrm{usual}}R_{\mathrm{dual}}$, with
 \[
 R_\text{usual} = \exp\!\left( \frac{\phi}{2} \hat{p} \right)
 = \cosh\frac{\phi}{2} + \hat{p} \sinh\frac{\phi}{2},
@@ -305,20 +241,7 @@ revealing that the dagger operation effectively bridges the hyperbolic geometry 
 
 The relative rotor $\Omega = R_\text{usual}^\dagger R_\text{dual}$ realizes this bridge operationally: the dagger temporarily ``deconstructs'' the hyperbolic boost structure of the usual spacetime (inducing the dual map through its sign reversal), while subsequent multiplication by $R_\text{dual}$ ``reconstructs'' the combined object, making the relative misalignment manifest. Through this ``deconstruct-then-reconstruct'' process, the torsional mismatch between the usual and dual spacetimes is extracted algebraically, and this mismatch constitutes the essence of gravity in the double spacetime framework.
 
-In vacuum (free fall), the relative rotor is the identity if and only if the two rotors coincide. The written anti-synchronization $R_{\mathrm{dual}}=R_{\mathrm{usual}}^\dagger$ does not force $\Omega=1$. Mass-energy is a physical interpretation of deviations from $\Omega=1$; that reading is a hypothesis. The rotors themselves are units in the even subalgebra (a $\mathrm{Spin}^+(3,1)$ candidate). The logarithm $\Omega_{\mathrm{biv}}=\log\Omega$ takes values in the Lie algebra $\mathfrak{so}(3,1)$, not in the spin group, and the six generators $\{i\Gamma_a,\Gamma_a\}$ span a Lorentz candidate, not the twelve-dimensional sum $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$.
-
-\begin{proposition}[Relative rotor identity]
-\label{prop:relative-rotor-one}
-Let $R_{\mathrm{usual}}=\exp(\sum_a(\alpha_a/2)\,i\Gamma_a)$ and $R_{\mathrm{dual}}=\exp(\sum_a(\beta_a/2)\,\Gamma_a)$, and set $\Omega=R_{\mathrm{usual}}^\dagger R_{\mathrm{dual}}$. Unitarity of $R_{\mathrm{usual}}$ yields
-\[
-\Omega=1 \iff R_{\mathrm{dual}}=R_{\mathrm{usual}}.
-\]
-\end{proposition}
-
-\begin{proposition}[Written vacuum condition]
-\label{prop:paper-vacuum-sync}
-The condition $R_{\mathrm{dual}}=R_{\mathrm{usual}}^\dagger$ is not equivalent to $\Omega=1$. On a single axis it forces both bivector coefficients of the closed forms to vanish: $\sinh(\alpha/2)=0$ and $\sin(\beta/2)=0$. In particular a nontrivial pure boost does not satisfy $R_{\mathrm{dual}}=R_{\mathrm{usual}}^\dagger$.
-\end{proposition}
+Free fall is the state in which this mismatch vanishes. Unitarity of $R_{\mathrm{usual}}$ gives a sharp criterion: $\Omega=1$ if and only if the two rotors coincide, $R_{\mathrm{dual}}=R_{\mathrm{usual}}$. Anti-synchronization $R_{\mathrm{dual}}=R_{\mathrm{usual}}^\dagger$ is a different condition; on a single axis it forces both bivector coefficients to vanish, so a nontrivial pure boost does not satisfy it. We read mass-energy as the physical cost of deviations from $\Omega=1$. The rotors themselves are units in the even subalgebra. The logarithm $\Omega_{\mathrm{biv}}=\log\Omega$ takes values in $\mathfrak{so}(3,1)$, and the six generators $\{i\Gamma_a,\Gamma_a\}$ span one Lorentz copy, not the twelve-dimensional sum $\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)$.
 
 The associated torsion bivector is
 \[
@@ -334,32 +257,22 @@ B(X,Y) = 4\,\mathrm{Tr}(X Y).
 \]
 Denote the three grade-2 spatial bivectors of \S\ref{sec:kinematics} collectively by $\Gamma_a$ ($a=1,2,3$) with $\Gamma_1 = I$, $\Gamma_2 = J$, $\Gamma_3 = K$ (the Clifford identification $e_3e_2 = I$, $e_1e_3 = J$, $e_2e_1 = K$ of \S\ref{sec:math}). The usual-spacetime boost generators are $i\Gamma_a$, while $\Gamma_a$ generate rotations in the dual sector. Evaluating the Killing form gives $B(i\Gamma_a, i\Gamma_a) = +8$ and $B(\Gamma_a, \Gamma_a) = -8$, reproducing the Lorentzian signature perfectly. Same-axis generators commute, $[i\Gamma_a,\Gamma_a]=0$; off-axis commutators need not vanish.
 
-Write the half-angle expansion $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$. The six generators span a candidate copy of $\mathfrak{so}(3,1)$; together with translations the natural ambient algebra is the Poincar\'e candidate $\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}$. Then
+Write the half-angle expansion $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$. The six generators span one copy of $\mathfrak{so}(3,1)$; together with translations the ambient algebra is the Poincar\'e candidate $\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}$. Then
 \[
-B(\Omega_\text{biv},\Omega_\text{biv})=2\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
+B(\Omega_\text{biv},\Omega_\text{biv})=2\sum_{a=1}^3(\alpha_a^2-\beta_a^2).
 \]
-not the factor $8\sum$ of earlier drafts. The parameter-space scalar used throughout is
-\[
+The scalar that measures the mismatch throughout this paper is
+\begin{equation}
+\label{eq:J-def}
 J=\frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
-\]
-which is four times $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$ under this expansion. Boundedness statements refer to this $J$ and to $\Jnorm=\frac8{3\pi^2}J$. Write $M=\frac12\sum_a(\alpha_a^2+\beta_a^2)$ for the unsigned torsional mass, with the same normalisation $\Mnorm=\frac8{3\pi^2}M$.
+\end{equation}
+four times $\frac1{16}B(\Omega_\text{biv},\Omega_\text{biv})$ under this expansion. We also write $\Jnorm=\frac8{3\pi^2}J$, and $M=\frac12\sum_a(\alpha_a^2+\beta_a^2)$ for the unsigned torsional mass, with the same normalisation $\Mnorm=\frac8{3\pi^2}M$.
 
-\begin{proposition}[Admissible bound]
-\label{prop:admissible-bound}
-On admissible configurations (non-negative rapidities with $\alpha_a+\beta_a\le\pi/2$ for each axis) one has $|J|\le\Jbound$ and $|\Jnorm|\le 1$, and likewise $0\le\Mnorm\le 1$. The image of $\Jnorm$ on this cone is the whole interval $[-1,1]$. The bound fails if only a principal-branch condition $|\alpha_a+\beta_a|\le\pi/2$ is imposed. Equality $|\Jnorm|=1$ holds if and only if the configuration is purely hyperbolic ($\alpha_a=\pi/2$, $\beta_a=0$ on every axis) or purely elliptic ($\alpha_a=0$, $\beta_a=\pi/2$ on every axis).
-\end{proposition}
+The sign of $J$ is the distinction between ordinary attractive gravity and dual-dominated repulsion. When usual-spacetime boosts dominate, $J>0$ and the force is attractive. When dual rotations dominate, $J<0$ and the force is repulsive. Swapping the two sectors, $\alpha\leftrightarrow\beta$, sends $J\mapsto -J$ and leaves $M$ invariant.
 
-The sign of $J$ distinguishes ordinary attractive gravity ($J>0$: usual-spacetime boosts dominate) from dual-dominated repulsion ($J<0$). The vanishing locus is larger than vacuum:
+Three vanishing conditions must not be conflated. If $M=0$, then $J=0$: every rapidity vanishes, and this is vacuum. The converse is false. Equal usual and dual rapidities give $J=0$ with $M>0$---balanced massive states---and on a single axis those states still have $\Omega\neq 1$. Thus $\Omega=1$, $J=0$, and $M=0$ are three different physical situations. Gravity as free fall is $\Omega=1$, not the vanishing of $J$.
 
-\begin{proposition}[Vanishing $J$ and the dual map]
-\label{prop:J-zero-dual}
-If $M=0$, then $J=0$ (vacuum: all rapidities vanish). The converse is false: there exist admissible configurations with $J=0$ and $M>0$ (balanced massive states, equal usual and dual rapidities). The usual--dual swap $\alpha\leftrightarrow\beta$ sends $J\mapsto -J$ and leaves $M$ invariant.
-\end{proposition}
-
-\begin{proposition}[$J=0$ does not force $\Omega=1$]
-\label{prop:J-zero-not-omega}
-There exist one-axis balanced configurations with $J=0$, $M>0$, and $\Omega\neq 1$. Thus $\Omega=1$, $J=0$, and $M=0$ are three distinct conditions.
-\end{proposition}
+The algebra does not allow unbounded mismatch. On admissible configurations---non-negative rapidities with $\alpha_a+\beta_a\le\pi/2$ on each axis---one has $|J|\le\Jbound$ and $|\Jnorm|\le 1$, and likewise $0\le\Mnorm\le 1$. The image of $\Jnorm$ on this cone is the whole interval $[-1,1]$. Equality $|\Jnorm|=1$ holds only for a purely hyperbolic configuration ($\alpha_a=\pi/2$, $\beta_a=0$ on every axis) or a purely elliptic one ($\alpha_a=0$, $\beta_a=\pi/2$). A principal-branch condition $|\alpha_a+\beta_a|\le\pi/2$ without the sign restriction is not enough: the bound fails.
 
 \subsection{\texorpdfstring{Schwarzschild Chart and the Distinction among $J$, $J_{\mathrm{field}}$, and $T$}{Schwarzschild Chart and J, J field, and T}}
 \label{subsec:schwarzschild-chart}
@@ -389,119 +302,31 @@ Three quadratic quantities appear on this chart and must not be conflated:
 \[
 J=\tfrac12\varphi^2,\qquad J_{\mathrm{field}}=\tfrac12(\varphi')^2,\qquad T\text{ as in }\eqref{eq:schwarzschild-T}.
 \]
-The first is a finite-angle parameter diagnostic; the second is a field seed built from $\partial_r\varphi$; the third is the TEGR Lagrangian density.
-
-\begin{proposition}[Exterior Schwarzschild sandwich and Weitzenb\"ock scalar]
-\label{prop:schwarzschild-chart}
-On the exterior domain $r>r_s>0$, the radial pure-boost sandwich scales are $\mathrm{e}^{-\varphi}=\sqrt{A}$ and $\mathrm{e}^{\varphi}=A^{-1/2}$ with $A=1-r_s/r$. The coframe $(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta)$ induces the Schwarzschild metric $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$. Its Weitzenb\"ock scalar is $T=\frac{2}{r^2}(1-\sqrt{A})^2/\sqrt{A}=-\frac{1}{r^2}\partial_r(r^2 B^r)$ with $B^r=4(1-\sqrt{A})/r$.
-\end{proposition}
-
-\begin{proposition}[Rejection of $J=\tfrac12 T$]
-\label{prop:identification-rejected}
-A constant nonzero boost has $J\neq 0$ with vanishing Weitzenb\"ock $T$ on flat space, so $J=\tfrac12 T$ fails. At the exterior point $(r_s,r)=(2,4)$ one has $J_{\mathrm{field}}\neq\tfrac12 T$. On every static radial-boost gauge the closed dictionary of Propositions~\ref{prop:jt-dictionary}--\ref{prop:jt-sandwich} holds; a dictionary for a general tetrad field remains open.
-\end{proposition}
+The first is the finite-angle mismatch of the two rotors; the second is a field seed built from $\partial_r\varphi$; the third is the teleparallel Lagrangian density. They are not the same object. A constant nonzero boost already has $J\neq 0$ with vanishing $T$ on flat space, so $J$ cannot be a multiple of $T$ in general. A dictionary for an arbitrary tetrad remains open; what follows is the dictionary on every static radial-boost chart.
 
 Substituting $\sqrt{A}=\mathrm{e}^{-\varphi}$ into~\eqref{eq:schwarzschild-T} yields
 \[
 \frac{(1-\sqrt{A})^2}{\sqrt{A}}=\mathrm{e}^{\varphi}-2+\mathrm{e}^{-\varphi}=2(\cosh\varphi-1).
 \]
-The two independent reasons the naive coefficient $\tfrac12$ fails are then visible: a missing length scale $r^2$, and a leading coefficient $4$ rather than $\tfrac12$.
-
-\begin{proposition}[Closed-form $J$--$T$ dictionary]
-\label{prop:jt-dictionary}
-Let $A>0$ be the time-leg factor of a static radial-boost coframe, with rapidity $\varphi=-\tfrac12\log A$ and $J=\tfrac12\varphi^2$. For $r\neq 0$,
-\[
-T=\frac{4}{r^2}(\cosh\varphi-1)=\frac{8}{r^2}\sinh^2\frac{\varphi}{2}.
-\]
-Equivalently
-\[
+Hence, for the time-leg $A>0$ of any static radial-boost coframe, with rapidity $\varphi=-\tfrac12\log A$ and $J=\tfrac12\varphi^2$,
+\begin{equation}
+\label{eq:jt-dictionary}
+T=\frac{4}{r^2}(\cosh\varphi-1)=\frac{8}{r^2}\sinh^2\frac{\varphi}{2},
+\qquad
 r^2 T=4\bigl(\cosh\sqrt{2J}-1\bigr)=4J+\tfrac23 J^2+\tfrac{2}{45}J^3+\cdots.
-\]
-In the weak-field limit $\varphi\to 0$ one has $r^2 T/(4J)\to 1$. The exterior Schwarzschild factor $A=1-r_s/r$ is the unique vacuum specialisation of this gauge (Propositions~\ref{prop:schwarzschild-chart} and~\ref{prop:schwarzschild-vacuum}).
-\end{proposition}
-
-The dictionary is not merely a one-way formula. The map $J\mapsto r^2 T$ is strictly increasing across the whole admissible cone $|J|\le\Jbound$: the argument $\sqrt{2|J|}$ never exceeds $\pi\sqrt{3}/2<\pi$, so the continuation to $J<0$ recorded below stays inside the range on which the cosine is still strictly decreasing. The correspondence is therefore one-to-one, and it can be written out explicitly.
-
-\begin{proposition}[Closed-form inversion]
-\label{prop:jt-inverse}
-Let $A>0$ be the time-leg factor of a static radial-boost coframe and $r\neq 0$. For $J\ge 0$,
+\end{equation}
+In the weak field, $\varphi\to 0$, one has $r^2 T/(4J)\to 1$: the two densities agree at leading order, and nowhere else. The map $J\mapsto r^2 T$ is strictly increasing on the whole admissible cone $|J|\le\Jbound$, so it inverts:
 \[
-J=\tfrac12\Bigl(\arccosh\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2},
+J=\tfrac12\Bigl(\arccosh\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2}
+\quad(J\ge 0),\qquad
+J=-\tfrac12\Bigl(\arccos\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2}
+\quad(J<0).
 \]
-and on the elliptic sector $J<0$ of the admissible cone,
-\[
-J=-\tfrac12\Bigl(\arccos\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2}.
-\]
-Moreover $J\mapsto r^2 T$ is strictly increasing on $|J|\le\Jbound$, hence injective: the teleparallel density at a given radius determines the algebraic parameter scalar. The two are never equal outside the flat limit, yet on this gauge they carry the same information.
-\end{proposition}
+On this gauge the teleparallel density at a given radius determines the algebraic scalar, even though the two are never equal outside the flat limit. Moreover $4J/r^2\le T$, with equality only in the flat case $A=1$; on the exterior Schwarzschild chart one has in addition $T\le 4J_{\mathrm{field}}$.
 
-\begin{proposition}[$J$--$T$ sandwich]
-\label{prop:jt-sandwich}
-On any static radial-boost gauge with $A>0$ and $r\neq 0$,
-\[
-\frac{4J}{r^2}\le T,
-\]
-with equality if and only if $A=1$ (flat). On the exterior Schwarzschild chart one has in addition
-\[
-T\le 4J_{\mathrm{field}},
-\]
-strict except in the flat limit. The same universal constant $4$ appears at both ends.
-\end{proposition}
+The analytic continuation $E(J)=\cosh\sqrt{2J}-1$ is entire. For $J<0$ it becomes $E(J)=\cos\sqrt{-2J}-1$. On the admissible cone the argument never reaches $\pi$, so $E(J)<0$ whenever $J<0$, and $\operatorname{sign} T=\operatorname{sign} J$. A real (hyperbolic) radial boost cannot produce $T<0$: on a static radial-boost gauge with $A>0$ one has $T\ge 0$, vanishing only for $A=1$. Repulsive layers live in the elliptic dual sector. The cosine branch is not a formal continuation; it is the geometry in which gravity reverses.
 
-\begin{proposition}[Exact field-seed ratio]
-\label{prop:jt-field-ratio}
-On the exterior domain $r>r_s>0$,
-\[
-\frac{J_{\mathrm{field}}}{T}=\frac{(1+\sqrt{A})^2}{16 A^{3/2}}=\frac{\mathrm{e}^{2\varphi}\cosh^2(\varphi/2)}{4}.
-\]
-The ratio is strictly increasing in $\varphi$ and has infimum $\tfrac14$. Consequently the naive identification $J_{\mathrm{field}}=\tfrac12 T$ can hold on at most one sphere.
-\end{proposition}
-
-The analytic continuation $E(J)=\cosh\sqrt{2J}-1$ is entire. For $J<0$ one has $E(J)=\cos\sqrt{-2J}-1$. On the admissible cone $|J|\le\Jbound$ the argument satisfies $\sqrt{-2J}\le\pi\sqrt{3}/2<\pi$, so $E(J)<0$ whenever $J<0$. Thus $\operatorname{sign} T=\operatorname{sign} J$ on that cone, confirming the reading $J>0$ attractive / $J<0$ repulsive on the $T$ side.
-
-\begin{proposition}[Real boosts cannot produce $T<0$]
-\label{prop:repulsive-nogo}
-On a static radial-boost gauge with $A>0$ and $r\neq 0$ one has $T\ge 0$, with $T=0$ if and only if $A=1$. A real (hyperbolic) radial boost therefore cannot realise a repulsive layer $T<0$. On the admissible cone, Proposition~\ref{prop:jt-dictionary} together with $\operatorname{sign} T=\operatorname{sign} J$ forces $T<0$ to require $J<0$, i.e.\ the elliptic sector. The cosine branch of $E(J)$ is consequently not a mere analytic continuation: it is the sector in which repulsive layers can occur.
-\end{proposition}
-
-The vacuum condition $\frac{d}{dr}(rA)=1$ selects a unique member of the static radial-boost family. On that member the Newtonian potential, the far-field coefficients of $T$ and $J$, and the exterior layering are then explicit.
-
-\begin{proposition}[Vacuum characterisation of the Schwarzschild factor]
-\label{prop:schwarzschild-vacuum}
-Let $A$ be the time-leg of a static radial-boost gauge. If $\frac{d}{dr}(rA)=1$ on an open ray $r>c\ge 0$, then $A(r)=1-r_s/r$ for a unique radius $r_s=r(1-A(r))$. Thus among all static radial-boost gauges, the exterior factor $A=1-r_s/r$ is the unique vacuum specialisation.
-\end{proposition}
-
-\begin{proposition}[Newtonian sandwich]
-\label{prop:schwarzschild-newtonian}
-On the exterior domain $r>r_s>0$,
-\[
-\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}.
-\]
-In particular $r\varphi\to r_s/2$ as $r\to\infty$, so the finite-angle rapidity tracks the Newtonian potential at infinity.
-\end{proposition}
-
-\begin{proposition}[Far-field coefficients]
-\label{prop:schwarzschild-farfield}
-On the exterior domain, as $r\to\infty$,
-\[
-r^4 T\to\frac{r_s^2}{2},\qquad 4r^2 J\to\frac{r_s^2}{2}.
-\]
-The teleparallel and algebraic chart densities therefore share the same leading coefficient at infinity.
-\end{proposition}
-
-\begin{proposition}[Exterior layering]
-\label{prop:schwarzschild-layering}
-On $r>r_s>0$ the factor $A$ is strictly increasing, while $\varphi$, $J$, $T$, and $r^2T$ are strictly decreasing. As $r\to r_s^+$ one has $A\to 0^+$, $\varphi\to\infty$, and $T\to\infty$.
-\end{proposition}
-
-\begin{proposition}[Reference sphere]
-\label{prop:schwarzschild-reference-sphere}
-At the sphere $r=\tfrac43 r_s$ one has the exact values
-\[
-A=\tfrac14,\qquad \varphi=\log 2,\qquad r^2 T=1,\qquad 4J=2\log^2 2,\qquad r^2 J_{\mathrm{field}}=\tfrac98.
-\]
-In particular $2\log^2 2<1$, so the sandwiches $4J<r^2 T$ and $T<4J_{\mathrm{field}}$ are strict at this sphere, with field-seed ratio $J_{\mathrm{field}}/T=\tfrac98$.
-\end{proposition}
+Among all static radial-boost gauges, the vacuum condition $\frac{d}{dr}(rA)=1$ selects a unique member: $A(r)=1-r_s/r$, with $r_s=r(1-A(r))$. That is the exterior Schwarzschild factor. On this chart, $\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}$, so $r\varphi\to r_s/2$ at infinity and the finite-angle rapidity tracks the Newtonian potential. The two densities share the same leading falloff, $r^4 T\to r_s^2/2$ and $4r^2 J\to r_s^2/2$. As $r\to r_s^+$ one has $A\to 0^+$, $\varphi\to\infty$, and $T\to\infty$: the classical chart is unbounded, a pathology the admissible cone will cut off in Section~\ref{subsec:quasi-horizon}.
 
 \subsection{Proposed Action}
 
@@ -509,15 +334,11 @@ We propose the action
 \[
 S = \frac{c^4}{16\pi G} \int J \, d^4x
 \]
-as a DST Lagrangian density in the parameter-space scalar $J$. This expression is algebraic and background-independent. It is a working hypothesis, \emph{not} identified with the teleparallel integral of $T$. For the Weitzenb\"ock scalar itself, the teleparallel identity
+as a Lagrangian density in the mismatch scalar $J$. The integral is algebraic and background-independent. It is not the teleparallel integral of $T$. For $T$ itself the standard identity
 \[
 \int T \, e \, d^4x = -\int R \, \sqrt{-g} \, d^4x + \int \partial_\mu(\sqrt{-g}\, V^\mu)\, d^4x
 \]
-holds after the standard tetrad variation with vanishing boundary variations $\delta e^a{}_\mu$. The Einstein equations therefore belong to $T$, not to algebraic $J$. Gravity in the present theory remains a torsional mismatch angle between particle-intrinsic dual spacetimes. On any static radial-boost coframe the chart densities satisfy
-\[
-e\cdot\frac{4J}{r^2}\;\le\; e\cdot T,
-\]
-with equality if and only if $A=1$ (when $\sin\theta>0$). The teleparallel density therefore dominates the algebraic density, and the two agree in the weak-field limit. A dictionary for a general tetrad field remains open, and the field equations of GR are recovered from algebraic $J$ only after that general dictionary is established.
+holds after tetrad variation with vanishing boundary variations, so the Einstein equations belong to $T$, not to $J$. Gravity in this theory remains the mismatch angle between particle-intrinsic dual frames. On a static radial-boost coframe the teleparallel density dominates, $e\cdot 4J/r^2\le e\cdot T$, with equality only when $A=1$. The two agree in the weak field. Recovering the Einstein equations from $J$ for a general tetrad requires a dictionary that is not yet written.
 
 \subsection{Weak-Field and Newtonian Limit}
 
@@ -529,12 +350,12 @@ yielding $\Omega_\text{biv} \approx \sum \alpha_a \, i\Gamma_a$ and $J \approx \
 \[
 \nabla^2 \Phi = 4\pi G \rho
 \]
-is recovered with the standard coefficient. This matching is a linearized hypothesis, not a derivation of $G$ from the dual-rotor algebra.
+is recovered with the standard coefficient. This matching identifies $G$ with the linearised chart; it does not derive $G$ from the algebra.
 
 \subsection{Rotor Action in the Dual Spacetime}
 \label{subsec:dual-rotors}
 
-In the double spacetime theory, the sole algebraic degrees of freedom considered here are the rotor angles within $\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)$ carried by every massive particle. Gravity, inertia, and quantum states are interpreted as deviations and coherences among these angles; that reading is a hypothesis.
+The sole algebraic degrees of freedom considered here are the rotor angles within $\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)$ carried by every massive particle. Gravity, inertia, and quantum states are read as deviations and coherences among these angles.
 
 The dual spacetime, related to the usual spacetime by the dual map $X \mapsto Xi$, inherits a time-reversed orientation. Consequently, an angle that generates a pure spatial rotation in the dual sector must be appropriately dual-transformed when incorporated into the unified rotor description.
 
@@ -554,7 +375,7 @@ R_\text{dual} = \exp\left( \frac{\theta}{2} \hat{q} \right),
 \]
 while its action on dual spacetime vectors, after the angle dual conversion $\theta \mapsto \theta i$, manifests as a boost generated by $i\Gamma_a$ ($ (\hat{q}i)^2 = +1 $).
 
-In vacuum (free fall), $\Omega=1$ requires $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, not $J=0$. Mass-energy is interpreted as inducing deviations from this condition; that interpretation, and the identification of $J$ with gravitational attraction, remain hypotheses.
+In free fall, $\Omega=1$ requires $R_{\mathrm{dual}}=R_{\mathrm{usual}}$, not $J=0$. Mass-energy is the cost of deviations from that condition, and $J>0$ is attractive gravity.
 
 This angle-centric treatment, with explicit dual conversion $\theta \mapsto \theta i$, preserves the original form of the total rotor
 \[
@@ -564,12 +385,7 @@ while correctly incorporating the time-reversal duality: the dual rotor $R_\text
 
 \subsection{Physical Interpretation and Gravitational Engineering}
 
-\begin{hypothesis}[Gravitational engineering]
-\label{hyp:gravity-engineering}
-Gravity is the energetic cost of dual rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, an external influence that coherently modulates the dual components $\theta$ is conjectured to alter $J$, including the possibilities $J\to 0$ (shielding) and $J<0$ (repulsion). No derivation of such a coupling from the dual-rotor algebra is claimed.
-\end{hypothesis}
-
-The continuum is a macroscopic description. Spacetime degrees of freedom in this theory are particle-local and paired. Whether that mismatch is engineerable is the hypothesis above, not a theorem.
+Gravity is the energetic cost of dual-rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, an external influence that coherently modulates the dual components $\theta$ could in principle alter $J$, including the possibilities $J\to 0$ (shielding) and $J<0$ (repulsion). Whether such a coupling exists is a conjecture, taken up in Section~\ref{sec:gravitycontrol}. The continuum remains a macroscopic description; spacetime degrees of freedom in this theory are particle-local and paired.
 
 \section{Unified Description of Inertia and Gravity}
 \label{sec:unified}
@@ -651,37 +467,19 @@ The corresponding radius is $r_\star=r_s/(1-A_{\min})$, equivalently $r_\star/r_
 
 This cutoff is a working identification of the three-axis ceiling on a single boost axis. A one-axis admissible boost saturates only at $\varphi=\pi/2$, where $J=\pi^2/8=\Jbound/3$. The inverted value $\varphi_{\max}>\pi/2$ therefore lies outside the admissible cone. The construction saturates the three-axis bound, not the single-axis cone.
 
-On the same radial slice the dictionary of Proposition~\ref{prop:jt-dictionary} converts the rapidity ceiling into a finite envelope for the Weitzenb\"ock scalar: $\varphi\le\varphi_{\max}$ implies $r^2 T\le 4(\cosh\varphi_{\max}-1)$, and
+The dictionary~\eqref{eq:jt-dictionary} converts the rapidity ceiling into a finite envelope for $T$: $\varphi\le\varphi_{\max}$ implies $r^2 T\le 4(\cosh\varphi_{\max}-1)$, and
 \[
 26<4\bigl(\cosh(\pi\sqrt{3}/2)-1\bigr)<27.
 \]
-A one-axis admissible boost $\varphi\le\pi/2$ yields the tighter envelope $r^2 T<6.1$. Classical Schwarzschild has $r^2 T\to\infty$ as $r\to r_s^+$. The quasi-horizon cutoff therefore cuts off $T$ as well as $\varphi$.
+A one-axis admissible boost $\varphi\le\pi/2$ yields the tighter envelope $r^2 T<6.1$. Classical Schwarzschild has $r^2 T\to\infty$ as $r\to r_s^+$; the cutoff therefore bounds $T$ as well as $\varphi$.
 
-The elliptic sector supplies the matching floor, and for the same reason. On the admissible cone the dictionary argument obeys $\sqrt{2|J|}\le\varphi_{\max}=\pi\sqrt{3}/2<\pi$, so the cosine branch of $E(J)$ never leaves the range on which $\cos$ is strictly decreasing. Its deepest value is therefore reached exactly at saturation,
+The elliptic sector supplies the matching floor. On the admissible cone $\sqrt{2|J|}\le\varphi_{\max}<\pi$, so the cosine branch of $E(J)$ never leaves the range on which $\cos$ is strictly decreasing. Its deepest value is reached at saturation,
 \[
 -7.7<4\bigl(\cos\varphi_{\max}-1\bigr)<-7.6,
 \]
-and together with the ceiling this confines the dimensionless teleparallel density to the finite window $-8<r^2 T<27$. Repulsive layers consequently have a bounded depth: the theory admits gravitational reversal, but not reversal of unlimited strength. Both ends of the window are attained, at $J=-\Jbound$ and $J=+\Jbound$ respectively, so neither can be improved.
+and together with the ceiling this confines the dimensionless teleparallel density to $-8<r^2 T<27$. Repulsive layers have a bounded depth: gravity can reverse, but not with unlimited strength. Both ends of the window are attained, at $J=\pm\Jbound$.
 
-\begin{proposition}[Finite two-sided window for $r^2 T$]
-\label{prop:r2T-ceiling}
-If $\varphi\le\varphi_{\max}$, then $r^2 T\le 4(\cosh\varphi_{\max}-1)$ and $26<4(\cosh(\pi\sqrt{3}/2)-1)<27$. If $\varphi\le\pi/2$, then $r^2 T<6.1$. On the admissible cone $|J|\le\Jbound$ the elliptic branch supplies the matching floor,
-\[
-4\bigl(\cos\varphi_{\max}-1\bigr)\;\le\;r^2 T\;\le\;4\bigl(\cosh\varphi_{\max}-1\bigr),
-\qquad -7.7<4\bigl(\cos\varphi_{\max}-1\bigr)<-7.6,
-\]
-so $-8<r^2 T<27$ throughout. Both ends are attained, at $J=-\Jbound$ and $J=+\Jbound$ respectively, so neither bound can be improved. Classical Schwarzschild has unbounded $r^2 T$ as $r\to r_s^+$.
-\end{proposition}
-
-\begin{proposition}[Quasi-horizon cutoff]
-\label{prop:quasi-horizon}
-Identifying the three-axis ceiling $|J|=\Jbound$ with a radial pure-boost slice $J=\tfrac12\varphi^2$ yields $\varphi_{\max}=\pi\sqrt{3}/2$ and $A_{\min}=\mathrm{e}^{-\pi\sqrt{3}}$, with $0<A_{\min}<10^{-2}$ and $1<r_\star/r_s<1.005$ where $r_\star=r_s/(1-A_{\min})$. The saturated and classical charts agree at $r=r_\star$, and $A_{\min}>0$. The value $\varphi_{\max}$ lies outside the single-axis admissible cone.
-\end{proposition}
-
-\begin{proposition}[Saturated interior: vanishing field seed, residual torsion]
-\label{prop:saturated-interior}
-On the saturated interior $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so the field seed $J_{\mathrm{field}}$ vanishes. The constant-$A$ coframe still carries angular Weitzenb\"ock torsion (in particular $T^2{}_{r\theta}=1$), hence $T$ does not vanish. Substituting the frozen $A_{\min}$ into the exterior closed form for $T$ does not reproduce the frozen-divergence expression. Thus $J_{\mathrm{field}}=0$ while $T\neq 0$, the dual of the constant-boost counterexample $J\neq 0$, $T=0$.
-\end{proposition}
+Inside $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so the field seed $J_{\mathrm{field}}$ vanishes. The constant-$A$ coframe still carries angular Weitzenb\"ock torsion, so $T$ itself does not vanish---the dual of a constant boost, which has $J\neq 0$ with $T=0$.
 
 This layered structure prevents both singularities and event horizons. Matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
 
@@ -792,29 +590,20 @@ It is convenient also to introduce the scalar interference factor
 \]
 which, unlike $\gamma_\text{eff}$, may change sign and will serve as the order parameter distinguishing attractive ($\gamma_s > 0$) from repulsive ($\gamma_s < 0$) torsional regimes below. The negative sign in the interference term is fixed by the time-reversed duality of the dual spacetime.
 
-\begin{proposition}[Closed form of $\gamma_{\mathrm{eff}}$]
-\label{prop:gamma-eff-closed}
-For all real $\alpha,\beta$,
-\[
+A short calculation collapses the squares:
+\begin{equation}
+\label{eq:gamma-eff}
 \gamma_{\mathrm{eff}}(\alpha,\beta)=\cosh\alpha-\sinh\alpha\sin\beta.
-\]
-In particular $\gamma_{\mathrm{eff}}(\alpha,\beta)\ge e^{-|\alpha|}>0$, so the proper-time factor never vanishes. If $\alpha=0$, then $\gamma_{\mathrm{eff}}=1$. If $\beta=0$, then $\gamma_{\mathrm{eff}}=\cosh\alpha$, recovering the special-relativistic factor.
-\end{proposition}
-
-\begin{proposition}[Balanced kinematics is not the vacuum factor]
-\label{prop:gamma-eff-balanced}
-If $\sin\alpha\neq 0$ and $\sinh\alpha\neq 0$, then $\gamma_{\mathrm{eff}}(\alpha,\alpha)\neq\cosh\alpha$. Already at $\alpha=\beta=1$ one has $\gamma_{\mathrm{eff}}(1,1)\neq 1$. Thus the balanced locus $\alpha=\beta$ (where $J=0$ on one axis) is not the special-relativistic kinematics.
-\end{proposition}
-
-The special-relativistic limit is the unexcited dual sector $\theta=0$, not the locus $J=0$. Then $s=\cosh(\phi/2)$ and $b=\sinh(\phi/2)$, and Proposition~\ref{prop:gamma-eff-closed} gives $\gamma_{\mathrm{eff}}=\cosh\phi$.
+\end{equation}
+This factor is always at least $e^{-|\alpha|}$, hence never zero: clocks slow, they do not stop. If the dual sector is unexcited, $\beta=0$, one recovers the special-relativistic factor $\cosh\alpha$. If there is no usual boost, $\alpha=0$, then $\gamma_{\mathrm{eff}}=1$. The balanced locus $\alpha=\beta$, where $J=0$ on one axis, is a different kinematics: $\gamma_{\mathrm{eff}}(\alpha,\alpha)\neq\cosh\alpha$ as soon as $\alpha\neq 0$. Special relativity is the unexcited dual sector $\theta=0$, not the vanishing of $J$.
 
 \subsection{Vacuum Limit and Massless Particles}
 
-Torsion-free vacuum in the kinematic sense is $\theta=0$ (equivalently $R_{\mathrm{dual}}=1$ on a pure usual boost), which yields $\gamma_{\mathrm{eff}}=\cosh\phi$. This is not the same as $J=0$: balanced massive states have $J=0$ with $\theta=\phi\neq 0$ and a different factor $\gamma_{\mathrm{eff}}=\cosh\phi-\sinh\phi\sin\phi$. Massless particles are interpreted as maintaining $\theta=0$ at all velocities; that reading is a hypothesis.
+Torsion-free kinematics is $\theta=0$ (equivalently $R_{\mathrm{dual}}=1$ on a pure usual boost), which yields $\gamma_{\mathrm{eff}}=\cosh\phi$. Balanced massive states have $J=0$ with $\theta=\phi\neq 0$ and a different factor $\gamma_{\mathrm{eff}}=\cosh\phi-\sinh\phi\sin\phi$. Photons, in this reading, maintain $\theta=0$ at all velocities: they pay no dual-rotor price for a change of frame.
 
 \subsection{Massive Particles and Gravitational Effects}
 
-For massive particles, rest mass is interpreted as rigidity that causes the dual rotor to lag behind the usual rotor under acceleration. The resulting deviation $\delta\theta = \theta - \phi$ modulates $\gamma_{\mathrm{eff}}$. Identifying that modulation with gravitational redshift is a working hypothesis, not a derivation from the closed form alone.
+For massive particles, rest mass is the rigidity that causes the dual rotor to lag behind the usual rotor under acceleration. The resulting deviation $\delta\theta = \theta - \phi$ modulates $\gamma_{\mathrm{eff}}$. We read that modulation as gravitational redshift.
 
 \subsection{Sign Inversion of the Scalar Interference Factor and Repulsive Layers}
 
@@ -822,21 +611,16 @@ When dual-spacetime rotations dominate ($\theta/2$ sufficiently large), the sinu
 \[
 \tan\left(\frac{\theta}{2}\right) > \coth\left(\frac{\phi}{2}\right).
 \]
-In these regimes, the scalar interference factor $\gamma_s$ becomes negative, $\gamma_s < 0$, while the proper-time Lorentz factor $\gamma_\text{eff} = s^2 + b^2$ remains strictly positive by Proposition~\ref{prop:gamma-eff-closed}. The change of sign of $\gamma_s$ is the algebraic order parameter used below for repulsive layers; identifying it with gravitational repulsion is a working hypothesis (not a literal reversal of causality).
+Then $\gamma_s$ becomes negative, while $\gamma_\text{eff}=s^2+b^2$ remains strictly positive. The sign of $\gamma_s$ is the order parameter of repulsive layers. It is not a reversal of causality: proper time never runs backward.
 
 This $\theta$-centric formulation makes manifest that time dilation is fundamentally a torsional phenomenon originating in the particle-intrinsic dual spacetime. The usual rapidity $\phi$ provides the kinematic baseline, while deviations in the compact dual angle $\theta$ encode the gravitational and inertial corrections that distinguish GR from flat-spacetime kinematics. External coherent excitation of $\theta$ thus offers a pathway to manipulate time dilation and effective gravitational fields.
 
 \section{Scale-Invariant Torsional Layers: The Strong Force as Gravitational Repulsion and Nuclei as Primordial Torsion Stars}
 \label{sec:nuclear}
 
-The layered torsional reversal is \emph{algebraically} scale-invariant in the dimensionless resonance variable \(x=\ell/(2r)\): under the equal-scale working hypothesis \(\alpha(r)=\beta(r)=\ell/r\) the entire layer sequence depends on \(x\) alone, so absolute femtometer and MeV scales enter solely through an external characteristic length \(\ell\) and particle masses. The same layered mechanism that governs stellar collapse into stratified torsion stars is therefore available at nuclear densities as a \emph{working identification}, not as a derived equality of couplings. In particular the Newtonian gravity fine-structure constant \(\alpha_G=G m_p^2/\hbar c\sim 10^{-38}\) must \emph{not} be conflated with an \(O(1)\) nuclear strength, nor with a divergence of \(1/\gamma_s\) near a torsional node: the latter is a kinematic amplification of an already-present channel, not a derivation of the strong coupling from \(G\).
+The layered reversal is scale-invariant in the dimensionless variable \(x=\ell/(2r)\). Under the equal-scale ansatz \(\alpha(r)=\beta(r)=\ell/r\) the entire sequence depends on \(x\) alone; femtometer and MeV scales enter only through a characteristic length \(\ell\) and the particle masses. The same mechanism that stratifies a collapsing star is therefore available at nuclear densities. We propose that this is the strong force: gravity in its layered phase, not a second coupling. The Newtonian gravity fine-structure constant \(\alpha_G=G m_p^2/\hbar c\sim 10^{-38}\) must not be conflated with an \(O(1)\) nuclear strength. Near a torsional node, \(1/\gamma_s\) diverges; that is a kinematic amplification of a channel already present, not a derivation of the strong coupling from \(G\).
 
-One structural point must be settled before the layers are described, because it was treated inconsistently in earlier presentations of this section. The equal-scale ansatz sets \(\alpha_a=\beta_a\) on every axis, and on that locus the Killing-form scalar \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) vanishes \emph{identically}, while the unsigned mass \(M=\frac12\sum_a(\alpha_a^2+\beta_a^2)\) stays strictly positive. Nuclear matter, in this reading, sits on the balanced locus of Proposition~\ref{prop:J-zero-not-omega}: massive, with \(\Omega\neq 1\), and with \(J=0\). The quantity that alternates across the layers is therefore not \(J\) but the scalar interference factor \(\gamma_s\) of Section~\ref{sec:timedilation}. Every layer statement below is phrased in terms of \(\gamma_s\); labels that formerly read \(J<0\) or \(J\gg 0\) are to be read as \(\gamma_s<0\) and \(\gamma_s\) small and positive.
-
-\begin{proposition}[Balanced locus of the equal-scale layers]
-\label{prop:equalscale-balanced}
-On the equal-scale locus \(\alpha_a=\beta_a\) one has \(J=0\) for every choice of rapidities, while \(M>0\) whenever some \(\alpha_a\neq 0\). The layer alternation is carried by \(\gamma_s\), which does change sign on that locus. Thus \(J\) and \(\gamma_s\) are independent order parameters, and the nuclear layering belongs to the second.
-\end{proposition}
+One structural point must be settled at the outset. The equal-scale ansatz sets \(\alpha_a=\beta_a\) on every axis, so \(J\) vanishes identically while \(M\) stays positive whenever some rapidity is nonzero. Nuclear matter, in this reading, sits on the balanced locus of Section~\ref{sec:gravity}: massive, with \(\Omega\neq 1\), and with \(J=0\). What alternates across the layers is not \(J\) but the interference factor \(\gamma_s\) of Section~\ref{sec:timedilation}. Attraction and repulsion below are the sign of \(\gamma_s\). \(J\) and \(\gamma_s\) are independent order parameters; nuclear layering belongs to the second.
 
 \subsection{The Closed-Form Layer Spectrum}
 \label{subsec:layer-spectrum}
@@ -850,86 +634,58 @@ Its derivative collapses to a single product,
 \label{eq:gammaS-derivative}
 \gamma_s'(x)=-2\cosh x\,\sin x ,
 \end{equation}
-so the entire layer structure is governed by the zeros of \(\sin\). Everything in this subsection follows from that identity.
-
-\begin{proposition}[Layer spectrum]
-\label{prop:layer-spectrum}
-The critical points of \(\gamma_s\) are exactly the integer multiples of \(\pi\), and the extremal values are
+so the entire layer structure is governed by the zeros of \(\sin\). The critical points of \(\gamma_s\) are exactly the integer multiples of \(\pi\), and the extremal values are
 \[
 \gamma_s(n\pi)=(-1)^n\cosh(n\pi),\qquad n=0,1,2,\dots
 \]
-On each interval \([n\pi,(n+1)\pi]\) the factor \(\gamma_s\) is strictly monotone---decreasing for even \(n\), increasing for odd \(n\)---so each such interval carries exactly one torsional node, and the sign of \(\gamma_s\) strictly alternates from one plateau to the next. In particular \(\gamma_s(n\pi)\neq 0\) for every \(n\), and only finitely many nodes lie in any bounded range of \(x\).
-\end{proposition}
+On each interval \([n\pi,(n+1)\pi]\) the factor is strictly monotone---decreasing for even \(n\), increasing for odd \(n\)---so each interval carries exactly one torsional node, and the sign of \(\gamma_s\) strictly alternates from one plateau to the next. Plateaux never vanish; only finitely many nodes lie in any bounded range of \(x\).
 
-Ordered outward in radius, the alternation reads: attraction for \(r>r_1\); a barrier at \(r_1\); repulsion on \((r_2,r_1)\); a barrier at \(r_2\); attraction on \((r_3,r_2)\); and so on indefinitely. The onion-like stratification postulated in Section~\ref{sec:strongfield} is therefore not an extra assumption but a consequence of \eqref{eq:gammaS-derivative}, with one barrier per \(\pi\)-interval of \(x\) and no possibility of two consecutive layers of the same sign.
+Ordered outward in radius the pattern is: attraction for \(r>r_1\); a barrier at \(r_1\); repulsion on \((r_2,r_1)\); a barrier at \(r_2\); attraction on \((r_3,r_2)\); and so on. The onion of Section~\ref{sec:strongfield} is not an extra assumption. It is this derivative, one barrier per \(\pi\)-interval of \(x\), with no two consecutive layers of the same sign.
 
-\begin{proposition}[Sharpened branch localisation]
-\label{prop:layer-sharp-branch}
-A node forces \(\cos x\neq 0\) and \(\tan x=1/\tanh x>1\). Consequently the \(n\)-th node satisfies
+A node forces \(\tan x=1/\tanh x>1\), so the \(n\)-th node sits in
 \[
 n\pi+\frac{\pi}{4}<x_n<n\pi+\frac{\pi}{2},
 \]
-which is strictly stronger than the branch \((n\pi,\,n\pi+\pi/2)\) used previously. In radius this reads
+or in radius
 \[
-\frac{\ell}{(2n+1)\pi}<r_n<\frac{2\ell}{(4n+1)\pi},
+\frac{\ell}{(2n+1)\pi}<r_n<\frac{2\ell}{(4n+1)\pi}.
 \]
-so \(r_n=\Theta(1/n)\) with explicit two-sided constants, and every node obeys \(r_n<2\ell/\pi\): the outermost node is the largest layer radius. The first two nodes satisfy
+Thus \(r_n=\Theta(1/n)\), every node obeys \(r_n<2\ell/\pi\), and the outermost node is the largest layer radius. The first two nodes satisfy
 \[
-\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255,
+\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255.
 \]
-strictly inside the earlier window \((1/(3\pi),\,1/\pi)\).
-\end{proposition}
 
-\begin{proposition}[Amplitude growth and inward screening]
-\label{prop:layer-screening}
-The plateau amplitudes grow at least geometrically,
-\[
-\cosh\pi\cdot\cosh(n\pi)\le\cosh\bigl((n+1)\pi\bigr),\qquad
-(\cosh\pi)^n\le\cosh(n\pi),\qquad \cosh\pi>11,
-\]
-while never exceeding \(\mathrm{e}^{n\pi}\). The per-layer amplification is capped by \(\mathrm{e}^\pi\), with exact shortfall
-\[
-\mathrm{e}^\pi\cosh a-\cosh(a+\pi)=\sinh\pi\;\mathrm{e}^{-a},
-\]
-and the ratio \(\cosh(a+\pi)/\cosh a\) is strictly increasing in \(a\), so successive layers amplify by an ever larger factor that stays strictly below the ceiling \(\mathrm{e}^\pi\approx 23.14\). Because \(\gamma_s\) sits in the \emph{denominator} of the effective force \(F=k/(\gamma_s r^2)\), the mid-layer force amplitude at the \(n\)-th plateau \(r=\ell/(2n\pi)\) is
+The plateau amplitudes grow at least geometrically, \((\cosh\pi)^n\le\cosh(n\pi)\) with \(\cosh\pi>11\), while never exceeding \(\mathrm{e}^{n\pi}\). Successive layers amplify by an ever larger factor that stays strictly below \(\mathrm{e}^\pi\approx 23.14\). Because \(\gamma_s\) sits in the denominator of the effective force \(F=k/(\gamma_s r^2)\), the mid-layer amplitude at the \(n\)-th plateau \(r=\ell/(2n\pi)\) is
 \[
 |F|=\frac{k}{\ell^2}\cdot\frac{4\pi^2n^2}{\cosh(n\pi)},
 \]
-which is strictly decreasing in \(n\) for \(n\ge 1\). The mid-layer interaction is therefore exponentially screened toward the centre, not amplified.
-\end{proposition}
+which decreases in \(n\) for \(n\ge 1\). What grows inward without bound is the barrier structure---the nodes at which \(\gamma_s\) vanishes and \(1/\gamma_s\) diverges. The plateaux between barriers become exponentially quiet, successive factors falling like \(\mathrm{e}^{-n\pi}\). In radius the screening is \(1/\cosh\bigl(\ell/(2r)\bigr)\): the deep interior of a torsional condensate is quasi-free between barriers and confined at them. That is the qualitative pattern of nuclear confinement, read off the algebra rather than postulated.
 
-Proposition~\ref{prop:layer-screening} corrects a reading carried by earlier drafts of this paper. What grows inward without bound is the \emph{barrier} structure---the nodes at which \(\gamma_s\) vanishes and \(1/\gamma_s\) diverges---while the plateaux between barriers become exponentially quiet, successive plateau factors falling off like \(\mathrm{e}^{-n\pi}\). Expressed in radius, the plateau screening factor is \(1/\cosh\bigl(\ell/(2r)\bigr)\): the deep interior of a torsional condensate is quasi-free between barriers and confined at them. In the nuclear reading this is precisely the qualitative pattern one wants, with confinement supplied by the nodes and a nearly interaction-free interior between them, and it is a consequence of the algebra rather than an added postulate.
-
-Two further facts complete the picture. First, a torsional barrier is a force divergence and not a clock freeze: at a node the proper-time factor \(\gamma_{\mathrm{eff}}=\gamma_s^2+\gamma_b^2\) reduces to \(\gamma_b^2\), and by Proposition~\ref{prop:gamma-eff-closed} it remains strictly positive. Second, the ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are \emph{identical} at nuclear and at stellar scales; the characteristic length \(\ell\) fixes the absolute radii and cancels from every ratio. That is the precise content of the scale invariance announced in the title of this section, and it is the only sense in which nuclear and stellar layering are the same structure.
+A barrier is a force divergence, not a clock freeze: at a node \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. The ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are identical at nuclear and at stellar scales; \(\ell\) fixes the absolute radii and cancels from every ratio. That is the content of the scale invariance in the title of this section, and the only sense in which nuclear and stellar layering are the same structure.
 
 \subsection{Torsional Layers at Nuclear Densities}
 
 As baryon density approaches nuclear saturation
 \(\rho_0\sim (2\text{--}3)\times 10^{14}\,\mathrm{g/cm^3}\)
 (equivalently \(n_0\sim 0.16\,\mathrm{fm}^{-3}\)),
-the dual rotor parameters \(\theta\) dominate the mismatch. Densities of order \(10^{18}\,\mathrm{g/cm^3}\) are \emph{not} characteristic of ordinary nuclear interiors. The sequence of sign flips in \(\gamma_s\) is organised on femtometer scales set by the external characteristic length \(\ell\), and the labelled hypothesis \(\ell\sim\lambda_\pi\approx 1.41\,\mathrm{fm}\) is \emph{not} a theorem of the dual-rotor algebra. That hypothesis is now sharply constrained.
-
-\begin{proposition}[Pion length and the outermost node]
-\label{prop:pion-node}
-The charged-pion Compton wavelength satisfies \(\lambda_\pi<\pi/2\,\mathrm{fm}\). Under the labelled hypothesis \(\ell=\lambda_\pi\), every equal-scale node therefore lies below \(1\,\mathrm{fm}\), and the outermost node is confined to
+the dual rotor parameters \(\theta\) dominate the mismatch. Densities of order \(10^{18}\,\mathrm{g/cm^3}\) are not ordinary nuclear interiors. The sign flips of \(\gamma_s\) are organised on femtometer scales set by \(\ell\). Taking \(\ell\sim\lambda_\pi\approx 1.41\,\mathrm{fm}\), the charged-pion Compton wavelength, is a physical identification, not a derivation. Because \(\lambda_\pi<\pi/2\,\mathrm{fm}\), every equal-scale node then lies below \(1\,\mathrm{fm}\), and the outermost node is confined to
 \[
 0.44\,\mathrm{fm}<r_1<0.91\,\mathrm{fm}.
 \]
-A repulsive shell at \(1\)--\(2\,\mathrm{fm}\) is consequently incompatible with \(\ell=\lambda_\pi\); an outermost node at \(1\,\mathrm{fm}\) or beyond forces \(\ell>\pi/2\,\mathrm{fm}>\lambda_\pi\).
-\end{proposition}
+That is the empirical hard-core region near \(0.5\,\mathrm{fm}\). A repulsive shell at \(1\)--\(2\,\mathrm{fm}\) would require a longer \(\ell\).
 
-The pion hypothesis thus places the outermost barrier squarely in the empirical hard-core region near \(0.5\,\mathrm{fm}\) rather than at the \(1\)--\(2\,\mathrm{fm}\) band quoted in earlier drafts. With that correction the layer sequence at nuclear densities reads:
+The layer sequence at nuclear densities then reads:
 
 \begin{itemize}
-\item Outermost barrier: the first node \(\gamma_s=0\), identified with the short-range repulsion of nucleon--nucleon scattering. Under \(\ell=\lambda_\pi\) it lies at \(0.44\)--\(0.91\,\mathrm{fm}\) by Proposition~\ref{prop:pion-node}, consistent with the empirical hard core; matching a \(1\)--\(2\,\mathrm{fm}\) shell instead requires a longer \(\ell\).
-\item Repulsive shell inside it (\(\gamma_s<0\)), extending inward to the second node, whose radius is between one sixth and one quarter of the first by Proposition~\ref{prop:layer-sharp-branch}.
-\item Intermediate attractive plateau (\(\gamma_s>0\)). The observed binding energy per nucleon is \(\mathrm{BE}/A\sim 8\,\mathrm{MeV}\) near iron; an optical-model well depth of order \(40\)--\(50\,\mathrm{MeV}\) is a distinct external input and must not be quoted as \(\mathrm{BE}/A\).
-\item Deeper layers: strictly alternating attraction and repulsion, one barrier per \(\pi\)-interval of \(x\), with exponentially quieter plateaux by Proposition~\ref{prop:layer-screening}. The barriers halt further collapse and are interpreted, in this framework, as the geometric counterpart of quark confinement; the quiet plateaux between them are the counterpart of a nearly free interior.
+\item Outermost barrier: the first node \(\gamma_s=0\), identified with the short-range repulsion of nucleon--nucleon scattering, at \(0.44\)--\(0.91\,\mathrm{fm}\) if \(\ell=\lambda_\pi\).
+\item Repulsive shell inside it (\(\gamma_s<0\)), extending inward to the second node, whose radius is between one sixth and one quarter of the first.
+\item Intermediate attractive plateau (\(\gamma_s>0\)). The observed binding energy per nucleon is \(\mathrm{BE}/A\sim 8\,\mathrm{MeV}\) near iron; an optical-model well depth of order \(40\)--\(50\,\mathrm{MeV}\) is a distinct input.
+\item Deeper layers: strictly alternating attraction and repulsion, one barrier per \(\pi\)-interval of \(x\), with exponentially quieter plateaux. The barriers halt further collapse and are the geometric counterpart of quark confinement; the quiet plateaux between them are a nearly free interior.
 \end{itemize}
 
 Pauli's exclusion principle is no longer fundamental: it is dynamically generated by the first repulsive torsional layer. Fermions cannot occupy the same state because the dual rotor $\theta$ phases enter a repulsive regime when two identical particles attempt spatial overlap, producing an effective fermi pressure without invoking quantum statistics a priori. Bosons, lacking this phase rigidity, experience only the attractive layers until much higher densities.
 
-In short: under the present working hypothesis the ``strong force'' is gravity in its strong-field, layered phase. QCD color charge is interpreted as a misreading of torsional charge carried by dual rotor phases; this narrative deliberately does \emph{not} identify \(\alpha_s\) with the discrete lattice floor \(\varepsilon_N\).
+In short: we propose that the strong force is gravity in its strong-field, layered phase. QCD color charge is then a misreading of torsional charge carried by dual-rotor phases; we do not identify \(\alpha_s\) with the discrete lattice floor \(\varepsilon_N\).
 
 \subsection{Atomic Nuclei as Primordial Torsion Stars}
 
@@ -942,25 +698,15 @@ Every atomic nucleus is a microscopic analog of the torsion stars described in S
 \item Alternating deeper barriers and plateaux, the barriers ever sharper and the plateaux exponentially quieter, so that the innermost region is nearly interaction-free between confining walls.
 \end{itemize}
 
-The last item replaces the earlier picture of a centrally amplified force. The amplification is entirely in the barriers; the intervening interior is screened by the factor \(1/\cosh\bigl(\ell/(2r)\bigr)\) of Proposition~\ref{prop:layer-screening}.
+The amplification is entirely in the barriers; the intervening interior is screened by \(1/\cosh\bigl(\ell/(2r)\bigr)\).
 
-Saturation of nuclear density deserves a separate statement, because it is the one nuclear regularity that the layer picture claims to explain and it is also where the standard empirical constants disagree with each other.
-
-\begin{proposition}[Saturation and the \(A^{1/3}\) radius law]
-\label{prop:saturation-radius}
-Constant nucleon number density is exactly the statement \(R=r_0A^{1/3}\): a uniform sphere of that radius has density \(3/(4\pi r_0^3)\) for every \(A\). Numerically \(r_0=1.2\,\mathrm{fm}\) gives
+Saturation of nuclear density is the one nuclear regularity the layer picture claims to explain, and it is also where the standard empirical constants disagree. Constant nucleon number density is exactly \(R=r_0A^{1/3}\): a uniform sphere of that radius has density \(3/(4\pi r_0^3)\) for every \(A\). Numerically \(r_0=1.2\,\mathrm{fm}\) gives
 \[
 0.13\,\mathrm{fm}^{-3}<\frac{3}{4\pi r_0^3}<0.14\,\mathrm{fm}^{-3},
 \]
-which is \emph{not} the empirical saturation value \(n_0=0.16\,\mathrm{fm}^{-3}\). The coefficient consistent with \(n_0\) satisfies \((1.14)^3<3/(4\pi n_0)<(1.15)^3\), that is \(r_0^\star\approx 1.14\,\mathrm{fm}\). The two commonly quoted nuclear constants are therefore mutually inconsistent at the ten-per-cent level, and any layer identification must choose between them rather than invoke both.
-\end{proposition}
+which is not the empirical saturation value \(n_0=0.16\,\mathrm{fm}^{-3}\). The coefficient consistent with \(n_0\) is \(r_0^\star\approx 1.14\,\mathrm{fm}\). The two commonly quoted nuclear constants disagree at the ten-per-cent level; a layer identification must choose between them.
 
-Charge independence of the nuclear force, spin--orbit coupling, and magic numbers are \emph{interpreted} as resonance conditions in the dual rotor spectrum; they are not theorems of the present algebra. Discrete finiteness of the rotor image at fixed compactification parameter \(N\) yields only \(A_{\max}(N)<\infty\). The layer geometry itself yields no such cutoff at all.
-
-\begin{proposition}[No finite \(A_{\max}\) from the layer geometry]
-\label{prop:no-Amax}
-If the characteristic length scales collectively as \(\ell\propto A^{1/3}\), the ratio of the nuclear surface \(R=r_0A^{1/3}\) to any layer radius is independent of \(A\). If instead \(\ell\) is \(A\)-independent and equal to \(\lambda_\pi\), then already at \(A=1\) the surface \(r_0=1.2\,\mathrm{fm}\) lies outside every node. In neither case does the equal-scale layer geometry single out a finite terminating mass number, so the estimate \(A\sim 300\) remains an external heuristic.
-\end{proposition}
+Charge independence, spin--orbit coupling, and magic numbers are read as resonance conditions in the dual-rotor spectrum. Discrete finiteness of the rotor image at fixed compactification \(N\) yields only \(A_{\max}(N)<\infty\). The layer geometry itself yields no such cutoff: if \(\ell\propto A^{1/3}\), the ratio of the nuclear surface to any layer radius is independent of \(A\); if \(\ell=\lambda_\pi\) is \(A\)-independent, already at \(A=1\) the surface \(r_0=1.2\,\mathrm{fm}\) lies outside every node. The estimate \(A\sim 300\) remains an external heuristic.
 
 Nuclear fission and fusion are torsional layer transitions: fission occurs when an excited dual mode drives \(\gamma_s\) through a node from positive to negative, explosively repelling fragments; fusion succeeds when two nuclei tunnel through the outermost barrier into the attractive plateau behind it.
 
@@ -969,13 +715,11 @@ Nuclear fission and fusion are torsional layer transitions: fission occurs when 
 \begin{itemize}
 \item Ultra-high-energy nucleus-nucleus collisions (LHC, RHIC) should produce transient \(\gamma_s<0\) fireballs that decay via explosive hadron jets rather than hydrodynamic flow — already hinted in anomalous flow data.
 \item Precision measurements of the nuclear equation of state above saturation density will reveal oscillatory behavior in pressure vs. density, with characteristic repulsive peaks at $\sim$ 2–4 $\rho_0$.
-\item The ratio of successive barrier radii is a pure number, confined to \((1/6,\,4/(5\pi))\) for the first pair by Proposition~\ref{prop:layer-sharp-branch} and independent of \(\ell\). The same ratio must therefore appear in the NN repulsive core structure and in the layer spacing of compact remnants; a measured mismatch between the two would falsify the scale-invariance claim without any appeal to \(\ell\).
+\item The ratio of successive barrier radii is a pure number, confined to \((1/6,\,4/(5\pi))\) for the first pair and independent of \(\ell\). The same ratio must therefore appear in the NN repulsive core and in the layer spacing of compact remnants; a measured mismatch between the two would falsify the scale-invariance claim without any appeal to \(\ell\).
 \item Because the plateaux are screened by \(1/\cosh\bigl(\ell/(2r)\bigr)\), probes that resolve well inside the outermost barrier should see an interaction that weakens exponentially with decreasing distance, interrupted only at the discrete barrier radii.
 \end{itemize}
 
-The four fundamental interactions are not collapsed into a single force, but unified within a single geometric mechanism: the layered torsional dynamics of the dual rotor. Gravity and electromagnetism share the identical algebraic structure—the same layered reversal of the scalar interference factor \(\gamma_s\), whose closed-form spectrum is Proposition~\ref{prop:layer-spectrum}—and differ only in which phase channel of the dual rotor sources the mismatch. Gravity is driven by the kinematic rapidity--angle pair $(\phi, \theta)$ tied to inertial mass, whereas electromagnetism is driven by an independent rapidity--angle pair $(\alpha, \beta)$ tied to charge (developed explicitly in Sec.~\ref{sec:electronshells} and Sec.~\ref{sec:unification}). In this sense, gravity and electromagnetism are two phases of the same underlying torsional geometry, distinguished by the angular channel through which the dual rotor is driven.
-
-Within this unified picture, the so-called ``strong force'' is the layered phase of the gravitational channel at nuclear densities, while the discrete shell structure of atomic electrons (next section) is the analogous layered phase of the electromagnetic channel at atomic length scales. The algebraic relation between electromagnetism and the weak channel is developed in Section~\ref{sec:unification}: Faraday coefficients occupy the same six-generator space as the dual rotor, the dual map is not a chirality projector, and an axis $e_1$ splits that space into a commuting triple and an anticommuting triple. Identifying those triples with charged and neutral currents, or recovering a Weinberg angle, remains a working hypothesis.
+The four interactions are not collapsed into a single force. They are two channels of one geometry. Gravity and electromagnetism share the layered reversal of \(\gamma_s\) and differ only in which phase of the dual rotor sources the mismatch: the kinematic pair $(\phi, \theta)$ tied to inertial mass, or an independent pair $(\alpha, \beta)$ tied to charge. The strong force is the layered phase of the gravitational channel at nuclear densities; electron shells, in the next section, are the analogous layered phase of the electromagnetic channel. Faraday coefficients occupy the same six-generator space as the dual rotor (Section~\ref{sec:unification}). Identifying commuting and anticommuting triples with charged and neutral currents, or recovering a Weinberg angle, remains open.
 
 There is only one geometry — the layered dance of attraction and repulsion in the dual rotor, played simultaneously in two phase channels. Atomic nuclei are the primordial torsion stars of the gravitational channel; atomic electron shells, as we shall see next, are the primordial torsion stars of the electromagnetic channel — and from this single dual-rotor geometry, expressed in two angular channels, all structure emerges.
 
@@ -1009,22 +753,11 @@ The hyperbolic-trigonometric form of \(\gamma_s\) introduces extreme oscillatory
   \]
 \end{itemize}
 
-The written force is undefined at a node. A node is a force divergence and not a clock freeze: the proper-time factor remains \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by Proposition~\ref{prop:gamma-eff-closed}. Infinite barriers therefore separate neighbouring wells, but they do not by themselves supply a circular orbit.
+The force is undefined at a node. A node is a force divergence, not a clock freeze: \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. Infinite barriers separate neighbouring wells, but they do not by themselves supply a circular orbit.
 
-\subsection{First Coulombic node and labelled characteristic length}
+\subsection{First Coulombic node and characteristic length}
 
-\begin{proposition}[First equal-scale Coulombic node]
-\label{prop:em-first-node}
-Under \(\alpha(r)=\beta(r)=\lambda/r\), the first positive node of \(\gamma_s\) lies in
-\[
-\frac\pi4<x_1<1,\qquad x=\frac{\lambda}{2r}.
-\]
-If that outermost node is identified with the Bohr radius \(a_0\), the characteristic length is confined to
-\[
-\frac\pi2\,a_0<\lambda<2a_0.
-\]
-The identification \(r_1=a_0\) is a labelled hypothesis; \(a_0\) itself is an external input.
-\end{proposition}
+Under \(\alpha(r)=\beta(r)=\lambda/r\), the first positive node of \(\gamma_s\) lies in \(\pi/4<x_1<1\) with \(x=\lambda/(2r)\). If that outermost node is identified with the Bohr radius \(a_0\), the characteristic length is confined to \(\frac\pi2 a_0<\lambda<2a_0\). The identification \(r_1=a_0\) is a proposal; \(a_0\) itself is an external input.
 
 \subsection{Coulombic circular orbits}
 
@@ -1032,39 +765,15 @@ The centripetal balance \(mv^2/r=ke^2/(\gamma_s r^2)\) rearranges to
 \[
 v^2=\frac{ke^2}{m\,\gamma_s\,r}.
 \]
+Circular speed is real only where \(\gamma_s>0\). On a repulsive layer the circular \(v^2\) is negative. In the Coulomb limit \(\gamma_s=1\) one recovers \(v^2=ke^2/(mr)\). Bound circular orbits therefore exist only in attractive layers---the exterior Coulomb well \(r>r_1\) and the inward attractive strata between later barriers.
 
-\begin{proposition}[Circular speed of the written Coulombic force]
-\label{prop:em-circular}
-If \(k>0\), \(e\neq 0\), \(m>0\), and \(r>0\), then \(v^2>0\) if and only if \(\gamma_s>0\). On a repulsive layer \(\gamma_s<0\) the written circular \(v^2\) is negative. In the Coulomb limit \(\gamma_s=1\) one recovers \(v^2=ke^2/(mr)\).
-\end{proposition}
+Under the equal-scale ansatz the resonance condition is \(\tanh x\cdot\tan x=1\), the same as \(\gamma_s=0\), so the layer spectrum of Section~\ref{subsec:layer-spectrum} applies verbatim: radii scale as \(r_n=\Theta(1/n)\), not as \(\Theta(n^2)\). The first two nodes satisfy \(r_2/r_1<1\), while Bohr bookkeeping \(r_n=n^2 a_0\) gives \(r_2/r_1=4\). The equal-scale tower runs inward; Bohr shells run outward. Matching the Rydberg series therefore requires a separate radius law such as \(r_n=n^2 a_0\). The barriers are the geometry; the hydrogen spectrum is additional bookkeeping.
 
-On the equal-scale locus the outermost well \(0<x<x_1\) is attractive and the first inner interval \(x_1<x<\pi\) is repulsive. Bound circular orbits of the written force therefore exist only in attractive layers---the exterior Coulomb well \(r>r_1\) and the inward attractive strata between later barriers. They do not exist in the repulsive shells.
+\subsection{\texorpdfstring{$Z$-contraction}{Z-contraction}}
 
-\paragraph{Equal-scale ansatz versus Bohr bookkeeping.}
-Under the equal-scale working hypothesis \(\alpha(r)=\beta(r)=\lambda/r\), the resonance condition reduces to \(\tanh x\cdot\tan x=1\) with dimensionless \(x=\lambda/(2r)\). This is the same condition as \(\gamma_s=0\), so the closed-form layer spectrum of Section~\ref{subsec:layer-spectrum} applies verbatim to the electromagnetic channel: positive roots lie in the sharpened branches \((n\pi+\pi/4,\,n\pi+\pi/2)\) of Proposition~\ref{prop:layer-sharp-branch}, one per period, and the associated radii scale as \(r_n=\lambda/(2x_n)=\Theta(1/n)\), \emph{not} as \(\Theta(n^2)\).
+On the equal-scale locus, \(\ell\mapsto\ell/Z\) contracts every layer radius by \(Z\), while \(\ell\mapsto Z\ell\) expands them. The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the expanding map: it evaluates the \(Z=1\) profile at \(r/Z\) and moves nodes outward. Observed shrinkage of electron shells with nuclear charge is the identification \(\ell(Z)=\ell/Z\).
 
-\begin{proposition}[Equal-scale radius ratio is not the Bohr ratio]
-\label{prop:em-bohr-ratio}
-The first two equal-scale Coulombic nodes satisfy
-\[
-\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255,
-\]
-hence \(r_2/r_1<1\). The Bohr bookkeeping \(r_n=n^2 a_0\) gives \(r_2/r_1=4\). These cannot be the same radius sequence: the equal-scale tower is inward, while Bohr shells are outward.
-\end{proposition}
-
-Consequently the equal-scale \(\gamma_s=0\) loci alone do \emph{not} reproduce the Rydberg \(n^2\) spectrum. The Bohr radii \(r_n=n^2 a_0\) (and the energy differences \(\Delta E_{n\to m}\propto n^{-2}-m^{-2}\)) must be introduced as a separate bookkeeping ansatz if one wishes to match the observed hydrogen lines; they are not theorems of the equal-scale torsional resonance.
-
-\subsection{\(Z\)-contraction}
-
-\begin{proposition}[\(Z\)-scaling of equal-scale radii]
-\label{prop:em-Z}
-On the equal-scale locus, \(\ell\mapsto\ell/Z\) contracts every layer radius by \(Z\), while \(\ell\mapsto Z\ell\) expands every layer radius by \(Z\). The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the expanding map: it evaluates the \(Z=1\) rapidity profile at \(r/Z\) and therefore moves nodes \emph{outward} by \(Z\). Observed shrinkage of electron shells with nuclear charge is the labelled identification \(\ell(Z)=\ell/Z\), not a theorem of \(\alpha\propto Z/r\) at fixed \(\ell\).
-\end{proposition}
-
-\begin{hypothesis}[Lattice-floor diagnostic for \(\alpha\)]
-\label{hyp:alpha-lattice}
-The shared discrete floor \(\varepsilon_N=16/(3N^2)\) may be paired with the electromagnetic coupling as \(\alpha_{\mathrm{hyp}}(N)=\varepsilon_N\). Matching CODATA \(\alpha\) then forces \(729<N_*^2<732\), so \(N_*\) lies between \(27\) and \(28\), and \(\alpha_{\mathrm{hyp}}(27)=16/2187\) overshoots \(\alpha\) by a relative factor in \((1,\,732/729)\). This is a labelled diagnostic, not a derivation of \(\alpha\). It is a different channel from the gravitational height of the electron, which yields \(N_*^2\sim 10^{45}\).
-\end{hypothesis}
+The shared discrete floor \(\varepsilon_N=16/(3N^2)\) may be paired with the electromagnetic coupling as \(\alpha_{\mathrm{hyp}}(N)=\varepsilon_N\). Matching CODATA \(\alpha\) then forces \(729<N_*^2<732\), so \(N_*\) lies between \(27\) and \(28\), and \(\alpha_{\mathrm{hyp}}(27)=16/2187\) overshoots \(\alpha\) slightly. This is a diagnostic, not a derivation of \(\alpha\). It is a different channel from the gravitational height of the electron, which yields \(N_*^2\sim 10^{45}\).
 
 \subsection{Energy Conservation in the Dual Structure}
 
@@ -1078,154 +787,59 @@ The true potential \(V_\text{true}\) is proportional to the torsional mismatch s
 
 Photon emission corresponds to the release of stored dual-phase energy when the rotor unwinds into a lower torsional state. This dual bookkeeping ensures strict energy conservation without violating the discrete, particle-local nature of spacetime. Observed spectral differences require the separate Bohr bookkeeping of shell radii discussed above; they are not implied by equal-scale \(\gamma_s=0\) alone.
 
-The written Coulombic force therefore accounts for discrete torsional barriers and for circular orbits in attractive layers, without a wave-function postulate. Matching the empirical Rydberg series further requires an independent radius law such as \(r_n=n^2 a_0\). Identifying those barriers with atomic electron shells remains a working hypothesis: the layer spectrum itself is established, its absolute scale and the Bohr bookkeeping are not.
+The Coulombic force therefore accounts for discrete torsional barriers and for circular orbits in attractive layers, without a wave-function postulate. Identifying those barriers with atomic electron shells is a proposal: the layer spectrum is the geometry, its absolute scale and the Bohr bookkeeping are inputs.
 
 \section{Electromagnetism and the Weak Channel in Dual Spacetime}
 \label{sec:unification}
 
-Electromagnetism and the weak channel occupy the same six-generator space as the dual rotor. They are not the same map. The dual map $X\mapsto Xi$ is Hodge duality on that space: it exchanges the usual (electric, hyperbolic) and dual (magnetic, cyclic) summands, has period 4, and sends $J\mapsto -J$. Chirality, by contrast, requires a generator that squares to $+1$. The $\mathrm{Cl}(3,1)$ pseudoscalar satisfies $i^2=-1$, so the formulae $(1\pm i)/2$ are not idempotent and cannot serve as left/right projectors. The complementary pair built from the spatial axis $e_1$ with $e_1^2=+1$,
+Electromagnetism and the weak channel occupy the same six-generator space as the dual rotor. They are not the same map. The dual map $X\mapsto Xi$ is Hodge duality on that space: it exchanges the usual (electric, hyperbolic) and dual (magnetic, cyclic) summands, has period 4, and sends $J\mapsto -J$. Chirality, by contrast, requires a generator that squares to $+1$. The $\mathrm{Cl}(3,1)$ pseudoscalar satisfies $i^2=-1$, so $(1\pm i)/2$ are not idempotent and cannot serve as left/right projectors. The complementary pair built from the spatial axis $e_1$ with $e_1^2=+1$,
 \[
 P_L = \frac{1 - e_1}{2},\qquad P_R = \frac{1 + e_1}{2},
 \]
-is idempotent, sums to the unit, and multiplies to zero. Duality sends $e_1$ to the trivector $-e_0 e_2 e_3$, which is not a real multiple of $e_1$: the chirality axis is not a dual-invariant line.
+is idempotent, sums to the unit, and multiplies to zero. Duality sends $e_1$ to the trivector $-e_0 e_2 e_3$, which is not a real multiple of $e_1$: the chirality axis is not a dual-invariant line. The product of the commuting square-$+1$ pair $e_1$ and $e_0e_2$ generates a nonzero left ideal; we do not claim that ideal as an irreducible spinor module.
 
-\begin{proposition}[Commuting square-$+1$ pair and a nonzero left ideal]
-\label{prop:commuting-left-ideal}
-The complementary pair $P_{L,R}=(1\pm e_1)/2$ built from $e_1^2=+1$ is idempotent, with $P_L+P_R=1$ and $P_L P_R=0$; the pseudoscalar formulae $(1\pm i)/2$ are not idempotent. Duality does not preserve the axis $e_1$ as a real line. The product of the commuting square-$+1$ pair $e_1$ and $e_0e_2$ is idempotent and nonzero, and generates a nonzero left ideal. Irreducibility of that ideal as a spinor module is not claimed.
-\end{proposition}
-
-The Faraday coefficients $(E_a,B_a)$ occupy the same six-generator space as the dual-rotor bivector $\Omega_{\mathrm{biv}}$. The compatible split, used also in Section~\ref{sec:gravitycontrol}, is
-\[
+The Faraday coefficients $(E_a,B_a)$ occupy the same six-generator space as the dual-rotor bivector $\Omega_{\mathrm{biv}}$:
+\begin{equation}
+\label{eq:faraday-split}
 F = F_{\mathrm{usual}}+F_{\mathrm{dual}},\qquad
 F_{\mathrm{usual}}=\sum_a E_a\,i\Gamma_a,\qquad
 F_{\mathrm{dual}}=\sum_a B_a\,\Gamma_a.
-\]
-The single symbol $F_{\mathrm{dual}}=\sum_a(E_a i\Gamma_a+B_a\Gamma_a)$ written in earlier drafts mixed the two sectors; it names the \emph{full} Faraday bivector $F$, not the dual summand.
-
-\begin{proposition}[Faraday 6-space and duality]
-\label{prop:faraday-split}
-The pair $(E,B)$ lives in the same six-generator space as $(\alpha,\beta)$. Duality $X\mapsto Xi$ sends hyperbolic generators to cyclic ones and conversely, and acts on coefficients by
+\end{equation}
+Electric field is usual-sector, boost-like, noncompact. Magnetic field is dual-sector, rotation-like, compact. Duality $X\mapsto Xi$ acts on coefficients by $(E,B)\mapsto(B,-E)$. On this identification the mismatch scalar is the Faraday quadratic
 \[
-(E,B)\mapsto(B,-E).
+J(F)=\tfrac12(E^2-B^2),\qquad M(F)=\tfrac12(E^2+B^2).
 \]
-\end{proposition}
+A pure electric configuration has $J\ge 0$; a pure magnetic configuration has $J\le 0$. That is the Killing-form signature of the two sectors, written in laboratory fields. Fields with $E^2=B^2$ sit on the balanced massive locus $J=0$, $M>0$, not on the vacuum $M=0$.
 
-\begin{proposition}[Faraday quadratic and null fields]
-\label{prop:faraday-quadratic}
-On the identification of Faraday coefficients with torsion parameters, the torsional scalar is the Faraday quadratic
-\[
-J(F)=\tfrac12(E^2-B^2),
-\]
-and the unsigned mass is $M(F)=\tfrac12(E^2+B^2)$. Fields with $E^2=B^2$ have $J=0$. A circularly polarised wave of helicity $\sigma=\pm 1$ (units $c=1$), at every phase $\psi=kz-\omega t$,
+A circularly polarised wave of helicity $\sigma=\pm 1$ (units $c=1$),
 \[
 \mathbf{E}=E_0(\hat{x}\cos\psi+\sigma\hat{y}\sin\psi),\qquad
 \mathbf{B}=E_0(-\hat{x}\sin\psi+\sigma\hat{y}\cos\psi),
 \]
-is likewise null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$. The circular snapshot is the special case $\psi=0$. A null Faraday field occupies the balanced massive locus, not the vacuum $M=0$.
-\end{proposition}
+is null at every phase $\psi=kz-\omega t$: $J=0$, $E\cdot B=0$, and $M=E_0^2$. Its signed Poynting component along the beam is $\sigma E_0^2$ at every phase. Laboratory time reversal $(E,B)\mapsto(E,-B)$ reverses that sign; duality preserves it. The two local Faraday invariants $J$ and $E\cdot B$ vanish identically on the wave, so a helicity-odd scalar cannot be a polynomial in those invariants. Superposing the wave onto a background torsion shifts $J$ by a first harmonic in the phase; the four-phase mean of $J$ is the background value. Linear superposition does not displace mean mismatch.
 
-\begin{proposition}[Sector signature]
-\label{prop:faraday-sector-sign}
-A pure electric configuration has $J=\tfrac12 E^2\ge 0$, vanishing if and only if $E=0$. A pure magnetic configuration has $J=-\tfrac12 B^2\le 0$, vanishing if and only if $B=0$. That is the Killing-form signature of the usual versus dual sectors, written in Faraday coefficients: the usual (boost, electric) sector is positive definite and the dual (rotation, magnetic) sector is negative definite.
-\end{proposition}
-
-\begin{proposition}[Three maps on the Faraday 6-space]
-\label{prop:faraday-maps}
-Pseudoscalar duality $X\mapsto Xi$ acts by $(E,B)\mapsto(B,-E)$, sends $J\mapsto -J$ and $E\cdot B\mapsto -E\cdot B$, preserves $M$, and has period 4 ($F\mapsto -F\mapsto F$). The usual--dual parameter swap $(\alpha,\beta)\mapsto(\beta,\alpha)$ likewise sends $J\mapsto -J$ and preserves $M$, but has period 2 and coincides with duality only on a pure magnetic field. Laboratory time reversal $(E,B)\mapsto(E,-B)$ preserves $J$, flips $E\cdot B$, and is neither map.
-\end{proposition}
-
-\begin{proposition}[Helicity Poynting of a circular wave]
-\label{prop:circular-poynting}
-For the circular wave of Proposition~\ref{prop:faraday-quadratic} the signed Poynting component along the propagation axis equals $\sigma E_0^2$ at every phase. Laboratory time reversal reverses that sign; duality $(E,B)\mapsto(B,-E)$ preserves it. A linearly polarised travelling wave $E=E_0\cos\psi\,\hat{x}$, $B=E_0\cos\psi\,\hat{y}$ is also null, but its Poynting component is $E_0^2\cos^2\psi\ge 0$ and carries no helicity sign, while $M$ oscillates as $E_0^2\cos^2\psi$. The two local Faraday invariants $J$ and $E\cdot B$ vanish identically on the circular wave, so a helicity-odd scalar cannot be a polynomial in those invariants.
-\end{proposition}
-
-Relative to the chirality axis $e_1$, the six Faraday generators split evenly.
-
-\begin{proposition}[Axis split of the Faraday 6-space]
-\label{prop:faraday-chirality-split}
-The generators $\Gamma_1$, $i\Gamma_2$, and $i\Gamma_3$ commute with $e_1$. The generators $i\Gamma_1$, $\Gamma_2$, and $\Gamma_3$ anticommute with $e_1$. Equivalently, writing coefficients as $(E,B)$, the commuting triple is $(B_1,E_2,E_3)$ and the anticommuting triple is $(E_1,B_2,B_3)$.
-\end{proposition}
-
-Write $F=F_{\parallel}+F_{\perp}$ for the corresponding decomposition of the Faraday bivector, and $P_R=(1+e_1)/2$. The sandwich $P_R X P_R$ is linear in $X$.
-
-\begin{proposition}[Same-projector sandwich]
-\label{prop:chiral-sandwich}
-If $g^2=+1$ and $\{g,X\}=0$, then $P_R X P_R=0$ for $P_R=(1+g)/2$. If instead $[g,X]=0$, then $P_R X P_R=P_R X$. Consequently $P_R F_{\perp} P_R=0$ and $P_R F P_R=P_R F_{\parallel}$. This selection is axis-dependent: it is not a Lorentz-scalar Weyl projection.
-\end{proposition}
-
-Write $F_{\parallel}$ and $F_{\perp}$ in Faraday coefficients as the Cartan triple $(B_1,E_2,E_3)$ and the charged triple $(E_1,B_2,B_3)$.
-
-\begin{proposition}[Axis chirality is not photon helicity]
-\label{prop:axis-not-helicity}
-Relative to $e_1$, the circular wave of Proposition~\ref{prop:faraday-quadratic} is the phase quadrature of those two triples:
-\[
-\mathbf{E}_{\parallel}=E_0\sigma\sin\psi\,\hat{y},\qquad
-\mathbf{B}_{\parallel}=-E_0\sin\psi\,\hat{x},
-\]
-\[
-\mathbf{E}_{\perp}=E_0\cos\psi\,\hat{x},\qquad
-\mathbf{B}_{\perp}=E_0\sigma\cos\psi\,\hat{y}.
-\]
-Each summand is null. The signed Poynting splits without a cross term,
-\[
-(E\times B)_z\big|_{\parallel}=\sigma E_0^2\sin^2\psi,\qquad
-(E\times B)_z\big|_{\perp}=\sigma E_0^2\cos^2\psi.
-\]
-Both sandwiches $P_R F P_R$ and $P_L F P_L$ annihilate the charged summand, leaving only a linearly polarised Cartan field. At the snapshot phase $\psi=0$ that Cartan field vanishes, so $P_R F P_R=0$. At $\psi=\pi/2$ the wave is purely Cartan. Neither projector selects the helicity sign $\sigma=\pm 1$: a circular wave is not an eigenstate of axis chirality.
-\end{proposition}
-
-Same-axis electric and magnetic generators commute, $[i\Gamma_a,\Gamma_a]=0$ (Proposition~\ref{prop:same-axis-factor}). A simultaneous rotation of the pair $(E,B)$ is therefore well-defined on every axis:
+Three maps act on this six-space and must not be conflated. Duality has period 4 and sends $J\mapsto -J$. The usual--dual parameter swap has period 2, also sends $J\mapsto -J$, and coincides with duality only on a pure magnetic field. Laboratory time reversal preserves $J$ and flips $E\cdot B$. Same-axis electric and magnetic generators commute, so a simultaneous rotation of the pair $(E,B)$ is well-defined:
 \[
 E_a(\omega)=E_a\cos\omega+B_a\sin\omega,\qquad
-B_a(\omega)=-E_a\sin\omega+B_a\cos\omega.
+B_a(\omega)=-E_a\sin\omega+B_a\cos\omega,
 \]
+with $J(\omega)=J\cos 2\omega+(E\cdot B)\sin 2\omega$. Duality is the special angle $\omega=\pi/2$.
 
-\begin{proposition}[Faraday mix]
-\label{prop:faraday-mix}
-The one-parameter mix acts on the Faraday quadratic by
-\[
-J(\omega)=J\cos 2\omega+(E\cdot B)\sin 2\omega.
-\]
-If $E\cdot B=0$, this reduces to $J(\omega)=J\cos 2\omega$. Duality $(E,B)\mapsto(B,-E)$ is the special angle $\omega=\pi/2$.
-\end{proposition}
+Relative to $e_1$ the six generators split into a commuting triple $(B_1,E_2,E_3)$ and an anticommuting triple $(E_1,B_2,B_3)$. The sandwich $P_R X P_R$ keeps the former and kills the latter; the selection is axis-dependent, not a Lorentz-scalar Weyl projection. A circular wave is the phase quadrature of those two triples, so neither projector selects the helicity sign $\sigma=\pm 1$. Axis chirality is not photon helicity.
 
-Componentwise superposition of Faraday fields is bilinear in the coefficients.
-
-\begin{proposition}[Superposition and mix of a circular wave]
-\label{prop:circular-superposition}
-If $p$ and $q$ are Faraday configurations, then
-\[
-J(p+q)=J(p)+J(q)+(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q).
-\]
-Superposing the circular wave of Proposition~\ref{prop:faraday-quadratic} onto a background therefore shifts $J$ by a first harmonic in the phase. The four-phase mean of $J$ is the background value: linear superposition does not displace mean mismatch. The Faraday mix of Proposition~\ref{prop:faraday-mix} applied to that circular wave still yields $J=0$.
-\end{proposition}
-
-The first-order sandwich increment of $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$. On a rest particle a pure electric generator produces a spatial kick and every magnetic generator produces none, so the dual Faraday summand never kicks a rest frame. On a particle with velocity along $y$, a pure $B_x$ generator produces a kick along $z$. The outer product $F\wedge X$ is nonzero on the magnetic rest case and vanishes on that moving magnetic case.
-
-\begin{proposition}[Sandwich increment versus the written wedge]
-\label{prop:faraday-sandwich}
-The first-order increment of $RX\widetilde R$ is the commutator, not the outer product. A rest electric generator and a moving magnetic generator each produce a spatial kick; every rest magnetic generator produces none, so the dual Faraday summand of an arbitrary field---a circular wave included---vanishes on a rest frame at first order. In particular $F\wedge X$ is not the Lorentz increment of the written sandwich.
-\end{proposition}
-
-Write $X=e_0+\mathbf{v}$ for the non-relativistic Minkowski vector of a particle.
-
-\begin{proposition}[Sandwich increment is the Lorentz 4-force of $(E,-B)$]
-\label{prop:faraday-lorentz}
-The commutator of the Faraday bivector on $X$ is the 4-vector
-\[
+The first-order sandwich increment of a rotor $R=1+\varepsilon\Omega$ is the commutator $\Omega X-X\Omega$, not the outer product $F\wedge X$. On a rest particle a pure electric generator produces a spatial kick and every magnetic generator produces none. On $X=e_0+\mathbf{v}$ the commutator is the 4-vector
+\begin{equation}
+\label{eq:faraday-lorentz}
 FX-XF=(E\cdot v)\,e_0+(E-v\times B).
-\]
-That is the Lorentz 4-force of the laboratory time-reversed field $(E,-B)$. The coefficient 3-force $q(E+v\times B)$ differs from the sandwich by the sign of $B$; laboratory time reversal converts one into the other. A rest frame therefore receives the electric kick $E$ with vanishing power. A velocity along the beam of the circular wave of Proposition~\ref{prop:faraday-quadratic} yields a transverse kick with no longitudinal component; the four-phase mean of the rest electric kick vanishes. Maxwell's equations are not derived: the identity is kinematic on the written sandwich.
-\end{proposition}
+\end{equation}
+That is the Lorentz 4-force of the laboratory time-reversed field $(E,-B)$. The familiar 3-force $q(E+v\times B)$ differs from the sandwich by the sign of $B$; laboratory time reversal converts one into the other. A rest frame receives the electric kick $E$ with vanishing power. A velocity along a circular beam yields a transverse kick with no longitudinal component. Maxwell's equations are not derived: the identity is kinematic on the sandwich.
 
-The algebraic relation between the electromagnetic and weak channels is therefore this: both live in the Faraday 6-space; the dual map exchanges the two sectors and is not a chirality projector; an axis $e_1$ splits the six generators into a commuting triple and an anticommuting triple, of which only the former survives the same-projector sandwich; a circular wave is the phase quadrature of those triples, so the sandwich destroys circular polarisation and does not select helicity; same-axis $E$ and $B$ mix by a single angle whose quadratic law contains duality as a special value; the sign of $J$ distinguishes the noncompact electric sector from the compact magnetic sector; and the Faraday sandwich on a particle's 4-velocity is the Lorentz 4-force of $(E,-B)$, not of $(E,B)$.
-
-Minimal coupling to a vector potential $A_a$ in the dual sector, $\theta_a\mapsto\theta_a+q A_a$, remains a working hypothesis, as does the extended rotor built from $\int F\,ds$. Identifying the commuting triple with a Cartan (neutral) direction and the anticommuting triple with charged currents, writing a chiral dual rotor with distinct left and right angles, recovering a Weinberg angle from the mix $\omega$, and identifying rotor rigidity with a Higgs mechanism, are working hypotheses. Maxwell's equations are not derived. The dual map does not imply a V--A coupling.
+The electromagnetic and weak channels therefore live in one six-space. The dual map exchanges the two sectors and is not a chirality projector. The sign of $J$ distinguishes the noncompact electric sector from the compact magnetic sector. The sandwich on a particle's 4-velocity is the Lorentz force of $(E,-B)$. Minimal coupling $\theta_a\mapsto\theta_a+q A_a$, an extended rotor built from $\int F\,ds$, a Weinberg angle from the mix $\omega$, and a Higgs reading of rotor rigidity remain open. The dual map does not imply a V--A coupling.
 
 \section{Dark Matter-Free Galactic Rotation Curves from Dual-Spacetime Compactness}
 \label{sec:darkmatter}
 
-Having established the layered torsional geometry of gravity and electromagnetism at nuclear and atomic scales (Sections~\ref{sec:strongfield}--\ref{sec:electronshells}) and their unification as two channels of a single dual-rotor mechanism (Section~\ref{sec:unification}), we now examine how each channel spatially unfolds at cosmological scales. The gravitational channel, driven by the kinematic pair $(\phi, \theta)$ tied to inertial mass, is read as compactifying the dual sector into galaxy-scale $S^3$ patches; the electromagnetic channel, driven by the independent pair $(\alpha, \beta)$ tied to charge, unfolds over substantially larger, near-cosmic scales. That reading is a working identification. Of the three-sphere chart itself the following are theorems: the cotangent potential obeys Gauss's law; circular speed is $v^2=(GM/R)\,f(r/R)$; the shape $f$ has a unique minimum on the attractive interval; and attraction ends at $r=\pi R/2$, strictly before $r=2R$. If galaxies are such patches, the systematic distortion of the compact-to-flat map is what observers interpret as missing gravitational mass, and flat rotation curves emerge from baryons alone. That physical step is not a theorem of the dual-rotor algebra.
+The same dual-rotor geometry that layers nuclei and electron shells unfolds, at cosmological scales, as compactness. We read the gravitational channel, driven by $(\phi,\theta)$ tied to inertial mass, as compactifying the dual sector into galaxy-scale $S^3$ patches; the electromagnetic channel, driven by $(\alpha,\beta)$ tied to charge, unfolds over substantially larger, near-cosmic scales. On the three-sphere chart itself the geometry is definite: the cotangent potential obeys Gauss's law; circular speed is $v^2=(GM/R)\,f(r/R)$; the shape $f$ has a unique minimum on the attractive interval; and attraction ends at $r=\pi R/2$, strictly before $r=2R$. If galaxies are such patches, the systematic distortion of the compact-to-flat map is what observers interpret as missing gravitational mass, and flat rotation curves emerge from baryons alone. That last step is the proposed reading.
 
 \subsection{The Compact Dual Spacetime as 3-sphere}
 
@@ -1253,15 +867,7 @@ That this satisfies the Laplace equation on $S^3$ can be verified directly: in g
 \[
 g(r) \cdot 4\pi R^2 \sin^2\!\left(\frac{r}{R}\right) = -\frac{GM}{R^2 \sin^2(r/R)} \cdot 4\pi R^2 \sin^2\!\left(\frac{r}{R}\right) = -4\pi GM.
 \]
-
-\begin{proposition}[$S^3$ Gauss law]
-\label{prop:s3-gauss}
-The radial derivative of the cotangent potential is $-g(r)$, and the flux through geodesic spheres is constant:
-\[
-g(r)\cdot 4\pi R^2\sin^2(r/R)=-4\pi GM.
-\]
-Consequently $\Phi$ is radially harmonic away from the origin. On the first hemisphere $0<r<\pi R$, one has $\Phi(r)=0$ if and only if $r=\pi R/2$.
-\end{proposition}
+The flux through geodesic spheres is constant, so $\Phi$ is radially harmonic away from the origin. On the first hemisphere $0<r<\pi R$, the potential vanishes if and only if $r=\pi R/2$: attraction ends at the equator of the three-sphere.
 
 In the limit $r \ll R$, the cotangent expands as
 \[
@@ -1289,27 +895,18 @@ Representative windows on the attractive hemisphere: $1.003<\eta<1.004$ at $r/R=
 
 \subsection{Emergence of Flat Rotation Curves}
 
-\begin{proposition}[Circular speed on $S^3$]
-\label{prop:s3-circular-speed}
 For a test particle in circular orbit about a point mass $M$ on the three-sphere chart,
-\[
+\begin{equation}
+\label{eq:s3-circular}
 v^2(r)=r\,|g(r)|=\frac{GM}{R}\,f(r/R)=\frac{GM}{r}\,\eta(r/R),
-\]
-where $f(x)=x/\sin^2 x$. Flatness of $v$ is constancy of $f$.
-\end{proposition}
+\end{equation}
+where $f(x)=x/\sin^2 x$. Flatness of $v$ is constancy of $f$. Outside the luminous disk, where $M(r)\approx M_{\text{tot}}$, the Keplerian factor $GM_{\text{tot}}/r$ declines as $r^{-1}$. The strictly increasing enhancement $\eta$ counteracts this decline. The combined shape is $f$ itself.
 
-Outside the luminous disk ($r > r_{\text{disk}}$), where $M(r) \approx M_{\text{tot}}$, the flat-space Keplerian factor $GM_{\text{tot}}/r$ declines as $r^{-1}$. The strictly increasing enhancement $\eta$ counteracts this decline. The combined shape is $f$ itself.
-
-\begin{proposition}[Unique minimum of the rotation-curve shape]
-\label{prop:plateau-root}
-On the attractive interval $(0,\pi/2)$ the shape $f(x)=x/\sin^2 x$ has a unique critical point, the unique root $x_0$ of $\tan x=2x$ in $(57/50,\,6/5)=(1.14,1.20)$. At that root $f(x_0)=x_0+1/(4x_0)$, and this value $f_0$ is the unique minimum of $f$ on $(0,\pi/2)$:
+On the attractive interval $(0,\pi/2)$ the shape $f$ has a unique critical point, the unique root $x_0$ of $\tan x=2x$ in $(1.14,1.20)$. At that root $f(x_0)=x_0+1/(4x_0)$, and this value $f_0$ is the unique minimum of $f$ on $(0,\pi/2)$:
 \[
 \frac{135}{100}<f_0<\frac{141}{100}.
 \]
-The decimal $f_0\approx 1.38$ is only a reading of that window. Equivalently, $f'(x)=0$ if and only if $\tan x=2x$.
-\end{proposition}
-
-Proposition~\ref{prop:plateau-root} is the geometric origin of a plateau: after the inner Keplerian decline is arrested, $v^2$ sits near $(GM/R)f_0$ throughout a neighbourhood of $r=x_0 R$. Earlier drafts placed an ``outer rise'' at $r\gtrsim 2R$ and a reversal at $\pi R/2$. That ordering is impossible. One has $x_0<\pi/2<2$, so the attractive patch ends at $r=\pi R/2$, strictly before $r=2R$. The three regions on a point-mass chart are therefore:
+That minimum is the geometric origin of a plateau: after the inner Keplerian decline is arrested, $v^2$ sits near $(GM/R)f_0$ throughout a neighbourhood of $r=x_0 R$. One has $x_0<\pi/2<2$, so the attractive patch ends at $r=\pi R/2$, strictly before $r=2R$. The three regions on a point-mass chart are therefore:
 
 \begin{itemize}
   \item \textbf{Inner region} ($x\ll 1$): Newtonian recovery, Keplerian behaviour modified by the rising $M(r)$.
@@ -1323,7 +920,7 @@ The asymptotic circular velocity at the plateau satisfies
 \[
 v_{\text{flat}}^2 \sim \frac{GM_{\text{tot}}}{R} \cdot f_0,
 \]
-where $f_0$ is the unique minimum of Proposition~\ref{prop:plateau-root}. If the compactification radius scales with the total enclosed mass as
+where $f_0$ is the unique minimum of $f$ on $(0,\pi/2)$. If the compactification radius scales with the total enclosed mass as
 \[
 R = \sqrt{\frac{GM_{\text{tot}}}{a_0}},
 \]
@@ -1337,7 +934,7 @@ For the Milky Way ($M_{\text{tot}} \approx 6 \times 10^{10}\,M_\odot$), the same
 \[
 8\,\mathrm{kpc}<R<9\,\mathrm{kpc},
 \]
-of which $R\approx 8.3\,\mathrm{kpc}$ is only a reading of the window. The geometric plateau therefore sits at $x_0 R$, in $(9,11)\,\mathrm{kpc}$, inside the optical disk, while the torsional reversal at $\pi R/2$ lies in $(12,15)\,\mathrm{kpc}$. Identifying $a_0$ with a characteristic acceleration on the $S^3$ patch remains a working hypothesis.
+of which $R\approx 8.3\,\mathrm{kpc}$ is only a reading of the window. The geometric plateau therefore sits at $x_0 R$, in $(9,11)\,\mathrm{kpc}$, inside the optical disk, while the torsional reversal at $\pi R/2$ lies in $(12,15)\,\mathrm{kpc}$. Identifying $a_0$ with a characteristic acceleration on the $S^3$ patch is a proposal.
 
 \subsection{Torsional Reversal and the Finite Range of Gravity}
 
@@ -1378,17 +975,12 @@ Key predictions distinguishing this theory from $\Lambda$CDM and MOND include:
   \item \textbf{Diversity from $R(M)$}: The observed diversity of rotation curve shapes --- from slowly rising (low-surface-brightness dwarfs with $r_{\text{disk}} \ll R$) to flat (Milky Way-type) to gently declining (high-surface-brightness spirals with $r_{\text{disk}} \sim R$) --- is reproduced by the single relation $R = \sqrt{GM/a_0}$ without additional free parameters.
 \end{itemize}
 
-If the working identification holds, dark matter is superfluous --- an artifact of projecting the compact $S^3$ geometry of the dual spacetime onto a fictitious flat and infinite background. The cotangent potential, the azimuthal equidistant distortion, and the torsional reversal at the $S^3$ boundary then provide the missing gravity without invisible matter. That ontological step is not a theorem of the chart.
+If galaxies are such patches, dark matter is superfluous --- an artifact of projecting the compact $S^3$ geometry of the dual spacetime onto a fictitious flat and infinite background. The cotangent potential, the azimuthal equidistant distortion, and the torsional reversal at the $S^3$ boundary then provide the missing gravity without invisible matter.
 
 \section{Gravitational Engineering: Coherent Excitation of Dual-Spacetime Rotors}
 \label{sec:gravitycontrol}
 
-\begin{hypothesis}[Coherent dual excitation]
-\label{hyp:coherent-excitation}
-The torsion scalar $J = \frac12\sum_a(\alpha_a^2-\beta_a^2)$ depends on the relative rotor $\Omega=R_{\text{usual}}^\dagger R_{\text{dual}}$. External fields capable of coherently modulating the dual rotor parameters $\theta_a$ are conjectured to reduce $J \to 0$ (shielding or inertial mass reduction) or drive $J < 0$ (repulsion). No derivation of an electromagnetic coupling, a resonance frequency, or a laboratory protocol from the dual-rotor algebra is claimed.
-\end{hypothesis}
-
-The remainder of this section records that working model.
+Because $J$ depends only on the relative rotor $\Omega$, an external field that coherently modulates the dual angles $\theta_a$ could in principle reduce $J\to 0$ (shielding or inertial-mass reduction) or drive $J<0$ (repulsion). No electromagnetic coupling, resonance frequency, or laboratory protocol is forced by the dual-rotor algebra. The remainder of this section records a proposed model.
 
 \subsection{Theoretical Coupling of Circularly Polarized Electromagnetic Fields to Dual Rotors}
 
@@ -1408,7 +1000,7 @@ F_{\text{usual}} = \mathbf{E} \cdot (iI, iJ, iK) \quad (\hat{p}^2 = +1:\ \text{b
 F_{\text{dual}} = \mathbf{B} \cdot (I, J, K) \quad (\hat{q}^2 = -1:\ \text{rotation-like, compact}).
 \]
 
-The electric component $\mathbf{E}$ occupies the usual-spacetime boost generators, while the magnetic component $\mathbf{B}$ occupies the dual-spacetime rotation generators, as in Proposition~\ref{prop:faraday-split}. Laboratory time reversal $(E,B)\mapsto(E,-B)$ is a distinct involution from both pseudoscalar duality and the usual--dual parameter swap (Proposition~\ref{prop:faraday-maps}); it is not identified with either.
+The electric component $\mathbf{E}$ occupies the usual-spacetime boost generators, while the magnetic component $\mathbf{B}$ occupies the dual-spacetime rotation generators, as in~\eqref{eq:faraday-split}. Laboratory time reversal $(E,B)\mapsto(E,-B)$ is a distinct involution from both duality and the usual--dual parameter swap.
 
 For a circularly polarized wave propagating along $z$ with helicity $\sigma = \pm 1$,
 
@@ -1416,13 +1008,13 @@ For a circularly polarized wave propagating along $z$ with helicity $\sigma = \p
 \mathbf{E} = E_0 (\hat{x} \cos(kz - \omega t) + \sigma \hat{y} \sin(kz - \omega t)), \quad \mathbf{B} = \frac{E_0}{c} (-\hat{x} \sin(kz - \omega t) + \sigma \hat{y} \cos(kz - \omega t)).
 \]
 
-At every phase that wave is null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$ (Proposition~\ref{prop:faraday-quadratic}). Each linear Faraday coefficient is a first harmonic of the phase, so the four-phase means vanish,
+At every phase that wave is null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$. Each linear Faraday coefficient is a first harmonic of the phase, so the four-phase means vanish,
 \[
 \langle F_{\mathrm{usual}}\rangle=\langle F_{\mathrm{dual}}\rangle=0.
 \]
-There is in particular no mean dual field proportional to $\sigma E_0^2 K$. What is helicity-odd and constant is the bilinear Poynting component $(E\times B)_z=\sigma E_0^2$ (Proposition~\ref{prop:circular-poynting}). Superposition of the wave onto a background torsion does not shift the mean of $J$, and the Faraday mix cannot create $J$ from the wave (Proposition~\ref{prop:circular-superposition}). A first-order rest sandwich of the dual summand vanishes for every Faraday field, circular waves included (Proposition~\ref{prop:faraday-sandwich}). The rest sandwich of the wave itself is the oscillating electric kick, whose four-phase mean vanishes; a velocity along the beam produces a transverse kick $E-v\times B$ with no longitudinal component (Proposition~\ref{prop:faraday-lorentz}). Axis projectors $P_{L,R}$ likewise fail to extract helicity: they annihilate the charged summand of the wave and kill the circular snapshot outright (Proposition~\ref{prop:axis-not-helicity}).
+There is in particular no mean dual field proportional to $\sigma E_0^2 K$. What is helicity-odd and constant is the bilinear Poynting component $(E\times B)_z=\sigma E_0^2$. Superposition of the wave onto a background torsion does not shift the mean of $J$, and the Faraday mix cannot create $J$ from the wave. A first-order rest sandwich of the dual summand vanishes for every Faraday field, circular waves included. The rest sandwich of the wave itself is the oscillating electric kick, whose four-phase mean vanishes; a velocity along the beam produces a transverse kick with no longitudinal component~\eqref{eq:faraday-lorentz}. Axis projectors $P_{L,R}$ likewise fail to extract helicity.
 
-A helicity-dependent drive of the particle mismatch is therefore not a local scalar of $F$, nor a linear superposition on the Faraday 6-space, nor a first-order rest sandwich of $F_{\mathrm{dual}}$, nor an axis-chirality projection, nor a beam-direction Lorentz kick of the particle's 4-velocity. Any such drive requires extra structure---a preferred axis, a potential, or the particle's dual phase---and belongs to Hypothesis~\ref{hyp:coherent-excitation}. In that working model the helicity-odd bilinear $(E\times B)_z=\sigma E_0^2$ is the candidate source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it.
+A helicity-dependent drive of the particle mismatch is therefore not a local scalar of $F$, nor a linear superposition, nor a first-order rest sandwich of $F_{\mathrm{dual}}$, nor an axis-chirality projection, nor a beam-direction Lorentz kick. Any such drive requires extra structure---a preferred axis, a potential, or the particle's dual phase. In the model below, the helicity-odd bilinear $(E\times B)_z=\sigma E_0^2$ is the candidate source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it.
 
 The coupling in the working model is written as a path-ordered exponential
 
@@ -1436,7 +1028,7 @@ where the dual generators $\Gamma_a$ mediate the interaction. Near resonance, th
 \dot{\theta} = \kappa \sigma E_0^2 \sin(\omega t - \theta + \delta_\sigma),
 \]
 
-yielding coherent excitation of the torsional mismatch angle only as part of Hypothesis~\ref{hyp:coherent-excitation}.
+yielding coherent excitation of the torsional mismatch angle only within this proposed model.
 
 \subsection{Resonance Frequencies and the Role of Superconductors}
 
@@ -1446,17 +1038,12 @@ The intrinsic dual-spacetime scale is Planckian ($\sim 10^{43}$ Hz). Macroscopic
 
 A microgram-scale test mass in a high-$Q$ superconducting resonator is illuminated with tunable circularly polarized radiation (0.1--10 THz). Expected signatures include resonant, helicity-dependent changes in apparent weight or inertial mass ($\Delta m/m \gtrsim 10^{-6}$), with left-handed polarization producing reduction and right-handed enhancement. Success at this level scales directly to practical gravitational engineering.
 
-For the first time, gravity is rendered not merely controllable but chirally controllable, with helicity serving as the switch between attraction and repulsion in the torsional geometry of double spacetime. That claim belongs to Hypothesis~\ref{hyp:coherent-excitation}.
+If the model is right, gravity is not merely controllable but chirally controllable, with helicity serving as the switch between attraction and repulsion. That is a conjecture, to be decided in the laboratory.
 
 \section{Baryon Asymmetry: The Geometric Origin from Dual Rotor Time Arrow Fixation}
 \label{sec:baryonasymmetry}
 
-\begin{hypothesis}[Baryon asymmetry]
-\label{hyp:baryon-asymmetry}
-The observed baryon asymmetry $\eta \equiv (n_B - n_{\bar{B}})/n_\gamma \approx 6 \times 10^{-10}$ is conjectured to arise from asymmetric fixation of the time arrow in the dual rotors during the Planck epoch. The construction is a working model, not a theorem of the dual-rotor algebra, and does not derive $\eta$ from $J$ or $\Omega$.
-\end{hypothesis}
-
-The remainder of this section records that model.
+We propose that the observed baryon asymmetry $\eta \equiv (n_B - n_{\bar{B}})/n_\gamma \approx 6 \times 10^{-10}$ arises from asymmetric fixation of the time arrow in the dual rotors during the Planck epoch. The construction does not derive $\eta$ from $J$ or $\Omega$; it is a geometric model of the origin of the arrow.
 
 \subsection{The Intrinsic Time Duality and Rotor Parameters}
 
@@ -1525,12 +1112,7 @@ This asymmetry is required for theoretical consistency:
   \item The usual spacetime is hyperbolic ($\hat{p}^2 = +1$), intrinsically non-compact, so continuity of $\phi$ preserves the full Lorentz group in the macroscopic limit.
 \end{itemize}
 
-The torsional mismatch rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ thus combines a continuous usual component with a discrete dual component. The parameter-space scalar $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ is bounded by $|J|\le\Jbound$ (equivalently $|\Jnorm|\le 1$) only on admissible configurations. Discretizing the dual angle alone does not imply the bound: a principal-branch condition without non-negative rapidities admits counterexamples, and the continuous usual-sector rapidity is unbounded. Continuum-induced singularities are therefore excluded only after the admissible cone is imposed. On the discrete torus $(\mathbb{Z}/N\mathbb{Z})^6$ the rotor image is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
-
-\begin{proposition}[Finite discrete rotor image]
-\label{prop:discrete-rotor-image}
-At fixed compactification $N$, the discrete rotor image of the torus is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
-\end{proposition}
+The torsional mismatch rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ thus combines a continuous usual component with a discrete dual component. The scalar $J$ is bounded by $|J|\le\Jbound$ only on admissible configurations. Discretizing the dual angle alone does not imply the bound: a principal-branch condition without non-negative rapidities admits counterexamples, and the continuous usual-sector rapidity is unbounded. Continuum-induced singularities are therefore excluded only after the admissible cone is imposed. On the discrete torus $(\mathbb{Z}/N\mathbb{Z})^6$ the rotor image is finite. Nonzero winding of a scaled lattice configuration is incompatible with real-scale admissibility. When $4\mid N$ the lattice attains the extremals $\Jnorm=\pm 1$; otherwise the admissible bound is strict.
 
 A critical issue arises in the effective Lorentz factor across torsional layers, which typically appears as a synchronization function of the form
 \[
@@ -1544,21 +1126,12 @@ At every such point the numerator $\sin(N \cdot k\pi)$ also vanishes (for any in
 \]
 so the synchronization function is bounded on the entire compact lattice and the classical continuum limit $N \to \infty$ is recovered without pathology.
 
-Thus the Dirichlet kernel is bounded for any large positive integer $N$; primality is not required. The relation between $N$ and particle mass spectra, and the zeta-regularized product $\prod_p p\to 4\pi^2$, remain open within the present paper. The geometric reading of $4\pi^2$ as the square of the dual-rotor period $2\pi$ is a consistency remark, not a derivation of mass spectra.
-
-\begin{proposition}[Normalised Dirichlet kernel]
-\label{prop:dirichlet-kernel}
-For every positive integer $N$, filling removable singularities of
-\[
-D_N(\theta)=\frac{\sin(N\theta/2)}{N\sin(\theta/2)}
-\]
-by the L'H\^{o}pital value yields $|D_N(\theta)|\le 1$. At every lattice point $\theta=2\pi k$ one has $D_N=\pm 1$.
-\end{proposition}
+Thus the Dirichlet kernel is bounded for any large positive integer $N$; primality is not required. Filling the removable singularities by the L'H\^{o}pital value yields $|D_N(\theta)|\le 1$, with $D_N=\pm 1$ at every lattice point. The relation between $N$ and particle mass spectra, and the zeta-regularized product $\prod_p p\to 4\pi^2$, remain open. The geometric reading of $4\pi^2$ as the square of the dual-rotor period $2\pi$ is a consistency remark, not a derivation of mass spectra.
 
 \section{Dual-Rotor Dynamics and the Geometric Origin of the de Broglie Phase}
 \label{sec:dualrotordynamics}
 
-In the double spacetime theory, the torsional mismatch scalar $J$ is constructed from the relative rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$. While $J$ is proposed as a gravitational action density in the classical field theory, it also admits a particle-intrinsic reading as a potential for the internal angles of individual massive particles. That reading, and the de Broglie identification below, are working hypotheses except for the Euler--Lagrange identities recorded as propositions.
+The mismatch scalar $J$ is proposed as a gravitational action density in the classical field theory. It also admits a particle-intrinsic reading as a potential for the internal angles of individual massive particles. That reading, and the de Broglie identification below, are proposals.
 
 For small mismatch angles, the Killing form invariant expands as
 \[
@@ -1575,33 +1148,21 @@ S_{\text{particle}} = \int \left[ \frac{1}{2} \sum_{a=1}^3 \dot{\phi}_a^2 - \fra
 \]
 The opposite signs of the kinetic terms are part of the written model; they are not deduced from unitarity of the rotors.
 
-The Euler--Lagrange operator on jets $(\phi,\theta,\ddot\phi,\ddot\theta)$ is algebraic. For the written Lagrangian $L=\tfrac12\dot\phi^2-\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ one has $\partial L/\partial\phi=-m(\phi-\theta)$ and $\partial L/\partial\theta=m(\phi-\theta)$, while $\frac{d}{dt}(\partial L/\partial\dot\phi)=\ddot\phi$ and $\frac{d}{dt}(\partial L/\partial\dot\theta)=-\ddot\theta$.
-
-\begin{proposition}[Euler--Lagrange equations of the written action]
-\label{prop:paper-EL}
-The Euler--Lagrange equations of the written Lagrangian are
+The Euler--Lagrange equations of this Lagrangian are
 \[
 \ddot\phi=-m(\phi-\theta),\qquad \ddot\theta=-m(\phi-\theta).
 \]
-The mismatch $\delta=\phi-\theta$ is therefore free: $\ddot\delta=0$. In particular the written action does not yield the oscillator $\ddot\delta+m\delta=0$.
-\end{proposition}
-
-The system sometimes written alongside that Lagrangian,
+The mismatch $\delta=\phi-\theta$ is therefore free: $\ddot\delta=0$. The written action does not yield the oscillator $\ddot\delta+m\delta=0$. A neighbouring system sometimes written alongside it,
 \[
 \ddot\phi=m(\phi-\theta),\qquad -\ddot\theta=m(\phi-\theta),
 \]
-is not the Euler--Lagrange system of $S_{\mathrm{particle}}$. It makes the mismatch runaway, $\ddot\delta=2m\delta$, and is likewise not the oscillator $\ddot\delta+m\delta=0$.
+makes the mismatch runaway, $\ddot\delta=2m\delta$, and is likewise not an oscillator.
 
-\begin{proposition}[Same-sign working model]
-\label{prop:oscillator-model}
-The modified density $L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ has Euler--Lagrange equations $\ddot\phi=-m(\phi-\theta)$ and $\ddot\theta=m(\phi-\theta)$, hence
+An oscillator does appear if both kinetic signs are taken positive. The modified density $L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ has Euler--Lagrange equations $\ddot\phi=-m(\phi-\theta)$ and $\ddot\theta=m(\phi-\theta)$, hence
 \[
 \ddot\delta+2m\delta=0.
 \]
-This is an explicit working model, not the written action.
-\end{proposition}
-
-If one adopts the working model of Proposition~\ref{prop:oscillator-model}, the oscillation frequency is $\sqrt{2m}$ (in natural units where $\hbar = c = 1$). For a free particle in uniform motion the usual rapidity components are modelled as evolving with constant rate $\dot{\phi}_a = \gamma v_a/c$. The general solution of $\ddot\delta+2m\delta=0$ is
+This is a separate working model, not the written action. Its frequency is $\sqrt{2m}$ (in natural units $\hbar=c=1$). For a free particle in uniform motion the usual rapidity is modelled as evolving at constant rate $\dot{\phi}_a=\gamma v_a/c$. The general solution is
 \[
 \delta\phi_a(t) = A_a \sin(\sqrt{2m}\, t + \psi_a).
 \]
@@ -1609,31 +1170,16 @@ In the low-energy, non-relativistic regime, rapid Compton-frequency oscillations
 \[
 \int \delta\phi_a \, dt \propto \frac{E t - \mathbf{p} \cdot \mathbf{x}}{\hbar},
 \]
-the de Broglie phase of the matter wave. That identification is a working hypothesis, not a theorem of Proposition~\ref{prop:paper-EL}.
-
-Collective averaging of this particle-intrinsic action over many particles is proposed to recover a macroscopic integral of $J$. That averaging is a working hypothesis, not an identification of $J$ with the Weitzenb\"ock density $T$.
-
-The written action does not furnish a harmonic bridge to quantum theory. The same-sign working model of Proposition~\ref{prop:oscillator-model} is the only oscillator among the three systems compared here.
+the de Broglie phase of the matter wave. Collective averaging of this particle-intrinsic action over many particles is proposed to recover a macroscopic integral of $J$. That averaging is not an identification of $J$ with the Weitzenb\"ock density $T$. The written action does not furnish a harmonic bridge to quantum theory; the same-sign model is the only oscillator among the three systems compared here.
 
 \section{Towards Quantum Gravity and Full Unification}
 \label{sec:quantumgravity}
 
 The classical formulation presented thus far treats gravity as torsional mismatch between the particle-intrinsic usual and dual spacetimes, encoded in $\mathbb{H}\otimes_{\mathbb{R}}\mathbb{H}\cong\mathrm{Cl}(3,1)$. The proposed action uses the parameter-space scalar $J$; it is not identified with the Einstein--Hilbert integral.
 
-The dual rotor $R_\text{dual}=\exp(\theta/2\,\hat q)$ is the spin-$1/2$ rotation operator of $\mathrm{SU}(2)$. Dual-sector phases $\theta$ therefore parameterize quantum states. The cyclic generators of the dual sector are represented on the spinor space $\mathbb{C}^2$ by $-i\sigma_a$, so that the standard rotation is $\exp(-i\beta\cdot\sigma/2)$. Due to the compactness of the dual spacetime ($\theta\bmod 4\pi$), these phases live on a compact manifold: each particle's state $|\psi\rangle$ corresponds to the unitary phase part of $R_\text{dual}$.
+The dual rotor $R_\text{dual}=\exp(\theta/2\,\hat q)$ is the spin-$1/2$ rotation operator of $\mathrm{SU}(2)$. Dual-sector phases $\theta$ therefore parameterize quantum states. Represented on $\mathbb{C}^2$ by $\exp\bigl(\sum_a(\theta_a/2)(-i\sigma_a)\bigr)$, the dual rotor is unitary with determinant $1$, hence an element of $\mathrm{SU}(2)$. Due to the compactness of the dual spacetime ($\theta\bmod 4\pi$), these phases live on a compact manifold: each particle's state $|\psi\rangle$ corresponds to the unitary phase part of $R_\text{dual}$. A Hilbert-space completion of a $\mathrm{Cl}(3,1)$ minimal left ideal is not constructed here.
 
-\begin{proposition}[Dual rotor as $\mathrm{SU}(2)$]
-\label{prop:dual-rotor-su2}
-The dual rotor
-\[
-R_{\mathrm{dual}}=\exp\Bigl(\sum_a\frac{\theta_a}{2}\Gamma_a\Bigr),
-\]
-represented on $\mathbb{C}^2$ by $\exp\bigl(\sum_a(\theta_a/2)(-i\sigma_a)\bigr)$, is unitary with determinant $1$, hence an element of $\mathrm{SU}(2)$. A Hilbert-space completion of a $\mathrm{Cl}(3,1)$ minimal left ideal is not claimed.
-\end{proposition}
-
-Position and momentum operators, and uncertainty relations among them, are not derived. The present section records only the $\mathrm{SU}(2)$ identification and the $\mathbb{C}^2$ representation. Singularities are excluded on the admissible cone by the bound of Proposition~\ref{prop:admissible-bound}; the quasi-horizon of Section~\ref{subsec:quasi-horizon} is a working identification on the saturated Schwarzschild chart.
-
-An explicit Hilbert space of $\mathrm{Cl}(3,1)$ spinors as minimal left ideals, and a complete quantization of the mismatch dynamics, remain open. Baryon asymmetry through Planck-era time-arrow fixation is Hypothesis~\ref{hyp:baryon-asymmetry}, not a derived theorem.
+Position and momentum operators, and uncertainty relations among them, are not derived. Singularities are excluded on the admissible cone by the bound of Section~\ref{sec:gravity}; the quasi-horizon of Section~\ref{subsec:quasi-horizon} is a reading of that bound on the saturated Schwarzschild chart. An explicit Hilbert space of $\mathrm{Cl}(3,1)$ spinors, and a complete quantization of the mismatch dynamics, remain open.
 
 Quantum gravity is therefore not a separate theory: it is the dual-rotor kinematics of the same 16-dimensional algebra, still incomplete as a Hilbert-space construction.
 
@@ -1642,11 +1188,11 @@ Quantum gravity is therefore not a separate theory: it is the dual-rotor kinemat
 
 The century that began with Einstein taught us to speak of gravity as the curvature of a continuum. That speech is exact as a macroscopic bookkeeping, and it remains so. What it does not say is why a continuum should curve, nor why the same phenomenon should appear as inertia under acceleration. The present work has refused the continuum as a primitive. There is no autonomous stage. Each massive particle carries, in the sixteen-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$, a pair of Minkowski sectors---the usual and the dual. A map between them reverses the arrow of time and leaves the Minkowski norm untouched. Gravity is the torsion of that pair: the mismatch of two rotors that belong to the particle itself.
 
-Of the algebra, and of the charts constructed from it, the following stand as theorems. The relative rotor is the identity precisely when the two rotors coincide. A unique Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost gauge, $J$ stands in a closed dictionary with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum specialisation. The two agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers are ordered by that interference and not by $J$. The same algebra houses the electromagnetic channel: Faraday coefficients occupy the six-generator space of the dual rotor. The written particle action has Euler--Lagrange equations; the dual rotor is an element of $\mathrm{SU}(2)$. On the three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$, the shape $f$ has a unique minimum on $(0,\pi/2)$, and attraction ends at $\pi R/2$, before $r=2R$. None of these identities requires a background manifold.
+The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost chart, $J$ stands in a closed relation with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum case. The two agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$, the shape $f$ has a unique minimum on $(0,\pi/2)$, and attraction ends at $\pi R/2$, before $r=2R$. None of this requires a background manifold.
 
-Of physics, the following remain working hypotheses, and none is a theorem of the algebra: that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that the mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. Uncertainty relations are not derived. Controllability of gravity is a conjecture, not an identity.
+We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Controllability of gravity is a conjecture.
 
-What can already be asked of the sky, without those open derivations, is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a three-sphere patch, its rotation curve plateaus near $r\sim x_0 R$ with $x_0\in(1.14,1.20)$ and reverses at $\pi R/2$, rather than by unseen mass; for Milky-Way stand-in mass the plateau sits near $9$--$11\,\mathrm{kpc}$ and the reversal near $12$--$15\,\mathrm{kpc}$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
+What can already be asked of the sky is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a three-sphere patch, its rotation curve plateaus near $r\sim x_0 R$ with $x_0\in(1.14,1.20)$ and reverses at $\pi R/2$, rather than by unseen mass; for Milky-Way stand-in mass the plateau sits near $9$--$11\,\mathrm{kpc}$ and the reversal near $12$--$15\,\mathrm{kpc}$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
 
 If this ontology is sound, then the geometry of the world is not prior to matter. It is an attribute of particles, as spin and charge are attributes, and the apparent curvature of the heavens is the collective torsion of their dual rotors. The continuum remains a useful fiction of the large. What remains is not to curve an empty stage more ingeniously, but to learn, from the algebra already in hand, how the paired rotors of matter compose the world we see.
 
