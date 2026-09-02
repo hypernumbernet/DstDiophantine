@@ -9,6 +9,8 @@ import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Descent
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.DiscreteCount
+import DstDiophantine.Framework.Spectrum
+import DstDiophantine.Framework.SpectrumSearch
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
@@ -78,6 +80,20 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   AxisPair triangleNum card_axisPair card_admissibleClass
   card_admissibleClass_eq_of_div_four card_admissibleClass_one_of_lt_four
   card_admissibleClass_four card_admissibleClass_eight
+  axisMismatch axisMass axisMismatchSet threeMismatchSet mismatchHoles
+  mismatchInterval
+  one_mem_axisMismatchSet_iff neg_one_mem_axisMismatchSet_iff
+  threeMismatchSet_subset_interval abs_three_axis_eq_ceiling_iff
+  card_balancedTriples card_zeroHeight_gt_balanced
+  abs_latticeMismatch_le_latticeMass latticeMismatch_modEq_latticeMass
+  latticeMass_eq_zero_iff latticeMismatch_mem_threeMismatchSet
+  exists_admissible_mismatch_one exists_admissible_mismatch_neg_one
+  torsion_gap_attained exists_unbalanced_zeroHeight_massive
+  JNormalized_eq_sharp_iff abs_latticeMismatch_eq_ceiling_iff
+  axisMismatchSet_two threeMismatchSet_one mismatchHoles_two
+  ten_not_mem_threeMismatchSet_two mismatchHoles_three
+  threeMismatchSet_proper_subset_interval_two
+  zeroHeight_card_one zeroHeight_card_two zeroHeight_card_three
   pureHyperbolicDiscrete pureEllipticDiscrete
   pureHyperbolicDiscrete_admissible pureEllipticDiscrete_admissible
   JNormalized_pureHyperbolicDiscrete JNormalized_pureEllipticDiscrete

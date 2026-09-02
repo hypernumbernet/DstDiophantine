@@ -2,6 +2,8 @@ import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Lattice
 import DstDiophantine.Framework.DiscreteCount
+import DstDiophantine.Framework.Spectrum
+import DstDiophantine.Framework.SpectrumSearch
 import DstDiophantine.Algebra.Periodicity
 import DstDiophantine.Embedding.Height
 import DstDiophantine.Embedding.RotorClass
@@ -1017,6 +1019,48 @@ example : Fintype.card (AdmissibleClass 4) = 27 :=
 
 example : Fintype.card (AdmissibleClass 8) = 216 :=
   card_admissibleClass_eight
+
+/-- For `N ≥ 4` the nonzero height floor `16/(3N²)` is attained. -/
+example : ∃ t : DiscreteTorsion 8, IsAdmissible t ∧
+    |JNormalized (toTorsionParams t)| = (16 : ℝ) / (3 * (8 : ℝ) ^ 2) :=
+  torsion_gap_attained (by decide : 4 ≤ 8)
+
+/-- At `N = 8` (`K = 2`) the slots `|Δ| ∈ {10, 11}` are empty. -/
+example : (10 : ℤ) ∉ threeMismatchSet 2 ∧ (11 : ℤ) ∉ threeMismatchSet 2 :=
+  ⟨ten_not_mem_threeMismatchSet_two, eleven_not_mem_threeMismatchSet_two⟩
+
+example : threeMismatchSet 2 ⊂ mismatchInterval 2 :=
+  threeMismatchSet_proper_subset_interval_two
+
+/-- Discrete ceiling equality: same-wall configurations only. -/
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    |JNormalized (toTorsionParams t)| = ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 ↔
+      (∀ a, (t.n a).val = N / 4 ∧ (t.m a).val = 0) ∨
+        (∀ a, (t.n a).val = 0 ∧ (t.m a).val = N / 4) :=
+  JNormalized_eq_sharp_iff t h
+
+/-- Even mass–torsion lattice: `|Δ| ≤ Σ` and `Δ ≡ Σ [ZMOD 2]`. -/
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
+    |latticeMismatch t| ≤ (latticeMass t : ℤ) ∧
+      latticeMismatch t ≡ (latticeMass t : ℤ) [ZMOD 2] :=
+  ⟨abs_latticeMismatch_le_latticeMass t, latticeMismatch_modEq_latticeMass t⟩
+
+/-- Cross-axis cancellation: vanishing `J` with positive mass, not balanced. -/
+example : ∃ t : DiscreteTorsion 8, IsAdmissible t ∧ latticeMismatch t = 0 ∧
+    0 < latticeMass t ∧ ¬ (∀ a, t.n a = t.m a) :=
+  exists_unbalanced_zeroHeight_massive (by decide : 4 ≤ 8)
+
+/-- Zero-height locus strictly larger than the balanced cube once `K ≥ 1`. -/
+example : (1 / 2 + 1) ^ 3 < (zeroHeightTriples 1).card :=
+  card_zeroHeight_gt_balanced (by decide : 1 ≤ 1)
+
+example : (zeroHeightTriples 2).card = 32 :=
+  zeroHeight_card_two
+
+/-- Distinct-axis generators do not commute, so the six-parameter rotor
+is not a product of independent one-axis factors. -/
+example : commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
+  commutator_hyperbolic0_cyclic1_ne_zero
 
 /-! ### Algebraic sandwich surface (Gravity intentionally out of scope) -/
 
