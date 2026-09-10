@@ -30,6 +30,7 @@ import DstDiophantine.Logic.Quantum.StringSpectrum
 import DstDiophantine.Logic.Quantum.MinimalIdeal
 import DstDiophantine.Logic.Quantum.CompositeProjector
 import DstDiophantine.Logic.Quantum.Dirac
+import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
 import DstDiophantine.Algebra.Invariant
@@ -61,8 +62,9 @@ and `DstDiophantine.CGA`).
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
-  `ℂ²`, subspace lattice, internal dictionary) plus the string-comparison
-  slice (`Cl91`, MW16, spectrum labels, level-match dictionary)
+  `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation)
+  plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
+  level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
 * `Logic.Regime` — discrete proof-status algebra and implication table
@@ -406,6 +408,24 @@ example :
     commutingSpinorIdem ≠ 0 ∧
       ∃ x ∈ leftIdealOf commutingSpinorIdem, x ≠ 0 :=
   ⟨commutingSpinorIdem_ne_zero, leftIdeal_commutingSpinorIdem_nontrivial⟩
+
+/-- Regression: vanishing interference does not force a common single axis. -/
+example : ∃ p q : TorsionParams, interfere p q = 0 ∧ ¬ SameAxis p q :=
+  compatible_not_implies_same_axis
+
+/-- Regression: Dirac \(\mathbb{C}^4\) matrices obey the Clifford relations. -/
+example (μ ν : Fin 4) :
+    diracMat μ * diracMat ν + diracMat ν * diracMat μ =
+      (2 * minkowskiEta μ ν : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) :=
+  diracMat_clifford μ ν
+
+/-- Regression: dual \(\mathbb{C}^2\) is not the Dirac \(\mathbb{C}^4\). -/
+example : Module.finrank ℂ DualSpinor ≠ Module.finrank ℂ DiracSpinor :=
+  dualSpinor_ne_diracSpinor
+
+/-- Regression: commuting left ideal has real dimension at least two. -/
+example : 2 ≤ Module.finrank ℝ (leftIdealSub commutingSpinorIdem) :=
+  two_le_finrank_leftIdeal_commuting
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

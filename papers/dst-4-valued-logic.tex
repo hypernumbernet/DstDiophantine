@@ -20,7 +20,6 @@
 
 \newcommand{\Jnorm}{J_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
-\newcommand{\leancite}[1]{{\raggedright\smallskip\noindent Lean: #1\par}}
 
 \title{Dual Spacetime 4-Valued Logic (D4L):\\
 Amplitudes, Four States, Geometric Interference,\\
@@ -44,13 +43,16 @@ commutator of torsion bivectors. Two preorders on \([-1,1]\) separate
 height from saturation. The dual sector carries a Hilbert space \(\mathbb{C}^2\): cyclic
 generators obey the quaternion table, the flipped dual pairing is
 Euclidean on \(\mathbb{R}^3\), and \(-i\sigma_a\) represents those
-generators. The closed-subspace lattice of \(\mathbb{C}^2\) is
-orthomodular and non-distributive. Amplitude geometry and this Hilbert
-space are two layers of one logic, related by an internal dictionary;
+generators. For every dual rapidity the associated matrix rotor lies in
+\(\mathrm{SU}(2)\). The closed-subspace lattice of \(\mathbb{C}^2\) is
+orthomodular and non-distributive. The Clifford algebra \(\mathrm{Cl}(3,1)\)
+acts on a Dirac spinor \(\mathbb{C}^4\) by matrices satisfying
+\(\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}\); this representation is not
+identified with the dual \(\mathbb{C}^2\). Amplitude geometry and the
+Hilbert layer are two layers of one logic, related by an internal dictionary;
 their operations are not identified. In particular the Killing form is
 indefinite, self-overlap is not a Born probability, and the four labels
-are not a PVM of \(\mathbb{C}^2\). Theorems below are machine-checked
-in Lean~4.
+are not a PVM of \(\mathbb{C}^2\). Theorems below are machine-checked.
 \end{abstract}
 
 \section{Position}
@@ -78,10 +80,6 @@ identified: the Killing form is not the spinor inner product,
 \(\min/\max\) is not the meet and join of \(L(\mathbb{C}^2)\), and the
 four labels are not a PVM. There is no \(\hbar\) and no derivation of
 the Born rule from \(J\).
-
-The Lean entry is \(\texttt{DstDiophantine.Logic}\), not re-exported
-from \(\texttt{Basic}\). Dual-layer modules live under
-\(\texttt{Logic.Quantum}\).
 
 \section{Torsion and the admissible cone}
 \label{sec:torsion}
@@ -148,16 +146,18 @@ When \(4\nmid N\) every admissible point satisfies the strict inequality
 An \emph{amplitude} is an admissible continuous torsion configuration
 \(p=(\alpha_a,\beta_a)\). Write
 \[
-\Omega(p)=\texttt{omegaTorsion}\,p,\qquad
-R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p).
+\Omega(p)=\sum_{a=1}^3\Bigl(\frac{\alpha_a}{2}\,B^+_a+\frac{\beta_a}{2}\,B^-_a\Bigr),
+\qquad
+R(p)=\exp\Omega(p).
 \]
 Measurement and collapse are
 \[
 \langle p\rangle:=\Jnorm(p),\qquad
-\mathrm{collapse}(p):=\texttt{ofParams}\,p
+\mathrm{collapse}(p)
 \in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}.
 \]
-The adjoint is the usual--dual swap \(p^\dagger=\texttt{daggerParams}\,p\).
+The adjoint is the usual--dual swap \(p^\dagger\), exchanging
+\((\alpha_a)\) with \((\beta_a)\).
 \end{definition}
 
 \begin{theorem}[Adjoint]
@@ -243,9 +243,6 @@ There exists an admissible configuration with \(\Jnorm=0\) and
 bases'' is false. Vacuum and balanced massive both inhabit
 \(\lvert T\rangle\).
 \end{theorem}
-\leancite{\texttt{JNormalized\_zero\_not\_implies\_vacuum},
-\texttt{T\_splits\_vacuum\_and\_balancedMassive},
-\texttt{massNormalized\_bound\_continuous}.}
 
 \section{Connectives}
 \label{sec:conn}
@@ -273,8 +270,6 @@ Hence \(p\wedge\neg p\) is \(\lvert T\rangle\) or \(\lvert B\rangle\), and
 never saturates \(\lvert F\rangle\). De Morgan duality and distributivity
 hold as they do for \(\min/\max\) on \(\mathbb{R}\).
 \end{theorem}
-
-Lean: \(\texttt{scalar\_connectives\_distributive}\).
 
 \section{Two orders, not Belnap FOUR}
 \label{sec:order}
@@ -308,8 +303,7 @@ in the information order. The labels do not match Belnap's
 \begin{definition}[Overlap and interference]
 \label{def:geo}
 \[
-\langle p\mid q\rangle := \texttt{killingForm}\,p\,q
-= 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
+\langle p\mid q\rangle := 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
 \qquad
 [\Omega(p),\Omega(q)] := \Omega(p)\Omega(q)-\Omega(q)\Omega(p).
 \]
@@ -331,9 +325,9 @@ vanishes.
 
 \begin{theorem}[Indefinite pairing]
 \label{thm:indef}
-There exist configurations with \(\texttt{killingForm}(p,p)>0\) and with
-\(\texttt{killingForm}(q,q)<0\). In particular the pairing is not
-positive definite. Lean: \(\texttt{killingForm\_indefinite}\).
+There exist configurations with \(\langle p\mid p\rangle>0\) and with
+\(\langle q\mid q\rangle<0\). In particular the pairing is not
+positive definite.
 \end{theorem}
 
 The witnesses are the pure-boost and pure-rotation extremals already
@@ -342,8 +336,7 @@ used for \(\lvert\Jnorm\rvert=1\).
 \begin{theorem}[Not a Born probability]
 \label{thm:born}
 There exists \(p\) with \(\langle p\mid p\rangle<0\). A signed quantity
-cannot be a Born probability. Lean:
-\(\texttt{overlap\_self\_not\_born\_probability}\).
+cannot be a Born probability.
 \end{theorem}
 
 The pairing is not the spinor inner product
@@ -358,29 +351,27 @@ a PGA product and is not a lattice operation.
 The dual sector already contains a Euclidean three-space, a quaternion
 table, and a spinor representation on \(\mathbb{C}^2\). This section
 records that kinematics and the dictionary that relates it to the
-amplitude layer. Lean indexes the three spatial axes by \(\texttt{Fin}\,3\),
-written \(a=0,1,2\) below.
+amplitude layer. Spatial axes are indexed by \(a=0,1,2\).
 
 \subsection{Dual and usual sectors}
 \label{sec:sector}
 
 \begin{definition}
 \(p\) is dual-sector when \(\alpha=0\), usual-sector when \(\beta=0\).
-Write \(\texttt{ofDual}\,\beta\) and \(\texttt{ofUsual}\,\alpha\) for the
-corresponding embeddings of Euclidean \(\mathbb{R}^3\).
+Write \(p_\beta\) and \(p_\alpha\) for the corresponding embeddings of
+Euclidean \(\mathbb{R}^3\).
 \end{definition}
 
 \begin{theorem}[Definite restrictions]
 \label{thm:sector}
 On the dual sector,
 \[
-\texttt{killingForm}(\texttt{ofDual}\,\beta,\texttt{ofDual}\,\gamma)
+\langle p_\beta\mid p_\gamma\rangle
 =-8\langle\beta,\gamma\rangle_{\mathbb{R}^3},
 \]
 hence negative definite. On the usual sector the pairing is
 \(+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}\), hence positive
-definite. Lean: \(\texttt{killingForm\_ofDual}\),
-\(\texttt{killingForm\_ofDual\_neg\_def}\).
+definite.
 \end{theorem}
 
 The inner-product space is the linear span of each sector, not the
@@ -390,88 +381,91 @@ Superposition is a statement about that span.
 \subsection{Quaternion table}
 \label{sec:quat}
 
-The cyclic generators satisfy
-\((\texttt{cyclic}\,a)^2=-1\) and the off-diagonal products below.
+Write \(\Gamma_a\) for the cyclic generators of the dual sector. They
+satisfy \(\Gamma_a^2=-1\) and the off-diagonal products below.
 
 \begin{theorem}[Quaternion multiplication]
 \label{thm:quat}
 \[
 \begin{aligned}
-\texttt{cyclic}\,0\cdot\texttt{cyclic}\,1&=\texttt{cyclic}\,2,\\
-\texttt{cyclic}\,1\cdot\texttt{cyclic}\,2&=\texttt{cyclic}\,0,\\
-\texttt{cyclic}\,2\cdot\texttt{cyclic}\,0&=\texttt{cyclic}\,1,
+\Gamma_0\Gamma_1&=\Gamma_2,\\
+\Gamma_1\Gamma_2&=\Gamma_0,\\
+\Gamma_2\Gamma_0&=\Gamma_1,
 \end{aligned}
 \qquad
 \begin{aligned}
-\texttt{cyclic}\,1\cdot\texttt{cyclic}\,0&=-\texttt{cyclic}\,2,\\
-\texttt{cyclic}\,2\cdot\texttt{cyclic}\,1&=-\texttt{cyclic}\,0,\\
-\texttt{cyclic}\,0\cdot\texttt{cyclic}\,2&=-\texttt{cyclic}\,1.
+\Gamma_1\Gamma_0&=-\Gamma_2,\\
+\Gamma_2\Gamma_1&=-\Gamma_0,\\
+\Gamma_0\Gamma_2&=-\Gamma_1.
 \end{aligned}
 \]
-Lean: \(\texttt{cyclic\_zero\_mul\_one}\) and companions.
 \end{theorem}
 
-The identities are computed from the vector anticommutators in
-\(G(3,1,1)\). For a pure dual configuration
+The identities follow from the vector anticommutators in \(G(3,1,1)\).
+For a pure dual configuration
 \[
-\Omega(\texttt{ofDual}\,\beta)=\sum(\beta_a/2)\,\texttt{cyclic}\,a,
+\Omega(p_\beta)=\sum_a(\beta_a/2)\,\Gamma_a,
 \]
-and on axis \(0\) this collapses to \((\theta/2)\,\texttt{cyclic}\,0\).
+and on axis \(0\) this collapses to \((\theta/2)\,\Gamma_0\).
 
 \subsection{Spinor Hilbert space}
 \label{sec:spinor}
 
 \begin{definition}[Dual spinor]
-\(\texttt{DualSpinor}:=\mathbb{C}^2\) with the standard Hermitian
+The dual spinor space is \(\mathbb{C}^2\) with the standard Hermitian
 product. Pauli matrices \(\sigma_x,\sigma_y,\sigma_z\) are the usual
-ones. The representation is
-\(\texttt{cyclicRep}\,a:=-i\sigma_a\).
+ones. The representation is \(\rho(\Gamma_a):=-i\sigma_a\).
 That sign makes \(IJ=K\) agree with the cyclic products in \(G(3,1,1)\)
 and sends the dual rotor to the standard \(\mathrm{SU}(2)\) factor
-\(\exp(-i\beta\cdot\sigma/2)\). Lean is authoritative.
+\(\exp(-i\beta\cdot\sigma/2)\).
 \end{definition}
 
 \begin{theorem}[Representation]
 \label{thm:rep}
-\((\texttt{cyclicRep}\,a)^2=-1\) and
-\(\texttt{cyclicRep}\,0\cdot\texttt{cyclicRep}\,1=\texttt{cyclicRep}\,2\).
-Each \(\texttt{cyclicRep}\,a\) is anti-Hermitian.
+\(\rho(\Gamma_a)^2=-1\) and
+\(\rho(\Gamma_0)\rho(\Gamma_1)=\rho(\Gamma_2)\).
+Each \(\rho(\Gamma_a)\) is anti-Hermitian.
 \end{theorem}
 
-Lean: \(\texttt{cyclicRep\_sq}\), \(\texttt{cyclicRep\_zero\_mul\_one}\),
-\(\texttt{cyclicRep\_conjTranspose}\).
-
-The dual rotor is the matrix exponential
+The dual rotor matrix is
 \[
-\texttt{dualRotorMat}(\beta)
+U(\beta)
 =\exp\Bigl(\sum_a(\beta_a/2)(-i\sigma_a)\Bigr)
 =\exp(-i\beta\cdot\sigma/2).
 \]
-On a single axis this is exactly \(\exp\) of the corresponding generator.
-A general identification of the Banach exponential in \(G(3,1,1)\) with
-the matrix exponential is not claimed; that would require BCH control
-already refused by \(\texttt{Algebra.Motor}\).
+On a single axis this is the Rodrigues formula
+\(\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_a)\). For a general dual
+rapidity the same trigonometric form holds along the unit cyclic
+combination determined by \(\beta\).
 
-\(\dim_{\mathbb{C}}\texttt{DualSpinor}=2\), so a projective measurement
+\begin{theorem}[Dual rotor in \(\mathrm{SU}(2)\)]
+\label{thm:su2}
+For every dual rapidity \(\beta\in\mathbb{R}^3\), the matrix \(U(\beta)\)
+is unitary of determinant \(1\). Thus \(U(\beta)\in\mathrm{SU}(2)\).
+\end{theorem}
+
+A general identification of the Banach exponential in \(G(3,1,1)\) with
+this matrix exponential is not claimed; that would require control of
+the Baker--Campbell--Hausdorff formula for mixed generators.
+
+\(\dim_{\mathbb{C}}\mathbb{C}^2=2\), so a projective measurement
 has at most two orthogonal outcomes.
 
 \subsection[Quantum logic of C2]{Quantum logic of \(\mathbb{C}^2\)}
 \label{sec:ql}
 
 \begin{definition}
-A quantum proposition is a linear subspace of \(\texttt{DualSpinor}\).
+A quantum proposition is a linear subspace of \(\mathbb{C}^2\).
 Meet is intersection, join is the sum, negation is the orthogonal
 complement. Finite dimension makes every subspace closed.
 \end{definition}
 
 \begin{theorem}[Orthomodular law]
 \label{thm:om}
-If \(A\le B\) then \(A\vee(A^\perp\wedge B)=B\). Lean:
-\(\texttt{orthomodular}\).
+If \(A\le B\) then \(A\vee(A^\perp\wedge B)=B\).
 \end{theorem}
 
-This is the orthogonal decomposition of a finite-dimensional subspace,
-already in mathlib.
+This is the orthogonal decomposition of a finite-dimensional subspace.
 
 \begin{theorem}[Non-distributivity]
 \label{thm:ndist}
@@ -482,8 +476,7 @@ Let \(e_0=(1,0)\), \(e_1=(0,1)\), \(d=(1,1)\), and write \(\ell_v\) for
 \neq
 (\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d).
 \]
-The left side is \(\ell_{e_0}\); the right side is \(\{0\}\). Lean:
-\(\texttt{not\_distributive}\).
+The left side is \(\ell_{e_0}\); the right side is \(\{0\}\).
 \end{theorem}
 
 The scalar connectives of Section~\ref{sec:conn} distribute. A
@@ -493,10 +486,71 @@ Hilbert space of dimension at least two.
 \begin{theorem}[At most two orthogonal atoms]
 \label{thm:two}
 There do not exist three pairwise orthogonal one-dimensional subspaces
-of \(\texttt{DualSpinor}\).
+of \(\mathbb{C}^2\).
 \end{theorem}
 
-Lean: \(\texttt{no\_three\_pairwise\_orthogonal\_lines}\).
+\subsection{Projectors}
+\label{sec:proj}
+
+A primitive idempotent in the algebra must be built from generators
+that square to \(+1\). If \(g^2=+1\), then \((1+g)/2\) is idempotent.
+Write \(j:=e_0e_1\) for the hyperbolic generator of axis \(0\) (so
+\(j^2=+1\)). This \(j\) is not the time vector \(\gamma^0=e_0\), which
+squares to \(-1\) in signature \((-,+,+,+)\). The working projectors
+are
+\[
+P_{\mathrm{spin}}=\frac{1+e_0e_1}{2},\qquad
+P_L=\frac{1-e_1}{2},\qquad
+P_R=\frac{1+e_1}{2}.
+\]
+They satisfy \(P_L^2=P_L\), \(P_R^2=P_R\), \(P_{\mathrm{spin}}^2=P_{\mathrm{spin}}\),
+and \(P_L+P_R=1\).
+
+\begin{theorem}[Draft projectors fail]
+\label{thm:proj-fail}
+The formulae \((1\pm i)/2\) built from the \(\mathrm{Cl}(3,1)\)
+pseudoscalar \(i\) with \(i^2=-1\) are not idempotent:
+\(\bigl((1-i)/2\bigr)^2=-i/2\). The product \(P_{\mathrm{spin}}P_R\) is
+likewise not idempotent: \(e_0e_1\) and \(e_1\) anticommute.
+\end{theorem}
+
+\begin{theorem}[Commuting projector]
+\label{thm:proj-ok}
+The generators \(e_1\) and \(e_0e_2\) commute and both square to
+\(+1\). Their product projector
+\[
+P=\frac{1+e_1}{2}\cdot\frac{1+e_0e_2}{2}
+\]
+is idempotent and nonzero. The principal left ideal it generates is
+nonzero and has real dimension at least two. Irreducibility of that
+ideal as a spinor module, and a complex dimension of four, are not
+claimed.
+\end{theorem}
+
+\subsection{Clifford relations and the Dirac spinor}
+\label{sec:dirac}
+
+The Dirac matrices of signature \((-,+,+,+)\) are the grade-1 generators
+\(\gamma^\mu\) of \(\mathrm{Cl}(3,1)\). They obey
+\[
+\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu},\qquad
+\eta=\mathrm{diag}(-1,+1,+1,+1).
+\]
+In particular \((\gamma^0)^2=-1\), so \(\gamma^0\neq j\).
+
+\begin{theorem}[Dirac representation]
+\label{thm:dirac-rep}
+There exist matrices \(\gamma^\mu\in M_4(\mathbb{C})\) satisfying the
+same Clifford relations. They act on a Dirac spinor space
+\(\mathbb{C}^4\). This space has complex dimension four, hence is not
+the dual spinor \(\mathbb{C}^2\). As vector spaces one has a Weyl
+splitting \(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\); that
+splitting is a dictionary, not an identification of the dual-sector
+kinematics with a chiral Dirac component.
+\end{theorem}
+
+The Dirac equation, a mass term, and covariance under the full rotor
+group are not derived here.
 
 \subsection{Internal dictionary}
 \label{sec:dict}
@@ -506,12 +560,13 @@ Lean: \(\texttt{no\_three\_pairwise\_orthogonal\_lines}\).
 \toprule
 Amplitude layer & Dual Hilbert layer \\
 \midrule
-pure dual amplitude & \(\beta\in\mathbb{R}^3\) and \(U(\beta)\in\mathrm{U}(2)\) \\
+pure dual amplitude & \(\beta\in\mathbb{R}^3\) and \(U(\beta)\in\mathrm{SU}(2)\) \\
 usual--dual swap & leaves the dual sector; not a Hilbert adjoint \\
 Killing overlap & distinct from the spinor inner product \\
-\(\texttt{interfere}=0\) on one axis & commuting generators (necessary only) \\
+vanishing interference on one axis & commuting generators (necessary only) \\
 \(\Jnorm\) four-state collapse & coarse-graining of a continuous scalar \\
 \(\min/\max\) & not the meet/join of \(L(\mathbb{C}^2)\) \\
+dual \(\mathbb{C}^2\) & not the Dirac \(\mathbb{C}^4\) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -519,11 +574,17 @@ Killing overlap & distinct from the spinor inner product \\
 \begin{theorem}[Four labels are not a PVM]
 \label{thm:pvm}
 There is no assignment of one-dimensional subspaces of
-\(\texttt{DualSpinor}\) to the four D4L labels that makes distinct
+\(\mathbb{C}^2\) to the four D4L labels that makes distinct
 labels pairwise orthogonal.
 \end{theorem}
 
-Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\).
+\begin{theorem}[Compatibility is not same-axis]
+\label{thm:compat}
+If two configurations are supported on a single common spatial axis,
+their interference vanishes. The converse is false: vanishing
+interference does not force a common single axis. A two-axis boost,
+for instance, has vanishing self-commutator and is not single-axis.
+\end{theorem}
 
 \section{Designated values and consequence}
 \label{sec:cons}
@@ -544,7 +605,8 @@ non-refutation (every label except \(\lvert F\rangle\)).
 \end{definition}
 
 Formulas are generated by atoms, \(\neg\), \(\wedge\), and \(\vee\),
-and are evaluated by \(\texttt{negJ}/\texttt{conjJ}/\texttt{disjJ}\).
+and are evaluated by the scalar operations \(\neg\), \(\wedge\), \(\vee\)
+already fixed on heights.
 There is no implication connective on the amplitude heights: the
 residuum of \(\min\) would take its top at \(+1=\lvert F\rangle\).
 Implication lives on the discrete proof-status layer
@@ -573,14 +635,10 @@ The \emph{wall} fragment is \(\{-1,+1\}=\{\text{deepest }\lvert B\rangle,\lvert 
 It is not closed under \(\neg\): \(\neg 1=-1\) leaves \(\{0,1\}\).
 \end{theorem}
 
-\leancite{\texttt{negJ\_zero}, \texttt{namedTwo\_not\_closed\_under\_neg}.}
-
 \begin{theorem}[Walls swap]
 \label{thm:wall-swap}
 If \(j\in\{-1,+1\}\) then \(\neg j\in\{-1,+1\}\) and \(j\neq\neg j\).
 \end{theorem}
-
-\leancite{\texttt{wallTwo\_neg}, \texttt{wallTwo\_not\_negFixed}.}
 
 The wall fragment is the faithful classical core. The named fragment
 matches the labels and is already not classical.
@@ -602,10 +660,6 @@ unsatisfiable on the wall fragment and uniquely realised in D4L by
 \(\lvert T\rangle\), including by an amplitude.
 \end{theorem}
 
-\leancite{\texttt{isNegFixed\_iff\_zero},
-\texttt{not\_exists\_wall\_negFixed},
-\texttt{exists\_amplitude\_negFixed}.}
-
 Classically \(P\leftrightarrow\neg P\) has no model. D4L hosts it at
 perfect usual--dual balance. This is not the G\"odel sentence.
 
@@ -619,8 +673,6 @@ On \(\mathrm{Bool}\), \(P\) and \(\neg P\) cannot both be
 \(+1\).
 \end{theorem}
 
-\leancite{\texttt{bool\_efq}, \texttt{wall\_not\_both\_pos}.}
-
 \begin{theorem}[D4L does not explode]
 \label{thm:d4l-efq}
 Let \(P\) be atom \(0\) and \(Q\) atom \(1\). Then
@@ -630,10 +682,6 @@ and \(Q\) to \(1\). A second witness sends \(P\) to \(-\tfrac12\)
 (interior \(\lvert B\rangle\)) and \(Q\) to \(1\). The conjunction
 \(j\wedge\neg j\) is always non-refuted.
 \end{theorem}
-
-\leancite{\texttt{contradict\_not\_entailsT\_atom},
-\texttt{contradict\_not\_entailsNotF\_atom},
-\texttt{conj\_neg\_holdsNotF}.}
 
 An inconsistent pair of observations therefore does not force an
 unrelated atom onto the positive wall.
@@ -648,9 +696,6 @@ On the named fragment, \(\mathrm{HoldsNotF}\) collapses to
 \(\lvert T\rangle\), \(\lvert U\rangle\), and \(\lvert B\rangle\).
 \end{theorem}
 
-\leancite{\texttt{namedTwo\_notF\_only\_T},
-\texttt{exists\_three\_notF\_labels}.}
-
 \subsection{Complementarity}
 \label{sec:ex-comp}
 
@@ -661,13 +706,6 @@ a Boolean algebra. It has at most two pairwise orthogonal atoms. The
 four D4L labels are not a PVM. The distributive scalar connectives
 cannot present that lattice.
 \end{theorem}
-
-These are the existing dual-layer theorems; there is no separate
-example module.
-\leancite{\texttt{not\_distributive},
-\texttt{no\_three\_pairwise\_orthogonal\_lines},
-\texttt{four\_labels\_not\_orthogonal\_pvm},
-\texttt{scalar\_lattice\_not\_iso\_qprop}.}
 
 \section{Proof-status layer}
 \label{sec:regime}
@@ -684,10 +722,10 @@ residuum of \(\min\).
 Negation and the lattice operations follow the amplitude
 representatives \(\lvert T\rangle\mapsto 0\), \(\lvert U\rangle\mapsto 1/2\),
 \(\lvert F\rangle\mapsto 1\), \(\lvert B\rangle\mapsto -1/2\). In particular
-\(F\wedge\neg F=B\). A second operation, the establishedness meet
-\(\texttt{meetR}\), packages two artefacts along \(F<B<U<T\), so that a
-proved core with a live bridge is still live:
-\(\texttt{meetR}(T,U)=U\). Implication is
+\(F\wedge\neg F=B\). A second operation, the establishedness meet,
+packages two artefacts along \(F<B<U<T\), so that a
+proved core with a live bridge is still live: the meet of \(T\) and
+\(U\) is \(U\). Implication is
 \[
 \begin{aligned}
 T\to\phi&=\phi,\\
@@ -704,6 +742,14 @@ Designated predicates on statuses are the same two names:
 \(\mathrm{HoldsT}_R\) means status \(T\);
 \(\mathrm{HoldsNotF}_R\) means status \(\ne F\).
 
+Additive motors and multiplicative amplitudes occupy distinct seats at
+the same label \(\lvert T\rangle\). Pure translation has vanishing
+torsion and is vacuum. A balanced massive configuration is not vacuum.
+The mixed product \(R\cdot T\) is not identified with
+\(\exp(\Omega_{\mathrm{biv}})\) when the factors fail to commute. The
+balanced residual class excludes window seeds: a half-window
+configuration is not a balanced residual.
+
 \section{Discrete amplitudes and amplification}
 \label{sec:discrete-dyn}
 
@@ -713,16 +759,16 @@ strict, so no admissible point saturates \(\lvert F\rangle\). When
 
 Pure-boost scaling multiplies \(\Jnorm\) by \(k^2\). Synchrony is a
 fixed point. A label \(\lvert U\rangle\) can be driven onto
-\(\lvert F\rangle\), or out of the admissible cone, where
-\(\texttt{classify?}\) returns nothing. That is the logical reading of
-the shared no-go; it is not new arithmetic.
+\(\lvert F\rangle\), or out of the admissible cone, where collapse is
+undefined. That is the logical reading of the shared no-go; it is not
+new arithmetic.
 
 Vacuum is a fixed point of every admissible scaling. A small
 balanced-massive seed stays at \(\lvert T\rangle\) with mass
 \(k^2 M\) and may remain admissible; a large balanced seed leaves
 the cone. That cone exit is invisible to the signed-height
-classifier: \(\Jnorm\) stays \(0\), so \(\texttt{classify?}\) still
-returns \(\lvert T\rangle\). Mass and the cone predicate are the
+classifier: \(\Jnorm\) stays \(0\), so the four-state label is still
+\(\lvert T\rangle\). Mass and the cone predicate are the
 observables that see it. This is why a Beal balanced seed
 \(\theta=\log 2/m\) can survive \(m\)-fold scaling inside the cone.
 
@@ -730,15 +776,6 @@ Height and modular winding are two measurements. Real-scale
 admissibility and nonzero winding cannot hold together. That
 incompatibility is a separation of observables, not a Both-status on
 one observable.
-
-\leancite{\texttt{DiscreteAmplitude.collapse\_ne\_F\_of\_not\_four\_dvd},
-\texttt{seedU\_to\_F\_scales\_to\_F},
-\texttt{seedU\_exits\_unclassified},
-\texttt{scale\_vacuum\_stays\_vacuum},
-\texttt{seedBalanced\_stays\_scales\_balanced},
-\texttt{balancedAmplitude\_exits\_not\_admissible},
-\texttt{balancedAmplitude\_scale\_classify\_T},
-\texttt{not\_both\_admissibleScale\_and\_winding}.}
 
 \subsection{Diophantine regimes}
 \label{sec:ex-regime}
@@ -755,12 +792,16 @@ with an ill-posed NoGo \(B\) does not force the conjecture off \(F\).
 The implication \(U\to T\) is not designated.
 \end{theorem}
 
-\leancite{\texttt{exists\_three\_layer\_valuation},
-\texttt{not\_exists\_named\_three\_layer},
-\texttt{not\_exists\_wall\_core},
-\texttt{core\_not\_entailsTR\_conjecture},
-\texttt{window\_nogo\_not\_entailsNotFR\_conjecture},
-\texttt{impR\_U\_T}.}
+The same algebra hosts a Beal residual atlas: closed slices (including
+the Fermat and Darmon--Merel positions, and the signature \((n,n,5)\))
+sit at \(T\); refuted diagnostics sit at \(F\); bookkeeping identities
+sit at \(B\); live residuals and the classical conjecture sit at \(U\).
+The closed slices do not \(T\)-entail classical Beal. A dual-axis
+Fermat atlas likewise places the additive core and the real \(L^p\)
+dichotomy at \(T\), demoted single-axis modular and balanced-seed
+diagnostics at \(F\), and the mixed-motor residual together with
+classical FLT at \(U\). Closed Fermat slices do not \(T\)-entail
+classical FLT.
 
 This is why DST must not treat a single bound, or a refuted diagnostic,
 as entailing the seven classical conjectures. The regime layer records
@@ -786,8 +827,8 @@ further demands synchrony. Conjunction does not explode
 This is a change of semantics, not a proof that G\"odel's theorems fail
 in classical arithmetic. Completeness talk over the negative-torsion
 sector is likewise a reading of admissible rotors, not a completion of
-the Hilbert programme inside first-order Peano arithmetic. The Lean
-theorems of Section~\ref{sec:examples} are the fixed content; the
+the Hilbert programme inside first-order Peano arithmetic. The theorems
+of Section~\ref{sec:examples} are the fixed content; the
 reading in this section is not a new incompleteness theorem.
 
 \section{What D4L does and does not show}
@@ -825,17 +866,29 @@ reading in this section is not a new incompleteness theorem.
         that self-overlap is not a Born probability.
   \item It \emph{does} extract a Euclidean dual sector and a quaternion
         table for the cyclic generators.
-  \item It \emph{does} represent that table on the Hilbert space
-        \(\mathbb{C}^2\) and record the orthomodular, non-distributive
-        lattice of its subspaces.
+  \item It \emph{does} represent that table on \(\mathbb{C}^2\), place
+        the dual rotor matrix in \(\mathrm{SU}(2)\) for every dual
+        rapidity, and record the orthomodular, non-distributive lattice
+        of closed subspaces.
+  \item It \emph{does} reject the draft projectors \((1\pm i)/2\) and
+        \(P_{\mathrm{spin}}P_R\), and exhibit a commuting square-\(+1\)
+        pair whose product is idempotent, with a left ideal of real
+        dimension at least two.
+  \item It \emph{does} realise the Clifford relations of
+        \(\mathrm{Cl}(3,1)\) on a Dirac spinor \(\mathbb{C}^4\), distinct
+        from the dual \(\mathbb{C}^2\).
+  \item It \emph{does} host Beal and Fermat residual atlases on the
+        regime algebra, without \(T\)-entailing the classical
+        conjectures.
   \item It does \emph{not} identify the scalar connectives with the
         meet and join of \(L(\mathbb{C}^2)\), nor the four labels with
-        a PVM.
+        a PVM, nor vanishing interference with a common single axis.
   \item It does \emph{not} derive the Born rule from \(J\) or from
         Killing overlap.
-  \item It does \emph{not} construct the Dirac spinor \(\mathbb{C}^4\),
-        position/momentum operators, or a solution of the measurement
-        problem.
+  \item It does \emph{not} derive the Dirac equation, position or
+        momentum operators, or a solution of the measurement problem.
+  \item It does \emph{not} claim irreducibility of the commuting left
+        ideal, nor a complex dimension of four for that ideal.
   \item It does \emph{not} refute G\"odel's theorems in classical
         arithmetic.
   \item It does \emph{not} claim unconditional Beal (or FLT, abc)
@@ -848,19 +901,7 @@ reading in this section is not a new incompleteness theorem.
         ceiling is \(\Jbound\).
 \end{itemize}
 
-The Lean modules are \(\texttt{Amplitude}\), \(\texttt{TruthValue}\),
-\(\texttt{Connective}\), \(\texttt{Interpretation}\), \(\texttt{Order}\),
-\(\texttt{Geometric}\), \(\texttt{Formula}\),
-\(\texttt{Valuation}\), \(\texttt{Consequence}\),
-\(\texttt{Regime}\), \(\texttt{DiscreteAmplitude}\),
-\(\texttt{Dynamics}\), and \(\texttt{Winding}\). The examples live under
-\(\texttt{Logic.Example}\)
-(\(\texttt{FixedPoint}\), \(\texttt{Explosion}\), \(\texttt{NotFalse}\),
-\(\texttt{Regime}\)).
-Complementarity is the dual-layer pair \(\texttt{QuantumLogic}\) /
-\(\texttt{Dictionary}\). The remaining dual-layer modules are
-\(\texttt{Separation}\), \(\texttt{DualSector}\), \(\texttt{Quaternion}\),
-and \(\texttt{Spinor}\).
+The statements above are machine-checked.
 
 \begin{thebibliography}{9}
 \raggedright

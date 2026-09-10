@@ -1,7 +1,14 @@
 import DstDiophantine.Logic.Quantum.MinimalIdeal
+import DstDiophantine.Algebra.PGA.Normed
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Composite spinor projectors
@@ -407,6 +414,104 @@ theorem leftIdeal_commutingSpinorIdem_nontrivial :
     ∃ x ∈ leftIdealOf commutingSpinorIdem, x ≠ 0 :=
   ⟨commutingSpinorIdem, commutingSpinorIdem_mem_leftIdeal,
     commutingSpinorIdem_ne_zero⟩
+
+/-! ### Real dimension of the commuting left ideal -/
+
+open Module
+
+/-- Principal left ideal as an \(\mathbb{R}\)-submodule (right multiplication by `e`). -/
+noncomputable def leftIdealSub (e : PGA) : Submodule ℝ PGA :=
+  LinearMap.range (LinearMap.mulRight ℝ e)
+
+theorem mem_leftIdealSub_iff {e x : PGA} :
+    x ∈ leftIdealSub e ↔ ∃ a, x = a * e := by
+  simp [leftIdealSub, LinearMap.mulRight_apply, eq_comm]
+
+theorem commutingSpinorIdem_mem_leftIdealSub :
+    commutingSpinorIdem ∈ leftIdealSub commutingSpinorIdem :=
+  ⟨1, by simp [LinearMap.mulRight_apply]⟩
+
+theorem iota0_mul_commuting_mem_leftIdealSub :
+    PGA.ι 0 * commutingSpinorIdem ∈ leftIdealSub commutingSpinorIdem :=
+  ⟨PGA.ι 0, rfl⟩
+
+/-- \(e_0 P\) is never a real multiple of the commuting projector \(P\). -/
+theorem not_smul_eq_iota0_mul (c : ℝ) :
+    c • commutingSpinorIdem ≠ PGA.ι 0 * commutingSpinorIdem := by
+  intro h
+  have h1 : algebraMap ℝ PGA (-1) * commutingSpinorIdem =
+      (c * c) • commutingSpinorIdem := by
+    calc algebraMap ℝ PGA (-1) * commutingSpinorIdem
+        = PGA.ι 0 * PGA.ι 0 * commutingSpinorIdem := by
+            rw [PGA.e0_sq]
+      _ = PGA.ι 0 * (PGA.ι 0 * commutingSpinorIdem) := by rw [mul_assoc]
+      _ = PGA.ι 0 * (c • commutingSpinorIdem) := by rw [← h]
+      _ = c • (PGA.ι 0 * commutingSpinorIdem) := mul_smul_comm _ _ _
+      _ = c • (c • commutingSpinorIdem) := by rw [← h]
+      _ = (c * c) • commutingSpinorIdem := by rw [smul_smul]
+  have h2 : (-1 : ℝ) • commutingSpinorIdem =
+      (c * c) • commutingSpinorIdem := by
+    simpa [Algebra.smul_def] using h1
+  have hsum : (c * c + 1) • commutingSpinorIdem = 0 := by
+    calc (c * c + 1) • commutingSpinorIdem
+        = (c * c) • commutingSpinorIdem + (1 : ℝ) • commutingSpinorIdem :=
+          add_smul _ _ _
+      _ = (-1 : ℝ) • commutingSpinorIdem + commutingSpinorIdem := by
+          rw [h2, one_smul]
+      _ = 0 := by simp
+  have hc : (c * c + 1 : ℝ) ≠ 0 := by nlinarith [mul_self_nonneg c]
+  exact commutingSpinorIdem_ne_zero ((smul_eq_zero.mp hsum).resolve_left hc)
+
+/-- \(\{P, e_0 P\}\) is linearly independent, so the left ideal has real dimension at least two.
+Irreducibility and complex dimension four are not claimed. -/
+theorem linearIndependent_commutingSpinorIdem_iota0 :
+    LinearIndependent ℝ
+      ![PGA.ι 0 * commutingSpinorIdem, commutingSpinorIdem] := by
+  rw [linearIndependent_fin2]
+  exact ⟨commutingSpinorIdem_ne_zero, not_smul_eq_iota0_mul⟩
+
+private theorem span_P_iota0P_le_leftIdeal :
+    Submodule.span ℝ
+        (Set.range ![PGA.ι 0 * commutingSpinorIdem, commutingSpinorIdem]) ≤
+      leftIdealSub commutingSpinorIdem := by
+  rw [Submodule.span_le]
+  intro x hx
+  rcases hx with ⟨i, rfl⟩
+  fin_cases i
+  · exact iota0_mul_commuting_mem_leftIdealSub
+  · exact commutingSpinorIdem_mem_leftIdealSub
+
+/-- Real dimension of the commuting left ideal is at least \(2\). -/
+theorem two_le_finrank_leftIdeal_commuting :
+    2 ≤ finrank ℝ (leftIdealSub commutingSpinorIdem) := by
+  have hli := linearIndependent_commutingSpinorIdem_iota0
+  have hdim :
+      finrank ℝ
+          (Submodule.span ℝ
+            (Set.range ![PGA.ι 0 * commutingSpinorIdem, commutingSpinorIdem])) =
+        2 := by
+    rw [finrank_span_eq_card hli]
+    simp
+  have := Submodule.finrank_mono span_P_iota0P_le_leftIdeal
+  exact hdim.symm.trans_le this
+
+instance instFinitePGA : Module.Finite ℝ PGA :=
+  inferInstanceAs (Module.Finite ℝ PGANormed.Alg311)
+
+/-- Real dimension of \(G(3,1,1)\) is \(32\). -/
+theorem finrank_pga : finrank ℝ PGA = 32 := by
+  have h := LinearEquiv.finrank_eq (CliffordAlgebra.equivExterior Q311)
+  have hex : finrank ℝ (ExteriorAlgebra ℝ Vec5) = 2 ^ 5 := by
+    classical
+    have b := (Pi.basisFun ℝ (Fin 5)).ExteriorAlgebra
+    rw [finrank_eq_card_basis b, Fintype.card_finset, Fintype.card_fin]
+  rw [h, hex]
+  norm_num
+
+theorem finrank_leftIdeal_commuting_le_pga :
+    finrank ℝ (leftIdealSub commutingSpinorIdem) ≤ 32 := by
+  have := Submodule.finrank_le (leftIdealSub commutingSpinorIdem)
+  exact this.trans_eq finrank_pga
 
 end Logic
 

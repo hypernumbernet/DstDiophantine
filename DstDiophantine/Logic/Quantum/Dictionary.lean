@@ -3,6 +3,7 @@ import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Amplitude
 import DstDiophantine.Logic.Geometric
 import DstDiophantine.Logic.Interpretation
+import DstDiophantine.Algebra.Generators
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -65,14 +66,42 @@ theorem scalar_lattice_not_iso_qprop :
       lineE0 ⊓ (lineE1 ⊔ lineD) ≠ (lineE0 ⊓ lineE1) ⊔ (lineE0 ⊓ lineD) :=
   ⟨scalar_connectives_distributive, not_distributive⟩
 
-/-- Same-axis interference vanishes (already proved). Compatibility of the
-corresponding dual generators is a necessary condition only; the converse
-is not claimed. -/
+/-- Same-axis interference vanishes (already proved). -/
 theorem same_axis_compatible (α β : ℝ) :
     interfere
         ⟨fun a => if a = 0 then α else 0, fun _ => 0⟩
         ⟨fun _ => 0, fun a => if a = 0 then β else 0⟩ = 0 :=
   interfere_axis0_self α β
+
+/-- Self-interference always vanishes: \([\Omega,\Omega]=0\). -/
+theorem interfere_self (p : TorsionParams) : interfere p p = 0 := by
+  simp [interfere, Generators.commutator]
+
+/-- Both configurations are supported on a single common spatial axis. -/
+def SameAxis (p q : TorsionParams) : Prop :=
+  ∃ a : Fin 3,
+    (∀ b, b ≠ a → p.alpha b = 0 ∧ p.beta b = 0) ∧
+      (∀ b, b ≠ a → q.alpha b = 0 ∧ q.beta b = 0)
+
+/-- Two-axis boost: axes `0` and `1`. Not a single-axis configuration. -/
+def axis01Boost : TorsionParams :=
+  ⟨fun a => if a = 0 ∨ a = 1 then (1 : ℝ) else 0, fun _ => 0⟩
+
+theorem not_sameAxis_axis01Boost : ¬ SameAxis axis01Boost axis01Boost := by
+  rintro ⟨a, hp, _⟩
+  fin_cases a
+  · have h := hp 1 (by decide)
+    simp [axis01Boost] at h
+  · have h := hp 0 (by decide)
+    simp [axis01Boost] at h
+  · have h := hp 0 (by decide)
+    simp [axis01Boost] at h
+
+/-- Vanishing interference does not force a common single axis.
+The witness is a two-axis boost, whose self-commutator is zero. -/
+theorem compatible_not_implies_same_axis :
+    ∃ p q : TorsionParams, interfere p q = 0 ∧ ¬ SameAxis p q :=
+  ⟨axis01Boost, axis01Boost, interfere_self axis01Boost, not_sameAxis_axis01Boost⟩
 
 end Logic
 

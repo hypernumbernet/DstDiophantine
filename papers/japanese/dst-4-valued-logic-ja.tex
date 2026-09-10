@@ -21,7 +21,6 @@
 
 \newcommand{\Jnorm}{J_{\rm norm}}
 \newcommand{\Jbound}{\frac{3\pi^2}{8}}
-\newcommand{\leancite}[1]{{\raggedright\smallskip\noindent Lean: #1\par}}
 
 \title{二重時空四値論理（D4L）：\\
 振幅・四状態・幾何干渉・双対ヒルベルト空間}
@@ -35,7 +34,7 @@
 \begin{abstract}
 二重時空理論の論理として、二重時空4値論理（D4L）を固定する。命題は許容ねじれ配置であり、同値に PGA 双ベクトル \(\Omega\) およびローター \(R=\exp\Omega\) である。測定は正規化高さ \(\Jnorm\in[-1,1]\) であり、崩壊は四つのラベル
 \(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\)
-を与える。スカラー結合子は \(\min/\max/-\) である。可換な重なりはパラメータ Killing 形式、非可換な干渉はねじれ双ベクトルの幾何交換子である。区間 \([-1,1]\) 上の二つの前順序が高さと飽和を分ける。双対セクターはヒルベルト空間 \(\mathbb{C}^2\) を担う：循環生成子は四元数の積表を満たし、符号を反転した双対対は \(\mathbb{R}^3\) 上で Euclid であり、\(-i\sigma_a\) がその生成子を表現する。\(\mathbb{C}^2\) の閉部分空間格子はオーソモジュラーかつ非分配的である。振幅幾何とこのヒルベルト空間は一つの論理の二つの層であり、内部辞書で結ばれるが、演算は同一視しない。とくに Killing 形式は不定であり、自己重なりは Born 確率ではなく、四ラベルは \(\mathbb{C}^2\) の PVM ではない。以下の定理は Lean~4 で機械検証されている。
+を与える。スカラー結合子は \(\min/\max/-\) である。可換な重なりはパラメータ キリング形式、非可換な干渉はねじれ双ベクトルの幾何交換子である。区間 \([-1,1]\) 上の二つの前順序が高さと飽和を分ける。双対セクターはヒルベルト空間 \(\mathbb{C}^2\) を担う：循環生成子は四元数の積表を満たし、符号を反転した双対対は \(\mathbb{R}^3\) 上でユークリッドであり、\(-i\sigma_a\) がその生成子を表現する。任意の双対ラピディティに対し、対応する行列ローターは \(\mathrm{SU}(2)\) に属する。\(\mathbb{C}^2\) の閉部分空間格子はオーソモジュラーかつ非分配的である。クリフォード代数 \(\mathrm{Cl}(3,1)\) はディラック・スピノル \(\mathbb{C}^4\) に \(\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}\) を満たす行列として作用する。この表現は双対 \(\mathbb{C}^2\) と同一視しない。振幅幾何とヒルベルト層は一つの論理の二つの層であり、内部辞書で結ばれるが、演算は同一視しない。とくにキリング形式は不定であり、自己重なりはボルン確率ではなく、四ラベルは \(\mathbb{C}^2\) の PVM ではない。以下の定理は機械検証されている。
 \end{abstract}
 
 \section{位置づけ}
@@ -45,13 +44,11 @@
 \((\alpha_a,\beta_a)_{a=1,2,3}\)
 によって符号化する。各空間軸に、通常セクターのブーストと双対セクターの回転がある \cite{DST2025,Diophantine2026}。その対のすでに証明済みの不変量は符号付きの高さである。D4L はその幾何の論理であり、二つの層をもつ。
 
-振幅層は、許容配置を命題、\(\Jnorm\) を観測量、\(\min/\max/-\) をスカラー結合子とする。Killing 重なりと双ベクトル交換子もここに属する：PGA コアにすでに存在するねじれパラメータの上で動く。
+振幅層は、許容配置を命題、\(\Jnorm\) を観測量、\(\min/\max/-\) をスカラー結合子とする。キリング重なりと双ベクトル交換子もここに属する：PGA コアにすでに存在するねじれパラメータの上で動く。
 
-双対 Hilbert 層は双対セクターの運動学である：\(\mathbb{R}^3\) 上の Euclid 対、循環生成子の四元数表、およびその \(\mathbb{C}^2\) 上の表現。閉部分空間格子は二次元スピノルの Birkhoff--von Neumann 論理である \cite{BvN1936}。
+双対ヒルベルト層は双対セクターの運動学である：\(\mathbb{R}^3\) 上のユークリッド対、循環生成子の四元数表、およびその \(\mathbb{C}^2\) 上の表現。閉部分空間格子は二次元スピノルのバーコフ--フォン・ノイマン論理である \cite{BvN1936}。
 
-内部辞書が二つの層を結ぶ。演算は同一視しない：Killing 形式はスピノル内積ではなく、\(\min/\max\) は \(L(\mathbb{C}^2)\) の交わり・和ではなく、四ラベルは PVM ではない。\(\hbar\) もなく、\(J\) からの Born 則の導出もない。
-
-Lean の入口は \(\texttt{DstDiophantine.Logic}\) である。\(\texttt{DstDiophantine.Basic}\) からは再エクスポートしない。双対層のモジュールは \(\texttt{Logic.Quantum}\) に置く。
+内部辞書が二つの層を結ぶ。演算は同一視しない：キリング形式はスピノル内積ではなく、\(\min/\max\) は \(L(\mathbb{C}^2)\) の交わり・和ではなく、四ラベルは PVM ではない。\(\hbar\) もなく、\(J\) からのボルン則の導出もない。
 
 \section{ねじれと許容錐}
 \label{sec:torsion}
@@ -104,16 +101,17 @@ J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr)
 \label{def:amp}
 \emph{振幅}とは、許容連続ねじれ配置 \(p=(\alpha_a,\beta_a)\) である。
 \[
-\Omega(p)=\texttt{omegaTorsion}\,p,\qquad
-R(p)=\texttt{rotorTorsion}\,p=\exp\Omega(p)
+\Omega(p)=\sum_{a=1}^3\Bigl(\frac{\alpha_a}{2}\,B^+_a+\frac{\beta_a}{2}\,B^-_a\Bigr),
+\qquad
+R(p)=\exp\Omega(p)
 \]
 と書く。測定と崩壊は
 \[
 \langle p\rangle:=\Jnorm(p),\qquad
-\mathrm{collapse}(p):=\texttt{ofParams}\,p
+\mathrm{collapse}(p)
 \in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}
 \]
-である。随伴は通常–双対スワップ \(p^\dagger=\texttt{daggerParams}\,p\) である。
+である。随伴は通常–双対スワップ \(p^\dagger\) であり、\((\alpha_a)\) と \((\beta_a)\) を入れ替える。
 \end{definition}
 
 \begin{theorem}[随伴]
@@ -180,9 +178,6 @@ M_{\mathrm{norm}}=\frac{8}{3\pi^2}\,M
 \label{thm:T-split}
 \(\Jnorm=0\) かつ \(M>0\) の許容配置が存在する。したがって論文第6章のステップ「\(\Jnorm=0\) なら自明な基底」は偽である。真空と釣り合い質量はともに \(\lvert T\rangle\) に住む。
 \end{theorem}
-\leancite{\texttt{JNormalized\_zero\_not\_implies\_vacuum}、
-\texttt{T\_splits\_vacuum\_and\_balancedMassive}、
-\texttt{massNormalized\_bound\_continuous}。}
 
 \section{結合子}
 \label{sec:conn}
@@ -209,9 +204,7 @@ j\wedge\neg j = -|j|\le 0
 である。したがって \(p\wedge\neg p\) は \(\lvert T\rangle\) または \(\lvert B\rangle\) であり、決して \(\lvert F\rangle\) に飽和しない。De Morgan 双対と分配則は、\(\mathbb{R}\) 上の \(\min/\max\) におけるものと同じである。
 \end{theorem}
 
-Lean: \(\texttt{scalar\_connectives\_distributive}\)。
-
-\section{二つの順序、Belnap FOUR ではない}
+\section{二つの順序、ベルナップ FOUR ではない}
 \label{sec:order}
 
 \begin{definition}
@@ -229,7 +222,7 @@ j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert
 \([-1,1]\) の上で、\(j=0\) は一意の情報の底であり、情報の頂はちょうど壁 \(j=\pm 1\) である。同値に、情報の底はラベル \(\lvert T\rangle\)、二つの頂は \(\lvert F\rangle\) と最深の \(\lvert B\rangle\) である。
 \end{theorem}
 
-内部の \(\lvert B\rangle\) は情報順序で最深の \(\lvert B\rangle\) より真に小さい。ラベルは Belnap の \(\{\bot,t,f,\top\}\) と一致しない。複格子同型は主張しない。
+内部の \(\lvert B\rangle\) は情報順序で最深の \(\lvert B\rangle\) より真に小さい。ラベルはベルナップの \(\{\bot,t,f,\top\}\) と一致しない。複格子同型は主張しない。
 
 \section{幾何演算}
 \label{sec:geo}
@@ -237,8 +230,7 @@ j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert
 \begin{definition}[重なりと干渉]
 \label{def:geo}
 \[
-\langle p\mid q\rangle := \texttt{killingForm}\,p\,q
-= 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
+\langle p\mid q\rangle := 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
 \qquad
 [\Omega(p),\Omega(q)] := \Omega(p)\Omega(q)-\Omega(q)\Omega(p).
 \]
@@ -252,45 +244,42 @@ j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert
 
 \begin{theorem}[不定対]
 \label{thm:indef}
-\(\texttt{killingForm}(p,p)>0\) となる配置と
-\(\texttt{killingForm}(q,q)<0\) となる配置が存在する。とくにこの対は
-正定値ではない。Lean: \(\texttt{killingForm\_indefinite}\)。
+\(\langle p\mid p\rangle>0\) となる配置と
+\(\langle q\mid q\rangle<0\) となる配置が存在する。とくにこの対は
+正定値ではない。
 \end{theorem}
 
 証人は \(\lvert\Jnorm\rvert=1\) に用いた純ブーストおよび純回転の端点である。
 
-\begin{theorem}[Born 確率ではない]
+\begin{theorem}[ボルン確率ではない]
 \label{thm:born}
 \(\langle p\mid p\rangle<0\) となる \(p\) が存在する。符号付きの量は
-Born 確率になり得ない。Lean:
-\(\texttt{overlap\_self\_not\_born\_probability}\)。
+ボルン確率になり得ない。
 \end{theorem}
 
 この対は第~\ref{sec:spinor}節のスピノル内積ではない。sandwich 評価 \(R(p)\,v\,R(p)^\sim\) は重力チャート層から独立に再掲する。退化二次形式の保存は主張しない。幾何合成は PGA 積として結合的であり、格子演算であることは主張しない。
 
-\section{双対 Hilbert 層}
+\section{双対ヒルベルト層}
 \label{sec:hilbert}
 
-双対セクターは Euclid 三次元空間、四元数表、および \(\mathbb{C}^2\) 上のスピノル表現をすでに含んでいる。本節はその運動学と、振幅層との辞書を記録する。Lean は三つの空間軸を \(\texttt{Fin}\,3\) で添字づけ、以下では \(a=0,1,2\) と書く。
+双対セクターはユークリッド三次元空間、四元数表、および \(\mathbb{C}^2\) 上のスピノル表現をすでに含んでいる。本節はその運動学と、振幅層との辞書を記録する。空間軸は \(a=0,1,2\) で添字づける。
 
 \subsection{双対セクターと通常セクター}
 \label{sec:sector}
 
 \begin{definition}
-\(p\) は \(\alpha=0\) のとき双対セクター、\(\beta=0\) のとき通常セクターである。Euclid \(\mathbb{R}^3\) からの埋め込みを \(\texttt{ofDual}\,\beta\)、\(\texttt{ofUsual}\,\alpha\) と書く。
+\(p\) は \(\alpha=0\) のとき双対セクター、\(\beta=0\) のとき通常セクターである。ユークリッド \(\mathbb{R}^3\) からの埋め込みを \(p_\beta\)、\(p_\alpha\) と書く。
 \end{definition}
 
 \begin{theorem}[定値な制限]
 \label{thm:sector}
 双対セクター上では
 \[
-\texttt{killingForm}(\texttt{ofDual}\,\beta,\texttt{ofDual}\,\gamma)
+\langle p_\beta\mid p_\gamma\rangle
 =-8\langle\beta,\gamma\rangle_{\mathbb{R}^3}
 \]
 であり、したがって負定値である。通常セクター上では対は
 \(+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}\) で正定値である。
-Lean: \(\texttt{killingForm\_ofDual}\)、
-\(\texttt{killingForm\_ofDual\_neg\_def}\)。
 \end{theorem}
 
 内積空間は各セクターの線形包であり、許容立方体
@@ -300,79 +289,80 @@ Lean: \(\texttt{killingForm\_ofDual}\)、
 \subsection{四元数の積表}
 \label{sec:quat}
 
-循環生成子は \((\texttt{cyclic}\,a)^2=-1\) と、以下の非対角積を満たす。
+双対セクターの循環生成子を \(\Gamma_a\) と書く。それらは \(\Gamma_a^2=-1\) と、以下の非対角積を満たす。
 
 \begin{theorem}[四元数の乗法]
 \label{thm:quat}
 \[
 \begin{aligned}
-\texttt{cyclic}\,0\cdot\texttt{cyclic}\,1&=\texttt{cyclic}\,2,\\
-\texttt{cyclic}\,1\cdot\texttt{cyclic}\,2&=\texttt{cyclic}\,0,\\
-\texttt{cyclic}\,2\cdot\texttt{cyclic}\,0&=\texttt{cyclic}\,1,
+\Gamma_0\Gamma_1&=\Gamma_2,\\
+\Gamma_1\Gamma_2&=\Gamma_0,\\
+\Gamma_2\Gamma_0&=\Gamma_1,
 \end{aligned}
 \qquad
 \begin{aligned}
-\texttt{cyclic}\,1\cdot\texttt{cyclic}\,0&=-\texttt{cyclic}\,2,\\
-\texttt{cyclic}\,2\cdot\texttt{cyclic}\,1&=-\texttt{cyclic}\,0,\\
-\texttt{cyclic}\,0\cdot\texttt{cyclic}\,2&=-\texttt{cyclic}\,1.
+\Gamma_1\Gamma_0&=-\Gamma_2,\\
+\Gamma_2\Gamma_1&=-\Gamma_0,\\
+\Gamma_0\Gamma_2&=-\Gamma_1.
 \end{aligned}
 \]
-Lean: \(\texttt{cyclic\_zero\_mul\_one}\) および同行の定理。
 \end{theorem}
 
-恒等式は \(G(3,1,1)\) のベクトル反交換から計算する。純双対配置では
+恒等式は \(G(3,1,1)\) のベクトル反交換から従う。純双対配置では
 \[
-\Omega(\texttt{ofDual}\,\beta)=\sum(\beta_a/2)\,\texttt{cyclic}\,a
+\Omega(p_\beta)=\sum_a(\beta_a/2)\,\Gamma_a
 \]
-であり、軸 \(0\) では \((\theta/2)\,\texttt{cyclic}\,0\) に落ちる。
+であり、軸 \(0\) では \((\theta/2)\,\Gamma_0\) に落ちる。
 
 \subsection{スピノル・ヒルベルト空間}
 \label{sec:spinor}
 
 \begin{definition}[双対スピノル]
-\(\texttt{DualSpinor}:=\mathbb{C}^2\) に標準 Hermite 内積を入れたもの。
-Pauli 行列 \(\sigma_x,\sigma_y,\sigma_z\) は通常のもの。表現は
-\(\texttt{cyclicRep}\,a:=-i\sigma_a\) である。
-この符号で \(IJ=K\) が \(G(3,1,1)\) の循環積と一致し、双対ローターは標準的な \(\mathrm{SU}(2)\) 因子 \(\exp(-i\beta\cdot\sigma/2)\) へ送られる。Lean を正とする。
+双対スピノル空間は、標準エルミート内積をもつ \(\mathbb{C}^2\) である。
+パウリ行列 \(\sigma_x,\sigma_y,\sigma_z\) は通常のもの。表現は
+\(\rho(\Gamma_a):=-i\sigma_a\) である。
+この符号で \(IJ=K\) が \(G(3,1,1)\) の循環積と一致し、双対ローターは標準的な \(\mathrm{SU}(2)\) 因子 \(\exp(-i\beta\cdot\sigma/2)\) へ送られる。
 \end{definition}
 
 \begin{theorem}[表現]
 \label{thm:rep}
-\((\texttt{cyclicRep}\,a)^2=-1\) かつ
-\(\texttt{cyclicRep}\,0\cdot\texttt{cyclicRep}\,1=\texttt{cyclicRep}\,2\)。
-各 \(\texttt{cyclicRep}\,a\) は反 Hermite である。
+\(\rho(\Gamma_a)^2=-1\) かつ
+\(\rho(\Gamma_0)\rho(\Gamma_1)=\rho(\Gamma_2)\)。
+各 \(\rho(\Gamma_a)\) は反エルミートである。
 \end{theorem}
 
-Lean: \(\texttt{cyclicRep\_sq}\)、\(\texttt{cyclicRep\_zero\_mul\_one}\)、
-\(\texttt{cyclicRep\_conjTranspose}\)。
-
-双対ローターは行列指数
+双対ローター行列は
 \[
-\texttt{dualRotorMat}(\beta)
+U(\beta)
 =\exp\Bigl(\sum_a(\beta_a/2)(-i\sigma_a)\Bigr)
 =\exp(-i\beta\cdot\sigma/2)
 \]
-である。一軸では対応する生成子の \(\exp\) そのものである。
-\(G(3,1,1)\) の Banach 指数と行列指数の一般的な同一視は主張しない。
-それは \(\texttt{Algebra.Motor}\) がすでに拒んでいる BCH 制御を要する。
+である。一軸ではロドリゲスの公式
+\(\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_a)\) である。一般の双対ラピディティでは、\(\beta\) が定める単位循環の組み合わせに沿って同じ三角公式が成り立つ。
 
-\(\dim_{\mathbb{C}}\texttt{DualSpinor}=2\) なので、射影測定の直交結果は
+\begin{theorem}[双対ローターは \(\mathrm{SU}(2)\) に属する]
+\label{thm:su2}
+任意の双対ラピディティ \(\beta\in\mathbb{R}^3\) に対し、行列 \(U(\beta)\) はユニタリで行列式 \(1\) である。したがって \(U(\beta)\in\mathrm{SU}(2)\)。
+\end{theorem}
+
+\(G(3,1,1)\) のバナッハ指数とこの行列指数の一般的な同一視は主張しない。それは混合生成子に対する Baker--Campbell--Hausdorff 公式の制御を要する。
+
+\(\dim_{\mathbb{C}}\mathbb{C}^2=2\) なので、射影測定の直交結果は
 高々二つである。
 
 \subsection[C2 の量子論理]{\(\mathbb{C}^2\) の量子論理}
 \label{sec:ql}
 
 \begin{definition}
-量子命題は \(\texttt{DualSpinor}\) の線形部分空間である。交わりは共通部分、結びは和、否定は直交補空間。有限次元なのですべての部分空間は閉である。
+量子命題は \(\mathbb{C}^2\) の線形部分空間である。交わりは共通部分、結びは和、否定は直交補空間。有限次元なのですべての部分空間は閉である。
 \end{definition}
 
 \begin{theorem}[オーソモジュラー法則]
 \label{thm:om}
-\(A\le B\) ならば \(A\vee(A^\perp\wedge B)=B\)。Lean:
-\(\texttt{orthomodular}\)。
+\(A\le B\) ならば \(A\vee(A^\perp\wedge B)=B\)。
 \end{theorem}
 
-これは有限次元部分空間の直交分解であり、mathlib にすでに存在する。
+これは有限次元部分空間の直交分解である。
 
 \begin{theorem}[非分配性]
 \label{thm:ndist}
@@ -383,19 +373,58 @@ Lean: \(\texttt{cyclicRep\_sq}\)、\(\texttt{cyclicRep\_zero\_mul\_one}\)、
 \neq
 (\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d).
 \]
-左辺は \(\ell_{e_0}\)、右辺は \(\{0\}\) である。Lean:
-\(\texttt{not\_distributive}\)。
+左辺は \(\ell_{e_0}\)、右辺は \(\{0\}\) である。
 \end{theorem}
 
 第~\ref{sec:conn}節のスカラー結合子は分配的である。分配的な束は、次元が \(2\) 以上のヒルベルト空間の部分空間格子と同型になり得ない。
 
 \begin{theorem}[直交原子は高々二つ]
 \label{thm:two}
-\(\texttt{DualSpinor}\) の互いに直交する一次元部分空間を三つ取ることは
+\(\mathbb{C}^2\) の互いに直交する一次元部分空間を三つ取ることは
 できない。
 \end{theorem}
 
-Lean: \(\texttt{no\_three\_pairwise\_orthogonal\_lines}\)。
+\subsection{射影子}
+\label{sec:proj}
+
+原始冪等元は、平方が \(+1\) の生成子から作らねばならない。\(g^2=+1\) ならば \((1+g)/2\) は冪等である。軸 \(0\) の双曲生成子を \(j:=e_0e_1\) と書く（\(j^2=+1\)）。この \(j\) は時間ベクトル \(\gamma^0=e_0\) ではない。符号 \((-,+,+,+)\) では後者の平方は \(-1\) である。作業用の射影子は
+\[
+P_{\mathrm{spin}}=\frac{1+e_0e_1}{2},\qquad
+P_L=\frac{1-e_1}{2},\qquad
+P_R=\frac{1+e_1}{2}
+\]
+である。\(P_L^2=P_L\)、\(P_R^2=P_R\)、\(P_{\mathrm{spin}}^2=P_{\mathrm{spin}}\)、および \(P_L+P_R=1\) が成り立つ。
+
+\begin{theorem}[草稿の射影子は失敗する]
+\label{thm:proj-fail}
+\(\mathrm{Cl}(3,1)\) の擬スカラー \(i\)（\(i^2=-1\)）から作った \((1\pm i)/2\) は冪等ではない：\(\bigl((1-i)/2\bigr)^2=-i/2\)。積 \(P_{\mathrm{spin}}P_R\) も冪等ではない：\(e_0e_1\) と \(e_1\) は反交換する。
+\end{theorem}
+
+\begin{theorem}[可換な射影子]
+\label{thm:proj-ok}
+生成子 \(e_1\) と \(e_0e_2\) は可換で、ともに平方 \(+1\) である。それらの積
+\[
+P=\frac{1+e_1}{2}\cdot\frac{1+e_0e_2}{2}
+\]
+は冪等かつ非零である。それが生成する主左イデアルは非自明であり、実次元は少なくとも \(2\) である。スピノル加群としての既約性、および複素次元 \(4\) は主張しない。
+\end{theorem}
+
+\subsection{クリフォード関係とディラック・スピノル}
+\label{sec:dirac}
+
+符号 \((-,+,+,+)\) のディラック行列は \(\mathrm{Cl}(3,1)\) の次数 \(1\) 生成子 \(\gamma^\mu\) である。それらは
+\[
+\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu},\qquad
+\eta=\mathrm{diag}(-1,+1,+1,+1)
+\]
+を満たす。とくに \((\gamma^0)^2=-1\) なので \(\gamma^0\neq j\) である。
+
+\begin{theorem}[ディラック表現]
+\label{thm:dirac-rep}
+同じクリフォード関係を満たす行列 \(\gamma^\mu\in M_4(\mathbb{C})\) が存在する。それらはディラック・スピノル空間 \(\mathbb{C}^4\) に作用する。この空間の複素次元は \(4\) であり、したがって双対スピノル \(\mathbb{C}^2\) ではない。ベクトル空間としてはワイル分解 \(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\) がある。その分解は辞書であり、双対セクターの運動学をカイラルなディラック成分と同一視するものではない。
+\end{theorem}
+
+ディラック方程式、質量項、および全ローター群のもとでの共変性はここでは導かない。
 
 \subsection{内部辞書}
 \label{sec:dict}
@@ -403,25 +432,29 @@ Lean: \(\texttt{no\_three\_pairwise\_orthogonal\_lines}\)。
 \begin{center}
 \begin{tabular}{@{}ll@{}}
 \toprule
-振幅層 & 双対 Hilbert 層 \\
+振幅層 & 双対ヒルベルト層 \\
 \midrule
-純双対振幅 & \(\beta\in\mathbb{R}^3\) と \(U(\beta)\in\mathrm{U}(2)\) \\
-通常--双対スワップ & 双対セクターの外へ出す。Hilbert 随伴ではない \\
-Killing 重なり & スピノル内積とは別物 \\
-一軸で \(\texttt{interfere}=0\) & 可換な生成子（必要条件のみ） \\
+純双対振幅 & \(\beta\in\mathbb{R}^3\) と \(U(\beta)\in\mathrm{SU}(2)\) \\
+通常--双対スワップ & 双対セクターの外へ出す。ヒルベルト随伴ではない \\
+キリング重なり & スピノル内積とは別物 \\
+一軸での干渉消滅 & 可換な生成子（必要条件のみ） \\
 \(\Jnorm\) の四状態崩壊 & 連続スカラーの粗視化 \\
 \(\min/\max\) & \(L(\mathbb{C}^2)\) の交わり・和ではない \\
+双対 \(\mathbb{C}^2\) & ディラック \(\mathbb{C}^4\) ではない \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \begin{theorem}[四ラベルは PVM ではない]
 \label{thm:pvm}
-四つの D4L ラベルに \(\texttt{DualSpinor}\) の一次元部分空間を割り当て、
+四つの D4L ラベルに \(\mathbb{C}^2\) の一次元部分空間を割り当て、
 相異なるラベルを互いに直交させることはできない。
 \end{theorem}
 
-Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
+\begin{theorem}[両立は同軸を意味しない]
+\label{thm:compat}
+二つの配置が単一の共通空間軸に支えられていれば、干渉は消える。逆は偽である：干渉の消滅は共通の単一軸を強制しない。たとえば二軸ブーストは自己交換子が消え、しかも単一軸ではない。
+\end{theorem}
 
 \section{指定値と帰結}
 \label{sec:cons}
@@ -439,7 +472,7 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \end{definition}
 
 論理式は原子、\(\neg\)、\(\wedge\)、\(\vee\) から生成し、
-\(\texttt{negJ}/\texttt{conjJ}/\texttt{disjJ}\) で評価する。振幅の高さに含意結合子は置かない。\(\min\) の剰余の頂は \(+1=\lvert F\rangle\) になってしまう。含意は離散の証明ステータス層（第~\ref{sec:regime}節）に置く。
+すでに高さ上で固定したスカラー演算 \(\neg\)、\(\wedge\)、\(\vee\) で評価する。振幅の高さに含意結合子は置かない。\(\min\) の剰余の頂は \(+1=\lvert F\rangle\) になってしまう。含意は離散の証明ステータス層（第~\ref{sec:regime}節）に置く。
 
 \begin{definition}[帰結]
 \label{def:entail}
@@ -459,21 +492,17 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \(\neg 0=0\) なので、名前フラグメントは否定の固定点を含む。\(\neg\) で閉じていない：\(\neg 1=-1\) は \(\{0,1\}\) を出る。
 \end{theorem}
 
-\leancite{\texttt{negJ\_zero}、\texttt{namedTwo\_not\_closed\_under\_neg}。}
-
 \begin{theorem}[壁は入れ替わる]
 \label{thm:wall-swap}
 \(j\in\{-1,+1\}\) ならば \(\neg j\in\{-1,+1\}\) かつ \(j\neq\neg j\)。
 \end{theorem}
-
-\leancite{\texttt{wallTwo\_neg}、\texttt{wallTwo\_not\_negFixed}。}
 
 壁フラグメントが古典2値の忠実な核である。名前フラグメントはラベルと揃うが、すでに古典ではない。
 
 \section{二値論理が担えない例}
 \label{sec:examples}
 
-これらは意味論の変更であり、ペアノ算術の新しい定理ではない。無条件の FLT / Beal およびゲーデル定理の反証は主張しない。
+これらは意味論の変更であり、ペアノ算術の新しい定理ではない。無条件のフェルマー最終定理・ビール予想およびゲーデル定理の反証は主張しない。
 
 \subsection{否定の固定点}
 \label{sec:ex-fp}
@@ -482,10 +511,6 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \label{thm:ex-fp}
 条件 \(j=\neg j\) は \(j=0\) と同値である。壁フラグメントでは充足不能であり、D4L では \(\lvert T\rangle\) によって一意に実現される（振幅でも実現される）。
 \end{theorem}
-
-\leancite{\texttt{isNegFixed\_iff\_zero}、
-\texttt{not\_exists\_wall\_negFixed}、
-\texttt{exists\_amplitude\_negFixed}。}
 
 古典では \(P\leftrightarrow\neg P\) にモデルがない。D4L はそれを完全な通常–双対バランスに置く。これはゲーデル文ではない。
 
@@ -497,18 +522,12 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \(\mathrm{Bool}\) の上で \(P\) と \(\neg P\) がともに \(\mathtt{true}\) にはなれない。壁の上で \(j\) と \(\neg j\) がともに \(+1\) にはなれない。
 \end{theorem}
 
-\leancite{\texttt{bool\_efq}、\texttt{wall\_not\_both\_pos}。}
-
 \begin{theorem}[D4L は爆発しない]
 \label{thm:d4l-efq}
 \(P\) を原子 \(0\)、\(Q\) を原子 \(1\) とする。このとき
 \(\{P,\neg P\}\not\models_T Q\) かつ
 \(\{P,\neg P\}\not\models_{\lnot F} Q\) である。証人は \(P\) を \(0\)、\(Q\) を \(1\) に送る。第二の証人は \(P\) を \(-\tfrac12\)（内部の \(\lvert B\rangle\)）、\(Q\) を \(1\) に送る。連言 \(j\wedge\neg j\) は常に非反駁である。
 \end{theorem}
-
-\leancite{\texttt{contradict\_not\_entailsT\_atom}、
-\texttt{contradict\_not\_entailsNotF\_atom}、
-\texttt{conj\_neg\_holdsNotF}。}
 
 したがって矛盾した観測の対は、無関係な原子を正の壁へ強制しない。
 
@@ -520,9 +539,6 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 名前フラグメントの上では \(\mathrm{HoldsNotF}\) は \(\mathrm{HoldsT}\) に潰れる。D4L では同じ制約が \(\lvert T\rangle\)、\(\lvert U\rangle\)、\(\lvert B\rangle\) によって実現される。
 \end{theorem}
 
-\leancite{\texttt{namedTwo\_notF\_only\_T}、
-\texttt{exists\_three\_notF\_labels}。}
-
 \subsection{相補性}
 \label{sec:ex-comp}
 
@@ -531,24 +547,17 @@ Lean: \(\texttt{four\_labels\_not\_orthogonal\_pvm}\)。
 \(\mathbb{C}^2\) の部分空間格子は分配的でなく、したがってブール代数ではない。互いに直交する原子は高々二つである。四つの D4L ラベルは PVM ではない。分配的なスカラー結合子はその格子を表示できない。
 \end{theorem}
 
-これらは双対層の既存定理であり、例専用のモジュールは置かない。
-\leancite{\texttt{not\_distributive}、
-\texttt{no\_three\_pairwise\_orthogonal\_lines}、
-\texttt{four\_labels\_not\_orthogonal\_pvm}、
-\texttt{scalar\_lattice\_not\_iso\_qprop}。}
-
 \section{証明ステータス層}
 \label{sec:regime}
 
-DST の証明対象——核補題、本命の bridge、棄却済み診断、bookkeeping の等式——はねじれ配置ではない。離散のステータスを持ち、四つの名前は再利用するが、観測量は \(\Jnorm\) ではない。この担体の上では否定は四ラベルの関数であり、含意は表であって \(\min\) の剰余ではない。
+DST の証明対象——核補題、本命の bridge、棄却済み診断、帳簿上の等式——はねじれ配置ではない。離散のステータスを持ち、四つの名前は再利用するが、観測量は \(\Jnorm\) ではない。この担体の上では否定は四ラベルの関数であり、含意は表であって \(\min\) の剰余ではない。
 
 \begin{definition}[レジーム演算]
 \label{def:regime}
 否定と格子演算は振幅の代表元
 \(\lvert T\rangle\mapsto 0\)、\(\lvert U\rangle\mapsto 1/2\)、
 \(\lvert F\rangle\mapsto 1\)、\(\lvert B\rangle\mapsto -1/2\)
-に従う。とくに \(F\wedge\neg F=B\) である。第二の演算である確立度の交わり \(\texttt{meetR}\) は、二つの対象を \(F<B<U<T\) に沿って梱包する。証明済みの核と未閉鎖の bridge の複合は、なお未閉鎖である：
-\(\texttt{meetR}(T,U)=U\)。
+に従う。とくに \(F\wedge\neg F=B\) である。第二の演算である確立度の交わりは、二つの対象を \(F<B<U<T\) に沿って梱包する。証明済みの核と未閉鎖の bridge の複合は、なお未閉鎖である：\(T\) と \(U\) の交わりは \(U\) である。
 含意は
 \[
 \begin{aligned}
@@ -558,30 +567,23 @@ U\to T&=U,\\
 B\to T&=U
 \end{aligned}
 \]
-である。後ろの二式が要点である：開いた、あるいは両立しないプログラムは定理を確立しない。Belnap FOUR 同型は主張しない。
+である。後ろの二式が要点である：開いた、あるいは両立しないプログラムは定理を確立しない。ベルナップ FOUR 同型は主張しない。
 \end{definition}
 
 ステータス上の指定述語は同じ二つの名前である。\(\mathrm{HoldsT}_R\) はステータス \(T\)、\(\mathrm{HoldsNotF}_R\) はステータス \(\ne F\) である。
+
+加法モーターと乗法振幅は、同じラベル \(\lvert T\rangle\) の別座席に住む。純並進はねじれが消え、真空である。釣り合い質量の配置は真空ではない。因子が可換でないとき、混合積 \(R\cdot T\) を \(\exp(\Omega_{\mathrm{biv}})\) と同一視しない。釣り合い残件類は窓シードを除く：半窓の配置は釣り合い残件ではない。
 
 \section{離散振幅と増幅}
 \label{sec:discrete-dyn}
 
 有限トーラス上で \(4\nmid N\) のとき、鋭い離散上界は厳密であり、許容点は \(\lvert F\rangle\) に飽和しない。\(4\mid N\) のとき両壁が達成される。
 
-純ブーストのスケールは \(\Jnorm\) を \(k^2\) 倍する。同期は不動点である。ラベル \(\lvert U\rangle\) は \(\lvert F\rangle\) へ、または許容錐の外へ追い込まれ得る。錐の外では \(\texttt{classify?}\) は何も返さない。これが共通 no-go の論理的な読みであり、新しい数論ではない。
+純ブーストのスケールは \(\Jnorm\) を \(k^2\) 倍する。同期は不動点である。ラベル \(\lvert U\rangle\) は \(\lvert F\rangle\) へ、または許容錐の外へ追い込まれ得る。錐の外では崩壊は定義されない。これが共通 no-go の論理的な読みであり、新しい数論ではない。
 
-真空は、許容なスケールの不動点である。小さな釣り合い質量の種は \(\lvert T\rangle\) に留まり質量は \(k^2 M\) になるが、許容に残り得る。大きな釣り合い種は錐を出る。その錐外化は符号付き高さの分類器には見えない：\(\Jnorm\) は \(0\) のままなので \(\texttt{classify?}\) はなお \(\lvert T\rangle\) を返す。見えるのは質量と錐の述語である。これが、Beal の釣り合い種 \(\theta=\log 2/m\) が \(m\) 倍しても錐内に残り得る理由である。
+真空は、許容なスケールの不動点である。小さな釣り合い質量の種は \(\lvert T\rangle\) に留まり質量は \(k^2 M\) になるが、許容に残り得る。大きな釣り合い種は錐を出る。その錐外化は符号付き高さの分類器には見えない：\(\Jnorm\) は \(0\) のままなので、四状態のラベルはなお \(\lvert T\rangle\) である。見えるのは質量と錐の述語である。これが、ビール予想の釣り合い種 \(\theta=\log 2/m\) が \(m\) 倍しても錐内に残り得る理由である。
 
-高さと modular 巻数は二つの測定である。実スケール許容と非零巻数は同時には成り立たない。この両立不可能性は観測量の分離であり、一つの観測量の Both 状態ではない。
-
-\leancite{\texttt{DiscreteAmplitude.collapse\_ne\_F\_of\_not\_four\_dvd}、
-\texttt{seedU\_to\_F\_scales\_to\_F}、
-\texttt{seedU\_exits\_unclassified}、
-\texttt{scale\_vacuum\_stays\_vacuum}、
-\texttt{seedBalanced\_stays\_scales\_balanced}、
-\texttt{balancedAmplitude\_exits\_not\_admissible}、
-\texttt{balancedAmplitude\_scale\_classify\_T}、
-\texttt{not\_both\_admissibleScale\_and\_winding}。}
+高さとモジュラー巻数は二つの測定である。実スケール許容と非零巻数は同時には成り立たない。この両立不可能性は観測量の分離であり、一つの観測量の Both 状態ではない。
 
 \subsection{ディオファントス・レジーム}
 \label{sec:ex-regime}
@@ -591,14 +593,9 @@ B\to T&=U
 原子 \(0\) を証明済みの核、原子 \(1\) を診断、原子 \(2\) を本命の未閉鎖 bridge、原子 \(3\) を古典予想とする。名前の二値 \(\{T,F\}\) は未閉鎖の状態 \(U\) をホストできない。壁フラグメント \(\{B,F\}\) は核 \(T\) をホストできない。D4L は核 \(T\)、診断 \(F\)、本命 \(U\)、予想 \(U\) の割り当てを実現する。核だけでは予想を \(T\)-含意しない。窓の \(T\) と ill-posed な NoGo の \(B\) は、予想を \(F\) の外へ強制しない。含意 \(U\to T\) は指定値ではない。
 \end{theorem}
 
-\leancite{\texttt{exists\_three\_layer\_valuation}、
-\texttt{not\_exists\_named\_three\_layer}、
-\texttt{not\_exists\_wall\_core}、
-\texttt{core\_not\_entailsTR\_conjecture}、
-\texttt{window\_nogo\_not\_entailsNotFR\_conjecture}、
-\texttt{impR\_U\_T}。}
+同じ代数はビール残件地図をホストする：閉じた切片（フェルマーおよびダルモン--メレルの位置、および符号 \((n,n,5)\) を含む）は \(T\)、棄却済み診断は \(F\)、帳簿上の等式は \(B\)、未閉鎖の残件と古典予想は \(U\) に座る。閉じた切片は古典ビール予想を \(T\)-含意しない。双軸フェルマー地図も同様に、加法核と実 \(L^p\) 二分法を \(T\)、格下げした単軸モジュラー診断と釣り合い種診断を \(F\)、混合モーター残件と古典フェルマー最終定理を \(U\) に置く。閉じたフェルマー切片は古典フェルマー最終定理を \(T\)-含意しない。
 
-これが、DST が単一の有界や棄却済み診断から七つの古典予想を従わせてはならない理由である。レジーム層はその禁止を記録する。未証明の bridge を証明せず、無条件の FLT / Beal / abc も主張しない。
+これが、DST が単一の有界や棄却済み診断から七つの古典予想を従わせてはならない理由である。レジーム層はその禁止を記録する。未証明の bridge を証明せず、無条件のフェルマー最終定理・ビール予想・abc も主張しない。
 
 \section{自己言及}
 \label{sec:godel}
@@ -609,7 +606,7 @@ B\to T&=U
 \]
 この制約は \(G\) をラベルとして \(\lvert T\rangle\)、\(\lvert U\rangle\)、または \(\lvert B\rangle\) に残す。さらに同期を要求するなら \(\lvert T\rangle\) である。連言は爆発しない（定理~\ref{thm:d4l-efq}）。
 
-これは意味論の変更であり、ゲーデルの定理が古典算術において失敗することの証明ではない。負ねじれセクター上の完全性の話も、許容ローターの読みであって、一次ペアノ算術の内部でのヒルベルト計画の完了ではない。第~\ref{sec:examples}節の Lean 定理が固定された内容であり、本節の読みは新しい不完全性定理ではない。
+これは意味論の変更であり、ゲーデルの定理が古典算術において失敗することの証明ではない。負ねじれセクター上の完全性の話も、許容ローターの読みであって、一次ペアノ算術の内部でのヒルベルト計画の完了ではない。第~\ref{sec:examples}節の定理が固定された内容であり、本節の読みは新しい不完全性定理ではない。
 
 \section{D4L が示すこと・示さないこと}
 \label{sec:claims}
@@ -626,49 +623,23 @@ B\to T&=U
   \item \emph{示す}のは、そのステータス代数への含意（\(U\to T=U\)）と、高さ上の \(\min\) 剰余の拒否である。
   \item \emph{示す}のは、ラベル \(\lvert T\rangle\) を第二の観測量 \(M\) で真空と釣り合い質量に分けることである。第五の名前は置かない。
   \item \emph{示す}のは、\(4\nmid N\) のとき離散の \(\lvert F\rangle\) が禁止されること、および \(k\) 倍増幅をラベル上の部分写像として読むことである。釣り合い質量の錐外化は高さ分類器には見えない。
-  \item \emph{示す}のは、Killing 対が不定であること、および自己重なりが Born 確率ではないことである。
-  \item \emph{示す}のは、Euclid 双対セクターと循環生成子の四元数表の切り出しである。
-  \item \emph{示す}のは、その表の \(\mathbb{C}^2\) 上の表現と、部分空間格子のオーソモジュラー性および非分配性である。
-  \item \emph{示さない}のは、スカラー結合子と \(L(\mathbb{C}^2)\) の交わり・和の同一視、および四ラベルと PVM の同一視である。
-  \item \emph{示さない}のは、\(J\) や Killing 重なりからの Born 則の導出である。
-  \item \emph{示さない}のは、Dirac スピノル \(\mathbb{C}^4\)、位置・運動量演算子、測定問題の解決である。
+  \item \emph{示す}のは、キリング対が不定であること、および自己重なりがボルン確率ではないことである。
+  \item \emph{示す}のは、ユークリッド双対セクターと循環生成子の四元数表の切り出しである。
+  \item \emph{示す}のは、その表の \(\mathbb{C}^2\) 上の表現、任意の双対ラピディティに対する双対ローター行列の \(\mathrm{SU}(2)\) 所属、および閉部分空間格子のオーソモジュラー性と非分配性である。
+  \item \emph{示す}のは、草稿の射影子 \((1\pm i)/2\) と \(P_{\mathrm{spin}}P_R\) の拒否、および可換な平方 \(+1\) 対の積が冪等であることである。その左イデアルの実次元は少なくとも \(2\) である。
+  \item \emph{示す}のは、\(\mathrm{Cl}(3,1)\) のクリフォード関係をディラック・スピノル \(\mathbb{C}^4\) 上で実現することである。これは双対 \(\mathbb{C}^2\) とは別である。
+  \item \emph{示す}のは、レジーム代数上のビールおよびフェルマーの残件地図である。閉じた切片は古典予想を \(T\)-含意しない。
+  \item \emph{示さない}のは、スカラー結合子と \(L(\mathbb{C}^2)\) の交わり・和の同一視、四ラベルと PVM の同一視、および干渉消滅と同軸の同一視である。
+  \item \emph{示さない}のは、\(J\) やキリング重なりからのボルン則の導出である。
+  \item \emph{示さない}のは、ディラック方程式、位置・運動量演算子、測定問題の解決である。
+  \item \emph{示さない}のは、可換左イデアルの既約性、およびそのイデアルの複素次元 \(4\) である。
   \item \emph{示さない}のは、古典算術におけるゲーデルの定理の反証である。
-  \item \emph{示さない}のは、\(T\) の内部分割や質量スケールからの無条件 Beal（および FLT、abc）である。釣り合い質量の種は増幅後も許容に残り得る。
+  \item \emph{示さない}のは、\(T\) の内部分割や質量スケールからの無条件ビール予想（およびフェルマー最終定理、abc）である。釣り合い質量の種は増幅後も許容に残り得る。
   \item \emph{示さない}のは、\([\Omega(p),\Omega(q)]\ne 0\) のとき \(R(p)R(q)\) をねじれ配置へ引き戻すことである。
   \item \emph{示さない}のは、生の \(J\) を \([-1,1]\) の値と同一視することである。その区間は \(\Jnorm\) のものであり、生の天井は \(\Jbound\) である。
 \end{itemize}
 
-{\raggedright
-振幅層の Lean は
-\(\texttt{Amplitude}\)、
-\(\texttt{TruthValue}\)、
-\(\texttt{Connective}\)、
-\(\texttt{Interpretation}\)、
-\(\texttt{Order}\)、
-\(\texttt{Geometric}\)、
-\(\texttt{Formula}\)、
-\(\texttt{Valuation}\)、
-\(\texttt{Consequence}\)、
-\(\texttt{Regime}\)、
-\(\texttt{DiscreteAmplitude}\)、
-\(\texttt{Dynamics}\)、
-\(\texttt{Winding}\)
-である。
-例は \(\texttt{Logic.Example}\) の
-\(\texttt{FixedPoint}\)、
-\(\texttt{Explosion}\)、
-\(\texttt{NotFalse}\)、
-\(\texttt{Regime}\)
-である。相補性は双対層の
-\(\texttt{QuantumLogic}\) /
-\(\texttt{Dictionary}\)
-である。残る双対層は
-\(\texttt{Separation}\)、
-\(\texttt{DualSector}\)、
-\(\texttt{Quaternion}\)、
-\(\texttt{Spinor}\)
-である。
-\par}
+以上の主張は機械検証されている。
 
 \begin{thebibliography}{9}
 \raggedright
