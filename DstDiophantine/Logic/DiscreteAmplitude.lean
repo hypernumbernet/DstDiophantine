@@ -84,6 +84,17 @@ theorem discreteF_collapse (h4 : 4 ∣ N) : (discreteF h4).collapse = .F := by
     simpa [DiscreteAmplitude.measure, AdmissibleClass.toParams, discreteF] using hJ
   exact (classifyOfMem_eq_F_iff habs).mpr hmeas
 
+/-- When `4 ∣ N`, the discrete all-rotation wall realises deepest `B`. -/
+noncomputable def discreteB (h4 : 4 ∣ N) : DiscreteAmplitude N :=
+  ⟨⟨pureEllipticDiscrete N, pureEllipticDiscrete_admissible h4⟩⟩
+
+theorem discreteB_collapse (h4 : 4 ∣ N) : (discreteB h4).collapse = .B := by
+  have hJ := JNormalized_pureEllipticDiscrete h4
+  have habs := (discreteB h4).abs_measure
+  have hmeas : (discreteB h4).measure = -1 := by
+    simpa [DiscreteAmplitude.measure, AdmissibleClass.toParams, discreteB] using hJ
+  exact (classifyOfMem_eq_B_iff habs).mpr ⟨by linarith [hmeas], by linarith [hmeas]⟩
+
 end Logic
 
 end DstDiophantine

@@ -107,6 +107,10 @@ theorem massNormalized_le_one (a : Amplitude) : a.massNormalized ≤ 1 :=
 theorem mass_adjoint (a : Amplitude) : a.adjoint.mass = a.mass :=
   mass_dagger a.params
 
+theorem abs_measure_le_massNormalized (a : Amplitude) :
+    |a.measure| ≤ a.massNormalized :=
+  abs_JNormalized_le_massNormalized a.params
+
 /--
 Vacuum: label `T` with vanishing mass. A predicate on amplitudes, not a
 fifth D4L name. Equivalent to all six rapidities being zero.
@@ -183,6 +187,72 @@ theorem T_splits_vacuum_and_balancedMassive :
   ⟨⟨vacuumAmplitude, vacuumAmplitude_isVacuum.1, vacuumAmplitude_isVacuum⟩,
     ⟨balancedAmplitude, balancedAmplitude_isBalancedMassive.1,
       balancedAmplitude_isBalancedMassive⟩⟩
+
+/-- Axiswise usual–dual equality. Strictly stronger than vanishing height. -/
+def IsAxiswiseBalanced (p : TorsionParams) : Prop :=
+  ∀ a : Fin 3, p.alpha a = p.beta a
+
+/-- Cross-axis cancellation: boost on axis `0`, rotation on axis `1`. -/
+def unbalancedZeroParams : TorsionParams :=
+  ⟨fun a => if a = 0 then 1 else 0, fun a => if a = 1 then 1 else 0⟩
+
+private theorem unbalancedZero_vals :
+    unbalancedZeroParams.alpha 0 = 1 ∧ unbalancedZeroParams.alpha 1 = 0 ∧
+      unbalancedZeroParams.alpha 2 = 0 ∧ unbalancedZeroParams.beta 0 = 0 ∧
+        unbalancedZeroParams.beta 1 = 1 ∧ unbalancedZeroParams.beta 2 = 0 :=
+  ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩
+
+theorem isAdmissibleContinuous_unbalancedZero :
+    IsAdmissibleContinuous unbalancedZeroParams := by
+  intro a
+  have hπ : (1 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_gt_three]
+  have hz : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
+  rcases unbalancedZero_vals with ⟨hα0, hα1, hα2, hβ0, hβ1, hβ2⟩
+  fin_cases a
+  · simp only [Fin.zero_eta]
+    rw [hα0, hβ0]; exact ⟨zero_le_one, le_rfl, by linarith [hπ]⟩
+  · simp only [Fin.mk_one]
+    rw [hα1, hβ1]; exact ⟨le_rfl, zero_le_one, by linarith [hπ]⟩
+  · simp only [Fin.reduceFinMk]
+    rw [hα2, hβ2]; exact ⟨le_rfl, le_rfl, by linarith [hz]⟩
+
+theorem J_unbalancedZero : J unbalancedZeroParams = 0 := by
+  rcases unbalancedZero_vals with ⟨hα0, hα1, hα2, hβ0, hβ1, hβ2⟩
+  rw [J_coef, Fin.sum_univ_three, hα0, hα1, hα2, hβ0, hβ1, hβ2]
+  norm_num
+
+theorem mass_unbalancedZero : mass unbalancedZeroParams = 1 := by
+  rcases unbalancedZero_vals with ⟨hα0, hα1, hα2, hβ0, hβ1, hβ2⟩
+  rw [mass_coef, Fin.sum_univ_three, hα0, hα1, hα2, hβ0, hβ1, hβ2]
+  norm_num
+
+theorem not_axiswiseBalanced_unbalancedZero :
+    ¬ IsAxiswiseBalanced unbalancedZeroParams := by
+  intro h
+  rcases unbalancedZero_vals with ⟨hα0, _, _, hβ0, _, _⟩
+  have h0 := h 0
+  rw [hα0, hβ0] at h0
+  exact one_ne_zero h0
+
+noncomputable def unbalancedAmplitude : Amplitude :=
+  ⟨unbalancedZeroParams, isAdmissibleContinuous_unbalancedZero⟩
+
+theorem unbalancedAmplitude_T : unbalancedAmplitude.collapse = .T :=
+  (Amplitude.measure_eq_zero_iff _).mp <| by
+    simp [Amplitude.measure, unbalancedAmplitude, JNormalized, J_unbalancedZero]
+
+theorem unbalancedAmplitude_massive : 0 < unbalancedAmplitude.mass := by
+  have h : unbalancedAmplitude.mass = 1 := by
+    simp [Amplitude.mass, unbalancedAmplitude, mass_unbalancedZero]
+  rw [h]
+  exact one_pos
+
+/-- Vanishing height is not axiswise balance: a boost on one axis can cancel
+a rotation on another. -/
+theorem T_has_cross_axis_cancellation :
+    ∃ a : Amplitude, a.collapse = .T ∧ 0 < a.mass ∧ ¬ IsAxiswiseBalanced a.params :=
+  ⟨unbalancedAmplitude, unbalancedAmplitude_T, unbalancedAmplitude_massive,
+    not_axiswiseBalanced_unbalancedZero⟩
 
 end Logic
 

@@ -130,6 +130,17 @@ theorem wall_not_both_pos {j : ℝ} (h : IsWallTwo j) :
     ¬ (j = 1 ∧ negJ j = 1) := by
   rcases h with h | h <;> simp [negJ, h] <;> norm_num
 
+/-- The residuum of `min` designates `U → T` as synchrony. -/
+theorem residuumJ_U_T_holdsT : HoldsT (residuumJ (1 / 2 : ℝ) 0) := by
+  rw [HoldsT, residuumJ_U_T]
+
+/-- The residuum of `min` sends `B → T` to the positive wall. -/
+theorem residuumJ_B_T_eq_F :
+    classifyOfMem (residuumJ (-1 / 2 : ℝ) 0)
+      (by simp [residuumJ_B_T]) = .F := by
+  rw [classifyOfMem_eq_F_iff]
+  exact residuumJ_B_T
+
 theorem exists_holdsNotF_label {tv : TruthValue} (hne : tv ≠ .F) :
     ∃ (j : ℝ) (hj : |j| ≤ 1),
       classifyOfMem j hj = tv ∧ HoldsNotF j := by

@@ -3,6 +3,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Birkhoff–von Neumann quantum logic of `DualSpinor`
@@ -178,6 +179,69 @@ theorem no_three_pairwise_orthogonal_lines
     exact le_bot_iff.mp hCle
   rw [hCbot, finrank_bot] at hC
   exact (by decide : ¬ (0 : ℕ) = 1) hC
+
+private theorem inner_e0_e1 : ⟪e0, e1⟫_ℂ = 0 := by
+  simp [e0, e1, EuclideanSpace.inner_single_left]
+
+/-- A complementary pair of rays exists in `ℂ²`. -/
+theorem lineE0_isOrtho_lineE1 : lineE0 ⟂ lineE1 := by
+  intro x hx y hy
+  obtain ⟨a, rfl⟩ := mem_span_singleton.mp hx
+  obtain ⟨b, rfl⟩ := mem_span_singleton.mp hy
+  have h0 : ⟪e1, e0⟫_ℂ = 0 := by
+    rw [inner_eq_zero_symm]
+    exact inner_e0_e1
+  rw [inner_smul_left, inner_smul_right, h0]
+  simp
+
+/-- The one-dimensional subspace through `(1, z)`. -/
+noncomputable def lineOf (z : ℂ) : QProp := ℂ ∙ (e0 + z • e1)
+
+private theorem smul_lineOf_eq (z c : ℂ) :
+    c • (e0 + z • e1) = c • e0 + (c * z) • e1 := by
+  simp [smul_add, smul_smul]
+
+private theorem coord_lineOf (z c : ℂ) :
+    (c • (e0 + z • e1)) 0 = c ∧ (c • (e0 + z • e1)) 1 = c * z := by
+  constructor
+  · rw [smul_lineOf_eq, PiLp.add_apply, (coord_e0 c).1, (coord_e1 (c * z)).1]
+    simp
+  · rw [smul_lineOf_eq, PiLp.add_apply, (coord_e0 c).2, (coord_e1 (c * z)).2]
+    simp
+
+private theorem coord_vec_lineOf (z : ℂ) :
+    (e0 + z • e1) 0 = 1 ∧ (e0 + z • e1) 1 = z := by
+  simpa using coord_lineOf z 1
+
+theorem lineOf_ne_zero (z : ℂ) : e0 + z • e1 ≠ 0 := by
+  intro h
+  have h0 : (e0 + z • e1) 0 = 0 := by simp [h]
+  rw [(coord_vec_lineOf z).1] at h0
+  exact one_ne_zero h0
+
+theorem lineOf_finrank (z : ℂ) : finrank ℂ (lineOf z) = 1 :=
+  finrank_span_singleton (lineOf_ne_zero z)
+
+theorem lineOf_injective {z w : ℂ} (h : lineOf z = lineOf w) : z = w := by
+  have hz : e0 + z • e1 ∈ lineOf w := by
+    rw [← h]
+    exact Submodule.mem_span_singleton_self _
+  obtain ⟨c, hc⟩ := mem_span_singleton.mp hz
+  have h0 := congrArg (fun v : DualSpinor => v 0) hc
+  have h1 := congrArg (fun v : DualSpinor => v 1) hc
+  rw [(coord_vec_lineOf z).1, (coord_lineOf w c).1] at h0
+  rw [(coord_vec_lineOf z).2, (coord_lineOf w c).2] at h1
+  subst h0
+  rw [one_mul] at h1
+  exact h1.symm
+
+/-- The dual Hilbert layer has infinitely many atoms. Four D4L labels cannot
+enumerate them. -/
+theorem infinite_one_dim_subspaces :
+    Infinite {A : QProp // finrank ℂ A = 1} := by
+  refine Infinite.of_injective (fun n : ℕ => ⟨lineOf (n : ℂ), lineOf_finrank n⟩) ?_
+  intro n m h
+  exact Nat.cast_injective (lineOf_injective (congrArg Subtype.val h))
 
 end Logic
 

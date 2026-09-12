@@ -102,6 +102,25 @@ theorem neg_not_a_function_of_TruthValue :
     rw [hL, hR, hF, hU]
     decide
 
+/-- Gödel residuum of `min`, with lattice top `1`. This is *not* D4L implication:
+it sends a boost-dominant height implying synchrony to the designated point
+`0`, and a rotation-dominant height implying synchrony to the wall `1`. -/
+noncomputable def residuumJ (j k : ℝ) : ℝ := if j ≤ k then (1 : ℝ) else k
+
+theorem residuumJ_of_le {j k : ℝ} (h : j ≤ k) : residuumJ j k = 1 := by
+  simp [residuumJ, h]
+
+theorem residuumJ_of_not_le {j k : ℝ} (h : ¬ j ≤ k) : residuumJ j k = k := by
+  simp [residuumJ, h]
+
+/-- Open (boost-dominant) implying synchrony evaluates to synchrony. -/
+theorem residuumJ_U_T : residuumJ (1 / 2 : ℝ) 0 = 0 :=
+  residuumJ_of_not_le (by norm_num)
+
+/-- Rotation-dominant implying synchrony evaluates to the positive wall. -/
+theorem residuumJ_B_T : residuumJ (-1 / 2 : ℝ) 0 = 1 :=
+  residuumJ_of_le (by norm_num)
+
 end Logic
 
 end DstDiophantine

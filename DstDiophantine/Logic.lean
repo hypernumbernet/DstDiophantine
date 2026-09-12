@@ -316,6 +316,44 @@ example :
       (∃ b : Amplitude, b.collapse = .T ∧ b.IsBalancedMassive) :=
   T_splits_vacuum_and_balancedMassive
 
+/-- Regression: height cannot exceed mass. -/
+example (a : Amplitude) : |a.measure| ≤ a.massNormalized :=
+  a.abs_measure_le_massNormalized
+
+/-- Regression: vanishing height is not axiswise balance. -/
+example :
+    ∃ a : Amplitude, a.collapse = .T ∧ 0 < a.mass ∧ ¬ IsAxiswiseBalanced a.params :=
+  T_has_cross_axis_cancellation
+
+/-- Regression: Gödel residuum of `min` designates `U → T` as `T`. -/
+example : HoldsT (residuumJ (1 / 2 : ℝ) 0) :=
+  residuumJ_U_T_holdsT
+
+/-- Regression: Gödel residuum of `min` sends `B → T` to `F`. -/
+example :
+    classifyOfMem (residuumJ (-1 / 2 : ℝ) 0) (by simp [residuumJ_B_T]) = .F :=
+  residuumJ_B_T_eq_F
+
+/-- Regression: regime implication disagrees with the residuum at `U → T` and `B → T`. -/
+example :
+    residuumJ (amplitudeRep .U) (amplitudeRep .T) = 0 ∧ impR .U .T = .U ∧
+      residuumJ (amplitudeRep .B) (amplitudeRep .T) = 1 ∧ impR .B .T = .U :=
+  ⟨residuum_U_T_ne_impR.1, residuum_U_T_ne_impR.2,
+    residuum_B_T_ne_impR.1, residuum_B_T_ne_impR.2⟩
+
+/-- Regression: when `4 ∣ N`, both discrete walls are attained. -/
+example : (discreteF (by decide : 4 ∣ 4)).collapse = .F ∧
+    (discreteB (by decide : 4 ∣ 4)).collapse = .B :=
+  ⟨discreteF_collapse (by decide), discreteB_collapse (by decide)⟩
+
+/-- Regression: complementary rays exist in `ℂ²`. -/
+example : lineE0 ⟂ lineE1 :=
+  lineE0_isOrtho_lineE1
+
+/-- Regression: the dual Hilbert layer has infinitely many atoms. -/
+example : Infinite {A : QProp // Module.finrank ℂ A = 1} :=
+  infinite_one_dim_subspaces
+
 /-- Regression: vacuum stays vacuum under admissible scaling. -/
 example {k : ℕ} (h : Admissible.IsAdmissibleContinuous
     (Amplification.scaleTorsion (k : ℝ) vacuumAmplitude.params)) :
@@ -445,7 +483,7 @@ example (β : DualRapidity) :
 example (β : DualRapidity) :
     dualRotorMat β =
       Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
-        (if h : β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+        (if _h : β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
           else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) :=
   dualRotorMat_rodrigues β
 

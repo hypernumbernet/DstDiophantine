@@ -202,6 +202,87 @@ theorem JNormalized_eq_zero_of_massNormalized_eq_zero {p : TorsionParams}
   unfold JNormalized
   simp [J_eq_zero_of_mass_eq_zero ((massNormalized_eq_zero_iff p).mp h)]
 
+/-- Height cannot exceed mass. Equality holds iff one sector vanishes. -/
+theorem abs_J_le_mass (p : TorsionParams) : |J p| ≤ mass p := by
+  rw [abs_le, J_coef, mass_coef]
+  constructor
+  · have hα : 0 ≤ ∑ a : Fin 3, p.alpha a ^ 2 :=
+      Finset.sum_nonneg fun _ _ => sq_nonneg _
+    have hsum :
+        ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) =
+          (∑ a : Fin 3, p.alpha a ^ 2) + ∑ a : Fin 3, p.beta a ^ 2 := by
+      simp [Finset.sum_add_distrib]
+    have hdiff :
+        ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) =
+          (∑ a : Fin 3, p.alpha a ^ 2) - ∑ a : Fin 3, p.beta a ^ 2 := by
+      simp [Finset.sum_sub_distrib]
+    linarith
+  · have hβ : 0 ≤ ∑ a : Fin 3, p.beta a ^ 2 :=
+      Finset.sum_nonneg fun _ _ => sq_nonneg _
+    have hsum :
+        ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) =
+          (∑ a : Fin 3, p.alpha a ^ 2) + ∑ a : Fin 3, p.beta a ^ 2 := by
+      simp [Finset.sum_add_distrib]
+    have hdiff :
+        ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) =
+          (∑ a : Fin 3, p.alpha a ^ 2) - ∑ a : Fin 3, p.beta a ^ 2 := by
+      simp [Finset.sum_sub_distrib]
+    linarith
+
+theorem abs_J_eq_mass_iff (p : TorsionParams) :
+    |J p| = mass p ↔
+      (∀ a : Fin 3, p.beta a = 0) ∨ (∀ a : Fin 3, p.alpha a = 0) := by
+  have hsum :
+      ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) =
+        (∑ a : Fin 3, p.alpha a ^ 2) + ∑ a : Fin 3, p.beta a ^ 2 := by
+    simp [Finset.sum_add_distrib]
+  have hdiff :
+      ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) =
+        (∑ a : Fin 3, p.alpha a ^ 2) - ∑ a : Fin 3, p.beta a ^ 2 := by
+    simp [Finset.sum_sub_distrib]
+  have hα : 0 ≤ ∑ a : Fin 3, p.alpha a ^ 2 :=
+    Finset.sum_nonneg fun _ _ => sq_nonneg _
+  have hβ : 0 ≤ ∑ a : Fin 3, p.beta a ^ 2 :=
+    Finset.sum_nonneg fun _ _ => sq_nonneg _
+  have hnnα : ∀ a ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ p.alpha a ^ 2 :=
+    fun _ _ => sq_nonneg _
+  have hnnβ : ∀ a ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ p.beta a ^ 2 :=
+    fun _ _ => sq_nonneg _
+  constructor
+  · intro h
+    have hJ : J p = mass p ∨ J p = -mass p := eq_or_eq_neg_of_abs_eq h
+    rw [J_coef, mass_coef] at hJ
+    rcases hJ with hpos | hneg
+    · have : ∑ a : Fin 3, p.beta a ^ 2 = 0 := by linarith
+      left
+      intro a
+      have ha : p.beta a ^ 2 = 0 :=
+        (Finset.sum_eq_zero_iff_of_nonneg hnnβ).mp this a (Finset.mem_univ a)
+      exact sq_eq_zero_iff.mp ha
+    · have : ∑ a : Fin 3, p.alpha a ^ 2 = 0 := by linarith
+      right
+      intro a
+      have ha : p.alpha a ^ 2 = 0 :=
+        (Finset.sum_eq_zero_iff_of_nonneg hnnα).mp this a (Finset.mem_univ a)
+      exact sq_eq_zero_iff.mp ha
+  · intro h
+    rcases h with hβ0 | hα0
+    · have hJ : J p = mass p := by
+        rw [J_coef, mass_coef]
+        simp [hβ0]
+      rw [hJ, abs_eq_self.mpr (mass_nonneg p)]
+    · have hJ : J p = -mass p := by
+        rw [J_coef, mass_coef]
+        simp [hα0]
+      rw [hJ, abs_neg, abs_eq_self.mpr (mass_nonneg p)]
+
+theorem abs_JNormalized_le_massNormalized (p : TorsionParams) :
+    |JNormalized p| ≤ massNormalized p := by
+  unfold JNormalized massNormalized
+  have hcoef : 0 ≤ (8 / (3 * Real.pi ^ 2) : ℝ) := by positivity
+  rw [abs_mul, abs_of_nonneg hcoef]
+  exact mul_le_mul_of_nonneg_left (abs_J_le_mass p) hcoef
+
 /-- Axis-wise factorisation behind the Killing quadratic form. -/
 theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
 

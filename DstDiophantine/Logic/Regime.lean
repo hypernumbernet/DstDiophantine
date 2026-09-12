@@ -1,4 +1,5 @@
 import DstDiophantine.Logic.TruthValue
+import DstDiophantine.Logic.Connective
 import Mathlib.Data.Set.Basic
 
 /-!
@@ -114,6 +115,23 @@ theorem impR_U_T : impR .U .T = .U :=
 
 theorem impR_B_T : impR .B .T = .U :=
   rfl
+
+/-- Amplitude representatives used by `negR` / `conjR`. -/
+noncomputable def amplitudeRep : TruthValue → ℝ
+  | .T => 0
+  | .U => 1 / 2
+  | .F => 1
+  | .B => -1 / 2
+
+/-- The residuum of `min` disagrees with regime implication at `U → T`. -/
+theorem residuum_U_T_ne_impR :
+    residuumJ (amplitudeRep .U) (amplitudeRep .T) = 0 ∧ impR .U .T = .U :=
+  ⟨residuumJ_U_T, rfl⟩
+
+/-- The residuum of `min` disagrees with regime implication at `B → T`. -/
+theorem residuum_B_T_ne_impR :
+    residuumJ (amplitudeRep .B) (amplitudeRep .T) = 1 ∧ impR .B .T = .U :=
+  ⟨residuumJ_B_T, rfl⟩
 
 theorem meetR_T_U : meetR .T .U = .U :=
   rfl
