@@ -216,6 +216,129 @@ theorem weylUpper_eq_lower_implies_zero {ψ φ : DualSpinor}
     · exact φ0
     · exact φ1
 
+/-- Apply a \(4\times 4\) matrix to a Dirac spinor. -/
+def applyDiracMat (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) : DiracSpinor :=
+  WithLp.toLp 2 (M *ᵥ WithLp.ofLp Ψ)
+
+/-- Chirality matrix \(\gamma^5=-i\gamma^0\gamma^1\gamma^2\gamma^3\),
+so that this Weyl representation has \(\gamma^5=\mathrm{diag}(1,1,-1,-1)\). -/
+def diracMat5 : Matrix (Fin 4) (Fin 4) ℂ :=
+  (-I) • (diracMat0 * diracMat1 * diracMat2 * diracMat3)
+
+/-- In this Weyl representation, \(\gamma^5=\mathrm{diag}(1,1,-1,-1)\). -/
+theorem diracMat5_eq :
+    diracMat5 = !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, -1, 0; 0, 0, 0, -1] := by
+  unfold diracMat5 diracMat0 diracMat1 diracMat2 diracMat3
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Matrix.smul_apply, Fin.sum_univ_four, I_mul_I]
+
+theorem diracMat5_sq : diracMat5 * diracMat5 = 1 := by
+  rw [diracMat5_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Fin.sum_univ_four, Matrix.one_apply]
+
+theorem diracMat5_anticomm (μ : Fin 4) :
+    diracMat5 * diracMat μ + diracMat μ * diracMat5 = 0 := by
+  rw [diracMat5_eq]
+  fin_cases μ <;> unfold diracMat diracMat0 diracMat1 diracMat2 diracMat3
+  · ext i j; fin_cases i <;> fin_cases j <;>
+      simp [Matrix.mul_apply, Matrix.add_apply, Fin.sum_univ_four]
+  · ext i j; fin_cases i <;> fin_cases j <;>
+      simp [Matrix.mul_apply, Matrix.add_apply, Fin.sum_univ_four]
+  · ext i j; fin_cases i <;> fin_cases j <;>
+      simp [Matrix.mul_apply, Matrix.add_apply, Fin.sum_univ_four, I_mul_I]
+  · ext i j; fin_cases i <;> fin_cases j <;>
+      simp [Matrix.mul_apply, Matrix.add_apply, Fin.sum_univ_four]
+
+/-- Weyl projector \(P_+=(1+\gamma^5)/2\). -/
+noncomputable def weylProjPlus : Matrix (Fin 4) (Fin 4) ℂ :=
+  (1 / 2 : ℂ) • (1 + diracMat5)
+
+/-- Weyl projector \(P_-=(1-\gamma^5)/2\). -/
+noncomputable def weylProjMinus : Matrix (Fin 4) (Fin 4) ℂ :=
+  (1 / 2 : ℂ) • (1 - diracMat5)
+
+theorem weylProjPlus_eq :
+    weylProjPlus = !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0, 0; 0, 0, 0, 0] := by
+  unfold weylProjPlus
+  rw [diracMat5_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] <;> ring
+
+theorem weylProjMinus_eq :
+    weylProjMinus = !![0, 0, 0, 0; 0, 0, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1] := by
+  unfold weylProjMinus
+  rw [diracMat5_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.sub_apply, Matrix.smul_apply, Matrix.one_apply] <;> ring
+
+theorem weylProjPlus_sq : weylProjPlus * weylProjPlus = weylProjPlus := by
+  rw [weylProjPlus_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Fin.sum_univ_four]
+
+theorem weylProjMinus_sq : weylProjMinus * weylProjMinus = weylProjMinus := by
+  rw [weylProjMinus_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Fin.sum_univ_four]
+
+theorem weylProjPlus_add_minus : weylProjPlus + weylProjMinus = 1 := by
+  rw [weylProjPlus_eq, weylProjMinus_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.add_apply, Matrix.one_apply]
+
+theorem weylProjPlus_mul_minus : weylProjPlus * weylProjMinus = 0 := by
+  rw [weylProjPlus_eq, weylProjMinus_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Fin.sum_univ_four]
+
+/-- Upper Weyl image is the \(+1\) eigenspace of \(\gamma^5\). -/
+theorem applyDiracMat5_weylUpper (ψ : DualSpinor) :
+    applyDiracMat diracMat5 (weylUpper ψ) = weylUpper ψ := by
+  rw [diracMat5_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylUpper, Matrix.mulVec, Fin.sum_univ_four]
+
+/-- Lower Weyl image is the \(-1\) eigenspace of \(\gamma^5\). -/
+theorem applyDiracMat5_weylLower (ψ : DualSpinor) :
+    applyDiracMat diracMat5 (weylLower ψ) = -weylLower ψ := by
+  rw [diracMat5_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylLower, Matrix.mulVec, Fin.sum_univ_four,
+    PiLp.neg_apply]
+
+theorem applyWeylProjPlus_weylUpper (ψ : DualSpinor) :
+    applyDiracMat weylProjPlus (weylUpper ψ) = weylUpper ψ := by
+  rw [weylProjPlus_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylUpper, Matrix.mulVec, Fin.sum_univ_four]
+
+theorem applyWeylProjMinus_weylLower (ψ : DualSpinor) :
+    applyDiracMat weylProjMinus (weylLower ψ) = weylLower ψ := by
+  rw [weylProjMinus_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylLower, Matrix.mulVec, Fin.sum_univ_four]
+
+theorem applyWeylProjPlus_weylLower (ψ : DualSpinor) :
+    applyDiracMat weylProjPlus (weylLower ψ) = 0 := by
+  rw [weylProjPlus_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylLower, Matrix.mulVec, Fin.sum_univ_four]
+
+theorem applyWeylProjMinus_weylUpper (ψ : DualSpinor) :
+    applyDiracMat weylProjMinus (weylUpper ψ) = 0 := by
+  rw [weylProjMinus_eq]
+  ext i
+  fin_cases i <;> simp [applyDiracMat, weylUpper, Matrix.mulVec, Fin.sum_univ_four]
+
 /-- Real dimension of the Dirac spinor matches the commuting left ideal. -/
 theorem diracSpinor_finrank_real : Module.finrank ℝ DiracSpinor = 8 := by
   have h := Module.finrank_mul_finrank ℝ ℂ DiracSpinor

@@ -454,10 +454,41 @@ collapses to the same Rodrigues formula, so the dual-sector exponential
 and the matrix rotor agree on every pure dual rapidity.
 \end{theorem}
 
+The usual sector is the twin, with opposite signature. Distinct
+hyperbolic generators anticommute and each squares to \(+1\), so the
+combination \(\Gamma^+(\alpha)=\sum_a\alpha_a B^+_a\) satisfies
+\(\Gamma^+(\alpha)^2=\lVert\alpha\rVert^2\). The Banach exponential on a
+pure usual rapidity is therefore the hyperbolic Rodrigues formula
+\[
+\exp\bigl(\Omega(p_\alpha)\bigr)
+=\cosh(\lVert\alpha\rVert/2)\,I
++\sinh(\lVert\alpha\rVert/2)\,U^+(\alpha),
+\]
+and on axis \(0\) this is
+\(\cosh(\theta/2)\,I+\sinh(\theta/2)\,B^+_0\). Representing the same
+generators by Pauli matrices rather than \(-i\sigma_a\) sends the usual
+rotor to
+\[
+V(\alpha)=\exp(\alpha\cdot\sigma/2).
+\]
+For every usual rapidity, \(V(\alpha)\) is Hermitian of determinant
+\(1\), and the matrix exponential agrees with the Banach exponential on
+every pure usual configuration. A nonzero boost is not unitary: the
+usual rotor is not an element of \(\mathrm{SU}(2)\). The set of
+Hermitian determinant-\(1\) matrices is not claimed to be a group under
+multiplication.
+
+This is the kinematics of the positive wall. Height equals mass if and
+only if one sector vanishes; the usual exponential saturates
+\(\lvert F\rangle\) as the dual exponential saturates deepest
+\(\lvert B\rangle\).
+
 A general identification of the Banach exponential in \(G(3,1,1)\) with
 this matrix exponential for \emph{mixed} usual/dual or translational
 generators is not claimed; that would require control of the
-Baker--Campbell--Hausdorff formula beyond the pure dual sector.
+Baker--Campbell--Hausdorff formula beyond a single pure sector. The
+product of a usual boost with a dual rotation is not identified with an
+\(\mathrm{SL}(2,\mathbb{C})\) factorisation.
 
 Because \(\dim_{\mathbb{C}}\mathbb{C}^2=2\), a projective measurement
 has at most two orthogonal outcomes. A complementary pair of rays does
@@ -531,10 +562,20 @@ Clifford relations are realised by matrices in \(M_4(\mathbb{C})\)
 acting on a Dirac spinor space \(\mathbb{C}^4\). That space has complex
 dimension four, hence is not the dual spinor \(\mathbb{C}^2\); as real
 vector spaces one has a Weyl splitting
-\(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\). The splitting is
-a dictionary, not an identification of the dual-sector kinematics with
-a chiral Dirac component. The Dirac equation, a mass term, and
-covariance under the full rotor group are not derived here.
+\(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\). The algebraic
+reason for the split is chirality. With
+\(\gamma^5=-i\gamma^0\gamma^1\gamma^2\gamma^3\) one has
+\((\gamma^5)^2=I\) and \(\{\gamma^5,\gamma^\mu\}=0\). The Weyl
+projectors
+\[
+P_\pm=\frac{1\pm\gamma^5}{2}
+\]
+are complementary idempotents. The upper Weyl block is the
+\(+1\) eigenspace of \(\gamma^5\); the lower block is the \(-1\)
+eigenspace. The splitting is a dictionary, not an identification of the
+dual-sector kinematics with a chiral Dirac component. The Dirac
+equation, a mass term, and covariance under the full rotor group are
+not derived here.
 
 \subsection{Internal dictionary}
 \label{sec:dict}
@@ -547,6 +588,7 @@ The two layers share a geometry. They do not share operations.
 Amplitude layer & Dual Hilbert layer \\
 \midrule
 pure dual amplitude & \(\beta\in\mathbb{R}^3\) and \(U(\beta)\in\mathrm{SU}(2)\) \\
+pure usual amplitude & \(\alpha\in\mathbb{R}^3\) and Hermitian \(\det=1\) boost \(V(\alpha)\) \\
 usual--dual swap & leaves the dual sector; not a Hilbert adjoint \\
 Killing overlap & distinct from the spinor inner product \\
 vanishing interference on one axis & commuting generators (necessary only) \\
@@ -819,7 +861,11 @@ not a Born probability; the dual sector yields a Euclidean
 three-space, a quaternion table, and an \(\mathrm{SU}(2)\) rotor on
 \(\mathbb{C}^2\) whose closed-subspace lattice is orthomodular and
 non-distributive, with infinitely many atoms and a complementary pair
-of rays but not four.
+of rays but not four. The usual sector is the twin: hyperbolic
+Rodrigues, a Hermitian determinant-\(1\) matrix rotor that is not
+unitary for a nonzero boost. Chirality \(\gamma^5\) squares to the
+identity, anticommutes with the Dirac matrices, and splits
+\(\mathbb{C}^4\) by complementary Weyl projectors.
 
 Two designated predicates and two two-valued fragments turn that
 picture into a consequence relation. The relation hosts a unique
@@ -843,7 +889,8 @@ common single axis, or raw \(J\) with a value in \([-1,1]\). It does
 not derive the Born rule, the Dirac equation, or a solution of the
 measurement problem. It does not claim irreducibility of the commuting
 left ideal, nor identify the Banach exponential with the matrix
-exponential beyond the pure dual sector. It does not refute G\"odel's
+exponential beyond a single pure sector, nor factor mixed usual/dual
+rotors through \(\mathrm{SL}(2,\mathbb{C})\). It does not refute G\"odel's
 theorems in classical arithmetic, and it does not claim unconditional
 Beal, FLT, or abc.
 

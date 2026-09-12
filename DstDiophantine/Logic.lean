@@ -24,6 +24,8 @@ import DstDiophantine.Logic.Quantum.DualSector
 import DstDiophantine.Logic.Quantum.Quaternion
 import DstDiophantine.Logic.Quantum.Spinor
 import DstDiophantine.Logic.Quantum.DualRodrigues
+import DstDiophantine.Logic.Quantum.UsualRodrigues
+import DstDiophantine.Logic.Quantum.UsualRotor
 import DstDiophantine.Logic.Quantum.QuantumLogic
 import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
@@ -64,7 +66,8 @@ and `DstDiophantine.CGA`).
 * `Logic.Order` — height and information preorders (not Belnap FOUR)
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
-  `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation)
+  `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation,
+  usual-sector hyperbolic Rodrigues, Weyl chirality)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -487,11 +490,64 @@ example (β : DualRapidity) :
           else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) :=
   dualRotorMat_rodrigues β
 
+/-- Regression: usual-sector PGA exponential is the hyperbolic Rodrigues formula. -/
+example (α : UsualRapidity) :
+    Motor.rotorTorsion (ofUsual α) =
+      Real.cosh (‖α‖ / 2) • (1 : PGA) +
+        (if h : α = 0 then (0 : PGA)
+          else Real.sinh (‖α‖ / 2) • hyperbolicUnit α h) :=
+  rotorTorsion_ofUsual α
+
+/-- Regression: axis-0 usual rotor is \(\cosh(\theta/2)I+\sinh(\theta/2)B^+_0\). -/
+example (θ : ℝ) :
+    Motor.rotorTorsion (ofUsual (EuclideanSpace.single 0 θ)) =
+      Real.cosh (θ / 2) • (1 : PGA) + Real.sinh (θ / 2) • Generators.hyperbolic 0 :=
+  rotorTorsion_ofUsual_axis0 θ
+
+/-- Regression: usual matrix rotor is Hermitian of determinant 1. -/
+example (α : UsualRapidity) :
+    (usualRotorMat α).IsHermitian ∧ (usualRotorMat α).det = 1 :=
+  ⟨usualRotorMat_isHermitian α, usualRotorMat_det α⟩
+
+/-- Regression: a nonzero usual boost is not unitary. -/
+example :
+    (usualRotorMat (EuclideanSpace.single 0 (2 : ℝ))).conjTranspose *
+      usualRotorMat (EuclideanSpace.single 0 (2 : ℝ)) ≠ 1 :=
+  usualRotorMat_axis0_not_unitary
+
+/-- Regression: matrix usual rotor is the hyperbolic Rodrigues formula along α. -/
+example (α : UsualRapidity) :
+    usualRotorMat α =
+      Real.cosh (‖α‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (if _h : α = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+          else Real.sinh (‖α‖ / 2) • pauliComb (fun a => α a / ‖α‖)) :=
+  usualRotorMat_rodrigues α
+
 /-- Regression: every Dirac spinor decomposes into Weyl blocks. -/
 example (Ψ : DiracSpinor) :
     weylUpper (WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]) +
       weylLower (WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]) = Ψ :=
   weyl_decompose Ψ
+
+/-- Regression: \(\gamma^5\) squares to the identity. -/
+example : diracMat5 * diracMat5 = 1 :=
+  diracMat5_sq
+
+/-- Regression: Weyl projectors are complementary idempotents. -/
+example : weylProjPlus * weylProjPlus = weylProjPlus ∧
+    weylProjMinus * weylProjMinus = weylProjMinus ∧
+      weylProjPlus + weylProjMinus = 1 :=
+  ⟨weylProjPlus_sq, weylProjMinus_sq, weylProjPlus_add_minus⟩
+
+/-- Regression: upper Weyl block is the \(+1\) eigenspace of \(\gamma^5\). -/
+example (ψ : DualSpinor) :
+    applyDiracMat diracMat5 (weylUpper ψ) = weylUpper ψ :=
+  applyDiracMat5_weylUpper ψ
+
+/-- Regression: lower Weyl block is the \(-1\) eigenspace of \(\gamma^5\). -/
+example (ψ : DualSpinor) :
+    applyDiracMat diracMat5 (weylLower ψ) = -weylLower ψ :=
+  applyDiracMat5_weylLower ψ
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
