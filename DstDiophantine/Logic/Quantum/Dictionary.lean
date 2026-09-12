@@ -28,6 +28,15 @@ noncomputable def Amplitude.dualMat (a : Amplitude) (h : IsDualSector a.params) 
     Matrix (Fin 2) (Fin 2) ℂ :=
   dualRotorMat (a.dualRapidity h)
 
+/-- Dual-sector amplitudes yield \(\mathrm{SU}(2)\) matrix rotors. -/
+theorem Amplitude.dualMat_unitary (a : Amplitude) (h : IsDualSector a.params) :
+    (a.dualMat h).conjTranspose * a.dualMat h = 1 :=
+  dualRotorMat_unitary (a.dualRapidity h)
+
+theorem Amplitude.dualMat_det (a : Amplitude) (h : IsDualSector a.params) :
+    (a.dualMat h).det = 1 :=
+  dualRotorMat_det (a.dualRapidity h)
+
 /-- Usual–dual swap sends a dual-sector configuration out of the dual sector
 whenever the dual rapidity is nonzero. It is not the Hilbert-space adjoint. -/
 theorem dagger_leaves_dual_sector {p : TorsionParams}

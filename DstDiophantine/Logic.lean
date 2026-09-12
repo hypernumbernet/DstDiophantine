@@ -23,12 +23,14 @@ import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Quantum.DualSector
 import DstDiophantine.Logic.Quantum.Quaternion
 import DstDiophantine.Logic.Quantum.Spinor
+import DstDiophantine.Logic.Quantum.DualRodrigues
 import DstDiophantine.Logic.Quantum.QuantumLogic
 import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
 import DstDiophantine.Logic.Quantum.StringSpectrum
 import DstDiophantine.Logic.Quantum.MinimalIdeal
 import DstDiophantine.Logic.Quantum.CompositeProjector
+import DstDiophantine.Logic.Quantum.LeftIdealDim
 import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.LevelMatch
@@ -423,9 +425,35 @@ example (μ ν : Fin 4) :
 example : Module.finrank ℂ DualSpinor ≠ Module.finrank ℂ DiracSpinor :=
   dualSpinor_ne_diracSpinor
 
-/-- Regression: commuting left ideal has real dimension at least two. -/
-example : 2 ≤ Module.finrank ℝ (leftIdealSub commutingSpinorIdem) :=
-  two_le_finrank_leftIdeal_commuting
+/-- Regression: commuting left ideal has real dimension exactly eight. -/
+example : Module.finrank ℝ (leftIdealSub commutingSpinorIdem) = 8 :=
+  finrank_leftIdeal_commuting
+
+/-- Regression: Dirac spinor has real dimension eight (matches the left ideal). -/
+example : Module.finrank ℝ DiracSpinor = 8 :=
+  diracSpinor_finrank_real
+
+/-- Regression: dual-sector PGA exponential is the Rodrigues formula. -/
+example (β : DualRapidity) :
+    Motor.rotorTorsion (ofDual β) =
+      Real.cos (‖β‖ / 2) • (1 : PGA) +
+        (if h : β = 0 then (0 : PGA)
+          else Real.sin (‖β‖ / 2) • cyclicUnit β h) :=
+  rotorTorsion_ofDual β
+
+/-- Regression: matrix dual rotor is the Rodrigues formula along β. -/
+example (β : DualRapidity) :
+    dualRotorMat β =
+      Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (if h : β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+          else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) :=
+  dualRotorMat_rodrigues β
+
+/-- Regression: every Dirac spinor decomposes into Weyl blocks. -/
+example (Ψ : DiracSpinor) :
+    weylUpper (WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]) +
+      weylLower (WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]) = Ψ :=
+  weyl_decompose Ψ
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

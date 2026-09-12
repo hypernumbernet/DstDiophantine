@@ -2,6 +2,8 @@ import DstDiophantine.Logic.Quantum.Spinor
 import DstDiophantine.Logic.Quantum.Dirac
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Dirac spinor \(\mathbb{C}^4\) as a matrix representation of \(\mathrm{Cl}(3,1)\)
@@ -171,6 +173,14 @@ theorem weylUpper_injective : Function.Injective weylUpper := by
   · simpa [weylUpper] using congrFun hvec 0
   · simpa [weylUpper] using congrFun hvec 1
 
+theorem weylLower_injective : Function.Injective weylLower := by
+  intro ψ φ h
+  have hvec := WithLp.toLp_injective (p := 2) h
+  ext i
+  fin_cases i
+  · simpa [weylLower] using congrFun hvec 2
+  · simpa [weylLower] using congrFun hvec 3
+
 /-- The two Weyl embeddings land in complementary coordinate subspaces. -/
 theorem weylUpper_add_lower (ψ φ : DualSpinor) :
     weylUpper ψ + weylLower φ =
@@ -178,6 +188,43 @@ theorem weylUpper_add_lower (ψ φ : DualSpinor) :
         WithLp.ofLp φ 0, WithLp.ofLp φ 1] := by
   ext i
   fin_cases i <;> simp [weylUpper, weylLower, PiLp.add_apply]
+
+/-- Every Dirac spinor is the sum of its upper and lower Weyl blocks. -/
+theorem weyl_decompose (Ψ : DiracSpinor) :
+    weylUpper (WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]) +
+      weylLower (WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]) = Ψ := by
+  rw [weylUpper_add_lower]
+  ext i
+  fin_cases i <;> simp
+
+/-- Upper and lower Weyl images meet only at zero. -/
+theorem weylUpper_eq_lower_implies_zero {ψ φ : DualSpinor}
+    (h : weylUpper ψ = weylLower φ) : ψ = 0 ∧ φ = 0 := by
+  have h0 : (weylUpper ψ) 0 = (weylLower φ) 0 := congrArg (fun v => v 0) h
+  have h1 : (weylUpper ψ) 1 = (weylLower φ) 1 := congrArg (fun v => v 1) h
+  have h2 : (weylUpper ψ) 2 = (weylLower φ) 2 := congrArg (fun v => v 2) h
+  have h3 : (weylUpper ψ) 3 = (weylLower φ) 3 := congrArg (fun v => v 3) h
+  have ψ0 : WithLp.ofLp ψ 0 = 0 := by simpa [weylUpper, weylLower] using h0
+  have ψ1 : WithLp.ofLp ψ 1 = 0 := by simpa [weylUpper, weylLower] using h1
+  have φ0 : WithLp.ofLp φ 0 = 0 := by simpa [weylUpper, weylLower] using h2.symm
+  have φ1 : WithLp.ofLp φ 1 = 0 := by simpa [weylUpper, weylLower] using h3.symm
+  refine ⟨?_, ?_⟩
+  · ext i; fin_cases i
+    · exact ψ0
+    · exact ψ1
+  · ext i; fin_cases i
+    · exact φ0
+    · exact φ1
+
+/-- Real dimension of the Dirac spinor matches the commuting left ideal. -/
+theorem diracSpinor_finrank_real : Module.finrank ℝ DiracSpinor = 8 := by
+  have h := Module.finrank_mul_finrank ℝ ℂ DiracSpinor
+  have hℂ : Module.finrank ℝ ℂ = 2 := Complex.finrank_real_complex
+  have h4 : Module.finrank ℂ DiracSpinor = 4 := diracSpinor_finrank
+  calc Module.finrank ℝ DiracSpinor
+      = Module.finrank ℝ ℂ * Module.finrank ℂ DiracSpinor := h.symm
+    _ = 2 * 4 := by rw [hℂ, h4]
+    _ = 8 := by norm_num
 
 end Logic
 

@@ -103,17 +103,21 @@ theorem pauliX_mul_pauliY : pauliX * pauliY = I • pauliZ := by
   fin_cases i <;> fin_cases j <;>
     simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
 
-theorem cyclicRep_zero_mul_one : cyclicRep 0 * cyclicRep 1 = cyclicRep 2 := by
-  unfold cyclicRep pauli
-  have hσ : pauliX * pauliY = I • pauliZ := pauliX_mul_pauliY
-  calc (-I) • pauliX * ((-I) • pauliY)
-      = ((-I) * (-I)) • (pauliX * pauliY) := by
-        simp [smul_smul]
-    _ = (-1 : ℂ) • (I • pauliZ) := by
-        have : (-I) * (-I) = (-1 : ℂ) := by simp [neg_mul, mul_neg, I_mul_I]
-        rw [this, hσ]
-    _ = (-I) • pauliZ := by
-        simp [smul_smul]
+private theorem cyclicRep_of_pauli (a b c : Fin 3)
+    {σa σb σc : Matrix (Fin 2) (Fin 2) ℂ}
+    (ha : pauli a = σa) (hb : pauli b = σb) (hc : pauli c = σc)
+    (hσ : σa * σb = I • σc) :
+    cyclicRep a * cyclicRep b = cyclicRep c := by
+  unfold cyclicRep
+  rw [ha, hb, hc]
+  have hI : (-I) * (-I) = (-1 : ℂ) := by simp [neg_mul, mul_neg, I_mul_I]
+  calc (-I) • σa * ((-I) • σb)
+      = ((-I) * (-I)) • (σa * σb) := by simp [smul_smul]
+    _ = (-1 : ℂ) • (I • σc) := by rw [hI, hσ]
+    _ = (-I) • σc := by simp [smul_smul]
+
+theorem cyclicRep_zero_mul_one : cyclicRep 0 * cyclicRep 1 = cyclicRep 2 :=
+  cyclicRep_of_pauli 0 1 2 rfl rfl rfl pauliX_mul_pauliY
 
 /-- Apply a `2×2` matrix to a dual spinor. -/
 def applyMat (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) : DualSpinor :=
@@ -451,6 +455,35 @@ theorem pauliY_mul_pauliX : pauliY * pauliX = -I • pauliZ := by
   ext i j; fin_cases i <;> fin_cases j <;>
     simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
 
+/-- Quaternion table for `-iσ`: \(IJ=K\) and cyclic permutations. -/
+theorem cyclicRep_one_mul_two : cyclicRep 1 * cyclicRep 2 = cyclicRep 0 :=
+  cyclicRep_of_pauli 1 2 0 rfl rfl rfl pauliY_mul_pauliZ
+
+theorem cyclicRep_two_mul_zero : cyclicRep 2 * cyclicRep 0 = cyclicRep 1 :=
+  cyclicRep_of_pauli 2 0 1 rfl rfl rfl pauliZ_mul_pauliX
+
+private theorem cyclicRep_of_pauli_neg (a b c : Fin 3)
+    {σa σb σc : Matrix (Fin 2) (Fin 2) ℂ}
+    (ha : pauli a = σa) (hb : pauli b = σb) (hc : pauli c = σc)
+    (hσ : σa * σb = -I • σc) :
+    cyclicRep a * cyclicRep b = -cyclicRep c := by
+  unfold cyclicRep
+  rw [ha, hb, hc]
+  have hI : (-I) * (-I) = (-1 : ℂ) := by simp [neg_mul, mul_neg, I_mul_I]
+  calc (-I) • σa * ((-I) • σb)
+      = ((-I) * (-I)) • (σa * σb) := by simp [smul_smul]
+    _ = (-1 : ℂ) • ((-I) • σc) := by rw [hI, hσ]
+    _ = -((-I) • σc) := by simp [smul_smul, neg_smul]
+
+theorem cyclicRep_one_mul_zero : cyclicRep 1 * cyclicRep 0 = -cyclicRep 2 :=
+  cyclicRep_of_pauli_neg 1 0 2 rfl rfl rfl pauliY_mul_pauliX
+
+theorem cyclicRep_two_mul_one : cyclicRep 2 * cyclicRep 1 = -cyclicRep 0 :=
+  cyclicRep_of_pauli_neg 2 1 0 rfl rfl rfl pauliZ_mul_pauliY
+
+theorem cyclicRep_zero_mul_two : cyclicRep 0 * cyclicRep 2 = -cyclicRep 1 :=
+  cyclicRep_of_pauli_neg 0 2 1 rfl rfl rfl pauliX_mul_pauliZ
+
 /-- \((\vec n\cdot\vec\sigma)^2 = \|\vec n\|^2 I\). -/
 theorem pauli_dot_sq (n : Fin 3 → ℝ) :
     (∑ a : Fin 3, (n a : ℂ) • pauli a) * (∑ a : Fin 3, (n a : ℂ) • pauli a) =
@@ -476,6 +509,59 @@ theorem cyclicRep_dot_sq (n : Fin 3 → ℝ) :
   ext i j
   simp [Matrix.neg_apply, Matrix.smul_apply]
   ring
+
+/-- Matrix cyclic combination \(\rho(\Gamma(n))\). -/
+noncomputable def cyclicRepComb (n : Fin 3 → ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
+  ∑ a : Fin 3, (n a : ℂ) • cyclicRep a
+
+private theorem dualRapidity_norm_sq (β : DualRapidity) :
+    ‖β‖ ^ 2 = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
+  have h1 := (real_inner_self_eq_norm_sq (F := DualRapidity) β).symm
+  have h2 : inner ℝ β β = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
+    simp [inner, Fin.sum_univ_three, sq]
+  exact h1.trans h2
+
+private theorem dualRotorGen_of_unit {β : DualRapidity} (h : β ≠ 0) :
+    dualRotorGen β =
+      (‖β‖ / 2 : ℝ) • cyclicRepComb (fun a => β a / ‖β‖) := by
+  have hr : ‖β‖ ≠ 0 := norm_ne_zero_iff.mpr h
+  unfold dualRotorGen cyclicRepComb
+  simp only [Fin.sum_univ_three, smul_add]
+  have hterm (v : ℝ) (G : Matrix (Fin 2) (Fin 2) ℂ) :
+      (v / 2 : ℂ) • G = (‖β‖ / 2 : ℝ) • ((v / ‖β‖ : ℂ) • G) := by
+    ext i j
+    simp [Matrix.smul_apply]
+    field_simp [hr]
+  have hcast (v : ℝ) : (v / ‖β‖ : ℂ) = ((v / ‖β‖ : ℝ) : ℂ) := by
+    simp [Complex.ofReal_div]
+  rw [hterm (β 0), hterm (β 1), hterm (β 2), hcast (β 0), hcast (β 1), hcast (β 2)]
+
+private theorem cyclicRepComb_unit_sq {β : DualRapidity} (h : β ≠ 0) :
+    cyclicRepComb (fun a => β a / ‖β‖) * cyclicRepComb (fun a => β a / ‖β‖) = -1 := by
+  have hr : ‖β‖ ≠ 0 := norm_ne_zero_iff.mpr h
+  have hn : ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2 + (β 2 / ‖β‖) ^ 2 : ℝ) = 1 := by
+    have hdiv :
+        (β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2 + (β 2 / ‖β‖) ^ 2 =
+          ((β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2) / ‖β‖ ^ 2 := by
+      field_simp [hr]
+    rw [hdiv, ← dualRapidity_norm_sq, div_self (pow_ne_zero 2 hr)]
+  have h := cyclicRep_dot_sq (fun a => β a / ‖β‖)
+  have hnC : ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2 + (β 2 / ‖β‖) ^ 2 : ℂ) = 1 :=
+    mod_cast hn
+  simpa [cyclicRepComb, hnC, one_smul] using h
+
+/-- Dual rotor matrix is the Rodrigues formula along \(\beta\). -/
+theorem dualRotorMat_rodrigues (β : DualRapidity) :
+    dualRotorMat β =
+      Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (if h : β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+          else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) := by
+  by_cases h : β = 0
+  · subst h
+    simp [dualRotorMat, Real.cos_zero]
+  · rw [dualRotorMat_eq_exp_gen, dualRotorGen_of_unit h]
+    simp [h]
+    exact exp_mat_of_sq_neg_one (cyclicRepComb_unit_sq h) (‖β‖ / 2)
 
 /-- Three-axis dual rotor has determinant `1`. -/
 theorem dualRotorMat_det (β : DualRapidity) :

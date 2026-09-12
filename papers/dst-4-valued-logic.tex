@@ -32,72 +32,120 @@ and Dual Hilbert Space}
 \maketitle
 
 \begin{abstract}
-We fix Dual Spacetime 4-Valued Logic (D4L) as the logic of Dual Spacetime
-Theory. A proposition is an admissible torsion configuration, equivalently
-its PGA bivector \(\Omega\) and rotor \(R=\exp\Omega\). Measurement is the
-normalised height \(\Jnorm\in[-1,1]\); collapse yields four labels
-\(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\).
-Scalar connectives are \(\min/\max/-\). Commutative overlap is the
-parameter Killing form; non-commutative interference is the geometric
-commutator of torsion bivectors. Two preorders on \([-1,1]\) separate
-height from saturation. The dual sector carries a Hilbert space \(\mathbb{C}^2\): cyclic
-generators obey the quaternion table, the flipped dual pairing is
-Euclidean on \(\mathbb{R}^3\), and \(-i\sigma_a\) represents those
-generators. For every dual rapidity the associated matrix rotor lies in
-\(\mathrm{SU}(2)\). The closed-subspace lattice of \(\mathbb{C}^2\) is
-orthomodular and non-distributive. The Clifford algebra \(\mathrm{Cl}(3,1)\)
-acts on a Dirac spinor \(\mathbb{C}^4\) by matrices satisfying
-\(\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}\); this representation is not
-identified with the dual \(\mathbb{C}^2\). Amplitude geometry and the
-Hilbert layer are two layers of one logic, related by an internal dictionary;
-their operations are not identified. In particular the Killing form is
-indefinite, self-overlap is not a Born probability, and the four labels
-are not a PVM of \(\mathbb{C}^2\). Theorems below are machine-checked.
+Classical two-valued logic is the logic of a decided world: a
+proposition is true or false, and a contradiction entails everything.
+Dual Spacetime Theory is not a theory of decided worlds. Every massive
+configuration is a pair of frames, usual and dual, and the invariant of
+that pair is a single signed height \(\Jnorm\in[-1,1]\). Dual Spacetime
+4-Valued Logic (D4L) is the logic of that height.
+
+A proposition is an admissible torsion configuration. Measurement reads
+\(\Jnorm\); the four names
+\(\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\)
+are the sign and the saturation of the same number, not an external
+algebra of labels. Negation is the usual--dual swap of the geometry.
+Conjunction and disjunction are \(\min\) and \(\max\) on the height.
+A configuration and its swap cannot both sit at the positive wall, so
+contradiction does not explode.
+
+The dual sector of the same geometry carries a Hilbert space
+\(\mathbb{C}^2\). Amplitude operations and Hilbert operations belong to
+one logic, related by an internal dictionary, but they are not
+identified: the Killing form is indefinite, self-overlap is not a Born
+probability, and the four labels are not a PVM of \(\mathbb{C}^2\).
+Two designated predicates---synchrony and non-refutation---turn the
+height into a consequence relation. Two-valued restrictions of the
+interval fail to host the situations that relation is built to record.
+The statements of this paper are machine-checked.
 \end{abstract}
 
-\section{Position}
+\section{Introduction}
 \label{sec:position}
 
-Dual Spacetime Theory encodes every massive configuration by six
-rapidities \((\alpha_a,\beta_a)_{a=1,2,3}\): a usual-sector boost and a
-dual-sector rotation on each spatial axis \cite{DST2025,Diophantine2026}.
-The already-proved invariant of that pair is a signed height. D4L is the
-logic of that geometry, in two layers.
+Two-valued logic is the natural language of a fact that has already
+been decided. A proposition is true or it is false. If it is both, then
+every other proposition follows: that is the explosion principle, and
+it is why classical consequence cannot tolerate a live contradiction.
 
-The amplitude layer takes admissible configurations as propositions,
-\(\Jnorm\) as the observable, and \(\min/\max/-\) as scalar connectives.
-Killing overlap and the bivector commutator belong here: they act on
-torsion parameters already present in the PGA core.
+Dual Spacetime Theory does not describe decided facts. It describes a
+pair of Minkowski frames carried by every massive particle---the usual
+frame, in which we measure, and a dual frame, time-reversed relative to
+the first \cite{DST2025,Diophantine2026}. On each of the three spatial
+axes the pair is encoded by two rapidities \((\alpha_a,\beta_a)\): a
+boost in the usual sector and a rotation in the dual sector. The
+already-proved invariant of that pair is a signed height. When the two
+frames are perfectly balanced the height vanishes. When the usual
+sector dominates, the height is positive. When the dual sector
+dominates, it is negative. At the walls the configuration is saturated:
+every axis is a pure boost, or every axis is a pure rotation.
 
-The dual Hilbert layer is the kinematics of the dual sector: a Euclidean
-pairing on \(\mathbb{R}^3\), the quaternion table of the cyclic
-generators, and their representation on \(\mathbb{C}^2\). The
-closed-subspace lattice is the Birkhoff--von Neumann logic of a
-two-dimensional spinor \cite{BvN1936}.
+Those four situations are not extra labels glued onto an algebra. They
+are the sign and the saturation of a quantity the geometry already
+supplies. Dual Spacetime 4-Valued Logic is the decision to take that
+quantity as the observable of a proposition, and to let the four names
+be what the observable does.
+
+The resulting logic has two layers, and they must not be confused.
+
+The \emph{amplitude layer} takes an admissible configuration as a
+proposition, the normalised height \(\Jnorm\) as its observable, and
+\(\min/\max/-\) as scalar connectives. Overlap of two configurations is
+the parameter Killing form already present in the PGA core. Interference
+is the geometric commutator of their torsion bivectors. Nothing is added
+to the algebra; the logic reads what the algebra already computes.
+
+The \emph{dual Hilbert layer} is the kinematics of the dual sector: a
+Euclidean pairing on \(\mathbb{R}^3\), the quaternion table of the
+cyclic generators, and their representation on \(\mathbb{C}^2\). The
+lattice of closed subspaces is the Birkhoff--von Neumann logic of a
+two-dimensional spinor \cite{BvN1936}. It is a genuine quantum logic.
+It is not the amplitude layer in another notation.
 
 An internal dictionary relates the layers. Their operations are not
-identified: the Killing form is not the spinor inner product,
-\(\min/\max\) is not the meet and join of \(L(\mathbb{C}^2)\), and the
-four labels are not a PVM. There is no \(\hbar\) and no derivation of
-the Born rule from \(J\).
+identified. The Killing form is not the spinor inner product;
+\(\min/\max\) is not the meet and join of \(L(\mathbb{C}^2)\); the four
+labels are not a projection-valued measure. There is no \(\hbar\), and
+there is no derivation of the Born rule from \(J\).
 
-\section{Torsion and the admissible cone}
+The paper develops this picture in that order. Section~\ref{sec:torsion}
+fixes the geometric carrier and the bound that makes four states
+possible. Section~\ref{sec:states} names the states and splits the
+balanced label by a second observable, mass, without adding a fifth
+name. Sections~\ref{sec:conn} and~\ref{sec:geo} give the scalar
+connectives, the two orders, and the geometric operations.
+Section~\ref{sec:hilbert} extracts the dual Hilbert layer and states
+the dictionary that refuses to identify it with the first.
+Section~\ref{sec:cons} says which heights hold, and
+Section~\ref{sec:examples} shows why two-valued restrictions of the
+interval cannot host the situations D4L is built to record.
+Section~\ref{sec:regime} reads DST proof artefacts and Diophantine
+regimes in the same four names. Section~\ref{sec:claims} states the
+reach of the theory, and its limits.
+
+\section{Torsion as the carrier of a proposition}
 \label{sec:torsion}
 
-\begin{definition}[Torsion scalar]
-\label{def:J}
-For a rotor pair write \(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) and
-let \(\Omega_{\rm biv}\) be a principal logarithm. The parameter form used
-throughout this paper is
+A proposition in D4L is not a sentence. It is a configuration of the
+geometry: six rapidities, equivalently a torsion bivector and the rotor
+it generates. The observable is a single scalar already proved in the
+companion development \cite{Diophantine2026}.
+
+Write \(\Omega=R_{\rm usual}^\dagger R_{\rm dual}\) for a rotor pair,
+and let \(\Omega_{\rm biv}\) be a principal logarithm. Throughout this
+paper the parameter form of the torsion scalar is
 \begin{equation}
 \label{eq:J-raw}
 J = \frac12\sum_{a=1}^3\bigl(\alpha_a^2-\beta_a^2\bigr).
 \end{equation}
-The combination \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) appearing
-in older drafts differs from \eqref{eq:J-raw} by a constant factor under
-the standard generator expansion; boundedness statements here always
-refer to \(J\) and \(\Jnorm\) \cite{Diophantine2026}.
-\end{definition}
+The combination \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\) that
+appears in older drafts differs from \eqref{eq:J-raw} by a constant
+factor under the standard generator expansion. Boundedness statements
+here always refer to \(J\) and to its normalisation \(\Jnorm\).
+
+Not every six-tuple of rapidities is admitted. Usual and dual
+rapidities on one axis are not allowed to add past a right angle: that
+is the anti-synchronisation bound of the dual map. Together with
+non-negativity it cuts out a compact cone.
 
 \begin{definition}[Admissible configuration]
 \label{def:admissible}
@@ -107,9 +155,9 @@ A configuration is \emph{admissible} when, on every axis,
 \]
 \end{definition}
 
-The cutoff \(\pi/2\) is the anti-synchronisation bound of the dual map:
-usual and dual rapidities on one axis are not allowed to add past a right
-angle.
+On that cone the signed height cannot run off to infinity. The
+quadratic form \(J\) is bounded by the volume of the cone, and a
+constant rescaling puts the bound at \(1\).
 
 \begin{theorem}[Torsion bound]
 \label{thm:torsion-bound}
@@ -122,29 +170,30 @@ where
 \label{eq:Jnorm}
 \Jnorm := \frac{8}{3\pi^2}\,J.
 \end{equation}
-Equality \(|\Jnorm|=1\) holds if and only if every axis is pure boost, or
-every axis is pure rotation. The image of \(\Jnorm\) on the admissible cone
-is the whole interval \([-1,1]\). The bound is false if one keeps only the
-principal-branch condition \(|\alpha_a+\beta_a|\le\pi/2\) and allows
-negative rapidities.
+Equality \(|\Jnorm|=1\) holds if and only if every axis is a pure boost,
+or every axis is a pure rotation. The image of \(\Jnorm\) on the
+admissible cone is the whole interval \([-1,1]\). The bound is false if
+one keeps only the principal-branch condition
+\(|\alpha_a+\beta_a|\le\pi/2\) and allows negative rapidities.
 \end{theorem}
 
-For a compactification \(N\) the discrete bound is sharper
+The four names of D4L are therefore not a truncation. Every value in
+\([-1,1]\) is attained, and both walls are attained, but only by
+configurations in which every axis votes the same way. A mixed
+extremum---one axis a pure boost, another a pure rotation---never
+reaches \(|\Jnorm|=1\).
+
+On a compactification \(N\) the discrete bound is sharper
 \cite{Diophantine2026}:
 \[
 |\Jnorm|\le\Bigl(\frac{4\lfloor N/4\rfloor}{N}\Bigr)^2.
 \]
-When \(4\mid N\) the right-hand side is \(1\) and both signs are attained.
-When \(4\nmid N\) every admissible point satisfies the strict inequality
-\(|\Jnorm|<1\).
+When \(4\mid N\) the right-hand side is \(1\) and both signs are
+attained. When \(4\nmid N\) every admissible lattice point satisfies the
+strict inequality \(|\Jnorm|<1\): the positive wall is simply not there.
 
-\section{Amplitudes}
-\label{sec:amp}
-
-\begin{definition}[Amplitude]
-\label{def:amp}
-An \emph{amplitude} is an admissible continuous torsion configuration
-\(p=(\alpha_a,\beta_a)\). Write
+An \emph{amplitude} is an admissible continuous configuration
+\(p=(\alpha_a,\beta_a)\). Its torsion bivector and rotor are
 \[
 \Omega(p)=\sum_{a=1}^3\Bigl(\frac{\alpha_a}{2}\,B^+_a+\frac{\beta_a}{2}\,B^-_a\Bigr),
 \qquad
@@ -157,22 +206,16 @@ Measurement and collapse are
 \in\{\lvert T\rangle,\lvert U\rangle,\lvert F\rangle,\lvert B\rangle\}.
 \]
 The adjoint is the usual--dual swap \(p^\dagger\), exchanging
-\((\alpha_a)\) with \((\beta_a)\).
-\end{definition}
+\((\alpha_a)\) with \((\beta_a)\). The swap is an involution and flips
+the observable: \((p^\dagger)^\dagger=p\) and
+\(\langle p^\dagger\rangle=-\langle p\rangle\). Every label is realised
+by some amplitude.
 
-\begin{theorem}[Adjoint]
-\label{thm:adjoint}
-The swap is an involution and flips the observable:
-\( (p^\dagger)^\dagger=p \) and \(\langle p^\dagger\rangle=-\langle p\rangle\).
-Every label is realised by some amplitude.
-\end{theorem}
-
-The four names are not a function of each other under adjoint: deepest
-\(\lvert B\rangle\) maps to \(\lvert F\rangle\), interior \(\lvert B\rangle\)
-maps to \(\lvert U\rangle\).
-
-\section{Four states}
+\section{Four states from a signed height}
 \label{sec:states}
+
+Once \(\Jnorm\) is known to take every value in \([-1,1]\), the four
+names are a partition of that interval by sign and saturation.
 
 \begin{definition}[D4L states]
 \label{def:states}
@@ -183,82 +226,72 @@ On \(\Jnorm\in[-1,1]\),
 \lvert U\rangle &\colon 0 < \Jnorm < 1
   &&\text{boost-dominant, not saturated,}\\
 \lvert F\rangle &\colon \Jnorm = +1
-  &&\text{every axis pure boost,}\\
+  &&\text{every axis a pure boost,}\\
 \lvert B\rangle &\colon -1\le \Jnorm < 0
   &&\text{rotation-dominant, including the}\\
 &&& \text{deepest point \(\Jnorm=-1\).}
 \end{align*}
 \end{definition}
 
-The positive extreme is a singleton named False; the negative extreme is
-kept inside Both. That is a logical convention, not a gap in the cone:
-both extremes exist and are unique. Mixed extrema --- one axis boost,
-another rotation --- never reach \(|\Jnorm|=1\). Saturation requires every
-axis to vote the same way.
-
-\begin{theorem}[Extremal labels]
-\label{thm:extremal}
-On an admissible configuration, \(\mathrm{collapse}(p)=\lvert F\rangle\)
-if and only if \(p\) is purely hyperbolic, and \(\Jnorm(p)=-1\) if and
-only if \(p\) is purely elliptic.
-\end{theorem}
+The positive extreme is a singleton named False. The negative extreme
+is kept inside Both. That is a logical convention, not a gap in the
+cone: both walls exist and are unique. On an admissible configuration,
+collapse to \(\lvert F\rangle\) if and only if the configuration is
+purely hyperbolic, and \(\Jnorm=-1\) if and only if it is purely
+elliptic.
 
 Interior \(\lvert B\rangle\) is a range, not a single fixed point. The
-deepest point of that range is the wall \(\Jnorm=-1\).
+deepest point of that range is the wall \(\Jnorm=-1\). The four names
+are therefore not a function of each other under adjoint: deepest
+\(\lvert B\rangle\) maps to \(\lvert F\rangle\), while interior
+\(\lvert B\rangle\) maps to \(\lvert U\rangle\). Negation, as a map on
+labels, does not exist.
 
-Label \(\lvert T\rangle\) is likewise not a single geometric point.
-The signed height \(\Jnorm=0\) holds both at the origin of the cone
-and on a positive-mass balanced configuration \(\alpha_a=\beta_a\).
-Those two are distinguished by a second observable, not by a fifth
-name.
-
-\begin{definition}[Mass]
-\label{def:mass}
-The unsigned torsional mass is
+The balanced label \(\lvert T\rangle\) is likewise not a single
+geometric point. The signed height \(\Jnorm=0\) holds both at the origin
+of the cone and on a positive-mass configuration with \(\alpha_a=\beta_a\)
+on every axis. Those two situations are distinguished by a second
+observable, not by a fifth name. The unsigned torsional mass is
 \[
 M(p)=\frac12\sum_{a=1}^3\bigl(\alpha_a^2+\beta_a^2\bigr),\qquad
 M_{\mathrm{norm}}=\frac{8}{3\pi^2}\,M.
 \]
 On the admissible cone \(0\le M_{\mathrm{norm}}\le 1\). Usual--dual
-swap preserves \(M\). Uniform scaling multiplies \(M\) by \(k^2\).
-\end{definition}
+swap preserves \(M\); uniform scaling multiplies \(M\) by \(k^2\).
 
-\begin{definition}[Vacuum and balanced massive]
-\label{def:vacuum}
-These are predicates on amplitudes, not extra D4L labels.
+Vacuum and balanced massive are predicates on amplitudes:
 \begin{align*}
 \mathrm{IsVacuum}(p)
   &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge M(p)=0,\\
 \mathrm{IsBalancedMassive}(p)
   &\iff \mathrm{collapse}(p)=\lvert T\rangle \wedge 0<M(p).
 \end{align*}
-\(\mathrm{IsVacuum}\) is equivalent to all six rapidities vanishing,
-and implies \(\Jnorm=0\). The converse is false.
-\end{definition}
+Vacuum is equivalent to all six rapidities vanishing, and implies
+\(\Jnorm=0\). The converse is false: there exist admissible
+configurations with \(\Jnorm=0\) and \(M>0\). The paper step
+``\(\Jnorm=0\) implies trivial bases'' is therefore false. Vacuum and
+balanced massive both inhabit \(\lvert T\rangle\). Beal's balanced
+seeds sit in that second seat; the four-state classifier cannot see
+them.
 
-\begin{theorem}[Zero height is not vacuum]
-\label{thm:T-split}
-There exists an admissible configuration with \(\Jnorm=0\) and
-\(M>0\). Consequently the paper step ``\(\Jnorm=0\) implies trivial
-bases'' is false. Vacuum and balanced massive both inhabit
-\(\lvert T\rangle\).
-\end{theorem}
-
-\section{Connectives}
+\section{Connectives that do not explode}
 \label{sec:conn}
 
-\begin{definition}[Logical operations]
-\label{def:ops}
-On the signed height,
+The scalar operations on the signed height are the ones the real line
+already possesses:
 \[
 \neg j = -j,\qquad
 j\wedge k = \min(j,k),\qquad
 j\vee k = \max(j,k).
 \]
-Negation is the usual--dual swap
+Negation is not a new connective. It is the usual--dual swap
 \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\), which sends
-\(J\mapsto -J\) and therefore \(\Jnorm\mapsto-\Jnorm\).
-\end{definition}
+\(J\mapsto -J\) and therefore \(\Jnorm\mapsto-\Jnorm\). De~Morgan
+duality and distributivity hold as they do for \(\min/\max\) on
+\(\mathbb{R}\).
+
+The logical content is in what conjunction of a height with its
+negation cannot do.
 
 \begin{theorem}[Non-explosion]
 \label{thm:nexplosion}
@@ -266,42 +299,39 @@ For every \(j\in[-1,1]\),
 \[
 j\wedge\neg j = -|j|\le 0.
 \]
-Hence \(p\wedge\neg p\) is \(\lvert T\rangle\) or \(\lvert B\rangle\), and
-never saturates \(\lvert F\rangle\). De Morgan duality and distributivity
-hold as they do for \(\min/\max\) on \(\mathbb{R}\).
+Hence \(p\wedge\neg p\) is \(\lvert T\rangle\) or \(\lvert B\rangle\),
+and never saturates \(\lvert F\rangle\).
 \end{theorem}
 
-\section{Two orders, not Belnap FOUR}
-\label{sec:order}
+A configuration and its usual--dual swap cannot both sit at the
+positive wall. Contradiction is therefore a rotation-dominant, or
+balanced, situation. It is never the unique all-boost world. That is
+why D4L can host a live contradiction without forcing every unrelated
+atom onto \(\lvert F\rangle\).
 
-\begin{definition}
-On \(\mathbb{R}\), and then by restriction on \([-1,1]\),
-\[
-j\preceq_\tau k \iff j\le k,
-\qquad
-j\preceq_\iota k \iff \lvert j\rvert\le\lvert k\rvert.
-\]
-The first is the height (boost-versus-rotation) order. The second is
-the information (saturation) order.
-\end{definition}
+The interval \([-1,1]\) carries two preorders, and they must not be
+collapsed into one. The \emph{height} order is the ordinary order of
+the real line: \(j\preceq_\tau k\) if and only if \(j\le k\). It
+compares boost-dominance with rotation-dominance. The
+\emph{information} order compares saturation: \(j\preceq_\iota k\) if
+and only if \(\lvert j\rvert\le\lvert k\rvert\). In the information
+order, \(j=0\) is the unique bottom, and the two tops are exactly the
+walls \(j=\pm 1\). Equivalently, the information bottom is the label
+\(\lvert T\rangle\), and the two tops are \(\lvert F\rangle\) and
+deepest \(\lvert B\rangle\). Interior \(\lvert B\rangle\) is strictly
+below deepest \(\lvert B\rangle\) in the information order.
 
-\begin{theorem}[Information bottom and tops]
-\label{thm:info}
-On \([-1,1]\), \(j=0\) is the unique information bottom, and the
-information tops are exactly the walls \(j=\pm 1\). Equivalently, the
-information bottom is the label \(\lvert T\rangle\), and the two tops
-are \(\lvert F\rangle\) and deepest \(\lvert B\rangle\).
-\end{theorem}
+The four labels therefore do not match Belnap's
+\(\{\bot,t,f,\top\}\). No bilattice isomorphism is claimed. Height and
+saturation are two readings of one number, not two independent
+lattices.
 
-Interior \(\lvert B\rangle\) is strictly below deepest \(\lvert B\rangle\)
-in the information order. The labels do not match Belnap's
-\(\{\bot,t,f,\top\}\); no bilattice isomorphism is claimed.
-
-\section{Geometric operations}
+\section{Overlap and interference}
 \label{sec:geo}
 
-\begin{definition}[Overlap and interference]
-\label{def:geo}
+Scalar connectives act after measurement. Before measurement, two
+amplitudes already interact in the algebra. The commutative interaction
+is overlap; the non-commutative interaction is interference.
 \[
 \langle p\mid q\rangle := 8\sum_{a=1}^3\bigl(\alpha_a\alpha'_a-\beta_a\beta'_a\bigr),
 \qquad
@@ -310,82 +340,61 @@ in the information order. The labels do not match Belnap's
 Rotor composition \(R(p)R(q)\) is a product in the PGA. It is not
 pulled back through the Baker--Campbell--Hausdorff formula to a third
 torsion configuration.
-\end{definition}
 
-\begin{theorem}[Pairing and non-commutativity]
-\label{thm:geo}
-The overlap is symmetric, and \(\langle p\mid p\rangle=16\,J(p)\),
-equivalently a constant multiple of \(\Jnorm(p)\). Distinct-axis
-torsion bivectors need not commute: if \(p\) is a pure boost on axis
-\(0\) and \(q\) a pure rotation on axis \(1\), then
-\([\Omega(p),\Omega(q)]\ne 0\). Same-axis hyperbolic and cyclic
-generators do commute, so the corresponding one-axis interference
-vanishes.
-\end{theorem}
+The overlap is symmetric, and self-overlap is a constant multiple of
+the observable: \(\langle p\mid p\rangle=16\,J(p)\), equivalently a
+constant multiple of \(\Jnorm(p)\). Distinct-axis torsion bivectors
+need not commute. If \(p\) is a pure boost on axis \(0\) and \(q\) a
+pure rotation on axis \(1\), then \([\Omega(p),\Omega(q)]\ne 0\).
+Same-axis hyperbolic and cyclic generators do commute, so the
+corresponding one-axis interference vanishes. The converse is false:
+vanishing interference does not force a common single axis. A two-axis
+boost, for instance, has vanishing self-commutator and is not
+single-axis.
 
-\begin{theorem}[Indefinite pairing]
-\label{thm:indef}
-There exist configurations with \(\langle p\mid p\rangle>0\) and with
-\(\langle q\mid q\rangle<0\). In particular the pairing is not
-positive definite.
-\end{theorem}
+Because self-overlap is a multiple of \(J\), it inherits the signature
+of \(J\). Pure-boost extremals give \(\langle p\mid p\rangle>0\);
+pure-rotation extremals give \(\langle q\mid q\rangle<0\). The pairing
+is therefore indefinite. A signed quantity cannot be a Born
+probability, and the pairing is not the spinor inner product of
+Section~\ref{sec:spinor}. Sandwich evaluation of rotors is independent
+of the gravity chart; preservation of the degenerate quadratic form is
+not claimed. Geometric composition is associative as a PGA product and
+is not a lattice operation.
 
-The witnesses are the pure-boost and pure-rotation extremals already
-used for \(\lvert\Jnorm\rvert=1\).
-
-\begin{theorem}[Not a Born probability]
-\label{thm:born}
-There exists \(p\) with \(\langle p\mid p\rangle<0\). A signed quantity
-cannot be a Born probability.
-\end{theorem}
-
-The pairing is not the spinor inner product
-(Section~\ref{sec:spinor}). Sandwich evaluation of rotors is
-independent of the gravity chart; preservation of the degenerate
-quadratic form is not claimed. Geometric composition is associative as
-a PGA product and is not a lattice operation.
-
-\section{Dual Hilbert layer}
+\section{The dual sector as a Hilbert space}
 \label{sec:hilbert}
 
 The dual sector already contains a Euclidean three-space, a quaternion
 table, and a spinor representation on \(\mathbb{C}^2\). This section
-records that kinematics and the dictionary that relates it to the
-amplitude layer. Spatial axes are indexed by \(a=0,1,2\).
+reads that kinematics as the second layer of D4L, and states the
+dictionary that relates it to the first. Spatial axes are indexed by
+\(a=0,1,2\).
 
-\subsection{Dual and usual sectors}
+\subsection{Two definite sectors}
 \label{sec:sector}
 
-\begin{definition}
-\(p\) is dual-sector when \(\alpha=0\), usual-sector when \(\beta=0\).
-Write \(p_\beta\) and \(p_\alpha\) for the corresponding embeddings of
-Euclidean \(\mathbb{R}^3\).
-\end{definition}
-
-\begin{theorem}[Definite restrictions]
-\label{thm:sector}
-On the dual sector,
+A configuration is dual-sector when \(\alpha=0\), usual-sector when
+\(\beta=0\). Write \(p_\beta\) and \(p_\alpha\) for the corresponding
+embeddings of Euclidean \(\mathbb{R}^3\). On the dual sector the
+Killing overlap restricts to
 \[
 \langle p_\beta\mid p_\gamma\rangle
 =-8\langle\beta,\gamma\rangle_{\mathbb{R}^3},
 \]
-hence negative definite. On the usual sector the pairing is
-\(+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}\), hence positive
-definite.
-\end{theorem}
-
-The inner-product space is the linear span of each sector, not the
-admissible cube \(\alpha_a,\beta_a\ge 0\), \(\alpha_a+\beta_a\le\pi/2\).
-Superposition is a statement about that span.
+hence is negative definite. On the usual sector it restricts to
+\(+8\langle\alpha,\gamma\rangle_{\mathbb{R}^3}\), hence is positive
+definite. The inner-product space is the linear span of each sector,
+not the admissible cube \(\alpha_a,\beta_a\ge 0\),
+\(\alpha_a+\beta_a\le\pi/2\). Superposition is a statement about that
+span.
 
 \subsection{Quaternion table}
 \label{sec:quat}
 
 Write \(\Gamma_a\) for the cyclic generators of the dual sector. They
-satisfy \(\Gamma_a^2=-1\) and the off-diagonal products below.
-
-\begin{theorem}[Quaternion multiplication]
-\label{thm:quat}
+satisfy \(\Gamma_a^2=-1\) and the off-diagonal products of the
+quaternion algebra:
 \[
 \begin{aligned}
 \Gamma_0\Gamma_1&=\Gamma_2,\\
@@ -399,8 +408,6 @@ satisfy \(\Gamma_a^2=-1\) and the off-diagonal products below.
 \Gamma_0\Gamma_2&=-\Gamma_1.
 \end{aligned}
 \]
-\end{theorem}
-
 The identities follow from the vector anticommutators in \(G(3,1,1)\).
 For a pure dual configuration
 \[
@@ -411,23 +418,17 @@ and on axis \(0\) this collapses to \((\theta/2)\,\Gamma_0\).
 \subsection{Spinor Hilbert space}
 \label{sec:spinor}
 
-\begin{definition}[Dual spinor]
 The dual spinor space is \(\mathbb{C}^2\) with the standard Hermitian
 product. Pauli matrices \(\sigma_x,\sigma_y,\sigma_z\) are the usual
-ones. The representation is \(\rho(\Gamma_a):=-i\sigma_a\).
-That sign makes \(IJ=K\) agree with the cyclic products in \(G(3,1,1)\)
-and sends the dual rotor to the standard \(\mathrm{SU}(2)\) factor
-\(\exp(-i\beta\cdot\sigma/2)\).
-\end{definition}
+ones. The representation \(\rho(\Gamma_a):=-i\sigma_a\) is chosen so
+that \(IJ=K\) agrees with the cyclic products in \(G(3,1,1)\) and so
+that the dual rotor is sent to the standard \(\mathrm{SU}(2)\) factor
+\(\exp(-i\beta\cdot\sigma/2)\). Each \(\rho(\Gamma_a)\) squares to
+\(-1\), the cyclic identity
+\(\rho(\Gamma_0)\rho(\Gamma_1)=\rho(\Gamma_2)\) holds, and each
+generator is anti-Hermitian.
 
-\begin{theorem}[Representation]
-\label{thm:rep}
-\(\rho(\Gamma_a)^2=-1\) and
-\(\rho(\Gamma_0)\rho(\Gamma_1)=\rho(\Gamma_2)\).
-Each \(\rho(\Gamma_a)\) is anti-Hermitian.
-\end{theorem}
-
-The dual rotor matrix is
+The dual rotor matrix is therefore
 \[
 U(\beta)
 =\exp\Bigl(\sum_a(\beta_a/2)(-i\sigma_a)\Bigr)
@@ -442,54 +443,44 @@ combination determined by \(\beta\).
 \label{thm:su2}
 For every dual rapidity \(\beta\in\mathbb{R}^3\), the matrix \(U(\beta)\)
 is unitary of determinant \(1\). Thus \(U(\beta)\in\mathrm{SU}(2)\).
+On a pure dual configuration the Banach exponential in \(G(3,1,1)\)
+collapses to the same Rodrigues formula, so the dual-sector exponential
+and the matrix rotor agree on every pure dual rapidity.
 \end{theorem}
 
 A general identification of the Banach exponential in \(G(3,1,1)\) with
-this matrix exponential is not claimed; that would require control of
-the Baker--Campbell--Hausdorff formula for mixed generators.
+this matrix exponential for \emph{mixed} usual/dual or translational
+generators is not claimed; that would require control of the
+Baker--Campbell--Hausdorff formula beyond the pure dual sector.
 
-\(\dim_{\mathbb{C}}\mathbb{C}^2=2\), so a projective measurement
-has at most two orthogonal outcomes.
+Because \(\dim_{\mathbb{C}}\mathbb{C}^2=2\), a projective measurement
+has at most two orthogonal outcomes. Four pairwise orthogonal rays do
+not exist in this space.
 
 \subsection[Quantum logic of C2]{Quantum logic of \(\mathbb{C}^2\)}
 \label{sec:ql}
 
-\begin{definition}
-A quantum proposition is a linear subspace of \(\mathbb{C}^2\).
-Meet is intersection, join is the sum, negation is the orthogonal
-complement. Finite dimension makes every subspace closed.
-\end{definition}
-
-\begin{theorem}[Orthomodular law]
-\label{thm:om}
-If \(A\le B\) then \(A\vee(A^\perp\wedge B)=B\).
-\end{theorem}
-
-This is the orthogonal decomposition of a finite-dimensional subspace.
-
-\begin{theorem}[Non-distributivity]
-\label{thm:ndist}
-Let \(e_0=(1,0)\), \(e_1=(0,1)\), \(d=(1,1)\), and write \(\ell_v\) for
-\(\mathbb{C}v\). Then
+A quantum proposition is a linear subspace of \(\mathbb{C}^2\). Meet is
+intersection, join is the sum, negation is the orthogonal complement.
+Finite dimension makes every subspace closed. The resulting lattice is
+orthomodular: if \(A\le B\) then \(A\vee(A^\perp\wedge B)=B\). It is not
+distributive. With \(e_0=(1,0)\), \(e_1=(0,1)\), \(d=(1,1)\), and
+\(\ell_v=\mathbb{C}v\),
 \[
 \ell_{e_0}\wedge(\ell_{e_1}\vee\ell_d)
 \neq
-(\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d).
+(\ell_{e_0}\wedge\ell_{e_1})\vee(\ell_{e_0}\wedge\ell_d):
 \]
-The left side is \(\ell_{e_0}\); the right side is \(\{0\}\).
-\end{theorem}
+the left side is \(\ell_{e_0}\), the right side is \(\{0\}\).
 
 The scalar connectives of Section~\ref{sec:conn} distribute. A
 distributive lattice cannot be isomorphic to the subspace lattice of a
-Hilbert space of dimension at least two.
+Hilbert space of dimension at least two. There do not exist three
+pairwise orthogonal one-dimensional subspaces of \(\mathbb{C}^2\). The
+four D4L labels therefore cannot be four orthogonal rays, and the
+amplitude connectives cannot present the Birkhoff--von Neumann lattice.
 
-\begin{theorem}[At most two orthogonal atoms]
-\label{thm:two}
-There do not exist three pairwise orthogonal one-dimensional subspaces
-of \(\mathbb{C}^2\).
-\end{theorem}
-
-\subsection{Projectors}
+\subsection{Projectors and the Dirac spinor}
 \label{sec:proj}
 
 A primitive idempotent in the algebra must be built from generators
@@ -497,63 +488,48 @@ that square to \(+1\). If \(g^2=+1\), then \((1+g)/2\) is idempotent.
 Write \(j:=e_0e_1\) for the hyperbolic generator of axis \(0\) (so
 \(j^2=+1\)). This \(j\) is not the time vector \(\gamma^0=e_0\), which
 squares to \(-1\) in signature \((-,+,+,+)\). The working projectors
-are
 \[
 P_{\mathrm{spin}}=\frac{1+e_0e_1}{2},\qquad
 P_L=\frac{1-e_1}{2},\qquad
-P_R=\frac{1+e_1}{2}.
+P_R=\frac{1+e_1}{2}
 \]
-They satisfy \(P_L^2=P_L\), \(P_R^2=P_R\), \(P_{\mathrm{spin}}^2=P_{\mathrm{spin}}\),
-and \(P_L+P_R=1\).
+are each idempotent, and \(P_L+P_R=1\). The formulae
+\((1\pm i)/2\) built from the \(\mathrm{Cl}(3,1)\) pseudoscalar \(i\)
+with \(i^2=-1\) are not: \(\bigl((1-i)/2\bigr)^2=-i/2\). The product
+\(P_{\mathrm{spin}}P_R\) is likewise not idempotent, because \(e_0e_1\)
+and \(e_1\) anticommute.
 
-\begin{theorem}[Draft projectors fail]
-\label{thm:proj-fail}
-The formulae \((1\pm i)/2\) built from the \(\mathrm{Cl}(3,1)\)
-pseudoscalar \(i\) with \(i^2=-1\) are not idempotent:
-\(\bigl((1-i)/2\bigr)^2=-i/2\). The product \(P_{\mathrm{spin}}P_R\) is
-likewise not idempotent: \(e_0e_1\) and \(e_1\) anticommute.
-\end{theorem}
-
-\begin{theorem}[Commuting projector]
-\label{thm:proj-ok}
-The generators \(e_1\) and \(e_0e_2\) commute and both square to
-\(+1\). Their product projector
+A commuting square-\(+1\) pair does exist: \(e_1\) and \(e_0e_2\). Their
+product projector
 \[
 P=\frac{1+e_1}{2}\cdot\frac{1+e_0e_2}{2}
 \]
-is idempotent and nonzero. The principal left ideal it generates is
-nonzero and has real dimension at least two. Irreducibility of that
-ideal as a spinor module, and a complex dimension of four, are not
-claimed.
-\end{theorem}
+is idempotent and nonzero. The principal left ideal it generates has
+real dimension exactly eight, matching the real dimension of a Dirac
+spinor \(\mathbb{C}^4\). Irreducibility of that ideal as a spinor
+module, and any identification of the ideal with the Dirac
+representation, are not claimed.
 
-\subsection{Clifford relations and the Dirac spinor}
-\label{sec:dirac}
-
-The Dirac matrices of signature \((-,+,+,+)\) are the grade-1 generators
-\(\gamma^\mu\) of \(\mathrm{Cl}(3,1)\). They obey
+The Dirac matrices of signature \((-,+,+,+)\) are the grade-1
+generators \(\gamma^\mu\) of \(\mathrm{Cl}(3,1)\). They obey
 \[
 \{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu},\qquad
 \eta=\mathrm{diag}(-1,+1,+1,+1).
 \]
-In particular \((\gamma^0)^2=-1\), so \(\gamma^0\neq j\).
-
-\begin{theorem}[Dirac representation]
-\label{thm:dirac-rep}
-There exist matrices \(\gamma^\mu\in M_4(\mathbb{C})\) satisfying the
-same Clifford relations. They act on a Dirac spinor space
-\(\mathbb{C}^4\). This space has complex dimension four, hence is not
-the dual spinor \(\mathbb{C}^2\). As vector spaces one has a Weyl
-splitting \(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\); that
-splitting is a dictionary, not an identification of the dual-sector
-kinematics with a chiral Dirac component.
-\end{theorem}
-
-The Dirac equation, a mass term, and covariance under the full rotor
-group are not derived here.
+In particular \((\gamma^0)^2=-1\), so \(\gamma^0\neq j\). The same
+Clifford relations are realised by matrices in \(M_4(\mathbb{C})\)
+acting on a Dirac spinor space \(\mathbb{C}^4\). That space has complex
+dimension four, hence is not the dual spinor \(\mathbb{C}^2\); as real
+vector spaces one has a Weyl splitting
+\(\mathbb{C}^4\simeq\mathbb{C}^2\oplus\mathbb{C}^2\). The splitting is
+a dictionary, not an identification of the dual-sector kinematics with
+a chiral Dirac component. The Dirac equation, a mass term, and
+covariance under the full rotor group are not derived here.
 
 \subsection{Internal dictionary}
 \label{sec:dict}
+
+The two layers share a geometry. They do not share operations.
 
 \begin{center}
 \begin{tabular}{@{}ll@{}}
@@ -571,22 +547,12 @@ dual \(\mathbb{C}^2\) & not the Dirac \(\mathbb{C}^4\) \\
 \end{tabular}
 \end{center}
 
-\begin{theorem}[Four labels are not a PVM]
-\label{thm:pvm}
-There is no assignment of one-dimensional subspaces of
-\(\mathbb{C}^2\) to the four D4L labels that makes distinct
-labels pairwise orthogonal.
-\end{theorem}
+There is no assignment of one-dimensional subspaces of \(\mathbb{C}^2\)
+to the four D4L labels that makes distinct labels pairwise orthogonal.
+The four names are a partition of an interval, not a projective
+measurement of a qubit.
 
-\begin{theorem}[Compatibility is not same-axis]
-\label{thm:compat}
-If two configurations are supported on a single common spatial axis,
-their interference vanishes. The converse is false: vanishing
-interference does not force a common single axis. A two-axis boost,
-for instance, has vanishing self-commutator and is not single-axis.
-\end{theorem}
-
-\section{Designated values and consequence}
+\section{Which heights hold}
 \label{sec:cons}
 
 The four labels are not yet a logic until one says which heights
@@ -604,128 +570,130 @@ The first is synchrony (the label \(\lvert T\rangle\)). The second is
 non-refutation (every label except \(\lvert F\rangle\)).
 \end{definition}
 
-Formulas are generated by atoms, \(\neg\), \(\wedge\), and \(\vee\),
-and are evaluated by the scalar operations \(\neg\), \(\wedge\), \(\vee\)
-already fixed on heights.
-There is no implication connective on the amplitude heights: the
-residuum of \(\min\) would take its top at \(+1=\lvert F\rangle\).
-Implication lives on the discrete proof-status layer
-(Section~\ref{sec:regime}).
+The two predicates answer different questions. Synchrony asks whether
+the usual and dual frames are balanced. Non-refutation asks only
+whether the configuration has been driven onto the unique all-boost
+world. A rotation-dominant configuration is not synchronous, but it is
+not refuted either.
 
-\begin{definition}[Consequence]
-\label{def:entail}
-A valuation assigns each atom a height in \([-1,1]\). \(\Gamma\models_T\psi\)
-when every valuation that synchronises \(\Gamma\) synchronises \(\psi\).
-\(\Gamma\models_{\lnot F}\psi\) is the same clause with non-refutation.
-\end{definition}
+Formulas are generated by atoms, \(\neg\), \(\wedge\), and \(\vee\),
+and are evaluated by the scalar operations already fixed on heights.
+There is no implication connective on the amplitude heights: the
+residuum of \(\min\) would take its top at \(+1=\lvert F\rangle\),
+which is the wrong top for a logic whose designated values sit at
+balance and away from the positive wall. Implication lives on the
+discrete proof-status layer (Section~\ref{sec:regime}).
+
+A valuation assigns each atom a height in \([-1,1]\). Consequence
+follows the two predicates:
+\(\Gamma\models_T\psi\) when every valuation that synchronises \(\Gamma\)
+synchronises \(\psi\); \(\Gamma\models_{\lnot F}\psi\) is the same
+clause with non-refutation.
 
 Two-valued \emph{restrictions} of the interval are not unique, because
 D4L's names \(\lvert T\rangle,\lvert F\rangle\) are not classical
-true/false.
+true/false. The \emph{named} fragment is
+\(\{0,1\}=\{\lvert T\rangle,\lvert F\rangle\}\). The \emph{wall}
+fragment is \(\{-1,+1\}=\{\text{deepest }\lvert B\rangle,\lvert F\rangle\}\).
+They behave differently under negation. On the named fragment,
+\(\neg 0=0\): the balanced point is a fixed point of negation, and
+\(\neg 1=-1\) leaves \(\{0,1\}\) altogether. The named fragment is
+therefore not Boolean and not even closed. On the walls, \(\neg\)
+swaps the two points and has no fixed point. The wall fragment is the
+faithful classical core. Comparing D4L with ``true and false'' by
+cutting to the names \(\lvert T\rangle\) and \(\lvert F\rangle\)
+already leaves classical logic.
 
-\begin{definition}[Two fragments]
-\label{def:frag}
-The \emph{named} fragment is \(\{0,1\}=\{\lvert T\rangle,\lvert F\rangle\}\).
-The \emph{wall} fragment is \(\{-1,+1\}=\{\text{deepest }\lvert B\rangle,\lvert F\rangle\}\).
-\end{definition}
-
-\begin{theorem}[Named fragment is not Boolean]
-\label{thm:named-not-bool}
-\(\neg 0=0\), so the named fragment contains a negation fixed point.
-It is not closed under \(\neg\): \(\neg 1=-1\) leaves \(\{0,1\}\).
-\end{theorem}
-
-\begin{theorem}[Walls swap]
-\label{thm:wall-swap}
-If \(j\in\{-1,+1\}\) then \(\neg j\in\{-1,+1\}\) and \(j\neq\neg j\).
-\end{theorem}
-
-The wall fragment is the faithful classical core. The named fragment
-matches the labels and is already not classical.
-
-\section{Examples two-valued logic cannot host}
+\section{What two-valued logic cannot host}
 \label{sec:examples}
+
+The difference between D4L and two-valued logic is not that D4L is a
+stronger proof engine, nor that it decides more arithmetic. It is that
+two-valued algebras cannot host certain situations of satisfaction,
+consequence, and lattice structure that D4L hosts, and that the
+difference can be fixed as a pair: emptiness (or vacuity, or collapse
+to a singleton) on the fragment, realisation on D4L.
 
 These are changes of semantics, not new theorems of Peano arithmetic.
 Unconditional FLT / Beal and a refutation of G\"odel's theorems are
 not claimed.
 
-\subsection{Negation fixed point}
+\subsection{A fixed point of negation}
 \label{sec:ex-fp}
 
-\begin{theorem}[Fixed point of negation]
-\label{thm:ex-fp}
-The condition \(j=\neg j\) is equivalent to \(j=0\). It is
-unsatisfiable on the wall fragment and uniquely realised in D4L by
-\(\lvert T\rangle\), including by an amplitude.
-\end{theorem}
+Classically, \(P\leftrightarrow\neg P\) has no model. On the wall
+fragment the same is true: if \(j\in\{-1,+1\}\) then \(j\neq -j\).
+In D4L the condition \(j=\neg j\) is equivalent to \(j=0\). The unique
+solution is the label \(\lvert T\rangle\), perfect usual--dual
+balance, and it is realised both by a constant valuation and by an
+amplitude.
 
-Classically \(P\leftrightarrow\neg P\) has no model. D4L hosts it at
-perfect usual--dual balance. This is not the G\"odel sentence.
+The equation is not the G\"odel sentence. It is the self-referential
+\emph{equality} \(P=\neg P\), which an algebra whose negation has no
+fixed point cannot host, and which D4L seats uniquely at synchrony.
 
 \subsection{Contradiction without explosion}
 \label{sec:ex-efq}
 
-\begin{theorem}[Boolean EFQ is vacuous]
-\label{thm:bool-efq}
-On \(\mathrm{Bool}\), \(P\) and \(\neg P\) cannot both be
+Classical two-valued logic has \emph{ex falso quodlibet}: from
+\(\{P,\neg P\}\) every \(Q\) follows. On \(\mathrm{Bool}\) the premise
+is already impossible, because \(P\) and \(\neg P\) cannot both be
 \(\mathtt{true}\). On the walls, \(j\) and \(\neg j\) cannot both be
-\(+1\).
-\end{theorem}
+\(+1\). Two-valued explosion is therefore vacuous: the premises cannot
+be designated together.
 
-\begin{theorem}[D4L does not explode]
-\label{thm:d4l-efq}
-Let \(P\) be atom \(0\) and \(Q\) atom \(1\). Then
-\(\{P,\neg P\}\not\models_T Q\) and
-\(\{P,\neg P\}\not\models_{\lnot F} Q\). A witness sends \(P\) to \(0\)
-and \(Q\) to \(1\). A second witness sends \(P\) to \(-\tfrac12\)
-(interior \(\lvert B\rangle\)) and \(Q\) to \(1\). The conjunction
-\(j\wedge\neg j\) is always non-refuted.
-\end{theorem}
-
-An inconsistent pair of observations therefore does not force an
-unrelated atom onto the positive wall.
+In D4L they can. Let \(P\) be atom \(0\) and \(Q\) atom \(1\). Then
+\[
+\{P,\neg P\}\not\models_T Q,\qquad
+\{P,\neg P\}\not\models_{\lnot F} Q.
+\]
+One witness sends \(P\) to \(0\) and \(Q\) to \(1\): the contradictory
+pair is synchronous, the unrelated atom is False. A second witness
+sends \(P\) to \(-\tfrac12\) (interior \(\lvert B\rangle\)) and \(Q\)
+to \(1\): the pair is non-refuted, the unrelated atom is still False.
+The conjunction \(j\wedge\neg j\) is always non-refuted. An
+inconsistent pair of observations therefore does not force an unrelated
+atom onto the positive wall.
 
 \subsection{\texorpdfstring{The constraint \(\Jnorm<1\)}{The constraint Jnorm < 1}}
 \label{sec:ex-notF}
 
-\begin{theorem}[Named remainder is a singleton]
-\label{thm:named-notF}
-On the named fragment, \(\mathrm{HoldsNotF}\) collapses to
-\(\mathrm{HoldsT}\). On D4L the same constraint is inhabited by
-\(\lvert T\rangle\), \(\lvert U\rangle\), and \(\lvert B\rangle\).
-\end{theorem}
+A sentence forbidden from sitting at the unique all-boost world is
+constrained by \(\mathrm{HoldsNotF}\), that is by \(\Jnorm<1\). On the
+named fragment this constraint collapses to \(\mathrm{HoldsT}\): the
+only remaining point is \(0\). On D4L the same constraint is inhabited
+by three labels, \(\lvert T\rangle\), \(\lvert U\rangle\), and
+\(\lvert B\rangle\). Non-refutation is not synchrony. The named
+fragment cannot see the difference.
 
 \subsection{Complementarity}
 \label{sec:ex-comp}
 
-\begin{theorem}[No Boolean assignment of complementary rays]
-\label{thm:ex-comp}
 The subspace lattice of \(\mathbb{C}^2\) is not distributive, hence not
 a Boolean algebra. It has at most two pairwise orthogonal atoms. The
 four D4L labels are not a PVM. The distributive scalar connectives
-cannot present that lattice.
-\end{theorem}
+cannot present that lattice. Complementary rays in the dual Hilbert
+layer cannot be assigned Boolean values, and they cannot be identified
+with the four names of the amplitude layer. The two layers remain two
+layers.
 
-\section{Proof-status layer}
+\section{Proof status and Diophantine regimes}
 \label{sec:regime}
 
-A DST proof artefact --- a core lemma, a live bridge, a refuted
-diagnostic, a bookkeeping identity --- is not a torsion configuration.
+A DST proof artefact---a core lemma, a live bridge, a refuted
+diagnostic, a bookkeeping identity---is not a torsion configuration.
 It carries a discrete status that reuses the four names, but the
-observable is not \(\Jnorm\). On this carrier negation \emph{is} a
+observable is not \(\Jnorm\). On this carrier, negation \emph{is} a
 function of the four labels, and implication is a table, not the
 residuum of \(\min\).
 
-\begin{definition}[Regime operations]
-\label{def:regime}
 Negation and the lattice operations follow the amplitude
 representatives \(\lvert T\rangle\mapsto 0\), \(\lvert U\rangle\mapsto 1/2\),
-\(\lvert F\rangle\mapsto 1\), \(\lvert B\rangle\mapsto -1/2\). In particular
-\(F\wedge\neg F=B\). A second operation, the establishedness meet,
-packages two artefacts along \(F<B<U<T\), so that a
-proved core with a live bridge is still live: the meet of \(T\) and
-\(U\) is \(U\). Implication is
+\(\lvert F\rangle\mapsto 1\), \(\lvert B\rangle\mapsto -1/2\). In
+particular \(F\wedge\neg F=B\). A second operation, the establishedness
+meet, packages two artefacts along \(F<B<U<T\), so that a proved core
+with a live bridge is still live: the meet of \(T\) and \(U\) is \(U\).
+Implication is
 \[
 \begin{aligned}
 T\to\phi&=\phi,\\
@@ -736,61 +704,17 @@ B\to T&=U.
 \]
 The last two clauses are the point: an open or conflicted programme
 does not establish a theorem. No Belnap-FOUR isomorphism is claimed.
-\end{definition}
-
-Designated predicates on statuses are the same two names:
+Designated predicates on statuses reuse the same two names:
 \(\mathrm{HoldsT}_R\) means status \(T\);
 \(\mathrm{HoldsNotF}_R\) means status \(\ne F\).
 
-Additive motors and multiplicative amplitudes occupy distinct seats at
-the same label \(\lvert T\rangle\). Pure translation has vanishing
-torsion and is vacuum. A balanced massive configuration is not vacuum.
-The mixed product \(R\cdot T\) is not identified with
-\(\exp(\Omega_{\mathrm{biv}})\) when the factors fail to commute. The
-balanced residual class excludes window seeds: a half-window
-configuration is not a balanced residual.
-
-\section{Discrete amplitudes and amplification}
-\label{sec:discrete-dyn}
-
-On the finite torus, when \(4\nmid N\) the sharp discrete bound is
-strict, so no admissible point saturates \(\lvert F\rangle\). When
-\(4\mid N\) both walls are attained.
-
-Pure-boost scaling multiplies \(\Jnorm\) by \(k^2\). Synchrony is a
-fixed point. A label \(\lvert U\rangle\) can be driven onto
-\(\lvert F\rangle\), or out of the admissible cone, where collapse is
-undefined. That is the logical reading of the shared no-go; it is not
-new arithmetic.
-
-Vacuum is a fixed point of every admissible scaling. A small
-balanced-massive seed stays at \(\lvert T\rangle\) with mass
-\(k^2 M\) and may remain admissible; a large balanced seed leaves
-the cone. That cone exit is invisible to the signed-height
-classifier: \(\Jnorm\) stays \(0\), so the four-state label is still
-\(\lvert T\rangle\). Mass and the cone predicate are the
-observables that see it. This is why a Beal balanced seed
-\(\theta=\log 2/m\) can survive \(m\)-fold scaling inside the cone.
-
-Height and modular winding are two measurements. Real-scale
-admissibility and nonzero winding cannot hold together. That
-incompatibility is a separation of observables, not a Both-status on
-one observable.
-
-\subsection{Diophantine regimes}
-\label{sec:ex-regime}
-
-\begin{theorem}[Three-layer split]
-\label{thm:ex-regime}
-Let atom \(0\) be a proved core, atom \(1\) a diagnostic, atom \(2\) a
-live bridge, and atom \(3\) a classical conjecture. Named two-valued
-logic \(\{T,F\}\) cannot host the live status \(U\). The wall fragment
-\(\{B,F\}\) cannot host the core \(T\). D4L realises the assignment
-core \(T\), diagnostic \(F\), live \(U\), conjecture \(U\). The core
-alone does not \(T\)-entail the conjecture. A window \(T\) together
-with an ill-posed NoGo \(B\) does not force the conjecture off \(F\).
-The implication \(U\to T\) is not designated.
-\end{theorem}
+This is the algebra in which DST records what it has proved and what it
+has not. Named two-valued logic \(\{T,F\}\) cannot host a live status
+\(U\). The wall fragment \(\{B,F\}\) cannot host a proved core \(T\).
+D4L realises the assignment core \(T\), diagnostic \(F\), live \(U\),
+conjecture \(U\). The core alone does not \(T\)-entail the conjecture.
+A window \(T\) together with an ill-posed NoGo \(B\) does not force the
+conjecture off \(F\). The implication \(U\to T\) is not designated.
 
 The same algebra hosts a Beal residual atlas: closed slices (including
 the Fermat and Darmon--Merel positions, and the signature \((n,n,5)\))
@@ -808,7 +732,38 @@ as entailing the seven classical conjectures. The regime layer records
 that prohibition. It does not prove any unproved bridge, and it does
 not claim unconditional FLT, Beal, or abc.
 
-\section{Self-reference}
+Additive motors and multiplicative amplitudes occupy distinct seats at
+the same label \(\lvert T\rangle\). Pure translation has vanishing
+torsion and is vacuum. A balanced massive configuration is not vacuum.
+The mixed product \(R\cdot T\) is not identified with
+\(\exp(\Omega_{\mathrm{biv}})\) when the factors fail to commute. The
+balanced residual class excludes window seeds: a half-window
+configuration is not a balanced residual.
+
+On the finite torus the same four names acquire a discrete reading.
+When \(4\nmid N\) the sharp discrete bound is strict, so no admissible
+point saturates \(\lvert F\rangle\). When \(4\mid N\) both walls are
+attained. Pure-boost scaling multiplies \(\Jnorm\) by \(k^2\).
+Synchrony is a fixed point. A label \(\lvert U\rangle\) can be driven
+onto \(\lvert F\rangle\), or out of the admissible cone, where collapse
+is undefined. That is the logical reading of the shared no-go; it is
+not new arithmetic.
+
+Vacuum is a fixed point of every admissible scaling. A small
+balanced-massive seed stays at \(\lvert T\rangle\) with mass
+\(k^2 M\) and may remain admissible; a large balanced seed leaves the
+cone. That cone exit is invisible to the signed-height classifier:
+\(\Jnorm\) stays \(0\), so the four-state label is still
+\(\lvert T\rangle\). Mass and the cone predicate are the observables
+that see it. This is why a Beal balanced seed \(\theta=\log 2/m\) can
+survive \(m\)-fold scaling inside the cone.
+
+Height and modular winding are two measurements. Real-scale
+admissibility and nonzero winding cannot hold together. That
+incompatibility is a separation of observables, not a Both-status on
+one observable.
+
+\section{A reading of self-reference}
 \label{sec:godel}
 
 Let \(G\) be the G\"odel sentence: ``\(G\) is not provable in the
@@ -822,84 +777,51 @@ exactly \(\mathrm{HoldsNotF}\) of Section~\ref{sec:ex-notF}:
 That constraint leaves \(G\) in \(\lvert T\rangle\), \(\lvert U\rangle\),
 or \(\lvert B\rangle\) as labels, or at \(\lvert T\rangle\) if one
 further demands synchrony. Conjunction does not explode
-(Theorem~\ref{thm:d4l-efq}).
+(Section~\ref{sec:ex-efq}).
 
 This is a change of semantics, not a proof that G\"odel's theorems fail
 in classical arithmetic. Completeness talk over the negative-torsion
 sector is likewise a reading of admissible rotors, not a completion of
-the Hilbert programme inside first-order Peano arithmetic. The theorems
-of Section~\ref{sec:examples} are the fixed content; the
-reading in this section is not a new incompleteness theorem.
+the Hilbert programme inside first-order Peano arithmetic. The content
+of Section~\ref{sec:examples} is fixed; the reading in this section is
+not a new incompleteness theorem.
 
-\section{What D4L does and does not show}
+\section{Scope}
 \label{sec:claims}
 
-\begin{itemize}[leftmargin=1.4em]
-  \item It \emph{does} take admissible torsion configurations as the
-        carriers of propositions, with \(\Jnorm\) as the observable.
-  \item It \emph{does} partition \([-1,1]\) into four named states, with
-        both walls attained on the admissible cone.
-  \item It \emph{does} make negation geometric: the usual--dual swap.
-  \item It \emph{does} exhibit a commutative pairing and a
-        non-commutative interference term already proved in the
-        algebra.
-  \item It \emph{does} separate height from saturation by two
-        preorders on \([-1,1]\).
-  \item It \emph{does} keep \(p\wedge\neg p\) out of \(\lvert F\rangle\).
-  \item It \emph{does} distinguish two designated predicates
-        (\(\mathrm{HoldsT}\), \(\mathrm{HoldsNotF}\)) and two
-        two-valued fragments (named versus walls).
-  \item It \emph{does} host \(P=\neg P\) uniquely at \(\lvert T\rangle\),
-        refuse explosion of \(\{P,\neg P\}\), inhabit
-        \(\Jnorm<1\) by three labels, and host the DST three-layer
-        split on a discrete proof-status algebra.
-  \item It \emph{does} put implication on that status algebra, with
-        \(U\to T=U\), and refuse the residuum of \(\min\) on heights.
-  \item It \emph{does} split label \(\lvert T\rangle\) by a second
-        observable \(M\): vacuum versus balanced massive, without a
-        fifth name.
-  \item It \emph{does} forbid discrete \(\lvert F\rangle\) when
-        \(4\nmid N\), and read \(k\)-fold amplification as a partial
-        map on labels, including cone exit of balanced massive that
-        the height classifier cannot see.
-  \item It \emph{does} prove that the Killing pairing is indefinite and
-        that self-overlap is not a Born probability.
-  \item It \emph{does} extract a Euclidean dual sector and a quaternion
-        table for the cyclic generators.
-  \item It \emph{does} represent that table on \(\mathbb{C}^2\), place
-        the dual rotor matrix in \(\mathrm{SU}(2)\) for every dual
-        rapidity, and record the orthomodular, non-distributive lattice
-        of closed subspaces.
-  \item It \emph{does} reject the draft projectors \((1\pm i)/2\) and
-        \(P_{\mathrm{spin}}P_R\), and exhibit a commuting square-\(+1\)
-        pair whose product is idempotent, with a left ideal of real
-        dimension at least two.
-  \item It \emph{does} realise the Clifford relations of
-        \(\mathrm{Cl}(3,1)\) on a Dirac spinor \(\mathbb{C}^4\), distinct
-        from the dual \(\mathbb{C}^2\).
-  \item It \emph{does} host Beal and Fermat residual atlases on the
-        regime algebra, without \(T\)-entailing the classical
-        conjectures.
-  \item It does \emph{not} identify the scalar connectives with the
-        meet and join of \(L(\mathbb{C}^2)\), nor the four labels with
-        a PVM, nor vanishing interference with a common single axis.
-  \item It does \emph{not} derive the Born rule from \(J\) or from
-        Killing overlap.
-  \item It does \emph{not} derive the Dirac equation, position or
-        momentum operators, or a solution of the measurement problem.
-  \item It does \emph{not} claim irreducibility of the commuting left
-        ideal, nor a complex dimension of four for that ideal.
-  \item It does \emph{not} refute G\"odel's theorems in classical
-        arithmetic.
-  \item It does \emph{not} claim unconditional Beal (or FLT, abc)
-        from the \(T\)-split or from mass scaling. Balanced massive
-        seeds may remain admissible after amplification.
-  \item It does \emph{not} pull \(R(p)R(q)\) back to a torsion
-        configuration when \([\Omega(p),\Omega(q)]\ne 0\).
-  \item It does \emph{not} identify raw \(J\) with a value in
-        \([-1,1]\). That interval belongs to \(\Jnorm\); the raw
-        ceiling is \(\Jbound\).
-\end{itemize}
+D4L takes admissible torsion configurations as the carriers of
+propositions and \(\Jnorm\) as the observable. It partitions
+\([-1,1]\) into four named states, both walls attained on the
+admissible cone, and it makes negation the usual--dual swap of the
+geometry. Conjunction of a height with its negation stays out of
+\(\lvert F\rangle\). Height and saturation are two preorders on one
+interval. The Killing pairing is indefinite; self-overlap is not a Born
+probability; the dual sector yields a Euclidean three-space, a
+quaternion table, and an \(\mathrm{SU}(2)\) rotor on \(\mathbb{C}^2\)
+whose closed-subspace lattice is orthomodular and non-distributive.
+
+Two designated predicates and two two-valued fragments turn that
+picture into a consequence relation. The relation hosts a unique
+negation fixed point at \(\lvert T\rangle\), refuses explosion of
+\(\{P,\neg P\}\), inhabits \(\Jnorm<1\) by three labels, and records
+the DST three-layer split---proved core, refuted diagnostic, open
+bridge---without \(T\)-entailing a classical conjecture. Implication
+lives on the status algebra, with \(U\to T=U\), not as the residuum of
+\(\min\). Label \(\lvert T\rangle\) splits by a second observable
+\(M\) into vacuum and balanced massive, without a fifth name. Discrete
+\(\lvert F\rangle\) is forbidden when \(4\nmid N\); amplification is a
+partial map on labels, including a cone exit of balanced massive that
+the height classifier cannot see.
+
+The theory does not identify amplitude operations with Hilbert
+operations, four labels with a PVM, vanishing interference with a
+common single axis, or raw \(J\) with a value in \([-1,1]\). It does
+not derive the Born rule, the Dirac equation, or a solution of the
+measurement problem. It does not claim irreducibility of the commuting
+left ideal, nor identify the Banach exponential with the matrix
+exponential beyond the pure dual sector. It does not refute G\"odel's
+theorems in classical arithmetic, and it does not claim unconditional
+Beal, FLT, or abc.
 
 The statements above are machine-checked.
 
