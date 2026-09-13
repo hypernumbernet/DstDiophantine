@@ -17,7 +17,7 @@
 \maketitle
 
 \begin{abstract}
-We prove that the quantum mechanical wave function of a massive particle is nothing but the geometric overlap (biquaternionic inner product) between the observer's dual rotor and the particle's own dual rotor evaluated at every point in space. The de Broglie phase is identified as the accumulated torsional mismatch angle between the usual and dual rotors carried intrinsically by every massive particle in the 16-dimensional biquaternion algebra $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. This identification provides a fully deterministic, nonlocal hidden-variable completion of quantum mechanics in which the hidden variables are precisely the six real parameters $(\theta_1,\theta_2,\theta_3,\phi_1,\phi_2,\phi_3)$ of the dual-spacetime rotor pair. Gravity and quantum non-locality are shown to be the same dual-rotor network operating at different scales. The Schrödinger, Klein–Gordon, and Dirac equations emerge as linear approximations of the exact nonlinear dual-rotor evolution. Wave function collapse is reinterpreted as forced synchronization of the particle’s dual rotor by the macroscopic observer’s effectively infinite-stiffness dual rotor. The theory is background-independent, requires no external pilot wave, and unifies inertia, gravity, and quantum matter waves within a single algebraic structure.
+We prove that the quantum mechanical wave function of a massive particle is nothing but the geometric overlap (biquaternionic inner product) between the observer's dual rotor and the particle's own dual rotor evaluated at every point in space. The de Broglie phase is identified as the accumulated torsional mismatch angle between the usual and dual rotors carried intrinsically by every massive particle in the 16-dimensional biquaternion algebra $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. This identification provides a fully deterministic, nonlocal hidden-variable completion of quantum mechanics in which the hidden variables are precisely the six real parameters $(\theta_1,\theta_2,\theta_3,\phi_1,\phi_2,\phi_3)$ of the dual-spacetime rotor pair. Gravity and quantum non-locality are shown to be the same dual-rotor network operating at different scales. The Dirac equation in momentum space is the first-order factor of the Minkowski quadratic already present in \(\mathrm{Cl}(3,1)\). Schrödinger and Klein–Gordon dynamics remain low-energy readings of dual-rotor evolution, not independent postulates of a linearization. Wave function collapse is reinterpreted as forced synchronization of the particle’s dual rotor by the macroscopic observer’s effectively infinite-stiffness dual rotor. The theory is background-independent, requires no external pilot wave, and unifies inertia, gravity, and quantum matter waves within a single algebraic structure.
 \end{abstract}
 
 \section{Introduction}
@@ -135,7 +135,7 @@ Unlike Bohmian mechanics, no external guiding equation is needed: the pilot roto
 
 \section{Derivation of Schrödinger and Klein–Gordon Equations}
 
-Linearizing the exact rotor evolution around a slowly varying background dual rotor yields (see Appendix B):
+A slowly varying dual-rotor background suggests the familiar low-energy wave equations (see Appendix B for a heuristic expansion, not a derived theorem):
 \begin{align}
 i\hbar \frac{\partial \psi}{\partial t}
   &= \Bigl[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{x})\Bigr]\psi, \\
@@ -145,17 +145,13 @@ Thus both non-relativistic and relativistic quantum mechanics emerge as low-ener
 
 \section{Dirac Equation as First-Order Form of Rotor Dynamics}
 
-Because the underlying algebra is the Clifford algebra \(\mathrm{Cl}(3,1)\), the rotor dynamics admit a natural first-order formulation. The biquaternionic Dirac operator is obtained by left-multiplication by the gamma matrices realized as
+The underlying algebra is the Clifford algebra \(\mathrm{Cl}(3,1)\). A first-order spinor equation is therefore not an extra postulate: it is the square root already present in the product. For a four-momentum \(p\) the grade-1 element \(\gamma(p)=\sum_\mu p_\mu\gamma^\mu\) satisfies \(\gamma(p)^2=Q(p)\), with \(Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2\), both in the algebra and as Weyl matrices on \(\mathbb{C}^4\). The mass shell \(Q(p)=-m^2\) is the vanishing of \((\gamma(p)-im)(\gamma(p)+im)\). A spinor with \(\gamma(p)\Psi=im\Psi\) lies on that shell. In the chiral representation
 \[
 \gamma^\mu = \begin{pmatrix} 0 & \sigma^\mu \\ \bar{\sigma}^\mu & 0 \end{pmatrix}
 \]
-in the chiral representation, where the \(\sigma^\mu\) are Pauli matrices extended by the dual-sector generators. Acting on a four-component biquaternionic spinor \(\Psi\) assembled from the usual and dual rotor components, the free Dirac equation
-\[
-(i\gamma^\mu\partial_\mu - m)\Psi = 0
-\]
-is recovered exactly as the linearization of the rotor evolution equation about a background torsional vacuum. The mass term arises directly from the stiffness of the dual-rotor coupling, while the first-order differential structure is inherited from the Clifford product. Squaring the Dirac operator immediately yields the Klein–Gordon equation derived in the preceding section, confirming consistency.
+the slash is off-diagonal, so vanishing mass decouples the two Weyl blocks while a nonzero mass mixes them. Chirality \(\gamma^5\) reverses the sign of \(m\). Rest-frame solutions exist.
 
-This establishes that the Dirac equation is not an independent postulate but the minimal first-order differential consequence of the \(\mathrm{Cl}(3,1)\) geometry carried by every massive particle.
+This is the free Dirac equation in momentum space, equivalently the plane-wave form of \((i\gamma^\mu\partial_\mu-m)\Psi=0\). Squaring the slash recovers the Klein–Gordon symbol \(Q(p)+m^2\). The first-order structure is inherited from the Clifford product, not from a linearization of a dual-rotor PDE about a torsional vacuum. Identifying \(m\) with dual-rotor stiffness remains a geometric reading, not a derived equality.
 
 \section{Wave Function Collapse as Rotor Synchronization}
 

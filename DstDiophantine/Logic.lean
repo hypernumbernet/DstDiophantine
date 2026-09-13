@@ -35,6 +35,7 @@ import DstDiophantine.Logic.Quantum.CompositeProjector
 import DstDiophantine.Logic.Quantum.LeftIdealDim
 import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
+import DstDiophantine.Logic.Quantum.DiracEquation
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
 import DstDiophantine.Algebra.Invariant
@@ -67,7 +68,8 @@ and `DstDiophantine.CGA`).
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
   `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation,
-  usual-sector hyperbolic Rodrigues, Weyl chirality)
+  usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
+  equation as the Clifford square of the Minkowski quadratic)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -548,6 +550,38 @@ example (ψ : DualSpinor) :
 example (ψ : DualSpinor) :
     applyDiracMat diracMat5 (weylLower ψ) = -weylLower ψ :=
   applyDiracMat5_weylLower ψ
+
+/-- Regression: Clifford slash squares to the Minkowski quadratic. -/
+example (p : Vec4) :
+    slashCl p * slashCl p = algebraMap ℝ Cl31 (minkowskiQ p) :=
+  slashCl_sq p
+
+/-- Regression: matrix slash squares to \(Q(p)\,I\). -/
+example (p : Vec4) :
+    slashMat p * slashMat p = (minkowskiQ p : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) :=
+  slashMat_sq p
+
+/-- Regression: a nonzero Dirac eigenspinor lies on the mass shell. -/
+example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
+    (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
+    minkowskiQ p = -m ^ 2 :=
+  diracMomentum_implies_mass_shell hΨ h
+
+/-- Regression: rest-frame particle solutions exist. -/
+example (m : ℝ) :
+    ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
+  exists_rest_particle m
+
+/-- Regression: massless Dirac decouples into Weyl equations. -/
+example {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum 0 p Ψ) :
+    applyMat (pauliSlash p) (diracLower Ψ) = 0 ∧
+      applyMat (pauliSlashBar p) (diracUpper Ψ) = 0 :=
+  dirac_massless_decouple h
+
+/-- Regression: \(\gamma^5\) sends mass \(m\) to mass \(-m\). -/
+example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    DiracMomentum (-m) p (applyDiracMat diracMat5 Ψ) :=
+  diracMat5_flips_mass h
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

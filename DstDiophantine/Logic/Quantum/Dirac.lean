@@ -15,8 +15,9 @@ The Dirac matrices of signature `(-,+,+,+)` are the grade-1 generators
 to `+1`). The paper draft's reuse of `j` for both `P_spin = (1+j)/2`
 (`j² = +1`) and `γ⁰` is therefore rejected.
 
-The Dirac *equation* (a first-order PDE, mass term, rotor covariance) is
-not formalised here.
+The Dirac *equation* as a spacetime PDE, a torsional mass, and rotor
+covariance are not formalised here. The momentum-space first-order
+factor of the Minkowski quadratic is `Logic.Quantum.DiracEquation`.
 -/
 
 namespace DstDiophantine
