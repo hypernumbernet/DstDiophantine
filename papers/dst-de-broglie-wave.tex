@@ -1,12 +1,8 @@
 \documentclass[a4paper]{article}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{amsthm}
-\usepackage{mathtools}
-\usepackage{bm}
+\usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
 \usepackage{hyperref}
-\newtheorem{theorem}{Theorem}
 
 \title{De Broglie Waves as Dual-Rotor Phase Lag:\\ Quantum Mechanics as Geometry of Particle-Intrinsic Dual Spacetime}
 
@@ -17,187 +13,146 @@
 \maketitle
 
 \begin{abstract}
-We prove that the quantum mechanical wave function of a massive particle is nothing but the geometric overlap (biquaternionic inner product) between the observer's dual rotor and the particle's own dual rotor evaluated at every point in space. The de Broglie phase is identified as the accumulated torsional mismatch angle between the usual and dual rotors carried intrinsically by every massive particle in the 16-dimensional biquaternion algebra $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. This identification provides a fully deterministic, nonlocal hidden-variable completion of quantum mechanics in which the hidden variables are precisely the six real parameters $(\theta_1,\theta_2,\theta_3,\phi_1,\phi_2,\phi_3)$ of the dual-spacetime rotor pair. Gravity and quantum non-locality are shown to be the same dual-rotor network operating at different scales. The Dirac equation in momentum space is the first-order factor of the Minkowski quadratic already present in \(\mathrm{Cl}(3,1)\). Schrödinger and Klein–Gordon dynamics remain low-energy readings of dual-rotor evolution, not independent postulates of a linearization. Wave function collapse is reinterpreted as forced synchronization of the particle’s dual rotor by the macroscopic observer’s effectively infinite-stiffness dual rotor. The theory is background-independent, requires no external pilot wave, and unifies inertia, gravity, and quantum matter waves within a single algebraic structure.
+Every massive particle in double spacetime theory carries a dual rotor, already an element of \(\mathrm{SU}(2)\) on \(\mathbb{C}^2\). Three invariants of that rotor must be kept apart: the real character \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\); the complex spinor matrix element \(\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle=\cos(\theta/2)-i n_z\sin(\theta/2)\), a pure phase along the observer axis and a real cosine in the equatorial plane; and a scalar \(\mathrm{U}(1)\) factor identified with the de Broglie phase. Observer and particle are compared by the Hilbert pairing of their dual-rotor images, equal to the matrix element of the relative dual rotor. The written opposite-sign particle action makes the mismatch free, so lag may accumulate linearly; a harmonic model exists only for same-sign kinetics, at frequency \(\sqrt{2m}\), which is not \(E/\hbar\). The Dirac equation in momentum space is the first-order factor of the Minkowski quadratic in \(\mathrm{Cl}(3,1)\). Schr\"odinger and Klein--Gordon dynamics, collapse, and the unification of gravity with quantum non-locality remain geometric readings. The phase \(J\) of this note is an oscillator diagnostic, not the parameter-space Killing quadratic of the main paper.
 \end{abstract}
 
 \section{Introduction}
 
-The de Broglie’s 1924 hypothesis that every massive particle is accompanied by a wave of wavelength $\lambda = h/p$ has remained one of the most profound and mysterious insights in physics for a century. Standard quantum mechanics treats the wave function $\psi$ as a probabilistic amplitude living in an abstract Hilbert space, while general relativity describes gravity via curvature of a continuous spacetime manifold. Despite numerous attempts, no geometric mechanism has ever explained \emph{why} massive particles exhibit wave behavior or how this wave is physically generated.
+De Broglie's 1924 hypothesis that every massive particle is accompanied by a wave of wavelength \(\lambda=h/p\) remains one of the deepest empirical facts in physics~\cite{debroglie1924}. Standard quantum mechanics places the wave function in an abstract Hilbert space. General relativity places gravity in the curvature of a shared continuum. Neither construction says, from the algebra carried by a single massive particle, \emph{what} the matter wave is.
 
-The dual spacetime theory resolves both mysteries at once: every massive particle carries \emph{two} compactified Minkowski spacetimes encoded in the 16-real-dimensional biquaternion algebra $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. Gravity and inertia arise from the torsional mismatch between the usual rotor $R_\text{usual}$ and the dual rotor $R_\text{dual}$. The phase $J$ used below is an oscillator/phase-lag potential, not the parameter-space Killing quadratic of the main paper; the admissible ceiling $|J_{\rm norm}|\le 1$ must not be transplanted here. Here we prove that the de Broglie–Bohm pilot wave is not an external field but the \emph{dual rotor itself}, and that the full quantum wave function is the biquaternionic overlap between observer and particle dual rotors.
-
-\section{Dual Rotors and the Origin of de Broglie Phase}
-
-Every massive particle carries the complete rotor
+Double spacetime theory supplies a candidate~\cite{dst-main}. Every massive particle carries two compactified Minkowski frames inside the 16-real-dimensional biquaternion algebra \(\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)\). Gravity and inertia are torsional mismatch between the usual rotor \(R_{\mathrm{usual}}\) and the dual rotor \(R_{\mathrm{dual}}\). The dual rotor, represented on \(\mathbb{C}^2\) by
 \[
-R_\text{total} = R_\text{usual} R_\text{dual}
-  = \exp\!\Bigl[\sum_{a=1}^3 \bigl(\tfrac{\theta_a}{2} i\Gamma_a + \tfrac{\phi_a}{2}\Gamma_a\bigr)\Bigr],
+R(\beta)=\exp\Bigl(\sum_{a=1}^3\tfrac{\beta_a}{2}(-i\sigma_a)\Bigr),
+\]
+is unitary of determinant \(1\), hence an element of \(\mathrm{SU}(2)\). Compactness of the dual sector is the \(4\pi\) period of that group.
+
+The question is which invariant of \(R(\beta)\) is the de Broglie phase. The character, the spinor matrix element, and a scalar \(\mathrm{U}(1)\) factor built from the mismatch angle are three different quantities. Conflating them produces a complex wave function out of a real trace, or a Compton frequency out of a Lagrangian that does not oscillate. The geometry is clearer when the three are named separately.
+
+\section{Dual rotors}
+
+The complete rotor of a massive particle is written
+\[
+R_{\mathrm{total}}
+  =\exp\Bigl[\sum_{a=1}^3\bigl(\tfrac{\theta_a}{2}i\Gamma_a+\tfrac{\phi_a}{2}\Gamma_a\bigr)\Bigr],
 \qquad \Gamma_1=I,\;\Gamma_2=J,\;\Gamma_3=K,
 \]
-where $i\Gamma_a$ generate boosts (square to $+1$) and $\Gamma_a$ generate rotations (square to $-1$) in the dual sector.
+where \(i\Gamma_a\) generate boosts (square to \(+1\)) and \(\Gamma_a\) generate dual-sector rotations (square to \(-1\)). Same-axis usual and dual generators commute, so a one-axis exponential factorises. Distinct-axis generators need not commute; an unrestricted six-parameter factorisation \(R_{\mathrm{usual}}R_{\mathrm{dual}}\) is not justified by those commutators.
 
-In free uniform motion with velocity $\mathbf{v}$, the usual rotor evolves as a pure boost:
+The relative rotor \(\Omega=R_{\mathrm{usual}}^{\dagger}R_{\mathrm{dual}}\) equals the identity if and only if the two rotors coincide. Vanishing of the parameter-space scalar \(J\) does not force \(\Omega=1\): a balanced massive seed has \(J=0\) with a nontrivial relative rotor.
+
+On \(\mathbb{C}^2\) the dual rotor is the Rodrigues matrix
 \[
-R_\text{usual}(t) = \exp\!\Bigl[\tfrac{\gamma v_a t}{2c} i\Gamma_a\Bigr].
+R(\beta)=\cos(\lVert\beta\rVert/2)\,I+\sin(\lVert\beta\rVert/2)\,\widehat{\Gamma}(\beta),
 \]
-The dual rotor, bound by rest mass $m$, lags behind with rigidity proportional to $m$:
+with \(\widehat{\Gamma}(\beta)^2=-1\) whenever \(\beta\neq 0\). Usual-sector rotors are the hyperbolic twin: Hermitian of determinant \(1\), and not unitary for a nonzero boost.
+
+\section{Three invariants}
+
+The character of the dual rotor is the normalised trace
 \[
-\phi_a(t) = \theta_a(t) - \delta\theta_a(t),\qquad
-\delta\theta_a(t) \propto m.
+\frac12\operatorname{Tr} R(\beta)=\cos(\lVert\beta\rVert/2).
 \]
-The accumulated phase lag is
+It is real. A pairing built from this trace cannot be a complex scalar wave function. It is the \(\mathrm{SU}(2)\) character of the dual rapidity, the half-angle cosine of a rotation on the three-sphere of unit dual rotors.
+
+The finer invariant is a spinor matrix element. Let \(\lvert\uparrow\rangle\) be the \(+1\) eigenvector of \(\sigma_z\) in the observer's dual frame. Then
 \[
-\Phi(t,\mathbf{x}) = \int \delta\theta_a(t')\,dt'
-  = \frac{E t - \mathbf{p}\cdot\mathbf{x}}{\hbar} + \text{const},
+\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle
+  =\cos(\theta/2)-i n_z\sin(\theta/2),
+\qquad \theta=\lVert\beta\rVert,\quad \hat n=\beta/\theta.
 \]
-which is \emph{exactly} the de Broglie phase. Thus the de Broglie wave is the physical record of dual-rotor torsional strain.
-
-The Compton wavelength emerges as the compactification radius of the dual spacetime:
+Two axes display the geometry cleanly. A dual rotation about the observer axis is a pure phase,
 \[
-r_\text{comp} \sim \frac{\hbar}{mc},
+\langle\uparrow\rvert R(\theta e_z)\lvert\uparrow\rangle=e^{-i\theta/2}.
 \]
-while the de Broglie wavelength is the distance over which the torsional mismatch accumulates one full cycle $2\pi$.
+A dual rotation in the equatorial plane is a real cosine,
+\[
+\langle\uparrow\rvert R(\theta e_x)\lvert\uparrow\rangle=\cos(\theta/2).
+\]
+Amplitude and phase of the matrix element are therefore not independent decorations of a single angle: they record how the dual axis sits relative to the observer. The polar form \(\sqrt{\rho}\,e^{iS/\hbar}\) of textbook wave mechanics is not this \(\mathrm{SU}(2)\) object, and cannot be recovered from \(\arg(\hat n_{\mathcal{O}}\cdot\hat n_A)\), which for two real unit vectors is \(0\) or \(\pi\).
 
-\section{Wave Function as Dual-Rotor Overlap}
-\label{sec:wavefunction}
+The third quantity is a scalar mismatch angle \(\delta\) between usual and dual rapidities, promoted by hand to a laboratory \(\mathrm{U}(1)\) factor \(e^{i\delta}\). That identification may be read as the de Broglie phase \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\). It is not the character, and it is not automatically the spinor matrix element. The double cover of \(\mathrm{SU}(2)\) makes the distinction sharp: a \(2\pi\) dual rotation sends the spinor to its negative and the character to \(\cos\pi=-1\), while a conventional scalar matter wave would have completed a single cycle.
 
-The quantum mechanical wave function is not an abstract entity in Hilbert space but a concrete geometric overlap in the biquaternion algebra.
+\section{Observer overlap}
 
-Let $\mathcal{O}$ denote the macroscopic observer (measurement apparatus) and $A$ the massive particle under consideration. The \emph{dual-rotor inner product} is defined as
-\begin{equation}
-\langle R_{\text{dual}}^{\mathcal{O}} \mid R_{\text{dual}}^{A}(\mathbf{x},t) \rangle
-:= \frac{1}{2} \operatorname{Tr}\!\left[ (R_{\text{dual}}^{\mathcal{O}})^\dagger \, R_{\text{dual}}^{A}(\mathbf{x},t) \right],
-\label{eq:innerproduct}
-\end{equation}
-where $R_{\text{dual}}^{A}(\mathbf{x},t)$ is the \emph{pilot dual rotor}—the hypothetical value that the particle's own dual rotor would take if its center-of-mass were instantaneously located at spacetime point $(\mathbf{x},t)$.
+Let \(\mathcal{O}\) be a macroscopic observer and \(A\) a massive particle. The comparison that lives in the dual Hilbert space is
+\[
+\langle R(\beta_{\mathcal{O}})\chi\mid R(\beta_A)\chi\rangle
+  =\langle\chi\mid R(\beta_{\mathcal{O}})^{\dagger}R(\beta_A)\chi\rangle,
+\]
+for a reference spinor \(\chi\). Unitarity of each dual rotor makes the left-hand side an inner product of two unitarily transported copies of \(\chi\), and makes the right-hand side the matrix element of the relative dual rotor. The modulus is bounded by \(\lVert\chi\rVert^2\).
 
-Because every rotor satisfies $R^\dagger = R^{-1}$, the trace in Eq.~\eqref{eq:innerproduct} is always a complex number of modulus $\leq 1$. We now prove that this quantity \emph{is} the complex wave function.
+This pairing is not the parameter-space Killing form. The Killing pairing has signature \((3,3)\). Self-overlap equals a multiple of \(J\) and can be negative; it is not a Born probability. The four labels of dual-spacetime logic are not four orthogonal rays in \(\mathbb{C}^2\).
 
-\begin{theorem}
-The dual-rotor overlap defines the standard complex wave function:
-\begin{equation}
-\psi_A(\mathbf{x},t \mid \mathcal{O})
-:= \langle R_{\text{dual}}^{\mathcal{O}} \mid R_{\text{dual}}^{A}(\mathbf{x},t) \rangle
-= \sqrt{\rho(\mathbf{x},t)} \, e^{i S(\mathbf{x},t)/\hbar},
-\label{eq:psi}
-\end{equation}
-where $\rho = |\psi|^2$ is the Born-rule probability density and $S$ is the de Broglie–Bohm phase function.
-\end{theorem}
+On a single dual axis the rotors compose by adding angles: \(R((\theta+\phi)e_z)=R(\theta e_z)R(\phi e_z)\). Superposition of distinct dual axes is composition in \(\mathrm{SU}(2)\), not addition of complex scalars. Interference, in this geometry, is non-abelian.
 
-\begin{proof}
-Expand both rotors in the standard basis:
+\section{Mismatch dynamics}
+
+A particle-intrinsic action for the six rapidities is a model, not a deduction from unitarity. Three neighbouring systems have been compared~\cite{dst-dynamic-equation,dst-main}.
+
+The written opposite-sign density
+\[
+L=\tfrac12\dot\phi^2-\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2
+\]
+has Euler--Lagrange equations \(\ddot\phi=-m(\phi-\theta)\) and \(\ddot\theta=-m(\phi-\theta)\). The mismatch \(\delta=\phi-\theta\) is free: \(\ddot\delta=0\). Affine lag \(\delta(t)=\delta_0+\nu t\) is allowed. The coefficient \(\nu\) is an initial condition; the mass \(m\) accelerates both angles together and does not fix a de Broglie frequency.
+
+A neighbouring system sometimes written alongside it,
+\[
+\ddot\phi=m(\phi-\theta),\qquad -\ddot\theta=m(\phi-\theta),
+\]
+makes the mismatch runaway, \(\ddot\delta=2m\delta\). It is not an oscillator.
+
+An oscillator appears only if both kinetic signs are taken positive. The density \(L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2\) yields \(\ddot\delta+2m\delta=0\), with frequency \(\sqrt{2m}\) in units \(\hbar=c=1\). That frequency is not the Compton frequency \(m\), and the model is not the written action.
+
+Linear accumulation of a free mismatch is therefore the only dynamical bridge to a secular phase that the written action actually supplies. Identifying the rate with \(E/\hbar\) remains a reading. Collective averaging of a particle-intrinsic \(J_{\mathrm{osc}}\) over many particles is likewise a reading; it is not an identification with the Weitzenb\"ock density \(T\), and \(\lvert J_{\mathrm{norm}}\rvert\le 1\) is not transplanted here.
+
+The Compton wavelength continues to be readable as a compactification radius of the dual sector, \(\sim\hbar/mc\). The de Broglie wavelength is the laboratory distance over which an identified scalar phase advances by \(2\pi\). Neither length is derived from the trace character.
+
+\section{Dirac equation as first-order form}
+
+The underlying algebra is \(\mathrm{Cl}(3,1)\). A first-order spinor equation is therefore not an extra postulate: it is the square root already present in the product. For a four-momentum \(p\) the grade-1 element \(\gamma(p)=\sum_{\mu}p_{\mu}\gamma^{\mu}\) satisfies \(\gamma(p)^2=Q(p)\), with \(Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2\), both in the algebra and as Weyl matrices on \(\mathbb{C}^4\). The mass shell \(Q(p)=-m^2\) is the vanishing of \((\gamma(p)-im)(\gamma(p)+im)\). A spinor with \(\gamma(p)\Psi=im\Psi\) lies on that shell. In the chiral representation the slash is off-diagonal, so vanishing mass decouples the two Weyl blocks while a nonzero mass mixes them. Chirality \(\gamma^5\) reverses the sign of \(m\). Rest-frame solutions exist.
+
+This is the free Dirac equation in momentum space, equivalently the plane-wave form of \((i\gamma^{\mu}\partial_{\mu}-m)\Psi=0\). Squaring the slash recovers the Klein--Gordon symbol \(Q(p)+m^2\). The first-order structure is inherited from the Clifford product, not from a linearisation of a dual-rotor PDE about a torsional vacuum. Identifying \(m\) with dual-rotor stiffness remains a geometric reading, not a derived equality. The time gamma \(\gamma^0\) is the Minkowski vector \(e_0\), not the hyperbolic bivector used as a spin projector.
+
+\section{Wave equations and geometric readings}
+
+A slowly varying dual-rotor background may be read as suggesting the familiar laboratory wave equations
 \begin{align}
-R_{\text{dual}}^{\mathcal{O}} &= \cos\!\frac{\alpha}{2} + \sin\!\frac{\alpha}{2}\, \hat{n}_\mathcal{O}\cdot\vec{\Gamma}, \\[4pt]
-R_{\text{dual}}^{A}(\mathbf{x},t) &= \cos\!\frac{\beta(\mathbf{x},t)}{2} + \sin\!\frac{\beta(\mathbf{x},t)}{2}\, \hat{n}_A(\mathbf{x},t)\cdot\vec{\Gamma}.
+i\hbar\frac{\partial\psi}{\partial t}
+  &=\Bigl[-\frac{\hbar^2}{2m}\nabla^2+V(\mathbf{x})\Bigr]\psi, \\
+\square\psi+\frac{m^2c^2}{\hbar^2}\psi&=0.
 \end{align}
-The trace of the product of two unit spinors in $\mathrm{Spin}^+(3,1)$ is
-\begin{equation}
-\operatorname{Tr}(R_1^\dagger R_2) = 2 \cos\!\Bigl[\tfrac{\beta - \alpha}{2}\Bigr]
-          = 2 \cos\!\Bigl[\tfrac{\delta\theta(\mathbf{x},t)}{2}\Bigr],
-\end{equation}
-where $\delta\theta(\mathbf{x},t)$ is the relative angle between the two dual rotors. Therefore
-\begin{equation}
-\langle R_{\text{dual}}^{\mathcal{O}} \mid R_{\text{dual}}^{A}(\mathbf{x},t) \rangle
-= \cos\!\Bigl[\tfrac{\delta\theta(\mathbf{x},t)}{2}\Bigr]
-  \exp\!\Bigl[i \arg\!\bigl(\hat{n}_\mathcal{O}\cdot\hat{n}_A\bigr) \Bigr].
-\end{equation}
-The real part gives the probability amplitude $\sqrt{\rho}$, while the accumulated phase $\delta\theta(\mathbf{x},t)$ is exactly the torsional mismatch phase identified in Section 2 as the de Broglie phase $S/\hbar$. Q.E.D.
-\end{proof}
+The passage from the \(\mathrm{SU}(2)\) kinematics, or from the affine mismatch, to these scalar PDEs is a heuristic expansion, not a derived theorem. Non-relativistic and relativistic quantum mechanics remain available as low-energy languages of dual-rotor dynamics; they are not forced by the character or by the spinor matrix element.
 
-The argument \(\arg(\hat{n}_\mathcal{O}\cdot\hat{n}_A)\) maps directly onto the complex phase of the wave function because the pseudoscalar \(i\) in the biquaternion center commutes with all generators and supplies the imaginary unit of ordinary complex analysis. Consequently the overlap is a genuine \(\mathbb{C}\)-valued function on spacetime.
+Wave-function collapse, in the same register, is readable as forced alignment of a particle's dual rotor to a macroscopic observer whose many dual rotors are locked into a stiff collective state. Apparent randomness is then ignorance of the initial dual angles, six real numbers per particle. Because the dual sector is compact, the realignment is instantaneous in the dual dimensions. This is a geometric picture of the measurement postulate, not a derivation of it.
 
-The Born rule follows at once: the probability density is
-\[
-|\psi|^2 = \cos^2\Bigl(\frac{\delta\theta(\mathbf{x},t)}{2}\Bigr).
-\]
-This expression is non-negative, integrates to unity when the observer’s rotor state is normalized, and reduces to the standard Born interpretation without any additional statistical postulate.
+The same 16-dimensional network is readable as transmitting macroscopic gravity through averaged mismatch and microscopic interference through local dual-rotor geometry. The diagnostic \(J\) of this note is not the parameter-space Killing quadratic of the main paper. Gravity and quantum non-locality may be the same algebra at different scales; that remains a reading.
 
-For many-particle systems, the wave function is constructed from the \emph{composite dual rotor} of all particles; entanglement emerges automatically from shared dual-rotor phases rather than tensor-product structure. The pilot rotor field $R_{\text{dual}}^{A}(\mathbf{x},t)$ propagates instantaneously in the compact dual dimensions, providing the physical mechanism for quantum non-locality.
+\section{Relation to de Broglie--Bohm mechanics}
 
-This definition satisfies all requirements of quantum mechanics:
-\begin{itemize}
-\item $|\psi|^2$ is non-negative and integrates to 1,
-\item the phase gradient $\nabla S = \mathbf{p}$ yields the correct guidance equation,
-\item superposition and interference arise from geometric addition of rotor composition.
-\end{itemize}
+The pilot-wave interpretation of de Broglie and Bohm posits an external guiding field that steers particles along deterministic trajectories~\cite{bohm1952}. In the dual-spacetime framework no external field is required. The dual rotor that appears in the observer overlap is the particle's own dual rotor, evaluated at a hypothetical location of its centre of mass. The hidden variables, if one wishes to speak that way, are the six real rotor angles. The ``pilot wave'' is the particle viewed from the dual sector.
 
-Thus the wave function is not probabilistic in origin—it is the cosine of half the torsional mismatch angle between observer and particle dual spacetimes.
+Bohmian mechanics still needs a scalar wave function on spacetime and a quantum potential. The dual-rotor geometry supplies an \(\mathrm{SU}(2)\) kinematics and a relative-rotor pairing; it does not, by itself, reconstruct the quantum potential or prove a Bell violation~\cite{bell1964}. Compactness of the dual sector makes non-locality available as a geometric option, not as a theorem of the character.
 
-\section{Deterministic Nonlocal Hidden Variables}
+\section{Experimental signatures}
 
-The hidden variables of the theory are the six real numbers per particle:
-\[
-\lambda = (\theta_1,\theta_2,\theta_3, \phi_1,\phi_2,\phi_3) \in \mathbb{R}^6.
-\]
-These evolve deterministically under the exact nonlinear rotor equations. Because the dual spacetime is compactified and shared instantaneously across the universe (Planck-frequency modes), the evolution is \emph{nonlocal by construction} and violates Bell inequalities exactly as required by quantum mechanics.
+The identifications that remain readings still yield distinguishable expectations.
 
-Unlike Bohmian mechanics, no external guiding equation is needed: the pilot rotor \emph{is} the particle’s own dual rotor.
+First, matter-wave interferometry would see a weak dependence of fringe visibility on the collective torsional stiffness of nearby masses, and a phase shift linear in the angular velocity of a large rotating mass---a gravitational Faraday-like effect from dual-rotor frame dragging.
 
-\section{Derivation of Schrödinger and Klein–Gordon Equations}
+Second, high-frequency gravitational-wave detectors operating near Compton frequencies would see resonant features only if a harmonic dual-rotor model is physically realised. The working oscillator, if it is the right model, sits at \(\sqrt{2m}\), not at \(m\). Absence of a narrow line at either frequency would constrain the dynamics, not the dual-rotor kinematics.
 
-A slowly varying dual-rotor background suggests the familiar low-energy wave equations (see Appendix B for a heuristic expansion, not a derived theorem):
-\begin{align}
-i\hbar \frac{\partial \psi}{\partial t}
-  &= \Bigl[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{x})\Bigr]\psi, \\
-\square \psi + \frac{m^2 c^2}{\hbar^2}\psi &= 0.
-\end{align}
-Thus both non-relativistic and relativistic quantum mechanics emerge as low-energy effective theories of dual-rotor dynamics.
+Third, if collapse is dual-rotor synchronisation, repeated weak measurements within a rotor relaxation time would show small systematic deviations from the Born rule. Such experiments lie within the reach of superconducting qubits or trapped ions.
 
-\section{Dirac Equation as First-Order Form of Rotor Dynamics}
-
-The underlying algebra is the Clifford algebra \(\mathrm{Cl}(3,1)\). A first-order spinor equation is therefore not an extra postulate: it is the square root already present in the product. For a four-momentum \(p\) the grade-1 element \(\gamma(p)=\sum_\mu p_\mu\gamma^\mu\) satisfies \(\gamma(p)^2=Q(p)\), with \(Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2\), both in the algebra and as Weyl matrices on \(\mathbb{C}^4\). The mass shell \(Q(p)=-m^2\) is the vanishing of \((\gamma(p)-im)(\gamma(p)+im)\). A spinor with \(\gamma(p)\Psi=im\Psi\) lies on that shell. In the chiral representation
-\[
-\gamma^\mu = \begin{pmatrix} 0 & \sigma^\mu \\ \bar{\sigma}^\mu & 0 \end{pmatrix}
-\]
-the slash is off-diagonal, so vanishing mass decouples the two Weyl blocks while a nonzero mass mixes them. Chirality \(\gamma^5\) reverses the sign of \(m\). Rest-frame solutions exist.
-
-This is the free Dirac equation in momentum space, equivalently the plane-wave form of \((i\gamma^\mu\partial_\mu-m)\Psi=0\). Squaring the slash recovers the Klein–Gordon symbol \(Q(p)+m^2\). The first-order structure is inherited from the Clifford product, not from a linearization of a dual-rotor PDE about a torsional vacuum. Identifying \(m\) with dual-rotor stiffness remains a geometric reading, not a derived equality.
-
-\section{Wave Function Collapse as Rotor Synchronization}
-
-A macroscopic observer possesses \(\sim10^{23}\) particles whose dual rotors are locked into a single, effectively infinite-stiffness collective state. Upon interaction the particle’s dual rotor is forced to align with one of the eigen-rotors of the observer:
-\[
-R_\text{dual}^A \;\to\; P_k R_\text{dual}^A,
-\]
-where \(P_k\) is the projection rotor onto the \(k\)-th eigenspace of the measurement observable (itself realized as a linear combination of the bivector generators \(\Gamma_a\)).
-
-Because the dual sector is compactified and shared across the entire universe at Planck frequency, this realignment occurs instantaneously in the dual dimensions. In the usual sector, however, the particle appears to “choose” an outcome with probability given by the squared overlap \(|\langle R_{\text{dual}}^{\mathcal{O}} \mid R_{\text{dual}}^{A}\rangle|^2 = \cos^2(\delta\theta_k/2)\). The apparent randomness is therefore an artifact of the observer’s ignorance of the precise initial torsional state; the underlying dynamics remain fully deterministic.
-
-After projection the particle’s dual rotor remains locked to the chosen eigenstate until the next interaction, reproducing the textbook postulate of wave-function collapse as a purely geometric synchronization process.
-
-\section{Unification of Gravity and Quantum Nonlocality}
-
-The torsional mismatch scalar $J \propto \mathrm{Tr}(\Omega_\text{biv}^2)$ of this note is a phase/oscillator diagnostic: it is not identified with the parameter-space $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$ of the main paper, and $|J_{\rm norm}|\le 1$ is not used. It is taken to govern both gravitational curvature (collective dual-rotor misalignment) and quantum phase gradients (individual dual-rotor misalignment). The same 16-dimensional network transmits:
-- macroscopic gravity (averaged $J$),
-- microscopic quantum interference (local $J$ fluctuations).
-
-\section{Relation to de Broglie–Bohm Mechanics}
-
-The pilot-wave interpretation of de Broglie and Bohm posits an external guiding field that steers particles along deterministic trajectories. In the dual-spacetime framework no external field exists. The pilot rotor \(R_{\text{dual}}^{A}(\mathbf{x},t)\) that appears in the guidance equation is precisely the particle’s own dual rotor evaluated at the hypothetical location of its center of mass. Consequently the theory is a hidden-variable completion in which the hidden variables are the six real rotor angles carried intrinsically by every massive particle; the “pilot wave” is the particle itself viewed from the dual sector.
-
-Because the dual spacetime is compactified and shared non-locally, the guidance mechanism is automatically non-local and reproduces the quantum potential of Bohmian mechanics as the torsional strain energy stored in the mismatch angle \(\delta\theta\). No additional ontological layer is required.
-
-\section{Experimental Signatures and Tests}
-
-The identification of the de Broglie wave with dual-rotor torsional lag yields several falsifiable predictions.
-
-First, in matter-wave interferometry the visibility of interference fringes should exhibit a weak dependence on the local gravitational potential through the collective torsional stiffness of nearby masses; a precision atom interferometer placed near a large rotating mass could detect a phase shift linear in the angular velocity (gravitational Faraday-like effect arising from dual-rotor frame dragging).
-
-Second, high-frequency gravitational-wave detectors operating near the Compton frequency of electrons or nucleons should see resonant absorption or emission lines when the wave’s torsional spectrum overlaps the natural harmonic-oscillator frequency \(\sqrt{m}\) of the dual rotors. Such resonances would appear as narrow-band features in the stochastic gravitational-wave background, distinguishable from ordinary metric perturbations.
-
-Third, the theory predicts that “wave-function collapse” is accompanied by a transient burst of dual-sector torsional radiation at Planckian frequencies; although unobservable directly, the back-reaction on the usual sector should produce a minute, systematic deviation from the Born rule in repeated weak measurements performed on the same particle within a coherence time shorter than the rotor relaxation time. Experiments of this type are within reach of current superconducting qubit or trapped-ion platforms.
-
-These signatures distinguish the dual-spacetime origin of matter waves from both standard quantum mechanics and other hidden-variable theories.
+These signatures distinguish a dual-spacetime origin of matter waves from standard quantum mechanics and from hidden-variable theories that retain an external pilot field. They do not test the character identity or the spinor matrix element, which are algebraic.
 
 \section{Conclusions}
 
-The century-old mystery of matter waves is solved: the de Broglie wave is the torsional lag of the particle’s own dual spacetime rotor. Quantum mechanics is pure geometry of particle-intrinsic dual spacetimes. The theory is deterministic, nonlocal, background-independent, and unifies gravity, inertia, and quantum phenomena within a single algebraic structure carried by every massive particle.
+The matter wave is not the trace of a dual rotor. That trace is real. What the dual sector actually supplies is an \(\mathrm{SU}(2)\) kinematics on \(\mathbb{C}^2\): a real character, a complex spinor matrix element whose polar form tracks the dual axis against the observer, and a relative-rotor pairing that compares two dual rotors without leaving the Hilbert space of the dual sector. The scalar de Broglie phase is a further identification, available as linear lag in the written particle action, not as a harmonic motion derived from rest mass, and not as the first-order Dirac factor already present in \(\mathrm{Cl}(3,1)\).
 
-The wave function is real. It is made of the same stuff as gravity.
+Quantum mechanics, in this geometry, is not an extra Hilbert space placed beside gravity. It is the dual-rotor kinematics of the same 16-dimensional algebra. The kinematics is sharp. The dynamical bridge to laboratory wave equations is not.
 
 \begin{thebibliography}{9}
 
-% --- Companion / DST internal papers ---
 \bibitem{dst-main}
 Anonymous,
 ``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
@@ -208,98 +163,21 @@ Anonymous,
 ``Derivation of Dual-Rotor Dynamics in Double Spacetime Theory: A Harmonic Oscillator Model from Torsional Mismatch Potential'' (2025).
 \url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/dst-dynamic-equation.pdf}.
 
-% --- de Broglie hypothesis and matter waves ---
 \bibitem{debroglie1924}
 L.~de Broglie,
 ``Recherches sur la th\'eorie des quanta,''
 \textit{Ann.\ Phys.} (Paris) \textbf{3}, 22--128 (1925).
 
-% --- de Broglie--Bohm pilot-wave theory ---
 \bibitem{bohm1952}
 D.~Bohm,
 ``A suggested interpretation of the quantum theory in terms of ``hidden'' variables.\ I,''
 \textit{Phys.\ Rev.} \textbf{85}, 166--179 (1952).
 
-% --- Quantum foundations and non-locality ---
 \bibitem{bell1964}
 J.~S.~Bell,
 ``On the Einstein Podolsky Rosen paradox,''
 \textit{Physics Physique Fizika} \textbf{1}, 195--200 (1964).
 
-\bibitem{tsirelson1980}
-B.~S.~Tsirelson,
-``Quantum generalizations of Bell's inequality,''
-\textit{Lett.\ Math.\ Phys.} \textbf{4}, 93--100 (1980).
-
 \end{thebibliography}
-
-\appendix
-\section{Proof that Dual-Rotor Overlap Equals Complex Wave Function}
-
-We provide a complete, self-contained proof that the dual-rotor inner product defined in Eq.~\eqref{eq:innerproduct} yields the standard complex wave function \(\psi\) of quantum mechanics, including explicit normalization and the identification of real/imaginary parts.
-
-Let \( R_{\text{dual}}^{\mathcal{O}} \) and \( R_{\text{dual}}^{A}(\mathbf{x},t) \) be unit elements of the spin group \(\mathrm{Spin}^+(3,1)\) embedded in the biquaternion algebra \(\mathbb{H}\otimes\mathbb{H}\). Any such rotor admits the Euler decomposition
-\[
-R = \cos\frac{\alpha}{2} + \sin\frac{\alpha}{2}\, \hat{n}\cdot\vec{\Gamma},
-\]
-where \(\hat{n}\) is a unit vector in the three-dimensional space spanned by the bivector basis \(\{\Gamma_1,\Gamma_2,\Gamma_3\}\) and \(\alpha\in[0,2\pi]\) is the rotation angle.
-
-The dual-rotor inner product is the normalized trace
-\[
-\langle R_1 \mid R_2 \rangle := \frac12 \operatorname{Tr}(R_1^\dagger R_2).
-\]
-Because every rotor satisfies \(R^\dagger = R^{-1}\) and \(\operatorname{Tr}(R_1^\dagger R_2)\) is the real part of a complex number in the center of the algebra (spanned by \(1\) and the pseudoscalar \(i\)), the inner product is always a complex scalar of modulus at most unity.
-
-Expanding the product explicitly in the biquaternion basis and collecting the scalar and pseudoscalar coefficients yields
-\[
-\operatorname{Tr}(R_{\text{dual}}^{\mathcal{O}\dagger} R_{\text{dual}}^A) = 2\cos\Bigl(\frac{\delta\theta}{2}\Bigr)\exp\bigl(i\,\arg(\hat{n}_{\mathcal{O}}\cdot\hat{n}_A)\bigr),
-\]
-where \(\delta\theta(\mathbf{x},t)\) is the relative torsional mismatch angle between the two dual rotors. Therefore
-\[
-\langle R_{\text{dual}}^{\mathcal{O}} \mid R_{\text{dual}}^{A}(\mathbf{x},t) \rangle = \cos\Bigl(\frac{\delta\theta}{2}\Bigr)\exp\bigl(i\,\phi(\mathbf{x},t)\bigr),
-\]
-with phase \(\phi = \arg(\hat{n}_{\mathcal{O}}\cdot\hat{n}_A)\).
-
-We identify the probability amplitude with the modulus and the accumulated phase with the de Broglie–Bohm phase function:
-\[
-\sqrt{\rho(\mathbf{x},t)} := \cos\Bigl(\frac{\delta\theta(\mathbf{x},t)}{2}\Bigr),\qquad
-S(\mathbf{x},t)/\hbar := \phi(\mathbf{x},t) + \text{const}.
-\]
-This yields the polar form of the wave function
-\[
-\psi_A(\mathbf{x},t\mid\mathcal{O}) = \sqrt{\rho}\,e^{i S/\hbar}.
-\]
-The Born-rule normalization \(\int|\psi|^2\,d^3x=1\) follows from geometry: \(\cos^2(\delta\theta/2)\) is the squared half-angle cosine on the 3-sphere of unit rotors. Integrating the probability density over space recovers the observer’s normalized rotor measure.
-
-This completes the identification of the dual-rotor overlap with the quantum wave function.
-
-\section{Derivation of Schrödinger Equation from Rotor Linearization}
-
-We start from the exact nonlinear dual-rotor dynamics derived in the companion paper \cite{dst-dynamic-equation}. The torsional mismatch angle \(\delta\theta_a = \theta_a - \phi_a\) of a free massive particle obeys the simple harmonic oscillator equation
-\[
-\ddot{\delta\theta}_a + m\,\delta\theta_a = 0,
-\]
-where the rest mass \(m\) appears as the stiffness of the dual-sector coupling (natural units \(\hbar = c = 1\)).
-
-In the low-energy, long-wavelength regime relevant to laboratory quantum mechanics, the rapid Compton-frequency oscillations average to zero. The slowly varying envelope of the mismatch therefore satisfies the first-order approximation
-\[
-\dot{\delta\theta}_a \approx \frac{p_a}{m},
-\]
-where \(p_a\) is the canonical momentum conjugate to the usual-sector boost angle. Integrating once more yields the linear phase accumulation
-\[
-\delta\theta_a(t,\mathbf{x}) \approx \frac{E t - \mathbf{p}\cdot\mathbf{x}}{\hbar} + \text{const}.
-\]
-
-The complex wave function is the dual-rotor overlap
-\[
-\psi = \cos\Bigl(\frac{\delta\theta}{2}\Bigr)\exp(i\,\phi).
-\]
-For small, slowly varying \(\delta\theta\) the cosine linearizes to \(\cos(\delta\theta/2) \approx 1 - (\delta\theta)^2/8\), but the dominant dynamical content resides in the phase factor. Differentiating with respect to time and using the chain rule together with the identification \(\nabla S = \mathbf{p}\) produces the continuity and Hamilton–Jacobi equations whose imaginary and real parts are precisely the Schrödinger equation
-\[
-i\hbar\frac{\partial\psi}{\partial t} = \Bigl[-\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{x})\Bigr]\psi.
-\]
-The same linearization applied to the relativistic rotor dispersion recovers the Klein–Gordon equation \(\square\psi + m^2\psi = 0\).
-
-Thus both the non-relativistic and relativistic wave equations of quantum mechanics emerge as the unique linear, low-energy effective theories of the underlying nonlinear dual-rotor dynamics.
 
 \end{document}

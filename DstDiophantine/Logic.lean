@@ -36,6 +36,7 @@ import DstDiophantine.Logic.Quantum.LeftIdealDim
 import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DiracEquation
+import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
 import DstDiophantine.Algebra.Invariant
@@ -69,7 +70,8 @@ and `DstDiophantine.CGA`).
 * `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
   `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation,
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
-  equation as the Clifford square of the Minkowski quadratic)
+  equation as the Clifford square of the Minkowski quadratic,
+  dual-rotor character and spinor amplitude)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -447,6 +449,37 @@ example (β : DualRapidity) :
     (dualRotorMat β).conjTranspose * dualRotorMat β = 1 ∧
       (dualRotorMat β).det = 1 :=
   ⟨dualRotorMat_unitary β, dualRotorMat_det β⟩
+
+/-- Regression: dual-rotor character is the real half-angle cosine. -/
+example (β : DualRapidity) :
+    (dualRotorMat β).trace = 2 * (Real.cos (‖β‖ / 2) : ℂ) :=
+  dualRotorMat_trace β
+
+/-- Regression: along \(\sigma_z\) the spinor amplitude is \(e^{-i\theta/2}\). -/
+example (θ : ℝ) :
+    dualRotorAmplitude (EuclideanSpace.single 2 θ) spinUp =
+      Complex.exp (-(θ / 2 : ℂ) * Complex.I) :=
+  dualRotorAmplitude_axis2 θ
+
+/-- Regression: along \(\sigma_x\) the spinor amplitude is the real cosine. -/
+example (θ : ℝ) :
+    dualRotorAmplitude (EuclideanSpace.single 0 θ) spinUp =
+      (Real.cos (θ / 2) : ℂ) :=
+  dualRotorAmplitude_axis0 θ
+
+/-- Regression: observer–particle pairing is the relative-rotor matrix element. -/
+example (βO βA : DualRapidity) (χ : DualSpinor) :
+    inner ℂ (applyMat (dualRotorMat βO) χ) (applyMat (dualRotorMat βA) χ) =
+      inner ℂ χ
+        (applyMat ((dualRotorMat βO).conjTranspose * dualRotorMat βA) χ) :=
+  dualRotor_relative_overlap βO βA χ
+
+/-- Regression: same-axis dual rotors compose by adding angles. -/
+example (θ φ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 2 (θ + φ)) =
+      dualRotorMat (EuclideanSpace.single 2 θ) *
+        dualRotorMat (EuclideanSpace.single 2 φ) :=
+  dualRotorMat_axis2_add θ φ
 
 /-- Regression: commuting projector is nonzero and generates a nonzero left ideal. -/
 example :
