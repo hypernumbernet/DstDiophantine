@@ -481,6 +481,36 @@ example (θ φ : ℝ) :
         dualRotorMat (EuclideanSpace.single 2 φ) :=
   dualRotorMat_axis2_add θ φ
 
+/-- Regression: the character is the sum of opposite computational amplitudes. -/
+example (β : DualRapidity) :
+    (dualRotorMat β).trace =
+      dualRotorAmplitude β spinUp + dualRotorAmplitude β spinDown :=
+  dualRotorMat_trace_eq_amplitudes β
+
+/-- Regression: half-trace character is the real part of the spin-up element. -/
+example (β : DualRapidity) :
+    (dualRotorAmplitude β spinUp).re = Real.cos (‖β‖ / 2) :=
+  dualRotorAmplitude_spinUp_re β
+
+/-- Regression: \(2\pi\) dual rotation about the observer axis is \(-I\). -/
+example : dualRotorMat (EuclideanSpace.single 2 (2 * Real.pi)) = -1 :=
+  dualRotorMat_axis2_two_pi
+
+/-- Regression: the relative dual rotor is unitary of determinant \(1\). -/
+example (βO βA : DualRapidity) :
+    ((dualRotorMat βO).conjTranspose * dualRotorMat βA).conjTranspose *
+        ((dualRotorMat βO).conjTranspose * dualRotorMat βA) = 1 ∧
+      ((dualRotorMat βO).conjTranspose * dualRotorMat βA).det = 1 :=
+  ⟨dualRotor_relative_unitary βO βA, dualRotor_relative_det βO βA⟩
+
+/-- Regression: distinct-axis dual rotors need not commute. -/
+example :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 2 Real.pi) ≠
+      dualRotorMat (EuclideanSpace.single 2 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 0 Real.pi) :=
+  dualRotorMat_axes_not_commute
+
 /-- Regression: commuting projector is nonzero and generates a nonzero left ideal. -/
 example :
     commutingSpinorIdem ≠ 0 ∧
@@ -604,6 +634,13 @@ example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
 example (m : ℝ) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
   exists_rest_particle m
+
+/-- Regression: rest-frame Dirac overlap is twice the dual-rotor amplitude. -/
+example (β : DualRapidity) (u : DualSpinor) :
+    inner ℂ (restParticleSpinor u)
+        (restParticleSpinor (applyMat (dualRotorMat β) u)) =
+      2 * dualRotorAmplitude β u :=
+  restParticle_dualRotor_overlap β u
 
 /-- Regression: massless Dirac decouples into Weyl equations. -/
 example {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum 0 p Ψ) :

@@ -1,6 +1,8 @@
 import DstDiophantine.Logic.Quantum.DiracSpinor
+import DstDiophantine.Logic.Quantum.DeBroglie
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.Abel
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Momentum-space Dirac equation from the Clifford square
@@ -9,6 +11,10 @@ The Minkowski quadratic is already a square in `Cl(3,1)`:
 `γ(p)² = Q(p)`. On the Dirac module `ℂ⁴` the same identity is
 `slash(p)² = Q(p) I`. A spinor eigenvector `slash(p) Ψ = i m Ψ`
 therefore sits on the mass shell `Q(p) = -m²`.
+
+A rest-frame particle solution is assembled from a dual spinor `u`.
+Dual rotation of `u` stays on that shell, and the `ℂ⁴` overlap of two
+such solutions is twice the dual-rotor amplitude.
 
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
@@ -19,7 +25,9 @@ namespace DstDiophantine
 
 namespace Logic
 
-open Matrix Complex Cl31
+open Matrix Complex Cl31 InnerProductSpace
+
+open scoped InnerProductSpace
 
 /-! ### Minkowski quadratic and the Clifford slash -/
 
@@ -673,6 +681,66 @@ theorem diracMat5_flips_mass {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
         rw [applyDiracMat_smul]
     _ = (I * ((-m : ℝ) : ℂ)) • applyDiracMat diracMat5 Ψ := by
         simp [neg_smul, ofReal_neg]
+
+/-! ### Dual-rotor amplitude as rest-frame Dirac overlap -/
+
+private theorem dirac_inner_sum (χ ψ : DiracSpinor) :
+    inner ℂ χ ψ = ∑ i : Fin 4, star (χ i) * ψ i := by
+  simp [inner, Fin.sum_univ_four]
+  ring
+
+private theorem dual_inner_sum (χ ψ : DualSpinor) :
+    inner ℂ χ ψ = ∑ i : Fin 2, star (χ i) * ψ i := by
+  simp [inner, Fin.sum_univ_two]
+  ring
+
+/-- Weyl blocks are orthogonal in \(\mathbb{C}^4\). -/
+theorem weylUpper_inner_lower (ψ φ : DualSpinor) :
+    inner ℂ (weylUpper ψ) (weylLower φ) = 0 := by
+  rw [dirac_inner_sum]
+  simp [weylUpper, weylLower, Fin.sum_univ_four]
+
+theorem weylLower_inner_upper (ψ φ : DualSpinor) :
+    inner ℂ (weylLower ψ) (weylUpper φ) = 0 := by
+  rw [dirac_inner_sum]
+  simp [weylUpper, weylLower, Fin.sum_univ_four]
+
+theorem weylUpper_inner_upper (ψ χ : DualSpinor) :
+    inner ℂ (weylUpper ψ) (weylUpper χ) = inner ℂ ψ χ := by
+  rw [dirac_inner_sum, dual_inner_sum]
+  simp [weylUpper, Fin.sum_univ_four, Fin.sum_univ_two]
+
+theorem weylLower_inner_lower (ψ χ : DualSpinor) :
+    inner ℂ (weylLower ψ) (weylLower χ) = inner ℂ ψ χ := by
+  rw [dirac_inner_sum, dual_inner_sum]
+  simp [weylLower, Fin.sum_univ_four, Fin.sum_univ_two]
+
+private theorem inner_I_smul (u v : DualSpinor) :
+    inner ℂ (I • u) (I • v) = inner ℂ u v := by
+  rw [inner_smul_left, inner_smul_right, ← mul_assoc]
+  have : (starRingEnd ℂ) I * I = 1 := by
+    have hstar : (starRingEnd ℂ) I = -I := conj_I
+    rw [hstar, neg_mul, I_mul_I]
+    simp
+  rw [this, one_mul]
+
+/-- Rest-frame particle overlap is twice the dual-spinor pairing. -/
+theorem restParticle_inner (u v : DualSpinor) :
+    inner ℂ (restParticleSpinor u) (restParticleSpinor v) = 2 * inner ℂ u v := by
+  unfold restParticleSpinor
+  rw [inner_add_left, inner_add_right, inner_add_right,
+    weylUpper_inner_upper, weylUpper_inner_lower, weylLower_inner_upper,
+    weylLower_inner_lower, inner_I_smul]
+  ring
+
+/-- The \(\mathbb{C}^4\) overlap of rest-frame solutions that differ by a dual
+rotation is twice the dual-rotor amplitude. Dual rotation of the Weyl
+parameter stays on the rest-frame mass shell by `restParticle_dirac`. -/
+theorem restParticle_dualRotor_overlap (β : DualRapidity) (u : DualSpinor) :
+    inner ℂ (restParticleSpinor u)
+        (restParticleSpinor (applyMat (dualRotorMat β) u)) =
+      2 * dualRotorAmplitude β u := by
+  rw [restParticle_inner, dualRotorAmplitude]
 
 end Logic
 

@@ -1,7 +1,10 @@
 import DstDiophantine.Logic.Quantum.Spinor
 import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Dual-rotor character, spinor amplitude, and relative overlap
@@ -9,13 +12,17 @@ import Mathlib.Tactic.Ring
 The dual rotor is already an element of \(\mathrm{SU}(2)\). Three
 invariants of that matrix are distinguished here.
 
-* The character \(\operatorname{Tr} R = 2\cos(\lVert\beta\rVert/2)\) is real.
+* The character \(\operatorname{Tr} R = 2\cos(\lVert\beta\rVert/2)\) is
+  the sum of opposite computational amplitudes, hence real.
 * The spinor matrix element \(\langle\uparrow\rvert R\lvert\uparrow\rangle\)
   is \(\cos(\theta/2)-i n_z\sin(\theta/2)\). Along \(\sigma_z\) it is the
   pure phase \(e^{-i\theta/2}\); along \(\sigma_x\) it is the real cosine.
+  Its squared modulus is the polar tilt of the dual axis.
 * The observer–particle pairing is the Hilbert inner product
   \(\langle R_{\mathcal{O}}\chi\mid R_A\chi\rangle\), equal to
   \(\langle\chi\mid R_{\mathcal{O}}^{\dagger}R_A\chi\rangle\).
+  The relative rotor stays in \(\mathrm{SU}(2)\). A \(2\pi\) dual rotation
+  about the observer axis is \(-I\).
 
 None of these is a spacetime Schrödinger wave, a Born position density,
 or a derivation of \(E/\hbar\) from rest mass.
@@ -220,8 +227,8 @@ private theorem cyclicRepComb_apply_00 (n : Fin 3 → ℝ) :
   simp [cyclicRep_apply_00]
   ring
 
-private theorem real_smul_apply (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ) :
-    (r • A) 0 0 = (r : ℂ) * A 0 0 := by
+private theorem real_smul_apply (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ)
+    (i j : Fin 2) : (r • A) i j = (r : ℂ) * A i j := by
   rw [algebraMap_smul_mat, Matrix.smul_apply]
   simp
 
@@ -299,6 +306,237 @@ theorem dualRotorMat_axis2_add (θ φ : ℝ) :
         dualRotorMat (EuclideanSpace.single 2 φ) := by
   rw [dualRotorMat_axis2, dualRotorMat_axis2, dualRotorMat_axis2, axis2Gen_add]
   exact Matrix.exp_add_of_commute (axis2Gen θ) (axis2Gen φ) (commute_axis2Gen θ φ)
+
+/-! ### Spin-down, character as opposite-phase sum, modulus, double cover -/
+
+/-- Computational \(\lvert\downarrow\rangle\): the \(-1\) eigenvector of \(\sigma_z\). -/
+noncomputable def spinDown : DualSpinor :=
+  EuclideanSpace.single (1 : Fin 2) (1 : ℂ)
+
+private theorem spinDown_apply_zero : spinDown 0 = 0 := by
+  simp [spinDown]
+
+private theorem spinDown_apply_one : spinDown 1 = 1 := by
+  simp [spinDown]
+
+private theorem mulVec_spinDown (A : Matrix (Fin 2) (Fin 2) ℂ) :
+    applyMat A spinDown 0 = A 0 1 ∧ applyMat A spinDown 1 = A 1 1 := by
+  constructor <;> simp [applyMat, spinDown]
+
+private theorem dualRotorAmplitude_spinDown_eq_entry (β : DualRapidity) :
+    dualRotorAmplitude β spinDown = dualRotorMat β 1 1 := by
+  unfold dualRotorAmplitude
+  rw [inner_sum]
+  have h := mulVec_spinDown (dualRotorMat β)
+  simp [Fin.sum_univ_two, spinDown_apply_zero, spinDown_apply_one, h]
+
+/-- The character is the sum of the two computational matrix elements. -/
+theorem dualRotorMat_trace_eq_amplitudes (β : DualRapidity) :
+    (dualRotorMat β).trace =
+      dualRotorAmplitude β spinUp + dualRotorAmplitude β spinDown := by
+  rw [dualRotorAmplitude_spinUp_eq_entry, dualRotorAmplitude_spinDown_eq_entry,
+    Matrix.trace_fin_two]
+
+/-- Along \(\sigma_z\), the down amplitude is the opposite half-angle phase. -/
+theorem dualRotorAmplitude_axis2_down (θ : ℝ) :
+    dualRotorAmplitude (EuclideanSpace.single 2 θ) spinDown =
+      Complex.exp ((θ / 2 : ℂ) * I) := by
+  rw [dualRotorAmplitude_spinDown_eq_entry, dualRotorMat_axis2_entries]
+  simp only [of_apply, cons_val', empty_val', cons_val_fin_one, cons_val_one]
+  rw [Complex.exp_mul_I, complex_cos_half, complex_sin_half]
+  ring
+
+private theorem cyclicRep_apply_11 (a : Fin 3) :
+    cyclicRep a 1 1 = if a = 2 then I else 0 := by
+  fin_cases a <;> simp [cyclicRep, pauli, pauliX, pauliY, pauliZ]
+
+private theorem cyclicRepComb_apply_11 (n : Fin 3 → ℝ) :
+    cyclicRepComb n 1 1 = I * (n 2 : ℂ) := by
+  simp only [cyclicRepComb, Fin.sum_univ_three, Matrix.add_apply, Matrix.smul_apply]
+  simp [cyclicRep_apply_11]
+  ring
+
+theorem dualRotorAmplitude_spinDown (β : DualRapidity) :
+    dualRotorAmplitude β spinDown =
+      (Real.cos (‖β‖ / 2) : ℂ) + I *
+        (if β = 0 then 0
+          else (β 2 / ‖β‖ : ℂ) * (Real.sin (‖β‖ / 2) : ℂ)) := by
+  rw [dualRotorAmplitude_spinDown_eq_entry, dualRotorMat_rodrigues]
+  by_cases h : β = 0
+  · subst h
+    simp [Real.cos_zero]
+  · simp only [h, dite_false, ite_false]
+    rw [Matrix.add_apply, real_smul_apply, real_smul_apply, Matrix.one_apply,
+      cyclicRepComb_apply_11]
+    simp
+    ring
+
+/-- Polar weight of the observer axis in the spin-up matrix element. -/
+private noncomputable def dualNzSin (β : DualRapidity) : ℝ :=
+  if β = 0 then 0 else (β 2 / ‖β‖) * Real.sin (‖β‖ / 2)
+
+private theorem dualNzSin_coe (β : DualRapidity) :
+    (if β = 0 then (0 : ℂ)
+      else (β 2 / ‖β‖ : ℂ) * (Real.sin (‖β‖ / 2) : ℂ)) =
+      (dualNzSin β : ℂ) := by
+  by_cases h : β = 0
+  · simp [h, dualNzSin]
+  · simp [h, dualNzSin, Complex.ofReal_mul]
+
+private theorem re_ofReal_sub_I (a b : ℝ) :
+    ((a : ℂ) - I * (b : ℂ)).re = a := by
+  rw [sub_re, mul_re]
+  simp [I_re, I_im, Complex.ofReal_re, Complex.ofReal_im]
+
+private theorem norm_sq_ofReal_sub_I (a b : ℝ) :
+    ‖(a : ℂ) - I * (b : ℂ)‖ ^ 2 = a ^ 2 + b ^ 2 := by
+  have : (a : ℂ) - I * b = ↑a + ↑(-b) * I := by
+    simp [sub_eq_add_neg, mul_comm]
+  rw [this, ← Complex.normSq_eq_norm_sq, Complex.normSq_add_mul_I]
+  ring
+
+/-- Half-trace character equals the real part of the spin-up matrix element. -/
+theorem dualRotorAmplitude_spinUp_re (β : DualRapidity) :
+    (dualRotorAmplitude β spinUp).re = Real.cos (‖β‖ / 2) := by
+  rw [dualRotorAmplitude_spinUp, dualNzSin_coe, re_ofReal_sub_I]
+
+/-- Squared modulus of the spin-up matrix element: polar tilt of the dual axis. -/
+theorem dualRotorAmplitude_spinUp_normSq (β : DualRapidity) :
+    ‖dualRotorAmplitude β spinUp‖ ^ 2 =
+      Real.cos (‖β‖ / 2) ^ 2 + dualNzSin β ^ 2 := by
+  rw [dualRotorAmplitude_spinUp, dualNzSin_coe, norm_sq_ofReal_sub_I]
+
+private theorem dualRapidity_norm_sq (β : DualRapidity) :
+    ‖β‖ ^ 2 = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
+  simpa [inner, Fin.sum_univ_three, sq] using
+    (real_inner_self_eq_norm_sq (F := DualRapidity) β).symm
+
+private theorem dualRapidity_unit_sq {β : DualRapidity} (h : β ≠ 0) :
+    (β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2 + (β 2 / ‖β‖) ^ 2 = 1 := by
+  have hr : ‖β‖ ≠ 0 := norm_ne_zero_iff.mpr h
+  have hdiv :
+      (β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2 + (β 2 / ‖β‖) ^ 2 =
+        ((β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2) / ‖β‖ ^ 2 := by
+    field_simp [hr]
+  rw [hdiv, ← dualRapidity_norm_sq, div_self (pow_ne_zero 2 hr)]
+
+/-- Equivalently, the squared modulus is one minus the equatorial weight. -/
+theorem dualRotorAmplitude_spinUp_normSq_equator {β : DualRapidity} (h : β ≠ 0) :
+    ‖dualRotorAmplitude β spinUp‖ ^ 2 =
+      1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) * Real.sin (‖β‖ / 2) ^ 2 := by
+  have hn := dualRapidity_unit_sq h
+  have hcs : Real.cos (‖β‖ / 2) ^ 2 + Real.sin (‖β‖ / 2) ^ 2 = 1 :=
+    Real.cos_sq_add_sin_sq _
+  rw [dualRotorAmplitude_spinUp_normSq]
+  simp only [dualNzSin, h, ite_false]
+  have hnz :
+      (β 2 / ‖β‖) ^ 2 = 1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) := by
+    linarith
+  calc Real.cos (‖β‖ / 2) ^ 2 + (β 2 / ‖β‖ * Real.sin (‖β‖ / 2)) ^ 2
+      = Real.cos (‖β‖ / 2) ^ 2 +
+          (β 2 / ‖β‖) ^ 2 * Real.sin (‖β‖ / 2) ^ 2 := by ring
+    _ = Real.cos (‖β‖ / 2) ^ 2 +
+          (1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2)) *
+            Real.sin (‖β‖ / 2) ^ 2 := by rw [hnz]
+    _ = Real.cos (‖β‖ / 2) ^ 2 + Real.sin (‖β‖ / 2) ^ 2 -
+          ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) *
+            Real.sin (‖β‖ / 2) ^ 2 := by ring
+    _ = 1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) *
+          Real.sin (‖β‖ / 2) ^ 2 := by rw [hcs]
+
+/-- Along the observer axis the spin-up matrix element is a pure phase. -/
+theorem dualRotorAmplitude_axis2_norm (θ : ℝ) :
+    ‖dualRotorAmplitude (EuclideanSpace.single 2 θ) spinUp‖ = 1 := by
+  rw [dualRotorAmplitude_axis2, Complex.norm_exp]
+  have hre : (-(θ / 2 : ℂ) * I).re = 0 := by simp
+  rw [hre, Real.exp_zero]
+
+/-- \(2\pi\) dual rotation about the observer axis is \(-I\). -/
+theorem dualRotorMat_axis2_two_pi :
+    dualRotorMat (EuclideanSpace.single 2 (2 * Real.pi)) = -1 := by
+  rw [dualRotorMat_axis2_rodrigues]
+  have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+  rw [hhalf, Real.cos_pi, Real.sin_pi]
+  simp
+
+/-- \(4\pi\) dual rotation about the observer axis is the identity. -/
+theorem dualRotorMat_axis2_four_pi :
+    dualRotorMat (EuclideanSpace.single 2 (4 * Real.pi)) = 1 := by
+  rw [dualRotorMat_axis2_rodrigues]
+  have hhalf : (4 * Real.pi) / 2 = 2 * Real.pi := by ring
+  rw [hhalf, Real.cos_two_pi, Real.sin_two_pi]
+  simp
+
+theorem dualRotorAmplitude_axis2_two_pi :
+    dualRotorAmplitude (EuclideanSpace.single 2 (2 * Real.pi)) spinUp = -1 := by
+  rw [dualRotorAmplitude_spinUp_eq_entry, dualRotorMat_axis2_two_pi]
+  simp [Matrix.neg_apply]
+
+theorem dualRotorMat_character_two_pi :
+    (dualRotorMat (EuclideanSpace.single 2 (2 * Real.pi))).trace / 2 = -1 := by
+  rw [dualRotorMat_axis2_two_pi, trace_neg, trace_one]
+  norm_num
+
+/-! ### Relative dual rotor stays in \(\mathrm{SU}(2)\); distinct axes need not commute -/
+
+theorem dualRotorMat_mul_conjTranspose (β : DualRapidity) :
+    dualRotorMat β * (dualRotorMat β).conjTranspose = 1 := by
+  have hdet : IsUnit (dualRotorMat β).det := by
+    rw [dualRotorMat_det]
+    exact isUnit_one
+  rw [← Matrix.inv_eq_left_inv (dualRotorMat_unitary β)]
+  exact Matrix.mul_nonsing_inv _ hdet
+
+/-- The observer–particle relative dual rotor is unitary. -/
+theorem dualRotor_relative_unitary (βO βA : DualRapidity) :
+    ((dualRotorMat βO).conjTranspose * dualRotorMat βA).conjTranspose *
+      ((dualRotorMat βO).conjTranspose * dualRotorMat βA) = 1 := by
+  rw [Matrix.conjTranspose_mul, Matrix.conjTranspose_conjTranspose]
+  calc (dualRotorMat βA).conjTranspose * dualRotorMat βO *
+        ((dualRotorMat βO).conjTranspose * dualRotorMat βA)
+      = (dualRotorMat βA).conjTranspose *
+          (dualRotorMat βO * (dualRotorMat βO).conjTranspose) * dualRotorMat βA := by
+        simp [mul_assoc]
+    _ = (dualRotorMat βA).conjTranspose * dualRotorMat βA := by
+        rw [dualRotorMat_mul_conjTranspose, mul_one]
+    _ = 1 := dualRotorMat_unitary βA
+
+/-- The observer–particle relative dual rotor has determinant \(1\). -/
+theorem dualRotor_relative_det (βO βA : DualRapidity) :
+    ((dualRotorMat βO).conjTranspose * dualRotorMat βA).det = 1 := by
+  rw [det_mul, det_conjTranspose, dualRotorMat_det, dualRotorMat_det]
+  simp
+
+private theorem dualRotorMat_axis0_pi :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) = cyclicRep 0 := by
+  rw [dualRotorMat_axis0_rodrigues, Real.cos_pi_div_two, Real.sin_pi_div_two]
+  simp
+
+private theorem dualRotorMat_axis2_pi :
+    dualRotorMat (EuclideanSpace.single 2 Real.pi) = cyclicRep 2 := by
+  rw [dualRotorMat_axis2_rodrigues, Real.cos_pi_div_two, Real.sin_pi_div_two]
+  simp
+
+private theorem cyclicRep_one_eq : cyclicRep 1 = !![0, -1; 1, 0] := by
+  unfold cyclicRep pauli pauliY
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [neg_mul, I_mul_I]
+
+/-- Distinct-axis dual rotors need not commute. -/
+theorem dualRotorMat_axes_not_commute :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 2 Real.pi) ≠
+      dualRotorMat (EuclideanSpace.single 2 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 0 Real.pi) := by
+  rw [dualRotorMat_axis0_pi, dualRotorMat_axis2_pi,
+    cyclicRep_zero_mul_two, cyclicRep_two_mul_zero]
+  intro h
+  have hsum : cyclicRep 1 + cyclicRep 1 = 0 := by
+    nth_rw 1 [← h]
+    exact neg_add_cancel _
+  have he : (cyclicRep 1 + cyclicRep 1) 1 0 = (0 : Matrix (Fin 2) (Fin 2) ℂ) 1 0 :=
+    congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 0) hsum
+  simp [cyclicRep_one_eq, Matrix.add_apply] at he
 
 end Logic
 

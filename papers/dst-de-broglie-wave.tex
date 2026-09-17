@@ -13,7 +13,7 @@
 \maketitle
 
 \begin{abstract}
-Every massive particle in double spacetime theory carries a dual rotor, already an element of \(\mathrm{SU}(2)\) on \(\mathbb{C}^2\). Three invariants of that rotor must be kept apart: the real character \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\); the complex spinor matrix element \(\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle=\cos(\theta/2)-i n_z\sin(\theta/2)\), a pure phase along the observer axis and a real cosine in the equatorial plane; and a scalar \(\mathrm{U}(1)\) factor identified with the de Broglie phase. Observer and particle are compared by the Hilbert pairing of their dual-rotor images, equal to the matrix element of the relative dual rotor. The written opposite-sign particle action makes the mismatch free, so lag may accumulate linearly; a harmonic model exists only for same-sign kinetics, at frequency \(\sqrt{2m}\), which is not \(E/\hbar\). The Dirac equation in momentum space is the first-order factor of the Minkowski quadratic in \(\mathrm{Cl}(3,1)\). Schr\"odinger and Klein--Gordon dynamics, collapse, and the unification of gravity with quantum non-locality remain geometric readings. The phase \(J\) of this note is an oscillator diagnostic, not the parameter-space Killing quadratic of the main paper.
+Every massive particle in double spacetime theory carries a dual rotor, already an element of \(\mathrm{SU}(2)\) on \(\mathbb{C}^2\). Three invariants of that rotor must be kept apart. The character \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\) is real because it is the sum of opposite half-angle phases on the two computational spinors. The complex matrix element \(\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle=\cos(\theta/2)-i n_z\sin(\theta/2)\) is a pure phase along the observer axis and a real cosine in the equatorial plane; its modulus is the polar tilt of the dual axis. A scalar \(\mathrm{U}(1)\) factor identified with the de Broglie phase is a third, distinct quantity. Observer and particle are compared by the Hilbert pairing of their dual-rotor images, equal to the matrix element of a relative dual rotor that itself remains in \(\mathrm{SU}(2)\). That same matrix element is the overlap of rest-frame Dirac solutions that differ by an internal dual rotation. The written opposite-sign particle action makes the mismatch free, so lag may accumulate linearly; a harmonic model exists only for same-sign kinetics, at frequency \(\sqrt{2m}\), which is not \(E/\hbar\). The Dirac equation in momentum space is the first-order factor of the Minkowski quadratic in \(\mathrm{Cl}(3,1)\). Schr\"odinger and Klein--Gordon dynamics, collapse, and the unification of gravity with quantum non-locality remain geometric readings. The phase \(J\) of this note is an oscillator diagnostic, not the parameter-space Killing quadratic of the main paper.
 \end{abstract}
 
 \section{Introduction}
@@ -52,25 +52,37 @@ The character of the dual rotor is the normalised trace
 \[
 \frac12\operatorname{Tr} R(\beta)=\cos(\lVert\beta\rVert/2).
 \]
-It is real. A pairing built from this trace cannot be a complex scalar wave function. It is the \(\mathrm{SU}(2)\) character of the dual rapidity, the half-angle cosine of a rotation on the three-sphere of unit dual rotors.
+It is real, and it is real for a geometric reason. Let \(\lvert\uparrow\rangle\) and \(\lvert\downarrow\rangle\) be the computational eigenvectors of \(\sigma_z\) in the observer's dual frame. The trace is their sum,
+\[
+\operatorname{Tr} R(\beta)
+  =\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle
+  +\langle\downarrow\rvert R(\beta)\lvert\downarrow\rangle,
+\]
+so the half-trace is the real part of the spin-up matrix element. Along the observer axis the two amplitudes are opposite half-angle phases,
+\[
+\langle\uparrow\rvert R(\theta e_z)\lvert\uparrow\rangle=e^{-i\theta/2},\qquad
+\langle\downarrow\rvert R(\theta e_z)\lvert\downarrow\rangle=e^{+i\theta/2},
+\]
+and their sum is \(2\cos(\theta/2)\). A pairing built from this trace cannot be a complex scalar wave function: the two \(\mathrm{U}(1)\) phases have already been added, and the imaginary part has cancelled. What remains is the \(\mathrm{SU}(2)\) character of the dual rapidity, the half-angle cosine of a rotation on the three-sphere of unit dual rotors.
 
-The finer invariant is a spinor matrix element. Let \(\lvert\uparrow\rangle\) be the \(+1\) eigenvector of \(\sigma_z\) in the observer's dual frame. Then
+The finer invariant is a single spinor matrix element. With \(\theta=\lVert\beta\rVert\) and \(\hat n=\beta/\theta\),
 \[
 \langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle
-  =\cos(\theta/2)-i n_z\sin(\theta/2),
-\qquad \theta=\lVert\beta\rVert,\quad \hat n=\beta/\theta.
+  =\cos(\theta/2)-i n_z\sin(\theta/2).
 \]
-Two axes display the geometry cleanly. A dual rotation about the observer axis is a pure phase,
+Its squared modulus is the polar tilt of the dual axis against the observer,
 \[
-\langle\uparrow\rvert R(\theta e_z)\lvert\uparrow\rangle=e^{-i\theta/2}.
+\bigl\lvert\langle\uparrow\rvert R(\beta)\lvert\uparrow\rangle\bigr\rvert^2
+  =\cos^2(\theta/2)+n_z^2\sin^2(\theta/2)
+  =1-(n_x^2+n_y^2)\sin^2(\theta/2).
 \]
-A dual rotation in the equatorial plane is a real cosine,
+A pure phase, of unit modulus, appears only when that axis is aligned with the observer, or when the rotation is trivial. Two axes display the same geometry cleanly. A dual rotation about the observer axis is the phase \(e^{-i\theta/2}\) already written. A dual rotation in the equatorial plane is a real cosine,
 \[
 \langle\uparrow\rvert R(\theta e_x)\lvert\uparrow\rangle=\cos(\theta/2).
 \]
 Amplitude and phase of the matrix element are therefore not independent decorations of a single angle: they record how the dual axis sits relative to the observer. The polar form \(\sqrt{\rho}\,e^{iS/\hbar}\) of textbook wave mechanics is not this \(\mathrm{SU}(2)\) object, and cannot be recovered from \(\arg(\hat n_{\mathcal{O}}\cdot\hat n_A)\), which for two real unit vectors is \(0\) or \(\pi\).
 
-The third quantity is a scalar mismatch angle \(\delta\) between usual and dual rapidities, promoted by hand to a laboratory \(\mathrm{U}(1)\) factor \(e^{i\delta}\). That identification may be read as the de Broglie phase \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\). It is not the character, and it is not automatically the spinor matrix element. The double cover of \(\mathrm{SU}(2)\) makes the distinction sharp: a \(2\pi\) dual rotation sends the spinor to its negative and the character to \(\cos\pi=-1\), while a conventional scalar matter wave would have completed a single cycle.
+The third quantity is a scalar mismatch angle \(\delta\) between usual and dual rapidities, promoted by hand to a laboratory \(\mathrm{U}(1)\) factor \(e^{i\delta}\). That identification may be read as the de Broglie phase \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\). It is not the character, and it is not automatically the spinor matrix element. The double cover of \(\mathrm{SU}(2)\) makes the distinction a matrix identity: a \(2\pi\) dual rotation about the observer axis is \(-I\), so the spinor goes to its negative and the half-trace to \(\cos\pi=-1\); a \(4\pi\) rotation is the identity. A conventional scalar matter wave would have completed a single cycle already at \(2\pi\).
 
 \section{Observer overlap}
 
@@ -79,7 +91,7 @@ Let \(\mathcal{O}\) be a macroscopic observer and \(A\) a massive particle. The 
 \langle R(\beta_{\mathcal{O}})\chi\mid R(\beta_A)\chi\rangle
   =\langle\chi\mid R(\beta_{\mathcal{O}})^{\dagger}R(\beta_A)\chi\rangle,
 \]
-for a reference spinor \(\chi\). Unitarity of each dual rotor makes the left-hand side an inner product of two unitarily transported copies of \(\chi\), and makes the right-hand side the matrix element of the relative dual rotor. The modulus is bounded by \(\lVert\chi\rVert^2\).
+for a reference spinor \(\chi\). Unitarity of each dual rotor makes the left-hand side an inner product of two unitarily transported copies of \(\chi\), and makes the right-hand side the matrix element of the relative dual rotor \(R(\beta_{\mathcal{O}})^{\dagger}R(\beta_A)\). That relative rotor is itself unitary of determinant \(1\), so the pairing never leaves \(\mathrm{SU}(2)\). The modulus is bounded by \(\lVert\chi\rVert^2\).
 
 This pairing is not the parameter-space Killing form. The Killing pairing has signature \((3,3)\). Self-overlap equals a multiple of \(J\) and can be negative; it is not a Born probability. The four labels of dual-spacetime logic are not four orthogonal rays in \(\mathbb{C}^2\).
 
@@ -109,7 +121,12 @@ The Compton wavelength continues to be readable as a compactification radius of 
 
 \section{Dirac equation as first-order form}
 
-The underlying algebra is \(\mathrm{Cl}(3,1)\). A first-order spinor equation is therefore not an extra postulate: it is the square root already present in the product. For a four-momentum \(p\) the grade-1 element \(\gamma(p)=\sum_{\mu}p_{\mu}\gamma^{\mu}\) satisfies \(\gamma(p)^2=Q(p)\), with \(Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2\), both in the algebra and as Weyl matrices on \(\mathbb{C}^4\). The mass shell \(Q(p)=-m^2\) is the vanishing of \((\gamma(p)-im)(\gamma(p)+im)\). A spinor with \(\gamma(p)\Psi=im\Psi\) lies on that shell. In the chiral representation the slash is off-diagonal, so vanishing mass decouples the two Weyl blocks while a nonzero mass mixes them. Chirality \(\gamma^5\) reverses the sign of \(m\). Rest-frame solutions exist.
+The underlying algebra is \(\mathrm{Cl}(3,1)\). A first-order spinor equation is therefore not an extra postulate: it is the square root already present in the product. For a four-momentum \(p\) the grade-1 element \(\gamma(p)=\sum_{\mu}p_{\mu}\gamma^{\mu}\) satisfies \(\gamma(p)^2=Q(p)\), with \(Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2\), both in the algebra and as Weyl matrices on \(\mathbb{C}^4\). The mass shell \(Q(p)=-m^2\) is the vanishing of \((\gamma(p)-im)(\gamma(p)+im)\). A spinor with \(\gamma(p)\Psi=im\Psi\) lies on that shell. In the chiral representation the slash is off-diagonal, so vanishing mass decouples the two Weyl blocks while a nonzero mass mixes them. Chirality \(\gamma^5\) reverses the sign of \(m\). Rest-frame solutions exist: a rest-frame particle spinor is assembled from a dual spinor \(u\) as the Weyl pair \((u,\,iu)\). Dual rotation of \(u\) leaves that rest-frame equation intact, so the internal \(\mathrm{SU}(2)\) of the dual sector is a symmetry of the mass shell at \(p=(m,0,0,0)\). The two Weyl blocks are orthogonal in \(\mathbb{C}^4\), and the inner product of two such rest-frame solutions that differ by a dual rotation is twice the dual-rotor amplitude,
+\[
+\langle\Psi(u)\mid\Psi\bigl(R(\beta)u\bigr)\rangle_{\mathbb{C}^4}
+  =2\,\langle u\mid R(\beta)u\rangle_{\mathbb{C}^2}.
+\]
+The spinor matrix element of the dual rotor is therefore not an extra object placed beside the Dirac equation. It is the Hilbert pairing of rest-frame solutions related by an internal dual rotation. That pairing is still not \(e^{iEt/\hbar}\), and it does not produce a spacetime PDE.
 
 This is the free Dirac equation in momentum space, equivalently the plane-wave form of \((i\gamma^{\mu}\partial_{\mu}-m)\Psi=0\). Squaring the slash recovers the Klein--Gordon symbol \(Q(p)+m^2\). The first-order structure is inherited from the Clifford product, not from a linearisation of a dual-rotor PDE about a torsional vacuum. Identifying \(m\) with dual-rotor stiffness remains a geometric reading, not a derived equality. The time gamma \(\gamma^0\) is the Minkowski vector \(e_0\), not the hyperbolic bivector used as a spin projector.
 
@@ -147,7 +164,7 @@ These signatures distinguish a dual-spacetime origin of matter waves from standa
 
 \section{Conclusions}
 
-The matter wave is not the trace of a dual rotor. That trace is real. What the dual sector actually supplies is an \(\mathrm{SU}(2)\) kinematics on \(\mathbb{C}^2\): a real character, a complex spinor matrix element whose polar form tracks the dual axis against the observer, and a relative-rotor pairing that compares two dual rotors without leaving the Hilbert space of the dual sector. The scalar de Broglie phase is a further identification, available as linear lag in the written particle action, not as a harmonic motion derived from rest mass, and not as the first-order Dirac factor already present in \(\mathrm{Cl}(3,1)\).
+The matter wave is not the trace of a dual rotor. That trace is real because it sums two opposite half-angle phases. What the dual sector actually supplies is an \(\mathrm{SU}(2)\) kinematics on \(\mathbb{C}^2\): a real character, a complex spinor matrix element whose modulus is the polar tilt of the dual axis against the observer, and a relative-rotor pairing that compares two dual rotors without leaving that group. The same matrix element is the overlap of rest-frame Dirac solutions that differ by an internal dual rotation. The scalar de Broglie phase is a further identification, available as linear lag in the written particle action, not as a harmonic motion derived from rest mass, and not as the first-order Dirac factor already present in \(\mathrm{Cl}(3,1)\).
 
 Quantum mechanics, in this geometry, is not an extra Hilbert space placed beside gravity. It is the dual-rotor kinematics of the same 16-dimensional algebra. The kinematics is sharp. The dynamical bridge to laboratory wave equations is not.
 
