@@ -19,7 +19,7 @@
 \begin{abstract}
 General relativity successfully describes gravity as the curvature of a single spacetime continuum, yet its reconciliation with quantum mechanics remains elusive, plagued by singularities, the continuum hypothesis, and the absence of a microscopic origin for curvature. This paper develops the quantum sector of the Double Spacetime Theory (DST) introduced in the companion work, where spacetime is not a shared manifold but a pair of compactified Minkowski spacetimes intrinsically attached to every massive particle and encoded in the 16-real-dimensional biquaternion algebra $\mathbb{H} \oplus \mathbb{H} \cong \mathrm{Cl}(3,1)$.
 
-On admissible configurations the torsional scalar obeys $|J|\le 3\pi^2/8$, or equivalently $|J_{\mathrm{norm}}|\le 1$. Square-$+1$ generators yield idempotent projectors $P_L$, $P_R$ and $P_{\mathrm{spin}}$; the naive factors $(1\pm i)/2$ with $i^2=-1$ do not, nor does the composite $P_{\mathrm{spin}}P_R$. Usual and dual generators commute on a common axis and need not commute off-axis. The cyclic generators satisfy $IJ=K$ and act on $\mathbb{C}^2$ by $-i\sigma_a$; along a single axis the dual rotor is the Rodrigues matrix of $\mathrm{SU}(2)$, which is unitary of determinant one. The grade-1 generators of $\mathrm{Cl}(3,1)$ obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ with $\eta=\mathrm{diag}(-1,+1,+1,+1)$, and $\gamma^0$ is not the hyperbolic generator $j$ used for $P_{\mathrm{spin}}$. The Killing self-pairing is indefinite and is not a Born probability~\cite{dst-d4l}. The algebras $\mathrm{Cl}(3,1)$ and $\mathrm{Cl}(9,1)$ are not isomorphic, and the dual spinor space is not the Majorana--Weyl module of ten-dimensional spacetime. Variational equivalence of TEGR with the Einstein--Hilbert action is taken from the literature after a rotor-to-tetrad dictionary is fixed. The momentum-space Dirac equation is the first-order factor of the Minkowski quadratic in \(\mathrm{Cl}(3,1)\). Mass as torsion, the Higgs mechanism, measurement, and the path integral remain geometric hypotheses.
+On admissible configurations the torsional scalar obeys $|J|\le 3\pi^2/8$, or equivalently $|J_{\mathrm{norm}}|\le 1$. Square-$+1$ generators yield idempotent projectors $P_L$, $P_R$ and $P_{\mathrm{spin}}$; the naive factors $(1\pm i)/2$ with $i^2=-1$ do not, nor does the composite $P_{\mathrm{spin}}P_R$. Usual and dual generators commute on a common axis and need not commute off-axis. The cyclic generators satisfy $IJ=K$ and act on $\mathbb{C}^2$ by $-i\sigma_a$; at every dual rapidity the dual rotor is the Rodrigues matrix of $\mathrm{SU}(2)$, which is unitary of determinant one. The grade-1 generators of $\mathrm{Cl}(3,1)$ obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ with $\eta=\mathrm{diag}(-1,+1,+1,+1)$, and $\gamma^0$ is not the hyperbolic generator $j$ used for $P_{\mathrm{spin}}$. The Killing self-pairing is indefinite and is not a Born probability~\cite{dst-d4l}. The algebras $\mathrm{Cl}(3,1)$ and $\mathrm{Cl}(9,1)$ are not isomorphic, and the dual spinor space is not the Majorana--Weyl module of ten-dimensional spacetime. Variational equivalence of TEGR with the Einstein--Hilbert action is taken from the literature after a rotor-to-tetrad dictionary is fixed. The momentum-space Dirac equation is the first-order factor of the Minkowski quadratic in \(\mathrm{Cl}(3,1)\); on the mass shell a dual spinor recovers the rest-frame pair \((u,iu)\). The written opposite-sign action frees the mismatch and sources the common rapidity, with a conserved indefinite Jacobi integral. Mass as torsion, the Higgs mechanism, measurement, and the path integral remain geometric hypotheses.
 \end{abstract}
 
 \section{Introduction: An Algebraic Approach to Quantum Gravity}
@@ -30,15 +30,11 @@ This assumption, while extraordinarily successful at macroscopic scales, leads t
 
 In this paper we develop a different approach. The underlying algebra is the $16$-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$; a background manifold and Riemann curvature are not required for the identities recorded below. The physical picture is the pair of rotors $R_\text{usual}$ and $R_\text{dual}$. Dual-sector kinematics is the representation on $\mathbb{C}^2$; gravitational phenomenology is torsional mismatch measured by $J=\frac12\sum_a(\alpha_a^2-\beta_a^2)$. Identification of $J$ with the teleparallel scalar, and Einstein--Hilbert equivalence, are taken from the TEGR literature after a rotor-to-tetrad dictionary is fixed.
 
-Along a single axis the dual rotor
-\[
-R_\text{dual}(\theta\,e_0) = \exp\bigl(\tfrac{\theta}{2}\Gamma_0\bigr)
-\]
-equals the Rodrigues matrix $\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_x)$, which is unitary of determinant $1$. We do not claim a group isomorphism for general angles. The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators of $\mathrm{Cl}(3,1)$; they obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ and are not the hyperbolic bivectors used for $P_{\mathrm{spin}}$. Born's rule is not the Killing self-pairing: that pairing has signature $(3,3)$ and is negative on pure elliptic configurations~\cite{dst-d4l}. Position and momentum operators, a spacetime Dirac PDE, and mass as torsion are not derived here. The momentum-space Dirac equation follows from the Clifford square of the Minkowski quadratic, as recorded in Section~\ref{sec:dirac}.
+At every dual rapidity the dual rotor is the Rodrigues matrix of $\mathrm{SU}(2)$: unitary of determinant $1$, with relative dual rotors remaining in the group. This is the matrix representation on $\mathbb{C}^2$ recorded in Section~\ref{sec:quantumstates}, not a Riemannian identification of the rotor manifold with the three-sphere. The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators of $\mathrm{Cl}(3,1)$; they obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ and are not the hyperbolic bivectors used for $P_{\mathrm{spin}}$. Born's rule is not the Killing self-pairing: that pairing has signature $(3,3)$ and is negative on pure elliptic configurations~\cite{dst-d4l}. Position and momentum operators, a spacetime Dirac PDE, and mass as torsion are not derived here. The momentum-space Dirac equation follows from the Clifford square of the Minkowski quadratic, as recorded in Section~\ref{sec:dirac}.
 
 By abandoning the continuum hypothesis entirely, the theory automatically resolves the singularities of classical general relativity. The compactness of the dual spacetime discretizes the rotor angles. On admissible configurations the algebraic ceiling is $|J|\le 3\pi^2/8$ (equivalently $|J_{\rm norm}|\le 1$); this forbids the unbounded curvature that would otherwise appear at $r=0$ or at the Big Bang, provided the configuration remains admissible. Event horizons are likewise absent: light rays traverse finite torsional layers via resonance tunneling. Strong-field deviations from general relativity become observable in principle, and the framework opens a concrete pathway to gravitational engineering through coherent control of dual-rotor phases.
 
-The remainder of the paper is organized as follows. Section~\ref{sec:spinor} constructs square-$+1$ projectors and shows that the composite $P_{\mathrm{spin}}P_R$ is not idempotent. Section~\ref{sec:quantumstates} identifies dual generators with $-i\sigma_a$ and the axis-$0$ dual rotor with an $\mathrm{SU}(2)$ matrix, and shows that the Killing pairing is not Born's rule. Section~\ref{sec:dirac} records the Clifford relations of $\mathrm{Cl}(3,1)$, distinguishes $\gamma^0$ from the hyperbolic generator $j$, and factors the Minkowski quadratic into the momentum-space Dirac equation. Sections~\ref{sec:mass}--\ref{sec:dynamics} discuss the value of mass, the Higgs mechanism, measurement, and the path integral as geometric hypotheses. Section~\ref{sec:predictions} presents conjectural predictions bounded by the admissible ceiling. Section~\ref{sec:comparison} compares the framework with other programmes, distinguishing internal duality from ten-dimensional spacetime supersymmetry. Section~\ref{sec:experiments} outlines near-term tests. Section~\ref{sec:status} collects the algebraic statements. Section~\ref{sec:conclusions} summarizes.
+The remainder of the paper is organized as follows. Section~\ref{sec:spinor} constructs square-$+1$ projectors and shows that the composite $P_{\mathrm{spin}}P_R$ is not idempotent. Section~\ref{sec:quantumstates} identifies dual generators with $-i\sigma_a$ and the dual rotor at every rapidity with an $\mathrm{SU}(2)$ matrix, and shows that the Killing pairing is not Born's rule. Section~\ref{sec:dirac} records the Clifford relations of $\mathrm{Cl}(3,1)$, distinguishes $\gamma^0$ from the hyperbolic generator $j$, factors the Minkowski quadratic into the momentum-space Dirac equation, and assembles on-shell solutions from a dual spinor. Sections~\ref{sec:mass}--\ref{sec:dynamics} discuss the value of mass, the Higgs mechanism, measurement, and the path integral as geometric hypotheses; the written particle action is shown to free the mismatch and source the common rapidity. Section~\ref{sec:predictions} presents conjectural predictions bounded by the admissible ceiling. Section~\ref{sec:comparison} compares the framework with other programmes, distinguishing internal duality from ten-dimensional spacetime supersymmetry. Section~\ref{sec:experiments} outlines near-term tests. Section~\ref{sec:status} collects the algebraic statements. Section~\ref{sec:conclusions} summarizes.
 
 Quantum gravity is not claimed to follow in full from $\mathrm{Cl}(3,1)$. The results of this paper are algebraic identities in the $16$-dimensional algebra; continuum dynamics remains a classical approximation.
 
@@ -92,14 +88,13 @@ R_\text{dual} = \exp\left( \sum_{a=1}^3 \frac{\phi_a}{2} \Gamma_a \right),
 \]
 where $\Gamma_1 = I$, $\Gamma_2 = J$, $\Gamma_3 = K$ satisfy the quaternion relations $\Gamma_a^2 = -1$ and $IJ=K$, is represented on $\mathbb{C}^2$ by $-i\sigma_a$. The alternative dictionary $I\leftrightarrow i\sigma$ is incompatible with $IJ=K$.
 
-Along axis~$0$ the exponential is the Rodrigues formula
+At every dual rapidity $\beta$ the exponential is the Rodrigues formula
 \[
-\exp\bigl(\tfrac{\theta}{2}\Gamma_0\bigr)
-=\cos(\theta/2)\,I+\sin(\theta/2)\,(-i\sigma_x),
+U(\beta)
+=\cos(\lVert\beta\rVert/2)\,I
++\sin(\lVert\beta\rVert/2)\,n\cdot(-i\sigma),
 \]
-and that matrix is unitary of determinant $1$. A closed form for a general angle $\vec{\phi}$, and an isomorphism of compact Lie groups with $\mathrm{SU}(2)$, are not claimed.
-
-The compact topology of the dual spacetime ($\phi_a \bmod 4\pi$) suggests that the space of rotors is $S^3\cong\mathrm{SU}(2)$; we do not prove that identification of manifolds here.
+with $n=\beta/\lVert\beta\rVert$ when $\beta\neq 0$ and $U(0)=I$. That matrix is unitary of determinant $1$. Relative dual rotors remain in $\mathrm{SU}(2)$. A $2\pi$ dual rotation about a computational axis is $-I$. Compactness of the dual spacetime ($\phi_a \bmod 4\pi$) is compatible with this matrix group on $\mathbb{C}^2$; an independent diffeomorphism of manifolds $S^3\cong\mathrm{SU}(2)$ is not proved here.
 
 Position and momentum operators, the canonical commutation relations, and the uncertainty bound $\Delta\phi\cdot\Delta\theta\ge 1/2$ are geometric hypotheses.
 
@@ -126,7 +121,7 @@ The six generators of the underlying Lorentz candidate \(\mathfrak{so}(3,1)\) (n
 
 The scalar \(J\) is the parameter-space quadratic \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) built from the mismatch bivector \(\Omega_\text{biv}\). Because the Killing form takes opposite values on the hyperbolic sector (\(+8\)) and the cyclic sector (\(-8\)), bosonic and fermionic contributions enter with opposite signs. When the two sectors are aligned, these contributions cancel exactly. The residual vacuum value of \(J\) is generated exclusively by quantum fluctuations of the dual-sector angles. The cyclic generators square to \(-1\), rendering the dual spacetime elliptic: its rotor manifold is the compact three-sphere \(S^3 \cong \mathrm{SU}(2)\). The angles are therefore periodic and discretely sampled, \(\theta_a \in (2\pi/N)\mathbb{Z}\) for large integer \(N\). Compactness does \emph{not} force an algebraic upper bound of order \(N^{-2}\). On admissible configurations \(|J|\le 3\pi^2/8\), or \(|J_{\rm norm}|\le 1\) with \(J_{\rm norm}=\frac8{3\pi^2}J\). The discrete quantity \(\varepsilon_N=16/(3N^2)\) is a \emph{lower} bound on the nonzero normalized height, not an upper bound: every non-rest admissible lattice point satisfies \(|J_{\rm norm}|\ge\varepsilon_N\). Vacuum suppression, if it occurs, must come from a dynamical cancellation between sectors, not from writing \(|J|\le J_{\max}\sim N^{-2}\).
 
-Because the dual rotor matches the $\mathrm{SU}(2)$ Rodrigues formula on a single axis, the dual sector can host spin-$1/2$ kinematics; a full identification of Standard Model fermions with dual phases is not claimed. The dual map $X\mapsto Xi$ is an internal automorphism of the algebra. It is not spacetime supersymmetry of a ten-dimensional string: $\mathrm{Cl}(3,1)\not\cong\mathrm{Cl}(9,1)$, the dual spinor space is not the Majorana--Weyl module of $\mathrm{Cl}(9,1)$, and the Super-Poincar\'e generator count is not the ten generators of the projective geometric algebra.
+Because the dual rotor is the $\mathrm{SU}(2)$ Rodrigues matrix at every rapidity, the dual sector can host spin-$1/2$ kinematics; a full identification of Standard Model fermions with dual phases is not claimed. The dual map $X\mapsto Xi$ is an internal automorphism of the algebra. It is not spacetime supersymmetry of a ten-dimensional string: $\mathrm{Cl}(3,1)\not\cong\mathrm{Cl}(9,1)$, the dual spinor space is not the Majorana--Weyl module of $\mathrm{Cl}(9,1)$, and the Super-Poincar\'e generator count is not the ten generators of the projective geometric algebra.
 
 The same mechanism simultaneously addresses the hierarchy problem. The dual-sector rigidity that enforces the bosonic–fermionic cancellation in the vacuum also generates the observed particle masses. Both the extreme smallness of the cosmological constant and the origin of fermion masses descend from one and the same compact dual spacetime intrinsic to every massive particle.
 
@@ -142,7 +137,13 @@ The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators $\gamma^\
 \]
 In particular $(\gamma^0)^2=-1$. The hyperbolic generator $j=e_0 e_1$ used for $P_{\mathrm{spin}}$ squares to $+1$, so $\gamma^0\neq j$. The dictionary $\gamma^0\leftrightarrow j$, $\gamma^i\leftrightarrow kI,\ldots$ is therefore replaced by this grade-1 basis.
 
-For a four-momentum $p$ the grade-1 element $\gamma(p)=\sum_\mu p_\mu\gamma^\mu$ squares to the Minkowski quadratic $Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2$, both in $\mathrm{Cl}(3,1)$ and as matrices on $\mathbb{C}^4$. The mass shell $Q(p)=-m^2$ is therefore the vanishing of $(\gamma(p)-im)(\gamma(p)+im)$. A spinor with $\gamma(p)\Psi=im\Psi$ lies on that shell: this is the Dirac equation in momentum space. In the Weyl representation $\gamma(p)$ is off-diagonal, so vanishing mass decouples the two chiral blocks while a nonzero mass mixes them. Chirality $\gamma^5$ sends a solution of mass $m$ to a solution of mass $-m$. Rest-frame solutions exist.
+For a four-momentum $p$ the grade-1 element $\gamma(p)=\sum_\mu p_\mu\gamma^\mu$ squares to the Minkowski quadratic $Q(p)=-p_0^2+p_1^2+p_2^2+p_3^2$, both in $\mathrm{Cl}(3,1)$ and as matrices on $\mathbb{C}^4$. The two chiral slashes of the Weyl representation multiply to that same quadratic. The mass shell $Q(p)=-m^2$ is therefore the vanishing of $(\gamma(p)-im)(\gamma(p)+im)$. A spinor with $\gamma(p)\Psi=im\Psi$ lies on that shell: this is the Dirac equation in momentum space. In the Weyl representation $\gamma(p)$ is off-diagonal, so vanishing mass decouples the two chiral blocks while a nonzero mass mixes them. Chirality $\gamma^5$ sends a solution of mass $m$ to a solution of mass $-m$.
+
+On the mass shell with $m\neq 0$ an arbitrary dual spinor $u$ determines a solution: the upper Weyl block is $u$, and the lower block is fixed by the chiral slash of $p$. At rest momentum $(m,0,0,0)$ this is the pair $\Psi=(u,iu)$. The same construction applies to every on-shell four-momentum, including the longitudinal boost
+\[
+p=(m\cosh\alpha,\,0,\,0,\,m\sinh\alpha).
+\]
+The $\mathbb{C}^4$ overlap of two rest-frame solutions that differ by a dual rotation is twice the dual-rotor amplitude. That overlap is a rest-frame identity; it is not a spacetime inner product.
 
 A spacetime PDE, the mass term as dual-rotor lag, and covariance under the full rotor group are not derived here. Square-$+1$ projectors $P_L=(1-e_1)/2$ and $P_R=(1+e_1)/2$ organise a chiral split in the algebra; they do not by themselves yield the Standard Model weak interaction.
 
@@ -176,11 +177,22 @@ S_\text{particle} = \int \left[ \frac{1}{2} \sum_{a=1}^3 \dot{\phi}_a^2 - \frac{
 \]
 The opposite signs of the kinetic terms are part of the written model. They are intended to reflect the boost-like (hyperbolic) character of the usual sector and the rotation-like (elliptic) character of the dual sector; they are not deduced from unitarity of the rotors. The last term is the oscillator potential of Section~\ref{sec:mass}, not the parameter-space Killing quadratic of the main paper.
 
-The Euler--Lagrange equations of this density are
+On one axis the density is equivalently the mixed form
+\[
+L=\tfrac12\dot\sigma\dot\delta-\tfrac m2\delta^2,
+\]
+with common rapidity $\sigma=\phi+\theta$ and mismatch $\delta=\phi-\theta$. The Euler--Lagrange equations of this density are
 \[
 \ddot{\phi}_a = -m (\phi_a - \theta_a), \qquad \ddot{\theta}_a = -m (\phi_a - \theta_a).
 \]
-Both angles accelerate together. The mismatch $\delta_a=\phi_a-\theta_a$ is therefore free: $\ddot\delta_a=0$. Affine lag $\delta_a(t)=\delta_{a0}+\nu_a t$ is allowed. The mass $m$ does not restore $\delta$ and does not fix a frequency~\cite{dst-dynamic-equation}.
+Both angles accelerate together. The mismatch is therefore free: $\ddot\delta_a=0$. What the potential sources is the common rapidity, $\ddot\sigma_a=-2m\delta_a$. Affine lag $\delta_a(t)=\delta_{a0}+\nu_a t$ is allowed. A constant lag accelerates $\sigma$ uniformly; a nonzero rate makes that acceleration secular, so $\sigma$ grows as a cubic polynomial in $t$. The mass, written as a stiffness of $\delta$, is a force on $\sigma$ and does not restore a frequency~\cite{dst-dynamic-equation}.
+
+The Jacobi integral
+\[
+E=\tfrac12\dot\phi^2-\tfrac12\dot\theta^2+\tfrac m2\delta^2
+=\tfrac12\dot\sigma\dot\delta+\tfrac m2\delta^2
+\]
+is conserved along those equations and is indefinite: a purely dual velocity at vanishing lag already yields $E<0$. Conservation of an unbounded quadratic does not select a frequency.
 
 A neighbouring system sometimes written alongside the action,
 \[
@@ -188,9 +200,9 @@ A neighbouring system sometimes written alongside the action,
 \]
 makes the mismatch runaway, $\ddot\delta_a=2m\delta_a$. It is not an oscillator.
 
-An oscillator appears only if both kinetic signs are taken positive. The density $\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ yields $\ddot\delta+2m\delta=0$, at frequency $\sqrt{2m}$ in units $\hbar=c=1$. That frequency is not the Compton frequency $m$, and the model is not the written action.
+An oscillator appears only if both kinetic signs are taken positive. The density $\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ yields $\ddot\delta+2m\delta=0$, at frequency $\sqrt{2m}$ in units $\hbar=c=1$, while the common rapidity is free. That frequency is not the Compton frequency $m$, and the model is not the written action. For $m\ge 0$ its Jacobi integral is nonnegative, so conservation does bound the motion of $\delta$. The general solution is an oscillation of the mismatch together with uniform common rapidity.
 
-The written action therefore supplies no harmonic bridge to quantum theory. Linear accumulation of free mismatch is the only secular phase it actually yields. Identifying the rate $\nu$ with $E/\hbar$ remains a reading; the accumulated lag may then be written
+The written action therefore supplies no harmonic bridge to quantum theory. Identifying the rate $\nu$ of free lag with $E/\hbar$ remains a reading; the accumulated lag may then be written
 \[
 \int \delta_a \, dt \propto \frac{E t - \mathbf{p} \cdot \mathbf{x}}{\hbar},
 \]
@@ -348,16 +360,17 @@ Same-axis usual and dual generators commute & holds \\
 Off-axis usual and dual generators always commute & false \\
 $IJ=K$; cyclic generators act by $-i\sigma_a$ & holds \\
 $I\leftrightarrow i\sigma$ & false \\
-Axis-$0$ dual rotor is the Rodrigues $\mathrm{SU}(2)$ matrix (unitary, $\det=1$) & holds \\
-Dual-rotor matrix $U(\beta)\in\mathrm{SU}(2)$ at every dual rapidity; pure-dual Banach exponential matches & holds \\
+Dual-rotor matrix $U(\beta)\in\mathrm{SU}(2)$ at every dual rapidity; relative dual rotors remain in $\mathrm{SU}(2)$ & holds \\
 $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ in $\mathrm{Cl}(3,1)$ & holds \\
 $\gamma^0$ equals the hyperbolic generator $j$ & false \\
 $|\Omega|^2$ is a Born probability & false~\cite{dst-d4l} \\
 $\mathrm{Cl}(3,1)\cong\mathrm{Cl}(9,1)$, or the dual spinor space is the $10$D Majorana--Weyl module & false \\
 Momentum-space Dirac equation as Clifford factor of $Q(p)$ & holds \\
-Written opposite-sign action: $\ddot\phi=\ddot\theta=-m(\phi-\theta)$, hence $\ddot\delta=0$ & holds \\
+On-shell Weyl construction recovers rest $(u,iu)$ and solves every on-shell $p$ & holds \\
+Rest-frame Dirac overlap is twice the dual-rotor amplitude & holds \\
+Written opposite-sign action: $\ddot\delta=0$, $\ddot\sigma=-2m\delta$; Jacobi integral conserved and indefinite & holds \\
 Claimed EL $\ddot\phi=m(\phi-\theta)$, $-\ddot\theta=m(\phi-\theta)$ yields $\ddot\delta+m\delta=0$ & false (runaway $\ddot\delta=2m\delta$) \\
-Same-sign kinetics: $\ddot\delta+2m\delta=0$ at $\sqrt{2m}$ & holds as a working model \\
+Same-sign kinetics: $\ddot\delta+2m\delta=0$ at $\sqrt{2m}$, free common rapidity & holds as a working model \\
 Spacetime Dirac PDE, mass as torsion, Higgs mechanism, measurement, path integral & open \\
 Irreducibility of the left ideal as a spinor module & open \\
 TEGR equivalent to Einstein--Hilbert (variational) & literature~\cite{maluf2013} \\
@@ -368,9 +381,9 @@ TEGR equivalent to Einstein--Hilbert (variational) & literature~\cite{maluf2013}
 \section{Conclusions}
 \label{sec:conclusions}
 
-The double spacetime theory supplies an algebraic setting for quantum gravity, not a completed derivation. Every massive particle is encoded in the $16$-dimensional biquaternion algebra $\mathbb{H}\oplus\mathbb{H}\cong\mathrm{Cl}(3,1)$. The identities collected in Section~\ref{sec:status} include the admissible ceiling on $J$, the square-$+1$ projectors, on-axis commutativity only, the representation $-i\sigma$, the axis-$0$ Rodrigues matrix of $\mathrm{SU}(2)$, and the Clifford relations of $\mathrm{Cl}(3,1)$. Several natural identifications fail: the Killing pairing is not Born's rule, $I$ is not $i\sigma$, $\gamma^0$ is not $j$, $P_{\mathrm{spin}}P_R$ is not a projector, and $\mathrm{Cl}(3,1)$ is not $\mathrm{Cl}(9,1)$.
+The double spacetime theory supplies an algebraic setting for quantum gravity, not a completed derivation. Every massive particle is encoded in the $16$-dimensional biquaternion algebra $\mathbb{H}\oplus\mathbb{H}\cong\mathrm{Cl}(3,1)$. The identities collected in Section~\ref{sec:status} include the admissible ceiling on $J$, the square-$+1$ projectors, on-axis commutativity only, the representation $-i\sigma$, the Rodrigues matrix of $\mathrm{SU}(2)$ at every dual rapidity, and the Clifford relations of $\mathrm{Cl}(3,1)$. Several natural identifications fail: the Killing pairing is not Born's rule, $I$ is not $i\sigma$, $\gamma^0$ is not $j$, $P_{\mathrm{spin}}P_R$ is not a projector, and $\mathrm{Cl}(3,1)$ is not $\mathrm{Cl}(9,1)$.
 
-The spacetime Dirac PDE, fermion mass as torsional rigidity, the Higgs mechanism, measurement, and entanglement are not theorems of this paper. The momentum-space Dirac equation is the first-order factor of the Minkowski quadratic in Section~\ref{sec:dirac}. The written opposite-sign particle action makes the mismatch free: $\ddot\delta=0$. A neighbouring oscillator exists only for same-sign kinetics, at frequency $\sqrt{2m}$, not at the Compton frequency $m$. Identifying free lag with the de Broglie phase remains a reading. Gravity as misalignment of usual and dual rotors remains the programme of the companion gravity papers; TEGR equivalence with Einstein--Hilbert is taken from the literature. The bound $|J|\le 3\pi^2/8$ constrains torsion on admissible configurations; it does not by itself forbid astrophysical singularities.
+The spacetime Dirac PDE, fermion mass as torsional rigidity, the Higgs mechanism, measurement, and entanglement are not theorems of this paper. The momentum-space Dirac equation is the first-order factor of the Minkowski quadratic; on the mass shell it is solved by a dual spinor that recovers the rest pair $(u,iu)$. The written opposite-sign action frees the mismatch and sources the common rapidity, with a conserved indefinite Jacobi integral. A neighbouring oscillator exists only for same-sign kinetics, at frequency $\sqrt{2m}$, not at the Compton frequency $m$. Identifying free lag with the de Broglie phase remains a reading. Gravity as misalignment of usual and dual rotors remains the programme of the companion gravity papers; TEGR equivalence with Einstein--Hilbert is taken from the literature. The bound $|J|\le 3\pi^2/8$ constrains torsion on admissible configurations; it does not by itself forbid astrophysical singularities.
 
 Dual-sector kinematics is the $\mathbb{C}^2$ representation described in~\cite{dst-d4l}; the gravitational scalar is the parameter-space quantity $J$ with the bound above. The continuum remains a classical approximation. The $16$-dimensional algebra is the setting, not a finished theory of quantum gravity.
 

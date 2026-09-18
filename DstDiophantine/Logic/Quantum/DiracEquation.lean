@@ -3,6 +3,7 @@ import DstDiophantine.Logic.Quantum.DeBroglie
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.Abel
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # Momentum-space Dirac equation from the Clifford square
@@ -13,8 +14,10 @@ The Minkowski quadratic is already a square in `Cl(3,1)`:
 therefore sits on the mass shell `Q(p) = -m²`.
 
 A rest-frame particle solution is assembled from a dual spinor `u`.
-Dual rotation of `u` stays on that shell, and the `ℂ⁴` overlap of two
-such solutions is twice the dual-rotor amplitude.
+On any mass shell `Q(p)=-m²` with `m≠0` the same Weyl parameter
+determines a solution whose rest-frame specialisation is `(u,iu)`.
+The `ℂ⁴` overlap of two rest-frame solutions is twice the dual-rotor
+amplitude.
 
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
@@ -480,6 +483,21 @@ theorem applyMat_one (ψ : DualSpinor) :
     applyMat (1 : Matrix (Fin 2) (Fin 2) ℂ) ψ = ψ := by
   simp [applyMat, Matrix.one_mulVec]
 
+theorem applyMat_mul (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (A * B) ψ = applyMat A (applyMat B ψ) := by
+  simp [applyMat, Matrix.mulVec_mulVec]
+
+private theorem applyMat_basis (A : Matrix (Fin 2) (Fin 2) ℂ) (i j : Fin 2) :
+    WithLp.ofLp (applyMat A (EuclideanSpace.single j (1 : ℂ))) i = A i j := by
+  simp [applyMat, EuclideanSpace.single]
+
+private theorem applyMat_eq_of_forall {A B : Matrix (Fin 2) (Fin 2) ℂ}
+    (h : ∀ ψ, applyMat A ψ = applyMat B ψ) : A = B := by
+  ext i j
+  have hij := congrArg (fun v : DualSpinor => WithLp.ofLp v i)
+    (h (EuclideanSpace.single j (1 : ℂ)))
+  simpa [applyMat_basis] using hij
+
 private theorem apply_pauliSlashBar_eq (p : Vec4) (ψ : DualSpinor) :
     applyMat (pauliSlashBar p) ψ =
       (-(p 0 : ℂ)) • ψ + (p 1 : ℂ) • applyMat pauliX ψ +
@@ -529,6 +547,35 @@ theorem slash_weyl_decompose (p : Vec4) (Ψ : DiracSpinor) :
   nth_rw 1 [← weyl_decompose' Ψ]
   rw [applyDiracMat_add, slash_weylUpper, slash_weylLower]
   abel
+
+/-- Chiral slashes multiply to the Minkowski quadratic. -/
+theorem pauliSlash_mul_pauliSlashBar (p : Vec4) :
+    pauliSlash p * pauliSlashBar p = (minkowskiQ p : ℂ) • 1 := by
+  refine applyMat_eq_of_forall fun ψ => ?_
+  rw [applyMat_smul_mat, applyMat_one]
+  have hsq :
+      applyDiracMat (slashMat p * slashMat p) (weylUpper ψ) =
+        weylUpper (applyMat (pauliSlash p * pauliSlashBar p) ψ) := by
+    rw [applyDiracMat_mul, slash_weylUpper, slash_weylLower, applyMat_mul]
+  have hQ :
+      applyDiracMat (slashMat p * slashMat p) (weylUpper ψ) =
+        weylUpper ((minkowskiQ p : ℂ) • ψ) := by
+    rw [slashMat_sq, applyDiracMat_smul_one, weylUpper_smul]
+  exact weylUpper_injective (hsq.symm.trans hQ)
+
+theorem pauliSlashBar_mul_pauliSlash (p : Vec4) :
+    pauliSlashBar p * pauliSlash p = (minkowskiQ p : ℂ) • 1 := by
+  refine applyMat_eq_of_forall fun ψ => ?_
+  rw [applyMat_smul_mat, applyMat_one]
+  have hsq :
+      applyDiracMat (slashMat p * slashMat p) (weylLower ψ) =
+        weylLower (applyMat (pauliSlashBar p * pauliSlash p) ψ) := by
+    rw [applyDiracMat_mul, slash_weylLower, slash_weylUpper, applyMat_mul]
+  have hQ :
+      applyDiracMat (slashMat p * slashMat p) (weylLower ψ) =
+        weylLower ((minkowskiQ p : ℂ) • ψ) := by
+    rw [slashMat_sq, applyDiracMat_smul_one, weylLower_smul]
+  exact weylLower_injective (hsq.symm.trans hQ)
 
 /-- Massless Dirac decouples into two independent Weyl equations. -/
 theorem dirac_massless_decouple {p : Vec4} {Ψ : DiracSpinor}
@@ -644,6 +691,108 @@ theorem exists_rest_particle (m : ℝ) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
   ⟨restParticleSpinor (EuclideanSpace.single 0 (1 : ℂ)),
     restParticleSpinor_ne_zero, restParticle_dirac m _⟩
+
+/-! ### On-shell solutions from a Weyl parameter -/
+
+/-- On-shell particle spinor: the lower Weyl block is fixed by the chiral slash.
+At rest this is the pair \((u,iu)\). -/
+noncomputable def onShellParticleSpinor (m : ℝ) (p : Vec4) (u : DualSpinor) :
+    DiracSpinor :=
+  weylUpper u + weylLower (-(I / (m : ℂ)) • applyMat (pauliSlashBar p) u)
+
+theorem onShellParticleSpinor_rest {m : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
+    onShellParticleSpinor m (restMomentum m) u = restParticleSpinor u := by
+  have hmC : (m : ℂ) ≠ 0 := ofReal_ne_zero.mpr hm
+  have hscale : -(I / (m : ℂ)) * (-(m : ℂ)) = I := by
+    field_simp [hmC]
+  unfold onShellParticleSpinor restParticleSpinor
+  have hbar : applyMat (pauliSlashBar (restMomentum m)) u = (-(m : ℂ)) • u := by
+    rw [pauliSlashBar_rest, applyMat_smul_mat, applyMat_one]
+  rw [hbar, smul_smul, hscale]
+
+theorem onShellParticleSpinor_ne_zero {m : ℝ} {p : Vec4} {u : DualSpinor}
+    (hu : u ≠ 0) : onShellParticleSpinor m p u ≠ 0 := by
+  intro h
+  have h0 : weylUpper u + weylLower (-(I / (m : ℂ)) • applyMat (pauliSlashBar p) u) =
+      weylUpper 0 + weylLower 0 := by
+    simpa [onShellParticleSpinor, weylUpper_zero, weylLower_zero] using h
+  exact hu (weyl_pair_injective h0).1
+
+private theorem dualSpinor_single_ne_zero :
+    EuclideanSpace.single (0 : Fin 2) (1 : ℂ) ≠ 0 := by
+  intro h
+  have h0 := congrArg (fun v : DualSpinor => WithLp.ofLp v 0) h
+  simp [EuclideanSpace.single] at h0
+
+/-- Any dual spinor determines a massive Dirac solution on the mass shell. -/
+theorem onShellParticle_dirac {m : ℝ} {p : Vec4} (hm : m ≠ 0)
+    (hQ : minkowskiQ p = -m ^ 2) (u : DualSpinor) :
+    DiracMomentum m p (onShellParticleSpinor m p u) := by
+  have hmC : (m : ℂ) ≠ 0 := ofReal_ne_zero.mpr hm
+  set l : DualSpinor := -(I / (m : ℂ)) • applyMat (pauliSlashBar p) u
+  have hscale : I * (m : ℂ) * (-(I / (m : ℂ))) = 1 := by
+    field_simp [hmC]
+    simp [sq, I_mul_I]
+  have hbar : applyMat (pauliSlashBar p) u = (I * (m : ℂ)) • l := by
+    have : (I * (m : ℂ)) • l =
+        (I * (m : ℂ) * (-(I / (m : ℂ)))) • applyMat (pauliSlashBar p) u := by
+      dsimp [l]; rw [smul_smul]
+    rw [this, hscale, one_smul]
+  have hsl : applyMat (pauliSlash p) l = (I * (m : ℂ)) • u := by
+    have hprod :
+        applyMat (pauliSlash p) (applyMat (pauliSlashBar p) u) =
+          (minkowskiQ p : ℂ) • u := by
+      rw [← applyMat_mul, pauliSlash_mul_pauliSlashBar, applyMat_smul_mat,
+        applyMat_one]
+    have hQ' : (minkowskiQ p : ℂ) = -((m : ℂ) ^ 2) := by
+      rw [hQ, ofReal_neg, ofReal_pow]
+    have hcoeff : -(I / (m : ℂ)) * (-((m : ℂ) ^ 2)) = I * (m : ℂ) := by
+      field_simp [hmC]
+    calc applyMat (pauliSlash p) l
+        = -(I / (m : ℂ)) • applyMat (pauliSlash p) (applyMat (pauliSlashBar p) u) := by
+          dsimp [l]; rw [applyMat_smul]
+      _ = -(I / (m : ℂ)) • ((minkowskiQ p : ℂ) • u) := by rw [hprod]
+      _ = (-(I / (m : ℂ)) * (minkowskiQ p : ℂ)) • u := by rw [smul_smul]
+      _ = (I * (m : ℂ)) • u := by rw [hQ', hcoeff]
+  unfold DiracMomentum onShellParticleSpinor
+  rw [applyDiracMat_add, slash_weylUpper, slash_weylLower]
+  have h1 : weylUpper (applyMat (pauliSlash p) l) =
+      (I * (m : ℂ)) • weylUpper u := by
+    rw [hsl, weylUpper_smul]
+  have h2 : weylLower (applyMat (pauliSlashBar p) u) =
+      (I * (m : ℂ)) • weylLower l := by
+    rw [hbar, weylLower_smul]
+  rw [h1, h2, smul_add, add_comm]
+
+/-- Massive on-shell particle solutions exist for every four-momentum on the shell. -/
+theorem exists_onShell_particle {m : ℝ} {p : Vec4} (hm : m ≠ 0)
+    (hQ : minkowskiQ p = -m ^ 2) :
+    ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m p Ψ :=
+  ⟨onShellParticleSpinor m p (EuclideanSpace.single 0 (1 : ℂ)),
+    onShellParticleSpinor_ne_zero dualSpinor_single_ne_zero,
+    onShellParticle_dirac hm hQ _⟩
+
+/-- Longitudinal boost of the rest momentum: \((m\cosh\alpha,0,0,m\sinh\alpha)\). -/
+noncomputable def boostZMomentum (m α : ℝ) : Vec4 :=
+  Pi.single (0 : Fin 4) (m * Real.cosh α) + Pi.single (3 : Fin 4) (m * Real.sinh α)
+
+theorem minkowskiQ_boostZ (m α : ℝ) :
+    minkowskiQ (boostZMomentum m α) = -m ^ 2 := by
+  have h0 : boostZMomentum m α 0 = m * Real.cosh α := by
+    simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
+  have h1 : boostZMomentum m α 1 = 0 := by
+    simp [boostZMomentum, Pi.single_eq_of_ne]
+  have h2 : boostZMomentum m α 2 = 0 := by
+    simp [boostZMomentum, Pi.single_eq_of_ne]
+  have h3 : boostZMomentum m α 3 = m * Real.sinh α := by
+    simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
+  have hid : Real.cosh α ^ 2 - Real.sinh α ^ 2 = 1 :=
+    Real.cosh_sq_sub_sinh_sq α
+  calc minkowskiQ (boostZMomentum m α)
+      = -(m * Real.cosh α) ^ 2 + (m * Real.sinh α) ^ 2 := by
+        rw [minkowskiQ_eq, h0, h1, h2, h3]; ring
+    _ = -m ^ 2 * (Real.cosh α ^ 2 - Real.sinh α ^ 2) := by ring
+    _ = -m ^ 2 := by rw [hid]; ring
 
 theorem slashMat_anticomm_gamma5 (p : Vec4) :
     slashMat p * diracMat5 + diracMat5 * slashMat p = 0 := by

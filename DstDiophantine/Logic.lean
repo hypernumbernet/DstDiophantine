@@ -71,6 +71,7 @@ and `DstDiophantine.CGA`).
   `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation,
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
   equation as the Clifford square of the Minkowski quadratic,
+  on-shell Weyl construction recovering the rest pair \((u,iu)\),
   dual-rotor character and spinor amplitude)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
@@ -634,6 +635,26 @@ example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
 example (m : ℝ) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
   exists_rest_particle m
+
+/-- Regression: chiral slashes multiply to the Minkowski quadratic. -/
+example (p : Vec4) :
+    pauliSlash p * pauliSlashBar p = (minkowskiQ p : ℂ) • 1 :=
+  pauliSlash_mul_pauliSlashBar p
+
+/-- Regression: the on-shell Weyl construction recovers the rest pair \((u,iu)\). -/
+example {m : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
+    onShellParticleSpinor m (restMomentum m) u = restParticleSpinor u :=
+  onShellParticleSpinor_rest hm u
+
+/-- Regression: a massive on-shell four-momentum carries a Dirac solution. -/
+example {m : ℝ} {p : Vec4} (hm : m ≠ 0) (hQ : minkowskiQ p = -m ^ 2)
+    (u : DualSpinor) :
+    DiracMomentum m p (onShellParticleSpinor m p u) :=
+  onShellParticle_dirac hm hQ u
+
+/-- Regression: a longitudinal boost of rest momentum lies on the mass shell. -/
+example (m α : ℝ) : minkowskiQ (boostZMomentum m α) = -m ^ 2 :=
+  minkowskiQ_boostZ m α
 
 /-- Regression: rest-frame Dirac overlap is twice the dual-rotor amplitude. -/
 example (β : DualRapidity) (u : DualSpinor) :
