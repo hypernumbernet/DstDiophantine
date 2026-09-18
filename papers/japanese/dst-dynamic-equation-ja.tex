@@ -1,16 +1,12 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{luatexja}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
 \usepackage{hyperref}
 
-\newtheorem{theorem}{定理}
-\newtheorem{lemma}{補題}
-\newtheorem{definition}{定義}
-
-\title{二重時空理論における双対ローター動態の導出：\\
-ねじれ不整合ポテンシャルからの調和振動子モデル}
+\title{二重時空理論における双対ローター動態：\\
+書かれた作用、自由不整合、および近傍の振動子}
 
 \author{\texttt{https://github.com/hypernumbernet}}
 \date{}
@@ -20,88 +16,156 @@
 \maketitle
 
 \begin{abstract}
-二重時空理論では、すべての質量粒子が $\mathrm{Cl}(3,1)$ と同型の16次元双四元数代数に符号化された、通常時空と双対時空の内在的な対を運ぶ。重力は通常ローター $R_{\text{usual}}$ と双対ローター $R_{\text{dual}}$ の間のねじれ不整合から生じる。ここではキリング形式不変量 $J$ を粒子内在ポテンシャルへ昇格させることで、ねじれ不整合角に対する厳密な動態方程式を導出する。得られた作用の変分は単純調和振動子方程式 $\ddot{\delta\theta}_a + m \delta\theta_a = 0$ を与え、ここで $m$ は静止質量である。低エネルギー領域では、これはド・ブロイ位相を自然に再現し、遠平行重力との古典的等価性を保ちつつ、量子物質波の幾何学的起源を供給する。
+二重時空理論では、すべての質量粒子が \(\mathrm{Cl}(3,1)\) と同型の16実次元双四元数代数に符号化された、通常と双対のミンコフスキーセクターの内在的な対を運ぶ。重力は通常ローター \(R_{\mathrm{usual}}\) と双対ローター \(R_{\mathrm{dual}}\) のねじれ不整合である。六つのラピディティに対する粒子内在作用は模型であり、それらのローターのユニタリ性からの演繹ではない。書かれた反対符号の密度は不整合を自由にする。両角はともに加速し、差の二階導関数は消える。作用の傍らに書かれることのある近傍の符号パターンは、不整合を暴走させる。振動子が現れるのは両運動項の符号を正にとったときに限り、そのとき振動数は \(\sqrt{2m}\) であってコンプトン振動数 \(m\) ではない。自由な遅れの線形蓄積は、書かれた作用が供給する唯一の永年位相である。その速さをド・ブロイ位相と同定することは読みのままである。本稿の振動子ポテンシャルは、主論文のパラメータ空間キリング二次形式ではない。
 \end{abstract}
 
 \section{はじめに}
 
-二重時空理論は、時空が共有連続体ではなく、双四元数 $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$ により記述される粒子局所的なコンパクト化ミンコフスキー時空の対であると定式化する。完全ローターは
+二重時空理論は共有連続体を拒む。各質量粒子は、16実次元双四元数代数 \(\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)\) の内部に二つのコンパクト化ミンコフスキー枠を運ぶ~\cite{dst-main}。完全ローターは
 \[
-R_{\text{total}} = R_{\text{usual}} R_{\text{dual}}
-= \exp\!\left[\sum_{a=1}^3 \left(\frac{\theta_a}{2} i\Gamma_a + \frac{\phi_a}{2}\Gamma_a\right)\right],
+R_{\mathrm{total}}
+  =\exp\!\left[\sum_{a=1}^3\left(\frac{\phi_a}{2}\,i\Gamma_a+\frac{\theta_a}{2}\,\Gamma_a\right)\right],
+\qquad
+\Gamma_1=I,\;\Gamma_2=J,\;\Gamma_3=K
 \]
-であり、$\Gamma_1=I$、$\Gamma_2=J$、$\Gamma_3=K$ である。古典重力作用は、バイベクトル $\Omega_{\text{biv}} = \log(R_{\text{usual}}^\dagger R_{\text{dual}})$ から構成されるキリング形式スカラー $J$ に比例する。本稿の $J$ は小角振動子ポテンシャルであり、主論文のパラメータ空間キリング二次形式ではない。許容天井 $|J_{\rm norm}|\le 1$ をここに移植してはならない。
+と書かれる。双曲生成子 \(i\Gamma_a\) は平方が \(+1\) であり通常セクターを動かす。循環生成子 \(\Gamma_a\) は平方が \(-1\) であり双対セクターを回転させる。同軸の通常生成子と双対生成子は可換であり、一軸の指数は因数分解する。異軸の生成子は必ずしも可換でない。無制限の六パラメータ因数分解 \(R_{\mathrm{usual}}R_{\mathrm{dual}}\) は、ここでは仮定しない。
 
-本論文では、$J$ を個別粒子の内在ポテンシャルとして扱い、ねじれ不整合角 $\delta\theta_a = \theta_a - \phi_a$ の厳密な動態を導出する。得られる方程式は質量に比例する調和振動子であり、線形領域でド・ブロイ位相を与える。
+相対ローター \(\Omega=R_{\mathrm{usual}}^\dagger R_{\mathrm{dual}}\) が単位元に等しいのは、二つのローターが一致するときに限る。不整合バイベクトル \(\Omega_{\mathrm{biv}}=\log\Omega\) から作られるローレンツ不変スカラー \(J\) は、古典場理論においてその不一致を測る。本稿の \(J\) は別の対象である。単一粒子の不整合角から組み立てた小角振動子ポテンシャルである。主論文の許容天井 \(\lvert J_{\mathrm{norm}}\rvert\le 1\) をここに移植してはならない。
 
-\section{小角近似におけるねじれ不整合ポテンシャル}
+問いは動力学的である。不整合角 \(\delta_a=\phi_a-\theta_a\) を粒子内在ラグランジアンの座標へ昇格させたとき、どのような運動が従うか。近傍の三つの系が比べられてきた。それらのオイラー--ラグランジュ恒等式は初等であり、一致しない。双対ローターの幾何---その実の指標、スピノル行列要素、観測者との \(\mathrm{SU}(2)\) 対---は併記のノートに属する~\cite{dst-de-broglie-wave}。ここで問うのは \(\delta\) の運動だけである。
 
-相対ローター $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$ を定義する。小さな不整合角に対して
+\section{粒子ポテンシャルとしてのねじれ不整合}
+
+小さな不整合に対し、相対ローターは模型チャート
 \[
-\Omega \approx 1 + \frac{1}{2}\sum_{a=1}^3 \delta\theta_a (i\Gamma_a + \Gamma_a).
+\Omega
+  \approx 1+\frac12\sum_{a=1}^3\delta_a\,(i\Gamma_a+\Gamma_a)
 \]
-バイベクトル $\Omega_{\text{biv}} = \log\Omega$ は、交差項の相殺と適切な正規化の後
+を許す。その展開はチャートであり、六生成子代数の定理ではない。静止質量 \(m\) を双対セクターの剛性として取り込むことも、同様にモデリング上の選択である。\(m\) は双対ローター代数から導かれない。得られる振動子ポテンシャル
 \[
-J \approx \frac{1}{2} \sum_{a=1}^3 \delta\theta_a^2
+J_{\mathrm{osc}}
+  =\frac12 m\sum_{a=1}^3\delta_a^2
 \]
-を与える。静止質量 $m$ を双対セクターの剛性として取り込み、振動子ポテンシャル
+は、主論文のパラメータ空間キリング二次形式 \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) ではない。そのキリングスカラーの消滅は \(\Omega=1\) を強制しない。平衡した質量シードは \(J=0\) でありながら非自明な相対ローターをもちうる。ポテンシャル \(J_{\mathrm{osc}}\) はその区別を知らない。座標差 \(\delta_a\) の二次形式であり、それ以上ではない。
+
+\section{書かれた粒子作用}
+
+単一粒子の内在角に対して書かれた有効作用は
 \[
-J_{\mathrm{osc}} = \frac{1}{2} m \sum_{a=1}^3 \delta\theta_a^2
+S_{\mathrm{particle}}
+  =\int\left[
+    \frac12\sum_{a=1}^3\dot\phi_a^2
+    -\frac12\sum_{a=1}^3\dot\theta_a^2
+    -\frac m2\sum_{a=1}^3(\phi_a-\theta_a)^2
+  \right]dt
 \]
-と書く。この \(J_{\mathrm{osc}}\) は主論文のキリング二次形式ではない。
+である。運動項の反対符号は書かれた模型の一部である。通常セクターのブースト自由度と、双対セクターの時間反転した楕円的性格を反映させる意図である。ローターのユニタリ性から演繹されたものではない。
 
-\section{粒子内在作用原理}
-
-単一粒子の内在的自由度に対する有効作用を次のように提案する：
+一軸上の密度は
 \[
-S_{\text{particle}} = \int \left[ \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
-- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
-- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2 \right] dt.
+L
+  =\frac12\dot\phi^2
+  -\frac12\dot\theta^2
+  -\frac m2(\phi-\theta)^2
 \]
-運動項は通常セクターのブースト自由度と双対セクターの時間反転的性格を反映し、ポテンシャルは振動子 \(J_{\mathrm{osc}}\) である。多数粒子にわたる集団平均は遠平行作用の回復として形式的に書かれるが、その同一視は本稿の定理ではない。
-
-\section{運動方程式の導出}
-
-ラグランジアンは
-\[
-L = \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
-- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
-- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2.
-\]
-である。オイラー--ラグランジュ方程式は
-\begin{align}
-\ddot{\theta}_a - m (\theta_a - \phi_a) &= 0, \\
--\ddot{\phi}_a - m (\theta_a - \phi_a) &= 0.
-\end{align}
-となる。ねじれ不整合角 $\delta\theta_a = \theta_a - \phi_a$ を導入すると
+である。この密度のオイラー--ラグランジュ方程式は
 \begin{equation}
-\ddot{\delta\theta}_a + m \delta\theta_a = 0.
-\label{eq:harmonic}
+\ddot\phi=-m(\phi-\theta),\qquad
+\ddot\theta=-m(\phi-\theta)
+\label{eq:written-el}
 \end{equation}
-を得る。これは角振動数 $\sqrt{m}$ の調和振動子である。
-
-\section{自由粒子の解とド・ブロイ位相}
-
-自由粒子では $\dot{\theta}_a = \gamma v_a/c$（定数）である。式~\eqref{eq:harmonic} の一般解は
+である。両角は同じ量だけ加速する。したがって不整合 \(\delta=\phi-\theta\) は
+\begin{equation}
+\ddot\delta=0
+\label{eq:free}
+\end{equation}
+を満たす。アフィン遅れ
 \[
-\delta\theta_a(t) = A \sin(\sqrt{m}\, t) + B \cos(\sqrt{m}\, t).
+\delta(t)=\delta_0+\nu t
 \]
-である。低エネルギー（コンプトンスケール）領域では急速振動が平均化され、線形蓄積
-\[
-\delta\theta_a(t) \approx \dot{\delta\theta}_a(0)\, t,
-\]
-が残り、初期率は $\dot{\delta\theta}_a(0) \propto \gamma v_a$ である。積分すると蓄積位相
-\[
-\int \delta\theta_a\, dt \propto (\gamma m c^2 t - \gamma m v_a x)/\hbar
-\]
-を得る。これは実験室座標への変換後、まさにド・ブロイ位相 $(Et - \mathbf{p}\cdot\mathbf{x})/\hbar$ である。
+は許される。係数 \(\nu\) は初期条件である。質量 \(m\) は \(\phi\) と \(\theta\) をともに加速する。\(\delta\) を復元せず、振動数を固定しない。
 
-\section{量子有効理論への接続}
+これが書かれた作用の動態である。二つのセクターを区別するはずであった反対の運動符号は、不整合の通路で相殺する。\eqref{eq:written-el} に残るポテンシャルの寄与は共通の力であり、\(\delta\) に対する復元力ではない。
 
-コンプトン振動数振動にわたる平均化は $\delta\theta_a$ のゆっくり変化する成分のみを残し、$\phi_a \approx -\theta_a +$（遅い遅れ）を与える。この線形位相進化は量子波動関数の位相 $S(x,t)/\hbar$ に対応し、低エネルギー有効理論として自然に現れる。
+この粒子内在作用の多数粒子にわたる集団平均は、\(J\) の巨視的積分を回復するものとして提案されることがある。その平均は読みである。\(J_{\mathrm{osc}}\) とワイツェンベック密度 \(T\) の同一視ではない。
+
+\section{近傍の二つの系}
+
+作用の傍らに、あたかも同一ラグランジアンのオイラー--ラグランジュ系であるかのように書かれることのある近傍の系がある。
+\begin{equation}
+\ddot\phi=m(\phi-\theta),\qquad
+-\ddot\theta=m(\phi-\theta).
+\label{eq:claimed}
+\end{equation}
+これは書かれた密度のオイラー--ラグランジュ系ではない。不整合は暴走する。
+\begin{equation}
+\ddot\delta=2m\delta.
+\label{eq:runaway}
+\end{equation}
+振動子ではない。質量は遅れを復元するのではなく、増幅する。
+
+振動子が現れるのは、両運動項の符号を正にとったときである。密度
+\[
+L
+  =\frac12\dot\phi^2
+  +\frac12\dot\theta^2
+  -\frac m2(\phi-\theta)^2
+\]
+のオイラー--ラグランジュ方程式は
+\[
+\ddot\phi=-m(\phi-\theta),\qquad
+\ddot\theta=m(\phi-\theta)
+\]
+であり、したがって
+\begin{equation}
+\ddot\delta+2m\delta=0
+\label{eq:oscillator}
+\end{equation}
+である。これは明示的な作業模型であり、書かれた作用ではない。単位 \(\hbar=c=1\) における角振動数は \(\sqrt{2m}\) である。その振動数はコンプトン振動数 \(m\) ではない。通常ラピディティが一定率 \(\dot\phi_a=\gamma v_a/c\) で発展すると模型化した自由粒子に対し、一般解は
+\[
+\delta_a(t)=A_a\sin\bigl(\sqrt{2m}\,t+\psi_a\bigr)
+\]
+である。三つの系は二次ラグランジアンの空間における近傍である。書かれた作用であるのはそのうち一つだけであり、それは振動しない。振動するのはそのうち一つだけであり、それは書かれた作用ではない。残る系は暴走する。
+
+\section{永年位相とド・ブロイ同定}
+
+書かれた作用は量子理論への調和的な橋を与えない。与えるのは、自由不整合の線形蓄積である。初期率 \(\nu\) を実験室の四元運動量に比例するものとして読めば、蓄積遅れ
+\[
+\int\delta\,dt
+  \propto\frac{Et-\mathbf{p}\cdot\mathbf{x}}{\hbar}
+\]
+は物質波のド・ブロイ位相である~\cite{debroglie1924}。ルイ・ド・ブロイの同定は読みのままである。ポテンシャルに現れる質量は速さを選ばない。\(\nu\) はデータである。
+
+代わりに同符号模型を動態として採用するならば、遅い永年位相を主張する前に、\(\sqrt{2m}\) における急速振動をなお手で平均しなければならない。その線が物理的であるならば、それは \(\sqrt{2m}\) にあり、\(m\) にはない。いずれの振動数における狭い共鳴の欠如も、動態を制約するのであって、双対ローター運動学を制約するのではない。
+
+コンプトン波長は、双対セクターのコンパクト化半径 \(\sim\hbar/mc\) として読み続けられる。ド・ブロイ波長は、同定されたスカラー位相が \(2\pi\) 進む実験室距離である。いずれの長さも振動子から導かれず、双対ローターのトレースでもない。
+
+不整合角から作ったスカラー \(\mathrm{U}(1)\) 因子 \(e^{i\delta}\) は第三の量であり、双対ローターの実の指標 \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\) とも、そのローターの複素スピノル行列要素とも異なる~\cite{dst-de-broglie-wave}。それら二つの不変量は双対セクターの \(\mathrm{SU}(2)\) 運動学に属する。それらは本稿の粒子作用が供給するものではなく、作用はそれらを実験室の波には変えない。
 
 \section{結論}
 
-不整合角から構成した小角振動子ポテンシャル（主論文のパラメータ空間キリング二次形式ではない）を粒子内在ポテンシャルへ昇格させることで、作用原理から厳密な動態方程式 $\ddot{\delta\theta}_a + m \delta\theta_a = 0$ を導出した。この単純調和振動子は双対ローター遅れを支配し、ド・ブロイ位相を幾何学的に再現し、二重時空理論における双対ローター動態として最も整合的かつ背景独立な機構を供給する。
+双対ローター対は、二重時空理論における質量粒子の幾何である。粒子内在作用はその幾何の上に置かれた模型であり、幾何からの演繹ではない。ここで比べた近傍の三系のうち、書かれた反対符号の密度は不整合を自由にする。\(\ddot\delta=0\)。アフィン遅れは蓄積しうる。その線形蓄積は、書かれた作用が実際に供給する唯一の永年位相である。近傍の符号パターンは不整合を暴走させる。振動子が現れるのは同符号の運動項に限り、振動数は \(\sqrt{2m}\) であって静止質量のコンプトン振動数ではない。
+
+自由な遅れをド・ブロイ位相と同定すること、\(J_{\mathrm{osc}}\) を多数粒子集団にわたって平均すること、コンプトン波長を双対セクターの半径として読むこと、は幾何的な読みのままである。それらは利用可能である。書かれた作用のオイラー--ラグランジュ恒等式によって強制されるのではない。
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{dst-main}
+Anonymous,
+「双対時空の間のねじれとしての重力：一般相対性理論の双四元数的再定式化」 (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{dst-de-broglie-wave}
+Anonymous,
+「双対ローター位相遅れとしてのド・ブロイ波：粒子内在双対時空の幾何としての量子力学」 (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/dst-de-broglie-wave.pdf}.
+
+\bibitem{debroglie1924}
+L.~de Broglie,
+``Recherches sur la th\'eorie des quanta,''
+\textit{Ann.\ Phys.} (Paris) \textbf{3}, 22--128 (1925).
+
+\end{thebibliography}
 
 \end{document}

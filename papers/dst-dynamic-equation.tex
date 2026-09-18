@@ -1,15 +1,11 @@
 \documentclass[11pt,a4paper]{article}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb}
 \usepackage{geometry}
 \geometry{left=25mm,right=25mm,top=25mm,bottom=25mm}
 \usepackage{hyperref}
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{definition}{Definition}
-
-\title{Derivation of Dual-Rotor Dynamics in Double Spacetime Theory:\\ 
-A Harmonic Oscillator Model from Torsional Mismatch Potential}
+\title{Dual-Rotor Dynamics in Double Spacetime Theory:\\
+Written Action, Free Mismatch, and a Neighbouring Oscillator}
 
 \author{\texttt{https://github.com/hypernumbernet}}
 \date{}
@@ -19,88 +15,156 @@ A Harmonic Oscillator Model from Torsional Mismatch Potential}
 \maketitle
 
 \begin{abstract}
-In the double spacetime theory, every massive particle carries an intrinsic pair of usual and dual spacetimes encoded in the 16-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$. Gravity arises from the torsional mismatch between the usual rotor $R_{\text{usual}}$ and the dual rotor $R_{\text{dual}}$. Here we derive a rigorous dynamical equation for the torsional mismatch angle by promoting the Killing-form invariant $J$ to a particle-intrinsic potential. Variation of the resulting action yields a simple harmonic oscillator equation $\ddot{\delta\theta}_a + m \delta\theta_a = 0$, where $m$ is the rest mass. In the low-energy regime, this naturally reproduces the de Broglie phase, providing a geometric origin for quantum matter waves while preserving classical equivalence to teleparallel gravity.
+In double spacetime theory every massive particle carries an intrinsic pair of usual and dual Minkowski sectors, encoded in the 16-real-dimensional biquaternion algebra isomorphic to \(\mathrm{Cl}(3,1)\). Gravity is the torsional mismatch of the usual rotor \(R_{\mathrm{usual}}\) and the dual rotor \(R_{\mathrm{dual}}\). A particle-intrinsic action for the six rapidities is a model, not a deduction from unitarity of those rotors. The written opposite-sign density makes the mismatch free: both angles accelerate together, and their difference has vanishing second derivative. A neighbouring sign pattern, sometimes written alongside the action, makes the mismatch runaway. An oscillator appears only when both kinetic signs are taken positive, and then at frequency \(\sqrt{2m}\), not at the Compton frequency \(m\). Linear accumulation of free lag is the only secular phase the written action supplies; identifying that rate with the de Broglie phase remains a reading. The oscillator potential of this note is not the parameter-space Killing quadratic of the main paper.
 \end{abstract}
 
 \section{Introduction}
 
-The double spacetime theory posits that spacetime is not a shared continuum but a particle-local pair of compactified Minkowski spacetimes described by biquaternions $\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)$. The complete rotor is
+The double spacetime theory refuses a shared continuum. Each massive particle carries two compactified Minkowski frames inside the 16-real-dimensional biquaternion algebra \(\mathbb{H}\otimes\mathbb{H}\cong\mathrm{Cl}(3,1)\)~\cite{dst-main}. The complete rotor is written
 \[
-R_{\text{total}} = R_{\text{usual}} R_{\text{dual}}
-= \exp\!\left[\sum_{a=1}^3 \left(\frac{\theta_a}{2} i\Gamma_a + \frac{\phi_a}{2}\Gamma_a\right)\right],
+R_{\mathrm{total}}
+  =\exp\!\left[\sum_{a=1}^3\left(\frac{\phi_a}{2}\,i\Gamma_a+\frac{\theta_a}{2}\,\Gamma_a\right)\right],
+\qquad
+\Gamma_1=I,\;\Gamma_2=J,\;\Gamma_3=K.
 \]
-where $\Gamma_1=I$, $\Gamma_2=J$, $\Gamma_3=K$. The classical gravitational action is proportional to the Killing-form scalar $J$ constructed from the bivector $\Omega_{\text{biv}} = \log(R_{\text{usual}}^\dagger R_{\text{dual}})$. The $J$ of this note is a small-angle oscillator potential, not the parameter-space Killing quadratic of the main paper; the admissible ceiling $|J_{\rm norm}|\le 1$ must not be transplanted here.
+The hyperbolic generators \(i\Gamma_a\) square to \(+1\) and move the usual sector; the cyclic generators \(\Gamma_a\) square to \(-1\) and rotate the dual sector. Same-axis usual and dual generators commute, so a one-axis exponential factorises. Distinct-axis generators need not commute. An unrestricted six-parameter factorisation \(R_{\mathrm{usual}}R_{\mathrm{dual}}\) is not assumed here.
 
-In this paper, we treat $J$ as an intrinsic potential for individual particles and derive the exact dynamics of the torsional mismatch angle $\delta\theta_a = \theta_a - \phi_a$. The resulting equation is a mass-proportional harmonic oscillator, yielding the de Broglie phase in the linear regime.
+The relative rotor \(\Omega=R_{\mathrm{usual}}^\dagger R_{\mathrm{dual}}\) is the identity if and only if the two rotors coincide. A Lorentz-invariant scalar \(J\) built from the mismatch bivector \(\Omega_{\mathrm{biv}}=\log\Omega\) measures that disagreement in the classical field theory. The \(J\) of this note is a different object: a small-angle oscillator potential assembled from the mismatch angles of a single particle. The admissible ceiling \(\lvert J_{\mathrm{norm}}\rvert\le 1\) of the main paper must not be transplanted here.
 
-\section{Torsional Mismatch Potential in the Small-Angle Approximation}
+The question is dynamical. Once the mismatch angle \(\delta_a=\phi_a-\theta_a\) is promoted to a coordinate of a particle-intrinsic Lagrangian, what motion follows? Three neighbouring systems have been compared. Their Euler--Lagrange identities are elementary, and they do not agree. The geometry of the dual rotor---its real character, its spinor matrix element, its \(\mathrm{SU}(2)\) pairing with an observer---belongs to a companion note~\cite{dst-de-broglie-wave}. What is asked here is only the motion of \(\delta\).
 
-Define the relative rotor $\Omega = R_{\text{usual}}^\dagger R_{\text{dual}}$. For small mismatch angles,
+\section{Torsional mismatch as a particle potential}
+
+For small mismatch the relative rotor admits the modelling chart
 \[
-\Omega \approx 1 + \frac{1}{2}\sum_{a=1}^3 \delta\theta_a (i\Gamma_a + \Gamma_a).
+\Omega
+  \approx 1+\frac12\sum_{a=1}^3\delta_a\,(i\Gamma_a+\Gamma_a).
 \]
-The bivector $\Omega_{\text{biv}} = \log\Omega$ yields, after cancellation of cross terms and proper normalization,
+That expansion is a chart, not a theorem of the six-generator algebra. Incorporating the rest mass \(m\) as a stiffness of the dual sector is likewise a modelling choice; \(m\) is not derived from the dual-rotor algebra. The resulting oscillator potential
 \[
-J \approx \frac{1}{2} \sum_{a=1}^3 \delta\theta_a^2.
+J_{\mathrm{osc}}
+  =\frac12 m\sum_{a=1}^3\delta_a^2
 \]
-Incorporating the rest mass $m$ as the stiffness of the dual sector, we write the oscillator potential
+is not the parameter-space Killing quadratic \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) of the main paper. Vanishing of that Killing scalar does not force \(\Omega=1\); a balanced massive seed may have \(J=0\) with a nontrivial relative rotor. The potential \(J_{\mathrm{osc}}\) knows nothing of that distinction. It is quadratic in the coordinate difference \(\delta_a\) and nothing else.
+
+\section{The written particle action}
+
+The written effective action for the intrinsic angles of a single particle is
 \[
-J_{\mathrm{osc}} = \frac{1}{2} m \sum_{a=1}^3 \delta\theta_a^2.
+S_{\mathrm{particle}}
+  =\int\left[
+    \frac12\sum_{a=1}^3\dot\phi_a^2
+    -\frac12\sum_{a=1}^3\dot\theta_a^2
+    -\frac m2\sum_{a=1}^3(\phi_a-\theta_a)^2
+  \right]dt.
 \]
-This \(J_{\mathrm{osc}}\) is not the Killing quadratic of the main paper.
+The opposite signs of the kinetic terms are part of the written model. They are intended to reflect boost freedom in the usual sector and the time-reversed, elliptic character of the dual sector. They are not deduced from unitarity of the rotors.
 
-\section{Particle-Intrinsic Action Principle}
-
-We propose an effective action for the intrinsic degrees of freedom of a single particle:
+On one axis the density is
 \[
-S_{\text{particle}} = \int \left[ \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
-- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
-- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2 \right] dt.
+L
+  =\frac12\dot\phi^2
+  -\frac12\dot\theta^2
+  -\frac m2(\phi-\theta)^2.
 \]
-The kinetic terms reflect boost freedom in the usual sector and the time-reversed character of the dual sector; the potential is the oscillator \(J_{\mathrm{osc}}\). Collective averaging over many particles is formally written as recovering a teleparallel action, but that identification is not a theorem of this note.
-
-\section{Derivation of the Equations of Motion}
-
-The Lagrangian is
-\[
-L = \frac{1}{2}\sum_{a=1}^3 \dot{\theta}_a^2 
-- \frac{1}{2}\sum_{a=1}^3 \dot{\phi}_a^2 
-- \frac{m}{2}\sum_{a=1}^3 (\theta_a - \phi_a)^2.
-\]
-The Euler--Lagrange equations read
-\begin{align}
-\ddot{\theta}_a - m (\theta_a - \phi_a) &= 0, \\
--\ddot{\phi}_a - m (\theta_a - \phi_a) &= 0.
-\end{align}
-Introducing the torsional mismatch angle $\delta\theta_a = \theta_a - \phi_a$, we obtain
+The Euler--Lagrange equations of this density are
 \begin{equation}
-\ddot{\delta\theta}_a + m \delta\theta_a = 0.
-\label{eq:harmonic}
+\ddot\phi=-m(\phi-\theta),\qquad
+\ddot\theta=-m(\phi-\theta).
+\label{eq:written-el}
 \end{equation}
-This is a harmonic oscillator with angular frequency $\sqrt{m}$.
-
-\section{Solution for Free Particles and the de Broglie Phase}
-
-For a free particle, $\dot{\theta}_a = \gamma v_a/c$ (constant). The general solution of Eq.~\eqref{eq:harmonic} is
+Both angles accelerate by the same amount. The mismatch \(\delta=\phi-\theta\) therefore satisfies
+\begin{equation}
+\ddot\delta=0.
+\label{eq:free}
+\end{equation}
+Affine lag
 \[
-\delta\theta_a(t) = A \sin(\sqrt{m}\, t) + B \cos(\sqrt{m}\, t).
+\delta(t)=\delta_0+\nu t
 \]
-In the low-energy (Compton-scale) regime, rapid oscillations average out, leaving linear accumulation
-\[
-\delta\theta_a(t) \approx \dot{\delta\theta}_a(0)\, t,
-\]
-with initial rate $\dot{\delta\theta}_a(0) \propto \gamma v_a$. Integrating gives the accumulated phase
-\[
-\int \delta\theta_a\, dt \propto (\gamma m c^2 t - \gamma m v_a x)/\hbar,
-\]
-which, after transformation to laboratory coordinates, is precisely the de Broglie phase $(Et - \mathbf{p}\cdot\mathbf{x})/\hbar$.
+is allowed. The coefficient \(\nu\) is an initial condition. The mass \(m\) accelerates \(\phi\) and \(\theta\) together; it does not restore \(\delta\), and it does not fix a frequency.
 
-\section{Connection to Quantum Effective Theory}
+This is the dynamics of the written action. The opposite kinetic signs, which were meant to distinguish the two sectors, cancel in the mismatch channel. What remains of the potential in~\eqref{eq:written-el} is a common force, not a restoring force on \(\delta\).
 
-Averaging over Compton-frequency oscillations retains only the slowly varying component of $\delta\theta_a$, yielding $\phi_a \approx -\theta_a +$ (slow lag). This linear phase evolution corresponds to the phase $S(x,t)/\hbar$ of the quantum wave function, naturally emerging as the low-energy effective theory.
+Collective averaging of this particle-intrinsic action over many particles is sometimes proposed as recovering a macroscopic integral of \(J\). That averaging is a reading. It is not an identification of \(J_{\mathrm{osc}}\) with the Weitzenb\"ock density \(T\).
+
+\section{Two neighbouring systems}
+
+A neighbouring system is sometimes written alongside the action, as if it were the Euler--Lagrange system of the same Lagrangian:
+\begin{equation}
+\ddot\phi=m(\phi-\theta),\qquad
+-\ddot\theta=m(\phi-\theta).
+\label{eq:claimed}
+\end{equation}
+This is not the Euler--Lagrange system of the written density. The mismatch then runs away,
+\begin{equation}
+\ddot\delta=2m\delta.
+\label{eq:runaway}
+\end{equation}
+It is not an oscillator. The mass, instead of restoring the lag, amplifies it.
+
+An oscillator does appear if both kinetic signs are taken positive. The density
+\[
+L
+  =\frac12\dot\phi^2
+  +\frac12\dot\theta^2
+  -\frac m2(\phi-\theta)^2
+\]
+has Euler--Lagrange equations
+\[
+\ddot\phi=-m(\phi-\theta),\qquad
+\ddot\theta=m(\phi-\theta),
+\]
+and therefore
+\begin{equation}
+\ddot\delta+2m\delta=0.
+\label{eq:oscillator}
+\end{equation}
+This is an explicit working model, not the written action. In units \(\hbar=c=1\) its angular frequency is \(\sqrt{2m}\). That frequency is not the Compton frequency \(m\). For a free particle whose usual rapidity is modelled as evolving at constant rate \(\dot\phi_a=\gamma v_a/c\), the general solution is
+\[
+\delta_a(t)=A_a\sin\bigl(\sqrt{2m}\,t+\psi_a\bigr).
+\]
+The three systems are neighbours in the space of quadratic Lagrangians. Only one of them is the written action, and that one does not oscillate. Only one of them oscillates, and that one is not the written action. The remaining system is runaway.
+
+\section{Secular phase and the de Broglie identification}
+
+The written action does not furnish a harmonic bridge to quantum theory. What it does furnish is linear accumulation of free mismatch. If the initial rate \(\nu\) is read as proportional to the laboratory four-momentum, the accumulated lag
+\[
+\int\delta\,dt
+  \propto\frac{Et-\mathbf{p}\cdot\mathbf{x}}{\hbar}
+\]
+is the de Broglie phase of the matter wave~\cite{debroglie1924}. That identification remains a reading. The mass that appears in the potential does not select the rate; \(\nu\) is data.
+
+If instead the same-sign model is adopted as the dynamics, rapid oscillations at \(\sqrt{2m}\) must still be averaged by hand before a slow secular phase can be claimed. The line, if it is physical, sits at \(\sqrt{2m}\), not at \(m\). Absence of a narrow resonance at either frequency would constrain the dynamics, not the dual-rotor kinematics.
+
+The Compton wavelength continues to be readable as a compactification radius of the dual sector, \(\sim\hbar/mc\). The de Broglie wavelength is the laboratory distance over which an identified scalar phase advances by \(2\pi\). Neither length is derived from the oscillator, and neither is the trace of a dual rotor.
+
+The scalar \(\mathrm{U}(1)\) factor \(e^{i\delta}\) built from the mismatch angle is a third quantity, distinct from the real character \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\) of the dual rotor and from the complex spinor matrix element of that rotor~\cite{dst-de-broglie-wave}. Those two invariants belong to the \(\mathrm{SU}(2)\) kinematics of the dual sector. They are not supplied by the particle action of this note, and the action does not turn them into a laboratory wave.
 
 \section{Conclusion}
 
-By elevating a small-angle oscillator potential built from the mismatch angle (not the parameter-space Killing quadratic of the main paper) to a particle-intrinsic potential, we have derived the exact dynamical equation $\ddot{\delta\theta}_a + m \delta\theta_a = 0$ from an action principle. This simple harmonic oscillator governs dual-rotor lag, reproduces the de Broglie phase geometrically, and provides the most consistent, background-independent mechanism for the dual-rotor dynamics in double spacetime theory.
+The dual-rotor pair is the geometry of a massive particle in double spacetime theory. The particle-intrinsic action is a model placed on that geometry, not a deduction from it. Of the three neighbouring systems compared here, the written opposite-sign density makes the mismatch free: \(\ddot\delta=0\). Affine lag may accumulate, and that linear accumulation is the only secular phase the written action actually supplies. A neighbouring sign pattern makes the mismatch runaway. An oscillator appears only for same-sign kinetics, at frequency \(\sqrt{2m}\), not at the Compton frequency of the rest mass.
+
+Identifying the free lag with the de Broglie phase, averaging \(J_{\mathrm{osc}}\) over a many-particle ensemble, and reading the Compton wavelength as a dual-sector radius remain geometric readings. They are available. They are not forced by the Euler--Lagrange identities of the written action.
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{dst-main}
+Anonymous,
+``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{dst-de-broglie-wave}
+Anonymous,
+``De Broglie Waves as Dual-Rotor Phase Lag: Quantum Mechanics as Geometry of Particle-Intrinsic Dual Spacetime'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/dst-de-broglie-wave.pdf}.
+
+\bibitem{debroglie1924}
+L.~de Broglie,
+``Recherches sur la th\'eorie des quanta,''
+\textit{Ann.\ Phys.} (Paris) \textbf{3}, 22--128 (1925).
+
+\end{thebibliography}
 
 \end{document}
