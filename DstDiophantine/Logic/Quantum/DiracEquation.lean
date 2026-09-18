@@ -16,8 +16,11 @@ therefore sits on the mass shell `Q(p) = -m²`.
 A rest-frame particle solution is assembled from a dual spinor `u`.
 On any mass shell `Q(p)=-m²` with `m≠0` the same Weyl parameter
 determines a solution whose rest-frame specialisation is `(u,iu)`.
-The `ℂ⁴` overlap of two rest-frame solutions is twice the dual-rotor
-amplitude.
+A longitudinal boost of that rest pair is the on-shell Weyl
+construction after the chiral hyperbolic Rodrigues factor along the
+boost axis. Dual rotation about that axis commutes with the factor;
+a perpendicular dual rotation need not. The `ℂ⁴` overlap of two
+rest-frame solutions is twice the dual-rotor amplitude.
 
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
@@ -351,6 +354,36 @@ def diracUpper (Ψ : DiracSpinor) : DualSpinor :=
 def diracLower (Ψ : DiracSpinor) : DualSpinor :=
   WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]
 
+private theorem diracUpper_weylUpper (u : DualSpinor) :
+    diracUpper (weylUpper u) = u := by
+  ext i
+  fin_cases i <;> simp [diracUpper, weylUpper]
+
+private theorem diracLower_weylLower (l : DualSpinor) :
+    diracLower (weylLower l) = l := by
+  ext i
+  fin_cases i <;> simp [diracLower, weylLower]
+
+private theorem diracUpper_weylLower (l : DualSpinor) :
+    diracUpper (weylLower l) = 0 := by
+  ext i
+  fin_cases i <;> simp [diracUpper, weylLower]
+
+private theorem diracLower_weylUpper (u : DualSpinor) :
+    diracLower (weylUpper u) = 0 := by
+  ext i
+  fin_cases i <;> simp [diracLower, weylUpper]
+
+private theorem diracUpper_add (Ψ Φ : DiracSpinor) :
+    diracUpper (Ψ + Φ) = diracUpper Ψ + diracUpper Φ := by
+  ext i
+  fin_cases i <;> simp [diracUpper, PiLp.add_apply]
+
+private theorem diracLower_add (Ψ Φ : DiracSpinor) :
+    diracLower (Ψ + Φ) = diracLower Ψ + diracLower Φ := by
+  ext i
+  fin_cases i <;> simp [diracLower, PiLp.add_apply]
+
 theorem weyl_decompose' (Ψ : DiracSpinor) :
     weylUpper (diracUpper Ψ) + weylLower (diracLower Ψ) = Ψ :=
   weyl_decompose Ψ
@@ -478,6 +511,10 @@ theorem applyMat_add_mat (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
 theorem applyMat_smul_mat (c : ℂ) (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
     applyMat (c • M) ψ = c • applyMat M ψ := by
   simp [applyMat, Matrix.smul_mulVec]
+
+theorem applyMat_neg (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (-M) ψ = -applyMat M ψ := by
+  simpa using applyMat_smul_mat (-1) M ψ
 
 theorem applyMat_one (ψ : DualSpinor) :
     applyMat (1 : Matrix (Fin 2) (Fin 2) ℂ) ψ = ψ := by
@@ -776,23 +813,168 @@ theorem exists_onShell_particle {m : ℝ} {p : Vec4} (hm : m ≠ 0)
 noncomputable def boostZMomentum (m α : ℝ) : Vec4 :=
   Pi.single (0 : Fin 4) (m * Real.cosh α) + Pi.single (3 : Fin 4) (m * Real.sinh α)
 
+private theorem boostZMomentum_zero (m α : ℝ) :
+    boostZMomentum m α 0 = m * Real.cosh α := by
+  simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
+
+private theorem boostZMomentum_one (m α : ℝ) : boostZMomentum m α 1 = 0 := by
+  simp [boostZMomentum, Pi.single_eq_of_ne]
+
+private theorem boostZMomentum_two (m α : ℝ) : boostZMomentum m α 2 = 0 := by
+  simp [boostZMomentum, Pi.single_eq_of_ne]
+
+private theorem boostZMomentum_three (m α : ℝ) :
+    boostZMomentum m α 3 = m * Real.sinh α := by
+  simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
+
 theorem minkowskiQ_boostZ (m α : ℝ) :
     minkowskiQ (boostZMomentum m α) = -m ^ 2 := by
-  have h0 : boostZMomentum m α 0 = m * Real.cosh α := by
-    simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
-  have h1 : boostZMomentum m α 1 = 0 := by
-    simp [boostZMomentum, Pi.single_eq_of_ne]
-  have h2 : boostZMomentum m α 2 = 0 := by
-    simp [boostZMomentum, Pi.single_eq_of_ne]
-  have h3 : boostZMomentum m α 3 = m * Real.sinh α := by
-    simp [boostZMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
   have hid : Real.cosh α ^ 2 - Real.sinh α ^ 2 = 1 :=
     Real.cosh_sq_sub_sinh_sq α
   calc minkowskiQ (boostZMomentum m α)
       = -(m * Real.cosh α) ^ 2 + (m * Real.sinh α) ^ 2 := by
-        rw [minkowskiQ_eq, h0, h1, h2, h3]; ring
+        rw [minkowskiQ_eq, boostZMomentum_zero, boostZMomentum_one,
+          boostZMomentum_two, boostZMomentum_three]; ring
     _ = -m ^ 2 * (Real.cosh α ^ 2 - Real.sinh α ^ 2) := by ring
     _ = -m ^ 2 := by rw [hid]; ring
+
+/-! ### Chiral boost along \(z\) and internal dual rotation -/
+
+/-- Hyperbolic Rodrigues factor along \(\sigma_z\):
+\(\cosh(\alpha/2)\,I+\sinh(\alpha/2)\,\sigma_z\). -/
+noncomputable def chiralBoostZ (α : ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
+  (Real.cosh (α / 2) : ℂ) • 1 + (Real.sinh (α / 2) : ℂ) • pauliZ
+
+private theorem chiralBoostZ_eq (α : ℝ) :
+    chiralBoostZ α =
+      !![↑(Real.exp (α / 2)), 0; 0, ↑(Real.exp (-(α / 2)))] := by
+  unfold chiralBoostZ pauliZ
+  ext i j
+  fin_cases i <;> fin_cases j
+  · simp [Matrix.add_apply, Matrix.smul_apply, Complex.cosh_add_sinh,
+      ofReal_div, ofReal_exp]
+  · simp [Matrix.add_apply, Matrix.smul_apply]
+  · simp [Matrix.add_apply, Matrix.smul_apply]
+  · simp [Matrix.add_apply, Matrix.smul_apply]
+    simpa [sub_eq_add_neg] using Complex.cosh_sub_sinh (↑α / 2 : ℂ)
+
+/-- Same-axis chiral boosts compose by adding rapidities. -/
+private theorem chiralBoostZ_add (α β : ℝ) :
+    chiralBoostZ (α + β) = chiralBoostZ α * chiralBoostZ β := by
+  rw [chiralBoostZ_eq, chiralBoostZ_eq, chiralBoostZ_eq]
+  ext i j
+  fin_cases i <;> fin_cases j
+  · simp [Matrix.mul_apply, Fin.sum_univ_two]
+    rw [← Complex.exp_add]; congr 1; ring
+  · simp [Matrix.mul_apply, Fin.sum_univ_two]
+  · simp [Matrix.mul_apply, Fin.sum_univ_two]
+  · simp [Matrix.mul_apply, Fin.sum_univ_two]
+    rw [← Complex.exp_add]; congr 1; ring
+
+private theorem pauliSlashBar_boostZ (m α : ℝ) :
+    pauliSlashBar (boostZMomentum m α) =
+      (-((m * Real.cosh α : ℝ) : ℂ)) • 1 +
+        ((m * Real.sinh α : ℝ) : ℂ) • pauliZ := by
+  simp [pauliSlashBar, boostZMomentum_zero, boostZMomentum_one,
+    boostZMomentum_two, boostZMomentum_three]
+
+/-- Weyl-block action of a longitudinal Dirac boost: the upper block
+by \(V(\alpha)\) and the lower by \(V(-\alpha)\). -/
+noncomputable def applyDiracBoostZ (α : ℝ) (Ψ : DiracSpinor) : DiracSpinor :=
+  weylUpper (applyMat (chiralBoostZ α) (diracUpper Ψ)) +
+    weylLower (applyMat (chiralBoostZ (-α)) (diracLower Ψ))
+
+private theorem applyDiracBoostZ_weyl (α : ℝ) (u l : DualSpinor) :
+    applyDiracBoostZ α (weylUpper u + weylLower l) =
+      weylUpper (applyMat (chiralBoostZ α) u) +
+        weylLower (applyMat (chiralBoostZ (-α)) l) := by
+  unfold applyDiracBoostZ
+  rw [diracUpper_add, diracLower_add, diracUpper_weylUpper, diracUpper_weylLower,
+    diracLower_weylUpper, diracLower_weylLower, add_zero, zero_add]
+
+private theorem onShell_boostZ_lower {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
+    -(I / (m : ℂ)) • applyMat (pauliSlashBar (boostZMomentum m α)) u =
+      I • applyMat (chiralBoostZ (-(2 * α))) u := by
+  have hmC : (m : ℂ) ≠ 0 := ofReal_ne_zero.mpr hm
+  have hV : chiralBoostZ (-(2 * α)) =
+      (Real.cosh α : ℂ) • 1 - (Real.sinh α : ℂ) • pauliZ := by
+    have hdiv : -(2 * α) / 2 = -α := by ring
+    unfold chiralBoostZ
+    rw [hdiv, Real.cosh_neg, Real.sinh_neg, ofReal_neg, neg_smul, sub_eq_add_neg]
+  have hbar :
+      applyMat (pauliSlashBar (boostZMomentum m α)) u =
+        (-((m * Real.cosh α : ℝ) : ℂ)) • u +
+          ((m * Real.sinh α : ℝ) : ℂ) • applyMat pauliZ u := by
+    rw [pauliSlashBar_boostZ, applyMat_add_mat, applyMat_smul_mat, applyMat_one,
+      applyMat_smul_mat]
+  have hcosh : ((m * Real.cosh α : ℝ) : ℂ) = (m : ℂ) * Real.cosh α := ofReal_mul _ _
+  have hsinh : ((m * Real.sinh α : ℝ) : ℂ) = (m : ℂ) * Real.sinh α := ofReal_mul _ _
+  have hc : -(I / (m : ℂ)) * -((m : ℂ) * Real.cosh α) = I * Real.cosh α := by
+    field_simp [hmC]
+  have hs : -(I / (m : ℂ)) * ((m : ℂ) * Real.sinh α) = -(I * Real.sinh α) := by
+    field_simp [hmC]
+  have hR :
+      applyMat (chiralBoostZ (-(2 * α))) u =
+        (Real.cosh α : ℂ) • u - (Real.sinh α : ℂ) • applyMat pauliZ u := by
+    rw [hV, sub_eq_add_neg, applyMat_add_mat, applyMat_smul_mat, applyMat_one,
+      applyMat_neg, applyMat_smul_mat, sub_eq_add_neg]
+  rw [hbar, smul_add, hcosh, hsinh, smul_smul, smul_smul, hc, hs, hR,
+    smul_sub, smul_smul, smul_smul, mul_comm (I : ℂ), mul_comm (I : ℂ),
+    sub_eq_add_neg, neg_smul]
+
+/-- The on-shell Weyl construction at a longitudinal boost of rest
+momentum is the Dirac-boosted rest pair, after a chiral factor on the
+Weyl parameter. -/
+theorem applyDiracBoostZ_rest {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
+    applyDiracBoostZ α (restParticleSpinor u) =
+      onShellParticleSpinor m (boostZMomentum m α)
+        (applyMat (chiralBoostZ α) u) := by
+  unfold restParticleSpinor onShellParticleSpinor
+  rw [applyDiracBoostZ_weyl, onShell_boostZ_lower hm, applyMat_smul]
+  have hcomp :
+      applyMat (chiralBoostZ (-(2 * α))) (applyMat (chiralBoostZ α) u) =
+        applyMat (chiralBoostZ (-α)) u := by
+    rw [← applyMat_mul, ← chiralBoostZ_add]
+    have : -(2 * α) + α = -α := by ring
+    rw [this]
+  rw [hcomp]
+
+/-- Dual rotation about the boost axis commutes with the chiral factor. -/
+theorem chiralBoostZ_comm_dualRotor_axis2 (α θ : ℝ) :
+    chiralBoostZ α * dualRotorMat (EuclideanSpace.single 2 θ) =
+      dualRotorMat (EuclideanSpace.single 2 θ) * chiralBoostZ α := by
+  have hR :
+      dualRotorMat (EuclideanSpace.single 2 θ) =
+        !![↑(Real.cos (θ / 2)) - I * ↑(Real.sin (θ / 2)), 0;
+           0, ↑(Real.cos (θ / 2)) + I * ↑(Real.sin (θ / 2))] := by
+    rw [dualRotorMat_axis2_rodrigues, cyclicRep_two_eq]
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [Matrix.add_apply, Matrix.smul_apply] <;> ring
+  rw [chiralBoostZ_eq, hR]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Fin.sum_univ_two] <;> ring
+
+/-- Dual rotation about a perpendicular axis need not commute with the
+chiral boost factor. -/
+theorem chiralBoostZ_not_comm_dualRotor_axis0 :
+    chiralBoostZ 2 * dualRotorMat (EuclideanSpace.single 0 Real.pi) ≠
+      dualRotorMat (EuclideanSpace.single 0 Real.pi) * chiralBoostZ 2 := by
+  have hR : dualRotorMat (EuclideanSpace.single 0 Real.pi) = cyclicRep 0 := by
+    rw [dualRotorMat_axis0_rodrigues, Real.cos_pi_div_two, Real.sin_pi_div_two]
+    simp
+  rw [hR, cyclicRep_zero_eq, chiralBoostZ_eq]
+  intro h
+  have h01 := congrFun (congrFun h 0) 1
+  simp [Matrix.mul_apply, Fin.sum_univ_two] at h01
+  have hexp : Complex.exp 1 = Complex.exp (-1) :=
+    mul_right_cancel₀ I_ne_zero (h01.trans (mul_comm _ _))
+  have hre : Real.exp (1 : ℝ) = Real.exp (-(1 : ℝ)) := by
+    apply ofReal_injective
+    simpa [ofReal_exp] using hexp
+  have : (1 : ℝ) = -1 := Real.exp_injective hre
+  linarith
 
 theorem slashMat_anticomm_gamma5 (p : Vec4) :
     slashMat p * diracMat5 + diracMat5 * slashMat p = 0 := by

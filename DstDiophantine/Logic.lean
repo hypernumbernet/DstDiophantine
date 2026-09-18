@@ -72,7 +72,8 @@ and `DstDiophantine.CGA`).
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
   equation as the Clifford square of the Minkowski quadratic,
   on-shell Weyl construction recovering the rest pair \((u,iu)\),
-  dual-rotor character and spinor amplitude)
+  longitudinal boost of that pair, dual-rotor character and spinor
+  amplitude)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -655,6 +656,28 @@ example {m : ℝ} {p : Vec4} (hm : m ≠ 0) (hQ : minkowskiQ p = -m ^ 2)
 /-- Regression: a longitudinal boost of rest momentum lies on the mass shell. -/
 example (m α : ℝ) : minkowskiQ (boostZMomentum m α) = -m ^ 2 :=
   minkowskiQ_boostZ m α
+
+/-- Regression: a longitudinal Dirac boost of the rest pair is the on-shell
+Weyl construction after a chiral factor on the Weyl parameter. -/
+example {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
+    applyDiracBoostZ α (restParticleSpinor u) =
+      onShellParticleSpinor m (boostZMomentum m α)
+        (applyMat (chiralBoostZ α) u) :=
+  applyDiracBoostZ_rest hm u
+
+/-- Regression: dual rotation about the boost axis commutes with the chiral
+boost factor. -/
+example (α θ : ℝ) :
+    chiralBoostZ α * dualRotorMat (EuclideanSpace.single 2 θ) =
+      dualRotorMat (EuclideanSpace.single 2 θ) * chiralBoostZ α :=
+  chiralBoostZ_comm_dualRotor_axis2 α θ
+
+/-- Regression: dual rotation about a perpendicular axis need not commute
+with the chiral boost factor. -/
+example :
+    chiralBoostZ 2 * dualRotorMat (EuclideanSpace.single 0 Real.pi) ≠
+      dualRotorMat (EuclideanSpace.single 0 Real.pi) * chiralBoostZ 2 :=
+  chiralBoostZ_not_comm_dualRotor_axis0
 
 /-- Regression: rest-frame Dirac overlap is twice the dual-rotor amplitude. -/
 example (β : DualRapidity) (u : DualSpinor) :
