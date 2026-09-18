@@ -5,6 +5,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Abel
 
 /-!
 # Dual-rotor character, spinor amplitude, and relative overlap
@@ -21,8 +22,13 @@ invariants of that matrix are distinguished here.
 * The observer–particle pairing is the Hilbert inner product
   \(\langle R_{\mathcal{O}}\chi\mid R_A\chi\rangle\), equal to
   \(\langle\chi\mid R_{\mathcal{O}}^{\dagger}R_A\chi\rangle\).
-  The relative rotor stays in \(\mathrm{SU}(2)\). A \(2\pi\) dual rotation
-  about the observer axis is \(-I\).
+  The relative rotor stays in \(\mathrm{SU}(2)\). The inverse is the
+  opposite rapidity, so the relative rotor is \(R(-\beta_{\mathcal{O}})R(\beta_A)\).
+  On a common ray it is a single dual rotation by the difference. Off-axis
+  the character of a product records axis alignment; the remainder is a
+  traceless tilt, and perpendicular \(\pi\) dual rotations have group
+  commutator \(-I\). A \(2\pi\) dual rotation about the observer axis is
+  \(-I\).
 
 None of these is a spacetime Schrödinger wave, a Born position density,
 or a derivation of \(E/\hbar\) from rest mass.
@@ -537,6 +543,145 @@ theorem dualRotorMat_axes_not_commute :
   have he : (cyclicRep 1 + cyclicRep 1) 1 0 = (0 : Matrix (Fin 2) (Fin 2) ℂ) 1 0 :=
     congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 0) hsum
   simp [cyclicRep_one_eq, Matrix.add_apply] at he
+
+/-! ### Relative composition, character of a product, noncommutative residue -/
+
+private theorem smul_mul_smul_matR (c d : ℝ) (u v : Matrix (Fin 2) (Fin 2) ℂ) :
+    (c • u) * (d • v) = (c * d : ℝ) • (u * v) := by
+  rw [algebraMap_smul_mat, algebraMap_smul_mat, smul_mul_smul_mat,
+    algebraMap_smul_mat (c * d), Complex.ofReal_mul]
+
+/-- Unit dual axis, or zero if the rapidity vanishes. -/
+noncomputable def dualAxis (β : DualRapidity) : Fin 3 → ℝ :=
+  fun a => if β = 0 then 0 else β a / ‖β‖
+
+/-- Alignment \(\hat\beta\cdot\hat\gamma\) of two dual axes. -/
+noncomputable def dualAxisInner (β γ : DualRapidity) : ℝ :=
+  dualAxis β 0 * dualAxis γ 0 + dualAxis β 1 * dualAxis γ 1 +
+    dualAxis β 2 * dualAxis γ 2
+
+private theorem dualRotorMat_cos_sin (β : DualRapidity) :
+    dualRotorMat β =
+      Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.sin (‖β‖ / 2) • cyclicRepComb (dualAxis β) := by
+  rw [dualRotorMat_rodrigues]
+  by_cases h : β = 0
+  · subst h
+    simp [Real.sin_zero]
+  · have hax : dualAxis β = fun a => β a / ‖β‖ := by
+      funext a
+      simp [dualAxis, h]
+    simp [h, hax]
+
+private theorem dualAxis_neg (β : DualRapidity) (a : Fin 3) :
+    dualAxis (-β) a = -dualAxis β a := by
+  unfold dualAxis
+  by_cases h : β = 0
+  · subst h
+    simp
+  · have hneg : (-β) ≠ 0 := neg_ne_zero.mpr h
+    simp [h, hneg, PiLp.neg_apply, norm_neg, neg_div]
+
+private theorem dualAxisInner_neg_left (β γ : DualRapidity) :
+    dualAxisInner (-β) γ = -dualAxisInner β γ := by
+  unfold dualAxisInner
+  simp [dualAxis_neg]
+  ring
+
+/-- Observer–particle relative dual rotor is \(R(-\beta_{\mathcal{O}})R(\beta_A)\). -/
+theorem dualRotor_relative_eq_neg_mul (βO βA : DualRapidity) :
+    (dualRotorMat βO).conjTranspose * dualRotorMat βA =
+      dualRotorMat (-βO) * dualRotorMat βA := by
+  rw [dualRotorMat_neg]
+
+/-- On a common ray the relative dual rotor is a single dual rotation by the difference. -/
+theorem dualRotor_relative_ray (s t : ℝ) (β : DualRapidity) :
+    (dualRotorMat (s • β)).conjTranspose * dualRotorMat (t • β) =
+      dualRotorMat ((t - s) • β) := by
+  rw [dualRotor_relative_eq_neg_mul]
+  have hneg : -(s • β) = (-s) • β := by
+    simp [neg_smul]
+  rw [hneg, ← dualRotorMat_ray_add]
+  have hscale : (-s + t) • β = (t - s) • β := by
+    simp [sub_eq_add_neg, add_comm]
+  rw [hscale]
+
+private theorem cyclicRepComb_mul_trace (n m : Fin 3 → ℝ) :
+    (cyclicRepComb n * cyclicRepComb m).trace =
+      (-2 * (n 0 * m 0 + n 1 * m 1 + n 2 * m 2) : ℂ) := by
+  rw [cyclicRepComb_mul, trace_add, trace_neg, cyclicRepComb_trace]
+  have hI : (((n 0 * m 0 + n 1 * m 1 + n 2 * m 2 : ℂ) •
+      (1 : Matrix (Fin 2) (Fin 2) ℂ)).trace) =
+      (2 * (n 0 * m 0 + n 1 * m 1 + n 2 * m 2) : ℂ) := by
+    rw [trace_smul, trace_one]
+    simp [Fintype.card_fin]
+    ring
+  rw [hI]
+  ring
+
+/-- Character of a composite: \(\frac12\operatorname{Tr}(R(\beta)R(\gamma))=
+\cos(\theta/2)\cos(\phi/2)-(\hat n\cdot\hat m)\sin(\theta/2)\sin(\phi/2)\). -/
+theorem dualRotorMat_mul_trace (β γ : DualRapidity) :
+    (dualRotorMat β * dualRotorMat γ).trace =
+      2 * ((Real.cos (‖β‖ / 2) : ℂ) * Real.cos (‖γ‖ / 2) -
+        (dualAxisInner β γ : ℂ) * Real.sin (‖β‖ / 2) * Real.sin (‖γ‖ / 2)) := by
+  rw [dualRotorMat_cos_sin β, dualRotorMat_cos_sin γ]
+  set c1 := Real.cos (‖β‖ / 2)
+  set s1 := Real.sin (‖β‖ / 2)
+  set c2 := Real.cos (‖γ‖ / 2)
+  set s2 := Real.sin (‖γ‖ / 2)
+  have hprod :
+      (c1 • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s1 • cyclicRepComb (dualAxis β)) *
+          (c2 • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s2 • cyclicRepComb (dualAxis γ)) =
+        (c1 * c2 : ℝ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+          (c1 * s2 : ℝ) • cyclicRepComb (dualAxis γ) +
+            (s1 * c2 : ℝ) • cyclicRepComb (dualAxis β) +
+              (s1 * s2 : ℝ) •
+                (cyclicRepComb (dualAxis β) * cyclicRepComb (dualAxis γ)) := by
+    simp only [add_mul, mul_add, smul_mul_smul_matR, Matrix.one_mul, Matrix.mul_one]
+    abel
+  rw [hprod, trace_add, trace_add, trace_add, trace_real_smul_one,
+    trace_real_smul, cyclicRepComb_trace, trace_real_smul, cyclicRepComb_trace,
+    trace_real_smul, cyclicRepComb_mul_trace]
+  simp only [dualAxisInner, mul_zero, add_zero, Complex.ofReal_mul, Complex.ofReal_add]
+  ring
+
+/-- Relative-rotor character records the alignment of the two dual axes. -/
+theorem dualRotor_relative_trace (βO βA : DualRapidity) :
+    ((dualRotorMat βO).conjTranspose * dualRotorMat βA).trace =
+      2 * ((Real.cos (‖βO‖ / 2) : ℂ) * Real.cos (‖βA‖ / 2) +
+        (dualAxisInner βO βA : ℂ) * Real.sin (‖βO‖ / 2) * Real.sin (‖βA‖ / 2)) := by
+  rw [dualRotor_relative_eq_neg_mul, dualRotorMat_mul_trace, norm_neg,
+    dualAxisInner_neg_left]
+  simp [Complex.ofReal_neg]
+
+/-- \(\pi\) dual rotations about \(x\) and \(z\) compose to \(-\Gamma_y\). -/
+theorem dualRotorMat_pi_compose :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 2 Real.pi) =
+      -cyclicRep 1 := by
+  rw [dualRotorMat_axis0_pi, dualRotorMat_axis2_pi, cyclicRep_zero_mul_two]
+
+/-- Group commutator of perpendicular \(\pi\) dual rotations is the double-cover element \(-I\). -/
+theorem dualRotorMat_axes_group_commutator :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 2 Real.pi) *
+          (dualRotorMat (EuclideanSpace.single 0 Real.pi)).conjTranspose *
+            (dualRotorMat (EuclideanSpace.single 2 Real.pi)).conjTranspose =
+      -1 := by
+  rw [dualRotorMat_axis0_pi, dualRotorMat_axis2_pi,
+    cyclicRep_conjTranspose, cyclicRep_conjTranspose]
+  simp only [mul_neg, neg_mul, neg_neg]
+  calc cyclicRep 0 * cyclicRep 2 * cyclicRep 0 * cyclicRep 2
+      = -cyclicRep 1 * cyclicRep 0 * cyclicRep 2 := by
+        rw [cyclicRep_zero_mul_two]
+    _ = -(cyclicRep 1 * cyclicRep 0) * cyclicRep 2 := by
+        simp [mul_assoc]
+    _ = -(-cyclicRep 2) * cyclicRep 2 := by
+        rw [cyclicRep_one_mul_zero]
+    _ = cyclicRep 2 * cyclicRep 2 := by
+        simp
+    _ = -1 := cyclicRep_sq 2
 
 end Logic
 

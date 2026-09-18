@@ -653,6 +653,122 @@ theorem dualRotorMat_det (β : DualRapidity) :
         _ = c * c + s * s := by ring
         _ = 1 := hcs
 
+/-! ### Quaternion product of cyclic combinations; inverse and same-ray composition -/
+
+private theorem smul_mul_smul_matC (c d : ℂ) (u v : Matrix (Fin 2) (Fin 2) ℂ) :
+    (c • u) * (d • v) = (c * d) • (u * v) := by
+  rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
+
+private theorem algebraMap_smul_mat' (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ) :
+    (r : ℝ) • A = (r : ℂ) • A :=
+  (algebraMap_smul ℂ r A).symm
+
+/-- Vector product on \(\mathbb{R}^3\) coefficients. -/
+def cross3 (n m : Fin 3 → ℝ) : Fin 3 → ℝ
+  | 0 => n 1 * m 2 - n 2 * m 1
+  | 1 => n 2 * m 0 - n 0 * m 2
+  | 2 => n 0 * m 1 - n 1 * m 0
+
+theorem cyclicRepComb_smul (c : ℝ) (n : Fin 3 → ℝ) :
+    cyclicRepComb (fun a => c * n a) = (c : ℝ) • cyclicRepComb n := by
+  unfold cyclicRepComb
+  simp only [Fin.sum_univ_three, smul_add]
+  have hterm (v : ℝ) (G : Matrix (Fin 2) (Fin 2) ℂ) :
+      ((c * v : ℝ) : ℂ) • G = (c : ℝ) • ((v : ℂ) • G) := by
+    rw [algebraMap_smul_mat', Complex.ofReal_mul, smul_smul]
+  rw [hterm (n 0), hterm (n 1), hterm (n 2)]
+
+theorem cyclicRepComb_neg (n : Fin 3 → ℝ) :
+    cyclicRepComb (fun a => -n a) = -cyclicRepComb n := by
+  have h := cyclicRepComb_smul (-1) n
+  simpa [neg_one_smul] using h
+
+/-- Quaternion product \(\Gamma(n)\Gamma(m)=-(n\cdot m)I+\Gamma(n\times m)\). -/
+theorem cyclicRepComb_mul (n m : Fin 3 → ℝ) :
+    cyclicRepComb n * cyclicRepComb m =
+      -((n 0 * m 0 + n 1 * m 1 + n 2 * m 2 : ℂ) •
+          (1 : Matrix (Fin 2) (Fin 2) ℂ)) +
+        cyclicRepComb (cross3 n m) := by
+  simp only [cyclicRepComb, Fin.sum_univ_three, mul_add, add_mul, smul_mul_smul_matC,
+    cyclicRep_sq, cyclicRep_zero_mul_one, cyclicRep_one_mul_two, cyclicRep_two_mul_zero,
+    cyclicRep_one_mul_zero, cyclicRep_two_mul_one, cyclicRep_zero_mul_two]
+  unfold cross3
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.add_apply, Matrix.neg_apply, Matrix.smul_apply,
+      cyclicRep, pauli, pauliX, pauliY, pauliZ] <;> ring
+
+/-- Rodrigues formula along the (possibly zero) cyclic combination of \(\beta\). -/
+theorem dualRotorMat_rodrigues_comb (β : DualRapidity) :
+    dualRotorMat β =
+      Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (if ‖β‖ = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+          else (Real.sin (‖β‖ / 2) / ‖β‖) • cyclicRepComb (fun a => β a)) := by
+  rw [dualRotorMat_rodrigues]
+  by_cases h : β = 0
+  · subst h
+    simp
+  · have hr : ‖β‖ ≠ 0 := norm_ne_zero_iff.mpr h
+    have hlin :
+        cyclicRepComb (fun a => β a) =
+          (‖β‖ : ℝ) • cyclicRepComb (fun a => β a / ‖β‖) := by
+      have hfun : (fun a : Fin 3 => β a) = fun a => ‖β‖ * (β a / ‖β‖) := by
+        ext a
+        field_simp [hr]
+      rw [hfun, cyclicRepComb_smul]
+    simp only [h, ↓reduceDIte, hr, ↓reduceIte, hlin, smul_smul]
+    field_simp [hr]
+
+theorem dualRotorGen_smul (c : ℝ) (β : DualRapidity) :
+    dualRotorGen (c • β) = c • dualRotorGen β := by
+  unfold dualRotorGen
+  simp only [Fin.sum_univ_three, smul_add]
+  have hcomp (a : Fin 3) : (c • β) a = c * β a := by
+    simp [PiLp.smul_apply, smul_eq_mul]
+  simp_rw [hcomp]
+  have hterm (v : ℝ) (G : Matrix (Fin 2) (Fin 2) ℂ) :
+      ((c * v : ℝ) / 2 : ℂ) • G = c • ((v / 2 : ℂ) • G) := by
+    have hcast : ((c * v : ℝ) / 2 : ℂ) = (c : ℂ) * (v / 2 : ℂ) := by
+      norm_cast
+      ring
+    rw [hcast, algebraMap_smul_mat', smul_smul]
+  rw [hterm (β 0), hterm (β 1), hterm (β 2)]
+
+private theorem commute_dualRotorGen_smul (s t : ℝ) (β : DualRapidity) :
+    Commute (dualRotorGen (s • β)) (dualRotorGen (t • β)) := by
+  rw [dualRotorGen_smul, dualRotorGen_smul]
+  have hs : s • dualRotorGen β = (s : ℂ) • dualRotorGen β :=
+    (algebraMap_smul ℂ s (dualRotorGen β)).symm
+  have ht : t • dualRotorGen β = (t : ℂ) • dualRotorGen β :=
+    (algebraMap_smul ℂ t (dualRotorGen β)).symm
+  rw [hs, ht]
+  change ((s : ℂ) • dualRotorGen β) * ((t : ℂ) • dualRotorGen β) =
+    ((t : ℂ) • dualRotorGen β) * ((s : ℂ) • dualRotorGen β)
+  rw [smul_mul_smul_matC, smul_mul_smul_matC, mul_comm (s : ℂ) (t : ℂ)]
+
+/-- Inverse dual rotor is the dual rotor of the opposite rapidity. -/
+theorem dualRotorMat_neg (β : DualRapidity) :
+    dualRotorMat (-β) = (dualRotorMat β).conjTranspose := by
+  have hgen : dualRotorGen (-β) = -dualRotorGen β := by
+    have : dualRotorGen ((-1 : ℝ) • β) = (-1 : ℝ) • dualRotorGen β :=
+      dualRotorGen_smul (-1) β
+    simpa [neg_one_smul] using this
+  rw [dualRotorMat_eq_exp_gen, dualRotorMat_eq_exp_gen, hgen]
+  have hCT : (NormedSpace.exp (dualRotorGen β)).conjTranspose =
+      NormedSpace.exp (dualRotorGen β).conjTranspose :=
+    (Matrix.exp_conjTranspose (dualRotorGen β)).symm
+  rw [hCT, dualRotorGen_conjTranspose]
+
+/-- Dual rotors along a common ray compose by adding the scale. -/
+theorem dualRotorMat_ray_add (s t : ℝ) (β : DualRapidity) :
+    dualRotorMat ((s + t) • β) =
+      dualRotorMat (s • β) * dualRotorMat (t • β) := by
+  have hgen : dualRotorGen ((s + t) • β) =
+      dualRotorGen (s • β) + dualRotorGen (t • β) := by
+    rw [dualRotorGen_smul, dualRotorGen_smul, dualRotorGen_smul, add_smul]
+  rw [dualRotorMat_eq_exp_gen, dualRotorMat_eq_exp_gen, dualRotorMat_eq_exp_gen, hgen]
+  exact Matrix.exp_add_of_commute _ _ (commute_dualRotorGen_smul s t β)
+
 end Logic
 
 end DstDiophantine

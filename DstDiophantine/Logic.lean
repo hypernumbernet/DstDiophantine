@@ -72,8 +72,9 @@ and `DstDiophantine.CGA`).
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
   equation as the Clifford square of the Minkowski quadratic,
   on-shell Weyl construction recovering the rest pair \((u,iu)\),
-  longitudinal boost of that pair, dual-rotor character and spinor
-  amplitude)
+  longitudinal boost of that pair, dual-rotor character, spinor
+  amplitude, relative dual-rotor composition and noncommutative
+  interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
@@ -512,6 +513,46 @@ example :
       dualRotorMat (EuclideanSpace.single 2 Real.pi) *
         dualRotorMat (EuclideanSpace.single 0 Real.pi) :=
   dualRotorMat_axes_not_commute
+
+/-- Regression: inverse dual rotor is the opposite rapidity. -/
+example (β : DualRapidity) :
+    dualRotorMat (-β) = (dualRotorMat β).conjTranspose :=
+  dualRotorMat_neg β
+
+/-- Regression: dual rotors along a common ray compose by adding the scale. -/
+example (s t : ℝ) (β : DualRapidity) :
+    dualRotorMat ((s + t) • β) =
+      dualRotorMat (s • β) * dualRotorMat (t • β) :=
+  dualRotorMat_ray_add s t β
+
+/-- Regression: on a common ray the relative dual rotor is a single difference. -/
+example (s t : ℝ) (β : DualRapidity) :
+    (dualRotorMat (s • β)).conjTranspose * dualRotorMat (t • β) =
+      dualRotorMat ((t - s) • β) :=
+  dualRotor_relative_ray s t β
+
+/-- Regression: character of a composite records dual-axis alignment. -/
+example (β γ : DualRapidity) :
+    (dualRotorMat β * dualRotorMat γ).trace =
+      2 * ((Real.cos (‖β‖ / 2) : ℂ) * Real.cos (‖γ‖ / 2) -
+        (dualAxisInner β γ : ℂ) * Real.sin (‖β‖ / 2) * Real.sin (‖γ‖ / 2)) :=
+  dualRotorMat_mul_trace β γ
+
+/-- Regression: relative-rotor character is the aligned half-angle cosine. -/
+example (βO βA : DualRapidity) :
+    ((dualRotorMat βO).conjTranspose * dualRotorMat βA).trace =
+      2 * ((Real.cos (‖βO‖ / 2) : ℂ) * Real.cos (‖βA‖ / 2) +
+        (dualAxisInner βO βA : ℂ) * Real.sin (‖βO‖ / 2) * Real.sin (‖βA‖ / 2)) :=
+  dualRotor_relative_trace βO βA
+
+/-- Regression: group commutator of perpendicular π dual rotations is -I. -/
+example :
+    dualRotorMat (EuclideanSpace.single 0 Real.pi) *
+        dualRotorMat (EuclideanSpace.single 2 Real.pi) *
+          (dualRotorMat (EuclideanSpace.single 0 Real.pi)).conjTranspose *
+            (dualRotorMat (EuclideanSpace.single 2 Real.pi)).conjTranspose =
+      -1 :=
+  dualRotorMat_axes_group_commutator
 
 /-- Regression: commuting projector is nonzero and generates a nonzero left ideal. -/
 example :
