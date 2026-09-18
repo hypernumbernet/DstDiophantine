@@ -15,20 +15,30 @@ and claims the Euler–Lagrange system
 \(\ddot\phi=m(\phi-\theta)\), \(-\ddot\theta=m(\phi-\theta)\), hence
 \(\ddot{\delta\phi}+m\,\delta\phi=0\).
 
-These are algebraic identities on jets \((\phi,\theta,\ddot\phi,\ddot\theta)\).
+These are algebraic identities on jets
+\((\phi,\theta,\dot\phi,\dot\theta,\ddot\phi,\ddot\theta)\).
 No derivation of \(m\) from the dual-rotor algebra is claimed.
+The de Broglie reading of free lag, and any identification of
+\(J_{\mathrm{osc}}\) with the Weitzenböck density, remain out of scope.
 
 ## Proved
 
 * The Euler–Lagrange equations of the written Lagrangian are
   \(\ddot\phi=-m(\phi-\theta)\) and \(\ddot\theta=-m(\phi-\theta)\).
-  The mismatch \(\delta=\phi-\theta\) then satisfies \(\ddot\delta=0\).
-* The written (claimed) system makes \(\ddot\delta=2m\delta\), which is
-  not the harmonic oscillator \(\ddot\delta+m\delta=0\).
+  In the sum and difference \(\sigma=\phi+\theta\), \(\delta=\phi-\theta\),
+  the density is \(\tfrac12\dot\sigma\dot\delta-\tfrac m2\delta^2\).
+  The mismatch is free, \(\ddot\delta=0\), while the potential sources the
+  common channel, \(\ddot\sigma=-2m\delta\).
+* The Jacobi integral
+  \(E=\tfrac12\dot\phi^2-\tfrac12\dot\theta^2+\tfrac m2\delta^2\)
+  is conserved on that jet and is indefinite.
+* The written (claimed) system makes \(\ddot\delta=2m\delta\) with a free
+  common mode, and is not the harmonic oscillator \(\ddot\delta+m\delta=0\).
 * The same-sign kinetic model
   \(L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2\)
-  yields \(\ddot\delta+2m\delta=0\). This is an explicit working model,
-  not the written action.
+  yields \(\ddot\delta+2m\delta=0\) with \(\ddot\sigma=0\).
+  Its energy is conserved and nonnegative for \(m\ge 0\).
+  This is an explicit working model, not the written action.
 -/
 
 namespace DstDiophantine
@@ -56,12 +66,64 @@ theorem paperActualEL_eq (m φ θ φddot θddot : ℝ) :
       φddot = -m * (φ - θ) ∧ θddot = -m * (φ - θ) := by
   simp [PaperActualEL, paperForcePhi, paperForceTheta]
 
+/-- Opposite kinetic signs are the mixed term \(\tfrac12\dot\sigma\dot\delta\). -/
+theorem paperLagrangian_eq_mixed (m φ θ φdot θdot : ℝ) :
+    paperLagrangian m φ θ φdot θdot =
+      (1 / 2) * (φdot + θdot) * (φdot - θdot) - (m / 2) * (φ - θ) ^ 2 := by
+  unfold paperLagrangian
+  ring
+
+/-- Written Euler–Lagrange is a free mismatch and a sourced common channel. -/
+theorem paperActualEL_iff_channels (m φ θ φddot θddot : ℝ) :
+    PaperActualEL m φ θ φddot θddot ↔
+      φddot - θddot = 0 ∧ φddot + θddot = -2 * m * (φ - θ) := by
+  rw [paperActualEL_eq]
+  constructor
+  · intro ⟨hφ, hθ⟩
+    constructor <;> linarith
+  · intro ⟨hδ, hσ⟩
+    constructor <;> linarith
+
 /-- The written action makes the mismatch free: \(\ddot\phi-\ddot\theta=0\). -/
 theorem paperActualEL_free_mismatch {m φ θ φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
-    φddot - θddot = 0 := by
+    φddot - θddot = 0 :=
+  (paperActualEL_iff_channels m φ θ φddot θddot).mp h |>.1
+
+/-- The potential sources the common channel: \(\ddot\sigma=-2m\delta\). -/
+theorem paperActualEL_common_driven {m φ θ φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) :
+    φddot + θddot = -2 * m * (φ - θ) :=
+  (paperActualEL_iff_channels m φ θ φddot θddot).mp h |>.2
+
+/-- Jacobi integral of the written density. -/
+noncomputable def paperEnergy (m φ θ φdot θdot : ℝ) : ℝ :=
+  (1 / 2) * φdot ^ 2 - (1 / 2) * θdot ^ 2 + (m / 2) * (φ - θ) ^ 2
+
+theorem paperEnergy_eq_mixed (m φ θ φdot θdot : ℝ) :
+    paperEnergy m φ θ φdot θdot =
+      (1 / 2) * (φdot + θdot) * (φdot - θdot) + (m / 2) * (φ - θ) ^ 2 := by
+  unfold paperEnergy
+  ring
+
+/-- Formal \(\dot E=\dot\phi\,\ddot\phi-\dot\theta\,\ddot\theta+m\delta(\dot\phi-\dot\theta)\). -/
+def paperEnergyDot (m φ θ φdot θdot φddot θddot : ℝ) : ℝ :=
+  φdot * φddot - θdot * θddot + m * (φ - θ) * (φdot - θdot)
+
+/-- The written Jacobi integral is conserved on the Euler–Lagrange jet. -/
+theorem paperEnergy_conserved {m φ θ φdot θdot φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = 0 := by
   rcases (paperActualEL_eq m φ θ φddot θddot).mp h with ⟨hφ, hθ⟩
-  linarith
+  simp [paperEnergyDot, hφ, hθ]
+  ring
+
+/-- Mixed kinetics make the written Jacobi integral indefinite. -/
+theorem paperEnergy_indefinite :
+    (∃ m φ θ φdot θdot : ℝ, 0 < paperEnergy m φ θ φdot θdot) ∧
+      (∃ m φ θ φdot θdot : ℝ, paperEnergy m φ θ φdot θdot < 0) :=
+  ⟨⟨1, 1, 0, 0, 0, by unfold paperEnergy; norm_num⟩,
+    ⟨1, 0, 0, 0, 1, by unfold paperEnergy; norm_num⟩⟩
 
 /-- The written action does not yield the claimed oscillator \(\ddot\delta+m\delta=0\). -/
 theorem paperActualEL_not_oscillator :
@@ -82,6 +144,13 @@ def PaperClaimedEL (m φ θ φddot θddot : ℝ) : Prop :=
 theorem paperClaimedEL_runaway {m φ θ φddot θddot : ℝ}
     (h : PaperClaimedEL m φ θ φddot θddot) :
     φddot - θddot = 2 * m * (φ - θ) := by
+  rcases h with ⟨hφ, hθ⟩
+  linarith
+
+/-- On the claimed system the common mode is free: \(\ddot\sigma=0\). -/
+theorem paperClaimedEL_free_common {m φ θ φddot θddot : ℝ}
+    (h : PaperClaimedEL m φ θ φddot θddot) :
+    φddot + θddot = 0 := by
   rcases h with ⟨hφ, hθ⟩
   linarith
 
@@ -118,12 +187,46 @@ theorem oscillatorEL_eq (m φ θ φddot θddot : ℝ) :
       φddot = -m * (φ - θ) ∧ θddot = m * (φ - θ) := by
   simp [OscillatorEL, oscillatorForcePhi, oscillatorForceTheta]
 
+/-- Same-sign kinetics split as \(\tfrac14\dot\sigma^2+\tfrac14\dot\delta^2\). -/
+theorem oscillatorLagrangian_eq_split (m φ θ φdot θdot : ℝ) :
+    oscillatorLagrangian m φ θ φdot θdot =
+      (1 / 4) * (φdot + θdot) ^ 2 + (1 / 4) * (φdot - θdot) ^ 2 -
+        (m / 2) * (φ - θ) ^ 2 := by
+  unfold oscillatorLagrangian
+  ring
+
 /-- The working model yields \(\ddot\delta+2m\delta=0\). -/
 theorem oscillatorEL_harmonic {m φ θ φddot θddot : ℝ}
     (h : OscillatorEL m φ θ φddot θddot) :
     (φddot - θddot) + 2 * m * (φ - θ) = 0 := by
   rcases (oscillatorEL_eq m φ θ φddot θddot).mp h with ⟨hφ, hθ⟩
   linarith
+
+/-- On the working model the common mode is free: \(\ddot\sigma=0\). -/
+theorem oscillatorEL_free_common {m φ θ φddot θddot : ℝ}
+    (h : OscillatorEL m φ θ φddot θddot) :
+    φddot + θddot = 0 := by
+  rcases (oscillatorEL_eq m φ θ φddot θddot).mp h with ⟨hφ, hθ⟩
+  linarith
+
+/-- Jacobi integral of the same-sign working model. -/
+noncomputable def oscillatorEnergy (m φ θ φdot θdot : ℝ) : ℝ :=
+  (1 / 2) * φdot ^ 2 + (1 / 2) * θdot ^ 2 + (m / 2) * (φ - θ) ^ 2
+
+def oscillatorEnergyDot (m φ θ φdot θdot φddot θddot : ℝ) : ℝ :=
+  φdot * φddot + θdot * θddot + m * (φ - θ) * (φdot - θdot)
+
+theorem oscillatorEnergy_conserved {m φ θ φdot θdot φddot θddot : ℝ}
+    (h : OscillatorEL m φ θ φddot θddot) :
+    oscillatorEnergyDot m φ θ φdot θdot φddot θddot = 0 := by
+  rcases (oscillatorEL_eq m φ θ φddot θddot).mp h with ⟨hφ, hθ⟩
+  simp [oscillatorEnergyDot, hφ, hθ]
+  ring
+
+theorem oscillatorEnergy_nonneg {m φ θ φdot θdot : ℝ} (hm : 0 ≤ m) :
+    0 ≤ oscillatorEnergy m φ θ φdot θdot := by
+  unfold oscillatorEnergy
+  nlinarith [sq_nonneg φdot, sq_nonneg θdot, sq_nonneg (φ - θ)]
 
 end Gravity
 

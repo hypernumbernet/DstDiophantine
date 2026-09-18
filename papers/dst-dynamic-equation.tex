@@ -15,7 +15,7 @@ Written Action, Free Mismatch, and a Neighbouring Oscillator}
 \maketitle
 
 \begin{abstract}
-In double spacetime theory every massive particle carries an intrinsic pair of usual and dual Minkowski sectors, encoded in the 16-real-dimensional biquaternion algebra isomorphic to \(\mathrm{Cl}(3,1)\). Gravity is the torsional mismatch of the usual rotor \(R_{\mathrm{usual}}\) and the dual rotor \(R_{\mathrm{dual}}\). A particle-intrinsic action for the six rapidities is a model, not a deduction from unitarity of those rotors. The written opposite-sign density makes the mismatch free: both angles accelerate together, and their difference has vanishing second derivative. A neighbouring sign pattern, sometimes written alongside the action, makes the mismatch runaway. An oscillator appears only when both kinetic signs are taken positive, and then at frequency \(\sqrt{2m}\), not at the Compton frequency \(m\). Linear accumulation of free lag is the only secular phase the written action supplies; identifying that rate with the de Broglie phase remains a reading. The oscillator potential of this note is not the parameter-space Killing quadratic of the main paper.
+In double spacetime theory every massive particle carries an intrinsic pair of usual and dual Minkowski sectors, encoded in the 16-real-dimensional biquaternion algebra isomorphic to \(\mathrm{Cl}(3,1)\). Gravity is the torsional mismatch of the usual rotor \(R_{\mathrm{usual}}\) and the dual rotor \(R_{\mathrm{dual}}\). A particle-intrinsic action for the six rapidities is a model, not a deduction from unitarity of those rotors. Opposite kinetic signs become a mixed term in the common rapidity \(\sigma=\phi+\theta\) and the mismatch \(\delta=\phi-\theta\). The mismatch is free, while the mass sources the common rapidity: \(\ddot\sigma=-2m\delta\). Affine lag therefore drives a polynomial common rapidity. The Jacobi integral of the written density is conserved and indefinite, so it does not restore a frequency. A neighbouring sign pattern, sometimes written alongside the action, makes the mismatch runaway. An oscillator appears only when both kinetic signs are taken positive, and then at frequency \(\sqrt{2m}\), not at the Compton frequency \(m\). Linear accumulation of free lag is the only secular phase the written action supplies; identifying that rate with the de Broglie phase remains a reading. The oscillator potential of this note is not the parameter-space Killing quadratic of the main paper.
 \end{abstract}
 
 \section{Introduction}
@@ -31,7 +31,7 @@ The hyperbolic generators \(i\Gamma_a\) square to \(+1\) and move the usual sect
 
 The relative rotor \(\Omega=R_{\mathrm{usual}}^\dagger R_{\mathrm{dual}}\) is the identity if and only if the two rotors coincide. A Lorentz-invariant scalar \(J\) built from the mismatch bivector \(\Omega_{\mathrm{biv}}=\log\Omega\) measures that disagreement in the classical field theory. The \(J\) of this note is a different object: a small-angle oscillator potential assembled from the mismatch angles of a single particle. The admissible ceiling \(\lvert J_{\mathrm{norm}}\rvert\le 1\) of the main paper must not be transplanted here.
 
-The question is dynamical. Once the mismatch angle \(\delta_a=\phi_a-\theta_a\) is promoted to a coordinate of a particle-intrinsic Lagrangian, what motion follows? Three neighbouring systems have been compared. Their Euler--Lagrange identities are elementary, and they do not agree. The geometry of the dual rotor---its real character, its spinor matrix element, its \(\mathrm{SU}(2)\) pairing with an observer---belongs to a companion note~\cite{dst-de-broglie-wave}. What is asked here is only the motion of \(\delta\).
+The question is dynamical. Once the mismatch angle \(\delta_a=\phi_a-\theta_a\) is promoted to a coordinate of a particle-intrinsic Lagrangian, what motion follows for \(\delta\) and for the common rapidity \(\sigma=\phi+\theta\)? Three neighbouring systems have been compared. Their Euler--Lagrange identities are elementary, and they do not agree. The geometry of the dual rotor---its real character, its spinor matrix element, its \(\mathrm{SU}(2)\) pairing with an observer---belongs to a companion note~\cite{dst-de-broglie-wave}. What is asked here is the motion of that pair.
 
 \section{Torsional mismatch as a particle potential}
 
@@ -78,13 +78,37 @@ Both angles accelerate by the same amount. The mismatch \(\delta=\phi-\theta\) t
 \ddot\delta=0.
 \label{eq:free}
 \end{equation}
+
+The same identities are transparent in the sum and the difference. Write \(\sigma=\phi+\theta\). Opposite kinetic signs are then a mixed term,
+\begin{equation}
+L
+  =\frac12\dot\sigma\dot\delta
+  -\frac m2\delta^2.
+\label{eq:mixed}
+\end{equation}
+The coordinate \(\sigma\) does not appear in the density. Its conjugate momentum \(\frac12\dot\delta\) is therefore conserved, which is~\eqref{eq:free} again. What the potential actually sources is the common rapidity,
+\begin{equation}
+\ddot\sigma=-2m\delta.
+\label{eq:common}
+\end{equation}
 Affine lag
 \[
 \delta(t)=\delta_0+\nu t
 \]
-is allowed. The coefficient \(\nu\) is an initial condition. The mass \(m\) accelerates \(\phi\) and \(\theta\) together; it does not restore \(\delta\), and it does not fix a frequency.
+is allowed. The coefficient \(\nu\) is an initial condition. A constant lag accelerates \(\sigma\) uniformly. A nonzero rate makes that acceleration secular, and \(\sigma\) grows as a cubic polynomial in \(t\). The mass \(m\), written as a stiffness of \(\delta\), is a force on \(\sigma\).
 
-This is the dynamics of the written action. The opposite kinetic signs, which were meant to distinguish the two sectors, cancel in the mismatch channel. What remains of the potential in~\eqref{eq:written-el} is a common force, not a restoring force on \(\delta\).
+The Jacobi integral
+\[
+E
+  =\frac12\dot\phi^2
+  -\frac12\dot\theta^2
+  +\frac m2\delta^2
+  =\frac12\dot\sigma\dot\delta
+  +\frac m2\delta^2
+\]
+is conserved along~\eqref{eq:written-el}. Mixed kinetics make it indefinite: a purely dual velocity at vanishing lag already yields \(E<0\). Conservation of an unbounded quadratic does not select a frequency.
+
+Opposite kinetic signs, which were meant to distinguish the two sectors, cancel in the mismatch channel and survive only as a drive of the common rapidity. What remains of the potential in~\eqref{eq:written-el} is a common force, not a restoring force on \(\delta\).
 
 Collective averaging of this particle-intrinsic action over many particles is sometimes proposed as recovering a macroscopic integral of \(J\). That averaging is a reading. It is not an identification of \(J_{\mathrm{osc}}\) with the Weitzenb\"ock density \(T\).
 
@@ -101,7 +125,7 @@ This is not the Euler--Lagrange system of the written density. The mismatch then
 \ddot\delta=2m\delta.
 \label{eq:runaway}
 \end{equation}
-It is not an oscillator. The mass, instead of restoring the lag, amplifies it.
+It is not an oscillator. The common rapidity is free: \(\ddot\sigma=0\). The mass, instead of restoring the lag, amplifies it, and leaves \(\sigma\) inertial.
 
 An oscillator does appear if both kinetic signs are taken positive. The density
 \[
@@ -120,22 +144,22 @@ and therefore
 \ddot\delta+2m\delta=0.
 \label{eq:oscillator}
 \end{equation}
-This is an explicit working model, not the written action. In units \(\hbar=c=1\) its angular frequency is \(\sqrt{2m}\). That frequency is not the Compton frequency \(m\). For a free particle whose usual rapidity is modelled as evolving at constant rate \(\dot\phi_a=\gamma v_a/c\), the general solution is
+The common rapidity is again free. This is an explicit working model, not the written action. In units \(\hbar=c=1\) its angular frequency is \(\sqrt{2m}\). That frequency is not the Compton frequency \(m\). The Jacobi integral of this density is \(\frac12\dot\phi^2+\frac12\dot\theta^2+\frac m2\delta^2\); for \(m\ge 0\) it is nonnegative, so here conservation does bound the motion of \(\delta\). The general solution is an oscillation of the mismatch together with uniform common rapidity,
 \[
 \delta_a(t)=A_a\sin\bigl(\sqrt{2m}\,t+\psi_a\bigr).
 \]
-The three systems are neighbours in the space of quadratic Lagrangians. Only one of them is the written action, and that one does not oscillate. Only one of them oscillates, and that one is not the written action. The remaining system is runaway.
+The three systems are neighbours in the space of quadratic Lagrangians. Kinetic signature---same versus opposite---decides whether \(\delta\) is a dynamical coordinate. Opposite kinetics free the mismatch and let the potential drive \(\sigma\). Same-sign kinetics free \(\sigma\) and leave the potential sign to decide oscillator versus runaway. Only one of the three is the written action, and that one does not oscillate. Only one of them oscillates, and that one is not the written action. The remaining system is runaway.
 
 \section{Secular phase and the de Broglie identification}
 
-The written action does not furnish a harmonic bridge to quantum theory. What it does furnish is linear accumulation of free mismatch. If the initial rate \(\nu\) is read as proportional to the laboratory four-momentum, the accumulated lag
+The written action does not furnish a harmonic bridge to quantum theory. What it does furnish is linear accumulation of free mismatch, together with a polynomial common rapidity sourced by that lag. That common motion is not a wave. If the initial rate \(\nu\) is read as proportional to the laboratory four-momentum, the accumulated lag
 \[
 \int\delta\,dt
   \propto\frac{Et-\mathbf{p}\cdot\mathbf{x}}{\hbar}
 \]
-is the de Broglie phase of the matter wave~\cite{debroglie1924}. That identification remains a reading. The mass that appears in the potential does not select the rate; \(\nu\) is data.
+is the de Broglie phase of the matter wave~\cite{debroglie1924}. That identification remains a reading. The mass that appears in the potential does not select the rate; it accelerates \(\sigma\). The coefficient \(\nu\) is data.
 
-If instead the same-sign model is adopted as the dynamics, rapid oscillations at \(\sqrt{2m}\) must still be averaged by hand before a slow secular phase can be claimed. The line, if it is physical, sits at \(\sqrt{2m}\), not at \(m\). Absence of a narrow resonance at either frequency would constrain the dynamics, not the dual-rotor kinematics.
+If instead the same-sign model is adopted as the dynamics, the common rapidity is uniform, and rapid oscillations at \(\sqrt{2m}\) must still be averaged by hand before a slow secular phase can be claimed. The line, if it is physical, sits at \(\sqrt{2m}\), not at \(m\). Absence of a narrow resonance at either frequency would constrain the dynamics, not the dual-rotor kinematics.
 
 The Compton wavelength continues to be readable as a compactification radius of the dual sector, \(\sim\hbar/mc\). The de Broglie wavelength is the laboratory distance over which an identified scalar phase advances by \(2\pi\). Neither length is derived from the oscillator, and neither is the trace of a dual rotor.
 
@@ -143,7 +167,7 @@ The scalar \(\mathrm{U}(1)\) factor \(e^{i\delta}\) built from the mismatch angl
 
 \section{Conclusion}
 
-The dual-rotor pair is the geometry of a massive particle in double spacetime theory. The particle-intrinsic action is a model placed on that geometry, not a deduction from it. Of the three neighbouring systems compared here, the written opposite-sign density makes the mismatch free: \(\ddot\delta=0\). Affine lag may accumulate, and that linear accumulation is the only secular phase the written action actually supplies. A neighbouring sign pattern makes the mismatch runaway. An oscillator appears only for same-sign kinetics, at frequency \(\sqrt{2m}\), not at the Compton frequency of the rest mass.
+The dual-rotor pair is the geometry of a massive particle in double spacetime theory. The particle-intrinsic action is a model placed on that geometry, not a deduction from it. Of the three neighbouring systems compared here, the written opposite-sign density makes the mismatch free and sources the common rapidity: \(\ddot\delta=0\), \(\ddot\sigma=-2m\delta\). Affine lag may accumulate, and the common rapidity then grows as a polynomial. That linear accumulation of \(\delta\) is the only secular phase the written action actually supplies, and its Jacobi integral is conserved and indefinite. Same-sign kinetics free the common rapidity and leave the potential sign to decide oscillator versus runaway. The oscillator, when it appears, sits at \(\sqrt{2m}\), not at the Compton frequency of the rest mass.
 
 Identifying the free lag with the de Broglie phase, averaging \(J_{\mathrm{osc}}\) over a many-particle ensemble, and reading the Compton wavelength as a dual-sector radius remain geometric readings. They are available. They are not forced by the Euler--Lagrange identities of the written action.
 

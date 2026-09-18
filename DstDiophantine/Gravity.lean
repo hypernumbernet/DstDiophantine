@@ -39,7 +39,8 @@ extrema `(-1)^n cosh(nπ)`, one node per `π`-interval, sharpened branch
 exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
 `dst_derives_lambdaN` / `dst_derives_Amax`),
 the closed form of `gammaEff`, the Euler–Lagrange identities of
-`DualRotorDynamics`, the Coulombic circular-orbit identities of
+`DualRotorDynamics` (free mismatch, sourced common rapidity \(\ddot\sigma=-2m\delta\),
+indefinite conserved energy of the written density), the Coulombic circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
 ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
@@ -175,11 +176,29 @@ example (α β : ℝ) : 0 < gammaEff α β :=
 example (α : ℝ) : gammaEff α 0 = Real.cosh α :=
   gammaEff_sr_is_beta_zero α
 
-/-- Regression: the written particle action makes the mismatch free. -/
-example {m φ θ φddot θddot : ℝ}
+/-- Regression: written Euler–Lagrange is a free mismatch and a sourced common channel. -/
+example (m φ θ φddot θddot : ℝ) :
+    PaperActualEL m φ θ φddot θddot ↔
+      φddot - θddot = 0 ∧ φddot + θddot = -2 * m * (φ - θ) :=
+  paperActualEL_iff_channels m φ θ φddot θddot
+
+/-- Regression: written energy is conserved on the Euler–Lagrange jet. -/
+example {m φ θ φdot θdot φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
-    φddot - θddot = 0 :=
-  paperActualEL_free_mismatch h
+    paperEnergyDot m φ θ φdot θdot φddot θddot = 0 :=
+  paperEnergy_conserved h
+
+/-- Regression: written energy is indefinite. -/
+example :
+    (∃ m φ θ φdot θdot : ℝ, 0 < paperEnergy m φ θ φdot θdot) ∧
+      (∃ m φ θ φdot θdot : ℝ, paperEnergy m φ θ φdot θdot < 0) :=
+  paperEnergy_indefinite
+
+/-- Regression: same-sign oscillator frees the common rapidity. -/
+example {m φ θ φddot θddot : ℝ}
+    (h : OscillatorEL m φ θ φddot θddot) :
+    φddot + θddot = 0 :=
+  oscillatorEL_free_common h
 
 /-- Regression: exact derivative of the equal-scale interference factor. -/
 example (x : ℝ) :
