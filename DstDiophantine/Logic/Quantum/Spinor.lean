@@ -669,20 +669,6 @@ def cross3 (n m : Fin 3 → ℝ) : Fin 3 → ℝ
   | 1 => n 2 * m 0 - n 0 * m 2
   | 2 => n 0 * m 1 - n 1 * m 0
 
-theorem cyclicRepComb_smul (c : ℝ) (n : Fin 3 → ℝ) :
-    cyclicRepComb (fun a => c * n a) = (c : ℝ) • cyclicRepComb n := by
-  unfold cyclicRepComb
-  simp only [Fin.sum_univ_three, smul_add]
-  have hterm (v : ℝ) (G : Matrix (Fin 2) (Fin 2) ℂ) :
-      ((c * v : ℝ) : ℂ) • G = (c : ℝ) • ((v : ℂ) • G) := by
-    rw [algebraMap_smul_mat', Complex.ofReal_mul, smul_smul]
-  rw [hterm (n 0), hterm (n 1), hterm (n 2)]
-
-theorem cyclicRepComb_neg (n : Fin 3 → ℝ) :
-    cyclicRepComb (fun a => -n a) = -cyclicRepComb n := by
-  have h := cyclicRepComb_smul (-1) n
-  simpa [neg_one_smul] using h
-
 /-- Quaternion product \(\Gamma(n)\Gamma(m)=-(n\cdot m)I+\Gamma(n\times m)\). -/
 theorem cyclicRepComb_mul (n m : Fin 3 → ℝ) :
     cyclicRepComb n * cyclicRepComb m =
@@ -698,28 +684,7 @@ theorem cyclicRepComb_mul (n m : Fin 3 → ℝ) :
     simp [Matrix.add_apply, Matrix.neg_apply, Matrix.smul_apply,
       cyclicRep, pauli, pauliX, pauliY, pauliZ] <;> ring
 
-/-- Rodrigues formula along the (possibly zero) cyclic combination of \(\beta\). -/
-theorem dualRotorMat_rodrigues_comb (β : DualRapidity) :
-    dualRotorMat β =
-      Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
-        (if ‖β‖ = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
-          else (Real.sin (‖β‖ / 2) / ‖β‖) • cyclicRepComb (fun a => β a)) := by
-  rw [dualRotorMat_rodrigues]
-  by_cases h : β = 0
-  · subst h
-    simp
-  · have hr : ‖β‖ ≠ 0 := norm_ne_zero_iff.mpr h
-    have hlin :
-        cyclicRepComb (fun a => β a) =
-          (‖β‖ : ℝ) • cyclicRepComb (fun a => β a / ‖β‖) := by
-      have hfun : (fun a : Fin 3 => β a) = fun a => ‖β‖ * (β a / ‖β‖) := by
-        ext a
-        field_simp [hr]
-      rw [hfun, cyclicRepComb_smul]
-    simp only [h, ↓reduceDIte, hr, ↓reduceIte, hlin, smul_smul]
-    field_simp [hr]
-
-theorem dualRotorGen_smul (c : ℝ) (β : DualRapidity) :
+private theorem dualRotorGen_smul (c : ℝ) (β : DualRapidity) :
     dualRotorGen (c • β) = c • dualRotorGen β := by
   unfold dualRotorGen
   simp only [Fin.sum_univ_three, smul_add]

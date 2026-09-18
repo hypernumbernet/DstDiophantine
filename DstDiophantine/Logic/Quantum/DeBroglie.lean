@@ -22,13 +22,11 @@ invariants of that matrix are distinguished here.
 * The observer–particle pairing is the Hilbert inner product
   \(\langle R_{\mathcal{O}}\chi\mid R_A\chi\rangle\), equal to
   \(\langle\chi\mid R_{\mathcal{O}}^{\dagger}R_A\chi\rangle\).
-  The relative rotor stays in \(\mathrm{SU}(2)\). The inverse is the
-  opposite rapidity, so the relative rotor is \(R(-\beta_{\mathcal{O}})R(\beta_A)\).
-  On a common ray it is a single dual rotation by the difference. Off-axis
-  the character of a product records axis alignment; the remainder is a
-  traceless tilt, and perpendicular \(\pi\) dual rotations have group
-  commutator \(-I\). A \(2\pi\) dual rotation about the observer axis is
-  \(-I\).
+  The relative rotor stays in \(\mathrm{SU}(2)\). Inverse is opposite
+  rapidity; on a common ray the relative rotor is a single difference;
+  off-axis the product character records axis alignment and the remainder
+  is traceless. Perpendicular \(\pi\) dual rotations have group commutator
+  \(-I\). A \(2\pi\) dual rotation about the observer axis is \(-I\).
 
 None of these is a spacetime Schrödinger wave, a Born position density,
 or a derivation of \(E/\hbar\) from rest mass.
@@ -290,28 +288,20 @@ theorem dualRotorAmplitude_bound (β : DualRapidity) (χ : DualSpinor) :
 
 /-! ### Same-axis composition on \(\sigma_z\) -/
 
-private theorem axis2Gen_add (θ φ : ℝ) :
-    axis2Gen (θ + φ) = axis2Gen θ + axis2Gen φ := by
-  unfold axis2Gen
-  have h : (↑(θ + φ) / 2) = (θ / 2 : ℂ) + (φ / 2 : ℂ) := by
-    rw [Complex.ofReal_add]
-    ring
-  rw [h, add_smul]
-
-private theorem commute_axis2Gen (θ φ : ℝ) :
-    Commute (axis2Gen θ) (axis2Gen φ) := by
-  unfold axis2Gen
-  change ((θ / 2 : ℂ) • cyclicRep 2) * ((φ / 2 : ℂ) • cyclicRep 2) =
-    ((φ / 2 : ℂ) • cyclicRep 2) * ((θ / 2 : ℂ) • cyclicRep 2)
-  rw [smul_mul_smul_mat, smul_mul_smul_mat, mul_comm (θ / 2 : ℂ)]
+private theorem dualRapidity_single_smul (a : Fin 3) (x : ℝ) :
+    EuclideanSpace.single a x = x • EuclideanSpace.single a 1 := by
+  ext i
+  simp [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul]
 
 /-- Same-axis dual rotors compose by adding angles. -/
 theorem dualRotorMat_axis2_add (θ φ : ℝ) :
     dualRotorMat (EuclideanSpace.single 2 (θ + φ)) =
       dualRotorMat (EuclideanSpace.single 2 θ) *
         dualRotorMat (EuclideanSpace.single 2 φ) := by
-  rw [dualRotorMat_axis2, dualRotorMat_axis2, dualRotorMat_axis2, axis2Gen_add]
-  exact Matrix.exp_add_of_commute (axis2Gen θ) (axis2Gen φ) (commute_axis2Gen θ φ)
+  have hs (x : ℝ) :
+      EuclideanSpace.single (2 : Fin 3) x = x • EuclideanSpace.single 2 1 :=
+    dualRapidity_single_smul 2 x
+  rw [hs (θ + φ), hs θ, hs φ, dualRotorMat_ray_add]
 
 /-! ### Spin-down, character as opposite-phase sum, modulus, double cover -/
 
@@ -552,13 +542,12 @@ private theorem smul_mul_smul_matR (c d : ℝ) (u v : Matrix (Fin 2) (Fin 2) ℂ
     algebraMap_smul_mat (c * d), Complex.ofReal_mul]
 
 /-- Unit dual axis, or zero if the rapidity vanishes. -/
-noncomputable def dualAxis (β : DualRapidity) : Fin 3 → ℝ :=
+private noncomputable def dualAxis (β : DualRapidity) : Fin 3 → ℝ :=
   fun a => if β = 0 then 0 else β a / ‖β‖
 
 /-- Alignment \(\hat\beta\cdot\hat\gamma\) of two dual axes. -/
 noncomputable def dualAxisInner (β γ : DualRapidity) : ℝ :=
-  dualAxis β 0 * dualAxis γ 0 + dualAxis β 1 * dualAxis γ 1 +
-    dualAxis β 2 * dualAxis γ 2
+  ∑ a : Fin 3, dualAxis β a * dualAxis γ a
 
 private theorem dualRotorMat_cos_sin (β : DualRapidity) :
     dualRotorMat β =
@@ -585,11 +574,10 @@ private theorem dualAxis_neg (β : DualRapidity) (a : Fin 3) :
 private theorem dualAxisInner_neg_left (β γ : DualRapidity) :
     dualAxisInner (-β) γ = -dualAxisInner β γ := by
   unfold dualAxisInner
-  simp [dualAxis_neg]
-  ring
+  simp [dualAxis_neg, Fin.sum_univ_three]
 
 /-- Observer–particle relative dual rotor is \(R(-\beta_{\mathcal{O}})R(\beta_A)\). -/
-theorem dualRotor_relative_eq_neg_mul (βO βA : DualRapidity) :
+private theorem dualRotor_relative_eq_neg_mul (βO βA : DualRapidity) :
     (dualRotorMat βO).conjTranspose * dualRotorMat βA =
       dualRotorMat (-βO) * dualRotorMat βA := by
   rw [dualRotorMat_neg]
@@ -643,7 +631,8 @@ theorem dualRotorMat_mul_trace (β γ : DualRapidity) :
   rw [hprod, trace_add, trace_add, trace_add, trace_real_smul_one,
     trace_real_smul, cyclicRepComb_trace, trace_real_smul, cyclicRepComb_trace,
     trace_real_smul, cyclicRepComb_mul_trace]
-  simp only [dualAxisInner, mul_zero, add_zero, Complex.ofReal_mul, Complex.ofReal_add]
+  simp only [dualAxisInner, Fin.sum_univ_three, mul_zero, add_zero,
+    Complex.ofReal_mul, Complex.ofReal_add]
   ring
 
 /-- Relative-rotor character records the alignment of the two dual axes. -/
@@ -656,7 +645,7 @@ theorem dualRotor_relative_trace (βO βA : DualRapidity) :
   simp [Complex.ofReal_neg]
 
 /-- \(\pi\) dual rotations about \(x\) and \(z\) compose to \(-\Gamma_y\). -/
-theorem dualRotorMat_pi_compose :
+private theorem dualRotorMat_pi_compose :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) =
       -cyclicRep 1 := by
@@ -669,19 +658,11 @@ theorem dualRotorMat_axes_group_commutator :
           (dualRotorMat (EuclideanSpace.single 0 Real.pi)).conjTranspose *
             (dualRotorMat (EuclideanSpace.single 2 Real.pi)).conjTranspose =
       -1 := by
-  rw [dualRotorMat_axis0_pi, dualRotorMat_axis2_pi,
+  rw [dualRotorMat_pi_compose, dualRotorMat_axis0_pi, dualRotorMat_axis2_pi,
     cyclicRep_conjTranspose, cyclicRep_conjTranspose]
-  simp only [mul_neg, neg_mul, neg_neg]
-  calc cyclicRep 0 * cyclicRep 2 * cyclicRep 0 * cyclicRep 2
-      = -cyclicRep 1 * cyclicRep 0 * cyclicRep 2 := by
-        rw [cyclicRep_zero_mul_two]
-    _ = -(cyclicRep 1 * cyclicRep 0) * cyclicRep 2 := by
-        simp [mul_assoc]
-    _ = -(-cyclicRep 2) * cyclicRep 2 := by
-        rw [cyclicRep_one_mul_zero]
-    _ = cyclicRep 2 * cyclicRep 2 := by
-        simp
-    _ = -1 := cyclicRep_sq 2
+  simp only [mul_neg, neg_mul, neg_neg, mul_assoc]
+  rw [cyclicRep_zero_mul_two]
+  simp [cyclicRep_sq]
 
 end Logic
 
