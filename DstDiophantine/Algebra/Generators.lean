@@ -30,6 +30,40 @@ namespace Generators
 noncomputable def commutator (x y : PGA) : PGA :=
   x * y - y * x
 
+theorem commutator_smul_left (c : ℝ) (x y : PGA) :
+    commutator (c • x) y = c • commutator x y := by
+  simp [commutator, smul_mul_assoc, mul_smul_comm, smul_sub]
+
+theorem commutator_smul_right (c : ℝ) (x y : PGA) :
+    commutator x (c • y) = c • commutator x y := by
+  simp [commutator, smul_mul_assoc, mul_smul_comm, smul_sub]
+
+theorem commutator_add_left (x₁ x₂ y : PGA) :
+    commutator (x₁ + x₂) y = commutator x₁ y + commutator x₂ y := by
+  simp only [commutator, add_mul, mul_add]
+  abel
+
+theorem commutator_add_right (x y₁ y₂ : PGA) :
+    commutator x (y₁ + y₂) = commutator x y₁ + commutator x y₂ := by
+  simp only [commutator, add_mul, mul_add]
+  abel
+
+theorem commutator_sum_left {ι : Type*} [Fintype ι] (s : Finset ι) (x : ι → PGA) (y : PGA) :
+    commutator (∑ i ∈ s, x i) y = ∑ i ∈ s, commutator (x i) y := by
+  classical
+  refine Finset.induction_on s ?_ ?_
+  · simp [commutator]
+  · intro a s ha ih
+    simp [Finset.sum_insert ha, commutator_add_left, ih]
+
+theorem commutator_sum_right {ι : Type*} [Fintype ι] (x : PGA) (s : Finset ι) (y : ι → PGA) :
+    commutator x (∑ i ∈ s, y i) = ∑ i ∈ s, commutator x (y i) := by
+  classical
+  refine Finset.induction_on s ?_ ?_
+  · simp [commutator]
+  · intro a s ha ih
+    simp [Finset.sum_insert ha, commutator_add_right, ih]
+
 /-- Hyperbolic boost generators `B⁺ₐ = e₀ e_{a+1}` for `a = 0,1,2`. -/
 noncomputable def hyperbolic : Fin 3 → PGA
   | 0 => ι 0 * ι 1
@@ -561,6 +595,360 @@ theorem commutator_cyclic0_null_mem_span (μ : Fin 4) :
   | 3 =>
     rw [commutator_cyclic0_null3]
     exact (Submodule.span ℝ _).smul_mem _ (Submodule.subset_span ⟨2, rfl⟩)
+
+/-! ### Remaining Lorentz–null brackets, as the vector action of `so(3,1)` -/
+
+/-- Null bivector span, the translation ideal. -/
+noncomputable def nullSpan : Submodule ℝ PGA :=
+  Submodule.span ℝ (Set.range (null : Fin 4 → PGA))
+
+theorem mem_nullSpan (μ : Fin 4) : null μ ∈ nullSpan :=
+  Submodule.subset_span ⟨μ, rfl⟩
+
+theorem smul_mem_nullSpan (c : ℝ) {x : PGA} (hx : x ∈ nullSpan) : c • x ∈ nullSpan :=
+  nullSpan.smul_mem c hx
+
+private theorem hyperbolic_eq (a : Fin 3) :
+    hyperbolic a = ι 0 * ι (Fin.castAdd 1 a.succ) := by
+  fin_cases a <;> rfl
+
+private theorem spatial_sq (k : Fin 4) (hk : k ≠ 0) :
+    ι (Fin.castAdd 1 k) * ι (Fin.castAdd 1 k) = (1 : PGA) := by
+  fin_cases k
+  · cases hk rfl
+  · simp [e_sq, Q311_e5vec, w311]
+  · simp [e_sq, Q311_e5vec, w311]
+  · simp [e_sq, Q311_e5vec, w311]
+
+private theorem castAdd_ne_e4 (k : Fin 4) : Fin.castAdd 1 k ≠ e4Index := by
+  fin_cases k <;> decide
+
+private theorem castAdd_inj {μ ν : Fin 4}
+    (h : Fin.castAdd 1 μ = Fin.castAdd 1 ν) : μ = ν :=
+  Fin.castAdd_injective 4 1 h
+
+private theorem castAdd_ne_zero {k : Fin 4} (hk : k ≠ 0) : Fin.castAdd 1 k ≠ (0 : Fin 5) := by
+  fin_cases k <;> first | cases hk rfl | decide
+
+private theorem zero_ne_castAdd_succ (a : Fin 3) :
+    (0 : Fin 5) ≠ Fin.castAdd 1 a.succ :=
+  (castAdd_ne_zero (Fin.succ_ne_zero a)).symm
+
+/-- Boost against a time translation: \((e_0 e_k) N_0 = N_k\). -/
+private theorem mul_hyperbolic_null_time (a : Fin 3) :
+    hyperbolic a * null 0 = null a.succ := by
+  rw [hyperbolic_eq]
+  dsimp [null]
+  have hk_e4 : ι (Fin.castAdd 1 a.succ) * ι e4Index =
+      -(ι e4Index * ι (Fin.castAdd 1 a.succ)) := e4_inner_anticomm a.succ
+  have h0e4 : ι 0 * ι e4Index = -(ι e4Index * ι 0) := e4_inner_anticomm 0
+  have hk0 : ι (Fin.castAdd 1 a.succ) * ι 0 =
+      -(ι 0 * ι (Fin.castAdd 1 a.succ)) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero a))
+  calc (ι 0 * ι (Fin.castAdd 1 a.succ)) * (ι e4Index * ι 0)
+      = ι 0 * (ι (Fin.castAdd 1 a.succ) * ι e4Index) * ι 0 := by simp [mul_assoc]
+    _ = ι 0 * (-(ι e4Index * ι (Fin.castAdd 1 a.succ))) * ι 0 := by rw [hk_e4]
+    _ = -(ι 0 * ι e4Index * ι (Fin.castAdd 1 a.succ) * ι 0) := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι e4Index * ι 0) * ι (Fin.castAdd 1 a.succ) * ι 0) := by rw [h0e4]
+    _ = ι e4Index * (ι 0 * (ι (Fin.castAdd 1 a.succ) * ι 0)) := by simp [mul_assoc]
+    _ = ι e4Index * (ι 0 * (-(ι 0 * ι (Fin.castAdd 1 a.succ)))) := by rw [hk0]
+    _ = -(ι e4Index * (ι 0 * ι 0) * ι (Fin.castAdd 1 a.succ)) := by simp [mul_neg, mul_assoc]
+    _ = ι e4Index * ι (Fin.castAdd 1 a.succ) := by simp [e0_sq]
+
+private theorem mul_null_time_hyperbolic (a : Fin 3) :
+    null 0 * hyperbolic a = -null a.succ := by
+  rw [hyperbolic_eq]
+  dsimp [null]
+  calc (ι e4Index * ι 0) * (ι 0 * ι (Fin.castAdd 1 a.succ))
+      = ι e4Index * (ι 0 * ι 0) * ι (Fin.castAdd 1 a.succ) := by simp [mul_assoc]
+    _ = -(ι e4Index * ι (Fin.castAdd 1 a.succ)) := by simp [e0_sq]
+
+/-- Boost against its spatial translation: \((e_0 e_k) N_k = N_0\). -/
+private theorem mul_hyperbolic_null_space (a : Fin 3) :
+    hyperbolic a * null a.succ = null 0 := by
+  rw [hyperbolic_eq]
+  dsimp [null]
+  have hk_e4 : ι (Fin.castAdd 1 a.succ) * ι e4Index =
+      -(ι e4Index * ι (Fin.castAdd 1 a.succ)) := e4_inner_anticomm a.succ
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι 0 * ι (Fin.castAdd 1 a.succ)) * (ι e4Index * ι (Fin.castAdd 1 a.succ))
+      = ι 0 * (ι (Fin.castAdd 1 a.succ) * ι e4Index) * ι (Fin.castAdd 1 a.succ) := by
+        simp [mul_assoc]
+    _ = ι 0 * (-(ι e4Index * ι (Fin.castAdd 1 a.succ))) *
+          ι (Fin.castAdd 1 a.succ) := by rw [hk_e4]
+    _ = -(ι 0 * ι e4Index * (ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 a.succ))) := by
+        simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι e4Index) := by rw [hsq, mul_one]
+    _ = ι e4Index * ι 0 := (e4_mul_anticomm 0).symm
+
+private theorem mul_null_space_hyperbolic (a : Fin 3) :
+    null a.succ * hyperbolic a = -null 0 := by
+  rw [hyperbolic_eq]
+  dsimp [null]
+  have hk0 : ι (Fin.castAdd 1 a.succ) * ι 0 =
+      -(ι 0 * ι (Fin.castAdd 1 a.succ)) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero a))
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι e4Index * ι (Fin.castAdd 1 a.succ)) * (ι 0 * ι (Fin.castAdd 1 a.succ))
+      = ι e4Index * (ι (Fin.castAdd 1 a.succ) * ι 0) * ι (Fin.castAdd 1 a.succ) := by
+        simp [mul_assoc]
+    _ = ι e4Index * (-(ι 0 * ι (Fin.castAdd 1 a.succ))) *
+          ι (Fin.castAdd 1 a.succ) := by rw [hk0]
+    _ = -(ι e4Index * ι 0 * (ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 a.succ))) := by
+        simp [mul_neg, mul_assoc]
+    _ = -null 0 := by simp [null, hsq]
+
+private theorem commute_hyperbolic_null_off (a : Fin 3) {μ : Fin 4}
+    (h0 : μ ≠ 0) (hsp : μ ≠ a.succ) :
+    Commute (hyperbolic a) (null μ) := by
+  rw [hyperbolic_eq]
+  dsimp [null]
+  have hi0 : (e4Index : Fin 5) ≠ 0 := by decide
+  have hik : e4Index ≠ Fin.castAdd 1 a.succ := (castAdd_ne_e4 a.succ).symm
+  have hμ0 : Fin.castAdd 1 μ ≠ (0 : Fin 5) := by
+    intro h
+    exact h0 (castAdd_inj (h.trans (by simp)))
+  have hμk : Fin.castAdd 1 μ ≠ Fin.castAdd 1 a.succ := by
+    intro h
+    exact hsp (castAdd_inj h)
+  exact (commute_simple_bivector_ι (zero_ne_castAdd_succ a) hi0 hik).mul_right
+    (commute_simple_bivector_ι (zero_ne_castAdd_succ a) hμ0 hμk)
+
+/-- Closed commutator table of a boost with the four null generators. -/
+theorem commutator_hyperbolic_null (a : Fin 3) (μ : Fin 4) :
+    commutator (hyperbolic a) (null μ) =
+      if μ = 0 then (2 : ℝ) • null a.succ
+      else if μ = a.succ then (2 : ℝ) • null 0
+      else 0 := by
+  by_cases h0 : μ = 0
+  · subst h0
+    simp [commutator, mul_hyperbolic_null_time, mul_null_time_hyperbolic, sub_neg_eq_add, two_smul]
+  · by_cases hsp : μ = a.succ
+    · subst hsp
+      simp [commutator, mul_hyperbolic_null_space, mul_null_space_hyperbolic, h0,
+        sub_neg_eq_add, two_smul]
+    · rw [commutator, (commute_hyperbolic_null_off a h0 hsp).eq, sub_self]
+      simp [h0, hsp]
+
+theorem commutator_hyperbolic_null_mem_span (a : Fin 3) (μ : Fin 4) :
+    commutator (hyperbolic a) (null μ) ∈ nullSpan := by
+  rw [commutator_hyperbolic_null]
+  split_ifs with h0 hsp
+  · exact smul_mem_nullSpan _ (mem_nullSpan _)
+  · exact smul_mem_nullSpan _ (mem_nullSpan _)
+  · exact nullSpan.zero_mem
+
+/-- Plane of the cyclic generator `B⁻_a`: left and right spatial legs. -/
+def cyclicLeft : Fin 3 → Fin 4
+  | 0 => 3
+  | 1 => 1
+  | 2 => 2
+
+def cyclicRight : Fin 3 → Fin 4
+  | 0 => 2
+  | 1 => 3
+  | 2 => 1
+
+private theorem cyclic_eq_legs (a : Fin 3) :
+    cyclic a = ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a)) := by
+  fin_cases a <;> rfl
+
+private theorem cyclicLeft_ne_right (a : Fin 3) : cyclicLeft a ≠ cyclicRight a := by
+  fin_cases a <;> decide
+
+private theorem cyclicLeft_ne_zero (a : Fin 3) : cyclicLeft a ≠ 0 := by
+  fin_cases a <;> decide
+
+private theorem cyclicRight_ne_zero (a : Fin 3) : cyclicRight a ≠ 0 := by
+  fin_cases a <;> decide
+
+private theorem mul_cyclic_null_right (a : Fin 3) :
+    cyclic a * null (cyclicRight a) = null (cyclicLeft a) := by
+  rw [cyclic_eq_legs]
+  dsimp [null]
+  have hj_e4 : ι (Fin.castAdd 1 (cyclicRight a)) * ι e4Index =
+      -(ι e4Index * ι (Fin.castAdd 1 (cyclicRight a))) :=
+    e4_inner_anticomm (cyclicRight a)
+  have hsq := spatial_sq (cyclicRight a) (cyclicRight_ne_zero a)
+  calc (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a))) *
+          (ι e4Index * ι (Fin.castAdd 1 (cyclicRight a)))
+      = ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (ι (Fin.castAdd 1 (cyclicRight a)) * ι e4Index) *
+          ι (Fin.castAdd 1 (cyclicRight a)) := by simp [mul_assoc]
+    _ = ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (-(ι e4Index * ι (Fin.castAdd 1 (cyclicRight a)))) *
+          ι (Fin.castAdd 1 (cyclicRight a)) := by rw [hj_e4]
+    _ = -(ι (Fin.castAdd 1 (cyclicLeft a)) * ι e4Index *
+          (ι (Fin.castAdd 1 (cyclicRight a)) * ι (Fin.castAdd 1 (cyclicRight a)))) := by
+        simp [mul_neg, mul_assoc]
+    _ = -(ι (Fin.castAdd 1 (cyclicLeft a)) * ι e4Index) := by rw [hsq, mul_one]
+    _ = ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a)) :=
+      (e4_mul_anticomm (cyclicLeft a)).symm
+
+private theorem mul_null_right_cyclic (a : Fin 3) :
+    null (cyclicRight a) * cyclic a = -null (cyclicLeft a) := by
+  rw [cyclic_eq_legs]
+  dsimp [null]
+  have hji : ι (Fin.castAdd 1 (cyclicRight a)) * ι (Fin.castAdd 1 (cyclicLeft a)) =
+      -(ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a))) :=
+    e_mul_anticomm (by
+      intro h
+      exact cyclicLeft_ne_right a (castAdd_inj h.symm))
+  have hsq := spatial_sq (cyclicRight a) (cyclicRight_ne_zero a)
+  calc (ι e4Index * ι (Fin.castAdd 1 (cyclicRight a))) *
+          (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a)))
+      = ι e4Index * (ι (Fin.castAdd 1 (cyclicRight a)) *
+          ι (Fin.castAdd 1 (cyclicLeft a))) *
+          ι (Fin.castAdd 1 (cyclicRight a)) := by simp [mul_assoc]
+    _ = ι e4Index * (-(ι (Fin.castAdd 1 (cyclicLeft a)) *
+          ι (Fin.castAdd 1 (cyclicRight a)))) *
+          ι (Fin.castAdd 1 (cyclicRight a)) := by rw [hji]
+    _ = -(ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (ι (Fin.castAdd 1 (cyclicRight a)) * ι (Fin.castAdd 1 (cyclicRight a)))) := by
+        simp [mul_neg, mul_assoc]
+    _ = -null (cyclicLeft a) := by simp [null, hsq]
+
+private theorem mul_cyclic_null_left (a : Fin 3) :
+    cyclic a * null (cyclicLeft a) = -null (cyclicRight a) := by
+  rw [cyclic_eq_legs]
+  dsimp [null]
+  have hj_e4 : ι (Fin.castAdd 1 (cyclicRight a)) * ι e4Index =
+      -(ι e4Index * ι (Fin.castAdd 1 (cyclicRight a))) :=
+    e4_inner_anticomm (cyclicRight a)
+  have hi_e4 : ι (Fin.castAdd 1 (cyclicLeft a)) * ι e4Index =
+      -(ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a))) :=
+    e4_inner_anticomm (cyclicLeft a)
+  have hji : ι (Fin.castAdd 1 (cyclicRight a)) * ι (Fin.castAdd 1 (cyclicLeft a)) =
+      -(ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a))) :=
+    e_mul_anticomm (by
+      intro h
+      exact cyclicLeft_ne_right a (castAdd_inj h.symm))
+  have hsq := spatial_sq (cyclicLeft a) (cyclicLeft_ne_zero a)
+  calc (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a))) *
+          (ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a)))
+      = ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (ι (Fin.castAdd 1 (cyclicRight a)) * ι e4Index) *
+          ι (Fin.castAdd 1 (cyclicLeft a)) := by simp [mul_assoc]
+    _ = ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (-(ι e4Index * ι (Fin.castAdd 1 (cyclicRight a)))) *
+          ι (Fin.castAdd 1 (cyclicLeft a)) := by rw [hj_e4]
+    _ = -(ι (Fin.castAdd 1 (cyclicLeft a)) * ι e4Index) *
+          ι (Fin.castAdd 1 (cyclicRight a)) *
+          ι (Fin.castAdd 1 (cyclicLeft a)) := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a)))) *
+          ι (Fin.castAdd 1 (cyclicRight a)) *
+          ι (Fin.castAdd 1 (cyclicLeft a)) := by rw [hi_e4]
+    _ = ι e4Index * (ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (ι (Fin.castAdd 1 (cyclicRight a)) * ι (Fin.castAdd 1 (cyclicLeft a)))) := by
+        simp [mul_assoc]
+    _ = ι e4Index * (ι (Fin.castAdd 1 (cyclicLeft a)) *
+          (-(ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a))))) := by
+        rw [hji]
+    _ = -(ι e4Index * (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicLeft a))) *
+          ι (Fin.castAdd 1 (cyclicRight a))) := by simp [mul_neg, mul_assoc]
+    _ = -null (cyclicRight a) := by simp [null, hsq]
+
+private theorem mul_null_left_cyclic (a : Fin 3) :
+    null (cyclicLeft a) * cyclic a = null (cyclicRight a) := by
+  rw [cyclic_eq_legs]
+  dsimp [null]
+  have hsq := spatial_sq (cyclicLeft a) (cyclicLeft_ne_zero a)
+  calc (ι e4Index * ι (Fin.castAdd 1 (cyclicLeft a))) *
+          (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicRight a)))
+      = ι e4Index * (ι (Fin.castAdd 1 (cyclicLeft a)) * ι (Fin.castAdd 1 (cyclicLeft a))) *
+          ι (Fin.castAdd 1 (cyclicRight a)) := by simp [mul_assoc]
+    _ = null (cyclicRight a) := by simp [null, hsq]
+
+private theorem commute_cyclic_null_off (a : Fin 3) {μ : Fin 4}
+    (hL : μ ≠ cyclicLeft a) (hR : μ ≠ cyclicRight a) :
+    Commute (cyclic a) (null μ) := by
+  rw [cyclic_eq_legs]
+  dsimp [null]
+  have hij : Fin.castAdd 1 (cyclicLeft a) ≠ Fin.castAdd 1 (cyclicRight a) := by
+    intro h
+    exact cyclicLeft_ne_right a (castAdd_inj h)
+  have hi4 : Fin.castAdd 1 (cyclicLeft a) ≠ e4Index := castAdd_ne_e4 (cyclicLeft a)
+  have hj4 : Fin.castAdd 1 (cyclicRight a) ≠ e4Index := castAdd_ne_e4 (cyclicRight a)
+  have hμL : Fin.castAdd 1 μ ≠ Fin.castAdd 1 (cyclicLeft a) := by
+    intro h; exact hL (castAdd_inj h)
+  have hμR : Fin.castAdd 1 μ ≠ Fin.castAdd 1 (cyclicRight a) := by
+    intro h; exact hR (castAdd_inj h)
+  exact (commute_simple_bivector_ι hij hi4.symm hj4.symm).mul_right
+    (commute_simple_bivector_ι hij hμL hμR)
+
+/-- Closed commutator table of a cyclic generator with the four null generators. -/
+theorem commutator_cyclic_null (a : Fin 3) (μ : Fin 4) :
+    commutator (cyclic a) (null μ) =
+      if μ = cyclicRight a then (2 : ℝ) • null (cyclicLeft a)
+      else if μ = cyclicLeft a then (-2 : ℝ) • null (cyclicRight a)
+      else 0 := by
+  by_cases hR : μ = cyclicRight a
+  · subst hR
+    simp [commutator, mul_cyclic_null_right, mul_null_right_cyclic, sub_neg_eq_add, two_smul]
+  · by_cases hL : μ = cyclicLeft a
+    · subst hL
+      simp [commutator, mul_cyclic_null_left, mul_null_left_cyclic, hR]
+      module
+    · rw [commutator, (commute_cyclic_null_off a hL hR).eq, sub_self]
+      simp [hR, hL]
+
+theorem commutator_cyclic_null_mem_span (a : Fin 3) (μ : Fin 4) :
+    commutator (cyclic a) (null μ) ∈ nullSpan := by
+  rw [commutator_cyclic_null]
+  split_ifs
+  · exact smul_mem_nullSpan _ (mem_nullSpan _)
+  · exact smul_mem_nullSpan _ (mem_nullSpan _)
+  · exact nullSpan.zero_mem
+
+/-- Any two elements of the null span multiply to zero. -/
+theorem nullSpan_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) : x * y = 0 := by
+  refine Submodule.span_induction₂
+    (s := Set.range (null : Fin 4 → PGA)) (t := Set.range (null : Fin 4 → PGA))
+    (p := fun u v _ _ => u * v = 0) ?mem ?zl ?zr ?al ?ar ?sl ?sr hx hy
+  · intro u v hu hv
+    obtain ⟨μ, rfl⟩ := hu
+    obtain ⟨ν, rfl⟩ := hv
+    exact null_mul_null μ ν
+  · intro; simp
+  · intro; simp
+  · intro _ _ _ _ _ _ hxz hyz
+    simp [add_mul, hxz, hyz]
+  · intro _ _ _ _ _ _ hxy hxz
+    simp [mul_add, hxy, hxz]
+  · intro r _ _ _ _ h
+    rw [smul_mul_assoc, h, smul_zero]
+  · intro r _ _ _ _ h
+    rw [mul_smul_comm, h, smul_zero]
+
+/-- Two null generators sandwich any element to zero. -/
+theorem null_mul_mul_null (μ ν : Fin 4) (z : PGA) :
+    null μ * z * null ν = 0 := by
+  dsimp [null]
+  calc ι e4Index * ι (Fin.castAdd 1 μ) * z * (ι e4Index * ι (Fin.castAdd 1 ν))
+      = (ι e4Index * (ι (Fin.castAdd 1 μ) * z) * ι e4Index) *
+          ι (Fin.castAdd 1 ν) := by simp [mul_assoc]
+    _ = 0 := by rw [e4_mul_mul_e4, zero_mul]
+
+/-- Null-span elements sandwich any element to zero. -/
+theorem nullSpan_mul_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) (z : PGA) :
+    x * z * y = 0 := by
+  refine Submodule.span_induction₂
+    (s := Set.range (null : Fin 4 → PGA)) (t := Set.range (null : Fin 4 → PGA))
+    (p := fun u v _ _ => u * z * v = 0) ?mem ?zl ?zr ?al ?ar ?sl ?sr hx hy
+  · intro u v hu hv
+    obtain ⟨μ, rfl⟩ := hu
+    obtain ⟨ν, rfl⟩ := hv
+    exact null_mul_mul_null μ ν z
+  · intro; simp
+  · intro; simp
+  · intro _ _ _ _ _ _ hxz hyz
+    simp [add_mul, hxz, hyz]
+  · intro _ _ _ _ _ _ hxy hxz
+    simp [mul_add, hxy, hxz]
+  · intro r _ _ _ _ h
+    rw [smul_mul_assoc, smul_mul_assoc, h, smul_zero]
+  · intro r _ _ _ _ h
+    rw [mul_smul_comm, h, smul_zero]
 
 end Generators
 

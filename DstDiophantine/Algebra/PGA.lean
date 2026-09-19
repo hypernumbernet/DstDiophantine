@@ -2,6 +2,7 @@ import DstDiophantine.Algebra.QuadraticForm
 import Mathlib.Data.Real.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.Algebra.Ring.Defs
 
@@ -75,6 +76,36 @@ theorem ι_e4_ne_zero : ι e4Index ≠ 0 := by
   rw [CliffordAlgebra.changeForm_ι] at h'
   exact absurd (Iff.mp (ExteriorAlgebra.ι_eq_zero_iff (e5vec e4Index)) h')
     (by simp [e5vec, e4Index, Pi.single])
+
+/-- `e₄` anticommutes with every vector, since it is orthogonal to the whole space. -/
+theorem e4_mul_ι_vec (m : Vec5) :
+    ι e4Index * CliffordAlgebra.ι Q311 m =
+      -(CliffordAlgebra.ι Q311 m * ι e4Index) := by
+  dsimp [ι, e4Index]
+  have h := CliffordAlgebra.ι_mul_ι_add_swap (Q := Q311) (e5vec 4) m
+  rw [Q311_polar_e4, map_zero, add_eq_zero_iff_eq_neg] at h
+  exact h
+
+/-- Two insertions of the null vector kill any sandwich: `e₄ z e₄ = 0`. -/
+theorem e4_mul_mul_e4 (z : PGA) : ι e4Index * z * ι e4Index = 0 := by
+  induction z using CliffordAlgebra.left_induction with
+  | algebraMap r =>
+    have hsq : ι e4Index * ι e4Index = 0 := e4_sq_zero
+    calc ι e4Index * algebraMap ℝ PGA r * ι e4Index
+        = algebraMap ℝ PGA r * (ι e4Index * ι e4Index) := by
+          rw [← mul_assoc, Algebra.commutes r (ι e4Index), mul_assoc]
+      _ = 0 := by rw [hsq, mul_zero]
+  | add x y hx hy =>
+    simp [mul_add, add_mul, hx, hy]
+  | ι_mul x m hx =>
+    calc ι e4Index * (CliffordAlgebra.ι Q311 m * x) * ι e4Index
+        = (ι e4Index * CliffordAlgebra.ι Q311 m) * x * ι e4Index := by
+          simp [mul_assoc]
+      _ = (-(CliffordAlgebra.ι Q311 m * ι e4Index)) * x * ι e4Index := by
+          rw [e4_mul_ι_vec]
+      _ = -(CliffordAlgebra.ι Q311 m * (ι e4Index * x * ι e4Index)) := by
+          simp [mul_assoc]
+      _ = 0 := by rw [hx, mul_zero, neg_zero]
 
 end PGA
 

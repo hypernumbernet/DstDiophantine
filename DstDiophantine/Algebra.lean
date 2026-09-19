@@ -41,7 +41,9 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   commutator commutator_null_null null_commute
   commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero
   commutator_hyperbolic0_null commutator_hyperbolic0_null_mem_span
-  commutator_cyclic0_null commutator_cyclic0_null_mem_span)
+  commutator_cyclic0_null commutator_cyclic0_null_mem_span
+  nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
+  commutator_cyclic_null commutator_cyclic_null_mem_span)
 export Operations (pseudoscalar dual TorsionParams daggerParams
   e4_commute_pseudoscalar dual_null
   pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
@@ -61,7 +63,10 @@ export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
   reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one
-  exp_omegaTrans expTrans_mul exp_omegaBiv_eq_motor_of_commute)
+  exp_omegaTrans expTrans_mul exp_omegaBiv_eq_motor_of_commute
+  commutator_omegaTorsion_omegaTrans_mem_span
+  commutator_omegaTrans_commutator_torsion_trans
+  motorPath bch2Path bch3Path motor_bch2_jet motor_bch3_jet exists_omegaBiv_ne_motor)
 export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp sandwich_reverse
   sandwich_mul sandwich_sq sandwich_minkowskiVector_sq
   rotorTorsion_pureBoost_closed sandwich_pureBoost_ι0 sandwich_pureBoost_ι1
@@ -177,5 +182,27 @@ example (p : Motor.OmegaParams)
     (h : Commute (omegaTorsion p.torsion) (omegaTrans p.trans)) :
     NormedSpace.exp (omegaBiv p) = motor p :=
   exp_omegaBiv_eq_motor_of_commute p h
+
+/-- Regression: every Lorentz–null bracket remains translational. -/
+example (a : Fin 3) (μ : Fin 4) :
+    commutator (hyperbolic a) (null μ) ∈ nullSpan ∧
+      commutator (cyclic a) (null μ) ∈ nullSpan :=
+  ⟨commutator_hyperbolic_null_mem_span a μ, commutator_cyclic_null_mem_span a μ⟩
+
+/-- Regression: mixed motors are not the Banach exponential of \(\Omega_{\mathrm{biv}}\). -/
+example : ∃ p : Motor.OmegaParams, NormedSpace.exp (omegaBiv p) ≠ motor p :=
+  exists_omegaBiv_ne_motor
+
+/-- Regression: the ordered product and the second-order BCH exponential share a 2-jet. -/
+example (p : Motor.OmegaParams) :
+    motorPath p 0 = bch2Path p 0 ∧
+      deriv (motorPath p) 0 = deriv (bch2Path p) 0 ∧
+      iteratedDeriv 2 (motorPath p) 0 = iteratedDeriv 2 (bch2Path p) 0 :=
+  motor_bch2_jet p
+
+/-- Regression: the ordered product and the third-order BCH exponential share a 3-jet. -/
+example (p : Motor.OmegaParams) :
+    iteratedDeriv 3 (motorPath p) 0 = iteratedDeriv 3 (bch3Path p) 0 :=
+  (motor_bch3_jet p).2.2.2
 
 end DstDiophantine

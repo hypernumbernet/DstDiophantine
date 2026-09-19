@@ -178,6 +178,19 @@ theorem Q311_isOrtho_basis (i j : Fin 5) (hij : i ≠ j) :
     Q311.IsOrtho (e5vec i) (e5vec j) :=
   weightedSumSquares_isOrtho_single w311 hij
 
+/-- The null basis vector is orthogonal to the whole space, including itself. -/
+theorem Q311_polar_e4 (m : Vec5) :
+    QuadraticMap.polar Q311 (e5vec 4) m = 0 := by
+  have hQe4 : Q311 (e5vec 4) = 0 := by simp [Q311_e5vec, w311]
+  have hsum (v : Vec5) :
+      Q311 v = ∑ i : Fin 5, w311 i * v i * v i := by
+    simp [Q311, QuadraticMap.weightedSumSquares_apply, smul_eq_mul, mul_assoc]
+  have hQe4m : Q311 (e5vec 4 + m) = Q311 m := by
+    rw [hsum, hsum]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    fin_cases i <;> simp [e5vec, w311, Pi.single]
+  simp [QuadraticMap.polar, hQe4, hQe4m]
+
 theorem Q31_isOrtho_basis (i j : Fin 4) (hij : i ≠ j) :
     Q31.IsOrtho (e4vec i) (e4vec j) :=
   weightedSumSquares_isOrtho_single w31 hij
