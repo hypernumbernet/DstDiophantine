@@ -266,6 +266,10 @@ theorem paperSourcedEL_iff_channels (m φ θ φddot θddot u : ℝ) :
   · intro ⟨hδ, hσ⟩
     constructor <;> linarith
 
+theorem paperSourcedEL_zero_iff (m φ θ φddot θddot : ℝ) :
+    PaperSourcedEL m φ θ φddot θddot 0 ↔ PaperActualEL m φ θ φddot θddot := by
+  simp [PaperSourcedEL, PaperActualEL, paperForcePhi, paperForceTheta]
+
 /-- Same-sign working model with a dual-channel acceleration \(u\). -/
 def OscillatorSourcedEL (m φ θ φddot θddot u : ℝ) : Prop :=
   φddot = -m * (φ - θ) ∧ θddot = m * (φ - θ) + u
@@ -289,6 +293,10 @@ theorem oscillatorSourcedEL_eq_mismatch {m φ θ u : ℝ} (hm : m ≠ 0)
   have hδ := oscillatorSourcedEL_mismatch h
   have h2 : (2 : ℝ) * m ≠ 0 := mul_ne_zero two_ne_zero hm
   exact (eq_div_iff h2).mpr (by linarith)
+
+theorem oscillatorSourcedEL_zero_iff (m φ θ φddot θddot : ℝ) :
+    OscillatorSourcedEL m φ θ φddot θddot 0 ↔ OscillatorEL m φ θ φddot θddot := by
+  simp [OscillatorSourcedEL, OscillatorEL, oscillatorForcePhi, oscillatorForceTheta]
 
 end Gravity
 

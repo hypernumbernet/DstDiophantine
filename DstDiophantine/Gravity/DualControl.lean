@@ -257,6 +257,12 @@ def zeroDual (p : TorsionParams) : TorsionParams where
   alpha := p.alpha
   beta := fun _ => 0
 
+theorem dualRay_zero (α v : Fin 3 → ℝ) :
+    dualRay α v 0 = zeroDual { alpha := α, beta := v } := by
+  refine torsionParams_ext rfl ?_
+  funext a
+  simp [dualRay, zeroDual]
+
 theorem isAdmissibleContinuous_zeroDual {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :
     IsAdmissibleContinuous (zeroDual p) := by
@@ -273,7 +279,8 @@ theorem J_le_zeroDual (p : TorsionParams) :
   have : 0 ≤ p.beta a ^ 2 := sq_nonneg _
   linarith
 
-theorem J_dualWall_le_of_same_alpha {p q : TorsionParams}
+/-- Dual-only configurations cannot undercut the wall value of \(J\). -/
+theorem J_dual_only_ge_wall {p q : TorsionParams}
     (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
     J (dualWallParams p) ≤ J q := by
   rw [J_eq_sum_JAxis, J_eq_sum_JAxis]
@@ -293,12 +300,6 @@ theorem J_dualWall_le_of_same_alpha {p q : TorsionParams}
   simp [hα]
   linarith
 
-/-- Dual-only configurations cannot undercut the wall value of \(J\). -/
-theorem J_dual_only_ge_wall {p q : TorsionParams}
-    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
-    J (dualWallParams p) ≤ J q :=
-  J_dualWall_le_of_same_alpha hα hq
-
 /-! ### Equal-scale shielding target -/
 
 def equalScaleOf (p : TorsionParams) : TorsionParams where
@@ -308,6 +309,12 @@ def equalScaleOf (p : TorsionParams) : TorsionParams where
 theorem J_equalScaleOf (p : TorsionParams) : J (equalScaleOf p) = 0 := by
   rw [J_coef]
   simp [equalScaleOf]
+
+theorem mass_equalScaleOf (p : TorsionParams) :
+    mass (equalScaleOf p) = ∑ a : Fin 3, p.alpha a ^ 2 := by
+  rw [mass_coef]
+  simp only [equalScaleOf, Fin.sum_univ_three]
+  ring
 
 theorem isAdmissibleContinuous_equalScaleOf_iff {p : TorsionParams}
     (hα : ∀ a, 0 ≤ p.alpha a) :
@@ -324,18 +331,6 @@ theorem isAdmissibleContinuous_equalScaleOf_iff {p : TorsionParams}
 
 /-! ### Existence of a dual-only shield when the wall is nonpositive -/
 
-/-- Dual interpolation from \(\beta=0\) to the wall. -/
-noncomputable def dualShieldInterp (p : TorsionParams) (t : ℝ) : TorsionParams :=
-  dualInterp (zeroDual p) (fun a => dualWall (p.alpha a)) t
-
-theorem J_dualShieldInterp (p : TorsionParams) (t : ℝ) :
-    J (dualShieldInterp p t) =
-      (1 / 2) * ∑ a : Fin 3,
-        (p.alpha a ^ 2 - t ^ 2 * dualWall (p.alpha a) ^ 2) := by
-  rw [J_coef]
-  simp only [dualShieldInterp, dualInterp, zeroDual, Fin.sum_univ_three]
-  ring
-
 def sumAlphaSq (p : TorsionParams) : ℝ :=
   ∑ a : Fin 3, p.alpha a ^ 2
 
@@ -348,42 +343,43 @@ theorem J_dualWall_eq_half_diff (p : TorsionParams) :
   simp only [dualWallParams, sumAlphaSq, sumWallSq, Fin.sum_univ_three]
   ring
 
-theorem J_dualShieldInterp_eq (p : TorsionParams) (t : ℝ) :
+/-- Dual interpolation from \(\beta=0\) to the wall. -/
+noncomputable def dualShieldInterp (p : TorsionParams) (t : ℝ) : TorsionParams :=
+  dualInterp (zeroDual p) (fun a => dualWall (p.alpha a)) t
+
+theorem J_dualShieldInterp (p : TorsionParams) (t : ℝ) :
     J (dualShieldInterp p t) =
       (1 / 2) * (sumAlphaSq p - t ^ 2 * sumWallSq p) := by
-  rw [J_dualShieldInterp]
-  simp only [sumAlphaSq, sumWallSq, Fin.sum_univ_three]
+  rw [J_coef]
+  simp only [dualShieldInterp, dualInterp, zeroDual, sumAlphaSq, sumWallSq,
+    Fin.sum_univ_three]
   ring
 
+/-- Vanishing wall squares would force every \(\alpha_a=\pi/2\), hence a
+strictly positive wall value of \(J\). -/
 theorem sumWallSq_pos_of_wall_nonpos {p : TorsionParams}
     (h : J (dualWallParams p) ≤ 0) :
     0 < sumWallSq p := by
-  have hdiff : sumAlphaSq p ≤ sumWallSq p := by
-    have := J_dualWall_eq_half_diff p
-    linarith
-  have hnn : 0 ≤ sumAlphaSq p := Finset.sum_nonneg fun _ _ => sq_nonneg _
-  by_contra hn
-  have hSw : sumWallSq p ≤ 0 := le_of_not_gt hn
-  have hSw0 : sumWallSq p = 0 := le_antisymm hSw (Finset.sum_nonneg fun _ _ => sq_nonneg _)
-  have hSα : sumAlphaSq p = 0 := le_antisymm (hdiff.trans_eq hSw0) hnn
-  have hJ : J (dualWallParams p) = 0 := by
-    rw [J_dualWall_eq_half_diff, hSα, hSw0]
-    ring
-  -- If both sums vanish, every α is 0 and every wall vanishes, so π/2 = 0.
-  have hα0 : ∀ a, p.alpha a = 0 := by
-    have hnnA : ∀ a ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ p.alpha a ^ 2 :=
-      fun _ _ => sq_nonneg _
+  have hnn : 0 ≤ sumWallSq p := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  refine lt_of_le_of_ne hnn ?_
+  intro h0
+  have hSw0 : ∑ a : Fin 3, dualWall (p.alpha a) ^ 2 = 0 := by
+    simpa [sumWallSq] using h0.symm
+  have hα : ∀ a, p.alpha a = Real.pi / 2 := by
     intro a
-    have := (Finset.sum_eq_zero_iff_of_nonneg hnnA).mp hSα a (Finset.mem_univ a)
-    exact sq_eq_zero_iff.mp this
-  have hW0 : dualWall (p.alpha 0) = 0 := by
-    have hnnW : ∀ a ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ dualWall (p.alpha a) ^ 2 :=
-      fun _ _ => sq_nonneg _
-    have := (Finset.sum_eq_zero_iff_of_nonneg hnnW).mp hSw0 0 (Finset.mem_univ 0)
-    exact sq_eq_zero_iff.mp this
-  unfold dualWall at hW0
-  have := hα0 0
-  have hπ : (0 : ℝ) < Real.pi / 2 := by positivity
+    have hnnW : ∀ i ∈ (Finset.univ : Finset (Fin 3)),
+        0 ≤ dualWall (p.alpha i) ^ 2 := fun _ _ => sq_nonneg _
+    have := (Finset.sum_eq_zero_iff_of_nonneg hnnW).mp hSw0 a (Finset.mem_univ a)
+    have hw : dualWall (p.alpha a) = 0 := sq_eq_zero_iff.mp this
+    unfold dualWall at hw
+    linarith
+  have hJ : J (dualWallParams p) = 3 * Real.pi ^ 2 / 8 := by
+    rw [J_dualWallParams]
+    simp only [hα, Fin.sum_univ_three]
+    ring
+  have hpos : 0 < (3 : ℝ) * Real.pi ^ 2 / 8 := by
+    have hπ : 0 < Real.pi := Real.pi_pos
+    positivity
   linarith
 
 /-- Time parameter that lands on \(J=0\) along the zero-to-wall dual ray. -/
@@ -415,7 +411,7 @@ theorem J_dualShieldInterp_at_T {p : TorsionParams}
     (h : J (dualWallParams p) ≤ 0) :
     J (dualShieldInterp p (dualShieldT p)) = 0 := by
   have hSw : 0 < sumWallSq p := sumWallSq_pos_of_wall_nonpos h
-  rw [J_dualShieldInterp_eq]
+  rw [J_dualShieldInterp]
   unfold dualShieldT
   have hSα : 0 ≤ sumAlphaSq p := Finset.sum_nonneg fun _ _ => sq_nonneg _
   have hquot : 0 ≤ sumAlphaSq p / sumWallSq p := div_nonneg hSα hSw.le
@@ -504,6 +500,13 @@ theorem uniform_pi_div_six_equalScale_admissible :
 theorem uniform_pi_div_six_shields :
     J (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) = 0 :=
   J_equalScaleOf _
+
+theorem uniform_pi_div_six_massive :
+    0 < mass (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) := by
+  rw [mass_equalScaleOf]
+  simp only [uniformTorsion, Fin.sum_univ_three]
+  have hπ : 0 < Real.pi := Real.pi_pos
+  nlinarith
 
 theorem uniform_pi_div_six_wall_neg :
     J (dualWallParams (uniformTorsion (Real.pi / 6) 0)) < 0 := by

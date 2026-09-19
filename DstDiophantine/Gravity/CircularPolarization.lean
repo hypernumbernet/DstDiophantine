@@ -517,15 +517,7 @@ theorem sandwichForce_circularWave_zVelocity (σ E0 ψ vz : ℝ) :
 def classicalQuadratic (cE2 cB2 cEB cPx cPy cPz : ℝ)
     (p : FaradayParams) : ℝ :=
   cE2 * energySq p + cB2 * magneticSq p + cEB * faradayDot p +
-    cPx * cross p.E p.B 0 + cPy * cross p.E p.B 1 + cPz * cross p.E p.B 2
-
-theorem cross_circularWave_x (σ E0 ψ : ℝ) :
-    cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 0 = 0 := by
-  simp [cross, circularWave]
-
-theorem cross_circularWave_y (σ E0 ψ : ℝ) :
-    cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 1 = 0 := by
-  simp [cross, circularWave]
+    cPx * cross p.E p.B 0 + cPy * cross p.E p.B 1 + cPz * poyntingZ p
 
 theorem classicalQuadratic_circularWave {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1)
     (cE2 cB2 cEB cPx cPy cPz : ℝ) :
@@ -533,11 +525,8 @@ theorem classicalQuadratic_circularWave {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1)
       (cE2 + cB2) * E0 ^ 2 + cPz * σ * E0 ^ 2 := by
   unfold classicalQuadratic
   rw [circularWave_energy hσ, circularWave_magnetic hσ, circularWave_dot hσ,
-    cross_circularWave_x, cross_circularWave_y]
-  have hz : cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 2 =
-      σ * E0 ^ 2 := by
-    simpa [poyntingZ] using poyntingZ_circularWave σ E0 ψ
-  rw [hz]
+    poyntingZ_circularWave]
+  simp [cross, circularWave]
   ring
 
 /-- Helicity-oddness on circular waves forces the even quadratic sector to

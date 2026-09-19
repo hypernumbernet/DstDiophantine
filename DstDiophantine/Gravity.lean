@@ -41,7 +41,9 @@ exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
 `dst_derives_lambdaN` / `dst_derives_Amax`),
 the closed form of `gammaEff`, the Euler–Lagrange identities of
 `DualRotorDynamics` (free mismatch, sourced common rapidity \(\ddot\sigma=-2m\delta\),
-indefinite conserved energy of the written density), the Coulombic circular-orbit identities of
+indefinite conserved energy, dual-channel drive \(\ddot\delta=-u\) on the written
+action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; no Faraday
+identification of \(u\)), the Coulombic circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
 ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
@@ -67,14 +69,12 @@ chirality is not photon helicity; rest electric kick has vanishing
 four-phase mean; a beam-direction velocity yields a transverse sandwich
 force; among the six classical Faraday quadratics a helicity-odd
 combination equals a multiple of \(P_z\) on circular waves;
-no helicity drive of \(J\)), the dual-only control identities of
+no helicity drive of \(J\)), and the dual-only control identities of
 `DualControl` (jet \(\dot J\), second-order drop along a dual ray, convex
 dual interpolation, wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\), dual-only
 shielding iff the wall is nonpositive, equal-scale target iff
 \(\alpha_a\le\pi/4\), uniform \(\pi/6\) shields and repels while \(\pi/3\)
-cannot dual-only shield), and the sourced dual-channel Euler–Lagrange
-identities (written action \(\ddot\delta=-u\), working oscillator
-\(\ddot\delta+2m\delta=-u\); no Faraday identification of \(u\)).
+cannot dual-only shield).
 -/
 
 namespace DstDiophantine
@@ -582,8 +582,15 @@ example (p : Operations.TorsionParams) :
 /-- Regression: uniform \(\pi/6\) admits equal-scale shielding. -/
 example : J (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) = 0 ∧
     Admissible.IsAdmissibleContinuous
-      (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) :=
-  ⟨uniform_pi_div_six_shields, uniform_pi_div_six_equalScale_admissible⟩
+      (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) ∧
+    0 < mass (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) :=
+  ⟨uniform_pi_div_six_shields, uniform_pi_div_six_equalScale_admissible,
+    uniform_pi_div_six_massive⟩
+
+/-- Regression: equal-scale shielding is the existing balanced locus. -/
+example (p : Operations.TorsionParams) :
+    equalScaleOf p = equalScaleParams p.alpha :=
+  rfl
 
 /-- Regression: uniform \(\pi/3\) cannot be dual-only shielded. -/
 example {q : Operations.TorsionParams}
@@ -591,6 +598,11 @@ example {q : Operations.TorsionParams}
     (hq : Admissible.IsAdmissibleContinuous q) :
     0 < J q :=
   uniform_pi_div_three_no_dual_shield hα hq
+
+/-- Regression: vanishing dual force recovers the unsourced written jet. -/
+example (m φ θ φddot θddot : ℝ) :
+    PaperSourcedEL m φ θ φddot θddot 0 ↔ PaperActualEL m φ θ φddot θddot :=
+  paperSourcedEL_zero_iff m φ θ φddot θddot
 
 /-- Regression: written dual force freely accelerates the mismatch. -/
 example (m φ θ φddot θddot u : ℝ) (h : PaperSourcedEL m φ θ φddot θddot u) :

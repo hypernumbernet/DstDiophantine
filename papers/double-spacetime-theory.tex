@@ -385,7 +385,7 @@ while correctly incorporating the time-reversal duality: the dual rotor $R_\text
 
 \subsection{Physical Interpretation and Gravitational Engineering}
 
-Gravity is the energetic cost of dual-rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, dual-only modulation of $\theta$ cannot raise $J$, and on the admissible cone it reaches shielding or repulsion precisely when the dual wall is nonpositive. Whether an external field supplies that dual-channel force is a conjecture, taken up in Section~\ref{sec:gravitycontrol}. The continuum remains a macroscopic description; spacetime degrees of freedom in this theory are particle-local and paired.
+Gravity is the energetic cost of dual-rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, dual-only modulation of $\theta$ cannot raise $J$. Dual-only shielding is possible precisely when the dual wall is nonpositive; a strictly negative wall admits repulsion. Whether an external field supplies that dual-channel force is a conjecture, taken up in Section~\ref{sec:gravitycontrol}. The continuum remains a macroscopic description; spacetime degrees of freedom in this theory are particle-local and paired.
 
 \section{Unified Description of Inertia and Gravity}
 \label{sec:unified}
@@ -996,37 +996,15 @@ An electromagnetic coupling, a resonance frequency, or a laboratory protocol is 
 
 \subsection{Theoretical Coupling of Circularly Polarized Electromagnetic Fields to Dual Rotors}
 
-The electromagnetic field is naturally partitioned across the two spacetimes:
+The electromagnetic field occupies the six-generator space of Section~\ref{sec:unification}, partitioned as in~\eqref{eq:faraday-split}. Laboratory time reversal $(E,B)\mapsto(E,-B)$ remains a distinct involution from both duality and the usual--dual parameter swap.
 
-\[
-F = F_{\text{usual}} + F_{\text{dual}},
-\]
-
-where
-
-\[
-F_{\text{usual}} = \mathbf{E} \cdot (iI, iJ, iK) \quad (\hat{p}^2 = +1:\ \text{boost-like, non-compact}),
-\]
-
-\[
-F_{\text{dual}} = \mathbf{B} \cdot (I, J, K) \quad (\hat{q}^2 = -1:\ \text{rotation-like, compact}).
-\]
-
-The electric component $\mathbf{E}$ occupies the usual-spacetime boost generators, while the magnetic component $\mathbf{B}$ occupies the dual-spacetime rotation generators, as in~\eqref{eq:faraday-split}. Laboratory time reversal $(E,B)\mapsto(E,-B)$ is a distinct involution from both duality and the usual--dual parameter swap.
-
-For a circularly polarized wave propagating along $z$ with helicity $\sigma = \pm 1$,
-
-\[
-\mathbf{E} = E_0 (\hat{x} \cos(kz - \omega t) + \sigma \hat{y} \sin(kz - \omega t)), \quad \mathbf{B} = \frac{E_0}{c} (-\hat{x} \sin(kz - \omega t) + \sigma \hat{y} \cos(kz - \omega t)).
-\]
-
-At every phase that wave is null: $J=0$, $E\cdot B=0$, and $M=E_0^2$ whenever $E_0\neq 0$. Each linear Faraday coefficient is a first harmonic of the phase, so the four-phase means vanish,
+The circular wave recorded there is null at every phase, and every linear Faraday coefficient has vanishing four-phase mean, so
 \[
 \langle F_{\mathrm{usual}}\rangle=\langle F_{\mathrm{dual}}\rangle=0.
 \]
-There is in particular no mean dual field proportional to $\sigma E_0^2 K$. What is helicity-odd and constant is the bilinear Poynting component $(E\times B)_z=\sigma E_0^2$. Among the six classical Faraday quadratics $\{E^2,B^2,E\cdot B,P_x,P_y,P_z\}$, a real linear combination that is odd under helicity reversal equals a multiple of $P_z$ on every circular wave. Linear polarisation carries a nonnegative Poynting component and no helicity sign. Superposition of the wave onto a background torsion does not shift the mean of $J$, and the Faraday mix cannot create $J$ from the wave. A first-order rest sandwich of the dual summand vanishes for every Faraday field, circular waves included. The rest sandwich of the wave itself is the oscillating electric kick, whose four-phase mean vanishes; a velocity along the beam produces a transverse kick with no longitudinal component~\eqref{eq:faraday-lorentz}. Axis projectors $P_{L,R}$ likewise fail to extract helicity.
+There is in particular no mean dual field proportional to $\sigma E_0^2 K$. What is helicity-odd and constant is the bilinear Poynting component $(E\times B)_z=\sigma E_0^2$ of that section. Linear polarisation carries a nonnegative Poynting component and no helicity sign. Superposition of the wave onto a background torsion does not shift the mean of $J$, and the Faraday mix cannot create $J$ from the wave. A first-order rest sandwich of the dual summand vanishes for every Faraday field, circular waves included. The rest sandwich of the wave itself is the oscillating electric kick, whose four-phase mean vanishes; a velocity along the beam produces a transverse kick with no longitudinal component~\eqref{eq:faraday-lorentz}. Axis projectors $P_{L,R}$ likewise fail to extract helicity.
 
-A helicity-dependent drive of the particle mismatch is therefore not a local scalar of $F$, nor a linear superposition, nor a first-order rest sandwich of $F_{\mathrm{dual}}$, nor an axis-chirality projection, nor a beam-direction Lorentz kick. Any such drive requires extra structure---a preferred axis, a potential, or the particle's dual phase. Within the classical quadratic span the helicity-odd candidate is unique: $(E\times B)_z=\sigma E_0^2$. In the model below that bilinear is the source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it. That identification remains a model.
+A helicity-dependent drive of the particle mismatch is therefore not a local scalar of $F$, nor a linear superposition, nor a first-order rest sandwich of $F_{\mathrm{dual}}$, nor an axis-chirality projection, nor a beam-direction Lorentz kick. Any such drive requires extra structure---a preferred axis, a potential, or the particle's dual phase. Within the classical quadratic span the helicity-odd candidate remains $(E\times B)_z=\sigma E_0^2$. In the model below that bilinear is the source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it. That identification remains a model.
 
 If a dual-channel generalised acceleration $u$ is added to $\ddot\theta$ in the written particle action of Section~\ref{sec:dualrotordynamics}, the channels become
 \[
@@ -1208,7 +1186,7 @@ The century that began with Einstein taught us to speak of gravity as the curvat
 
 The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost chart, $J$ stands in a closed relation with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum case. The two agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$, the shape $f$ has a unique minimum on $(0,\pi/2)$, and attraction ends at $\pi R/2$, before $r=2R$. None of this requires a background manifold.
 
-We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$, and shielding or repulsion by dual excitation alone is possible precisely when the dual wall is nonpositive. Whether laboratory electromagnetism supplies that dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
+We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$, and shielding by dual excitation alone is possible precisely when the dual wall is nonpositive. Whether laboratory electromagnetism supplies that dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
 
 What can already be asked of the sky is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a three-sphere patch, its rotation curve plateaus near $r\sim x_0 R$ with $x_0\in(1.14,1.20)$ and reverses at $\pi R/2$, rather than by unseen mass; for Milky-Way stand-in mass the plateau sits near $9$--$11\,\mathrm{kpc}$ and the reversal near $12$--$15\,\mathrm{kpc}$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
 
