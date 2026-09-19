@@ -33,8 +33,13 @@ strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra expo
   the truncated BCH exponential agree through order three, with the first
   correction `½[Ω_torsion,Ω_trans]`; and `exp(Ω_biv) ≠ RT` in general (radial
   boost against time translation).
-* A closed motor product law for mixed torsion-plus-translation parameters is
-  not claimed.
+* **Proved in `DstDiophantine.Algebra.MotorGroup`:** the group-level consequences:
+  every torsion rotor normalises the translators (`R T R˜ = T'`), motors multiply in
+  semidirect form `(R_p T_p)(R_q T_q) = (R_p R_q) T'`, and `exp(Ω_biv)` is itself a
+  motor `R · T_dressed` with the *same* torsion rotor and a dressed translation
+  (which differs from `Ω_trans` in general, consistent with `exists_omegaBiv_ne_motor`).
+* Not claimed: a fully closed parametrised product law on `OmegaParams` (this would
+  need surjectivity of `exp` from `lorentzSpan` onto the rotor group).
 * Sandwich metric preservation for the full degenerate quadratic form is likewise
   not claimed.
 -/

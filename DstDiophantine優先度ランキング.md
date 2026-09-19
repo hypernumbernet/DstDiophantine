@@ -182,10 +182,12 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 
 ### 3 位: Motor / Sandwich 回帰と全軸スカラー可換
 
-- **対象:** [`Algebra/Motor.lean`](DstDiophantine/Algebra/Motor.lean)、[`Algebra/Sandwich.lean`](DstDiophantine/Algebra/Sandwich.lean)
+- **対象:** [`Algebra/Motor.lean`](DstDiophantine/Algebra/Motor.lean)、[`Algebra/Sandwich.lean`](DstDiophantine/Algebra/Sandwich.lean)、[`Algebra/MotorGroup.lean`](DstDiophantine/Algebra/MotorGroup.lean)（新設）
 - **証明済:** 定義的分解 `motor = rotorTorsion * expTrans`、ユニタリ性、null 指数の 1 次打切り、BCH 2/3-jet（`motor_bch2_jet` / `motor_bch3_jet`）、一般不一致 `exists_omegaBiv_ne_motor`、`sandwich_pureBoost_expTrans`
-- **未主張:** 混合 torsion+translation の閉じた積法則、退化二次形式の完全 sandwich 等長、一般の `exp(Ω_usual+Ω_dual) = exp(Ω_usual)exp(Ω_dual)`
-- **次の作業:** 2 位で得た括弧表を Motor 側へ export、全軸スカラー可換、`Algebra.lean` / [`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean) への回帰追加。4-jet の一致検証または否定は任意
+- **証明済（`MotorGroup`）:** `exp(tΩ) x exp(-tΩ) = exp(t·ad Ω) x`（`exp_smul_mul_mul_exp_neg_smul`）と ad 不変部分空間の sandwich 不変性（`sandwich_exp_mem`）。任意の torsion rotor が translator を translator へ共役（`exists_sandwich_rotorTorsion_expTrans`）、torsion rotor を torsion rotor へ共役（`exists_sandwich_rotorTorsion_rotorTorsion`、ユニタリ sandwich は `exp` と交換 `sandwich_exp`）。半直積形の積法則 `(R_p T_p)(R_q T_q) = (R_p R_q) T'`（`exists_motor_mul`）と冪 `(RT)^n = R^n T_n`（`exists_motor_pow`）。`exp(Ω_biv) = R·(1+Z)`、`Z = ∫₀¹ e^{-sΩ_tor} Ω_trans e^{sΩ_tor} ds ∈ nullSpan`（`exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans`）、一般に `Z ≠ Ω_trans`（`exists_dressed_translation_ne`）、`exp(Ω_biv)` のユニタリ性。全軸スカラー可換 `hyperbolic_smul_cyclic_smul_same` / `cyclic_smul_mul`
+- **未主張:** `OmegaParams` 上で閉じたパラメータ付き積法則（`R_p R_q = R_r` を要し、`exp : so(3,1) → Spin⁺(3,1)` の全射性に相当）、退化二次形式の完全 sandwich 等長、一般の `exp(Ω_usual+Ω_dual) = exp(Ω_usual)exp(Ω_dual)`、4-jet
+- **反映済:** `Algebra.lean` / [`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean) 回帰、論文 2.3 節（英・日）に半直積法則と着衣並進 `Z` の記述、BCH 節に `M^p = R^p T_p` を追記
+- **次の作業:** 4-jet の一致検証または否定は任意。`R_p R_q` の閉形式は `exp` 非全射のため一般には期待できず、同軸ケースに限定するなら `rotorTorsion_axis_factor` 系と接続
 - **期待成果:** FLT mixed-motor 攻撃の安全網。Diophantine 葉は直接閉じない
 - **難所:** 閉じた積法則や 4-jet に手を伸ばすと工数が跳ねる。短期は「表と回帰」に限定する
 

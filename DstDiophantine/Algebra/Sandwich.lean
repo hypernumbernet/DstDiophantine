@@ -16,6 +16,10 @@ import Mathlib.Algebra.BigOperators.Fin
   `minkowskiVector v` is unchanged.
 * Closed-form pure-boost rotor and its action on the frame `{ι μ}` together with
   light-cone eigenvalues `e^{±φ}`.
+* The pure-boost translator conjugation `sandwich_pureBoost_expTrans` is the closed-form
+  instance of a general fact proved in `DstDiophantine.Algebra.MotorGroup`: *every*
+  torsion rotor conjugates translators to translators and torsion rotors to torsion
+  rotors, because the sandwich by `exp Ω` is `exp(ad Ω)` on any `ad Ω`-invariant span.
 
 ## Not claimed
 

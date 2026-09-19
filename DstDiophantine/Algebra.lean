@@ -12,6 +12,7 @@ import DstDiophantine.Algebra.LorentzDim
 import DstDiophantine.Algebra.LorentzLie
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.MotorGroup
 import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.Periodicity
 import DstDiophantine.Algebra.PGA
@@ -82,6 +83,19 @@ export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans 
   commutator_omegaTorsion_omegaTrans_mem_span
   commutator_omegaTrans_commutator_torsion_trans
   motorPath bch2Path bch3Path motor_bch2_jet motor_bch3_jet exists_omegaBiv_ne_motor)
+export MotorGroup (adL adL_apply exp_apply_mem_of_forall_mem exp_smul_mul_mul_exp_neg_smul
+  exp_mul_mul_exp_neg_mem sandwich_exp_mem
+  sandwich_rotorTorsion_mem_nullSpan sandwich_rotorTorsion_mem_lorentzSpan
+  sandwich_rotorTorsion_mem_poincareSpan
+  exists_omegaTrans_eq_of_mem_nullSpan exists_omegaTorsion_eq_of_mem_lorentzSpan
+  exists_sandwich_rotorTorsion_omegaTrans exists_sandwich_rotorTorsion_expTrans
+  sandwichAlgHom sandwich_exp exists_sandwich_rotorTorsion_rotorTorsion
+  reverse_rotorTorsion exists_motor_mul exists_expTrans_mul_rotorTorsion expTrans_zero
+  exists_motor_pow
+  conjPath nullDress exists_exp_add_eq_exp_mul_one_add
+  exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans exists_dressed_translation_ne
+  exp_omegaBiv_unitary
+  smul_mul_smul_comm_of_commute cyclic_smul_mul hyperbolic_smul_cyclic_smul_same)
 export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp sandwich_reverse
   sandwich_mul sandwich_sq sandwich_minkowskiVector_sq
   rotorTorsion_pureBoost_closed sandwich_pureBoost_ι0 sandwich_pureBoost_ι1
@@ -272,5 +286,48 @@ example (p : Motor.OmegaParams) :
 example (p : Motor.OmegaParams) :
     iteratedDeriv 3 (motorPath p) 0 = iteratedDeriv 3 (bch3Path p) 0 :=
   (motor_bch3_jet p).2.2.2
+
+/-- Regression: conjugation by `exp(tΩ)` is `exp(t · ad Ω)`; hence `ad`-invariant subspaces
+are invariant under the sandwich. -/
+example (Ω x : PGA) (t : ℝ) :
+    NormedSpace.exp (t • Ω) * x * NormedSpace.exp ((-t) • Ω) =
+      NormedSpace.exp (t • adL Ω) x :=
+  exp_smul_mul_mul_exp_neg_smul Ω x t
+
+/-- Regression: every torsion rotor conjugates a null translator to a null translator,
+and a torsion rotor to a torsion rotor. -/
+example (t : Operations.TorsionParams) (p : Motor.TransParams) (s : Operations.TorsionParams) :
+    (∃ q : Motor.TransParams, sandwich (rotorTorsion t) (expTrans p) = expTrans q) ∧
+      ∃ s' : Operations.TorsionParams,
+        sandwich (rotorTorsion t) (rotorTorsion s) = rotorTorsion s' :=
+  ⟨exists_sandwich_rotorTorsion_expTrans t p, exists_sandwich_rotorTorsion_rotorTorsion t s⟩
+
+/-- Regression: the motor product law in semidirect form. -/
+example (p q : Motor.OmegaParams) :
+    ∃ r : Motor.TransParams,
+      motor p * motor q = rotorTorsion p.torsion * rotorTorsion q.torsion * expTrans r :=
+  exists_motor_mul p q
+
+/-- Regression: powers of a mixed motor amplify only through the torsion rotor. -/
+example (p : Motor.OmegaParams) (n : ℕ) :
+    ∃ r : Motor.TransParams, motor p ^ n = rotorTorsion p.torsion ^ n * expTrans r :=
+  exists_motor_pow p n
+
+/-- Regression: `exp(Ω_biv)` is a motor with the same rotor and a dressed translation, and
+the dressed translation differs from `Ω_trans` in general. -/
+example (p : Motor.OmegaParams) :
+    ∃ q : Motor.TransParams,
+      NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q :=
+  exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans p
+
+example : ∃ (p : Motor.OmegaParams) (q : Motor.TransParams),
+    NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q ∧ q ≠ p.trans :=
+  exists_dressed_translation_ne
+
+/-- Regression: same-axis boost/rotation scalars commute on every axis. -/
+example (a : Fin 3) (x y : ℝ) :
+    (x • hyperbolic a) * (y • cyclic a) = (y • cyclic a) * (x • hyperbolic a) ∧
+      (x • cyclic a) * (y • cyclic a) = (y • cyclic a) * (x • cyclic a) :=
+  ⟨hyperbolic_smul_cyclic_smul_same a x y, cyclic_smul_mul a x y⟩
 
 end DstDiophantine

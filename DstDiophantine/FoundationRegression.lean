@@ -17,6 +17,7 @@ import DstDiophantine.Algebra.UnitGroup
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.LorentzLie
 import DstDiophantine.Algebra.Motor
+import DstDiophantine.Algebra.MotorGroup
 import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.PGA
 import DstDiophantine.Theorems.Fermat
@@ -71,7 +72,8 @@ invariance, light-cone eigenvalues) are included; Gravity remains out of scope.
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
-open Operations Continuum UnitGroup Generators Sandwich PGA Periodicity LorentzLie
+open Operations Continuum UnitGroup Generators Sandwich PGA Periodicity LorentzLie MotorGroup
+open CliffordAlgebra (reverse)
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Logic
 
@@ -1137,5 +1139,55 @@ example (φ : ℝ) :
     sandwich (rotorTorsion (pureBoost φ)) (ι 0 - ι 1) =
       Real.exp (-φ) • (ι 0 - ι 1) :=
   sandwich_pureBoost_lightlike_minus φ
+
+/-! ### Group-level motor structure (`MotorGroup`) -/
+
+/-- Sandwich by `exp Ω` preserves every `ad Ω`-invariant subspace (reverse-odd `Ω`). -/
+example {W : Submodule ℝ PGA} {Ω : PGA} (hΩ : reverse Ω = -Ω)
+    (hW : ∀ y ∈ W, commutator Ω y ∈ W) {x : PGA} (hx : x ∈ W) :
+    sandwich (NormedSpace.exp Ω) x ∈ W :=
+  sandwich_exp_mem hΩ hW hx
+
+/-- Torsion rotors preserve the null ideal, the Lorentz span and the Poincaré span. -/
+example (t : TorsionParams) {x : PGA} (hx : x ∈ nullSpan) :
+    sandwich (rotorTorsion t) x ∈ nullSpan :=
+  sandwich_rotorTorsion_mem_nullSpan t hx
+
+example (t : TorsionParams) {x : PGA} (hx : x ∈ poincareSpan) :
+    sandwich (rotorTorsion t) x ∈ poincareSpan :=
+  sandwich_rotorTorsion_mem_poincareSpan t hx
+
+/-- Every torsion rotor normalises the translator group. -/
+example (t : TorsionParams) (p : TransParams) :
+    ∃ q : TransParams, sandwich (rotorTorsion t) (expTrans p) = expTrans q :=
+  exists_sandwich_rotorTorsion_expTrans t p
+
+/-- Unitary sandwiches commute with the Banach exponential. -/
+example {m : PGA} (hm : m * reverse m = 1) (x : PGA) :
+    sandwich m (NormedSpace.exp x) = NormedSpace.exp (sandwich m x) :=
+  sandwich_exp hm x
+
+/-- Semidirect product law for motors. -/
+example (p q : OmegaParams) :
+    ∃ r : TransParams,
+      motor p * motor q = rotorTorsion p.torsion * rotorTorsion q.torsion * expTrans r :=
+  exists_motor_mul p q
+
+/-- Mixed-motor powers: `(RT)^n = R^n T_n`; the translator never amplifies the rotor. -/
+example (p : OmegaParams) (n : ℕ) :
+    ∃ r : TransParams, motor p ^ n = rotorTorsion p.torsion ^ n * expTrans r :=
+  exists_motor_pow p n
+
+/-- `exp(Ω_biv) = R · T_dressed`, unitary, with a dressed translation that is in general
+different from `Ω_trans`. -/
+example (p : OmegaParams) :
+    (∃ q : TransParams,
+      NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q) ∧
+      NormedSpace.exp (omegaBiv p) * reverse (NormedSpace.exp (omegaBiv p)) = 1 :=
+  ⟨exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans p, exp_omegaBiv_unitary p⟩
+
+example : ∃ (p : OmegaParams) (q : TransParams),
+    NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q ∧ q ≠ p.trans :=
+  exists_dressed_translation_ne
 
 end DstDiophantine.FoundationRegression
