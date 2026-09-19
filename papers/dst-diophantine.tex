@@ -32,9 +32,9 @@
 \maketitle
 
 \begin{abstract}
-We develop a rigorous algebraic framework in which both classical gravity and Diophantine number theory emerge from a single structure: the discrete biquaternionic double spacetime algebra. By embedding the 16-dimensional biquaternion algebra \(\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)\) into the projective geometric algebra \(G(3,1,1)\) and discretizing the dual-spacetime rapidities to a finite torus \((\mathbb{Z}/N\mathbb{Z})^6\), we obtain a theory with a strictly bounded normalized torsional scalar \(|\Jnorm| \leq 1\) on admissible configurations (equivalently \(|J| \leq 3\pi^2/8\)). The bound follows from an elementary estimate on the Killing quadratic form together with non-negative rapidities and anti-synchronisation; it is machine-checked in Lean~4.
+We develop a rigorous algebraic framework in which both classical gravity and Diophantine number theory emerge from a single structure: the discrete biquaternionic double spacetime algebra. By embedding the 16-dimensional biquaternion algebra \(\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)\) into the projective geometric algebra \(G(3,1,1)\) and discretizing the dual-spacetime rapidities to a finite torus \((\mathbb{Z}/N\mathbb{Z})^6\), we obtain a theory with a strictly bounded normalized torsional scalar \(|\Jnorm| \leq 1\) on admissible configurations (equivalently \(|J| \leq 3\pi^2/8\)). The bound follows from an elementary estimate on the Killing quadratic form together with non-negative rapidities and anti-synchronisation.
 
-Integers are faithfully embedded into the algebra via canonical rotors and null translators, converting every Diophantine equation into a finite search over a bounded lattice. Chapters~5--10 outline a common amplification programme for Fermat’s Last Theorem, Beal’s conjecture, the abc conjecture, the Riemann Hypothesis, Goldbach’s conjecture, Polignac’s conjecture, and the Collatz conjecture. The admissible bound \(|\Jnorm|\le 1\) is machine-checked; the problem-specific bridges that would turn the programme into unconditional theorems are not established, and no unconditional statement of those conjectures is claimed.
+Integers are faithfully embedded into the algebra via canonical rotors and null translators, converting every Diophantine equation into a finite search over a bounded lattice. Chapter~5 develops the dual-axis geometric seat of a Fermat triple and the interference of its mixed torsion seed; the incompatibility of that seed with a positive degree-\(n\ge 3\) power sum remains open, and classical Fermat’s Last Theorem is not claimed. Chapters~6--10 outline a common amplification programme for Beal’s conjecture, the abc conjecture, the Riemann Hypothesis, Goldbach’s conjecture, Polignac’s conjecture, and the Collatz conjecture. The problem-specific bridges that would turn those programmes into unconditional theorems are not established, and no unconditional statement of those conjectures is claimed.
 
 The framework recovers the Teleparallel Equivalent of General Relativity exactly in the continuum limit \(N \to \infty\), while the discrete structure supplies both a number-theoretic foundation and a natural ultraviolet cutoff that eliminates singularities and divergences. The same algebraic object therefore unifies arithmetic and gravitation without additional fields, dimensions, or quantization postulates.
 
@@ -61,11 +61,11 @@ Second, we embed the biquaternion algebra into the projective geometric algebra 
 
 The dagger operation \(R_{\rm usual}^\dagger\) on the usual-sector rotor extracts the dual-sector data from the combined mismatch (equivalently, swaps the rapidity pairs \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\)), while subsequent reconstruction by the dual rotor recovers the torsional configuration up to sign of \(J\). Decidability of the discrete Diophantine problems then follows from the finiteness of the admissible torus together with either exhaustive lattice search or amplification contradictions against \(|\Jnorm|\le 1\) (Chapter~10); dagger itself does not decrease the torsional height.
 
-Within this unified algebraic framework we formulate a common amplification programme for seven longstanding conjectures. Fermat's Last Theorem would follow from the non-existence of lattice points satisfying \(a^p + b^p = c^p\) (\(p \geq 3\)) with \(\Jnorm \leq 1\), once a solution-to-witness bridge is proved. Beal's conjecture would extend this mechanism to unequal exponents \(A^x + B^y = C^z\) (\(x,y,z \geq 3\)). The abc conjecture would follow by bounding the quality of every coprime triple \(a + b = c\) through the torsional height of its rotor embedding. The Riemann Hypothesis, Goldbach's conjecture, Polignac's conjecture, and the Collatz conjecture are likewise reduced to the existence of ensembles, decompositions, even-gap resets, or flows that minimize \(J\) on the finite torus. In the companion Lean development those bridges remain unproved; the machine-checked core is the admissible bound, the discrete sharp bound, and the emptiness of the old coarse witness. Unconditional statements of the seven conjectures are not claimed. Dual Spacetime 4-Valued Logic (D4L) records that prohibition as a regime calculus: a proved core, a refuted diagnostic, and an open bridge cannot be hosted together by two-valued fragments, and none of them \(T\)-entails a classical conjecture (\(\texttt{dst-4-valued-logic.tex}\)).
+Within this unified algebraic framework the seven classical problems occupy two distinct seats. Fermat's Last Theorem is attached to a dual-axis torsion seed of the projective triple \([a:b:c]\) (Chapter~5): degree \(n=2\) is pure cyclic, degree \(n\ge 3\) is mixed, and mixed seeds carry off-axis interference invisible to the scalar \(J\). The live residual is the incompatibility of that mixed motor with a positive power sum; until it closes, classical Fermat’s Last Theorem is not claimed. Beal's conjecture, the abc conjecture, the Riemann Hypothesis, Goldbach's conjecture, Polignac's conjecture, and the Collatz conjecture remain amplification programmes on the finite torus, reducing respectively to unequal-exponent mismatch, quality bounds, ensembles, decompositions, even-gap resets, or flows that would minimize \(J\). Those bridges remain unproved, and unconditional statements of the six conjectures are not claimed. Dual Spacetime 4-Valued Logic (D4L) records the prohibition as a regime calculus: a proved core, a refuted diagnostic, and an open residual cannot be hosted together by two-valued fragments, and none of them \(T\)-entails a classical conjecture (\(\texttt{dst-4-valued-logic.tex}\)).
 
-All proofs rely on the strict boundedness \(|\Jnorm| \leq 1\) on admissible configurations (Theorem~\ref{thm:torsion-bound}), derived from the sign asymmetry of the Killing form together with non-negative embedded rapidities and anti-synchronisation \(\alpha_a + \beta_a \leq \pi/2\).
+The admissible analysis throughout relies on the strict boundedness \(|\Jnorm| \leq 1\) on admissible configurations (Theorem~\ref{thm:torsion-bound}), derived from the sign asymmetry of the Killing form together with non-negative embedded rapidities and anti-synchronisation \(\alpha_a + \beta_a \leq \pi/2\).
 
-The paper is organized as follows. Chapter~2 introduces the discrete dual spacetime and the \(G(3,1,1)\) embedding. Chapter~3 establishes the rigorous torsion boundedness theorem. Chapter~4 develops the algebraic embedding of number theory into the discrete biquaternionic ring. Chapters~5--6 contain the proofs of Fermat's Last Theorem and Beal's conjecture; Chapter~7 proves the abc conjecture; Chapter~8 proves the Riemann Hypothesis; Chapter~9 treats the remaining three conjectures. Chapter~10 presents the unified Diophantine descent framework. Chapter~11 discusses physical and number-theoretic implications, and Chapter~12 concludes with future directions.
+The paper is organized as follows. Chapter~2 introduces the discrete dual spacetime and the \(G(3,1,1)\) embedding. Chapter~3 establishes the rigorous torsion boundedness theorem. Chapter~4 develops the algebraic embedding of number theory into the discrete biquaternionic ring. Chapter~5 develops the dual-axis Fermat programme (the mixed-motor residual remains open). Chapter~6 records the Beal programme; Chapter~7 the abc programme; Chapter~8 the Riemann programme; Chapter~9 the remaining three conjectures. Chapter~10 presents the unified Diophantine descent framework. Chapter~11 discusses physical and number-theoretic implications, and Chapter~12 concludes with future directions.
 
 This work demonstrates that the biquaternion algebra, once equipped with discreteness and projective geometric structure, furnishes a complete algebraic foundation for both classical gravity and arithmetic number theory.
 
@@ -254,7 +254,7 @@ For a prime power \( p \geq 3 \) the Baker--Campbell--Hausdorff formula yields t
 \[
 \log(R(n)^p) = p \log R(n) + \frac{p(p-1)}{2} [\log R(n), \log R(n)] + \cdots.
 \]
-When this expression is inserted into the mismatch bivector, the leading term produces an amplification factor \( p^2 \) in the quadratic form defining \( J \). This amplification is the algebraic origin of the contradiction for Fermat-type equations.
+When this expression is inserted into the mismatch bivector, the leading term produces an amplification factor \( p^2 \) in the quadratic form defining \( J \). This is the formal origin of the single-axis diagnostic in Chapter~5; it is not the live Fermat obstruction.
 
 \subsection{Diophantine Constraints from the Discrete Rotor Image}
 
@@ -274,57 +274,48 @@ J(\Omega^\dagger)=-J(\Omega),\qquad |\Jnorm(\Omega^\dagger)|=|\Jnorm(\Omega)|.
 \]
 Thus dagger alone does \emph{not} furnish a strict descent on torsional height. Membership tests against the finite image of the discrete torus likewise do not, by themselves, shrink \(|\Jnorm|\). What makes Diophantine problems decidable inside the algebra is the combination of (i)~faithful encoding of additive relations by null translators, (ii)~the finite admissible set on \((\mathbb{Z}/N\mathbb{Z})^6\), and (iii)~either exhaustive search for zero-height configurations or an amplification argument that would force \(|\Jnorm|>1\), contradicting Theorem~\ref{thm:torsion-bound}. Chapter~10 abstracts this three-layer scheme; the Lean~4 development \texttt{DstDiophantine} machine-checks the height-preservation identity and the finite-search termination.
 
-The constructions of this chapter therefore reduce classical Diophantine problems to finite, rigorously bounded computations inside a single 32-dimensional algebra. The subsequent chapters apply this machinery to the seven principal conjectures.
+The constructions of this chapter therefore reduce classical Diophantine problems to finite, rigorously bounded computations inside a single 32-dimensional algebra. The subsequent chapters apply this encoding to the Diophantine programmes below.
 
-\section{Programme for Fermat's Last Theorem}
+\section{Dual-axis programme for Fermat's Last Theorem}
 
-The following argument would show that there are no nonzero integers \( a, b, c \) and prime \( p \geq 3 \) satisfying
+The multiplicative embedding of a nonzero integer is the single-axis boost
 \[
-a^p + b^p = c^p,
+R(n)=\exp\bigl(\log|n|\,B^+_0\bigr).
 \]
-once every such solution is shown to produce an amplification witness incompatible with Theorem~\ref{thm:torsion-bound}. That bridge is not established. The remainder of the chapter records the intended no-go, relying only on the torsion boundedness theorem and the finite discrete rotor image established in the preceding chapters.
+Additive content of a power sum is a null translator. On a putative solution \(a^n+b^n=c^n\) that translator is already the identity: conjugating it produces no new information, and it is not the seat of Fermat's Last Theorem.
 
-\subsection{Setup and Canonical Embedding}
+\subsection{The dual-axis seat}
 
-Assume, for contradiction, that such integers exist. Without loss of generality we may take \( a, b, c > 0 \). By the embedding constructed in Chapter~4 we associate to each integer its canonical rotor class:
+The geometric seat of a projective triple \([a:b:c]\) with \(a,c\neq 0\) is the dual-axis torsion seed
 \[
-R(a),\ R(b),\ R(c) \in \mathrm{Spin}^+(3,1).
+\Omega=\frac{\alpha}{2}B^+_0+\frac{\beta}{2}B^-_1,
 \]
-The additive relation \( a^p + b^p = c^p \) is realized algebraically by the null translator
+where
 \[
-T := T(a^p) + T(b^p) - T(c^p) \in \operatorname{span}\{N_\mu\},
+\alpha=\log\Bigl(\frac{\sqrt{a^2+b^2}}{|c|}\Bigr),\qquad
+\beta=\arctan\Bigl(\frac{|b|}{|a|}\Bigr)
 \]
-so that the combined object satisfies
+(the angle requiring \(a\neq 0\)). The first coordinate is a hyperbolic rapidity on axis \(0\); the second is a cyclic angle on axis \(1\). Positive solutions of degree \(n=2\) are exactly the pure-cyclic configurations \(\alpha=0\), which is the Pythagorean radius condition \(a^2+b^2=c^2\). Every positive solution of degree \(n\ge 3\) is mixed: \(\alpha>0\) and \(\beta\in(0,\pi/2)\).
+
+\subsection{Interference and the mixed sandwich}
+
+On a mixed seed the off-axis bracket \([B^+_0,B^-_1]=2B^+_2\) is live. The boost and cyclic parts therefore fail to commute, and their interference
 \[
-R(a)^p \cdot \exp(T) \cdot R(b)^p = R(c)^p
+\Bigl[\frac{\alpha}{2}B^+_0,\frac{\beta}{2}B^-_1\Bigr]=\frac{\alpha\beta}{2}B^+_2
 \]
-up to units of the integer biquaternion ring. Because the unit group is finite, it suffices to work with a single representative in each equivalence class.
+is a nonzero multiple of the remaining boost generator. The scalar \(J\) does not see this component. When \(b\neq 0\), vanishing interference is equivalent to the pure-cyclic seat: mixed seeds carry a nonempty \(B^+_2\) obstruction.
 
-\subsection{Amplification of the Torsional Mismatch}
-
-Let \( \Omega = R(a)^\dagger R(c) \) be the mismatch rotor between the left- and right-hand sides (the contribution of \( b \) is absorbed into the translator). Raising to the \( p \)-th power and applying the Baker--Campbell--Hausdorff formula yields
+The same dichotomy appears under sandwich. A pure axis-\(0\) boost leaves the null generator \(N_3\) inert. Writing \(R_\beta=\exp(\beta B^-_1/2)\) for the cyclic factor, a pure axis-\(1\) rotation acts in the plane \((N_1,N_3)\) by
 \[
-\log(\Omega^p) = p \log \Omega + \frac{p(p-1)}{2} [\log \Omega, \log \Omega] + O(p^3).
+R_\beta\,N_3\,\widetilde{R}_\beta=\sin\beta\,N_1+\cos\beta\,N_3.
 \]
-The leading term produces the quadratic form
-\[
-J(\Omega^p) = p^2 J(\Omega) + O(p^3 \cdot \text{higher commutators}).
-\]
-For \( p \geq 3 \) the coefficient \( p^2 \) strictly amplifies any nonzero mismatch. In particular, if the original configuration is nontrivial (\( a,b,c \neq 0 \)), then \( J(\Omega) \geq \varepsilon > 0 \) for some positive lower bound determined by the minimal nonzero lattice spacing on the discrete torus.
+Whenever \(\sin\beta\neq 0\), this action differs from the identity. Infinitesimally \([\Omega,N_3]=\beta N_1\) for the Fermat seed, so a mixed one-parameter sandwich group cannot coincide with the pure-boost group on \(N_3\). Every torsion rotor still conjugates translators to translators; the defect is Lorentzian, not a failure of the semidirect product.
 
-\subsection{Contradiction on the Finite Torus}
+\subsection{Diagnosis and residual}
 
-Because all rapidities lie on the finite torus \( (\mathbb{Z}/N\mathbb{Z})^6 \), there are only finitely many admissible mismatch bivectors. For each such bivector the value of \( J \) is known explicitly. The amplification factor \( p^2 \) implies that
-\[
-J(\Omega^p) \geq p^2 \varepsilon > \Jbound
-\]
-whenever \( \varepsilon > \Jbound / p^2 \). But the torsion boundedness theorem (Chapter~3) asserts that every physically admissible configuration satisfies \( |\Jnorm| \leq 1 \). This is a contradiction.
+Single-axis mismatch \(R(a)^\dagger R(c)\) and its formal \(p^2\) amplification against \(|\Jnorm|\le 1\) do not cover the dual-axis seat. A balanced seed \(\alpha=\log 2/p\) already lies below the admissible threshold after amplification, and a geometric larger-base seed on a positive solution has vanishing winding on the discrete torus. Those facts diagnose the single-axis programme; they are not the live obstruction.
 
-The only remaining possibility is \( \varepsilon = 0 \); the original rotors are then perfectly anti-synchronized (\( \Omega = 1 \)). In that case \( a = b = c = 0 \), contradicting the assumption that \( a, b, c \) are nonzero. Therefore no solutions exist.
-
-The direct power-amplification argument of this chapter is the equal-exponent special case of the quality bound established independently in Chapter~7 for all coprime additive triples \( a + b = c \).
-
-This completes the proof of Fermat’s Last Theorem within the discrete double spacetime framework.
+The live residual is the incompatibility of a mixed dual-axis motor with a positive degree-\(n\ge 3\) power sum. The geometric obstruction above is strictly weaker: it does not mention the additive identity. Until that incompatibility is established, coexistence remains open, and classical Fermat's Last Theorem is not claimed. If the residual closes, the mixed-seat theorem for \(n\ge 3\) supplies the statement for positive integers, and thence the usual form over the natural numbers.
 
 \section{Proof of Beal's Conjecture}
 
@@ -332,7 +323,7 @@ We prove that if positive integers \( A, B, C \) and exponents \( x, y, z \geq 3
 \[
 A^x + B^y = C^z,
 \]
-then \( A, B, C \) must share a common prime factor. The proof extends the Fermat argument of Chapter~5 to unequal exponents and relies on the same torsion boundedness theorem and finite discrete rotor image.
+then \( A, B, C \) must share a common prime factor. The argument extends the single-axis amplification diagnostic of Chapter~5 to unequal exponents and relies on the same torsion boundedness theorem and finite discrete rotor image; it does not inherit a closed Fermat theorem.
 
 \subsection{Setup and Canonical Embedding}
 
@@ -378,9 +369,9 @@ The remaining case \(\varepsilon = 0\) is \emph{not} vacuum. Signed height \(\Jn
 
 When the seed is large enough to leave the admissible cone, or when the fractional gap sits in the principal window \(2\pi/k\le\delta<4\pi/k\), a modular winding witness is available. Neither of those covers the balanced residual. Unconditional classical Beal is not claimed.
 
-\subsection{Recovery of Fermat's Last Theorem}
+\subsection{Equal-exponent reduction}
 
-When \( x = y = z = p \geq 3 \) for a prime \( p \), Beal’s conjecture reduces to the statement that any solution of \( A^p + B^p = C^p \) requires a common prime factor. Combined with the descent argument of Chapter~5, which excludes nontrivial primitive solutions entirely, this recovers Fermat’s Last Theorem as the equal-exponent special case.
+When \( x = y = z = p \geq 3 \) for a prime \( p \), Beal’s conjecture reduces to the statement that any solution of \( A^p + B^p = C^p \) requires a common prime factor. Chapter~5 does not exclude nontrivial primitive solutions: that is the open dual-axis residual. Equal-exponent Beal is therefore not a recovery of Fermat's Last Theorem from the present development.
 
 \subsection{Arithmetic reduction of the residual}
 
@@ -548,9 +539,9 @@ The continuum recovery is uniform: the discrete proof for each fixed \( N \) sup
 
 \subsection{Corollaries}
 
-\begin{corollary}[Recovery of Fermat's Last Theorem]
+\begin{corollary}[Conditional Fermat reduction]
 \label{cor:abc-flt}
-Let \( p \geq 3 \) be prime. If \( a^p + b^p = c^p \) with \( \gcd(a,b,c) = 1 \), then \( q(a,b,c) \) is unbounded as the discrete torus refines, contradicting Theorem~\ref{thm:discrete-abc}. Hence no such primitive solution exists. This recovers Fermat's Last Theorem as a corollary of the abc bound; the direct power-amplification proof of Chapter~5 is an independent special case.
+Let \( p \geq 3 \) be prime. If \( a^p + b^p = c^p \) with \( \gcd(a,b,c) = 1 \), then \( q(a,b,c) \) is unbounded as the discrete torus refines, contradicting Theorem~\ref{thm:discrete-abc}. This would recover Fermat's Last Theorem as a corollary of the abc bound once that bound is unconditional; the \(p^2\) amplification of Chapter~5 is a diagnostic special case, not an independent proof.
 \end{corollary}
 
 \begin{corollary}[Relation to Beal's conjecture]
@@ -893,9 +884,8 @@ We have constructed a complete algebraic framework in which classical gravity an
 
 First, the torsional mismatch scalar \( J \) satisfies \(|\Jnorm| \leq 1\) on admissible configurations (Theorem~\ref{thm:torsion-bound}), furnishing a natural ultraviolet cutoff at \(|J| = 3\pi^2/8\).
 
-Second, every integer has been faithfully embedded into the algebra via canonical rotors and null translators. The finite discrete rotor image converts every Diophantine equation into a finite search over a bounded lattice. Chapters~5--10 record a common amplification programme for
+Second, every integer has been faithfully embedded into the algebra via canonical rotors and null translators. The finite discrete rotor image converts every Diophantine equation into a finite search over a bounded lattice. Chapter~5 records the dual-axis Fermat seat and its interference; the mixed-motor residual remains open, and classical Fermat’s Last Theorem is not claimed. Chapters~6--10 record a common amplification programme for
 \begin{itemize}
-  \item Fermat’s Last Theorem,
   \item Beal’s conjecture,
   \item the abc conjecture,
   \item the Riemann Hypothesis,
@@ -903,7 +893,7 @@ Second, every integer has been faithfully embedded into the algebra via canonica
   \item Polignac’s conjecture (including the Twin Prime conjecture as the case \( 2k = 2 \)), and
   \item the Collatz conjecture.
 \end{itemize}
-The shared mechanism is the non-existence of configurations that simultaneously satisfy the algebraic relation and violate the bound \( |\Jnorm| \leq 1 \), together with the finiteness of the admissible discrete search space (Chapter~10). The problem-specific bridges remain unproved; no unconditional statement of those conjectures is claimed. Dual extraction by dagger preserves \(|\Jnorm|\) and is not itself a height-reducing descent.
+The shared amplification mechanism is the non-existence of configurations that simultaneously satisfy the algebraic relation and violate the bound \( |\Jnorm| \leq 1 \), together with the finiteness of the admissible discrete search space (Chapter~10). The problem-specific bridges remain unproved; no unconditional statement of those conjectures is claimed. Dual extraction by dagger preserves \(|\Jnorm|\) and is not itself a height-reducing descent.
 
 Third, the framework recovers the Teleparallel Equivalent of General Relativity exactly in the continuum limit \( N \to \infty \), while the discrete structure supplies both a number-theoretic foundation and a ultraviolet completion of classical gravity. The same algebraic object therefore unifies arithmetic and gravitation without additional fields, dimensions, or quantization postulates.
 
@@ -946,7 +936,7 @@ These lattice identities, machine-checked in Lean~4 (\texttt{DstDiophantine.Fram
 
 \subsection{Baker--Campbell--Hausdorff Formula for Rotor Powers}
 
-In the proofs of Fermat’s Last Theorem, Beal’s conjecture, the abc conjecture, and the amplification of torsional mismatch, we repeatedly raise rotors to integer powers. Let \( \Omega = \exp(X) \) where \( X \in \mathfrak{so}(3,1) \) is the mismatch bivector. Then
+In the amplification programmes for Beal’s conjecture, the abc conjecture, and torsional mismatch, we repeatedly raise rotors to integer powers. Let \( \Omega = \exp(X) \) where \( X \in \mathfrak{so}(3,1) \) is the mismatch bivector. Then
 \[
 \Omega^p = \exp(pX + \tfrac{p(p-1)}{2}[X,X] + \tfrac{p(p-1)(2p-1)}{12}[X,[X,X]] + \cdots).
 \]
@@ -958,7 +948,7 @@ Substituting into the quadratic form that defines \( J \) produces the leading a
 \[
 J(\Omega^p) = p^2 J(\Omega) + O(p^3 \cdot \text{higher nested commutators}).
 \]
-For \( p \geq 3 \) the coefficient \( p^2 \) strictly dominates any higher-order correction on the finite torus, justifying the contradiction argument used in Chapter~5. Nothing changes when the rotor is replaced by a mixed motor \( M=RT \): because the translators form a normal abelian subgroup normalised by the torsion rotors, \( M^p = R^p\,T_p \) with \( T_p \) a translator, so the amplification of \( J \) is carried entirely by \( R^p \) and the translational sector never feeds back into the torsional scalar.
+For \( p \geq 3 \) the coefficient \( p^2 \) strictly dominates any higher-order correction on the finite torus. This is the diagnostic single-axis amplification recorded in Chapter~5; it does not cover the dual-axis Fermat seat. Nothing changes when the rotor is replaced by a mixed motor \( M=RT \): because the translators form a normal abelian subgroup normalised by the torsion rotors, \( M^p = R^p\,T_p \) with \( T_p \) a translator, so the amplification of \( J \) is carried entirely by \( R^p \) and the translational sector never feeds back into the torsional scalar.
 
 \subsection{Spin Covering and Principal Branch Restriction}
 
@@ -982,7 +972,7 @@ inside the principal branch. This bound follows from the fact that a full \( 2\p
 
 On the finite torus \( (\mathbb{Z}/N\mathbb{Z})^6 \) all rapidities are bounded by \( 2\pi \). Consequently the mismatch bivector \( X \) satisfies \( \|X\| \leq 3\pi \). For any fixed compactification parameter \( N \), the higher-order terms in the Baker--Campbell--Hausdorff series are uniformly bounded. The error incurred by second-order truncation is therefore controlled by a constant that depends only on \( N \) and vanishes in the continuum limit. This justifies all approximations used in the Diophantine proofs.
 
-The combination of the Baker--Campbell--Hausdorff expansion with the Spin covering restriction supports the amplification arguments used in Chapters~5--7. The elementary admissible bound \(|\Jnorm| \leq 1\) (Theorem~\ref{thm:torsion-bound}) is independent of BCH truncation.
+The combination of the Baker--Campbell--Hausdorff expansion with the Spin covering restriction supports the amplification arguments used in Chapters~6--7. The elementary admissible bound \(|\Jnorm| \leq 1\) (Theorem~\ref{thm:torsion-bound}) is independent of BCH truncation.
 
 \section{Proofs of Auxiliary Lemmas}
 

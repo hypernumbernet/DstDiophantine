@@ -63,6 +63,11 @@ export Embedding (integerRotor integerRotor_mul integerRotor_pow nullTranslator 
   quantizeInt_one quantizeInt_pureBoost
   quantizeMismatch_pureBoost quantizeRapidity_error quantizeMismatch_error
   quantizeRapidity_zmod_eq_principal principalRapidity_nonneg principalRapidity_lt_two_pi
+  fermatL2 fermatBoost fermatAngle fermatTorsion fermatMotorRotor
+  fermatBoostSeed fermatAngleSeed IsMixedFermatMotor IsPureCyclicFermatMotor
+  omegaTorsion_fermatTorsion fermatInterfere fermatInterfere_eq
+  fermatInterfere_ne_zero_of_mixed fermatInterfere_eq_zero_iff_pureCyclic
+  not_commute_fermat_boost_angle
   conformalPoint conformalInteger conformalPoint_sq conformalInteger_sq
   IsCGAIntegerPoint IsCGAIntegerPoint_conformalInteger IsCGAIntegerPoint_natAbs
   IsCGAPowerLatticePoint isCGAPowerLatticePoint_two_rpow_four_thirds
@@ -133,6 +138,8 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   FermatMixedMotorResidual fermat_pos_of_mixed_motor_residual
   FermatLastTheorem_of_mixed_motor_residual
   isMixedFermatMotor_of_sol fermatBoost_eq_zero_iff_pythagorean
+  commutator_fermatTorsion_null3_ne_pureBoost
+  sandwich_fermatAngle_null3_ne_pureBoost exists_sandwich_fermat_ne_pureBoost
   beal_solution_iff_motor bealMinExp bealAmpExp bealExpGcd bealGcd
   beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge

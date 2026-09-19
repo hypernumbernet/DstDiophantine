@@ -85,6 +85,7 @@ export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans 
   motorPath bch2Path bch3Path motor_bch2_jet motor_bch3_jet exists_omegaBiv_ne_motor)
 export MotorGroup (adL adL_apply exp_apply_mem_of_forall_mem exp_smul_mul_mul_exp_neg_smul
   exp_mul_mul_exp_neg_mem sandwich_exp_mem
+  sandwich_exp_smul_eq_exp_ad hasDerivAt_sandwich_exp_smul
   sandwich_rotorTorsion_mem_nullSpan sandwich_rotorTorsion_mem_lorentzSpan
   sandwich_rotorTorsion_mem_poincareSpan
   exists_omegaTrans_eq_of_mem_nullSpan exists_omegaTorsion_eq_of_mem_lorentzSpan
@@ -100,8 +101,11 @@ export Sandwich (sandwich sandwich_one sandwich_smul sandwich_add sandwich_comp 
   sandwich_mul sandwich_sq sandwich_minkowskiVector_sq
   rotorTorsion_pureBoost_closed sandwich_pureBoost_ι0 sandwich_pureBoost_ι1
   sandwich_pureBoost_ι2 sandwich_pureBoost_lightlike_plus sandwich_pureBoost_lightlike_minus
-  rotorTorsion_pureRotation_closed sandwich_pureBoost_null0 sandwich_pureBoost_expTrans
-  reverse_rotorTorsion_pureBoost_eq rotorTorsion_pureBoost_mul boostConjLambda)
+  rotorTorsion_pureRotation_closed sandwich_pureBoost_null0 sandwich_pureBoost_null3
+  sandwich_pureBoost_expTrans
+  reverse_rotorTorsion_pureBoost_eq rotorTorsion_pureBoost_mul boostConjLambda
+  sandwich_pureRotation1_null3 sandwich_pureRotation1_expTrans
+  sandwich_pureRotation1_null3_ne_of_sin)
 export UnitGroup (discreteRotor DiscreteUnit DiscreteRotorImage discreteUnit_finite
   discreteRotorImage_finite reverse_discreteRotor discreteRotor_mul_reverse
   negTorsionParams AdmissibleRotorImage admissibleRotorImage_subset_discrete
@@ -127,7 +131,8 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   torsion_bound torsion_bound_continuous JNormalized_extremal JNormalized_extremal_neg
   abs_JNormalized_eq_one_iff exists_admissible_JNormalized
   torsion_bound_naive_false)
-export Amplification (scaleTorsion pureBoost pureBoost_scale_real pureBoost_scale
+export Amplification (scaleTorsion pureBoost pureRotation1 pureBoost_scale_real pureBoost_scale
+  omegaTorsion_pureRotation1 rotorTorsion_pureRotation1
   J_scale JNormalized_scale mass_scale massNormalized_scale scaleTorsion_balancedRay
   J_pureBoost JNormalized_pureBoost JNormalized_pureBoost_nonneg
   J_pow_amplify JNormalized_pow_amplify rotorTorsion_pureBoost_pow

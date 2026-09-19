@@ -20,9 +20,11 @@ motor construction.
 
 ## Main results
 
-* `exp_apply_mem_of_forall_mem`, `exp_smul_mul_mul_exp_neg_smul`, `sandwich_exp_mem`:
-  conjugation by `exp Ω` is `exp(ad Ω)`; hence every `ad Ω`-invariant subspace is
-  invariant under the sandwich `exp Ω · exp(-Ω)`.
+* `exp_apply_mem_of_forall_mem`, `exp_smul_mul_mul_exp_neg_smul`, `sandwich_exp_mem`,
+  `sandwich_exp_smul_eq_exp_ad`, `hasDerivAt_sandwich_exp_smul`:
+  conjugation by `exp Ω` is `exp(ad Ω)`; the one-parameter sandwich has derivative
+  `[Ω, ·]` at the identity; every `ad Ω`-invariant subspace is invariant under
+  the sandwich `exp Ω · exp(-Ω)`.
 * `sandwich_rotorTorsion_mem_nullSpan`, `exists_sandwich_rotorTorsion_expTrans`:
   a torsion rotor conjugates a null translator to a null translator
   (`R T R˜ = T'`), for **every** torsion rotor, not only for the pure radial boost of
@@ -180,6 +182,29 @@ theorem sandwich_exp_mem {W : Submodule ℝ PGA} {Ω : PGA} (hΩ : reverse Ω = 
     sandwich (exp Ω) x ∈ W := by
   rw [sandwich, reverse_exp_of_reverse_neg hΩ]
   exact exp_mul_mul_exp_neg_mem hW hx
+
+/-- For a reverse-odd generator, sandwich by `exp(tΩ)` is `exp(t · ad Ω)`. -/
+theorem sandwich_exp_smul_eq_exp_ad {Ω : PGA} (hΩ : reverse Ω = -Ω) (t : ℝ) (x : PGA) :
+    sandwich (exp (t • Ω)) x = exp (t • adL Ω) x := by
+  have hrev : reverse (t • Ω) = -(t • Ω) := by rw [map_smul, hΩ, smul_neg]
+  rw [sandwich, reverse_exp_of_reverse_neg hrev, ← neg_smul, exp_smul_mul_mul_exp_neg_smul]
+
+/-- Infinitesimal sandwich of a reverse-odd generator is the Lie bracket. -/
+theorem hasDerivAt_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω) (x : PGA) :
+    HasDerivAt (fun t : ℝ => sandwich (exp (t • Ω)) x) (commutator Ω x) 0 := by
+  have hf := hasDerivAt_exp_smul_const (adL Ω) (0 : ℝ)
+  have hA0 : (0 : ℝ) • adL Ω = 0 := zero_smul ℝ _
+  have hf' : HasDerivAt (fun t : ℝ => exp (t • adL Ω)) (adL Ω) 0 :=
+    hf.congr_deriv (by rw [hA0, NormedSpace.exp_zero, one_mul])
+  have hx : HasDerivAt (fun t : ℝ => exp (t • adL Ω) x) (adL Ω x) 0 := by
+    refine (hf'.clm_apply (hasDerivAt_const (0 : ℝ) x)).congr_deriv ?_
+    have hA0' : (0 : ℝ) • adL Ω = 0 := zero_smul ℝ _
+    simp [hA0', NormedSpace.exp_zero]
+  have hfun :
+      (fun t : ℝ => sandwich (exp (t • Ω)) x) = fun t : ℝ => exp (t • adL Ω) x :=
+    funext fun t => sandwich_exp_smul_eq_exp_ad hΩ t x
+  rw [hfun]
+  simpa [adL_apply] using hx
 
 /-! ### Torsion rotors act on the null, Lorentz and Poincaré spans -/
 

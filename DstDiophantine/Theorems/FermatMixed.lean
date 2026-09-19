@@ -1,9 +1,9 @@
 import DstDiophantine.Embedding.FermatMotor
 import DstDiophantine.Theorems.Fermat
+import DstDiophantine.Algebra.MotorGroup
+import DstDiophantine.Algebra.Sandwich
 import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -23,6 +23,8 @@ namespace DstDiophantine
 namespace Theorems
 
 open _root_.DstDiophantine.Embedding Real
+open Amplification Motor Sandwich Generators MotorGroup PGA Operations
+open CliffordAlgebra NormedSpace
 
 private theorem natAbs_coe_eq_coe_of_pos {z : ℤ} (hz : 0 < z) :
     (z.natAbs : ℝ) = (z : ℝ) := by
@@ -149,6 +151,85 @@ theorem isMixedFermatMotor_of_sol {a b c : ℤ} {n : ℕ}
   ⟨fermatBoost_pos_of_sol hn ha hb hc hsol,
     fermatAngle_pos_of_b_ne (ne_of_gt ha) (ne_of_gt hb),
     fermatAngle_lt_half_pi a b (ne_of_gt ha)⟩
+
+/-! ### Sandwich / commutator connection (geometric, independent of FLT) -/
+
+theorem commutator_fermatTorsion_null3 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3) =
+      fermatAngle a b ha • null 1 := by
+  rw [omegaTorsion_fermatTorsion, commutator_add_left, commutator_smul_left,
+    commutator_smul_left, commutator_hyperbolic0_null3, commutator_cyclic_null]
+  have hR : (3 : Fin 4) = cyclicRight (1 : Fin 3) := rfl
+  have hL : cyclicLeft (1 : Fin 3) = (1 : Fin 4) := rfl
+  simp [hR, hL]
+  ring_nf
+  module
+
+theorem commutator_fermatBoost_null3 (a b c : ℤ) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc)) (null 3) = 0 := by
+  rw [fermatBoostSeed, omegaTorsion_pureBoost, commutator_smul_left,
+    commutator_hyperbolic0_null3, smul_zero]
+
+/-- Infinitesimal sandwich defect: mixed Fermat seeds move `N₃`, while a pure
+axis-0 boost leaves it inert. -/
+theorem commutator_fermatTorsion_null3_ne_pureBoost {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3) ≠
+      Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc)) (null 3) := by
+  rw [commutator_fermatTorsion_null3, commutator_fermatBoost_null3]
+  intro hz
+  have hβ : fermatAngle a b ha ≠ 0 := ne_of_gt h.2.1
+  exact null_one_ne_zero ((smul_eq_zero.mp hz).resolve_left hβ)
+
+theorem sandwich_fermatBoost_null3 (a b c : ℤ) (hc : c ≠ 0) :
+    sandwich (rotorTorsion (fermatBoostSeed a b c hc)) (null 3) = null 3 :=
+  sandwich_pureBoost_null3 (fermatBoost a b c hc)
+
+theorem sandwich_fermatAngle_null3 (a b : ℤ) (ha : a ≠ 0) :
+    sandwich (rotorTorsion (fermatAngleSeed a b ha)) (null 3) =
+      Real.sin (fermatAngle a b ha) • null 1 +
+        Real.cos (fermatAngle a b ha) • null 3 :=
+  sandwich_pureRotation1_null3 (fermatAngle a b ha)
+
+/-- The cyclic Fermat factor rotates `N₃`; a pure boost does not. -/
+theorem sandwich_fermatAngle_null3_ne_pureBoost {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (hβ : 0 < fermatAngle a b ha) :
+    sandwich (rotorTorsion (fermatAngleSeed a b ha)) (null 3) ≠
+      sandwich (rotorTorsion (fermatBoostSeed a b c hc)) (null 3) := by
+  rw [sandwich_fermatBoost_null3]
+  simpa [fermatAngleSeed] using
+    sandwich_pureRotation1_null3_ne_of_sin (ne_of_gt (fermatAngle_sin_pos ha hβ))
+
+/-- Every Fermat torsion rotor still conjugates translators to translators. -/
+theorem exists_sandwich_fermatTorsion_expTrans (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0)
+    (p : TransParams) :
+    ∃ q : TransParams,
+      sandwich (fermatMotorRotor a b c ha hc) (expTrans p) = expTrans q :=
+  exists_sandwich_rotorTorsion_expTrans (fermatTorsion a b c ha hc) p
+
+/-- The one-parameter sandwich groups of a mixed Fermat seed and of its
+pure-boost part disagree on `N₃`. -/
+theorem exists_sandwich_fermat_ne_pureBoost {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    ∃ t : ℝ,
+      sandwich (exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 3) ≠
+        sandwich (exp (t • omegaTorsion (fermatBoostSeed a b c hc))) (null 3) := by
+  by_contra! hforall
+  have hf := hasDerivAt_sandwich_exp_smul
+    (omegaTorsion_reverse (fermatTorsion a b c ha hc)) (null 3)
+  have hg := hasDerivAt_sandwich_exp_smul
+    (omegaTorsion_reverse (fermatBoostSeed a b c hc)) (null 3)
+  have hfun :
+      (fun t : ℝ =>
+          sandwich (exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 3)) =
+        fun t : ℝ =>
+          sandwich (exp (t • omegaTorsion (fermatBoostSeed a b c hc))) (null 3) :=
+    funext hforall
+  rw [hfun] at hf
+  exact commutator_fermatTorsion_null3_ne_pureBoost ha hc h (hf.unique hg)
 
 /-! ### Live residual (sandwich / commutator attack; unproved) -/
 

@@ -67,7 +67,12 @@ dictionary, admissible bound, finite rotor image, continuum `J` approximation,
 sharp discrete `|JNormalized|` range) are included below.
 
 Algebraic sandwich surface regressions (composition, pure-boost `ι 2`
-invariance, light-cone eigenvalues) are included; Gravity remains out of scope.
+invariance, light-cone eigenvalues, axis-1 rotation of `N₃`) are included;
+Gravity remains out of scope.
+
+Dual-axis Fermat geometric lemmas (interference closed form, mixed seat of
+degree `n ≥ 3`, sandwich mismatch with a pure boost) are included. The live
+residual `FermatMixedMotorResidual` remains a type, not a proved theorem.
 -/
 
 namespace DstDiophantine.FoundationRegression
@@ -178,6 +183,58 @@ example (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
 /-- Dual-axis residual recovers classical FLT conditionally. -/
 example (hres : FermatMixedMotorResidual) : FermatLastTheorem :=
   FermatLastTheorem_of_mixed_motor_residual hres
+
+/-- Dual-axis Fermat seed: closed-form generator. -/
+example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    omegaTorsion (fermatTorsion a b c ha hc) =
+      (fermatBoost a b c hc / 2) • hyperbolic 0 +
+        (fermatAngle a b ha / 2) • cyclic 1 :=
+  omegaTorsion_fermatTorsion a b c ha hc
+
+/-- Geometric interference of a Fermat seed is `(α β / 2) B⁺₂`. -/
+example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    fermatInterfere a b c ha hc =
+      ((fermatBoost a b c hc * fermatAngle a b ha) / 2) • hyperbolic 2 :=
+  fermatInterfere_eq a b c ha hc
+
+/-- Mixed seeds have nonempty interference; pure cyclic seeds have none. -/
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    fermatInterfere a b c ha hc ≠ 0 :=
+  fermatInterfere_ne_zero_of_mixed ha hc h
+
+example {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) :
+    fermatInterfere a b c ha hc = 0 ↔ IsPureCyclicFermatMotor a b c hc :=
+  fermatInterfere_eq_zero_iff_pureCyclic ha hb hc
+
+/-- Degree `n ≥ 3` positive solutions sit in the mixed dual-axis seat. -/
+example {a b c : ℤ} {n : ℕ}
+    (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    IsMixedFermatMotor a b c (ne_of_gt ha) (ne_of_gt hc) :=
+  isMixedFermatMotor_of_sol hn ha hb hc hsol
+
+/-- Positive Pythagorean triples are exactly the pure-cyclic Fermat motors. -/
+example {a b c : ℤ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    IsPureCyclicFermatMotor a b c (ne_of_gt hc) ↔ a ^ 2 + b ^ 2 = c ^ 2 :=
+  fermatBoost_eq_zero_iff_pythagorean ha hb hc
+
+/-- Finite sandwich: the cyclic Fermat factor rotates `N₃`. -/
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (hβ : 0 < fermatAngle a b ha) :
+    sandwich (rotorTorsion (fermatAngleSeed a b ha)) (null 3) ≠
+      sandwich (rotorTorsion (fermatBoostSeed a b c hc)) (null 3) :=
+  sandwich_fermatAngle_null3_ne_pureBoost ha hc hβ
+
+/-- One-parameter sandwich groups of mixed vs pure-boost Fermat seeds disagree. -/
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    ∃ t : ℝ,
+      sandwich (NormedSpace.exp (t • omegaTorsion (fermatTorsion a b c ha hc)))
+          (null 3) ≠
+        sandwich (NormedSpace.exp (t • omegaTorsion (fermatBoostSeed a b c hc)))
+          (null 3) :=
+  exists_sandwich_fermat_ne_pureBoost ha hc h
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :
@@ -1175,6 +1232,12 @@ example (φ : ℝ) :
       Real.exp (-φ) • (ι 0 - ι 1) :=
   sandwich_pureBoost_lightlike_minus φ
 
+/-- Axis-1 rotation moves `N₃` in the `(N₁, N₃)` plane. -/
+example (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation1 θ)) (null 3) =
+      Real.sin θ • null 1 + Real.cos θ • null 3 :=
+  sandwich_pureRotation1_null3 θ
+
 /-! ### Group-level motor structure (`MotorGroup`) -/
 
 /-- Sandwich by `exp Ω` preserves every `ad Ω`-invariant subspace (reverse-odd `Ω`). -/
@@ -1182,6 +1245,12 @@ example {W : Submodule ℝ PGA} {Ω : PGA} (hΩ : reverse Ω = -Ω)
     (hW : ∀ y ∈ W, commutator Ω y ∈ W) {x : PGA} (hx : x ∈ W) :
     sandwich (NormedSpace.exp Ω) x ∈ W :=
   sandwich_exp_mem hΩ hW hx
+
+/-- Sandwich by `exp(tΩ)` is the exponential of the adjoint. -/
+example {Ω : PGA} (hΩ : reverse Ω = -Ω) (t : ℝ) (x : PGA) :
+    sandwich (NormedSpace.exp (t • Ω)) x =
+      NormedSpace.exp (t • adL Ω) x :=
+  sandwich_exp_smul_eq_exp_ad hΩ t x
 
 /-- Torsion rotors preserve the null ideal, the Lorentz span and the Poincaré span. -/
 example (t : TorsionParams) {x : PGA} (hx : x ∈ nullSpan) :

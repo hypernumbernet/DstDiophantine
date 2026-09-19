@@ -121,6 +121,21 @@ theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
     have hhalf_pi : (0 : ℝ) ≤ Real.pi / 2 := by positivity
     fin_cases a <;> simp [pureBoost, hθ0, hθπ, hhalf_pi]
 
+/-- Pure cyclic rotation on axis `1` (`B⁻₁ = e₁ e₃`). Dual-axis Fermat seeds
+place their angle here, complementary to `pureBoost` on axis `0`. -/
+def pureRotation1 (θ : ℝ) : TorsionParams where
+  alpha := fun _ => 0
+  beta := fun a => if a = 1 then θ else 0
+
+theorem omegaTorsion_pureRotation1 (θ : ℝ) :
+    omegaTorsion (pureRotation1 θ) = (θ / 2) • cyclic 1 := by
+  simp only [omegaTorsion, pureRotation1, Fin.sum_univ_three]
+  simp
+
+theorem rotorTorsion_pureRotation1 (θ : ℝ) :
+    rotorTorsion (pureRotation1 θ) = exp ((θ / 2) • cyclic 1) := by
+  rw [rotorTorsion, omegaTorsion_pureRotation1]
+
 end Amplification
 
 end DstDiophantine
