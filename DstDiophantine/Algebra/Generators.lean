@@ -32,11 +32,11 @@ noncomputable def commutator (x y : PGA) : PGA :=
 
 theorem commutator_smul_left (c : ℝ) (x y : PGA) :
     commutator (c • x) y = c • commutator x y := by
-  simp [commutator, smul_mul_assoc, mul_smul_comm, smul_sub]
+  simp [commutator, smul_sub]
 
 theorem commutator_smul_right (c : ℝ) (x y : PGA) :
     commutator x (c • y) = c • commutator x y := by
-  simp [commutator, smul_mul_assoc, mul_smul_comm, smul_sub]
+  simp [commutator, smul_sub]
 
 theorem commutator_add_left (x₁ x₂ y : PGA) :
     commutator (x₁ + x₂) y = commutator x₁ y + commutator x₂ y := by
@@ -48,7 +48,7 @@ theorem commutator_add_right (x y₁ y₂ : PGA) :
   simp only [commutator, add_mul, mul_add]
   abel
 
-theorem commutator_sum_left {ι : Type*} [Fintype ι] (s : Finset ι) (x : ι → PGA) (y : PGA) :
+theorem commutator_sum_left {ι : Type*} (s : Finset ι) (x : ι → PGA) (y : PGA) :
     commutator (∑ i ∈ s, x i) y = ∑ i ∈ s, commutator (x i) y := by
   classical
   refine Finset.induction_on s ?_ ?_
@@ -56,7 +56,7 @@ theorem commutator_sum_left {ι : Type*} [Fintype ι] (s : Finset ι) (x : ι �
   · intro a s ha ih
     simp [Finset.sum_insert ha, commutator_add_left, ih]
 
-theorem commutator_sum_right {ι : Type*} [Fintype ι] (x : PGA) (s : Finset ι) (y : ι → PGA) :
+theorem commutator_sum_right {ι : Type*} (x : PGA) (s : Finset ι) (y : ι → PGA) :
     commutator x (∑ i ∈ s, y i) = ∑ i ∈ s, commutator x (y i) := by
   classical
   refine Finset.induction_on s ?_ ?_

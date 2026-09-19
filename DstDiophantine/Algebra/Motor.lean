@@ -601,7 +601,7 @@ private theorem iteratedDeriv_two_bch2Arg (p : OmegaParams) :
       simpa using (hasDerivAt_id (0 : ℝ)).smul_const
         (Generators.commutator (omegaTorsion p.torsion) (omegaTrans p.trans))
     exact hC.const_add (omegaBiv p)
-  simp [iteratedDeriv_succ, iteratedDeriv_one, hfun, h2.deriv]
+  simp [iteratedDeriv_succ, hfun, h2.deriv]
 
 private theorem contDiff_bch2Arg (p : OmegaParams) : ContDiff ℝ ⊤ (bch2Arg p) := by
   unfold bch2Arg
@@ -635,9 +635,8 @@ private theorem perm_fin_two_eq (σ : Equiv.Perm (Fin 2)) :
 
 private theorem expSeries_two_apply (x y : PGA) :
     expSeries ℝ PGA 2 ![x, y] = (2⁻¹ : ℝ) • (x * y) := by
-  simp [expSeries, ContinuousMultilinearMap.smul_apply,
-    ContinuousMultilinearMap.mkPiAlgebraFin_apply, List.ofFn_succ, List.ofFn_zero,
-    List.prod_cons, List.prod_nil, mul_one]
+  simp [expSeries, ContinuousMultilinearMap.mkPiAlgebraFin_apply, List.ofFn_succ,
+    List.ofFn_zero, List.prod_cons, List.prod_nil, mul_one]
 
 private theorem iteratedFDeriv_two_exp (v w : PGA) :
     iteratedFDeriv ℝ 2 (exp : PGA → PGA) 0 ![v, w] =
@@ -657,9 +656,8 @@ private theorem iteratedFDeriv_two_exp (v w : PGA) :
   have hterm (σ : Equiv.Perm (Fin 2)) :
       expSeries ℝ PGA 2 (fun i => (![v, w] : Fin 2 → PGA) (σ i)) =
         (2⁻¹ : ℝ) • ((![v, w] : Fin 2 → PGA) (σ 0) * (![v, w] : Fin 2 → PGA) (σ 1)) := by
-    simp [expSeries, ContinuousMultilinearMap.smul_apply,
-      ContinuousMultilinearMap.mkPiAlgebraFin_apply, List.ofFn_succ, List.ofFn_zero,
-      List.prod_cons, List.prod_nil, mul_one]
+    simp [expSeries, ContinuousMultilinearMap.mkPiAlgebraFin_apply, List.ofFn_succ,
+      List.ofFn_zero, List.prod_cons, List.prod_nil, mul_one]
   rw [hterm 1, hterm (Equiv.swap (0 : Fin 2) 1)]
   simp [Equiv.swap_apply_left, Equiv.swap_apply_right, smul_add]
 
@@ -741,7 +739,7 @@ private theorem hasDerivAt_iteratedDeriv_two_motorPath (p : OmegaParams) (t : �
       exp (t • X) * (X * X * Y) =
       exp (t • X) * (X * X * X * ((1 : PGA) + t • Y) +
         (3 : ℝ) • (X * X * Y)) := by
-    simp [mul_add, two_smul, three_smul_eq, mul_assoc, mul_smul_comm]
+    simp [mul_add, two_smul, three_smul_eq, mul_assoc]
     abel
   rw [hfun]
   exact hprod.congr_deriv this
@@ -808,7 +806,7 @@ private theorem iteratedDeriv_two_bch3Arg (p : OmegaParams) :
         funext fun t => add_assoc _ _ _
     rw [hfun']
     exact hsum.const_add (omegaBiv p)
-  simp [iteratedDeriv_succ, iteratedDeriv_one, hfun, h2.deriv]
+  simp [iteratedDeriv_succ, hfun, h2.deriv]
 
 private theorem iteratedDeriv_three_bch3Arg (p : OmegaParams) :
     iteratedDeriv 3 (bch3Arg p) 0 =
@@ -888,8 +886,7 @@ private theorem bch3_bracket_algebra (X Y : PGA) (hY : Y * Y = 0)
   have h2 : (2 : ℝ) ≠ 0 := by norm_num
   apply smul_right_injective (M := PGA) h2
   have h21 : (2 : ℝ) * (3 / 2) = 3 := by norm_num
-  have h22 : (2 : ℝ) * (2⁻¹) = 1 := by norm_num
-  simp [smul_add, smul_smul, h21, h22, one_smul, hA3, hAC, hK, two_smul, three_smul_eq,
+  simp [smul_add, smul_smul, h21, one_smul, hA3, hAC, hK, two_smul, three_smul_eq,
     smul_sub]
   abel
 
@@ -988,7 +985,7 @@ private theorem iteratedDeriv_two_exp_smul_zero (A : PGA) :
     ext t
     exact (hasDerivAt_exp_smul_const A t).deriv
   have h2 := (hasDerivAt_exp_smul_sq A 0).deriv
-  simp [iteratedDeriv_succ, iteratedDeriv_one, h1, h2, zero_smul, exp_zero]
+  simp [iteratedDeriv_succ, h1, h2, zero_smul, exp_zero]
 
 private def scaledParams (p : OmegaParams) (t : ℝ) : OmegaParams :=
   ⟨⟨fun a => t * p.torsion.alpha a, fun a => t * p.torsion.beta a⟩,
