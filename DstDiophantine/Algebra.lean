@@ -38,8 +38,9 @@ export LorentzDim (soDim isoDim so31Dim so91Dim so8Dim iso31Dim iso91Dim
   pgaGeneratorCount_eq_iso31Dim pgaGeneratorCount_ne_iso91Dim
   lightCone_ne_torsionGenerators)
 export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
-  commutator commutator_null_null null_commute
+  hyperbolic_smul_mul commutator commutator_null_null null_commute
   commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero
+  commutator_hyperbolic_hyperbolic commutator_cyclic_cyclic commutator_hyperbolic_cyclic
   commutator_hyperbolic0_null commutator_hyperbolic0_null_mem_span
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
@@ -188,6 +189,24 @@ example (a : Fin 3) (μ : Fin 4) :
     commutator (hyperbolic a) (null μ) ∈ nullSpan ∧
       commutator (cyclic a) (null μ) ∈ nullSpan :=
   ⟨commutator_hyperbolic_null_mem_span a μ, commutator_cyclic_null_mem_span a μ⟩
+
+/-- Regression: same-axis Lorentz generators commute; adjacent axes close. -/
+example (a : Fin 3) :
+    commutator (hyperbolic a) (hyperbolic a) = 0 ∧
+      commutator (cyclic a) (cyclic (a + 1)) = (2 : ℝ) • cyclic (a + 2) ∧
+        commutator (hyperbolic a) (cyclic (a + 1)) =
+          (2 : ℝ) • hyperbolic (a + 2) := by
+  have hne : a ≠ a + 1 := by fin_cases a <;> decide
+  refine ⟨?_, ?_, ?_⟩
+  · simp [commutator_hyperbolic_hyperbolic]
+  · simp [commutator_cyclic_cyclic, hne]
+  · simp [commutator_hyperbolic_cyclic, hne]
+
+/-- Regression: boost scalars on every axis commute. -/
+example (a : Fin 3) (x y : ℝ) :
+    (x • hyperbolic a) * (y • hyperbolic a) =
+      (y • hyperbolic a) * (x • hyperbolic a) :=
+  hyperbolic_smul_mul a x y
 
 /-- Regression: mixed motors are not the Banach exponential of \(\Omega_{\mathrm{biv}}\). -/
 example : ∃ p : Motor.OmegaParams, NormedSpace.exp (omegaBiv p) ≠ motor p :=

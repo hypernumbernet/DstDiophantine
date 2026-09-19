@@ -16,8 +16,9 @@ the geometric product (`N_μ N_ν = 0`).  Together they are the standard
 
 We deliberately **do not** call the six generators `𝔰𝔬(3,1) ⊕ 𝔰𝔬(3,1)`: that
 would be twelve-dimensional.  Full Lie-bracket isomorphism theorems are not
-claimed here; only product squares, strong null vanishing, and a minimal
-commutator API are formalised.
+claimed here; only product squares, strong null vanishing, the internal
+Lorentz commutator table among the six hyperbolic/cyclic generators, and a
+minimal commutator API are formalised.
 -/
 
 namespace DstDiophantine
@@ -29,6 +30,12 @@ namespace Generators
 /-- Geometric commutator `[x,y] = xy - yx`. -/
 noncomputable def commutator (x y : PGA) : PGA :=
   x * y - y * x
+
+theorem commutator_neg (x y : PGA) : commutator x y = -commutator y x := by
+  simp [commutator]
+
+theorem commutator_self (x : PGA) : commutator x x = 0 := by
+  simp [commutator]
 
 theorem commutator_smul_left (c : ℝ) (x y : PGA) :
     commutator (c • x) y = c • commutator x y := by
@@ -178,11 +185,11 @@ theorem hyperbolic_reverse (a : Fin 3) : reverse (hyperbolic a) = -hyperbolic a 
   · exact reverse_ι_mul_ι 0 2 (by decide)
   · exact reverse_ι_mul_ι 0 3 (by decide)
 
-theorem hyperbolic_smul_mul (x y : ℝ) :
-    (x • hyperbolic 0) * (y • hyperbolic 0) = (y • hyperbolic 0) * (x • hyperbolic 0) := by
+theorem hyperbolic_smul_mul (a : Fin 3) (x y : ℝ) :
+    (x • hyperbolic a) * (y • hyperbolic a) = (y • hyperbolic a) * (x • hyperbolic a) := by
   simp only [Algebra.smul_def]
-  set h : PGA := hyperbolic 0
-  have hh : h * h = 1 := hyperbolic_sq 0
+  set h : PGA := hyperbolic a
+  have hh : h * h = 1 := hyperbolic_sq a
   set Ax : PGA := algebraMap ℝ PGA x
   set Ay : PGA := algebraMap ℝ PGA y
   have scalar_mul_comm : Ax * Ay = Ay * Ax := by rw [← map_mul, ← map_mul, mul_comm x y]
@@ -899,6 +906,286 @@ theorem commutator_cyclic_null_mem_span (a : Fin 3) (μ : Fin 4) :
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact nullSpan.zero_mem
+
+/-! ### Internal Lorentz brackets among the six hyperbolic/cyclic generators -/
+
+private theorem space_castAdd_injective {a b : Fin 3}
+    (h : Fin.castAdd 1 a.succ = Fin.castAdd 1 b.succ) : a = b :=
+  Fin.succ_injective _ (castAdd_inj h)
+
+private theorem fin3_ne_add_one (a : Fin 3) : a ≠ a + 1 := by
+  fin_cases a <;> decide
+
+private theorem fin3_ne_add_two (a : Fin 3) : a ≠ a + 2 := by
+  fin_cases a <;> decide
+
+private theorem fin3_succ_trichotomy (a b : Fin 3) :
+    a = b ∨ b = a + 1 ∨ a = b + 1 := by
+  fin_cases a <;> fin_cases b <;> decide
+
+private theorem mul_hyperbolic_hyperbolic (a b : Fin 3) :
+    hyperbolic a * hyperbolic b =
+      ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 b.succ) := by
+  rw [hyperbolic_eq, hyperbolic_eq]
+  have hk0 : ι (Fin.castAdd 1 a.succ) * ι 0 =
+      -(ι 0 * ι (Fin.castAdd 1 a.succ)) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero a))
+  calc (ι 0 * ι (Fin.castAdd 1 a.succ)) * (ι 0 * ι (Fin.castAdd 1 b.succ))
+      = ι 0 * (ι (Fin.castAdd 1 a.succ) * ι 0) *
+          ι (Fin.castAdd 1 b.succ) := by simp [mul_assoc]
+    _ = ι 0 * (-(ι 0 * ι (Fin.castAdd 1 a.succ))) *
+          ι (Fin.castAdd 1 b.succ) := by rw [hk0]
+    _ = -(ι 0 * ι 0 * ι (Fin.castAdd 1 a.succ) *
+          ι (Fin.castAdd 1 b.succ)) := by simp [mul_neg, mul_assoc]
+    _ = ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 b.succ) := by simp [e0_sq]
+
+/-- Distinct boosts close on twice the spatial bivector of their space legs. -/
+theorem commutator_hyperbolic_hyperbolic (a b : Fin 3) :
+    commutator (hyperbolic a) (hyperbolic b) =
+      if a = b then 0
+      else (2 : ℝ) • (ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 b.succ)) := by
+  by_cases hab : a = b
+  · subst hab
+    simp [commutator]
+  · have hne : Fin.castAdd 1 a.succ ≠ Fin.castAdd 1 b.succ := fun h =>
+      hab (space_castAdd_injective h)
+    have hanti :
+        ι (Fin.castAdd 1 b.succ) * ι (Fin.castAdd 1 a.succ) =
+          -(ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 b.succ)) :=
+      e_mul_anticomm hne.symm
+    simp [commutator, mul_hyperbolic_hyperbolic, hab, hanti, sub_neg_eq_add,
+      two_smul]
+
+private theorem cyclic_succ_eq (a : Fin 3) :
+    cyclic (a + 1) =
+      ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 (a + 2).succ) := by
+  fin_cases a <;> rfl
+
+private theorem cyclic_addTwo_eq (a : Fin 3) :
+    cyclic (a + 2) =
+      ι (Fin.castAdd 1 (a + 1).succ) * ι (Fin.castAdd 1 a.succ) := by
+  fin_cases a <;> rfl
+
+private theorem mul_cyclic_cyclic_succ (a : Fin 3) :
+    cyclic a * cyclic (a + 1) = cyclic (a + 2) := by
+  fin_cases a
+  · dsimp [cyclic]
+    have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+    have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+    have h23 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+    have h3sq : ι 3 * ι 3 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 3 * ι 2) * (ι 1 * ι 3)
+        = ι 3 * (ι 2 * ι 1) * ι 3 := by simp [mul_assoc]
+      _ = ι 3 * (-(ι 1 * ι 2)) * ι 3 := by rw [h21]
+      _ = -(ι 3 * ι 1 * ι 2 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(-(ι 1 * ι 3) * ι 2 * ι 3) := by rw [h31]
+      _ = (ι 1 * ι 3) * (ι 2 * ι 3) := by simp [mul_assoc]
+      _ = (ι 1 * ι 3) * (-(ι 3 * ι 2)) := by
+            have h32 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+            rw [h32]
+      _ = -(ι 1 * (ι 3 * ι 3) * ι 2) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 1 * ι 2) := by rw [h3sq, mul_one]
+      _ = ι 2 * ι 1 := by
+            have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+            simp [h12]
+  · dsimp [cyclic]
+    have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+    have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+    have h13 : ι 1 * ι 3 = -(ι 3 * ι 1) := e_mul_anticomm (by decide)
+    have h1sq : ι 1 * ι 1 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 1 * ι 3) * (ι 2 * ι 1)
+        = ι 1 * (ι 3 * ι 2) * ι 1 := by simp [mul_assoc]
+      _ = ι 1 * (-(ι 2 * ι 3)) * ι 1 := by rw [h32]
+      _ = -(ι 1 * ι 2 * ι 3 * ι 1) := by simp [mul_neg, mul_assoc]
+      _ = -(-(ι 2 * ι 1) * ι 3 * ι 1) := by rw [h12]
+      _ = (ι 2 * ι 1) * (ι 3 * ι 1) := by simp [mul_assoc]
+      _ = (ι 2 * ι 1) * (-(ι 1 * ι 3)) := by
+            have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+            rw [h31]
+      _ = -(ι 2 * (ι 1 * ι 1) * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 2 * ι 3) := by rw [h1sq, mul_one]
+      _ = ι 3 * ι 2 := by
+            have : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+            simp [this]
+  · dsimp [cyclic]
+    have h13 : ι 1 * ι 3 = -(ι 3 * ι 1) := e_mul_anticomm (by decide)
+    have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+    have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+    have h2sq : ι 2 * ι 2 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 2 * ι 1) * (ι 3 * ι 2)
+        = ι 2 * (ι 1 * ι 3) * ι 2 := by simp [mul_assoc]
+      _ = ι 2 * (-(ι 3 * ι 1)) * ι 2 := by rw [h13]
+      _ = -(ι 2 * ι 3 * ι 1 * ι 2) := by simp [mul_neg, mul_assoc]
+      _ = -(-(ι 3 * ι 2) * ι 1 * ι 2) := by rw [h23]
+      _ = (ι 3 * ι 2) * (ι 1 * ι 2) := by simp [mul_assoc]
+      _ = (ι 3 * ι 2) * (-(ι 2 * ι 1)) := by
+            have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+            rw [h12]
+      _ = -(ι 3 * (ι 2 * ι 2) * ι 1) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 3 * ι 1) := by rw [h2sq, mul_one]
+      _ = ι 1 * ι 3 := by
+            have : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+            simp [this]
+
+private theorem mul_cyclic_succ_cyclic (a : Fin 3) :
+    cyclic (a + 1) * cyclic a = -cyclic (a + 2) := by
+  fin_cases a
+  · dsimp [cyclic]
+    have h3sq : ι 3 * ι 3 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 1 * ι 3) * (ι 3 * ι 2)
+        = ι 1 * (ι 3 * ι 3) * ι 2 := by simp [mul_assoc]
+      _ = ι 1 * ι 2 := by rw [h3sq, mul_one]
+      _ = -(ι 2 * ι 1) := by
+            have : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+            simp [this]
+  · dsimp [cyclic]
+    have h1sq : ι 1 * ι 1 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 2 * ι 1) * (ι 1 * ι 3)
+        = ι 2 * (ι 1 * ι 1) * ι 3 := by simp [mul_assoc]
+      _ = ι 2 * ι 3 := by rw [h1sq, mul_one]
+      _ = -(ι 3 * ι 2) := by
+            have : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+            simp [this]
+  · dsimp [cyclic]
+    have h2sq : ι 2 * ι 2 = (1 : PGA) := by simp [e_sq, Q311_e5vec, w311]
+    calc (ι 3 * ι 2) * (ι 2 * ι 1)
+        = ι 3 * (ι 2 * ι 2) * ι 1 := by simp [mul_assoc]
+      _ = ι 3 * ι 1 := by rw [h2sq, mul_one]
+      _ = -(ι 1 * ι 3) := by
+            have : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+            simp [this]
+
+private theorem mul_cyclic_cyclic_addTwo (a : Fin 3) :
+    cyclic a * cyclic (a + 2) = -cyclic (a + 1) := by
+  have h := mul_cyclic_succ_cyclic (a + 2)
+  have h1 : a + 2 + 1 = a := by fin_cases a <;> decide
+  have h2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
+  simpa [h1, h2] using h
+
+private theorem mul_cyclic_addTwo_cyclic (a : Fin 3) :
+    cyclic (a + 2) * cyclic a = cyclic (a + 1) := by
+  have h := mul_cyclic_cyclic_succ (a + 2)
+  have h1 : a + 2 + 1 = a := by fin_cases a <;> decide
+  have h2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
+  simpa [h1, h2] using h
+
+/-- Cyclic generators close with the standard `𝔰𝔬(3)` structure constants
+`[B⁻_a, B⁻_{a+1}] = 2 B⁻_{a+2}`. -/
+theorem commutator_cyclic_cyclic (a b : Fin 3) :
+    commutator (cyclic a) (cyclic b) =
+      if a = b then 0
+      else if b = a + 1 then (2 : ℝ) • cyclic (a + 2)
+      else -((2 : ℝ) • cyclic (b + 2)) := by
+  by_cases hab : a = b
+  · simp [hab, commutator]
+  · by_cases hsucc : b = a + 1
+    · subst hsucc
+      simp [hab, commutator, mul_cyclic_cyclic_succ, mul_cyclic_succ_cyclic,
+        sub_neg_eq_add, two_smul]
+    · have hb : b = a + 2 := by
+        rcases fin3_succ_trichotomy a b with h | h | h
+        · exact (hab h).elim
+        · exact (hsucc h).elim
+        · have hwrap : b + 1 + 2 = b := by fin_cases b <;> decide
+          calc b = b + 1 + 2 := hwrap.symm
+            _ = a + 2 := by rw [h]
+      subst hb
+      rw [commutator, mul_cyclic_cyclic_addTwo, mul_cyclic_addTwo_cyclic]
+      have hb2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
+      simp [hab, hsucc, hb2, two_smul, sub_eq_add_neg]
+
+private theorem mul_hyperbolic_cyclic_succ (a : Fin 3) :
+    hyperbolic a * cyclic (a + 1) = hyperbolic (a + 2) := by
+  rw [hyperbolic_eq, cyclic_succ_eq, hyperbolic_eq]
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι 0 * ι (Fin.castAdd 1 a.succ)) *
+          (ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 (a + 2).succ))
+      = ι 0 * (ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 a.succ)) *
+          ι (Fin.castAdd 1 (a + 2).succ) := by simp [mul_assoc]
+    _ = ι 0 * ι (Fin.castAdd 1 (a + 2).succ) := by rw [hsq, mul_one]
+
+private theorem mul_cyclic_succ_hyperbolic (a : Fin 3) :
+    cyclic (a + 1) * hyperbolic a = -hyperbolic (a + 2) := by
+  rw [hyperbolic_eq, cyclic_succ_eq, hyperbolic_eq]
+  set k := Fin.castAdd 1 a.succ
+  set m := Fin.castAdd 1 (a + 2).succ
+  have hk0 : ι k * ι 0 = -(ι 0 * ι k) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero a))
+  have hm0 : ι m * ι 0 = -(ι 0 * ι m) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero (a + 2)))
+  have hkm : k ≠ m := fun h =>
+    (fin3_ne_add_two a) (space_castAdd_injective h)
+  have hmk : ι m * ι k = -(ι k * ι m) := e_mul_anticomm hkm.symm
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι k * ι m) * (ι 0 * ι k)
+      = ι k * (ι m * ι 0) * ι k := by simp [mul_assoc]
+    _ = ι k * (-(ι 0 * ι m)) * ι k := by rw [hm0]
+    _ = -(ι k * ι 0 * ι m * ι k) := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι 0 * ι k) * ι m * ι k) := by rw [hk0]
+    _ = ι 0 * ι k * ι m * ι k := by simp [mul_assoc]
+    _ = ι 0 * (ι k * (ι m * ι k)) := by simp [mul_assoc]
+    _ = ι 0 * (ι k * (-(ι k * ι m))) := by rw [hmk]
+    _ = -(ι 0 * (ι k * ι k) * ι m) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι m) := by rw [hsq, mul_one]
+
+private theorem mul_hyperbolic_cyclic_addTwo (a : Fin 3) :
+    hyperbolic a * cyclic (a + 2) = -hyperbolic (a + 1) := by
+  rw [hyperbolic_eq, cyclic_addTwo_eq, hyperbolic_eq]
+  set k := Fin.castAdd 1 a.succ
+  set n := Fin.castAdd 1 (a + 1).succ
+  have hkn : k ≠ n := fun h =>
+    fin3_ne_add_one a (space_castAdd_injective h)
+  have hnk : ι k * ι n = -(ι n * ι k) := e_mul_anticomm hkn
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι 0 * ι k) * (ι n * ι k)
+      = ι 0 * (ι k * ι n) * ι k := by simp [mul_assoc]
+    _ = ι 0 * (-(ι n * ι k)) * ι k := by rw [hnk]
+    _ = -(ι 0 * ι n * (ι k * ι k)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 0 * ι n) := by rw [hsq, mul_one]
+
+private theorem mul_cyclic_addTwo_hyperbolic (a : Fin 3) :
+    cyclic (a + 2) * hyperbolic a = hyperbolic (a + 1) := by
+  rw [hyperbolic_eq, cyclic_addTwo_eq, hyperbolic_eq]
+  set k := Fin.castAdd 1 a.succ
+  set n := Fin.castAdd 1 (a + 1).succ
+  have hk0 : ι k * ι 0 = -(ι 0 * ι k) :=
+    e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero a))
+  have hsq := spatial_sq a.succ (Fin.succ_ne_zero a)
+  calc (ι n * ι k) * (ι 0 * ι k)
+      = ι n * (ι k * ι 0) * ι k := by simp [mul_assoc]
+    _ = ι n * (-(ι 0 * ι k)) * ι k := by rw [hk0]
+    _ = -(ι n * ι 0 * (ι k * ι k)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι n * ι 0) := by rw [hsq, mul_one]
+    _ = ι 0 * ι n := by
+          have hn0 : ι n * ι 0 = -(ι 0 * ι n) :=
+            e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero (a + 1)))
+          simp [hn0]
+
+/-- Mixed boost–rotation brackets: same axis vanishes, adjacent axes produce
+the remaining boost (structure constants of a candidate `𝔰𝔬(3,1)` copy). -/
+theorem commutator_hyperbolic_cyclic (a b : Fin 3) :
+    commutator (hyperbolic a) (cyclic b) =
+      if a = b then 0
+      else if b = a + 1 then (2 : ℝ) • hyperbolic (a + 2)
+      else -((2 : ℝ) • hyperbolic (b + 2)) := by
+  by_cases hab : a = b
+  · subst hab
+    simpa using commutator_hyperbolic_cyclic_same a
+  · by_cases hsucc : b = a + 1
+    · subst hsucc
+      simp [hab, commutator, mul_hyperbolic_cyclic_succ, mul_cyclic_succ_hyperbolic,
+        sub_neg_eq_add, two_smul]
+    · have hb : b = a + 2 := by
+        rcases fin3_succ_trichotomy a b with h | h | h
+        · exact (hab h).elim
+        · exact (hsucc h).elim
+        · have hwrap : b + 1 + 2 = b := by fin_cases b <;> decide
+          calc b = b + 1 + 2 := hwrap.symm
+            _ = a + 2 := by rw [h]
+      subst hb
+      rw [commutator, mul_hyperbolic_cyclic_addTwo, mul_cyclic_addTwo_hyperbolic]
+      have hb2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
+      simp [hab, hsucc, hb2, two_smul, sub_eq_add_neg]
 
 /-- Any two elements of the null span multiply to zero. -/
 theorem nullSpan_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) : x * y = 0 := by

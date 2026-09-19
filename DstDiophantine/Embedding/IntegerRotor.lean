@@ -52,7 +52,7 @@ theorem integerRotor_mul {m n : ℤ} (hm : m ≠ 0) (hn : n ≠ 0) :
   have hcomm :
       Commute (Real.log (Int.natAbs m) • hyperbolic 0)
         (Real.log (Int.natAbs n) • hyperbolic 0) :=
-    Generators.hyperbolic_smul_mul _ _
+    Generators.hyperbolic_smul_mul 0 _ _
   rw [add_smul, exp_add_of_commute hcomm]
 
 theorem integerRotor_eq_rotorTorsion (n : ℤ) (hn : n ≠ 0) :

@@ -19,7 +19,8 @@ exponent 3:
 * mod-8 obstruction when the factor `2` sits on an odd coordinate;
 * Mihăilescu when the pure-cube coordinate has absolute value `1`;
 * reduction of the `|u| ≥ 1` body to the positive equation `α³ + 2β³ = γ³`;
-* mod-7 / mod-9 diagnostic slices for that equation;
+* 2-adic/gcd reduction of any positive solution to a primitive odd-`α,γ` slice;
+* mod-7 / mod-9 / mod-13 / mod-19 cube-residue tables and allowed classes;
 * split assembly `e = 3` vs `e ≥ 5`;
 * phase 7m: primitivity / parity / difference-factor / 2-adic packaging for
   `α³ + 2β³ = γ³`, and assembly from the affine residual `X³ + 2Y³ = 1`;
@@ -425,6 +426,66 @@ theorem odd_alpha_gamma_of_pos_cube_primitive
   · have hαo : Odd α := Nat.not_even_iff_odd.mp hαe
     exact ⟨hαo, odd_gamma_of_odd_alpha_pos_cube hαo heq⟩
 
+/--
+Any positive solution of `α³ + 2β³ = γ³` yields a primitive solution with both
+`α` and `γ` odd (divide out `gcd(α,β,γ)`; the surviving triple cannot be even).
+-/
+theorem exists_primitive_odd_pos_cube_of_pos
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    ∃ α' β' γ' : ℕ,
+      0 < α' ∧ 0 < β' ∧ 0 < γ' ∧
+        Nat.gcd α' (Nat.gcd β' γ') = 1 ∧ Odd α' ∧ Odd γ' ∧
+          α' ^ 3 + 2 * β' ^ 3 = γ' ^ 3 := by
+  set d := Nat.gcd α (Nat.gcd β γ)
+  have hdpos : 0 < d := Nat.gcd_pos_of_pos_left _ hα0
+  obtain ⟨α', hα⟩ := (Nat.gcd_dvd_left α (Nat.gcd β γ) : d ∣ α)
+  obtain ⟨β', hβ⟩ :=
+    ((Nat.gcd_dvd_right α (Nat.gcd β γ)).trans (Nat.gcd_dvd_left β γ) : d ∣ β)
+  obtain ⟨γ', hγ⟩ :=
+    ((Nat.gcd_dvd_right α (Nat.gcd β γ)).trans (Nat.gcd_dvd_right β γ) : d ∣ γ)
+  have hα'0 : 0 < α' := Nat.pos_of_mul_pos_left (hα ▸ hα0)
+  have hβ'0 : 0 < β' := Nat.pos_of_mul_pos_left (hβ ▸ hβ0)
+  have hγ'0 : 0 < γ' := Nat.pos_of_mul_pos_left (hγ ▸ hγ0)
+  have heq' : α' ^ 3 + 2 * β' ^ 3 = γ' ^ 3 := by
+    have hmul : d ^ 3 * (α' ^ 3 + 2 * β' ^ 3) = d ^ 3 * γ' ^ 3 := by
+      calc d ^ 3 * (α' ^ 3 + 2 * β' ^ 3)
+          = (d * α') ^ 3 + 2 * (d * β') ^ 3 := by ring
+        _ = α ^ 3 + 2 * β ^ 3 := by rw [← hα, ← hβ]
+        _ = γ ^ 3 := heq
+        _ = (d * γ') ^ 3 := by rw [hγ]
+        _ = d ^ 3 * γ' ^ 3 := by ring
+    exact Nat.mul_left_cancel (pow_pos hdpos 3) hmul
+  have hg : Nat.gcd α' (Nat.gcd β' γ') = 1 := by
+    have hmul :
+        d * Nat.gcd α' (Nat.gcd β' γ') =
+          Nat.gcd (d * α') (Nat.gcd (d * β') (d * γ')) := by
+      rw [Nat.gcd_mul_left, Nat.gcd_mul_left]
+    have : d * Nat.gcd α' (Nat.gcd β' γ') = d := by
+      rw [hmul, ← hα, ← hβ, ← hγ]
+    have : d * Nat.gcd α' (Nat.gcd β' γ') = d * 1 := by
+      simpa [mul_one] using this
+    exact Nat.mul_left_cancel hdpos this
+  have hodd := odd_alpha_gamma_of_pos_cube_primitive hα'0 hβ'0 hγ'0 hg heq'
+  exact ⟨α', β', γ', hα'0, hβ'0, hγ'0, hg, hodd.1, hodd.2, heq'⟩
+
+/--
+The positive-cube residual is equivalent to the absence of primitive solutions
+with both `α` and `γ` odd.
+-/
+theorem BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd :
+    BealPosCubeAddTwoCubeResidual ↔
+      ∀ (α β γ : ℕ), 0 < α → 0 < β → 0 < γ →
+        Nat.gcd α (Nat.gcd β γ) = 1 → Odd α → Odd γ →
+          ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 := by
+  constructor
+  · intro h α β γ hα hβ hγ _ _ _ heq
+    exact h α β γ hα hβ hγ heq
+  · intro h α β γ hα hβ hγ heq
+    obtain ⟨α', β', γ', hα', hβ', hγ', hg, hoα, hoγ, heq'⟩ :=
+      exists_primitive_odd_pos_cube_of_pos hα hβ hγ heq
+    exact h α' β' γ' hα' hβ' hγ' hg hoα hoγ heq'
+
 /-- Positive solutions satisfy `α < γ`. -/
 theorem alpha_lt_gamma_of_pos_cube
     {α β γ : ℕ} (hβ0 : 0 < β) (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
@@ -824,6 +885,127 @@ theorem not_pos_cube_add_two_cube_mod_nine_of_alpha8_beta8
   have hγ := nat_cube_mod_nine γ
   have : γ ^ 3 % 9 = 6 := by rw [← heq]; exact hLHS
   omega
+
+/-- Reducing `α³ + 2β³` modulo `n > 2` to the cube residues of `α` and `β`. -/
+theorem cube_add_two_mod {n : ℕ} (hn : 2 < n) (α β : ℕ) :
+    (α ^ 3 + 2 * β ^ 3) % n =
+      (α ^ 3 % n + (2 * (β ^ 3 % n)) % n) % n := by
+  have h2 : 2 % n = 2 := Nat.mod_eq_of_lt hn
+  rw [Nat.add_mod, Nat.mul_mod, h2]
+
+theorem nat_cube_mod_thirteen (v : ℕ) :
+    v ^ 3 % 13 = 0 ∨ v ^ 3 % 13 = 1 ∨ v ^ 3 % 13 = 5 ∨
+      v ^ 3 % 13 = 8 ∨ v ^ 3 % 13 = 12 := by
+  have h : v % 13 = 0 ∨ v % 13 = 1 ∨ v % 13 = 2 ∨ v % 13 = 3 ∨
+      v % 13 = 4 ∨ v % 13 = 5 ∨ v % 13 = 6 ∨ v % 13 = 7 ∨
+      v % 13 = 8 ∨ v % 13 = 9 ∨ v % 13 = 10 ∨ v % 13 = 11 ∨
+      v % 13 = 12 := by omega
+  have hv : v ^ 3 % 13 = (v % 13) ^ 3 % 13 := by rw [← Nat.pow_mod]
+  rcases h with h | h | h | h | h | h | h | h | h | h | h | h | h
+    <;> simp [hv, h]
+
+theorem nat_cube_mod_nineteen (v : ℕ) :
+    v ^ 3 % 19 = 0 ∨ v ^ 3 % 19 = 1 ∨ v ^ 3 % 19 = 7 ∨ v ^ 3 % 19 = 8 ∨
+      v ^ 3 % 19 = 11 ∨ v ^ 3 % 19 = 12 ∨ v ^ 3 % 19 = 18 := by
+  have h : v % 19 = 0 ∨ v % 19 = 1 ∨ v % 19 = 2 ∨ v % 19 = 3 ∨
+      v % 19 = 4 ∨ v % 19 = 5 ∨ v % 19 = 6 ∨ v % 19 = 7 ∨
+      v % 19 = 8 ∨ v % 19 = 9 ∨ v % 19 = 10 ∨ v % 19 = 11 ∨
+      v % 19 = 12 ∨ v % 19 = 13 ∨ v % 19 = 14 ∨ v % 19 = 15 ∨
+      v % 19 = 16 ∨ v % 19 = 17 ∨ v % 19 = 18 := by omega
+  have hv : v ^ 3 % 19 = (v % 19) ^ 3 % 19 := by rw [← Nat.pow_mod]
+  rcases h with h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h
+    <;> simp [hv, h]
+
+/--
+Cube residues of a positive solution modulo 7 occupy one of the five locally
+admissible pairs. (The complementary pairs are cubes but the weighted sum is not.)
+-/
+theorem pos_cube_add_two_cube_mod_seven_classes
+    {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 7 = 0 ∧ β ^ 3 % 7 = 0 ∨
+      α ^ 3 % 7 = 1 ∧ β ^ 3 % 7 = 0 ∨
+        α ^ 3 % 7 = 6 ∧ β ^ 3 % 7 = 0 ∨
+          α ^ 3 % 7 = 6 ∧ β ^ 3 % 7 = 1 ∨
+            α ^ 3 % 7 = 1 ∧ β ^ 3 % 7 = 6 := by
+  have hα := nat_cube_mod_seven α
+  have hβ := nat_cube_mod_seven β
+  have hγ := nat_cube_mod_seven γ
+  have hLHS : γ ^ 3 % 7 =
+      (α ^ 3 % 7 + (2 * (β ^ 3 % 7)) % 7) % 7 := by
+    rw [← heq, cube_add_two_mod (by decide)]
+  rcases hα with hα | hα | hα
+    <;> rcases hβ with hβ | hβ | hβ
+    <;> simp [hα, hβ] at hLHS ⊢
+    <;> omega
+
+/-- Allowed cube-residue pairs modulo 9. -/
+theorem pos_cube_add_two_cube_mod_nine_classes
+    {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 9 = 0 ∧ β ^ 3 % 9 = 0 ∨
+      α ^ 3 % 9 = 1 ∧ β ^ 3 % 9 = 0 ∨
+        α ^ 3 % 9 = 8 ∧ β ^ 3 % 9 = 0 ∨
+          α ^ 3 % 9 = 1 ∧ β ^ 3 % 9 = 8 ∨
+            α ^ 3 % 9 = 8 ∧ β ^ 3 % 9 = 1 := by
+  have hα := nat_cube_mod_nine α
+  have hβ := nat_cube_mod_nine β
+  have hγ := nat_cube_mod_nine γ
+  have hLHS : γ ^ 3 % 9 =
+      (α ^ 3 % 9 + (2 * (β ^ 3 % 9)) % 9) % 9 := by
+    rw [← heq, cube_add_two_mod (by decide)]
+  rcases hα with hα | hα | hα
+    <;> rcases hβ with hβ | hβ | hβ
+    <;> simp [hα, hβ] at hLHS ⊢
+    <;> omega
+
+/-- Allowed cube-residue pairs modulo 13. -/
+theorem pos_cube_add_two_cube_mod_thirteen_classes
+    {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 13 = 0 ∧ β ^ 3 % 13 = 0 ∨
+      α ^ 3 % 13 = 1 ∧ β ^ 3 % 13 = 0 ∨
+        α ^ 3 % 13 = 5 ∧ β ^ 3 % 13 = 0 ∨
+          α ^ 3 % 13 = 8 ∧ β ^ 3 % 13 = 0 ∨
+            α ^ 3 % 13 = 12 ∧ β ^ 3 % 13 = 0 ∨
+              α ^ 3 % 13 = 12 ∧ β ^ 3 % 13 = 1 ∨
+                α ^ 3 % 13 = 8 ∧ β ^ 3 % 13 = 5 ∨
+                  α ^ 3 % 13 = 5 ∧ β ^ 3 % 13 = 8 ∨
+                    α ^ 3 % 13 = 1 ∧ β ^ 3 % 13 = 12 := by
+  have hα := nat_cube_mod_thirteen α
+  have hβ := nat_cube_mod_thirteen β
+  have hγ := nat_cube_mod_thirteen γ
+  have hLHS : γ ^ 3 % 13 =
+      (α ^ 3 % 13 + (2 * (β ^ 3 % 13)) % 13) % 13 := by
+    rw [← heq, cube_add_two_mod (by decide)]
+  rcases hα with hα | hα | hα | hα | hα
+    <;> rcases hβ with hβ | hβ | hβ | hβ | hβ
+    <;> simp [hα, hβ] at hLHS ⊢
+    <;> omega
+
+/-- Allowed cube-residue pairs modulo 19. -/
+theorem pos_cube_add_two_cube_mod_nineteen_classes
+    {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 19 = 0 ∧ β ^ 3 % 19 = 0 ∨
+      α ^ 3 % 19 = 1 ∧ β ^ 3 % 19 = 0 ∨
+        α ^ 3 % 19 = 7 ∧ β ^ 3 % 19 = 0 ∨
+          α ^ 3 % 19 = 8 ∧ β ^ 3 % 19 = 0 ∨
+            α ^ 3 % 19 = 11 ∧ β ^ 3 % 19 = 0 ∨
+              α ^ 3 % 19 = 12 ∧ β ^ 3 % 19 = 0 ∨
+                α ^ 3 % 19 = 18 ∧ β ^ 3 % 19 = 0 ∨
+                  α ^ 3 % 19 = 18 ∧ β ^ 3 % 19 = 1 ∨
+                    α ^ 3 % 19 = 12 ∧ β ^ 3 % 19 = 7 ∨
+                      α ^ 3 % 19 = 11 ∧ β ^ 3 % 19 = 8 ∨
+                        α ^ 3 % 19 = 8 ∧ β ^ 3 % 19 = 11 ∨
+                          α ^ 3 % 19 = 7 ∧ β ^ 3 % 19 = 12 ∨
+                            α ^ 3 % 19 = 1 ∧ β ^ 3 % 19 = 18 := by
+  have hα := nat_cube_mod_nineteen α
+  have hβ := nat_cube_mod_nineteen β
+  have hγ := nat_cube_mod_nineteen γ
+  have hLHS : γ ^ 3 % 19 =
+      (α ^ 3 % 19 + (2 * (β ^ 3 % 19)) % 19) % 19 := by
+    rw [← heq, cube_add_two_mod (by decide)]
+  rcases hα with hα | hα | hα | hα | hα | hα | hα
+    <;> rcases hβ with hβ | hβ | hβ | hβ | hβ | hβ | hβ
+    <;> simp [hα, hβ] at hLHS ⊢
+    <;> omega
 
 /-! ### Bridge from residual to two-factor `e = 3` -/
 

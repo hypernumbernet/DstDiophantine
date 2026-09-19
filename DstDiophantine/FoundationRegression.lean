@@ -639,6 +639,36 @@ example (hAff : BealAffineCubeAddTwoResidual) :
     BealPosCubeAddTwoCubeResidual :=
   BealPosCubeAddTwoCubeResidual_of_affine hAff
 
+/-- Positive `α³+2β³=γ³` reduces to a primitive odd-`α,γ` slice. -/
+example {α β γ : ℕ} (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    ∃ α' β' γ' : ℕ,
+      0 < α' ∧ 0 < β' ∧ 0 < γ' ∧
+        Nat.gcd α' (Nat.gcd β' γ') = 1 ∧ Odd α' ∧ Odd γ' ∧
+          α' ^ 3 + 2 * β' ^ 3 = γ' ^ 3 :=
+  exists_primitive_odd_pos_cube_of_pos hα hβ hγ heq
+
+/-- The positive-cube residual is the primitive odd slice. -/
+example :
+    BealPosCubeAddTwoCubeResidual ↔
+      ∀ (α β γ : ℕ), 0 < α → 0 < β → 0 < γ →
+        Nat.gcd α (Nat.gcd β γ) = 1 → Odd α → Odd γ →
+          ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 :=
+  BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd
+
+/-- Cube-residue classes modulo 13 of a positive solution. -/
+example {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 13 = 0 ∧ β ^ 3 % 13 = 0 ∨
+      α ^ 3 % 13 = 1 ∧ β ^ 3 % 13 = 0 ∨
+        α ^ 3 % 13 = 5 ∧ β ^ 3 % 13 = 0 ∨
+          α ^ 3 % 13 = 8 ∧ β ^ 3 % 13 = 0 ∨
+            α ^ 3 % 13 = 12 ∧ β ^ 3 % 13 = 0 ∨
+              α ^ 3 % 13 = 12 ∧ β ^ 3 % 13 = 1 ∨
+                α ^ 3 % 13 = 8 ∧ β ^ 3 % 13 = 5 ∨
+                  α ^ 3 % 13 = 5 ∧ β ^ 3 % 13 = 8 ∨
+                    α ^ 3 % 13 = 1 ∧ β ^ 3 % 13 = 12 :=
+  pos_cube_add_two_cube_mod_thirteen_classes heq
+
 /-- Phase 7o: Mordell residual assembles the Affine residual. -/
 example (hMor : BealMordellCubeAddTwoResidual) :
     BealAffineCubeAddTwoResidual :=

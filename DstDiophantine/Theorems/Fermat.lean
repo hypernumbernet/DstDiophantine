@@ -89,7 +89,7 @@ private theorem reverse_integerRotor (n : ℤ) (hn : n ≠ 0) :
 
 private theorem commute_smul_hyperbolic0 (x y : ℝ) :
     Commute (x • hyperbolic 0) (y • hyperbolic 0) :=
-  Generators.hyperbolic_smul_mul x y
+  Generators.hyperbolic_smul_mul 0 x y
 
 theorem mismatchRotor_eq_rotorTorsion (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     mismatchRotor a c ha hc =
