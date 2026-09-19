@@ -42,8 +42,9 @@ exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
 the closed form of `gammaEff`, the Euler–Lagrange identities of
 `DualRotorDynamics` (free mismatch, sourced common rapidity \(\ddot\sigma=-2m\delta\),
 indefinite conserved energy, dual-channel drive \(\ddot\delta=-u\) on the written
-action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; no Faraday
-identification of \(u\)), the Coulombic circular-orbit identities of
+action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; dual-only
+\(\ddot\phi=0\) is not a free sourced solution unless \(m(\phi-\theta)=0\);
+no Faraday identification of \(u\)), the Coulombic circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
 ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
@@ -73,8 +74,11 @@ no helicity drive of \(J\)), and the dual-only control identities of
 `DualControl` (jet \(\dot J\), second-order drop along a dual ray, convex
 dual interpolation, wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\), dual-only
 shielding iff the wall is nonpositive, equal-scale target iff
-\(\alpha_a\le\pi/4\), uniform \(\pi/6\) shields and repels while \(\pi/3\)
-cannot dual-only shield).
+\(\alpha_a\le\pi/4\), conservation \(J+M=\sum\alpha^2\) along dual-only
+motion and unique shield mass \(2M_{\mathrm{seed}}\), dual-only \(J\)
+filling the wall-to-seed interval, mixed unwind onto \(\alpha_a\le\pi/4\)
+when the wall is positive, uniform \(\pi/6\) shields and repels while
+\(\pi/3\) cannot dual-only shield).
 -/
 
 namespace DstDiophantine
@@ -599,6 +603,25 @@ example {q : Operations.TorsionParams}
     0 < J q :=
   uniform_pi_div_three_no_dual_shield hα hq
 
+/-- Regression: dual-only motion conserves \(J+M\). -/
+example {p q : Operations.TorsionParams} (hα : q.alpha = p.alpha) :
+    J q + mass q = J p + mass p :=
+  dual_only_conserves_J_add_mass hα
+
+/-- Regression: a dual-only shield doubles the pure-usual unsigned mass. -/
+example {p q : Operations.TorsionParams}
+    (hα : q.alpha = p.alpha) (hJ : J q = 0) :
+    mass q = 2 * mass (zeroDual p) :=
+  mass_eq_two_zeroDual_of_dual_only_J_eq_zero hα hJ
+
+/-- Regression: mixed unwind shields a uniform \(\pi/3\) seed. -/
+example :
+    J (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) = 0 ∧
+      Admissible.IsAdmissibleContinuous
+        (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) ∧
+      0 < mass (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) :=
+  uniform_pi_div_three_mixed_shield
+
 /-- Regression: vanishing dual force recovers the unsourced written jet. -/
 example (m φ θ φddot θddot : ℝ) :
     PaperSourcedEL m φ θ φddot θddot 0 ↔ PaperActualEL m φ θ φddot θddot :=
@@ -614,6 +637,11 @@ example {m φ θ u : ℝ} (hm : m ≠ 0)
     (h : OscillatorSourcedEL m φ θ 0 0 u) :
     φ - θ = -u / (2 * m) :=
   oscillatorSourcedEL_eq_mismatch hm h
+
+/-- Regression: leftover mismatch is not dual-only on the written sourced jet. -/
+example {m φ θ φddot θddot u : ℝ} (hm : m ≠ 0) (hδ : φ ≠ θ) :
+    ¬ (PaperSourcedEL m φ θ φddot θddot u ∧ φddot = 0) :=
+  paperSourcedEL_not_dual_only_of_mismatch hm hδ
 
 /-- Regression: helicity-odd classical quadratics are multiples of \(P_z\). -/
 example {cE2 cB2 cEB cPx cPy cPz : ℝ}

@@ -27,8 +27,18 @@ are **not** derived.
   Dual-only repulsion (\(J<0\)) requires a strictly negative wall.
 * The balanced target \(\beta=\alpha\) (equal-scale shielding) lies in the
   cone if and only if \(\alpha_a\le\pi/4\) on every axis.
+* Unconditionally \(J+M=\sum\alpha^2\) and \(M-J=\sum\beta^2\). Dual-only
+  motion conserves \(J+M\); usual-only motion conserves \(M-J\). Every
+  dual-only drop in \(J\) is paid for, one-for-one, by unsigned mass.
+  Dual-only \(J=0\) therefore has a unique mass \(\sum\alpha^2\), twice
+  the pure-usual seed.
+* Dual-only admissible \(J\) fills the closed interval from the wall up
+  to the pure-usual value. When the wall is positive, mixed control still
+  reaches a massive shield by unwinding each usual rapidity to at most
+  \(\pi/4\) and matching the dual angle.
 * Uniform examples: \(\alpha=\pi/6\) admits both shielding and repulsion
-  by dual-only motion; \(\alpha=\pi/3\) cannot reach \(J=0\) dual-only.
+  by dual-only motion; \(\alpha=\pi/3\) cannot reach \(J=0\) dual-only,
+  but the mixed unwind does.
 -/
 
 namespace DstDiophantine
@@ -279,6 +289,38 @@ theorem J_le_zeroDual (p : TorsionParams) :
   have : 0 ≤ p.beta a ^ 2 := sq_nonneg _
   linarith
 
+theorem zeroDual_eq_of_alpha {p q : TorsionParams} (hα : q.alpha = p.alpha) :
+    zeroDual q = zeroDual p := by
+  refine torsionParams_ext hα ?_
+  funext a
+  simp [zeroDual]
+
+theorem mass_zeroDual (p : TorsionParams) :
+    mass (zeroDual p) = (1 / 2) * ∑ a : Fin 3, p.alpha a ^ 2 := by
+  rw [mass_coef]
+  simp only [zeroDual, Fin.sum_univ_three]
+  ring
+
+theorem J_zeroDual_eq_mass (p : TorsionParams) :
+    J (zeroDual p) = mass (zeroDual p) :=
+  J_eq_mass_of_forall_beta_eq_zero fun _ => rfl
+
+theorem dual_only_conserves_J_add_mass {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) :
+    J q + mass q = J p + mass p := by
+  rw [J_add_mass, J_add_mass, hα]
+
+theorem usual_only_conserves_mass_sub_J {p q : TorsionParams}
+    (hβ : q.beta = p.beta) :
+    mass q - J q = mass p - J p := by
+  rw [mass_sub_J, mass_sub_J, hβ]
+
+theorem J_dual_only_le_zeroDual {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) :
+    J q ≤ J (zeroDual p) := by
+  rw [← zeroDual_eq_of_alpha hα]
+  exact J_le_zeroDual q
+
 /-- Dual-only configurations cannot undercut the wall value of \(J\). -/
 theorem J_dual_only_ge_wall {p q : TorsionParams}
     (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
@@ -299,6 +341,11 @@ theorem J_dual_only_ge_wall {p q : TorsionParams}
     pow_le_pow_left₀ hβnn hβle 2
   simp [hα]
   linarith
+
+theorem J_dual_only_mem_interval {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
+    J (dualWallParams p) ≤ J q ∧ J q ≤ J (zeroDual p) :=
+  ⟨J_dual_only_ge_wall hα hq, J_dual_only_le_zeroDual hα⟩
 
 /-! ### Equal-scale shielding target -/
 
@@ -342,6 +389,14 @@ theorem J_dualWall_eq_half_diff (p : TorsionParams) :
   rw [J_coef]
   simp only [dualWallParams, sumAlphaSq, sumWallSq, Fin.sum_univ_three]
   ring
+
+theorem sumAlphaSq_eq_J_add_mass (p : TorsionParams) :
+    sumAlphaSq p = J p + mass p :=
+  (J_add_mass p).symm
+
+theorem J_zeroDual_eq_half_sumAlphaSq (p : TorsionParams) :
+    J (zeroDual p) = (1 / 2) * sumAlphaSq p := by
+  rw [J_zeroDual_eq_mass, mass_zeroDual, sumAlphaSq]
 
 /-- Dual interpolation from \(\beta=0\) to the wall. -/
 noncomputable def dualShieldInterp (p : TorsionParams) (t : ℝ) : TorsionParams :=
@@ -450,6 +505,111 @@ theorem exists_dual_only_J_lt_zero {p : TorsionParams}
       q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q < 0 :=
   ⟨dualWallParams p, rfl, isAdmissibleContinuous_dualWallParams hp, h⟩
 
+/-! ### Unsigned-mass cost of a dual-only shield -/
+
+theorem mass_eq_sum_alpha_of_J_eq_zero {p : TorsionParams} (hJ : J p = 0) :
+    mass p = ∑ a : Fin 3, p.alpha a ^ 2 := by
+  have := J_add_mass p
+  linarith
+
+theorem mass_dual_only_of_J_eq_zero {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) (hJ : J q = 0) :
+    mass q = ∑ a : Fin 3, p.alpha a ^ 2 := by
+  rw [mass_eq_sum_alpha_of_J_eq_zero hJ, hα]
+
+/-- Every dual-only shield from a given usual seed has the same unsigned
+mass, twice the pure-usual value. -/
+theorem mass_eq_two_zeroDual_of_dual_only_J_eq_zero {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) (hJ : J q = 0) :
+    mass q = 2 * mass (zeroDual p) := by
+  have hM := mass_dual_only_of_J_eq_zero hα hJ
+  have h0 := mass_zeroDual p
+  linarith
+
+/-! ### Dual-only \(J\) fills the wall-to-seed interval -/
+
+noncomputable def dualTargetT (p : TorsionParams) (c : ℝ) : ℝ :=
+  Real.sqrt ((sumAlphaSq p - 2 * c) / sumWallSq p)
+
+theorem dualTargetT_nonneg (p : TorsionParams) (c : ℝ) :
+    0 ≤ dualTargetT p c :=
+  Real.sqrt_nonneg _
+
+private theorem dualTarget_num_nonneg {p : TorsionParams} {c : ℝ}
+    (hc' : c ≤ J (zeroDual p)) :
+    0 ≤ sumAlphaSq p - 2 * c := by
+  have := J_zeroDual_eq_half_sumAlphaSq p
+  linarith
+
+private theorem dualTarget_num_le_wall {p : TorsionParams} {c : ℝ}
+    (hc : J (dualWallParams p) ≤ c) :
+    sumAlphaSq p - 2 * c ≤ sumWallSq p := by
+  have := J_dualWall_eq_half_diff p
+  linarith
+
+theorem dualTargetT_le_one {p : TorsionParams} {c : ℝ}
+    (hSw : sumWallSq p ≠ 0)
+    (hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
+    dualTargetT p c ≤ 1 := by
+  unfold dualTargetT
+  have hSwN : 0 ≤ sumWallSq p := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  have hSwPos : 0 < sumWallSq p := lt_of_le_of_ne hSwN hSw.symm
+  have hle := dualTarget_num_le_wall hc
+  have hquot : (sumAlphaSq p - 2 * c) / sumWallSq p ≤ 1 :=
+    (div_le_one hSwPos).mpr hle
+  have hnum := dualTarget_num_nonneg hc'
+  rw [Real.sqrt_le_iff]
+  exact ⟨zero_le_one, by simpa [hnum] using hquot⟩
+
+theorem J_dualShieldInterp_at_target {p : TorsionParams} {c : ℝ}
+    (hSw : 0 < sumWallSq p)
+    (_hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
+    J (dualShieldInterp p (dualTargetT p c)) = c := by
+  rw [J_dualShieldInterp]
+  unfold dualTargetT
+  have hnum := dualTarget_num_nonneg hc'
+  have hquot : 0 ≤ (sumAlphaSq p - 2 * c) / sumWallSq p :=
+    div_nonneg hnum hSw.le
+  rw [Real.sq_sqrt hquot]
+  have hcancel :
+      (sumAlphaSq p - 2 * c) / sumWallSq p * sumWallSq p =
+        sumAlphaSq p - 2 * c :=
+    div_mul_cancel₀ _ hSw.ne'
+  rw [hcancel]
+  ring
+
+theorem isAdmissibleContinuous_dualShieldInterp_at_target {p : TorsionParams}
+    {c : ℝ} (hp : IsAdmissibleContinuous p) (hSw : 0 < sumWallSq p)
+    (hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
+    IsAdmissibleContinuous (dualShieldInterp p (dualTargetT p c)) := by
+  refine isAdmissibleContinuous_dualInterp
+    (isAdmissibleContinuous_zeroDual hp) ?_ (dualTargetT_nonneg p c)
+    (dualTargetT_le_one hSw.ne' hc hc')
+  simpa [zeroDual, dualWallParams] using isAdmissibleContinuous_dualWallParams hp
+
+theorem J_dualWall_eq_zeroDual_of_sumWallSq_eq_zero {p : TorsionParams}
+    (h : sumWallSq p = 0) :
+    J (dualWallParams p) = J (zeroDual p) := by
+  rw [J_dualWall_eq_half_diff, J_zeroDual_eq_half_sumAlphaSq, h, sub_zero]
+
+/-- Dual-only admissible \(J\) attains every value between the wall and
+the pure-usual seed. -/
+theorem exists_dual_only_J_eq {p : TorsionParams} {c : ℝ}
+    (hp : IsAdmissibleContinuous p)
+    (hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
+    ∃ q : TorsionParams,
+      q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q = c := by
+  by_cases hSw : sumWallSq p = 0
+  · have hEq := J_dualWall_eq_zeroDual_of_sumWallSq_eq_zero hSw
+    have hc0 : c = J (zeroDual p) := le_antisymm hc' (hEq ▸ hc)
+    exact ⟨zeroDual p, rfl, isAdmissibleContinuous_zeroDual hp, hc0.symm⟩
+  · have hne : sumWallSq p ≠ 0 := hSw
+    have hpos : 0 < sumWallSq p :=
+      lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
+    refine ⟨dualShieldInterp p (dualTargetT p c), rfl, ?_, ?_⟩
+    · exact isAdmissibleContinuous_dualShieldInterp_at_target hp hpos hc hc'
+    · exact J_dualShieldInterp_at_target hpos hc hc'
+
 /-! ### Uniform examples \(\alpha=\pi/6\) and \(\alpha=\pi/3\) -/
 
 def uniformTorsion (α β : ℝ) : TorsionParams where
@@ -542,6 +702,73 @@ theorem uniform_pi_div_three_no_dual_shield {q : TorsionParams}
   have hαp : q.alpha = (uniformTorsion (Real.pi / 3) 0).alpha := by
     funext a; exact hα a
   exact not_dual_only_J_eq_zero_of_wall_pos hαp hq uniform_pi_div_three_wall_pos
+
+/-! ### Mixed unwind onto the equal-scale cone -/
+
+/-- Usual rapidities truncated to \(\pi/4\), dual angles matched. -/
+noncomputable def equalScaleUnwind (p : TorsionParams) : TorsionParams where
+  alpha := fun a => min (p.alpha a) (Real.pi / 4)
+  beta := fun a => min (p.alpha a) (Real.pi / 4)
+
+theorem J_equalScaleUnwind (p : TorsionParams) : J (equalScaleUnwind p) = 0 := by
+  rw [J_coef]
+  simp [equalScaleUnwind]
+
+theorem isAdmissibleContinuous_equalScaleUnwind {p : TorsionParams}
+    (hα : ∀ a, 0 ≤ p.alpha a) :
+    IsAdmissibleContinuous (equalScaleUnwind p) := by
+  intro a
+  have hπ : 0 ≤ Real.pi / 4 := by
+    have : 0 < Real.pi := Real.pi_pos
+    linarith
+  have hmin : 0 ≤ min (p.alpha a) (Real.pi / 4) := le_min (hα a) hπ
+  have hle : min (p.alpha a) (Real.pi / 4) ≤ Real.pi / 4 := min_le_right _ _
+  refine ⟨hmin, hmin, ?_⟩
+  simp only [equalScaleUnwind]
+  linarith
+
+theorem mass_equalScaleUnwind (p : TorsionParams) :
+    mass (equalScaleUnwind p) =
+      ∑ a : Fin 3, (min (p.alpha a) (Real.pi / 4)) ^ 2 := by
+  rw [mass_coef]
+  simp only [equalScaleUnwind, Fin.sum_univ_three]
+  ring
+
+theorem mass_equalScaleUnwind_pos {p : TorsionParams}
+    (h : ∃ a, 0 < p.alpha a) :
+    0 < mass (equalScaleUnwind p) := by
+  rw [mass_equalScaleUnwind]
+  rcases h with ⟨a, ha⟩
+  have hπ : 0 < Real.pi / 4 := by
+    have : 0 < Real.pi := Real.pi_pos
+    linarith
+  refine Finset.sum_pos' (fun _ _ => sq_nonneg _) ?_
+  exact ⟨a, Finset.mem_univ a, sq_pos_of_pos (lt_min ha hπ)⟩
+
+/-- Mixed control still reaches a massive shield when dual-only cannot:
+unwind each usual rapidity to at most \(\pi/4\). -/
+theorem exists_mixed_equalScale_J_eq_zero {p : TorsionParams}
+    (hα : ∀ a, 0 ≤ p.alpha a) (hpos : ∃ a, 0 < p.alpha a) :
+    ∃ q : TorsionParams,
+      IsAdmissibleContinuous q ∧ J q = 0 ∧ 0 < mass q :=
+  ⟨equalScaleUnwind p, isAdmissibleContinuous_equalScaleUnwind hα,
+    J_equalScaleUnwind p, mass_equalScaleUnwind_pos hpos⟩
+
+theorem uniform_pi_div_three_mixed_shield :
+    J (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) = 0 ∧
+      IsAdmissibleContinuous
+        (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) ∧
+      0 < mass (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) := by
+  refine ⟨J_equalScaleUnwind _, ?_, ?_⟩
+  · refine isAdmissibleContinuous_equalScaleUnwind ?_
+    intro a
+    simp only [uniformTorsion]
+    positivity
+  · refine mass_equalScaleUnwind_pos ?_
+    refine ⟨0, ?_⟩
+    simp only [uniformTorsion]
+    have hπ : 0 < Real.pi := Real.pi_pos
+    nlinarith
 
 end Gravity
 

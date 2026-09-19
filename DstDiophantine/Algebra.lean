@@ -119,7 +119,8 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   J_eq_zero_of_mass_eq_zero J_dagger JNormalized_dagger mass_dagger
   massNormalized_coef massNormalized_nonneg
   massNormalized_eq_zero_iff JNormalized_eq_zero_of_massNormalized_eq_zero
-  abs_J_le_mass abs_J_eq_mass_iff abs_JNormalized_le_massNormalized
+  abs_J_le_mass abs_J_eq_mass_iff J_add_mass mass_sub_J
+  J_eq_mass_of_forall_beta_eq_zero abs_JNormalized_le_massNormalized
   sq_sum_le_half_pi_sq sq_sum_eq_half_pi_sq_iff
   mass_bound_raw_continuous massNormalized_bound_continuous
   balancedRay JNormalized_balancedRay mass_balancedRay massNormalized_balancedRay

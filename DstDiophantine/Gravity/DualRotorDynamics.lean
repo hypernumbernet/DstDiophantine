@@ -45,6 +45,10 @@ The de Broglie reading of free lag, and any identification of
   the working oscillator yields \(\ddot\delta+2m\delta=-u\) and
   \(\ddot\sigma=u\). A constant drive shifts the equilibrium mismatch;
   it is not derived from Faraday helicity.
+* Dual-only kinematics (\(\ddot\phi=0\)) is not a free solution of either
+  sourced system unless \(m(\phi-\theta)=0\). A nonzero rest mass with
+  leftover mismatch drags the usual sector; holding it fixed requires a
+  constraint.
 -/
 
 namespace DstDiophantine
@@ -297,6 +301,40 @@ theorem oscillatorSourcedEL_eq_mismatch {m φ θ u : ℝ} (hm : m ≠ 0)
 theorem oscillatorSourcedEL_zero_iff (m φ θ φddot θddot : ℝ) :
     OscillatorSourcedEL m φ θ φddot θddot 0 ↔ OscillatorEL m φ θ φddot θddot := by
   simp [OscillatorSourcedEL, OscillatorEL, oscillatorForcePhi, oscillatorForceTheta]
+
+/-! ### Dual-only jets are constrained -/
+
+/-- Holding the usual rapidity fixed on the written sourced jet forces
+the potential to vanish, after which \(\ddot\theta=u\). -/
+theorem paperSourcedEL_of_phi_ddot_zero {m φ θ φddot θddot u : ℝ}
+    (h : PaperSourcedEL m φ θ φddot θddot u) (hφ : φddot = 0) :
+    m * (φ - θ) = 0 ∧ θddot = u := by
+  rcases h with ⟨hφel, hθel⟩
+  have hm : m * (φ - θ) = 0 := by linarith
+  exact ⟨hm, by linarith⟩
+
+/-- A dual-only jet with leftover mismatch is not a free solution of the
+written sourced Euler–Lagrange system. -/
+theorem paperSourcedEL_not_dual_only_of_mismatch {m φ θ φddot θddot u : ℝ}
+    (hm : m ≠ 0) (hδ : φ ≠ θ) :
+    ¬ (PaperSourcedEL m φ θ φddot θddot u ∧ φddot = 0) := by
+  intro ⟨h, hφ⟩
+  have hmul := (paperSourcedEL_of_phi_ddot_zero h hφ).1
+  exact hδ (sub_eq_zero.mp ((mul_eq_zero.mp hmul).resolve_left hm))
+
+theorem oscillatorSourcedEL_of_phi_ddot_zero {m φ θ φddot θddot u : ℝ}
+    (h : OscillatorSourcedEL m φ θ φddot θddot u) (hφ : φddot = 0) :
+    m * (φ - θ) = 0 ∧ θddot = u := by
+  rcases h with ⟨hφel, hθel⟩
+  have hm : m * (φ - θ) = 0 := by linarith
+  exact ⟨hm, by linarith⟩
+
+theorem oscillatorSourcedEL_not_dual_only_of_mismatch {m φ θ φddot θddot u : ℝ}
+    (hm : m ≠ 0) (hδ : φ ≠ θ) :
+    ¬ (OscillatorSourcedEL m φ θ φddot θddot u ∧ φddot = 0) := by
+  intro ⟨h, hφ⟩
+  have hmul := (oscillatorSourcedEL_of_phi_ddot_zero h hφ).1
+  exact hδ (sub_eq_zero.mp ((mul_eq_zero.mp hmul).resolve_left hm))
 
 end Gravity
 

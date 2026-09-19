@@ -276,6 +276,28 @@ theorem abs_J_eq_mass_iff (p : TorsionParams) :
         simp [hα0]
       rw [hJ, abs_neg, abs_eq_self.mpr (mass_nonneg p)]
 
+/-- Unconditional: \(J+M=\sum\alpha^2\). Dual-only motion therefore
+conserves \(J+M\). -/
+theorem J_add_mass (p : TorsionParams) :
+    J p + mass p = ∑ a : Fin 3, p.alpha a ^ 2 := by
+  rw [J_coef, mass_coef]
+  simp only [Fin.sum_univ_three]
+  ring
+
+/-- Unconditional: \(M-J=\sum\beta^2\). Usual-only motion therefore
+conserves \(M-J\). -/
+theorem mass_sub_J (p : TorsionParams) :
+    mass p - J p = ∑ a : Fin 3, p.beta a ^ 2 := by
+  rw [J_coef, mass_coef]
+  simp only [Fin.sum_univ_three]
+  ring
+
+theorem J_eq_mass_of_forall_beta_eq_zero {p : TorsionParams}
+    (h : ∀ a, p.beta a = 0) : J p = mass p := by
+  have := mass_sub_J p
+  simp [h] at this
+  linarith
+
 theorem abs_JNormalized_le_massNormalized (p : TorsionParams) :
     |JNormalized p| ≤ massNormalized p := by
   unfold JNormalized massNormalized
