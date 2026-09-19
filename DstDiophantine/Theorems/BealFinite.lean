@@ -8,11 +8,10 @@ set_option linter.style.nativeDecide false
 # Phase 7j–7q: finite Beal certificates
 
 * **Box search** (phase 7j): bases and `C` all `≤ Amax`, exponents in `3…Emax`.
-* **Perfect-power search** (phase 7k–7s): bases `≤ Amax`, exponents in `3…Emax`,
+* **Perfect-power search** (phase 7k–7t): bases `≤ Amax`, exponents in `3…Emax`,
   but `C` is recovered as a positive `z`-th root of `A^x + B^y` (unbounded).
-  Current certificates: bases `≤ 21`, exponents `3…6`; bases `≤ 20`, exponents
-  `3…7`; bases `≤ 19`, exponents `3…8` (weaker named bounds follow by
-  monotonicity).
+  Current certificates: bases `≤ 24`, exponents `3…8` (weaker named bounds
+  follow by monotonicity).
 * **Finders** (phase 7n): `findCoprimeBealUpTo` / `findCoprimeBealPerfectPowerUpTo`
   return the first hit (for `#eval` / diagnostics), with soundness and completeness.
 
@@ -207,89 +206,157 @@ theorem beal_no_coprime_of_le_eight_five
 /-! ### Perfect-power search (phase 7k; `C` unbounded) -/
 
 /--
-Search for a positive `z`-th root of `s`, starting at `c`, with fuel bound.
-Returns `some C` when `C ^ z = s`.
+Grow an exclusive upper bound on a positive `z`-th root of `s` by doubling.
+Fuel exhaustion falls back to `max hi (s + 1)`, which still exceeds any root.
 -/
-def findNthRootGO (s z c fuel : ℕ) : Option ℕ :=
+def growNthRootHi (s z hi fuel : ℕ) : ℕ :=
+  match fuel with
+  | 0 => max hi (s + 1)
+  | fuel + 1 =>
+    if s < hi ^ z then hi
+    else growNthRootHi s z (hi * 2) fuel
+
+theorem growNthRootHi_gt {s z hi fuel : ℕ} (hhi : 0 < hi) (hz : 0 < z) :
+    s < (growNthRootHi s z hi fuel) ^ z ∧
+      hi ≤ growNthRootHi s z hi fuel := by
+  induction fuel generalizing hi with
+  | zero =>
+    simp only [growNthRootHi]
+    constructor
+    · have hlt : s < max hi (s + 1) := Nat.lt_of_succ_le (le_max_right _ _)
+      have hpos : 0 < max hi (s + 1) :=
+        Nat.lt_of_lt_of_le hhi (le_max_left _ _)
+      have hle : max hi (s + 1) ≤ (max hi (s + 1)) ^ z :=
+        Nat.le_self_pow (Nat.pos_iff_ne_zero.mp hz) _
+      omega
+    · exact le_max_left _ _
+  | succ fuel ih =>
+    by_cases hgt : s < hi ^ z
+    · simp [growNthRootHi, hgt]
+    · have hrec := ih (Nat.mul_pos hhi (by decide : 0 < 2))
+      simp only [growNthRootHi, hgt, ↓reduceIte]
+      exact ⟨hrec.1,
+        Nat.le_trans (Nat.le_mul_of_pos_right hi (by decide : 0 < 2)) hrec.2⟩
+
+private theorem bin_mid_bounds {lo hi : ℕ} (h : lo < hi) :
+    lo ≤ lo + (hi - lo) / 2 ∧ lo + (hi - lo) / 2 < hi := by
+  have hpos : 0 < hi - lo := Nat.sub_pos_of_lt h
+  constructor
+  · exact Nat.le_add_right _ _
+  · have : (hi - lo) / 2 < hi - lo :=
+      Nat.div_lt_self hpos (by decide : 1 < 2)
+    omega
+
+/--
+Binary search for a positive `z`-th root of `s` in the half-open interval
+`[lo, hi)`. Returns `some C` when `C ^ z = s`.
+-/
+def findNthRootBin (s z lo hi fuel : ℕ) : Option ℕ :=
   match fuel with
   | 0 => none
   | fuel + 1 =>
-    if c ^ z = s then some c
-    else if s < c ^ z then none
-    else findNthRootGO s z (c + 1) fuel
+    if hi ≤ lo then none
+    else
+      let mid := lo + (hi - lo) / 2
+      let p := mid ^ z
+      if p = s then some mid
+      else if p < s then findNthRootBin s z (mid + 1) hi fuel
+      else findNthRootBin s z lo mid fuel
+
+set_option linter.flexible false in
+theorem findNthRootBin_sound {s z lo hi fuel C : ℕ}
+    (h : findNthRootBin s z lo hi fuel = some C) :
+    C ^ z = s ∧ lo ≤ C ∧ C < hi := by
+  induction fuel generalizing lo hi with
+  | zero =>
+    simp [findNthRootBin] at h
+  | succ fuel ih =>
+    by_cases hle : hi ≤ lo
+    · simp [findNthRootBin, hle] at h
+    · have hlt : lo < hi := Nat.not_le.mp hle
+      have ⟨hmlo, hmhi⟩ := bin_mid_bounds hlt
+      set mid := lo + (hi - lo) / 2 with hmid
+      simp [findNthRootBin, hle] at h
+      rw [← hmid] at h
+      by_cases hEq : mid ^ z = s
+      · simp [hEq] at h
+        subst h
+        exact ⟨hEq, hmlo, hmhi⟩
+      · simp [hEq] at h
+        by_cases hLt : mid ^ z < s
+        · simp [hLt] at h
+          obtain ⟨heq, hleC, hltC⟩ := ih h
+          exact ⟨heq, le_trans (Nat.le_succ_of_le hmlo) hleC, hltC⟩
+        · simp [hLt] at h
+          obtain ⟨heq, hleC, hltC⟩ := ih h
+          exact ⟨heq, hleC, Nat.lt_trans hltC hmhi⟩
+
+set_option linter.flexible false in
+theorem findNthRootBin_complete {s z lo hi fuel C : ℕ}
+    (hz : 0 < z) (hlo : lo ≤ C) (hhi : C < hi) (heq : C ^ z = s)
+    (hfuel : hi - lo < fuel) :
+    (findNthRootBin s z lo hi fuel).isSome := by
+  have hz0 : z ≠ 0 := Nat.pos_iff_ne_zero.mp hz
+  induction fuel generalizing lo hi with
+  | zero =>
+    omega
+  | succ fuel ih =>
+    have hlt : lo < hi := by omega
+    have hle : ¬ hi ≤ lo := Nat.not_le.mpr hlt
+    have ⟨hmlo, hmhi⟩ := bin_mid_bounds hlt
+    set mid := lo + (hi - lo) / 2 with hmid
+    simp [findNthRootBin, hle]
+    rw [← hmid]
+    by_cases hEq : mid ^ z = s
+    · simp [hEq]
+    · simp [hEq]
+      by_cases hLt : mid ^ z < s
+      · have hpow : mid ^ z < C ^ z := by simpa [heq] using hLt
+        have hmidC : mid < C := (Nat.pow_lt_pow_iff_left hz0).mp hpow
+        have hrec :
+            (findNthRootBin s z (mid + 1) hi fuel).isSome :=
+          ih (Nat.succ_le_of_lt hmidC) hhi (by omega)
+        simpa [hLt] using hrec
+      · have hsle : s ≤ mid ^ z := Nat.not_lt.mp hLt
+        have hslt : s < mid ^ z := Nat.lt_of_le_of_ne hsle (Ne.symm hEq)
+        have hpow : C ^ z < mid ^ z := by simpa [heq] using hslt
+        have hCmid : C < mid := (Nat.pow_lt_pow_iff_left hz0).mp hpow
+        have hrec :
+            (findNthRootBin s z lo mid fuel).isSome :=
+          ih hlo hCmid (by omega)
+        simpa [hLt] using hrec
 
 /-- Positive `z`-th root of `s`, if any (`z = 0` yields `none`). -/
 def findNthRoot (s z : ℕ) : Option ℕ :=
   if z = 0 then none
-  else findNthRootGO s z 1 (s + 1)
+  else
+    let hi := growNthRootHi s z 1 (Nat.log2 s + 4)
+    findNthRootBin s z 1 hi (hi + 1)
 
 /-- True when `s` is a positive perfect `z`-th power. -/
 def isNthPower (s z : ℕ) : Bool :=
   (findNthRoot s z).isSome
 
-theorem findNthRootGO_sound {s z c fuel C : ℕ}
-    (h : findNthRootGO s z c fuel = some C) : C ^ z = s ∧ c ≤ C := by
-  induction fuel generalizing c with
-  | zero =>
-    simp [findNthRootGO] at h
-  | succ fuel ih =>
-    by_cases hEq : c ^ z = s
-    · have h' : some c = some C := by
-        simpa [findNthRootGO, hEq] using h
-      obtain rfl := Option.some_inj.mp h'
-      exact ⟨hEq, le_rfl⟩
-    · by_cases hGt : s < c ^ z
-      · have : findNthRootGO s z c (fuel + 1) = none := by
-          simp [findNthRootGO, hEq, hGt]
-        simp [this] at h
-      · have h' : findNthRootGO s z (c + 1) fuel = some C := by
-          simpa [findNthRootGO, hEq, hGt] using h
-        obtain ⟨heq, hle⟩ := ih h'
-        exact ⟨heq, Nat.le_trans (Nat.le_succ c) hle⟩
-
 theorem findNthRoot_sound {s z C : ℕ}
     (h : findNthRoot s z = some C) : 0 < C ∧ C ^ z = s := by
   by_cases hz : z = 0
   · simp [findNthRoot, hz] at h
-  · have h' : findNthRootGO s z 1 (s + 1) = some C := by
+  · have h' : findNthRootBin s z 1 (growNthRootHi s z 1 (Nat.log2 s + 4))
+        (growNthRootHi s z 1 (Nat.log2 s + 4) + 1) = some C := by
       simpa [findNthRoot, hz] using h
-    obtain ⟨heq, hle⟩ := findNthRootGO_sound h'
+    obtain ⟨heq, hle, _⟩ := findNthRootBin_sound h'
     exact ⟨Nat.lt_of_lt_of_le (by decide : 0 < 1) hle, heq⟩
-
-theorem findNthRootGO_complete {s z c fuel : ℕ}
-    (_hz : 0 < z) (_hc : 0 < c)
-    (hfuel : ∃ C, c ≤ C ∧ C ^ z = s ∧ C < c + fuel) :
-    (findNthRootGO s z c fuel).isSome := by
-  induction fuel generalizing c with
-  | zero =>
-    obtain ⟨C, hle, _, hlt⟩ := hfuel
-    omega
-  | succ fuel ih =>
-    obtain ⟨C, hle, heq, hlt⟩ := hfuel
-    by_cases hEq : c ^ z = s
-    · simp [findNthRootGO, hEq]
-    · by_cases hGt : s < c ^ z
-      · have : c ^ z ≤ s := by
-          have := Nat.pow_le_pow_left hle z
-          simpa [heq] using this
-        exact False.elim (Nat.lt_le_asymm hGt this)
-      · have hcC : c < C := by
-          by_contra hnot
-          have heqC : c = C := Nat.le_antisymm hle (Nat.not_lt.mp hnot)
-          exact hEq (heqC ▸ heq)
-        have hrec :
-            (findNthRootGO s z (c + 1) fuel).isSome :=
-          ih (by omega) ⟨C, Nat.succ_le_of_lt hcC, heq, by omega⟩
-        simpa [findNthRootGO, hEq, hGt] using hrec
 
 theorem findNthRoot_complete {s z C : ℕ}
     (hz : 0 < z) (hC : 0 < C) (heq : C ^ z = s) :
     (findNthRoot s z).isSome := by
   have hzne : z ≠ 0 := Nat.pos_iff_ne_zero.mp hz
   simp only [findNthRoot, hzne, ↓reduceIte]
-  refine findNthRootGO_complete hz (by decide : 0 < 1) ⟨C, Nat.succ_le_of_lt hC, heq, ?_⟩
-  have : C ≤ C ^ z := Nat.le_self_pow hzne C
-  omega
+  set hi := growNthRootHi s z 1 (Nat.log2 s + 4)
+  have hgt : s < hi ^ z := (growNthRootHi_gt (by decide : 0 < 1) hz).1
+  have hpow : C ^ z < hi ^ z := by simpa [heq] using hgt
+  have hChi : C < hi := (Nat.pow_lt_pow_iff_left hzne).mp hpow
+  exact findNthRootBin_complete hz (Nat.succ_le_of_lt hC) hChi heq (by omega)
 
 /-- Completeness + uniqueness: the positive `z`-th root is exactly `C`. -/
 theorem findNthRoot_eq_some_of {s z C : ℕ}
@@ -461,9 +528,22 @@ theorem noCoprimeBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
   exact absurd hany (by simp [this])
 
 /--
-Phase 7s: no positive coprime Beal solution with bases `≤ 21` and exponents in
-`3…6`, allowing unbounded `C` recovered as a perfect power.
+Phase 7t: no positive coprime Beal solution with bases `≤ 24` and exponents in
+`3…8`, allowing unbounded `C` recovered as a perfect power.
 -/
+theorem beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 24) (hBmax : B ≤ 24)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 8) (hyE : y ≤ 8) (hzE : z ≤ 8)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealPerfectPowerUpTo_sound
+    (by native_decide : noCoprimeBealPerfectPowerUpTo 24 8 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twentyone_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -472,11 +552,10 @@ theorem beal_no_coprime_perfect_power_of_le_twentyone_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 21 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 21. -/
+/-- Phase 7r certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twenty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -485,10 +564,10 @@ theorem beal_no_coprime_perfect_power_of_le_twenty_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7q certificate; follows from ≤ 21. -/
+/-- Phase 7q certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -497,10 +576,10 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Weaker perfect-power certificates (phases 7k–7p); follow from ≤ 21. -/
+/-- Weaker perfect-power certificates (phases 7k–7p); follow from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twelve_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -509,8 +588,8 @@ theorem beal_no_coprime_perfect_power_of_le_twelve_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
 theorem beal_no_coprime_perfect_power_of_le_thirteen_six
     {A B C x y z : ℕ}
@@ -520,8 +599,8 @@ theorem beal_no_coprime_perfect_power_of_le_thirteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
 theorem beal_no_coprime_perfect_power_of_le_fourteen_six
     {A B C x y z : ℕ}
@@ -531,8 +610,8 @@ theorem beal_no_coprime_perfect_power_of_le_fourteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
 theorem beal_no_coprime_perfect_power_of_le_fifteen_six
     {A B C x y z : ℕ}
@@ -542,8 +621,8 @@ theorem beal_no_coprime_perfect_power_of_le_fifteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
 theorem beal_no_coprime_perfect_power_of_le_sixteen_six
     {A B C x y z : ℕ}
@@ -553,8 +632,8 @@ theorem beal_no_coprime_perfect_power_of_le_sixteen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
 theorem beal_no_coprime_perfect_power_of_le_seventeen_six
     {A B C x y z : ℕ}
@@ -564,10 +643,10 @@ theorem beal_no_coprime_perfect_power_of_le_seventeen_six
     (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7s: bases `≤ 20`, exponents `3…7`. -/
+/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twenty_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -576,11 +655,10 @@ theorem beal_no_coprime_perfect_power_of_le_twenty_seven
     (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 20 7 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 20 · 7. -/
+/-- Phase 7r certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -589,10 +667,10 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_seven
     (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twenty_seven
-    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7s: bases `≤ 19`, exponents `3…8` (exponent expansion). -/
+/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_eight
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -601,9 +679,8 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_eight
     (hxE : x ≤ 8) (hyE : y ≤ 8) (hzE : z ≤ 8)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noCoprimeBealPerfectPowerUpTo_sound
-    (by native_decide : noCoprimeBealPerfectPowerUpTo 19 8 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
 
 /-! ### Known non-coprime solutions (not counterexamples) -/
 

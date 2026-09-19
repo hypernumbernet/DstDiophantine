@@ -643,40 +643,40 @@ example {A B C x y z : ℕ}
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
   beal_no_coprime_of_le_eight_five hA hB hC hAmax hBmax hCmax hx hy hz hxE hyE hzE hsol hgcd
 
-/-- Phase 7s: no coprime perfect-power Beal with bases ≤ 21 and exponents 3…6. -/
+/-- Phase 7t: no coprime perfect-power Beal with bases ≤ 24 and exponents 3…8. -/
 example {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hAmax : A ≤ 21) (hBmax : B ≤ 21)
+    (hAmax : A ≤ 24) (hBmax : B ≤ 24)
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hxE : x ≤ 8) (hyE : y ≤ 8) (hzE : z ≤ 8)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_coprime_perfect_power_of_le_twentyone_six
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
 /-- Phase 7n: perfect-power finder returns none on the closed 14×6 box. -/
 example : findCoprimeBealPerfectPowerUpTo 14 6 = none := by native_decide
 
-/-- Phase 7s: no primitive positive `α³+2β³=γ³` with α,β ≤ 120. -/
+/-- Phase 7t: no primitive positive `α³+2β³=γ³` with α,β ≤ 400. -/
 example {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
-    (hαN : α ≤ 120) (hβN : β ≤ 120)
+    (hαN : α ≤ 400) (hβN : β ≤ 400)
     (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
-  no_pos_cube_add_two_primitive_of_le_hundredtwenty
+  no_pos_cube_add_two_primitive_of_le_fourhundred
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
-/-- Phase 7s: no open-residual coprime perfect-power Beal with bases ≤ 60, exp 3…6. -/
+/-- Phase 7t: no open-residual coprime perfect-power Beal with bases ≤ 80, exp 3…7. -/
 example {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hAmax : A ≤ 60) (hBmax : B ≤ 60)
+    (hAmax : A ≤ 80) (hBmax : B ≤ 80)
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
     (hopen : isOpenResidualExponents x y z = true)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  beal_no_open_residual_perfect_power_of_le_sixty_six
+  beal_no_open_residual_perfect_power_of_le_eighty_seven
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
 
 /-- Phase 7p: open-residual Bool ↔ regime label `U`. -/

@@ -9,12 +9,12 @@ Finite certificates aimed at residual shapes where a classical Beal
 counterexample could still hide. This module is diagnostic / computational;
 it does **not** close residual bodies (`BealPosCubeAddTwoCubeResidual`, etc.).
 
-* **Positive cube kernel** `α³ + 2β³ = γ³`: current certificate bases `≤ 120`
+* **Positive cube kernel** `α³ + 2β³ = γ³`: current certificate bases `≤ 400`
   (weaker named bounds follow by monotonicity).
 * **Open-residual filter** on classical coprime `A^x+B^y=C^z` (skips closed
   slices `d ≥ 3`, two exponents divisible by 4, Darmon–Merel cube positions,
   and signature-`(n,n,5)` with common exponent `≥ 4`):
-  current certificate bases `≤ 60`, exponents `3…6`.
+  current certificate bases `≤ 80`, exponents `3…7`.
 
 Classical Beal is **not** claimed unconditionally.
 -/
@@ -103,9 +103,21 @@ theorem noPosCubeAddTwoPrimitiveUpTo_sound {N : ℕ}
   exact absurd hany (by simp [this])
 
 /--
-Phase 7s: no primitive positive solution of `α³ + 2β³ = γ³` with
-`α,β ≤ 120` (odd `α`, three-way gcd 1). Finite slice only.
+Phase 7t: no primitive positive solution of `α³ + 2β³ = γ³` with
+`α,β ≤ 400` (odd `α`, three-way gcd 1). Finite slice only.
 -/
+theorem no_pos_cube_add_two_primitive_of_le_fourhundred
+    {α β γ : ℕ}
+    (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hαN : α ≤ 400) (hβN : β ≤ 400)
+    (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
+  noPosCubeAddTwoPrimitiveUpTo_sound
+    (by native_decide : noPosCubeAddTwoPrimitiveUpTo 400 = true)
+    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+
+/-- Phase 7s certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_hundredtwenty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -113,11 +125,10 @@ theorem no_pos_cube_add_two_primitive_of_le_hundredtwenty
     (hαodd : α % 2 = 1) (hγodd : γ % 2 = 1)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False :=
-  noPosCubeAddTwoPrimitiveUpTo_sound
-    (by native_decide : noPosCubeAddTwoPrimitiveUpTo 120 = true)
-    hα hβ hγ hαN hβN hαodd hγodd hgcd heq
+  no_pos_cube_add_two_primitive_of_le_fourhundred
+    hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Phase 7r certificate; follows from ≤ 120. -/
+/-- Phase 7r certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_hundred
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -128,7 +139,7 @@ theorem no_pos_cube_add_two_primitive_of_le_hundred
   no_pos_cube_add_two_primitive_of_le_hundredtwenty
     hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Phase 7q certificate; follows from ≤ 120. -/
+/-- Phase 7q certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_eighty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -139,7 +150,7 @@ theorem no_pos_cube_add_two_primitive_of_le_eighty
   no_pos_cube_add_two_primitive_of_le_hundredtwenty
     hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Weaker cube-kernel certificates (phases 7n–7p); follow from ≤ 120. -/
+/-- Weaker cube-kernel certificates (phases 7n–7p); follow from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_forty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -332,9 +343,23 @@ theorem noOpenResidualBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
   exact absurd hany (by simp [this])
 
 /--
-Phase 7s: no open-residual coprime perfect-power Beal solution with bases
-`≤ 60` and exponents in `3…6` (`C` unbounded).
+Phase 7t: no open-residual coprime perfect-power Beal solution with bases
+`≤ 80` and exponents in `3…7` (`C` unbounded).
 -/
+theorem beal_no_open_residual_perfect_power_of_le_eighty_seven
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 80) (hBmax : B ≤ 80)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noOpenResidualBealPerfectPowerUpTo_sound
+    (by native_decide : noOpenResidualBealPerfectPowerUpTo 80 7 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+
+/-- Phase 7s certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_sixty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -344,11 +369,39 @@ theorem beal_no_open_residual_perfect_power_of_le_sixty_six
     (hopen : isOpenResidualExponents x y z = true)
     (hsol : A ^ x + B ^ y = C ^ z)
     (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
-  noOpenResidualBealPerfectPowerUpTo_sound
-    (by native_decide : noOpenResidualBealPerfectPowerUpTo 60 6 = true)
-    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
+  beal_no_open_residual_perfect_power_of_le_eighty_seven
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega)
+    hopen hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 60. -/
+/-- Phase 7t certificate; follows from ≤ 80 · 7. -/
+theorem beal_no_open_residual_perfect_power_of_le_eighty_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 80) (hBmax : B ≤ 80)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_open_residual_perfect_power_of_le_eighty_seven
+    hA hB hC hAmax hBmax hx hy hz (by omega) (by omega) (by omega)
+    hopen hsol hgcd
+
+/-- Phase 7t certificate; follows from ≤ 80 · 7. -/
+theorem beal_no_open_residual_perfect_power_of_le_sixty_seven
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 60) (hBmax : B ≤ 60)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
+    (hopen : isOpenResidualExponents x y z = true)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_open_residual_perfect_power_of_le_eighty_seven
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE
+    hopen hsol hgcd
+
+/-- Phase 7r certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_fifty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -361,7 +414,7 @@ theorem beal_no_open_residual_perfect_power_of_le_fifty_six
   beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hopen hsol hgcd
 
-/-- Phase 7q certificate; follows from ≤ 60. -/
+/-- Phase 7q certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_forty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -374,7 +427,7 @@ theorem beal_no_open_residual_perfect_power_of_le_forty_six
   beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hopen hsol hgcd
 
-/-- Weaker open-residual certificates (phases 7n–7p); follow from ≤ 60. -/
+/-- Weaker open-residual certificates (phases 7n–7p); follow from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_twenty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
