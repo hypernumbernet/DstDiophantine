@@ -42,6 +42,17 @@ amplification proof core (phases 1–6).
 Algebraic DST primitives are re-exported via `DstDiophantine.Algebra`.
 The PGA–TEGR chart layer lives in `DstDiophantine.Gravity` and is **not**
 re-exported here, so the Diophantine path does not depend on gravity modules.
+
+## Export policy (Beal regime / D4L)
+
+`Theorems.BealRegime` (`classifyBealExponents`) and the D4L barrel
+`DstDiophantine.Logic` are **not** re-exported. The Diophantine public API
+exposes residual *types* and the exponent-shape filter
+`isOpenResidualExponents` / `IsClosedShapeExponents`; it does not expose the
+four-valued status board. `FoundationRegression` imports `BealRegime` so that
+the classifier and atlas correspondence are compiled on the Diophantine path,
+but a `.U → .T` update of an atlas atom must be made in
+`Logic.Example.BealRegime` and does not silently promote classical Beal.
 -/
 
 namespace DstDiophantine
@@ -258,7 +269,10 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   no_pos_cube_add_two_primitive_of_le_forty
   no_pos_cube_add_two_primitive_of_le_fifty
   no_pos_cube_add_two_primitive_of_le_sixty
-  isOpenResidualExponents isOpenResidualBealPerfectPower
+  isOpenResidualExponents IsClosedShapeExponents isOpenResidualExponents_iff
+  isOpenResidualExponents_eq_false_of_closed
+  isClosedShapeExponents_of_range_not_open
+  isOpenResidualBealPerfectPower
   hasOpenResidualBealPerfectPowerUpTo noOpenResidualBealPerfectPowerUpTo
   findOpenResidualBealPerfectPowerUpTo
   beal_no_open_residual_perfect_power_of_le_forty_six

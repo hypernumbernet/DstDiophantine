@@ -58,7 +58,8 @@ config, phase 7f exponent-gcd reduction / FLT hypothesis, phase 7g
 unconditional FLT slices / Pythagorean classification, phase 7h Pythagorean
 UFD slices / mixed-exponent case splits, phase 7i FLT axiom / Gaussian UFD /
 equal-odd and even two-equal progress, diagnostic NoGo, phase 7p D4L Beal
-regime atlas / open-residual ↔ `U`) are included;
+regime atlas / open-residual ↔ `U` / closed-shape classifier / artefact
+independence of classical Beal) are included;
 Gravity remains intentionally out of scope.
 
 DST / discrete-companion algebraic core regressions (dual map, Killing
@@ -627,11 +628,28 @@ example {x y z : ℕ} :
       isOpenResidualExponents x y z = true :=
   classifyBealExponents_eq_U_iff
 
+/-- Exponent classifier: `T` iff closed shape; never bookkeeping `B`. -/
+example {x y z : ℕ} :
+    (classifyBealExponents x y z = .T ↔ IsClosedShapeExponents x y z) ∧
+      classifyBealExponents x y z ≠ .B :=
+  ⟨classifyBealExponents_eq_T_iff, classifyBealExponents_ne_B x y z⟩
+
+/-- Even cube permutation `(3,4,4)` stays open; `(4,4,3)` is Darmon–Merel. -/
+example :
+    classifyBealExponents 3 4 4 = .U ∧ classifyBealExponents 4 4 3 = .T :=
+  ⟨classifyBealExponents_three_four_four, classifyBealExponents_four_four_three⟩
+
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :
     ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
         bealConjecture :=
   closed_slices_not_entailsTR_beal
+
+/-- Promoting one live residual, or even every artefact, does not T-entail Beal. -/
+example :
+    ¬ EntailsTR (bealClosedSliceAtomSet ∪ {liveMordell}) bealConjecture ∧
+      ¬ EntailsTR bealArtefactAtomSet bealConjecture :=
+  ⟨promote_liveMordell_not_entailsTR_beal, artefacts_not_entailsTR_beal⟩
 
 /-- Phase 7p: balanced Beal seat is `IsBalancedMassive`, not vacuum. -/
 example : balancedAmplitude.IsBalancedMassive ∧ ¬ balancedAmplitude.IsVacuum :=
@@ -671,6 +689,23 @@ example {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
                   α ^ 3 % 13 = 5 ∧ β ^ 3 % 13 = 8 ∨
                     α ^ 3 % 13 = 1 ∧ β ^ 3 % 13 = 12 :=
   pos_cube_add_two_cube_mod_thirteen_classes heq
+
+/-- Cube-residue classes modulo 19 of a positive solution. -/
+example {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    α ^ 3 % 19 = 0 ∧ β ^ 3 % 19 = 0 ∨
+      α ^ 3 % 19 = 1 ∧ β ^ 3 % 19 = 0 ∨
+        α ^ 3 % 19 = 7 ∧ β ^ 3 % 19 = 0 ∨
+          α ^ 3 % 19 = 8 ∧ β ^ 3 % 19 = 0 ∨
+            α ^ 3 % 19 = 11 ∧ β ^ 3 % 19 = 0 ∨
+              α ^ 3 % 19 = 12 ∧ β ^ 3 % 19 = 0 ∨
+                α ^ 3 % 19 = 18 ∧ β ^ 3 % 19 = 0 ∨
+                  α ^ 3 % 19 = 18 ∧ β ^ 3 % 19 = 1 ∨
+                    α ^ 3 % 19 = 12 ∧ β ^ 3 % 19 = 7 ∨
+                      α ^ 3 % 19 = 11 ∧ β ^ 3 % 19 = 8 ∨
+                        α ^ 3 % 19 = 8 ∧ β ^ 3 % 19 = 11 ∨
+                          α ^ 3 % 19 = 7 ∧ β ^ 3 % 19 = 12 ∨
+                            α ^ 3 % 19 = 1 ∧ β ^ 3 % 19 = 18 :=
+  pos_cube_add_two_cube_mod_nineteen_classes heq
 
 /-- Phase 7o: Mordell residual assembles the Affine residual. -/
 example (hMor : BealMordellCubeAddTwoResidual) :

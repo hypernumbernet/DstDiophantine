@@ -173,23 +173,98 @@ theorem no_pos_cube_add_two_primitive_of_le_sixty
 /-! ### Open-residual filter on classical Beal -/
 
 /--
-Exponents that still sit in an **open** residual after skipping closed slices:
+Beal-range exponent triples whose *shape* is closed by a named slice:
 
-* `d = gcd(x,y,z) ∈ {1,2}` (skip `d ≥ 3` / FLT),
-* not two of `{x,y,z}` divisible by 4 when `d = 2`,
-* not a Darmon–Merel cube position `(n,n,3)` / `(3,n,n)` / `(n,3,n)`,
-* not a signature-`(n,n,5)` position with common exponent `≥ 4`:
-  `(n,n,5)` / `(5,n,n)` / `(n,5,n)` (phase 7s; `(3,3,5)` stays open).
+* `d ≥ 3` (FLT axiom);
+* `d = 2` with at least two of `{x,y,z}` divisible by 4;
+* Darmon–Merel cube positions, matching `not_beal_two_equal_cube_slice`
+  (the even permutations `(3,n,n)` / `(n,3,n)` with even `n` stay live);
+* signature `(n,n,5)` positions, matching `not_beal_two_equal_fifth_slice`
+  (even permutations likewise stay live; `(3,3,5)` stays open).
+
+This is strictly coarser than the residual atlas: Mihăilescu's `|u| = 1`
+slice is a coefficient condition, not an exponent shape.
+-/
+def IsClosedShapeExponents (x y z : ℕ) : Prop :=
+  3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
+    (3 ≤ bealExpGcd x y z ∨
+      (bealExpGcd x y z = 2 ∧
+        ((4 ∣ x ∧ 4 ∣ y) ∨ (4 ∣ y ∧ 4 ∣ z) ∨ (4 ∣ x ∧ 4 ∣ z))) ∨
+      (bealExpGcd x y z = 1 ∧
+        ((x = y ∧ z = 3) ∨ (y = z ∧ x = 3 ∧ y % 2 = 1) ∨
+          (x = z ∧ y = 3 ∧ x % 2 = 1))) ∨
+      (bealExpGcd x y z = 1 ∧
+        ((x = y ∧ z = 5 ∧ 4 ≤ x) ∨
+          (y = z ∧ x = 5 ∧ y % 2 = 1 ∧ 4 ≤ y) ∨
+          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))))
+
+instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
+  unfold IsClosedShapeExponents
+  infer_instance
+
+/--
+Exponents that still sit in an **open** residual after skipping closed
+*shapes* (`IsClosedShapeExponents`). Even permutations of the cube and
+`(n,n,5)` signatures are kept open: they belong to the even two-equal
+difference residual, because an even common exponent does not rewrite to
+Darmon–Merel or `(n,n,5)` form.
 -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
-  let d := Nat.gcd x (Nat.gcd y z)
+  let d := bealExpGcd x y z
   decide
     (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
       (d = 1 ∨ d = 2) ∧
       ¬(d = 2 ∧ ((4 ∣ x ∧ 4 ∣ y) ∨ (4 ∣ y ∧ 4 ∣ z) ∨ (4 ∣ x ∧ 4 ∣ z))) ∧
-      ¬((x = y ∧ z = 3) ∨ (y = z ∧ x = 3) ∨ (x = z ∧ y = 3)) ∧
-      ¬((x = y ∧ z = 5 ∧ 4 ≤ x) ∨ (y = z ∧ x = 5 ∧ 4 ≤ y) ∨
-          (x = z ∧ y = 5 ∧ 4 ≤ x)))
+      ¬(d = 1 ∧ ((x = y ∧ z = 3) ∨ (y = z ∧ x = 3 ∧ y % 2 = 1) ∨
+          (x = z ∧ y = 3 ∧ x % 2 = 1))) ∧
+      ¬(d = 1 ∧ ((x = y ∧ z = 5 ∧ 4 ≤ x) ∨
+          (y = z ∧ x = 5 ∧ y % 2 = 1 ∧ 4 ≤ y) ∨
+          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))))
+
+theorem isOpenResidualExponents_iff {x y z : ℕ} :
+    isOpenResidualExponents x y z = true ↔
+      3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧ ¬ IsClosedShapeExponents x y z := by
+  unfold isOpenResidualExponents
+  simp only [decide_eq_true_eq]
+  constructor
+  · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5⟩
+    refine ⟨hx, hy, hz, ?_⟩
+    intro hcl
+    obtain ⟨_, _, _, hdisj⟩ := hcl
+    rcases hdisj with hge | h2 | hdm | hnn
+    · rcases hd with hd | hd <;> omega
+    · exact hfourth h2
+    · exact hDM hdm
+    · exact hNN5 hnn
+  · intro ⟨hx, hy, hz, hnot⟩
+    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_⟩
+    · have htri := bealExpGcd_eq_one_or_eq_two_or_ge_three (y := y) (z := z) hx
+      have hnge : ¬ 3 ≤ bealExpGcd x y z := fun hd =>
+        hnot ⟨hx, hy, hz, Or.inl hd⟩
+      rcases htri with h | h | h
+      · exact Or.inl h
+      · exact Or.inr h
+      · exact (hnge h).elim
+    · exact fun hf => hnot ⟨hx, hy, hz, Or.inr (Or.inl hf)⟩
+    · exact fun hDM => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inl hDM))⟩
+    · exact fun hNN5 => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr hNN5))⟩
+
+theorem isOpenResidualExponents_eq_false_of_closed {x y z : ℕ}
+    (h : IsClosedShapeExponents x y z) :
+    isOpenResidualExponents x y z = false := by
+  rw [Bool.eq_false_iff]
+  intro htrue
+  exact (isOpenResidualExponents_iff.mp htrue).2.2.2 h
+
+theorem isClosedShapeExponents_of_range_not_open {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hopen : isOpenResidualExponents x y z = false) :
+    IsClosedShapeExponents x y z := by
+  have hne : isOpenResidualExponents x y z ≠ true := by
+    simpa [Bool.not_eq_true] using hopen
+  have : ¬ (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧ ¬ IsClosedShapeExponents x y z) := by
+    simpa [isOpenResidualExponents_iff] using hne
+  exact Decidable.not_not.mp fun hnot => this ⟨hx, hy, hz, hnot⟩
 
 /-- Coprime perfect-power Beal hit whose exponents pass the open-residual filter. -/
 def isOpenResidualBealPerfectPower (A B x y z : ℕ) : Bool :=

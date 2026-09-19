@@ -267,6 +267,12 @@ example :
         bealConjecture :=
   closed_slices_not_entailsTR_beal
 
+/-- Regression: promoting one live residual, or every artefact, still fails. -/
+example :
+    ¬ EntailsTR (bealClosedSliceAtomSet ∪ {liveMordell}) bealConjecture ∧
+      ¬ EntailsTR bealArtefactAtomSet bealConjecture :=
+  ⟨promote_liveMordell_not_entailsTR_beal, artefacts_not_entailsTR_beal⟩
+
 /-- Regression: FLT atlas realises closed `T`, diagnostic `F`, live `U`. -/
 example :
     ∃ v : RegimeValuation,

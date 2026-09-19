@@ -194,9 +194,9 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 ### 4 位: FoundationRegression / BealRegime 整備
 
 - **対象:** [`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean)、[`Theorems/BealRegime.lean`](DstDiophantine/Theorems/BealRegime.lean) の `classifyBealExponents`
-- **現状:** phase 7 系の `example` は厚い。`BealRegime` は `Basic` 非 export（意図的）
-- **次の作業:** 1–3 位で増えた補題の回帰、アトラス原子と live residual の対応コメント整備、export 方針の文書化（無理に `Basic` へ入れない）
-- **期待成果:** 残差を 1 つ閉じたときの `.U → .T` 更新が安全
+- **現状:** 指数形状 `IsClosedShapeExponents` とアトラス原子の対応を固定。分類器は `{T,U,F}` に着地し `B` を返さない。`T` iff 閉じた形状。ダルモン–メレル／`(n,n,5)` の偶置換 `(3,4,4)` 等は開いたまま（偶二一致の差）。成果物をすべて `T` にしても古典 Beal を `T`-含意しない（`artefacts_not_entailsTR_beal`）。`BealRegime` は `Basic` 非 export（意図的）
+- **次の作業:** 残差を 1 つ閉じたときのアトラス `.U → .T` は `Logic.Example.BealRegime` で行い、予想原子は算術組立が揃うまで動かさない
+- **期待成果:** `.U → .T` 更新が予想を黙って主張しない
 - **限界:** 研究本体ではない。総合を押し上げすぎないよう V = 2
 
 ### 5 位: 有限 Beal 証書の境界拡大
