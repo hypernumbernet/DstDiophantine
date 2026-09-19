@@ -49,7 +49,7 @@ The Dual Spacetime Theory encodes gravity and inertia as torsional mismatch betw
 \[
 J = \frac12\sum_{a=1}^3(\alpha_a^2-\beta_a^2),
 \]
-built from the six-generator Lorentz candidate \(\mathfrak{so}(3,1)\) (not the twelve-dimensional sum \(\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)\)), is identified with the teleparallel scalar only after a rotor-to-tetrad dictionary is fixed. Variational equivalence with the Einstein--Hilbert action is taken from the TEGR literature and is not re-derived here. Under the half-angle expansion one has \(B(\Omega_{\rm biv},\Omega_{\rm biv})=2\sum_a(\alpha_a^2-\beta_a^2)\), so \(J\) is four times \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\).
+built from the six-generator Lorentz sector \(\mathfrak{so}(3,1)\) (not the twelve-dimensional sum \(\mathfrak{so}(3,1)\oplus\mathfrak{so}(3,1)\)), is identified with the teleparallel scalar only after a rotor-to-tetrad dictionary is fixed. Variational equivalence with the Einstein--Hilbert action is taken from the TEGR literature and is not re-derived here. Under the half-angle expansion one has \(B(\Omega_{\rm biv},\Omega_{\rm biv})=2\sum_a(\alpha_a^2-\beta_a^2)\), so \(J\) is four times \(\frac1{16}B(\Omega_{\rm biv},\Omega_{\rm biv})\).
 
 To elevate the framework to a rigorous number-theoretic setting, we introduce two decisive extensions. First, the natural compactness induced by the dual map \(X \mapsto Xi\) is formalized by discretizing the rapidity parameters:
 \[
@@ -91,7 +91,7 @@ The resulting algebra is 32-dimensional. Its ten-dimensional bivector space deco
   \item Cyclic generators (square to \( -1 \)): \( I, J, K \),
   \item Null generators: \( N_\mu = e_4 \wedge e_\mu \) for \( \mu = 0,1,2,3 \).
 \end{itemize}
-The four null generators satisfy the strong vanishing property \( N_\mu N_\nu = 0 \) for all \( \mu,\nu \), and each is reversal-odd: \( \widetilde{N_\mu} = -N_\mu \). They span an abelian translation ideal that realizes the translational sector of the Poincaré algebra \( \mathfrak{iso}(3,1) \).
+The four null generators satisfy the strong vanishing property \( N_\mu N_\nu = 0 \) for all \( \mu,\nu \), and each is reversal-odd: \( \widetilde{N_\mu} = -N_\mu \). Under the commutator \([X,Y]=XY-YX\) the ten-dimensional span is a Lie subalgebra of \( G(3,1,1) \): the six hyperbolic and cyclic generators close on their own span, every bracket of a torsional generator with a null generator is again null, and null generators commute. The null span is thus an abelian ideal on which the Lorentz sector acts by its vector representation, and the ten-dimensional space carries the semidirect-product structure \( \mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1} \) of the Poincaré algebra \( \mathfrak{iso}(3,1) \) as an algebraic fact rather than as a count of dimensions. Within the Lorentz sector the structure constants take the standard form \([B^-_a,B^-_{a+1}]=2B^-_{a+2}\), \([B^+_a,B^-_{a+1}]=2B^+_{a+2}\), \([B^+_a,B^+_{a+1}]=-2B^-_{a+2}\), the last sign being the one that separates \(\mathfrak{so}(3,1)\) from the compact \(\mathfrak{so}(4)\).
 
 \subsection{Extended Torsional Mismatch and the Invariant \texorpdfstring{\( J^{(5)} \)}{J}}
 
@@ -111,7 +111,7 @@ Under the half-angle expansion the first term equals \(\frac18\sum_a(\alpha_a^2-
 
 \subsection{Duality Covariance}
 
-The duality map \( X \mapsto Xi \) of the parent biquaternion algebra commutes with the null vector \( e_4 \). Duality preserves the six-dimensional torsional (hyperbolic--cyclic) sector. Each null generator is sent to a grade-4 element, so the ten-dimensional generator space is \emph{not} closed under duality; translational parameters must be tracked separately. The dagger operation \( R_{\rm usual}^\dagger \) on the usual-sector rotor maps boost parameters to their dual-sector rotation partners and, on the parameter chart, merely swaps \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\). In particular it sends \(J\mapsto -J\) and therefore preserves the normalised height \(|\Jnorm|\). The finite discrete rotor image of the torus, together with admissibility, delimits the search space used in Chapter~10. Termination of Diophantine arguments relies on that finiteness (and on amplification against Theorem~\ref{thm:torsion-bound}), not on a strict decrease of height under dagger.
+The duality map \( X \mapsto Xi \) of the parent biquaternion algebra is right multiplication by the pseudoscalar \( i=e_0e_1e_2e_3 \), which satisfies \( i^2=-1 \), commutes with the null vector \( e_4 \), and commutes with every bivector of the torsional sector. On the six-dimensional torsional (hyperbolic--cyclic) sector duality is therefore a complex structure, and it is exact on the generators: \( B^-_a\,i = B^+_a \) and \( B^+_a\,i=-B^-_a \). Every boost is the dual of the corresponding rotation, the Lorentz sector is the complexification of the rotation algebra, and the bracket is complex-bilinear, \([Xi,Y]=[X,Y]\,i\) and \([Xi,Yi]=-[X,Y]\); the boost--boost sign recorded above is nothing but \( i^2=-1 \). On the parameter chart duality is the quarter-turn \((\alpha_a,\beta_a)\mapsto(\beta_a,-\alpha_a)\), which reverses \(J\) and preserves the unsigned mass \(\tfrac12\sum_a(\alpha_a^2+\beta_a^2)\). Each null generator is sent to a grade-4 element, so the ten-dimensional generator space is \emph{not} closed under duality; translational parameters must be tracked separately. The dagger operation \( R_{\rm usual}^\dagger \) on the usual-sector rotor maps boost parameters to their dual-sector rotation partners and, on the parameter chart, merely swaps \((\alpha_a,\beta_a)\mapsto(\beta_a,\alpha_a)\); it differs from the pseudoscalar quarter-turn only by the sign of the new rotation parameter. Both send \(J\mapsto -J\) and therefore preserve the normalised height \(|\Jnorm|\). The finite discrete rotor image of the torus, together with admissibility, delimits the search space used in Chapter~10. Termination of Diophantine arguments relies on that finiteness (and on amplification against Theorem~\ref{thm:torsion-bound}), not on a strict decrease of height under dagger.
 
 The constructions of this chapter therefore furnish a complete algebraic environment in which both multiplicative (rotor) and additive (null translator) structures coexist, the normalized torsion scalar satisfies \(|\Jnorm|\leq 1\) on admissible configurations, and every Diophantine equation is reduced to a finite lattice search.
 
@@ -143,7 +143,7 @@ The principal-branch condition \(|\delta_a| = |\alpha_a + \beta_a| \leq \pi/2\) 
 
 \subsection{Derivation from the Killing Form}
 
-Let the torsional mismatch bivector be expressed in the standard six-generator basis of the Lorentz candidate \( \mathfrak{so}(3,1) \):
+Let the torsional mismatch bivector be expressed in the standard six-generator basis of the Lorentz sector \( \mathfrak{so}(3,1) \):
 \[
 \Omega_{\rm biv} = \sum_{a=1}^3 \Bigl( \frac{\alpha_a}{2} i\Gamma_a + \frac{\beta_a}{2} \Gamma_a \Bigr),
 \]

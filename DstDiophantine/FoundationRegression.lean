@@ -15,6 +15,7 @@ import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.UnitGroup
 import DstDiophantine.Algebra.Generators
+import DstDiophantine.Algebra.LorentzLie
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.PGA
@@ -70,7 +71,7 @@ invariance, light-cone eigenvalues) are included; Gravity remains out of scope.
 namespace DstDiophantine.FoundationRegression
 
 open Amplification Discrete Invariant Framework Theorems ModularAmplification Motor
-open Operations Continuum UnitGroup Generators Sandwich PGA Periodicity
+open Operations Continuum UnitGroup Generators Sandwich PGA Periodicity LorentzLie
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Logic
 
@@ -927,6 +928,27 @@ example (a : Fin 3) : commutator (hyperbolic a) (cyclic a) = 0 :=
 
 example : commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
   commutator_hyperbolic0_cyclic1_ne_zero
+
+/-- Lie closure on the spans: the six generators span a Lie subalgebra, the ten span a
+Lie subalgebra with the null span as an abelian ideal. -/
+example {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
+    commutator x y ∈ lorentzSpan :=
+  commutator_mem_lorentzSpan hx hy
+
+example {x y : PGA} (hx : x ∈ poincareSpan) (hy : y ∈ nullSpan) :
+    commutator x y ∈ nullSpan ∧ commutator x y ∈ poincareSpan :=
+  ⟨commutator_poincare_null_mem_nullSpan hx hy,
+    commutator_mem_poincareSpan hx (LorentzLie.nullSpan_le_poincareSpan hy)⟩
+
+/-- Duality is the complex structure of the Lorentz sector: boosts are dual rotations,
+[Xi, Yi] = -[X, Y], and on parameters (α,β) ↦ (β,-α) reverses J. -/
+example (a b : Fin 3) (p : TorsionParams) :
+    hyperbolic a = dual (cyclic a) ∧
+      commutator (hyperbolic a) (hyperbolic b) = -commutator (cyclic a) (cyclic b) ∧
+        dual (omegaTorsion p) = omegaTorsion (dualParams p) ∧
+          J (dualParams p) = -J p :=
+  ⟨hyperbolic_eq_dual_cyclic a, commutator_hyperbolic_hyperbolic_eq_neg a b,
+    dual_omegaTorsion p, J_dualParams p⟩
 
 /-- Discrete admissibility ↔ continuous admissibility of the embedding. -/
 example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :

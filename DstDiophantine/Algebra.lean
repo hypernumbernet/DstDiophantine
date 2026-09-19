@@ -9,6 +9,7 @@ import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.LorentzDim
+import DstDiophantine.Algebra.LorentzLie
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Operations
@@ -45,6 +46,19 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
   commutator_cyclic_null commutator_cyclic_null_mem_span)
+export LorentzLie (cyclicSpan lorentzSpan poincareSpan
+  hyperbolic_mem_lorentzSpan cyclic_mem_lorentzSpan null_mem_poincareSpan
+  commute_pseudoscalar_hyperbolic commute_pseudoscalar_cyclic
+  commute_pseudoscalar_of_mem_lorentzSpan
+  hyperbolic_eq_dual_cyclic dual_dual dual_mem_lorentzSpan
+  commutator_dual_left commutator_dual_right commutator_dual_dual
+  commutator_hyperbolic_hyperbolic_eq_neg commutator_hyperbolic_cyclic_eq_dual
+  commutator_hyperbolic_hyperbolic_cyclic lorentzSpan_eq_sup mem_lorentzSpan_iff
+  commutator_mem_lorentzSpan commutator_lorentz_null_mem_nullSpan
+  commutator_null_null_eq_zero commutator_poincare_null_mem_nullSpan
+  commutator_mem_poincareSpan commutator_hyperbolic0_null0_ne_zero
+  dualParams dual_omegaTorsion omegaTorsion_mem_lorentzSpan
+  J_dualParams mass_dualParams JNormalized_dualParams)
 export Operations (pseudoscalar dual TorsionParams daggerParams
   e4_commute_pseudoscalar dual_null
   pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
@@ -201,6 +215,41 @@ example (a : Fin 3) :
   · simp [commutator_hyperbolic_hyperbolic]
   · simp [commutator_cyclic_cyclic, hne]
   · simp [commutator_hyperbolic_cyclic, hne]
+
+/-- Regression: the Lorentz span and the Poincaré span are closed under the bracket,
+and the null span is an abelian ideal of the latter. -/
+example {x y : PGA} (hx : x ∈ poincareSpan) (hy : y ∈ poincareSpan) (hn : y ∈ nullSpan) :
+    commutator x y ∈ poincareSpan ∧ commutator x y ∈ nullSpan :=
+  ⟨commutator_mem_poincareSpan hx hy, commutator_poincare_null_mem_nullSpan hx hn⟩
+
+example {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
+    commutator x y ∈ lorentzSpan :=
+  commutator_mem_lorentzSpan hx hy
+
+/-- Regression: duality is a complex structure on the Lorentz sector and the bracket is
+complex-bilinear for it; hence boosts bracket to minus the rotation bracket. -/
+example {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
+    dual (dual x) = -x ∧ dual x ∈ lorentzSpan ∧
+      commutator (dual x) (dual y) = -commutator x y :=
+  ⟨dual_dual x, dual_mem_lorentzSpan hx, commutator_dual_dual hx hy⟩
+
+example (a : Fin 3) :
+    commutator (hyperbolic a) (hyperbolic (a + 1)) = -((2 : ℝ) • cyclic (a + 2)) := by
+  have hne : a ≠ a + 1 := by fin_cases a <;> decide
+  simp [commutator_hyperbolic_hyperbolic_cyclic, hne]
+
+/-- Regression: every Lorentz element is a rotation plus a dualised rotation. -/
+example {x : PGA} (hx : x ∈ lorentzSpan) :
+    ∃ u ∈ cyclicSpan, ∃ v ∈ cyclicSpan, x = u + dual v :=
+  mem_lorentzSpan_iff.mp hx
+
+/-- Regression: duality acts on torsion parameters as the quarter-turn `(α,β) ↦ (β,-α)`,
+reversing `J` and preserving the mass. -/
+example (p : Operations.TorsionParams) :
+    dual (omegaTorsion p) = omegaTorsion (dualParams p) ∧
+      Invariant.J (dualParams p) = -Invariant.J p ∧
+        Invariant.mass (dualParams p) = Invariant.mass p :=
+  ⟨dual_omegaTorsion p, J_dualParams p, mass_dualParams p⟩
 
 /-- Regression: boost scalars on every axis commute. -/
 example (a : Fin 3) (x y : ℝ) :
