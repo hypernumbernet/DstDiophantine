@@ -32,7 +32,7 @@ In this paper we develop a different approach. The underlying algebra is the $16
 
 At every dual rapidity the dual rotor is the Rodrigues matrix of $\mathrm{SU}(2)$: unitary of determinant $1$, with relative dual rotors remaining in the group. This is the matrix representation on $\mathbb{C}^2$ recorded in Section~\ref{sec:quantumstates}, not a Riemannian identification of the rotor manifold with the three-sphere. The Dirac matrices of signature $(-,+,+,+)$ are the grade-1 generators of $\mathrm{Cl}(3,1)$; they obey $\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$ and are not the hyperbolic bivectors used for $P_{\mathrm{spin}}$. Born's rule is not the Killing self-pairing: that pairing has signature $(3,3)$ and is negative on pure elliptic configurations~\cite{dst-d4l}. Position and momentum operators, a spacetime Dirac PDE, and mass as torsion are not derived here. The momentum-space Dirac equation follows from the Clifford square of the Minkowski quadratic, as recorded in Section~\ref{sec:dirac}.
 
-By abandoning the continuum hypothesis entirely, the theory automatically resolves the singularities of classical general relativity. The compactness of the dual spacetime discretizes the rotor angles. On admissible configurations the algebraic ceiling is $|J|\le 3\pi^2/8$ (equivalently $|J_{\rm norm}|\le 1$); this forbids the unbounded curvature that would otherwise appear at $r=0$ or at the Big Bang, provided the configuration remains admissible. Event horizons are likewise absent: light rays traverse finite torsional layers via resonance tunneling. Strong-field deviations from general relativity become observable in principle, and the framework opens a concrete pathway to gravitational engineering through coherent control of dual-rotor phases.
+By abandoning the continuum hypothesis entirely, the theory automatically resolves the singularities of classical general relativity. The compactness of the dual spacetime discretizes the rotor angles. On admissible configurations the algebraic ceiling is $|J|\le 3\pi^2/8$ (equivalently $|J_{\rm norm}|\le 1$); this forbids the unbounded curvature that would otherwise appear at $r=0$ or at the Big Bang, provided the configuration remains admissible. Event horizons are likewise absent: light rays traverse finite torsional layers via resonance tunneling. Strong-field deviations from general relativity become observable in principle. Dual-only kinematics on the admissible cone delimit when $J$ can be shielded or reversed; whether laboratory fields supply that dual force is the experimental question of Section~\ref{sec:experiments}.
 
 The remainder of the paper is organized as follows. Section~\ref{sec:spinor} constructs square-$+1$ projectors and shows that the composite $P_{\mathrm{spin}}P_R$ is not idempotent. Section~\ref{sec:quantumstates} identifies dual generators with $-i\sigma_a$ and the dual rotor at every rapidity with an $\mathrm{SU}(2)$ matrix, and shows that the Killing pairing is not Born's rule. Section~\ref{sec:dirac} records the Clifford relations of $\mathrm{Cl}(3,1)$, distinguishes $\gamma^0$ from the hyperbolic generator $j$, factors the Minkowski quadratic into the momentum-space Dirac equation, assembles on-shell solutions from a dual spinor, and identifies a longitudinal boost of the rest pair with that construction. Sections~\ref{sec:mass}--\ref{sec:dynamics} discuss the value of mass, the Higgs mechanism, measurement, and the path integral as geometric hypotheses; the written particle action is shown to free the mismatch and source the common rapidity. Section~\ref{sec:predictions} presents conjectural predictions bounded by the admissible ceiling. Section~\ref{sec:comparison} compares the framework with other programmes, distinguishing internal duality from ten-dimensional spacetime supersymmetry. Section~\ref{sec:experiments} outlines near-term tests. Section~\ref{sec:status} gathers the algebraic picture of the quantum sector. Section~\ref{sec:conclusions} summarizes.
 
@@ -309,18 +309,19 @@ In summary, existing quantum gravity programs extend or quantize the continuum m
 \section{Experimental Testability from the Quantum Perspective}
 \label{sec:experiments}
 
-Although the double spacetime theory is fundamentally algebraic, its quantum sector makes concrete experimental predictions that can be tested with current or near-future technology. The key insight is that the torsional mismatch scalar $J$ depends solely on the relative angle between the usual and dual rotors. External fields capable of coherently modulating the dual-rotor phases $\phi_a$ can therefore alter gravitational and inertial effects in a measurable way.
+Although the double spacetime theory is fundamentally algebraic, its quantum sector makes concrete experimental predictions that can be tested with current or near-future technology. The mismatch scalar $J=\tfrac12\sum_a(\alpha_a^2-\beta_a^2)$ depends only on the relative rotor. Dual-only motion cannot raise $J$, and on the admissible cone shielding or repulsion is reachable precisely when the dual wall is nonpositive. Whether laboratory fields supply a dual-channel force remains a conjecture.
 
 \subsection{Theoretical Coupling Mechanism}
 
-Circularly polarized electromagnetic fields in the THz range ($10^{13}$--$10^{15}$ Hz) possess helical wavefronts that couple preferentially to the dual generators $\Gamma_a = I, J, K$. Because the dual spacetime is time-reversed, the helicity $\sigma = \pm 1$ of the wave directly controls the direction of dual-rotor drive: right-handed polarization reinforces attractive torsional mismatch ($J > 0$), while left-handed polarization opposes it. The effective interaction Hamiltonian is
+A circularly polarised electromagnetic wave is null at every phase, with vanishing four-phase mean of every linear Faraday coefficient. Among the six classical Faraday quadratics, the unique helicity-odd combination on that wave is the Poynting component $(E\times B)_z=\sigma E_0^2$. Helicity drive of the particle mismatch is not a local scalar of $F$, nor a linear superposition, nor a rest sandwich of the dual summand. The working model takes that bilinear as the candidate source of a dual-phase drive, with right-handed polarisation ($\sigma=+1$) reinforcing attractive mismatch ($J>0$) and left-handed polarisation ($\sigma=-1$) opposing it. The effective interaction is written
 \[
-H_\text{int} = \kappa \sigma E_0^2 \sum_a \phi_a \Gamma_a,
+H_\text{int} = \kappa \sigma E_0^2 \sum_a \theta_a \Gamma_a,
 \]
-where $E_0$ is the electric-field amplitude and $\kappa$ is a material-dependent coupling constant. Near resonance, the dual phase evolves according to
+where $E_0$ is the electric-field amplitude and $\kappa$ is a material-dependent coupling, neither of which is derived from the dual-rotor algebra. The phase-lock
 \[
-\dot{\phi} = \kappa \sigma E_0^2 \sin(\omega t - \phi + \delta_\sigma).
+\dot{\theta} = \kappa \sigma E_0^2 \sin(\omega t - \theta + \delta_\sigma)
 \]
+is extra structure. The written particle action, given a dual-channel acceleration $u$, makes the mismatch a double integrator $\ddot\delta=-u$ and supplies no restoring frequency.
 
 \subsection{Proposed Near-Term Experiments}
 
@@ -329,22 +330,22 @@ The most accessible platform exploits collective coherence in superconductors or
 \begin{itemize}
 \item Suspend a microgram-scale superconducting test mass inside an asymmetric THz resonator (quantum cascade laser or free-electron laser cavity) with precise circular-polarization control.
 \item Monitor the apparent weight or inertial mass via a high-precision torsion balance or superconducting gravimeter while sweeping the frequency and helicity.
-\item Look for resonant, helicity-dependent changes in effective mass at the predicted dual-rotor resonance frequencies $\theta \sim c / (2\pi r_\text{comp})$, where $r_\text{comp}$ is the compactification radius set by the particle mass.
+\item Look for helicity-dependent changes in effective mass. A resonant peak at a proposed dual-rotor scale $\theta \sim c / (2\pi r_\text{comp})$ would test the extra phase-lock structure, not the dual-only geometry of $J$.
 \end{itemize}
 
-Predicted effect sizes are $\Delta m / m \sim 10^{-2}$--$10^{-5}$ at achievable intensities of $10^{12}$--$10^{15}$ W/m$^2$. The signature is distinctive: the effect must reverse sign when the polarization helicity is flipped and must vanish for linearly polarized or unpolarized radiation.
+Predicted effect sizes, if the coupling exists, are $\Delta m / m \sim 10^{-2}$--$10^{-5}$ at achievable intensities of $10^{12}$--$10^{15}$ W/m$^2$. The signature is distinctive: the effect must reverse sign when the polarization helicity is flipped and must vanish for linearly polarized or unpolarized radiation.
 
 \subsection{Falsifiability and Caveats}
 
-A null result at the $10^{-6}$ level after a systematic frequency and helicity scan would constrain the dual-rotor coupling strength and the compactification scale. Positive detection—particularly a helicity-reversible, resonance-peaked mass shift—would constitute strong evidence that gravity and inertia are torsional phenomena originating in dual spacetime.
+A null result at the $10^{-6}$ level after a systematic frequency and helicity scan would constrain the dual-rotor coupling strength, not the admissible-cone kinematics of $J$. Positive detection---particularly a helicity-reversible mass shift---would constitute strong evidence that gravity and inertia are torsional phenomena originating in dual spacetime. A resonance peak would further constrain the working oscillator or phase-lock, which the written action does not force.
 
-The theory makes no claim of immediate technological breakthrough. The proposals above are modest, table-top experiments whose primary purpose is to test the fundamental hypothesis that dual-spacetime degrees of freedom couple measurably to laboratory electromagnetic fields. Success at this level would open the door to larger-scale gravitational engineering; failure would simply bound the parameters of the framework.
+The theory makes no claim of immediate technological breakthrough. The proposals above are modest, table-top experiments whose primary purpose is to test the hypothesis that dual-spacetime degrees of freedom couple measurably to laboratory electromagnetic fields. Success at this level would open the door to larger-scale gravitational engineering; failure would simply bound the parameters of the coupling model.
 
 \subsection{Broader Implications}
 
 If dual-rotor control proves feasible, the same mechanism offers pathways to nuclear transmutation and radioactivity neutralization by driving torsional layer transitions inside atomic nuclei. These applications, however, lie beyond the scope of the present quantum-gravity test program and will be addressed in future work.
 
-In summary, the double spacetime theory transforms gravity from an immutable geometric constraint into a controllable torsional degree of freedom whose quantum sector is already within experimental reach. The coming decade will decide whether nature has granted us access to this new degree of freedom.
+In summary, dual-only kinematics already delimit when $J$ can be shielded or reversed. Whether nature supplies a laboratory dual force---and whether gravity is therefore a controllable torsional degree of freedom---is the experimental question of the coming decade.
 
 \section{The algebraic picture}
 \label{sec:status}

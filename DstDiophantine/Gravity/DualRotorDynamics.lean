@@ -39,6 +39,12 @@ The de Broglie reading of free lag, and any identification of
   yields \(\ddot\delta+2m\delta=0\) with \(\ddot\sigma=0\).
   Its energy is conserved and nonnegative for \(m\ge 0\).
   This is an explicit working model, not the written action.
+* A dual-channel generalised acceleration \(u\) on the written action
+  yields \(\ddot\delta=-u\) and \(\ddot\sigma=-2m\delta+u\): the mismatch
+  is a double integrator, with no restoring frequency. The same \(u\) on
+  the working oscillator yields \(\ddot\delta+2m\delta=-u\) and
+  \(\ddot\sigma=u\). A constant drive shifts the equilibrium mismatch;
+  it is not derived from Faraday helicity.
 -/
 
 namespace DstDiophantine
@@ -227,6 +233,62 @@ theorem oscillatorEnergy_nonneg {m φ θ φdot θdot : ℝ} (hm : 0 ≤ m) :
     0 ≤ oscillatorEnergy m φ θ φdot θdot := by
   unfold oscillatorEnergy
   nlinarith [sq_nonneg φdot, sq_nonneg θdot, sq_nonneg (φ - θ)]
+
+/-! ### Dual-channel generalised acceleration \(u\)
+
+The sign convention is kinematic: \(u\) is added to \(\ddot\theta\).
+No identification \(u\propto\sigma E_0^2\) is claimed.
+-/
+
+/-- Written Euler–Lagrange with a dual-channel acceleration \(u\). -/
+def PaperSourcedEL (m φ θ φddot θddot u : ℝ) : Prop :=
+  φddot = -m * (φ - θ) ∧ θddot = -m * (φ - θ) + u
+
+theorem paperSourcedEL_mismatch {m φ θ φddot θddot u : ℝ}
+    (h : PaperSourcedEL m φ θ φddot θddot u) :
+    φddot - θddot = -u := by
+  rcases h with ⟨hφ, hθ⟩
+  linarith
+
+theorem paperSourcedEL_common {m φ θ φddot θddot u : ℝ}
+    (h : PaperSourcedEL m φ θ φddot θddot u) :
+    φddot + θddot = -2 * m * (φ - θ) + u := by
+  rcases h with ⟨hφ, hθ⟩
+  linarith
+
+/-- On the written action a dual force freely accelerates the mismatch. -/
+theorem paperSourcedEL_iff_channels (m φ θ φddot θddot u : ℝ) :
+    PaperSourcedEL m φ θ φddot θddot u ↔
+      φddot - θddot = -u ∧ φddot + θddot = -2 * m * (φ - θ) + u := by
+  constructor
+  · intro h
+    exact ⟨paperSourcedEL_mismatch h, paperSourcedEL_common h⟩
+  · intro ⟨hδ, hσ⟩
+    constructor <;> linarith
+
+/-- Same-sign working model with a dual-channel acceleration \(u\). -/
+def OscillatorSourcedEL (m φ θ φddot θddot u : ℝ) : Prop :=
+  φddot = -m * (φ - θ) ∧ θddot = m * (φ - θ) + u
+
+theorem oscillatorSourcedEL_mismatch {m φ θ φddot θddot u : ℝ}
+    (h : OscillatorSourcedEL m φ θ φddot θddot u) :
+    (φddot - θddot) + 2 * m * (φ - θ) = -u := by
+  rcases h with ⟨hφ, hθ⟩
+  linarith
+
+theorem oscillatorSourcedEL_common {m φ θ φddot θddot u : ℝ}
+    (h : OscillatorSourcedEL m φ θ φddot θddot u) :
+    φddot + θddot = u := by
+  rcases h with ⟨hφ, hθ⟩
+  linarith
+
+/-- A constant dual drive shifts the mismatch equilibrium of the oscillator. -/
+theorem oscillatorSourcedEL_eq_mismatch {m φ θ u : ℝ} (hm : m ≠ 0)
+    (h : OscillatorSourcedEL m φ θ 0 0 u) :
+    φ - θ = -u / (2 * m) := by
+  have hδ := oscillatorSourcedEL_mismatch h
+  have h2 : (2 : ℝ) * m ≠ 0 := mul_ne_zero two_ne_zero hm
+  exact (eq_div_iff h2).mpr (by linarith)
 
 end Gravity
 

@@ -15,6 +15,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
+import DstDiophantine.Gravity.DualControl
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -64,7 +65,16 @@ wave into null Cartan and charged linear pieces whose Poynting parts add
 without a cross term; both \(P_{L,R}\) kill the charged summand, so axis
 chirality is not photon helicity; rest electric kick has vanishing
 four-phase mean; a beam-direction velocity yields a transverse sandwich
-force; no helicity drive of \(J\)).
+force; among the six classical Faraday quadratics a helicity-odd
+combination equals a multiple of \(P_z\) on circular waves;
+no helicity drive of \(J\)), the dual-only control identities of
+`DualControl` (jet \(\dot J\), second-order drop along a dual ray, convex
+dual interpolation, wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\), dual-only
+shielding iff the wall is nonpositive, equal-scale target iff
+\(\alpha_a\le\pi/4\), uniform \(\pi/6\) shields and repels while \(\pi/3\)
+cannot dual-only shield), and the sourced dual-channel Euler–Lagrange
+identities (written action \(\ddot\delta=-u\), working oscillator
+\(\ddot\delta+2m\delta=-u\); no Faraday identification of \(u\)).
 -/
 
 namespace DstDiophantine
@@ -557,6 +567,51 @@ example {G M R a0 : ℝ} (hR : R ≠ 0) (hscale : R ^ 2 = G * M / a0)
     (ha0 : a0 ≠ 0) :
     (vFlatSq G M R) ^ 2 = G * M * a0 * f0 ^ 2 :=
   tullyFisher_of_scaling hR hscale ha0
+
+/-- Regression: dual wall formula. -/
+example (α : ℝ) :
+    JAxis α (dualWall α) = (Real.pi / 2) * (α - Real.pi / 4) :=
+  JAxis_wall α
+
+/-- Regression: dual-only shielding iff the wall is nonpositive. -/
+example (p : Operations.TorsionParams) :
+    J (dualWallParams p) ≤ 0 ↔
+      ∑ a : Fin 3, p.alpha a ≤ 3 * Real.pi / 4 :=
+  J_dualWall_nonpos_iff p
+
+/-- Regression: uniform \(\pi/6\) admits equal-scale shielding. -/
+example : J (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) = 0 ∧
+    Admissible.IsAdmissibleContinuous
+      (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) :=
+  ⟨uniform_pi_div_six_shields, uniform_pi_div_six_equalScale_admissible⟩
+
+/-- Regression: uniform \(\pi/3\) cannot be dual-only shielded. -/
+example {q : Operations.TorsionParams}
+    (hα : ∀ a, q.alpha a = Real.pi / 3)
+    (hq : Admissible.IsAdmissibleContinuous q) :
+    0 < J q :=
+  uniform_pi_div_three_no_dual_shield hα hq
+
+/-- Regression: written dual force freely accelerates the mismatch. -/
+example (m φ θ φddot θddot u : ℝ) (h : PaperSourcedEL m φ θ φddot θddot u) :
+    φddot - θddot = -u :=
+  paperSourcedEL_mismatch h
+
+/-- Regression: working oscillator plus dual force shifts the mismatch. -/
+example {m φ θ u : ℝ} (hm : m ≠ 0)
+    (h : OscillatorSourcedEL m φ θ 0 0 u) :
+    φ - θ = -u / (2 * m) :=
+  oscillatorSourcedEL_eq_mismatch hm h
+
+/-- Regression: helicity-odd classical quadratics are multiples of \(P_z\). -/
+example {cE2 cB2 cEB cPx cPy cPz : ℝ}
+    (h : ∀ σ E0 ψ : ℝ, σ ^ 2 = 1 →
+      classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave (-σ) E0 ψ) =
+        -classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ))
+    {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ) =
+      cPz * poyntingZ (circularWave σ E0 ψ) :=
+  classicalQuadratic_eq_smul_poyntingZ_of_helicity_odd h hσ
 
 end Gravity
 

@@ -45,6 +45,11 @@ field vanishes, so a dual-sector drive proportional to a mean
   kick; its four-phase mean vanishes. A velocity along the beam yields
   a transverse sandwich force \(E-v\times B\) with vanishing \(z\)
   component, not a helicity-odd scalar \(J\).
+* Among the six classical Faraday quadratics
+  \(\{E^2,B^2,E\cdot B,P_x,P_y,P_z\}\), a real linear combination that is
+  helicity-odd on circular waves equals a multiple of \(P_z\) on those
+  waves. Helicity drive of the particle mismatch \(J\) is still not
+  derived.
 -/
 
 namespace DstDiophantine
@@ -505,6 +510,65 @@ theorem sandwichForce_circularWave_zVelocity (σ E0 ψ vz : ℝ) :
       σ * E0 * Real.sin ψ + vz * (E0 * Real.sin ψ) ∧
     sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 := by
   simp [sandwichForce, circularWave, zVelocity, cross]
+
+/-! ### Uniqueness of the helicity-odd classical quadratic -/
+
+/-- Real linear combination of the six classical Faraday quadratics. -/
+def classicalQuadratic (cE2 cB2 cEB cPx cPy cPz : ℝ)
+    (p : FaradayParams) : ℝ :=
+  cE2 * energySq p + cB2 * magneticSq p + cEB * faradayDot p +
+    cPx * cross p.E p.B 0 + cPy * cross p.E p.B 1 + cPz * cross p.E p.B 2
+
+theorem cross_circularWave_x (σ E0 ψ : ℝ) :
+    cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 0 = 0 := by
+  simp [cross, circularWave]
+
+theorem cross_circularWave_y (σ E0 ψ : ℝ) :
+    cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 1 = 0 := by
+  simp [cross, circularWave]
+
+theorem classicalQuadratic_circularWave {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1)
+    (cE2 cB2 cEB cPx cPy cPz : ℝ) :
+    classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ) =
+      (cE2 + cB2) * E0 ^ 2 + cPz * σ * E0 ^ 2 := by
+  unfold classicalQuadratic
+  rw [circularWave_energy hσ, circularWave_magnetic hσ, circularWave_dot hσ,
+    cross_circularWave_x, cross_circularWave_y]
+  have hz : cross (circularWave σ E0 ψ).E (circularWave σ E0 ψ).B 2 =
+      σ * E0 ^ 2 := by
+    simpa [poyntingZ] using poyntingZ_circularWave σ E0 ψ
+  rw [hz]
+  ring
+
+/-- Helicity-oddness on circular waves forces the even quadratic sector to
+vanish, so the combination equals a multiple of \(P_z\) on those waves. -/
+theorem classicalQuadratic_helicity_odd_even_sector
+    {cE2 cB2 cEB cPx cPy cPz : ℝ}
+    (h : ∀ σ E0 ψ : ℝ, σ ^ 2 = 1 →
+      classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave (-σ) E0 ψ) =
+        -classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ)) :
+    cE2 + cB2 = 0 := by
+  have hσ : (1 : ℝ) ^ 2 = 1 := by norm_num
+  have h1 := classicalQuadratic_circularWave (σ := 1) (E0 := 1) (ψ := 0) hσ
+    cE2 cB2 cEB cPx cPy cPz
+  have hσn : ((-1 : ℝ) ^ 2 = 1) := by norm_num
+  have hn := classicalQuadratic_circularWave (σ := -1) (E0 := 1) (ψ := 0) hσn
+    cE2 cB2 cEB cPx cPy cPz
+  have hodd := h 1 1 0 hσ
+  simp [h1, hn] at hodd
+  linarith
+
+theorem classicalQuadratic_eq_smul_poyntingZ_of_helicity_odd
+    {cE2 cB2 cEB cPx cPy cPz : ℝ}
+    (h : ∀ σ E0 ψ : ℝ, σ ^ 2 = 1 →
+      classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave (-σ) E0 ψ) =
+        -classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ))
+    {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ) =
+      cPz * poyntingZ (circularWave σ E0 ψ) := by
+  have heven := classicalQuadratic_helicity_odd_even_sector h
+  rw [classicalQuadratic_circularWave hσ, poyntingZ_circularWave, heven]
+  ring
 
 end Gravity
 
