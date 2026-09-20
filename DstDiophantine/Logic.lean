@@ -33,6 +33,7 @@ import DstDiophantine.Logic.Quantum.StringSpectrum
 import DstDiophantine.Logic.Quantum.MinimalIdeal
 import DstDiophantine.Logic.Quantum.CompositeProjector
 import DstDiophantine.Logic.Quantum.LeftIdealDim
+import DstDiophantine.Logic.Quantum.LeftIdealSplit
 import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DiracEquation
@@ -583,6 +584,22 @@ example : Module.finrank ℂ DualSpinor ≠ Module.finrank ℂ DiracSpinor :=
 /-- Regression: commuting left ideal has real dimension exactly eight. -/
 example : Module.finrank ℝ (leftIdealSub commutingSpinorIdem) = 8 :=
   finrank_leftIdeal_commuting
+
+/-- Regression: Minkowski core of the commuting left ideal is four-dimensional. -/
+example : Module.finrank ℝ minkowskiLeftIdeal = 4 :=
+  finrank_minkowskiLeftIdeal
+
+/-- Regression: the eight-dimensional ideal splits as Minkowski core plus null copy. -/
+example :
+    minkowskiLeftIdeal ⊔ nullSlice = leftIdealSub commutingSpinorIdem ∧
+      minkowskiLeftIdeal ⊓ nullSlice = (⊥ : Submodule ℝ PGA) :=
+  leftIdeal_directSum_null
+
+/-- Regression: the null copy is a proper left PGA-submodule, so the ideal is reducible. -/
+example :
+    nullSlice ≠ (⊥ : Submodule ℝ PGA) ∧
+      nullSlice ≠ leftIdealSub commutingSpinorIdem :=
+  ⟨nullSlice_is_proper_submodule.2.1, nullSlice_is_proper_submodule.2.2.1⟩
 
 /-- Regression: Dirac spinor has real dimension eight (matches the left ideal). -/
 example : Module.finrank ℝ DiracSpinor = 8 :=

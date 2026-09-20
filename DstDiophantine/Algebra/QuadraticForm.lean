@@ -131,6 +131,69 @@ theorem Q311_extend4 (v : Vec4) : Q311 (extend4 v) = Q31 v := by
   rw [Fin.sum_univ_five, Fin.sum_univ_four]
   simp
 
+/-- Restrict `Fin 5 → ℝ` to the first four (Minkowski) coordinates. -/
+def restrict4 (v : Vec5) : Vec4 :=
+  fun i => v (Fin.castAdd 1 i)
+
+@[simp] theorem restrict4_apply (v : Vec5) (μ : Fin 4) :
+    restrict4 v μ = v (Fin.castAdd 1 μ) :=
+  rfl
+
+theorem restrict4_extend4 (v : Vec4) : restrict4 (extend4 v) = v := by
+  ext i
+  fin_cases i <;> simp [restrict4, extend4]
+
+theorem restrict4_e5vec_last : restrict4 (e5vec 4) = 0 := by
+  ext i
+  fin_cases i <;> simp [restrict4, e5vec, Pi.single]
+
+/-- Every vector splits as a Minkowski part plus a multiple of \(e_4\). -/
+theorem extend4_restrict4_add_last (v : Vec5) :
+    extend4 (restrict4 v) + v 4 • e5vec 4 = v := by
+  ext i
+  fin_cases i <;> simp [extend4, restrict4, e5vec, Pi.single, Pi.add_apply,
+    Pi.smul_apply]
+
+theorem Q31_restrict4 (v : Vec5) : Q31 (restrict4 v) = Q311 v := by
+  simp only [Q31, Q311, QuadraticMap.weightedSumSquares_apply, restrict4, w31, w311]
+  rw [Fin.sum_univ_four, Fin.sum_univ_five]
+  simp
+
+/-- Sign flip of the null coordinate `e₄`. -/
+def flipE4 (v : Vec5) : Vec5 :=
+  fun i => if i = 4 then -v i else v i
+
+noncomputable def flipE4LM : Vec5 →ₗ[ℝ] Vec5 where
+  toFun := flipE4
+  map_add' := fun x y => by
+    ext i
+    by_cases h : i = 4
+    · subst h
+      simp [flipE4, Pi.add_apply]
+      abel
+    · simp [flipE4, h, Pi.add_apply]
+  map_smul' := fun c x => by
+    ext i
+    by_cases h : i = 4
+    · subst h; simp [flipE4, Pi.smul_apply]
+    · simp [flipE4, h, Pi.smul_apply]
+
+@[simp] theorem flipE4LM_apply (v : Vec5) : flipE4LM v = flipE4 v := rfl
+
+theorem flipE4_extend4 (v : Vec4) : flipE4 (extend4 v) = extend4 v := by
+  ext i
+  fin_cases i <;> simp [flipE4, extend4]
+
+theorem flipE4_flipE4 (v : Vec5) : flipE4 (flipE4 v) = v := by
+  ext i
+  simp [flipE4]
+  split_ifs <;> simp
+
+theorem Q311_flipE4 (v : Vec5) : Q311 (flipE4 v) = Q311 v := by
+  simp only [Q311, QuadraticMap.weightedSumSquares_apply, w311]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  fin_cases i <;> simp [flipE4]
+
 private theorem extend4to10_of_ge_four (v : Vec4) (k : Fin 10) (hk : 4 ≤ (k : ℕ)) :
     extend4to10 v k = 0 := by
   have : k.val = 4 ∨ k.val = 5 ∨ k.val = 6 ∨ k.val = 7 ∨ k.val = 8 ∨ k.val = 9 := by
