@@ -292,6 +292,11 @@ theorem mass_sub_J (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring
 
+/-- Unconditional: \(J=0\) iff the two rapidity budgets agree. -/
+theorem J_eq_zero_iff (p : TorsionParams) :
+    J p = 0 ↔ ∑ a : Fin 3, p.alpha a ^ 2 = ∑ a : Fin 3, p.beta a ^ 2 := by
+  constructor <;> intro h <;> linarith [J_add_mass p, mass_sub_J p]
+
 theorem J_eq_mass_of_forall_beta_eq_zero {p : TorsionParams}
     (h : ∀ a, p.beta a = 0) : J p = mass p := by
   have := mass_sub_J p

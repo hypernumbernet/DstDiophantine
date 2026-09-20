@@ -49,6 +49,10 @@ The de Broglie reading of free lag, and any identification of
   sourced system unless \(m(\phi-\theta)=0\). A nonzero rest mass with
   leftover mismatch drags the usual sector; holding it fixed requires a
   constraint.
+* With both channel forces \((v,u)\), the written Jacobi integral
+  changes at \(v\dot\phi-u\dot\theta\). Holding \(\ddot\phi=0\) uniquely
+  fixes \(v=m(\phi-\theta)\). If \(\dot\phi=0\) that constraint
+  contributes no power.
 -/
 
 namespace DstDiophantine
@@ -335,6 +339,40 @@ theorem oscillatorSourcedEL_not_dual_only_of_mismatch {m φ θ φddot θddot u :
   intro ⟨h, hφ⟩
   have hmul := (oscillatorSourcedEL_of_phi_ddot_zero h hφ).1
   exact hδ (sub_eq_zero.mp ((mul_eq_zero.mp hmul).resolve_left hm))
+
+/-! ### Both-channel forces and the constraint that realises dual-only -/
+
+/-- Written Euler–Lagrange with a usual force \(v\) and a dual force \(u\). -/
+def PaperBothSourcedEL (m φ θ φddot θddot v u : ℝ) : Prop :=
+  φddot = -m * (φ - θ) + v ∧ θddot = -m * (φ - θ) + u
+
+theorem paperSourcedEL_iff_both_zero_usual (m φ θ φddot θddot u : ℝ) :
+    PaperSourcedEL m φ θ φddot θddot u ↔
+      PaperBothSourcedEL m φ θ φddot θddot 0 u := by
+  simp [PaperSourcedEL, PaperBothSourcedEL]
+
+/-- Power of the written Jacobi integral is the indefinite pairing of the
+two controls with the two velocities. -/
+theorem paperEnergyDot_both_sourced {m φ θ φdot θdot φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = v * φdot - u * θdot := by
+  rcases h with ⟨hφ, hθ⟩
+  simp [paperEnergyDot, hφ, hθ]
+  ring
+
+/-- Holding \(\ddot\phi=0\) uniquely fixes the usual-channel force. -/
+theorem paperBothSourcedEL_constraint_force {m φ θ φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) (hφ : φddot = 0) :
+    v = m * (φ - θ) := by
+  rcases h with ⟨hφel, _⟩
+  linarith
+
+/-- If the usual rapidity is instantaneously at rest, the constraint
+contributes no power. -/
+theorem paperEnergyDot_rest_usual {m φ θ φdot θdot φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) (hφdot : φdot = 0) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = -u * θdot := by
+  simp [paperEnergyDot_both_sourced h, hφdot]
 
 end Gravity
 

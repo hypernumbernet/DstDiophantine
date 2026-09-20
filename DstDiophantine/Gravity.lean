@@ -44,7 +44,9 @@ the closed form of `gammaEff`, the Euler–Lagrange identities of
 indefinite conserved energy, dual-channel drive \(\ddot\delta=-u\) on the written
 action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; dual-only
 \(\ddot\phi=0\) is not a free sourced solution unless \(m(\phi-\theta)=0\);
-no Faraday identification of \(u\)), the Coulombic circular-orbit identities of
+both-channel power \(v\dot\phi-u\dot\theta\) and unique constraint
+\(v=m(\phi-\theta)\); no Faraday identification of \(u\)), the Coulombic
+circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
 ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
@@ -71,14 +73,14 @@ four-phase mean; a beam-direction velocity yields a transverse sandwich
 force; among the six classical Faraday quadratics a helicity-odd
 combination equals a multiple of \(P_z\) on circular waves;
 no helicity drive of \(J\)), and the dual-only control identities of
-`DualControl` (jet \(\dot J\), second-order drop along a dual ray, convex
-dual interpolation, wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\), dual-only
-shielding iff the wall is nonpositive, equal-scale target iff
-\(\alpha_a\le\pi/4\), conservation \(J+M=\sum\alpha^2\) along dual-only
-motion and unique shield mass \(2M_{\mathrm{seed}}\), dual-only \(J\)
-filling the wall-to-seed interval, mixed unwind onto \(\alpha_a\le\pi/4\)
-when the wall is positive, uniform \(\pi/6\) shields and repels while
-\(\pi/3\) cannot dual-only shield).
+`DualControl` (jet \(\dot J\), wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\),
+dual-only shielding iff the wall is nonpositive, equal-scale strictly
+stronger than dual-only shielding, cross-axis compensation, unique
+shield when the wall vanishes, vacuum unreachable dual-only unless
+\(\sum\alpha^2=0\), conservation \(J+M=\sum\alpha^2\) and unique shield
+mass \(2M_{\mathrm{seed}}\), dual-only \(J\) filling the wall-to-seed
+interval, mixed unwind onto \(\alpha_a\le\pi/4\) when the wall is
+positive).
 -/
 
 namespace DstDiophantine
@@ -621,6 +623,46 @@ example :
         (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) ∧
       0 < mass (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) :=
   uniform_pi_div_three_mixed_shield
+
+/-- Regression: equal-scale is strictly stronger than dual-only shielding. -/
+example :
+    ∃ p : Operations.TorsionParams,
+      Admissible.IsAdmissibleContinuous p ∧
+        (∃ q : Operations.TorsionParams,
+          q.alpha = p.alpha ∧ Admissible.IsAdmissibleContinuous q ∧
+            J q = 0) ∧
+          ¬ Admissible.IsAdmissibleContinuous (equalScaleOf p) :=
+  equalScale_strictly_stronger_than_dual_only_shield
+
+/-- Regression: two silent axes give two distinct dual-only shields. -/
+example :
+    ∃ q₁ q₂ : Operations.TorsionParams,
+      q₁.alpha = (axisUsual (Real.pi / 3)).alpha ∧
+        q₂.alpha = (axisUsual (Real.pi / 3)).alpha ∧
+          Admissible.IsAdmissibleContinuous q₁ ∧
+            Admissible.IsAdmissibleContinuous q₂ ∧
+              J q₁ = 0 ∧ J q₂ = 0 ∧ q₁ ≠ q₂ :=
+  exists_two_dual_only_shields_axisUsual (by positivity)
+    pi_div_three_le_pi_div_two
+
+/-- Regression: dual-only cannot evacuate a positive usual seed. -/
+example {p q : Operations.TorsionParams}
+    (hα : q.alpha = p.alpha)
+    (hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0)
+    (hM : mass q = 0) : False :=
+  dual_only_not_vacuum_of_usual_pos hα hU hM
+
+/-- Regression: both-channel power is the indefinite pairing. -/
+example {m φ θ φdot θdot φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = v * φdot - u * θdot :=
+  paperEnergyDot_both_sourced h
+
+/-- Regression: dual-only constraint force is unique. -/
+example {m φ θ φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) (hφ : φddot = 0) :
+    v = m * (φ - θ) :=
+  paperBothSourcedEL_constraint_force h hφ
 
 /-- Regression: vanishing dual force recovers the unsourced written jet. -/
 example (m φ θ φddot θddot : ℝ) :

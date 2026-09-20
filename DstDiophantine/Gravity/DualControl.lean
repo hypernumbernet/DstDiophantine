@@ -4,6 +4,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FinCases
 
 /-!
 # Dual-only control of the particle mismatch \(J\)
@@ -25,20 +26,26 @@ are **not** derived.
   that wall value. Dual-only shielding (\(J=0\)) is possible if and only
   if the wall is nonpositive, equivalently \(\sum\alpha_a\le 3\pi/4\).
   Dual-only repulsion (\(J<0\)) requires a strictly negative wall.
-* The balanced target \(\beta=\alpha\) (equal-scale shielding) lies in the
-  cone if and only if \(\alpha_a\le\pi/4\) on every axis.
 * Unconditionally \(J+M=\sum\alpha^2\) and \(M-J=\sum\beta^2\). Dual-only
   motion conserves \(J+M\); usual-only motion conserves \(M-J\). Every
   dual-only drop in \(J\) is paid for, one-for-one, by unsigned mass.
-  Dual-only \(J=0\) therefore has a unique mass \(\sum\alpha^2\), twice
-  the pure-usual seed.
-* Dual-only admissible \(J\) fills the closed interval from the wall up
-  to the pure-usual value. When the wall is positive, mixed control still
-  reaches a massive shield by unwinding each usual rapidity to at most
-  \(\pi/4\) and matching the dual angle.
-* Uniform examples: \(\alpha=\pi/6\) admits both shielding and repulsion
-  by dual-only motion; \(\alpha=\pi/3\) cannot reach \(J=0\) dual-only,
-  but the mixed unwind does.
+  Dual-only \(J=0\) therefore has unique mass \(\sum\alpha^2\), twice the
+  pure-usual seed, and dual-only admissible \(J\) fills the closed
+  interval from the wall up to that seed.
+* The balanced target \(\beta=\alpha\) lies in the cone iff
+  \(\alpha_a\le\pi/4\) on every axis, which is strictly stronger than
+  dual-only shielding. A single-axis usual seed with
+  \(\pi/4<\alpha\le\pi/2\) has a strictly negative wall, so dual-only
+  \(J=0\) exists by cross-axis compensation, while \(\beta=\alpha\) on
+  that axis leaves the cone. Two silent axes give two distinct shields
+  of the same mass. When the wall vanishes, the shield is unique: the
+  wall itself. Dual-only conserves \(\sum\alpha^2\), so the vacuum
+  \(M=0\) is unreachable unless the usual seed already vanishes.
+* When the wall is positive, mixed control still reaches a massive
+  shield by unwinding each usual rapidity to at most \(\pi/4\) and
+  matching the dual angle. Uniform \(\alpha=\pi/6\) admits dual-only
+  shielding and repulsion; uniform \(\alpha=\pi/3\) cannot reach
+  \(J=0\) dual-only, but the mixed unwind does.
 -/
 
 namespace DstDiophantine
@@ -164,6 +171,13 @@ theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
     linarith
   · unfold dualWallParams dualWall
     linarith
+
+theorem admissibleContinuous_beta_le_dualWall {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    p.beta a ≤ dualWall (p.alpha a) := by
+  have := admissibleContinuous_sum_le p h a
+  unfold dualWall
+  linarith
 
 /-! ### Affine dual interpolation -/
 
@@ -327,17 +341,12 @@ theorem J_dual_only_ge_wall {p q : TorsionParams}
     J (dualWallParams p) ≤ J q := by
   rw [J_eq_sum_JAxis, J_eq_sum_JAxis]
   refine Finset.sum_le_sum fun a _ => ?_
-  unfold JAxis dualWallParams dualWall
+  unfold JAxis dualWallParams
   have hβnn := admissibleContinuous_beta_nonneg q hq a
-  have hsum := admissibleContinuous_sum_le q hq a
-  have hβle : q.beta a ≤ Real.pi / 2 - p.alpha a := by
-    rw [← hα]
-    linarith
-  have hwall_nn : 0 ≤ Real.pi / 2 - p.alpha a := by
-    have := admissibleContinuous_alpha_le_half_pi q hq a
-    rw [hα] at this
-    linarith
-  have hsq : q.beta a ^ 2 ≤ (Real.pi / 2 - p.alpha a) ^ 2 :=
+  have hβle : q.beta a ≤ dualWall (p.alpha a) := by
+    have := admissibleContinuous_beta_le_dualWall hq a
+    rwa [hα] at this
+  have hsq : q.beta a ^ 2 ≤ dualWall (p.alpha a) ^ 2 :=
     pow_le_pow_left₀ hβnn hβle 2
   simp [hα]
   linarith
@@ -641,6 +650,10 @@ theorem pi_div_four_lt_pi_div_three : Real.pi / 4 < Real.pi / 3 := by
   have hπ : 0 < Real.pi := Real.pi_pos
   nlinarith
 
+theorem pi_div_three_le_pi_div_two : Real.pi / 3 ≤ Real.pi / 2 := by
+  have hπ : 0 < Real.pi := Real.pi_pos
+  nlinarith
+
 theorem uniform_pi_div_six_admissible :
     IsAdmissibleContinuous (uniformTorsion (Real.pi / 6) 0) :=
   isAdmissibleContinuous_uniform (by positivity) le_rfl (by
@@ -769,6 +782,194 @@ theorem uniform_pi_div_three_mixed_shield :
     simp only [uniformTorsion]
     have hπ : 0 < Real.pi := Real.pi_pos
     nlinarith
+
+/-! ### Cross-axis dual compensation
+
+Equal-scale \(\beta=\alpha\) is an isotropic target. Dual-only shielding
+is a scalar budget: idle axes can carry the dual rapidity that cancels a
+boosted usual axis.
+-/
+
+/-- Value `x` on index `i`, else `0`. -/
+def finCoord (i : Fin 3) (x : ℝ) : Fin 3 → ℝ :=
+  fun a => if a = i then x else 0
+
+theorem finCoord_nonneg {i : Fin 3} {x : ℝ} (hx : 0 ≤ x) (a : Fin 3) :
+    0 ≤ finCoord i x a := by
+  simp [finCoord]
+  split_ifs <;> simp [hx]
+
+theorem sum_sq_finCoord (i : Fin 3) (x : ℝ) :
+    ∑ a : Fin 3, finCoord i x a ^ 2 = x ^ 2 := by
+  fin_cases i <;> simp [finCoord]
+
+theorem J_finCoord_pair (i j : Fin 3) (α : ℝ) :
+    J ⟨finCoord i α, finCoord j α⟩ = 0 := by
+  rw [J_coef]
+  dsimp
+  rw [Finset.sum_sub_distrib, sum_sq_finCoord, sum_sq_finCoord]
+  ring
+
+/-- Pure usual rapidity on axis \(0\). -/
+def axisUsual (α : ℝ) : TorsionParams where
+  alpha := finCoord 0 α
+  beta := fun _ => 0
+
+/-- Usual on axis \(0\), dual on axis \(1\). -/
+def crossAxisDual (α : ℝ) : TorsionParams where
+  alpha := finCoord 0 α
+  beta := finCoord 1 α
+
+/-- Usual on axis \(0\), dual on axis \(2\). -/
+def crossAxisDual' (α : ℝ) : TorsionParams where
+  alpha := finCoord 0 α
+  beta := finCoord 2 α
+
+theorem axisUsual_alpha_nonneg {α : ℝ} (hα : 0 ≤ α) :
+    ∀ a, 0 ≤ (axisUsual α).alpha a :=
+  fun _ => finCoord_nonneg hα _
+
+theorem isAdmissibleContinuous_axisUsual {α : ℝ}
+    (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisUsual α) := by
+  intro a
+  refine ⟨finCoord_nonneg hα0 a, le_rfl, ?_⟩
+  simp [axisUsual, finCoord]
+  split_ifs <;> linarith [hα0, hα]
+
+theorem J_crossAxisDual (α : ℝ) : J (crossAxisDual α) = 0 :=
+  J_finCoord_pair 0 1 α
+
+theorem J_crossAxisDual' (α : ℝ) : J (crossAxisDual' α) = 0 :=
+  J_finCoord_pair 0 2 α
+
+theorem crossAxisDual_alpha_eq_axisUsual (α : ℝ) :
+    (crossAxisDual α).alpha = (axisUsual α).alpha :=
+  rfl
+
+theorem crossAxisDual'_alpha_eq_axisUsual (α : ℝ) :
+    (crossAxisDual' α).alpha = (axisUsual α).alpha :=
+  rfl
+
+theorem isAdmissibleContinuous_crossAxisDual {α : ℝ}
+    (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (crossAxisDual α) := by
+  intro a
+  refine ⟨finCoord_nonneg hα0 a, finCoord_nonneg hα0 a, ?_⟩
+  fin_cases a
+  · simpa [crossAxisDual, finCoord] using hα
+  · simpa [crossAxisDual, finCoord] using hα
+  · have : (0 : ℝ) ≤ Real.pi / 2 := by positivity
+    simpa [crossAxisDual, finCoord] using this
+
+theorem isAdmissibleContinuous_crossAxisDual' {α : ℝ}
+    (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (crossAxisDual' α) := by
+  intro a
+  refine ⟨finCoord_nonneg hα0 a, finCoord_nonneg hα0 a, ?_⟩
+  fin_cases a
+  · simpa [crossAxisDual', finCoord] using hα
+  · have : (0 : ℝ) ≤ Real.pi / 2 := by positivity
+    simpa [crossAxisDual', finCoord] using this
+  · simpa [crossAxisDual', finCoord] using hα
+
+theorem crossAxisDual_ne_crossAxisDual' {α : ℝ} (hα : α ≠ 0) :
+    crossAxisDual α ≠ crossAxisDual' α := by
+  intro h
+  have hβ := congrArg (fun p : TorsionParams => p.beta 1) h
+  simp only [crossAxisDual, crossAxisDual', finCoord, ↓reduceIte] at hβ
+  exact hα hβ
+
+/-- Equal-scale on a single axis leaves the cone once \(\alpha>\pi/4\). -/
+theorem equalScale_axisUsual_not_admissible {α : ℝ}
+    (h : Real.pi / 4 < α) :
+    ¬ IsAdmissibleContinuous (equalScaleOf (axisUsual α)) := by
+  intro hAdm
+  have hnn : ∀ a, 0 ≤ (axisUsual α).alpha a :=
+    axisUsual_alpha_nonneg
+      (le_of_lt (lt_trans (by positivity : (0 : ℝ) < Real.pi / 4) h))
+  have := (isAdmissibleContinuous_equalScaleOf_iff hnn).mp hAdm 0
+  simp only [axisUsual, finCoord] at this
+  exact (not_le_of_gt h) this
+
+/-- Dual-only shielding of a single-axis seed does not require the
+equal-scale point. -/
+theorem exists_dual_only_shield_axisUsual {α : ℝ}
+    (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
+    ∃ q : TorsionParams,
+      q.alpha = (axisUsual α).alpha ∧ IsAdmissibleContinuous q ∧ J q = 0 :=
+  ⟨crossAxisDual α, rfl, isAdmissibleContinuous_crossAxisDual hα0 hα,
+    J_crossAxisDual α⟩
+
+/-- The isotropic target is strictly stronger than dual-only shielding. -/
+theorem equalScale_strictly_stronger_than_dual_only_shield :
+    ∃ p : TorsionParams,
+      IsAdmissibleContinuous p ∧
+        (∃ q : TorsionParams,
+          q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q = 0) ∧
+          ¬ IsAdmissibleContinuous (equalScaleOf p) :=
+  ⟨axisUsual (Real.pi / 3),
+    isAdmissibleContinuous_axisUsual (by positivity) pi_div_three_le_pi_div_two,
+    exists_dual_only_shield_axisUsual (by positivity) pi_div_three_le_pi_div_two,
+    equalScale_axisUsual_not_admissible pi_div_four_lt_pi_div_three⟩
+
+/-- Two silent axes give two distinct dual-only shields of the same seed. -/
+theorem exists_two_dual_only_shields_axisUsual {α : ℝ}
+    (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
+    ∃ q₁ q₂ : TorsionParams,
+      q₁.alpha = (axisUsual α).alpha ∧ q₂.alpha = (axisUsual α).alpha ∧
+        IsAdmissibleContinuous q₁ ∧ IsAdmissibleContinuous q₂ ∧
+          J q₁ = 0 ∧ J q₂ = 0 ∧ q₁ ≠ q₂ :=
+  ⟨crossAxisDual α, crossAxisDual' α, rfl, rfl,
+    isAdmissibleContinuous_crossAxisDual (le_of_lt hα0) hα,
+    isAdmissibleContinuous_crossAxisDual' (le_of_lt hα0) hα,
+    J_crossAxisDual α, J_crossAxisDual' α,
+    crossAxisDual_ne_crossAxisDual' hα0.ne'⟩
+
+/-! ### Unique dual-only shield on the wall, and vacuum obstruction -/
+
+/-- When the wall vanishes, the only dual-only shield is the wall itself. -/
+theorem dual_only_shield_unique_of_wall_zero {p q : TorsionParams}
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q)
+    (hwall : J (dualWallParams p) = 0) (hJ : J q = 0) :
+    q = dualWallParams p := by
+  refine torsionParams_ext hα ?_
+  have hβW : ∑ i : Fin 3, q.beta i ^ 2 =
+      ∑ i : Fin 3, dualWall (p.alpha i) ^ 2 := by
+    have hq' := (J_eq_zero_iff q).mp hJ
+    have hp' := (J_eq_zero_iff (dualWallParams p)).mp hwall
+    simp only [dualWallParams] at hp'
+    rw [← hq', hα]
+    exact hp'
+  have hle (i : Fin 3) : q.beta i ≤ dualWall (p.alpha i) := by
+    have := admissibleContinuous_beta_le_dualWall hq i
+    rwa [hα] at this
+  have hnn : ∀ i ∈ (Finset.univ : Finset (Fin 3)),
+      0 ≤ dualWall (p.alpha i) ^ 2 - q.beta i ^ 2 := fun i _ =>
+    sub_nonneg.mpr <|
+      pow_le_pow_left₀ (admissibleContinuous_beta_nonneg q hq i) (hle i) 2
+  have hdiff0 :
+      ∑ i : Fin 3, (dualWall (p.alpha i) ^ 2 - q.beta i ^ 2) = 0 := by
+    simp [Finset.sum_sub_distrib, hβW]
+  funext a
+  have hsq : dualWall (p.alpha a) ^ 2 = q.beta a ^ 2 := by
+    linarith [(Finset.sum_eq_zero_iff_of_nonneg hnn).mp hdiff0 a
+      (Finset.mem_univ a)]
+  have hWnn : 0 ≤ dualWall (p.alpha a) :=
+    le_trans (admissibleContinuous_beta_nonneg q hq a) (hle a)
+  simp only [dualWallParams]
+  exact ((sq_eq_sq₀ hWnn (admissibleContinuous_beta_nonneg q hq a)).mp
+    hsq).symm
+
+/-- Dual-only motion conserves \(\sum\alpha^2\), so a massive usual seed
+cannot reach the vacuum. -/
+theorem dual_only_not_vacuum_of_usual_pos {p q : TorsionParams}
+    (hα : q.alpha = p.alpha)
+    (hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0)
+    (hM : mass q = 0) : False := by
+  rw [← hα] at hU
+  exact hU <| Finset.sum_eq_zero fun a _ => by
+    simp [((mass_eq_zero_iff q).mp hM a).1]
 
 end Gravity
 
