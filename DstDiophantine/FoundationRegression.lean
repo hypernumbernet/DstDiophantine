@@ -734,6 +734,37 @@ example :
           ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 :=
   BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd
 
+/-- Phase 7q: a primitive positive solution occupies one 3-descent branch. -/
+example {α β γ : ℕ} (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    (∃ t s τ : ℕ, 0 < t ∧ 0 < s ∧ t ^ 3 < τ ∧
+        Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧ 3 ∣ τ ∧
+          α = τ - t ^ 3 ∧ γ = τ + t ^ 3 ∧ β = t * s ∧
+            s ^ 3 = t ^ 6 + 3 * τ ^ 2) ∨
+      ∃ k t s τ : ℕ, 0 < k ∧ 0 < t ∧ 0 < s ∧
+        3 ^ (3 * k - 1) * t ^ 3 < τ ∧
+          Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧
+            k = padicValNat 3 β ∧
+              α = τ - 3 ^ (3 * k - 1) * t ^ 3 ∧
+                γ = τ + 3 ^ (3 * k - 1) * t ^ 3 ∧
+                  β = 3 ^ k * t * s ∧
+                    s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3 :=
+  pos_cube_three_descent_dichotomy hα hβ hγ hgcd heq
+
+/-- Phase 7q: the coprime-difference parametrisation reconstructs a solution. -/
+example {t s τ : ℕ} (h : t ^ 3 ≤ τ) (heq : s ^ 3 = t ^ 6 + 3 * τ ^ 2) :
+    (τ - t ^ 3) ^ 3 + 2 * (t * s) ^ 3 = (τ + t ^ 3) ^ 3 :=
+  pos_cube_eq_of_gcd_one_params h heq
+
+/-- Phase 7q: the gcd-`3` parametrisation reconstructs a solution. -/
+example {k t s τ : ℕ} (hk : 0 < k)
+    (h : 3 ^ (3 * k - 1) * t ^ 3 ≤ τ)
+    (heq : s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) :
+    (τ - 3 ^ (3 * k - 1) * t ^ 3) ^ 3 + 2 * (3 ^ k * t * s) ^ 3 =
+      (τ + 3 ^ (3 * k - 1) * t ^ 3) ^ 3 :=
+  pos_cube_eq_of_gcd_three_params hk h heq
+
 /-- Cube-residue classes modulo 13 of a positive solution. -/
 example {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α ^ 3 % 13 = 0 ∧ β ^ 3 % 13 = 0 ∨

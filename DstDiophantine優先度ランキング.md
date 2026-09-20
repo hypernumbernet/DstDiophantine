@@ -1,16 +1,16 @@
 # DstDiophantine 研究優先度ランキング
 
-調査日: 2026-09-20（前回 2026-09-19 からの更新）。基準は Lean 実装（論文草稿と食い違う場合は **Lean が正**）。`sorry` / `admit` による穴はなく、未完了は名前付き `Prop`（Residual / Bridge）と明示 `axiom` 4 本で管理されている。
+調査日: 2026-09-20（同日の立方 3-descent 着地を反映）。基準は Lean 実装（論文草稿と食い違う場合は **Lean が正**）。`sorry` / `admit` による穴はなく、未完了は名前付き `Prop`（Residual / Bridge）と明示 `axiom` 4 本で管理されている。
 
 この文書は「比較的容易に研究が進みそうな部分」を、主要定理への寄与と切り分けて評価したものである。有限 `native_decide` 証書や回帰整備は着手しやすいが、それだけでは live residual は閉じない。
 
-前回 Phase I（立方の局所表・Generators 内部括弧・Motor 回帰）は **着地済み**。残っているのは残差本体と、幾何補題を加法条件へ繋ぐ橋である。
+前回 Phase I（立方の局所表・Generators 内部括弧・Motor 回帰）に続き、立方残差の立方差 3-descent は **着地済み**（残差本体は未閉）。残っているのは還元方程式の障害、他の残差本体、および幾何補題を加法条件へ繋ぐ橋である。
 
 ---
 
 ## 1. 結論
 
-**次の一手として最も費用対効果が高いのは、`BealPosCubeAddTwoCubeResidual` の立方差 3-descent（`gcd | 3` の場合分け）である。** 局所表・2-adic 原始スライス・差因子パッケージは既に揃っており、Mordell rank を待たずに `d = 2` equal-odd の `e = 3` 枝を前進できる。
+**次の一手として最も費用対効果が高いのは、`BealTwoEqualEvenDiffFactorResidual` の小さな指数（とくに \(n=4\)）と opposite-parity の部分 no-go である。** 立方の差因子 3-descent は完了し、正値 \(\alpha^3+2\beta^3=\gamma^3\) は \(s^3=t^6+3\tau^2\)（\(3\mid\tau\)）または \(s^3=\tau^2+(3^{2k-1}t^2)^3\) に落ちた。残差そのものは閉じていない。還元方程式の空性は価値が高いが容易性が落ちたので、短期の主戦場は even-diff に移す。
 
 同点級の基盤作業だった Generators 内部括弧表と Lorentz スパン閉包は完了した。代数側の次は、着地した sandwich / 干渉 API を使って `FermatMixedMotorResidual` を加法条件へ繋ぐことである。
 
@@ -18,13 +18,13 @@
 
 | 目的 | 着手すべき候補 | 総合順位 |
 | --- | --- | ---: |
-| Beal の正値組立を 1 葉でも前進させる | cube 立方差 3-descent | 1 |
-| `d = 1` even の半分 | even-diff の `n = 4` / opposite-parity no-go | 4 |
+| Beal の正値組立を 1 葉でも前進させる | even-diff の \(n=4\) / opposite-parity | 1 |
+| 立方葉の後継（重い） | 還元方程式 \(s^3=t^6+3\tau^2\) / \(s^3=\tau^2+w^3\) の障害 | 4 |
 | 低リスクの並行作業 | FoundationRegression / 有限証書 | 2–3 |
 | FLT の live 経路 | `FermatMixedMotorResidual`（幾何補題は着地、加法条件は未接続） | 6 |
 | 避ける（短期） | 旧 coarse / single-axis bridge の再利用、Mordell rank、axiom の内部証明、Goldbach 高さモデル、Faraday と \(u\) の同一視、`𝔰𝔬(3,1)` 抽象同型 | 下位 |
 
-総合 1 位は「容易さだけ」でも「価値だけ」でもなく、**既存補題が厚く、組立先が証明済みで、外部大定理に依存しない**点で選んでいる。2–3 位は Quick Win が高くても残差を閉じない。
+総合表の先頭近くに回帰が来るのは Quick Win のためである。研究の次の一手は **既存補題が厚く、組立先が証明済みで、外部大定理に依存しない** even-diff である。2–3 位は Quick Win が高くても残差を閉じない。
 
 ---
 
@@ -62,6 +62,7 @@
 | 旧順位 | 内容 | 着地点 |
 | --- | --- | --- |
 | 旧 1 位の前処理 | cube の mod 13 / 19 立方剰余表と許容クラス、2-adic 原始 odd スライスへの帰着 | `nat_cube_mod_thirteen` / `_nineteen`、`pos_cube_add_two_cube_mod_*_classes`、`BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd`、`pos_cube_diff_factor_package` |
+| 旧 1 位 | cube 立方差 3-descent（`gcd ∈ {1,3}`、ほぼ立方、半和方程式） | `pos_cube_three_descent_dichotomy`、`exists_pos_cube_gcd_one_half_sum`、`exists_pos_cube_gcd_three_half_sum`、逆向き再構成。残差本体は未閉 |
 | 旧 2 位 | Generators 内部 Lorentz 括弧表、全軸 `hyperbolic_smul_mul` | `commutator_hyperbolic_hyperbolic` / `_cyclic_cyclic` / `_hyperbolic_cyclic` |
 | （追加） | Lorentz / Poincaré スパンの Lie 閉包と双対の複素構造 | [`Algebra/LorentzLie.lean`](DstDiophantine/Algebra/LorentzLie.lean)。抽象 `𝔰𝔬(3,1)` 同型と次元独立性は未請求 |
 | 旧 3 位 | Motor 半直積・着衣並進・全軸スカラー可換、軸 1 回転 sandwich | [`Algebra/MotorGroup.lean`](DstDiophantine/Algebra/MotorGroup.lean)、`sandwich_pureRotation1_*` |
@@ -106,6 +107,8 @@ flowchart TB
   uneq["BealPythagoreanUnequalOddResidual"]
   cube["BealPosCubeAddTwoCubeResidual"]
   prim["primitive odd slice / 差因子 gcd | 3"]
+  desc1["s^3 = t^6 + 3 tau^2"]
+  desc3["s^3 = tau^2 + w^3"]
   aff["BealAffineCubeAddTwoResidual"]
   ge5["BealEqualOddTwoFactorExpGeFiveResidual"]
   sumRes["BealTwoEqualEvenSumResidual"]
@@ -123,6 +126,8 @@ flowchart TB
   eqOdd --> ge5
   cube --> prim
   cube --> aff
+  prim --> desc1
+  prim --> desc3
   d1 --> sumRes
   d1 --> diffRes
   d1 --> oddRes
@@ -151,10 +156,10 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 
 | 順位 | 候補 | V | E | I | B | T | 総合 | 主要前進 | Quick Win |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | cube 立方差 3-descent | 4 | 3 | 5 | 4 | 4 | **63** | 31 | 20 |
+| 1 | even-diff 因子 / 完全冪 residual | 4 | 3 | 4 | 3 | 3 | **55** | 28 | 18 |
 | 2 | FoundationRegression / BealRegime 整備 | 2 | 5 | 3 | 5 | 5 | **62** | 17 | 30 |
 | 3 | 有限 Beal 証書の境界拡大 | 2 | 5 | 2 | 5 | 5 | **59** | 14 | 30 |
-| 4 | even-diff 因子 / 完全冪 residual | 4 | 3 | 4 | 3 | 3 | **55** | 28 | 18 |
+| 4 | cube 還元方程式の障害 | 4 | 2 | 5 | 3 | 3 | **54** | 31 | 14 |
 | 5 | `BealTwoEqualEvenSumExpGeSevenResidual` | 5 | 2 | 5 | 2 | 2 | **53** | 35 | 12 |
 | 6 | `FermatMixedMotorResidual` | 5 | 2 | 4 | 2 | 3 | **52** | 32 | 14 |
 | 7 | `BealEqualOddTwoFactorExpGeFiveResidual` | 4 | 2 | 4 | 3 | 3 | **51** | 28 | 14 |
@@ -171,31 +176,27 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 | 18 | `BealModularBridge` / CGA dilation no-go | 4 | 1 | 3 | 1 | 2 | **36** | 25 | 6 |
 | 19 | Lorentz 抽象同型 / 生成子の線型独立 | 3 | 1 | 3 | 1 | 2 | **32** | 21 | 6 |
 
-**読み方:** 5 位の even-sum `z ≥ 7` は主要前進が最高級（35）だが容易性が低い。2–3 位の回帰・有限証書は Quick Win 最高級だが主要前進は低い。6 位の Fermat は主要前進 32 で、幾何 API 着地後も加法条件が残る。短期研究は 1 位と 4 位を主戦場にし、2–3 位は空き時間、5 位以降は準備が揃ってからでよい。
+**読み方:** 順位は研究の次の一手（残差を前進させる費用対効果）であり、総合点の降順ではない。2–3 位の回帰・有限証書は Quick Win 最高級で総合点では even-diff を上回るが、残差を閉じないので先頭に置かない。1 位の even-diff は純数論で `d = 1` even の半分に届く。4 位の立方還元方程式は主要前進が旧 cube 3-descent と同水準（31）だが、梱包が済んだあとの空性証明は E が落ちる。5 位の even-sum `z ≥ 7` は主要前進が最高級（35）だが容易性が低い。6 位の Fermat は幾何 API 着地後も加法条件が残る。短期研究は 1 位を主戦場にし、4 位は立方葉を続けるときに戻る。2–3 位は空き時間、5 位以降は準備が揃ってからでよい。
 
-完了して表から外したもの: Generators 内部括弧表（旧総合 69）、Motor 半直積・全軸可換（旧 66）、cube 局所表そのもの（旧 69 の前処理）。
+完了して表から外したもの: Generators 内部括弧表（旧総合 69）、Motor 半直積・全軸可換（旧 66）、cube 局所表（旧 69 の前処理）、cube 立方差 3-descent（旧総合 63。残差は未閉、還元方程式は 4 位として残置）。
 
 ---
 
 ## 5. 候補別評価
 
-### 1 位: `BealPosCubeAddTwoCubeResidual` の立方差 3-descent
+### 1 位: even-diff 因子 / 完全冪 residual
 
-- **対象:** [`Theorems/BealGaussianCube.lean`](DstDiophantine/Theorems/BealGaussianCube.lean) の `BealPosCubeAddTwoCubeResidual`（正の \(\alpha^3 + 2\beta^3 = \gamma^3\) 禁止）
-- **既存（局所・2-adic・パッケージ）:** `pos_cube_add_two_cube_halve_of_even`、`not_even_alpha_odd_beta_pos_cube`、mod 7 / 9 / 13 / 19 の立方剰余と許容クラス、`BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd`、`pos_cube_diff_factor_package`（\(\gamma-\alpha\) と二次因子の gcd が 3 を割る）、`padicValNat_two_gamma_sub_alpha_of_odd`、有限証書 `no_pos_cube_add_two_primitive_of_le_fourhundred`
-- **組立先:** `BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five` → `BealEqualOddTwoFactorResidual` → `beal_pythagorean_of_subresiduals`
-- **次の作業:**
-  1. primitive odd スライスで `gcd(γ-α, γ²+γα+α²) ∈ {1,3}` に場合分けし、各因子がほぼ立方になることを書く
-  2. `gcd = 1` なら 2-adic 情報と合わせて小さな方程式へ落とす。`gcd = 3` は 3-primary 部分を切る
-  3. 追加の法（31, 37, …）は任意。CRT を厚くしても無限族は閉じないので本体の代替にしない
-- **期待成果:** `e = 3` の two-factor 枝を、Mordell rank なしで部分閉包または強い無限 no-go にする
-- **難所:** 方程式全体の無限族を mod だけでは閉じきれない。閉じきる古典経路は Affine / Mordell（14 位）が残る。3-descent も立方体の類数・単数に触れうる
-- **なぜ 1 位か:** 局所前処理が完了し、差因子 API が揃い、組立は証明済。外部ブロッカーが Mordell を避けられる。E は旧「局所表」より 1 落ち（無限命題）だが、I・B は据え置き
+- **対象:** [`Theorems/BealEven.lean`](DstDiophantine/Theorems/BealEven.lean) の `BealTwoEqualEvenDiffFactorResidual`、`BealTwoEqualEvenDiffPerfectPowerResidual`
+- **既存:** opposite-parity / both-odd の抽出（`exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity`、`exists_odd_pow_parts_of_diff_sum_mul_eq_pow_both_odd`）、`diff_sum_mul_eq_pow_both_odd_gcd_padic`、組立 `BealTwoEqualEvenDiffFactorResidual_of_perfect_power` と `BealTwoEqualEvenDiffResidual_of_factor`
+- **次の作業:** opposite-parity と both-odd を分け、`n = 4`（平方差）から no-go を足す。DST bridge は不要
+- **期待成果:** `BealTwoEqualEvenDiffResidual` の部分閉包、ひいては `d = 1` even の半分
+- **難所:** 一般の `D·E = A^x` 降下は Fermat 型に戻りうる。小さな `n` に切るのが現実的
+- **なぜ 1 位か:** 立方 3-descent の梱包は着地した。even-diff は既存の差・和分解 API が厚く、組立は証明済で、Mordell rank に触れない
 
 ### 2 位: FoundationRegression / BealRegime 整備
 
 - **対象:** [`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean)、[`Theorems/BealRegime.lean`](DstDiophantine/Theorems/BealRegime.lean) の `classifyBealExponents`
-- **現状:** 指数形状 `IsClosedShapeExponents` とアトラス原子の対応を固定。分類器は `{T,U,F}` に着地し `B` を返さない。`T` iff 閉じた形状。ダルモン–メレル／`(n,n,5)` の偶置換 `(3,4,4)` 等は開いたまま（偶二一致の差）。成果物をすべて `T` にしても古典 Beal を `T`-含意しない（`artefacts_not_entailsTR_beal`）。`BealRegime` は `Basic` 非 export（意図的）。Fermat 幾何補題と cube / 有限証書の回帰は追加済
+- **現状:** 指数形状 `IsClosedShapeExponents` とアトラス原子の対応を固定。分類器は `{T,U,F}` に着地し `B` を返さない。`T` iff 閉じた形状。ダルモン–メレル／`(n,n,5)` の偶置換 `(3,4,4)` 等は開いたまま（偶二一致の差）。成果物をすべて `T` にしても古典 Beal を `T`-含意しない（`artefacts_not_entailsTR_beal`）。`BealRegime` は `Basic` 非 export（意図的）。Fermat 幾何補題、cube 局所表、立方 3-descent、有限証書の回帰は追加済
 - **次の作業:** 残差を 1 つ閉じたときのアトラス `.U → .T` は `Logic.Example.BealRegime` で行い、予想原子は算術組立が揃うまで動かさない
 - **期待成果:** `.U → .T` 更新が予想を黙って主張しない
 - **限界:** 研究本体ではない。総合を押し上げすぎないよう V = 2。公式では 2 位だが、結論の「次の一手」ではない
@@ -209,14 +210,15 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 - **期待成果:** 小さな反例の不在、CI 回帰。反例が出れば Beal 全体に影響する（その場合の情報量は大きい）
 - **限界:** 無限命題の代替ではない。Quick Win 30 に対し主要前進 14
 
-### 4 位: even-diff 因子 / 完全冪 residual
+### 4 位: cube 還元方程式の障害
 
-- **対象:** [`Theorems/BealEven.lean`](DstDiophantine/Theorems/BealEven.lean) の `BealTwoEqualEvenDiffFactorResidual`、`BealTwoEqualEvenDiffPerfectPowerResidual`
-- **既存:** opposite-parity / both-odd の抽出（`exists_signed_pow_of_diff_sum_mul_eq_pow_opposite_parity`、`exists_odd_pow_parts_of_diff_sum_mul_eq_pow_both_odd`）、`diff_sum_mul_eq_pow_both_odd_gcd_padic`、組立 `BealTwoEqualEvenDiffFactorResidual_of_perfect_power` と `BealTwoEqualEvenDiffResidual_of_factor`
-- **次の作業:** opposite-parity と both-odd を分け、`n = 4`（平方差）から no-go を足す。DST bridge は不要
-- **期待成果:** `BealTwoEqualEvenDiffResidual` の部分閉包、ひいては `d = 1` even の半分
-- **難所:** 一般の `D·E = A^x` 降下は Fermat 型に戻りうる。小さな `n` に切るのが現実的
-- **位置づけ:** cube 局所表が完了したため、数論本体としては 1 位に次ぐ主戦場
+- **対象:** [`Theorems/BealGaussianCube.lean`](DstDiophantine/Theorems/BealGaussianCube.lean) の `BealPosCubeAddTwoCubeResidual`（正の \(\alpha^3 + 2\beta^3 = \gamma^3\) 禁止）
+- **着地済み（3-descent）:** `gcd(γ-α, γ²+γα+α²) ∈ {1,3}`、`pos_cube_three_descent_dichotomy`。gcd \(=1\) なら \(s^3=t^6+3\tau^2\) かつ \(3\mid\tau\)。gcd \(=3\) なら \(v_3(γ-α)=3v_3(β)-1\)、\(v_3(Q)=1\)、\(s^3=\tau^2+(3^{2k-1}t^2)^3\)。いずれの径数も逆向きに解を再構成する
+- **組立先:** `BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five` → `BealEqualOddTwoFactorResidual` → `beal_pythagorean_of_subresiduals`
+- **次の作業:** 還元方程式の空性（または無限族の強い no-go）。追加の法（31, 37, …）は任意。CRT を厚くしても無限族は閉じないので本体の代替にしない
+- **期待成果:** `e = 3` の two-factor 枝を、Mordell rank なしで部分閉包する
+- **難所:** 梱包は済んだ。残るのは二つのディオファントス曲面の空性であり、類数・単数や別の降下に触れうる。閉じきる古典経路は Affine / Mordell（14 位）も残る
+- **位置づけ:** 旧 1 位の後継。主要前進は据え置き、E が 3→2 に落ちたので総合 4 位
 
 ### 5 位: `BealTwoEqualEvenSumExpGeSevenResidual`
 
@@ -238,8 +240,8 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 
 - **対象:** [`BealGaussianCube.lean`](DstDiophantine/Theorems/BealGaussianCube.lean) の equal-odd、`e ≥ 5`、`1 < u`
 - **既存:** `|u| = 1` は Mihăilescu で全奇数 `e ≥ 3` が閉。Gaussian hypotenuse power API
-- **組立:** 1 位の cube residual と合わせて `BealEqualOddTwoFactorResidual`
-- **次の作業:** 1 位と独立に攻撃可能だが、全体閉包には両方必要。小さな `u` や固定 `e` から切る
+- **組立:** 4 位の cube residual と合わせて `BealEqualOddTwoFactorResidual`
+- **次の作業:** 4 位と独立に攻撃可能だが、全体閉包には両方必要。小さな `u` や固定 `e` から切る
 - **難所:** cube より前処理が薄い
 
 ### 8 位: `BealTwoEqualOddResidual` / `BealAllDistinctExpResidual`
@@ -247,7 +249,7 @@ D4L アトラス [`Logic/Example/BealRegime.lean`](DstDiophantine/Logic/Example/
 - **対象:** [`Theorems/BealMixed.lean`](DstDiophantine/Theorems/BealMixed.lean)
 - **既存:** `beal_expGcd_eq_one_two_equal_or_all_distinct`、`beal_mixed_exp_of_subresiduals`（組立済）、mod 4 の `beal_two_equal_xy_even_not_both_odd`
 - **波及:** 閉じれば `BealMixedExpResidual` の残り（even 以外）が揃う
-- **難所:** all-distinct は一般混指数。even 枝（4–5 位）より前処理が少ない
+- **難所:** all-distinct は一般混指数。even 枝（1 位・5 位）より前処理が少ない
 
 ### 9 位: RelativeRotor 一般因子分解
 
@@ -263,7 +265,7 @@ Wiles FLT、Mihăilescu、Darmon–Merel、`(n,n,5)` を Lean 内で証明する
 
 ### 12 位: `BealPythagoreanUnequalOddResidual`
 
-[`BealMixed.lean`](DstDiophantine/Theorems/BealMixed.lean)。`d = 2` で fourth-div と equal-odd の外側。fourth-div スライスは既閉。equal-odd（1 位・7 位）を先に進めたあとの仕上げ。
+[`BealMixed.lean`](DstDiophantine/Theorems/BealMixed.lean)。`d = 2` で fourth-div と equal-odd の外側。fourth-div スライスは既閉。equal-odd（4 位・7 位）を先に進めたあとの仕上げ。
 
 ### 13 位: D4L / 量子スピノル残ギャップ
 
@@ -271,7 +273,7 @@ Wiles FLT、Mihăilescu、Darmon–Merel、`(n,n,5)` を Lean 内で証明する
 
 ### 14 位: `BealMordellCubeAddTwoResidual`
 
-[`BealGaussianCube.lean`](DstDiophantine/Theorems/BealGaussianCube.lean)。`y² = x³ - 1728` の有理点が 2-torsion のみ、という主張。Affine 経由で 1 位の cube residual を完全に閉じる経路。mathlib に Mordell rank はなく、Selmer 相当は外部。1 位の 3-descent の **代替本丸** であり、短期には後回し。立方残差が descent で閉じても、この原子は `.U` のままでよい。
+[`BealGaussianCube.lean`](DstDiophantine/Theorems/BealGaussianCube.lean)。`y² = x³ - 1728` の有理点が 2-torsion のみ、という主張。Affine 経由で 4 位の cube residual を完全に閉じる経路。mathlib に Mordell rank はなく、Selmer 相当は外部。4 位の還元方程式の **代替本丸** であり、短期には後回し。立方残差が descent で閉じても、この原子は `.U` のままでよい。
 
 ### 15 位: `AbcModularBridge`
 
@@ -299,13 +301,13 @@ Goldbach / Polignac / Collatz / Riemann。有限証書は既にある（Goldbach
 
 ### Phase I′（短期: 1–2 スプリント）
 
-1. **1 位** cube の `gcd | 3` 場合分けと差因子のほぼ立方への落下
-2. **4 位** even-diff の `n = 4` および opposite-parity の部分 no-go（1 位と独立に並行可）
+1. **1 位** even-diff の `n = 4` および opposite-parity の部分 no-go
+2. **4 位** は立方葉を続けるとき: 還元方程式 \(s^3=t^6+3\tau^2\) / \(s^3=\tau^2+w^3\) の障害（3-descent 梱包は済）
 3. **2–3 位** を空きで: 新補題を `FoundationRegression` に載せる、cube kernel / open-residual 箱の拡大（本体の代替にしない）
 
 ### Phase II（中期: Beal `d = 1` even と `d = 2` equal-odd、FLT 幾何→加法）
 
-4. **7 位** は 1 位と合流させ `BealEqualOddTwoFactorResidual` を目指す
+4. **7 位** は 4 位と合流させ `BealEqualOddTwoFactorResidual` を目指す
 5. **5 位** even-sum は `z = 7` などへ切ってから本体に触れる
 6. **6 位** は「幾何欠陥 ⇒ `powerSumMotor ≠ 1`」の形が書けてから本格化する
 
@@ -338,11 +340,11 @@ Goldbach / Polignac / Collatz / Riemann。有限証書は既にある（Goldbach
 
 | 候補 | 総合 | 主要前進 | Quick Win | 一言 |
 | --- | ---: | ---: | ---: | --- |
-| cube 3-descent | 63 | 31 | 20 | 最短の Beal 葉（局所表は済） |
+| even-diff | 55 | 28 | 18 | 最短の Beal 葉（立方 descent は済） |
 | 有限証書 | 59 | 14 | 30 | 診断専用 |
-| even-diff | 55 | 28 | 18 | 純数論で even の半分 |
+| cube 還元方程式 | 54 | 31 | 14 | 旧 1 位の後継。空性は重い |
 | even-sum `z ≥ 7` | 53 | 35 | 12 | 最大ピースだが重い |
 | `FermatMixedMotorResidual` | 52 | 32 | 14 | 幾何は着地、加法は未接続 |
-| cube 局所表（完了） | — | — | — | 2026-09-20 に着地 |
+| cube 3-descent（完了） | — | — | — | 2026-09-20 に着地。残差は未閉 |
 
-「容易に進む」だけなら回帰 / 有限証書が先頭になる。「研究として意味のある次の一手」なら cube 3-descent が先頭、even-diff がそれに続く数論本体である。Fermat は代数橋の欠落が解消されたので主要前進では上位群だが、両立禁止の本体はまだ重い。
+「容易に進む」だけなら回帰 / 有限証書が先頭になる。「研究として意味のある次の一手」なら even-diff が先頭、立方還元方程式がそれに続く数論本体である。Fermat は代数橋の欠落が解消されたので主要前進では上位群だが、両立禁止の本体はまだ重い。

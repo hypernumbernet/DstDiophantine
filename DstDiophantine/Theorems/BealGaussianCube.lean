@@ -24,6 +24,8 @@ exponent 3:
 * split assembly `e = 3` vs `e ≥ 5`;
 * phase 7m: primitivity / parity / difference-factor / 2-adic packaging for
   `α³ + 2β³ = γ³`, and assembly from the affine residual `X³ + 2Y³ = 1`;
+* phase 7q: 3-descent of the difference factors (`gcd ∈ {1,3}`), almost-cube
+  assignment, and reduction to `s³ = t⁶ + 3τ²` or `s³ = τ² + (3^{2k-1} t²)³`;
 * phase 7o: birational packaging of that Affine curve onto the Mordell model
   `y² = x³ - 1728`, with assembly `BealMordellCubeAddTwoResidual → Affine`.
 
@@ -518,6 +520,18 @@ theorem cube_sub_eq_mul_of_le {γ α : ℕ} (hle : α ≤ γ) :
           rw [hγa]; push_cast; ring
     _ = ((γ - α) * (γ ^ 2 + γ * α + α ^ 2) : ℕ) := by simp
 
+/-- Quadratic factor of a difference of cubes, as a polynomial identity on `ℕ`. -/
+theorem quad_factor_eq_of_le {γ α : ℕ} (hle : α ≤ γ) :
+    γ ^ 2 + γ * α + α ^ 2 = (γ - α) * (γ + 2 * α) + 3 * α ^ 2 := by
+  apply Int.ofNat_inj.mp
+  have hγa : ((γ - α : ℕ) : ℤ) = (γ : ℤ) - α := Nat.cast_sub hle
+  calc ((γ ^ 2 + γ * α + α ^ 2 : ℕ) : ℤ)
+      = (γ : ℤ) ^ 2 + γ * α + α ^ 2 := by push_cast; ring
+    _ = ((γ : ℤ) - α) * ((γ : ℤ) + 2 * α) + 3 * α ^ 2 := by ring
+    _ = (((γ - α : ℕ) : ℤ) * ((γ + 2 * α : ℕ) : ℤ) + (3 * α ^ 2 : ℕ)) := by
+          rw [hγa]; push_cast; ring
+    _ = ((γ - α) * (γ + 2 * α) + 3 * α ^ 2 : ℕ) := by simp
+
 /-- Under `Nat.Coprime α γ` and `α ≤ γ`, the difference-factor gcd divides 3. -/
 theorem gcd_cube_diff_factors_dvd_three_of_coprime
     {γ α : ℕ} (hle : α ≤ γ) (hcop : Nat.Coprime α γ) :
@@ -531,19 +545,9 @@ theorem gcd_cube_diff_factors_dvd_three_of_coprime
       rw [Nat.add_comm] at h
       rw [← h, Nat.add_sub_of_le hle]
     rwa [this, ← Nat.coprime_iff_gcd_eq_one]
-  have heqN : γ ^ 2 + γ * α + α ^ 2 =
-      (γ - α) * (γ + 2 * α) + 3 * α ^ 2 := by
-    apply Int.ofNat_inj.mp
-    have hγa : ((γ - α : ℕ) : ℤ) = (γ : ℤ) - α := Nat.cast_sub hle
-    calc ((γ ^ 2 + γ * α + α ^ 2 : ℕ) : ℤ)
-        = (γ : ℤ) ^ 2 + γ * α + α ^ 2 := by push_cast; ring
-      _ = ((γ : ℤ) - α) * ((γ : ℤ) + 2 * α) + 3 * α ^ 2 := by ring
-      _ = (((γ - α : ℕ) : ℤ) * ((γ + 2 * α : ℕ) : ℤ) + (3 * α ^ 2 : ℕ)) := by
-            rw [hγa]; push_cast; ring
-      _ = ((γ - α) * (γ + 2 * α) + 3 * α ^ 2 : ℕ) := by simp
   have hrew : Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) =
       Nat.gcd (γ - α) (3 * α ^ 2) := by
-    rw [heqN, Nat.gcd_mul_left_add_right]
+    rw [quad_factor_eq_of_le hle, Nat.gcd_mul_left_add_right]
   rw [hrew]
   have hga2 : Nat.Coprime (γ - α) (α ^ 2) := hga.pow_right 2
   rw [hga2.symm.gcd_mul_right_cancel_right 3]
@@ -638,6 +642,779 @@ theorem padicValNat_two_gamma_sub_alpha_of_odd
           simp [hprod, hsec0]
     _ = padicValNat 2 (2 * β ^ 3) := by rw [hfac]
     _ = 1 + 3 * padicValNat 2 β := hrhs
+
+/-! ### Phase 7q: 3-descent of the difference factors -/
+
+theorem eq_of_nat_cube_eq {a b : ℕ} (h : a ^ 3 = b ^ 3) : a = b :=
+  le_antisymm
+    (le_of_pow_le_pow_left₀ (by decide : (3 : ℕ) ≠ 0) (Nat.zero_le _) (le_of_eq h))
+    (le_of_pow_le_pow_left₀ (by decide : (3 : ℕ) ≠ 0) (Nat.zero_le _) (le_of_eq h.symm))
+
+/--
+Odd coordinates yield an integer half-sum and half-difference.
+-/
+theorem exists_half_sum_diff_of_odd {α γ : ℕ}
+    (hαo : Odd α) (hγo : Odd γ) (hle : α ≤ γ) :
+    ∃ τ δ : ℕ, γ + α = 2 * τ ∧ γ - α = 2 * δ ∧
+      γ = τ + δ ∧ α = τ - δ ∧ δ ≤ τ := by
+  have hsum2 : (γ + α) % 2 = 0 := by
+    have := Nat.odd_iff.mp hγo
+    have := Nat.odd_iff.mp hαo
+    omega
+  have hdiff2 : (γ - α) % 2 = 0 := by
+    have := Nat.odd_iff.mp hγo
+    have := Nat.odd_iff.mp hαo
+    omega
+  obtain ⟨τ, hτ⟩ := (Nat.dvd_iff_mod_eq_zero.mpr hsum2 : 2 ∣ γ + α)
+  obtain ⟨δ, hδ⟩ := (Nat.dvd_iff_mod_eq_zero.mpr hdiff2 : 2 ∣ γ - α)
+  have hδτ : δ ≤ τ := by
+    have : 2 * δ ≤ 2 * τ := by
+      rw [← hδ, ← hτ]
+      omega
+    omega
+  refine ⟨τ, δ, hτ, hδ, ?_, ?_, hδτ⟩
+  · have : 2 * γ = 2 * (τ + δ) := by omega
+    exact Nat.mul_left_cancel (by decide : 0 < 2) this
+  · have : 2 * α = 2 * (τ - δ) := by
+      have : 2 * τ - 2 * δ = 2 * (τ - δ) := (Nat.mul_sub_left_distrib 2 τ δ).symm
+      omega
+    exact Nat.mul_left_cancel (by decide : 0 < 2) this
+
+/--
+On a half-sum / half-difference splitting, the quadratic factor is
+`3 τ² + δ²`.
+-/
+theorem quad_factor_of_half_sum_diff {γ α τ δ : ℕ}
+    (hle : α ≤ γ) (hsum : γ + α = 2 * τ) (hdiff : γ - α = 2 * δ) :
+    γ ^ 2 + γ * α + α ^ 2 = 3 * τ ^ 2 + δ ^ 2 := by
+  have h4 : 4 * (γ ^ 2 + γ * α + α ^ 2) =
+      3 * (γ + α) ^ 2 + (γ - α) ^ 2 := by
+    apply Int.ofNat_inj.mp
+    have hγa : ((γ - α : ℕ) : ℤ) = (γ : ℤ) - α := Nat.cast_sub hle
+    calc ((4 * (γ ^ 2 + γ * α + α ^ 2) : ℕ) : ℤ)
+        = 4 * ((γ : ℤ) ^ 2 + γ * α + α ^ 2) := by push_cast; ring
+      _ = 3 * ((γ : ℤ) + α) ^ 2 + ((γ : ℤ) - α) ^ 2 := by ring
+      _ = 3 * ((γ + α : ℕ) : ℤ) ^ 2 + ((γ - α : ℕ) : ℤ) ^ 2 := by
+            rw [hγa]; push_cast; ring
+      _ = ((3 * (γ + α) ^ 2 + (γ - α) ^ 2 : ℕ) : ℤ) := by simp
+  have : 4 * (γ ^ 2 + γ * α + α ^ 2) = 4 * (3 * τ ^ 2 + δ ^ 2) := by
+    calc 4 * (γ ^ 2 + γ * α + α ^ 2)
+        = 3 * (γ + α) ^ 2 + (γ - α) ^ 2 := h4
+      _ = 3 * (2 * τ) ^ 2 + (2 * δ) ^ 2 := by rw [hsum, hdiff]
+      _ = 4 * (3 * τ ^ 2 + δ ^ 2) := by ring
+  exact Nat.mul_left_cancel (by decide : 0 < 4) this
+
+/--
+Elementary reconstruction identity:
+`(τ+δ)³ − (τ−δ)³ = 2δ(3τ²+δ²)`.
+-/
+theorem cube_sub_of_half_sum_diff {τ δ : ℕ} (h : δ ≤ τ) :
+    (τ + δ) ^ 3 - (τ - δ) ^ 3 = 2 * δ * (3 * τ ^ 2 + δ ^ 2) := by
+  have hle : τ - δ ≤ τ + δ :=
+    Nat.le_trans (Nat.sub_le _ _) (Nat.le_add_right _ _)
+  have hpow : (τ - δ) ^ 3 ≤ (τ + δ) ^ 3 := Nat.pow_le_pow_left hle 3
+  apply Int.ofNat_inj.mp
+  have hτδ : ((τ - δ : ℕ) : ℤ) = (τ : ℤ) - δ := Nat.cast_sub h
+  calc ((((τ + δ) ^ 3 - (τ - δ) ^ 3 : ℕ) : ℤ))
+      = ((τ : ℤ) + δ) ^ 3 - ((τ : ℤ) - δ) ^ 3 := by
+          rw [Nat.cast_sub hpow]; push_cast; rw [hτδ]
+    _ = 2 * (δ : ℤ) * (3 * (τ : ℤ) ^ 2 + (δ : ℤ) ^ 2) := by ring
+    _ = ((2 * δ * (3 * τ ^ 2 + δ ^ 2) : ℕ) : ℤ) := by rfl
+
+theorem pos_cube_eq_of_half_sum_diff {τ δ β : ℕ} (hδ : δ ≤ τ)
+    (hβ : β ^ 3 = δ * (3 * τ ^ 2 + δ ^ 2)) :
+    (τ - δ) ^ 3 + 2 * β ^ 3 = (τ + δ) ^ 3 := by
+  have hsub := cube_sub_of_half_sum_diff hδ
+  have hle : (τ - δ) ^ 3 ≤ (τ + δ) ^ 3 :=
+    Nat.pow_le_pow_left (Nat.le_trans (Nat.sub_le _ _) (Nat.le_add_right _ _)) 3
+  calc (τ - δ) ^ 3 + 2 * β ^ 3
+      = (τ - δ) ^ 3 + 2 * (δ * (3 * τ ^ 2 + δ ^ 2)) := by rw [hβ]
+    _ = (τ - δ) ^ 3 + 2 * δ * (3 * τ ^ 2 + δ ^ 2) := by ring
+    _ = (τ - δ) ^ 3 + ((τ + δ) ^ 3 - (τ - δ) ^ 3) := by rw [hsub]
+    _ = (τ + δ) ^ 3 := Nat.add_sub_of_le hle
+
+/-- Coprime difference factors have gcd `1` or `3`. -/
+theorem gcd_cube_diff_eq_one_or_three {γ α : ℕ}
+    (hlt : α < γ) (hcop : Nat.Coprime α γ) :
+    Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 1 ∨
+      Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 3 :=
+  (Nat.dvd_prime Nat.prime_three).1
+    (gcd_cube_diff_factors_dvd_three_of_coprime (Nat.le_of_lt hlt) hcop)
+
+theorem three_dvd_quad_factor_of_three_dvd_diff {γ α : ℕ}
+    (hle : α ≤ γ) (h3 : 3 ∣ γ - α) :
+    3 ∣ γ ^ 2 + γ * α + α ^ 2 := by
+  rw [quad_factor_eq_of_le hle]
+  exact dvd_add (dvd_mul_of_dvd_left h3 _) ⟨α ^ 2, rfl⟩
+
+/-- The gcd is `3` if and only if `3` divides the difference. -/
+theorem three_dvd_gamma_sub_alpha_iff_gcd_eq_three {α γ : ℕ}
+    (hlt : α < γ) (hcop : Nat.Coprime α γ) :
+    3 ∣ γ - α ↔
+      Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 3 := by
+  constructor
+  · intro h3
+    have h3Q := three_dvd_quad_factor_of_three_dvd_diff (Nat.le_of_lt hlt) h3
+    have hg3 : 3 ∣ Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) :=
+      Nat.dvd_gcd h3 h3Q
+    rcases gcd_cube_diff_eq_one_or_three hlt hcop with h1 | h3eq
+    · exact False.elim ((by decide : ¬ 3 ∣ (1 : ℕ)) (h1 ▸ hg3))
+    · exact h3eq
+  · intro hg
+    exact hg ▸ Nat.gcd_dvd_left _ _
+
+theorem not_three_dvd_alpha_of_three_dvd_diff {α γ : ℕ}
+    (hle : α ≤ γ) (hcop : Nat.Coprime α γ) (h3 : 3 ∣ γ - α) :
+    ¬ 3 ∣ α := by
+  intro hα
+  have hγ : 3 ∣ γ := by
+    have hγeq : γ = α + (γ - α) := (Nat.add_sub_of_le hle).symm
+    rw [hγeq]
+    exact dvd_add hα h3
+  have : 3 ∣ Nat.gcd α γ := Nat.dvd_gcd hα hγ
+  exact (by decide : ¬ 3 ∣ (1 : ℕ))
+    ((Nat.coprime_iff_gcd_eq_one.mp hcop) ▸ this)
+
+/--
+If the difference factors are coprime, each is a cube up to the explicit
+factor of `2` on the even difference: `γ − α = 2 t³` and
+`γ² + γα + α² = s³`.
+-/
+theorem exists_pos_cube_gcd_one_almost_cubes
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3)
+    (hg1 : Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 1) :
+    ∃ t s : ℕ, 0 < t ∧ 0 < s ∧
+      Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧
+        γ - α = 2 * t ^ 3 ∧
+          γ ^ 2 + γ * α + α ^ 2 = s ^ 3 ∧
+            β = t * s := by
+  obtain ⟨hlt, hαo, hγo, hcop, _, hfac, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  set D := γ - α
+  set Q := γ ^ 2 + γ * α + α ^ 2
+  have hDe : Even D :=
+    (Nat.even_sub (Nat.le_of_lt hlt)).2
+      (iff_of_false (Nat.not_even_iff_odd.2 hγo) (Nat.not_even_iff_odd.2 hαo))
+  obtain ⟨D2, hD2⟩ := even_iff_exists_two_mul.mp hDe
+  have hprod : D2 * Q = β ^ 3 := by
+    have : 2 * (D2 * Q) = 2 * β ^ 3 := by
+      calc 2 * (D2 * Q) = (2 * D2) * Q := by ring
+        _ = D * Q := by rw [hD2]
+        _ = 2 * β ^ 3 := hfac
+    exact Nat.mul_left_cancel (by decide : 0 < 2) this
+  have hcopDQ2 : Nat.Coprime D2 Q := by
+    have hdiv : Nat.gcd D2 Q ∣ Nat.gcd D Q := by
+      refine Nat.dvd_gcd ?_ (Nat.gcd_dvd_right _ _)
+      have : Nat.gcd D2 Q ∣ D2 := Nat.gcd_dvd_left _ _
+      have : Nat.gcd D2 Q ∣ 2 * D2 := dvd_mul_of_dvd_right this 2
+      rwa [← hD2] at this
+    have : Nat.gcd D2 Q ∣ 1 := by rwa [hg1] at hdiv
+    exact Nat.coprime_iff_gcd_eq_one.2 (Nat.eq_one_of_dvd_one this)
+  obtain ⟨t, ht⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime hcopDQ2 hprod
+  obtain ⟨s, hs⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime_right hcopDQ2 hprod
+  have ht0 : 0 < t := by
+    have hDpos : 0 < D := Nat.sub_pos_of_lt hlt
+    have hD20 : 0 < D2 := by
+      by_contra h
+      have : D2 = 0 := Nat.eq_zero_of_not_pos h
+      subst this
+      simp [hD2] at hDpos
+    have ht0' : t ≠ 0 := by
+      intro ht0
+      subst ht0
+      exact hD20.ne' (by simpa using ht)
+    exact Nat.pos_iff_ne_zero.mpr ht0'
+  have hs0 : 0 < s := by
+    have hQpos : 0 < Q := lt_of_lt_of_le (pow_pos hα0 2) (Nat.le_add_left _ _)
+    have hs0' : s ≠ 0 := by
+      intro hs0
+      subst hs0
+      exact hQpos.ne' (by simpa using hs)
+    exact Nat.pos_iff_ne_zero.mpr hs0'
+  have hcopts : Nat.Coprime t s := by
+    refine Nat.coprime_iff_gcd_eq_one.2 ?_
+    set d := Nat.gcd t s
+    have hdD : d ∣ D2 := by
+      have : d ∣ t := Nat.gcd_dvd_left _ _
+      have : d ∣ t ^ 3 := dvd_trans this (dvd_pow (dvd_refl t) (by decide : 3 ≠ 0))
+      rwa [← ht] at this
+    have hdQ : d ∣ Q := by
+      have : d ∣ s := Nat.gcd_dvd_right _ _
+      have : d ∣ s ^ 3 := dvd_trans this (dvd_pow (dvd_refl s) (by decide : 3 ≠ 0))
+      rwa [← hs] at this
+    have : d ∣ Nat.gcd D2 Q := Nat.dvd_gcd hdD hdQ
+    have : d ∣ 1 := by rwa [Nat.coprime_iff_gcd_eq_one.mp hcopDQ2] at this
+    exact Nat.eq_one_of_dvd_one this
+  have hsodd : Odd s := by
+    have hQodd : Odd Q :=
+      ((Odd.pow hγo).add_odd (hγo.mul hαo)).add_odd (Odd.pow hαo)
+    have : Odd (s ^ 3) := by simpa [hs] using hQodd
+    simpa [pow_three] using Nat.Odd.of_mul_right this
+  have ht3 : ¬ 3 ∣ t := by
+    intro ht3'
+    have h3D2 : 3 ∣ D2 := by
+      have : 3 ∣ t ^ 3 := dvd_trans ht3' (dvd_pow (dvd_refl t) (by decide : 3 ≠ 0))
+      rwa [← ht] at this
+    have h3D : 3 ∣ D := by
+      rw [hD2]
+      exact dvd_mul_of_dvd_right h3D2 2
+    have hg3 : Nat.gcd D Q = 3 :=
+      (three_dvd_gamma_sub_alpha_iff_gcd_eq_three hlt hcop).1 h3D
+    exact (by decide : (3 : ℕ) ≠ 1) (hg3.symm.trans hg1)
+  refine ⟨t, s, ht0, hs0, hcopts, hsodd, ht3, ?_, hs, ?_⟩
+  · rw [hD2, ht]
+  · exact eq_of_nat_cube_eq (by rw [← hprod, ht, hs, mul_pow])
+
+/--
+Cubes modulo 9 of an integer not divisible by 3 are `1` or `8`.
+-/
+theorem nat_cube_mod_nine_of_not_three_dvd {v : ℕ} (h : ¬ 3 ∣ v) :
+    v ^ 3 % 9 = 1 ∨ v ^ 3 % 9 = 8 := by
+  have h9 : v % 9 = 1 ∨ v % 9 = 2 ∨ v % 9 = 4 ∨ v % 9 = 5 ∨
+      v % 9 = 7 ∨ v % 9 = 8 := by
+    have : v % 3 ≠ 0 := fun hv => h (Nat.dvd_iff_mod_eq_zero.mpr hv)
+    omega
+  have hv : v ^ 3 % 9 = (v % 9) ^ 3 % 9 := by rw [← Nat.pow_mod]
+  rcases h9 with h | h | h | h | h | h <;> simp [hv, h]
+
+/--
+On `s³ = t⁶ + 3 τ²` with `3 ∤ t`, the half-sum is divisible by `3`.
+(Otherwise the left-hand side would be `4` modulo `9`, which is not a cube.)
+-/
+theorem three_dvd_tau_of_cube_sixth {t s τ : ℕ}
+    (ht3 : ¬ 3 ∣ t) (heq : s ^ 3 = t ^ 6 + 3 * τ ^ 2) : 3 ∣ τ := by
+  have ht6 : t ^ 6 % 9 = 1 := by
+    have ht3m := nat_cube_mod_nine_of_not_three_dvd ht3
+    have h6 : t ^ 6 % 9 = (t ^ 3 % 9) ^ 2 % 9 := by
+      have : t ^ 6 = (t ^ 3) ^ 2 := by ring
+      rw [this, ← Nat.pow_mod]
+    rcases ht3m with h | h <;> simp [h6, h]
+  by_contra hτ
+  have hτ2 : (3 * τ ^ 2) % 9 = 3 := by
+    have h9 : τ % 9 = 1 ∨ τ % 9 = 2 ∨ τ % 9 = 4 ∨ τ % 9 = 5 ∨
+        τ % 9 = 7 ∨ τ % 9 = 8 := by
+      have : τ % 3 ≠ 0 := by
+        intro h
+        exact hτ (Nat.dvd_iff_mod_eq_zero.mpr h)
+      omega
+    have hsq : τ ^ 2 % 9 = (τ % 9) ^ 2 % 9 := by rw [← Nat.pow_mod]
+    have hmul : (3 * τ ^ 2) % 9 = (3 * (τ ^ 2 % 9)) % 9 := by
+      rw [Nat.mul_mod, Nat.mod_eq_of_lt (by decide : 3 < 9)]
+    rcases h9 with h | h | h | h | h | h <;> simp [hmul, hsq, h]
+  have hLHS : s ^ 3 % 9 = (t ^ 6 % 9 + (3 * τ ^ 2) % 9) % 9 := by
+    rw [heq, Nat.add_mod]
+  have : s ^ 3 % 9 = 4 := by rw [hLHS, ht6, hτ2]
+  have hc : s ^ 3 % 9 = 0 ∨ s ^ 3 % 9 = 1 ∨ s ^ 3 % 9 = 8 := by
+    have h : s % 9 = 0 ∨ s % 9 = 1 ∨ s % 9 = 2 ∨ s % 9 = 3 ∨ s % 9 = 4 ∨
+        s % 9 = 5 ∨ s % 9 = 6 ∨ s % 9 = 7 ∨ s % 9 = 8 := by omega
+    have hv : s ^ 3 % 9 = (s % 9) ^ 3 % 9 := by rw [← Nat.pow_mod]
+    rcases h with h | h | h | h | h | h | h | h | h <;> simp [hv, h]
+  omega
+
+/--
+Coprime difference factors collapse to the single equation
+`s³ = t⁶ + 3 τ²` with `α = τ − t³`, `γ = τ + t³`, `β = t s`, and `3 ∣ τ`.
+-/
+theorem exists_pos_cube_gcd_one_half_sum
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3)
+    (hg1 : Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 1) :
+    ∃ t s τ : ℕ, 0 < t ∧ 0 < s ∧ t ^ 3 < τ ∧
+      Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧ 3 ∣ τ ∧
+        α = τ - t ^ 3 ∧ γ = τ + t ^ 3 ∧ β = t * s ∧
+          s ^ 3 = t ^ 6 + 3 * τ ^ 2 := by
+  obtain ⟨t, s, ht0, hs0, hcop, hsodd, ht3, hD, hQ, hβ⟩ :=
+    exists_pos_cube_gcd_one_almost_cubes hα0 hβ0 hγ0 hgcd heq hg1
+  obtain ⟨hlt, hαo, hγo, _, _, _, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  obtain ⟨τ, δ, hsum, hdiff, hγeq, hαeq, hδτ⟩ :=
+    exists_half_sum_diff_of_odd hαo hγo (Nat.le_of_lt hlt)
+  have hδ : δ = t ^ 3 :=
+    Nat.mul_left_cancel (by decide : 0 < 2) (hdiff.symm.trans hD)
+  subst hδ
+  have hQτ : s ^ 3 = 3 * τ ^ 2 + (t ^ 3) ^ 2 := by
+    have := quad_factor_of_half_sum_diff (Nat.le_of_lt hlt) hsum hdiff
+    rwa [hQ] at this
+  have hs3 : s ^ 3 = t ^ 6 + 3 * τ ^ 2 := by
+    rw [hQτ, show (t ^ 3) ^ 2 = t ^ 6 by ring]
+    ring
+  have hτt : t ^ 3 < τ := by
+    have : α = τ - t ^ 3 := hαeq
+    omega
+  have hτ3 : 3 ∣ τ := three_dvd_tau_of_cube_sixth ht3 hs3
+  have hs3n : ¬ 3 ∣ s := by
+    intro h3s
+    have : 3 ∣ s ^ 3 := dvd_trans h3s (dvd_pow (dvd_refl s) (by decide : 3 ≠ 0))
+    have hsum : 3 ∣ t ^ 6 + 3 * τ ^ 2 := by rwa [← hs3]
+    have h3τ : 3 ∣ 3 * τ ^ 2 := ⟨τ ^ 2, rfl⟩
+    have : 3 ∣ t ^ 6 := (Nat.dvd_add_iff_left h3τ).mpr hsum
+    exact ht3 (Nat.Prime.dvd_of_dvd_pow Nat.prime_three this)
+  exact ⟨t, s, τ, ht0, hs0, hτt, hcop, hsodd, ht3, hs3n, hτ3, hαeq, hγeq, hβ, hs3⟩
+
+/--
+The coprime parametrisation reconstructs a positive solution of
+`α³ + 2β³ = γ³`.
+-/
+theorem pos_cube_eq_of_gcd_one_params {t s τ : ℕ}
+    (h : t ^ 3 ≤ τ) (heq : s ^ 3 = t ^ 6 + 3 * τ ^ 2) :
+    (τ - t ^ 3) ^ 3 + 2 * (t * s) ^ 3 = (τ + t ^ 3) ^ 3 := by
+  have hβ : (t * s) ^ 3 = t ^ 3 * (3 * τ ^ 2 + (t ^ 3) ^ 2) := by
+    rw [mul_pow, heq, show (t ^ 3) ^ 2 = t ^ 6 by ring]
+    ring
+  exact pos_cube_eq_of_half_sum_diff h hβ
+
+theorem three_pow_pred_mul_three {k : ℕ} (hk : 0 < k) :
+    3 ^ (3 * k - 1) * 3 = 3 ^ (3 * k) := by
+  have hle : 1 ≤ 3 * k := by omega
+  calc 3 ^ (3 * k - 1) * 3
+      = 3 ^ (3 * k - 1) * 3 ^ 1 := by rw [pow_one]
+    _ = 3 ^ ((3 * k - 1) + 1) := (pow_add _ _ _).symm
+    _ = 3 ^ (3 * k) := by rw [Nat.sub_add_cancel hle]
+
+theorem three_pow_sixth_pred_mul_three {k : ℕ} (hk : 0 < k) :
+    3 ^ (6 * k - 3) * 3 = 3 ^ (6 * k - 2) := by
+  have hex : 6 * k - 3 + 1 = 6 * k - 2 := by omega
+  calc 3 ^ (6 * k - 3) * 3
+      = 3 ^ (6 * k - 3) * 3 ^ 1 := by rw [pow_one]
+    _ = 3 ^ (6 * k - 3 + 1) := (pow_add _ _ _).symm
+    _ = 3 ^ (6 * k - 2) := by rw [hex]
+
+theorem sq_of_three_pow_mul_t_cube {k t : ℕ} (_hk : 0 < k) :
+    (3 ^ (3 * k - 1) * t ^ 3) ^ 2 = 3 ^ (6 * k - 2) * t ^ 6 := by
+  have h2 : (3 * k - 1) * 2 = 6 * k - 2 := by omega
+  calc (3 ^ (3 * k - 1) * t ^ 3) ^ 2
+      = (3 ^ (3 * k - 1)) ^ 2 * (t ^ 3) ^ 2 := mul_pow _ _ 2
+    _ = 3 ^ ((3 * k - 1) * 2) * t ^ 6 := by
+          rw [← pow_mul, show (t ^ 3) ^ 2 = t ^ 6 by ring]
+    _ = 3 ^ (6 * k - 2) * t ^ 6 := by rw [h2]
+
+theorem three_pow_t_sixth_eq_cube {k t : ℕ} (_hk : 0 < k) :
+    3 ^ (6 * k - 3) * t ^ 6 = (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := by
+  have h3 : 6 * k - 3 = (2 * k - 1) * 3 := by omega
+  calc 3 ^ (6 * k - 3) * t ^ 6
+      = 3 ^ ((2 * k - 1) * 3) * (t ^ 2) ^ 3 := by
+          rw [h3, show t ^ 6 = (t ^ 2) ^ 3 by ring]
+    _ = (3 ^ (2 * k - 1)) ^ 3 * (t ^ 2) ^ 3 := by rw [pow_mul]
+    _ = (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := (mul_pow _ _ 3).symm
+
+/--
+If `3` divides the difference of a primitive positive solution, then
+`v₃(γ−α) = 3 v₃(β) − 1` and `v₃(γ²+γα+α²) = 1`.
+-/
+theorem padicValNat_three_of_pos_cube_three_dvd
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3)
+    (h3 : 3 ∣ γ - α) :
+    padicValNat 3 (γ - α) = 3 * padicValNat 3 β - 1 ∧
+      padicValNat 3 (γ ^ 2 + γ * α + α ^ 2) = 1 ∧
+        1 ≤ padicValNat 3 β := by
+  have : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
+  obtain ⟨hlt, _, _, hcop, _, hfac, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  set D := γ - α
+  set Q := γ ^ 2 + γ * α + α ^ 2
+  have hα3 : ¬ 3 ∣ α :=
+    not_three_dvd_alpha_of_three_dvd_diff (Nat.le_of_lt hlt) hcop h3
+  have hDne : D ≠ 0 := Nat.pos_iff_ne_zero.mp (Nat.sub_pos_of_lt hlt)
+  have hQne : Q ≠ 0 :=
+    Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le (pow_pos hα0 2) (Nat.le_add_left _ _))
+  have hAeq : D * (γ + 2 * α) + 3 * α ^ 2 = Q :=
+    (quad_factor_eq_of_le (Nat.le_of_lt hlt)).symm
+  set A := D * (γ + 2 * α)
+  set B := 3 * α ^ 2
+  have hAne : A ≠ 0 := by
+    have : 0 < γ + 2 * α := Nat.add_pos_left hγ0 _
+    exact Nat.mul_ne_zero hDne (Nat.pos_iff_ne_zero.mp this)
+  have hBne : B ≠ 0 :=
+    Nat.mul_ne_zero (by decide : (3 : ℕ) ≠ 0)
+      (pow_ne_zero 2 (Nat.pos_iff_ne_zero.mp hα0))
+  have hvB : padicValNat 3 B = 1 := by
+    have hα0v : padicValNat 3 α = 0 := padicValNat.eq_zero_of_not_dvd hα3
+    have hm := padicValNat.mul (p := 3) (by decide : (3 : ℕ) ≠ 0)
+      (pow_ne_zero 2 (Nat.pos_iff_ne_zero.mp hα0))
+    have h3self : padicValNat 3 3 = 1 := padicValNat_self (p := 3)
+    have hα2 : padicValNat 3 (α ^ 2) = 2 * padicValNat 3 α :=
+      padicValNat.pow (p := 3) α 2
+    simpa [h3self, hα2, hα0v] using hm
+  have h3sum : 3 ∣ γ + 2 * α := by
+    have hγ : γ = α + D := (Nat.add_sub_of_le (Nat.le_of_lt hlt)).symm
+    have : γ + 2 * α = D + 3 * α := by
+      rw [hγ]; ring
+    rw [this]
+    exact dvd_add h3 ⟨α, rfl⟩
+  have h9A : 9 ∣ A := by
+    have : 3 * 3 ∣ D * (γ + 2 * α) := Nat.mul_dvd_mul h3 h3sum
+    simpa [show (9 : ℕ) = 3 * 3 by decide] using this
+  have hQeq : A + B = Q := hAeq
+  have hn9Q : ¬ 9 ∣ Q := by
+    intro h9
+    have h9AB : 9 ∣ A + B := by simpa [hQeq] using h9
+    have h9B : 9 ∣ B := (Nat.dvd_add_iff_right h9A).mpr h9AB
+    have : 2 ≤ padicValNat 3 B := (padicValNat_dvd_iff_le hBne (n := 2)).mp h9B
+    omega
+  have hvQ : padicValNat 3 Q = 1 := by
+    have h3Q : 3 ∣ Q := by
+      rw [← hQeq]
+      exact dvd_add (dvd_trans (by decide : 3 ∣ 9) h9A) ⟨α ^ 2, rfl⟩
+    have hge : 1 ≤ padicValNat 3 Q :=
+      (padicValNat_dvd_iff_le hQne (n := 1)).mp h3Q
+    have hlt2 : padicValNat 3 Q < 2 := by
+      by_contra h
+      have : 2 ≤ padicValNat 3 Q := Nat.le_of_not_lt h
+      exact hn9Q ((padicValNat_dvd_iff_le hQne (n := 2)).mpr this)
+    omega
+  have hkpos : 1 ≤ padicValNat 3 β := by
+    have h3β3 : 3 ∣ β ^ 3 := by
+      have : 3 ∣ D * Q := dvd_mul_of_dvd_left h3 _
+      have : 3 ∣ 2 * β ^ 3 := by rwa [hfac] at this
+      exact Nat.Coprime.dvd_of_dvd_mul_left (by decide : Nat.Coprime 3 2)
+        (by simpa [mul_comm] using this)
+    have h3β : 3 ∣ β := Nat.Prime.dvd_of_dvd_pow Nat.prime_three h3β3
+    exact (padicValNat_dvd_iff_le (Nat.pos_iff_ne_zero.mp hβ0) (n := 1)).mp h3β
+  have hvprod : padicValNat 3 (D * Q) = padicValNat 3 D + padicValNat 3 Q :=
+    padicValNat.mul (p := 3) hDne hQne
+  have hrhs : padicValNat 3 (2 * β ^ 3) = 3 * padicValNat 3 β := by
+    have h2 : padicValNat 3 2 = 0 :=
+      padicValNat.eq_zero_of_not_dvd (by decide : ¬ 3 ∣ 2)
+    have hb : padicValNat 3 (β ^ 3) = 3 * padicValNat 3 β :=
+      padicValNat.pow (p := 3) β 3
+    have hm := padicValNat.mul (p := 3) (by decide : (2 : ℕ) ≠ 0)
+      (pow_ne_zero 3 (Nat.pos_iff_ne_zero.mp hβ0))
+    simpa [h2, hb] using hm
+  have hvD : padicValNat 3 D = 3 * padicValNat 3 β - 1 := by
+    have : padicValNat 3 D + 1 = 3 * padicValNat 3 β := by
+      have : padicValNat 3 (D * Q) = padicValNat 3 (2 * β ^ 3) := by rw [hfac]
+      simpa [hvprod, hvQ, hrhs] using this
+    omega
+  exact ⟨hvD, hvQ, hkpos⟩
+
+/--
+If the difference-factor gcd is `3`, stripping the 3-primary part yields
+`γ − α = 2 · 3^{3k−1} t³` and `γ² + γα + α² = 3 s³` with `k = v₃(β) ≥ 1`.
+-/
+theorem exists_pos_cube_gcd_three_almost_cubes
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3)
+    (hg3 : Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 3) :
+    ∃ k t s : ℕ, 0 < k ∧ 0 < t ∧ 0 < s ∧
+      Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧
+        k = padicValNat 3 β ∧
+          γ - α = 2 * (3 ^ (3 * k - 1) * t ^ 3) ∧
+            γ ^ 2 + γ * α + α ^ 2 = 3 * s ^ 3 ∧
+              β = 3 ^ k * t * s := by
+  have : Fact (Nat.Prime 3) := ⟨Nat.prime_three⟩
+  obtain ⟨hlt, hαo, hγo, hcop, _, hfac, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  have h3D : 3 ∣ γ - α :=
+    (three_dvd_gamma_sub_alpha_iff_gcd_eq_three hlt hcop).2 hg3
+  obtain ⟨hvD, hvQ, hkpos⟩ :=
+    padicValNat_three_of_pos_cube_three_dvd hα0 hβ0 hγ0 hgcd heq h3D
+  set k := padicValNat 3 β
+  set D := γ - α
+  set Q := γ ^ 2 + γ * α + α ^ 2
+  have hDne : D ≠ 0 := Nat.pos_iff_ne_zero.mp (Nat.sub_pos_of_lt hlt)
+  have hQne : Q ≠ 0 :=
+    Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le (pow_pos hα0 2) (Nat.le_add_left _ _))
+  have hβne : β ≠ 0 := Nat.pos_iff_ne_zero.mp hβ0
+  have hvDeq : padicValNat 3 D = 3 * k - 1 := hvD
+  have hDsplit : 3 ^ (3 * k - 1) * (D / 3 ^ (3 * k - 1)) = D := by
+    have hdiv : 3 ^ (3 * k - 1) ∣ D :=
+      (padicValNat_dvd_iff_le hDne (n := 3 * k - 1)).mpr (le_of_eq hvDeq.symm)
+    exact Nat.mul_div_cancel' hdiv
+  set D3 := D / 3 ^ (3 * k - 1)
+  have h3Q : 3 ∣ Q := (padicValNat_dvd_iff_le hQne (n := 1)).mpr (le_of_eq hvQ.symm)
+  have hQsplit : 3 * (Q / 3) = Q := Nat.mul_div_cancel' h3Q
+  set Q3 := Q / 3
+  have hβsplit : 3 ^ k * (β / 3 ^ k) = β := by
+    have hdiv : 3 ^ k ∣ β :=
+      (padicValNat_dvd_iff_le hβne (n := k)).mpr (le_of_eq rfl)
+    exact Nat.mul_div_cancel' hdiv
+  set β0 := β / 3 ^ k
+  have hk : 0 < k := hkpos
+  have hprod3 : D3 * Q3 = 2 * β0 ^ 3 := by
+    have hmul :
+        3 ^ (3 * k) * (D3 * Q3) = 3 ^ (3 * k) * (2 * β0 ^ 3) := by
+      calc 3 ^ (3 * k) * (D3 * Q3)
+          = (3 ^ (3 * k - 1) * 3) * (D3 * Q3) := by
+              rw [three_pow_pred_mul_three hk]
+        _ = (3 ^ (3 * k - 1) * D3) * (3 * Q3) := by
+              simp [mul_assoc, mul_left_comm, mul_comm]
+        _ = D * Q := by rw [hDsplit, hQsplit]
+        _ = 2 * β ^ 3 := hfac
+        _ = 2 * (3 ^ k * β0) ^ 3 := by rw [hβsplit]
+        _ = 2 * (3 ^ (3 * k) * β0 ^ 3) := by
+              rw [mul_pow]
+              have : (3 ^ k) ^ 3 = 3 ^ (3 * k) := by
+                rw [← pow_mul]; congr 1; ring
+              rw [this]
+        _ = 3 ^ (3 * k) * (2 * β0 ^ 3) := by
+              simp [mul_left_comm]
+    exact Nat.mul_left_cancel (pow_pos (by decide : 0 < 3) (3 * k)) hmul
+  have hD3e : Even D3 := by
+    have hDe : Even D :=
+      (Nat.even_sub (Nat.le_of_lt hlt)).2
+        (iff_of_false (Nat.not_even_iff_odd.2 hγo) (Nat.not_even_iff_odd.2 hαo))
+    have : Even (3 ^ (3 * k - 1) * D3) := by rwa [hDsplit]
+    have hodd : Odd (3 ^ (3 * k - 1)) := Odd.pow (by decide : Odd 3)
+    exact (Nat.even_mul.mp this).resolve_left (Nat.not_even_iff_odd.2 hodd)
+  obtain ⟨D3h, hD3h⟩ := even_iff_exists_two_mul.mp hD3e
+  have hprod2 : D3h * Q3 = β0 ^ 3 := by
+    have : 2 * (D3h * Q3) = 2 * β0 ^ 3 := by
+      calc 2 * (D3h * Q3) = (2 * D3h) * Q3 := by ring
+        _ = D3 * Q3 := by rw [hD3h]
+        _ = 2 * β0 ^ 3 := hprod3
+    exact Nat.mul_left_cancel (by decide : 0 < 2) this
+  have hcop3 : Nat.Coprime D3 Q3 := by
+    refine Nat.coprime_iff_gcd_eq_one.2 ?_
+    set d := Nat.gcd D3 Q3
+    have hdD : d ∣ D := by
+      have : d ∣ D3 := Nat.gcd_dvd_left _ _
+      have : d ∣ 3 ^ (3 * k - 1) * D3 := dvd_mul_of_dvd_right this _
+      rwa [hDsplit] at this
+    have hdQ : d ∣ Q := by
+      have : d ∣ Q3 := Nat.gcd_dvd_right _ _
+      have : d ∣ 3 * Q3 := dvd_mul_of_dvd_right this _
+      rwa [hQsplit] at this
+    have hd3 : d ∣ 3 := by
+      have : d ∣ Nat.gcd D Q := Nat.dvd_gcd hdD hdQ
+      rwa [hg3] at this
+    rcases (Nat.dvd_prime Nat.prime_three).1 hd3 with h1 | h3d
+    · exact h1
+    · have h3D3 : 3 ∣ D3 := h3d ▸ Nat.gcd_dvd_left D3 Q3
+      have : 3 ^ (3 * k) ∣ D := by
+        have : 3 ^ ((3 * k - 1) + 1) ∣ 3 ^ (3 * k - 1) * D3 := by
+          rw [pow_add, pow_one]
+          exact mul_dvd_mul_left _ h3D3
+        have hv1 : (3 * k - 1) + 1 = 3 * k := by omega
+        rwa [hv1, hDsplit] at this
+      have : 3 * k ≤ padicValNat 3 D :=
+        (padicValNat_dvd_iff_le hDne (n := 3 * k)).mp this
+      omega
+  have hcop2 : Nat.Coprime D3h Q3 := by
+    have hdiv : Nat.gcd D3h Q3 ∣ Nat.gcd D3 Q3 := by
+      refine Nat.dvd_gcd ?_ (Nat.gcd_dvd_right _ _)
+      have : Nat.gcd D3h Q3 ∣ D3h := Nat.gcd_dvd_left _ _
+      have : Nat.gcd D3h Q3 ∣ 2 * D3h := dvd_mul_of_dvd_right this 2
+      rwa [← hD3h] at this
+    have : Nat.gcd D3h Q3 ∣ 1 := by
+      rwa [Nat.coprime_iff_gcd_eq_one.mp hcop3] at hdiv
+    exact Nat.coprime_iff_gcd_eq_one.2 (Nat.eq_one_of_dvd_one this)
+  obtain ⟨t, ht⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime hcop2 hprod2
+  obtain ⟨s, hs⟩ := nat_eq_pow_of_mul_eq_pow_of_coprime_right hcop2 hprod2
+  have ht0 : 0 < t := by
+    have hD3h0 : 0 < D3h := by
+      have hDpos : 0 < D := Nat.sub_pos_of_lt hlt
+      have hD30 : 0 < D3 := by
+        have : 0 < 3 ^ (3 * k - 1) := pow_pos (by decide : 0 < 3) _
+        exact Nat.pos_of_mul_pos_left (hDsplit ▸ hDpos)
+      have : 0 < 2 * D3h := by rwa [← hD3h]
+      omega
+    have ht0' : t ≠ 0 := by
+      intro ht0
+      subst ht0
+      exact hD3h0.ne' (by simpa using ht)
+    exact Nat.pos_iff_ne_zero.mpr ht0'
+  have hs0 : 0 < s := by
+    have hQ30 : 0 < Q3 := by
+      have hQpos : 0 < Q := lt_of_lt_of_le (pow_pos hα0 2) (Nat.le_add_left _ _)
+      exact Nat.pos_of_mul_pos_left (hQsplit ▸ hQpos)
+    have hs0' : s ≠ 0 := by
+      intro hs0
+      subst hs0
+      exact hQ30.ne' (by simpa using hs)
+    exact Nat.pos_iff_ne_zero.mpr hs0'
+  have hcopts : Nat.Coprime t s := by
+    refine Nat.coprime_iff_gcd_eq_one.2 ?_
+    set d := Nat.gcd t s
+    have hdD : d ∣ D3h := by
+      have : d ∣ t := Nat.gcd_dvd_left _ _
+      have : d ∣ t ^ 3 := dvd_trans this (dvd_pow (dvd_refl t) (by decide : 3 ≠ 0))
+      rwa [← ht] at this
+    have hdQ : d ∣ Q3 := by
+      have : d ∣ s := Nat.gcd_dvd_right _ _
+      have : d ∣ s ^ 3 := dvd_trans this (dvd_pow (dvd_refl s) (by decide : 3 ≠ 0))
+      rwa [← hs] at this
+    have : d ∣ Nat.gcd D3h Q3 := Nat.dvd_gcd hdD hdQ
+    have : d ∣ 1 := by rwa [Nat.coprime_iff_gcd_eq_one.mp hcop2] at this
+    exact Nat.eq_one_of_dvd_one this
+  have hsodd : Odd s := by
+    have hQodd : Odd Q :=
+      ((Odd.pow hγo).add_odd (hγo.mul hαo)).add_odd (Odd.pow hαo)
+    have hQ3odd : Odd Q3 := by
+      have : Odd (3 * Q3) := by simpa [hQsplit] using hQodd
+      exact Nat.Odd.of_mul_right this
+    have : Odd (s ^ 3) := by simpa [hs] using hQ3odd
+    simpa [pow_three] using Nat.Odd.of_mul_right this
+  have ht3 : ¬ 3 ∣ t := by
+    intro ht3'
+    have h3D3h : 3 ∣ D3h := by
+      have : 3 ∣ t ^ 3 := dvd_trans ht3' (dvd_pow (dvd_refl t) (by decide : 3 ≠ 0))
+      rwa [← ht] at this
+    have h3D3 : 3 ∣ D3 := by
+      rw [hD3h]
+      exact dvd_mul_of_dvd_right h3D3h 2
+    have : 3 ^ (3 * k) ∣ D := by
+      have : 3 ^ ((3 * k - 1) + 1) ∣ 3 ^ (3 * k - 1) * D3 := by
+        rw [pow_add, pow_one]
+        exact mul_dvd_mul_left _ h3D3
+      have hv1 : (3 * k - 1) + 1 = 3 * k := by omega
+      rwa [hv1, hDsplit] at this
+    have : 3 * k ≤ padicValNat 3 D :=
+      (padicValNat_dvd_iff_le hDne (n := 3 * k)).mp this
+    omega
+  have hs3n : ¬ 3 ∣ s := by
+    intro hs3'
+    have h3Q3 : 3 ∣ Q3 := by
+      have : 3 ∣ s ^ 3 := dvd_trans hs3' (dvd_pow (dvd_refl s) (by decide : 3 ≠ 0))
+      rwa [← hs] at this
+    have h9Q : 9 ∣ Q := by
+      have : 3 * 3 ∣ 3 * Q3 := Nat.mul_dvd_mul_left 3 h3Q3
+      simpa [show (9 : ℕ) = 3 * 3 by decide, hQsplit] using this
+    have : 2 ≤ padicValNat 3 Q := (padicValNat_dvd_iff_le hQne (n := 2)).mp h9Q
+    omega
+  have hDform : D = 2 * (3 ^ (3 * k - 1) * t ^ 3) := by
+    calc D = 3 ^ (3 * k - 1) * D3 := hDsplit.symm
+      _ = 3 ^ (3 * k - 1) * (2 * D3h) := by rw [hD3h]
+      _ = 2 * (3 ^ (3 * k - 1) * t ^ 3) := by rw [ht]; ring
+  have hQform : Q = 3 * s ^ 3 := by rw [← hQsplit, hs]
+  have hβform : β = 3 ^ k * t * s := by
+    have hβ0 : β0 = t * s :=
+      eq_of_nat_cube_eq (by
+        calc β0 ^ 3 = D3h * Q3 := hprod2.symm
+          _ = t ^ 3 * s ^ 3 := by rw [ht, hs]
+          _ = (t * s) ^ 3 := (mul_pow t s 3).symm)
+    calc β = 3 ^ k * β0 := hβsplit.symm
+      _ = 3 ^ k * t * s := by rw [hβ0]; ring
+  exact ⟨k, t, s, hk, ht0, hs0, hcopts, hsodd, ht3, hs3n, rfl, hDform, hQform, hβform⟩
+
+/--
+The gcd-`3` branch collapses to `s³ = τ² + (3^{2k−1} t²)³`.
+-/
+theorem exists_pos_cube_gcd_three_half_sum
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3)
+    (hg3 : Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 3) :
+    ∃ k t s τ : ℕ, 0 < k ∧ 0 < t ∧ 0 < s ∧
+      3 ^ (3 * k - 1) * t ^ 3 < τ ∧
+        Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧
+          k = padicValNat 3 β ∧
+            α = τ - 3 ^ (3 * k - 1) * t ^ 3 ∧
+              γ = τ + 3 ^ (3 * k - 1) * t ^ 3 ∧
+                β = 3 ^ k * t * s ∧
+                  s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := by
+  obtain ⟨k, t, s, hk, ht0, hs0, hcop, hsodd, ht3, hs3n, hkEq, hD, hQ, hβ⟩ :=
+    exists_pos_cube_gcd_three_almost_cubes hα0 hβ0 hγ0 hgcd heq hg3
+  obtain ⟨hlt, hαo, hγo, _, _, _, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  obtain ⟨τ, δ, hsum, hdiff, hγeq, hαeq, hδτ⟩ :=
+    exists_half_sum_diff_of_odd hαo hγo (Nat.le_of_lt hlt)
+  have hδ : δ = 3 ^ (3 * k - 1) * t ^ 3 :=
+    Nat.mul_left_cancel (by decide : 0 < 2) (hdiff.symm.trans hD)
+  subst hδ
+  have hQτ : 3 * s ^ 3 = 3 * τ ^ 2 + (3 ^ (3 * k - 1) * t ^ 3) ^ 2 := by
+    have := quad_factor_of_half_sum_diff (Nat.le_of_lt hlt) hsum hdiff
+    rwa [hQ] at this
+  have hs3 : s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := by
+    have hmul :
+        3 * s ^ 3 = 3 * (τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) := by
+      have hsq := sq_of_three_pow_mul_t_cube (t := t) hk
+      have hcube := three_pow_t_sixth_eq_cube (t := t) hk
+      have hpow := three_pow_sixth_pred_mul_three hk
+      calc 3 * s ^ 3
+          = 3 * τ ^ 2 + (3 ^ (3 * k - 1) * t ^ 3) ^ 2 := hQτ
+        _ = 3 * τ ^ 2 + 3 ^ (6 * k - 2) * t ^ 6 := by rw [hsq]
+        _ = 3 * τ ^ 2 + 3 ^ (6 * k - 3) * 3 * t ^ 6 := by rw [← hpow]
+        _ = 3 * τ ^ 2 + 3 * (3 ^ (6 * k - 3) * t ^ 6) := by
+              simp [mul_left_comm, mul_comm]
+        _ = 3 * (τ ^ 2 + 3 ^ (6 * k - 3) * t ^ 6) := by
+              simp [mul_add]
+        _ = 3 * (τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) := by rw [hcube]
+    exact Nat.mul_left_cancel (by decide : 0 < 3) hmul
+  have hτt : 3 ^ (3 * k - 1) * t ^ 3 < τ := by
+    have : α = τ - 3 ^ (3 * k - 1) * t ^ 3 := hαeq
+    omega
+  exact ⟨k, t, s, τ, hk, ht0, hs0, hτt, hcop, hsodd, ht3, hs3n, hkEq,
+    hαeq, hγeq, hβ, hs3⟩
+
+/--
+A primitive positive solution occupies exactly one of the two 3-descent
+branches.
+-/
+theorem pos_cube_three_descent_dichotomy
+    {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
+    (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
+    (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
+    (∃ t s τ : ℕ, 0 < t ∧ 0 < s ∧ t ^ 3 < τ ∧
+        Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧ 3 ∣ τ ∧
+          α = τ - t ^ 3 ∧ γ = τ + t ^ 3 ∧ β = t * s ∧
+            s ^ 3 = t ^ 6 + 3 * τ ^ 2) ∨
+      ∃ k t s τ : ℕ, 0 < k ∧ 0 < t ∧ 0 < s ∧
+        3 ^ (3 * k - 1) * t ^ 3 < τ ∧
+          Nat.Coprime t s ∧ Odd s ∧ ¬ 3 ∣ t ∧ ¬ 3 ∣ s ∧
+            k = padicValNat 3 β ∧
+              α = τ - 3 ^ (3 * k - 1) * t ^ 3 ∧
+                γ = τ + 3 ^ (3 * k - 1) * t ^ 3 ∧
+                  β = 3 ^ k * t * s ∧
+                    s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := by
+  obtain ⟨hlt, _, _, hcop, _, _, _⟩ :=
+    pos_cube_diff_factor_package hα0 hβ0 hγ0 hgcd heq
+  rcases gcd_cube_diff_eq_one_or_three hlt hcop with hg1 | hg3
+  · exact Or.inl
+      (exists_pos_cube_gcd_one_half_sum hα0 hβ0 hγ0 hgcd heq hg1)
+  · exact Or.inr
+      (exists_pos_cube_gcd_three_half_sum hα0 hβ0 hγ0 hgcd heq hg3)
+
+/--
+The gcd-`3` parametrisation reconstructs a positive solution of
+`α³ + 2β³ = γ³`.
+-/
+theorem pos_cube_eq_of_gcd_three_params {k t s τ : ℕ}
+    (hk : 0 < k) (h : 3 ^ (3 * k - 1) * t ^ 3 ≤ τ)
+    (heq : s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) :
+    (τ - 3 ^ (3 * k - 1) * t ^ 3) ^ 3 + 2 * (3 ^ k * t * s) ^ 3 =
+      (τ + 3 ^ (3 * k - 1) * t ^ 3) ^ 3 := by
+  set δ := 3 ^ (3 * k - 1) * t ^ 3
+  have hβ : (3 ^ k * t * s) ^ 3 = δ * (3 * τ ^ 2 + δ ^ 2) := by
+    have hsq : δ ^ 2 = 3 ^ (6 * k - 2) * t ^ 6 := by
+      simpa [δ] using sq_of_three_pow_mul_t_cube (k := k) (t := t) hk
+    have hcube := three_pow_t_sixth_eq_cube (k := k) (t := t) hk
+    have hpow3 := three_pow_pred_mul_three hk
+    have hpow6 := three_pow_sixth_pred_mul_three hk
+    have hδQ : δ * (3 * τ ^ 2 + δ ^ 2) =
+        3 ^ (3 * k) * t ^ 3 * (τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) := by
+      calc δ * (3 * τ ^ 2 + δ ^ 2)
+          = 3 ^ (3 * k - 1) * t ^ 3 *
+              (3 * τ ^ 2 + 3 ^ (6 * k - 2) * t ^ 6) := by
+                rw [hsq]
+        _ = 3 ^ (3 * k - 1) * t ^ 3 *
+              (3 * τ ^ 2 + 3 ^ (6 * k - 3) * 3 * t ^ 6) := by rw [← hpow6]
+        _ = 3 ^ (3 * k - 1) * t ^ 3 *
+              (3 * τ ^ 2 + 3 * (3 ^ (6 * k - 3) * t ^ 6)) := by
+                simp [mul_left_comm, mul_comm]
+        _ = (3 ^ (3 * k - 1) * 3) * t ^ 3 *
+              (τ ^ 2 + 3 ^ (6 * k - 3) * t ^ 6) := by
+                simp [mul_add, mul_assoc, mul_left_comm, mul_comm]
+        _ = 3 ^ (3 * k) * t ^ 3 *
+              (τ ^ 2 + 3 ^ (6 * k - 3) * t ^ 6) := by rw [hpow3]
+        _ = 3 ^ (3 * k) * t ^ 3 *
+              (τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) := by rw [hcube]
+    have hpow : (3 ^ k * t * s) ^ 3 = 3 ^ (3 * k) * t ^ 3 * s ^ 3 := by
+      rw [mul_assoc (3 ^ k), mul_pow, mul_pow]
+      have : (3 ^ k) ^ 3 = 3 ^ (3 * k) := by
+        rw [← pow_mul]; congr 1; ring
+      rw [this, mul_assoc]
+    calc (3 ^ k * t * s) ^ 3
+        = 3 ^ (3 * k) * t ^ 3 * s ^ 3 := hpow
+      _ = 3 ^ (3 * k) * t ^ 3 *
+          (τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) := by rw [heq]
+      _ = δ * (3 * τ ^ 2 + δ ^ 2) := hδQ.symm
+  exact pos_cube_eq_of_half_sum_diff h hβ
 
 /-! ### Phase 7o: Weierstrass model of `X³ + 2Y³ = 1` -/
 
