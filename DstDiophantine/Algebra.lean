@@ -46,7 +46,8 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   commutator_hyperbolic0_null commutator_hyperbolic0_null_mem_span
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
-  commutator_cyclic_null commutator_cyclic_null_mem_span)
+  commutator_cyclic_null commutator_cyclic_null_mem_span
+  null_ne_zero null_zero_ne_smul_null3 smul_null0_add_smul_null3_eq_zero_iff)
 export LorentzLie (cyclicSpan lorentzSpan poincareSpan
   hyperbolic_mem_lorentzSpan cyclic_mem_lorentzSpan null_mem_poincareSpan
   commute_pseudoscalar_hyperbolic commute_pseudoscalar_cyclic
@@ -86,6 +87,7 @@ export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans 
 export MotorGroup (adL adL_apply exp_apply_mem_of_forall_mem exp_smul_mul_mul_exp_neg_smul
   exp_mul_mul_exp_neg_mem sandwich_exp_mem
   sandwich_exp_smul_eq_exp_ad hasDerivAt_sandwich_exp_smul
+  hasDerivAt_sandwich_exp_smul_at iteratedDeriv_two_sandwich_exp_smul
   sandwich_rotorTorsion_mem_nullSpan sandwich_rotorTorsion_mem_lorentzSpan
   sandwich_rotorTorsion_mem_poincareSpan
   exists_omegaTrans_eq_of_mem_nullSpan exists_omegaTorsion_eq_of_mem_lorentzSpan
@@ -205,6 +207,13 @@ example (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) ∈
       Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) :=
   commutator_hyperbolic0_null_mem_span μ
+
+/-- Regression: every null generator is nonzero; \(N_0\) is not a multiple of \(N_3\). -/
+example (μ : Fin 4) : null μ ≠ 0 :=
+  null_ne_zero μ
+
+example (k : ℝ) : null 0 ≠ k • null 3 :=
+  null_zero_ne_smul_null3 k
 
 /-- Regression: a pure boost conjugates a translator to a translator. -/
 example (φ : ℝ) (p : Motor.TransParams) :
@@ -335,5 +344,11 @@ example (a : Fin 3) (x y : ℝ) :
     (x • hyperbolic a) * (y • cyclic a) = (y • cyclic a) * (x • hyperbolic a) ∧
       (x • cyclic a) * (y • cyclic a) = (y • cyclic a) * (x • cyclic a) :=
   ⟨hyperbolic_smul_cyclic_smul_same a x y, cyclic_smul_mul a x y⟩
+
+/-- Regression: the sandwich 2-jet at the identity is the nested bracket. -/
+example {Ω : PGA} (hΩ : CliffordAlgebra.reverse Ω = -Ω) (x : PGA) :
+    iteratedDeriv 2 (fun s : ℝ => sandwich (NormedSpace.exp (s • Ω)) x) 0 =
+      commutator Ω (commutator Ω x) :=
+  iteratedDeriv_two_sandwich_exp_smul hΩ x
 
 end DstDiophantine

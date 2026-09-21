@@ -166,14 +166,33 @@ theorem null_commute (μ ν : Fin 4) : Commute (null μ) (null ν) := by
   unfold Commute SemiconjBy
   simp [null_mul_null]
 
-theorem null_one_ne_zero : null 1 ≠ 0 := by
+/-- Contracting a null generator against its Minkowski leg recovers a nonzero
+multiple of \(e_4\). -/
+theorem null_mul_own (μ : Fin 4) :
+    null μ * ι (Fin.castAdd 1 μ) =
+      algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) * ι e4Index := by
+  simp only [null]
+  calc ι e4Index * ι (Fin.castAdd 1 μ) * ι (Fin.castAdd 1 μ)
+      = ι e4Index * (ι (Fin.castAdd 1 μ) * ι (Fin.castAdd 1 μ)) := by
+        rw [mul_assoc]
+    _ = ι e4Index * algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) := by
+        rw [e_sq]
+    _ = algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) * ι e4Index :=
+        (Algebra.commutes _ _).symm
+
+theorem null_ne_zero (μ : Fin 4) : null μ ≠ 0 := by
   intro h
-  have hcast : Fin.castAdd 1 (1 : Fin 4) = (1 : Fin 5) := by decide
-  have hι : ι e4Index = 0 := by
-    calc ι e4Index
-        = null 1 * ι 1 := by rw [null, hcast, mul_assoc, e1_sq, mul_one]
-      _ = 0 := by rw [h, zero_mul]
-  exact ι_e4_ne_zero hι
+  have hr : Q311 (e5vec (Fin.castAdd 1 μ)) ≠ 0 := by
+    fin_cases μ <;> simp [Q311_e5vec, w311]
+  have hprod :
+      algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) * ι e4Index = 0 := by
+    rw [← null_mul_own, h, zero_mul]
+  have : Q311 (e5vec (Fin.castAdd 1 μ)) • ι e4Index = 0 := by
+    simpa [Algebra.smul_def] using hprod
+  exact ι_e4_ne_zero ((smul_eq_zero.mp this).resolve_left hr)
+
+theorem null_one_ne_zero : null 1 ≠ 0 :=
+  null_ne_zero 1
 
 theorem null_reverse (μ : Fin 4) : reverse (null μ) = -null μ := by
   dsimp [null]
@@ -457,6 +476,34 @@ theorem commutator_hyperbolic0_null2 :
 theorem commutator_hyperbolic0_null3 :
     commutator (hyperbolic 0) (null 3) = 0 := by
   simp [commutator, mul_hyperbolic0_null3, sub_self]
+
+/-- Time-null \(N_0\) is not a multiple of the cyclic-plane generator \(N_3\):
+the radial boost mixes the former into \(N_1\) and leaves the latter inert. -/
+theorem null_zero_ne_smul_null3 (k : ℝ) : null 0 ≠ k • null 3 := by
+  intro h
+  have heq := congrArg (commutator (hyperbolic 0)) h
+  rw [commutator_hyperbolic0_null0, commutator_smul_right,
+    commutator_hyperbolic0_null3, smul_zero] at heq
+  exact null_ne_zero (1 : Fin 4)
+    ((smul_eq_zero.mp heq).resolve_left (by norm_num))
+
+theorem smul_null0_add_smul_null3_eq_zero_iff {r s : ℝ} :
+    r • null 0 + s • null 3 = 0 ↔ r = 0 ∧ s = 0 := by
+  constructor
+  · intro h
+    by_cases hr : r = 0
+    · refine ⟨hr, ?_⟩
+      have : s • null 3 = 0 := by simpa [hr] using h
+      exact (smul_eq_zero.mp this).resolve_right (null_ne_zero 3)
+    · have : r • null 0 = -s • null 3 := by
+        simpa [sub_eq_add_neg] using (eq_neg_iff_add_eq_zero.mpr h)
+      have hmul : null 0 = (-s / r) • null 3 := by
+        have h' := congrArg (fun z => r⁻¹ • z) this
+        simpa [smul_smul, inv_mul_cancel₀ hr, one_smul, ← div_eq_inv_mul,
+          neg_div, neg_smul] using h'
+      exact (null_zero_ne_smul_null3 (-s / r) hmul).elim
+  · rintro ⟨rfl, rfl⟩
+    simp
 
 /-- Closed commutator table of the radial boost with the four null generators. -/
 theorem commutator_hyperbolic0_null (μ : Fin 4) :

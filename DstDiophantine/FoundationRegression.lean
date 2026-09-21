@@ -71,8 +71,9 @@ invariance, light-cone eigenvalues, axis-1 rotation of `N₃`) are included;
 Gravity remains out of scope.
 
 Dual-axis Fermat geometric lemmas (interference closed form, mixed seat of
-degree `n ≥ 3`, sandwich mismatch with a pure boost) are included. The live
-residual `FermatMixedMotorResidual` remains a type, not a proved theorem.
+degree `n ≥ 3`, first-jet leak of \(N_1\) into \(N_0\), second jet on \(N_3\),
+sandwich mismatch with a pure boost) are included. The live residual
+`FermatMixedMotorResidual` remains a type, not a proved theorem.
 -/
 
 namespace DstDiophantine.FoundationRegression
@@ -235,6 +236,46 @@ example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
         sandwich (NormedSpace.exp (t • omegaTorsion (fermatBoostSeed a b c hc)))
           (null 3) :=
   exists_sandwich_fermat_ne_pureBoost ha hc h
+
+/-- Mixed first jet on the integer axis: \([\Omega,N_1]=\alpha N_0-\beta N_3\). -/
+example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) =
+      fermatBoost a b c hc • null 0 - fermatAngle a b ha • null 3 :=
+  commutator_fermatTorsion_null1 a b c ha hc
+
+/-- Mixed vs cyclic first jets on \(N_1\) differ by the time-null leak \(\alpha N_0\). -/
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) ≠
+      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 1) :=
+  commutator_fermatTorsion_null1_ne_cyclic ha hc h
+
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    ∃ t : ℝ,
+      sandwich (NormedSpace.exp (t • omegaTorsion (fermatTorsion a b c ha hc)))
+          (null 1) ≠
+        sandwich (NormedSpace.exp (t • omegaTorsion (fermatAngleSeed a b ha)))
+          (null 1) :=
+  exists_sandwich_fermat_ne_cyclic_null1 ha hc h
+
+/-- Mixed second jet on \(N_3\): \([\Omega,[\Omega,N_3]]=\alpha\beta N_0-\beta^2 N_3\). -/
+example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+      (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3)) =
+      (fermatBoost a b c hc * fermatAngle a b ha) • null 0 -
+        (fermatAngle a b ha) ^ 2 • null 3 :=
+  commutator_fermatTorsion_null3_two a b c ha hc
+
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+        (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+          (null 3)) ≠
+      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
+        (Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
+          (null 3)) :=
+  commutator_fermatTorsion_null3_two_ne_cyclic ha hc h
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :

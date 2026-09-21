@@ -6,6 +6,7 @@ import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -21,9 +22,11 @@ motor construction.
 ## Main results
 
 * `exp_apply_mem_of_forall_mem`, `exp_smul_mul_mul_exp_neg_smul`, `sandwich_exp_mem`,
-  `sandwich_exp_smul_eq_exp_ad`, `hasDerivAt_sandwich_exp_smul`:
+  `sandwich_exp_smul_eq_exp_ad`, `hasDerivAt_sandwich_exp_smul`,
+  `hasDerivAt_sandwich_exp_smul_at`, `iteratedDeriv_two_sandwich_exp_smul`:
   conjugation by `exp Ω` is `exp(ad Ω)`; the one-parameter sandwich has derivative
-  `[Ω, ·]` at the identity; every `ad Ω`-invariant subspace is invariant under
+  `sandwich(exp(tΩ),[Ω,·])` at every time, hence `[Ω,·]` at the identity, and second
+  jet `[Ω,[Ω,·]]`; every `ad Ω`-invariant subspace is invariant under
   the sandwich `exp Ω · exp(-Ω)`.
 * `sandwich_rotorTorsion_mem_nullSpan`, `exists_sandwich_rotorTorsion_expTrans`:
   a torsion rotor conjugates a null translator to a null translator
@@ -189,22 +192,41 @@ theorem sandwich_exp_smul_eq_exp_ad {Ω : PGA} (hΩ : reverse Ω = -Ω) (t : ℝ
   have hrev : reverse (t • Ω) = -(t • Ω) := by rw [map_smul, hΩ, smul_neg]
   rw [sandwich, reverse_exp_of_reverse_neg hrev, ← neg_smul, exp_smul_mul_mul_exp_neg_smul]
 
+/-- Sandwich by `exp(tΩ)` has derivative `sandwich(exp(tΩ), [Ω,x])` at every time. -/
+theorem hasDerivAt_sandwich_exp_smul_at {Ω : PGA} (hΩ : reverse Ω = -Ω)
+    (x : PGA) (t : ℝ) :
+    HasDerivAt (fun s : ℝ => sandwich (exp (s • Ω)) x)
+      (sandwich (exp (t • Ω)) (commutator Ω x)) t := by
+  have hf := hasDerivAt_exp_smul_const (adL Ω) t
+  have hx : HasDerivAt (fun s : ℝ => exp (s • adL Ω) x)
+      (exp (t • adL Ω) (adL Ω x)) t := by
+    refine (hf.clm_apply (hasDerivAt_const t x)).congr_deriv ?_
+    change (exp (t • adL Ω) * adL Ω) x + exp (t • adL Ω) 0 = _
+    simp
+  have hfun :
+      (fun s : ℝ => sandwich (exp (s • Ω)) x) = fun s : ℝ => exp (s • adL Ω) x :=
+    funext fun s => sandwich_exp_smul_eq_exp_ad hΩ s x
+  rw [hfun]
+  convert hx using 1
+  rw [adL_apply, ← sandwich_exp_smul_eq_exp_ad hΩ t]
+
 /-- Infinitesimal sandwich of a reverse-odd generator is the Lie bracket. -/
 theorem hasDerivAt_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω) (x : PGA) :
     HasDerivAt (fun t : ℝ => sandwich (exp (t • Ω)) x) (commutator Ω x) 0 := by
-  have hf := hasDerivAt_exp_smul_const (adL Ω) (0 : ℝ)
-  have hA0 : (0 : ℝ) • adL Ω = 0 := zero_smul ℝ _
-  have hf' : HasDerivAt (fun t : ℝ => exp (t • adL Ω)) (adL Ω) 0 :=
-    hf.congr_deriv (by rw [hA0, NormedSpace.exp_zero, one_mul])
-  have hx : HasDerivAt (fun t : ℝ => exp (t • adL Ω) x) (adL Ω x) 0 := by
-    refine (hf'.clm_apply (hasDerivAt_const (0 : ℝ) x)).congr_deriv ?_
-    have hA0' : (0 : ℝ) • adL Ω = 0 := zero_smul ℝ _
-    simp [hA0', NormedSpace.exp_zero]
-  have hfun :
-      (fun t : ℝ => sandwich (exp (t • Ω)) x) = fun t : ℝ => exp (t • adL Ω) x :=
-    funext fun t => sandwich_exp_smul_eq_exp_ad hΩ t x
-  rw [hfun]
-  simpa [adL_apply] using hx
+  simpa [zero_smul, exp_zero, sandwich_one] using
+    hasDerivAt_sandwich_exp_smul_at hΩ x 0
+
+/-- Second jet of the one-parameter sandwich at the identity. -/
+theorem iteratedDeriv_two_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω)
+    (x : PGA) :
+    iteratedDeriv 2 (fun s : ℝ => sandwich (exp (s • Ω)) x) 0 =
+      commutator Ω (commutator Ω x) := by
+  have hder : deriv (fun s : ℝ => sandwich (exp (s • Ω)) x) =
+      fun t => sandwich (exp (t • Ω)) (commutator Ω x) :=
+    funext fun t => (hasDerivAt_sandwich_exp_smul_at hΩ x t).deriv
+  rw [iteratedDeriv_succ, iteratedDeriv_one, hder]
+  simpa [zero_smul, exp_zero, sandwich_one] using
+    (hasDerivAt_sandwich_exp_smul_at hΩ (commutator Ω x) 0).deriv
 
 /-! ### Torsion rotors act on the null, Lorentz and Poincaré spans -/
 

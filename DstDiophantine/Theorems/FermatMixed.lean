@@ -3,6 +3,7 @@ import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Algebra.MotorGroup
 import DstDiophantine.Algebra.Sandwich
 import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 
@@ -14,8 +15,11 @@ Closes the geometric dichotomy used by the dual-axis programme:
 * `n = 2` positive solutions are pure cyclic (`α = 0`);
 * `n ≥ 3` positive solutions are mixed (`α > 0` and `β ∈ (0, π/2)`).
 
-Attack on the live residual is sandwich / commutator defect — **not** height
-amplification. Unconditional classical FLT is **not** claimed.
+The mixed seed leaks the additive null axis \(N_1\) into the time-null
+generator \(N_0\) at first order, and the same leak reappears as the second
+jet on \(N_3\). Those identities sit on the embedding axis itself; they do
+**not** yet mention `powerSumMotor = 1`. Unconditional classical FLT is
+**not** claimed.
 -/
 
 namespace DstDiophantine
@@ -181,6 +185,140 @@ theorem commutator_fermatTorsion_null3_ne_pureBoost {a b c : ℤ}
   intro hz
   have hβ : fermatAngle a b ha ≠ 0 := ne_of_gt h.2.1
   exact null_one_ne_zero ((smul_eq_zero.mp hz).resolve_left hβ)
+
+/-! ### First jet on the integer axis \(N_1\) (temporal leak) -/
+
+private theorem commutator_cyclic1_null1 :
+    commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 := by
+  rw [commutator_cyclic_null]
+  have hne : (1 : Fin 4) ≠ cyclicRight (1 : Fin 3) := by decide
+  have heq : (1 : Fin 4) = cyclicLeft (1 : Fin 3) := rfl
+  rw [ite_eq_right hne, ite_eq_left heq]
+  rfl
+
+private theorem commutator_cyclic1_null3 :
+    commutator (cyclic 1) (null 3) = (2 : ℝ) • null 1 := by
+  rw [commutator_cyclic_null]
+  have heq : (3 : Fin 4) = cyclicRight (1 : Fin 3) := rfl
+  rw [ite_eq_left heq]
+  rfl
+
+/-- Cyclic Fermat factor rotates the additive axis: \([\Omega_\beta,N_1]=-\beta N_3\). -/
+theorem commutator_fermatAngle_null1 (a b : ℤ) (ha : a ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 1) =
+      -fermatAngle a b ha • null 3 := by
+  rw [fermatAngleSeed, omegaTorsion_pureRotation1, commutator_smul_left,
+    commutator_cyclic1_null1]
+  module
+
+/-- Radial Fermat boost mixes the additive axis into time: \([\Omega_\alpha,N_1]=\alpha N_0\). -/
+theorem commutator_fermatBoost_null1 (a b c : ℤ) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc)) (null 1) =
+      fermatBoost a b c hc • null 0 := by
+  rw [fermatBoostSeed, omegaTorsion_pureBoost, commutator_smul_left,
+    commutator_hyperbolic0_null1]
+  module
+
+/-- Mixed Fermat seed on the integer translator axis:
+\([\Omega,N_1]=\alpha N_0-\beta N_3\). -/
+theorem commutator_fermatTorsion_null1 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) =
+      fermatBoost a b c hc • null 0 - fermatAngle a b ha • null 3 := by
+  rw [omegaTorsion_fermatTorsion, commutator_add_left, commutator_smul_left,
+    commutator_smul_left, commutator_hyperbolic0_null1, commutator_cyclic1_null1]
+  module
+
+/-- The mixed first jet on \(N_1\) differs from the pure cyclic jet by \(\alpha N_0\). -/
+theorem commutator_fermatTorsion_null1_ne_cyclic {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) ≠
+      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 1) := by
+  rw [commutator_fermatTorsion_null1, commutator_fermatAngle_null1]
+  intro heq
+  have : fermatBoost a b c hc • null 0 = 0 := by
+    have h' := congrArg (fun z => z + fermatAngle a b ha • null 3) heq
+    simpa [sub_eq_add_neg, add_assoc, add_neg_cancel, add_zero] using h'
+  exact null_ne_zero 0 ((smul_eq_zero.mp this).resolve_left (ne_of_gt h.1))
+
+/-- One-parameter sandwich groups of mixed vs cyclic Fermat seeds disagree on
+the integer axis \(N_1\). -/
+theorem exists_sandwich_fermat_ne_cyclic_null1 {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    ∃ t : ℝ,
+      sandwich (exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 1) ≠
+        sandwich (exp (t • omegaTorsion (fermatAngleSeed a b ha))) (null 1) := by
+  by_contra! hforall
+  have hf := hasDerivAt_sandwich_exp_smul
+    (omegaTorsion_reverse (fermatTorsion a b c ha hc)) (null 1)
+  have hg := hasDerivAt_sandwich_exp_smul
+    (omegaTorsion_reverse (fermatAngleSeed a b ha)) (null 1)
+  have hfun :
+      (fun t : ℝ =>
+          sandwich (exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 1)) =
+        fun t : ℝ =>
+          sandwich (exp (t • omegaTorsion (fermatAngleSeed a b ha))) (null 1) :=
+    funext hforall
+  rw [hfun] at hf
+  exact commutator_fermatTorsion_null1_ne_cyclic ha hc h (hf.unique hg)
+
+/-! ### Second jet on the cyclic plane \(N_3\) (feedback into time) -/
+
+theorem commutator_fermatAngle_null3 (a b : ℤ) (ha : a ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 3) =
+      fermatAngle a b ha • null 1 := by
+  rw [fermatAngleSeed, omegaTorsion_pureRotation1, commutator_smul_left,
+    commutator_cyclic1_null3]
+  module
+
+theorem commutator_fermatAngle_null3_two (a b : ℤ) (ha : a ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
+      (Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 3)) =
+      -(fermatAngle a b ha) ^ 2 • null 3 := by
+  rw [commutator_fermatAngle_null3, commutator_smul_right, commutator_fermatAngle_null1]
+  module
+
+/-- Second nested bracket on \(N_3\): \([\Omega,[\Omega,N_3]]=\alpha\beta N_0-\beta^2 N_3\). -/
+theorem commutator_fermatTorsion_null3_two (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+      (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3)) =
+      (fermatBoost a b c hc * fermatAngle a b ha) • null 0 -
+        (fermatAngle a b ha) ^ 2 • null 3 := by
+  rw [commutator_fermatTorsion_null3, commutator_smul_right,
+    commutator_fermatTorsion_null1]
+  module
+
+/-- Mixed second jet on \(N_3\) differs from the pure cyclic jet by \(\alpha\beta N_0\). -/
+theorem commutator_fermatTorsion_null3_two_ne_cyclic {a b c : ℤ}
+    (ha : a ≠ 0) (hc : c ≠ 0)
+    (h : IsMixedFermatMotor a b c ha hc) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+        (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
+          (null 3)) ≠
+      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
+        (Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
+          (null 3)) := by
+  rw [commutator_fermatTorsion_null3_two, commutator_fermatAngle_null3_two]
+  intro heq
+  have : (fermatBoost a b c hc * fermatAngle a b ha) • null 0 = 0 := by
+    have h' := congrArg (fun z => z + (fermatAngle a b ha) ^ 2 • null 3) heq
+    simpa [sub_eq_add_neg, add_assoc, add_neg_cancel, add_zero] using h'
+  have hcoeff : fermatBoost a b c hc * fermatAngle a b ha ≠ 0 :=
+    mul_ne_zero (ne_of_gt h.1) (ne_of_gt h.2.1)
+  exact null_ne_zero 0 ((smul_eq_zero.mp this).resolve_left hcoeff)
+
+/-- The mixed sandwich 2-jet on \(N_3\) is \(\alpha\beta N_0-\beta^2 N_3\). -/
+theorem iteratedDeriv_two_sandwich_fermatTorsion_null3
+    (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    iteratedDeriv 2
+      (fun t : ℝ =>
+        sandwich (exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 3)) 0 =
+      (fermatBoost a b c hc * fermatAngle a b ha) • null 0 -
+        (fermatAngle a b ha) ^ 2 • null 3 := by
+  rw [iteratedDeriv_two_sandwich_exp_smul
+    (omegaTorsion_reverse (fermatTorsion a b c ha hc)),
+    commutator_fermatTorsion_null3_two]
 
 theorem sandwich_fermatBoost_null3 (a b c : ℤ) (hc : c ≠ 0) :
     sandwich (rotorTorsion (fermatBoostSeed a b c hc)) (null 3) = null 3 :=
