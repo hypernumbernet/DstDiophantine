@@ -47,7 +47,7 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
   commutator_cyclic_null commutator_cyclic_null_mem_span
-  null_ne_zero null_zero_ne_smul_null3 smul_null0_add_smul_null3_eq_zero_iff)
+  commutator_cyclic1_null1 commutator_cyclic1_null3 null_ne_zero)
 export LorentzLie (cyclicSpan lorentzSpan poincareSpan
   hyperbolic_mem_lorentzSpan cyclic_mem_lorentzSpan null_mem_poincareSpan
   commute_pseudoscalar_hyperbolic commute_pseudoscalar_cyclic
@@ -88,6 +88,7 @@ export MotorGroup (adL adL_apply exp_apply_mem_of_forall_mem exp_smul_mul_mul_ex
   exp_mul_mul_exp_neg_mem sandwich_exp_mem
   sandwich_exp_smul_eq_exp_ad hasDerivAt_sandwich_exp_smul
   hasDerivAt_sandwich_exp_smul_at iteratedDeriv_two_sandwich_exp_smul
+  exists_sandwich_exp_ne_of_commutator_ne
   sandwich_rotorTorsion_mem_nullSpan sandwich_rotorTorsion_mem_lorentzSpan
   sandwich_rotorTorsion_mem_poincareSpan
   exists_omegaTrans_eq_of_mem_nullSpan exists_omegaTorsion_eq_of_mem_lorentzSpan
@@ -208,12 +209,15 @@ example (μ : Fin 4) :
       Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) :=
   commutator_hyperbolic0_null_mem_span μ
 
-/-- Regression: every null generator is nonzero; \(N_0\) is not a multiple of \(N_3\). -/
+/-- Regression: every null generator is nonzero. -/
 example (μ : Fin 4) : null μ ≠ 0 :=
   null_ne_zero μ
 
-example (k : ℝ) : null 0 ≠ k • null 3 :=
-  null_zero_ne_smul_null3 k
+/-- Regression: axis-1 rotation of the integer and cyclic-plane translators. -/
+example :
+    commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 ∧
+      commutator (cyclic 1) (null 3) = (2 : ℝ) • null 1 :=
+  ⟨commutator_cyclic1_null1, commutator_cyclic1_null3⟩
 
 /-- Regression: a pure boost conjugates a translator to a translator. -/
 example (φ : ℝ) (p : Motor.TransParams) :

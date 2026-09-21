@@ -220,6 +220,12 @@ example {a b c : ℤ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     IsPureCyclicFermatMotor a b c (ne_of_gt hc) ↔ a ^ 2 + b ^ 2 = c ^ 2 :=
   fermatBoost_eq_zero_iff_pythagorean ha hb hc
 
+/-- Mixed first jet on \(N_3\): \([\Omega,N_3]=\beta N_1\). -/
+example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
+    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3) =
+      fermatAngle a b ha • null 1 :=
+  commutator_fermatTorsion_null3 a b c ha hc
+
 /-- Finite sandwich: the cyclic Fermat factor rotates `N₃`. -/
 example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
     (hβ : 0 < fermatAngle a b ha) :
@@ -243,13 +249,7 @@ example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
       fermatBoost a b c hc • null 0 - fermatAngle a b ha • null 3 :=
   commutator_fermatTorsion_null1 a b c ha hc
 
-/-- Mixed vs cyclic first jets on \(N_1\) differ by the time-null leak \(\alpha N_0\). -/
-example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
-    (h : IsMixedFermatMotor a b c ha hc) :
-    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) ≠
-      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 1) :=
-  commutator_fermatTorsion_null1_ne_cyclic ha hc h
-
+/-- Mixed vs cyclic sandwich groups disagree on the integer axis \(N_1\). -/
 example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc) :
     ∃ t : ℝ,
@@ -266,16 +266,6 @@ example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
       (fermatBoost a b c hc * fermatAngle a b ha) • null 0 -
         (fermatAngle a b ha) ^ 2 • null 3 :=
   commutator_fermatTorsion_null3_two a b c ha hc
-
-example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
-    (h : IsMixedFermatMotor a b c ha hc) :
-    Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
-        (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
-          (null 3)) ≠
-      Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
-        (Generators.commutator (omegaTorsion (fermatAngleSeed a b ha))
-          (null 3)) :=
-  commutator_fermatTorsion_null3_two_ne_cyclic ha hc h
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :

@@ -23,10 +23,12 @@ motor construction.
 
 * `exp_apply_mem_of_forall_mem`, `exp_smul_mul_mul_exp_neg_smul`, `sandwich_exp_mem`,
   `sandwich_exp_smul_eq_exp_ad`, `hasDerivAt_sandwich_exp_smul`,
-  `hasDerivAt_sandwich_exp_smul_at`, `iteratedDeriv_two_sandwich_exp_smul`:
+  `hasDerivAt_sandwich_exp_smul_at`, `iteratedDeriv_two_sandwich_exp_smul`,
+  `exists_sandwich_exp_ne_of_commutator_ne`:
   conjugation by `exp Ω` is `exp(ad Ω)`; the one-parameter sandwich has derivative
   `sandwich(exp(tΩ),[Ω,·])` at every time, hence `[Ω,·]` at the identity, and second
-  jet `[Ω,[Ω,·]]`; every `ad Ω`-invariant subspace is invariant under
+  jet `[Ω,[Ω,·]]`; disagreement of brackets implies disagreement of sandwich
+  groups; every `ad Ω`-invariant subspace is invariant under
   the sandwich `exp Ω · exp(-Ω)`.
 * `sandwich_rotorTorsion_mem_nullSpan`, `exists_sandwich_rotorTorsion_expTrans`:
   a torsion rotor conjugates a null translator to a null translator
@@ -227,6 +229,22 @@ theorem iteratedDeriv_two_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω)
   rw [iteratedDeriv_succ, iteratedDeriv_one, hder]
   simpa [zero_smul, exp_zero, sandwich_one] using
     (hasDerivAt_sandwich_exp_smul_at hΩ (commutator Ω x) 0).deriv
+
+/-- If two reverse-odd generators disagree on `[·, x]`, their one-parameter
+sandwich groups disagree on `x`. -/
+theorem exists_sandwich_exp_ne_of_commutator_ne {Ω₁ Ω₂ : PGA}
+    (hΩ₁ : reverse Ω₁ = -Ω₁) (hΩ₂ : reverse Ω₂ = -Ω₂) {x : PGA}
+    (hne : commutator Ω₁ x ≠ commutator Ω₂ x) :
+    ∃ t : ℝ, sandwich (exp (t • Ω₁)) x ≠ sandwich (exp (t • Ω₂)) x := by
+  by_contra! hforall
+  have hf := hasDerivAt_sandwich_exp_smul hΩ₁ x
+  have hg := hasDerivAt_sandwich_exp_smul hΩ₂ x
+  have hfun :
+      (fun t : ℝ => sandwich (exp (t • Ω₁)) x) =
+        fun t : ℝ => sandwich (exp (t • Ω₂)) x :=
+    funext hforall
+  rw [hfun] at hf
+  exact hne (hf.unique hg)
 
 /-! ### Torsion rotors act on the null, Lorentz and Poincaré spans -/
 

@@ -168,7 +168,7 @@ theorem null_commute (μ ν : Fin 4) : Commute (null μ) (null ν) := by
 
 /-- Contracting a null generator against its Minkowski leg recovers a nonzero
 multiple of \(e_4\). -/
-theorem null_mul_own (μ : Fin 4) :
+private theorem null_mul_own (μ : Fin 4) :
     null μ * ι (Fin.castAdd 1 μ) =
       algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) * ι e4Index := by
   simp only [null]
@@ -476,34 +476,6 @@ theorem commutator_hyperbolic0_null2 :
 theorem commutator_hyperbolic0_null3 :
     commutator (hyperbolic 0) (null 3) = 0 := by
   simp [commutator, mul_hyperbolic0_null3, sub_self]
-
-/-- Time-null \(N_0\) is not a multiple of the cyclic-plane generator \(N_3\):
-the radial boost mixes the former into \(N_1\) and leaves the latter inert. -/
-theorem null_zero_ne_smul_null3 (k : ℝ) : null 0 ≠ k • null 3 := by
-  intro h
-  have heq := congrArg (commutator (hyperbolic 0)) h
-  rw [commutator_hyperbolic0_null0, commutator_smul_right,
-    commutator_hyperbolic0_null3, smul_zero] at heq
-  exact null_ne_zero (1 : Fin 4)
-    ((smul_eq_zero.mp heq).resolve_left (by norm_num))
-
-theorem smul_null0_add_smul_null3_eq_zero_iff {r s : ℝ} :
-    r • null 0 + s • null 3 = 0 ↔ r = 0 ∧ s = 0 := by
-  constructor
-  · intro h
-    by_cases hr : r = 0
-    · refine ⟨hr, ?_⟩
-      have : s • null 3 = 0 := by simpa [hr] using h
-      exact (smul_eq_zero.mp this).resolve_right (null_ne_zero 3)
-    · have : r • null 0 = -s • null 3 := by
-        simpa [sub_eq_add_neg] using (eq_neg_iff_add_eq_zero.mpr h)
-      have hmul : null 0 = (-s / r) • null 3 := by
-        have h' := congrArg (fun z => r⁻¹ • z) this
-        simpa [smul_smul, inv_mul_cancel₀ hr, one_smul, ← div_eq_inv_mul,
-          neg_div, neg_smul] using h'
-      exact (null_zero_ne_smul_null3 (-s / r) hmul).elim
-  · rintro ⟨rfl, rfl⟩
-    simp
 
 /-- Closed commutator table of the radial boost with the four null generators. -/
 theorem commutator_hyperbolic0_null (μ : Fin 4) :
@@ -953,6 +925,23 @@ theorem commutator_cyclic_null_mem_span (a : Fin 3) (μ : Fin 4) :
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact nullSpan.zero_mem
+
+/-- Axis-1 rotation of the integer translator: \([B^-_1,N_1]=-2N_3\). -/
+theorem commutator_cyclic1_null1 :
+    commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 := by
+  rw [commutator_cyclic_null]
+  have hne : (1 : Fin 4) ≠ cyclicRight (1 : Fin 3) := by decide
+  have heq : (1 : Fin 4) = cyclicLeft (1 : Fin 3) := rfl
+  rw [ite_eq_right hne, ite_eq_left heq]
+  rfl
+
+/-- Axis-1 rotation of the cyclic-plane translator: \([B^-_1,N_3]=2N_1\). -/
+theorem commutator_cyclic1_null3 :
+    commutator (cyclic 1) (null 3) = (2 : ℝ) • null 1 := by
+  rw [commutator_cyclic_null]
+  have heq : (3 : Fin 4) = cyclicRight (1 : Fin 3) := rfl
+  rw [ite_eq_left heq]
+  rfl
 
 /-! ### Internal Lorentz brackets among the six hyperbolic/cyclic generators -/
 
