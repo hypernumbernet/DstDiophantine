@@ -47,7 +47,8 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
   commutator_cyclic_null commutator_cyclic_null_mem_span
-  commutator_cyclic1_null1 commutator_cyclic1_null3 null_ne_zero)
+  commutator_cyclic1_null0 commutator_cyclic1_null1 commutator_cyclic1_null3
+  null_ne_zero)
 export LorentzLie (cyclicSpan lorentzSpan poincareSpan
   hyperbolic_mem_lorentzSpan cyclic_mem_lorentzSpan null_mem_poincareSpan
   commute_pseudoscalar_hyperbolic commute_pseudoscalar_cyclic

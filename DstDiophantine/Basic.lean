@@ -143,6 +143,10 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   commutator_fermatTorsion_null1 exists_sandwich_fermat_ne_cyclic_null1
   commutator_fermatTorsion_null3_two
   iteratedDeriv_two_sandwich_fermatTorsion_null3
+  fermatMixedFreq J_fermatTorsion fermatBoost_lt_fermatAngle
+  fermatMixedFreq_pos sandwich_fermatTorsion_null1_elliptic
+  sandwich_fermatTorsion_null1_timeRemainder
+  sandwich_fermatTorsion_null1_time_ne_zero_of_sol
   beal_solution_iff_motor bealMinExp bealAmpExp bealExpGcd bealGcd
   beal_amplification_contradiction
   beal_discrete_amplification_contradiction BealAdmissibleBridge

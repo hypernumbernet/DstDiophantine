@@ -279,14 +279,15 @@ example :
     ∃ v : RegimeValuation,
       sliceCore.eval v.assign = .T ∧
         sliceLp.eval v.assign = .T ∧
-          diagSingleAxisModular.eval v.assign = .F ∧
-            diagBalancedSeed.eval v.assign = .F ∧
-              liveMixedMotor.eval v.assign = .U ∧
-                fltConjecture.eval v.assign = .U :=
+          sliceElliptic.eval v.assign = .T ∧
+            diagSingleAxisModular.eval v.assign = .F ∧
+              diagBalancedSeed.eval v.assign = .F ∧
+                liveMixedMotor.eval v.assign = .U ∧
+                  fltConjecture.eval v.assign = .U :=
   exists_fermat_atlas_valuation
 
 /-- Regression: closed FLT slices do not T-entail classical FLT. -/
-example : ¬ EntailsTR {sliceCore, sliceLp} fltConjecture :=
+example : ¬ EntailsTR {sliceCore, sliceLp, sliceElliptic} fltConjecture :=
   closed_slices_not_entailsTR_flt
 
 /-- Regression: closed slices packaged with a live residual stay live. -/

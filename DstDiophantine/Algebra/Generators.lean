@@ -926,6 +926,14 @@ theorem commutator_cyclic_null_mem_span (a : Fin 3) (μ : Fin 4) :
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact nullSpan.zero_mem
 
+/-- Time translation is inert under axis-1 rotation: \([B^-_1,N_0]=0\). -/
+theorem commutator_cyclic1_null0 :
+    commutator (cyclic 1) (null 0) = 0 := by
+  rw [commutator_cyclic_null]
+  have hR : (0 : Fin 4) ≠ cyclicRight (1 : Fin 3) := by decide
+  have hL : (0 : Fin 4) ≠ cyclicLeft (1 : Fin 3) := by decide
+  simp [hR, hL]
+
 /-- Axis-1 rotation of the integer translator: \([B^-_1,N_1]=-2N_3\). -/
 theorem commutator_cyclic1_null1 :
     commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 := by

@@ -72,7 +72,9 @@ Gravity remains out of scope.
 
 Dual-axis Fermat geometric lemmas (interference closed form, mixed seat of
 degree `n ≥ 3`, first-jet leak of \(N_1\) into \(N_0\), second jet on \(N_3\),
-sandwich mismatch with a pure boost) are included. The live residual
+elliptic characteristic \(\omega=\sqrt{\beta^2-\alpha^2}\), finite sandwich of
+\(N_1\) as a harmonic oscillator, nonzero time-null remainder on mixed
+solutions, sandwich mismatch with a pure boost) are included. The live residual
 `FermatMixedMotorResidual` remains a type, not a proved theorem.
 -/
 
@@ -266,6 +268,35 @@ example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
       (fermatBoost a b c hc * fermatAngle a b ha) • null 0 -
         (fermatAngle a b ha) ^ 2 • null 3 :=
   commutator_fermatTorsion_null3_two a b c ha hc
+
+/-- On a positive solution the dual-axis characteristic is elliptic. -/
+example {a b c : ℤ} {n : ℕ}
+    (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    fermatBoost a b c (ne_of_gt hc) < fermatAngle a b (ne_of_gt ha) ∧
+      0 < fermatMixedFreq a b c (ne_of_gt ha) (ne_of_gt hc) :=
+  ⟨fermatBoost_lt_fermatAngle (Nat.le_trans (by decide : 1 ≤ 3) hn) ha hb hc hsol,
+    fermatMixedFreq_pos hn ha hb hc hsol⟩
+
+/-- Finite sandwich of \(N_1\) is the elliptic oscillator. -/
+example {a b c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0)
+    (hω : 0 < fermatMixedFreq a b c ha hc) (t : ℝ) :
+    sandwich (NormedSpace.exp (t • omegaTorsion (fermatTorsion a b c ha hc))) (null 1) =
+      Real.cos (fermatMixedFreq a b c ha hc * t) • null 1 +
+        (Real.sin (fermatMixedFreq a b c ha hc * t) / fermatMixedFreq a b c ha hc) •
+          (fermatBoost a b c hc • null 0 - fermatAngle a b ha • null 3) :=
+  sandwich_fermatTorsion_null1_elliptic ha hc hω t
+
+/-- Mixed degree-`n ≥ 3` solutions have a nonzero time-null remainder at unit time. -/
+example {a b c : ℤ} {n : ℕ}
+    (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    sandwich (fermatMotorRotor a b c (ne_of_gt ha) (ne_of_gt hc)) (null 1) -
+        Real.cos (fermatMixedFreq a b c (ne_of_gt ha) (ne_of_gt hc)) • null 1 +
+          (Real.sin (fermatMixedFreq a b c (ne_of_gt ha) (ne_of_gt hc)) /
+            fermatMixedFreq a b c (ne_of_gt ha) (ne_of_gt hc) *
+              fermatAngle a b (ne_of_gt ha)) • null 3 ≠ 0 :=
+  sandwich_fermatTorsion_null1_time_ne_zero_of_sol hn ha hb hc hsol
 
 /-- Balanced continuous obstruction (phase-6 diagnostic). -/
 example {p : ℕ} (hp : 1 ≤ p) :
