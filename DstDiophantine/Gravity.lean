@@ -16,6 +16,7 @@ import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
+import DstDiophantine.Gravity.ShieldCeiling
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -80,7 +81,13 @@ shield when the wall vanishes, vacuum unreachable dual-only unless
 \(\sum\alpha^2=0\), conservation \(J+M=\sum\alpha^2\) and unique shield
 mass \(2M_{\mathrm{seed}}\), dual-only \(J\) filling the wall-to-seed
 interval, mixed unwind onto \(\alpha_a\le\pi/4\) when the wall is
-positive).
+positive), and the mass ceiling of `ShieldCeiling` (sharp trade-off
+\(\pi^2M\le\frac{5\pi^4}{16}+4J^2\), i.e.
+\(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\), attained along
+the wall family \(\alpha=(\pi/2,0,\gamma)\), \(\beta=(0,\pi/2,\pi/2-\gamma)\);
+hence a shield obeys \(M\le 5\pi^2/16\) with the isotropic shield capped at
+\(3\pi^2/16\); at the cone's mass ceiling every axis is purely usual or
+purely dual and \(|J|\ge\pi^2/8\); full repulsion has no mass penalty).
 -/
 
 namespace DstDiophantine
@@ -651,6 +658,77 @@ example {p q : Operations.TorsionParams}
     (hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0)
     (hM : mass q = 0) : False :=
   dual_only_not_vacuum_of_usual_pos hα hU hM
+
+/-- Regression: neutrality is equality of the two rapidity budgets, and is
+neither the vacuum nor agreement of the two rotors. -/
+example (p : Operations.TorsionParams) :
+    (IsGravNeutral p ↔
+      ∑ a : Fin 3, p.alpha a ^ 2 = ∑ a : Fin 3, p.beta a ^ 2) ∧
+    (∃ q : Operations.TorsionParams, IsGravNeutral q ∧ 0 < mass q ∧
+      RelativeRotor.relativeRotor q ≠ 1) :=
+  ⟨isGravNeutral_iff_budgets_agree p, exists_isGravNeutral_massive_torsioned⟩
+
+/-- Regression: a configuration at the cone's mass ceiling is not neutral. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    ¬ IsGravNeutral p :=
+  not_isGravNeutral_of_mass_eq_max h hM
+
+/-- Regression: sharp mass–mismatch trade-off on the admissible cone. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 :=
+  pi_sq_mass_le_shield_ceiling_add_J_sq p h
+
+/-- Regression: normalized trade-off curve. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    massNormalized p ≤ 5 / 6 + (3 / 2) * JNormalized p ^ 2 :=
+  massNormalized_le_shield_curve p h
+
+/-- Regression: a shield weighs at most five sixths of the cone ceiling,
+and that weight is attained. -/
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧ J p = 0 ∧
+      mass p = 5 * Real.pi ^ 2 / 16 :=
+  exists_admissible_shield_of_mass_eq_ceiling
+
+/-- Regression: the trade-off is an equality along the whole wall family. -/
+example (γ : ℝ) :
+    Real.pi ^ 2 * mass (ceilingWitness γ)
+      = 5 * Real.pi ^ 4 / 16 + 4 * J (ceilingWitness γ) ^ 2 :=
+  ceilingWitness_attains γ
+
+/-- Regression: the isotropic shield is capped below the ceiling. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
+    mass p ≤ 3 * Real.pi ^ 2 / 16 :=
+  mass_le_equalScale_ceiling h heq
+
+/-- Regression: at the cone's mass ceiling every axis is purely usual or
+purely dual, and no shield exists. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    (∀ a : Fin 3, (p.alpha a = Real.pi / 2 ∧ p.beta a = 0) ∨
+        (p.alpha a = 0 ∧ p.beta a = Real.pi / 2)) ∧
+      Real.pi ^ 2 / 8 ≤ |J p| :=
+  ⟨fun a => axis_rigidity_of_mass_eq_max h hM a,
+    pi_sq_div_eight_le_abs_J_of_mass_eq_max h hM⟩
+
+/-- Regression: full repulsion carries no mass penalty. -/
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧
+      mass p = 3 * Real.pi ^ 2 / 8 ∧ J p = -(3 * Real.pi ^ 2 / 8) :=
+  exists_admissible_max_mass_full_repulsion
+
+/-- Regression: a dual-only shieldable seed carries at most the ceiling
+budget. -/
+example {p q : Operations.TorsionParams} (hα : q.alpha = p.alpha)
+    (hq : Admissible.IsAdmissibleContinuous q) (hJ : J q = 0) :
+    ∑ a : Fin 3, p.alpha a ^ 2 ≤ 5 * Real.pi ^ 2 / 16 :=
+  sum_alpha_sq_le_shield_ceiling_of_dual_only_shield hα hq hJ
 
 /-- Regression: both-channel power is the indefinite pairing. -/
 example {m φ θ φdot θdot φddot θddot v u : ℝ}

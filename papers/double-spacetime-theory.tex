@@ -385,7 +385,7 @@ while correctly incorporating the time-reversal duality: the dual rotor $R_\text
 
 \subsection{Physical Interpretation and Gravitational Engineering}
 
-Gravity is the energetic cost of dual-rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, dual-only modulation of $\theta$ cannot raise $J$. It conserves $J+M$, and dual-only shielding is possible precisely when the dual wall is nonpositive; a strictly negative wall admits repulsion. Whether an external field supplies that dual-channel force is a conjecture, taken up in Section~\ref{sec:gravitycontrol}. The continuum remains a macroscopic description; spacetime degrees of freedom in this theory are particle-local and paired.
+Gravity is the energetic cost of dual-rotor misalignment. Because $J$ depends solely on the relative rotor $\Omega$, dual-only modulation of $\theta$ cannot raise $J$. It conserves $J+M$, and dual-only shielding is possible precisely when the dual wall is nonpositive; a strictly negative wall admits repulsion. Gravitational neutrality is moreover bounded in mass: no admissible configuration with $J=0$ carries more than five sixths of the cone's mass ceiling, whereas full repulsion reaches that ceiling unimpeded. Whether an external field supplies that dual-channel force is a conjecture, taken up in Section~\ref{sec:gravitycontrol}. The continuum remains a macroscopic description; spacetime degrees of freedom in this theory are particle-local and paired.
 
 \section{Unified Description of Inertia and Gravity}
 \label{sec:unified}
@@ -421,7 +421,7 @@ Thus, the equivalence principle is not an empirical coincidence but an algebraic
 
 \begin{itemize}
 \item The arrow of time distinction between usual and dual spacetimes explains why massive particles have a preferred rest frame: the dual time reversal breaks perfect symmetry, generating the mass gap.
-\item Synchronising the dual rotor $\theta$ with $\phi$ can cancel the mismatch $J$ that is felt as inertial resistance. Dual-only, that cancellation is purchased one-for-one by unsigned mass $M$: it is not a reduction of $M$, and the dual budget may be parked on a silent axis. Reducing both $J$ and $M$ requires unwinding the two rotors together, toward the origin. Either operation is a kinematic possibility on the cone, not yet a laboratory coupling---a direct pathway, if a dual-channel force exists, toward propellantless control of inertia.
+\item Synchronising the dual rotor $\theta$ with $\phi$ can cancel the mismatch $J$ that is felt as inertial resistance. Dual-only, that cancellation is purchased one-for-one by unsigned mass $M$: it is not a reduction of $M$, and the dual budget may be parked on a silent axis. Reducing both $J$ and $M$ requires unwinding the two rotors together, toward the origin. The cancellation is also capped: a configuration with $J=0$ cannot carry more than five sixths of the maximal unsigned mass, so a sufficiently heavy body must be made lighter before its inertial signature can be cancelled at all. Either operation is a kinematic possibility on the cone, not yet a laboratory coupling---a direct pathway, if a dual-channel force exists, toward propellantless control of inertia.
 \item The theory predicts that sufficiently high-frequency fields coupling to the dual spacetime could make massive objects behave as effectively massless over short timescales, allowing transient superluminal phase velocities (without violating causality, as information remains luminal).
 \end{itemize}
 
@@ -986,6 +986,13 @@ Because $J=\tfrac12\sum_a(\alpha_a^2-\beta_a^2)$ depends only on the relative ro
 \]
 Increasing the dual angles cannot raise $J$. At vanishing dual angle the first variation vanishes, and $J$ drops at second order along a dual ray $\beta=tv$. The admissible cone $\alpha_a,\beta_a\ge 0$, $\alpha_a+\beta_a\le\pi/2$ is convex, so affine interpolation of dual angles between admissible endpoints of equal usual rapidity remains admissible.
 
+It is worth fixing the target state before asking how to reach it. Call a configuration \emph{gravitationally neutral}, or equivalently \emph{shielded}, when the invariant mismatch vanishes:
+\begin{equation}
+\label{eq:neutral-def}
+J=0,\qquad\text{equivalently}\qquad\sum_a\alpha_a^2=\sum_a\beta_a^2 .
+\end{equation}
+The two sectors then hold equal rapidity budgets, and the particle neither attracts nor repels; $J>0$ is the dual budget falling short, $J<0$ its overshooting. Neutrality in this sense is a statement about the signed scalar and about nothing else, and it is worth separating from three notions it is easily confused with. It is not the vacuum: apart from the trivial origin a gravitationally neutral configuration carries strictly positive unsigned mass $M=\sum_a\alpha_a^2$, and the heavier the usual sector, the larger the dual budget neutrality consumes. It is not coincidence of the two rotors: $J$ can vanish while the relative rotor $\Omega$ stays away from the identity, so a neutral particle remains internally torsioned. And it is not the absence of structure: where the two rotors share a common scale $J$ vanishes while their interference continues to alternate, so the layered phase of Section~\ref{sec:strongfield} survives neutrality untouched. A gravitationally neutral particle is thus not an inert one. It is one whose gravitational and inertial signature, in the sense of Section~\ref{sec:unified}, has been cancelled, while everything else about it remains.
+
 That cone has a dual wall $\beta_a=\pi/2-\alpha_a$, on which
 \[
 J=\frac\pi2\sum_a\bigl(\alpha_a-\pi/4\bigr).
@@ -1001,6 +1008,40 @@ J+M=\sum_a\alpha_a^2,\qquad M-J=\sum_a\beta_a^2.
 Dual-only motion travels on $J+M=\mathrm{const}$: every drop in $J$ is paid for, one-for-one, by unsigned mass, and $J=0$ forces the dual budget $\sum\beta^2=\sum\alpha^2$. When the wall vanishes that shield is unique---the wall itself. When the wall is strictly negative the same mass is shared among a family of dual angles; two silent axes already give two distinct shields. Dual-only $J$ fills the closed interval from the wall up to the pure-usual value. From a pure usual seed one lands at $M=2M_{\mathrm{seed}}$.
 
 Usual-only motion conserves $M-J$. When the wall is positive, dual excitation cannot cancel $J$, but unwinding the usual rotor lowers the ceiling $\sum\alpha^2$ itself. Truncating each $\alpha_a$ to at most $\pi/4$ and matching the dual angle always yields a massive equal-scale shield; at uniform $\alpha=\pi/3$ that mixed unwind succeeds where dual-only fails. Dual-only conserves $\sum\alpha^2$, so the vacuum $J=M=0$ lies on no dual-only orbit except the origin. Mixed control reaches it from every seed by unwinding the usual rotor. Inertial resistance, in the sense of Section~\ref{sec:unified}, tracks $J$, not $M$. Synchronising the dual rotor with the usual one can null $J$ while increasing $M$; reducing both requires walking toward the origin.
+
+All of that concerns trajectories. The cone itself, before any trajectory is chosen, already limits what a shield can weigh. The variables that make the limit visible are the axis sum and difference $s_a=\alpha_a+\beta_a$, $d_a=\alpha_a-\beta_a$, in which admissibility reads simply $0\le s_a\le\pi/2$ and $|d_a|\le s_a$, while the two observables become
+\[
+J=\tfrac12\sum_a s_ad_a,\qquad M=\tfrac14\sum_a\bigl(s_a^2+d_a^2\bigr).
+\]
+Mass is a squared radius; mismatch is a product of coordinates. On a single axis the cone then forces $(k^2-s_a^2)(k^2-d_a^2)\ge 0$ with $k=\pi/2$, that is
+\[
+2k^2\bigl(\alpha_a^2+\beta_a^2\bigr)\le k^4+\bigl(\alpha_a^2-\beta_a^2\bigr)^2 ,
+\]
+so an axis can be heavy only by being lopsided. Nothing forbids three axes from being lopsided in opposite senses, and that is precisely the freedom shielding exploits; but the cancellation is itself bounded, because each axis density $\alpha_a^2-\beta_a^2$ lies in $[-k^2,k^2]$, and three such numbers cannot drive the sum of their pairwise products below $-k^4$. Assembling the two facts binds the two observables of the theory in one sharp inequality,
+\begin{equation}
+\label{eq:shield-ceiling}
+\pi^2M\le\frac{5\pi^4}{16}+4J^2,
+\qquad\text{equivalently}\qquad
+M_{\mathrm{norm}}\le\frac56+\frac32\,J_{\mathrm{norm}}^2 .
+\end{equation}
+
+Read at neutrality \eqref{eq:neutral-def}, the inequality \eqref{eq:shield-ceiling} says that a shielded particle cannot weigh more than
+\[
+M\le\frac{5\pi^2}{16}=\frac56\cdot\frac{3\pi^2}{8},
+\]
+five sixths of the cone's own mass ceiling. The remaining sixth of the available mass is closed to neutrality---whatever trajectory is taken, and whatever force drives the dual channel. Nor is the bound an artefact of the estimate: it is attained, and attained along an entire one-parameter family lying on the wall,
+\[
+\alpha=(\pi/2,\,0,\,\gamma),\qquad\beta=(0,\,\pi/2,\,\pi/2-\gamma),\qquad 0\le\gamma\le\pi/2,
+\]
+for which $J=\tfrac\pi2(\gamma-\pi/4)$ and $M=\tfrac{5\pi^2}{16}+(\gamma-\pi/4)^2$ turn \eqref{eq:shield-ceiling} into an identity. The heaviest shield in the theory is the midpoint $\gamma=\pi/4$: one axis purely usual, one axis purely dual, the third split evenly, all three on the wall.
+
+The shape of that extremal is as telling as its weight. It is maximally anisotropic: the two sectors do not cancel axis by axis, they exchange roles across axes, and that exchange is what buys the mass. An isotropic shield $\beta=\alpha$ is confined by $\alpha_a\le\pi/4$ to $M\le 3\pi^2/16$, lighter than the optimum by exactly the factor $5/3$. Matching each dual angle to its own usual rapidity---the most natural picture of ``aligning the two rotors''---is therefore the inefficient way to shield a heavy particle. Cross-axis compensation is the efficient one.
+
+At the top of the mass range the freedom vanishes altogether. A configuration attaining $M=3\pi^2/8$ must have every axis either purely usual, $(\alpha_a,\beta_a)=(\pi/2,0)$, or purely dual, $(0,\pi/2)$; at maximal radius the cone admits no intermediate. Such a configuration's mismatch is a sum of three quanta $\pm\pi^2/8$, so $|J_{\mathrm{norm}}|\ge 1/3$. The heaviest configurations the theory admits are not merely hard to shield: they are not gravitationally neutral at all, and nothing can make them so without first making them lighter.
+
+The asymmetry between the two directions deserves saying plainly, since it inverts the intuition that repulsion should be the expensive state. The ceiling in \eqref{eq:shield-ceiling} is a ceiling on neutrality, not on gravity. Full repulsion costs nothing: the pure-elliptic configuration $\alpha=0$, $\beta_a=\pi/2$ carries the maximal mass $3\pi^2/8$ together with the extreme value $J_{\mathrm{norm}}=-1$, and its attractive mirror does the same. Attraction and repulsion are available at every weight; what is obstructed is the crossing between them, and the obstruction grows quadratically in how close to zero one insists on standing. The design constraint of a control programme is therefore not how much dual excitation can be supplied, but how heavy an object one is willing to leave gravitationally visible.
+
+Brought back to the seed, the two budgets prove complementary rather than redundant. A usual seed that dual excitation alone can shield obeys the linear condition $\sum_a\alpha_a\le 3\pi/4$, and the shield it reaches carries $M=\sum_a\alpha_a^2$; the ceiling therefore imposes the quadratic condition $\sum_a\alpha_a^2\le 5\pi^2/16$ on that same seed.
 
 An electromagnetic coupling, a resonance frequency, or a laboratory protocol is not forced by this geometry. The remainder of this section records a proposed model for a dual-channel force, not a derivation of that force from Faraday coefficients.
 
@@ -1196,7 +1237,7 @@ The century that began with Einstein taught us to speak of gravity as the curvat
 
 The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost chart, $J$ stands in a closed relation with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum case. The two agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$, the shape $f$ has a unique minimum on $(0,\pi/2)$, and attraction ends at $\pi R/2$, before $r=2R$. None of this requires a background manifold.
 
-We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$. It conserves $J+M$, so every dual-only shield from a pure usual seed doubles unsigned mass, and it reaches $J=0$ precisely when the dual wall is nonpositive. Holding the usual rotor fixed against the written potential requires a constraint. Whether laboratory electromagnetism supplies that dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
+We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that early dual dynamics sources baryon asymmetry; that Maxwell's equations, a Weinberg angle, and a Higgs reading of rotor rigidity can be recovered from the same six-space; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$. It conserves $J+M$, so every dual-only shield from a pure usual seed doubles unsigned mass, and it reaches $J=0$ precisely when the dual wall is nonpositive. Independently of any trajectory the cone binds the two observables against each other, $M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2$: neutrality is capped at five sixths of the maximal mass, is reached only by a maximally anisotropic wall configuration, and fails outright at maximal mass, where every axis is purely usual or purely dual---while full repulsion pays no such penalty. Holding the usual rotor fixed against the written potential requires a constraint. Whether laboratory electromagnetism supplies that dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
 
 What can already be asked of the sky is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a three-sphere patch, its rotation curve plateaus near $r\sim x_0 R$ with $x_0\in(1.14,1.20)$ and reverses at $\pi R/2$, rather than by unseen mass; for Milky-Way stand-in mass the plateau sits near $9$--$11\,\mathrm{kpc}$ and the reversal near $12$--$15\,\mathrm{kpc}$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
 

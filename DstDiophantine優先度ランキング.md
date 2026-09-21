@@ -64,6 +64,7 @@
 | 旧 1 位の前処理 | cube の mod 13 / 19 立方剰余表と許容クラス、2-adic 原始 odd スライスへの帰着 | `nat_cube_mod_thirteen` / `_nineteen`、`pos_cube_add_two_cube_mod_*_classes`、`BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd`、`pos_cube_diff_factor_package` |
 | 旧 1 位 | cube 立方差 3-descent（`gcd ∈ {1,3}`、ほぼ立方、半和方程式） | `pos_cube_three_descent_dichotomy`、`exists_pos_cube_gcd_one_half_sum`、`exists_pos_cube_gcd_three_half_sum`、逆向き再構成。残差本体は未閉 |
 | 旧 2 位 | Generators 内部 Lorentz 括弧表、全軸 `hyperbolic_smul_mul` | `commutator_hyperbolic_hyperbolic` / `_cyclic_cyclic` / `_hyperbolic_cyclic` |
+| 旧 16 位の一部 | Gravity 遮蔽の質量天井 | [`Gravity/ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean)。`pi_sq_mass_le_shield_ceiling_add_J_sq`、`massNormalized_le_shield_curve`、`mass_le_shield_ceiling`、`ceilingWitness_attains`、`mass_le_equalScale_ceiling`、`axis_rigidity_of_mass_eq_max`。電磁結合は未請求のまま |
 | （追加） | Lorentz / Poincaré スパンの Lie 閉包と双対の複素構造 | [`Algebra/LorentzLie.lean`](DstDiophantine/Algebra/LorentzLie.lean)。抽象 `𝔰𝔬(3,1)` 同型と次元独立性は未請求 |
 | 旧 3 位 | Motor 半直積・着衣並進・全軸スカラー可換、軸 1 回転 sandwich | [`Algebra/MotorGroup.lean`](DstDiophantine/Algebra/MotorGroup.lean)、`sandwich_pureRotation1_*` |
 | 旧 10 位の前処理 | dual-axis Fermat の干渉閉形式と sandwich 欠陥 | `fermatInterfere`、`sandwich_fermatAngle_null3_ne_pureBoost`、`exists_sandwich_fermat_ne_pureBoost`。残差本体は未閉 |
@@ -281,7 +282,7 @@ Wiles FLT、Mihăilescu、Darmon–Merel、`(n,n,5)` を Lean 内で証明する
 
 ### 16 位: Gravity 変分同値 / Faraday–\(u\) 同一視
 
-[`Gravity.lean`](DstDiophantine/Gravity.lean)。チャート層の辞書・反例（`J` と teleparallel `T` の naive 同一化拒否）は厚い。DualControl は許容錐上の運動学（jet、壁、dual-only 遮蔽 iff、\(J+M=\sum\alpha^2\) 保存、混合 unwind）まで閉じ、DualRotorDynamics は書かれた作用の EL・sourced 二重積分器・dual-only が自由解でないことを示した。`dst_derives_G`、Faraday ヘリシティによる \(u\)、ヘリシティ駆動で \(J\) を作ることは **未請求**（CircularPolarization は mix が \(J\) を作れないことまで）。Diophantine と独立。運動学の Quick Win は打ち止めと見てよい。
+[`Gravity.lean`](DstDiophantine/Gravity.lean)。チャート層の辞書・反例（`J` と teleparallel `T` の naive 同一化拒否）は厚い。DualControl は許容錐上の運動学（jet、壁、dual-only 遮蔽 iff、\(J+M=\sum\alpha^2\) 保存、混合 unwind）まで閉じ、DualRotorDynamics は書かれた作用の EL・sourced 二重積分器・dual-only が自由解でないことを示した。2026-09-21 に [`Gravity/ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean) が着地し、軌跡に依らない鋭い質量–不整合トレードオフ \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\)（正規化形 \(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\)）と、その帰結である遮蔽の質量天井 \(M\le 5\pi^2/16\)（壁上の一径数族で等号達成、等方遮蔽は \(3\pi^2/16\) 止まり、最大質量では各軸が純通常か純双対で \(|J_{\mathrm{norm}}|\ge 1/3\)、完全斥力には天井なし）が閉じた。`dst_derives_G`、Faraday ヘリシティによる \(u\)、ヘリシティ駆動で \(J\) を作ることは **未請求**（CircularPolarization は mix が \(J\) を作れないことまで）。Diophantine と独立。残るのは変分同値と電磁結合であり、運動学の Quick Win は打ち止めと見てよい。
 
 ### 17 位: 他予想の `*AdmissibleBridge`
 
