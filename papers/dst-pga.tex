@@ -36,7 +36,7 @@ Once both sectors are in hand, a motor is an ordered product \(M=RT\). The torsi
 
 The same motor, restricted to a radial boost, recovers the diagonal Schwarzschild coframe. What it does not do is identify the parameter-space scalar \(J\) with the teleparallel torsion density \(T\). One is a finite angle; the other is a derivative of the coframe. Confusing the two collapses a constant boost into a curved geometry, or a pure translation into a non-vanishing field.
 
-The paper follows that order. Section~\ref{sec:adjunction} adjoins \(e_{4}\) and classifies the ten generators. Section~\ref{sec:duality} shows that duality determines the Lorentz algebra. Section~\ref{sec:motors} constructs the motor and the quadratic diagnostic \(J^{(5)}\). Section~\ref{sec:gravity} reads the Schwarzschild exterior as a radial boost. Section~\ref{sec:conclusions} returns to what the algebra has settled and what it has not.
+The paper follows that order. Section~\ref{sec:adjunction} adjoins \(e_{4}\) and classifies the ten generators. Section~\ref{sec:duality} shows that duality determines the Lorentz algebra. Section~\ref{sec:motors} constructs the motor and the quadratic diagnostic \(J^{(5)}\). Section~\ref{sec:gravity} reads the Schwarzschild exterior as a radial boost. Section~\ref{sec:conclusions} returns to what the algebra has settled and what it has not. The algebraic identities of those sections are machine-checked in the Lean~4 companion \texttt{DstDiophantine}; Appendix~\ref{app:lean} records the corresponding statements.
 
 \section{Adjoining a null direction}
 \label{sec:adjunction}
@@ -363,6 +363,83 @@ P \mathbin{\underline{\vee}} D \;=\; \kappa\, N_{3}
 for a real coefficient \(\kappa\). The right-hand side is a generator of translations along that normal. The dual element \(D\) has acted as the carrier of the normal direction.
 
 A second, purely spatial example confirms the grade pattern. For \(A=e_{1}e_{2}e_{3}\) and \(B=e_{1}e_{2}e_{4}\) one finds \(AB=-e_{3}e_{4}\) and \(BA=+e_{3}e_{4}\), hence \(A\mathbin{\underline{\vee}}B=-e_{3}e_{4}\) and \(A\mathbin{\overline{\vee}}B=0\): a pure grade-two commutator, as expected of an antisymmetric product.
+
+\section{Lean-checked identities}
+\label{app:lean}
+
+{\raggedright
+\emergencystretch=3em
+
+The construction of the paper is formalised in the Lean~4 project \texttt{DstDiophantine}. What follows is not a second proof, but a map from the three claims of the introduction to the theorems that check them. Proofs live in the named modules; they are not reproduced here. Linear independence of the ten generators, an abstract isomorphism with \(\mathfrak{iso}(3,1)\), a field dictionary for a general motor, and sandwiching against the full degenerate metric of \(G(3,1,1)\) are not claimed in the formalisation.
+
+\subsection{Null direction and the ten generators}
+
+The algebra is the Clifford algebra of the quadratic form with weights \((-1,+1,+1,+1,0)\), in modules \texttt{Algebra.QuadraticForm} and \texttt{Algebra.PGA}. The identities \(e_{4}^{2}=0\) and \(\{e_{4},e_{\mu}\}=0\) are \texttt{PGA.e4\_sq} and \texttt{PGA.e4\_anticomm}. The ten bivectors of Table~\ref{tab:generators} are \texttt{hyperbolic}, \texttt{cyclic}, and \texttt{null} in \texttt{Algebra.Generators}. Squares and strong vanishing read
+{\small
+\begin{verbatim}
+theorem hyperbolic_sq (a : Fin 3) : hyperbolic a * hyperbolic a = 1
+theorem cyclic_sq (a : Fin 3) : cyclic a * cyclic a = -1
+theorem null_mul_null (mu nu : Fin 4) : null mu * null nu = 0
+theorem null_reverse (mu : Fin 4) : reverse (null mu) = -null mu
+\end{verbatim}
+}
+The last line is why translations must be bivectors: reversal of a grade-one null vector would be even, and the unitarity argument of Section~\ref{sec:motors} would fail. The same module proves \texttt{hyperbolic\_reverse} and \texttt{cyclic\_reverse}.
+
+\subsection{Duality and the Poincar\'{e} span}
+
+\texttt{Algebra.LorentzLie} lifts the generator table to spans. Write \(\mathfrak{l}\) for \texttt{lorentzSpan} and \(\mathfrak{n}\) for \texttt{nullSpan}. The Lorentz span and the ten-dimensional span close under the commutator (\texttt{commutator\_mem\_lorentzSpan}, \texttt{commutator\_mem\_poincareSpan}). The null span is an abelian ideal (\texttt{commutator\_null\_null\_eq\_zero}, \texttt{commutator\_poincare\_null\_mem\_nullSpan}). These are the mathlib Lie subalgebras \texttt{lorentzLieSubalgebra} and \texttt{poincareLieSubalgebra}. The action is faithful in the sense motors require: \texttt{commutator\_hyperbolic0\_null0\_ne\_zero} is \([B^{+}_{0},N_{0}]\neq 0\).
+
+Duality is right multiplication by the Cl(3,1) pseudoscalar. On the Lorentz span it is a complex structure, and the bracket is complex-bilinear:
+{\small
+\begin{verbatim}
+theorem hyperbolic_eq_dual_cyclic (a : Fin 3) :
+    hyperbolic a = dual (cyclic a)
+theorem dual_dual (x : PGA) : dual (dual x) = -x
+theorem commutator_dual_dual (x y : PGA)
+    (hx : x Mem lorentzSpan) (hy : y Mem lorentzSpan) :
+    commutator (dual x) (dual y) = -commutator x y
+theorem commutator_hyperbolic_hyperbolic_cyclic (a b : Fin 3) :
+    commutator (hyperbolic a) (hyperbolic b) =
+      if a = b then 0
+      else if b = a + 1 then -((2 : Real) smul cyclic (a + 2))
+      else (2 : Real) smul cyclic (b + 2)
+\end{verbatim}
+}
+The minus sign in the boost--boost table is \(i^{2}=-1\). Every Lorentz element is a rotation plus a dualised rotation (\texttt{mem\_lorentzSpan\_iff}). On torsion parameters duality is the quarter-turn \((\alpha,\beta)\mapsto(\beta,-\alpha)\) (\texttt{dual\_omegaTorsion}). It reverses \(J\) and preserves the unsigned mass (\texttt{J\_dualParams}, \texttt{mass\_dualParams}).
+
+\subsection{Motors}
+
+\texttt{Algebra.Motor} defines \(\Omega_{\mathrm{torsion}}\), \(\Omega_{\mathrm{trans}}\), and the ordered product \(RT\). Nilpotence of the translational generator truncates the Banach exponential, translators add, and the product is unitary:
+{\small
+\begin{verbatim}
+theorem omegaTrans_sq (p : TransParams) :
+    omegaTrans p * omegaTrans p = 0
+theorem exp_omegaTrans (p : TransParams) :
+    exp (omegaTrans p) = 1 + omegaTrans p
+theorem expTrans_mul (p q : TransParams) :
+    expTrans p * expTrans q =
+      expTrans (fun mu => p.lambda mu + q.lambda mu)
+theorem rotor_unitary (p : TorsionParams) :
+    rotorTorsion p * reverse (rotorTorsion p) = 1
+theorem motor_unitary (p : OmegaParams) :
+    motor p * reverse (motor p) = 1
+\end{verbatim}
+}
+When the factors commute, \(\exp(\Omega_{\mathrm{biv}}^{(5)})=RT\) (\texttt{exp\_omegaBiv\_eq\_motor\_of\_commute}). When they do not, the two differ: \texttt{exists\_omegaBiv\_ne\_motor} exhibits a radial boost against a time translation. Every torsion rotor, not only a pure radial boost, conjugates translators to translators (\texttt{Algebra.MotorGroup}, \texttt{exists\_sandwich\_rotorTorsion\_expTrans}). Closed forms \(\exp(tB^{+})=\cosh t+\sinh t\cdot B^{+}\) and \(\exp(tB^{-})=\cos t+\sin t\cdot B^{-}\) are \texttt{exp\_of\_sq\_one} and \texttt{exp\_of\_sq\_neg\_one}.
+
+The diagnostic of Section~\ref{sec:motors} is \texttt{Invariant.J5}: the companion scalar \(J=\tfrac12\sum_{a}(\alpha_{a}^{2}-\beta_{a}^{2})\) plus the Minkowski pairing on \(\lambda^{\mu}\). It is unbounded without a constraint on translations (\texttt{J5\_unbounded}).
+
+\subsection{Gravity on a chart}
+
+The diagonal Schwarzschild coframe induces the Schwarzschild metric (\texttt{Gravity.Schwarzschild}, \texttt{inducedMetric\_schwarzschild}). The \((t,r)\) legs are the boost scale factors of the radial rapidity \(\varphi=-\tfrac12\log A\) (\texttt{Gravity.Sandwich}, \texttt{boostScaleFactors\_schwarzschild}), and the finite-angle diagnostic on that slice is \(J=\tfrac12\varphi^{2}\) (\texttt{J\_radialBoostParams}).
+
+\texttt{Gravity.JTDictionary} converts the Weitzenb\"{o}ck scalar on the same chart into
+\[
+T \;=\; \frac{4}{r^{2}}(\cosh\varphi-1),
+\]
+which is identical to \(\frac{2}{r^{2}}(1-\sqrt{A})^{2}/\sqrt{A}\) of Section~\ref{sec:gravity} (\texttt{schwarzschild\_T\_eq\_cosh\_rapidity}). Finite angle, field seed, and coframe density remain distinct. The three comparisons of that section are checked in \texttt{Gravity.Identification}: a nonzero finite angle against a flat chart, a pure spatial translation against vanishing \(T\), and the field seed against \(\tfrac12 T\) at \((r_{s},r)=(2,4)\).
+
+\par}
 
 \begin{thebibliography}{99}
 

@@ -38,7 +38,7 @@
 
 同じモーターを動径ブーストに制限すれば、対角シュヴァルツシルトコフレームが回復される。それがしないのは、パラメータ空間のスカラー \(J\) を遠平行ねじれ密度 \(T\) と同一視することである。一方は有限角であり、他方はコフレームの導関数である。両者を混同すれば、定数ブーストが曲がった幾何に潰れ、あるいは純並進が非零の場になる。
 
-論文はその順序に従う。第\ref{sec:adjunction}節は \(e_{4}\) を付加し、十個の生成元を分類する。第\ref{sec:duality}節は、双対性がローレンツ代数を定めることを示す。第\ref{sec:motors}節はモーターと二次診断量 \(J^{(5)}\) を構成する。第\ref{sec:gravity}節はシュヴァルツシルト外部を動径ブーストとして読む。第\ref{sec:conclusions}節は、代数が決着させたこととさせていないことへ戻る。
+論文はその順序に従う。第\ref{sec:adjunction}節は \(e_{4}\) を付加し、十個の生成元を分類する。第\ref{sec:duality}節は、双対性がローレンツ代数を定めることを示す。第\ref{sec:motors}節はモーターと二次診断量 \(J^{(5)}\) を構成する。第\ref{sec:gravity}節はシュヴァルツシルト外部を動径ブーストとして読む。第\ref{sec:conclusions}節は、代数が決着させたこととさせていないことへ戻る。それらの節の代数的恒等式は Lean~4 伴プロジェクト \texttt{DstDiophantine} において機械検証されている。対応する主張は付録~\ref{app:lean} に記録する。
 
 \section{零方向の付加}
 \label{sec:adjunction}
@@ -365,6 +365,83 @@ P \mathbin{\underline{\vee}} D \;=\; \kappa\, N_{3}
 である。右辺はその法線に沿う並進の生成元である。双対要素 \(D\) は法線方向の担体として作用した。
 
 第二の、純空間的な例は次数パターンを確認する。\(A=e_{1}e_{2}e_{3}\) および \(B=e_{1}e_{2}e_{4}\) に対して \(AB=-e_{3}e_{4}\)、\(BA=+e_{3}e_{4}\) となり、したがって \(A\mathbin{\underline{\vee}}B=-e_{3}e_{4}\)、\(A\mathbin{\overline{\vee}}B=0\) である。反対称積に期待されるとおり、純次数2の交換子である。
+
+\section{Lean で検証した恒等式}
+\label{app:lean}
+
+{\raggedright
+\emergencystretch=3em
+
+本稿の構成は Lean~4 プロジェクト \texttt{DstDiophantine} において形式化されている。以下は第二の証明ではない。導入の三つの主張を、それを検査する定理へ結ぶ地図である。証明は指名したモジュールにあり、ここでは再現しない。十個の生成元の線形独立性、\(\mathfrak{iso}(3,1)\) との抽象的な同型、一般モーターに対する場の辞書、および \(G(3,1,1)\) の完全な退化計量によるサンドイッチは、形式化では主張していない。
+
+\subsection{零方向と十個の生成元}
+
+代数は、重み \((-1,+1,+1,+1,0)\) の二次形式に対するクリフォード代数であり、モジュールは \texttt{Algebra.QuadraticForm} および \texttt{Algebra.PGA} である。恒等式 \(e_{4}^{2}=0\) および \(\{e_{4},e_{\mu}\}=0\) は \texttt{PGA.e4\_sq} と \texttt{PGA.e4\_anticomm} である。表~\ref{tab:generators} の十個のバイベクトルは \texttt{Algebra.Generators} の \texttt{hyperbolic}、\texttt{cyclic}、\texttt{null} である。平方と強い消滅は
+{\small
+\begin{verbatim}
+theorem hyperbolic_sq (a : Fin 3) : hyperbolic a * hyperbolic a = 1
+theorem cyclic_sq (a : Fin 3) : cyclic a * cyclic a = -1
+theorem null_mul_null (mu nu : Fin 4) : null mu * null nu = 0
+theorem null_reverse (mu : Fin 4) : reverse (null mu) = -null mu
+\end{verbatim}
+}
+最後の行が、並進がバイベクトルでなければならない理由である。次数1の零ベクトルの反転は偶数となり、第\ref{sec:motors}節のユニタリ性の論証は失敗する。同じモジュールが \texttt{hyperbolic\_reverse} および \texttt{cyclic\_reverse} を証明する。
+
+\subsection{双対性とポアンカレスパン}
+
+\texttt{Algebra.LorentzLie} は生成元の表をスパンへ持ち上げる。\(\mathfrak{l}\) を \texttt{lorentzSpan}、\(\mathfrak{n}\) を \texttt{nullSpan} と書く。ローレンツスパンと10次元スパンは交換子の下で閉じる（\texttt{commutator\_mem\_lorentzSpan}、\texttt{commutator\_mem\_poincareSpan}）。零スパンは可換イデアルである（\texttt{commutator\_null\_null\_eq\_zero}、\texttt{commutator\_poincare\_null\_mem\_nullSpan}）。これらは mathlib のリー部分代数 \texttt{lorentzLieSubalgebra} および \texttt{poincareLieSubalgebra} として与えられる。作用はモーターが要求する意味で忠実である。\texttt{commutator\_hyperbolic0\_null0\_ne\_zero} は \([B^{+}_{0},N_{0}]\neq 0\) である。
+
+双対性は Cl(3,1) 擬スカラーによる右乗法である。ローレンツスパンの上では複素構造であり、括弧は複素双線型である：
+{\small
+\begin{verbatim}
+theorem hyperbolic_eq_dual_cyclic (a : Fin 3) :
+    hyperbolic a = dual (cyclic a)
+theorem dual_dual (x : PGA) : dual (dual x) = -x
+theorem commutator_dual_dual (x y : PGA)
+    (hx : x Mem lorentzSpan) (hy : y Mem lorentzSpan) :
+    commutator (dual x) (dual y) = -commutator x y
+theorem commutator_hyperbolic_hyperbolic_cyclic (a b : Fin 3) :
+    commutator (hyperbolic a) (hyperbolic b) =
+      if a = b then 0
+      else if b = a + 1 then -((2 : Real) smul cyclic (a + 2))
+      else (2 : Real) smul cyclic (b + 2)
+\end{verbatim}
+}
+ブースト同士の表の負号は \(i^{2}=-1\) である。すべてのローレンツ要素は回転と双対化された回転の和である（\texttt{mem\_lorentzSpan\_iff}）。ねじれパラメータの上で双対性は四分の一回転 \((\alpha,\beta)\mapsto(\beta,-\alpha)\) である（\texttt{dual\_omegaTorsion}）。それは \(J\) を反転し、符号なしの質量を保つ（\texttt{J\_dualParams}、\texttt{mass\_dualParams}）。
+
+\subsection{モーター}
+
+\texttt{Algebra.Motor} は \(\Omega_{\mathrm{torsion}}\)、\(\Omega_{\mathrm{trans}}\)、および順序積 \(RT\) を定義する。並進生成元の冪零性は Banach 指数を打ち切り、トランスレータは加法し、積はユニタリである：
+{\small
+\begin{verbatim}
+theorem omegaTrans_sq (p : TransParams) :
+    omegaTrans p * omegaTrans p = 0
+theorem exp_omegaTrans (p : TransParams) :
+    exp (omegaTrans p) = 1 + omegaTrans p
+theorem expTrans_mul (p q : TransParams) :
+    expTrans p * expTrans q =
+      expTrans (fun mu => p.lambda mu + q.lambda mu)
+theorem rotor_unitary (p : TorsionParams) :
+    rotorTorsion p * reverse (rotorTorsion p) = 1
+theorem motor_unitary (p : OmegaParams) :
+    motor p * reverse (motor p) = 1
+\end{verbatim}
+}
+因子が可換なとき \(\exp(\Omega_{\mathrm{biv}}^{(5)})=RT\) である（\texttt{exp\_omegaBiv\_eq\_motor\_of\_commute}）。可換でないとき両者は異なる。\texttt{exists\_omegaBiv\_ne\_motor} は動径ブーストと時間並進を示す。純動径ブーストに限らず、すべてのねじれローターがトランスレータをトランスレータへ共役する（\texttt{Algebra.MotorGroup}、\texttt{exists\_sandwich\_rotorTorsion\_expTrans}）。閉じた形 \(\exp(tB^{+})=\cosh t+\sinh t\cdot B^{+}\) および \(\exp(tB^{-})=\cos t+\sin t\cdot B^{-}\) は \texttt{exp\_of\_sq\_one} および \texttt{exp\_of\_sq\_neg\_one} である。
+
+第\ref{sec:motors}節の診断量は \texttt{Invariant.J5} である。伴う論文のスカラー \(J=\tfrac12\sum_{a}(\alpha_{a}^{2}-\beta_{a}^{2})\) と \(\lambda^{\mu}\) 上のミンコフスキー対との和である。並進に制約がなければ非有界である（\texttt{J5\_unbounded}）。
+
+\subsection{チャート上の重力}
+
+対角シュヴァルツシルトコフレームはシュヴァルツシルト計量を誘導する（\texttt{Gravity.Schwarzschild}、\texttt{inducedMetric\_schwarzschild}）。\((t,r)\) 脚は動径ラピディティ \(\varphi=-\tfrac12\log A\) のブーストスケール因子であり（\texttt{Gravity.Sandwich}、\texttt{boostScaleFactors\_schwarzschild}）、その切片上の有限角診断量は \(J=\tfrac12\varphi^{2}\) である（\texttt{J\_radialBoostParams}）。
+
+\texttt{Gravity.JTDictionary} は同一チャート上のヴァイツェンベックスカラーを
+\[
+T \;=\; \frac{4}{r^{2}}(\cosh\varphi-1)
+\]
+へ変換する。これは第\ref{sec:gravity}節の \(\frac{2}{r^{2}}(1-\sqrt{A})^{2}/\sqrt{A}\) と同一である（\texttt{schwarzschild\_T\_eq\_cosh\_rapidity}）。有限角、場の種、コフレーム密度は別物のままである。その節の三つの比較は \texttt{Gravity.Identification} において検査される。非零の有限角と平坦チャート、純空間並進と消滅する \(T\)、および \((r_{s},r)=(2,4)\) における場の種と \(\tfrac12 T\) である。
+
+\par}
 
 \begin{thebibliography}{99}
 
