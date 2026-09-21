@@ -196,7 +196,7 @@ def dualInterp (p : TorsionParams) (β' : Fin 3 → ℝ) (t : ℝ) : TorsionPara
     (dualInterp p β' t).beta a = (1 - t) * p.beta a + t * β' a :=
   rfl
 
-private theorem torsionParams_ext {p q : TorsionParams}
+theorem torsionParams_ext {p q : TorsionParams}
     (hα : p.alpha = q.alpha) (hβ : p.beta = q.beta) : p = q := by
   rcases p with ⟨α, β⟩
   rcases q with ⟨α', β'⟩

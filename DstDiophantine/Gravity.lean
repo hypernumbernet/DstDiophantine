@@ -19,6 +19,7 @@ import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Gravity.ChiralSpectrum
+import DstDiophantine.Gravity.EMControl
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -48,7 +49,7 @@ indefinite conserved energy, dual-channel drive \(\ddot\delta=-u\) on the writte
 action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; dual-only
 \(\ddot\phi=0\) is not a free sourced solution unless \(m(\phi-\theta)=0\);
 both-channel power \(v\dot\phi-u\dot\theta\) and unique constraint
-\(v=m(\phi-\theta)\); no Faraday identification of \(u\)), the Coulombic
+\(v=m(\phi-\theta)\); no Faraday-helicity identification of \(u\)), the Coulombic
 circular-orbit identities of
 `ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
 no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
@@ -104,7 +105,17 @@ idempotent complementary projectors; distinct-axis projectors do not commute
 and do not resolve the identity; the time axis cannot serve as a chirality
 generator; Cartan brackets close as \(\mathfrak{so}(2,1)\) while the charged
 triple leaks into Cartan; duality exchanges the two triples; the dual-rotor
-cyclic generators are compact and satisfy \(IJ=K\); no Weinberg angle).
+cyclic generators are compact and satisfy \(IJ=K\); no Weinberg angle),
+and the electromagnetic control identities of `EMControl` (magnetic Faraday
+superposition is the dual-rotor substitution \(\theta\mapsto\theta+eA\);
+pure magnetic increments cannot raise \(J\) against a nonnegative dual
+seed; circular superposition does not shift mean \(J\); the dual-only
+reading of a circular potential drops mean \(J\) by the helicity-even
+ponderomotive \((e^2/2)(E_0/\omega)^2\); constant shifts of \(A\) change
+\(J\); a zero-mean circular \(A\) on a vanishing dual seed leaves the
+cone; dual-only realisation on the written action requires
+\(u=e\ddot A+m\delta\); no helicity drive of \(J\), no Maxwell, no
+laboratory protocol).
 -/
 
 namespace DstDiophantine
@@ -858,6 +869,55 @@ example (a : Fin 3) :
     dual (cartanGen a 0) = chargedGen a 0 ∧
       dual (cartanGen a 1) = -chargedGen a 1 :=
   ⟨(dual_cartanGen a).1, (dual_cartanGen a).2.1⟩
+
+/-- Regression: \(\theta\mapsto\theta+eA\) is magnetic Faraday superposition. -/
+example (p : Operations.TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) :
+    coupleA p e A = superpose p (magneticFaraday (fun a => e * A a)) :=
+  coupleA_eq_superpose_magnetic p e A
+
+/-- Regression: nonnegative magnetic increments cannot raise \(J\). -/
+example {p : Operations.TorsionParams} {B : Fin 3 → ℝ}
+    (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a) :
+    J (superpose p (magneticFaraday B)) ≤ J p :=
+  J_superpose_magnetic_le hβ hB
+
+/-- Regression: circular Faraday superposition does not shift mean \(J\). -/
+example (p : Operations.TorsionParams) {σ E0 : ℝ} (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (superpose p (circularWave σ E0 ψ))) = J p :=
+  quadMean_J_superpose_circular p hσ
+
+/-- Regression: circular \(A\) drops mean \(J\) by a helicity-even
+ponderomotive. -/
+example (p : Operations.TorsionParams) (e E0 ω σ : ℝ) (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (coupleA p e (circularPotential σ E0 ω ψ))) =
+      J p - (e ^ 2 / 2) * (E0 / ω) ^ 2 ∧
+    quadMean (fun ψ => J (coupleA p e (circularPotential σ E0 ω ψ))) =
+      quadMean (fun ψ =>
+        J (coupleA p e (circularPotential (-σ) E0 ω ψ))) :=
+  ⟨quadMean_J_coupleA_circular p e E0 ω hσ,
+    quadMean_J_coupleA_circular_helicity_even p e E0 ω σ hσ⟩
+
+/-- Regression: a constant shift of \(A\) changes \(J\). -/
+example :
+    ∃ p : Operations.TorsionParams, ∃ e : ℝ, ∃ A c : Fin 3 → ℝ,
+      J (coupleA p e A) ≠ J (coupleA p e (fun a => A a + c a)) :=
+  exists_constant_potential_changes_J
+
+/-- Regression: zero-mean circular \(A\) on a vanishing dual seed leaves
+the cone. -/
+example {p : Operations.TorsionParams} {e E0 ω : ℝ} (hβ : p.beta 0 = 0)
+    (he : 0 < e) (hE : 0 < E0) (hω : 0 < ω) :
+    ¬ Admissible.IsAdmissibleContinuous
+        (coupleA p e (circularPotential 1 E0 ω (3 * Real.pi / 2))) :=
+  not_admissible_coupleA_circular_from_zeroDual hβ he hE hω
+
+/-- Regression: dual-only realisation of \(\theta=\theta_0+eA\) on the
+written action requires \(u=e\ddot A+m\delta\). -/
+example (m φ θ0 e A Addot : ℝ) :
+    PaperBothSourcedEL m φ (θ0 + e * A) 0 (e * Addot)
+      (m * (φ - (θ0 + e * A)))
+      (e * Addot + m * (φ - (θ0 + e * A))) :=
+  paperBothSourcedEL_coupleA_jet m φ θ0 e A Addot
 
 /-- Regression: dual-rotor cyclic generators satisfy \(IJ=K\). -/
 example : cyclic 0 * cyclic 1 = cyclic 2 :=
