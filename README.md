@@ -125,7 +125,7 @@ Not imported by `Basic.lean`.
 | Track | Barrel | Content |
 | --- | --- | --- |
 | D4L | [`Logic.lean`](DstDiophantine/Logic.lean) | Four-valued logic of $J_{\mathrm{norm}}$, plus the dual Hilbert / Dirac layer in `Logic/Quantum/`. Beal / Fermat status boards live in `Logic/Example/` and do not silently promote classical conjectures. |
-| Gravity | [`Gravity.lean`](DstDiophantine/Gravity.lean) | PGA–TEGR chart dictionary, dual-rotor dynamics, Faraday audit, dual-only control, and the sharp shield ceiling $M_{\mathrm{norm}}\le\frac56+\frac32 J_{\mathrm{norm}}^2$ in [`ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean). $J$ is not identified with teleparallel $T$; `dst_derives_G` is not claimed. |
+| Gravity | [`Gravity.lean`](DstDiophantine/Gravity.lean) | PGA–TEGR chart dictionary, dual-rotor dynamics, Faraday audit, dual-only control, the sharp shield ceiling $M_{\mathrm{norm}}\le\frac56+\frac32 J_{\mathrm{norm}}^2$ in [`ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean), and the chiral spectrum of [`ChiralSpectrum.lean`](DstDiophantine/Gravity/ChiralSpectrum.lean) (Cartan $\mathfrak{so}(2,1)$, non-closed charged triple, dual-rotor $IJ=K$). $J$ is not identified with teleparallel $T$; `dst_derives_G` and a Weinberg angle are not claimed. |
 | CGA | [`CGA.lean`](DstDiophantine/CGA.lean) | 1D conformal probe (`Algebra/CGA/`) for the dilation sector that $G(3,1,1)$ does not supply. |
 
 `Theorems.BealRegime` (`classifyBealExponents`) is compiled on the Diophantine

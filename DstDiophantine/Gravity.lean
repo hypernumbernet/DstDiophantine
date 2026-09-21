@@ -17,6 +17,7 @@ import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.ShieldCeiling
+import DstDiophantine.Gravity.ChiralSpectrum
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -87,14 +88,20 @@ positive), and the mass ceiling of `ShieldCeiling` (sharp trade-off
 the wall family \(\alpha=(\pi/2,0,\gamma)\), \(\beta=(0,\pi/2,\pi/2-\gamma)\);
 hence a shield obeys \(M\le 5\pi^2/16\) with the isotropic shield capped at
 \(3\pi^2/16\); at the cone's mass ceiling every axis is purely usual or
-purely dual and \(|J|\ge\pi^2/8\); full repulsion has no mass penalty).
+purely dual and \(|J|\ge\pi^2/8\); full repulsion has no mass penalty),
+and the chiral spectrum of `ChiralSpectrum` (three spatial axes each yield
+idempotent complementary projectors; distinct-axis projectors do not commute
+and do not resolve the identity; the time axis cannot serve as a chirality
+generator; Cartan brackets close as \(\mathfrak{so}(2,1)\) while the charged
+triple leaks into Cartan; duality exchanges the two triples; the dual-rotor
+cyclic generators are compact and satisfy \(IJ=K\); no Weinberg angle).
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-open Invariant PGA Generators Logic
+open Invariant PGA Generators Logic Operations
 
 /-- Regression: closed-form dictionary \(T=(4/r^2)(\cosh\sqrt{2J}-1)\). -/
 example {rs r : ℝ} (h : IsExterior rs r) :
@@ -772,6 +779,49 @@ example {cE2 cB2 cEB cPx cPy cPz : ℝ}
     classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ) =
       cPz * poyntingZ (circularWave σ E0 ψ) :=
   classicalQuadratic_eq_smul_poyntingZ_of_helicity_odd h hσ
+
+/-- Regression: the time axis cannot furnish a chirality projector. -/
+example :
+    ((1 : PGA) + PGA.ι 0) * half * (((1 : PGA) + PGA.ι 0) * half) ≠
+      ((1 : PGA) + PGA.ι 0) * half :=
+  timeAxis_not_chirality_projector
+
+/-- Regression: three right projectors are not a resolution of the identity. -/
+example : chiralityRAxis 0 + chiralityRAxis 1 + chiralityRAxis 2 ≠ 1 :=
+  chiralityRAxis_sum_ne_one
+
+/-- Regression: distinct-axis chirality projectors do not commute. -/
+example : chiralityRAxis 0 * chiralityRAxis 1 ≠
+    chiralityRAxis 1 * chiralityRAxis 0 :=
+  chiralityRAxis_not_commute (by decide : (0 : Fin 3) ≠ 1)
+
+/-- Regression: Cartan brackets of axis \(e_1\) close as \(\mathfrak{so}(2,1)\). -/
+example :
+    commutator (cartanGen 0 0) (cartanGen 0 1) = (2 : ℝ) • cartanGen 0 2 ∧
+      commutator (cartanGen 0 0) (cartanGen 0 2) = -((2 : ℝ) • cartanGen 0 1) ∧
+        commutator (cartanGen 0 1) (cartanGen 0 2) = -((2 : ℝ) • cartanGen 0 0) :=
+  ⟨commutator_cartan_K_P1 0, commutator_cartan_K_P2 0, commutator_cartan_P1_P2 0⟩
+
+/-- Regression: the charged triple is not Lie-closed. -/
+example (a : Fin 3) :
+    ¬ (spatialGen a * commutator (chargedGen a 0) (chargedGen a 1) =
+        -(commutator (chargedGen a 0) (chargedGen a 1) * spatialGen a)) :=
+  charged_triple_not_lie_closed a
+
+/-- Regression: duality exchanges Cartan with charged. -/
+example (a : Fin 3) :
+    dual (cartanGen a 0) = chargedGen a 0 ∧
+      dual (cartanGen a 1) = -chargedGen a 1 :=
+  ⟨(dual_cartanGen a).1, (dual_cartanGen a).2.1⟩
+
+/-- Regression: dual-rotor cyclic generators satisfy \(IJ=K\). -/
+example : cyclic 0 * cyclic 1 = cyclic 2 :=
+  dual_rotor_quaternion.1
+
+/-- Regression: Cartan signature is mixed; hyperbolic generators are not compact. -/
+example (a : Fin 3) :
+    cartanGen a 0 * cartanGen a 0 = -1 ∧ hyperbolic a * hyperbolic a ≠ -1 :=
+  ⟨(cartan_mixed_signature a).1, hyperbolic_noncompact a⟩
 
 end Gravity
 

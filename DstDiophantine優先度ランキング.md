@@ -1,6 +1,6 @@
 # DstDiophantine 研究優先度ランキング
 
-調査日: 2026-09-20（同日の立方 3-descent 着地を反映）。基準は Lean 実装（論文草稿と食い違う場合は **Lean が正**）。`sorry` / `admit` による穴はなく、未完了は名前付き `Prop`（Residual / Bridge）と明示 `axiom` 4 本で管理されている。
+調査日: 2026-09-21（カイラリティ軸の $\mathfrak{so}(2,1)$ カルタンと双対 $\mathrm{SU}(2)$ の着地を反映）。基準は Lean 実装（論文草稿と食い違う場合は **Lean が正**）。`sorry` / `admit` による穴はなく、未完了は名前付き `Prop`（Residual / Bridge）と明示 `axiom` 4 本で管理されている。
 
 この文書は「比較的容易に研究が進みそうな部分」を、主要定理への寄与と切り分けて評価したものである。有限 `native_decide` 証書や回帰整備は着手しやすいが、それだけでは live residual は閉じない。
 
@@ -57,7 +57,7 @@
 
 ## 3. 現状（評価の前提）
 
-### 3.0 前回 Phase I で完了したこと（2026-09-19 → 09-20）
+### 3.0 前回 Phase I で完了したこと（2026-09-19 → 09-21）
 
 | 旧順位 | 内容 | 着地点 |
 | --- | --- | --- |
@@ -65,6 +65,7 @@
 | 旧 1 位 | cube 立方差 3-descent（`gcd ∈ {1,3}`、ほぼ立方、半和方程式） | `pos_cube_three_descent_dichotomy`、`exists_pos_cube_gcd_one_half_sum`、`exists_pos_cube_gcd_three_half_sum`、逆向き再構成。残差本体は未閉 |
 | 旧 2 位 | Generators 内部 Lorentz 括弧表、全軸 `hyperbolic_smul_mul` | `commutator_hyperbolic_hyperbolic` / `_cyclic_cyclic` / `_hyperbolic_cyclic` |
 | 旧 16 位の一部 | Gravity 遮蔽の質量天井 | [`Gravity/ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean)。`pi_sq_mass_le_shield_ceiling_add_J_sq`、`massNormalized_le_shield_curve`、`mass_le_shield_ceiling`、`ceilingWitness_attains`、`mass_le_equalScale_ceiling`、`axis_rigidity_of_mass_eq_max`。電磁結合は未請求のまま |
+| （追加） | カイラリティ軸のカルタン $\mathfrak{so}(2,1)$ と双対 $\mathrm{SU}(2)$ | [`Gravity/ChiralSpectrum.lean`](DstDiophantine/Gravity/ChiralSpectrum.lean)。三空間軸の冪等射影子、異軸非可換・単位元非分解、時間軸は射影不可、カルタン括弧は $\mathfrak{so}(2,1)$、charged は非閉包、双対性が二つを入れ替え、双対ローターは $IJ=K$。ワインバーグ角は未請求 |
 | （追加） | Lorentz / Poincaré スパンの Lie 閉包と双対の複素構造 | [`Algebra/LorentzLie.lean`](DstDiophantine/Algebra/LorentzLie.lean)。抽象 `𝔰𝔬(3,1)` 同型と次元独立性は未請求 |
 | 旧 3 位 | Motor 半直積・着衣並進・全軸スカラー可換、軸 1 回転 sandwich | [`Algebra/MotorGroup.lean`](DstDiophantine/Algebra/MotorGroup.lean)、`sandwich_pureRotation1_*` |
 | 旧 10 位の前処理 | dual-axis Fermat の干渉閉形式と sandwich 欠陥 | `fermatInterfere`、`sandwich_fermatAngle_null3_ne_pureBoost`、`exists_sandwich_fermat_ne_pureBoost`。残差本体は未閉 |
@@ -282,7 +283,7 @@ Wiles FLT、Mihăilescu、Darmon–Merel、`(n,n,5)` を Lean 内で証明する
 
 ### 16 位: Gravity 変分同値 / Faraday–\(u\) 同一視
 
-[`Gravity.lean`](DstDiophantine/Gravity.lean)。チャート層の辞書・反例（`J` と teleparallel `T` の naive 同一化拒否）は厚い。DualControl は許容錐上の運動学（jet、壁、dual-only 遮蔽 iff、\(J+M=\sum\alpha^2\) 保存、混合 unwind）まで閉じ、DualRotorDynamics は書かれた作用の EL・sourced 二重積分器・dual-only が自由解でないことを示した。2026-09-21 に [`Gravity/ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean) が着地し、軌跡に依らない鋭い質量–不整合トレードオフ \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\)（正規化形 \(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\)）と、その帰結である遮蔽の質量天井 \(M\le 5\pi^2/16\)（壁上の一径数族で等号達成、等方遮蔽は \(3\pi^2/16\) 止まり、最大質量では各軸が純通常か純双対で \(|J_{\mathrm{norm}}|\ge 1/3\)、完全斥力には天井なし）が閉じた。`dst_derives_G`、Faraday ヘリシティによる \(u\)、ヘリシティ駆動で \(J\) を作ることは **未請求**（CircularPolarization は mix が \(J\) を作れないことまで）。Diophantine と独立。残るのは変分同値と電磁結合であり、運動学の Quick Win は打ち止めと見てよい。
+[`Gravity.lean`](DstDiophantine/Gravity.lean)。チャート層の辞書・反例（`J` と teleparallel `T` の naive 同一化拒否）は厚い。DualControl は許容錐上の運動学（jet、壁、dual-only 遮蔽 iff、\(J+M=\sum\alpha^2\) 保存、混合 unwind）まで閉じ、DualRotorDynamics は書かれた作用の EL・sourced 二重積分器・dual-only が自由解でないことを示した。2026-09-21 に [`Gravity/ShieldCeiling.lean`](DstDiophantine/Gravity/ShieldCeiling.lean) が着地し、軌跡に依らない鋭い質量–不整合トレードオフ \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\)（正規化形 \(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\)）と、その帰結である遮蔽の質量天井 \(M\le 5\pi^2/16\)（壁上の一径数族で等号達成、等方遮蔽は \(3\pi^2/16\) 止まり、最大質量では各軸が純通常か純双対で \(|J_{\mathrm{norm}}|\ge 1/3\)、完全斥力には天井なし）が閉じた。同日 [`Gravity/ChiralSpectrum.lean`](DstDiophantine/Gravity/ChiralSpectrum.lean) が、ファラデー六空間のカイラリティ分裂を Cartan \(\mathfrak{so}(2,1)\)（閉包）対 charged（非閉包、双対性が入れ替え）として確定し、コンパクト \(\mathrm{SU}(2)\) を双対ローター \(IJ=K\) に限った。三空間軸の射影子は同時世代ラベルにならない。`dst_derives_G`、Faraday ヘリシティによる \(u\)、ヘリシティ駆動で \(J\) を作ること、ワインバーグ角は **未請求**。Diophantine と独立。残るのは変分同値と電磁結合であり、運動学の Quick Win とカイラリティ骨格は打ち止めと見てよい。
 
 ### 17 位: 他予想の `*AdmissibleBridge`
 

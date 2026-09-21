@@ -40,6 +40,10 @@ with the Standard Model, nor with photon helicity.
 * Pure electric configurations have \(J\ge 0\); pure magnetic ones have
   \(J\le 0\). That is the Killing-form signature of usual versus dual
   sectors, written in Faraday coefficients.
+
+The Cartan \(\mathfrak{so}(2,1)\) brackets, the non-closure of the charged
+triple, duality exchanging the two, and the dual-rotor quaternion table
+are in `ChiralSpectrum`.
 -/
 
 namespace DstDiophantine
