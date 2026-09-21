@@ -414,7 +414,7 @@ private theorem half_log_one_add_sq_le_arctan {t : ℝ}
   have : 0 ≤ 2 * Real.arctan t - Real.log (1 + t ^ 2) := hf_nonneg
   linarith
 
-theorem fermatBoost_sq_add_lt_two_sq {a b c : ℤ} {n : ℕ}
+private theorem fermatBoost_sq_add_lt_two_sq {a b c : ℤ} {n : ℕ}
     (hn : 1 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
     (a : ℝ) ^ 2 + (b : ℝ) ^ 2 < 2 * (c : ℝ) ^ 2 := by
@@ -429,7 +429,7 @@ theorem fermatBoost_sq_add_lt_two_sq {a b c : ℤ} {n : ℕ}
     pow_lt_pow_left₀ (by exact_mod_cast hb_lt) hbR (by decide : (2 : ℕ) ≠ 0)
   linarith
 
-theorem fermatBoost_lt_half_log_two {a b c : ℤ} {n : ℕ}
+private theorem fermatBoost_lt_half_log_two {a b c : ℤ} {n : ℕ}
     (hn : 1 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
     fermatBoost a b c (ne_of_gt hc) < Real.log 2 / 2 := by
@@ -537,7 +537,7 @@ theorem fermatMixedFreq_pos {a b c : ℤ} {n : ℕ}
     fermatAngle_nonneg a b (ne_of_gt ha)
   nlinarith [hlt, hβ, hα]
 
-theorem fermatMixedFreq_lt_angle {a b c : ℤ} {n : ℕ}
+private theorem fermatMixedFreq_lt_angle {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
     fermatMixedFreq a b c (ne_of_gt ha) (ne_of_gt hc) <
@@ -586,11 +586,8 @@ private theorem oscillator_eval {y y' : ℝ → ℝ} {ω : ℝ} (hω : 0 < ω)
     simp [z, c0, Real.cos_zero, Real.sin_zero]
   have hz'0 : z' 0 = 0 := by
     simp [z', c1, Real.sin_zero, Real.cos_zero]
-  have hmul (s : ℝ) : HasDerivAt (fun u => ω * u) ω s := by
-    have hfun : (fun u => ω * u) = (fun _ => ω) * id := by
-      funext u; simp
-    rw [hfun]
-    exact ((hasDerivAt_const s ω).mul (hasDerivAt_id s)).congr_deriv (by simp)
+  have hmul (s : ℝ) : HasDerivAt (fun u => ω * u) ω s :=
+    ((hasDerivAt_id s).const_mul ω).congr_deriv (by simp)
   have hcos (s : ℝ) :
       HasDerivAt (fun u => Real.cos (ω * u)) (-Real.sin (ω * s) * ω) s :=
     (hmul s).cos
@@ -722,7 +719,7 @@ theorem sandwich_fermatTorsion_null1_timeRemainder {a b c : ℤ}
   module
 
 /-- On a mixed elliptic seat the time-null remainder at unit time is nonzero. -/
-theorem sandwich_fermatTorsion_null1_time_ne_zero {a b c : ℤ}
+private theorem sandwich_fermatTorsion_null1_time_ne_zero {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc)
     (hω : 0 < fermatMixedFreq a b c ha hc)
@@ -769,10 +766,10 @@ theorem sandwich_fermatTorsion_null1_time_ne_zero_of_sol {a b c : ℤ} {n : ℕ}
 **Live residual** (dual-axis programme).
 
 A mixed dual-axis Fermat motor cannot coexist with a positive degree-`n ≥ 3`
-power sum. Attack points: the first-jet leak of the integer axis \(N_1\) into
-\(N_0\), the second-jet feedback on \(N_3\), and/or the nonzero axis
-interference. Height amplification and single-axis modular winding are **not**
-the intended hooks.
+power sum. The finite elliptic sandwich of \(N_1\) already isolates a
+nonzero time-null remainder on any mixed seed; the residual is to promote
+that remainder to an incompatibility with \(a^n+b^n=c^n\). Height
+amplification and single-axis modular winding are **not** the intended hooks.
 
 Does **not** claim unconditional classical FLT.
 -/

@@ -32,8 +32,10 @@ scale). The legacy `FermatCoarseDiscreteBridge` uses a structurally empty
 payload (`CoarseAmplificationWitness.empty_of_coarse`). The single-axis
 `FermatModularBridge` is **demoted to diagnostic**: geometric FLT seeds with
 the larger base have winding `0` (`fermat_larger_base_no_modularWitness`).
-The live programme is the dual-axis Fermat motor
-(`Embedding.FermatMotor`, `FermatMixedMotorResidual`).
+The dual-axis seat is `Embedding.FermatMotor`. Mixedness of a positive
+`n ≥ 3` solution is a finite-time property of the integer axis
+(`sandwich_fermatTorsion_null1_time_ne_zero_of_sol`). The live residual
+is power-sum incompatibility (`FermatMixedMotorResidual`).
 -/
 
 namespace DstDiophantine

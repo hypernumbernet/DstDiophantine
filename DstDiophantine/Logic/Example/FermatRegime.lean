@@ -3,15 +3,16 @@ import DstDiophantine.Logic.Regime
 /-!
 # Dual-axis FLT regime atlas (D4L)
 
-Atoms are names only (no `Theorems` import). Layout:
+Atoms are names only (no `Theorems` import). Layout: closed slices
+`T` (0–2), diagnostics `F` (3–4), live residual and conjecture `U` (5–6).
 
 * slice `T` (0) — additive faithfulness / shared no-go core
 * slice `T` (1) — real Lᵖ dichotomy (`n = 2` pure cyclic / `n ≥ 3` mixed)
-* diagnostic `F` (2) — single-axis modular winding (demoted)
-* diagnostic `F` (3) — continuous balanced-seed obstruction
-* live residual `U` (4) — `FermatMixedMotorResidual` (power-sum incompatibility)
-* conjecture `U` (5) — classical FLT
-* slice `T` (6) — elliptic characteristic and finite sandwich of \(N_1\)
+* slice `T` (2) — elliptic characteristic and finite sandwich of \(N_1\)
+* diagnostic `F` (3) — single-axis modular winding (demoted)
+* diagnostic `F` (4) — continuous balanced-seed obstruction
+* live residual `U` (5) — `FermatMixedMotorResidual` (power-sum incompatibility)
+* conjecture `U` (6) — classical FLT
 
 Closed slices alone do not T-entail classical FLT. Unconditional FLT is not claimed.
 -/
@@ -26,24 +27,23 @@ open RegimeFormula
 def sliceCore : RegimeFormula := atom 0
 /-- Closed slice: real Lᵖ dichotomy (pure cyclic ↔ Pythagorean; n≥3 ⇒ mixed). -/
 def sliceLp : RegimeFormula := atom 1
+/-- Closed slice: elliptic frequency and finite time-null remainder of \(N_1\). -/
+def sliceElliptic : RegimeFormula := atom 2
 
 /-- Diagnostic: single-axis modular winding (demoted; geometric seed winds 0). -/
-def diagSingleAxisModular : RegimeFormula := atom 2
+def diagSingleAxisModular : RegimeFormula := atom 3
 /-- Diagnostic: continuous balanced seed below `1/p²`. -/
-def diagBalancedSeed : RegimeFormula := atom 3
+def diagBalancedSeed : RegimeFormula := atom 4
 
 /-- Live residual: mixed dual-axis motor vs additive null constraint. -/
-def liveMixedMotor : RegimeFormula := atom 4
+def liveMixedMotor : RegimeFormula := atom 5
 
 /-- Classical Fermat's Last Theorem. -/
-def fltConjecture : RegimeFormula := atom 5
-
-/-- Closed slice: elliptic frequency and finite time-null remainder of \(N_1\). -/
-def sliceElliptic : RegimeFormula := atom 6
+def fltConjecture : RegimeFormula := atom 6
 
 /-- Honest atlas status list. -/
 def fermatAtlasStatuses : List TruthValue :=
-  [.T, .T, .F, .F, .U, .U, .T]
+  [.T, .T, .T, .F, .F, .U, .U]
 
 /-- Honest FLT atlas valuation. -/
 def fermatAtlasVal : RegimeValuation :=
@@ -62,32 +62,32 @@ theorem fermatAtlasVal_sliceCore : sliceCore.eval fermatAtlasVal.assign = .T :=
 theorem fermatAtlasVal_sliceLp : sliceLp.eval fermatAtlasVal.assign = .T :=
   fermatAtlasVal_at 1 (by decide)
 
+theorem fermatAtlasVal_sliceElliptic :
+    sliceElliptic.eval fermatAtlasVal.assign = .T :=
+  fermatAtlasVal_at 2 (by decide)
+
 theorem fermatAtlasVal_diagSingleAxisModular :
     diagSingleAxisModular.eval fermatAtlasVal.assign = .F :=
-  fermatAtlasVal_at 2 (by decide)
+  fermatAtlasVal_at 3 (by decide)
 
 theorem fermatAtlasVal_diagBalancedSeed :
     diagBalancedSeed.eval fermatAtlasVal.assign = .F :=
-  fermatAtlasVal_at 3 (by decide)
+  fermatAtlasVal_at 4 (by decide)
 
 theorem fermatAtlasVal_liveMixedMotor :
     liveMixedMotor.eval fermatAtlasVal.assign = .U :=
-  fermatAtlasVal_at 4 (by decide)
-
-theorem fermatAtlasVal_conjecture : fltConjecture.eval fermatAtlasVal.assign = .U :=
   fermatAtlasVal_at 5 (by decide)
 
-theorem fermatAtlasVal_sliceElliptic :
-    sliceElliptic.eval fermatAtlasVal.assign = .T :=
+theorem fermatAtlasVal_conjecture : fltConjecture.eval fermatAtlasVal.assign = .U :=
   fermatAtlasVal_at 6 (by decide)
 
 /-- Named `{T,F}` cannot host the live mixed-motor residual. -/
 theorem not_exists_named_fermat_live :
     ¬ ∃ v : RegimeValuation,
-        IsNamedRegime (v.assign 4) ∧
+        IsNamedRegime (v.assign 5) ∧
           liveMixedMotor.eval v.assign = .U := by
   rintro ⟨v, hn, hl⟩
-  have : v.assign 4 = .U := by simpa [liveMixedMotor] using hl
+  have : v.assign 5 = .U := by simpa [liveMixedMotor] using hl
   exact namedRegime_not_U hn this
 
 /-- Wall `{B,F}` cannot host a proved closed slice. -/
