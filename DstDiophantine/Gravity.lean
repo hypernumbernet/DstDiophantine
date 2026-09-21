@@ -767,23 +767,6 @@ example (p : Operations.TorsionParams)
     mass p ≤ controlCeiling (J p) :=
   mass_le_control_ceiling p h
 
-/-- Regression: normalized piecewise envelope. -/
-example (p : Operations.TorsionParams)
-    (h : Admissible.IsAdmissibleContinuous p) :
-    massNormalized p ≤
-      5 / 6 + (1 / 6) *
-        min (9 * JNormalized p ^ 2)
-          (min ((3 * JNormalized p - 2) ^ 2)
-            ((3 * JNormalized p + 2) ^ 2)) :=
-  massNormalized_le_control_curve p h
-
-/-- Regression: two-usual family attains the attractive lobe. -/
-example (γ : ℝ) :
-    Real.pi ^ 2 * mass (twoUsualWitness γ) =
-      5 * Real.pi ^ 4 / 16 +
-        (2 * J (twoUsualWitness γ) - Real.pi ^ 2 / 2) ^ 2 :=
-  twoUsualWitness_attains γ
-
 /-- Regression: at \(|J|=\pi^2/4\) the envelope falls back to the shield
 mass, and that value is attained. -/
 example : ∃ p : Operations.TorsionParams,

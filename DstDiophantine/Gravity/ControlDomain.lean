@@ -64,42 +64,17 @@ theorem unsignedSum_eq_two_mass (p : TorsionParams) :
   simp only [axisUnsigned, Fin.sum_univ_three]
   ring
 
-private theorem axis_sum_sq_le {k α β : ℝ}
-    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
-    (α + β) ^ 2 ≤ k ^ 2 := by
-  nlinarith
-
-private theorem axis_diff_sq_le {k α β : ℝ}
-    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
-    (α - β) ^ 2 ≤ k ^ 2 := by
-  nlinarith
-
-private theorem axis_trade_off {k α β : ℝ}
-    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
-    2 * k ^ 2 * (α ^ 2 + β ^ 2) ≤ k ^ 4 + (α ^ 2 - β ^ 2) ^ 2 := by
-  have h1 : (0 : ℝ) ≤ k ^ 2 - (α + β) ^ 2 :=
-    sub_nonneg.mpr (axis_sum_sq_le hα hβ hs)
-  have h2 : (0 : ℝ) ≤ k ^ 2 - (α - β) ^ 2 :=
-    sub_nonneg.mpr (axis_diff_sq_le hα hβ hs)
-  nlinarith [mul_nonneg h1 h2]
-
 private theorem axis_signed_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
-    axisSigned p a ≤ (Real.pi / 2) ^ 2 := by
-  have hα := (h a).1
-  have hβ := (h a).2.1
-  have hs := (h a).2.2
-  unfold axisSigned
-  nlinarith
+    axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
+  (abs_le.mp (by simpa [axisSigned] using
+    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).2
 
 private theorem axis_signed_ge {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
-    -(Real.pi / 2) ^ 2 ≤ axisSigned p a := by
-  have hα := (h a).1
-  have hβ := (h a).2.1
-  have hs := (h a).2.2
-  unfold axisSigned
-  nlinarith
+    -(Real.pi / 2) ^ 2 ≤ axisSigned p a :=
+  (abs_le.mp (by simpa [axisSigned] using
+    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).1
 
 private theorem e2_ge_two_K_T_sub_three_K_sq {K t₀ t₁ t₂ : ℝ}
     (h₀ : t₀ ≤ K) (h₁ : t₁ ≤ K) (h₂ : t₂ ≤ K) :
@@ -228,9 +203,6 @@ noncomputable def controlEnvelopeNum (Jval : ℝ) : ℝ :=
 noncomputable def controlCeiling (Jval : ℝ) : ℝ :=
   5 * Real.pi ^ 2 / 16 + controlEnvelopeNum Jval / Real.pi ^ 2
 
-theorem controlEnvelopeNum_nonneg (Jval : ℝ) : 0 ≤ controlEnvelopeNum Jval :=
-  le_min (by positivity) (le_min (sq_nonneg _) (sq_nonneg _))
-
 theorem controlEnvelopeNum_neg (Jval : ℝ) :
     controlEnvelopeNum (-Jval) = controlEnvelopeNum Jval := by
   unfold controlEnvelopeNum
@@ -347,7 +319,7 @@ theorem massNormalized_le_control_curve (p : TorsionParams)
     unfold controlCeiling JNormalized
     rw [hscale]
     field_simp
-    try ring
+    ring
   linarith
 
 /-! ### Wall families attaining the envelope -/
@@ -586,6 +558,40 @@ private theorem le_of_sq_le_sq₀ {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b)
     (h : a ^ 2 ≤ b ^ 2) : a ≤ b :=
   (sq_le_sq₀ ha hb).mp h
 
+private theorem sqrt_pi_sq_div_four :
+    Real.sqrt (Real.pi ^ 2 / 4) = Real.pi / 2 := by
+  rw [show Real.pi ^ 2 / 4 = (Real.pi / 2) ^ 2 by ring,
+    Real.sqrt_sq (le_of_lt Real.pi_div_two_pos)]
+
+private theorem sqrt_le_pi_div_two {x : ℝ} (hx : x ≤ Real.pi ^ 2 / 4) :
+    Real.sqrt x ≤ Real.pi / 2 := by
+  have := Real.sqrt_le_sqrt hx
+  rwa [sqrt_pi_sq_div_four] at this
+
+private theorem mass_le_attractive_ceiling {Jval Mval : ℝ}
+    (h : Mval ≤ controlCeiling Jval) :
+    Mval ≤ 5 * Real.pi ^ 2 / 16 +
+      (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 := by
+  have hnum : controlEnvelopeNum Jval ≤
+      (2 * Jval - Real.pi ^ 2 / 2) ^ 2 :=
+    le_trans (min_le_right _ _) (min_le_left _ _)
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  unfold controlCeiling at h
+  have : controlEnvelopeNum Jval / Real.pi ^ 2 ≤
+      (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 :=
+    div_le_div_of_nonneg_right hnum (le_of_lt hπ)
+  linarith
+
+private theorem shifted_mass_le_axis_parabola {Jval Mval : ℝ}
+    (h : Mval ≤ controlCeiling Jval) :
+    Mval - Real.pi ^ 2 / 4 ≤
+      Real.pi ^ 2 / 16 +
+        4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
+  have hM := mass_le_attractive_ceiling h
+  have hid : (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 =
+      4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by ring
+  linarith [hM, hid]
+
 
 private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}
     (hJ : |j| ≤ Real.pi ^ 2 / 8)
@@ -607,7 +613,7 @@ private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}
   linarith
 
 /-- \(\sqrt{m+j}+\sqrt{m-j}\le\pi/2\) on a single admissible axis. -/
-theorem sqrt_pair_sum_le_half_pi {j m : ℝ}
+private theorem sqrt_pair_sum_le_half_pi {j m : ℝ}
     (habs : |j| ≤ m)
     (hJ : |j| ≤ Real.pi ^ 2 / 8)
     (hceil : m ≤ Real.pi ^ 2 / 16 + 4 * j ^ 2 / Real.pi ^ 2) :
@@ -657,6 +663,31 @@ theorem sqrt_pair_sum_le_half_pi {j m : ℝ}
     (add_nonneg (Real.sqrt_nonneg _) (Real.sqrt_nonneg _))
     (le_of_lt Real.pi_div_two_pos) this
 
+private theorem exists_twoUsualRest_shifted {Jval Mval : ℝ}
+    (habs : |Jval - Real.pi ^ 2 / 4| ≤ Mval - Real.pi ^ 2 / 4)
+    (hJ : |Jval - Real.pi ^ 2 / 4| ≤ Real.pi ^ 2 / 8)
+    (hceil : Mval - Real.pi ^ 2 / 4 ≤
+      Real.pi ^ 2 / 16 +
+        4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2) :
+    ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ J p = Jval ∧
+      mass p = Mval := by
+  set j := Jval - Real.pi ^ 2 / 4
+  set m := Mval - Real.pi ^ 2 / 4
+  have habs' : |j| ≤ m := by simpa [j, m] using habs
+  have hJ' : |j| ≤ Real.pi ^ 2 / 8 := by simpa [j] using hJ
+  have hceil' : m ≤ Real.pi ^ 2 / 16 + 4 * j ^ 2 / Real.pi ^ 2 := by
+    simpa [j, m] using hceil
+  have hmj : 0 ≤ m + j := by linarith [(abs_le.mp habs').1]
+  have hmj' : 0 ≤ m - j := sub_nonneg.mpr (abs_le.mp habs').2
+  refine ⟨twoUsualRest (Real.sqrt (m + j)) (Real.sqrt (m - j)),
+    isAdmissibleContinuous_twoUsualRest (Real.sqrt_nonneg _)
+      (Real.sqrt_nonneg _) (sqrt_pair_sum_le_half_pi habs' hJ' hceil'),
+    ?_, ?_⟩
+  · rw [J_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
+    unfold j m; ring
+  · rw [mass_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
+    unfold j m; ring
+
 /-! ### Filling the envelope -/
 
 private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
@@ -673,20 +704,8 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
         ?_, ?_, ?_⟩
       · refine isAdmissibleContinuous_crossUsualDual (Real.sqrt_nonneg _)
           (Real.sqrt_nonneg _) ?_ ?_
-        · have : Mval + Jval ≤ Real.pi ^ 2 / 4 := by linarith
-          have hnn : 0 ≤ Mval + Jval := add_nonneg (le_trans hJ0 hMlo) hJ0
-          have := Real.sqrt_le_sqrt this
-          have : Real.sqrt (Real.pi ^ 2 / 4) = Real.pi / 2 := by
-            rw [show Real.pi ^ 2 / 4 = (Real.pi / 2) ^ 2 by ring,
-              Real.sqrt_sq (by positivity)]
-          linarith
-        · have : Mval - Jval ≤ Real.pi ^ 2 / 4 := by linarith
-          have hnn : 0 ≤ Mval - Jval := sub_nonneg.mpr hMlo
-          have := Real.sqrt_le_sqrt this
-          have : Real.sqrt (Real.pi ^ 2 / 4) = Real.pi / 2 := by
-            rw [show Real.pi ^ 2 / 4 = (Real.pi / 2) ^ 2 by ring,
-              Real.sqrt_sq (by positivity)]
-          linarith
+        · exact sqrt_le_pi_div_two (by linarith)
+        · exact sqrt_le_pi_div_two (by linarith)
       · rw [J_crossUsualDual, Real.sq_sqrt (add_nonneg (le_trans hJ0 hMlo) hJ0),
           Real.sq_sqrt (sub_nonneg.mpr hMlo)]
         ring
@@ -767,126 +786,33 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
     have h8lt : Real.pi ^ 2 / 8 < Jval := lt_of_not_ge h8
     by_cases h4 : Jval ≤ Real.pi ^ 2 / 4
     · by_cases hpin : Mval ≤ Real.pi ^ 2 / 2 - Jval
-      · refine ⟨oneUsualCross (Real.sqrt (Mval + Jval - Real.pi ^ 2 / 4))
-            (Real.sqrt (Mval - Jval)), ?_, ?_, ?_⟩
-        · have hx2 : 0 ≤ Mval + Jval - Real.pi ^ 2 / 4 := by
-            nlinarith [hMlo, h8lt]
-          have hy2 : 0 ≤ Mval - Jval := sub_nonneg.mpr hMlo
-          refine isAdmissibleContinuous_oneUsualCross (Real.sqrt_nonneg _)
-            (Real.sqrt_nonneg _) ?_ ?_
-          · have : Mval + Jval - Real.pi ^ 2 / 4 ≤ Real.pi ^ 2 / 4 := by
-              nlinarith [hpin]
-            have := Real.sqrt_le_sqrt this
-            have : Real.sqrt (Real.pi ^ 2 / 4) = Real.pi / 2 := by
-              rw [show Real.pi ^ 2 / 4 = (Real.pi / 2) ^ 2 by ring,
-                Real.sqrt_sq (by positivity)]
-            linarith
-          · have : Mval - Jval ≤ Real.pi ^ 2 / 4 := by nlinarith [hpin, h4]
-            have := Real.sqrt_le_sqrt this
-            have : Real.sqrt (Real.pi ^ 2 / 4) = Real.pi / 2 := by
-              rw [show Real.pi ^ 2 / 4 = (Real.pi / 2) ^ 2 by ring,
-                Real.sqrt_sq (by positivity)]
-            linarith
-        · have hx2 : 0 ≤ Mval + Jval - Real.pi ^ 2 / 4 := by
-            nlinarith [hMlo, h8lt]
-          have hy2 : 0 ≤ Mval - Jval := sub_nonneg.mpr hMlo
-          rw [J_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
+      · have hx2 : 0 ≤ Mval + Jval - Real.pi ^ 2 / 4 := by
+          nlinarith [hMlo, h8lt]
+        have hy2 : 0 ≤ Mval - Jval := sub_nonneg.mpr hMlo
+        refine ⟨oneUsualCross (Real.sqrt (Mval + Jval - Real.pi ^ 2 / 4))
+            (Real.sqrt (Mval - Jval)),
+          isAdmissibleContinuous_oneUsualCross (Real.sqrt_nonneg _)
+            (Real.sqrt_nonneg _)
+            (sqrt_le_pi_div_two (by nlinarith [hpin]))
+            (sqrt_le_pi_div_two (by nlinarith [hpin, h4])),
+          ?_, ?_⟩
+        · rw [J_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
           ring
-        · have hx2 : 0 ≤ Mval + Jval - Real.pi ^ 2 / 4 := by
-            nlinarith [hMlo, h8lt]
-          have hy2 : 0 ≤ Mval - Jval := sub_nonneg.mpr hMlo
-          rw [mass_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
+        · rw [mass_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
           ring
-      · -- Two usual rest, third axis on the cone.
-        set j := Jval - Real.pi ^ 2 / 4
-        set m := Mval - Real.pi ^ 2 / 4
-        have habs : |j| ≤ m := by
-          have : Jval ≤ Mval := hMlo
-          unfold j m
-          rw [abs_of_nonpos (by linarith [h4])]
+      · refine exists_twoUsualRest_shifted ?_ ?_
+          (shifted_mass_le_axis_parabola hMhi)
+        · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [not_le.mp hpin]
-        have hjB : |j| ≤ Real.pi ^ 2 / 8 := by
-          unfold j
-          rw [abs_of_nonpos (by linarith [h4])]
+        · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [h8lt]
-        have hceilA : m ≤ Real.pi ^ 2 / 16 + 4 * j ^ 2 / Real.pi ^ 2 := by
-          have hnumle : controlEnvelopeNum Jval ≤
-              (2 * Jval - Real.pi ^ 2 / 2) ^ 2 :=
-            le_trans (min_le_right _ _) (min_le_left _ _)
-          have hdiv : controlEnvelopeNum Jval / Real.pi ^ 2 ≤
-              (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 :=
-            div_le_div_of_nonneg_right hnumle (le_of_lt hπ2)
-          have hM : Mval ≤ 5 * Real.pi ^ 2 / 16 +
-              (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 := by
-            unfold controlCeiling at hMhi
-            linarith [hMhi, hdiv]
-          unfold j m
-          have hid : (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 =
-              4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
-            ring
-          linarith [hM, hid]
-        have hsum := sqrt_pair_sum_le_half_pi habs hjB hceilA
-        have hx0 : 0 ≤ Real.sqrt (m + j) := Real.sqrt_nonneg _
-        have hy0 : 0 ≤ Real.sqrt (m - j) := Real.sqrt_nonneg _
-        refine ⟨twoUsualRest (Real.sqrt (m + j)) (Real.sqrt (m - j)),
-          isAdmissibleContinuous_twoUsualRest hx0 hy0 hsum, ?_, ?_⟩
-        · have hmj : 0 ≤ m + j := by
-            unfold j m; nlinarith [hMlo]
-          have hmj' : 0 ≤ m - j := by
-            unfold j m; nlinarith [not_le.mp hpin]
-          rw [J_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
-          unfold j m
-          ring
-        · have hmj : 0 ≤ m + j := by
-            unfold j m; nlinarith [hMlo]
-          have hmj' : 0 ≤ m - j := by
-            unfold j m; nlinarith [not_le.mp hpin]
-          rw [mass_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
-          unfold j m
-          ring
-    · -- High band `π²/4 < J ≤ 3π²/8`.
-      have h4lt : Real.pi ^ 2 / 4 < Jval := lt_of_not_ge h4
-      set j := Jval - Real.pi ^ 2 / 4
-      set m := Mval - Real.pi ^ 2 / 4
-      have habs : |j| ≤ m := by
-        unfold j m
-        rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
+    · have h4lt : Real.pi ^ 2 / 4 < Jval := lt_of_not_ge h4
+      refine exists_twoUsualRest_shifted ?_ ?_
+        (shifted_mass_le_axis_parabola hMhi)
+      · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         linarith [hMlo]
-      have hjB : |j| ≤ Real.pi ^ 2 / 8 := by
-        unfold j
-        rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
+      · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         nlinarith [hJmax]
-      have hceilA : m ≤ Real.pi ^ 2 / 16 + 4 * j ^ 2 / Real.pi ^ 2 := by
-        have hnumle : controlEnvelopeNum Jval ≤
-            (2 * Jval - Real.pi ^ 2 / 2) ^ 2 :=
-          le_trans (min_le_right _ _) (min_le_left _ _)
-        have hdiv : controlEnvelopeNum Jval / Real.pi ^ 2 ≤
-            (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 :=
-          div_le_div_of_nonneg_right hnumle (le_of_lt hπ2)
-        have hM : Mval ≤ 5 * Real.pi ^ 2 / 16 +
-            (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 := by
-          unfold controlCeiling at hMhi
-          linarith [hMhi, hdiv]
-        unfold j m
-        have hid : (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 =
-            4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
-          ring
-        linarith [hM, hid]
-      have hsum := sqrt_pair_sum_le_half_pi habs hjB hceilA
-      have hx0 : 0 ≤ Real.sqrt (m + j) := Real.sqrt_nonneg _
-      have hy0 : 0 ≤ Real.sqrt (m - j) := Real.sqrt_nonneg _
-      refine ⟨twoUsualRest (Real.sqrt (m + j)) (Real.sqrt (m - j)),
-        isAdmissibleContinuous_twoUsualRest hx0 hy0 hsum, ?_, ?_⟩
-      · have hmj : 0 ≤ m + j := by unfold j m; nlinarith
-        have hmj' : 0 ≤ m - j := by unfold j m; nlinarith [hMlo]
-        rw [J_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
-        unfold j m
-        ring
-      · have hmj : 0 ≤ m + j := by unfold j m; nlinarith
-        have hmj' : 0 ≤ m - j := by unfold j m; nlinarith [hMlo]
-        rw [mass_twoUsualRest, Real.sq_sqrt hmj, Real.sq_sqrt hmj']
-        unfold j m
-        ring
 
 /-- Every pair under the envelope is realised. -/
 theorem exists_admissible_of_JM {Jval Mval : ℝ}

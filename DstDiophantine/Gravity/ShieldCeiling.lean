@@ -67,7 +67,7 @@ private theorem axis_diff_sq_le {k α β : ℝ}
 /-- Axis trade-off between unsigned density and signed density:
 \(2k^2(\alpha^2+\beta^2)\le k^4+(\alpha^2-\beta^2)^2\). It is the factored
 inequality \((k^2-(\alpha+\beta)^2)(k^2-(\alpha-\beta)^2)\ge 0\). -/
-private theorem axis_trade_off {k α β : ℝ}
+theorem axis_trade_off {k α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
     2 * k ^ 2 * (α ^ 2 + β ^ 2) ≤ k ^ 4 + (α ^ 2 - β ^ 2) ^ 2 := by
   have h1 : (0 : ℝ) ≤ k ^ 2 - (α + β) ^ 2 :=
@@ -77,7 +77,7 @@ private theorem axis_trade_off {k α β : ℝ}
   nlinarith [mul_nonneg h1 h2]
 
 /-- The axis density is bounded by the square of the cone angle. -/
-private theorem axis_abs_density_le {k α β : ℝ}
+theorem axis_abs_density_le {k α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
     |α ^ 2 - β ^ 2| ≤ k ^ 2 := by
   have hk : 0 ≤ k := by linarith
