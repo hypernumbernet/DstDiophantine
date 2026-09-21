@@ -17,6 +17,7 @@ import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.ShieldCeiling
+import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Gravity.ChiralSpectrum
 
 /-!
@@ -82,13 +83,22 @@ shield when the wall vanishes, vacuum unreachable dual-only unless
 \(\sum\alpha^2=0\), conservation \(J+M=\sum\alpha^2\) and unique shield
 mass \(2M_{\mathrm{seed}}\), dual-only \(J\) filling the wall-to-seed
 interval, mixed unwind onto \(\alpha_a\le\pi/4\) when the wall is
-positive), and the mass ceiling of `ShieldCeiling` (sharp trade-off
+positive), and the mass ceiling of `ShieldCeiling` (the parabola
 \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\), i.e.
-\(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\), attained along
+\(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\), valid everywhere
+and sharp on \(|J|\le\pi^2/8\), attained along
 the wall family \(\alpha=(\pi/2,0,\gamma)\), \(\beta=(0,\pi/2,\pi/2-\gamma)\);
 hence a shield obeys \(M\le 5\pi^2/16\) with the isotropic shield capped at
 \(3\pi^2/16\); at the cone's mass ceiling every axis is purely usual or
 purely dual and \(|J|\ge\pi^2/8\); full repulsion has no mass penalty),
+the exact kinematic domain of `ControlDomain` (attractive and repulsive
+lobes; envelope
+\(M\le 5\pi^2/16+\min(4J^2,(2J-\pi^2/2)^2,(2J+\pi^2/2)^2)/\pi^2\),
+equivalently
+\(M_{\mathrm{norm}}\le\frac56+\frac16\min(9J_n^2,(3J_n-2)^2,(3J_n+2)^2)\);
+peaks \(M=3\pi^2/8\) at \(|J|=\pi^2/8\) and \(|J|=3\pi^2/8\); local minima
+\(M=5\pi^2/16\) at \(J=0\) and \(|J|=\pi^2/4\); every pair under the
+envelope with \(|J|\le M\) is realised),
 and the chiral spectrum of `ChiralSpectrum` (three spatial axes each yield
 idempotent complementary projectors; distinct-axis projectors do not commute
 and do not resolve the identity; the time axis cannot serve as a chirality
@@ -736,6 +746,58 @@ example {p q : Operations.TorsionParams} (hα : q.alpha = p.alpha)
     (hq : Admissible.IsAdmissibleContinuous q) (hJ : J q = 0) :
     ∑ a : Fin 3, p.alpha a ^ 2 ≤ 5 * Real.pi ^ 2 / 16 :=
   sum_alpha_sq_le_shield_ceiling_of_dual_only_shield hα hq hJ
+
+/-- Regression: attractive-lobe pairing on the whole cone. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 / 16 + (2 * J p - Real.pi ^ 2 / 2) ^ 2 :=
+  pi_sq_mass_le_attractive_lobe p h
+
+/-- Regression: repulsive-lobe pairing on the whole cone. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 / 16 + (2 * J p + Real.pi ^ 2 / 2) ^ 2 :=
+  pi_sq_mass_le_repulsive_lobe p h
+
+/-- Regression: the piecewise envelope is the mass ceiling at each \(J\). -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p ≤ controlCeiling (J p) :=
+  mass_le_control_ceiling p h
+
+/-- Regression: normalized piecewise envelope. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    massNormalized p ≤
+      5 / 6 + (1 / 6) *
+        min (9 * JNormalized p ^ 2)
+          (min ((3 * JNormalized p - 2) ^ 2)
+            ((3 * JNormalized p + 2) ^ 2)) :=
+  massNormalized_le_control_curve p h
+
+/-- Regression: two-usual family attains the attractive lobe. -/
+example (γ : ℝ) :
+    Real.pi ^ 2 * mass (twoUsualWitness γ) =
+      5 * Real.pi ^ 4 / 16 +
+        (2 * J (twoUsualWitness γ) - Real.pi ^ 2 / 2) ^ 2 :=
+  twoUsualWitness_attains γ
+
+/-- Regression: at \(|J|=\pi^2/4\) the envelope falls back to the shield
+mass, and that value is attained. -/
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧
+      J p = Real.pi ^ 2 / 4 ∧ mass p = 5 * Real.pi ^ 2 / 16 :=
+  exists_admissible_J_quarter_mass_eq_shield
+
+/-- Regression: every pair under the envelope is realised. -/
+example {Jval Mval : ℝ}
+    (hJmax : |Jval| ≤ 3 * Real.pi ^ 2 / 8)
+    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :
+    ∃ p : Operations.TorsionParams, Admissible.IsAdmissibleContinuous p ∧
+      J p = Jval ∧ mass p = Mval :=
+  exists_admissible_of_JM hJmax hMlo hMhi
 
 /-- Regression: both-channel power is the indefinite pairing. -/
 example {m φ θ φdot θdot φddot θddot v u : ℝ}
