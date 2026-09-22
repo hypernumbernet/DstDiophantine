@@ -47,18 +47,18 @@ def TwoCorners (p : TorsionParams) : Prop :=
     (IsCorner p 0 ∧ IsCorner p 2) ∨
     (IsCorner p 1 ∧ IsCorner p 2)
 
-def TwoPureUsual (p : TorsionParams) : Prop :=
+private def TwoPureUsual (p : TorsionParams) : Prop :=
   (IsPureUsual p 0 ∧ IsPureUsual p 1) ∨
     (IsPureUsual p 0 ∧ IsPureUsual p 2) ∨
     (IsPureUsual p 1 ∧ IsPureUsual p 2)
 
-def TwoPureDual (p : TorsionParams) : Prop :=
+private def TwoPureDual (p : TorsionParams) : Prop :=
   (IsPureDual p 0 ∧ IsPureDual p 1) ∨
     (IsPureDual p 0 ∧ IsPureDual p 2) ∨
     (IsPureDual p 1 ∧ IsPureDual p 2)
 
 /-- One axis purely usual and another purely dual. -/
-def OpposedCorners (p : TorsionParams) : Prop :=
+private def OpposedCorners (p : TorsionParams) : Prop :=
   (IsPureUsual p 0 ∧ IsPureDual p 1) ∨ (IsPureDual p 0 ∧ IsPureUsual p 1) ∨
     (IsPureUsual p 0 ∧ IsPureDual p 2) ∨ (IsPureDual p 0 ∧ IsPureUsual p 2) ∨
     (IsPureUsual p 1 ∧ IsPureDual p 2) ∨ (IsPureDual p 1 ∧ IsPureUsual p 2)

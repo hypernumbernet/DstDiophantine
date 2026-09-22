@@ -813,6 +813,15 @@ example {p q : Operations.TorsionParams}
     (hqE : mass q = controlCeiling (J q)) : p = q :=
   eq_of_onEnvelope_of_alpha_eq hp hq hα hpE hqE
 
+/-- Regression: the heaviest shield splits the free axis in half. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hJ : J p = 0) (hM : mass p = 5 * Real.pi ^ 2 / 16) :
+    ∃ a b c : Fin 3, a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+      IsPureUsual p a ∧ IsPureDual p b ∧
+      p.alpha c = Real.pi / 4 ∧ p.beta c = Real.pi / 4 :=
+  exists_heaviest_shield_roles h hJ hM
+
 /-- Regression: both-channel power is the indefinite pairing. -/
 example {m φ θ φdot θdot φddot θddot v u : ℝ}
     (h : PaperBothSourcedEL m φ θ φddot θddot v u) :
