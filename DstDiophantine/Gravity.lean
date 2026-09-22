@@ -18,6 +18,7 @@ import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
+import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.EMControl
 
@@ -100,6 +101,10 @@ equivalently
 peaks \(M=3\pi^2/8\) at \(|J|=\pi^2/8\) and \(|J|=3\pi^2/8\); local minima
 \(M=5\pi^2/16\) at \(J=0\) and \(|J|=\pi^2/4\); every pair under the
 envelope with \(|J|\le M\) is realised),
+the envelope lock of `EnvelopeLock` (the bound is met if and only if every
+axis lies on the wall and at least two axes are corners of the cone, so a
+dual-only motion meets the envelope at most once; the heaviest shield
+assigns one axis purely usual, one purely dual, and the third split evenly),
 and the chiral spectrum of `ChiralSpectrum` (three spatial axes each yield
 idempotent complementary projectors; distinct-axis projectors do not commute
 and do not resolve the identity; the time axis cannot serve as a chirality
@@ -792,6 +797,21 @@ example {Jval Mval : ℝ}
     ∃ p : Operations.TorsionParams, Admissible.IsAdmissibleContinuous p ∧
       J p = Jval ∧ mass p = Mval :=
   exists_admissible_of_JM hJmax hMlo hMhi
+
+/-- Regression: the envelope is met exactly on the locked wall. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p = controlCeiling (J p) ↔ OnWall p ∧ TwoCorners p :=
+  onEnvelope_iff h
+
+/-- Regression: a dual-only slice meets the envelope at most once. -/
+example {p q : Operations.TorsionParams}
+    (hp : Admissible.IsAdmissibleContinuous p)
+    (hq : Admissible.IsAdmissibleContinuous q)
+    (hα : q.alpha = p.alpha)
+    (hpE : mass p = controlCeiling (J p))
+    (hqE : mass q = controlCeiling (J q)) : p = q :=
+  eq_of_onEnvelope_of_alpha_eq hp hq hα hpE hqE
 
 /-- Regression: both-channel power is the indefinite pairing. -/
 example {m φ θ φdot θdot φddot θddot v u : ℝ}
