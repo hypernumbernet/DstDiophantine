@@ -39,8 +39,10 @@ This module upgrades the generator-level commutator tables of
 
 ## Not claimed
 
-Linear independence of the ten generators (hence `dim = 6`, `dim = 10`) and an
-abstract Lie-algebra isomorphism with `𝔰𝔬(3,1)` / `𝔦𝔰𝔬(3,1)` are not formalised.
+An abstract Lie-algebra isomorphism with `𝔰𝔬(3,1)` / `𝔦𝔰𝔬(3,1)` is not
+formalised. Linear independence of the ten generators, the dimensions
+`3 + 3 + 4 = 10`, and the identification of their span with the bivector grade
+are proved in `Algebra.BivectorBasis`.
 -/
 
 namespace DstDiophantine

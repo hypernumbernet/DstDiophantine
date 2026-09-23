@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Amplification
+import DstDiophantine.Algebra.BivectorBasis
 import DstDiophantine.Algebra.Cl31
 import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Continuum
@@ -62,6 +63,10 @@ export LorentzLie (cyclicSpan lorentzSpan poincareSpan
   commutator_mem_poincareSpan commutator_hyperbolic0_null0_ne_zero
   dualParams dual_omegaTorsion omegaTorsion_mem_lorentzSpan
   J_dualParams mass_dualParams JNormalized_dualParams)
+export BivectorBasis (linearIndependent_tenGen poincareSpan_eq_bivectorGrade
+  finrank_poincareSpan finrank_lorentzSpan finrank_nullSpan
+  finrank_hyperbolicSpan finrank_cyclicSpan
+  disjoint_lorentz_null disjoint_hyperbolic_cyclic)
 export Operations (pseudoscalar dual TorsionParams daggerParams
   e4_commute_pseudoscalar dual_null
   pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
