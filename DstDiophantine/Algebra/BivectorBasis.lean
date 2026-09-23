@@ -81,14 +81,14 @@ theorem orderedBivector_eq_mul {i j : Fin 5} (hij : i < j)
     have hlen : 0 < (((s : Finset (Fin 5))).sort (· ≤ ·)).length := by
       rw [Finset.length_sort, Set.powersetCard.card_eq]; decide
     have hget : (((s : Finset (Fin 5))).sort (· ≤ ·)).get ⟨0, hlen⟩ = i := by
-      simpa [hsort] using (rfl : ([i, j] : List (Fin 5)).get ⟨0, by decide⟩ = i)
+      simp [hsort]
     simpa [Finset.orderEmbOfFin_apply] using hget
   have h1 : Finset.orderEmbOfFin (s : Finset (Fin 5)) (Set.powersetCard.card_eq s) 1 = j := by
     rw [Finset.orderEmbOfFin_apply]
     have hlen : 1 < (((s : Finset (Fin 5))).sort (· ≤ ·)).length := by
       rw [Finset.length_sort, Set.powersetCard.card_eq]; decide
     have hget : (((s : Finset (Fin 5))).sort (· ≤ ·)).get ⟨1, hlen⟩ = j := by
-      simpa [hsort] using (rfl : ([i, j] : List (Fin 5)).get ⟨1, by decide⟩ = j)
+      simp [hsort]
     simpa [Finset.orderEmbOfFin_apply] using hget
   rw [h0, h1]
 
@@ -174,45 +174,33 @@ def pairSign : Fin 10 → ℝˣ
 theorem pairIndex_injective : Function.Injective pairIndex := by
   decide
 
+private theorem tenGen_of_mul {k : Fin 10} {i j : Fin 5} (hij : i < j)
+    (hsign : (pairSign k : ℝ) = 1) (hmul : tenGen k = ι i * ι j)
+    (hs : ((pairIndex k) : Finset (Fin 5)) = {i, j}) :
+    tenGen k = (pairSign k : ℝ) • orderedBivector (pairIndex k) := by
+  rw [hsign, one_smul, hmul]
+  exact (orderedBivector_eq_mul hij (pairIndex k) hs).symm
+
+private theorem tenGen_of_neg_mul {k : Fin 10} {i j : Fin 5} (hij : i < j) (hne : j ≠ i)
+    (hsign : pairSign k = -1) (hmul : tenGen k = ι j * ι i)
+    (hs : ((pairIndex k) : Finset (Fin 5)) = {i, j}) :
+    tenGen k = (pairSign k : ℝ) • orderedBivector (pairIndex k) := by
+  rw [hmul, e_mul_anticomm hne, hsign, Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
+  exact (orderedBivector_eq_mul hij (pairIndex k) hs).symm
+
 private theorem tenGen_eq_signed (k : Fin 10) :
     tenGen k = (pairSign k : ℝ) • orderedBivector (pairIndex k) := by
   fin_cases k <;> dsimp
-  · rw [show tenGen 0 = hyperbolic 0 from rfl, show pairSign 0 = 1 from rfl, Units.val_one, one_smul,
-      show hyperbolic 0 = PGA.ι 0 * PGA.ι 1 from rfl]
-    exact (orderedBivector_eq_mul (by decide : (0 : Fin 5) < 1) (pairIndex 0) rfl).symm
-  · rw [show tenGen 1 = hyperbolic 1 from rfl, show pairSign 1 = 1 from rfl, Units.val_one, one_smul,
-      show hyperbolic 1 = PGA.ι 0 * PGA.ι 2 from rfl]
-    exact (orderedBivector_eq_mul (by decide : (0 : Fin 5) < 2) (pairIndex 1) rfl).symm
-  · rw [show tenGen 2 = hyperbolic 2 from rfl, show pairSign 2 = 1 from rfl, Units.val_one, one_smul,
-      show hyperbolic 2 = PGA.ι 0 * PGA.ι 3 from rfl]
-    exact (orderedBivector_eq_mul (by decide : (0 : Fin 5) < 3) (pairIndex 2) rfl).symm
-  · rw [show tenGen 3 = cyclic 2 from rfl, show pairSign 3 = -1 from rfl, show cyclic 2 =
-        PGA.ι 2 * PGA.ι 1 from rfl, e_mul_anticomm (by decide : (2 : Fin 5) ≠ 1)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (1 : Fin 5) < 2) (pairIndex 3) rfl).symm
-  · rw [show tenGen 4 = cyclic 1 from rfl, show pairSign 4 = 1 from rfl, Units.val_one, one_smul,
-      show cyclic 1 = PGA.ι 1 * PGA.ι 3 from rfl]
-    exact (orderedBivector_eq_mul (by decide : (1 : Fin 5) < 3) (pairIndex 4) rfl).symm
-  · rw [show tenGen 5 = cyclic 0 from rfl, show pairSign 5 = -1 from rfl, show cyclic 0 =
-        PGA.ι 3 * PGA.ι 2 from rfl, e_mul_anticomm (by decide : (3 : Fin 5) ≠ 2)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (2 : Fin 5) < 3) (pairIndex 5) rfl).symm
-  · rw [show tenGen 6 = null 0 from rfl, show pairSign 6 = -1 from rfl, show null 0 =
-        PGA.ι 4 * PGA.ι 0 from rfl, e_mul_anticomm (by decide : (4 : Fin 5) ≠ 0)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (0 : Fin 5) < 4) (pairIndex 6) rfl).symm
-  · rw [show tenGen 7 = null 1 from rfl, show pairSign 7 = -1 from rfl, show null 1 =
-        PGA.ι 4 * PGA.ι 1 from rfl, e_mul_anticomm (by decide : (4 : Fin 5) ≠ 1)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (1 : Fin 5) < 4) (pairIndex 7) rfl).symm
-  · rw [show tenGen 8 = null 2 from rfl, show pairSign 8 = -1 from rfl, show null 2 =
-        PGA.ι 4 * PGA.ι 2 from rfl, e_mul_anticomm (by decide : (4 : Fin 5) ≠ 2)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (2 : Fin 5) < 4) (pairIndex 8) rfl).symm
-  · rw [show tenGen 9 = null 3 from rfl, show pairSign 9 = -1 from rfl, show null 3 =
-        PGA.ι 4 * PGA.ι 3 from rfl, e_mul_anticomm (by decide : (4 : Fin 5) ≠ 3)]
-    rw [Units.val_neg, neg_smul, Units.val_one, one_smul, neg_inj]
-    exact (orderedBivector_eq_mul (by decide : (3 : Fin 5) < 4) (pairIndex 9) rfl).symm
+  · exact tenGen_of_mul (by decide : (0 : Fin 5) < 1) rfl rfl rfl
+  · exact tenGen_of_mul (by decide : (0 : Fin 5) < 2) rfl rfl rfl
+  · exact tenGen_of_mul (by decide : (0 : Fin 5) < 3) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (1 : Fin 5) < 2) (by decide) rfl rfl rfl
+  · exact tenGen_of_mul (by decide : (1 : Fin 5) < 3) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (2 : Fin 5) < 3) (by decide) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (0 : Fin 5) < 4) (by decide) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (1 : Fin 5) < 4) (by decide) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (2 : Fin 5) < 4) (by decide) rfl rfl rfl
+  · exact tenGen_of_neg_mul (by decide : (3 : Fin 5) < 4) (by decide) rfl rfl rfl
 
 theorem linearIndependent_tenGen : LinearIndependent ℝ tenGen := by
   have hunits :=
@@ -361,29 +349,27 @@ private theorem span_sumElim_lorentz :
     · exact Submodule.subset_span ⟨Sum.inl a, rfl⟩
     · exact Submodule.subset_span ⟨Sum.inr a, rfl⟩
 
-theorem linearIndependent_hyperbolic : LinearIndependent ℝ hyperbolic := by
-  have hinj : Function.Injective boostIndex :=
-    Fin.castLE_injective (by decide : 3 ≤ 10)
-  have h := linearIndependent_tenGen.comp boostIndex hinj
-  have heq : hyperbolic = tenGen ∘ boostIndex := by
-    funext a
-    exact (tenGen_boost a).symm
-  simpa [heq] using h
+private theorem linearIndependent_of_tenGen {ι : Type*} (f : ι → Fin 10)
+    (hf : Function.Injective f) (g : ι → PGA) (hg : g = tenGen ∘ f) :
+    LinearIndependent ℝ g := by
+  simpa [hg] using linearIndependent_tenGen.comp f hf
 
-theorem linearIndependent_cyclic : LinearIndependent ℝ cyclic := by
-  have hinj : Function.Injective cycIndex := by decide
-  have h := linearIndependent_tenGen.comp cycIndex hinj
-  have heq : cyclic = tenGen ∘ cycIndex := by
-    funext a
-    exact (tenGen_cyc a).symm
-  simpa [heq] using h
+theorem linearIndependent_hyperbolic : LinearIndependent ℝ hyperbolic :=
+  linearIndependent_of_tenGen boostIndex (Fin.castLE_injective (by decide : 3 ≤ 10))
+    hyperbolic (by funext a; exact (tenGen_boost a).symm)
 
-theorem linearIndependent_null : LinearIndependent ℝ null := by
-  have h := linearIndependent_tenGen.comp nullIndex nullIndex_injective
-  have heq : null = tenGen ∘ nullIndex := by
-    funext μ
-    exact (tenGen_null μ).symm
-  simpa [heq] using h
+theorem linearIndependent_cyclic : LinearIndependent ℝ cyclic :=
+  linearIndependent_of_tenGen cycIndex (by decide) cyclic
+    (by funext a; exact (tenGen_cyc a).symm)
+
+theorem linearIndependent_null : LinearIndependent ℝ null :=
+  linearIndependent_of_tenGen nullIndex nullIndex_injective null
+    (by funext μ; exact (tenGen_null μ).symm)
+
+private theorem linearIndependent_lorentzGen :
+    LinearIndependent ℝ (Sum.elim hyperbolic cyclic) := by
+  simpa [tenGen_lorentzIndex] using
+    linearIndependent_tenGen.comp lorentzIndex lorentzIndex_injective
 
 theorem finrank_hyperbolicSpan :
     Module.finrank ℝ (Submodule.span ℝ (Set.range hyperbolic)) = 3 := by
@@ -399,19 +385,13 @@ theorem finrank_nullSpan : Module.finrank ℝ nullSpan = 4 := by
   simp
 
 theorem finrank_lorentzSpan : Module.finrank ℝ LorentzLie.lorentzSpan = 6 := by
-  have hli : LinearIndependent ℝ (Sum.elim hyperbolic cyclic) := by
-    simpa [tenGen_lorentzIndex] using
-      linearIndependent_tenGen.comp lorentzIndex lorentzIndex_injective
-  rw [← span_sumElim_lorentz, finrank_span_eq_card hli]
+  rw [← span_sumElim_lorentz, finrank_span_eq_card linearIndependent_lorentzGen]
   simp
 
 theorem disjoint_hyperbolic_cyclic :
     Disjoint (Submodule.span ℝ (Set.range hyperbolic)) LorentzLie.cyclicSpan := by
-  have hli : LinearIndependent ℝ (Sum.elim hyperbolic cyclic) := by
-    simpa [tenGen_lorentzIndex] using
-      linearIndependent_tenGen.comp lorentzIndex lorentzIndex_injective
-  have h := (linearIndependent_sum.mp hli).2.2
-  simpa [LorentzLie.cyclicSpan] using h
+  simpa [LorentzLie.cyclicSpan] using
+    (linearIndependent_sum.mp linearIndependent_lorentzGen).2.2
 
 theorem disjoint_lorentz_null :
     Disjoint LorentzLie.lorentzSpan nullSpan := by
