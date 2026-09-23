@@ -17,10 +17,8 @@ import Mathlib.Data.Complex.Basic
 /-!
 # Dual-sector spinor Hilbert space `ℂ²`
 
-The cyclic generators are represented by `-i σ_a`. This sign is chosen so that
-`I J = K` matches `cyclic_zero_mul_one` and the standard rotation is
-`exp(-i/2 β · σ)`. The paper draft `I ↔ i σ` differs by a global sign of `i`;
-Lean is authoritative.
+The cyclic generators are represented by `-i σ_a`, so that `IJ = K`
+matches `cyclic_zero_mul_one` and the rotation is `exp(-i/2 β · σ)`.
 
 This Hilbert space is D4L's dual-sector kinematics. It is not the space
 of scalar-layer propositions `{T,U,F,B}`.

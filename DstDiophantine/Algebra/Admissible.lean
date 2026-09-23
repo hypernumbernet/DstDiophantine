@@ -10,13 +10,17 @@ Parameter dictionary (DST papers ↔ Lean):
 * Discrete companion: `ω_a`, `φ_a`
 * Lean: `TorsionParams.alpha` / `TorsionParams.beta`
 
-## Paper claims vs formalised predicates
+## Predicates
 
-* `IsPrincipalBranch`: `|α_a + β_a| ≤ π/2` (main-branch neighbourhood of `Ω ≈ 1`).
-  Alone this does **not** imply `|J| ≤ 1` (see `Invariant.torsion_bound_naive_false`).
-* `IsAdmissibleContinuous`: non-negative rapidities with anti-synchronisation
-  `α_a + β_a ≤ π/2`. On this cone the discrete companion's bound
-  `|JNormalized| ≤ 1` is proved in `Invariant`.
+* `IsPrincipalBranch`: `|α_a + β_a| ≤ π/2` (neighbourhood of `Ω ≈ 1`).
+  Alone this does not bound `J` (`Invariant.torsion_bound_naive_false`).
+* `IsAdmissibleContinuous`: non-negative rapidities with `α_a + β_a ≤ π/2`
+  on each axis. On this cone `|J| ≤ 3π²/8` and `|JNormalized| ≤ 1`
+  (`Invariant`).
+
+Anti-synchronisation in the main paper is the rotor condition
+`R_dual = R_usual†`, which is not this cone inequality. The discrete
+companion uses the same phrase for `α_a + β_a ≤ π/2`.
 -/
 
 namespace DstDiophantine
@@ -25,11 +29,11 @@ open Operations Real
 
 namespace Admissible
 
-/-- Principal-branch anti-synchronisation `|α_a + β_a| ≤ π/2`. -/
+/-- Principal branch: `|α_a + β_a| ≤ π/2` on each axis. -/
 def IsPrincipalBranch (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, |p.alpha a + p.beta a| ≤ Real.pi / 2
 
-/-- Continuous admissible configuration: non-negative rapidities with anti-synchronisation. -/
+/-- Admissible cone: non-negative rapidities with `α_a + β_a ≤ π/2` on each axis. -/
 def IsAdmissibleContinuous (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, 0 ≤ p.alpha a ∧ 0 ≤ p.beta a ∧ p.alpha a + p.beta a ≤ Real.pi / 2
 

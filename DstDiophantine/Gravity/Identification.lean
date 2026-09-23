@@ -21,8 +21,8 @@ import Mathlib.Tactic.Ring
 | `J_field = ½ (φ')²` | field seed from `∂_r φ` | same dimension class as `T` |
 | `T` | Weitzenböck scalar | TEGR Lagrangian density |
 
-Lean `J5` uses the discrete-companion `J = ½∑(α²−β²)`, **not** the paper's raw
-`(1/16) B_Killing` (= `J/4` under the half-angle expansion).
+Lean `J` is `½∑(α²−β²)`, four times `(1/16) B(Ω,Ω)` under the half-angle
+expansion. `J5` adds the Minkowski translation term to that scalar.
 
 **Quantity-class note.** Algebraic `J` / `JNormalized` are dimensionless
 parameter-space diagnostics. They must **not** be identified with the

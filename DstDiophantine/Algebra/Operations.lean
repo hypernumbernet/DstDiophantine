@@ -359,9 +359,8 @@ theorem e4_commute_pseudoscalar :
 Dual of a null generator: `N_μ · i = e₄ · (e_μ · i)` by associativity.
 
 **Grade warning:** `e_μ · i` is grade 3 in the Cl(3,1) subalgebra, so the
-right-hand side is grade 4 in `G(3,1,1)`.  Duality therefore does **not** map
-the null *bivector* sector into itself.  The paper claim that duality closes
-the four-dimensional null bivector ideal is rejected at the grade level.
+right-hand side is grade 4 in `G(3,1,1)`. Duality therefore does **not** map
+the null bivector sector into itself.
 -/
 theorem dual_null (μ : Fin 4) :
     dual (null μ) = ι e4Index * (ι (Fin.castAdd 1 μ) * pseudoscalar) := by

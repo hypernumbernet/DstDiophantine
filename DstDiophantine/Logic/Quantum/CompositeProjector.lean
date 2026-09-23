@@ -13,11 +13,12 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 /-!
 # Composite spinor projectors
 
-The paper's `P = P_spin P_R` with `P_spin = (1+e₀e₁)/2` and `P_R = (1+e₁)/2`
+The product `P_spin P_R` with `P_spin = (1+e₀e₁)/2` and `P_R = (1+e₁)/2`
 is not idempotent: those factors do not commute. A commuting square-`+1`
 pair is `e₁` with the off-axis boost `e₀e₂`. The generated left ideal
-has real dimension exactly eight (`Logic.Quantum.LeftIdealDim`).
-Irreducibility as a spinor module remains deferred.
+has real dimension exactly eight (`Logic.Quantum.LeftIdealDim`) and is
+reducible as a PGA-module (`Logic.Quantum.LeftIdealSplit`). Irreducibility
+of the Minkowski core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine

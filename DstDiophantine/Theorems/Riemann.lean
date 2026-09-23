@@ -104,7 +104,7 @@ theorem criticalHeight_eq (θ σ : ℝ) :
   unfold criticalHeight
   rw [critical_JNormalized_eq]
 
-/-- Model zero-mismatch condition `J(ρ) = 0` from paper §8.1. -/
+/-- Model zero-mismatch condition `J(ρ) = 0` (Chapter 8). -/
 def IsCriticalZeroEnsemble (θ σ : ℝ) : Prop :=
   J (criticalMismatchParams θ σ) = 0
 

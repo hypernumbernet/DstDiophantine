@@ -9,13 +9,15 @@ import Mathlib.Tactic.Ring
 The main paper writes the particle-intrinsic action
 \[
 S=\int\Bigl(\tfrac12\sum_a\dot\phi_a^2-\tfrac12\sum_a\dot\theta_a^2
--\tfrac m2\sum_a(\phi_a-\theta_a)^2\Bigr)\,dt
+-\tfrac m2\sum_a(\phi_a-\theta_a)^2\Bigr)\,dt.
 \]
-and claims the Euler–Lagrange system
-\(\ddot\phi=m(\phi-\theta)\), \(-\ddot\theta=m(\phi-\theta)\), hence
-\(\ddot{\delta\phi}+m\,\delta\phi=0\).
+Its Euler–Lagrange equations are
+\(\ddot\phi=-m(\phi-\theta)\) and \(\ddot\theta=-m(\phi-\theta)\).
+A neighbouring system
+\(\ddot\phi=m(\phi-\theta)\), \(-\ddot\theta=m(\phi-\theta)\)
+is not that Euler–Lagrange system.
 
-These are algebraic identities on jets
+The identities below are algebraic statements on jets
 \((\phi,\theta,\dot\phi,\dot\theta,\ddot\phi,\ddot\theta)\).
 No derivation of \(m\) from the dual-rotor algebra is claimed.
 The de Broglie reading of free lag, and any identification of
@@ -32,7 +34,7 @@ The de Broglie reading of free lag, and any identification of
 * The Jacobi integral
   \(E=\tfrac12\dot\phi^2-\tfrac12\dot\theta^2+\tfrac m2\delta^2\)
   is conserved on that jet and is indefinite.
-* The written (claimed) system makes \(\ddot\delta=2m\delta\) with a free
+* The neighbouring system makes \(\ddot\delta=2m\delta\) with a free
   common mode, and is not the harmonic oscillator \(\ddot\delta+m\delta=0\).
 * The same-sign kinetic model
   \(L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2\)
@@ -148,9 +150,9 @@ theorem paperActualEL_not_oscillator :
   · exact (paperActualEL_eq 1 1 0 (-1) (-1)).mpr ⟨by norm_num, by norm_num⟩
   · norm_num
 
-/-! ### Claimed Euler–Lagrange system of the paper -/
+/-! ### Neighbouring runaway system -/
 
-/-- The system written in the paper, not the Euler–Lagrange equations of its Lagrangian. -/
+/-- Neighbouring system, not the Euler–Lagrange equations of the written Lagrangian. -/
 def PaperClaimedEL (m φ θ φddot θddot : ℝ) : Prop :=
   φddot = m * (φ - θ) ∧ -θddot = m * (φ - θ)
 

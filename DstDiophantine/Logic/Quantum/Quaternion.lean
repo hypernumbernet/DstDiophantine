@@ -14,7 +14,7 @@ The three cyclic generators satisfy the quaternion multiplication table
 and cyclic permutations, with opposite order giving the minus sign.
 
 These identities are computed in `G(3,1,1)` from the vector anticommutators.
-The Lean signs are authoritative if they disagree with a paper draft.
+The cyclic table is `IJ = K`.
 -/
 
 namespace DstDiophantine

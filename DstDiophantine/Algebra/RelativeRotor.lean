@@ -12,9 +12,11 @@ import Mathlib.Tactic.Ring
 /-!
 # Relative rotor and same-axis factorisation
 
-The paper writes a six-parameter exponential as `R_usual R_dual` and takes
-the vacuum condition to be `R_dual = R_usual†`, yielding `Ω = 1`. Both
-claims need the algebra of `G(3,1,1)`.
+The relative rotor is `Ω = R_usual† R_dual`. A six-parameter exponential
+factorises as `R_usual R_dual` only when the summands commute: they do on
+one axis, and they need not off-axis. `Ω = 1` if and only if
+`R_dual = R_usual`. Anti-synchronisation `R_dual = R_usual†` is a different
+condition.
 
 ## Proved
 
@@ -23,8 +25,8 @@ claims need the algebra of `G(3,1,1)`.
   six-parameter factorisation is not justified by same-axis commutators.
 * Defining `Ω = R_usual† R_dual`, one has `Ω = 1` if and only if
   `R_dual = R_usual` (unitarity), not `R_dual = R_usual†`.
-* On a single axis the written condition `R_dual = R_usual†` forces the
-  usual half-rapidity through `sinh(α/2) = 0`.
+* On a single axis `R_dual = R_usual†` forces the usual half-rapidity
+  through `sinh(α/2) = 0`.
 * `J = 0` does not imply `Ω = 1`: a balanced massive one-axis seed has
   vanishing `J` with a nontrivial relative rotor.
 
@@ -162,7 +164,7 @@ theorem reverse_rotorUsual_axis (α β : ℝ) :
     hyperbolic_reverse, smul_neg]
   abel
 
-/-- The paper's unrestricted commutator `[iΓ_a, Γ_b] = 0` fails off-axis. -/
+/-- Off-axis commutator `[iΓ_0, Γ_1]` does not vanish. -/
 theorem paper_unrestricted_commutator_false :
     commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
   commutator_hyperbolic0_cyclic1_ne_zero

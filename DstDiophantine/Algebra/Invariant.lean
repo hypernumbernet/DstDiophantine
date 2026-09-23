@@ -12,20 +12,21 @@ The six-dimensional torsional scalar, its five-dimensional extension with the
 Minkowski translation term, and the unsigned Euclidean mass that splits
 label `T` into vacuum versus balanced massive.
 
-## Boundedness note
+## Boundedness
 
-The raw paper claim `|J| ≤ 1` under `IsPrincipalBranch` alone is false for
-`J = (1/2) ∑ (α² - β²)`. On admissible configurations (`IsAdmissibleContinuous`:
-non-negative rapidities with `α + β ≤ π/2`) we prove `|J| ≤ 3π²/8` and
-`|JNormalized| ≤ 1` where `JNormalized = (8/(3π²)) J` matches the appendix extremals.
+On admissible configurations (`IsAdmissibleContinuous`: non-negative rapidities
+with `α + β ≤ π/2` on each axis) one has `|J| ≤ 3π²/8` and `|JNormalized| ≤ 1`,
+where `JNormalized = (8/(3π²)) J`. The raw bound `|J| ≤ 1` is not this
+statement. `IsPrincipalBranch` alone, without the sign restriction, does not
+bound `J` (`torsion_bound_naive_false`).
 
-## Killing-form dictionary (main paper App. B)
+## Killing form
 
 Assume generator orthonormality `B(B⁺_a,B⁺_b)=8 δ_{ab}`, `B(B⁻_a,B⁻_b)=-8 δ_{ab}`
 and expand `Ω = omegaTorsion p = ∑ (α_a/2) B⁺_a + (β_a/2) B⁻_a`. Then
-`B(Ω,Ω) = 2 ∑(α²-β²)`, **not** the appendix claim `8 ∑(α²-β²)`.
-The project's `J = ½∑(α²-β²)` is the discrete-companion conclusion formula;
-it is **not** `(1/16) B(Ω,Ω)` under that expansion (which would be `⅛∑(α²-β²)`).
+`B(Ω,Ω) = 2 ∑(α²-β²)`. The scalar `J = ½∑(α²-β²)` is four times
+`(1/16) B(Ω,Ω)` under that expansion. The coefficient `8 ∑(α²-β²)` is not
+this pairing (`paper_appendix_killing_coeff_false`).
 -/
 
 namespace DstDiophantine
@@ -62,8 +63,8 @@ theorem omegaTorsion_killing_vs_param (p : TorsionParams) :
   ring_nf
 
 /--
-Appendix claim `B(Ω,Ω) = 8 ∑(α²-β²)` for `Ω = ∑(α/2)iΓ+(β/2)Γ` is false:
-the generator expansion yields `2 ∑(α²-β²)` instead.
+The coefficient `8 ∑(α²-β²)` is not `B(Ω,Ω)` for
+`Ω = ∑(α/2)iΓ+(β/2)Γ`. The generator expansion yields `2 ∑(α²-β²)`.
 -/
 theorem paper_appendix_killing_coeff_false :
     ∃ p : TorsionParams,
@@ -313,15 +314,15 @@ theorem abs_JNormalized_le_massNormalized (p : TorsionParams) :
 /-- Axis-wise factorisation behind the Killing quadratic form. -/
 theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
 
-/-- Pure hyperbolic dominance on every axis (appendix positive extremal). -/
+/-- Pure hyperbolic dominance on every axis (positive extremal of the cone). -/
 def IsPureHyperbolic (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, p.alpha a = Real.pi / 2 ∧ p.beta a = 0
 
-/-- Pure elliptic dominance on every axis (appendix negative extremal). -/
+/-- Pure elliptic dominance on every axis (negative extremal of the cone). -/
 def IsPureElliptic (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, p.alpha a = 0 ∧ p.beta a = Real.pi / 2
 
-/-- Axis-wise bound under non-negativity and anti-synchronisation. -/
+/-- Axis-wise bound under non-negative rapidities with `α + β ≤ π/2`. -/
 theorem sq_diff_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
@@ -840,7 +841,7 @@ noncomputable def counterExampleParams : TorsionParams where
   alpha := fun a => match a with | 0 => 10 | 1 => 0 | 2 => 0
   beta := fun a => match a with | 0 => -10 + Real.pi / 4 | 1 => 0 | 2 => 0
 
-/-- `IsPrincipalBranch` alone does not bound `J`; the paper's naive claim is false. -/
+/-- `IsPrincipalBranch` alone does not bound `J`. -/
 theorem torsion_bound_naive_false :
     ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| := by
   refine ⟨counterExampleParams, ?_, ?_⟩

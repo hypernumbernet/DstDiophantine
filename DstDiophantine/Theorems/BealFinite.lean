@@ -5,7 +5,7 @@ import Mathlib.Tactic.NormNum
 set_option linter.style.nativeDecide false
 
 /-!
-# Phase 7j–7q: finite Beal certificates
+# Finite Beal certificates
 
 * **Box search** (phase 7j): bases and `C` all `≤ Amax`, exponents in `3…Emax`.
 * **Perfect-power search** (phase 7k–7t): bases `≤ Amax`, exponents in `3…Emax`,

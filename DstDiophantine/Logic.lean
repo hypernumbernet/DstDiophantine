@@ -417,11 +417,11 @@ example : chiralityL * chiralityL = chiralityL ∧
       spinorIdem * spinorIdem = spinorIdem :=
   ⟨chiralityL_sq, chiralityR_sq, spinorIdem_sq⟩
 
-/-- Regression: paper `(1-i)/2` is not idempotent when `i² = -1`. -/
+/-- Regression: `(1-i)/2` is not idempotent when `i² = -1`. -/
 example : paperChiralityL * paperChiralityL ≠ paperChiralityL :=
   paper_chirality_rejected
 
-/-- Regression: paper composite `P_spin P_R` is not idempotent. -/
+/-- Regression: composite `spinorIdem * chiralityR` is not idempotent. -/
 example : (spinorIdem * chiralityR) * (spinorIdem * chiralityR) ≠
     spinorIdem * chiralityR :=
   paperComposite_not_idempotent

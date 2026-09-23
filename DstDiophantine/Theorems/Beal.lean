@@ -26,7 +26,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 5–7g: Beal's conjecture (problem-specific layer)
+# Beal's conjecture (problem-specific layer)
 
 Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
 together with the faithful null-translator encoding of `A^x + B^y - C^z`.
@@ -34,8 +34,12 @@ Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
 
 ## Paper gap (not closed)
 
-Classical Beal is **not** claimed unconditionally. The live programme (phase 7h)
-is **exponent-gcd reduction** (not an independent CGA geometric principle):
+Classical Beal is **not** claimed unconditionally. The exponent-gcd assembly
+is proved in the sibling modules
+(`beal_conjecture_pos_of_fine_residuals_even_split`). What remains are the
+residual leaves. This file holds the additive encoding and the diagnostic
+bridges. The case split is exponent-gcd reduction (not an independent CGA
+geometric principle):
 
 * `BealCGARealization` — **bookkeeping**: coprime solution ⇒ A–C root ratio is
   an integer CGA dilation; under coprimality this forces `|A|=1` and an

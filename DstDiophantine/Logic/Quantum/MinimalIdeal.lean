@@ -6,15 +6,18 @@ import Mathlib.Tactic.NormNum
 /-!
 # Chiral / spinor projectors inside `G(3,1,1)`
 
-The paper draft writes `P_L = (1 - i)/2` with the Cl(3,1) pseudoscalar `i`
-satisfying `i² = -1`. That formula is **not** idempotent (proved below).
-Working projectors use generators that square to `+1`:
+The factors `(1 ± i)/2`, with the Cl(3,1) pseudoscalar `i` satisfying
+`i² = -1`, are not idempotent. Working projectors use generators that
+square to `+1`:
 
 * spatial `e₁` (`ι 1`) for a complementary pair `chiralityL` / `chiralityR`;
 * hyperbolic `e₀e₁` for `spinorIdem`.
 
-The paper composite `P_spin P_R` with those two factors is not idempotent
-(`Logic.Quantum.CompositeProjector`). Irreducibility of the left ideal is deferred.
+The product of `spinorIdem` with `chiralityR` is not idempotent
+(`Logic.Quantum.CompositeProjector`). The commuting left ideal has real
+dimension 8 (`LeftIdealDim`) and splits as a Minkowski core plus a null
+copy, hence is reducible as a PGA-module (`LeftIdealSplit`). Irreducibility
+of that core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine
@@ -100,11 +103,11 @@ theorem idempotent_of_sq_one_sub {g : PGA} (hg : g * g = 1) :
     ((1 : PGA) - g) * half * (((1 : PGA) - g) * half) = ((1 : PGA) - g) * half :=
   idempotent_half (sq_one_expand_sub hg)
 
-/-- Paper draft formula `(1 - i)/2`. -/
+/-- Pseudoscalar formula `(1 - i)/2`. -/
 noncomputable def paperChiralityL : PGA :=
   ((1 : PGA) - pseudoscalar) * half
 
-/-- Paper draft formula `(1 + i)/2`. -/
+/-- Pseudoscalar formula `(1 + i)/2`. -/
 noncomputable def paperChiralityR : PGA :=
   ((1 : PGA) + pseudoscalar) * half
 

@@ -12,8 +12,7 @@ import Mathlib.Tactic.NoncommRing
 
 The Dirac matrices of signature `(-,+,+,+)` are the grade-1 generators
 `Cl31.ι μ`. They are **not** the hyperbolic bivectors `e₀eₐ` (which square
-to `+1`). The paper draft's reuse of `j` for both `P_spin = (1+j)/2`
-(`j² = +1`) and `γ⁰` is therefore rejected.
+to `+1`). In particular `γ⁰` is not the generator `j` of `P_spin`.
 
 The Dirac *equation* as a spacetime PDE, a torsional mass, and rotor
 covariance are not formalised here. The momentum-space first-order

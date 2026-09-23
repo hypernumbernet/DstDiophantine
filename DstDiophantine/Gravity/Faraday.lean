@@ -25,12 +25,9 @@ circular-wave identities live in `CircularPolarization`.
 ## What is proved
 
 * The Faraday coefficients \((E_a,B_a)\) live in the same 6-generator space
-  as \(\Omega_{\mathrm{biv}}\): usual (boost, \(i\Gamma\)) plus dual
-  (rotation, \(\Gamma\)). Section 10's single symbol \(F_{\mathrm{dual}}\)
-  that mixes \(E\) and \(B\) is the *full* Faraday bivector; Section 12's
-  split \(F_{\mathrm{usual}}\leftrightarrow\mathbf{E}\),
-  \(F_{\mathrm{dual}}\leftrightarrow\mathbf{B}\) is the compatible
-  decomposition.
+  as \(\Omega_{\mathrm{biv}}\). The split is
+  \(F=F_{\mathrm{usual}}+F_{\mathrm{dual}}\), with \(E\) on the boost
+  generators and \(B\) on the rotation generators.
 * Duality \(X\mapsto Xi\) sends \((E,B)\mapsto(B,-E)\).
 * On that identification the torsional scalar is the Faraday quadratic
   \(J=\tfrac12(E^2-B^2)\), with unsigned mass \(M=\tfrac12(E^2+B^2)\).
@@ -44,12 +41,12 @@ circular-wave identities live in `CircularPolarization`.
 * Superposition of Faraday coefficients is componentwise: \(J\) of a sum
   is \(J(p)+J(q)\) plus the interference \(\mathbf{E}_p\cdot\mathbf{E}_q
   -\mathbf{B}_p\cdot\mathbf{B}_q\).
-* First-order sandwich increment is the commutator \(\Omega X-X\Omega\).
-  On a rest particle a pure electric generator produces a spatial kick
-  and every magnetic generator produces none, so the dual Faraday summand
-  never kicks a rest frame. On a \(y\)-velocity a pure \(B_x\) generator
-  produces a \(z\)-kick; the paper wedge vanishes on that moving case.
-  The outer product \(F\wedge X\) is therefore not the Lorentz increment.
+* The first-order sandwich increment is the commutator \(\Omega X-X\Omega\),
+  not the outer product. On a rest particle a pure electric generator
+  produces a spatial kick and every magnetic generator produces none, so
+  the dual Faraday summand never kicks a rest frame. On a \(y\)-velocity a
+  pure \(B_x\) generator produces a \(z\)-kick, while the outer product
+  vanishes, so the outer product is not the Lorentz increment.
 * On the Minkowski vector \(X=e_0+v\) the same commutator of the Faraday
   bivector is the 4-vector \((E\cdot v)\,e_0+(E-v\times B)\). That is the
   Lorentz 4-force of the laboratory time-reversed field \((E,-B)\); the
@@ -81,7 +78,7 @@ instance : Add FaradayParams where
     (p + q).B a = p.B a + q.B a :=
   rfl
 
-/-- Section 12 split: \(E\) on boost generators, \(B\) on rotation generators. -/
+/-- Usual–dual split: \(E\) on boost generators, \(B\) on rotation generators. -/
 def toTorsion (p : FaradayParams) : TorsionParams where
   alpha := p.E
   beta := p.B
@@ -92,7 +89,7 @@ noncomputable def faradayUsual (p : FaradayParams) : PGA :=
 noncomputable def faradayDual (p : FaradayParams) : PGA :=
   omegaDual (toTorsion p)
 
-/-- Full Faraday bivector (Section 10's written \(F_{\mathrm{dual}}\)). -/
+/-- Full Faraday bivector \(F=F_{\mathrm{usual}}+F_{\mathrm{dual}}\). -/
 noncomputable def faraday (p : FaradayParams) : PGA :=
   omegaTorsion (toTorsion p)
 
@@ -100,7 +97,7 @@ theorem faraday_eq_add (p : FaradayParams) :
     faraday p = faradayUsual p + faradayDual p :=
   omegaTorsion_eq_add (toTorsion p)
 
-/-- Section 10 and Section 12 name the same 6-space. -/
+/-- The Faraday bivector is the sum of its usual and dual summands. -/
 theorem paper_sec10_Fdual_is_full_faraday (p : FaradayParams) :
     faraday p = faradayUsual p + faradayDual p :=
   faraday_eq_add p
@@ -443,13 +440,13 @@ theorem lorentzForce_pureB_yVelocity (q Bx vy : ℝ) :
   simp
   ring
 
-/-! ### First-order sandwich increment versus the paper wedge -/
+/-! ### First-order sandwich increment versus the outer product -/
 
 /-- First-order increment of \(RX\widetilde R\) at \(R=1+\varepsilon\Omega\). -/
 noncomputable def sandwichIncrement (Ω X : PGA) : PGA :=
   Ω * X - X * Ω
 
-/-- Outer product used by the paper's \(F\wedge X\). -/
+/-- Outer product \(\tfrac12(\Omega X+X\Omega)\), distinct from the sandwich commutator. -/
 noncomputable def paperWedgeIncrement (Ω X : PGA) : PGA :=
   (1 / 2 : ℝ) • (Ω * X + X * Ω)
 

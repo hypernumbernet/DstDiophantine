@@ -3,7 +3,7 @@ import DstDiophantine.Theorems.BealFinite
 set_option linter.style.nativeDecide false
 
 /-!
-# Phase 7n–7q: residual-shaped Beal finite search
+# Residual-shaped Beal finite search
 
 Finite certificates aimed at residual shapes where a classical Beal
 counterexample could still hide. This module is diagnostic / computational;

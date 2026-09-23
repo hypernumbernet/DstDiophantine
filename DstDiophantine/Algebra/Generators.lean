@@ -236,8 +236,8 @@ theorem cyclic_reverse (a : Fin 3) : reverse (cyclic a) = -cyclic a := by
 
 /-! ### Commutators of hyperbolic / cyclic generators
 
-The paper appendix writes `[iΓ_a, Γ_b] = 0` without restricting indices.
-Same-axis pairs commute; distinct axes need not.
+Same-axis pairs commute. The unrestricted identity `[iΓ_a, Γ_b] = 0`
+fails off-axis.
 -/
 
 private theorem mul_hyperbolic0_cyclic0 :
@@ -356,7 +356,7 @@ private theorem ι0_mul_ι3_ne_zero : ι 0 * ι 3 ≠ 0 := by
   exact absurd (Iff.mp (ExteriorAlgebra.ι_eq_zero_iff (e5vec 0)) h')
     (by simp [e5vec, Pi.single])
 
-/-- Off-axis counterexample: `[e₀e₁, e₁e₃] ≠ 0` (paper's unrestricted commutativity fails). -/
+/-- Off-axis counterexample: `[e₀e₁, e₁e₃] ≠ 0`. -/
 theorem commutator_hyperbolic0_cyclic1_ne_zero :
     commutator (hyperbolic 0) (cyclic 1) ≠ 0 := by
   intro h

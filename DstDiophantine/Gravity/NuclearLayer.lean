@@ -30,16 +30,16 @@ heuristic, as in `discrete-dual-spacetime.tex`.
 
 * \(\hbar c \in (197,198)\) MeV·fm on the SI stand-ins.
 * Pion Compton wavelength \(\lambda_\pi \in (1,2)\) fm; proton Compton
-  \(\lambda_p \in (1/5,3/10)\) fm (does **not** match the 1–2 fm outer layer).
+  \(\lambda_p \in (1/5,3/10)\) fm, outside that pion window.
 * Equal-scale layer radii \(r_n=\ell/(2x_n)\) satisfy
   \(r_2/r_1 \in (1/(3\pi),1/\pi)\); a hard-core \(0.5\) fm is compatible with
   an outer \(r_1\in(1,2)\) fm but is not forced.
-* Labelled pion–\(\ell\) hypothesis: \(\lambda_\pi/2 < r_1 < \lambda_\pi\);
-  the paper's lower bound \(1\) fm is not forced by this alone.
-* Saturation density \(\rho_0 \in (2,3)\times 10^{14}\) g/cm³;
-  paper \(10^{18}\) as an in-nucleus value is rejected.
-* Empirical BE/\(A \in (7,9)\) MeV; paper \(40\)–\(50\) MeV as BE/\(A\) is
-  rejected (optical well depth is a separate external label).
+* Labelled pion–\(\ell\) hypothesis: \(\lambda_\pi/2 < r_1 < \lambda_\pi\).
+  A lower bound of \(1\) fm is not forced by this hypothesis alone.
+* Saturation density \(\rho_0 \in (2,3)\times 10^{14}\) g/cm³.
+  The value \(10^{18}\) g/cm³ lies outside that window.
+* Empirical BE/\(A \in (7,9)\) MeV. The band \(40\)–\(50\) MeV is the
+  optical well depth, a separate external label.
 * Gravity fine-structure \(\alpha_G = G m_p^2/\hbar c \in (10^{-39},10^{-38})\);
   not to be identified with \(O(1)\) nuclear strength or with `epsN 1`.
 
@@ -50,8 +50,8 @@ Using `TorsionalLayer` (sharpened branch `(nπ+π/4, nπ+π/2)` and radius windo
 
 * \(\lambda_\pi < \pi/2\) fm, hence under \(\ell=\lambda_\pi\) **every** node
   satisfies \(r<1\) fm, and the outermost node lies in the hard-core band
-  \(0.44\,\mathrm{fm}<r_1<0.91\,\mathrm{fm}\). The paper's \(1\)–\(2\) fm
-  outermost shell is therefore **incompatible** with \(\ell=\lambda_\pi\); it
+  \(0.44\,\mathrm{fm}<r_1<0.91\,\mathrm{fm}\). An outermost shell in
+  \(1\)–\(2\) fm is incompatible with \(\ell=\lambda_\pi\); it
   requires \(\ell>\pi/2\) fm.
 * Sharpened ratio window \(r_2/r_1\in(1/6,\,4/(5\pi))\), strictly inside the
   previous \((1/(3\pi),1/\pi)\).
@@ -141,7 +141,7 @@ private theorem pionComptonFm_den_pos : (0 : ℚ) < (pionComptonFm_den : ℚ) :=
     pionMassMeVMantissa
   norm_num
 
-/-- Window: \(1 < \lambda_\pi < 2\) fm (overlaps the paper's outer-layer band). -/
+/-- Window: \(1 < \lambda_\pi < 2\) fm. -/
 theorem pionComptonFm_bounds :
     (1 : ℚ) < pionComptonFm ∧ pionComptonFm < (2 : ℚ) := by
   rw [pionComptonFm_eq_num_div_den]
@@ -333,8 +333,7 @@ theorem pionLambdaHyp_r1_bounds {x₁ : ℝ}
       nlinarith [hx.1, hπ]
     exact this
 
-/-- Paper outer-layer lower bound \(1\) fm is not forced by the pion–\(\ell\)
-hypothesis alone. -/
+/-- A lower bound of \(1\) fm is not forced by the pion–\(\ell\) hypothesis alone. -/
 theorem paper_outer_layer_1fm_not_forced_by_pionLambda :
     ∃ x₁ : ℝ, x₁ ∈ Ioo (1 / 2 : ℝ) 1 ∧ pionLambdaHyp_r1 x₁ < 1 := by
   refine ⟨(9 / 10 : ℝ), ?_, ?_⟩
@@ -375,8 +374,7 @@ theorem saturationDensity_g_cm3_bounds :
     protonMassMantissa
   constructor <;> norm_num
 
-/-- Paper claim \(\sim 10^{18}\) g/cm³ as an in-nucleus density is false on
-the saturation stand-in. -/
+/-- \(10^{18}\) g/cm³ is not the saturation stand-in. -/
 theorem paper_density_1e18_false :
     saturationDensity_g_cm3 ≠ (10 : ℚ) ^ 18 := by
   rw [saturationDensity_g_cm3_eq_nat]
@@ -400,7 +398,7 @@ theorem bindingEnergyPerNucleonMeV_bounds :
     bindingEnergyPerNucleonMeVScale
   constructor <;> norm_num
 
-/-- Paper \(\sim 40\)–\(50\) MeV “per nucleon” is **not** BE/\(A\). -/
+/-- The band \(40\)–\(50\) MeV is not BE/\(A\). -/
 theorem paper_binding_40_50_as_BE_A_false :
     ¬ ((40 : ℚ) ≤ bindingEnergyPerNucleonMeVApprox ∧
         bindingEnergyPerNucleonMeVApprox ≤ 50) := by
@@ -409,7 +407,7 @@ theorem paper_binding_40_50_as_BE_A_false :
   have : bindingEnergyPerNucleonMeVApprox < 40 := lt_trans hhi (by norm_num)
   exact absurd h.1 (not_le.mpr this)
 
-/-- Optical well depth \(45\) MeV lies in the paper's \(40\)–\(50\) MeV band
+/-- Optical well depth \(45\) MeV lies in the \(40\)–\(50\) MeV band
 (separate external label, not BE/\(A\)). -/
 theorem nuclearWellDepth_in_40_50 :
     (40 : ℚ) ≤ nuclearWellDepthMeVApprox ∧
@@ -528,8 +526,7 @@ theorem pionLambda_outer_node_band {x : ℝ} (hx : x ∈ Ioo (π / 4) (π / 2)) 
   · rw [div_le_iff₀ pi_pos]
     nlinarith [pionComptonFm_real_lt, hπlo]
 
-/-- The paper's `1`–`2` fm outermost repulsive shell is incompatible with
-`ℓ = λ_π`. -/
+/-- An outermost shell in `(1, 2)` fm is incompatible with `ℓ = λ_π`. -/
 theorem paper_outer_layer_1_2_fm_incompatible_with_pionLambda (n : ℕ) {x : ℝ}
     (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
     ¬ (1 < layerRadius (pionComptonFm : ℝ) x ∧

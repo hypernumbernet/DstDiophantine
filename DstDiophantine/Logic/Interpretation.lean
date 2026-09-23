@@ -49,8 +49,8 @@ theorem ofParams_T_iff_zeroHeight {p : TorsionParams} (h : IsAdmissibleContinuou
   rw [ofParams_eq_T_iff, isZeroHeight_iff_JNormalized]
 
 /-- The torsion bivector is the PGA carrier of the height that is classified.
-Coefficient dictionary: project `J` is *not* `(1/16) B(Ω,Ω)` under the
-generator expansion; see `paper_appendix_killing_coeff_false`. -/
+`J` equals four times `(1/16) B(Ω,Ω)` under the half-angle expansion.
+The coefficient `8∑(α²-β²)` is rejected by `paper_appendix_killing_coeff_false`. -/
 theorem J_of_omegaTorsion (p : TorsionParams) :
     J p = 4 * ((1 / 16) * omegaTorsionGeneratorKilling p) :=
   J_eq_four_times_one_sixteenth_omegaKilling p

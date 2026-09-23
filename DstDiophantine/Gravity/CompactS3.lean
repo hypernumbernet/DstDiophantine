@@ -28,10 +28,8 @@ Sec.~darkmatter writes an \(S^3\) cotangent potential, enhancement
 \(\eta=(x/\sin x)^2\), shape \(f(x)=x/\sin^2 x\), and the scaling
 \(R=\sqrt{GM/a_0}\). The acceleration \(a_0\) and Newton \(G\) are **external**
 inputs (`Gravity.SI`); this module does **not** derive them from the dual-rotor
-algebra. No theorem asserts `dst_derives_a0`.
-
-Paper claims \(f_0\approx 1.10\) and Milky-Way \(R\approx 27\,\mathrm{kpc}\) are
-machine-rejected on the SI stand-ins.
+algebra. No theorem asserts `dst_derives_a0`. The point values
+\(f_0=1.10\) and \(R=27\,\mathrm{kpc}\) lie outside the windows below.
 
 Of the \(S^3\) chart the following are theorems (not a derivation of \(a_0\)):
 the cotangent potential differentiates to the Gauss acceleration; circular
@@ -382,6 +380,7 @@ theorem f0_bounds : (135 / 100 : ℝ) < f0 ∧ f0 < (141 / 100 : ℝ) := by
       _ = 169 / 120 := hg
       _ < 141 / 100 := by norm_num
 
+/-- The value `1.10` is not the minimum of `f`. -/
 theorem paper_f0_1_10_false : f0 ≠ (11 / 10 : ℝ) := by
   intro h; have ⟨hlo, _⟩ := f0_bounds; rw [h] at hlo; norm_num at hlo
 
@@ -447,6 +446,7 @@ theorem milkyWayRsqOverKpc2_bounds :
         milkyWayMassCoeff
       native_decide : milkyWayRsqOverKpc2_num < 81 * milkyWayRsqOverKpc2_den)
 
+/-- `R²` on the Milky-Way stand-in lies strictly below `(27 kpc)²`. -/
 theorem paper_R_MW_27_kpc_false :
     milkyWayRsqOverKpc2 < (27 : ℚ) ^ 2 :=
   milkyWayRsqOverKpc2_bounds.2.trans (by norm_num)

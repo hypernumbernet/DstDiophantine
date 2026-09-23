@@ -44,9 +44,9 @@ Write `x = ℓ/(2r)` and `gammaSEqual x = cosh x * cos x - sinh x * sin x`
   `(cosh π)^n ≤ cosh (nπ)` with `11 < cosh π`; and the one-sided ceiling
   `cosh (a+π) < e^π cosh a`.
 * Inward screening: the mid-layer (plateau) force factor
-  `4π²n²/cosh (nπ)` is strictly decreasing for `n ≥ 1`, so the layer
-  amplitudes do **not** grow toward the centre. The paper's "ever-increasing
-  amplitude toward the centre" is refuted for this force law.
+  `4π²n²/cosh (nπ)` is strictly decreasing for `n ≥ 1`. Plateau amplitudes
+  do not grow toward the centre. What diverges inward is the barrier, where
+  `gammaS` vanishes.
 * On the equal-scale locus the Killing-form scalar vanishes identically,
   `J = 0`, while the unsigned mass `M` is positive. The layer order parameter
   is therefore `gammaS`, not `J`.
@@ -600,8 +600,7 @@ theorem plateauForceFactor_strictAnti (n : ℕ) (hn : 1 ≤ n) :
     _ ≤ (4 * π ^ 2 * (n : ℝ) ^ 2) * cosh ((((n + 1 : ℕ)) : ℝ) * π) :=
         mul_le_mul_of_nonneg_left hgrow hnum.le
 
-/-- Refutation of the "ever-increasing amplitude toward the centre" reading:
-already at the first plateau pair the factor decreases. -/
+/-- The mid-layer force factor is not strictly increasing in `n`. -/
 theorem paper_amplitude_increase_inward_false :
     ¬ (∀ n : ℕ, 1 ≤ n → plateauForceFactor n < plateauForceFactor (n + 1)) := by
   intro h

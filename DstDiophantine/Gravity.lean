@@ -27,117 +27,96 @@ import DstDiophantine.Gravity.EMControl
 /-!
 # Gravity / PGA–TEGR chart layer
 
-Re-exports the chart-level TEGR scaffolding (coframe, sandwich scales,
-Schwarzschild tetrad, Weitzenböck torsion, motor-induced frame vectors,
-and the `J` / `J_field` / `T` dictionary with naive-identification rejections,
-the closed radial-boost form in `JTDictionary` together with its strict
-monotonicity, closed-form inversion, and finite two-sided window on the
-admissible cone, the gauge-level generalisation in `GaugeDictionary`, and the
-classical specialisation `A=1-rₛ/r` in `ClassicalSchwarzschild`),
-plus the exploratory SI / \(c\to G\) hypothesis layer (`SI`, `NewtonFromLight`),
-the labelled quasi-horizon cutoff (`EventBoundary`), the electromagnetic
-exploratory layer (`CoulombFromDual`, `ElectronShell`), the galactic
-S³ cotangent layer (`CompactS3`: \(v^2=(GM/R)f\), unique minimum of \(f\) on
-\((0,\pi/2)\) with \(1.35<f_0<1.41\), strictly increasing \(\eta\), attractive
-patch ending before \(r=2R\), Milky-Way windows \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\);
-no `dst_derives_a0` / `dst_derives_G`),
-the closed-form layer spectrum of `TorsionalLayer` (exact derivative, plateau
-extrema `(-1)^n cosh(nπ)`, one node per `π`-interval, sharpened branch
-`(nπ+π/4, nπ+π/2)`, exponential inward screening), and the nuclear-layer
-exploratory diagnostics (`NuclearLayer`; no `dst_derives_alpha_s` /
-`dst_derives_lambdaN` / `dst_derives_Amax`),
-the closed form of `gammaEff`, the Euler–Lagrange identities of
-`DualRotorDynamics` (free mismatch, sourced common rapidity \(\ddot\sigma=-2m\delta\),
-indefinite conserved energy, dual-channel drive \(\ddot\delta=-u\) on the written
-action and \(\ddot\delta+2m\delta=-u\) on the working oscillator; dual-only
-\(\ddot\phi=0\) is not a free sourced solution unless \(m(\phi-\theta)=0\);
-both-channel power \(v\dot\phi-u\dot\theta\) and unique constraint
-\(v=m(\phi-\theta)\); no Faraday-helicity identification of \(u\)), the Coulombic
-circular-orbit identities of
-`ElectronOrbit` (first-root window \(\pi/4<x_1<1\), repulsive layers yield
-no real circular \(v^2\), equal-scale \(r_2/r_1\) cannot equal the Bohr
-ratio \(4\); no `dst_derives_lambda`), the Faraday 6-space audit of
-`Faraday` (Section 10/12 split, dual map \((E,B)\mapsto(B,-E)\), Faraday
-quadratic \(J=\tfrac12(E^2-B^2)\), null circular snapshots with \(J=0\) and
-\(M>0\), Hodge period 4 versus the period-2 parameter swap and laboratory
-\(T\), sandwich commutator versus the paper wedge on rest and on a
-\(y\)-velocity, rest sandwich of every dual Faraday field vanishes;
-the commutator of the Faraday bivector on \(e_0+v\) is the 4-kick
-\((E\cdot v)\,e_0+(E-v\times B)\), i.e.\ the Lorentz 4-force of
-laboratory time-reversed \((E,-B)\); Maxwell is not derived), the electroweak skeleton of
-`Electroweak` (dual map is not a Weyl projector; Faraday \(3+3\) split
-relative to \(e_1\); same-projector sandwich kills the anticommuting
-summand; mix \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\) with duality
-at \(\omega=\pi/2\); pure \(E\) has \(J\ge 0\), pure \(B\) has \(J\le 0\);
-no Weinberg angle, no \(W/Z\) masses), and the circular-wave identities of
-`CircularPolarization` (null at every phase, Poynting \(\sigma E_0^2\),
-vanishing four-phase mean of linear coefficients, superposition does not
-shift mean \(J\), mix cannot create \(J\); axis \(e_1\) splits a circular
-wave into null Cartan and charged linear pieces whose Poynting parts add
-without a cross term; both \(P_{L,R}\) kill the charged summand, so axis
-chirality is not photon helicity; rest electric kick has vanishing
-four-phase mean; a beam-direction velocity yields a transverse sandwich
-force; among the six classical Faraday quadratics a helicity-odd
-combination equals a multiple of \(P_z\) on circular waves;
-no helicity drive of \(J\)), and the dual-only control identities of
-`DualControl` (jet \(\dot J\), wall \(J=\frac\pi2\sum(\alpha_a-\pi/4)\),
-dual-only shielding iff the wall is nonpositive, equal-scale strictly
-stronger than dual-only shielding, cross-axis compensation, unique
-shield when the wall vanishes, vacuum unreachable dual-only unless
-\(\sum\alpha^2=0\), conservation \(J+M=\sum\alpha^2\) and unique shield
-mass \(2M_{\mathrm{seed}}\), dual-only \(J\) filling the wall-to-seed
-interval, mixed unwind onto \(\alpha_a\le\pi/4\) when the wall is
-positive), the one-axis clock of `ShieldClock`
-(\(\gamma_{\mathrm{eff}}\) strictly decreasing in the dual angle on a
-boosted axis; unique return \(\gamma_{\mathrm{eff}}=1\) at
-\(\beta_\ast=\arcsin\tanh(\alpha/2)\); \(\beta_\ast<\alpha\) so every
-admissible coaxial shield already has \(\gamma_{\mathrm{eff}}<1\);
-unique wall-clock threshold in \((\pi/3,\pi/2)\); coaxial and
-cross-axis shields of a pure-usual seed share \(J=0\) and unsigned
-mass, while the latter leaves the boosted clock at \(\cosh\alpha\);
-no many-axis product of clocks), and the mass ceiling of `ShieldCeiling` (the parabola
-\(\pi^2M\le\frac{5\pi^4}{16}+4J^2\), i.e.
-\(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\), valid everywhere
-and sharp on \(|J|\le\pi^2/8\), attained along
-the wall family \(\alpha=(\pi/2,0,\gamma)\), \(\beta=(0,\pi/2,\pi/2-\gamma)\);
-hence a shield obeys \(M\le 5\pi^2/16\) with the isotropic shield capped at
-\(3\pi^2/16\); at the cone's mass ceiling every axis is purely usual or
-purely dual and \(|J|\ge\pi^2/8\); full repulsion has no mass penalty),
-the exact kinematic domain of `ControlDomain` (attractive and repulsive
-lobes; envelope
-\(M\le 5\pi^2/16+\min(4J^2,(2J-\pi^2/2)^2,(2J+\pi^2/2)^2)/\pi^2\),
-equivalently
-\(M_{\mathrm{norm}}\le\frac56+\frac16\min(9J_n^2,(3J_n-2)^2,(3J_n+2)^2)\);
-peaks \(M=3\pi^2/8\) at \(|J|=\pi^2/8\) and \(|J|=3\pi^2/8\); local minima
-\(M=5\pi^2/16\) at \(J=0\) and \(|J|=\pi^2/4\); every pair under the
-envelope with \(|J|\le M\) is realised),
-the envelope lock of `EnvelopeLock` (the bound is met if and only if every
-axis lies on the wall and at least two axes are corners of the cone, so a
-dual-only motion meets the envelope at most once; the heaviest shield
-assigns one axis purely usual, one purely dual, and the third split evenly),
-and the chiral spectrum of `ChiralSpectrum` (three spatial axes each yield
-idempotent complementary projectors; distinct-axis projectors do not commute
-and do not resolve the identity; the time axis cannot serve as a chirality
-generator; Cartan brackets close as \(\mathfrak{so}(2,1)\) while the charged
-triple leaks into Cartan; duality exchanges the two triples; the dual-rotor
-cyclic generators are compact and satisfy \(IJ=K\); no Weinberg angle),
-and the chirality stabilizer of `ChiralityStabilizer` (Cartan rotations and
-perpendicular boosts fix the axis; a dual rotation by \(\theta\) about
-\(B_{a+1}\) sends \(e_a\) to \(\cos\theta\,e_a-\sin\theta\,e_{a+2}\) and
-exchanges the projectors at \(\theta=\pi\); a boost along the axis tilts it
-into time and the image still squares to \(+1\); in the parallel plane
-\(c_B B_a+c_E E_a\) preserves the axis iff \(c_E=0\); the parallel electric
-generator is not a rotor; no chiral \(\mathrm{SU}(2)\), no V--A),
-and the electromagnetic control identities of `EMControl` (magnetic Faraday
-superposition is the dual-rotor substitution \(\theta\mapsto\theta+eA\);
-pure magnetic increments cannot raise \(J\) against a nonnegative dual
-seed; circular superposition does not shift mean \(J\); the dual-only
-reading of a circular potential drops mean \(J\) by the helicity-even
-ponderomotive \((e^2/2)(E_0/\omega)^2\); constant shifts of \(A\) change
-\(J\); a zero-mean circular \(A\) on a vanishing dual seed leaves the
-cone; dual-only realisation on the written action requires
-\(u=e\ddot A+m\delta\); no helicity drive of \(J\), no Maxwell, no
-laboratory protocol).
+Parallel track. Not re-exported from `DstDiophantine.Basic`.
+Algebraic `J` is a dimensionless parameter-space scalar. It is not the
+Weitzenböck density `T`, and it is not \(c^4/(G\,\ell_P^{-2})\).
+
+No theorem asserts `dst_derives_G`, `dst_derives_a0`, `dst_derives_alpha_s`,
+`dst_derives_lambda`, `dst_derives_lambdaN`, `dst_derives_Amax`, Maxwell's
+equations, a Weinberg angle, \(W/Z\) masses, a chiral \(\mathrm{SU}(2)\),
+a V--A coupling, or a helicity-odd drive of \(J\).
+
+## Chart dictionary
+
+`Coframe`, `Sandwich`, `Weitzenbock`, `Tetrad`, `Identification`,
+`JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`.
+
+On every static radial-boost chart,
+\(T=(4/r^2)(\cosh\sqrt{2J}-1)\). The map inverts on the admissible cone,
+where \(r^2 T\) lies in a finite two-sided window. A real radial boost
+cannot produce \(T<0\). Exterior Schwarzschild is the vacuum gauge
+\(A=1-r_s/r\). The naive identification \(J_{\mathrm{field}}=\tfrac12 T\)
+holds on at most one sphere.
+
+## Scales that are inputs
+
+* `SI`, `NewtonFromLight` — SI stand-ins. The \(c\to G\) comparison does
+  not derive \(G\).
+* `EventBoundary` — the admissible ceiling read as a finite redshift floor.
+  A one-way horizon \(A=0\) does not form on that chart.
+* `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
+  \(\alpha\) or \(\lambda\).
+* `CompactS3` — \(v^2=(GM/R)\,f(r/R)\). Unique minimum of \(f\) on
+  \((0,\pi/2)\) with \(1.35<f_0<1.41\). The attractive patch ends before
+  \(r=2R\). Milky-Way window \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
+* `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
+  pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
+  lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
+  heuristic.
+
+## Layers and particle dynamics
+
+* `TorsionalLayer` — equal-scale spectrum: exact derivative, plateaux
+  \((-1)^n\cosh(n\pi)\), one node per \(\pi\)-interval in
+  \((n\pi+\pi/4,\,n\pi+\pi/2)\), inward screening of the plateau force.
+* `DualRotorDynamics` — Euler–Lagrange system of the written action: free
+  mismatch \(\ddot\delta=0\), sourced common rapidity \(\ddot\sigma=-2m\delta\).
+  The same-sign kinetic model is the oscillator \(\ddot\delta+2m\delta=0\).
+  Dual-only \(\ddot\phi=0\) is a constraint, not a free solution, unless
+  \(m(\phi-\theta)=0\).
+* `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). Repulsive layers
+  yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
+  ratio \(4\).
+
+## One Faraday six-space
+
+`Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`,
+`ChiralityStabilizer`, `EMControl`.
+
+Faraday coefficients occupy the dual-rotor generators: electric on the
+boosts, magnetic on the rotations, \(F=F_{\mathrm{usual}}+F_{\mathrm{dual}}\).
+Duality sends \((E,B)\) to \((B,-E)\) and has period 4. The usual–dual
+parameter swap has period 2. Laboratory time reversal preserves \(J\).
+The quadratic is \(J=\tfrac12(E^2-B^2)\). The first-order sandwich
+increment is the commutator; on \(e_0+v\) it is the Lorentz 4-force of
+\((E,-B)\). The outer product is not that increment.
+
+A spatial axis splits the six-space into an \(\mathfrak{so}(2,1)\)
+stabilizer and a complement that moves the axis. Distinct-axis projectors
+do not resolve the identity. Compact \(\mathrm{SU}(2)\) here is the dual
+rotor (\(IJ=K\)), not a symmetry of a fixed projector. In the parallel
+plane, \(c_B B_a+c_E E_a\) preserves the axis only when \(c_E=0\).
+
+`EMControl` reads a dual-only increment in two ways: magnetic superposition,
+and the substitution \(\theta\mapsto\theta+eA\). Neither raises \(J\) against
+a nonnegative dual seed. A circular potential drops mean \(J\) by the
+helicity-even ponderomotive \((e^2/2)(E_0/\omega)^2\).
+
+## Dual-only control of \((J,M)\)
+
+`DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`,
+`EnvelopeLock`.
+
+Dual-only motion conserves \(J+M\) and cannot raise \(J\). It reaches a
+shield \(J=0\) precisely when the dual wall is nonpositive. The mass
+ceiling is the parabola
+\(M_{\mathrm{norm}}\le\frac56+\frac32 J_{\mathrm{norm}}^2\), sharp on
+\(|J|\le\pi^2/8\). The exact image of the cone is the three-lobed envelope
+of `ControlDomain`. That envelope is met only when every axis lies on the
+wall and at least two axes are corners, so a dual-only motion meets it at
+most once. On a boosted axis, \(\gamma_{\mathrm{eff}}\) returns to \(1\)
+at a dual angle strictly before the coaxial shield; a cross-axis shield of
+the same mass leaves that clock at \(\cosh\alpha\).
 -/
 
 namespace DstDiophantine
@@ -390,7 +369,7 @@ example {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
     layerRadius (ℓ / Z) x = layerRadius ℓ x / Z :=
   Z_contracts_layerRadius hZ
 
-/-- Regression: Faraday is the Section 12 usual-plus-dual split. -/
+/-- Regression: Faraday splits as usual electric plus dual magnetic. -/
 example (p : FaradayParams) :
     faraday p = faradayUsual p + faradayDual p :=
   faraday_eq_add p
@@ -430,14 +409,14 @@ example (p : FaradayParams) :
     Operations.dual (Operations.dual (faraday p)) = -faraday p :=
   dual_dual_faraday p
 
-/-- Regression: the paper wedge is not the first-order sandwich increment. -/
+/-- Regression: the outer product is not the first-order sandwich increment. -/
 example :
     sandwichIncrement (cyclic 0) (ι 0) = 0 ∧
       paperWedgeIncrement (cyclic 0) (ι 0) ≠ 0 :=
   paper_wedge_ne_lorentz_increment
 
-/-- Regression: a \(y\)-velocity against \(B_x\) yields a \(z\)-kick; the wedge
-vanishes. -/
+/-- Regression: a \(y\)-velocity against \(B_x\) yields a \(z\)-kick; the outer
+product vanishes. -/
 example :
     sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 ∧
       paperWedgeIncrement (cyclic 0) (ι 2) = 0 :=

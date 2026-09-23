@@ -1096,13 +1096,13 @@ example {a b c : ℕ} (h : IsAbcTriple a b c) :
 example : pseudoscalar * pseudoscalar = (-1 : PGA) :=
   pseudoscalar_sq
 
-/-- Dual preserves Minkowski square (paper §2). -/
+/-- Dual preserves the Minkowski square. -/
 example (v : Fin 4 → ℝ) :
     dual (minkowskiVector v) * dual (minkowskiVector v) =
       minkowskiVector v * minkowskiVector v :=
   dual_minkowskiVector_sq v
 
-/-- Paper appendix Killing coefficient `8∑(α²-β²)` is false for `Ω = omegaTorsion`. -/
+/-- Killing coefficient `8∑(α²-β²)` is not `B(Ω,Ω)` for `Ω = omegaTorsion`. -/
 example :
     ∃ p : TorsionParams,
       omegaTorsionGeneratorKilling p ≠

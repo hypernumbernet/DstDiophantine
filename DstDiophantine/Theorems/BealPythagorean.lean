@@ -23,7 +23,7 @@ Isolated from `Beal.lean` / `BealSlice.lean`.
 ## Discrete tools
 
 * `ℕ`-UFD for `2mn` an `e`-th power;
-* `ℤ[i]` hypotenuse-power preparation (full descent deferred).
+* `ℤ[i]` hypotenuse-power preparation; the Gaussian continuation is `BealGaussian`.
 
 Classical Beal is **not** claimed unconditionally.
 -/
