@@ -21,6 +21,7 @@ import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
+import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 
 /-!
@@ -120,6 +121,13 @@ and do not resolve the identity; the time axis cannot serve as a chirality
 generator; Cartan brackets close as \(\mathfrak{so}(2,1)\) while the charged
 triple leaks into Cartan; duality exchanges the two triples; the dual-rotor
 cyclic generators are compact and satisfy \(IJ=K\); no Weinberg angle),
+and the chirality stabilizer of `ChiralityStabilizer` (Cartan rotations and
+perpendicular boosts fix the axis; a dual rotation by \(\theta\) about
+\(B_{a+1}\) sends \(e_a\) to \(\cos\theta\,e_a-\sin\theta\,e_{a+2}\) and
+exchanges the projectors at \(\theta=\pi\); a boost along the axis tilts it
+into time and the image still squares to \(+1\); in the parallel plane
+\(c_B B_a+c_E E_a\) preserves the axis iff \(c_E=0\); the parallel electric
+generator is not a rotor; no chiral \(\mathrm{SU}(2)\), no V--A),
 and the electromagnetic control identities of `EMControl` (magnetic Faraday
 superposition is the dual-rotor substitution \(\theta\mapsto\theta+eA\);
 pure magnetic increments cannot raise \(J\) against a nonnegative dual
@@ -907,6 +915,19 @@ example (a : Fin 3) :
     dual (cartanGen a 0) = chargedGen a 0 ∧
       dual (cartanGen a 1) = -chargedGen a 1 :=
   ⟨(dual_cartanGen a).1, (dual_cartanGen a).2.1⟩
+
+/-- Regression: a perpendicular dual rotation exchanges the projectors at angle \(\pi\). -/
+example (a : Fin 3) :
+    NormedSpace.exp ((Real.pi / 2) • cyclic (a + 1)) * chiralityRAxis a *
+        CliffordAlgebra.reverse
+          (NormedSpace.exp ((Real.pi / 2) • cyclic (a + 1))) =
+      chiralityLAxis a :=
+  dualRotation_exchanges_projectors a
+
+/-- Regression: the parallel electric mix preserves the axis only at a trivial angle. -/
+example (a : Fin 3) (cB cE : ℝ) :
+    Commute (spatialGen a) (cB • cyclic a + cE • hyperbolic a) ↔ cE = 0 :=
+  commute_neutral_axis_iff a cB cE
 
 /-- Regression: \(\theta\mapsto\theta+eA\) is magnetic Faraday superposition. -/
 example (p : Operations.TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) :
