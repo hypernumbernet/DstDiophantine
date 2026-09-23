@@ -15,7 +15,9 @@ The admissible image of `latticeMismatch` is the three-fold sumset of
 one-axis differences of squares in the triangle `n + m ≤ ⌊N/4⌋`.  That
 sumset is a proper subset of `{−3K²,…,3K²}` for some `K` (spectral holes).
 The slot `Δ = ±1` is occupied as soon as `N ≥ 4`, so the nonzero height
-floor `16/(3N²)` is attained.
+floor `16/(3N²)` is attained. For every `K`, the integers strictly between
+the shoulder `2K²+(K−1)²` and the ceiling `3K²` are unoccupied; when `K ≥ 2`
+that positive band has width `2K−2`.
 -/
 
 namespace DstDiophantine
@@ -310,6 +312,208 @@ theorem threeMismatchSet_subset_interval (K : ℕ) :
 /-- Unoccupied slots inside the bound interval. -/
 def mismatchHoles (K : ℕ) : Finset ℤ :=
   mismatchInterval K \ threeMismatchSet K
+
+/-! ### Ceiling band
+
+On one axis, `K²` is isolated from the rest of the triangle. The factorisation
+`n² − m² = (n − m)(n + m)` forces every non-wall pair to land at most at
+`(K − 1)²`: either `n + m ≤ K − 1`, or the pair sits on the hypotenuse
+`n + m = K` with both coordinates positive, where parity drops `|n − m|` by at
+least two and the product is at most `K(K − 2) = K² − 2K < (K − 1)²`.
+A three-axis sum can therefore pass the shoulder `2K² + (K − 1)²` only by
+placing every axis on the same pure wall, which jumps to `3K²` and leaves the
+open interval between them empty.
+-/
+
+/-- Largest three-axis mismatch that still uses a shortened wall:
+`2K² + (K − 1)²`. -/
+def mismatchShoulder (K : ℕ) : ℤ :=
+  2 * (K : ℤ) ^ 2 + ((K - 1 : ℕ) : ℤ) ^ 2
+
+theorem mismatchShoulder_eq_of_pos {K : ℕ} (hK : 1 ≤ K) :
+    mismatchShoulder K = 3 * (K : ℤ) ^ 2 - 2 * (K : ℤ) + 1 := by
+  have hcast : ((K - 1 : ℕ) : ℤ) = (K : ℤ) - 1 := by omega
+  unfold mismatchShoulder
+  rw [hcast]
+  ring
+
+/-- The shortened wall `(K − 1, 0)` realises the second one-axis maximum. -/
+theorem pred_sq_mem_axisMismatchSet (K : ℕ) :
+    ((K - 1 : ℕ) : ℤ) ^ 2 ∈ axisMismatchSet K := by
+  rw [mem_axisMismatchSet]
+  refine ⟨K - 1, 0, by omega, ?_⟩
+  simp [axisMismatch]
+
+/-- A one-axis mismatch strictly above `(K − 1)²` is the pure hyperbolic wall. -/
+theorem axisMismatch_eq_wall_of_gt_pred {K n m : ℕ} (h : n + m ≤ K)
+    (hgt : ((K - 1 : ℕ) : ℤ) ^ 2 < axisMismatch n m) :
+    n = K ∧ m = 0 := by
+  by_cases hK : K = 0
+  · subst hK
+    have hn : n = 0 := by omega
+    have hm : m = 0 := by omega
+    simp [axisMismatch, hn, hm] at hgt
+  · have hKpos : 0 < K := Nat.pos_of_ne_zero hK
+    have hKz : (0 : ℤ) < K := by exact_mod_cast hKpos
+    have hsum_eq : n + m = K := by
+      by_contra hne
+      have hle : n + m ≤ K - 1 := by omega
+      have hbound := abs_axisMismatch_le_add_sq n m
+      have hsq : ((n + m : ℕ) : ℤ) ^ 2 ≤ ((K - 1 : ℕ) : ℤ) ^ 2 :=
+        pow_le_pow_left₀ (Nat.cast_nonneg _) (by exact_mod_cast hle) 2
+      have : axisMismatch n m ≤ ((K - 1 : ℕ) : ℤ) ^ 2 :=
+        (le_abs_self _).trans (hbound.trans hsq)
+      linarith
+    have hfac : axisMismatch n m =
+        ((n : ℤ) - (m : ℤ)) * ((n : ℤ) + (m : ℤ)) := by
+      unfold axisMismatch; ring
+    have hsumZ : (n : ℤ) + (m : ℤ) = (K : ℤ) := by
+      have : (n : ℤ) + (m : ℤ) = ((n + m : ℕ) : ℤ) := by push_cast; rfl
+      rw [this]; exact_mod_cast hsum_eq
+    by_cases hm : m = 0
+    · subst hm
+      exact ⟨by omega, rfl⟩
+    · have hn_le : n ≤ K - 1 := by omega
+      have hnZ : (n : ℤ) ≤ (K : ℤ) - 1 := by
+        have hcast : ((K - 1 : ℕ) : ℤ) = (K : ℤ) - 1 := by omega
+        have : (n : ℤ) ≤ ((K - 1 : ℕ) : ℤ) := by exact_mod_cast hn_le
+        linarith
+      have hdiff : (n : ℤ) - (m : ℤ) ≤ (K : ℤ) - 2 := by
+        have hmZ : (m : ℤ) = (K : ℤ) - (n : ℤ) := by linarith [hsumZ]
+        nlinarith
+      have hprod :
+          ((n : ℤ) - (m : ℤ)) * (K : ℤ) ≤ ((K : ℤ) - 2) * (K : ℤ) :=
+        mul_le_mul_of_nonneg_right hdiff hKz.le
+      have hpred : ((K : ℤ) - 2) * (K : ℤ) ≤ ((K - 1 : ℕ) : ℤ) ^ 2 := by
+        have hcast : ((K - 1 : ℕ) : ℤ) = (K : ℤ) - 1 := by omega
+        rw [hcast]
+        nlinarith
+      rw [hfac, hsumZ] at hgt
+      linarith
+
+/-- No one-axis mismatch lies strictly between `(K − 1)²` and `K²`. -/
+theorem not_mem_axisMismatchSet_of_one_axis_gap {K : ℕ} {x : ℤ}
+    (hlo : ((K - 1 : ℕ) : ℤ) ^ 2 < x) (hhi : x < (K : ℤ) ^ 2) :
+    x ∉ axisMismatchSet K := by
+  intro hx
+  rw [mem_axisMismatchSet] at hx
+  obtain ⟨n, m, hnm, rfl⟩ := hx
+  obtain ⟨rfl, rfl⟩ := axisMismatch_eq_wall_of_gt_pred hnm hlo
+  simp [axisMismatch] at hhi
+
+theorem mismatchShoulder_mem (K : ℕ) :
+    mismatchShoulder K ∈ threeMismatchSet K := by
+  rw [mem_threeMismatchSet]
+  refine ⟨K, 0, K, 0, K - 1, 0, by omega, by omega, by omega, ?_⟩
+  have hK : axisMismatch K 0 = (K : ℤ) ^ 2 := by simp [axisMismatch]
+  have hpred : axisMismatch (K - 1) 0 = ((K - 1 : ℕ) : ℤ) ^ 2 := by
+    simp [axisMismatch]
+  simp only [mismatchShoulder]
+  rw [hK, hpred]
+  ring
+
+theorem threeMismatchSet_neg {K : ℕ} {x : ℤ} (hx : x ∈ threeMismatchSet K) :
+    -x ∈ threeMismatchSet K := by
+  rw [mem_threeMismatchSet] at hx ⊢
+  obtain ⟨n0, m0, n1, m1, n2, m2, h0, h1, h2, rfl⟩ := hx
+  refine ⟨m0, n0, m1, n1, m2, n2, by omega, by omega, by omega, ?_⟩
+  rw [axisMismatch_comm m0 n0, axisMismatch_comm m1 n1, axisMismatch_comm m2 n2]
+  ring
+
+/-- Integers strictly between the shoulder and the ceiling are unoccupied. -/
+theorem not_mem_threeMismatchSet_of_ceiling_gap {K : ℕ} {x : ℤ}
+    (hlo : mismatchShoulder K < x) (hhi : x < 3 * (K : ℤ) ^ 2) :
+    x ∉ threeMismatchSet K := by
+  intro hx
+  rw [mem_threeMismatchSet] at hx
+  obtain ⟨n0, m0, n1, m1, n2, m2, h0, h1, h2, rfl⟩ := hx
+  set p : ℤ := ((K - 1 : ℕ) : ℤ) ^ 2
+  set c : ℤ := (K : ℤ) ^ 2
+  have le_c {n m : ℕ} (h : n + m ≤ K) : axisMismatch n m ≤ c :=
+    (le_abs_self _).trans (abs_axisMismatch_le_of_triangle h)
+  have hgt0 : p < axisMismatch n0 m0 := by
+    by_contra hng
+    have hle : axisMismatch n0 m0 ≤ p := le_of_not_gt hng
+    have hsum :
+        axisMismatch n0 m0 + axisMismatch n1 m1 + axisMismatch n2 m2 ≤
+          p + c + c := by
+      linarith [hle, le_c h1, le_c h2]
+    have hs : p + c + c = mismatchShoulder K := by
+      unfold mismatchShoulder; ring
+    linarith
+  have hgt1 : p < axisMismatch n1 m1 := by
+    by_contra hng
+    have hle : axisMismatch n1 m1 ≤ p := le_of_not_gt hng
+    have hsum :
+        axisMismatch n0 m0 + axisMismatch n1 m1 + axisMismatch n2 m2 ≤
+          c + p + c := by
+      linarith [hle, le_c h0, le_c h2]
+    have hs : c + p + c = mismatchShoulder K := by
+      unfold mismatchShoulder; ring
+    linarith
+  have hgt2 : p < axisMismatch n2 m2 := by
+    by_contra hng
+    have hle : axisMismatch n2 m2 ≤ p := le_of_not_gt hng
+    have hsum :
+        axisMismatch n0 m0 + axisMismatch n1 m1 + axisMismatch n2 m2 ≤
+          c + c + p := by
+      linarith [hle, le_c h0, le_c h1]
+    have hs : c + c + p = mismatchShoulder K := by
+      unfold mismatchShoulder; ring
+    linarith
+  have e0 : axisMismatch n0 m0 = c := by
+    obtain ⟨rfl, rfl⟩ := axisMismatch_eq_wall_of_gt_pred h0 hgt0
+    simp [axisMismatch, c]
+  have e1 : axisMismatch n1 m1 = c := by
+    obtain ⟨rfl, rfl⟩ := axisMismatch_eq_wall_of_gt_pred h1 hgt1
+    simp [axisMismatch, c]
+  have e2 : axisMismatch n2 m2 = c := by
+    obtain ⟨rfl, rfl⟩ := axisMismatch_eq_wall_of_gt_pred h2 hgt2
+    simp [axisMismatch, c]
+  have hsum :
+      axisMismatch n0 m0 + axisMismatch n1 m1 + axisMismatch n2 m2 = 3 * c := by
+    rw [e0, e1, e2]
+    ring
+  linarith
+
+theorem not_mem_threeMismatchSet_of_ceiling_gap_neg {K : ℕ} {x : ℤ}
+    (hlo : -3 * (K : ℤ) ^ 2 < x) (hhi : x < -mismatchShoulder K) :
+    x ∉ threeMismatchSet K := by
+  intro hx
+  exact not_mem_threeMismatchSet_of_ceiling_gap
+    (x := -x) (by linarith) (by linarith) (threeMismatchSet_neg hx)
+
+/-- The integer immediately below the ceiling is empty once `K ≥ 2`. -/
+theorem ceiling_predecessor_not_mem {K : ℕ} (hK : 2 ≤ K) :
+    3 * (K : ℤ) ^ 2 - 1 ∉ threeMismatchSet K := by
+  refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_
+  · rw [mismatchShoulder_eq_of_pos (by omega : 1 ≤ K)]
+    nlinarith
+  · nlinarith
+
+/-- Width of the positive ceiling band: `2K − 2` unoccupied integers. -/
+theorem ceiling_gap_width {K : ℕ} (hK : 1 ≤ K) :
+    3 * (K : ℤ) ^ 2 - 1 - mismatchShoulder K = 2 * (K : ℤ) - 2 := by
+  rw [mismatchShoulder_eq_of_pos hK]
+  ring
+
+example : mismatchShoulder 2 = 9 := by
+  norm_num [mismatchShoulder]
+
+example : mismatchShoulder 3 = 22 := by
+  norm_num [mismatchShoulder]
+
+example : (10 : ℤ) ∉ threeMismatchSet 2 := by
+  refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_ <;> norm_num [mismatchShoulder]
+
+example : (11 : ℤ) ∉ threeMismatchSet 2 := by
+  refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_ <;> norm_num [mismatchShoulder]
+
+example : (23 : ℤ) ∉ threeMismatchSet 3 := by
+  refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_ <;> norm_num [mismatchShoulder]
+
+example : (26 : ℤ) ∉ threeMismatchSet 3 := by
+  refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_ <;> norm_num [mismatchShoulder]
 
 /-! ### Same-wall equality for the three-axis ceiling -/
 

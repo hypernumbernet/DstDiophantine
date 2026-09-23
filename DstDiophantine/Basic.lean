@@ -100,7 +100,12 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   card_admissibleClass_eq_of_div_four card_admissibleClass_one_of_lt_four
   card_admissibleClass_four card_admissibleClass_eight
   axisMismatch axisMass axisMismatchSet threeMismatchSet mismatchHoles
-  mismatchInterval
+  mismatchInterval mismatchShoulder mismatchShoulder_eq_of_pos
+  pred_sq_mem_axisMismatchSet axisMismatch_eq_wall_of_gt_pred
+  not_mem_axisMismatchSet_of_one_axis_gap mismatchShoulder_mem
+  threeMismatchSet_neg not_mem_threeMismatchSet_of_ceiling_gap
+  not_mem_threeMismatchSet_of_ceiling_gap_neg ceiling_predecessor_not_mem
+  ceiling_gap_width
   one_mem_axisMismatchSet_iff neg_one_mem_axisMismatchSet_iff
   threeMismatchSet_subset_interval abs_three_axis_eq_ceiling_iff
   card_balancedTriples card_zeroHeight_gt_balanced
