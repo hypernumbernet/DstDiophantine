@@ -650,11 +650,15 @@ example {m n : ℤ} {c : ℕ}
         (∃ v : ℕ, m.natAbs = 1 ∧ 2 * n.natAbs = v ^ 3)) : False :=
   not_eq_odd_two_factor_of_exp_three_abs_one hm0 hn0 heq hform
 
-/-- Phase 7l: positive-cube residual + e≥5 assemble equal-odd two-factor. -/
-example (hCube : BealPosCubeAddTwoCubeResidual)
-    (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
+/-- Phase 7u: Euler closes the cube leaf; equal-odd two-factor from e≥5 alone. -/
+example (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
     BealEqualOddTwoFactorResidual :=
-  BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five hCube hGe5
+  BealEqualOddTwoFactorResidual_of_ge_five hGe5
+
+/-- Phase 7u: no positive solution of `α³ + 2β³ = γ³`. -/
+example {α β γ : ℕ} (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ) :
+    ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 :=
+  not_pos_cube_add_two_cube hα hβ hγ
 
 /-- Phase 7l: even-difference factorization residual implies Diff residual. -/
 example (hFac : BealTwoEqualEvenDiffFactorResidual) :

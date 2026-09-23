@@ -28,6 +28,7 @@ import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.FermatLast
+import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
@@ -232,6 +233,7 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   BealAffineCubeAddTwoResidual BealPosCubeAddTwoCubeResidual_of_affine
   BealMordellCubeAddTwoResidual BealAffineCubeAddTwoResidual_of_mordell
   BealPosCubeAddTwoCubeResidual_of_mordell
+  not_pos_cube_add_two_cube BealEqualOddTwoFactorResidual_of_ge_five
   affineCubeAddTwoToMordell mordell_of_affine_cube_add_two
   affineCubeAddTwoToMordell_neg_one_one
   exists_pos_cube_add_two_cube_of_two_factor
@@ -328,6 +330,7 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   beal_conjecture_of_discreteClosed_and_unitBaseNoGo
   not_one_add_pow_three_eq_pow_three
   mihailescu not_unitAbs_pow_add_pow_eq_pow_pos
+  eulerAffineCubeAddTwo BealPosCubeAddTwoCubeResidual_of_euler
   beal_modularWitness_of_fracGap_window beal_modularWitness_of_fracGap_window_ampExp
   beal_modularWitness_of_principal_fracGap_window
   beal_winding_of_solution_window beal_winding_of_solution_principal_window

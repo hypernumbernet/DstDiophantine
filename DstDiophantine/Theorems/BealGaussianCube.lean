@@ -1,4 +1,5 @@
 import DstDiophantine.Theorems.BealGaussian
+import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Mihailescu
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.MaxPowDiv
@@ -27,13 +28,13 @@ exponent 3:
 * phase 7q: 3-descent of the difference factors (`gcd ∈ {1,3}`), almost-cube
   assignment, and reduction to `s³ = t⁶ + 3τ²` or `s³ = τ² + (3^{2k-1} t²)³`;
 * phase 7o: birational packaging of that Affine curve onto the Mordell model
-  `y² = x³ - 1728`, with assembly `BealMordellCubeAddTwoResidual → Affine`.
+  `y² = x³ - 1728`, with assembly `BealMordellCubeAddTwoResidual → Affine`;
+* phase 7u: Euler axiom `eulerAffineCubeAddTwo` closes the affine residual and
+  therefore the positive-cube residual (the `e = 3` leaf).
 
-The positive cube equation `α³ + 2β³ = γ³` is the live residual for `e = 3`
-(no new axiom; classical Beal is **not** claimed unconditionally). The naive
-2-adic descent used for `x³ + 2y³ = 4z³` does **not** apply here (signed
-solutions such as `(-1)³ + 2·1³ = 1³` exist). The Mordell rank is not in
-mathlib; phase 7o does **not** close it.
+The live residual for equal-odd two-factor is now the odd-exponent body
+`e ≥ 5`. Classical Beal is **not** claimed unconditionally. The Mordell rank
+is not in mathlib; phase 7o does **not** close the Weierstrass model by itself.
 -/
 
 namespace DstDiophantine
@@ -285,9 +286,10 @@ theorem exists_pos_cube_add_two_cube_of_two_factor_symm
 /-! ### Residual: no positive solutions of `α³ + 2β³ = γ³` -/
 
 /--
-**Residual** (phase 7l, unproved): no positive integers satisfy
-`α³ + 2β³ = γ³`. (Signed solutions exist, e.g. `(-1)³ + 2·1³ = 1³`; the Beal
-two-factor reduction only produces positive `α = u²`.)
+**Cube leaf** (phase 7l / 7u): no positive integers satisfy `α³ + 2β³ = γ³`.
+Signed solutions exist (e.g. `(-1)³ + 2·1³ = 1³`); the Beal two-factor
+reduction only produces positive `α = u²`. Closed under the Euler axiom via
+`BealPosCubeAddTwoCubeResidual_of_euler` below.
 -/
 def BealPosCubeAddTwoCubeResidual : Prop :=
   ∀ (α β γ : ℕ), 0 < α → 0 < β → 0 < γ → ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3
@@ -1514,20 +1516,18 @@ theorem eq_one_of_affine_cube_add_two_Y_zero
     exact False.elim (hdisc ⟨X, h⟩)
 
 /--
-**Residual** (phase 7m, unproved): the only rational points on
-`X³ + 2Y³ = 1` are `(1, 0)` and `(-1, 1)`.
+**Affine residual** (phase 7m / 7u): the only rational points on
+`X³ + 2Y³ = 1` are `(1, 0)` and `(-1, 1)`. Definitionally the Euler axiom.
 -/
-def BealAffineCubeAddTwoResidual : Prop :=
+abbrev BealAffineCubeAddTwoResidual : Prop :=
   ∀ (X Y : ℚ), X ^ 3 + 2 * Y ^ 3 = 1 →
     (X = 1 ∧ Y = 0) ∨ (X = -1 ∧ Y = 1)
 
 /--
-**Residual** (phase 7o, unproved): the only rational point on the Mordell curve
-`y² = x³ - 1728` is the 2-torsion point `(12, 0)`.
-(The point at infinity corresponds to the Affine point `(1, 0)` under the
-birational map above; it is not an affine Weierstrass point.)
-mathlib does not contain the rank of this curve; this is **not** a Lean proof
-of Selmer's theorem.
+**Diagnostic packaging** (phase 7o): only rational Weierstrass point on
+`y² = x³ - 1728` is the 2-torsion `(12, 0)`. (Infinity corresponds to the
+Affine point `(1, 0)`.) The cube leaf is closed by the Euler axiom on the
+affine model, not by this packaging; mathlib has no rank for the curve.
 -/
 def BealMordellCubeAddTwoResidual : Prop :=
   ∀ (x y : ℚ), y ^ 2 = x ^ 3 - 1728 → x = 12 ∧ y = 0
@@ -1582,6 +1582,17 @@ theorem BealPosCubeAddTwoCubeResidual_of_mordell
     BealPosCubeAddTwoCubeResidual :=
   BealPosCubeAddTwoCubeResidual_of_affine
     (BealAffineCubeAddTwoResidual_of_mordell hMor)
+
+/-- Phase 7u: Euler axiom closes the positive-cube residual. -/
+theorem BealPosCubeAddTwoCubeResidual_of_euler :
+    BealPosCubeAddTwoCubeResidual :=
+  BealPosCubeAddTwoCubeResidual_of_affine eulerAffineCubeAddTwo
+
+/-- Phase 7u: no positive integers satisfy `α³ + 2β³ = γ³`. -/
+theorem not_pos_cube_add_two_cube
+    {α β γ : ℕ} (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ) :
+    ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 :=
+  BealPosCubeAddTwoCubeResidual_of_euler α β γ hα hβ hγ
 
 /-! ### Mod-7 / mod-9 diagnostic slices -/
 
@@ -1943,6 +1954,13 @@ theorem BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five
           ⟨Nat.pos_iff_ne_zero.mp hu0, hu1⟩
         exact hGe5 m n e he5 hodd hcop hpar hAssoc
           (Or.inr ⟨u, v, hu', hv0, hm, hn⟩)
+
+/-- Phase 7u: equal-odd two-factor residual follows from the `e ≥ 5` leaf alone. -/
+theorem BealEqualOddTwoFactorResidual_of_ge_five
+    (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
+    BealEqualOddTwoFactorResidual :=
+  BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five
+    BealPosCubeAddTwoCubeResidual_of_euler hGe5
 
 end Theorems
 

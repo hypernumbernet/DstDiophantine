@@ -53,8 +53,10 @@ geometric principle):
   `PythagoreanTriple.coprime_classification` parameters; fourth-divisibility
   of at least two exponents is closed in `BealPythagorean` / `BealSlice`;
   equal-odd matching even-leg/hyp slices reduce via Gaussian UFD to
-  `BealEqualOddTwoFactorResidual` (`BealGaussian`); residual outside those
-  is `BealPythagoreanResidual` (at least two reduced exponents odd);
+  `BealEqualOddTwoFactorResidual` (`BealGaussian`); the cube leaf `e = 3`
+  is closed under the Euler axiom `eulerAffineCubeAddTwo`; the live body
+  inside that residual is odd `e ≥ 5`; residual outside those is
+  `BealPythagoreanResidual` (at least two reduced exponents odd);
 * `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved), with
   two-equal and all-distinct case splits; even two-equal progress (mod 4 +
   sum-of-squares shape) in `BealGaussian` / `BealTwoEqualEvenResidual`;

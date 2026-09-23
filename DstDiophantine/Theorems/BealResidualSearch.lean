@@ -9,8 +9,9 @@ Finite certificates aimed at residual shapes where a classical Beal
 counterexample could still hide. This module is diagnostic / computational;
 it does **not** close residual bodies (`BealPosCubeAddTwoCubeResidual`, etc.).
 
-* **Positive cube kernel** `α³ + 2β³ = γ³`: current certificate bases `≤ 400`
-  (weaker named bounds follow by monotonicity).
+* **Positive cube kernel** `α³ + 2β³ = γ³`: closed under the Euler axiom
+  (`BealPosCubeAddTwoCubeResidual_of_euler`); the finite certificate bases
+  `≤ 400` remain as a complementary diagnostic.
 * **Open-residual filter** on classical coprime `A^x+B^y=C^z` (skips closed
   slices `d ≥ 3`, two exponents divisible by 4, Darmon–Merel cube positions,
   and signature-`(n,n,5)` with common exponent `≥ 4`):

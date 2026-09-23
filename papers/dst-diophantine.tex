@@ -405,33 +405,11 @@ If \( d\ge 3 \), a coprime solution of \( A^x+B^y=C^z \) is a coprime Fermat equ
 \]
 The signed relation \( (-1)^3 + 2\cdot 1^3 = 1^3 \) exists, but the Pythagorean--Gaussian reduction produces only \( \alpha = u^2 > 0 \).
 
-Any positive solution of this cubic is, after extracting the content \( \gcd(\alpha,\beta,\gamma) \), equivalent to a primitive solution in which both \( \alpha \) and \( \gamma \) are odd: if \( \alpha \) and \( \beta \) are even then so is \( \gamma \) and the halved triple is again a solution, while an even \( \alpha \) cannot accompany an odd \( \beta \). On a primitive odd slice one has the difference-of-cubes identity \( \gamma^3-\alpha^3=2\beta^3 \) together with the 2-adic relation \( v_2(\gamma-\alpha)=1+3v_2(\beta) \). Cube residues modulo \( 7 \), \( 9 \), \( 13 \) and \( 19 \) further constrain the admissible pairs \( (\alpha^3,\beta^3) \). Because a signed rational point is already present, no finite collection of such local conditions can by itself exclude every positive solution.
-
-The same identity nevertheless organises a global 3-primary descent on the slice. Write \( D=\gamma-\alpha \) and \( Q=\gamma^2+\gamma\alpha+\alpha^2 \), so that \( D\cdot Q=2\beta^3 \). Coprimality of \( \alpha \) and \( \gamma \) forces \( \gcd(D,Q)\in\{1,3\} \), the value \( 3 \) occurring if and only if \( 3 \) divides the difference. Both coordinates being odd, the half-sum \( \tau=(\gamma+\alpha)/2 \) and half-difference \( \delta=(\gamma-\alpha)/2 \) are integers, the quadratic factor is \( Q=3\tau^2+\delta^2 \), and the elementary reconstruction
-\[
-(\tau+\delta)^3-(\tau-\delta)^3=2\delta(3\tau^2+\delta^2)
-\]
-recovers the original cubic from any such splitting.
-
-When the factors are coprime, unique factorization together with the 2-adic constraint on \( D \) assigns the even difference as twice a cube and the quadratic factor as a cube: \( \gamma-\alpha=2t^3 \), \( Q=s^3 \), and \( \beta=ts \). In half-sum coordinates this is the single equation
-\[
-s^3=t^6+3\tau^2,
-\]
-with \( \alpha=\tau-t^3 \) and \( \gamma=\tau+t^3 \). Cubes modulo \( 9 \) force \( 3\mid\tau \): otherwise the right-hand side would be \( 4 \) modulo \( 9 \), which is not a cubic residue. Conversely, every such parametrization produces a positive solution.
-
-When \( 3 \) divides the difference, the complementary 3-adic reading of \( Q=D(\gamma+2\alpha)+3\alpha^2 \) yields \( v_3(D)=3v_3(\beta)-1 \) and \( v_3(Q)=1 \). Stripping the 3-primary part gives \( \gamma-\alpha=2\cdot 3^{3k-1}t^3 \) and \( Q=3s^3 \) with \( k=v_3(\beta)\ge 1 \), and the half-sum form collapses to
-\[
-s^3=\tau^2+\bigl(3^{2k-1}t^2\bigr)^3.
-\]
-A primitive positive point therefore occupies exactly one of two Diophantine surfaces: a cube equal to a sixth power plus a twisted square, or a cube equal to a square plus a cube. Each parametrization reconstructs a solution of \( \alpha^3+2\beta^3=\gamma^3 \). Neither surface has been shown empty. The descent rewrites the positive cubic; it does not close it.
-
-The local tables and this dichotomy therefore cannot decide the infinite family. What they do decide is the geometry of any hypothetical small solution. After content is extracted, a positive point of height at most \(400\) would have to occupy the primitive odd slice, and that slice is empty through height \(400\). A counterexample, if one exists, is forced beyond that box. Emptiness of a finite height box is complementary to the local obstructions: it is an arithmetic fact about small solutions, not a substitute for emptiness of either reduced surface, nor for the Mordell--Weil rank of the model recorded below.
-
-Clearing denominators, a positive solution corresponds to a rational point on the affine curve \( X^3+2Y^3=1 \) other than the obvious point \( (1,0) \). The change of variables
+Clearing denominators, any positive solution would yield a rational point on the affine curve \( X^3+2Y^3=1 \) other than the obvious point \( (1,0) \). Euler's determination of that curve admits precisely two rational points, \( (1,0) \) and \( (-1,1) \): equivalently, the only rational solutions of \( x^3-2y^3=1 \) are its two integral ones. The second point is the signed cubic already written above; it does not produce a positive triple. Consequently there is no positive integer solution of \( \alpha^3+2\beta^3=\gamma^3 \), and the Gaussian cube leaf at odd exponent \( e=3 \) closes. The change of variables
 \[
 x=\frac{24Y}{1-X},\qquad y=\frac{72(1+X)}{1-X}
 \]
-carries that geometry onto the Weierstrass model \( y^2=x^3-1728 \), sending \( (-1,1) \) to the 2-torsion \( (12,0) \). This is a birational packaging of the same affine curve, not a reading of the two integral surfaces above. We record the reduction and do not invoke the Mordell--Weil rank of the model.
+packages the same affine curve onto the Weierstrass model \( y^2=x^3-1728 \), sending \( (-1,1) \) to the 2-torsion \( (12,0) \); the leaf does not depend on a reading of the Mordell--Weil rank. Emptiness of the primitive odd slice through height \(400\) remains as a finite certificate complementary to that determination.
 
 What remains open is the equal-odd two-factor body at odd exponents \( e\ge 5 \), the mixed-exponent case \( d=1 \) (even two-equal sum and difference, odd two-equal, and all-distinct exponents), and the unequal-odd Pythagorean residue. Unconditional classical Beal is not claimed.
 

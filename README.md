@@ -7,7 +7,7 @@ Diophantine conjectures.
 The machine-checked core is an algebraic bound and a shared no-go calculus.
 Unconditional Fermat, Beal, abc, the Riemann Hypothesis, Goldbach, Polignac,
 and Collatz are **not** claimed. Open work is named residual / `*Bridge`
-propositions and four explicit `axiom`s; there are no `sorry` holes. Where a
+propositions and five explicit `axiom`s; there are no `sorry` holes. Where a
 paper draft disagrees with Lean, **Lean is authoritative**.
 
 Entry point for the Diophantine path: [`DstDiophantine/Basic.lean`](DstDiophantine/Basic.lean)
@@ -81,7 +81,7 @@ replace an `axiom` with an internal proof. Diagnostic bridges
 | Conjecture | Live layer | Status |
 | --- | --- | --- |
 | Fermat | [`FermatMixed.lean`](DstDiophantine/Theorems/FermatMixed.lean), [`FermatMotor.lean`](DstDiophantine/Embedding/FermatMotor.lean) | Dual-axis motor. $n=2$ is pure cyclic; $n\ge 3$ positive solutions are mixed. Sandwich / interference lemmas are proved; they are **not** yet connected to `powerSumMotor = 1`. Residual: `FermatMixedMotorResidual`. Classical FLT is not claimed. |
-| Beal | [`Beal.lean`](DstDiophantine/Theorems/Beal.lean) and slices | Furthest along. Exponent-gcd assembly `beal_conjecture_pos_of_fine_residuals_even_split` is proved; remaining work is the residual **leaves** (cube $e=3$, $e\ge 5$, even-diff, even-sum $z\ge 7$, odd two-equal, all-distinct, unequal-odd). Finite coprime-free boxes in [`BealFinite.lean`](DstDiophantine/Theorems/BealFinite.lean). Classical Beal is not claimed. |
+| Beal | [`Beal.lean`](DstDiophantine/Theorems/Beal.lean) and slices | Furthest along. Exponent-gcd assembly `beal_conjecture_pos_of_fine_residuals_even_split` is proved; the Gaussian cube leaf `α³+2β³=γ³` is closed under Euler's affine determination (`eulerAffineCubeAddTwo`). Remaining work is the residual **leaves** (`e≥5` equal-odd two-factor, even-diff, even-sum `z≥7`, odd two-equal, all-distinct, unequal-odd). Finite coprime-free boxes in [`BealFinite.lean`](DstDiophantine/Theorems/BealFinite.lean). Classical Beal is not claimed. |
 | abc | [`Abc.lean`](DstDiophantine/Theorems/Abc.lean) | Continuous bridge is false. Live: `AbcModularBridge` plus bounded radical certificates. |
 | Riemann | [`Riemann.lean`](DstDiophantine/Theorems/Riemann.lean) | `RiemannAdmissibleBridge`; rational-grid certificates (denominator $\le 20$). Not mathlib `riemannZeta`. |
 | Goldbach | [`Goldbach.lean`](DstDiophantine/Theorems/Goldbach.lean) | `GoldbachAdmissibleBridge`; even $n\le 100$. Integer height is independent of whether a pair exists. |
@@ -91,7 +91,7 @@ replace an `axiom` with an internal proof. Diagnostic bridges
 Beal is the most developed problem-specific layer. Fermat’s live route is the
 dual-axis motor, not the demoted single-axis modular bridge.
 
-### Explicit axioms (4)
+### Explicit axioms (5)
 
 mathlib at this pin does not supply these classical theorems; they are recorded
 as `axiom` rather than smuggled into `sorry`.
@@ -102,6 +102,7 @@ as `axiom` rather than smuggled into `sorry`.
 | `mihailescu` | [`Mihailescu.lean`](DstDiophantine/Theorems/Mihailescu.lean) | Positive Beal unit base $\|A\|=1$ |
 | `darmonMerelCube` | [`DarmonMerel.lean`](DstDiophantine/Theorems/DarmonMerel.lean) | Even-sum cube slice $z=3$ |
 | `fermatSignatureNN5` | [`FermatNN5.lean`](DstDiophantine/Theorems/FermatNN5.lean) | Even-sum fifth-power slice $z=5$ |
+| `eulerAffineCubeAddTwo` | [`EulerCube.lean`](DstDiophantine/Theorems/EulerCube.lean) | Gaussian cube leaf $\alpha^3+2\beta^3=\gamma^3$ |
 
 ### Finite certificates
 
