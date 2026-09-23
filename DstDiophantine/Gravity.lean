@@ -16,6 +16,7 @@ import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
+import DstDiophantine.Gravity.ShieldClock
 import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Gravity.EnvelopeLock
@@ -85,7 +86,15 @@ shield when the wall vanishes, vacuum unreachable dual-only unless
 \(\sum\alpha^2=0\), conservation \(J+M=\sum\alpha^2\) and unique shield
 mass \(2M_{\mathrm{seed}}\), dual-only \(J\) filling the wall-to-seed
 interval, mixed unwind onto \(\alpha_a\le\pi/4\) when the wall is
-positive), and the mass ceiling of `ShieldCeiling` (the parabola
+positive), the one-axis clock of `ShieldClock`
+(\(\gamma_{\mathrm{eff}}\) strictly decreasing in the dual angle on a
+boosted axis; unique return \(\gamma_{\mathrm{eff}}=1\) at
+\(\beta_\ast=\arcsin\tanh(\alpha/2)\); \(\beta_\ast<\alpha\) so every
+admissible coaxial shield already has \(\gamma_{\mathrm{eff}}<1\);
+unique wall-clock threshold in \((\pi/3,\pi/2)\); coaxial and
+cross-axis shields of a pure-usual seed share \(J=0\) and unsigned
+mass, while the latter leaves the boosted clock at \(\cosh\alpha\);
+no many-axis product of clocks), and the mass ceiling of `ShieldCeiling` (the parabola
 \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\), i.e.
 \(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\), valid everywhere
 and sharp on \(|J|\le\pi^2/8\), attained along
@@ -956,6 +965,45 @@ example : cyclic 0 * cyclic 1 = cyclic 2 :=
 example (a : Fin 3) :
     cartanGen a 0 * cartanGen a 0 = -1 ∧ hyperbolic a * hyperbolic a ≠ -1 :=
   ⟨(cartan_mixed_signature a).1, hyperbolic_noncompact a⟩
+
+/-- Regression: dual excitation strictly lowers \(\gamma_{\mathrm{eff}}\)
+on a boosted axis. -/
+example {α β₁ β₂ : ℝ} (hα : 0 < α) (hlo : 0 ≤ β₁) (hlt : β₁ < β₂)
+    (hhi : β₂ ≤ Real.pi / 2) :
+    gammaEff α β₂ < gammaEff α β₁ :=
+  gammaEff_lt_gammaEff_of_lt_beta hα hlo hlt hhi
+
+/-- Regression: \(\gamma_{\mathrm{eff}}=1\) iff the dual angle is \(\beta_\ast\). -/
+example {α β : ℝ} (hα : 0 < α) (hβ0 : 0 ≤ β) (hβ : β ≤ Real.pi / 2) :
+    gammaEff α β = 1 ↔ β = clockAngle α :=
+  gammaEff_eq_one_iff_clockAngle hα hβ0 hβ
+
+/-- Regression: an admissible coaxial shield has already passed that
+return. -/
+example {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 4) :
+    gammaEff α α < 1 :=
+  gammaEff_coaxial_lt_one hα0 hα
+
+/-- Regression: unique wall-clock threshold in \((\pi/3,\pi/2)\). -/
+example :
+    wallClockRoot ∈ Set.Ioo (Real.pi / 3) (Real.pi / 2) ∧
+      ∀ α, α ∈ Set.Ioo (Real.pi / 3) (Real.pi / 2) →
+        wallClockProbe α = 0 → α = wallClockRoot :=
+  ⟨wallClockRoot_mem, fun _ h hz => eq_wallClockRoot h hz⟩
+
+/-- Regression: cross-axis shielding preserves the special-relativistic
+clock on the boosted axis. -/
+example (α : ℝ) :
+    J (crossAxisDual α) = 0 ∧
+      J (equalScaleOf (axisUsual α)) = 0 ∧
+        mass (crossAxisDual α) = mass (equalScaleOf (axisUsual α)) ∧
+          gammaEff ((crossAxisDual α).alpha 0) ((crossAxisDual α).beta 0) =
+            Real.cosh α ∧
+            gammaEff ((crossAxisDual α).alpha 1) ((crossAxisDual α).beta 1) =
+              1 :=
+  ⟨J_crossAxisDual α, J_equalScaleOf (axisUsual α),
+    mass_crossAxisDual_eq_equalScale α, gammaEff_crossAxisDual_boost α,
+    gammaEff_crossAxisDual_comp α⟩
 
 end Gravity
 
