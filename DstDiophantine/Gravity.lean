@@ -11,6 +11,7 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
+import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
@@ -74,6 +75,13 @@ holds on at most one sphere.
   The same-sign kinetic model is the oscillator \(\ddot\delta+2m\delta=0\).
   Dual-only \(\ddot\phi=0\) is a constraint, not a free solution, unless
   \(m(\phi-\theta)=0\).
+* `DualRotorFlow` — closed integrals of those jets. The written action is
+  an affine lag with cubic common rapidity, and its Jacobi integral
+  reduces to initial data. The neighbouring runaway at rate \(\kappa\)
+  with \(\kappa^2=2m\) is hyperbolic and unbounded for a nonzero seed.
+  The same-sign oscillator is harmonic, of squared amplitude \(A^2+B^2\).
+  \(\sqrt{2m}\) meets the Compton frequency \(m\) only at \(m=0\) and
+  \(m=2\).
 * `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). Repulsive layers
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
   ratio \(4\).
@@ -245,6 +253,26 @@ example :
     (∃ m φ θ φdot θdot : ℝ, 0 < paperEnergy m φ θ φdot θdot) ∧
       (∃ m φ θ φdot θdot : ℝ, paperEnergy m φ θ φdot θdot < 0) :=
   paperEnergy_indefinite
+
+/-- Regression: the cubic flow solves the written Euler–Lagrange system. -/
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    PaperActualEL m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
+      (deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t)
+      (deriv (deriv (writtenDual σ₀ σd₀ m δ₀ ν)) t) :=
+  written_flow_actualEL σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: the Jacobi integral of the cubic flow is initial data. -/
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    paperEnergy m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
+        (deriv (writtenUsual σ₀ σd₀ m δ₀ ν) t)
+        (deriv (writtenDual σ₀ σd₀ m δ₀ ν) t) =
+      (1 / 2) * ν * σd₀ + (m / 2) * δ₀ ^ 2 :=
+  written_flow_energy σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: \(\sqrt{2m}\) meets the Compton frequency only at \(m=0,2\). -/
+example {m : ℝ} (hm : 0 ≤ m) :
+    Real.sqrt (2 * m) = m ↔ m = 0 ∨ m = 2 :=
+  sqrt_two_mul_eq_compton_iff hm
 
 /-- Regression: same-sign oscillator frees the common rapidity. -/
 example {m φ θ φddot θddot : ℝ}

@@ -1238,20 +1238,25 @@ The Euler--Lagrange equations of this Lagrangian are
 \[
 \ddot\phi=-m(\phi-\theta),\qquad \ddot\theta=-m(\phi-\theta).
 \]
-The mismatch $\delta=\phi-\theta$ is therefore free: $\ddot\delta=0$. The written action does not yield the oscillator $\ddot\delta+m\delta=0$. A neighbouring system sometimes written alongside it,
+The mismatch $\delta=\phi-\theta$ is therefore free: $\ddot\delta=0$. On one axis the integral is the affine lag $\delta(t)=\delta_0+\nu t$ together with the cubic common rapidity
+\[
+\sigma(t)=\sigma_0+\dot\sigma_0\,t-m\delta_0\,t^2-\frac{m\nu}{3}\,t^3,
+\]
+and the Jacobi integral along that motion equals the initial value $\tfrac12\nu\dot\sigma_0+\tfrac m2\delta_0^2$. The written action does not yield the oscillator $\ddot\delta+m\delta=0$. A neighbouring system sometimes written alongside it,
 \[
 \ddot\phi=m(\phi-\theta),\qquad -\ddot\theta=m(\phi-\theta),
 \]
-makes the mismatch runaway, $\ddot\delta=2m\delta$, and is likewise not an oscillator.
+makes the mismatch runaway, $\ddot\delta=2m\delta$. For $m>0$ that runaway is the hyperbolic motion $A\cosh(\sqrt{2m}\,t)+B\sinh(\sqrt{2m}\,t)$, unbounded for a nonzero seed, and is likewise not an oscillator.
 
 An oscillator does appear if both kinetic signs are taken positive. The modified density $L=\tfrac12\dot\phi^2+\tfrac12\dot\theta^2-\tfrac m2(\phi-\theta)^2$ has Euler--Lagrange equations $\ddot\phi=-m(\phi-\theta)$ and $\ddot\theta=m(\phi-\theta)$, hence
 \[
 \ddot\delta+2m\delta=0.
 \]
-This is a separate working model, not the written action. Its frequency is $\sqrt{2m}$ (in natural units $\hbar=c=1$). For a free particle in uniform motion the usual rapidity is modelled as evolving at constant rate $\dot{\phi}_a=\gamma v_a/c$. The general solution is
+This is a separate working model, not the written action. Its frequency is $\sqrt{2m}$ (in natural units $\hbar=c=1$). That line and the Compton frequency $m$ meet only at the isolated values $m=0$ and $m=2$. For a free particle in uniform motion the usual rapidity is modelled as evolving at constant rate $\dot{\phi}_a=\gamma v_a/c$. The general solution is
 \[
-\delta\phi_a(t) = A_a \sin(\sqrt{2m}\, t + \psi_a).
+\delta(t)=A\cos(\sqrt{2m}\,t)+B\sin(\sqrt{2m}\,t),
 \]
+with $\delta(t)^2\le A^2+B^2$ and with Jacobi integral $\tfrac14\dot\sigma_0^2+\tfrac m2(A^2+B^2)$.
 In the low-energy, non-relativistic regime, rapid Compton-frequency oscillations are assumed to average to zero, leaving a slow linear accumulation of phase proportional to the proper time. Restoring $\hbar$ and $c$, the accumulated phase is conjectured to be
 \[
 \int \delta\phi_a \, dt \propto \frac{E t - \mathbf{p} \cdot \mathbf{x}}{\hbar},
