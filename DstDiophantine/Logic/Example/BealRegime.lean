@@ -7,7 +7,8 @@ import Mathlib.Tactic.IntervalCases
 Atoms are names only (no `Theorems` import). Arithmetic witnesses live in
 `Theorems.BealRegime`. Layout: slices `T` (0–3), diagnostics `F` (4–5),
 bookkeeping `B` (6), live residuals `U` (7–13; Odd/AllDistinct/UnequalOdd
-split at 11–13), conjecture `U` (14), closed `(n,n,5)` slice `T` (15).
+split at 11–13), conjecture `U` (14), closed `(n,n,5)` slice `T` (15),
+closed two-cube fourth/fifth-power slice `T` (16).
 
 Correspondence with residual *types* (comments only; types live in Theorems):
 
@@ -16,6 +17,8 @@ Correspondence with residual *types* (comments only; types live in Theorems):
 * `sliceAbsOne` — equal-odd `|u| = 1` (Mihăilescu; coefficient, not a shape)
 * `sliceFourth` — `d = 2` with two fourth-divisible exponents
 * `sliceNN5` — signature `(n,n,5)` (`not_beal_two_equal_fifth_slice`)
+* `sliceBruin` — two cubes summing to a fourth or fifth power
+  (`not_beal_bruin_two_cube_shape`)
 * `diagModular` / `diagBalanced` — demoted winding / balanced-seed diagnostics
 * `bookRealization` — CGA discrete closure ≡ `|A| = 1`
 * `liveMordell` — `BealMordellCubeAddTwoResidual`
@@ -66,7 +69,7 @@ def liveGeFive : RegimeFormula := atom 8
 def liveDiffPP : RegimeFormula := atom 9
 /-- Live residual: even-sum `z ≥ 7` (phase 7s: `z = 5` closed by `(n,n,5)`). -/
 def liveSumOut : RegimeFormula := atom 10
-/-- Live residual: odd two-equal (outside Darmon–Merel cubes). -/
+/-- Live residual: odd two-equal (outside Darmon–Merel and two-cube fourth/fifth). -/
 def liveOdd : RegimeFormula := atom 11
 /-- Live residual: all-distinct mixed exponents. -/
 def liveAllDistinct : RegimeFormula := atom 12
@@ -79,18 +82,21 @@ def bealConjecture : RegimeFormula := atom 14
 /-- Closed slice: generalised Fermat signature `(n,n,5)` (phase 7s). -/
 def sliceNN5 : RegimeFormula := atom 15
 
+/-- Closed slice: two cubes as a fourth or fifth power (phase 7v). -/
+def sliceBruin : RegimeFormula := atom 16
+
 /-- Honest atlas status list (indices match the atoms above). -/
 def bealAtlasStatuses : List TruthValue :=
-  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U, .T]
+  [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U, .T, .T]
 
 /-- Honest Beal atlas valuation. -/
 def bealAtlasVal : RegimeValuation :=
   RegimeValuation.ofList bealAtlasStatuses
 
-theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 16 := by
+theorem bealAtlasStatuses_length : bealAtlasStatuses.length = 17 := by
   simp [bealAtlasStatuses]
 
-theorem bealAtlasVal_at (n : ℕ) (hn : n < 16) :
+theorem bealAtlasVal_at (n : ℕ) (hn : n < 17) :
     bealAtlasVal.assign n = bealAtlasStatuses[n] :=
   RegimeValuation.ofList_get _ _ (by rw [bealAtlasStatuses_length]; exact hn)
 
@@ -145,6 +151,9 @@ theorem bealAtlasVal_conjecture : bealConjecture.eval bealAtlasVal.assign = .U :
 theorem bealAtlasVal_sliceNN5 : sliceNN5.eval bealAtlasVal.assign = .T :=
   bealAtlasVal_at 15 (by decide)
 
+theorem bealAtlasVal_sliceBruin : sliceBruin.eval bealAtlasVal.assign = .T :=
+  bealAtlasVal_at 16 (by decide)
+
 /-- Closed-slice statuses under the honest atlas (atoms 0–3). -/
 def closedSliceStatuses : List TruthValue :=
   List.replicate 4 .T
@@ -186,27 +195,29 @@ theorem exists_beal_atlas_valuation :
                 liveAllDistinct.eval v.assign = .U ∧
                   liveUnequalOdd.eval v.assign = .U ∧
                     bealConjecture.eval v.assign = .U ∧
-                      sliceNN5.eval v.assign = .T :=
+                      sliceNN5.eval v.assign = .T ∧
+                        sliceBruin.eval v.assign = .T :=
   ⟨bealAtlasVal, bealAtlasVal_sliceFLT, bealAtlasVal_diagModular,
     bealAtlasVal_bookRealization, bealAtlasVal_liveMordell, bealAtlasVal_liveOdd,
     bealAtlasVal_liveAllDistinct, bealAtlasVal_liveUnequalOdd,
-    bealAtlasVal_conjecture, bealAtlasVal_sliceNN5⟩
+    bealAtlasVal_conjecture, bealAtlasVal_sliceNN5, bealAtlasVal_sliceBruin⟩
 
-/-- Closed slices alone (including `(n,n,5)`) do not T-entail classical Beal. -/
+/-- Closed slices alone do not T-entail classical Beal. -/
 theorem closed_slices_not_entailsTR_beal :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}
         bealConjecture := by
   intro h
   have hmod : ModelsTR bealAtlasVal
-      {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5} := by
+      {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin} := by
     intro φ hφ
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hφ
-    rcases hφ with rfl | rfl | rfl | rfl | rfl
+    rcases hφ with rfl | rfl | rfl | rfl | rfl | rfl
     · exact bealAtlasVal_sliceFLT
     · exact bealAtlasVal_at 1 (by decide)
     · exact bealAtlasVal_at 2 (by decide)
     · exact bealAtlasVal_at 3 (by decide)
     · exact bealAtlasVal_sliceNN5
+    · exact bealAtlasVal_sliceBruin
   have := h bealAtlasVal hmod
   simp [HoldsTR, bealAtlasVal_conjecture] at this
 
@@ -235,9 +246,9 @@ theorem window_book_not_entailsNotFR_beal :
 
 /-! ### Safe `.U → .T` packaging -/
 
-/-- Named closed-slice atoms (indices 0–3 and 15). -/
+/-- Named closed-slice atoms (indices 0–3, 15, and 16). -/
 def bealClosedSliceAtomSet : Set RegimeFormula :=
-  {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+  {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}
 
 /-- Live residual atoms (indices 7–13). -/
 def bealLiveResidualAtomSet : Set RegimeFormula :=
@@ -248,7 +259,7 @@ def bealLiveResidualAtomSet : Set RegimeFormula :=
 def bealArtefactAtomSet : Set RegimeFormula :=
   {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, diagModular, diagBalanced,
     bookRealization, liveMordell, liveGeFive, liveDiffPP, liveSumOut,
-    liveOdd, liveAllDistinct, liveUnequalOdd, sliceNN5}
+    liveOdd, liveAllDistinct, liveUnequalOdd, sliceNN5, sliceBruin}
 
 /-- Establishedness of the seven live residuals is live. -/
 theorem meetRList_beal_live_residuals :
@@ -283,7 +294,7 @@ theorem promote_liveMordell_not_entailsTR_beal :
     intro φ hφ
     simp only [bealClosedSliceAtomSet, Set.mem_union, Set.mem_insert_iff,
       Set.mem_singleton_iff] at hφ
-    rcases hφ with (rfl | rfl | rfl | rfl | rfl) | rfl
+    rcases hφ with (rfl | rfl | rfl | rfl | rfl | rfl) | rfl
     · simp [HoldsTR, sliceFLT, bealPromoteMordellVal, RegimeValuation.ofList,
         bealAtlasStatuses, List.set]
     · simp [HoldsTR, sliceDM, bealPromoteMordellVal, RegimeValuation.ofList,
@@ -294,13 +305,15 @@ theorem promote_liveMordell_not_entailsTR_beal :
         bealAtlasStatuses, List.set]
     · simp [HoldsTR, sliceNN5, bealPromoteMordellVal, RegimeValuation.ofList,
         bealAtlasStatuses, List.set]
+    · simp [HoldsTR, sliceBruin, bealPromoteMordellVal, RegimeValuation.ofList,
+        bealAtlasStatuses, List.set]
     · simpa [HoldsTR] using bealPromoteMordellVal_liveMordell
   have := h bealPromoteMordellVal hmod
   simp [HoldsTR, bealPromoteMordellVal_conjecture] at this
 
 /-- Status board with every artefact at `T` and the conjecture still `U`. -/
 def bealAllArtefactsClosedStatuses : List TruthValue :=
-  List.replicate 14 .T ++ [.U, .T]
+  List.replicate 14 .T ++ [.U, .T, .T]
 
 def bealAllArtefactsClosedVal : RegimeValuation :=
   RegimeValuation.ofList bealAllArtefactsClosedStatuses
@@ -321,6 +334,11 @@ private theorem bealAllArtefactsClosedVal_eval_NN5 :
   simp [bealAllArtefactsClosedVal, RegimeValuation.ofList,
     bealAllArtefactsClosedStatuses]
 
+private theorem bealAllArtefactsClosedVal_eval_Bruin :
+    bealAllArtefactsClosedVal.assign 16 = .T := by
+  simp [bealAllArtefactsClosedVal, RegimeValuation.ofList,
+    bealAllArtefactsClosedStatuses]
+
 /--
 The status algebra does not encode the arithmetic assembly. Even with every
 named artefact forced to `T`, classical Beal is not `T`-entailed.
@@ -333,7 +351,7 @@ theorem artefacts_not_entailsTR_beal :
     simp only [bealArtefactAtomSet, Set.mem_insert_iff, Set.mem_singleton_iff]
       at hφ
     rcases hφ with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-      | rfl | rfl | rfl | rfl | rfl
+      | rfl | rfl | rfl | rfl | rfl | rfl
     · simpa [HoldsTR, sliceFLT] using
         bealAllArtefactsClosedVal_eval_T (n := 0) (by decide)
     · simpa [HoldsTR, sliceDM] using
@@ -363,6 +381,7 @@ theorem artefacts_not_entailsTR_beal :
     · simpa [HoldsTR, liveUnequalOdd] using
         bealAllArtefactsClosedVal_eval_T (n := 13) (by decide)
     · simpa [HoldsTR, sliceNN5] using bealAllArtefactsClosedVal_eval_NN5
+    · simpa [HoldsTR, sliceBruin] using bealAllArtefactsClosedVal_eval_Bruin
   have := h bealAllArtefactsClosedVal hmod
   simp [HoldsTR, bealConjecture, bealAllArtefactsClosedVal_eval_U] at this
 

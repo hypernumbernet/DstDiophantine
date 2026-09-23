@@ -34,6 +34,7 @@ import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Theorems.BealRegime
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
+import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -762,9 +763,26 @@ example :
     classifyBealExponents 3 4 4 = .U ∧ classifyBealExponents 4 4 3 = .T :=
   ⟨classifyBealExponents_three_four_four, classifyBealExponents_four_four_three⟩
 
+/-- Phase 7v: two cubes are never a coprime fourth or fifth power. -/
+example {A B C : ℤ} {n : ℕ}
+    (hn : n = 4 ∨ n = 5) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : Nat.gcd A.natAbs (Nat.gcd B.natAbs C.natAbs) = 1) :
+    ¬ A ^ 3 + B ^ 3 = C ^ n :=
+  bruinSumTwoCubes A B C n hn hA hB hC hgcd
+
+/-- Phase 7v: odd two-equal follows from the body outside those shapes. -/
+example (hOut : BealTwoEqualOddOutsideBruinResidual) :
+    BealTwoEqualOddResidual :=
+  BealTwoEqualOddResidual_of_outside_bruin hOut
+
+/-- Phase 7v: `(3,3,5)` is a closed shape; `(3,3,7)` stays open. -/
+example :
+    classifyBealExponents 3 3 5 = .T ∧ classifyBealExponents 3 3 7 = .U :=
+  ⟨classifyBealExponents_three_three_five, classifyBealExponents_three_three_seven⟩
+
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}
         bealConjecture :=
   closed_slices_not_entailsTR_beal
 

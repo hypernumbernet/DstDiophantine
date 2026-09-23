@@ -147,8 +147,22 @@ theorem classifyBealExponents_four_three_four :
 theorem classifyBealExponents_five_four_four :
     classifyBealExponents 5 4 4 = .U := by native_decide
 
+/-- Two cubes summing to a fifth power: closed shape (Bruin), every position. -/
 theorem classifyBealExponents_three_three_five :
-    classifyBealExponents 3 3 5 = .U := by native_decide
+    classifyBealExponents 3 3 5 = .T := by native_decide
+
+theorem classifyBealExponents_three_three_four :
+    classifyBealExponents 3 3 4 = .T := by native_decide
+
+theorem classifyBealExponents_five_three_three :
+    classifyBealExponents 5 3 3 = .T := by native_decide
+
+theorem classifyBealExponents_three_four_three :
+    classifyBealExponents 3 4 3 = .T := by native_decide
+
+/-- Repeated exponent `3` with companion `7` stays in the odd two-equal body. -/
+theorem classifyBealExponents_three_three_seven :
+    classifyBealExponents 3 3 7 = .U := by native_decide
 
 theorem classifyBealExponents_two_three_three :
     classifyBealExponents 2 3 3 = .F := by native_decide

@@ -259,12 +259,13 @@ example :
                 liveAllDistinct.eval v.assign = .U ∧
                   liveUnequalOdd.eval v.assign = .U ∧
                     bealConjecture.eval v.assign = .U ∧
-                      sliceNN5.eval v.assign = .T :=
+                      sliceNN5.eval v.assign = .T ∧
+                        sliceBruin.eval v.assign = .T :=
   exists_beal_atlas_valuation
 
 /-- Regression: closed Beal slices do not T-entail classical Beal. -/
 example :
-    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5}
+    ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}
         bealConjecture :=
   closed_slices_not_entailsTR_beal
 

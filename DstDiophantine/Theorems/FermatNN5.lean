@@ -18,8 +18,8 @@ exponent case `n = 5` overlaps FLT and is recorded separately for uniformity.
 Even common exponents do **not** rewrite via the odd-permutation form.
 
 Phase 7s uses this to close the even-sum residual at `z = 5` (even common
-exponent forces `n ≥ 4`). The configuration `(3,3,5)` lies outside `n ≥ 4`
-and is not claimed here.
+exponent forces `n ≥ 4`). The configuration `(3,3,5)` lies outside `n ≥ 4`;
+it is closed by `bruinSumTwoCubes`, not by this axiom.
 -/
 
 namespace DstDiophantine
@@ -110,7 +110,8 @@ theorem not_beal_two_equal_third_five_even {A B C : ℤ} {x y z : ℕ}
 Phase 7s: `(5,n,n)` with odd `n ≥ 4` and `d = 1`.
 
 From `A^5 + B^n = C^n` and odd `n`, rewrite to `C^n + (-B)^n = A^5`.
-The case `n = 3` rewrites to signature `(3,3,5)` and is **not** claimed.
+The case `n = 3` rewrites to a sum of two cubes equal to a fifth power and is
+closed by `bruinSumTwoCubes`, not by this axiom.
 -/
 theorem not_beal_two_equal_first_five_odd_of_NN5
     (hNN5 : FermatSignatureNN5Hyp)

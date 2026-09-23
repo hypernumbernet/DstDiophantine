@@ -60,6 +60,9 @@ geometric principle):
 * `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved), with
   two-equal and all-distinct case splits; even two-equal progress (mod 4 +
   sum-of-squares shape) in `BealGaussian` / `BealTwoEqualEvenResidual`;
+  odd two-equal with repeated exponent `3` and companion `4` or `5` is closed
+  under the Bruin axiom `bruinSumTwoCubes` (phase 7v); the live body is
+  `BealTwoEqualOddOutsideBruinResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”

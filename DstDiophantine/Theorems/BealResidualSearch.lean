@@ -1,4 +1,5 @@
 import DstDiophantine.Theorems.BealFinite
+import DstDiophantine.Theorems.Bruin
 
 set_option linter.style.nativeDecide false
 
@@ -192,7 +193,9 @@ Beal-range exponent triples whose *shape* is closed by a named slice:
 * Darmon–Merel cube positions, matching `not_beal_two_equal_cube_slice`
   (the even permutations `(3,n,n)` / `(n,3,n)` with even `n` stay live);
 * signature `(n,n,5)` positions, matching `not_beal_two_equal_fifth_slice`
-  (even permutations likewise stay live; `(3,3,5)` stays open).
+  (even permutations likewise stay live; `(3,3,5)` is not this signature);
+* two-cube fourth and fifth powers (`IsBruinTwoCubeShape`): repeated
+  exponent `3` with the remaining exponent `4` or `5`, every position.
 
 This is strictly coarser than the residual atlas: Mihăilescu's `|u| = 1`
 slice is a coefficient condition, not an exponent shape.
@@ -208,7 +211,8 @@ def IsClosedShapeExponents (x y z : ℕ) : Prop :=
       (bealExpGcd x y z = 1 ∧
         ((x = y ∧ z = 5 ∧ 4 ≤ x) ∨
           (y = z ∧ x = 5 ∧ y % 2 = 1 ∧ 4 ≤ y) ∨
-          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))))
+          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))) ∨
+      (bealExpGcd x y z = 1 ∧ IsBruinTwoCubeShape x y z))
 
 instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   unfold IsClosedShapeExponents
@@ -231,7 +235,8 @@ def isOpenResidualExponents (x y z : ℕ) : Bool :=
           (x = z ∧ y = 3 ∧ x % 2 = 1))) ∧
       ¬(d = 1 ∧ ((x = y ∧ z = 5 ∧ 4 ≤ x) ∨
           (y = z ∧ x = 5 ∧ y % 2 = 1 ∧ 4 ≤ y) ∨
-          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))))
+          (x = z ∧ y = 5 ∧ x % 2 = 1 ∧ 4 ≤ x))) ∧
+      ¬(d = 1 ∧ IsBruinTwoCubeShape x y z))
 
 theorem isOpenResidualExponents_iff {x y z : ℕ} :
     isOpenResidualExponents x y z = true ↔
@@ -239,17 +244,18 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
   unfold isOpenResidualExponents
   simp only [decide_eq_true_eq]
   constructor
-  · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5⟩
+  · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5, hBruin⟩
     refine ⟨hx, hy, hz, ?_⟩
     intro hcl
     obtain ⟨_, _, _, hdisj⟩ := hcl
-    rcases hdisj with hge | h2 | hdm | hnn
+    rcases hdisj with hge | h2 | hdm | hnn | hbr
     · rcases hd with hd | hd <;> omega
     · exact hfourth h2
     · exact hDM hdm
     · exact hNN5 hnn
+    · exact hBruin hbr
   · intro ⟨hx, hy, hz, hnot⟩
-    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_⟩
+    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_, ?_⟩
     · have htri := bealExpGcd_eq_one_or_eq_two_or_ge_three (y := y) (z := z) hx
       have hnge : ¬ 3 ≤ bealExpGcd x y z := fun hd =>
         hnot ⟨hx, hy, hz, Or.inl hd⟩
@@ -259,7 +265,8 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
       · exact (hnge h).elim
     · exact fun hf => hnot ⟨hx, hy, hz, Or.inr (Or.inl hf)⟩
     · exact fun hDM => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inl hDM))⟩
-    · exact fun hNN5 => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr hNN5))⟩
+    · exact fun hNN5 => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inl hNN5)))⟩
+    · exact fun hBruin => hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr hBruin)))⟩
 
 theorem isOpenResidualExponents_eq_false_of_closed {x y z : ℕ}
     (h : IsClosedShapeExponents x y z) :

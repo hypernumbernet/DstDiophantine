@@ -27,6 +27,7 @@ import DstDiophantine.Theorems.BealFinite
 import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
+import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Collatz
@@ -218,6 +219,8 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   not_beal_two_equal_cube_slice
   fermatSignatureNN5 not_beal_two_equal_third_five_even
   not_beal_two_equal_fifth_slice
+  bruinSumTwoCubes IsBruinTwoCubeShape not_beal_bruin_two_cube_shape
+  BealTwoEqualOddOutsideBruinResidual BealTwoEqualOddResidual_of_outside_bruin
   BealTwoEqualEvenSumResidual BealTwoEqualEvenDiffResidual
   beal_two_equal_even_of_sum_diff beal_conjecture_pos_of_fine_residuals_even_split
   beal_two_equal_even_sum_gaussian
