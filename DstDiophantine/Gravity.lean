@@ -24,6 +24,7 @@ import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
+import DstDiophantine.Gravity.ParticleStability
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -64,6 +65,11 @@ holds on at most one sphere.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
+* `ParticleStability` — a balanced massive seed is not emptied by either
+  rapidity budget alone. On the SI stand-ins, \(1836<m_p/m_e<1837\),
+  a hundred nuclear bindings and twenty optical wells each lie below the
+  proton rest energy, and hydrogen ionisation is \(\alpha^2/2\in
+  (2,3)\times 10^{-5}\) of the electron rest energy.
 
 ## Layers and particle dynamics
 
@@ -715,6 +721,12 @@ example {p q : Operations.TorsionParams}
     (hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0)
     (hM : mass q = 0) : False :=
   dual_only_not_vacuum_of_usual_pos hα hU hM
+
+/-- Regression: a balanced massive seed is not emptied by either channel alone. -/
+example {p q : Operations.TorsionParams}
+    (hJ : J p = 0) (hM : 0 < mass p) (hq : mass q = 0) :
+    q.alpha ≠ p.alpha ∧ q.beta ≠ p.beta :=
+  vacuum_moves_both_budgets hJ hM hq
 
 /-- Regression: neutrality is equality of the two rapidity budgets, and is
 neither the vacuum nor agreement of the two rotors. -/
