@@ -11,6 +11,7 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
+import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
@@ -81,6 +82,11 @@ holds on at most one sphere.
   The same-sign kinetic model is the oscillator \(\ddot\delta+2m\delta=0\).
   Dual-only \(\ddot\phi=0\) is a constraint, not a free solution, unless
   \(m(\phi-\theta)=0\).
+* `DualRotorRigidity` — an arbitrary mismatch slope. Opposite kinetics
+  still free \(\delta\); a frozen lag is inertial only at a critical
+  point. Same-sign kinetics restore. The quartic \((\lambda/4)(\delta^2-v^2)^2\)
+  is minimized at \(\delta=\pm v\), and its radial curvature \(4\lambda v^2\)
+  is not a prescribed Compton value.
 * `DualRotorFlow` — closed integrals of those jets. The written action is
   an affine lag with cubic common rapidity, and its Jacobi integral
   reduces to initial data. The neighbouring runaway at rate \(\kappa\)
