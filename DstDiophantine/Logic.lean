@@ -203,6 +203,43 @@ example : ¬ ∃ v : Valuation,
 example : ∃ v : Valuation, IsNegFixed ((Formula.atom 0).eval v.assign) :=
   exists_negFixed_valuation
 
+/-- Regression: non-refutation of a conjunction is the join of the non-refutations. -/
+example (j k : ℝ) : HoldsNotF (conjJ j k) ↔ HoldsNotF j ∨ HoldsNotF k :=
+  holdsNotF_conj j k
+
+/-- Regression: non-refutation of a disjunction is the meet of the non-refutations. -/
+example (j k : ℝ) : HoldsNotF (disjJ j k) ↔ HoldsNotF j ∧ HoldsNotF k :=
+  holdsNotF_disj j k
+
+/-- Regression: balance absorbs every nonnegative height, and every nonpositive height. -/
+example {k : ℝ} (hk : 0 ≤ k) : conjJ 0 k = 0 :=
+  conjJ_zero_of_nonneg hk
+
+example {k : ℝ} (hk : k ≤ 0) : disjJ 0 k = 0 :=
+  disjJ_zero_of_nonpos hk
+
+/-- Regression: on the interval, excluded middle is refuted exactly at the walls. -/
+example {j : ℝ} (hj : |j| ≤ 1) :
+    ¬ HoldsNotF (disjJ j (negJ j)) ↔ j = 1 ∨ j = -1 :=
+  not_holdsNotF_excluded_middle_iff hj
+
+/-- Regression: synchrony of an atom forces synchrony of excluded middle. -/
+example :
+    EntailsT {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 0).neg) :=
+  entailsT_excluded_middle (Formula.atom 0)
+
+/-- Regression: non-refutation of the negative wall does not save excluded middle. -/
+example :
+    ¬ EntailsNotF {(Formula.atom 0)}
+        ((Formula.atom 0).disj (Formula.atom 0).neg) :=
+  not_entailsNotF_excluded_middle
+
+/-- Regression: contradiction is non-refuted with no premises, but not synchronised. -/
+example :
+    EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
+      ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) :=
+  ⟨entailsNotF_conj_neg _, not_entailsT_conj_neg⟩
+
 /-- Regression: `{P, ¬P}` does not explode to an unrelated atom. -/
 example : ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1) :=
   contradict_not_entailsT_atom

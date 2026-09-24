@@ -37,6 +37,9 @@ def const (j : ℝ) (hj : |j| ≤ 1) : Valuation where
   assign := fun _ => j
   mem := fun _ => hj
 
+@[simp] theorem const_assign (j : ℝ) (hj : |j| ≤ 1) (n : ℕ) :
+    (const j hj).assign n = j := rfl
+
 /-- Assignment with atom `0 ↦ j`, atom `1 ↦ k`, and `0` elsewhere. -/
 def pair (j k : ℝ) (hj : |j| ≤ 1) (hk : |k| ≤ 1) : Valuation where
   assign := fun n => if n = 0 then j else if n = 1 then k else 0
@@ -93,6 +96,44 @@ theorem holdsNotF_iff_ne_F {j : ℝ} (hj : |j| ≤ 1) :
 theorem holdsT_holdsNotF {j : ℝ} (h : HoldsT j) : HoldsNotF j := by
   simp [HoldsT, HoldsNotF] at h ⊢
   linarith
+
+/-- A conjunction is refuted only when both heights sit at the positive wall.
+Non-refutation of a meet is the join of the non-refutations. -/
+theorem holdsNotF_conj (j k : ℝ) :
+    HoldsNotF (conjJ j k) ↔ HoldsNotF j ∨ HoldsNotF k := by
+  simp only [HoldsNotF, conjJ]
+  constructor
+  · intro h
+    rcases le_total j k with hjk | hkj
+    · exact Or.inl (by rwa [min_eq_left hjk] at h)
+    · exact Or.inr (by rwa [min_eq_right hkj] at h)
+  · intro h
+    rcases h with h | h
+    · exact lt_of_le_of_lt (min_le_left j k) h
+    · exact lt_of_le_of_lt (min_le_right j k) h
+
+/-- A disjunction is refuted as soon as either height sits at the positive wall.
+Non-refutation of a join is the meet of the non-refutations. -/
+theorem holdsNotF_disj (j k : ℝ) :
+    HoldsNotF (disjJ j k) ↔ HoldsNotF j ∧ HoldsNotF k := by
+  simp only [HoldsNotF, disjJ, max_lt_iff]
+
+/-- Excluded middle is synchronous exactly at the negation fixed point. -/
+theorem holdsT_excluded_middle (j : ℝ) :
+    HoldsT (disjJ j (negJ j)) ↔ HoldsT j := by
+  simp only [disj_neg_eq_abs, HoldsT, abs_eq_zero]
+
+/-- On the interval, excluded middle is refuted exactly at the two walls. -/
+theorem not_holdsNotF_excluded_middle_iff {j : ℝ} (hj : |j| ≤ 1) :
+    ¬ HoldsNotF (disjJ j (negJ j)) ↔ j = 1 ∨ j = -1 := by
+  rw [disj_neg_eq_abs]
+  simp only [HoldsNotF]
+  constructor
+  · intro h
+    have hle : 1 ≤ |j| := not_lt.mp h
+    have : |j| = 1 := le_antisymm hj hle
+    exact (abs_eq (by norm_num : (0 : ℝ) ≤ 1)).mp this
+  · rintro (rfl | rfl) <;> norm_num
 
 /-- `j ∧ ¬j` never saturates `F`. -/
 theorem conj_neg_holdsNotF (j : ℝ) : HoldsNotF (conjJ j (negJ j)) := by

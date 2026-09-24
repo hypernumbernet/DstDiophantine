@@ -1,5 +1,6 @@
 import DstDiophantine.Logic.Valuation
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.NormNum
 
 /-!
 # Consequence relations for D4L
@@ -70,6 +71,40 @@ theorem modelsNotF_contradict {v : Valuation} {φ : Formula} :
     rcases hψ with h | h
     · simpa [h] using hp
     · simpa [Set.eq_of_mem_singleton h] using hn
+
+/-- Contradiction is always non-refuted, with no premises required. -/
+theorem entailsNotF_conj_neg (φ : Formula) :
+    EntailsNotF ∅ (φ.conj φ.neg) := by
+  intro v _
+  simpa [Formula.eval] using conj_neg_holdsNotF (φ.eval v.assign)
+
+/-- Synchrony of an atom forces synchrony of its excluded middle. -/
+theorem entailsT_excluded_middle (φ : Formula) :
+    EntailsT {φ} (φ.disj φ.neg) := by
+  intro v hv
+  have hj : HoldsT (φ.eval v.assign) := hv φ (Set.mem_singleton _)
+  simpa [Formula.eval] using (holdsT_excluded_middle (φ.eval v.assign)).mpr hj
+
+/-- The negative wall is not refuted, but its excluded middle is the positive wall. -/
+theorem not_entailsNotF_excluded_middle :
+    ¬ EntailsNotF {(Formula.atom 0)}
+        ((Formula.atom 0).disj (Formula.atom 0).neg) := by
+  intro h
+  let v := Valuation.const (-1) (by norm_num)
+  have hM : ModelsNotF v {(Formula.atom 0)} := by
+    intro φ hφ
+    rw [Set.eq_of_mem_singleton hφ]
+    simp [v, HoldsNotF]
+  have hE := h v hM
+  simp [Formula.eval, v, HoldsNotF, disjJ, negJ] at hE
+
+/-- Empty premises do not synchronise a contradiction: interior heights miss `0`. -/
+theorem not_entailsT_conj_neg :
+    ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) := by
+  intro h
+  let v := Valuation.const (1 / 2) (by norm_num)
+  have hE := h v (by intro _ hφ; simp at hφ)
+  simp [Formula.eval, v, HoldsT, conjJ, negJ] at hE
 
 end Logic
 

@@ -53,6 +53,23 @@ theorem conj_neg_nonpos (j : ℝ) : conjJ j (negJ j) ≤ 0 := by
   rw [conj_neg_eq_neg_abs]
   exact neg_nonpos.mpr (abs_nonneg j)
 
+/-- Excluded middle on the height is the absolute value. -/
+theorem disj_neg_eq_abs (j : ℝ) : disjJ j (negJ j) = |j| := by
+  simp only [disjJ, negJ]
+  rcases le_total j (-j) with h | h
+  · have hj : j ≤ 0 := by linarith
+    rw [max_eq_right h, abs_of_nonpos hj]
+  · have hj : 0 ≤ j := by linarith
+    rw [max_eq_left h, abs_of_nonneg hj]
+
+/-- Balance absorbs every nonnegative height under conjunction. -/
+theorem conjJ_zero_of_nonneg {k : ℝ} (hk : 0 ≤ k) : conjJ 0 k = 0 := by
+  simp [conjJ, hk]
+
+/-- Balance absorbs every nonpositive height under disjunction. -/
+theorem disjJ_zero_of_nonpos {k : ℝ} (hk : k ≤ 0) : disjJ 0 k = 0 := by
+  simp [disjJ, hk]
+
 theorem abs_conj_neg_le {j : ℝ} (hj : |j| ≤ 1) : |conjJ j (negJ j)| ≤ 1 := by
   rw [conj_neg_eq_neg_abs, abs_neg, abs_abs]
   exact hj
