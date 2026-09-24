@@ -156,6 +156,10 @@ theorem quarticPotential_vacuum (lam v : ℝ) : quarticPotential lam v v = 0 := 
   unfold quarticPotential
   ring
 
+theorem quarticPotential_neg_vacuum (lam v : ℝ) : quarticPotential lam v (-v) = 0 := by
+  unfold quarticPotential
+  ring
+
 theorem quarticPotential_symmetric (lam v : ℝ) :
     quarticPotential lam v 0 = (lam / 4) * v ^ 4 := by
   unfold quarticPotential
@@ -209,6 +213,14 @@ theorem quarticSlope_linearization (lam v ε : ℝ) :
       lam * (3 * v * ε ^ 2 + ε ^ 3) := by
   unfold quarticSlope
   ring
+
+/-- The linear slope `2 λ v² ε` restores at squared frequency `4 λ v²`. -/
+theorem linearized_mismatch {lam v ε φddot θddot : ℝ}
+    (h : SameSignPotentialEL (2 * lam * v ^ 2 * ε) φddot θddot) :
+    φddot - θddot = -radialFreqSq lam v * ε := by
+  have hδ := sameSign_mismatch h
+  unfold radialFreqSq at *
+  linarith
 
 /-- The curvature `4 λ v²` is not a prescribed Compton value. -/
 theorem radial_not_identically_compton :
