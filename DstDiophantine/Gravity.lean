@@ -13,6 +13,7 @@ import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
+import DstDiophantine.Gravity.DualRotorVacuum
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
@@ -94,6 +95,12 @@ holds on at most one sphere.
   The same-sign oscillator is harmonic, of squared amplitude \(A^2+B^2\).
   \(\sqrt{2m}\) meets the Compton frequency \(m\) only at \(m=0\) and
   \(m=2\).
+* `DualRotorVacuum` — on one axis \(J=\delta\sigma/2\) and
+  \(M=(\sigma^2+\delta^2)/4\). Written alignment keeps \(J=0\) while \(M\)
+  coasts with \(\sigma^2/4\), stationary if and only if the common rate
+  vanishes, and crosses \(M=0\) once when that rate is nonzero.
+  A frozen well \(\delta=v\) carries \(J=v\sigma/2\); at rest it is
+  balanced and massive, not free fall.
 * `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). Repulsive layers
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
   ratio \(4\).
@@ -272,6 +279,15 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
       (deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t)
       (deriv (deriv (writtenDual σ₀ σd₀ m δ₀ ν)) t) :=
   written_flow_actualEL σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: coasting alignment keeps \(J=0\) and lets the mass run with \(\sigma^2\). -/
+example (σ₀ σd₀ m t : ℝ) :
+    J (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m 0 0 t)
+        (writtenDual σ₀ σd₀ m 0 0 t)) = 0 ∧
+      mass (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m 0 0 t)
+        (writtenDual σ₀ σd₀ m 0 0 t)) =
+        (σ₀ + σd₀ * t) ^ 2 / 4 :=
+  ⟨written_aligned_J σ₀ σd₀ m t, written_aligned_mass σ₀ σd₀ m t⟩
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :

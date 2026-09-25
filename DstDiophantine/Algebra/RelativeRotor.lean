@@ -320,15 +320,24 @@ theorem mass_axisParams_balanced {t : ℝ} (ht : t ≠ 0) :
   rw [mass_axisParams]
   nlinarith [sq_pos_of_ne_zero ht]
 
+/-- On one axis the two rotors differ as soon as either bivector coefficient is nonzero. -/
+theorem axis_rotors_ne_of_bivector {α β : ℝ}
+    (h : Real.sinh (α / 2) ≠ 0 ∨ Real.sin (β / 2) ≠ 0) :
+    rotorDual (axisParams α β) ≠ rotorUsual (axisParams α β) := by
+  intro heq
+  have hform :
+      Real.cos (β / 2) • (1 : PGA) + Real.sin (β / 2) • cyclic 0 =
+        Real.cosh (α / 2) • (1 : PGA) + Real.sinh (α / 2) • hyperbolic 0 := by
+    simpa [rotorDual_axis_closed, rotorUsual_axis_closed] using heq
+  have hb := closed_forms_bivector hform
+  rcases h with hsinh | hsin
+  · exact hsinh hb.2
+  · exact hsin hb.1
+
 /-- Balanced one-axis rotors coincide only if the hyperbolic coefficient vanishes. -/
 theorem balanced_axis_rotors_ne {t : ℝ} (ht : Real.sinh (t / 2) ≠ 0) :
-    rotorDual (axisParams t t) ≠ rotorUsual (axisParams t t) := by
-  intro h
-  have heq :
-      Real.cos (t / 2) • (1 : PGA) + Real.sin (t / 2) • cyclic 0 =
-        Real.cosh (t / 2) • (1 : PGA) + Real.sinh (t / 2) • hyperbolic 0 := by
-    simpa [rotorDual_axis_closed, rotorUsual_axis_closed] using h
-  exact ht (closed_forms_bivector heq).2
+    rotorDual (axisParams t t) ≠ rotorUsual (axisParams t t) :=
+  axis_rotors_ne_of_bivector (Or.inl ht)
 
 /-- `J = 0` does not force the relative rotor to be the identity. -/
 theorem J_zero_not_relativeRotor_one :

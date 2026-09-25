@@ -176,7 +176,7 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
   paper_unrestricted_commutator_false PaperVacuumSync
   relativeRotor_of_paperVacuumSync paperVacuumSync_axis
   not_paperVacuumSync_pureBoost J_axisParams_balanced
-  J_zero_not_relativeRotor_one)
+  axis_rotors_ne_of_bivector J_zero_not_relativeRotor_one)
 
 /-- Regression: normalised Dirichlet kernel is bounded by 1. -/
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
