@@ -30,7 +30,9 @@ cannot pay their rest energies.
   empirical binding per nucleon, and twenty optical wells, each lie
   below the proton rest energy. Hydrogen ionisation is exactly
   \(\alpha^2/2\) of the electron rest energy, and that fraction lies in
-  \((2,3)\times 10^{-5}\). The gravitational heights satisfy
+  \((2,3)\times 10^{-5}\). Equivalently the rest energy is between
+  \(3\times 10^4\) and \(5\times 10^4\) hydrogen ionisations. The
+  gravitational heights satisfy
   \(N_*^2(m_e)/N_*^2(m_p) > 3\times 10^6\).
 
 ## Not claimed
@@ -179,6 +181,21 @@ theorem hydrogen_ionisation_frac_bounds :
       fineStructureApprox ^ 2 / 2 < (3 : ℚ) / 10 ^ 5 := by
   unfold fineStructureApprox fineStructureMantissa fineStructureScale
   norm_num
+
+/-- Rest energy measured in hydrogen ionisations: \(3\times 10^4<2/\alpha^2<5\times 10^4\). -/
+theorem hydrogen_ionisations_per_rest_bounds :
+    (3 : ℚ) * 10 ^ 4 < 2 / fineStructureApprox ^ 2 ∧
+      2 / fineStructureApprox ^ 2 < (5 : ℚ) * 10 ^ 4 := by
+  have h := hydrogen_ionisation_frac_bounds
+  have hpos : (0 : ℚ) < fineStructureApprox ^ 2 / 2 := lt_trans (by norm_num) h.1
+  have hinv_hi : (10 : ℚ) ^ 5 / 3 < 2 / fineStructureApprox ^ 2 := by
+    have hrec := one_div_lt_one_div_of_lt hpos h.2
+    simpa [one_div_div] using hrec
+  have hinv_lo : 2 / fineStructureApprox ^ 2 < (10 : ℚ) ^ 5 / 2 := by
+    have hrec := one_div_lt_one_div_of_lt (by norm_num : (0 : ℚ) < (2 : ℚ) / 10 ^ 5) h.1
+    simpa [one_div_div] using hrec
+  refine ⟨lt_trans (by norm_num) hinv_hi, ?_⟩
+  exact lt_of_lt_of_eq hinv_lo (by norm_num)
 
 theorem gravitational_height_electron_over_proton :
     (3 : ℚ) * 10 ^ 6 <

@@ -71,7 +71,8 @@ holds on at most one sphere.
   rapidity budget alone. On the SI stand-ins, \(1836<m_p/m_e<1837\),
   a hundred nuclear bindings and twenty optical wells each lie below the
   proton rest energy, and hydrogen ionisation is \(\alpha^2/2\in
-  (2,3)\times 10^{-5}\) of the electron rest energy.
+  (2,3)\times 10^{-5}\) of the electron rest energy, hence between
+  \(3\times 10^4\) and \(5\times 10^4\) such ionisations.
 
 ## Layers and particle dynamics
 
@@ -101,7 +102,9 @@ holds on at most one sphere.
   vanishes, and crosses \(M=0\) once when that rate is nonzero.
   A frozen well \(\delta=v\) carries \(J=v\sigma/2\); at rest it is
   balanced and massive, not free fall.
-* `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). Repulsive layers
+* `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). The zero is
+  simple, and the equal-scale Coulomb potential falls logarithmically,
+  without a lower bound, as the node is approached. Repulsive layers
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
   ratio \(4\).
 
