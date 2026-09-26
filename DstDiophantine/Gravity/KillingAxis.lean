@@ -48,7 +48,9 @@ derivative.
 * A covariant Killing transport on a general manifold, or a dictionary for a
   general motor field.
 * That the straight line of the flat flow is a Schwarzschild geodesic. The
-  fall law is the Killing jet at one event.
+  fall law in this file is the Killing jet at one event. `RadialFall` writes
+  it as \(d\psi/ds=-\cosh\psi/\rho\) and, with \(\ell(r)\) in place of \(\rho\),
+  integrates it to \(d^2r/d\tau^2=-\kappa\) and \((dr/d\tau)^2=E^2-A\).
 -/
 
 namespace DstDiophantine

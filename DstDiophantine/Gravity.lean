@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.KillingAxis
+import DstDiophantine.Gravity.RadialFall
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -71,7 +72,17 @@ inertial frame of release is \(\exp(-\tau K)\) as seen by the hoverer. A body
 released from rest travels on \(s e_0\); at observer proper time \(\sigma\) its
 separation is \(\ell(\operatorname{sech}(\sigma/\ell)-1)\), with initial
 acceleration \(-1/\ell\), and it meets the light cone of the axis, where \(N=0\),
-at proper time \(\ell\).
+at proper time \(\ell\). Along that line the radial rapidity relative to the
+local hovering observer obeys \(d\psi/ds=-\cosh\psi/\rho\), with
+\(\rho=\sqrt{\ell^2-s^2}\), and at release this derivative is \(-1/\ell\).
+
+`RadialFall` keeps that law on the exterior, with the chart distance
+\(\ell(r)\) in place of \(\rho\) and with \(dr/d\tau=\sqrt{A}\sinh\psi\).
+Differentiating cancels every power of the speed, so
+\(d^2r/d\tau^2=-\kappa=-r_s/(2r^2)\). The energy
+\(E=\sqrt{A}\cosh\psi\) is stationary, and on a proper-time interval
+\((dr/d\tau)^2=E^2-A\). Release from rest at radius \(R\) gives \(E^2=A(R)\).
+The straight line of one fixed jet is not itself that geodesic.
 
 ## Scales that are inputs
 
