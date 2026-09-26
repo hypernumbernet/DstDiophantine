@@ -66,7 +66,12 @@ hover acceleration. The axis lies inward exactly when \(r_s>0\). It reaches the
 observer at the horizon, where \(K\) is the pure boost of rate \(1/(2r_s)\), and
 recedes to infinity far away, where \(K\) is the time translation. For any
 Poincaré bivector the squared Killing norm has d'Alembertian \(8J\): it grows away
-from a boost axis and shrinks away from a rotation axis.
+from a boost axis and shrinks away from a rotation axis. In the flat flow, the
+inertial frame of release is \(\exp(-\tau K)\) as seen by the hoverer. A body
+released from rest travels on \(s e_0\); at observer proper time \(\sigma\) its
+separation is \(\ell(\operatorname{sech}(\sigma/\ell)-1)\), with initial
+acceleration \(-1/\ell\), and it meets the light cone of the axis, where \(N=0\),
+at proper time \(\ell\).
 
 ## Scales that are inputs
 
@@ -191,6 +196,20 @@ example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
         KillingAxis.killingNormSq p (x - t • e4vec μ) - 2 * KillingAxis.killingNormSq p x) =
       8 * J p.torsion * t ^ 2 :=
   KillingAxis.killingNormSq_dAlembertian p x t
+
+/-- Regression: a body released from rest accelerates toward the axis at the hover rate. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    deriv (deriv (KillingAxis.releasedDisplacementProper (KillingAxis.axisDistance rs r))) 0 =
+      -dSqrtA_dr rs r :=
+  KillingAxis.released_initial_acceleration_exterior h
+
+/-- Regression: that body meets the Killing horizon of the flat flow at proper time `ℓ`. -/
+example (κ ℓ : ℝ) :
+    KillingAxis.killingNormSq (KillingAxis.killingParams κ (κ * ℓ))
+        (KillingAxis.releasedWorldline ℓ) = 0 ∧
+      Q31 (KillingAxis.releasedWorldline ℓ - (KillingAxis.radialShift ℓ).lambda) = 0 :=
+  ⟨KillingAxis.released_on_killingHorizon κ ℓ,
+    (KillingAxis.released_lightcone_iff ℓ ℓ).2 (Or.inl rfl)⟩
 
 /-- Regression: the same dictionary holds for any static radial-boost gauge. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :

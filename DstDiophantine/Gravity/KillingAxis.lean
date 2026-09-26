@@ -29,6 +29,13 @@ derivative.
 * The squared Killing norm `N² = -(λ + ω x)²` satisfies the exact
   second-difference identity `□N² = 8J`. Hyperbolic model: `N²` grows away from
   the axis; elliptic model: it shrinks.
+* In that flat flow the inertial frame of release, seen from the hovering
+  observer, is `exp(-τ K)`, still a boost about the same axis. A body released
+  from rest travels on `s e₀`. At observer proper time `σ` its simultaneous
+  separation is `ℓ (sech(σ/ℓ) - 1)` along the outward normal: nonpositive,
+  with vanishing first derivative at release and second derivative `-1/ℓ`.
+  The same line meets the light cone of the axis, where `N = 0`, at proper
+  time `ℓ`, and the separation tends to `-ℓ`.
 * Exterior Schwarzschild: `ν = √A`, `κ = ½A' = √A ∂_r√A = rₛ/(2r²)`,
   `r²κ = rₛ/2`, `ℓ = ν/κ > 0` inward with `ℓ · ∂_r√A = 1`,
   `∂_r√A = T⁰_{rt} = -√A φ'`; `ℓ` increases strictly, tends to `0` at the
@@ -40,6 +47,8 @@ derivative.
 * That the double-spacetime mismatch `Ω` itself is a Killing bivector.
 * A covariant Killing transport on a general manifold, or a dictionary for a
   general motor field.
+* That the straight line of the flat flow is a Schwarzschild geodesic. The
+  fall law is the Killing jet at one event.
 -/
 
 namespace DstDiophantine
@@ -563,6 +572,276 @@ theorem J_rotationParams (ω ν : ℝ) :
   rw [Invariant.J_coef]
   simp [rotationParams, Fin.sum_univ_three]
 
+/-! ### Free fall in the flat flow -/
+
+/-- Minkowski product `⟨x,y⟩ = -x⁰y⁰ + xⁱyⁱ`. -/
+def minkowskiProd (x y : Fin 4 → ℝ) : ℝ :=
+  -x 0 * y 0 + x 1 * y 1 + x 2 * y 2 + x 3 * y 3
+
+theorem minkowskiProd_smul_left (c : ℝ) (x y : Fin 4 → ℝ) :
+    minkowskiProd (c • x) y = c * minkowskiProd x y := by
+  simp only [minkowskiProd, Pi.smul_apply, smul_eq_mul]
+  ring
+
+/-- Inertial worldline of a body released from rest at the origin: `s e₀`. -/
+def releasedWorldline (s : ℝ) : Fin 4 → ℝ := ![s, 0, 0, 0]
+
+theorem releasedWorldline_eq_smul (s : ℝ) : releasedWorldline s = s • e4vec 0 := by
+  ext μ
+  fin_cases μ <;> simp [releasedWorldline, e4vec]
+
+theorem Q31_time_unit : Q31 (e4vec 0) = -1 := by
+  simp [Q31_eq_minkowskiDot, minkowskiDot, e4vec]
+
+/-- Unit 4-velocity of the hovering observer at flow parameter `τ`. -/
+noncomputable def hoverVelocity (κ τ : ℝ) : Fin 4 → ℝ :=
+  ![Real.cosh (τ * κ), Real.sinh (τ * κ), 0, 0]
+
+/-- Unit spacelike normal, orthogonal to `hoverVelocity`. At `τ = 0` it is `+e₁`. -/
+noncomputable def hoverOutward (κ τ : ℝ) : Fin 4 → ℝ :=
+  ![Real.sinh (τ * κ), Real.cosh (τ * κ), 0, 0]
+
+theorem hoverOutward_zero (κ : ℝ) : hoverOutward κ 0 = e4vec 1 := by
+  ext μ
+  fin_cases μ <;> simp [hoverOutward, e4vec, Real.sinh_zero, Real.cosh_zero]
+
+theorem Q31_hoverVelocity (κ τ : ℝ) : Q31 (hoverVelocity κ τ) = -1 := by
+  rw [Q31_eq_minkowskiDot]
+  have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
+  simp [minkowskiDot, hoverVelocity]
+  linear_combination -h
+
+theorem Q31_hoverOutward (κ τ : ℝ) : Q31 (hoverOutward κ τ) = 1 := by
+  rw [Q31_eq_minkowskiDot]
+  have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
+  simp [minkowskiDot, hoverOutward]
+  linear_combination h
+
+theorem minkowskiProd_hoverVelocity_outward (κ τ : ℝ) :
+    minkowskiProd (hoverVelocity κ τ) (hoverOutward κ τ) = 0 := by
+  simp [minkowskiProd, hoverVelocity, hoverOutward]
+  ring
+
+theorem hasDerivAt_hoverTime (κ ℓ τ : ℝ) :
+    HasDerivAt (fun t => hoverWorldline κ ℓ t 0) (ℓ * κ * Real.cosh (τ * κ)) τ := by
+  have hmul := (hasDerivAt_id τ).mul_const κ
+  simp only [id_eq, one_mul] at hmul
+  have hsinh := ((Real.hasDerivAt_sinh (τ * κ)).comp τ hmul).const_mul ℓ
+  simp only [Function.comp] at hsinh
+  have hfun : (fun t => ℓ * Real.sinh (t * κ)) = fun t => hoverWorldline κ ℓ t 0 := by
+    ext t
+    simp [hoverWorldline]
+  rw [← hfun]
+  exact hsinh.congr_deriv (by ring)
+
+theorem hasDerivAt_hoverRadial (κ ℓ τ : ℝ) :
+    HasDerivAt (fun t => hoverWorldline κ ℓ t 1) (ℓ * κ * Real.sinh (τ * κ)) τ := by
+  have hmul := (hasDerivAt_id τ).mul_const κ
+  simp only [id_eq, one_mul] at hmul
+  have hcosh := (((Real.hasDerivAt_cosh (τ * κ)).comp τ hmul).sub_const 1).const_mul ℓ
+  simp only [Function.comp] at hcosh
+  have hfun : (fun t => ℓ * (Real.cosh (t * κ) - 1)) = fun t => hoverWorldline κ ℓ t 1 := by
+    ext t
+    simp [hoverWorldline]
+  rw [← hfun]
+  exact hcosh.congr_deriv (by ring)
+
+/-- The tangent `(d/dτ) X` has interval `-(ℓ κ)²`, so proper time runs at rate `|ℓ κ|`. -/
+theorem hoverTangent_interval (κ ℓ τ : ℝ) :
+    Q31 ((ℓ * κ) • hoverVelocity κ τ) = -(ℓ * κ) ^ 2 := by
+  rw [Q31_eq_minkowskiDot]
+  have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
+  simp [minkowskiDot, Pi.smul_apply, smul_eq_mul, hoverVelocity]
+  linear_combination -(ℓ * κ) ^ 2 * h
+
+/-- Proper-time reparametrization: rapidity `κτ` becomes `σ/ℓ` when `σ = ℓ κ τ`. -/
+theorem hoverWorldline_proper {κ ℓ σ : ℝ} (hℓ : ℓ ≠ 0) (hκ : κ ≠ 0) :
+    hoverWorldline κ ℓ (σ / (ℓ * κ)) =
+      ![ℓ * Real.sinh (σ / ℓ), ℓ * (Real.cosh (σ / ℓ) - 1), 0, 0] := by
+  ext μ
+  fin_cases μ
+  · simp only [hoverWorldline]
+    rw [show (σ / (ℓ * κ)) * κ = σ / ℓ by field_simp]
+  · simp only [hoverWorldline]
+    rw [show (σ / (ℓ * κ)) * κ = σ / ℓ by field_simp]
+  · simp [hoverWorldline]
+  · simp [hoverWorldline]
+
+/-- Seen from the hovering observer, the inertial frame of release is the inverse motor:
+a boost of rapidity `-κτ` about the same axis. -/
+theorem exp_neg_killing_eq_displacedBoost (κ ℓ τ : ℝ) :
+    exp ((-τ) • killingBivector κ (κ * ℓ)) =
+      sandwich (expTrans (radialShift ℓ)) (rotorTorsion (pureBoost (-(τ * κ)))) := by
+  rw [show -(τ * κ) = (-τ) * κ by ring]
+  exact exp_smul_killingBivector κ ℓ (-τ)
+
+/-- Proper time on the inertial line at which the event is simultaneous with
+the observer at flow parameter `τ`. -/
+noncomputable def releasedSimulTime (ℓ κ τ : ℝ) : ℝ :=
+  ℓ * Real.tanh (τ * κ)
+
+/-- Signed separation along `hoverOutward`: `ℓ (sech(κτ) - 1)`. -/
+noncomputable def releasedDisplacement (ℓ κ τ : ℝ) : ℝ :=
+  ℓ * ((Real.cosh (τ * κ))⁻¹ - 1)
+
+/-- The same separation in observer proper time `σ`, with rapidity `σ/ℓ`. -/
+noncomputable def releasedDisplacementProper (ℓ σ : ℝ) : ℝ :=
+  ℓ * ((Real.cosh (σ / ℓ))⁻¹ - 1)
+
+theorem released_simultaneous_prod (ℓ κ τ s : ℝ) :
+    minkowskiProd (releasedWorldline s - hoverWorldline κ ℓ τ) (hoverVelocity κ τ) =
+      ℓ * Real.sinh (τ * κ) - s * Real.cosh (τ * κ) := by
+  simp [minkowskiProd, releasedWorldline, hoverWorldline, hoverVelocity, Pi.sub_apply]
+  ring
+
+theorem released_simultaneous_iff (ℓ κ τ s : ℝ) :
+    minkowskiProd (releasedWorldline s - hoverWorldline κ ℓ τ) (hoverVelocity κ τ) = 0 ↔
+      s = releasedSimulTime ℓ κ τ := by
+  have hc : Real.cosh (τ * κ) ≠ 0 := (Real.cosh_pos _).ne'
+  rw [released_simultaneous_prod, releasedSimulTime, Real.tanh_eq_sinh_div_cosh]
+  constructor
+  · intro h
+    have hs : s * Real.cosh (τ * κ) = ℓ * Real.sinh (τ * κ) := by linarith
+    apply mul_left_cancel₀ hc
+    field_simp at hs ⊢
+    linarith
+  · intro h
+    rw [h]
+    field_simp
+    ring
+
+/-- The simultaneous separation is the signed multiple of the outward normal. -/
+theorem released_separation_eq_displacement (ℓ κ τ : ℝ) :
+    releasedWorldline (releasedSimulTime ℓ κ τ) - hoverWorldline κ ℓ τ =
+      releasedDisplacement ℓ κ τ • hoverOutward κ τ := by
+  ext μ
+  fin_cases μ
+  · simp [releasedWorldline, releasedSimulTime, hoverWorldline, releasedDisplacement,
+      hoverOutward, Pi.sub_apply, Pi.smul_apply, smul_eq_mul, Real.tanh_eq_sinh_div_cosh]
+    field_simp [(Real.cosh_pos _).ne']
+  · simp [releasedWorldline, releasedSimulTime, hoverWorldline, releasedDisplacement,
+      hoverOutward, Pi.sub_apply, Pi.smul_apply, smul_eq_mul, Real.tanh_eq_sinh_div_cosh]
+    field_simp [(Real.cosh_pos _).ne']
+    ring
+  · simp [releasedWorldline, hoverWorldline, releasedDisplacement, hoverOutward, Pi.sub_apply,
+      Pi.smul_apply]
+  · simp [releasedWorldline, hoverWorldline, releasedDisplacement, hoverOutward, Pi.sub_apply,
+      Pi.smul_apply]
+
+theorem releasedDisplacement_eq_proper {ℓ κ τ : ℝ} (hℓ : ℓ ≠ 0) :
+    releasedDisplacement ℓ κ τ = releasedDisplacementProper ℓ (ℓ * κ * τ) := by
+  simp only [releasedDisplacement, releasedDisplacementProper]
+  congr 1
+  rw [show (ℓ * κ * τ) / ℓ = τ * κ by field_simp]
+
+theorem releasedDisplacementProper_zero (ℓ : ℝ) : releasedDisplacementProper ℓ 0 = 0 := by
+  simp [releasedDisplacementProper, Real.cosh_zero, zero_div]
+
+theorem releasedDisplacementProper_nonpos {ℓ : ℝ} (hℓ : 0 ≤ ℓ) (σ : ℝ) :
+    releasedDisplacementProper ℓ σ ≤ 0 := by
+  have hp := Real.cosh_pos (σ / ℓ)
+  have hinv : (Real.cosh (σ / ℓ))⁻¹ ≤ 1 := (inv_le_one₀ hp).2 (Real.one_le_cosh _)
+  exact mul_nonpos_of_nonneg_of_nonpos hℓ (sub_nonpos.mpr hinv)
+
+theorem releasedDisplacementProper_lt_zero {ℓ : ℝ} (hℓ : 0 < ℓ) {σ : ℝ} (hσ : σ ≠ 0) :
+    releasedDisplacementProper ℓ σ < 0 := by
+  have hcosh : 1 < Real.cosh (σ / ℓ) :=
+    Real.one_lt_cosh.2 (div_ne_zero hσ hℓ.ne')
+  have hinv : (Real.cosh (σ / ℓ))⁻¹ < 1 :=
+    (inv_lt_one₀ (Real.cosh_pos _)).2 hcosh
+  exact mul_neg_of_pos_of_neg hℓ (sub_lt_zero.mpr hinv)
+
+theorem hasDerivAt_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
+    HasDerivAt (releasedDisplacementProper ℓ)
+      (-Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2) σ := by
+  have harg := (hasDerivAt_id σ).div_const ℓ
+  simp only [id_eq] at harg
+  have hcosh := (Real.hasDerivAt_cosh (σ / ℓ)).comp σ harg
+  have hinv := hcosh.inv (Real.cosh_pos _).ne'
+  have hmul := (hinv.sub_const (1 : ℝ)).const_mul ℓ
+  unfold releasedDisplacementProper
+  exact hmul.congr_deriv <| by
+    simp only [Function.comp]
+    field_simp [hℓ]
+
+theorem deriv_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
+    deriv (releasedDisplacementProper ℓ) σ =
+      -Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2 :=
+  (hasDerivAt_releasedDisplacementProper hℓ σ).deriv
+
+theorem deriv_releasedDisplacementProper_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
+    deriv (releasedDisplacementProper ℓ) 0 = 0 := by
+  rw [deriv_releasedDisplacementProper hℓ]
+  simp [Real.sinh_zero, Real.cosh_zero]
+
+theorem hasDerivAt_releasedSpeed_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
+    HasDerivAt (fun σ : ℝ => -Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2) (-1 / ℓ) 0 := by
+  have harg := (hasDerivAt_id 0).div_const ℓ
+  simp only [id_eq] at harg
+  have hsinh := ((Real.hasDerivAt_sinh (0 / ℓ)).comp 0 harg).neg
+  have hcosh := (Real.hasDerivAt_cosh (0 / ℓ)).comp 0 harg
+  have hden := hcosh.pow 2
+  have hpos : ((Real.cosh ∘ fun x => x / ℓ) ^ 2) 0 ≠ 0 := by
+    simp [Function.comp, Real.cosh_zero]
+  have hdiv := hsinh.div hden hpos
+  exact hdiv.congr_deriv <| by
+    simp [Real.sinh_zero, Real.cosh_zero, zero_div]
+    field_simp [hℓ]
+
+/-- Initial acceleration toward the negative outward normal: `ξ''(0) = -1/ℓ`. -/
+theorem released_initial_acceleration {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
+    deriv (deriv (releasedDisplacementProper ℓ)) 0 = -1 / ℓ := by
+  have hfun : deriv (releasedDisplacementProper ℓ) =
+      fun σ => -Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2 := by
+    ext σ
+    exact deriv_releasedDisplacementProper hℓ σ
+  rw [hfun]
+  exact (hasDerivAt_releasedSpeed_zero hℓ).deriv
+
+/-- As the observer's proper time tends to infinity, the simultaneous separation
+approaches `-ℓ`: the body approaches the axis on the observer's simultaneity. -/
+theorem tendsto_releasedDisplacementProper_atTop {ℓ : ℝ} (hℓ : 0 < ℓ) :
+    Tendsto (releasedDisplacementProper ℓ) atTop (𝓝 (-ℓ)) := by
+  have hdiv : Tendsto (fun σ : ℝ => σ / ℓ) atTop atTop :=
+    (tendsto_div_const_atTop_of_pos hℓ).2 tendsto_id
+  have hexp : Tendsto (fun σ => Real.exp (σ / ℓ) / 2) atTop atTop :=
+    (tendsto_div_const_atTop_of_pos (by norm_num : (0 : ℝ) < 2)).2
+      (Real.tendsto_exp_atTop.comp hdiv)
+  have hle : ∀ σ, Real.exp (σ / ℓ) / 2 ≤ Real.cosh (σ / ℓ) := by
+    intro σ
+    rw [Real.cosh_eq]
+    linarith [Real.exp_pos (-(σ / ℓ))]
+  have hcosh : Tendsto (fun σ => Real.cosh (σ / ℓ)) atTop atTop :=
+    tendsto_atTop_mono hle hexp
+  have hinv : Tendsto (fun σ => (Real.cosh (σ / ℓ))⁻¹) atTop (𝓝 0) :=
+    tendsto_inv_atTop_zero.comp hcosh
+  have hmul := ((hinv.sub_const 1).const_mul ℓ)
+  unfold releasedDisplacementProper
+  simpa [sub_eq_add_neg] using hmul
+
+theorem released_axis_interval (ℓ s : ℝ) :
+    Q31 (releasedWorldline s - (radialShift ℓ).lambda) = ℓ ^ 2 - s ^ 2 := by
+  rw [Q31_eq_minkowskiDot]
+  simp only [minkowskiDot, releasedWorldline, radialShift, Pi.sub_apply]
+  simp
+  ring
+
+/-- The inertial line meets the light cone of the axis event at proper time `±ℓ`. -/
+theorem released_lightcone_iff (ℓ s : ℝ) :
+    Q31 (releasedWorldline s - (radialShift ℓ).lambda) = 0 ↔ s = ℓ ∨ s = -ℓ := by
+  rw [released_axis_interval]
+  constructor
+  · intro h
+    have hs : s ^ 2 = ℓ ^ 2 := by linarith
+    exact (sq_eq_sq_iff_eq_or_eq_neg).1 hs
+  · rintro (rfl | rfl) <;> ring
+
+/-- That meeting point lies on the Killing horizon `N = 0`. -/
+theorem released_on_killingHorizon (κ ℓ : ℝ) :
+    killingNormSq (killingParams κ (κ * ℓ)) (releasedWorldline ℓ) = 0 := by
+  simp [killingNormSq, killingParams, releasedWorldline, lorentzAct, pureBoost,
+    Q31_eq_minkowskiDot, minkowskiDot]
+
 /-! ### Exterior Schwarzschild -/
 
 /-- Killing norm of `∂_t`: `ν = √A`. -/
@@ -812,6 +1091,18 @@ theorem J_hoverAcceleration {rs r : ℝ} (h : IsExterior rs r) :
   have hs2 : Real.sqrt (schwarzschildA rs r) ^ 2 = schwarzschildA rs r := Real.sq_sqrt hApos.le
   rw [J_pureBoost, J_field_coef h, dSqrtA_dr, div_pow, hs2]
   field_simp
+  ring
+
+/-- On the exterior chart the flat-model initial acceleration is `-∂_r √A`. -/
+theorem released_initial_acceleration_exterior {rs r : ℝ} (h : IsExterior rs r) :
+    deriv (deriv (releasedDisplacementProper (axisDistance rs r))) 0 =
+      -dSqrtA_dr rs r := by
+  have hℓ := axisDistance_pos h
+  rw [released_initial_acceleration hℓ.ne']
+  have hdiv : dSqrtA_dr rs r = 1 / axisDistance rs r := by
+    rw [eq_div_iff hℓ.ne', mul_comm]
+    exact axisDistance_mul_dSqrtA_dr h
+  rw [hdiv]
   ring
 
 end KillingAxis
