@@ -27,6 +27,7 @@ import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.ParticleStability
+import DstDiophantine.Gravity.KillingAxis
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -51,6 +52,21 @@ where \(r^2 T\) lies in a finite two-sided window. A real radial boost
 cannot produce \(T<0\). Exterior Schwarzschild is the vacuum gauge
 \(A=1-r_s/r\). The naive identification \(J_{\mathrm{field}}=\tfrac12 T\)
 holds on at most one sphere.
+
+## The direction of gravity
+
+`KillingAxis` reads the static Killing field at an event as the Poincaré
+bivector \(K=\tfrac{\kappa}{2}B^{+}+\tfrac{\nu}{2}N_0\). It is the pure boost
+\(\tfrac{\kappa}{2}B^{+}\) moved by the radial translator of length
+\(\ell=\nu/\kappa\); its velocity vanishes only on that axis, and \(\exp(\tau K)\)
+carries the observer on the hyperbola at interval \(\ell\) from it. On the
+exterior chart \(\nu=\sqrt A\), \(\kappa=r_s/(2r^2)\) with \(r^2\kappa=r_s/2\),
+and \(\ell\cdot\partial_r\sqrt A=1\), where \(\partial_r\sqrt A=T^0{}_{rt}\) is the
+hover acceleration. The axis lies inward exactly when \(r_s>0\). It reaches the
+observer at the horizon, where \(K\) is the pure boost of rate \(1/(2r_s)\), and
+recedes to infinity far away, where \(K\) is the time translation. For any
+Poincaré bivector the squared Killing norm has d'Alembertian \(8J\): it grows away
+from a boost axis and shrinks away from a rotation axis.
 
 ## Scales that are inputs
 
@@ -160,6 +176,21 @@ example {rs r : ℝ} (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =
       teleparallelTofJ (J (radialBoostParams rs r)) r :=
   schwarzschild_T_eq_teleparallelTofJ h
+
+/-- Regression: the static Killing bivector is a boost about the inward axis at `ℓ`. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.staticKilling rs r =
+      Sandwich.sandwich (Motor.expTrans (KillingAxis.radialShift (KillingAxis.axisDistance rs r)))
+        ((KillingAxis.killingRate rs r / 2) • hyperbolic 0) ∧
+      KillingAxis.axisDistance rs r * dSqrtA_dr rs r = 1 :=
+  ⟨KillingAxis.staticKilling_eq_sandwich h, KillingAxis.axisDistance_mul_dSqrtA_dr h⟩
+
+/-- Regression: the d'Alembertian of the squared Killing norm is `8J`. -/
+example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
+    ∑ μ : Fin 4, w31 μ * (KillingAxis.killingNormSq p (x + t • e4vec μ) +
+        KillingAxis.killingNormSq p (x - t • e4vec μ) - 2 * KillingAxis.killingNormSq p x) =
+      8 * J p.torsion * t ^ 2 :=
+  KillingAxis.killingNormSq_dAlembertian p x t
 
 /-- Regression: the same dictionary holds for any static radial-boost gauge. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :

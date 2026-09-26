@@ -19,7 +19,7 @@
 \begin{abstract}
 二重時空理論は、重力を、各質量粒子が運ぶ二つのミンコフスキー枠のあいだのねじれ不整合として扱う。それらの枠は双四元数代数 \(\mathrm{Cl}(3,1)\) のなかにある。そこにまだないのは並進である。射影幾何代数 \(G(3,1,1)\) は、単一の零ベクトル \(e_{4}\) を付加することでその欠落を埋める。並進はブーストや回転と同じ資格のバイベクトルになる。十個のバイベクトルはバイベクトル空間の基底であり、その空間は三つのブースト、三つの回転、四つの並進の直和に分かれる。交換子のもとでその空間はポアンカレ代数 \(\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}\) である。
 
-構成を組織するのは三つの主張である。双対性 \(X\mapsto Xi\) はローレンツセクター上の複素構造である。すべてのブーストは回転の双対であり、\(\mathfrak{so}(3,1)\) を \(\mathfrak{so}(4)\) から分ける符号は \(i^{2}=-1\) である。ねじれと並進を一つにする幾何学的対象は、単一のバナッハ指数ではなく、ねじれローターと零トランスレータの順序積 \(M=RT\) である。座標チャート上では、外部シュヴァルツシルト幾何はそのモーターの動径ブーストである。パラメータ空間で不整合を測る有限角のスカラー \(J\) は、遠平行の場の密度 \(T\) ではない。
+構成を組織するのは四つの主張である。双対性 \(X\mapsto Xi\) はローレンツセクター上の複素構造である。すべてのブーストは回転の双対であり、\(\mathfrak{so}(3,1)\) を \(\mathfrak{so}(4)\) から分ける符号は \(i^{2}=-1\) である。ねじれと並進を一つにする幾何学的対象は、単一のバナッハ指数ではなく、ねじれローターと零トランスレータの順序積 \(M=RT\) である。座標チャート上では、外部シュヴァルツシルト幾何はそのモーターの動径ブーストであり、パラメータ空間で不整合を測る有限角のスカラー \(J\) は、遠平行の場の密度 \(T\) ではない。重力の方向は並進が担う。静止観測者の運動は、ホバリング加速度の逆数だけ内側にずれた軸のまわりの、率 \(GM/r^{2}\) の単一のブーストであり、重力はその軸へ向かう。軸は地平で観測者に達し、遠方では無限遠へ退く。キリングノルムの平方のダランベルシアンは \(8J\) であるから、物体が軸へ落ちるか軸から離れるかは \(J\) の符号が決める。
 \end{abstract}
 
 \section{はじめに}
@@ -35,7 +35,9 @@
 
 同じモーターを動径ブーストに制限すれば、対角シュヴァルツシルトコフレームが回復される。それがしないのは、パラメータ空間のスカラー \(J\) を遠平行ねじれ密度 \(T\) と同一視することである。一方は有限角であり、他方はコフレームの導関数である。両者を混同すれば、定数ブーストが曲がった幾何に潰れ、あるいは純並進が非零の場になる。
 
-論文はその順序に従う。第\ref{sec:adjunction}節は \(e_{4}\) を付加し、十個の生成元を分類する。第\ref{sec:duality}節は、双対性がローレンツ代数を定めることを示す。第\ref{sec:motors}節はモーターと二次診断量 \(J^{(5)}\) を構成する。第\ref{sec:gravity}節はシュヴァルツシルト外部を動径ブーストとして読む。第\ref{sec:conclusions}節は、代数が決着させたこととさせていないことへ戻る。それらの節の代数的恒等式は Lean~4 伴プロジェクト \texttt{DstDiophantine} において機械検証されている。対応する主張は付録~\ref{app:lean} に記録する。
+方向は別の問題である。ラピディティの場は、コフレームがどれだけ強くブーストされているかを述べるが、放された物体がどちらへ落ちるかは述べない。答えは、チャートの読みが使わずに残した並進の側にある。静止観測者は時間並進によって動き、\(G(3,1,1)\) においてその運動の生成元は、互いに可換でない動径ブーストと時間並進の和である。その和は内側にずれた軸のまわりの単一のブーストであり、重力は観測者からその軸へ向かう。ブースト率は近似なしにニュートン場 \(GM/r^{2}\) であり、軸までの距離の逆数はホバリング加速度である。親理論が引力と斥力として読む \(J\) の符号は、キリングノルムの曲がりの符号になる。
+
+論文はその順序に従う。第\ref{sec:adjunction}節は \(e_{4}\) を付加し、十個の生成元を分類する。第\ref{sec:duality}節は、双対性がローレンツ代数を定めることを示す。第\ref{sec:motors}節はモーターと二次診断量 \(J^{(5)}\) を構成する。第\ref{sec:gravity}節はシュヴァルツシルト外部を動径ブーストとして読む。第\ref{sec:direction}節は重力の方向を静止キリング・バイベクトルの軸に置く。第\ref{sec:conclusions}節は、代数が決着させたこととさせていないことへ戻る。それらの節の代数的恒等式は Lean~4 伴プロジェクト \texttt{DstDiophantine} において機械検証されている。対応する主張は付録~\ref{app:lean} に記録する。
 
 \section{零方向の付加}
 \label{sec:adjunction}
@@ -264,7 +266,7 @@ A \mathbin{\underline{\vee}} B \;:=\; \tfrac12(AB-BA)
 \]
 は次数2に値をとる。代表的な構成の上で、\(P\) が三ブレードであり、\(D\) が \(P\) の平面の法線 \(n\) に沿う双対セクターの要素であるとき、括弧積はその法線に沿う零バイベクトルである、
 \[
-P \mathbin{\underline{\vee}} D \;=\; \kappa\,(e_{4}\wedge n).
+P \mathbin{\underline{\vee}} D \;=\; k\,(e_{4}\wedge n).
 \]
 双対時空は法線の担体として作用し、括弧積は法線に沿う並進を生じる。付録はそのような例を一つ計算する。これらの括弧積を \(\Omega_{\mathrm{biv}}^{(5)}\) に結ぶ完全に共変な算法は、ここでは展開しない。
 
@@ -283,7 +285,7 @@ e^{a} \;:=\; \bigl\langle M\,\mathring{e}^{a}\,\widetilde{M}\bigr\rangle_{1}
 g_{\mu\nu} \;=\; \eta_{ab}\, e^{a}{}_{\mu}\, e^{b}{}_{\nu}
 \label{eq:induced-metric}
 \end{equation}
-を誘導する。ここで \(\eta=\mathrm{diag}(-1,+1,+1,+1)\) である。\(M\) が純ローレンツローターであるとき、サンドイッチは参照ベクトル上の局所ローレンツ作用である。零並進は完全モーター \(M=RT\) に入るが、それ自体では古典的シュヴァルツシルト対角ゲージを供給しない。それらは \(J^{(5)}\) によって測られる並進不整合として利用可能なままである。
+を誘導する。ここで \(\eta=\mathrm{diag}(-1,+1,+1,+1)\) である。\(M\) が純ローレンツローターであるとき、サンドイッチは参照ベクトル上の局所ローレンツ作用である。零並進は完全モーター \(M=RT\) に入るが、それ自体では古典的シュヴァルツシルト対角ゲージを供給しない。それらは \(J^{(5)}\) によって測られる並進不整合として利用可能なままである。零並進は静止観測者の運動には入り、そこで重力の方向を担う（第\ref{sec:direction}節）。
 
 チャート上のコフレームのヴァイツェンベックねじれは反対称化された導関数
 \begin{equation}
@@ -334,7 +336,86 @@ T \;=\; -r^{-2}\,\partial_{r}(r^{2}B^{r})
 
 定数の非零ブーストは \(J\neq 0\) をもち、平坦チャートは \(T=0\) をもつ。ミンコフスキー空間上の純空間並進は \(J^{(5)}\neq 0\) かつ \(T=0\) である。場の種でさえ、一般の外部点で \(\tfrac12 T\) と一致しない。たとえば \((r_{s},r)=(2,4)\) において二つの数は食い違う。有限角、角の変化率、コフレーム密度は、導関数の梯子の異なる段に住む。一般の滑らかなモーター場 \(M(x)=R(x)T(x)\) に対する辞書は、有限角ではなく \((\Omega_{\mathrm{torsion}},\lambda)\) の導関数から組まれなければならず、全発散を含むことが期待される。その辞書はここでは構成しない。
 
-\(G(3,1,1)\) の完全な退化計量に関するサンドイッチも同様に脇に置く。\(M\) と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との同一視は因子が可換なとき成り立ち、そうでないときは一般に成り立たない。
+\(G(3,1,1)\) の完全な退化計量に関するサンドイッチも同様に脇に置く。\(M\) と \(\exp(\Omega_{\mathrm{biv}}^{(5)})\) との同一視は因子が可換なとき成り立ち、そうでないときは一般に成り立たない。そのもっとも簡単な破れは静止観測者そのものであり、次にそれを扱う。
+
+\section{重力の方向}
+\label{sec:direction}
+
+第\ref{sec:gravity}節の動径ブーストは計量を定める。放された物体がどちらへ落ちるかは述べない。ラピディティ \(\varphi(r)\) はスカラーであり、スカラーが方向を得るのは、その上を横切って動くものを通してだけである。動くのは静止観測者である。その運動は時間並進であり、\(G(3,1,1)\) において運動の生成元はバイベクトルである。
+
+事象においてキリング場 \(\xi\) は二つのデータで定まる。並進であるその値と、ローレンツ生成元であるその反対称微分 \(\nabla\xi\) である~\cite{Wald1984}。その組はポアンカレ代数の元であり、第\ref{sec:duality}節によってその元は \(G(3,1,1)\) のバイベクトルである。外部チャートの静的な場 \(\partial_{t}\) について、静止観測者の正規直交枠で見ると、値は \(\nu\,e_{0}\) であり、
+\[
+\nu \;=\; \sqrt{A} \;=\; e^{-\varphi}
+\]
+である。\(\nabla\xi\) の唯一の成分は動径ブーストであり、その率は固有動径距離 \(s\) に沿う \(\nu\) の微分である：
+\[
+\kappa \;=\; \frac{d\nu}{ds} \;=\; \sqrt{A}\,\partial_{r}\sqrt{A} \;=\; \tfrac12 A' \;=\; \frac{r_{s}}{2r^{2}}.
+\]
+静止キリング・バイベクトルは
+\begin{equation}
+K \;=\; \frac{\kappa}{2}\,B^{+}_{1} \;+\; \frac{\nu}{2}\,N_{0}
+\label{eq:killing-bivector}
+\end{equation}
+である。その並進部分は赤方偏移であり、ローレンツ部分はブースト率である。\(r_{s}=2GM\) とすれば、ブースト率は弱場展開なしに、あらゆる半径で \(\kappa=GM/r^{2}\) である。ニュートン場は静止キリング・バイベクトルのローレンツ部分である。ガウスの法則は補正なしにそれについて成り立つ。積 \(r^{2}\kappa=r_{s}/2\) は \(r\) によらないから、あらゆる球面を貫く流束 \(4\pi r^{2}\kappa=4\pi GM\) は同じである。これは外部のコマール質量である~\cite{Komar1959}。
+
+\eqref{eq:killing-bivector} の組は第\ref{sec:motors}節の非可換な例、すなわち時間並進に対する動径ブーストであり、両者の積ではない。トランスレータによる共役は一次で厳密である、
+\[
+T\,X\,\widetilde{T} \;=\; X + [\Omega_{\mathrm{trans}},X].
+\]
+二つの零バイベクトルに挟まれたサンドイッチは消えるからである。これを純ブーストに適用すると
+\begin{equation}
+K \;=\; T(-\ell e_{1})\,\Bigl(\frac{\kappa}{2}B^{+}_{1}\Bigr)\,\widetilde{T}(-\ell e_{1}),
+\qquad
+\ell \;=\; \frac{\nu}{\kappa}
+\label{eq:displaced-boost}
+\end{equation}
+を得る。静止キリング・バイベクトルは単一のブーストであり、純ブースト \(\tfrac{\kappa}{2}B^{+}_{1}\) を距離 \(\ell\) だけ動径方向に動かしたものである。その変位は一意である。時間成分をもたず、動径成分は \(-\ell\) であり、自由に残るのは軸そのものに沿う並進だけである。幾何学的には \(K\) は二つの超平面の交わり、すなわち観測者の時間超平面 \(e_{0}\) と、\(e_{1}-\ell e_{4}\) へ動かされた動径超平面の交わりである：
+\[
+K \;=\; \frac{\kappa}{2}\;e_{0}\,(e_{1}-\ell\,e_{4}).
+\]
+その平方 \(K^{2}=\kappa^{2}/4\) は並進を見ない。静的な運動のポアンカレ不変な中身はブースト率だけであり、赤方偏移は軸の位置を決めるだけである。
+
+軸がどこにあり、何をするかは事象から読む。ミンコフスキー座標 \(x\) の事象を \(P(x)=(1+e_{4}x)\,i\) と書く。トランスレータは事象をそのパラメータだけ動かし、\(T(\lambda)\,P(x)\,\widetilde{T}(\lambda)=P(x+\lambda)\) であり、ポアンカレ・バイベクトルは事象に
+\[
+[\Omega_{\mathrm{biv}}^{(5)},P(x)] \;=\; e_{4}\,\bigl(\lambda+[\Omega_{\mathrm{torsion}},x]\bigr)\,i
+\]
+で作用する。これはそれが生成するキリング流の速度場 \(\lambda+\omega x\) である。\(K\) の場合、動径線 \(x=s\,e_{1}\) に沿う速度は \((\nu+\kappa s)\,e_{0}\) である。それが消えるのは \(s=-\ell\) だけである。流れ
+\[
+\exp(\tau K) \;=\; T(-\ell e_{1})\,R(\kappa\tau)\,\widetilde{T}(-\ell e_{1})
+\]
+は平面 \(\{t=0,\;x=-\ell\}\) のすべての事象を固定し、観測者を原点から
+\[
+X(\tau) \;=\; \ell\,\bigl(\sinh\kappa\tau,\;\cosh\kappa\tau-1,\;0,\;0\bigr)
+\]
+に沿って運ぶ。これは軸上の事象 \(-\ell e_{1}\) から一定の空間的間隔 \(\ell\) を保つ双曲線である。その動径座標は決して負にならない。軌道は軸から離れる向きに曲がる。間隔 \(\ell\) の双曲線の固有加速度は \(1/\ell\) である~\cite{Rindler1966}。キリング軌道の加速度は事象におけるキリング場とその一階微分で決まるから、これは平坦な流れのものであるだけでなく、静止観測者の真のホバリング加速度である。自由な物体は直線上を動き、観測者から見て軸へ落ちる。
+
+事象における重力の方向は、観測者からそのキリング・バイベクトルの軸へ向かう方向である。その強さは軸までの距離の逆数である。
+
+外部チャート上で、距離とその逆数は
+\[
+\ell \;=\; \frac{2r^{2}\sqrt{A}}{r_{s}},\qquad
+a \;=\; \frac{1}{\ell} \;=\; \partial_{r}\sqrt{A} \;=\; \frac{r_{s}}{2r^{2}\sqrt{A}}
+\]
+である。軸は内側にある。時間並進が正のとき、軸は \(\kappa\) の符号と反対の側にあり、\(\kappa\) は \(r_{s}\) の符号をもつ。正の質量は軸を中心側に置き、負の \(r_{s}\) は軸を外側に置いて静的な場を斥力にするだろう。ホバリング加速度 \(a\) には同じチャート上でさらに二つの読みがある。それはヴァイツェンベックねじれ~\eqref{eq:weitzenbock-torsion} の成分 \(T^{0}{}_{rt}\) である。時間脚のねじれが重力の力である~\cite{AldrovandiPereira2013}。それはまたラピディティの固有動径勾配 \(a=-\sqrt{A}\,\varphi'=-d\varphi/ds\) でもある。\(\varphi'<0\) であるから、重力はラピディティの勾配を登る向き、すなわちコフレームがより強くブーストされている領域へ向かい、\(\ell\) は現在の率でラピディティが一単位変わる固有長である。固有時間あたりの生成元は \(K/\nu=\tfrac12\bigl(a\,B^{+}_{1}+N_{0}\bigr)\) であり、単位時間並進とホバリング加速度でのブーストの組である。
+
+軸は \(r\) とともに狭義に退き、その両端が外部の二つの極限である。遠方では \(\nu\to 1\)、\(\kappa\to 0\)、\(\ell\to\infty\) であり、\(K\) は純時間並進 \(\tfrac12 N_{0}\) へ近づく。軸は届かず、重力はない。地平では \(\nu\to 0\)、\(\ell\to 0\) である一方、\(\kappa\to 1/(2r_{s})\) である。軸は観測者に達し、\(K\) は純ブースト \(\tfrac{1}{4r_{s}}B^{+}_{1}\) へ近づく。その率は地平の表面重力である。静的な運動は無限遠では並進であり、地平ではブーストである。そのあいだでは、有限の距離 \(1/a\) に立つ軸のまわりのブーストである。
+
+これはキリング・バイベクトルを第\ref{sec:gravity}節の導関数の梯子の上にも置く。そのブースト率はコフレームの一階微分であり、そのねじれスカラーは
+\[
+J(\kappa) \;=\; \tfrac12\kappa^{2} \;=\; A^{2}\,J_{\mathrm{field}},
+\qquad
+J(a) \;=\; \tfrac12 a^{2} \;=\; A\,J_{\mathrm{field}}
+\]
+である。赤方偏移を除けば、\(\tfrac12T\) になれなかった場の種は、静止観測者自身のブーストのねじれスカラーである。
+
+物体がどちらの側へ落ちるかは、ローレンツ部分が双曲的か楕円的かが決める。\(N^{2}(x)=-(\lambda+\omega x)^{2}\) を、任意のポアンカレ・バイベクトルの速度場のキリングノルムの平方とする。それは事象の二次関数であり、そのダランベルシアンは定数である、
+\begin{equation}
+\Box N^{2} \;=\; 8J.
+\label{eq:dalembert-J}
+\end{equation}
+並進部分が何であっても、どこで評価しても変わらない。双曲側ではキリングノルムは軸から離れるにつれて増す。\(K\) の動径線に沿って \(N^{2}=(\nu+\kappa s)^{2}=\kappa^{2}(s+\ell)^{2}\) である。楕円側では減る。\((y,z)\) 平面での率 \(\omega\) の回転に、その軸に沿う時間並進 \(\nu\) を添えると \(N^{2}=\nu^{2}-\omega^{2}y^{2}\) であり、\(J=-\tfrac12\omega^{2}\) である。キリング場の軌道は \(\log N\) の勾配に沿って加速する~\cite{Wald1984}。ブーストの軸のまわりでは軌道は外へ押され、自由な物体は内へ落ちる。慣性力は軸を向く。回転の軸のまわりでは軌道は求心的に内へ引かれ、自由な物体は外へ漂う。慣性力は軸から離れる向きである。双対性は二つの側を入れ替える。それは \(B^{+}_{1}\) を \((y,z)\) 平面の回転 \(-B^{-}_{1}\) へ送り、\(J\) を反転するからである。親理論の規則、すなわち \(J>0\) で引力、\(J<0\) で斥力は、この読みではキリングノルムの曲がりの符号である。
+
+これらの主張は、事象におけるキリングジェットと、それが生成する平坦な流れに関するものである。一般の多様体に沿うキリング・バイベクトルの共変な輸送は構成しない。親理論のねじれ不整合をキリング・バイベクトルと同一視することもしない。
 
 \section{結論}
 \label{sec:conclusions}
@@ -343,7 +424,11 @@ T \;=\; -r^{-2}\,\partial_{r}(r^{2}B^{r})
 
 両セクターを一つにするモーターは順序積 \(M=RT\) である。零生成元の冪零性はその指数をトランスレータ \(T=1+\Omega_{\mathrm{trans}}\) へ打ち切る。すべてのバイベクトルの反転奇数性は \(M\widetilde{M}=1\) を与える。ねじれと並進が可換でないとき、積は単一の指数ではない。それは幾何学的対象のままである。双対性はねじれパラメータを四分の一回転し、\(J\) を反転し、符号なしの質量を保つ。診断量 \(J^{(5)}\) はキリング二次形式を並進上のミンコフスキー対によって拡張する。その並進項は光錐の外で非有界である。
 
-チャート上では、\(M\) によるサンドイッチがテトラッドを生じる。外部シュヴァルツシルトコフレームはそのテトラッドの動径ブーストである。有限角のスカラー \(J\)、場の種 \(J_{\mathrm{field}}\)、遠平行密度 \(T\) は同一幾何の三つの異なる読みであり、点ごとに同一ではない。残るのは、平面に対する共変な括弧積算法、\(G(3,1,1)\) の退化計量によるサンドイッチ、および一般モーターに対する場の辞書である。TEGR とアインシュタイン--ヒルベルト重力の変分等価性は~\cite{maluf2013} の入力である。
+チャート上では、\(M\) によるサンドイッチがテトラッドを生じる。外部シュヴァルツシルトコフレームはそのテトラッドの動径ブーストである。有限角のスカラー \(J\)、場の種 \(J_{\mathrm{field}}\)、遠平行密度 \(T\) は同一幾何の三つの異なる読みであり、点ごとに同一ではない。
+
+重力の方向は並進が担う。静止観測者のキリング・バイベクトルは、\(\ell=1/a\) だけ内側へ動かされた軸のまわりの、率 \(\kappa=GM/r^{2}\) の純ブーストである。ここで \(a=\partial_{r}\sqrt{A}\) はホバリング加速度であり、時間脚のヴァイツェンベックねじれである。重力はその軸へ向かう。軸は遠方では無限遠へ退き、そこで静的な運動は時間並進である。地平では軸は観測者に達し、運動は表面重力でのブーストである。赤方偏移を除けば、場の種はそのブーストのねじれスカラーである。キリングノルムの平方のダランベルシアンは \(8J\) であるから、双曲的なローレンツ部分は物体をその軸へ引き寄せ、楕円的なものは遠ざける。これが親理論の符号規則の運動学的な中身である。
+
+残るのは、平面に対する共変な括弧積算法、\(G(3,1,1)\) の退化計量によるサンドイッチ、一般モーターに対する場の辞書、および親理論の不整合をキリング・バイベクトルに結ぶ共変な輸送である。TEGR とアインシュタイン--ヒルベルト重力の変分等価性は~\cite{maluf2013} の入力である。
 
 \appendix
 
@@ -357,9 +442,9 @@ A \mathbin{\overline{\vee}} B \;=\; \tfrac12(AB+BA)
 \]
 である。これらの記号はこの意味でのみ用いる。PGA 文献の反内積および反外積ではない~\cite{Lengyel2024,DorstFontijneMann2007}。5次元ベクトル空間において、二つの次数3要素の幾何積は次数 \(0\)、\(2\)、\(4\) のみをもつ。
 
-\(P=e_{4}\wedge e_{1}\wedge e_{2}\) および親理論の双対セクター三ベクトル \(D=jI=-e_{0}e_{3}e_{2}\) を取る。積 \(PD-DP\) を通じて生成元を反可換に動かすと、括弧積は \(e_{4}\wedge e_{3}\) の倍数に還元される。方向 \(e_{3}\) は空間平面 \(e_{1}\wedge e_{2}\) への単位法線であるから、実係数 \(\kappa\) に対して
+\(P=e_{4}\wedge e_{1}\wedge e_{2}\) および親理論の双対セクター三ベクトル \(D=jI=-e_{0}e_{3}e_{2}\) を取る。積 \(PD-DP\) を通じて生成元を反可換に動かすと、括弧積は \(e_{4}\wedge e_{3}\) の倍数に還元される。方向 \(e_{3}\) は空間平面 \(e_{1}\wedge e_{2}\) への単位法線であるから、実係数 \(k\) に対して
 \[
-P \mathbin{\underline{\vee}} D \;=\; \kappa\, N_{3}
+P \mathbin{\underline{\vee}} D \;=\; k\, N_{3}
 \]
 である。右辺はその法線に沿う並進の生成元である。双対要素 \(D\) は法線方向の担体として作用した。
 
@@ -371,7 +456,7 @@ P \mathbin{\underline{\vee}} D \;=\; \kappa\, N_{3}
 {\raggedright
 \emergencystretch=3em
 
-本稿の構成は Lean~4 プロジェクト \texttt{DstDiophantine} において形式化されている。以下は第二の証明ではない。導入の三つの主張を、それを検査する定理へ結ぶ地図である。証明は指名したモジュールにあり、ここでは再現しない。\(\mathfrak{iso}(3,1)\) との抽象的な同型、一般モーターに対する場の辞書、および \(G(3,1,1)\) の完全な退化計量によるサンドイッチは、形式化では主張していない。十個の生成元の線形独立性と、バイベクトル空間の内部における三つの類の直和は、\texttt{Algebra.BivectorBasis} の \texttt{linearIndependent\_tenGen}、\texttt{poincareSpan\_eq\_bivectorGrade}、\texttt{disjoint\_lorentz\_null} である。
+本稿の構成は Lean~4 プロジェクト \texttt{DstDiophantine} において形式化されている。以下は第二の証明ではない。本稿の主張を、それを検査する定理へ結ぶ地図である。証明は指名したモジュールにあり、ここでは再現しない。\(\mathfrak{iso}(3,1)\) との抽象的な同型、一般モーターに対する場の辞書、\(G(3,1,1)\) の完全な退化計量によるサンドイッチ、およびキリング・バイベクトルの共変な輸送は、形式化では主張していない。十個の生成元の線形独立性と、バイベクトル空間の内部における三つの類の直和は、\texttt{Algebra.BivectorBasis} の \texttt{linearIndependent\_tenGen}、\texttt{poincareSpan\_eq\_bivectorGrade}、\texttt{disjoint\_lorentz\_null} である。
 
 \subsection{零方向と十個の生成元}
 
@@ -439,6 +524,24 @@ theorem motor_unitary (p : OmegaParams) :
 T \;=\; \frac{4}{r^{2}}(\cosh\varphi-1)
 \]
 へ変換する。これは第\ref{sec:gravity}節の \(\frac{2}{r^{2}}(1-\sqrt{A})^{2}/\sqrt{A}\) と同一である（\texttt{schwarzschild\_T\_eq\_cosh\_rapidity}）。有限角、場の種、コフレーム密度は別物のままである。その節の三つの比較は \texttt{Gravity.Identification} において検査される。非零の有限角と平坦チャート、純空間並進と消滅する \(T\)、および \((r_{s},r)=(2,4)\) における場の種と \(\tfrac12 T\) である。
+
+\subsection{重力の方向}
+
+\texttt{Gravity.KillingAxis} が第\ref{sec:direction}節を担う。トランスレータによる共役は一次で厳密である（\texttt{sandwich\_expTrans}）。静止キリング・バイベクトルはずれたブーストであり、変位は一意であり、\(K\) は二つの超平面の交わりで \(K^{2}=\kappa^{2}/4\) をみたす（\texttt{sandwich\_radialShift\_boost}、\texttt{sandwich\_expTrans\_boost\_eq\_killing\_iff}、\texttt{killingBivector\_eq\_meet}、\texttt{killingBivector\_sq}）。事象、速度、軌道は
+{\small
+\begin{verbatim}
+theorem commutator_omegaBiv_event (p : OmegaParams) (x : Fin 4 -> Real) :
+    commutator (omegaBiv p) (event x) =
+      e4 * (minkowskiVector p.trans.lambda +
+        commutator (omegaTorsion p.torsion) (minkowskiVector x)) * i
+theorem killing_velocity_eq_zero_iff (k nu s : Real) :
+    commutator (killingBivector k nu) (event ![0, s, 0, 0]) = 0
+      <-> nu + k * s = 0
+theorem hoverWorldline_interval (k l tau : Real) :
+    Q31 (hoverWorldline k l tau - (radialShift l).lambda) = l ^ 2
+\end{verbatim}
+}
+である。流れは軸を点ごとに固定し、軌道は軸から離れる向きに曲がる（\texttt{sandwich\_exp\_killing\_event\_axis}、\texttt{sandwich\_exp\_killing\_event\_zero}、\texttt{hoverWorldline\_radial\_nonneg}）。外部チャート上で \(\kappa=\sqrt{A}\,\partial_{r}\sqrt{A}\) および \(r^{2}\kappa=r_{s}/2\) である（\texttt{killingRate\_eq\_norm\_mul\_deriv}、\texttt{sq\_mul\_killingRate}）。\(\ell\) と \(\partial_{r}\sqrt{A}\)、\(T^{0}{}_{rt}\)、\(-\sqrt{A}\,\varphi'\) それぞれとの積はすべて一である（\texttt{axisDistance\_mul\_dSqrtA\_dr}、\texttt{axisDistance\_mul\_torsion}、\texttt{axisDistance\_mul\_rapidity}）。軸の側は質量の符号である（\texttt{axis\_neg\_iff}、\texttt{killingRate\_pos\_iff}）。単調性と二つの極限は \texttt{axisDistance\_strictMonoOn}、\texttt{tendsto\_axisDistance\_horizon}、\texttt{tendsto\_staticKilling\_horizon}、\texttt{tendsto\_axisDistance\_atTop}、\texttt{tendsto\_staticKilling\_atTop} であり、赤方偏移した場の種は \texttt{J\_killingRate} と \texttt{J\_hoverAcceleration} である。ダランベルシアン~\eqref{eq:dalembert-J} は、\texttt{commutator\_omegaTorsion\_minkowskiVector} が \([\Omega_{\mathrm{torsion}},x]\) を \(\omega x\) と同定したうえで、あらゆる事象とあらゆる刻みについて厳密な二階差分として成り立つ（\texttt{killingNormSq\_dAlembertian}）。二つの側は \texttt{killingNormSq\_killingParams\_radial} と \texttt{killingNormSq\_rotationParams} である。
 
 \par}
 
@@ -527,6 +630,26 @@ Springer, New York (1972).
 J.~W.~Maluf,
 \textit{The teleparallel equivalent of general relativity},
 Annalen der Physik \textbf{525} (5--6), 339--357 (2013).
+
+\bibitem{Wald1984}
+R.~M.~Wald,
+\textit{General Relativity},
+University of Chicago Press, Chicago (1984).
+
+\bibitem{Komar1959}
+A.~Komar,
+\textit{Covariant conservation laws in general relativity},
+Physical Review \textbf{113} (3), 934--936 (1959).
+
+\bibitem{Rindler1966}
+W.~Rindler,
+\textit{Kruskal space and the uniformly accelerated frame},
+American Journal of Physics \textbf{34} (12), 1174--1178 (1966).
+
+\bibitem{AldrovandiPereira2013}
+R.~Aldrovandi and J.~G.~Pereira,
+\textit{Teleparallel Gravity: An Introduction},
+Fundamental Theories of Physics \textbf{173}, Springer, Dordrecht (2013).
 
 \end{thebibliography}
 
