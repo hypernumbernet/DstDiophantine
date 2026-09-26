@@ -578,11 +578,6 @@ theorem J_rotationParams (ω ν : ℝ) :
 def minkowskiProd (x y : Fin 4 → ℝ) : ℝ :=
   -x 0 * y 0 + x 1 * y 1 + x 2 * y 2 + x 3 * y 3
 
-theorem minkowskiProd_smul_left (c : ℝ) (x y : Fin 4 → ℝ) :
-    minkowskiProd (c • x) y = c * minkowskiProd x y := by
-  simp only [minkowskiProd, Pi.smul_apply, smul_eq_mul]
-  ring
-
 /-- Inertial worldline of a body released from rest at the origin: `s e₀`. -/
 def releasedWorldline (s : ℝ) : Fin 4 → ℝ := ![s, 0, 0, 0]
 
@@ -601,10 +596,6 @@ noncomputable def hoverVelocity (κ τ : ℝ) : Fin 4 → ℝ :=
 noncomputable def hoverOutward (κ τ : ℝ) : Fin 4 → ℝ :=
   ![Real.sinh (τ * κ), Real.cosh (τ * κ), 0, 0]
 
-theorem hoverOutward_zero (κ : ℝ) : hoverOutward κ 0 = e4vec 1 := by
-  ext μ
-  fin_cases μ <;> simp [hoverOutward, e4vec, Real.sinh_zero, Real.cosh_zero]
-
 theorem Q31_hoverVelocity (κ τ : ℝ) : Q31 (hoverVelocity κ τ) = -1 := by
   rw [Q31_eq_minkowskiDot]
   have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
@@ -622,11 +613,13 @@ theorem minkowskiProd_hoverVelocity_outward (κ τ : ℝ) :
   simp [minkowskiProd, hoverVelocity, hoverOutward]
   ring
 
+private theorem hasDerivAt_mul_kappa (κ τ : ℝ) :
+    HasDerivAt (fun t : ℝ => t * κ) κ τ := by
+  simpa [id_eq, one_mul] using (hasDerivAt_id τ).mul_const κ
+
 theorem hasDerivAt_hoverTime (κ ℓ τ : ℝ) :
     HasDerivAt (fun t => hoverWorldline κ ℓ t 0) (ℓ * κ * Real.cosh (τ * κ)) τ := by
-  have hmul := (hasDerivAt_id τ).mul_const κ
-  simp only [id_eq, one_mul] at hmul
-  have hsinh := ((Real.hasDerivAt_sinh (τ * κ)).comp τ hmul).const_mul ℓ
+  have hsinh := ((Real.hasDerivAt_sinh (τ * κ)).comp τ (hasDerivAt_mul_kappa κ τ)).const_mul ℓ
   simp only [Function.comp] at hsinh
   have hfun : (fun t => ℓ * Real.sinh (t * κ)) = fun t => hoverWorldline κ ℓ t 0 := by
     ext t
@@ -636,9 +629,8 @@ theorem hasDerivAt_hoverTime (κ ℓ τ : ℝ) :
 
 theorem hasDerivAt_hoverRadial (κ ℓ τ : ℝ) :
     HasDerivAt (fun t => hoverWorldline κ ℓ t 1) (ℓ * κ * Real.sinh (τ * κ)) τ := by
-  have hmul := (hasDerivAt_id τ).mul_const κ
-  simp only [id_eq, one_mul] at hmul
-  have hcosh := (((Real.hasDerivAt_cosh (τ * κ)).comp τ hmul).sub_const 1).const_mul ℓ
+  have hcosh :=
+    (((Real.hasDerivAt_cosh (τ * κ)).comp τ (hasDerivAt_mul_kappa κ τ)).sub_const 1).const_mul ℓ
   simp only [Function.comp] at hcosh
   have hfun : (fun t => ℓ * (Real.cosh (t * κ) - 1)) = fun t => hoverWorldline κ ℓ t 1 := by
     ext t
@@ -646,13 +638,12 @@ theorem hasDerivAt_hoverRadial (κ ℓ τ : ℝ) :
   rw [← hfun]
   exact hcosh.congr_deriv (by ring)
 
-/-- The tangent `(d/dτ) X` has interval `-(ℓ κ)²`, so proper time runs at rate `|ℓ κ|`. -/
+/-- The tangent `(d/dτ) X = (ℓ κ) • hoverVelocity` has interval `-(ℓ κ)²`. -/
 theorem hoverTangent_interval (κ ℓ τ : ℝ) :
     Q31 ((ℓ * κ) • hoverVelocity κ τ) = -(ℓ * κ) ^ 2 := by
-  rw [Q31_eq_minkowskiDot]
-  have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
-  simp [minkowskiDot, Pi.smul_apply, smul_eq_mul, hoverVelocity]
-  linear_combination -(ℓ * κ) ^ 2 * h
+  rw [QuadraticMap.map_smul, Q31_hoverVelocity]
+  simp
+  ring
 
 /-- Proper-time reparametrization: rapidity `κτ` becomes `σ/ℓ` when `σ = ℓ κ τ`. -/
 theorem hoverWorldline_proper {κ ℓ σ : ℝ} (hℓ : ℓ ≠ 0) (hκ : κ ≠ 0) :
@@ -688,7 +679,7 @@ noncomputable def releasedDisplacement (ℓ κ τ : ℝ) : ℝ :=
 noncomputable def releasedDisplacementProper (ℓ σ : ℝ) : ℝ :=
   ℓ * ((Real.cosh (σ / ℓ))⁻¹ - 1)
 
-theorem released_simultaneous_prod (ℓ κ τ s : ℝ) :
+private theorem released_simultaneous_prod (ℓ κ τ s : ℝ) :
     minkowskiProd (releasedWorldline s - hoverWorldline κ ℓ τ) (hoverVelocity κ τ) =
       ℓ * Real.sinh (τ * κ) - s * Real.cosh (τ * κ) := by
   simp [minkowskiProd, releasedWorldline, hoverWorldline, hoverVelocity, Pi.sub_apply]
@@ -737,12 +728,6 @@ theorem releasedDisplacement_eq_proper {ℓ κ τ : ℝ} (hℓ : ℓ ≠ 0) :
 theorem releasedDisplacementProper_zero (ℓ : ℝ) : releasedDisplacementProper ℓ 0 = 0 := by
   simp [releasedDisplacementProper, Real.cosh_zero, zero_div]
 
-theorem releasedDisplacementProper_nonpos {ℓ : ℝ} (hℓ : 0 ≤ ℓ) (σ : ℝ) :
-    releasedDisplacementProper ℓ σ ≤ 0 := by
-  have hp := Real.cosh_pos (σ / ℓ)
-  have hinv : (Real.cosh (σ / ℓ))⁻¹ ≤ 1 := (inv_le_one₀ hp).2 (Real.one_le_cosh _)
-  exact mul_nonpos_of_nonneg_of_nonpos hℓ (sub_nonpos.mpr hinv)
-
 theorem releasedDisplacementProper_lt_zero {ℓ : ℝ} (hℓ : 0 < ℓ) {σ : ℝ} (hσ : σ ≠ 0) :
     releasedDisplacementProper ℓ σ < 0 := by
   have hcosh : 1 < Real.cosh (σ / ℓ) :=
@@ -751,7 +736,7 @@ theorem releasedDisplacementProper_lt_zero {ℓ : ℝ} (hℓ : 0 < ℓ) {σ : �
     (inv_lt_one₀ (Real.cosh_pos _)).2 hcosh
   exact mul_neg_of_pos_of_neg hℓ (sub_lt_zero.mpr hinv)
 
-theorem hasDerivAt_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
+private theorem hasDerivAt_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
     HasDerivAt (releasedDisplacementProper ℓ)
       (-Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2) σ := by
   have harg := (hasDerivAt_id σ).div_const ℓ
@@ -764,7 +749,7 @@ theorem hasDerivAt_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ
     simp only [Function.comp]
     field_simp [hℓ]
 
-theorem deriv_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
+private theorem deriv_releasedDisplacementProper {ℓ : ℝ} (hℓ : ℓ ≠ 0) (σ : ℝ) :
     deriv (releasedDisplacementProper ℓ) σ =
       -Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2 :=
   (hasDerivAt_releasedDisplacementProper hℓ σ).deriv
@@ -774,7 +759,7 @@ theorem deriv_releasedDisplacementProper_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
   rw [deriv_releasedDisplacementProper hℓ]
   simp [Real.sinh_zero, Real.cosh_zero]
 
-theorem hasDerivAt_releasedSpeed_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
+private theorem hasDerivAt_releasedSpeed_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
     HasDerivAt (fun σ : ℝ => -Real.sinh (σ / ℓ) / Real.cosh (σ / ℓ) ^ 2) (-1 / ℓ) 0 := by
   have harg := (hasDerivAt_id 0).div_const ℓ
   simp only [id_eq] at harg
@@ -1104,6 +1089,13 @@ theorem released_initial_acceleration_exterior {rs r : ℝ} (h : IsExterior rs r
     exact axisDistance_mul_dSqrtA_dr h
   rw [hdiv]
   ring
+
+/-- On the exterior chart that light-cone meeting lies on the horizon of the static field. -/
+theorem released_on_staticHorizon {rs r : ℝ} (h : IsExterior rs r) :
+    killingNormSq (killingParams (killingRate rs r) (killingNorm rs r))
+      (releasedWorldline (axisDistance rs r)) = 0 := by
+  rw [← killingRate_mul_axisDistance h]
+  exact released_on_killingHorizon _ _
 
 end KillingAxis
 

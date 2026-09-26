@@ -203,13 +203,12 @@ example {rs r : ℝ} (h : IsExterior rs r) :
       -dSqrtA_dr rs r :=
   KillingAxis.released_initial_acceleration_exterior h
 
-/-- Regression: that body meets the Killing horizon of the flat flow at proper time `ℓ`. -/
-example (κ ℓ : ℝ) :
-    KillingAxis.killingNormSq (KillingAxis.killingParams κ (κ * ℓ))
-        (KillingAxis.releasedWorldline ℓ) = 0 ∧
-      Q31 (KillingAxis.releasedWorldline ℓ - (KillingAxis.radialShift ℓ).lambda) = 0 :=
-  ⟨KillingAxis.released_on_killingHorizon κ ℓ,
-    (KillingAxis.released_lightcone_iff ℓ ℓ).2 (Or.inl rfl)⟩
+/-- Regression: on the exterior chart that meeting lies on the static horizon. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.killingNormSq
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r) (KillingAxis.killingNorm rs r))
+        (KillingAxis.releasedWorldline (KillingAxis.axisDistance rs r)) = 0 :=
+  KillingAxis.released_on_staticHorizon h
 
 /-- Regression: the same dictionary holds for any static radial-boost gauge. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :

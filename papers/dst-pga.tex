@@ -37,7 +37,7 @@ The same motor, restricted to a radial boost, recovers the diagonal Schwarzschil
 
 Direction is a separate matter. A rapidity field says how strongly the coframe is boosted, not which way a released body falls. The answer lies with the translations that the chart reading leaves unused. The static observer moves by time translation, and in \(G(3,1,1)\) the generator of that motion is a radial boost plus a time translation that do not commute. Their sum is a single boost about an axis displaced inward, and gravity points from the observer to that axis. The boost rate is the Newtonian field \(GM/r^{2}\) without approximation, and the inverse distance to the axis is the hover acceleration. In the flat flow a body released from rest accelerates toward the axis at that rate, and the same distance is the proper time in which it meets the light cone of the axis. The sign of \(J\), which the parent theory reads as attraction or repulsion, becomes the sign of the curvature of the Killing norm.
 
-The paper follows that order. Section~\ref{sec:adjunction} adjoins \(e_{4}\) and classifies the ten generators. Section~\ref{sec:duality} shows that duality determines the Lorentz algebra. Section~\ref{sec:motors} constructs the motor and the quadratic diagnostic \(J^{(5)}\). Section~\ref{sec:gravity} reads the Schwarzschild exterior as a radial boost. Section~\ref{sec:direction} places the direction of gravity at the axis of the static Killing bivector. Section~\ref{sec:conclusions} returns to what the algebra has settled and what it has not. The algebraic identities of those sections are machine-checked in the Lean~4 companion \texttt{DstDiophantine}; Appendix~\ref{app:lean} records the corresponding statements.
+The paper follows that order. Section~\ref{sec:adjunction} adjoins \(e_{4}\) and classifies the ten generators. Section~\ref{sec:duality} shows that duality determines the Lorentz algebra. Section~\ref{sec:motors} constructs the motor and the quadratic diagnostic \(J^{(5)}\). Section~\ref{sec:gravity} reads the Schwarzschild exterior as a radial boost. Section~\ref{sec:direction} places the direction of gravity at the axis of the static Killing bivector. Section~\ref{sec:conclusions} returns to what the algebra has settled and what it has not. Appendix~\ref{app:reading} reads across that order. The non-commuting pair, the derivative ladder, and the sign of \(J\) are one construction. The algebraic identities of those sections are machine-checked in the Lean~4 companion \texttt{DstDiophantine}.
 
 \section{Adjoining a null direction}
 \label{sec:adjunction}
@@ -404,7 +404,7 @@ of the outward unit normal. For \(\ell>0\) the displacement is negative at every
 \[
 \xi''(0) \;=\; -\frac{1}{\ell}.
 \]
-The initial acceleration has the magnitude of the hover acceleration and points toward the axis. The same line meets the light cone of the axis event at proper time \(s=\ell\), and that event lies on the Killing horizon \(N=0\) of the flat flow. The distance to the axis is therefore also the proper time in which a released body reaches that horizon. Along the observer's simultaneity the separation tends to \(-\ell\) only as \(\sigma\to\infty\): the body meets the horizon in finite proper time, while the one who hovers approaches the meeting asymptotically.
+The same line meets the light cone of the axis event at proper time \(s=\ell\), and that event lies on the Killing horizon \(N=0\) of the flat flow. The distance to the axis is therefore also the proper time in which a released body reaches that horizon. Along the observer's simultaneity the separation tends to \(-\ell\) only as \(\sigma\to\infty\): the body meets the horizon in finite proper time, while the one who hovers approaches the meeting asymptotically.
 
 The direction of gravity at an event is the direction from the observer to the axis of its Killing bivector. Its strength is the inverse distance to that axis, the initial acceleration of a body released from rest.
 
@@ -413,7 +413,7 @@ On the exterior chart the distance and its inverse are
 \ell \;=\; \frac{2r^{2}\sqrt{A}}{r_{s}},\qquad
 a \;=\; \frac{1}{\ell} \;=\; \partial_{r}\sqrt{A} \;=\; \frac{r_{s}}{2r^{2}\sqrt{A}}.
 \]
-The axis lies inward. In the flat flow at that event the initial acceleration is \(-a\), and the proper time to the horizon of the flow is \(\ell\). For a positive time translation the axis lies on the side opposite to the sign of \(\kappa\), and \(\kappa\) has the sign of \(r_{s}\): positive mass puts the axis toward the centre, and a negative \(r_{s}\) would put it outside and make the static field repel. The hover acceleration \(a\) has two further readings on the same chart. It is the component \(T^{0}{}_{rt}\) of the Weitzenb\"{o}ck torsion~\eqref{eq:weitzenbock-torsion}: the torsion of the time leg is the gravitational force~\cite{AldrovandiPereira2013}. It is also the proper radial gradient of the rapidity, \(a=-\sqrt{A}\,\varphi'=-d\varphi/ds\). Since \(\varphi'<0\), gravity points up the rapidity gradient, toward the region where the coframe is more strongly boosted, and \(\ell\) is the proper length over which the rapidity would change by one unit at its present rate. Per unit proper time the generator is \(K/\nu=\tfrac12\bigl(a\,B^{+}_{1}+N_{0}\bigr)\): a unit time translation together with a boost at the hover acceleration.
+The axis lies inward, and the initial acceleration of the flat flow there is \(-a\). For a positive time translation the axis lies on the side opposite to the sign of \(\kappa\), and \(\kappa\) has the sign of \(r_{s}\): positive mass puts the axis toward the centre, and a negative \(r_{s}\) would put it outside and make the static field repel. The hover acceleration \(a\) has two further readings on the same chart. It is the component \(T^{0}{}_{rt}\) of the Weitzenb\"{o}ck torsion~\eqref{eq:weitzenbock-torsion}: the torsion of the time leg is the gravitational force~\cite{AldrovandiPereira2013}. It is also the proper radial gradient of the rapidity, \(a=-\sqrt{A}\,\varphi'=-d\varphi/ds\). Since \(\varphi'<0\), gravity points up the rapidity gradient, toward the region where the coframe is more strongly boosted, and \(\ell\) is the proper length over which the rapidity would change by one unit at its present rate. Per unit proper time the generator is \(K/\nu=\tfrac12\bigl(a\,B^{+}_{1}+N_{0}\bigr)\): a unit time translation together with a boost at the hover acceleration.
 
 The axis recedes strictly as \(r\) grows, and its two ends are the two limits of the exterior. Far away \(\nu\to 1\), \(\kappa\to 0\), \(\ell\to\infty\), and \(K\) tends to the pure time translation \(\tfrac12 N_{0}\): the axis is out of reach, the proper time to the horizon of the flat flow diverges, and there is no gravity. At the horizon \(\nu\to 0\) and \(\ell\to 0\) while \(\kappa\to 1/(2r_{s})\): the axis reaches the observer, the proper time to the horizon of the flat flow vanishes, and \(K\) tends to the pure boost \(\tfrac{1}{4r_{s}}B^{+}_{1}\), whose rate is the surface gravity of the horizon. The static motion is a translation at infinity and a boost at the horizon. In between it is a boost about an axis that stands at the finite distance \(1/a\).
 
@@ -443,7 +443,7 @@ The motor that unites the two sectors is the ordered product \(M=RT\). Nilpotenc
 
 On a chart, sandwiching with \(M\) produces a tetrad. The exterior Schwarzschild coframe is a radial boost of that tetrad. The finite-angle scalar \(J\), the field seed \(J_{\mathrm{field}}\), and the teleparallel density \(T\) are three different readings of the same geometry; they are not pointwise identical.
 
-The direction of gravity is carried by the translations. The static observer's Killing bivector is a pure boost of rate \(\kappa=GM/r^{2}\) about an axis moved inward through \(\ell=1/a\), where \(a=\partial_{r}\sqrt{A}\) is the hover acceleration and the Weitzenb\"{o}ck torsion of the time leg. Gravity points to that axis. In the flat flow the inertial frame of release, seen from the observer, remains a boost about that axis. A body released from rest travels on the straight line \(s\,e_{0}\), and at observer proper time \(\sigma\) its signed separation along the outward normal is \(\ell(\operatorname{sech}(\sigma/\ell)-1)\). The initial acceleration is \(-1/\ell\), toward the axis, and the line meets the light cone of the axis, where the Killing norm vanishes, at proper time \(\ell\). The axis recedes to infinity far away, where the static motion is a time translation and that proper time diverges, and reaches the observer at the horizon, where the motion is a boost at the surface gravity and the proper time vanishes. Up to redshift, the field seed is the torsional scalar of that boost. Because the squared Killing norm has d'Alembertian \(8J\), a hyperbolic Lorentz part draws bodies toward its axis and an elliptic one drives them away; this is the kinematic content of the parent theory's sign rule.
+The direction of gravity is carried by the translations. The static observer's Killing bivector is a pure boost of rate \(\kappa=GM/r^{2}\) about an axis moved inward through \(\ell=1/a\), where \(a=\partial_{r}\sqrt{A}\) is the hover acceleration and the Weitzenb\"{o}ck torsion of the time leg. Gravity points to that axis. In the flat flow a body released from rest accelerates toward it at rate \(1/\ell\) and meets its light cone in proper time \(\ell\). The axis recedes to infinity far away, where the static motion is a time translation, and reaches the observer at the horizon, where the motion is a boost at the surface gravity; the proper time \(\ell\) diverges in the first limit and vanishes in the second. Up to redshift, the field seed is the torsional scalar of that boost. Because the squared Killing norm has d'Alembertian \(8J\), a hyperbolic Lorentz part draws bodies toward its axis and an elliptic one drives them away; this is the kinematic content of the parent theory's sign rule.
 
 What remains open is a covariant bracket calculus for planes, a sandwich with the degenerate metric of \(G(3,1,1)\), a field dictionary for a general motor, and a covariant transport that would relate the mismatch of the parent theory to the Killing bivector. The variational equivalence of TEGR with Einstein--Hilbert gravity is the input of~\cite{maluf2013}.
 
@@ -467,102 +467,62 @@ for a real coefficient \(k\). The right-hand side is a generator of translations
 
 A second, purely spatial example confirms the grade pattern. For \(A=e_{1}e_{2}e_{3}\) and \(B=e_{1}e_{2}e_{4}\) one finds \(AB=-e_{3}e_{4}\) and \(BA=+e_{3}e_{4}\), hence \(A\mathbin{\underline{\vee}}B=-e_{3}e_{4}\) and \(A\mathbin{\overline{\vee}}B=0\): a pure grade-two commutator, as expected of an antisymmetric product.
 
-\section{Lean-checked identities}
-\label{app:lean}
+\section{An extended reading}
+\label{app:reading}
 
-{\raggedright
-\emergencystretch=3em
+Sections~\ref{sec:adjunction}--\ref{sec:direction} establish the algebra, the motor, the chart, and the axis, each with its own argument. The formulae are not repeated here. What that order does not pause to assemble is that three of its objects are one pair, that the scalars of the chart and the direction of the fall stand on one ladder, and that the sign which separates the Lorentz algebra from the Euclidean algebra is the sign which decides the side of a fall. This appendix is that assembly.
 
-The construction of the paper is formalised in the Lean~4 project \texttt{DstDiophantine}. What follows is not a second proof, but a map from the claims of the paper to the theorems that check them. Proofs live in the named modules; they are not reproduced here. An abstract isomorphism with \(\mathfrak{iso}(3,1)\), a field dictionary for a general motor, sandwiching against the full degenerate metric of \(G(3,1,1)\), and a covariant transport of Killing bivectors are not claimed in the formalisation. Linear independence of the ten generators, and the direct sum of the three classes inside the bivector space, are \texttt{linearIndependent\_tenGen}, \texttt{poincareSpan\_eq\_bivectorGrade}, and \texttt{disjoint\_lorentz\_null} in \texttt{Algebra.BivectorBasis}.
+\subsection{Orientation and displacement}
 
-\subsection{Null direction and the ten generators}
+The direct sum of Section~\ref{sec:adjunction} divides the bivector space into a Lorentz summand and a null ideal. Duality, in Section~\ref{sec:duality}, is a complex structure on the first and an exit from grade two on the second. The motor has to be written so as to respect both. A map that organises boosts and rotations has already sent the translations out of the grade in which a rotor is an exponential, so it cannot be asked to organise displacement as well. The ordered product \(M=RT\) is the form that keeps the two offices apart: \(R\) lies in the summand duality closes, and \(T\) lies in the ideal it leaves.
 
-The algebra is the Clifford algebra of the quadratic form with weights \((-1,+1,+1,+1,0)\), in modules \texttt{Algebra.QuadraticForm} and \texttt{Algebra.PGA}. The identities \(e_{4}^{2}=0\) and \(\{e_{4},e_{\mu}\}=0\) are \texttt{PGA.e4\_sq} and \texttt{PGA.e4\_anticomm}. The ten bivectors of Table~\ref{tab:generators} are \texttt{hyperbolic}, \texttt{cyclic}, and \texttt{null} in \texttt{Algebra.Generators}. Squares and strong vanishing read
-{\small
-\begin{verbatim}
-theorem hyperbolic_sq (a : Fin 3) : hyperbolic a * hyperbolic a = 1
-theorem cyclic_sq (a : Fin 3) : cyclic a * cyclic a = -1
-theorem null_mul_null (mu nu : Fin 4) : null mu * null nu = 0
-theorem null_reverse (mu : Fin 4) : reverse (null mu) = -null mu
-\end{verbatim}
-}
-The last line is why translations must be bivectors: reversal of a grade-one null vector would be even, and the unitarity argument of Section~\ref{sec:motors} would fail. The same module proves \texttt{hyperbolic\_reverse} and \texttt{cyclic\_reverse}.
+Reversal decides which grade that ideal may occupy, and the decision is the same one that makes a motor unitary. The cancellation \(M\widetilde{M}=1\) in Section~\ref{sec:motors} uses the reversal-odd character of every bivector together with the nilpotence of a null bivector. A grade-one null vector reverses evenly, and the cancellation stops. Realising translations as bivectors and requiring \(M\widetilde{M}=1\) are therefore one constraint on grade. Light-likeness remains a condition on the four coefficients, as Section~\ref{sec:adjunction} has it, so that the grade is available for every translation.
 
-\subsection{Duality and the Poincar\'{e} span}
+The complex structure has a second life on parameters. Complex bilinearity makes the boost--boost sign equal to \(i^{2}=-1\), and the quarter-turn \((\alpha,\beta)\mapsto(\beta,-\alpha)\) is that multiplication written on \((\alpha,\beta)\). Writing \(z_{a}=\alpha_{a}+\mathrm{i}\beta_{a}\), the turn reverses the real part of \(\sum_{a}z_{a}^{2}\) and preserves the Hermitian sum, which is the reversal of \(J\) and the preservation of the unsigned mass. The four coefficients \(\lambda^{\mu}\) stand outside the turn. The Cartan--Killing form of the Poincar\'{e} algebra vanishes on the translation ideal~\cite{FultonHarris1991,Humphreys1972}, so a quadratic that can see displacement has to bring in the Minkowski pairing by hand. The diagnostic \(J^{(5)}\) is that admission: the complex structure measures orientation, and displacement is measured by a metric the structure does not see. Off the light cone the added term is unbounded, and any ceiling inherited from the discrete companion applies to the torsional parameters alone.
 
-\texttt{Algebra.LorentzLie} lifts the generator table to spans. Write \(\mathfrak{l}\) for \texttt{lorentzSpan} and \(\mathfrak{n}\) for \texttt{nullSpan}. The Lorentz span and the ten-dimensional span close under the commutator (\texttt{commutator\_mem\_lorentzSpan}, \texttt{commutator\_mem\_poincareSpan}). The null span is an abelian ideal (\texttt{commutator\_null\_null\_eq\_zero}, \texttt{commutator\_poincare\_null\_mem\_nullSpan}). These are the mathlib Lie subalgebras \texttt{lorentzLieSubalgebra} and \texttt{poincareLieSubalgebra}. The action is faithful in the sense motors require: \texttt{commutator\_hyperbolic0\_null0\_ne\_zero} is \([B^{+}_{0},N_{0}]\neq 0\).
+\subsection{One pair, three writings}
 
-Duality is right multiplication by the Cl(3,1) pseudoscalar. On the Lorentz span it is a complex structure, and the bracket is complex-bilinear:
-{\small
-\begin{verbatim}
-theorem hyperbolic_eq_dual_cyclic (a : Fin 3) :
-    hyperbolic a = dual (cyclic a)
-theorem dual_dual (x : PGA) : dual (dual x) = -x
-theorem commutator_dual_dual (x y : PGA)
-    (hx : x Mem lorentzSpan) (hy : y Mem lorentzSpan) :
-    commutator (dual x) (dual y) = -commutator x y
-theorem commutator_hyperbolic_hyperbolic_cyclic (a b : Fin 3) :
-    commutator (hyperbolic a) (hyperbolic b) =
-      if a = b then 0
-      else if b = a + 1 then -((2 : Real) smul cyclic (a + 2))
-      else (2 : Real) smul cyclic (b + 2)
-\end{verbatim}
-}
-The minus sign in the boost--boost table is \(i^{2}=-1\). Every Lorentz element is a rotation plus a dualised rotation (\texttt{mem\_lorentzSpan\_iff}). On torsion parameters duality is the quarter-turn \((\alpha,\beta)\mapsto(\beta,-\alpha)\) (\texttt{dual\_omegaTorsion}). It reverses \(J\) and preserves the unsigned mass (\texttt{J\_dualParams}, \texttt{mass\_dualParams}).
+A radial boost set against a time translation appears three times. The appearances are one pair, written at three scales.
 
-\subsection{Motors}
+In Section~\ref{sec:duality} the pair is infinitesimal. The bracket \([B^{+}_{0},N_{0}]=2N_{1}\) witnesses that the Lorentz action on the null ideal is faithful. A change of orientation moves a translation. The ten-dimensional span is a semidirect product on the strength of that movement.
 
-\texttt{Algebra.Motor} defines \(\Omega_{\mathrm{torsion}}\), \(\Omega_{\mathrm{trans}}\), and the ordered product \(RT\). Nilpotence of the translational generator truncates the Banach exponential, translators add, and the product is unitary:
-{\small
-\begin{verbatim}
-theorem omegaTrans_sq (p : TransParams) :
-    omegaTrans p * omegaTrans p = 0
-theorem exp_omegaTrans (p : TransParams) :
-    exp (omegaTrans p) = 1 + omegaTrans p
-theorem expTrans_mul (p q : TransParams) :
-    expTrans p * expTrans q =
-      expTrans (fun mu => p.lambda mu + q.lambda mu)
-theorem rotor_unitary (p : TorsionParams) :
-    rotorTorsion p * reverse (rotorTorsion p) = 1
-theorem motor_unitary (p : OmegaParams) :
-    motor p * reverse (motor p) = 1
-\end{verbatim}
-}
-When the factors commute, \(\exp(\Omega_{\mathrm{biv}}^{(5)})=RT\) (\texttt{exp\_omegaBiv\_eq\_motor\_of\_commute}). When they do not, the two differ: \texttt{exists\_omegaBiv\_ne\_motor} exhibits a radial boost against a time translation. Every torsion rotor, not only a pure radial boost, conjugates translators to translators (\texttt{Algebra.MotorGroup}, \texttt{exists\_sandwich\_rotorTorsion\_expTrans}). Closed forms \(\exp(tB^{+})=\cosh t+\sinh t\cdot B^{+}\) and \(\exp(tB^{-})=\cos t+\sin t\cdot B^{-}\) are \texttt{exp\_of\_sq\_one} and \texttt{exp\_of\_sq\_neg\_one}.
+In Section~\ref{sec:motors} the pair is finite. When the factors commute, the exponential of the sum equals the ordered product \(RT\). For this pair the two differ, and the geometric object is the product, which keeps an order. Conjugation says what the order does to a finite translation: every torsional rotor sends translators to translators, by its Lorentz action on \(\lambda^{\mu}\).
 
-The diagnostic of Section~\ref{sec:motors} is \texttt{Invariant.J5}: the companion scalar \(J=\tfrac12\sum_{a}(\alpha_{a}^{2}-\beta_{a}^{2})\) plus the Minkowski pairing on \(\lambda^{\mu}\). It is unbounded without a constraint on translations (\texttt{J5\_unbounded}).
+In Section~\ref{sec:direction} the pair is the static observer. The bivector \(K\) is the sum. The displacement identity says that this sum is already a pure boost moved through the distance \(\ell=\nu/\kappa\). The finite flow \(\exp(\tau K)\) is the conjugate of a boost of rapidity \(\kappa\tau\), and so a product once more. The infinitesimal bracket, the disagreement of the exponential with \(RT\), and the moved axis are the same failure to commute, read at a point, in a finite motor, and along an orbit.
 
-\subsection{Gravity on a chart}
+The square \(K^{2}=\kappa^{2}/4\) does not register the translation that performed the move. The invariant content of the static motion is the boost rate. The redshift only places the axis. Strength and direction therefore separate inside one bivector. Strength is the Lorentz summand. Direction is the null summand, which duality could not keep in grade two. A rapidity is a scalar built from the Lorentz summand alone, and Section~\ref{sec:gravity} can recover the exterior metric from it while still leaving the direction unsaid. The direction is said only when Section~\ref{sec:direction} restores the translation the chart did not use.
 
-The diagonal Schwarzschild coframe induces the Schwarzschild metric (\texttt{Gravity.Schwarzschild}, \texttt{inducedMetric\_schwarzschild}). The \((t,r)\) legs are the boost scale factors of the radial rapidity \(\varphi=-\tfrac12\log A\) (\texttt{Gravity.Sandwich}, \texttt{boostScaleFactors\_schwarzschild}), and the finite-angle diagnostic on that slice is \(J=\tfrac12\varphi^{2}\) (\texttt{J\_radialBoostParams}).
+\subsection{The ladder, and what points}
 
-\texttt{Gravity.JTDictionary} converts the Weitzenb\"{o}ck scalar on the same chart into
-\[
-T \;=\; \frac{4}{r^{2}}(\cosh\varphi-1),
-\]
-which is identical to \(\frac{2}{r^{2}}(1-\sqrt{A})^{2}/\sqrt{A}\) of Section~\ref{sec:gravity} (\texttt{schwarzschild\_T\_eq\_cosh\_rapidity}). Finite angle, field seed, and coframe density remain distinct. The three comparisons of that section are checked in \texttt{Gravity.Identification}: a nonzero finite angle against a flat chart, a pure spatial translation against vanishing \(T\), and the field seed against \(\tfrac12 T\) at \((r_{s},r)=(2,4)\).
+Section~\ref{sec:gravity} places three scalars on the exterior and keeps them distinct. The finite angle \(J=\tfrac12\varphi^{2}\) measures the radial boost. The field seed \(J_{\mathrm{field}}=\tfrac12(\varphi')^{2}\) measures the square of its radial derivative. The teleparallel scalar \(T\) is a quadratic in the derivatives of the coframe. On this chart it is a pure radial divergence, and it equals \(\tfrac{4}{r^{2}}(\cosh\varphi-1)\), which rewrites the density in the rapidity without turning the density into an angle. A constant boost, a pure spatial translation, and the exterior point \((r_{s},r)=(2,4)\) keep the three rungs from collapsing into one another.
 
-\subsection{The direction of gravity}
+Section~\ref{sec:direction} climbs the same ladder with another bivector. The static observer is not the finite rotor of rapidity \(\varphi\). It is the jet of \(\partial_{t}\): the Lorentz part is the derivative \(\kappa=\sqrt{A}\,\partial_{r}\sqrt{A}\), and the null part is the value \(\nu=\sqrt{A}\). The torsional scalars of that jet, \(\tfrac12\kappa^{2}\) and \(\tfrac12 a^{2}\), reproduce \(J_{\mathrm{field}}\) up to the redshift factors \(A^{2}\) and \(A\). The field seed that disagrees with \(\tfrac12 T\) agrees, up to redshift, with the angle-scalar of the observer's own boost. The disagreement and the agreement concern different rungs. \(T\) is a divergence built from the coframe. \(J(\kappa)\) is the square of one component of its first derivative.
 
-\texttt{Gravity.KillingAxis} carries Section~\ref{sec:direction}. Translator conjugation is exact at first order (\texttt{sandwich\_expTrans}). The static Killing bivector is the displaced boost, the displacement is unique, and \(K\) is the meet of two hyperplanes with \(K^{2}=\kappa^{2}/4\) (\texttt{sandwich\_radialShift\_boost}, \texttt{sandwich\_expTrans\_boost\_eq\_killing\_iff}, \texttt{killingBivector\_eq\_meet}, \texttt{killingBivector\_sq}). Events, velocity, and orbit read
-{\small
-\begin{verbatim}
-theorem commutator_omegaBiv_event (p : OmegaParams) (x : Fin 4 -> Real) :
-    commutator (omegaBiv p) (event x) =
-      e4 * (minkowskiVector p.trans.lambda +
-        commutator (omegaTorsion p.torsion) (minkowskiVector x)) * i
-theorem killing_velocity_eq_zero_iff (k nu s : Real) :
-    commutator (killingBivector k nu) (event ![0, s, 0, 0]) = 0
-      <-> nu + k * s = 0
-theorem hoverWorldline_interval (k l tau : Real) :
-    Q31 (hoverWorldline k l tau - (radialShift l).lambda) = l ^ 2
-\end{verbatim}
-}
-The flow fixes the axis pointwise and the orbit bends away from it (\texttt{sandwich\_exp\_killing\_event\_axis}, \texttt{sandwich\_exp\_killing\_event\_zero}, \texttt{hoverWorldline\_radial\_nonneg}). On the exterior chart \(\kappa=\sqrt{A}\,\partial_{r}\sqrt{A}\) and \(r^{2}\kappa=r_{s}/2\) (\texttt{killingRate\_eq\_norm\_mul\_deriv}, \texttt{sq\_mul\_killingRate}); the products of \(\ell\) with \(\partial_{r}\sqrt{A}\), with \(T^{0}{}_{rt}\), and with \(-\sqrt{A}\,\varphi'\) all equal one (\texttt{axisDistance\_mul\_dSqrtA\_dr}, \texttt{axisDistance\_mul\_torsion}, \texttt{axisDistance\_mul\_rapidity}). The side of the axis is the sign of the mass (\texttt{axis\_neg\_iff}, \texttt{killingRate\_pos\_iff}). Monotonicity and the two limits are \texttt{axisDistance\_strictMonoOn}, \texttt{tendsto\_axisDistance\_horizon}, \texttt{tendsto\_staticKilling\_horizon}, \texttt{tendsto\_axisDistance\_atTop}, and \texttt{tendsto\_staticKilling\_atTop}; the redshifted field seed is \texttt{J\_killingRate} and \texttt{J\_hoverAcceleration}. The d'Alembertian~\eqref{eq:dalembert-J} holds as an exact second difference at every event and for every step (\texttt{killingNormSq\_dAlembertian}), once \texttt{commutator\_omegaTorsion\_minkowskiVector} identifies \([\Omega_{\mathrm{torsion}},x]\) with \(\omega x\). The two sides are \texttt{killingNormSq\_killingParams\_radial} and \texttt{killingNormSq\_rotationParams}.
+The inverse distance \(1/\ell\) is that derivative under three names: the hover acceleration, the Weitzenb\"{o}ck component \(T^{0}{}_{rt}\) of the time leg, and the proper gradient of \(\varphi\). The chart already contained \(\varphi'\). It acquires a direction when the unused translation \(\nu N_{0}\) is restored and the ratio \(\nu/\kappa\) is read as a displacement. For a positive mass the axis lies inward, and gravity points up the rapidity gradient, toward the more strongly boosted coframe. A scalar points only by being the rate of a boost about an axis that a translation has placed.
 
-The fall law of the flat flow is in the same module. The inertial frame, seen from the hoverer, is the inverse motor \texttt{exp\_neg\_killing\_eq\_displacedBoost}. The tangent of the hyperbola has squared interval \(-(\ell\kappa)^{2}\) (\texttt{hoverTangent\_interval}), and proper time reparametrizes the rapidity as \(\sigma/\ell\) (\texttt{hoverWorldline\_proper}). The simultaneous separation equals \(\xi(\sigma)\) of~\eqref{eq:fall-displacement} (\texttt{released\_separation\_eq\_displacement}, \texttt{releasedDisplacement\_eq\_proper}). For \(\ell>0\) it is strictly negative at nonzero proper time (\texttt{releasedDisplacementProper\_lt\_zero}). Value and first derivative vanish at release, and the second derivative is \(-1/\ell\) (\texttt{released\_initial\_acceleration}); on the exterior chart that acceleration is \(-\partial_{r}\sqrt{A}\) (\texttt{released\_initial\_acceleration\_exterior}). The separation tends to \(-\ell\) (\texttt{tendsto\_releasedDisplacementProper\_atTop}). The inertial line meets the light cone of the axis at proper time \(\ell\), on the horizon \(N=0\) (\texttt{released\_lightcone\_iff}, \texttt{released\_on\_killingHorizon}).
+The two limits are the two ways that placement can fail. Far away the axis recedes, \(\ell\) diverges, and \(K\) becomes a pure time translation: the Lorentz rung has vanished, and there is nothing to point toward. At the horizon the axis reaches the observer, \(\ell\) vanishes, and \(K\) becomes a pure boost at the surface gravity: the null rung has vanished, and the direction has zero length. Between them the motion is a boost about an axis at the finite distance \(1/a\).
 
-\par}
+The fall is the flat flow of this one jet. Its initial acceleration is \(-1/\ell\), and the same \(\ell\) is the proper time in which a body released from rest meets the light cone of the axis. The hovering observer approaches the meeting only as proper time tends to infinity. The acceleration of a Killing orbit is fixed by the jet, which is why \(1/\ell\) is the hover acceleration on the exterior as well as in the flat model. The law does not transport the jet along the curved exterior, and it does not identify the jet with the torsional mismatch of the parent theory.
+
+\subsection{The sign is the complex structure}
+
+The parent theory distinguishes attraction and repulsion by the sign of \(J\). Section~\ref{sec:direction} reads that sign as the curvature of the Killing norm, \(\Box N^{2}=8J\). The reading has a source in Section~\ref{sec:duality} which the local computation does not require, and which shows the rule to be the complex structure evaluated on a flow.
+
+The two squares of Section~\ref{sec:adjunction} are the two sides of the fall. Square \(+1\) is the hyperbolic side: along the radial line of \(K\) the norm grows as one leaves the axis, the orbit is pushed outward, and a free body falls in. Square \(-1\) is the elliptic side: a rotation in the \((y,z)\)-plane makes the norm shrink as one leaves the axis, the orbit is drawn inward, and a free body drifts out. Duality exchanges the generators, sending \(B^{+}_{1}\) to \(-B^{-}_{1}\), and the quarter-turn exchanges the sign of \(J\). The d'Alembertian changes sign with them. Attraction for \(J>0\) and repulsion for \(J<0\) are the boost--boost sign, the factor \(i^{2}=-1\), read on the flat flow of a single bivector. The sign that separates \(\mathfrak{so}(3,1)\) from \(\mathfrak{so}(4)\) is the sign that chooses the side of the fall.
+
+The translation does not enter \(\Box N^{2}\). It places the axis and leaves the side to the Lorentz summand. This agrees with the split above. Duality, which reverses \(J\), acts on the summand it closes, and the null ideal only locates the centre about which that curvature is felt.
+
+\subsection{Where the reading stops}
+
+Section~\ref{sec:conclusions} leaves four questions open. Each is the sentence that would follow the reading above, and each stops for a definite reason.
+
+Appendix~\ref{app:bracket} shows that the antisymmetric product of one spatial plane with one dual trivector returns a null bivector along the normal. The configuration is a single one. A covariant bracket calculus would have to locate that product inside \(\Omega_{\mathrm{biv}}^{(5)}\), so that the translation it returns is the translational half of a motor. The body records the grade and does not build the calculus.
+
+The tetrad of Section~\ref{sec:gravity} sandwiches the reference vectors of \(\mathrm{Cl}(3,1)\). On the exterior chart the motor in that sandwich is a pure radial rotor, and the null direction which carries translations is not among the vectors being sent to the coframe. A sandwich taken in the degenerate metric of \(G(3,1,1)\) is the step that would let the motor act in the algebra where the pointing direction lives. Until then, direction is read from the Killing bivector, while the tetrad carries the metric.
+
+A dictionary for a general motor \(M(x)=R(x)T(x)\) has to be built from derivatives of \((\Omega_{\mathrm{torsion}},\lambda)\). The ladder already shows that the teleparallel scalar sees derivatives, and the static jet shows that the first derivative, written as a Poincar\'{e} bivector, is what points. The missing dictionary is the passage from one such jet to a field of them. On the exterior chart \(T\) is a divergence, so the passage would be expected to contain a total divergence. The static jet is the only case written here.
+
+The fall is the flow of that jet in the flat algebra. To carry the bivector along a general manifold, and to identify it with the torsional mismatch of the parent theory, is a further construction. The variational equivalence of the teleparallel scalar with the Einstein--Hilbert action remains the input taken from~\cite{maluf2013}.
 
 \begin{thebibliography}{99}
 
