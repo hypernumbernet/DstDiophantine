@@ -35,6 +35,7 @@ import DstDiophantine.Theorems.BealRegime
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
+import DstDiophantine.Theorems.SiksekStoll
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -775,10 +776,12 @@ example (hOut : BealTwoEqualOddOutsideBruinResidual) :
     BealTwoEqualOddResidual :=
   BealTwoEqualOddResidual_of_outside_bruin hOut
 
-/-- Phase 7v: `(3,3,5)` is a closed shape; `(3,3,7)` stays open. -/
+/-- Phase 7w: `(3,3,5)` and `(3,3,7)` are closed; `(3,5,7)` stays open. -/
 example :
-    classifyBealExponents 3 3 5 = .T ∧ classifyBealExponents 3 3 7 = .U :=
-  ⟨classifyBealExponents_three_three_five, classifyBealExponents_three_three_seven⟩
+    classifyBealExponents 3 3 5 = .T ∧ classifyBealExponents 3 3 7 = .T ∧
+      classifyBealExponents 3 4 5 = .T ∧ classifyBealExponents 3 5 7 = .U :=
+  ⟨classifyBealExponents_three_three_five, classifyBealExponents_three_three_seven,
+    classifyBealExponents_three_four_five, classifyBealExponents_three_five_seven⟩
 
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :

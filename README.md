@@ -7,7 +7,7 @@ Diophantine conjectures.
 The machine-checked core is an algebraic bound and a shared no-go calculus.
 Unconditional Fermat, Beal, abc, the Riemann Hypothesis, Goldbach, Polignac,
 and Collatz are **not** claimed. Open work is named residual / `*Bridge`
-propositions and six explicit `axiom`s; there are no `sorry` holes. Where a
+propositions and seven explicit `axiom`s; there are no `sorry` holes. Where a
 paper draft disagrees with Lean, **Lean is authoritative**.
 
 Entry point for the Diophantine path: [`DstDiophantine/Basic.lean`](DstDiophantine/Basic.lean)
@@ -81,7 +81,7 @@ replace an `axiom` with an internal proof. Diagnostic bridges
 | Conjecture | Live layer | Status |
 | --- | --- | --- |
 | Fermat | [`FermatMixed.lean`](DstDiophantine/Theorems/FermatMixed.lean), [`FermatMotor.lean`](DstDiophantine/Embedding/FermatMotor.lean) | Dual-axis motor. $n=2$ is pure cyclic; $n\ge 3$ positive solutions are mixed. Sandwich / interference lemmas are proved; they are **not** yet connected to `powerSumMotor = 1`. Residual: `FermatMixedMotorResidual`. Classical FLT is not claimed. |
-| Beal | [`Beal.lean`](DstDiophantine/Theorems/Beal.lean) and slices | Furthest along. Exponent-gcd assembly `beal_conjecture_pos_of_fine_residuals_even_split` is proved; the Gaussian cube leaf `α³+2β³=γ³` is closed under Euler's affine determination (`eulerAffineCubeAddTwo`). Odd two-equal shapes with repeated exponent `3` and companion `4` or `5` are closed under Bruin's theorem on sums of two cubes (`bruinSumTwoCubes`). Remaining work is the residual **leaves** (`e≥5` equal-odd two-factor, even-diff, even-sum `z≥7`, odd two-equal outside those shapes, all-distinct, unequal-odd). Finite coprime-free boxes in [`BealFinite.lean`](DstDiophantine/Theorems/BealFinite.lean). Classical Beal is not claimed. |
+| Beal | [`Beal.lean`](DstDiophantine/Theorems/Beal.lean) and slices | Furthest along. Exponent-gcd assembly `beal_conjecture_pos_of_fine_residuals_even_split` is proved; the Gaussian cube leaf `α³+2β³=γ³` is closed under Euler's affine determination (`eulerAffineCubeAddTwo`). A coprime sum of two cubes is never an `n`-th power for `3 ≤ n ≤ 10^9`, nor for any even `n ≥ 4` (`sumTwoCubesNotPerfectPower`); Bruin's `n = 4, 5` is derived. Signature `(3,4,5)` is closed in every order (`siksekStoll345`). Remaining work is the residual **leaves** (`e≥5` equal-odd two-factor, even-diff, even-sum `z≥7`, odd two-equal outside the two-cube range, all-distinct outside `(3,4,5)`, unequal-odd). Finite coprime-free boxes in [`BealFinite.lean`](DstDiophantine/Theorems/BealFinite.lean). Classical Beal is not claimed. |
 | abc | [`Abc.lean`](DstDiophantine/Theorems/Abc.lean) | Continuous bridge is false. Live: `AbcModularBridge` plus bounded radical certificates. |
 | Riemann | [`Riemann.lean`](DstDiophantine/Theorems/Riemann.lean) | `RiemannAdmissibleBridge`; rational-grid certificates (denominator $\le 20$). Not mathlib `riemannZeta`. |
 | Goldbach | [`Goldbach.lean`](DstDiophantine/Theorems/Goldbach.lean) | `GoldbachAdmissibleBridge`; even $n\le 100$. Integer height is independent of whether a pair exists. |
@@ -91,7 +91,7 @@ replace an `axiom` with an internal proof. Diagnostic bridges
 Beal is the most developed problem-specific layer. Fermat’s live route is the
 dual-axis motor, not the demoted single-axis modular bridge.
 
-### Explicit axioms (6)
+### Explicit axioms (7)
 
 mathlib at this pin does not supply these classical theorems; they are recorded
 as `axiom` rather than smuggled into `sorry`.
@@ -103,7 +103,8 @@ as `axiom` rather than smuggled into `sorry`.
 | `darmonMerelCube` | [`DarmonMerel.lean`](DstDiophantine/Theorems/DarmonMerel.lean) | Even-sum cube slice $z=3$ |
 | `fermatSignatureNN5` | [`FermatNN5.lean`](DstDiophantine/Theorems/FermatNN5.lean) | Even-sum fifth-power slice $z=5$ |
 | `eulerAffineCubeAddTwo` | [`EulerCube.lean`](DstDiophantine/Theorems/EulerCube.lean) | Gaussian cube leaf $\alpha^3+2\beta^3=\gamma^3$ |
-| `bruinSumTwoCubes` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | Odd two-equal shapes $a^3+b^3=c^4$ and $a^3+b^3=c^5$ |
+| `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | $a^3+b^3=c^n$ for $3\le n\le 10^9$, and for every even $n\ge 4$ |
+| `siksekStoll345` | [`SiksekStoll.lean`](DstDiophantine/Theorems/SiksekStoll.lean) | Signature $(3,4,5)$ in every order |
 
 ### Finite certificates
 

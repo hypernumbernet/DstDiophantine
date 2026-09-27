@@ -160,9 +160,30 @@ theorem classifyBealExponents_five_three_three :
 theorem classifyBealExponents_three_four_three :
     classifyBealExponents 3 4 3 = .T := by native_decide
 
-/-- Repeated exponent `3` with companion `7` stays in the odd two-equal body. -/
+/-- Repeated exponent `3` with companion `7` is inside the two-cube bound. -/
 theorem classifyBealExponents_three_three_seven :
-    classifyBealExponents 3 3 7 = .U := by native_decide
+    classifyBealExponents 3 3 7 = .T := by native_decide
+
+/-- Even companion `8` is a two-cube power, with no appeal to the bound. -/
+theorem classifyBealExponents_three_three_eight :
+    classifyBealExponents 3 3 8 = .T := by native_decide
+
+/-- An even companion past `10^9` stays closed; the next odd companion does not. -/
+theorem classifyBealExponents_three_three_past_bound :
+    classifyBealExponents 3 3 1000000002 = .T ∧
+      classifyBealExponents 3 3 1000000001 = .U := by
+  native_decide
+
+/-- Signature `(3,4,5)` is closed in every order. -/
+theorem classifyBealExponents_three_four_five :
+    classifyBealExponents 3 4 5 = .T := by native_decide
+
+theorem classifyBealExponents_five_three_four :
+    classifyBealExponents 5 3 4 = .T := by native_decide
+
+/-- The prime signature `(3,5,7)` stays in the all-distinct body. -/
+theorem classifyBealExponents_three_five_seven :
+    classifyBealExponents 3 5 7 = .U := by native_decide
 
 theorem classifyBealExponents_two_three_three :
     classifyBealExponents 2 3 3 = .F := by native_decide
@@ -176,11 +197,11 @@ theorem beal_balanced_diagnostic_seat :
 
 /-- Open-residual `U` is not sufficient for the L3 balanced seat. -/
 theorem open_residual_U_not_implies_balancedSeat :
-    classifyBealExponents 3 4 5 = .U ∧
+    classifyBealExponents 3 5 7 = .U ∧
       IsWindowSeed halfWindowSeed ∧
         ¬ BalancedResidualClass halfWindowSeed := by
   refine ⟨?_, halfWindowSeed_isWindowSeed, halfWindowSeed_not_balanced⟩
-  exact classifyBealExponents_eq_U_iff.mpr (by native_decide)
+  exact classifyBealExponents_three_five_seven
 
 /-! ### Model rapidity `pureBoost (log 2 / m)` is outside L3 -/
 

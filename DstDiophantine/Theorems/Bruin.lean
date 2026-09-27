@@ -3,18 +3,22 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
-# Sums of two cubes as fourth and fifth powers (phase 7v)
+# Sums of two cubes as perfect powers (phase 7v / 7w)
 
-mathlib (v4.34) does not contain Bruin's theorem that a sum of two cubes is
-never a fourth or a fifth power. We take that classical statement as an
-`axiom` (same contract as `darmonMerelCube` / `fermatSignatureNN5`) and close
-the odd two-equal Beal shapes in which the repeated exponent is `3` and the
-remaining exponent is `4` or `5`.
+mathlib (v4.34) does not contain the theorems that a coprime sum of two cubes
+is never an `n`-th power for `3 ≤ n ≤ 10^9`, nor for every even `n ≥ 4`.
+We take that classical statement as an `axiom` (same contract as
+`darmonMerelCube` / `fermatSignatureNN5`).
 
-The exponent `3` is odd, so each placement of the repeated exponent rewrites,
-by moving one cube across the equation, into `a³ + b³ = cⁿ`. Signature
-`(n,n,5)` with `n ≥ 4` stays with `fermatSignatureNN5`; the case `n = 3` is
-this theorem, not that one. Classical Beal is **not** claimed unconditionally.
+* The bound `3 ≤ n ≤ 10^9` is the compilation of Bruin, Chen–Siksek, Dahmen,
+  Freitas and Kraus recorded by Bennett–Bruni–Freitas.
+* The even family `n = 2k` with `k ≥ 2` is Bennett–Chen–Dahmen–Yazdani:
+  `a³ + b³ = c^{2k}` has no nonzero coprime solution.
+
+Bruin's fourth and fifth powers are the first two cases (`bruinSumTwoCubes`
+is derived, not a separate axiom). The exponent `3` is odd, so each placement
+of the repeated exponent rewrites, by moving one cube across the equation,
+into `a³ + b³ = cⁿ`. Classical Beal is **not** claimed unconditionally.
 -/
 
 namespace DstDiophantine
@@ -34,20 +38,75 @@ instance {x y z : ℕ} : Decidable (IsBruinTwoCubeShape x y z) := by
   infer_instance
 
 /--
-Bruin (2000): there are no nonzero integer solutions of `a³ + b³ = cⁿ` for
-`n = 4` or `n = 5` with `gcd(|a|,|b|,|c|) = 1`.
+Companion exponents for which a coprime sum of two cubes is not an `n`-th power:
+the range `3 ≤ n ≤ 10^9`, or any even `n ≥ 4`.
+-/
+def TwoCubeExponent (n : ℕ) : Prop :=
+  (3 ≤ n ∧ n ≤ 1000000000) ∨ (4 ≤ n ∧ 2 ∣ n)
+
+instance : DecidablePred TwoCubeExponent := by
+  intro n
+  unfold TwoCubeExponent
+  infer_instance
+
+/--
+Two exponents equal `3` and the third is a `TwoCubeExponent`, in any position.
+Bruin's shapes `(3,3,4)` and `(3,3,5)` are the first cases.
+-/
+def IsTwoCubePowerShape (x y z : ℕ) : Prop :=
+  (x = 3 ∧ y = 3 ∧ TwoCubeExponent z) ∨
+    (y = 3 ∧ z = 3 ∧ TwoCubeExponent x) ∨
+      (x = 3 ∧ z = 3 ∧ TwoCubeExponent y)
+
+instance {x y z : ℕ} : Decidable (IsTwoCubePowerShape x y z) := by
+  unfold IsTwoCubePowerShape
+  infer_instance
+
+theorem TwoCubeExponent_of_four_or_five {n : ℕ} (h : n = 4 ∨ n = 5) :
+    TwoCubeExponent n := by
+  rcases h with rfl | rfl
+  · exact Or.inl ⟨by decide, by decide⟩
+  · exact Or.inl ⟨by decide, by decide⟩
+
+theorem IsTwoCubePowerShape_of_bruin {x y z : ℕ} (h : IsBruinTwoCubeShape x y z) :
+    IsTwoCubePowerShape x y z := by
+  rcases h with ⟨hx, hy, hz⟩ | ⟨hy, hz, hx⟩ | ⟨hx, hz, hy⟩
+  · exact Or.inl ⟨hx, hy, TwoCubeExponent_of_four_or_five hz⟩
+  · exact Or.inr (Or.inl ⟨hy, hz, TwoCubeExponent_of_four_or_five hx⟩)
+  · exact Or.inr (Or.inr ⟨hx, hz, TwoCubeExponent_of_four_or_five hy⟩)
+
+/--
+No nonzero coprime solution of `a³ + b³ = cⁿ` when `3 ≤ n ≤ 10^9`, and none
+when `n` is even and `n ≥ 4`.
 
 Not present in mathlib at the pin used by this project; recorded explicitly as
 an axiom rather than smuggled into a `sorry`. This is **not** a Lean proof of
-Bruin's theorem. On this equation a three-way gcd of `1` is the coprimality
-hypothesis of the classical statement.
+the cited theorems. On this equation a three-way gcd of `1` is the coprimality
+hypothesis of the classical statements (a prime dividing two bases divides the
+third).
 -/
-axiom bruinSumTwoCubes :
+axiom sumTwoCubesNotPerfectPower :
+    ∀ (a b c : ℤ) (n : ℕ),
+      ((3 ≤ n ∧ n ≤ 1000000000) ∨ (4 ≤ n ∧ 2 ∣ n)) →
+      a ≠ 0 → b ≠ 0 → c ≠ 0 →
+      Nat.gcd a.natAbs (Nat.gcd b.natAbs c.natAbs) = 1 →
+      ¬ a ^ 3 + b ^ 3 = c ^ n
+
+/--
+Bruin (2000), recovered from `sumTwoCubesNotPerfectPower`: no nonzero coprime
+solution of `a³ + b³ = cⁿ` for `n = 4` or `n = 5`.
+-/
+theorem bruinSumTwoCubes :
     ∀ (a b c : ℤ) (n : ℕ),
       (n = 4 ∨ n = 5) →
       a ≠ 0 → b ≠ 0 → c ≠ 0 →
       Nat.gcd a.natAbs (Nat.gcd b.natAbs c.natAbs) = 1 →
-      ¬ a ^ 3 + b ^ 3 = c ^ n
+      ¬ a ^ 3 + b ^ 3 = c ^ n := by
+  intro a b c n hn hA hB hC hgcd hsol
+  apply sumTwoCubesNotPerfectPower a b c n ?_ hA hB hC hgcd hsol
+  rcases hn with rfl | rfl
+  · exact Or.inl ⟨by decide, by decide⟩
+  · exact Or.inl ⟨by decide, by decide⟩
 
 /-- Abbreviation for the two-cube fourth/fifth-power hypothesis. -/
 abbrev BruinSumTwoCubesHyp : Prop :=
@@ -95,6 +154,36 @@ theorem not_beal_bruin_two_cube_shape_of
       rw [(bealGcd_neg_permute A B C).2]; exact hgcd
     exact hBr C (-A) B y hy45 hC (neg_ne_zero.mpr hA) hB hgcd' hrew
 
+/--
+Phase 7w: a coprime Beal solution whose exponents are a repeated cube beside a
+`TwoCubeExponent` is impossible, in every position.
+-/
+theorem not_beal_two_cube_power_shape
+    {A B C : ℤ} {x y z : ℕ}
+    (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (_hd : bealExpGcd x y z = 1)
+    (hshape : IsTwoCubePowerShape x y z)
+    (hsol : A ^ x + B ^ y = C ^ z) : False := by
+  rcases hshape with ⟨hx3, hy3, hzN⟩ | ⟨hy3, hz3, hxN⟩ | ⟨hx3, hz3, hyN⟩
+  · subst hx3; subst hy3
+    exact sumTwoCubesNotPerfectPower A B C z hzN hA hB hC hgcd hsol
+  · subst hy3; subst hz3
+    have hrew : C ^ 3 + (-B) ^ 3 = A ^ x := by
+      rw [odd_pow_add_neg (by decide : Odd 3)]
+      linarith [hsol]
+    have hgcd' : bealGcd C (-B) A = 1 := by
+      rw [(bealGcd_neg_permute A B C).1]; exact hgcd
+    exact sumTwoCubesNotPerfectPower C (-B) A x hxN hC (neg_ne_zero.mpr hB) hA hgcd' hrew
+  · subst hx3; subst hz3
+    have hrew : C ^ 3 + (-A) ^ 3 = B ^ y := by
+      rw [odd_pow_add_neg (by decide : Odd 3)]
+      linarith [hsol]
+    have hgcd' : bealGcd C (-A) B = 1 := by
+      rw [(bealGcd_neg_permute A B C).2]; exact hgcd
+    exact sumTwoCubesNotPerfectPower C (-A) B y hyN hC (neg_ne_zero.mpr hA) hB hgcd' hrew
+
 /-- Phase 7v axiom form of the two-cube fourth/fifth-power slice. -/
 theorem not_beal_bruin_two_cube_shape
     {A B C : ℤ} {x y z : ℕ}
@@ -108,8 +197,10 @@ theorem not_beal_bruin_two_cube_shape
     hx hy hz hA hB hC hgcd hd hshape hsol
 
 /--
-**Residual** (phase 7v, unproved): odd two-equal Beal outside the two-cube
-fourth and fifth powers. The removed shapes are `IsBruinTwoCubeShape`.
+**Residual** (phase 7w, unproved): odd two-equal Beal outside the two-cube
+power shapes. The removed shapes are `IsTwoCubePowerShape` (Bruin's fourth
+and fifth powers, every companion through `10^9`, and every even companion
+at least `4`).
 -/
 def BealTwoEqualOddOutsideBruinResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -117,19 +208,19 @@ def BealTwoEqualOddOutsideBruinResidual : Prop :=
     bealGcd A B C = 1 →
     bealExpGcd x y z = 1 →
     ((x = y ∧ Odd x) ∨ (y = z ∧ Odd y) ∨ (x = z ∧ Odd x)) →
-    ¬ IsBruinTwoCubeShape x y z →
+    ¬ IsTwoCubePowerShape x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 /--
-Phase 7v: the odd two-equal residual follows from its body outside the
-two-cube fourth and fifth powers.
+Phase 7w: the odd two-equal residual follows from its body outside the
+two-cube power shapes.
 -/
 theorem BealTwoEqualOddResidual_of_outside_bruin
     (hOut : BealTwoEqualOddOutsideBruinResidual) :
     BealTwoEqualOddResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hpair hsol
-  by_cases hshape : IsBruinTwoCubeShape x y z
-  · exact not_beal_bruin_two_cube_shape hx hy hz hA hB hC hgcd hd hshape hsol
+  by_cases hshape : IsTwoCubePowerShape x y z
+  · exact not_beal_two_cube_power_shape hx hy hz hA hB hC hgcd hd hshape hsol
   · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hshape hsol
 
 end Theorems
