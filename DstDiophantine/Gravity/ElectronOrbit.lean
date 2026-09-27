@@ -35,12 +35,11 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
   \(x_1<x<\pi\) is repulsive. Barriers are force divergences, not clock freezes.
 * Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the Bohr
   ratio \(4\). The equal-scale tower is inward; Bohr shells are outward.
-* The unique node of the `n`-th `π`-interval increases with `n`. Any common
-  phase that is strictly decreasing in distance therefore places successive
-  nodes inward (`s < r`, hence `s/r ≠ 4`). In particular they cannot sit at
-  `a₀` and `4a₀`, and they cannot occupy two successive Bohr radii. The
-  inward order is not special to `λ/r`. Bohr radii themselves strictly
-  increase.
+* The node of branch `n` increases with `n`. A common phase that is strictly
+  decreasing in distance places successive nodes inward (`s < r`, hence
+  `s/r ≠ 4`), so those nodes cannot occupy two successive Bohr radii.
+  The pair `a₀`, `4a₀` is the first such pair. Bohr radii themselves
+  strictly increase. This order is not special to `λ/r`.
 * \(Z\)-contraction is the algebraic identity \(\ell\mapsto Z\ell\) \(\iff\)
   \(r\mapsto r/Z\).
 * The first node is a simple zero. On \([\pi/4,x_1)\) one has
@@ -273,18 +272,6 @@ theorem equalScale_node_ratio_ne_four
   have hratio : s / r < 1 := (div_lt_one₀ hr).mpr hs_lt
   exact ne_of_lt (lt_trans hratio (by norm_num : (1 : ℝ) < 4))
 
-/-- The first two nodes of a decreasing equal phase cannot sit at \(a_0\) and \(4a_0\). -/
-theorem not_equalScale_bohr_pair
-    {ρ : ℝ → ℝ} (hanti : StrictAntiOn ρ (Ioi 0))
-    (h1 : ρ (bohrRadiusApprox : ℝ) = 2 * branchNode 0)
-    (h4 : ρ (4 * (bohrRadiusApprox : ℝ)) = 2 * branchNode 1) : False := by
-  have ha0 : (0 : ℝ) < (bohrRadiusApprox : ℝ) := by exact_mod_cast bohrRadiusApprox_pos
-  have h4pos : (0 : ℝ) < 4 * (bohrRadiusApprox : ℝ) := by positivity
-  have hratio := equalScale_node_ratio_ne_four hanti ha0 h4pos h1 h4
-  have : 4 * (bohrRadiusApprox : ℝ) / (bohrRadiusApprox : ℝ) = 4 := by
-    field_simp [ha0.ne']
-  exact hratio this
-
 /-- No decreasing equal phase can place two successive Bohr shells on two
 successive nodes: one sequence increases and the other decreases. -/
 theorem equalScale_successive_nodes_ne_bohr
@@ -295,6 +282,19 @@ theorem equalScale_successive_nodes_ne_bohr
     equalScale_phase_nodes_inward hanti (bohrShellRadius_pos hk)
       (bohrShellRadius_pos (Nat.succ_pos k)) hr hs
   exact absurd hinward (lt_asymm (bohrShellRadius_strictMono hk))
+
+/-- The radii \(a_0\) and \(4a_0\) are the first successive Bohr pair. -/
+theorem not_equalScale_bohr_pair
+    {ρ : ℝ → ℝ} (hanti : StrictAntiOn ρ (Ioi 0))
+    (h1 : ρ (bohrRadiusApprox : ℝ) = 2 * branchNode 0)
+    (h4 : ρ (4 * (bohrRadiusApprox : ℝ)) = 2 * branchNode 1) : False := by
+  have hr1 : bohrShellRadius 1 = (bohrRadiusApprox : ℝ) := by
+    unfold bohrShellRadius
+    norm_num
+  have hr2 : bohrShellRadius 2 = 4 * (bohrRadiusApprox : ℝ) := by
+    unfold bohrShellRadius
+    norm_num
+  exact equalScale_successive_nodes_ne_bohr (k := 1) Nat.one_pos hanti (hr1 ▸ h1) (hr2 ▸ h4)
 
 /-! ### \(Z\)-contraction -/
 
