@@ -14,6 +14,7 @@ import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
+import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
@@ -136,6 +137,14 @@ The straight line of one fixed jet is not itself that geodesic.
   vanishes, and crosses \(M=0\) once when that rate is nonzero.
   A frozen well \(\delta=v\) carries \(J=v\sigma/2\); at rest it is
   balanced and massive, not free fall.
+* `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
+  mass \(M\), and free fall \(\Omega=1\) are three different quantities.
+  On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
+  only if the lag vanishes or the dual angle vanishes. A cross-axis
+  shield has \(J=0\), \(M>0\), and \(V>0\). Vanishing stiffness does not
+  force resonance. A frozen lag keeps \(V\) constant while \(J\) and \(M\)
+  move whenever \(m\delta\neq 0\). Only the same-sign kinetic model
+  restores the lag. No \(F=ma\) and no acceleration ceiling are claimed.
 * `ElectronOrbit` — first Coulombic node in \((\pi/4,1)\). The zero is
   simple, and the equal-scale Coulomb potential falls logarithmically,
   without a lower bound, as the node is approached. Repulsive layers
@@ -345,6 +354,12 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
       (deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t)
       (deriv (deriv (writtenDual σ₀ σd₀ m δ₀ ν)) t) :=
   written_flow_actualEL σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: one-axis stiffness is \(2m(M-\sigma^2/4)\), not \(J\). -/
+example (m α β : ℝ) :
+    stiffnessPotential m (RelativeRotor.axisParams α β) =
+      2 * m * (mass (RelativeRotor.axisParams α β) - (α + β) ^ 2 / 4) :=
+  stiffness_axis_massShift m α β
 
 /-- Regression: coasting alignment keeps \(J=0\) and lets the mass run with \(\sigma^2\). -/
 example (σ₀ σd₀ m t : ℝ) :
