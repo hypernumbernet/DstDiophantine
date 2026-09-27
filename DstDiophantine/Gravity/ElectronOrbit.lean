@@ -35,6 +35,12 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
   \(x_1<x<\pi\) is repulsive. Barriers are force divergences, not clock freezes.
 * Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the Bohr
   ratio \(4\). The equal-scale tower is inward; Bohr shells are outward.
+* The unique node of the `n`-th `π`-interval increases with `n`. Any common
+  phase that is strictly decreasing in distance therefore places successive
+  nodes inward (`s < r`, hence `s/r ≠ 4`). In particular they cannot sit at
+  `a₀` and `4a₀`, and they cannot occupy two successive Bohr radii. The
+  inward order is not special to `λ/r`. Bohr radii themselves strictly
+  increase.
 * \(Z\)-contraction is the algebraic identity \(\ell\mapsto Z\ell\) \(\iff\)
   \(r\mapsto r/Z\).
 * The first node is a simple zero. On \([\pi/4,x_1)\) one has
@@ -208,6 +214,87 @@ theorem equalScale_ratio_ne_bohr
     resonanceRoot1 / x₂ ≠ bohrShellRadius 2 / bohrShellRadius 1 := by
   rw [bohrShellRadius_ratio_two]
   exact ne_of_lt (lt_trans (equalScale_ratio_lt_one hx₂) (by norm_num : (1 : ℝ) < 4))
+
+/-! ### Inward order for any decreasing equal phase -/
+
+/-- The unique node of the `n`-th `π`-interval. -/
+noncomputable def branchNode (n : ℕ) : ℝ :=
+  Classical.choose (ExistsUnique.exists (exists_unique_node_branch n))
+
+theorem branchNode_spec (n : ℕ) :
+    branchNode n ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π) ∧
+      gammaSEqual (branchNode n) = 0 :=
+  Classical.choose_spec (ExistsUnique.exists (exists_unique_node_branch n))
+
+/-- Neighbouring branches meet only at an endpoint, so the nodes increase. -/
+theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := by
+  have hlo := (mem_Ioo.mp (branchNode_spec n).1).2
+  have hhi := (mem_Ioo.mp (branchNode_spec (n + 1)).1).1
+  have hend : (n : ℝ) * π + π = ((n + 1 : ℕ) : ℝ) * π := by
+    push_cast
+    ring
+  linarith
+
+/-- Bohr radii increase: \(r_n=n^2 a_0\) runs outward. -/
+theorem bohrShellRadius_strictMono {n : ℕ} (hn : 0 < n) :
+    bohrShellRadius n < bohrShellRadius (n + 1) := by
+  unfold bohrShellRadius
+  have ha0 : (0 : ℝ) < (bohrRadiusApprox : ℝ) := by exact_mod_cast bohrRadiusApprox_pos
+  have hlt : (n : ℝ) < ((n + 1 : ℕ) : ℝ) := by exact_mod_cast Nat.lt_add_one n
+  have hn0 : (0 : ℝ) < (n : ℝ) := Nat.cast_pos.mpr hn
+  have hsq : (n : ℝ) ^ 2 < ((n + 1 : ℕ) : ℝ) ^ 2 := by
+    have hcast : ((n + 1 : ℕ) : ℝ) = (n : ℝ) + 1 := by push_cast; rfl
+    rw [hcast, pow_two, pow_two]
+    nlinarith [hn0]
+  exact mul_lt_mul_of_pos_right hsq ha0
+
+/-- A common phase that decreases with distance places successive nodes inward.
+`ρ` is the shared rapidity, so a node of branch `n` is the level `2 * branchNode n`. -/
+theorem equalScale_phase_nodes_inward
+    {ρ : ℝ → ℝ} {n : ℕ} (hanti : StrictAntiOn ρ (Ioi 0))
+    {r s : ℝ} (hr : 0 < r) (hs : 0 < s)
+    (hrρ : ρ r = 2 * branchNode n) (hsρ : ρ s = 2 * branchNode (n + 1)) :
+    s < r := by
+  have hρ : ρ r < ρ s := by
+    rw [hrρ, hsρ]
+    exact mul_lt_mul_of_pos_left (branchNode_strictMono n) (by norm_num)
+  rcases lt_trichotomy s r with hsr | heq | hrs
+  · exact hsr
+  · exact absurd hρ (by rw [heq]; exact lt_irrefl _)
+  · exact absurd (hanti (mem_Ioi.mpr hr) (mem_Ioi.mpr hs) hrs) (not_lt_of_gt hρ)
+
+/-- Successive inward nodes stand in a ratio different from the Bohr ratio `4`. -/
+theorem equalScale_node_ratio_ne_four
+    {ρ : ℝ → ℝ} {n : ℕ} (hanti : StrictAntiOn ρ (Ioi 0))
+    {r s : ℝ} (hr : 0 < r) (hs : 0 < s)
+    (hrρ : ρ r = 2 * branchNode n) (hsρ : ρ s = 2 * branchNode (n + 1)) :
+    s / r ≠ 4 := by
+  have hs_lt := equalScale_phase_nodes_inward hanti hr hs hrρ hsρ
+  have hratio : s / r < 1 := (div_lt_one₀ hr).mpr hs_lt
+  exact ne_of_lt (lt_trans hratio (by norm_num : (1 : ℝ) < 4))
+
+/-- The first two nodes of a decreasing equal phase cannot sit at \(a_0\) and \(4a_0\). -/
+theorem not_equalScale_bohr_pair
+    {ρ : ℝ → ℝ} (hanti : StrictAntiOn ρ (Ioi 0))
+    (h1 : ρ (bohrRadiusApprox : ℝ) = 2 * branchNode 0)
+    (h4 : ρ (4 * (bohrRadiusApprox : ℝ)) = 2 * branchNode 1) : False := by
+  have ha0 : (0 : ℝ) < (bohrRadiusApprox : ℝ) := by exact_mod_cast bohrRadiusApprox_pos
+  have h4pos : (0 : ℝ) < 4 * (bohrRadiusApprox : ℝ) := by positivity
+  have hratio := equalScale_node_ratio_ne_four hanti ha0 h4pos h1 h4
+  have : 4 * (bohrRadiusApprox : ℝ) / (bohrRadiusApprox : ℝ) = 4 := by
+    field_simp [ha0.ne']
+  exact hratio this
+
+/-- No decreasing equal phase can place two successive Bohr shells on two
+successive nodes: one sequence increases and the other decreases. -/
+theorem equalScale_successive_nodes_ne_bohr
+    {ρ : ℝ → ℝ} {n k : ℕ} (hk : 0 < k) (hanti : StrictAntiOn ρ (Ioi 0))
+    (hr : ρ (bohrShellRadius k) = 2 * branchNode n)
+    (hs : ρ (bohrShellRadius (k + 1)) = 2 * branchNode (n + 1)) : False := by
+  have hinward :=
+    equalScale_phase_nodes_inward hanti (bohrShellRadius_pos hk)
+      (bohrShellRadius_pos (Nat.succ_pos k)) hr hs
+  exact absurd hinward (lt_asymm (bohrShellRadius_strictMono hk))
 
 /-! ### \(Z\)-contraction -/
 

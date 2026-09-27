@@ -138,7 +138,8 @@ The straight line of one fixed jet is not itself that geodesic.
   simple, and the equal-scale Coulomb potential falls logarithmically,
   without a lower bound, as the node is approached. Repulsive layers
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
-  ratio \(4\).
+  ratio \(4\). Any strictly distance-decreasing equal phase places
+  successive nodes inward, so they cannot coincide with the outward Bohr radii.
 
 ## One Faraday six-space
 
@@ -482,6 +483,12 @@ example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
 example {x₂ : ℝ} (hx₂ : x₂ ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
     resonanceRoot1 / x₂ ≠ bohrShellRadius 2 / bohrShellRadius 1 :=
   equalScale_ratio_ne_bohr hx₂
+
+/-- Regression: a decreasing equal phase cannot place successive Bohr shells on successive nodes. -/
+example {ρ : ℝ → ℝ} {n k : ℕ} (hk : 0 < k) (hanti : StrictAntiOn ρ (Set.Ioi 0))
+    (hr : ρ (bohrShellRadius k) = 2 * branchNode n)
+    (hs : ρ (bohrShellRadius (k + 1)) = 2 * branchNode (n + 1)) : False :=
+  equalScale_successive_nodes_ne_bohr hk hanti hr hs
 
 /-- Regression: \(\ell\mapsto\ell/Z\) contracts every equal-scale radius. -/
 example {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
