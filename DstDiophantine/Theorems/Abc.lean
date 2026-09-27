@@ -248,7 +248,7 @@ theorem abcHeight_eq (a b c : ℕ) :
     add_zero]
   ring
 
-/-- Quality–height identity (exact pure-boost model; paper drops `O(1)`). -/
+/-- Quality–height identity in the pure-boost chart. -/
 theorem abcHeight_eq_quality {a b c : ℕ} (h : IsAbcTriple a b c) :
     abcHeight a b c =
       (16 / (3 * Real.pi ^ 2)) *
@@ -534,7 +534,17 @@ theorem abcHeight_eq_logGap (a b c : ℕ) :
       (16 / (3 * Real.pi ^ 2)) * (abcLogGap a b c) ^ 2 := by
   simpa [abcLogGap] using abcHeight_eq a b c
 
-/-- Normalised height passes 1 exactly past rapidity `π √3 / 4`. -/
+/-- Normalised height equals one at rapidity `π √3 / 4`. -/
+private theorem abcHeight_unit_at_threshold :
+    (16 / (3 * Real.pi ^ 2)) * (Real.pi * Real.sqrt 3 / 4) ^ 2 = 1 := by
+  have hsq : (Real.pi * Real.sqrt 3 / 4) ^ 2 = 3 * Real.pi ^ 2 / 16 := by
+    rw [div_pow, mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+    field_simp
+    norm_num
+  rw [hsq]
+  field_simp
+
+/-- Normalised height passes below 1 exactly inside rapidity `π √3 / 4`. -/
 theorem abcHeight_lt_one_iff (a b c : ℕ) :
     abcHeight a b c < 1 ↔
       |abcLogGap a b c| < Real.pi * Real.sqrt 3 / 4 := by
@@ -548,53 +558,38 @@ theorem abcHeight_lt_one_iff (a b c : ℕ) :
   have hρ : 0 < ρ := by
     unfold ρ
     positivity
-  have hinv : 1 / κ = 3 * Real.pi ^ 2 / 16 := by
-    unfold κ
-    field_simp
-  have hρsq : ρ ^ 2 = 3 * Real.pi ^ 2 / 16 := by
-    unfold ρ
-    rw [div_pow, mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
-    field_simp
-    norm_num
+  have hunit : κ * ρ ^ 2 = 1 := by
+    simpa [κ, ρ] using abcHeight_unit_at_threshold
   constructor
   · intro h
-    have hδ : δ ^ 2 < 1 / κ :=
-      (lt_div_iff₀ hκ).mpr (by simpa [mul_comm] using h)
-    rw [hinv, ← hρsq] at hδ
-    have hsq := (sq_lt_sq).mp hδ
-    rwa [abs_of_pos hρ] at hsq
+    have hsq : δ ^ 2 < ρ ^ 2 := by
+      have hlt : κ * δ ^ 2 < κ * ρ ^ 2 := by simpa [hunit, mul_comm] using h
+      exact lt_of_mul_lt_mul_left hlt (le_of_lt hκ)
+    have habs := (sq_lt_sq).mp hsq
+    rwa [abs_of_pos hρ] at habs
   · intro h
     have hsq : δ ^ 2 < ρ ^ 2 := (sq_lt_sq).mpr (by rwa [abs_of_pos hρ])
-    rw [hρsq] at hsq
-    have hδ : δ ^ 2 < 1 / κ := by
-      rw [← hinv] at hsq
-      exact hsq
-    have : κ * δ ^ 2 < 1 := by
-      have hmul := (lt_div_iff₀ hκ).mp hδ
-      simpa [mul_comm] using hmul
-    simpa [mul_comm] using this
+    have hlt : κ * δ ^ 2 < κ * ρ ^ 2 := mul_lt_mul_of_pos_left hsq hκ
+    simpa [hunit, mul_comm] using hlt
 
 theorem one_lt_abcHeight_of_abs_logGap_gt (a b c : ℕ)
     (h : Real.pi * Real.sqrt 3 / 4 < |abcLogGap a b c|) :
     1 < abcHeight a b c := by
   rw [abcHeight_eq_logGap]
   set δ : ℝ := abcLogGap a b c
+  set κ : ℝ := 16 / (3 * Real.pi ^ 2)
   set ρ : ℝ := Real.pi * Real.sqrt 3 / 4
+  have hκ : 0 < κ := by
+    unfold κ
+    positivity
   have hρ : 0 < ρ := by
     unfold ρ
     positivity
+  have hunit : κ * ρ ^ 2 = 1 := by
+    simpa [κ, ρ] using abcHeight_unit_at_threshold
   have hsq : ρ ^ 2 < δ ^ 2 := (sq_lt_sq).mpr (by rwa [abs_of_pos hρ])
-  have hρsq : ρ ^ 2 = 3 * Real.pi ^ 2 / 16 := by
-    unfold ρ
-    rw [div_pow, mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
-    field_simp
-    norm_num
-  have hcoef : (0 : ℝ) < 16 / (3 * Real.pi ^ 2) := by positivity
-  have hmul := mul_lt_mul_of_pos_left hsq hcoef
-  have hconst : (16 : ℝ) / (3 * Real.pi ^ 2) * ρ ^ 2 = 1 := by
-    rw [hρsq]
-    field_simp
-  linarith
+  have hlt : κ * ρ ^ 2 < κ * δ ^ 2 := mul_lt_mul_of_pos_left hsq hκ
+  simpa [hunit, mul_comm] using hlt
 
 /-- Admissible pure-boost seeds obey the strong radical bound `c ≤ e^{π/4} rad`. -/
 theorem abc_c_le_exp_mul_radical_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -660,7 +655,7 @@ theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b 
     ring
   linarith
 
-/-! ### Discrete ceiling (paper `Q(N)` shape) -/
+/-! ### Coarser ceiling from `|JNormalized| ≤ 1` -/
 
 /--
 Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with
@@ -669,7 +664,8 @@ Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with
 noncomputable def discreteAbcCeiling (N rad : ℕ) : ℝ :=
   1 + Real.sqrt (1 / (abcHeightCoef rad * ((16 : ℝ) / (3 * (N : ℝ) ^ 2))))
 
-/-- Under continuous admissibility the model ceiling applies (discrete form of Ch.7). -/
+/-- Admissibility also implies the coarser ceiling coming from `|JNormalized| ≤ 1`.
+The branch `δ ≤ π/4` is the stricter cut. -/
 theorem discrete_abc_bound {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) :=
@@ -681,7 +677,36 @@ theorem discrete_abc_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
     (16 : ℝ) / (3 * (N : ℝ) ^ 2) ≤ |JNormalized (toTorsionParams t)| :=
   Framework.discrete_nonzero_height_lb t hne
 
-/-! ### Finite computational certificate -/
+/-! ### Finite search over primitive triples -/
+
+/-- Enumerate primitive triples with `c ≤ N` and test `ok`. -/
+def allPrimitiveAbcUpTo (N : ℕ) (ok : ℕ → ℕ → ℕ → Bool) : Bool :=
+  (List.range (N + 1)).all fun c =>
+    (List.range (c + 1)).all fun a =>
+      let b := c - a
+      if decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) then
+        ok a b c
+      else
+        true
+
+theorem allPrimitiveAbcUpTo_sound {N : ℕ} {ok : ℕ → ℕ → ℕ → Bool}
+    (hcert : allPrimitiveAbcUpTo N ok = true) :
+    ∀ a b c : ℕ, IsAbcTriple a b c → c ≤ N → ok a b c = true := by
+  intro a b c h hcN
+  have hc_lt : c < N + 1 := Nat.lt_succ_of_le hcN
+  have hall_c := (List.all_eq_true.mp hcert) c (List.mem_range.mpr hc_lt)
+  have ha_le : a ≤ c := by
+    rw [← h.2.2.1]
+    exact Nat.le_add_right a b
+  have ha_mem : a ∈ List.range (c + 1) := List.mem_range.mpr (Nat.lt_succ_of_le ha_le)
+  have hall_a := (List.all_eq_true.mp hall_c) a ha_mem
+  have hb_eq : c - a = b := by
+    rw [← h.2.2.1, Nat.add_sub_cancel_left]
+  have hcond : (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) :=
+    ⟨h.1, h.2.1, h.2.2.1, h.2.2.2⟩
+  have hcondB : decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) = true :=
+    decide_eq_true_eq.mpr hcond
+  simpa only [hb_eq, hcondB, ↓reduceIte] using hall_a
 
 /-- Decidable radical-power bound for a single candidate pair. -/
 def abcRadicalPowOk (a b c : ℕ) : Bool :=
@@ -689,34 +714,15 @@ def abcRadicalPowOk (a b c : ℕ) : Bool :=
 
 /-- All primitive triples with `c ≤ N` satisfy `c ≤ rad(abc)²`. -/
 def allAbcRadicalPowBoundUpTo (N : ℕ) : Bool :=
-  (List.range (N + 1)).all fun c =>
-    (List.range (c + 1)).all fun a =>
-      let b := c - a
-      if decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) then
-        abcRadicalPowOk a b c
-      else
-        true
+  allPrimitiveAbcUpTo N abcRadicalPowOk
 
 theorem allAbcRadicalPowBoundUpTo_sound {N : ℕ}
     (hcert : allAbcRadicalPowBoundUpTo N = true) :
     ∀ a b c : ℕ, IsAbcTriple a b c → c ≤ N →
       c ≤ (abcRadical (a * b * c)) ^ 2 := by
-  intro a b c h hcN
-  have hc_lt : c < N + 1 := Nat.lt_succ_of_le hcN
-  have hall_c := (List.all_eq_true.mp hcert) c (List.mem_range.mpr hc_lt)
-  have ha_le : a ≤ c := by
-    rw [← h.2.2.1]
-    exact Nat.le_add_right a b
-  have ha_mem : a ∈ List.range (c + 1) := List.mem_range.mpr (Nat.lt_succ_of_le ha_le)
-  have hall_a := (List.all_eq_true.mp hall_c) a ha_mem
-  have hb_eq : c - a = b := by
-    rw [← h.2.2.1, Nat.add_sub_cancel_left]
-  have hcond : (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) :=
-    ⟨h.1, h.2.1, h.2.2.1, h.2.2.2⟩
-  have hcondB : decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) = true :=
-    decide_eq_true_eq.mpr hcond
-  simp only [hb_eq, hcondB, ↓reduceIte, abcRadicalPowOk, decide_eq_true_eq] at hall_a
-  exact hall_a
+  intro a b c h hc
+  have hok := allPrimitiveAbcUpTo_sound hcert a b c h hc
+  simpa [abcRadicalPowOk, decide_eq_true_eq] using hok
 
 /-- Chapter 7 finite-exploration certificate for targets up to `100`. -/
 theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -724,41 +730,19 @@ theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
   allAbcRadicalPowBoundUpTo_sound
     (by native_decide : allAbcRadicalPowBoundUpTo 100 = true) a b c h hc
 
-/-- Every primitive triple with `c ≤ N` satisfies `c ≤ 2 · rad(abc)`. -/
-def allAbcTwiceRadicalUpTo (N : ℕ) : Bool :=
-  (List.range (N + 1)).all fun c =>
-    (List.range (c + 1)).all fun a =>
-      let b := c - a
-      if decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) then
-        decide (c ≤ 2 * abcRadical (a * b * c))
-      else
-        true
+/-- Decidable comparison `c ≤ 2 · rad(abc)`. -/
+def abcTwiceRadicalOk (a b c : ℕ) : Bool :=
+  decide (c ≤ 2 * abcRadical (a * b * c))
 
-theorem allAbcTwiceRadicalUpTo_sound {N : ℕ}
-    (hcert : allAbcTwiceRadicalUpTo N = true) :
-    ∀ a b c : ℕ, IsAbcTriple a b c → c ≤ N →
-      c ≤ 2 * abcRadical (a * b * c) := by
-  intro a b c h hcN
-  have hc_lt : c < N + 1 := Nat.lt_succ_of_le hcN
-  have hall_c := (List.all_eq_true.mp hcert) c (List.mem_range.mpr hc_lt)
-  have ha_le : a ≤ c := by
-    rw [← h.2.2.1]
-    exact Nat.le_add_right a b
-  have ha_mem : a ∈ List.range (c + 1) := List.mem_range.mpr (Nat.lt_succ_of_le ha_le)
-  have hall_a := (List.all_eq_true.mp hall_c) a ha_mem
-  have hb_eq : c - a = b := by
-    rw [← h.2.2.1, Nat.add_sub_cancel_left]
-  have hcond : (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) :=
-    ⟨h.1, h.2.1, h.2.2.1, h.2.2.2⟩
-  have hcondB : decide (0 < a ∧ 0 < b ∧ a + b = c ∧ Nat.Coprime a b) = true :=
-    decide_eq_true_eq.mpr hcond
-  simp only [hb_eq, hcondB, ↓reduceIte, decide_eq_true_eq] at hall_a
-  exact hall_a
+/-- All primitive triples with `c ≤ N` satisfy `c ≤ 2 · rad(abc)`. -/
+def allAbcTwiceRadicalUpTo (N : ℕ) : Bool :=
+  allPrimitiveAbcUpTo N abcTwiceRadicalOk
 
 theorem abc_twice_radical_of_le_eighty {a b c : ℕ} (h : IsAbcTriple a b c)
-    (hc : c ≤ 80) : c ≤ 2 * abcRadical (a * b * c) :=
-  allAbcTwiceRadicalUpTo_sound
+    (hc : c ≤ 80) : c ≤ 2 * abcRadical (a * b * c) := by
+  have hok := allPrimitiveAbcUpTo_sound
     (by native_decide : allAbcTwiceRadicalUpTo 80 = true) a b c h hc
+  simpa [abcTwiceRadicalOk, decide_eq_true_eq] using hok
 
 /-- Sums up to `80` stay strictly inside the upper wall of the cone. -/
 theorem abc_logGap_lt_pi_div_four_of_le_eighty {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -825,25 +809,26 @@ theorem abcHeight_lt_one_one_eighty : abcHeight 1 80 81 < 1 := by
     linarith
   exact (Real.log_lt_iff_lt_exp (by norm_num)).mpr hratio
 
+theorem isAbcTriple_one_eight_nine : IsAbcTriple 1 8 9 := by
+  refine ⟨by decide, by decide, by decide, ?_⟩
+  decide
+
+theorem abcRadical_one_eight_nine : abcRadical (1 * 8 * 9) = 6 := by
+  native_decide
+
 theorem isAdmissibleContinuous_abc_one_eight_nine :
     IsAdmissibleContinuous (abcMismatchParams 1 8 9) := by
-  have htri : IsAbcTriple 1 8 9 := by
-    refine ⟨by decide, by decide, by decide, ?_⟩
-    decide
-  have hrad : abcRadical (1 * 8 * 9) = 6 := by native_decide
-  rw [isAdmissibleContinuous_abcMismatch_iff htri]
+  rw [isAdmissibleContinuous_abcMismatch_iff isAbcTriple_one_eight_nine]
   constructor
-  · rw [hrad]
+  · rw [abcRadical_one_eight_nine]
     push_cast
-    have hlog : Real.log (6 : ℝ) < Real.log (9 : ℝ) :=
-      Real.log_lt_log (by norm_num) (by norm_num)
-    linarith
-  · rw [hrad]
+    exact le_of_lt (sub_pos.mpr
+      (Real.log_lt_log (by norm_num) (by norm_num : (6 : ℝ) < 9)))
+  · rw [abcRadical_one_eight_nine]
     push_cast
     rw [← Real.log_div (by norm_num) (by norm_num)]
     have hratio : (9 : ℝ) / 6 < Real.exp (Real.pi / 4) := by
-      have hnum : (9 : ℝ) / 6 < 2 := by norm_num
-      exact hnum.trans two_lt_exp_pi_div_four
+      exact (by norm_num : (9 : ℝ) / 6 < 2).trans two_lt_exp_pi_div_four
     exact le_of_lt ((Real.log_lt_iff_lt_exp (by norm_num)).mpr hratio)
 
 theorem isAbcTriple_three_one_two_five : IsAbcTriple 3 125 128 := by
@@ -853,36 +838,33 @@ theorem isAbcTriple_three_one_two_five : IsAbcTriple 3 125 128 := by
 theorem abcRadical_three_one_two_five : abcRadical (3 * 125 * 128) = 30 := by
   native_decide
 
-/-- `3 + 5³ = 2⁷` leaves the cone and the normalised height exceeds one. -/
-theorem one_lt_abcHeight_three_one_two_five : 1 < abcHeight 3 125 128 := by
-  apply one_lt_abcHeight_of_abs_logGap_gt
-  have hpos : 0 < abcLogGap 3 125 128 := by
-    rw [abcLogGap, abcRadical_three_one_two_five]
-    push_cast
-    exact sub_pos.mpr (Real.log_lt_log (by norm_num) (by norm_num : (30 : ℝ) < 128))
-  rw [abs_of_pos hpos, abcLogGap, abcRadical_three_one_two_five]
+/-- `3 + 5³ = 2⁷` crosses the height threshold, hence leaves the cone. -/
+theorem pi_sqrt_three_div_four_lt_abcLogGap_two_seven :
+    Real.pi * Real.sqrt 3 / 4 < abcLogGap 3 125 128 := by
+  rw [abcLogGap, abcRadical_three_one_two_five]
   push_cast
   rw [← Real.log_div (by norm_num) (by norm_num)]
   have hratio : Real.exp (Real.pi * Real.sqrt 3 / 4) < (128 : ℝ) / 30 := by
-    have h := exp_pi_sqrt_three_div_four_lt_64_div_15
     have hnum : (64 : ℝ) / 15 = (128 : ℝ) / 30 := by norm_num
-    linarith
+    rw [← hnum]
+    exact exp_pi_sqrt_three_div_four_lt_64_div_15
   exact (Real.lt_log_iff_exp_lt (by norm_num)).mpr hratio
+
+theorem one_lt_abcHeight_three_one_two_five : 1 < abcHeight 3 125 128 := by
+  apply one_lt_abcHeight_of_abs_logGap_gt
+  have hgt := pi_sqrt_three_div_four_lt_abcLogGap_two_seven
+  rwa [abs_of_pos (lt_trans (by positivity : (0 : ℝ) < Real.pi * Real.sqrt 3 / 4) hgt)]
 
 theorem not_admissible_abc_three_one_two_five :
     ¬ IsAdmissibleContinuous (abcMismatchParams 3 125 128) := by
   intro hadm
   have hle :=
     (isAdmissibleContinuous_abcMismatch_iff isAbcTriple_three_one_two_five).mp hadm
-  have hgap : Real.pi / 4 < abcLogGap 3 125 128 := by
-    rw [abcLogGap, abcRadical_three_one_two_five]
-    push_cast
-    rw [← Real.log_div (by norm_num) (by norm_num)]
-    have hratio : Real.exp (Real.pi / 4) < (128 : ℝ) / 30 := by
-      have hnum : (27 : ℝ) / 10 < (128 : ℝ) / 30 := by norm_num
-      exact exp_pi_div_four_lt_27_div_10.trans hnum
-    exact (Real.lt_log_iff_exp_lt (by norm_num)).mpr hratio
-  exact not_lt_of_ge hle.2 hgap
+  have hhalf : Real.pi / 4 < Real.pi * Real.sqrt 3 / 4 := by
+    have hs : (1 : ℝ) < Real.sqrt 3 :=
+      Real.lt_sqrt_of_sq_lt (by norm_num : (1 : ℝ) ^ 2 < 3)
+    nlinarith [Real.pi_pos, hs]
+  exact not_lt_of_ge hle.2 (hhalf.trans pi_sqrt_three_div_four_lt_abcLogGap_two_seven)
 
 /-! ### Continuous bridge (diagnostic only) -/
 
@@ -921,13 +903,6 @@ theorem abc_conjecture_of_bridge (hbridge : AbcAdmissibleBridge) :
   · have hlt : 1 + ε < abcQuality a b c := lt_of_not_ge hq
     obtain ⟨hadm, hbig⟩ := hbridge ε hε a b c h hlt
     exact (abc_amplification_contradiction h hadm hbig).elim
-
-theorem isAbcTriple_one_eight_nine : IsAbcTriple 1 8 9 := by
-  refine ⟨by decide, by decide, by decide, ?_⟩
-  decide
-
-theorem abcRadical_one_eight_nine : abcRadical (1 * 8 * 9) = 6 := by
-  native_decide
 
 theorem one_lt_abcQuality_one_eight_nine : 1 < abcQuality 1 8 9 := by
   have h := isAbcTriple_one_eight_nine
