@@ -424,159 +424,52 @@ The shape stratification likewise converts a portion of the classical search int
 
 A second stratification records proof artefacts rather than exponent triples. Closed slices sit at the designated status \( T \), refuted diagnostics at \( F \), bookkeeping identities at \( B \), and live residuals together with the classical statement at \( U \). The four names are those of Dual Spacetime 4-Valued Logic, but the observable is not \( \Jnorm \): it is a discrete establishedness order \( F<B<U<T \). The establishedness meet of a proved slice with a live residual is live. The status board does not encode the arithmetic assembly of the residuals into classical Beal. Forcing every named artefact to \( T \) still fails to \( T \)-entail the conjecture; promoting a single live residual from \( U \) to \( T \) likewise cannot claim it. The exponent-shape classifier lands in \( \{T,U,F\} \) and never records bookkeeping \( B \).
 
-\section{Proof of the abc Conjecture}
+\section{The abc conjecture}
 
-We record a programme for the abc conjecture within the discrete biquaternionic algebra. The argument is independent of the Fermat and Beal programmes of Chapters~5--6 and relies on the same torsion boundedness theorem, the finite discrete rotor image, and the compactness of the dual sector induced by prime radicals. The solution-to-witness bridge is not established.
-
-\subsection{Classical Statement}
-
-\begin{definition}[Radical and quality]
-For a positive integer \( n \), the radical is
+A primitive triple is a triple of positive integers \(a\), \(b\), \(c\) with \(a+b=c\) and \(\gcd(a,b)=1\). Coprimality of the two summands forces each of them to be coprime to the sum, and the radical splits:
 \[
-\mathrm{rad}(n) := \prod_{p \mid n} p,
+\mathrm{rad}(abc)=\mathrm{rad}(a)\,\mathrm{rad}(b)\,\mathrm{rad}(c).
 \]
-the product of distinct prime divisors of \( n \). For coprime positive integers \( a, b, c \) satisfying \( a + b = c \), define the quality
+The radical of a positive integer is the product of its distinct prime divisors. For a primitive triple it is at least \(2\), so the quality
 \[
-q(a,b,c) := \frac{\log c}{\log \mathrm{rad}(abc)}.
+q(a,b,c)=\frac{\log c}{\log\mathrm{rad}(abc)}
 \]
-A triple is \emph{primitive} if \( \gcd(a,b,c) = 1 \).
-\end{definition}
-
-\begin{theorem}[abc Conjecture (Oesterlé--Masser)]
-\label{thm:abc-classical}
-For every \( \varepsilon > 0 \) there exists a constant \( C_\varepsilon > 0 \) such that every primitive triple \( (a,b,c) \) with \( a + b = c \) satisfies
+is defined. Oesterlé and Masser conjectured that for every \(\varepsilon>0\) there is a constant \(C_\varepsilon\) such that every primitive triple satisfies
 \[
-c < C_\varepsilon \, \mathrm{rad}(abc)^{1+\varepsilon}.
+c<C_\varepsilon\,\mathrm{rad}(abc)^{1+\varepsilon}.
 \]
-Equivalently, for every \( \varepsilon > 0 \) only finitely many primitive triples have \( q(a,b,c) > 1 + \varepsilon \).
-\end{theorem}
+Equivalently, only finitely many primitive triples have quality greater than \(1+\varepsilon\). That statement is not established.
 
-Our discrete proof proceeds by establishing a uniform quality bound for each fixed compactification parameter \( N \), then recovering Theorem~\ref{thm:abc-classical} in the continuum limit \( N \to \infty \).
-
-\subsection{Algebraic Embedding of abc Triples}
-
-Let \( (a,b,c) \) be a primitive triple with \( a + b = c \). By the embedding of Chapter~4 we associate canonical rotor classes
+The sum itself is the null translator \(T(a)+T(b)-T(c)\). The quality does not measure the translator. It measures the gap between the size of the sum and the prime support of the product. In the pure-boost chart that gap is the single rapidity
 \[
-R(a),\ R(b),\ R(c) \in \mathrm{Spin}^+(3,1).
+\delta=\log c-\log\mathrm{rad}(abc),
 \]
-The additive relation is realized by the null translator
+carried as the boost \(2\delta\) on the first axis and on no other. The normalised height of this seed is exactly
 \[
-T_{\rm abc} := T(a) + T(b) - T(c) \in \operatorname{span}\{N_\mu\},
+|\Jnorm|=\frac{16}{3\pi^2}\delta^2.
 \]
-so that
+The admissible cone cuts a pure boost of rapidity \(2\delta\) by the principal branch \(0\le 2\delta\le\pi/2\), that is \(0\le\delta\le\pi/4\). On the whole of this interval the normalised height is at most one third, and the value one third is the height of the upper edge. The torsional bound \(|\Jnorm|\le 1\) is therefore slack on every admissible abc seed: the cone is closed by the branch, not by the quadratic form. The same edge is the linear estimate
 \[
-R(a) \cdot \exp(T_{\rm abc}) \cdot R(b) = R(c)
+c\le e^{\pi/4}\,\mathrm{rad}(abc),
 \]
-up to units of the integer biquaternion ring. Because \( \gcd(a,b,c) = 1 \), no nontrivial unit can cancel the mismatch among all three rotors simultaneously; the finite discrete rotor image therefore constrains the admissible dual-sector configurations.
-
-For each prime \( p \mid abc \) the dual-sector rotor
+and with it
 \[
-R_{\rm dual}(p) := \exp\!\Bigl( \frac{2\pi}{N} \cdot \Gamma_p \Bigr)
+q(a,b,c)\le 1+\frac{\pi/4}{\log\mathrm{rad}(abc)}.
 \]
-contributes a compact phase on the discrete torus \( (\mathbb{Z}/N\mathbb{Z})^6 \), where \( \Gamma_p \) is the cyclic generator aligned with the prime direction in the logarithmic chart. The radical \( \mathrm{rad}(abc) \) encodes precisely the set of primes that enter this compact sector: only primes dividing \( abc \) contribute nontrivial dual phases, and coprimality forces these contributions to be independent. Consequently the dual configuration of a primitive triple is determined by a finite set of phases whose cardinality is bounded by \( \omega(\mathrm{rad}(abc)) \), the number of distinct prime factors of \( \mathrm{rad}(abc) \).
+As the radical grows, the right-hand side falls to \(1\). An admissible primitive triple whose quality exceeds \(1+\varepsilon\) has bounded radical, and the linear estimate then bounds the sum. On the cone the strong form of the conjecture holds, with exponent one and constant \(e^{\pi/4}\).
 
-\begin{definition}[abc mismatch rotor]
-The abc mismatch rotor is
+The cone does not contain every primitive triple. The sum \(1+8=9\) is primitive, its radical is \(6\), and the ratio \(3/2\) lies strictly below \(e^{\pi/4}\). The gap is positive, so the quality exceeds \(1\), while the seed remains inside the cone. An excess of quality, taken by itself, is not an exit. Nor can the conjecture be recovered by asking every triple of quality greater than \(1+\varepsilon\) to be at once admissible and already past the torsional ceiling. Admissibility holds the normalised height at or below one third, so the two demands exclude each other.
+
+Every primitive triple whose sum is at most \(80\) satisfies \(c\le 2\,\mathrm{rad}(abc)\). Since \(2<e^{\pi/4}\), no such triple leaves the cone through the upper wall. The first sum that does is
 \[
-\Omega_{\rm abc} := R(a)^\dagger R(c) \cdot \exp\!\Bigl( \tfrac12 T_{\rm abc} \Bigr),
+1+2^4\cdot 5=3^4.
 \]
-restricted to the principal branch on the discrete torus. Its logarithm decomposes into usual-sector boost parameters \( \alpha_a \) and dual-sector rotation parameters \( \beta_a \) as in Chapter~3.
-\end{definition}
+The triple is primitive, the radical is \(30\), and the ratio is \(27/10\). This is larger than \(e^{\pi/4}\), so the seed is not admissible, and smaller than \(e^{\pi\sqrt{3}/4}\), the point at which the normalised height passes \(1\). Between the branch \(\pi/4\) and the height threshold \(\pi\sqrt{3}/4\) the seed has left the cone while \(|\Jnorm|\) is still strictly less than one. The torsional bound neither sees the triple nor forbids it.
 
-The usual sector carries the magnitude \( c \) through \( \log c \), while the dual sector carries the prime content through \( \log \mathrm{rad}(abc) \). The quality \( q(a,b,c) \) therefore measures the imbalance between hyperbolic (non-compact) and cyclic (compact) contributions to \( \Omega_{\rm abc} \).
+The same radical carries a triple across the height threshold. The sum \(3+5^3=2^7\) is primitive, the radical is again \(30\), and the ratio \(64/15\) exceeds \(e^{\pi\sqrt{3}/4}\). The normalised height is then strictly greater than one, and the seed is again not admissible. A large height outside the cone is not a contradiction of the bound, because the bound does not apply there.
 
-\subsection{Quality as Torsional Height}
+What remains is a comparison that returns every primitive triple, those outside the cone included, to its radical. Quantising the logarithmic gap onto the discrete torus produces a pure-boost lattice seed. When the gap lies in a window \([2\pi/k,2\pi)\) and \(k\) divides the compactification order, the seed winds under \(k\)-fold amplification, and real scaling carries it out of the admissible cone. If every primitive triple of quality greater than \(1+\varepsilon\) produced such a winding and were nevertheless required to keep the scaled seed admissible, the classical estimate would follow. That requirement is not established. A uniform radical bound would constrain equal powers and unequal powers together; the implication runs from the abc conjecture toward those equations, and it is not available here. The unconditional conjecture is not claimed.
 
-Define the abc torsional height by
-\[
-H_{\rm abc}(a,b,c) := J(\Omega_{\rm abc}) = \frac12 \sum_{a=1}^3 (\alpha_a^2 - \beta_a^2).
-\]
-The following proposition quantifies the relation between quality and torsional height.
-
-\begin{proposition}[Quality--torsion correspondence]
-\label{prop:quality-torsion}
-Let \( (a,b,c) \) be a primitive triple with \( a + b = c \). On the discrete torus of compactification parameter \( N \), there exist positive constants \( c_1(N), c_2(N) \) depending only on \( N \) such that
-\[
-H_{\rm abc}(a,b,c) \geq c_1(N) \bigl( q(a,b,c) - 1 \bigr)^2
-\]
-whenever \( q(a,b,c) > 1 \), and
-\[
-H_{\rm abc}(a,b,c) \leq c_2(N) \bigl( q(a,b,c) - 1 \bigr)^2 + O\!\bigl( (\log \mathrm{rad}(abc))^{-1} \bigr)
-\]
-for all admissible triples. In particular, large quality forces large torsional height.
-\end{proposition}
-
-\begin{proof}
-Write the mismatch bivector in the logarithmic chart as
-\[
-\log \Omega_{\rm abc} = \theta\, \hat{p} + \phi\, \hat{q},
-\]
-where \( \hat{p} \) is the unit hyperbolic direction aligned with \( (\log a, \log b, \log c) \) and \( \hat{q} \) is the unit cyclic direction determined by the prime content of \( \mathrm{rad}(abc) \). The usual-sector rapidity satisfies
-\[
-\theta = 2 \log c - 2 \log \mathrm{rad}(abc) + O(1) = 2 \log \mathrm{rad}(abc) \bigl( q(a,b,c) - 1 \bigr) + O(1),
-\]
-while the dual-sector rapidity \( \phi \) is confined to the compact range \( [0, 2\pi) \) by Lemma~\ref{lem:radical-dual}. Substituting into the quadratic form defining \( J \) and using the principal branch bound \( |\delta_a| \leq \pi/2 \) from Chapter~3 yields the stated inequalities, with constants absorbed into \( c_1(N) \) and \( c_2(N) \).
-\end{proof}
-
-Assume, for contradiction, that a primitive triple satisfies
-\[
-c > \mathrm{rad}(abc)^{1+\varepsilon}
-\]
-for some fixed \( \varepsilon > 0 \). Then \( q(a,b,c) > 1 + \varepsilon \) and Proposition~\ref{prop:quality-torsion} gives
-\[
-H_{\rm abc}(a,b,c) \geq c_1(N) \varepsilon^2 > 0.
-\]
-On the discrete torus the minimal nonzero lattice spacing is \( 2\pi/N \), so any nontrivial mismatch satisfies \( H_{\rm abc} \geq \varepsilon_N > 0 \) for some \( \varepsilon_N \) depending only on \( N \). When \( q(a,b,c) \) exceeds the threshold
-\[
-Q(N) := 1 + \sqrt{\frac{1}{c_1(N) \varepsilon_N}},
-\]
-Proposition~\ref{prop:quality-torsion} forces \( H_{\rm abc} > \Jbound \), contradicting the torsion boundedness theorem (Chapter~3).
-
-\subsection{Discrete Strong Form}
-
-\begin{theorem}[Discrete abc bound]
-\label{thm:discrete-abc}
-For each compactification parameter \( N \geq 2 \) there exists a constant \( Q(N) > 1 \), depending only on \( N \), such that every primitive triple \( (a,b,c) \) with \( a + b = c \) satisfies
-\[
-q(a,b,c) \leq Q(N).
-\]
-Equivalently,
-\[
-c \leq \mathrm{rad}(abc)^{Q(N)}.
-\]
-\end{theorem}
-
-\begin{proof}
-Suppose, for contradiction, that a primitive triple satisfies \( q(a,b,c) > Q(N) \). By Proposition~\ref{prop:quality-torsion} the abc torsional height obeys \( H_{\rm abc}(a,b,c) > \Jbound \). Because \( \Omega_{\rm abc} \) is a physically admissible configuration on the discrete torus, the torsion boundedness theorem (Chapter~3) requires \( |\Jnorm| \leq 1 \) for all components of the mismatch. The height \( H_{\rm abc} \) is precisely the quadratic form \( J \) evaluated on \( \Omega_{\rm abc} \), so \( H_{\rm abc} > \Jbound \) is a contradiction.
-
-It remains to show that only the trivial degenerate triple \( a = b = 0 \), \( c = 0 \) could saturate the bound with \( H_{\rm abc} = 0 \). Coprimality and positivity exclude this case. Therefore every primitive triple satisfies \( q(a,b,c) \leq Q(N) \).
-\end{proof}
-
-The discrete bound is \emph{stronger} than the classical conjecture at each fixed \( N \): it permits only finitely many quality values above \( 1 \), with an explicit uniform ceiling \( Q(N) \).
-
-\subsection{Continuum Limit}
-
-In the limit \( N \to \infty \) the discrete torus becomes dense in \( \mathrm{Spin}^+(3,1) \oplus \mathrm{Spin}^+(3,1) \) and the quality ceiling increases without bound:
-\[
-Q(N) \to \infty \qquad \text{as } N \to \infty.
-\]
-For any prescribed \( \varepsilon > 0 \) choose \( N \) sufficiently large that \( Q(N) \geq 1 + \varepsilon \). Theorem~\ref{thm:discrete-abc} then implies that only finitely many primitive triples can satisfy \( q(a,b,c) > 1 + \varepsilon \), because such triples would require \( q(a,b,c) > Q(N) \), which is forbidden. Since \( \varepsilon > 0 \) was arbitrary, Theorem~\ref{thm:abc-classical} follows.
-
-The continuum recovery is uniform: the discrete proof for each fixed \( N \) supplies a finite verification set, and the limit \( N \to \infty \) eliminates the artificial ceiling while preserving the bound \( |\Jnorm| \leq 1 \) that drives the contradiction.
-
-\subsection{Corollaries}
-
-\begin{corollary}[Conditional Fermat reduction]
-\label{cor:abc-flt}
-Let \( p \geq 3 \) be prime. If \( a^p + b^p = c^p \) with \( \gcd(a,b,c) = 1 \), then \( q(a,b,c) \) is unbounded as the discrete torus refines, contradicting Theorem~\ref{thm:discrete-abc}. This would recover Fermat's Last Theorem as a corollary of the abc bound once that bound is unconditional; the \(p^2\) amplification of Chapter~5 is a diagnostic special case, not an independent proof.
-\end{corollary}
-
-\begin{corollary}[Relation to Beal's conjecture]
-\label{cor:abc-beal}
-When \( A^x + B^y = C^z \) with \( \gcd(A,B,C) = 1 \) and \( x,y,z \geq 3 \), the abc bound on the underlying additive triple \( A^x + B^y = C^z \) forces \( H_{\rm abc} > \Jbound \) for large exponents, consistent with the coprimality contradiction of Chapter~6. The abc and Beal proofs are complementary: abc treats arbitrary coprime sums \( a + b = c \), while Beal treats the amplified mismatch of unequal power maps.
-\end{corollary}
-
-This completes the proof of the abc conjecture within the discrete double spacetime framework.
 
 \section{The Riemann Hypothesis}
 
@@ -681,7 +574,7 @@ For the ordered prime sequence \( \{p_n\} \), define the prime rotor chain
 \[
 \mathcal{C} := \bigl\{ R(p_n) \bigr\}_{n \geq 1}.
 \]
-Each adjacent gap \( g_n \) contributes a link mismatch. Choose a fixed cyclic generator \( \Gamma_a \) aligned with the logarithmic prime direction (as in Chapter~7). The cumulative gap bivector after \( M \) primes is
+Each adjacent gap \( g_n \) contributes a link mismatch. Choose a fixed cyclic generator \( \Gamma_a \) aligned with the logarithmic prime direction. The cumulative gap bivector after \( M \) primes is
 \[
 \Sigma_M := \sum_{n=1}^{M-1} \frac{g_n}{p_n}\, i\Gamma_a,
 \]
@@ -920,7 +813,7 @@ Second, every integer has been faithfully embedded into the algebra via canonica
   \item Polignac’s conjecture (including the Twin Prime conjecture as the case \( 2k = 2 \)), and
   \item the Collatz conjecture.
 \end{itemize}
-The shared amplification mechanism is the non-existence of configurations that simultaneously satisfy the algebraic relation and violate the bound \( |\Jnorm| \leq 1 \), together with the finiteness of the admissible discrete search space (Chapter~10). The problem-specific bridges remain unproved; no unconditional statement of those conjectures is claimed. Dual extraction by dagger preserves \(|\Jnorm|\) and is not itself a height-reducing descent.
+The shared amplification mechanism is the non-existence of configurations that simultaneously satisfy the algebraic relation and violate the bound \( |\Jnorm| \leq 1 \), together with the finiteness of the admissible discrete search space (Chapter~10). For the abc conjecture that bound is not the cut. On an admissible pure-boost seed the logarithmic gap is at most \(\pi/4\), so \(c\le e^{\pi/4}\,\mathrm{rad}(abc)\) and the normalised height is at most one third. The first primitive sum that leaves the cone is \(1+2^4\cdot 5=3^4\), and it does so while the normalised height is still less than one. The problem-specific bridges remain unproved; no unconditional statement of those conjectures is claimed. Dual extraction by dagger preserves \(|\Jnorm|\) and is not itself a height-reducing descent.
 
 Third, the framework recovers the Teleparallel Equivalent of General Relativity exactly in the continuum limit \( N \to \infty \), while the discrete structure supplies both a number-theoretic foundation and a ultraviolet completion of classical gravity. The same algebraic object therefore unifies arithmetic and gravitation without additional fields, dimensions, or quantization postulates.
 
@@ -1060,32 +953,6 @@ Inside the principal branch of the logarithm on \( \mathrm{Spin}^+(3,1) \oplus \
 
 \begin{proof}
 The dual map \( X \mapsto Xi \) identifies a full \( 2\pi \) rotation in the dual sector with the central element \( -1 \) of the Spin group. The principal branch is defined to be the open set in which the norm of the logarithm is strictly less than \( 2\pi \). Any deviation \( |\delta_a| > \pi/2 \) would force the total mismatch to exit this neighborhood, contradicting the choice of principal branch. Therefore \( |\delta_a| \leq \pi/2 \).
-\end{proof}
-
-\subsection{Lemma on Radical--Dual Compactness}
-\label{lem:radical-dual}
-
-\begin{lemma}
-Let \( (a,b,c) \) be a primitive triple with \( a + b = c \). The dual-sector rotor configuration determined by \( \mathrm{rad}(abc) \) lies in a finite subset of \( \mathrm{Spin}^+(3,1) \) whose cardinality depends only on \( \omega(\mathrm{rad}(abc)) \) and the compactification parameter \( N \). In particular, the dual rapidities satisfy
-\[
-0 \leq \phi_a < \frac{2\pi}{N} \cdot \omega(\mathrm{rad}(abc))
-\]
-for each cyclic coefficient \( \phi_a \) in the logarithm of the abc mismatch rotor.
-\end{lemma}
-
-\begin{proof}
-Each prime \( p \mid abc \) contributes a dual rotor \( R_{\rm dual}(p) = \exp(2\pi \Gamma_p / N) \) whose phase is an integer multiple of \( 2\pi/N \) on the discrete torus. Because \( \gcd(a,b,c) = 1 \), the prime factors of \( a \), \( b \), and \( c \) are disjoint; the total dual configuration is the product of \( \omega(\mathrm{rad}(abc)) \) such phases. The discrete rotor image (Lemma on the Discrete Rotor Image) further restricts the product to a finite set of admissible classes. Each cyclic coefficient is therefore bounded by the number of distinct prime factors times the lattice spacing \( 2\pi/N \).
-\end{proof}
-
-\subsection{Lemma on Quality--Torsion Inequality}
-\label{lem:quality-torsion}
-
-\begin{lemma}
-For fixed compactification parameter \( N \) there exists a constant \( Q(N) > 1 \) such that every primitive triple \( (a,b,c) \) with \( a + b = c \) and \( q(a,b,c) > Q(N) \) satisfies \( J(\Omega_{\rm abc}) > \Jbound \), where \( \Omega_{\rm abc} \) is the abc mismatch rotor of Chapter~7.
-\end{lemma}
-
-\begin{proof}
-By Proposition~\ref{prop:quality-torsion}, large quality forces the abc torsional height \( H_{\rm abc} = J(\Omega_{\rm abc}) \) to exceed \( c_1(N)(q - 1)^2 \). Choose \( Q(N) = 1 + (c_1(N) \varepsilon_N)^{-1/2} \) where \( \varepsilon_N \) is the minimal nonzero torsional height on the discrete torus. Then \( q(a,b,c) > Q(N) \) implies \( H_{\rm abc} > c_1(N) \varepsilon_N \geq \Jbound \), using the principal branch bound and the compactness of the dual sector from Lemma~\ref{lem:radical-dual}.
 \end{proof}
 
 \subsection{Lemma on Cumulative Gap Accumulation}

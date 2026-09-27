@@ -1126,6 +1126,27 @@ example {a b c : ℕ} (h : IsAbcTriple a b c) :
     abcRadical (a * b * c) = abcRadical a * abcRadical b * abcRadical c :=
   isAbcTriple_radical_mul h
 
+/-- Admissible abc seeds obey the strong radical bound, with height at most 1/3. -/
+example {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    (c : ℝ) ≤ Real.exp (Real.pi / 4) * (abcRadical (a * b * c) : ℝ) ∧
+      abcHeight a b c ≤ 1 / 3 :=
+  ⟨abc_c_le_exp_mul_radical_of_admissible h hadm,
+    abcHeight_le_one_third_of_admissible h hadm⟩
+
+/-- Sums through 80 stay inside the cone; `1 + 80 = 81` is the first exit. -/
+example {a b c : ℕ} (h : IsAbcTriple a b c) (hc : c ≤ 80) :
+    abcLogGap a b c < Real.pi / 4 :=
+  abc_logGap_lt_pi_div_four_of_le_eighty h hc
+
+example : Real.pi / 4 < abcLogGap 1 80 81 ∧ abcHeight 1 80 81 < 1 :=
+  ⟨pi_div_four_lt_abcLogGap_one_eighty, abcHeight_lt_one_one_eighty⟩
+
+/-- `3 + 5³ = 2⁷` has normalised height above one and is not admissible. -/
+example : 1 < abcHeight 3 125 128 ∧
+    ¬ IsAdmissibleContinuous (abcMismatchParams 3 125 128) :=
+  ⟨one_lt_abcHeight_three_one_two_five, not_admissible_abc_three_one_two_five⟩
+
 /-! ## DST / discrete-companion algebraic core -/
 
 /-- Pseudoscalar squares to `-1`. -/
