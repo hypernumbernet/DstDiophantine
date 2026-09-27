@@ -1,5 +1,6 @@
 import DstDiophantine.Theorems.BealGaussian
 import DstDiophantine.Theorems.BealMixed
+import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Logic.Geometric
@@ -749,6 +750,57 @@ theorem BealTwoEqualEvenSumResidual_of_ge_seven
     BealTwoEqualEvenSumResidual :=
   BealTwoEqualEvenSumResidual_of_five_ge_seven
     BealTwoEqualEvenSumExpFiveResidual_of_NN5 h7
+
+/--
+Phase 7x: even-sum body at hypotenuse exponent `z ≥ 7`, outside signatures in
+which the common exponent is divisible by `3` and `z` is a `TwoCubeExponent`.
+`(6,6,7)` is removed; `(4,4,7)` remains.
+-/
+def BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    bealExpGcd x y z = 1 →
+    x = y → Even x → 7 ≤ z →
+    ¬ IsCubePairPowerShape x y z →
+      ¬ A ^ x + B ^ y = C ^ z
+
+theorem BealTwoEqualEvenSumExpGeSevenResidual_of_outside_cube_pair
+    (hOut : BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual) :
+    BealTwoEqualEvenSumExpGeSevenResidual := by
+  intro A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hsol
+  by_cases hshape : IsCubePairPowerShape x y z
+  · exact not_beal_cube_pair_power_shape hx hy hz hA hB hC hgcd hshape hsol
+  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hshape hsol
+
+/-- Phase 7x: the even-sum residual follows from the `z ≥ 7` body outside cube pairs. -/
+theorem BealTwoEqualEvenSumResidual_of_ge_seven_outside_cube_pair
+    (h7 : BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_ge_seven
+    (BealTwoEqualEvenSumExpGeSevenResidual_of_outside_cube_pair h7)
+
+/--
+Phase 7x: even-difference body outside cube-pair shapes. `(5,6,6)` is a
+coprime sum of two cubes and is removed; a common exponent not divisible by `3`
+remains.
+-/
+def BealTwoEqualEvenDiffOutsideCubePairResidual : Prop :=
+  ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
+    (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
+    bealGcd A B C = 1 →
+    bealExpGcd x y z = 1 →
+    ((y = z ∧ Even y) ∨ (x = z ∧ Even x)) →
+    ¬ IsCubePairPowerShape x y z →
+      ¬ A ^ x + B ^ y = C ^ z
+
+theorem BealTwoEqualEvenDiffResidual_of_outside_cube_pair
+    (hOut : BealTwoEqualEvenDiffOutsideCubePairResidual) :
+    BealTwoEqualEvenDiffResidual := by
+  intro A B C x y z hx hy hz hA hB hC hgcd hd hpair hsol
+  by_cases hshape : IsCubePairPowerShape x y z
+  · exact not_beal_cube_pair_power_shape hx hy hz hA hB hC hgcd hshape hsol
+  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hshape hsol
 
 /--
 Phase 7k: five fine residuals with even residual replaced by sum+diff still

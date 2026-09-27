@@ -783,6 +783,17 @@ example :
   ⟨classifyBealExponents_three_three_five, classifyBealExponents_three_three_seven,
     classifyBealExponents_three_four_five, classifyBealExponents_three_five_seven⟩
 
+/-- Phase 7x: multiples of `3` collapse; `(4,4,7)` does not. -/
+example :
+    classifyBealExponents 6 6 7 = .T ∧ classifyBealExponents 9 9 4 = .T ∧
+      classifyBealExponents 3 6 5 = .T ∧ classifyBealExponents 5 6 6 = .T ∧
+        classifyBealExponents 4 4 7 = .U ∧
+          classifyBealExponents 9 9 1000000001 = .U :=
+  ⟨classifyBealExponents_six_six_seven, classifyBealExponents_nine_nine_four,
+    classifyBealExponents_three_six_five, classifyBealExponents_five_six_six,
+    classifyBealExponents_four_four_seven,
+    classifyBealExponents_nine_nine_past_bound⟩
+
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :
     ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}

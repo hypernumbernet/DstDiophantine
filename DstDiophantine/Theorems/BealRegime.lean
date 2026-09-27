@@ -185,6 +185,28 @@ theorem classifyBealExponents_five_three_four :
 theorem classifyBealExponents_three_five_seven :
     classifyBealExponents 3 5 7 = .U := by native_decide
 
+/-- Two exponents divisible by `3` collapse to a sum of two cubes. -/
+theorem classifyBealExponents_six_six_seven :
+    classifyBealExponents 6 6 7 = .T := by native_decide
+
+theorem classifyBealExponents_nine_nine_four :
+    classifyBealExponents 9 9 4 = .T := by native_decide
+
+theorem classifyBealExponents_three_six_five :
+    classifyBealExponents 3 6 5 = .T := by native_decide
+
+/-- Even permutation `(5,6,6)` of signature `(n,n,5)`: the common exponent is divisible by `3`. -/
+theorem classifyBealExponents_five_six_six :
+    classifyBealExponents 5 6 6 = .T := by native_decide
+
+/-- The even sum whose common exponent is not divisible by `3` stays open. -/
+theorem classifyBealExponents_four_four_seven :
+    classifyBealExponents 4 4 7 = .U := by native_decide
+
+/-- Repeated multiple of `3` with an odd companion past `10^9` stays open. -/
+theorem classifyBealExponents_nine_nine_past_bound :
+    classifyBealExponents 9 9 1000000001 = .U := by native_decide
+
 theorem classifyBealExponents_two_three_three :
     classifyBealExponents 2 3 3 = .F := by native_decide
 

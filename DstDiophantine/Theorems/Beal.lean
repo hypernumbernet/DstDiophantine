@@ -62,9 +62,12 @@ geometric principle):
   sum-of-squares shape) in `BealGaussian` / `BealTwoEqualEvenResidual`;
   odd two-equal with repeated exponent `3` is closed when the companion lies
   in `3 … 10^9` or is even and at least `4` (`sumTwoCubesNotPerfectPower`,
-  phase 7w; Bruin's `4` and `5` are the first cases); signature `(3,4,5)` is
+  phase 7w; Bruin's `4` and `5` are the first cases); any two exponents
+  divisible by `3` with the third a `TwoCubeExponent` close by the same
+  prohibition (`IsCubePairPowerShape`, phase 7x), whether or not `d = 1`;
+  signature `(3,4,5)` is
   closed in every order (`siksekStoll345`); the live odd two-equal body is
-  `BealTwoEqualOddOutsideBruinResidual`;
+  `BealTwoEqualOddOutsideCubePairResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
