@@ -92,9 +92,11 @@ The straight line of one fixed jet is not itself that geodesic.
   A one-way horizon \(A=0\) does not form on that chart.
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
-* `CompactS3` — \(v^2=(GM/R)\,f(r/R)\). Unique minimum of \(f\) on
-  \((0,\pi/2)\) with \(1.35<f_0<1.41\). The attractive patch ends before
-  \(r=2R\). Milky-Way window \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
+* `CompactS3` — \(v^2=(GM/R)\,f(r/R)\). The cotangent potential is radially
+  harmonic, with Newtonian germ \(-GM/r+GMr/(3R^2)\). Unique minimum of \(f\)
+  on \((0,\pi/2)\) with \(1.35<f_0<1.41\), and \(f<(11/10)f_0\) on \([1,6/5]\).
+  The acceleration stays center-directed on \((0,\pi R)\); the negative well
+  ends before \(r=2R\). Milky-Way window \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
@@ -735,6 +737,51 @@ example {G M R a0 : ℝ} (hR : R ≠ 0) (hscale : R ^ 2 = G * M / a0)
     (ha0 : a0 ≠ 0) :
     (vFlatSq G M R) ^ 2 = G * M * a0 * f0 ^ 2 :=
   tullyFisher_of_scaling hR hscale ha0
+
+/-- Regression: cotangent flux equals the enclosed mass. -/
+example {G M R r : ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    R ^ 2 * Real.sin (r / R) ^ 2 * deriv (cotPotential G M R) r = G * M :=
+  geodesicFlux_cotPotential hR hs
+
+/-- Regression: the cotangent potential is radially harmonic off the origin. -/
+example {G M R r : ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    radialLaplace R (cotPotential G M R) r = 0 :=
+  radialLaplace_cotPotential hR hs
+
+/-- Regression: the chart acceleration stays center-directed on \((0,\pi R)\). -/
+example {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hr : r ∈ Set.Ioo (0 : ℝ) (Real.pi * R)) :
+    s3Accel G M R r < 0 :=
+  s3Accel_lt_zero_of_mem_Ioo hG hM hR hr
+
+/-- Regression: the negative well is exactly the open hemisphere. -/
+example {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hr : 0 < r) (hπ : r < Real.pi * R) :
+    cotPotential G M R r < 0 ↔ r < Real.pi * R / 2 :=
+  cotPotential_neg_iff_lt_equator hG hM hR hr hπ
+
+/-- Regression: enhancement and the azimuthal Jacobian both tend to \(1\) at the origin. -/
+example :
+    Filter.Tendsto enhancement (nhdsWithin 0 (Set.Ioi 0)) (nhds 1) ∧
+      Filter.Tendsto compactJacobian (nhdsWithin 0 (Set.Ioi 0)) (nhds 1) :=
+  ⟨tendsto_enhancement_zero, tendsto_compactJacobian_zero⟩
+
+/-- Regression: Newtonian germ on \(0<r\le R\). -/
+example {G M R r : ℝ} (hR : 0 < R) (hr : 0 < r) (hrR : r ≤ R) :
+    |cotPotential G M R r + G * M / r - G * M * r / (3 * R ^ 2)|
+      ≤ |G * M| * r ^ 3 / (6 * R ^ 4) :=
+  abs_cotPotential_newton hR hr hrR
+
+/-- Regression: on \([1,6/5]\), \(f<(11/10)f_0\). -/
+example {x : ℝ} (hx : x ∈ Set.Icc (1 : ℝ) (6 / 5)) :
+    rotationShape x < (11 / 10) * f0 :=
+  rotationShape_lt_eleven_tenths_f0 hx
+
+/-- Regression: a constant enclosed mass reproduces the point-mass speed. -/
+example {G R M0 r : ℝ} {M : ℝ → ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0)
+    (hM : M r = M0) :
+    enclosedCircularSpeedSq G R M r = s3CircularSpeedSq G M0 R r :=
+  enclosedCircularSpeedSq_const_eq_point hR hs hM
 
 /-- Regression: dual wall formula. -/
 example (α : ℝ) :

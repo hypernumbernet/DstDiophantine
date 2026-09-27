@@ -3,6 +3,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Inv
@@ -31,13 +32,22 @@ inputs (`Gravity.SI`); this module does **not** derive them from the dual-rotor
 algebra. No theorem asserts `dst_derives_a0`. The point values
 \(f_0=1.10\) and \(R=27\,\mathrm{kpc}\) lie outside the windows below.
 
+The radial force does **not** change sign at the equator: `s3Accel` stays
+negative wherever the sine is nonzero. The equator is only the zero of the
+potential. Do not identify it with a sign change of \(J\) or of \(\gamma_s\).
+
 Of the \(S^3\) chart the following are theorems (not a derivation of \(a_0\)):
-the cotangent potential differentiates to the Gauss acceleration; circular
+the cotangent potential is radially harmonic and differentiates to the Gauss
+acceleration; the flux \(R^2\sin^2(r/R)\,\Phi'\) equals \(GM\); circular
 \(v^2=(GM/R)\,f(r/R)\); \(f\) has a unique minimum on \((0,\pi/2)\) at the
-plateau root, with \(1.35<f_0<1.41\); \(\eta\) is strictly increasing on
-\((0,\pi)\); the attractive patch ends at \(\pi R/2\), which lies strictly
-before \(r=2R\); on the SI stand-ins the Milky-Way compactification radius
-satisfies \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
+plateau root, with \(1.35<f_0<1.41\), and on \([1,6/5]\) one has
+\(f<(11/10)f_0\); \(\eta\to 1\) as \(x\to 0^+\) and is strictly increasing on
+\((0,\pi)\); for \(0<r\le R\) the potential is the Newtonian germ
+\(-GM/r+GMr/(3R^2)\) up to a remainder of order \(r^3/R^4\); a constant
+enclosed mass reproduces the point-mass shape; the negative well ends at
+\(\pi R/2\), strictly before \(r=2R\), while the acceleration remains
+center-directed on \((0,\pi R)\); on the SI stand-ins the Milky-Way
+compactification radius satisfies \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
 -/
 
 namespace DstDiophantine
@@ -937,6 +947,537 @@ theorem milkyWayPlateau_lt_reversal :
   have hRpos : (0 : ℝ) < milkyWayROverKpc :=
     lt_trans (by norm_num) milkyWayROverKpc_bounds.1
   exact mul_lt_mul_of_pos_right plateauRoot_lt_pi_div_two hRpos
+
+/-! ### Radial harmonicity, force sign, and the edge of the well -/
+
+open Filter
+open scoped Topology
+
+/-- Radial Laplacian `Φ'' + (2/R) cot(r/R) Φ'` on the geodesic polar chart. -/
+noncomputable def radialLaplace (R : ℝ) (Φ : ℝ → ℝ) (r : ℝ) : ℝ :=
+  deriv (deriv Φ) r + (2 / R) * cot (r / R) * deriv Φ r
+
+/-- Geodesic-sphere flux of the cotangent potential is the enclosed mass. -/
+theorem geodesicFlux_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) :
+    R ^ 2 * sin (r / R) ^ 2 * deriv (cotPotential G M R) r = G * M := by
+  rw [(hasDerivAt_cotPotential G M R r hR hs).deriv]
+  unfold s3Accel
+  field_simp [hR, hs]
+
+private theorem hasDerivAt_sin_over (R r : ℝ) :
+    HasDerivAt (fun t : ℝ => sin (t / R)) (cos (r / R) * (1 / R)) r := by
+  have h := (hasDerivAt_sin (r / R)).comp r ((hasDerivAt_id r).div_const R)
+  have hfun : (fun t : ℝ => sin (t / R)) =ᶠ[𝓝 r] sin ∘ fun t : ℝ => t / R := by
+    refine EventuallyEq.of_eq ?_
+    funext t
+    rfl
+  simpa using h.congr_of_eventuallyEq hfun
+
+private theorem hasDerivAt_slopeFactor {R r : ℝ} (hs : sin (r / R) ≠ 0) :
+    HasDerivAt (fun t : ℝ => (sin (t / R) ^ 2)⁻¹)
+      (-2 * cos (r / R) / (R * sin (r / R) ^ 3)) r := by
+  have hR : R ≠ 0 := by
+    rintro rfl
+    simp [sin_zero] at hs
+  have hsin := hasDerivAt_sin_over R r
+  have hsq : HasDerivAt (fun t : ℝ => sin (t / R) * sin (t / R))
+      (cos (r / R) * (1 / R) * sin (r / R) +
+        sin (r / R) * (cos (r / R) * (1 / R))) r :=
+    hsin.mul hsin
+  have hsq' : HasDerivAt (fun t : ℝ => sin (t / R) ^ 2)
+      (2 * sin (r / R) * cos (r / R) * (1 / R)) r := by
+    convert hsq using 1
+    · funext t; ring
+    · ring
+  have hinv := hsq'.inv (pow_ne_zero 2 hs)
+  have heq : -(2 * sin (r / R) * cos (r / R) * (1 / R)) / (sin (r / R) ^ 2) ^ 2 =
+      -2 * cos (r / R) / (R * sin (r / R) ^ 3) := by
+    field_simp [hs, hR]
+  exact heq ▸ hinv
+
+private theorem hasDerivAt_neg_s3Accel {G M R r : ℝ} (hs : sin (r / R) ≠ 0) :
+    HasDerivAt (fun t : ℝ => -s3Accel G M R t)
+      ((G * M) / R ^ 2 * (-2 * cos (r / R) / (R * sin (r / R) ^ 3))) r := by
+  have hfun : (fun t : ℝ => -s3Accel G M R t) =
+      fun t => (G * M) / R ^ 2 * (sin (t / R) ^ 2)⁻¹ := by
+    funext t
+    unfold s3Accel
+    simp only [neg_neg, div_eq_mul_inv, mul_inv_rev]
+    ring
+  rw [hfun]
+  exact (hasDerivAt_slopeFactor hs).const_mul ((G * M) / R ^ 2)
+
+private theorem eventually_sin_ne {R r : ℝ} (hs : sin (r / R) ≠ 0) :
+    ∀ᶠ t in 𝓝 r, sin (t / R) ≠ 0 := by
+  refine ContinuousAt.eventually_ne ?_ hs
+  exact continuous_sin.continuousAt.comp ((continuous_id.div_const R).continuousAt)
+
+theorem hasDerivAt_deriv_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) :
+    HasDerivAt (deriv (cotPotential G M R))
+      ((G * M) / R ^ 2 * (-2 * cos (r / R) / (R * sin (r / R) ^ 3))) r := by
+  refine (hasDerivAt_neg_s3Accel hs).congr_of_eventuallyEq ?_
+  filter_upwards [eventually_sin_ne hs] with t ht
+  exact (hasDerivAt_cotPotential G M R t hR ht).deriv
+
+/-- Away from the origin the cotangent potential is radially harmonic. -/
+theorem radialLaplace_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) :
+    radialLaplace R (cotPotential G M R) r = 0 := by
+  unfold radialLaplace
+  rw [(hasDerivAt_deriv_cotPotential hR hs).deriv,
+    (hasDerivAt_cotPotential G M R r hR hs).deriv]
+  unfold s3Accel
+  rw [cot_eq_cos_div_sin]
+  field_simp [hR, hs]
+  ring
+
+/-- The chart acceleration points toward the mass wherever it is defined. -/
+theorem s3Accel_lt_zero {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hs : sin (r / R) ≠ 0) : s3Accel G M R r < 0 := by
+  unfold s3Accel
+  refine neg_lt_zero.mpr (div_pos (mul_pos hG hM) ?_)
+  exact mul_pos (pow_pos hR 2) ((sq_pos_iff).mpr hs)
+
+/-- On the open three-sphere the force stays center-directed, equator included. -/
+theorem s3Accel_lt_zero_of_mem_Ioo {G M R r : ℝ}
+    (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) (hr : r ∈ Ioo (0 : ℝ) (π * R)) :
+    s3Accel G M R r < 0 := by
+  have hx : r / R ∈ Ioo (0 : ℝ) π :=
+    ⟨div_pos hr.1 hR, (div_lt_iff₀ hR).mpr hr.2⟩
+  exact s3Accel_lt_zero hG hM hR (sin_pos_of_mem_Ioo hx).ne'
+
+/-- The negative well is the open hemisphere. The equator is its edge, not a force reversal. -/
+theorem cotPotential_neg_iff_lt_equator {G M R r : ℝ}
+    (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) (hr : 0 < r) (hπ : r < π * R) :
+    cotPotential G M R r < 0 ↔ r < π * R / 2 := by
+  have hx : r / R ∈ Ioo (0 : ℝ) π :=
+    ⟨div_pos hr hR, (div_lt_iff₀ hR).mpr hπ⟩
+  have hsin : 0 < sin (r / R) := sin_pos_of_mem_Ioo hx
+  have hcoef : 0 < G * M / R := div_pos (mul_pos hG hM) hR
+  unfold cotPotential
+  have hsign : -(G * M / R) * cot (r / R) < 0 ↔ 0 < cot (r / R) := by
+    rw [neg_mul, neg_lt_zero]
+    exact mul_pos_iff_of_pos_left hcoef
+  rw [hsign, cot_eq_cos_div_sin, div_pos_iff_of_pos_right hsin]
+  have hcos : 0 < cos (r / R) ↔ r / R < π / 2 := by
+    constructor
+    · intro hpos
+      by_contra hge
+      push Not at hge
+      rcases eq_or_lt_of_le hge with heq | hlt
+      · rw [← heq, cos_pi_div_two] at hpos
+        exact lt_irrefl _ hpos
+      · exact (not_lt_of_gt (cos_neg_of_pi_div_two_lt_of_lt hlt (by linarith [hx.2, pi_pos]))) hpos
+    · intro hlt
+      exact cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr pi_div_two_pos) hx.1, hlt⟩
+  rw [hcos]
+  have hhalf : r / R < π / 2 ↔ r < π * R / 2 := by
+    rw [div_lt_iff₀ hR]
+    have : (π / 2) * R = π * R / 2 := by ring
+    rw [this]
+  exact hhalf
+
+/-! ### Newtonian germ -/
+
+theorem tendsto_enhancement_zero :
+    Tendsto enhancement (𝓝[>] (0 : ℝ)) (𝓝 1) := by
+  have hopen : Ioo (0 : ℝ) π ∈ 𝓝[>] 0 := by
+    rw [mem_nhdsWithin]
+    refine ⟨Ioo (-1) π, isOpen_Ioo, ⟨by norm_num, pi_pos⟩, ?_⟩
+    intro x hx
+    simp only [mem_inter_iff, mem_Ioo, mem_Ioi] at hx
+    exact ⟨hx.2, hx.1.2⟩
+  have hsinc : Tendsto sinc (𝓝[>] (0 : ℝ)) (𝓝 1) := by
+    simpa [sinc_zero] using
+      (continuous_sinc.tendsto 0).mono_left (nhdsWithin_le_nhds : 𝓝[>] (0 : ℝ) ≤ 𝓝 0)
+  have hinv : Tendsto (fun x : ℝ => (sinc x)⁻¹ ^ 2) (𝓝[>] 0) (𝓝 1) := by
+    simpa using ((hsinc.inv₀ one_ne_zero).pow 2)
+  refine hinv.congr' ?_
+  filter_upwards [hopen] with x hx
+  have hs : sin x ≠ 0 := (sin_pos_of_mem_Ioo hx).ne'
+  have hx0 : x ≠ 0 := hx.1.ne'
+  rw [sinc_of_ne_zero hx0, enhancement]
+  field_simp [hs, hx0]
+
+theorem tendsto_compactJacobian_zero :
+    Tendsto compactJacobian (𝓝[>] (0 : ℝ)) (𝓝 1) := by
+  have hopen : Ioo (0 : ℝ) π ∈ 𝓝[>] 0 := by
+    rw [mem_nhdsWithin]
+    refine ⟨Ioo (-1) π, isOpen_Ioo, ⟨by norm_num, pi_pos⟩, ?_⟩
+    intro x hx
+    simp only [mem_inter_iff, mem_Ioo, mem_Ioi] at hx
+    exact ⟨hx.2, hx.1.2⟩
+  have hsinc : Tendsto sinc (𝓝[>] (0 : ℝ)) (𝓝 1) := by
+    simpa [sinc_zero] using
+      (continuous_sinc.tendsto 0).mono_left (nhdsWithin_le_nhds : 𝓝[>] (0 : ℝ) ≤ 𝓝 0)
+  have hpow : Tendsto (fun x : ℝ => sinc x ^ 2) (𝓝[>] (0 : ℝ)) (𝓝 1) := by
+    simpa using hsinc.pow 2
+  refine hpow.congr' ?_
+  filter_upwards [hopen] with x hx
+  have hx0 : x ≠ 0 := hx.1.ne'
+  rw [sinc_of_ne_zero hx0, compactJacobian]
+  field_simp [hx0]
+
+/-- On \((0,1]\), \(\lvert\cot x-(1/x-x/3)\rvert\le x^3/6\). -/
+theorem abs_cot_sub_newton {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :
+    |cot x - (1 / x - x / 3)| ≤ x ^ 3 / 6 := by
+  have hxabs : |x| ≤ 1 := by rwa [abs_of_pos hx]
+  have hsinb := abs_sub_le_iff.mp (sin_bound hxabs)
+  have hcosb := abs_sub_le_iff.mp (cos_bound hxabs)
+  have hs_lb : x - x ^ 3 / 6 - x ^ 5 / 100 ≤ sin x := by
+    have h := hsinb.2
+    rw [abs_of_pos hx] at h
+    linarith
+  have hs_ub : sin x ≤ x - x ^ 3 / 6 + x ^ 5 / 100 := by
+    have h := hsinb.1
+    rw [abs_of_pos hx] at h
+    linarith
+  have hc_lb : 1 - x ^ 2 / 2 - x ^ 4 * (5 / 96) ≤ cos x := by
+    have h := hcosb.2
+    rw [abs_of_pos hx] at h
+    linarith
+  have hc_ub : cos x ≤ 1 - x ^ 2 / 2 + x ^ 4 * (5 / 96) := by
+    have h := hcosb.1
+    rw [abs_of_pos hx] at h
+    linarith
+  have hspos : 0 < sin x := sin_pos_of_pos_of_le_one hx hx1
+  set a : ℝ := 1 - x ^ 2 / 3
+  have ha : 0 < a := by dsimp [a]; nlinarith
+  have ha_le : a ≤ 1 := by dsimp [a]; nlinarith
+  set sL : ℝ := x - x ^ 3 / 6 - x ^ 5 / 100
+  set sU : ℝ := x - x ^ 3 / 6 + x ^ 5 / 100
+  set cL : ℝ := 1 - x ^ 2 / 2 - x ^ 4 * (5 / 96)
+  set cU : ℝ := 1 - x ^ 2 / 2 + x ^ 4 * (5 / 96)
+  have hsin_ge : sL ≤ sin x := by simpa [sL] using hs_lb
+  have hsin_le : sin x ≤ sU := by simpa [sU] using hs_ub
+  have hcos_ge : cL ≤ cos x := by simpa [cL] using hc_lb
+  have hcos_le : cos x ≤ cU := by simpa [cU] using hc_ub
+  have hD_le : x * cos x - sin x * a ≤ x * cU - sL * a := by
+    have h1 : x * cos x ≤ x * cU := mul_le_mul_of_nonneg_left hcos_le hx.le
+    have h2 : sL * a ≤ sin x * a := mul_le_mul_of_nonneg_right hsin_ge ha.le
+    linarith
+  have hD_ge : x * cL - sU * a ≤ x * cos x - sin x * a := by
+    have h1 : x * cL ≤ x * cos x := mul_le_mul_of_nonneg_left hcos_ge hx.le
+    have h2 : sin x * a ≤ sU * a := mul_le_mul_of_nonneg_right hsin_le ha.le
+    linarith
+  have hhi : x * cU - sL * a =
+      -x ^ 5 / 18 + (5 / 96) * x ^ 5 + (x ^ 5 / 100) * a := by
+    dsimp [cU, sL, a]; ring
+  have hlo : x * cL - sU * a =
+      -x ^ 5 / 18 - (5 / 96) * x ^ 5 - (x ^ 5 / 100) * a := by
+    dsimp [cL, sU, a]; ring
+  have hposx : 0 ≤ x ^ 5 := by positivity
+  have hS : |x * cos x - sin x * a| ≤ (847 / 7200) * x ^ 5 := by
+    have hupper : x * cos x - sin x * a ≤ (847 / 7200) * x ^ 5 := by
+      have hdrop : -x ^ 5 / 18 + (5 / 96) * x ^ 5 + (x ^ 5 / 100) * a ≤
+          (5 / 96) * x ^ 5 + (1 / 100) * x ^ 5 := by
+        have : (x ^ 5 / 100) * a ≤ x ^ 5 / 100 := by nlinarith [ha_le, hposx]
+        nlinarith [this, hposx]
+      have hsum : (5 / 96 : ℝ) + 1 / 100 ≤ 847 / 7200 := by norm_num
+      calc
+        x * cos x - sin x * a ≤ x * cU - sL * a := hD_le
+        _ = -x ^ 5 / 18 + (5 / 96) * x ^ 5 + (x ^ 5 / 100) * a := hhi
+        _ ≤ (5 / 96) * x ^ 5 + (1 / 100) * x ^ 5 := hdrop
+        _ ≤ (847 / 7200) * x ^ 5 := by nlinarith [hsum, hposx]
+    have hlower : -((847 / 7200) * x ^ 5) ≤ x * cos x - sin x * a := by
+      have hcoef : (1 / 18 + 5 / 96 + 1 / 100 : ℝ) = 847 / 7200 := by norm_num
+      have hmag : x ^ 5 / 18 + (5 / 96) * x ^ 5 + (x ^ 5 / 100) * a ≤
+          (847 / 7200) * x ^ 5 := by
+        have : (x ^ 5 / 100) * a ≤ x ^ 5 / 100 := by nlinarith [ha_le, hposx]
+        nlinarith [this, hcoef, hposx]
+      calc
+        -((847 / 7200) * x ^ 5) ≤
+            -(x ^ 5 / 18 + (5 / 96) * x ^ 5 + (x ^ 5 / 100) * a) := by
+          linarith [hmag]
+        _ = x * cL - sU * a := by rw [hlo]; ring
+        _ ≤ x * cos x - sin x * a := hD_ge
+    exact abs_le.mpr ⟨hlower, hupper⟩
+  have hden : 0 < x * sin x := mul_pos hx hspos
+  have hform : cot x - (1 / x - x / 3) =
+      (x * cos x - sin x * a) / (x * sin x) := by
+    rw [cot_eq_cos_div_sin]
+    have : 1 / x - x / 3 = a / x := by dsimp [a]; field_simp [hx.ne']
+    rw [this]
+    field_simp [hspos.ne', hx.ne']
+  have hsin_lb2 : x * (247 / 300) ≤ sin x := by
+    have hx2 : x ^ 2 ≤ 1 := by nlinarith [hx.le, hx1]
+    have hx4_le : x ^ 4 ≤ x ^ 2 := by
+      have hfac : x ^ 4 - x ^ 2 = x ^ 2 * (x ^ 2 - 1) := by ring
+      have hnonpos : x ^ 4 - x ^ 2 ≤ 0 := by
+        rw [hfac]
+        exact mul_nonpos_of_nonneg_of_nonpos (sq_nonneg x) (sub_nonpos.mpr hx2)
+      linarith
+    have hid : sL - x * (247 / 300) =
+        x * (53 / 300 - x ^ 2 / 6 - x ^ 4 / 100) := by
+      dsimp [sL]; ring
+    have hdrop : 53 / 300 - x ^ 2 / 6 - x ^ 2 / 100 =
+        (53 / 300) * (1 - x ^ 2) := by
+      ring_nf
+    have hgap : 0 ≤ 53 / 300 - x ^ 2 / 6 - x ^ 4 / 100 := by
+      have hge : 53 / 300 - x ^ 2 / 6 - x ^ 2 / 100 ≤
+          53 / 300 - x ^ 2 / 6 - x ^ 4 / 100 := by
+        linarith only [hx4_le]
+      have hnn : 0 ≤ (53 / 300) * (1 - x ^ 2) :=
+        mul_nonneg (by norm_num) (sub_nonneg.mpr hx2)
+      linarith only [hdrop, hge, hnn]
+    have : 0 ≤ sL - x * (247 / 300) := by
+      rw [hid]
+      exact mul_nonneg hx.le hgap
+    linarith only [this, hsin_ge]
+  have hden_lb : x ^ 2 * (247 / 300) ≤ x * sin x := by
+    calc
+      x ^ 2 * (247 / 300) = x * (x * (247 / 300)) := by ring
+      _ ≤ x * sin x := mul_le_mul_of_nonneg_left hsin_lb2 hx.le
+  have hd0 : 0 < x ^ 2 * (247 / 300) := by positivity
+  have hquot : |cot x - (1 / x - x / 3)| ≤
+      ((847 / 7200) * x ^ 5) / (x ^ 2 * (247 / 300)) := by
+    rw [hform, abs_div, abs_of_pos hden]
+    have h1 : |x * cos x - sin x * a| / (x * sin x) ≤
+        ((847 / 7200) * x ^ 5) / (x * sin x) :=
+      div_le_div_of_nonneg_right hS (le_of_lt hden)
+    have h2 : ((847 / 7200) * x ^ 5) / (x * sin x) ≤
+        ((847 / 7200) * x ^ 5) / (x ^ 2 * (247 / 300)) :=
+      div_le_div_of_nonneg_left (by positivity) hd0 hden_lb
+    exact h1.trans h2
+  have hsimp : ((847 / 7200) * x ^ 5) / (x ^ 2 * (247 / 300)) =
+      (847 / 5928) * x ^ 3 := by
+    field_simp [hx.ne']
+    ring
+  have h5928 : (847 / 5928 : ℝ) ≤ 1 / 6 := by norm_num
+  calc
+    |cot x - (1 / x - x / 3)| ≤
+        ((847 / 7200) * x ^ 5) / (x ^ 2 * (247 / 300)) := hquot
+    _ = (847 / 5928) * x ^ 3 := hsimp
+    _ ≤ x ^ 3 / 6 := by
+      have hmul := mul_le_mul_of_nonneg_right h5928 (pow_nonneg hx.le 3)
+      have heq : (1 / 6) * x ^ 3 = x ^ 3 / 6 := by ring
+      linarith only [hmul, heq]
+
+/-- For \(0<r\le R\), the cotangent potential is the Newtonian germ up to \(O(r^3/R^4)\). -/
+theorem abs_cotPotential_newton {G M R r : ℝ}
+    (hR : 0 < R) (hr : 0 < r) (hrR : r ≤ R) :
+    |cotPotential G M R r + G * M / r - G * M * r / (3 * R ^ 2)|
+      ≤ |G * M| * r ^ 3 / (6 * R ^ 4) := by
+  have hx : 0 < r / R := div_pos hr hR
+  have hx1 : r / R ≤ 1 := (div_le_iff₀ hR).mpr (by simpa using hrR)
+  have hcot := abs_cot_sub_newton hx hx1
+  have hR0 : R ≠ 0 := hR.ne'
+  have hid : cotPotential G M R r + G * M / r - G * M * r / (3 * R ^ 2) =
+      -(G * M / R) * (cot (r / R) - (1 / (r / R) - (r / R) / 3)) := by
+    unfold cotPotential
+    field_simp [hR0, hr.ne']
+    ring
+  rw [hid, abs_mul, abs_neg]
+  calc
+    |G * M / R| * |cot (r / R) - (1 / (r / R) - (r / R) / 3)|
+        ≤ |G * M / R| * ((r / R) ^ 3 / 6) :=
+      mul_le_mul_of_nonneg_left hcot (abs_nonneg _)
+    _ = |G * M| * r ^ 3 / (6 * R ^ 4) := by
+      rw [abs_div, abs_of_pos hR]
+      field_simp [hR0]
+
+/-! ### Shallow plateau and a saturated enclosed mass -/
+
+theorem strictAntiOn_rotationShape_before :
+    StrictAntiOn rotationShape (Ioo (0 : ℝ) plateauRoot) := by
+  refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
+  · unfold rotationShape
+    refine ContinuousOn.div continuousOn_id (continuousOn_sin.pow 2) ?_
+    intro x hx
+    exact pow_ne_zero 2 (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨hx.1, lt_trans hx.2 plateauRoot_lt_pi_div_two⟩).ne'
+  · intro x hx
+    rw [interior_Ioo] at hx
+    exact deriv_rotationShape_neg_of_lt_root hx
+
+theorem strictMonoOn_rotationShape_after :
+    StrictMonoOn rotationShape (Ioo plateauRoot (π / 2)) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ioo _ _) ?_ ?_
+  · unfold rotationShape
+    refine ContinuousOn.div continuousOn_id (continuousOn_sin.pow 2) ?_
+    intro x hx
+    exact pow_ne_zero 2 (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨lt_trans (lt_trans (by norm_num) plateauRoot_bounds.1) hx.1, hx.2⟩).ne'
+  · intro x hx
+    rw [interior_Ioo] at hx
+    exact deriv_rotationShape_pos_of_gt_root hx
+
+theorem rotationShape_six_fifths_lt :
+    rotationShape (6 / 5 : ℝ) < (148 / 100 : ℝ) := by
+  set y : ℝ := 3 / 5
+  have hy : |y| ≤ 1 := by norm_num [y]
+  have hypos : (0 : ℝ) < y := by norm_num [y]
+  have hsin := abs_sub_le_iff.mp (sin_bound hy)
+  have hcos := abs_sub_le_iff.mp (cos_bound hy)
+  have hsin_lb : y - y ^ 3 / 6 - y ^ 5 / 100 ≤ sin y := by
+    have := hsin.1
+    rw [abs_of_pos hypos] at this
+    linarith
+  have hcos_lb : 1 - y ^ 2 / 2 - y ^ 4 * (5 / 96) ≤ cos y := by
+    have := hcos.1
+    rw [abs_of_pos hypos] at this
+    linarith
+  have hs0 : (0 : ℝ) < y - y ^ 3 / 6 - y ^ 5 / 100 := by norm_num [y]
+  have hc0 : (0 : ℝ) < 1 - y ^ 2 / 2 - y ^ 4 * (5 / 96) := by norm_num [y]
+  have hprod : (91 / 100 : ℝ) < 2 * (y - y ^ 3 / 6 - y ^ 5 / 100) *
+      (1 - y ^ 2 / 2 - y ^ 4 * (5 / 96)) := by norm_num [y]
+  have hsin2 : sin (2 * y) = 2 * sin y * cos y := sin_two_mul y
+  have hy2 : (6 / 5 : ℝ) = 2 * y := by norm_num [y]
+  have hge : 2 * (y - y ^ 3 / 6 - y ^ 5 / 100) *
+      (1 - y ^ 2 / 2 - y ^ 4 * (5 / 96)) ≤ sin (6 / 5) := by
+    rw [hy2, hsin2]
+    nlinarith [hsin_lb, hcos_lb, hs0, hc0]
+  have hsin_gt : (91 / 100 : ℝ) < sin (6 / 5) := lt_of_lt_of_le hprod hge
+  have hspos : (0 : ℝ) < sin (6 / 5) := lt_trans (by norm_num) hsin_gt
+  unfold rotationShape
+  rw [div_lt_iff₀ (sq_pos_of_pos hspos)]
+  have hcmp : (6 / 5 : ℝ) < (148 / 100) * (91 / 100) ^ 2 := by norm_num
+  have hsq : (91 / 100 : ℝ) ^ 2 < sin (6 / 5) ^ 2 := by nlinarith [hsin_gt]
+  nlinarith [hcmp, hsq]
+
+/-- On \([1,6/5]\), \(f\) stays strictly within a tenth of its minimum. -/
+theorem rotationShape_lt_eleven_tenths_f0 {x : ℝ} (hx : x ∈ Icc (1 : ℝ) (6 / 5)) :
+    rotationShape x < (11 / 10) * f0 := by
+  have hroot_lo : (1 : ℝ) < plateauRoot :=
+    lt_trans (by norm_num : (1 : ℝ) < 57 / 50) plateauRoot_bounds.1
+  have hroot_hi : plateauRoot < 6 / 5 := plateauRoot_bounds.2
+  have h148 : (148 / 100 : ℝ) < (11 / 10) * f0 := by
+    calc
+      (148 / 100 : ℝ) < (11 / 10) * (135 / 100) := by norm_num
+      _ < (11 / 10) * f0 := mul_lt_mul_of_pos_left f0_bounds.1 (by norm_num)
+  have hanti : StrictAntiOn rotationShape (Icc (1 : ℝ) plateauRoot) := by
+    refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+      (continuousOn_rotationShape_Icc (by norm_num) plateauRoot_lt_pi_div_two) ?_
+    intro y hy
+    have hyI : y ∈ Ioo (1 : ℝ) plateauRoot := by simpa [interior_Icc] using hy
+    exact deriv_rotationShape_neg_of_lt_root ⟨lt_trans (by norm_num) hyI.1, hyI.2⟩
+  have hmono : StrictMonoOn rotationShape (Icc plateauRoot (6 / 5)) := by
+    refine strictMonoOn_of_deriv_pos (convex_Icc _ _)
+      (continuousOn_rotationShape_Icc (lt_trans (by norm_num) plateauRoot_bounds.1)
+        six_fifths_lt_pi_div_two) ?_
+    intro y hy
+    have hyI : y ∈ Ioo plateauRoot (6 / 5) := by simpa [interior_Icc] using hy
+    exact deriv_rotationShape_pos_of_gt_root ⟨hyI.1, lt_trans hyI.2 six_fifths_lt_pi_div_two⟩
+  rcases lt_trichotomy x plateauRoot with hlt | heq | hgt
+  · rcases eq_or_lt_of_le hx.1 with rfl | hx1
+    · exact lt_trans rotationShape_one_bounds.2 h148
+    · have hlt_shape : rotationShape x < rotationShape 1 :=
+        hanti ⟨le_rfl, hroot_lo.le⟩ ⟨hx.1, hlt.le⟩ hx1
+      exact lt_trans hlt_shape (lt_trans rotationShape_one_bounds.2 h148)
+  · subst heq
+    have hf0 : (0 : ℝ) < f0 := lt_trans (by norm_num) f0_bounds.1
+    simpa [f0] using (lt_mul_of_one_lt_left hf0 (by norm_num : (1 : ℝ) < 11 / 10))
+  · rcases eq_or_lt_of_le hx.2 with rfl | hxhi
+    · exact lt_trans rotationShape_six_fifths_lt h148
+    · exact lt_trans (hmono ⟨hgt.le, hx.2⟩ ⟨hroot_hi.le, le_rfl⟩ hxhi)
+        (lt_trans rotationShape_six_fifths_lt h148)
+
+theorem strictAntiOn_s3CircularSpeedSq {G M R : ℝ}
+    (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) :
+    StrictAntiOn (s3CircularSpeedSq G M R) (Ioo (0 : ℝ) (plateauRoot * R)) := by
+  have hpos : 0 < G * M / R := div_pos (mul_pos hG hM) hR
+  have hR0 : R ≠ 0 := hR.ne'
+  intro r hr s hs hrs
+  have hmap : ∀ t ∈ Ioo (0 : ℝ) (plateauRoot * R), t / R ∈ Ioo (0 : ℝ) plateauRoot := by
+    intro t ht
+    exact ⟨div_pos ht.1 hR, (div_lt_iff₀ hR).mpr ht.2⟩
+  have hsinr : sin (r / R) ≠ 0 :=
+    (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨(hmap r hr).1, lt_trans (hmap r hr).2 plateauRoot_lt_pi_div_two⟩).ne'
+  have hsins : sin (s / R) ≠ 0 :=
+    (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨(hmap s hs).1, lt_trans (hmap s hs).2 plateauRoot_lt_pi_div_two⟩).ne'
+  rw [s3CircularSpeedSq_eq_shape G M R r hR0 hsinr,
+    s3CircularSpeedSq_eq_shape G M R s hR0 hsins]
+  exact mul_lt_mul_of_pos_left
+    (strictAntiOn_rotationShape_before (hmap r hr) (hmap s hs)
+      (div_lt_div_of_pos_right hrs hR)) hpos
+
+theorem strictMonoOn_s3CircularSpeedSq {G M R : ℝ}
+    (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) :
+    StrictMonoOn (s3CircularSpeedSq G M R) (Ioo (plateauRoot * R) (π / 2 * R)) := by
+  have hpos : 0 < G * M / R := div_pos (mul_pos hG hM) hR
+  have hR0 : R ≠ 0 := hR.ne'
+  intro r hr s hs hrs
+  have hmap : ∀ t ∈ Ioo (plateauRoot * R) (π / 2 * R),
+      t / R ∈ Ioo plateauRoot (π / 2) := by
+    intro t ht
+    exact ⟨(lt_div_iff₀ hR).mpr ht.1, (div_lt_iff₀ hR).mpr ht.2⟩
+  have hembed : ∀ t ∈ Ioo (plateauRoot * R) (π / 2 * R),
+      t / R ∈ Ioo (0 : ℝ) (π / 2) := by
+    intro t ht
+    exact ⟨lt_trans (lt_trans (by norm_num) plateauRoot_bounds.1) (hmap t ht).1, (hmap t ht).2⟩
+  have hsinr : sin (r / R) ≠ 0 := (sin_pos_of_mem_Ioo_zero_pi2 (hembed r hr)).ne'
+  have hsins : sin (s / R) ≠ 0 := (sin_pos_of_mem_Ioo_zero_pi2 (hembed s hs)).ne'
+  rw [s3CircularSpeedSq_eq_shape G M R r hR0 hsinr,
+    s3CircularSpeedSq_eq_shape G M R s hR0 hsins]
+  exact mul_lt_mul_of_pos_left
+    (strictMonoOn_rotationShape_after (hmap r hr) (hmap s hs)
+      (div_lt_div_of_pos_right hrs hR)) hpos
+
+theorem s3CircularSpeedSq_flat {G M R r : ℝ}
+    (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hr : r / R ∈ Icc (1 : ℝ) (6 / 5)) :
+    s3CircularSpeedSq G M R r < (11 / 10) * ((G * M / R) * f0) := by
+  have hR0 : R ≠ 0 := hR.ne'
+  have hxπ : r / R < π / 2 := lt_of_le_of_lt hr.2 six_fifths_lt_pi_div_two
+  have hs : sin (r / R) ≠ 0 :=
+    (sin_pos_of_mem_Ioo_zero_pi2 ⟨lt_of_lt_of_le (by norm_num) hr.1, hxπ⟩).ne'
+  rw [s3CircularSpeedSq_eq_shape G M R r hR0 hs]
+  have hpos : 0 < G * M / R := div_pos (mul_pos hG hM) hR
+  calc
+    (G * M / R) * rotationShape (r / R)
+        < (G * M / R) * ((11 / 10) * f0) :=
+      mul_lt_mul_of_pos_left (rotationShape_lt_eleven_tenths_f0 hr) hpos
+    _ = (11 / 10) * ((G * M / R) * f0) := by ring
+
+/-- Circular speed on a spherical chart, with enclosed mass `M r`. -/
+noncomputable def enclosedCircularSpeedSq (G R : ℝ) (M : ℝ → ℝ) (r : ℝ) : ℝ :=
+  (G * M r / R) * rotationShape (r / R)
+
+theorem enclosedCircularSpeedSq_const {G R M0 : ℝ} {M : ℝ → ℝ} {a b : ℝ}
+    (hM : ∀ r ∈ Icc a b, M r = M0) {r : ℝ} (hr : r ∈ Icc a b) :
+    enclosedCircularSpeedSq G R M r = (G * M0 / R) * rotationShape (r / R) := by
+  simp [enclosedCircularSpeedSq, hM r hr]
+
+theorem enclosedCircularSpeedSq_const_eq_point {G R M0 r : ℝ} {M : ℝ → ℝ}
+    (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) (hM : M r = M0) :
+    enclosedCircularSpeedSq G R M r = s3CircularSpeedSq G M0 R r := by
+  rw [enclosedCircularSpeedSq, hM, s3CircularSpeedSq_eq_shape G M0 R r hR hs]
+
+theorem strictAntiOn_enclosedCircularSpeedSq {G M0 R : ℝ} {M : ℝ → ℝ}
+    (hG : 0 < G) (hM0 : 0 < M0) (hR : 0 < R)
+    (hM : ∀ r ∈ Ioo (0 : ℝ) (plateauRoot * R), M r = M0) :
+    StrictAntiOn (enclosedCircularSpeedSq G R M) (Ioo (0 : ℝ) (plateauRoot * R)) := by
+  have hspeed := strictAntiOn_s3CircularSpeedSq hG hM0 hR
+  intro r hr s hs hrs
+  have hR0 : R ≠ 0 := hR.ne'
+  have hsin : ∀ t ∈ Ioo (0 : ℝ) (plateauRoot * R), sin (t / R) ≠ 0 := by
+    intro t ht
+    have ht' : t / R ∈ Ioo (0 : ℝ) plateauRoot :=
+      ⟨div_pos ht.1 hR, (div_lt_iff₀ hR).mpr ht.2⟩
+    exact (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨ht'.1, lt_trans ht'.2 plateauRoot_lt_pi_div_two⟩).ne'
+  rw [enclosedCircularSpeedSq_const_eq_point hR0 (hsin r hr) (hM r hr),
+    enclosedCircularSpeedSq_const_eq_point hR0 (hsin s hs) (hM s hs)]
+  exact hspeed hr hs hrs
+
+theorem strictMonoOn_enclosedCircularSpeedSq {G M0 R : ℝ} {M : ℝ → ℝ}
+    (hG : 0 < G) (hM0 : 0 < M0) (hR : 0 < R)
+    (hM : ∀ r ∈ Ioo (plateauRoot * R) (π / 2 * R), M r = M0) :
+    StrictMonoOn (enclosedCircularSpeedSq G R M)
+      (Ioo (plateauRoot * R) (π / 2 * R)) := by
+  have hspeed := strictMonoOn_s3CircularSpeedSq hG hM0 hR
+  intro r hr s hs hrs
+  have hR0 : R ≠ 0 := hR.ne'
+  have hsin : ∀ t ∈ Ioo (plateauRoot * R) (π / 2 * R), sin (t / R) ≠ 0 := by
+    intro t ht
+    have ht' : t / R ∈ Ioo plateauRoot (π / 2) :=
+      ⟨(lt_div_iff₀ hR).mpr ht.1, (div_lt_iff₀ hR).mpr ht.2⟩
+    exact (sin_pos_of_mem_Ioo_zero_pi2
+      ⟨lt_trans (lt_trans (by norm_num) plateauRoot_bounds.1) ht'.1, ht'.2⟩).ne'
+  rw [enclosedCircularSpeedSq_const_eq_point hR0 (hsin r hr) (hM r hr),
+    enclosedCircularSpeedSq_const_eq_point hR0 (hsin s hs) (hM s hs)]
+  exact hspeed hr hs hrs
 
 end Gravity
 
