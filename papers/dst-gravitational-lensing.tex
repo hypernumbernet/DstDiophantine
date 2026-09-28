@@ -1,0 +1,339 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{Gravitational Lensing by Torsion Stars:\\
+Layered Foci beyond the Schwarzschild Deflection}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Double spacetime theory recovers the exterior of a spherical mass as a Schwarzschild chart and freezes the redshift at a quasi-horizon \(r_\star\), with \(1<r_\star/r_s<1.005\) on the three-axis reading of the admissible ceiling. The photon sphere \(r_{\mathrm{ph}}=3r_s/2\) lies outside that surface on both the three-axis and the one-axis readings, so the critical impact parameter of light from infinity remains the Schwarzschild value \(b_c=3\sqrt{3}\,GM/c^2\). Rays with \(b>b_c\) turn in the exterior and never meet a torsional node. The equal-scale interference factor of the parent theory has one node in each interval of \(\pi\), neighboring areal radii satisfy \(1/6<r_2/r_1<4/(5\pi)\), and the plateaux between nodes are exponentially quiet. Reading each node as a thin signed barrier, after the pole of \(1/\gamma_s\) has been cut off by \(|J|\le 3\pi^2/8\), gives a weak-deflection map whose cylindrical mass is the projected mass of that stack. A point mass has one tangential critical curve. A stack of signed barriers can add a critical curve at each supercritical limb, and both the shell reading and the frozen-redshift chart send neighboring limbs to angular radii in the areal-radius ratio. That stack is a model. A photon has vanishing stiffness in the written particle action, and the massive force \(F=k/(\gamma_s r^2)\) is not itself a null geodesic. The mass on each barrier is not fixed by the algebra, so magnifications are not predicted. The exterior chart meets the Cassini bound on the Shapiro delay and leaves galactic Einstein rings unchanged, because \(r_\star\) subtends an angle far below those rings. The critical curve overlaps the emission rings reported for M87* and for Sgr A* at the published precision. Those images do not resolve an interior sequence. A shadow diameter inconsistent with \(b_c\), at fixed mass and distance, would falsify the exterior chart. A resolved pair of neighboring limbs whose radius ratio lies outside the node window would falsify the shell reading.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+The double spacetime theory refuses a shared continuum. Each massive particle carries a usual Minkowski frame and a dual frame, and gravity is the torsional mismatch of that pair~\cite{dst-main}. On the exterior of a spherical mass the mismatch is read as a radial boost, and the boost reproduces the Schwarzschild coframe. Inside a sufficient density the same mismatch changes sign with radius. The parent theory calls the resulting object a torsion star: a layered condensate with no event horizon and no central singularity. The layers are not an extra assumption pasted onto the Schwarzschild interior. Under the equal-scale ansatz they are the zeros of a single interference factor, one node in each interval of \(\pi\).
+
+Light answers a different question from the fall of a massive particle. The written particle action gives a photon vanishing stiffness, so the action does not accelerate a photon's rapidities. What deflects light, on the exterior, is the null geometry of the coframe. What is asked in this note is how that geometry, together with the nodal barriers, maps a source direction to image directions. The ordinary Schwarzschild lens has one critical curve in the weak field, the Einstein ring of the total mass, and one critical impact parameter in the strong field, the photon sphere. A stack of barriers of alternating sign can do more. Each supercritical limb can add a critical curve, and the curves sit at distinct radii.
+
+Two statements have to be kept apart from the start. The exterior deflection, the location of the photon sphere relative to the quasi-horizon, and the window on neighboring nodal radii are readings of results already obtained in the parent theory. The identification of a node with a thin signed shell, and the lens map built from the projected mass of that shell, are a model. The model is the weak-deflection reading of the barriers. It is not a completed null integration through a strong-field interior, and it does not assign a mass to each barrier.
+
+The note follows that division. Section~\ref{sec:chart} records the chart, the quasi-horizon, and the nodal window. Section~\ref{sec:schwarzschild} recalls the Schwarzschild lens. Section~\ref{sec:classes} separates rays that turn outside \(r_\star\) from rays that enter it. Section~\ref{sec:shells} constructs the layered map. Section~\ref{sec:critical} locates the critical curves. Section~\ref{sec:observations} compares the two readings with the Shapiro delay, with galactic rings, and with the emission rings of M87* and Sgr A*.
+
+\section{The chart inherited from the parent theory}
+\label{sec:chart}
+
+On the exterior Schwarzschild domain the radial boost rapidity and the redshift factor are
+\begin{equation}
+\label{eq:exterior-A}
+\varphi(r)=-\frac12\log\bigl(1-r_s/r\bigr),
+\qquad
+A(r)=1-\frac{r_s}{r},
+\qquad
+r_s=\frac{2GM}{c^2},
+\end{equation}
+with \(r>r_s\). The coframe \(\bigl(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta\bigr)\) induces the Schwarzschild metric. Three quadratic quantities live on this chart and are not the same object: the finite-angle mismatch \(J=\frac12\varphi^2\), the field seed \(J_{\mathrm{field}}=\frac12(\varphi')^2\), and the teleparallel scalar \(T\). They agree at leading order in the weak field and nowhere else. The Einstein equation belongs to \(T\) after a tetrad variation. It is not an identity for \(J\).
+
+Classical Schwarzschild sends \(\varphi\to\infty\) and \(A\to 0\) as \(r\to r_s^+\). The admissible cone cuts that divergence. Identifying the three-axis ceiling \(|J|=3\pi^2/8\) with a radial pure boost inverts to
+\begin{equation}
+\label{eq:quasihorizon}
+\varphi_{\max}=\frac{\pi\sqrt{3}}{2},
+\qquad
+A_{\min}=\mathrm{e}^{-\pi\sqrt{3}},
+\qquad
+\frac{r_\star}{r_s}=\frac{1}{1-A_{\min}}.
+\end{equation}
+The parent theory records the window \(0<A_{\min}<10^{-2}\) and \(1<r_\star/r_s<1.005\). For \(r\le r_\star\) the chart freezes \(\varphi=\varphi_{\max}\) and \(A=A_{\min}\). The frozen factor is strictly positive. A null surface \(A=0\) does not form. The same parent passage flags the identification as a three-axis ceiling read onto one boost axis. A one-axis admissible boost saturates at \(\varphi=\pi/2\), where \(A=\mathrm{e}^{-\pi}\) and \(r_\star/r_s=1/(1-\mathrm{e}^{-\pi})\). That ratio is still less than \(3/2\).
+
+The layered interior is organized by a different scalar. Under the equal-scale ansatz the interference factor, written in \(x=\ell/(2r)\), is
+\begin{equation}
+\label{eq:gamma-s}
+\gamma_s(x)=\cosh x\cos x-\sinh x\sin x,
+\end{equation}
+and its derivative collapses to
+\begin{equation}
+\label{eq:gamma-s-derivative}
+\gamma_s'(x)=-2\cosh x\,\sin x.
+\end{equation}
+Each interval \([n\pi,(n+1)\pi]\) therefore contains exactly one node, and the sign of \(\gamma_s\) alternates from plateau to plateau. The \(n\)-th node lies in
+\begin{equation}
+\label{eq:node-window}
+n\pi+\frac{\pi}{4}<x_n<n\pi+\frac{\pi}{2},
+\end{equation}
+and the first two areal radii satisfy
+\begin{equation}
+\label{eq:radius-ratio}
+\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255.
+\end{equation}
+The ratio depends only on the dimensionless roots. The characteristic length \(\ell\) sets the absolute scale and cancels from every ratio. Plateaux are screened by \(1/\cosh\bigl(\ell/(2r)\bigr)\). What grows toward the centre is the barrier at the node, where \(\gamma_s\) has a simple zero and \(1/\gamma_s\) diverges in the equal-scale idealization.
+
+That divergence is not a physical column density. On the admissible cone \(|J|\le 3\pi^2/8\), and the parent dictionary confines the dimensionless teleparallel density to \(-8<r^2 T<27\). The spike in the effective source is finite. The cone does not convert the window into a unique surface density. Section~\ref{sec:shells} replaces each finite spike by a thin shell of some mass \(m_n\), and leaves \(m_n\) unfixed.
+
+One further distinction belongs here because the lens map will otherwise be misread. In the written particle action a photon is a particle of vanishing stiffness. Vanishing stiffness removes the acceleration of the common rapidity. It does not force the photon onto the vacuum, and it does not make \(F=k/(\gamma_s r^2)\) the force on a ray. The symbol \(F\) is the effective force in the massive layer reading. Null deflection on the exterior is the geodesic of the coframe~\eqref{eq:exterior-A}. Null deflection through the barriers is the model of Section~\ref{sec:shells}.
+
+\section{The Schwarzschild lens}
+\label{sec:schwarzschild}
+
+A static spherical line element
+\[
+ds^2=-A(r)\,c^2\,dt^2+A(r)^{-1}\,dr^2+r^2\,d\Omega^2
+\]
+conserves an energy \(E\) and an angular momentum \(L\). Their ratio is the asymptotic impact parameter \(b=L/E\). Radial turning points of a null ray obey
+\begin{equation}
+\label{eq:turning}
+b^2=\frac{r_0^2}{A(r_0)}.
+\end{equation}
+Circular photon orbits are the critical points of \(A/r^2\). For the exterior factor~\eqref{eq:exterior-A},
+\[
+\frac{d}{dr}\Bigl(\frac{A}{r^2}\Bigr)=-\frac{2}{r^3}+\frac{3r_s}{r^4},
+\]
+so the only positive root is the photon sphere
+\begin{equation}
+\label{eq:photon-sphere}
+r_{\mathrm{ph}}=\frac{3}{2}\,r_s=\frac{3GM}{c^2}.
+\end{equation}
+The corresponding impact parameter is
+\begin{equation}
+\label{eq:bc}
+b_c=\frac{r_{\mathrm{ph}}}{\sqrt{A(r_{\mathrm{ph}})}}=3\sqrt{3}\,\frac{GM}{c^2}=\frac{3\sqrt{3}}{2}\,r_s.
+\end{equation}
+At that root \(A/r^2\) has a maximum, so the circular orbit is unstable. Rays from infinity with \(b>b_c\) turn at some \(r_0>r_{\mathrm{ph}}\). Rays with \(b<b_c\) pass \(r_{\mathrm{ph}}\).
+
+The azimuthal advance from a turning point \(r_0>r_{\mathrm{ph}}\) out to infinity and back is
+\begin{equation}
+\label{eq:deflection-integral}
+\Delta\varphi(b)
+  =2\int_{r_0}^{\infty}
+    \frac{dr}{r^2\sqrt{b^{-2}-A(r)/r^2}},
+\qquad
+\alpha_{\mathrm{ext}}(b)=\Delta\varphi(b)-\pi,
+\end{equation}
+with \(b\) and \(r_0\) tied by~\eqref{eq:turning}. In the weak field, \(b\gg r_s\), the integral reduces to
+\begin{equation}
+\label{eq:weak-deflection}
+\alpha_{\mathrm{ext}}(b)=\frac{4GM}{c^2 b}+O\Bigl(\Bigl(\frac{r_s}{b}\Bigr)^2\Bigr).
+\end{equation}
+The leading term is the quantity tested by light bending at the solar limb. The same Schwarzschild factor fixes the Shapiro delay. In the parametrized post-Newtonian writing both the bending and the delay scale with \((1+\gamma)/2\), and the chart~\eqref{eq:exterior-A} is the case \(\gamma=1\).
+
+For a thin lens at angular-diameter distance \(D_L\) from the observer, with a source at \(D_S\) and a lens--source distance \(D_{LS}\), the lens equation relates the angular source position \(\beta\) to the angular image position \(\theta\) by
+\begin{equation}
+\label{eq:lens}
+\beta=\theta-\bar\alpha(\theta),
+\qquad
+\bar\alpha(\theta)=\frac{D_{LS}}{D_S}\,\alpha(D_L\theta).
+\end{equation}
+The Einstein angle of a point mass \(M\) is defined by
+\begin{equation}
+\label{eq:einstein}
+\theta_E^2=\frac{4GM}{c^2}\,\frac{D_{LS}}{D_L D_S},
+\end{equation}
+so that the weak point-mass deflection becomes \(\bar\alpha(\theta)=\theta_E^2/\theta\). Two eigenvalues of the lens map vanish on different sets~\cite{NarayanBartelmann1996}. The tangential eigenvalue vanishes where
+\begin{equation}
+\label{eq:tangential}
+\bar\alpha(\theta)=\theta,
+\end{equation}
+and the radial eigenvalue vanishes where
+\begin{equation}
+\label{eq:radial}
+\frac{d\bar\alpha}{d\theta}=1.
+\end{equation}
+For the point mass,~\eqref{eq:tangential} has the single positive root \(\theta=\theta_E\), the Einstein ring of a source on the optic axis. The radial derivative is \(-\theta_E^2/\theta^2\), which does not equal \(1\) for any real \(\theta\). A point mass therefore has one tangential critical curve and no radial critical curve. That is the lens a torsion star must exceed if its layers are to draw further foci.
+
+\section{Two classes of rays}
+\label{sec:classes}
+
+Join the exterior factor~\eqref{eq:exterior-A} for \(r>r_\star\) to the frozen value \(A=A_{\min}\) for \(r\le r_\star\). The join is continuous, because \(r_\star\) was defined by \(A(r_\star)=A_{\min}\). On the frozen interval
+\[
+\frac{d}{dr}\Bigl(\frac{A}{r^2}\Bigr)=-\frac{2A_{\min}}{r^3}<0.
+\]
+The frozen redshift contributes no critical point. The only critical point of the joined function \(A/r^2\) on \(r>0\) remains \(r_{\mathrm{ph}}\), provided \(r_{\mathrm{ph}}>r_\star\).
+
+That inequality holds for both ceilings quoted in Section~\ref{sec:chart}. The photon sphere is at \(3r_s/2\). The three-axis window gives \(r_\star/r_s<1.005\). The one-axis saturation gives \(r_\star/r_s=1/(1-\mathrm{e}^{-\pi})<3/2\) as well, since \(\mathrm{e}^{-\pi}<1/3\). In either reading,
+\begin{equation}
+\label{eq:photon-outside}
+r_{\mathrm{ph}}>r_\star.
+\end{equation}
+The critical curve of rays from infinity is fixed in the exterior chart, at the impact parameter~\eqref{eq:bc}. Layers inside \(r_\star\) do not move it.
+
+The same comparison splits the rays into two classes.
+
+A ray of the exterior class has \(b>b_c\). Its turning point lies at \(r_0>r_{\mathrm{ph}}>r_\star\). The whole of the deflected path is in the Schwarzschild domain, and the deflection is~\eqref{eq:deflection-integral}. No node is encountered. Every weak-field test whose impact parameter is large compared with \(r_s\), and every strong-field test whose observable is the angular diameter \(2b_c/D_A\) of this critical curve, belongs to this class.
+
+A ray of the penetrating class has \(b<b_c\). It passes the photon sphere, enters \(r<r_\star\), and, on the frozen chart alone, reaches a periapsis where~\eqref{eq:turning} gives
+\begin{equation}
+\label{eq:periapsis}
+r_{\mathrm{peri}}=b\sqrt{A_{\min}}.
+\end{equation}
+The periapsis is positive for every finite \(b\). The ray returns. There is no horizon to capture it. Because the maximum of the effective potential still lies below the energy of any ray with \(b<b_c\), the returning ray can recross \(r_{\mathrm{ph}}\) and reach infinity. Near \(b_c\) the passage past the unstable orbit can wind many times. That winding is the photon-ring sequence of the exterior geometry. It is one critical curve, visited repeatedly. It is not a sequence of nodal limbs.
+
+Equation~\eqref{eq:periapsis} is chart geometry. It does not know about \(\gamma_s\). A sphere of areal radius \(r\) inside the freeze-out is grazed by the ray whose periapsis lies on that sphere, and the asymptotic impact parameter of that ray is \(r/\sqrt{A_{\min}}\). The map is homogeneous of degree one, so neighboring nodal spheres are grazed at impact parameters in the ratio of their areal radii. The graze is accessible to a ray from infinity only when that impact parameter lies below \(b_c\), that is when \(r<b_c\sqrt{A_{\min}}\). An outer node near \(r_\star\) is crossed by every penetrating ray and is not a periapsis limb on the sky. The shell model of the next section is a second, weak-deflection reading of the same nodes. It is not a correction added on top of~\eqref{eq:deflection-integral} for the same ray.
+
+\section{A layered lens map}
+\label{sec:shells}
+
+The plateaux of \(\gamma_s\) are exponentially quiet, so the smooth column they contribute is neglected. Each node is a barrier. The equal-scale zero of \(\gamma_s\) would make \(1/\gamma_s\) non-integrable across the node. The admissible window of Section~\ref{sec:chart} replaces that pole by a finite spike. The model of this section collapses the spike further, to a thin spherical shell of areal radius \(R\) and mass \(m\). The mass \(m\) may be negative. A positive shell is the idealization of an attractive barrier, a negative shell of a repulsive one. Nothing in the cone fixes the value of \(m\), nor the fraction of the total mass that sits on any one node.
+
+Let \(\sigma=m/(4\pi R^2)\) be the surface density. A line of sight at impact parameter \(b<R\) meets the shell twice. The angle between the line of sight and the radial normal has cosine \(\sqrt{R^2-b^2}/R\), so the projected column is
+\begin{equation}
+\label{eq:column}
+\Sigma(b)=\frac{2\sigma R}{\sqrt{R^2-b^2}}\qquad(b<R),
+\end{equation}
+and \(\Sigma(b)=0\) for \(b>R\). The column diverges at the limb \(b=R\). That divergence is the ideal thin limit. A spike of finite width, as required by the cone, keeps \(\Sigma\) finite and peaked at the limb.
+
+The mass projected inside a cylinder of radius \(b\) is
+\[
+M_{\mathrm{cyl}}(b)=\int_0^{\min(b,R)}2\pi b'\,\Sigma(b')\,db'.
+\]
+For \(b\le R\) the integral is elementary,
+\begin{equation}
+\label{eq:mcyl}
+M_{\mathrm{cyl}}(b)
+  =4\pi\sigma R\int_0^{b}\frac{b'\,db'}{\sqrt{R^2-b'^2}}
+  =\frac{m}{R}\Bigl(R-\sqrt{R^2-b^2}\Bigr),
+\end{equation}
+and for \(b\ge R\) one has \(M_{\mathrm{cyl}}(b)=m\). The weak-field deflection, with the general-relativistic factor \(4G/c^2\) rather than the Newtonian \(2G/c^2\), is
+\begin{equation}
+\label{eq:shell-deflection}
+\alpha(b)=\frac{4G\,M_{\mathrm{cyl}}(b)}{c^2 b}.
+\end{equation}
+Outside the shell this is the point-mass law. On the axis, \(R-\sqrt{R^2-b^2}\sim b^2/(2R)\), so \(\alpha\to 0\) as \(b\to 0\), as spherical symmetry requires. The slope does not stay bounded at the limb: \(dM_{\mathrm{cyl}}/db=(m/R)\,b/\sqrt{R^2-b^2}\) diverges as \(b\to R^-\). A finite thickness replaces the divergence by a steep but finite peak.
+
+A torsion star, in this reading, is a stack of such shells, one at each nodal radius \(R_n=r_n\), with signed masses \(m_n\). The cylindrical masses add. For the weak-field normalization one requires
+\begin{equation}
+\label{eq:mass-sum}
+\sum_n m_n=M,
+\end{equation}
+so that a ray with \(b\) larger than every node sees the point-mass deflection of the total mass. That normalization matches~\eqref{eq:weak-deflection}. It is a choice of the model. It is not a theorem that the barriers carry the whole mass, and it is not the deflection law of an exterior-class ray. Exterior-class rays are already accounted for by~\eqref{eq:deflection-integral}, which knows the total mass through \(r_s\) and does not pass through the shells.
+
+The sign of \(m_n\) alternates, because the sign of \(\gamma_s\) alternates from plateau to plateau and each barrier is the transition between them. Consequently \(\alpha(b)\) need not be monotone in \(b\). A monotone deflection, of the point-mass form \(\theta_E^2/\theta\), produces two images of a source off the axis. A non-monotone deflection can produce more. Those further images are the complex foci of the layered lens. They exist in this model when the corresponding critical curves exist, which is the question of the next section.
+
+\section{Critical curves}
+\label{sec:critical}
+
+Substitute~\eqref{eq:shell-deflection} into the lens equation~\eqref{eq:lens}. With the Einstein angle~\eqref{eq:einstein} of the total mass, and with \(b=D_L\theta\),
+\begin{equation}
+\label{eq:reduced-stack}
+\bar\alpha(\theta)=\frac{\theta_E^2}{\theta}\,\frac{M_{\mathrm{cyl}}(D_L\theta)}{M},
+\end{equation}
+where \(M_{\mathrm{cyl}}\) now denotes the sum of the shell contributions. Outside every node, \(M_{\mathrm{cyl}}=M\) by~\eqref{eq:mass-sum}, and \(\bar\alpha\) collapses to the point-mass deflection. The tangential condition~\eqref{eq:tangential} still has the root \(\theta=\theta_E\), and the radial condition~\eqref{eq:radial} still has none. The Einstein ring of the total mass survives the layering. It is the critical curve of rays that stay outside every shell.
+
+Inside the stack the two conditions part company, and they part company according to the sign of the barrier.
+
+On a positive shell the ideal column~\eqref{eq:column} diverges at the limb, so the convergence passes through every finite threshold, including the threshold that enforces~\eqref{eq:tangential}. After the cone has given the barrier a finite width, the peak is finite, and the tangential condition is met only if that peak still exceeds the critical convergence. The algebra does not decide the comparison. If the peak is supercritical, the tangential critical curve lies at the limb, because that is where the column is greatest. Its angular radius is \(\theta_n=r_n/D_L\) in this weak-deflection reading.
+
+On a negative shell, \(\bar\alpha\) has the wrong sign to satisfy \(\bar\alpha(\theta)=\theta\) for \(\theta>0\). A repulsive barrier does not form an Einstein ring. Its slope, however, is steep at the limb, and a steep slope can satisfy the radial condition~\eqref{eq:radial}. Again the regularized peak must actually cross the threshold. If it does, the radial critical curve likewise sits at that limb.
+
+Alternating signs therefore alternate the type of the extra critical curve: tangential at a supercritical attractive barrier, radial at a supercritical repulsive barrier. The number of extra curves is not a prediction. It is at most one per node, and it is zero at every node whose regularized column fails to cross. What the nodal window does fix, for those curves that exist, is their radius ratio. Neighboring limbs stand in the ratio of the areal radii, so
+\begin{equation}
+\label{eq:angular-ratio}
+\frac16<\frac{\theta_{n+1}}{\theta_n}<\frac{4}{5\pi}
+\end{equation}
+whenever both limbs are present and the weak-deflection identification \(\theta=b/D_L=r/D_L\) is the map in use.
+
+The frozen chart gives the same ratio for a different family of rays. Section~\ref{sec:classes} assigns to a nodal sphere the grazing impact parameter \(b_n=r_n/\sqrt{A_{\min}}\), provided \(b_n<b_c\). The factor \(\sqrt{A_{\min}}\) cancels in \(b_{n+1}/b_n\), and the angular radius on the sky of an asymptotic observer is \(b/D_A\). Wherever two such grazes are accessible, their angular ratio is again~\eqref{eq:radius-ratio}. The overall scale differs between the two readings by \(1/\sqrt{A_{\min}}\). The ratio does not. Magnifications differ as well, and neither reading computes them, because neither reading fixes \(m_n\).
+
+The photon-ring sequence is not this ratio. Successive half-orbits of the single unstable curve at \(b_c\) are demagnified, for the Schwarzschild geometry, by a factor \(\mathrm{e}^{-\pi}\) per half-orbit, and their image-plane radii converge to that one curve~\cite{Johnson2020}. A pair of nodal limbs is a pair of distinct impact parameters. An exponential pile-up at \(b_c\) and a pair whose ratio lies in~\eqref{eq:angular-ratio} are different arrangements of light on the sky. The present note does not integrate the ray that both winds at \(r_{\mathrm{ph}}\) and crosses the barriers. It separates the two arrangements and leaves the combined deflection uncomputed.
+
+\section{Comparison with observations}
+\label{sec:observations}
+
+\subsection{The exterior class}
+
+The solar tests sit in the exterior class. A ray that grazes the photosphere has an impact parameter of order the solar radius, larger than \(r_s\) by a factor of order \(10^5\), and it does not enter a nucleus. Nuclear nodes, whatever their femtometer scale, are not on the path. The deflection is~\eqref{eq:weak-deflection} evaluated at the solar limb, and the delay is the Shapiro delay of the same factor \(A\). Cassini tracking of radio links past the Sun gives
+\begin{equation}
+\label{eq:cassini}
+\gamma=1+(2.1\pm 2.3)\times 10^{-5}
+\end{equation}
+\cite{Bertotti2003}. The chart is the case \(\gamma=1\). The measurement constrains any correction that would rescale the exterior bending and delay together. It does not constrain the interior shells, which that ray does not meet.
+
+Galactic strong lensing is the same class in a weaker field. The Einstein angle~\eqref{eq:einstein} and the angular size \(r_\star/D_L\) of the quasi-horizon are related by \(\theta_E^2\sim(r_s/D_L)(D_{LS}/D_S)\). The ratio of the two angles is then the square root of an angle measured in radians, and for any galactic lens that square root is many orders of magnitude below unity. Structure at \(r_\star\) does not move the Einstein ring, the image positions, or the time delay at the precision of those observations. A double Einstein ring formed by two sources at two redshifts is two exterior-class rings. It is not a pair of nodal limbs. Flux-ratio anomalies among images of a single quasar are likewise an exterior-class question, read in the literature as substructure in the lens, and this note does not assign them to torsional nodes.
+
+\subsection{The critical curve of M87* and of Sgr A*}
+
+The emission ring of M87* has diameter \(42\pm 3\,\mu\mathrm{as}\), surrounding a central depression whose flux ratio is \(\gtrsim 10{:}1\). The angular gravitational radius adopted with that ring is \(\theta_g=GM/(c^2 D)=3.8\pm 0.4\,\mu\mathrm{as}\), at distance \(16.8\pm 0.8\,\mathrm{Mpc}\), and the corresponding mass is \((6.5\pm 0.7)\times 10^9\,M_\odot\)~\cite{EHT2019}. The critical curve~\eqref{eq:bc} has angular diameter
+\begin{equation}
+\label{eq:shadow-diameter}
+\frac{2b_c}{D_A}=6\sqrt{3}\,\theta_g.
+\end{equation}
+Since \(6\sqrt{3}\approx 10.392\),
+\[
+6\sqrt{3}\times(3.8\pm 0.4)\,\mu\mathrm{as}
+\]
+is about \(39.5\pm 4.2\,\mu\mathrm{as}\). That interval overlaps \(42\pm 3\,\mu\mathrm{as}\). The overlap is the comparison the exterior chart supports. The published ring is lensed emission around the critical curve, not the critical curve itself, and the mass inference already uses a shadow scaling of that order. Agreement at this precision is a check that the photon sphere lies where~\eqref{eq:photon-outside} places it. It is not a detection of a horizon. The horizon is what the quasi-horizon replaces, and the critical curve does not consult the replacement.
+
+Sgr A* is the same comparison at a second mass. The emission ring has diameter \(51.8\pm 2.3\,\mu\mathrm{as}\)~\cite{EHT2022I}. Calibrated to general-relativistic simulations, the angular gravitational radius is \(4.8^{+1.4}_{-0.7}\,\mu\mathrm{as}\)~\cite{EHT2022IV}. The central value of~\eqref{eq:shadow-diameter} is about \(49.9\,\mu\mathrm{as}\). The uncertainty on \(\theta_g\) runs from \(4.1\) to \(6.2\,\mu\mathrm{as}\), and \(6\sqrt{3}\) times that interval runs from about \(43\) to \(64\,\mu\mathrm{as}\). The measured ring lies inside the interval. Again the exterior critical curve is consistent with the image, at the precision of the published gravitational radius.
+
+The central depression is a separate observable. A penetrating ray can return, by~\eqref{eq:periapsis}, and could in principle brighten the interior of the shadow. The M87* depression, at a contrast \(\gtrsim 10{:}1\), limits the sum of transmitted flux and any emission in front of the shadow. Optical depth of the surrounding plasma can enforce that limit whether or not a ray that enters \(r_\star\) eventually escapes. The depression constrains that optical depth. It does not enter~\eqref{eq:shadow-diameter}.
+
+\subsection{What would distinguish the layers}
+
+The images just cited are single rings. They do not resolve a sequence of interior critical curves, so they do not yet speak to~\eqref{eq:angular-ratio}. The arrangement that general relativity predicts inside the photon ring is the opposite of a nodal ratio: an infinite sequence of subrings, each demagnified by \(\mathrm{e}^{-\pi}\) per half-orbit in the Schwarzschild case, packed onto the one curve \(b_c\)~\cite{Johnson2020}. The shell reading predicts, for those barriers that are supercritical, limbs separated by a ratio in~\eqref{eq:angular-ratio}, a window whose upper end is about \(0.255\). A pile-up has neighboring radii in a ratio indistinguishable from \(1\) once the exponential has converged. The two patterns do not meet.
+
+Resolving them is a task for a denser and longer-baseline array than the one that made the 2017 images. The science case of the next-generation Event Horizon Telescope includes the photon ring as a distinct target, and classifies that target as a high-risk objective: on Earth baselines only the \(n=0\) and \(n=1\) subrings are expected to be detectable, and separating them already requires super-resolution~\cite{Johnson2023}. That separation, if it is achieved, still concerns one critical curve. It is not yet a measurement of a nodal ratio. Until a pair of interior limbs is separated, the interior ratio is untested, and the exterior diameter is the comparison that has actually been made.
+
+Two comparisons would falsify the account given here, and only these two are claimed as falsifiers. If the mass and the distance are held fixed and the angular diameter of the critical curve falls outside the observational allowance around \(2b_c/D_A\), the exterior chart is wrong. If a resolved pair of neighboring interior limbs, identified as limbs in the sense of Section~\ref{sec:critical}, has a radius ratio outside~\eqref{eq:angular-ratio}, the shell reading is wrong. A dark interior, a magnification, or a galactic flux ratio is not a third falsifier. The first is entangled with optical depth, and the other two are not fixed by the algebra.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+The exterior of a torsion star lenses light as the Schwarzschild chart lenses light. The photon sphere lies outside the quasi-horizon for both ceilings recorded in the parent theory, the critical impact parameter remains \(b_c=3\sqrt{3}\,GM/c^2\), and the Einstein ring of the total mass survives in the weak field. That is why the solar delay, the galactic rings, and the emission rings of M87* and Sgr A* meet the theory at the precision those measurements actually have.
+
+Further foci require the barriers. The layered map of this note collapses each nodal spike, already bounded by the admissible cone, to a thin signed shell, and reads the lens from the projected mass of the stack. Supercritical limbs add critical curves, tangential or radial according to the sign, at angular radii in the nodal ratio \(1/6<r_2/r_1<4/(5\pi)\). The same ratio is the ratio of accessible periapsis grazes on the frozen chart. The mass on each shell is not determined, so the model does not predict magnifications, nor which nodes are supercritical, nor the deflection of a ray that both winds at the photon sphere and crosses the barriers.
+
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem{dst-main}
+Anonymous,
+``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{NarayanBartelmann1996}
+R.~Narayan and M.~Bartelmann,
+``Lectures on Gravitational Lensing,''
+arXiv:astro-ph/9606001 (1996).
+
+\bibitem{Bertotti2003}
+B.~Bertotti, L.~Iess, and P.~Tortora,
+``A test of general relativity using radio links with the Cassini spacecraft,''
+\textit{Nature} \textbf{425}, 374--376 (2003).
+
+\bibitem{EHT2019}
+Event Horizon Telescope Collaboration,
+``First M87 Event Horizon Telescope Results. I. The Shadow of the Supermassive Black Hole,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{875}, L1 (2019).
+
+\bibitem{EHT2022I}
+Event Horizon Telescope Collaboration,
+``First Sagittarius A* Event Horizon Telescope Results. I. The Shadow of the Supermassive Black Hole in the Center of the Milky Way,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{930}, L12 (2022).
+
+\bibitem{EHT2022IV}
+Event Horizon Telescope Collaboration,
+``First Sagittarius A* Event Horizon Telescope Results. IV. Variability, Morphology, and Black Hole Mass,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{930}, L15 (2022).
+
+\bibitem{Johnson2020}
+M.~D.~Johnson et al.,
+``Universal interferometric signatures of a black hole's photon ring,''
+\textit{Sci.\ Adv.} \textbf{6}, eaaz1310 (2020).
+
+\bibitem{Johnson2023}
+M.~D.~Johnson et al.,
+``Key Science Goals for the Next-Generation Event Horizon Telescope,''
+\textit{Galaxies} \textbf{11}, 61 (2023).
+
+\end{thebibliography}
+
+\end{document}

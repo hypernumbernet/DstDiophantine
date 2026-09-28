@@ -1,0 +1,340 @@
+\documentclass[a4paper]{article}
+\usepackage{luatexja}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{ねじれ星による重力レンズ：\\
+シュヴァルツシルト偏向の先にある層状焦点}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+二重時空理論は、球対称質量の外縁をシュヴァルツシルト・チャートとして回復し、準地平 \(r_\star\) で赤方偏移を凍結する。許容上界の三軸読みでは \(1<r_\star/r_s<1.005\) である。光子球 \(r_{\mathrm{ph}}=3r_s/2\) はその面の外に、三軸読みでも一軸読みでも位置するので、無限遠から来る光の臨界インパクトパラメータはシュヴァルツシルト値 \(b_c=3\sqrt{3}\,GM/c^2\) のままである。\(b>b_c\) の光線は外縁で転向し、ねじれ節に出会わない。親理論の等スケール干渉因子は \(\pi\) の各区間に節を一つもち、隣り合う面積半径は \(1/6<r_2/r_1<4/(5\pi)\) を満たし、節のあいだの平坦部は指数関数的に静かである。\(1/\gamma_s\) の極を \(|J|\le 3\pi^2/8\) で切ったのち、各節を符号つきの薄い障壁と読むと、その積層の射影質量を円筒質量とする弱偏向写像が得られる。点質量は接線臨界曲線を一つもつ。符号つき障壁の積層は、超臨界なリムごとに臨界曲線を加えうる。殻の読みも凍結赤方偏移のチャートも、隣り合うリムを面積半径の比の角半径へ送る。その積層は模型である。書かれた粒子作用において光子の剛性は消え、質量粒子の力 \(F=k/(\gamma_s r^2)\) そのものはヌル測地線ではない。各障壁の質量は代数から決まらないので、倍率は予測しない。外縁チャートはシャピロ遅延についてのカッシーニの限界と合い、銀河のアインシュタイン環を動かさない。\(r_\star\) の張る角がそれらの環よりはるかに小さいからである。臨界曲線は、公表精度において M87* と Sgr A* の放射環と重なる。それらの像は内部の列を分解しない。質量と距離を固定したとき、影の直径が \(b_c\) と両立しなければ、外縁チャートは反証される。分解された隣り合うリムの半径比が節の窓の外にあれば、殻の読みは反証される。
+\end{abstract}
+
+\section{はじめに}
+\label{sec:introduction}
+
+二重時空理論は共有連続体を拒む。各質量粒子は通常のミンコフスキー枠と双対枠を運び、重力はその対のねじれ不整合である~\cite{dst-main}。球対称質量の外縁では、不整合は動径ブーストとして読まれ、そのブーストはシュヴァルツシルト・コフレームを再現する。十分な密度の内部では、同じ不整合が半径とともに符号を変える。親理論は、その結果として得られる対象をねじれ星と呼ぶ。事象地平もなく中心特異点もない、層状の凝縮体である。層はシュヴァルツシルト内部へ貼り足した仮定ではない。等スケール・アンザッツのもとでは、層は単一の干渉因子の零点であり、\(\pi\) の各区間に節が一つある。
+
+光が問うのは、質量粒子の落下とは別の問いである。書かれた粒子作用は光子に消える剛性を与えるので、作用は光子のラピディティを加速しない。外縁で光を偏向するのは、コフレームのヌル幾何である。本稿が問うのは、その幾何が節の障壁とともに、光源の方向を像の方向へどう写すかである。通常のシュヴァルツシルト・レンズは、弱場では臨界曲線を一つ、すなわち全質量のアインシュタイン環をもち、強場では臨界インパクトパラメータを一つ、すなわち光子球をもつ。符号が交互する障壁の積層は、それ以上のことをしうる。超臨界なリムはそれぞれ臨界曲線を加えうるし、曲線は別々の半径に座す。
+
+二つの陳述は最初から分けておかねばならない。外縁の偏向、準地平に対する光子球の位置、隣り合う節半径の窓は、親理論ですでに得られている結果の読みである。節を符号つきの薄い殻と同一視すること、およびその殻の射影質量から組むレンズ写像は、模型である。模型は障壁の弱偏向の読みである。強場の内部を貫くヌル積分の完成ではなく、各障壁へ質量を割り当てるものでもない。
+
+本稿はその分割に従う。第\ref{sec:chart}節はチャート、準地平、節の窓を記録する。第\ref{sec:schwarzschild}節はシュヴァルツシルト・レンズを想起する。第\ref{sec:classes}節は \(r_\star\) の外で転向する光線と、そこへ入る光線とを分ける。第\ref{sec:shells}節は層状写像を構成する。第\ref{sec:critical}節は臨界曲線の位置を定める。第\ref{sec:observations}節は二つの読みを、シャピロ遅延、銀河の環、M87* と Sgr A* の放射環と比較する。
+
+\section{親理論から引き継ぐチャート}
+\label{sec:chart}
+
+外域シュヴァルツシルト領域では、動径ブーストのラピディティと赤方偏移因子は
+\begin{equation}
+\label{eq:exterior-A}
+\varphi(r)=-\frac12\log\bigl(1-r_s/r\bigr),
+\qquad
+A(r)=1-\frac{r_s}{r},
+\qquad
+r_s=\frac{2GM}{c^2},
+\end{equation}
+であり、\(r>r_s\) である。コフレーム \(\bigl(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta\bigr)\) はシュヴァルツシルト計量を誘導する。このチャートには三つの二次量が住み、それらは同一の対象ではない。有限角の不整合 \(J=\frac12\varphi^2\)、場の種 \(J_{\mathrm{field}}=\frac12(\varphi')^2\)、そしてテレパラレル・スカラー \(T\) である。弱場の主要次数では一致し、それ以外では一致しない。アインシュタイン方程式は、テトラッド変分ののち \(T\) に属する。\(J\) の恒等式ではない。
+
+古典シュヴァルツシルトは \(r\to r_s^+\) で \(\varphi\to\infty\)、\(A\to 0\) とする。許容錐がその発散を切る。三軸の上界 \(|J|=3\pi^2/8\) を動径の純粋ブーストと同一視すると、
+\begin{equation}
+\label{eq:quasihorizon}
+\varphi_{\max}=\frac{\pi\sqrt{3}}{2},
+\qquad
+A_{\min}=\mathrm{e}^{-\pi\sqrt{3}},
+\qquad
+\frac{r_\star}{r_s}=\frac{1}{1-A_{\min}}
+\end{equation}
+へ反転する。親理論は窓 \(0<A_{\min}<10^{-2}\) および \(1<r_\star/r_s<1.005\) を記録する。\(r\le r_\star\) ではチャートは \(\varphi=\varphi_{\max}\) と \(A=A_{\min}\) を凍結する。凍結した因子は狭義に正である。ヌル面 \(A=0\) は形成されない。親理論の同じ箇所は、この同一視が三軸上界を一つのブースト軸へ読んだものであると標す。一軸の許容ブーストは \(\varphi=\pi/2\) で飽和し、そこでは \(A=\mathrm{e}^{-\pi}\)、\(r_\star/r_s=1/(1-\mathrm{e}^{-\pi})\) である。その比もなお \(3/2\) より小さい。
+
+層状の内部を組織するのは別のスカラーである。等スケール・アンザッツのもと、\(x=\ell/(2r)\) で書いた干渉因子は
+\begin{equation}
+\label{eq:gamma-s}
+\gamma_s(x)=\cosh x\cos x-\sinh x\sin x
+\end{equation}
+であり、その導関数は
+\begin{equation}
+\label{eq:gamma-s-derivative}
+\gamma_s'(x)=-2\cosh x\,\sin x
+\end{equation}
+へ潰れる。したがって各区間 \([n\pi,(n+1)\pi]\) はちょうど一つの節を含み、\(\gamma_s\) の符号は平坦部から平坦部へと交替する。第 \(n\) 節は
+\begin{equation}
+\label{eq:node-window}
+n\pi+\frac{\pi}{4}<x_n<n\pi+\frac{\pi}{2}
+\end{equation}
+にあり、最初の二つの面積半径は
+\begin{equation}
+\label{eq:radius-ratio}
+\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi}\approx 0.255
+\end{equation}
+を満たす。比は無次元の根だけに依る。特性長 \(\ell\) は絶対尺度を定め、あらゆる比から相殺される。平坦部は \(1/\cosh\bigl(\ell/(2r)\bigr)\) によって遮蔽される。中心へ向かって成長するのは節の障壁である。そこでは \(\gamma_s\) が単純零点をもち、等スケールの理想化では \(1/\gamma_s\) が発散する。
+
+その発散は物理的な柱密度ではない。許容錐上では \(|J|\le 3\pi^2/8\) であり、親理論の辞書は無次元テレパラレル密度を \(-8<r^2 T<27\) に閉じ込める。有効源のスパイクは有限である。錐はその窓を一意な面密度へ変換しない。第\ref{sec:shells}節は各有限スパイクを、ある質量 \(m_n\) の薄い殻で置き、\(m_n\) を未定のまま残す。
+
+レンズ写像が誤読されないために、もう一つの区別がここにある。書かれた粒子作用において、光子は剛性が消える粒子である。剛性が消えると、共通ラピディティの加速が除かれる。光子を真空へ強制することはなく、\(F=k/(\gamma_s r^2)\) を光線への力にすることもない。記号 \(F\) は、質量をもつ層の読みにおける有効力である。外縁のヌル偏向はコフレーム~\eqref{eq:exterior-A} の測地線である。障壁を通るヌル偏向は、第\ref{sec:shells}節の模型である。
+
+\section{シュヴァルツシルト・レンズ}
+\label{sec:schwarzschild}
+
+静的で球対称な線素
+\[
+ds^2=-A(r)\,c^2\,dt^2+A(r)^{-1}\,dr^2+r^2\,d\Omega^2
+\]
+はエネルギー \(E\) と角運動量 \(L\) を保存する。その比が漸近インパクトパラメータ \(b=L/E\) である。ヌル光線の動径転向点は
+\begin{equation}
+\label{eq:turning}
+b^2=\frac{r_0^2}{A(r_0)}
+\end{equation}
+に従う。円光子軌道は \(A/r^2\) の臨界点である。外縁因子~\eqref{eq:exterior-A} については
+\[
+\frac{d}{dr}\Bigl(\frac{A}{r^2}\Bigr)=-\frac{2}{r^3}+\frac{3r_s}{r^4}
+\]
+であるから、唯一の正の根は光子球
+\begin{equation}
+\label{eq:photon-sphere}
+r_{\mathrm{ph}}=\frac{3}{2}\,r_s=\frac{3GM}{c^2}
+\end{equation}
+である。対応するインパクトパラメータは
+\begin{equation}
+\label{eq:bc}
+b_c=\frac{r_{\mathrm{ph}}}{\sqrt{A(r_{\mathrm{ph}})}}=3\sqrt{3}\,\frac{GM}{c^2}=\frac{3\sqrt{3}}{2}\,r_s
+\end{equation}
+である。その根において \(A/r^2\) は最大値をもつので、円軌道は不安定である。無限遠から来る \(b>b_c\) の光線は、ある \(r_0>r_{\mathrm{ph}}\) で転向する。\(b<b_c\) の光線は \(r_{\mathrm{ph}}\) を通過する。
+
+転向点 \(r_0>r_{\mathrm{ph}}\) から無限遠へ出て戻る方位角の進みは
+\begin{equation}
+\label{eq:deflection-integral}
+\Delta\varphi(b)
+  =2\int_{r_0}^{\infty}
+    \frac{dr}{r^2\sqrt{b^{-2}-A(r)/r^2}},
+\qquad
+\alpha_{\mathrm{ext}}(b)=\Delta\varphi(b)-\pi
+\end{equation}
+であり、\(b\) と \(r_0\) は~\eqref{eq:turning} で結ばれる。弱場 \(b\gg r_s\) では、積分は
+\begin{equation}
+\label{eq:weak-deflection}
+\alpha_{\mathrm{ext}}(b)=\frac{4GM}{c^2 b}+O\Bigl(\Bigl(\frac{r_s}{b}\Bigr)^2\Bigr)
+\end{equation}
+へ還元される。主要項は、太陽の縁における光の曲がりが試す量である。同じシュヴァルツシルト因子がシャピロ遅延を定める。パラメトライズド後ニュートン記法では、曲がりも遅延も \((1+\gamma)/2\) に比例し、チャート~\eqref{eq:exterior-A} は \(\gamma=1\) の場合である。
+
+観測者から角径距離 \(D_L\) にある薄いレンズ、光源までの距離 \(D_S\)、レンズと光源の距離 \(D_{LS}\) に対し、レンズ方程式は角で測った光源位置 \(\beta\) と像位置 \(\theta\) を
+\begin{equation}
+\label{eq:lens}
+\beta=\theta-\bar\alpha(\theta),
+\qquad
+\bar\alpha(\theta)=\frac{D_{LS}}{D_S}\,\alpha(D_L\theta)
+\end{equation}
+で結ぶ。点質量 \(M\) のアインシュタイン角は
+\begin{equation}
+\label{eq:einstein}
+\theta_E^2=\frac{4GM}{c^2}\,\frac{D_{LS}}{D_L D_S}
+\end{equation}
+で定義され、弱い点質量偏向は \(\bar\alpha(\theta)=\theta_E^2/\theta\) となる。レンズ写像の二つの固有値は、異なる集合の上で消える~\cite{NarayanBartelmann1996}。接線固有値が消えるのは
+\begin{equation}
+\label{eq:tangential}
+\bar\alpha(\theta)=\theta
+\end{equation}
+においてであり、動径固有値が消えるのは
+\begin{equation}
+\label{eq:radial}
+\frac{d\bar\alpha}{d\theta}=1
+\end{equation}
+においてである。点質量では~\eqref{eq:tangential} は正の根を一つもち、\(\theta=\theta_E\)、すなわち光軸上の光源のアインシュタイン環である。動径導関数は \(-\theta_E^2/\theta^2\) であり、いかなる実数 \(\theta\) に対しても \(1\) に等しくない。したがって点質量は接線臨界曲線を一つもち、動径臨界曲線をもたない。層がさらなる焦点を描くなら、ねじれ星が超えねばならないレンズはこれである。
+
+\section{光線の二類}
+\label{sec:classes}
+
+\(r>r_\star\) では外縁因子~\eqref{eq:exterior-A} を、\(r\le r_\star\) では凍結値 \(A=A_{\min}\) を、つなぐ。接合は連続である。\(r_\star\) は \(A(r_\star)=A_{\min}\) によって定義されたからである。凍結区間では
+\[
+\frac{d}{dr}\Bigl(\frac{A}{r^2}\Bigr)=-\frac{2A_{\min}}{r^3}<0
+\]
+である。凍結した赤方偏移は臨界点を寄与しない。接合した関数 \(A/r^2\) の \(r>0\) における唯一の臨界点は、\(r_{\mathrm{ph}}>r_\star\) である限り、\(r_{\mathrm{ph}}\) のままである。
+
+この不等式は、第\ref{sec:chart}節に引用した両方の上界で成り立つ。光子球は \(3r_s/2\) にある。三軸の窓は \(r_\star/r_s<1.005\) を与える。一軸の飽和は \(r_\star/r_s=1/(1-\mathrm{e}^{-\pi})\) を与え、\(\mathrm{e}^{-\pi}<1/3\) であるから、これも \(3/2\) より小さい。いずれの読みでも
+\begin{equation}
+\label{eq:photon-outside}
+r_{\mathrm{ph}}>r_\star
+\end{equation}
+である。無限遠から来る光線の臨界曲線は外縁チャートの中に、インパクトパラメータ~\eqref{eq:bc} において固定される。\(r_\star\) の内側の層はそれを動かさない。
+
+同じ比較が光線を二類に分ける。
+
+外縁類の光線は \(b>b_c\) をもつ。その転向点は \(r_0>r_{\mathrm{ph}}>r_\star\) にある。偏向される経路の全体がシュヴァルツシルト領域にあり、偏向は~\eqref{eq:deflection-integral} である。節には出会わない。インパクトパラメータが \(r_s\) に比べて大きいあらゆる弱場の試験、およびこの臨界曲線の角直径 \(2b_c/D_A\) を観測量とするあらゆる強場の試験は、この類に属する。
+
+貫入類の光線は \(b<b_c\) をもつ。光子球を通過し、\(r<r_\star\) へ入り、凍結チャートの上だけでは、~\eqref{eq:turning} が与える近点
+\begin{equation}
+\label{eq:periapsis}
+r_{\mathrm{peri}}=b\sqrt{A_{\min}}
+\end{equation}
+に達する。近点は有限なあらゆる \(b\) に対して正である。光線は戻る。それを捕獲する地平はない。有効ポテンシャルの最大が、\(b<b_c\) なる任意の光線のエネルギーより下になお位置するので、戻る光線は \(r_{\mathrm{ph}}\) を再び横切り、無限遠へ達しうる。\(b_c\) の近くでは、不安定軌道の傍らを過ぎる通過が何度も巻きうる。その巻きは外縁幾何の光子環列である。一つの臨界曲線を繰り返し訪れる。節のリムの列ではない。
+
+式~\eqref{eq:periapsis} はチャートの幾何である。\(\gamma_s\) を知らない。凍結域の内部にある面積半径 \(r\) の球面は、近点がその球面上にある光線によってかすめられ、その光線の漸近インパクトパラメータは \(r/\sqrt{A_{\min}}\) である。写像は一次斉次であるから、隣り合う節球面は、面積半径の比をもつインパクトパラメータにおいてかすめられる。かすめが無限遠からの光線に到達可能であるのは、そのインパクトパラメータが \(b_c\) より下にあるとき、すなわち \(r<b_c\sqrt{A_{\min}}\) のときに限る。\(r_\star\) 付近の外縁の節は、あらゆる貫入光線によって横切られ、天空上の近点リムではない。次節の殻模型は、同じ節の第二の、弱偏向の読みである。同一の光線に対する~\eqref{eq:deflection-integral} の上へ足す補正ではない。
+
+\section{層状レンズ写像}
+\label{sec:shells}
+
+\(\gamma_s\) の平坦部は指数関数的に静かであるから、それらが寄与する滑らかな柱は無視する。各節は障壁である。\(\gamma_s\) の等スケール零点は、節を横切る \(1/\gamma_s\) を非可積分にする。第\ref{sec:chart}節の許容窓は、その極を有限なスパイクで置き換える。本節の模型はスパイクをさらに潰し、面積半径 \(R\)、質量 \(m\) の薄い球殻にする。質量 \(m\) は負でありうる。正の殻は引力障壁の理想化であり、負の殻は斥力障壁の理想化である。錐は、\(m\) の値も、全質量のうちいずれかの節に座る割合も、固定しない。
+
+\(\sigma=m/(4\pi R^2)\) を面密度とする。インパクトパラメータ \(b<R\) の視線は殻に二度出会う。視線と動径法線のなす角の余弦は \(\sqrt{R^2-b^2}/R\) であるから、射影柱は
+\begin{equation}
+\label{eq:column}
+\Sigma(b)=\frac{2\sigma R}{\sqrt{R^2-b^2}}\qquad(b<R)
+\end{equation}
+であり、\(b>R\) では \(\Sigma(b)=0\) である。柱はリム \(b=R\) で発散する。その発散は理想的な薄い極限である。錐が要求する有限幅のスパイクは、\(\Sigma\) を有限に保ち、リムでピークさせる。
+
+半径 \(b\) の円筒の内部に射影される質量は
+\[
+M_{\mathrm{cyl}}(b)=\int_0^{\min(b,R)}2\pi b'\,\Sigma(b')\,db'
+\]
+である。\(b\le R\) では積分は初等的であり、
+\begin{equation}
+\label{eq:mcyl}
+M_{\mathrm{cyl}}(b)
+  =4\pi\sigma R\int_0^{b}\frac{b'\,db'}{\sqrt{R^2-b'^2}}
+  =\frac{m}{R}\Bigl(R-\sqrt{R^2-b^2}\Bigr)
+\end{equation}
+となり、\(b\ge R\) では \(M_{\mathrm{cyl}}(b)=m\) である。弱場の偏向は、ニュートン因子 \(2G/c^2\) ではなく一般相対論の因子 \(4G/c^2\) をつけて、
+\begin{equation}
+\label{eq:shell-deflection}
+\alpha(b)=\frac{4G\,M_{\mathrm{cyl}}(b)}{c^2 b}
+\end{equation}
+である。殻の外ではこれは点質量の法則である。軸上では \(R-\sqrt{R^2-b^2}\sim b^2/(2R)\) であるから、球対称が要求するとおり \(b\to 0\) で \(\alpha\to 0\) となる。傾きはリムで有界にとどまらない。\(dM_{\mathrm{cyl}}/db=(m/R)\,b/\sqrt{R^2-b^2}\) は \(b\to R^-\) で発散する。有限の厚みは、発散を急峻だが有限なピークで置き換える。
+
+この読みにおけるねじれ星は、そのような殻の積層である。節半径 \(R_n=r_n\) ごとに一つ、符号つき質量 \(m_n\) をもつ。円筒質量は加わる。弱場の規格化では
+\begin{equation}
+\label{eq:mass-sum}
+\sum_n m_n=M
+\end{equation}
+を要求する。あらゆる節より大きい \(b\) をもつ光線が、全質量の点質量偏向を見るためである。この規格化は~\eqref{eq:weak-deflection} と合う。模型の選択である。障壁が全質量を運ぶという定理ではなく、外縁類の光線の偏向法則でもない。外縁類の光線はすでに~\eqref{eq:deflection-integral} によって計上されている。それは \(r_s\) を通じて全質量を知り、殻を通過しない。
+
+\(m_n\) の符号は交替する。\(\gamma_s\) の符号が平坦部から平坦部へと交替し、各障壁はそのあいだの遷移であるからである。したがって \(\alpha(b)\) は \(b\) について単調とは限らない。点質量の形 \(\theta_E^2/\theta\) をもつ単調な偏向は、軸を外れた光源の像を二つ生む。単調でない偏向は、それより多くを生みうる。それらの追加の像が、層状レンズの複雑な焦点である。それらがこの模型に存在するのは、対応する臨界曲線が存在するときであり、それが次節の問いである。
+
+\section{臨界曲線}
+\label{sec:critical}
+
+\eqref{eq:shell-deflection} をレンズ方程式~\eqref{eq:lens} へ代入する。全質量のアインシュタイン角~\eqref{eq:einstein} と \(b=D_L\theta\) のもとで、
+\begin{equation}
+\label{eq:reduced-stack}
+\bar\alpha(\theta)=\frac{\theta_E^2}{\theta}\,\frac{M_{\mathrm{cyl}}(D_L\theta)}{M}
+\end{equation}
+となる。ここで \(M_{\mathrm{cyl}}\) は殻の寄与の和を表す。あらゆる節の外では、~\eqref{eq:mass-sum} により \(M_{\mathrm{cyl}}=M\) であり、\(\bar\alpha\) は点質量偏向へ潰れる。接線条件~\eqref{eq:tangential} はなお根 \(\theta=\theta_E\) をもち、動径条件~\eqref{eq:radial} はなお根をもたない。全質量のアインシュタイン環は層構造を生き延びる。あらゆる殻の外にとどまる光線の臨界曲線である。
+
+積層の内部では二つの条件は袂を分かつ。そして障壁の符号に従って袂を分かつ。
+
+正の殻では、理想柱~\eqref{eq:column} がリムで発散するので、収束はあらゆる有限なしきい値を通過する。~\eqref{eq:tangential} を強制するしきい値も含めてである。錐が障壁に有限の幅を与えたのち、ピークは有限であり、接線条件が満たされるのは、そのピークがなお臨界収束を超えるときに限る。代数はその比較を決めない。ピークが超臨界ならば、接線臨界曲線はリムに位置する。柱が最大である場所がそこであるからである。この弱偏向の読みでは、その角半径は \(\theta_n=r_n/D_L\) である。
+
+負の殻では、\(\bar\alpha\) は \(\theta>0\) に対して \(\bar\alpha(\theta)=\theta\) を満たす符号をもたない。斥力障壁はアインシュタイン環を形成しない。しかしその傾きはリムで急であり、急な傾きは動径条件~\eqref{eq:radial} を満たしうる。ここでも、正則化されたピークが実際にしきい値を横切らねばならない。横切るならば、動径臨界曲線も同様にそのリムに座す。
+
+したがって符号の交替は、追加の臨界曲線の種類を交替させる。超臨界な引力障壁では接線、超臨界な斥力障壁では動径である。追加曲線の個数は予測ではない。節あたり高々一つであり、正則化された柱が横断に失敗するあらゆる節では零である。節の窓が、存在するそれらの曲線について固定するのは、半径の比である。隣り合うリムは面積半径の比に立つので、
+\begin{equation}
+\label{eq:angular-ratio}
+\frac16<\frac{\theta_{n+1}}{\theta_n}<\frac{4}{5\pi}
+\end{equation}
+が、両方のリムが存在し、用いられている写像が弱偏向の同一視 \(\theta=b/D_L=r/D_L\) であるときに成り立つ。
+
+凍結チャートは、別の光線族に対して同じ比を与える。第\ref{sec:classes}節は、\(b_n<b_c\) である限り、節球面にかすめのインパクトパラメータ \(b_n=r_n/\sqrt{A_{\min}}\) を割り当てる。因子 \(\sqrt{A_{\min}}\) は \(b_{n+1}/b_n\) において相殺され、漸近的観測者の天空上の角半径は \(b/D_A\) である。そのようなかすめが二つとも到達可能である所では、角の比は再び~\eqref{eq:radius-ratio} である。全体の尺度は二つの読みのあいだで \(1/\sqrt{A_{\min}}\) だけ異なる。比は異ならない。倍率も同様に異なるが、いずれの読みもそれを計算しない。いずれの読みも \(m_n\) を固定しないからである。
+
+光子環の列はこの比ではない。\(b_c\) にある単一の不安定曲線の相次ぐ半周は、シュヴァルツシルト幾何では半周ごとに \(\mathrm{e}^{-\pi}\) の因子で減光され、像平面上の半径はその一つの曲線へ収束する~\cite{Johnson2020}。節のリムの対は、相異なるインパクトパラメータの対である。\(b_c\) への指数的な集積と、比が~\eqref{eq:angular-ratio} に入る対とは、天空上の光の異なる配置である。本稿は、\(r_{\mathrm{ph}}\) で巻き、かつ障壁を横切る光線を積分しない。二つの配置を分け、合成された偏向は未計算のまま残す。
+
+\section{観測との比較}
+\label{sec:observations}
+
+\subsection{外縁類}
+
+太陽の試験は外縁類に座す。光球をかすめる光線のインパクトパラメータは太陽半径の程度であり、\(r_s\) より \(10^5\) の程度の因子だけ大きく、原子核へ入らない。核の節は、そのフェムトメートル尺度が何であれ、経路上にない。偏向は太陽の縁で評価した~\eqref{eq:weak-deflection} であり、遅延は同じ因子 \(A\) のシャピロ遅延である。太陽の傍らを過ぎる電波リンクのカッシーニ追跡は
+\begin{equation}
+\label{eq:cassini}
+\gamma=1+(2.1\pm 2.3)\times 10^{-5}
+\end{equation}
+を与える~\cite{Bertotti2003}。チャートは \(\gamma=1\) の場合である。測定は、外縁の曲がりと遅延を一緒に縮尺し直すような補正を制限する。その光線が出会わない内部の殻を制限はしない。
+
+銀河の強いレンズは、より弱い場における同じ類である。アインシュタイン角~\eqref{eq:einstein} と準地平の角サイズ \(r_\star/D_L\) は、\(\theta_E^2\sim(r_s/D_L)(D_{LS}/D_S)\) によって関係する。二つの角の比は、ラジアンで測った角の平方根であり、いかなる銀河レンズについてもその平方根は \(1\) より何桁も小さい。\(r_\star\) にある構造は、それらの観測の精度において、アインシュタイン環も、像の位置も、時間遅延も動かさない。二つの赤方偏移にある二つの光源が形成する二重アインシュタイン環は、外縁類の環が二つである。節のリムの対ではない。単一クェーサーの像のあいだのフラックス比の異常も同様に外縁類の問いであり、文献ではレンズ内の下部構造として読まれている。本稿はそれをねじれ節へ割り当てない。
+
+\subsection{M87* と Sgr A* の臨界曲線}
+
+M87* の放射環は直径 \(42\pm 3\,\mu\mathrm{as}\) をもち、フラックス比 \(\gtrsim 10{:}1\) の中心減光を囲む。その環とともに採用される角重力半径は \(\theta_g=GM/(c^2 D)=3.8\pm 0.4\,\mu\mathrm{as}\)、距離は \(16.8\pm 0.8\,\mathrm{Mpc}\)、対応する質量は \((6.5\pm 0.7)\times 10^9\,M_\odot\) である~\cite{EHT2019}。臨界曲線~\eqref{eq:bc} の角直径は
+\begin{equation}
+\label{eq:shadow-diameter}
+\frac{2b_c}{D_A}=6\sqrt{3}\,\theta_g
+\end{equation}
+である。\(6\sqrt{3}\approx 10.392\) であるから、
+\[
+6\sqrt{3}\times(3.8\pm 0.4)\,\mu\mathrm{as}
+\]
+は約 \(39.5\pm 4.2\,\mu\mathrm{as}\) である。その区間は \(42\pm 3\,\mu\mathrm{as}\) と重なる。重なりが、外縁チャートの支持する比較である。公表された環は臨界曲線そのものではなく、臨界曲線のまわりのレンズされた放射であり、質量の推論はすでにその程度の影の縮尺を用いている。この精度での一致は、光子球が~\eqref{eq:photon-outside} の置く場所にあることの確認である。地平の検出ではない。地平は準地平が置き換えるものであり、臨界曲線はその置き換えを参照しない。
+
+Sgr A* は、第二の質量における同じ比較である。放射環の直径は \(51.8\pm 2.3\,\mu\mathrm{as}\) である~\cite{EHT2022I}。一般相対論的シミュレーションへ較正された角重力半径は \(4.8^{+1.4}_{-0.7}\,\mu\mathrm{as}\) である~\cite{EHT2022IV}。~\eqref{eq:shadow-diameter} の中心値は約 \(49.9\,\mu\mathrm{as}\) である。\(\theta_g\) の不確かさは \(4.1\) から \(6.2\,\mu\mathrm{as}\) へ走り、その区間の \(6\sqrt{3}\) 倍は約 \(43\) から \(64\,\mu\mathrm{as}\) へ走る。測定された環はその区間の内部にある。ここでも外縁の臨界曲線は、公表された重力半径の精度において、像と両立する。
+
+中心減光は別の観測量である。貫入光線は~\eqref{eq:periapsis} によって戻りうるし、原理上は影の内部を明るくしうる。コントラスト \(\gtrsim 10{:}1\) の M87* の減光は、透過フラックスと、影の手前にある放射との和を制限する。周囲のプラズマの光学的厚みは、\(r_\star\) へ入った光線が最終的に脱出するか否かにかかわらず、その制限を強制しうる。減光はその光学的厚みを制限する。~\eqref{eq:shadow-diameter} には入らない。
+
+\subsection{層を分けるもの}
+
+いま引用した像は単一の環である。内部の臨界曲線の列を分解しないので、~\eqref{eq:angular-ratio} にはまだ語りかけない。一般相対論が光子環の内部に予測する配置は、節の比とは逆である。無限の部分環の列であり、シュヴァルツシルトの場合には半周ごとに \(\mathrm{e}^{-\pi}\) で減光され、一つの曲線 \(b_c\) の上へ詰められる~\cite{Johnson2020}。殻の読みが予測するのは、超臨界であるそれらの障壁について、~\eqref{eq:angular-ratio} の比で隔てられたリムであり、その窓の上端は約 \(0.255\) である。集積は、指数が収束したのちには、隣り合う半径の比が \(1\) と区別できない。二つのパターンは出会わない。
+
+それらを分解することは、2017 年の像を作った配列より密で、基線のより長い配列の仕事である。次世代イベント・ホライズン望遠鏡の科学目標は、光子環を独立の標的として含み、その標的を高リスクの目標に分類する。地球基線上では \(n=0\) と \(n=1\) の部分環だけが検出可能と期待され、それらを分けること自体がすでに超分解を要する~\cite{Johnson2023}。その分離が達成されたとしても、なお一つの臨界曲線に関する。節の比の測定にはまだならない。内部のリムの対が分離されるまでは、内部の比は未試験であり、実際になされた比較は外縁の直径である。
+
+ここで与えた説明を反証する比較は二つであり、反証条件として主張するのはこの二つだけである。質量と距離を固定したとき、臨界曲線の角直径が \(2b_c/D_A\) のまわりの観測上の許容の外に落ちるならば、外縁チャートは誤っている。第\ref{sec:critical}節の意味でリムと同定された、分解された隣り合う内部リムの対が、~\eqref{eq:angular-ratio} の外の半径比をもつならば、殻の読みは誤っている。暗い内部、倍率、銀河のフラックス比は、第三の反証条件ではない。第一のものは光学的厚みと絡み、他の二つは代数から固定されない。
+
+\section{結論}
+\label{sec:conclusion}
+
+ねじれ星の外縁は、シュヴァルツシルト・チャートが光をレンズするのと同じ仕方で光をレンズする。光子球は親理論が記録する両方の上界について準地平の外にあり、臨界インパクトパラメータは \(b_c=3\sqrt{3}\,GM/c^2\) のままであり、全質量のアインシュタイン環は弱場で生き延びる。太陽の遅延、銀河の環、M87* と Sgr A* の放射環が、それらの測定が実際にもつ精度において理論と会うのは、そのためである。
+
+さらなる焦点は障壁を要する。本稿の層状写像は、許容錐によってすでに有界である各節スパイクを符号つきの薄い殻へ潰し、積層の射影質量からレンズを読む。超臨界なリムは、符号に応じて接線または動径の臨界曲線を、節の比 \(1/6<r_2/r_1<4/(5\pi)\) にある角半径において加える。同じ比は、凍結チャート上で到達可能な近点かすめの比である。各殻の質量は定まらないので、模型は倍率も、どの節が超臨界であるかも、光子球で巻きかつ障壁を横切る光線の偏向も、予測しない。
+
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem{dst-main}
+Anonymous,
+「双対時空の間のねじれとしての重力：一般相対性理論の双四元数的再定式化」 (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{NarayanBartelmann1996}
+R.~Narayan and M.~Bartelmann,
+``Lectures on Gravitational Lensing,''
+arXiv:astro-ph/9606001 (1996).
+
+\bibitem{Bertotti2003}
+B.~Bertotti, L.~Iess, and P.~Tortora,
+``A test of general relativity using radio links with the Cassini spacecraft,''
+\textit{Nature} \textbf{425}, 374--376 (2003).
+
+\bibitem{EHT2019}
+Event Horizon Telescope Collaboration,
+``First M87 Event Horizon Telescope Results. I. The Shadow of the Supermassive Black Hole,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{875}, L1 (2019).
+
+\bibitem{EHT2022I}
+Event Horizon Telescope Collaboration,
+``First Sagittarius A* Event Horizon Telescope Results. I. The Shadow of the Supermassive Black Hole in the Center of the Milky Way,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{930}, L12 (2022).
+
+\bibitem{EHT2022IV}
+Event Horizon Telescope Collaboration,
+``First Sagittarius A* Event Horizon Telescope Results. IV. Variability, Morphology, and Black Hole Mass,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{930}, L15 (2022).
+
+\bibitem{Johnson2020}
+M.~D.~Johnson et al.,
+``Universal interferometric signatures of a black hole's photon ring,''
+\textit{Sci.\ Adv.} \textbf{6}, eaaz1310 (2020).
+
+\bibitem{Johnson2023}
+M.~D.~Johnson et al.,
+``Key Science Goals for the Next-Generation Event Horizon Telescope,''
+\textit{Galaxies} \textbf{11}, 61 (2023).
+
+\end{thebibliography}
+
+\end{document}
