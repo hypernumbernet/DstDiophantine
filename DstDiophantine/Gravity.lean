@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.ParticleStability
+import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 
@@ -41,7 +42,7 @@ Weitzenböck density `T`, and it is not \(c^4/(G\,\ell_P^{-2})\).
 No theorem asserts `dst_derives_G`, `dst_derives_a0`, `dst_derives_alpha_s`,
 `dst_derives_lambda`, `dst_derives_lambdaN`, `dst_derives_Amax`, Maxwell's
 equations, a Weinberg angle, \(W/Z\) masses, a chiral \(\mathrm{SU}(2)\),
-a V--A coupling, or a helicity-odd drive of \(J\).
+a V--A coupling, a helicity-odd drive of \(J\), or a numerical baryon yield.
 
 ## Chart dictionary
 
@@ -102,6 +103,17 @@ The straight line of one fixed jet is not itself that geodesic.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
+* `BaryonAsymmetry` — a vacuum excess of rapidity \(\delta\) along \(p\) has
+  \(J=M=(\delta^2/2)\sum_a p_a^2\) on the boost side and \(J=-M\) on the
+  rotation side, so \(J/M=\pm 1\) when both are nonzero. Both scalars are
+  even in \(\delta\). On a one-axis balance of rapidity \(\varphi\), a boost
+  shift has \(J=\varphi\delta+\delta^2/2\), and the two signs of \(\delta\)
+  differ in mass by \(2\varphi\delta\). Both odd pieces vanish for every
+  \(\delta\) precisely when \(\varphi=0\). Equal nonzero rapidities give
+  \(J=0\), \(M=\varphi^2\), and a relative rotor different from \(1\).
+  Spatial inversion sends the pseudoscalar to its negative, negates each
+  boost generator, and fixes each rotation generator. On \(\mathbb{C}^2\)
+  the dual rotor has determinant \(1\).
 * `ParticleStability` — a balanced massive seed is not emptied by either
   rapidity budget alone. On the SI stand-ins, \(1836<m_p/m_e<1837\),
   a hundred nuclear bindings and twenty optical wells each lie below the
@@ -1198,6 +1210,32 @@ example (α : ℝ) :
   ⟨J_crossAxisDual α, J_equalScaleOf (axisUsual α),
     mass_crossAxisDual_eq_equalScale α, gammaEff_crossAxisDual_boost α,
     gammaEff_crossAxisDual_comp α⟩
+
+/-- Regression: a unit vacuum excess is gravitationally maximal. -/
+example {δ : ℝ} {p : Fin 3 → ℝ} (hδ : δ ≠ 0) (hp : ∑ a : Fin 3, p a ^ 2 = 1) :
+    J (boostAlong δ p) = δ ^ 2 / 2 ∧
+      mass (boostAlong δ p) = δ ^ 2 / 2 ∧
+        J (boostAlong δ p) / mass (boostAlong δ p) = 1 ∧
+          J (rotationAlong δ p) / mass (rotationAlong δ p) = -1 := by
+  have hJ := J_boostAlong_unit (δ := δ) hp
+  have hp0 : ∑ a : Fin 3, p a ^ 2 ≠ 0 := by
+    rw [hp]
+    norm_num
+  exact ⟨hJ.1, hJ.2, J_div_mass_boostAlong hδ hp0, J_div_mass_rotationAlong hδ hp0⟩
+
+/-- Regression: the quadratic vacuum law characterises a vanishing background. -/
+example (φ : ℝ) :
+    (∀ δ : ℝ, J (balancedBoostShift φ δ) = δ ^ 2 / 2) ↔ φ = 0 :=
+  balancedBoostShift_J_eq_quadratic_iff φ
+
+/-- Regression: spatial inversion negates the pseudoscalar. -/
+example : spatialParity Operations.pseudoscalar = -Operations.pseudoscalar :=
+  spatialParity_pseudoscalar
+
+/-- Regression: the dual-rotor determinant has vanishing argument. -/
+example (β : DualRapidity) :
+    (dualRotorMat β).det = 1 ∧ ((dualRotorMat β).det).arg = 0 :=
+  dualRotor_det_arg β
 
 end Gravity
 
