@@ -1,7 +1,6 @@
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.DualRotorVacuum
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
@@ -46,13 +45,13 @@ open Operations RelativeRotor Invariant
 
 /-! ### Stiffness potential -/
 
-/-- Potential of the written action, \((m/2)\sum(\alpha_a-\beta_a)^2\). -/
-noncomputable def stiffnessPotential (m : ℝ) (p : TorsionParams) : ℝ :=
-  (m / 2) * ∑ a : Fin 3, (p.alpha a - p.beta a) ^ 2
-
-/-- Sum of squared lags. -/
+/-- Sum of squared lags, \(\sum(\alpha_a-\beta_a)^2\). -/
 def lagSq (p : TorsionParams) : ℝ :=
   ∑ a : Fin 3, (p.alpha a - p.beta a) ^ 2
+
+/-- Potential of the written action, \((m/2)\) times `lagSq`. -/
+noncomputable def stiffnessPotential (m : ℝ) (p : TorsionParams) : ℝ :=
+  (m / 2) * lagSq p
 
 theorem stiffnessPotential_eq_lag (m : ℝ) (p : TorsionParams) :
     stiffnessPotential m p = (m / 2) * lagSq p := by
@@ -60,7 +59,7 @@ theorem stiffnessPotential_eq_lag (m : ℝ) (p : TorsionParams) :
 
 theorem stiffness_axis (m α β : ℝ) :
     stiffnessPotential m (axisParams α β) = (m / 2) * (α - β) ^ 2 := by
-  unfold stiffnessPotential
+  unfold stiffnessPotential lagSq
   rw [Fin.sum_univ_three]
   simp [axisParams]
 
@@ -70,13 +69,6 @@ theorem stiffness_axis_massShift (m α β : ℝ) :
       2 * m * (mass (axisParams α β) - (α + β) ^ 2 / 4) := by
   rw [stiffness_axis, mass_axisParams]
   ring
-
-theorem stiffness_ne_J :
-    ∃ m α β : ℝ,
-      stiffnessPotential m (axisParams α β) ≠ J (axisParams α β) := by
-  refine ⟨1, 1, -1, ?_⟩
-  rw [stiffness_axis, J_axisParams]
-  norm_num
 
 /-- On the pure-usual ray, \(V=mJ\). -/
 theorem stiffness_eq_mul_J_of_dual_zero (m α : ℝ) :
@@ -113,7 +105,7 @@ theorem lagSq_crossAxisDual (α : ℝ) :
   simp [crossAxisDual, finCoord]
   ring
 
-theorem mass_crossAxisDual_public (α : ℝ) :
+private theorem mass_crossAxisDual (α : ℝ) :
     mass (crossAxisDual α) = α ^ 2 := by
   rw [mass_coef, Fin.sum_univ_three]
   simp [crossAxisDual, finCoord]
@@ -125,7 +117,7 @@ theorem crossAxis_neutral_stiff {m α : ℝ} (hm : 0 < m) (hα : α ≠ 0) :
       0 < mass (crossAxisDual α) ∧
         0 < stiffnessPotential m (crossAxisDual α) := by
   refine ⟨J_crossAxisDual α, ?_, ?_⟩
-  · rw [mass_crossAxisDual_public]
+  · rw [mass_crossAxisDual]
     exact sq_pos_of_ne_zero hα
   · rw [stiffnessPotential_eq_lag, lagSq_crossAxisDual]
     nlinarith [sq_pos_of_ne_zero hα, hm]
@@ -150,10 +142,6 @@ theorem stiffness_aligned (m α : ℝ) :
     stiffnessPotential m (axisParams α α) = 0 := by
   rw [stiffness_axis]
   ring
-
-theorem mass_aligned_pos {α : ℝ} (hα : α ≠ 0) :
-    0 < mass (axisParams α α) :=
-  mass_axisParams_balanced hα
 
 /-- Anti-alignment keeps \(J=0\) and makes the potential positive. -/
 theorem antialigned_potential {m φ : ℝ} (hm : 0 < m) (hφ : φ ≠ 0) :
@@ -318,17 +306,12 @@ theorem sameSign_restores {m φ θ φddot θddot : ℝ}
   have hδ := oscillatorEL_harmonic h
   linarith
 
-theorem written_lag_free {m φ θ φddot θddot : ℝ}
-    (h : PaperActualEL m φ θ φddot θddot) :
-    φddot - θddot = 0 :=
-  paperActualEL_free_mismatch h
-
 theorem sameSign_not_written {m φ θ φddot θddot : ℝ}
     (h : OscillatorEL m φ θ φddot θddot) (hδ : m * (φ - θ) ≠ 0) :
     ¬ PaperActualEL m φ θ φddot θddot := by
   intro hw
   have hrest := (sameSign_restores h).1
-  have hfree := written_lag_free hw
+  have hfree := paperActualEL_free_mismatch hw
   apply hδ
   linarith
 
