@@ -15,6 +15,7 @@ import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
+import DstDiophantine.Gravity.DualRotorMotor
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
@@ -158,6 +159,14 @@ The straight line of one fixed jet is not itself that geodesic.
   vanishes, and crosses \(M=0\) once when that rate is nonzero.
   A frozen well \(\delta=v\) carries \(J=v\sigma/2\); at rest it is
   balanced and massive, not free fall.
+* `DualRotorMotor` — on one axis the factorised rotor splits the null
+  ideal. The usual rapidity scales \(N_0\pm N_1\) by \(e^{\pm\phi}\); the
+  dual angle rotates \((N_2,N_3)\). Along the written flow those
+  parameters are \((\sigma+\delta)/2\) and \((\sigma-\delta)/2\), so the
+  stiffness accelerates both planes and leaves their offset free. The
+  relative rotor sees \(\phi\) and \(\theta\) separately. Its derivative
+  at the identity retains \(\sigma\), and alignment with \(\sigma\neq 0\)
+  still moves the boost plane.
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -407,6 +416,28 @@ example (σ₀ σd₀ m t : ℝ) :
         (writtenDual σ₀ σd₀ m 0 0 t)) =
         (σ₀ + σd₀ * t) ^ 2 / 4 :=
   ⟨written_aligned_J σ₀ σd₀ m t, written_aligned_mass σ₀ σd₀ m t⟩
+
+/-- Regression: the written flow splits null translations into a boost by
+\((\sigma+\delta)/2\) and a rotation by \((\sigma-\delta)/2\). -/
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    writtenUsual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t + writtenDelta δ₀ ν t) / 2 ∧
+      writtenDual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t - writtenDelta δ₀ ν t) / 2 ∧
+      Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+          (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)))
+        (Generators.null 0 + Generators.null 1) =
+          Real.exp (writtenUsual σ₀ σd₀ m δ₀ ν t) •
+            (Generators.null 0 + Generators.null 1) ∧
+      Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+          (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)))
+        (Generators.null 2) =
+          Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 2 +
+            Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 3 :=
+  ⟨(written_plane_params σ₀ σd₀ m δ₀ ν t).1,
+    (written_plane_params σ₀ σd₀ m δ₀ ν t).2,
+    written_flow_boost_plane σ₀ σd₀ m δ₀ ν t,
+    written_flow_rotation_plane σ₀ σd₀ m δ₀ ν t⟩
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
