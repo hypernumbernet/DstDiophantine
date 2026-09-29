@@ -505,7 +505,7 @@ Thus every non-trivial zero lies on the critical line \( \operatorname{Re}(s) = 
 
 \section{Goldbach, Polignac, and Collatz Conjectures}
 
-Goldbach's conjecture and Polignac's conjecture are treated by the same algebraic machinery. Each of those arguments reduces to the non-existence of lattice points on the finite torus that violate the bound \( |\Jnorm| \leq 1 \). Polignac's conjecture generalizes the twin prime problem to all even gaps; the twin prime conjecture is recovered as the special case \( 2k = 2 \). The Collatz map is a pure-boost flow on the integer rotor. The admissible cone contains only two of its positive states, and the torsional bound does not confine the orbit.
+Goldbach's conjecture and Polignac's conjecture are treated by the same algebraic machinery. Each of those arguments reduces to the non-existence of lattice points on the finite torus that violate the bound \( |\Jnorm| \leq 1 \). Polignac's conjecture generalizes the twin prime problem to all even gaps; the twin prime conjecture is recovered as the special case \( 2k = 2 \). The Collatz map is taken up at the end of the section, as the pure-boost flow of the same integer rotor.
 
 \subsection{Goldbach Conjecture}
 
@@ -672,7 +672,7 @@ The two admissible integers do not form a closed orbit. Half of \(2\) is \(1\), 
 
 No other cycle meets \(\{1,2,3\}\). The forward orbit is deterministic, so a cycle through \(1\) or through \(2\) is this triangle. The orbit of \(3\) runs \(3,10,5,16,8,4\) and then enters the same triangle; once inside the triangle it cannot return to \(3\). Every other cycle therefore lies entirely among the integers \(n\ge 4\), where the normalised height is strictly greater than one at every vertex.
 
-A bounded orbit that never reaches \(1\) falls into such a cycle: a finite forward orbit on the positive integers is eventually periodic. An unbounded orbit is a rapidity runaway. Along its record values the height tends to infinity. The torsion bound does not forbid the runaway. The bound applies on the admissible cone, and the cone is not invariant under the odd step. The same separation appears for abc, where the first primitive triple to leave the cone still has height less than one.
+A bounded orbit that never reaches \(1\) is eventually periodic, and therefore falls into a cycle of this kind. An unbounded orbit leaves every bounded interval of rapidity. The odd step does not preserve the cone, so that departure lies outside the torsional bound, just as the first primitive abc triple to leave the cone still has height less than one.
 
 The parity of the orbit does control a uniform contraction on a large set of congruence classes. Fold into each odd step the halving that must follow it, so that an even integer goes to \(n/2\) and an odd integer to \((3n+1)/2\). Each accelerated step divides by \(2\) exactly once, and multiplies by \(3\) precisely when the input is odd. Consider sixteen successive steps, and let \(c\) be the number of odd inputs. If \(c\le 10\), the multiplier \(3^c/2^{16}\) is strictly smaller than one, because \(3^{10}=59049<65536=2^{16}\) while \(3^{11}\) exceeds \(2^{16}\). Every integer \(n\ge 3\) with such a pattern returns strictly below itself, and once \(n\ge 4\) the pure-boost height falls with it. The complementary patterns are those with eleven or more odd inputs. There are exactly \(6885\) such residue classes modulo \(2^{16}\), a proportion \(6885/65536\). These are the only classes in which a block of sixteen accelerated steps is permitted to increase the integer.
 
@@ -680,11 +680,7 @@ Every positive integer up to \(2^{20}\) reaches \(1\). Any other cycle would hav
 
 \subsection{Finite Exploration Algorithm}
 
-Because the torus \( (\mathbb{Z}/N\mathbb{Z})^6 \) is finite, the Goldbach and Polignac arguments admit a finite verification algorithm: enumerate all admissible rotor configurations, compute the associated \( J \)-values, and check the additive decomposition or the even-gap \( 2k \) reset. For any fixed compactification parameter \( N \) and each even gap \( 2k \), the Polignac check verifies that no tail avoids \( g_n = 2k \). For any fixed compactification parameter \( N \) the algorithm terminates. The continuum limit \( N \to \infty \) recovers those two classical statements.
-
-For the Collatz flow the admissible part is the pair of rotors at \(1\) and \(2\). The return cycle leaves that pair at the first odd step, and every other cycle would lie above \(2^{20}\), where the normalised height exceeds \(100\).
-
-This completes the arguments for Goldbach’s conjecture and Polignac’s conjecture within the discrete double spacetime framework.
+Because the torus \( (\mathbb{Z}/N\mathbb{Z})^6 \) is finite, the Goldbach and Polignac arguments admit a finite verification algorithm: enumerate all admissible rotor configurations, compute the associated \( J \)-values, and check the additive decomposition or the even-gap \( 2k \) reset. For any fixed compactification parameter \( N \) and each even gap \( 2k \), the Polignac check verifies that no tail avoids \( g_n = 2k \). For any fixed compactification parameter \( N \) the algorithm terminates. The continuum limit \( N \to \infty \) recovers those two classical statements. This completes the arguments for Goldbach’s conjecture and Polignac’s conjecture within the discrete double spacetime framework.
 
 \section{Unified Diophantine Framework and Descent}
 

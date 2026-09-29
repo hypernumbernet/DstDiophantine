@@ -16,10 +16,9 @@ set_option linter.style.nativeDecide false
 /-!
 # Phase 5: Collatz conjecture (DST orbit / height core)
 
-We formalise Chapter 9 of `dst-diophantine.tex` as a **finite-orbit / height
-bound** argument on the pure-boost integer-rotor model, together with a small
-computational certificate and a bridge hypothesis recovering the classical
-statement.
+We formalise Chapter 9 of `dst-diophantine.tex` as the pure-boost geometry of
+the Collatz map: the admissible window, the return cycle, a congruence
+contraction, and a certificate that every start up to `2^20` reaches `1`.
 
 ## What is proved
 
@@ -54,7 +53,7 @@ namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Invariant Real Admissible
+open Amplification Invariant Real
 open _root_.DstDiophantine.Embedding
 
 /-! ### Classical Collatz dynamics -/
@@ -326,42 +325,6 @@ theorem eventually_periodic_of_fintype {α : Type*} [Finite α]
   · exact lt_of_le_of_ne hle (Fin.val_ne_iff.mpr hab)
   · simpa [hle] using heq.symm
 
-/-! ### Small computational certificate -/
-
-/-- Fuel-bounded search for reaching `1`. -/
-def collatzReachesOneFuel : ℕ → ℕ → Bool
-  | 0, n => decide (n = 1)
-  | fuel + 1, n => decide (n = 1) || collatzReachesOneFuel fuel (collatzStep n)
-
-theorem collatzReachesOneFuel_sound :
-    ∀ fuel n : ℕ, collatzReachesOneFuel fuel n = true → ReachesOne n
-  | 0, n, h => by
-    have hn : n = 1 := by simpa [collatzReachesOneFuel] using h
-    exact ⟨0, by simp [collatzIter, hn]⟩
-  | fuel + 1, n, h => by
-    have h' : n = 1 ∨ collatzReachesOneFuel fuel (collatzStep n) = true := by
-      simpa [collatzReachesOneFuel, Bool.or_eq_true, decide_eq_true_eq] using h
-    rcases h' with hn | hfuel
-    · exact ⟨0, by simp [collatzIter, hn]⟩
-    · exact reachesOne_of_step (collatzReachesOneFuel_sound fuel (collatzStep n) hfuel)
-
-/-- All of `1…N` reach `1` within the given fuel budget. -/
-def allReachOneUpTo (N fuel : ℕ) : Bool :=
-  (List.range N).all fun i => collatzReachesOneFuel fuel (i + 1)
-
-theorem allReachOneUpTo_sound {N fuel : ℕ} (h : allReachOneUpTo N fuel = true) :
-    ∀ n, 1 ≤ n → n ≤ N → ReachesOne n := by
-  intro n hn1 hnN
-  have hlt : n - 1 < N := by omega
-  have hall := (List.all_eq_true.mp h) (n - 1) (List.mem_range.mpr hlt)
-  have : n - 1 + 1 = n := Nat.sub_add_cancel hn1
-  rw [this] at hall
-  exact collatzReachesOneFuel_sound fuel n hall
-
-/-- Chapter 9 finite-exploration certificate for starting values up to `20`. -/
-theorem reachesOne_of_le_twenty {n : ℕ} (hn1 : 1 ≤ n) (hn : n ≤ 20) : ReachesOne n :=
-  allReachOneUpTo_sound (by native_decide : allReachOneUpTo 20 1000 = true) n hn1 hn
-
 /-! ### Admissible window on the integer boost -/
 
 theorem two_log_two_lt_pi_div_two : 2 * Real.log 2 < Real.pi / 2 := by
@@ -560,37 +523,12 @@ theorem not_collatz_periodic_three : ¬ IsCollatzPeriodic 3 := by
   have hmem := periodic_reachesOne_mem_421 hper hreach
   omega
 
-/-- An odd integer congruent to `1` modulo `4` falls in three ordinary steps. -/
-theorem collatz_one_mod_four_descends {n : ℕ} (hn : 1 < n) (hmod : n % 4 = 1) :
-    collatzIter 3 n = (3 * n + 1) / 4 ∧ (3 * n + 1) / 4 < n := by
-  have hodd : n % 2 = 1 := by omega
-  have hstep1 : collatzStep n = 3 * n + 1 := collatzStep_odd hodd
-  have heven1 : (3 * n + 1) % 2 = 0 := by omega
-  have heven2 : ((3 * n + 1) / 2) % 2 = 0 := by omega
-  have hthree : collatzIter 3 n = (3 * n + 1) / 4 := by
-    rw [collatzIter_succ, collatzIter_succ, collatzIter_succ, collatzIter_zero]
-    rw [hstep1, collatzStep_even heven1, collatzStep_even heven2, Nat.div_div_eq_div_mul]
-  refine ⟨hthree, ?_⟩
-  have hlt : 3 * n + 1 < 4 * n := by omega
-  exact Nat.div_lt_of_lt_mul (by simpa [Nat.mul_comm] using hlt)
+/-! ### Accelerated map: one halving per step
 
-/-! ### Accelerated map: one halving per step -/
-
-/-- Even input halves; odd input applies `(3n+1)/2`. -/
-def collatzAccel (n : ℕ) : ℕ :=
-  if n % 2 = 0 then n / 2 else (3 * n + 1) / 2
-
-theorem collatzAccel_even {n : ℕ} (h : n % 2 = 0) : collatzAccel n = n / 2 := by
-  simp [collatzAccel, h]
-
-theorem collatzAccel_odd {n : ℕ} (h : n % 2 = 1) : collatzAccel n = (3 * n + 1) / 2 := by
-  simp [collatzAccel, h]
-
-theorem collatzAccel_odd_eq_two_steps {n : ℕ} (h : n % 2 = 1) :
-    collatzAccel n = collatzStep (collatzStep n) := by
-  rw [collatzAccel_odd h, collatzStep_odd h]
-  have he : (3 * n + 1) % 2 = 0 := by omega
-  rw [collatzStep_even he]
+An even input is halved. An odd input is sent to `(3n+1)/2`, which is the
+ordinary odd step followed by the forced halving. `accelRun k n` returns the
+value after `k` such steps and the number of odd inputs among them.
+-/
 
 /-- `k` accelerated steps, together with the number of odd inputs. -/
 def accelRun : ℕ → ℕ → ℕ × ℕ
@@ -706,12 +644,6 @@ theorem allBlockFailBounded_sound :
       · simpa [hi'] using hle
       · exact allBlockFailBounded_sound bound r k h i (by omega)
 
-/-- Count residues `r < bound` whose sixteen-step block has at least eleven odd inputs. -/
-def countBlockBad : ℕ → ℕ → ℕ
-  | acc, 0 => acc
-  | acc, r + 1 =>
-    countBlockBad (acc + if 2 ^ 16 ≤ 3 ^ (accelRun 16 r).2 then 1 else 0) r
-
 theorem three_pow_ten_lt_two_pow_sixteen : 3 ^ 10 < 2 ^ 16 := by native_decide
 
 theorem two_pow_sixteen_lt_three_pow_eleven : 2 ^ 16 < 3 ^ 11 := by native_decide
@@ -719,10 +651,6 @@ theorem two_pow_sixteen_lt_three_pow_eleven : 2 ^ 16 < 3 ^ 11 := by native_decid
 set_option maxRecDepth 2000000 in
 theorem collatz_block_fail_bounded :
     allBlockFailBounded 16 2 (2 ^ 16) = true := by
-  native_decide
-
-set_option maxRecDepth 2000000 in
-theorem countBlockBad_sixteen : countBlockBad 0 (2 ^ 16) = 6885 := by
   native_decide
 
 theorem collatz_bad_class_card :
@@ -752,7 +680,7 @@ theorem accel_block_contracts {n : ℕ} (hn : 2 < n)
   have hc10 : c ≤ 10 := by simpa [c, r, M] using hc
   have hpow : 3 ^ c < M := by
     have hmono : 3 ^ c ≤ 3 ^ 10 := Nat.pow_le_pow_right (by decide) hc10
-    exact lt_of_le_of_lt hmono (by simpa [M] using three_pow_ten_lt_two_pow_sixteen)
+    exact lt_of_le_of_lt hmono (by simp [M])
   have hfail : collatzBlockFail 16 r ≤ 2 :=
     allBlockFailBounded_sound 2 M 16 (by simpa [M] using collatz_block_fail_bounded) r hr
   rw [himg, hnM]
@@ -882,15 +810,16 @@ theorem allDrop_sound : ∀ lo hi fuel, allDrop lo hi fuel = true →
     · have hform : allDrop lo hi fuel =
           if dropsBelow fuel lo lo = false then false else allDrop (lo + 1) hi fuel := by
         conv_lhs => unfold allDrop
-        rw [if_neg hlt]
+        rw [ite_eq_right hlt]
       rw [hform] at h
       by_cases hd : dropsBelow fuel lo lo = false
-      · simp [hd] at h
+      · rw [ite_eq_left hd] at h
+        cases h
       · have hdrop : dropsBelow fuel lo lo = true := by
           cases hbool : dropsBelow fuel lo lo
           · exact absurd hbool hd
           · rfl
-        simp [hd] at h
+        rw [ite_eq_right hd] at h
         by_cases hne : n = lo
         · simpa [hne] using hdrop
         · exact allDrop_sound (lo + 1) hi fuel h n (by omega) hhi
@@ -918,9 +847,8 @@ theorem reachesOne_of_allDrop {N : ℕ} (h : allDrop 1 N 400 = true) :
     · have hdrop : dropsBelow 400 n n = true := allDrop_sound 1 N 400 h n hn1 hnN
       exact reachesOne_of_drop (by omega) hdrop (fun m hm hlt => ih m hlt (by omega) (by omega))
 
--- The orbit search is a tail recursion of length `2^20`; the limit only lets the
--- compiler finish checking the resulting proof term.
 set_option maxHeartbeats 0 in
+-- The search is a tail recursion of length `2^20`.
 set_option maxRecDepth 2000000 in
 theorem allDrop_two_pow_twenty : allDrop 1 (2 ^ 20) 400 = true := by
   native_decide
@@ -929,11 +857,14 @@ theorem reachesOne_of_le_two_pow_twenty {n : ℕ} (hn1 : 1 ≤ n) (hn : n ≤ 2 
     ReachesOne n :=
   reachesOne_of_allDrop allDrop_two_pow_twenty n hn1 hn
 
+theorem reachesOne_of_le_twenty {n : ℕ} (hn1 : 1 ≤ n) (hn : n ≤ 20) : ReachesOne n :=
+  reachesOne_of_le_two_pow_twenty hn1 (hn.trans (by decide : 20 ≤ 2 ^ 20))
+
 theorem log_nat_two_pow (k : ℕ) :
     Real.log ((2 ^ k : ℕ) : ℝ) = (k : ℝ) * Real.log 2 := by
   have hpow : ((2 ^ k : ℕ) : ℝ) = (2 : ℝ) ^ k := by norm_cast
   rw [hpow]
-  simpa using Real.log_pow (2 : ℝ) k
+  exact Real.log_pow (2 : ℝ) k
 
 theorem collatzHeight_strictMono {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 0) (hlt : m < n) :
     collatzHeight m hm < collatzHeight n hn := by
