@@ -54,7 +54,9 @@ QCD \(\alpha_s\) is not paired with `epsN`.
   `J_field = ½ T` on Schwarzschild (concrete point).
 * On the radial pure-boost gauge, `Gravity.JTDictionary` supplies the closed
   form `r² T = 4(cosh √(2J) − 1)` with sandwich `4J/r² ≤ T ≤ 4 J_field`.
-* Corrected field dictionary for general motors remains open.
+* `Gravity.LorentzGauge`: an inertial-plane boost of any rapidity profile has
+  Minkowski metric and vanishing teleparallel scalar, so no pointwise map
+  sends `J` to `T` on every tetrad. A dictionary for a general motor remains open.
 -/
 
 namespace DstDiophantine

@@ -67,6 +67,8 @@ on \(r^2 T\).
 ## Not claimed
 
 * A dictionary for a general motor field (off-axis or with translations).
+  `Gravity.LorentzGauge` shows that no pointwise map \(J\mapsto T\) serves
+  every tetrad: an inertial-plane boost has \(T=0\) for every jet.
 * Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
 -/
 

@@ -39,6 +39,7 @@ characterised uniquely by the vacuum condition \(\frac{d}{dr}(rA)=1\).
 ## Not claimed
 
 * A dictionary for a general tetrad field (off-axis or with translations).
+  `Gravity.LorentzGauge` rules out a pointwise map from \(J\) alone.
 * Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
 -/
 

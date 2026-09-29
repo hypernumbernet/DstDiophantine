@@ -31,6 +31,7 @@ gauge, not merely the Schwarzschild factor \(A=1-r_s/r\).
 ## Not claimed
 
 * A dictionary for a general tetrad field (off-axis or with translations).
+  `Gravity.LorentzGauge` rules out a pointwise map from \(J\) alone.
 * Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
 -/
 

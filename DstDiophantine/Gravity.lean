@@ -2,6 +2,7 @@ import DstDiophantine.Gravity.Identification
 import DstDiophantine.Gravity.JTDictionary
 import DstDiophantine.Gravity.GaugeDictionary
 import DstDiophantine.Gravity.ClassicalSchwarzschild
+import DstDiophantine.Gravity.LorentzGauge
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
@@ -47,7 +48,7 @@ a V--A coupling, a helicity-odd drive of \(J\), or a numerical baryon yield.
 ## Chart dictionary
 
 `Coframe`, `Sandwich`, `Weitzenbock`, `Tetrad`, `Identification`,
-`JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`.
+`JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`.
 
 On every static radial-boost chart,
 \(T=(4/r^2)(\cosh\sqrt{2J}-1)\). The map inverts on the admissible cone,
@@ -55,6 +56,14 @@ where \(r^2 T\) lies in a finite two-sided window. A real radial boost
 cannot produce \(T<0\). Exterior Schwarzschild is the vacuum gauge
 \(A=1-r_s/r\). The naive identification \(J_{\mathrm{field}}=\tfrac12 T\)
 holds on at most one sphere.
+
+A pure boost of the inertial frame in a fixed plane, of any rapidity
+profile \(\varphi(t,x)\), induces the Minkowski metric. Its coordinate
+torsion is \(T^t{}_{tx}=\partial_t\varphi\) and \(T^x{}_{xt}=\partial_x\varphi\),
+and the teleparallel quadratic vanishes for every jet. The same \(J=\tfrac12\varphi^2\)
+is positive-\(T\) on the exterior Schwarzschild coframe, so no pointwise map
+sends \(J\) to \(T\) for every tetrad. Distinct squared rapidities give the
+same metric and distinct \(J\).
 
 ## The direction of gravity
 
@@ -244,6 +253,23 @@ example {rs r : ℝ} (h : IsExterior rs r) :
         (KillingAxis.killingParams (KillingAxis.killingRate rs r) (KillingAxis.killingNorm rs r))
         (KillingAxis.releasedWorldline (KillingAxis.axisDistance rs r)) = 0 :=
   KillingAxis.released_on_staticHorizon h
+
+/-- Regression: an inertial-plane boost keeps the Minkowski metric and kills `T`. -/
+example (φ u v : ℝ) (μ ν : Fin 4) :
+    inducedMetric (inertialBoostCoframe φ) μ ν =
+        (if μ = ν then w31 μ else 0) ∧
+      boostCoordTorsion φ u v 0 0 1 = u ∧
+      boostTeleparallel u v = 0 :=
+  ⟨inducedMetric_inertialBoost φ μ ν, boostCoordTorsion_ttx φ u v,
+    boostTeleparallel_eq_zero u v⟩
+
+/-- Regression: the same `J` does not determine `T` off the radial-boost gauge. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    J (DstDiophantine.Amplification.pureBoost (schwarzschildRapidity rs r)) =
+        J (radialBoostParams rs r) ∧
+      boostTeleparallel 0 0 = 0 ∧
+      0 < schwarzschildTeleparallelT rs r :=
+  sameJ_inertial_T_zero_schwarzschild_T_pos h
 
 /-- Regression: the same dictionary holds for any static radial-boost gauge. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
