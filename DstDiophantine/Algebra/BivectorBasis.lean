@@ -371,6 +371,21 @@ private theorem linearIndependent_lorentzGen :
   simpa [tenGen_lorentzIndex] using
     linearIndependent_tenGen.comp lorentzIndex lorentzIndex_injective
 
+/-- A vanishing sum of boosts and rotations has every coefficient zero. -/
+theorem sum_elim_hyperbolic_cyclic_eq_zero {f g : Fin 3 → ℝ}
+    (h : (∑ a : Fin 3, f a • hyperbolic a) + (∑ a : Fin 3, g a • cyclic a) = 0) :
+    (∀ a, f a = 0) ∧ (∀ a, g a = 0) := by
+  have hli := Fintype.linearIndependent_iff.mp linearIndependent_lorentzGen
+  let c : Fin 3 ⊕ Fin 3 → ℝ := Sum.elim f g
+  have hzero : (∑ i : Fin 3 ⊕ Fin 3, c i • Sum.elim hyperbolic cyclic i) = 0 := by
+    simpa [c, Fintype.sum_sumElim] using h
+  have hc := hli c hzero
+  refine ⟨?_, ?_⟩
+  · intro a
+    simpa [c] using hc (Sum.inl a)
+  · intro a
+    simpa [c] using hc (Sum.inr a)
+
 theorem finrank_hyperbolicSpan :
     Module.finrank ℝ (Submodule.span ℝ (Set.range hyperbolic)) = 3 := by
   rw [finrank_span_eq_card linearIndependent_hyperbolic]

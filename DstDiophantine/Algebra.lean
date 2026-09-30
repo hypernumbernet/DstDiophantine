@@ -44,6 +44,7 @@ export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cy
   hyperbolic_smul_mul commutator commutator_null_null null_commute
   commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero
   commutator_hyperbolic_hyperbolic commutator_cyclic_cyclic commutator_hyperbolic_cyclic
+  anticommute_hyperbolic_cyclic_off offAxis_scaled_sq hyperbolic_mul_cyclic_off
   commutator_hyperbolic0_null commutator_hyperbolic0_null_mem_span
   commutator_cyclic0_null commutator_cyclic0_null_mem_span
   nullSpan commutator_hyperbolic_null commutator_hyperbolic_null_mem_span
@@ -58,6 +59,7 @@ export LorentzLie (cyclicSpan lorentzSpan poincareSpan
   commutator_dual_left commutator_dual_right commutator_dual_dual
   commutator_hyperbolic_hyperbolic_eq_neg commutator_hyperbolic_cyclic_eq_dual
   commutator_hyperbolic_hyperbolic_cyclic lorentzSpan_eq_sup mem_lorentzSpan_iff
+  reverse_neg_of_mem_lorentzSpan scalar_add_lorentz_eq_zero
   commutator_mem_lorentzSpan commutator_lorentz_null_mem_nullSpan
   commutator_null_null_eq_zero commutator_poincare_null_mem_nullSpan
   commutator_mem_poincareSpan commutator_hyperbolic0_null0_ne_zero
@@ -66,7 +68,8 @@ export LorentzLie (cyclicSpan lorentzSpan poincareSpan
 export BivectorBasis (linearIndependent_tenGen poincareSpan_eq_bivectorGrade
   finrank_poincareSpan finrank_lorentzSpan finrank_nullSpan
   finrank_hyperbolicSpan finrank_cyclicSpan
-  disjoint_lorentz_null disjoint_hyperbolic_cyclic)
+  disjoint_lorentz_null disjoint_hyperbolic_cyclic
+  sum_elim_hyperbolic_cyclic_eq_zero)
 export Operations (pseudoscalar dual TorsionParams daggerParams
   e4_commute_pseudoscalar dual_null
   pseudoscalar_sq ι_anticomm_pseudoscalar minkowskiVector minkowskiVector_sq
@@ -85,7 +88,7 @@ export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
   dirichletKernel_two_pi abs_dirichletKernel_lattice)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
-  reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one
+  reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one exp_of_sq_zero
   exp_omegaTrans expTrans_mul exp_omegaBiv_eq_motor_of_commute
   commutator_omegaTorsion_omegaTrans_mem_span
   commutator_omegaTrans_commutator_torsion_trans

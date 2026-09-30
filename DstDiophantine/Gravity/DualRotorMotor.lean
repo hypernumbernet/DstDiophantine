@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.NormNum
@@ -34,6 +35,12 @@ the first plane and by the rotation `θ` on the second. Neither action is a
 function of `δ` alone. Its derivative at the identity along the ray `(φ, θ)`
 is `−(φ/2) B⁺₀ + (θ/2) B⁻₀`, which in `(σ, δ)` retains a term in `σ`.
 Alignment `δ = 0` with `σ ≠ 0` still moves the null ideal.
+
+Off a common axis the usual generator and the dual generator anticommute, so
+`p B⁺_a + q B⁻_b` squares to the scalar `p² - q²`. The sign of that scalar is
+the type of one rotor: hyperbolic, elliptic, or parabolic. The parabolic
+rotor `1 + t(B⁺₀ + B⁻₁)` shears `N₁` to `N₁ + 2t(N₀ - N₃)`, which leaves the
+boost plane of the first axis.
 -/
 
 namespace DstDiophantine
@@ -42,7 +49,7 @@ namespace Gravity
 
 open CliffordAlgebra (reverse)
 open PGA Generators Motor Amplification Operations
-open RelativeRotor Sandwich BivectorBasis Real
+open RelativeRotor Sandwich BivectorBasis Real NormedSpace LorentzLie
 open Filter
 
 /-! ### `cyclic 0` on the frame -/
@@ -666,6 +673,346 @@ theorem written_flow_null_split (σ₀ σd₀ m δ₀ ν t : ℝ) :
     (written_plane_params σ₀ σd₀ m δ₀ ν t).2,
     written_flow_boost_plane σ₀ σd₀ m δ₀ ν t,
     written_flow_rotation_plane σ₀ σd₀ m δ₀ ν t⟩
+
+/-! ### Off axis, one rotor -/
+
+theorem exp_offAxis_hyperbolic {a b : Fin 3} (hab : a ≠ b) {p q : ℝ}
+    (hρ : 0 < p ^ 2 - q ^ 2) :
+    let x := p • hyperbolic a + q • cyclic b
+    let s := Real.sqrt (p ^ 2 - q ^ 2)
+    exp x = Real.cosh s • (1 : PGA) + (Real.sinh s / s) • x := by
+  intro x s
+  have hs_nonneg : 0 ≤ p ^ 2 - q ^ 2 := le_of_lt hρ
+  have hs_sq : s ^ 2 = p ^ 2 - q ^ 2 := Real.sq_sqrt hs_nonneg
+  have hs0 : s ≠ 0 := by
+    intro hs
+    apply hρ.ne
+    rw [← hs_sq, hs]
+    ring
+  set u : PGA := (1 / s) • x
+  have hu : u * u = 1 := by
+    have hx : x * x = (s ^ 2) • (1 : PGA) := by
+      rw [offAxis_scaled_sq hab, hs_sq]
+    calc
+      u * u = ((1 / s) * (1 / s)) • (x * x) := by
+        rw [show u = (1 / s) • x from rfl, smul_mul_assoc, mul_smul_comm, smul_smul]
+      _ = (1 / s ^ 2) • (x * x) := by
+        congr 1
+        ring
+      _ = (1 / s ^ 2) • ((s ^ 2) • (1 : PGA)) := by rw [hx]
+      _ = ((1 / s ^ 2) * s ^ 2) • (1 : PGA) := by rw [smul_smul]
+      _ = (1 : PGA) := by
+        rw [show (1 / s ^ 2) * s ^ 2 = 1 by field_simp [hs0]]
+        simp
+  have hx_eq : x = s • u := by
+    rw [show u = (1 / s) • x from rfl, smul_smul]
+    rw [show s * (1 / s) = 1 by field_simp [hs0], one_smul]
+  have hcoe : Real.sinh s * (1 / s) = Real.sinh s / s := by ring
+  nth_rw 1 [hx_eq]
+  rw [exp_of_sq_one hu]
+  nth_rw 1 [show u = (1 / s) • x from rfl]
+  rw [smul_smul, hcoe]
+
+theorem exp_offAxis_elliptic {a b : Fin 3} (hab : a ≠ b) {p q : ℝ}
+    (hρ : p ^ 2 - q ^ 2 < 0) :
+    let x := p • hyperbolic a + q • cyclic b
+    let s := Real.sqrt (q ^ 2 - p ^ 2)
+    exp x = Real.cos s • (1 : PGA) + (Real.sin s / s) • x := by
+  intro x s
+  have hpos : 0 < q ^ 2 - p ^ 2 := by linarith
+  have hs_nonneg : 0 ≤ q ^ 2 - p ^ 2 := le_of_lt hpos
+  have hs_sq : s ^ 2 = q ^ 2 - p ^ 2 := Real.sq_sqrt hs_nonneg
+  have hs0 : s ≠ 0 := by
+    intro hs
+    apply hpos.ne
+    rw [← hs_sq, hs]
+    ring
+  set u : PGA := (1 / s) • x
+  have hu : u * u = -1 := by
+    have hx : x * x = (p ^ 2 - q ^ 2) • (1 : PGA) := offAxis_scaled_sq hab p q
+    have hxx : x * x = (-(s ^ 2)) • (1 : PGA) := by
+      rw [hx]
+      congr 1
+      linarith
+    calc
+      u * u = ((1 / s) * (1 / s)) • (x * x) := by
+        rw [show u = (1 / s) • x from rfl, smul_mul_assoc, mul_smul_comm, smul_smul]
+      _ = (1 / s ^ 2) • (x * x) := by
+        congr 1
+        ring
+      _ = (1 / s ^ 2) • ((-(s ^ 2)) • (1 : PGA)) := by rw [hxx]
+      _ = ((1 / s ^ 2) * -(s ^ 2)) • (1 : PGA) := by rw [smul_smul]
+      _ = (-1 : PGA) := by
+        rw [show (1 / s ^ 2) * -(s ^ 2) = -1 by field_simp [hs0]]
+        simp
+  have hx_eq : x = s • u := by
+    rw [show u = (1 / s) • x from rfl, smul_smul]
+    rw [show s * (1 / s) = 1 by field_simp [hs0], one_smul]
+  have hcoe : Real.sin s * (1 / s) = Real.sin s / s := by ring
+  nth_rw 1 [hx_eq]
+  rw [exp_of_sq_neg_one hu]
+  nth_rw 1 [show u = (1 / s) • x from rfl]
+  rw [smul_smul, hcoe]
+
+theorem exp_offAxis_parabolic {a b : Fin 3} (hab : a ≠ b) {p q : ℝ}
+    (hpq : p ^ 2 = q ^ 2) :
+    exp (p • hyperbolic a + q • cyclic b) =
+      (1 : PGA) + p • hyperbolic a + q • cyclic b := by
+  set x := p • hyperbolic a + q • cyclic b
+  have hsq : x * x = 0 := by
+    rw [offAxis_scaled_sq hab, hpq, sub_self, zero_smul]
+  have hexp : exp x = (1 : PGA) + x := by
+    simpa [one_smul] using exp_of_sq_zero hsq 1
+  rw [hexp]
+  simp only [x, add_assoc]
+
+theorem exp_offAxis_sum {a b : Fin 3} (hab : a ≠ b) (t : ℝ) :
+    exp (t • (hyperbolic a + cyclic b)) =
+      (1 : PGA) + t • (hyperbolic a + cyclic b) := by
+  have hsq : (hyperbolic a + cyclic b) * (hyperbolic a + cyclic b) = 0 := by
+    simpa using offAxis_scaled_sq hab (1 : ℝ) 1
+  exact exp_of_sq_zero hsq t
+
+private theorem exp_hyperbolic_mul_exp_cyclic (a b : Fin 3) (p q : ℝ) :
+    exp (p • hyperbolic a) * exp (q • cyclic b) =
+      (Real.cosh p * Real.cos q) • (1 : PGA) +
+        (Real.sinh p * Real.cos q) • hyperbolic a +
+        (Real.cosh p * Real.sin q) • cyclic b +
+        (Real.sinh p * Real.sin q) • (hyperbolic a * cyclic b) := by
+  rw [exp_of_sq_one (hyperbolic_sq a), exp_of_sq_neg_one (cyclic_sq b)]
+  have smul_mul_smul (c d : ℝ) (u v : PGA) :
+      (c • u) * (d • v) = (c * d) • (u * v) := by
+    rw [smul_mul_assoc, mul_smul_comm, smul_smul]
+  simp only [mul_add, add_mul]
+  rw [smul_mul_smul, smul_mul_smul, smul_mul_smul, smul_mul_smul]
+  simp only [mul_one, one_mul]
+  module
+
+private theorem exp_offAxis_in_pair {a b : Fin 3} (hab : a ≠ b) (p q : ℝ) :
+    ∃ α β γ : ℝ,
+      exp (p • hyperbolic a + q • cyclic b) =
+        α • (1 : PGA) + β • hyperbolic a + γ • cyclic b := by
+  by_cases hpq : p ^ 2 = q ^ 2
+  · refine ⟨1, p, q, ?_⟩
+    simpa using exp_offAxis_parabolic hab hpq
+  · by_cases hpos : 0 < p ^ 2 - q ^ 2
+    · let s := Real.sqrt (p ^ 2 - q ^ 2)
+      refine ⟨Real.cosh s, (Real.sinh s / s) * p, (Real.sinh s / s) * q, ?_⟩
+      have hform := exp_offAxis_hyperbolic hab hpos
+      rw [hform]
+      module
+    · have hneg : p ^ 2 - q ^ 2 < 0 :=
+        lt_of_le_of_ne (le_of_not_gt hpos) (sub_ne_zero.mpr hpq)
+      let s := Real.sqrt (q ^ 2 - p ^ 2)
+      refine ⟨Real.cos s, (Real.sin s / s) * p, (Real.sin s / s) * q, ?_⟩
+      have hform := exp_offAxis_elliptic hab hneg
+      rw [hform]
+      module
+
+private theorem offAxis_remainder_independent {a b : Fin 3} (hab : a ≠ b) {δ : ℝ}
+    (hδ : δ ≠ 0) {α β γ : ℝ} :
+    δ • (hyperbolic a * cyclic b) ≠
+      α • (1 : PGA) + β • hyperbolic a + γ • cyclic b := by
+  intro h
+  have hzero :
+      α • (1 : PGA) + β • hyperbolic a + γ • cyclic b -
+          δ • (hyperbolic a * cyclic b) = 0 :=
+    sub_eq_zero.mpr h.symm
+  have hform :
+      α • (1 : PGA) +
+          (β • hyperbolic a + γ • cyclic b +
+            (-δ) • (hyperbolic a * cyclic b)) = 0 := by
+    convert hzero using 1
+    module
+  have hM : hyperbolic a * cyclic b ∈ lorentzSpan := by
+    rw [hyperbolic_mul_cyclic_off hab]
+    split_ifs
+    · exact hyperbolic_mem_lorentzSpan _
+    · exact Submodule.neg_mem _ (hyperbolic_mem_lorentzSpan _)
+  have hmem :
+      β • hyperbolic a + γ • cyclic b + (-δ) • (hyperbolic a * cyclic b) ∈
+        lorentzSpan :=
+    Submodule.add_mem _ (Submodule.add_mem _
+      (Submodule.smul_mem _ _ (hyperbolic_mem_lorentzSpan a))
+      (Submodule.smul_mem _ _ (cyclic_mem_lorentzSpan b)))
+      (Submodule.smul_mem _ _ hM)
+  have hscal := scalar_add_lorentz_eq_zero hmem hform
+  have hbiv :
+      β • hyperbolic a + γ • cyclic b + (-δ) • (hyperbolic a * cyclic b) = 0 :=
+    hscal.2
+  rw [hyperbolic_mul_cyclic_off hab] at hbiv
+  by_cases hsucc : b = a + 1
+  · subst hsucc
+    simp only [↓reduceIte] at hbiv
+    have hgroup :
+        (β • hyperbolic a + (-δ) • hyperbolic (a + 2)) + γ • cyclic (a + 1) = 0 := by
+      calc
+        (β • hyperbolic a + (-δ) • hyperbolic (a + 2)) + γ • cyclic (a + 1)
+            = β • hyperbolic a + γ • cyclic (a + 1) + (-δ) • hyperbolic (a + 2) := by
+              abel
+        _ = 0 := hbiv
+    have hhyp : β • hyperbolic a + (-δ) • hyperbolic (a + 2) =
+        -(γ • cyclic (a + 1)) :=
+      eq_neg_of_add_eq_zero_left hgroup
+    have hboost : β • hyperbolic a + (-δ) • hyperbolic (a + 2) = 0 := by
+      rw [hhyp]
+      refine (Submodule.disjoint_def.mp disjoint_hyperbolic_cyclic) _ ?_ ?_
+      · rw [← hhyp]
+        exact Submodule.add_mem _
+          (Submodule.smul_mem _ _ (Submodule.subset_span ⟨a, rfl⟩))
+          (Submodule.smul_mem _ _ (Submodule.subset_span ⟨a + 2, rfl⟩))
+      · exact Submodule.neg_mem _ (Submodule.smul_mem _ _
+          (Submodule.subset_span ⟨a + 1, rfl⟩))
+    let f : Fin 3 → ℝ := fun i => if i = a then β else if i = a + 2 then -δ else 0
+    have hsum : ∑ i : Fin 3, f i • hyperbolic i = 0 := by
+      rw [Fin.sum_univ_three]
+      fin_cases a <;> simp [f, zero_smul, add_zero] at hboost ⊢
+      · exact hboost
+      · rw [add_comm]; exact hboost
+      · rw [add_comm]; exact hboost
+    have hidx : (a + 2 : Fin 3) ≠ a := by fin_cases a <;> decide
+    have hcoef := (Fintype.linearIndependent_iff.mp linearIndependent_hyperbolic) f hsum
+      (a + 2)
+    simp [f, hidx] at hcoef
+    exact hδ (by linarith)
+  · have hb : b = a + 2 := by
+      fin_cases a <;> fin_cases b <;> simp_all
+    subst hb
+    simp only [hsucc, ↓reduceIte, smul_neg, neg_smul] at hbiv
+    have hgroup :
+        (β • hyperbolic a + δ • hyperbolic (a + 1)) + γ • cyclic (a + 2) = 0 := by
+      calc
+        (β • hyperbolic a + δ • hyperbolic (a + 1)) + γ • cyclic (a + 2)
+            = β • hyperbolic a + γ • cyclic (a + 2) + δ • hyperbolic (a + 1) := by
+              abel
+        _ = 0 := by simpa [neg_neg] using hbiv
+    have hhyp : β • hyperbolic a + δ • hyperbolic (a + 1) =
+        -(γ • cyclic (a + 2)) :=
+      eq_neg_of_add_eq_zero_left hgroup
+    have hboost : β • hyperbolic a + δ • hyperbolic (a + 1) = 0 := by
+      rw [hhyp]
+      refine (Submodule.disjoint_def.mp disjoint_hyperbolic_cyclic) _ ?_ ?_
+      · rw [← hhyp]
+        exact Submodule.add_mem _
+          (Submodule.smul_mem _ _ (Submodule.subset_span ⟨a, rfl⟩))
+          (Submodule.smul_mem _ _ (Submodule.subset_span ⟨a + 1, rfl⟩))
+      · exact Submodule.neg_mem _ (Submodule.smul_mem _ _
+          (Submodule.subset_span ⟨a + 2, rfl⟩))
+    let f : Fin 3 → ℝ := fun i => if i = a then β else if i = a + 1 then δ else 0
+    have hsum : ∑ i : Fin 3, f i • hyperbolic i = 0 := by
+      rw [Fin.sum_univ_three]
+      fin_cases a <;> simp [f, zero_smul, add_zero] at hboost ⊢
+      · exact hboost
+      · exact hboost
+      · rw [add_comm]; exact hboost
+    have hidx : (a + 1 : Fin 3) ≠ a := by fin_cases a <;> decide
+    have hcoef := (Fintype.linearIndependent_iff.mp linearIndependent_hyperbolic) f hsum
+      (a + 1)
+    simp [f, hidx] at hcoef
+    exact hδ hcoef
+
+/-- The joint exponential is not the product of the separate boost and rotation. -/
+theorem exp_offAxis_ne_factor {a b : Fin 3} (hab : a ≠ b) {p q : ℝ}
+    (h : Real.sinh p * Real.sin q ≠ 0) :
+    exp (p • hyperbolic a + q • cyclic b) ≠
+      exp (p • hyperbolic a) * exp (q • cyclic b) := by
+  intro heq
+  rw [exp_hyperbolic_mul_exp_cyclic] at heq
+  obtain ⟨α, β, γ, hE⟩ := exp_offAxis_in_pair hab p q
+  set s1 : PGA := (Real.cosh p * Real.cos q) • (1 : PGA)
+  set sH : PGA := (Real.sinh p * Real.cos q) • hyperbolic a
+  set sC : PGA := (Real.cosh p * Real.sin q) • cyclic b
+  set rest : PGA := (Real.sinh p * Real.sin q) • (hyperbolic a * cyclic b)
+  have hrest : rest = α • (1 : PGA) + β • hyperbolic a + γ • cyclic b - (s1 + sH + sC) := by
+    have hsum : exp (p • hyperbolic a + q • cyclic b) = s1 + sH + sC + rest := by
+      simpa [s1, sH, sC, rest, add_assoc] using heq
+    rw [hE, add_comm (s1 + sH + sC) rest] at hsum
+    exact eq_sub_of_add_eq hsum.symm
+  have hspan : rest =
+      (α - Real.cosh p * Real.cos q) • (1 : PGA) +
+        (β - Real.sinh p * Real.cos q) • hyperbolic a +
+        (γ - Real.cosh p * Real.sin q) • cyclic b := by
+    rw [hrest]
+    simp only [s1, sH, sC]
+    module
+  exact offAxis_remainder_independent hab h
+    (α := α - Real.cosh p * Real.cos q)
+    (β := β - Real.sinh p * Real.cos q)
+    (γ := γ - Real.cosh p * Real.sin q) hspan
+
+/-! ### The parabolic rotor mixes the planes -/
+
+private theorem reverse_parabolic01 (t : ℝ) :
+    reverse ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) =
+      (1 : PGA) - t • (hyperbolic 0 + cyclic 1) := by
+  rw [map_add, map_smul, reverse.map_one, map_add, hyperbolic_reverse, cyclic_reverse]
+  module
+
+/-- `1 + t(B⁺₀ + B⁻₁)` shears `N₁` out of the boost plane. -/
+theorem sandwich_parabolic_null1 (t : ℝ) :
+    sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) =
+      null 1 + (2 * t) • null 0 - (2 * t) • null 3 := by
+  set K := hyperbolic 0 + cyclic 1
+  have hrev := reverse_parabolic01 t
+  have hsq : K * K = 0 := by
+    simpa [K] using offAxis_scaled_sq (by decide : (0 : Fin 3) ≠ 1) (1 : ℝ) 1
+  have hKN : K * null 1 = null 0 - null 3 := by
+    simpa [K] using crossAxis01_mul_null1
+  have hNK : null 1 * K = -(null 0 - null 3) := by
+    simpa [K] using null1_mul_crossAxis01
+  rw [sandwich]
+  dsimp [K] at hrev hNK ⊢
+  rw [hrev, mul_assoc]
+  have hright : null 1 * ((1 : PGA) - t • (hyperbolic 0 + cyclic 1)) =
+      null 1 + t • (null 0 - null 3) := by
+    rw [mul_sub, mul_one, mul_smul_comm, hNK, smul_neg, sub_neg_eq_add]
+  rw [hright]
+  have hKshear : K * (null 0 - null 3) = 0 := by
+    calc
+      K * (null 0 - null 3) = K * (K * null 1) := by rw [hKN]
+      _ = (K * K) * null 1 := (mul_assoc _ _ _).symm
+      _ = 0 := by rw [hsq, zero_mul]
+  have hexpand :
+      ((1 : PGA) + t • K) * (null 1 + t • (null 0 - null 3)) =
+        null 1 + t • (null 0 - null 3) + (t • K) * null 1 +
+          (t • K) * (t • (null 0 - null 3)) := by
+    set A := (t • K) * null 1
+    set B := t • (null 0 - null 3)
+    set C := (t • K) * B
+    rw [mul_add, add_mul, add_mul, one_mul, one_mul]
+    dsimp [A, B, C]
+    ac_rfl
+  rw [hexpand]
+  have ht1 : (t • K) * null 1 = t • (K * null 1) := smul_mul_assoc _ _ _
+  have ht2 : (t • K) * (t • (null 0 - null 3)) =
+      (t * t) • (K * (null 0 - null 3)) := by
+    rw [smul_mul_assoc, mul_smul_comm, smul_smul]
+  rw [ht1, ht2, hKN, hKshear, smul_zero, add_zero]
+  module
+
+theorem sandwich_parabolic_null1_not_boostPlane {t : ℝ} (ht : t ≠ 0) :
+    ∀ c₀ c₁ : ℝ,
+      sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) ≠
+        c₀ • null 0 + c₁ • null 1 := by
+  intro c₀ c₁ h
+  rw [sandwich_parabolic_null1] at h
+  have hlin : (2 * t - c₀) • null 0 + (1 - c₁) • null 1 +
+      (-(2 * t)) • null 3 = 0 := by
+    have hsub := congrArg (fun z : PGA => z - (c₀ • null 0 + c₁ • null 1)) h
+    simp only [sub_self] at hsub
+    convert hsub using 1
+    module
+  let l : Fin 4 → ℝ := fun μ => match μ with
+    | 0 => 2 * t - c₀
+    | 1 => 1 - c₁
+    | 2 => 0
+    | 3 => -(2 * t)
+  have hsum : ∑ μ : Fin 4, l μ • null μ = 0 := by
+    rw [Fin.sum_univ_four]
+    simpa [l] using hlin
+  have hli := Fintype.linearIndependent_iff.mp linearIndependent_null l hsum
+  have h3 : -(2 * t) = 0 := by simpa [l] using hli 3
+  exact ht (by linarith)
 
 end Gravity
 

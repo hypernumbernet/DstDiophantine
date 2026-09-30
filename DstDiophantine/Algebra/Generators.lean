@@ -1,6 +1,7 @@
 import DstDiophantine.Algebra.PGA
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Module
 
 /-!
 # Ten bivector generators of G(3,1,1)
@@ -1230,6 +1231,81 @@ theorem commutator_hyperbolic_cyclic (a b : Fin 3) :
       rw [commutator, mul_hyperbolic_cyclic_addTwo, mul_cyclic_addTwo_hyperbolic]
       have hb2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
       simp [hab, hsucc, hb2, two_smul, sub_eq_add_neg]
+
+private theorem eq_add_two_of_ne_and_ne_succ {a b : Fin 3} (h : a ≠ b)
+    (hsucc : b ≠ a + 1) : b = a + 2 := by
+  rcases fin3_succ_trichotomy a b with hEq | hEq | hEq
+  · exact (h hEq).elim
+  · exact (hsucc hEq).elim
+  · have hwrap : b + 1 + 2 = b := by fin_cases b <;> decide
+    calc
+      b = b + 1 + 2 := hwrap.symm
+      _ = a + 2 := by rw [hEq]
+
+/-- Off a common axis the product is the remaining boost, up to sign. -/
+theorem hyperbolic_mul_cyclic_off {a b : Fin 3} (h : a ≠ b) :
+    hyperbolic a * cyclic b =
+      if b = a + 1 then hyperbolic (a + 2) else -hyperbolic (a + 1) := by
+  by_cases hsucc : b = a + 1
+  · subst hsucc
+    simp [mul_hyperbolic_cyclic_succ]
+  · have hb : b = a + 2 := eq_add_two_of_ne_and_ne_succ h hsucc
+    subst hb
+    simp [hsucc, mul_hyperbolic_cyclic_addTwo]
+
+/-- Off a common axis a boost and a rotation anticommute. -/
+theorem anticommute_hyperbolic_cyclic_off {a b : Fin 3} (h : a ≠ b) :
+    hyperbolic a * cyclic b = -(cyclic b * hyperbolic a) := by
+  rw [hyperbolic_mul_cyclic_off h]
+  by_cases hsucc : b = a + 1
+  · subst hsucc
+    simp [mul_cyclic_succ_hyperbolic]
+  · have hb : b = a + 2 := eq_add_two_of_ne_and_ne_succ h hsucc
+    subst hb
+    simp [hsucc, mul_cyclic_addTwo_hyperbolic]
+
+/-- Off a common axis, \((p B^+_a + q B^-_b)^2 = (p^2 - q^2)\,1\). -/
+theorem offAxis_scaled_sq {a b : Fin 3} (h : a ≠ b) (p q : ℝ) :
+    (p • hyperbolic a + q • cyclic b) * (p • hyperbolic a + q • cyclic b) =
+      (p ^ 2 - q ^ 2) • (1 : PGA) := by
+  have hanti : cyclic b * hyperbolic a = -(hyperbolic a * cyclic b) := by
+    have hAC := anticommute_hyperbolic_cyclic_off h
+    calc
+      cyclic b * hyperbolic a = -(-(cyclic b * hyperbolic a)) := by simp
+      _ = -(hyperbolic a * cyclic b) := by
+        rw [show -(cyclic b * hyperbolic a) = hyperbolic a * cyclic b from hAC.symm]
+  have smul_mul_smul (c d : ℝ) (x y : PGA) :
+      (c • x) * (d • y) = (c * d) • (x * y) := by
+    rw [smul_mul_assoc, mul_smul_comm, smul_smul]
+  have hexpand :
+      (p • hyperbolic a + q • cyclic b) * (p • hyperbolic a + q • cyclic b) =
+        (p • hyperbolic a) * (p • hyperbolic a) +
+          (p • hyperbolic a) * (q • cyclic b) +
+          (q • cyclic b) * (p • hyperbolic a) +
+          (q • cyclic b) * (q • cyclic b) := by
+    rw [add_mul, mul_add, mul_add]
+    abel
+  rw [hexpand, smul_mul_smul, smul_mul_smul, smul_mul_smul, smul_mul_smul,
+    hyperbolic_sq, cyclic_sq, hanti]
+  module
+
+/-- The axis-0 boost plus the axis-1 rotation sends \(N_1\) to \(N_0 - N_3\). -/
+theorem crossAxis01_mul_null1 :
+    (hyperbolic 0 + cyclic 1) * null 1 = null 0 - null 3 := by
+  rw [add_mul, mul_hyperbolic0_null1]
+  have hC : cyclic 1 * null 1 = -null 3 := by
+    simpa [cyclicLeft, cyclicRight] using mul_cyclic_null_left (1 : Fin 3)
+  rw [hC]
+  abel
+
+/-- The same pair acts on the right by the opposite shear. -/
+theorem null1_mul_crossAxis01 :
+    null 1 * (hyperbolic 0 + cyclic 1) = -(null 0 - null 3) := by
+  rw [mul_add, mul_null1_hyperbolic0]
+  have hC : null 1 * cyclic 1 = null 3 := by
+    simpa [cyclicLeft, cyclicRight] using mul_null_left_cyclic (1 : Fin 3)
+  rw [hC]
+  abel
 
 /-- Any two elements of the null span multiply to zero. -/
 theorem nullSpan_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) : x * y = 0 := by

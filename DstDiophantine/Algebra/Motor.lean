@@ -267,6 +267,55 @@ theorem exp_of_sq_neg_one {x : PGA} (hx : x * x = -1) (t : ℝ) :
     _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
     _ = R t := one_mul _
 
+/-- Nilpotent closed form: `x² = 0 ⇒ exp(t • x) = 1 + t • x`. -/
+theorem exp_of_sq_zero {x : PGA} (hx : x * x = 0) (t : ℝ) :
+    exp (t • x) = (1 : PGA) + t • x := by
+  let R : ℝ → PGA := fun u => (1 : PGA) + u • x
+  let f : ℝ → PGA := fun u => exp ((-u) • x) * R u
+  have hRx (u : ℝ) : x * R u = x := by
+    simp only [R, mul_add, mul_one]
+    rw [mul_smul_comm, hx, smul_zero, add_zero]
+  have hR' (u : ℝ) : HasDerivAt R x u := by
+    have hconst : HasDerivAt (fun _ : ℝ => (1 : PGA)) 0 u := hasDerivAt_const u (1 : PGA)
+    have hid : HasDerivAt (fun v : ℝ => v • x) x u := by
+      simpa using (hasDerivAt_id u).smul_const x
+    have hsum : R = (fun _ : ℝ => (1 : PGA)) + fun v => v • x := rfl
+    rw [hsum]
+    simpa using hconst.add hid
+  have hf' (u : ℝ) : HasDerivAt f 0 u := by
+    have hexp := hasDerivAt_exp_neg_smul x u
+    have hmul :
+        HasDerivAt ((fun v => exp ((-v) • x)) * R)
+          (exp ((-u) • x) * (-x) * R u + exp ((-u) • x) * x) u :=
+      hexp.mul (hR' u)
+    have hzero :
+        exp ((-u) • x) * (-x) * R u + exp ((-u) • x) * x = 0 := by
+      calc
+        exp ((-u) • x) * (-x) * R u + exp ((-u) • x) * x
+            = exp ((-u) • x) * ((-x) * R u) + exp ((-u) • x) * x := by
+              rw [mul_assoc]
+        _ = exp ((-u) • x) * ((-x) * R u + x) := by rw [← mul_add]
+        _ = exp ((-u) • x) * (-(x * R u) + x) := by rw [neg_mul]
+        _ = exp ((-u) • x) * (-x + x) := by rw [hRx]
+        _ = exp ((-u) • x) * 0 := by rw [neg_add_cancel]
+        _ = 0 := mul_zero _
+    convert hmul using 2
+    · rfl
+    · exact hzero.symm
+  have hf0 : f 0 = 1 := by
+    simp only [f, R, neg_zero, zero_smul, exp_zero, zero_smul, add_zero, mul_one]
+  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
+  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
+  have hf_one : ∀ u, f u = 1 := fun u =>
+    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
+  have : exp ((-t) • x) * R t = 1 := hf_one t
+  calc
+    exp (t • x) = exp (t • x) * 1 := (mul_one _).symm
+    _ = exp (t • x) * (exp ((-t) • x) * R t) := by rw [this]
+    _ = (exp (t • x) * exp ((-t) • x)) * R t := by rw [mul_assoc]
+    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
+    _ = R t := one_mul _
+
 theorem rotor_unitary (p : TorsionParams) :
     rotorTorsion p * reverse (rotorTorsion p) = 1 := by
   dsimp [rotorTorsion]
@@ -315,55 +364,8 @@ theorem omegaTrans_smul_mul (p : TransParams) (t u : ℝ) :
 
 /-- First-order truncation: \(\exp(t\,\Omega_{\mathrm{trans}})=1+t\,\Omega_{\mathrm{trans}}\). -/
 theorem exp_smul_omegaTrans (p : TransParams) (t : ℝ) :
-    exp (t • omegaTrans p) = (1 : PGA) + t • omegaTrans p := by
-  set Ω := omegaTrans p
-  have hsq : Ω * Ω = 0 := omegaTrans_sq p
-  let R : ℝ → PGA := fun u => (1 : PGA) + u • Ω
-  let f : ℝ → PGA := fun u => exp ((-u) • Ω) * R u
-  have hRΩ (u : ℝ) : Ω * R u = Ω := by
-    simp only [R, mul_add, mul_one]
-    rw [mul_smul_comm, hsq, smul_zero, add_zero]
-  have hR' (u : ℝ) : HasDerivAt R Ω u := by
-    have hconst : HasDerivAt (fun _ : ℝ => (1 : PGA)) 0 u := hasDerivAt_const u (1 : PGA)
-    have hid : HasDerivAt (fun v : ℝ => v • Ω) Ω u := by
-      simpa using (hasDerivAt_id u).smul_const Ω
-    have hsum : R = (fun _ : ℝ => (1 : PGA)) + fun v => v • Ω := rfl
-    rw [hsum]
-    have hadd := hconst.add hid
-    simpa using hadd
-  have hf' (u : ℝ) : HasDerivAt f 0 u := by
-    have hexp := hasDerivAt_exp_neg_smul Ω u
-    have hmul :
-        HasDerivAt ((fun v => exp ((-v) • Ω)) * R)
-          (exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω) u :=
-      hexp.mul (hR' u)
-    have hzero :
-        exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω = 0 := by
-      calc
-        exp ((-u) • Ω) * (-Ω) * R u + exp ((-u) • Ω) * Ω
-            = exp ((-u) • Ω) * ((-Ω) * R u) + exp ((-u) • Ω) * Ω := by
-              rw [mul_assoc]
-        _ = exp ((-u) • Ω) * ((-Ω) * R u + Ω) := by rw [← mul_add]
-        _ = exp ((-u) • Ω) * (-(Ω * R u) + Ω) := by rw [neg_mul]
-        _ = exp ((-u) • Ω) * (-Ω + Ω) := by rw [hRΩ]
-        _ = exp ((-u) • Ω) * 0 := by rw [neg_add_cancel]
-        _ = 0 := mul_zero _
-    convert hmul using 2
-    · rfl
-    · exact hzero.symm
-  have hf0 : f 0 = 1 := by
-    simp only [f, R, neg_zero, zero_smul, exp_zero, zero_smul, add_zero, mul_one]
-  have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt
-  have hderiv : ∀ u, deriv f u = 0 := fun u => (hf' u).deriv
-  have hf_one : ∀ u, f u = 1 := fun u =>
-    (is_const_of_deriv_eq_zero hdiff hderiv u 0).trans hf0
-  have : exp ((-t) • Ω) * R t = 1 := hf_one t
-  calc
-    exp (t • Ω) = exp (t • Ω) * 1 := (mul_one _).symm
-    _ = exp (t • Ω) * (exp ((-t) • Ω) * R t) := by rw [this]
-    _ = (exp (t • Ω) * exp ((-t) • Ω)) * R t := by rw [mul_assoc]
-    _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
-    _ = R t := one_mul _
+    exp (t • omegaTrans p) = (1 : PGA) + t • omegaTrans p :=
+  exp_of_sq_zero (omegaTrans_sq p) t
 
 /-- The Banach exponential of a null generator truncates at first order. -/
 theorem exp_omegaTrans (p : TransParams) :

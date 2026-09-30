@@ -4,6 +4,8 @@ import DstDiophantine.Algebra.Invariant
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.NormNum
 
 /-!
 # Lie closure of the ten generators and the duality complex structure
@@ -149,6 +151,43 @@ theorem commute_pseudoscalar_cyclic (a : Fin 3) :
   · exact commute_pseudoscalar_bivector (i := 3) (j := 2) (by decide) (by decide)
   · exact commute_pseudoscalar_bivector (i := 1) (j := 3) (by decide) (by decide)
   · exact commute_pseudoscalar_bivector (i := 2) (j := 1) (by decide) (by decide)
+
+/-- Every Lorentz element is reversal-odd, as each generator is. -/
+theorem reverse_neg_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :
+    reverse x = -x := by
+  refine Submodule.span_induction (p := fun y _ => reverse y = -y) ?_ ?_ ?_ ?_ hx
+  · rintro y (⟨a, rfl⟩ | ⟨a, rfl⟩)
+    · exact hyperbolic_reverse a
+    · exact cyclic_reverse a
+  · simp
+  · intro y z _ _ hy hz
+    rw [map_add, hy, hz, neg_add]
+  · intro r y _ hy
+    simp [map_smul, hy]
+
+/-- A scalar plus a Lorentz element vanishes only if both do. -/
+theorem scalar_add_lorentz_eq_zero {c : ℝ} {x : PGA} (hx : x ∈ lorentzSpan)
+    (h : c • (1 : PGA) + x = 0) : c = 0 ∧ x = 0 := by
+  have hrev : c • (1 : PGA) - x = 0 := by
+    have hR := congrArg reverse h
+    rw [map_add, map_smul, reverse.map_one, reverse_neg_of_mem_lorentzSpan hx] at hR
+    simpa [sub_eq_add_neg, smul_neg] using hR
+  have hsum : (c • (1 : PGA) + x) + (c • (1 : PGA) - x) = 0 := by
+    rw [h, hrev, add_zero]
+  have htwo : ((2 : ℝ) * c) • (1 : PGA) = 0 := by
+    have hpair : c • (1 : PGA) + c • (1 : PGA) = 0 := by
+      calc
+        c • (1 : PGA) + c • (1 : PGA)
+            = (c • (1 : PGA) + x) + (c • (1 : PGA) - x) := by abel
+        _ = 0 := hsum
+    simpa [two_mul, add_smul] using hpair
+  have hc : (2 : ℝ) * c = 0 := by
+    have hR : algebraMap ℝ PGA ((2 : ℝ) * c) = 0 := by
+      simpa [Algebra.smul_def] using htwo
+    exact (FaithfulSMul.algebraMap_eq_zero_iff (R := ℝ) (A := PGA)).mp hR
+  have hc0 : c = 0 := (mul_eq_zero.mp hc).resolve_left (by norm_num)
+  refine ⟨hc0, ?_⟩
+  simpa [hc0] using h
 
 /-- The pseudoscalar is central on the whole Lorentz span. -/
 theorem commute_pseudoscalar_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :

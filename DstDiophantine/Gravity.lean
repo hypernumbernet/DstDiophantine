@@ -166,7 +166,11 @@ The straight line of one fixed jet is not itself that geodesic.
   stiffness accelerates both planes and leaves their offset free. The
   relative rotor sees \(\phi\) and \(\theta\) separately. Its derivative
   at the identity retains \(\sigma\), and alignment with \(\sigma\neq 0\)
-  still moves the boost plane.
+  still moves the boost plane. Off axis a usual generator and a dual
+  generator anticommute, and \(p B^+_a+q B^-_b\) squares to \(p^2-q^2\).
+  The sign of that scalar is one rotor: hyperbolic, elliptic, or
+  parabolic. The parabolic rotor \(1+t(B^+_0+B^-_1)\) sends \(N_1\) to
+  \(N_1+2t(N_0-N_3)\), which leaves the boost plane when \(t\neq 0\).
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -435,6 +439,18 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
           Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 2 +
             Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 3 :=
   written_flow_null_split σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: off axis, equal coefficients truncate, and the shear leaves the boost plane. -/
+example {t : ℝ} (ht : t ≠ 0) :
+    NormedSpace.exp (t • (hyperbolic 0 + cyclic 1)) =
+        (1 : PGA) + t • (hyperbolic 0 + cyclic 1) ∧
+      Sandwich.sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) =
+        null 1 + (2 * t) • null 0 - (2 * t) • null 3 ∧
+      ∀ c₀ c₁ : ℝ,
+        Sandwich.sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) ≠
+          c₀ • null 0 + c₁ • null 1 :=
+  ⟨exp_offAxis_sum (by decide) t, sandwich_parabolic_null1 t,
+    sandwich_parabolic_null1_not_boostPlane ht⟩
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
