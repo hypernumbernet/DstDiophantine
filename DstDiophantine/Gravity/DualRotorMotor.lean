@@ -393,6 +393,20 @@ theorem null01_ne_zero : null 0 + null 1 ≠ 0 := by
   have : (1 : ℝ) = 0 := by simpa [l] using hli 0
   norm_num at this
 
+private theorem absurd_scale_fix {c : ℝ} {v : PGA} (hv : v ≠ 0) (hc : c ≠ 1)
+    (h : v = c • v) : False := by
+  have hzero : (1 - c) • v = 0 := by
+    rw [sub_smul, one_smul]
+    nth_rw 1 [h]
+    exact sub_self _
+  have hc0 : 1 - c ≠ 0 := sub_ne_zero.mpr (Ne.symm hc)
+  have hv0 : v = 0 := by
+    have hinv : v = (1 - c)⁻¹ • ((1 - c) • v) := by
+      rw [smul_smul, inv_mul_cancel₀ hc0, one_smul]
+    rw [hzero, smul_zero] at hinv
+    exact hinv
+  exact hv hv0
+
 /-- Equal mismatch, unequal action on the null ideal: both planes see `(φ, θ)`, not `δ`. -/
 theorem same_lag_distinct_null :
     ((0 : ℝ) - 0 = (1 : ℝ) - 1) ∧
@@ -404,21 +418,11 @@ theorem same_lag_distinct_null :
   · rw [sandwich_relative_null_plus, sandwich_relative_null_plus]
     intro h
     rw [neg_zero, Real.exp_zero, one_smul] at h
-    have hzero : (1 - Real.exp (-(1 : ℝ))) • (null 0 + null 1) = 0 := by
-      rw [sub_smul, one_smul, ← h, sub_self]
-    have hc : (1 : ℝ) - Real.exp (-1) ≠ 0 := by
-      intro hz
-      have hexp : Real.exp (-(1 : ℝ)) = 1 := by linarith
+    have hc : Real.exp (-(1 : ℝ)) ≠ 1 := by
+      intro hexp
       rw [Real.exp_eq_one_iff] at hexp
       norm_num at hexp
-    have hv : null 0 + null 1 = 0 := by
-      have hinv : null 0 + null 1 =
-          (1 - Real.exp (-(1 : ℝ)))⁻¹ •
-            ((1 - Real.exp (-(1 : ℝ))) • (null 0 + null 1)) := by
-        rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
-      rw [hzero, smul_zero] at hinv
-      exact hinv
-    exact null01_ne_zero hv
+    exact absurd_scale_fix null01_ne_zero hc h
   · rw [sandwich_relative_null2, sandwich_relative_null2]
     intro h
     rw [Real.cos_zero, Real.sin_zero, one_smul, zero_smul, add_zero] at h
@@ -602,20 +606,11 @@ theorem aligned_moves_null {σ : ℝ} (hσ : σ ≠ 0) :
       null 0 + null 1 := by
   rw [sandwich_axis_null_plus]
   intro h
-  have hzero : (Real.exp (σ / 2) - 1) • (null 0 + null 1) = 0 := by
-    rw [sub_smul, one_smul, h, sub_self]
-  have hc : Real.exp (σ / 2) - 1 ≠ 0 := by
-    intro hz
-    have hexp : Real.exp (σ / 2) = 1 := by linarith
+  have hc : Real.exp (σ / 2) ≠ 1 := by
+    intro hexp
     rw [Real.exp_eq_one_iff] at hexp
     exact hσ (by linarith)
-  have hv : null 0 + null 1 = 0 := by
-    have hinv : null 0 + null 1 =
-        (Real.exp (σ / 2) - 1)⁻¹ • ((Real.exp (σ / 2) - 1) • (null 0 + null 1)) := by
-      rw [smul_smul, inv_mul_cancel₀ hc, one_smul]
-    rw [hzero, smul_zero] at hinv
-    exact hinv
-  exact null01_ne_zero hv
+  exact absurd_scale_fix null01_ne_zero hc h.symm
 
 /-! ### The written flow is this split -/
 
@@ -653,6 +648,24 @@ theorem written_flow_rotation_plane (σ₀ σd₀ m δ₀ ν t : ℝ) :
       Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • null 2 +
         Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • null 3 :=
   sandwich_axis_null2 _ _
+
+/-- The written flow dresses the boost plane by `(σ+δ)/2` and rotates the other by `(σ−δ)/2`. -/
+theorem written_flow_null_split (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    writtenUsual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t + writtenDelta δ₀ ν t) / 2 ∧
+      writtenDual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t - writtenDelta δ₀ ν t) / 2 ∧
+      sandwich (rotorTorsion (axisParams (writtenUsual σ₀ σd₀ m δ₀ ν t)
+          (writtenDual σ₀ σd₀ m δ₀ ν t))) (null 0 + null 1) =
+        Real.exp (writtenUsual σ₀ σd₀ m δ₀ ν t) • (null 0 + null 1) ∧
+      sandwich (rotorTorsion (axisParams (writtenUsual σ₀ σd₀ m δ₀ ν t)
+          (writtenDual σ₀ σd₀ m δ₀ ν t))) (null 2) =
+        Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • null 2 +
+          Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • null 3 :=
+  ⟨(written_plane_params σ₀ σd₀ m δ₀ ν t).1,
+    (written_plane_params σ₀ σd₀ m δ₀ ν t).2,
+    written_flow_boost_plane σ₀ σd₀ m δ₀ ν t,
+    written_flow_rotation_plane σ₀ σd₀ m δ₀ ν t⟩
 
 end Gravity
 

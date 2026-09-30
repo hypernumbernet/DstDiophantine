@@ -434,10 +434,7 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
         (Generators.null 2) =
           Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 2 +
             Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 3 :=
-  ⟨(written_plane_params σ₀ σd₀ m δ₀ ν t).1,
-    (written_plane_params σ₀ σd₀ m δ₀ ν t).2,
-    written_flow_boost_plane σ₀ σd₀ m δ₀ ν t,
-    written_flow_rotation_plane σ₀ σd₀ m δ₀ ν t⟩
+  written_flow_null_split σ₀ σd₀ m δ₀ ν t
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
