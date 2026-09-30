@@ -16,6 +16,7 @@ import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
 import DstDiophantine.Gravity.DualRotorMotor
+import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.Faraday
@@ -171,6 +172,10 @@ The straight line of one fixed jet is not itself that geodesic.
   The sign of that scalar is one rotor: hyperbolic, elliptic, or
   parabolic. The parabolic rotor \(1+t(B^+_0+B^-_1)\) sends \(N_1\) to
   \(N_1+2t(N_0-N_3)\), which leaves the boost plane when \(t\neq 0\).
+  `NullRotation` reads that truncation on the Minkowski frame. The
+  generator lies in the Lorentz span, fixes the null line \(e_0-e_3\) and
+  the axis \(e_2\), and shears \(e_1\) along the null line. A translator
+  \(1+s N_1\) adds \(e_4\).
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -451,6 +456,25 @@ example {t : ℝ} (ht : t ≠ 0) :
           c₀ • null 0 + c₁ • null 1 :=
   ⟨exp_offAxis_sum (by decide) t, sandwich_parabolic_null1 t,
     sandwich_parabolic_null1_not_boostPlane ht⟩
+
+/-- Regression: the parabolic truncation is a null rotation, and a translator adds \(e_4\). -/
+example (t : ℝ) :
+    Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 0 - ι 3) = ι 0 - ι 3 ∧
+      Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 2) = ι 2 ∧
+        Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 1) =
+          ι 1 + (2 * t) • (ι 0 - ι 3) ∧
+          Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 0 + ι 3) =
+            (ι 0 + ι 3) + (4 * t) • ι 1 + (4 * t ^ 2) • (ι 0 - ι 3) ∧
+            Sandwich.sandwich (Motor.expTrans ⟨![0, t, 0, 0]⟩) (ι 1) =
+              ι 1 + t • ι e4Index ∧
+              parabolicGen ∉ nullSpan := by
+  refine ⟨sandwich_parabolic_fixedNull t, sandwich_parabolic_e2 t, ?_, ?_,
+    sandwich_translator_e1 t, parabolicGen_not_mem_nullSpan⟩
+  · rw [sandwich_parabolic_e1]
+    module
+  · have h := sandwich_parabolic_nullPlus t
+    convert h using 1
+    module
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
