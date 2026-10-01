@@ -460,87 +460,32 @@ theorem sandwich_parabolic_nullVector (t : ℝ) (x : Fin 4 → ℝ) :
     _ = nullVector (nullRotation t x) := by
           rw [nullVector]
 
-theorem sandwich_parabolic_null0 (t : ℝ) :
-    sandwich (parabolicRotor t) (null 0) =
-      null 0 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
-  have h0 : null 0 = nullVector ![1, 0, 0, 0] := by
-    rw [← nullVector_basis 0]
-    congr
-    funext i
-    fin_cases i <;> simp [e4vec, Pi.single]
-  have hrot : nullRotation t ![1, 0, 0, 0] = ![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] := by
-    funext i
-    fin_cases i <;> simp [nullRotation]
-  have hv0 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 0 =
-      1 + 2 * t ^ 2 := rfl
-  have hv1 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 1 = 2 * t := rfl
-  have hv2 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 2 = 0 := rfl
-  have hv3 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 3 =
-      -(2 * t ^ 2) := rfl
-  calc
-    sandwich (parabolicRotor t) (null 0)
-        = sandwich (parabolicRotor t) (nullVector ![1, 0, 0, 0]) := by rw [h0]
-    _ = nullVector (nullRotation t ![1, 0, 0, 0]) :=
-          sandwich_parabolic_nullVector t _
-    _ = ∑ μ : Fin 4, nullRotation t ![1, 0, 0, 0] μ • null μ := nullVector_eq_sum _
-    _ = (1 + 2 * t ^ 2) • null 0 + (2 * t) • null 1 + (-(2 * t ^ 2)) • null 3 := by
-          rw [hrot, Fin.sum_univ_four, hv0, hv1, hv2, hv3, zero_smul, add_zero]
-    _ = null 0 + (2 * t ^ 2) • null 0 + (2 * t) • null 1 +
-          -((2 * t ^ 2) • null 3) := by
-          rw [add_smul, one_smul, neg_smul]
-    _ = null 0 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
-          rw [smul_sub]
-          abel_nf
+theorem nullVector_sub (x y : Fin 4 → ℝ) :
+    nullVector (x - y) = nullVector x - nullVector y := by
+  rw [nullVector_eq_sum, nullVector_eq_sum, nullVector_eq_sum, ← Finset.sum_sub_distrib]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  rw [Pi.sub_apply, sub_smul]
+
+private theorem nullLineVec_eq : nullLineVec = e4vec 0 - e4vec 3 := by
+  ext i
+  fin_cases i <;> simp [nullLineVec, e4vec, Pi.single, Pi.sub_apply]
 
 theorem sandwich_parabolic_null2_fixed (t : ℝ) :
     sandwich (parabolicRotor t) (null 2) = null 2 := by
-  have h2 : null 2 = nullVector ![0, 0, 1, 0] := by
-    rw [← nullVector_basis 2]
-    congr
-    funext i
-    fin_cases i <;> simp [e4vec, Pi.single]
-  rw [h2, sandwich_parabolic_nullVector]
-  have hrot : nullRotation t ![0, 0, 1, 0] = ![0, 0, 1, 0] := by
-    funext i
-    fin_cases i <;> simp [nullRotation]
-  rw [hrot, ← h2]
-
-theorem sandwich_parabolic_null3 (t : ℝ) :
-    sandwich (parabolicRotor t) (null 3) =
-      null 3 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
-  have h3 : null 3 = nullVector ![0, 0, 0, 1] := by
-    rw [← nullVector_basis 3]
-    congr
-    funext i
-    fin_cases i <;> simp [e4vec, Pi.single]
-  have hrot : nullRotation t ![0, 0, 0, 1] = ![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] := by
-    funext i
-    fin_cases i <;> simp [nullRotation]
-  have hv0 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 0 = 2 * t ^ 2 := rfl
-  have hv1 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 1 = 2 * t := rfl
-  have hv2 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 2 = 0 := rfl
-  have hv3 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 3 =
-      1 - 2 * t ^ 2 := rfl
-  calc
-    sandwich (parabolicRotor t) (null 3)
-        = sandwich (parabolicRotor t) (nullVector ![0, 0, 0, 1]) := by rw [h3]
-    _ = nullVector (nullRotation t ![0, 0, 0, 1]) :=
-          sandwich_parabolic_nullVector t _
-    _ = ∑ μ : Fin 4, nullRotation t ![0, 0, 0, 1] μ • null μ := nullVector_eq_sum _
-    _ = (2 * t ^ 2) • null 0 + (2 * t) • null 1 + (1 - 2 * t ^ 2) • null 3 := by
-          rw [hrot, Fin.sum_univ_four, hv0, hv1, hv2, hv3, zero_smul, add_zero]
-    _ = (2 * t ^ 2) • null 0 + (2 * t) • null 1 + null 3 +
-          -((2 * t ^ 2) • null 3) := by
-          rw [sub_smul, one_smul]
-          abel_nf
-    _ = null 3 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
-          rw [smul_sub]
-          abel_nf
+  rw [← nullVector_basis, sandwich_parabolic_nullVector]
+  have hrot : nullRotation t (e4vec 2) = e4vec 2 := by
+    ext i
+    fin_cases i <;> simp [nullRotation, e4vec, Pi.single]
+  rw [hrot, nullVector_basis]
 
 theorem sandwich_parabolic_null_fixedLine (t : ℝ) :
     sandwich (parabolicRotor t) (null 0 - null 3) = null 0 - null 3 := by
-  rw [sandwich_sub, sandwich_parabolic_null0, sandwich_parabolic_null3]
-  abel
+  have hvec : null 0 - null 3 = nullVector nullLineVec := by
+    rw [nullLineVec_eq, nullVector_sub, nullVector_basis, nullVector_basis]
+  have hrot : nullRotation t nullLineVec = nullLineVec := by
+    ext i
+    fin_cases i <;> simp [nullRotation, nullLineVec]
+  rw [hvec, sandwich_parabolic_nullVector, hrot]
 
 end Gravity
 
