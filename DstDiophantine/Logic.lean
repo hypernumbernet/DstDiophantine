@@ -7,6 +7,7 @@ import DstDiophantine.Logic.Geometric
 import DstDiophantine.Logic.Formula
 import DstDiophantine.Logic.Valuation
 import DstDiophantine.Logic.Consequence
+import DstDiophantine.Logic.Implication
 import DstDiophantine.Logic.Example.FixedPoint
 import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
@@ -80,6 +81,8 @@ and `DstDiophantine.CGA`).
   level-match dictionary)
 * `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
+* `Logic.Implication` — separate residuals of the two predicates; no common
+  residual on the height
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
@@ -389,6 +392,35 @@ example : HoldsT (residuumJ (1 / 2 : ℝ) 0) :=
 example :
     classifyOfMem (residuumJ (-1 / 2 : ℝ) 0) (by simp [residuumJ_B_T]) = .F :=
   residuumJ_B_T_eq_F
+
+/-- Regression: no height operation residuates both designated predicates. -/
+example :
+    ¬ ∃ imp : ℝ → ℝ → ℝ,
+      (∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 → |imp j k| ≤ 1) ∧
+        (∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 →
+          (HoldsT (imp j k) ↔ (HoldsT j → HoldsT k)) ∧
+            (HoldsNotF (imp j k) ↔ (HoldsNotF j → HoldsNotF k))) :=
+  no_common_residual
+
+/-- Regression: boost-dominant implying the wall splits the two residuals. -/
+example : syncImp (1 / 2 : ℝ) 1 = 0 ∧ nonrefImp (1 / 2 : ℝ) 1 = 1 :=
+  sync_nonref_at_open_wall
+
+/-- Regression: both residuals designate boost-dominant implying synchrony. -/
+example : syncImp (1 / 2 : ℝ) 0 = 0 ∧ nonrefImp (1 / 2 : ℝ) 0 = 0 :=
+  sync_nonref_agree_open_to_balance
+
+/-- Regression: the Gödel residuum refutes rotation-dominant implying synchrony. -/
+example : residuumJ (-1 / 2 : ℝ) 0 = 1 ∧ nonrefImp (-1 / 2 : ℝ) 0 = 0 :=
+  residuum_refutes_B_T_nonref_designates
+
+/-- Regression: regime implication residuates non-refutation, not theoremhood. -/
+example (a b : TruthValue) :
+    HoldsNotFR (impR a b) ↔ (HoldsNotFR a → HoldsNotFR b) :=
+  holdsNotFR_impR a b
+
+example : ¬ (HoldsTR (impR .U .T) ↔ (HoldsTR .U → HoldsTR .T)) :=
+  impR_not_theoremhood_residual
 
 /-- Regression: regime implication disagrees with the residuum at `U → T` and `B → T`. -/
 example :

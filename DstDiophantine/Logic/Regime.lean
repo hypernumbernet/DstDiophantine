@@ -335,6 +335,30 @@ theorem modelsTR_to_modelsNotFR {v : RegimeValuation} {Γ : Set RegimeFormula}
     (h : ModelsTR v Γ) : ModelsNotFR v Γ :=
   fun φ hφ => holdsTR_holdsNotFR (h φ hφ)
 
+/-- Regime implication is refuted exactly when a non-refuted status implies a refuted one. -/
+theorem impR_eq_F_iff (a b : TruthValue) :
+    impR a b = .F ↔ a ≠ .F ∧ b = .F := by
+  cases a <;> cases b <;> simp [impR]
+
+theorem holdsNotFR_impR (a b : TruthValue) :
+    HoldsNotFR (impR a b) ↔ (HoldsNotFR a → HoldsNotFR b) := by
+  simp only [HoldsNotFR]
+  constructor
+  · intro hne ha hb
+    exact hne ((impR_eq_F_iff a b).mpr ⟨ha, hb⟩)
+  · intro h hf
+    have ⟨ha, hb⟩ := (impR_eq_F_iff a b).mp hf
+    exact (h ha) hb
+
+/-- Theoremhood is not residuated: an open status implying a theorem is a vacuous
+classical conditional, and the table records `U`. -/
+theorem impR_not_theoremhood_residual :
+    ¬ (HoldsTR (impR .U .T) ↔ (HoldsTR .U → HoldsTR .T)) := by
+  intro h
+  have : HoldsTR (impR .U .T) :=
+    h.mpr (fun hu => by simp [HoldsTR] at hu)
+  simp [HoldsTR, impR_U_T] at this
+
 end Logic
 
 end DstDiophantine

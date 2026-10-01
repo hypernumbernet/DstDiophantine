@@ -6,7 +6,8 @@ import Mathlib.Tactic.Linarith
 
 Formulas are built from atoms, negation, conjunction, and disjunction.
 Evaluation is on signed heights via `negJ` / `conjJ` / `disjJ`. There is
-no implication connective: the designated-value layer does not need one.
+no implication connective: synchrony and non-refutation have no common
+residual (`Logic.Implication`).
 
 This is not a Hilbert-space syntax and not Belnap FOUR.
 -/
