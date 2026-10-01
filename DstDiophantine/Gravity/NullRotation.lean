@@ -68,15 +68,15 @@ def nullRotation (t : ℝ) (x : Fin 4 → ℝ) : Fin 4 → ℝ :=
     x 2,
     x 3 - 2 * t * x 1 - 2 * t ^ 2 * (x 0 + x 3)]
 
-private theorem fin4_apply_zero (x : Fin 4 → ℝ) : Matrix.vecHead x = x 0 := rfl
+@[simp] private theorem fin4_apply_zero (x : Fin 4 → ℝ) : Matrix.vecHead x = x 0 := rfl
 
-private theorem fin4_apply_one (x : Fin 4 → ℝ) :
+@[simp] private theorem fin4_apply_one (x : Fin 4 → ℝ) :
     Matrix.vecHead (Matrix.vecTail x) = x 1 := rfl
 
-private theorem fin4_apply_two (x : Fin 4 → ℝ) :
+@[simp] private theorem fin4_apply_two (x : Fin 4 → ℝ) :
     Matrix.vecHead (Matrix.vecTail (Matrix.vecTail x)) = x 2 := rfl
 
-private theorem fin4_apply_three (x : Fin 4 → ℝ) :
+@[simp] private theorem fin4_apply_three (x : Fin 4 → ℝ) :
     Matrix.vecHead (Matrix.vecTail (Matrix.vecTail (Matrix.vecTail x))) = x 3 := rfl
 
 theorem nullRotation_eq_series (t : ℝ) (x : Fin 4 → ℝ) :
@@ -86,16 +86,21 @@ theorem nullRotation_eq_series (t : ℝ) (x : Fin 4 → ℝ) :
           (KillingAxis.lorentzAct parabolicParams x) := by
   funext i
   fin_cases i
-  · simp [nullRotation, Pi.add_apply, KillingAxis.lorentzAct, parabolicParams]
-    rw [fin4_apply_zero]
+  · suffices x 0 + 2 * t * x 1 + 2 * t ^ 2 * (x 0 + x 3) =
+        x 0 + t * (2 * x 1) + t ^ 2 / 2 * (2 * (2 * x 0 + 2 * x 3)) by
+      simpa [nullRotation, Pi.add_apply, Pi.smul_apply, KillingAxis.lorentzAct,
+        parabolicParams] using this
+    ring
+  · suffices x 1 + 2 * t * (x 0 + x 3) =
+        x 1 + t * (2 * x 0 + 2 * x 3) by
+      simpa [nullRotation, Pi.add_apply, Pi.smul_apply, KillingAxis.lorentzAct,
+        parabolicParams] using this
     ring
   · simp [nullRotation, Pi.add_apply, KillingAxis.lorentzAct, parabolicParams]
-    rw [fin4_apply_one]
-    ring
-  · simp [nullRotation, Pi.add_apply, KillingAxis.lorentzAct, parabolicParams]
-    rw [fin4_apply_two]
-  · simp [nullRotation, Pi.add_apply, KillingAxis.lorentzAct, parabolicParams]
-    rw [fin4_apply_three]
+  · suffices x 3 - 2 * t * x 1 - 2 * t ^ 2 * (x 0 + x 3) =
+        x 3 + -(t * (2 * x 1)) + -(t ^ 2 / 2 * (2 * (2 * x 0 + 2 * x 3))) by
+      simpa [nullRotation, Pi.add_apply, Pi.smul_apply, KillingAxis.lorentzAct,
+        parabolicParams] using this
     ring
 
 private theorem minkowskiVector_smul (c : ℝ) (x : Fin 4 → ℝ) :
@@ -194,31 +199,6 @@ theorem sandwich_parabolic_minkowski (t : ℝ) (x : Fin 4 → ℝ) :
   rw [h1, h2, nullRotation_eq_series, KillingAxis.minkowskiVector_add,
     KillingAxis.minkowskiVector_add, minkowskiVector_smul, minkowskiVector_smul]
 
-private theorem equivExterior_vec (μ : Fin 5) :
-    CliffordAlgebra.equivExterior Q311 (ι μ) = ExteriorAlgebra.ι ℝ (e5vec μ) := by
-  rw [show CliffordAlgebra.equivExterior Q311 =
-      CliffordAlgebra.changeFormEquiv CliffordAlgebra.changeForm.associated_neg_proof from rfl,
-    CliffordAlgebra.changeFormEquiv_apply]
-  dsimp [PGA.ι]
-  rw [CliffordAlgebra.changeForm_ι]
-
-private theorem sum_smul_ι_eq_zero {c : Fin 5 → ℝ}
-    (h : ∑ μ : Fin 5, c μ • ι μ = 0) (μ : Fin 5) : c μ = 0 := by
-  have hmap :
-      CliffordAlgebra.equivExterior Q311 (∑ ν : Fin 5, c ν • ι ν) =
-        ExteriorAlgebra.ι ℝ (∑ ν : Fin 5, c ν • e5vec ν) := by
-    rw [map_sum, map_sum]
-    refine Finset.sum_congr rfl ?_
-    intro ν _
-    rw [LinearEquiv.map_smul, LinearMap.map_smul, equivExterior_vec]
-  rw [h, map_zero] at hmap
-  have hvec : ∑ ν : Fin 5, c ν • e5vec ν = 0 :=
-    (ExteriorAlgebra.ι_eq_zero_iff _).mp hmap.symm
-  have hli := Fintype.linearIndependent_iff.mp (Pi.basisFun ℝ (Fin 5)).linearIndependent
-  have hzero : ∑ ν : Fin 5, c ν • (Pi.basisFun ℝ (Fin 5)) ν = 0 := by
-    simpa [e5vec, Pi.basisFun_apply] using hvec
-  exact hli c hzero μ
-
 theorem sandwich_parabolic_e1 (t : ℝ) :
     sandwich ((1 : PGA) + t • parabolicGen) (ι 1) =
       (2 * t) • ι 0 + ι 1 - (2 * t) • ι 3 := by
@@ -232,6 +212,13 @@ theorem sandwich_parabolic_e1 (t : ℝ) :
   rw [h, hrot]
   have himg := KillingAxis.minkowskiVector_vec (2 * t) 1 0 (-(2 * t))
   rw [himg]
+  module
+
+/-- The shear of `e₁`, written along the fixed null line. -/
+theorem sandwich_parabolic_e1_shear (t : ℝ) :
+    sandwich ((1 : PGA) + t • parabolicGen) (ι 1) =
+      ι 1 + (2 * t) • (ι 0 - ι 3) := by
+  rw [sandwich_parabolic_e1]
   module
 
 theorem sandwich_parabolic_e2 (t : ℝ) :
@@ -276,6 +263,13 @@ theorem sandwich_parabolic_nullPlus (t : ℝ) :
   rw [himg]
   module
 
+/-- The shear of the complementary null vector `e₀ + e₃`. -/
+theorem sandwich_parabolic_nullPlus_shear (t : ℝ) :
+    sandwich ((1 : PGA) + t • parabolicGen) (ι 0 + ι 3) =
+      ι 0 + ι 3 + (4 * t) • ι 1 + (4 * t ^ 2) • (ι 0 - ι 3) := by
+  rw [sandwich_parabolic_nullPlus]
+  module
+
 /-- A translator along `e₁` adds `e₄`. -/
 theorem sandwich_translator_e1 (s : ℝ) :
     sandwich (expTrans ⟨![0, s, 0, 0]⟩) (ι 1) = ι 1 + s • ι e4Index := by
@@ -285,25 +279,6 @@ theorem sandwich_translator_e1 (s : ℝ) :
   have hvec : ![0, s, 0, 0] (1 : Fin 4) = s := by simp
   rw [hvec] at h
   simpa using h
-
-theorem sandwich_parabolic_e1_ne_translator {t s : ℝ} (ht : t ≠ 0) :
-    sandwich ((1 : PGA) + t • parabolicGen) (ι 1) ≠
-      sandwich (expTrans ⟨![0, s, 0, 0]⟩) (ι 1) := by
-  intro h
-  rw [sandwich_parabolic_e1, sandwich_translator_e1] at h
-  have hzero : (2 * t) • ι 0 + (-(2 * t)) • ι 3 + (-s) • ι e4Index = 0 := by
-    have hsub := congrArg (fun z : PGA => z - (ι 1 + s • ι e4Index)) h
-    simp only [sub_self] at hsub
-    convert hsub using 1
-    module
-  let c : Fin 5 → ℝ := fun μ =>
-    if μ = 0 then 2 * t else if μ = 3 then -(2 * t) else if μ = 4 then -s else 0
-  have hsum : ∑ μ : Fin 5, c μ • ι μ = 0 := by
-    rw [Fin.sum_univ_five]
-    simpa [c, e4Index] using hzero
-  have h0 := sum_smul_ι_eq_zero hsum 0
-  simp [c] at h0
-  exact ht (by linarith)
 
 end Gravity
 
