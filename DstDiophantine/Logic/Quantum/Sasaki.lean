@@ -10,10 +10,12 @@ The implication carried by the orthomodular law is
 so an inclusion is one identity and does not need a distributive expansion.
 
 That implication agrees with the classical expansion `A⊥ ∨ B` exactly when
-`A` decomposes as `(A ∧ B) ∨ (A ∧ B⊥)`. Orthogonal computational rays are
-compatible, and the two implications agree. A computational ray and the
-diagonal are not: the classical expansion returns the whole space, and the
-native implication returns only the orthogonal line.
+`A` decomposes as `(A ∧ B) ∨ (A ∧ B⊥)`. The same splitting is the condition
+under which the expansion detaches. The native implication detaches for
+every pair. Orthogonal computational rays are compatible, and the two
+implications agree. A computational ray and the diagonal are not: the
+classical expansion returns the whole space, and the native implication
+returns only the orthogonal line.
 -/
 
 namespace DstDiophantine
@@ -221,6 +223,52 @@ theorem diagonal_classical_overshoots :
   constructor
   · simp [sasaki, lineE0_orthogonal_eq_lineE1, lineE0_inf_lineD]
   · simp [material, lineE0_orthogonal_eq_lineE1, lineE1_sup_lineD]
+
+/-- The lattice implication detaches: a vector in the antecedent and the
+implication already lies in the consequent. -/
+theorem sasaki_detach (A B : QProp) : A ⊓ sasaki A B ≤ B := by
+  intro v hv
+  rcases mem_inf.mp hv with ⟨hvA, hvS⟩
+  rw [sasaki] at hvS
+  rcases mem_sup.mp hvS with ⟨x, hx, y, hy, hxy⟩
+  have hsub : v - y = x := (sub_eq_iff_eq_add).mpr hxy.symm
+  rcases mem_inf.mp hy with ⟨hyA, hyB⟩
+  have hdiffA : v - y ∈ A := A.sub_mem hvA hyA
+  have hdiffO : v - y ∈ Aᗮ := by
+    rw [hsub]
+    exact hx
+  have hdiff0 : v - y = 0 := by
+    have hbot : v - y ∈ A ⊓ Aᗮ := mem_inf.mpr ⟨hdiffA, hdiffO⟩
+    rw [A.inf_orthogonal_eq_bot, Submodule.mem_bot] at hbot
+    exact hbot
+  rw [sub_eq_zero.mp hdiff0]
+  exact hyB
+
+/-- The classical expansion detaches if and only if the antecedent splits. -/
+theorem material_detach_iff_compatible {A B : QProp} :
+    A ⊓ material A B ≤ B ↔ Compatible A B := by
+  constructor
+  · intro h
+    rw [Compatible]
+    refine le_antisymm ?_ (sup_le inf_le_left inf_le_left)
+    intro v hv
+    let S : QProp := Aᗮ ⊔ B
+    let u := S.starProjection v
+    have huS : u ∈ S := S.starProjection_apply_mem v
+    have hvu : v - u ∈ Sᗮ := S.sub_starProjection_mem_orthogonal v
+    have hSorth : Sᗮ = A ⊓ Bᗮ := by
+      rw [← Submodule.inf_orthogonal Aᗮ B, Submodule.orthogonal_orthogonal]
+    have hvuAB : v - u ∈ A ⊓ Bᗮ := by
+      rwa [hSorth] at hvu
+    rcases mem_inf.mp hvuAB with ⟨hvuA, hvuBp⟩
+    have huA : u ∈ A := by
+      simpa [sub_sub_self] using A.sub_mem hv hvuA
+    have huB : u ∈ B := h (mem_inf.mpr ⟨huA, by simpa [material] using huS⟩)
+    exact mem_sup.mpr ⟨u, mem_inf.mpr ⟨huA, huB⟩, v - u, mem_inf.mpr ⟨hvuA, hvuBp⟩,
+      add_sub_cancel u v⟩
+  · intro h
+    rw [← compatible_iff_sasaki_eq_material.mp h]
+    exact sasaki_detach A B
 
 theorem diagonal_not_compatible : ¬ Compatible lineE0 lineD := by
   intro h

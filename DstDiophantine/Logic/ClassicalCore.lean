@@ -14,6 +14,11 @@ specialisation of that identity; the two-valued case split is idle.
 Excluded middle and the syllogism do not lift. They hold on the walls,
 and they fail as soon as a height leaves them. At total balance the
 syllogism returns synchrony, which the classical reading does not call truth.
+
+Material implication `max (-j) k` detaches the positive wall on every
+real height. It lies strictly below that wall exactly when the negated
+antecedent and the consequent do. Balance implies every nonpositive
+height, and that implication is balance, so synchrony does not detach.
 -/
 
 namespace DstDiophantine
@@ -210,6 +215,32 @@ theorem syllogism_not_height_identity :
 theorem impJ_wall_iff {j k : ℝ} (hj : IsWallTwo j) (hk : IsWallTwo k) :
     impJ j k = 1 ↔ (j = 1 → k = 1) := by
   rcases hj with rfl | rfl <;> rcases hk with rfl | rfl <;> simp [impJ, disjJ, negJ]
+
+/-- Classical detachment on every real height: the positive wall is inherited. -/
+theorem impJ_detach_wall {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 := by
+  subst hj
+  simp only [impJ, disjJ, negJ] at himp
+  rcases le_total k (-1) with hk | hk
+  · rw [max_eq_left hk] at himp
+    exact absurd himp (by norm_num)
+  · rw [max_eq_right hk] at himp
+    exact himp
+
+/-- Non-refutation of a material implication is the pair of non-refutations
+of the negated antecedent and of the consequent. -/
+theorem holdsNotF_impJ (j k : ℝ) :
+    HoldsNotF (impJ j k) ↔ HoldsNotF (negJ j) ∧ HoldsNotF k := by
+  simp only [HoldsNotF, impJ, disjJ, negJ]
+  exact max_lt_iff
+
+/-- Balance materially implies every nonpositive height, and the implication is balance. -/
+theorem impJ_zero_of_nonpos {k : ℝ} (hk : k ≤ 0) : impJ 0 k = 0 := by
+  simp only [impJ, disjJ, negJ, neg_zero, max_eq_left hk]
+
+/-- The negative wall materially implying balance is the positive wall. -/
+theorem impJ_neg_wall_balance : impJ (-1) 0 = 1 := by
+  have h0 : (0 : ℝ) ≤ 1 := by norm_num
+  simp only [impJ, disjJ, negJ, neg_neg, max_eq_left h0]
 
 end Logic
 

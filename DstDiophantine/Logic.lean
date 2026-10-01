@@ -87,9 +87,12 @@ and `DstDiophantine.CGA`).
   residual on the height
 * `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with
   classical truth the positive wall; the De Morgan skeleton lifts off
-  the walls, excluded middle and the syllogism do not
-* `Logic.Quantum.Sasaki` — the implication carried by orthomodularity;
-  it agrees with the classical expansion exactly on splitting pairs
+  the walls, excluded middle and the syllogism do not; material
+  implication detaches the positive wall, and its non-refutation is
+  the non-refutation of the negated antecedent
+* `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
+  detaches for every pair; it agrees with the classical expansion, and
+  that expansion detaches, exactly on splitting pairs
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
@@ -256,6 +259,23 @@ example (b : ℕ → Bool) : syllogismFormula.boolEval b = true :=
 
 example : syllogismFormula.eval (fun _ => 0) = 0 :=
   syllogism_balance
+
+/-- Regression: material implication detaches the positive wall on every real height. -/
+example {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 :=
+  impJ_detach_wall hj himp
+
+/-- Regression: non-refutation of a material implication reads the negated antecedent. -/
+example (j k : ℝ) :
+    HoldsNotF (impJ j k) ↔ HoldsNotF (negJ j) ∧ HoldsNotF k :=
+  holdsNotF_impJ j k
+
+/-- Regression: balance materially implies every nonpositive height. -/
+example {k : ℝ} (hk : k ≤ 0) : impJ 0 k = 0 :=
+  impJ_zero_of_nonpos hk
+
+/-- Regression: the negative wall implying balance is the positive wall. -/
+example : impJ (-1) 0 = 1 :=
+  impJ_neg_wall_balance
 
 /-- Regression: non-refutation of the negative wall does not save excluded middle. -/
 example :
@@ -470,6 +490,18 @@ example :
       sasaki lineE0 lineD = lineE1 ∧ material lineE0 lineD = ⊤ :=
   ⟨lineE0_compatible_lineE1, diagonal_not_compatible,
     diagonal_classical_overshoots.1, diagonal_classical_overshoots.2⟩
+
+/-- Regression: the lattice implication detaches for every pair. -/
+example (A B : QProp) : A ⊓ sasaki A B ≤ B :=
+  sasaki_detach A B
+
+/-- Regression: the classical expansion detaches exactly on a splitting pair. -/
+example {A B : QProp} : A ⊓ material A B ≤ B ↔ Compatible A B :=
+  material_detach_iff_compatible
+
+/-- Regression: a basis ray and the diagonal refuse detachment of the expansion. -/
+example : ¬ lineE0 ⊓ material lineE0 lineD ≤ lineD :=
+  material_detach_iff_compatible.not.mpr diagonal_not_compatible
 
 /-- Regression: complementary rays exist in `ℂ²`. -/
 example : lineE0 ⟂ lineE1 :=
