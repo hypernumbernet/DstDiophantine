@@ -8,6 +8,7 @@ import DstDiophantine.Logic.Formula
 import DstDiophantine.Logic.Valuation
 import DstDiophantine.Logic.Consequence
 import DstDiophantine.Logic.Implication
+import DstDiophantine.Logic.ClassicalCore
 import DstDiophantine.Logic.Example.FixedPoint
 import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
@@ -28,6 +29,7 @@ import DstDiophantine.Logic.Quantum.DualRodrigues
 import DstDiophantine.Logic.Quantum.UsualRodrigues
 import DstDiophantine.Logic.Quantum.UsualRotor
 import DstDiophantine.Logic.Quantum.QuantumLogic
+import DstDiophantine.Logic.Quantum.Sasaki
 import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
 import DstDiophantine.Logic.Quantum.StringSpectrum
@@ -83,6 +85,11 @@ and `DstDiophantine.CGA`).
   `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
 * `Logic.Implication` — separate residuals of the two predicates; no common
   residual on the height
+* `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with
+  classical truth the positive wall; the De Morgan skeleton lifts off
+  the walls, excluded middle and the syllogism do not
+* `Logic.Quantum.Sasaki` — the implication carried by orthomodularity;
+  it agrees with the classical expansion exactly on splitting pairs
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
@@ -230,6 +237,25 @@ example {j : ℝ} (hj : |j| ≤ 1) :
 example :
     EntailsT {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 0).neg) :=
   entailsT_excluded_middle (Formula.atom 0)
+
+/-- Regression: classical truth is the positive wall, on every formula. -/
+example (φ : Formula) :
+    (∀ b : ℕ → Bool, φ.boolEval b = true) ↔
+      ∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 :=
+  classical_iff_positive_wall φ
+
+/-- Regression: double negation on the height is already the classical law. -/
+example (φ : Formula) (b : ℕ → Bool) :
+    φ.neg.neg.boolEval b = φ.boolEval b :=
+  double_neg_classical φ b
+
+/-- Regression: the syllogism is a classical tautology, and at balance it
+returns synchrony. -/
+example (b : ℕ → Bool) : syllogismFormula.boolEval b = true :=
+  syllogism_classical b
+
+example : syllogismFormula.eval (fun _ => 0) = 0 :=
+  syllogism_balance
 
 /-- Regression: non-refutation of the negative wall does not save excluded middle. -/
 example :
@@ -433,6 +459,17 @@ example :
 example : (discreteF (by decide : 4 ∣ 4)).collapse = .F ∧
     (discreteB (by decide : 4 ∣ 4)).collapse = .B :=
   ⟨discreteF_collapse (by decide), discreteB_collapse (by decide)⟩
+
+/-- Regression: native implication is the whole space exactly on inclusion. -/
+example {A B : QProp} : sasaki A B = ⊤ ↔ A ≤ B :=
+  sasaki_eq_top_iff
+
+/-- Regression: a basis ray and the diagonal separate the two implications. -/
+example :
+    Compatible lineE0 lineE1 ∧ ¬ Compatible lineE0 lineD ∧
+      sasaki lineE0 lineD = lineE1 ∧ material lineE0 lineD = ⊤ :=
+  ⟨lineE0_compatible_lineE1, diagonal_not_compatible,
+    diagonal_classical_overshoots.1, diagonal_classical_overshoots.2⟩
 
 /-- Regression: complementary rays exist in `ℂ²`. -/
 example : lineE0 ⟂ lineE1 :=

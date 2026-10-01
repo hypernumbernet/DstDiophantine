@@ -50,7 +50,15 @@ probability, and the four labels are not a PVM of \(\mathbb{C}^2\).
 Two designated predicates---synchrony and non-refutation---turn the
 height into a consequence relation. Two-valued restrictions of the
 interval fail to host the situations that relation is built to record.
-The statements of this paper are machine-checked.
+A classical tautology is precisely a formula that returns the positive
+wall under every assignment of atoms to the two walls. The De Morgan
+skeleton of a classical proof is an identity of every real height, so
+the two-valued case split is a specialisation; excluded middle and the
+syllogism are the saturation of the height. In the spinor lattice,
+inclusion is the identity that \(A^\perp\vee(A\wedge B)\) is the whole
+space, and that implication agrees with the classical expansion
+\(A^\perp\vee B\) exactly when the antecedent splits along the
+consequent. The statements of this paper are machine-checked.
 \end{abstract}
 
 \section{Introduction}
@@ -109,9 +117,12 @@ name. Sections~\ref{sec:conn} and~\ref{sec:geo} give the scalar
 connectives, the two orders, and the geometric operations.
 Section~\ref{sec:hilbert} extracts the dual Hilbert layer and states
 the dictionary that refuses to identify it with the first.
-Section~\ref{sec:cons} says which heights hold, and
-Section~\ref{sec:examples} shows why two-valued restrictions of the
-interval cannot host the situations D4L is built to record.
+Section~\ref{sec:cons} says which heights hold.
+Section~\ref{sec:wall} separates a classical proof into a height
+identity and a saturation on the walls. Section~\ref{sec:examples}
+shows why two-valued restrictions of the interval cannot host the
+situations D4L is built to record. Section~\ref{sec:block} names the
+steps of such a proof that survive in the spinor lattice.
 Section~\ref{sec:regime} reads DST proof artefacts and Diophantine
 regimes in the same four names. Section~\ref{sec:claims} states the
 reach of the theory, and its limits.
@@ -743,19 +754,70 @@ They behave differently under negation. On the named fragment,
 \(\neg 1=-1\) leaves \(\{0,1\}\) altogether. The named fragment is
 therefore not Boolean and not even closed. On the walls, \(\neg\)
 swaps the two points and has no fixed point. The wall fragment is the
-faithful classical core. Comparing D4L with ``true and false'' by
+faithful classical core, in the sense fixed in
+Section~\ref{sec:wall}. Comparing D4L with ``true and false'' by
 cutting to the names \(\lvert T\rangle\) and \(\lvert F\rangle\)
 already leaves classical logic.
+
+\section{Classical proof on the walls}
+\label{sec:wall}
+
+Read the positive wall as classical truth and the negative wall as
+classical falsity. Negation swaps the two points. Conjunction and
+disjunction are \(\min\) and \(\max\), and both preserve the walls, so
+a formula whose atoms sit on the walls evaluates on the walls. Under
+that reading the wall fragment is a Boolean algebra.
+
+\begin{theorem}[Classical tautologies]
+\label{thm:wall}
+A formula built from atoms, negation, conjunction, and disjunction is a
+classical tautology if and only if every assignment of its atoms to the
+two walls returns the positive wall.
+\end{theorem}
+
+A classical derivation spends most of its length on identities that do
+not use this restriction. Section~\ref{sec:conn} already records that
+De~Morgan duality and distributivity hold for every real height. Double
+negation and absorption are of the same kind. A proof of any of them by
+cases on true and false repeats a computation the height has already
+performed. The case split records the specialisation of that identity.
+
+The walls contribute saturation.
+Section~\ref{sec:conn} records \(j\wedge\neg j=-|j|\) and
+\(j\vee\neg j=|j|\). Both equal the corresponding wall if and only if
+the height is already a wall. Off the walls the comparison
+\(-|j|\le|k|\) remains: the conjunction of any height with its negation
+lies at or below the disjunction of any height with its negation.
+Excluded middle, and the classical form of non-contradiction, are the
+statement \(|j|=1\).
+
+Material implication, read as \(\neg j\vee k\), shows the split on a
+syllogism. The formula
+\[
+(P\to Q)\to\bigl((Q\to R)\to(P\to R)\bigr)
+\]
+returns the positive wall under every wall assignment. It is not an
+identity of the height. At total balance, every atom at \(0\), the same
+formula returns \(0\). Synchrony holds. The classical reading does not
+call that value truth. One computation, two readings, and they disagree
+on whether the inference has succeeded. A classical proof of the
+syllogism is a wall computation. The step that stays on the walls is
+the saturation \(|j|=1\). The De Morgan skeleton underneath it has
+already been proved on the height.
+
+Explosion has the same shape. On the walls a value and its negation
+cannot both be the positive wall, so the inference from a contradiction
+to an unrelated atom quantifies over an empty set of valuations. The
+classical proof is short because the premise does not occur.
 
 \section{What two-valued logic cannot host}
 \label{sec:examples}
 
-The difference between D4L and two-valued logic is not that D4L is a
-stronger proof engine, nor that it decides more arithmetic. It is that
-two-valued algebras cannot host certain situations of satisfaction,
-consequence, and lattice structure that D4L hosts, and that the
-difference can be fixed as a pair: emptiness (or vacuity, or collapse
-to a singleton) on the fragment, realisation on D4L.
+Section~\ref{sec:wall} factors a classical proof into a height identity
+and a wall saturation. Two-valued algebras still cannot host the
+situations below, and D4L still realises them. The difference is fixed
+as a pair: emptiness (or vacuity, or collapse to a singleton) on the
+fragment, realisation on D4L.
 
 These are changes of semantics, not new theorems of Peano arithmetic.
 Unconditional FLT / Beal and a refutation of G\"odel's theorems are
@@ -819,6 +881,53 @@ cannot present that lattice. Complementary rays in the dual Hilbert
 layer cannot be assigned Boolean values, and they cannot be identified
 with the four names of the amplitude layer. The two layers remain two
 layers.
+
+\section{Where a classical proof survives in the spinor lattice}
+\label{sec:block}
+
+The subspace lattice of \(\mathbb{C}^2\) is not Boolean, so a classical
+proof about subspaces is not yet a proof in the dual Hilbert layer. The
+part that survives has a geometric name.
+
+The implication carried by the orthomodular law is
+\[
+A\to B \;=\; A^\perp\vee(A\wedge B).
+\]
+The zero subspace implies every subspace, and no nonzero vector lies in
+the zero subspace. Quantum explosion, like the explosion of
+Section~\ref{sec:wall}, is an inference from the bottom of the lattice.
+
+\begin{theorem}[Inclusion and splitting]
+\label{thm:split}
+\(A^\perp\vee(A\wedge B)\) equals the whole space if and only if \(A\) is
+contained in \(B\). It equals the classical expansion \(A^\perp\vee B\)
+if and only if \(A\) splits along \(B\),
+\[
+A \;=\; (A\wedge B)\vee(A\wedge B^\perp).
+\]
+\end{theorem}
+
+An inclusion is the first identity. Splitting is the further condition
+that compares it with the classical expansion. The native implication
+sits inside that expansion, because \(A\wedge B\) sits inside \(B\).
+Equality is the splitting. The relation is symmetric: \(A\) splits along
+\(B\) exactly when \(B\) splits along \(A\). A pair that splits lies in
+a Boolean block, and inside that block the classical expansion is the
+implication the lattice already uses.
+
+Orthogonal rays of a computational basis are such a pair. Each is the
+orthogonal of the other, the two implications agree, and both equal the
+orthogonal line. The agreed value is that line. A ray sits outside the
+orthogonal ray, so the implication stops short of the whole space.
+
+A computational ray and the diagonal do not split. Their meet is zero,
+and the ray is not orthogonal to the diagonal, so the decomposition is
+the zero subspace. The classical expansion returns the whole space. The
+implication carried by the lattice returns only the orthogonal line.
+That disagreement is the step that leaves a two-valued proof. A
+derivation that stays inside a splitting pair keeps every other step,
+and those steps are the same computation the Boolean core performs on
+the walls.
 
 \section{Proof status and Diophantine regimes}
 \label{sec:regime}
@@ -980,7 +1089,14 @@ negation fixed point at \(\lvert T\rangle\), refuses explosion of
 the DST three-layer split---proved core, refuted diagnostic, open
 bridge---without \(T\)-entailing a classical conjecture. No operation on the height residuates both designated predicates.
 Implication lives on the status algebra, where the table residuates
-non-refutation and \(U\to T=U\). Label \(\lvert T\rangle\) is not a
+non-refutation and \(U\to T=U\). Classical tautologies are the formulas
+that return the positive wall on every wall assignment. The De Morgan
+skeleton holds for every real height; excluded middle and the syllogism
+are the saturation \(|j|=1\), and at balance the syllogism returns
+synchrony. In the spinor lattice, \(A^\perp\vee(A\wedge B)\) is the
+whole space exactly when \(A\) is contained in \(B\), and it agrees with
+\(A^\perp\vee B\) exactly when \(A\) splits along \(B\). A basis ray and
+the diagonal separate the two implications. Label \(\lvert T\rangle\) is not a
 single geometric point: vacuum, axiswise balanced massive, and
 cross-axis cancellation all sit there, distinguished by mass and by
 axiswise equality, without a fifth name. Discrete \(\lvert F\rangle\)
