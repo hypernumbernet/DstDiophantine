@@ -5,14 +5,13 @@ import DstDiophantine.Gravity.KillingAxis
 # The parabolic rotor is a null rotation
 
 Off a common axis, `B⁺₀ + B⁻₁` squares to zero and lies in the Lorentz span,
-complementary to the null ideal. Its exponential therefore truncates, and the
-truncation acts on Minkowski vectors by a null rotation: `e₀ - e₃` and `e₂`
-stay fixed, while
-`e₁ ↦ e₁ + 2t(e₀ - e₃)` and
-`e₀ + e₃ ↦ (e₀ + e₃) + 4t e₁ + 4t²(e₀ - e₃)`.
-The image remains in the span of `e₀,…,e₃`. The same coefficients are the
-vector representation already seen on `N₁`. A translator `1 + s N₁` sends
-`e₁` to `e₁ + s e₄`.
+complementary to the null ideal. Its exponential therefore truncates. The
+truncations multiply by adding the parameter, the opposite parameter is the
+reverse, and the sandwich preserves the Minkowski product. For a nonzero
+parameter the fixed vectors are the span of `e₀ - e₃` and `e₂`. The same
+coefficients act on the null ideal, because `e₄` commutes with the Lorentz
+span: `N(x)` is sent to `N(Λₜ x)`. A translator `1 + s N₁` sends `e₁` to
+`e₁ + s e₄`.
 -/
 
 namespace DstDiophantine
@@ -25,6 +24,20 @@ open PGA Generators Motor Operations Sandwich BivectorBasis LorentzLie
 /-- Lightlike Lorentz generator `B⁺₀ + B⁻₁`. -/
 noncomputable def parabolicGen : PGA :=
   hyperbolic 0 + cyclic 1
+
+/-- Truncated null rotation `1 + t(B⁺₀ + B⁻₁)`. -/
+noncomputable def parabolicRotor (t : ℝ) : PGA :=
+  (1 : PGA) + t • parabolicGen
+
+/-- Coordinates of the fixed null line `e₀ - e₃`. -/
+def nullLineVec : Fin 4 → ℝ := ![1, 0, 0, -1]
+
+/-- Coordinates of the fixed transverse axis `e₂`. -/
+def transverseVec : Fin 4 → ℝ := ![0, 0, 1, 0]
+
+/-- Translational bivector with Minkowski coefficients `x`. -/
+noncomputable def nullVector (x : Fin 4 → ℝ) : PGA :=
+  ι e4Index * minkowskiVector x
 
 /-- Half-angle parameters whose torsion bivector is `parabolicGen`. -/
 def parabolicParams : Operations.TorsionParams where
@@ -279,6 +292,255 @@ theorem sandwich_translator_e1 (s : ℝ) :
   have hvec : ![0, s, 0, 0] (1 : Fin 4) = s := by simp
   rw [hvec] at h
   simpa using h
+
+/-! ### The truncations form a one-parameter group of isometries -/
+
+theorem parabolicRotor_mul (t s : ℝ) :
+    parabolicRotor t * parabolicRotor s = parabolicRotor (t + s) := by
+  unfold parabolicRotor
+  have hsq : (t • parabolicGen) * (s • parabolicGen) = 0 := by
+    rw [smul_mul_smul_comm, parabolicGen_sq, smul_zero]
+  calc
+    ((1 : PGA) + t • parabolicGen) * ((1 : PGA) + s • parabolicGen)
+        = (1 : PGA) * ((1 : PGA) + s • parabolicGen) +
+            (t • parabolicGen) * ((1 : PGA) + s • parabolicGen) := by
+          rw [add_mul]
+    _ = ((1 : PGA) + s • parabolicGen) +
+          ((t • parabolicGen) * (1 : PGA) + (t • parabolicGen) * (s • parabolicGen)) := by
+          rw [one_mul, mul_add]
+    _ = (1 : PGA) + s • parabolicGen + t • parabolicGen +
+          (t • parabolicGen) * (s • parabolicGen) := by
+          rw [mul_one]
+          abel
+    _ = (1 : PGA) + (t + s) • parabolicGen := by
+          rw [hsq, add_zero]
+          module
+
+theorem reverse_parabolicRotor (t : ℝ) :
+    reverse (parabolicRotor t) = parabolicRotor (-t) := by
+  rw [parabolicRotor, parabolicRotor, map_add, reverse.map_one, map_smul, reverse_parabolicGen,
+    smul_neg, neg_smul]
+
+theorem parabolicRotor_mul_reverse (t : ℝ) :
+    parabolicRotor t * reverse (parabolicRotor t) = 1 := by
+  rw [reverse_parabolicRotor, parabolicRotor_mul, add_neg_cancel]
+  simp [parabolicRotor]
+
+/-- The third adjoint of the nilpotent generator vanishes. -/
+theorem adjoint_parabolic_cube (v : PGA) :
+    Generators.commutator parabolicGen
+        (Generators.commutator parabolicGen (Generators.commutator parabolicGen v)) = 0 := by
+  have hdouble :
+      Generators.commutator parabolicGen (Generators.commutator parabolicGen v) =
+        (-2 : ℝ) • (parabolicGen * v * parabolicGen) := by
+    rw [commutator_commutator_of_sq_zero parabolicGen_sq, neg_smul]
+  rw [hdouble, Generators.commutator_smul_right, Generators.commutator]
+  have hleft : parabolicGen * (parabolicGen * v * parabolicGen) = 0 := by
+    rw [show parabolicGen * (parabolicGen * v * parabolicGen) =
+        (parabolicGen * parabolicGen) * v * parabolicGen by simp [mul_assoc],
+      parabolicGen_sq, zero_mul, zero_mul]
+  have hright : (parabolicGen * v * parabolicGen) * parabolicGen = 0 := by
+    rw [show (parabolicGen * v * parabolicGen) * parabolicGen =
+        parabolicGen * v * (parabolicGen * parabolicGen) by simp [mul_assoc],
+      parabolicGen_sq, mul_zero]
+  simp [hleft, hright]
+
+theorem nullRotation_add (t : ℝ) (x y : Fin 4 → ℝ) :
+    nullRotation t (x + y) = nullRotation t x + nullRotation t y := by
+  funext i
+  fin_cases i <;> simp [nullRotation, Pi.add_apply] <;> ring
+
+theorem nullRotation_smul (t c : ℝ) (x : Fin 4 → ℝ) :
+    nullRotation t (c • x) = c • nullRotation t x := by
+  funext i
+  fin_cases i <;> simp [nullRotation, Pi.smul_apply] <;> ring
+
+/-- The null rotation preserves Minkowski squares. -/
+theorem Q31_nullRotation (t : ℝ) (x : Fin 4 → ℝ) : Q31 (nullRotation t x) = Q31 x := by
+  have hsq := sandwich_minkowskiVector_sq (parabolicRotor_mul_reverse t) x
+  rw [parabolicRotor, sandwich_parabolic_minkowski t x, minkowskiVector_sq] at hsq
+  exact FaithfulSMul.algebraMap_injective (R := ℝ) (A := PGA) hsq
+
+private theorem minkowskiProd_polar (x y : Fin 4 → ℝ) :
+    KillingAxis.minkowskiProd x y = (1 / 2) * (Q31 (x + y) - Q31 x - Q31 y) := by
+  simp only [KillingAxis.minkowskiProd, Q31_eq_minkowskiDot, minkowskiDot, Pi.add_apply]
+  ring
+
+/-- The null rotation preserves the Minkowski product. -/
+theorem minkowskiProd_nullRotation (t : ℝ) (x y : Fin 4 → ℝ) :
+    KillingAxis.minkowskiProd (nullRotation t x) (nullRotation t y) =
+      KillingAxis.minkowskiProd x y := by
+  rw [minkowskiProd_polar, minkowskiProd_polar, ← nullRotation_add, Q31_nullRotation,
+    Q31_nullRotation, Q31_nullRotation]
+
+theorem Q31_nullLineVec : Q31 nullLineVec = 0 := by
+  simp [Q31_eq_minkowskiDot, minkowskiDot, nullLineVec]
+
+theorem Q31_transverseVec : Q31 transverseVec = 1 := by
+  simp [Q31_eq_minkowskiDot, minkowskiDot, transverseVec]
+
+theorem minkowskiProd_nullLine_transverse :
+    KillingAxis.minkowskiProd nullLineVec transverseVec = 0 := by
+  simp [KillingAxis.minkowskiProd, nullLineVec, transverseVec]
+
+/-- A lightlike vector remains lightlike. -/
+theorem nullRotation_lightlike {t : ℝ} {x : Fin 4 → ℝ} (hx : Q31 x = 0) :
+    Q31 (nullRotation t x) = 0 := by
+  rw [Q31_nullRotation, hx]
+
+/-- For `t ≠ 0` the fixed vectors are the span of the null line and `e₂`. -/
+theorem nullRotation_eq_self_iff {t : ℝ} (ht : t ≠ 0) (x : Fin 4 → ℝ) :
+    nullRotation t x = x ↔ ∃ a b : ℝ, x = a • nullLineVec + b • transverseVec := by
+  constructor
+  · intro h
+    have h1 : x 1 + 2 * t * (x 0 + x 3) = x 1 := by
+      simpa [nullRotation] using congr_fun h 1
+    have h0 : x 0 + 2 * t * x 1 + 2 * t ^ 2 * (x 0 + x 3) = x 0 := by
+      simpa [nullRotation] using congr_fun h 0
+    have hsum : x 0 + x 3 = 0 := by
+      have hdiff : 2 * t * (x 0 + x 3) = 0 := by linarith
+      exact (mul_eq_zero.mp hdiff).resolve_left (mul_ne_zero two_ne_zero ht)
+    have hx1 : x 1 = 0 := by
+      have : 2 * t * x 1 = 0 := by
+        rw [hsum] at h0
+        linarith
+      exact (mul_eq_zero.mp this).resolve_left (mul_ne_zero two_ne_zero ht)
+    refine ⟨x 0, x 2, ?_⟩
+    funext i
+    fin_cases i <;> simp [nullLineVec, transverseVec, hx1, Pi.add_apply]
+    · linarith
+  · rintro ⟨a, b, rfl⟩
+    funext i
+    fin_cases i <;> simp [nullRotation, nullLineVec, transverseVec, Pi.add_apply]
+
+/-! ### The null ideal carries the same coefficients -/
+
+theorem nullVector_eq_sum (x : Fin 4 → ℝ) :
+    nullVector x = ∑ μ : Fin 4, x μ • null μ := by
+  rw [nullVector, minkowskiVector_eq_sum, Finset.mul_sum]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  rw [mul_smul_comm]
+  rfl
+
+theorem nullVector_basis (μ : Fin 4) : nullVector (e4vec μ) = null μ := by
+  rw [nullVector_eq_sum, e4vec, Fintype.sum_eq_single μ]
+  · simp [Pi.single]
+  · intro ν hν
+    simp [Pi.single, hν]
+
+theorem commute_e4_parabolicRotor (t : ℝ) : Commute (ι e4Index) (parabolicRotor t) := by
+  have h1 : Commute (ι e4Index) (1 : PGA) := Commute.one_right _
+  have hK : Commute (ι e4Index) parabolicGen :=
+    KillingAxis.commute_e4_of_mem_lorentzSpan parabolicGen_mem_lorentzSpan
+  simpa [parabolicRotor] using h1.add_right (hK.smul_right t)
+
+/-- `e₄` commutes through the rotor, so translations transform as vectors. -/
+theorem sandwich_parabolic_nullVector (t : ℝ) (x : Fin 4 → ℝ) :
+    sandwich (parabolicRotor t) (nullVector x) = nullVector (nullRotation t x) := by
+  have hcomm : parabolicRotor t * ι e4Index = ι e4Index * parabolicRotor t :=
+    (commute_e4_parabolicRotor t).eq.symm
+  calc
+    sandwich (parabolicRotor t) (nullVector x)
+        = parabolicRotor t * (ι e4Index * minkowskiVector x) *
+            reverse (parabolicRotor t) := by
+          rw [sandwich, nullVector]
+    _ = (parabolicRotor t * ι e4Index) * minkowskiVector x *
+          reverse (parabolicRotor t) := by
+          simp [mul_assoc]
+    _ = (ι e4Index * parabolicRotor t) * minkowskiVector x *
+          reverse (parabolicRotor t) := by
+          rw [hcomm]
+    _ = ι e4Index * (parabolicRotor t * minkowskiVector x *
+          reverse (parabolicRotor t)) := by
+          simp [mul_assoc]
+    _ = ι e4Index * sandwich (parabolicRotor t) (minkowskiVector x) := by
+          rw [sandwich]
+    _ = ι e4Index * minkowskiVector (nullRotation t x) := by
+          rw [parabolicRotor, sandwich_parabolic_minkowski]
+    _ = nullVector (nullRotation t x) := by
+          rw [nullVector]
+
+theorem sandwich_parabolic_null0 (t : ℝ) :
+    sandwich (parabolicRotor t) (null 0) =
+      null 0 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
+  have h0 : null 0 = nullVector ![1, 0, 0, 0] := by
+    rw [← nullVector_basis 0]
+    congr
+    funext i
+    fin_cases i <;> simp [e4vec, Pi.single]
+  have hrot : nullRotation t ![1, 0, 0, 0] = ![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] := by
+    funext i
+    fin_cases i <;> simp [nullRotation]
+  have hv0 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 0 =
+      1 + 2 * t ^ 2 := rfl
+  have hv1 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 1 = 2 * t := rfl
+  have hv2 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 2 = 0 := rfl
+  have hv3 : (![1 + 2 * t ^ 2, 2 * t, 0, -(2 * t ^ 2)] : Fin 4 → ℝ) 3 =
+      -(2 * t ^ 2) := rfl
+  calc
+    sandwich (parabolicRotor t) (null 0)
+        = sandwich (parabolicRotor t) (nullVector ![1, 0, 0, 0]) := by rw [h0]
+    _ = nullVector (nullRotation t ![1, 0, 0, 0]) :=
+          sandwich_parabolic_nullVector t _
+    _ = ∑ μ : Fin 4, nullRotation t ![1, 0, 0, 0] μ • null μ := nullVector_eq_sum _
+    _ = (1 + 2 * t ^ 2) • null 0 + (2 * t) • null 1 + (-(2 * t ^ 2)) • null 3 := by
+          rw [hrot, Fin.sum_univ_four, hv0, hv1, hv2, hv3, zero_smul, add_zero]
+    _ = null 0 + (2 * t ^ 2) • null 0 + (2 * t) • null 1 +
+          -((2 * t ^ 2) • null 3) := by
+          rw [add_smul, one_smul, neg_smul]
+    _ = null 0 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
+          rw [smul_sub]
+          abel_nf
+
+theorem sandwich_parabolic_null2_fixed (t : ℝ) :
+    sandwich (parabolicRotor t) (null 2) = null 2 := by
+  have h2 : null 2 = nullVector ![0, 0, 1, 0] := by
+    rw [← nullVector_basis 2]
+    congr
+    funext i
+    fin_cases i <;> simp [e4vec, Pi.single]
+  rw [h2, sandwich_parabolic_nullVector]
+  have hrot : nullRotation t ![0, 0, 1, 0] = ![0, 0, 1, 0] := by
+    funext i
+    fin_cases i <;> simp [nullRotation]
+  rw [hrot, ← h2]
+
+theorem sandwich_parabolic_null3 (t : ℝ) :
+    sandwich (parabolicRotor t) (null 3) =
+      null 3 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
+  have h3 : null 3 = nullVector ![0, 0, 0, 1] := by
+    rw [← nullVector_basis 3]
+    congr
+    funext i
+    fin_cases i <;> simp [e4vec, Pi.single]
+  have hrot : nullRotation t ![0, 0, 0, 1] = ![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] := by
+    funext i
+    fin_cases i <;> simp [nullRotation]
+  have hv0 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 0 = 2 * t ^ 2 := rfl
+  have hv1 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 1 = 2 * t := rfl
+  have hv2 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 2 = 0 := rfl
+  have hv3 : (![2 * t ^ 2, 2 * t, 0, 1 - 2 * t ^ 2] : Fin 4 → ℝ) 3 =
+      1 - 2 * t ^ 2 := rfl
+  calc
+    sandwich (parabolicRotor t) (null 3)
+        = sandwich (parabolicRotor t) (nullVector ![0, 0, 0, 1]) := by rw [h3]
+    _ = nullVector (nullRotation t ![0, 0, 0, 1]) :=
+          sandwich_parabolic_nullVector t _
+    _ = ∑ μ : Fin 4, nullRotation t ![0, 0, 0, 1] μ • null μ := nullVector_eq_sum _
+    _ = (2 * t ^ 2) • null 0 + (2 * t) • null 1 + (1 - 2 * t ^ 2) • null 3 := by
+          rw [hrot, Fin.sum_univ_four, hv0, hv1, hv2, hv3, zero_smul, add_zero]
+    _ = (2 * t ^ 2) • null 0 + (2 * t) • null 1 + null 3 +
+          -((2 * t ^ 2) • null 3) := by
+          rw [sub_smul, one_smul]
+          abel_nf
+    _ = null 3 + (2 * t) • null 1 + (2 * t ^ 2) • (null 0 - null 3) := by
+          rw [smul_sub]
+          abel_nf
+
+theorem sandwich_parabolic_null_fixedLine (t : ℝ) :
+    sandwich (parabolicRotor t) (null 0 - null 3) = null 0 - null 3 := by
+  rw [sandwich_sub, sandwich_parabolic_null0, sandwich_parabolic_null3]
+  abel
 
 end Gravity
 

@@ -173,8 +173,11 @@ The straight line of one fixed jet is not itself that geodesic.
   parabolic. The parabolic rotor \(1+t(B^+_0+B^-_1)\) sends \(N_1\) to
   \(N_1+2t(N_0-N_3)\), which leaves the boost plane when \(t\neq 0\).
 * `NullRotation` — that same generator lies in the Lorentz span. The
-  truncated rotor fixes \(e_0-e_3\) and \(e_2\), and shears \(e_1\) along
-  the null line. A translator \(1+s N_1\) adds \(e_4\).
+  truncations multiply by adding the parameter, and the opposite parameter
+  is the reverse, so the shear preserves the Minkowski product. For
+  \(t\neq 0\) the fixed vectors are the span of \(e_0-e_3\) and \(e_2\).
+  Because \(e_4\) commutes with the Lorentz span, the null ideal carries
+  the same coefficients. A translator \(1+s N_1\) adds \(e_4\).
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -470,6 +473,29 @@ example (t : ℝ) :
   ⟨sandwich_parabolic_fixedNull t, sandwich_parabolic_e2 t,
     sandwich_parabolic_e1_shear t, sandwich_parabolic_nullPlus_shear t,
     sandwich_translator_e1 t, parabolicGen_not_mem_nullSpan⟩
+
+/-- Regression: null rotations are a one-parameter group of Minkowski isometries,
+and the null ideal transforms by the same coefficients. -/
+example (t s : ℝ) (x y : Fin 4 → ℝ) :
+    parabolicRotor t * parabolicRotor s = parabolicRotor (t + s) ∧
+      CliffordAlgebra.reverse (parabolicRotor t) = parabolicRotor (-t) ∧
+        parabolicRotor t * CliffordAlgebra.reverse (parabolicRotor t) = 1 ∧
+          Q31 (nullRotation t x) = Q31 x ∧
+            KillingAxis.minkowskiProd (nullRotation t x) (nullRotation t y) =
+              KillingAxis.minkowskiProd x y ∧
+              Sandwich.sandwich (parabolicRotor t) (nullVector x) =
+                nullVector (nullRotation t x) ∧
+                Sandwich.sandwich (parabolicRotor t) (null 0 - null 3) = null 0 - null 3 ∧
+                  Sandwich.sandwich (parabolicRotor t) (null 2) = null 2 :=
+  ⟨parabolicRotor_mul t s, reverse_parabolicRotor t, parabolicRotor_mul_reverse t,
+    Q31_nullRotation t x, minkowskiProd_nullRotation t x y,
+    sandwich_parabolic_nullVector t x, sandwich_parabolic_null_fixedLine t,
+    sandwich_parabolic_null2_fixed t⟩
+
+/-- Regression: a nonzero null rotation fixes only the null line and \(e_2\). -/
+example {t : ℝ} (ht : t ≠ 0) (x : Fin 4 → ℝ) :
+    nullRotation t x = x ↔ ∃ a b : ℝ, x = a • nullLineVec + b • transverseVec :=
+  nullRotation_eq_self_iff ht x
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
