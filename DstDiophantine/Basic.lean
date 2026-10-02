@@ -29,6 +29,7 @@ import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.SiksekStoll
+import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Collatz
@@ -240,6 +241,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   BealPythagoreanUnequalOddOutsideCubePairResidual
   BealPythagoreanUnequalOddResidual_of_outside_cube_pair
   siksekStoll345 IsSignature345 not_beal_signature_345
+  sumTwoFifthsNotSeventhOrNineteenth IsRepeatedFifthTo IsRepeatedFifthShape
+  not_beal_repeated_fifth_to not_beal_repeated_fifth_shape
+  BealTwoEqualOddOutsideRepeatedFifthResidual
+  BealTwoEqualOddResidual_of_outside_repeated_fifth
+  BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth
   BealTwoEqualEvenSumResidual BealTwoEqualEvenDiffResidual
   beal_two_equal_even_of_sum_diff beal_conjecture_pos_of_fine_residuals_even_split
   beal_two_equal_even_sum_gaussian

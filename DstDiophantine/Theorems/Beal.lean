@@ -66,8 +66,10 @@ geometric principle):
   divisible by `3` with the third a `TwoCubeExponent` close by the same
   prohibition (`IsCubePairPowerShape`, phase 7x), whether or not `d = 1`;
   signature `(3,4,5)` is
-  closed in every order (`siksekStoll345`); the live odd two-equal body is
-  `BealTwoEqualOddOutsideCubePairResidual`;
+  closed in every order (`siksekStoll345`); a repeated five beside `7` or
+  `19` is closed in every order (`sumTwoFifthsNotSeventhOrNineteenth`,
+  phase 7y; `(7,7,5)` is already `(n,n,5)`); the live odd two-equal body is
+  `BealTwoEqualOddOutsideRepeatedFifthResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”

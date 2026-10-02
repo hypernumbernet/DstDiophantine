@@ -185,6 +185,26 @@ theorem classifyBealExponents_five_three_four :
 theorem classifyBealExponents_three_five_seven :
     classifyBealExponents 3 5 7 = .U := by native_decide
 
+/-- Repeated five beside seven or nineteen is closed in every order. -/
+theorem classifyBealExponents_five_five_seven :
+    classifyBealExponents 5 5 7 = .T := by native_decide
+
+theorem classifyBealExponents_seven_five_five :
+    classifyBealExponents 7 5 5 = .T := by native_decide
+
+theorem classifyBealExponents_five_seven_five :
+    classifyBealExponents 5 7 5 = .T := by native_decide
+
+theorem classifyBealExponents_five_five_nineteen :
+    classifyBealExponents 5 5 19 = .T := by native_decide
+
+theorem classifyBealExponents_nineteen_five_five :
+    classifyBealExponents 19 5 5 = .T := by native_decide
+
+/-- A repeated five beside eleven stays open. -/
+theorem classifyBealExponents_five_five_eleven :
+    classifyBealExponents 5 5 11 = .U := by native_decide
+
 /-- Two exponents divisible by `3` collapse to a sum of two cubes. -/
 theorem classifyBealExponents_six_six_seven :
     classifyBealExponents 6 6 7 = .T := by native_decide

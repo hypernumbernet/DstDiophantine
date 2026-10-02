@@ -36,6 +36,7 @@ import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.SiksekStoll
+import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -782,6 +783,30 @@ example :
       classifyBealExponents 3 4 5 = .T ∧ classifyBealExponents 3 5 7 = .U :=
   ⟨classifyBealExponents_three_three_five, classifyBealExponents_three_three_seven,
     classifyBealExponents_three_four_five, classifyBealExponents_three_five_seven⟩
+
+/-- Phase 7y: a repeated five beside `7` or `19` is closed; beside `11` it is not. -/
+example :
+    classifyBealExponents 5 5 7 = .T ∧ classifyBealExponents 7 5 5 = .T ∧
+      classifyBealExponents 5 7 5 = .T ∧ classifyBealExponents 5 5 19 = .T ∧
+        classifyBealExponents 19 5 5 = .T ∧ classifyBealExponents 5 5 11 = .U :=
+  ⟨classifyBealExponents_five_five_seven, classifyBealExponents_seven_five_five,
+    classifyBealExponents_five_seven_five, classifyBealExponents_five_five_nineteen,
+    classifyBealExponents_nineteen_five_five, classifyBealExponents_five_five_eleven⟩
+
+example {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1) :
+    ¬ A ^ 5 + B ^ 5 = C ^ 7 ∧ ¬ A ^ 7 + B ^ 5 = C ^ 5 ∧ ¬ A ^ 5 + B ^ 19 = C ^ 5 :=
+  ⟨fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
+      (Or.inl (Or.inl ⟨rfl, rfl, rfl⟩)) h,
+    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
+      (Or.inl (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))) h,
+    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
+      (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))) h⟩
+
+example (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
+    BealTwoEqualOddResidual :=
+  BealTwoEqualOddResidual_of_outside_repeated_fifth hOut
 
 /-- Phase 7x: multiples of `3` collapse; `(4,4,7)` does not. -/
 example :
