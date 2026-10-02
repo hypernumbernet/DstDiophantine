@@ -35,6 +35,7 @@ import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Lensing
+import DstDiophantine.Gravity.PhotonReturn
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -200,6 +201,13 @@ The straight line of one fixed jet is not itself that geodesic.
   interior tangential curve exactly when \(1<c<2\), in which case the
   tangential curve lies outside the radial one. A repulsive shell has
   neither curve on its disk.
+* `PhotonReturn` — a ray with \(b<b_c\) has no turning point on the
+  classical exterior, and the Killing time down to \(r_s\) is unbounded.
+  For \(r<r_s\) the classical factor is negative. On either recorded
+  ceiling the same ray turns inside the freeze. The photon half-orbit
+  lies between \(16\) and \(17\) in units of \(GM/c^3\); the shortest
+  interior visit exceeds \(20\) on the one-axis saturation and \(280\)
+  on the three-axis ceiling.
 
 ## One Faraday six-space
 
@@ -1359,6 +1367,15 @@ example : spatialParity Operations.pseudoscalar = -Operations.pseudoscalar :=
 example {c : ℝ} (h1 : 1 < c) (h2 : c < 2) :
     xiOfS (radialCriticalS c) < xiOfS (tangentialCriticalS c) :=
   radial_caustic_lt_tangential h1 h2
+
+/-- Regression: a subcritical ray has no classical turning point, and the
+Killing time down to the horizon is unbounded. -/
+example {rs r b T : ℝ} (hrs : 0 < rs) (hr : rs < r) (hb : 0 ≤ b)
+    (hlt : b < criticalImpact rs) :
+    b ^ 2 * schwarzschildA rs r < r ^ 2 ∧
+      ∃ s, rs < s ∧ s < photonSphere rs ∧
+        T < killingAntideriv rs (photonSphere rs) - killingAntideriv rs s :=
+  ⟨no_exterior_turning hrs hr hb hlt, exists_classical_delay_gt hrs⟩
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
