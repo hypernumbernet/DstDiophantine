@@ -789,20 +789,15 @@ example :
     classifyBealExponents 5 5 7 = .T ∧ classifyBealExponents 7 5 5 = .T ∧
       classifyBealExponents 5 7 5 = .T ∧ classifyBealExponents 5 5 19 = .T ∧
         classifyBealExponents 19 5 5 = .T ∧ classifyBealExponents 5 5 11 = .U :=
-  ⟨classifyBealExponents_five_five_seven, classifyBealExponents_seven_five_five,
-    classifyBealExponents_five_seven_five, classifyBealExponents_five_five_nineteen,
-    classifyBealExponents_nineteen_five_five, classifyBealExponents_five_five_eleven⟩
+  classifyBealExponents_repeated_fifth
 
 example {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1) :
     ¬ A ^ 5 + B ^ 5 = C ^ 7 ∧ ¬ A ^ 7 + B ^ 5 = C ^ 5 ∧ ¬ A ^ 5 + B ^ 19 = C ^ 5 :=
-  ⟨fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
-      (Or.inl (Or.inl ⟨rfl, rfl, rfl⟩)) h,
-    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
-      (Or.inl (Or.inr (Or.inl ⟨rfl, rfl, rfl⟩))) h,
-    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd
-      (Or.inr (Or.inr (Or.inr ⟨rfl, rfl, rfl⟩))) h⟩
+  ⟨fun h => not_beal_repeated_fifth_shape hA hB hC hgcd (by decide) h,
+    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd (by decide) h,
+    fun h => not_beal_repeated_fifth_shape hA hB hC hgcd (by decide) h⟩
 
 example (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
     BealTwoEqualOddResidual :=

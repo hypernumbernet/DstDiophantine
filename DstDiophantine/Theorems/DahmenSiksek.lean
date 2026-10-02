@@ -86,33 +86,24 @@ theorem not_beal_repeated_fifth_to
     (hgcd : bealGcd A B C = 1)
     (hshape : IsRepeatedFifthTo l x y z)
     (hsol : A ^ x + B ^ y = C ^ z) : False := by
-  have hgcdB : bealGcd C (-B) A = 1 := (bealGcd_fifth_perm A B C).1.trans hgcd
-  have hgcdA : bealGcd C (-A) B = 1 := (bealGcd_fifth_perm A B C).2.trans hgcd
-  rcases hl with rfl | rfl
-  · rcases hshape with ⟨rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩
-    · exact sumTwoFifthsNotSeventhOrNineteenth A B C 7 (Or.inl rfl) hA hB hC hgcd hsol
-    · have hrew : C ^ 5 + (-B) ^ 5 = A ^ 7 := by
-        rw [odd_pow_neg (by decide : Odd 5)]
-        linarith [hsol]
-      exact sumTwoFifthsNotSeventhOrNineteenth C (-B) A 7 (Or.inl rfl) hC
-        (neg_ne_zero.mpr hB) hA hgcdB hrew
-    · have hrew : C ^ 5 + (-A) ^ 5 = B ^ 7 := by
-        rw [odd_pow_neg (by decide : Odd 5)]
-        linarith [hsol]
-      exact sumTwoFifthsNotSeventhOrNineteenth C (-A) B 7 (Or.inl rfl) hC
-        (neg_ne_zero.mpr hA) hB hgcdA hrew
-  · rcases hshape with ⟨rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩
-    · exact sumTwoFifthsNotSeventhOrNineteenth A B C 19 (Or.inr rfl) hA hB hC hgcd hsol
-    · have hrew : C ^ 5 + (-B) ^ 5 = A ^ 19 := by
-        rw [odd_pow_neg (by decide : Odd 5)]
-        linarith [hsol]
-      exact sumTwoFifthsNotSeventhOrNineteenth C (-B) A 19 (Or.inr rfl) hC
-        (neg_ne_zero.mpr hB) hA hgcdB hrew
-    · have hrew : C ^ 5 + (-A) ^ 5 = B ^ 19 := by
-        rw [odd_pow_neg (by decide : Odd 5)]
-        linarith [hsol]
-      exact sumTwoFifthsNotSeventhOrNineteenth C (-A) B 19 (Or.inr rfl) hC
-        (neg_ne_zero.mpr hA) hB hgcdA hrew
+  rcases hshape with ⟨hx, hy, hz⟩ | ⟨hy, hz, hx⟩ | ⟨hx, hz, hy⟩
+  · subst hx; subst hy
+    rw [hz] at hsol
+    exact sumTwoFifthsNotSeventhOrNineteenth A B C l hl hA hB hC hgcd hsol
+  · subst hy; subst hz
+    rw [hx] at hsol
+    have hrew : C ^ 5 + (-B) ^ 5 = A ^ l := by
+      rw [odd_pow_neg (by decide : Odd 5)]
+      linarith [hsol]
+    exact sumTwoFifthsNotSeventhOrNineteenth C (-B) A l hl hC
+      (neg_ne_zero.mpr hB) hA ((bealGcd_fifth_perm A B C).1.trans hgcd) hrew
+  · subst hx; subst hz
+    rw [hy] at hsol
+    have hrew : C ^ 5 + (-A) ^ 5 = B ^ l := by
+      rw [odd_pow_neg (by decide : Odd 5)]
+      linarith [hsol]
+    exact sumTwoFifthsNotSeventhOrNineteenth C (-A) B l hl hC
+      (neg_ne_zero.mpr hA) hB ((bealGcd_fifth_perm A B C).2.trans hgcd) hrew
 
 theorem not_beal_repeated_fifth_shape
     {A B C : ℤ} {x y z : ℕ}
@@ -139,19 +130,9 @@ def BealTwoEqualOddOutsideRepeatedFifthResidual : Prop :=
       ¬ A ^ x + B ^ y = C ^ z
 
 /--
-Phase 7y: the odd two-equal residual follows from its body outside cube pairs
-and outside the repeated-fifth signatures `(5,5,7)` and `(5,5,19)`.
+The odd two-equal body outside cube pairs follows once a repeated five beside
+`7` or `19` has also been removed.
 -/
-theorem BealTwoEqualOddResidual_of_outside_repeated_fifth
-    (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
-    BealTwoEqualOddResidual := by
-  intro A B C x y z hx hy hz hA hB hC hgcd hd hpair hsol
-  by_cases hcube : IsCubePairPowerShape x y z
-  · exact not_beal_cube_pair_power_shape hx hy hz hA hB hC hgcd hcube hsol
-  · by_cases hfifth : IsRepeatedFifthShape x y z
-    · exact not_beal_repeated_fifth_shape hA hB hC hgcd hfifth hsol
-    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hfifth hsol
-
 theorem BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth
     (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
     BealTwoEqualOddOutsideCubePairResidual := by
@@ -159,6 +140,13 @@ theorem BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth
   by_cases hfifth : IsRepeatedFifthShape x y z
   · exact not_beal_repeated_fifth_shape hA hB hC hgcd hfifth hsol
   · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hfifth hsol
+
+/-- Phase 7y: the odd two-equal residual follows from that narrower body. -/
+theorem BealTwoEqualOddResidual_of_outside_repeated_fifth
+    (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
+    BealTwoEqualOddResidual :=
+  BealTwoEqualOddResidual_of_outside_cube_pair
+    (BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth hOut)
 
 end Theorems
 
