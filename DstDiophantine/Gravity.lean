@@ -34,6 +34,7 @@ import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
+import DstDiophantine.Gravity.Lensing
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -192,6 +193,13 @@ The straight line of one fixed jet is not itself that geodesic.
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
   ratio \(4\). Any strictly distance-decreasing equal phase places
   successive nodes inward, so they cannot coincide with the outward Bohr radii.
+* `Lensing` — weak deflection by one thin shell. Angles are in units of
+  the shell's angular radius, and \(c=(b_m/R)^2\). The tangential ratio
+  stays finite at the limb; the radial slope does not. An attractive shell
+  has an interior radial critical curve exactly when \(c<2\), and an
+  interior tangential curve exactly when \(1<c<2\), in which case the
+  tangential curve lies outside the radial one. A repulsive shell has
+  neither curve on its disk.
 
 ## One Faraday six-space
 
@@ -1346,6 +1354,11 @@ example (φ : ℝ) :
 /-- Regression: spatial inversion negates the pseudoscalar. -/
 example : spatialParity Operations.pseudoscalar = -Operations.pseudoscalar :=
   spatialParity_pseudoscalar
+
+/-- Regression: in the thin-shell window the tangential caustic lies outside the radial one. -/
+example {c : ℝ} (h1 : 1 < c) (h2 : c < 2) :
+    xiOfS (radialCriticalS c) < xiOfS (tangentialCriticalS c) :=
+  radial_caustic_lt_tangential h1 h2
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
