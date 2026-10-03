@@ -1,0 +1,377 @@
+\documentclass[a4paper]{article}
+\usepackage{luatexja}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{符号つき静電力から導かれる電子軌道：\\
+共有結合・金属結合・分子間力の大きさ}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+二重時空理論の電磁チャネルは、重力チャネルと同じ干渉因子 \(\gamma_s\) を運ぶ。等スケール軌跡の上では、二電荷のあいだの力はクーロン力を \(\gamma_s\) で割ったものである。\(\gamma_s\) の符号が引力と斥力を選び、円軌道が実となるのはこの因子が正のところに限る。最外の井戸では、軌道が厳密に安定なのは \(\tan x=1/(2x+\tanh x)\) が定める限界半径の外側だけであり、円軌道族のエネルギーはその同じ半径で停留する。対称な二中心軌道は、あらゆる間隔で各陽子の軸力を消し、共通の部分力の大きさは \(k e^{2}/(\gamma_s(R) R^{2})\) である。円軌道に保つとこの族は極小をもつ。その極小の角運動量では、間隔と軌道半径の平面における有効ポテンシャルは鞍点であり、釣り合いの射線に沿う二階微分は消える。引き離しに抗する力は非調和である。同じ軌道を配位数 \(z\) の近傍に分けると、円軌道としての軸力の釣り合いはある限界までしか続かず、そこでの部分力は共有結合の値に対する純粋な比になり、対のエネルギーは正のままである。二つの中性な限界軌道を半径の数倍だけ離して置くと、単極子が消えたあとに力が残る。四半径から八半径では、その残差は共有結合の部分力の百分の数であり、その大部分は純クーロン力のうちにすでに含まれている。限界半径をボーア半径と同定することは、一つの外部入力である。そのとき得られる長さと深さは、実験室の水素的な数値から一のオーダーの因子だけずれる。
+\end{abstract}
+
+\section{はじめに}
+
+二重時空理論の電子殻の節は、分母にスカラー干渉因子 \(\gamma_s\) をもつ静電力を書く~\cite{dst-main}。大きな間隔では因子は \(1\) に近づき、クーロンの法則が回復される。より近くでは、\(\gamma_s\) は離散的な半径の集合で零を通り、それらの節のあいだで負になる。節は力の発散である。円軌道ではなく、節の外側での動径ポテンシャルは下に有界でない。
+
+本稿はその力を所与として、それが許す軌道を計算し、同じ対から組まれる三つの束縛の大きさを出す。二中心の共有軌道、電子対の \(2/z\) だけを運ぶ最近接結合、そして二つの中性な一中心軌道のあいだに残る力である。等スケールの同定 \(\alpha=\beta=\ell/r\) は、核の層とクーロン層にすでに用いられている読みである。長さ \(\ell\) は導出しない。ボーアの \(n^{2}\) 則も微細構造定数も導出しない。実験室の数値が入るところは、入力であると記す。
+
+\section{符号つきの力}
+\label{sec:force}
+
+一軸の上で、双対ローターの干渉因子は
+\[
+\gamma_s
+  =\cosh\frac{\alpha}{2}\cos\frac{\beta}{2}
+  -\sinh\frac{\alpha}{2}\sin\frac{\beta}{2}
+\]
+である。等スケール軌跡は \(\alpha=\beta=\ell/r\) と置く。無次元変数 \(x=\ell/(2r)\) では
+\begin{equation}
+\label{eq:gamma}
+\gamma_s(x)=\cosh x\cos x-\sinh x\sin x,
+\qquad
+\gamma_s'(x)=-2\cosh x\sin x
+\end{equation}
+である。したがって \(\gamma_s(0)=1\) であり、各区間 \([n\pi,(n+1)\pi]\) にちょうど一つの単純零点がある。最初の零点 \(x_1\) は
+\begin{equation}
+\label{eq:node}
+\tan x=\coth x
+\end{equation}
+の \((\pi/4,\pi/2)\) における唯一の根である。数値的には \(x_1=0.93755\) であるから、最外の節は
+\[
+\frac{r_1}{\ell}=\frac{1}{2x_1}=0.53330
+\]
+にある。半径の大きい方から読むと、外側の井戸 \(r>r_1\) では \(\gamma_s>0\)、殻 \(r_2<r<r_1\) では \(\gamma_s<0\) であり、符号はこのあと交替する。
+
+二電荷の間隔を増す向きの力は
+\begin{equation}
+\label{eq:force}
+F_r=\frac{k q_1 q_2}{\gamma_s(r)\,r^{2}},
+\qquad
+k=\frac{1}{4\pi\epsilon_0}
+\end{equation}
+である。同符号の電荷は \(\gamma_s>0\) で斥け合い、\(\gamma_s<0\) で引き合う。異符号では逆である。したがって外側の井戸では電子と陽子は引き合い、その引力は \(r\to\infty\) でクーロンの法則になる。
+
+原点でのテイラー展開は \(\gamma_s''(0)=-2\) と \(\gamma_s''''(0)=-4\) から従い、
+\begin{equation}
+\label{eq:series}
+\gamma_s(x)=1-x^{2}-\frac16 x^{4}+O(x^{6})
+\end{equation}
+である。ゆえに
+\[
+\frac{1}{\gamma_s(r)\,r^{2}}
+  =r^{-2}+\frac{\ell^{2}}{4}\,r^{-4}+\frac{7\ell^{4}}{96}\,r^{-6}+O(r^{-8}).
+\]
+クーロン力への補正は \((\ell/r)^{2}\) の次数から始まる。
+
+\(r>r_1\) では、\eqref{eq:force} を積分し無限遠で消える対ポテンシャルが得られる。置換 \(s=\ell/(2x)\) は \(ds/s^{2}=-(2/\ell)\,dx\) を与えるので、
+\begin{equation}
+\label{eq:potential}
+\int_r^{\infty}\frac{ds}{\gamma_s(s)\,s^{2}}
+  =\frac{2}{\ell}\int_0^{\ell/(2r)}\frac{dx}{\gamma_s(x)}
+\end{equation}
+である。ただし積分路は外側の井戸に留まる。上端が \(x_1\) に近づくと積分は発散するので、異符号電荷のポテンシャルは節で下に有界でなくなる。節の内側へ同じ式は続かない。無限遠からの路が極を横切るからである。以下のポテンシャルはすべて外側の井戸のものである。
+
+\section{一中心の円軌道}
+\label{sec:onecenter}
+
+陽子を原点に固定し、質量 \(m\) の電子が \(q_1 q_2=-e^{2}\) の中心力~\eqref{eq:force} のなかを動く。動径加速度は
+\[
+m\ddot r-\frac{L^{2}}{m r^{3}}
+  =-\frac{k e^{2}}{\gamma_s(r)\,r^{2}}
+\]
+を満たし、\(L=m r^{2}\dot\theta\) は保存する。円軌道では \(\ddot r=0\) であるから
+\begin{equation}
+\label{eq:v2}
+v^{2}=\frac{k e^{2}}{m\,\gamma_s(r)\,r}
+\end{equation}
+である。右辺が正となるのは \(\gamma_s>0\) のところに限る。斥力層では \(v^{2}\) は負であり、円軌道はない。クーロン極限 \(\gamma_s=1\) では \(v^{2}=k e^{2}/(m r)\) を回復する。
+
+固定した \(L\) での有効ポテンシャルは \(V(r)+L^{2}/(2m r^{2})\) である。ここで \(F_r=-\partial V/\partial r\) であり、\(F_r\) は外向きである。外側の井戸での内向きの大きさを \(f(r)=k e^{2}/(\gamma_s r^{2})\) と書く。円軌道の釣り合いは \(L^{2}/(m r^{3})=f\) であり、そこでの有効ポテンシャルの二階微分は \(f'+3f/r\) である。軌道が厳密に安定なのは
+\[
+\frac{r}{f}\frac{df}{dr}>-3
+\]
+のときである。\(f\propto 1/(\gamma_s r^{2})\) とすれば、これは
+\[
+\frac{r}{\gamma_s}\frac{d\gamma_s}{dr}<1
+\]
+になる。連鎖律と~\eqref{eq:gamma} から \(d\gamma_s/dr=(2x/r)\cosh x\sin x\) であるので、外側の井戸での安定条件は
+\begin{equation}
+\label{eq:stable}
+2x\cosh x\sin x<\gamma_s(x)
+\end{equation}
+である。同値な形は
+\begin{equation}
+\label{eq:marginal}
+\tan x=\frac{1}{2x+\tanh x}
+\end{equation}
+である。\((0,x_1)\) における唯一の根は \(x_c=0.55478\) である。限界半径と、節に対するその比は
+\[
+\frac{r_c}{\ell}=\frac{1}{2x_c}=0.90125,
+\qquad
+\frac{r_c}{r_1}=\frac{x_1}{x_c}=1.6899
+\]
+である。そこでは \(\gamma_s(x_c)=0.67675\) である。\(0\le x<x_c\)、すなわち \(r>r_c\) では不等式~\eqref{eq:stable} が成り立ち、円軌道は厳密に安定である。節と \(r_c\) のあいだにも円軌道解は存在する。\(\gamma_s>0\) だからである。ただしそれは不安定である。
+
+円軌道のエネルギーは、固定した \(L\) での有効ポテンシャルではない。半径ごとに角運動量が異なる。ポテンシャルの零点を無限遠に取ると
+\[
+E(r)
+  =\frac{k e^{2}}{2\gamma_s(r)\,r}
+  -k e^{2}\int_r^{\infty}\frac{ds}{\gamma_s(s)\,s^{2}}
+\]
+である。積分記号下で微分し~\eqref{eq:potential} を用いると
+\begin{equation}
+\label{eq:dE}
+\frac{dE}{dr}
+  =\frac{k e^{2}}{2\gamma_s^{2} r^{2}}
+  \left(\gamma_s-r\frac{d\gamma_s}{dr}\right)
+\end{equation}
+を得る。括弧が消える軌跡は、限界安定の条件 \(r\,d\gamma_s/dr=\gamma_s\) と同じである。\(r>r_c\) では \(dE/dr>0\) であり、\(r_1<r<r_c\) では \(dE/dr<0\) である。したがって円軌道族は限界軌道で極小をもち、厳密に安定な円軌道はすべてその外側にあって、より高いエネルギーにある。極小を与える軌道は限界的に安定なだけである。固定した \(L\) の有効ポテンシャルの二階微分は、そこで消える。
+
+極小値は~\eqref{eq:potential} の求積である。\(I(x_c)=\int_0^{x_c}dx/\gamma_s(x)=0.62819\) とすれば
+\[
+\frac{E(r_c)}{k e^{2}/\ell}
+  =\frac{1}{2\gamma_s(x_c)\,(r_c/\ell)}-2I(x_c)
+  =-0.43661
+\]
+である。その軌道の上の内向きの力の大きさは
+\begin{equation}
+\label{eq:F1}
+F(r_c)
+  =\frac{k e^{2}}{\gamma_s(x_c)\,r_c^{2}}
+  =1.8192\,\frac{k e^{2}}{\ell^{2}}
+\end{equation}
+である。この二つの数は \(\gamma_s\) の性質である。実験室のエネルギーと力になるのは、\(\ell\) または \(r_c\) を測定された長さと同定したあとである。
+
+\section{二中心軌道と共有結合の力}
+\label{sec:covalent}
+
+電荷 \(+e\) の陽子を \(z=\pm R/2\) に置き、電荷 \(-e\) の電子を中間面の円筒半径 \(\rho\) に、互いに向かい合わせて置く。三つの間隔は、陽子間距離 \(R\)、電子間距離 \(r_{ee}=2\rho\)、そして四本が等しい電子--陽子距離
+\[
+r_{ep}=\sqrt{(R/2)^{2}+\rho^{2}}
+\]
+である。三つのすべてを \(r_1\) の外側に置く。\eqref{eq:potential} をどの対にも使えるようにするためである。
+
+\(z=+R/2\) にある陽子の軸力を、\(R\) を増す向きに正と数えると、もう一方の陽子からの斥力から、各電子への引力の内向き軸成分を引いたものになる。
+\begin{equation}
+\label{eq:Faxial}
+F_z
+  =k e^{2}\left(
+    \frac{1}{\gamma_s(R)\,R^{2}}
+    -\frac{R}{\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right).
+\end{equation}
+これが消えるのは \(\gamma_s(r_{ep})\,r_{ep}^{3}=\gamma_s(R)\,R^{3}\) のときである。射線
+\begin{equation}
+\label{eq:ray}
+r_{ep}=R,
+\qquad
+\rho=\frac{\sqrt{3}}{2}\,R
+\end{equation}
+は、あらゆる \(R\) でこの方程式を解く。\eqref{eq:Faxial} に入る二つの距離が等しく、したがって同じ \(\gamma_s\) を運ぶからである。打ち消しは \(\gamma_s\) の形を使わない。\(\gamma_s\) が距離だけの関数であることを使う。この射線の上では二つの部分力の大きさが等しく、
+\begin{equation}
+\label{eq:Fpar}
+F_{\parallel}(R)=\frac{k e^{2}}{\gamma_s(R)\,R^{2}}
+\end{equation}
+である。この共通の大きさが、間隔 \(R\) における共有結合の力のスケールである。軸力のネットは零である。
+
+各電子に働く円筒方向の力が内向きであるとき、電子は円軌道に留まる。射線の上では \(r_{ee}=\sqrt{3}\,R\) であり、
+\[
+F_{\rho}
+  =\frac{k e^{2}}{R^{2}}
+  \left(
+    \frac{1}{3\gamma_s(\ell/(2\sqrt{3}\,R))}
+    -\frac{\sqrt{3}}{\gamma_s(\ell/(2R))}
+  \right)
+\]
+である。外側の井戸では \(x\) が増すにつれて \(\gamma_s\) は減り、\(R<r_{ee}\) は \(\gamma_s(R)<\gamma_s(r_{ee})\) を意味する。それらの比は厳密に \(1\) より小さく、軌道の条件が要求するのは \(3\sqrt{3}\) より小さいことだけである。したがって \(R>r_1\) のあらゆる点で \(F_{\rho}<0\) である。射線は円軌道の領域に全体として含まれる。その軌道の上の二電子の運動エネルギーは \(K=-\rho F_{\rho}\) である。
+
+運動が円軌道に留まるよう角運動量を付け直したときの、射線に沿う全エネルギー \(E(R)=V(R)+K(R)\) は、外側の井戸にただ一つの極小をもつ。\(V\) は~\eqref{eq:potential} から取る。求積はその極小を
+\begin{equation}
+\label{eq:Rstar}
+\frac{R_{\ast}}{\ell}=0.93816,
+\qquad
+\gamma_s(R_{\ast})=0.70277,
+\qquad
+\frac{E(R_{\ast})}{k e^{2}/\ell}=-1.0084
+\end{equation}
+に置く。そこでの部分力、およびこの円軌道族の曲率と傾きの極大は
+\begin{align}
+F_{\parallel}(R_{\ast})
+  &=1.6167\,\frac{k e^{2}}{\ell^{2}},
+\label{eq:Fcov}\\
+\frac{d^{2}E}{dR^{2}}\bigg|_{R_{\ast}}
+  &=6.558\,\frac{k e^{2}}{\ell^{3}},
+\label{eq:kappa}\\
+\max_{R>R_{\ast}}\frac{dE}{dR}
+  &=0.51570\,\frac{k e^{2}}{\ell^{2}}
+\label{eq:Fmaxcirc}
+\end{align}
+であり、極大は \(R/\ell=1.210\) で達せられる。曲率~\eqref{eq:kappa} は、電子を円軌道に保つときの結合のばね定数である。傾き~\eqref{eq:Fmaxcirc} は、その族に沿って陽子を引き離すために加えねばならない力の最大である。どちらも部分力~\eqref{eq:Fcov} より小さい。部分力は、残差の大きさではなく、打ち消し合う各片の大きさである。
+
+角運動量を、\(R_{\ast}\) に属する円軌道の値に固定すると、結論は変わる。有効ポテンシャルは \(V(R,\rho)+K_{\ast}(\rho_{\ast}/\rho)^{2}\) になる。\((R_{\ast},\rho_{\ast})\) において、\((R,\rho)\) 平面のヘッシアンは二つの正の対角成分と負の行列式をもつ。臨界点は鞍点である。射線~\eqref{eq:ray} に限ると、二階微分は \(-2\times 10^{-5}\,k e^{2}/\ell^{3}\) であり、求積の分解能では零と区別できない。そして \(R\) が節へ向かって減るにつれてポテンシャルは下がる。引き離しにはなお抗する。抗する力は非調和であり、射線の上でのその極大は
+\begin{equation}
+\label{eq:FmaxL}
+\max_{R>R_{\ast}}\frac{dU}{dR}
+  =0.23901\,\frac{k e^{2}}{\ell^{2}}
+\end{equation}
+であって、\(R/\ell=1.709\) で達せられる。したがって固定角運動量の問題は、張力を与え、調和的なばねは与えない。この角運動量でも他の角運動量でも内へ走るチャネルは、一中心問題にすでにあった、節での非有界なポテンシャルである。釣り合い~\eqref{eq:ray} は軸力の停留幾何である。エネルギーの大域的な極小ではない。
+
+二つの離れた限界原子に対して、円軌道族の極小は
+\[
+E(R_{\ast})-2E(r_c)=-0.13518\,\frac{k e^{2}}{\ell}
+\]
+だけ低い。この差は二つの停留値を比べたものである。共有軌道の射線に沿う障壁ではない。その射線は \(R\to\infty\) で零へ向かい、間隔はおよそ \(k e^{2}/\ell\) である。
+
+\section{配位と金属結合の力}
+\label{sec:metal}
+
+一価の配位殻で近傍が \(z\) 個あるとき、最近接の結合にはその結合の電子含量 \(\nu=2/z\) を与える。二原子は \(z=1\)、\(\nu=2\) である。電荷 \(-\nu e\) を、中間面の円の向かい合う二点にある電荷 \(-(\nu/2)e\) の二つの塊に分ける。軸力~\eqref{eq:Faxial} は
+\begin{equation}
+\label{eq:Fznu}
+F_z
+  =k e^{2}\left(
+    \frac{1}{\gamma_s(R)\,R^{2}}
+    -\frac{\nu R}{2\,\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right)
+\end{equation}
+になり、一塊に働く円筒方向の力は
+\[
+F_{\rho}
+  =k e^{2}\left(
+    \frac{(\nu/2)^{2}}{\gamma_s(r_{ee})\,r_{ee}^{2}}
+    -\frac{\nu\rho}{\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right)
+\]
+である。軸力の釣り合いは \(\gamma_s(r_{ep})\,r_{ep}^{3}=(\nu/2)\,\gamma_s(R)\,R^{3}\) である。\(\nu=2\) ではこれが共有結合の射線である。より小さい \(\nu\) では、電子--陽子距離が陽子間距離の内側に入らねばならない。より弱い電荷でも軸成分が合いうるようにするためである。
+
+\eqref{eq:Fznu} の根における部分力は、なお陽子--陽子の片 \(F_{\parallel}(R)\) である。\(\nu\) に依存するのは、円軌道の根が存在する半径である。二つの限界が現れる。
+
+\(z=8\)、したがって \(\nu=1/4\) では、軸力の釣り合いと厳密に内向きの \(F_{\rho}\) が共存するのは \(R/\ell\le 2.3591\) に限る。限界では \(F_{\rho}=0\) である。共有された軌道が動径方向に限界的になり、
+\[
+\frac{\rho}{\ell}=0.36615,
+\qquad
+\gamma_s=0.95474,
+\qquad
+F_{\parallel}=0.18820\,\frac{k e^{2}}{\ell^{2}}
+\]
+である。共有結合の部分力~\eqref{eq:Fcov} に対する比は
+\begin{equation}
+\label{eq:ratio8}
+\frac{F_{\parallel}(z=8)}{F_{\parallel}(R_{\ast})}=0.11641
+\end{equation}
+である。この円軌道の軌跡に沿ってエネルギーは正であり、\(R\) が増すにつれて減る。停留する結合長はない。限界は、円軌道の領域が終わるところであって、エネルギーが極小になるところではない。
+
+\(z=12\)、したがって \(\nu=1/6\) では、外側の井戸の軌跡は、電子間距離が節に達するために終わる。
+\[
+\frac{R}{\ell}=1.2908,
+\qquad
+\frac{\rho}{\ell}=0.26688,
+\qquad
+F_{\parallel}=0.70920\,\frac{k e^{2}}{\ell^{2}}
+\]
+である。比は
+\begin{equation}
+\label{eq:ratio12}
+\frac{F_{\parallel}(z=12)}{F_{\parallel}(R_{\ast})}=0.43867
+\end{equation}
+である。この軌跡の上でもエネルギーは正である。電子対の十二分の一を中間面に置いても、陽子の斥力を、外側の井戸の束縛した根まで打ち消すことはない。エネルギーがなお下がりつつあるうちに、軌跡は節へ入る。
+
+どちらの比も、それらの限界の性質である。各イオンが対称に囲まれる結晶では、同じ間隔の孤立した対が釣り合わなくても、対称性によってネットの力が消えうる。その格子和は、上の計算ではない。経験的な最近接距離は~\eqref{eq:Fpar} によって \(F_{\parallel}\) を直接定める。それは入力であり、\eqref{eq:ratio8} にも \eqref{eq:ratio12} にも要らない。
+
+\section{中性の対と分子間力}
+\label{sec:inter}
+
+限界的な一中心軌道は中性である。陽子の電荷 \(+e\) と電子の電荷 \(-e\) が距離 \(r_c\) だけ離れて座っている。中心間距離が \(D\) のそのような軌道が二つあると、分子間の対は四つある。各電子が自分の陽子と重なっていれば、どの対も一つの距離を共有し、\(\gamma_s\) は共通因子になり、\eqref{eq:force} は正味電荷とともに消える。単極子は消える。残るのは、その一致が成り立たないことと、\(\gamma_s\) が恒等的に \(1\) ではないことである。
+
+第\ref{sec:force}節の展開は、この二つの失敗を分ける。片 \(r^{-2}\) はクーロンの法則であり、電子が \(r_c\) だけ変位しただけで双極子--双極子の力を生む。片 \((\ell^{2}/4) r^{-4}\) は最初のねじれ補正である。それも一致極限では消え、\(r_c/D\) についてより高次の残りを残す。
+
+数値的な残差は、左側の原子に働く四つの力の和である。大きさと符号を見るには、共線の二つの配置で足りる。平行配置では、両方の電子が、左の陽子から右の陽子へ向かう中心線に沿って、それぞれの陽子から \(+r_c\) だけ変位している。内側配置では、電子は陽子のあいだにある。引力を正に数える。ネットの力を \(F\)、\(\gamma_s=1\) での同じ和を \(F_{\mathrm{C}}\) と書いて、
+
+\begin{center}
+\begin{tabular}{crrrr}
+\(D/r_c\) & \(F/F_{\parallel}\) & \(F_{\mathrm{C}}/F_{\parallel}\) & \(F/F_{\parallel}\) & \(F_{\mathrm{C}}/F_{\parallel}\) \\
+ & \multicolumn{2}{c}{平行} & \multicolumn{2}{c}{内側} \\
+4 & \(+0.021405\) & \(+0.019883\) & \(-0.079746\) & \(-0.068747\) \\
+6 & \(+0.003809\) & \(+0.003695\) & \(-0.008185\) & \(-0.007827\) \\
+8 & \(+0.001164\) & \(+0.001145\) & \(-0.002013\) & \(-0.001970\) \\
+\end{tabular}
+\end{center}
+
+平行の列は引力であり、内側の列は斥力である。内側の幾何では、二つの電子が、どちらの電子と相手の陽子との距離よりも互いに近く、したがって最も近い対が斥け合う。どちらの列も \(D\) が増すにつれて落ちる。四半径から八半径までで、平行の力はおよそ十八分の一になり、\(D^{-4}\) の双極子力の因子十六に近い。八半径では、純クーロンの片がすでに共有結合の部分力の \(0.001145\) であり、その片を上回るねじれの超過は \(1.9\times 10^{-5}\) である。この模型における分子間力の大きさは、二つの中性軌道の多重極残差である。因子 \(1/\gamma_s-1\) は、四半径で数パーセント、八半径でおよそ一パーセントだけ、それを補正する。
+
+\section{数値例}
+\label{sec:numbers}
+
+上の大きさは、\(k e^{2}/\ell\) または \(k e^{2}/\ell^{2}\) に純粋な数を掛けたものである。一つの同定が、それらを電子ボルトとニュートンに変える。限界半径をボーア半径とする。
+\[
+r_c=a_0.
+\]
+このとき \(\ell=a_0/(r_c/\ell)=1.1096\,a_0\) である。\(a_0\) とハートリー・エネルギー \(E_h=k e^{2}/a_0\) の CODATA 値~\cite{codata2018} を用いると
+\[
+\frac{k e^{2}}{\ell}=0.90125\,E_h=24.524\,\mathrm{eV},
+\qquad
+\frac{k e^{2}}{a_0^{2}}=8.2387\times 10^{-8}\,\mathrm{N}
+\]
+である。一中心の極小は
+\[
+E(r_c)=-10.708\,\mathrm{eV}
+\]
+になり、無限に重い陽子の \(\tfrac12 E_h=13.606\,\mathrm{eV}\) と並ぶ。共有結合の極小は
+\[
+R_{\ast}=1.0410\,a_0=0.55085\,\text{\AA}
+\]
+にあり、H\(_2\) のボルン--オッペンハイマー平衡間隔 \(1.4011\,a_0\)~\cite{sims-nist} と並ぶ。差 \(E(R_{\ast})-2E(r_c)\) は \(3.315\,\mathrm{eV}\) になる。オルト H\(_2\) の \(N=1\) からの測定された解離エネルギーは \(4.463\,\mathrm{eV}\) である~\cite{holsch2019}。その数は零点エネルギーを含み、この古典軌道はそれを含まない。同じ同定での力は
+\begin{align*}
+F(r_c)&=122\,\mathrm{nN},&
+F_{\parallel}(R_{\ast})&=108\,\mathrm{nN},\\
+\max\frac{dE}{dR}&=34.5\,\mathrm{nN},&
+\max\frac{dU}{dR}&=16.0\,\mathrm{nN}
+\end{align*}
+である。部分力は、打ち消し合う片である。二つのより小さい数は、円軌道族に沿うネットの力の最大と、固定角運動量の射線に沿うネットの力の最大である。長さは実験室の結合より因子 \(1.35\) だけ短く、一中心の深さは \(\tfrac12 E_h\) より因子 \(1.27\) だけ浅い。同定 \(r_c=a_0\) は入力であり、これらの因子は、その同定が生むずれである。第二の \(\ell\) の選択へ吸収することはしない。
+
+\section{結論}
+
+符号つきの力~\eqref{eq:force} は、円電子軌道がどこに存在し、どこで安定かを定める。存在は \(\gamma_s\) の符号である。外側の井戸での厳密な安定は不等式~\eqref{eq:stable} であり、円軌道族のエネルギーは同じ半径で極小になる。その半径は限界的に安定なだけである。共有結合の射線 \(\rho=(\sqrt{3}/2)R\) はあらゆる間隔で軸力を消し、部分力の大きさは~\eqref{eq:Fpar} である。円軌道に保てば、射線は \(R_{\ast}=0.93816\,\ell\) に極小をもち、ばね定数は \(6.558\,k e^{2}/\ell^{3}\)、復元力の最大は \(0.51570\,k e^{2}/\ell^{2}\) である。固定した角運動量では、その幾何は鞍点であり、射線に沿う二階微分は消え、引き離しに抗する力は \(0.23901\,k e^{2}/\ell^{2}\) で極大になる。
+
+\(\nu=2/z\) 個の電子を運ぶ結合は、\(z=8\) でも \(z=12\) でも、外側の井戸に負エネルギーの根をもたない。円軌道としての軸力の釣り合いの軌跡は、\(z=8\) では動径の限界で、\(z=12\) では電子間の節で終わり、そこでの部分力は共有結合の部分力に対して比 \(0.11641\) と \(0.43867\) にある。距離 \(D=4r_c\) から \(8r_c\) にある二つの中性な限界軌道は、向きに応じて引力または斥力であり、その大きさは同じ部分力の \(2\times 10^{-2}\) から \(10^{-3}\) までである。ねじれの補正は、クーロン多重極を上回る小さな超過である。
+
+節はなおポテンシャルを下に非有界にするので、これらの停留幾何のどれも大域的な極小ではない。ボーア・スペクトルは含意されない。一つの同定 \(r_c=a_0\) が、無次元の力をニュートンに変え、実験室の長さと深さを一のオーダーの因子だけ外す。
+
+\begin{thebibliography}{9}
+
+\bibitem{dst-main}
+Anonymous,
+``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{codata2018}
+E.~Tiesinga, P.~J.~Mohr, D.~B.~Newell, and B.~N.~Taylor,
+``CODATA recommended values of the fundamental physical constants: 2018,''
+\textit{Rev.\ Mod.\ Phys.} \textbf{93}, 025010 (2021).
+
+\bibitem{sims-nist}
+National Institute of Standards and Technology,
+Mathematical and Computational Sciences Division highlight,
+``Most Accurate Molecular Quantum Computations to Date Performed,''
+reporting the Born--Oppenheimer equilibrium separation \(R=1.4011\,a_0\) of H\(_2\).
+\url{https://math.nist.gov/mcsd/highlights/dihydrogen.html}.
+
+\bibitem{holsch2019}
+N.~H\"olsch, M.~Beyer, E.~J.~Salumbides, K.~S.~E.~Eikema, W.~Ubachs, Ch.~Jungen, and F.~Merkt,
+``Benchmarking theory with an improved measurement of the ionization and dissociation energies of H\(_2\),''
+\textit{Phys.\ Rev.\ Lett.} \textbf{122}, 103002 (2019).
+
+\end{thebibliography}
+
+\end{document}

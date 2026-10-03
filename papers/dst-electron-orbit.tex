@@ -1,0 +1,376 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{Electron Orbits from the Signed Electrostatic Force:\\
+Covalent, Metallic, and Intermolecular Magnitudes}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In double spacetime theory the electromagnetic channel carries the same interference factor \(\gamma_s\) as the gravitational one. On the equal-scale locus the force between two charges is the Coulomb force divided by \(\gamma_s\). The sign of \(\gamma_s\) selects attraction or repulsion, and a circular electron orbit is real only where that factor is positive. In the outer well the orbit is strictly stable only outside a marginal radius fixed by \(\tan x=1/(2x+\tanh x)\), and the energy of the circular family is stationary at that same radius. A symmetric two-center orbit cancels the axial force on each proton for every separation, with a common partial magnitude \(k e^{2}/(\gamma_s(R) R^{2})\). Kept circular, that family has a minimum; at the angular momentum of the minimum the joint potential in the plane of separation and orbit radius is a saddle, and the second derivative along the balance ray vanishes. The force that opposes separation is then anharmonic. Sharing the same orbit among \(z\) neighbors leaves a circular axial balance only out to a margin, where the partial force is a pure ratio to the covalent value and the pair energy stays positive. Two neutral marginal orbits, placed a few radii apart, retain a force after the monopole cancels; at four to eight radii that residue is a few parts in a hundred of the covalent partial force, and most of it is already present in the pure Coulomb law. Identifying the marginal radius with the Bohr radius is one external input. The resulting length and depth miss the laboratory hydrogenic numbers by a factor of order one.
+\end{abstract}
+
+\section{Introduction}
+
+The electron-shell section of double spacetime theory writes an electrostatic force whose denominator is the scalar interference factor \(\gamma_s\)~\cite{dst-main}. At large separation the factor tends to one and the Coulomb law is recovered. Closer in, \(\gamma_s\) passes through zero on a discrete set of radii and is negative between those nodes. A node is a divergence of the force. It is not a circular orbit, and the radial potential on the outer side of a node is unbounded below.
+
+This note takes that force as given and computes the orbits it allows, together with the magnitudes of three bindings built from the same pairs: a two-center covalent orbit, a nearest-neighbor bond that carries only \(2/z\) of an electron pair, and the residual force between two neutral one-center orbits. The equal-scale identification \(\alpha=\beta=\ell/r\) is the reading already used for the nuclear and Coulomb layers. The length \(\ell\) is not derived. Bohr's \(n^{2}\) rule and the fine-structure constant are not derived. Where a laboratory number enters, it is marked as an input.
+
+\section{The signed force}
+\label{sec:force}
+
+On one axis the interference factor of the dual rotor is
+\[
+\gamma_s
+  =\cosh\frac{\alpha}{2}\cos\frac{\beta}{2}
+  -\sinh\frac{\alpha}{2}\sin\frac{\beta}{2}.
+\]
+The equal-scale locus sets \(\alpha=\beta=\ell/r\). In the dimensionless variable \(x=\ell/(2r)\),
+\begin{equation}
+\label{eq:gamma}
+\gamma_s(x)=\cosh x\cos x-\sinh x\sin x,
+\qquad
+\gamma_s'(x)=-2\cosh x\sin x.
+\end{equation}
+Thus \(\gamma_s(0)=1\), and on each interval \([n\pi,(n+1)\pi]\) there is one simple zero. The first zero \(x_1\) is the unique root of
+\begin{equation}
+\label{eq:node}
+\tan x=\coth x
+\end{equation}
+in \((\pi/4,\pi/2)\). Numerically \(x_1=0.93755\), so the outermost node lies at
+\[
+\frac{r_1}{\ell}=\frac{1}{2x_1}=0.53330.
+\]
+Ordered by decreasing radius, the outer well \(r>r_1\) has \(\gamma_s>0\), the shell \(r_2<r<r_1\) has \(\gamma_s<0\), and the sign continues to alternate.
+
+The force that increases the separation of two charges is
+\begin{equation}
+\label{eq:force}
+F_r=\frac{k q_1 q_2}{\gamma_s(r)\,r^{2}},
+\qquad
+k=\frac{1}{4\pi\epsilon_0}.
+\end{equation}
+Like charges repel where \(\gamma_s>0\) and attract where \(\gamma_s<0\). Unlike charges do the opposite. In the outer well an electron and a proton therefore attract, and the attraction becomes the Coulomb law as \(r\to\infty\).
+
+The Taylor expansion at the origin follows from \(\gamma_s''(0)=-2\) and \(\gamma_s''''(0)=-4\),
+\begin{equation}
+\label{eq:series}
+\gamma_s(x)=1-x^{2}-\frac16 x^{4}+O(x^{6}).
+\end{equation}
+Hence
+\[
+\frac{1}{\gamma_s(r)\,r^{2}}
+  =r^{-2}+\frac{\ell^{2}}{4}\,r^{-4}+\frac{7\ell^{4}}{96}\,r^{-6}+O(r^{-8}).
+\]
+The correction to the Coulomb force begins at order \((\ell/r)^{2}\).
+
+For \(r>r_1\) the pair potential that vanishes at infinity is the integral of~\eqref{eq:force}. The substitution \(s=\ell/(2x)\) gives \(ds/s^{2}=-(2/\ell)\,dx\), and therefore
+\begin{equation}
+\label{eq:potential}
+\int_r^{\infty}\frac{ds}{\gamma_s(s)\,s^{2}}
+  =\frac{2}{\ell}\int_0^{\ell/(2r)}\frac{dx}{\gamma_s(x)},
+\end{equation}
+provided the path stays in the outer well. The integral diverges as the upper limit approaches \(x_1\), so the unlike-charge potential falls without a lower bound at the node. Inside the node the same formula does not continue: the path from infinity would cross a pole. All potentials below are outer-well potentials.
+
+\section{One-center circular orbits}
+\label{sec:onecenter}
+
+A proton is fixed at the origin and an electron of mass \(m\) moves in the central force~\eqref{eq:force} with \(q_1 q_2=-e^{2}\). The radial acceleration satisfies
+\[
+m\ddot r-\frac{L^{2}}{m r^{3}}
+  =-\frac{k e^{2}}{\gamma_s(r)\,r^{2}},
+\]
+with \(L=m r^{2}\dot\theta\) conserved. A circular orbit has \(\ddot r=0\), so
+\begin{equation}
+\label{eq:v2}
+v^{2}=\frac{k e^{2}}{m\,\gamma_s(r)\,r}.
+\end{equation}
+The right-hand side is positive only where \(\gamma_s>0\). On a repulsive layer \(v^{2}\) is negative and there is no circular orbit. In the Coulomb limit \(\gamma_s=1\) one recovers \(v^{2}=k e^{2}/(m r)\).
+
+The effective potential at fixed \(L\) is \(V(r)+L^{2}/(2m r^{2})\), where \(F_r=-\partial V/\partial r\) and \(F_r\) points outward. Write \(f(r)=k e^{2}/(\gamma_s r^{2})\) for the inward magnitude in the outer well. Circular balance is \(L^{2}/(m r^{3})=f\), and the second derivative of the effective potential there is \(f'+3f/r\). The orbit is strictly stable when
+\[
+\frac{r}{f}\frac{df}{dr}>-3.
+\]
+With \(f\propto 1/(\gamma_s r^{2})\) this is
+\[
+\frac{r}{\gamma_s}\frac{d\gamma_s}{dr}<1.
+\]
+The chain rule and~\eqref{eq:gamma} give \(d\gamma_s/dr=(2x/r)\cosh x\sin x\), so the stability condition in the outer well is
+\begin{equation}
+\label{eq:stable}
+2x\cosh x\sin x<\gamma_s(x).
+\end{equation}
+Equivalently,
+\begin{equation}
+\label{eq:marginal}
+\tan x=\frac{1}{2x+\tanh x}.
+\end{equation}
+The unique root in \((0,x_1)\) is \(x_c=0.55478\). The marginal radius and its ratio to the node are
+\[
+\frac{r_c}{\ell}=\frac{1}{2x_c}=0.90125,
+\qquad
+\frac{r_c}{r_1}=\frac{x_1}{x_c}=1.6899.
+\]
+At that point \(\gamma_s(x_c)=0.67675\). For \(0\le x<x_c\), that is for \(r>r_c\), the inequality~\eqref{eq:stable} holds and the circular orbit is strictly stable. Between the node and \(r_c\) a circular solution still exists, because \(\gamma_s>0\), but it is unstable.
+
+The energy of a circular orbit is not the effective potential at fixed \(L\): each radius has its own angular momentum. With the zero of potential at infinity,
+\[
+E(r)
+  =\frac{k e^{2}}{2\gamma_s(r)\,r}
+  -k e^{2}\int_r^{\infty}\frac{ds}{\gamma_s(s)\,s^{2}}.
+\]
+Differentiating under the integral and using~\eqref{eq:potential} yields
+\begin{equation}
+\label{eq:dE}
+\frac{dE}{dr}
+  =\frac{k e^{2}}{2\gamma_s^{2} r^{2}}
+  \left(\gamma_s-r\frac{d\gamma_s}{dr}\right).
+\end{equation}
+The parenthesis vanishes at the same locus as the marginal-stability condition \(r\,d\gamma_s/dr=\gamma_s\). For \(r>r_c\) one has \(dE/dr>0\); for \(r_1<r<r_c\) one has \(dE/dr<0\). The circular family therefore has a minimum at the marginal orbit, and every strictly stable circular orbit lies outside it and sits higher. The minimizing orbit is only marginally stable: the second derivative of the fixed-\(L\) effective potential vanishes there.
+
+The minimum value is a quadrature of~\eqref{eq:potential}. With \(I(x_c)=\int_0^{x_c}dx/\gamma_s(x)=0.62819\),
+\[
+\frac{E(r_c)}{k e^{2}/\ell}
+  =\frac{1}{2\gamma_s(x_c)\,(r_c/\ell)}-2I(x_c)
+  =-0.43661.
+\]
+The inward force on that orbit has magnitude
+\begin{equation}
+\label{eq:F1}
+F(r_c)
+  =\frac{k e^{2}}{\gamma_s(x_c)\,r_c^{2}}
+  =1.8192\,\frac{k e^{2}}{\ell^{2}}.
+\end{equation}
+These two numbers are properties of \(\gamma_s\). They become laboratory energies and forces only after \(\ell\), or \(r_c\), is identified with a measured length.
+
+\section{The two-center orbit and the covalent force}
+\label{sec:covalent}
+
+Place protons of charge \(+e\) at \(z=\pm R/2\) and electrons of charge \(-e\) at cylindrical radius \(\rho\) in the midplane, opposite each other. The three separations are the proton--proton distance \(R\), the electron--electron distance \(r_{ee}=2\rho\), and the four equal electron--proton distances
+\[
+r_{ep}=\sqrt{(R/2)^{2}+\rho^{2}}.
+\]
+All three are required to lie outside \(r_1\), so that~\eqref{eq:potential} applies to every pair.
+
+The axial force on the proton at \(+R/2\), counted positive when it increases \(R\), is the repulsion from the other proton minus the inward axial part of the attraction to each electron,
+\begin{equation}
+\label{eq:Faxial}
+F_z
+  =k e^{2}\left(
+    \frac{1}{\gamma_s(R)\,R^{2}}
+    -\frac{R}{\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right).
+\end{equation}
+It vanishes when \(\gamma_s(r_{ep})\,r_{ep}^{3}=\gamma_s(R)\,R^{3}\). The ray
+\begin{equation}
+\label{eq:ray}
+r_{ep}=R,
+\qquad
+\rho=\frac{\sqrt{3}}{2}\,R
+\end{equation}
+solves that equation for every \(R\), because the two distances that enter~\eqref{eq:Faxial} are equal and therefore carry the same \(\gamma_s\). The cancellation does not use the form of \(\gamma_s\), only that \(\gamma_s\) depends on distance alone. On this ray the two partial forces are equal in magnitude,
+\begin{equation}
+\label{eq:Fpar}
+F_{\parallel}(R)=\frac{k e^{2}}{\gamma_s(R)\,R^{2}}.
+\end{equation}
+That common magnitude is the covalent force scale at separation \(R\). The net axial force is zero.
+
+The electrons remain on a circular orbit when the cylindrical force on each of them points inward. On the ray, \(r_{ee}=\sqrt{3}\,R\) and
+\[
+F_{\rho}
+  =\frac{k e^{2}}{R^{2}}
+  \left(
+    \frac{1}{3\gamma_s(\ell/(2\sqrt{3}\,R))}
+    -\frac{\sqrt{3}}{\gamma_s(\ell/(2R))}
+  \right).
+\]
+In the outer well \(\gamma_s\) decreases as \(x\) increases, and \(R<r_{ee}\) implies \(\gamma_s(R)<\gamma_s(r_{ee})\). The ratio of those factors is then strictly less than \(1\), while the orbit condition asks only that it be less than \(3\sqrt{3}\). Thus \(F_{\rho}<0\) at every \(R>r_1\): the ray lies entirely in the circular regime. The kinetic energy of the two electrons on that orbit is \(K=-\rho F_{\rho}\).
+
+The total energy \(E(R)=V(R)+K(R)\) along the ray, with \(V\) from~\eqref{eq:potential} and with the angular momentum retuned so that the motion stays circular, has a single minimum in the outer well. Quadrature places it at
+\begin{equation}
+\label{eq:Rstar}
+\frac{R_{\ast}}{\ell}=0.93816,
+\qquad
+\gamma_s(R_{\ast})=0.70277,
+\qquad
+\frac{E(R_{\ast})}{k e^{2}/\ell}=-1.0084.
+\end{equation}
+The partial force there, and the curvature and the maximum slope of this circular family, are
+\begin{align}
+F_{\parallel}(R_{\ast})
+  &=1.6167\,\frac{k e^{2}}{\ell^{2}},
+\label{eq:Fcov}\\
+\frac{d^{2}E}{dR^{2}}\bigg|_{R_{\ast}}
+  &=6.558\,\frac{k e^{2}}{\ell^{3}},
+\label{eq:kappa}\\
+\max_{R>R_{\ast}}\frac{dE}{dR}
+  &=0.51570\,\frac{k e^{2}}{\ell^{2}},
+\label{eq:Fmaxcirc}
+\end{align}
+the maximum being attained at \(R/\ell=1.210\). The curvature~\eqref{eq:kappa} is the spring constant of the bond when the electrons are kept on the circular orbit. The slope~\eqref{eq:Fmaxcirc} is the greatest force that must be applied to separate the protons along that family. Both are smaller than the partial force~\eqref{eq:Fcov}, which is the size of each cancelling piece rather than the size of the remainder.
+
+Holding the angular momentum fixed at the circular value belonging to \(R_{\ast}\) changes the conclusion. The effective potential is then \(V(R,\rho)+K_{\ast}(\rho_{\ast}/\rho)^{2}\). At \((R_{\ast},\rho_{\ast})\) its Hessian in the \((R,\rho)\) plane has two positive diagonal entries and a negative determinant: the critical point is a saddle. Restricted to the ray~\eqref{eq:ray}, the second derivative is \(-2\times 10^{-5}\,k e^{2}/\ell^{3}\), indistinguishable from zero at the resolution of the quadrature, and the potential decreases as \(R\) decreases toward the node. Separation is still opposed. The opposing force is anharmonic, and its maximum on the ray is
+\begin{equation}
+\label{eq:FmaxL}
+\max_{R>R_{\ast}}\frac{dU}{dR}
+  =0.23901\,\frac{k e^{2}}{\ell^{2}},
+\end{equation}
+attained at \(R/\ell=1.709\). The fixed-angular-momentum problem therefore supplies a tensile force and does not supply a harmonic spring. The channel that runs inward, at this angular momentum and at others, is the unbounded potential at the node already present in the one-center problem. The balance~\eqref{eq:ray} is a stationary geometry of the axial force. It is not a global minimum of the energy.
+
+Relative to two separate marginal atoms the circular-family minimum lies lower by
+\[
+E(R_{\ast})-2E(r_c)=-0.13518\,\frac{k e^{2}}{\ell}.
+\]
+That difference compares two stationary values. It is not the barrier along the shared-orbit ray, which rises toward zero as \(R\to\infty\), a gap of about \(k e^{2}/\ell\).
+
+\section{Coordination and the metallic force}
+\label{sec:metal}
+
+A nearest-neighbor bond in a monovalent coordination shell of \(z\) neighbors is given the electron content of that bond, \(\nu=2/z\). The dimer is \(z=1\), \(\nu=2\). The charge \(-\nu e\) is split into two lumps of charge \(-(\nu/2)e\) at opposite points of the midplane circle. The axial force~\eqref{eq:Faxial} becomes
+\begin{equation}
+\label{eq:Fznu}
+F_z
+  =k e^{2}\left(
+    \frac{1}{\gamma_s(R)\,R^{2}}
+    -\frac{\nu R}{2\,\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right),
+\end{equation}
+and the cylindrical force on one lump is
+\[
+F_{\rho}
+  =k e^{2}\left(
+    \frac{(\nu/2)^{2}}{\gamma_s(r_{ee})\,r_{ee}^{2}}
+    -\frac{\nu\rho}{\gamma_s(r_{ep})\,r_{ep}^{3}}
+  \right).
+\]
+Axial balance is \(\gamma_s(r_{ep})\,r_{ep}^{3}=(\nu/2)\,\gamma_s(R)\,R^{3}\). For \(\nu=2\) this is the covalent ray. For a smaller \(\nu\) the electron--proton distance must lie inside the proton--proton distance, so the axial component can still match a weaker charge.
+
+The partial force at a root of~\eqref{eq:Fznu} is still the proton--proton piece \(F_{\parallel}(R)\). What depends on \(\nu\) is the radius at which a circular root exists. Two margins appear.
+
+For \(z=8\), so \(\nu=1/4\), axial balance and a strictly inward \(F_{\rho}\) coexist only for \(R/\ell\le 2.3591\). At the margin \(F_{\rho}=0\): the shared orbit has become radially marginal, with
+\[
+\frac{\rho}{\ell}=0.36615,
+\qquad
+\gamma_s=0.95474,
+\qquad
+F_{\parallel}=0.18820\,\frac{k e^{2}}{\ell^{2}}.
+\]
+The ratio to the covalent partial force~\eqref{eq:Fcov} is
+\begin{equation}
+\label{eq:ratio8}
+\frac{F_{\parallel}(z=8)}{F_{\parallel}(R_{\ast})}=0.11641.
+\end{equation}
+Along this circular locus the energy is positive and decreases as \(R\) increases. There is no stationary bond length. The margin is where the circular regime ends, not where the energy is minimal.
+
+For \(z=12\), so \(\nu=1/6\), the outer-well locus ends because the electron--electron separation reaches the node, at
+\[
+\frac{R}{\ell}=1.2908,
+\qquad
+\frac{\rho}{\ell}=0.26688,
+\qquad
+F_{\parallel}=0.70920\,\frac{k e^{2}}{\ell^{2}}.
+\]
+The ratio is
+\begin{equation}
+\label{eq:ratio12}
+\frac{F_{\parallel}(z=12)}{F_{\parallel}(R_{\ast})}=0.43867.
+\end{equation}
+The energy on this locus is positive as well. A twelfth of an electron pair, placed in the midplane, does not cancel the proton repulsion down to a bound root in the outer well; the locus runs into the node while the energy is still falling.
+
+Both ratios are properties of those margins. A crystal in which each ion is surrounded symmetrically can have a vanishing net force by symmetry even though an isolated pair at the same spacing does not. That lattice sum is not the calculation above. An empirical nearest-neighbor distance would fix \(F_{\parallel}\) by~\eqref{eq:Fpar} directly; it is an input, and it is not required for~\eqref{eq:ratio8} or~\eqref{eq:ratio12}.
+
+\section{Neutral pairs and the intermolecular force}
+\label{sec:inter}
+
+A marginal one-center orbit is neutral: the proton charge \(+e\) and the electron charge \(-e\) sit a distance \(r_c\) apart. Two such orbits whose centers are a distance \(D\) apart have four intermolecular pairs. If each electron were coincident with its proton, every pair would share one distance, \(\gamma_s\) would be a common factor, and~\eqref{eq:force} would vanish with the net charge. The monopole cancels. What remains is the failure of that coincidence, together with the failure of \(\gamma_s\) to be identically one.
+
+The expansion of Section~\ref{sec:force} separates the two failures. The piece \(r^{-2}\) is the Coulomb law and already produces a dipole--dipole force once the electron is displaced by \(r_c\). The piece \((\ell^{2}/4) r^{-4}\) is the first torsional correction; it too cancels in the coincident limit and leaves a remainder of higher order in \(r_c/D\).
+
+The numerical residue is the sum of the four forces on the left-hand atom. Two collinear placements are enough to see the size and the sign. In the parallel placement both electrons are displaced from their protons by \(+r_c\) along the line of centers, which runs from the left proton to the right one. In the inward placement the electrons lie between the protons. Attraction is counted positive. Writing \(F\) for the net force and \(F_{\mathrm{C}}\) for the same sum at \(\gamma_s=1\),
+
+\begin{center}
+\begin{tabular}{crrrr}
+\(D/r_c\) & \(F/F_{\parallel}\) & \(F_{\mathrm{C}}/F_{\parallel}\) & \(F/F_{\parallel}\) & \(F_{\mathrm{C}}/F_{\parallel}\) \\
+ & \multicolumn{2}{c}{parallel} & \multicolumn{2}{c}{inward} \\
+4 & \(+0.021405\) & \(+0.019883\) & \(-0.079746\) & \(-0.068747\) \\
+6 & \(+0.003809\) & \(+0.003695\) & \(-0.008185\) & \(-0.007827\) \\
+8 & \(+0.001164\) & \(+0.001145\) & \(-0.002013\) & \(-0.001970\) \\
+\end{tabular}
+\end{center}
+
+The parallel column is attractive, the inward column repulsive. The inward geometry puts the two electrons closer to each other than either is to the foreign proton, so the nearest pair repels. Both columns fall as \(D\) increases. From four radii to eight the parallel force drops by a factor of about eighteen, close to the factor sixteen of a \(D^{-4}\) dipole force. At eight radii the pure Coulomb piece is already \(0.001145\) of the covalent partial force, and the torsional excess over that piece is \(1.9\times 10^{-5}\). The intermolecular magnitude in this model is the multipole residue of two neutral orbits. The factor \(1/\gamma_s-1\) corrects it by a few percent at four radii and by about one percent at eight.
+
+\section{A numerical illustration}
+\label{sec:numbers}
+
+The magnitudes above are pure numbers times \(k e^{2}/\ell\) or \(k e^{2}/\ell^{2}\). One identification turns them into electron-volts and newtons: the marginal radius is the Bohr radius,
+\[
+r_c=a_0.
+\]
+Then \(\ell=a_0/(r_c/\ell)=1.1096\,a_0\). With the CODATA values of \(a_0\) and of the Hartree energy \(E_h=k e^{2}/a_0\)~\cite{codata2018},
+\[
+\frac{k e^{2}}{\ell}=0.90125\,E_h=24.524\,\mathrm{eV},
+\qquad
+\frac{k e^{2}}{a_0^{2}}=8.2387\times 10^{-8}\,\mathrm{N}.
+\]
+The one-center minimum becomes
+\[
+E(r_c)=-10.708\,\mathrm{eV},
+\]
+against \(\tfrac12 E_h=13.606\,\mathrm{eV}\) for an infinitely heavy proton. The covalent minimum sits at
+\[
+R_{\ast}=1.0410\,a_0=0.55085\,\text{\AA},
+\]
+against the Born--Oppenheimer equilibrium separation \(1.4011\,a_0\) of H\(_2\)~\cite{sims-nist}. The gap \(E(R_{\ast})-2E(r_c)\) becomes \(3.315\,\mathrm{eV}\). The measured dissociation energy of ortho-H\(_2\) from \(N=1\) is \(4.463\,\mathrm{eV}\)~\cite{holsch2019}; that number includes the zero-point energy, which this classical orbit does not have. The forces at the same identification are
+\begin{align*}
+F(r_c)&=122\,\mathrm{nN},&
+F_{\parallel}(R_{\ast})&=108\,\mathrm{nN},\\
+\max\frac{dE}{dR}&=34.5\,\mathrm{nN},&
+\max\frac{dU}{dR}&=16.0\,\mathrm{nN}.
+\end{align*}
+The partial force is the cancelling piece. The two smaller numbers are the greatest net forces along the circular family and along the fixed-angular-momentum ray. The length is short of the laboratory bond by a factor \(1.35\), and the one-center depth is short of \(\tfrac12 E_h\) by a factor \(1.27\). The identification \(r_c=a_0\) is an input, and these factors are the discrepancy it produces. They are not absorbed into a second choice of \(\ell\).
+
+\section{Conclusions}
+
+The signed force~\eqref{eq:force} fixes where a circular electron orbit exists and where it is stable. Existence is the sign of \(\gamma_s\). Strict stability in the outer well is the inequality~\eqref{eq:stable}, and the energy of the circular family is minimized at the same radius, which is only marginally stable. The covalent ray \(\rho=(\sqrt{3}/2)R\) cancels the axial force at every separation, with partial magnitude~\eqref{eq:Fpar}. Kept circular, the ray has a minimum at \(R_{\ast}=0.93816\,\ell\), a spring constant \(6.558\,k e^{2}/\ell^{3}\), and a maximum restoring force \(0.51570\,k e^{2}/\ell^{2}\). At fixed angular momentum that geometry is a saddle, the second derivative along the ray vanishes, and the force opposing separation peaks at \(0.23901\,k e^{2}/\ell^{2}\).
+
+A bond that carries \(\nu=2/z\) electrons has no negative-energy root in the outer well for \(z=8\) or \(z=12\). The circular axial-balance locus ends at a radial margin for \(z=8\) and at the electron--electron node for \(z=12\), where the partial forces stand in the ratios \(0.11641\) and \(0.43867\) to the covalent partial force. Two neutral marginal orbits a distance \(D=4r_c\) to \(8r_c\) apart attract or repel, according to orientation, by \(2\times 10^{-2}\) down to \(10^{-3}\) of that same partial force. The torsional correction is the small excess over the Coulomb multipole.
+
+The node still renders the potential unbounded below, so none of these stationary geometries is a global minimum. The Bohr spectrum is not implied. One identification, \(r_c=a_0\), converts the dimensionless forces into newtons and misses the laboratory length and depth by a factor of order one.
+
+\begin{thebibliography}{9}
+
+\bibitem{dst-main}
+Anonymous,
+``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{codata2018}
+E.~Tiesinga, P.~J.~Mohr, D.~B.~Newell, and B.~N.~Taylor,
+``CODATA recommended values of the fundamental physical constants: 2018,''
+\textit{Rev.\ Mod.\ Phys.} \textbf{93}, 025010 (2021).
+
+\bibitem{sims-nist}
+National Institute of Standards and Technology,
+Mathematical and Computational Sciences Division highlight,
+``Most Accurate Molecular Quantum Computations to Date Performed,''
+reporting the Born--Oppenheimer equilibrium separation \(R=1.4011\,a_0\) of H\(_2\).
+\url{https://math.nist.gov/mcsd/highlights/dihydrogen.html}.
+
+\bibitem{holsch2019}
+N.~H\"olsch, M.~Beyer, E.~J.~Salumbides, K.~S.~E.~Eikema, W.~Ubachs, Ch.~Jungen, and F.~Merkt,
+``Benchmarking theory with an improved measurement of the ionization and dissociation energies of H\(_2\),''
+\textit{Phys.\ Rev.\ Lett.} \textbf{122}, 103002 (2019).
+
+\end{thebibliography}
+
+\end{document}

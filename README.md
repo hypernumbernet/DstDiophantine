@@ -192,5 +192,6 @@ Every English source has a Japanese counterpart in [`papers/japanese/`](papers/j
 | Gravity | De Broglie Waves as Dual-Rotor Phase Lag | [`dst-de-broglie-wave.tex`](papers/dst-de-broglie-wave.tex) |
 | Gravity | Quantum Gravity as Torsional Mismatch | [`dst-quantum-gravity.tex`](papers/dst-quantum-gravity.tex) |
 | Gravity | Gravitational Lensing by Torsion Stars | [`dst-gravitational-lensing.tex`](papers/dst-gravitational-lensing.tex) |
+| Gravity | Electron Orbits from the Signed Electrostatic Force | [`dst-electron-orbit.tex`](papers/dst-electron-orbit.tex) |
 | Diophantine | Discrete Biquaternionic Double Spacetime (Diophantine programme) | [`dst-diophantine.tex`](papers/dst-diophantine.tex) |
 | Logic | Dual Spacetime 4-Valued Logic (D4L) | [`dst-4-valued-logic.tex`](papers/dst-4-valued-logic.tex) |
