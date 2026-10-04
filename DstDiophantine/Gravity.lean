@@ -20,6 +20,7 @@ import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
+import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
@@ -200,6 +201,14 @@ The straight line of one fixed jet is not itself that geodesic.
   throughout the outer well. In the first repulsive shell it is strictly
   increasing and changes sign between \(3/2\) and \(8/5\), so there is
   exactly one such square.
+* `ElectronCapacity` — two electrons at the ends of a diameter have no radial
+  balance in the outer well and exactly one in the first repulsive shell, for
+  every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
+  electrons at the vertices of a cube likewise have exactly one radial balance
+  in that shell, and the outward force restores the radius. Monopole, dipole,
+  and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); two
+  complementary chiral seats give \(2\), \(8\), and \(18\). These counts are
+  not indices of the equal-scale nodes.
 * `Lensing` — weak deflection by one thin shell. Angles are in units of
   the shell's angular radius, and \(c=(b_m/R)^2\). The tangential ratio
   stays finite at the limb; the radial slope does not. An attractive shell
@@ -634,6 +643,21 @@ example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
 /-- Regression: `r₀ = 1.2` fm is not consistent with `n₀ = 0.16` fm⁻³. -/
 example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
   numberDensity_radiusCoeff_1_2_ne_saturation
+
+/-- Regression: a diameter has one radial balance in the first repulsive shell. -/
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    pairBalance 1 x = 0 :=
+  exists_unique_diameter_shell (by norm_num)
+
+/-- Regression: a cube has one radial balance in the first repulsive shell. -/
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    cubeOutward 1 x = 0 :=
+  exists_unique_cube_shell (by norm_num)
+
+/-- Regression: two chiral seats on modes of dimensions `1`, `3`, and `5`. -/
+example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+    Module.finrank ℝ Gravity.quadrupole) = 18 := by
+  simpa using shell_seat_counts.2.2
 
 /-- Regression: first Coulombic node lies in \((\pi/4,1)\). -/
 example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
