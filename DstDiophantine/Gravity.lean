@@ -19,6 +19,7 @@ import DstDiophantine.Gravity.DualRotorMotor
 import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
+import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
@@ -194,6 +195,11 @@ The straight line of one fixed jet is not itself that geodesic.
   yield no real circular \(v^2\). Equal-scale \(r_2/r_1\) is not the Bohr
   ratio \(4\). Any strictly distance-decreasing equal phase places
   successive nodes inward, so they cannot coincide with the outward Bohr radii.
+* `ElectronSquare` — on the square the two electrostatic components reduce
+  to \(\gamma_s(\sqrt{2}x)=2\sqrt{2}\,\gamma_s(x)\). That balance is negative
+  throughout the outer well. In the first repulsive shell it is strictly
+  increasing and changes sign between \(3/2\) and \(8/5\), so there is
+  exactly one such square.
 * `Lensing` — weak deflection by one thin shell. Angles are in units of
   the shell's angular radius, and \(c=(b_m/R)^2\). The tangential ratio
   stays finite at the limb; the radial slope does not. An attractive shell
