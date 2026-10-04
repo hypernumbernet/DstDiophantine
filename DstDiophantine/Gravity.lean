@@ -21,6 +21,7 @@ import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronCapacity
+import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
@@ -209,6 +210,12 @@ The straight line of one fixed jet is not itself that geodesic.
   and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); two
   complementary chiral seats give \(2\), \(8\), and \(18\). These counts are
   not indices of the equal-scale nodes.
+* `ElectronBoundary` — the cube's far-field coefficient lies strictly between
+  \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
+  outer well. The nearest chord of a regular dodecahedron is shorter than its
+  radius, and the far-field coefficient of the twenty vertices is strictly
+  less than \(8\). For every \(Z\ge 8\) the radial response therefore equals
+  \(Z\) at some phase before that chord meets the first node.
 * `Lensing` — weak deflection by one thin shell. Angles are in units of
   the shell's angular radius, and \(c=(b_m/R)^2\). The tangential ratio
   stays finite at the limb; the radial slope does not. An attractive shell
@@ -648,6 +655,16 @@ example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     pairBalance 1 x = 0 :=
   exists_unique_diameter_shell (by norm_num)
+
+/-- Regression: for `Z ≥ 3` a cube has no radial root in the outer well. -/
+example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    cubeOutward Z x < 0 :=
+  cube_no_outer_root hZ hx
+
+/-- Regression: a dodecahedron of charge `Z ≥ 8` balances before the chord node. -/
+example {Z : ℝ} (hZ : 8 ≤ Z) :
+    ∃ x ∈ Set.Ioo (0 : ℝ) dodecaWall, dodecaResponse x = Z :=
+  exists_dodeca_outer_root hZ
 
 /-- Regression: a cube has one radial balance in the first repulsive shell. -/
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
