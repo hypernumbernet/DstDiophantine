@@ -22,6 +22,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronBoundary
+import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
@@ -216,6 +217,17 @@ The straight line of one fixed jet is not itself that geodesic.
   radius, and the far-field coefficient of the twenty vertices is strictly
   less than \(8\). For every \(Z\ge 8\) the radial response therefore equals
   \(Z\) at some phase before that chord meets the first node.
+* `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
+  \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
+  above the ground state is less than one such unit, and the occupation is
+  less than \(2e^{-x}\) once \(x\ge 1\). For \(n\ge 2\) the shape
+  \(x^n/(e^x-1)\) has one positive maximum, in \((n-1,n)\): the frequency
+  density peaks in \((5/2,3)\) and the wavelength density in \((9/2,5)\).
+  The maximizing wavelength times the temperature is constant. The
+  equipartition density \(T\nu^2\) has no maximum. The integral of
+  \(x^3/(e^x-1)\) equals \(\pi^4/15\), so an enclosure whose modes grow as
+  \(\nu^2\) scales as \(T^4\). The constants \(h\), \(k_B\), \(c\), and that
+  mode growth are not roots of \(\gamma_s\).
 * `Lensing` — weak deflection by one thin shell. Angles are in units of
   the shell's angular radius, and \(c=(b_m/R)^2\). The tangential ratio
   stays finite at the limb; the radial slope does not. An attractive shell
@@ -665,6 +677,20 @@ example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
 example {Z : ℝ} (hZ : 8 ≤ Z) :
     ∃ x ∈ Set.Ioo (0 : ℝ) dodecaWall, dodecaResponse x = Z :=
   exists_dodeca_outer_root hZ
+
+section
+open MeasureTheory
+
+/-- Regression: wavelength peak in `(9/2,5)`, frequency peak in `(5/2,3)`,
+and the Bose integral `\pi^4/15`. -/
+example :
+    (9 / 2 : ℝ) < planckPeak 5 ∧ planckPeak 5 < 5 ∧
+      (5 / 2 : ℝ) < planckPeak 3 ∧ planckPeak 3 < 3 ∧
+      ∫ x in Set.Ioi (0 : ℝ), planckShape 3 x = Real.pi ^ 4 / 15 :=
+  ⟨wavelengthPeak_bounds.1, wavelengthPeak_bounds.2,
+    frequencyPeak_bounds.1, frequencyPeak_bounds.2, boseIntegral⟩
+
+end
 
 /-- Regression: a cube has one radial balance in the first repulsive shell. -/
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
