@@ -218,8 +218,12 @@ The straight line of one fixed jet is not itself that geodesic.
   below \(1\), \(2\), and \(5\), so the same absence holds for every nuclear
   charge at least that large. The nearest chord of a regular dodecahedron is
   shorter than its radius, and the far-field coefficient of the twenty vertices
-  is strictly less than \(8\). For every \(Z\ge 8\) the radial response
-  therefore equals \(Z\) at some phase before that chord meets the first node.
+  lies strictly between \(15/2\) and \(8\). Before that chord meets the first
+  node the response stays strictly above \(7\), so every nuclear charge
+  \(Z\le 7\) is pushed outward on that whole interval. For every \(Z\ge 8\)
+  the force is inward at large separation, and the response equals \(Z\) at
+  some phase before the chord meets the node. The response is not asserted
+  to be monotone, and uniqueness of that root is not claimed.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -695,6 +699,20 @@ example {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
 example {Z : ℝ} (hZ : 8 ≤ Z) :
     ∃ x ∈ Set.Ioo (0 : ℝ) dodecaWall, dodecaResponse x = Z :=
   exists_dodeca_outer_root hZ
+
+/-- Regression: the dodecahedral coefficient lies strictly between `15/2` and `8`. -/
+example : (15 / 2 : ℝ) < dodecaCoeff ∧ dodecaCoeff < 8 :=
+  ⟨dodecaCoeff_gt_fifteen_halves, dodecaCoeff_lt_eight⟩
+
+/-- Regression: for `Z ≤ 7` a dodecahedron is pushed outward before the chord node. -/
+example {Z x : ℝ} (hZ : Z ≤ 7) (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall) :
+    7 < dodecaResponse x ∧ 0 < dodecaOutward Z x :=
+  ⟨dodecaResponse_gt_seven hx, dodeca_outward_pos_of_le_seven hZ hx⟩
+
+/-- Regression: for `Z ≥ 8` the dodecahedral far field is inward. -/
+example {Z : ℝ} (hZ : 8 ≤ Z) :
+    ∃ a ∈ Set.Ioo (0 : ℝ) dodecaWall, ∀ x ∈ Set.Ioo (0 : ℝ) a, dodecaOutward Z x < 0 :=
+  dodeca_far_field_inward hZ
 
 section
 open MeasureTheory

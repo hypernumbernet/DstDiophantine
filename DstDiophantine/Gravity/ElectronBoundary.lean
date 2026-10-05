@@ -26,17 +26,19 @@ Uniqueness of the dodecahedral root is not claimed.
   below `1`, `2`, and `5`. For every nuclear charge at least that large, the
   outward force stays inward through the outer well.
 * The nearest chord of a regular dodecahedron is shorter than the radius, and
-  the far-field coefficient of its twenty vertices is strictly less than `8`.
-  For every nuclear charge `Z ≥ 8` the radial response therefore passes through
-  `Z` while every pair is still outside the first node: the force is inward at
-  large separation and outward beside that chord node.
+  the far-field coefficient of its twenty vertices lies strictly between
+  `15/2` and `8`. Before that chord meets the first node the response stays
+  strictly above `7`, so every nuclear charge `Z ≤ 7` is pushed outward on
+  the whole of that interval. For every `Z ≥ 8` the force is inward at large
+  separation, and the response passes through `Z` while every pair is still
+  outside the first node. The response is not asserted to be monotone.
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-open Real Set Filter
+open Real Set Filter Finset
 
 /-! ### Cube coefficient in the outer well -/
 
@@ -825,6 +827,1307 @@ theorem icosa_no_outer_root {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Ioo (0 : ℝ)
   rw [icosaOutward_eq_response hγ.ne' he hm hb]
   have hresp : icosaResponse x < Z := by
     linarith [icosaResponse_lt_icosaCoeff hx, icosaCoeff_lt_five, hZ]
+  exact div_neg_of_neg_of_pos (by linarith) hγ
+
+/-! ### The dodecahedral coefficient lies between 15/2 and 8 -/
+
+private theorem sqrt_five_lt_fiftySix_twentyFifths : sqrt 5 < 56 / 25 := by
+  have hsq : (sqrt 5) ^ 2 < (56 / 25 : ℝ) ^ 2 := by
+    rw [sq_sqrt (by norm_num)]
+    norm_num
+  have habs : |sqrt 5| < |(56 / 25 : ℝ)| := (sq_lt_sq).1 hsq
+  rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 56 / 25)] at habs
+
+private theorem sqrt_five_gt_oneSixSeven_seventyFive : 167 / 75 < sqrt 5 := by
+  have hsq : (167 / 75 : ℝ) ^ 2 < (sqrt 5) ^ 2 := by
+    rw [sq_sqrt (by norm_num)]
+    norm_num
+  have habs : |(167 / 75 : ℝ)| < |sqrt 5| := (sq_lt_sq).1 hsq
+  rwa [abs_of_pos (by norm_num : (0 : ℝ) < 167 / 75), abs_of_nonneg (sqrt_nonneg _)] at habs
+
+theorem dodecaNear_gt_seven_fifths : 7 / 5 < dodecaNear := by
+  have hsq : dodecaNear ^ 2 = 3 * (3 + sqrt 5) / 8 := by
+    unfold dodecaNear
+    exact sq_sqrt (by nlinarith [sqrt_nonneg (5 : ℝ), sqrt_five_gt_one])
+  have hlt : (7 / 5 : ℝ) ^ 2 < dodecaNear ^ 2 := by
+    rw [hsq]
+    have h5 : 167 / 75 < sqrt 5 := sqrt_five_gt_oneSixSeven_seventyFive
+    rw [lt_div_iff₀ (by norm_num)]
+    nlinarith
+  have hnn : 0 ≤ dodecaNear := by
+    unfold dodecaNear
+    exact sqrt_nonneg _
+  rw [← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 7 / 5), ← abs_of_nonneg hnn]
+  exact (sq_lt_sq).mp hlt
+
+private theorem dodecaNear_lt_sevenHundredOne_fiveHundred : dodecaNear < 701 / 500 := by
+  have h5 : sqrt 5 < 56 / 25 := sqrt_five_lt_fiftySix_twentyFifths
+  have hsq : dodecaNear ^ 2 = 3 * (3 + sqrt 5) / 8 := by
+    unfold dodecaNear
+    exact sq_sqrt (by nlinarith [sqrt_nonneg (5 : ℝ), h5])
+  have hlt : dodecaNear ^ 2 < (701 / 500 : ℝ) ^ 2 := by
+    rw [hsq]
+    nlinarith [h5]
+  have hnn : 0 ≤ dodecaNear := by
+    unfold dodecaNear
+    exact sqrt_nonneg _
+  rw [← abs_of_nonneg hnn, ← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 701 / 500)]
+  exact (sq_lt_sq).mp hlt
+
+private theorem sqrt_three_div_two_gt : 433 / 500 < sqrt 3 / 2 := by
+  have h3 : 433 / 250 < sqrt 3 := by
+    have hsq : (433 / 250 : ℝ) ^ 2 < (sqrt 3) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |(433 / 250 : ℝ)| < |sqrt 3| := (sq_lt_sq).1 hsq
+    rwa [abs_of_pos (by norm_num : (0 : ℝ) < 433 / 250), abs_of_nonneg (sqrt_nonneg _)] at habs
+  nlinarith
+
+private theorem sqrt_six_div_four_gt : 61 / 100 < sqrt 6 / 4 := by
+  have h6 : 61 / 25 < sqrt 6 := by
+    have hsq : (61 / 25 : ℝ) ^ 2 < (sqrt 6) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |(61 / 25 : ℝ)| < |sqrt 6| := (sq_lt_sq).1 hsq
+    rwa [abs_of_pos (by norm_num : (0 : ℝ) < 61 / 25), abs_of_nonneg (sqrt_nonneg _)] at habs
+  nlinarith
+
+private theorem sqrt_five_lt_nine_quarters : sqrt 5 < 9 / 4 := by
+  have hsq : (sqrt 5) ^ 2 < (9 / 4 : ℝ) ^ 2 := by
+    rw [sq_sqrt (by norm_num)]
+    norm_num
+  have habs : |sqrt 5| < |(9 / 4 : ℝ)| := (sq_lt_sq).1 hsq
+  rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 9 / 4)] at habs
+
+private theorem dodecaFarScale_gt_fiftyThree_hundredths : 53 / 100 < dodecaFarScale := by
+  have h5 : sqrt 5 < 9 / 4 := sqrt_five_lt_nine_quarters
+  have hsq : dodecaFarScale ^ 2 = 3 * (3 - sqrt 5) / 8 := by
+    unfold dodecaFarScale
+    exact sq_sqrt (by nlinarith [h5])
+  have hlt : (53 / 100 : ℝ) ^ 2 < dodecaFarScale ^ 2 := by
+    rw [hsq]
+    nlinarith [h5]
+  have hnn : 0 ≤ dodecaFarScale := by
+    unfold dodecaFarScale
+    exact sqrt_nonneg _
+  rw [← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 53 / 100), ← abs_of_nonneg hnn]
+  exact (sq_lt_sq).mp hlt
+
+theorem dodecaCoeff_gt_fifteen_halves : 15 / 2 < dodecaCoeff := by
+  have hnear : 7 / 5 < dodecaNear := dodecaNear_gt_seven_fifths
+  have h3 : 433 / 500 < sqrt 3 / 2 := sqrt_three_div_two_gt
+  have h6 : 61 / 100 < sqrt 6 / 4 := sqrt_six_div_four_gt
+  have hfar : 53 / 100 < dodecaFarScale := dodecaFarScale_gt_fiftyThree_hundredths
+  unfold dodecaCoeff
+  nlinarith
+
+/-! ### Polynomial bounds for the interference factor -/
+
+private noncomputable def subSq (y : ℝ) : ℝ := 1 - y ^ 2 - gammaSEqual y
+
+private noncomputable def subSq1 (y : ℝ) : ℝ := 2 * (cosh y * sin y - y)
+
+private noncomputable def subSq2 (y : ℝ) : ℝ :=
+  2 * (sinh y * sin y + cosh y * cos y - 1)
+
+private noncomputable def subSq3 (y : ℝ) : ℝ := 4 * (sinh y * cos y)
+
+private theorem hasDerivAt_subSq (y : ℝ) : HasDerivAt subSq (subSq1 y) y := by
+  have hpow : HasDerivAt (fun t : ℝ => t ^ 2) (2 * y) y := by
+    simpa using hasDerivAt_pow 2 y
+  have hpoly := (hasDerivAt_const y (1 : ℝ)).sub hpow
+  have h := hpoly.sub (hasDerivAt_gammaSEqual y)
+  unfold subSq
+  refine h.congr_deriv ?_
+  unfold subSq1
+  ring
+
+private theorem hasDerivAt_subSq1 (y : ℝ) : HasDerivAt subSq1 (subSq2 y) y := by
+  have hmul : HasDerivAt (fun t : ℝ => cosh t * sin t)
+      (sinh y * sin y + cosh y * cos y) y :=
+    (hasDerivAt_cosh y).mul (hasDerivAt_sin y)
+  have hdiff : HasDerivAt (fun t : ℝ => cosh t * sin t - t)
+      (sinh y * sin y + cosh y * cos y - 1) y :=
+    hmul.sub (hasDerivAt_id' y)
+  have h := hdiff.const_mul 2
+  unfold subSq1
+  refine h.congr_deriv ?_
+  unfold subSq2
+  ring
+
+private theorem hasDerivAt_subSq2 (y : ℝ) : HasDerivAt subSq2 (subSq3 y) y := by
+  have h1 : HasDerivAt (fun t : ℝ => sinh t * sin t)
+      (cosh y * sin y + sinh y * cos y) y :=
+    (hasDerivAt_sinh y).mul (hasDerivAt_sin y)
+  have h2 : HasDerivAt (fun t : ℝ => cosh t * cos t)
+      (sinh y * cos y + cosh y * -sin y) y :=
+    (hasDerivAt_cosh y).mul (hasDerivAt_cos y)
+  have hdiff : HasDerivAt (fun t : ℝ => sinh t * sin t + cosh t * cos t - 1)
+      (cosh y * sin y + sinh y * cos y + (sinh y * cos y + cosh y * -sin y) - 0) y :=
+    (h1.add h2).sub (hasDerivAt_const y (1 : ℝ))
+  have h := hdiff.const_mul 2
+  unfold subSq2
+  refine h.congr_deriv ?_
+  unfold subSq3
+  ring
+
+private theorem hasDerivAt_subSq3 (y : ℝ) : HasDerivAt subSq3 (4 * gammaSEqual y) y := by
+  have hmul : HasDerivAt (fun t : ℝ => sinh t * cos t)
+      (cosh y * cos y + sinh y * -sin y) y :=
+    (hasDerivAt_sinh y).mul (hasDerivAt_cos y)
+  have h := hmul.const_mul 4
+  unfold subSq3
+  refine h.congr_deriv ?_
+  unfold gammaSEqual
+  ring
+
+private theorem segment_strictMono {f f' : ℝ → ℝ} {b : ℝ} (hb : 0 < b)
+    (hcont : ContinuousOn f (Icc 0 b))
+    (hderiv : ∀ y ∈ Ioo (0 : ℝ) b, HasDerivAt f (f' y) y)
+    (hpos : ∀ y ∈ Ioo (0 : ℝ) b, 0 < f' y) :
+    StrictMonoOn f (Icc 0 b) := by
+  refine strictMonoOn_of_deriv_pos (convex_Icc 0 b) hcont ?_
+  intro y hy
+  rw [interior_Icc] at hy
+  rw [(hderiv y hy).deriv]
+  exact hpos y hy
+
+private theorem segment_pos {f f' : ℝ → ℝ} {b : ℝ} (hb : 0 < b) (h0 : f 0 = 0)
+    (hcont : ContinuousOn f (Icc 0 b))
+    (hderiv : ∀ y ∈ Ioo (0 : ℝ) b, HasDerivAt f (f' y) y)
+    (hpos : ∀ y ∈ Ioo (0 : ℝ) b, 0 < f' y) :
+    0 < f b := by
+  have hmono := segment_strictMono hb hcont hderiv hpos
+  have hlt := hmono (by simp [hb.le]) (right_mem_Icc.mpr hb.le) hb
+  simpa [h0] using hlt
+
+private theorem gammaSEqual_anti_on_first {a b : ℝ}
+    (ha : a ∈ Icc (0 : ℝ) π) (hb : b ∈ Icc (0 : ℝ) π) (hab : a < b) :
+    gammaSEqual b < gammaSEqual a := by
+  have hset : Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) = Icc (0 : ℝ) π := by
+    simp
+  exact strictAntiOn_gammaSEqual_even 0 (hset.symm ▸ ha) (hset.symm ▸ hb) hab
+
+private theorem gammaSEqual_lt_one_of_pos {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
+    gammaSEqual y < 1 := by
+  have hπ : y < π :=
+    lt_trans hy1 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+  have hlt := gammaSEqual_anti_on_first ⟨le_rfl, pi_pos.le⟩ ⟨hy0.le, hπ.le⟩ hy0
+  simpa [gammaSEqual_zero] using hlt
+
+private theorem gammaSEqual_lt_sub_sq {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
+    gammaSEqual y < 1 - y ^ 2 := by
+  have hγ : ∀ t ∈ Ioo (0 : ℝ) y, 0 < gammaSEqual t := by
+    intro t ht
+    exact gammaSEqual_pos_of_lt_firstNode ht.1.le (lt_trans ht.2 hy1)
+  have h3pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < 4 * gammaSEqual t := by
+    intro t ht
+    exact mul_pos (by norm_num) (hγ t ht)
+  have hcont3 : ContinuousOn subSq3 (Icc 0 y) := by
+    unfold subSq3
+    exact (by continuity : Continuous fun t : ℝ => 4 * (sinh t * cos t)).continuousOn
+  have h3 := segment_pos hy0 (by unfold subSq3; simp) hcont3 (fun t ht => hasDerivAt_subSq3 t) h3pos
+  have h2pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < subSq3 t := by
+    intro t ht
+    have hmono : StrictMonoOn subSq3 (Icc 0 y) :=
+      segment_strictMono hy0 hcont3 (fun s hs => hasDerivAt_subSq3 s) h3pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [subSq3] using hlt
+  have hcont2 : ContinuousOn subSq2 (Icc 0 y) := by
+    unfold subSq2
+    exact (by continuity :
+      Continuous fun t : ℝ => 2 * (sinh t * sin t + cosh t * cos t - 1)).continuousOn
+  have h2 := segment_pos hy0 (by unfold subSq2; simp) hcont2 (fun t ht => hasDerivAt_subSq2 t) h2pos
+  have h1pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < subSq2 t := by
+    intro t ht
+    have hmono : StrictMonoOn subSq2 (Icc 0 y) :=
+      segment_strictMono hy0 hcont2 (fun s hs => hasDerivAt_subSq2 s) h2pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [subSq2] using hlt
+  have hcont1 : ContinuousOn subSq1 (Icc 0 y) := by
+    unfold subSq1
+    exact (by continuity : Continuous fun t : ℝ => 2 * (cosh t * sin t - t)).continuousOn
+  have h1 := segment_pos hy0 (by unfold subSq1; simp) hcont1 (fun t ht => hasDerivAt_subSq1 t) h1pos
+  have h0pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < subSq1 t := by
+    intro t ht
+    have hmono : StrictMonoOn subSq1 (Icc 0 y) :=
+      segment_strictMono hy0 hcont1 (fun s hs => hasDerivAt_subSq1 s) h1pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [subSq1] using hlt
+  have hcont0 : ContinuousOn subSq (Icc 0 y) := by
+    unfold subSq
+    exact ((continuous_const.sub (continuous_pow 2)).sub continuous_gammaSEqual).continuousOn
+  have h0 := segment_pos hy0 (by unfold subSq; simp [gammaSEqual_zero]) hcont0
+    (fun t ht => hasDerivAt_subSq t) h0pos
+  simpa [subSq] using h0
+
+private noncomputable def lowPoly (y : ℝ) : ℝ :=
+  gammaSEqual y - (1 - y ^ 2 - y ^ 4 / 6)
+
+private noncomputable def lowPoly1 (y : ℝ) : ℝ :=
+  -2 * (cosh y * sin y) + 2 * y + (2 / 3) * y ^ 3
+
+private noncomputable def lowPoly2 (y : ℝ) : ℝ :=
+  2 * (1 + y ^ 2 - sinh y * sin y - cosh y * cos y)
+
+private noncomputable def lowPoly3 (y : ℝ) : ℝ := 4 * (y - sinh y * cos y)
+
+private theorem hasDerivAt_lowPoly (y : ℝ) : HasDerivAt lowPoly (lowPoly1 y) y := by
+  have hsq : HasDerivAt (fun t : ℝ => t ^ 2) (2 * y) y := by
+    simpa using hasDerivAt_pow 2 y
+  have h4 : HasDerivAt (fun t : ℝ => t ^ 4 / 6) (4 * y ^ 3 / 6) y := by
+    simpa using (hasDerivAt_pow 4 y).div_const 6
+  have hinside := ((hasDerivAt_const y (1 : ℝ)).sub hsq).sub h4
+  have h := (hasDerivAt_gammaSEqual y).sub hinside
+  unfold lowPoly
+  refine h.congr_deriv ?_
+  unfold lowPoly1
+  ring
+
+private theorem hasDerivAt_lowPoly1 (y : ℝ) : HasDerivAt lowPoly1 (lowPoly2 y) y := by
+  have hmul : HasDerivAt (fun t : ℝ => -2 * (cosh t * sin t))
+      (-2 * (sinh y * sin y + cosh y * cos y)) y :=
+    ((hasDerivAt_cosh y).mul (hasDerivAt_sin y)).const_mul (-2)
+  have hy : HasDerivAt (fun t : ℝ => 2 * t) (2 * 1) y := (hasDerivAt_id' y).const_mul 2
+  have hcube : HasDerivAt (fun t : ℝ => (2 / 3) * t ^ 3) ((2 / 3) * (3 * y ^ 2)) y := by
+    simpa using (hasDerivAt_pow 3 y).const_mul (2 / 3)
+  have h := (hmul.add hy).add hcube
+  unfold lowPoly1
+  refine h.congr_deriv ?_
+  unfold lowPoly2
+  ring
+
+private theorem hasDerivAt_lowPoly2 (y : ℝ) : HasDerivAt lowPoly2 (lowPoly3 y) y := by
+  have hpow : HasDerivAt (fun t : ℝ => t ^ 2) (2 * y) y := by
+    simpa using hasDerivAt_pow 2 y
+  have h1 := (hasDerivAt_const y (1 : ℝ)).add hpow
+  have h2 : HasDerivAt (fun t : ℝ => sinh t * sin t)
+      (cosh y * sin y + sinh y * cos y) y :=
+    (hasDerivAt_sinh y).mul (hasDerivAt_sin y)
+  have h3 : HasDerivAt (fun t : ℝ => cosh t * cos t)
+      (sinh y * cos y + cosh y * -sin y) y :=
+    (hasDerivAt_cosh y).mul (hasDerivAt_cos y)
+  have h := ((h1.sub h2).sub h3).const_mul 2
+  unfold lowPoly2
+  refine h.congr_deriv ?_
+  unfold lowPoly3
+  ring
+
+private theorem hasDerivAt_lowPoly3 (y : ℝ) : HasDerivAt lowPoly3 (4 * (1 - gammaSEqual y)) y := by
+  have hmul : HasDerivAt (fun t : ℝ => sinh t * cos t)
+      (cosh y * cos y + sinh y * -sin y) y :=
+    (hasDerivAt_sinh y).mul (hasDerivAt_cos y)
+  have h := ((hasDerivAt_id' y).sub hmul).const_mul 4
+  unfold lowPoly3
+  refine h.congr_deriv ?_
+  unfold gammaSEqual
+  ring
+
+private theorem gammaSEqual_gt_lowerPoly {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
+    1 - y ^ 2 - y ^ 4 / 6 < gammaSEqual y := by
+  have hgap : ∀ t ∈ Ioo (0 : ℝ) y, 0 < 1 - gammaSEqual t := by
+    intro t ht
+    exact sub_pos.mpr (gammaSEqual_lt_one_of_pos ht.1 (lt_trans ht.2 hy1))
+  have h3pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < 4 * (1 - gammaSEqual t) := by
+    intro t ht
+    exact mul_pos (by norm_num) (hgap t ht)
+  have hcont3 : ContinuousOn lowPoly3 (Icc 0 y) := by
+    unfold lowPoly3
+    exact (by continuity : Continuous fun t : ℝ => 4 * (t - sinh t * cos t)).continuousOn
+  have h3 := segment_pos hy0 (by unfold lowPoly3; simp) hcont3
+    (fun t ht => hasDerivAt_lowPoly3 t) h3pos
+  have h2pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < lowPoly3 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont3 (fun s hs => hasDerivAt_lowPoly3 s) h3pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [lowPoly3] using hlt
+  have hcont2 : ContinuousOn lowPoly2 (Icc 0 y) := by
+    unfold lowPoly2
+    exact (by continuity : Continuous fun t : ℝ =>
+      2 * (1 + t ^ 2 - sinh t * sin t - cosh t * cos t)).continuousOn
+  have h2 := segment_pos hy0 (by unfold lowPoly2; simp) hcont2
+    (fun t ht => hasDerivAt_lowPoly2 t) h2pos
+  have h1pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < lowPoly2 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont2 (fun s hs => hasDerivAt_lowPoly2 s) h2pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [lowPoly2] using hlt
+  have hcont1 : ContinuousOn lowPoly1 (Icc 0 y) := by
+    unfold lowPoly1
+    exact (by continuity : Continuous fun t : ℝ =>
+      -2 * (cosh t * sin t) + 2 * t + (2 / 3) * t ^ 3).continuousOn
+  have h1 := segment_pos hy0 (by unfold lowPoly1; simp) hcont1
+    (fun t ht => hasDerivAt_lowPoly1 t) h1pos
+  have h0pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < lowPoly1 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont1 (fun s hs => hasDerivAt_lowPoly1 s) h1pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [lowPoly1] using hlt
+  have hcont0 : ContinuousOn lowPoly (Icc 0 y) := by
+    unfold lowPoly
+    exact (continuous_gammaSEqual.sub
+      ((continuous_const.sub (continuous_pow 2)).sub ((continuous_pow 4).div_const 6))).continuousOn
+  have h0 := segment_pos hy0 (by unfold lowPoly; simp [gammaSEqual_zero]) hcont0
+    (fun t ht => hasDerivAt_lowPoly t) h0pos
+  simpa [lowPoly] using h0
+
+/-! ### Sine upper bound and cosine lower bound on `(0, π)` -/
+
+private noncomputable def sinGap (y : ℝ) : ℝ := y - y ^ 3 / 6 + y ^ 5 / 120 - sin y
+
+private noncomputable def sinGap1 (y : ℝ) : ℝ := 1 - y ^ 2 / 2 + y ^ 4 / 24 - cos y
+
+private noncomputable def sinGap2 (y : ℝ) : ℝ := -y + y ^ 3 / 6 + sin y
+
+private noncomputable def sinGap3 (y : ℝ) : ℝ := -1 + y ^ 2 / 2 + cos y
+
+private noncomputable def sinGap4 (y : ℝ) : ℝ := y - sin y
+
+private theorem hasDerivAt_sinGap (y : ℝ) : HasDerivAt sinGap (sinGap1 y) y := by
+  have h3 : HasDerivAt (fun t : ℝ => t ^ 3 / 6) (3 * y ^ 2 / 6) y := by
+    simpa using (hasDerivAt_pow 3 y).div_const 6
+  have h5 : HasDerivAt (fun t : ℝ => t ^ 5 / 120) (5 * y ^ 4 / 120) y := by
+    simpa using (hasDerivAt_pow 5 y).div_const 120
+  have h := (((hasDerivAt_id' y).sub h3).add h5).sub (hasDerivAt_sin y)
+  unfold sinGap
+  refine h.congr_deriv ?_
+  unfold sinGap1
+  ring
+
+private theorem hasDerivAt_sinGap1 (y : ℝ) : HasDerivAt sinGap1 (sinGap2 y) y := by
+  have h2 : HasDerivAt (fun t : ℝ => t ^ 2 / 2) (2 * y / 2) y := by
+    simpa using (hasDerivAt_pow 2 y).div_const 2
+  have h4 : HasDerivAt (fun t : ℝ => t ^ 4 / 24) (4 * y ^ 3 / 24) y := by
+    simpa using (hasDerivAt_pow 4 y).div_const 24
+  have h := (((hasDerivAt_const y (1 : ℝ)).sub h2).add h4).sub (hasDerivAt_cos y)
+  unfold sinGap1
+  refine h.congr_deriv ?_
+  unfold sinGap2
+  ring
+
+private theorem hasDerivAt_sinGap2 (y : ℝ) : HasDerivAt sinGap2 (sinGap3 y) y := by
+  have h3 : HasDerivAt (fun t : ℝ => t ^ 3 / 6) (3 * y ^ 2 / 6) y := by
+    simpa using (hasDerivAt_pow 3 y).div_const 6
+  have h := (((hasDerivAt_id' y).neg.add h3).add (hasDerivAt_sin y))
+  unfold sinGap2
+  refine h.congr_deriv ?_
+  unfold sinGap3
+  ring
+
+private theorem hasDerivAt_sinGap3 (y : ℝ) : HasDerivAt sinGap3 (sinGap4 y) y := by
+  have h2 : HasDerivAt (fun t : ℝ => t ^ 2 / 2) (2 * y / 2) y := by
+    simpa using (hasDerivAt_pow 2 y).div_const 2
+  have h := ((hasDerivAt_const y (-1 : ℝ)).add h2).add (hasDerivAt_cos y)
+  unfold sinGap3
+  refine h.congr_deriv ?_
+  unfold sinGap4
+  ring
+
+private theorem hasDerivAt_sinGap4 (y : ℝ) : HasDerivAt sinGap4 (1 - cos y) y := by
+  have h := (hasDerivAt_id' y).sub (hasDerivAt_sin y)
+  unfold sinGap4
+  refine h.congr_deriv ?_
+  ring
+
+private theorem sin_lt_poly {y : ℝ} (hy0 : 0 < y) (hyπ : y < π) :
+    sin y < y - y ^ 3 / 6 + y ^ 5 / 120 := by
+  have h4pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < 1 - cos t := by
+    intro t ht
+    have htπ : t < π := lt_trans ht.2 hyπ
+    exact sub_pos.mpr <| by
+      simpa using cos_lt_cos_of_nonneg_of_le_pi (le_refl (0 : ℝ)) htπ.le ht.1
+  have hcont4 : ContinuousOn sinGap4 (Icc 0 y) := by
+    unfold sinGap4
+    exact (continuous_id.sub continuous_sin).continuousOn
+  have h4 := segment_pos hy0 (by unfold sinGap4; simp) hcont4
+    (fun t _ => hasDerivAt_sinGap4 t) h4pos
+  have h3pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < sinGap4 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont4 (fun s _ => hasDerivAt_sinGap4 s) h4pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [sinGap4] using hlt
+  have hcont3 : ContinuousOn sinGap3 (Icc 0 y) := by
+    unfold sinGap3
+    exact ((continuous_const.add ((continuous_pow 2).div_const 2)).add continuous_cos).continuousOn
+  have h3 := segment_pos hy0 (by unfold sinGap3; simp) hcont3
+    (fun t _ => hasDerivAt_sinGap3 t) h3pos
+  have h2pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < sinGap3 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont3 (fun s _ => hasDerivAt_sinGap3 s) h3pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [sinGap3] using hlt
+  have hcont2 : ContinuousOn sinGap2 (Icc 0 y) := by
+    unfold sinGap2
+    exact ((continuous_id.neg.add ((continuous_pow 3).div_const 6)).add continuous_sin).continuousOn
+  have h2 := segment_pos hy0 (by unfold sinGap2; simp) hcont2
+    (fun t _ => hasDerivAt_sinGap2 t) h2pos
+  have h1pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < sinGap2 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont2 (fun s _ => hasDerivAt_sinGap2 s) h2pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [sinGap2] using hlt
+  have hcont1 : ContinuousOn sinGap1 (Icc 0 y) := by
+    unfold sinGap1
+    exact (((continuous_const.sub ((continuous_pow 2).div_const 2)).add
+      ((continuous_pow 4).div_const 24)).sub continuous_cos).continuousOn
+  have h1 := segment_pos hy0 (by unfold sinGap1; simp) hcont1
+    (fun t _ => hasDerivAt_sinGap1 t) h1pos
+  have h0pos : ∀ t ∈ Ioo (0 : ℝ) y, 0 < sinGap1 t := by
+    intro t ht
+    have hmono := segment_strictMono hy0 hcont1 (fun s _ => hasDerivAt_sinGap1 s) h1pos
+    have hlt := hmono (by simp [hy0.le]) ⟨ht.1.le, ht.2.le⟩ ht.1
+    simpa [sinGap1] using hlt
+  have hcont0 : ContinuousOn sinGap (Icc 0 y) := by
+    unfold sinGap
+    exact (((continuous_id.sub ((continuous_pow 3).div_const 6)).add
+      ((continuous_pow 5).div_const 120)).sub continuous_sin).continuousOn
+  have h0 := segment_pos hy0 (by unfold sinGap; simp) hcont0
+    (fun t _ => hasDerivAt_sinGap t) h0pos
+  simpa [sinGap] using h0
+
+private theorem cos_gt_poly {y : ℝ} (hy0 : 0 < y) (hyπ : y < π) :
+    1 - y ^ 2 / 2 + y ^ 4 / 24 - y ^ 6 / 720 < cos y := by
+  have hsin : ∀ t ∈ Ioo (0 : ℝ) y, 0 < sinGap t := by
+    intro t ht
+    have hlt := sin_lt_poly ht.1 (lt_trans ht.2 hyπ)
+    simpa [sinGap] using hlt
+  let f : ℝ → ℝ := fun t => cos t - (1 - t ^ 2 / 2 + t ^ 4 / 24 - t ^ 6 / 720)
+  have hderiv : ∀ t ∈ Ioo (0 : ℝ) y, HasDerivAt f (sinGap t) t := by
+    intro t ht
+    have h2 : HasDerivAt (fun s : ℝ => s ^ 2 / 2) (2 * t / 2) t := by
+      simpa using (hasDerivAt_pow 2 t).div_const 2
+    have h4 : HasDerivAt (fun s : ℝ => s ^ 4 / 24) (4 * t ^ 3 / 24) t := by
+      simpa using (hasDerivAt_pow 4 t).div_const 24
+    have h6 : HasDerivAt (fun s : ℝ => s ^ 6 / 720) (6 * t ^ 5 / 720) t := by
+      simpa using (hasDerivAt_pow 6 t).div_const 720
+    have hpoly := (((hasDerivAt_const t (1 : ℝ)).sub h2).add h4).sub h6
+    have h := (hasDerivAt_cos t).sub hpoly
+    refine h.congr_deriv ?_
+    unfold sinGap
+    ring
+  have hcont : ContinuousOn f (Icc 0 y) := by
+    have hpoly : Continuous (fun t : ℝ => 1 - t ^ 2 / 2 + t ^ 4 / 24 - t ^ 6 / 720) :=
+      (((continuous_const.sub ((continuous_pow 2).div_const 2)).add
+        ((continuous_pow 4).div_const 24)).sub ((continuous_pow 6).div_const 720))
+    exact (continuous_cos.sub hpoly).continuousOn
+  have h0 := segment_pos hy0 (by simp [f]) hcont hderiv hsin
+  simpa [f] using h0
+
+/-! ### The first node lies beyond 93/100 -/
+
+private theorem exp_ninetyThree_hundredths_lt : exp (93 / 100) < 2535 / 1000 := by
+  exact (exp_between (x := 93 / 100) (lo := 0) (hi := 2535 / 1000) (n := 8)
+    (by norm_num) (by norm_num) (by decide)
+    (by norm_num [sum_range_succ, Nat.factorial])
+    (by norm_num [sum_range_succ, Nat.factorial])).2
+
+private theorem tanh_exp_ratio (x : ℝ) :
+    tanh x = (exp (2 * x) - 1) / (exp (2 * x) + 1) := by
+  rw [tanh_eq x]
+  have hx : exp x ≠ 0 := (exp_pos x).ne'
+  have hden : exp x + exp (-x) ≠ 0 := (add_pos (exp_pos x) (exp_pos (-x))).ne'
+  have hden' : exp (2 * x) + 1 ≠ 0 :=
+    (add_pos_of_pos_of_nonneg (exp_pos _) (by norm_num : (0 : ℝ) ≤ 1)).ne'
+  have h2 : exp (2 * x) = exp x * exp x := by
+    rw [← exp_add]
+    congr 1
+    ring
+  have h1 : (1 : ℝ) = exp (-x) * exp x := by
+    rw [← exp_zero, ← exp_add]
+    congr 1
+    ring
+  refine (div_eq_div_iff hden hden').mpr ?_
+  rw [h2, h1]
+  ring
+
+private theorem resonanceProd_ninetyThree_hundredths_lt_one :
+    resonanceProd (93 / 100) < 1 := by
+  have hy0 : (0 : ℝ) < 93 / 100 := by norm_num
+  have hyπ : (93 / 100 : ℝ) < π := by linarith [pi_gt_three]
+  have hsin := sin_lt_poly hy0 hyπ
+  have hcos := cos_gt_poly hy0 hyπ
+  have hcospos : 0 < 1 - (93 / 100 : ℝ) ^ 2 / 2 + (93 / 100) ^ 4 / 24 -
+      (93 / 100) ^ 6 / 720 := by norm_num
+  have htan : tan (93 / 100) <
+      ((93 / 100 : ℝ) - (93 / 100) ^ 3 / 6 + (93 / 100) ^ 5 / 120) /
+        (1 - (93 / 100) ^ 2 / 2 + (93 / 100) ^ 4 / 24 - (93 / 100) ^ 6 / 720) := by
+    rw [tan_eq_sin_div_cos]
+    have hcos_pos : 0 < cos (93 / 100) := lt_trans hcospos hcos
+    rw [div_lt_div_iff₀ hcos_pos (by linarith)]
+    have hsinpos : 0 < sin (93 / 100) := sin_pos_of_pos_of_lt_pi hy0 hyπ
+    nlinarith
+  have hexp := exp_ninetyThree_hundredths_lt
+  have h2 : exp (2 * (93 / 100 : ℝ)) < (2535 / 1000) ^ 2 := by
+    have hpos : 0 < exp (93 / 100) := exp_pos _
+    have hmul : exp (93 / 100) * exp (93 / 100) < (2535 / 1000) * (2535 / 1000) :=
+      mul_lt_mul hexp hexp.le hpos (by norm_num)
+    have hsum : exp (93 / 100) * exp (93 / 100) = exp (2 * (93 / 100)) := by
+      rw [← exp_add]
+      congr 1
+      ring
+    rw [← hsum, pow_two]
+    exact hmul
+  have htanh : tanh (93 / 100) <
+      ((2535 / 1000 : ℝ) ^ 2 - 1) / ((2535 / 1000) ^ 2 + 1) := by
+    rw [tanh_exp_ratio]
+    have hden : 0 < exp (2 * (93 / 100 : ℝ)) + 1 := by positivity
+    have hden' : 0 < (2535 / 1000 : ℝ) ^ 2 + 1 := by positivity
+    have hinc : (exp (2 * (93 / 100 : ℝ)) - 1) / (exp (2 * (93 / 100 : ℝ)) + 1) <
+        ((2535 / 1000 : ℝ) ^ 2 - 1) / ((2535 / 1000) ^ 2 + 1) := by
+      rw [div_lt_div_iff₀ hden hden']
+      nlinarith [h2]
+    exact hinc
+  have hprod : tan (93 / 100) * tanh (93 / 100) <
+      (((93 / 100 : ℝ) - (93 / 100) ^ 3 / 6 + (93 / 100) ^ 5 / 120) /
+        (1 - (93 / 100) ^ 2 / 2 + (93 / 100) ^ 4 / 24 - (93 / 100) ^ 6 / 720)) *
+      (((2535 / 1000 : ℝ) ^ 2 - 1) / ((2535 / 1000) ^ 2 + 1)) := by
+    have htanh_pos : 0 < tanh (93 / 100) := by
+      rw [tanh_eq_sinh_div_cosh]
+      exact div_pos (sinh_pos_iff.mpr hy0) (cosh_pos _)
+    exact mul_lt_mul htan htanh.le htanh_pos (by positivity)
+  have hnum : (((93 / 100 : ℝ) - (93 / 100) ^ 3 / 6 + (93 / 100) ^ 5 / 120) /
+      (1 - (93 / 100) ^ 2 / 2 + (93 / 100) ^ 4 / 24 - (93 / 100) ^ 6 / 720)) *
+      (((2535 / 1000 : ℝ) ^ 2 - 1) / ((2535 / 1000) ^ 2 + 1)) < 1 := by
+    norm_num
+  unfold resonanceProd
+  rw [mul_comm]
+  exact hprod.trans hnum
+
+private theorem ninetyThree_hundredths_lt_resonanceRoot1 : 93 / 100 < resonanceRoot1 := by
+  have hprod := resonanceProd_ninetyThree_hundredths_lt_one
+  by_contra h
+  have hle : resonanceRoot1 ≤ 93 / 100 := le_of_not_gt h
+  have hmem : (93 / 100 : ℝ) ∈ Ioo (0 : ℝ) (π / 2) := by
+    refine ⟨by norm_num, ?_⟩
+    linarith [pi_gt_three]
+  have hroot : resonanceRoot1 ∈ Ioo (0 : ℝ) (π / 2) := by
+    refine ⟨lt_trans (by norm_num) resonanceRoot1_bounds.1, ?_⟩
+    linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three]
+  rcases lt_or_eq_of_le hle with hlt | heq
+  · have hmono := strictMonoOn_resonanceProd hroot hmem hlt
+    rw [resonanceRoot1_prod] at hmono
+    exact lt_irrefl _ (hprod.trans hmono)
+  · rw [← heq, resonanceRoot1_prod] at hprod
+    exact lt_irrefl _ hprod
+
+private theorem dodecaWall_gt_thirtyThree_fiftieths : 33 / 50 < dodecaWall := by
+  have hnear : dodecaNear < 701 / 500 := dodecaNear_lt_sevenHundredOne_fiveHundred
+  have hx1 : 93 / 100 < resonanceRoot1 := ninetyThree_hundredths_lt_resonanceRoot1
+  have hmul : dodecaNear * (33 / 50) < resonanceRoot1 := by
+    have hcmp : (701 / 500 : ℝ) * (33 / 50) < 93 / 100 := by norm_num
+    have hpos : (0 : ℝ) < 33 / 50 := by norm_num
+    have hlt : dodecaNear * (33 / 50) < (701 / 500) * (33 / 50) :=
+      mul_lt_mul_of_pos_right hnear hpos
+    linarith
+  unfold dodecaWall
+  rw [lt_div_iff₀ (by linarith [dodecaNear_gt_one])]
+  simpa [mul_comm] using hmul
+
+/-! ### Monotonicity of a chord ratio -/
+
+private noncomputable def chordSlope (t : ℝ) : ℝ :=
+  gammaSEqual t / (cosh t * sin t)
+
+private theorem chordSlope_pos {t : ℝ} (ht0 : 0 < t) (ht1 : t < resonanceRoot1) :
+    0 < chordSlope t := by
+  have hπ : t < π :=
+    lt_trans ht1 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+  have hγ : 0 < gammaSEqual t := gammaSEqual_pos_of_lt_firstNode ht0.le ht1
+  have hden : 0 < cosh t * sin t := mul_pos (cosh_pos t) (sin_pos_of_pos_of_lt_pi ht0 hπ)
+  unfold chordSlope
+  exact div_pos hγ hden
+
+private theorem hasDerivAt_chordSlope {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
+    HasDerivAt chordSlope
+      ((-2 * (cosh t * sin t) ^ 2 -
+          gammaSEqual t * (sinh t * sin t + cosh t * cos t)) /
+        (cosh t * sin t) ^ 2) t := by
+  have hden_ne : cosh t * sin t ≠ 0 :=
+    mul_ne_zero (cosh_pos t).ne' (sin_pos_of_pos_of_lt_pi ht0 htπ).ne'
+  have hden : HasDerivAt (fun s : ℝ => cosh s * sin s)
+      (sinh t * sin t + cosh t * cos t) t :=
+    (hasDerivAt_cosh t).mul (hasDerivAt_sin t)
+  have hdiv := (hasDerivAt_gammaSEqual t).div hden hden_ne
+  unfold chordSlope
+  refine hdiv.congr_deriv ?_
+  ring
+
+private theorem strictAntiOn_chordSlope :
+    StrictAntiOn chordSlope (Ioo (0 : ℝ) resonanceRoot1) := by
+  refine strictAntiOn_of_deriv_neg (convex_Ioo 0 resonanceRoot1) ?_ ?_
+  · refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+      ((continuous_cosh.mul continuous_sin).continuousOn) ?_
+    intro t ht
+    have hπ : t < π :=
+      lt_trans ht.2 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    exact mul_ne_zero (cosh_pos t).ne' (sin_pos_of_pos_of_lt_pi ht.1 hπ).ne'
+  · intro t ht
+    rw [interior_Ioo] at ht
+    have hπ : t < π :=
+      lt_trans ht.2 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    rw [(hasDerivAt_chordSlope ht.1 hπ).deriv]
+    have hden : 0 < (cosh t * sin t) ^ 2 := by
+      exact sq_pos_of_pos (mul_pos (cosh_pos t) (sin_pos_of_pos_of_lt_pi ht.1 hπ))
+    have hnum : -2 * (cosh t * sin t) ^ 2 -
+        gammaSEqual t * (sinh t * sin t + cosh t * cos t) < 0 := by
+      have hsq : 0 < (cosh t * sin t) ^ 2 := hden
+      have hγ : 0 < gammaSEqual t := gammaSEqual_pos_of_lt_firstNode ht.1.le ht.2
+      have hrest : 0 < sinh t * sin t + cosh t * cos t := by
+        have hsinh : 0 < sinh t := sinh_pos_iff.mpr ht.1
+        have hsin : 0 < sin t := sin_pos_of_pos_of_lt_pi ht.1 hπ
+        have hhalf : t < π / 2 :=
+          lt_trans ht.2 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+        have hcos : 0 < cos t :=
+          cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr (half_pos pi_pos)) ht.1, hhalf⟩
+        positivity
+      nlinarith
+    exact div_neg_of_neg_of_pos hnum hden
+
+private theorem scaledRatio_numer_eq {c x : ℝ} (hx0 : 0 < x) (hcx0 : 0 < c * x)
+    (hπx : x < π) (hπc : c * x < π) :
+    deriv gammaSEqual x * gammaSEqual (c * x) -
+        gammaSEqual x * (deriv gammaSEqual (c * x) * c) =
+      2 * (cosh x * sin x) * (cosh (c * x) * sin (c * x)) *
+        (c * chordSlope x - chordSlope (c * x)) := by
+  rw [deriv_gammaSEqual, deriv_gammaSEqual]
+  unfold chordSlope
+  set a := cosh x * sin x
+  set b := cosh (c * x) * sin (c * x)
+  have ha : a ≠ 0 :=
+    mul_ne_zero (cosh_pos x).ne' (sin_pos_of_pos_of_lt_pi hx0 hπx).ne'
+  have hb : b ≠ 0 :=
+    mul_ne_zero (cosh_pos _).ne' (sin_pos_of_pos_of_lt_pi hcx0 hπc).ne'
+  field_simp [ha, hb]
+  ring
+
+private theorem scaledRatio_strictMono_of_gt_one {c : ℝ} (hc : 1 < c) :
+    StrictMonoOn (scaledRatio c) (Ioo (0 : ℝ) (resonanceRoot1 / c)) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ioo 0 (resonanceRoot1 / c)) ?_ ?_
+  · refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+      ((continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn) ?_
+    intro x hx
+    have hcpos : 0 < c := by linarith
+    have hcx : c * x < resonanceRoot1 := by
+      have hx' : x < resonanceRoot1 / c := hx.2
+      rw [lt_div_iff₀ hcpos] at hx'
+      simpa [mul_comm] using hx'
+    exact (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hcpos.le hx.1.le) hcx).ne'
+  · intro x hx
+    rw [interior_Ioo] at hx
+    have hcpos : 0 < c := by linarith
+    have hcx : c * x < resonanceRoot1 := by
+      have hx' : x < resonanceRoot1 / c := hx.2
+      rw [lt_div_iff₀ hcpos] at hx'
+      simpa [mul_comm] using hx'
+    have hxc : x < c * x := by nlinarith [hc, hx.1]
+    have hx1 : x < resonanceRoot1 := lt_trans hxc hcx
+    have hπx : x < π :=
+      lt_trans hx1 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    have hπc : c * x < π :=
+      lt_trans hcx (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    have hden_pos : 0 < gammaSEqual (c * x) :=
+      gammaSEqual_pos_of_lt_firstNode (mul_nonneg hcpos.le hx.1.le) hcx
+    rw [(hasDerivAt_scaledRatio hden_pos.ne').deriv]
+    have hbracket : 0 < c * chordSlope x - chordSlope (c * x) := by
+      have hxmem : x ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨hx.1, hx1⟩
+      have hcmem : c * x ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨mul_pos hcpos hx.1, hcx⟩
+      have hlt : chordSlope (c * x) < chordSlope x :=
+        strictAntiOn_chordSlope hxmem hcmem hxc
+      have hpos := chordSlope_pos hx.1 hx1
+      nlinarith
+    have hfactor : 0 < 2 * (cosh x * sin x) * (cosh (c * x) * sin (c * x)) := by
+      exact mul_pos
+        (mul_pos (by norm_num) (mul_pos (cosh_pos x) (sin_pos_of_pos_of_lt_pi hx.1 hπx)))
+        (mul_pos (cosh_pos _) (sin_pos_of_pos_of_lt_pi (mul_pos hcpos hx.1) hπc))
+    rw [scaledRatio_numer_eq hx.1 (mul_pos hcpos hx.1) hπx hπc]
+    exact div_pos (mul_pos hfactor hbracket) (sq_pos_of_pos hden_pos)
+
+private theorem scaledRatio_strictAnti_of_lt_one {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
+    StrictAntiOn (scaledRatio c) (Ioo (0 : ℝ) resonanceRoot1) := by
+  refine strictAntiOn_of_deriv_neg (convex_Ioo 0 resonanceRoot1) ?_ ?_
+  · refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+      ((continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn) ?_
+    intro x hx
+    exact (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hc0.le hx.1.le)
+      (chordPhase_lt_root hc1 hx.1 hx.2)).ne'
+  · intro x hx
+    rw [interior_Ioo] at hx
+    have hcx : c * x < resonanceRoot1 := chordPhase_lt_root hc1 hx.1 hx.2
+    have hπx : x < π :=
+      lt_trans hx.2 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    have hπc : c * x < π :=
+      lt_trans hcx (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+    have hden_pos : 0 < gammaSEqual (c * x) :=
+      gammaSEqual_pos_of_lt_firstNode (mul_nonneg hc0.le hx.1.le) hcx
+    rw [(hasDerivAt_scaledRatio hden_pos.ne').deriv]
+    have hbracket : c * chordSlope x - chordSlope (c * x) < 0 := by
+      have hxmem : x ∈ Ioo (0 : ℝ) resonanceRoot1 := hx
+      have hcmem : c * x ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨mul_pos hc0 hx.1, hcx⟩
+      have hxc : c * x < x := by nlinarith [hc1, hx.1]
+      have hlt : chordSlope x < chordSlope (c * x) :=
+        strictAntiOn_chordSlope hcmem hxmem hxc
+      have hpos := chordSlope_pos hx.1 hx.2
+      nlinarith
+    have hfactor : 0 < 2 * (cosh x * sin x) * (cosh (c * x) * sin (c * x)) := by
+      exact mul_pos
+        (mul_pos (by norm_num) (mul_pos (cosh_pos x) (sin_pos_of_pos_of_lt_pi hx.1 hπx)))
+        (mul_pos (cosh_pos _) (sin_pos_of_pos_of_lt_pi (mul_pos hc0 hx.1) hπc))
+    rw [scaledRatio_numer_eq hx.1 (mul_pos hc0 hx.1) hπx hπc]
+    exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hfactor hbracket)
+      (sq_pos_of_pos hden_pos)
+
+/-! ### The response stays above 7 before the chord node -/
+
+private noncomputable def dodecaNearTerm (x : ℝ) : ℝ :=
+  (3 / 2 * dodecaNear) * scaledRatio dodecaNear x
+
+private noncomputable def dodecaFarTerm (x : ℝ) : ℝ :=
+  (3 * sqrt 3 / 2) * scaledRatio (sqrt 3 / 2) x +
+    (3 * sqrt 6 / 4) * scaledRatio (sqrt 6 / 4) x +
+    (3 / 2 * dodecaFarScale) * scaledRatio dodecaFarScale x +
+    (1 / 4) * scaledRatio (1 / 2) x
+
+private theorem dodecaResponse_eq_terms (x : ℝ) :
+    dodecaResponse x = dodecaNearTerm x + dodecaFarTerm x := by
+  unfold dodecaResponse dodecaNearTerm dodecaFarTerm
+  ring
+
+private theorem scaledRatio_gt_one {c x : ℝ} (hc : 1 < c) (hx : 0 < x)
+    (hcx : c * x < resonanceRoot1) : 1 < scaledRatio c x := by
+  have hxc : x < c * x := by nlinarith
+  have hx1 : x < resonanceRoot1 := lt_trans hxc hcx
+  have hπx : x < π :=
+    lt_trans hx1 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+  have hπc : c * x < π :=
+    lt_trans hcx (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+  have hγ : gammaSEqual (c * x) < gammaSEqual x :=
+    gammaSEqual_anti_on_first ⟨hx.le, hπx.le⟩ ⟨(mul_pos (by linarith) hx).le, hπc.le⟩ hxc
+  have hpos : 0 < gammaSEqual (c * x) :=
+    gammaSEqual_pos_of_lt_firstNode (by positivity) hcx
+  unfold scaledRatio
+  rw [one_lt_div hpos]
+  exact hγ
+
+private theorem dodecaNearTerm_strictMono :
+    StrictMonoOn dodecaNearTerm (Ioo (0 : ℝ) dodecaWall) := by
+  have hmono := scaledRatio_strictMono_of_gt_one dodecaNear_gt_one
+  have hweight : 0 < 3 / 2 * dodecaNear := by nlinarith [dodecaNear_gt_one]
+  intro a ha b hb hab
+  unfold dodecaNearTerm
+  have hwall : dodecaWall = resonanceRoot1 / dodecaNear := rfl
+  have ha' : a ∈ Ioo (0 : ℝ) (resonanceRoot1 / dodecaNear) := by simpa [hwall] using ha
+  have hb' : b ∈ Ioo (0 : ℝ) (resonanceRoot1 / dodecaNear) := by simpa [hwall] using hb
+  exact mul_lt_mul_of_pos_left (hmono ha' hb' hab) hweight
+
+private theorem dodecaFarTerm_strictAnti :
+    StrictAntiOn dodecaFarTerm (Ioo (0 : ℝ) dodecaWall) := by
+  have h3 : sqrt 3 / 2 < 1 := by
+    rw [div_lt_one (by norm_num)]
+    exact lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num)
+  have h6 : sqrt 6 / 4 < 1 := by
+    rw [div_lt_one (by norm_num)]
+    exact lt_trans sqrt_six_lt_five_halves (by norm_num)
+  have h3m := scaledRatio_strictAnti_of_lt_one
+    (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) h3
+  have h6m := scaledRatio_strictAnti_of_lt_one
+    (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) h6
+  have hfm := scaledRatio_strictAnti_of_lt_one
+    (by
+      have h5 : sqrt 5 < 3 := by
+        have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+        have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+        rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+      unfold dodecaFarScale
+      exact sqrt_pos.mpr (by nlinarith [h5]))
+    dodecaFarScale_lt_one
+  have hhm := scaledRatio_strictAnti_of_lt_one (c := (1 / 2 : ℝ)) (by norm_num) (by norm_num)
+  have hw3 : 0 < 3 * sqrt 3 / 2 := by nlinarith [sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3)]
+  have hw6 : 0 < 3 * sqrt 6 / 4 := by nlinarith [sqrt_pos.mpr (by norm_num : (0 : ℝ) < 6)]
+  have hwf : 0 < 3 / 2 * dodecaFarScale := by
+    have h5 : sqrt 5 < 3 := by
+      have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+      have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+      rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+    have hpos : 0 < dodecaFarScale := by
+      unfold dodecaFarScale
+      exact sqrt_pos.mpr (by nlinarith [h5])
+    nlinarith
+  intro a ha b hb hab
+  have ha1 : a ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨ha.1, lt_trans ha.2 dodecaWall_mem_Ioo.2⟩
+  have hb1 : b ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨hb.1, lt_trans hb.2 dodecaWall_mem_Ioo.2⟩
+  unfold dodecaFarTerm
+  have h3lt := mul_lt_mul_of_pos_left (h3m ha1 hb1 hab) hw3
+  have h6lt := mul_lt_mul_of_pos_left (h6m ha1 hb1 hab) hw6
+  have hflt := mul_lt_mul_of_pos_left (hfm ha1 hb1 hab) hwf
+  have hhlt := mul_lt_mul_of_pos_left (hhm ha1 hb1 hab) (by norm_num : (0 : ℝ) < 1 / 4)
+  linarith
+
+private theorem dodecaFarTerm_pos {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) :
+    0 < dodecaFarTerm x := by
+  have hsc := dodeca_scales_lt_near
+  have hγ : 0 < gammaSEqual x :=
+    gammaSEqual_pos_left_of_first_node ⟨hx.1, lt_trans hx.2 dodecaWall_mem_Ioo.2⟩
+  have hterm : ∀ {s : ℝ}, 0 < s → s ≤ dodecaNear → 0 < scaledRatio s x := by
+    intro s hs0 hs
+    have hden : 0 < gammaSEqual (s * x) := gamma_pos_dodeca_phase hs0 hs hx
+    unfold scaledRatio
+    exact div_pos hγ hden
+  unfold dodecaFarTerm
+  have h3 : 0 < (3 * sqrt 3 / 2) * scaledRatio (sqrt 3 / 2) x :=
+    mul_pos (by nlinarith [sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3)])
+      (hterm (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.1.le)
+  have h6 : 0 < (3 * sqrt 6 / 4) * scaledRatio (sqrt 6 / 4) x :=
+    mul_pos (by nlinarith [sqrt_pos.mpr (by norm_num : (0 : ℝ) < 6)])
+      (hterm (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.2.1.le)
+  have h5 : sqrt 5 < 3 := by
+    have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+    have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+  have hf0 : 0 < dodecaFarScale := by
+    unfold dodecaFarScale
+    exact sqrt_pos.mpr (by nlinarith [h5])
+  have hf : 0 < (3 / 2 * dodecaFarScale) * scaledRatio dodecaFarScale x :=
+    mul_pos (by nlinarith) (hterm hf0 hsc.2.2.1.le)
+  have hh : 0 < (1 / 4) * scaledRatio (1 / 2) x :=
+    mul_pos (by norm_num) (hterm (by norm_num) hsc.2.2.2.le)
+  linarith
+
+private theorem dodecaTerm_gt_poly {k c cLo x : ℝ} (hk : 0 < k) (hc0 : 0 < cLo)
+    (hc : cLo ≤ c) (hx : 0 < x) (hxle : x ≤ 33 / 50) (hx1 : x < resonanceRoot1)
+    (hcx : c * x < resonanceRoot1) :
+    k * cLo * (1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2) < k * c * scaledRatio c x := by
+  have hglo : 0 < 1 - x ^ 2 - x ^ 4 / 6 := by
+    have h2 : x ^ 2 ≤ (33 / 50) ^ 2 := pow_le_pow_left₀ hx.le hxle 2
+    have h4 : x ^ 4 ≤ (33 / 50) ^ 4 := pow_le_pow_left₀ hx.le hxle 4
+    have hcut : (0 : ℝ) < 1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6 := by norm_num
+    nlinarith
+  have hden : 0 < 1 - (cLo * x) ^ 2 := by
+    have hphase : cLo * x < 1 :=
+      lt_trans (lt_of_le_of_lt (mul_le_mul_of_nonneg_right hc hx.le) hcx)
+        resonanceRoot1_sharp_bounds.2
+    have hnn : 0 ≤ cLo * x := mul_nonneg hc0.le hx.le
+    nlinarith [sq_nonneg (cLo * x)]
+  have hγc : gammaSEqual (c * x) < 1 - (cLo * x) ^ 2 := by
+    have hcpos : 0 < c := lt_of_lt_of_le hc0 hc
+    have hupper := gammaSEqual_lt_sub_sq (mul_pos hcpos hx) hcx
+    rcases lt_or_eq_of_le hc with hlt | rfl
+    · have hsq : (cLo * x) ^ 2 < (c * x) ^ 2 := by
+        have hphase : cLo * x < c * x := mul_lt_mul_of_pos_right hlt hx
+        have hdiff : (c * x) ^ 2 - (cLo * x) ^ 2 =
+            (c * x - cLo * x) * (c * x + cLo * x) := by ring
+        have hpos : 0 < (c * x - cLo * x) * (c * x + cLo * x) :=
+          mul_pos (by linarith) (by nlinarith [hcpos, hc0, hx])
+        linarith
+      linarith
+    · simpa using hupper
+  have hγpos : 0 < gammaSEqual (c * x) :=
+    gammaSEqual_pos_of_lt_firstNode (mul_nonneg (le_of_lt (lt_of_lt_of_le hc0 hc)) hx.le) hcx
+  have hγx := gammaSEqual_gt_lowerPoly hx hx1
+  have hratio : (1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2) <
+      gammaSEqual x / gammaSEqual (c * x) := by
+    rw [div_lt_div_iff₀ hden hγpos]
+    nlinarith
+  have hle : k * cLo * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) ≤
+      k * c * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) := by
+    have hρ : 0 ≤ (1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2) := (div_pos hglo hden).le
+    have hcρ : cLo * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) ≤
+        c * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) :=
+      mul_le_mul_of_nonneg_right hc hρ
+    nlinarith
+  have hlt : k * c * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) <
+      k * c * (gammaSEqual x / gammaSEqual (c * x)) :=
+    mul_lt_mul_of_pos_left hratio (mul_pos hk (lt_of_lt_of_le hc0 hc))
+  unfold scaledRatio
+  have hassoc : k * cLo * (1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2) =
+      k * cLo * ((1 - x ^ 2 - x ^ 4 / 6) / (1 - (cLo * x) ^ 2)) := by ring
+  have hassoc' : k * c * (gammaSEqual x / gammaSEqual (c * x)) =
+      k * c * gammaSEqual x / gammaSEqual (c * x) := by ring
+  linarith
+
+private theorem dodeca_slot_1 :
+    (7 : ℝ) < 3 / 2 * (7 / 5) +
+      3 * (433 / 500) * (1 - (33 / 250) ^ 2 - (33 / 250) ^ 4 / 6) /
+        (1 - ((433 / 500) * (33 / 250)) ^ 2) +
+      3 * (61 / 100) * (1 - (33 / 250) ^ 2 - (33 / 250) ^ 4 / 6) /
+        (1 - ((61 / 100) * (33 / 250)) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - (33 / 250) ^ 2 - (33 / 250) ^ 4 / 6) /
+        (1 - ((53 / 100) * (33 / 250)) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - (33 / 250) ^ 2 - (33 / 250) ^ 4 / 6) /
+        (1 - ((1 / 2) * (33 / 250)) ^ 2) := by
+  norm_num
+
+private theorem dodeca_slot_2 :
+    (7 : ℝ) <
+      (3 / 2) * (7 / 5) * (1 - (33 / 250) ^ 2 - (33 / 250) ^ 4 / 6) /
+        (1 - ((7 / 5) * (33 / 250)) ^ 2) +
+      3 * (433 / 500) * (1 - (66 / 250) ^ 2 - (66 / 250) ^ 4 / 6) /
+        (1 - ((433 / 500) * (66 / 250)) ^ 2) +
+      3 * (61 / 100) * (1 - (66 / 250) ^ 2 - (66 / 250) ^ 4 / 6) /
+        (1 - ((61 / 100) * (66 / 250)) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - (66 / 250) ^ 2 - (66 / 250) ^ 4 / 6) /
+        (1 - ((53 / 100) * (66 / 250)) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - (66 / 250) ^ 2 - (66 / 250) ^ 4 / 6) /
+        (1 - ((1 / 2) * (66 / 250)) ^ 2) := by
+  norm_num
+
+private theorem dodeca_slot_3 :
+    (7 : ℝ) <
+      (3 / 2) * (7 / 5) * (1 - (66 / 250) ^ 2 - (66 / 250) ^ 4 / 6) /
+        (1 - ((7 / 5) * (66 / 250)) ^ 2) +
+      3 * (433 / 500) * (1 - (99 / 250) ^ 2 - (99 / 250) ^ 4 / 6) /
+        (1 - ((433 / 500) * (99 / 250)) ^ 2) +
+      3 * (61 / 100) * (1 - (99 / 250) ^ 2 - (99 / 250) ^ 4 / 6) /
+        (1 - ((61 / 100) * (99 / 250)) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - (99 / 250) ^ 2 - (99 / 250) ^ 4 / 6) /
+        (1 - ((53 / 100) * (99 / 250)) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - (99 / 250) ^ 2 - (99 / 250) ^ 4 / 6) /
+        (1 - ((1 / 2) * (99 / 250)) ^ 2) := by
+  norm_num
+
+private theorem dodeca_slot_4 :
+    (7 : ℝ) <
+      (3 / 2) * (7 / 5) * (1 - (99 / 250) ^ 2 - (99 / 250) ^ 4 / 6) /
+        (1 - ((7 / 5) * (99 / 250)) ^ 2) +
+      3 * (433 / 500) * (1 - (132 / 250) ^ 2 - (132 / 250) ^ 4 / 6) /
+        (1 - ((433 / 500) * (132 / 250)) ^ 2) +
+      3 * (61 / 100) * (1 - (132 / 250) ^ 2 - (132 / 250) ^ 4 / 6) /
+        (1 - ((61 / 100) * (132 / 250)) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - (132 / 250) ^ 2 - (132 / 250) ^ 4 / 6) /
+        (1 - ((53 / 100) * (132 / 250)) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - (132 / 250) ^ 2 - (132 / 250) ^ 4 / 6) /
+        (1 - ((1 / 2) * (132 / 250)) ^ 2) := by
+  norm_num
+
+private theorem dodeca_slot_5 :
+    (7 : ℝ) <
+      (3 / 2) * (7 / 5) * (1 - (132 / 250) ^ 2 - (132 / 250) ^ 4 / 6) /
+        (1 - ((7 / 5) * (132 / 250)) ^ 2) +
+      3 * (433 / 500) * (1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6) /
+        (1 - ((433 / 500) * (33 / 50)) ^ 2) +
+      3 * (61 / 100) * (1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6) /
+        (1 - ((61 / 100) * (33 / 50)) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6) /
+        (1 - ((53 / 100) * (33 / 50)) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6) /
+        (1 - ((1 / 2) * (33 / 50)) ^ 2) := by
+  norm_num
+
+private theorem dodeca_near_at_cut :
+    (7 : ℝ) < (3 / 2) * (7 / 5) * (1 - (33 / 50) ^ 2 - (33 / 50) ^ 4 / 6) /
+      (1 - ((7 / 5) * (33 / 50)) ^ 2) := by
+  norm_num
+
+private theorem farPoly_le {b : ℝ} (hb0 : 0 < b) (hb1 : b < resonanceRoot1)
+    (hbcut : b ≤ 33 / 50)
+    (h3 : (sqrt 3 / 2) * b < resonanceRoot1) (h6 : (sqrt 6 / 4) * b < resonanceRoot1)
+    (hf : dodecaFarScale * b < resonanceRoot1) (hh : (1 / 2) * b < resonanceRoot1) :
+    3 * (433 / 500) * (1 - b ^ 2 - b ^ 4 / 6) / (1 - ((433 / 500) * b) ^ 2) +
+      3 * (61 / 100) * (1 - b ^ 2 - b ^ 4 / 6) / (1 - ((61 / 100) * b) ^ 2) +
+      (3 / 2) * (53 / 100) * (1 - b ^ 2 - b ^ 4 / 6) / (1 - ((53 / 100) * b) ^ 2) +
+      (1 / 2) * (1 / 2) * (1 - b ^ 2 - b ^ 4 / 6) / (1 - ((1 / 2) * b) ^ 2) <
+      dodecaFarTerm b := by
+  have h3c : 433 / 500 ≤ sqrt 3 / 2 := sqrt_three_div_two_gt.le
+  have h6c : 61 / 100 ≤ sqrt 6 / 4 := sqrt_six_div_four_gt.le
+  have hfc : 53 / 100 ≤ dodecaFarScale := dodecaFarScale_gt_fiftyThree_hundredths.le
+  have h3t := dodecaTerm_gt_poly (k := 3) (c := sqrt 3 / 2) (cLo := 433 / 500)
+    (by norm_num) (by norm_num) h3c hb0 hbcut hb1 h3
+  have h6t := dodecaTerm_gt_poly (k := 3) (c := sqrt 6 / 4) (cLo := 61 / 100)
+    (by norm_num) (by norm_num) h6c hb0 hbcut hb1 h6
+  have hft := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaFarScale) (cLo := 53 / 100)
+    (by norm_num) (by norm_num) hfc hb0 hbcut hb1 hf
+  have hht := dodecaTerm_gt_poly (k := 1 / 2) (c := 1 / 2) (cLo := 1 / 2)
+    (by norm_num) (by norm_num) le_rfl hb0 hbcut hb1 hh
+  unfold dodecaFarTerm
+  linarith
+
+private theorem phase_lt_root {c b : ℝ} (hc : 0 < c) (hc1 : c ≤ 1) (hb0 : 0 < b)
+    (hb1 : b < resonanceRoot1) : c * b < resonanceRoot1 := by
+  rcases lt_or_eq_of_le hc1 with hlt | rfl
+  · exact chordPhase_lt_root hlt hb0 hb1
+  · simpa using hb1
+
+theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) :
+    7 < dodecaResponse x := by
+  have hcut : (33 / 50 : ℝ) < dodecaWall := dodecaWall_gt_thirtyThree_fiftieths
+  have hx1 : x < resonanceRoot1 := lt_trans hx.2 dodecaWall_mem_Ioo.2
+  rw [dodecaResponse_eq_terms]
+  rcases le_or_gt x (33 / 50) with hle | hgt
+  · rcases le_or_gt x (33 / 250) with h1 | h1
+    · have hnear : 3 / 2 * (7 / 5) < dodecaNearTerm x := by
+        have hratio : 1 < scaledRatio dodecaNear x :=
+          scaledRatio_gt_one dodecaNear_gt_one hx.1
+            (by
+              have hwall : dodecaNear * x < resonanceRoot1 := by
+                have hxw : x < dodecaWall := hx.2
+                unfold dodecaWall at hxw
+                have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+                rw [lt_div_iff₀ hpos] at hxw
+                simpa [mul_comm] using hxw
+              exact hwall)
+        unfold dodecaNearTerm
+        have hw : 3 / 2 * (7 / 5) < 3 / 2 * dodecaNear := by
+          nlinarith [dodecaNear_gt_seven_fifths]
+        nlinarith
+      have hb : (33 / 250 : ℝ) < resonanceRoot1 :=
+        lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2)
+      have hphases :
+          (sqrt 3 / 2) * (33 / 250 : ℝ) < resonanceRoot1 ∧
+          (sqrt 6 / 4) * (33 / 250 : ℝ) < resonanceRoot1 ∧
+          dodecaFarScale * (33 / 250 : ℝ) < resonanceRoot1 ∧
+          (1 / 2) * (33 / 250 : ℝ) < resonanceRoot1 := by
+        refine ⟨phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num)))
+            (by norm_num) hb,
+          phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_six_lt_five_halves (by norm_num)))
+            (by norm_num) hb,
+          phase_lt_root (by
+            have h5 : sqrt 5 < 3 := by
+              have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+              have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+              rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+            unfold dodecaFarScale; exact sqrt_pos.mpr (by nlinarith [h5]))
+            dodecaFarScale_lt_one.le (by norm_num) hb,
+          phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb⟩
+      have hfar := farPoly_le (b := 33 / 250) (by norm_num) hb (by norm_num)
+        hphases.1 hphases.2.1 hphases.2.2.1 hphases.2.2.2
+      have hfarx : dodecaFarTerm (33 / 250) ≤ dodecaFarTerm x := by
+        rcases lt_or_eq_of_le h1 with hlt | rfl
+        · exact (dodecaFarTerm_strictAnti hx ⟨by norm_num, lt_trans (by norm_num) hcut⟩ hlt).le
+        · exact le_rfl
+      linarith [dodeca_slot_1, hnear, hfar, hfarx]
+    · -- Remaining slots use the same split. The cut 33/50 is the last right endpoint.
+      have hmono := dodecaNearTerm_strictMono
+      have hanti := dodecaFarTerm_strictAnti
+      rcases le_or_gt x (66 / 250) with h2 | h2
+      · have ha : (33 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hb : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hnear : dodecaNearTerm (33 / 250) < dodecaNearTerm x := hmono ha hx h1
+        have hfarx : dodecaFarTerm (66 / 250) ≤ dodecaFarTerm x := by
+          rcases lt_or_eq_of_le h2 with hlt | rfl
+          · exact (hanti hx hb hlt).le
+          · exact le_rfl
+        have hnp := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaNear) (cLo := 7 / 5)
+          (x := 33 / 250) (by norm_num) (by norm_num) dodecaNear_gt_seven_fifths.le
+          (by norm_num) (by norm_num)
+          (lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2))
+          (by
+            have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+            have : (33 / 250 : ℝ) < dodecaWall := lt_trans (by norm_num) hcut
+            unfold dodecaWall at this
+            rw [lt_div_iff₀ hpos] at this
+            simpa [mul_comm] using this)
+        have hb1 : (66 / 250 : ℝ) < resonanceRoot1 :=
+          lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2)
+        have hfp := farPoly_le (b := 66 / 250) (by norm_num) hb1 (by norm_num)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_six_lt_five_halves (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by
+            have h5 : sqrt 5 < 3 := by
+              have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+              have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+              rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+            unfold dodecaFarScale; exact sqrt_pos.mpr (by nlinarith [h5]))
+            dodecaFarScale_lt_one.le (by norm_num) hb1)
+          (phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb1)
+        unfold dodecaNearTerm at hnear ⊢
+        linarith [dodeca_slot_2, hnear, hfarx, hnp, hfp]
+      rcases le_or_gt x (99 / 250) with h3 | h3
+      · have ha : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hb : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hnear : dodecaNearTerm (66 / 250) < dodecaNearTerm x := hmono ha hx h2
+        have hfarx : dodecaFarTerm (99 / 250) ≤ dodecaFarTerm x := by
+          rcases lt_or_eq_of_le h3 with hlt | rfl
+          · exact (hanti hx hb hlt).le
+          · exact le_rfl
+        have hnp := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaNear) (cLo := 7 / 5)
+          (x := 66 / 250) (by norm_num) (by norm_num) dodecaNear_gt_seven_fifths.le
+          (by norm_num) (by norm_num)
+          (lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2))
+          (by
+            have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+            have : (66 / 250 : ℝ) < dodecaWall := lt_trans (by norm_num) hcut
+            unfold dodecaWall at this
+            rw [lt_div_iff₀ hpos] at this
+            simpa [mul_comm] using this)
+        have hb1 : (99 / 250 : ℝ) < resonanceRoot1 :=
+          lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2)
+        have hfp := farPoly_le (b := 99 / 250) (by norm_num) hb1 (by norm_num)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_six_lt_five_halves (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by
+            have h5 : sqrt 5 < 3 := by
+              have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+              have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+              rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+            unfold dodecaFarScale; exact sqrt_pos.mpr (by nlinarith [h5]))
+            dodecaFarScale_lt_one.le (by norm_num) hb1)
+          (phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb1)
+        unfold dodecaNearTerm at hnear ⊢
+        linarith [dodeca_slot_3, hnear, hfarx, hnp, hfp]
+      rcases le_or_gt x (132 / 250) with h4 | h4
+      · have ha : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hb : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hnear : dodecaNearTerm (99 / 250) < dodecaNearTerm x := hmono ha hx h3
+        have hfarx : dodecaFarTerm (132 / 250) ≤ dodecaFarTerm x := by
+          rcases lt_or_eq_of_le h4 with hlt | rfl
+          · exact (hanti hx hb hlt).le
+          · exact le_rfl
+        have hnp := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaNear) (cLo := 7 / 5)
+          (x := 99 / 250) (by norm_num) (by norm_num) dodecaNear_gt_seven_fifths.le
+          (by norm_num) (by norm_num)
+          (lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2))
+          (by
+            have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+            have : (99 / 250 : ℝ) < dodecaWall := lt_trans (by norm_num) hcut
+            unfold dodecaWall at this
+            rw [lt_div_iff₀ hpos] at this
+            simpa [mul_comm] using this)
+        have hb1 : (132 / 250 : ℝ) < resonanceRoot1 :=
+          lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2)
+        have hfp := farPoly_le (b := 132 / 250) (by norm_num) hb1 (by norm_num)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_six_lt_five_halves (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by
+            have h5 : sqrt 5 < 3 := by
+              have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+              have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+              rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+            unfold dodecaFarScale; exact sqrt_pos.mpr (by nlinarith [h5]))
+            dodecaFarScale_lt_one.le (by norm_num) hb1)
+          (phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb1)
+        unfold dodecaNearTerm at hnear ⊢
+        linarith [dodeca_slot_4, hnear, hfarx, hnp, hfp]
+      · have ha : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+        have hb : (33 / 50 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, hcut⟩
+        have hnear : dodecaNearTerm (132 / 250) < dodecaNearTerm x := hmono ha hx h4
+        have hfarx : dodecaFarTerm (33 / 50) ≤ dodecaFarTerm x := by
+          rcases lt_or_eq_of_le hle with hlt | rfl
+          · exact (hanti hx hb hlt).le
+          · exact le_rfl
+        have hnp := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaNear) (cLo := 7 / 5)
+          (x := 132 / 250) (by norm_num) (by norm_num) dodecaNear_gt_seven_fifths.le
+          (by norm_num) (by norm_num)
+          (lt_trans (by norm_num) (lt_trans hcut dodecaWall_mem_Ioo.2))
+          (by
+            have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+            have : (132 / 250 : ℝ) < dodecaWall := lt_trans (by norm_num) hcut
+            unfold dodecaWall at this
+            rw [lt_div_iff₀ hpos] at this
+            simpa [mul_comm] using this)
+        have hb1 : (33 / 50 : ℝ) < resonanceRoot1 := lt_trans hcut dodecaWall_mem_Ioo.2
+        have hfp := farPoly_le (b := 33 / 50) (by norm_num) hb1 (by norm_num)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_three_lt_twentySix_fifteenths (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by positivity) (by
+            rw [div_le_one (by norm_num)]; exact le_of_lt
+              (lt_trans sqrt_six_lt_five_halves (by norm_num))) (by norm_num) hb1)
+          (phase_lt_root (by
+            have h5 : sqrt 5 < 3 := by
+              have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+              have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+              rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+            unfold dodecaFarScale; exact sqrt_pos.mpr (by nlinarith [h5]))
+            dodecaFarScale_lt_one.le (by norm_num) hb1)
+          (phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb1)
+        unfold dodecaNearTerm at hnear ⊢
+        linarith [dodeca_slot_5, hnear, hfarx, hnp, hfp]
+  · have hnp := dodecaTerm_gt_poly (k := 3 / 2) (c := dodecaNear) (cLo := 7 / 5)
+      (x := 33 / 50) (by norm_num) (by norm_num) dodecaNear_gt_seven_fifths.le
+      (by norm_num) (by norm_num)
+      (lt_trans hcut dodecaWall_mem_Ioo.2)
+      (by
+        have hpos : 0 < dodecaNear := by linarith [dodecaNear_gt_one]
+        unfold dodecaWall at hcut
+        rw [lt_div_iff₀ hpos] at hcut
+        simpa [mul_comm] using hcut)
+    have hnear : dodecaNearTerm (33 / 50) < dodecaNearTerm x :=
+      dodecaNearTerm_strictMono ⟨by norm_num, hcut⟩ hx hgt
+    have hfar : 0 < dodecaFarTerm x := dodecaFarTerm_pos hx
+    unfold dodecaNearTerm at hnp hnear ⊢
+    linarith [dodeca_near_at_cut, hnear, hfar]
+
+private theorem dodecaOutward_eq_on_wall {Z x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) :
+    dodecaOutward Z x = (dodecaResponse x - Z) / gammaSEqual x := by
+  have hsc := dodeca_scales_lt_near
+  have hγ : 0 < gammaSEqual x :=
+    gammaSEqual_pos_left_of_first_node ⟨hx.1, lt_trans hx.2 dodecaWall_mem_Ioo.2⟩
+  have hnear : 0 < gammaSEqual (dodecaNear * x) :=
+    gamma_pos_dodeca_phase (by linarith [dodecaNear_gt_one]) le_rfl hx
+  have h3 : 0 < gammaSEqual ((sqrt 3 / 2) * x) :=
+    gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.1.le hx
+  have h6 : 0 < gammaSEqual ((sqrt 6 / 4) * x) :=
+    gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.2.1.le hx
+  have h5 : sqrt 5 < 3 := by
+    have hsq : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by rw [sq_sqrt (by norm_num)]; norm_num
+    have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hsq
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+  have hf0 : 0 < dodecaFarScale := by
+    unfold dodecaFarScale
+    exact sqrt_pos.mpr (by nlinarith [h5])
+  have hf : 0 < gammaSEqual (dodecaFarScale * x) :=
+    gamma_pos_dodeca_phase hf0 hsc.2.2.1.le hx
+  have hh : 0 < gammaSEqual (x / 2) := by
+    rw [div_eq_mul_inv, mul_comm, ← one_div]
+    exact gamma_pos_dodeca_phase (s := (1 / 2 : ℝ))
+      (by norm_num : (0 : ℝ) < 1 / 2) hsc.2.2.2.le hx
+  exact dodecaOutward_eq_response hγ.ne' hnear.ne' h3.ne' h6.ne' hf.ne' hh.ne'
+
+/-- For every nuclear charge `Z ≤ 7`, twenty vertices of a regular dodecahedron
+are pushed outward on the whole interval before the nearest chord meets the
+first node. -/
+theorem dodeca_outward_pos_of_le_seven {Z x : ℝ} (hZ : Z ≤ 7)
+    (hx : x ∈ Ioo (0 : ℝ) dodecaWall) : 0 < dodecaOutward Z x := by
+  have hresp : 7 < dodecaResponse x := dodecaResponse_gt_seven hx
+  have hγ : 0 < gammaSEqual x :=
+    gammaSEqual_pos_left_of_first_node ⟨hx.1, lt_trans hx.2 dodecaWall_mem_Ioo.2⟩
+  rw [dodecaOutward_eq_on_wall hx]
+  exact div_pos (by linarith) hγ
+
+/-- For every nuclear charge `Z ≥ 8`, the dodecahedral shell is drawn inward
+at sufficiently large separation. -/
+theorem dodeca_far_field_inward {Z : ℝ} (hZ : 8 ≤ Z) :
+    ∃ a ∈ Ioo (0 : ℝ) dodecaWall, ∀ x ∈ Ioo (0 : ℝ) a, dodecaOutward Z x < 0 := by
+  have hcoeff : dodecaCoeff < Z := lt_of_lt_of_le dodecaCoeff_lt_eight hZ
+  obtain ⟨δ, hδpos, hδ⟩ := Metric.mem_nhds_iff.mp
+      (tendsto_dodecaResponse_zero (Metric.ball_mem_nhds _ (sub_pos.mpr hcoeff)))
+  have hw0 : 0 < dodecaWall := dodecaWall_mem_Ioo.1
+  set a : ℝ := min (δ / 2) (dodecaWall / 2)
+  have ha0 : 0 < a := by positivity
+  have ha_wall : a < dodecaWall := lt_of_le_of_lt (min_le_right _ _) (by linarith)
+  refine ⟨a, ⟨ha0, ha_wall⟩, ?_⟩
+  intro x hx
+  have hxδ : |x - 0| < δ := by
+    rw [sub_zero, abs_of_pos hx.1]
+    exact lt_of_lt_of_le hx.2 (le_trans (min_le_left _ _) (by linarith))
+  have hball : x ∈ Metric.ball 0 δ := by
+    rw [Metric.mem_ball, Real.dist_eq]
+    simpa [sub_zero] using hxδ
+  have hclose := hδ hball
+  have hresp : dodecaResponse x < Z := by
+    have hmem : dodecaResponse x ∈ Metric.ball dodecaCoeff (Z - dodecaCoeff) := hclose
+    rw [Metric.mem_ball, Real.dist_eq] at hmem
+    rw [abs_lt] at hmem
+    linarith
+  have hγ : 0 < gammaSEqual x :=
+    gammaSEqual_pos_left_of_first_node
+      ⟨hx.1, lt_trans hx.2 (lt_trans ha_wall dodecaWall_mem_Ioo.2)⟩
+  rw [dodecaOutward_eq_on_wall ⟨hx.1, lt_trans hx.2 ha_wall⟩]
   exact div_neg_of_neg_of_pos (by linarith) hγ
 
 end Gravity
