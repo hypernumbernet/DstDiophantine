@@ -213,10 +213,13 @@ The straight line of one fixed jet is not itself that geodesic.
   not indices of the equal-scale nodes.
 * `ElectronBoundary` — the cube's far-field coefficient lies strictly between
   \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
-  outer well. The nearest chord of a regular dodecahedron is shorter than its
-  radius, and the far-field coefficient of the twenty vertices is strictly
-  less than \(8\). For every \(Z\ge 8\) the radial response therefore equals
-  \(Z\) at some phase before that chord meets the first node.
+  outer well. The tetrahedron, the octahedron, and the icosahedron likewise
+  keep every chord longer than the radius, and their coefficients lie strictly
+  below \(1\), \(2\), and \(5\), so the same absence holds for every nuclear
+  charge at least that large. The nearest chord of a regular dodecahedron is
+  shorter than its radius, and the far-field coefficient of the twenty vertices
+  is strictly less than \(8\). For every \(Z\ge 8\) the radial response
+  therefore equals \(Z\) at some phase before that chord meets the first node.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -672,6 +675,21 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
 example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     cubeOutward Z x < 0 :=
   cube_no_outer_root hZ hx
+
+/-- Regression: for `Z ≥ 1` a tetrahedron has no radial root in the outer well. -/
+example {Z x : ℝ} (hZ : 1 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    tetraOutward Z x < 0 :=
+  tetra_no_outer_root hZ hx
+
+/-- Regression: for `Z ≥ 2` an octahedron has no radial root in the outer well. -/
+example {Z x : ℝ} (hZ : 2 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    octaOutward Z x < 0 :=
+  octa_no_outer_root hZ hx
+
+/-- Regression: for `Z ≥ 5` an icosahedron has no radial root in the outer well. -/
+example {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    icosaOutward Z x < 0 :=
+  icosa_no_outer_root hZ hx
 
 /-- Regression: a dodecahedron of charge `Z ≥ 8` balances before the chord node. -/
 example {Z : ℝ} (hZ : 8 ≤ Z) :

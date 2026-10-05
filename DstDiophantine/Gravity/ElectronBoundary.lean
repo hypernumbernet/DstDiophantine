@@ -21,6 +21,10 @@ Uniqueness of the dodecahedral root is not claimed.
   outer well every chord scale is less than one, so the cube response lies
   strictly below that coefficient. For every nuclear charge `Z ≥ 3` the cube
   therefore has no radial root in the outer well.
+* The tetrahedron, the octahedron, and the icosahedron likewise have every
+  chord longer than the radius. Their far-field coefficients lie strictly
+  below `1`, `2`, and `5`. For every nuclear charge at least that large, the
+  outward force stays inward through the outer well.
 * The nearest chord of a regular dodecahedron is shorter than the radius, and
   the far-field coefficient of its twenty vertices is strictly less than `8`.
   For every nuclear charge `Z ≥ 8` the radial response therefore passes through
@@ -515,6 +519,313 @@ theorem exists_dodeca_outer_root {Z : ℝ} (hZ : 8 ≤ Z) :
       (hcont.mono fun t ht => ⟨lt_of_lt_of_le hb.1 ht.1, lt_of_le_of_lt ht.2 ha_wall⟩)
       (show Z ∈ Ioo (dodecaResponse a) (dodecaResponse b) from ⟨hlt, hbgt⟩)
     exact ⟨x, ⟨lt_trans hb.1 hxI.1, lt_trans hxI.2 ha_wall⟩, hx0⟩
+
+/-! ### Regular shells with every chord longer than the radius -/
+
+lemma chordPhase_lt_root {c x : ℝ} (hc1 : c < 1) (hx0 : 0 < x) (hx1 : x < resonanceRoot1) :
+    c * x < resonanceRoot1 := by
+  have hcx : c * x < x := by
+    simpa using mul_lt_mul_of_pos_right hc1 hx0
+  exact lt_trans hcx hx1
+
+lemma halfPhase_lt_root {x : ℝ} (hx0 : 0 < x) (hx1 : x < resonanceRoot1) :
+    x / 2 < resonanceRoot1 :=
+  lt_trans (div_lt_self hx0 (by norm_num : (1 : ℝ) < 2)) hx1
+
+noncomputable def tetraScale : ℝ := sqrt 6 / 4
+
+noncomputable def tetraCoeff : ℝ := 3 * sqrt 6 / 8
+
+noncomputable def tetraResponse (x : ℝ) : ℝ :=
+  tetraCoeff * scaledRatio tetraScale x
+
+noncomputable def tetraOutward (Z x : ℝ) : ℝ :=
+  -Z / gammaSEqual x + tetraCoeff / gammaSEqual (tetraScale * x)
+
+noncomputable def octaEdge : ℝ := sqrt 2 / 2
+
+noncomputable def octaCoeff : ℝ := sqrt 2 + 1 / 4
+
+noncomputable def octaResponse (x : ℝ) : ℝ :=
+  sqrt 2 * scaledRatio octaEdge x + (1 / 4) * scaledRatio (1 / 2) x
+
+noncomputable def octaOutward (Z x : ℝ) : ℝ :=
+  -Z / gammaSEqual x +
+    sqrt 2 / gammaSEqual (octaEdge * x) +
+    (1 / 4) / gammaSEqual (x / 2)
+
+noncomputable def icosaRadius : ℝ := sqrt ((5 + sqrt 5) / 2)
+
+noncomputable def icosaEdge : ℝ := icosaRadius / 2
+
+noncomputable def icosaMid : ℝ := icosaRadius * (sqrt 5 - 1) / 4
+
+noncomputable def icosaCoeff : ℝ := (5 / 4) * sqrt (5 + 2 * sqrt 5) + 1 / 4
+
+noncomputable def icosaResponse (x : ℝ) : ℝ :=
+  (5 / 2 * icosaEdge) * scaledRatio icosaEdge x +
+    (5 / 2 * icosaMid) * scaledRatio icosaMid x +
+    (1 / 4) * scaledRatio (1 / 2) x
+
+noncomputable def icosaOutward (Z x : ℝ) : ℝ :=
+  -Z / gammaSEqual x +
+    (5 / 2 * icosaEdge) / gammaSEqual (icosaEdge * x) +
+    (5 / 2 * icosaMid) / gammaSEqual (icosaMid * x) +
+    (1 / 4) / gammaSEqual (x / 2)
+
+theorem tetraScale_mem_Ioo : tetraScale ∈ Ioo (0 : ℝ) 1 := by
+  refine ⟨by unfold tetraScale; positivity, ?_⟩
+  unfold tetraScale
+  have h6 : sqrt 6 < 5 / 2 := sqrt_six_lt_five_halves
+  nlinarith
+
+theorem tetraCoeff_lt_one : tetraCoeff < 1 := by
+  have h6 : sqrt 6 < 5 / 2 := sqrt_six_lt_five_halves
+  unfold tetraCoeff
+  nlinarith
+
+theorem tetraOutward_eq_response {Z x : ℝ}
+    (hx : gammaSEqual x ≠ 0) (hs : gammaSEqual (tetraScale * x) ≠ 0) :
+    tetraOutward Z x = (tetraResponse x - Z) / gammaSEqual x := by
+  unfold tetraOutward tetraResponse scaledRatio
+  field_simp [hx, hs]
+  ring
+
+theorem tetraResponse_lt_tetraCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    tetraResponse x < tetraCoeff := by
+  have hscale := tetraScale_mem_Ioo
+  have hratio := scaledRatio_lt_one (c := tetraScale) hscale.1 hscale.2 hx.1 hx.2
+  have hcoeff : 0 < tetraCoeff := by unfold tetraCoeff; positivity
+  unfold tetraResponse
+  nlinarith
+
+/-- For every nuclear charge `Z ≥ 1`, four electrons at the vertices of a
+regular tetrahedron have no radial balance in the outer well. -/
+theorem tetra_no_outer_root {Z x : ℝ} (hZ : 1 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    tetraOutward Z x < 0 := by
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  have hscale := tetraScale_mem_Ioo
+  have hs : gammaSEqual (tetraScale * x) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hscale.1.le hx.1.le)
+      (chordPhase_lt_root hscale.2 hx.1 hx.2)).ne'
+  rw [tetraOutward_eq_response hγ.ne' hs]
+  have hresp : tetraResponse x < Z := by
+    linarith [tetraResponse_lt_tetraCoeff hx, tetraCoeff_lt_one, hZ]
+  exact div_neg_of_neg_of_pos (by linarith) hγ
+
+theorem sqrt_two_lt_seven_quarters : sqrt 2 < 7 / 4 := by
+  have hsq : (sqrt 2) ^ 2 < (7 / 4 : ℝ) ^ 2 := by
+    rw [sq_sqrt (by norm_num)]
+    norm_num
+  have habs : |sqrt 2| < |(7 / 4 : ℝ)| := (sq_lt_sq).1 hsq
+  rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 7 / 4)] at habs
+
+theorem octaEdge_mem_Ioo : octaEdge ∈ Ioo (0 : ℝ) 1 := by
+  refine ⟨by unfold octaEdge; positivity, ?_⟩
+  unfold octaEdge
+  have h2 : sqrt 2 < 2 := by
+    have hsq : (sqrt 2) ^ 2 < (2 : ℝ) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |sqrt 2| < |(2 : ℝ)| := (sq_lt_sq).1 hsq
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 2)] at habs
+  nlinarith
+
+theorem octaCoeff_lt_two : octaCoeff < 2 := by
+  have h2 : sqrt 2 < 7 / 4 := sqrt_two_lt_seven_quarters
+  unfold octaCoeff
+  linarith
+
+theorem octaOutward_eq_response {Z x : ℝ}
+    (hx : gammaSEqual x ≠ 0) (he : gammaSEqual (octaEdge * x) ≠ 0)
+    (hb : gammaSEqual (x / 2) ≠ 0) :
+    octaOutward Z x = (octaResponse x - Z) / gammaSEqual x := by
+  unfold octaOutward octaResponse scaledRatio
+  field_simp [hx, he, hb]
+  ring
+
+theorem octaResponse_lt_octaCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    octaResponse x < octaCoeff := by
+  have hedge := octaEdge_mem_Ioo
+  have he := scaledRatio_lt_one (c := octaEdge) hedge.1 hedge.2 hx.1 hx.2
+  have hb := scaledRatio_lt_one (c := (1 / 2 : ℝ)) (by norm_num) (by norm_num) hx.1 hx.2
+  have hcoeff : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
+  unfold octaResponse octaCoeff
+  nlinarith
+
+/-- For every nuclear charge `Z ≥ 2`, six electrons at the vertices of a
+regular octahedron have no radial balance in the outer well. -/
+theorem octa_no_outer_root {Z x : ℝ} (hZ : 2 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    octaOutward Z x < 0 := by
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  have hedge := octaEdge_mem_Ioo
+  have he : gammaSEqual (octaEdge * x) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hedge.1.le hx.1.le)
+      (chordPhase_lt_root hedge.2 hx.1 hx.2)).ne'
+  have hb : gammaSEqual (x / 2) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (div_nonneg hx.1.le (by norm_num))
+      (halfPhase_lt_root hx.1 hx.2)).ne'
+  rw [octaOutward_eq_response hγ.ne' he hb]
+  have hresp : octaResponse x < Z := by
+    linarith [octaResponse_lt_octaCoeff hx, octaCoeff_lt_two, hZ]
+  exact div_neg_of_neg_of_pos (by linarith) hγ
+
+theorem icosaRadius_mem_Ioo : icosaRadius ∈ Ioo (0 : ℝ) 2 := by
+  refine ⟨by unfold icosaRadius; positivity, ?_⟩
+  have hsq : icosaRadius ^ 2 = (5 + sqrt 5) / 2 := by
+    unfold icosaRadius
+    exact sq_sqrt (by positivity)
+  have h5 : sqrt 5 < 3 := by
+    have hpow : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hpow
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+  have hlt : icosaRadius ^ 2 < (2 : ℝ) ^ 2 := by
+    rw [hsq]
+    nlinarith [h5]
+  have hnn : 0 ≤ icosaRadius := by unfold icosaRadius; exact sqrt_nonneg _
+  rw [← abs_of_nonneg hnn, ← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+  exact (sq_lt_sq).mp hlt
+
+theorem icosaEdge_mem_Ioo : icosaEdge ∈ Ioo (0 : ℝ) 1 := by
+  have hR := icosaRadius_mem_Ioo
+  unfold icosaEdge
+  constructor
+  · exact div_pos hR.1 (by norm_num)
+  · nlinarith [hR.2]
+
+theorem sqrt_five_gt_one : (1 : ℝ) < sqrt 5 := by
+  have hsq : (1 : ℝ) ^ 2 < (sqrt 5) ^ 2 := by
+    rw [sq_sqrt (by norm_num)]
+    norm_num
+  have habs : |(1 : ℝ)| < |sqrt 5| := (sq_lt_sq).1 hsq
+  rwa [abs_of_pos (by norm_num : (0 : ℝ) < 1), abs_of_nonneg (sqrt_nonneg _)] at habs
+
+theorem icosaMid_mem_Ioo : icosaMid ∈ Ioo (0 : ℝ) 1 := by
+  have hR := icosaRadius_mem_Ioo
+  have h5 : 1 < sqrt 5 := sqrt_five_gt_one
+  have h5lt : sqrt 5 < 3 := by
+    have hpow : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |sqrt 5| < |(3 : ℝ)| := (sq_lt_sq).1 hpow
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
+  unfold icosaMid
+  constructor
+  · exact div_pos (mul_pos hR.1 (by linarith)) (by norm_num)
+  · nlinarith [hR.2, h5, h5lt]
+
+theorem icosaCoeff_eq :
+    icosaCoeff = 5 / 2 * icosaEdge + 5 / 2 * icosaMid + 1 / 4 := by
+  have hRsq : icosaRadius ^ 2 = (5 + sqrt 5) / 2 := by
+    unfold icosaRadius
+    exact sq_sqrt (by positivity)
+  have hSsq : (sqrt (5 + 2 * sqrt 5)) ^ 2 = 5 + 2 * sqrt 5 :=
+    sq_sqrt (by positivity)
+  have hsq_eq : (2 * sqrt (5 + 2 * sqrt 5)) ^ 2 =
+      (icosaRadius * (1 + sqrt 5)) ^ 2 := by
+    have hL : (2 * sqrt (5 + 2 * sqrt 5)) ^ 2 = 20 + 8 * sqrt 5 := by
+      rw [show (2 * sqrt (5 + 2 * sqrt 5)) ^ 2 = 4 * (sqrt (5 + 2 * sqrt 5)) ^ 2 by ring, hSsq]
+      ring
+    have hφ : (1 + sqrt 5) ^ 2 = 6 + 2 * sqrt 5 := by
+      rw [show (1 + sqrt 5) ^ 2 = 1 + 2 * sqrt 5 + (sqrt 5) ^ 2 by ring, sq_sqrt (by norm_num)]
+      ring
+    have hRight : (icosaRadius * (1 + sqrt 5)) ^ 2 = 20 + 8 * sqrt 5 := by
+      calc (icosaRadius * (1 + sqrt 5)) ^ 2
+          = icosaRadius ^ 2 * (1 + sqrt 5) ^ 2 := by ring
+        _ = (5 + sqrt 5) / 2 * (6 + 2 * sqrt 5) := by rw [hRsq, hφ]
+        _ = (5 + sqrt 5) * (3 + sqrt 5) := by ring
+        _ = 15 + 8 * sqrt 5 + (sqrt 5) ^ 2 := by ring
+        _ = 15 + 8 * sqrt 5 + 5 := by rw [sq_sqrt (by norm_num)]
+        _ = 20 + 8 * sqrt 5 := by ring
+    linarith
+  have hsum_pos : 0 < 2 * sqrt (5 + 2 * sqrt 5) + icosaRadius * (1 + sqrt 5) := by
+    have hR : 0 < icosaRadius := icosaRadius_mem_Ioo.1
+    positivity
+  have hdiff : 2 * sqrt (5 + 2 * sqrt 5) - icosaRadius * (1 + sqrt 5) = 0 := by
+    have hfactor : (2 * sqrt (5 + 2 * sqrt 5) - icosaRadius * (1 + sqrt 5)) *
+        (2 * sqrt (5 + 2 * sqrt 5) + icosaRadius * (1 + sqrt 5)) =
+        (2 * sqrt (5 + 2 * sqrt 5)) ^ 2 - (icosaRadius * (1 + sqrt 5)) ^ 2 := by ring
+    have hzero : (2 * sqrt (5 + 2 * sqrt 5)) ^ 2 - (icosaRadius * (1 + sqrt 5)) ^ 2 = 0 := by
+      linarith [hsq_eq]
+    exact (mul_eq_zero.mp (hfactor.trans hzero)).resolve_right hsum_pos.ne'
+  have heq : 2 * sqrt (5 + 2 * sqrt 5) = icosaRadius * (1 + sqrt 5) := by linarith
+  have hlin : (5 / 4) * sqrt (5 + 2 * sqrt 5) =
+      (5 / 8) * (icosaRadius * (1 + sqrt 5)) := by
+    calc (5 / 4) * sqrt (5 + 2 * sqrt 5)
+        = (5 / 8) * (2 * sqrt (5 + 2 * sqrt 5)) := by ring
+      _ = (5 / 8) * (icosaRadius * (1 + sqrt 5)) := by rw [heq]
+  unfold icosaCoeff icosaEdge icosaMid
+  calc (5 / 4) * sqrt (5 + 2 * sqrt 5) + 1 / 4
+      = (5 / 8) * (icosaRadius * (1 + sqrt 5)) + 1 / 4 := by rw [hlin]
+    _ = 5 / 2 * (icosaRadius / 2) + 5 / 2 * (icosaRadius * (sqrt 5 - 1) / 4) + 1 / 4 := by ring
+
+theorem icosaCoeff_lt_five : icosaCoeff < 5 := by
+  have h5 : sqrt 5 < 118 / 25 := by
+    have hpow : (sqrt 5) ^ 2 < (118 / 25 : ℝ) ^ 2 := by
+      rw [sq_sqrt (by norm_num)]
+      norm_num
+    have habs : |sqrt 5| < |(118 / 25 : ℝ)| := (sq_lt_sq).1 hpow
+    rwa [abs_of_nonneg (sqrt_nonneg _), abs_of_pos (by norm_num : (0 : ℝ) < 118 / 25)] at habs
+  have hinner : 5 + 2 * sqrt 5 < (19 / 5 : ℝ) ^ 2 := by
+    have h19 : (19 / 5 : ℝ) ^ 2 = 361 / 25 := by norm_num
+    rw [h19]
+    nlinarith [h5]
+  have hsqrt : sqrt (5 + 2 * sqrt 5) < 19 / 5 := by
+    have hnn := sqrt_nonneg (5 + 2 * sqrt 5)
+    rw [← abs_of_nonneg hnn, ← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 19 / 5)]
+    apply (sq_lt_sq).mp
+    rw [sq_sqrt (by positivity)]
+    exact hinner
+  unfold icosaCoeff
+  nlinarith [hsqrt]
+
+theorem icosaOutward_eq_response {Z x : ℝ}
+    (hx : gammaSEqual x ≠ 0) (he : gammaSEqual (icosaEdge * x) ≠ 0)
+    (_hm : gammaSEqual (icosaMid * x) ≠ 0) (hb : gammaSEqual (x / 2) ≠ 0) :
+    icosaOutward Z x = (icosaResponse x - Z) / gammaSEqual x := by
+  unfold icosaOutward icosaResponse scaledRatio
+  field_simp [hx, he, _hm, hb]
+  ring
+
+theorem icosaResponse_lt_icosaCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    icosaResponse x < icosaCoeff := by
+  have hedge := icosaEdge_mem_Ioo
+  have hmid := icosaMid_mem_Ioo
+  have he := scaledRatio_lt_one (c := icosaEdge) hedge.1 hedge.2 hx.1 hx.2
+  have hm := scaledRatio_lt_one (c := icosaMid) hmid.1 hmid.2 hx.1 hx.2
+  have hb := scaledRatio_lt_one (c := (1 / 2 : ℝ)) (by norm_num) (by norm_num) hx.1 hx.2
+  have hE : 0 < 5 / 2 * icosaEdge := by
+    have h := icosaEdge_mem_Ioo.1
+    positivity
+  have hM : 0 < 5 / 2 * icosaMid := by
+    have h := icosaMid_mem_Ioo.1
+    positivity
+  rw [icosaCoeff_eq]
+  unfold icosaResponse
+  nlinarith
+
+/-- For every nuclear charge `Z ≥ 5`, twelve electrons at the vertices of a
+regular icosahedron have no radial balance in the outer well. -/
+theorem icosa_no_outer_root {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    icosaOutward Z x < 0 := by
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  have hedge := icosaEdge_mem_Ioo
+  have hmid := icosaMid_mem_Ioo
+  have he : gammaSEqual (icosaEdge * x) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hedge.1.le hx.1.le)
+      (chordPhase_lt_root hedge.2 hx.1 hx.2)).ne'
+  have hm : gammaSEqual (icosaMid * x) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (mul_nonneg hmid.1.le hx.1.le)
+      (chordPhase_lt_root hmid.2 hx.1 hx.2)).ne'
+  have hb : gammaSEqual (x / 2) ≠ 0 :=
+    (gammaSEqual_pos_of_lt_firstNode (div_nonneg hx.1.le (by norm_num))
+      (halfPhase_lt_root hx.1 hx.2)).ne'
+  rw [icosaOutward_eq_response hγ.ne' he hm hb]
+  have hresp : icosaResponse x < Z := by
+    linarith [icosaResponse_lt_icosaCoeff hx, icosaCoeff_lt_five, hZ]
+  exact div_neg_of_neg_of_pos (by linarith) hγ
 
 end Gravity
 
