@@ -33,6 +33,10 @@ remain `Θ(1/n)`.
   outward force restores that radius.
 * Monopole, dipole, and quadrupole modes number `1`, `3`, and `5`. Two chiral
   seats on each mode give `2`, `8`, and `18` through degrees `0`, `1`, and `2`.
+  The traceless octupole has dimension `7`, and the count through degree `3`
+  is `32`.
+* Where the interference factor of a separation is positive, the antipode is
+  an angular minimum of an energy that falls as the separation grows.
 -/
 
 namespace DstDiophantine
@@ -1148,6 +1152,24 @@ theorem antipode_energy_curvature_neg {k e γ r : ℝ}
   have hslope := likePairEnergySlope_pos (d := 2 * r) hk he hγ (by linarith)
   exact mul_neg_of_pos_of_neg hslope hsep
 
+theorem likePairEnergySlope_neg {k e γ d : ℝ}
+    (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) (hd : d ≠ 0) :
+    likePairEnergySlope k e γ d < 0 := by
+  unfold likePairEnergySlope
+  have hnum : 0 < k * e ^ 2 := mul_pos hk (sq_pos_of_ne_zero he)
+  have hden : 0 < γ * d ^ 2 := mul_pos hγ (sq_pos_of_ne_zero hd)
+  have hneg : -(k * e ^ 2) < 0 := neg_lt_zero.mpr hnum
+  exact div_neg_of_neg_of_pos hneg hden
+
+/-- In the outer well the pair repels, so the antipode is an angular minimum. -/
+theorem antipode_energy_curvature_pos {k e γ r : ℝ}
+    (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :
+    0 < likePairEnergySlope k e γ (2 * r) *
+      deriv (deriv (pairSeparation r)) π := by
+  have hsep := (pairSeparation_antipode_curvature hr).2
+  have hslope := likePairEnergySlope_neg (d := 2 * r) hk he hγ (by linarith)
+  exact mul_pos_of_neg_of_neg hslope hsep
+
 /-! ### Phase weight
 
 The logarithmic slope of `γ`, weighted by its argument, is strictly decreasing
@@ -2178,15 +2200,124 @@ lemma quadrupole_rank : Module.finrank ℝ quadrupole = 5 := by
   rw [← e.finrank_eq]
   exact (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 5 → ℝ) = 5)
 
+/-! ### Octupole seats
+
+A homogeneous cubic has ten coefficients. The Laplacian is a vector, three
+linear conditions, and those conditions are independent. The traceless
+octupole therefore has dimension `7`. -/
+
+def octuTrace (c : Fin 10 → ℝ) : Fin 3 → ℝ
+  | 0 => 3 * c 0 + c 5 + c 7
+  | 1 => 3 * c 1 + c 3 + c 8
+  | 2 => 3 * c 2 + c 4 + c 6
+
+def octupole : Submodule ℝ (Fin 10 → ℝ) where
+  carrier := {c | octuTrace c = 0}
+  add_mem' := by
+    intro c d hc hd
+    ext i
+    have hc' := congr_fun hc i
+    have hd' := congr_fun hd i
+    fin_cases i <;>
+      simp only [octuTrace, Pi.add_apply, Pi.zero_apply] at hc' hd' ⊢ <;>
+      linarith
+  zero_mem' := by
+    ext i
+    fin_cases i <;> simp [octuTrace]
+  smul_mem' := by
+    intro a c hc
+    ext i
+    have hc' := congr_fun hc i
+    fin_cases i
+    · simp only [octuTrace, Pi.smul_apply, Pi.zero_apply, smul_eq_mul] at hc' ⊢
+      calc
+        3 * (a * c 0) + a * c 5 + a * c 7
+            = a * (3 * c 0 + c 5 + c 7) := by ring
+        _ = a * 0 := by rw [hc']
+        _ = 0 := by ring
+    · simp only [octuTrace, Pi.smul_apply, Pi.zero_apply, smul_eq_mul] at hc' ⊢
+      calc
+        3 * (a * c 1) + a * c 3 + a * c 8
+            = a * (3 * c 1 + c 3 + c 8) := by ring
+        _ = a * 0 := by rw [hc']
+        _ = 0 := by ring
+    · simp only [octuTrace, Pi.smul_apply, Pi.zero_apply, smul_eq_mul] at hc' ⊢
+      calc
+        3 * (a * c 2) + a * c 4 + a * c 6
+            = a * (3 * c 2 + c 4 + c 6) := by ring
+        _ = a * 0 := by rw [hc']
+        _ = 0 := by ring
+
+/-- The seven free cubic amplitudes. -/
+noncomputable def octuParam (p : Fin 7 → ℝ) : Fin 10 → ℝ
+  | 0 => -(p 2 + p 4) / 3
+  | 1 => -(p 0 + p 5) / 3
+  | 2 => -(p 1 + p 3) / 3
+  | 3 => p 0
+  | 4 => p 1
+  | 5 => p 2
+  | 6 => p 3
+  | 7 => p 4
+  | 8 => p 5
+  | 9 => p 6
+
+lemma octuParam_trace (p : Fin 7 → ℝ) : octuTrace (octuParam p) = 0 := by
+  ext i
+  fin_cases i <;> simp [octuTrace, octuParam] <;> ring
+
+lemma octuParam_mem (p : Fin 7 → ℝ) : octuParam p ∈ octupole :=
+  octuParam_trace p
+
+noncomputable def octuOf : (Fin 7 → ℝ) →ₗ[ℝ] octupole where
+  toFun p := ⟨octuParam p, octuParam_mem p⟩
+  map_add' p q := by
+    apply Subtype.ext
+    ext i
+    fin_cases i <;> simp [octuParam] <;> ring
+  map_smul' a p := by
+    apply Subtype.ext
+    ext i
+    fin_cases i <;> simp [octuParam] <;> ring
+
+lemma octuOf_surjective : Function.Surjective octuOf := by
+  rintro ⟨c, hc⟩
+  refine ⟨![c 3, c 4, c 5, c 6, c 7, c 8, c 9], ?_⟩
+  apply Subtype.ext
+  ext i
+  have h0 : octuTrace c 0 = 0 := by simpa using congr_fun hc 0
+  have h1 : octuTrace c 1 = 0 := by simpa using congr_fun hc 1
+  have h2 : octuTrace c 2 = 0 := by simpa using congr_fun hc 2
+  fin_cases i <;> simp [octuOf, octuParam, octuTrace] at h0 h1 h2 ⊢ <;> linarith
+
+lemma octuOf_injective : Function.Injective octuOf := by
+  intro p q h
+  have hval : octuParam p = octuParam q := congrArg Subtype.val h
+  ext i
+  fin_cases i
+  · simpa [octuParam] using congr_fun hval 3
+  · simpa [octuParam] using congr_fun hval 4
+  · simpa [octuParam] using congr_fun hval 5
+  · simpa [octuParam] using congr_fun hval 6
+  · simpa [octuParam] using congr_fun hval 7
+  · simpa [octuParam] using congr_fun hval 8
+  · simpa [octuParam] using congr_fun hval 9
+
+lemma octupole_rank : Module.finrank ℝ octupole = 7 := by
+  let e : (Fin 7 → ℝ) ≃ₗ[ℝ] octupole :=
+    LinearEquiv.ofBijective octuOf ⟨octuOf_injective, octuOf_surjective⟩
+  rw [← e.finrank_eq]
+  exact (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 7 → ℝ) = 7)
+
 theorem shell_seat_counts :
     2 * Module.finrank ℝ ℝ = 2 ∧
       2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ)) = 8 ∧
       2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
-        Module.finrank ℝ quadrupole) = 18 := by
-  have h1 : Module.finrank ℝ ℝ = 1 := Module.finrank_self ℝ
+        Module.finrank ℝ quadrupole) = 18 ∧
+      2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+        Module.finrank ℝ quadrupole + Module.finrank ℝ octupole) = 32 := by
   have h3 : Module.finrank ℝ (Fin 3 → ℝ) = 3 :=
     (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 3 → ℝ) = 3)
-  simp [h1, h3, quadrupole_rank]
+  simp [h3, quadrupole_rank, octupole_rank]
 
 end Gravity
 

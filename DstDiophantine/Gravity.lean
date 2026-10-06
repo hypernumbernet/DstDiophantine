@@ -209,14 +209,18 @@ The straight line of one fixed jet is not itself that geodesic.
   electrons at the vertices of a cube likewise have exactly one radial balance
   in that shell, and the outward force restores the radius. Monopole, dipole,
   and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); two
-  complementary chiral seats give \(2\), \(8\), and \(18\). These counts are
-  not indices of the equal-scale nodes.
+  complementary chiral seats give \(2\), \(8\), and \(18\). The traceless
+  octupole has dimension \(7\), and the count through degree \(3\) is \(32\).
+  These counts are not indices of the equal-scale nodes. Where the interference
+  factor of a separation is positive, the antipode is an angular minimum.
 * `ElectronBoundary` — the cube's far-field coefficient lies strictly between
   \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
   outer well. The tetrahedron, the octahedron, and the icosahedron likewise
   keep every chord longer than the radius, and their coefficients lie strictly
   below \(1\), \(2\), and \(5\), so the same absence holds for every nuclear
-  charge at least that large. The nearest chord of a regular dodecahedron is
+  charge at least that large. Two electrons in the outer well, at any
+  placement, are not simultaneously force-free once the nuclear charge is at
+  least \(1/4\). The nearest chord of a regular dodecahedron is
   shorter than its radius, and the far-field coefficient of the twenty vertices
   lies strictly between \(15/2\) and \(8\). Before that chord meets the first
   node the response stays strictly above \(7\), so every nuclear charge
@@ -733,10 +737,25 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     cubeOutward 1 x = 0 :=
   exists_unique_cube_shell (by norm_num)
 
-/-- Regression: two chiral seats on modes of dimensions `1`, `3`, and `5`. -/
+/-- Regression: two chiral seats through the quadrupole and the octupole. -/
 example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
-    Module.finrank ℝ Gravity.quadrupole) = 18 := by
+    Module.finrank ℝ Gravity.quadrupole) = 18 ∧
+    2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+      Module.finrank ℝ Gravity.quadrupole + Module.finrank ℝ Gravity.octupole) = 32 := by
   simpa using shell_seat_counts.2.2
+
+/-- Regression: in the outer well the antipode is an angular minimum. -/
+example {k e γ r : ℝ} (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :
+    0 < likePairEnergySlope k e γ (2 * r) *
+      deriv (deriv (pairSeparation r)) Real.pi :=
+  antipode_energy_curvature_pos hr hk he hγ
+
+/-- Regression: two electrons in the outer well do not balance for `Z ≥ 1/4`. -/
+example {Z : ℝ} {a b : Fin 3 → ℝ} (hZ : (1 / 4 : ℝ) ≤ Z)
+    (ha : outerSep (vnorm a)) (hb : outerSep (vnorm b))
+    (hd : outerSep (vnorm (vsub a b))) :
+    ¬ ((∀ i, twoForce Z a b i = 0) ∧ (∀ i, twoForce Z b a i = 0)) :=
+  two_electron_no_outer_balance hZ ha hb hd
 
 /-- Regression: first Coulombic node lies in \((\pi/4,1)\). -/
 example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=

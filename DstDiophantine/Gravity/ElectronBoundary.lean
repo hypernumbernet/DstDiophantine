@@ -32,6 +32,10 @@ Uniqueness of the dodecahedral root is not claimed.
   the whole of that interval. For every `Z ≥ 8` the force is inward at large
   separation, and the response passes through `Z` while every pair is still
   outside the first node. The response is not asserted to be monotone.
+* Two electrons whose mutual separation and whose distances to the nucleus all
+  lie in the outer well have no force-free placement once the nuclear charge
+  is at least `1/4`. On opposite rays the repulsion is strictly less than a
+  quarter of the attraction of unit nuclear charge. Distances are in units of `ℓ`.
 -/
 
 namespace DstDiophantine
@@ -2130,7 +2134,279 @@ theorem dodeca_far_field_inward {Z : ℝ} (hZ : 8 ≤ Z) :
   rw [dodecaOutward_eq_on_wall ⟨hx.1, lt_trans hx.2 ha_wall⟩]
   exact div_neg_of_neg_of_pos (by linarith) hγ
 
+/-! ### Two electrons, any placement -/
+
+def vdot (v w : Fin 3 → ℝ) : ℝ :=
+  v 0 * w 0 + v 1 * w 1 + v 2 * w 2
+
+def vnorm2 (v : Fin 3 → ℝ) : ℝ :=
+  vdot v v
+
+noncomputable def vnorm (v : Fin 3 → ℝ) : ℝ :=
+  sqrt (vnorm2 v)
+
+def vsub (v w : Fin 3 → ℝ) : Fin 3 → ℝ :=
+  fun i => v i - w i
+
+def vsmul (c : ℝ) (v : Fin 3 → ℝ) : Fin 3 → ℝ :=
+  fun i => c * v i
+
+/-- Dimensionless phase `ℓ/(2r)` at `ℓ = 1`. -/
+noncomputable def pairPhase (r : ℝ) : ℝ :=
+  1 / (2 * r)
+
+def outerSep (r : ℝ) : Prop :=
+  0 < r ∧ pairPhase r < resonanceRoot1
+
+noncomputable def twoForce (Z : ℝ) (a b : Fin 3 → ℝ) (i : Fin 3) : ℝ :=
+  -Z * a i / (gammaSEqual (pairPhase (vnorm a)) * vnorm a ^ 3) +
+    (a i - b i) /
+      (gammaSEqual (pairPhase (vnorm (vsub a b))) * vnorm (vsub a b) ^ 3)
+
+lemma vnorm2_nonneg (v : Fin 3 → ℝ) : 0 ≤ vnorm2 v := by
+  unfold vnorm2 vdot
+  nlinarith [sq_nonneg (v 0), sq_nonneg (v 1), sq_nonneg (v 2)]
+
+lemma vnorm_sq (v : Fin 3 → ℝ) : vnorm v ^ 2 = vnorm2 v :=
+  sq_sqrt (vnorm2_nonneg v)
+
+lemma vnorm2_smul (c : ℝ) (v : Fin 3 → ℝ) :
+    vnorm2 (vsmul c v) = c ^ 2 * vnorm2 v := by
+  unfold vnorm2 vdot vsmul
+  ring
+
+lemma vnorm_vsub_comm (a b : Fin 3 → ℝ) :
+    vnorm (vsub b a) = vnorm (vsub a b) := by
+  have h2 : vnorm2 (vsub b a) = vnorm2 (vsub a b) := by
+    unfold vnorm2 vdot vsub
+    ring
+  unfold vnorm
+  rw [h2]
+
+lemma exists_coord_ne_zero {v : Fin 3 → ℝ} (hv : 0 < vnorm v) : ∃ i, v i ≠ 0 := by
+  by_contra h
+  push Not at h
+  have h2 : vnorm2 v = 0 := by
+    unfold vnorm2 vdot
+    simp [h]
+  have : vnorm v = 0 := by
+    unfold vnorm
+    rw [h2, sqrt_zero]
+  linarith
+
+lemma gamma_strictAnti_phase {x y : ℝ} (hx0 : 0 ≤ x) (hy : y < resonanceRoot1)
+    (hxy : x < y) : gammaSEqual y < gammaSEqual x := by
+  have hxπ : x ≤ π :=
+    (lt_trans (lt_trans hxy hy)
+      (lt_trans resonanceRoot1_bounds.2 (by linarith [pi_gt_three]))).le
+  have hyπ : y ≤ π :=
+    (lt_trans hy (lt_trans resonanceRoot1_bounds.2 (by linarith [pi_gt_three]))).le
+  have hxI : x ∈ Icc (0 : ℝ) π := ⟨hx0, hxπ⟩
+  have hyI : y ∈ Icc (0 : ℝ) π := ⟨(lt_of_le_of_lt hx0 hxy).le, hyπ⟩
+  exact strictAntiOn_gammaSEqual_even 0 (by simpa using hxI) (by simpa using hyI) hxy
+
+lemma outer_gamma_pos {r : ℝ} (hr : outerSep r) :
+    0 < gammaSEqual (pairPhase r) := by
+  have hx : 0 < pairPhase r := by
+    unfold pairPhase
+    exact div_pos (by norm_num) (by linarith [hr.1])
+  exact gammaSEqual_pos_of_lt_firstNode hx.le hr.2
+
+/-- Two electrons in the outer well, about a nucleus of charge `Z ≥ 1/4`,
+are not simultaneously force-free. Distances are in units of `ℓ`. -/
+theorem two_electron_no_outer_balance {Z : ℝ} {a b : Fin 3 → ℝ}
+    (hZ : (1 / 4 : ℝ) ≤ Z) (ha : outerSep (vnorm a)) (hb : outerSep (vnorm b))
+    (hd : outerSep (vnorm (vsub a b))) :
+    ¬ ((∀ i, twoForce Z a b i = 0) ∧ (∀ i, twoForce Z b a i = 0)) := by
+  intro ⟨hFa, hFb⟩
+  set ra := vnorm a
+  set rb := vnorm b
+  set d := vnorm (vsub a b)
+  set ga := gammaSEqual (pairPhase ra)
+  set gb := gammaSEqual (pairPhase rb)
+  set gd := gammaSEqual (pairPhase d)
+  have ra_eq : ra = vnorm a := rfl
+  have rb_eq : rb = vnorm b := rfl
+  have d_eq : d = vnorm (vsub a b) := rfl
+  have ga_eq : ga = gammaSEqual (pairPhase ra) := rfl
+  have gb_eq : gb = gammaSEqual (pairPhase rb) := rfl
+  have gd_eq : gd = gammaSEqual (pairPhase d) := rfl
+  have hga : 0 < ga := outer_gamma_pos ha
+  have hgb : 0 < gb := outer_gamma_pos hb
+  have hgd : 0 < gd := outer_gamma_pos hd
+  have hra : 0 < ra := ha.1
+  have hrb : 0 < rb := hb.1
+  have hd0 : 0 < d := hd.1
+  have hdena : ga * ra ^ 3 ≠ 0 := mul_ne_zero hga.ne' (pow_ne_zero 3 hra.ne')
+  have hdenb : gb * rb ^ 3 ≠ 0 := mul_ne_zero hgb.ne' (pow_ne_zero 3 hrb.ne')
+  have hFa' (i : Fin 3) :
+      -Z * a i / (ga * ra ^ 3) + (a i - b i) / (gd * d ^ 3) = 0 := by
+    simpa [twoForce, ← ra_eq, ← rb_eq, ← d_eq, ← ga_eq, ← gb_eq, ← gd_eq] using hFa i
+  have hswap : vnorm (vsub b a) = d := by
+    rw [d_eq]
+    exact vnorm_vsub_comm a b
+  have hFb' (i : Fin 3) :
+      -Z * b i / (gb * rb ^ 3) + (b i - a i) / (gd * d ^ 3) = 0 := by
+    have hγ : gammaSEqual (pairPhase (vnorm (vsub b a))) = gd := by
+      rw [hswap, gd_eq]
+    simpa [twoForce, ← ra_eq, ← rb_eq, hswap, hγ, ← ga_eq, ← gb_eq] using hFb i
+  have hpar (i : Fin 3) :
+      Z * b i / (gb * rb ^ 3) = -(Z * a i / (ga * ra ^ 3)) := by
+    have hA := hFa' i
+    have hB := hFb' i
+    have hneg : (b i - a i) / (gd * d ^ 3) = -((a i - b i) / (gd * d ^ 3)) := by
+      rw [show b i - a i = -(a i - b i) by ring, neg_div]
+    have hAeq : (a i - b i) / (gd * d ^ 3) = Z * a i / (ga * ra ^ 3) := by
+      have hsign : -Z * a i / (ga * ra ^ 3) = -(Z * a i / (ga * ra ^ 3)) := by ring
+      rw [hsign] at hA
+      linarith
+    have hBeq : (b i - a i) / (gd * d ^ 3) = Z * b i / (gb * rb ^ 3) := by
+      have hsign : -Z * b i / (gb * rb ^ 3) = -(Z * b i / (gb * rb ^ 3)) := by ring
+      rw [hsign] at hB
+      linarith
+    linarith [hneg, hAeq, hBeq]
+  set c : ℝ := gb * rb ^ 3 / (ga * ra ^ 3)
+  have hcpos : 0 < c := by
+    unfold c
+    exact div_pos (mul_pos hgb (pow_pos hrb 3)) (mul_pos hga (pow_pos hra 3))
+  have hcne : c ≠ 0 := hcpos.ne'
+  have hcdef : c * (ga * ra ^ 3) = gb * rb ^ 3 := by
+    unfold c
+    field_simp
+  have hbi (i : Fin 3) : b i * (ga * ra ^ 3) = -(a i) * (gb * rb ^ 3) := by
+    have h := hpar i
+    have hmul := congrArg (fun t => t * ((gb * rb ^ 3) * (ga * ra ^ 3))) h
+    field_simp [hdenb, hdena] at hmul
+    calc
+      b i * (ga * ra ^ 3) = b i * ga * ra ^ 3 := by ring
+      _ = -(gb * rb ^ 3 * a i) := hmul
+      _ = -(a i) * (gb * rb ^ 3) := by ring
+  have hb_coord (i : Fin 3) : b i = -c * a i := by
+    apply mul_left_cancel₀ hdena
+    calc
+      (ga * ra ^ 3) * b i = b i * (ga * ra ^ 3) := by ring
+      _ = -(a i) * (gb * rb ^ 3) := hbi i
+      _ = -(a i) * (c * (ga * ra ^ 3)) := by rw [← hcdef]
+      _ = (ga * ra ^ 3) * (-c * a i) := by ring
+  have hb_eq : b = vsmul (-c) a := by
+    funext i
+    simpa [vsmul] using hb_coord i
+  have hrb_eq : rb = c * ra := by
+    have h2 : rb ^ 2 = (c * ra) ^ 2 := by
+      rw [vnorm_sq, hb_eq, vnorm2_smul, ← vnorm_sq]
+      ring
+    exact (sq_eq_sq₀ hrb.le (mul_nonneg hcpos.le hra.le)).mp h2
+  have hga_eq : ga = c ^ 2 * gb := by
+    have hscaled : c * ga * ra ^ 3 = gb * (c ^ 3 * ra ^ 3) := by
+      calc
+        c * ga * ra ^ 3 = c * (ga * ra ^ 3) := by ring
+        _ = gb * rb ^ 3 := hcdef
+        _ = gb * (c * ra) ^ 3 := by rw [hrb_eq]
+        _ = gb * (c ^ 3 * ra ^ 3) := by ring
+    have hra3 : ra ^ 3 ≠ 0 := pow_ne_zero 3 hra.ne'
+    have hmul : c * ga = gb * c ^ 3 := by
+      apply mul_right_cancel₀ hra3
+      calc
+        (c * ga) * ra ^ 3 = c * ga * ra ^ 3 := by ring
+        _ = gb * (c ^ 3 * ra ^ 3) := hscaled
+        _ = (gb * c ^ 3) * ra ^ 3 := by ring
+    apply mul_left_cancel₀ (pow_ne_zero 2 hcne)
+    calc
+      c ^ 2 * ga = c * (c * ga) := by ring
+      _ = c * (gb * c ^ 3) := by rw [hmul]
+      _ = c ^ 2 * (c ^ 2 * gb) := by ring
+  have hphase_b : pairPhase rb = pairPhase ra / c := by
+    unfold pairPhase
+    rw [hrb_eq]
+    field_simp [hra.ne', hcne]
+  have hxa : 0 < pairPhase ra := by
+    unfold pairPhase
+    exact div_pos (by norm_num) (mul_pos (by norm_num) hra)
+  rcases lt_trichotomy c 1 with hcl | hce | hcg
+  · have hxb : pairPhase ra < pairPhase rb := by
+      rw [hphase_b, lt_div_iff₀ hcpos]
+      nlinarith [hxa, hcl]
+    have hγ : gb < ga := gamma_strictAnti_phase hxa.le hb.2 hxb
+    have hlt : ga < gb := by
+      have hc2 : c ^ 2 < 1 := by nlinarith [hcl, hcpos]
+      have : c ^ 2 * gb < gb := by
+        simpa [one_mul] using mul_lt_mul_of_pos_right hc2 hgb
+      simpa [← hga_eq] using this
+    exact lt_irrefl _ (hlt.trans hγ)
+  · have hbneg : b = vsmul (-1) a := by
+      simpa [hce] using hb_eq
+    have hsub : vsub a b = vsmul (2 : ℝ) a := by
+      funext i
+      have hcoord : b i = -a i := by
+        have := congr_fun hbneg i
+        simpa [vsmul] using this
+      simp [vsub, vsmul, hcoord]
+      ring
+    have hd_len : d = 2 * ra := by
+      have h2 : d ^ 2 = (2 * ra) ^ 2 := by
+        rw [vnorm_sq, hsub, vnorm2_smul, ← vnorm_sq]
+        ring
+      exact (sq_eq_sq₀ hd0.le (mul_nonneg (by norm_num) hra.le)).mp h2
+    have hxd : pairPhase d = pairPhase ra / 2 := by
+      unfold pairPhase
+      rw [hd_len]
+      field_simp [hra.ne']
+    obtain ⟨i, hi⟩ := exists_coord_ne_zero (v := a) hra
+    have hA := hFa' i
+    have hdiff : a i - b i = 2 * a i := by
+      have hcoord : b i = -a i := by
+        have := congr_fun hbneg i
+        simpa [vsmul] using this
+      rw [hcoord]
+      ring
+    have hd3 : d ^ 3 = 8 * ra ^ 3 := by
+      rw [hd_len]
+      ring
+    rw [hdiff, hd3] at hA
+    have hprod : Z * (4 * gd) = ga := by
+      have hra3 : ra ^ 3 ≠ 0 := pow_ne_zero 3 hra.ne'
+      field_simp [hdena, hgd.ne', hra3] at hA
+      simp only [mul_zero] at hA
+      have hcoef : -(Z * gd * 8) + ga * 2 = 0 :=
+        (mul_eq_zero.mp hA).resolve_left hi
+      have htwo : ga * 2 = Z * gd * 8 := by linarith [hcoef]
+      have hga4 : ga = Z * gd * 4 := by
+        apply mul_right_cancel₀ (by norm_num : (2 : ℝ) ≠ 0)
+        linarith [htwo]
+      calc
+        Z * (4 * gd) = Z * gd * 4 := by ring
+        _ = ga := hga4.symm
+    have hZeq : Z = ga / (4 * gd) := by
+      have h4 : (4 : ℝ) * gd ≠ 0 := mul_ne_zero (by norm_num) hgd.ne'
+      apply (eq_div_iff h4).mpr
+      simpa [mul_comm, mul_left_comm] using hprod
+    have hxhalf : pairPhase d < pairPhase ra := by
+      rw [hxd]
+      linarith [hxa]
+    have hx0 : 0 ≤ pairPhase d := by
+      rw [hxd]
+      exact div_nonneg hxa.le (by norm_num)
+    have hγ : ga < gd := gamma_strictAnti_phase hx0 ha.2 hxhalf
+    have : Z < 1 / 4 := by
+      rw [hZeq]
+      have h4pos : (0 : ℝ) < 4 * gd := by positivity
+      rw [div_lt_div_iff₀ h4pos (by norm_num : (0 : ℝ) < 4)]
+      linarith [hγ]
+    linarith
+  · have hxb : pairPhase rb < pairPhase ra := by
+      rw [hphase_b, div_lt_iff₀ hcpos]
+      nlinarith [hxa, hcg]
+    have hxp : 0 < pairPhase rb := by
+      rw [hphase_b]
+      exact div_pos hxa hcpos
+    have hγ : ga < gb := gamma_strictAnti_phase hxp.le ha.2 hxb
+    have hlt : gb < ga := by
+      have hc2 : (1 : ℝ) < c ^ 2 := by nlinarith [hcg]
+      have : gb < c ^ 2 * gb := by
+        simpa [one_mul] using mul_lt_mul_of_pos_right hc2 hgb
+      simpa [← hga_eq] using this
+    exact lt_irrefl _ (hγ.trans hlt)
+
 end Gravity
 
 end DstDiophantine
-
