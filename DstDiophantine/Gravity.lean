@@ -200,9 +200,12 @@ The straight line of one fixed jet is not itself that geodesic.
   successive nodes inward, so they cannot coincide with the outward Bohr radii.
 * `ElectronSquare` — on the square the two electrostatic components reduce
   to \(\gamma_s(\sqrt{2}x)=2\sqrt{2}\,\gamma_s(x)\). That balance is negative
-  throughout the outer well. In the first repulsive shell it is strictly
-  increasing and changes sign between \(3/2\) and \(8/5\), so there is
-  exactly one such square.
+  throughout the outer well. While the proton separation and the electron
+  separation both lie in the outer well, the midplane pair has no equilibrium
+  at any ratio of those separations. Opposite signs of the two factors
+  likewise give no equilibrium. In the first repulsive shell the balance is
+  strictly increasing and changes sign between \(3/2\) and \(8/5\), so there
+  is exactly one such square.
 * `ElectronCapacity` — two electrons at the ends of a diameter have no radial
   balance in the outer well and exactly one in the first repulsive shell, for
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
@@ -211,7 +214,8 @@ The straight line of one fixed jet is not itself that geodesic.
   and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); two
   complementary chiral seats give \(2\), \(8\), and \(18\). The traceless
   octupole has dimension \(7\), and the count through degree \(3\) is \(32\).
-  These counts are not indices of the equal-scale nodes. Where the interference
+  These counts are not indices of the equal-scale nodes. Degree by degree the
+  same seats number \(2\), \(6\), \(10\), and \(14\). Where the interference
   factor of a separation is positive, the antipode is an angular minimum.
 * `ElectronBoundary` — the cube's far-field coefficient lies strictly between
   \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
@@ -743,6 +747,20 @@ example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
     2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
       Module.finrank ℝ Gravity.quadrupole + Module.finrank ℝ Gravity.octupole) = 32 := by
   simpa using shell_seat_counts.2.2
+
+/-- Regression: the seats on one degree number `2`, `6`, `10`, and `14`. -/
+example : 2 * Module.finrank ℝ ℝ = 2 ∧
+    2 * Module.finrank ℝ (Fin 3 → ℝ) = 6 ∧
+    2 * Module.finrank ℝ Gravity.quadrupole = 10 ∧
+    2 * Module.finrank ℝ Gravity.octupole = 14 :=
+  subshell_seat_counts
+
+/-- Regression: the midplane pair has no outer-well balance at any ratio. -/
+example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
+    (hRwell : ℓ / (2 * R) ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
+  no_midplane_outer_equilibrium hℓ hR hρ hRwell hEwell
 
 /-- Regression: in the outer well the antipode is an angular minimum. -/
 example {k e γ r : ℝ} (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :

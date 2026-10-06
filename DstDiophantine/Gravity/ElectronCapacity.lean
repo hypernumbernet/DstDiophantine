@@ -34,7 +34,7 @@ remain `Θ(1/n)`.
 * Monopole, dipole, and quadrupole modes number `1`, `3`, and `5`. Two chiral
   seats on each mode give `2`, `8`, and `18` through degrees `0`, `1`, and `2`.
   The traceless octupole has dimension `7`, and the count through degree `3`
-  is `32`.
+  is `32`. Degree by degree the same seats number `2`, `6`, `10`, and `14`.
 * Where the interference factor of a separation is positive, the antipode is
   an angular minimum of an energy that falls as the separation grows.
 -/
@@ -2315,6 +2315,15 @@ theorem shell_seat_counts :
         Module.finrank ℝ quadrupole) = 18 ∧
       2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
         Module.finrank ℝ quadrupole + Module.finrank ℝ octupole) = 32 := by
+  have h3 : Module.finrank ℝ (Fin 3 → ℝ) = 3 :=
+    (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 3 → ℝ) = 3)
+  simp [h3, quadrupole_rank, octupole_rank]
+
+theorem subshell_seat_counts :
+    2 * Module.finrank ℝ ℝ = 2 ∧
+      2 * Module.finrank ℝ (Fin 3 → ℝ) = 6 ∧
+      2 * Module.finrank ℝ quadrupole = 10 ∧
+      2 * Module.finrank ℝ octupole = 14 := by
   have h3 : Module.finrank ℝ (Fin 3 → ℝ) = 3 :=
     (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 3 → ℝ) = 3)
   simp [h3, quadrupole_rank, octupole_rank]
