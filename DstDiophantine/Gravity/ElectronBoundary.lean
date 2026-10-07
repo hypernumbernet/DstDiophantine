@@ -13,7 +13,7 @@ import Mathlib.Tactic.Ring
 The length `ℓ` is not derived. Nothing here produces a Bohr spectrum, a
 numerical ionization energy, or the noble-gas counts from a polyhedron.
 Twenty is the number of vertices of the dodecahedron, not a principal shell.
-Uniqueness of the dodecahedral root is not claimed.
+Monotonicity of the response on the whole outer interval is not claimed.
 
 ## What is proved
 
@@ -31,7 +31,9 @@ Uniqueness of the dodecahedral root is not claimed.
   strictly above `7`, so every nuclear charge `Z ≤ 7` is pushed outward on
   the whole of that interval. For every `Z ≥ 8` the force is inward at large
   separation, and the response passes through `Z` while every pair is still
-  outside the first node. The response is not asserted to be monotone.
+  outside the first node. For every `Z ≥ 8` it meets the charge exactly once,
+  at a radius strictly between `7ℓ/10` and `10ℓ/7`, and the outward force
+  restores that radius. The comparison is in `ElectronDodeca`.
 * Two electrons whose mutual separation and whose distances to the nucleus all
   lie in the outer well have no force-free placement once the nuclear charge
   is at least `1/4`. On opposite rays the repulsion is strictly less than a
@@ -864,7 +866,7 @@ theorem dodecaNear_gt_seven_fifths : 7 / 5 < dodecaNear := by
   rw [← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 7 / 5), ← abs_of_nonneg hnn]
   exact (sq_lt_sq).mp hlt
 
-private theorem dodecaNear_lt_sevenHundredOne_fiveHundred : dodecaNear < 701 / 500 := by
+theorem dodecaNear_lt_sevenHundredOne_fiveHundred : dodecaNear < 701 / 500 := by
   have h5 : sqrt 5 < 56 / 25 := sqrt_five_lt_fiftySix_twentyFifths
   have hsq : dodecaNear ^ 2 = 3 * (3 + sqrt 5) / 8 := by
     unfold dodecaNear
@@ -1019,7 +1021,7 @@ private theorem gammaSEqual_lt_one_of_pos {y : ℝ} (hy0 : 0 < y) (hy1 : y < res
   have hlt := gammaSEqual_anti_on_first ⟨le_rfl, pi_pos.le⟩ ⟨hy0.le, hπ.le⟩ hy0
   simpa [gammaSEqual_zero] using hlt
 
-private theorem gammaSEqual_lt_sub_sq {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
+theorem gammaSEqual_lt_sub_sq {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
     gammaSEqual y < 1 - y ^ 2 := by
   have hγ : ∀ t ∈ Ioo (0 : ℝ) y, 0 < gammaSEqual t := by
     intro t ht
@@ -1127,7 +1129,7 @@ private theorem hasDerivAt_lowPoly3 (y : ℝ) : HasDerivAt lowPoly3 (4 * (1 - ga
   unfold gammaSEqual
   ring
 
-private theorem gammaSEqual_gt_lowerPoly {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
+theorem gammaSEqual_gt_lowerPoly {y : ℝ} (hy0 : 0 < y) (hy1 : y < resonanceRoot1) :
     1 - y ^ 2 - y ^ 4 / 6 < gammaSEqual y := by
   have hgap : ∀ t ∈ Ioo (0 : ℝ) y, 0 < 1 - gammaSEqual t := by
     intro t ht
@@ -1397,7 +1399,7 @@ private theorem resonanceProd_ninetyThree_hundredths_lt_one :
   rw [mul_comm]
   exact hprod.trans hnum
 
-private theorem ninetyThree_hundredths_lt_resonanceRoot1 : 93 / 100 < resonanceRoot1 := by
+theorem ninetyThree_hundredths_lt_resonanceRoot1 : 93 / 100 < resonanceRoot1 := by
   have hprod := resonanceProd_ninetyThree_hundredths_lt_one
   by_contra h
   have hle : resonanceRoot1 ≤ 93 / 100 := le_of_not_gt h
@@ -1414,7 +1416,7 @@ private theorem ninetyThree_hundredths_lt_resonanceRoot1 : 93 / 100 < resonanceR
   · rw [← heq, resonanceRoot1_prod] at hprod
     exact lt_irrefl _ hprod
 
-private theorem dodecaWall_gt_thirtyThree_fiftieths : 33 / 50 < dodecaWall := by
+theorem dodecaWall_gt_thirtyThree_fiftieths : 33 / 50 < dodecaWall := by
   have hnear : dodecaNear < 701 / 500 := dodecaNear_lt_sevenHundredOne_fiveHundred
   have hx1 : 93 / 100 < resonanceRoot1 := ninetyThree_hundredths_lt_resonanceRoot1
   have hmul : dodecaNear * (33 / 50) < resonanceRoot1 := by
@@ -1429,10 +1431,10 @@ private theorem dodecaWall_gt_thirtyThree_fiftieths : 33 / 50 < dodecaWall := by
 
 /-! ### Monotonicity of a chord ratio -/
 
-private noncomputable def chordSlope (t : ℝ) : ℝ :=
+noncomputable def chordSlope (t : ℝ) : ℝ :=
   gammaSEqual t / (cosh t * sin t)
 
-private theorem chordSlope_pos {t : ℝ} (ht0 : 0 < t) (ht1 : t < resonanceRoot1) :
+theorem chordSlope_pos {t : ℝ} (ht0 : 0 < t) (ht1 : t < resonanceRoot1) :
     0 < chordSlope t := by
   have hπ : t < π :=
     lt_trans ht1 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
@@ -1456,7 +1458,7 @@ private theorem hasDerivAt_chordSlope {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
   refine hdiv.congr_deriv ?_
   ring
 
-private theorem strictAntiOn_chordSlope :
+theorem strictAntiOn_chordSlope :
     StrictAntiOn chordSlope (Ioo (0 : ℝ) resonanceRoot1) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo 0 resonanceRoot1) ?_ ?_
   · refine ContinuousOn.div continuous_gammaSEqual.continuousOn
@@ -1487,7 +1489,7 @@ private theorem strictAntiOn_chordSlope :
       nlinarith
     exact div_neg_of_neg_of_pos hnum hden
 
-private theorem scaledRatio_numer_eq {c x : ℝ} (hx0 : 0 < x) (hcx0 : 0 < c * x)
+theorem scaledRatio_numer_eq {c x : ℝ} (hx0 : 0 < x) (hcx0 : 0 < c * x)
     (hπx : x < π) (hπc : c * x < π) :
     deriv gammaSEqual x * gammaSEqual (c * x) -
         gammaSEqual x * (deriv gammaSEqual (c * x) * c) =
@@ -1582,16 +1584,16 @@ private theorem scaledRatio_strictAnti_of_lt_one {c : ℝ} (hc0 : 0 < c) (hc1 : 
 
 /-! ### The response stays above 7 before the chord node -/
 
-private noncomputable def dodecaNearTerm (x : ℝ) : ℝ :=
+noncomputable def dodecaNearTerm (x : ℝ) : ℝ :=
   (3 / 2 * dodecaNear) * scaledRatio dodecaNear x
 
-private noncomputable def dodecaFarTerm (x : ℝ) : ℝ :=
+noncomputable def dodecaFarTerm (x : ℝ) : ℝ :=
   (3 * sqrt 3 / 2) * scaledRatio (sqrt 3 / 2) x +
     (3 * sqrt 6 / 4) * scaledRatio (sqrt 6 / 4) x +
     (3 / 2 * dodecaFarScale) * scaledRatio dodecaFarScale x +
     (1 / 4) * scaledRatio (1 / 2) x
 
-private theorem dodecaResponse_eq_terms (x : ℝ) :
+theorem dodecaResponse_eq_terms (x : ℝ) :
     dodecaResponse x = dodecaNearTerm x + dodecaFarTerm x := by
   unfold dodecaResponse dodecaNearTerm dodecaFarTerm
   ring
@@ -1612,7 +1614,7 @@ private theorem scaledRatio_gt_one {c x : ℝ} (hc : 1 < c) (hx : 0 < x)
   rw [one_lt_div hpos]
   exact hγ
 
-private theorem dodecaNearTerm_strictMono :
+theorem dodecaNearTerm_strictMono :
     StrictMonoOn dodecaNearTerm (Ioo (0 : ℝ) dodecaWall) := by
   have hmono := scaledRatio_strictMono_of_gt_one dodecaNear_gt_one
   have hweight : 0 < 3 / 2 * dodecaNear := by nlinarith [dodecaNear_gt_one]
@@ -1623,7 +1625,7 @@ private theorem dodecaNearTerm_strictMono :
   have hb' : b ∈ Ioo (0 : ℝ) (resonanceRoot1 / dodecaNear) := by simpa [hwall] using hb
   exact mul_lt_mul_of_pos_left (hmono ha' hb' hab) hweight
 
-private theorem dodecaFarTerm_strictAnti :
+theorem dodecaFarTerm_strictAnti :
     StrictAntiOn dodecaFarTerm (Ioo (0 : ℝ) dodecaWall) := by
   have h3 : sqrt 3 / 2 < 1 := by
     rw [div_lt_one (by norm_num)]
@@ -2066,7 +2068,7 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
     unfold dodecaNearTerm at hnp hnear ⊢
     linarith [dodeca_near_at_cut, hnear, hfar]
 
-private theorem dodecaOutward_eq_on_wall {Z x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) :
+theorem dodecaOutward_eq_on_wall {Z x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) :
     dodecaOutward Z x = (dodecaResponse x - Z) / gammaSEqual x := by
   have hsc := dodeca_scales_lt_near
   have hγ : 0 < gammaSEqual x :=

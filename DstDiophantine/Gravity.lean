@@ -20,8 +20,10 @@ import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
+import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronBoundary
+import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
@@ -206,6 +208,13 @@ The straight line of one fixed jet is not itself that geodesic.
   likewise give no equilibrium. In the first repulsive shell the balance is
   strictly increasing and changes sign between \(3/2\) and \(8/5\), so there
   is exactly one such square.
+* `ElectronForce` — counted with attraction positive, the electron–proton
+  force \(4x^{2}/\gamma_s(x)\) is positive and strictly increasing on the
+  outer well, and negative throughout the first repulsive shell. Inside that
+  shell it has exactly one extremum,
+  at a phase in \((5/2,\pi)\), so the radius lies in \((1/(2\pi),1/5)\).
+  The outward magnitude there is strictly less than \(3\), while at \(x=\pi\)
+  it is \(4\pi^{2}/\cosh\pi\), strictly greater than \(3\).
 * `ElectronCapacity` — two electrons at the ends of a diameter have no radial
   balance in the outer well and exactly one in the first repulsive shell, for
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
@@ -230,8 +239,11 @@ The straight line of one fixed jet is not itself that geodesic.
   node the response stays strictly above \(7\), so every nuclear charge
   \(Z\le 7\) is pushed outward on that whole interval. For every \(Z\ge 8\)
   the force is inward at large separation, and the response equals \(Z\) at
-  some phase before the chord meets the node. The response is not asserted
-  to be monotone, and uniqueness of that root is not claimed.
+  exactly one phase before the chord meets the node. The radius there lies
+  strictly between
+  \(7\ell/10\) and \(10\ell/7\), and the outward force restores it. An unlike
+  pair is driven toward the first node from both sides; a like pair is driven
+  off it, and that repulsion is the wall of this shell.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -703,10 +715,20 @@ example {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
     icosaOutward Z x < 0 :=
   icosa_no_outer_root hZ hx
 
-/-- Regression: a dodecahedron of charge `Z ≥ 8` balances before the chord node. -/
+/-- Regression: a dodecahedron of charge `Z ≥ 8` has one restoring root,
+at a radius strictly between `7ℓ/10` and `10ℓ/7`. -/
 example {Z : ℝ} (hZ : 8 ≤ Z) :
-    ∃ x ∈ Set.Ioo (0 : ℝ) dodecaWall, dodecaResponse x = Z :=
-  exists_dodeca_outer_root hZ
+    ∃! x : ℝ, x ∈ Set.Ioo (0 : ℝ) dodecaWall ∧ dodecaResponse x = Z :=
+  exists_unique_dodeca_outer_root hZ
+
+example {Z x : ℝ} (hZ : 8 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall)
+    (hR : dodecaResponse x = Z) :
+    (7 : ℝ) / 10 < 1 / (2 * x) ∧ 1 / (2 * x) < 10 / 7 ∧
+      (∀ y ∈ Set.Ioo (0 : ℝ) dodecaWall,
+        (y < x → dodecaOutward Z y < 0) ∧ (y = x → dodecaOutward Z y = 0) ∧
+          (x < y → 0 < dodecaOutward Z y)) :=
+  ⟨(dodeca_outer_root_radius hZ hx hR).1, (dodeca_outer_root_radius hZ hx hR).2,
+    fun _ hy => dodeca_outer_root_restoring hZ hx hR hy⟩
 
 /-- Regression: the dodecahedral coefficient lies strictly between `15/2` and `8`. -/
 example : (15 / 2 : ℝ) < dodecaCoeff ∧ dodecaCoeff < 8 :=
@@ -778,6 +800,20 @@ example {Z : ℝ} {a b : Fin 3 → ℝ} (hZ : (1 / 4 : ℝ) ≤ Z)
 /-- Regression: first Coulombic node lies in \((\pi/4,1)\). -/
 example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
   firstNode_window
+
+/-- Regression: the first repulsive shell has one force extremum in `(5/2, π)`. -/
+example : ∃! x : ℝ, x ∈ Set.Ioo (5 / 2) Real.pi ∧ forceCrit x = 0 :=
+  exists_unique_forceQuiet
+
+/-- Regression: that extremum is weaker than the outward value at `π`. -/
+example {x : ℝ} (hx : x ∈ Set.Ioo (5 / 2) Real.pi) (h0 : forceCrit x = 0) :
+    -3 < pairAttraction x ∧ pairAttraction x < 0 ∧ pairAttraction Real.pi < -3 :=
+  ⟨(forceQuiet_magnitude hx h0).1, (forceQuiet_magnitude hx h0).2,
+    pairAttraction_pi_lt_neg_three⟩
+
+/-- Regression: attraction strengthens with phase throughout the outer well. -/
+example : StrictMonoOn pairAttraction (Set.Ioo (0 : ℝ) resonanceRoot1) :=
+  pairAttraction_strictMono_outer
 
 /-- Regression: repulsive Coulombic layers yield no real circular speed. -/
 example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
