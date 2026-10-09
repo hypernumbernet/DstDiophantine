@@ -33,6 +33,10 @@ or an equilibrium. No centrifugal term is added.
   lies in `(5/2, π)`, so the radius `1/(2x)` lies in `(1/(2π), 1/5)`.
 * The attraction-positive value there lies strictly between `-3` and `0`.
   At `x = π` the value is `-4π²/cosh π`, which is strictly less than `-3`.
+* On the outer well, `d ln Y / d ln x = 2(γ_s + x cosh x sin x)/γ_s`.
+  This logarithmic derivative lies below `3` precisely when
+  `γ_s(x) > 2 x cosh x sin x`. That comparison has exactly one root,
+  in `(1/2, 3/5)`, so the radius `1/(2x)` lies in `(5/6, 1)`.
 -/
 
 namespace DstDiophantine
@@ -972,6 +976,337 @@ theorem forceQuiet_radius {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) :
     calc 1 / (2 * x) = (1 / x) / 2 := by ring
       _ < (2 / 5) / 2 := div_lt_div_of_pos_right hinv (by norm_num)
       _ = 1 / 5 := by ring
+
+/-! ### Restoring circular paths in the outer well
+
+`circStable x = γ_s(x) - 2 x cosh x sin x` is the sign of
+`3 - d ln Y / d ln x` on the outer well. No centrifugal term is added
+to the force. The root is not a zero of the electrostatic force.
+-/
+
+/-- Sign of `3 - d ln Y / d ln x` on a layer where `γ_s` keeps a sign. -/
+noncomputable def circStable (x : ℝ) : ℝ :=
+  gammaSEqual x - 2 * x * cosh x * sin x
+
+private lemma circStable_exp (x : ℝ) :
+    circStable x =
+      (exp x / 2) * (cos x - (1 + 2 * x) * sin x) +
+      (exp (-x) / 2) * (cos x + (1 - 2 * x) * sin x) := by
+  unfold circStable
+  rw [gammaSEqual_exp, cosh_eq]
+  ring
+
+private theorem hasDerivAt_circStable (x : ℝ) :
+    HasDerivAt circStable
+      (-(4 * cosh x * sin x + 2 * x * (sinh x * sin x + cosh x * cos x))) x := by
+  unfold circStable
+  have hy : HasDerivAt (fun y : ℝ => 2 * y) 2 x := by
+    simpa using (hasDerivAt_id x).const_mul 2
+  have hsin := (hy.mul (Real.hasDerivAt_cosh x)).mul (hasDerivAt_sin x)
+  have h := (hasDerivAt_gammaSEqual x).sub hsin
+  refine h.congr_deriv ?_
+  simp only [Pi.mul_apply]
+  ring
+
+private lemma continuous_circStable : Continuous circStable := by
+  unfold circStable
+  exact continuous_gammaSEqual.sub
+    (((continuous_const.mul continuous_id).mul continuous_cosh).mul continuous_sin)
+
+private lemma circStable_deriv_neg {x : ℝ} (hx0 : 0 < x) (hxπ : x < π / 2) :
+    -(4 * cosh x * sin x + 2 * x * (sinh x * sin x + cosh x * cos x)) < 0 := by
+  have hsin : 0 < sin x := sin_pos_of_pos_of_lt_pi hx0 (by linarith [hxπ, pi_pos])
+  have hcos : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hxπ⟩
+  have hsinh : 0 < sinh x := sinh_pos_iff.mpr hx0
+  rw [neg_lt_zero]
+  positivity
+
+private lemma circStable_strictAnti : StrictAntiOn circStable (Icc 0 (π / 2)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _) continuous_circStable.continuousOn ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  rw [(hasDerivAt_circStable x).deriv]
+  exact circStable_deriv_neg hx.1 hx.2
+
+private lemma circStable_half_pos : 0 < circStable (1 / 2) := by
+  have hx0 : (0 : ℝ) ≤ 1 / 2 := by norm_num
+  have hsinHi := sin_upper_quintic hx0
+  have hsinLo := sin_lower_cubic hx0
+  have hcosLo := cos_lower_sextic hx0
+  have hcosHi := cos_upper_quartic hx0
+  have hform : circStable (1 / 2) =
+      (exp (1 / 2) / 2) * (cos (1 / 2) - 2 * sin (1 / 2)) +
+        (exp (-(1 / 2)) / 2) * cos (1 / 2) := by
+    rw [circStable_exp]
+    have h1 : (1 + 2 * (1 / 2 : ℝ)) = 2 := by norm_num
+    have h2 : (1 - 2 * (1 / 2 : ℝ)) = 0 := by norm_num
+    rw [h1, h2]
+    ring
+  set A : ℝ := cos (1 / 2) - 2 * sin (1 / 2)
+  set B : ℝ := cos (1 / 2)
+  set Alo : ℝ := polyCos6 (1 / 2) - 2 * polySin5 (1 / 2)
+  set Ahi : ℝ := polyCos4 (1 / 2) - 2 * polySin3 (1 / 2)
+  set Blo : ℝ := polyCos6 (1 / 2)
+  have hAlo : Alo ≤ A := by
+    dsimp [Alo, A, polyCos6, polySin5]
+    linarith
+  have hAhi : A ≤ Ahi := by
+    dsimp [Ahi, A, polyCos4, polySin3]
+    linarith
+  have hAhi_neg : Ahi < 0 := by
+    dsimp [Ahi, polyCos4, polySin3]
+    norm_num
+  have hAneg : A < 0 := lt_of_le_of_lt hAhi hAhi_neg
+  have hBlo_pos : 0 < Blo := by
+    dsimp [Blo, polyCos6]
+    norm_num
+  have hBlo : Blo ≤ B := by
+    dsimp [Blo, B, polyCos6]
+    exact hcosLo
+  have hEhi : exp (1 / 2) < 165 / 100 := exp_half_bounds.2
+  have hinv : (100 / 165 : ℝ) < exp (-(1 / 2)) := by
+    rw [exp_neg]
+    have h := (inv_lt_inv₀ (by norm_num : (0 : ℝ) < 165 / 100) (exp_pos (1 / 2))).mpr hEhi
+    have heq : ((165 / 100 : ℝ)⁻¹) = 100 / 165 := by norm_num
+    linarith
+  have htermA : (165 / 100) * Alo < exp (1 / 2) * A := by
+    have hleft : (165 / 100) * A < exp (1 / 2) * A :=
+      mul_lt_mul_of_neg_right hEhi hAneg
+    have hright : (165 / 100) * Alo ≤ (165 / 100) * A :=
+      mul_le_mul_of_nonneg_left hAlo (by norm_num)
+    linarith
+  have htermB : (100 / 165) * Blo < exp (-(1 / 2)) * B := by
+    have hleft : (100 / 165) * B < exp (-(1 / 2)) * B :=
+      mul_lt_mul_of_pos_right hinv (lt_of_lt_of_le hBlo_pos hBlo)
+    have hright : (100 / 165) * Blo ≤ (100 / 165) * B :=
+      mul_le_mul_of_nonneg_left hBlo (by norm_num)
+    linarith
+  have hhalfA : (165 / 100) / 2 * Alo < exp (1 / 2) / 2 * A := by
+    calc (165 / 100) / 2 * Alo = (165 / 100) * Alo / 2 := by ring
+      _ < exp (1 / 2) * A / 2 := div_lt_div_of_pos_right htermA (by norm_num)
+      _ = exp (1 / 2) / 2 * A := by ring
+  have hhalfB : (100 / 165) / 2 * Blo < exp (-(1 / 2)) / 2 * B := by
+    calc (100 / 165) / 2 * Blo = (100 / 165) * Blo / 2 := by ring
+      _ < exp (-(1 / 2)) * B / 2 := div_lt_div_of_pos_right htermB (by norm_num)
+      _ = exp (-(1 / 2)) / 2 * B := by ring
+  have hrat : 0 < (165 / 100) / 2 * Alo + (100 / 165) / 2 * Blo := by
+    dsimp [Alo, Blo, polyCos6, polySin5]
+    norm_num
+  rw [hform]
+  linarith
+
+private lemma circStable_three_fifths_neg : circStable (3 / 5) < 0 := by
+  have hx0 : (0 : ℝ) ≤ 3 / 5 := by norm_num
+  have hsinHi := sin_upper_quintic hx0
+  have hsinLo := sin_lower_cubic hx0
+  have hcosLo := cos_lower_sextic hx0
+  have hcosHi := cos_upper_quartic hx0
+  have hform : circStable (3 / 5) =
+      (exp (3 / 5) / 2) * (cos (3 / 5) - (11 / 5) * sin (3 / 5)) +
+        (exp (-(3 / 5)) / 2) * (cos (3 / 5) - (1 / 5) * sin (3 / 5)) := by
+    rw [circStable_exp]
+    have h1 : (1 + 2 * (3 / 5 : ℝ)) = 11 / 5 := by norm_num
+    have h2 : (1 - 2 * (3 / 5 : ℝ)) = -(1 / 5) := by norm_num
+    rw [h1, h2]
+    ring
+  set A : ℝ := cos (3 / 5) - (11 / 5) * sin (3 / 5)
+  set B : ℝ := cos (3 / 5) - (1 / 5) * sin (3 / 5)
+  set Ahi : ℝ := polyCos4 (3 / 5) - (11 / 5) * polySin3 (3 / 5)
+  set Blo : ℝ := polyCos6 (3 / 5) - (1 / 5) * polySin5 (3 / 5)
+  set Bhi : ℝ := polyCos4 (3 / 5) - (1 / 5) * polySin3 (3 / 5)
+  have hAhi : A ≤ Ahi := by
+    dsimp [A, Ahi, polyCos4, polySin3]
+    linarith
+  have hAhi_neg : Ahi < 0 := by
+    dsimp [Ahi, polyCos4, polySin3]
+    norm_num
+  have hAneg : A < 0 := lt_of_le_of_lt hAhi hAhi_neg
+  have hBlo : Blo ≤ B := by
+    dsimp [Blo, B, polyCos6, polySin5]
+    linarith
+  have hBhi : B ≤ Bhi := by
+    dsimp [B, Bhi, polyCos4, polySin3]
+    linarith
+  have hBlo_pos : 0 < Blo := by
+    dsimp [Blo, polyCos6, polySin5]
+    norm_num
+  have hBpos : 0 < B := lt_of_lt_of_le hBlo_pos hBlo
+  have hElo : (1822 / 1000 : ℝ) < exp (3 / 5) := exp_three_fifths_bounds.1
+  have hinv : exp (-(3 / 5)) < 1000 / 1822 := by
+    rw [exp_neg]
+    have h := (inv_lt_inv₀ (exp_pos (3 / 5)) (by norm_num : (0 : ℝ) < 1822 / 1000)).mpr hElo
+    have heq : ((1822 / 1000 : ℝ)⁻¹) = 1000 / 1822 := by norm_num
+    linarith
+  have htermA : exp (3 / 5) * A < (1822 / 1000) * Ahi := by
+    have hleft : exp (3 / 5) * A < (1822 / 1000) * A :=
+      mul_lt_mul_of_neg_right hElo hAneg
+    have hright : (1822 / 1000) * A ≤ (1822 / 1000) * Ahi :=
+      mul_le_mul_of_nonneg_left hAhi (by norm_num)
+    linarith
+  have htermB : exp (-(3 / 5)) * B < (1000 / 1822) * Bhi := by
+    have hleft : exp (-(3 / 5)) * B < (1000 / 1822) * B :=
+      mul_lt_mul_of_pos_right hinv hBpos
+    have hright : (1000 / 1822) * B ≤ (1000 / 1822) * Bhi :=
+      mul_le_mul_of_nonneg_left hBhi (by norm_num)
+    linarith
+  have hhalfA : exp (3 / 5) / 2 * A < (1822 / 1000) / 2 * Ahi := by
+    calc exp (3 / 5) / 2 * A = exp (3 / 5) * A / 2 := by ring
+      _ < (1822 / 1000) * Ahi / 2 := div_lt_div_of_pos_right htermA (by norm_num)
+      _ = (1822 / 1000) / 2 * Ahi := by ring
+  have hhalfB : exp (-(3 / 5)) / 2 * B < (1000 / 1822) / 2 * Bhi := by
+    calc exp (-(3 / 5)) / 2 * B = exp (-(3 / 5)) * B / 2 := by ring
+      _ < (1000 / 1822) * Bhi / 2 := div_lt_div_of_pos_right htermB (by norm_num)
+      _ = (1000 / 1822) / 2 * Bhi := by ring
+  have hrat : (1822 / 1000) / 2 * Ahi + (1000 / 1822) / 2 * Bhi < 0 := by
+    dsimp [Ahi, Bhi, polyCos4, polySin3]
+    norm_num
+  rw [hform]
+  linarith
+
+private lemma three_fifths_lt_pi_div_two : (3 / 5 : ℝ) < π / 2 := by
+  linarith [pi_gt_three]
+
+private lemma three_fifths_lt_resonanceRoot1 : (3 / 5 : ℝ) < resonanceRoot1 := by
+  have hπ : (3 / 5 : ℝ) < π / 4 := by
+    linarith [pi_gt_three]
+  exact lt_trans hπ resonanceRoot1_sharp_bounds.1
+
+/-- The comparison `γ_s(x) = 2 x cosh x sin x` has exactly one root in `(1/2, 3/5)`. -/
+theorem exists_unique_circStable :
+    ∃! x : ℝ, x ∈ Ioo (1 / 2) (3 / 5) ∧ circStable x = 0 := by
+  have hmem : (0 : ℝ) ∈ Ioo (circStable (3 / 5)) (circStable (1 / 2)) :=
+    ⟨circStable_three_fifths_neg, circStable_half_pos⟩
+  obtain ⟨x, hx, hx0⟩ :=
+    intermediate_value_Ioo' (by norm_num : (1 / 2 : ℝ) ≤ 3 / 5)
+      continuous_circStable.continuousOn hmem
+  refine ⟨x, ⟨hx, hx0⟩, ?_⟩
+  intro y hy
+  have hyI : y ∈ Icc (0 : ℝ) (π / 2) :=
+    ⟨by linarith [hy.1.1], by linarith [hy.1.2, three_fifths_lt_pi_div_two]⟩
+  have hxI : x ∈ Icc (0 : ℝ) (π / 2) :=
+    ⟨by linarith [hx.1], by linarith [hx.2, three_fifths_lt_pi_div_two]⟩
+  exact circStable_strictAnti.injOn hyI hxI (by rw [hy.2, hx0])
+
+/-- A root in the outer well is the root in `(1/2, 3/5)`. -/
+theorem circStable_phase_outer {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) (h0 : circStable x = 0) :
+    x ∈ Ioo (1 / 2) (3 / 5) := by
+  refine ⟨?_, ?_⟩
+  · by_contra hle
+    have hx2 : x ≤ 1 / 2 := le_of_not_gt hle
+    have hxI : x ∈ Icc (0 : ℝ) (π / 2) :=
+      ⟨hx.1.le, by linarith [hx.2, resonanceRoot1_sharp_bounds.2, pi_gt_three]⟩
+    have hhalfI : (1 / 2 : ℝ) ∈ Icc (0 : ℝ) (π / 2) :=
+      ⟨by norm_num, by linarith [pi_gt_three]⟩
+    rcases eq_or_lt_of_le hx2 with rfl | hlt
+    · exact (ne_of_gt circStable_half_pos) h0
+    · have hanti := circStable_strictAnti hxI hhalfI hlt
+      linarith [circStable_half_pos, h0]
+  · by_contra hge
+    have hx2 : 3 / 5 ≤ x := le_of_not_gt hge
+    have hxI : x ∈ Icc (0 : ℝ) (π / 2) :=
+      ⟨hx.1.le, by linarith [hx.2, resonanceRoot1_sharp_bounds.2, pi_gt_three]⟩
+    have hthreeI : (3 / 5 : ℝ) ∈ Icc (0 : ℝ) (π / 2) :=
+      ⟨by norm_num, three_fifths_lt_pi_div_two.le⟩
+    rcases eq_or_lt_of_le hx2 with rfl | hlt
+    · exact (ne_of_lt circStable_three_fifths_neg) h0
+    · have hanti := circStable_strictAnti hthreeI hxI hlt
+      linarith [circStable_three_fifths_neg, h0]
+
+/-- The outer well contains exactly one phase where the circular comparison changes. -/
+theorem exists_unique_circStable_outer :
+    ∃! x : ℝ, x ∈ Ioo (0 : ℝ) resonanceRoot1 ∧ circStable x = 0 := by
+  obtain ⟨x, hx, huniq⟩ := exists_unique_circStable
+  have hxwell : x ∈ Ioo (0 : ℝ) resonanceRoot1 :=
+    ⟨by linarith [hx.1.1], lt_trans hx.1.2 three_fifths_lt_resonanceRoot1⟩
+  refine ⟨x, ⟨hxwell, hx.2⟩, ?_⟩
+  intro y hy
+  exact huniq y ⟨circStable_phase_outer hy.1 hy.2, hy.2⟩
+
+/-- Below the root the comparison is positive, and above it, up to the node, negative. -/
+theorem circStable_outer_sign {x y : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1)
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    (0 < circStable x ↔ x < y) ∧ (circStable x < 0 ↔ y < x) := by
+  have hxI : x ∈ Icc (0 : ℝ) (π / 2) :=
+    ⟨hx.1.le, by linarith [hx.2, resonanceRoot1_sharp_bounds.2, pi_gt_three]⟩
+  have hyI : y ∈ Icc (0 : ℝ) (π / 2) :=
+    ⟨by linarith [hy.1], by linarith [hy.2, three_fifths_lt_pi_div_two]⟩
+  constructor
+  · constructor
+    · intro hpos
+      by_contra hge
+      have hyle : y ≤ x := le_of_not_gt hge
+      rcases eq_or_lt_of_le hyle with rfl | hlt
+      · exact (ne_of_gt hpos) h0
+      · have hanti := circStable_strictAnti hyI hxI hlt
+        linarith [h0]
+    · intro hlt
+      have hanti := circStable_strictAnti hxI hyI hlt
+      linarith [h0]
+  · constructor
+    · intro hneg
+      by_contra hge
+      have hxle : x ≤ y := le_of_not_gt hge
+      rcases eq_or_lt_of_le hxle with rfl | hlt
+      · exact (ne_of_lt hneg) h0
+      · have hanti := circStable_strictAnti hxI hyI hlt
+        linarith [h0]
+    · intro hlt
+      have hanti := circStable_strictAnti hyI hxI hlt
+      linarith [h0]
+
+theorem pairAttraction_logDeriv_eq {x : ℝ} (hx : x ≠ 0) (hγ : gammaSEqual x ≠ 0) :
+    x * deriv pairAttraction x / pairAttraction x =
+      2 * forceCrit x / gammaSEqual x := by
+  rw [deriv_pairAttraction hγ]
+  unfold pairAttraction
+  field_simp [hx, hγ]
+  ring
+
+theorem pairAttraction_logDeriv_lt_three_iff {x : ℝ} (hγ : 0 < gammaSEqual x) :
+    2 * forceCrit x / gammaSEqual x < 3 ↔ 0 < circStable x := by
+  have hne : gammaSEqual x ≠ 0 := hγ.ne'
+  constructor
+  · intro h
+    have hlt : 2 * forceCrit x < 3 * gammaSEqual x := (div_lt_iff₀ hγ).mp h
+    unfold forceCrit circStable at *
+    linarith
+  · intro h
+    have hlt : 2 * forceCrit x < 3 * gammaSEqual x := by
+      unfold forceCrit circStable at *
+      linarith
+    exact (div_lt_iff₀ hγ).mpr hlt
+
+/-- On the outer well, `d ln Y / d ln x < 3` exactly on the restoring side. -/
+theorem pairAttraction_logDeriv_lt_three_outer_iff {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    x * deriv pairAttraction x / pairAttraction x < 3 ↔ 0 < circStable x := by
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  rw [pairAttraction_logDeriv_eq hx.1.ne' hγ.ne']
+  exact pairAttraction_logDeriv_lt_three_iff hγ
+
+/-- A phase in `(1/2, 3/5)` has radius `1/(2x)` strictly between `5/6` and `1`. -/
+theorem circStable_radius {x : ℝ} (hx : x ∈ Ioo (1 / 2) (3 / 5)) :
+    5 / 6 < 1 / (2 * x) ∧ 1 / (2 * x) < 1 := by
+  have hx0 : 0 < x := by linarith [hx.1]
+  refine ⟨?_, ?_⟩
+  · have h35 : (0 : ℝ) < 3 / 5 := by norm_num
+    have hinv : 5 / 3 < 1 / x := by
+      calc 5 / 3 = (3 / 5)⁻¹ := by norm_num
+        _ < x⁻¹ := (inv_lt_inv₀ h35 hx0).mpr hx.2
+        _ = 1 / x := by ring
+    calc 5 / 6 = (5 / 3) / 2 := by ring
+      _ < (1 / x) / 2 := div_lt_div_of_pos_right hinv (by norm_num)
+      _ = 1 / (2 * x) := by ring
+  · have h12 : (0 : ℝ) < 1 / 2 := by norm_num
+    have hinv : 1 / x < 2 := by
+      calc 1 / x = x⁻¹ := by ring
+        _ < (1 / 2)⁻¹ := (inv_lt_inv₀ hx0 h12).mpr hx.1
+        _ = 2 := by norm_num
+    calc 1 / (2 * x) = (1 / x) / 2 := by ring
+      _ < 2 / 2 := div_lt_div_of_pos_right hinv (by norm_num)
+      _ = 1 := by norm_num
 
 end Gravity
 
