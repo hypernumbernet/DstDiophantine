@@ -1266,7 +1266,6 @@ theorem pairAttraction_logDeriv_eq {x : ℝ} (hx : x ≠ 0) (hγ : gammaSEqual x
 
 theorem pairAttraction_logDeriv_lt_three_iff {x : ℝ} (hγ : 0 < gammaSEqual x) :
     2 * forceCrit x / gammaSEqual x < 3 ↔ 0 < circStable x := by
-  have hne : gammaSEqual x ≠ 0 := hγ.ne'
   constructor
   · intro h
     have hlt : 2 * forceCrit x < 3 * gammaSEqual x := (div_lt_iff₀ hγ).mp h
