@@ -22,6 +22,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronCapacity
+import DstDiophantine.Gravity.ElectronShape
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronNegativity
@@ -233,6 +234,12 @@ The straight line of one fixed jet is not itself that geodesic.
   These counts are not indices of the equal-scale nodes. Degree by degree the
   same seats number \(2\), \(6\), \(10\), and \(14\). Where the interference
   factor of a separation is positive, the antipode is an angular minimum.
+* `ElectronShape` — a seat is a pattern on directions, not a path. The
+  monopole does not depend on direction. A dipole with a nonzero axis is
+  positive along that axis and negative along the opposite direction, and the
+  zero set is a plane. A nonzero traceless quadrupole is unchanged under
+  reversal of the direction, takes both signs, and vanishes along some nonzero
+  direction. A nonzero traceless octupole changes sign under that reversal.
 * `ElectronBoundary` — the cube's far-field coefficient lies strictly between
   \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
   outer well. The tetrahedron, the octahedron, and the icosahedron likewise
@@ -801,6 +808,18 @@ example : 2 * Module.finrank ℝ ℝ = 2 ∧
     2 * Module.finrank ℝ Gravity.quadrupole = 10 ∧
     2 * Module.finrank ℝ Gravity.octupole = 14 :=
   subshell_seat_counts
+
+/-- Regression: a dipole changes sign across a plane. -/
+example {a : Fin 3 → ℝ} (ha : dipoleValue a a ≠ 0) :=
+  seatPattern_dipole ha
+
+/-- Regression: a nonzero quadrupole is even and has a nodal direction. -/
+example {M} (hM : M ∈ quadrupole) (h0 : M ≠ 0) :=
+  seatPattern_quadrupole hM h0
+
+/-- Regression: a nonzero octupole changes sign when the direction is reversed. -/
+example {c} (hc : c ∈ octupole) (h0 : c ≠ 0) :=
+  seatPattern_octupole hc h0
 
 /-- Regression: the midplane pair has no outer-well balance at any ratio. -/
 example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
