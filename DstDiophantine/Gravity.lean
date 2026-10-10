@@ -245,7 +245,11 @@ The straight line of one fixed jet is not itself that geodesic.
   outer well. The tetrahedron, the octahedron, and the icosahedron likewise
   keep every chord longer than the radius, and their coefficients lie strictly
   below \(1\), \(2\), and \(5\), so the same absence holds for every nuclear
-  charge at least that large. Two electrons in the outer well, at any
+  charge at least that large. Four vertices of a regular tetrahedron, and six
+  of a regular octahedron, each have exactly one radial balance in the first
+  repulsive shell for every \(Z\ge 1\), and the outward force restores that
+  radius. Four and six are vertex counts, not seat counts. The icosahedron's
+  reversed-shell root is not claimed. Two electrons in the outer well, at any
   placement, are not simultaneously force-free once the nuclear charge is at
   least \(1/4\). The nearest chord of a regular dodecahedron is
   shorter than its radius, and the far-field coefficient of the twenty vertices
@@ -258,16 +262,22 @@ The straight line of one fixed jet is not itself that geodesic.
   \(7\ell/10\) and \(10\ell/7\), and the outward force restores it. An unlike
   pair is driven toward the first node from both sides; a like pair is driven
   off it, and that repulsion is the wall of this shell.
-* `ElectronWater` — the water skeleton places the nucleus at the origin and
-  one proton on each of two rays, with one electron on each ray. While the
-  electron–electron and proton–proton separations lie in the outer well and
-  the cross factor is not a node, the tangential force on the electron and
-  the tangential force on its proton do not vanish together at any angle
-  strictly between ray coincidence and a straight line. On a straight line,
-  with each electron between the nucleus and its proton, the sum of the
-  outward forces is strictly negative whenever the nuclear charge is at
-  least \(1/4\), both nucleus distances lie in the outer well, and the factor
-  on the segment between them is not a node.
+* `ElectronWater` — the water molecule places the nucleus at the origin and
+  one proton on each of two rays, with one bonding electron on each ray,
+  closer to the nucleus than its proton. While the bonding electrons repel,
+  the other bond drives each bonding electron toward a wider angle. The
+  nuclear charge does not enter that comparison. An electron on the same ray
+  adds nothing. An electron that repels from the side toward the other bond
+  adds a wider push, and one that repels from the opposite side adds a
+  narrower push. If every further contribution is nonnegative, the tangent
+  stays positive. On a straight line, with both nucleus distances in the
+  outer well, the two bonds exert no tangential force, and an electron on
+  the opposite axis makes that tangent strictly negative. With each electron
+  between the nucleus and its proton, the outward sum on that line is
+  strictly negative whenever the nuclear charge is at least \(1/4\) and the
+  factor on the segment is not a node. While the electron–electron and
+  proton–proton separations lie in the outer well and the cross factor is
+  not a node, the two tangential forces do not vanish together.
 * `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
   times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
   larger phase. On the segment between two positive charges, with separation
@@ -795,6 +805,16 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     cubeOutward 1 x = 0 :=
   exists_unique_cube_shell (by norm_num)
 
+/-- Regression: a tetrahedron has one radial balance in the first repulsive shell. -/
+example : ∃! x : ℝ, x ∈ Set.Ioo (resonanceRoot1 / tetraScale) (branchNode 1) ∧
+    tetraOutward 1 x = 0 :=
+  exists_unique_tetra_shell (by norm_num)
+
+/-- Regression: an octahedron has one radial balance in the first repulsive shell. -/
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    octaOutward 1 x = 0 :=
+  exists_unique_octa_shell (by norm_num)
+
 /-- Regression: two chiral seats through the quadrupole and the octupole. -/
 example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
     Module.finrank ℝ Gravity.quadrupole) = 18 ∧
@@ -841,7 +861,7 @@ example {Z : ℝ} {a b : Fin 3 → ℝ} (hZ : (1 / 4 : ℝ) ≤ Z)
     ¬ ((∀ i, twoForce Z a b i = 0) ∧ (∀ i, twoForce Z b a i = 0)) :=
   two_electron_no_outer_balance hZ ha hb hd
 
-/-- Regression: the water skeleton has no outer tangential balance. -/
+/-- Regression: the two bonds have no common outer tangential zero. -/
 example {Z r R θ : ℝ}
     (hθ : θ ∈ Set.Ioo 0 Real.pi) (hr : 0 < r) (hR : 0 < R) (hne : r ≠ R)
     (hee : outerSep (2 * r * Real.sin (θ / 2)))
@@ -850,6 +870,40 @@ example {Z r R θ : ℝ}
       (Real.sqrt (r ^ 2 + R ^ 2 - 2 * r * R * Real.cos θ))) ≠ 0) :
     ¬ (waterBendElectron Z r R (θ / 2) = 0 ∧ waterBendProton Z r R (θ / 2) = 0) :=
   water_no_outer_tangent hθ hr hR hne hee hhh hc
+
+/-- Regression: the nearer bonding electron is driven toward a wider angle. -/
+example {Z r R a : ℝ}
+    (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * Real.sin a)) :
+    0 < waterBendElectron Z r R a :=
+  waterBendElectron_opening ha hr hrR hee
+
+/-- Regression: an electron on the same ray adds no tangent. -/
+example (r a q s : ℝ) :
+    waterExtraTangent r a q (vsmul s (waterU a)) = 0 :=
+  waterExtraTangent_same_ray r a q s
+
+/-- Regression: an electron between the bonds, while it repels, pushes wider. -/
+example {r a μ : ℝ} (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hμ : 0 < μ)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis μ)))) :
+    0 < waterExtraTangent r a (-1) (bondAxis μ) :=
+  waterExtraTangent_bisector_pos ha hμ hsep
+
+/-- Regression: on the straight line a far electron drives the bond off the line. -/
+example {Z r R lam : ℝ} (hr : outerSep r) (hR : outerSep R) (hlam : 0 < lam) :
+    waterBendElectron Z r R (Real.pi / 2) +
+      waterExtraTangent r (Real.pi / 2) (-1) (bondAxis (-lam)) < 0 :=
+  water_straight_far_neg hr hR hlam
+
+/-- Regression: nonnegative extra tangents leave the bond opening. -/
+example {Z r R a : ℝ}
+    (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * Real.sin a)) :
+    0 < waterBendElectron Z r R a +
+      waterTangentSum r a (fun _ : Fin 0 => (0 : ℝ)) (fun _ _ => (0 : ℝ)) := by
+  refine waterMolecule_opening ha hr hrR hee ?_
+  intro i
+  exact Fin.elim0 i
 
 /-- Regression: the outer-well cancellation lies toward the smaller charge. -/
 example {Z W φ t : ℝ} (hW : 0 < W) (hZ : W < Z)
@@ -878,7 +932,7 @@ example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
     y < x :=
   weaker_charge_closer hZ hW hx hy hp
 
-/-- Regression: on the straight water skeleton the outward sum is negative. -/
+/-- Regression: on the straight water molecule the outward sum is negative. -/
 example {Z r R : ℝ} (hZ : (1 / 4 : ℝ) ≤ Z) (hr : outerSep r) (hR : outerSep R)
     (hrR : r < R) (hgap : gammaSEqual (pairPhase (R - r)) ≠ 0) :
     waterStraightElectron Z r R + waterStraightProton Z r R < 0 :=

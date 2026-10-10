@@ -370,12 +370,16 @@ outward force restores it. Twenty is a vertex count.
 
 On the symmetric midplane pair, with both separations in the outer well,
 the two force components do not vanish together at any ratio. The square of
-that family closes in the reversed shell. The water skeleton — nucleus at
-the origin, one proton on each of two rays, one electron on each ray — has
-no common tangential zero in the outer well at any angle strictly between
-coincident rays and a straight line. On the straight line, with each
-electron between the nucleus and its proton, the sum of the outward forces
-is strictly negative once $Z \ge 1/4$.
+that family closes in the reversed shell. The water molecule places the
+nucleus at the origin and one proton on each of two rays, with one bonding
+electron on each ray, closer to the nucleus than its proton. While those
+electrons repel, the other bond drives each bonding electron toward a wider
+angle. An electron on the same ray adds nothing. One that repels from the
+side toward the other bond widens the angle, and one that repels from the
+opposite side narrows it. On the straight line the two bonds exert no
+tangential force, and an electron on the opposite axis takes the arrangement
+off the line. With each electron between the nucleus and its proton, the
+outward sum is strictly negative once $Z \ge 1/4$.
 
 On a segment longer than twice the first-node radius, an electron that stays
 in the outer well of both nuclei is drawn from the midpoint toward the

@@ -38,6 +38,11 @@ Monotonicity of the response on the whole outer interval is not claimed.
   lie in the outer well have no force-free placement once the nuclear charge
   is at least `1/4`. On opposite rays the repulsion is strictly less than a
   quarter of the attraction of unit nuclear charge. Distances are in units of `ℓ`.
+* Four vertices of a regular tetrahedron, and six of a regular octahedron,
+  each have exactly one radial balance in the first repulsive shell for every
+  nuclear charge `Z ≥ 1`. The outward force restores that radius. Four and six
+  are vertex counts, not seat counts. The icosahedron's reversed-shell root is
+  not claimed here.
 -/
 
 namespace DstDiophantine
@@ -2408,6 +2413,724 @@ theorem two_electron_no_outer_balance {Z : ℝ} {a b : Fin 3 → ℝ}
         simpa [one_mul] using mul_lt_mul_of_pos_right hc2 hgb
       simpa [← hga_eq] using this
     exact lt_irrefl _ (hγ.trans hlt)
+
+/-! ### Reversed-shell closure of the tetrahedron and the octahedron
+
+Every chord is longer than the radius, so the first repulsive shell is the
+window in which the longest chord has passed the first node and the radius
+has not reached the second. The response falls from above every positive
+charge to below `1`, and the outward force restores the root. -/
+
+lemma exp_quarter_gt : (128 / 100 : ℝ) < exp (1 / 4) := by
+  exact (exp_between (x := 1 / 4) (lo := 128 / 100) (hi := 2) (n := 8)
+    (by norm_num) (by norm_num) (by decide)
+    (by norm_num [sum_range_succ, Nat.factorial])
+    (by norm_num [sum_range_succ, Nat.factorial])).1
+
+lemma exp_nineteen_twentieths_gt : (2585 / 1000 : ℝ) < exp (19 / 20) := by
+  exact (exp_between (x := 19 / 20) (lo := 2585 / 1000) (hi := 3) (n := 8)
+    (by norm_num) (by norm_num) (by decide)
+    (by norm_num [sum_range_succ, Nat.factorial])
+    (by norm_num [sum_range_succ, Nat.factorial])).1
+
+lemma exp_thirtyNine_twentieths_gt : (7 : ℝ) < exp (39 / 20) := by
+  have hid : exp (39 / 20) = exp 1 * exp (19 / 20) := by
+    rw [show (39 / 20 : ℝ) = 1 + 19 / 20 by norm_num, exp_add]
+  have hprod : (271 / 100) * (2585 / 1000) < exp 1 * exp (19 / 20) :=
+    mul_lt_mul exp_one_gt_271 exp_nineteen_twentieths_gt.le (by norm_num)
+      (exp_pos _).le
+  have hnum : (7 : ℝ) < (271 / 100) * (2585 / 1000) := by norm_num
+  linarith [hid, hprod]
+
+lemma gammaSEqual_five_quarters_lt : gammaSEqual (5 / 4) < -1 / 2 := by
+  have hεlo : (320 / 1000 : ℝ) ≤ π / 2 - 5 / 4 := by linarith [pi_gt_d6]
+  have hεhi : π / 2 - 5 / 4 ≤ 321 / 1000 := by linarith [pi_lt_d6]
+  have hexp_lo : (34 / 10 : ℝ) < exp (5 / 4) := by
+    have hid : exp (5 / 4) = exp 1 * exp (1 / 4) := by
+      rw [show (5 / 4 : ℝ) = 1 + 1 / 4 by norm_num, exp_add]
+    have hprod : (271 / 100) * (128 / 100) < exp 1 * exp (1 / 4) :=
+      mul_lt_mul exp_one_gt_271 exp_quarter_gt.le (by norm_num) (exp_pos _).le
+    have hnum : (34 / 10 : ℝ) < (271 / 100) * (128 / 100) := by norm_num
+    linarith [hid, hprod]
+  have hexp_hi : exp (5 / 4) < 4 := by
+    have h1 : exp 1 < 3 := lt_trans exp_one_lt_d9 (by norm_num)
+    have h4 : exp (1 / 4) < 13 / 10 := by
+      exact (exp_between (x := 1 / 4) (lo := 0) (hi := 13 / 10) (n := 8)
+        (by norm_num) (by norm_num) (by decide)
+        (by norm_num [sum_range_succ, Nat.factorial])
+        (by norm_num [sum_range_succ, Nat.factorial])).2
+    have hid : exp (5 / 4) = exp 1 * exp (1 / 4) := by
+      rw [show (5 / 4 : ℝ) = 1 + 1 / 4 by norm_num, exp_add]
+    have hprod : exp 1 * exp (1 / 4) < 3 * (13 / 10) :=
+      mul_lt_mul h1 h4.le (exp_pos _) (by norm_num)
+    have hnum : 3 * (13 / 10 : ℝ) < 4 := by norm_num
+    linarith [hid, hprod]
+  have hD : sinHi (321 / 1000) - cosLo (321 / 1000) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (320 / 1000) (321 / 1000) + cosLo (321 / 1000) := by
+    simp only [sinLo, cosLo]; norm_num
+  have hbounds := gamma_before (x := 5 / 4) (ε := π / 2 - 5 / 4)
+      (a := 320 / 1000) (b := 321 / 1000) (E0 := 34 / 10) (E1 := 4)
+      (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
+      hexp_lo.le hexp_hi.le hD hS
+  have hgu : gammaUpper (34 / 10)
+      (sinHi (321 / 1000) - cosLo (321 / 1000))
+      (sinHi (321 / 1000) + cosHi (320 / 1000) (321 / 1000)) < -1 / 2 := by
+    simp only [gammaUpper, sinHi, cosLo, cosHi]; norm_num
+  linarith [hbounds.2]
+
+lemma gammaSEqual_thirtyNine_twentieths_lt : gammaSEqual (39 / 20) < -4 := by
+  have hεlo : (379 / 1000 : ℝ) ≤ 39 / 20 - π / 2 := by linarith [pi_lt_d6]
+  have hεhi : 39 / 20 - π / 2 ≤ 380 / 1000 := by linarith [pi_gt_d6]
+  have hexp_hi : exp (39 / 20) ≤ 74 / 10 := by
+    have hlt : exp (39 / 20) < exp 2 := exp_lt_exp.mpr (by norm_num)
+    exact le_of_lt (lt_trans hlt exp_one_sq_bounds.2)
+  have hD : -(sinLo (379 / 1000) (380 / 1000) + cosLo (380 / 1000)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (380 / 1000) + cosLo (380 / 1000) := by
+    simp only [sinHi, cosLo]; norm_num
+  have hbounds := gamma_after (x := 39 / 20) (ε := 39 / 20 - π / 2)
+      (a := 379 / 1000) (b := 380 / 1000) (E0 := 7) (E1 := 74 / 10)
+      (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
+      exp_thirtyNine_twentieths_gt.le hexp_hi hD hS
+  have hgu : gammaUpper 7
+      (-(sinLo (379 / 1000) (380 / 1000) + cosLo (380 / 1000)))
+      (-sinLo (379 / 1000) (380 / 1000) +
+        cosHi (379 / 1000) (380 / 1000)) < -4 := by
+    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  linarith [hbounds.2]
+
+lemma branchNode_one_gt_thirtyNine_tenths : 39 / 10 < branchNode 1 := by
+  have hlo : π + π / 4 < branchNode 1 := by
+    have h := node_mem_sharp_branch 1 (branchNode_spec 1).1 (branchNode_spec 1).2
+    simpa [Nat.cast_one, one_mul] using h.1
+  linarith [pi_gt_d6, hlo]
+
+lemma tetraScale_gt_three_fifths : 3 / 5 < tetraScale := by
+  have h6 : 12 / 5 < sqrt 6 := sqrt_six_gt_twelve_fifths
+  unfold tetraScale
+  nlinarith
+
+lemma tetraScale_lt_five_eighths : tetraScale < 5 / 8 := by
+  have h6 : sqrt 6 < 5 / 2 := sqrt_six_lt_five_halves
+  unfold tetraScale
+  nlinarith
+
+lemma tetra_phases_in_shell {x : ℝ}
+    (hx : x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1)) :
+    gammaSEqual x < 0 ∧ gammaSEqual (tetraScale * x) < 0 := by
+  have hscale := tetraScale_mem_Ioo
+  have hx0 : 0 < x := by
+    have hslot : 0 < resonanceRoot1 / tetraScale :=
+      div_pos (lt_trans (by norm_num) resonanceRoot1_bounds.1) hscale.1
+    linarith [hx.1, hslot]
+  have hroot : resonanceRoot1 < x := by
+    have hdiv : resonanceRoot1 < resonanceRoot1 / tetraScale := by
+      rw [lt_div_iff₀ hscale.1]
+      have hpos : 0 < resonanceRoot1 :=
+        lt_trans (by norm_num) resonanceRoot1_bounds.1
+      nlinarith [hscale.2, hpos]
+    exact lt_trans hdiv hx.1
+  have hedge_lo : resonanceRoot1 < tetraScale * x := by
+    simpa [mul_comm] using (div_lt_iff₀ hscale.1).mp hx.1
+  have hedge_hi : tetraScale * x < branchNode 1 := by nlinarith [hscale.2, hx.2, hx0]
+  exact ⟨gammaSEqual_neg_first_shell ⟨hroot, hx.2⟩,
+    gammaSEqual_neg_first_shell ⟨hedge_lo, hedge_hi⟩⟩
+
+lemma tetraResponse_strictAnti :
+    StrictAntiOn tetraResponse (Ioo (resonanceRoot1 / tetraScale) (branchNode 1)) := by
+  have hscale := tetraScale_mem_Ioo
+  have hanti := scaledRatio_strictAnti_from_chord (c := tetraScale) hscale.1 hscale.2
+  have hcoeff : 0 < tetraCoeff := by unfold tetraCoeff; positivity
+  unfold tetraResponse
+  exact strictAntiOn_const_mul hcoeff hanti
+
+lemma continuousOn_tetraResponse :
+    ContinuousOn tetraResponse (Ioo (resonanceRoot1 / tetraScale) (branchNode 1)) := by
+  unfold tetraResponse scaledRatio
+  refine ContinuousOn.mul continuousOn_const ?_
+  refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+    (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_
+  intro x hx
+  exact (tetra_phases_in_shell hx).2.ne
+
+lemma tetraResponse_of_outward {Z x : ℝ}
+    (hx : x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1))
+    (h0 : tetraOutward Z x = 0) : tetraResponse x = Z := by
+  have hphases := tetra_phases_in_shell hx
+  have heq := tetraOutward_eq_response (Z := Z) (x := x) hphases.1.ne hphases.2.ne
+  rw [h0] at heq
+  have : (tetraResponse x - Z) / gammaSEqual x = 0 := heq.symm
+  field_simp [hphases.1.ne] at this
+  linarith
+
+/-- Just after the edge enters the shell, the tetrahedral response exceeds `Z`. -/
+lemma tetraResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
+    Z < tetraResponse ((resonanceRoot1 + 1 / (40 * Z)) / tetraScale) := by
+  have hZ0 : 0 < Z := by linarith
+  set h : ℝ := 1 / (40 * Z) with hh
+  have hh0 : 0 < h := by positivity
+  have hx1 : resonanceRoot1 < resonanceRoot1 + h := by linarith
+  obtain ⟨c, hc, hslope⟩ := exists_hasDerivAt_eq_slope gammaSEqual (deriv gammaSEqual) hx1
+    continuous_gammaSEqual.continuousOn (fun y _ => by
+      simpa [deriv_gammaSEqual] using hasDerivAt_gammaSEqual y)
+  have hzero : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
+  have hval : gammaSEqual (resonanceRoot1 + h) = deriv gammaSEqual c * h := by
+    have hs := hslope.symm
+    rw [hzero, sub_zero] at hs
+    have hsub : resonanceRoot1 + h - resonanceRoot1 = h := by ring
+    rw [hsub] at hs
+    field_simp [hh0.ne'] at hs
+    linarith
+  have hh1 : h ≤ 1 / 40 := by
+    rw [hh, div_le_div_iff₀ (by positivity) (by norm_num)]
+    nlinarith
+  have hc0 : 0 ≤ c := by linarith [resonanceRoot1_bounds.1, hc.1]
+  have hc2 : c < 2 := by linarith [hc.2, resonanceRoot1_sharp_bounds.2, hh1]
+  have hcosh : cosh c < 5 := by
+    have hle : cosh c ≤ cosh 2 := (cosh_le_cosh).mpr (by
+      rw [abs_of_nonneg hc0, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+      exact le_of_lt hc2)
+    linarith [hle, cosh_two_lt_five]
+  have hsin0 : 0 ≤ sin c :=
+    sin_nonneg_of_nonneg_of_le_pi hc0 (by linarith [hc2, pi_gt_three])
+  have hmag : 2 * cosh c * sin c < 10 := by
+    have hsin : sin c ≤ 1 := sin_le_one c
+    have hcoef : 0 ≤ 2 * cosh c := by linarith [cosh_pos c]
+    have hlin : 2 * cosh c * sin c ≤ 2 * cosh c := by
+      simpa using mul_le_mul_of_nonneg_left hsin hcoef
+    linarith [hcosh, hlin]
+  have hsmall : -gammaSEqual (resonanceRoot1 + h) < 10 * h := by
+    rw [hval, deriv_gammaSEqual]
+    nlinarith [hmag, hh0]
+  set x : ℝ := (resonanceRoot1 + h) / tetraScale
+  have hscale_lo := tetraScale_gt_three_fifths
+  have hscale_hi := tetraScale_lt_five_eighths
+  have hx_gt : 5 / 4 < x := by
+    have hbase : (5 / 4 : ℝ) < 2 * π / 5 := by linarith [pi_gt_d6]
+    have heq : (π / 4) / (5 / 8) = 2 * π / 5 := by ring
+    have hlow : (π / 4) / (5 / 8) < resonanceRoot1 / tetraScale := by
+      rw [div_lt_div_iff₀ (by norm_num) tetraScale_mem_Ioo.1]
+      have h1 : (π / 4) * tetraScale < (π / 4) * (5 / 8) :=
+        mul_lt_mul_of_pos_left hscale_hi (by positivity)
+      have h2 : (π / 4) * (5 / 8) < resonanceRoot1 * (5 / 8) :=
+        mul_lt_mul_of_pos_right resonanceRoot1_sharp_bounds.1 (by norm_num)
+      linarith
+    have hstep : resonanceRoot1 / tetraScale < x := by
+      dsimp [x]
+      rw [div_lt_div_iff₀ tetraScale_mem_Ioo.1 tetraScale_mem_Ioo.1]
+      nlinarith [hh0, hscale_lo]
+    have hmid : 5 / 4 < (π / 4) / (5 / 8) := by
+      rw [heq]
+      exact hbase
+    exact lt_trans (lt_trans hmid hlow) hstep
+  have hxπ : x < π := by
+    have hnum : resonanceRoot1 + h < 41 / 40 := by
+      linarith [resonanceRoot1_sharp_bounds.2, hh1]
+    have hx24 : x < 41 / 24 := by
+      dsimp [x]
+      rw [div_lt_div_iff₀ tetraScale_mem_Ioo.1 (by norm_num : (0 : ℝ) < 24)]
+      have hL : (resonanceRoot1 + h) * 24 < (41 / 40) * 24 :=
+        mul_lt_mul_of_pos_right hnum (by norm_num)
+      have hR : (41 / 40) * 24 < 41 * tetraScale := by
+        have heq : (41 / 40 : ℝ) * 24 = 41 * (3 / 5) := by norm_num
+        rw [heq]
+        exact mul_lt_mul_of_pos_left hscale_lo (by norm_num)
+      linarith
+    have h24 : (41 / 24 : ℝ) < π := by linarith [pi_gt_three]
+    exact lt_trans hx24 h24
+  have hγx : gammaSEqual x < -1 / 2 := by
+    have hleft : (5 / 4 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
+    have hright : x ∈ Icc (0 : ℝ) π := ⟨by linarith, hxπ.le⟩
+    have hlt := strictAntiOn_gammaSEqual_even 0 (by simpa using hleft)
+      (by simpa using hright) hx_gt
+    linarith [hlt, gammaSEqual_five_quarters_lt]
+  have hγe_lt : gammaSEqual (resonanceRoot1 + h) < 0 := by
+    have hmem : resonanceRoot1 + h ∈ Ioo resonanceRoot1 (branchNode 1) := by
+      refine ⟨by linarith, ?_⟩
+      have hnode : π < branchNode 1 := by
+        simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
+      linarith [resonanceRoot1_sharp_bounds.2, hh1, pi_gt_three, hnode]
+    exact gammaSEqual_neg_first_shell hmem
+  have hγe_gt : -(10 * h) < gammaSEqual (resonanceRoot1 + h) := by linarith [hsmall]
+  have hratio : 2 * Z < gammaSEqual x / gammaSEqual (resonanceRoot1 + h) := by
+    have htarget : 1 / (20 * h) = 2 * Z := by
+      rw [hh]; field_simp; ring
+    rw [← htarget, lt_div_iff_of_neg hγe_lt]
+    have hright : -1 / 2 < (1 / (20 * h)) * gammaSEqual (resonanceRoot1 + h) := by
+      have hcmp : (1 / (20 * h)) * (-(10 * h)) <
+          (1 / (20 * h)) * gammaSEqual (resonanceRoot1 + h) := by
+        exact mul_lt_mul_of_pos_left hγe_gt (by positivity)
+      have hid : (1 / (20 * h)) * (-(10 * h)) = -1 / 2 := by field_simp; ring
+      linarith
+    linarith [hγx]
+  have hsame : gammaSEqual (tetraScale * x) = gammaSEqual (resonanceRoot1 + h) := by
+    dsimp [x]
+    congr 1
+    field_simp [tetraScale_mem_Ioo.1.ne']
+  have hratio' : 2 * Z < scaledRatio tetraScale x := by
+    unfold scaledRatio
+    rw [hsame]
+    exact hratio
+  have hcoeff : 3 / 4 < tetraCoeff := by
+    have h6 : (2 : ℝ) < sqrt 6 := by
+      rw [← sqrt_sq (by norm_num : (0 : ℝ) ≤ 2), sqrt_lt_sqrt_iff (by positivity)]
+      norm_num
+    unfold tetraCoeff
+    nlinarith
+  have hpos : 0 < scaledRatio tetraScale x := by linarith
+  have hstep : (3 / 4) * (2 * Z) < tetraCoeff * scaledRatio tetraScale x := by
+    have h1 : (3 / 4) * (2 * Z) < tetraCoeff * (2 * Z) :=
+      mul_lt_mul_of_pos_right hcoeff (by positivity)
+    have h2 : tetraCoeff * (2 * Z) < tetraCoeff * scaledRatio tetraScale x :=
+      mul_lt_mul_of_pos_left hratio' (by linarith)
+    linarith
+  have hthree : Z < (3 / 4) * (2 * Z) := by nlinarith
+  unfold tetraResponse
+  linarith
+
+lemma tetraResponse_thirtyNine_tenths_lt : tetraResponse (39 / 10) < 1 := by
+  have hscale_lo := tetraScale_gt_three_fifths
+  have hscale_hi := tetraScale_lt_five_eighths
+  have hedge_lo : 11 / 5 < tetraScale * (39 / 10) := by
+    have h6 : 12 / 5 < sqrt 6 := sqrt_six_gt_twelve_fifths
+    unfold tetraScale
+    nlinarith
+  have hedge_hi : tetraScale * (39 / 10) < π := by
+    have h6 : sqrt 6 < 5 / 2 := sqrt_six_lt_five_halves
+    have hπ : (39 / 16 : ℝ) < π := by linarith [pi_gt_three]
+    unfold tetraScale
+    nlinarith
+  have hγe : gammaSEqual (tetraScale * (39 / 10)) < gammaSEqual (11 / 5) := by
+    have hleft : (11 / 5 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
+    have hright : tetraScale * (39 / 10) ∈ Icc (0 : ℝ) π :=
+      ⟨by linarith [hedge_lo], hedge_hi.le⟩
+    exact strictAntiOn_gammaSEqual_even 0 (by simpa using hleft)
+      (by simpa using hright) hedge_lo
+  have hγe6 : gammaSEqual (tetraScale * (39 / 10)) < -6 := by
+    linarith [hγe, gammaSEqual_eleven_fifths_lt]
+  have hgx : -3 / 2 < gammaSEqual (39 / 10) := gammaSEqual_thirtyNine_tenths_gt
+  have hcmp : gammaSEqual (tetraScale * (39 / 10)) < gammaSEqual (39 / 10) := by
+    linarith [hγe6, hgx]
+  have hge : gammaSEqual (tetraScale * (39 / 10)) < 0 := by linarith
+  have hratio : gammaSEqual (39 / 10) / gammaSEqual (tetraScale * (39 / 10)) < 1 := by
+    rw [div_lt_iff_of_neg hge]
+    linarith [hcmp]
+  have hcoeff : tetraCoeff < 1 := tetraCoeff_lt_one
+  have hpos : 0 < tetraCoeff := by unfold tetraCoeff; positivity
+  unfold tetraResponse scaledRatio
+  have hmul : tetraCoeff *
+      (gammaSEqual (39 / 10) / gammaSEqual (tetraScale * (39 / 10))) < tetraCoeff := by
+    have hlt := mul_lt_mul_of_pos_left hratio hpos
+    simpa using hlt
+  linarith
+
+theorem tetraOutward_sign {Z x : ℝ}
+    (hx : x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1)) :
+    tetraOutward Z x < 0 ↔ Z < tetraResponse x := by
+  have hphases := tetra_phases_in_shell hx
+  rw [tetraOutward_eq_response hphases.1.ne hphases.2.ne]
+  have hden : gammaSEqual x < 0 := hphases.1
+  constructor
+  · intro h
+    have : tetraResponse x - Z > 0 := by
+      rw [div_lt_iff_of_neg hden] at h
+      linarith
+    linarith
+  · intro h
+    rw [div_lt_iff_of_neg hden]
+    linarith
+
+theorem tetraOutward_restores {Z x y : ℝ}
+    (hx : x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1))
+    (hy : y ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1))
+    (h0 : tetraOutward Z y = 0) :
+    (x < y → tetraOutward Z x < 0) ∧ (y < x → 0 < tetraOutward Z x) := by
+  have hyR : tetraResponse y = Z := tetraResponse_of_outward hy h0
+  constructor
+  · intro hlt
+    have hZ : Z < tetraResponse x := by
+      linarith [tetraResponse_strictAnti hx hy hlt, hyR]
+    exact (tetraOutward_sign hx).mpr hZ
+  · intro hlt
+    have hnum : tetraResponse x - Z < 0 := by
+      linarith [tetraResponse_strictAnti hy hx hlt, hyR]
+    have hphases := tetra_phases_in_shell hx
+    rw [tetraOutward_eq_response hphases.1.ne hphases.2.ne]
+    exact div_pos_of_neg_of_neg hnum hphases.1
+
+/-- For every nuclear charge `Z ≥ 1`, four electrons at the vertices of a
+regular tetrahedron have exactly one radial balance in the window where the
+radius and the edge both lie in the first repulsive shell. -/
+theorem exists_unique_tetra_shell {Z : ℝ} (hZ : 1 ≤ Z) :
+    ∃! x : ℝ, x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1) ∧
+      tetraOutward Z x = 0 := by
+  have hZ0 : 0 < Z := by linarith
+  set xL : ℝ := (resonanceRoot1 + 1 / (40 * Z)) / tetraScale
+  set xR : ℝ := 39 / 10
+  have hgt : Z < tetraResponse xL := by
+    simpa [xL] using tetraResponse_gt_near_outer hZ
+  have hlt : tetraResponse xR < Z := by
+    have h1 : tetraResponse xR < 1 := by
+      simpa [xR] using tetraResponse_thirtyNine_tenths_lt
+    linarith
+  have hxL_lo : resonanceRoot1 / tetraScale < xL := by
+    dsimp [xL]
+    rw [div_lt_div_iff₀ tetraScale_mem_Ioo.1 tetraScale_mem_Ioo.1]
+    have hh : 0 < 1 / (40 * Z) := by positivity
+    have hpos : 0 < tetraScale := tetraScale_mem_Ioo.1
+    nlinarith [hpos, hh]
+  have hxL_hi : xL < xR := by
+    dsimp [xL, xR]
+    have hh : 1 / (40 * Z) ≤ 1 / 40 := by
+      rw [div_le_div_iff₀ (by positivity) (by norm_num)]
+      nlinarith
+    have hnum : resonanceRoot1 + 1 / (40 * Z) < 41 / 40 := by
+      linarith [resonanceRoot1_sharp_bounds.2, hh]
+    have hx24 : xL < 41 / 24 := by
+      dsimp [xL]
+      rw [div_lt_div_iff₀ tetraScale_mem_Ioo.1 (by norm_num : (0 : ℝ) < 24)]
+      have hscale : 3 / 5 < tetraScale := tetraScale_gt_three_fifths
+      have hL : (resonanceRoot1 + 1 / (40 * Z)) * 24 < (41 / 40) * 24 :=
+        mul_lt_mul_of_pos_right hnum (by norm_num)
+      have hR : (41 / 40) * 24 < 41 * tetraScale := by
+        have heq : (41 / 40 : ℝ) * 24 = 41 * (3 / 5) := by norm_num
+        rw [heq]
+        exact mul_lt_mul_of_pos_left hscale (by norm_num)
+      linarith
+    have h24 : (41 / 24 : ℝ) < 39 / 10 := by norm_num
+    exact lt_trans hx24 h24
+  have hRmem : xR ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1) := by
+    dsimp [xR]
+    refine ⟨?_, branchNode_one_gt_thirtyNine_tenths⟩
+    have hslot : resonanceRoot1 / tetraScale < 5 / 3 := by
+      have hden : 3 / 5 < tetraScale := tetraScale_gt_three_fifths
+      have hroot : resonanceRoot1 < 1 := resonanceRoot1_sharp_bounds.2
+      have hpos : 0 < resonanceRoot1 := lt_trans (by norm_num) resonanceRoot1_bounds.1
+      rw [div_lt_div_iff₀ tetraScale_mem_Ioo.1 (by norm_num)]
+      nlinarith
+    linarith
+  have hcont : ContinuousOn (fun t => Z - tetraResponse t) (Icc xL xR) := by
+    refine ContinuousOn.sub continuousOn_const ?_
+    refine continuousOn_tetraResponse.mono ?_
+    intro t ht
+    exact ⟨lt_of_lt_of_le hxL_lo ht.1, lt_of_le_of_lt ht.2 hRmem.2⟩
+  have hleft : (fun t => Z - tetraResponse t) xL < 0 := by
+    simpa using sub_neg.mpr hgt
+  have hright : 0 < (fun t => Z - tetraResponse t) xR := by
+    simpa using sub_pos.mpr hlt
+  obtain ⟨x, hxI, hx0⟩ := intermediate_value_Ioo (le_of_lt hxL_hi) hcont ⟨hleft, hright⟩
+  have hxLmem : xL ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1) :=
+    ⟨hxL_lo, lt_trans hxL_hi hRmem.2⟩
+  have hxmem : x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1) :=
+    ⟨lt_trans hxL_lo hxI.1, lt_trans hxI.2 hRmem.2⟩
+  have hzero : tetraOutward Z x = 0 := by
+    have hphases := tetra_phases_in_shell hxmem
+    rw [tetraOutward_eq_response hphases.1.ne hphases.2.ne]
+    have hresp : tetraResponse x = Z := by linarith [hx0]
+    rw [hresp]
+    field_simp [hphases.1.ne]
+    ring
+  refine ⟨x, ⟨hxmem, hzero⟩, ?_⟩
+  intro y hy
+  have hxR := tetraResponse_of_outward hxmem hzero
+  have hyR := tetraResponse_of_outward hy.1 hy.2
+  exact (tetraResponse_strictAnti.injOn hxmem hy.1 (by rw [hxR, hyR])).symm
+
+lemma octaEdge_ge_half : 1 / 2 ≤ octaEdge := by
+  unfold octaEdge
+  have h2 : (1 : ℝ) < sqrt 2 := one_lt_sqrt_two
+  nlinarith
+
+lemma octa_phases_in_shell {x : ℝ}
+    (hx : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1)) :
+    gammaSEqual x < 0 ∧ gammaSEqual (octaEdge * x) < 0 ∧ gammaSEqual (x / 2) < 0 := by
+  have hedge := octaEdge_mem_Ioo
+  have hhalf := octaEdge_ge_half
+  have hx0 : 0 < x := by linarith [hx.1, resonanceRoot1_bounds.1]
+  have hroot : resonanceRoot1 < x := by
+    have htwo : resonanceRoot1 < 2 * resonanceRoot1 := by
+      nlinarith [resonanceRoot1_bounds.1]
+    exact lt_trans htwo hx.1
+  have hopp_lo : resonanceRoot1 < x / 2 := by
+    rw [lt_div_iff₀ (by norm_num : (0 : ℝ) < 2)]
+    linarith [hx.1]
+  have hopp_hi : x / 2 < branchNode 1 := by
+    have hlt : x / 2 < x := by nlinarith
+    exact lt_trans hlt hx.2
+  have hedge_lo : resonanceRoot1 < octaEdge * x := by nlinarith [hhalf, hopp_lo, hx0]
+  have hedge_hi : octaEdge * x < branchNode 1 := by nlinarith [hedge.2, hx.2, hx0]
+  exact ⟨gammaSEqual_neg_first_shell ⟨hroot, hx.2⟩,
+    gammaSEqual_neg_first_shell ⟨hedge_lo, hedge_hi⟩,
+    gammaSEqual_neg_first_shell ⟨hopp_lo, hopp_hi⟩⟩
+
+lemma octaResponse_strictAnti :
+    StrictAntiOn octaResponse (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+  have hedge := scaledRatio_strictAnti (c := octaEdge) octaEdge_ge_half octaEdge_mem_Ioo.2
+  have hbod := scaledRatio_strictAnti (c := (1 / 2 : ℝ)) (by norm_num) (by norm_num)
+  unfold octaResponse
+  exact strictAntiOn_add
+    (strictAntiOn_const_mul (sqrt_pos.mpr (by norm_num)) hedge)
+    (strictAntiOn_const_mul (by norm_num : (0 : ℝ) < 1 / 4) hbod)
+
+lemma continuousOn_octaResponse :
+    ContinuousOn octaResponse (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+  unfold octaResponse scaledRatio
+  refine ContinuousOn.add ?_ ?_
+  · refine ContinuousOn.mul continuousOn_const ?_
+    refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+      (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_
+    intro x hx
+    exact (octa_phases_in_shell hx).2.1.ne
+  · refine ContinuousOn.mul continuousOn_const ?_
+    refine ContinuousOn.div continuous_gammaSEqual.continuousOn
+      (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_
+    intro x hx
+    have hsame : (1 / 2) * x = x / 2 := by ring
+    rw [hsame]
+    exact (octa_phases_in_shell hx).2.2.ne
+
+lemma octaResponse_of_outward {Z x : ℝ}
+    (hx : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1))
+    (h0 : octaOutward Z x = 0) : octaResponse x = Z := by
+  have hphases := octa_phases_in_shell hx
+  have heq := octaOutward_eq_response (Z := Z) (x := x) hphases.1.ne hphases.2.1.ne
+    hphases.2.2.ne
+  rw [h0] at heq
+  have : (octaResponse x - Z) / gammaSEqual x = 0 := heq.symm
+  field_simp [hphases.1.ne] at this
+  linarith
+
+/-- The opposite-vertex term alone exceeds `Z` just after that chord enters
+the shell, and the four edges add a positive contribution. -/
+lemma octaResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
+    Z < octaResponse (2 * (resonanceRoot1 + 1 / (40 * Z))) := by
+  have hZ0 : 0 < Z := by linarith
+  set h : ℝ := 1 / (40 * Z) with hh
+  have hh0 : 0 < h := by positivity
+  have hx1 : resonanceRoot1 < resonanceRoot1 + h := by linarith
+  obtain ⟨c, hc, hslope⟩ := exists_hasDerivAt_eq_slope gammaSEqual (deriv gammaSEqual) hx1
+    continuous_gammaSEqual.continuousOn (fun y _ => by
+      simpa [deriv_gammaSEqual] using hasDerivAt_gammaSEqual y)
+  have hzero : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
+  have hval : gammaSEqual (resonanceRoot1 + h) = deriv gammaSEqual c * h := by
+    have hs := hslope.symm
+    rw [hzero, sub_zero] at hs
+    have hsub : resonanceRoot1 + h - resonanceRoot1 = h := by ring
+    rw [hsub] at hs
+    field_simp [hh0.ne'] at hs
+    linarith
+  have hh1 : h ≤ 1 / 40 := by
+    rw [hh, div_le_div_iff₀ (by positivity) (by norm_num)]
+    nlinarith
+  have hc0 : 0 ≤ c := by linarith [resonanceRoot1_bounds.1, hc.1]
+  have hc2 : c < 2 := by linarith [hc.2, resonanceRoot1_sharp_bounds.2, hh1]
+  have hcosh : cosh c < 5 := by
+    have hle : cosh c ≤ cosh 2 := (cosh_le_cosh).mpr (by
+      rw [abs_of_nonneg hc0, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 2)]
+      exact le_of_lt hc2)
+    linarith [hle, cosh_two_lt_five]
+  have hsin0 : 0 ≤ sin c :=
+    sin_nonneg_of_nonneg_of_le_pi hc0 (by linarith [hc2, pi_gt_three])
+  have hmag : 2 * cosh c * sin c < 10 := by
+    have hsin : sin c ≤ 1 := sin_le_one c
+    have hcoef : 0 ≤ 2 * cosh c := by linarith [cosh_pos c]
+    have hlin : 2 * cosh c * sin c ≤ 2 * cosh c := by
+      simpa using mul_le_mul_of_nonneg_left hsin hcoef
+    linarith [hcosh, hlin]
+  have hsmall : -gammaSEqual (resonanceRoot1 + h) < 10 * h := by
+    rw [hval, deriv_gammaSEqual]
+    nlinarith [hmag, hh0]
+  set x : ℝ := 2 * (resonanceRoot1 + h)
+  have hxbig : 8 / 5 < x := by
+    dsimp [x]; linarith [four_fifths_lt_resonanceRoot1]
+  have hxπ : x < π := by
+    dsimp [x]; linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three, hh1]
+  have hmemL : (8 / 5 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
+  have hmemx : x ∈ Icc (0 : ℝ) π :=
+    ⟨by dsimp [x]; linarith [resonanceRoot1_bounds.1], hxπ.le⟩
+  have hγx : gammaSEqual x < gammaSEqual (8 / 5) :=
+    strictAntiOn_gammaSEqual_even 0 (by simpa using hmemL) (by simpa using hmemx) hxbig
+  have hγlt : gammaSEqual x < -1 := by linarith [hγx, gammaSEqual_eight_fifths_lt]
+  have harg : x / 2 = resonanceRoot1 + h := by dsimp [x]; ring
+  have hhalf_gt : -(10 * h) < gammaSEqual (x / 2) := by
+    rw [harg]; linarith [hsmall]
+  have hhalf_lt : gammaSEqual (x / 2) < 0 := by
+    rw [harg]
+    exact gammaSEqual_neg_right_of_first_node ⟨lt_add_of_pos_right _ hh0,
+      by linarith [resonanceRoot1_sharp_bounds.2, hh1, pi_gt_three]⟩
+  have hratio : 1 / (10 * h) < gammaSEqual x / gammaSEqual (x / 2) := by
+    rw [lt_div_iff_of_neg hhalf_lt]
+    have hright : -1 < (1 / (10 * h)) * gammaSEqual (x / 2) := by
+      have hid : (1 / (10 * h)) * (-(10 * h)) = -1 := by field_simp [hh0.ne']
+      nlinarith [hhalf_gt, hid, hh0]
+    linarith [hγlt]
+  have hquarter : Z < (1 / 4) * (gammaSEqual x / gammaSEqual (x / 2)) := by
+    have hlt : (1 / 4) * (1 / (10 * h)) < (1 / 4) * (gammaSEqual x / gammaSEqual (x / 2)) := by
+      exact mul_lt_mul_of_pos_left hratio (by norm_num)
+    have hZeq : Z = (1 / 4) * (1 / (10 * h)) := by
+      rw [hh]; field_simp; ring
+    linarith
+  have hsame : x / 2 = (1 / 2) * x := by ring
+  have hquarter' : Z < (1 / 4) * scaledRatio (1 / 2) x := by
+    unfold scaledRatio
+    rw [← hsame]
+    linarith [hquarter]
+  have hshell : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) := by
+    refine ⟨by dsimp [x]; linarith, ?_⟩
+    have hnode : π < branchNode 1 := by
+      simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
+    dsimp [x]; linarith [hxπ, hnode]
+  have hphases := octa_phases_in_shell hshell
+  have hedge : 0 < sqrt 2 * scaledRatio octaEdge x := by
+    unfold scaledRatio
+    exact mul_pos (sqrt_pos.mpr (by norm_num))
+      (div_pos_of_neg_of_neg hphases.1 hphases.2.1)
+  unfold octaResponse
+  linarith [hquarter', hedge]
+
+lemma octaResponse_thirtyNine_tenths_lt : octaResponse (39 / 10) < 1 := by
+  have hopp : gammaSEqual (39 / 20) < -4 := gammaSEqual_thirtyNine_twentieths_lt
+  have hgx : -3 / 2 < gammaSEqual (39 / 10) := gammaSEqual_thirtyNine_tenths_gt
+  have hgx0 : gammaSEqual (39 / 10) < 0 := by
+    have hmem : (39 / 10 : ℝ) ∈ Ioo (2 * resonanceRoot1) (branchNode 1) := by
+      refine ⟨by linarith [resonanceRoot1_sharp_bounds.2], branchNode_one_gt_thirtyNine_tenths⟩
+    exact (octa_phases_in_shell hmem).1
+  have hrop : gammaSEqual (39 / 10) / gammaSEqual (39 / 20) < 1 / 2 := by
+    have hneg : gammaSEqual (39 / 20) < 0 := by linarith
+    rw [div_lt_iff_of_neg hneg]
+    have hhalf : (1 / 2) * gammaSEqual (39 / 20) < -2 := by nlinarith
+    linarith [hgx]
+  have hedge_lo : 11 / 5 < octaEdge * (39 / 10) := by
+    have h2 : 7 / 5 < sqrt 2 := by
+      rw [← sqrt_sq (by norm_num : (0 : ℝ) ≤ 7 / 5), sqrt_lt_sqrt_iff (by positivity)]
+      norm_num
+    unfold octaEdge
+    nlinarith
+  have hedge_hi : octaEdge * (39 / 10) < π := by
+    have h2 : sqrt 2 < 99 / 70 := sqrt_two_bounds.2
+    have hπ : (3861 / 1400 : ℝ) < π := by linarith [pi_gt_three]
+    unfold octaEdge
+    nlinarith
+  have hγe : gammaSEqual (octaEdge * (39 / 10)) < gammaSEqual (11 / 5) := by
+    have hleft : (11 / 5 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
+    have hright : octaEdge * (39 / 10) ∈ Icc (0 : ℝ) π :=
+      ⟨by linarith [hedge_lo], hedge_hi.le⟩
+    exact strictAntiOn_gammaSEqual_even 0 (by simpa using hleft)
+      (by simpa using hright) hedge_lo
+  have hγe6 : gammaSEqual (octaEdge * (39 / 10)) < -6 := by
+    linarith [hγe, gammaSEqual_eleven_fifths_lt]
+  have hre : gammaSEqual (39 / 10) / gammaSEqual (octaEdge * (39 / 10)) < 1 / 2 := by
+    have hneg : gammaSEqual (octaEdge * (39 / 10)) < 0 := by linarith
+    rw [div_lt_iff_of_neg hneg]
+    have hhalf : (1 / 2) * gammaSEqual (octaEdge * (39 / 10)) < -3 := by nlinarith
+    linarith [hgx]
+  have hsqrt : sqrt 2 / 2 < 7 / 8 := by
+    have h2 : sqrt 2 < 7 / 4 := sqrt_two_lt_seven_quarters
+    nlinarith
+  have hposE : 0 < gammaSEqual (39 / 10) / gammaSEqual (octaEdge * (39 / 10)) :=
+    div_pos_of_neg_of_neg hgx0 (by linarith)
+  have hposH : 0 < gammaSEqual (39 / 10) / gammaSEqual (39 / 20) :=
+    div_pos_of_neg_of_neg hgx0 (by linarith)
+  have hpe : sqrt 2 * (gammaSEqual (39 / 10) / gammaSEqual (octaEdge * (39 / 10))) <
+      7 / 8 := by
+    have h1 : sqrt 2 * (gammaSEqual (39 / 10) / gammaSEqual (octaEdge * (39 / 10))) <
+        sqrt 2 * (1 / 2) := mul_lt_mul_of_pos_left hre (sqrt_pos.mpr (by norm_num))
+    have heq : sqrt 2 * (1 / 2) = sqrt 2 / 2 := by ring
+    linarith [h1, heq, hsqrt]
+  have hph : (1 / 4) * (gammaSEqual (39 / 10) / gammaSEqual (39 / 20)) < 1 / 8 := by
+    have h1 := mul_lt_mul_of_pos_left hrop (by norm_num : (0 : ℝ) < 1 / 4)
+    have heq : (1 / 4) * (1 / 2) = (1 / 8 : ℝ) := by norm_num
+    linarith
+  unfold octaResponse scaledRatio
+  have hhalf_same : gammaSEqual ((1 / 2) * (39 / 10)) = gammaSEqual (39 / 20) := by
+    congr 1
+    norm_num
+  rw [hhalf_same]
+  linarith [hpe, hph]
+
+theorem octaOutward_sign {Z x : ℝ}
+    (hx : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1)) :
+    octaOutward Z x < 0 ↔ Z < octaResponse x := by
+  have hphases := octa_phases_in_shell hx
+  rw [octaOutward_eq_response hphases.1.ne hphases.2.1.ne hphases.2.2.ne]
+  have hden : gammaSEqual x < 0 := hphases.1
+  constructor
+  · intro h
+    have : octaResponse x - Z > 0 := by
+      rw [div_lt_iff_of_neg hden] at h
+      linarith
+    linarith
+  · intro h
+    rw [div_lt_iff_of_neg hden]
+    linarith
+
+theorem octaOutward_restores {Z x y : ℝ}
+    (hx : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1))
+    (hy : y ∈ Ioo (2 * resonanceRoot1) (branchNode 1))
+    (h0 : octaOutward Z y = 0) :
+    (x < y → octaOutward Z x < 0) ∧ (y < x → 0 < octaOutward Z x) := by
+  have hyR : octaResponse y = Z := octaResponse_of_outward hy h0
+  constructor
+  · intro hlt
+    exact (octaOutward_sign hx).mpr (by linarith [octaResponse_strictAnti hx hy hlt, hyR])
+  · intro hlt
+    have hnum : octaResponse x - Z < 0 := by
+      linarith [octaResponse_strictAnti hy hx hlt, hyR]
+    have hphases := octa_phases_in_shell hx
+    rw [octaOutward_eq_response hphases.1.ne hphases.2.1.ne hphases.2.2.ne]
+    exact div_pos_of_neg_of_neg hnum hphases.1
+
+/-- For every nuclear charge `Z ≥ 1`, six electrons at the vertices of a
+regular octahedron have exactly one radial balance in the window where the
+radius, the edge, and the opposite vertex all lie in the first repulsive shell. -/
+theorem exists_unique_octa_shell {Z : ℝ} (hZ : 1 ≤ Z) :
+    ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) ∧ octaOutward Z x = 0 := by
+  have hZ0 : 0 < Z := by linarith
+  set xL : ℝ := 2 * (resonanceRoot1 + 1 / (40 * Z))
+  set xR : ℝ := 39 / 10
+  have hgt : Z < octaResponse xL := by
+    simpa [xL] using octaResponse_gt_near_outer hZ
+  have hlt : octaResponse xR < Z := by
+    have h1 : octaResponse xR < 1 := by simpa [xR] using octaResponse_thirtyNine_tenths_lt
+    linarith
+  have hxL_hi : xL < xR := by
+    dsimp [xL, xR]
+    have hh : 1 / (40 * Z) ≤ 1 / 40 := by
+      rw [div_le_div_iff₀ (by positivity) (by norm_num)]
+      nlinarith
+    linarith [resonanceRoot1_sharp_bounds.2]
+  have hRmem : xR ∈ Ioo (2 * resonanceRoot1) (branchNode 1) := by
+    dsimp [xR]
+    exact ⟨by linarith [resonanceRoot1_sharp_bounds.2], branchNode_one_gt_thirtyNine_tenths⟩
+  have hxL_lo : 2 * resonanceRoot1 < xL := by
+    dsimp [xL]
+    have : 0 < 1 / (40 * Z) := by positivity
+    linarith
+  have hcont : ContinuousOn (fun t => Z - octaResponse t) (Icc xL xR) := by
+    refine ContinuousOn.sub continuousOn_const ?_
+    refine continuousOn_octaResponse.mono ?_
+    intro t ht
+    exact ⟨lt_of_lt_of_le hxL_lo ht.1, lt_of_le_of_lt ht.2 hRmem.2⟩
+  have hleft : (fun t => Z - octaResponse t) xL < 0 := by
+    simpa using sub_neg.mpr hgt
+  have hright : 0 < (fun t => Z - octaResponse t) xR := by
+    simpa using sub_pos.mpr hlt
+  obtain ⟨x, hxI, hx0⟩ := intermediate_value_Ioo (le_of_lt hxL_hi) hcont ⟨hleft, hright⟩
+  have hxmem : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) :=
+    ⟨lt_trans hxL_lo hxI.1, lt_trans hxI.2 hRmem.2⟩
+  have hzero : octaOutward Z x = 0 := by
+    have hphases := octa_phases_in_shell hxmem
+    rw [octaOutward_eq_response hphases.1.ne hphases.2.1.ne hphases.2.2.ne]
+    have hresp : octaResponse x = Z := by linarith [hx0]
+    rw [hresp]
+    field_simp [hphases.1.ne]
+    ring
+  refine ⟨x, ⟨hxmem, hzero⟩, ?_⟩
+  intro y hy
+  have hxR := octaResponse_of_outward hxmem hzero
+  have hyR := octaResponse_of_outward hy.1 hy.2
+  exact (octaResponse_strictAnti.injOn hxmem hy.1 (by rw [hxR, hyR])).symm
 
 end Gravity
 

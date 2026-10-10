@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronForce
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -12,29 +13,39 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
-# The water skeleton
+# The water molecule
 
 ## Paper boundary (do **not** claim)
 
 The length `ℓ` is not derived. Nothing here produces a bond angle, a
-dissociation energy, a value of `a₀`, or a lone pair. The skeleton is one
-electron on each of two rays, not a shell of eight and not the cube.
-No equilibrium is claimed in the reversed shell, and none is claimed once a
-second electron is added to a ray.
+dissociation energy, a value of `a₀`, or a count of lone pairs. The molecule
+is two bonds — one electron and one proton on each ray — together with any
+further electrons off those rays. It is not a shell of eight and not the
+cube. No equilibrium is claimed in the reversed shell. A far-side electron
+narrows the angle and is not shown to cancel it. Oxygen is not the
+dodecahedron.
 
 ## What is proved
 
-* While the electron–electron and proton–proton separations lie in the outer
-  well and the cross factor is not a node, the tangential force on the
-  electron and the tangential force on its proton do not vanish together at
-  any angle strictly between ray coincidence and a straight line. The
-  electron and the proton on one ray are distinct. The nuclear charge does
-  not enter.
-* On a straight line, with each electron between the nucleus and its proton
-  and with both nucleus distances in the outer well, the outward force on the
-  electron plus the outward force on the proton is strictly negative whenever
-  the nuclear charge is at least `1/4` and the factor on the segment between
-  them is not a node. Distances are in units of `ℓ`.
+* While the bonding electron is closer than its proton and the two bonding
+  electrons repel, the other bond drives that electron toward a wider angle.
+  The nuclear charge does not enter. An electron on the same ray adds
+  nothing. An electron that repels from the side toward the other bond adds
+  a wider push; one that repels from the opposite side adds a narrower push.
+  With every added electron contributing a nonnegative tangent, the total
+  stays positive. Distances are in units of `ℓ`.
+* On a straight line, while both distances from the nucleus lie in the outer
+  well, the two bonds alone have no tangential force. An electron on the axis
+  opposite the bonds then makes the bonding electron's tangent strictly
+  negative.
+* On that straight line, with each electron between the nucleus and its
+  proton and with both nucleus distances in the outer well, the outward force
+  on the electron plus the outward force on the proton is strictly negative
+  whenever the nuclear charge is at least `1/4` and the factor on the segment
+  between them is not a node.
+* The older ratio statement remains: while the electron–electron and
+  proton–proton separations lie in the outer well and the cross factor is
+  not a node, the two tangential forces do not vanish together.
 -/
 
 namespace DstDiophantine.Gravity
@@ -332,7 +343,7 @@ private theorem pairForce_axis_in {qi qj s t : ℝ} (hst : s < t)
   field_simp [_hγ, hne]
   ring
 
-/-- Outward force on the electron of a straight water skeleton.
+/-- Outward force on the electron of the straight water molecule.
 The nucleus is at the origin, the electron at `+r`, its proton at `+R`. -/
 def waterStraightElectron (Z r R : ℝ) : ℝ :=
   pairForce (-1) Z (axisPoint r) (axisPoint 0) 0 +
@@ -340,7 +351,7 @@ def waterStraightElectron (Z r R : ℝ) : ℝ :=
     pairForce (-1) (-1) (axisPoint r) (axisPoint (-r)) 0 +
     pairForce (-1) 1 (axisPoint r) (axisPoint (-R)) 0
 
-/-- Outward force on the proton of a straight water skeleton. -/
+/-- Outward force on the proton of the straight water molecule. -/
 def waterStraightProton (Z r R : ℝ) : ℝ :=
   pairForce 1 Z (axisPoint R) (axisPoint 0) 0 +
     pairForce 1 (-1) (axisPoint R) (axisPoint r) 0 +
@@ -914,6 +925,343 @@ theorem water_no_outer_tangent {Z r R θ : ℝ}
       (one_lt_div hγh).mpr hγlt
     have hlt1 : R / r < 1 := (div_lt_one hr).mpr hgt
     linarith
+
+/-! ### The molecule: opening, and electrons off the rays -/
+
+private theorem vdot_sub (t u w : Fin 3 → ℝ) :
+    vdot t (vsub u w) = vdot t u - vdot t w := by
+  unfold vdot vsub
+  ring
+
+private theorem water_cross_expand (r R a : ℝ) :
+    r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a) =
+      (R - r) ^ 2 + 4 * r * R * sin a ^ 2 := by
+  have hcos : cos (2 * a) = 1 - 2 * sin a ^ 2 := by
+    rw [cos_two_mul]
+    have hsc : cos a ^ 2 = 1 - sin a ^ 2 := by
+      have h := sin_sq_add_cos_sq a
+      linarith
+    rw [hsc]
+    ring
+  rw [hcos]
+  ring
+
+private theorem outerSep_of_gt {d s : ℝ} (hd : outerSep d) (hlt : d < s) : outerSep s := by
+  have hs : 0 < s := lt_trans hd.1 hlt
+  refine ⟨hs, ?_⟩
+  have hφ : pairPhase s < pairPhase d := by
+    unfold pairPhase
+    exact div_lt_div_of_pos_left (by norm_num) (mul_pos (by norm_num) hd.1)
+      (by linarith : (2 : ℝ) * d < 2 * s)
+  exact lt_trans hφ hd.2
+
+/-- The electron tangent of the two bonds factors through `sin` of the angle.
+`a` is the half-angle. The nuclear charge does not appear. -/
+private theorem waterBendElectron_factor {Z r R a : ℝ}
+    (ha : a ∈ Ioo 0 π) (hr : 0 < r) (hR : 0 < R)
+    (hee : outerSep (2 * r * sin a))
+    (hc : gammaSEqual (pairPhase
+      (sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a)))) ≠ 0) :
+    waterBendElectron Z r R a =
+      sin (2 * a) * (r / (gammaSEqual (pairPhase (2 * r * sin a)) *
+        (2 * r * sin a) ^ 3) -
+        R / (gammaSEqual (pairPhase
+          (sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a)))) *
+          (sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a))) ^ 3)) := by
+  have hsin : 0 < sin a := sin_pos_of_pos_of_lt_pi ha.1 ha.2
+  have hee_pos : 0 < 2 * r * sin a := hee.1
+  have hrc2 : 0 < r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a) := by
+    rw [water_cross_expand]
+    have hsin2 : 0 < sin a ^ 2 := sq_pos_of_pos hsin
+    have h4 : 0 < 4 * r * R * sin a ^ 2 :=
+      mul_pos (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 4) hr) hR) hsin2
+    linarith [sq_nonneg (R - r)]
+  have hrc_pos : 0 < sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a)) :=
+    sqrt_pos.mpr hrc2
+  set ee : ℝ := 2 * r * sin a
+  set rc : ℝ := sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a))
+  have hvee := vnorm_ee r a hr hsin
+  have hpoly : vnorm2 (vsub (vsmul r (waterU a)) (vsmul R (waterV a))) =
+      r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a) := by
+    rw [vnorm2_cross, cos_sq_sub_sin_sq]
+  have hvrc : vnorm (vsub (vsmul r (waterU a)) (vsmul R (waterV a))) = rc := by
+    unfold vnorm rc
+    rw [hpoly]
+  have hγe : 0 < gammaSEqual (pairPhase ee) := outer_gamma_pos hee
+  have hden_e : gammaSEqual (pairPhase (vnorm (vsub (vsmul r (waterU a))
+      (vsmul r (waterV a))))) *
+      vnorm (vsub (vsmul r (waterU a)) (vsmul r (waterV a))) ^ 3 ≠ 0 := by
+    rw [hvee]
+    exact mul_ne_zero hγe.ne' (pow_ne_zero 3 hee_pos.ne')
+  have hden_c : gammaSEqual (pairPhase (vnorm (vsub (vsmul r (waterU a))
+      (vsmul R (waterV a))))) *
+      vnorm (vsub (vsmul r (waterU a)) (vsmul R (waterV a))) ^ 3 ≠ 0 := by
+    rw [hvrc]
+    exact mul_ne_zero hc (pow_ne_zero 3 hrc_pos.ne')
+  unfold waterBendElectron
+  rw [vdot_add, vdot_add, vdot_add]
+  have hnuc : vdot (waterT a) (fun i =>
+      pairForce (-1) Z (vsmul r (waterU a)) (fun _ => 0) i) = 0 := by
+    refine vdot_pairForce_ortho ?_
+    have hsub : vsub (vsmul r (waterU a)) (fun _ => 0) = vsmul r (waterU a) := by
+      funext i
+      simp [vsub]
+    rw [hsub, vdot_T_nucleus]
+  have hown : vdot (waterT a) (fun i =>
+      pairForce (-1) 1 (vsmul r (waterU a)) (vsmul R (waterU a)) i) = 0 :=
+    vdot_pairForce_ortho (vdot_T_partner r R a)
+  have hee_c := vdot_pairForce (-1) (-1)
+    (vsmul r (waterU a)) (vsmul r (waterV a)) (waterT a) hden_e
+  have hcross := vdot_pairForce (-1) 1
+    (vsmul r (waterU a)) (vsmul R (waterV a)) (waterT a) hden_c
+  rw [hnuc, hown, hee_c, hcross, vdot_T_ee, vdot_T_cross, hvee, hvrc]
+  ring
+
+/-- Closer than its proton, and repelling the other bonding electron, the
+electron is driven toward a wider angle. -/
+theorem waterBendElectron_opening {Z r R a : ℝ}
+    (ha : a ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * sin a)) :
+    0 < waterBendElectron Z r R a := by
+  have hR : 0 < R := lt_trans hr hrR
+  have haπ : a ∈ Ioo 0 π := ⟨ha.1, lt_trans ha.2 (half_lt_self pi_pos)⟩
+  have hsin : 0 < sin a := sin_pos_of_pos_of_lt_pi ha.1 haπ.2
+  have hcos : 0 < cos a :=
+    cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr pi_div_two_pos) ha.1, ha.2⟩
+  have hsin2 : 0 < sin (2 * a) := by
+    rw [sin_two_mul]
+    exact mul_pos (mul_pos (by norm_num : (0 : ℝ) < 2) hsin) hcos
+  set ee : ℝ := 2 * r * sin a
+  set rc : ℝ := sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a))
+  have hee_pos : 0 < ee := hee.1
+  have hrc2_pos : 0 < r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a) := by
+    rw [water_cross_expand]
+    have hsinSq : 0 < sin a ^ 2 := sq_pos_of_pos hsin
+    have h4 : 0 < 4 * r * R * sin a ^ 2 :=
+      mul_pos (mul_pos (mul_pos (by norm_num : (0 : ℝ) < 4) hr) hR) hsinSq
+    linarith [sq_nonneg (R - r)]
+  have hrc_pos : 0 < rc := by
+    unfold rc
+    exact sqrt_pos.mpr hrc2_pos
+  have hrc_sq : rc ^ 2 = (R - r) ^ 2 + 4 * r * R * sin a ^ 2 := by
+    have harg : rc ^ 2 = r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a) := by
+      unfold rc
+      exact sq_sqrt hrc2_pos.le
+    rw [harg, water_cross_expand]
+  have hee_sq : ee ^ 2 = 4 * r ^ 2 * sin a ^ 2 := by
+    unfold ee
+    ring
+  have hsq : R * ee ^ 2 < r * rc ^ 2 := by
+    have hdiff : r * rc ^ 2 - R * ee ^ 2 = r * (R - r) ^ 2 := by
+      rw [hrc_sq, hee_sq]
+      ring
+    have hpos : 0 < r * (R - r) ^ 2 :=
+      mul_pos hr (sq_pos_of_pos (sub_pos.mpr hrR))
+    linarith
+  have hrc_ee : ee < rc := by
+    have h2 : ee ^ 2 < rc ^ 2 := by
+      have hlt : r * ee ^ 2 < r * rc ^ 2 := by
+        have hRR : r * ee ^ 2 < R * ee ^ 2 :=
+          mul_lt_mul_of_pos_right hrR (sq_pos_of_pos hee_pos)
+        linarith
+      exact (mul_lt_mul_iff_of_pos_left hr).mp hlt
+    have habs : |ee| < |rc| := (sq_lt_sq).mp h2
+    rwa [abs_of_pos hee_pos, abs_of_pos hrc_pos] at habs
+  have hcube : R * ee ^ 3 < r * rc ^ 3 := by
+    have hmid : R * ee ^ 2 * ee < r * rc ^ 2 * rc := by
+      have h1 : R * ee ^ 2 * ee < r * rc ^ 2 * ee :=
+        mul_lt_mul_of_pos_right hsq hee_pos
+      have h2 : r * rc ^ 2 * ee < r * rc ^ 2 * rc :=
+        mul_lt_mul_of_pos_left hrc_ee (mul_pos hr (sq_pos_of_pos hrc_pos))
+      linarith
+    calc
+      R * ee ^ 3 = R * ee ^ 2 * ee := by ring
+      _ < r * rc ^ 2 * rc := hmid
+      _ = r * rc ^ 3 := by ring
+  have hphase : pairPhase rc < pairPhase ee := by
+    unfold pairPhase
+    exact div_lt_div_of_pos_left (by norm_num) (mul_pos (by norm_num) hee_pos)
+      (by linarith : (2 : ℝ) * ee < 2 * rc)
+  have hφee : pairPhase ee < resonanceRoot1 := hee.2
+  have hγe : 0 < gammaSEqual (pairPhase ee) := outer_gamma_pos hee
+  have hγc : 0 < gammaSEqual (pairPhase rc) := by
+    refine outer_gamma_pos ?_
+    exact ⟨hrc_pos, lt_trans hphase hφee⟩
+  have hγlt : gammaSEqual (pairPhase ee) < gammaSEqual (pairPhase rc) := by
+    refine gamma_strictAnti_phase ?_ hφee hphase
+    unfold pairPhase
+    exact div_nonneg (by norm_num) (mul_nonneg (by norm_num) hrc_pos.le)
+  have hclear : R * gammaSEqual (pairPhase ee) * ee ^ 3 <
+      r * gammaSEqual (pairPhase rc) * rc ^ 3 := by
+    have h1 : gammaSEqual (pairPhase ee) * (R * ee ^ 3) <
+        gammaSEqual (pairPhase ee) * (r * rc ^ 3) :=
+      mul_lt_mul_of_pos_left hcube hγe
+    have h2 : gammaSEqual (pairPhase ee) * (r * rc ^ 3) <
+        gammaSEqual (pairPhase rc) * (r * rc ^ 3) :=
+      mul_lt_mul_of_pos_right hγlt (mul_pos hr (pow_pos hrc_pos 3))
+    have hord1 : gammaSEqual (pairPhase ee) * (R * ee ^ 3) =
+        R * gammaSEqual (pairPhase ee) * ee ^ 3 := by ring
+    have hord2 : gammaSEqual (pairPhase rc) * (r * rc ^ 3) =
+        r * gammaSEqual (pairPhase rc) * rc ^ 3 := by ring
+    linarith
+  have hAe : 0 < r / (gammaSEqual (pairPhase ee) * ee ^ 3) -
+      R / (gammaSEqual (pairPhase rc) * rc ^ 3) := by
+    rw [sub_pos]
+    rw [div_lt_div_iff₀ (mul_pos hγc (pow_pos hrc_pos 3))
+      (mul_pos hγe (pow_pos hee_pos 3))]
+    linarith
+  have hfac := waterBendElectron_factor (Z := Z) haπ hr hR hee hγc.ne'
+  rw [hfac]
+  exact mul_pos hsin2 hAe
+
+/-- On the straight line the two bonds exert no tangential force on the
+bonding electron. Both distances from the nucleus lie in the outer well. -/
+theorem waterBendElectron_straight {Z r R : ℝ}
+    (hr : outerSep r) (hR : outerSep R) :
+    waterBendElectron Z r R (π / 2) = 0 := by
+  have ha : π / 2 ∈ Ioo 0 π := ⟨div_pos pi_pos (by norm_num), half_lt_self pi_pos⟩
+  have hangle : 2 * (π / 2) = π := by ring
+  have hee : outerSep (2 * r * sin (π / 2)) := by
+    rw [sin_pi_div_two, mul_one]
+    exact ⟨by linarith [hr.1], (phase_half_mem hr).2⟩
+  have hc : gammaSEqual (pairPhase
+      (sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * (π / 2))))) ≠ 0 := by
+    rw [hangle, cos_pi]
+    have hsq : r ^ 2 + R ^ 2 - 2 * r * R * (-1) = (R + r) ^ 2 := by ring
+    rw [hsq, sqrt_sq_eq_abs, abs_of_pos (by linarith [hr.1, hR.1])]
+    exact (outer_gamma_pos ⟨by linarith [hr.1, hR.1], (phase_sum_mem hr hR.1).2⟩).ne'
+  rw [waterBendElectron_factor ha hr.1 hR.1 hee hc, hangle, sin_pi, zero_mul]
+
+/-- A point on the axis between the two rays, or, for a negative coordinate,
+on the opposite axis. -/
+def bondAxis (z : ℝ) : Fin 3 → ℝ :=
+  ![0, 0, z]
+
+@[simp] theorem bondAxis_zero (z : ℝ) : bondAxis z 0 = 0 := rfl
+@[simp] theorem bondAxis_one (z : ℝ) : bondAxis z 1 = 0 := rfl
+@[simp] theorem bondAxis_two (z : ℝ) : bondAxis z 2 = z := rfl
+
+private theorem vdot_T_bondAxis (a z : ℝ) :
+    vdot (waterT a) (bondAxis z) = -z * sin a := by
+  unfold vdot
+  simp only [waterT_zero, waterT_one, waterT_two, bondAxis_zero, bondAxis_one,
+    bondAxis_two]
+  ring
+
+/-- Tangential force on the bonding electron at distance `r` from an extra
+charge `q` at `X`. -/
+def waterExtraTangent (r a q : ℝ) (X : Fin 3 → ℝ) : ℝ :=
+  vdot (waterT a) (fun i => pairForce (-1) q (vsmul r (waterU a)) X i)
+
+/-- Sum of the tangential forces from finitely many extra charges. -/
+def waterTangentSum {n : ℕ} (r a : ℝ) (q : Fin n → ℝ)
+    (X : Fin n → Fin 3 → ℝ) : ℝ :=
+  Finset.sum Finset.univ fun i => waterExtraTangent r a (q i) (X i)
+
+private theorem waterExtraTangent_repel {r a q : ℝ} {X : Fin 3 → ℝ}
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) X))) :
+    waterExtraTangent r a q X =
+      q * vdot (waterT a) X /
+        (gammaSEqual (pairPhase (vnorm (vsub (vsmul r (waterU a)) X))) *
+          vnorm (vsub (vsmul r (waterU a)) X) ^ 3) := by
+  unfold waterExtraTangent
+  have hden : gammaSEqual (pairPhase (vnorm (vsub (vsmul r (waterU a)) X))) *
+      vnorm (vsub (vsmul r (waterU a)) X) ^ 3 ≠ 0 :=
+    mul_ne_zero (outer_gamma_pos hsep).ne' (pow_ne_zero 3 hsep.1.ne')
+  rw [vdot_pairForce (-1) q (vsmul r (waterU a)) X (waterT a) hden]
+  rw [vdot_sub, vdot_T_nucleus, zero_sub]
+  have hnum : (-1) * q * (-vdot (waterT a) X) = q * vdot (waterT a) X := by ring
+  rw [hnum]
+
+/-- An electron that repels from the side toward the other bond pushes wider. -/
+theorem waterExtraTangent_inner {r a q : ℝ} {X : Fin 3 → ℝ}
+    (hq : q < 0) (hside : vdot (waterT a) X < 0)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) X))) :
+    0 < waterExtraTangent r a q X := by
+  rw [waterExtraTangent_repel hsep]
+  refine div_pos ?_ ?_
+  · exact mul_pos_of_neg_of_neg hq hside
+  · exact mul_pos (outer_gamma_pos hsep) (pow_pos hsep.1 3)
+
+/-- An electron that repels from the opposite side pushes narrower. -/
+theorem waterExtraTangent_outer {r a q : ℝ} {X : Fin 3 → ℝ}
+    (hq : q < 0) (hside : 0 < vdot (waterT a) X)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) X))) :
+    waterExtraTangent r a q X < 0 := by
+  rw [waterExtraTangent_repel hsep]
+  refine div_neg_of_neg_of_pos ?_ ?_
+  · exact mul_neg_of_neg_of_pos hq hside
+  · exact mul_pos (outer_gamma_pos hsep) (pow_pos hsep.1 3)
+
+/-- An electron on the same ray adds no tangential force. -/
+theorem waterExtraTangent_same_ray (r a q s : ℝ) :
+    waterExtraTangent r a q (vsmul s (waterU a)) = 0 := by
+  unfold waterExtraTangent
+  exact vdot_pairForce_ortho (vdot_T_partner r s a)
+
+/-- An electron on the axis opposite the bonds, while it repels, pushes narrower. -/
+theorem waterExtraTangent_far_neg {r a lam : ℝ}
+    (ha : a ∈ Ioo 0 π) (hlam : 0 < lam)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis (-lam))))) :
+    waterExtraTangent r a (-1) (bondAxis (-lam)) < 0 := by
+  refine waterExtraTangent_outer (by norm_num) ?_ hsep
+  rw [vdot_T_bondAxis]
+  have hsin : 0 < sin a := sin_pos_of_pos_of_lt_pi ha.1 ha.2
+  nlinarith
+
+/-- An electron on the axis between the bonds, while it repels, pushes wider. -/
+theorem waterExtraTangent_bisector_pos {r a μ : ℝ}
+    (ha : a ∈ Ioo 0 (π / 2)) (hμ : 0 < μ)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis μ)))) :
+    0 < waterExtraTangent r a (-1) (bondAxis μ) := by
+  refine waterExtraTangent_inner (by norm_num) ?_ hsep
+  rw [vdot_T_bondAxis]
+  have hsin : 0 < sin a :=
+    sin_pos_of_pos_of_lt_pi ha.1 (lt_trans ha.2 (half_lt_self pi_pos))
+  nlinarith
+
+/-- The bonding electron is still driven wider when every extra tangent is
+nonnegative. -/
+theorem waterMolecule_opening {n : ℕ} {Z r R a : ℝ}
+    {q : Fin n → ℝ} {X : Fin n → Fin 3 → ℝ}
+    (ha : a ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * sin a))
+    (hnn : ∀ i, 0 ≤ waterExtraTangent r a (q i) (X i)) :
+    0 < waterBendElectron Z r R a + waterTangentSum r a q X := by
+  have hopen : 0 < waterBendElectron Z r R a :=
+    waterBendElectron_opening ha hr hrR hee
+  have hsum : 0 ≤ waterTangentSum r a q X := by
+    unfold waterTangentSum
+    exact Finset.sum_nonneg fun i _ => hnn i
+  linarith
+
+/-- On the straight line, an electron on the opposite axis drives the bonding
+electron off the line. -/
+theorem water_straight_far_neg {Z r R lam : ℝ}
+    (hr : outerSep r) (hR : outerSep R) (hlam : 0 < lam) :
+    waterBendElectron Z r R (π / 2) +
+      waterExtraTangent r (π / 2) (-1) (bondAxis (-lam)) < 0 := by
+  rw [waterBendElectron_straight hr hR]
+  have ha : π / 2 ∈ Ioo 0 π := ⟨div_pos pi_pos (by norm_num), half_lt_self pi_pos⟩
+  have hsep : outerSep (vnorm (vsub (vsmul r (waterU (π / 2))) (bondAxis (-lam)))) := by
+    have hv : vnorm (vsub (vsmul r (waterU (π / 2))) (bondAxis (-lam))) =
+        sqrt (r ^ 2 + lam ^ 2) := by
+      unfold vnorm vnorm2 vdot vsub vsmul
+      simp only [waterU_zero, waterU_one, waterU_two, bondAxis_zero, bondAxis_one,
+        bondAxis_two, sin_pi_div_two, cos_pi_div_two]
+      have hsq : (r * (1 : ℝ) - 0) * (r * (1 : ℝ) - 0) +
+          (r * (0 : ℝ) - 0) * (r * (0 : ℝ) - 0) +
+          (r * (0 : ℝ) - -lam) * (r * (0 : ℝ) - -lam) = r ^ 2 + lam ^ 2 := by ring
+      rw [hsq]
+    rw [hv]
+    refine outerSep_of_gt hr ?_
+    have hsq : r ^ 2 < r ^ 2 + lam ^ 2 := by
+      linarith [sq_pos_of_pos hlam]
+    have hsqrt : sqrt (r ^ 2) < sqrt (r ^ 2 + lam ^ 2) :=
+      sqrt_lt_sqrt (sq_nonneg r) hsq
+    rwa [sqrt_sq_eq_abs, abs_of_pos hr.1] at hsqrt
+  have hfar := waterExtraTangent_far_neg ha hlam hsep
+  linarith
 
 end
 

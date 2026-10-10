@@ -1599,6 +1599,57 @@ lemma scaledRatio_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
       exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hprod hdiff) hy0
     exact div_neg_of_neg_of_pos hnum hden
 
+/-- Once the chord of scale `c ∈ (0, 1)` has passed the first node, the ratio
+`γ(x) / γ(c x)` keeps falling through the rest of the first repulsive shell. -/
+lemma scaledRatio_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
+    StrictAntiOn (scaledRatio c) (Ioo (resonanceRoot1 / c) (branchNode 1)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
+  · unfold scaledRatio
+    refine ContinuousOn.div continuous_gammaSEqual.continuousOn ?_ ?_
+    · exact (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn
+    · intro y hy
+      have hy0 : 0 < y := by
+        have hslot : 0 < resonanceRoot1 / c :=
+          div_pos (lt_trans (by norm_num) resonanceRoot1_bounds.1) hc0
+        linarith [hy.1, hslot]
+      have hcy_lo : resonanceRoot1 < c * y := by
+        simpa [mul_comm] using (div_lt_iff₀ hc0).mp hy.1
+      have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
+      exact (gammaSEqual_neg_first_shell ⟨hcy_lo, hcy_hi⟩).ne
+  · intro y hy
+    rw [interior_Ioo] at hy
+    have hy0 : 0 < y := by
+      have hslot : 0 < resonanceRoot1 / c :=
+        div_pos (lt_trans (by norm_num) resonanceRoot1_bounds.1) hc0
+      linarith [hy.1, hslot]
+    have hcy : c * y < y := by nlinarith [hc1, hy0]
+    have hcy_lo : resonanceRoot1 < c * y := by
+      simpa [mul_comm] using (div_lt_iff₀ hc0).mp hy.1
+    have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
+    have hmemc : c * y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hcy_lo, hcy_hi⟩
+    have hy_root : resonanceRoot1 < y := by
+      have hdiv : resonanceRoot1 < resonanceRoot1 / c := by
+        rw [lt_div_iff₀ hc0]
+        have hroot : 0 < resonanceRoot1 :=
+          lt_trans (by norm_num) resonanceRoot1_bounds.1
+        nlinarith [hc1, hroot]
+      exact lt_trans hdiv hy.1
+    have hmemy : y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hy_root, hy.2⟩
+    have hweight : phaseWeight y < phaseWeight (c * y) :=
+      phaseWeight_strictAnti hmemc hmemy hcy
+    have hgc : gammaSEqual (c * y) ≠ 0 := (gammaSEqual_neg_first_shell hmemc).ne
+    have hg : gammaSEqual y ≠ 0 := (gammaSEqual_neg_first_shell hmemy).ne
+    rw [(hasDerivAt_scaledRatio hgc).deriv, scaledRatioSlope_eq_weight hc0 hy0 hg hgc]
+    have hden : 0 < gammaSEqual (c * y) ^ 2 := sq_pos_of_ne_zero hgc
+    have hprod : gammaSEqual y * gammaSEqual (c * y) > 0 :=
+      mul_pos_of_neg_of_neg (gammaSEqual_neg_first_shell hmemy)
+        (gammaSEqual_neg_first_shell hmemc)
+    have hdiff : phaseWeight y - phaseWeight (c * y) < 0 := by linarith
+    have hnum : gammaSEqual y * gammaSEqual (c * y) *
+        (phaseWeight y - phaseWeight (c * y)) / y < 0 := by
+      exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hprod hdiff) hy0
+    exact div_neg_of_neg_of_pos hnum hden
+
 lemma strictAntiOn_const_mul {c : ℝ} {f : ℝ → ℝ} {s : Set ℝ}
     (hc : 0 < c) (hf : StrictAntiOn f s) : StrictAntiOn (fun x => c * f x) s := by
   intro x hx y hy hxy
