@@ -23,6 +23,8 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronBoundary
+import DstDiophantine.Gravity.ElectronWater
+import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
@@ -249,6 +251,24 @@ The straight line of one fixed jet is not itself that geodesic.
   \(7\ell/10\) and \(10\ell/7\), and the outward force restores it. An unlike
   pair is driven toward the first node from both sides; a like pair is driven
   off it, and that repulsion is the wall of this shell.
+* `ElectronWater` — the water skeleton places the nucleus at the origin and
+  one proton on each of two rays, with one electron on each ray. While the
+  electron–electron and proton–proton separations lie in the outer well and
+  the cross factor is not a node, the tangential force on the electron and
+  the tangential force on its proton do not vanish together at any angle
+  strictly between ray coincidence and a straight line. On a straight line,
+  with each electron between the nucleus and its proton, the sum of the
+  outward forces is strictly negative whenever the nuclear charge is at
+  least \(1/4\), both nucleus distances lie in the outer well, and the factor
+  on the segment between them is not a node.
+* `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
+  times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
+  larger phase. On the segment between two positive charges, with separation
+  phase strictly below \(x_1/2\), the net pull toward the first charge is
+  strictly decreasing in the electron fraction and vanishes once. At the
+  midpoint it is \((Z-W)\) times the unit pull. When \(Z>W\) the root lies
+  strictly above \(1/2\), the side drawn toward \(Z\) is the longer side, and
+  raising \(Z\) moves the root toward \(W\). The cancellation is not restored.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -801,6 +821,49 @@ example {Z : ℝ} {a b : Fin 3 → ℝ} (hZ : (1 / 4 : ℝ) ≤ Z)
     (hd : outerSep (vnorm (vsub a b))) :
     ¬ ((∀ i, twoForce Z a b i = 0) ∧ (∀ i, twoForce Z b a i = 0)) :=
   two_electron_no_outer_balance hZ ha hb hd
+
+/-- Regression: the water skeleton has no outer tangential balance. -/
+example {Z r R θ : ℝ}
+    (hθ : θ ∈ Set.Ioo 0 Real.pi) (hr : 0 < r) (hR : 0 < R) (hne : r ≠ R)
+    (hee : outerSep (2 * r * Real.sin (θ / 2)))
+    (hhh : outerSep (2 * R * Real.sin (θ / 2)))
+    (hc : gammaSEqual (pairPhase
+      (Real.sqrt (r ^ 2 + R ^ 2 - 2 * r * R * Real.cos θ))) ≠ 0) :
+    ¬ (waterBendElectron Z r R (θ / 2) = 0 ∧ waterBendProton Z r R (θ / 2) = 0) :=
+  water_no_outer_tangent hθ hr hR hne hee hhh hc
+
+/-- Regression: the outer-well cancellation lies toward the smaller charge. -/
+example {Z W φ t : ℝ} (hW : 0 < W) (hZ : W < Z)
+    (hφ : φ ∈ Set.Ioo 0 (resonanceRoot1 / 2))
+    (ht : t ∈ segmentSlot φ) (h0 : segmentPull Z W φ t = 0) :
+    1 / 2 < t ∧
+      (1 - φ / resonanceRoot1) - t < t - φ / resonanceRoot1 ∧
+      0 < segmentPull Z W φ (1 / 2) := by
+  refine ⟨segmentRoot_gt_half hW hZ hφ ht h0,
+    larger_charge_longer_reach hW hZ hφ ht h0, ?_⟩
+  rw [segmentPull_midpoint]
+  have h2 : 2 * φ ∈ Set.Ioo 0 resonanceRoot1 :=
+    ⟨by linarith [hφ.1], by linarith [hφ.2]⟩
+  exact mul_pos (sub_pos.mpr hZ) (pairAttraction_pos_outer h2)
+
+/-- Regression: the segment has one cancellation. -/
+example {Z W φ : ℝ} (hZ : 0 < Z) (hW : 0 < W)
+    (hφ : φ ∈ Set.Ioo 0 (resonanceRoot1 / 2)) :
+    ∃! t : ℝ, t ∈ segmentSlot φ ∧ segmentPull Z W φ t = 0 :=
+  exists_unique_segmentPull hZ hW hφ
+
+/-- Regression: a smaller charge outpulls a larger one only at a larger phase. -/
+example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
+    (hx : x ∈ Set.Ioo 0 resonanceRoot1) (hy : y ∈ Set.Ioo 0 resonanceRoot1)
+    (hp : W * pairAttraction y < Z * pairAttraction x) :
+    y < x :=
+  weaker_charge_closer hZ hW hx hy hp
+
+/-- Regression: on the straight water skeleton the outward sum is negative. -/
+example {Z r R : ℝ} (hZ : (1 / 4 : ℝ) ≤ Z) (hr : outerSep r) (hR : outerSep R)
+    (hrR : r < R) (hgap : gammaSEqual (pairPhase (R - r)) ≠ 0) :
+    waterStraightElectron Z r R + waterStraightProton Z r R < 0 :=
+  water_straight_sum_neg hZ hr hR hrR hgap
 
 /-- Regression: first Coulombic node lies in \((\pi/4,1)\). -/
 example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
