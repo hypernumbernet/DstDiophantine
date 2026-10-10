@@ -1,6 +1,8 @@
 import DstDiophantine.Gravity.ElectronSquare
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
@@ -37,6 +39,10 @@ or an equilibrium. No centrifugal term is added.
   This logarithmic derivative lies below `3` precisely when
   `γ_s(x) > 2 x cosh x sin x`. That comparison has exactly one root,
   in `(1/2, 3/5)`, so the radius `1/(2x)` lies in `(5/6, 1)`.
+* The energy of a circular path, in units of `k e²/ℓ`, is
+  `x/γ_s(x) - 2 ∫₀ˣ dt/γ_s`. On the outer well it is strictly least at
+  that same root, and the value is negative. The electrostatic force
+  there is not zero.
 -/
 
 namespace DstDiophantine
@@ -1284,6 +1290,177 @@ theorem pairAttraction_logDeriv_lt_three_outer_iff {x : ℝ}
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
   rw [pairAttraction_logDeriv_eq hx.1.ne' hγ.ne']
   exact pairAttraction_logDeriv_lt_three_iff hγ
+
+/-! ### Energy of a circular path
+
+The centripetal identity fixes the kinetic term. Added to the outer-well
+potential, and counted in units of `k e²/ℓ`, the energy at phase `x` is
+`x/γ_s(x) - 2 ∫₀ˣ dt/γ_s`. No centrifugal term is added to the force.
+-/
+
+open intervalIntegral MeasureTheory
+
+/-- Accumulated outer-well integral of `1/γ_s` from the origin. -/
+noncomputable def layerAccum (x : ℝ) : ℝ :=
+  ∫ t in (0 : ℝ)..x, (gammaSEqual t)⁻¹
+
+/-- Circular-path energy in units of `k e²/ℓ`. -/
+noncomputable def circEnergy (x : ℝ) : ℝ :=
+  x / gammaSEqual x - 2 * layerAccum x
+
+private theorem continuousOn_inv_gammaSEqual {b : ℝ} (_hb0 : 0 ≤ b)
+    (hb1 : b < resonanceRoot1) :
+    ContinuousOn (fun t => (gammaSEqual t)⁻¹) (Icc 0 b) := by
+  refine continuous_gammaSEqual.continuousOn.inv₀ ?_
+  intro t ht
+  exact (gammaSEqual_pos_of_lt_firstNode ht.1 (lt_of_le_of_lt ht.2 hb1)).ne'
+
+private theorem continuousAt_inv_gammaSEqual {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    ContinuousAt (fun t => (gammaSEqual t)⁻¹) x := by
+  exact continuous_gammaSEqual.continuousAt.inv₀
+    (gammaSEqual_pos_left_of_first_node hx).ne'
+
+private theorem stronglyMeasurable_inv_gammaSEqual {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    StronglyMeasurableAtFilter (fun t => (gammaSEqual t)⁻¹) (nhds x) volume := by
+  have hcont : ∀ t ∈ Ioo (0 : ℝ) resonanceRoot1,
+      ContinuousAt (fun s => (gammaSEqual s)⁻¹) t :=
+    fun t ht => continuousAt_inv_gammaSEqual ht
+  exact ContinuousAt.stronglyMeasurableAtFilter (μ := volume) isOpen_Ioo hcont x hx
+
+private theorem hasDerivAt_layerAccum {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    HasDerivAt layerAccum ((gammaSEqual x)⁻¹) x := by
+  have hcont := continuousOn_inv_gammaSEqual hx.1.le hx.2
+  have hint := hcont.intervalIntegrable_of_Icc (μ := volume) hx.1.le
+  unfold layerAccum
+  exact integral_hasDerivAt_right hint (stronglyMeasurable_inv_gammaSEqual hx)
+    (continuousAt_inv_gammaSEqual hx)
+
+private theorem hasDerivAt_phaseOverGamma {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
+    HasDerivAt (fun y => y / gammaSEqual y)
+      ((gammaSEqual x + 2 * x * cosh x * sin x) / gammaSEqual x ^ 2) x := by
+  have hdiv := (hasDerivAt_id x).div (hasDerivAt_gammaSEqual x) hγ
+  refine hdiv.congr_deriv ?_
+  simp only [id_eq]
+  ring
+
+theorem hasDerivAt_circEnergy {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    HasDerivAt circEnergy (-circStable x / gammaSEqual x ^ 2) x := by
+  have hγ := gammaSEqual_pos_left_of_first_node hx
+  unfold circEnergy
+  have hquot := hasDerivAt_phaseOverGamma hγ.ne'
+  have hint := (hasDerivAt_layerAccum hx).const_mul 2
+  have hsub := hquot.sub hint
+  refine hsub.congr_deriv ?_
+  unfold circStable
+  field_simp [hγ.ne']
+  ring
+
+theorem deriv_circEnergy {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    deriv circEnergy x = -circStable x / gammaSEqual x ^ 2 :=
+  (hasDerivAt_circEnergy hx).deriv
+
+theorem deriv_circEnergy_sign {x y : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1)
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    (deriv circEnergy x < 0 ↔ x < y) ∧ (0 < deriv circEnergy x ↔ y < x) := by
+  have hγ := gammaSEqual_pos_left_of_first_node hx
+  have hden : 0 < gammaSEqual x ^ 2 := sq_pos_of_pos hγ
+  rw [deriv_circEnergy hx]
+  have hsign := circStable_outer_sign hx hy h0
+  refine ⟨?_, ?_⟩
+  · rw [div_lt_iff₀ hden]
+    constructor
+    · intro h
+      have hc : 0 < circStable x := by linarith
+      exact hsign.1.mp hc
+    · intro hlt
+      have hc : 0 < circStable x := hsign.1.mpr hlt
+      linarith
+  · rw [lt_div_iff₀ hden]
+    constructor
+    · intro h
+      have hc : circStable x < 0 := by linarith
+      exact hsign.2.mp hc
+    · intro hlt
+      have hc : circStable x < 0 := hsign.2.mpr hlt
+      linarith
+
+theorem circEnergy_zero : circEnergy 0 = 0 := by
+  unfold circEnergy layerAccum
+  rw [integral_same]
+  simp [gammaSEqual_zero]
+
+private theorem continuousOn_layerAccum {b : ℝ} (hb0 : 0 ≤ b) (hb1 : b < resonanceRoot1) :
+    ContinuousOn layerAccum (Icc 0 b) := by
+  have hint :=
+    (continuousOn_inv_gammaSEqual hb0 hb1).intervalIntegrable_of_Icc (μ := volume) hb0
+  have hmem : (0 : ℝ) ∈ uIcc 0 b := left_mem_uIcc
+  have hcont := continuousOn_primitive_interval' hint hmem
+  rw [uIcc_of_le hb0] at hcont
+  unfold layerAccum
+  exact hcont
+
+private theorem continuousOn_circEnergy {b : ℝ} (hb0 : 0 ≤ b) (hb1 : b < resonanceRoot1) :
+    ContinuousOn circEnergy (Icc 0 b) := by
+  unfold circEnergy
+  refine ContinuousOn.sub ?_ (continuousOn_const.mul (continuousOn_layerAccum hb0 hb1))
+  refine ContinuousOn.div continuousOn_id continuous_gammaSEqual.continuousOn ?_
+  intro t ht
+  exact (gammaSEqual_pos_of_lt_firstNode ht.1 (lt_of_le_of_lt ht.2 hb1)).ne'
+
+private theorem circEnergy_strictAnti_to_root {y : ℝ}
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    StrictAntiOn circEnergy (Icc 0 y) := by
+  have hy0 : (0 : ℝ) ≤ y := by linarith [hy.1]
+  have hy1 : y < resonanceRoot1 := lt_trans hy.2 three_fifths_lt_resonanceRoot1
+  refine strictAntiOn_of_deriv_neg (convex_Icc 0 y)
+    (continuousOn_circEnergy hy0 hy1) ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  have hxwell : x ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨hx.1, lt_trans hx.2 hy1⟩
+  exact (deriv_circEnergy_sign hxwell hy h0).1.mpr hx.2
+
+private theorem circEnergy_strictMono_from_root {y b : ℝ}
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0)
+    (hyb : y < b) (hb : b < resonanceRoot1) :
+    StrictMonoOn circEnergy (Icc y b) := by
+  have hy0 : 0 ≤ y := by linarith [hy.1]
+  have hcont := (continuousOn_circEnergy (hy0.trans hyb.le) hb).mono
+    (Icc_subset_Icc (a₁ := y) (b₁ := b) (a₂ := 0) (b₂ := b) hy0 le_rfl)
+  refine strictMonoOn_of_deriv_pos (convex_Icc y b) hcont ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  have hxwell : x ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨by linarith [hy.1, hx.1], lt_trans hx.2 hb⟩
+  exact (deriv_circEnergy_sign hxwell hy h0).2.mpr hx.1
+
+/-- At the stability boundary the circular-path energy is negative. -/
+theorem circEnergy_neg_at_root {y : ℝ}
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    circEnergy y < 0 := by
+  have hanti := circEnergy_strictAnti_to_root hy h0
+  have hy0 : (0 : ℝ) ≤ y := by linarith [hy.1]
+  have hlt := hanti ⟨le_rfl, hy0⟩ ⟨hy0, le_rfl⟩ (by linarith [hy.1])
+  simpa [circEnergy_zero] using hlt
+
+/-- On the outer well the circular-path energy is strictly least at the stability boundary. -/
+theorem circEnergy_least_outer {x y : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1)
+    (hy : y ∈ Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    circEnergy y < 0 ∧ circEnergy y ≤ circEnergy x ∧
+      (circEnergy x = circEnergy y ↔ x = y) := by
+  have hneg := circEnergy_neg_at_root hy h0
+  rcases lt_trichotomy x y with hlt | rfl | hgt
+  · have hanti := circEnergy_strictAnti_to_root hy h0
+    have hy0 : (0 : ℝ) ≤ y := by linarith [hy.1]
+    have hE := hanti ⟨hx.1.le, hlt.le⟩ ⟨hy0, le_rfl⟩ hlt
+    exact ⟨hneg, hE.le, ⟨fun h => (hE.ne h.symm).elim, fun hxy => (hlt.ne hxy).elim⟩⟩
+  · exact ⟨hneg, le_rfl, ⟨fun _ => rfl, fun _ => rfl⟩⟩
+  · have hmono := circEnergy_strictMono_from_root hy h0 hgt hx.2
+    have hE := hmono ⟨le_rfl, hgt.le⟩ ⟨hgt.le, le_rfl⟩ hgt
+    exact ⟨hneg, hE.le, ⟨fun h => (hE.ne' h).elim, fun hxy => (hgt.ne hxy.symm).elim⟩⟩
 
 /-- A phase in `(1/2, 3/5)` has radius `1/(2x)` strictly between `5/6` and `1`. -/
 theorem circStable_radius {x : ℝ} (hx : x ∈ Ioo (1 / 2) (3 / 5)) :

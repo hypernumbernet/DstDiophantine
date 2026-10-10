@@ -217,7 +217,9 @@ The straight line of one fixed jet is not itself that geodesic.
   it is \(4\pi^{2}/\cosh\pi\), strictly greater than \(3\). On the outer well,
   \(d\ln Y/d\ln x<3\) exactly when \(\gamma_s(x)>2x\cosh x\sin x\). That
   comparison has one root, in \((1/2,3/5)\), so the radius lies in \((5/6,1)\).
-  The root is not a zero of the electrostatic force.
+  The root is not a zero of the electrostatic force. The energy of a
+  circular path, kinetic term of the centripetal identity plus the
+  outer-well potential, is strictly least there and is negative.
 * `ElectronCapacity` — two electrons at the ends of a diameter have no radial
   balance in the outer well and exactly one in the first repulsive shell, for
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
@@ -826,6 +828,13 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (1 / 2) (3 / 5) ∧ circStable x = 0 :=
 example {x : ℝ} (hx : x ∈ Set.Ioo (1 / 2) (3 / 5)) :
     5 / 6 < 1 / (2 * x) ∧ 1 / (2 * x) < 1 :=
   circStable_radius hx
+
+/-- Regression: circular-path energy is negative and least at that phase. -/
+example {x y : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hy : y ∈ Set.Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    circEnergy y < 0 ∧ circEnergy y ≤ circEnergy x ∧
+      (circEnergy x = circEnergy y ↔ x = y) :=
+  circEnergy_least_outer hx hy h0
 
 /-- Regression: repulsive Coulombic layers yield no real circular speed. -/
 example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
