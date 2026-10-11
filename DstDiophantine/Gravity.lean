@@ -29,6 +29,7 @@ import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronMetal
+import DstDiophantine.Gravity.ElectronCrystal
 import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
@@ -321,6 +322,20 @@ The straight line of one fixed jet is not itself that geodesic.
   displacement is pushed further, equally in all directions; the same shells
   restore every displacement of a positive ion. No infinite lattice sum, no
   conductivity, and no cohesive energy is claimed.
+* `ElectronCrystal` — the three-direction outflow has the sign of \(\sin x\):
+  positive on \((0,\pi)\) off the first node, zero at \(\pi\), and negative on
+  \((\pi,2\pi)\) wherever \(\gamma_s\neq 0\). A finite set of charges carried
+  into itself by the rotations of a tetrahedron exerts no force at the site,
+  and the rate is the same in every direction. Cubical truncations of the
+  simple, body-centred, and face-centred lattices are such sets, so like ions
+  hold the site and an electron is pushed off, to any number of shells, while
+  every phase lies below \(\pi\) and off the node. On the outer well the
+  outflow over the fourth power of the phase strictly increases. The nearest
+  two shells of rock salt, caesium chloride, zincblende, and both sites of
+  fluorite push a positive test charge off once a stated charge bound is met,
+  and the ordinary ionic charges meet it. With \(\gamma_s=1\) the rate is zero.
+  A rotation through \(2\pi/n\) preserves a three-dimensional lattice only for
+  \(n\in\{1,2,3,4,6\}\).
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
