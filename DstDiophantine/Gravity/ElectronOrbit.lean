@@ -381,6 +381,47 @@ theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) 1) 
   · unfold nodeSlopeLo
     linarith
 
+/-- The coefficient of \(\varepsilon\) in \(|\gamma_s|\) at the first node. -/
+theorem firstNode_eps_coeff_bounds :
+    (π / (2 * sqrt 2)) * cosh (π / 4) <
+      resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) ∧
+    resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) <
+      2 * cosh 1 * sin 1 := by
+  have hwin := resonanceRoot1_sharp_bounds
+  have hslope := deriv_gammaSEqual_slope_bounds (ξ := resonanceRoot1) ⟨hwin.1, hwin.2⟩
+  rw [deriv_gammaSEqual] at hslope
+  have hmag_lo : nodeSlopeLo < 2 * cosh resonanceRoot1 * sin resonanceRoot1 := by
+    linarith
+  have hmag_hi : 2 * cosh resonanceRoot1 * sin resonanceRoot1 < nodeSlopeHi := by
+    linarith
+  have hpos : 0 < 2 * cosh resonanceRoot1 * sin resonanceRoot1 := by
+    linarith [nodeSlopeLo_pos, hmag_lo]
+  have hcoeff :
+      (π / (2 * sqrt 2)) * cosh (π / 4) = (π / 4) * nodeSlopeLo := by
+    unfold nodeSlopeLo
+    rw [sin_pi_div_four]
+    have hs : (sqrt 2) ^ 2 = 2 := sq_sqrt (by norm_num)
+    field_simp [hs]
+    rw [hs]
+    norm_num
+  have hroot : 0 < resonanceRoot1 :=
+    lt_trans (div_pos pi_pos (by norm_num)) hwin.1
+  refine ⟨?_, ?_⟩
+  · rw [hcoeff]
+    have h1 : (π / 4) * nodeSlopeLo < resonanceRoot1 * nodeSlopeLo :=
+      mul_lt_mul_of_pos_right hwin.1 nodeSlopeLo_pos
+    have h2 : resonanceRoot1 * nodeSlopeLo <
+        resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) :=
+      mul_lt_mul_of_pos_left hmag_lo hroot
+    exact lt_trans h1 h2
+  · have h1 : resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) <
+        1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) :=
+      mul_lt_mul_of_pos_right hwin.2 hpos
+    have h2 : 1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) < nodeSlopeHi := by
+      simpa using hmag_hi
+    unfold nodeSlopeHi at h2
+    exact lt_trans (by simpa using h1) h2
+
 theorem gammaSEqual_pos_of_lt_firstNode {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < resonanceRoot1) :
     0 < gammaSEqual x := by
   rcases eq_or_lt_of_le hx0 with rfl | hx

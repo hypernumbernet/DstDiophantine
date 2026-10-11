@@ -210,9 +210,16 @@ The straight line of one fixed jet is not itself that geodesic.
   throughout the outer well. While the proton separation and the electron
   separation both lie in the outer well, the midplane pair has no equilibrium
   at any ratio of those separations. Opposite signs of the two factors
-  likewise give no equilibrium. In the first repulsive shell the balance is
+  likewise give no equilibrium. Both forces vanish, with all three factors
+  nonzero, exactly when \(\gamma(R)R^{3}\), \(\gamma(r_{ee})r_{ee}^{3}\), and
+  \(\gamma(r_{ep})r_{ep}^{3}\) are equal. While the electron–proton separation
+  lies in the outer well there is no such balance. At every square root the
+  side force is the diagonal force divided by \(\sqrt{2}\). In the first
+  repulsive shell the balance is
   strictly increasing and changes sign between \(3/2\) and \(8/5\), so there
-  is exactly one such square.
+  is exactly one such square. On that bracket the common force has the sign of
+  the balance: a larger diagonal is drawn inward and a smaller one is pushed
+  outward.
 * `ElectronHelium` — charge `Z > 0` with `Z ≠ 1` is not the square
   equilibrium wherever both interference factors are nonzero. Charge two
   on each nucleus, with two electrons, has no equilibrium while both
@@ -862,12 +869,58 @@ example {M} (hM : M ∈ quadrupole) (h0 : M ≠ 0) :=
 example {c} (hc : c ∈ octupole) (h0 : c ≠ 0) :=
   seatPattern_octupole hc h0
 
+/-- Regression: the shell square restores its diagonal. -/
+example {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
+    (hx : ℓ / (2 * R) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (hy : ℓ / (2 * S) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (h0 : squareBalance (ℓ / (2 * R)) = 0) :
+    (covalentAxial ℓ S (S / 2) < 0 ↔ R < S) ∧
+      (0 < covalentAxial ℓ S (S / 2) ↔ S < R) :=
+  square_diagonal_restores hR hS hx hy h0
+
+/-- Regression: the first-node coefficient of \(\varepsilon\) lies in the slope bracket. -/
+example :
+    (Real.pi / (2 * Real.sqrt 2)) * Real.cosh (Real.pi / 4) <
+      resonanceRoot1 * (2 * Real.cosh resonanceRoot1 * Real.sin resonanceRoot1) ∧
+    resonanceRoot1 * (2 * Real.cosh resonanceRoot1 * Real.sin resonanceRoot1) <
+      2 * Real.cosh 1 * Real.sin 1 :=
+  firstNode_eps_coeff_bounds
+
 /-- Regression: the midplane pair has no outer-well balance at any ratio. -/
 example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
     (hRwell : ℓ / (2 * R) ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
     (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
   no_midplane_outer_equilibrium hℓ hR hρ hRwell hEwell
+
+/-- Regression: both midplane forces vanish exactly when the three weights agree. -/
+example {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
+    (hγep : gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) ≠ 0) :
+    covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0 ↔
+      gammaSEqual (ℓ / (2 * R)) * R ^ 3 =
+          gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 ∧
+        gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 =
+          gammaSEqual (ℓ / (2 * (2 * ρ))) * (2 * ρ) ^ 3 :=
+  covalent_forces_iff_weights hR hρ hγR hγee hγep
+
+/-- Regression: no midplane equilibrium while the electron–proton separation is outer. -/
+example {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hEp : ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
+  no_midplane_ep_outer hR hρ hEp
+
+/-- Regression: at a square root the side force is the diagonal force over √2. -/
+example {ℓ R : ℝ} (hR : 0 < R)
+    (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγs : gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) ≠ 0)
+    (hbal : squareBalance (ℓ / (2 * R)) = 0) :
+    |1 / (gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) * (R / Real.sqrt 2) ^ 2)| =
+      |1 / (gammaSEqual (ℓ / (2 * R)) * R ^ 2)| / Real.sqrt 2 :=
+  square_side_eq_diag_div_sqrtTwo hR hγ hγs hbal
 
 /-- Regression: charge two is not a square equilibrium. -/
 example {ℓ R : ℝ} (hR : 0 < R)

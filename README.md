@@ -376,7 +376,8 @@ radius. Twenty is a vertex count.
 
 On the symmetric midplane pair, with both separations in the outer well,
 the two force components do not vanish together at any ratio. The square of
-that family closes in the reversed shell. The water molecule places the
+that family closes in the reversed shell. Between phases $3/2$ and $8/5$
+that square restores the diagonal: a larger diagonal is drawn inward. The water molecule places the
 nucleus at the origin and one proton on each of two rays, with one bonding
 electron on each ray, closer to the nucleus than its proton. While those
 electrons repel, the other bond drives each bonding electron toward a wider

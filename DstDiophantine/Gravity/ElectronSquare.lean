@@ -25,11 +25,19 @@ dissociation energy, or a value of `G`.
   outer well, the midplane pair has no equilibrium at any ratio of those
   separations. Opposite signs of the two interference factors likewise give
   no equilibrium.
+* Both forces vanish, with all three factors nonzero, exactly when
+  `γ(R) R³`, `γ(r_ee) r_ee³`, and `γ(r_ep) r_ep³` are equal. While the
+  electron–proton separation lies in the outer well there is no such balance.
+* At every square root the side force is the diagonal force divided by `√2`.
 * The second node lies below `4`. Every square whose diagonal and side both
   lie in the first repulsive shell therefore has its phase in `(π/4, π)`.
 * On that shell the balance is strictly increasing, and it changes sign between
   `3/2` and `8/5`. There is exactly one such square, and both interference
   factors are negative there.
+* On the bracket `(3/2, 8/5)` the common force on the square has the sign of
+  that balance. A larger diagonal is drawn inward and a smaller one is pushed
+  outward, so the root restores the square. The two-variable Hessian is not
+  identified here.
 -/
 
 namespace DstDiophantine
@@ -1347,6 +1355,441 @@ theorem exists_unique_square_shell :
   refine ⟨x, ⟨hxshell, hx0⟩, ?_⟩
   intro y hy
   exact (squareBalance_strictMonoOn_shell.injOn hxshell hy.1 (by rw [hx0, hy.2])).symm
+
+/-! ### The square restores its diagonal -/
+
+lemma squareBracket_gamma_neg {x : ℝ} (hx : x ∈ Set.Icc (3 / 2 : ℝ) (8 / 5)) :
+    gammaSEqual x < 0 ∧ gammaSEqual (sqrt 2 * x) < 0 := by
+  have hx1 : resonanceRoot1 < x := by
+    linarith [resonanceRoot1_sharp_bounds.2, hx.1]
+  have hxπ : x < π := by
+    linarith [pi_gt_three, hx.2]
+  have hside_lo : resonanceRoot1 < sqrt 2 * x := by
+    have hxpos : 0 < x := lt_of_lt_of_le (by norm_num) hx.1
+    have hlt : x < sqrt 2 * x := by nlinarith [one_lt_sqrt_two, hxpos]
+    linarith
+  have hside_hi : sqrt 2 * x < π := by
+    have hy : sqrt 2 * x ≤ sqrt 2 * (8 / 5) :=
+      mul_le_mul_of_nonneg_left hx.2 (sqrt_nonneg _)
+    have h8 : sqrt 2 * (8 / 5) < 3 := by
+      have h := sqrt_two_bounds.2
+      nlinarith
+    exact lt_of_le_of_lt hy (by linarith [pi_gt_three, h8])
+  exact ⟨gammaSEqual_neg_right_of_first_node ⟨hx1, hxπ⟩,
+    gammaSEqual_neg_right_of_first_node ⟨hside_lo, hside_hi⟩⟩
+
+lemma squareBracket_mem_shell {x : ℝ} (hx : x ∈ Set.Icc (3 / 2 : ℝ) (8 / 5)) :
+    x ∈ Ioo resonanceRoot1 (branchNode 1 / sqrt 2) := by
+  have hnode : π < branchNode 1 := by
+    simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
+  refine ⟨by linarith [resonanceRoot1_sharp_bounds.2, hx.1], ?_⟩
+  have hs : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
+  rw [lt_div_iff₀ hs]
+  have hy : sqrt 2 * x ≤ sqrt 2 * (8 / 5) :=
+    mul_le_mul_of_nonneg_left hx.2 (sqrt_nonneg _)
+  have h8 : sqrt 2 * (8 / 5) < 3 := by
+    have h := sqrt_two_bounds.2
+    nlinarith
+  linarith [pi_gt_three, hnode, h8]
+
+/-- Common square factor \(1/\gamma(x)-2\sqrt{2}/\gamma(\sqrt{2}\,x)\). -/
+noncomputable def squareForce (x : ℝ) : ℝ :=
+  1 / gammaSEqual x - 2 * sqrt 2 / gammaSEqual (sqrt 2 * x)
+
+theorem squareForce_eq_balance {x : ℝ}
+    (h1 : gammaSEqual x ≠ 0) (h2 : gammaSEqual (sqrt 2 * x) ≠ 0) :
+    squareForce x =
+      squareBalance x / (gammaSEqual x * gammaSEqual (sqrt 2 * x)) := by
+  unfold squareForce squareBalance
+  field_simp [h1, h2]
+
+theorem squareForce_sign {x : ℝ} (hx : x ∈ Set.Icc (3 / 2 : ℝ) (8 / 5)) :
+    (squareForce x < 0 ↔ squareBalance x < 0) ∧
+      (0 < squareForce x ↔ 0 < squareBalance x) := by
+  have hγ := squareBracket_gamma_neg hx
+  have hden : 0 < gammaSEqual x * gammaSEqual (sqrt 2 * x) :=
+    mul_pos_of_neg_of_neg hγ.1 hγ.2
+  have heq := squareForce_eq_balance hγ.1.ne hγ.2.ne
+  refine ⟨?_, ?_⟩
+  · rw [heq, div_lt_iff₀ hden, zero_mul]
+  · rw [heq, lt_div_iff₀ hden, zero_mul]
+
+theorem covalentAxial_eq_squareForce {ℓ R : ℝ} (hR : 0 < R) :
+    covalentAxial ℓ R (R / 2) = (1 / R ^ 2) * squareForce (ℓ / (2 * R)) := by
+  rw [covalentAxial_square hR]
+  rfl
+
+/-- On `(3/2, 8/5)` the square's diagonal is restored.
+A larger diagonal is drawn inward and a smaller one is pushed outward. -/
+theorem square_diagonal_restores {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
+    (hx : ℓ / (2 * R) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (hy : ℓ / (2 * S) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (h0 : squareBalance (ℓ / (2 * R)) = 0) :
+    (covalentAxial ℓ S (S / 2) < 0 ↔ R < S) ∧
+      (0 < covalentAxial ℓ S (S / 2) ↔ S < R) := by
+  set x : ℝ := ℓ / (2 * R)
+  set y : ℝ := ℓ / (2 * S)
+  have hxI : x ∈ Set.Icc (3 / 2 : ℝ) (8 / 5) := ⟨hx.1.le, hx.2.le⟩
+  have hyI : y ∈ Set.Icc (3 / 2 : ℝ) (8 / 5) := ⟨hy.1.le, hy.2.le⟩
+  have hxsh := squareBracket_mem_shell hxI
+  have hysh := squareBracket_mem_shell hyI
+  have hmono := squareBalance_strictMonoOn_shell
+  have hord : squareBalance y < 0 ↔ y < x := by
+    have h := hmono.lt_iff_lt hysh hxsh
+    rwa [h0] at h
+  have hord' : 0 < squareBalance y ↔ x < y := by
+    have h := hmono.lt_iff_lt hxsh hysh
+    rwa [h0] at h
+  have hsign := squareForce_sign hyI
+  have hscale : 0 < 1 / S ^ 2 := by positivity
+  have hax := covalentAxial_eq_squareForce (ℓ := ℓ) (R := S) hS
+  have hydef : ℓ / (2 * S) = y := rfl
+  have haxneg : covalentAxial ℓ S (S / 2) < 0 ↔ squareForce y < 0 := by
+    rw [hax, hydef]
+    have hiff := mul_lt_mul_iff_of_pos_left (b := squareForce y) (c := (0 : ℝ)) hscale
+    simpa [mul_zero] using hiff
+  have haxpos : 0 < covalentAxial ℓ S (S / 2) ↔ 0 < squareForce y := by
+    rw [hax, hydef]
+    have hiff := mul_lt_mul_iff_of_pos_left (b := (0 : ℝ)) (c := squareForce y) hscale
+    simpa [mul_zero] using hiff
+  have hℓpos : 0 < ℓ := by
+    have hx0 : 0 < ℓ / (2 * R) := lt_trans (by norm_num) hx.1
+    have hden : 0 < 2 * R := by positivity
+    have : 0 < ℓ / (2 * R) * (2 * R) := mul_pos hx0 hden
+    simpa [div_mul_cancel₀ ℓ hden.ne'] using this
+  have hphase : y < x ↔ R < S := by
+    dsimp [x, y]
+    rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    rw [mul_lt_mul_iff_of_pos_left hℓpos, mul_lt_mul_iff_of_pos_left (by norm_num : (0 : ℝ) < 2)]
+  have hphase' : x < y ↔ S < R := by
+    dsimp [x, y]
+    rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    rw [mul_lt_mul_iff_of_pos_left hℓpos, mul_lt_mul_iff_of_pos_left (by norm_num : (0 : ℝ) < 2)]
+  refine ⟨?_, ?_⟩
+  · rw [haxneg, hsign.1, hord, hphase]
+  · rw [haxpos, hsign.2, hord', hphase']
+
+/-! ### One weight on the three separations -/
+
+private lemma midplane_phase_balance {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ) :
+    let rEp := sqrt ((R / 2) ^ 2 + ρ ^ 2)
+    4 / (ℓ / (2 * rEp)) ^ 2 =
+      1 / (ℓ / (2 * R)) ^ 2 + 1 / (ℓ / (2 * (2 * ρ))) ^ 2 := by
+  intro rEp
+  have hrEp : 0 < rEp := by
+    dsimp [rEp]
+    positivity
+  have hr2 : rEp ^ 2 = R ^ 2 / 4 + ρ ^ 2 := by
+    dsimp [rEp]
+    rw [sq_sqrt (by positivity)]
+    ring
+  have hsum : 1 / (ℓ / (2 * R)) ^ 2 + 1 / (ℓ / (2 * (2 * ρ))) ^ 2 =
+      4 * (R ^ 2 + 4 * ρ ^ 2) / ℓ ^ 2 := by
+    field_simp [hℓ.ne', hR.ne', hρ.ne']
+    ring
+  have hEp : 4 / (ℓ / (2 * rEp)) ^ 2 = 4 * (R ^ 2 + 4 * ρ ^ 2) / ℓ ^ 2 := by
+    field_simp [hℓ.ne', hrEp.ne']
+    nlinarith [hr2]
+  linarith
+
+private lemma weight_to_phase {ℓ r s : ℝ} (hℓ : 0 < ℓ) (_hr : 0 < r) (_hs : 0 < s)
+    (h : gammaSEqual (ℓ / (2 * r)) * r ^ 3 = gammaSEqual (ℓ / (2 * s)) * s ^ 3) :
+    gammaSEqual (ℓ / (2 * r)) / (ℓ / (2 * r)) ^ 3 =
+      gammaSEqual (ℓ / (2 * s)) / (ℓ / (2 * s)) ^ 3 := by
+  field_simp [hℓ.ne'] at h ⊢
+  exact h
+
+private lemma gamma_quot_strictAnti {a b : ℝ}
+    (ha : a ∈ Ioo (0 : ℝ) resonanceRoot1) (hb : b ∈ Ioo (0 : ℝ) resonanceRoot1)
+    (hab : a < b) :
+    gammaSEqual b / b ^ 3 < gammaSEqual a / a ^ 3 := by
+  have hγa : 0 < gammaSEqual a := gammaSEqual_pos_left_of_first_node ha
+  have hγlt : gammaSEqual b < gammaSEqual a :=
+    strictAntiOn_gammaSEqual_even 0 (evenInterval_of_lt_firstNode ha)
+      (evenInterval_of_lt_firstNode hb) hab
+  have hpow : a ^ 3 < b ^ 3 := pow_lt_pow_left₀ hab ha.1.le (by decide : 3 ≠ 0)
+  have ha3 : 0 < a ^ 3 := pow_pos ha.1 3
+  have hb3 : 0 < b ^ 3 := pow_pos hb.1 3
+  have h1 : gammaSEqual b / b ^ 3 < gammaSEqual a / b ^ 3 := by
+    rw [div_lt_div_iff_of_pos_right hb3]
+    exact hγlt
+  have h2 : gammaSEqual a / b ^ 3 < gammaSEqual a / a ^ 3 := by
+    rw [div_lt_div_iff_of_pos_left hγa hb3 ha3]
+    exact hpow
+  exact lt_trans h1 h2
+
+private lemma gamma_quot_inj {a b : ℝ}
+    (ha : a ∈ Ioo (0 : ℝ) resonanceRoot1) (hb : b ∈ Ioo (0 : ℝ) resonanceRoot1)
+    (h : gammaSEqual a / a ^ 3 = gammaSEqual b / b ^ 3) :
+    a = b := by
+  rcases lt_trichotomy a b with hlt | heq | hgt
+  · exact absurd h (ne_of_gt (gamma_quot_strictAnti ha hb hlt))
+  · exact heq
+  · exact absurd h (ne_of_lt (gamma_quot_strictAnti hb ha hgt))
+
+/-- Both midplane forces vanish exactly when the three separations carry one
+value of `γ(r) r³`. -/
+theorem covalent_forces_iff_weights {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
+    (hγep : gammaSEqual (ℓ / (2 * sqrt ((R / 2) ^ 2 + ρ ^ 2))) ≠ 0) :
+    covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0 ↔
+      gammaSEqual (ℓ / (2 * R)) * R ^ 3 =
+          gammaSEqual (ℓ / (2 * sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 ∧
+        gammaSEqual (ℓ / (2 * sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 =
+          gammaSEqual (ℓ / (2 * (2 * ρ))) * (2 * ρ) ^ 3 := by
+  constructor
+  · rintro ⟨hFz, hFr⟩
+    unfold covalentAxial at hFz
+    unfold covalentRadial at hFr
+    dsimp only at hFz hFr
+    set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
+    set γR : ℝ := gammaSEqual (ℓ / (2 * R))
+    set γee : ℝ := gammaSEqual (ℓ / (2 * (2 * ρ)))
+    set γep : ℝ := gammaSEqual (ℓ / (2 * rEp))
+    have hrEp : 0 < rEp := by
+      dsimp [rEp]
+      positivity
+    have hγep' : γep ≠ 0 := by
+      simpa [γep, rEp] using hγep
+    have hFz' : 1 / (γR * R ^ 2) = R / (γep * rEp ^ 3) := by linarith
+    have hR3 : γep * rEp ^ 3 = γR * R ^ 3 := by
+      have hmul := congrArg (fun t => t * ((γR * R ^ 2) * (γep * rEp ^ 3))) hFz'
+      field_simp [hγR, hR.ne', hγep', hrEp.ne'] at hmul
+      linarith
+    have hFr' : 1 / (γee * (2 * ρ) ^ 2) = 2 * ρ / (γep * rEp ^ 3) := by linarith
+    have hEe : γep * rEp ^ 3 = γee * (2 * ρ) ^ 3 := by
+      have hmul := congrArg (fun t => t * ((γee * (2 * ρ) ^ 2) * (γep * rEp ^ 3))) hFr'
+      field_simp [hγee, hρ.ne', hγep', hrEp.ne'] at hmul
+      linarith
+    exact ⟨by simpa [γR, γep, rEp] using hR3.symm, by simpa [γep, γee, rEp] using hEe⟩
+  · rintro ⟨hAx, hRad⟩
+    unfold covalentAxial covalentRadial
+    dsimp only
+    set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
+    set γR : ℝ := gammaSEqual (ℓ / (2 * R))
+    set γee : ℝ := gammaSEqual (ℓ / (2 * (2 * ρ)))
+    set γep : ℝ := gammaSEqual (ℓ / (2 * rEp))
+    have hrEp : 0 < rEp := by
+      dsimp [rEp]
+      positivity
+    have hγep' : γep ≠ 0 := by
+      simpa [γep, rEp] using hγep
+    have hAx' : γR * R ^ 3 = γep * rEp ^ 3 := by
+      simpa [γR, γep, rEp] using hAx
+    have hRad' : γep * rEp ^ 3 = γee * (2 * ρ) ^ 3 := by
+      simpa [γep, γee, rEp] using hRad
+    refine ⟨?_, ?_⟩
+    · have hden : (γR * R ^ 2) * (γep * rEp ^ 3) ≠ 0 :=
+        mul_ne_zero (mul_ne_zero hγR (pow_ne_zero 2 hR.ne'))
+          (mul_ne_zero hγep' (pow_ne_zero 3 hrEp.ne'))
+      have hmul : 1 / (γR * R ^ 2) * ((γR * R ^ 2) * (γep * rEp ^ 3)) =
+          R / (γep * rEp ^ 3) * ((γR * R ^ 2) * (γep * rEp ^ 3)) := by
+        field_simp [hγR, hR.ne', hγep', hrEp.ne']
+        linarith
+      have hterms := mul_right_cancel₀ hden hmul
+      linarith
+    · have hden : (γee * (2 * ρ) ^ 2) * (γep * rEp ^ 3) ≠ 0 :=
+        mul_ne_zero (mul_ne_zero hγee (pow_ne_zero 2 (mul_ne_zero (by norm_num) hρ.ne')))
+          (mul_ne_zero hγep' (pow_ne_zero 3 hrEp.ne'))
+      have hmul : 1 / (γee * (2 * ρ) ^ 2) * ((γee * (2 * ρ) ^ 2) * (γep * rEp ^ 3)) =
+          (2 * ρ) / (γep * rEp ^ 3) * ((γee * (2 * ρ) ^ 2) * (γep * rEp ^ 3)) := by
+        field_simp [hγee, hρ.ne', hγep', hrEp.ne']
+        linarith
+      have hterms := mul_right_cancel₀ hden hmul
+      linarith
+
+/-- While the electron–proton separation lies in the outer well, the midplane
+pair has no equilibrium. -/
+theorem no_midplane_ep_outer {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hEp : ℓ / (2 * sqrt ((R / 2) ^ 2 + ρ ^ 2)) ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) := by
+  intro h
+  set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
+  set xR : ℝ := ℓ / (2 * R)
+  set xEe : ℝ := ℓ / (2 * (2 * ρ))
+  set xEp : ℝ := ℓ / (2 * rEp)
+  have hrEp : 0 < rEp := by
+    dsimp [rEp]
+    positivity
+  have hxEp : xEp ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+    simpa [xEp, rEp] using hEp
+  have hℓ : 0 < ℓ := by
+    have hden : 0 < 2 * rEp := by positivity
+    have hmul : 0 < xEp * (2 * rEp) := mul_pos hxEp.1 hden
+    simpa [xEp, div_mul_cancel₀ ℓ hden.ne'] using hmul
+  have hγep : gammaSEqual xEp ≠ 0 :=
+    (gammaSEqual_pos_left_of_first_node hxEp).ne'
+  have hFz := h.1
+  have hFr := h.2
+  have hγR : gammaSEqual xR ≠ 0 := by
+    intro h0
+    unfold covalentAxial at hFz
+    dsimp only at hFz
+    rw [show gammaSEqual (ℓ / (2 * R)) = gammaSEqual xR by rfl, h0] at hFz
+    simp only [zero_mul, div_zero, zero_sub] at hFz
+    have hden : gammaSEqual (ℓ / (2 * rEp)) * rEp ^ 3 ≠ 0 :=
+      mul_ne_zero (by simpa [xEp, rEp] using hγep) (pow_ne_zero 3 hrEp.ne')
+    have hneg : R / (gammaSEqual (ℓ / (2 * rEp)) * rEp ^ 3) ≠ 0 :=
+      div_ne_zero hR.ne' hden
+    exact hneg (by linarith)
+  have hγee : gammaSEqual xEe ≠ 0 := by
+    intro h0
+    unfold covalentRadial at hFr
+    dsimp only at hFr
+    rw [show gammaSEqual (ℓ / (2 * (2 * ρ))) = gammaSEqual xEe by rfl, h0] at hFr
+    simp only [zero_mul, div_zero, zero_sub] at hFr
+    have hden : gammaSEqual (ℓ / (2 * rEp)) * rEp ^ 3 ≠ 0 :=
+      mul_ne_zero (by simpa [xEp, rEp] using hγep) (pow_ne_zero 3 hrEp.ne')
+    have hneg : 2 * ρ / (gammaSEqual (ℓ / (2 * rEp)) * rEp ^ 3) ≠ 0 :=
+      div_ne_zero (mul_ne_zero (by norm_num) hρ.ne') hden
+    exact hneg (by linarith)
+  have hw := (covalent_forces_iff_weights (ℓ := ℓ) (R := R) (ρ := ρ)
+    hR hρ hγR hγee (by simpa [xEp, rEp] using hγep)).mp h
+  have hphase := weight_to_phase (ℓ := ℓ) (r := R) (s := rEp) hℓ hR hrEp
+    (by simpa [xR, xEp, rEp] using hw.1)
+  have hphaseE := weight_to_phase (ℓ := ℓ) (r := rEp) (s := 2 * ρ) hℓ hrEp
+    (by positivity) (by simpa [xEp, xEe, rEp] using hw.2)
+  have hgeom := midplane_phase_balance (ℓ := ℓ) (R := R) (ρ := ρ) hℓ hR hρ
+  have hx1 : 0 < resonanceRoot1 :=
+    lt_trans (by linarith [pi_pos] : (0 : ℝ) < π / 4) resonanceRoot1_sharp_bounds.1
+  have hxRpos : 0 < xR := by
+    dsimp [xR]
+    positivity
+  have hxEepos : 0 < xEe := by
+    dsimp [xEe]
+    positivity
+  have hcoinc : xR ∈ Ioo (0 : ℝ) resonanceRoot1 → False := by
+    intro hxRwell
+    have heq : xR = xEp :=
+      gamma_quot_inj hxRwell hxEp (by simpa [xR, xEp, rEp] using hphase)
+    have hsq : xEe ^ 2 = xR ^ 2 / 3 := by
+      have hrel : 4 / xR ^ 2 = 1 / xR ^ 2 + 1 / xEe ^ 2 := by
+        simpa [xR, xEe, xEp, rEp, heq] using hgeom
+      field_simp [hxRpos.ne', hxEepos.ne'] at hrel
+      linarith
+    have hxEe' : xEe = xR / sqrt 3 := by
+      have h3 : (sqrt 3) ^ 2 = 3 := sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)
+      have hsq' : xEe ^ 2 = (xR / sqrt 3) ^ 2 := by
+        calc
+          xEe ^ 2 = xR ^ 2 / 3 := hsq
+          _ = xR ^ 2 / (sqrt 3) ^ 2 := by rw [h3]
+          _ = (xR / sqrt 3) ^ 2 := by rw [← div_pow]
+      exact (sq_eq_sq₀ hxEepos.le (by positivity)).mp hsq'
+    have hsqrt3 : (1 : ℝ) < sqrt 3 :=
+      lt_of_pow_lt_pow_left₀ 2 (sqrt_nonneg _) <| by
+        rw [sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+        norm_num
+    have hxEewell : xEe ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+      refine ⟨hxEepos, ?_⟩
+      rw [hxEe']
+      have hlt : xR / sqrt 3 < xR := by
+        rw [div_lt_iff₀ (sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3))]
+        nlinarith [hsqrt3]
+      exact lt_trans hlt hxRwell.2
+    have hne : xEe ≠ xR := by
+      rw [hxEe']
+      intro heq
+      have hlt : xR / sqrt 3 < xR := by
+        rw [div_lt_iff₀ (sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3))]
+        nlinarith [hsqrt3]
+      linarith
+    exact hne (gamma_quot_inj hxEewell hxRwell
+      (by simpa [xEe, xR, xEp, rEp, heq] using hphaseE.symm))
+  by_cases hxRwell : xR < resonanceRoot1
+  · exact hcoinc ⟨hxRpos, hxRwell⟩
+  · have hxRge : resonanceRoot1 ≤ xR := le_of_not_gt hxRwell
+    by_cases hxEewell : xEe < resonanceRoot1
+    · have heq : xEe = xEp :=
+        gamma_quot_inj ⟨hxEepos, hxEewell⟩ hxEp
+          (by simpa [xEe, xEp, rEp] using hphaseE.symm)
+      have hsq : xR ^ 2 = xEe ^ 2 / 3 := by
+        have hrel : 4 / xEe ^ 2 = 1 / xR ^ 2 + 1 / xEe ^ 2 := by
+          simpa [xR, xEe, xEp, rEp, heq] using hgeom
+        field_simp [hxRpos.ne', hxEepos.ne'] at hrel
+        linarith
+      have hxR' : xR = xEe / sqrt 3 := by
+        have h3 : (sqrt 3) ^ 2 = 3 := sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)
+        have hsq' : xR ^ 2 = (xEe / sqrt 3) ^ 2 := by
+          calc
+            xR ^ 2 = xEe ^ 2 / 3 := hsq
+            _ = xEe ^ 2 / (sqrt 3) ^ 2 := by rw [h3]
+            _ = (xEe / sqrt 3) ^ 2 := by rw [← div_pow]
+        exact (sq_eq_sq₀ hxRpos.le (by positivity)).mp hsq'
+      have hsqrt3 : (1 : ℝ) < sqrt 3 :=
+        lt_of_pow_lt_pow_left₀ 2 (sqrt_nonneg _) <| by
+          rw [sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+          norm_num
+      have hxRwell' : xR ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+        refine ⟨hxRpos, ?_⟩
+        rw [hxR']
+        have hlt : xEe / sqrt 3 < xEe := by
+          rw [div_lt_iff₀ (sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3))]
+          nlinarith [hsqrt3]
+        exact lt_trans hlt hxEewell
+      exact hcoinc hxRwell'
+    · have hxEege : resonanceRoot1 ≤ xEe := le_of_not_gt hxEewell
+      have hsum : 1 / xR ^ 2 + 1 / xEe ^ 2 ≤ 2 / resonanceRoot1 ^ 2 := by
+        have hinvR : 1 / xR ^ 2 ≤ 1 / resonanceRoot1 ^ 2 := by
+          rw [one_div_le_one_div (by positivity) (by positivity)]
+          nlinarith
+        have hinvE : 1 / xEe ^ 2 ≤ 1 / resonanceRoot1 ^ 2 := by
+          rw [one_div_le_one_div (by positivity) (by positivity)]
+          nlinarith
+        have htwo : 1 / resonanceRoot1 ^ 2 + 1 / resonanceRoot1 ^ 2 =
+            2 / resonanceRoot1 ^ 2 := by ring
+        rw [← htwo]
+        exact add_le_add hinvR hinvE
+      have h4 : 4 / xEp ^ 2 ≤ 2 / resonanceRoot1 ^ 2 := by
+        have hrel : 4 / xEp ^ 2 = 1 / xR ^ 2 + 1 / xEe ^ 2 := by
+          simpa [xR, xEe, xEp, rEp] using hgeom
+        linarith
+      have hcross : 2 * resonanceRoot1 ^ 2 ≤ xEp ^ 2 := by
+        have h' : 4 * resonanceRoot1 ^ 2 ≤ 2 * xEp ^ 2 := by
+          rw [div_le_div_iff₀ (by positivity) (by positivity)] at h4
+          linarith
+        linarith
+      have hle : resonanceRoot1 * sqrt 2 ≤ xEp := by
+        have hsq : (resonanceRoot1 * sqrt 2) ^ 2 ≤ xEp ^ 2 := by
+          rw [mul_pow, sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+          linarith
+        exact le_of_sq_le_sq hsq hxEp.1.le
+      have hbig : resonanceRoot1 < resonanceRoot1 * sqrt 2 := by
+        nlinarith [one_lt_sqrt_two, hx1]
+      linarith [hxEp.2, hle, hbig]
+
+/-- At a square root the side force is the diagonal force divided by `√2`. -/
+theorem square_side_eq_diag_div_sqrtTwo {ℓ R : ℝ} (hR : 0 < R)
+    (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (_hγs : gammaSEqual (sqrt 2 * (ℓ / (2 * R))) ≠ 0)
+    (hbal : squareBalance (ℓ / (2 * R)) = 0) :
+    |1 / (gammaSEqual (sqrt 2 * (ℓ / (2 * R))) * (R / sqrt 2) ^ 2)| =
+      |1 / (gammaSEqual (ℓ / (2 * R)) * R ^ 2)| / sqrt 2 := by
+  set x : ℝ := ℓ / (2 * R)
+  have hrel : gammaSEqual (sqrt 2 * x) = 2 * sqrt 2 * gammaSEqual x := by
+    unfold squareBalance at hbal
+    linarith
+  have hspos : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
+  have hr2 : (R / sqrt 2) ^ 2 = R ^ 2 / 2 := by
+    rw [div_pow, sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+  have hR2 : 0 < R ^ 2 := by positivity
+  have hhalf : 0 < R ^ 2 / 2 := by positivity
+  have habs {a d : ℝ} (hd : 0 < d) :
+      |1 / (a * d)| = 1 / (|a| * d) := by
+    rw [abs_div, abs_one, abs_mul, abs_of_pos hd]
+  have hside : |1 / (gammaSEqual (sqrt 2 * x) * (R / sqrt 2) ^ 2)| =
+      1 / (|gammaSEqual (sqrt 2 * x)| * (R ^ 2 / 2)) := by
+    rw [hr2, habs hhalf]
+  have hdiag : |1 / (gammaSEqual x * R ^ 2)| = 1 / (|gammaSEqual x| * R ^ 2) :=
+    habs hR2
+  have hγsabs : |gammaSEqual (sqrt 2 * x)| = 2 * sqrt 2 * |gammaSEqual x| := by
+    rw [hrel, abs_mul, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2),
+      abs_of_pos hspos]
+  have hγabs : |gammaSEqual x| ≠ 0 := abs_ne_zero.mpr hγ
+  rw [hside, hdiag, hγsabs]
+  field_simp [hR.ne', hspos.ne', hγabs]
 
 end Gravity
 
