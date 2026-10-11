@@ -20,6 +20,7 @@ import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
+import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
@@ -211,6 +212,11 @@ The straight line of one fixed jet is not itself that geodesic.
   likewise give no equilibrium. In the first repulsive shell the balance is
   strictly increasing and changes sign between \(3/2\) and \(8/5\), so there
   is exactly one such square.
+* `ElectronHelium` — charge `Z > 0` with `Z ≠ 1` is not the square
+  equilibrium wherever both interference factors are nonzero. Charge two
+  on each nucleus, with two electrons, has no equilibrium while both
+  separations lie in the outer well. Opposite signs of those factors
+  likewise give no equilibrium.
 * `ElectronForce` — counted with attraction positive, the electron–proton
   force \(4x^{2}/\gamma_s(x)\) is positive and strictly increasing on the
   outer well, and negative throughout the first repulsive shell. Inside that
@@ -847,6 +853,20 @@ example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
     (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
   no_midplane_outer_equilibrium hℓ hR hρ hRwell hEwell
+
+/-- Regression: charge two is not a square equilibrium. -/
+example {ℓ R : ℝ} (hR : 0 < R)
+    (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγs : gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) ≠ 0) :
+    ¬ (heliumAxial 2 ℓ R (R / 2) = 0 ∧ heliumRadial 2 ℓ R (R / 2) = 0) :=
+  helium_square_not_balance (by norm_num) (by norm_num) hR hγ hγs
+
+/-- Regression: charge two has no outer-well midplane balance. -/
+example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
+    (hRwell : ℓ / (2 * R) ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (heliumAxial 2 ℓ R ρ = 0 ∧ heliumRadial 2 ℓ R ρ = 0) :=
+  helium_no_outer_equilibrium hℓ hR hρ hRwell hEwell
 
 /-- Regression: in the outer well the antipode is an angular minimum. -/
 example {k e γ r : ℝ} (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :
