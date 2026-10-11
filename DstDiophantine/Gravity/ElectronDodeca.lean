@@ -5413,6 +5413,39 @@ theorem dodeca_outer_root_restoring {Z x y : ℝ} (hZ : (8 : ℝ) ≤ Z)
       ⟨hx7.le, hx.2⟩ ⟨(lt_trans hx7 hxy).le, hy.2⟩ hxy
     linarith
 
+/-- A larger nuclear charge places the dodecahedral root at a larger phase. -/
+private theorem dodeca_root_phase_lt_of_lt_charge {Z W x y : ℝ}
+    (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
+    (hx : x ∈ Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Ioo (0 : ℝ) dodecaWall)
+    (hRx : dodecaResponse x = Z) (hRy : dodecaResponse y = W) :
+    x < y := by
+  have hx7 : (7 : ℝ) / 20 < x := dodeca_root_gt_seven_twentieths hZ hx hRx
+  have hy7 : (7 : ℝ) / 20 < y :=
+    dodeca_root_gt_seven_twentieths (hZ.trans hW.le) hy hRy
+  by_contra hge
+  have hyle : y ≤ x := le_of_not_gt hge
+  rcases eq_or_lt_of_le hyle with hEq | hlt
+  · have hZW : Z = W := by
+      rw [← hRx, ← hRy, hEq]
+    exact hW.ne hZW
+  · have hmono := strictMonoOn_dodecaResponse_past
+      ⟨hy7.le, hy.2⟩ ⟨hx7.le, hx.2⟩ hlt
+    linarith
+
+/-- The same increase of charge places the balance at a smaller radius. -/
+theorem dodeca_root_radius_lt_of_lt_charge {Z W x y : ℝ}
+    (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
+    (hx : x ∈ Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Ioo (0 : ℝ) dodecaWall)
+    (hRx : dodecaResponse x = Z) (hRy : dodecaResponse y = W) :
+    1 / (2 * y) < 1 / (2 * x) := by
+  have hxy := dodeca_root_phase_lt_of_lt_charge hZ hW hx hy hRx hRy
+  have hinv : 1 / y < 1 / x := by
+    rw [one_div, one_div]
+    exact (inv_lt_inv₀ hy.1 hx.1).mpr hxy
+  calc 1 / (2 * y) = (1 / y) / 2 := by ring
+    _ < (1 / x) / 2 := div_lt_div_of_pos_right hinv (by norm_num)
+    _ = 1 / (2 * x) := by ring
+
 end Gravity
 
 end DstDiophantine

@@ -22,6 +22,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
 import DstDiophantine.Gravity.ElectronBoundary
@@ -229,6 +230,13 @@ The straight line of one fixed jet is not itself that geodesic.
   The root is not a zero of the electrostatic force. The energy of a
   circular path, kinetic term of the centripetal identity plus the
   outer-well potential, is strictly least there and is negative.
+* `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
+  feels `Z` times the one-proton force. On the outer well the logarithmic
+  derivative does not depend on `Z > 0`, so the restoring radius is the
+  same for every positive charge. The circular energy is `Z` times the
+  one-proton energy. It is strictly least at that same radius, the value
+  is negative, and a larger charge makes it lower. The radius is not
+  `a₀/Z`, and the energy is not a laboratory ionization energy.
 * `ElectronCapacity` — two electrons at the ends of a diameter have no radial
   balance in the outer well and exactly one in the first repulsive shell, for
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
@@ -787,6 +795,13 @@ example {Z x : ℝ} (hZ : Z ≤ 7) (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall) :
     7 < dodecaResponse x ∧ 0 < dodecaOutward Z x :=
   ⟨dodecaResponse_gt_seven hx, dodeca_outward_pos_of_le_seven hZ hx⟩
 
+/-- Regression: a larger charge places the dodecahedral root at a smaller radius. -/
+example {Z W x y : ℝ} (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
+    (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Set.Ioo (0 : ℝ) dodecaWall)
+    (hRx : dodecaResponse x = Z) (hRy : dodecaResponse y = W) :
+    1 / (2 * y) < 1 / (2 * x) :=
+  dodeca_root_radius_lt_of_lt_charge hZ hW hx hy hRx hRy
+
 /-- Regression: for `Z ≥ 8` the dodecahedral far field is inward. -/
 example {Z : ℝ} (hZ : 8 ≤ Z) :
     ∃ a ∈ Set.Ioo (0 : ℝ) dodecaWall, ∀ x ∈ Set.Ioo (0 : ℝ) a, dodecaOutward Z x < 0 :=
@@ -991,6 +1006,20 @@ example {x y : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
     circEnergy y < 0 ∧ circEnergy y ≤ circEnergy x ∧
       (circEnergy x = circEnergy y ↔ x = y) :=
   circEnergy_least_outer hx hy h0
+
+/-- Regression: one electron about charge `Z > 0` keeps that phase.
+    The energy is `Z` times the one-proton energy, and a larger charge lowers it. -/
+example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
+    (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hy : y ∈ Set.Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
+    ionCircEnergy Z y = ionCircKinetic Z y + ionCircPotential Z y ∧
+      (x * deriv (ionAttraction Z) x / ionAttraction Z x < 3 ↔ 0 < circStable x) ∧
+      ionCircEnergy Z y < 0 ∧ ionCircEnergy Z y ≤ ionCircEnergy Z x ∧
+      (ionCircEnergy Z x = ionCircEnergy Z y ↔ x = y) ∧
+      ionCircEnergy W y < ionCircEnergy Z y := by
+  have hleast := ionCircEnergy_least_outer hZ hx hy h0
+  exact ⟨ionCircEnergy_eq_parts, ionAttraction_logDeriv_lt_three_outer_iff hZ hx,
+    hleast.1, hleast.2.1, hleast.2.2, ionCircEnergy_lt_of_lt_charge hW hy h0⟩
 
 /-- Regression: repulsive Coulombic layers yield no real circular speed. -/
 example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)

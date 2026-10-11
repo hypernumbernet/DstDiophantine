@@ -339,7 +339,12 @@ unique phase in $(1/2, 3/5)$ where $d\ln Y/d\ln x = 3$ for
 $Y = 4x^2/\gamma_s$, so the radius lies in $(5\ell/6, \ell)$. The energy of
 those circular paths is negative and strictly least at the same radius.
 The electrostatic force does not vanish there. The path is not a shell and
-not $a_0$.
+not $a_0$. One electron about a nucleus of positive charge $Z$, the proton
+number, feels $Z$ times the one-proton force. The restoring radius is the
+same for every such charge, and the circular energy is $Z$ times the
+one-proton energy, still negative. A larger charge makes that energy lower.
+The radius is not $a_0/Z$, and the energy is not a laboratory ionization
+energy.
 
 The first repulsive shell has one extremum of $Y$, at a phase in
 $(5/2, \pi)$, so the radius lies in $(\ell/(2\pi), \ell/5)$. Counted with
@@ -366,7 +371,8 @@ radius. A tetrahedron, an octahedron, a cube, and an icosahedron have no
 outer radial root once $Z \ge 1$, $2$, $3$, and $5$. For every $Z \ge 8$ the
 dodecahedron has exactly one radial root before that chord meets the first
 node, at a radius strictly between $7\ell/10$ and $10\ell/7$, and the
-outward force restores it. Twenty is a vertex count.
+outward force restores it. A larger charge places that balance at a smaller
+radius. Twenty is a vertex count.
 
 On the symmetric midplane pair, with both separations in the outer well,
 the two force components do not vanish together at any ratio. The square of
@@ -472,7 +478,7 @@ $c^4/(G\,\ell_P^{-2})$.
 | Chart | `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `Tetrad`, `Identification`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`, `KillingAxis`, `RadialFall` |
 | Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
 | Dynamics | `TorsionalLayer`, `DualRotorDynamics`, `DualRotorRigidity`, `DualRotorFlow`, `DualRotorVacuum`, `DualRotorMotor`, `NullRotation`, `RestMass` |
-| Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `Blackbody` |
+| Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `Blackbody` |
 | Field and control | `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`, `ChiralityStabilizer`, `EMControl`, `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`, `EnvelopeLock` |
 | Optics | `Lensing`, `PhotonReturn` |
 
