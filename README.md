@@ -479,7 +479,7 @@ $c^4/(G\,\ell_P^{-2})$.
 | Chart | `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `Tetrad`, `Identification`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`, `KillingAxis`, `RadialFall` |
 | Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
 | Dynamics | `TorsionalLayer`, `DualRotorDynamics`, `DualRotorRigidity`, `DualRotorFlow`, `DualRotorVacuum`, `DualRotorMotor`, `NullRotation`, `RestMass` |
-| Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `Blackbody` |
+| Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `ElectronMetal`, `Blackbody` |
 | Field and control | `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`, `ChiralityStabilizer`, `EMControl`, `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`, `EnvelopeLock` |
 | Optics | `Lensing`, `PhotonReturn` |
 

@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.ElectronShape
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronNegativity
+import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
@@ -307,6 +308,19 @@ The straight line of one fixed jet is not itself that geodesic.
   midpoint it is \((Z-W)\) times the unit pull. When \(Z>W\) the root lies
   strictly above \(1/2\), the side drawn toward \(Z\) is the longer side, and
   raising \(Z\) moves the root toward \(W\). The cancellation is not restored.
+* `ElectronMetal` — along any line, the outward component of the force of one
+  point charge has an explicit derivative. Summed over three orthonormal
+  directions it is the charge times \(16x^4\cosh x\sin x/\gamma_s^2\), which
+  is positive on the outer well and strictly increasing there; with
+  \(\gamma_s=1\) the sum is zero. An electron in the outer well of ions of
+  any positive charges has in every frame a direction along which the ions
+  push a displacement further. The same holds with further electrons when
+  the ion charges are at least one and each further electron is farther away
+  than a distinct ion. At the centre of a regular octahedron, a cube, and a
+  cuboctahedron of ions the force on an electron vanishes and every
+  displacement is pushed further, equally in all directions; the same shells
+  restore every displacement of a positive ion. No infinite lattice sum, no
+  conductivity, and no cohesive energy is claimed.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -1817,6 +1831,11 @@ example {rs r b T : ℝ} (hrs : 0 < rs) (hr : rs < r) (hb : 0 ≤ b)
       ∃ s, rs < s ∧ s < photonSphere rs ∧
         T < killingAntideriv rs (photonSphere rs) - killingAntideriv rs s :=
   ⟨no_exterior_turning hrs hr hb hlt, exists_classical_delay_gt hrs⟩
+
+/-- Regression: on the outer well an ion's outflow is positive, so the ions
+alone hold no electron there. -/
+example {x : ℝ} (hx : x ∈ Set.Ioo 0 resonanceRoot1) : 0 < ionOutflow x :=
+  ionOutflow_pos_outer hx
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
