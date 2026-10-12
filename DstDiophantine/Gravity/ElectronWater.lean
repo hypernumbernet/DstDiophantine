@@ -6,7 +6,9 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Topology.Order.IntermediateValue
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -17,13 +19,12 @@ import Mathlib.Tactic.Ring
 
 ## Paper boundary (do **not** claim)
 
-The length `ℓ` is not derived. Nothing here produces a bond angle, a
-dissociation energy, a value of `a₀`, or a count of lone pairs. The molecule
+The length `ℓ` is not derived. Nothing here produces a bond angle in degrees,
+a dissociation energy, a value of `a₀`, or a count of lone pairs. The molecule
 is two bonds — one electron and one proton on each ray — together with any
 further electrons off those rays. It is not a shell of eight and not the
-cube. No equilibrium is claimed in the reversed shell. A far-side electron
-narrows the angle and is not shown to cancel it. Oxygen is not the
-dodecahedron.
+cube. No equilibrium is claimed in the reversed shell. Oxygen is not the
+dodecahedron. No degree of a bond angle is computed.
 
 ## What is proved
 
@@ -46,6 +47,15 @@ dodecahedron.
 * The older ratio statement remains: while the electron–electron and
   proton–proton separations lie in the outer well and the cross factor is
   not a node, the two tangential forces do not vanish together.
+* The angle at which the protons are as far apart as each is from the other
+  electron is strictly less than a third of a straight angle. While both
+  separations lie in the outer well and the protons are no farther apart
+  than that cross separation, the tangential force on each proton points
+  toward the wider angle. The nuclear charge does not enter. When the
+  electron lies at least a quarter as far from the nucleus as the proton
+  and the equal separation still lies in the outer well, that force is
+  positive at the equal separation, negative at some greater angle short of
+  a straight line, and zero at an angle strictly between the two.
 -/
 
 namespace DstDiophantine.Gravity
@@ -957,7 +967,7 @@ private theorem outerSep_of_gt {d s : ℝ} (hd : outerSep d) (hlt : d < s) : out
 
 /-- The electron tangent of the two bonds factors through `sin` of the angle.
 `a` is the half-angle. The nuclear charge does not appear. -/
-private theorem waterBendElectron_factor {Z r R a : ℝ}
+theorem waterBendElectron_factor {Z r R a : ℝ}
     (ha : a ∈ Ioo 0 π) (hr : 0 < r) (hR : 0 < R)
     (hee : outerSep (2 * r * sin a))
     (hc : gammaSEqual (pairPhase
@@ -1262,6 +1272,564 @@ theorem water_straight_far_neg {Z r R lam : ℝ}
     rwa [sqrt_sq_eq_abs, abs_of_pos hr.1] at hsqrt
   have hfar := waterExtraTangent_far_neg ha hlam hsep
   linarith
+
+
+/-! ### The angle held by the two protons -/
+
+/-- Separation of the two protons. -/
+noncomputable def protonSep (a R : ℝ) : ℝ :=
+  2 * R * sin a
+
+/-- Separation of a proton from the other bond's electron. -/
+noncomputable def protonCross (a r R : ℝ) : ℝ :=
+  sqrt ((R - r) ^ 2 + 4 * r * R * sin a ^ 2)
+
+/-- Other-proton repulsion minus the other electron's pull, per unit sine. -/
+noncomputable def protonParen (a r R : ℝ) : ℝ :=
+  R / (gammaSEqual (pairPhase (protonSep a R)) * protonSep a R ^ 3) -
+    r / (gammaSEqual (pairPhase (protonCross a r R)) * protonCross a r R ^ 3)
+
+/-- Separation at which the protons are as far apart as each is from the other electron. -/
+noncomputable def equalChord (r R : ℝ) : ℝ :=
+  sqrt (R * (R - r))
+
+/-- Half-angle of that equal separation. -/
+noncomputable def equalHalf (r R : ℝ) : ℝ :=
+  arcsin (equalChord r R / (2 * R))
+
+private theorem equalChord_lt_half {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    equalChord r R / (2 * R) < 1 / 2 := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hprod : 0 ≤ R * (R - r) := by nlinarith
+  have hsq : equalChord r R ^ 2 = R * (R - r) := by
+    unfold equalChord
+    exact sq_sqrt hprod
+  have hlt : equalChord r R ^ 2 < R ^ 2 := by
+    rw [hsq]
+    nlinarith
+  have habs : |equalChord r R| < |R| := (sq_lt_sq).mp hlt
+  have hpos : 0 < equalChord r R := by
+    unfold equalChord
+    exact sqrt_pos.mpr (by nlinarith)
+  rw [abs_of_pos hpos, abs_of_pos hRpos] at habs
+  rw [div_lt_div_iff₀ (by linarith) (by norm_num)]
+  linarith
+
+private theorem sin_equalHalf {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    sin (equalHalf r R) = equalChord r R / (2 * R) := by
+  unfold equalHalf
+  have hRpos : 0 < R := lt_trans hr hR
+  refine sin_arcsin ?_ ?_
+  · have hnonneg : 0 ≤ equalChord r R / (2 * R) :=
+      div_nonneg (sqrt_nonneg _) (by linarith)
+    linarith
+  · linarith [equalChord_lt_half hr hR]
+
+theorem equalHalf_lt_pi_div_six {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    equalHalf r R < π / 6 := by
+  have hs : sin (equalHalf r R) < sin (π / 6) := by
+    rw [sin_equalHalf hr hR, sin_pi_div_six]
+    exact equalChord_lt_half hr hR
+  have h1 : equalHalf r R ∈ Icc (-(π / 2)) (π / 2) := arcsin_mem_Icc _
+  have h2 : (π / 6 : ℝ) ∈ Icc (-(π / 2)) (π / 2) := by
+    constructor <;> linarith [pi_pos]
+  exact (strictMonoOn_sin.lt_iff_lt h1 h2).mp hs
+
+private theorem equalHalf_pos {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    0 < equalHalf r R := by
+  unfold equalHalf
+  refine arcsin_pos.mpr ?_
+  exact div_pos (by
+    unfold equalChord
+    exact sqrt_pos.mpr (by nlinarith)) (by linarith [lt_trans hr hR])
+
+private theorem protonSep_equal {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    protonSep (equalHalf r R) R = equalChord r R := by
+  unfold protonSep
+  rw [sin_equalHalf hr hR]
+  have hRpos : 0 < R := lt_trans hr hR
+  field_simp
+
+private theorem protonCross_equal {r R : ℝ} (hr : 0 < r) (hR : r < R) :
+    protonCross (equalHalf r R) r R = equalChord r R := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hsin := sin_equalHalf hr hR
+  have hch : equalChord r R ^ 2 = R * (R - r) := by
+    unfold equalChord
+    exact sq_sqrt (by nlinarith)
+  have hsqsin : sin (equalHalf r R) ^ 2 = (R - r) / (4 * R) := by
+    calc
+      sin (equalHalf r R) ^ 2 = (equalChord r R / (2 * R)) ^ 2 := by rw [hsin]
+      _ = equalChord r R ^ 2 / (4 * R ^ 2) := by ring
+      _ = (R * (R - r)) / (4 * R ^ 2) := by rw [hch]
+      _ = (R - r) / (4 * R) := by field_simp
+  unfold protonCross
+  have harg : (R - r) ^ 2 + 4 * r * R * sin (equalHalf r R) ^ 2 =
+      R * (R - r) := by
+    rw [hsqsin]
+    field_simp
+    ring
+  rw [harg]
+  unfold equalChord
+  rfl
+
+private theorem protonSep_straight (R : ℝ) :
+    protonSep (π / 2) R = 2 * R := by
+  unfold protonSep
+  rw [sin_pi_div_two]
+  ring
+
+private theorem protonCross_straight {r R : ℝ} (hr : 0 ≤ r) (hR : 0 ≤ R) :
+    protonCross (π / 2) r R = R + r := by
+  unfold protonCross
+  have hsq : (R - r) ^ 2 + 4 * r * R * sin (π / 2) ^ 2 = (R + r) ^ 2 := by
+    rw [sin_pi_div_two]
+    ring
+  rw [hsq, sqrt_sq (by linarith : 0 ≤ R + r)]
+
+private theorem protonSep_mono {a b R : ℝ} (hR : 0 < R)
+    (ha : -(π / 2) ≤ a) (hb : b ≤ π / 2) (hab : a ≤ b) :
+    protonSep a R ≤ protonSep b R := by
+  unfold protonSep
+  have hsin : sin a ≤ sin b :=
+    strictMonoOn_sin.monotoneOn ⟨ha, le_trans hab hb⟩ ⟨by linarith, hb⟩ hab
+  have hmul : 0 ≤ 2 * R := by linarith
+  exact mul_le_mul_of_nonneg_left hsin hmul
+
+private theorem protonCross_mono {a b r R : ℝ} (hr : 0 ≤ r) (hR : 0 ≤ R)
+    (ha : 0 ≤ a) (hb : b ≤ π / 2) (hab : a ≤ b) :
+    protonCross a r R ≤ protonCross b r R := by
+  unfold protonCross
+  apply sqrt_le_sqrt
+  have hsin : sin a ≤ sin b :=
+    strictMonoOn_sin.monotoneOn
+      ⟨by linarith [pi_pos, ha], le_trans hab hb⟩ ⟨by linarith [pi_pos, ha], hb⟩ hab
+  have hsa : 0 ≤ sin a := sin_nonneg_of_nonneg_of_le_pi ha
+    (le_trans hab (le_trans hb (le_of_lt (half_lt_self pi_pos))))
+  have hsb : 0 ≤ sin b := sin_nonneg_of_nonneg_of_le_pi (le_trans ha hab)
+    (le_trans hb (le_of_lt (half_lt_self pi_pos)))
+  have hsq : sin a ^ 2 ≤ sin b ^ 2 := by
+    calc
+      sin a ^ 2 = sin a * sin a := by ring
+      _ ≤ sin b * sin b := mul_le_mul hsin hsin hsa hsb
+      _ = sin b ^ 2 := by ring
+  have hcoef : 0 ≤ 4 * r * R := by positivity
+  have hdiff : 4 * r * R * sin a ^ 2 ≤ 4 * r * R * sin b ^ 2 :=
+    mul_le_mul_of_nonneg_left hsq hcoef
+  linarith [sq_nonneg (R - r)]
+
+private theorem outer_proton_between {a r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hchord : outerSep (equalChord r R))
+    (ha : equalHalf r R ≤ a) (ha2 : a ≤ π / 2) :
+    outerSep (protonSep a R) ∧ outerSep (protonCross a r R) := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hsepeq := protonSep_equal hr hR
+  have hcrosseq := protonCross_equal hr hR
+  have hhalf_lo : -(π / 2) ≤ equalHalf r R := (arcsin_mem_Icc _).1
+  have hsep_ge : equalChord r R ≤ protonSep a R := by
+    rw [← hsepeq]
+    exact protonSep_mono hRpos hhalf_lo ha2 ha
+  have hcross_ge : equalChord r R ≤ protonCross a r R := by
+    rw [← hcrosseq]
+    exact protonCross_mono hr.le hRpos.le (equalHalf_pos hr hR).le ha2 ha
+  refine ⟨?_, ?_⟩
+  · rcases eq_or_lt_of_le hsep_ge with heq | hlt
+    · rw [← heq]; exact hchord
+    · exact outerSep_of_gt hchord hlt
+  · rcases eq_or_lt_of_le hcross_ge with heq | hlt
+    · rw [← heq]; exact hchord
+    · exact outerSep_of_gt hchord hlt
+
+private theorem eight_sep_gt {r R : ℝ} (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r) :
+    (R + r) ^ 3 < 8 * R ^ 2 * r := by
+  have hRpos : 0 < R := lt_trans hr hR
+  set t := r / R with ht
+  have ht_lo : (1 / 4 : ℝ) ≤ t := by
+    rw [ht, le_div_iff₀ hRpos]
+    linarith
+  have ht_hi : t < 1 := by
+    rw [ht, div_lt_one hRpos]
+    exact hR
+  have hquad : (1 / 16 : ℝ) ≤ t ^ 2 + 4 * t - 1 := by
+    have hdiff : t ^ 2 + 4 * t - 1 - (1 / 16) = (t - 1 / 4) * (t + 17 / 4) := by ring
+    have hnn : 0 ≤ (t - 1 / 4) * (t + 17 / 4) :=
+      mul_nonneg (by linarith) (by linarith)
+    linarith
+  have hpos : 0 < (1 - t) * (t ^ 2 + 4 * t - 1) :=
+    mul_pos (by linarith) (by linarith)
+  have hid : 8 * t - (1 + t) ^ 3 = (1 - t) * (t ^ 2 + 4 * t - 1) := by ring
+  have h8 : (1 + t) ^ 3 < 8 * t := by linarith
+  have hscale : (1 + t) ^ 3 * R ^ 3 < 8 * t * R ^ 3 :=
+    mul_lt_mul_of_pos_right h8 (pow_pos hRpos 3)
+  have hsum : (1 + t) * R = R + r := by
+    rw [ht]
+    field_simp
+  have hrad : t * R = r := by
+    rw [ht]
+    field_simp
+  calc
+    (R + r) ^ 3 = ((1 + t) * R) ^ 3 := by rw [hsum]
+    _ = (1 + t) ^ 3 * R ^ 3 := by ring
+    _ < 8 * t * R ^ 3 := hscale
+    _ = 8 * R ^ 2 * (t * R) := by ring
+    _ = 8 * R ^ 2 * r := by rw [hrad]
+
+/-- On the straight line the parenthesis is negative once the electron is at
+least a quarter as far out as the proton and the straight cross separation
+lies in the outer well. -/
+theorem protonParen_neg_straight {r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r) (hcross : outerSep (R + r)) :
+    protonParen (π / 2) r R < 0 := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have h2R : outerSep (2 * R) := outerSep_of_gt hcross (by linarith)
+  have hγ : gammaSEqual (pairPhase (R + r)) < gammaSEqual (pairPhase (2 * R)) := by
+    refine gamma_strictAnti_phase ?_ hcross.2 ?_
+    · unfold pairPhase
+      positivity
+    · unfold pairPhase
+      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+      nlinarith
+  have hγc : 0 < gammaSEqual (pairPhase (R + r)) := outer_gamma_pos hcross
+  have hγh : 0 < gammaSEqual (pairPhase (2 * R)) := outer_gamma_pos h2R
+  have hcube := eight_sep_gt hr hR hq
+  have hcmp : gammaSEqual (pairPhase (R + r)) * (R + r) ^ 3 <
+      gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 2 * r) := by
+    have h1 : gammaSEqual (pairPhase (R + r)) * (R + r) ^ 3 <
+        gammaSEqual (pairPhase (R + r)) * (8 * R ^ 2 * r) :=
+      mul_lt_mul_of_pos_left hcube hγc
+    have h2 : gammaSEqual (pairPhase (R + r)) * (8 * R ^ 2 * r) <
+        gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 2 * r) :=
+      mul_lt_mul_of_pos_right hγ (by positivity)
+    linarith
+  unfold protonParen
+  rw [protonSep_straight, protonCross_straight hr.le hRpos.le, sub_neg]
+  rw [div_lt_div_iff₀ (mul_pos hγh (by positivity)) (mul_pos hγc (by positivity))]
+  have hpow : (2 * R) ^ 3 = 8 * R ^ 3 := by ring
+  rw [hpow]
+  have hmul : R * (gammaSEqual (pairPhase (R + r)) * (R + r) ^ 3) <
+      R * (gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 2 * r)) :=
+    mul_lt_mul_of_pos_left hcmp hRpos
+  rw [show r * (gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 3)) =
+      R * (gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 2 * r)) by ring]
+  exact hmul
+
+/-- While the protons are no farther apart than each is from the other
+electron, and both separations lie in the outer well, the parenthesis is
+positive. -/
+theorem protonParen_pos_of_le {a r R : ℝ}
+    (hr : 0 < r) (hR : r < R)
+    (hh : outerSep (protonSep a R)) (hc : outerSep (protonCross a r R))
+    (hle : protonSep a R ≤ protonCross a r R) :
+    0 < protonParen a r R := by
+  have hRpos : 0 < R := lt_trans hr hR
+  set H := protonSep a R with hH
+  set C := protonCross a r R with hC
+  have hHpos : 0 < H := hh.1
+  have hCpos : 0 < C := hc.1
+  unfold protonParen
+  rw [← hH, ← hC, sub_pos]
+  rcases lt_or_eq_of_le hle with hlt | heq
+  · have hphase : pairPhase C < pairPhase H := by
+      unfold pairPhase
+      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+      linarith
+    have hγ : gammaSEqual (pairPhase H) < gammaSEqual (pairPhase C) :=
+      gamma_strictAnti_phase (by unfold pairPhase; positivity) hh.2 hphase
+    have hsq : H ^ 2 < C ^ 2 := by
+      calc
+        H ^ 2 = H * H := by ring
+        _ < C * H := mul_lt_mul_of_pos_right hlt hHpos
+        _ < C * C := mul_lt_mul_of_pos_left hlt hCpos
+        _ = C ^ 2 := by ring
+    have hcube : H ^ 3 < C ^ 3 := by
+      calc
+        H ^ 3 = H ^ 2 * H := by ring
+        _ < C ^ 2 * H := mul_lt_mul_of_pos_right hsq hHpos
+        _ < C ^ 2 * C := mul_lt_mul_of_pos_left hlt (sq_pos_of_pos hCpos)
+        _ = C ^ 3 := by ring
+    have hγC : 0 < gammaSEqual (pairPhase C) := outer_gamma_pos hc
+    have hden : gammaSEqual (pairPhase H) * H ^ 3 <
+        gammaSEqual (pairPhase C) * C ^ 3 := by
+      have h1 : gammaSEqual (pairPhase H) * H ^ 3 <
+          gammaSEqual (pairPhase C) * H ^ 3 :=
+        mul_lt_mul_of_pos_right hγ (pow_pos hHpos 3)
+      have h2 : gammaSEqual (pairPhase C) * H ^ 3 <
+          gammaSEqual (pairPhase C) * C ^ 3 :=
+        mul_lt_mul_of_pos_left hcube hγC
+      linarith
+    have hdenH : 0 < gammaSEqual (pairPhase H) * H ^ 3 :=
+      mul_pos (outer_gamma_pos hh) (pow_pos hHpos 3)
+    have hdenC : 0 < gammaSEqual (pairPhase C) * C ^ 3 :=
+      mul_pos hγC (pow_pos hCpos 3)
+    have hRden : R / (gammaSEqual (pairPhase C) * C ^ 3) <
+        R / (gammaSEqual (pairPhase H) * H ^ 3) := by
+      rw [div_lt_div_iff₀ hdenC hdenH]
+      nlinarith [hden]
+    have hrden : r / (gammaSEqual (pairPhase C) * C ^ 3) <
+        R / (gammaSEqual (pairPhase C) * C ^ 3) := by
+      rw [div_lt_div_iff₀ hdenC hdenC]
+      nlinarith
+    linarith
+  · rw [heq]
+    have hdenC' : 0 < gammaSEqual (pairPhase C) * C ^ 3 :=
+      mul_pos (outer_gamma_pos hc) (pow_pos hCpos 3)
+    rw [div_lt_div_iff₀ hdenC' hdenC']
+    nlinarith
+
+private theorem protonCross_eq (a r R : ℝ) :
+    protonCross a r R = sqrt (r ^ 2 + R ^ 2 - 2 * r * R * cos (2 * a)) := by
+  unfold protonCross
+  rw [← water_cross_expand]
+
+private theorem sin_two_pos {a : ℝ} (ha : a ∈ Ioo 0 (π / 2)) : 0 < sin (2 * a) := by
+  rw [sin_two_mul]
+  have hsin : 0 < sin a :=
+    sin_pos_of_pos_of_lt_pi ha.1 (lt_trans ha.2 (half_lt_self pi_pos))
+  have hcos : 0 < cos a :=
+    cos_pos_of_mem_Ioo ⟨by linarith [pi_pos, ha.1], ha.2⟩
+  positivity
+
+/-- The tangential force on the proton is `sin` of the bond angle times the
+parenthesis. The nuclear charge does not appear. -/
+theorem waterBendProton_factor {Z r R a : ℝ}
+    (ha : a ∈ Ioo 0 π) (_hr : 0 < r) (hR : 0 < R)
+    (hhh : outerSep (protonSep a R)) (hc : outerSep (protonCross a r R)) :
+    waterBendProton Z r R a = sin (2 * a) * protonParen a r R := by
+  have hsin : 0 < sin a := sin_pos_of_pos_of_lt_pi ha.1 ha.2
+  have hh_pos : 0 < protonSep a R := hhh.1
+  have hc_pos : 0 < protonCross a r R := hc.1
+  have hγh : 0 < gammaSEqual (pairPhase (protonSep a R)) := outer_gamma_pos hhh
+  have hγc : 0 < gammaSEqual (pairPhase (protonCross a r R)) := outer_gamma_pos hc
+  have hvhh : vnorm (vsub (vsmul R (waterU a)) (vsmul R (waterV a))) =
+      protonSep a R := by
+    rw [vnorm_hh R a hR hsin]
+    rfl
+  have hvrc : vnorm (vsub (vsmul r (waterU a)) (vsmul R (waterV a))) =
+      protonCross a r R := by
+    unfold vnorm
+    rw [vnorm2_cross, cos_sq_sub_sin_sq, protonCross_eq]
+  have hden_h : gammaSEqual (pairPhase (vnorm
+      (vsub (vsmul R (waterU a)) (vsmul R (waterV a))))) *
+      vnorm (vsub (vsmul R (waterU a)) (vsmul R (waterV a))) ^ 3 ≠ 0 := by
+    rw [hvhh]
+    exact mul_ne_zero hγh.ne' (pow_ne_zero 3 hh_pos.ne')
+  have hden_p : gammaSEqual (pairPhase (vnorm
+      (vsub (vsmul R (waterU a)) (vsmul r (waterV a))))) *
+      vnorm (vsub (vsmul R (waterU a)) (vsmul r (waterV a))) ^ 3 ≠ 0 := by
+    rw [vnorm_cross_sym, hvrc]
+    exact mul_ne_zero hγc.ne' (pow_ne_zero 3 hc_pos.ne')
+  unfold waterBendProton
+  rw [vdot_add, vdot_add, vdot_add]
+  have hnuc : vdot (waterT a) (fun i =>
+      pairForce 1 Z (vsmul R (waterU a)) (fun _ => 0) i) = 0 := by
+    refine vdot_pairForce_ortho ?_
+    have hsub : vsub (vsmul R (waterU a)) (fun _ => 0) = vsmul R (waterU a) := by
+      funext i
+      simp [vsub]
+    rw [hsub, vdot_T_nucleus]
+  have hown : vdot (waterT a) (fun i =>
+      pairForce 1 (-1) (vsmul R (waterU a)) (vsmul r (waterU a)) i) = 0 :=
+    vdot_pairForce_ortho (vdot_T_partner R r a)
+  have hpe := vdot_pairForce 1 (-1)
+    (vsmul R (waterU a)) (vsmul r (waterV a)) (waterT a) hden_p
+  have hhh_c := vdot_pairForce 1 1
+    (vsmul R (waterU a)) (vsmul R (waterV a)) (waterT a) hden_h
+  rw [hnuc, hown, hpe, hhh_c, vdot_T_pe, vdot_T_hh, hvhh]
+  have hcomm : vnorm (vsub (vsmul R (waterU a)) (vsmul r (waterV a))) =
+      protonCross a r R := (vnorm_cross_sym r R a).trans hvrc
+  rw [hcomm]
+  unfold protonParen
+  have hden1 : gammaSEqual (pairPhase (protonCross a r R)) *
+      protonCross a r R ^ 3 ≠ 0 :=
+    mul_ne_zero hγc.ne' (pow_ne_zero 3 hc_pos.ne')
+  have hden2 : gammaSEqual (pairPhase (protonSep a R)) *
+      protonSep a R ^ 3 ≠ 0 :=
+    mul_ne_zero hγh.ne' (pow_ne_zero 3 hh_pos.ne')
+  field_simp [hden1, hden2]
+  ring
+
+private theorem continuousOn_invSep {s : Set ℝ} {f : ℝ → ℝ}
+    (hf : ContinuousOn f s) (hpos : ∀ a ∈ s, 0 < f a)
+    (hγ : ∀ a ∈ s, gammaSEqual (pairPhase (f a)) ≠ 0) :
+    ContinuousOn (fun a => 1 / (gammaSEqual (pairPhase (f a)) * f a ^ 3)) s := by
+  have hpair : ContinuousOn pairPhase (Ioi 0) := by
+    unfold pairPhase
+    refine ContinuousOn.div continuousOn_const
+      (continuous_const.mul continuous_id).continuousOn ?_
+    intro x hx
+    exact mul_ne_zero (by norm_num) (ne_of_gt hx)
+  have hphase : ContinuousOn (fun a => pairPhase (f a)) s :=
+    hpair.comp hf fun a ha => hpos a ha
+  have hden : ContinuousOn (fun a => gammaSEqual (pairPhase (f a)) * f a ^ 3) s :=
+    (continuous_gammaSEqual.comp_continuousOn hphase).mul (hf.pow 3)
+  refine ContinuousOn.div continuousOn_const hden ?_
+  intro a ha
+  exact mul_ne_zero (hγ a ha) (pow_ne_zero 3 (hpos a ha).ne')
+
+private theorem continuousOn_protonParen {r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hchord : outerSep (equalChord r R)) :
+    ContinuousOn (fun a => protonParen a r R) (Icc (equalHalf r R) (π / 2)) := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hsep : ContinuousOn (fun a => protonSep a R) (Icc (equalHalf r R) (π / 2)) := by
+    unfold protonSep
+    exact (continuous_const.mul continuous_sin).continuousOn
+  have hcross : ContinuousOn (fun a => protonCross a r R)
+      (Icc (equalHalf r R) (π / 2)) := by
+    unfold protonCross
+    refine continuous_sqrt.comp_continuousOn ?_
+    exact ((continuous_const.add
+      (continuous_const.mul (continuous_sin.pow 2))).continuousOn)
+  have houter : ∀ a ∈ Icc (equalHalf r R) (π / 2),
+      outerSep (protonSep a R) ∧ outerSep (protonCross a r R) := by
+    intro a ha
+    exact outer_proton_between hr hR hchord ha.1 ha.2
+  have hinvH := continuousOn_invSep hsep
+    (fun a ha => (houter a ha).1.1)
+    (fun a ha => (outer_gamma_pos (houter a ha).1).ne')
+  have hinvC := continuousOn_invSep hcross
+    (fun a ha => (houter a ha).2.1)
+    (fun a ha => (outer_gamma_pos (houter a ha).2).ne')
+  have hleft : ContinuousOn (fun a =>
+      R * (1 / (gammaSEqual (pairPhase (protonSep a R)) * protonSep a R ^ 3)))
+      (Icc (equalHalf r R) (π / 2)) :=
+    continuousOn_const.mul hinvH
+  have hright : ContinuousOn (fun a =>
+      r * (1 / (gammaSEqual (pairPhase (protonCross a r R)) *
+        protonCross a r R ^ 3)))
+      (Icc (equalHalf r R) (π / 2)) :=
+    continuousOn_const.mul hinvC
+  have hpoint (a : ℝ) : protonParen a r R =
+      R * (1 / (gammaSEqual (pairPhase (protonSep a R)) * protonSep a R ^ 3)) -
+        r * (1 / (gammaSEqual (pairPhase (protonCross a r R)) *
+          protonCross a r R ^ 3)) := by
+    unfold protonParen
+    have h1 : R / (gammaSEqual (pairPhase (protonSep a R)) * protonSep a R ^ 3) =
+        R * (1 / (gammaSEqual (pairPhase (protonSep a R)) * protonSep a R ^ 3)) :=
+      div_eq_mul_one_div _ _
+    have h2 : r / (gammaSEqual (pairPhase (protonCross a r R)) *
+        protonCross a r R ^ 3) =
+        r * (1 / (gammaSEqual (pairPhase (protonCross a r R)) *
+          protonCross a r R ^ 3)) :=
+      div_eq_mul_one_div _ _
+    rw [h1, h2]
+  refine ContinuousOn.congr (hleft.sub hright) ?_
+  intro a _ha
+  rw [Pi.sub_apply]
+  exact hpoint a
+
+/-- The protons hold an angle strictly between the equal separation and the
+straight line. That equal separation is strictly less than a third of a
+straight angle. A smaller angle, down to the equal separation, is driven
+wider whenever the parenthesis has not changed sign, and the parenthesis is
+positive there and negative on the straight line. -/
+theorem water_proton_angle {Z r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r)
+    (hchord : outerSep (equalChord r R)) :
+    equalHalf r R < π / 6 ∧
+      0 < protonParen (equalHalf r R) r R ∧
+      protonParen (π / 2) r R < 0 ∧
+      ∃ a, equalHalf r R < a ∧ a < π / 2 ∧ waterBendProton Z r R a = 0 := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hlt := equalHalf_lt_pi_div_six hr hR
+  have hpos : 0 < protonParen (equalHalf r R) r R := by
+    have houter := outer_proton_between hr hR hchord le_rfl
+      (lt_trans hlt (by linarith [pi_pos])).le
+    have heq : protonSep (equalHalf r R) R = protonCross (equalHalf r R) r R := by
+      rw [protonSep_equal hr hR, protonCross_equal hr hR]
+    exact protonParen_pos_of_le hr hR houter.1 houter.2 heq.le
+  have hfar : outerSep (R + r) := by
+    refine outerSep_of_gt hchord ?_
+    have hchord_lt : equalChord r R < R := by
+      have hsq : equalChord r R ^ 2 = R * (R - r) := by
+        unfold equalChord
+        exact sq_sqrt (by nlinarith)
+      have hlt2 : equalChord r R ^ 2 < R ^ 2 := by
+        rw [hsq]
+        nlinarith
+      have habs : |equalChord r R| < |R| := (sq_lt_sq).mp hlt2
+      have hchpos : 0 < equalChord r R := hchord.1
+      rw [abs_of_pos hchpos, abs_of_pos hRpos] at habs
+      exact habs
+    linarith
+  have hneg := protonParen_neg_straight hr hR hq hfar
+  have hcont := continuousOn_protonParen hr hR hchord
+  have hhalf_le : equalHalf r R ≤ π / 2 :=
+    (lt_trans hlt (by linarith [pi_pos])).le
+  have hzero : (0 : ℝ) ∈ Ioo (protonParen (π / 2) r R)
+      (protonParen (equalHalf r R) r R) :=
+    ⟨hneg, hpos⟩
+  obtain ⟨a, ha, hfa⟩ :=
+    intermediate_value_Ioo' hhalf_le hcont hzero
+  have ha_pi : a ∈ Ioo 0 π :=
+    ⟨lt_trans (equalHalf_pos hr hR) ha.1, lt_trans ha.2 (half_lt_self pi_pos)⟩
+  have houter := outer_proton_between hr hR hchord ha.1.le ha.2.le
+  have hfac := waterBendProton_factor (Z := Z) ha_pi hr hRpos houter.1 houter.2
+  refine ⟨hlt, hpos, hneg, a, ha.1, ha.2, ?_⟩
+  rw [hfac]
+  have hzero_paren : protonParen a r R = 0 := by simpa using hfa
+  rw [hzero_paren, mul_zero]
+
+/-- At the equal separation the tangential force on the proton points toward
+the wider angle. -/
+theorem waterBendProton_equal_pos {Z r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hchord : outerSep (equalChord r R)) :
+    0 < waterBendProton Z r R (equalHalf r R) := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hlt := equalHalf_lt_pi_div_six hr hR
+  have houter := outer_proton_between hr hR hchord le_rfl
+    (lt_trans hlt (by linarith [pi_pos])).le
+  have heq : protonSep (equalHalf r R) R = protonCross (equalHalf r R) r R := by
+    rw [protonSep_equal hr hR, protonCross_equal hr hR]
+  have hp := protonParen_pos_of_le hr hR houter.1 houter.2 heq.le
+  have ha : equalHalf r R ∈ Ioo 0 (π / 2) :=
+    ⟨equalHalf_pos hr hR, lt_trans hlt (by linarith [pi_pos])⟩
+  have haπ : equalHalf r R ∈ Ioo 0 π :=
+    ⟨ha.1, lt_trans ha.2 (half_lt_self pi_pos)⟩
+  rw [waterBendProton_factor haπ hr hRpos houter.1 houter.2]
+  exact mul_pos (sin_two_pos ha) hp
+
+/-- Somewhere short of the straight line the tangential force on the proton
+points toward the narrower angle. -/
+theorem waterBendProton_narrow {Z r R : ℝ}
+    (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r)
+    (hchord : outerSep (equalChord r R)) :
+    ∃ a, equalHalf r R < a ∧ a < π / 2 ∧ waterBendProton Z r R a < 0 := by
+  have hRpos : 0 < R := lt_trans hr hR
+  have hlt := equalHalf_lt_pi_div_six hr hR
+  have hhalf_le : equalHalf r R ≤ π / 2 := (lt_trans hlt (by linarith [pi_pos])).le
+  have hpos : 0 < protonParen (equalHalf r R) r R := by
+    have houter := outer_proton_between hr hR hchord le_rfl hhalf_le
+    have heq : protonSep (equalHalf r R) R = protonCross (equalHalf r R) r R := by
+      rw [protonSep_equal hr hR, protonCross_equal hr hR]
+    exact protonParen_pos_of_le hr hR houter.1 houter.2 heq.le
+  have hfar : outerSep (R + r) := by
+    refine outerSep_of_gt hchord ?_
+    have hsq : equalChord r R ^ 2 = R * (R - r) := by
+      unfold equalChord
+      exact sq_sqrt (by nlinarith)
+    have hlt2 : equalChord r R ^ 2 < R ^ 2 := by
+      rw [hsq]
+      nlinarith
+    have habs : |equalChord r R| < |R| := (sq_lt_sq).mp hlt2
+    rw [abs_of_pos hchord.1, abs_of_pos hRpos] at habs
+    linarith
+  have hneg := protonParen_neg_straight hr hR hq hfar
+  have hmid : protonParen (π / 2) r R / 2 ∈
+      Ioo (protonParen (π / 2) r R) (protonParen (equalHalf r R) r R) := by
+    constructor <;> linarith
+  obtain ⟨a, ha, hfa⟩ :=
+    intermediate_value_Ioo' hhalf_le (continuousOn_protonParen hr hR hchord) hmid
+  have hparen : protonParen a r R < 0 := by
+    have hval : protonParen a r R = protonParen (π / 2) r R / 2 := by
+      simpa using hfa
+    linarith
+  have haπ : a ∈ Ioo 0 π :=
+    ⟨lt_trans (equalHalf_pos hr hR) ha.1, lt_trans ha.2 (half_lt_self pi_pos)⟩
+  have houter := outer_proton_between hr hR hchord ha.1.le ha.2.le
+  have hprod : waterBendProton Z r R a < 0 := by
+    rw [waterBendProton_factor haπ hr hRpos houter.1 houter.2]
+    exact mul_neg_of_pos_of_neg (sin_two_pos ⟨haπ.1, ha.2⟩) hparen
+  exact ⟨a, ha.1, ha.2, hprod⟩
 
 end
 

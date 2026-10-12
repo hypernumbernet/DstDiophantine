@@ -307,7 +307,15 @@ The straight line of one fixed jet is not itself that geodesic.
   strictly negative whenever the nuclear charge is at least \(1/4\) and the
   factor on the segment is not a node. While the electron–electron and
   proton–proton separations lie in the outer well and the cross factor is
-  not a node, the two tangential forces do not vanish together.
+  not a node, the two tangential forces do not vanish together. The angle
+  between the rays at which the protons are as far apart as each is from the
+  other electron is strictly less than a third of a straight angle. When the
+  electron lies at least a quarter as far from the nucleus as the proton and
+  that equal separation still lies in the outer well, the tangential force
+  on each proton is positive there, negative at some greater angle short of
+  the straight line, and zero at an angle strictly between them. The bonding
+  electron is not at rest on that ray while its separation with the other
+  bonding electron remains in the outer well.
 * `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
   times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
   larger phase. On the segment between two positive charges, with separation
