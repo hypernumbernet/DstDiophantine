@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
+import DstDiophantine.Gravity.ElectronAngle
 import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronCrystal
@@ -316,6 +317,17 @@ The straight line of one fixed jet is not itself that geodesic.
   the straight line, and zero at an angle strictly between them. The bonding
   electron is not at rest on that ray while its separation with the other
   bonding electron remains in the outer well.
+* `ElectronAngle` — four rays of a regular tetrahedron meet at cosine \(-1/3\),
+  an angle greater than a right angle. With every separation in the outer well,
+  the outward force on an electron whose ray carries a proton is strictly
+  greater than on an electron whose ray does not, so a non-shared electron is
+  driven inward. Four electrons at one distance and four protons at one
+  greater distance exert no tangential force. While the angle is at least a
+  right angle, a closer electron repels a neighbor more strongly. If it stays
+  at least \(1/\sqrt{2}\) times the neighbor's nuclear distance, the tangential
+  part is stronger as well. Moving one electron in, not past that fraction,
+  and removing its proton narrows the angle among the other three. Two such
+  electrons, at the same closer distance, contribute twice that narrowing.
 * `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
   times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
   larger phase. On the segment between two positive charges, with separation
