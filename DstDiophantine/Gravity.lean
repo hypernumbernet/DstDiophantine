@@ -22,6 +22,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
@@ -239,6 +240,12 @@ The straight line of one fixed jet is not itself that geodesic.
   The root is not a zero of the electrostatic force. The energy of a
   circular path, kinetic term of the centripetal identity plus the
   outer-well potential, is strictly least there and is negative.
+* `ElectronNumbers` — the first node lies in \((14/15,19/20)\) and the
+  restoring square in \((153/100,157/100)\). The circular radius, the first
+  node, the diagonal, the side, the one-electron extremum, and the second
+  node stand in that order. The diagonal force exceeds \(4\), while
+  \(4\pi^{2}/\cosh\pi<7/2\). Placing the side at one Bohr radius would put
+  the first node strictly between \(91/40\) and \(12/5\) Bohr radii.
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
