@@ -20,7 +20,9 @@ A longitudinal boost of that rest pair is the on-shell Weyl
 construction after the chiral hyperbolic Rodrigues factor along the
 boost axis. Dual rotation about that axis commutes with the factor;
 a perpendicular dual rotation need not. The `ℂ⁴` overlap of two
-rest-frame solutions is twice the dual-rotor amplitude.
+rest-frame solutions is twice the dual-rotor amplitude. The same
+boost multiplies that overlap by `cosh α`, for every dual rotation.
+The factor equals `1` only at vanishing rapidity.
 
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
@@ -1072,6 +1074,173 @@ theorem restParticle_dualRotor_overlap (β : DualRapidity) (u : DualSpinor) :
         (restParticleSpinor (applyMat (dualRotorMat β) u)) =
       2 * dualRotorAmplitude β u := by
   rw [restParticle_inner, dualRotorAmplitude]
+
+/-! ### Boosted Euclidean overlap -/
+
+private theorem applyMat_coord (A : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor)
+    (i : Fin 2) :
+    applyMat A ψ i = ∑ j : Fin 2, A i j * ψ j := by
+  simp [applyMat, Matrix.mulVec, dotProduct]
+
+private theorem applyMat_inner (A : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
+    inner ℂ (applyMat A χ) ψ = inner ℂ χ (applyMat A.conjTranspose ψ) := by
+  simp only [dual_inner_sum, applyMat_coord, Fin.sum_univ_two]
+  simp only [star_add, star_mul', Matrix.conjTranspose_apply]
+  ring
+
+private theorem applyMat_inner_mul (A B : Matrix (Fin 2) (Fin 2) ℂ)
+    (χ ψ : DualSpinor) :
+    inner ℂ (applyMat A χ) (applyMat B ψ) =
+      inner ℂ χ (applyMat (A.conjTranspose * B) ψ) := by
+  rw [applyMat_inner, applyMat_mul]
+
+private theorem ofReal_star (t : ℝ) : star (t : ℂ) = (t : ℂ) := by
+  rw [Complex.star_def, Complex.conj_ofReal]
+
+private theorem chiralBoostZ_hermitian (α : ℝ) :
+    (chiralBoostZ α).conjTranspose = chiralBoostZ α := by
+  unfold chiralBoostZ
+  rw [Matrix.conjTranspose_add, Matrix.conjTranspose_smul, Matrix.conjTranspose_smul,
+    Matrix.conjTranspose_one, pauliZ_isHermitian, ofReal_star, ofReal_star]
+
+private theorem chiralBoostZ_double (α : ℝ) :
+    chiralBoostZ α * chiralBoostZ α = chiralBoostZ (2 * α) := by
+  have h : α + α = 2 * α := by ring
+  rw [← h, chiralBoostZ_add]
+
+private theorem cosh_eq_one_iff (α : ℝ) : Real.cosh α = 1 ↔ α = 0 := by
+  constructor
+  · intro h
+    have hexp : Real.exp α + Real.exp (-α) = 2 := by
+      rw [Real.cosh_eq] at h
+      linarith
+    have hneg : Real.exp (-α) * Real.exp α = 1 := by
+      rw [← Real.exp_add]
+      simp
+    have hpoly : Real.exp α ^ 2 + 1 = 2 * Real.exp α := by
+      calc Real.exp α ^ 2 + 1
+          = Real.exp α ^ 2 + Real.exp (-α) * Real.exp α := by rw [hneg]
+        _ = Real.exp α * (Real.exp α + Real.exp (-α)) := by ring
+        _ = Real.exp α * 2 := by rw [hexp]
+        _ = 2 * Real.exp α := by ring
+    have hsq : (Real.exp α - 1) ^ 2 = 0 := by
+      have : (Real.exp α - 1) ^ 2 = Real.exp α ^ 2 - 2 * Real.exp α + 1 := by ring
+      linarith
+    have hexp1 : Real.exp α = 1 := by
+      have : Real.exp α - 1 = 0 := sq_eq_zero_iff.mp hsq
+      linarith
+    exact Real.exp_injective (by simpa [Real.exp_zero] using hexp1)
+  · intro h
+    simp [h]
+
+/-- The two chiral grams along a longitudinal boost sum to a scalar. -/
+private theorem chiralBoostZ_gram (α : ℝ) :
+    chiralBoostZ (2 * α) + chiralBoostZ (-(2 * α)) =
+      (2 * Real.cosh α : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
+  have hdiv : (2 * α) / 2 = α := by ring
+  have hdivn : (-(2 * α)) / 2 = -α := by ring
+  ext i j
+  fin_cases i <;> fin_cases j
+  · have hgoal :
+        Complex.exp (α : ℂ) + (Complex.cosh (α : ℂ) + -Complex.sinh (α : ℂ)) =
+          2 * Complex.cosh (α : ℂ) := by
+      rw [(Complex.cosh_add_sinh (α : ℂ)).symm]
+      ring
+    simpa [chiralBoostZ, hdiv, hdivn, pauliZ, Real.cosh_neg, Real.sinh_neg,
+      Matrix.add_apply, Matrix.smul_apply, ofReal_neg] using hgoal
+  · simp [chiralBoostZ, hdiv, hdivn, pauliZ, Real.cosh_neg, Real.sinh_neg,
+      Matrix.add_apply, Matrix.smul_apply, ofReal_neg]
+  · simp [chiralBoostZ, hdiv, hdivn, pauliZ, Real.cosh_neg, Real.sinh_neg,
+      Matrix.add_apply, Matrix.smul_apply, ofReal_neg]
+  · have hgoal :
+        Complex.cosh (α : ℂ) + -Complex.sinh (α : ℂ) + Complex.exp (α : ℂ) =
+          2 * Complex.cosh (α : ℂ) := by
+      rw [(Complex.cosh_add_sinh (α : ℂ)).symm]
+      ring
+    simpa [chiralBoostZ, hdiv, hdivn, pauliZ, Real.cosh_neg, Real.sinh_neg,
+      Matrix.add_apply, Matrix.smul_apply, ofReal_neg] using hgoal
+
+private theorem boosted_blocks (α : ℝ) (u : DualSpinor) :
+    applyDiracBoostZ α (restParticleSpinor u) =
+      weylUpper (applyMat (chiralBoostZ α) u) +
+        weylLower (I • applyMat (chiralBoostZ (-α)) u) := by
+  unfold restParticleSpinor
+  rw [applyDiracBoostZ_weyl, applyMat_smul]
+
+/-- A longitudinal boost of rapidity `α` multiplies the rest-frame
+`ℂ⁴` overlap by `cosh α`, for every dual rotation. -/
+theorem boostedRest_dualRotor_overlap (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
+    inner ℂ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+      (2 * Real.cosh α : ℂ) * dualRotorAmplitude β u := by
+  have hpos : chiralBoostZ α * chiralBoostZ α = chiralBoostZ (2 * α) :=
+    chiralBoostZ_double α
+  have hneg : chiralBoostZ (-α) * chiralBoostZ (-α) = chiralBoostZ (-(2 * α)) := by
+    rw [chiralBoostZ_double]
+    congr 1
+    ring
+  rw [boosted_blocks, boosted_blocks]
+  rw [inner_add_left, inner_add_right, inner_add_right,
+    weylUpper_inner_upper, weylUpper_inner_lower, weylLower_inner_upper,
+    weylLower_inner_lower, inner_I_smul]
+  rw [applyMat_inner_mul, applyMat_inner_mul, chiralBoostZ_hermitian,
+    chiralBoostZ_hermitian, hpos, hneg]
+  simp only [add_zero, zero_add]
+  rw [← inner_add_right, ← applyMat_add_mat, chiralBoostZ_gram,
+    applyMat_smul_mat, applyMat_one, inner_smul_right, dualRotorAmplitude]
+
+/-- The boosted overlap is the rest-frame overlap multiplied by `cosh α`. -/
+theorem boostedRest_overlap_factor (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
+    inner ℂ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+      (Real.cosh α : ℂ) *
+        inner ℂ (restParticleSpinor u)
+          (restParticleSpinor (applyMat (dualRotorMat β) u)) := by
+  rw [boostedRest_dualRotor_overlap, restParticle_dualRotor_overlap]
+  ring
+
+private theorem dualRotorAmplitude_zero (u : DualSpinor) :
+    dualRotorAmplitude 0 u = inner ℂ u u := by
+  unfold dualRotorAmplitude
+  have hR : dualRotorMat (0 : DualRapidity) = 1 := by
+    rw [dualRotorMat_rodrigues]
+    simp
+  rw [hR, applyMat_one]
+
+private theorem spinUp_inner_self : inner ℂ spinUp spinUp = 1 := by
+  rw [dual_inner_sum]
+  simp [spinUp]
+
+/-- The boosted overlap agrees with the rest-frame overlap for every dual
+rotation if and only if the boost rapidity vanishes. -/
+theorem boostedRest_overlap_eq_rest_iff (α : ℝ) :
+    (∀ (β : DualRapidity) (u : DualSpinor),
+      inner ℂ
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α
+            (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+        inner ℂ (restParticleSpinor u)
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) ↔
+      α = 0 := by
+  constructor
+  · intro h
+    have hamp := h (0 : DualRapidity) spinUp
+    rw [boostedRest_overlap_factor, restParticle_dualRotor_overlap,
+      dualRotorAmplitude_zero, spinUp_inner_self] at hamp
+    have hcoshC : (Real.cosh α : ℂ) = 1 := by
+      have h2 : (Real.cosh α : ℂ) * 2 = 2 := by simpa using hamp
+      have hne : (2 : ℂ) ≠ 0 := by norm_num
+      exact mul_right_cancel₀ hne (by simpa [mul_comm] using h2)
+    exact (cosh_eq_one_iff α).mp (ofReal_injective hcoshC)
+  · intro hα
+    subst hα
+    intro β u
+    rw [boostedRest_overlap_factor, Real.cosh_zero]
+    simp
 
 end Logic
 

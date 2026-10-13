@@ -76,7 +76,8 @@ and `DstDiophantine.CGA`).
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
   equation as the Clifford square of the Minkowski quadratic,
   on-shell Weyl construction recovering the rest pair \((u,iu)\),
-  longitudinal boost of that pair, dual-rotor character, spinor
+  longitudinal boost of that pair and the factor \(\cosh\alpha\) on its
+  Euclidean overlap, dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
@@ -889,6 +890,30 @@ example (β : DualRapidity) (u : DualSpinor) :
         (restParticleSpinor (applyMat (dualRotorMat β) u)) =
       2 * dualRotorAmplitude β u :=
   restParticle_dualRotor_overlap β u
+
+/-- Regression: a longitudinal boost multiplies that overlap by `cosh α`. -/
+example (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
+    inner ℂ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+      (Real.cosh α : ℂ) *
+        inner ℂ (restParticleSpinor u)
+          (restParticleSpinor (applyMat (dualRotorMat β) u)) :=
+  boostedRest_overlap_factor α β u
+
+/-- Regression: boosted and rest overlaps agree for every dual rotation
+only at vanishing rapidity. -/
+example (α : ℝ) :
+    (∀ (β : DualRapidity) (u : DualSpinor),
+      inner ℂ
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α
+            (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+        inner ℂ (restParticleSpinor u)
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) ↔
+      α = 0 :=
+  boostedRest_overlap_eq_rest_iff α
 
 /-- Regression: massless Dirac decouples into Weyl equations. -/
 example {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum 0 p Ψ) :
