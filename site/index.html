@@ -158,10 +158,11 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
 </section>
 
 <section id="electron">
-  <h2><span class="en">4. A sign-changing electric force</span><span class="ja">4. 符号が入れ替わる電気力</span></h2>
-  <p><span class="en">One of the repository's explorations applies the same interference of hyperbolic and cyclic parts to the electron and proton. On the equal-scale locus the electric force is the Coulomb force divided by the interference factor</span><span class="ja">リポジトリの探究の一つは、双曲的な部分と周期的な部分の同じ干渉を電子と陽子に当てはめます。等スケール軌跡上では、電気力はクーロン力を次の干渉因子で割ったものになります。</span></p>
+  <h2><span class="en">4. A sign-changing force</span><span class="ja">4. 符号が入れ替わる力</span></h2>
+  <p><span class="en">When the usual and dual rotors interfere, DST gets a factor that can change sign: the <b>scalar interference factor</b>. With equal boost and rotation scales (α = β = ℓ/r) it depends on a single variable, so the same curve appears at every scale:</span><span class="ja">通常ローターと双対ローターが干渉すると、DSTには符号を変えうる因子が現れます。<b>スカラー干渉因子</b>です。ブーストと回転を同じスケール（α = β = ℓ/r）にそろえると一つの変数だけで決まり、どのスケールでも同じ曲線になります。</span></p>
   <div class="eq">γ<sub>s</sub>(x) = cosh x · cos x − sinh x · sin x,&nbsp;&nbsp; x = ℓ / (2r)</div>
-  <svg class="fig" viewBox="0 0 640 280" role="img" aria-label="Plot of gamma_s(x) with sign changes">
+  <p><span class="en">Where γ<sub>s</sub> &gt; 0 the force attracts; where γ<sub>s</sub> &lt; 0 it repels. Going inward, the sign alternates, with exactly one node per interval [nπ, (n+1)π]: attraction → repulsion → attraction → … The paper describes gravity and electromagnetism as <i>two channels of one geometry</i> that share this layered reversal and differ only in which phase of the dual rotor drives it.</span><span class="ja">γ<sub>s</sub> &gt; 0 のところでは力は引力、γ<sub>s</sub> &lt; 0 では斥力になります。内側へ進むと符号は交互に入れ替わり、各区間 [nπ, (n+1)π] にちょうど一つの節があります。引力 → 斥力 → 引力 → … という層構造です。論文は重力と電磁気を<i>一つの幾何の二つのチャンネル</i>と呼び、両者はこの層状の反転を共有して、双対ローターのどの位相が源になるかだけが違うと述べています。</span></p>
+  <svg class="fig" viewBox="0 0 640 280" role="img" aria-label="Plot of gamma_s(x): one curve shared by gravity and electricity">
     <rect x="50" y="20" width="66.3" height="220" class="band attract"/>
     <rect x="116.3" y="20" width="211.2" height="220" class="band repel"/>
     <line class="axis" x1="50" y1="130" x2="590" y2="130"/>
@@ -172,12 +173,17 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="lbl small" x="327" y="258" text-anchor="middle">3.93</text>
     <text class="lbl small" x="549" y="258" text-anchor="middle">7.07</text>
     <text class="lbl small" x="596" y="134">x</text>
-    <text class="lbl small" x="56" y="34"><tspan class="en">outer well</tspan><tspan class="ja">外側の井戸</tspan></text>
+    <text class="lbl small" x="56" y="34"><tspan class="en">outermost</tspan><tspan class="ja">最外層</tspan></text>
     <text class="lbl small" x="56" y="50"><tspan class="en">(attraction)</tspan><tspan class="ja">（引力）</tspan></text>
-    <text class="lbl small" x="140" y="226"><tspan class="en">first repulsive shell</tspan><tspan class="ja">最初の斥力殻</tspan></text>
-    <text class="lbl small" x="590" y="274" text-anchor="end"><tspan class="en">← far from the nucleus · close to it →</tspan><tspan class="ja">← 核から遠い ・ 核に近い →</tspan></text>
+    <text class="lbl small" x="140" y="226"><tspan class="en">first repulsive layer</tspan><tspan class="ja">最初の斥力層</tspan></text>
+    <text class="lbl small" x="590" y="274" text-anchor="end"><tspan class="en">← far from the center · closer in →</tspan><tspan class="ja">← 中心から遠い ・ 中心に近い →</tspan></text>
   </svg>
-  <p class="note"><span class="en">Computed curve, vertical axis compressed with asinh so the growing oscillation fits. Zeros are simple, one per interval [nπ, (n+1)π]; the first lies in (π/4, π/2). Far from the nucleus (small x) electron and proton attract; between the first and second zero the sign reverses. Connecting this picture to atomic scales such as the Bohr radius is an active area of research.</span><span class="ja">数値計算した曲線で、縦軸は振動が収まるよう asinh で圧縮しています。零点は単純で、各区間 [nπ, (n+1)π] に一つずつ、最初の零点は (π/4, π/2) にあります。核から遠い側（小さい x）では電子と陽子は引き合い、1番目と2番目の零点の間では符号が逆転します。ボーア半径など原子のスケールとの結びつきは、現在研究中です。</span></p>
+  <p class="note"><span class="en">Computed curve; the vertical axis is compressed with asinh so the growing oscillation fits. Nodes at x ≈ 0.94, 3.93, 7.07; the first lies in (π/4, π/2). The length ℓ sets the scale for each setting.</span><span class="ja">数値計算した曲線で、大きくなる振動が収まるよう縦軸を asinh で圧縮しています。節は x ≈ 0.94, 3.93, 7.07、最初の節は (π/4, π/2) にあります。長さ ℓ がそれぞれの場面のスケールを決めます。</span></p>
+  <div class="cards three">
+    <div class="card"><h3><span class="en">Gravity: torsion stars</span><span class="ja">重力：ねじれ星</span></h3><p><span class="en">Deep inside a collapsing star the layers stack like an onion. In the paper, what observers call “black holes” are <b>torsion stars</b>: quasi-stable, layered condensates with no event horizon and no central singularity.</span><span class="ja">崩壊する星の内部では層が玉ねぎのように重なります。論文では、観測者が「ブラックホール」と呼ぶものは<b>ねじれ星</b>、つまり事象の地平も中心特異点もない、準安定な層状の凝縮体だとされます。</span></p></div>
+    <div class="card"><h3><span class="en">Gravity: the strong force</span><span class="ja">重力：強い力</span></h3><p><span class="en">The same layering at nuclear densities is proposed as the <b>strong force</b>: gravity in its layered phase, not a second coupling. Every atomic nucleus is read as a microscopic, primordial torsion star with the same node sequence.</span><span class="ja">原子核の密度で現れる同じ層構造が<b>強い力</b>だと提案されています。別の結合ではなく、層状の相にある重力です。すべての原子核は、同じ節の列をもつ微視的な「原始ねじれ星」として読まれます。</span></p></div>
+    <div class="card"><h3><span class="en">Electricity: electron shells</span><span class="ja">電気：電子殻</span></h3><p><span class="en">In the electric channel the Coulomb force becomes F = ke²/(γ<sub>s</sub> r²). Its alternating layers are read as the <b>electron shells</b>, the electromagnetic counterpart of the nuclear layers. Matching these layers to measured atomic sizes is an active area of research.</span><span class="ja">電気のチャンネルではクーロン力が F = ke²/(γ<sub>s</sub> r²) になります。その交互の層が<b>電子殻</b>として読まれ、原子核の層の電磁気版にあたります。実際の原子の大きさとの対応づけは、現在研究中です。</span></p></div>
+  </div>
 </section>
 
 <section id="tracks">
