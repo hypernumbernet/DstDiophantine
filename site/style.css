@@ -51,3 +51,4 @@ b{color:#fff}
 .links a{color:var(--usual)}
 footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 @media (max-width:720px){.cards.two,.cards.three{grid-template-columns:1fr}nav{display:none}.top{justify-content:space-between}body{font-size:16px}.eq{font-size:.95rem}}
+.fig .sheet path{fill:none;stroke:#5b6aa8;stroke-width:.9;stroke-opacity:.75}
