@@ -47,7 +47,7 @@ b{color:#fff}
 .fig .curve{fill:none;stroke:var(--accent);stroke-width:2.5}
 .fig .node{fill:#fff}
 .fig .band.attract{fill:#4fc3ff22}.fig .band.repel{fill:#ff5a7a1c}
-.fig .layer rect{stroke-width:1.5}.fig .layer.ok rect{fill:#1d3a2e;stroke:#5ad69a}.fig .layer.open rect{fill:#3a2a1d;stroke:var(--dual)}
+.fig .layer rect{stroke-width:1.5}.fig .layer.ok rect{fill:#1d3a2e;stroke:#5ad69a}.fig .layer.open rect{fill:#241d3a;stroke:var(--accent)}
 .links a{color:var(--usual)}
 footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 @media (max-width:720px){.cards.two,.cards.three{grid-template-columns:1fr}nav{display:none}.top{justify-content:space-between}body{font-size:16px}.eq{font-size:.95rem}}
