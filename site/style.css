@@ -1,0 +1,53 @@
+:root{--bg:#0b0d14;--panel:#141826;--line:#262c40;--text:#e3e6f0;--mute:#9aa1b8;--usual:#4fc3ff;--dual:#ff9a5a;--accent:#b18cff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#1b1f3a 0,transparent 60%),var(--bg);color:var(--text);font:17px/1.75 system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif}
+html[data-lang=en] .ja,html[data-lang=ja] .en{display:none}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:1rem;padding:.6rem 1.2rem;background:rgba(11,13,20,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:.1em;color:var(--text);text-decoration:none}
+nav{display:flex;gap:1rem;flex:1;overflow-x:auto;white-space:nowrap}
+nav a{color:var(--mute);text-decoration:none;font-size:.9rem}nav a:hover{color:var(--text)}
+.toggle{display:flex;border:1px solid var(--line);border-radius:999px;background:var(--panel);padding:3px;cursor:pointer;color:var(--mute);font:inherit;font-size:.85rem}
+.toggle .opt{padding:.15rem .7rem;border-radius:999px}
+html[data-lang=en] .opt[data-v=en],html[data-lang=ja] .opt[data-v=ja]{background:var(--accent);color:#120c22;font-weight:700}
+main{max-width:920px;margin:0 auto;padding:0 1.2rem 4rem}
+section{padding:3.2rem 0 1rem;border-bottom:1px solid var(--line)}
+.hero{padding-top:4rem}
+.kicker{color:var(--accent);letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;margin:0}
+h1{font-size:clamp(1.9rem,5vw,3rem);line-height:1.2;margin:.4rem 0 1rem;background:linear-gradient(90deg,var(--usual),var(--accent),var(--dual));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:1.6rem;margin:0 0 1rem}
+h3{margin:.2rem 0 .4rem;font-size:1.05rem}
+.lead{font-size:1.15rem;color:#cfd3e6}
+.note{color:var(--mute);font-size:.88rem}
+b{color:#fff}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}
+.eq{font-family:"Cambria Math","STIX Two Math",Georgia,serif;font-size:1.15rem;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0;overflow-x:auto;white-space:nowrap}
+.cards{display:grid;gap:1rem;margin:1.2rem 0}
+.cards.two{grid-template-columns:1fr 1fr}.cards.three{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem;font-size:.95rem}
+.card p{margin:.3rem 0}
+.usualc{border-top:3px solid var(--usual)}.dualc{border-top:3px solid var(--dual)}
+.fig{width:100%;height:auto;display:block;margin:1.5rem 0;color:var(--mute);background:linear-gradient(180deg,#11152200,#11152299);border-radius:14px}
+.fig text{fill:var(--text);font-size:14px}
+.fig .cap{font-size:15px;font-weight:600}
+.fig .small,.fig tspan.small{font-size:12px;fill:var(--mute)}
+.fig .note{font-size:13px;fill:var(--mute)}
+.fig .grid path{fill:none;stroke:#3a4466;stroke-width:1.2}
+.fig .mass{fill:#e9e4ff;filter:drop-shadow(0 0 6px #b18cff)}
+.fig .usual line{stroke:var(--usual);color:var(--usual);stroke-width:3}
+.fig .dual line,.fig line.dual{stroke:var(--dual);color:var(--dual);stroke-width:3}
+.fig line.usual{stroke:var(--usual);color:var(--usual);stroke-width:3}
+.fig .usualt{fill:var(--usual)}.fig .dualt{fill:var(--dual)}
+.fig .cone{fill:none;stroke-width:2}.fig .usualf{stroke:var(--usual);opacity:.5}.fig .dualf{stroke:var(--dual);opacity:.5}
+.fig .axis{stroke:#596284;stroke-width:1.4;color:#596284}
+.fig .twist{fill:none;stroke:var(--accent);stroke-width:2.5}.fig .twistt{fill:var(--accent);font-weight:700}
+.fig .region{stroke:#8a8fb0;stroke-width:1.5}
+.fig .zero{stroke:#cfd3e6;stroke-dasharray:4 4}
+.fig .dotw{fill:var(--dual)}.fig .dotc{fill:var(--usual)}.fig .warmt{fill:var(--dual)}.fig .coolt{fill:var(--usual)}
+.fig .curve{fill:none;stroke:var(--accent);stroke-width:2.5}
+.fig .node{fill:#fff}
+.fig .band.attract{fill:#4fc3ff22}.fig .band.repel{fill:#ff5a7a1c}
+.fig .layer rect{stroke-width:1.5}.fig .layer.ok rect{fill:#1d3a2e;stroke:#5ad69a}.fig .layer.open rect{fill:#3a2a1d;stroke:var(--dual)}
+.links a{color:var(--usual)}
+footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
+@media (max-width:720px){.cards.two,.cards.three{grid-template-columns:1fr}nav{display:none}.top{justify-content:space-between}body{font-size:16px}.eq{font-size:.95rem}}
