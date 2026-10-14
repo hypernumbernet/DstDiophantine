@@ -52,3 +52,14 @@ b{color:#fff}
 footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 @media (max-width:720px){.cards.two,.cards.three{grid-template-columns:1fr}nav{display:none}.top{justify-content:space-between}body{font-size:16px}.eq{font-size:.95rem}}
 .fig .sheet path{fill:none;stroke:#5b6aa8;stroke-width:.9;stroke-opacity:.75}
+.sub{margin-top:2rem}
+.fig .accentt{fill:var(--accent)}
+.fig .axisline{stroke:var(--accent);stroke-width:2;stroke-dasharray:6 5}.fig .axisline.faint{stroke:#596284;stroke-dasharray:2 5}
+.fig .obs{fill:var(--usual)}.fig .pull{stroke:var(--dual);color:var(--dual);stroke-width:3}
+.fig .dim{stroke:#8a8fb0;fill:none}
+.fig .ring{fill:none;stroke-width:1.5}.fig .ph{stroke:#8a8fb0;stroke-dasharray:4 4}.fig .frz{stroke:var(--accent)}.fig .rs{stroke:#3a4466}
+.fig .core{fill:#1a1430;filter:drop-shadow(0 0 10px #b18cff66)}
+.fig .ray{fill:none;stroke:var(--usual);stroke-width:2.4;color:var(--usual)}.fig .ray.far{stroke:#596284;color:#596284;stroke-width:1.6}
+.fig .step rect{fill:var(--panel);stroke:var(--line);stroke-width:1.5}.fig .lat circle{fill:var(--usual);opacity:.8}
+.fig .ceil{stroke:var(--accent);stroke-width:2.5}
+.fig .seg.b{fill:#4fc3ff44}.fig .seg.u{fill:#ff9a5a44}.fig .pt.t{fill:#fff}.fig .pt.f{fill:var(--dual)}
