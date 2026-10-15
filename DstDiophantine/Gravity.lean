@@ -9,6 +9,7 @@ import DstDiophantine.Gravity.EventBoundary
 import DstDiophantine.Gravity.CoulombFromDual
 import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
+import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
@@ -127,6 +128,17 @@ The straight line of one fixed jet is not itself that geodesic.
   on \((0,\pi/2)\) with \(1.35<f_0<1.41\), and \(f<(11/10)f_0\) on \([1,6/5]\).
   The acceleration stays center-directed on \((0,\pi R)\); the negative well
   ends before \(r=2R\). Milky-Way window \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
+  \(f\to+\infty\) at the antipode \(\pi R\), which lies between \(25\) and
+  \(29\,\mathrm{kpc}\) for the Milky Way.
+* `DualImage` — the period \(\pi R\) laid along the dual direction:
+  \(\sum_n GM/(r^2+(n\pi R)^2)=(GM/(rR))\coth(r/R)\). Rotation curve
+  \(v^2=v_{\mathrm{bar}}^2\,x\coth x\), with
+  \(\max(1,x)<x\coth x<\min(1+x,1+x^2/3)\). Flat at \(GM/R\); given
+  \(R^2=GM/a_0\), \(v^4=GMa_0\) and \(g=\sqrt{a_0g_N}\coth\sqrt{a_0/g_N}\),
+  which on the enclosed patch gives a parameter-free curve from
+  \(v_{\mathrm{bar}}^2\). At \(GM/r^2=a_0\) the enhancement lies in
+  \((1.31,1.32)\). Milky-Way \(v_\infty\) between \(175\) and
+  \(176\,\mathrm{km/s}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
@@ -1437,6 +1449,108 @@ example {G R M0 r : ℝ} {M : ℝ → ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R)
     (hM : M r = M0) :
     enclosedCircularSpeedSq G R M r = s3CircularSpeedSq G M0 R r :=
   enclosedCircularSpeedSq_const_eq_point hR hs hM
+
+/-- Regression: the \(S^3\) shape diverges at the antipode. -/
+example : Filter.Tendsto rotationShape (nhdsWithin Real.pi (Set.Iio Real.pi)) Filter.atTop :=
+  tendsto_rotationShape_pi
+
+/-- Regression: Milky-Way antipode \(25<\pi R<29\,\mathrm{kpc}\). -/
+example : (25 : ℝ) < Real.pi * milkyWayROverKpc ∧ Real.pi * milkyWayROverKpc < 29 :=
+  milkyWayAntipode_bounds
+
+/-- Regression: dual image lattice sum. -/
+example {x : ℝ} (hx : x ≠ 0) :
+    HasSum (fun n : ℤ => x ^ 2 / (x ^ 2 + ((n : ℝ) * Real.pi) ^ 2)) (dualEnhancement x) :=
+  hasSum_dualImage hx
+
+/-- Regression: windings of the dual phase sum to the lattice acceleration. -/
+example {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
+    HasSum (fun n : ℤ => G * M / (r ^ 2 + ((n : ℝ) * Real.pi * R) ^ 2))
+      (dualAccel G M R r) :=
+  hasSum_dualAccel hr hR
+
+/-- Regression: \(\max(1,x)<x\coth x<\min(1+x,1+x^2/3)\). -/
+example {x : ℝ} (hx : 0 < x) :
+    1 < dualEnhancement x ∧ x < dualEnhancement x ∧ dualEnhancement x < 1 + x ∧
+      dualEnhancement x < 1 + x ^ 2 / 3 :=
+  ⟨one_lt_dualEnhancement hx, self_lt_dualEnhancement hx, dualEnhancement_lt_one_add hx,
+    dualEnhancement_lt_one_add_sq_div_three hx⟩
+
+/-- Regression: acceleration sandwich of the lattice. -/
+example {G M R r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (hr : 0 < r) :
+    G * M / r ^ 2 < dualAccel G M R r ∧ G * M / (r * R) < dualAccel G M R r ∧
+      dualAccel G M R r < G * M / r ^ 2 + G * M / (r * R) ∧
+      dualAccel G M R r < G * M / r ^ 2 + G * M / (3 * R ^ 2) :=
+  dualAccel_bounds hGM hR hr
+
+/-- Regression: spherical rotation curve \((GM(r)/R)\coth(r/R)\). -/
+example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
+    dualRotationSq R (fun s => G * M s / s) r = dualCircularSpeedSq G R M r :=
+  dualRotationSq_spherical hr hR
+
+/-- Regression: a Keplerian baryonic tail flattens at \(GM/R\). -/
+example {R GM : ℝ} {vbarSq : ℝ → ℝ} (hR : 0 < R)
+    (h : Filter.Tendsto (fun r => r * vbarSq r) Filter.atTop (nhds GM)) :
+    Filter.Tendsto (dualRotationSq R vbarSq) Filter.atTop (nhds (GM / R)) :=
+  tendsto_dualRotationSq_atTop hR h
+
+/-- Regression: past \(3R\) outside the mass, within \(1/200\) of the asymptote. -/
+example {G R M0 r : ℝ} {M : ℝ → ℝ} (hGM : 0 < G * M0) (hR : 0 < R) (hr : 3 * R ≤ r)
+    (hM : M r = M0) :
+    dualCircularSpeedSq G R M r < (1 + 1 / 200) * (G * M0 / R) :=
+  dualCircularSpeedSq_near_flat hGM hR hr hM
+
+/-- Regression: exact baryonic Tully–Fisher given \(R^2=GM/a_0\). -/
+example {G M R a0 : ℝ} (hR : 0 < R) (ha0 : 0 < a0) (hscale : R ^ 2 = G * M / a0) :
+    (G * M / R) ^ 2 = G * M * a0 :=
+  dual_tullyFisher hR ha0 hscale
+
+/-- Regression: enhancement at \(GM/r^2=a_0\). -/
+example : (131 / 100 : ℝ) < dualEnhancement 1 ∧ dualEnhancement 1 < 132 / 100 :=
+  dualEnhancement_one_bounds
+
+/-- Regression: on \(R^2=GM/a_0\) the lattice is \(\sqrt{a_0g_N}\coth\sqrt{a_0/g_N}\). -/
+example {G M R a0 r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (ha0 : 0 < a0) (hr : 0 < r)
+    (hscale : R ^ 2 = G * M / a0) :
+    dualAccel G M R r = dualRAR a0 (G * M / r ^ 2) :=
+  dualAccel_eq_dualRAR hGM hR ha0 hr hscale
+
+/-- Regression: acceleration-relation sandwich. -/
+example {a0 gN : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) :
+    gN < dualRAR a0 gN ∧ Real.sqrt (a0 * gN) < dualRAR a0 gN ∧
+      dualRAR a0 gN < gN + Real.sqrt (a0 * gN) ∧ dualRAR a0 gN < gN + a0 / 3 :=
+  dualRAR_bounds ha0 hgN
+
+/-- Regression: \(g=a_0\coth 1\) at \(g_N=a_0\). -/
+example {a0 : ℝ} (ha0 : 0 < a0) :
+    dualRAR a0 a0 = a0 * (Real.cosh 1 / Real.sinh 1) :=
+  dualRAR_self ha0
+
+/-- Regression: enclosed-patch curve \(v^2=v_{\mathrm{bar}}^2\,x\coth x\),
+\(x^2=a_0r/v_{\mathrm{bar}}^2\). -/
+example {a0 r : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hr : 0 < r) (hv : 0 < vbarSq r) :
+    dualLocalRotationSq a0 vbarSq r =
+      vbarSq r * dualEnhancement (Real.sqrt (a0 * r / vbarSq r)) :=
+  dualLocalRotationSq_eq ha0 hr hv
+
+/-- Regression: enclosed-patch curve sandwich. -/
+example {a0 r : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hr : 0 < r) (hv : 0 < vbarSq r) :
+    vbarSq r < dualLocalRotationSq a0 vbarSq r ∧
+      Real.sqrt (a0 * (r * vbarSq r)) < dualLocalRotationSq a0 vbarSq r ∧
+      dualLocalRotationSq a0 vbarSq r < vbarSq r + Real.sqrt (a0 * (r * vbarSq r)) :=
+  dualLocalRotationSq_bounds ha0 hr hv
+
+/-- Regression: a Keplerian tail flattens at \(\sqrt{GMa_0}\) on the enclosed patch. -/
+example {a0 GM : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hGM : 0 < GM)
+    (h : Filter.Tendsto (fun r => r * vbarSq r) Filter.atTop (nhds GM)) :
+    Filter.Tendsto (dualLocalRotationSq a0 vbarSq) Filter.atTop (nhds (Real.sqrt (a0 * GM))) :=
+  tendsto_dualLocalRotationSq_atTop ha0 hGM h
+
+/-- Regression: Milky-Way \(175<v_\infty<176\,\mathrm{km/s}\). -/
+example :
+    ((175 * 10 ^ 3 : ℚ)) ^ 4 < milkyWayFlatSpeedFourth ∧
+      milkyWayFlatSpeedFourth < ((176 * 10 ^ 3 : ℚ)) ^ 4 :=
+  milkyWayFlatSpeedFourth_bounds
 
 /-- Regression: dual wall formula. -/
 example (α : ℝ) :

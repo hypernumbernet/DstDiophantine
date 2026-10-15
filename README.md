@@ -272,6 +272,21 @@ radially harmonic, with Newtonian germ $-GM/r + GMr/(3R^2)$. The profile $f$
 has a unique minimum on $(0, \pi/2)$ with $1.35 < f_0 < 1.41$, and
 $f < (11/10) f_0$ on $[1, 6/5]$. The acceleration stays center-directed on
 $(0, \pi R)$. The Milky Way window used there is $8\,\mathrm{kpc} < R < 9\,\mathrm{kpc}$.
+The profile $f$ diverges at the antipode $\pi R$, which lies between $25$ and
+$29\,\mathrm{kpc}$ for the Milky Way.
+
+`DualImage` lays the same period along the dual direction. The lattice sum is
+$\sum_n GM/(r^2 + (n\pi R)^2) = (GM/(rR))\coth(r/R)$, and the enhancement
+$x\coth x$ lies strictly between $\max(1, x)$ and $\min(1 + x, 1 + x^2/3)$.
+Given $R^2 = GM/a_0$, the acceleration is
+$g = \sqrt{a_0 g_N}\,\coth\sqrt{a_0/g_N}$, and the flat speed obeys
+$v^4 = GMa_0$. The rotation curve built from a baryonic curve,
+$v^2 = v_{\mathrm{bar}}^2\, x\coth x$ with $x^2 = a_0 r / v_{\mathrm{bar}}^2$,
+lies between $\max(v_{\mathrm{bar}}^2, \sqrt{a_0 r v_{\mathrm{bar}}^2})$ and
+$v_{\mathrm{bar}}^2 + \sqrt{a_0 r v_{\mathrm{bar}}^2}$. At $g_N = a_0$ the
+enhancement is $\coth 1 \in (1.31, 1.32)$. For the Milky Way stand-ins the
+flat speed lies between $175$ and $176\,\mathrm{km/s}$. The value of $a_0$ is
+an input.
 
 `NuclearLayer` compares saturation density, binding energy per nucleon, and
 the pion length. Under $\ell = \lambda_\pi$ every equal-scale node lies
@@ -477,7 +492,7 @@ $c^4/(G\,\ell_P^{-2})$.
 | Group | Modules |
 | --- | --- |
 | Chart | `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `Tetrad`, `Identification`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`, `KillingAxis`, `RadialFall` |
-| Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
+| Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `DualImage`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
 | Dynamics | `TorsionalLayer`, `DualRotorDynamics`, `DualRotorRigidity`, `DualRotorFlow`, `DualRotorVacuum`, `DualRotorMotor`, `NullRotation`, `RestMass` |
 | Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `ElectronMetal`, `ElectronCrystal`, `Blackbody` |
 | Field and control | `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`, `ChiralityStabilizer`, `EMControl`, `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`, `EnvelopeLock` |

@@ -871,7 +871,7 @@ The electromagnetic and weak channels therefore live in one six-space. The dual 
 \section{Dark Matter-Free Galactic Rotation Curves from Dual-Spacetime Compactness}
 \label{sec:darkmatter}
 
-The same dual-rotor geometry that layers nuclei and electron shells unfolds, at cosmological scales, as compactness. The dual rotor is a three-sphere. We read the gravitational channel, driven by $(\phi,\theta)$ and tied to inertial mass, as organizing that sphere into galaxy-scale patches of compactification radius $R$; the electromagnetic channel, driven by $(\alpha,\beta)$ and tied to charge, unfolds over substantially larger, near-cosmic scales. On the chart the geometry is definite. A spherical source carries a radially harmonic cotangent potential, normalized by Gauss's law. Circular speed is $v^2=(GM/R)\,f(r/R)$, and the shape $f$ has a single shallow minimum on the hemisphere where the potential is negative. The force stays directed toward the mass through the equator, where that well ends, and the equator lies strictly before $r=2R$. If galaxies are such patches, the missing acceleration is this geometry, and a flat rotation curve is the shallow bottom of $f$, read from baryons alone. That identification is the proposed reading. The acceleration $a_0$ below is an external input, not a consequence of the dual-rotor algebra.
+The same dual-rotor geometry that layers nuclei and electron shells unfolds, at cosmological scales, as compactness. The dual rotor is a three-sphere. We read the gravitational channel, driven by $(\phi,\theta)$ and tied to inertial mass, as organizing that sphere into galaxy-scale patches of compactification radius $R$; the electromagnetic channel, driven by $(\alpha,\beta)$ and tied to charge, unfolds over substantially larger, near-cosmic scales. A spherical source on the three-sphere carries a radially harmonic cotangent potential, normalized by Gauss's law. Its acceleration is a sum over images of the source repeated with period $\pi R$. If those images are laid along the usual radius, the circular speed has no finite value at the antipode $r=\pi R$, which for a Milky-Way mass lies within the measured rotation curve. That placement makes the usual radius periodic, while compactness belongs to the dual spacetime alone. Laid instead along the dual direction, the same images give the acceleration $(GM/(rR))\coth(r/R)$. If the compactification radius scales as $R=\sqrt{GM/a_0}$, this is a single relation between the observed and the Newtonian acceleration, and the rotation curve is the baryonic Newtonian curve multiplied by $x\coth x$, with $x^2=a_0r/v_{\text{bar}}^2$. It rises from the centre, turns over, and flattens without a further rise, at a speed that obeys $v^4=GMa_0$ exactly. If galaxies are such patches, the missing acceleration is this geometry, read from baryons alone. That identification is the proposed reading. The acceleration $a_0$ below is an external input, not a consequence of the dual-rotor algebra.
 
 \subsection{The compact dual spacetime}
 
@@ -883,7 +883,7 @@ sends each rotor to a point of a Euclidean ball of radius $\pi R$. It is the thr
 \[
 \mathcal{J}(\chi) = \frac{\sin^2 \chi}{\chi^2}, \qquad \chi = r/R.
 \]
-As $\chi \to 0^+$, both $\mathcal{J}$ and the enhancement defined below tend to $1$. At the antipode, $\mathcal{J}$ vanishes. A Newtonian calculation assumes $\mathcal{J}=1$ at every radius. On a galactic patch that assumption holds only near the centre.
+As $\chi \to 0^+$, $\mathcal{J}$ tends to $1$. At the antipode, $\mathcal{J}$ vanishes. A Newtonian calculation assumes $\mathcal{J}=1$ at every radius. On a galactic patch that assumption holds only near the centre.
 
 \subsection{The cotangent potential}
 
@@ -907,50 +907,82 @@ On the open interval $0<r<\pi R$ this acceleration is strictly negative. The for
 
 For $0<r\le R$ the germ at the origin is Newtonian. The potential differs from $-GM/r + GMr/(3R^2)$ by a remainder of order $r^3/R^4$. The correction $GMr/(3R^2)$ is the curvature of the three-sphere. It disappears in the decompactification $R\to\infty$, and with it the whole departure from the Newtonian potential.
 
-\subsection{Why the same flux is stronger}
+\subsection{Images along the radius}
 
-The acceleration exceeds the flat-space value $g_{\text{N}}=-GM/r^2$ by the enhancement
+The acceleration is a lattice sum. The partial-fraction expansion of the cotangent gives
 \[
-\eta(\chi) = \left(\frac{\chi}{\sin\chi}\right)^2, \qquad \chi = r/R.
+\frac{GM}{R^2\sin^2(r/R)}=\sum_{n\in\mathbb{Z}}\frac{GM}{(r-n\pi R)^2}.
 \]
-This factor is the square of the metric distortion of the equidistant chart, $\eta\,\mathcal{J}=1$. A geodesic sphere on $S^3$ is smaller than the Euclidean sphere of the same geodesic radius, so the same flux is more intense. On $(0,\pi)$ the enhancement is strictly greater than one and strictly increasing, and it tends to one at the origin. At the edge of the well, $\eta(\pi/2)=\pi^2/4$. At one compactification radius it has already entered the window $1.40<\eta(1)<1.48$. The radius $r=2R$ lies past the equator, outside the negative well.
-
-\subsection{The shallow minimum}
-
-A circular orbit in the flat chart has
+The term $n=0$ is Newton's; the others are the source seen again at every multiple of $\pi R$ along the radius. A circular orbit in the flat chart has
 \begin{equation}
 \label{eq:s3-circular}
-v^2(r) = r\,|g(r)| = \frac{GM}{R}\,f(r/R) = \frac{GM}{r}\,\eta(r/R),
+v^2(r) = r\,|g(r)| = \frac{GM}{R}\,f(r/R), \qquad f(x)=\frac{x}{\sin^2 x}.
 \end{equation}
-where $f(x)=x/\sin^2 x$. The Keplerian factor $GM/r$ falls as $r^{-1}$, and the rising enhancement opposes that fall. Their product is $f$ itself. Wherever an enclosed mass has become constant, the exterior curve is exactly this shape.
+On $(0,\pi/2)$ the shape has a single shallow minimum, at the root $x_0\in(1.14,1.20)$ of $\tan x=2x$, with $1.35<f(x_0)<1.41$. Past it $f$ rises, and as $x\to\pi^-$ it tends to $+\infty$: the image $n=1$ reaches the orbit at the antipode. For a Milky-Way mass, under the scaling of Section~\ref{subsec:btfr}, the antipode lies between $25$ and $29\,\mathrm{kpc}$, and measured rotation curves stay flat across such radii. The radial lattice makes the usual radius itself periodic, whereas only the dual spacetime is compact. It is the chart's reading of the images, faithful near the centre, and it is not the galactic law.
 
-On $(0,\pi/2)$ the shape decreases up to a single critical point and increases after it. That point is the unique root $x_0$ of $\tan x=2x$ in $(1.14,1.20)$. There $f(x_0)=x_0+1/(4x_0)$, and the value $f_0$ is the unique minimum of $f$ on the hemisphere:
-\[
-\frac{135}{100} < f_0 < \frac{141}{100}.
-\]
-The bottom is shallow. From one compactification radius out to six-fifths of it, $f<(11/10)\,f_0$, so $v^2$ stays within a tenth of its minimum. A disk that ends before the minimum is seen on the declining side of $f$; one that reaches the bottom looks flat; one that continues past it is seen on the rise. Since $x_0<\pi/2<2$, the well ends at $r=\pi R/2$, strictly before $r=2R$. After the minimum, $v^2$ rises, and the force remains attractive. Nothing in the acceleration changes sign at the equator.
+\subsection{Images along the dual direction}
 
-\subsection{Baryonic Tully--Fisher scaling}
+The duality $X\mapsto Xi$ relates the elliptic geometry of the dual sector to the hyperbolic geometry of the usual sector by analytic continuation (Section~\ref{sec:gravity}); on the cotangent it acts as $i\cot(ix)=\coth x$. Carried through that continuation, the period $\pi R$ leaves the usual radius and runs along the dual direction. Image $n$ sits at squared distance $r^2+(n\pi R)^2$, one leg in usual space and one around the compact dual circle, and the usual radius stays non-compact. The same cotangent expansion, at imaginary argument, sums this lattice in closed form:
+\begin{equation}
+\label{eq:dual-lattice}
+g(r)=\sum_{n\in\mathbb{Z}}\frac{GM}{r^2+(n\pi R)^2}=\frac{GM}{rR}\coth\frac{r}{R}.
+\end{equation}
+The ratio to Newton is the dual enhancement
+\[
+\eta(x)=x\coth x, \qquad x=r/R,
+\]
+and for every $x>0$
+\[
+\max(1,x)<\eta(x)<\min\!\left(1+x,\;1+\frac{x^2}{3}\right).
+\]
+The enhancement increases strictly and tends to $1$ at the origin, while $\coth$ decreases strictly to $1$. Near the centre the two lattices agree: both begin as $GM/r^2+GM/(3R^2)$, the curvature correction of the cotangent germ. The dual sum stays strictly below that germ at every radius, and strictly above both $GM/r^2$ and $GM/(rR)$. At large radius the second dominates. The acceleration falls as $1/r$ rather than $1/r^2$, and no radius is singular.
 
-At the minimum the circular speed of a saturated mass is
-\[
-v_{\text{flat}}^2 = \frac{GM_{\text{tot}}}{R}\,f_0.
-\]
-If the compactification radius scales with that mass as
-\[
-R = \sqrt{\frac{GM_{\text{tot}}}{a_0}},
-\]
-where $a_0 \approx 1.2 \times 10^{-10}\;\mathrm{m/s^2}$ is the observed baryonic Tully--Fisher acceleration, taken as an input rather than derived from the dual-rotor algebra, then
-\[
-v_{\text{flat}}^4 = G M_{\text{tot}} \, a_0 \, f_0^2.
-\]
-Given the scaling, the baryonic Tully--Fisher relation is an identity of the chart, and a heavier galaxy is a larger patch. A derivation of $a_0$ is not claimed.
+\subsection{Baryonic Tully--Fisher and the acceleration relation}
+\label{subsec:btfr}
 
-For the Milky Way stand-in $M_{\text{tot}} \approx 6 \times 10^{10}\,M_\odot$, the same inputs give $8\,\mathrm{kpc}<R<9\,\mathrm{kpc}$. The minimum therefore lies at $x_0 R$, inside $(9,11)\,\mathrm{kpc}$ and within the optical disk, while the well ends at $\pi R/2$, inside $(12,15)\,\mathrm{kpc}$. To identify $a_0$ with a characteristic acceleration of the patch is still a proposal.
+Let the compactification radius scale with the mass as $R=\sqrt{GM/a_0}$, where $a_0 \approx 1.2 \times 10^{-10}\;\mathrm{m/s^2}$ is the observed baryonic Tully--Fisher acceleration, taken as an input rather than derived from the dual-rotor algebra. A heavier galaxy is a larger patch. A derivation of $a_0$ is not claimed. About a point mass the circular speed is $v^2=r\,g=(GM/R)\coth(r/R)$. It decreases strictly with radius toward
+\[
+v_\infty^2=\frac{GM}{R}, \qquad v_\infty^4=GM\,a_0,
+\]
+exactly: slope four, with no shape factor. The approach is from above and fast. Past $r=3R$, $v^2$ lies within $1/200$ of $v_\infty^2$, so $v$ is within a quarter of a percent of $v_\infty$. There is no second rise and no antipode.
+
+The same scaling turns the lattice into a radial acceleration relation. With $g_{\text{N}}=GM/r^2$ one has $x^2g_{\text{N}}=a_0$ and $GM/(rR)=\sqrt{a_0g_{\text{N}}}$, so the acceleration is a function of $g_{\text{N}}$ alone,
+\begin{equation}
+\label{eq:dual-rar}
+g=\sqrt{a_0\,g_{\text{N}}}\,\coth\sqrt{\frac{a_0}{g_{\text{N}}}},
+\end{equation}
+bounded by
+\[
+\max\!\left(g_{\text{N}},\sqrt{a_0g_{\text{N}}}\right)<g<g_{\text{N}}+\min\!\left(\sqrt{a_0g_{\text{N}}},\,\frac{a_0}{3}\right).
+\]
+At high acceleration the excess over Newton stays below $a_0/3$. At low acceleration $g$ approaches $\sqrt{a_0g_{\text{N}}}$, the deep regime of Milgrom's phenomenology. In between, the relation is fixed, with no interpolating function to choose. At $g_{\text{N}}=a_0$, where $x=1$, the enhancement is $\coth 1$, between $1.31$ and $1.32$.
+
+For the Milky-Way stand-in $M \approx 6 \times 10^{10}\,M_\odot$ the same inputs give $8\,\mathrm{kpc}<R<9\,\mathrm{kpc}$ and
+\[
+175\,\mathrm{km/s}<v_\infty<176\,\mathrm{km/s}.
+\]
+To identify $a_0$ with a characteristic acceleration of the patch is still a proposal.
+
+\subsection{The rotation curve}
+
+At radius $r$ the flux is that of the enclosed mass $M(r)$, and the patch that carries it has $R(r)^2=GM(r)/a_0$. Outside the baryons this is the single patch of the total baryonic mass $M_{\text{b}}$; inside, it shrinks with the enclosed mass. With $g_{\text{N}}=v_{\text{bar}}^2/r$, the orbit sits at $x=r/R(r)=\sqrt{a_0/g_{\text{N}}}$, and the rotation curve is
+\begin{equation}
+\label{eq:dual-rotation}
+v^2(r)=v_{\text{bar}}^2(r)\,x\coth x, \qquad x^2=\frac{a_0\,r}{v_{\text{bar}}^2(r)},
+\end{equation}
+which is $r$ times the relation \eqref{eq:dual-rar} at $g_{\text{N}}=v_{\text{bar}}^2/r$. Here $v_{\text{bar}}^2=v_\star^2+v_{\text{gas}}^2+v_{\text{bulge}}^2$ is computed from photometry and 21-cm maps exactly as in a Newtonian mass model. The stellar mass-to-light ratio is the only adjustable quantity; $a_0$ is universal, and there is no halo. For a spherical mass the recipe is exact. For a disk it applies the relation radius by radius to the Newtonian curve of the disk.
+
+At every radius
+\[
+\max\!\left(v_{\text{bar}}^2,\sqrt{a_0\,r\,v_{\text{bar}}^2}\right)<v^2<v_{\text{bar}}^2+\sqrt{a_0\,r\,v_{\text{bar}}^2}.
+\]
+The curve therefore vanishes wherever $r\,v_{\text{bar}}^2$ does, as at a regular centre. Every baryonic curve with a Keplerian tail, $r\,v_{\text{bar}}^2\to GM_{\text{b}}$, flattens at $v_\infty^2=\sqrt{GM_{\text{b}}a_0}$, and outside the baryons the point-mass behaviour above holds with $R=\sqrt{GM_{\text{b}}/a_0}$. The curve rises, turns over, and stays flat.
+
+For a Milky-Way exponential disk of $6\times10^{10}\,M_\odot$ and scale length $2.6\,\mathrm{kpc}$, Eq.~\eqref{eq:dual-rotation} gives about $202\,\mathrm{km/s}$ at $4\,\mathrm{kpc}$, $211$ at $8$, $190$ at $15$, $179$ at $25$, and $176$ at $60\,\mathrm{kpc}$, while the Newtonian disk alone falls from $188$ to $105\,\mathrm{km/s}$ between $8$ and $25\,\mathrm{kpc}$. A low-surface-brightness disk of $3\times10^{9}\,M_\odot$ and scale length $3\,\mathrm{kpc}$, with $g_{\text{N}}$ near $a_0/10$ throughout, rises to about $50\,\mathrm{km/s}$ at $2\,\mathrm{kpc}$, $78$ at $6$ and $87$ at $15\,\mathrm{kpc}$, and settles at $83\,\mathrm{km/s}$. A dwarf of $4\times10^{8}\,M_\odot$ and scale length $0.8\,\mathrm{kpc}$ rises to about $52\,\mathrm{km/s}$ near $4\,\mathrm{kpc}$ and settles at $50\,\mathrm{km/s}$; on the radial lattice its antipode would lie near $2.1\,\mathrm{kpc}$.
 
 \subsection{What the sky can decide}
 
-Each source has, as its negative well, an open hemisphere. Neighbouring patches may overlap: each is faithful near its own centre and distorted toward its equator. If galaxies and clusters are such patches, the excess of the observed acceleration over the baryonic Newtonian value is the enhancement $\eta$, not an unseen mass, and a direct search has nothing particle-like to find. The radial acceleration relation is this enhancement, rather than a MOND interpolation in $g_{\text{bar}}/a_0$. An isolated galaxy whose mass is already enclosed should reach a shallow minimum near $x_0 R$ and then rise, under a force that remains attractive, out to the end of the well. For a Milky-Way mass that minimum lies near $9$--$11\,\mathrm{kpc}$ and the well ends near $12$--$15\,\mathrm{kpc}$, within the reach of deep 21-cm observations beyond the inner disk. The alternation of attraction and repulsion in strong fields, ordered by the interference of equal rapidities, is another regime. It is not the sign of $g$ on this chart.
+Neighbouring patches may overlap, each faithful near its own centre. If galaxies and clusters are such patches, the excess of the observed acceleration over the baryonic Newtonian value is the dual image lattice, not an unseen mass, and a direct search has nothing particle-like to find. Three features separate this reading from dark halos and from fitted interpolations alike. Outside the baryons the curve approaches $v_\infty=(GM_{\text{b}}a_0)^{1/4}$ from above and is flat to a quarter of a percent past $3R$; it neither declines like a Keplerian tail nor rises again. The baryonic Tully--Fisher relation $v_\infty^4=GM_{\text{b}}a_0$ is exact, with no dependence on surface brightness or size. And the relation \eqref{eq:dual-rar} has a definite transition that lies lower than the empirical one. At $g_{\text{N}}=a_0$ the enhancement is $1.31$--$1.32$, where the fit of McGaugh, Lelli and Schombert gives about $1.58$. In the three disks above the dual curve runs up to a tenth below that fit, and the two converge only slowly toward the common $v_\infty$. In star-dominated disks a mass-to-light ratio higher by roughly a fifth absorbs the difference. In gas-dominated dwarfs, whose baryonic curve is fixed by 21-cm data, nothing does, and they decide between the lattice and the fitted relation. The alternation of attraction and repulsion in strong fields, ordered by the interference of equal rapidities, is another regime. It is not the sign of $g$ on this chart.
 
 \section{Gravitational Engineering: Coherent Excitation of Dual-Spacetime Rotors}
 \label{sec:gravitycontrol}
@@ -1233,11 +1265,11 @@ The century that began with Einstein taught us to speak of gravity as the curvat
 
 The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost chart, $J$ stands in a closed relation with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum case. The relation is internal to that gauge. A boost of the inertial frame in one fixed plane, of any rapidity profile, leaves both the Minkowski metric and the teleparallel scalar untouched, even where the torsion does not vanish, and $J$ remains free. The two densities agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. A spatial chirality axis splits that six-space into an $\mathfrak{so}(2,1)$ stabilizer and a complement that moves the axis. A perpendicular dual rotation exchanges the two projectors at angle $\pi$, and the stabilizer's only compact direction admits no nontrivial mix with the parallel electric generator. Compact $\mathrm{SU}(2)$ is the dual rotor, not a chiral gauge symmetry. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$. The shape $f$ has a unique minimum on $(0,\pi/2)$, and from one compactification radius to six-fifths of it, $v^2$ stays within a tenth of that minimum. The radial force remains center-directed through the equator, where the negative well ends, before $r=2R$. None of this requires a background manifold.
 
-We have proposed that the layered phase is the strong force; that galaxies are three-sphere patches of the dual sector, and that this compactness therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that a vacuum chiral excess assigns one unsigned mass to both signs of \(J\), with binding on the positive sign, while the yield \(\eta\) lies outside that assignment; that Maxwell's equations remain unrecovered from the same six-space, and that a harmonic stiffness does not select a rotor rigidity away from alignment; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$. It conserves $J+M$, so every dual-only shield from a pure usual seed doubles unsigned mass, and it reaches $J=0$ precisely when the dual wall is nonpositive. On a boosted axis a coaxial dual-only ray restores the clock factor $\gamma_{\mathrm{eff}}$ to $1$ strictly before it cancels $J$; a cross-axis shield of equal mass leaves that clock at $\cosh\alpha$. Independently of any trajectory the cone's image in the $(J,M)$-plane is the three-lobed envelope \eqref{eq:control-envelope}: the shield parabola is sharp only for $|J|\le\pi^2/8$, neutrality is capped at five sixths of the maximal mass and is reached only by a maximally anisotropic wall configuration, and at maximal mass every axis is purely usual or purely dual---while full repulsion pays no such penalty. The envelope is a lock---every axis on the wall, at least two of them purely usual or purely dual---so dual-only motion meets it at most once and cannot travel along it. Holding the usual rotor fixed against the written potential requires a constraint. A dual-only increment of the dual angles---magnetic Faraday superposition, or the substitution $\theta\mapsto\theta+eA$---cannot raise $J$ against a nonnegative seed; along a circular wave the Faraday reading leaves mean $J$ unmoved, while the potential reading drops it by a helicity-even ponderomotive that is not Maxwell-gauge invariant and that leaves the cone from a vanishing dual seed. Whether laboratory electromagnetism supplies a helicity-odd dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
+We have proposed that the layered phase is the strong force; that galaxies are patches of the compact dual sector, whose image lattice therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that a vacuum chiral excess assigns one unsigned mass to both signs of \(J\), with binding on the positive sign, while the yield \(\eta\) lies outside that assignment; that Maxwell's equations remain unrecovered from the same six-space, and that a harmonic stiffness does not select a rotor rigidity away from alignment; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$. It conserves $J+M$, so every dual-only shield from a pure usual seed doubles unsigned mass, and it reaches $J=0$ precisely when the dual wall is nonpositive. On a boosted axis a coaxial dual-only ray restores the clock factor $\gamma_{\mathrm{eff}}$ to $1$ strictly before it cancels $J$; a cross-axis shield of equal mass leaves that clock at $\cosh\alpha$. Independently of any trajectory the cone's image in the $(J,M)$-plane is the three-lobed envelope \eqref{eq:control-envelope}: the shield parabola is sharp only for $|J|\le\pi^2/8$, neutrality is capped at five sixths of the maximal mass and is reached only by a maximally anisotropic wall configuration, and at maximal mass every axis is purely usual or purely dual---while full repulsion pays no such penalty. The envelope is a lock---every axis on the wall, at least two of them purely usual or purely dual---so dual-only motion meets it at most once and cannot travel along it. Holding the usual rotor fixed against the written potential requires a constraint. A dual-only increment of the dual angles---magnetic Faraday superposition, or the substitution $\theta\mapsto\theta+eA$---cannot raise $J$ against a nonnegative seed; along a circular wave the Faraday reading leaves mean $J$ unmoved, while the potential reading drops it by a helicity-even ponderomotive that is not Maxwell-gauge invariant and that leaves the cone from a vanishing dual seed. Whether laboratory electromagnetism supplies a helicity-odd dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
 
 A balanced massive seed is not emptied by either rapidity budget alone, and on the aligned flow its mass stands still only when the common rate vanishes. A hydrogen ionisation does not pay the electron rest energy, and the first Coulombic node is not a wall.
 
-What can already be asked of the sky is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a three-sphere patch, its rotation curve reaches a shallow minimum near $r\sim x_0 R$ with $x_0\in(1.14,1.20)$ and then rises, the force remaining attractive out to the end of the negative well at $\pi R/2$, rather than by unseen mass; for Milky-Way stand-in mass the minimum sits near $9$--$11\,\mathrm{kpc}$ and the well ends near $12$--$15\,\mathrm{kpc}$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
+What can already be asked of the sky is modest and sharp. In place of a true horizon one expects a finite redshift floor. At the centre of a spherically symmetric torsion star, gravitational time dilation should vanish. If a galaxy is a patch of the compact dual sector, its rotation curve is the baryonic Newtonian curve times $x\coth x$, with $x^2=a_0r/v_{\text{bar}}^2$, rather than the trace of unseen mass. It flattens from above at $v_\infty^4=GM_{\text{b}}a_0$, between $175$ and $176\,\mathrm{km/s}$ for the Milky-Way stand-in mass, and at $g_{\text{N}}=a_0$ its enhancement is $\coth 1\approx1.31$, below the empirical $1.58$. The ratio of successive barrier radii is a pure number, the same at nuclear and at stellar scales, because the characteristic length cancels from it.
 
 If this ontology is sound, then the geometry of the world is not prior to matter. It is an attribute of particles, as spin and charge are attributes, and the apparent curvature of the heavens is the collective torsion of their dual rotors. The continuum remains a useful fiction of the large. What remains is not to curve an empty stage more ingeniously, but to learn, from the algebra already in hand, how the paired rotors of matter compose the world we see.
 
