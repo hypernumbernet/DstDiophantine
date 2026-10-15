@@ -63,3 +63,7 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 .fig .step rect{fill:var(--panel);stroke:var(--line);stroke-width:1.5}.fig .lat circle{fill:var(--usual);opacity:.8}
 .fig .ceil{stroke:var(--accent);stroke-width:2.5}
 .fig .seg.b{fill:#4fc3ff44}.fig .seg.u{fill:#ff9a5a44}.fig .pt.t{fill:#fff}.fig .pt.f{fill:var(--dual)}
+.fig .swirl{fill:none;stroke:var(--usual);stroke-width:2.2;color:var(--usual)}
+.fig .eye{fill:#e9e4ff;opacity:.8}
+.fig .gridA line{stroke:var(--usual);stroke-width:1;opacity:.7}.fig .gridB line{stroke:var(--dual);stroke-width:1;opacity:.7}
+.fig .spin{fill:none;stroke:var(--accent);stroke-width:2.5;color:var(--accent)}
