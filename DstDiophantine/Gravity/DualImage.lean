@@ -3,6 +3,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Topology.Order.IntermediateValue
 
 /-!
 # Dual image lattice and the galactic rotation curve
@@ -26,7 +27,10 @@ than \(GM/(3R^2)\) and by less than \(GM/(rR)\), and exceeds \(GM/(rR)\);
 \(v^2=(GM(r)/R)\coth(r/R)=v_{\mathrm{bar}}^2\,x\coth x\); a Newtonian
 baryonic curve with \(r\,v_{\mathrm{bar}}^2\to GM\) tends to \(GM/R\); a
 regular centre gives \(v\to 0\); outside the mass \(v^2\) strictly decreases,
-and past \(3R\) it lies within \(1/200\) of \(GM/R\). Given
+and past \(3R\) it lies within \(1/200\) of \(GM/R\). The circular specific
+angular momentum satisfies \(\ell^2=GMr\,x\coth x\): it tends to \(0\) at the
+origin, is strictly increasing, tends to infinity, and attains every positive
+value at exactly one radius. Given
 \(R^2=GM/a_0\): \((GM/R)^2=GMa_0\), \((GM/(rR))^2=a_0\,GM/r^2\), and
 \(x^2\,GM/r^2=a_0\), so the lattice acceleration is
 \(g=\sqrt{a_0g_N}\coth\sqrt{a_0/g_N}\), with
@@ -440,6 +444,155 @@ theorem strictAntiOn_dualCircularSpeedSq {G R M0 a : ℝ} {M : ℝ → ℝ}
   have hc := strictAntiOn_coth (mem_Ioi.mpr (div_pos hr0 hR)) (mem_Ioi.mpr (div_pos hs0 hR))
     (div_lt_div_of_pos_right hrs hR)
   exact mul_lt_mul_of_pos_left hc (div_pos hGM hR)
+
+/-! ### Specific angular momentum of a circular orbit
+
+A fluctuation that leaves a star with specific angular momentum \(\ell\) can
+ride a circular orbit only where \(r v(r)=\ell\). Because \(v\) falls with
+radius, it is not obvious that \(\ell\) itself rises. It does:
+\(\ell^2=GMr\,x\coth x\) is strictly increasing, so each positive value
+belongs to exactly one radius. Near the origin \(x\coth x\to 1\) and the orbit
+is the Keplerian germ \(\ell^2\sim GMr\); a slight angular momentum stays on a
+small orbit. Far out \(v\to\sqrt{GM/R}\), so \(\ell\) grows in proportion to
+the radius and outward transport of angular momentum enlarges the body at
+nearly constant speed.
+-/
+
+private theorem strictMonoOn_mul_id_dualEnhancement :
+    StrictMonoOn (fun x : ℝ => x * dualEnhancement x) (Ioi 0) := by
+  intro a ha b hb hab
+  have hinc := strictMonoOn_dualEnhancement ha hb hab
+  have h1 : a * dualEnhancement a < b * dualEnhancement a :=
+    mul_lt_mul_of_pos_right hab (lt_trans zero_lt_one (one_lt_dualEnhancement ha))
+  have h2 : b * dualEnhancement a < b * dualEnhancement b :=
+    mul_lt_mul_of_pos_left hinc hb
+  exact h1.trans h2
+
+private theorem continuousOn_dualEnhancement : ContinuousOn dualEnhancement (Ioi 0) := by
+  intro x hx
+  unfold dualEnhancement
+  exact ((continuous_id.mul continuous_cosh).continuousAt.div continuous_sinh.continuousAt
+    (sinh_pos_iff.mpr hx).ne').continuousWithinAt
+
+/-- Circular specific angular momentum squared: \(\ell^2=GMr\,(r/R)\coth(r/R)\). -/
+theorem dualSpecificAngMomSq_eq {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
+    r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r =
+      G * M * r * dualEnhancement (r / R) := by
+  unfold dualCircularSpeedSq dualEnhancement
+  have hs : sinh (r / R) ≠ 0 := by rw [Ne, sinh_eq_zero]; exact div_ne_zero hr hR
+  field_simp
+
+theorem strictMonoOn_dualSpecificAngMomSq {G M R : ℝ} (hGM : 0 < G * M) (hR : 0 < R) :
+    StrictMonoOn (fun r : ℝ => r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r) (Ioi 0) := by
+  intro a ha b hb hab
+  change a ^ 2 * dualCircularSpeedSq G R (fun _ => M) a <
+    b ^ 2 * dualCircularSpeedSq G R (fun _ => M) b
+  rw [dualSpecificAngMomSq_eq ha.ne' hR.ne', dualSpecificAngMomSq_eq hb.ne' hR.ne']
+  have hrew : ∀ r : ℝ, G * M * r * dualEnhancement (r / R) =
+      G * M * R * ((r / R) * dualEnhancement (r / R)) := by
+    intro r
+    field_simp
+  rw [hrew a, hrew b]
+  exact mul_lt_mul_of_pos_left
+    (strictMonoOn_mul_id_dualEnhancement (div_pos ha hR) (div_pos hb hR)
+      (div_lt_div_of_pos_right hab hR))
+    (mul_pos hGM hR)
+
+theorem tendsto_dualSpecificAngMomSq_zero {G M R : ℝ} (hR : 0 < R) :
+    Tendsto (fun r : ℝ => r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r)
+      (𝓝[>] 0) (𝓝 0) := by
+  have harg : Tendsto (fun r : ℝ => r / R) (𝓝[>] 0) (𝓝[>] 0) := by
+    refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_
+    · have : Tendsto (fun r : ℝ => r / R) (𝓝 0) (𝓝 (0 / R)) :=
+        (continuous_id.div_const R).tendsto 0
+      simpa using this.mono_left nhdsWithin_le_nhds
+    · filter_upwards [self_mem_nhdsWithin] with r hr
+      exact div_pos hr hR
+  have hη := tendsto_dualEnhancement_zero.comp harg
+  have hlin : Tendsto (fun r : ℝ => (G * M) * r) (𝓝[>] 0) (𝓝 0) := by
+    have : Tendsto (fun r : ℝ => (G * M) * r) (𝓝 0) (𝓝 ((G * M) * 0)) :=
+      (continuous_const_mul (G * M)).tendsto 0
+    simpa using this.mono_left nhdsWithin_le_nhds
+  have hprod : Tendsto (fun r : ℝ => (G * M) * r * dualEnhancement (r / R))
+      (𝓝[>] 0) (𝓝 0) := by
+    simpa using hlin.mul hη
+  refine hprod.congr' ?_
+  filter_upwards [self_mem_nhdsWithin] with r hr
+  exact (dualSpecificAngMomSq_eq hr.ne' hR.ne').symm
+
+theorem tendsto_dualSpecificAngMomSq_atTop {G M R : ℝ} (hGM : 0 < G * M) (hR : 0 < R) :
+    Tendsto (fun r : ℝ => r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r) atTop atTop := by
+  refine tendsto_atTop_mono' atTop ?_ (tendsto_id.const_mul_atTop hGM)
+  filter_upwards [eventually_gt_atTop 0] with r hr
+  change G * M * r ≤ r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r
+  rw [dualSpecificAngMomSq_eq hr.ne' hR.ne']
+  have hη := one_lt_dualEnhancement (div_pos hr hR)
+  have hlt : G * M * r * 1 < G * M * r * dualEnhancement (r / R) :=
+    mul_lt_mul_of_pos_left hη (mul_pos hGM hr)
+  simpa using hlt.le
+
+/-- Every positive specific angular momentum belongs to exactly one circular radius. -/
+theorem exists_unique_dualSpecificAngMomSq {G M R ℓ2 : ℝ}
+    (hGM : 0 < G * M) (hR : 0 < R) (hℓ : 0 < ℓ2) :
+    ∃! r : ℝ, 0 < r ∧ r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r = ℓ2 := by
+  let f : ℝ → ℝ := fun r => r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r
+  let a : ℝ := min R (ℓ2 / (4 * (G * M)))
+  let b : ℝ := (ℓ2 + 1) / (G * M)
+  have ha0 : 0 < a := by
+    have h4 : (0 : ℝ) < 4 * (G * M) := mul_pos (by norm_num) hGM
+    exact lt_min hR (div_pos hℓ h4)
+  have hb0 : 0 < b := div_pos (by linarith) hGM
+  have hab : a < b := by
+    have ha4 : a ≤ ℓ2 / (4 * (G * M)) := min_le_right _ _
+    have hcmp : ℓ2 / (4 * (G * M)) < (ℓ2 + 1) / (G * M) := by
+      have hden : (0 : ℝ) < 4 * (G * M) := mul_pos (by norm_num) hGM
+      rw [div_lt_div_iff₀ hden hGM]
+      nlinarith
+    exact lt_of_le_of_lt ha4 hcmp
+  have hfa : f a < ℓ2 := by
+    have hx : 0 < a / R := div_pos ha0 hR
+    have hη := dualEnhancement_lt_one_add hx
+    have haR : a / R ≤ 1 := (div_le_one hR).mpr (min_le_left _ _)
+    have hη2 : dualEnhancement (a / R) < 2 := by linarith
+    have haℓ : a ≤ ℓ2 / (4 * (G * M)) := min_le_right _ _
+    have htwo : G * M * a * 2 ≤ ℓ2 / 2 := by
+      have hden : (0 : ℝ) < 4 * (G * M) := mul_pos (by norm_num) hGM
+      have had : a * (4 * (G * M)) ≤ ℓ2 := (le_div_iff₀ hden).mp haℓ
+      nlinarith
+    rw [show f a = G * M * a * dualEnhancement (a / R) from
+      dualSpecificAngMomSq_eq ha0.ne' hR.ne']
+    have hstrict : G * M * a * dualEnhancement (a / R) < G * M * a * 2 :=
+      mul_lt_mul_of_pos_left hη2 (mul_pos hGM ha0)
+    linarith
+  have hfb : ℓ2 < f b := by
+    rw [show f b = G * M * b * dualEnhancement (b / R) from
+      dualSpecificAngMomSq_eq hb0.ne' hR.ne']
+    have hη := one_lt_dualEnhancement (div_pos hb0 hR)
+    have hbM : G * M * b = ℓ2 + 1 := by
+      unfold b
+      rw [← mul_div_assoc]
+      exact mul_div_cancel_left₀ (ℓ2 + 1) hGM.ne'
+    have : G * M * b * 1 < G * M * b * dualEnhancement (b / R) :=
+      mul_lt_mul_of_pos_left hη (by linarith)
+    linarith
+  have hcont : ContinuousOn f (Icc a b) := by
+    have hsub : Icc a b ⊆ Ioi 0 := by
+      intro r hr
+      exact lt_of_lt_of_le ha0 hr.1
+    let g : ℝ → ℝ := fun r => G * M * r * dualEnhancement (r / R)
+    have hg : ContinuousOn g (Icc a b) := by
+      refine (continuousOn_const.mul continuousOn_id).mul ?_
+      refine continuousOn_dualEnhancement.comp (continuousOn_id.div_const R) ?_
+      intro r hr
+      exact div_pos (hsub hr) hR
+    exact hg.congr fun r hr => dualSpecificAngMomSq_eq (hsub hr).ne' hR.ne'
+  have hmem : ℓ2 ∈ Icc (f a) (f b) := ⟨hfa.le, hfb.le⟩
+  obtain ⟨r, hr, hfr⟩ := intermediate_value_Icc hab.le hcont hmem
+  have hr0 : 0 < r := lt_of_lt_of_le ha0 hr.1
+  refine ExistsUnique.intro r ⟨hr0, hfr⟩ ?_
+  intro r' hr'
+  exact (StrictMonoOn.injOn (strictMonoOn_dualSpecificAngMomSq hGM hR) hr0 hr'.1
+    (hfr.trans hr'.2.symm)).symm
 
 theorem tendsto_dualCircularSpeedSq_atTop {G R Mtot : ℝ} {M : ℝ → ℝ} (hR : 0 < R)
     (hM : Tendsto M atTop (𝓝 Mtot)) :

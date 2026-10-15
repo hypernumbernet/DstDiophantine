@@ -149,6 +149,10 @@ The straight line of one fixed jet is not itself that geodesic.
   \(0.8\,\mathrm{kpc}\) has surface speed between \(55.2\) and
   \(55.3\,\mathrm{km/s}\), \(50.38\) to \(50.39\,\mathrm{km/s}\) at
   \(2\,\mathrm{kpc}\), and the asymptotic window again at \(4\,\mathrm{kpc}\).
+  The circular specific angular momentum, \(\ell^2=GMr\,x\coth x\), tends to
+  \(0\) at the origin, is strictly increasing, and attains every positive value
+  once; from the dwarf's surface to \(4\,\mathrm{kpc}\) it grows by a factor
+  between \(4.53\) and \(4.56\).
   A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
   \(83.1<v_\infty<83.2\,\mathrm{km/s}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the

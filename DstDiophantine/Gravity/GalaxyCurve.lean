@@ -28,6 +28,9 @@ On the SI stand-ins, for a dwarf of mass \(4\times 10^8\,M_\odot\):
   speed at the surface lies between \(55.2\) and \(55.3\,\mathrm{km/s}\),
   at \(2\,\mathrm{kpc}\) between \(50.38\) and \(50.39\,\mathrm{km/s}\), and
   at \(4\,\mathrm{kpc}\) again between \(50.2\) and \(50.3\,\mathrm{km/s}\).
+  The circular specific angular momentum there is larger than at the surface
+  by a factor strictly between \(4.53\) and \(4.56\), while the radius is
+  larger by five.
 
 A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
 \(83.1 < v_\infty < 83.2\,\mathrm{km/s}\).
@@ -504,6 +507,92 @@ theorem dwarfFourKpcSpeed_bounds :
       solarMassApprox GMantissa GScale solarMassMantissa solarMassScale
       mondAccelMantissa mondAccelScale
     norm_num
+
+/-! ### From a random aggregate to a larger orbit
+
+Outside the ball the circular specific angular momentum is \(a\,v(a)\).
+It increases strictly with radius (`strictMonoOn_dualSpecificAngMomSq`), so a
+fluctuation that sets its value sets the radius. On the dwarf stand-in the
+step from the surface of the \(0.8\,\mathrm{kpc}\) ball to \(4\,\mathrm{kpc}\)
+multiplies the radius by five and the specific angular momentum by a factor
+between \(4.53\) and \(4.56\).
+-/
+
+noncomputable def dwarfCircSpeed (aKpc : ℝ) : ℝ :=
+  sqrt (dwarfPointSpeedSq aKpc)
+
+noncomputable def dwarfSpecificAngMom (aKpc : ℝ) : ℝ :=
+  aKpc * dwarfCircSpeed aKpc
+
+private lemma dwarfPointSpeedSq_pos {a : ℝ} (ha : 0 < a) : 0 < dwarfPointSpeedSq a := by
+  unfold dwarfPointSpeedSq
+  have hR : (0 : ℝ) < dwarfROverKpc := lt_trans (by norm_num) dwarfROverKpc_bounds.1
+  have hflat : (0 : ℝ) < (dwarfFlatSpeedFourth : ℝ) := by
+    exact_mod_cast (lt_trans (by norm_num : (0 : ℚ) < (502 * 10 ^ 2) ^ 4)
+      dwarfFlatSpeedFourth_bounds.1)
+  exact mul_pos (sqrt_pos.mpr hflat)
+    (div_pos (cosh_pos _) (sinh_pos_iff.mpr (div_pos ha hR)))
+
+private lemma dwarfCircSpeed_pos {a : ℝ} (ha : 0 < a) : 0 < dwarfCircSpeed a := by
+  unfold dwarfCircSpeed
+  exact sqrt_pos.mpr (dwarfPointSpeedSq_pos ha)
+
+private lemma dwarfCircSpeed_fourth {a : ℝ} (ha : 0 ≤ dwarfPointSpeedSq a) :
+    dwarfCircSpeed a ^ 4 = dwarfPointSpeedSq a ^ 2 := by
+  unfold dwarfCircSpeed
+  calc
+    (sqrt (dwarfPointSpeedSq a)) ^ 4 = (sqrt (dwarfPointSpeedSq a)) ^ (2 * 2) := by norm_num
+    _ = ((sqrt (dwarfPointSpeedSq a)) ^ 2) ^ 2 := by rw [pow_mul]
+    _ = dwarfPointSpeedSq a ^ 2 := by rw [sq_sqrt ha]
+
+private lemma dwarfCircSpeed_of_fourth {a lo hi : ℝ} (ha : 0 < a) (hlo : 0 ≤ lo)
+    (hhi : 0 ≤ hi)
+    (hbounds : lo ^ 4 < dwarfPointSpeedSq a ^ 2 ∧ dwarfPointSpeedSq a ^ 2 < hi ^ 4) :
+    lo < dwarfCircSpeed a ∧ dwarfCircSpeed a < hi := by
+  have hpos : 0 ≤ dwarfCircSpeed a := (dwarfCircSpeed_pos ha).le
+  have h4 := dwarfCircSpeed_fourth (dwarfPointSpeedSq_pos ha).le
+  constructor
+  · refine (pow_lt_pow_iff_left₀ hlo hpos (by decide : (4 : ℕ) ≠ 0)).mp ?_
+    rw [h4]
+    exact hbounds.1
+  · refine (pow_lt_pow_iff_left₀ hpos hhi (by decide : (4 : ℕ) ≠ 0)).mp ?_
+    rw [h4]
+    exact hbounds.2
+
+theorem dwarfSurfaceCircSpeed_bounds :
+    (552 * 10 ^ 2 : ℝ) < dwarfCircSpeed (4 / 5) ∧
+      dwarfCircSpeed (4 / 5) < 553 * 10 ^ 2 :=
+  dwarfCircSpeed_of_fourth (by norm_num) (by norm_num) (by norm_num) dwarfSurfaceSpeed_bounds
+
+theorem dwarfFourKpcCircSpeed_bounds :
+    (502 * 10 ^ 2 : ℝ) < dwarfCircSpeed 4 ∧ dwarfCircSpeed 4 < 503 * 10 ^ 2 :=
+  dwarfCircSpeed_of_fourth (by norm_num) (by norm_num) (by norm_num) dwarfFourKpcSpeed_bounds
+
+theorem dwarfAngMom_ratio_bounds :
+    (453 / 100 : ℝ) < dwarfSpecificAngMom 4 / dwarfSpecificAngMom (4 / 5) ∧
+      dwarfSpecificAngMom 4 / dwarfSpecificAngMom (4 / 5) < 456 / 100 := by
+  have h08 := dwarfSurfaceCircSpeed_bounds
+  have h4 := dwarfFourKpcCircSpeed_bounds
+  have hp08 := dwarfCircSpeed_pos (by norm_num : (0 : ℝ) < 4 / 5)
+  have hratio : dwarfSpecificAngMom 4 / dwarfSpecificAngMom (4 / 5) =
+      5 * dwarfCircSpeed 4 / dwarfCircSpeed (4 / 5) := by
+    unfold dwarfSpecificAngMom
+    field_simp
+  rw [hratio]
+  have hlo : (453 / 100 : ℝ) < 5 * (502 * 10 ^ 2) / (553 * 10 ^ 2) := by norm_num
+  have hhi : 5 * (503 * 10 ^ 2) / (552 * 10 ^ 2) < (456 / 100 : ℝ) := by norm_num
+  constructor
+  · calc
+      (453 / 100 : ℝ) < 5 * (502 * 10 ^ 2) / (553 * 10 ^ 2) := hlo
+      _ < 5 * dwarfCircSpeed 4 / dwarfCircSpeed (4 / 5) := by
+        rw [div_lt_div_iff₀ (by norm_num) hp08]
+        nlinarith [h4.1, h08.2]
+  · calc
+      5 * dwarfCircSpeed 4 / dwarfCircSpeed (4 / 5) <
+          5 * (503 * 10 ^ 2) / (552 * 10 ^ 2) := by
+        rw [div_lt_div_iff₀ hp08 (by norm_num)]
+        nlinarith [h4.2, h08.1]
+      _ < 456 / 100 := hhi
 
 end Gravity
 
