@@ -10,6 +10,7 @@ import DstDiophantine.Gravity.CoulombFromDual
 import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
+import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
@@ -139,6 +140,17 @@ The straight line of one fixed jet is not itself that geodesic.
   \(v_{\mathrm{bar}}^2\). At \(GM/r^2=a_0\) the enhancement lies in
   \((1.31,1.32)\). Milky-Way \(v_\infty\) between \(175\) and
   \(176\,\mathrm{km/s}\).
+* `GalaxyCurve` — a spherical dwarf on the same stand-ins. Outside the ball the
+  curve is the point-mass law. For \(4\times 10^8\,M_\odot\),
+  \(50.2<v_\infty<50.3\,\mathrm{km/s}\) and
+  \(0.6816\,\mathrm{kpc}<R<0.6817\,\mathrm{kpc}\), so
+  \(2.04\,\mathrm{kpc}<3R<2.05\,\mathrm{kpc}\) and
+  \(2.141\,\mathrm{kpc}<\pi R<2.142\,\mathrm{kpc}\). A ball of radius
+  \(0.8\,\mathrm{kpc}\) has surface speed between \(55.2\) and
+  \(55.3\,\mathrm{km/s}\), \(50.38\) to \(50.39\,\mathrm{km/s}\) at
+  \(2\,\mathrm{kpc}\), and the asymptotic window again at \(4\,\mathrm{kpc}\).
+  A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
+  \(83.1<v_\infty<83.2\,\mathrm{km/s}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
@@ -1551,6 +1563,30 @@ example :
     ((175 * 10 ^ 3 : ℚ)) ^ 4 < milkyWayFlatSpeedFourth ∧
       milkyWayFlatSpeedFourth < ((176 * 10 ^ 3 : ℚ)) ^ 4 :=
   milkyWayFlatSpeedFourth_bounds
+
+/-- Regression: dwarf \(50.2<v_\infty<50.3\,\mathrm{km/s}\). -/
+example :
+    ((502 * 10 ^ 2 : ℚ)) ^ 4 < dwarfFlatSpeedFourth ∧
+      dwarfFlatSpeedFourth < ((503 * 10 ^ 2 : ℚ)) ^ 4 :=
+  dwarfFlatSpeedFourth_bounds
+
+/-- Regression: low-surface-brightness \(83.1<v_\infty<83.2\,\mathrm{km/s}\). -/
+example :
+    ((831 * 10 ^ 2 : ℚ)) ^ 4 < lsbFlatSpeedFourth ∧
+      lsbFlatSpeedFourth < ((832 * 10 ^ 2 : ℚ)) ^ 4 :=
+  lsbFlatSpeedFourth_bounds
+
+/-- Regression: dwarf ball of radius \(0.8\,\mathrm{kpc}\), and the flat stretch past it. -/
+example :
+    ((552 * 10 ^ 2) ^ 4 : ℝ) < dwarfPointSpeedSq (4 / 5) ^ 2 ∧
+      dwarfPointSpeedSq (4 / 5) ^ 2 < ((553 * 10 ^ 2) ^ 4 : ℝ) ∧
+      ((50380 : ℕ) ^ 4 : ℝ) < dwarfPointSpeedSq 2 ^ 2 ∧
+      dwarfPointSpeedSq 2 ^ 2 < ((50390 : ℕ) ^ 4 : ℝ) ∧
+      ((502 * 10 ^ 2) ^ 4 : ℝ) < dwarfPointSpeedSq 4 ^ 2 ∧
+      dwarfPointSpeedSq 4 ^ 2 < ((503 * 10 ^ 2) ^ 4 : ℝ) :=
+  ⟨dwarfSurfaceSpeed_bounds.1, dwarfSurfaceSpeed_bounds.2,
+    dwarfTwoKpcSpeed_bounds.1, dwarfTwoKpcSpeed_bounds.2,
+    dwarfFourKpcSpeed_bounds.1, dwarfFourKpcSpeed_bounds.2⟩
 
 /-- Regression: dual wall formula. -/
 example (α : ℝ) :
