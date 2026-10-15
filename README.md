@@ -493,9 +493,14 @@ Parallel track, barrel [`DstDiophantine/Logic.lean`](DstDiophantine/Logic.lean).
 The note is [`papers/dst-4-valued-logic.tex`](papers/dst-4-valued-logic.tex).
 
 A proposition is an admissible torsion configuration. The observable is
-$J_{\mathrm{norm}} \in [-1,1]$, and collapse yields four labels. The walls
-$\pm 1$ are the two-valued fragment: classical truth is the positive wall.
-Balance is an information bottom, not a fifth label. Conjunction with
+$J_{\mathrm{norm}} \in [-1,1]$, and collapse yields four labels
+([`TruthValue.lean`](DstDiophantine/Logic/TruthValue.lean)):
+$|T\rangle$ is $J_{\mathrm{norm}} = 0$ (perfect balance),
+$|U\rangle$ is $0 < J_{\mathrm{norm}} < 1$ (boost-dominant, not saturated),
+$|F\rangle$ is $J_{\mathrm{norm}} = +1$ (pure boost), and
+$|B\rangle$ is $-1 \le J_{\mathrm{norm}} < 0$ (rotation-dominant). The
+positive wall $+1$ is $|F\rangle$; the negative wall $-1$ is the deepest
+point of $|B\rangle$. Outside $[-1,1]$ classification is refused. Conjunction with
 negation never saturates the negative wall, so $\{P, \neg P\}$ does not
 explode. The two designated predicates, theoremhood and non-refutation, have
 no common residual on the height. The Gödel residuum of $\min$ and the
