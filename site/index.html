@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Double Spacetime Theory · 二重時空理論</title>
-<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation.">
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="style.css">
 <script>
 (function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
@@ -76,7 +83,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
       <line class="axis" x1="-110" y1="0" x2="110" y2="0"/>
       <line class="usual arrow" x1="0" y1="0" x2="0" y2="-95" marker-end="url(#ah)"/>
       <text class="lbl usualt" x="8" y="-82"><tspan class="en">time</tspan><tspan class="ja">時間</tspan></text>
-      <text class="lbl" x="100" y="-8">x</text>
+      <text class="lbl" x="100" y="18">x</text>
       <text class="cap" x="0" y="112" text-anchor="middle"><tspan class="en">usual: X</tspan><tspan class="ja">通常：X</tspan></text>
     </g>
     <g transform="translate(320,110)">
@@ -156,7 +163,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
       <text class="lbl small" y="142"><tspan class="en">so |J</tspan><tspan class="ja">よって |J</tspan><tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</text>
     </g>
   </svg>
-  <p><span class="en">The ceiling does real work elsewhere in the repository. In the gravity track it is read as a finite redshift floor, so a one-way horizon (A = 0) does not form on that chart, and a light ray that would be captured classically turns around and comes back. In the number-theory track, a shared “no-go” theorem says no seed can be amplified past this ceiling.</span><span class="ja">この上限はリポジトリの他の部分で重要な役割を果たします。重力の分野では有限の赤方偏移の下限として読まれ、その座標系では一方通行の地平面（A = 0）ができません。古典的には捕らわれるはずの光線も、内部で向きを変えて戻ってきます。数論の分野では、「どんな種もこの上限を超えて増幅できない」という共通の不可能定理になります。</span></p>
+  <p><span class="en">The ceiling does real work elsewhere in the repository. In the gravity track it is read as a finite redshift floor, so a one-way horizon (A = 0) does not form on that chart, and a light ray that would be captured classically turns around and comes back. In the number-theory track, a shared “no-go” theorem says no seed can be amplified past this ceiling.</span><span class="ja">この上限はリポジトリの他の部分で重要な役割を果たします。重力の分野では有限の赤方偏移の下限として読まれ、その座標系では一方通行の地平（A = 0）ができません。古典的には捕らわれるはずの光線も、内部で向きを変えて戻ってきます。数論の分野では、「どんな種もこの上限を超えて増幅できない」という共通の不可能定理になります。</span></p>
   <p class="note"><span class="en">Placing boosts on a compact 2π-torus, with admissibility on top, is the modelling choice the theory builds on.</span><span class="ja">ブーストを周期 2π のトーラス上に置き、その上に許容性を課すことが、この理論の出発点となるモデル化です。</span></p>
 </section>
 
@@ -248,13 +255,13 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text x="540" y="34" text-anchor="middle" class="lbl small accentt"><tspan class="en">ceiling |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan><tspan class="ja">上限 |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan></text>
     <text class="note" x="320" y="178" text-anchor="middle"><tspan class="en">Schematic of the programme.</tspan><tspan class="ja">取り組みの模式図。</tspan></text>
   </svg>
-  <p><span class="en">Two layers are proved in Lean: the encoding is faithful, and a shared <b>amplification no-go</b> says no seed can be amplified past the admissible ceiling, whatever equation it came from. The third layer, connecting a hypothetical solution of each classical problem to such a seed, is the active research front. Beal is furthest along: positive Beal is reduced to six named residual cases, with many slices already closed. There are also concrete results along the way. For Collatz, the admissible cone contains only the integers 1 and 2, and every starting value up to 2²⁰ reaches 1.</span><span class="ja">Lean で証明されているのは二つの層です。符号化が忠実であること、そして共通の<b>増幅の不可能定理</b>、つまりどの方程式から来た種であっても許容上限を超えて増幅できないことです。第三の層、各古典問題の仮想的な解をそのような種に結びつける部分が、鋭意研究中の最前線です。最も進んでいるのはビール予想で、正の場合が名前付きの6つの残差ケースに帰着され、多くの部分がすでに閉じています。途中の具体的な結果もあります。コラッツ予想では、許容錐に入る整数は 1 と 2 だけで、2²⁰ までのすべての出発値が 1 に到達します。</span></p>
-  <p class="note"><span class="en">Also explored: abc, the Riemann Hypothesis, Goldbach and Polignac, each with finite certificates. See section 8 for how the open steps are tracked.</span><span class="ja">abc 予想、リーマン予想、ゴールドバッハ予想、ポリニャック予想も、有限範囲の検証とともに研究中です。研究中のステップの管理方法は第8節を参照してください。</span></p>
+  <p><span class="en">Two layers are proved in Lean: the encoding is faithful, and a shared <b>amplification no-go</b> says no seed can be amplified past the admissible ceiling, whatever equation it came from. The third layer, connecting a hypothetical solution of each classical problem to such a seed, is the active research front. Beal is furthest along: positive Beal is reduced to six named residual cases, with many slices already closed. There are also concrete results along the way. For Collatz, the admissible integer-boost cone contains only 1 and 2, and every starting value up to 2²⁰ reaches 1.</span><span class="ja">Lean で証明されているのは二つの層です。符号化が忠実であること、そして共通の<b>増幅の不可能定理</b>、つまりどの方程式から来た種であっても許容上限を超えて増幅できないことです。第三の層、各古典問題の仮想的な解をそのような種に結びつける部分が、鋭意研究中の最前線です。最も進んでいるのはビール予想で、正の場合が名前付きの6つの残差ケースに帰着され、多くの部分がすでに閉じています。途中の具体的な結果もあります。コラッツ予想では、整数ブーストの許容錐に入るのは 1 と 2 だけで、2²⁰ までのすべての出発値が 1 に到達します。</span></p>
+  <p class="note"><span class="en">Also explored: abc, the Riemann Hypothesis, Goldbach and Polignac, each with finite certificates. Section 8 explains how the steps still in progress are tracked.</span><span class="ja">abc 予想、リーマン予想、ゴールドバッハ予想、ポリニャック予想も、有限範囲の検証とともに研究中です。研究中のステップの管理方法は第8節を参照してください。</span></p>
 </section>
 
 <section id="logic">
   <h2><span class="en">7. Four-valued logic (D4L)</span><span class="ja">7. 4値論理（D4L）</span></h2>
-  <p><span class="en">Classical logic is the logic of a decided world: true or false, and a contradiction entails everything. <b>Dual Spacetime 4-Valued Logic</b> (D4L) is the logic of the signed height J<sub>norm</sub> ∈ [−1, 1]. A proposition is an admissible torsion configuration, and measuring it reads J<sub>norm</sub>. The four names are the sign and saturation of that one number:</span><span class="ja">古典論理は「決着した世界」の論理です。真か偽か、そして矛盾からは何でも導かれます。<b>双対時空4値論理</b>（D4L）は、符号付きの高さ J<sub>norm</sub> ∈ [−1, 1] の論理です。命題は許容されたねじれ配置で、測定すると J<sub>norm</sub> が読まれます。4つの名前は、この一つの数の符号と飽和の度合いです。</span></p>
+  <p><span class="en">Classical logic is the logic of a decided world: true or false, and a contradiction entails everything. <b>Dual Spacetime 4-Valued Logic</b> (D4L) is the logic of the signed height J<sub>norm</sub> ∈ [−1, 1]. A proposition is an admissible torsion configuration, and measuring it reads J<sub>norm</sub>. The four names are the sign and saturation of that one number. The two ends of the interval are called <b>walls</b>: the positive wall +1 is |F⟩ (every axis a pure boost), and the negative wall −1 is the deepest point of |B⟩ (pure rotation). Perfect balance, 0, is |T⟩. Outside [−1, 1] no label is assigned.</span><span class="ja">古典論理は「決着した世界」の論理です。真か偽か、そして矛盾からは何でも導かれます。<b>双対時空4値論理</b>（D4L）は、符号付きの高さ J<sub>norm</sub> ∈ [−1, 1] の論理です。命題は許容されたねじれ配置で、測定すると J<sub>norm</sub> が読まれます。4つの名前は、この一つの数の符号と飽和の度合いです。区間の両端を<b>壁</b>と呼びます。正の壁 +1 は |F⟩（すべての軸が純ブースト）、負の壁 −1 は |B⟩ のいちばん深い点（純回転）です。完全な釣り合い 0 が |T⟩ です。[−1, 1] の外にはラベルを付けません。</span></p>
   <svg class="fig" viewBox="0 0 640 170" role="img" aria-label="The interval from -1 to 1 split into B, T, U, F">
     <g transform="translate(60,80)">
       <rect x="0" y="-14" width="260" height="28" class="seg b"/>
@@ -273,8 +280,8 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     </g>
     <text class="lbl small" x="320" y="18" text-anchor="middle">J<tspan baseline-shift="sub" font-size="9">norm</tspan></text>
   </svg>
-  <p><span class="en">Negation is the usual–dual swap of the geometry. “And” and “or” are min and max on the height. A configuration and its swap cannot both sit at the positive wall, so <b>contradiction does not explode</b>: from P and not-P you cannot derive everything. The two ends of the interval are called walls. The positive wall J<sub>norm</sub> = +1 is the label |F⟩ (every axis a pure boost); the negative wall −1 is the deepest point of |B⟩ (pure rotation). Perfect balance, J<sub>norm</sub> = 0, is |T⟩. Outside [−1, 1] no label is assigned. The dual sector also carries a two-dimensional Hilbert space ℂ², linking the logic to spinors; that bridge is described in the paper as related to the logic by a dictionary rather than identified with it.</span><span class="ja">否定は幾何の通常–双対の入れ替えです。「かつ」と「または」は高さの min と max です。ある配置とその入れ替えが両方とも正の壁に乗ることはできないので、<b>矛盾は爆発しません</b>。P と ¬P から何でも導かれることはありません。区間の両端を「壁」と呼びます。正の壁 J<sub>norm</sub> = +1 はラベル |F⟩（すべての軸が純ブースト）、負の壁 −1 は |B⟩ のいちばん深い点（純回転）です。完全な釣り合い J<sub>norm</sub> = 0 が |T⟩ です。[−1, 1] の外にはラベルを付けません。双対の側には2次元のヒルベルト空間 ℂ² もあり、論理をスピノルと結びつけます。論文ではこの二つは同一視されず、辞書で対応づけられる関係として描かれています。</span></p>
-  <p class="note"><span class="en">The statements of the D4L paper are machine-checked in Lean.</span><span class="ja">D4L 論文の主張は Lean で機械検証されています。</span></p>
+  <p><span class="en">Negation is the usual–dual swap of the geometry. “And” and “or” are min and max on the height. A configuration and its swap cannot both sit at the positive wall, so <b>contradiction does not explode</b>: from P and not-P you cannot derive everything. The dual sector also carries a two-dimensional Hilbert space ℂ², linking the logic to spinors; that bridge is described in the paper as related to the logic by a dictionary rather than identified with it.</span><span class="ja">否定は幾何の通常–双対の入れ替えです。「かつ」と「または」は高さの min と max です。ある配置とその入れ替えが両方とも正の壁に乗ることはできないので、<b>矛盾は爆発しません</b>。P と ¬P から何でも導かれることはありません。双対の側には2次元のヒルベルト空間 ℂ² もあり、論理をスピノルと結びつけます。論文ではこの二つは同一視されず、辞書で対応づけられる関係として描かれています。</span></p>
+  <p class="note"><span class="en">The D4L definitions and theorems are machine-checked in Lean.</span><span class="ja">D4L の定義と定理は Lean で機械検証されています。</span></p>
 </section>
 
 
