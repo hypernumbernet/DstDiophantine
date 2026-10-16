@@ -40,8 +40,12 @@ of the visit is finite.
 * `d/dr (r + rₛ log(r - rₛ)) = 1/A`. The same antiderivative is unbounded
   as `r ↓ rₛ` and finite from the freeze out to the photon sphere.
 * Numerical brackets, in units of `GM/c³`, for the photon half-orbit, the
-  cavity from the photon sphere down to the freeze, and the Killing time
-  spent inside the freeze.
+  radial cavity from the photon sphere down to the freeze, and the Killing
+  time spent inside the freeze. Inside the freeze the round trip is
+  `(4/A) √(u★² − u_peri²)`. It is shortest as `b ↑ b_c`, at `82.83` on the
+  one-axis saturation and `913.54` on the three-axis ceiling. A radial ray
+  takes `96.74` and `927.08`. The radial cavity times are `11.44` and
+  `20.96`, shorter than the half-orbit by `4.89` and longer by `4.63`.
 
 ## Not claimed
 
@@ -92,9 +96,18 @@ noncomputable def cavityFactor (A : ℝ) : ℝ :=
 noncomputable def interiorRadialFactor (A : ℝ) : ℝ :=
   4 / (A * (1 - A))
 
-/-- Shortest interior round trip of a ray that has passed the photon sphere. -/
+/-- Chord lower bound on the marginal interior round trip.
+The geodesic time is `interiorVisit`, which is strictly longer. -/
 noncomputable def shallowInteriorFactor (A : ℝ) : ℝ :=
   4 * (1 / (1 - A) - (3 * Real.sqrt 3 / 2) * Real.sqrt A) / A
+
+/-- Periapsis ratio `r_peri / rₛ = (b / rₛ) √A` in the limit `b ↑ b_c`. -/
+noncomputable def marginalPeriRatio (A : ℝ) : ℝ :=
+  (3 * Real.sqrt 3 / 2) * Real.sqrt A
+
+/-- Interior round trip, in units of `GM/c³`, at periapsis ratio `uPeri = r_peri / rₛ`. -/
+noncomputable def interiorVisit (A uPeri : ℝ) : ℝ :=
+  4 * Real.sqrt ((1 / (1 - A)) ^ 2 - uPeri ^ 2) / A
 
 theorem criticalImpact_sq {rs : ℝ} : criticalImpact rs ^ 2 = (27 / 4) * rs ^ 2 := by
   unfold criticalImpact
@@ -690,6 +703,911 @@ theorem interior_outlasts_half_orbit :
   refine ⟨?_, ?_⟩
   · linarith [shallowInterior_oneAxis_gt]
   · linarith [shallowInterior_threeAxis_gt]
+
+/-! ### The geodesic time inside the freeze -/
+
+theorem hasDerivAt_freezeAntideriv {rp r : ℝ} (hp : 0 ≤ rp) (hr : rp < r) :
+    HasDerivAt (fun x => Real.sqrt (x ^ 2 - rp ^ 2))
+      (1 / Real.sqrt (1 - rp ^ 2 / r ^ 2)) r := by
+  have hr0 : 0 < r := lt_of_le_of_lt hp hr
+  have hsq : rp ^ 2 < r ^ 2 :=
+    pow_lt_pow_left₀ hr hp (by decide : (2 : ℕ) ≠ 0)
+  have hpos : 0 < r ^ 2 - rp ^ 2 := sub_pos.mpr hsq
+  have hpow : HasDerivAt (fun x => x ^ 2) (2 * r) r := by
+    simpa using hasDerivAt_pow 2 r
+  have hder := (hpow.sub_const (rp ^ 2)).sqrt hpos.ne'
+  have hfac : r ^ 2 - rp ^ 2 = r ^ 2 * (1 - rp ^ 2 / r ^ 2) := by
+    field_simp [hr0.ne']
+  have hq : 0 < 1 - rp ^ 2 / r ^ 2 := by
+    have hmul : 0 < r ^ 2 * (1 - rp ^ 2 / r ^ 2) := by
+      rw [← hfac]
+      exact hpos
+    exact (mul_pos_iff_of_pos_left (sq_pos_of_pos hr0)).mp hmul
+  have hrewrite : r / Real.sqrt (r ^ 2 - rp ^ 2) =
+      1 / Real.sqrt (1 - rp ^ 2 / r ^ 2) := by
+    rw [hfac, Real.sqrt_mul (sq_nonneg r), Real.sqrt_sq hr0.le]
+    field_simp [hr0.ne', (Real.sqrt_pos.mpr hq).ne']
+  refine hder.congr_deriv ?_
+  calc (2 * r) / (2 * Real.sqrt (r ^ 2 - rp ^ 2))
+      = r / Real.sqrt (r ^ 2 - rp ^ 2) := by field_simp
+    _ = 1 / Real.sqrt (1 - rp ^ 2 / r ^ 2) := hrewrite
+
+theorem interiorVisit_radial {A : ℝ} (hA : 0 < A) (hA1 : A < 1) :
+    interiorVisit A 0 = interiorRadialFactor A := by
+  have hU : 0 < 1 / (1 - A) := by
+    exact div_pos one_pos (sub_pos.mpr hA1)
+  unfold interiorVisit interiorRadialFactor
+  have hsq : (1 / (1 - A)) ^ 2 - (0 : ℝ) ^ 2 = (1 / (1 - A)) ^ 2 := by ring
+  rw [hsq, Real.sqrt_sq hU.le]
+  field_simp [hA.ne', (sub_pos.mpr hA1).ne']
+
+theorem interiorVisit_coordinate {rs A rPeri : ℝ}
+    (hrs : 0 < rs) (hA : 0 < A) (hA1 : A < 1)
+    (hp : 0 ≤ rPeri) (hr : rPeri ≤ rs / (1 - A)) :
+    2 * Real.sqrt ((rs / (1 - A)) ^ 2 - rPeri ^ 2) / A / (rs / 2) =
+      interiorVisit A (rPeri / rs) := by
+  have hden : 1 - A ≠ 0 := (sub_pos.mpr hA1).ne'
+  have hnn : 0 ≤ (rs / (1 - A)) ^ 2 - rPeri ^ 2 := by
+    have hle : rPeri ^ 2 ≤ (rs / (1 - A)) ^ 2 :=
+      pow_le_pow_left₀ hp hr 2
+    linarith
+  unfold interiorVisit
+  have hscale : Real.sqrt ((rs / (1 - A)) ^ 2 - rPeri ^ 2) =
+      rs * Real.sqrt ((1 / (1 - A)) ^ 2 - (rPeri / rs) ^ 2) := by
+    have hfac : (rs / (1 - A)) ^ 2 - rPeri ^ 2 =
+        rs ^ 2 * ((1 / (1 - A)) ^ 2 - (rPeri / rs) ^ 2) := by
+      field_simp [hrs.ne', hden]
+    have harg : 0 ≤ (1 / (1 - A)) ^ 2 - (rPeri / rs) ^ 2 := by
+      have : 0 ≤ rs ^ 2 * ((1 / (1 - A)) ^ 2 - (rPeri / rs) ^ 2) := by
+        simpa [hfac] using hnn
+      exact (mul_nonneg_iff_of_pos_left (sq_pos_of_pos hrs)).mp this
+    rw [hfac, Real.sqrt_mul (sq_nonneg rs), Real.sqrt_sq hrs.le]
+  rw [hscale]
+  field_simp [hrs.ne', hA.ne']
+  ring
+
+theorem interiorVisit_strictAnti {A u v : ℝ}
+    (hA : 0 < A) (_hA1 : A < 1) (hu : 0 ≤ u) (huv : u < v)
+    (hv : v < 1 / (1 - A)) :
+    interiorVisit A v < interiorVisit A u := by
+  have hv0 : 0 < v := lt_of_le_of_lt hu huv
+  have hvsq : v ^ 2 < (1 / (1 - A)) ^ 2 :=
+    pow_lt_pow_left₀ hv hv0.le (by decide : (2 : ℕ) ≠ 0)
+  have husq : u ^ 2 < v ^ 2 :=
+    pow_lt_pow_left₀ huv hu (by decide : (2 : ℕ) ≠ 0)
+  have hdiff : (1 / (1 - A)) ^ 2 - v ^ 2 < (1 / (1 - A)) ^ 2 - u ^ 2 := by
+    linarith
+  have hnn : 0 ≤ (1 / (1 - A)) ^ 2 - v ^ 2 := by linarith
+  have hsqrt := Real.sqrt_lt_sqrt hnn hdiff
+  unfold interiorVisit
+  have hmul := mul_lt_mul_of_pos_left hsqrt (by positivity : (0 : ℝ) < 4 / A)
+  simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using hmul
+
+theorem marginal_below_freeze_oneAxis :
+    marginalPeriRatio AOne < 1 / (1 - AOne) := by
+  have h := oneAxis_cut_inside (rs := 1) (by norm_num)
+  have hradius : (1 : ℝ) * radiusRatioOne = 1 / (1 - AOne) := by
+    unfold radiusRatioOne
+    rw [one_mul, one_div]
+  have hcrit : criticalImpact 1 * Real.sqrt AOne = marginalPeriRatio AOne := by
+    unfold criticalImpact marginalPeriRatio
+    ring
+  simpa [hradius, hcrit] using h
+
+theorem marginal_below_freeze_threeAxis :
+    marginalPeriRatio AMin < 1 / (1 - AMin) := by
+  have h := threeAxis_cut_inside (rs := 1) (by norm_num)
+  have hradius : eventBoundaryRadius 1 = 1 / (1 - AMin) := by
+    unfold eventBoundaryRadius radiusRatio
+    rw [one_mul, one_div]
+  have hcrit : criticalImpact 1 * Real.sqrt AMin = marginalPeriRatio AMin := by
+    unfold criticalImpact marginalPeriRatio
+    ring
+  simpa [hradius, hcrit] using h
+
+theorem marginalVisit_gt_shallow {A : ℝ}
+    (hA : 0 < A) (hA1 : A < 1) (hp : 0 < marginalPeriRatio A)
+    (hcut : marginalPeriRatio A < 1 / (1 - A)) :
+    shallowInteriorFactor A < interiorVisit A (marginalPeriRatio A) := by
+  set u : ℝ := 1 / (1 - A)
+  set p : ℝ := marginalPeriRatio A
+  have hu : 0 < u := div_pos one_pos (sub_pos.mpr hA1)
+  have hgap : u - p < Real.sqrt (u ^ 2 - p ^ 2) := by
+    have hpos : 0 < u ^ 2 - p ^ 2 := by
+      have hsq : p ^ 2 < u ^ 2 :=
+        pow_lt_pow_left₀ hcut hp.le (by decide : (2 : ℕ) ≠ 0)
+      linarith
+    have hsq_lt : (u - p) ^ 2 < u ^ 2 - p ^ 2 := by
+      nlinarith [hp, hcut]
+    have hnn : 0 ≤ u - p := by linarith
+    have hsqrt := Real.sqrt_lt_sqrt (sq_nonneg (u - p)) hsq_lt
+    simpa [Real.sqrt_sq hnn] using hsqrt
+  unfold shallowInteriorFactor interiorVisit
+  dsimp [u, p]
+  exact div_lt_div_of_pos_right (mul_lt_mul_of_pos_left hgap (by norm_num)) hA
+
+/-- A subcritical ray turns before the marginal periapsis, so its interior
+visit is strictly longer than the marginal value. -/
+theorem subcritical_visit_gt_marginal {rs A b : ℝ}
+    (hrs : 0 < rs) (hA : 0 < A) (hA1 : A < 1)
+    (hcut : marginalPeriRatio A < 1 / (1 - A))
+    (hb0 : 0 < b) (hb : b < criticalImpact rs) :
+    interiorVisit A (marginalPeriRatio A) <
+      interiorVisit A (b * Real.sqrt A / rs) := by
+  have hs : 0 < Real.sqrt A := Real.sqrt_pos.mpr hA
+  have hratio : b * Real.sqrt A / rs < marginalPeriRatio A := by
+    have hb' : b / rs < 3 * Real.sqrt 3 / 2 := by
+      have hbalt : b < (3 * Real.sqrt 3 / 2) * rs := by
+        simpa [criticalImpact] using hb
+      exact (div_lt_iff₀ hrs).mpr hbalt
+    unfold marginalPeriRatio
+    calc b * Real.sqrt A / rs
+        = b / rs * Real.sqrt A := by field_simp [hrs.ne']
+      _ < (3 * Real.sqrt 3 / 2) * Real.sqrt A :=
+          mul_lt_mul_of_pos_right hb' hs
+  have hpos : 0 ≤ b * Real.sqrt A / rs := by positivity
+  exact interiorVisit_strictAnti hA hA1 hpos hratio hcut
+
+theorem subcritical_visit_gt_marginal_oneAxis {rs b : ℝ}
+    (hrs : 0 < rs) (hb0 : 0 < b) (hb : b < criticalImpact rs) :
+    interiorVisit AOne (marginalPeriRatio AOne) <
+      interiorVisit AOne (b * Real.sqrt AOne / rs) :=
+  subcritical_visit_gt_marginal hrs AOne_pos AOne_lt_one
+    marginal_below_freeze_oneAxis hb0 hb
+
+theorem subcritical_visit_gt_marginal_threeAxis {rs b : ℝ}
+    (hrs : 0 < rs) (hb0 : 0 < b) (hb : b < criticalImpact rs) :
+    interiorVisit AMin (marginalPeriRatio AMin) <
+      interiorVisit AMin (b * Real.sqrt AMin / rs) :=
+  subcritical_visit_gt_marginal hrs AMin_pos AMin_lt_one
+    marginal_below_freeze_threeAxis hb0 hb
+
+/-! ### Brackets for the two ceilings -/
+
+private theorem sqrt_three_tight :
+    (1.732050807 : ℝ) < Real.sqrt 3 ∧ Real.sqrt 3 < (1.732050808 : ℝ) := by
+  constructor
+  · exact Real.lt_sqrt_of_sq_lt (by norm_num)
+  · exact (Real.sqrt_lt' (by norm_num)).mpr (by norm_num)
+
+private theorem exp_pi_bounds :
+    (23.14069 : ℝ) < Real.exp Real.pi ∧ Real.exp Real.pi < (23.14070 : ℝ) := by
+  have hπlo : (0.1415926535 : ℝ) < Real.pi - 3 := by
+    linarith [Real.pi_gt_d20]
+  have hπhi : Real.pi - 3 < (0.1415926536 : ℝ) := by
+    linarith [Real.pi_lt_d20]
+  have helo : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
+  have hehi : Real.exp 1 < (2.7182818286 : ℝ) := Real.exp_one_lt_d9
+  have hexp3 : Real.exp 1 ^ 3 = Real.exp 3 := by
+    rw [← Real.exp_nat_mul]
+    norm_num
+  have he3lo : (2.7182818283 : ℝ) ^ 3 < Real.exp 3 := by
+    have hpow : (2.7182818283 : ℝ) ^ 3 < Real.exp 1 ^ 3 :=
+      pow_lt_pow_left₀ helo (by norm_num) (by decide)
+    linarith [hexp3]
+  have he3hi : Real.exp 3 < (2.7182818286 : ℝ) ^ 3 := by
+    have hpow : Real.exp 1 ^ 3 < (2.7182818286 : ℝ) ^ 3 :=
+      pow_lt_pow_left₀ hehi (Real.exp_pos 1).le (by decide : (3 : ℕ) ≠ 0)
+    linarith [hexp3]
+  have hseries_gt : (1.15210724 : ℝ) <
+      ∑ m ∈ Finset.range 8, (0.1415926535 : ℝ) ^ m / m.factorial := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  have hseries_le : ∑ m ∈ Finset.range 8, (0.1415926535 : ℝ) ^ m / m.factorial ≤
+      Real.exp (0.1415926535 : ℝ) :=
+    Real.sum_le_exp_of_nonneg (by norm_num) 8
+  have hfrac_lt : Real.exp (0.1415926535 : ℝ) < Real.exp (Real.pi - 3) :=
+    Real.exp_lt_exp.mpr hπlo
+  have hprod_lo : (23.14069 : ℝ) < Real.exp 3 * Real.exp (Real.pi - 3) := by
+    have hnum : (23.14069 : ℝ) < (2.7182818283 : ℝ) ^ 3 * (1.15210724 : ℝ) := by
+      norm_num
+    have hstep : (2.7182818283 : ℝ) ^ 3 * (1.15210724 : ℝ) <
+        Real.exp 3 * Real.exp (Real.pi - 3) := by
+      have h2 : (1.15210724 : ℝ) < Real.exp (Real.pi - 3) :=
+        lt_trans hseries_gt (lt_of_le_of_lt hseries_le hfrac_lt)
+      exact (mul_lt_mul_of_pos_right he3lo (by norm_num)).trans
+        (mul_lt_mul_of_pos_left h2 (Real.exp_pos _))
+    linarith
+  have hsum_lt : ∑ m ∈ Finset.range 8, (0.1415926536 : ℝ) ^ m / m.factorial <
+      (1.15210725 : ℝ) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  have hrem : (0.1415926536 : ℝ) ^ 8 * ((8 : ℕ).succ / (Nat.factorial 8 * 8)) <
+      (0.00000001 : ℝ) := by
+    norm_num
+  have hexp_frac_lt : Real.exp (Real.pi - 3) < (1.15210726 : ℝ) := by
+    have hx : |(0.1415926536 : ℝ)| ≤ 1 := by norm_num
+    have hbound := Real.exp_bound hx (n := 8) (by decide)
+    have hle : Real.exp (0.1415926536 : ℝ) ≤
+        (∑ m ∈ Finset.range 8, (0.1415926536 : ℝ) ^ m / m.factorial) +
+          (0.1415926536 : ℝ) ^ 8 * ((8 : ℕ).succ / (Nat.factorial 8 * 8)) := by
+      have := (abs_sub_le_iff.mp hbound).1
+      linarith
+    have hstrict : Real.exp (0.1415926536 : ℝ) < (1.15210726 : ℝ) := by
+      linarith
+    exact lt_trans (Real.exp_lt_exp.mpr hπhi) hstrict
+  have hprod_hi : Real.exp 3 * Real.exp (Real.pi - 3) < (23.14070 : ℝ) := by
+    have hnum : (2.7182818286 : ℝ) ^ 3 * (1.15210726 : ℝ) < (23.14070 : ℝ) := by
+      norm_num
+    have hstep : Real.exp 3 * Real.exp (Real.pi - 3) <
+        (2.7182818286 : ℝ) ^ 3 * (1.15210726 : ℝ) := by
+      exact (mul_lt_mul_of_pos_right he3hi (Real.exp_pos _)).trans
+        (mul_lt_mul_of_pos_left hexp_frac_lt (by norm_num))
+    linarith
+  have hsplit : Real.exp Real.pi = Real.exp 3 * Real.exp (Real.pi - 3) := by
+    rw [← Real.exp_add]
+    ring_nf
+  constructor
+  · simpa [hsplit] using hprod_lo
+  · simpa [hsplit] using hprod_hi
+
+theorem AOne_bounds :
+    (0.04321390 : ℝ) < AOne ∧ AOne < (0.04321393 : ℝ) := by
+  have h := exp_pi_bounds
+  unfold AOne
+  rw [Real.exp_neg]
+  constructor
+  · have hinv : (23.14070 : ℝ)⁻¹ < (Real.exp Real.pi)⁻¹ :=
+      (inv_lt_inv₀ (by norm_num) (Real.exp_pos _)).mpr h.2
+    have hnum : (0.04321390 : ℝ) < (23.14070 : ℝ)⁻¹ := by norm_num
+    linarith
+  · have hinv : (Real.exp Real.pi)⁻¹ < (23.14069 : ℝ)⁻¹ :=
+      (inv_lt_inv₀ (Real.exp_pos _) (by norm_num)).mpr h.1
+    have hnum : (23.14069 : ℝ)⁻¹ < (0.04321393 : ℝ) := by norm_num
+    linarith
+
+private theorem pi_mul_sqrt_three_bounds :
+    (5.441398090 : ℝ) < Real.pi * Real.sqrt 3 ∧
+      Real.pi * Real.sqrt 3 < (5.441398095 : ℝ) := by
+  have hπlo : (3.1415926535 : ℝ) < Real.pi := by linarith [Real.pi_gt_d20]
+  have hπhi : Real.pi < (3.1415926536 : ℝ) := by linarith [Real.pi_lt_d20]
+  have hs := sqrt_three_tight
+  constructor
+  · have hnum : (5.441398090 : ℝ) < (3.1415926535 : ℝ) * (1.732050807 : ℝ) := by
+      norm_num
+    have hmul : (3.1415926535 : ℝ) * (1.732050807 : ℝ) < Real.pi * Real.sqrt 3 :=
+      mul_lt_mul hπlo hs.1.le (by norm_num) Real.pi_nonneg
+    linarith
+  · have hnum : (3.1415926536 : ℝ) * (1.732050808 : ℝ) < (5.441398095 : ℝ) := by
+      norm_num
+    have hmul : Real.pi * Real.sqrt 3 < (3.1415926536 : ℝ) * (1.732050808 : ℝ) :=
+      mul_lt_mul hπhi hs.2.le (Real.sqrt_pos.mpr (by norm_num)) (by norm_num)
+    linarith
+
+private theorem exp_pi_sqrt_three_bounds :
+    (230.76458 : ℝ) < Real.exp (Real.pi * Real.sqrt 3) ∧
+      Real.exp (Real.pi * Real.sqrt 3) < (230.76459 : ℝ) := by
+  have hspan := pi_mul_sqrt_three_bounds
+  have hlo : (0.441398090 : ℝ) < Real.pi * Real.sqrt 3 - 5 := by linarith
+  have hhi : Real.pi * Real.sqrt 3 - 5 < (0.441398095 : ℝ) := by linarith
+  have helo : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
+  have hehi : Real.exp 1 < (2.7182818286 : ℝ) := Real.exp_one_lt_d9
+  have hexp5 : Real.exp 1 ^ 5 = Real.exp 5 := by
+    rw [← Real.exp_nat_mul]
+    norm_num
+  have he5lo : (2.7182818283 : ℝ) ^ 5 < Real.exp 5 := by
+    have hpow : (2.7182818283 : ℝ) ^ 5 < Real.exp 1 ^ 5 :=
+      pow_lt_pow_left₀ helo (by norm_num) (by decide : (5 : ℕ) ≠ 0)
+    linarith [hexp5]
+  have he5hi : Real.exp 5 < (2.7182818286 : ℝ) ^ 5 := by
+    have hpow : Real.exp 1 ^ 5 < (2.7182818286 : ℝ) ^ 5 :=
+      pow_lt_pow_left₀ hehi (Real.exp_pos 1).le (by decide : (5 : ℕ) ≠ 0)
+    linarith [hexp5]
+  have hseries_gt : (1.55487952 : ℝ) <
+      ∑ m ∈ Finset.range 8, (0.441398090 : ℝ) ^ m / m.factorial := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  have hseries_le : ∑ m ∈ Finset.range 8, (0.441398090 : ℝ) ^ m / m.factorial ≤
+      Real.exp (0.441398090 : ℝ) :=
+    Real.sum_le_exp_of_nonneg (by norm_num) 8
+  have hfrac_lt : Real.exp (0.441398090 : ℝ) < Real.exp (Real.pi * Real.sqrt 3 - 5) :=
+    Real.exp_lt_exp.mpr hlo
+  have hprod_lo : (230.76458 : ℝ) < Real.exp 5 * Real.exp (Real.pi * Real.sqrt 3 - 5) := by
+    have hnum : (230.76458 : ℝ) < (2.7182818283 : ℝ) ^ 5 * (1.55487952 : ℝ) := by
+      norm_num
+    have h2 : (1.55487952 : ℝ) < Real.exp (Real.pi * Real.sqrt 3 - 5) :=
+      lt_trans hseries_gt (lt_of_le_of_lt hseries_le hfrac_lt)
+    have hstep : (2.7182818283 : ℝ) ^ 5 * (1.55487952 : ℝ) <
+        Real.exp 5 * Real.exp (Real.pi * Real.sqrt 3 - 5) :=
+      (mul_lt_mul_of_pos_right he5lo (by norm_num)).trans
+        (mul_lt_mul_of_pos_left h2 (Real.exp_pos _))
+    linarith
+  have hsum_lt : ∑ m ∈ Finset.range 8, (0.441398095 : ℝ) ^ m / m.factorial <
+      (1.554879532 : ℝ) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  have hrem : (0.441398095 : ℝ) ^ 8 * ((8 : ℕ).succ / (Nat.factorial 8 * 8)) <
+      (0.000000041 : ℝ) := by
+    norm_num
+  have hexp_frac_lt : Real.exp (Real.pi * Real.sqrt 3 - 5) < (1.554879573 : ℝ) := by
+    have hx : |(0.441398095 : ℝ)| ≤ 1 := by norm_num
+    have hbound := Real.exp_bound hx (n := 8) (by decide)
+    have hle : Real.exp (0.441398095 : ℝ) ≤
+        (∑ m ∈ Finset.range 8, (0.441398095 : ℝ) ^ m / m.factorial) +
+          (0.441398095 : ℝ) ^ 8 * ((8 : ℕ).succ / (Nat.factorial 8 * 8)) := by
+      linarith [(abs_sub_le_iff.mp hbound).1]
+    have hstrict : Real.exp (0.441398095 : ℝ) < (1.554879573 : ℝ) := by
+      linarith [hsum_lt, hrem, hle]
+    exact lt_trans (Real.exp_lt_exp.mpr hhi) hstrict
+  have hprod_hi : Real.exp 5 * Real.exp (Real.pi * Real.sqrt 3 - 5) < (230.76459 : ℝ) := by
+    have hnum : (2.7182818286 : ℝ) ^ 5 * (1.554879573 : ℝ) < (230.76459 : ℝ) := by
+      norm_num
+    have hstep : Real.exp 5 * Real.exp (Real.pi * Real.sqrt 3 - 5) <
+        (2.7182818286 : ℝ) ^ 5 * (1.554879573 : ℝ) :=
+      (mul_lt_mul_of_pos_right he5hi (Real.exp_pos _)).trans
+        (mul_lt_mul_of_pos_left hexp_frac_lt (by norm_num))
+    linarith
+  have hsplit : Real.exp (Real.pi * Real.sqrt 3) =
+      Real.exp 5 * Real.exp (Real.pi * Real.sqrt 3 - 5) := by
+    rw [← Real.exp_add]
+    ring_nf
+  constructor
+  · simpa [hsplit] using hprod_lo
+  · simpa [hsplit] using hprod_hi
+
+theorem AMin_decimal_bounds :
+    (0.0043334204 : ℝ) < AMin ∧ AMin < (0.0043334207 : ℝ) := by
+  have h := exp_pi_sqrt_three_bounds
+  rw [AMin_eq_exp_neg_pi_sqrt_three, Real.exp_neg]
+  constructor
+  · have hinv : (230.76459 : ℝ)⁻¹ < (Real.exp (Real.pi * Real.sqrt 3))⁻¹ :=
+      (inv_lt_inv₀ (by norm_num) (Real.exp_pos _)).mpr h.2
+    have hnum : (0.0043334204 : ℝ) < (230.76459 : ℝ)⁻¹ := by norm_num
+    linarith
+  · have hinv : (Real.exp (Real.pi * Real.sqrt 3))⁻¹ < (230.76458 : ℝ)⁻¹ :=
+      (inv_lt_inv₀ (Real.exp_pos _) (by norm_num)).mpr h.1
+    have hnum : (230.76458 : ℝ)⁻¹ < (0.0043334207 : ℝ) := by norm_num
+    linarith
+
+theorem photonHalfOrbit_tight :
+    (16.324 : ℝ) < photonHalfOrbit ∧ photonHalfOrbit < (16.325 : ℝ) := by
+  have hπlo : (3.1415926535 : ℝ) < Real.pi := by linarith [Real.pi_gt_d20]
+  have hπhi : Real.pi < (3.1415926536 : ℝ) := by linarith [Real.pi_lt_d20]
+  have hs := sqrt_three_tight
+  unfold photonHalfOrbit
+  constructor
+  · have hnum : (16.324 : ℝ) < 3 * ((3.1415926535 : ℝ) * (1.732050807 : ℝ)) := by
+      norm_num
+    have hmul : (3.1415926535 : ℝ) * (1.732050807 : ℝ) < Real.pi * Real.sqrt 3 :=
+      mul_lt_mul hπlo hs.1.le (by norm_num) Real.pi_nonneg
+    have h3 : 3 * ((3.1415926535 : ℝ) * (1.732050807 : ℝ)) <
+        3 * (Real.pi * Real.sqrt 3) :=
+      mul_lt_mul_of_pos_left hmul (by norm_num)
+    linarith
+  · have hnum : 3 * ((3.1415926536 : ℝ) * (1.732050808 : ℝ)) < (16.325 : ℝ) := by
+      norm_num
+    have hmul : Real.pi * Real.sqrt 3 < (3.1415926536 : ℝ) * (1.732050808 : ℝ) :=
+      mul_lt_mul hπhi hs.2.le (Real.sqrt_pos.mpr (by norm_num)) (by norm_num)
+    have h3 : 3 * (Real.pi * Real.sqrt 3) <
+        3 * ((3.1415926536 : ℝ) * (1.732050808 : ℝ)) :=
+      mul_lt_mul_of_pos_left hmul (by norm_num)
+    linarith
+
+theorem cavityFactor_AOne :
+    cavityFactor AOne =
+      4 * (3 / 2 - 1 / (1 - AOne) + Real.log (1 - AOne) - Real.log 2 + Real.pi) := by
+  have hA : 0 < AOne := AOne_pos
+  have h1 : 0 < 1 - AOne := sub_pos.mpr AOne_lt_one
+  unfold cavityFactor
+  have hlog : Real.log ((1 - AOne) / (2 * AOne)) =
+      Real.log (1 - AOne) - Real.log (2 * AOne) :=
+    Real.log_div h1.ne' (mul_ne_zero (by norm_num) hA.ne')
+  have hmul : Real.log (2 * AOne) = Real.log 2 + Real.log AOne :=
+    Real.log_mul (by norm_num) hA.ne'
+  have hAlog : Real.log AOne = -Real.pi := by
+    unfold AOne
+    exact Real.log_exp _
+  rw [hlog, hmul, hAlog]
+  ring
+
+theorem cavityFactor_AMin :
+    cavityFactor AMin =
+      4 * (3 / 2 - 1 / (1 - AMin) + Real.log (1 - AMin) - Real.log 2 +
+        Real.pi * Real.sqrt 3) := by
+  have hA : 0 < AMin := AMin_pos
+  have h1 : 0 < 1 - AMin := sub_pos.mpr AMin_lt_one
+  unfold cavityFactor
+  have hlog : Real.log ((1 - AMin) / (2 * AMin)) =
+      Real.log (1 - AMin) - Real.log (2 * AMin) :=
+    Real.log_div h1.ne' (mul_ne_zero (by norm_num) hA.ne')
+  have hmul : Real.log (2 * AMin) = Real.log 2 + Real.log AMin :=
+    Real.log_mul (by norm_num) hA.ne'
+  have hAlog : Real.log AMin = -(Real.pi * Real.sqrt 3) := by
+    rw [AMin_eq_exp_neg_pi_sqrt_three]
+    exact Real.log_exp _
+  rw [hlog, hmul, hAlog]
+  ring
+
+private theorem log_one_sub_AOne_bounds :
+    (-0.04417559 : ℝ) < Real.log (1 - AOne) ∧
+      Real.log (1 - AOne) < (-0.04417523 : ℝ) := by
+  have hA := AOne_bounds
+  have hsum_lo : (0.04417539 : ℝ) <
+      ∑ i ∈ Finset.range 4, (0.04321390 : ℝ) ^ (i + 1) / (i + 1) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.cast_zero, Nat.cast_one, Nat.cast_ofNat, zero_add, pow_one]
+    norm_num
+  have hR_lo : (0.04321390 : ℝ) ^ 5 / (1 - |(0.04321390 : ℝ)|) < (0.00000016 : ℝ) := by
+    norm_num
+  have habs_lo := Real.abs_log_sub_add_sum_range_le
+    (x := (0.04321390 : ℝ)) (by norm_num) 4
+  have hlog_lo : Real.log (1 - (0.04321390 : ℝ)) < (-0.04417523 : ℝ) := by
+    have hle := (abs_le.mp habs_lo).2
+    linarith
+  have hsum_hi : ∑ i ∈ Finset.range 4, (0.04321393 : ℝ) ^ (i + 1) / (i + 1) <
+      (0.04417543 : ℝ) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.cast_zero, Nat.cast_one, Nat.cast_ofNat, zero_add, pow_one]
+    norm_num
+  have hR_hi : (0.04321393 : ℝ) ^ 5 / (1 - |(0.04321393 : ℝ)|) < (0.00000016 : ℝ) := by
+    norm_num
+  have habs_hi := Real.abs_log_sub_add_sum_range_le
+    (x := (0.04321393 : ℝ)) (by norm_num) 4
+  have hlog_hi : (-0.04417559 : ℝ) < Real.log (1 - (0.04321393 : ℝ)) := by
+    have hge := (abs_le.mp habs_hi).1
+    linarith
+  have hpos : 0 < 1 - AOne := sub_pos.mpr AOne_lt_one
+  constructor
+  · have hlt : 1 - (0.04321393 : ℝ) < 1 - AOne := by linarith
+    have hlog : Real.log (1 - (0.04321393 : ℝ)) < Real.log (1 - AOne) :=
+      Real.log_lt_log (by norm_num) hlt
+    linarith
+  · have hlt : 1 - AOne < 1 - (0.04321390 : ℝ) := by linarith
+    have hlog : Real.log (1 - AOne) < Real.log (1 - (0.04321390 : ℝ)) :=
+      Real.log_lt_log hpos hlt
+    linarith
+
+private theorem log_one_sub_AMin_bounds :
+    (-0.004352281 : ℝ) < Real.log (1 - AMin) ∧
+      Real.log (1 - AMin) < (-0.004314560 : ℝ) := by
+  have hA := AMin_decimal_bounds
+  have habs_hi := Real.abs_log_sub_add_sum_range_le
+    (x := (0.0043334207 : ℝ)) (by norm_num) 1
+  have habs_lo := Real.abs_log_sub_add_sum_range_le
+    (x := (0.0043334204 : ℝ)) (by norm_num) 1
+  have hsum_hi : ∑ i ∈ Finset.range 1, (0.0043334207 : ℝ) ^ (i + 1) / (i + 1) =
+      (0.0043334207 : ℝ) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_zero]
+    simp
+  have hsum_lo : ∑ i ∈ Finset.range 1, (0.0043334204 : ℝ) ^ (i + 1) / (i + 1) =
+      (0.0043334204 : ℝ) := by
+    rw [Finset.sum_range_succ, Finset.sum_range_zero]
+    simp
+  have hlog_hi : (-0.004352281 : ℝ) < Real.log (1 - (0.0043334207 : ℝ)) := by
+    have hge := (abs_le.mp habs_hi).1
+    rw [hsum_hi] at hge
+    have hR : (0.0043334207 : ℝ) ^ 2 / (1 - |(0.0043334207 : ℝ)|) <
+        (0.004352281 : ℝ) - (0.0043334207 : ℝ) := by norm_num
+    linarith
+  have hlog_lo : Real.log (1 - (0.0043334204 : ℝ)) < (-0.004314560 : ℝ) := by
+    have hle := (abs_le.mp habs_lo).2
+    rw [hsum_lo] at hle
+    have hR : (0.0043334204 : ℝ) ^ 2 / (1 - |(0.0043334204 : ℝ)|) <
+        (0.0043334204 : ℝ) - (0.004314560 : ℝ) := by norm_num
+    linarith
+  have hpos : 0 < 1 - AMin := sub_pos.mpr AMin_lt_one
+  constructor
+  · have hlt : 1 - (0.0043334207 : ℝ) < 1 - AMin := by linarith
+    exact lt_trans hlog_hi (Real.log_lt_log (by norm_num) hlt)
+  · have hlt : 1 - AMin < 1 - (0.0043334204 : ℝ) := by linarith
+    exact lt_trans (Real.log_lt_log hpos hlt) hlog_lo
+
+private theorem inv_one_sub_AOne_bounds :
+    (1.04516568 : ℝ) < 1 / (1 - AOne) ∧ 1 / (1 - AOne) < (1.04516572 : ℝ) := by
+  have hA := AOne_bounds
+  have hpos : 0 < 1 - AOne := sub_pos.mpr AOne_lt_one
+  constructor
+  · have hden : 1 - AOne < 1 - (0.04321390 : ℝ) := by linarith
+    have hinv : (1 - (0.04321390 : ℝ))⁻¹ < (1 - AOne)⁻¹ :=
+      (inv_lt_inv₀ (by norm_num) hpos).mpr hden
+    have hnum : (1.04516568 : ℝ) < (1 - (0.04321390 : ℝ))⁻¹ := by norm_num
+    have heq : 1 / (1 - AOne) = (1 - AOne)⁻¹ := by rw [one_div]
+    linarith
+  · have hden : 1 - (0.04321393 : ℝ) < 1 - AOne := by linarith
+    have hinv : (1 - AOne)⁻¹ < (1 - (0.04321393 : ℝ))⁻¹ :=
+      (inv_lt_inv₀ hpos (by norm_num)).mpr hden
+    have hnum : (1 - (0.04321393 : ℝ))⁻¹ < (1.04516572 : ℝ) := by norm_num
+    have heq : 1 / (1 - AOne) = (1 - AOne)⁻¹ := by rw [one_div]
+    linarith
+
+private theorem inv_one_sub_AMin_bounds :
+    (1.004352280 : ℝ) < 1 / (1 - AMin) ∧ 1 / (1 - AMin) < (1.004352281 : ℝ) := by
+  have hA := AMin_decimal_bounds
+  have hpos : 0 < 1 - AMin := sub_pos.mpr AMin_lt_one
+  constructor
+  · have hden : 1 - AMin < 1 - (0.0043334204 : ℝ) := by linarith
+    have hinv : (1 - (0.0043334204 : ℝ))⁻¹ < (1 - AMin)⁻¹ :=
+      (inv_lt_inv₀ (by norm_num) hpos).mpr hden
+    have hnum : (1.004352280 : ℝ) < (1 - (0.0043334204 : ℝ))⁻¹ := by norm_num
+    have heq : 1 / (1 - AMin) = (1 - AMin)⁻¹ := by rw [one_div]
+    linarith
+  · have hden : 1 - (0.0043334207 : ℝ) < 1 - AMin := by linarith
+    have hinv : (1 - AMin)⁻¹ < (1 - (0.0043334207 : ℝ))⁻¹ :=
+      (inv_lt_inv₀ hpos (by norm_num)).mpr hden
+    have hnum : (1 - (0.0043334207 : ℝ))⁻¹ < (1.004352281 : ℝ) := by norm_num
+    have heq : 1 / (1 - AMin) = (1 - AMin)⁻¹ := by rw [one_div]
+    linarith
+
+theorem cavityFactor_AOne_bounds :
+    (11.436 : ℝ) < cavityFactor AOne ∧ cavityFactor AOne < (11.437 : ℝ) := by
+  rw [cavityFactor_AOne]
+  have hinv := inv_one_sub_AOne_bounds
+  have hlog := log_one_sub_AOne_bounds
+  have h2lo : (0.6931471803 : ℝ) < Real.log 2 := Real.log_two_gt_d9
+  have h2hi : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have hπlo : (3.1415926535 : ℝ) < Real.pi := by linarith [Real.pi_gt_d20]
+  have hπhi : Real.pi < (3.1415926536 : ℝ) := by linarith [Real.pi_lt_d20]
+  have hlo : (11.436 : ℝ) <
+      4 * (3 / 2 - (1.04516572 : ℝ) + (-0.04417559 : ℝ) -
+        (0.6931471808 : ℝ) + (3.1415926535 : ℝ)) := by
+    norm_num
+  have hhi : 4 * (3 / 2 - (1.04516568 : ℝ) + (-0.04417523 : ℝ) -
+      (0.6931471803 : ℝ) + (3.1415926536 : ℝ)) < (11.437 : ℝ) := by
+    norm_num
+  have hinside_lo : (3 / 2 - (1.04516572 : ℝ) + (-0.04417559 : ℝ) -
+      (0.6931471808 : ℝ) + (3.1415926535 : ℝ)) <
+      3 / 2 - 1 / (1 - AOne) + Real.log (1 - AOne) - Real.log 2 + Real.pi := by
+    linarith
+  have hinside_hi : 3 / 2 - 1 / (1 - AOne) + Real.log (1 - AOne) - Real.log 2 + Real.pi <
+      (3 / 2 - (1.04516568 : ℝ) + (-0.04417523 : ℝ) -
+        (0.6931471803 : ℝ) + (3.1415926536 : ℝ)) := by
+    linarith
+  constructor
+  · exact lt_trans hlo (mul_lt_mul_of_pos_left hinside_lo (by norm_num))
+  · exact lt_trans (mul_lt_mul_of_pos_left hinside_hi (by norm_num)) hhi
+
+theorem cavityFactor_AMin_bounds :
+    (20.958 : ℝ) < cavityFactor AMin ∧ cavityFactor AMin < (20.959 : ℝ) := by
+  rw [cavityFactor_AMin]
+  have hinv := inv_one_sub_AMin_bounds
+  have hlog := log_one_sub_AMin_bounds
+  have h2lo : (0.6931471803 : ℝ) < Real.log 2 := Real.log_two_gt_d9
+  have h2hi : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have hspan := pi_mul_sqrt_three_bounds
+  have hlo : (20.958 : ℝ) <
+      4 * (3 / 2 - (1.004352281 : ℝ) + (-0.004352281 : ℝ) -
+        (0.6931471808 : ℝ) + (5.441398090 : ℝ)) := by
+    norm_num
+  have hhi : 4 * (3 / 2 - (1.004352280 : ℝ) + (-0.004314560 : ℝ) -
+      (0.6931471803 : ℝ) + (5.441398095 : ℝ)) < (20.959 : ℝ) := by
+    norm_num
+  have hinside_lo : (3 / 2 - (1.004352281 : ℝ) + (-0.004352281 : ℝ) -
+      (0.6931471808 : ℝ) + (5.441398090 : ℝ)) <
+      3 / 2 - 1 / (1 - AMin) + Real.log (1 - AMin) - Real.log 2 +
+        Real.pi * Real.sqrt 3 := by
+    linarith
+  have hinside_hi :
+      3 / 2 - 1 / (1 - AMin) + Real.log (1 - AMin) - Real.log 2 +
+        Real.pi * Real.sqrt 3 <
+      (3 / 2 - (1.004352280 : ℝ) + (-0.004314560 : ℝ) -
+        (0.6931471803 : ℝ) + (5.441398095 : ℝ)) := by
+    linarith
+  constructor
+  · exact lt_trans hlo (mul_lt_mul_of_pos_left hinside_lo (by norm_num))
+  · exact lt_trans (mul_lt_mul_of_pos_left hinside_hi (by norm_num)) hhi
+
+theorem cavity_against_half_orbit :
+    (4.887 : ℝ) < photonHalfOrbit - cavityFactor AOne ∧
+      photonHalfOrbit - cavityFactor AOne < (4.889 : ℝ) ∧
+      (4.633 : ℝ) < cavityFactor AMin - photonHalfOrbit ∧
+      cavityFactor AMin - photonHalfOrbit < (4.635 : ℝ) := by
+  have hhalf := photonHalfOrbit_tight
+  have hone := cavityFactor_AOne_bounds
+  have hthree := cavityFactor_AMin_bounds
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> linarith
+
+private theorem sqrt_AOne_tight :
+    (0.20787953 : ℝ) < Real.sqrt AOne ∧ Real.sqrt AOne < (0.20787961 : ℝ) := by
+  have hA := AOne_bounds
+  constructor
+  · exact Real.lt_sqrt_of_sq_lt (by
+      have : (0.20787953 : ℝ) ^ 2 < (0.04321390 : ℝ) := by norm_num
+      linarith)
+  · exact (Real.sqrt_lt' (by norm_num)).mpr (by
+      have : (0.04321393 : ℝ) < (0.20787961 : ℝ) ^ 2 := by norm_num
+      linarith)
+
+private theorem sqrt_AMin_tight :
+    (0.065828720 : ℝ) < Real.sqrt AMin ∧ Real.sqrt AMin < (0.065828723 : ℝ) := by
+  have hA := AMin_decimal_bounds
+  constructor
+  · exact Real.lt_sqrt_of_sq_lt (by
+      have : (0.065828720 : ℝ) ^ 2 < (0.0043334204 : ℝ) := by norm_num
+      linarith)
+  · exact (Real.sqrt_lt' (by norm_num)).mpr (by
+      have : (0.0043334207 : ℝ) < (0.065828723 : ℝ) ^ 2 := by norm_num
+      linarith)
+
+private theorem marginalPeri_AOne_bounds :
+    (0.54008686 : ℝ) < marginalPeriRatio AOne ∧
+      marginalPeriRatio AOne < (0.54008707 : ℝ) := by
+  have hs := sqrt_AOne_tight
+  have h3 := sqrt_three_tight
+  unfold marginalPeriRatio
+  constructor
+  · have hcoeff : (3 * (1.732050807 : ℝ) / 2) < 3 * Real.sqrt 3 / 2 := by
+      have hmul : (3 : ℝ) * (1.732050807 : ℝ) < 3 * Real.sqrt 3 :=
+        mul_lt_mul_of_pos_left h3.1 (by norm_num)
+      exact div_lt_div_of_pos_right hmul (by norm_num)
+    have hmul : (3 * (1.732050807 : ℝ) / 2) * (0.20787953 : ℝ) <
+        (3 * Real.sqrt 3 / 2) * Real.sqrt AOne :=
+      mul_lt_mul hcoeff hs.1.le (by norm_num) (by positivity)
+    have hnum : (0.54008686 : ℝ) < (3 * (1.732050807 : ℝ) / 2) * (0.20787953 : ℝ) := by
+      norm_num
+    linarith
+  · have hcoeff : 3 * Real.sqrt 3 / 2 < 3 * (1.732050808 : ℝ) / 2 := by
+      have hmul : (3 : ℝ) * Real.sqrt 3 < 3 * (1.732050808 : ℝ) :=
+        mul_lt_mul_of_pos_left h3.2 (by norm_num)
+      exact div_lt_div_of_pos_right hmul (by norm_num)
+    have hmul : (3 * Real.sqrt 3 / 2) * Real.sqrt AOne <
+        (3 * (1.732050808 : ℝ) / 2) * (0.20787961 : ℝ) :=
+      mul_lt_mul hcoeff hs.2.le (Real.sqrt_pos.mpr AOne_pos) (by positivity)
+    have hnum : (3 * (1.732050808 : ℝ) / 2) * (0.20787961 : ℝ) < (0.54008707 : ℝ) := by
+      norm_num
+    linarith
+
+private theorem marginalPeri_AMin_bounds :
+    (0.17102803 : ℝ) < marginalPeriRatio AMin ∧
+      marginalPeriRatio AMin < (0.17102804 : ℝ) := by
+  have hs := sqrt_AMin_tight
+  have h3 := sqrt_three_tight
+  unfold marginalPeriRatio
+  constructor
+  · have hcoeff : (3 * (1.732050807 : ℝ) / 2) < 3 * Real.sqrt 3 / 2 := by
+      have hmul : (3 : ℝ) * (1.732050807 : ℝ) < 3 * Real.sqrt 3 :=
+        mul_lt_mul_of_pos_left h3.1 (by norm_num)
+      exact div_lt_div_of_pos_right hmul (by norm_num)
+    have hmul : (3 * (1.732050807 : ℝ) / 2) * (0.065828720 : ℝ) <
+        (3 * Real.sqrt 3 / 2) * Real.sqrt AMin :=
+      mul_lt_mul hcoeff hs.1.le (by norm_num) (by positivity)
+    have hnum : (0.17102803 : ℝ) <
+        (3 * (1.732050807 : ℝ) / 2) * (0.065828720 : ℝ) := by
+      norm_num
+    linarith
+  · have hcoeff : 3 * Real.sqrt 3 / 2 < 3 * (1.732050808 : ℝ) / 2 := by
+      have hmul : (3 : ℝ) * Real.sqrt 3 < 3 * (1.732050808 : ℝ) :=
+        mul_lt_mul_of_pos_left h3.2 (by norm_num)
+      exact div_lt_div_of_pos_right hmul (by norm_num)
+    have hmul : (3 * Real.sqrt 3 / 2) * Real.sqrt AMin <
+        (3 * (1.732050808 : ℝ) / 2) * (0.065828723 : ℝ) :=
+      mul_lt_mul hcoeff hs.2.le (Real.sqrt_pos.mpr AMin_pos) (by positivity)
+    have hnum : (3 * (1.732050808 : ℝ) / 2) * (0.065828723 : ℝ) < (0.17102804 : ℝ) := by
+      norm_num
+    linarith
+
+theorem marginalVisit_oneAxis_bounds :
+    (82.825 : ℝ) < interiorVisit AOne (marginalPeriRatio AOne) ∧
+      interiorVisit AOne (marginalPeriRatio AOne) < (82.826 : ℝ) := by
+  have hu := inv_one_sub_AOne_bounds
+  have hp := marginalPeri_AOne_bounds
+  have hA := AOne_bounds
+  have hdiff_lo : (0.89480570 : ℝ) ^ 2 <
+      (1.04516568 : ℝ) ^ 2 - (0.54008707 : ℝ) ^ 2 := by
+    norm_num
+  have hdiff_hi : (1.04516572 : ℝ) ^ 2 - (0.54008686 : ℝ) ^ 2 <
+      (0.89480589 : ℝ) ^ 2 := by
+    norm_num
+  have hgap_lo : (0.89480570 : ℝ) ^ 2 <
+      (1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2 := by
+    have hu2 : (1.04516568 : ℝ) ^ 2 < (1 / (1 - AOne)) ^ 2 :=
+      pow_lt_pow_left₀ hu.1 (by norm_num) (by decide : (2 : ℕ) ≠ 0)
+    have hp2 : marginalPeriRatio AOne ^ 2 < (0.54008707 : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hp.2 (by unfold marginalPeriRatio; positivity)
+        (by decide : (2 : ℕ) ≠ 0)
+    linarith
+  have hgap_hi : (1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2 <
+      (0.89480589 : ℝ) ^ 2 := by
+    have hu2 : (1 / (1 - AOne)) ^ 2 < (1.04516572 : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hu.2 (div_nonneg (by norm_num) (sub_pos.mpr AOne_lt_one).le)
+        (by decide : (2 : ℕ) ≠ 0)
+    have hp2 : (0.54008686 : ℝ) ^ 2 < marginalPeriRatio AOne ^ 2 :=
+      pow_lt_pow_left₀ hp.1 (by norm_num) (by decide : (2 : ℕ) ≠ 0)
+    linarith
+  have hsqrt_lo : (0.89480570 : ℝ) <
+      Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) :=
+    Real.lt_sqrt_of_sq_lt (by linarith)
+  have hsqrt_hi : Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) <
+      (0.89480589 : ℝ) :=
+    (Real.sqrt_lt' (by norm_num)).mpr (by linarith)
+  unfold interiorVisit
+  constructor
+  · have hdiv : (82.825 : ℝ) < 4 * (0.89480570 : ℝ) / (0.04321393 : ℝ) := by
+      norm_num
+    have hnum : 4 * (0.89480570 : ℝ) / (0.04321393 : ℝ) <
+        4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) / AOne := by
+      have hleft : 4 * (0.89480570 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) :=
+        mul_lt_mul_of_pos_left hsqrt_lo (by norm_num)
+      have hden : AOne < (0.04321393 : ℝ) := hA.2
+      -- a/b < c/d when a < c, d < b, all positive: a/b < c/b < c/d
+      have hpos_den : 0 < AOne := AOne_pos
+      have h1 : 4 * (0.89480570 : ℝ) / (0.04321393 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) /
+            (0.04321393 : ℝ) :=
+        div_lt_div_of_pos_right hleft (by norm_num)
+      have h2 : 4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) /
+          (0.04321393 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) / AOne := by
+        refine div_lt_div_of_pos_left ?_ hpos_den hden
+        exact mul_pos (by norm_num) (Real.sqrt_pos.mpr (by
+          have hcut := marginal_below_freeze_oneAxis
+          have hp0 : 0 < marginalPeriRatio AOne := by
+            unfold marginalPeriRatio
+            positivity
+          have hsq : marginalPeriRatio AOne ^ 2 < (1 / (1 - AOne)) ^ 2 :=
+            pow_lt_pow_left₀ hcut hp0.le (by decide : (2 : ℕ) ≠ 0)
+          linarith))
+      linarith
+    linarith
+  · have hdiv : 4 * (0.89480589 : ℝ) / (0.04321390 : ℝ) < (82.826 : ℝ) := by
+      norm_num
+    have hleft : 4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) <
+        4 * (0.89480589 : ℝ) :=
+      mul_lt_mul_of_pos_left hsqrt_hi (by norm_num)
+    have hden : (0.04321390 : ℝ) < AOne := hA.1
+    have h1 : 4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) / AOne <
+        4 * (0.89480589 : ℝ) / AOne :=
+      div_lt_div_of_pos_right hleft AOne_pos
+    have h2 : 4 * (0.89480589 : ℝ) / AOne < 4 * (0.89480589 : ℝ) / (0.04321390 : ℝ) := by
+      refine div_lt_div_of_pos_left ?_ (by norm_num) hden
+      positivity
+    linarith
+
+theorem marginalVisit_threeAxis_bounds :
+    (913.535 : ℝ) < interiorVisit AMin (marginalPeriRatio AMin) ∧
+      interiorVisit AMin (marginalPeriRatio AMin) < (913.536 : ℝ) := by
+  have hu := inv_one_sub_AMin_bounds
+  have hp := marginalPeri_AMin_bounds
+  have hA := AMin_decimal_bounds
+  have hdiff_lo : (0.98968322 : ℝ) ^ 2 <
+      (1.004352280 : ℝ) ^ 2 - (0.17102804 : ℝ) ^ 2 := by
+    norm_num
+  have hdiff_hi : (1.004352281 : ℝ) ^ 2 - (0.17102803 : ℝ) ^ 2 <
+      (0.98968325 : ℝ) ^ 2 := by
+    norm_num
+  have hgap_lo : (0.98968322 : ℝ) ^ 2 <
+      (1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2 := by
+    have hu2 : (1.004352280 : ℝ) ^ 2 < (1 / (1 - AMin)) ^ 2 :=
+      pow_lt_pow_left₀ hu.1 (by norm_num) (by decide : (2 : ℕ) ≠ 0)
+    have hp2 : marginalPeriRatio AMin ^ 2 < (0.17102804 : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hp.2 (by unfold marginalPeriRatio; positivity)
+        (by decide : (2 : ℕ) ≠ 0)
+    linarith
+  have hgap_hi : (1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2 <
+      (0.98968325 : ℝ) ^ 2 := by
+    have hu2 : (1 / (1 - AMin)) ^ 2 < (1.004352281 : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hu.2 (div_nonneg (by norm_num) (sub_pos.mpr AMin_lt_one).le)
+        (by decide : (2 : ℕ) ≠ 0)
+    have hp2 : (0.17102803 : ℝ) ^ 2 < marginalPeriRatio AMin ^ 2 :=
+      pow_lt_pow_left₀ hp.1 (by norm_num) (by decide : (2 : ℕ) ≠ 0)
+    linarith
+  have hsqrt_lo : (0.98968322 : ℝ) <
+      Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) :=
+    Real.lt_sqrt_of_sq_lt (by linarith)
+  have hsqrt_hi : Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) <
+      (0.98968325 : ℝ) :=
+    (Real.sqrt_lt' (by norm_num)).mpr (by linarith)
+  unfold interiorVisit
+  constructor
+  · have hdiv : (913.535 : ℝ) < 4 * (0.98968322 : ℝ) / (0.0043334207 : ℝ) := by
+      norm_num
+    have hnum : 4 * (0.98968322 : ℝ) / (0.0043334207 : ℝ) <
+        4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) / AMin := by
+      have hleft : 4 * (0.98968322 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) :=
+        mul_lt_mul_of_pos_left hsqrt_lo (by norm_num)
+      have hden : AMin < (0.0043334207 : ℝ) := hA.2
+      have h1 : 4 * (0.98968322 : ℝ) / (0.0043334207 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) /
+            (0.0043334207 : ℝ) :=
+        div_lt_div_of_pos_right hleft (by norm_num)
+      have h2 : 4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) /
+          (0.0043334207 : ℝ) <
+          4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) / AMin := by
+        refine div_lt_div_of_pos_left ?_ AMin_pos hden
+        exact mul_pos (by norm_num) (Real.sqrt_pos.mpr (by
+          have hcut := marginal_below_freeze_threeAxis
+          have hp0 : 0 < marginalPeriRatio AMin := by
+            unfold marginalPeriRatio
+            exact mul_pos (by positivity) (Real.sqrt_pos.mpr AMin_pos)
+          have hsq : marginalPeriRatio AMin ^ 2 < (1 / (1 - AMin)) ^ 2 :=
+            pow_lt_pow_left₀ hcut hp0.le (by decide : (2 : ℕ) ≠ 0)
+          linarith))
+      linarith
+    linarith
+  · have hdiv : 4 * (0.98968325 : ℝ) / (0.0043334204 : ℝ) < (913.536 : ℝ) := by
+      norm_num
+    have hleft : 4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) <
+        4 * (0.98968325 : ℝ) :=
+      mul_lt_mul_of_pos_left hsqrt_hi (by norm_num)
+    have hden : (0.0043334204 : ℝ) < AMin := hA.1
+    have h1 : 4 * Real.sqrt ((1 / (1 - AMin)) ^ 2 - marginalPeriRatio AMin ^ 2) / AMin <
+        4 * (0.98968325 : ℝ) / AMin :=
+      div_lt_div_of_pos_right hleft AMin_pos
+    have h2 : 4 * (0.98968325 : ℝ) / AMin <
+        4 * (0.98968325 : ℝ) / (0.0043334204 : ℝ) := by
+      refine div_lt_div_of_pos_left ?_ (by norm_num) hden
+      positivity
+    linarith
+
+theorem marginalVisit_against_half_orbit :
+    5 * photonHalfOrbit < interiorVisit AOne (marginalPeriRatio AOne) ∧
+      interiorVisit AOne (marginalPeriRatio AOne) < (5.1 : ℝ) * photonHalfOrbit ∧
+      55 * photonHalfOrbit < interiorVisit AMin (marginalPeriRatio AMin) ∧
+      interiorVisit AMin (marginalPeriRatio AMin) < 56 * photonHalfOrbit := by
+  have hhalf := photonHalfOrbit_tight
+  have hone := marginalVisit_oneAxis_bounds
+  have hthree := marginalVisit_threeAxis_bounds
+  have h5 : (5 : ℝ) * 16.325 < 82.825 := by norm_num
+  have h51 : (82.826 : ℝ) < 5.1 * 16.324 := by norm_num
+  have h55 : (55 : ℝ) * 16.325 < 913.535 := by norm_num
+  have h56 : (913.536 : ℝ) < 56 * 16.324 := by norm_num
+  refine ⟨?_, ?_, ?_, ?_⟩ <;> linarith
+
+theorem interiorRadial_oneAxis_bounds :
+    (96.743 : ℝ) < interiorRadialFactor AOne ∧
+      interiorRadialFactor AOne < (96.744 : ℝ) := by
+  have hA := AOne_bounds
+  unfold interiorRadialFactor
+  have hden : 0 < AOne * (1 - AOne) := by nlinarith [AOne_pos, AOne_lt_one]
+  constructor
+  · have hprod : AOne * (1 - AOne) <
+        (0.04321393 : ℝ) * (1 - (0.04321393 : ℝ)) := by
+      nlinarith [hA.2, AOne_pos]
+    have hbase : (96.743 : ℝ) * ((0.04321393 : ℝ) * (1 - 0.04321393)) < 4 := by
+      norm_num
+    have hmul : (96.743 : ℝ) * (AOne * (1 - AOne)) < 4 := by
+      nlinarith
+    exact (lt_div_iff₀ hden).mpr hmul
+  · have hprod : (0.04321390 : ℝ) * (1 - (0.04321390 : ℝ)) < AOne * (1 - AOne) := by
+      nlinarith [hA.1, AOne_lt_one]
+    have hbase : (4 : ℝ) < (96.744 : ℝ) * ((0.04321390 : ℝ) * (1 - 0.04321390)) := by
+      norm_num
+    rw [div_lt_iff₀ hden]
+    nlinarith
+
+theorem interiorRadial_threeAxis_bounds :
+    (927.075 : ℝ) < interiorRadialFactor AMin ∧
+      interiorRadialFactor AMin < (927.076 : ℝ) := by
+  have hA := AMin_decimal_bounds
+  unfold interiorRadialFactor
+  have hden : 0 < AMin * (1 - AMin) := by nlinarith [AMin_pos, AMin_lt_one]
+  constructor
+  · have hprod : AMin * (1 - AMin) <
+        (0.0043334207 : ℝ) * (1 - (0.0043334207 : ℝ)) := by
+      nlinarith [hA.2, AMin_pos]
+    have hbase : (927.075 : ℝ) *
+        ((0.0043334207 : ℝ) * (1 - 0.0043334207)) < 4 := by
+      norm_num
+    have hmul : (927.075 : ℝ) * (AMin * (1 - AMin)) < 4 := by
+      nlinarith
+    exact (lt_div_iff₀ hden).mpr hmul
+  · have hprod : (0.0043334204 : ℝ) * (1 - (0.0043334204 : ℝ)) <
+        AMin * (1 - AMin) := by
+      nlinarith [hA.1, AMin_lt_one]
+    have hbase : (4 : ℝ) < (927.076 : ℝ) *
+        ((0.0043334204 : ℝ) * (1 - 0.0043334204)) := by
+      norm_num
+    rw [div_lt_iff₀ hden]
+    nlinarith
 
 end Gravity
 

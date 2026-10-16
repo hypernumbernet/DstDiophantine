@@ -414,10 +414,14 @@ The straight line of one fixed jet is not itself that geodesic.
 * `PhotonReturn` — a ray with \(b<b_c\) has no turning point on the
   classical exterior, and the Killing time down to \(r_s\) is unbounded.
   For \(r<r_s\) the classical factor is negative. On either recorded
-  ceiling the same ray turns inside the freeze. The photon half-orbit
-  lies between \(16\) and \(17\) in units of \(GM/c^3\); the shortest
-  interior visit exceeds \(20\) on the one-axis saturation and \(280\)
-  on the three-axis ceiling.
+  ceiling the same ray turns inside the freeze. In units of \(GM/c^3\),
+  the photon half-orbit is \(16.32\). The radial cavity crossing is
+  \(11.44\) or \(20.96\), shorter than that half-orbit by \(4.89\) and
+  longer by \(4.63\). Inside the freeze the round trip is
+  \((4/A)\sqrt{u_\star^2-u_{\mathrm{peri}}^2}\), shortest as \(b\)
+  approaches \(b_c\): \(82.83\) on the one-axis saturation and \(913.54\)
+  on the three-axis ceiling, a little more than five half-orbits and a
+  little less than fifty-six. A radial ray takes \(96.74\) and \(927.08\).
 
 ## One Faraday six-space
 
