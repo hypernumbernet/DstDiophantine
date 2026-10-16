@@ -95,11 +95,10 @@ theorem dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA {rs r : ℝ} (h : IsExterior rs r) 
   field_simp [hr0, hs, hA0]
   rw [hs2]
 
-/-- TEGR chart scalar for exterior Schwarzschild: `(2/r²)(1-√A)²/√A`.
-
-Closed-form evaluation of
-`T = ¼ T_{ρμν}T^{ρμν} + ½ T_{ρμν}T^{νμρ} − T_ρ T^ρ` on the exterior diagonal
-tetrad (TEGR chart calculus). -/
+/-- Closed-form evaluation of the auxiliary expression
+`(2/r²)(1-√A)²/√A`. This is not the teleparallel quadratic: that contraction
+is `radialTeleparallel` in `Gravity.RadialQuadratic`, equal to `-2/r²` on
+the exterior vacuum. -/
 noncomputable def schwarzschildTeleparallelT (rs r : ℝ) : ℝ :=
   let A := schwarzschildA rs r
   (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
@@ -190,7 +189,8 @@ theorem J_field_coef {rs r : ℝ} (h : IsExterior rs r) :
   field_simp [hr0, hA0]
   ring
 
-/-- Minkowski limit: `rₛ = 0` forces `T = 0` and `J_field = 0` (at `r > 0`). -/
+/-- Auxiliary expression at `rₛ = 0`: it vanishes, as does `J_field` (`r > 0`).
+The teleparallel quadratic of the spherical frame does not. -/
 theorem minkowski_T_and_J_field_zero {r : ℝ} (_hr : 0 < r) :
     schwarzschildTeleparallelT 0 r = 0 ∧ J_field 0 r = 0 := by
   have hA : schwarzschildA 0 r = 1 := by

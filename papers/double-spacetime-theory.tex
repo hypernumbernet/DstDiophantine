@@ -287,50 +287,42 @@ e^a{}_\mu(x) \;=\; \langle R_{\mathrm{total}}(x)\, \mathring{e}^a\, R_{\mathrm{t
 \]
 yielding the metric $g_{\mu\nu}=\eta_{ab}\,e^a{}_\mu e^b{}_\nu$. For a coframe $e^a{}_\mu$ the Weitzenb\"ock torsion is $T^a{}_{\mu\nu}=\partial_\mu e^a{}_\nu-\partial_\nu e^a{}_\mu$, and the teleparallel scalar is the quadratic combination
 \[
-T=\tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu}+\tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho}-T_\rho T^\rho.
+T=\tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu}+\tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho}-T_\rho T^\rho,
 \]
-On the Schwarzschild coframe this evaluates to
+with indices moved by the spacetime metric. On the diagonal coframe the coordinate torsion consists of the radial derivative of the time leg and the angular anholonomy of the spherical frame. The quadratic evaluates to
 \begin{equation}
 \label{eq:schwarzschild-T}
-T = \frac{2}{r^2}\frac{(1-\sqrt{A})^2}{\sqrt{A}} = -\frac{1}{r^2}\,\partial_r\bigl(r^2 B^r\bigr),\qquad B^r=\frac{4(1-\sqrt{A})}{r}.
+T=-\frac{2}{r^2}\bigl(A+r A'\bigr).
 \end{equation}
+The angular pieces cancel, so $T$ does not depend on $\theta$. The flat spherical frame $A=1$, $A'=0$ already has $T=-2/r^2$: flatness of the metric does not set this coframe's teleparallel scalar to zero.
+
 Three quadratic quantities appear on this chart and must not be conflated:
 \[
 J=\tfrac12\varphi^2,\qquad J_{\mathrm{field}}=\tfrac12(\varphi')^2,\qquad T\text{ as in }\eqref{eq:schwarzschild-T}.
 \]
-The first is the finite-angle mismatch of the two rotors; the second is a field seed built from $\partial_r\varphi$; the third is the teleparallel Lagrangian density. They are not the same object. A constant nonzero boost already has $J\neq 0$ with vanishing $T$ on flat space, so $J$ cannot be a multiple of $T$ in general.
+The first is the finite-angle mismatch of the two rotors; the second is a field seed built from $\partial_r\varphi$; the third is the teleparallel Lagrangian density. They are not the same object. A constant nonzero boost of the inertial frame in one Cartesian plane already has $J\neq 0$ with vanishing $T$, so $J$ cannot be a multiple of $T$ in general.
 
 The separation is not an artefact of freezing the rapidity. Boost the inertial frame in one fixed plane by a rapidity $\varphi(t,x)$ that may vary from event to event. The coframe at each event is that boost, and the torsion sees the profile only through $\partial_t\varphi$ and $\partial_x\varphi$. The induced metric is the Minkowski metric for every profile, and the $(t,x)$ block has determinant one: the coframe is a proper boost of the inertial frame. Einstein's equation is an equation for the metric, so the rapidity drops out of it. The coordinate torsion keeps the derivatives and forgets the rapidity itself,
 \[
 T^t{}_{tx}=\partial_t\varphi,\qquad T^x{}_{xt}=\partial_x\varphi.
 \]
-A varying rapidity is a real torsion. The teleparallel quadratic cancels those derivatives as well, and $T=0$ at every event, for every profile, while $J=\tfrac12\varphi^2$ stays arbitrary. The same value of $J$ on the exterior Schwarzschild coframe has $T>0$. Torsion may be present, the vacuum equation may hold, and the teleparallel density may vanish, without constraining the mismatch. No pointwise function of $J$ is the teleparallel scalar of a general tetrad.
+A varying rapidity is a real torsion. The teleparallel quadratic cancels those derivatives as well, and $T=0$ at every event, for every profile, while $J=\tfrac12\varphi^2$ stays arbitrary. Torsion may be present, the vacuum equation may hold, and the teleparallel density may vanish, without constraining the mismatch. No pointwise function of $J$ is the teleparallel scalar of a general tetrad.
 
-What follows is a dictionary inside one gauge, not a gauge-invariant law. On the static radial-boost coframe the same rapidity rescales the diagonal legs, and the metric changes with it.
-
-Substituting $\sqrt{A}=\mathrm{e}^{-\varphi}$ into~\eqref{eq:schwarzschild-T} yields
+What follows is the comparison inside one ansatz, not a gauge-invariant law. On the static diagonal coframe the same rapidity rescales the time and radial legs, and the metric changes with it. The curvature calculation for $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$ gives
 \[
-\frac{(1-\sqrt{A})^2}{\sqrt{A}}=\mathrm{e}^{\varphi}-2+\mathrm{e}^{-\varphi}=2(\cosh\varphi-1).
+G^t{}_t=G^r{}_r=\frac{A+r A'-1}{r^2},\qquad
+G^\theta{}_\theta=G^\varphi{}_\varphi=\frac{A''}{2}+\frac{A'}{r}.
 \]
-Hence, for the time-leg $A>0$ of any static radial-boost coframe, with rapidity $\varphi=-\tfrac12\log A$ and $J=\tfrac12\varphi^2$,
+Comparison with~\eqref{eq:schwarzschild-T} is the identity
 \begin{equation}
 \label{eq:jt-dictionary}
-T=\frac{4}{r^2}(\cosh\varphi-1)=\frac{8}{r^2}\sinh^2\frac{\varphi}{2},
-\qquad
-r^2 T=4\bigl(\cosh\sqrt{2J}-1\bigr)=4J+\tfrac23 J^2+\tfrac{2}{45}J^3+\cdots.
+T+\frac{2}{r^2}=-2\,G^t{}_t.
 \end{equation}
-In the weak field, $\varphi\to 0$, one has $r^2 T/(4J)\to 1$: the two densities agree at leading order, and nowhere else. The map $J\mapsto r^2 T$ is strictly increasing on the whole admissible cone $|J|\le\Jbound$, so it inverts:
+The vacuum equation $G^t{}_t=G^r{}_r=0$ is the single condition $\frac{d}{dr}(rA)=1$; the angular components are its radial derivative. On an open ray that condition selects a unique member, $A(r)=1-r_s/r$, with $r_s=r(1-A(r))$. That is the exterior Schwarzschild factor, and on it the Ricci scalar vanishes while
 \[
-J=\tfrac12\Bigl(\arccosh\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2}
-\quad(J\ge 0),\qquad
-J=-\tfrac12\Bigl(\arccos\bigl(1+\tfrac14 r^2 T\bigr)\Bigr)^{2}
-\quad(J<0).
+T=-\frac{2}{r^2},
 \]
-On this gauge the teleparallel density at a given radius determines the algebraic scalar, even though the two are never equal outside the flat limit. Moreover $4J/r^2\le T$, with equality only in the flat case $A=1$; on the exterior Schwarzschild chart one has in addition $T\le 4J_{\mathrm{field}}$.
-
-The analytic continuation $E(J)=\cosh\sqrt{2J}-1$ is entire. For $J<0$ it becomes $E(J)=\cos\sqrt{-2J}-1$. On the admissible cone the argument never reaches $\pi$, so $E(J)<0$ whenever $J<0$, and $\operatorname{sign} T=\operatorname{sign} J$. A real (hyperbolic) radial boost cannot produce $T<0$: on a static radial-boost gauge with $A>0$ one has $T\ge 0$, vanishing only for $A=1$. Repulsive layers live in the elliptic dual sector. The cosine branch is not a formal continuation; it is the geometry in which gravity reverses.
-
-Among all static radial-boost gauges, the vacuum condition $\frac{d}{dr}(rA)=1$ selects a unique member: $A(r)=1-r_s/r$, with $r_s=r(1-A(r))$. That is the exterior Schwarzschild factor. On this chart, $\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}$, so $r\varphi\to r_s/2$ at infinity and the finite-angle rapidity tracks the Newtonian potential. The two densities share the same leading falloff, $r^4 T\to r_s^2/2$ and $4r^2 J\to r_s^2/2$. As $r\to r_s^+$ one has $A\to 0^+$, $\varphi\to\infty$, and $T\to\infty$: the classical chart is unbounded, a pathology the admissible cone will cut off in Section~\ref{subsec:quasi-horizon}.
+the same value as the flat spherical frame. The mass drops out of $T$. It does not drop out of the rapidity. On this chart $\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}$, so $r\varphi\to r_s/2$ at infinity, the finite-angle rapidity tracks the Newtonian potential, and $4r^2 J\to r_s^2/2$. There is no corresponding falloff for $T$, and the two densities do not agree in the weak field: $r^2 T=-2$ while $J=\tfrac12\varphi^2>0$. As $r\to r_s^+$ one has $A\to 0^+$ and $\varphi\to\infty$, while $T$ remains $-2/r^2$. The classical pathology is the unbounded rapidity, which the admissible cone cuts off in Section~\ref{subsec:quasi-horizon}. Repulsive layers are the negative sign of $J$, in the elliptic sector. They are not a negative value of this $T$: the attractive vacuum itself has $T<0$.
 
 \subsection{Proposed Action}
 
@@ -342,7 +334,7 @@ as a Lagrangian density in the mismatch scalar $J$. The integral is algebraic an
 \[
 \int T \, e \, d^4x = -\int R \, \sqrt{-g} \, d^4x + \int \partial_\mu(\sqrt{-g}\, V^\mu)\, d^4x
 \]
-holds after tetrad variation with vanishing boundary variations, so the Einstein equations belong to $T$, not to $J$. Gravity in this theory remains the mismatch angle between particle-intrinsic dual frames. On a static radial-boost coframe the teleparallel density dominates, $e\cdot 4J/r^2\le e\cdot T$, with equality only when $A=1$. The two agree in the weak field. Off that gauge the comparison is empty: the inertial boost just described has vanishing $T$ for every $J$. The Einstein equation constrains the metric. Read back as a condition on $J$, it requires the tetrad gauge in which the rapidity is the diagonal radial boost, and among those gauges the vacuum equation selects Schwarzschild. It does not select the rotor of a general tetrad.
+holds after tetrad variation with vanishing boundary variations, so the Einstein equations belong to $T$, not to $J$. Gravity in this theory remains the mismatch angle between particle-intrinsic dual frames. On the vacuum radial chart the tetrad determinant is $e=r^2\sin\theta$, so $e\,T=-2\sin\theta$, independent of the mass, while $J$ carries the redshift. The two do not agree in the weak field. Off that chart the comparison is empty in a sharper sense: the inertial boost just described has vanishing $T$ for every $J$, and the spherical frame of Minkowski space has $T=-2/r^2$ with $J=0$. The Einstein equation constrains the metric. On the diagonal radial ansatz it is $\frac{d}{dr}(rA)=1$, which freezes $T$ at the spherical-frame value and selects Schwarzschild. It does not select $J$, and it does not select the rotor of a general tetrad.
 
 \subsection{Weak-Field and Newtonian Limit}
 
@@ -466,19 +458,9 @@ The corresponding radius is $r_\star=r_s/(1-A_{\min})$, equivalently $r_\star/r_
 
 This cutoff is a working identification of the three-axis ceiling on a single boost axis. A one-axis admissible boost saturates only at $\varphi=\pi/2$, where $J=\pi^2/8=\Jbound/3$. The inverted value $\varphi_{\max}>\pi/2$ therefore lies outside the admissible cone. The construction saturates the three-axis bound, not the single-axis cone.
 
-The dictionary~\eqref{eq:jt-dictionary} converts the rapidity ceiling into a finite envelope for $T$: $\varphi\le\varphi_{\max}$ implies $r^2 T\le 4(\cosh\varphi_{\max}-1)$, and
-\[
-26<4\bigl(\cosh(\pi\sqrt{3}/2)-1\bigr)<27.
-\]
-A one-axis admissible boost $\varphi\le\pi/2$ yields the tighter envelope $r^2 T<6.1$. Classical Schwarzschild has $r^2 T\to\infty$ as $r\to r_s^+$; the cutoff therefore bounds $T$ as well as $\varphi$.
+On the vacuum chart $r^2 T=-2$ at every radius and for every mass, so the cutoff is not what keeps $T$ finite. It bounds $\varphi$ and holds $A\ge A_{\min}>0$. Repulsive layers remain the negative sign of $J$, and $|J|\le\Jbound$ on the cone, so the mismatch of a repulsive layer is bounded. That bound is not a window for $T$.
 
-The elliptic sector supplies the matching floor. On the admissible cone $\sqrt{2|J|}\le\varphi_{\max}<\pi$, so the cosine branch of $E(J)$ never leaves the range on which $\cos$ is strictly decreasing. Its deepest value is reached at saturation,
-\[
--7.7<4\bigl(\cos\varphi_{\max}-1\bigr)<-7.6,
-\]
-and together with the ceiling this confines the dimensionless teleparallel density to $-8<r^2 T<27$. Repulsive layers have a bounded depth: gravity can reverse, but not with unlimited strength. Both ends of the window are attained, at $J=\pm\Jbound$.
-
-Inside $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so the field seed $J_{\mathrm{field}}$ vanishes. The constant-$A$ coframe still carries angular Weitzenb\"ock torsion, so $T$ itself does not vanish---the dual of a constant boost, which has $J\neq 0$ with $T=0$.
+Inside $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so $A'=0$ and the field seed $J_{\mathrm{field}}$ vanishes. Equation~\eqref{eq:schwarzschild-T} then gives $T=-2A_{\min}/r^2$, which does not vanish: the constant-$A$ coframe still carries the angular anholonomy of the spherical frame. A constant Cartesian boost is the contrasting case, with $J\neq 0$ and $T=0$.
 
 This layered structure prevents both singularities and event horizons. Matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
 
@@ -1263,7 +1245,7 @@ Quantum gravity is therefore not a separate theory: it is the dual-rotor kinemat
 
 The century that began with Einstein taught us to speak of gravity as the curvature of a continuum. That speech is exact as a macroscopic bookkeeping, and it remains so. What it does not say is why a continuum should curve, nor why the same phenomenon should appear as inertia under acceleration. The present work has refused the continuum as a primitive. There is no autonomous stage. Each massive particle carries, in the sixteen-real-dimensional biquaternion algebra isomorphic to $\mathrm{Cl}(3,1)$, a pair of Minkowski sectors---the usual and the dual. A map between them reverses the arrow of time and leaves the Minkowski norm untouched. Gravity is the torsion of that pair: the mismatch of two rotors that belong to the particle itself.
 
-The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On every static radial-boost chart, $J$ stands in a closed relation with the Weitzenb\"ock torsion $T$ of teleparallel gravity, of which the exterior Schwarzschild geometry is the unique vacuum case. The relation is internal to that gauge. A boost of the inertial frame in one fixed plane, of any rapidity profile, leaves both the Minkowski metric and the teleparallel scalar untouched, even where the torsion does not vanish, and $J$ remains free. The two densities agree only in the flat limit. A real radial boost cannot produce repulsion; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. A spatial chirality axis splits that six-space into an $\mathfrak{so}(2,1)$ stabilizer and a complement that moves the axis. A perpendicular dual rotation exchanges the two projectors at angle $\pi$, and the stabilizer's only compact direction admits no nontrivial mix with the parallel electric generator. Compact $\mathrm{SU}(2)$ is the dual rotor, not a chiral gauge symmetry. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$. The shape $f$ has a unique minimum on $(0,\pi/2)$, and from one compactification radius to six-fifths of it, $v^2$ stays within a tenth of that minimum. The radial force remains center-directed through the equator, where the negative well ends, before $r=2R$. None of this requires a background manifold.
+The relative rotor is the identity precisely when the two rotors coincide. A Lorentz-invariant scalar $J$ measures the mismatch; it is bounded on the admissible cone, and vanishing $J$ does not force the rotors to agree. On the diagonal radial chart the teleparallel scalar is $T=-2(A+r A')/r^2$. The vacuum equation $\frac{d}{dr}(rA)=1$, which is $G^t{}_t=G^r{}_r=0$, selects the exterior Schwarzschild factor and freezes $T$ at $-2/r^2$, the value of the flat spherical frame. The mismatch $J=\tfrac12\varphi^2$ on that chart is a different scalar: it tracks the Newtonian potential and is not determined by $T$. A boost of the inertial frame in one fixed plane, of any rapidity profile, leaves both the Minkowski metric and the teleparallel scalar untouched, even where the torsion does not vanish, and $J$ remains free. A real radial boost has positive $J$; repulsive layers belong to the elliptic sector and are of bounded depth. Where the two rotors share a common scale, $J$ vanishes while their interference still alternates, so the layers of strong-field gravity are ordered by that interference and not by $J$. The same algebra houses electromagnetism: Faraday coefficients occupy the six-generator space of the dual rotor, and the sandwich increment is a Lorentz 4-force. A spatial chirality axis splits that six-space into an $\mathfrak{so}(2,1)$ stabilizer and a complement that moves the axis. A perpendicular dual rotation exchanges the two projectors at angle $\pi$, and the stabilizer's only compact direction admits no nontrivial mix with the parallel electric generator. Compact $\mathrm{SU}(2)$ is the dual rotor, not a chiral gauge symmetry. On a three-sphere chart the circular speed is $v^2=(GM/R)f(r/R)$. The shape $f$ has a unique minimum on $(0,\pi/2)$, and from one compactification radius to six-fifths of it, $v^2$ stays within a tenth of that minimum. The radial force remains center-directed through the equator, where the negative well ends, before $r=2R$. None of this requires a background manifold.
 
 We have proposed that the layered phase is the strong force; that galaxies are patches of the compact dual sector, whose image lattice therefore accounts for flat rotation curves; that coherent excitation of the dual sector might engineer gravity; that a vacuum chiral excess assigns one unsigned mass to both signs of \(J\), with binding on the positive sign, while the yield \(\eta\) lies outside that assignment; that Maxwell's equations remain unrecovered from the same six-space, and that a harmonic stiffness does not select a rotor rigidity away from alignment; that a mismatch oscillator is the de Broglie phase; and that a Hilbert-space quantization of the dual rotor completes the theory. These are readings of the geometry. Dual-only motion on the admissible cone cannot raise $J$. It conserves $J+M$, so every dual-only shield from a pure usual seed doubles unsigned mass, and it reaches $J=0$ precisely when the dual wall is nonpositive. On a boosted axis a coaxial dual-only ray restores the clock factor $\gamma_{\mathrm{eff}}$ to $1$ strictly before it cancels $J$; a cross-axis shield of equal mass leaves that clock at $\cosh\alpha$. Independently of any trajectory the cone's image in the $(J,M)$-plane is the three-lobed envelope \eqref{eq:control-envelope}: the shield parabola is sharp only for $|J|\le\pi^2/8$, neutrality is capped at five sixths of the maximal mass and is reached only by a maximally anisotropic wall configuration, and at maximal mass every axis is purely usual or purely dual---while full repulsion pays no such penalty. The envelope is a lock---every axis on the wall, at least two of them purely usual or purely dual---so dual-only motion meets it at most once and cannot travel along it. Holding the usual rotor fixed against the written potential requires a constraint. A dual-only increment of the dual angles---magnetic Faraday superposition, or the substitution $\theta\mapsto\theta+eA$---cannot raise $J$ against a nonnegative seed; along a circular wave the Faraday reading leaves mean $J$ unmoved, while the potential reading drops it by a helicity-even ponderomotive that is not Maxwell-gauge invariant and that leaves the cone from a vanishing dual seed. Whether laboratory electromagnetism supplies a helicity-odd dual force---and whether gravity is therefore chirally controllable---remains a conjecture.
 

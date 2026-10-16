@@ -3,6 +3,7 @@ import DstDiophantine.Gravity.JTDictionary
 import DstDiophantine.Gravity.GaugeDictionary
 import DstDiophantine.Gravity.ClassicalSchwarzschild
 import DstDiophantine.Gravity.LorentzGauge
+import DstDiophantine.Gravity.RadialQuadratic
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
@@ -69,22 +70,23 @@ a V--A coupling, a helicity-odd drive of \(J\), or a numerical baryon yield.
 ## Chart dictionary
 
 `Coframe`, `Sandwich`, `Weitzenbock`, `Tetrad`, `Identification`,
-`JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`.
+`RadialQuadratic`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`,
+`LorentzGauge`.
 
-On every static radial-boost chart,
-\(T=(4/r^2)(\cosh\sqrt{2J}-1)\). The map inverts on the admissible cone,
-where \(r^2 T\) lies in a finite two-sided window. A real radial boost
-cannot produce \(T<0\). Exterior Schwarzschild is the vacuum gauge
-\(A=1-r_s/r\). The naive identification \(J_{\mathrm{field}}=\tfrac12 T\)
-holds on at most one sphere.
+On the diagonal radial coframe the teleparallel quadratic is
+\(T=-2(A+r A')/r^2\). The vacuum condition \((rA)'=1\) freezes it at
+\(-2/r^2\), the value of the flat spherical frame, and selects
+\(A=1-r_s/r\). The mismatch \(J=\tfrac12\varphi^2\) on that chart is not
+\(T\). The auxiliary expression `(2/r²)(1-√A)²/√A` is not the quadratic;
+lemmas about it live in `JTDictionary` and `GaugeDictionary`.
 
 A pure boost of the inertial frame in a fixed plane, of any rapidity
 profile \(\varphi(t,x)\), induces the Minkowski metric. Its coordinate
 torsion is \(T^t{}_{tx}=\partial_t\varphi\) and \(T^x{}_{xt}=\partial_x\varphi\),
-and the teleparallel quadratic vanishes for every jet. The same \(J=\tfrac12\varphi^2\)
-is positive-\(T\) on the exterior Schwarzschild coframe, so no pointwise map
-sends \(J\) to \(T\) for every tetrad. Distinct squared rapidities give the
-same metric and distinct \(J\).
+and the teleparallel quadratic vanishes for every jet. The same
+\(J=\tfrac12\varphi^2\) does not determine \(T\): the inertial jet has
+\(T=0\), and the exterior Schwarzschild coframe has \(T=-2/r^2\).
+Distinct squared rapidities give the same metric and distinct \(J\).
 
 ## The direction of gravity
 
@@ -464,7 +466,7 @@ namespace Gravity
 
 open Invariant PGA Generators Logic Operations
 
-/-- Regression: closed-form dictionary \(T=(4/r^2)(\cosh\sqrt{2J}-1)\). -/
+/-- Regression: auxiliary expression `(4/r²)(cosh√(2J)-1)`, not the teleparallel quadratic. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =
       teleparallelTofJ (J (radialBoostParams rs r)) r :=
@@ -507,7 +509,19 @@ example (φ u v : ℝ) (μ ν : Fin 4) :
   ⟨inducedMetric_inertialBoost φ μ ν, boostCoordTorsion_ttx φ u v,
     boostTeleparallel_eq_zero u v⟩
 
-/-- Regression: the same `J` does not determine `T` off the radial-boost gauge. -/
+/-- Regression: the same `J` does not determine `T`. The inertial jet has `T=0`;
+the exterior quadratic is `-2/r²`. -/
+example {rs r θ : ℝ} (h : IsExterior rs r) (hs : Real.sin θ ≠ 0) :
+    J (DstDiophantine.Amplification.pureBoost (schwarzschildRapidity rs r)) =
+        J (radialBoostParams rs r) ∧
+      boostTeleparallel 0 0 = 0 ∧
+      radialTeleparallel (schwarzschildA rs r) (rs / r ^ 2) r θ = -2 / r ^ 2 ∧
+      0 < J (radialBoostParams rs r) := by
+  refine ⟨?_, boostTeleparallel_eq_zero 0 0, radialTeleparallel_schwarzschild h hs, ?_⟩
+  · rw [Amplification.J_pureBoost, J_radialBoostParams]
+  · exact (schwarzschild_J_pos_T_frozen h hs).1
+
+/-- Regression: the auxiliary chart expression is positive, and is not the quadratic. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     J (DstDiophantine.Amplification.pureBoost (schwarzschildRapidity rs r)) =
         J (radialBoostParams rs r) ∧
@@ -515,13 +529,13 @@ example {rs r : ℝ} (h : IsExterior rs r) :
       0 < schwarzschildTeleparallelT rs r :=
   sameJ_inertial_T_zero_schwarzschild_T_pos h
 
-/-- Regression: the same dictionary holds for any static radial-boost gauge. -/
+/-- Regression: the auxiliary expression on any positive time-leg, not the quadratic. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
     r ^ 2 * teleparallelTofA A r =
       4 * (Real.cosh (Real.sqrt (2 * J (gaugeBoostParams A))) - 1) :=
   r_sq_T_ofA_eq_four_cosh_sqrt hA hr
 
-/-- Regression: a real radial boost cannot produce \(T<0\). -/
+/-- Regression: the auxiliary expression is nonnegative. The quadratic is not. -/
 example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
     ¬ teleparallelTofA A r < 0 :=
   teleparallelTofA_not_lt_zero hA hr
@@ -532,12 +546,13 @@ example {Jval r : ℝ} (hr : r ≠ 0)
     Jval < 0 :=
   repulsive_requires_negative_J hr hbound hT
 
-/-- Regression: TEGR density dominates the algebraic density. -/
+/-- Regression: the auxiliary expression dominates the algebraic density. -/
 example {A r θ : ℝ} (hA : 0 < A) (hr : r ≠ 0) (hsin : 0 ≤ Real.sin θ) :
     algebraicDensity A r θ ≤ tegrDensity A r θ :=
   algebraicDensity_le_tegrDensity hA hr hsin
 
-/-- Regression: sandwich \(4J\le r^2 T\) and \(T\le 4J_{\mathrm{field}}\). -/
+/-- Regression: sandwich for the auxiliary expression,
+\(4J\le r^2 T_{\mathrm{aux}}\) and \(T_{\mathrm{aux}}\le 4J_{\mathrm{field}}\). -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     4 * J (radialBoostParams rs r) ≤
       r ^ 2 * schwarzschildTeleparallelT rs r ∧
@@ -552,19 +567,19 @@ example {rs r1 r2 : ℝ}
     r1 = r2 :=
   naive_half_ratio_at_most_one_sphere h1 h2 heq1 heq2
 
-/-- Regression: admissible ceiling \(r^2 T\le 4(\cosh\varphi_{\max}-1)<27\). -/
+/-- Regression: admissible ceiling of the auxiliary expression. -/
 example {rs r : ℝ} (h : IsExterior rs r)
     (hφ : schwarzschildRapidity rs r ≤ phiMax) :
     r ^ 2 * schwarzschildTeleparallelT rs r < 27 :=
   lt_of_le_of_lt (r_sq_T_le_ceiling h hφ) four_cosh_phiMax_sub_one_bounds.2
 
-/-- Regression: on the admissible cone \(r^2 T\) lies in a finite two-sided window. -/
+/-- Regression: two-sided window of the auxiliary expression on the cone. -/
 example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
     4 * (Real.cos phiMax - 1) ≤ r ^ 2 * teleparallelTofJ Jval r ∧
       r ^ 2 * teleparallelTofJ Jval r ≤ 4 * (Real.cosh phiMax - 1) :=
   r_sq_teleparallelTofJ_window hr hbound
 
-/-- Regression: numeric envelope of that window, \(-8<r^2 T<27\). -/
+/-- Regression: numeric envelope of the auxiliary expression, not of the quadratic. -/
 example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
     -8 < r ^ 2 * teleparallelTofJ Jval r ∧
       r ^ 2 * teleparallelTofJ Jval r < 27 :=
@@ -576,12 +591,12 @@ example {r : ℝ} (hr : r ≠ 0) :
       r ^ 2 * teleparallelTofJ JMax r = 4 * (Real.cosh phiMax - 1) :=
   r_sq_teleparallelTofJ_window_sharp hr
 
-/-- Regression: at a fixed radius the teleparallel density determines \(J\). -/
+/-- Regression: at a fixed radius the auxiliary expression determines \(J\). -/
 example {J₁ J₂ r : ℝ} (hr : r ≠ 0) (h₁ : |J₁| ≤ JMax) (h₂ : |J₂| ≤ JMax)
     (heq : teleparallelTofJ J₁ r = teleparallelTofJ J₂ r) : J₁ = J₂ :=
   J_unique_of_teleparallelTofJ_eq hr h₁ h₂ heq
 
-/-- Regression: closed-form inversion of the dictionary on the exterior chart. -/
+/-- Regression: closed-form inversion of the auxiliary expression. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     (1 / 2) *
         Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =
@@ -598,7 +613,7 @@ example {rs r : ℝ} (h : IsExterior rs r) :
     rs / (2 * r) ≤ schwarzschildRapidity rs r :=
   (schwarzschildRapidity_sandwich h).1
 
-/-- Regression: exact witness \(r=\frac43 r_s\) has \(r^2 T=1\). -/
+/-- Regression: exact witness of the auxiliary expression at \(r=\frac43 r_s\). -/
 example {rs : ℝ} (hrs : 0 < rs) :
     referenceRadius rs ^ 2 *
       schwarzschildTeleparallelT rs (referenceRadius rs) = 1 :=

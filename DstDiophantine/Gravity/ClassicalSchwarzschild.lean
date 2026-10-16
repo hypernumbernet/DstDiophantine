@@ -17,24 +17,28 @@ import Mathlib.Tactic.Ring
 /-!
 # Exterior Schwarzschild as the classical special case
 
-The closed dictionary of `Gravity.GaugeDictionary` holds for an arbitrary
-static radial-boost gauge with time-leg \(A>0\). This file proves that the
-exterior factor \(A=1-r_s/r\) is the classical specialisation of that gauge,
-characterised uniquely by the vacuum condition \(\frac{d}{dr}(rA)=1\).
+The vacuum condition \(\frac{d}{dr}(rA)=1\) on an open ray forces the exterior
+factor \(A=1-r_s/r\). The teleparallel quadratic on that factor is \(-2/r^2\).
+Lemmas about the auxiliary expression `(2/r²)(1-√A)²/√A` specialise to the
+same factor; they are not identities for the quadratic.
 
 ## Proved
 
 * Gauge specialisation: every exterior Schwarzschild identity is the
   \(A=1-r_s/r\) instance of the corresponding abstract-gauge theorem.
 * Vacuum characterisation: \(\frac{d}{dr}(rA)=1\) on an open ray forces
-  \(A(r)=1-r_s/r\) for a unique \(r_s\).
+  \(A(r)=1-r_s/r\) for a unique \(r_s\). On that factor the teleparallel
+  quadratic is \(-2/r^2\) (`Gravity.RadialQuadratic`).
 * Newtonian sandwich \(\frac{r_s}{2r}\le\varphi\le\frac{r_s}{2rA}\) and
-  \(r\varphi\to r_s/2\).
-* Far-field coefficients \(r^4 T\to r_s^2/2\) and \(4r^2 J\to r_s^2/2\).
-* Exterior layering: \(A\) strictly increasing, \(\varphi,J,T,r^2T\)
-  strictly decreasing; \(A\to 0^+\) and \(\varphi\to\infty\) as \(r\to r_s^+\).
-* Exact witness at \(r=\frac43 r_s\): \(A=\frac14\), \(\varphi=\log 2\),
-  \(r^2 T=1\), \(4J=2\log^2 2<1\), \(r^2 J_{\mathrm{field}}=\frac98\).
+  \(r\varphi\to r_s/2\), and \(4r^2 J\to r_s^2/2\).
+* The far-field statement \(r^4 T\to r_s^2/2\) below is about the auxiliary
+  expression `schwarzschildTeleparallelT`, not about the quadratic.
+* Exterior layering of the auxiliary expression: \(A\) strictly increasing,
+  \(\varphi,J\) and that expression strictly decreasing; \(A\to 0^+\) and
+  \(\varphi\to\infty\) as \(r\to r_s^+\). The quadratic stays \(-2/r^2\).
+* Exact witness of the auxiliary expression at \(r=\frac43 r_s\): \(A=\frac14\),
+  \(\varphi=\log 2\), auxiliary \(r^2 T=1\), \(4J=2\log^2 2<1\),
+  \(r^2 J_{\mathrm{field}}=\frac98\).
 
 ## Not claimed
 

@@ -24,7 +24,9 @@ The partials below are the 1-jet of a profile `φ(t,x)`: `u = ∂_t φ`, `v = �
   `T = ¼ T_{ρμν} T^{ρμν} + ½ T_{ρμν} T^{νμρ} - T_ρ T^ρ`,
   with indices moved by `η`, vanishes for every jet.
 * The same algebraic value `J = ½ φ²` occurs on an exterior Schwarzschild
-  coframe with `T > 0`. No pointwise map `J ↦ T` serves every tetrad.
+  coframe whose teleparallel quadratic is `-2/r²`. No pointwise map `J ↦ T`
+  serves every tetrad. The auxiliary expression `schwarzschildTeleparallelT`
+  is a different, positive quantity.
 * Two rapidities with distinct squares induce the same metric and distinct `J`.
 
 ## Not claimed

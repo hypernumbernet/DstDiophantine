@@ -24,26 +24,20 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
-# Closed-form \(J\)–\(T\) dictionary on the radial pure-boost chart
+# Auxiliary expression on the radial chart, not the teleparallel quadratic
 
-On the exterior Schwarzschild coframe, \(\sqrt{A}=e^{-\varphi}\) converts the
-Weitzenböck scalar into a function of the finite-angle parameter \(J=\tfrac12\varphi^2\):
-
-\[
-T=\frac{4}{r^2}(\cosh\varphi-1),\qquad
-r^2 T=4\bigl(\cosh\sqrt{2J}-1\bigr).
-\]
-
-The naive identifications \(J=\tfrac12 T\) and \(J_{\mathrm{field}}=\tfrac12 T\)
-fail for two independent reasons: a missing length scale \(r^2\), and a
-leading coefficient \(4\) rather than \(\tfrac12\). The corrected dictionary
-is proved below, together with the sandwich \(4J/r^2\le T\le 4J_{\mathrm{field}}\),
-the exact field-seed ratio, the sign continuation, and the admissible ceiling
-on \(r^2 T\).
+`schwarzschildTeleparallelT` and `teleparallelTofA` are the expression
+`(2/r²)(1-√A)²/√A`. `Gravity.RadialQuadratic` proves that the quadratic
+\(T=\tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu}+\tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho}-T_\rho T^\rho\)
+on this coframe is \(-2(A+r A')/r^2\), hence \(-2/r^2\) on the exterior
+vacuum. The lemmas below are algebraic properties of the auxiliary
+expression. They are not a dictionary between \(J\) and the Weitzenböck scalar.
 
 ## Proved
 
-* Chart identities \(T=(4/r^2)(\cosh\varphi-1)=(8/r^2)\sinh^2(\varphi/2)\).
+The symbol \(T\) in the bullets below is the auxiliary expression, not the quadratic.
+
+* Chart identities of that expression, \((4/r^2)(\cosh\varphi-1)=(8/r^2)\sinh^2(\varphi/2)\).
 * \(r^2 T=4(\cosh\sqrt{2J}-1)\) on the radial boost slice.
 * Sandwich \(4J\le r^2 T\) and \(T\le 4J_{\mathrm{field}}\), both strict on the
   exterior; weak-field limit \(r^2 T/(4J)\to 1\).

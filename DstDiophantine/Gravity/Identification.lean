@@ -52,8 +52,10 @@ QCD \(\alpha_s\) is not paired with `epsN`.
 * Boost leg: `∂_r √A = - φ' · √A`.
 * **Rejected:** finite-angle `J = ½ T`; parametric `J5 = ½ T` on flat space;
   `J_field = ½ T` on Schwarzschild (concrete point).
-* On the radial pure-boost gauge, `Gravity.JTDictionary` supplies the closed
-  form `r² T = 4(cosh √(2J) − 1)` with sandwich `4J/r² ≤ T ≤ 4 J_field`.
+* On the radial pure-boost gauge the auxiliary expression
+  `(2/r²)(1-√A)²/√A` is not the teleparallel quadratic. `Gravity.RadialQuadratic`
+  evaluates the quadratic as `-2(A + r A')/r²`, hence `-2/r²` on the exterior
+  vacuum, while `J = ½ φ²` stays positive.
 * `Gravity.LorentzGauge`: an inertial-plane boost of any rapidity profile has
   Minkowski metric and vanishing teleparallel scalar, so no pointwise map
   sends `J` to `T` on every tetrad. A dictionary for a general motor remains open.
@@ -111,7 +113,9 @@ theorem J5_and_T_on_schwarzschild_slice {rs r : ℝ} (h : IsExterior rs r) :
 
 /-! ### Rejection of naive point identification -/
 
-/-- Constant nonzero boost: parameter `J ≠ 0` while flat-chart `T = 0`. -/
+/-- Constant nonzero boost: parameter `J ≠ 0`. The auxiliary chart expression at
+`rₛ = 0` vanishes; the Cartesian inertial quadratic vanishes for a different
+reason (`Gravity.LorentzGauge`). -/
 theorem constant_boost_J_ne_zero_flat_T_zero (φ : ℝ) (hφ : φ ≠ 0) :
     J (Amplification.pureBoost φ) ≠ 0 ∧
       schwarzschildTeleparallelT 0 1 = 0 := by

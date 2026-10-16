@@ -13,18 +13,20 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
-# Gauge-level \(J\)–\(T\) dictionary for static radial boosts
+# Algebra of the auxiliary radial expression
 
-The closed dictionary of `Gravity.JTDictionary` uses only \(\sqrt{A}=e^{-\varphi}\)
-and positivity of \(A\). It therefore holds for an arbitrary static radial-boost
-gauge, not merely the Schwarzschild factor \(A=1-r_s/r\).
+`teleparallelTofA` is `(2/r²)(1-√A)²/√A`. It is not the teleparallel
+quadratic. `Gravity.RadialQuadratic` evaluates that quadratic as
+\(-2(A+r A')/r^2\). The lemmas below rewrite the auxiliary expression.
 
 ## Proved
 
-* \(T=(4/r^2)(\cosh\varphi-1)\) whenever \(0<A\) and \(r\neq 0\).
+The symbol \(T\) in the bullets below is the auxiliary expression, not the quadratic.
+
+* The auxiliary expression equals \((4/r^2)(\cosh\varphi-1)\) whenever \(0<A\) and \(r\neq 0\).
 * \(r^2 T=4(\cosh\sqrt{2J}-1)\) on that gauge, with sandwich \(4J\le r^2 T\).
-* Real radial boosts cannot produce \(T<0\); repulsive layers require the
-  elliptic sector.
+* Real radial factors make the auxiliary expression nonnegative. This is not
+  a sign constraint on the quadratic, which is negative on the attractive vacuum.
 * Chart densities satisfy \(e\cdot(4J/r^2)\le e\cdot T\), with equality only
   in the flat limit (when \(\sin\theta>0\)).
 
