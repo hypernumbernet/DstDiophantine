@@ -69,3 +69,5 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 .fig .spin{fill:none;stroke:var(--accent);stroke-width:2.5;color:var(--accent)}
 .fig .curve2{fill:none;stroke:var(--usual);stroke-width:2;stroke-dasharray:6 4}
 .card a{color:var(--usual)}
+.timelist{margin:.4rem 0 1rem;padding-left:1.3rem}.timelist li{margin:.25rem 0}
+a.ref{color:var(--usual)}
