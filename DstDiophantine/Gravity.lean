@@ -12,6 +12,7 @@ import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.GalaxyCurve
+import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.DualRotorDynamics
@@ -157,6 +158,12 @@ The straight line of one fixed jet is not itself that geodesic.
   between \(4.53\) and \(4.56\).
   A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
   \(83.1<v_\infty<83.2\,\mathrm{km/s}\).
+* `ChannelRange` — the same enhancement on two compactification radii.
+  For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
+  obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
+  excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) that excess exceeds the
+  electromagnetic one by more than \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
+  input. The comparison does not subtract the Coulomb coupling from \(G\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
