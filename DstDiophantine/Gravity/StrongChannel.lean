@@ -29,6 +29,19 @@ meets `φ_*` at one phase strictly before `x₁`.
 A dual excitation `ψ_*(x) = 2 arctan(γ_s(x)/τ(x))` is strictly decreasing on
 the outer well, vanishes at the first node, and tends to `π` at large
 separation.
+
+## Charged entrance (do **not** claim)
+
+The host that holds a rapidity down, a fusion rate, and the value of the
+Coulomb-to-nuclear ratio are **not** derived. What is proved is the sign
+comparison. Above the threshold the nuclear term adds to a positive Coulomb
+term. Below it, every finite positive ratio is overcome on a nonempty
+interval of rapidity abutting the threshold, and a higher sub-threshold
+rapidity pulls harder. A smaller positive rapidity keeps that onset closer
+to the node: the phase gap is strictly smaller than `φ/(4 cosh(x₁)²)`, and
+the fractional widening of the radius is strictly smaller than `φ/π`. If
+`0 < T/mc² ≤ 10⁻¹⁰`, that widening is strictly less than `5 × 10⁻⁶`.
+Outside phase `π/4`, a sufficiently large rapidity leaves a net repulsion.
 -/
 
 namespace DstDiophantine
@@ -602,6 +615,561 @@ theorem psiStar_tendsto_pi : Tendsto psiStar (nhdsWithin 0 (Ioi 0)) (nhds π) :=
   rw [hπ] at htwo
   unfold psiStar
   exact htwo
+
+/-! ### Charged entrance: the slow side of the pole -/
+
+noncomputable def chargedShift (γ ρ γE : ℝ) : ℝ :=
+  -1 / γ + ρ / γE
+
+theorem gammaRapidity_zero (x : ℝ) : gammaRapidity x 0 = gammaSEqual x := by
+  simp [gammaRapidity, sinh_zero, cosh_zero]
+
+theorem cosh_sub_one_local (φ : ℝ) :
+    cosh φ - 1 = 2 * sinh (φ / 2) ^ 2 := by
+  have h := cosh_two_mul (φ / 2)
+  rw [show 2 * (φ / 2) = φ by ring] at h
+  have hsq := cosh_sq_sub_sinh_sq (φ / 2)
+  linarith
+
+/-- Above the threshold the nuclear term is outward, so the net coefficient
+strictly exceeds the Coulomb piece. -/
+theorem chargedShift_gt_coulomb_of_neg {γ ρ γE : ℝ}
+    (hγ : γ < 0) (_hρ : 0 < ρ) (_hγE : 0 < γE) :
+    ρ / γE < chargedShift γ ρ γE := by
+  unfold chargedShift
+  have hpos : 0 < -1 / γ := by
+    refine div_pos_of_neg_of_neg ?_ hγ
+    norm_num
+  linarith
+
+theorem above_threshold_reinforces_coulomb {x δ ρ γE : ℝ}
+    (hx : π / 4 < x) (hx2 : x < π / 2)
+    (hδ : phiStar x / 2 < δ) (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ρ / γE < chargedShift (gammaRapidity x δ) ρ γE := by
+  have hγ : gammaRapidity x δ < 0 := by
+    have hnot : ¬ 0 < gammaRapidity x δ := by
+      intro hpos
+      have hlt := (gammaRapidity_pos_iff hx hx2).mp hpos
+      linarith
+    have hne : gammaRapidity x δ ≠ 0 := by
+      intro hzero
+      have := (gammaRapidity_eq_zero_iff hx hx2).mp hzero
+      linarith
+    exact lt_of_le_of_ne (le_of_not_gt hnot) hne
+  exact chargedShift_gt_coulomb_of_neg hγ hρ hγE
+
+noncomputable def gammaRapidityDeltaDeriv (x δ : ℝ) : ℝ :=
+  (1 / 2) * exp (δ + x) * (cos x - sin x) -
+    (1 / 2) * exp (-(δ + x)) * (cos x + sin x)
+
+theorem hasDerivAt_gammaRapidity_delta (x δ : ℝ) :
+    HasDerivAt (gammaRapidity x) (gammaRapidityDeltaDeriv x δ) δ := by
+  have hclosed : gammaRapidity x = fun t =>
+      (1 / 2) * exp (t + x) * (cos x - sin x) +
+        (1 / 2) * exp (-(t + x)) * (cos x + sin x) := by
+    funext t
+    exact gammaRapidity_closed x t
+  rw [hclosed]
+  have h1 : HasDerivAt (fun t => exp (t + x)) (exp (δ + x)) δ := by
+    simpa [id_eq, mul_one] using ((hasDerivAt_id δ).add_const x).exp
+  have h2 : HasDerivAt (fun t => exp (-(t + x))) (-exp (-(δ + x))) δ := by
+    have hsum : HasDerivAt (fun t => t + x) 1 δ := by
+      simpa [id_eq, mul_one] using (hasDerivAt_id δ).add_const x
+    simpa [mul_neg_one] using hsum.neg.exp
+  have hmul1 := h1.const_mul ((1 / 2) * (cos x - sin x))
+  have hmul2 := h2.const_mul ((1 / 2) * (cos x + sin x))
+  have hsumd := hmul1.add hmul2
+  have hfun :
+      (fun y => (1 / 2) * (cos x - sin x) * exp (y + x)) +
+        (fun y => (1 / 2) * (cos x + sin x) * exp (-(y + x))) =
+      fun t =>
+        (1 / 2) * exp (t + x) * (cos x - sin x) +
+          (1 / 2) * exp (-(t + x)) * (cos x + sin x) := by
+    funext t
+    simp only [Pi.add_apply]
+    ring_nf
+  have hderiv :
+      (1 / 2) * (cos x - sin x) * exp (δ + x) +
+        (1 / 2) * (cos x + sin x) * -exp (-(δ + x)) =
+      gammaRapidityDeltaDeriv x δ := by
+    unfold gammaRapidityDeltaDeriv
+    ring_nf
+  rw [hfun, hderiv] at hsumd
+  exact hsumd
+
+theorem gammaRapidityDeltaDeriv_neg {x δ : ℝ}
+    (hx : π / 4 < x) (hx2 : x < π / 2) :
+    gammaRapidityDeltaDeriv x δ < 0 := by
+  have hdiff : cos x - sin x < 0 := by linarith [sin_sub_cos_pos hx hx2]
+  have hsum : 0 < cos x + sin x := by
+    linarith [sin_add_cos_pos (by linarith [pi_pos]) hx2.le]
+  have hA : (1 / 2) * exp (δ + x) * (cos x - sin x) < 0 := by
+    have he : 0 < exp (δ + x) := exp_pos _
+    exact mul_neg_of_pos_of_neg (mul_pos (by norm_num : (0 : ℝ) < 1 / 2) he) hdiff
+  have hB : 0 < (1 / 2) * exp (-(δ + x)) * (cos x + sin x) := by
+    have he : 0 < exp (-(δ + x)) := exp_pos _
+    positivity
+  unfold gammaRapidityDeltaDeriv
+  linarith
+
+/-- On the window the interference factor falls strictly as the rapidity rises. -/
+theorem gammaRapidity_lt_of_lt_delta {x δ₁ δ₂ : ℝ}
+    (hx : π / 4 < x) (hx2 : x < π / 2) (hδ : δ₁ < δ₂) :
+    gammaRapidity x δ₂ < gammaRapidity x δ₁ := by
+  have hcont : ContinuousOn (gammaRapidity x) (Icc δ₁ δ₂) :=
+    fun t _ => (hasDerivAt_gammaRapidity_delta x t).continuousAt.continuousWithinAt
+  have hder : ∀ t ∈ Ioo δ₁ δ₂,
+      HasDerivAt (gammaRapidity x) (gammaRapidityDeltaDeriv x t) t :=
+    fun t _ => hasDerivAt_gammaRapidity_delta x t
+  obtain ⟨c, -, hslope⟩ := exists_hasDerivAt_eq_slope (gammaRapidity x)
+    (gammaRapidityDeltaDeriv x) hδ hcont hder
+  have hneg := gammaRapidityDeltaDeriv_neg (x := x) (δ := c) hx hx2
+  have hden : 0 < δ₂ - δ₁ := by linarith
+  have hquot : (gammaRapidity x δ₂ - gammaRapidity x δ₁) / (δ₂ - δ₁) < 0 := by
+    rw [← hslope]
+    exact hneg
+  have hnum : gammaRapidity x δ₂ - gammaRapidity x δ₁ < 0 := by
+    have hclear : gammaRapidity x δ₂ - gammaRapidity x δ₁ =
+        ((gammaRapidity x δ₂ - gammaRapidity x δ₁) / (δ₂ - δ₁)) * (δ₂ - δ₁) := by
+      field_simp
+    rw [hclear]
+    exact mul_neg_of_neg_of_pos hquot hden
+  linarith
+
+/-- A higher rapidity that is still below the threshold makes the net
+coefficient more inward. -/
+theorem higher_subthreshold_pulls_harder {x δ₁ δ₂ ρ γE : ℝ}
+    (hx : π / 4 < x) (hx2 : x < π / 2)
+    (hδ : δ₁ < δ₂) (h2 : δ₂ < phiStar x / 2) :
+    chargedShift (gammaRapidity x δ₂) ρ γE < chargedShift (gammaRapidity x δ₁) ρ γE := by
+  have hγ2 : 0 < gammaRapidity x δ₂ :=
+    (gammaRapidity_pos_iff hx hx2).mpr h2
+  have hlt := gammaRapidity_lt_of_lt_delta hx hx2 hδ
+  unfold chargedShift
+  have hinv : 1 / gammaRapidity x δ₁ < 1 / gammaRapidity x δ₂ :=
+    one_div_lt_one_div_of_lt hγ2 hlt
+  have hrew1 : -1 / gammaRapidity x δ₁ = -(1 / gammaRapidity x δ₁) := by ring
+  have hrew2 : -1 / gammaRapidity x δ₂ = -(1 / gammaRapidity x δ₂) := by ring
+  rw [hrew1, hrew2]
+  linarith
+
+theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
+    (hx : π / 4 < x) (hx1 : x < resonanceRoot1)
+    (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ∃ δ, 0 ≤ δ ∧ δ < phiStar x / 2 ∧
+      chargedShift (gammaRapidity x δ) ρ γE < 0 := by
+  have hπ : resonanceRoot1 < π / 2 := by
+    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  set δs : ℝ := phiStar x / 2
+  have hδs : 0 < δs := by
+    have hφ := phiStar_pos hx hx1
+    dsimp [δs]
+    linarith
+  have hzero : gammaRapidity x δs = 0 :=
+    (gammaRapidity_eq_zero_iff hx (by linarith)).mpr rfl
+  have hleft : 0 < gammaRapidity x 0 :=
+    (gammaRapidity_pos_iff hx (by linarith)).mpr (by simpa [δs] using hδs)
+  have hcont : ContinuousOn (gammaRapidity x) (Icc 0 δs) :=
+    fun t _ => (hasDerivAt_gammaRapidity_delta x t).continuousAt.continuousWithinAt
+  by_cases hsmall : gammaRapidity x 0 < γE / ρ
+  · have hshift : chargedShift (gammaRapidity x 0) ρ γE < 0 := by
+      unfold chargedShift
+      have hstep : gammaRapidity x 0 * ρ < γE := (lt_div_iff₀ hρ).mp hsmall
+      have hinv : ρ / γE < 1 / gammaRapidity x 0 := by
+        rw [div_lt_div_iff₀ hγE hleft]
+        linarith
+      have hrew : -1 / gammaRapidity x 0 = -(1 / gammaRapidity x 0) := by ring
+      rw [hrew]
+      linarith
+    exact ⟨0, le_rfl, by simpa [δs] using hδs, hshift⟩
+  · have hge : γE / ρ ≤ gammaRapidity x 0 := le_of_not_gt hsmall
+    set target : ℝ := γE / (2 * ρ)
+    have htarget : 0 < target := by
+      dsimp [target]
+      positivity
+    have htarget_lt : target < γE / ρ := by
+      dsimp [target]
+      have hρ2 : 0 < 2 * ρ := by positivity
+      rw [div_lt_div_iff₀ hρ2 hρ]
+      have : γE * ρ < γE * (2 * ρ) := by nlinarith [hγE, hρ]
+      linarith
+    have hmem : target ∈ Ioo (gammaRapidity x δs) (gammaRapidity x 0) := by
+      rw [hzero]
+      exact ⟨htarget, lt_of_lt_of_le htarget_lt hge⟩
+    obtain ⟨δ, hδ, hγ⟩ := intermediate_value_Ioo' hδs.le hcont hmem
+    have hpos : 0 < gammaRapidity x δ := by
+      rw [hγ]
+      exact htarget
+    have hbelow : gammaRapidity x δ < γE / ρ := by
+      rw [hγ]
+      exact htarget_lt
+    have hshift : chargedShift (gammaRapidity x δ) ρ γE < 0 := by
+      unfold chargedShift
+      have hstep : gammaRapidity x δ * ρ < γE := (lt_div_iff₀ hρ).mp hbelow
+      have hinv : ρ / γE < 1 / gammaRapidity x δ := by
+        rw [div_lt_div_iff₀ hγE hpos]
+        linarith
+      have hrew : -1 / gammaRapidity x δ = -(1 / gammaRapidity x δ) := by ring
+      rw [hrew]
+      linarith
+    exact ⟨δ, hδ.1.le, by simpa [δs] using hδ.2, hshift⟩
+
+/-- At rest, every finite Coulomb ratio is overcome somewhere before the node. -/
+theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ∃ x, π / 4 < x ∧ x < resonanceRoot1 ∧
+      chargedShift (gammaRapidity x 0) ρ γE < 0 := by
+  set xL : ℝ := (π / 4 + resonanceRoot1) / 2
+  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
+  have hxL₁ : π / 4 < xL := by dsimp [xL]; linarith
+  have hxL₂ : xL < resonanceRoot1 := by dsimp [xL]; linarith
+  have hγL : 0 < gammaSEqual xL :=
+    gammaSEqual_pos_left_of_first_node ⟨by linarith [pi_pos], hxL₂⟩
+  have hzero : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
+  have hcont : ContinuousOn gammaSEqual (Icc xL resonanceRoot1) :=
+    continuous_gammaSEqual.continuousOn
+  by_cases hsmall : gammaSEqual xL < γE / ρ
+  · have hshift : chargedShift (gammaRapidity xL 0) ρ γE < 0 := by
+      rw [gammaRapidity_zero]
+      unfold chargedShift
+      have hstep : gammaSEqual xL * ρ < γE := (lt_div_iff₀ hρ).mp hsmall
+      have hinv : ρ / γE < 1 / gammaSEqual xL := by
+        rw [div_lt_div_iff₀ hγE hγL]
+        linarith
+      have hrew : -1 / gammaSEqual xL = -(1 / gammaSEqual xL) := by ring
+      rw [hrew]
+      linarith
+    exact ⟨xL, hxL₁, hxL₂, hshift⟩
+  · have hge : γE / ρ ≤ gammaSEqual xL := le_of_not_gt hsmall
+    set target : ℝ := γE / (2 * ρ)
+    have htarget : 0 < target := by
+      dsimp [target]
+      positivity
+    have htarget_lt : target < γE / ρ := by
+      dsimp [target]
+      have hρ2 : 0 < 2 * ρ := by positivity
+      rw [div_lt_div_iff₀ hρ2 hρ]
+      nlinarith [hγE, hρ]
+    have hmem : target ∈ Ioo (gammaSEqual resonanceRoot1) (gammaSEqual xL) := by
+      rw [hzero]
+      exact ⟨htarget, lt_of_lt_of_le htarget_lt hge⟩
+    have hlt : xL < resonanceRoot1 := hxL₂
+    obtain ⟨x, hx, hγ⟩ := intermediate_value_Ioo' hlt.le hcont hmem
+    have hpos : 0 < gammaSEqual x := by rw [hγ]; exact htarget
+    have hbelow : gammaSEqual x < γE / ρ := by rw [hγ]; exact htarget_lt
+    have hshift : chargedShift (gammaRapidity x 0) ρ γE < 0 := by
+      rw [gammaRapidity_zero]
+      unfold chargedShift
+      have hstep : gammaSEqual x * ρ < γE := (lt_div_iff₀ hρ).mp hbelow
+      have hinv : ρ / γE < 1 / gammaSEqual x := by
+        rw [div_lt_div_iff₀ hγE hpos]
+        linarith
+      have hrew : -1 / gammaSEqual x = -(1 / gammaSEqual x) := by ring
+      rw [hrew]
+      linarith
+    exact ⟨x, lt_trans hxL₁ hx.1, hx.2, hshift⟩
+
+/-! ### The pole moves inward as the rapidity falls -/
+
+noncomputable def phiStarSlope (x : ℝ) : ℝ :=
+  2 * (1 - cos (2 * x)) / cos (2 * x)
+
+theorem phiStarSlope_lt_of_lt {c x : ℝ}
+    (hc : π / 4 < c) (hlt : c < x) (hx : x < π / 2) :
+    phiStarSlope c < phiStarSlope x := by
+  have hcos : cos (2 * x) < cos (2 * c) :=
+    cos_lt_cos_of_nonneg_of_le_pi (by linarith : (0 : ℝ) ≤ 2 * c)
+      (by linarith [pi_pos] : 2 * x ≤ π) (by linarith : 2 * c < 2 * x)
+  have hnegc : cos (2 * c) < 0 :=
+    cos_neg_of_pi_div_two_lt_of_lt (by linarith : π / 2 < 2 * c)
+      (by linarith [pi_pos] : 2 * c < π + π / 2)
+  have hnegx : cos (2 * x) < 0 :=
+    cos_neg_of_pi_div_two_lt_of_lt (by linarith : π / 2 < 2 * x)
+      (by linarith [pi_pos] : 2 * x < π + π / 2)
+  have hsec : 1 / cos (2 * c) < 1 / cos (2 * x) := by
+    have hnum : cos (2 * x) - cos (2 * c) < 0 := by linarith
+    have hden : 0 < cos (2 * c) * cos (2 * x) := by nlinarith
+    have hdiff : 1 / cos (2 * c) - 1 / cos (2 * x) =
+        (cos (2 * x) - cos (2 * c)) / (cos (2 * c) * cos (2 * x)) := by
+      field_simp [hnegc.ne, hnegx.ne]
+    have hquot : (cos (2 * x) - cos (2 * c)) / (cos (2 * c) * cos (2 * x)) < 0 :=
+      div_neg_of_neg_of_pos hnum hden
+    linarith
+  have hrew (t : ℝ) (ht : cos (2 * t) ≠ 0) :
+      phiStarSlope t = 2 * (1 / cos (2 * t) - 1) := by
+    unfold phiStarSlope
+    field_simp [ht]
+  have hc' := hrew c hnegc.ne
+  have hx' := hrew x hnegx.ne
+  linarith
+
+theorem phiStarSlope_node :
+    phiStarSlope resonanceRoot1 = -4 * cosh resonanceRoot1 ^ 2 := by
+  have hx := resonanceRoot1_sharp_bounds
+  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three]
+  have heq : phiStarSlope resonanceRoot1 = deriv phiStar resonanceRoot1 := by
+    unfold phiStarSlope
+    exact (hasDerivAt_phiStar hx.1 hπ).deriv.symm
+  rw [heq, phiStar_deriv_node]
+
+/-- Every positive rapidity meets the threshold at a phase strictly closer to
+the node than the tangent estimate `φ/(4 cosh(x₁)²)`. -/
+theorem phase_gap_lt_linear {φ x : ℝ} (_hφ : 0 < φ)
+    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
+    resonanceRoot1 - x < φ / (4 * cosh resonanceRoot1 ^ 2) := by
+  have hx1 : x < resonanceRoot1 := hx.2
+  have hπ : resonanceRoot1 < π / 2 := by
+    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hcont : ContinuousOn phiStar (Icc x resonanceRoot1) :=
+    continuousOn_phiStar.mono (by
+      intro t ht
+      exact ⟨lt_of_lt_of_le hx.1 ht.1, lt_of_le_of_lt ht.2 hπ⟩)
+  have hder : ∀ t ∈ Ioo x resonanceRoot1, HasDerivAt phiStar (phiStarSlope t) t := by
+    intro t ht
+    have ht1 : π / 4 < t := lt_trans hx.1 ht.1
+    have ht2 : t < π / 2 := lt_trans ht.2 hπ
+    simpa [phiStarSlope] using hasDerivAt_phiStar ht1 ht2
+  obtain ⟨c, hc, hslope⟩ :=
+    exists_hasDerivAt_eq_slope phiStar phiStarSlope hx1 hcont hder
+  have hceq := hslope.symm
+  rw [phiStar_node, hφx] at hceq
+  have hden : 0 < resonanceRoot1 - x := by linarith
+  have hlt_slope : phiStarSlope c < phiStarSlope resonanceRoot1 :=
+    phiStarSlope_lt_of_lt (lt_trans hx.1 hc.1) hc.2 hπ
+  rw [phiStarSlope_node] at hlt_slope
+  have hrew : (0 - φ) / (resonanceRoot1 - x) = -(φ / (resonanceRoot1 - x)) := by ring
+  rw [hrew] at hceq
+  have hgt : 4 * cosh resonanceRoot1 ^ 2 < φ / (resonanceRoot1 - x) := by
+    have hlt : -(φ / (resonanceRoot1 - x)) < -4 * cosh resonanceRoot1 ^ 2 := by
+      rw [hceq]
+      exact hlt_slope
+    linarith
+  have hcosh : 0 < 4 * cosh resonanceRoot1 ^ 2 := by
+    have hcsh : 0 < cosh resonanceRoot1 := cosh_pos _
+    positivity
+  have hmul : (4 * cosh resonanceRoot1 ^ 2) * (resonanceRoot1 - x) < φ :=
+    (lt_div_iff₀ hden).mp hgt
+  rw [lt_div_iff₀ hcosh]
+  linarith
+
+/-- The fractional widening `(r_*-r₁)/r₁` is strictly smaller than `φ/π`. -/
+theorem fractional_widening_lt_phi_div_pi {φ x : ℝ} (hφ : 0 < φ)
+    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
+    (resonanceRoot1 - x) / x < φ / π := by
+  have hgap := phase_gap_lt_linear hφ hx hφx
+  have hcosh : 1 < cosh resonanceRoot1 := by
+    have hpos : 0 < resonanceRoot1 :=
+      lt_trans (lt_trans (by linarith [pi_pos] : (0 : ℝ) < π / 4) hx.1) hx.2
+    have hsub := cosh_sub_one_local resonanceRoot1
+    have hsinh : 0 < sinh (resonanceRoot1 / 2) := sinh_pos_iff.mpr (by linarith)
+    have hpos' : 0 < cosh resonanceRoot1 - 1 := by
+      rw [hsub]
+      positivity
+    linarith
+  have hden : 0 < 4 * cosh resonanceRoot1 ^ 2 := by
+    have hcsh : 0 < cosh resonanceRoot1 := cosh_pos _
+    positivity
+  have hquarter : φ / (4 * cosh resonanceRoot1 ^ 2) < φ / 4 := by
+    refine div_lt_div_of_pos_left hφ (by norm_num) ?_
+    have hcsh : 1 < cosh resonanceRoot1 := hcosh
+    nlinarith
+  have hphase : resonanceRoot1 - x < φ / 4 := lt_trans hgap hquarter
+  have hxpos : 0 < x := by linarith [hx.1, pi_pos]
+  have hfrac_phase : (resonanceRoot1 - x) / x < (φ / 4) / x :=
+    div_lt_div_of_pos_right hphase hxpos
+  have hxq : π / 4 < x := hx.1
+  have hbound : (φ / 4) / x < (φ / 4) / (π / 4) :=
+    div_lt_div_of_pos_left (by positivity) (by linarith [pi_pos] : (0 : ℝ) < π / 4) hxq
+  have hpi : (φ / 4) / (π / 4) = φ / π := by
+    field_simp
+  exact lt_trans hfrac_phase (lt_of_lt_of_eq hbound hpi)
+
+theorem exists_threshold_phase {φ : ℝ} (hφ : 0 < φ) :
+    ∃ x, x ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar x = φ := by
+  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
+  have hπ : resonanceRoot1 < π / 2 := by
+    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hlarge : ∀ᶠ t in nhdsWithin (π / 4) (Ioi (π / 4)), φ < phiStar t :=
+    phiStar_tendsto_atTop.eventually (eventually_gt_atTop φ)
+  have hnear : Ioo (π / 4) resonanceRoot1 ∈ nhdsWithin (π / 4) (Ioi (π / 4)) :=
+    Ioo_mem_nhdsGT hx1
+  have hmem : ∀ᶠ t in nhdsWithin (π / 4) (Ioi (π / 4)),
+      t ∈ Ioo (π / 4) resonanceRoot1 :=
+    eventually_of_mem hnear fun t ht => ht
+  obtain ⟨x0, hx0φ, hx0mem⟩ := (hlarge.and hmem).exists
+  have hcont : ContinuousOn phiStar (Icc x0 resonanceRoot1) :=
+    continuousOn_phiStar.mono (by
+      intro t ht
+      exact ⟨lt_of_lt_of_le hx0mem.1 ht.1, lt_of_le_of_lt ht.2 hπ⟩)
+  have hval : φ ∈ Ioo (phiStar resonanceRoot1) (phiStar x0) := by
+    rw [phiStar_node]
+    exact ⟨hφ, hx0φ⟩
+  obtain ⟨x, hx, hxφ⟩ := intermediate_value_Ioo' hx0mem.2.le hcont hval
+  exact ⟨x, ⟨lt_trans hx0mem.1 hx.1, hx.2⟩, hxφ⟩
+
+/-- A smaller rapidity meets the threshold at a larger phase, hence at a
+smaller radius. -/
+theorem slower_threshold_deeper {φ₁ φ₂ x₁ x₂ : ℝ}
+    (hφ : φ₁ < φ₂)
+    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)
+    (h₁ : phiStar x₁ = φ₁) (h₂ : phiStar x₂ = φ₂) :
+    x₂ < x₁ := by
+  by_contra hnot
+  have hle : x₁ ≤ x₂ := le_of_not_gt hnot
+  have hπ : resonanceRoot1 < π / 2 := by
+    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hanti := strictAntiOn_phiStar
+  have hx₁' : x₁ ∈ Ioo (π / 4) (π / 2) := ⟨hx₁.1, lt_trans hx₁.2 hπ⟩
+  have hx₂' : x₂ ∈ Ioo (π / 4) (π / 2) := ⟨hx₂.1, lt_trans hx₂.2 hπ⟩
+  rcases eq_or_lt_of_le hle with rfl | hlt
+  · linarith
+  · have hφle : phiStar x₂ < phiStar x₁ := hanti hx₁' hx₂' hlt
+    linarith
+
+theorem slower_threshold_radius {ℓ φ₁ φ₂ x₁ x₂ : ℝ}
+    (hℓ : 0 < ℓ) (hφ : φ₁ < φ₂)
+    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)
+    (h₁ : phiStar x₁ = φ₁) (h₂ : phiStar x₂ = φ₂) :
+    layerRadius ℓ x₁ < layerRadius ℓ x₂ := by
+  have hx := slower_threshold_deeper hφ hx₁ hx₂ h₁ h₂
+  unfold layerRadius
+  have hx1pos : 0 < x₁ := by linarith [hx₁.1, pi_pos]
+  have hx2pos : 0 < x₂ := by linarith [hx₂.1, pi_pos]
+  rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+  nlinarith
+
+/-! ### Thermal rapidity -/
+
+theorem rapidity_lt_sqrt_two {φ y : ℝ} (hφ : 0 < φ) (hy : cosh φ = 1 + y) :
+    φ < sqrt (2 * y) := by
+  have hsub := cosh_sub_one_local φ
+  have hy' : y = 2 * sinh (φ / 2) ^ 2 := by linarith
+  have hhalf : 0 < φ / 2 := by linarith
+  have hsinh : φ / 2 < sinh (φ / 2) := self_lt_sinh_iff.mpr hhalf
+  have hsq : (φ / 2) ^ 2 < sinh (φ / 2) ^ 2 := by
+    have habs : |φ / 2| < |sinh (φ / 2)| := by
+      rw [abs_of_pos hhalf, abs_of_pos (sinh_pos_iff.mpr hhalf)]
+      exact hsinh
+    exact (sq_lt_sq).mpr habs
+  have hφsq : φ ^ 2 < 2 * y := by
+    have hleft : (φ / 2) ^ 2 < y / 2 := by
+      have hs : sinh (φ / 2) ^ 2 = y / 2 := by
+        rw [hy']
+        field_simp
+      linarith
+    nlinarith
+  have hy0 : 0 ≤ 2 * y := by
+    have : 0 < sinh (φ / 2) ^ 2 := by positivity
+    linarith
+  rw [← sq_lt_sq₀ (le_of_lt hφ) (sqrt_nonneg _)]
+  rw [sq_sqrt hy0]
+  exact hφsq
+
+theorem sqrt_two_tenth_lt :
+    sqrt (2 / (10 : ℝ) ^ 10) < (3 : ℝ) / 2 / (10 : ℝ) ^ 5 := by
+  have hL : 0 ≤ sqrt (2 / (10 : ℝ) ^ 10) := sqrt_nonneg _
+  have hR : 0 ≤ (3 : ℝ) / 2 / (10 : ℝ) ^ 5 := by positivity
+  rw [← sq_lt_sq₀ hL hR, sq_sqrt (by positivity)]
+  have hsq : ((3 : ℝ) / 2 / (10 : ℝ) ^ 5) ^ 2 = (9 / 4) / (10 : ℝ) ^ 10 := by
+    field_simp
+    ring
+  rw [hsq]
+  have hden : (0 : ℝ) < (10 : ℝ) ^ 10 := by positivity
+  rw [div_lt_div_iff₀ hden hden]
+  norm_num
+
+theorem fractional_widening_of_small_energy {φ y x : ℝ}
+    (hφ : 0 < φ) (hy : cosh φ = 1 + y)
+    (hyb : y ≤ 1 / (10 : ℝ) ^ 10)
+    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
+    (resonanceRoot1 - x) / x < 5 / (10 : ℝ) ^ 6 := by
+  have hfrac := fractional_widening_lt_phi_div_pi hφ hx hφx
+  have hφsqrt := rapidity_lt_sqrt_two hφ hy
+  have hle : sqrt (2 * y) ≤ sqrt (2 / (10 : ℝ) ^ 10) := by
+    refine sqrt_le_sqrt ?_
+    have hyb' : 2 * y ≤ 2 / (10 : ℝ) ^ 10 := by
+      have hden : (0 : ℝ) < (10 : ℝ) ^ 10 := by positivity
+      have : y ≤ 1 / (10 : ℝ) ^ 10 := hyb
+      nlinarith
+    exact hyb'
+  have hφnum : φ < (3 : ℝ) / 2 / (10 : ℝ) ^ 5 :=
+    lt_trans hφsqrt (lt_of_le_of_lt hle sqrt_two_tenth_lt)
+  have hπ : (3 : ℝ) < π := pi_gt_three
+  have hφπ : φ / π < φ / 3 := div_lt_div_of_pos_left hφ (by norm_num) hπ
+  have hφ3 : φ / 3 < ((3 : ℝ) / 2 / (10 : ℝ) ^ 5) / 3 :=
+    div_lt_div_of_pos_right hφnum (by norm_num)
+  have hend : ((3 : ℝ) / 2 / (10 : ℝ) ^ 5) / 3 = 5 / (10 : ℝ) ^ 6 := by
+    field_simp
+    ring
+  have hchain : φ / π < 5 / (10 : ℝ) ^ 6 := by
+    have hstep : φ / π < ((3 : ℝ) / 2 / (10 : ℝ) ^ 5) / 3 := lt_trans hφπ hφ3
+    linarith
+  linarith
+
+/-! ### Outside the quarter-phase, a fast pair is left to Coulomb -/
+
+private theorem cos_sub_sin_pos {x : ℝ} (hx0 : 0 ≤ x) (hx : x < π / 4) :
+    0 < cos x - sin x := by
+  have hcos : 0 < cos x :=
+    cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], by linarith [pi_pos]⟩
+  rcases eq_or_lt_of_le hx0 with rfl | hxpos
+  · simp [sin_zero, cos_zero]
+  · have hmem₁ : x ∈ Ioo (-(π / 2)) (π / 2) := ⟨by linarith [pi_pos], by linarith [pi_pos]⟩
+    have hmem₂ : (π / 4) ∈ Ioo (-(π / 2)) (π / 2) :=
+      ⟨by linarith [pi_pos], by linarith [pi_pos]⟩
+    have htan : tan x < 1 := by
+      have hstep := strictMonoOn_tan hmem₁ hmem₂ hx
+      rwa [tan_pi_div_four] at hstep
+    rw [tan_eq_sin_div_cos, div_lt_one hcos] at htan
+    linarith
+
+theorem gammaRapidity_tendsto_atTop_below_quarter {x : ℝ}
+    (hx0 : 0 ≤ x) (hx : x < π / 4) :
+    Tendsto (gammaRapidity x) atTop atTop := by
+  have hdiff : 0 < cos x - sin x := cos_sub_sin_pos hx0 hx
+  set a : ℝ := (1 / 2) * (cos x - sin x) * exp x
+  have ha : 0 < a := by
+    dsimp [a]
+    positivity
+  set b : ℝ := (1 / 2) * (cos x + sin x)
+  have hmain : Tendsto (fun δ => exp δ * a) atTop atTop :=
+    tendsto_exp_atTop.atTop_mul_const ha
+  have hbot : Tendsto (fun δ => -(δ + x)) atTop atBot := by
+    have hsum : Tendsto (fun δ => δ + x) atTop atTop :=
+      tendsto_id.atTop_add tendsto_const_nhds
+    exact tendsto_neg_atTop_atBot.comp hsum
+  have hexp : Tendsto (fun δ => exp (-(δ + x))) atTop (nhds 0) :=
+    tendsto_exp_atBot.comp hbot
+  have hrest : Tendsto (fun δ => exp (-(δ + x)) * b) atTop (nhds 0) := by
+    simpa [mul_zero] using hexp.mul_const b
+  refine (hrest.add_atTop hmain).congr fun δ => ?_
+  rw [gammaRapidity_closed]
+  have hexpadd : exp (δ + x) = exp δ * exp x := exp_add _ _
+  rw [hexpadd]
+  ring
+
+theorem exists_fast_net_outward {x ρ γE : ℝ}
+    (hx0 : 0 ≤ x) (hx : x < π / 4) (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ∃ Δ, ∀ δ, Δ ≤ δ → 0 < chargedShift (gammaRapidity x δ) ρ γE := by
+  have hlim := gammaRapidity_tendsto_atTop_below_quarter hx0 hx
+  have hev : ∀ᶠ δ in atTop, γE / ρ < gammaRapidity x δ :=
+    hlim.eventually (eventually_gt_atTop (γE / ρ))
+  rw [eventually_atTop] at hev
+  obtain ⟨Δ, hΔ⟩ := hev
+  refine ⟨Δ, ?_⟩
+  intro δ hδ
+  have hγ : γE / ρ < gammaRapidity x δ := hΔ δ hδ
+  have hpos : 0 < gammaRapidity x δ := lt_trans (div_pos hγE hρ) hγ
+  have hinv : 1 / gammaRapidity x δ < ρ / γE := by
+    have hrew : 1 / (γE / ρ) = ρ / γE := by field_simp
+    have hlt : 1 / gammaRapidity x δ < 1 / (γE / ρ) :=
+      one_div_lt_one_div_of_lt (div_pos hγE hρ) hγ
+    rw [hrew] at hlt
+    exact hlt
+  exact by
+    unfold chargedShift
+    have hrew : -1 / gammaRapidity x δ = -(1 / gammaRapidity x δ) := by ring
+    rw [hrew]
+    linarith
 
 end Gravity
 

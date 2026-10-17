@@ -174,8 +174,18 @@ The straight line of one fixed jet is not itself that geodesic.
   No finite rapidity inverts the channel at phase \(x\le\pi/4\). A
   nonnegative increasing rapidity that starts below the threshold meets it
   before that node. A dual excitation falls strictly on the outer well,
-  from \(\pi\) at large separation to \(0\) at the node. The prefactor
-  \(\kappa\), the disposal of rapidity, and the \(1/v\) law are not derived.
+  from \(\pi\) at large separation to \(0\) at the node. On the window the
+  interference factor falls strictly with rapidity. Above the threshold the
+  nuclear term adds to a positive Coulomb term. Below it, every finite
+  positive Coulomb ratio is overcome on a nonempty rapidity interval, and a
+  higher sub-threshold rapidity pulls harder. A smaller positive rapidity
+  keeps the onset closer to the node: the phase gap is strictly smaller
+  than \(\varphi/(4\cosh^2 x_1)\), and the fractional widening of the radius
+  is strictly smaller than \(\varphi/\pi\). If \(0<T/mc^2\le 10^{-10}\), that
+  widening is strictly less than \(5\times 10^{-6}\). Outside phase \(\pi/4\),
+  a sufficiently large rapidity leaves a net repulsion. The prefactor
+  \(\kappa\), the host that holds a rapidity down, a fusion rate, and the
+  \(1/v\) law are not derived.
 * `BaryonAsymmetry` — a vacuum excess of rapidity \(\delta\) along \(p\) has
   \(J=M=(\delta^2/2)\sum_a p_a^2\) on the boost side and \(J=-M\) on the
   rotation side, so \(J/M=\pm 1\) when both are nonzero. Both scalars are
@@ -2076,6 +2086,24 @@ example {c : ℝ} {φ : ℝ → ℝ}
     (hmono : StrictMonoOn φ (Set.Icc c resonanceRoot1)) :
     ∃ t, t ∈ Set.Ioo c resonanceRoot1 ∧ φ t = phiStar t :=
   inward_rapidity_meets_threshold hc hc1 h0 hlt hcont hmono
+
+/-- Regression: above the nuclear threshold the charged net force is more
+repulsive than the Coulomb term alone. -/
+example {x δ ρ γE : ℝ}
+    (hx : Real.pi / 4 < x) (hx2 : x < Real.pi / 2)
+    (hδ : phiStar x / 2 < δ) (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ρ / γE < chargedShift (gammaRapidity x δ) ρ γE :=
+  above_threshold_reinforces_coulomb hx hx2 hδ hρ hγE
+
+/-- Regression: a kinetic energy at most `10⁻¹⁰` of the rest energy widens
+the inversion radius by less than five parts in a million. -/
+example {φ y x : ℝ}
+    (hφ : 0 < φ) (hy : Real.cosh φ = 1 + y)
+    (hyb : y ≤ 1 / (10 : ℝ) ^ 10)
+    (hx : x ∈ Set.Ioo (Real.pi / 4) resonanceRoot1)
+    (hφx : phiStar x = φ) :
+    (resonanceRoot1 - x) / x < 5 / (10 : ℝ) ^ 6 :=
+  fractional_widening_of_small_energy hφ hy hyb hx hφx
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
