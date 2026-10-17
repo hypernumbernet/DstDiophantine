@@ -37,6 +37,7 @@ import DstDiophantine.Gravity.ElectronAngle
 import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronCrystal
+import DstDiophantine.Gravity.MetalFusion
 import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
 import DstDiophantine.Gravity.Faraday
