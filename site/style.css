@@ -72,3 +72,4 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 .timelist{margin:.4rem 0 1rem;padding-left:1.3rem}.timelist li{margin:.25rem 0}
 a.ref{color:var(--usual)}
 .fig .att{stroke:var(--usual);color:var(--usual);stroke-width:3}
+.fig .lobe.pos{fill:#4fc3ff55;stroke:#4fc3ff}.fig .lobe.neg{fill:#ff5a7a44;stroke:#ff5a7a}
