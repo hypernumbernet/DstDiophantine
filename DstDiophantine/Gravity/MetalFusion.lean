@@ -27,8 +27,6 @@ infinite lattice sum is taken. Screening is not introduced.
 
 ## What is proved
 
-* On `[0, ∞)`, `γ_s(x) ≥ 1 - x² cosh x`. Up to phase `1`,
-  `γ_s(x) ≤ 2 cos x - 1`.
 * For every ion charge `Z ≥ 1`, at cage radius `2` and proton half-separation
   `1`, the axial component is strictly negative.
 * As the half-separation descends to `1/(4x₁)`, the component tends to `+∞`.
@@ -45,7 +43,7 @@ open Real Set Filter
 /-! ### Bounds on the interference factor -/
 
 /-- `γ_s(x) ≥ 1 - x² cosh x` for `x ≥ 0`. -/
-theorem gammaSEqual_ge_one_sub_sq_cosh {x : ℝ} (hx : 0 ≤ x) :
+private lemma gammaSEqual_ge_one_sub_sq_cosh {x : ℝ} (hx : 0 ≤ x) :
     1 - x ^ 2 * cosh x ≤ gammaSEqual x := by
   let f : ℝ → ℝ := fun y => gammaSEqual y - 1 + y ^ 2 * cosh y
   have hderiv : ∀ y ∈ Ioo 0 (x + 1),
@@ -86,7 +84,7 @@ theorem gammaSEqual_ge_one_sub_sq_cosh {x : ℝ} (hx : 0 ≤ x) :
   linarith
 
 /-- Up to phase `1`, `γ_s(x) ≤ 2 cos x - 1`. -/
-theorem gammaSEqual_le_two_cos_sub_one {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
+private lemma gammaSEqual_le_two_cos_sub_one {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     gammaSEqual x ≤ 2 * cos x - 1 := by
   let f : ℝ → ℝ := fun y => 2 * cos y - 1 - gammaSEqual y
   have hderiv : ∀ y ∈ Ioo 0 1, HasDerivAt f (2 * sin y * (cosh y - 1)) y := by
@@ -134,13 +132,6 @@ private lemma exp_one_quarter_le : exp (1 / 4 : ℝ) ≤ 13 / 10 := by
   norm_num at h
   exact h.trans (by norm_num)
 
-private lemma exp_one_third_le : exp (1 / 3 : ℝ) ≤ 3 / 2 := by
-  have h := exp_bound' (x := 1 / 3) (by norm_num) (by norm_num) (n := 4) (by decide)
-  rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
-    Finset.sum_range_succ, Finset.sum_range_zero] at h
-  norm_num at h
-  exact h.trans (by norm_num)
-
 private lemma gamma_one_sixth_ge : (29 / 30 : ℝ) ≤ gammaSEqual (1 / 6) := by
   have h := gammaSEqual_ge_one_sub_sq_cosh (x := 1 / 6) (by norm_num)
   have hc := cosh_le_exp_of_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 6)
@@ -154,31 +145,6 @@ private lemma gamma_one_quarter_ge : (147 / 160 : ℝ) ≤ gammaSEqual (1 / 4) :
   have hexp := exp_one_quarter_le
   have : (1 / 4 : ℝ) ^ 2 * cosh (1 / 4) ≤ (1 / 16) * (13 / 10) := by nlinarith
   linarith
-
-private lemma gamma_of_le_third {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 3) :
-    5 / 6 ≤ gammaSEqual x := by
-  have h := gammaSEqual_ge_one_sub_sq_cosh hx0
-  have hc := cosh_le_exp_of_nonneg hx0
-  have hexp : exp x ≤ 3 / 2 := le_trans (exp_le_exp.mpr hx) exp_one_third_le
-  have hx2 : x ^ 2 ≤ 1 / 9 := by nlinarith
-  have : x ^ 2 * cosh x ≤ (1 / 9) * (3 / 2) := by
-    have hc' : cosh x ≤ 3 / 2 := le_trans hc hexp
-    nlinarith
-  linarith
-
-private lemma pairAttraction_le_third {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1 / 3) :
-    pairAttraction x ≤ 8 / 15 := by
-  have hγ := gamma_of_le_third hx0.le hx
-  have hγpos : 0 < gammaSEqual x := by linarith
-  have hx2 : x ^ 2 ≤ 1 / 9 := by nlinarith
-  unfold pairAttraction
-  have hgoal : 4 * x ^ 2 / gammaSEqual x ≤ 8 / 15 := by
-    rw [div_le_iff₀ hγpos]
-    have hnum : 4 * x ^ 2 ≤ 4 / 9 := by linarith
-    have : (4 / 9) * (6 / 5) = 8 / 15 := by norm_num
-    have hγ' : 5 / 6 ≤ gammaSEqual x := hγ
-    nlinarith
-  exact hgoal
 
 private lemma cos_half_le : cos (1 / 2 : ℝ) ≤ 1349 / 1536 := by
   have hb := cos_bound (x := (1 / 2 : ℝ)) (by norm_num)
@@ -205,12 +171,6 @@ noncomputable def octaPairOutward (Z a t : ℝ) : ℝ :=
   + Z * pairAttraction (1 / (2 * (a + t)))
   + 4 * Z * pullRate (1 / (2 * sqrt (a ^ 2 + t ^ 2))) * t
   + pairAttraction (1 / (4 * t))
-
-lemma pullRate_mul_radius {r : ℝ} (hr : 0 < r) :
-    pullRate (1 / (2 * r)) * r = pairAttraction (1 / (2 * r)) := by
-  unfold pullRate pairAttraction
-  field_simp
-  ring
 
 private lemma sqrt_five_gt : (11 / 5 : ℝ) < sqrt 5 := by
   have hsq : (11 / 5 : ℝ) ^ 2 < (sqrt 5) ^ 2 := by
@@ -404,7 +364,7 @@ theorem tendsto_pairAttraction_firstNode :
   have hb : b ≤ |b| := le_abs_self b
   linarith
 
-lemma nodeHalf_mem : 1 / (4 * resonanceRoot1) ∈ Ioo (5 / 19 : ℝ) (15 / 56) := by
+private lemma nodeHalf_mem : 1 / (4 * resonanceRoot1) ∈ Ioo (5 / 19 : ℝ) (15 / 56) := by
   have h := firstNode_num_window
   have hx : 0 < resonanceRoot1 := lt_trans (by norm_num) h.1
   refine ⟨?_, ?_⟩
