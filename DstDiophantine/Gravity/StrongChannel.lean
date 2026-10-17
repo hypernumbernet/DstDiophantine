@@ -736,6 +736,19 @@ theorem gammaRapidity_lt_of_lt_delta {x δ₁ δ₂ : ℝ}
     exact mul_neg_of_neg_of_pos hquot hden
   linarith
 
+/-- `γ < γ_E/ρ` with all three positive is an inward net coefficient. -/
+theorem chargedShift_neg_of_gamma_lt {γ ρ γE : ℝ}
+    (hγ : 0 < γ) (hρ : 0 < ρ) (hγE : 0 < γE) (hlt : γ < γE / ρ) :
+    chargedShift γ ρ γE < 0 := by
+  unfold chargedShift
+  have hstep : γ * ρ < γE := (lt_div_iff₀ hρ).mp hlt
+  have hinv : ρ / γE < 1 / γ := by
+    rw [div_lt_div_iff₀ hγE hγ]
+    linarith
+  have hrew : -1 / γ = -(1 / γ) := by ring
+  rw [hrew]
+  linarith
+
 /-- A higher rapidity that is still below the threshold makes the net
 coefficient more inward. -/
 theorem higher_subthreshold_pulls_harder {x δ₁ δ₂ ρ γE : ℝ}
@@ -772,16 +785,8 @@ theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
   have hcont : ContinuousOn (gammaRapidity x) (Icc 0 δs) :=
     fun t _ => (hasDerivAt_gammaRapidity_delta x t).continuousAt.continuousWithinAt
   by_cases hsmall : gammaRapidity x 0 < γE / ρ
-  · have hshift : chargedShift (gammaRapidity x 0) ρ γE < 0 := by
-      unfold chargedShift
-      have hstep : gammaRapidity x 0 * ρ < γE := (lt_div_iff₀ hρ).mp hsmall
-      have hinv : ρ / γE < 1 / gammaRapidity x 0 := by
-        rw [div_lt_div_iff₀ hγE hleft]
-        linarith
-      have hrew : -1 / gammaRapidity x 0 = -(1 / gammaRapidity x 0) := by ring
-      rw [hrew]
-      linarith
-    exact ⟨0, le_rfl, by simpa [δs] using hδs, hshift⟩
+  · exact ⟨0, le_rfl, by simpa [δs] using hδs,
+      chargedShift_neg_of_gamma_lt hleft hρ hγE hsmall⟩
   · have hge : γE / ρ ≤ gammaRapidity x 0 := le_of_not_gt hsmall
     set target : ℝ := γE / (2 * ρ)
     have htarget : 0 < target := by
@@ -803,16 +808,8 @@ theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
     have hbelow : gammaRapidity x δ < γE / ρ := by
       rw [hγ]
       exact htarget_lt
-    have hshift : chargedShift (gammaRapidity x δ) ρ γE < 0 := by
-      unfold chargedShift
-      have hstep : gammaRapidity x δ * ρ < γE := (lt_div_iff₀ hρ).mp hbelow
-      have hinv : ρ / γE < 1 / gammaRapidity x δ := by
-        rw [div_lt_div_iff₀ hγE hpos]
-        linarith
-      have hrew : -1 / gammaRapidity x δ = -(1 / gammaRapidity x δ) := by ring
-      rw [hrew]
-      linarith
-    exact ⟨δ, hδ.1.le, by simpa [δs] using hδ.2, hshift⟩
+    exact ⟨δ, hδ.1.le, by simpa [δs] using hδ.2,
+      chargedShift_neg_of_gamma_lt hpos hρ hγE hbelow⟩
 
 /-- At rest, every finite Coulomb ratio is overcome somewhere before the node. -/
 theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
@@ -828,16 +825,8 @@ theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
   have hcont : ContinuousOn gammaSEqual (Icc xL resonanceRoot1) :=
     continuous_gammaSEqual.continuousOn
   by_cases hsmall : gammaSEqual xL < γE / ρ
-  · have hshift : chargedShift (gammaRapidity xL 0) ρ γE < 0 := by
-      rw [gammaRapidity_zero]
-      unfold chargedShift
-      have hstep : gammaSEqual xL * ρ < γE := (lt_div_iff₀ hρ).mp hsmall
-      have hinv : ρ / γE < 1 / gammaSEqual xL := by
-        rw [div_lt_div_iff₀ hγE hγL]
-        linarith
-      have hrew : -1 / gammaSEqual xL = -(1 / gammaSEqual xL) := by ring
-      rw [hrew]
-      linarith
+  · have hshift := chargedShift_neg_of_gamma_lt hγL hρ hγE hsmall
+    rw [← gammaRapidity_zero] at hshift
     exact ⟨xL, hxL₁, hxL₂, hshift⟩
   · have hge : γE / ρ ≤ gammaSEqual xL := le_of_not_gt hsmall
     set target : ℝ := γE / (2 * ρ)
@@ -856,24 +845,16 @@ theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
     obtain ⟨x, hx, hγ⟩ := intermediate_value_Ioo' hlt.le hcont hmem
     have hpos : 0 < gammaSEqual x := by rw [hγ]; exact htarget
     have hbelow : gammaSEqual x < γE / ρ := by rw [hγ]; exact htarget_lt
-    have hshift : chargedShift (gammaRapidity x 0) ρ γE < 0 := by
-      rw [gammaRapidity_zero]
-      unfold chargedShift
-      have hstep : gammaSEqual x * ρ < γE := (lt_div_iff₀ hρ).mp hbelow
-      have hinv : ρ / γE < 1 / gammaSEqual x := by
-        rw [div_lt_div_iff₀ hγE hpos]
-        linarith
-      have hrew : -1 / gammaSEqual x = -(1 / gammaSEqual x) := by ring
-      rw [hrew]
-      linarith
+    have hshift := chargedShift_neg_of_gamma_lt hpos hρ hγE hbelow
+    rw [← gammaRapidity_zero] at hshift
     exact ⟨x, lt_trans hxL₁ hx.1, hx.2, hshift⟩
 
 /-! ### The pole moves inward as the rapidity falls -/
 
-noncomputable def phiStarSlope (x : ℝ) : ℝ :=
+private noncomputable def phiStarSlope (x : ℝ) : ℝ :=
   2 * (1 - cos (2 * x)) / cos (2 * x)
 
-theorem phiStarSlope_lt_of_lt {c x : ℝ}
+private theorem phiStarSlope_lt_of_lt {c x : ℝ}
     (hc : π / 4 < c) (hlt : c < x) (hx : x < π / 2) :
     phiStarSlope c < phiStarSlope x := by
   have hcos : cos (2 * x) < cos (2 * c) :=
@@ -902,7 +883,7 @@ theorem phiStarSlope_lt_of_lt {c x : ℝ}
   have hx' := hrew x hnegx.ne
   linarith
 
-theorem phiStarSlope_node :
+private theorem phiStarSlope_node :
     phiStarSlope resonanceRoot1 = -4 * cosh resonanceRoot1 ^ 2 := by
   have hx := resonanceRoot1_sharp_bounds
   have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three]
@@ -913,7 +894,7 @@ theorem phiStarSlope_node :
 
 /-- Every positive rapidity meets the threshold at a phase strictly closer to
 the node than the tangent estimate `φ/(4 cosh(x₁)²)`. -/
-theorem phase_gap_lt_linear {φ x : ℝ} (_hφ : 0 < φ)
+theorem phase_gap_lt_linear {φ x : ℝ}
     (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
     resonanceRoot1 - x < φ / (4 * cosh resonanceRoot1 ^ 2) := by
   have hx1 : x < resonanceRoot1 := hx.2
@@ -955,7 +936,7 @@ theorem phase_gap_lt_linear {φ x : ℝ} (_hφ : 0 < φ)
 theorem fractional_widening_lt_phi_div_pi {φ x : ℝ} (hφ : 0 < φ)
     (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
     (resonanceRoot1 - x) / x < φ / π := by
-  have hgap := phase_gap_lt_linear hφ hx hφx
+  have hgap := phase_gap_lt_linear hx hφx
   have hcosh : 1 < cosh resonanceRoot1 := by
     have hpos : 0 < resonanceRoot1 :=
       lt_trans (lt_trans (by linarith [pi_pos] : (0 : ℝ) < π / 4) hx.1) hx.2
