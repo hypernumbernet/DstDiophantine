@@ -15,6 +15,7 @@ import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
+import DstDiophantine.Gravity.StrongChannel
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
@@ -168,6 +169,13 @@ The straight line of one fixed jet is not itself that geodesic.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
+* `StrongChannel` — the rapidity threshold on \((\pi/4,\pi/2)\) falls
+  strictly and vanishes at the first node, with slope \(-4\cosh^2 x_1\).
+  No finite rapidity inverts the channel at phase \(x\le\pi/4\). A
+  nonnegative increasing rapidity that starts below the threshold meets it
+  before that node. A dual excitation falls strictly on the outer well,
+  from \(\pi\) at large separation to \(0\) at the node. The prefactor
+  \(\kappa\), the disposal of rapidity, and the \(1/v\) law are not derived.
 * `BaryonAsymmetry` — a vacuum excess of rapidity \(\delta\) along \(p\) has
   \(J=M=(\delta^2/2)\sum_a p_a^2\) on the boost side and \(J=-M\) on the
   rotation side, so \(J/M=\pm 1\) when both are nonzero. Both scalars are
@@ -2058,6 +2066,16 @@ example {rs r b T : ℝ} (hrs : 0 < rs) (hr : rs < r) (hb : 0 ≤ b)
 alone hold no electron there. -/
 example {x : ℝ} (hx : x ∈ Set.Ioo 0 resonanceRoot1) : 0 < ionOutflow x :=
   ionOutflow_pos_outer hx
+
+/-- Regression: a rising nonnegative rapidity meets the nuclear threshold
+before the static node. -/
+example {c : ℝ} {φ : ℝ → ℝ}
+    (hc : Real.pi / 4 < c) (hc1 : c < resonanceRoot1)
+    (h0 : 0 ≤ φ c) (hlt : φ c < phiStar c)
+    (hcont : ContinuousOn φ (Set.Icc c resonanceRoot1))
+    (hmono : StrictMonoOn φ (Set.Icc c resonanceRoot1)) :
+    ∃ t, t ∈ Set.Ioo c resonanceRoot1 ∧ φ t = phiStar t :=
+  inward_rapidity_meets_threshold hc hc1 h0 hlt hcont hmono
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
