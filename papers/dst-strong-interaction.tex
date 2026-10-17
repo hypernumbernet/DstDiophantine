@@ -1,0 +1,422 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{The Strong Force as a Repulsive Layer of Proximity Gravity:\\
+Proton Chaos, Magic Numbers, and Slow Neutrons}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Proximity gravity is the gravitational channel of double spacetime theory at a separation comparable to its characteristic length \(\ell\). On the equal-scale locus the force is the Newtonian force divided by the interference factor \(\gamma_s\). The sign of \(\gamma_s\) is the repulsion. Masses attract where \(\gamma_s>0\) and repel where \(\gamma_s<0\). The first negative interval is the repulsive inversion layer. Its outer edge is the first node \(x_1\), the unique root of \(\tan x=\coth x\) in \((\pi/4,\pi/2)\), and the numerical values are \(x_1=0.93755\), \(r_1/\ell=0.53330\). The inner edge is the second node, at \(r_2/\ell=0.12731\). Both sides of the first node drive the separation toward the node. A classical infall from large separation reaches that node and does not enter the deeper attractive chamber.
+
+A relative rapidity \(\varphi\), with \(\tanh\varphi=|v|/c\), is added to the usual proximity rapidity while the dual angle is held at \(\ell/r\). The interference factor becomes \(\cosh(\varphi/2)\,\gamma_s-\sinh(\varphi/2)\,\sigma\). Inside the window \(r_1<r<2\ell/\pi\) the factor changes sign at the closed threshold
+\[
+\varphi_*(x)=\ln\frac{\sin x+\cos x}{\sin x-\cos x}-2x,
+\qquad x=\ell/(2r).
+\]
+Below the threshold the channel attracts, and the attraction strengthens as the rapidity rises. Above it the channel repels, and the outward force is arbitrarily large immediately above the threshold. Outside the radius \(2\ell/\pi\) no finite rapidity produces repulsion. The outer radius of the inversion therefore increases with \(\varphi\) and remains strictly below \(2\ell/\pi\), which is \(1.1937\) times the static node. At small rapidity the node moves by \(\varphi/(4\cosh^2 x_1)\) in the phase, and the coefficient is \(0.11528\). A slow neutron remains attractive down to a skin of that thickness on the static node. A neutron of kinetic energy \(1\,\mathrm{MeV}\), \(10\,\mathrm{MeV}\), and \(100\,\mathrm{MeV}\) meets the threshold at \(1.0056\,r_1\), \(1.0175\,r_1\), and \(1.0517\,r_1\). That threshold is an entrance condition, common to capture, to neutron-induced fission, and to fusion: above it the nuclear channel already repels, and none of the three can begin. It is not the split. The disposal of rapidity inside a compound nucleus is not derived, and neither is the laboratory fall of a cross section as \(1/v\).
+
+Two protons carry the electromagnetic channel as well. With the nuclear prefactor written \(\kappa\), the separation force is \(-\kappa/(\gamma\,r^2)+k e^2/(\gamma_E r^2)\). Gravitational nodes at which \(\gamma_s\) falls through zero attract the separation; electromagnetic nodes of the same kind repel it. Consecutive nodes of one channel have opposite stability. When the two lengths differ, the nodes interleave, so attraction and repulsion occupy neighbouring chambers. In a nucleus different pairs occupy different chambers at one instant. The force on a proton is unbounded on the wall of a chamber, and an arbitrarily small displacement that puts one pair on a node changes that force by an arbitrarily large amount. That sensitivity is the chaotic proton force. The identification \(\kappa=G m_p^2\) loses to the Coulomb term unless \(|\gamma|\) compensates a factor \(1.236\times 10^{36}\). The MeV depth is an input.
+
+The integers \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), and \(126\) are seat counts. The spin-weighted oscillator closure through shell \(N\) is \(C(N)=(N+1)(N+2)(N+3)/3\). For \(N\ge 2\) the further closure \(C(N)+2(N+2)\) is that count plus the degeneracy of the highest-\(j\) orbital of the next shell. These integers are not indices of the nodes. A doubly magic nuclide closes one such count for each rotor class. The layer geometry does not select the integers, and it does not fix the valley of stability.
+
+A dual excitation is a different coordinate from the relative rapidity. At fixed excitation \(\psi\in(0,\pi)\) the outer well has a single attractor, at the phase where the critical angle \(2\arctan(\gamma_s/\tau)\) equals \(\psi\). That critical angle falls strictly from \(\pi\) to \(0\) between infinity and the first node, and its deficit from \(\pi\) begins as \(2\ell/r\). Relative rapidity cannot invert the force outside \(2\ell/\pi\). Dual excitation can, at every finite radius. Fission, once a compound nucleus exists, is that inversion. Fusion is the entrance that stays inward. A slow neutron can open fission only by passing the rapidity threshold first.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+The nuclear section of double spacetime theory reads the strong force as proximity gravity: the gravitational channel on the equal-scale locus, where the interference factor \(\gamma_s\) changes sign on a discrete set of radii~\cite{dst-main}. No second coupling is introduced. The same section is explicit about what that reading does not do. The Newtonian combination \(G m_p^2\) is not an \(O(1)\) nuclear strength. Near a node, \(1/\gamma_s\) diverges, and that divergence is a kinematic amplification of a channel already present. The femtometer and MeV scales enter through a length \(\ell\) and through the masses, and \(\ell\) is not derived. Magic numbers are named as resonance conditions and are not extracted from the nodes. Fission and fusion are named as layer transitions.
+
+This note computes the layer that those statements point to. Section~\ref{sec:force} fixes the signed force and the two auxiliary functions that the later thresholds are built from. Section~\ref{sec:layer} is the repulsive inversion itself: the first interval on which \(\gamma_s\) is negative, the direction of the force on each side of its walls, and the sense in which a classical trajectory from infinity stops at the outer wall. Section~\ref{sec:rapidity} puts a relative rapidity into the usual sector only. The threshold at which the force becomes repulsive is a closed function of the phase, and it exists only between the static node and the radius \(2\ell/\pi\). Capture, neutron-induced fission, and fusion share that entrance. A slow neutron is a neutron that has not crossed it. Section~\ref{sec:proton} adds the electromagnetic channel for a proton pair. The two channels do not share their walls unless their lengths are equal, and a nucleus of several protons therefore holds attracting pairs and repelling pairs at once. Section~\ref{sec:magic} separates the seat counts \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), and \(126\) from the node sequence, and lists the doubly closed nuclides. Section~\ref{sec:fission} returns to a dual excitation at fixed separation. That excitation, unlike the rapidity, can invert the outer well at every radius. The inversion is the split of a nucleus already formed. It is not a second way in.
+
+The electromagnetic companion has already used the same \(\gamma_s\) for charges~\cite{dst-shell}. The signs below are the gravitational specialisation of that force, together with the electromagnetic term where the particles are protons. The discrete companion represents a nucleus as an ordered product of proton and neutron rotor classes and proves that each fixed compactification admits only finitely many algebraically stable mass numbers~\cite{dst-dio}. The numerical ceiling near \(A\sim 300\) remains the heuristic already stated there. Nothing in the layer geometry of this note replaces it.
+
+\section{The signed proximity force}
+\label{sec:force}
+
+On one axis the interference factor of the dual rotor is
+\begin{equation}
+\label{eq:gamma-ab}
+\gamma_s(\alpha,\beta)
+  =\cosh\frac{\alpha}{2}\cos\frac{\beta}{2}
+  -\sinh\frac{\alpha}{2}\sin\frac{\beta}{2}.
+\end{equation}
+The equal-scale locus sets \(\alpha=\beta=\ell/r\). In the dimensionless phase \(x=\ell/(2r)\),
+\begin{equation}
+\label{eq:gamma}
+\gamma_s(x)=\cosh x\cos x-\sinh x\sin x,
+\qquad
+\gamma_s'(x)=-2\cosh x\sin x.
+\end{equation}
+Thus \(\gamma_s(0)=1\). The Taylor expansion used below is
+\begin{equation}
+\label{eq:series}
+\gamma_s(x)=1-x^{2}-\frac16 x^{4}+O(x^{6}).
+\end{equation}
+Two further combinations enter the thresholds. They are
+\begin{align}
+\label{eq:sigma}
+\sigma(x)&=\cosh x\sin x-\sinh x\cos x,\\
+\label{eq:tau}
+\tau(x)&=\cosh x\sin x+\sinh x\cos x.
+\end{align}
+Both vanish at the origin. Their derivatives are \(\sigma'(x)=2\sinh x\sin x\) and \(\tau'(x)=2\cosh x\cos x\). The sum and difference collapse to
+\begin{equation}
+\label{eq:sumdiff}
+\sigma+\gamma_s=e^{-x}(\sin x+\cos x),
+\qquad
+\sigma-\gamma_s=e^{x}(\sin x-\cos x).
+\end{equation}
+On \((0,\pi)\) one has \(\sigma(x)>0\), because \(\sigma(0)=0\) and \(\sigma'\) is nonnegative on that interval and not identically zero on any subinterval. On \((0,\pi/2)\) one has \(\tau(x)>0\), because \(\tau(0)=0\) and \(\tau'>0\) there.
+
+The force that increases the separation of two nucleon masses is
+\begin{equation}
+\label{eq:force}
+F_r=-\frac{\kappa}{\gamma\,r^{2}}.
+\end{equation}
+Here \(\gamma\) is~\eqref{eq:gamma-ab} evaluated on the rapidities assigned to the pair, and \(\kappa>0\) is the prefactor of the nuclear channel. Where \(\gamma>0\) the force is inward. Where \(\gamma<0\) it is outward. On the equal-scale locus, \(\gamma=\gamma_s(x)\). The main text writes the same quotient with the Newtonian prefactor \(G m_1 m_2\)~\cite{dst-main}. That identification is not used as the nuclear well. Section~\ref{sec:proton} records the size of the discrepancy with the Coulomb prefactor. The radii, the sign, and both thresholds are independent of \(\kappa\).
+
+At a simple zero of \(\gamma\) the force has a simple pole. The proper-time factor of the parent theory remains positive at that zero: a node is a divergence of the force, not a reversal of the clock~\cite{dst-main}.
+
+\section{The repulsive inversion layer}
+\label{sec:layer}
+
+On each interval \([n\pi,(n+1)\pi]\) the derivative~\eqref{eq:gamma} has the sign of \(-\sin x\), so \(\gamma_s\) is strictly monotone there and has exactly one zero. The zero lies where \(\tan x=\coth x\). Since \(\coth x>1\) for finite positive \(x\), the \(n\)-th zero sits in
+\[
+n\pi+\frac{\pi}{4}<x_n<n\pi+\frac{\pi}{2}.
+\]
+The first zero \(x_1\) is the unique root in \((\pi/4,\pi/2)\). Numerically \(x_1=0.93755\), so
+\[
+\frac{r_1}{\ell}=\frac{1}{2x_1}=0.53330.
+\]
+The second zero is \(x_2=3.9274\), and \(r_2/\ell=0.12731\). The ratio of those radii is \(r_2/r_1=x_1/x_2=0.23872\). The same bounds as in the main text,
+\[
+\frac16<\frac{r_2}{r_1}<\frac{4}{5\pi},
+\]
+follow once \(x_1<1\) is available, together with \(x_1>\pi/4\) and \(x_2\in(5\pi/4,3\pi/2)\). The upper estimate is \(x_1/x_2<1/(5\pi/4)=4/(5\pi)\). The lower estimate is \(x_1/x_2>(\pi/4)/(3\pi/2)=1/6\). To see \(x_1<1\), compare \(\tan 1\) with \(\coth 1\). The Lagrange remainder of \(\sin\) after the cubic term is positive, and that of \(\cos\) after the degree-four term is negative, so \(\sin 1>1-1/6=5/6\) and \(\cos 1<1-1/2+1/24=13/24\), hence \(\tan 1>20/13\). The exponential series through \(1/720\) is \(1957/720\). Since \(1957>1944\), this exceeds \(27/10\), and therefore \(e>27/10\). The map \(y\mapsto(y+1)/(y-1)\) decreases for \(y>1\), and \(e>27/10\) implies \(e^{2}>729/100\), so
+\[
+\coth 1=\frac{e^{2}+1}{e^{2}-1}<\frac{829}{629}.
+\]
+Since \(20\cdot 629-13\cdot 829=1803>0\), one has \(\tan 1>\coth 1\). The difference \(\tan x-\coth x\) is strictly increasing on \((0,\pi/2)\) and is negative at \(\pi/4\), so its unique zero lies in \((\pi/4,1)\). That zero is \(x_1\). Ordered by decreasing radius, \(\gamma_s>0\) for \(r>r_1\), \(\gamma_s<0\) on \(r_2<r<r_1\), and the sign continues to alternate. The interval \(r_2<r<r_1\) is the repulsive inversion layer.
+
+The extremum of \(\gamma_s\) inside that layer is \(\gamma_s(\pi)=-\cosh\pi\), at radius \(\ell/(2\pi)\). The outward force there is
+\begin{equation}
+\label{eq:plateau}
+|F_r|
+  =\frac{4\pi^{2}}{\cosh\pi}\,\frac{\kappa}{\ell^{2}}
+  =3.4057\,\frac{\kappa}{\ell^{2}}.
+\end{equation}
+Plateaux of higher index are quieter. At \(x=n\pi\) the same reduction gives
+\[
+|F_r|=\frac{4\pi^{2} n^{2}}{\cosh(n\pi)}\,\frac{\kappa}{\ell^{2}},
+\]
+which falls geometrically because \(\cosh(n\pi)\) grows as \(e^{n\pi}/2\). What grows without bound toward the centre is the set of poles, not the force between them.
+
+The first node is an attractor of the separation. As \(x\) approaches \(x_1\) from below, \(\gamma_s\downarrow 0\) and \(F_r\to-\infty\), so the separation decreases and the phase increases toward the node. As \(x\) approaches \(x_1\) from above, \(\gamma_s\uparrow 0\) through negative values and \(F_r\to+\infty\), so the separation increases and the phase falls back toward the node. The same pairing of signs holds at every zero where \(\gamma_s'\) is negative, that is, on every interval \((2m\pi,(2m+1)\pi)\). On the complementary intervals \(\gamma_s'\) is positive, the crossing runs from negative values to positive values, and both sides of the zero drive the separation away from it. The second node is of that second kind. Inside the inversion layer the outward force therefore points toward \(r_1\), and just inside \(r_2\) the inward force points away from \(r_2\), deeper into the next attractive chamber. A trajectory that starts at large separation is driven into the first node. It is not driven through the layer into the chamber beyond \(r_2\).
+
+The radial integral of~\eqref{eq:force} on the outer side of the node falls without a lower bound, by the same substitution that the electromagnetic companion uses for the Coulomb well~\cite{dst-shell}. The path from infinity does not cross a pole, and the integral diverges as the upper phase approaches \(x_1\). The inversion layer is on the other side of that pole. Its local force is defined wherever \(\gamma_s\neq 0\), and the outer-well integral does not continue across the node.
+
+The main text proposes the identification \(\ell=\lambda_\pi\approx 1.41\,\mathrm{fm}\), the charged-pion Compton wavelength, and records that every equal-scale node then lies below \(1\,\mathrm{fm}\), with the outermost node confined to the interval \(0.44\)--\(0.91\,\mathrm{fm}\)~\cite{dst-main}. Under that identification the central value is \(r_1=0.752\,\mathrm{fm}\). The identification is not a derivation of \(\ell\). A longer \(\ell\) would be required to place the inversion layer at \(1\)--\(2\,\mathrm{fm}\). The ratios of node radii do not depend on the choice.
+
+The parent theory reads the exclusion of a shared seat as this layer, rather than as a separate statistical postulate: identical fermions that overlap meet the outward side of the first node~\cite{dst-main}. That reading is adopted here for nucleons. It is not a derivation of the spin-statistics theorem. A proton and a neutron are different rotor classes~\cite{dst-dio}, so the same sentence does not by itself forbid a proton--neutron pair at one separation.
+
+The binding scale is not in the geometry. The main text quotes \(\mathrm{BE}/A\sim 8\,\mathrm{MeV}\) near iron, and an optical-model depth of order \(40\)--\(50\,\mathrm{MeV}\), as distinct inputs. Both remain inputs. Saturation of the density, in the form \(R=r_0 A^{1/3}\), is the regularity the layer picture claims, and the main text already records that the two common numerical conventions for \(r_0\) disagree at the level of ten percent. This note does not choose between them.
+
+\section{Relative rapidity}
+\label{sec:rapidity}
+
+Relative motion is a usual-sector boost. In the parent theory the rapidity of that boost is the positive parameter \(\varphi\) with \(\tanh\varphi=|v|/c\), the square root of the sum of squares of the rapidity components~\cite{dst-main}. The reading adopted here adds that parameter to the proximity value and leaves the dual angle at the proximity value,
+\begin{equation}
+\label{eq:ansatz}
+\alpha=\frac{\ell}{r}+\varphi,
+\qquad
+\beta=\frac{\ell}{r},
+\qquad
+\varphi\ge 0.
+\end{equation}
+Equal scale is broken as soon as \(\varphi\neq 0\). The pair leaves the locus on which the mismatch scalar \(J\) vanishes. The sign of the force is still the sign of~\eqref{eq:gamma-ab}. The inverse boost, \(\alpha\mapsto-\alpha\), is a different element: it changes the sign in front of \(\sinh(\alpha/2)\) and raises the interference factor. Capture is read on the positive rapidity, which is the parameter the rotor actually carries.
+
+Write \(\delta=\varphi/2\). Substitution into~\eqref{eq:gamma-ab} gives
+\begin{equation}
+\label{eq:gamma-phi}
+\gamma(x,\delta)
+  =\cosh\delta\,\gamma_s(x)-\sinh\delta\,\sigma(x).
+\end{equation}
+The closed form
+\begin{equation}
+\label{eq:gamma-closed}
+\gamma(x,\delta)
+  =\frac12 e^{\delta+x}(\cos x-\sin x)
+  +\frac12 e^{-(\delta+x)}(\cos x+\sin x)
+\end{equation}
+follows from~\eqref{eq:sumdiff}, and it makes the sign plain. For \(0\le x\le\pi/4\) both coefficients are nonnegative, so \(\gamma(x,\delta)>0\) at every finite \(\delta\). No relative rapidity inverts the force at a radius \(r\ge 2\ell/\pi\).
+
+For \(\pi/4<x<x_1\) one has \(0<\gamma_s<\sigma\), so the ratio \(\rho=\gamma_s/\sigma\) lies in \((0,1)\). The factor~\eqref{eq:gamma-phi} vanishes at
+\[
+\tanh\delta=\rho(x),
+\]
+and therefore at
+\begin{equation}
+\label{eq:phi-star}
+\varphi_*(x)
+  =2\operatorname{artanh}\rho(x)
+  =\ln\frac{\sin x+\cos x}{\sin x-\cos x}-2x.
+\end{equation}
+Below this threshold \(\gamma>0\) and the force is inward. Above it \(\gamma<0\) and the force is outward. As \(x\downarrow\pi/4\), the denominator \(\sin x-\cos x\) vanishes and \(\varphi_*\to\infty\). As \(x\uparrow x_1\), \(\gamma_s\to 0\) and \(\varphi_*\to 0\).
+
+The threshold falls strictly with the phase. On \((0,\pi)\),
+\begin{equation}
+\label{eq:rho-derivative}
+\gamma_s'\sigma-\gamma_s\sigma'
+  =-2\sin^{2}x.
+\end{equation}
+The identity is the substitution of \(\gamma_s'=-2\cosh x\sin x\) and \(\sigma'=2\sinh x\sin x\): the bracket that remains is \(\cosh x\,\sigma+\sinh x\,\gamma_s\), and that bracket equals \(\sin x\). Thus \((\gamma_s/\sigma)'<0\) wherever \(\sin x\neq 0\). In particular \(\rho\) falls from \(+\infty\) to \(0\) on \((0,x_1)\), it equals \(1\) at exactly \(\pi/4\), and \(\varphi_*\) falls from \(+\infty\) to \(0\) on \((\pi/4,x_1)\). The radius \(r_*=\ell/(2x_*)\) at which a given rapidity sits on the threshold therefore rises with \(\varphi\). It starts at \(r_1\) when \(\varphi=0\) and approaches \(2\ell/\pi\) as \(\varphi\to\infty\). The limiting ratio is
+\begin{equation}
+\label{eq:limit-ratio}
+\frac{2\ell/\pi}{r_1}=\frac{4x_1}{\pi}=1.1937.
+\end{equation}
+The inversion layer thickens outward by less than one fifth, at any rapidity.
+
+Inside the window the derivative of~\eqref{eq:gamma-phi} with respect to \(\delta\) is strictly negative. A higher rapidity lowers \(\gamma\). While \(\gamma\) is still positive the inward force strengthens. At \(\varphi_*\) the inward force diverges. Immediately above \(\varphi_*\) the outward force diverges, and a further increase of \(\varphi\) then drives \(\gamma\) more negative, so the outward magnitude falls from infinity toward the ultrarelativistic size read off from the first term of~\eqref{eq:gamma-closed}. High relative velocity does not multiply a fixed repulsive law. It moves the sign change. The repulsive regime of a given separation in the window is the regime \(\varphi>\varphi_*(x)\), and the repulsion is arbitrarily large at the entrance to that regime.
+
+Outside the window the same derivative vanishes once, at \(\tanh\delta=\sigma/\gamma_s<1\). There \(\gamma\) has a positive minimum. A small rapidity strengthens the attraction, and a large rapidity weakens it toward zero, because~\eqref{eq:gamma-closed} grows as \(e^{\varphi/2}\). The force at \(r>2\ell/\pi\) remains inward at every finite speed.
+
+At small \(\varphi\) the threshold lies close to the static node. The node condition is \(\gamma_s(x_1)=0\) with
+\[
+\gamma_s'(x_1)=-2\cosh x_1\sin x_1,
+\]
+and~\eqref{eq:sumdiff} at a point where \(\gamma_s=0\) gives \(\sigma(x_1)=\sin x_1/\cosh x_1\). Hence
+\begin{equation}
+\label{eq:skin}
+x_1-x_*
+  \sim
+  \frac{\varphi}{4\cosh^{2}x_1},
+\qquad
+\frac{1}{4\cosh^{2}x_1}=0.11528.
+\end{equation}
+To first order the fractional widening of the radius is this coefficient divided by \(x_1\), which is \(0.12295\,\varphi\). The repulsive skin of a slow neutron is a neighbourhood of \(r_1\) of that fractional thickness.
+
+The map from a laboratory kinetic energy to \(\varphi\) uses the neutron rest energy \(m_n c^{2}=939.6\,\mathrm{MeV}\) as an input, through \(\cosh\varphi=1+T/(m_n c^{2})\). The threshold radius at that rapidity is the unique \(r_*\) with \(\varphi_*( \ell/(2r_*) )=\varphi\).
+
+\begin{table}[htbp]
+\centering
+\caption{Inversion radius of a neutron at kinetic energy \(T\). The limiting ratio is \(4x_1/\pi=1.1937\).}
+\label{tab:neutron}
+\begin{tabular}{lcc}
+\hline
+\(T\) & \(\varphi\) & \(r_*/r_1\) \\
+\hline
+\(1\,\mathrm{eV}\) & \(4.6\times 10^{-5}\) & \(1.00001\) \\
+\(1\,\mathrm{keV}\) & \(0.00146\) & \(1.00018\) \\
+\(1\,\mathrm{MeV}\) & \(0.04613\) & \(1.00563\) \\
+\(14\,\mathrm{MeV}\) & \(0.1724\) & \(1.0206\) \\
+\(100\,\mathrm{MeV}\) & \(0.4574\) & \(1.0517\) \\
+\(1\,\mathrm{GeV}\) & \(1.353\) & \(1.124\) \\
+\hline
+\end{tabular}
+\end{table}
+
+A thermal neutron, with \(\varphi\) of order \(10^{-5}\), is indistinguishable from the static node at the precision of the table. Across the whole window except that skin, the force on it is inward, and the inward force becomes large as the skin is approached. A neutron of \(14\,\mathrm{MeV}\) meets the threshold only two percent of \(r_1\) outside the static node. That energy is the energy of the neutron emitted by deuterium--tritium fusion. It is not the energy of a neutron that induces fusion, and the reaction which emits it is a charged entrance, treated below. At \(100\,\mathrm{MeV}\) the shift is five percent. The geometry does not turn a few-MeV neutron back at twice the hard-core radius. It thickens the repulsive skin in proportion to \(\varphi\), up to the strict wall \(2\ell/\pi\).
+
+Under the proposed identification \(\ell=\lambda_\pi\approx 1.41\,\mathrm{fm}\), that wall lies at \(2\ell/\pi=0.898\,\mathrm{fm}\). No finite rapidity moves the onset of repulsion beyond \(0.898\,\mathrm{fm}\). The static node sits at \(0.752\,\mathrm{fm}\). Both numbers fall if a shorter \(\ell\) is chosen, and their ratio does not.
+
+The instantaneous criterion is not yet a capture cross section. While the force remains inward and the neutron is still moving inward, the rapidity itself increases. With the relative momentum \(\mu c\sinh\varphi\) and with \(\mu\) the reduced mass,
+\begin{equation}
+\label{eq:infall}
+\mu c\cosh\varphi\,\frac{d\varphi}{dt}
+  =\frac{\kappa}{\gamma r^{2}},
+\qquad
+\frac{dr}{dt}=-c\tanh\varphi,
+\end{equation}
+so long as \(\gamma>0\). Equivalently,
+\[
+\sinh\varphi\,d\varphi
+  =-\frac{\kappa}{\mu c^{2}}\,\frac{dr}{\gamma r^{2}}.
+\]
+The right-hand side depends on \(\varphi\) through \(\gamma\). As \(r\) falls through the window, \(\varphi\) rises and \(\varphi_*\) falls, so the margin \(\varphi_*-\varphi\) narrows from both sides. Whether the neutron sheds its rapidity before the margin closes is a property of the compound system. Radiation, excitation, and the imaginary part of an optical potential are not in~\eqref{eq:force}. The note therefore does not integrate~\eqref{eq:infall} and does not derive the laboratory rule that a capture cross section falls as \(1/v\). What the signed force does fix is the surface on which the force changes sign. A neutron that arrives at separation \(r\in(r_1,2\ell/\pi)\) with \(\varphi>\varphi_*(\ell/(2r))\) is already on the outward side of a pole. A slower arrival at the same separation is on the inward side.
+
+The preference for a slow neutron belongs to the entrance, and the entrance is shared. Capture accepts the neutron and remains inward. Neutron-induced fission accepts the same neutron and may afterwards split. Fusion accepts a partner nucleus and remains inward. Above \(\varphi_*\) the channel is already outward, so none of the three begins. The formula is that common refusal. It does not choose which reaction follows once the partner is inside.
+
+A charged projectile has a further term, written in the next section. Once \(\varphi>\varphi_*\), the nuclear contribution has become outward and adds to the Coulomb repulsion. Lowering the rapidity removes that addition and, while \(\gamma>0\), replaces it by an inward nuclear contribution. It does not remove the Coulomb term. Charged fusion therefore shares the nuclear threshold and still faces the electromagnetic barrier. It is not a slow-neutron reaction. The projectile of the slow entrance is a neutron, and the reactions that entrance can feed are capture and fission.
+
+\section{The chaotic proton force}
+\label{sec:proton}
+
+A proton carries both channels. The gravitational channel is~\eqref{eq:force}. The electromagnetic channel of a like pair, on its own equal-scale locus with its own length \(\ell_E\), contributes the signed Coulomb force of the companion note~\cite{dst-shell}. The force that increases the separation of two protons is
+\begin{equation}
+\label{eq:two-channel}
+F_r
+  =-\frac{\kappa}{\gamma(x,\varphi/2)\,r^{2}}
+  +\frac{k e^{2}}{\gamma_s(x_E)\,r^{2}},
+\qquad
+x=\frac{\ell}{2r},
+\quad
+x_E=\frac{\ell_E}{2r},
+\end{equation}
+with \(k=1/(4\pi\epsilon_0)\). The rapidity is assigned to the inertial pair. The charge pair keeps the equal-scale factor. A neutron is the case \(e=0\).
+
+The two lengths are independent. Write \(\lambda=\ell_E/\ell\). The electromagnetic nodes, read in the gravitational phase, lie at \(x_n/\lambda\). They coincide with the gravitational nodes for every \(n\) only when \(\lambda=1\). In that special case~\eqref{eq:two-channel} at rest is a single layer sequence with prefactor \(k e^{2}-\kappa\). If \(\kappa>k e^{2}\) the net force has the gravitational sign. If \(\kappa<k e^{2}\) it has the Coulomb sign. There is no second set of walls.
+
+When \(\lambda\neq 1\) the walls interleave. Each open interval that contains no node of either factor is a chamber: both denominators keep their signs, and the direction of each term is constant. The number of chambers that meet a bounded phase interval grows without bound as the inner endpoint is pushed toward the origin, because each channel contributes one node per interval of length \(\pi\). If \(\lambda\) is irrational, no gravitational node coincides with an electromagnetic node, every wall is a simple pole of only one term, and the sequence of chamber lengths in the phase is not periodic. The first wall met on the way in from large separation is the gravitational node when \(\lambda<1\), and the electromagnetic node when \(\lambda>1\). A finite Coulomb repulsion outside a shorter-range inversion is the first of these two orderings: \(\ell_E<\ell\), the charge factor is still positive at \(r_1\), and the gravitational pole overtakes that finite term in some neighbourhood of \(r_1\). The width of the neighbourhood is set by \(\kappa/(k e^{2})\) and is not a pure number. The opposite ordering puts a Coulomb pole outside the gravitational node, and a classical approach from infinity is turned back there.
+
+The stability of a wall is fixed by the sign in front of that term and by the sign of \(\gamma_s'\). Consider a zero where \(\gamma_s\) falls through zero, so \(\gamma_s'<0\). On the gravitational side, both neighbouring chambers drive the separation toward the zero, as in Section~\ref{sec:layer}. On the electromagnetic side the prefactor of \(1/\gamma_s\) is positive rather than negative, and both neighbouring chambers drive the separation away from the zero: just outside, like charges repel and the separation grows; just inside, \(\gamma_s<0\) and like charges attract, so the separation falls and the phase moves away from the zero. A zero where \(\gamma_s\) rises through zero has the opposite stability in each channel. Consecutive walls of one channel therefore alternate between attractors and repellers of the separation. The outermost gravitational wall is an attractor. The outermost electromagnetic wall is a repeller.
+
+The interleaving is already visible for the illustration \(\lambda=2\), which is not a determined value of the ratio. As the gravitational phase \(x\) increases from zero, the first wall is the electromagnetic node at \(x=x_1/2=0.46878\). Beyond it, and until the gravitational node at \(x_1=0.93755\), the electromagnetic factor is negative, so the Coulomb term is inward, and the gravitational term is still inward. That chamber pulls from both channels. Past \(x_1\), and until the next electromagnetic node at \(x=x_2/2=1.9637\), the gravitational term has become outward while the Coulomb term remains inward. The net direction is then the comparison
+\begin{equation}
+\label{eq:contest}
+\frac{\kappa}{|\gamma|}
+  \gtrless
+  \frac{k e^{2}}{|\gamma_E|},
+\end{equation}
+which depends on the input \(\kappa\) and on the two denominators. Each later wall reverses exactly one of the two terms. A proton pair that moved inward through this sequence would alternate between a doubly inward chamber, a contested chamber, and chambers in which the Coulomb term has flipped again. Classically the pair is not free to cross an attracting wall: the force diverges there. The alternation is the chamber structure, not a smooth well with a single minimum.
+
+In a nucleus the pairs do not share one separation. Consider three protons on a line, at \(0\), \(s\), and \(s+t\), with \(s\), \(t\), and \(s+t\) off every node. Let \(F(s)\) denote~\eqref{eq:two-channel} at separation \(s\), positive when it increases that separation. The rightward force on the middle proton is \(F(s)-F(t)\). If the left separation lies in an inward chamber, \(F(s)<0\), and the right separation lies in an outward chamber, \(F(t)>0\), the difference is negative: the left partner pulls the middle proton leftward, and the right partner pushes it leftward. The two forces point the same way. A displacement that carries one of those separations onto a node sends the corresponding \(F\) through infinity and reverses it. The change in the force on the middle proton is unbounded, at an arbitrarily small displacement of the wall crossing. Configurations on the two sides of the wall are not close in force.
+
+That is the chaotic proton force. It is not a claim that the radial two-body problem is a chaotic dynamical system: one separation, with a prescribed \(F(r)\), is a single degree of freedom. The chaos meant here is the arrangement. Several pairs sit in several chambers at once, some inward and some outward, and the vector sum on each proton is smooth only in the interior of a sign cell. The boundary of the cell is a pole. A nucleus is not a collection of pairs in one attractive well. It is a sign cell of the pair separations, stable only so long as no pair meets a wall, and sensitive to a displacement that brings one pair onto a wall.
+
+The Newtonian identification makes the contest~\eqref{eq:contest} extreme away from the walls. The CODATA values give
+\begin{equation}
+\label{eq:ratio}
+\frac{G m_p^{2}}{k e^{2}}=8.094\times 10^{-37},
+\qquad
+\frac{k e^{2}}{G m_p^{2}}=1.236\times 10^{36}
+\end{equation}
+\cite{codata2018}. If \(\kappa\) is replaced by \(G m_p^{2}\), the gravitational term exceeds the Coulomb term only where \(|\gamma|\) is smaller than \(|\gamma_E|\) by that factor \(1.236\times 10^{36}\). On a plateau, where both factors are of order one or larger, the Coulomb term decides the sign. The main text already refuses to conflate \(G m_p^{2}/\hbar c\sim 10^{-38}\) with an \(O(1)\) nuclear strength~\cite{dst-main}. The refusal is kept. The prefactor \(\kappa\) of the nuclear channel is an input. The chamber walls, their stability, and the rapidity threshold do not depend on it. Which term wins inside a contested chamber does.
+
+A proton--neutron pair has the gravitational term and no Coulomb term. A proton--proton pair has both. The outer gravitational well can bind the first and fail to bind the second once \(k e^{2}/\gamma_E\) exceeds \(\kappa/\gamma\), which is the uncontested direction of~\eqref{eq:contest} wherever both factors are positive. The laboratory deuteron is a proton--neutron bound state, and the diproton is unbound. The note does not compute the \(2.2\,\mathrm{MeV}\) binding, and it does not derive the neutron--neutron scattering length: two neutrons at a separation outside the node are not on the pole that excludes a shared seat, so the sign of \(\gamma_s\) alone does not decide that they are unbound.
+
+\section{Magic numbers and nuclides}
+\label{sec:magic}
+
+The node radii scale as \(\Theta(1/n)\). That sequence does not contain the integers \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), and \(126\). Those integers count seats, in the same sense in which the electromagnetic companion reads \(2\), \(8\), \(18\), and \(32\) as two chiral seats on successive angular degrees and refuses to read them as node labels~\cite{dst-shell}. The nuclear count is a different arithmetic, because the empirical closures split the oscillator shells. The splitting is not derived from \(\gamma_s\). What follows is the count itself, so that it is not mistaken for a property of the inversion layer.
+
+The three-dimensional isotropic oscillator shell \(N=0,1,2,\dots\) has orbital degeneracy \((N+1)(N+2)/2\). Two spin seats on each orbital give \((N+1)(N+2)\) states. The cumulative number through shell \(N\) is
+\begin{equation}
+\label{eq:C}
+C(N)
+  =\sum_{k=0}^{N}(k+1)(k+2)
+  =\frac{(N+1)(N+2)(N+3)}{3}.
+\end{equation}
+The first values are \(C(0)=2\), \(C(1)=8\), \(C(2)=20\), \(C(3)=40\), \(C(4)=70\), and \(C(5)=112\). Shell \(N+1\) has highest orbital angular momentum \(l=N+1\), and the state \(j=l+1/2\) has degeneracy \(2j+1=2(N+2)\). Adding that one orbital to the cumulative count produces
+\begin{equation}
+\label{eq:magic}
+C(N)+2(N+2)
+\end{equation}
+for \(N\ge 2\), namely \(28\), \(50\), \(82\), and \(126\). The observed closures are \(C(0)\), \(C(1)\), \(C(2)\), and~\eqref{eq:magic}. The pure oscillator closures \(C(N)\) for \(N\ge 3\) are not among them. The arithmetic is the shell-model arithmetic: one high-\(j\) orbital of the next shell is counted with the closed shells below it. The layer geometry does not say why that orbital, rather than another, is the one that moves, and this note does not supply the missing reason. Charge independence and spin--orbit coupling remain, as in the main text, resonance conditions of the dual rotor that have not been reduced to the nodes.
+
+Proton seats and neutron seats are seats of two rotor classes~\cite{dst-dio}. Each class has the count above. The electromagnetic term and the chaotic sign cell of Section~\ref{sec:proton} act in the proton class. They do not act in the neutron class. The integers can therefore agree while the binding does not. Adding a proton to a configuration adds a Coulomb sum over the proton pairs already present, in every chamber where \(\gamma_E>0\), and it adds one further proton pair to the sign cell. Adding a neutron adds neither. The stable composition of a heavy nuclide bends toward neutron excess for that reason. The coefficient of \(Z^{2}/A^{1/3}\) in the semi-empirical mass formula is not fixed by the bend, and it is not derived here.
+
+A doubly magic nuclide is one whose proton count and neutron count are each one of \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), \(126\).
+
+\begin{table}[htbp]
+\centering
+\caption{Doubly closed counts. Closure of the two counts is not stability against decay.}
+\label{tab:doubly}
+\begin{tabular}{lccc}
+\hline
+Nuclide & \(Z\) & \(N\) & \(A\) \\
+\hline
+\({}^{4}\mathrm{He}\) & \(2\) & \(2\) & \(4\) \\
+\({}^{16}\mathrm{O}\) & \(8\) & \(8\) & \(16\) \\
+\({}^{40}\mathrm{Ca}\) & \(20\) & \(20\) & \(40\) \\
+\({}^{48}\mathrm{Ca}\) & \(20\) & \(28\) & \(48\) \\
+\({}^{56}\mathrm{Ni}\) & \(28\) & \(28\) & \(56\) \\
+\({}^{78}\mathrm{Ni}\) & \(28\) & \(50\) & \(78\) \\
+\({}^{100}\mathrm{Sn}\) & \(50\) & \(50\) & \(100\) \\
+\({}^{132}\mathrm{Sn}\) & \(50\) & \(82\) & \(132\) \\
+\({}^{208}\mathrm{Pb}\) & \(82\) & \(126\) & \(208\) \\
+\hline
+\end{tabular}
+\end{table}
+
+Among these, \({}^{4}\mathrm{He}\), \({}^{16}\mathrm{O}\), \({}^{40}\mathrm{Ca}\), \({}^{48}\mathrm{Ca}\), and \({}^{208}\mathrm{Pb}\) are stable. The others lie off the valley. The seat count closes in either case. The maximum of \(\mathrm{BE}/A\) lies near \(A=62\), between the closures \(28\) and \(50\), rather than on \({}^{56}\mathrm{Ni}\). The Coulomb term on the proton class is available as the agent that moves the maximum off the doubly closed point. The value of the maximum remains the input already quoted.
+
+The discrete theory proves \(A_{\max}(N)<\infty\) at each fixed compactification and does not evaluate it~\cite{dst-dio}. The estimate \(A_*\sim 300\) is the heuristic of that paper and of the main text, read off from the empirical end of the magic sequence together with a layer budget. The nodes of Section~\ref{sec:layer} do not tighten it. If \(\ell\) is independent of \(A\), the nuclear surface of the liquid-drop radius already lies outside every node at \(A=1\). If instead \(\ell\) scales as \(A^{1/3}\), every ratio of the surface to a node is independent of \(A\), and again no cutoff appears. Finiteness of the nuclide chart, in this framework, is the finiteness of the rotor image, not a property of \(\gamma_s\).
+
+\section{The shared entrance, and fission}
+\label{sec:fission}
+
+A dual excitation is an addition to the dual angle at fixed proximity, the complementary reading to~\eqref{eq:ansatz}:
+\begin{equation}
+\label{eq:dual-ansatz}
+\alpha=\frac{\ell}{r},
+\qquad
+\beta=\frac{\ell}{r}+\psi,
+\qquad
+\psi\ge 0.
+\end{equation}
+With \(\varepsilon=\psi/2\) and with \(\tau\) as in~\eqref{eq:tau},
+\begin{equation}
+\label{eq:gamma-psi}
+\gamma_\psi(x)
+  =\cos\varepsilon\,\gamma_s(x)-\sin\varepsilon\,\tau(x).
+\end{equation}
+On the outer well \(0<x<x_1\), both \(\gamma_s\) and \(\tau\) are positive. For \(\psi\in(0,\pi)\) one has \(\varepsilon\in(0,\pi/2)\) and \(\cos\varepsilon>0\), so \(\gamma_\psi\) has the sign of \(\gamma_s/\tau-\tan\varepsilon\). The zero lies at
+\begin{equation}
+\label{eq:psi-star}
+\psi_*(x)=2\arctan\frac{\gamma_s(x)}{\tau(x)}.
+\end{equation}
+The quotient \(\gamma_s/\tau\) is strictly decreasing on \((0,x_1)\). The numerator of its derivative is \(\gamma_s'\tau-\gamma_s\tau'\). Substituting \(\gamma_s'=-2\cosh x\sin x\) and \(\tau'=2\cosh x\cos x\) leaves the bracket \(\sin x\,\tau+\gamma_s\cos x\), and that bracket equals \(\cosh x\), so the numerator is \(-2\cosh^{2}x\). Thus \(\psi_*\) falls strictly from \(\pi\) to \(0\) as \(x\) runs from \(0\) to \(x_1\). Every excitation \(\psi\in(0,\pi)\) is the critical value at exactly one phase \(x_\psi\) in the outer well.
+
+At small phase, \(\tau(x)=2x+O(x^{3})\) and \(\gamma_s(x)=1+O(x^{2})\), so
+\[
+\psi_*(x)=\pi-4x+O(x^{3})=\pi-\frac{2\ell}{r}+O\Bigl(\Bigl(\frac{\ell}{r}\Bigr)^{3}\Bigr).
+\]
+A widely separated pair is inverted only by an excitation near \(\pi\). A pair already near the node is inverted by a small excitation. Relative rapidity cannot imitate this at large separation: outside \(2\ell/\pi\) the factor~\eqref{eq:gamma-phi} stays positive at every finite \(\varphi\).
+
+The phase \(x_\psi\) is an attractor of the separation at fixed \(\psi\). For \(x>x_\psi\) one has \(\psi_*(x)<\psi\), hence \(\gamma_\psi<0\), and the force is outward, so the separation grows and the phase falls toward \(x_\psi\). For \(x<x_\psi\) the force is inward, the separation shrinks, and the phase rises toward \(x_\psi\). The zero of \(\gamma_\psi\) is simple because \((\gamma_s/\tau)'\neq 0\), and the force has a simple pole there. As \(\psi\downarrow 0\) the attractor approaches the static node. As \(\psi\uparrow\pi\) one has \(x_\psi\downarrow 0\), so the attractor recedes to infinity. From the leading deficit, the radius of the attractor at an excitation close to \(\pi\) is \(2\ell/(\pi-\psi)\).
+
+The rapidity threshold and the dual threshold are not two names for one reaction. The rapidity threshold \(\varphi_*\) is the entrance, and it is common. Capture, neutron-induced fission, and fusion each require a partner that is still on the inward side of \(\varphi_*\). Above that threshold the nuclear channel repels, and the partner is turned away before a compound system exists. Fusion is this entrance completed: the combined system remains inward, and the mass number has increased. For two charged nuclei the Coulomb term of Section~\ref{sec:proton} is still present, so the shared nuclear condition does not become a slow-neutron reaction. A neutron already carries no charge. Its being slow is what keeps \(\varphi\) under \(\varphi_*\).
+
+Fission is not that entrance. It is a dual excitation of a nucleus already formed, not a high relative rapidity and not the joining itself. The main text describes it as an excited dual mode that drives \(\gamma_s\) from positive to negative and repels the fragments~\cite{dst-main}. The formula~\eqref{eq:psi-star} locates that transition. On the inner side of \(x_\psi\) the force is outward, which is the repulsion of the fragments. On the outer side the outer well is still attractive, so a fixed excitation gathers the separation at \(r=\ell/(2x_\psi)\) rather than sending it to infinity. A split that runs away requires the excitation to approach \(\pi\), where the gathering radius diverges, or requires the excitation to change during the separation. Neither the \(Q\) value nor the asymmetric mass split of actinide fission is computed. Neutron-induced fission uses both thresholds in that order. The neutron arrives with \(\varphi\) below \(\varphi_*\), or it never joins. The excitation \(\psi\) deposited by that joining is what can cross \(\psi_*\). Spontaneous fission has no neutron entrance. It is only the second threshold. The branching between capture, scattering, fusion, and fission is not decided by the sign of \(\gamma\) alone.
+
+The two thresholds therefore answer two different questions, and a slow neutron sits in both only as the way in. The rapidity threshold says when a moving nucleon, at a separation already inside \(2\ell/\pi\), finds the channel outward. The dual threshold says when an internal excitation inverts a pair at rest, at any separation. Joining uses the first. Splitting uses the second.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+The repulsive inversion layer is the first interval on which the equal-scale factor \(\gamma_s\) is negative. Its outer wall is the node \(x_1=0.93755\), at \(r_1/\ell=0.53330\), and its inner wall is \(r_2/\ell=0.12731\). The outer wall attracts the separation from both sides. An infall from large radius is driven into that wall and does not classically enter the deeper attractive chamber. The plateau value of the outward force inside the layer, at the minimum of \(\gamma_s\), is \(3.4057\,\kappa/\ell^{2}\). The prefactor \(\kappa\) is a nuclear input. The combination \(G m_p^{2}\) is smaller than \(k e^{2}\) by \(1.236\times 10^{36}\) and is not that input.
+
+Added to the usual proximity rapidity, a relative rapidity \(\varphi\) lowers the interference factor. The force at phase \(x\in(\pi/4,x_1)\) is inward for \(\varphi<\varphi_*(x)\) and outward for \(\varphi>\varphi_*(x)\), with \(\varphi_*\) the closed logarithm~\eqref{eq:phi-star}. No finite rapidity inverts the force outside \(2\ell/\pi\), and the outward displacement of the wall is bounded by the ratio \(1.1937\). The repulsive skin of a slow neutron has fractional thickness \(0.12295\,\varphi\). At \(1\,\mathrm{MeV}\) the wall has moved by six parts in a thousand; at \(100\,\mathrm{MeV}\), by five percent. A neutron on the inward side of its own threshold is pulled in. A neutron on the outward side is driven off a pole. That alternative is the entrance shared by capture, by neutron-induced fission, and by fusion. Shedding of the rapidity, and the \(1/v\) law, are not derived.
+
+Two protons add the signed Coulomb force. Walls at which \(\gamma_s\) falls through zero attract a mass pair and repel a like charge pair, and consecutive walls of either channel have the opposite stability. Unequal lengths interleave the walls, so a nuclear configuration is a sign cell: inward pairs and outward pairs at one instant, with an unbounded force on each wall. That cell is the chaotic proton force. Equal lengths produce no such interleaving, only the single prefactor \(k e^{2}-\kappa\).
+
+The closures \(2\), \(8\), \(20\) and \(28\), \(50\), \(82\), \(126\) are the cumulative oscillator counts \(C(N)\) and the shifted counts \(C(N)+2(N+2)\). They label seats of each rotor class, not nodes. Doubly magic nuclides close both classes. Stability, the valley, and the maximum of \(\mathrm{BE}/A\) near \(A=62\) are not consequences of the closure, and \(A_{\max}\) remains the finite but unevaluated bound of the discrete theory.
+
+A dual excitation \(\psi\) inverts the outer well at a single phase, and that phase attracts the separation. The critical angle falls from \(\pi\) at infinity to \(0\) at the first node. Fission is this inversion of a nucleus already formed. Fusion is not that inversion: it is the shared entrance, \(\varphi<\varphi_*\), completed while the combined system is still inward. A slow neutron induces fission only by passing that entrance. The split, if it follows, is \(\psi>\psi_*\). Relative rapidity does not produce the split outside \(2\ell/\pi\). The strong force, throughout, is the sign of one interference factor: inward on the outer side of the first node, outward in the inversion layer, inward again only in a deeper chamber that a classical infall does not reach, and outward under either a rapidity past \(\varphi_*\) or a dual excitation past \(\psi_*\).
+
+\begin{thebibliography}{9}
+
+\bibitem{dst-main}
+Anonymous,
+``Gravity as Torsion between Dual Spacetime: A Biquaternionic Reformulation of General Relativity'' (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{dst-shell}
+Anonymous,
+``Electron Orbits from the Signed Electrostatic Force: Covalent Bonds, Metallic Bonds, and Crystals,''
+companion note.
+
+\bibitem{dst-dio}
+Anonymous,
+``Discrete Biquaternionic Double Spacetime: Rigorous Proofs of Diophantine Conjectures via Torsional Mismatch and PGA Embedding,''
+companion note.
+
+\bibitem{codata2018}
+E.~Tiesinga, P.~J.~Mohr, D.~B.~Newell, and B.~N.~Taylor,
+``CODATA recommended values of the fundamental physical constants: 2018,''
+\textit{Rev.\ Mod.\ Phys.} \textbf{93}, 025010 (2021).
+
+\end{thebibliography}
+
+\end{document}
