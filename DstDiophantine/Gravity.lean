@@ -161,8 +161,8 @@ The straight line of one fixed jet is not itself that geodesic.
 * `ChannelRange` — the same enhancement on two compactification radii.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
-  excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) that excess exceeds the
-  electromagnetic one by more than \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
+  excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) the ratio of that excess
+  to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
   input. The comparison does not subtract the Coulomb coupling from \(G\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node

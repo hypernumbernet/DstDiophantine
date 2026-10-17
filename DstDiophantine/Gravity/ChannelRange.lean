@@ -4,7 +4,7 @@ import DstDiophantine.Gravity.DualImage
 # Gravitational and electromagnetic compactification ranges
 
 Both channels read the same dual-image enhancement \(\eta(x)=x\coth x\).
-The gravitational channel is organised on a galactic compactification radius
+The gravitational channel is organized on a galactic compactification radius
 \(R\); the electromagnetic channel is read on a larger radius \(\Lambda\).
 
 On \(0<r\le R\) the electromagnetic fractional departure from inverse-square
@@ -21,8 +21,6 @@ inverse-square law. It does not subtract the Coulomb coupling from \(G\).
 namespace DstDiophantine
 
 namespace Gravity
-
-open Real
 
 /-- Across a patch \(0<r\le R\), the electromagnetic fractional excess over
 its own inverse-square law is positive and strictly less than \((R/\Lambda)^2/3\). -/
@@ -50,18 +48,14 @@ theorem gravExcess_one_bounds :
   obtain ⟨hlo, hhi⟩ := dualEnhancement_one_bounds
   constructor <;> linarith
 
-/-- At \(r=R<\Lambda\), the gravitational fractional excess exceeds the
-electromagnetic one by more than \((93/100)(\Lambda/R)^2\). -/
+/-- At \(r=R<\Lambda\), the ratio of the gravitational fractional excess to the
+electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). -/
 theorem excess_ratio_at_compactification {R Λ : ℝ} (hR : 0 < R) (hΛR : R < Λ) :
     (93 / 100 : ℝ) * (Λ / R) ^ 2 <
       (dualEnhancement 1 - 1) / (dualEnhancement (R / Λ) - 1) := by
   have hΛ : 0 < Λ := hR.trans hΛR
-  have hx : 0 < R / Λ := div_pos hR hΛ
-  have hden : 0 < dualEnhancement (R / Λ) - 1 := by
-    linarith [one_lt_dualEnhancement hx]
-  have hdenLt : dualEnhancement (R / Λ) - 1 < (R / Λ) ^ 2 / 3 := by
-    linarith [dualEnhancement_lt_one_add_sq_div_three hx]
-  have hupper : 0 < (R / Λ) ^ 2 / 3 := by positivity
+  obtain ⟨hden, hdenLt⟩ := emExcess_pos_lt_patch hR hR hΛ le_rfl
+  have hupper : 0 < (R / Λ) ^ 2 / 3 := hden.trans hdenLt
   have hnum : (31 / 100 : ℝ) < dualEnhancement 1 - 1 := gravExcess_one_bounds.1
   have hlargerNum :
       (31 / 100 : ℝ) / (dualEnhancement (R / Λ) - 1) <
