@@ -13,11 +13,11 @@ set_option linter.style.nativeDecide false
 
 ## Paper boundary (do **not** claim)
 
-The length `ℓ` is not derived. The caps do not select it. A representative
-input is the reduced Compton wavelength `ℏ/(m_e c)`. The Bohr radius, `α`,
-and the nuclear charges `1`, `2`, and `92` are external inputs. Nothing here
-produces a Bohr spectrum, a dissociation energy, or an identification of the
-square with a laboratory bond.
+The electromagnetic length is the reduced Compton wavelength `ℏ/(m_e c)`.
+The laboratory caps lie above it. The Bohr radius, `α`, and the nuclear
+charges `1`, `2`, and `92` are external inputs. Nothing here produces a Bohr
+spectrum, a dissociation energy, or an identification of the square with a
+laboratory bond.
 
 ## What is proved
 
@@ -31,7 +31,7 @@ square with a laboratory bond.
   `(1092/10¹⁵, 1093/10¹⁵)` m.
 * Placing the first node at `a₀` puts the phase of the radius `a₀/2` where
   `γ_s < 0`.
-* The representative `ℏ/(m_e c)` lies strictly below the charge-`92` cap, in
+* The length `ℏ/(m_e c)` lies strictly below the charge-`92` cap, in
   `(3861/10¹⁶, 3862/10¹⁶)` m. Its first node lies in
   `(2032/10¹⁶, 2069/10¹⁶)` m and strictly inside `a₀/92`.
 -/
@@ -311,7 +311,7 @@ private theorem fineStructure_lt_seven_over_threeFortyFive :
   rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
   norm_cast
 
-/-- The representative lies strictly under the tightest rational cap. -/
+/-- The electron Compton wavelength lies strictly under the tightest rational cap. -/
 theorem ellRep_lt_ellCap_ninetyTwo : ellRep < ellCap 92 := by
   rw [ellRep_eq_bohr_mul_alpha]
   unfold ellCap hydrogenicRadius
@@ -443,7 +443,7 @@ theorem ellRep_nodeUpper_meter_window :
   rw [rat_pow_ten_sixteen]
   exact h
 
-/-- The first node of the representative lies strictly between
+/-- The first node of the electron Compton wavelength lies strictly between
 `2032×10⁻¹⁶` m and `2069×10⁻¹⁶` m. -/
 theorem ellRep_node_meter_window :
     (2032 : ℝ) / 10 ^ 16 < (ellRep : ℝ) / (2 * resonanceRoot1) ∧

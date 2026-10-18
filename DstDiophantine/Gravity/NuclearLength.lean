@@ -13,12 +13,12 @@ set_option linter.style.nativeDecide false
 
 ## Paper boundary (do **not** claim)
 
-The length `ℓ` is not derived. The caps do not select it. A representative
-input is the charged-pion Compton wavelength `λ_π`. The core radii `2/5` fm
-and `1/2` fm, the attractive radius `1` fm, the saturation density, and the
-charge-radius lower edges are external inputs. Nothing here produces a
-binding energy, a scattering length, or an identification of a charge radius
-with a pair separation.
+The nuclear length is the charged-pion Compton wavelength `λ_π`. The
+laboratory signs place it between `56/75` fm and `19/10` fm. The core radii
+`2/5` fm and `1/2` fm, the attractive radius `1` fm, the saturation density,
+and the charge-radius lower edges are external inputs. Nothing here produces
+a binding energy, a scattering length, or an identification of a charge radius
+with a pair separation. The identification is not a derivation of `ℓ`.
 
 ## What is proved
 
@@ -89,7 +89,7 @@ theorem core_interior_lt_scale : nnCoreInteriorFm < nnCoreScaleFm := by
   unfold nnCoreInteriorFm nnCoreScaleFm
   norm_num
 
-/-! ### The representative sits inside the caps -/
+/-! ### The charged-pion wavelength sits inside the caps -/
 
 private theorem pion_real_gt : (7 / 5 : ℝ) < (pionComptonFm : ℝ) := by
   rw [show (7 / 5 : ℝ) = ((7 / 5 : ℚ) : ℝ) by norm_num]
@@ -102,7 +102,7 @@ private theorem pion_real_lt : (pionComptonFm : ℝ) < 71 / 50 := by
 private theorem pion_real_pos : (0 : ℝ) < (pionComptonFm : ℝ) :=
   lt_trans (by norm_num : (0 : ℝ) < 7 / 5) pion_real_gt
 
-/-- `56/75 < λ_π < 19/10`. The caps do not select the representative. -/
+/-- `56/75 < λ_π < 19/10`. -/
 theorem pion_inside_sign_caps :
     (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 := by
   have h := pionComptonFm_tight_bounds

@@ -172,11 +172,11 @@ The straight line of one fixed jet is not itself that geodesic.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
-* `NuclearLength` — laboratory signs cap the nuclear length without
-  selecting it. Repulsion at \(2/5\,\mathrm{fm}\) forces
+* `NuclearLength` — the nuclear length is the charged-pion Compton wavelength
+  \(\lambda_\pi\). Repulsion at \(2/5\,\mathrm{fm}\) forces
   \(\ell>56/75\,\mathrm{fm}\), and attraction at \(1\,\mathrm{fm}\) forces
-  \(\ell<19/10\,\mathrm{fm}\). The representative \(\lambda_\pi\) lies
-  strictly between those caps. Its first node lies in
+  \(\ell<19/10\,\mathrm{fm}\). The wavelength \(\lambda_\pi\) lies strictly between
+  those caps. Its first node lies in
   \((14/19,\,213/280)\,\mathrm{fm}\), so the core scale \(1/2\,\mathrm{fm}\)
   lies in the inversion layer, and the rapidity wall lies in
   \((8/9,\,142/157)\,\mathrm{fm}\). Charge-radius lower edges and the
@@ -321,9 +321,9 @@ The straight line of one fixed jet is not itself that geodesic.
   and \(92\) lie in \((1005,1006)\times 10^{-13}\,\mathrm{m}\),
   \((502,503)\times 10^{-13}\,\mathrm{m}\), and
   \((1092,1093)\times 10^{-15}\,\mathrm{m}\). Placing the node at \(a_0\) puts
-  the phase of \(a_0/2\) where \(\gamma_s<0\). The caps do not select \(\ell\).
-  A representative input is \(\hbar/(m_e c)\), strictly below the charge-\(92\)
-  cap, in \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
+  the phase of \(a_0/2\) where \(\gamma_s<0\). The electromagnetic length is
+  \(\hbar/(m_e c)\), strictly below the charge-\(92\) cap, in
+  \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
   \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
@@ -912,7 +912,7 @@ example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
 example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
   numberDensity_radiusCoeff_1_2_ne_saturation
 
-/-- Regression: the pion representative lies strictly inside the sign caps. -/
+/-- Regression: the charged-pion Compton wavelength lies strictly inside the sign caps. -/
 example : (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 :=
   pion_inside_sign_caps
 
