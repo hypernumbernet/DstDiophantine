@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronNumbers
+import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
@@ -303,6 +304,17 @@ The straight line of one fixed jet is not itself that geodesic.
   node stand in that order. The diagonal force exceeds \(4\), while
   \(4\pi^{2}/\cosh\pi<7/2\). Placing the side at one Bohr radius would put
   the first node strictly between \(91/40\) and \(12/5\) Bohr radii.
+* `ElectronLength` — an outer-well radius \(r\) forces \(\ell<(19/10)r\).
+  Attraction at the Bohr radius forces \(\ell<\mathtt{lambdaHyp}\) and
+  \(\ell<(19/10)a_0\). The same sign at \(a_0/Z\) forces
+  \(\ell<(19/10)a_0/Z\). On the SI stand-ins the caps for charges \(1\), \(2\),
+  and \(92\) lie in \((1005,1006)\times 10^{-13}\,\mathrm{m}\),
+  \((502,503)\times 10^{-13}\,\mathrm{m}\), and
+  \((1092,1093)\times 10^{-15}\,\mathrm{m}\). Placing the node at \(a_0\) puts
+  the phase of \(a_0/2\) where \(\gamma_s<0\). The caps do not select \(\ell\).
+  A representative input is \(\hbar/(m_e c)\), strictly below the charge-\(92\)
+  cap, in \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
+  \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
