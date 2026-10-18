@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronNumbers
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -30,8 +31,9 @@ infinite lattice sum is taken. Screening is not introduced.
 * For every ion charge `Z ≥ 1`, at cage radius `2` and proton half-separation
   `1`, the axial component is strictly negative.
 * As the half-separation descends to `1/(4x₁)`, the component tends to `+∞`.
-* A zero therefore lies at a separation strictly between the first charge
-  node and `2`.
+* On the half-separations strictly between `1/(4x₁)` and `1`, the component
+  falls strictly. The balance is therefore unique, outward on its inner side
+  and inward on its outer side.
 -/
 
 namespace DstDiophantine
@@ -574,6 +576,679 @@ theorem exists_octa_pair_balance {Z : ℝ} (hZ : 1 ≤ Z) :
   · linarith
   · have hhalf : 2 * c / 2 = c := by ring
     simpa [hhalf] using hc0
+
+/-! ### The balance is unique -/
+
+private noncomputable def nearPhase (t : ℝ) : ℝ := 1 / (2 * (2 - t))
+
+private noncomputable def farPhase (t : ℝ) : ℝ := 1 / (2 * (2 + t))
+
+private noncomputable def eqPhase (t : ℝ) : ℝ := 1 / (2 * sqrt (4 + t ^ 2))
+
+/-- `24φ⁵ − φ³`, the numerator that bounds the equatorial slope. -/
+private noncomputable def equatorialNum (φ : ℝ) : ℝ := 24 * φ ^ 5 - φ ^ 3
+
+private noncomputable def cageOutward (t : ℝ) : ℝ :=
+  -pairAttraction (nearPhase t) + pairAttraction (farPhase t) + 4 * pullRate (eqPhase t) * t
+
+private noncomputable def cageOutwardDeriv (t : ℝ) : ℝ :=
+  -((8 * nearPhase t * forceCrit (nearPhase t) / gammaSEqual (nearPhase t) ^ 2) *
+      (2 * nearPhase t ^ 2))
+    + (8 * farPhase t * forceCrit (farPhase t) / gammaSEqual (farPhase t) ^ 2) *
+      (-(2 * farPhase t ^ 2))
+    + 4 * (pullRate (eqPhase t) * (48 * eqPhase t ^ 2 - 2) +
+      ionOutflow (eqPhase t) * (16 * eqPhase t ^ 2 - 1))
+
+private lemma gammaSEqual_le_taylor {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
+    gammaSEqual x ≤ 1 - x ^ 2 + x ^ 4 * (5 / 48) := by
+  have hcos := cos_bound (x := x) (by rwa [abs_of_nonneg hx0])
+  have hle : cos x ≤ 1 - x ^ 2 / 2 + x ^ 4 * (5 / 96) := by
+    have h := (abs_sub_le_iff.mp hcos).1
+    rw [abs_of_nonneg hx0] at h
+    linarith
+  have hγ := gammaSEqual_le_two_cos_sub_one hx0 hx1
+  have hpoly : 2 * (1 - x ^ 2 / 2 + x ^ 4 * (5 / 96)) - 1
+      = 1 - x ^ 2 + x ^ 4 * (5 / 48) := by ring
+  linarith
+
+private lemma hasDerivAt_equatorialNum (φ : ℝ) :
+    HasDerivAt equatorialNum (3 * φ ^ 2 * (40 * φ ^ 2 - 1)) φ := by
+  unfold equatorialNum
+  have h5 : HasDerivAt (fun y : ℝ => y ^ 5) (5 * φ ^ 4) φ := by
+    simpa using hasDerivAt_pow 5 φ
+  have h3 : HasDerivAt (fun y : ℝ => y ^ 3) (3 * φ ^ 2) φ := by
+    simpa using hasDerivAt_pow 3 φ
+  have h := (h5.const_mul 24).sub h3
+  refine h.congr_deriv ?_
+  ring
+
+private lemma equatorialNum_monotone :
+    MonotoneOn equatorialNum (Icc (1 / 5 : ℝ) (1 / 2)) := by
+  refine monotoneOn_of_deriv_nonneg (convex_Icc (1 / 5) (1 / 2)) ?_ ?_ ?_
+  · unfold equatorialNum
+    exact ((continuous_id.pow 5).const_mul 24).continuousOn.sub
+      (continuous_id.pow 3).continuousOn
+  · intro y hy
+    rw [interior_Icc] at hy
+    exact (hasDerivAt_equatorialNum y).differentiableAt.differentiableWithinAt
+  · intro y hy
+    rw [interior_Icc] at hy
+    rw [(hasDerivAt_equatorialNum y).deriv]
+    have hy5 : (1 / 5 : ℝ) < y := hy.1
+    have hy0 : 0 < y := by linarith
+    have hsq : (1 / 5 : ℝ) ^ 2 < y ^ 2 := (sq_lt_sq₀ (by norm_num) hy0.le).mpr hy5
+    nlinarith [hsq]
+
+private lemma nearPhase_mono {s t : ℝ} (hs : s ≤ t) (ht : t < 2) :
+    nearPhase s ≤ nearPhase t := by
+  unfold nearPhase
+  have hle : 2 * (2 - t) ≤ 2 * (2 - s) := by nlinarith
+  exact one_div_le_one_div_of_le (by linarith) hle
+
+private lemma farPhase_anti {s t : ℝ} (hs : 0 ≤ s) (hst : s ≤ t) :
+    farPhase t ≤ farPhase s := by
+  unfold farPhase
+  have hle : 2 * (2 + s) ≤ 2 * (2 + t) := by nlinarith
+  exact one_div_le_one_div_of_le (by linarith) hle
+
+private lemma cubic_over_gamma_ge {x y : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1)
+    (hy : y ∈ Ioo 0 resonanceRoot1) (hyx : y ≤ x) :
+    y ^ 3 / (1 - y ^ 2 + y ^ 4 * (5 / 48)) ≤ x ^ 3 / gammaSEqual x := by
+  have hy1 : y ≤ 1 := le_of_lt (lt_trans hy.2 resonanceRoot1_bounds.2)
+  have hU : gammaSEqual y ≤ 1 - y ^ 2 + y ^ 4 * (5 / 48) :=
+    gammaSEqual_le_taylor hy.1.le hy1
+  have hγy : 0 < gammaSEqual y := gammaSEqual_pos_left_of_first_node hy
+  have hγx : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  set U : ℝ := 1 - y ^ 2 + y ^ 4 * (5 / 48)
+  have hUpos : 0 < U := lt_of_lt_of_le hγy hU
+  have hγle : gammaSEqual x ≤ gammaSEqual y := by
+    rcases eq_or_lt_of_le hyx with rfl | hlt
+    · rfl
+    · have hanti := strictAntiOn_gammaSEqual_even 0
+      have hxI : x ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
+        simpa using (⟨hx.1.le, by linarith [hx.2, resonanceRoot1_bounds.2, pi_gt_three]⟩ :
+          x ∈ Icc (0 : ℝ) π)
+      have hyI : y ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
+        simpa using (⟨hy.1.le, by linarith [hy.2, resonanceRoot1_bounds.2, pi_gt_three]⟩ :
+          y ∈ Icc (0 : ℝ) π)
+      exact (hanti hyI hxI hlt).le
+  have hpow : y ^ 3 ≤ x ^ 3 := pow_le_pow_left₀ hy.1.le hyx 3
+  have h1 : y ^ 3 / U ≤ x ^ 3 / U := div_le_div_of_nonneg_right hpow hUpos.le
+  have hden : gammaSEqual x ≤ U := le_trans hγle hU
+  have h2 : x ^ 3 / U ≤ x ^ 3 / gammaSEqual x :=
+    div_le_div_of_nonneg_left (by have hx0 := hx.1; positivity) hγx hden
+  exact h1.trans h2
+
+private lemma eqPhase_lt_quarter {t : ℝ} (ht : t ∈ Icc (5 / 19 : ℝ) 1) :
+    eqPhase t < 1 / 4 := by
+  have ht0 : 0 < t := by linarith [ht.1]
+  have hsqrt : (2 : ℝ) < sqrt (4 + t ^ 2) := by
+    rw [← Real.sqrt_sq (by norm_num : (0 : ℝ) ≤ 2)]
+    exact Real.sqrt_lt_sqrt (by positivity) (by nlinarith [ht0])
+  have h4 : (4 : ℝ) < 2 * sqrt (4 + t ^ 2) := by linarith
+  unfold eqPhase
+  exact one_div_lt_one_div_of_lt (by norm_num) h4
+
+private lemma fifth_lt_eqPhase {t : ℝ} (ht : t ∈ Icc (5 / 19 : ℝ) 1) :
+    1 / 5 < eqPhase t := by
+  have ht2 : t ^ 2 ≤ 1 := by
+    have hpow := pow_le_pow_left₀ (by linarith [ht.1] : (0 : ℝ) ≤ t) ht.2 2
+    simpa using hpow
+  have hsqrt_le : sqrt (4 + t ^ 2) ≤ sqrt 5 :=
+    Real.sqrt_le_sqrt (by linarith [ht2])
+  have hsqrt5 : sqrt 5 < 5 / 2 := by
+    have hsq : (sqrt 5) ^ 2 < ((5 : ℝ) / 2) ^ 2 := by
+      rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 5)]
+      norm_num
+    exact (sq_lt_sq₀ (Real.sqrt_nonneg 5) (by norm_num)).mp hsq
+  have hden : 2 * sqrt (4 + t ^ 2) ≤ 2 * sqrt 5 := by nlinarith
+  have h5 : 2 * sqrt 5 < 5 := by linarith
+  have hcomp : 1 / (2 * sqrt 5) ≤ 1 / (2 * sqrt (4 + t ^ 2)) :=
+    one_div_le_one_div_of_le (by positivity) hden
+  have hfifth : (1 / 5 : ℝ) < 1 / (2 * sqrt 5) :=
+    one_div_lt_one_div_of_lt (by positivity) h5
+  unfold eqPhase
+  linarith
+
+private lemma equatorial_over_gamma_le {t : ℝ} (ht : t ∈ Icc (5 / 19 : ℝ) 1) :
+    64 * equatorialNum (eqPhase t) / gammaSEqual (eqPhase t) ≤ 80 / 147 := by
+  have hph := phase_outer_on_cage ht.1 ht.2
+  have hφmem : eqPhase t ∈ Ioo 0 resonanceRoot1 := by
+    simpa [eqPhase] using hph.2.2
+  have hγ : 0 < gammaSEqual (eqPhase t) := gammaSEqual_pos_left_of_first_node hφmem
+  have hγ4pos : 0 < gammaSEqual (1 / 4) := by linarith [gamma_one_quarter_ge]
+  have hφ4 := eqPhase_lt_quarter ht
+  have hφ5 := fifth_lt_eqPhase ht
+  have hφI : eqPhase t ∈ Icc (1 / 5 : ℝ) (1 / 2) := ⟨hφ5.le, by linarith⟩
+  have h14I : (1 / 4 : ℝ) ∈ Icc (1 / 5) (1 / 2) := ⟨by norm_num, by norm_num⟩
+  have hu : equatorialNum (eqPhase t) ≤ equatorialNum (1 / 4) :=
+    equatorialNum_monotone hφI h14I hφ4.le
+  have hu4 : equatorialNum (1 / 4) = 1 / 128 := by
+    unfold equatorialNum
+    norm_num
+  have hanti := strictAntiOn_gammaSEqual_even 0
+  have hφπ : eqPhase t ≤ π := by
+    linarith [hφmem.2, resonanceRoot1_bounds.2, pi_gt_three]
+  have hφIcc : eqPhase t ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
+    simpa using (⟨hφmem.1.le, hφπ⟩ : eqPhase t ∈ Icc (0 : ℝ) π)
+  have h14π : (1 / 4 : ℝ) ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
+    simpa using (⟨by norm_num, by linarith [pi_gt_three]⟩ : (1 / 4 : ℝ) ∈ Icc (0 : ℝ) π)
+  have hγle : gammaSEqual (1 / 4) < gammaSEqual (eqPhase t) := hanti hφIcc h14π hφ4
+  have h1 : equatorialNum (eqPhase t) / gammaSEqual (eqPhase t) ≤
+      equatorialNum (1 / 4) / gammaSEqual (eqPhase t) :=
+    div_le_div_of_nonneg_right hu hγ.le
+  have hu0 : 0 ≤ equatorialNum (1 / 4) := by rw [hu4]; norm_num
+  have h2 : equatorialNum (1 / 4) / gammaSEqual (eqPhase t) ≤
+      equatorialNum (1 / 4) / gammaSEqual (1 / 4) :=
+    div_le_div_of_nonneg_left hu0 hγ4pos hγle.le
+  have h3 : equatorialNum (1 / 4) / gammaSEqual (1 / 4) ≤
+      equatorialNum (1 / 4) / (147 / 160) :=
+    div_le_div_of_nonneg_left hu0 (by norm_num) gamma_one_quarter_ge
+  have hconst : (64 : ℝ) * ((1 / 128) / (147 / 160)) = 80 / 147 := by norm_num
+  have h64 : 64 * (equatorialNum (eqPhase t) / gammaSEqual (eqPhase t)) ≤
+      64 * (equatorialNum (1 / 4) / (147 / 160)) := by
+    have hstep := h1.trans (h2.trans h3)
+    exact mul_le_mul_of_nonneg_left hstep (by norm_num)
+  rw [hu4] at h64
+  calc
+    64 * equatorialNum (eqPhase t) / gammaSEqual (eqPhase t)
+        = 64 * (equatorialNum (eqPhase t) / gammaSEqual (eqPhase t)) := by ring
+    _ ≤ 64 * ((1 / 128) / (147 / 160)) := h64
+    _ = 80 / 147 := hconst
+
+private lemma axialSlope_gt {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
+    16 * x ^ 3 / gammaSEqual x <
+      8 * x * forceCrit x / gammaSEqual x ^ 2 * (2 * x ^ 2) := by
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
+  have hsin : 0 < sin x :=
+    sin_pos_of_pos_of_lt_pi hx.1 (by linarith [hx.2, resonanceRoot1_bounds.2, pi_gt_three])
+  have hdiff : 8 * x * forceCrit x / gammaSEqual x ^ 2 * (2 * x ^ 2) -
+      16 * x ^ 3 / gammaSEqual x =
+      16 * x ^ 4 * cosh x * sin x / gammaSEqual x ^ 2 := by
+    unfold forceCrit
+    field_simp [hγ.ne']
+    ring
+  have hpos : 0 < 16 * x ^ 4 * cosh x * sin x / gammaSEqual x ^ 2 := by
+    have hnum : 0 < 16 * x ^ 4 * cosh x * sin x :=
+      mul_pos (mul_pos (mul_pos (by norm_num) (pow_pos hx.1 4)) (cosh_pos x)) hsin
+    exact div_pos hnum (sq_pos_of_pos hγ)
+  linarith
+
+private lemma equatorialSlope_lt {φ : ℝ} (hφ : φ ∈ Ioo 0 resonanceRoot1) (hφ4 : φ < 1 / 4) :
+    pullRate φ * (48 * φ ^ 2 - 2) + ionOutflow φ * (16 * φ ^ 2 - 1) <
+      16 * φ ^ 3 * (24 * φ ^ 2 - 1) / gammaSEqual φ := by
+  have hion : 0 < ionOutflow φ := ionOutflow_pos_outer hφ
+  have hneg : 16 * φ ^ 2 - 1 < 0 := by nlinarith [hφ.1, hφ4]
+  have hlt : ionOutflow φ * (16 * φ ^ 2 - 1) < 0 := mul_neg_of_pos_of_neg hion hneg
+  have hγ : gammaSEqual φ ≠ 0 := (gammaSEqual_pos_left_of_first_node hφ).ne'
+  have heq : pullRate φ * (48 * φ ^ 2 - 2) =
+      16 * φ ^ 3 * (24 * φ ^ 2 - 1) / gammaSEqual φ := by
+    unfold pullRate
+    field_simp [hγ]
+    ring
+  linarith
+
+private lemma cageOutwardDeriv_lt_ratios {t : ℝ} (ht : t ∈ Icc (5 / 19 : ℝ) 1) :
+    cageOutwardDeriv t <
+      -(16 * nearPhase t ^ 3 / gammaSEqual (nearPhase t)) +
+        -(16 * farPhase t ^ 3 / gammaSEqual (farPhase t)) +
+        64 * equatorialNum (eqPhase t) / gammaSEqual (eqPhase t) := by
+  have hph := phase_outer_on_cage ht.1 ht.2
+  have hn : nearPhase t ∈ Ioo 0 resonanceRoot1 := by simpa [nearPhase] using hph.1
+  have hf : farPhase t ∈ Ioo 0 resonanceRoot1 := by simpa [farPhase] using hph.2.1
+  have he : eqPhase t ∈ Ioo 0 resonanceRoot1 := by simpa [eqPhase] using hph.2.2
+  have hφ4 := eqPhase_lt_quarter ht
+  have hnear := axialSlope_gt hn
+  have hfar := axialSlope_gt hf
+  have heq := equatorialSlope_lt he hφ4
+  have h4 : 4 * (pullRate (eqPhase t) * (48 * eqPhase t ^ 2 - 2) +
+      ionOutflow (eqPhase t) * (16 * eqPhase t ^ 2 - 1)) <
+      64 * equatorialNum (eqPhase t) / gammaSEqual (eqPhase t) := by
+    have hmul := mul_lt_mul_of_pos_left heq (by norm_num : (0 : ℝ) < 4)
+    have hγ : gammaSEqual (eqPhase t) ≠ 0 := (gammaSEqual_pos_left_of_first_node he).ne'
+    have hid : 4 * (16 * eqPhase t ^ 3 * (24 * eqPhase t ^ 2 - 1) / gammaSEqual (eqPhase t)) =
+        64 * equatorialNum (eqPhase t) / gammaSEqual (eqPhase t) := by
+      unfold equatorialNum
+      field_simp [hγ]
+      ring
+    linarith
+  have hfarEq : 8 * farPhase t * forceCrit (farPhase t) / gammaSEqual (farPhase t) ^ 2 *
+      (-(2 * farPhase t ^ 2)) =
+      -((8 * farPhase t * forceCrit (farPhase t) / gammaSEqual (farPhase t) ^ 2) *
+        (2 * farPhase t ^ 2)) := by ring
+  unfold cageOutwardDeriv
+  exact add_lt_add (add_lt_add (neg_lt_neg hnear) (by rw [hfarEq]; exact neg_lt_neg hfar)) h4
+
+private lemma cageOutwardDeriv_neg_of_margin {a b : ℝ}
+    (ha0 : (5 / 19 : ℝ) ≤ a) (hb1 : b ≤ 1) (hab : a ≤ b)
+    (hmargin : (80 / 147 : ℝ) <
+      16 * nearPhase a ^ 3 / (1 - nearPhase a ^ 2 + nearPhase a ^ 4 * (5 / 48)) +
+      16 * farPhase b ^ 3 / (1 - farPhase b ^ 2 + farPhase b ^ 4 * (5 / 48))) :
+    ∀ t ∈ Icc a b, cageOutwardDeriv t < 0 := by
+  intro t ht
+  have htI : t ∈ Icc (5 / 19 : ℝ) 1 := ⟨le_trans ha0 ht.1, le_trans ht.2 hb1⟩
+  have haI : a ∈ Icc (5 / 19 : ℝ) 1 := ⟨ha0, le_trans hab hb1⟩
+  have hbI : b ∈ Icc (5 / 19 : ℝ) 1 := ⟨le_trans ha0 hab, hb1⟩
+  have htn := phase_outer_on_cage htI.1 htI.2
+  have han := phase_outer_on_cage haI.1 haI.2
+  have hbn := phase_outer_on_cage hbI.1 hbI.2
+  have hnear_le : nearPhase a ≤ nearPhase t :=
+    nearPhase_mono ht.1 (by linarith [htI.2])
+  have hfar_le : farPhase b ≤ farPhase t :=
+    farPhase_anti (s := t) (t := b) (by linarith [htI.1]) ht.2
+  have hna : nearPhase a ∈ Ioo 0 resonanceRoot1 := by simpa [nearPhase] using han.1
+  have hnt : nearPhase t ∈ Ioo 0 resonanceRoot1 := by simpa [nearPhase] using htn.1
+  have hfb : farPhase b ∈ Ioo 0 resonanceRoot1 := by simpa [farPhase] using hbn.2.1
+  have hft : farPhase t ∈ Ioo 0 resonanceRoot1 := by simpa [farPhase] using htn.2.1
+  have hnear := cubic_over_gamma_ge hnt hna hnear_le
+  have hfar := cubic_over_gamma_ge hft hfb hfar_le
+  have heq := equatorial_over_gamma_le htI
+  have hpoint := cageOutwardDeriv_lt_ratios htI
+  have hnear16 : 16 * (nearPhase a ^ 3 /
+        (1 - nearPhase a ^ 2 + nearPhase a ^ 4 * (5 / 48))) ≤
+      16 * (nearPhase t ^ 3 / gammaSEqual (nearPhase t)) :=
+    mul_le_mul_of_nonneg_left hnear (by norm_num)
+  have hfar16 : 16 * (farPhase b ^ 3 /
+        (1 - farPhase b ^ 2 + farPhase b ^ 4 * (5 / 48))) ≤
+      16 * (farPhase t ^ 3 / gammaSEqual (farPhase t)) :=
+    mul_le_mul_of_nonneg_left hfar (by norm_num)
+  have hnearA : 16 * (nearPhase a ^ 3 /
+        (1 - nearPhase a ^ 2 + nearPhase a ^ 4 * (5 / 48))) =
+      16 * nearPhase a ^ 3 / (1 - nearPhase a ^ 2 + nearPhase a ^ 4 * (5 / 48)) := by ring
+  have hfarB : 16 * (farPhase b ^ 3 /
+        (1 - farPhase b ^ 2 + farPhase b ^ 4 * (5 / 48))) =
+      16 * farPhase b ^ 3 / (1 - farPhase b ^ 2 + farPhase b ^ 4 * (5 / 48)) := by ring
+  rw [← hnearA, ← hfarB] at hmargin
+  have htop : -(16 * (nearPhase a ^ 3 / (1 - nearPhase a ^ 2 + nearPhase a ^ 4 * (5 / 48)))) +
+      -(16 * (farPhase b ^ 3 / (1 - farPhase b ^ 2 + farPhase b ^ 4 * (5 / 48)))) +
+      80 / 147 < 0 := by linarith [hmargin]
+  have hle := add_le_add (add_le_add (neg_le_neg hnear16) (neg_le_neg hfar16)) heq
+  have hnearT : 16 * (nearPhase t ^ 3 / gammaSEqual (nearPhase t)) =
+      16 * nearPhase t ^ 3 / gammaSEqual (nearPhase t) := by ring
+  have hfarT : 16 * (farPhase t ^ 3 / gammaSEqual (farPhase t)) =
+      16 * farPhase t ^ 3 / gammaSEqual (farPhase t) := by ring
+  rw [hnearT, hfarT] at hle
+  linarith
+
+private lemma margin_5_19_3_10 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (5 / 19) ^ 3 /
+        (1 - nearPhase (5 / 19) ^ 2 + nearPhase (5 / 19) ^ 4 * (5 / 48)) +
+      16 * farPhase (3 / 10) ^ 3 /
+        (1 - farPhase (3 / 10) ^ 2 + farPhase (3 / 10) ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma margin_3_10_2_5 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (3 / 10) ^ 3 /
+        (1 - nearPhase (3 / 10) ^ 2 + nearPhase (3 / 10) ^ 4 * (5 / 48)) +
+      16 * farPhase (2 / 5) ^ 3 /
+        (1 - farPhase (2 / 5) ^ 2 + farPhase (2 / 5) ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma margin_2_5_1_2 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (2 / 5) ^ 3 /
+        (1 - nearPhase (2 / 5) ^ 2 + nearPhase (2 / 5) ^ 4 * (5 / 48)) +
+      16 * farPhase (1 / 2) ^ 3 /
+        (1 - farPhase (1 / 2) ^ 2 + farPhase (1 / 2) ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma margin_1_2_3_5 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (1 / 2) ^ 3 /
+        (1 - nearPhase (1 / 2) ^ 2 + nearPhase (1 / 2) ^ 4 * (5 / 48)) +
+      16 * farPhase (3 / 5) ^ 3 /
+        (1 - farPhase (3 / 5) ^ 2 + farPhase (3 / 5) ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma margin_3_5_4_5 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (3 / 5) ^ 3 /
+        (1 - nearPhase (3 / 5) ^ 2 + nearPhase (3 / 5) ^ 4 * (5 / 48)) +
+      16 * farPhase (4 / 5) ^ 3 /
+        (1 - farPhase (4 / 5) ^ 2 + farPhase (4 / 5) ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma margin_4_5_1 :
+    (80 / 147 : ℝ) <
+      16 * nearPhase (4 / 5) ^ 3 /
+        (1 - nearPhase (4 / 5) ^ 2 + nearPhase (4 / 5) ^ 4 * (5 / 48)) +
+      16 * farPhase 1 ^ 3 /
+        (1 - farPhase 1 ^ 2 + farPhase 1 ^ 4 * (5 / 48)) := by
+  unfold nearPhase farPhase
+  norm_num
+
+private lemma cageOutwardDeriv_neg {t : ℝ} (ht : t ∈ Icc (5 / 19 : ℝ) 1) :
+    cageOutwardDeriv t < 0 := by
+  by_cases h1 : t ≤ 3 / 10
+  · exact cageOutwardDeriv_neg_of_margin (a := 5 / 19) (b := 3 / 10)
+      (by norm_num) (by norm_num) (by norm_num) margin_5_19_3_10 t ⟨ht.1, h1⟩
+  by_cases h2 : t ≤ 2 / 5
+  · exact cageOutwardDeriv_neg_of_margin (a := 3 / 10) (b := 2 / 5)
+      (by norm_num) (by norm_num) (by norm_num) margin_3_10_2_5 t ⟨(not_le.mp h1).le, h2⟩
+  by_cases h3 : t ≤ 1 / 2
+  · exact cageOutwardDeriv_neg_of_margin (a := 2 / 5) (b := 1 / 2)
+      (by norm_num) (by norm_num) (by norm_num) margin_2_5_1_2 t ⟨(not_le.mp h2).le, h3⟩
+  by_cases h4 : t ≤ 3 / 5
+  · exact cageOutwardDeriv_neg_of_margin (a := 1 / 2) (b := 3 / 5)
+      (by norm_num) (by norm_num) (by norm_num) margin_1_2_3_5 t ⟨(not_le.mp h3).le, h4⟩
+  by_cases h5 : t ≤ 4 / 5
+  · exact cageOutwardDeriv_neg_of_margin (a := 3 / 5) (b := 4 / 5)
+      (by norm_num) (by norm_num) (by norm_num) margin_3_5_4_5 t ⟨(not_le.mp h4).le, h5⟩
+  · exact cageOutwardDeriv_neg_of_margin (a := 4 / 5) (b := 1)
+      (by norm_num) (by norm_num) (by norm_num) margin_4_5_1 t ⟨(not_le.mp h5).le, ht.2⟩
+
+private lemma hasDerivAt_nearPhase {t : ℝ} (ht : t < 2) :
+    HasDerivAt nearPhase (2 * nearPhase t ^ 2) t := by
+  unfold nearPhase
+  have hsub0 := (hasDerivAt_const t (2 : ℝ)).sub (hasDerivAt_id t)
+  have hsub : HasDerivAt (fun s : ℝ => 2 - s) (-1) t := by
+    refine (hsub0.congr_of_eventuallyEq
+      (Filter.Eventually.of_forall fun s => ?_)).congr_deriv (by ring)
+    simp [Pi.sub_apply]
+  have hlin : HasDerivAt (fun s : ℝ => 2 * (2 - s)) (-2) t :=
+    (hsub.const_mul (2 : ℝ)).congr_deriv (by ring)
+  have hnz : (2 : ℝ) * (2 - t) ≠ 0 :=
+    mul_ne_zero (by norm_num) (by linarith : (2 : ℝ) - t ≠ 0)
+  refine (((hasDerivAt_inv hnz).comp t hlin).congr_of_eventuallyEq
+    (Filter.Eventually.of_forall fun s => ?_)).congr_deriv ?_
+  · simp [Function.comp_apply]
+  · field_simp [hnz]
+
+private lemma hasDerivAt_farPhase {t : ℝ} (ht : 0 ≤ t) :
+    HasDerivAt farPhase (-(2 * farPhase t ^ 2)) t := by
+  unfold farPhase
+  have hadd0 := (hasDerivAt_const t (2 : ℝ)).add (hasDerivAt_id t)
+  have hadd : HasDerivAt (fun s : ℝ => 2 + s) 1 t := by
+    refine (hadd0.congr_of_eventuallyEq
+      (Filter.Eventually.of_forall fun s => ?_)).congr_deriv (by ring)
+    simp [Pi.add_apply]
+  have hlin : HasDerivAt (fun s : ℝ => 2 * (2 + s)) 2 t :=
+    (hadd.const_mul (2 : ℝ)).congr_deriv (by ring)
+  have hnz : (2 : ℝ) * (2 + t) ≠ 0 := by positivity
+  refine (((hasDerivAt_inv hnz).comp t hlin).congr_of_eventuallyEq
+    (Filter.Eventually.of_forall fun s => ?_)).congr_deriv ?_
+  · simp [Function.comp_apply]
+  · field_simp [hnz]
+
+private lemma hasDerivAt_eqPhase {t : ℝ} (_ht : 0 < t) :
+    HasDerivAt eqPhase (-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) t := by
+  unfold eqPhase
+  have hpow : HasDerivAt (fun s : ℝ => s ^ 2) (2 * t) t := by
+    simpa using hasDerivAt_pow 2 t
+  have hu0 := (hasDerivAt_const t (4 : ℝ)).add hpow
+  have hu : HasDerivAt (fun s : ℝ => 4 + s ^ 2) (2 * t) t := by
+    refine (hu0.congr_of_eventuallyEq
+      (Filter.Eventually.of_forall fun s => ?_)).congr_deriv (by ring)
+    simp [Pi.add_apply]
+  have hsqrt := (hasDerivAt_sqrt (by positivity : (4 : ℝ) + t ^ 2 ≠ 0)).comp t hu
+  have hR : sqrt (4 + t ^ 2) ≠ 0 := by positivity
+  have hinv := (hasDerivAt_inv hR).comp t hsqrt
+  have hhalf0 := hinv.const_mul ((1 : ℝ) / 2)
+  have hhalf : HasDerivAt eqPhase
+      ((1 / 2) * (-(sqrt (4 + t ^ 2) ^ 2)⁻¹ *
+        (1 / (2 * sqrt (4 + t ^ 2)) * (2 * t)))) t := by
+    unfold eqPhase
+    refine hhalf0.congr_of_eventuallyEq (Filter.Eventually.of_forall fun s => ?_)
+    simp [Function.comp_apply]
+    ring
+  refine hhalf.congr_deriv (by field_simp [hR])
+
+private lemma eqPhase_weight {t : ℝ} (_ht : 0 ≤ t) :
+    t ^ 2 / (2 * (sqrt (4 + t ^ 2)) ^ 3) =
+      eqPhase t * (1 - 16 * eqPhase t ^ 2) := by
+  set R := sqrt (4 + t ^ 2)
+  have hR : 0 < R := by unfold R; positivity
+  have hsq : R ^ 2 = 4 + t ^ 2 := by
+    unfold R
+    exact Real.sq_sqrt (by positivity)
+  have hRne : R ≠ 0 := hR.ne'
+  have ht2 : t ^ 2 = R ^ 2 - 4 := by rw [hsq]; ring
+  have hRdef : sqrt (4 + t ^ 2) = R := rfl
+  unfold eqPhase
+  rw [hRdef, ht2]
+  have hpow : (1 / (2 * R)) ^ 2 = 1 / (4 * R ^ 2) := by
+    field_simp [hRne]
+    ring
+  rw [hpow]
+  field_simp [hRne]
+  ring
+
+private lemma eqSlope_eq {t : ℝ} (ht : 0 < t) (hγ : gammaSEqual (eqPhase t) ≠ 0) :
+    pullRateDeriv (eqPhase t) * (-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t +
+        pullRate (eqPhase t) =
+      pullRate (eqPhase t) * (48 * eqPhase t ^ 2 - 2) +
+        ionOutflow (eqPhase t) * (16 * eqPhase t ^ 2 - 1) := by
+  have hw := eqPhase_weight (le_of_lt ht)
+  have hflow := pullRate_outflow hγ
+  have hφd : eqPhase t * pullRateDeriv (eqPhase t) =
+      3 * pullRate (eqPhase t) + ionOutflow (eqPhase t) := by
+    linarith
+  have hneg : -(t / (2 * (sqrt (4 + t ^ 2)) ^ 3)) * t =
+      -(eqPhase t * (1 - 16 * eqPhase t ^ 2)) := by
+    have hmul : t / (2 * (sqrt (4 + t ^ 2)) ^ 3) * t =
+        t ^ 2 / (2 * (sqrt (4 + t ^ 2)) ^ 3) := by
+      field_simp
+    linarith
+  have hstep : pullRateDeriv (eqPhase t) * (-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t =
+      pullRateDeriv (eqPhase t) * (-(eqPhase t * (1 - 16 * eqPhase t ^ 2))) := by
+    have hassoc : pullRateDeriv (eqPhase t) * (-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t =
+        pullRateDeriv (eqPhase t) *
+          ((-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t) := by ring
+    rw [hassoc, hneg]
+  calc
+    pullRateDeriv (eqPhase t) * (-(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t +
+        pullRate (eqPhase t) =
+      pullRate (eqPhase t) +
+        pullRateDeriv (eqPhase t) * (-(eqPhase t * (1 - 16 * eqPhase t ^ 2))) := by
+      rw [hstep]
+      ring
+    _ = pullRate (eqPhase t) -
+        eqPhase t * pullRateDeriv (eqPhase t) * (1 - 16 * eqPhase t ^ 2) := by
+      ring
+    _ = pullRate (eqPhase t) -
+        (3 * pullRate (eqPhase t) + ionOutflow (eqPhase t)) *
+          (1 - 16 * eqPhase t ^ 2) := by
+      rw [hφd]
+    _ = pullRate (eqPhase t) * (48 * eqPhase t ^ 2 - 2) +
+        ionOutflow (eqPhase t) * (16 * eqPhase t ^ 2 - 1) := by
+      ring
+
+private lemma hasDerivAt_cageOutward {t : ℝ} (ht0 : 0 < t) (ht2 : t < 2)
+    (hγn : gammaSEqual (nearPhase t) ≠ 0) (hγf : gammaSEqual (farPhase t) ≠ 0)
+    (hγe : gammaSEqual (eqPhase t) ≠ 0) :
+    HasDerivAt cageOutward (cageOutwardDeriv t) t := by
+  have hnear := ((hasDerivAt_pairAttraction hγn).comp t
+    (hasDerivAt_nearPhase ht2)).const_mul (-1)
+  have hfar := (hasDerivAt_pairAttraction hγf).comp t (hasDerivAt_farPhase ht0.le)
+  have hpull := (hasDerivAt_pullRate hγe).comp t (hasDerivAt_eqPhase ht0)
+  have heq := (hpull.const_mul 4).mul (hasDerivAt_id t)
+  have hsum := (hnear.add hfar).add heq
+  refine (hsum.congr_of_eventuallyEq (Filter.Eventually.of_forall fun s => ?_)).congr_deriv ?_
+  · simp only [Function.comp_apply, neg_mul, one_mul, Pi.add_apply, Pi.mul_apply, id_eq]
+    unfold cageOutward
+    ring
+  · have hslope := eqSlope_eq ht0 hγe
+    unfold cageOutwardDeriv
+    have hcomp : (pullRate ∘ eqPhase) t = pullRate (eqPhase t) := rfl
+    have hid : id t = t := rfl
+    rw [hcomp, hid]
+    have hthird : 4 * (pullRateDeriv (eqPhase t) * -(t / (2 * (sqrt (4 + t ^ 2)) ^ 3))) * t +
+        4 * pullRate (eqPhase t) * 1 =
+        4 * (pullRate (eqPhase t) * (48 * eqPhase t ^ 2 - 2) +
+          ionOutflow (eqPhase t) * (16 * eqPhase t ^ 2 - 1)) := by
+      linarith [hslope]
+    rw [hthird]
+    ring
+
+private lemma octaPairOutward_eq_cage {Z t : ℝ} :
+    octaPairOutward Z 2 t = Z * cageOutward t + pairAttraction (1 / (4 * t)) := by
+  unfold octaPairOutward cageOutward nearPhase farPhase eqPhase
+  rw [show (2 : ℝ) ^ 2 = 4 by norm_num]
+  ring
+
+private lemma hasDerivAt_partnerPhase {t : ℝ} (ht : 0 < t) :
+    HasDerivAt (fun s : ℝ => 1 / (4 * s)) (-(4 * (1 / (4 * t)) ^ 2)) t := by
+  have hlin : HasDerivAt (fun s : ℝ => 4 * s) 4 t :=
+    ((hasDerivAt_id t).const_mul 4).congr_deriv (by ring)
+  have hnz : (4 : ℝ) * t ≠ 0 := by positivity
+  refine (((hasDerivAt_inv hnz).comp t hlin).congr_of_eventuallyEq
+    (Filter.Eventually.of_forall fun s => ?_)).congr_deriv ?_
+  · simp [Function.comp_apply]
+  · field_simp [hnz]
+
+private lemma continuousOn_octaPair_aboveNode {Z : ℝ} :
+    ContinuousOn (octaPairOutward Z 2) (Ioc (1 / (4 * resonanceRoot1)) 1) := by
+  set t0 := 1 / (4 * resonanceRoot1)
+  have ht0 := nodeHalf_mem
+  have hsub : Ioc t0 1 ⊆ Icc (5 / 19 : ℝ) 1 := by
+    intro u hu
+    exact ⟨le_of_lt (lt_trans ht0.1 hu.1), hu.2⟩
+  have hcage : ContinuousOn cageOutward (Ioc t0 1) := by
+    have h := continuousOn_cage (Z := 1)
+    refine (h.mono hsub).congr ?_
+    intro u _
+    unfold cageOutward nearPhase farPhase eqPhase
+    ring
+  have hY := continuousOn_pairAttraction_outer
+  have hphase : ContinuousOn (fun u : ℝ => 1 / (4 * u)) (Ioc t0 1) := by
+    refine ContinuousOn.div continuousOn_const (continuousOn_const.mul continuousOn_id) ?_
+    intro u hu
+    exact ne_of_gt (by linarith [ht0.1, hu.1] : (0 : ℝ) < 4 * u)
+  have hmap : MapsTo (fun u : ℝ => 1 / (4 * u)) (Ioc t0 1) (Ioo 0 resonanceRoot1) := by
+    intro u hu
+    have hu0 : 0 < u := by linarith [ht0.1, hu.1]
+    refine ⟨by positivity, ?_⟩
+    have hlt : 1 / (4 * u) < 1 / (4 * t0) :=
+      one_div_lt_one_div_of_lt (by nlinarith [ht0.1]) (by nlinarith [hu.1])
+    have ht0eq : 1 / (4 * t0) = resonanceRoot1 := by
+      dsimp [t0]; field_simp
+    linarith
+  have hpartner : ContinuousOn (fun u : ℝ => pairAttraction (1 / (4 * u))) (Ioc t0 1) :=
+    (hY.comp hphase hmap).congr fun u _ => by simp [Function.comp_apply]
+  refine (hcage.const_mul Z |>.add hpartner).congr ?_
+  intro u _
+  rw [Pi.add_apply]
+  exact octaPairOutward_eq_cage (Z := Z) (t := u)
+
+private lemma hasDerivAt_octaPairOutward_aboveNode {Z t : ℝ} (_hZ : 1 ≤ Z)
+    (ht : t ∈ Ioo (1 / (4 * resonanceRoot1)) 1) :
+    HasDerivAt (octaPairOutward Z 2)
+      (Z * cageOutwardDeriv t +
+        (8 * (1 / (4 * t)) * forceCrit (1 / (4 * t)) / gammaSEqual (1 / (4 * t)) ^ 2) *
+          (-(4 * (1 / (4 * t)) ^ 2))) t := by
+  have ht0mem := nodeHalf_mem
+  have htI : t ∈ Icc (5 / 19 : ℝ) 1 :=
+    ⟨le_of_lt (lt_trans ht0mem.1 ht.1), ht.2.le⟩
+  have hph := phase_outer_on_cage htI.1 htI.2
+  have hγn : gammaSEqual (nearPhase t) ≠ 0 := by
+    exact (gammaSEqual_pos_left_of_first_node (by simpa [nearPhase] using hph.1)).ne'
+  have hγf : gammaSEqual (farPhase t) ≠ 0 := by
+    exact (gammaSEqual_pos_left_of_first_node (by simpa [farPhase] using hph.2.1)).ne'
+  have hγe : gammaSEqual (eqPhase t) ≠ 0 := by
+    exact (gammaSEqual_pos_left_of_first_node (by simpa [eqPhase] using hph.2.2)).ne'
+  have htpos : 0 < t := by linarith [htI.1]
+  have htlt : t < 2 := by linarith [ht.2]
+  have hcage := hasDerivAt_cageOutward htpos htlt hγn hγf hγe
+  have hpartnerPhase := hasDerivAt_partnerPhase htpos
+  have hmem : 1 / (4 * t) ∈ Ioo 0 resonanceRoot1 := by
+    have ht0 : 0 < 1 / (4 * resonanceRoot1) := lt_trans (by norm_num) ht0mem.1
+    have h4t : 0 < 4 * t := by linarith [ht0mem.1, ht.1]
+    refine ⟨one_div_pos.mpr h4t, ?_⟩
+    have hden : 0 < 4 * (1 / (4 * resonanceRoot1)) := by nlinarith
+    have hab : 4 * (1 / (4 * resonanceRoot1)) < 4 * t := by nlinarith [ht.1]
+    have hlt : 1 / (4 * t) < 1 / (4 * (1 / (4 * resonanceRoot1))) :=
+      one_div_lt_one_div_of_lt hden hab
+    have heq : 1 / (4 * (1 / (4 * resonanceRoot1))) = resonanceRoot1 := by field_simp
+    linarith
+  have hγp : gammaSEqual (1 / (4 * t)) ≠ 0 :=
+    (gammaSEqual_pos_left_of_first_node hmem).ne'
+  have hpartner := (hasDerivAt_pairAttraction hγp).comp t hpartnerPhase
+  have hsum := (hcage.const_mul Z).add hpartner
+  refine hsum.congr_of_eventuallyEq (Filter.Eventually.of_forall fun s => ?_)
+  simp only [Function.comp_apply, Pi.add_apply]
+  exact octaPairOutward_eq_cage (Z := Z) (t := s)
+
+/-- For an ion charge at least one, the axial component falls strictly from just
+outside the first charge node through separation `2`. -/
+theorem octaPairOutward_strictAnti {Z : ℝ} (hZ : 1 ≤ Z) :
+    StrictAntiOn (octaPairOutward Z 2) (Ioc (1 / (4 * resonanceRoot1)) 1) := by
+  refine strictAntiOn_of_deriv_neg (convex_Ioc _ _) (continuousOn_octaPair_aboveNode (Z := Z)) ?_
+  intro t ht
+  rw [interior_Ioc] at ht
+  have hderiv := hasDerivAt_octaPairOutward_aboveNode hZ ht
+  rw [hderiv.deriv]
+  have htI : t ∈ Icc (5 / 19 : ℝ) 1 :=
+    ⟨le_of_lt (lt_trans nodeHalf_mem.1 ht.1), ht.2.le⟩
+  have hcage := cageOutwardDeriv_neg htI
+  have hZneg : Z * cageOutwardDeriv t ≤ cageOutwardDeriv t := by
+    have hmul : (Z - 1) * cageOutwardDeriv t ≤ 0 :=
+      mul_nonpos_of_nonneg_of_nonpos (by linarith) hcage.le
+    linarith
+  have hmem : 1 / (4 * t) ∈ Ioo 0 resonanceRoot1 := by
+    have ht0 : 0 < 1 / (4 * resonanceRoot1) := lt_trans (by norm_num) nodeHalf_mem.1
+    have h4t : 0 < 4 * t := by linarith [nodeHalf_mem.1, ht.1]
+    refine ⟨one_div_pos.mpr h4t, ?_⟩
+    have hden : 0 < 4 * (1 / (4 * resonanceRoot1)) := by nlinarith
+    have hab : 4 * (1 / (4 * resonanceRoot1)) < 4 * t := by nlinarith [ht.1]
+    have hlt : 1 / (4 * t) < 1 / (4 * (1 / (4 * resonanceRoot1))) :=
+      one_div_lt_one_div_of_lt hden hab
+    have heq : 1 / (4 * (1 / (4 * resonanceRoot1))) = resonanceRoot1 := by field_simp
+    linarith
+  have hpart : (8 * (1 / (4 * t)) * forceCrit (1 / (4 * t)) /
+      gammaSEqual (1 / (4 * t)) ^ 2) * (-(4 * (1 / (4 * t)) ^ 2)) < 0 := by
+    have hγ : 0 < gammaSEqual (1 / (4 * t)) := gammaSEqual_pos_left_of_first_node hmem
+    have hcrit : 0 < forceCrit (1 / (4 * t)) := forceCrit_pos_outer hmem
+    have hφ : 0 < 1 / (4 * t) := hmem.1
+    have hnum : 0 < 8 * (1 / (4 * t)) * forceCrit (1 / (4 * t)) /
+        gammaSEqual (1 / (4 * t)) ^ 2 := by positivity
+    have hneg : -(4 * (1 / (4 * t)) ^ 2) < 0 := by nlinarith
+    exact mul_neg_of_pos_of_neg hnum hneg
+  linarith
+
+/-- The axial balance lies at one separation. Inside it the component is outward,
+and outside it the component is inward. -/
+theorem octa_pair_seat {Z : ℝ} (hZ : 1 ≤ Z) :
+    ∃ s, 1 / (2 * resonanceRoot1) < s ∧ s < 2 ∧ octaPairOutward Z 2 (s / 2) = 0 ∧
+      (∀ s', 1 / (2 * resonanceRoot1) < s' → s' < 2 →
+        octaPairOutward Z 2 (s' / 2) = 0 → s' = s) ∧
+      ∀ t, 1 / (4 * resonanceRoot1) < t → t ≤ 1 →
+        (t < s / 2 → 0 < octaPairOutward Z 2 t) ∧
+        (s / 2 < t → octaPairOutward Z 2 t < 0) := by
+  obtain ⟨s, hs1, hs2, hs0⟩ := exists_octa_pair_balance hZ
+  have hanti := octaPairOutward_strictAnti hZ
+  set t0 := 1 / (4 * resonanceRoot1)
+  have htwo : 2 * t0 = 1 / (2 * resonanceRoot1) := by
+    dsimp [t0]; field_simp; ring
+  have hsI : s / 2 ∈ Ioc t0 1 := by
+    refine ⟨?_, by linarith⟩
+    rw [← htwo] at hs1
+    linarith
+  refine ⟨s, hs1, hs2, hs0, ?_, ?_⟩
+  · intro s' hs1' hs2' hs0'
+    have hs'I : s' / 2 ∈ Ioc t0 1 := by
+      refine ⟨?_, by linarith⟩
+      rw [← htwo] at hs1'
+      linarith
+    have hhalf := hanti.injOn hsI hs'I (by rw [hs0, hs0'])
+    linarith
+  · intro t ht0' ht1
+    have htI : t ∈ Ioc t0 1 := ⟨ht0', ht1⟩
+    refine ⟨?_, ?_⟩
+    · intro hlt
+      have hlt' := hanti htI hsI hlt
+      rw [hs0] at hlt'
+      linarith
+    · intro hgt
+      have hlt' := hanti hsI htI hgt
+      rw [hs0] at hlt'
+      linarith
 
 end Gravity
 

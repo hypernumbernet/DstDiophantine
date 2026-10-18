@@ -419,6 +419,14 @@ The straight line of one fixed jet is not itself that geodesic.
   and the ordinary ionic charges meet it. With \(\gamma_s=1\) the rate is zero.
   A rotation through \(2\pi/n\) preserves a three-dimensional lattice only for
   \(n\in\{1,2,3,4,6\}\).
+* `MetalFusion` — two protons on one axis of a regular octahedron of ions,
+  of charge at least one and of cage radius `2`, have a separation-increasing
+  component that is strictly negative at half-separation `1` and tends to
+  `+∞` as the half-separation descends to `1/(4x₁)`. Between those
+  half-separations the component falls strictly, so the balance is unique:
+  outward toward the node and inward toward separation `2`. The cage does
+  not carry the pair through the node. No rate, no heat, and no ratio of the
+  two lengths is derived.
 * `Blackbody` — on a harmonic ladder of spacing \(x>0\), in units of
   \(k_B T\), the mean number of quanta is \(1/(e^x-1)\). The mean energy
   above the ground state is less than one such unit, and the occupation is
@@ -971,6 +979,17 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (resonanceRoot1 / tetraScale) (branchNode 
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     octaOutward 1 x = 0 :=
   exists_unique_octa_shell (by norm_num)
+
+/-- Regression: a proton pair in an octahedral cage of radius `2` has one restoring seat. -/
+example {Z : ℝ} (hZ : 1 ≤ Z) :
+    ∃ s, 1 / (2 * resonanceRoot1) < s ∧ s < 2 ∧
+      octaPairOutward Z 2 (s / 2) = 0 ∧
+      (∀ s', 1 / (2 * resonanceRoot1) < s' → s' < 2 →
+        octaPairOutward Z 2 (s' / 2) = 0 → s' = s) ∧
+      ∀ t, 1 / (4 * resonanceRoot1) < t → t ≤ 1 →
+        (t < s / 2 → 0 < octaPairOutward Z 2 t) ∧
+        (s / 2 < t → octaPairOutward Z 2 t < 0) :=
+  octa_pair_seat hZ
 
 /-- Regression: two chiral seats through the quadrupole and the octupole. -/
 example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
