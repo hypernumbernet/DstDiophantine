@@ -73,3 +73,4 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 a.ref{color:var(--usual)}
 .fig .att{stroke:var(--usual);color:var(--usual);stroke-width:3}
 .fig .lobe.pos{fill:#4fc3ff55;stroke:#4fc3ff}.fig .lobe.neg{fill:#ff5a7a44;stroke:#ff5a7a}
+.fig .ion{fill:#2a3d5c;stroke:#4fc3ff}.fig .prot{fill:#ff9a3c}
