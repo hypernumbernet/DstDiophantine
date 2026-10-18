@@ -15,6 +15,7 @@ import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
+import DstDiophantine.Gravity.NuclearLength
 import DstDiophantine.Gravity.StrongChannel
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
@@ -171,6 +172,15 @@ The straight line of one fixed jet is not itself that geodesic.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
+* `NuclearLength` — laboratory signs cap the nuclear length without
+  selecting it. Repulsion at \(2/5\,\mathrm{fm}\) forces
+  \(\ell>56/75\,\mathrm{fm}\), and attraction at \(1\,\mathrm{fm}\) forces
+  \(\ell<19/10\,\mathrm{fm}\). The representative \(\lambda_\pi\) lies
+  strictly between those caps. Its first node lies in
+  \((14/19,\,213/280)\,\mathrm{fm}\), so the core scale \(1/2\,\mathrm{fm}\)
+  lies in the inversion layer, and the rapidity wall lies in
+  \((8/9,\,142/157)\,\mathrm{fm}\). Charge-radius lower edges and the
+  saturation spacing lie outside that wall.
 * `StrongChannel` — the rapidity threshold on \((\pi/4,\pi/2)\) falls
   strictly and vanishes at the first node, with slope \(-4\cosh^2 x_1\).
   No finite rapidity inverts the channel at phase \(x\le\pi/4\). A
@@ -901,6 +911,22 @@ example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
 /-- Regression: `r₀ = 1.2` fm is not consistent with `n₀ = 0.16` fm⁻³. -/
 example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
   numberDensity_radiusCoeff_1_2_ne_saturation
+
+/-- Regression: the pion representative lies strictly inside the sign caps. -/
+example : (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 :=
+  pion_inside_sign_caps
+
+/-- Regression: under `ℓ = λ_π` the core scale lies in the inversion layer. -/
+example {x : ℝ} (hx : x ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < (SI.nnCoreScaleFm : ℝ) ∧
+      (SI.nnCoreScaleFm : ℝ) < layerRadius (pionComptonFm : ℝ) resonanceRoot1 :=
+  pion_core_scale_in_inversion_layer hx
+
+/-- Regression: charge-radius lower edges lie outside the rapidity wall. -/
+example :
+    2 * (pionComptonFm : ℝ) / Real.pi < (SI.he4ChargeRadiusFmLower : ℝ) ∧
+      2 * (pionComptonFm : ℝ) / Real.pi < (SI.lead208ChargeRadiusFmLower : ℝ) :=
+  ⟨chargeRadii_outside_wall.2.1, chargeRadii_outside_wall.2.2.2.2.2⟩
 
 /-- Regression: a diameter has one radial balance in the first repulsive shell. -/
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧

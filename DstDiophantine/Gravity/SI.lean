@@ -253,6 +253,32 @@ def bindingEnergyPerNucleonMeVApprox : ℚ :=
 /-- Optical-model well depth stand-in \(45\) MeV (external; not BE/\(A\)). -/
 def nuclearWellDepthMeVApprox : ℚ := 45
 
+/-! ### Nucleon-nucleon sign radii and charge radii (external) -/
+
+/-- A separation inside the repulsive core. The quoted core scale is
+`1/2` fm; `2/5` fm lies strictly inside it. -/
+def nnCoreInteriorFm : ℚ := 2 / 5
+
+/-- Quoted repulsive-core scale, `1/2` fm. -/
+def nnCoreScaleFm : ℚ := 1 / 2
+
+/-- Inner edge of the attractive interval of a realistic nucleon-nucleon
+potential, `1` fm. -/
+def nnAttractionRadiusFm : ℚ := 1
+
+/-- Angeli--Marinova lower edge: central value minus the quoted uncertainty. -/
+def deuteronChargeRadiusFmLower : ℚ := 21333 / 10000
+
+def he4ChargeRadiusFmLower : ℚ := 16727 / 10000
+
+def oxygen16ChargeRadiusFmLower : ℚ := 26939 / 10000
+
+def calcium40ChargeRadiusFmLower : ℚ := 34757 / 10000
+
+def calcium48ChargeRadiusFmLower : ℚ := 34751 / 10000
+
+def lead208ChargeRadiusFmLower : ℚ := 54999 / 10000
+
 theorem femtometerApprox_pos : (0 : ℚ) < femtometerApprox := by
   unfold femtometerApprox; norm_num
 
@@ -287,6 +313,27 @@ theorem bindingEnergyPerNucleonMeVApprox_pos :
 theorem nuclearWellDepthMeVApprox_pos :
     (0 : ℚ) < nuclearWellDepthMeVApprox := by
   unfold nuclearWellDepthMeVApprox; norm_num
+
+theorem nnCoreInteriorFm_pos : (0 : ℚ) < nnCoreInteriorFm := by
+  unfold nnCoreInteriorFm; norm_num
+
+theorem nnCoreScaleFm_pos : (0 : ℚ) < nnCoreScaleFm := by
+  unfold nnCoreScaleFm; norm_num
+
+theorem nnAttractionRadiusFm_pos : (0 : ℚ) < nnAttractionRadiusFm := by
+  unfold nnAttractionRadiusFm; norm_num
+
+theorem chargeRadiusLower_gt_one :
+    (1 : ℚ) < deuteronChargeRadiusFmLower ∧
+      (1 : ℚ) < he4ChargeRadiusFmLower ∧
+      (1 : ℚ) < oxygen16ChargeRadiusFmLower ∧
+      (1 : ℚ) < calcium40ChargeRadiusFmLower ∧
+      (1 : ℚ) < calcium48ChargeRadiusFmLower ∧
+      (1 : ℚ) < lead208ChargeRadiusFmLower := by
+  unfold deuteronChargeRadiusFmLower he4ChargeRadiusFmLower
+    oxygen16ChargeRadiusFmLower calcium40ChargeRadiusFmLower
+    calcium48ChargeRadiusFmLower lead208ChargeRadiusFmLower
+  norm_num
 
 end SI
 
