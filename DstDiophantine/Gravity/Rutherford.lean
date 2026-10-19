@@ -519,13 +519,11 @@ theorem nuclear_dev_six {r : ℝ} (hr : 29 ≤ r) :
       1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * r)) - 1 < 6 / 10000 := by
   have hphase := pion_phase_le_of_ge hr
   set x : ℝ := (pionComptonFm : ℝ) / (2 * r)
-  have hx40 : x ≤ 1 / 40 := hphase.2
-  have hx10 : x ≤ 1 / 10 := by linarith
+  have hx10 : x ≤ 1 / 10 := by linarith [hphase.2]
   have hxUp : x < (14139 / 10000 : ℝ) / (2 * 29) := by
     have hpion := rf_pion_scattering_bounds.2
     have hnonneg : 0 ≤ (pionComptonFm : ℝ) :=
       le_of_lt (lt_trans (by norm_num) rf_pion_scattering_bounds.1)
-    have hr0 : (0 : ℝ) < 2 * r := by linarith
     have hden : (0 : ℝ) < 2 * 29 := by norm_num
     have hfrac : (pionComptonFm : ℝ) / (2 * r) ≤ (pionComptonFm : ℝ) / (2 * 29) := by
       refine div_le_div_of_nonneg_left hnonneg hden ?_
@@ -540,7 +538,6 @@ theorem nuclear_dev_six {r : ℝ} (hr : 29 ≤ r) :
       (2438 / 100000 : ℝ) ^ 2 * (1 + (2438 / 100000 : ℝ) ^ 2 / 2 +
         (2438 / 100000 : ℝ) ^ 4 / 12) := by
     have hx0 := hphase.1
-    have hbase : 0 ≤ (2438 / 100000 : ℝ) := by norm_num
     have hmon : x ≤ 2438 / 100000 := hxU.le
     have hsq : x ^ 2 ≤ (2438 / 100000 : ℝ) ^ 2 := pow_le_pow_left₀ hx0 hmon 2
     have h4 : x ^ 4 ≤ (2438 / 100000 : ℝ) ^ 4 := pow_le_pow_left₀ hx0 hmon 4
