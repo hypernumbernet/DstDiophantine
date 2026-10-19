@@ -250,6 +250,15 @@ theorem platinum_kappa_cap {κ k : ℝ} (hk : 0 < k)
   have hk' := hk
   nlinarith
 
+/-! ### Thermal neutrons -/
+
+/-- A thermal neutron of `0.0253` eV has `2T/(m c²)` below `6×10⁻¹¹`, with the
+neutron rest energy `939.565` MeV (external), so `(v/c)²` and the rapidity
+squared are of that order. -/
+theorem thermalNeutron_speedSq_lt :
+    2 * ((253 : ℚ) / 10 ^ 10) / (939565 / 1000) < 6 / 10 ^ 11 := by
+  norm_num
+
 end Gravity
 
 end DstDiophantine
