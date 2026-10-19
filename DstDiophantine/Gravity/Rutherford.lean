@@ -233,6 +233,23 @@ theorem coherent_kappa_cap {κ k : ℝ} (hk : 0 < k)
     (h : 4 * 197 * κ ≤ (1 / 200) * (2 * 79 * k)) : κ < k / 997 := by
   linarith
 
+/-! ### Chadwick's three charges -/
+
+/-- The alpha coefficient `2A/Z` for copper, silver, and platinum (external
+mass numbers `63.55`, `107.87`, `195.08`). -/
+theorem chadwick_coeff_windows :
+    ((438 : ℚ) / 100 < 2 * (6355 / 100) / 29 ∧ 2 * (6355 / 100 : ℚ) / 29 < 439 / 100) ∧
+    ((459 : ℚ) / 100 < 2 * (10787 / 100) / 47 ∧ 2 * (10787 / 100 : ℚ) / 47 < 460 / 100) ∧
+    ((500 : ℚ) / 100 < 2 * (19508 / 100) / 78 ∧ 2 * (19508 / 100 : ℚ) / 78 < 501 / 100) := by
+  refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> norm_num
+
+/-- A coherent nuclear share of at most `1/50` of the platinum charge forces
+`κ < k e²/250`. -/
+theorem platinum_kappa_cap {κ k : ℝ} (hk : 0 < k)
+    (h : 2 * (19508 / 100) / 78 * κ ≤ (1 / 50) * k) : κ < k / 250 := by
+  have hk' := hk
+  nlinarith
+
 end Gravity
 
 end DstDiophantine
