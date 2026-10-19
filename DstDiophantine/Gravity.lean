@@ -30,6 +30,7 @@ import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
+import DstDiophantine.Gravity.Rutherford
 import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
@@ -325,6 +326,12 @@ The straight line of one fixed jet is not itself that geodesic.
   \(\hbar/(m_e c)\), strictly below the charge-\(92\) cap, in
   \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
   \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
+* `Rutherford` — the laboratory-frame Coulomb head-on distance of a
+  \(7.69\,\mathrm{MeV}\) alpha particle on gold lies in \((29,30)\,\mathrm{fm}\).
+  Repulsion in the outer well at that distance forces \(\ell<57\,\mathrm{fm}\).
+  The first node of \(\hbar/(m_e c)\) lies outside that distance, so under
+  that length the distance is not in the outer well, and \(\hbar/(m_e c)\)
+  lies above the cap.
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
