@@ -12,9 +12,12 @@ import Mathlib.Tactic.Positivity
 
 The Coulomb constant `k e² = 1.439964` MeV fm, the alpha energy `7.69` MeV,
 the charges `2` and `79`, and the mass numbers `4` and `197` are external
-inputs. The length is the nuclear length `λ_π`, and the Coulomb term is read
-with the equal-scale factor at that length, the special case `ℓ_E = ℓ` of the
-two-channel force. The head-on distance is the laboratory-frame Coulomb value
+inputs. The length is chosen by the particles: charges of electrons or protons
+take the electromagnetic length, and mass-bearing particles, mainly nucleons,
+take the gravitational length. Between two nuclei the length is `λ_π`, and the
+Coulomb term is read with the equal-scale factor at that length: the protons
+of a nucleus sit in the sign cell of the chaotic proton force and are not
+isolated charges. The head-on distance is the laboratory-frame Coulomb value
 `2 Z k e² / E`. No cross section or half-life is computed here. The coherent
 sum `A₁ A₂ κ` of the nuclear prefactor over nucleon pairs is an option, not a
 statement of the papers.
