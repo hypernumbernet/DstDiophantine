@@ -327,11 +327,12 @@ The straight line of one fixed jet is not itself that geodesic.
   \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
   \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
 * `Rutherford` — the laboratory-frame Coulomb head-on distance of a
-  \(7.69\,\mathrm{MeV}\) alpha particle on gold lies in \((29,30)\,\mathrm{fm}\).
-  Repulsion in the outer well at that distance forces \(\ell<57\,\mathrm{fm}\).
-  The first node of \(\hbar/(m_e c)\) lies outside that distance, so under
-  that length the distance is not in the outer well, and \(\hbar/(m_e c)\)
-  lies above the cap.
+  \(7.69\,\mathrm{MeV}\) alpha particle on gold lies in \((29,30)\,\mathrm{fm}\),
+  outside the first node of \(\lambda_\pi\). For \(0\le x\le 1/40\),
+  \(0\le 1/\gamma_s(x)-1\le 13/15987\), and every separation of at least
+  \(29\,\mathrm{fm}\) has its phase \(\lambda_\pi/(2r)\) there. A coherent
+  nuclear prefactor over \(4\cdot 197\) pairs with a far-field share at most
+  \(1/200\) of \(2\cdot 79\,k e^{2}\) forces \(\kappa<k e^{2}/997\).
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
