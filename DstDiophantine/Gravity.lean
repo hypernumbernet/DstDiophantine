@@ -328,11 +328,19 @@ The straight line of one fixed jet is not itself that geodesic.
   \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
 * `Rutherford` — the laboratory-frame Coulomb head-on distance of a
   \(7.69\,\mathrm{MeV}\) alpha particle on gold lies in \((29,30)\,\mathrm{fm}\),
-  outside the first node of \(\lambda_\pi\). For \(0\le x\le 1/40\),
-  \(0\le 1/\gamma_s(x)-1\le 13/15987\), and every separation of at least
-  \(29\,\mathrm{fm}\) has its phase \(\lambda_\pi/(2r)\) there. A coherent
-  nuclear prefactor over \(4\cdot 197\) pairs with a far-field share at most
-  \(1/200\) of \(2\cdot 79\,k e^{2}\) forces \(\kappa<k e^{2}/997\).
+  outside the first node of \(\lambda_\pi\) and beyond \(20\lambda_\pi\).
+  For \(0\le x\le 1/40\), \(0\le 1/\gamma_s(x)-1\le 13/15987\), and every
+  separation of at least \(29\,\mathrm{fm}\) has its phase \(\lambda_\pi/(2r)\)
+  there, where the signed factor exceeds one by less than \(6/10000\).
+  In the centre-of-mass frame the head-on distance lies in
+  \((30.18,30.19)\,\mathrm{fm}\) and the departure lies strictly between
+  \(548/1000000\) and \(55/100000\). At \(10\,\mathrm{fm}\) it lies strictly
+  between \(5/1000\) and \(51/10000\). A coherent nuclear prefactor over
+  \(4\cdot 197\) pairs with a far-field share at most \(1/200\) of
+  \(2\cdot 79\,k e^{2}\) forces \(\kappa<k e^{2}/997\). Chadwick's three
+  charges, at one percent each, give \(\kappa/(k e^{2})\) strictly between
+  \(94/100000\) and \(95/100000\), with standard deviation strictly between
+  \(123/100000\) and \(124/100000\).
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
