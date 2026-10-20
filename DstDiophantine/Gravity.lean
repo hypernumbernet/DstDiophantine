@@ -54,6 +54,7 @@ import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
+import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -516,6 +517,14 @@ plane, \(c_B B_a+c_E E_a\) preserves the axis only when \(c_E=0\).
 and the substitution \(\theta\mapsto\theta+eA\). Neither raises \(J\) against
 a nonnegative dual seed. A circular potential drops mean \(J\) by the
 helicity-even ponderomotive \((e^2/2)(E_0/\omega)^2\).
+
+`NeutronMagnet` records the charge-silent magnet. On \(J=0\) the magnetic
+square equals the unsigned mass, and a silent dual budget forces that mass
+to vanish. The substitution with \(e=0\) is the identity, and the dual rotor
+depends only on the dual angles. A dual phase \(2\pi\) on one axis sends the
+rotor to \(-1\); a dual phase \(4\pi\) restores \(1\). At rest the dual
+Faraday summand gives no sandwich kick. The ratio of nucleon moments is not
+derived.
 
 ## Dual-only control of \((J,M)\)
 
@@ -2011,6 +2020,28 @@ example (a : Fin 3) :
 example (a : Fin 3) (cB cE : ℝ) :
     Commute (spatialGen a) (cB • cyclic a + cE • hyperbolic a) ↔ cE = 0 :=
   commute_neutral_axis_iff a cB cE
+
+/-- Regression: on \(J=0\) the magnetic square equals the unsigned mass. -/
+example {p : FaradayParams} (hJ : J (toTorsion p) = 0) :
+    mass (toTorsion p) = magneticSq p ∧
+      (1 / 2) * magneticSq p = mass (toTorsion p) / 2 :=
+  ⟨mass_eq_magneticSq_of_balanced hJ, (balanced_shares hJ).1⟩
+
+/-- Regression: a silent charge does not move the dual angles. -/
+example (p : Operations.TorsionParams) (A : Fin 3 → ℝ) :
+    coupleA p 0 A = p :=
+  coupleA_zero_label p A
+
+/-- Regression: one-axis dual phase \(2\pi\) sends the dual rotor to \(-1\). -/
+example (a : Fin 3) (p : Operations.TorsionParams)
+    (h : ∀ b, p.beta b = if b = a then 2 * Real.pi else 0) :
+    RelativeRotor.rotorDual p = -1 :=
+  rotorDual_single_axis_two_pi a p h
+
+/-- Regression: the dual Faraday summand does not kick a body at rest. -/
+example (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (ι 0) = 0 :=
+  magnet_rest_kick p
 
 /-- Regression: \(\theta\mapsto\theta+eA\) is magnetic Faraday superposition. -/
 example (p : Operations.TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) :
