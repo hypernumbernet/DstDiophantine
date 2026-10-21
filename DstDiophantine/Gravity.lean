@@ -356,8 +356,17 @@ The straight line of one fixed jet is not itself that geodesic.
   \(D\ge 50R\). The fixed-angle Rutherford prefactor of that point field grows
   from \(1\,\mathrm{MeV}\) to \(14\,\mathrm{MeV}\) by a factor strictly between
   \(197\) and \(198\). The evaluated gold total at \(14\,\mathrm{MeV}\) stays
-  above nine tenths of the total at \(1\,\mathrm{MeV}\). A scattering amplitude
-  inside the wall is not derived.
+  above nine tenths of the total at \(1\,\mathrm{MeV}\). With the dual phase
+  held at zero the far-field factor is \(\cosh(\varphi/2)\ge 1\). A relative
+  dual phase past the right angle makes that factor negative at every
+  nonnegative rapidity, and near the right angle the factor can be smaller
+  than every positive bound. The mean-square fluctuation of a weighted sample
+  vanishes exactly when every nucleus that occurs has the same coefficient.
+  The tabulated incoherent cross sections of natural hydrogen and vanadium
+  exceed the coherent ones by more than \(45\) and \(200\). The
+  abundance-weighted mean of the five stable titanium lengths lies strictly
+  between \(-3.44\) and \(-3.43\,\mathrm{fm}\). A scattering amplitude inside
+  the wall, and a length in femtometres, are not derived.
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the

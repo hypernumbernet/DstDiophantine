@@ -9,10 +9,11 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 ## Paper boundary (do **not** claim)
 
-The prefactor `κ`, a scattering amplitude inside the wall, and the sign of a
-measured scattering length are **not** derived. The neutron rest energy
-`939.565` MeV is an external input. The rapidity is the nonnegative parameter
-of the pair.
+The prefactor `κ`, a scattering amplitude inside the wall, and the value in
+femtometres of a measured scattering length are **not** derived. The neutron
+rest energy `939.565` MeV is an external input. The rapidity is the
+nonnegative parameter of the pair. Abundances and tabulated lengths are
+external inputs.
 
 ## What is proved
 
@@ -45,6 +46,21 @@ Rutherford law and is not re-derived. From `1` MeV to `14` MeV the ratio of
 those prefactors lies strictly between `197` and `198`. With the evaluated
 gold totals `5.755` b and `5.295` b, the later total is strictly above nine
 tenths of the earlier one.
+
+At vanishing phase the interference factor with rapidity `δ` and relative
+dual phase `ε` is `cosh δ · cos ε − sinh δ · sin ε`. It reduces to the
+rapidity factor at `ε = 0` and to the dual-excitation factor at `δ = 0`.
+For `δ ≥ 0` that factor is at least `1` when `ε = 0`. It is negative when
+`ε` lies past the right angle. It stays positive when `ε` lies short of the
+right angle and `δ` does not exceed the gap. At zero rapidity it can lie
+strictly between `0` and `1/M` for every `M > 0`, and likewise just below
+zero. The mean-square fluctuation of a weighted sample is nonnegative and
+vanishes exactly when every nucleus that occurs has the same coefficient.
+Opposite signs put the mean strictly between the two coefficients, and
+strictly below the larger magnitude. The tabulated hydrogen and vanadium
+incoherent cross sections exceed their coherent ones by more than `45` and
+`200`. The abundance-weighted mean of the five stable titanium lengths lies
+strictly between `-3.44` and `-3.43` fm.
 -/
 
 namespace DstDiophantine
@@ -980,6 +996,314 @@ later total strictly above nine tenths of the earlier one. -/
 theorem goldTotal_above_nine_tenths :
     (9 : ℝ) / 10 < ((5295 : ℝ) / 1000) / (5755 / 1000) := by
   norm_num
+
+/-! ### Relative dual phase -/
+
+/-- Interference factor at phase `x`, rapidity half-angle `δ`, and relative
+dual half-angle `ε`. At equal scale both angles sit on top of `x`. -/
+noncomputable def gammaChannel (x δ ε : ℝ) : ℝ :=
+  cosh (x + δ) * cos (x + ε) - sinh (x + δ) * sin (x + ε)
+
+theorem gammaChannel_zero_phase (δ ε : ℝ) :
+    gammaChannel 0 δ ε = cosh δ * cos ε - sinh δ * sin ε := by
+  simp [gammaChannel]
+
+theorem gammaChannel_eq_rapidity (x δ : ℝ) :
+    gammaChannel x δ 0 = gammaRapidity x δ := by
+  unfold gammaChannel gammaRapidity gammaSEqual sigmaEqual
+  rw [show x + (0 : ℝ) = x by ring, cosh_add x δ, sinh_add x δ]
+  ring
+
+theorem gammaChannel_eq_dual (x ε : ℝ) :
+    gammaChannel x 0 ε = cos ε * gammaSEqual x - sin ε * tauEqual x := by
+  unfold gammaChannel gammaSEqual tauEqual
+  rw [show x + (0 : ℝ) = x by ring, cos_add x ε, sin_add x ε]
+  ring
+
+/-- A pure rapidity weakens the far field and does not reverse it. -/
+theorem rapidity_farField_attractive_bounded {δ : ℝ} (_hδ : 0 ≤ δ) :
+    0 < gammaChannel 0 δ 0 ∧ 1 ≤ gammaChannel 0 δ 0 := by
+  have hcosh : gammaChannel 0 δ 0 = cosh δ := by
+    simp [gammaChannel]
+  rw [hcosh]
+  exact ⟨cosh_pos δ, one_le_cosh δ⟩
+
+theorem farField_right_angle {δ : ℝ} :
+    gammaChannel 0 δ (π / 2) = -sinh δ := by
+  simp [gammaChannel, cos_pi_div_two, sin_pi_div_two]
+
+/-- Past the right angle the far field repels at every nonnegative rapidity. -/
+theorem farField_repulsive {δ ε : ℝ} (hδ : 0 ≤ δ) (hε : π / 2 < ε) (hεπ : ε ≤ π) :
+    gammaChannel 0 δ ε < 0 := by
+  rw [gammaChannel_zero_phase]
+  have hcosh : 0 < cosh δ := cosh_pos δ
+  have hcos : cos ε < 0 := by
+    have hstep := strictAntiOn_cos (a := π / 2) (b := ε)
+      ⟨by linarith [pi_pos], by linarith [pi_pos]⟩ ⟨by linarith [pi_pos], hεπ⟩ hε
+    rwa [cos_pi_div_two] at hstep
+  have hsin : 0 ≤ sin ε := sin_nonneg_of_mem_Icc ⟨by linarith [pi_pos], hεπ⟩
+  have hleft : cosh δ * cos ε < 0 := mul_neg_of_pos_of_neg hcosh hcos
+  have hright : -(sinh δ * sin ε) ≤ 0 := by
+    have hsinh : 0 ≤ sinh δ := sinh_nonneg_iff.mpr hδ
+    have hprod : 0 ≤ sinh δ * sin ε := mul_nonneg hsinh hsin
+    linarith
+  linarith
+
+private theorem tanh_lt_self {x : ℝ} (hx : 0 < x) : tanh x < x := by
+  let f : ℝ → ℝ := fun y => y - tanh y
+  let df : ℝ → ℝ := fun y => tanh y ^ 2
+  have hder : ∀ y, HasDerivAt f (df y) y := by
+    intro y
+    have hdiv := (hasDerivAt_sinh y).div (hasDerivAt_cosh y) (cosh_pos y).ne'
+    have hdiv' : HasDerivAt tanh (1 / cosh y ^ 2) y := by
+      have hfun : tanh = fun z => sinh z / cosh z := by
+        ext z
+        rw [tanh_eq_sinh_div_cosh]
+      rw [hfun]
+      refine hdiv.congr_deriv ?_
+      have hnum : cosh y * cosh y - sinh y * sinh y = 1 := by
+        rw [← pow_two, ← pow_two]
+        simpa [pow_two] using cosh_sq_sub_sinh_sq y
+      rw [hnum]
+    have hsub := (hasDerivAt_id y).sub hdiv'
+    refine hsub.congr_deriv ?_
+    have hcosh : cosh y ≠ 0 := (cosh_pos y).ne'
+    have hsq : cosh y ^ 2 - sinh y ^ 2 = 1 := by
+      simpa [pow_two] using cosh_sq_sub_sinh_sq y
+    unfold df
+    rw [tanh_eq_sinh_div_cosh]
+    field_simp [hcosh]
+    linarith [hsq]
+  have hcont : Continuous f := by
+    unfold f
+    have hfun : tanh = fun y => sinh y / cosh y := by
+      ext y
+      rw [tanh_eq_sinh_div_cosh]
+    rw [hfun]
+    exact continuous_id.sub
+      (continuous_sinh.div continuous_cosh fun y => (cosh_pos y).ne')
+  obtain ⟨c, hc, hslope⟩ :=
+    exists_hasDerivAt_eq_slope f df hx hcont.continuousOn (fun z _ => hder z)
+  have hf0 : f 0 = 0 := by unfold f; simp
+  rw [hf0, sub_zero, sub_zero] at hslope
+  have hdf : 0 < df c := by
+    unfold df
+    have hc0 : 0 < c := hc.1
+    have hsinh : 0 < sinh c := sinh_pos_iff.mpr hc0
+    have htanh : 0 < tanh c := by
+      rw [tanh_eq_sinh_div_cosh]
+      exact div_pos hsinh (cosh_pos c)
+    exact pow_pos htanh 2
+  have hquot : 0 < f x / x := by
+    rw [← hslope]
+    exact hdf
+  have hmul : 0 < f x / x * x := mul_pos hquot hx
+  rw [div_mul_cancel₀ _ hx.ne'] at hmul
+  unfold f at hmul
+  linarith
+
+/-- Short of the right angle, a half-rapidity no larger than the angular gap
+leaves the far field attractive. -/
+theorem farField_attractive_of_gap {δ ε : ℝ}
+    (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hεlt : ε < π / 2) (hgap : δ + ε ≤ π / 2) :
+    0 < gammaChannel 0 δ ε := by
+  rcases eq_or_lt_of_le hε with rfl | hεpos
+  · have hcosh : gammaChannel 0 δ 0 = cosh δ := by simp [gammaChannel]
+    rw [hcosh]
+    exact cosh_pos δ
+  · have hθ0 : 0 < π / 2 - ε := by linarith
+    have hθpi : π / 2 - ε < π / 2 := by linarith
+    have hδθ : δ ≤ π / 2 - ε := by linarith
+    have hsin : 0 < sin ε := sin_pos_of_pos_of_lt_pi hεpos (by linarith [pi_pos])
+    have hcosh : 0 < cosh δ := cosh_pos δ
+    have htanθ : tan (π / 2 - ε) = cos ε / sin ε := by
+      rw [tan_eq_sin_div_cos, sin_pi_div_two_sub, cos_pi_div_two_sub]
+    have hcot : tanh δ < cos ε / sin ε := by
+      rw [← htanθ]
+      rcases eq_or_lt_of_le hδ with rfl | hδpos
+      · rw [tanh_zero]
+        exact lt_trans hθ0 (lt_tan hθ0 hθpi)
+      · have htanh : tanh δ < δ := tanh_lt_self hδpos
+        have htan : π / 2 - ε < tan (π / 2 - ε) := lt_tan hθ0 hθpi
+        linarith
+    rw [gammaChannel_zero_phase]
+    rw [tanh_eq_sinh_div_cosh] at hcot
+    rw [div_lt_div_iff₀ hcosh hsin] at hcot
+    linarith
+
+/-- At zero rapidity the far-field factor can lie strictly between `0` and
+`1/M`, so the strength exceeds every bound. -/
+theorem dualPhase_factor_arbitrarily_small {M : ℝ} (hM : 0 < M) :
+    ∃ ε : ℝ, 0 < ε ∧ ε < π / 2 ∧ 0 < gammaChannel 0 0 ε ∧
+      gammaChannel 0 0 ε < 1 / M := by
+  set η : ℝ := min 1 (1 / (2 * M))
+  have hηhalf : 0 < 1 / (2 * M) := by positivity
+  have hη0 : 0 < η := lt_min (by norm_num) hηhalf
+  have hηle : η ≤ 1 := min_le_left _ _
+  have hηM : η ≤ 1 / (2 * M) := min_le_right _ _
+  have hηpi : η < π / 2 := lt_of_le_of_lt hηle (by linarith [pi_gt_three])
+  refine ⟨π / 2 - η, by linarith, by linarith, ?_, ?_⟩
+  · have hsin : 0 < sin η := sin_pos_of_pos_of_lt_pi hη0 (by linarith [pi_pos])
+    simpa [gammaChannel, cos_pi_div_two_sub] using hsin
+  · have hsinle : sin η ≤ η := sin_le hη0.le
+    have hhalf : 1 / (2 * M) < 1 / M := by
+      rw [div_lt_div_iff₀ (by positivity) hM]
+      linarith
+    have hsmall : sin η < 1 / M := lt_of_le_of_lt hsinle (lt_of_le_of_lt hηM hhalf)
+    simpa [gammaChannel, cos_pi_div_two_sub] using hsmall
+
+theorem dualPhase_factor_arbitrarily_small_neg {M : ℝ} (hM : 0 < M) :
+    ∃ ε : ℝ, π / 2 < ε ∧ ε < π ∧ gammaChannel 0 0 ε < 0 ∧
+      -(1 / M) < gammaChannel 0 0 ε := by
+  obtain ⟨ε, hε0, hεπ, hpos, hsmall⟩ := dualPhase_factor_arbitrarily_small hM
+  refine ⟨π - ε, by linarith, by linarith, ?_, ?_⟩
+  · have hcos : gammaChannel 0 0 (π - ε) = -gammaChannel 0 0 ε := by
+      simp [gammaChannel, cos_pi_sub, sin_pi_sub]
+    linarith
+  · have hcos : gammaChannel 0 0 (π - ε) = -gammaChannel 0 0 ε := by
+      simp [gammaChannel, cos_pi_sub, sin_pi_sub]
+    linarith
+
+/-! ### A sample of nuclei -/
+
+theorem sample_fluctuation {ι : Type*} (s : Finset ι) (p b : ι → ℝ)
+    (hp : ∀ i ∈ s, 0 ≤ p i) (hsum : ∑ i ∈ s, p i = 1) :
+    ∑ i ∈ s, p i * b i ^ 2 - (∑ i ∈ s, p i * b i) ^ 2 =
+      ∑ i ∈ s, p i * (b i - ∑ j ∈ s, p j * b j) ^ 2 ∧
+      0 ≤ ∑ i ∈ s, p i * b i ^ 2 - (∑ i ∈ s, p i * b i) ^ 2 := by
+  set μ : ℝ := ∑ j ∈ s, p j * b j
+  have hterm : ∀ i, p i * (b i - μ) ^ 2 =
+      p i * b i ^ 2 - 2 * μ * (p i * b i) + μ ^ 2 * p i := by
+    intro i
+    ring
+  have hexpand : ∑ i ∈ s, p i * (b i - μ) ^ 2 =
+      ∑ i ∈ s, p i * b i ^ 2 - 2 * μ * μ + μ ^ 2 := by
+    have hrewrite : ∑ i ∈ s, p i * (b i - μ) ^ 2 =
+        ∑ i ∈ s, (p i * b i ^ 2 - 2 * μ * (p i * b i) + μ ^ 2 * p i) := by
+      refine Finset.sum_congr rfl ?_
+      intro i _
+      exact hterm i
+    rw [hrewrite]
+    have hsplit : ∑ i ∈ s, (p i * b i ^ 2 - 2 * μ * (p i * b i) + μ ^ 2 * p i) =
+        (∑ i ∈ s, p i * b i ^ 2 - ∑ i ∈ s, 2 * μ * (p i * b i)) +
+          ∑ i ∈ s, μ ^ 2 * p i := by
+      have hrewrite2 : ∑ i ∈ s, (p i * b i ^ 2 - 2 * μ * (p i * b i) + μ ^ 2 * p i) =
+          ∑ i ∈ s, ((p i * b i ^ 2 - 2 * μ * (p i * b i)) + μ ^ 2 * p i) := by
+        refine Finset.sum_congr rfl ?_
+        intro i _
+        ring
+      rw [hrewrite2, Finset.sum_add_distrib, Finset.sum_sub_distrib]
+    rw [hsplit]
+    have hlin : ∑ i ∈ s, 2 * μ * (p i * b i) = 2 * μ * μ := by
+      have hsame : ∑ i ∈ s, 2 * μ * (p i * b i) =
+          ∑ i ∈ s, (2 * μ) * (p i * b i) := by
+        refine Finset.sum_congr rfl ?_
+        intro i _
+        ring
+      rw [hsame, ← Finset.mul_sum]
+    have hweight : ∑ i ∈ s, μ ^ 2 * p i = μ ^ 2 := by
+      have hsame : ∑ i ∈ s, μ ^ 2 * p i = ∑ i ∈ s, (μ ^ 2) * p i := by
+        refine Finset.sum_congr rfl ?_
+        intro i _
+        ring
+      rw [hsame, ← Finset.mul_sum, hsum, mul_one]
+    rw [hlin, hweight]
+  have hnn : 0 ≤ ∑ i ∈ s, p i * (b i - μ) ^ 2 := by
+    refine Finset.sum_nonneg ?_
+    intro i hi
+    exact mul_nonneg (hp i hi) (sq_nonneg _)
+  have hmain : ∑ i ∈ s, p i * b i ^ 2 - μ ^ 2 =
+      ∑ i ∈ s, p i * (b i - μ) ^ 2 := by
+    linarith [hexpand]
+  constructor
+  · simpa [μ] using hmain
+  · have hμsq : (∑ i ∈ s, p i * b i) ^ 2 = μ ^ 2 := by simp [μ]
+    linarith [hmain, hnn, hμsq]
+
+theorem sample_fluctuation_vanishes_iff {ι : Type*} (s : Finset ι) (p b : ι → ℝ)
+    (hp : ∀ i ∈ s, 0 ≤ p i) (hsum : ∑ i ∈ s, p i = 1) :
+    ∑ i ∈ s, p i * b i ^ 2 - (∑ i ∈ s, p i * b i) ^ 2 = 0 ↔
+      ∀ i ∈ s, p i = 0 ∨ b i = ∑ j ∈ s, p j * b j := by
+  set μ : ℝ := ∑ j ∈ s, p j * b j
+  have hpair := sample_fluctuation s p b hp hsum
+  have hid : ∑ i ∈ s, p i * b i ^ 2 - (∑ i ∈ s, p i * b i) ^ 2 =
+      ∑ i ∈ s, p i * (b i - μ) ^ 2 := by
+    simpa [μ] using hpair.1
+  constructor
+  · intro h0
+    have hsum0 : ∑ i ∈ s, p i * (b i - μ) ^ 2 = 0 := by linarith
+    have hnn : ∀ i ∈ s, 0 ≤ p i * (b i - μ) ^ 2 := by
+      intro i hi
+      exact mul_nonneg (hp i hi) (sq_nonneg _)
+    have hterm := (Finset.sum_eq_zero_iff_of_nonneg hnn).mp hsum0
+    intro i hi
+    have hzero : p i * (b i - μ) ^ 2 = 0 := hterm i hi
+    rcases mul_eq_zero.mp hzero with hp0 | hsq
+    · exact Or.inl hp0
+    · exact Or.inr (sub_eq_zero.mp (sq_eq_zero_iff.mp hsq))
+  · intro hall
+    have hzero : ∑ i ∈ s, p i * (b i - μ) ^ 2 = 0 := by
+      refine Finset.sum_eq_zero ?_
+      intro i hi
+      rcases hall i hi with hp0 | hb
+      · simp [hp0]
+      · simp [hb, μ]
+    linarith
+
+theorem two_channel_fluctuation (p b₁ b₂ : ℝ) :
+    p * b₁ ^ 2 + (1 - p) * b₂ ^ 2 - (p * b₁ + (1 - p) * b₂) ^ 2 =
+      p * (1 - p) * (b₁ - b₂) ^ 2 := by
+  ring
+
+theorem channel_mean_strictly_between {p b₁ b₂ : ℝ}
+    (hp : 0 < p) (hp1 : p < 1) (h : b₁ < b₂) :
+    b₁ < p * b₁ + (1 - p) * b₂ ∧ p * b₁ + (1 - p) * b₂ < b₂ := by
+  constructor
+  · have hpos : 0 < (1 - p) * (b₂ - b₁) := mul_pos (by linarith) (sub_pos.mpr h)
+    have : p * b₁ + (1 - p) * b₂ - b₁ = (1 - p) * (b₂ - b₁) := by ring
+    linarith
+  · have hpos : 0 < p * (b₂ - b₁) := mul_pos hp (sub_pos.mpr h)
+    have : b₂ - (p * b₁ + (1 - p) * b₂) = p * (b₂ - b₁) := by ring
+    linarith
+
+/-- Opposite signs put the coherent coefficient strictly between the two
+channels and strictly below the larger magnitude. -/
+theorem opposite_channel_mean_smaller {p b₁ b₂ : ℝ}
+    (hp : 0 < p) (hp1 : p < 1) (h₁ : b₁ < 0) (h₂ : 0 < b₂) :
+    |p * b₁ + (1 - p) * b₂| < max (-b₁) b₂ := by
+  have hbetween := channel_mean_strictly_between hp hp1 (show b₁ < b₂ by linarith)
+  set μ : ℝ := p * b₁ + (1 - p) * b₂
+  rcases lt_or_ge μ 0 with hμ | hμ
+  · rw [abs_of_neg hμ]
+    have : -μ < -b₁ := by linarith [hbetween.1]
+    exact lt_of_lt_of_le this (le_max_left _ _)
+  · rw [abs_of_nonneg hμ]
+    exact lt_of_lt_of_le hbetween.2 (le_max_right _ _)
+
+/-- External Sears values. The incoherent cross section of natural hydrogen
+exceeds the coherent one by more than `45`. -/
+theorem hydrogen_incoherent_dominates :
+    (45 : ℝ) < ((8026 : ℝ) / 100) / (17568 / 10000) := by
+  norm_num
+
+/-- External Sears values. The incoherent cross section of natural vanadium
+exceeds the coherent one by more than `200`. -/
+theorem vanadium_incoherent_dominates :
+    (200 : ℝ) < ((508 : ℝ) / 100) / (184 / 10000) := by
+  norm_num
+
+/-- External Sears abundances and bound coherent lengths of the five stable
+titanium isotopes. `46` and `48` have opposite signs, and the weighted mean
+lies strictly between `-3.44` and `-3.43` fm. -/
+theorem titanium_sample_mean :
+    ((82 : ℝ) / 1000) * (493 / 100) + (74 / 1000) * (363 / 100) +
+        (738 / 1000) * (-608 / 100) + (54 / 1000) * (104 / 100) +
+        (52 / 1000) * (618 / 100) ∈ Ioo (-344 / 100) (-343 / 100) ∧
+      (-608 / 100 : ℝ) < 0 ∧ 0 < (493 / 100 : ℝ) ∧
+      (82 : ℝ) / 1000 + 74 / 1000 + 738 / 1000 + 54 / 1000 + 52 / 1000 = 1 := by
+  refine ⟨?_, by norm_num, by norm_num, by norm_num⟩
+  rw [Set.mem_Ioo]
+  constructor <;> norm_num
 
 end Gravity
 
