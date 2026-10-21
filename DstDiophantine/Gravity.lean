@@ -31,6 +31,7 @@ import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
+import DstDiophantine.Gravity.NeutronScatter
 import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
@@ -340,6 +341,15 @@ The straight line of one fixed jet is not itself that geodesic.
   charges, at one percent each, give \(\kappa/(k e^{2})\) strictly between
   \(94/100000\) and \(95/100000\), with standard deviation strictly between
   \(123/100000\) and \(124/100000\).
+* `NeutronScatter` — outside the rapidity wall a neutron is pulled inward.
+  At vanishing phase the pair force is the inverse-square law of strength
+  \(\kappa/\cosh(\varphi/2)=\kappa/\sqrt{1+T/(2mc^{2})}\). At \(1\,\mathrm{MeV}\)
+  the square root lies in \((1.000266,1.000267)\); at \(14\,\mathrm{MeV}\), in
+  \((1.003718,1.003719)\). Between those energies the coefficient falls by a
+  fraction strictly less than \(4/1000\). On \(0<x<\pi/4\) the fractional
+  excess over that law is strictly smaller than
+  \(e^{-x}/(\cos x-\sin x)-1\), and strictly less than \(6/1000\) for
+  \(x\le 7/100\). A scattering amplitude inside the wall is not derived.
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
