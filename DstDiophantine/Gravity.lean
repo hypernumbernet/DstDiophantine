@@ -349,7 +349,15 @@ The straight line of one fixed jet is not itself that geodesic.
   fraction strictly less than \(4/1000\). On \(0<x<\pi/4\) the fractional
   excess over that law is strictly smaller than
   \(e^{-x}/(\cos x-\sin x)-1\), and strictly less than \(6/1000\) for
-  \(x\le 7/100\). A scattering amplitude inside the wall is not derived.
+  \(x\le 7/100\). If the phase at distance \(D-R\) is at most \(7/100\), the
+  net force differs from the point field of strength \(A\kappa/\cosh(\varphi/2)\)
+  by a fraction strictly less than
+  \(6/1000+(1+6/1000)\,2(R/D)/(1-R/D)^3\), and by less than \(1/20\) when
+  \(D\ge 50R\). The fixed-angle Rutherford prefactor of that point field grows
+  from \(1\,\mathrm{MeV}\) to \(14\,\mathrm{MeV}\) by a factor strictly between
+  \(197\) and \(198\). The evaluated gold total at \(14\,\mathrm{MeV}\) stays
+  above nine tenths of the total at \(1\,\mathrm{MeV}\). A scattering amplitude
+  inside the wall is not derived.
 * `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
   feels `Z` times the one-proton force. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
