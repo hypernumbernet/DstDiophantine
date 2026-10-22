@@ -138,6 +138,44 @@ the same way. -/
 theorem middle_proton_same_direction {Fs Ft : ℝ} (hs : Fs < 0) (ht : 0 < Ft) :
     Fs - Ft < 0 := by linarith
 
+/-! ### The slow charged entrance at the common length -/
+
+/-- At the common length the Coulomb factor of a nuclear pair is the static
+equal-scale factor at the same phase; on the entrance window `π/4 < x < x₁`
+it is strictly positive. The positivity assumed for the slow charged entrance
+holds there with no ordering of two lengths. -/
+theorem cold_window_coulomb_factor_pos {x : ℝ} (h0 : π / 4 < x)
+    (h1 : x < resonanceRoot1) : 0 < gammaSEqual x :=
+  gammaSEqual_pos_below_root1 (by linarith [pi_pos]) h1
+
+/-- For a positive Coulomb factor `γ_E` and finite `ρ > 0`, the net coefficient
+`-1/γ + ρ/γ_E` is negative whenever `0 < γ < γ_E/ρ`: an interval abutting the
+threshold from below on which the nuclear term exceeds the Coulomb term. -/
+theorem cold_net_inward {γ γE ρ : ℝ} (hE : 0 < γE) (hρ : 0 < ρ) (hγ : 0 < γ)
+    (hlt : γ < γE / ρ) : -1 / γ + ρ / γE < 0 := by
+  have h1 : γ * ρ < γE := by rwa [lt_div_iff₀ hρ] at hlt
+  have : ρ / γE < 1 / γ := by
+    rw [div_lt_div_iff₀ hE hγ]; linarith
+  have : -1 / γ = -(1 / γ) := by ring
+  linarith
+
+/-- Two like charges held in an octahedral hole about `2 Å = 2·10⁵` fm apart
+are beyond `2ℓ_E/π`: the seat is read at the electromagnetic length. -/
+theorem octahedral_seat_isolated {ℓE : ℝ} (hℓ0 : 0 < ℓE) (hℓ : ℓE < 387) :
+    0 < gammaSEqual (ℓE / (2 * 200000)) := by
+  have hπ : (3 : ℝ) < π := pi_gt_three
+  apply gammaSEqual_pos_beyond_two_ell_div_pi hℓ0
+  rw [div_lt_iff₀ (by linarith)]; nlinarith
+
+/-- Nucleon separations of at least `1` fm, read at `λ_π < 71/50` fm, lie
+beyond the wall `2λ_π/π`, on the outer attractive chamber. -/
+theorem nucleon_window_outer_chamber {ℓ r : ℝ} (hℓ0 : 0 < ℓ) (hℓ : ℓ < 71 / 50)
+    (hr : 1 ≤ r) : 2 * ℓ / π < r ∧ 0 < gammaSEqual (ℓ / (2 * r)) := by
+  have hπ : (3 : ℝ) < π := pi_gt_three
+  have h : 2 * ℓ / π < r := by
+    rw [div_lt_iff₀ (by linarith)]; nlinarith
+  exact ⟨h, gammaSEqual_pos_beyond_two_ell_div_pi hℓ0 h⟩
+
 end Gravity
 
 end DstDiophantine
