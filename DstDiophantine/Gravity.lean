@@ -2243,3 +2243,4 @@ example (β : DualRapidity) :
 end Gravity
 
 end DstDiophantine
+import DstDiophantine.Gravity.LengthRule
