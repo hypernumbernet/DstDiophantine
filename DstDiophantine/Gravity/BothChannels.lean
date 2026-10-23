@@ -121,7 +121,7 @@ theorem electronProtonGravToCoulomb_bounds :
       unfold electronProtonGravToCoulomb_num electronProtonGravToCoulomb_den
         GMantissa electronMassMantissa protonMassMantissa
         fineStructureMantissa hbarMantissa speedOfLightNat
-      native_decide
+      norm_num
     rw [div_lt_div_iff₀ (by norm_num) hden]
     exact_mod_cast hnat
   · have hnat : electronProtonGravToCoulomb_num * 10 ^ 43 <
@@ -129,7 +129,7 @@ theorem electronProtonGravToCoulomb_bounds :
       unfold electronProtonGravToCoulomb_num electronProtonGravToCoulomb_den
         GMantissa electronMassMantissa protonMassMantissa
         fineStructureMantissa hbarMantissa speedOfLightNat
-      native_decide
+      norm_num
     rw [div_lt_div_iff₀ hden (by norm_num)]
     exact_mod_cast hnat
 
