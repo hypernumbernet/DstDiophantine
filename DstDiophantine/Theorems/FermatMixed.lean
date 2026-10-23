@@ -33,10 +33,10 @@ The mixed seed leaks the additive null axis \(N_1\) into the time-null
 generator \(N_0\) at first order. On a positive solution the dual-axis
 characteristic is elliptic (\(\beta^2>\alpha^2\)), so the finite sandwich of
 \(N_1\) is a harmonic oscillator whose time-null remainder is a strictly
-positive multiple of \(N_0\) precisely when \(\alpha>0\). The power sum of positive
-bases is the scalar `exp(n α) (cos β ^ n + sin β ^ n)` on that same seat. Equal positive real
-legs realise the scalar with `α > 0`, so the leak does not forbid the
-relation over `ℝ`. Neither positive integer base divides the other. For an
+positive multiple of \(N_0\) precisely when \(\alpha>0\). The power sum of
+positive bases is the scalar `exp(n α) (cos β ^ n + sin β ^ n)` on that seat.
+Equal positive real legs realise the scalar with `α > 0`, so the relation
+survives over `ℝ`. Neither positive integer base divides the other. For an
 odd prime exponent dividing none of three coprime positive bases, `a + b`
 and `(a^n + b^n) / (a + b)` are pure powers of coprime positive integers
 whose product is `c`. Unconditional classical FLT is **not** claimed.
@@ -775,48 +775,35 @@ private theorem fermatL2_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
   unfold fermatL2
   rw [natAbs_coe_eq_coe_of_pos ha, natAbs_coe_eq_coe_of_pos hb]
 
-theorem fermatAngle_cos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
-    Real.cos (fermatAngle a b (ne_of_gt ha)) = (a : ℝ) / fermatL2 a b := by
+private theorem fermat_hypot_div {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
+    Real.sqrt (1 + ((b : ℝ) / a) ^ 2) = fermatL2 a b / a := by
   have haR : (0 : ℝ) < a := by exact_mod_cast ha
   have ha_ne : (a : ℝ) ≠ 0 := ne_of_gt haR
+  rw [fermatL2_of_pos ha hb]
+  have hnn : 0 ≤ (a : ℝ) ^ 2 + (b : ℝ) ^ 2 := add_nonneg (sq_nonneg _) (sq_nonneg _)
+  calc Real.sqrt (1 + ((b : ℝ) / a) ^ 2)
+      = Real.sqrt (((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (a : ℝ) ^ 2) := by
+        congr 1
+        field_simp [ha_ne]
+    _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / Real.sqrt ((a : ℝ) ^ 2) := by
+        exact Real.sqrt_div hnn _
+    _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / a := by
+        rw [Real.sqrt_sq haR.le]
+
+theorem fermatAngle_cos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
+    Real.cos (fermatAngle a b (ne_of_gt ha)) = (a : ℝ) / fermatL2 a b := by
+  have ha_ne : (a : ℝ) ≠ 0 := by exact_mod_cast ha.ne'
   unfold fermatAngle
-  rw [natAbs_coe_eq_coe_of_pos ha, natAbs_coe_eq_coe_of_pos hb, Real.cos_arctan]
-  have hL := fermatL2_of_pos ha hb
-  have hsqrt : Real.sqrt (1 + ((b : ℝ) / a) ^ 2) = fermatL2 a b / a := by
-    rw [hL]
-    have hnn : 0 ≤ (a : ℝ) ^ 2 + (b : ℝ) ^ 2 :=
-      add_nonneg (sq_nonneg _) (sq_nonneg _)
-    calc Real.sqrt (1 + ((b : ℝ) / a) ^ 2)
-        = Real.sqrt (((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (a : ℝ) ^ 2) := by
-          congr 1
-          field_simp [ha_ne]
-      _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / Real.sqrt ((a : ℝ) ^ 2) := by
-          exact Real.sqrt_div hnn _
-      _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / a := by
-          rw [Real.sqrt_sq haR.le]
-  rw [hsqrt]
+  rw [natAbs_coe_eq_coe_of_pos ha, natAbs_coe_eq_coe_of_pos hb, Real.cos_arctan,
+    fermat_hypot_div ha hb]
   field_simp [ha_ne, (fermatL2_pos (Or.inl (ne_of_gt ha))).ne']
 
 theorem fermatAngle_sin_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) :
     Real.sin (fermatAngle a b (ne_of_gt ha)) = (b : ℝ) / fermatL2 a b := by
-  have haR : (0 : ℝ) < a := by exact_mod_cast ha
-  have ha_ne : (a : ℝ) ≠ 0 := ne_of_gt haR
+  have ha_ne : (a : ℝ) ≠ 0 := by exact_mod_cast ha.ne'
   unfold fermatAngle
-  rw [natAbs_coe_eq_coe_of_pos ha, natAbs_coe_eq_coe_of_pos hb, Real.sin_arctan]
-  have hL := fermatL2_of_pos ha hb
-  have hsqrt : Real.sqrt (1 + ((b : ℝ) / a) ^ 2) = fermatL2 a b / a := by
-    rw [hL]
-    have hnn : 0 ≤ (a : ℝ) ^ 2 + (b : ℝ) ^ 2 :=
-      add_nonneg (sq_nonneg _) (sq_nonneg _)
-    calc Real.sqrt (1 + ((b : ℝ) / a) ^ 2)
-        = Real.sqrt (((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (a : ℝ) ^ 2) := by
-          congr 1
-          field_simp [ha_ne]
-      _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / Real.sqrt ((a : ℝ) ^ 2) := by
-          exact Real.sqrt_div hnn _
-      _ = Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / a := by
-          rw [Real.sqrt_sq haR.le]
-  rw [hsqrt]
+  rw [natAbs_coe_eq_coe_of_pos ha, natAbs_coe_eq_coe_of_pos hb, Real.sin_arctan,
+    fermat_hypot_div ha hb]
   field_simp [ha_ne, (fermatL2_pos (Or.inl (ne_of_gt ha))).ne']
 
 theorem fermat_exp_boost_of_pos {a b c : ℤ} (ha : 0 < a) (hc : 0 < c) :
@@ -887,8 +874,7 @@ theorem equal_leg_real_boost_pos {n : ℕ} (hn : 3 ≤ n) :
     0 < c ∧ (1 : ℝ) ^ n + (1 : ℝ) ^ n = c ^ n ∧
       0 < Real.log (Real.sqrt 2 / c) := by
   intro c
-  have hn0 : (0 : ℝ) < n := by exact_mod_cast (Nat.succ_le_iff.mp
-    (Nat.le_trans (by decide : 1 ≤ 3) hn))
+  have hn0 : (0 : ℝ) < n := by exact_mod_cast (show 0 < n by omega)
   have hc : 0 < c := Real.rpow_pos_of_pos (by norm_num) _
   have hpow : c ^ n = 2 := by
     have hre : c ^ (n : ℝ) = (2 : ℝ) := by
@@ -918,6 +904,38 @@ theorem equal_leg_real_boost_pos {n : ℕ} (hn : 3 ≤ n) :
     exact mul_pos hposexp (Real.log_pos (by norm_num))
 
 /-! ### Integral constraints -/
+
+private theorem nat_pow_add_one_lt_succ_pow {k n : ℕ} (hk : 0 < k) (hn : 3 ≤ n) :
+    k ^ n + 1 < (k + 1) ^ n := by
+  by_cases hk1 : k = 1
+  · subst hk1
+    have h8 : 8 ≤ 2 ^ n := by
+      simpa using (Nat.pow_le_pow_right (by decide : 1 ≤ 2) hn : 2 ^ 3 ≤ 2 ^ n)
+    rw [show (1 + 1) ^ n = 2 ^ n by rfl, one_pow]
+    omega
+  · have hk2 : 2 ≤ k := by omega
+    have hn' : (n - 1) + 1 = n := by omega
+    have hstep : k ^ (n - 1) * (k + 1) ≤ (k + 1) ^ n := by
+      have hpow : (k + 1) ^ ((n - 1) + 1) = (k + 1) ^ (n - 1) * (k + 1) :=
+        Nat.pow_succ _ _
+      rw [hn'] at hpow
+      rw [hpow]
+      exact Nat.mul_le_mul_right _ (Nat.pow_le_pow_left (Nat.le_succ k) (n - 1))
+    have hexp : k ^ (n - 1) * (k + 1) = k ^ n + k ^ (n - 1) := by
+      rw [Nat.mul_add, Nat.mul_one]
+      have : k ^ (n - 1) * k = k ^ n := by
+        have hmul : k ^ (n - 1) * k = k ^ (n - 1).succ := (Nat.pow_succ k (n - 1)).symm
+        have hsucc : (n - 1).succ = n := by rw [Nat.succ_eq_add_one, hn']
+        rw [hmul, hsucc]
+      rw [this]
+    have hge : 2 ≤ k ^ (n - 1) := by
+      calc 2
+          = 2 ^ 1 := by simp
+        _ ≤ 2 ^ (n - 1) :=
+            Nat.pow_le_pow_right (by decide : 1 ≤ 2) (by omega : 1 ≤ n - 1)
+        _ ≤ k ^ (n - 1) := Nat.pow_le_pow_left hk2 (n - 1)
+    have : k ^ n + 1 < k ^ n + k ^ (n - 1) := by omega
+    exact this.trans_le (by rwa [hexp] at hstep)
 
 /-- If one positive base divides the other, degree `n ≥ 3` has no solution in `ℕ`. -/
 theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
@@ -961,15 +979,19 @@ theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
       rw [← hcopn.gcd_eq_one]
       exact Nat.dvd_gcd (dvd_refl _) hdvd_pow
     have hone : a1 ^ n = 1 := Nat.eq_one_of_dvd_one hdvd_one
-    match a1 with
-    | 0 => simp [zero_pow (by omega : n ≠ 0)] at hone
-    | 1 => rfl
-    | a1 + 2 =>
-      have h8 : 8 ≤ 2 ^ n := by
-        have : 2 ^ 3 ≤ 2 ^ n := Nat.pow_le_pow_right (by decide : 1 ≤ 2) hn
-        simpa using this
-      have hle : 2 ^ n ≤ (a1 + 2) ^ n := Nat.pow_le_pow_left (by omega) n
+    have ha1_ne : a1 ≠ 0 := by
+      intro h0
+      simp [h0, zero_pow (by omega : n ≠ 0)] at hone
+    have ha1_le : a1 ≤ 1 := by
+      by_contra hgt
+      have h2 : 2 ≤ a1 := by omega
+      have : 8 ≤ a1 ^ n := by
+        calc 8
+            = 2 ^ 3 := by decide
+          _ ≤ 2 ^ n := Nat.pow_le_pow_right (by decide : 1 ≤ 2) hn
+          _ ≤ a1 ^ n := Nat.pow_le_pow_left h2 n
       omega
+    omega
   have hunit : 1 + k ^ n = c1 ^ n := by simpa [ha1_one, one_pow] using hcancel
   have hk_lt : k < c1 := by
     have : k ^ n < c1 ^ n := by
@@ -977,42 +999,10 @@ theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
       exact Nat.lt_add_of_pos_left (by decide : 0 < 1)
     exact lt_of_pow_lt_pow_left₀ n (Nat.zero_le _) this
   have hsmall : (k + 1) ^ n ≤ k ^ n + 1 := by
-    have hc1_ge : k + 1 ≤ c1 := Nat.succ_le_of_lt hk_lt
     calc (k + 1) ^ n
-        ≤ c1 ^ n := Nat.pow_le_pow_left hc1_ge n
+        ≤ c1 ^ n := Nat.pow_le_pow_left (Nat.succ_le_of_lt hk_lt) n
       _ = k ^ n + 1 := by rw [← hunit, Nat.add_comm]
-  have hgt : k ^ n + 1 < (k + 1) ^ n := by
-    have hn1 : 1 ≤ n := by omega
-    have hstep : k ^ (n - 1) * (k + 1) ≤ (k + 1) ^ n := by
-      have hn' : (n - 1) + 1 = n := by omega
-      have hpow : (k + 1) ^ ((n - 1) + 1) = (k + 1) ^ (n - 1) * (k + 1) :=
-        Nat.pow_succ _ _
-      rw [hn'] at hpow
-      rw [hpow]
-      exact Nat.mul_le_mul_right _ (Nat.pow_le_pow_left (Nat.le_succ k) (n - 1))
-    have hexp : k ^ (n - 1) * (k + 1) = k ^ n + k ^ (n - 1) := by
-      rw [Nat.mul_succ]
-      have : k ^ (n - 1) * k = k ^ ((n - 1) + 1) := (Nat.pow_succ k (n - 1)).symm
-      have hn' : (n - 1) + 1 = n := by omega
-      rw [this, hn']
-    by_cases hk1 : k = 1
-    · subst hk1
-      have h8 : 8 ≤ (1 + 1) ^ n := by
-        have : 2 ^ 3 ≤ 2 ^ n := Nat.pow_le_pow_right (by decide : 1 ≤ 2) hn
-        simpa using this
-      have hle : (1 + 1) ^ n ≤ 2 := by simpa [one_pow] using hsmall
-      omega
-    · have hk2 : 2 ≤ k := by omega
-      have hpow2 : 2 ≤ k ^ (n - 1) := by
-        have h2k : 2 ^ (n - 1) ≤ k ^ (n - 1) := Nat.pow_le_pow_left hk2 (n - 1)
-        have h22 : 2 ≤ 2 ^ (n - 1) := by
-          have : 2 ^ 1 ≤ 2 ^ (n - 1) :=
-            Nat.pow_le_pow_right (by decide : 1 ≤ 2) (by omega : 1 ≤ n - 1)
-          simpa using this
-        exact h22.trans h2k
-      have : k ^ n + 1 < k ^ n + k ^ (n - 1) := by omega
-      exact this.trans_le (hexp ▸ hstep)
-  exact absurd hsmall (not_le_of_gt hgt)
+  exact absurd hsmall (not_le_of_gt (nat_pow_add_one_lt_succ_pow hk0 hn))
 
 theorem not_fermat_pos_of_dvd_leg {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (_hc : 0 < c)
@@ -1059,10 +1049,7 @@ theorem fermat_odd_prime_leg_sum_pow {a b c n : ℕ}
   have hab0 : 0 < a + b := Nat.add_pos_left ha b
   have hgcd : Nat.gcd (a + b) q = 1 := by
     by_contra hne
-    have hgt : Nat.gcd (a + b) q ≠ 1 := hne
-    have hpos : 0 < Nat.gcd (a + b) q := Nat.gcd_pos_of_pos_left _ hab0
-    have hge : 2 ≤ Nat.gcd (a + b) q := by omega
-    obtain ⟨p, hpprime, hpdvd⟩ := Nat.exists_prime_and_dvd (by omega : Nat.gcd (a + b) q ≠ 1)
+    obtain ⟨p, hpprime, hpdvd⟩ := Nat.exists_prime_and_dvd hne
     have hp_ab : p ∣ a + b := Nat.dvd_trans hpdvd (Nat.gcd_dvd_left _ _)
     have hp_q : p ∣ q := Nat.dvd_trans hpdvd (Nat.gcd_dvd_right _ _)
     have hgeom := geom_sum₂_mul (a : ℤ) (-(b : ℤ)) n
