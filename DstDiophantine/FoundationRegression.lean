@@ -77,8 +77,12 @@ Dual-axis Fermat geometric lemmas (interference closed form, mixed seat of
 degree `n ≥ 3`, first-jet leak of \(N_1\) into \(N_0\), second jet on \(N_3\),
 elliptic characteristic \(\omega=\sqrt{\beta^2-\alpha^2}\), finite sandwich of
 \(N_1\) as a harmonic oscillator, nonzero time-null remainder on mixed
-solutions, sandwich mismatch with a pure boost) are included. The live residual
-`FermatMixedMotorResidual` remains a type, not a proved theorem.
+solutions, sandwich mismatch with a pure boost) are included, as are the seat
+scalar of a positive power sum, the positive boost of equal real legs, the
+exclusion of a positive solution in which one base divides the other, and the
+coprime pure-power shape of an odd prime dividing none of three coprime bases.
+The live residual `FermatMixedMotorResidual` remains a type, not a proved
+theorem.
 -/
 
 namespace DstDiophantine.FoundationRegression
@@ -189,6 +193,35 @@ example (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
 /-- Dual-axis residual recovers classical FLT conditionally. -/
 example (hres : FermatMixedMotorResidual) : FermatLastTheorem :=
   FermatLastTheorem_of_mixed_motor_residual hres
+
+/-- A positive power sum is the dual-axis seat scalar. -/
+example {a b c : ℤ} {n : ℕ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    a ^ n + b ^ n = c ^ n ↔
+      Real.exp (n * fermatBoost a b c (ne_of_gt hc)) *
+        (Real.cos (fermatAngle a b (ne_of_gt ha)) ^ n +
+          Real.sin (fermatAngle a b (ne_of_gt ha)) ^ n) = 1 :=
+  fermat_solution_iff_polar ha hb hc
+
+/-- Equal positive real legs of degree `n ≥ 3` carry a positive boost. -/
+example {n : ℕ} (hn : 3 ≤ n) :
+    let c : ℝ := 2 ^ ((1 : ℝ) / n)
+    0 < c ∧ (1 : ℝ) ^ n + (1 : ℝ) ^ n = c ^ n ∧
+      0 < Real.log (Real.sqrt 2 / c) :=
+  equal_leg_real_boost_pos hn
+
+/-- Degree `n ≥ 3` excludes a positive solution in which one base divides the other. -/
+example {a b c : ℤ} {n : ℕ} (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hdvd : a ∣ b) :
+    a ^ n + b ^ n ≠ c ^ n :=
+  not_fermat_pos_of_dvd_leg hn ha hb hc hdvd
+
+/-- Odd prime dividing none of three coprime bases: sum and complement are pure powers. -/
+example {a b c n : ℕ} (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ∃ m t : ℕ, 1 < m ∧ 0 < t ∧ Nat.Coprime m t ∧
+      a + b = m ^ n ∧ (a ^ n + b ^ n) / (a + b) = t ^ n ∧ c = m * t :=
+  fermat_odd_prime_leg_sum_pow hp hodd ha hb hcop hnd hsol
 
 /-- Dual-axis Fermat seed: closed-form generator. -/
 example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
