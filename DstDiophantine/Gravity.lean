@@ -63,6 +63,7 @@ import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
+import DstDiophantine.Gravity.BothChannels
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -312,6 +313,15 @@ The straight line of one fixed jet is not itself that geodesic.
   The root is not a zero of the electrostatic force. The energy of a
   circular path, kinetic term of the centripetal identity plus the
   outer-well potential, is strictly least there and is negative.
+* `BothChannels` — an electron and a proton exert both terms at every
+  separation. For an unlike pair, equal signs of the two interference factors
+  make the two terms point the same way, so the separation-increasing force
+  does not vanish. Above \(52917\,\mathrm{fm}\), with \(\ell_E<387\,\mathrm{fm}\)
+  and \(\lambda_\pi<71/50\,\mathrm{fm}\), both phases lie in \([0,1/40]\) and
+  both factors are positive. The mass term is then a fraction of the charge
+  term strictly between \(440/10^{42}\) and \(442/10^{42}\). The prefactor
+  \(G m_e m_p/(k e^{2})\) lies strictly between \(4407/10^{43}\) and
+  \(4408/10^{43}\).
 * `ElectronNumbers` — the first node lies in \((14/15,19/20)\) and the
   restoring square in \((153/100,157/100)\). The circular radius, the first
   node, the diagonal, the side, the one-electron extremum, and the second
@@ -2235,6 +2245,25 @@ example {φ y x : ℝ}
     (hφx : phiStar x = φ) :
     (resonanceRoot1 - x) / x < 5 / (10 : ℝ) ^ 6 :=
   fractional_widening_of_small_energy hφ hy hyb hx hφx
+
+/-- Regression: an unlike pair does not balance where both factors are positive. -/
+example {κ coul γG γE r : ℝ}
+    (hκ : 0 < κ) (hc : coul < 0) (hr : r ≠ 0) (hG : 0 < γG) (hE : 0 < γE) :
+    pairChannelForce κ coul γG γE r < 0 :=
+  (unlike_same_sign_no_zero hκ hc hr hG hE).2.2
+
+/-- Regression: at a hydrogenic separation the mass term is between
+\(4.40\times 10^{-40}\) and \(4.42\times 10^{-40}\) of the charge term. -/
+example {ℓE ℓG a : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 71 / 50)
+    (ha : 52917 < a) :
+    (440 : ℝ) / 10 ^ 42 <
+        (electronProtonGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) ∧
+      (electronProtonGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
+        442 / 10 ^ 42 :=
+  bohr_mass_fraction hE0 hE hG0 hG ha
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
