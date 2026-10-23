@@ -866,14 +866,20 @@ private theorem offAxis_remainder_independent {a b : Fin 3} (hab : a ≠ b) {δ 
     let f : Fin 3 → ℝ := fun i => if i = a then β else if i = a + 2 then -δ else 0
     have hsum : ∑ i : Fin 3, f i • hyperbolic i = 0 := by
       rw [Fin.sum_univ_three]
-      fin_cases a <;> simp [f, zero_smul, add_zero] at hboost ⊢
-      · exact hboost
-      · rw [add_comm]; exact hboost
-      · rw [add_comm]; exact hboost
+      fin_cases a
+      · simp only [Fin.zero_eta, Fin.isValue, zero_add, neg_smul, ↓reduceIte,
+          one_ne_zero, Fin.reduceEq, zero_smul, add_zero, f] at hboost ⊢
+        exact hboost
+      · simp only [Fin.mk_one, Fin.isValue, Fin.reduceAdd, neg_smul, zero_ne_one,
+          ↓reduceIte, Fin.reduceEq, zero_smul, add_zero, f] at hboost ⊢
+        rw [add_comm]; exact hboost
+      · simp only [Fin.reduceFinMk, Fin.isValue, Fin.reduceAdd, neg_smul,
+          Fin.reduceEq, ↓reduceIte, zero_ne_one, zero_smul, zero_add, f] at hboost ⊢
+        rw [add_comm]; exact hboost
     have hidx : (a + 2 : Fin 3) ≠ a := by fin_cases a <;> decide
     have hcoef := (Fintype.linearIndependent_iff.mp linearIndependent_hyperbolic) f hsum
       (a + 2)
-    simp [f, hidx] at hcoef
+    simp only [Fin.isValue, hidx, ↓reduceIte, neg_eq_zero, f] at hcoef
     exact hδ (by linarith)
   · have hb : b = a + 2 := by
       fin_cases a <;> fin_cases b <;> simp_all
@@ -901,14 +907,20 @@ private theorem offAxis_remainder_independent {a b : Fin 3} (hab : a ≠ b) {δ 
     let f : Fin 3 → ℝ := fun i => if i = a then β else if i = a + 1 then δ else 0
     have hsum : ∑ i : Fin 3, f i • hyperbolic i = 0 := by
       rw [Fin.sum_univ_three]
-      fin_cases a <;> simp [f, zero_smul, add_zero] at hboost ⊢
-      · exact hboost
-      · exact hboost
-      · rw [add_comm]; exact hboost
+      fin_cases a
+      · simp only [Fin.zero_eta, Fin.isValue, zero_add, ↓reduceIte, one_ne_zero,
+          Fin.reduceEq, zero_smul, add_zero, f] at hboost ⊢
+        exact hboost
+      · simp only [Fin.mk_one, Fin.isValue, Fin.reduceAdd, zero_ne_one, ↓reduceIte,
+          Fin.reduceEq, zero_smul, zero_add, f] at hboost ⊢
+        exact hboost
+      · simp only [Fin.reduceFinMk, Fin.isValue, Fin.reduceAdd, Fin.reduceEq,
+          ↓reduceIte, one_ne_zero, zero_smul, add_zero, f] at hboost ⊢
+        rw [add_comm]; exact hboost
     have hidx : (a + 1 : Fin 3) ≠ a := by fin_cases a <;> decide
     have hcoef := (Fintype.linearIndependent_iff.mp linearIndependent_hyperbolic) f hsum
       (a + 1)
-    simp [f, hidx] at hcoef
+    simp only [Fin.isValue, hidx, ↓reduceIte, f] at hcoef
     exact hδ hcoef
 
 /-- The joint exponential is not the product of the separate boost and rotation. -/

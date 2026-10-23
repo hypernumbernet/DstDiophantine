@@ -910,7 +910,8 @@ theorem balanceWeight_lt {t : ℝ} (ht : t ∈ Ioo (π / 4) π) : balanceWeight 
               · exact tanh_three_halves_lt
               · exact lt_trans (tanh_strictMono hlt) tanh_three_halves_lt
             have hcot : cos t / sin t < 1 / 4 :=
-              lt_trans (cot_lt_cot (by norm_num) (by linarith [pi_gt_three]) h75lt) cot_seven_fifths_lt
+              lt_trans (cot_lt_cot (by norm_num) (by linarith [pi_gt_three]) h75lt)
+                cot_seven_fifths_lt
             unfold balanceWeight
             nlinarith
           · have h32lt : 3 / 2 < t := not_le.mp h32

@@ -1403,7 +1403,7 @@ lemma hasDerivAt_phaseWeight {y : ℝ} (hg : gammaSEqual y ≠ 0) :
   have hden := (hasDerivAt_gammaSEqual y).neg
   simp only [Pi.mul_apply, id] at hnum
   have hdiv := hnum.div hden (by simpa using hg)
-  simp only [Pi.div_apply, Pi.neg_apply] at hdiv
+  simp only [Pi.neg_apply] at hdiv
   have hfun : (fun t => 2 * (t * (cosh t * sin t))) / -gammaSEqual = phaseWeight := by
     funext t
     unfold phaseWeight
@@ -1411,7 +1411,7 @@ lemma hasDerivAt_phaseWeight {y : ℝ} (hg : gammaSEqual y ≠ 0) :
     ring
   rw [hfun] at hdiv
   refine hdiv.congr_deriv ?_
-  simp only [one_mul, neg_neg]
+  simp only [one_mul]
   have hsq : (-gammaSEqual y) ^ 2 = gammaSEqual y ^ 2 := by ring
   rw [hsq]
   have hW := weightNumer_eq y
@@ -1664,8 +1664,10 @@ lemma strictAntiOn_add {f g : ℝ → ℝ} {s : Set ℝ}
 lemma cubeResponse_strictAnti :
     StrictAntiOn cubeResponse (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
   have hscale := cubeScale_mem_Ioo
-  have hedge := scaledRatio_strictAnti (c := cubeEdge) (by nlinarith [hscale.1, hscale.2.1]) hscale.2.2
-  have hface := scaledRatio_strictAnti (c := cubeFace) (by nlinarith [hscale.1]) (by nlinarith [hscale.2.1])
+  have hedge := scaledRatio_strictAnti (c := cubeEdge) (by nlinarith [hscale.1, hscale.2.1])
+    hscale.2.2
+  have hface := scaledRatio_strictAnti (c := cubeFace) (by nlinarith [hscale.1]) (by nlinarith
+    [hscale.2.1])
   have hbody := scaledRatio_strictAnti (c := (1 / 2 : ℝ)) (by norm_num) (by norm_num)
   have hcoeff := cubeCoeff_pos
   unfold cubeResponse
@@ -1860,10 +1862,10 @@ lemma continuousOn_cubeResponse :
 
 lemma cubeOutward_eq_response {Z x : ℝ}
     (hx : gammaSEqual x ≠ 0) (he : gammaSEqual (cubeEdge * x) ≠ 0)
-    (hf : gammaSEqual (cubeFace * x) ≠ 0) (hb : gammaSEqual (x / 2) ≠ 0) :
+    (_hf : gammaSEqual (cubeFace * x) ≠ 0) (hb : gammaSEqual (x / 2) ≠ 0) :
     cubeOutward Z x = (cubeResponse x - Z) / gammaSEqual x := by
   unfold cubeOutward cubeResponse scaledRatio
-  field_simp [hx, he, hf, hb]
+  field_simp [hx, he, _hf, hb]
   ring
 
 lemma cubeResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
@@ -2209,12 +2211,12 @@ noncomputable def quadOf : (Fin 5 → ℝ) →ₗ[ℝ] quadrupole where
     apply Subtype.ext
     ext i j
     fin_cases i <;> fin_cases j <;>
-      simp [quadApply, quadVec, add_mul] <;> ring
+      simp [quadApply, quadVec]; ring
   map_smul' a c := by
     apply Subtype.ext
     ext i j
     fin_cases i <;> fin_cases j <;>
-      simp [quadApply, quadVec, mul_assoc] <;> ring
+      simp [quadApply, quadVec]; ring
 
 lemma quadOf_surjective : Function.Surjective quadOf := by
   rintro ⟨M, hM⟩
@@ -2230,7 +2232,7 @@ lemma quadOf_surjective : Function.Surjective quadOf := by
   have h21 : M 2 1 = M 1 2 := by
     simpa [Matrix.transpose_apply] using (congr_fun (congr_fun hM.1 2) 1).symm
   fin_cases i <;> fin_cases j <;>
-    simp [quadOf, quadApply, quadVec, htr, h10, h20, h21] <;> linarith [htr]
+    simp [quadOf, quadApply, quadVec, h10, h20, h21]; linarith [htr]
 
 lemma quadOf_injective : Function.Injective quadOf := by
   intro c d h

@@ -296,17 +296,20 @@ theorem continuousOn_dodecaResponse :
       (ContinuousOn.div continuous_gammaSEqual.continuousOn
         (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_)
     intro x hx
-    exact (gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.1.le hx).ne'
+    exact (gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.1.le
+      hx).ne'
   · refine ContinuousOn.mul continuousOn_const
       (ContinuousOn.div continuous_gammaSEqual.continuousOn
         (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_)
     intro x hx
-    exact (gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.2.1.le hx).ne'
+    exact (gamma_pos_dodeca_phase (div_pos (sqrt_pos.mpr (by norm_num)) (by norm_num)) hsc.2.1.le
+      hx).ne'
   · refine ContinuousOn.mul continuousOn_const
       (ContinuousOn.div continuous_gammaSEqual.continuousOn
         (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).continuousOn ?_)
     intro x hx
-    exact (gamma_pos_dodeca_phase (sqrt_pos.mpr (by nlinarith [sq_sqrt (show (0 : ℝ) ≤ 5 by norm_num)]))
+    exact (gamma_pos_dodeca_phase (sqrt_pos.mpr (by nlinarith [sq_sqrt (show (0 : ℝ) ≤ 5 by
+      norm_num)]))
       hsc.2.2.1.le hx).ne'
   · refine ContinuousOn.mul continuousOn_const
       (ContinuousOn.div continuous_gammaSEqual.continuousOn
@@ -385,7 +388,8 @@ theorem exists_dodecaResponse_gt {M : ℝ} (hM : 0 < M) :
       have hsum : gammaSEqual t * M + gammaSEqual t < a * gammaSEqual dodecaWall := by
         simpa [mul_add, mul_one] using hεt
       have hMγ : M * gammaSEqual t < a * gammaSEqual dodecaWall := by
-        simpa [mul_comm] using (by nlinarith [hγt, hsum] : gammaSEqual t * M < a * gammaSEqual dodecaWall)
+        simpa [mul_comm] using (by nlinarith [hγt, hsum] : gammaSEqual t * M < a * gammaSEqual
+          dodecaWall)
       exact (lt_div_iff₀ hden).mpr hMγ
     have hdiv' : a * gammaSEqual dodecaWall / gammaSEqual t <
         a * (gammaSEqual x / gammaSEqual t) := by
@@ -416,7 +420,8 @@ theorem exists_dodecaResponse_gt {M : ℝ} (hM : 0 < M) :
             show sqrt 5 < 3 by
               have hsq3 : (sqrt 5) ^ 2 < (3 : ℝ) ^ 2 := by
                 rw [sq_sqrt (by norm_num)]; norm_num
-              rw [← abs_of_nonneg (sqrt_nonneg (5 : ℝ)), ← abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 3)]
+              rw [← abs_of_nonneg (sqrt_nonneg (5 : ℝ)), ← abs_of_nonneg (by norm_num : (0 : ℝ) ≤
+                3)]
               exact (sq_lt_sq).mp hsq3])) hsc.2.2.1.le)
     have h4 : 0 < scaledRatio (1 / 2) x := by
       unfold scaledRatio
@@ -466,7 +471,8 @@ lemma tendsto_scaledRatio_zero {c : ℝ} (_hc : c ≠ 0) :
 lemma tendsto_dodecaResponse_zero :
     Tendsto dodecaResponse (nhds 0) (nhds dodecaCoeff) := by
   unfold dodecaResponse
-  have h1 := (tendsto_scaledRatio_zero (show dodecaNear ≠ 0 by linarith [dodecaNear_gt_one])).const_mul
+  have h1 := (tendsto_scaledRatio_zero (show dodecaNear ≠ 0 by linarith
+    [dodecaNear_gt_one])).const_mul
     (3 / 2 * dodecaNear)
   have h2 := (tendsto_scaledRatio_zero (div_pos (sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3))
       (by norm_num : (0 : ℝ) < 2)).ne').const_mul (3 * sqrt 3 / 2)
@@ -992,7 +998,7 @@ private theorem hasDerivAt_subSq3 (y : ℝ) : HasDerivAt subSq3 (4 * gammaSEqual
   unfold gammaSEqual
   ring
 
-private theorem segment_strictMono {f f' : ℝ → ℝ} {b : ℝ} (hb : 0 < b)
+private theorem segment_strictMono {f f' : ℝ → ℝ} {b : ℝ} (_hb : 0 < b)
     (hcont : ContinuousOn f (Icc 0 b))
     (hderiv : ∀ y ∈ Ioo (0 : ℝ) b, HasDerivAt f (f' y) y)
     (hpos : ∀ y ∈ Ioo (0 : ℝ) b, 0 < f' y) :
@@ -1913,8 +1919,10 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
       have hmono := dodecaNearTerm_strictMono
       have hanti := dodecaFarTerm_strictAnti
       rcases le_or_gt x (66 / 250) with h2 | h2
-      · have ha : (33 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
-        have hb : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+      · have ha : (33 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+        hcut⟩
+        have hb : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+          hcut⟩
         have hnear : dodecaNearTerm (33 / 250) < dodecaNearTerm x := hmono ha hx h1
         have hfarx : dodecaFarTerm (66 / 250) ≤ dodecaFarTerm x := by
           rcases lt_or_eq_of_le h2 with hlt | rfl
@@ -1950,8 +1958,10 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
         unfold dodecaNearTerm at hnear ⊢
         linarith [dodeca_slot_2, hnear, hfarx, hnp, hfp]
       rcases le_or_gt x (99 / 250) with h3 | h3
-      · have ha : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
-        have hb : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+      · have ha : (66 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+        hcut⟩
+        have hb : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+          hcut⟩
         have hnear : dodecaNearTerm (66 / 250) < dodecaNearTerm x := hmono ha hx h2
         have hfarx : dodecaFarTerm (99 / 250) ≤ dodecaFarTerm x := by
           rcases lt_or_eq_of_le h3 with hlt | rfl
@@ -1987,8 +1997,10 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
         unfold dodecaNearTerm at hnear ⊢
         linarith [dodeca_slot_3, hnear, hfarx, hnp, hfp]
       rcases le_or_gt x (132 / 250) with h4 | h4
-      · have ha : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
-        have hb : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+      · have ha : (99 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+        hcut⟩
+        have hb : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+          hcut⟩
         have hnear : dodecaNearTerm (99 / 250) < dodecaNearTerm x := hmono ha hx h3
         have hfarx : dodecaFarTerm (132 / 250) ≤ dodecaFarTerm x := by
           rcases lt_or_eq_of_le h4 with hlt | rfl
@@ -2023,7 +2035,8 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
           (phase_lt_root (by norm_num) (by norm_num) (by norm_num) hb1)
         unfold dodecaNearTerm at hnear ⊢
         linarith [dodeca_slot_4, hnear, hfarx, hnp, hfp]
-      · have ha : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num) hcut⟩
+      · have ha : (132 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)
+        hcut⟩
         have hb : (33 / 50 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, hcut⟩
         have hnear : dodecaNearTerm (132 / 250) < dodecaNearTerm x := hmono ha hx h4
         have hfarx : dodecaFarTerm (33 / 50) ≤ dodecaFarTerm x := by

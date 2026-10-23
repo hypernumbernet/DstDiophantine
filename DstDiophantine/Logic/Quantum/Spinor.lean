@@ -487,9 +487,10 @@ theorem pauli_dot_sq (n : Fin 3 → ℝ) :
     (∑ a : Fin 3, (n a : ℂ) • pauli a) * (∑ a : Fin 3, (n a : ℂ) • pauli a) =
       ((n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 : ℂ) • 1 := by
   simp only [Fin.sum_univ_three, pauli]
-  simp [mul_add, add_mul, pauliX_sq, pauliY_sq, pauliZ_sq,
-    pauliX_mul_pauliY, pauliY_mul_pauliX, pauliY_mul_pauliZ, pauliZ_mul_pauliY,
-    pauliZ_mul_pauliX, pauliX_mul_pauliZ]
+  simp only [Fin.isValue, coe_smul, mul_add, Algebra.mul_smul_comm, add_mul,
+    Algebra.smul_mul_assoc, pauliX_sq, pauliY_mul_pauliX, neg_smul, smul_neg,
+    pauliZ_mul_pauliX, smul_add, pauliX_mul_pauliY, pauliY_sq, pauliZ_mul_pauliY,
+    pauliX_mul_pauliZ, pauliY_mul_pauliZ, pauliZ_sq]
   ext i j
   fin_cases i <;> fin_cases j <;> simp [pauliX, pauliY, pauliZ] <;> ring
 
@@ -503,7 +504,8 @@ theorem cyclicRep_dot_sq (n : Fin 3 → ℝ) :
     simp only [cyclicRep, Fin.sum_univ_three, smul_add, smul_smul]
     ring_nf
   rw [h, smul_mul_smul_comm, pauli_dot_sq]
-  simp [smul_smul, I_mul_I]
+  simp only [mul_neg, neg_mul, I_mul_I, neg_neg, Fin.isValue, smul_smul, one_mul,
+    neg_add_rev]
   ext i j
   simp [Matrix.neg_apply, Matrix.smul_apply]
   ring
@@ -552,13 +554,13 @@ private theorem cyclicRepComb_unit_sq {β : DualRapidity} (h : β ≠ 0) :
 theorem dualRotorMat_rodrigues (β : DualRapidity) :
     dualRotorMat β =
       Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
-        (if h : β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+        (if β = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
           else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) := by
   by_cases h : β = 0
   · subst h
     simp [dualRotorMat, Real.cos_zero]
   · rw [dualRotorMat_eq_exp_gen, dualRotorGen_of_unit h]
-    simp [h]
+    simp only [h, ↓reduceIte]
     exact exp_mat_of_sq_neg_one (cyclicRepComb_unit_sq h) (‖β‖ / 2)
 
 /-- Three-axis dual rotor has determinant `1`. -/
