@@ -62,6 +62,7 @@ import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
+import DstDiophantine.Gravity.LengthRule
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -2243,4 +2244,3 @@ example (β : DualRapidity) :
 end Gravity
 
 end DstDiophantine
-import DstDiophantine.Gravity.LengthRule

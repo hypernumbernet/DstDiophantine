@@ -14,6 +14,9 @@ nucleus are external inputs. Nothing here fixes `κ` or computes a binding.
 
 ## The ordering
 
+Every particle carries both channels at once; only the length governing
+the electric channel depends on whether the charge is isolated.
+
 1. *Isolated charge* is defined by the electromagnetic reading itself: a charge
    acts as an isolated charge toward a partner when no electromagnetic wall lies
    at or beyond their separation. Every separation larger than `2ℓ/π` is on the
@@ -160,7 +163,8 @@ theorem cold_net_inward {γ γE ρ : ℝ} (hE : 0 < γE) (hρ : 0 < ρ) (hγ : 0
   linarith
 
 /-- Two like charges held in an octahedral hole about `2 Å = 2·10⁵` fm apart
-are beyond `2ℓ_E/π`: the seat is read at the electromagnetic length. -/
+are beyond `2ℓ_E/π`: at the seat the electric channel is governed by `ℓ_E`;
+the gravitational channel acts at `λ_π` throughout. -/
 theorem octahedral_seat_isolated {ℓE : ℝ} (hℓ0 : 0 < ℓE) (hℓ : ℓE < 387) :
     0 < gammaSEqual (ℓE / (2 * 200000)) := by
   have hπ : (3 : ℝ) < π := pi_gt_three
