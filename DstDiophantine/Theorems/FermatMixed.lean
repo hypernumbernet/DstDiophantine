@@ -36,10 +36,16 @@ characteristic is elliptic (\(\beta^2>\alpha^2\)), so the finite sandwich of
 positive multiple of \(N_0\) precisely when \(\alpha>0\). The power sum of
 positive bases is the scalar `exp(n α) (cos β ^ n + sin β ^ n)` on that seat.
 Equal positive real legs realise the scalar with `α > 0`, so the relation
-survives over `ℝ`. Neither positive integer base divides the other. For an
-odd prime exponent dividing none of three coprime positive bases, `a + b`
-and `(a^n + b^n) / (a + b)` are pure powers of coprime positive integers
-whose product is `c`. Unconditional classical FLT is **not** claimed.
+survives over `ℝ`. Neither positive integer base divides the other. On a
+positive integer solution the excess `a² + b² - c²` is a positive integer,
+so the boost equals `½ log(1 + (a²+b²-c²)/c²)` and is at least
+`½ log(1 + 1/c²)`. For an odd prime exponent dividing none of three coprime
+positive bases, `a + b`, `c - a`, and `c - b` are pairwise coprime pure `n`th
+powers summing to `2c`, with positive roots. The quotient of the power sum
+by `a + b` is a pure `n`th power coprime to that sum. The third base is the
+product of the root of `a + b` and the root of that quotient, both greater
+than one.
+Unconditional classical FLT is **not** claimed.
 -/
 
 namespace DstDiophantine
@@ -1004,6 +1010,80 @@ theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
       _ = k ^ n + 1 := by rw [← hunit, Nat.add_comm]
   exact absurd hsmall (not_le_of_gt (nat_pow_add_one_lt_succ_pow hk0 hn))
 
+/-- On a positive integer solution of degree `n ≥ 3`, `c² < a² + b²`. -/
+theorem fermat_sq_excess_pos {a b c : ℤ} {n : ℕ}
+    (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    c ^ 2 < a ^ 2 + b ^ 2 := by
+  have hα := fermatBoost_pos_of_sol hn ha hb hc hsol
+  have hcmp :=
+    (fermatBoost_pos_iff (ne_of_gt hc) (Or.inl (ne_of_gt ha))).mp hα
+  rw [fermatL2_of_pos ha hb, natAbs_coe_eq_coe_of_pos hc] at hcmp
+  have hc0 : (0 : ℝ) ≤ c := by exact_mod_cast hc.le
+  have hsq : (c : ℝ) ^ 2 < (a : ℝ) ^ 2 + (b : ℝ) ^ 2 :=
+    (Real.lt_sqrt hc0).mp hcmp
+  exact_mod_cast hsq
+
+/-- For positive bases the boost is the half-logarithm of the normalised excess. -/
+theorem fermatBoost_eq_half_log_excess {a b c : ℤ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    fermatBoost a b c (ne_of_gt hc) =
+      Real.log (1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2) / 2 := by
+  have hL := fermatL2_of_pos ha hb
+  have hS : 0 < (a : ℝ) ^ 2 + (b : ℝ) ^ 2 := by positivity
+  have hc0 : (0 : ℝ) < c := by exact_mod_cast hc
+  have hα : fermatBoost a b c (ne_of_gt hc) =
+      Real.log (Real.sqrt ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / c) := by
+    unfold fermatBoost
+    rw [hL, natAbs_coe_eq_coe_of_pos hc]
+  rw [hα, Real.log_div (Real.sqrt_pos.mpr hS).ne' hc0.ne', Real.log_sqrt hS.le]
+  have hlogsq : Real.log ((c : ℝ) ^ 2) = 2 * Real.log (c : ℝ) := by
+    rw [Real.log_pow, Nat.cast_ofNat]
+  have hdiv : Real.log ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) - Real.log ((c : ℝ) ^ 2) =
+      Real.log (((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (c : ℝ) ^ 2) := by
+    rw [Real.log_div hS.ne' (pow_ne_zero 2 hc0.ne')]
+  have harg : ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (c : ℝ) ^ 2 =
+      1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 := by
+    have hden : (c : ℝ) ^ 2 ≠ 0 := pow_ne_zero 2 hc0.ne'
+    calc ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (c : ℝ) ^ 2
+        = ((c : ℝ) ^ 2 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2)) / (c : ℝ) ^ 2 := by
+          congr 1
+          ring
+      _ = (c : ℝ) ^ 2 / (c : ℝ) ^ 2 +
+          ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 := by
+          rw [add_div]
+      _ = 1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 := by
+          rw [div_self hden]
+  calc Real.log ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / 2 - Real.log (c : ℝ)
+      = Real.log ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / 2 - Real.log ((c : ℝ) ^ 2) / 2 := by
+        rw [hlogsq]; ring
+    _ = (Real.log ((a : ℝ) ^ 2 + (b : ℝ) ^ 2) - Real.log ((c : ℝ) ^ 2)) / 2 := by ring
+    _ = Real.log (((a : ℝ) ^ 2 + (b : ℝ) ^ 2) / (c : ℝ) ^ 2) / 2 := by rw [hdiv]
+    _ = Real.log (1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2) / 2 := by
+        rw [harg]
+
+/-- On a positive integer solution the boost is at least `½ log(1 + 1/c²)`. -/
+theorem fermatBoost_ge_half_log_one_over_sq {a b c : ℤ} {n : ℕ}
+    (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    Real.log (1 + 1 / (c : ℝ) ^ 2) / 2 ≤ fermatBoost a b c (ne_of_gt hc) := by
+  have hlt := fermat_sq_excess_pos hn ha hb hc hsol
+  have hEint : (1 : ℤ) ≤ a ^ 2 + b ^ 2 - c ^ 2 := by omega
+  have hE : (1 : ℝ) ≤ (a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2 := by
+    exact_mod_cast hEint
+  have hc0 : (0 : ℝ) < c := by exact_mod_cast hc
+  have hfrac :
+      1 / (c : ℝ) ^ 2 ≤
+        ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 :=
+    div_le_div_of_nonneg_right hE (sq_nonneg _)
+  have hpos : 0 < 1 + 1 / (c : ℝ) ^ 2 := by positivity
+  have hle : 1 + 1 / (c : ℝ) ^ 2 ≤
+      1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 := by
+    simpa using add_le_add_left hfrac 1
+  have hlog := Real.log_le_log hpos hle
+  rw [fermatBoost_eq_half_log_excess ha hb hc]
+  exact div_le_div_of_nonneg_right hlog (by norm_num : (0 : ℝ) ≤ 2)
+
 theorem not_fermat_pos_of_dvd_leg {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (_hc : 0 < c)
     (hdvd : a ∣ b) :
@@ -1186,6 +1266,327 @@ theorem fermat_odd_prime_leg_sum_pow {a b c n : ℕ}
   · have hdivq : a ^ n + b ^ n = q * (a + b) := by
       simpa [Nat.mul_comm] using hq
     rw [Nat.div_eq_of_eq_mul_left hab0 hdivq, ht_pow]
+
+private theorem fermat_gcd_sum_sub {a b c n : ℕ}
+    (_hn : n ≠ 0) (hodd : Odd n) (hcop : Nat.Coprime a b)
+    (hsol : a ^ n + b ^ n = c ^ n) (hbc : b < c) :
+    Nat.gcd (a + b) (c - b) = 1 := by
+  by_contra hne
+  obtain ⟨p, hp, hpdvd⟩ := Nat.exists_prime_and_dvd hne
+  have hp_ab : p ∣ a + b := Nat.dvd_trans hpdvd (Nat.gcd_dvd_left _ _)
+  have hp_cb : p ∣ c - b := Nat.dvd_trans hpdvd (Nat.gcd_dvd_right _ _)
+  have hdiff0 : ((c - b : ℕ) : ZMod p) = 0 :=
+    (ZMod.natCast_eq_zero_iff (c - b) p).mpr hp_cb
+  have hsum0 : ((a + b : ℕ) : ZMod p) = 0 :=
+    (ZMod.natCast_eq_zero_iff (a + b) p).mpr hp_ab
+  have hb_eq : (b : ZMod p) = (c : ZMod p) := by
+    have hsub : ((c - b : ℕ) : ZMod p) = (c : ZMod p) - (b : ZMod p) :=
+      Nat.cast_sub hbc.le
+    have h0 : (c : ZMod p) - (b : ZMod p) = 0 := by simpa [hsub] using hdiff0
+    exact (sub_eq_zero.mp h0).symm
+  have ha_eq : (a : ZMod p) = - (b : ZMod p) := by
+    have : (a : ZMod p) + (b : ZMod p) = 0 := by simpa using hsum0
+    exact eq_neg_of_add_eq_zero_left this
+  have hsolZ : (a : ZMod p) ^ n + (b : ZMod p) ^ n = (c : ZMod p) ^ n := by
+    simpa [Nat.cast_add, Nat.cast_pow] using congrArg (fun k : ℕ => (k : ZMod p)) hsol
+  have hx : (- (b : ZMod p)) ^ n + (b : ZMod p) ^ n = (b : ZMod p) ^ n := by
+    simpa [ha_eq, hb_eq] using hsolZ
+  rw [Odd.neg_pow hodd (b : ZMod p)] at hx
+  have hb0 : (b : ZMod p) ^ n = 0 := by
+    have hx0 : (0 : ZMod p) = (b : ZMod p) ^ n := by simpa using hx
+    exact hx0.symm
+  have hpb : p ∣ b := by
+    have hpow0 : ((b ^ n : ℕ) : ZMod p) = 0 := by simpa [Nat.cast_pow] using hb0
+    exact hp.dvd_of_dvd_pow ((ZMod.natCast_eq_zero_iff (b ^ n) p).mp hpow0)
+  have hpa : p ∣ a := by
+    have ha0 : (a : ZMod p) ^ n = 0 := by
+      rw [ha_eq, Odd.neg_pow hodd, hb0, neg_zero]
+    have hpow0 : ((a ^ n : ℕ) : ZMod p) = 0 := by simpa [Nat.cast_pow] using ha0
+    exact hp.dvd_of_dvd_pow ((ZMod.natCast_eq_zero_iff (a ^ n) p).mp hpow0)
+  have hpg : p ∣ Nat.gcd a b := Nat.dvd_gcd hpa hpb
+  rw [hcop.gcd_eq_one] at hpg
+  exact hp.not_dvd_one hpg
+
+private theorem fermat_gcd_two_diffs {a b c n : ℕ}
+    (_hn : n ≠ 0) (hcop : Nat.Coprime a b)
+    (hsol : a ^ n + b ^ n = c ^ n) (hac : a < c) (hbc : b < c) :
+    Nat.gcd (c - a) (c - b) = 1 := by
+  by_contra hne
+  obtain ⟨p, hp, hpdvd⟩ := Nat.exists_prime_and_dvd hne
+  have hp_ca : p ∣ c - a := Nat.dvd_trans hpdvd (Nat.gcd_dvd_left _ _)
+  have hp_cb : p ∣ c - b := Nat.dvd_trans hpdvd (Nat.gcd_dvd_right _ _)
+  have ha_eq : (a : ZMod p) = (c : ZMod p) := by
+    have hzero : ((c - a : ℕ) : ZMod p) = 0 :=
+      (ZMod.natCast_eq_zero_iff (c - a) p).mpr hp_ca
+    have hsub : ((c - a : ℕ) : ZMod p) = (c : ZMod p) - (a : ZMod p) :=
+      Nat.cast_sub hac.le
+    have h0 : (c : ZMod p) - (a : ZMod p) = 0 := by simpa [hsub] using hzero
+    exact (sub_eq_zero.mp h0).symm
+  have hb_eq : (b : ZMod p) = (c : ZMod p) := by
+    have hzero : ((c - b : ℕ) : ZMod p) = 0 :=
+      (ZMod.natCast_eq_zero_iff (c - b) p).mpr hp_cb
+    have hsub : ((c - b : ℕ) : ZMod p) = (c : ZMod p) - (b : ZMod p) :=
+      Nat.cast_sub hbc.le
+    have h0 : (c : ZMod p) - (b : ZMod p) = 0 := by simpa [hsub] using hzero
+    exact (sub_eq_zero.mp h0).symm
+  have hsolZ : (a : ZMod p) ^ n + (b : ZMod p) ^ n = (c : ZMod p) ^ n := by
+    simpa [Nat.cast_add, Nat.cast_pow] using congrArg (fun k : ℕ => (k : ZMod p)) hsol
+  have hx : (a : ZMod p) ^ n + (a : ZMod p) ^ n = (a : ZMod p) ^ n := by
+    simpa [ha_eq, hb_eq] using hsolZ
+  have ha0 : (a : ZMod p) ^ n = 0 :=
+    add_left_cancel <| by
+      calc (a : ZMod p) ^ n + (a : ZMod p) ^ n
+          = (a : ZMod p) ^ n := hx
+        _ = (a : ZMod p) ^ n + 0 := (add_zero _).symm
+  have hpa : p ∣ a := by
+    have hpow0 : ((a ^ n : ℕ) : ZMod p) = 0 := by simpa [Nat.cast_pow] using ha0
+    exact hp.dvd_of_dvd_pow ((ZMod.natCast_eq_zero_iff (a ^ n) p).mp hpow0)
+  have hpb : p ∣ b := by
+    have hb0 : (b : ZMod p) ^ n = 0 := by rw [hb_eq, ← ha_eq, ha0]
+    have hpow0 : ((b ^ n : ℕ) : ZMod p) = 0 := by simpa [Nat.cast_pow] using hb0
+    exact hp.dvd_of_dvd_pow ((ZMod.natCast_eq_zero_iff (b ^ n) p).mp hpow0)
+  have hpg : p ∣ Nat.gcd a b := Nat.dvd_gcd hpa hpb
+  rw [hcop.gcd_eq_one] at hpg
+  exact hp.not_dvd_one hpg
+
+private theorem fermat_gcd_diff_quot {a b c n : ℕ}
+    (hp : Nat.Prime n) (_ha : 0 < a) (_hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hna : ¬ n ∣ a) (hsol : a ^ n + b ^ n = c ^ n) (hbc : b < c) :
+    Nat.gcd (c - b) (∑ i ∈ Finset.range n, b ^ i * c ^ (n - 1 - i)) = 1 := by
+  set Q := ∑ i ∈ Finset.range n, b ^ i * c ^ (n - 1 - i)
+  by_contra hne
+  obtain ⟨p, hpprime, hpdvd⟩ := Nat.exists_prime_and_dvd hne
+  have hp_cb : p ∣ c - b := Nat.dvd_trans hpdvd (Nat.gcd_dvd_left _ _)
+  have hp_Q : p ∣ Q := Nat.dvd_trans hpdvd (Nat.gcd_dvd_right _ _)
+  have hb_eq : (b : ZMod p) = (c : ZMod p) := by
+    have hzero : ((c - b : ℕ) : ZMod p) = 0 :=
+      (ZMod.natCast_eq_zero_iff (c - b) p).mpr hp_cb
+    have hsub : ((c - b : ℕ) : ZMod p) = (c : ZMod p) - (b : ZMod p) :=
+      Nat.cast_sub hbc.le
+    have h0 : (c : ZMod p) - (b : ZMod p) = 0 := by simpa [hsub] using hzero
+    exact (sub_eq_zero.mp h0).symm
+  have hQ : (Q : ZMod p) = (n : ZMod p) * (b : ZMod p) ^ (n - 1) := by
+    have hcoe : (Q : ZMod p) =
+        ∑ i ∈ Finset.range n, (b : ZMod p) ^ i * (c : ZMod p) ^ (n - 1 - i) := by
+      simp [Q, Nat.cast_sum, Nat.cast_mul, Nat.cast_pow]
+    rw [hcoe]
+    have hsum :
+        ∑ i ∈ Finset.range n, (b : ZMod p) ^ i * (c : ZMod p) ^ (n - 1 - i) =
+          ∑ i ∈ Finset.range n, (b : ZMod p) ^ i * (b : ZMod p) ^ (n - 1 - i) := by
+      refine Finset.sum_congr rfl ?_
+      intro i _
+      rw [hb_eq]
+    rw [hsum, geom_sum₂_self]
+  have hp_nb : p ∣ n * b ^ (n - 1) :=
+    (ZMod.natCast_eq_zero_iff (n * b ^ (n - 1)) p).mp <| by
+      have hQ0 : (Q : ZMod p) = 0 := (ZMod.natCast_eq_zero_iff Q p).mpr hp_Q
+      rw [Nat.cast_mul, Nat.cast_pow, ← hQ, hQ0]
+  rcases hpprime.dvd_mul.mp hp_nb with hp_n | hp_pow
+  · have hp_eq : p = n := (Nat.prime_dvd_prime_iff_eq hpprime hp).mp hp_n
+    have hn_cb : n ∣ c - b := by simpa [hp_eq] using hp_cb
+    have ha0 : (a : ZMod n) ^ n = 0 := by
+      have hsolZ : (a : ZMod n) ^ n + (b : ZMod n) ^ n = (c : ZMod n) ^ n := by
+        simpa [Nat.cast_add, Nat.cast_pow] using congrArg (fun k : ℕ => (k : ZMod n)) hsol
+      have hb_c : (b : ZMod n) = (c : ZMod n) := by
+        have hzero : ((c - b : ℕ) : ZMod n) = 0 :=
+          (ZMod.natCast_eq_zero_iff (c - b) n).mpr hn_cb
+        have hsub : ((c - b : ℕ) : ZMod n) = (c : ZMod n) - (b : ZMod n) :=
+          Nat.cast_sub hbc.le
+        have h0 : (c : ZMod n) - (b : ZMod n) = 0 := by simpa [hsub] using hzero
+        exact (sub_eq_zero.mp h0).symm
+      have hsum : (a : ZMod n) ^ n + (c : ZMod n) ^ n = (c : ZMod n) ^ n := by
+        simpa [hb_c] using hsolZ
+      exact add_right_cancel <| by
+        rw [zero_add]
+        exact hsum
+    exact hna <| by
+      have hpow0 : ((a ^ n : ℕ) : ZMod n) = 0 := by simpa [Nat.cast_pow] using ha0
+      exact hp.dvd_of_dvd_pow ((ZMod.natCast_eq_zero_iff (a ^ n) n).mp hpow0)
+  · have hpb : p ∣ b := hpprime.dvd_of_dvd_pow hp_pow
+    have hpc : p ∣ c := by
+      have hc : (c - b) + b = c := Nat.sub_add_cancel hbc.le
+      rw [← hc]
+      exact dvd_add hp_cb hpb
+    have hpan : p ∣ a ^ n := by
+      have hcbn : p ∣ c ^ n := dvd_pow hpc hp.ne_zero
+      have hpbn : p ∣ b ^ n := dvd_pow hpb hp.ne_zero
+      have hsum : p ∣ b ^ n + a ^ n := by
+        rw [add_comm, hsol]
+        exact hcbn
+      exact (Nat.dvd_add_right hpbn).mp hsum
+    have hpa : p ∣ a := hpprime.dvd_of_dvd_pow hpan
+    have hpg : p ∣ Nat.gcd a b := Nat.dvd_gcd hpa hpb
+    rw [hcop.gcd_eq_one] at hpg
+    exact hpprime.not_dvd_one hpg
+
+/--
+Odd prime exponent, coprime positive bases, exponent dividing none of them:
+`a + b`, `c - a`, and `c - b` are pairwise coprime pure `n`th powers summing
+to `2c`, with positive roots. The quotient of the power sum by `a + b` is
+a pure `n`th power coprime to that sum. The third base is the product of the
+root of `a + b` and the root of that quotient, both greater than one.
+-/
+theorem fermat_odd_prime_three_powers {a b c n : ℕ}
+    (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b)
+    (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    ∃ p q r t : ℕ, 1 < p ∧ 0 < q ∧ 0 < r ∧ 1 < t ∧
+      Nat.Coprime p q ∧ Nat.Coprime p r ∧ Nat.Coprime q r ∧ Nat.Coprime p t ∧
+      a + b = p ^ n ∧ c - a = q ^ n ∧ c - b = r ^ n ∧
+      p ^ n + q ^ n + r ^ n = 2 * c ∧
+      (a ^ n + b ^ n) / (a + b) = t ^ n ∧ c = p * t := by
+  have hna : ¬ n ∣ a := fun h => hnd (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left h b) c)
+  have hbc : b < c := by
+    have hpow : b ^ n < c ^ n := by
+      have : b ^ n < a ^ n + b ^ n := Nat.lt_add_of_pos_left (pow_pos ha n)
+      rwa [hsol] at this
+    exact lt_of_pow_lt_pow_left₀ n (Nat.zero_le _) hpow
+  have hac : a < c := by
+    have hpow : a ^ n < c ^ n := by
+      have : a ^ n < a ^ n + b ^ n := Nat.lt_add_of_pos_right (pow_pos hb n)
+      rwa [hsol] at this
+    exact lt_of_pow_lt_pow_left₀ n (Nat.zero_le _) hpow
+  obtain ⟨p, t, hpgt, ht0, hcoppt, hp_pow, ht_pow, hc_eq⟩ :=
+    fermat_odd_prime_leg_sum_pow hp hodd ha hb hcop hnd hsol
+  have ht : 1 < t := by
+    have ht_ne : t ≠ 1 := by
+      intro ht1
+      have hdiv : a + b ∣ a ^ n + b ^ n := hodd.nat_add_dvd_pow_add_pow a b
+      have hquot : (a ^ n + b ^ n) / (a + b) = 1 := by simpa [ht1, one_pow] using ht_pow
+      have hsum_eq : a ^ n + b ^ n = a + b := by
+        rw [← Nat.mul_div_cancel' hdiv, hquot, mul_one]
+      by_cases ha1 : a = 1
+      · by_cases hb1 : b = 1
+        · have hc2 : c ^ n = 2 := by
+            have h2 : 1 ^ n + 1 ^ n = c ^ n := by simpa [ha1, hb1] using hsol
+            simpa using h2.symm
+          have hcpos : 0 < c := Nat.pos_of_ne_zero fun hc0 => by
+            simp [hc0, hp.ne_zero, zero_pow] at hc2
+          rcases Nat.lt_or_ge c 2 with hc1 | hc2le
+          · have : c = 1 := by omega
+            simp [this, one_pow] at hc2
+          · have h4 : 4 ≤ c ^ n := by
+              calc 4
+                  = 2 ^ 2 := by decide
+                _ ≤ 2 ^ n := Nat.pow_le_pow_right (by decide : 0 < 2) hp.two_le
+                _ ≤ c ^ n := Nat.pow_le_pow_left hc2le n
+            omega
+        · have hb2 : 2 ≤ b := by omega
+          have hb_pow : b + b ≤ b ^ n := by
+            calc b + b
+                = 2 * b := by rw [two_mul]
+              _ ≤ b * b := Nat.mul_le_mul_right b hb2
+              _ = b ^ 2 := by rw [pow_two, mul_comm]
+              _ ≤ b ^ n := Nat.pow_le_pow_right hb hp.two_le
+          rw [ha1, one_pow] at hsum_eq
+          omega
+      · have ha2 : 2 ≤ a := by omega
+        have ha_pow : a + a ≤ a ^ n := by
+          calc a + a
+              = 2 * a := by rw [two_mul]
+            _ ≤ a * a := Nat.mul_le_mul_right a ha2
+            _ = a ^ 2 := by rw [pow_two]
+            _ ≤ a ^ n := Nat.pow_le_pow_right ha hp.two_le
+        have hb_le : b ≤ b ^ n := by
+          calc b
+              = b ^ 1 := (pow_one b).symm
+            _ ≤ b ^ n := Nat.pow_le_pow_right hb hp.one_le
+        omega
+    omega
+  have hgcd_ab_cb := fermat_gcd_sum_sub hp.ne_zero hodd hcop hsol hbc
+  have hgcd_ab_ca : Nat.gcd (a + b) (c - a) = 1 := by
+    simpa [Nat.add_comm] using
+      fermat_gcd_sum_sub hp.ne_zero hodd hcop.symm (by simpa [Nat.add_comm] using hsol) hac
+  have hgcd_diffs := fermat_gcd_two_diffs hp.ne_zero hcop hsol hac hbc
+  have hQgcd_b := fermat_gcd_diff_quot hp ha hb hcop hna hsol hbc
+  have hQgcd_a :=
+    fermat_gcd_diff_quot hp hb ha hcop.symm
+      (fun h => hnd (dvd_mul_of_dvd_left (dvd_mul_of_dvd_right h a) c))
+      (by simpa [add_comm] using hsol) hac
+  let Qb := ∑ i ∈ Finset.range n, b ^ i * c ^ (n - 1 - i)
+  let Qa := ∑ i ∈ Finset.range n, a ^ i * c ^ (n - 1 - i)
+  have hprod_b : (c - b) * Qb = a ^ n := by
+    have hgeom := geom_sum₂_mul_of_le hbc.le n
+    have hmul : Qb * (c - b) = a ^ n := by
+      rw [show Qb * (c - b) =
+          (∑ i ∈ Finset.range n, b ^ i * c ^ (n - 1 - i)) * (c - b) from rfl, hgeom]
+      exact Nat.sub_eq_of_eq_add hsol.symm
+    rwa [Nat.mul_comm] at hmul
+  have hunit_b : IsUnit (Nat.gcd (c - b) Qb) := by
+    rw [hQgcd_b]
+    exact isUnit_one
+  obtain ⟨r, hr⟩ := exists_eq_pow_of_mul_eq_pow hunit_b hprod_b
+  have hprod_a : (c - a) * Qa = b ^ n := by
+    have hgeom := geom_sum₂_mul_of_le hac.le n
+    have hmul : Qa * (c - a) = b ^ n := by
+      rw [show Qa * (c - a) =
+          (∑ i ∈ Finset.range n, a ^ i * c ^ (n - 1 - i)) * (c - a) from rfl, hgeom]
+      exact Nat.sub_eq_of_eq_add <| by
+        calc c ^ n
+            = a ^ n + b ^ n := hsol.symm
+          _ = b ^ n + a ^ n := by rw [Nat.add_comm]
+    rwa [Nat.mul_comm] at hmul
+  have hunit_a : IsUnit (Nat.gcd (c - a) Qa) := by
+    rw [hQgcd_a]
+    exact isUnit_one
+  obtain ⟨q, hq⟩ := exists_eq_pow_of_mul_eq_pow hunit_a hprod_a
+  have hq_pos : 0 < q := by
+    have hpos : 0 < c - a := Nat.sub_pos_of_lt hac
+    have : 0 < q ^ n := by simpa [hq] using hpos
+    exact Nat.pos_of_ne_zero fun hq0 => by simp [hq0, hp.ne_zero, zero_pow] at this
+  have hr_pos : 0 < r := by
+    have hpos : 0 < c - b := Nat.sub_pos_of_lt hbc
+    have : 0 < r ^ n := by simpa [hr] using hpos
+    exact Nat.pos_of_ne_zero fun hr0 => by simp [hr0, hp.ne_zero, zero_pow] at this
+  have hcop_pq : Nat.Coprime p q := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    obtain ⟨g, hg, hgdvd⟩ := Nat.exists_prime_and_dvd hne
+    have hgp : g ∣ p ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_left _ _)) hp.ne_zero
+    have hgq : g ∣ q ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_right _ _)) hp.ne_zero
+    have hpg : g ∣ Nat.gcd (a + b) (c - a) := by
+      rw [hp_pow, hq]
+      exact Nat.dvd_gcd hgp hgq
+    rw [hgcd_ab_ca] at hpg
+    exact hg.not_dvd_one hpg
+  have hcop_pr : Nat.Coprime p r := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    obtain ⟨g, hg, hgdvd⟩ := Nat.exists_prime_and_dvd hne
+    have hgp : g ∣ p ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_left _ _)) hp.ne_zero
+    have hgr : g ∣ r ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_right _ _)) hp.ne_zero
+    have hpg : g ∣ Nat.gcd (a + b) (c - b) := by
+      rw [hp_pow, hr]
+      exact Nat.dvd_gcd hgp hgr
+    rw [hgcd_ab_cb] at hpg
+    exact hg.not_dvd_one hpg
+  have hcop_qr : Nat.Coprime q r := by
+    rw [Nat.coprime_iff_gcd_eq_one]
+    by_contra hne
+    obtain ⟨g, hg, hgdvd⟩ := Nat.exists_prime_and_dvd hne
+    have hgq : g ∣ q ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_left _ _)) hp.ne_zero
+    have hgr : g ∣ r ^ n := dvd_pow (Nat.dvd_trans hgdvd (Nat.gcd_dvd_right _ _)) hp.ne_zero
+    have hpg : g ∣ Nat.gcd (c - a) (c - b) := by
+      rw [hq, hr]
+      exact Nat.dvd_gcd hgq hgr
+    rw [hgcd_diffs] at hpg
+    exact hg.not_dvd_one hpg
+  have hsum2 : p ^ n + q ^ n + r ^ n = 2 * c := by
+    rw [← hp_pow, ← hq, ← hr]
+    have hca : a + (c - a) = c := Nat.add_sub_cancel' hac.le
+    have hcb : b + (c - b) = c := Nat.add_sub_cancel' hbc.le
+    calc a + b + (c - a) + (c - b)
+        = a + (c - a) + b + (c - b) := by
+          rw [Nat.add_assoc a b (c - a), Nat.add_comm b (c - a),
+            ← Nat.add_assoc a (c - a) b]
+        _ = (a + (c - a)) + (b + (c - b)) := by
+          rw [← Nat.add_assoc (a + (c - a)) b (c - b)]
+        _ = c + c := by rw [hca, hcb]
+        _ = 2 * c := by rw [two_mul]
+  refine ⟨p, q, r, t, hpgt, hq_pos, hr_pos, ht, hcop_pq, hcop_pr, hcop_qr, hcoppt,
+    hp_pow, hq, hr, hsum2, ht_pow, hc_eq⟩
 
 /-! ### Live residual (sandwich / commutator attack; unproved) -/
 

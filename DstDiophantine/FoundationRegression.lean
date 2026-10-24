@@ -79,8 +79,10 @@ elliptic characteristic \(\omega=\sqrt{\beta^2-\alpha^2}\), finite sandwich of
 \(N_1\) as a harmonic oscillator, nonzero time-null remainder on mixed
 solutions, sandwich mismatch with a pure boost) are included, as are the seat
 scalar of a positive power sum, the positive boost of equal real legs, the
-exclusion of a positive solution in which one base divides the other, and the
-coprime pure-power shape of an odd prime dividing none of three coprime bases.
+exclusion of a positive solution in which one base divides the other, the
+half-logarithm formula for the positive integer excess, and the pairwise
+coprime pure powers \(a+b\), \(c-a\), and \(c-b\) for an odd prime dividing
+none of three coprime bases.
 The live residual `FermatMixedMotorResidual` remains a type, not a proved
 theorem.
 -/
@@ -222,6 +224,28 @@ example {a b c n : ℕ} (hp : Nat.Prime n) (hodd : Odd n)
     ∃ m t : ℕ, 1 < m ∧ 0 < t ∧ Nat.Coprime m t ∧
       a + b = m ^ n ∧ (a ^ n + b ^ n) / (a + b) = t ^ n ∧ c = m * t :=
   fermat_odd_prime_leg_sum_pow hp hodd ha hb hcop hnd hsol
+
+/-- Positive integer solution: the boost is the half-logarithm of the excess. -/
+example {a b c : ℤ} {n : ℕ} (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hsol : a ^ n + b ^ n = c ^ n) :
+    c ^ 2 < a ^ 2 + b ^ 2 ∧
+      fermatBoost a b c (ne_of_gt hc) =
+        Real.log (1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2) / 2 ∧
+      Real.log (1 + 1 / (c : ℝ) ^ 2) / 2 ≤ fermatBoost a b c (ne_of_gt hc) :=
+  ⟨fermat_sq_excess_pos hn ha hb hc hsol,
+    fermatBoost_eq_half_log_excess ha hb hc,
+    fermatBoost_ge_half_log_one_over_sq hn ha hb hc hsol⟩
+
+/-- Odd prime case: three pairwise coprime pure powers, composite third base. -/
+example {a b c n : ℕ} (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ∃ p q r t : ℕ, 1 < p ∧ 0 < q ∧ 0 < r ∧ 1 < t ∧
+      Nat.Coprime p q ∧ Nat.Coprime p r ∧ Nat.Coprime q r ∧ Nat.Coprime p t ∧
+      a + b = p ^ n ∧ c - a = q ^ n ∧ c - b = r ^ n ∧
+      p ^ n + q ^ n + r ^ n = 2 * c ∧
+      (a ^ n + b ^ n) / (a + b) = t ^ n ∧ c = p * t :=
+  fermat_odd_prime_three_powers hp hodd ha hb hcop hnd hsol
 
 /-- Dual-axis Fermat seed: closed-form generator. -/
 example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
