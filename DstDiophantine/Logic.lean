@@ -41,6 +41,7 @@ import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DiracEquation
 import DstDiophantine.Logic.Quantum.DiracCovariance
+import DstDiophantine.Logic.Quantum.DiracField
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -84,7 +85,10 @@ and `DstDiophantine.CGA`).
   momentum-space Dirac equation, mass bilinear and current under every
   unit-determinant total rotor, its unique usual·dual factorization, the dual
   sector as little group of the rest momentum, and the Thomas–Wigner dual
-  rotation of perpendicular usual rotors, dual-rotor character, spinor
+  rotation of perpendicular usual rotors, the Gordon identity relating the
+  current of two solutions to the momentum and the mass bilinear, the
+  spacetime Dirac equation `γ^μ∂_μΨ = -mΨ` with its plane-wave solutions and
+  conserved current, dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
@@ -962,6 +966,37 @@ example {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
         usualRotorMat α * dualRotorMat (EuclideanSpace.single 1 φ) ∧
       dualRotorMat (EuclideanSpace.single 1 φ) ≠ 1 :=
   usualRotor_perp_wigner ha hb
+
+/-- Regression: Gordon identity, the current of two solutions is the raised
+momentum times the mass bilinear. -/
+example {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor} (hΨ : DiracMomentum m p Ψ)
+    (hΦ : DiracMomentum m p Φ) (μ : Fin 4) :
+    (m : ℂ) * diracCurrent μ Ψ Φ =
+      -Complex.I * ((minkowskiEta μ μ * p μ : ℝ) : ℂ) * diracScalar Ψ Φ :=
+  diracCurrent_gordon hΨ hΦ μ
+
+/-- Regression: the real current of a solution has Minkowski square `-(Ψ̄Ψ)²`. -/
+example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0) (hΨ : Ψ ≠ 0)
+    (h : DiracMomentum m p Ψ) :
+    minkowskiQ (realCurrent Ψ) = -((diracScalar Ψ Ψ).re) ^ 2 :=
+  minkowskiQ_realCurrent hm hΨ h
+
+/-- Regression: a plane wave solves the spacetime Dirac equation exactly when
+its amplitude solves the momentum-space equation. -/
+example (m : ℝ) (p : Vec4) (u : DiracSpinor) :
+    DiracField m (planeWave p u) ↔ DiracMomentum m p u :=
+  diracField_planeWave_iff m p u
+
+/-- Regression: the current of two solutions of one real mass is conserved. -/
+example {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (hΦ : DiracField m Φ)
+    (x : Vec4) :
+    ∑ μ : Fin 4, fderiv ℝ (currentField Ψ Φ μ) x (Pi.single μ 1) = 0 :=
+  currentField_conserved hΨ hΦ x
+
+/-- Regression: dual rotors leave the density `Ψ†Ψ` unchanged. -/
+example (β : DualRapidity) (Ψ : DiracSpinor) :
+    ‖rotorDirac (dualRotorMat β) Ψ‖ = ‖Ψ‖ :=
+  norm_rotorDirac_dualRotor β Ψ
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

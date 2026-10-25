@@ -568,9 +568,29 @@ isomorphic. The four D4L labels are not four orthogonal rays in $\mathbb{C}^2$.
 The orthomodular (Sasaki) implication detaches for every pair. The classical
 material expansion detaches exactly on compatible pairs.
 
+[`DiracCovariance.lean`](DstDiophantine/Logic/Quantum/DiracCovariance.lean):
+every unit-determinant total rotor maps solutions of mass $m$ to solutions of
+mass $m$ and preserves the mass bilinear. It factors uniquely as a usual rotor
+followed by a dual rotor, the dual rotors are exactly the stabilizer of the
+rest momentum, and perpendicular usual rotors leave a Thomas–Wigner dual
+rotation.
+
+[`DiracField.lean`](DstDiophantine/Logic/Quantum/DiracField.lean): for two
+solutions at one momentum the current is the raised momentum times the mass
+bilinear (Gordon identity), so $m\,\Psi^\dagger\Phi = p_0\,\bar\Psi\Phi$. The
+real current of one solution has Minkowski square $-(\bar\Psi\Psi)^2$. Under
+$p_\mu \mapsto -i\partial_\mu$ the field equation is
+$\gamma^\mu\partial_\mu\Psi = -m\Psi$. A plane wave $e^{ip\cdot x}u$ solves it
+exactly when $u$ solves the momentum-space equation, solutions of one mass
+form a complex vector space, and the current of two differentiable solutions
+of one real mass is conserved. Its time component is $i\Psi^\dagger\Psi$.
+Dual rotors leave $\Psi^\dagger\Psi$ unchanged, and a total rotor carrying a
+rest solution to $p$ multiplies it by $p_0/m$.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
-produce a spacetime Dirac equation, a mass from torsion, or covariance under
-the full rotor group. The dual-rotor character, the spinor matrix element,
+produce a mass from torsion, position operators, or covariance of the field
+equation under rotors acting on spacetime points. The dual-rotor character,
+the spinor matrix element,
 and a scalar $\mathrm{U}(1)$ phase are three distinct invariants. A finite
 discrete rotor image is not a count of generations. The light-cone split
 $8+8$ is not the six torsional generators, and the super-Poincaré count used
@@ -656,6 +676,7 @@ lake build DstDiophantine.Gravity
 lake build DstDiophantine.Logic
 lake build DstDiophantine.Logic.Quantum.DiracEquation
 lake build DstDiophantine.Logic.Quantum.DiracCovariance
+lake build DstDiophantine.Logic.Quantum.DiracField
 lake build DstDiophantine.CGA
 ```
 
