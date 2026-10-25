@@ -604,6 +604,22 @@ the dual sector. At zero charge the equation is Klein–Gordon. A spin
 Hamiltonian $\tfrac12\,\omega\cdot\sigma$ evolves a dual spinor by the dual
 rotor of rapidity $t\omega$.
 
+[`DiracConjugation.lean`](DstDiophantine/Logic/Quantum/DiracConjugation.lean):
+the pseudoscalar of the dual map acts on Dirac spinors as
+$\omega = \gamma^0\gamma^1\gamma^2\gamma^3 = i\gamma^5$. It anticommutes with
+every $\gamma^\mu$ and commutes with every total rotor, so it carries a
+solution at $p$ to a solution of the same mass at $-p$. It keeps the current
+and the density and reverses the mass bilinear. The dual spinor carries the
+quaternionic structure $Ju = i\sigma_y\bar u$, which is antilinear with
+$J^2 = -1$, commutes with every dual rotor, and reverses $\sigma\cdot n$ along
+every axis. Charge conjugation $(u, l) \mapsto (-Jl, Ju)$ commutes with every
+$\gamma^\mu$ and every total rotor, carries $p$ to $-p$, and carries a
+solution of charge $e$ in $A$ to a solution of charge $-e$ in the same $A$.
+The antiparticle $\omega\Psi^c$ is a solution at the same $p$ with the same
+current and density. The field $\omega\Psi^c(-x)$ solves the equation of
+charge $-e$ in the reflected potential $-A(-x)$, and at rest the antiparticle
+of $(u, iu)$ is $-(Ju, iJu)$.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
 produce a mass from torsion or position operators. The dual-rotor character,
 the spinor matrix element,
@@ -694,6 +710,7 @@ lake build DstDiophantine.Logic.Quantum.DiracEquation
 lake build DstDiophantine.Logic.Quantum.DiracCovariance
 lake build DstDiophantine.Logic.Quantum.DiracField
 lake build DstDiophantine.Logic.Quantum.DiracGauge
+lake build DstDiophantine.Logic.Quantum.DiracConjugation
 lake build DstDiophantine.CGA
 ```
 

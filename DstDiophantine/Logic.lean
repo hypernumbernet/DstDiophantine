@@ -43,6 +43,7 @@ import DstDiophantine.Logic.Quantum.DiracEquation
 import DstDiophantine.Logic.Quantum.DiracCovariance
 import DstDiophantine.Logic.Quantum.DiracField
 import DstDiophantine.Logic.Quantum.DiracGauge
+import DstDiophantine.Logic.Quantum.DiracConjugation
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -1048,6 +1049,32 @@ example {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : 
     ∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • partialD (fun y => partialD Ψ μ y) μ x =
       ((m : ℂ) ^ 2) • Ψ x :=
   diracField_kleinGordon hΨ2 hΨ x
+
+/-- Regression: the dual map reverses the four-momentum of a solution. -/
+example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    DiracMomentum m (-p) (dualFlip Ψ) :=
+  diracMomentum_dualFlip h
+
+/-- Regression: charge conjugation reverses the charge in the same potential. -/
+example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
+    (hΨ : DiracGaugeField m e A Ψ) : DiracGaugeField m (-e) A (conjField Ψ) :=
+  diracGaugeField_conjField hΨ
+
+/-- Regression: the antiparticle of a solution at `p` is a solution at `p`. -/
+example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    DiracMomentum m p (antiparticle Ψ) :=
+  diracMomentum_antiparticle h
+
+/-- Regression: at rest the antiparticle of `(u, iu)` is `-(J u, i J u)`. -/
+example (u : DualSpinor) : antiparticle (restParticleSpinor u) = -restParticleSpinor (quatJ u) :=
+  antiparticle_restParticle u
+
+/-- Regression: the antiparticle field solves the equation of opposite charge
+in the reflected potential. -/
+example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
+    (hΨ : DiracGaugeField m e A Ψ) :
+    DiracGaugeField m (-e) (reflectPot A) (antiparticleField Ψ) :=
+  diracGaugeField_antiparticleField hΨ
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
