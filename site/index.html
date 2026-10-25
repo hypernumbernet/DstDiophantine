@@ -27,6 +27,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <a href="#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
     <a href="#ceiling"><span class="en">Ceiling</span><span class="ja">上限</span></a>
     <a href="#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="#antiparticle"><span class="en">Antiparticle</span><span class="ja">反粒子</span></a>
     <a href="#physics"><span class="en">Physics</span><span class="ja">物理</span></a>
     <a href="#rotation"><span class="en">Rotation</span><span class="ja">回転</span></a>
     <a href="#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
@@ -342,8 +343,54 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   </div>
 </section>
 
+
+<section id="antiparticle">
+  <h2><span class="en">5. Antiparticles from the dual map</span><span class="ja">5. 双対写像から見える反粒子</span></h2>
+  <p><span class="en">In ordinary quantum mechanics an antiparticle is introduced as another solution of the Dirac equation: same mass, opposite charge. Double Spacetime Theory (DST) already carries the two ingredients of that picture inside the algebra of section&nbsp;1. The <b>dual map</b> reverses the arrow of time. The dual spinor also carries a built-in flip of spin, and that flip defines <b>charge conjugation</b>, which reverses the charge. Neither step alone produces a positive-energy particle of opposite charge. Taken together they do: the antiparticle is the charge conjugate read through the dual spacetime.</span><span class="ja">ふつうの量子力学では、反粒子はディラック方程式の別の解として導入されます。質量は同じで、電荷は反対です。二重時空理論（DST）では、その描像に必要な二つの要素が、すでに第1節の代数の中にあります。<b>双対写像</b>は時間の矢を反転します。双対スピノルにはスピンをひっくり返すしくみも備わっており、それが<b>荷電共役</b>を定め、電荷を反転します。どちらの操作も単独では、反対の電荷をもつ正エネルギーの粒子を生みません。二つを合わせると生みます。反粒子とは、双対時空を通して読んだ荷電共役です。</span></p>
+
+  <div class="cards two">
+    <div class="card dualc"><h3><span class="en">Dual map</span><span class="ja">双対写像</span></h3><p><span class="en">Reverses time orientation. On a Dirac solution it reverses the four-momentum, so the sign of the energy flips, while the charge stays the same.</span><span class="ja">時間の向きを反転します。ディラックの解の上では四元運動量を反転するのでエネルギーの符号が変わり、電荷はそのままです。</span></p></div>
+    <div class="card usualc"><h3><span class="en">Charge conjugation</span><span class="ja">荷電共役</span></h3><p><span class="en">Reverses the charge and the energy. Alone it is a negative-frequency solution of opposite charge — a particle running backward in time.</span><span class="ja">電荷とエネルギーを反転します。単独では、反対電荷の負振動数の解、すなわち時間を逆行する粒子です。</span></p></div>
+  </div>
+
+  <svg class="fig" viewBox="0 0 640 250" role="img" aria-label="Charge conjugation then dual map yields the antiparticle at the same momentum">
+    <defs>
+      <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g transform="translate(90,110)">
+      <circle r="28" class="mass"/>
+      <text class="lbl" x="0" y="4" text-anchor="middle">e⁻</text>
+      <text class="cap" x="0" y="70" text-anchor="middle"><tspan class="en">particle</tspan><tspan class="ja">粒子</tspan></text>
+      <text class="lbl small" x="0" y="90" text-anchor="middle"><tspan class="en">charge e, momentum p</tspan><tspan class="ja">電荷 e、運動量 p</tspan></text>
+    </g>
+    <g transform="translate(250,70)">
+      <line class="axis arrow" x1="-40" y1="0" x2="40" y2="0" marker-end="url(#ah2)"/>
+      <text class="lbl small" x="0" y="-12" text-anchor="middle"><tspan class="en">charge conjugation</tspan><tspan class="ja">荷電共役</tspan></text>
+      <text class="lbl small coolt" x="0" y="22" text-anchor="middle"><tspan class="en">e → −e, energy flips</tspan><tspan class="ja">e → −e、エネルギー反転</tspan></text>
+    </g>
+    <g transform="translate(250,150)">
+      <line class="dual arrow" x1="-40" y1="0" x2="40" y2="0" marker-end="url(#ah2)"/>
+      <text class="lbl small dualt" x="0" y="-12" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+      <text class="lbl small dualt" x="0" y="22" text-anchor="middle"><tspan class="en">time reverses</tspan><tspan class="ja">時間反転</tspan></text>
+    </g>
+    <g transform="translate(410,110)">
+      <circle r="28" class="obs"/>
+      <text class="lbl" x="0" y="4" text-anchor="middle">e⁺</text>
+      <text class="cap" x="0" y="70" text-anchor="middle"><tspan class="en">antiparticle</tspan><tspan class="ja">反粒子</tspan></text>
+      <text class="lbl small" x="0" y="90" text-anchor="middle"><tspan class="en">charge −e, same p</tspan><tspan class="ja">電荷 −e、同じ p</tspan></text>
+    </g>
+    <text class="note" x="320" y="235" text-anchor="middle"><tspan class="en">Schematic. Same mass; density and current of one spinor are kept.</tspan><tspan class="ja">模式図。質量は同じ。一つのスピノルの密度とカレントは保たれます。</tspan></text>
+  </svg>
+
+  <p><span class="en"><b>What the composite does.</b> The two steps together carry a solution of mass <i>m</i> at momentum <i>p</i> to a solution of the same mass at the same <i>p</i>, with opposite charge. For a single spinor the density and the current are kept. At rest the antiparticle of a dual-spinor pair is the pair of the spin-reversed dual spinor. The composite is antilinear and reverses all four spacetime coordinates, the same overall pattern as the CPT operation of the Dirac equation.</span><span class="ja"><b>合成がすること。</b>二つの段階を合わせると、運動量 <i>p</i> における質量 <i>m</i> の解が、同じ <i>p</i> における同じ質量の、反対電荷の解へ写ります。一つのスピノルについては密度とカレントが保たれます。静止系では、双対スピノルの対の反粒子は、スピンを反転した双対スピノルの対です。この合成は反線形で、時空の四つの座標をすべて反転します。ディラック方程式の CPT 操作と同じ全体の形です。</span></p>
+
+  <p><span class="en"><b>Stueckelberg and Feynman, already in the algebra.</b> The reading of Stueckelberg and Feynman is that a charge conjugate is a negative-frequency solution of opposite charge — a particle running backward in time — and that reversing the time orientation turns it into a positive-energy antiparticle running forward. In DST both steps are already present: charge is reversed by the quaternionic structure of the dual spinor, and time orientation by the dual map. No second field has to be added by hand. The antiparticle is the same Dirac field read through the dual map.</span><span class="ja"><b>シュテュッケルベルクとファインマンの読みが、すでに代数の中にある。</b>シュテュッケルベルクとファインマンの読みでは、荷電共役は反対電荷の負振動数の解、すなわち時間を逆行する粒子であり、時間の向きを反転すると、時間を順行する正エネルギーの反粒子になります。DSTではこの二つの段階がすでにあります。電荷を反転するのは双対スピノルの四元数構造であり、時間の向きを反転するのは双対写像です。第二の場を手で足す必要はありません。反粒子は、双対写像を通して読んだ同じディラック場です。</span></p>
+
+  <p><span class="en"><b>What this does not yet claim.</b> The algebra places the antiparticle inside the same Dirac field. A full identification of every Standard Model fermion with a dual-sector phase is not claimed. Connecting this reading to concrete production and annihilation rates is currently under research.</span><span class="ja"><b>まだ主張していないこと。</b>代数は反粒子を同じディラック場の内部に置きます。標準模型のすべてのフェルミオンを双対セクターの位相と同一視することは主張していません。この読みを具体的な生成・消滅の割合に結びつけることは、現在研究中です。</span></p>
+</section>
+
 <section id="physics">
-  <h2><span class="en">5. Gravity and physics: where gravity points</span><span class="ja">5. 重力と物理：重力はどこを向くか</span></h2>
+  <h2><span class="en">6. Gravity and physics: where gravity points</span><span class="ja">6. 重力と物理：重力はどこを向くか</span></h2>
   <p><span class="en">The biquaternion frames hold boosts and rotations but not movement from place to place. The companion paper on <b>projective geometric algebra</b> G(3,1,1) adds one null direction, e<sub>4</sub>. Translations then become generators on the same footing as boosts and rotations: 3 boosts + 3 rotations + 4 translations = 10, which together form the Poincaré algebra of special relativity. A twist R and a shift T combine into a single <b>motor</b> M = RT.</span><span class="ja">双四元数のフレームはブーストと回転を含みますが、場所の移動（並進）は含みません。姉妹論文は<b>射影幾何代数</b> G(3,1,1) を使い、ヌル方向 e<sub>4</sub> を一つ加えます。すると並進もブーストや回転と同じ立場の生成子になり、ブースト3＋回転3＋並進4＝10個で、特殊相対論のポアンカレ代数をなします。ねじれ R とずらし T は一つの<b>モーター</b> M = RT にまとまります。</span></p>
   <p><span class="en">With translations available, the paper reads off the <b>direction</b> of gravity. An observer hovering above a mass is, at each moment, undergoing a single boost about an axis displaced inward by a distance ℓ, the inverse of the hover acceleration. Gravity points toward that axis. A body released from rest accelerates toward it at 1/ℓ. Far from the mass the axis recedes to infinity; at the horizon it reaches the observer. Integrated along the radius, the same law gives the radial fall of the exterior geometry.</span><span class="ja">並進が使えるようになると、論文は重力の<b>向き</b>を読み取ります。質量の上で静止している観測者は、各瞬間に、内側へ距離 ℓ（静止に必要な加速度の逆数）だけずれた軸のまわりで一つのブーストを受けています。重力はその軸の方を向きます。静かに手放した物体は加速度 1/ℓ で軸へ向かいます。質量から遠いと軸は無限遠へ退き、地平の位置では観測者に重なります。半径に沿って積分すると、同じ法則が外部幾何での動径落下になります。</span></p>
   <svg class="fig" viewBox="0 0 640 250" role="img" aria-label="Killing axis displaced inward by ell; gravity points toward it">
@@ -393,7 +440,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
 </section>
 
 <section id="rotation">
-  <h2><span class="en">6. A hypothesis: why do things rotate?</span><span class="ja">6. 仮説：なぜ回転が生まれるのか</span></h2>
+  <h2><span class="en">7. A hypothesis: why do things rotate?</span><span class="ja">7. 仮説：なぜ回転が生まれるのか</span></h2>
   <p class="kicker"><span class="en">Hypothesis</span><span class="ja">仮説</span></p>
   <p><span class="en">Why does the solar system rotate? If it formed from particles that were not rotating to begin with, the origin of its spin is not obvious. One explanation points to electromagnetic forces acting on the solar system and the planets. But rotation also appears at the scale of whole galaxies, where those forces do not reach that far. Electromagnetism therefore does not account for rotation at every scale, which suggests it is not the essence of rotation.</span><span class="ja">太陽系は、なぜ回転しているのでしょうか。もともと回転していなかった粒子が集まってできたと考えると、その回転の起源は自明ではありません。太陽系や惑星の回転には電磁力が働いている、という説もあります。しかし回転は銀河ほどの大きさでも見られ、そこまで遠くには電磁力は届きません。このため電磁力はあらゆる規模の回転を説明できず、回転の本質ではないと考えられます。</span></p>
   <p><span class="en">Dual spacetime theory offers another answer as a hypothesis. Space itself comes with a built-in twist, and rotation arises from it naturally, much as air flowing into a typhoon on the Earth's surface is turned into a swirl by the Coriolis force. In this hypothesis, the space in which gravity acts between bodies and the space in which bodies move are not quite the same: they are slightly offset. The twist produced by that offset is why the solar system rotates.</span><span class="ja">二重時空理論は、別の答えを仮説として示します。空間にはもともと「ねじれ」が備わっていて、そこから回転が自然に生まれる、というものです。地球の表面で台風ができるとき、流れ込む空気がコリオリの力で渦を巻くのに似ています。この仮説では、重力が相互作用するための空間と、物体が移動するための空間は、実は同じではなく少しずれています。このずれが生むねじれが、太陽系が回転している理由だとされます。</span></p>
@@ -424,7 +471,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
 </section>
 
 <section id="numbers">
-  <h2><span class="en">7. Number theory: equations as geometry</span><span class="ja">7. 数論：方程式を幾何に変える</span></h2>
+  <h2><span class="en">8. Number theory: equations as geometry</span><span class="ja">8. 数論：方程式を幾何に変える</span></h2>
   <p><span class="en">The same algebra is turned toward famous problems about whole numbers. Integers are embedded into PGA motors using rotors and null translators. A relation such as aⁿ + bⁿ = cⁿ (Fermat) or Aˣ + Bʸ = Cᶻ (Beal) becomes the statement that a certain <b>motor equals 1</b>. The dual-spacetime rapidities are placed on a finite torus (ℤ/Nℤ)⁶, so each problem becomes a search over a bounded lattice.</span><span class="ja">同じ代数は、整数についての有名な問題にも向けられます。整数はローターとヌル並進子によって PGA のモーターに埋め込まれます。aⁿ + bⁿ = cⁿ（フェルマー）や Aˣ + Bʸ = Cᶻ（ビール）のような関係は、あるモーターが<b>1に等しい</b>という主張に変わります。双対時空のラピディティは有限のトーラス (ℤ/Nℤ)⁶ に置かれ、各問題は有界な格子の探索になります。</span></p>
   <svg class="fig" viewBox="0 0 640 190" role="img" aria-label="Pipeline: equation to motor to bounded lattice, with the ceiling">
     <g class="step"><rect x="15" y="40" width="170" height="80" rx="12"/><text x="100" y="72" text-anchor="middle" class="lbl">aⁿ + bⁿ = cⁿ</text><text x="100" y="98" text-anchor="middle" class="lbl small"><tspan class="en">an equation in integers</tspan><tspan class="ja">整数の方程式</tspan></text></g>
@@ -440,11 +487,11 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="note" x="320" y="178" text-anchor="middle"><tspan class="en">Schematic of the programme.</tspan><tspan class="ja">取り組みの模式図。</tspan></text>
   </svg>
   <p><span class="en">Two layers are proved in Lean: the encoding is faithful, and a shared <b>amplification no-go</b> says no seed can be amplified past the admissible ceiling, whatever equation it came from. The third layer, connecting a hypothetical solution of each classical problem to such a seed, is the active research front. Beal is furthest along: positive Beal is reduced to six named residual cases, with many slices already closed. There are also concrete results along the way. For Collatz, the admissible integer-boost cone contains only 1 and 2, and every starting value up to 2²⁰ reaches 1.</span><span class="ja">Lean で証明されているのは二つの層です。符号化が忠実であること、そして共通の<b>増幅の不可能定理</b>、つまりどの方程式から来た種であっても許容上限を超えて増幅できないことです。第三の層、各古典問題の仮想的な解をそのような種に結びつける部分が、鋭意研究中の最前線です。最も進んでいるのはビール予想で、正の場合が名前付きの6つの残差ケースに帰着され、多くの部分がすでに閉じています。途中の具体的な結果もあります。コラッツ予想では、整数ブーストの許容錐に入るのは 1 と 2 だけで、2²⁰ までのすべての出発値が 1 に到達します。</span></p>
-  <p class="note"><span class="en">Also explored: abc, the Riemann Hypothesis, Goldbach and Polignac, each with finite certificates. Section 9 explains how the steps still in progress are tracked.</span><span class="ja">abc 予想、リーマン予想、ゴールドバッハ予想、ポリニャック予想も、有限範囲の検証とともに研究中です。研究中のステップの管理方法は第9節を参照してください。</span></p>
+  <p class="note"><span class="en">Also explored: abc, the Riemann Hypothesis, Goldbach and Polignac, each with finite certificates. Section 10 explains how the steps still in progress are tracked.</span><span class="ja">abc 予想、リーマン予想、ゴールドバッハ予想、ポリニャック予想も、有限範囲の検証とともに研究中です。研究中のステップの管理方法は第10節を参照してください。</span></p>
 </section>
 
 <section id="logic">
-  <h2><span class="en">8. Four-valued logic (D4L)</span><span class="ja">8. 4値論理（D4L）</span></h2>
+  <h2><span class="en">9. Four-valued logic (D4L)</span><span class="ja">9. 4値論理（D4L）</span></h2>
   <p><span class="en">Classical logic is the logic of a decided world: true or false, and a contradiction entails everything. <b>Dual Spacetime 4-Valued Logic</b> (D4L) is the logic of the signed height J<sub>norm</sub> ∈ [−1, 1]. A proposition is an admissible torsion configuration, and measuring it reads J<sub>norm</sub>. The four names are the sign and saturation of that one number. The two ends of the interval are called <b>walls</b>: the positive wall +1 is |F⟩ (every axis a pure boost), and the negative wall −1 is the deepest point of |B⟩ (pure rotation). Perfect balance, 0, is |T⟩. Outside [−1, 1] no label is assigned.</span><span class="ja">古典論理は「決着した世界」の論理です。真か偽か、そして矛盾からは何でも導かれます。<b>双対時空4値論理</b>（D4L）は、符号付きの高さ J<sub>norm</sub> ∈ [−1, 1] の論理です。命題は許容されたねじれ配置で、測定すると J<sub>norm</sub> が読まれます。4つの名前は、この一つの数の符号と飽和の度合いです。区間の両端を<b>壁</b>と呼びます。正の壁 +1 は |F⟩（すべての軸が純ブースト）、負の壁 −1 は |B⟩ のいちばん深い点（純回転）です。完全な釣り合い 0 が |T⟩ です。[−1, 1] の外にはラベルを付けません。</span></p>
   <svg class="fig" viewBox="0 0 640 170" role="img" aria-label="The interval from -1 to 1 split into B, T, U, F">
     <g transform="translate(60,80)">
@@ -470,7 +517,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
 
 
 <section id="lean">
-  <h2><span class="en">9. Checked by a machine</span><span class="ja">9. 機械による検証</span></h2>
+  <h2><span class="en">10. Checked by a machine</span><span class="ja">10. 機械による検証</span></h2>
   <p><span class="en">The mathematics is written in <b>Lean 4</b>, a proof assistant that checks every step. The repository contains no <span class="mono">sorry</span> (no unfinished proof). Eight classical theorems that the mathlib library does not yet provide (such as Wiles's Fermat theorem and Mihăilescu's theorem) are stated as explicit axioms. Steps still in progress are given names (residuals and <span class="mono">*Bridge</span> propositions), so the path ahead is clearly mapped.</span><span class="ja">数学は、すべての推論を検査する証明支援系 <b>Lean 4</b> で書かれています。リポジトリには <span class="mono">sorry</span>（未完成の証明）が一つもありません。mathlib にまだない古典的な定理8つ（ワイルズのフェルマーの定理、ミハイレスクの定理など）は明示的な公理として置かれています。研究中のステップには残差や <span class="mono">*Bridge</span> 命題という名前が付けられ、今後の道筋がはっきり示されています。</span></p>
   <svg class="fig" viewBox="0 0 640 120" role="img" aria-label="Three layers of the Diophantine programme">
     <g class="layer ok"><rect x="20" y="20" width="185" height="80" rx="10"/><text x="112" y="52" text-anchor="middle" class="lbl"><tspan class="en">1. Faithful encoding</tspan><tspan class="ja">1. 忠実な符号化</tspan></text><text x="112" y="78" text-anchor="middle" class="lbl small"><tspan class="en">proved</tspan><tspan class="ja">証明済み</tspan></text></g>
@@ -486,6 +533,8 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <li><a href="https://github.com/hypernumbernet/DstDiophantine"><span class="en">Repository and README</span><span class="ja">リポジトリと README</span></a></li>
     <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/double-spacetime-theory.pdf"><span class="en">Main paper: Double Spacetime Theory — Gravity as Torsion between Usual and Dual Spacetime (PDF)</span><span class="ja">主論文：二重時空理論 — 通常時空と双対時空の間のねじれとしての重力（英語PDF）</span></a></li>
     <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/double-spacetime-theory-ja.pdf"><span class="en">Japanese edition of the main paper (PDF)</span><span class="ja">主論文 日本語版（PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/dst-quantum-gravity.pdf"><span class="en">Quantum gravity paper (Dirac equation and antiparticles) (PDF)</span><span class="ja">量子重力の論文（ディラック方程式と反粒子）（英語PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/dst-quantum-gravity-ja.pdf"><span class="en">Japanese edition of the quantum gravity paper (PDF)</span><span class="ja">量子重力の論文 日本語版（PDF）</span></a></li>
     <li><a href="https://github.com/hypernumbernet/DstDiophantine/tree/main/papers"><span class="en">All papers (English and Japanese)</span><span class="ja">全論文（英語・日本語）</span></a></li>
   </ul>
 </section>
