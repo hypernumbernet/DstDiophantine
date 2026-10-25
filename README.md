@@ -587,9 +587,24 @@ of one real mass is conserved. Its time component is $i\Psi^\dagger\Psi$.
 Dual rotors leave $\Psi^\dagger\Psi$ unchanged, and a total rotor carrying a
 rest solution to $p$ multiplies it by $p_0/m$.
 
+[`DiracGauge.lean`](DstDiophantine/Logic/Quantum/DiracGauge.lean): a total
+rotor acting on the spinor and on spacetime points together maps solutions of
+the field equation to solutions and plane waves of momentum $p$ to plane waves
+of momentum $\Lambda p$. Minimal coupling
+$D_\mu = \partial_\mu - ieA_\mu$ is gauge covariant, a plane wave in a
+constant potential solves it at the kinetic momentum $p - ea$, and the
+current stays gauge invariant and conserved. For twice-differentiable spinors
+$[D_\mu, D_\nu] = -ieF_{\mu\nu}$, and every solution obeys
+$\eta^{\mu\mu}D_\mu D_\mu\Psi - \tfrac{ie}{2}F_{\mu\nu}\gamma^\mu\gamma^\nu\Psi
+= m^2\Psi$. In the Weyl blocks the field term is
+$e\,\sigma\cdot(\mathbf B \pm i\mathbf E)$. Since $\sigma\cdot\mathbf B$ is
+$i$ times the dual generator, the magnetic field acts on both blocks through
+the dual sector. At zero charge the equation is Klein–Gordon. A spin
+Hamiltonian $\tfrac12\,\omega\cdot\sigma$ evolves a dual spinor by the dual
+rotor of rapidity $t\omega$.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
-produce a mass from torsion, position operators, or covariance of the field
-equation under rotors acting on spacetime points. The dual-rotor character,
+produce a mass from torsion or position operators. The dual-rotor character,
 the spinor matrix element,
 and a scalar $\mathrm{U}(1)$ phase are three distinct invariants. A finite
 discrete rotor image is not a count of generations. The light-cone split
@@ -677,6 +692,7 @@ lake build DstDiophantine.Logic
 lake build DstDiophantine.Logic.Quantum.DiracEquation
 lake build DstDiophantine.Logic.Quantum.DiracCovariance
 lake build DstDiophantine.Logic.Quantum.DiracField
+lake build DstDiophantine.Logic.Quantum.DiracGauge
 lake build DstDiophantine.CGA
 ```
 

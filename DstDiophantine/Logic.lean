@@ -42,6 +42,7 @@ import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DiracEquation
 import DstDiophantine.Logic.Quantum.DiracCovariance
 import DstDiophantine.Logic.Quantum.DiracField
+import DstDiophantine.Logic.Quantum.DiracGauge
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -88,7 +89,11 @@ and `DstDiophantine.CGA`).
   rotation of perpendicular usual rotors, the Gordon identity relating the
   current of two solutions to the momentum and the mass bilinear, the
   spacetime Dirac equation `γ^μ∂_μΨ = -mΨ` with its plane-wave solutions and
-  conserved current, dual-rotor character, spinor
+  conserved current, its covariance under total rotors, minimal coupling with
+  gauge covariance, kinetic momentum and a gauge-invariant conserved current,
+  the second-order equation whose magnetic term is the dual generator on both
+  Weyl blocks, the Klein–Gordon equation, spin precession as a dual rotor,
+  dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
@@ -997,6 +1002,53 @@ example {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (hΦ : 
 example (β : DualRapidity) (Ψ : DiracSpinor) :
     ‖rotorDirac (dualRotorMat β) Ψ‖ = ‖Ψ‖ :=
   norm_rotorDirac_dualRotor β Ψ
+
+/-- Regression: total rotors carry solutions of the spacetime Dirac equation
+to solutions. -/
+example {m : ℝ} {M : Matrix (Fin 2) (Fin 2) ℂ} {Ψ : Vec4 → DiracSpinor} (hM : M.det = 1)
+    (hΨ : DiracField m Ψ) : DiracField m (rotorField M Ψ) :=
+  diracField_rotorField hM hΨ
+
+/-- Regression: solutions of the minimally coupled equation are carried to
+solutions by a gauge transformation. -/
+example {m e : ℝ} {A : Vec4 → Vec4} {χ : Vec4 → ℝ} {Ψ : Vec4 → DiracSpinor}
+    (hχ : Differentiable ℝ χ) (hΨ : DiracGaugeField m e A Ψ) :
+    DiracGaugeField m e (gaugePot A χ) (gaugePhase e χ Ψ) :=
+  diracGaugeField_gauge hχ hΨ
+
+/-- Regression: in a constant potential a plane wave solves the coupled
+equation exactly at the kinetic momentum `p - e a`. -/
+example (m e : ℝ) (a p : Vec4) (u : DiracSpinor) :
+    DiracGaugeField m e (fun _ => a) (planeWave p u) ↔ DiracMomentum m (p - e • a) u :=
+  diracGaugeField_planeWave_iff m e a p u
+
+/-- Regression: the commutator of covariant derivatives is the field strength. -/
+example {e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor} (hA : Differentiable ℝ A)
+    (hΨ : ContDiff ℝ 2 Ψ) (μ ν : Fin 4) (x : Vec4) :
+    covD e A (covD e A Ψ ν) μ x - covD e A (covD e A Ψ μ) ν x =
+      (-(Complex.I * ((e * fieldStrength A x μ ν : ℝ) : ℂ))) • Ψ x :=
+  covD_comm e hA hΨ μ ν x
+
+/-- Regression: upper Weyl block of the second-order equation, with the
+magnetic field through `e σ·B` and the electric field through `i e σ·E`. -/
+example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor} (hA : Differentiable ℝ A)
+    (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracGaugeField m e A Ψ) (x : Vec4) :
+    diracUpper (∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • covD e A (covD e A Ψ μ) μ x) +
+        applyMat ((e : ℂ) • (pauliComb (magVec (fieldStrength A x)) +
+          Complex.I • pauliComb (elecVec (fieldStrength A x)))) (diracUpper (Ψ x)) =
+      ((m : ℂ) ^ 2) • diracUpper (Ψ x) :=
+  diracGaugeField_pauli_upper hA hΨ2 hΨ x
+
+/-- Regression: the Pauli combination is `i` times the dual generator. -/
+example (n : Fin 3 → ℝ) : pauliComb n = Complex.I • cyclicRepComb n :=
+  pauliComb_eq_I_cyclicRepComb n
+
+/-- Regression: free solutions obey the Klein–Gordon equation. -/
+example {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracField m Ψ)
+    (x : Vec4) :
+    ∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • partialD (fun y => partialD Ψ μ y) μ x =
+      ((m : ℂ) ^ 2) • Ψ x :=
+  diracField_kleinGordon hΨ2 hΨ x
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
