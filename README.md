@@ -585,12 +585,13 @@ exactly when $u$ solves the momentum-space equation, solutions of one mass
 form a complex vector space, and the current of two differentiable solutions
 of one real mass is conserved. Its time component is $i\Psi^\dagger\Psi$.
 Dual rotors leave $\Psi^\dagger\Psi$ unchanged, and a total rotor carrying a
-rest solution to $p$ multiplies it by $p_0/m$.
+rest solution to $p$ multiplies it by $p_0/m$. A total rotor acting on the
+spinor and on spacetime points together maps solutions of the field equation
+to solutions and plane waves of momentum $p$ to plane waves of momentum
+$\Lambda p$.
 
-[`DiracGauge.lean`](DstDiophantine/Logic/Quantum/DiracGauge.lean): a total
-rotor acting on the spinor and on spacetime points together maps solutions of
-the field equation to solutions and plane waves of momentum $p$ to plane waves
-of momentum $\Lambda p$. Minimal coupling
+[`DiracGauge.lean`](DstDiophantine/Logic/Quantum/DiracGauge.lean): minimal
+coupling
 $D_\mu = \partial_\mu - ieA_\mu$ is gauge covariant, a plane wave in a
 constant potential solves it at the kinetic momentum $p - ea$, and the
 current stays gauge invariant and conserved. For twice-differentiable spinors
@@ -709,6 +710,4 @@ Dependency updates are manual, through
 [`.github/workflows/update.yml`](.github/workflows/update.yml).
 
 `FoundationRegression` is the CI-facing sample of the Diophantine path,
-including the Beal and Fermat atlases. A green build of `Logic` can still
-replay existing `flexible-simp` and `unusedSimpArgs` warnings in `Spinor`,
-`DualRodrigues`, `UsualRodrigues`, and older `DiracEquation` simp lists.
+including the Beal and Fermat atlases.

@@ -807,14 +807,13 @@ example :
 example (α : UsualRapidity) :
     usualRotorMat α =
       Real.cosh (‖α‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
-        (if _h : α = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+        (if α = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
           else Real.sinh (‖α‖ / 2) • pauliComb (fun a => α a / ‖α‖)) :=
   usualRotorMat_rodrigues α
 
 /-- Regression: every Dirac spinor decomposes into Weyl blocks. -/
 example (Ψ : DiracSpinor) :
-    weylUpper (WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]) +
-      weylLower (WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]) = Ψ :=
+    weylUpper (diracUpper Ψ) + weylLower (diracLower Ψ) = Ψ :=
   weyl_decompose Ψ
 
 /-- Regression: \(\gamma^5\) squares to the identity. -/

@@ -52,39 +52,9 @@ private theorem spinUp_apply_zero : spinUp 0 = 1 := by
 private theorem spinUp_apply_one : spinUp 1 = 0 := by
   simp [spinUp]
 
-private theorem applyMat_mul (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (A * B) ψ = applyMat A (applyMat B ψ) := by
-  simp [applyMat, Matrix.mulVec_mulVec]
-
-private theorem applyMat_one' (ψ : DualSpinor) :
-    applyMat (1 : Matrix (Fin 2) (Fin 2) ℂ) ψ = ψ := by
-  simp [applyMat, Matrix.one_mulVec]
-
-private theorem inner_sum (χ ψ : DualSpinor) :
-    inner ℂ χ ψ = ∑ i : Fin 2, star (χ i) * ψ i := by
-  simp [inner, Fin.sum_univ_two]
-  ring
-
-private theorem applyMat_apply (A : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor)
-    (i : Fin 2) :
-    applyMat A ψ i = ∑ j : Fin 2, A i j * ψ j := by
-  simp [applyMat, Matrix.mulVec, dotProduct]
-
 private theorem smul_mul_smul_mat (c d : ℂ) (u v : Matrix (Fin 2) (Fin 2) ℂ) :
     (c • u) * (d • v) = (c * d) • (u * v) := by
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul]
-
-private theorem applyMat_inner (A : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
-    inner ℂ (applyMat A χ) ψ = inner ℂ χ (applyMat A.conjTranspose ψ) := by
-  simp only [inner_sum, applyMat_apply, Fin.sum_univ_two]
-  simp only [star_add, star_mul', Matrix.conjTranspose_apply]
-  ring
-
-private theorem applyMat_inner_mul (A B : Matrix (Fin 2) (Fin 2) ℂ)
-    (χ ψ : DualSpinor) :
-    inner ℂ (applyMat A χ) (applyMat B ψ) =
-      inner ℂ χ (applyMat (A.conjTranspose * B) ψ) := by
-  rw [applyMat_inner, applyMat_mul]
 
 /-! ### Character: the trace is real -/
 
@@ -204,7 +174,7 @@ private theorem mulVec_spinUp (A : Matrix (Fin 2) (Fin 2) ℂ) :
 private theorem dualRotorAmplitude_spinUp_eq_entry (β : DualRapidity) :
     dualRotorAmplitude β spinUp = dualRotorMat β 0 0 := by
   unfold dualRotorAmplitude
-  rw [inner_sum]
+  rw [dualSpinor_inner_eq]
   have h := mulVec_spinUp (dualRotorMat β)
   simp [Fin.sum_univ_two, spinUp_apply_zero, spinUp_apply_one, h]
 
@@ -263,7 +233,7 @@ theorem dualRotorAmplitude_spinUp (β : DualRapidity) :
   by_cases h : β = 0
   · subst h
     simp [Real.cos_zero]
-  · simp only [h, dite_false, ite_false]
+  · simp only [h, ite_false]
     rw [Matrix.add_apply, real_smul_apply, real_smul_apply, Matrix.one_apply,
       cyclicRepComb_apply_00]
     simp
@@ -281,7 +251,7 @@ theorem dualRotor_relative_overlap (βO βA : DualRapidity) (χ : DualSpinor) :
 private theorem applyMat_dualRotor_inner (β : DualRapidity) (χ ψ : DualSpinor) :
     inner ℂ (applyMat (dualRotorMat β) χ) (applyMat (dualRotorMat β) ψ) =
       inner ℂ χ ψ := by
-  rw [applyMat_inner_mul, dualRotorMat_unitary, applyMat_one']
+  rw [applyMat_inner_mul, dualRotorMat_unitary, applyMat_one]
 
 private theorem applyMat_dualRotor_norm (β : DualRapidity) (ψ : DualSpinor) :
     ‖applyMat (dualRotorMat β) ψ‖ = ‖ψ‖ := by
@@ -339,7 +309,7 @@ private theorem mulVec_spinDown (A : Matrix (Fin 2) (Fin 2) ℂ) :
 private theorem dualRotorAmplitude_spinDown_eq_entry (β : DualRapidity) :
     dualRotorAmplitude β spinDown = dualRotorMat β 1 1 := by
   unfold dualRotorAmplitude
-  rw [inner_sum]
+  rw [dualSpinor_inner_eq]
   have h := mulVec_spinDown (dualRotorMat β)
   simp [Fin.sum_univ_two, spinDown_apply_zero, spinDown_apply_one, h]
 
@@ -378,7 +348,7 @@ theorem dualRotorAmplitude_spinDown (β : DualRapidity) :
   by_cases h : β = 0
   · subst h
     simp [Real.cos_zero]
-  · simp only [h, dite_false, ite_false]
+  · simp only [h, ite_false]
     rw [Matrix.add_apply, real_smul_apply, real_smul_apply, Matrix.one_apply,
       cyclicRepComb_apply_11]
     simp

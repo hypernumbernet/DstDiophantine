@@ -103,7 +103,7 @@ theorem rightE0_sq_apply (x : PGA) : rightE0 (rightE0 x) = -x := by
       = (x * ι 0) * ι 0 := by simp [rightE0, mulRight_apply]
     _ = x * (ι 0 * ι 0) := by rw [mul_assoc]
     _ = x * algebraMap ℝ PGA (-1) := by rw [e0_sq]
-    _ = (-1 : ℝ) • x := by simp [Algebra.smul_def, mul_comm]
+    _ = (-1 : ℝ) • x := by simp [Algebra.smul_def]
     _ = -x := by simp [neg_smul]
 
 theorem rightE1_anticomm_e0_apply (x : PGA) :
@@ -187,7 +187,7 @@ theorem boost03_anticomm_hyp1 :
       _ = -(ι 0 * ι 0) * (ι 3 * ι 2) := by simp [mul_neg, mul_assoc]
       _ = ι 3 * ι 2 := by
             rw [e0_sq]
-            simp [Algebra.algebraMap_eq_smul_one, neg_smul, mul_assoc]
+            simp [Algebra.algebraMap_eq_smul_one, neg_smul]
       _ = -(ι 2 * ι 3) := h32
   have hR : ι 0 * ι 2 * (ι 0 * ι 3) = ι 2 * ι 3 := by
     calc ι 0 * ι 2 * (ι 0 * ι 3)
@@ -196,7 +196,7 @@ theorem boost03_anticomm_hyp1 :
       _ = -(ι 0 * ι 0) * (ι 2 * ι 3) := by simp [mul_neg, mul_assoc]
       _ = ι 2 * ι 3 := by
             rw [e0_sq]
-            simp [Algebra.algebraMap_eq_smul_one, neg_smul, mul_assoc]
+            simp [Algebra.algebraMap_eq_smul_one, neg_smul]
   calc boost03 * hyperbolic 1
       = ι 0 * ι 3 * (ι 0 * ι 2) := rfl
     _ = -(ι 2 * ι 3) := hL
@@ -351,7 +351,7 @@ theorem commute_spinorIdemAxis1_chiralityGen :
   have hhalf : half * chiralityGen = chiralityGen * half := half_comm _
   calc ((1 : PGA) + hyperbolic 1) * half * chiralityGen
       = ((1 : PGA) + hyperbolic 1) * chiralityGen * half := by simp [mul_assoc, hhalf]
-    _ = (chiralityGen + hyperbolic 1 * chiralityGen) * half := by simp [add_mul, hc]
+    _ = (chiralityGen + hyperbolic 1 * chiralityGen) * half := by simp [add_mul]
     _ = chiralityGen * ((1 : PGA) + hyperbolic 1) * half := by simp [mul_add, hc]
     _ = chiralityGen * (((1 : PGA) + hyperbolic 1) * half) := by simp [mul_assoc]
 

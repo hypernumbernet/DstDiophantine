@@ -121,6 +121,65 @@ theorem cyclicRep_zero_mul_one : cyclicRep 0 * cyclicRep 1 = cyclicRep 2 :=
 def applyMat (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) : DualSpinor :=
   WithLp.toLp 2 (M *ᵥ WithLp.ofLp ψ)
 
+theorem applyMat_apply (A : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) (i : Fin 2) :
+    applyMat A ψ i = ∑ j : Fin 2, A i j * ψ j := by
+  simp [applyMat, Matrix.mulVec, dotProduct]
+
+theorem applyMat_add (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ φ : DualSpinor) :
+    applyMat M (ψ + φ) = applyMat M ψ + applyMat M φ := by
+  simp [applyMat, Matrix.mulVec_add]
+
+theorem applyMat_smul (c : ℂ) (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat M (c • ψ) = c • applyMat M ψ := by
+  simp [applyMat, Matrix.mulVec_smul]
+
+theorem applyMat_add_mat (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (A + B) ψ = applyMat A ψ + applyMat B ψ := by
+  simp [applyMat, Matrix.add_mulVec]
+
+theorem applyMat_smul_mat (c : ℂ) (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (c • M) ψ = c • applyMat M ψ := by
+  simp [applyMat, Matrix.smul_mulVec]
+
+theorem applyMat_neg (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (-M) ψ = -applyMat M ψ := by
+  simpa using applyMat_smul_mat (-1) M ψ
+
+theorem applyMat_one (ψ : DualSpinor) :
+    applyMat (1 : Matrix (Fin 2) (Fin 2) ℂ) ψ = ψ := by
+  simp [applyMat, Matrix.one_mulVec]
+
+theorem applyMat_mul (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (A * B) ψ = applyMat A (applyMat B ψ) := by
+  simp [applyMat, Matrix.mulVec_mulVec]
+
+theorem applyMat_finset_sum_mat {ι : Type*} (s : Finset ι)
+    (M : ι → Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
+    applyMat (∑ i ∈ s, M i) ψ = ∑ i ∈ s, applyMat (M i) ψ := by
+  induction s using Finset.cons_induction with
+  | empty =>
+    ext j
+    simp [applyMat]
+  | cons a s ha ih =>
+    rw [Finset.sum_cons, Finset.sum_cons, applyMat_add_mat, ih]
+
+theorem dualSpinor_inner_eq (χ ψ : DualSpinor) :
+    inner ℂ χ ψ = ∑ i : Fin 2, star (χ i) * ψ i := by
+  simp [inner, Fin.sum_univ_two]
+  ring
+
+/-- The adjoint of `applyMat A` is `applyMat Aᴴ`. -/
+theorem applyMat_inner (A : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
+    inner ℂ (applyMat A χ) ψ = inner ℂ χ (applyMat A.conjTranspose ψ) := by
+  simp only [dualSpinor_inner_eq, applyMat_apply, Fin.sum_univ_two]
+  simp only [star_add, star_mul', Matrix.conjTranspose_apply]
+  ring
+
+theorem applyMat_inner_mul (A B : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
+    inner ℂ (applyMat A χ) (applyMat B ψ) =
+      inner ℂ χ (applyMat (A.conjTranspose * B) ψ) := by
+  rw [applyMat_inner, applyMat_mul]
+
 /-- Dual rotor as a matrix: `exp(Σ (β_a/2) (-i σ_a)) = exp(-i/2 β·σ)`. -/
 noncomputable def dualRotorMat (β : DualRapidity) : Matrix (Fin 2) (Fin 2) ℂ :=
   NormedSpace.exp (∑ a : Fin 3, (β a / 2 : ℂ) • cyclicRep a)
@@ -199,7 +258,7 @@ theorem axis0Gen_eq_real_smul (θ : ℝ) :
   rw [h]
   rfl
 
-private theorem hasDerivAt_exp_neg_smul_mat
+theorem hasDerivAt_exp_neg_smul_mat
     (x : Matrix (Fin 2) (Fin 2) ℂ) (u : ℝ) :
     HasDerivAt (fun v : ℝ => NormedSpace.exp ((-v) • x))
       (NormedSpace.exp ((-u) • x) * (-x)) u := by
@@ -211,7 +270,7 @@ private theorem hasDerivAt_exp_neg_smul_mat
     funext fun v => by rw [neg_smul, smul_neg]
   simpa [hfun, neg_smul, smul_neg] using h
 
-private theorem exp_smul_mul_exp_neg_smul_mat
+theorem exp_smul_mul_exp_neg_smul_mat
     (x : Matrix (Fin 2) (Fin 2) ℂ) (t : ℝ) :
     NormedSpace.exp (t • x) * NormedSpace.exp ((-t) • x) = 1 := by
   have hneg : (-t) • x = -(t • x) := neg_smul t x
@@ -563,6 +622,10 @@ theorem dualRotorMat_rodrigues (β : DualRapidity) :
     simp only [h, ↓reduceIte]
     exact exp_mat_of_sq_neg_one (cyclicRepComb_unit_sq h) (‖β‖ / 2)
 
+theorem dualRotorMat_zero : dualRotorMat 0 = 1 := by
+  rw [dualRotorMat_rodrigues]
+  simp
+
 /-- Three-axis dual rotor has determinant `1`. -/
 theorem dualRotorMat_det (β : DualRapidity) :
     (dualRotorMat β).det = 1 := by
@@ -684,7 +747,7 @@ theorem cyclicRepComb_mul (n m : Fin 3 → ℝ) :
     simp [Matrix.add_apply, Matrix.neg_apply, Matrix.smul_apply,
       cyclicRep, pauli, pauliX, pauliY, pauliZ] <;> ring
 
-private theorem dualRotorGen_smul (c : ℝ) (β : DualRapidity) :
+theorem dualRotorGen_smul (c : ℝ) (β : DualRapidity) :
     dualRotorGen (c • β) = c • dualRotorGen β := by
   unfold dualRotorGen
   simp only [Fin.sum_univ_three, smul_add]

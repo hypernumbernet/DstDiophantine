@@ -23,6 +23,11 @@ On spacetime the correspondence `p_μ ↦ -i∂_μ` gives the field equation
 solves the momentum-space equation, and solutions of one mass form a
 complex vector space. For any two differentiable solutions of the same
 real mass the current is conserved: `∂_μ j^μ = 0`.
+
+A total rotor `M` with `det M = 1` acts on a field by
+`Ψ ↦ S(M) Ψ(L_M x)`, where `L_M` is the coordinate map dual to the Lorentz
+action `Λ_M` on momenta. This carries solutions to solutions and carries the
+plane wave of momentum `p` to the plane wave of momentum `Λ_M p`.
 -/
 
 namespace DstDiophantine
@@ -34,15 +39,6 @@ open Matrix Complex
 open scoped InnerProductSpace
 
 /-! ### Adjoint relations -/
-
-theorem applyDiracMat_inner_ct (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ Φ : DiracSpinor) :
-    inner ℂ Ψ (applyDiracMat M Φ) = inner ℂ (applyDiracMat Mᴴ Ψ) Φ := by
-  simp only [applyDiracMat, PiLp.inner_apply, Matrix.mulVec, dotProduct, Fin.sum_univ_four,
-    Matrix.conjTranspose_apply, RCLike.inner_apply]
-  simp only [map_add, map_mul]
-  ring_nf
-  simp only [Complex.star_def, Complex.conj_conj]
-  ring
 
 theorem diracAdjointMat_hermitian : diracAdjointMatᴴ = diracAdjointMat := by
   unfold diracAdjointMat diracMat0
@@ -271,27 +267,14 @@ theorem norm_sq_rotorDirac_rest {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1
 /-- Dual rotors leave the density unchanged. -/
 theorem norm_rotorDirac_dualRotor (β : DualRapidity) (Ψ : DiracSpinor) :
     ‖rotorDirac (dualRotorMat β) Ψ‖ = ‖Ψ‖ := by
-  have hU := dualRotorMat_unitary β
-  have hU' : (dualRotorMat β)ᴴ * dualRotorMat β = 1 := hU
   have hinner : ∀ ψ : DualSpinor,
       inner ℂ (applyMat (dualRotorMat β) ψ) (applyMat (dualRotorMat β) ψ) = inner ℂ ψ ψ := by
     intro ψ
-    simp only [applyMat, PiLp.inner_apply, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
-      RCLike.inner_apply]
-    have e00 := congrFun (congrFun hU' 0) 0
-    have e01 := congrFun (congrFun hU' 0) 1
-    have e10 := congrFun (congrFun hU' 1) 0
-    have e11 := congrFun (congrFun hU' 1) 1
-    simp only [Matrix.mul_apply, Fin.sum_univ_two, Matrix.conjTranspose_apply,
-      Matrix.one_apply_eq, Matrix.one_apply_ne (show (0 : Fin 2) ≠ 1 by decide),
-      Matrix.one_apply_ne (show (1 : Fin 2) ≠ 0 by decide)] at e00 e01 e10 e11
-    simp only [map_add, map_mul, Complex.star_def] at e00 e01 e10 e11 ⊢
-    linear_combination (starRingEnd ℂ (ψ 0) * ψ 0) * e00 + (starRingEnd ℂ (ψ 0) * ψ 1) * e01 +
-      (starRingEnd ℂ (ψ 1) * ψ 0) * e10 + (starRingEnd ℂ (ψ 1) * ψ 1) * e11
+    rw [applyMat_inner_mul, dualRotorMat_unitary, applyMat_one]
   have hsq : ‖rotorDirac (dualRotorMat β) Ψ‖ ^ 2 = ‖Ψ‖ ^ 2 := by
     have key : inner ℂ (rotorDirac (dualRotorMat β) Ψ) (rotorDirac (dualRotorMat β) Ψ) =
         inner ℂ Ψ Ψ := by
-      rw [← weyl_decompose' Ψ, rotorDirac_weyl, rotorLower_dualRotor, inner_add_left,
+      rw [← weyl_decompose Ψ, rotorDirac_weyl, rotorLower_dualRotor, inner_add_left,
         inner_add_right, inner_add_right, inner_add_left, inner_add_right, inner_add_right,
         weylUpper_inner_upper, weylUpper_inner_lower, weylLower_inner_upper,
         weylLower_inner_lower, weylUpper_inner_upper, weylUpper_inner_lower,
@@ -370,10 +353,6 @@ theorem planeWave_partialD (p : Vec4) (u : DiracSpinor) (μ : Fin 4) (x : Vec4) 
 theorem differentiable_planeWave (p : Vec4) (u : DiracSpinor) :
     Differentiable ℝ (planeWave p u) :=
   fun x => (hasFDerivAt_planeWave p u x).differentiableAt
-
-private theorem applyDiracMat_sum4 (M : Matrix (Fin 4) (Fin 4) ℂ) (f : Fin 4 → DiracSpinor) :
-    applyDiracMat M (∑ μ : Fin 4, f μ) = ∑ μ : Fin 4, applyDiracMat M (f μ) := by
-  simp only [Fin.sum_univ_four, applyDiracMat_add]
 
 theorem planeWave_diracOp (p : Vec4) (u : DiracSpinor) (x : Vec4) :
     diracOp (planeWave p u) x =
@@ -502,8 +481,8 @@ theorem currentField_conserved {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : D
     hΦ.2 x
   have hΨx : ∑ μ : Fin 4, applyDiracMat (diracMat μ) (partialD Ψ μ x) = (-(m : ℂ)) • Ψ x :=
     hΨ.2 x
-  rw [Finset.sum_neg_distrib, ← inner_sum, ← sum_inner, ← applyDiracMat_sum4,
-    ← applyDiracMat_sum4, hΦx, hΨx, applyDiracMat_smul, applyDiracMat_smul,
+  rw [Finset.sum_neg_distrib, ← inner_sum, ← sum_inner, ← applyDiracMat_finset_sum,
+    ← applyDiracMat_finset_sum, hΦx, hΨx, applyDiracMat_smul, applyDiracMat_smul,
     inner_smul_right, inner_smul_left]
   have hsym : inner ℂ (applyDiracMat diracAdjointMat (Ψ x)) (Φ x) =
       inner ℂ (Ψ x) (applyDiracMat diracAdjointMat (Φ x)) := by
@@ -511,6 +490,97 @@ theorem currentField_conserved {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : D
   rw [hsym]
   simp only [map_neg, Complex.conj_ofReal]
   ring
+
+/-! ### Field covariance under the total rotor -/
+
+/-- Coordinates transformed so that `p · (L_M x) = (Λ_M p) · x`. -/
+noncomputable def coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) : Vec4 →L[ℝ] Vec4 :=
+  ContinuousLinearMap.pi fun ν => wavePhaseCLM (lorentzAct M (Pi.single ν 1))
+
+theorem coordAct_apply (M : Matrix (Fin 2) (Fin 2) ℂ) (x : Vec4) (ν : Fin 4) :
+    coordAct M x ν = wavePhase (lorentzAct M (Pi.single ν 1)) x := by
+  simp [coordAct, wavePhaseCLM_apply]
+
+theorem coordAct_single (M : Matrix (Fin 2) (Fin 2) ℂ) (μ : Fin 4) :
+    coordAct M (Pi.single μ 1) = ∑ ν : Fin 4, lorentzAct M (Pi.single ν 1) μ • Pi.single ν 1 := by
+  ext ν
+  rw [coordAct_apply, wavePhase_single]
+  simp [Finset.sum_apply, Pi.single_apply]
+
+/-- A spinor field transformed by a total rotor. -/
+noncomputable def rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : Vec4 → DiracSpinor) :
+    Vec4 → DiracSpinor :=
+  fun x => rotorDirac M (Ψ (coordAct M x))
+
+theorem rotorField_eq (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : Vec4 → DiracSpinor) :
+    rotorField M Ψ = diracCLM (rotorDiracMat M) ∘ Ψ ∘ coordAct M := by
+  funext x
+  simp [rotorField, rotorDirac_eq_mat, diracCLM_apply]
+
+theorem differentiable_rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) {Ψ : Vec4 → DiracSpinor}
+    (hΨ : Differentiable ℝ Ψ) : Differentiable ℝ (rotorField M Ψ) := by
+  rw [rotorField_eq]
+  exact (diracCLM _).differentiable.comp (hΨ.comp (coordAct M).differentiable)
+
+theorem partialD_rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) {Ψ : Vec4 → DiracSpinor}
+    (hΨ : Differentiable ℝ Ψ) (μ : Fin 4) (x : Vec4) :
+    partialD (rotorField M Ψ) μ x =
+      applyDiracMat (rotorDiracMat M)
+        (∑ ν : Fin 4, ((lorentzAct M (Pi.single ν 1) μ : ℝ) : ℂ) •
+          partialD Ψ ν (coordAct M x)) := by
+  have h : HasFDerivAt (rotorField M Ψ)
+      ((diracCLM (rotorDiracMat M)).comp ((fderiv ℝ Ψ (coordAct M x)).comp (coordAct M))) x := by
+    rw [rotorField_eq]
+    exact (diracCLM _).hasFDerivAt.comp x
+      ((hΨ (coordAct M x)).hasFDerivAt.comp x (coordAct M).hasFDerivAt)
+  unfold partialD
+  rw [h.fderiv]
+  simp only [ContinuousLinearMap.comp_apply, diracCLM_apply, coordAct_single, map_sum,
+    map_smul]
+  rw [applyDiracMat_finset_sum]
+  refine Finset.sum_congr rfl fun ν _ => ?_
+  simp only [← Complex.coe_smul, applyDiracMat_smul]
+
+/-- Covariance of the spacetime Dirac equation under every total rotor. -/
+theorem diracField_rotorField {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ}
+    {Ψ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) : DiracField m (rotorField M Ψ) := by
+  refine ⟨differentiable_rotorField M hΨ.1, fun x => ?_⟩
+  have key : ∀ ν : Fin 4,
+      ∑ μ : Fin 4, ((lorentzAct M (Pi.single ν 1) μ : ℝ) : ℂ) •
+          applyDiracMat (diracMat μ)
+            (applyDiracMat (rotorDiracMat M) (partialD Ψ ν (coordAct M x))) =
+        applyDiracMat (rotorDiracMat M)
+          (applyDiracMat (diracMat ν) (partialD Ψ ν (coordAct M x))) := by
+    intro ν
+    have h := slash_rotorDirac hM (Pi.single ν 1) (partialD Ψ ν (coordAct M x))
+    rw [slashMat_single, rotorDirac_eq_mat, rotorDirac_eq_mat] at h
+    rw [← h]
+    unfold slashMat
+    simp only [Fin.sum_univ_four, applyDiracMat_add_mat, applyDiracMat_smul_mat]
+  unfold diracOp
+  simp only [partialD_rotorField M hΨ.1, applyDiracMat_finset_sum, applyDiracMat_smul]
+  rw [Finset.sum_comm]
+  simp only [key]
+  rw [← applyDiracMat_finset_sum]
+  have h2 := hΨ.2 (coordAct M x)
+  unfold diracOp at h2
+  rw [h2, applyDiracMat_smul, rotorField, rotorDirac_eq_mat]
+
+/-- The phase is invariant: `p · (L_M x) = (Λ_M p) · x`. -/
+theorem wavePhase_coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) (p x : Vec4) :
+    wavePhase p (coordAct M x) = wavePhase (lorentzAct M p) x := by
+  rw [lorentzAct_eq_sum]
+  simp only [wavePhase, coordAct_apply, Finset.sum_apply, Pi.smul_apply, smul_eq_mul,
+    Finset.mul_sum, Finset.sum_mul]
+  rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun μ _ => Finset.sum_congr rfl fun ν _ => ?_
+  ring
+
+/-- A plane wave of momentum `p` is carried to the plane wave of momentum `Λ_M p`. -/
+theorem rotorField_planeWave (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) (u : DiracSpinor) :
+    rotorField M (planeWave p u) = planeWave (lorentzAct M p) (rotorDirac M u) := by
+  funext x
+  simp only [rotorField, planeWave, wavePhase_coordAct, rotorDirac_smul]
 
 end Logic
 

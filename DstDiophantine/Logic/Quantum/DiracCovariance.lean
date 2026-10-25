@@ -77,15 +77,18 @@ theorem pauliSlash_hermVec {X : Matrix (Fin 2) (Fin 2) ℂ} (hX : Xᴴ = X) :
   rw [pauliSlash_entries]
   ext i j
   fin_cases i <;> fin_cases j
-  · apply Complex.ext <;> simp [hermVec, h00im] <;> ring
+  · apply Complex.ext <;> simp [hermVec, h00im]
+    ring
   · apply Complex.ext <;> simp [hermVec, ← h01]
   · apply Complex.ext <;> simp [hermVec]
-  · apply Complex.ext <;> simp [hermVec, h11im] <;> ring
+  · apply Complex.ext <;> simp [hermVec, h11im]
+    ring
 
 theorem pauliSlash_hermitian (p : Vec4) : (pauliSlash p)ᴴ = pauliSlash p := by
   rw [pauliSlash_entries]
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [Matrix.conjTranspose_apply] <;> ring
+  fin_cases i <;> fin_cases j <;> simp [Matrix.conjTranspose_apply]
+  ring
 
 /-- `det(p₀ I + p·σ) = -Q(p)`. -/
 theorem pauliSlash_det (p : Vec4) :
@@ -120,6 +123,32 @@ theorem pauliSlash_lorentzAct (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) :
   apply pauliSlash_hermVec
   rw [Matrix.conjTranspose_mul, Matrix.conjTranspose_mul, Matrix.conjTranspose_conjTranspose,
     pauliSlash_hermitian, Matrix.mul_assoc]
+
+/-- `pauliSlash` as a real linear map. -/
+noncomputable def pauliSlashLM : Vec4 →ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℂ where
+  toFun := pauliSlash
+  map_add' := pauliSlash_add
+  map_smul' r p := by
+    rw [pauliSlash_smul, RingHom.id_apply, ← Complex.coe_smul]
+
+/-- The Lorentz action of a total rotor is linear in the momentum. -/
+theorem lorentzAct_eq_sum (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) :
+    lorentzAct M p = ∑ ν : Fin 4, p ν • lorentzAct M (Pi.single ν 1) := by
+  apply pauliSlash_injective
+  have hp : p = ∑ ν : Fin 4, p ν • (Pi.single ν 1 : Vec4) := by
+    ext μ
+    simp [Finset.sum_apply, Pi.single_apply]
+  change pauliSlashLM (lorentzAct M p) =
+    pauliSlashLM (∑ ν : Fin 4, p ν • lorentzAct M (Pi.single ν 1))
+  rw [map_sum]
+  simp only [map_smul]
+  change pauliSlash (lorentzAct M p) = ∑ ν : Fin 4, p ν • pauliSlash (lorentzAct M _)
+  simp only [pauliSlash_lorentzAct]
+  conv_lhs => rw [hp]
+  change M * pauliSlashLM (∑ ν : Fin 4, p ν • (Pi.single ν 1 : Vec4)) * Mᴴ = _
+  rw [map_sum]
+  simp only [map_smul, Finset.mul_sum, Finset.sum_mul, Matrix.mul_smul, Matrix.smul_mul]
+  rfl
 
 /-- A unit-determinant rotor preserves the Minkowski quadratic. -/
 theorem minkowskiQ_lorentzAct {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (p : Vec4) :
@@ -164,6 +193,18 @@ theorem pauliSlashBar_lorentzAct_intertwine {M : Matrix (Fin 2) (Fin 2) ℂ} (hM
 noncomputable def rotorDirac (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) : DiracSpinor :=
   weylUpper (applyMat M (diracUpper Ψ)) + weylLower (applyMat (rotorLower M) (diracLower Ψ))
 
+/-- Matrix of the total rotor on `ℂ⁴`. -/
+noncomputable def rotorDiracMat (M : Matrix (Fin 2) (Fin 2) ℂ) : Matrix (Fin 4) (Fin 4) ℂ :=
+  blockDiag2 M (rotorLower M)
+
+theorem rotorDirac_eq_mat (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
+    rotorDirac M Ψ = applyDiracMat (rotorDiracMat M) Ψ := by
+  ext i
+  fin_cases i <;>
+    simp [rotorDirac, applyDiracMat, rotorDiracMat, blockDiag2, weylUpper, weylLower,
+      applyMat, diracUpper, diracLower, Matrix.mulVec, dotProduct, Fin.sum_univ_four,
+      Fin.sum_univ_two]
+
 theorem rotorDirac_weyl (M : Matrix (Fin 2) (Fin 2) ℂ) (u l : DualSpinor) :
     rotorDirac M (weylUpper u + weylLower l) =
       weylUpper (applyMat M u) + weylLower (applyMat (rotorLower M) l) := by
@@ -173,7 +214,7 @@ theorem rotorDirac_weyl (M : Matrix (Fin 2) (Fin 2) ℂ) (u l : DualSpinor) :
 
 theorem rotorDirac_smul (M : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (Ψ : DiracSpinor) :
     rotorDirac M (c • Ψ) = c • rotorDirac M Ψ := by
-  nth_rw 1 [← weyl_decompose' Ψ]
+  nth_rw 1 [← weyl_decompose Ψ]
   rw [smul_add, ← weylUpper_smul, ← weylLower_smul, rotorDirac_weyl, applyMat_smul,
     applyMat_smul, weylUpper_smul, weylLower_smul, ← smul_add]
   rfl
@@ -198,22 +239,14 @@ theorem diracMomentum_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 
   unfold DiracMomentum at h ⊢
   rw [slash_rotorDirac hM, h, rotorDirac_smul]
 
-private theorem applyMat_inner_ct (A B : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
-    inner ℂ (applyMat A χ) (applyMat B ψ) = inner ℂ χ (applyMat (Aᴴ * B) ψ) := by
-  simp only [applyMat, PiLp.inner_apply, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
-    Matrix.mul_apply, Matrix.conjTranspose_apply, RCLike.inner_apply]
-  simp only [map_add, map_mul]
-  ring_nf
-  simp only [Complex.star_def]
-  ring
-
 /-- The mass bilinear is invariant under every unit-determinant total rotor. -/
 theorem diracScalar_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (Ψ Φ : DiracSpinor) :
     diracScalar (rotorDirac M Ψ) (rotorDirac M Φ) = diracScalar Ψ Φ := by
-  rw [← weyl_decompose' Ψ, ← weyl_decompose' Φ, rotorDirac_weyl, rotorDirac_weyl, diracScalar_weyl, diracScalar_weyl,
-    applyMat_inner_ct, applyMat_inner_ct, conjTranspose_mul_rotorLower hM,
-    rotorLower_conjTranspose_mul hM, applyMat_one, applyMat_one]
+  rw [← weyl_decompose Ψ, ← weyl_decompose Φ, rotorDirac_weyl, rotorDirac_weyl,
+    diracScalar_weyl, diracScalar_weyl, applyMat_inner_mul, applyMat_inner_mul,
+    conjTranspose_mul_rotorLower hM, rotorLower_conjTranspose_mul hM, applyMat_one,
+    applyMat_one]
 
 /-! ### Current covariance -/
 
@@ -521,14 +554,6 @@ private theorem euclid_norm_scaled (w : Fin 3 → ℝ) {r a : ℝ} (hr : 0 < r) 
     field_simp
   rw [h, Real.sqrt_sq ha]
 
-theorem usualRotorMat_zero : usualRotorMat 0 = 1 := by
-  rw [usualRotorMat_rodrigues]
-  simp
-
-theorem dualRotorMat_zero : dualRotorMat 0 = 1 := by
-  rw [dualRotorMat_rodrigues]
-  simp
-
 /-- Every positive Hermitian matrix of determinant `1` is a usual rotor. -/
 theorem usualRotor_surj {H : Matrix (Fin 2) (Fin 2) ℂ} (hH : Hᴴ = H) (hdet : H.det = 1)
     (htr : 0 < H.trace.re) : ∃ α : UsualRapidity, usualRotorMat α = H := by
@@ -569,7 +594,7 @@ theorem usualRotor_surj {H : Matrix (Fin 2) (Fin 2) ℂ} (hH : Hᴴ = H) (hdet :
       linarith
     refine ⟨α, ?_⟩
     rw [usualRotorMat_rodrigues]
-    simp only [hα0, ↓reduceDIte]
+    simp only [hα0, ↓reduceIte]
     rw [hnorm, ← hHv, pauliSlash_entries]
     have hc : Real.cosh (a / 2) = v 0 := by
       rw [show a / 2 = Real.arsinh r by ring, Real.cosh_arsinh, hv0sq]
@@ -579,10 +604,10 @@ theorem usualRotor_surj {H : Matrix (Fin 2) (Fin 2) ℂ} (hH : Hᴴ = H) (hdet :
     have hane : a ≠ 0 := hapos.ne'
     have hrne : r ≠ 0 := hrpos.ne'
     ext i j
-    fin_cases i <;> fin_cases j <;>
+    fin_cases i <;> fin_cases j <;> apply Complex.ext <;>
       simp [α, w, pauliComb, pauli, pauliX, pauliY, pauliZ, Fin.sum_univ_three,
-        Matrix.add_apply, Matrix.smul_apply] <;>
-      (apply Complex.ext <;> simp <;> field_simp <;> ring)
+        Matrix.add_apply, Matrix.smul_apply] <;> field_simp
+    ring
   · have hr00 : r = 0 := by rw [hr]; exact hr0.symm
     have hsum : v 1 ^ 2 + v 2 ^ 2 + v 3 ^ 2 = 0 := by
       rw [← hr2, hr00]
@@ -609,13 +634,11 @@ theorem dualRotor_surj {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1) (hde
   have hadj := unitary_conjTranspose_eq_adjugate hU hdet
   rw [Matrix.adjugate_fin_two] at hadj
   have e11 : U 1 1 = star (U 0 0) := by
-    have := congrFun (congrFun hadj 0) 0
-    simp at this
-    exact this.symm
+    simpa using (congrFun (congrFun hadj 0) 0).symm
   have e01 : U 0 1 = -star (U 1 0) := by
-    have := congrFun (congrFun hadj 0) 1
-    simp at this
-    rw [Complex.star_def, this, neg_neg]
+    have h : (starRingEnd ℂ) (U 1 0) = -U 0 1 := by
+      simpa using congrFun (congrFun hadj 0) 1
+    rw [Complex.star_def, h, neg_neg]
   set x0 := (U 0 0).re
   set x3 := -(U 0 0).im
   set x1 := -(U 1 0).im
@@ -671,10 +694,9 @@ theorem dualRotor_surj {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1) (hde
     have hθne : θ ≠ 0 := hθpos.ne'
     have hrne : r ≠ 0 := hrpos.ne'
     ext i j
-    fin_cases i <;> fin_cases j <;>
+    fin_cases i <;> fin_cases j <;> apply Complex.ext <;>
       simp [β, w, cyclicRepComb, cyclicRep, pauli, pauliX, pauliY, pauliZ,
-        Fin.sum_univ_three, Matrix.add_apply, Matrix.smul_apply] <;>
-      (apply Complex.ext <;> simp <;> field_simp)
+        Fin.sum_univ_three, Matrix.add_apply, Matrix.smul_apply] <;> field_simp
   · have hr00 : r = 0 := by rw [hr]; exact hr0.symm
     have hsum : x1 ^ 2 + x2 ^ 2 + x3 ^ 2 = 0 := by
       rw [← hr2, hr00]
@@ -705,9 +727,6 @@ theorem totalRotor_factor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
   obtain ⟨α, rfl⟩ := usualRotor_surj hH hHdet hHtr
   obtain ⟨β, rfl⟩ := dualRotor_surj hU hUdet
   exact ⟨α, β, rfl⟩
-
-theorem pauliComb_trace (n : Fin 3 → ℝ) : (pauliComb n).trace = 0 := by
-  simp [pauliComb, Fin.sum_univ_three, Matrix.trace_fin_two, pauli, pauliX, pauliY, pauliZ]
 
 theorem usualRotorMat_trace_pos (α : UsualRapidity) : 0 < (usualRotorMat α).trace.re := by
   have hpos : 0 < Real.cosh (‖α‖ / 2) := Real.cosh_pos _
@@ -898,13 +917,11 @@ theorem real_unitary_axis1 {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1)
   have hadj := unitary_conjTranspose_eq_adjugate hU hdet
   rw [Matrix.adjugate_fin_two] at hadj
   have e11 : U 1 1 = star (U 0 0) := by
-    have := congrFun (congrFun hadj 0) 0
-    simp at this
-    exact this.symm
+    simpa using (congrFun (congrFun hadj 0) 0).symm
   have e01 : U 0 1 = -star (U 1 0) := by
-    have := congrFun (congrFun hadj 0) 1
-    simp at this
-    rw [Complex.star_def, this, neg_neg]
+    have h : (starRingEnd ℂ) (U 1 0) = -U 0 1 := by
+      simpa using congrFun (congrFun hadj 0) 1
+    rw [Complex.star_def, h, neg_neg]
   have hreal : ∀ i j, (U i j).im = 0 := by
     intro i j
     have h := congrArg Complex.im (congrFun (congrFun hr i) j)

@@ -2,12 +2,7 @@ import DstDiophantine.Logic.Quantum.DiracField
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
 /-!
-# Spacetime covariance and electromagnetic coupling of the Dirac field
-
-A total rotor `M` with `det M = 1` acts on a field by
-`Ψ ↦ S(M) Ψ(Λ(M)ᵀ x)`, where `Λ(M)` is the induced Lorentz action on
-covectors. This carries solutions of `γ^μ ∂_μ Ψ = -m Ψ` to solutions and
-carries the plane wave of momentum `p` to the plane wave of momentum `Λ(M) p`.
+# Electromagnetic coupling of the Dirac field
 
 Minimal coupling `D_μ = ∂_μ - i e A_μ` gives `γ^μ D_μ Ψ = -m Ψ`. Solutions are
 carried to solutions by `Ψ ↦ e^{i e χ} Ψ`, `A ↦ A + ∂χ`; in a constant
@@ -33,169 +28,6 @@ open Matrix Complex
 
 open scoped InnerProductSpace
 
-/-! ### Field covariance under the total rotor -/
-
-/-- Block matrix of the total rotor on `ℂ⁴`. -/
-noncomputable def rotorDiracMat (M : Matrix (Fin 2) (Fin 2) ℂ) : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![M 0 0, M 0 1, 0, 0;
-     M 1 0, M 1 1, 0, 0;
-     0, 0, rotorLower M 0 0, rotorLower M 0 1;
-     0, 0, rotorLower M 1 0, rotorLower M 1 1]
-
-theorem rotorDirac_eq_mat (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
-    rotorDirac M Ψ = applyDiracMat (rotorDiracMat M) Ψ := by
-  ext i
-  fin_cases i <;>
-    simp [rotorDirac, applyDiracMat, rotorDiracMat, weylUpper, weylLower, applyMat,
-      diracUpper, diracLower, Matrix.mulVec, dotProduct, Fin.sum_univ_four, Fin.sum_univ_two]
-
-theorem applyDiracMat_finset_sum {ι : Type*} (s : Finset ι) (M : Matrix (Fin 4) (Fin 4) ℂ)
-    (f : ι → DiracSpinor) :
-    applyDiracMat M (∑ i ∈ s, f i) = ∑ i ∈ s, applyDiracMat M (f i) := by
-  simp only [← diracCLM_apply, map_sum]
-
-theorem applyDiracMat_finset_sum_mat {ι : Type*} (s : Finset ι)
-    (M : ι → Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (∑ i ∈ s, M i) Ψ = ∑ i ∈ s, applyDiracMat (M i) Ψ := by
-  induction s using Finset.cons_induction with
-  | empty =>
-    ext j
-    simp [applyDiracMat]
-  | cons a s ha ih =>
-    rw [Finset.sum_cons, Finset.sum_cons, applyDiracMat_add_mat, ih]
-
-theorem slashMat_single (ν : Fin 4) : slashMat (Pi.single ν 1) = diracMat ν := by
-  unfold slashMat
-  rw [Finset.sum_eq_single ν]
-  · simp
-  · intro μ _ h
-    simp [Pi.single_eq_of_ne h]
-  · simp
-
-/-- Coordinates transformed so that `p · (L_M x) = (Λ_M p) · x`. -/
-noncomputable def coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) : Vec4 →L[ℝ] Vec4 :=
-  ContinuousLinearMap.pi fun ν => wavePhaseCLM (lorentzAct M (Pi.single ν 1))
-
-theorem coordAct_apply (M : Matrix (Fin 2) (Fin 2) ℂ) (x : Vec4) (ν : Fin 4) :
-    coordAct M x ν = wavePhase (lorentzAct M (Pi.single ν 1)) x := by
-  simp [coordAct, wavePhaseCLM_apply]
-
-theorem coordAct_single (M : Matrix (Fin 2) (Fin 2) ℂ) (μ : Fin 4) :
-    coordAct M (Pi.single μ 1) = ∑ ν : Fin 4, lorentzAct M (Pi.single ν 1) μ • Pi.single ν 1 := by
-  ext ν
-  rw [coordAct_apply, wavePhase_single]
-  simp [Finset.sum_apply, Pi.single_apply]
-
-/-- A spinor field transformed by a total rotor. -/
-noncomputable def rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : Vec4 → DiracSpinor) :
-    Vec4 → DiracSpinor :=
-  fun x => rotorDirac M (Ψ (coordAct M x))
-
-theorem rotorField_eq (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : Vec4 → DiracSpinor) :
-    rotorField M Ψ = diracCLM (rotorDiracMat M) ∘ Ψ ∘ coordAct M := by
-  funext x
-  simp [rotorField, rotorDirac_eq_mat, diracCLM_apply]
-
-theorem differentiable_rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) {Ψ : Vec4 → DiracSpinor}
-    (hΨ : Differentiable ℝ Ψ) : Differentiable ℝ (rotorField M Ψ) := by
-  rw [rotorField_eq]
-  exact (diracCLM _).differentiable.comp (hΨ.comp (coordAct M).differentiable)
-
-theorem partialD_rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) {Ψ : Vec4 → DiracSpinor}
-    (hΨ : Differentiable ℝ Ψ) (μ : Fin 4) (x : Vec4) :
-    partialD (rotorField M Ψ) μ x =
-      applyDiracMat (rotorDiracMat M)
-        (∑ ν : Fin 4, ((lorentzAct M (Pi.single ν 1) μ : ℝ) : ℂ) •
-          partialD Ψ ν (coordAct M x)) := by
-  have h : HasFDerivAt (rotorField M Ψ)
-      ((diracCLM (rotorDiracMat M)).comp ((fderiv ℝ Ψ (coordAct M x)).comp (coordAct M))) x := by
-    rw [rotorField_eq]
-    exact (diracCLM _).hasFDerivAt.comp x
-      ((hΨ (coordAct M x)).hasFDerivAt.comp x (coordAct M).hasFDerivAt)
-  unfold partialD
-  rw [h.fderiv]
-  simp only [ContinuousLinearMap.comp_apply, diracCLM_apply, coordAct_single, map_sum,
-    map_smul]
-  rw [applyDiracMat_finset_sum]
-  refine Finset.sum_congr rfl fun ν _ => ?_
-  simp only [← Complex.coe_smul, applyDiracMat_smul]
-
-/-- Covariance of the spacetime Dirac equation under every total rotor. -/
-theorem diracField_rotorField {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ}
-    {Ψ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) : DiracField m (rotorField M Ψ) := by
-  refine ⟨differentiable_rotorField M hΨ.1, fun x => ?_⟩
-  have key : ∀ ν : Fin 4,
-      ∑ μ : Fin 4, ((lorentzAct M (Pi.single ν 1) μ : ℝ) : ℂ) •
-          applyDiracMat (diracMat μ)
-            (applyDiracMat (rotorDiracMat M) (partialD Ψ ν (coordAct M x))) =
-        applyDiracMat (rotorDiracMat M)
-          (applyDiracMat (diracMat ν) (partialD Ψ ν (coordAct M x))) := by
-    intro ν
-    have h := slash_rotorDirac hM (Pi.single ν 1) (partialD Ψ ν (coordAct M x))
-    rw [slashMat_single, rotorDirac_eq_mat, rotorDirac_eq_mat] at h
-    rw [← h]
-    unfold slashMat
-    simp only [Fin.sum_univ_four, applyDiracMat_add_mat, applyDiracMat_smul_mat]
-  unfold diracOp
-  simp only [partialD_rotorField M hΨ.1, applyDiracMat_finset_sum, applyDiracMat_smul]
-  rw [Finset.sum_comm]
-  simp only [key]
-  rw [← applyDiracMat_finset_sum]
-  have h2 := hΨ.2 (coordAct M x)
-  unfold diracOp at h2
-  rw [h2, applyDiracMat_smul, rotorField, rotorDirac_eq_mat]
-
-theorem pauliSlash_add (p q : Vec4) : pauliSlash (p + q) = pauliSlash p + pauliSlash q := by
-  unfold pauliSlash
-  simp only [Pi.add_apply, ofReal_add, add_smul]
-  abel
-
-theorem pauliSlash_smul (r : ℝ) (p : Vec4) : pauliSlash (r • p) = (r : ℂ) • pauliSlash p := by
-  unfold pauliSlash
-  simp only [Pi.smul_apply, smul_eq_mul, ofReal_mul, smul_add, smul_smul]
-
-/-- `pauliSlash` as a real linear map. -/
-noncomputable def pauliSlashLM : Vec4 →ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℂ where
-  toFun := pauliSlash
-  map_add' := pauliSlash_add
-  map_smul' r p := by
-    rw [pauliSlash_smul, RingHom.id_apply, ← Complex.coe_smul]
-
-/-- The Lorentz action of a total rotor is linear in the momentum. -/
-theorem lorentzAct_eq_sum (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) :
-    lorentzAct M p = ∑ ν : Fin 4, p ν • lorentzAct M (Pi.single ν 1) := by
-  apply pauliSlash_injective
-  have hp : p = ∑ ν : Fin 4, p ν • (Pi.single ν 1 : Vec4) := by
-    ext μ
-    simp [Finset.sum_apply, Pi.single_apply]
-  change pauliSlashLM (lorentzAct M p) =
-    pauliSlashLM (∑ ν : Fin 4, p ν • lorentzAct M (Pi.single ν 1))
-  rw [map_sum]
-  simp only [map_smul]
-  change pauliSlash (lorentzAct M p) = ∑ ν : Fin 4, p ν • pauliSlash (lorentzAct M _)
-  simp only [pauliSlash_lorentzAct]
-  conv_lhs => rw [hp]
-  change M * pauliSlashLM (∑ ν : Fin 4, p ν • (Pi.single ν 1 : Vec4)) * Mᴴ = _
-  rw [map_sum]
-  simp only [map_smul, Finset.mul_sum, Finset.sum_mul, Matrix.mul_smul, Matrix.smul_mul]
-  rfl
-
-/-- The phase is invariant: `p · (L_M x) = (Λ_M p) · x`. -/
-theorem wavePhase_coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) (p x : Vec4) :
-    wavePhase p (coordAct M x) = wavePhase (lorentzAct M p) x := by
-  rw [lorentzAct_eq_sum]
-  simp only [wavePhase, coordAct_apply, Finset.sum_apply, Pi.smul_apply, smul_eq_mul,
-    Finset.mul_sum, Finset.sum_mul]
-  rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl fun μ _ => Finset.sum_congr rfl fun ν _ => ?_
-  ring
-
-/-- A plane wave of momentum `p` is carried to the plane wave of momentum `Λ_M p`. -/
-theorem rotorField_planeWave (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) (u : DiracSpinor) :
-    rotorField M (planeWave p u) = planeWave (lorentzAct M p) (rotorDirac M u) := by
-  funext x
-  simp only [rotorField, planeWave, wavePhase_coordAct, rotorDirac_smul]
-
 /-! ### Minimal coupling to an electromagnetic potential -/
 
 /-- Covariant derivative `D_μ Ψ = ∂_μ Ψ - i e A_μ Ψ`. -/
@@ -212,20 +44,6 @@ noncomputable def gaugeDiracOp (e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → Dira
 `γ(p - eA) Ψ = i m Ψ` under `p_μ ↦ -i ∂_μ`. -/
 def DiracGaugeField (m e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → DiracSpinor) : Prop :=
   Differentiable ℝ Ψ ∧ ∀ x, gaugeDiracOp e A Ψ x = (-(m : ℂ)) • Ψ x
-
-theorem applyDiracMat_sub (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ Φ : DiracSpinor) :
-    applyDiracMat M (Ψ - Φ) = applyDiracMat M Ψ - applyDiracMat M Φ := by
-  simp only [← diracCLM_apply, map_sub]
-
-theorem applyDiracMat_sub_mat (M N : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (M - N) Ψ = applyDiracMat M Ψ - applyDiracMat N Ψ := by
-  ext i
-  simp [applyDiracMat, Matrix.sub_mulVec]
-
-theorem applyDiracMat_zero_mat (Ψ : DiracSpinor) :
-    applyDiracMat (0 : Matrix (Fin 4) (Fin 4) ℂ) Ψ = 0 := by
-  ext i
-  simp [applyDiracMat]
 
 theorem gaugeDiracOp_eq (e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
     gaugeDiracOp e A Ψ x =
@@ -613,30 +431,6 @@ theorem diracGaugeField_second_order {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 
 
 /-! ### Weyl blocks of the field strength -/
 
-/-- Block-diagonal `4×4` matrix with `P` on the upper and `Q` on the lower Weyl block. -/
-def blockDiag2 (P Q : Matrix (Fin 2) (Fin 2) ℂ) : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![P 0 0, P 0 1, 0, 0;
-     P 1 0, P 1 1, 0, 0;
-     0, 0, Q 0 0, Q 0 1;
-     0, 0, Q 1 0, Q 1 1]
-
-theorem diracUpper_blockDiag2 (P Q : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
-    diracUpper (applyDiracMat (blockDiag2 P Q) Ψ) = applyMat P (diracUpper Ψ) := by
-  ext i
-  fin_cases i <;>
-    simp [blockDiag2, applyDiracMat, applyMat, diracUpper, Matrix.mulVec, dotProduct,
-      Fin.sum_univ_four, Fin.sum_univ_two]
-
-theorem diracLower_blockDiag2 (P Q : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
-    diracLower (applyDiracMat (blockDiag2 P Q) Ψ) = applyMat Q (diracLower Ψ) := by
-  ext i
-  fin_cases i <;>
-    simp [blockDiag2, applyDiracMat, applyMat, diracLower, Matrix.mulVec, dotProduct,
-      Fin.sum_univ_four, Fin.sum_univ_two]
-
-theorem rotorDiracMat_eq_blockDiag2 (M : Matrix (Fin 2) (Fin 2) ℂ) :
-    rotorDiracMat M = blockDiag2 M (rotorLower M) := rfl
-
 /-- Magnetic field `B = (F₂₃, F₃₁, F₁₂)`. -/
 def magVec (F : Fin 4 → Fin 4 → ℝ) : Fin 3 → ℝ
   | 0 => F 2 3
@@ -648,54 +442,6 @@ def elecVec (F : Fin 4 → Fin 4 → ℝ) : Fin 3 → ℝ
   | 0 => F 1 0
   | 1 => F 2 0
   | 2 => F 3 0
-
-theorem diracUpper_smul (c : ℂ) (Ψ : DiracSpinor) :
-    diracUpper (c • Ψ) = c • diracUpper Ψ := by
-  ext i
-  fin_cases i <;> simp [diracUpper]
-
-theorem diracLower_smul (c : ℂ) (Ψ : DiracSpinor) :
-    diracLower (c • Ψ) = c • diracLower Ψ := by
-  ext i
-  fin_cases i <;> simp [diracLower]
-
-theorem diracUpper_finset_sum {ι : Type*} (s : Finset ι) (f : ι → DiracSpinor) :
-    diracUpper (∑ i ∈ s, f i) = ∑ i ∈ s, diracUpper (f i) := by
-  induction s using Finset.cons_induction with
-  | empty =>
-    ext j
-    fin_cases j <;> simp [diracUpper]
-  | cons a s ha ih =>
-    rw [Finset.sum_cons, Finset.sum_cons, diracUpper_add, ih]
-
-theorem diracLower_finset_sum {ι : Type*} (s : Finset ι) (f : ι → DiracSpinor) :
-    diracLower (∑ i ∈ s, f i) = ∑ i ∈ s, diracLower (f i) := by
-  induction s using Finset.cons_induction with
-  | empty =>
-    ext j
-    fin_cases j <;> simp [diracLower]
-  | cons a s ha ih =>
-    rw [Finset.sum_cons, Finset.sum_cons, diracLower_add, ih]
-
-theorem applyMat_finset_sum_mat {ι : Type*} (s : Finset ι)
-    (M : ι → Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (∑ i ∈ s, M i) ψ = ∑ i ∈ s, applyMat (M i) ψ := by
-  induction s using Finset.cons_induction with
-  | empty =>
-    ext j
-    simp [applyMat]
-  | cons a s ha ih =>
-    rw [Finset.sum_cons, Finset.sum_cons, applyMat_add_mat, ih]
-
-theorem diracUpper_slash (p : Vec4) (Ψ : DiracSpinor) :
-    diracUpper (applyDiracMat (slashMat p) Ψ) = applyMat (pauliSlash p) (diracLower Ψ) := by
-  rw [slash_weyl_decompose, diracUpper_add, diracUpper_weylUpper, diracUpper_weylLower,
-    add_zero]
-
-theorem diracLower_slash (p : Vec4) (Ψ : DiracSpinor) :
-    diracLower (applyDiracMat (slashMat p) Ψ) = applyMat (pauliSlashBar p) (diracUpper Ψ) := by
-  rw [slash_weyl_decompose, diracLower_add, diracLower_weylUpper, diracLower_weylLower,
-    zero_add]
 
 /-- Upper Weyl block of a bivector `γ^μ γ^ν`. -/
 theorem diracUpper_gamma_pair (μ ν : Fin 4) (Ψ : DiracSpinor) :
@@ -733,23 +479,6 @@ theorem diracLower_fieldMat (F : Fin 4 → Fin 4 → ℝ) (Ψ : DiracSpinor) :
   simp only [applyDiracMat_finset_sum_mat, applyDiracMat_smul_mat, diracLower_finset_sum,
     diracLower_smul, diracLower_gamma_pair, applyMat_finset_sum_mat, applyMat_smul_mat]
 
-private theorem ps0 : pauliSlash (Pi.single 0 1) = 1 := by
-  simp [pauliSlash]
-private theorem ps1 : pauliSlash (Pi.single 1 1) = pauliX := by
-  simp [pauliSlash]
-private theorem ps2 : pauliSlash (Pi.single 2 1) = pauliY := by
-  simp [pauliSlash]
-private theorem ps3 : pauliSlash (Pi.single 3 1) = pauliZ := by
-  simp [pauliSlash]
-private theorem psb0 : pauliSlashBar (Pi.single 0 1) = -1 := by
-  simp [pauliSlashBar]
-private theorem psb1 : pauliSlashBar (Pi.single 1 1) = pauliX := by
-  simp [pauliSlashBar]
-private theorem psb2 : pauliSlashBar (Pi.single 2 1) = pauliY := by
-  simp [pauliSlashBar]
-private theorem psb3 : pauliSlashBar (Pi.single 3 1) = pauliZ := by
-  simp [pauliSlashBar]
-
 /-- Upper block: `-(i e/2) F_{μν} s_μ s̄_ν = e (σ·B + i σ·E)`. -/
 theorem fieldUpper_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -F ν μ) (e : ℝ) :
     (-(I * (e : ℂ) / 2)) • fieldUpper F =
@@ -762,7 +491,9 @@ theorem fieldUpper_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -
   have h21 := hF 2 1
   have h32 := hF 3 2
   unfold fieldUpper
-  simp only [Fin.sum_univ_four, ps0, ps1, ps2, ps3, psb0, psb1, psb2, psb3, Matrix.one_mul,
+  simp only [Fin.sum_univ_four, pauliSlash_single_zero, pauliSlash_single_one,
+    pauliSlash_single_two, pauliSlash_single_three, pauliSlashBar_single_zero,
+    pauliSlashBar_single_one, pauliSlashBar_single_two, pauliSlashBar_single_three, Matrix.one_mul,
     Matrix.mul_one, Matrix.mul_neg, pauliX_sq, pauliY_sq, pauliZ_sq,
     pauliX_mul_pauliY, pauliY_mul_pauliX, pauliY_mul_pauliZ, pauliZ_mul_pauliY,
     pauliZ_mul_pauliX, pauliX_mul_pauliZ, d, h01, h02, h03, h13, h21, h32]
@@ -782,33 +513,15 @@ theorem fieldLower_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -
   have h21 := hF 2 1
   have h32 := hF 3 2
   unfold fieldLower
-  simp only [Fin.sum_univ_four, ps0, ps1, ps2, ps3, psb0, psb1, psb2, psb3, Matrix.one_mul,
+  simp only [Fin.sum_univ_four, pauliSlash_single_zero, pauliSlash_single_one,
+    pauliSlash_single_two, pauliSlash_single_three, pauliSlashBar_single_zero,
+    pauliSlashBar_single_one, pauliSlashBar_single_two, pauliSlashBar_single_three, Matrix.one_mul,
     Matrix.mul_one, Matrix.neg_mul, pauliX_sq, pauliY_sq, pauliZ_sq,
     pauliX_mul_pauliY, pauliY_mul_pauliX, pauliY_mul_pauliZ, pauliZ_mul_pauliY,
     pauliZ_mul_pauliX, pauliX_mul_pauliZ, d, h01, h02, h03, h13, h21, h32]
   simp only [magVec, elecVec, pauliComb, pauli, Fin.sum_univ_three]
   push_cast
   match_scalars <;> (try ring_nf) <;> (try simp only [I_sq]) <;> (try ring)
-
-/-- The magnetic matrix `σ·B` is `i` times the dual generator `Γ(B) = -i σ·B`. -/
-theorem pauliComb_eq_I_cyclicRepComb (n : Fin 3 → ℝ) :
-    pauliComb n = I • cyclicRepComb n := by
-  unfold pauliComb cyclicRepComb cyclicRep
-  rw [Finset.smul_sum]
-  refine Finset.sum_congr rfl fun a _ => ?_
-  rw [smul_smul, smul_smul]
-  congr 1
-  linear_combination (n a : ℂ) * I_sq
-
-theorem diracUpper_sub (Ψ Φ : DiracSpinor) :
-    diracUpper (Ψ - Φ) = diracUpper Ψ - diracUpper Φ := by
-  ext i
-  fin_cases i <;> simp [diracUpper]
-
-theorem diracLower_sub (Ψ Φ : DiracSpinor) :
-    diracLower (Ψ - Φ) = diracLower Ψ - diracLower Φ := by
-  ext i
-  fin_cases i <;> simp [diracLower]
 
 /-- Upper Weyl block of the second-order equation: the magnetic field couples
 through `e σ·B`, the electric field through `i e σ·E`. -/
@@ -860,25 +573,6 @@ section Precession
 
 attribute [local instance] Matrix.linftyOpNormedRing Matrix.linftyOpNormedAlgebra
 
-theorem dualRotorGen_smul_ray (t : ℝ) (ω : DualRapidity) :
-    dualRotorGen (t • ω) = t • dualRotorGen ω := by
-  unfold dualRotorGen
-  rw [Finset.smul_sum]
-  refine Finset.sum_congr rfl fun a _ => ?_
-  rw [← Complex.coe_smul, smul_smul, PiLp.smul_apply, smul_eq_mul]
-  congr 1
-  push_cast
-  ring
-
-theorem dualRotorGen_eq_pauliComb (ω : DualRapidity) :
-    dualRotorGen ω = (-(I / 2)) • pauliComb (fun a => ω a) := by
-  unfold dualRotorGen pauliComb cyclicRep
-  rw [Finset.smul_sum]
-  refine Finset.sum_congr rfl fun a _ => ?_
-  rw [smul_smul, smul_smul]
-  congr 1
-  ring
-
 /-- `t ↦ U(t ω) u` solves `i u' = ½ (ω·σ) u`: a spin Hamiltonian linear in
 the Pauli matrices generates a dual rotor whose rapidity grows linearly. -/
 theorem hasDerivAt_dualRotor_ray (ω : DualRapidity) (u : DualSpinor) (t : ℝ) :
@@ -887,7 +581,7 @@ theorem hasDerivAt_dualRotor_ray (ω : DualRapidity) (u : DualSpinor) (t : ℝ) 
       t := by
   have hexp : ∀ s : ℝ, dualRotorMat (s • ω) = NormedSpace.exp (s • dualRotorGen ω) := by
     intro s
-    rw [dualRotorMat_eq_exp_gen, dualRotorGen_smul_ray]
+    rw [dualRotorMat_eq_exp_gen, dualRotorGen_smul]
   let L : Matrix (Fin 2) (Fin 2) ℂ →L[ℝ] DualSpinor :=
     LinearMap.toContinuousLinearMap
       { toFun := fun X => applyMat X u

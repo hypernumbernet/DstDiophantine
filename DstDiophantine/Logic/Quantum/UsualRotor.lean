@@ -5,6 +5,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Usual-sector matrix rotor
@@ -90,28 +91,6 @@ theorem usualRotorMat_isHermitian (α : UsualRapidity) :
     NormedSpace.exp (usualRotorGen α)
   rw [(Matrix.exp_conjTranspose (usualRotorGen α)).symm,
     usualRotorGen_conjTranspose]
-
-private theorem hasDerivAt_exp_neg_smul_mat
-    (x : Matrix (Fin 2) (Fin 2) ℂ) (u : ℝ) :
-    HasDerivAt (fun v : ℝ => NormedSpace.exp ((-v) • x))
-      (NormedSpace.exp ((-u) • x) * (-x)) u := by
-  have h : HasDerivAt (fun v : ℝ => NormedSpace.exp (v • (-x)))
-      (NormedSpace.exp (u • (-x)) * (-x)) u :=
-    hasDerivAt_exp_smul_const (-x) u
-  have hfun : (fun v : ℝ => NormedSpace.exp ((-v) • x)) =
-      fun v : ℝ => NormedSpace.exp (v • (-x)) :=
-    funext fun v => by rw [neg_smul, smul_neg]
-  simpa [hfun, neg_smul, smul_neg] using h
-
-private theorem exp_smul_mul_exp_neg_smul_mat
-    (x : Matrix (Fin 2) (Fin 2) ℂ) (t : ℝ) :
-    NormedSpace.exp (t • x) * NormedSpace.exp ((-t) • x) = 1 := by
-  have hneg : (-t) • x = -(t • x) := neg_smul t x
-  rw [hneg]
-  have hc : Commute (t • x) (-(t • x)) := Commute.neg_right (Commute.refl _)
-  have h := (NormedSpace.exp_add_of_commute hc).symm
-  rw [add_neg_cancel, NormedSpace.exp_zero] at h
-  exact h
 
 /-- Hyperbolic closed form on `M₂(ℂ)`: `x² = 1 ⇒ exp(t • x) = cosh t + sinh t • x`. -/
 theorem exp_mat_of_sq_one {x : Matrix (Fin 2) (Fin 2) ℂ}
@@ -268,6 +247,29 @@ theorem usualRotorMat_axis0_not_unitary :
 noncomputable def pauliComb (n : Fin 3 → ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
   ∑ a : Fin 3, (n a : ℂ) • pauli a
 
+theorem pauliComb_trace (n : Fin 3 → ℝ) : (pauliComb n).trace = 0 := by
+  simp [pauliComb, Fin.sum_univ_three, Matrix.trace_fin_two, pauli, pauliX, pauliY, pauliZ]
+
+/-- `σ·n = i Γ(n)`: a Pauli combination is `i` times the dual generator `-i σ·n`. -/
+theorem pauliComb_eq_I_cyclicRepComb (n : Fin 3 → ℝ) :
+    pauliComb n = I • cyclicRepComb n := by
+  unfold pauliComb cyclicRepComb cyclicRep
+  rw [Finset.smul_sum]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [smul_smul, smul_smul]
+  congr 1
+  linear_combination (n a : ℂ) * I_sq
+
+/-- The dual-rotor generator is `-(i/2) σ·β`. -/
+theorem dualRotorGen_eq_pauliComb (β : DualRapidity) :
+    dualRotorGen β = (-(I / 2)) • pauliComb (fun a => β a) := by
+  unfold dualRotorGen pauliComb cyclicRep
+  rw [Finset.smul_sum]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [smul_smul, smul_smul]
+  congr 1
+  ring
+
 private theorem usualRapidity_norm_sq (α : UsualRapidity) :
     ‖α‖ ^ 2 = (α 0) ^ 2 + (α 1) ^ 2 + (α 2) ^ 2 := by
   have h1 := (real_inner_self_eq_norm_sq (F := UsualRapidity) α).symm
@@ -308,14 +310,18 @@ private theorem pauliComb_unit_sq {α : UsualRapidity} (h : α ≠ 0) :
 theorem usualRotorMat_rodrigues (α : UsualRapidity) :
     usualRotorMat α =
       Real.cosh (‖α‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
-        (if h : α = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
+        (if α = 0 then (0 : Matrix (Fin 2) (Fin 2) ℂ)
           else Real.sinh (‖α‖ / 2) • pauliComb (fun a => α a / ‖α‖)) := by
   by_cases h : α = 0
   · subst h
     simp [usualRotorMat, Real.cosh_zero]
   · rw [usualRotorMat_eq_exp_gen, usualRotorGen_of_unit h]
-    simp only [h, ↓reduceDIte]
+    simp only [h, ↓reduceIte]
     exact exp_mat_of_sq_one (pauliComb_unit_sq h) (‖α‖ / 2)
+
+theorem usualRotorMat_zero : usualRotorMat 0 = 1 := by
+  rw [usualRotorMat_rodrigues]
+  simp
 
 /-- Three-axis usual rotor has determinant `1`. -/
 theorem usualRotorMat_det (α : UsualRapidity) :
@@ -339,7 +345,7 @@ theorem usualRotorMat_det (α : UsualRapidity) :
         field_simp [hr0]
       rw [hdiv, ← hnorm, div_self (pow_ne_zero 2 hr0)]
     rw [usualRotorMat_rodrigues]
-    simp only [hr, ↓reduceDIte]
+    simp only [hr, ↓reduceIte]
     set U := pauliComb (fun a => α a / ‖α‖)
     have hUsq : U * U = 1 := pauliComb_unit_sq hr
     set c := Real.cosh (‖α‖ / 2)

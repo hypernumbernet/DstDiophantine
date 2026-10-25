@@ -143,8 +143,7 @@ theorem rotorTorsion_ofDual (β : DualRapidity) :
   · subst h
     simp [rotorTorsion, omegaTorsion_ofDual, Real.cos_zero]
   · rw [rotorTorsion, omegaTorsion_ofDual_unit h]
-    simp [h]
-    exact exp_of_sq_neg_one (cyclicUnit_sq h) (‖β‖ / 2)
+    simpa [h] using exp_of_sq_neg_one (cyclicUnit_sq h) (‖β‖ / 2)
 
 /-- Closed form along the (possibly zero) cyclic combination. -/
 theorem rotorTorsion_ofDual_comb (β : DualRapidity) :

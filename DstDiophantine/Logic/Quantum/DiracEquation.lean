@@ -2,6 +2,7 @@ import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DeBroglie
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
@@ -41,9 +42,9 @@ the two rays vanish. A dual rotation about the boost axis multiplies each
 ray by a phase. A dual rotation of angle `π` about a perpendicular axis
 exchanges the rays.
 
-This is the first-order factor of Klein–Gordon. It is not a PDE on
-spacetime, not a derivation of `m` from torsion, and not covariance
-under the full rotor group.
+This is the first-order factor of Klein–Gordon in momentum space. Covariance
+under every total rotor is in `DiracCovariance`, the spacetime equation in
+`DiracField`, and the coupling to a potential in `DiracGauge`.
 -/
 
 namespace DstDiophantine
@@ -130,7 +131,7 @@ private theorem slashCl_diag (p : Vec4) :
           (p 3 * p 3) • (diracGamma 3 * diracGamma 3) =
       algebraMap ℝ Cl31 (minkowskiQ p) := by
   simp only [diracGamma_sq, smul_algebraMap_cl]
-  simp only [minkowskiQ, minkowskiEta_diag, Fin.sum_univ_four, w31, sq]
+  simp only [minkowskiQ, minkowskiEta_diag, Fin.sum_univ_four, w31]
   simp [map_add, map_neg, map_mul]
 
 /-- `γ(p)² = Q(p)` in `Cl(3,1)`. -/
@@ -277,12 +278,12 @@ theorem slashMat_factor (p : Vec4) (m : ℝ) :
     ring
   have hL (A : Matrix (Fin 4) (Fin 4) ℂ) :
       (cI • (1 : Matrix (Fin 4) (Fin 4) ℂ)) * A = cI • A := by
-    simp [Matrix.smul_mul, Matrix.one_mul]
+    simp
   have hR (A : Matrix (Fin 4) (Fin 4) ℂ) :
       A * (cI • (1 : Matrix (Fin 4) (Fin 4) ℂ)) = cI • A := by
-    simp [Matrix.mul_smul, Matrix.mul_one]
+    simp
   have hsq : (cI • (1 : Matrix (Fin 4) (Fin 4) ℂ)) * (cI • 1) = (cI * cI) • 1 := by
-    simp [Matrix.smul_mul, Matrix.one_mul, smul_smul]
+    simp [smul_smul]
   calc (slashMat p - cI • 1) * (slashMat p + cI • 1)
       = slashMat p * slashMat p + slashMat p * (cI • 1) -
           (cI • 1) * slashMat p - (cI • 1) * (cI • 1) := by
@@ -294,40 +295,6 @@ theorem slashMat_factor (p : Vec4) (m : ℝ) :
         simp
     _ = slashMat p * slashMat p + ((m : ℂ) ^ 2) • 1 := by
         rw [hcI, sub_eq_add_neg, neg_smul, neg_neg]
-
-/-! ### Linearity of the Dirac action -/
-
-theorem applyDiracMat_add (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ Φ : DiracSpinor) :
-    applyDiracMat M (Ψ + Φ) = applyDiracMat M Ψ + applyDiracMat M Φ := by
-  simp [applyDiracMat, Matrix.mulVec_add]
-
-theorem applyDiracMat_smul (c : ℂ) (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat M (c • Ψ) = c • applyDiracMat M Ψ := by
-  simp [applyDiracMat, Matrix.mulVec_smul]
-
-theorem applyDiracMat_smul_mat (c : ℂ) (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (c • M) Ψ = c • applyDiracMat M Ψ := by
-  simp [applyDiracMat, Matrix.smul_mulVec]
-
-theorem applyDiracMat_add_mat (A B : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (A + B) Ψ = applyDiracMat A Ψ + applyDiracMat B Ψ := by
-  simp [applyDiracMat, Matrix.add_mulVec]
-
-theorem applyDiracMat_neg (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (-M) Ψ = -applyDiracMat M Ψ := by
-  simpa using applyDiracMat_smul_mat (-1) M Ψ
-
-theorem applyDiracMat_mul (A B : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (A * B) Ψ = applyDiracMat A (applyDiracMat B Ψ) := by
-  simp [applyDiracMat, Matrix.mulVec_mulVec]
-
-theorem applyDiracMat_one (Ψ : DiracSpinor) :
-    applyDiracMat (1 : Matrix (Fin 4) (Fin 4) ℂ) Ψ = Ψ := by
-  simp [applyDiracMat, Matrix.one_mulVec]
-
-theorem applyDiracMat_smul_one (c : ℂ) (Ψ : DiracSpinor) :
-    applyDiracMat (c • (1 : Matrix (Fin 4) (Fin 4) ℂ)) Ψ = c • Ψ := by
-  rw [applyDiracMat_smul_mat, applyDiracMat_one]
 
 /-! ### Momentum-space Dirac equation -/
 
@@ -367,116 +334,49 @@ def pauliSlash (p : Vec4) : Matrix (Fin 2) (Fin 2) ℂ :=
 def pauliSlashBar (p : Vec4) : Matrix (Fin 2) (Fin 2) ℂ :=
   (-(p 0 : ℂ)) • 1 + (p 1 : ℂ) • pauliX + (p 2 : ℂ) • pauliY + (p 3 : ℂ) • pauliZ
 
-def diracUpper (Ψ : DiracSpinor) : DualSpinor :=
-  WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]
+theorem pauliSlash_add (p q : Vec4) : pauliSlash (p + q) = pauliSlash p + pauliSlash q := by
+  unfold pauliSlash
+  simp only [Pi.add_apply, ofReal_add, add_smul]
+  abel
 
-def diracLower (Ψ : DiracSpinor) : DualSpinor :=
-  WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]
+theorem pauliSlash_smul (r : ℝ) (p : Vec4) : pauliSlash (r • p) = (r : ℂ) • pauliSlash p := by
+  unfold pauliSlash
+  simp only [Pi.smul_apply, smul_eq_mul, ofReal_mul, smul_add, smul_smul]
 
-theorem diracUpper_weylUpper (u : DualSpinor) :
-    diracUpper (weylUpper u) = u := by
-  ext i
-  fin_cases i <;> simp [diracUpper, weylUpper]
+theorem pauliSlash_single_zero : pauliSlash (Pi.single 0 1) = 1 := by simp [pauliSlash]
+theorem pauliSlash_single_one : pauliSlash (Pi.single 1 1) = pauliX := by simp [pauliSlash]
+theorem pauliSlash_single_two : pauliSlash (Pi.single 2 1) = pauliY := by simp [pauliSlash]
+theorem pauliSlash_single_three : pauliSlash (Pi.single 3 1) = pauliZ := by simp [pauliSlash]
 
-theorem diracLower_weylLower (l : DualSpinor) :
-    diracLower (weylLower l) = l := by
-  ext i
-  fin_cases i <;> simp [diracLower, weylLower]
-
-theorem diracUpper_weylLower (l : DualSpinor) :
-    diracUpper (weylLower l) = 0 := by
-  ext i
-  fin_cases i <;> simp [diracUpper, weylLower]
-
-theorem diracLower_weylUpper (u : DualSpinor) :
-    diracLower (weylUpper u) = 0 := by
-  ext i
-  fin_cases i <;> simp [diracLower, weylUpper]
-
-theorem diracUpper_add (Ψ Φ : DiracSpinor) :
-    diracUpper (Ψ + Φ) = diracUpper Ψ + diracUpper Φ := by
-  ext i
-  fin_cases i <;> simp [diracUpper, PiLp.add_apply]
-
-theorem diracLower_add (Ψ Φ : DiracSpinor) :
-    diracLower (Ψ + Φ) = diracLower Ψ + diracLower Φ := by
-  ext i
-  fin_cases i <;> simp [diracLower, PiLp.add_apply]
-
-theorem weyl_decompose' (Ψ : DiracSpinor) :
-    weylUpper (diracUpper Ψ) + weylLower (diracLower Ψ) = Ψ :=
-  weyl_decompose Ψ
-
-theorem weylUpper_add (ψ φ : DualSpinor) :
-    weylUpper (ψ + φ) = weylUpper ψ + weylUpper φ := by
-  ext i; fin_cases i <;> simp [weylUpper, PiLp.add_apply]
-
-theorem weylLower_add (ψ φ : DualSpinor) :
-    weylLower (ψ + φ) = weylLower ψ + weylLower φ := by
-  ext i; fin_cases i <;> simp [weylLower, PiLp.add_apply]
-
-theorem weylUpper_smul (c : ℂ) (ψ : DualSpinor) :
-    weylUpper (c • ψ) = c • weylUpper ψ := by
-  ext i; fin_cases i <;> simp [weylUpper, PiLp.smul_apply]
-
-theorem weylLower_smul (c : ℂ) (ψ : DualSpinor) :
-    weylLower (c • ψ) = c • weylLower ψ := by
-  ext i; fin_cases i <;> simp [weylLower, PiLp.smul_apply]
-
-theorem weylUpper_neg (ψ : DualSpinor) :
-    weylUpper (-ψ) = -weylUpper ψ := by
-  simpa using weylUpper_smul (-1) ψ
-
-theorem weylLower_neg (ψ : DualSpinor) :
-    weylLower (-ψ) = -weylLower ψ := by
-  simpa using weylLower_smul (-1) ψ
-
-theorem weylUpper_zero : weylUpper (0 : DualSpinor) = 0 := by
-  simpa using weylUpper_smul 0 (0 : DualSpinor)
-
-theorem weylLower_zero : weylLower (0 : DualSpinor) = 0 := by
-  simpa using weylLower_smul 0 (0 : DualSpinor)
-
-theorem weyl_pair_injective {u l u' l' : DualSpinor}
-    (h : weylUpper u + weylLower l = weylUpper u' + weylLower l') :
-    u = u' ∧ l = l' := by
-  have hvec :
-      WithLp.toLp 2 ![WithLp.ofLp u 0, WithLp.ofLp u 1,
-        WithLp.ofLp l 0, WithLp.ofLp l 1] =
-      WithLp.toLp 2 ![WithLp.ofLp u' 0, WithLp.ofLp u' 1,
-        WithLp.ofLp l' 0, WithLp.ofLp l' 1] := by
-    simpa [weylUpper_add_lower] using h
-  have hf := WithLp.toLp_injective (p := 2) hvec
-  constructor
-  · ext i
-    fin_cases i
-    · simpa using congrFun hf 0
-    · simpa using congrFun hf 1
-  · ext i
-    fin_cases i
-    · simpa using congrFun hf 2
-    · simpa using congrFun hf 3
+theorem pauliSlashBar_single_zero : pauliSlashBar (Pi.single 0 1) = -1 := by
+  simp [pauliSlashBar]
+theorem pauliSlashBar_single_one : pauliSlashBar (Pi.single 1 1) = pauliX := by
+  simp [pauliSlashBar]
+theorem pauliSlashBar_single_two : pauliSlashBar (Pi.single 2 1) = pauliY := by
+  simp [pauliSlashBar]
+theorem pauliSlashBar_single_three : pauliSlashBar (Pi.single 3 1) = pauliZ := by
+  simp [pauliSlashBar]
 
 private theorem apply_diracMat0_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat0 (weylUpper ψ) = weylLower (-ψ) := by
   ext i
   fin_cases i <;>
-    simp [applyDiracMat, weylUpper, weylLower, diracMat0, Matrix.mulVec,
-      Fin.sum_univ_four, PiLp.neg_apply, vecHead, vecTail]
+    simp [applyDiracMat, weylUpper, weylLower, diracMat0,
+      PiLp.neg_apply, vecHead, vecTail]
 
 private theorem apply_diracMat1_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat1 (weylUpper ψ) = weylLower (applyMat pauliX ψ) := by
   ext i
   fin_cases i <;>
     simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat1, pauliX,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail]
+      vecHead, vecTail]
 
 private theorem apply_diracMat2_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat2 (weylUpper ψ) = weylLower (applyMat pauliY ψ) := by
   ext i
   fin_cases i <;>
     (simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail] <;>
+      vecHead, vecTail] <;>
       ring)
 
 private theorem apply_diracMat3_weylUpper (ψ : DualSpinor) :
@@ -484,28 +384,28 @@ private theorem apply_diracMat3_weylUpper (ψ : DualSpinor) :
   ext i
   fin_cases i <;>
     simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat3, pauliZ,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail]
+      vecHead, vecTail]
 
 private theorem apply_diracMat0_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat0 (weylLower ψ) = weylUpper ψ := by
   ext i
   fin_cases i <;>
-    simp [applyDiracMat, weylUpper, weylLower, diracMat0, Matrix.mulVec,
-      Fin.sum_univ_four, vecHead, vecTail]
+    simp [applyDiracMat, weylUpper, weylLower, diracMat0,
+      vecHead, vecTail]
 
 private theorem apply_diracMat1_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat1 (weylLower ψ) = weylUpper (applyMat pauliX ψ) := by
   ext i
   fin_cases i <;>
     simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat1, pauliX,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail]
+      vecHead, vecTail]
 
 private theorem apply_diracMat2_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat2 (weylLower ψ) = weylUpper (applyMat pauliY ψ) := by
   ext i
   fin_cases i <;>
     (simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail] <;>
+      vecHead, vecTail] <;>
       ring)
 
 private theorem apply_diracMat3_weylLower (ψ : DualSpinor) :
@@ -513,35 +413,7 @@ private theorem apply_diracMat3_weylLower (ψ : DualSpinor) :
   ext i
   fin_cases i <;>
     simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat3, pauliZ,
-      Matrix.mulVec, Fin.sum_univ_four, Fin.sum_univ_two, vecHead, vecTail]
-
-theorem applyMat_add (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ φ : DualSpinor) :
-    applyMat M (ψ + φ) = applyMat M ψ + applyMat M φ := by
-  simp [applyMat, Matrix.mulVec_add]
-
-theorem applyMat_smul (c : ℂ) (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat M (c • ψ) = c • applyMat M ψ := by
-  simp [applyMat, Matrix.mulVec_smul]
-
-theorem applyMat_add_mat (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (A + B) ψ = applyMat A ψ + applyMat B ψ := by
-  simp [applyMat, Matrix.add_mulVec]
-
-theorem applyMat_smul_mat (c : ℂ) (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (c • M) ψ = c • applyMat M ψ := by
-  simp [applyMat, Matrix.smul_mulVec]
-
-theorem applyMat_neg (M : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (-M) ψ = -applyMat M ψ := by
-  simpa using applyMat_smul_mat (-1) M ψ
-
-theorem applyMat_one (ψ : DualSpinor) :
-    applyMat (1 : Matrix (Fin 2) (Fin 2) ℂ) ψ = ψ := by
-  simp [applyMat, Matrix.one_mulVec]
-
-theorem applyMat_mul (A B : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor) :
-    applyMat (A * B) ψ = applyMat A (applyMat B ψ) := by
-  simp [applyMat, Matrix.mulVec_mulVec]
+      vecHead, vecTail]
 
 private theorem applyMat_basis (A : Matrix (Fin 2) (Fin 2) ℂ) (i j : Fin 2) :
     WithLp.ofLp (applyMat A (EuclideanSpace.single j (1 : ℂ))) i = A i j := by
@@ -600,9 +472,27 @@ theorem slash_weyl_decompose (p : Vec4) (Ψ : DiracSpinor) :
     applyDiracMat (slashMat p) Ψ =
       weylUpper (applyMat (pauliSlash p) (diracLower Ψ)) +
         weylLower (applyMat (pauliSlashBar p) (diracUpper Ψ)) := by
-  nth_rw 1 [← weyl_decompose' Ψ]
+  nth_rw 1 [← weyl_decompose Ψ]
   rw [applyDiracMat_add, slash_weylUpper, slash_weylLower]
   abel
+
+theorem diracUpper_slash (p : Vec4) (Ψ : DiracSpinor) :
+    diracUpper (applyDiracMat (slashMat p) Ψ) = applyMat (pauliSlash p) (diracLower Ψ) := by
+  rw [slash_weyl_decompose, diracUpper_add, diracUpper_weylUpper, diracUpper_weylLower,
+    add_zero]
+
+theorem diracLower_slash (p : Vec4) (Ψ : DiracSpinor) :
+    diracLower (applyDiracMat (slashMat p) Ψ) = applyMat (pauliSlashBar p) (diracUpper Ψ) := by
+  rw [slash_weyl_decompose, diracLower_add, diracLower_weylUpper, diracLower_weylLower,
+    zero_add]
+
+theorem slashMat_single (ν : Fin 4) : slashMat (Pi.single ν 1) = diracMat ν := by
+  unfold slashMat
+  rw [Finset.sum_eq_single ν]
+  · simp
+  · intro μ _ h
+    simp [Pi.single_eq_of_ne h]
+  · simp
 
 /-- Chiral slashes multiply to the Minkowski quadratic. -/
 theorem pauliSlash_mul_pauliSlashBar (p : Vec4) :
@@ -656,7 +546,7 @@ theorem dirac_massive_mix {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
       (I * (m : ℂ)) • Ψ =
         weylUpper ((I * (m : ℂ)) • diracUpper Ψ) +
           weylLower ((I * (m : ℂ)) • diracLower Ψ) := by
-    nth_rw 1 [← weyl_decompose' Ψ]
+    nth_rw 1 [← weyl_decompose Ψ]
     rw [smul_add, weylUpper_smul, weylLower_smul]
   have heq :
       weylUpper (applyMat (pauliSlash p) (diracLower Ψ)) +
@@ -732,8 +622,8 @@ theorem restAntiparticle_dirac_neg (m : ℝ) (u : DualSpinor) :
     rw [← weylUpper_smul, smul_smul, this, weylUpper_smul]
   have h2 : (-(m : ℂ)) • weylLower u = (I * ((-m : ℝ) : ℂ)) • weylLower (-I • u) := by
     have : I * ((-m : ℝ) : ℂ) * (-I) = -(m : ℂ) := by
-      simp [ofReal_neg]
-      rw [mul_right_comm, I_mul_I, neg_one_mul]
+      push_cast
+      linear_combination (m : ℂ) * I_sq
     calc (-(m : ℂ)) • weylLower u
         = weylLower ((-(m : ℂ)) • u) := (weylLower_smul _ _).symm
       _ = weylLower ((I * ((-m : ℝ) : ℂ) * (-I)) • u) := by rw [this]
@@ -880,15 +770,12 @@ private theorem chiralBoostZ_eq (α : ℝ) :
 /-- Same-axis chiral boosts compose by adding rapidities. -/
 private theorem chiralBoostZ_add (α β : ℝ) :
     chiralBoostZ (α + β) = chiralBoostZ α * chiralBoostZ β := by
-  rw [chiralBoostZ_eq, chiralBoostZ_eq, chiralBoostZ_eq]
-  ext i j
-  fin_cases i <;> fin_cases j
-  · simp [Matrix.mul_apply, Fin.sum_univ_two]
-    rw [← Complex.exp_add]; congr 1; ring
-  · simp [Matrix.mul_apply, Fin.sum_univ_two]
-  · simp [Matrix.mul_apply, Fin.sum_univ_two]
-  · simp [Matrix.mul_apply, Fin.sum_univ_two]
-    rw [← Complex.exp_add]; congr 1; ring
+  have h1 : Real.exp ((α + β) / 2) = Real.exp (α / 2) * Real.exp (β / 2) := by
+    rw [← Real.exp_add]; congr 1; ring
+  have h2 : Real.exp (-((α + β) / 2)) = Real.exp (-(α / 2)) * Real.exp (-(β / 2)) := by
+    rw [← Real.exp_add]; congr 1; ring
+  rw [chiralBoostZ_eq, chiralBoostZ_eq, chiralBoostZ_eq, Matrix.mul_fin_two, h1, h2]
+  simp
 
 private theorem pauliSlashBar_boostZ (m α : ℝ) :
     pauliSlashBar (boostZMomentum m α) =
@@ -1004,7 +891,7 @@ theorem slashMat_anticomm_gamma5 (p : Vec4) :
   calc ((p μ : ℂ) • diracMat μ) * diracMat5 + diracMat5 * ((p μ : ℂ) • diracMat μ)
       = (p μ : ℂ) • (diracMat μ * diracMat5) +
           (p μ : ℂ) • (diracMat5 * diracMat μ) := by
-        simp [Matrix.smul_mul, Matrix.mul_smul]
+        simp
     _ = (p μ : ℂ) • (diracMat μ * diracMat5 + diracMat5 * diracMat μ) := by
         rw [smul_add]
     _ = (p μ : ℂ) • (diracMat5 * diracMat μ + diracMat μ * diracMat5) := by
@@ -1034,35 +921,25 @@ theorem diracMat5_flips_mass {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
 
 /-! ### Dual-rotor amplitude as rest-frame Dirac overlap -/
 
-private theorem dirac_inner_sum (χ ψ : DiracSpinor) :
-    inner ℂ χ ψ = ∑ i : Fin 4, star (χ i) * ψ i := by
-  simp [inner, Fin.sum_univ_four]
-  ring
-
-private theorem dual_inner_sum (χ ψ : DualSpinor) :
-    inner ℂ χ ψ = ∑ i : Fin 2, star (χ i) * ψ i := by
-  simp [inner, Fin.sum_univ_two]
-  ring
-
 /-- Weyl blocks are orthogonal in \(\mathbb{C}^4\). -/
 theorem weylUpper_inner_lower (ψ φ : DualSpinor) :
     inner ℂ (weylUpper ψ) (weylLower φ) = 0 := by
-  rw [dirac_inner_sum]
+  rw [diracSpinor_inner_eq]
   simp [weylUpper, weylLower, Fin.sum_univ_four]
 
 theorem weylLower_inner_upper (ψ φ : DualSpinor) :
     inner ℂ (weylLower ψ) (weylUpper φ) = 0 := by
-  rw [dirac_inner_sum]
+  rw [diracSpinor_inner_eq]
   simp [weylUpper, weylLower, Fin.sum_univ_four]
 
 theorem weylUpper_inner_upper (ψ χ : DualSpinor) :
     inner ℂ (weylUpper ψ) (weylUpper χ) = inner ℂ ψ χ := by
-  rw [dirac_inner_sum, dual_inner_sum]
+  rw [diracSpinor_inner_eq, dualSpinor_inner_eq]
   simp [weylUpper, Fin.sum_univ_four, Fin.sum_univ_two]
 
 theorem weylLower_inner_lower (ψ χ : DualSpinor) :
     inner ℂ (weylLower ψ) (weylLower χ) = inner ℂ ψ χ := by
-  rw [dirac_inner_sum, dual_inner_sum]
+  rw [diracSpinor_inner_eq, dualSpinor_inner_eq]
   simp [weylLower, Fin.sum_univ_four, Fin.sum_univ_two]
 
 private theorem inner_I_smul (u v : DualSpinor) :
@@ -1093,23 +970,6 @@ theorem restParticle_dualRotor_overlap (β : DualRapidity) (u : DualSpinor) :
   rw [restParticle_inner, dualRotorAmplitude]
 
 /-! ### Boosted Euclidean overlap -/
-
-private theorem applyMat_coord (A : Matrix (Fin 2) (Fin 2) ℂ) (ψ : DualSpinor)
-    (i : Fin 2) :
-    applyMat A ψ i = ∑ j : Fin 2, A i j * ψ j := by
-  simp [applyMat, Matrix.mulVec, dotProduct]
-
-private theorem applyMat_inner (A : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
-    inner ℂ (applyMat A χ) ψ = inner ℂ χ (applyMat A.conjTranspose ψ) := by
-  simp only [dual_inner_sum, applyMat_coord, Fin.sum_univ_two]
-  simp only [star_add, star_mul', Matrix.conjTranspose_apply]
-  ring
-
-private theorem applyMat_inner_mul (A B : Matrix (Fin 2) (Fin 2) ℂ)
-    (χ ψ : DualSpinor) :
-    inner ℂ (applyMat A χ) (applyMat B ψ) =
-      inner ℂ χ (applyMat (A.conjTranspose * B) ψ) := by
-  rw [applyMat_inner, applyMat_mul]
 
 private theorem ofReal_star (t : ℝ) : star (t : ℂ) = (t : ℂ) := by
   rw [Complex.star_def, Complex.conj_ofReal]
@@ -1229,7 +1089,7 @@ private theorem dualRotorAmplitude_zero (u : DualSpinor) :
   rw [hR, applyMat_one]
 
 private theorem spinUp_inner_self : inner ℂ spinUp spinUp = 1 := by
-  rw [dual_inner_sum]
+  rw [dualSpinor_inner_eq]
   simp [spinUp]
 
 /-- The boosted overlap agrees with the rest-frame overlap for every dual
@@ -1393,19 +1253,13 @@ private theorem chiralBoostZ_conj_pauliX (α : ℝ) :
 
 private theorem chiralBoostZ_conj_pauliY (α : ℝ) :
     chiralBoostZ α * pauliY * chiralBoostZ α = pauliY := by
+  have h : Complex.exp (↑α / 2) * I * Complex.exp (-(↑α / 2)) = I := by
+    linear_combination I * exp_half_prod α
+  have h' : Complex.exp (-(↑α / 2)) * I * Complex.exp (↑α / 2) = I := by
+    linear_combination I * exp_half_prod' α
   rw [chiralBoostZ_eq]
   ext i j
-  fin_cases i <;> fin_cases j
-  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
-  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
-    calc Complex.exp (↑α / 2) * I * Complex.exp (-(↑α / 2))
-        = (Complex.exp (↑α / 2) * Complex.exp (-(↑α / 2))) * I := by ring
-      _ = I := by rw [exp_half_prod]; simp
-  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
-    calc Complex.exp (-(↑α / 2)) * I * Complex.exp (↑α / 2)
-        = (Complex.exp (-(↑α / 2)) * Complex.exp (↑α / 2)) * I := by ring
-      _ = I := by rw [exp_half_prod']; simp
-  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
+  fin_cases i <;> fin_cases j <;> simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two, h, h']
 
 private theorem chiralBoostZ_conj_pauliZ (α : ℝ) :
     chiralBoostZ α * pauliZ * chiralBoostZ α =
@@ -1420,10 +1274,10 @@ private theorem chiralBoostZ_conj_pauliZ (α : ℝ) :
       Fin.sum_univ_two]
   · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
       Fin.sum_univ_two]
-  · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
-      Fin.sum_univ_two, exp_double_neg]
-    rw [← sub_eq_add_neg, ← Complex.ofReal_sinh, ← Complex.ofReal_cosh,
-      sinh_sub_cosh_complex]
+  · have h := sinh_sub_cosh_complex α
+    push_cast at h
+    simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
+      Fin.sum_univ_two, exp_double_neg, ← sub_eq_add_neg, h]
 
 private theorem expectation_sandwich (A σ : Matrix (Fin 2) (Fin 2) ℂ)
     (hA : A.conjTranspose = A) (u v : DualSpinor) :
@@ -1678,18 +1532,18 @@ orthogonal in the invariant mass bilinear, and the Dirac current between
 them vanishes. -/
 
 private theorem spinUp_inner_spinDown : inner ℂ spinUp spinDown = 0 := by
-  rw [dual_inner_sum]
+  rw [dualSpinor_inner_eq]
   simp [spinUp, spinDown]
 
 private theorem pauliZ_spinUp : applyMat pauliZ spinUp = spinUp := by
   ext i
   fin_cases i <;>
-    simp [applyMat, pauliZ, spinUp, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+    simp [applyMat, pauliZ, spinUp]
 
 private theorem pauliZ_spinDown : applyMat pauliZ spinDown = -spinDown := by
   ext i
   fin_cases i <;>
-    simp [applyMat, pauliZ, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+    simp [applyMat, pauliZ, spinDown]
 
 private theorem chiralBoostZ_on_spinUp (α : ℝ) :
     applyMat (chiralBoostZ α) spinUp = (Real.exp (α / 2) : ℂ) • spinUp := by
@@ -1776,13 +1630,13 @@ private theorem cyclicRep_two_spinUp : applyMat (cyclicRep 2) spinUp = -I • sp
   rw [cyclicRep_two_eq]
   ext i
   fin_cases i <;>
-    simp [applyMat, spinUp, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+    simp [applyMat, spinUp]
 
 private theorem cyclicRep_two_spinDown : applyMat (cyclicRep 2) spinDown = I • spinDown := by
   rw [cyclicRep_two_eq]
   ext i
   fin_cases i <;>
-    simp [applyMat, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+    simp [applyMat, spinDown]
 
 /-- Dual rotation about the boost axis multiplies the eigenvalue \(+1\) by a phase. -/
 theorem dualRotor_axis2_spinUp (θ : ℝ) :
@@ -1811,14 +1665,13 @@ theorem dualRotor_axis0_pi_exchange :
   constructor
   · ext i
     fin_cases i <;>
-      simp [applyMat, spinUp, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
-        Matrix.add_apply, Matrix.smul_apply]
+      simp [applyMat, spinUp, spinDown]
   · ext i
     fin_cases i <;>
-      simp [applyMat, spinUp, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
-        Matrix.add_apply, Matrix.smul_apply]
+      simp [applyMat, spinUp, spinDown]
 
-/-- After a same-axis dual rotation, the boosted upper block stays in the ray of eigenvalue \(+1\). -/
+/-- After a same-axis dual rotation, the boosted upper block stays in the ray of
+eigenvalue \(+1\). -/
 theorem boostedRest_axis2_spinUp_upper (α θ : ℝ) :
     diracUpper (applyDiracBoostZ α
         (restParticleSpinor
@@ -1827,7 +1680,8 @@ theorem boostedRest_axis2_spinUp_upper (α θ : ℝ) :
   rw [boosted_spin_upper, dualRotor_axis2_spinUp, applyMat_smul, chiralBoostZ_on_spinUp,
     smul_smul]
 
-/-- After a perpendicular dual rotation of angle \(\pi\), the boosted upper block lies in the opposite ray. -/
+/-- After a perpendicular dual rotation of angle \(\pi\), the boosted upper block lies in
+the opposite ray. -/
 theorem boostedRest_axis0_pi_spinUp_upper (α : ℝ) :
     diracUpper (applyDiracBoostZ α
         (restParticleSpinor

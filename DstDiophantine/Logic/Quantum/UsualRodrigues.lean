@@ -113,18 +113,18 @@ private theorem mul_hyperbolic2_hyperbolic1 :
 theorem hyperbolic_anticomm {a b : Fin 3} (h : a ≠ b) :
     hyperbolic a * hyperbolic b + hyperbolic b * hyperbolic a = 0 := by
   fin_cases a <;> fin_cases b <;> try contradiction
-  · simp [mul_hyperbolic0_hyperbolic1, mul_hyperbolic1_hyperbolic0]
-    exact e_anticomm (by decide : (1 : Fin 5) ≠ 2)
-  · simp [mul_hyperbolic0_hyperbolic2, mul_hyperbolic2_hyperbolic0]
-    exact e_anticomm (by decide : (1 : Fin 5) ≠ 3)
-  · simp [mul_hyperbolic1_hyperbolic0, mul_hyperbolic0_hyperbolic1]
-    exact e_anticomm (by decide : (2 : Fin 5) ≠ 1)
-  · simp [mul_hyperbolic1_hyperbolic2, mul_hyperbolic2_hyperbolic1]
-    exact e_anticomm (by decide : (2 : Fin 5) ≠ 3)
-  · simp [mul_hyperbolic2_hyperbolic0, mul_hyperbolic0_hyperbolic2]
-    exact e_anticomm (by decide : (3 : Fin 5) ≠ 1)
-  · simp [mul_hyperbolic2_hyperbolic1, mul_hyperbolic1_hyperbolic2]
-    exact e_anticomm (by decide : (3 : Fin 5) ≠ 2)
+  · simpa [mul_hyperbolic0_hyperbolic1, mul_hyperbolic1_hyperbolic0]
+      using e_anticomm (by decide : (1 : Fin 5) ≠ 2)
+  · simpa [mul_hyperbolic0_hyperbolic2, mul_hyperbolic2_hyperbolic0]
+      using e_anticomm (by decide : (1 : Fin 5) ≠ 3)
+  · simpa [mul_hyperbolic1_hyperbolic0, mul_hyperbolic0_hyperbolic1]
+      using e_anticomm (by decide : (2 : Fin 5) ≠ 1)
+  · simpa [mul_hyperbolic1_hyperbolic2, mul_hyperbolic2_hyperbolic1]
+      using e_anticomm (by decide : (2 : Fin 5) ≠ 3)
+  · simpa [mul_hyperbolic2_hyperbolic0, mul_hyperbolic0_hyperbolic2]
+      using e_anticomm (by decide : (3 : Fin 5) ≠ 1)
+  · simpa [mul_hyperbolic2_hyperbolic1, mul_hyperbolic1_hyperbolic2]
+      using e_anticomm (by decide : (3 : Fin 5) ≠ 2)
 
 private theorem hyperbolicComb_sq_expand (α : UsualRapidity) :
     hyperbolicComb α * hyperbolicComb α =
