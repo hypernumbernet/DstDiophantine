@@ -504,8 +504,12 @@ theorem exists_odd_parts_pow_of_mul_eq_pow_gcd_two
   set b := padicValNat 2 E
   set d' := D / 2 ^ a
   set e' := E / 2 ^ b
-  have hDa : 2 ^ a * d' = D := Nat.ordProj_mul_ordCompl_eq_self D 2
-  have hEb : 2 ^ b * e' = E := Nat.ordProj_mul_ordCompl_eq_self E 2
+  have hDa : 2 ^ a * d' = D := by
+    simp only [a, d', ← Nat.factorization_def D Nat.prime_two]
+    exact Nat.ordProj_mul_ordCompl_eq_self D 2
+  have hEb : 2 ^ b * e' = E := by
+    simp only [b, e', ← Nat.factorization_def E Nat.prime_two]
+    exact Nat.ordProj_mul_ordCompl_eq_self E 2
   have hd'odd : ¬ 2 ∣ d' := by
     intro h2
     have hpow : 2 ^ (a + 1) = 2 ^ a * 2 := by rw [pow_succ]

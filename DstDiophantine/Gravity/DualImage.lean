@@ -128,7 +128,6 @@ theorem hasSum_inv_sq_add_succ_sq {y : ℝ} (hy : y ≠ 0) :
     rw [Ne, sinh_eq_zero]
     exact mul_ne_zero pi_ne_zero hy
   convert this using 1
-  · rfl
   · funext n
     field_simp
   · field_simp

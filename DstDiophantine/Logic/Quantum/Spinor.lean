@@ -329,8 +329,8 @@ theorem exp_mat_of_sq_neg_one {x : Matrix (Fin 2) (Fin 2) ℂ}
               rw [neg_add_cancel]
         _ = 0 := mul_zero _
     convert hmul using 2
-    · rfl
-    · exact hzero.symm
+    all_goals try rfl
+    exact hzero.symm
   have hf0 : f 0 = 1 := by
     simp only [f, R, neg_zero, zero_smul, NormedSpace.exp_zero, Real.cos_zero,
       Real.sin_zero, one_smul, zero_smul, add_zero, mul_one]

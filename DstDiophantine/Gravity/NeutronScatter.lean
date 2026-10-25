@@ -606,9 +606,7 @@ private theorem hasDerivAt_coulomb_path
     have hlin : HasDerivAt (fun s : ℝ => s • v) v t := by
       simpa using (hasDerivAt_id t).smul_const v
     convert (hasDerivAt_const t u).sub hlin using 1
-    · ext s
-      simp
-    · simp
+    simp
   have hsq := hpath.norm_sq
   have hbase : (‖x‖ ^ 2) ≠ 0 := by
     exact pow_ne_zero 2 (norm_ne_zero_iff.mpr (norm_pos_iff.mp hpos))

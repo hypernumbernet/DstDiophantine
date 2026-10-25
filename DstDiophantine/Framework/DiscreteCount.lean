@@ -66,9 +66,7 @@ private theorem triangle_sum (K : ℕ) :
         ∑ i ∈ range (K + 1), i + ∑ _ ∈ range (K + 1), (1 : ℕ) :=
     sum_add_distrib
   rw [hL, hreflect, hsplit, sum_range_id, sum_const, card_range, nsmul_one]
-  simp only [Nat.add_sub_cancel]
-  convert_to (K + 1) * K / 2 + (K + 1) = (K + 1) * (K + 2) / 2
-  · norm_cast
+  simp only [Nat.add_sub_cancel, Nat.cast_id]
   rw [← Nat.add_mul_div_right ((K + 1) * K) (K + 1) (by decide : 0 < 2)]
   congr 1
   ring

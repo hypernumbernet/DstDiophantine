@@ -194,8 +194,7 @@ theorem exp_of_sq_one {x : PGA} (hx : x * x = 1) (t : ℝ) :
               rw [neg_add_cancel]
         _ = 0 := mul_zero _
     convert hmul using 2
-    · rfl
-    · exact hzero.symm
+    exact hzero.symm
   have hf0 : f 0 = 1 := by
     simp only [f, R, neg_zero, zero_smul, exp_zero, Real.cosh_zero, Real.sinh_zero,
       one_smul, zero_smul, add_zero, mul_one]
@@ -250,8 +249,7 @@ theorem exp_of_sq_neg_one {x : PGA} (hx : x * x = -1) (t : ℝ) :
               rw [neg_add_cancel]
         _ = 0 := mul_zero _
     convert hmul using 2
-    · rfl
-    · exact hzero.symm
+    exact hzero.symm
   have hf0 : f 0 = 1 := by
     simp only [f, R, neg_zero, zero_smul, exp_zero, Real.cos_zero, Real.sin_zero,
       one_smul, zero_smul, add_zero, mul_one]
@@ -300,8 +298,7 @@ theorem exp_of_sq_zero {x : PGA} (hx : x * x = 0) (t : ℝ) :
         _ = exp ((-u) • x) * 0 := by rw [neg_add_cancel]
         _ = 0 := mul_zero _
     convert hmul using 2
-    · rfl
-    · exact hzero.symm
+    exact hzero.symm
   have hf0 : f 0 = 1 := by
     simp only [f, R, neg_zero, zero_smul, exp_zero, zero_smul, add_zero, mul_one]
   have hdiff : Differentiable ℝ f := fun u => (hf' u).differentiableAt

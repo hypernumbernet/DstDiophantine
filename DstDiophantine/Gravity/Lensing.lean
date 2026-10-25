@@ -142,8 +142,6 @@ theorem hasDerivAt_limbS {ξ : ℝ} (hξ : ξ ^ 2 < 1) :
   unfold limbS
   convert (HasDerivAt.sqrt ((hasDerivAt_const ξ (1 : ℝ)).sub (hasDerivAt_pow 2 ξ)) hne)
     using 1
-  · funext y
-    rfl
   · have hpoint :
         (((fun x : ℝ => (1 : ℝ)) - (fun x : ℝ => x ^ 2) : ℝ → ℝ) ξ) = 1 - ξ ^ 2 := rfl
     rw [hpoint]
@@ -163,8 +161,6 @@ theorem hasDerivAt_interiorDeflection {c ξ : ℝ} (hξ : ξ ^ 2 < 1) :
   have hdiv := hnum.fun_div hden hden_ne
   unfold interiorDeflection radialSlope
   convert hdiv using 1
-  · rfl
-  · rfl
   · have hone : ((fun x : ℝ => (1 : ℝ)) ξ) = 1 := rfl
     rw [hone, zero_add, mul_one]
     field_simp [hs0, hden_ne]
@@ -177,9 +173,6 @@ theorem hasDerivAt_exteriorDeflection {c ξ : ℝ} (hξ : ξ ≠ 0) :
   unfold exteriorDeflection
   convert hdiv using 1
   · rfl
-  · rfl
-  · funext y
-    simp [id]
   · simp [id]
 
 /-! ### Monotonicity -/

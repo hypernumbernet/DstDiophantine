@@ -464,9 +464,7 @@ lemma tendsto_scaledRatio_zero {c : ℝ} (_hc : c ≠ 0) :
     simpa [Function.comp_def, gammaSEqual_zero] using hγ.comp hmul
   unfold scaledRatio
   convert hγ.div hcomp one_ne_zero using 1
-  · ext x
-    rfl
-  · simp
+  simp
 
 lemma tendsto_dodecaResponse_zero :
     Tendsto dodecaResponse (nhds 0) (nhds dodecaCoeff) := by
