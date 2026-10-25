@@ -8,7 +8,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Spherical dwarfs and disk galaxies

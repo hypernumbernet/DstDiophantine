@@ -3,7 +3,7 @@ import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.SiksekStoll
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Residual-shaped Beal finite search

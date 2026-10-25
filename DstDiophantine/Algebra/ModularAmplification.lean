@@ -12,7 +12,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Modular torsional amplification with winding

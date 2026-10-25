@@ -123,7 +123,7 @@ theorem pointVec_eq (x : ℝ) :
     pointVec x = n0Vec + x • eLineVec + ((1 / 2) * x ^ 2) • nInfVec := by
   funext i
   fin_cases i
-  · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply]; try ring
+  · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply]
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply]
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply]; try ring
 
@@ -147,7 +147,7 @@ theorem pointVec_smul_weights (c x : ℝ) :
   funext i
   fin_cases i
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]; try ring
-  · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]; try ring
+  · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]; try ring
 
 /-- Integer multiplication as a dilation of the conformal point. -/

@@ -46,7 +46,7 @@ import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Data.Fintype.Card
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Public-API / layering regression examples

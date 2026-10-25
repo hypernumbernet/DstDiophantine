@@ -1,7 +1,7 @@
 import DstDiophantine.Framework.Spectrum
 import Mathlib.Tactic.NormNum
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Finite certificates for the discrete mismatch spectrum

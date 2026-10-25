@@ -2,7 +2,7 @@ import DstDiophantine.Theorems.Beal
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Tactic.NormNum
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Finite Beal certificates

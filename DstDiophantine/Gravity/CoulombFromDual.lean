@@ -3,7 +3,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Exploratory hypothesis: discrete height → fine-structure coupling

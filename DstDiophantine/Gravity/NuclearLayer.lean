@@ -8,7 +8,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Nuclear torsional layers (strong-force scale)

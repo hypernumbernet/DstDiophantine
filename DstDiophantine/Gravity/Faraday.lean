@@ -1061,7 +1061,7 @@ theorem sandwichIncrement_faradayDual_spatial (p : FaradayParams) (b : Fin 3) :
   fin_cases b <;>
     (simp [cross, sandwichIncrement_faradayDual_spatial0,
       sandwichIncrement_faradayDual_spatial1,
-      sandwichIncrement_faradayDual_spatial2, sub_eq_add_neg] <;> try abel)
+      sandwichIncrement_faradayDual_spatial2, sub_eq_add_neg]; try abel)
 
 theorem sandwichIncrement_faraday_spatial (p : FaradayParams) (b : Fin 3) :
     sandwichIncrement (faraday p) (spatialVec b) =

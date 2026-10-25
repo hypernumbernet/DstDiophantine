@@ -4,7 +4,7 @@ import DstDiophantine.Logic.Example.BealRegime
 import DstDiophantine.Theorems.BealResidualSearch
 import DstDiophantine.Algebra.Amplification
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Phase 7p / 7r: Beal regime witnesses (D4L ↔ Theorems)

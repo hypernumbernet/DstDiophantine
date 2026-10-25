@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Data.Complex.Basic
+import Mathlib.Basic.Complex.Basic
 
 
 /-!
@@ -329,7 +329,6 @@ theorem exp_mat_of_sq_neg_one {x : Matrix (Fin 2) (Fin 2) ℂ}
               rw [neg_add_cancel]
         _ = 0 := mul_zero _
     convert hmul using 2
-    all_goals try rfl
     exact hzero.symm
   have hf0 : f 0 = 1 := by
     simp only [f, R, neg_zero, zero_smul, NormedSpace.exp_zero, Real.cos_zero,
@@ -651,7 +650,6 @@ theorem dualRotorMat_det (β : DualRapidity) :
           (β 0 / r) ^ 2 + (β 1 / r) ^ 2 + (β 2 / r) ^ 2 =
             ((β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2) / r ^ 2 := by
         field_simp [hr0]
-        try ring
       rw [hdiv, ← hnorm, div_self (pow_ne_zero 2 hr0)]
     have hgen : dualRotorGen β = (r / 2 : ℝ) • ∑ a : Fin 3, (n a : ℂ) • cyclicRep a := by
       unfold dualRotorGen n
@@ -662,7 +660,6 @@ theorem dualRotorMat_det (β : DualRapidity) :
         ext i j
         simp [Matrix.smul_apply]
         field_simp [hr0]
-        try ring
       have hcast (v : ℝ) : (v / r : ℂ) = ((v / r : ℝ) : ℂ) := by
         simp [Complex.ofReal_div]
       rw [hterm (β 0), hterm (β 1), hterm (β 2), hcast (β 0), hcast (β 1), hcast (β 2)]

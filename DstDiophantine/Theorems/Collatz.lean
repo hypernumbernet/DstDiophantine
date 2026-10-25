@@ -11,7 +11,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.IntervalCases
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Phase 5: Collatz conjecture (DST orbit / height core)

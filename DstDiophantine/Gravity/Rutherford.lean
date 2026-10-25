@@ -452,7 +452,7 @@ private lemma gamma_ge_coshPoly {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 10) :
     mul_le_mul_of_nonneg_left hcosh hx2
   linarith
 
-set_option linter.style.nativeDecide false in
+set_option linter.style.native false in
 private theorem rf_pion_scattering_bounds :
     (14138 / 10000 : ℝ) < (pionComptonFm : ℝ) ∧
       (pionComptonFm : ℝ) < 14139 / 10000 := by

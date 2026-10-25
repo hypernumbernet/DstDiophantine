@@ -4,7 +4,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Exploratory hypothesis: discrete height → Newton coupling

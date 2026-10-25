@@ -1,6 +1,6 @@
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Invariant
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Real.Basic
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Tactic.Positivity
 

@@ -440,7 +440,6 @@ theorem mass_crossUsualDual (x y : ℝ) :
   rw [mass_coef]
   simp only [crossUsualDual, Fin.sum_univ_three]
   norm_num
-  try ring
 
 theorem isAdmissibleContinuous_crossUsualDual {x y : ℝ}
     (hx0 : 0 ≤ x) (hy0 : 0 ≤ y) (hx : x ≤ Real.pi / 2)
@@ -630,7 +629,6 @@ private theorem sqrt_pair_sum_le_half_pi {j m : ℝ}
     have : (Real.pi ^ 2 / 16 + 4 * j ^ 2 / Real.pi ^ 2) * Real.pi ^ 2 =
         Real.pi ^ 4 / 16 + 4 * j ^ 2 := by
       field_simp
-      try ring
     linarith
   have hsq : (2 * Real.sqrt (m ^ 2 - j ^ 2)) ^ 2 ≤
       (Real.pi ^ 2 / 4 - 2 * m) ^ 2 := by
@@ -724,7 +722,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
           have : 2 * Jval ≤ Real.pi ^ 2 / 4 := by nlinarith [h8]
           have := div_le_div_of_nonneg_right this (le_of_lt hπ)
           have hid : Real.pi ^ 2 / 4 / Real.pi = Real.pi / 4 := by
-            field_simp; try ring
+            field_simp
           linarith
         linarith
       have hwall :

@@ -23,7 +23,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Phase 5–7: abc conjecture (quality / modular bridge)
@@ -94,7 +94,7 @@ theorem two_le_abcRadical_of_one_lt {n : ℕ} (hn : 1 < n) : 2 ≤ abcRadical n 
   obtain ⟨p, hp⟩ := hne
   have hp2 : 2 ≤ p := (Nat.prime_of_mem_primeFactors hp).two_le
   have hle : p ≤ abcRadical n :=
-    Finset.single_le_prod'
+    Finset.single_le_prod
       (fun q hq => Nat.succ_le_of_lt (Nat.pos_of_mem_primeFactors hq)) hp
   exact le_trans hp2 hle
 

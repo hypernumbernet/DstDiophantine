@@ -217,7 +217,7 @@ theorem schwarzschildRapidity_sandwich {rs r : ℝ} (h : IsExterior rs r) :
       have : -(1 / 2) * (schwarzschildA rs r - 1) =
           (1 - schwarzschildA rs r) / 2 := by ring
       rw [this, ← hrsr]
-      field_simp [hrpos.ne']; try ring
+      field_simp [hrpos.ne']
     rw [hφ, ← hnewt]
     nlinarith
   · have hlog : -Real.log (schwarzschildA rs r) =
@@ -229,9 +229,9 @@ theorem schwarzschildRapidity_sandwich {rs r : ℝ} (h : IsExterior rs r) :
         rs / (2 * r * schwarzschildA rs r) := by
       have : (1 / 2) * ((schwarzschildA rs r)⁻¹ - 1) =
           (1 - schwarzschildA rs r) / (2 * schwarzschildA rs r) := by
-        field_simp [hA.ne']; try ring
+        field_simp [hA.ne']
       rw [this, ← hrsr]
-      field_simp [hrpos.ne', hA.ne']; try ring
+      field_simp [hrpos.ne', hA.ne']
     rw [hφ, ← hnewt]
     exact hle
 
@@ -260,7 +260,7 @@ theorem tendsto_r_mul_rapidity_atTop {rs : ℝ} (hrs : 0 < rs) :
     have hrpos : 0 < r := lt_trans hrs hr
     have hlo' := (schwarzschildRapidity_sandwich hex).1
     have hmul : r * (rs / (2 * r)) = rs / 2 := by
-      field_simp [hrpos.ne']; try ring
+      field_simp [hrpos.ne']
     calc rs / 2 = r * (rs / (2 * r)) := hmul.symm
       _ ≤ r * schwarzschildRapidity rs r :=
         mul_le_mul_of_nonneg_left hlo' hrpos.le
@@ -272,7 +272,7 @@ theorem tendsto_r_mul_rapidity_atTop {rs : ℝ} (hrs : 0 < rs) :
     have hmul :
         r * (rs / (2 * r * schwarzschildA rs r)) =
           rs / (2 * schwarzschildA rs r) := by
-      field_simp [hrpos.ne', hApos.ne']; try ring
+      field_simp [hrpos.ne', hApos.ne']
     calc r * schwarzschildRapidity rs r
         ≤ r * (rs / (2 * r * schwarzschildA rs r)) :=
           mul_le_mul_of_nonneg_left hhi' hrpos.le
@@ -295,7 +295,7 @@ theorem tendsto_rapidity_div_newtonian {rs : ℝ} (hrs : 0 < rs) :
   refine hdiv.congr' ?_
   filter_upwards [eventually_gt_atTop rs] with r hr
   have hrpos : 0 < r := lt_trans hrs hr
-  field_simp [hrs.ne', hrpos.ne']; try ring
+  field_simp [hrs.ne', hrpos.ne']
 
 /-! ### Far-field coefficients -/
 
@@ -534,7 +534,6 @@ theorem tendsto_schwarzschildRapidity_nhdsWithin_gt {rs : ℝ}
     hlog.const_mul_atTop (by norm_num)
   refine Tendsto.congr (fun r => ?_) hhalf
   simp [schwarzschildRapidity, schwarzschildA, Real.log_inv]
-  try ring
 
 theorem tendsto_r_sq_T_nhdsWithin_gt {rs : ℝ} (hrs : 0 < rs) :
     Tendsto (fun r => r ^ 2 * schwarzschildTeleparallelT rs r)
@@ -552,7 +551,7 @@ theorem tendsto_r_sq_T_nhdsWithin_gt {rs : ℝ} (hrs : 0 < rs) :
   have hex : IsExterior rs r := ⟨hrs, hr⟩
   have hrpos : 0 < r := hrs.trans hr
   rw [schwarzschild_T_eq_cosh_rapidity hex]
-  field_simp [hrpos.ne']; try ring
+  field_simp [hrpos.ne']
 
 theorem tendsto_T_nhdsWithin_gt {rs : ℝ} (hrs : 0 < rs) :
     Tendsto (schwarzschildTeleparallelT rs) (𝓝[>] rs) atTop := by
@@ -575,7 +574,7 @@ theorem tendsto_T_nhdsWithin_gt {rs : ℝ} (hrs : 0 < rs) :
       ≤ (r ^ 2)⁻¹ * (r ^ 2 * schwarzschildTeleparallelT rs r) :=
         mul_le_mul_of_nonneg_right hinv hnonneg
     _ = schwarzschildTeleparallelT rs r := by
-        field_simp [hrpos.ne']; try ring
+        field_simp [hrpos.ne']
 
 /-! ### Exact witness \(r=\frac43 r_s\) -/
 

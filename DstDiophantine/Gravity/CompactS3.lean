@@ -18,7 +18,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
-set_option linter.style.nativeDecide false
+set_option linter.style.native false
 
 /-!
 # Compact \(S^3\) cotangent gravity (galaxy scale)

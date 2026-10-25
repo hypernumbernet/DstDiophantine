@@ -2,6 +2,9 @@ name = "DstDiophantine"
 version = "0.1.0"
 keywords = ["math"]
 defaultTargets = ["DstDiophantine"]
+# This package still uses ordinary Lean files. Mathlib is a module-system
+# package, so without this flag every import of Mathlib warns.
+allowNonModules = true
 
 [leanOptions]
 pp.unicode.fun = true                 # pretty-prints `fun a ↦ b`
