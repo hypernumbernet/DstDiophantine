@@ -76,8 +76,10 @@ and `DstDiophantine.CGA`).
   usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
   equation as the Clifford square of the Minkowski quadratic,
   on-shell Weyl construction recovering the rest pair \((u,iu)\),
-  longitudinal boost of that pair and the factor \(\cosh\alpha\) on its
-  Euclidean overlap, dual-rotor character, spinor
+  longitudinal boost of that pair, the factor \(\cosh\alpha\) on its
+  Euclidean overlap, the boost-invariant mass bilinear
+  \(\Psi^\dagger(-i\gamma^0)\Phi\), and the Dirac current
+  \(i\bar\Psi\Phi(\cosh\alpha,0,0,-\sinh\alpha)\), dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,

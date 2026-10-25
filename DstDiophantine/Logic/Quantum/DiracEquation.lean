@@ -24,6 +24,15 @@ rest-frame solutions is twice the dual-rotor amplitude. The same
 boost multiplies that overlap by `cosh α`, for every dual rotation.
 The factor equals `1` only at vanishing rapidity.
 
+The mass bilinear is the Hermitian form `Ψ†(-iγ⁰)Φ`. On every pair of
+rest-frame solutions it equals the Euclidean overlap, and a longitudinal
+boost leaves it unchanged. In this representation `(-iγ⁰)γ⁰ = i`, so the
+time component of the Dirac current is `i` times the Euclidean overlap.
+Along the boosted rest pair the current is
+`i Ψ̄Φ (cosh α, 0, 0, −sinh α)`, its Clifford contraction with the
+boosted momentum is `i m Ψ̄Φ`, and `(j⁰, −j³)` is parallel to that
+momentum.
+
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
 under the full rotor group.
@@ -1241,6 +1250,415 @@ theorem boostedRest_overlap_eq_rest_iff (α : ℝ) :
     intro β u
     rw [boostedRest_overlap_factor, Real.cosh_zero]
     simp
+
+/-! ### Mass bilinear and Dirac current
+
+`(-iγ⁰)` is Hermitian. On a rest pair it reproduces the Euclidean overlap.
+A longitudinal boost leaves that bilinear fixed and turns the Euclidean
+growth `cosh α` into the time component of the current. -/
+
+/-- Dirac adjoint matrix \(-i\gamma^0\) in the Weyl representation. -/
+noncomputable def diracAdjointMat : Matrix (Fin 4) (Fin 4) ℂ :=
+  -I • diracMat0
+
+theorem diracAdjointMat_mul_gamma0 :
+    diracAdjointMat * diracMat0 = I • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
+  unfold diracAdjointMat
+  rw [Matrix.smul_mul, diracMat0_sq, smul_neg, neg_smul, neg_neg]
+
+/-- Mass bilinear \(\bar\Psi\Phi=\Psi^\dagger(-i\gamma^0)\Phi\). -/
+noncomputable def diracScalar (Ψ Φ : DiracSpinor) : ℂ :=
+  inner ℂ Ψ (applyDiracMat diracAdjointMat Φ)
+
+/-- Dirac current \(j^\mu=\Psi^\dagger(-i\gamma^0)\gamma^\mu\Phi\). -/
+noncomputable def diracCurrent (μ : Fin 4) (Ψ Φ : DiracSpinor) : ℂ :=
+  inner ℂ Ψ (applyDiracMat (diracAdjointMat * diracMat μ) Φ)
+
+theorem diracCurrent_eq_scalar (μ : Fin 4) (Ψ Φ : DiracSpinor) :
+    diracCurrent μ Ψ Φ = diracScalar Ψ (applyDiracMat (diracMat μ) Φ) := by
+  unfold diracCurrent diracScalar
+  rw [applyDiracMat_mul]
+
+/-- \((-i\gamma^0)\gamma^0=i\), so the time component is \(i\) times the
+Euclidean overlap, for every pair of Dirac spinors. -/
+theorem diracCurrent_zero (Ψ Φ : DiracSpinor) :
+    diracCurrent 0 Ψ Φ = I * inner ℂ Ψ Φ := by
+  have hmul : diracAdjointMat * diracMat 0 = I • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
+    simpa [diracMat] using diracAdjointMat_mul_gamma0
+  unfold diracCurrent
+  rw [hmul, applyDiracMat_smul_one, inner_smul_right]
+
+private theorem diracAdjoint_weyl (u l : DualSpinor) :
+    applyDiracMat diracAdjointMat (weylUpper u + weylLower l) =
+      weylUpper (-I • l) + weylLower (I • u) := by
+  have h0 :
+      applyDiracMat diracMat0 (weylUpper u + weylLower l) =
+        weylUpper l + weylLower (-u) := by
+    rw [applyDiracMat_add, apply_diracMat0_weylUpper, apply_diracMat0_weylLower,
+      add_comm]
+  have hneg : (-I) • (-u) = I • u := by
+    rw [smul_neg, neg_smul, neg_neg]
+  unfold diracAdjointMat
+  rw [applyDiracMat_smul_mat, h0, smul_add, ← weylUpper_smul, ← weylLower_smul, hneg]
+
+private theorem adjointCoeff (z : ℂ) :
+    -I * (I * z) + I * (-I * z) = 2 * z := by
+  calc -I * (I * z) + I * (-I * z)
+      = (-(I * I) + -(I * I)) * z := by ring
+    _ = (1 + 1) * z := by rw [I_mul_I]; ring
+    _ = 2 * z := by ring
+
+private theorem diracScalar_weyl (u l v m : DualSpinor) :
+    diracScalar (weylUpper u + weylLower l) (weylUpper v + weylLower m) =
+      (-I) * inner ℂ u m + I * inner ℂ l v := by
+  unfold diracScalar
+  rw [diracAdjoint_weyl, inner_add_left, inner_add_right, inner_add_right,
+    weylUpper_inner_upper, weylUpper_inner_lower, weylLower_inner_upper,
+    weylLower_inner_lower, inner_smul_right, inner_smul_right]
+  ring
+
+/-- At rest the mass bilinear is the Euclidean overlap, twice the
+dual-spinor pairing. -/
+theorem restParticle_diracScalar (u v : DualSpinor) :
+    diracScalar (restParticleSpinor u) (restParticleSpinor v) =
+      2 * inner ℂ u v := by
+  unfold restParticleSpinor
+  rw [diracScalar_weyl, inner_smul_right, inner_smul_left, conj_I]
+  exact adjointCoeff _
+
+theorem restParticle_diracScalar_eq_inner (u v : DualSpinor) :
+    diracScalar (restParticleSpinor u) (restParticleSpinor v) =
+      inner ℂ (restParticleSpinor u) (restParticleSpinor v) := by
+  rw [restParticle_diracScalar, restParticle_inner]
+
+private theorem chiralBoostZ_zero : chiralBoostZ 0 = 1 := by
+  unfold chiralBoostZ
+  simp [Real.cosh_zero, Real.sinh_zero]
+
+private theorem chiralBoostZ_inv (α : ℝ) :
+    chiralBoostZ α * chiralBoostZ (-α) = 1 := by
+  have h := chiralBoostZ_add α (-α)
+  simpa [add_neg_cancel, chiralBoostZ_zero] using h.symm
+
+private theorem chiralBoostZ_inv' (α : ℝ) :
+    chiralBoostZ (-α) * chiralBoostZ α = 1 := by
+  have h := chiralBoostZ_add (-α) α
+  simpa [neg_add_cancel, chiralBoostZ_zero] using h.symm
+
+private theorem exp_half_prod (α : ℝ) :
+    Complex.exp (↑α / 2) * Complex.exp (-(↑α / 2)) = 1 := by
+  rw [← Complex.exp_add]
+  ring_nf
+  simp
+
+private theorem exp_half_prod' (α : ℝ) :
+    Complex.exp (-(↑α / 2)) * Complex.exp (↑α / 2) = 1 := by
+  rw [mul_comm, exp_half_prod]
+
+private theorem exp_double (α : ℝ) :
+    Complex.exp (↑α / 2) * Complex.exp (↑α / 2) = Complex.exp α := by
+  rw [← Complex.exp_add]
+  ring_nf
+
+private theorem exp_double_neg (α : ℝ) :
+    Complex.exp (-(↑α / 2)) * Complex.exp (-(↑α / 2)) = Complex.exp (-α) := by
+  rw [← Complex.exp_add]
+  ring_nf
+
+private theorem sinh_sub_cosh_complex (α : ℝ) :
+    (Real.sinh α : ℂ) - Real.cosh α = -Complex.exp (-α) := by
+  have hsub : Real.cosh α - Real.sinh α = Real.exp (-α) := by
+    have h := Real.cosh_add_sinh (-α)
+    rw [Real.cosh_neg, Real.sinh_neg, ← sub_eq_add_neg] at h
+    exact h
+  have hneg : (Real.sinh α - Real.cosh α : ℝ) = -(Real.cosh α - Real.sinh α) := by
+    ring
+  rw [← Complex.ofReal_sub, hneg, hsub, Complex.ofReal_neg, Complex.ofReal_exp,
+    Complex.ofReal_neg]
+
+private theorem chiralBoostZ_conj_pauliX (α : ℝ) :
+    chiralBoostZ α * pauliX * chiralBoostZ α = pauliX := by
+  rw [chiralBoostZ_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauliX, Matrix.mul_apply, Fin.sum_univ_two, exp_half_prod, exp_half_prod']
+
+private theorem chiralBoostZ_conj_pauliY (α : ℝ) :
+    chiralBoostZ α * pauliY * chiralBoostZ α = pauliY := by
+  rw [chiralBoostZ_eq]
+  ext i j
+  fin_cases i <;> fin_cases j
+  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
+  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
+    calc Complex.exp (↑α / 2) * I * Complex.exp (-(↑α / 2))
+        = (Complex.exp (↑α / 2) * Complex.exp (-(↑α / 2))) * I := by ring
+      _ = I := by rw [exp_half_prod]; simp
+  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
+    calc Complex.exp (-(↑α / 2)) * I * Complex.exp (↑α / 2)
+        = (Complex.exp (-(↑α / 2)) * Complex.exp (↑α / 2)) * I := by ring
+      _ = I := by rw [exp_half_prod']; simp
+  · simp [pauliY, Matrix.mul_apply, Fin.sum_univ_two]
+
+private theorem chiralBoostZ_conj_pauliZ (α : ℝ) :
+    chiralBoostZ α * pauliZ * chiralBoostZ α =
+      (Real.sinh α : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (Real.cosh α : ℂ) • pauliZ := by
+  rw [chiralBoostZ_eq]
+  ext i j
+  fin_cases i <;> fin_cases j
+  · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
+      Fin.sum_univ_two, exp_double]
+  · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
+      Fin.sum_univ_two]
+  · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
+      Fin.sum_univ_two]
+  · simp [pauliZ, Matrix.mul_apply, Matrix.add_apply, Matrix.smul_apply,
+      Fin.sum_univ_two, exp_double_neg]
+    rw [← sub_eq_add_neg, ← Complex.ofReal_sinh, ← Complex.ofReal_cosh,
+      sinh_sub_cosh_complex]
+
+private theorem expectation_sandwich (A σ : Matrix (Fin 2) (Fin 2) ℂ)
+    (hA : A.conjTranspose = A) (u v : DualSpinor) :
+    inner ℂ (applyMat A u) (applyMat σ (applyMat A v)) =
+      inner ℂ u (applyMat (A * σ * A) v) := by
+  rw [← applyMat_mul, applyMat_inner_mul, hA, mul_assoc]
+
+private theorem spatial_current_weyl
+    (σ : Matrix (Fin 2) (Fin 2) ℂ) (γ : Matrix (Fin 4) (Fin 4) ℂ)
+    (hkU : ∀ ψ, applyDiracMat γ (weylUpper ψ) = weylLower (applyMat σ ψ))
+    (hkL : ∀ ψ, applyDiracMat γ (weylLower ψ) = weylUpper (applyMat σ ψ))
+    (U L U' L' : DualSpinor) :
+    diracScalar (weylUpper U + weylLower L)
+        (applyDiracMat γ (weylUpper U' + weylLower L')) =
+      (-I) * inner ℂ U (applyMat σ U') + I * inner ℂ L (applyMat σ L') := by
+  rw [applyDiracMat_add, hkU, hkL,
+    add_comm (weylLower (applyMat σ U')) (weylUpper (applyMat σ L')),
+    diracScalar_weyl]
+
+private theorem boosted_pauli_current
+    (σ : Matrix (Fin 2) (Fin 2) ℂ) (γ : Matrix (Fin 4) (Fin 4) ℂ) (μ : Fin 4)
+    (hμ : diracMat μ = γ)
+    (hkU : ∀ ψ, applyDiracMat γ (weylUpper ψ) = weylLower (applyMat σ ψ))
+    (hkL : ∀ ψ, applyDiracMat γ (weylLower ψ) = weylUpper (applyMat σ ψ))
+    (α : ℝ) (u v : DualSpinor) :
+    diracCurrent μ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) =
+      (-I) * inner ℂ (applyMat (chiralBoostZ α) u)
+          (applyMat σ (applyMat (chiralBoostZ α) v)) +
+        I * inner ℂ (applyMat (chiralBoostZ (-α)) u)
+          (applyMat σ (applyMat (chiralBoostZ (-α)) v)) := by
+  rw [boosted_blocks, boosted_blocks, diracCurrent_eq_scalar, hμ,
+    spatial_current_weyl σ γ hkU hkL]
+  simp only [applyMat_smul, inner_I_smul]
+
+/-- The Euclidean overlap of two boosted rest solutions is `cosh α` times
+twice the dual-spinor pairing. -/
+theorem boostedRest_inner (α : ℝ) (u v : DualSpinor) :
+    inner ℂ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) =
+      (2 * Real.cosh α : ℂ) * inner ℂ u v := by
+  have hpos : chiralBoostZ α * chiralBoostZ α = chiralBoostZ (2 * α) :=
+    chiralBoostZ_double α
+  have hneg : chiralBoostZ (-α) * chiralBoostZ (-α) = chiralBoostZ (-(2 * α)) := by
+    rw [chiralBoostZ_double]
+    congr 1
+    ring
+  rw [boosted_blocks, boosted_blocks]
+  rw [inner_add_left, inner_add_right, inner_add_right,
+    weylUpper_inner_upper, weylUpper_inner_lower, weylLower_inner_upper,
+    weylLower_inner_lower, inner_I_smul]
+  rw [applyMat_inner_mul, applyMat_inner_mul, chiralBoostZ_hermitian,
+    chiralBoostZ_hermitian, hpos, hneg]
+  simp only [add_zero, zero_add]
+  rw [← inner_add_right, ← applyMat_add_mat, chiralBoostZ_gram,
+    applyMat_smul_mat, applyMat_one, inner_smul_right]
+
+/-- A longitudinal boost leaves the mass bilinear unchanged. -/
+theorem boostedRest_diracScalar (α : ℝ) (u v : DualSpinor) :
+    diracScalar
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) =
+      2 * inner ℂ u v := by
+  rw [boosted_blocks, boosted_blocks, diracScalar_weyl, inner_smul_right,
+    inner_smul_left, conj_I]
+  have hU : inner ℂ (applyMat (chiralBoostZ α) u)
+      (applyMat (chiralBoostZ (-α)) v) = inner ℂ u v := by
+    rw [applyMat_inner_mul, chiralBoostZ_hermitian, chiralBoostZ_inv, applyMat_one]
+  have hL : inner ℂ (applyMat (chiralBoostZ (-α)) u)
+      (applyMat (chiralBoostZ α) v) = inner ℂ u v := by
+    rw [applyMat_inner_mul, chiralBoostZ_hermitian, chiralBoostZ_inv', applyMat_one]
+  rw [hU, hL]
+  exact adjointCoeff _
+
+theorem boostedRest_diracScalar_dualRotor (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
+    diracScalar
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α
+          (restParticleSpinor (applyMat (dualRotorMat β) u))) =
+      2 * dualRotorAmplitude β u := by
+  rw [boostedRest_diracScalar, dualRotorAmplitude]
+
+/-- The mass bilinear and the Euclidean overlap of the boosted rest pair
+agree for every dual spinors if and only if the rapidity vanishes. -/
+theorem boostedRest_scalar_eq_inner_iff (α : ℝ) :
+    (∀ u v : DualSpinor,
+      diracScalar
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) =
+        inner ℂ
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v))) ↔
+      α = 0 := by
+  constructor
+  · intro h
+    have hspin := h spinUp spinUp
+    rw [boostedRest_diracScalar, boostedRest_inner, spinUp_inner_self] at hspin
+    have hcoshC : (Real.cosh α : ℂ) = 1 := by
+      have hmul : (2 : ℂ) * (Real.cosh α : ℂ) = (2 : ℂ) * 1 := by
+        simpa [mul_one] using hspin.symm
+      exact mul_left_cancel₀ (by norm_num : (2 : ℂ) ≠ 0) hmul
+    exact (cosh_eq_one_iff α).mp (ofReal_injective hcoshC)
+  · intro hα
+    subst hα
+    intro u v
+    rw [boostedRest_diracScalar, boostedRest_inner, Real.cosh_zero]
+    simp
+
+theorem boostedRest_current_zero (α : ℝ) (u v : DualSpinor) :
+    diracCurrent 0
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) =
+      (I * Real.cosh α) *
+        diracScalar
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) := by
+  rw [diracCurrent_zero, boostedRest_inner, boostedRest_diracScalar]
+  ring
+
+private theorem boosted_pauli_cancel
+    (σ : Matrix (Fin 2) (Fin 2) ℂ) (γ : Matrix (Fin 4) (Fin 4) ℂ) (μ : Fin 4)
+    (hμ : diracMat μ = γ)
+    (hkU : ∀ ψ, applyDiracMat γ (weylUpper ψ) = weylLower (applyMat σ ψ))
+    (hkL : ∀ ψ, applyDiracMat γ (weylLower ψ) = weylUpper (applyMat σ ψ))
+    (hσ : ∀ β : ℝ, chiralBoostZ β * σ * chiralBoostZ β = σ)
+    (α : ℝ) (u v : DualSpinor) :
+    diracCurrent μ
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) = 0 := by
+  rw [boosted_pauli_current σ γ μ hμ hkU hkL]
+  rw [expectation_sandwich _ _ (chiralBoostZ_hermitian α), hσ,
+    expectation_sandwich _ _ (chiralBoostZ_hermitian (-α)), hσ]
+  ring
+
+theorem boostedRest_current_one (α : ℝ) (u v : DualSpinor) :
+    diracCurrent 1
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) = 0 := by
+  exact boosted_pauli_cancel pauliX diracMat1 1 rfl
+    (fun ψ => apply_diracMat1_weylUpper ψ)
+    (fun ψ => apply_diracMat1_weylLower ψ)
+    chiralBoostZ_conj_pauliX α u v
+
+theorem boostedRest_current_two (α : ℝ) (u v : DualSpinor) :
+    diracCurrent 2
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) = 0 := by
+  exact boosted_pauli_cancel pauliY diracMat2 2 rfl
+    (fun ψ => apply_diracMat2_weylUpper ψ)
+    (fun ψ => apply_diracMat2_weylLower ψ)
+    chiralBoostZ_conj_pauliY α u v
+
+private theorem pauliZ_expectation (β : ℝ) (u v : DualSpinor) :
+    inner ℂ u (applyMat
+        ((Real.sinh β : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+          (Real.cosh β : ℂ) • pauliZ) v) =
+      (Real.sinh β : ℂ) * inner ℂ u v +
+        (Real.cosh β : ℂ) * inner ℂ u (applyMat pauliZ v) := by
+  rw [applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
+    inner_add_right, inner_smul_right, inner_smul_right]
+
+theorem boostedRest_current_three (α : ℝ) (u v : DualSpinor) :
+    diracCurrent 3
+        (applyDiracBoostZ α (restParticleSpinor u))
+        (applyDiracBoostZ α (restParticleSpinor v)) =
+      (-I * Real.sinh α) *
+        diracScalar
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) := by
+  have hpos := chiralBoostZ_conj_pauliZ α
+  have hneg : chiralBoostZ (-α) * pauliZ * chiralBoostZ (-α) =
+      (-Real.sinh α : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (Real.cosh α : ℂ) • pauliZ := by
+    rw [chiralBoostZ_conj_pauliZ (-α), Real.sinh_neg, Real.cosh_neg, ofReal_neg]
+  have hnegMat :
+      (-Real.sinh α : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (Real.cosh α : ℂ) • pauliZ =
+      (Real.sinh (-α) : ℂ) • 1 + (Real.cosh (-α) : ℂ) • pauliZ := by
+    rw [Real.sinh_neg, Real.cosh_neg, ofReal_neg]
+  rw [boosted_pauli_current pauliZ diracMat3 3 rfl
+      (fun ψ => apply_diracMat3_weylUpper ψ)
+      (fun ψ => apply_diracMat3_weylLower ψ),
+    expectation_sandwich _ _ (chiralBoostZ_hermitian α), hpos,
+    expectation_sandwich _ _ (chiralBoostZ_hermitian (-α)), hneg, hnegMat,
+    pauliZ_expectation α, pauliZ_expectation (-α), Real.sinh_neg, Real.cosh_neg,
+    ofReal_neg, boostedRest_diracScalar]
+  ring
+
+/-- Clifford contraction of the current with the boosted momentum. -/
+theorem boostedRest_current_contract (m α : ℝ) (u v : DualSpinor) :
+    (boostZMomentum m α 0 : ℂ) *
+        diracCurrent 0
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) +
+      (boostZMomentum m α 1 : ℂ) *
+        diracCurrent 1
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) +
+      (boostZMomentum m α 2 : ℂ) *
+        diracCurrent 2
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) +
+      (boostZMomentum m α 3 : ℂ) *
+        diracCurrent 3
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) =
+      I * (m : ℂ) *
+        diracScalar
+          (applyDiracBoostZ α (restParticleSpinor u))
+          (applyDiracBoostZ α (restParticleSpinor v)) := by
+  rw [boostZMomentum_zero, boostZMomentum_one, boostZMomentum_two,
+    boostZMomentum_three, boostedRest_current_zero, boostedRest_current_one,
+    boostedRest_current_two, boostedRest_current_three]
+  have hcosh : ((m * Real.cosh α : ℝ) : ℂ) = (m : ℂ) * Real.cosh α := ofReal_mul _ _
+  have hsinh : ((m * Real.sinh α : ℝ) : ℂ) = (m : ℂ) * Real.sinh α := ofReal_mul _ _
+  have hid : (Real.cosh α : ℂ) ^ 2 = (Real.sinh α : ℂ) ^ 2 + 1 := by
+    have hsub : (Real.cosh α : ℂ) ^ 2 - (Real.sinh α : ℂ) ^ 2 = 1 := by
+      rw [← ofReal_pow, ← ofReal_pow, ← ofReal_sub, Real.cosh_sq_sub_sinh_sq,
+        ofReal_one]
+    linear_combination hsub
+  rw [hcosh, hsinh]
+  ring_nf
+  rw [hid]
+  ring
+
+/-- \((j^0,-j^3)\) tracks the boosted momentum, up to the factor \(i\)
+fixed by the adjoint. Dividing by \(m\) needs \(m\neq 0\). -/
+theorem boostedRest_current_parallel (m α : ℝ) (u v : DualSpinor) :
+    let Ψ := applyDiracBoostZ α (restParticleSpinor u)
+    let Φ := applyDiracBoostZ α (restParticleSpinor v)
+    (m : ℂ) * diracCurrent 0 Ψ Φ =
+        I * diracScalar Ψ Φ * (boostZMomentum m α 0 : ℂ) ∧
+      (m : ℂ) * (-diracCurrent 3 Ψ Φ) =
+        I * diracScalar Ψ Φ * (boostZMomentum m α 3 : ℂ) := by
+  dsimp
+  rw [boostedRest_current_zero, boostedRest_current_three, boostZMomentum_zero,
+    boostZMomentum_three]
+  have hcosh : ((m * Real.cosh α : ℝ) : ℂ) = (m : ℂ) * Real.cosh α := ofReal_mul _ _
+  have hsinh : ((m * Real.sinh α : ℝ) : ℂ) = (m : ℂ) * Real.sinh α := ofReal_mul _ _
+  rw [hcosh, hsinh]
+  constructor <;> ring
 
 end Logic
 
