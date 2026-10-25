@@ -373,32 +373,32 @@ def diracUpper (Ψ : DiracSpinor) : DualSpinor :=
 def diracLower (Ψ : DiracSpinor) : DualSpinor :=
   WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]
 
-private theorem diracUpper_weylUpper (u : DualSpinor) :
+theorem diracUpper_weylUpper (u : DualSpinor) :
     diracUpper (weylUpper u) = u := by
   ext i
   fin_cases i <;> simp [diracUpper, weylUpper]
 
-private theorem diracLower_weylLower (l : DualSpinor) :
+theorem diracLower_weylLower (l : DualSpinor) :
     diracLower (weylLower l) = l := by
   ext i
   fin_cases i <;> simp [diracLower, weylLower]
 
-private theorem diracUpper_weylLower (l : DualSpinor) :
+theorem diracUpper_weylLower (l : DualSpinor) :
     diracUpper (weylLower l) = 0 := by
   ext i
   fin_cases i <;> simp [diracUpper, weylLower]
 
-private theorem diracLower_weylUpper (u : DualSpinor) :
+theorem diracLower_weylUpper (u : DualSpinor) :
     diracLower (weylUpper u) = 0 := by
   ext i
   fin_cases i <;> simp [diracLower, weylUpper]
 
-private theorem diracUpper_add (Ψ Φ : DiracSpinor) :
+theorem diracUpper_add (Ψ Φ : DiracSpinor) :
     diracUpper (Ψ + Φ) = diracUpper Ψ + diracUpper Φ := by
   ext i
   fin_cases i <;> simp [diracUpper, PiLp.add_apply]
 
-private theorem diracLower_add (Ψ Φ : DiracSpinor) :
+theorem diracLower_add (Ψ Φ : DiracSpinor) :
     diracLower (Ψ + Φ) = diracLower Ψ + diracLower Φ := by
   ext i
   fin_cases i <;> simp [diracLower, PiLp.add_apply]
@@ -690,7 +690,7 @@ theorem restAntiparticleSpinor_ne_zero :
   simp [restAntiparticleSpinor, weylUpper, weylLower, EuclideanSpace.single,
     PiLp.add_apply] at h0
 
-private theorem pauliSlash_rest (m : ℝ) :
+theorem pauliSlash_rest (m : ℝ) :
     pauliSlash (restMomentum m) = (m : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
   simp [pauliSlash, restMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
 
@@ -1316,7 +1316,7 @@ private theorem adjointCoeff (z : ℂ) :
     _ = (1 + 1) * z := by rw [I_mul_I]; ring
     _ = 2 * z := by ring
 
-private theorem diracScalar_weyl (u l v m : DualSpinor) :
+theorem diracScalar_weyl (u l v m : DualSpinor) :
     diracScalar (weylUpper u + weylLower l) (weylUpper v + weylLower m) =
       (-I) * inner ℂ u m + I * inner ℂ l v := by
   unfold diracScalar

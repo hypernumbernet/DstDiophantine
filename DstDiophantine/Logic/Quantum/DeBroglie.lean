@@ -120,9 +120,9 @@ theorem dualRotorMat_trace (β : DualRapidity) :
   rw [dualRotorMat_rodrigues]
   by_cases h : β = 0
   · subst h
-    simp only [norm_zero, zero_div, Real.cos_zero, dite_true, add_zero]
+    simp only [norm_zero, zero_div, Real.cos_zero, ↓reduceIte, add_zero]
     exact trace_real_smul_one 1
-  · simp only [h, dite_false]
+  · simp only [h, ↓reduceIte]
     rw [trace_add, trace_real_smul_one, trace_real_smul, cyclicRepComb_trace]
     simp
 
@@ -159,6 +159,23 @@ theorem dualRotorMat_axis2_rodrigues (θ : ℝ) :
         Real.sin (θ / 2) • cyclicRep 2 := by
   rw [dualRotorMat_axis2, axis2Gen_eq_real_smul]
   exact exp_mat_of_sq_neg_one (cyclicRep_sq 2) (θ / 2)
+
+/-- Axis-1 dual rotor: \(\cos(\theta/2)I+\sin(\theta/2)(-i\sigma_y)\). -/
+theorem dualRotorMat_axis1_rodrigues (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 1 θ) =
+      Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.sin (θ / 2) • cyclicRep 1 := by
+  have hgen : dualRotorMat (EuclideanSpace.single 1 θ) =
+      NormedSpace.exp ((θ / 2 : ℂ) • cyclicRep 1) := by
+    unfold dualRotorMat
+    congr 1
+    simp [PiLp.single_apply, Fin.sum_univ_three]
+  have hreal : (θ / 2 : ℂ) • cyclicRep 1 = (θ / 2 : ℝ) • cyclicRep 1 := by
+    have h : (θ / 2 : ℂ) = ↑(θ / 2) := by simp [Complex.ofReal_div]
+    rw [h]
+    rfl
+  rw [hgen, hreal]
+  exact exp_mat_of_sq_neg_one (cyclicRep_sq 1) (θ / 2)
 
 theorem cyclicRep_two_eq : cyclicRep 2 = !![ -I, 0; 0, I] := by
   unfold cyclicRep pauli pauliZ

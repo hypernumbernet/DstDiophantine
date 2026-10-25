@@ -40,6 +40,7 @@ import DstDiophantine.Logic.Quantum.LeftIdealSplit
 import DstDiophantine.Logic.Quantum.Dirac
 import DstDiophantine.Logic.Quantum.DiracSpinor
 import DstDiophantine.Logic.Quantum.DiracEquation
+import DstDiophantine.Logic.Quantum.DiracCovariance
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -79,7 +80,11 @@ and `DstDiophantine.CGA`).
   longitudinal boost of that pair, the factor \(\cosh\alpha\) on its
   Euclidean overlap, the boost-invariant mass bilinear
   \(\Psi^\dagger(-i\gamma^0)\Phi\), and the Dirac current
-  \(i\bar\Psi\Phi(\cosh\alpha,0,0,-\sinh\alpha)\), dual-rotor character, spinor
+  \(i\bar\Psi\Phi(\cosh\alpha,0,0,-\sinh\alpha)\), covariance of the
+  momentum-space Dirac equation, mass bilinear and current under every
+  unit-determinant total rotor, its unique usual·dual factorization, the dual
+  sector as little group of the rest momentum, and the Thomas–Wigner dual
+  rotation of perpendicular usual rotors, dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
   plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
@@ -927,6 +932,36 @@ example {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum 0 p Ψ) :
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum (-m) p (applyDiracMat diracMat5 Ψ) :=
   diracMat5_flips_mass h
+
+/-- Regression: every unit-determinant total rotor maps solutions to solutions. -/
+example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ} {p : Vec4}
+    {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    DiracMomentum m (lorentzAct M p) (rotorDirac M Ψ) :=
+  diracMomentum_rotorDirac hM h
+
+/-- Regression: the mass bilinear is invariant under every total rotor. -/
+example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (Ψ Φ : DiracSpinor) :
+    diracScalar (rotorDirac M Ψ) (rotorDirac M Φ) = diracScalar Ψ Φ :=
+  diracScalar_rotorDirac hM Ψ Φ
+
+/-- Regression: total rotor = usual rotor · dual rotor. -/
+example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
+    ∃ (α : UsualRapidity) (β : DualRapidity), M = usualRotorMat α * dualRotorMat β :=
+  totalRotor_factor hM
+
+/-- Regression: the little group of the rest momentum is the dual sector. -/
+example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ} (hm : m ≠ 0) :
+    lorentzAct M (restMomentum m) = restMomentum m ↔
+      ∃ β : DualRapidity, M = dualRotorMat β :=
+  lorentzAct_rest_iff_dualRotor hM hm
+
+/-- Regression: Thomas–Wigner rotation about the perpendicular axis. -/
+example {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
+    ∃ (α : UsualRapidity) (φ : ℝ),
+      usualRotorMat (EuclideanSpace.single 0 a) * usualRotorMat (EuclideanSpace.single 2 b) =
+        usualRotorMat α * dualRotorMat (EuclideanSpace.single 1 φ) ∧
+      dualRotorMat (EuclideanSpace.single 1 φ) ≠ 1 :=
+  usualRotor_perp_wigner ha hb
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

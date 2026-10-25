@@ -655,6 +655,7 @@ each other in through `Basic`:
 lake build DstDiophantine.Gravity
 lake build DstDiophantine.Logic
 lake build DstDiophantine.Logic.Quantum.DiracEquation
+lake build DstDiophantine.Logic.Quantum.DiracCovariance
 lake build DstDiophantine.CGA
 ```
 

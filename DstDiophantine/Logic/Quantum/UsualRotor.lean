@@ -187,6 +187,23 @@ theorem usualRotorMat_axis0_rodrigues (θ : ℝ) :
   rw [usualRotorMat_axis0, axis0UsualGen_eq_real_smul]
   exact exp_mat_of_sq_one (pauli_sq 0) (θ / 2)
 
+/-- Axis-2 usual rotor: \(\cosh(\theta/2)\,I+\sinh(\theta/2)\,\sigma_z\). -/
+theorem usualRotorMat_axis2_rodrigues (θ : ℝ) :
+    usualRotorMat (EuclideanSpace.single 2 θ) =
+      Real.cosh (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        Real.sinh (θ / 2) • pauli 2 := by
+  have hgen : usualRotorMat (EuclideanSpace.single 2 θ) =
+      NormedSpace.exp ((θ / 2 : ℂ) • pauli 2) := by
+    unfold usualRotorMat
+    congr 1
+    simp [PiLp.single_apply, Fin.sum_univ_three]
+  have hreal : (θ / 2 : ℂ) • pauli 2 = (θ / 2 : ℝ) • pauli 2 := by
+    have h : (θ / 2 : ℂ) = ↑(θ / 2) := by simp [Complex.ofReal_div]
+    rw [h]
+    rfl
+  rw [hgen, hreal]
+  exact exp_mat_of_sq_one (pauli_sq 2) (θ / 2)
+
 private theorem usualRotorMat_axis0_entries (θ : ℝ) :
     usualRotorMat (EuclideanSpace.single 0 θ) =
       !![↑(Real.cosh (θ / 2)), ↑(Real.sinh (θ / 2));
