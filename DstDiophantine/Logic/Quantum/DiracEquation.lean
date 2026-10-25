@@ -33,6 +33,14 @@ Along the boosted rest pair the current is
 boosted momentum is `i m Ψ̄Φ`, and `(j⁰, −j³)` is parallel to that
 momentum.
 
+The eigenrays of `σ_z` label spin along that momentum. `V(α)` multiplies
+the eigenvalue `+1` by `e^{α/2}` on the upper block and by `e^{-α/2}` on
+the lower, and both blocks stay in that ray; the opposite ray exchanges
+the two factors. The mass bilinear and every current component between
+the two rays vanish. A dual rotation about the boost axis multiplies each
+ray by a phase. A dual rotation of angle `π` about a perpendicular axis
+exchanges the rays.
+
 This is the first-order factor of Klein–Gordon. It is not a PDE on
 spacetime, not a derivation of `m` from torsion, and not covariance
 under the full rotor group.
@@ -1659,6 +1667,204 @@ theorem boostedRest_current_parallel (m α : ℝ) (u v : DualSpinor) :
   have hsinh : ((m * Real.sinh α : ℝ) : ℂ) = (m : ℂ) * Real.sinh α := ofReal_mul _ _
   rw [hcosh, hsinh]
   constructor <;> ring
+
+/-! ### Spin along the longitudinal momentum
+
+`σ_z` eigenrays are labels of the free solution. The chiral factor is
+diagonal in that basis, so a longitudinal boost preserves each ray and a
+same-axis dual rotation only multiplies it by a phase. A perpendicular
+dual rotation of angle `π` exchanges the rays. Opposite rays are
+orthogonal in the invariant mass bilinear, and the Dirac current between
+them vanishes. -/
+
+private theorem spinUp_inner_spinDown : inner ℂ spinUp spinDown = 0 := by
+  rw [dual_inner_sum]
+  simp [spinUp, spinDown]
+
+private theorem pauliZ_spinUp : applyMat pauliZ spinUp = spinUp := by
+  ext i
+  fin_cases i <;>
+    simp [applyMat, pauliZ, spinUp, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+
+private theorem pauliZ_spinDown : applyMat pauliZ spinDown = -spinDown := by
+  ext i
+  fin_cases i <;>
+    simp [applyMat, pauliZ, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+
+private theorem chiralBoostZ_on_spinUp (α : ℝ) :
+    applyMat (chiralBoostZ α) spinUp = (Real.exp (α / 2) : ℂ) • spinUp := by
+  unfold chiralBoostZ
+  rw [applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
+    pauliZ_spinUp, ← add_smul]
+  have h : (Real.cosh (α / 2) : ℂ) + (Real.sinh (α / 2) : ℂ) =
+      (Real.exp (α / 2) : ℂ) := by
+    rw [← ofReal_add, Real.cosh_add_sinh, ofReal_exp]
+  rw [h]
+
+private theorem chiralBoostZ_on_spinDown (α : ℝ) :
+    applyMat (chiralBoostZ α) spinDown =
+      (Real.exp (-(α / 2)) : ℂ) • spinDown := by
+  unfold chiralBoostZ
+  rw [applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
+    pauliZ_spinDown, smul_neg]
+  have hsub : (Real.cosh (α / 2) : ℂ) - (Real.sinh (α / 2) : ℂ) =
+      (Real.exp (-(α / 2)) : ℂ) := by
+    have h : Real.cosh (α / 2) - Real.sinh (α / 2) = Real.exp (-(α / 2)) := by
+      have hexp := Real.cosh_add_sinh (-(α / 2))
+      rw [Real.cosh_neg, Real.sinh_neg, ← sub_eq_add_neg] at hexp
+      exact hexp
+    rw [← ofReal_sub, h, ofReal_exp]
+  rw [← sub_eq_add_neg, ← sub_smul, hsub]
+
+private theorem boosted_spin_upper (α : ℝ) (u : DualSpinor) :
+    diracUpper (applyDiracBoostZ α (restParticleSpinor u)) =
+      applyMat (chiralBoostZ α) u := by
+  rw [boosted_blocks, diracUpper_add, diracUpper_weylUpper, diracUpper_weylLower,
+    add_zero]
+
+private theorem boosted_spin_lower (α : ℝ) (u : DualSpinor) :
+    diracLower (applyDiracBoostZ α (restParticleSpinor u)) =
+      I • applyMat (chiralBoostZ (-α)) u := by
+  rw [boosted_blocks, diracLower_add, diracLower_weylUpper, diracLower_weylLower,
+    zero_add]
+
+/-- Upper block of the boosted eigenvalue \(+1\): the factor \(e^{\alpha/2}\). -/
+theorem boostedRest_spinUp_upper (α : ℝ) :
+    diracUpper (applyDiracBoostZ α (restParticleSpinor spinUp)) =
+      (Real.exp (α / 2) : ℂ) • spinUp := by
+  rw [boosted_spin_upper, chiralBoostZ_on_spinUp]
+
+/-- Lower block of the boosted eigenvalue \(+1\): the factor \(e^{-\alpha/2}\). -/
+theorem boostedRest_spinUp_lower (α : ℝ) :
+    diracLower (applyDiracBoostZ α (restParticleSpinor spinUp)) =
+      I • (Real.exp (-(α / 2)) : ℂ) • spinUp := by
+  rw [boosted_spin_lower, chiralBoostZ_on_spinUp]
+  have harg : (-α) / 2 = -(α / 2) := by ring
+  rw [harg]
+
+/-- Upper block of the boosted eigenvalue \(-1\): the factor \(e^{-\alpha/2}\). -/
+theorem boostedRest_spinDown_upper (α : ℝ) :
+    diracUpper (applyDiracBoostZ α (restParticleSpinor spinDown)) =
+      (Real.exp (-(α / 2)) : ℂ) • spinDown :=
+  by rw [boosted_spin_upper, chiralBoostZ_on_spinDown]
+
+/-- Lower block of the boosted eigenvalue \(-1\): the factor \(e^{\alpha/2}\). -/
+theorem boostedRest_spinDown_lower (α : ℝ) :
+    diracLower (applyDiracBoostZ α (restParticleSpinor spinDown)) =
+      I • (Real.exp (α / 2) : ℂ) • spinDown := by
+  rw [boosted_spin_lower, chiralBoostZ_on_spinDown]
+  have harg : -(-α / 2) = α / 2 := by ring
+  rw [harg]
+
+private theorem exp_half_phase (θ : ℝ) :
+    (Real.cos (θ / 2) : ℂ) + (Real.sin (θ / 2) : ℂ) * -I =
+      Complex.exp ((-↑(θ / 2)) * I) := by
+  rw [Complex.exp_mul_I, Complex.cos_neg, Complex.sin_neg,
+    ← Complex.ofReal_cos, ← Complex.ofReal_sin]
+  ring
+
+private theorem exp_half_phase_down (θ : ℝ) :
+    (Real.cos (θ / 2) : ℂ) + (Real.sin (θ / 2) : ℂ) * I =
+      Complex.exp (↑(θ / 2) * I) := by
+  rw [Complex.exp_mul_I, ← Complex.ofReal_cos, ← Complex.ofReal_sin]
+
+private theorem real_smul_complex_mat (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ) :
+    r • A = (r : ℂ) • A :=
+  (algebraMap_smul ℂ r A).symm
+
+private theorem cyclicRep_two_spinUp : applyMat (cyclicRep 2) spinUp = -I • spinUp := by
+  rw [cyclicRep_two_eq]
+  ext i
+  fin_cases i <;>
+    simp [applyMat, spinUp, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+
+private theorem cyclicRep_two_spinDown : applyMat (cyclicRep 2) spinDown = I • spinDown := by
+  rw [cyclicRep_two_eq]
+  ext i
+  fin_cases i <;>
+    simp [applyMat, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two]
+
+/-- Dual rotation about the boost axis multiplies the eigenvalue \(+1\) by a phase. -/
+theorem dualRotor_axis2_spinUp (θ : ℝ) :
+    applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinUp =
+      Complex.exp ((-↑(θ / 2)) * I) • spinUp := by
+  rw [dualRotorMat_axis2_rodrigues, real_smul_complex_mat, real_smul_complex_mat,
+    applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
+    cyclicRep_two_spinUp, smul_smul, ← add_smul, exp_half_phase]
+
+/-- Dual rotation about the boost axis multiplies the eigenvalue \(-1\) by the opposite phase. -/
+theorem dualRotor_axis2_spinDown (θ : ℝ) :
+    applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinDown =
+      Complex.exp (↑(θ / 2) * I) • spinDown := by
+  rw [dualRotorMat_axis2_rodrigues, real_smul_complex_mat, real_smul_complex_mat,
+    applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
+    cyclicRep_two_spinDown, smul_smul, ← add_smul, exp_half_phase_down]
+
+/-- A dual rotation of angle \(\pi\) about a perpendicular axis exchanges the two rays. -/
+theorem dualRotor_axis0_pi_exchange :
+    applyMat (dualRotorMat (EuclideanSpace.single 0 Real.pi)) spinUp =
+        -I • spinDown ∧
+      applyMat (dualRotorMat (EuclideanSpace.single 0 Real.pi)) spinDown =
+        -I • spinUp := by
+  rw [dualRotorMat_axis0_rodrigues, Real.cos_pi_div_two, Real.sin_pi_div_two,
+    cyclicRep_zero_eq]
+  constructor
+  · ext i
+    fin_cases i <;>
+      simp [applyMat, spinUp, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
+        Matrix.add_apply, Matrix.smul_apply]
+  · ext i
+    fin_cases i <;>
+      simp [applyMat, spinUp, spinDown, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
+        Matrix.add_apply, Matrix.smul_apply]
+
+/-- After a same-axis dual rotation, the boosted upper block stays in the ray of eigenvalue \(+1\). -/
+theorem boostedRest_axis2_spinUp_upper (α θ : ℝ) :
+    diracUpper (applyDiracBoostZ α
+        (restParticleSpinor
+          (applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinUp))) =
+      (Complex.exp ((-↑(θ / 2)) * I) * (Real.exp (α / 2) : ℂ)) • spinUp := by
+  rw [boosted_spin_upper, dualRotor_axis2_spinUp, applyMat_smul, chiralBoostZ_on_spinUp,
+    smul_smul]
+
+/-- After a perpendicular dual rotation of angle \(\pi\), the boosted upper block lies in the opposite ray. -/
+theorem boostedRest_axis0_pi_spinUp_upper (α : ℝ) :
+    diracUpper (applyDiracBoostZ α
+        (restParticleSpinor
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 Real.pi)) spinUp))) =
+      (-I * (Real.exp (-(α / 2)) : ℂ)) • spinDown := by
+  rw [boosted_spin_upper, dualRotor_axis0_pi_exchange.1, applyMat_smul,
+    chiralBoostZ_on_spinDown, smul_smul]
+
+/-- Opposite spin rays have vanishing invariant mass bilinear at every longitudinal rapidity. -/
+theorem boostedRest_oppositeSpin_scalar (α : ℝ) :
+    diracScalar
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0 := by
+  rw [boostedRest_diracScalar, spinUp_inner_spinDown, mul_zero]
+
+/-- Opposite spin rays carry no Dirac current into each other. -/
+theorem boostedRest_oppositeSpin_current (α : ℝ) (μ : Fin 4) :
+    diracCurrent μ
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0 := by
+  fin_cases μ
+  · change diracCurrent 0
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0
+    rw [boostedRest_current_zero, boostedRest_oppositeSpin_scalar, mul_zero]
+  · change diracCurrent 1
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0
+    exact boostedRest_current_one α spinUp spinDown
+  · change diracCurrent 2
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0
+    exact boostedRest_current_two α spinUp spinDown
+  · change diracCurrent 3
+        (applyDiracBoostZ α (restParticleSpinor spinUp))
+        (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0
+    rw [boostedRest_current_three, boostedRest_oppositeSpin_scalar, mul_zero]
 
 end Logic
 
