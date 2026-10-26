@@ -27,6 +27,8 @@ G_{\mathrm{hyp}}(N,m) = \varepsilon_N\cdot\frac{\hbar c}{m^2}
 
 If \(N \propto m\) then \(G_{\mathrm{hyp}}\) is species-independent. Taking
 \(N = m_P/m\) yields exactly the factor \(16/3\) relative to CODATA \(G\).
+`ForceScale` records that factor as the scale of the reading: the nonzero
+floor is \((16/3)\alpha_G\), not the electromagnetic constant.
 
 No theorem asserts `dst_derives_G`. Numerics use `Gravity.SI` rationals only.
 Dimensionless \(|J|\le 3\pi^2/8\) must not be conflated with

@@ -24,9 +24,15 @@ hypothesis** that pairs the shared lattice floor `SI.epsN` with CODATA \(\alpha\
 Matching CODATA \(\alpha\) yields \(N_*^2 = 16/(3\alpha)\). Numerically
 \(729 = 27^2 < N_*^2 < 732 < 28^2\), so \(N_* \approx 27\).
 
-No theorem asserts `dst_derives_alpha`. The gravitational
-`impliedNsq` for the electron (\(\sim 10^{45}\)) is a *different* channel
-(Planck-mass ratio) and must **not** be identified with this \(N_*\).
+That integer is not the scale one compactification produces. `ForceScale`
+reads \(N^2\) as the Planck ratio and obtains the floor \((16/3)\alpha_G\).
+For the electron the electromagnetic constant exceeds that floor by a factor
+strictly between \(7.7\times 10^{41}\) and \(8.1\times 10^{41}\).
+
+No theorem asserts `dst_derives_alpha`. The integer that sets the floor
+equal to the electron's \(\alpha_G\) has square in \((3\times 10^{45},4\times 10^{45})\)
+and must **not** be identified with this \(N_*\). The Planck reading itself,
+recorded in `ForceScale`, places the floor at \((16/3)\alpha_G\).
 Dimensionless \(|J|\le 3\pi^2/8\) must not be conflated with \(\alpha\).
 -/
 

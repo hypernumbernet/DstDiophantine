@@ -8,6 +8,7 @@ import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
 import DstDiophantine.Gravity.CoulombFromDual
+import DstDiophantine.Gravity.ForceScale
 import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
@@ -136,6 +137,13 @@ The straight line of one fixed jet is not itself that geodesic.
   A one-way horizon \(A=0\) does not form on that chart.
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
+* `ForceScale` — one integer, read as the Planck ratio \((m_P/m)^2\), places
+  the nonzero floor at \((16/3)\alpha_G\). For the electron,
+  \(1.70\times 10^{-45}<\alpha_G<1.77\times 10^{-45}\), and the electromagnetic
+  constant exceeds that floor by a factor strictly between \(7.7\times 10^{41}\)
+  and \(8.1\times 10^{41}\). The square that matches the electromagnetic
+  constant lies in \((729,732)\); the square that matches \(\alpha_G(m_e)\)
+  lies in \((3\times 10^{45},4\times 10^{45})\). Neither derives \(G\) or \(\alpha\).
 * `CompactS3` — \(v^2=(GM/R)\,f(r/R)\). The cotangent potential is radially
   harmonic, with Newtonian germ \(-GM/r+GMr/(3R^2)\). Unique minimum of \(f\)
   on \((0,\pi/2)\) with \(1.35<f_0<1.41\), and \(f<(11/10)f_0\) on \([1,6/5]\).
