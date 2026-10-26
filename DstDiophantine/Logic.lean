@@ -45,6 +45,8 @@ import DstDiophantine.Logic.Quantum.DiracField
 import DstDiophantine.Logic.Quantum.DiracGauge
 import DstDiophantine.Logic.Quantum.DiracConjugation
 import DstDiophantine.Logic.Quantum.DualEntanglement
+import DstDiophantine.Logic.Quantum.DualObservables
+import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -98,6 +100,12 @@ and `DstDiophantine.CGA`).
   the dual map, charge conjugation and the antiparticle, two dual spinors
   with the singlet as the unique state fixed by common dual rotors, its
   correlation `-a·b`, no signalling, and the CHSH bounds `2` and `2√2`,
+  the spin vector of a dual spinor as a point of the unit sphere, the
+  `4π` interference intensity, the Robertson–Schrödinger equality and
+  the bound for two spin axes, the polarization of each particle of a
+  joint state, exchange as the split into the singlet and the symmetric
+  states with `S² = 1 + P`, and exclusion of parallel dual spinors from
+  the singlet,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1113,6 +1121,39 @@ example : chsh singletCorr ![0, 0, 1] ![1, 0, 0]
     ![1 / Real.sqrt 2, 0, 1 / Real.sqrt 2] ![-(1 / Real.sqrt 2), 0, 1 / Real.sqrt 2] =
       -(2 * Real.sqrt 2) :=
   singletCorr_chsh
+
+/-- Regression: a unit dual spinor is a point of the unit sphere. -/
+example {u : DualSpinor} (hu : ‖u‖ = 1) :
+    axisDot (spinVec u) (spinVec u) = 1 :=
+  axisDot_spinVec_of_norm hu
+
+/-- Regression: interference of a dual spinor with its dual rotate has
+intensity `cos²(‖β‖/4)`. -/
+example (β : DualRapidity) (u : DualSpinor) :
+    ‖u + applyMat (dualRotorMat β) u‖ ^ 2 =
+      4 * Real.cos (‖β‖ / 4) ^ 2 * ‖u‖ ^ 2 :=
+  norm_add_dualRotor_sq β u
+
+/-- Regression: Robertson bound for two spin axes on a unit dual spinor. -/
+example {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 → ℝ) :
+    ‖spinExp (pauliComb a * pauliComb b - pauliComb b * pauliComb a) u‖ ^ 2 / 4 ≤
+      spinVar a u * spinVar b u :=
+  robertson_spin hu a b
+
+/-- Regression: polarization of each particle of a unit joint state. -/
+example {Ψ : PairState} (hΨ : pairNormSq Ψ = 1) :
+    axisDot (leftSpinVec Ψ) (leftSpinVec Ψ) = 1 - (2 * ‖Ψ.det‖) ^ 2 :=
+  (axisDot_spinVec_pair_of_norm hΨ).1
+
+/-- Regression: two parallel dual spinors have vanishing antisymmetrized
+product. -/
+example {u : DualSpinor} (hu : u ≠ 0) (c : ℂ) :
+    pairTensor u (c • u) - pairTensor (c • u) u = 0 :=
+  (pairTensor_sub_swap_eq_zero_iff hu (c • u)).mpr ⟨c, rfl⟩
+
+/-- Regression: total spin squared vanishes on the singlet. -/
+example : ∑ k, pairSpin k (pairSpin k singlet) = 0 :=
+  sum_pairSpin_sq_singlet
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

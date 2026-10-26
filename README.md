@@ -636,6 +636,27 @@ expectation of the other unchanged. Outcomes fixed by local variables keep
 the CHSH combination within $2$. The singlet reaches $2\sqrt2$, its maximum
 over unit axes.
 
+[`DualObservables.lean`](DstDiophantine/Logic/Quantum/DualObservables.lean):
+the spin vector $r(u)_k = \langle u, \sigma_k u\rangle$ is real,
+$\langle u, \sigma\cdot a\, u\rangle = a\cdot r$, and $|r|^2 = \|u\|^4$.
+A unit dual spinor is a point of the unit sphere, and the outcome $s = \pm 1$
+along a unit axis has probability $(1 + s\, a\cdot r)/2$. A dual rotor
+$U(\beta)$ turns $r$ by the full angle $\|\beta\|$ about $\beta$; two
+$\mathrm{SU}(2)$ matrices turn every axis alike exactly when they differ by
+sign. The interference of $u$ with $U(\beta)u$ has intensity
+$\cos^2(\|\beta\|/4)$ for every $u$. On a unit dual spinor the
+Robertson–Schrödinger relation is an equality, the Robertson bound holds
+with the covariance as the exact excess, and the variances along three
+perpendicular axes sum to $2$.
+
+[`DualExchange.lean`](DstDiophantine/Logic/Quantum/DualExchange.lean):
+on a unit joint state each particle has polarization $\sqrt{1-C^2}$ with
+$C = 2\|\det\Psi\|$. Exchange $\Psi \mapsto \Psi^{\mathsf T}$ commutes with
+every common rotor. The antisymmetric states are the multiples of the
+singlet, and $u\otimes v - v\otimes u$ vanishes exactly when $v \parallel u$.
+$\sum_k \sigma_k\otimes\sigma_k = 2P-1$, so $S^2 = 1+P$: $2$ on symmetric
+states and $0$ on the singlet.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
 produce a mass from torsion or position operators. The dual-rotor character,
 the spinor matrix element,
@@ -728,6 +749,8 @@ lake build DstDiophantine.Logic.Quantum.DiracField
 lake build DstDiophantine.Logic.Quantum.DiracGauge
 lake build DstDiophantine.Logic.Quantum.DiracConjugation
 lake build DstDiophantine.Logic.Quantum.DualEntanglement
+lake build DstDiophantine.Logic.Quantum.DualObservables
+lake build DstDiophantine.Logic.Quantum.DualExchange
 lake build DstDiophantine.CGA
 ```
 
