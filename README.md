@@ -655,7 +655,9 @@ $C = 2\|\det\Psi\|$. Exchange $\Psi \mapsto \Psi^{\mathsf T}$ commutes with
 every common rotor. The antisymmetric states are the multiples of the
 singlet, and $u\otimes v - v\otimes u$ vanishes exactly when $v \parallel u$.
 $\sum_k \sigma_k\otimes\sigma_k = 2P-1$, so $S^2 = 1+P$: $2$ on symmetric
-states and $0$ on the singlet.
+states and $0$ on the singlet. The orthogonal complement of a nonzero dual
+spinor is the ray of its spin-reversed partner; the two rays exhaust
+$\mathbb{C}^2$, and a third ray orthogonal to both is zero.
 
 The dual-rotor action on the Weyl parameter is internal. This layer does not
 produce a mass from torsion or position operators. The dual-rotor character,

@@ -31,10 +31,11 @@ remain `Θ(1/n)`.
 * Eight electrons at the vertices of a cube about a nucleus of charge `Z ≥ 1`
   have exactly one radial balance in the first repulsive shell, and the
   outward force restores that radius.
-* Monopole, dipole, and quadrupole modes number `1`, `3`, and `5`. Two chiral
-  seats on each mode give `2`, `8`, and `18` through degrees `0`, `1`, and `2`.
-  The traceless octupole has dimension `7`, and the count through degree `3`
-  is `32`. Degree by degree the same seats number `2`, `6`, `10`, and `14`.
+* Monopole, dipole, and quadrupole modes number `1`, `3`, and `5`. A dual
+  spinor and its spin-reversed partner put one seat on each mode, giving `2`,
+  `8`, and `18` through degrees `0`, `1`, and `2`. The traceless octupole has
+  dimension `7`, and the count through degree `3` is `32`. Degree by degree
+  the same seats number `2`, `6`, `10`, and `14`.
 * Where the interference factor of a separation is positive, the antipode is
   an angular minimum of an energy that falls as the separation grows.
 -/
@@ -2161,9 +2162,10 @@ theorem cubeOutward_sign {Z x : ℝ}
 
 /-! ### Seats
 
-A monopole, a dipole, and a traceless quadrupole are vector spaces of dimensions
-`1`, `3`, and `5`. The two complementary chiral projectors give one seat on each
-mode, so the counts through degrees `0`, `1`, and `2` are `2`, `8`, and `18`.
+A monopole, a dipole, a traceless quadrupole, and a traceless octupole are
+vector spaces of dimensions `1`, `3`, `5`, and `7`. One seat for a dual spinor
+and one for its spin-reversed partner on each mode give `2`, `8`, `18`, and
+`32`. The axis projectors `(1 ± e₁)/2` are a different split of the algebra.
 These integers are not indices of the equal-scale nodes. -/
 
 theorem chiral_projectors :

@@ -47,6 +47,7 @@ import DstDiophantine.Logic.Quantum.DiracConjugation
 import DstDiophantine.Logic.Quantum.DualEntanglement
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.DualExchange
+import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -105,7 +106,8 @@ and `DstDiophantine.CGA`).
   the bound for two spin axes, the polarization of each particle of a
   joint state, exchange as the split into the singlet and the symmetric
   states with `S² = 1 + P`, and exclusion of parallel dual spinors from
-  the singlet,
+  the singlet, the orthogonal complement of a dual-spinor ray as the ray of
+  its spin-reversed partner, and the absence of a third orthogonal ray,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1150,6 +1152,21 @@ product. -/
 example {u : DualSpinor} (hu : u ≠ 0) (c : ℂ) :
     pairTensor u (c • u) - pairTensor (c • u) u = 0 :=
   (pairTensor_sub_swap_eq_zero_iff hu (c • u)).mpr ⟨c, rfl⟩
+
+/-- Regression: `J` reverses the spin vector. -/
+example (u : DualSpinor) : spinVec (quatJ u) = fun k => -spinVec u k :=
+  spinVec_quatJ u
+
+/-- Regression: the orthogonal complement of a dual-spinor ray is the ray of `Ju`. -/
+example {u : DualSpinor} (hu : u ≠ 0) (v : DualSpinor) :
+    inner ℂ u v = 0 ↔ ∃ c : ℂ, v = c • quatJ u :=
+  inner_eq_zero_iff_smul_quatJ hu v
+
+/-- Regression: no third dual spinor is orthogonal to a ray and its reverse. -/
+example {u v w : DualSpinor} (hu : u ≠ 0) (hv : v ≠ 0)
+    (huv : inner ℂ u v = 0) (huw : inner ℂ u w = 0) (hvw : inner ℂ v w = 0) :
+    w = 0 :=
+  eq_zero_of_orthogonal_pair hu hv huv huw hvw
 
 /-- Regression: total spin squared vanishes on the singlet. -/
 example : ∑ k, pairSpin k (pairSpin k singlet) = 0 :=
