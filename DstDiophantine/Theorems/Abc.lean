@@ -43,11 +43,15 @@ the branch `0 ≤ δ ≤ π/4`, so an admissible seed obeys
 for `δ > π √3 / 4`.
 
 Every primitive triple with `c ≤ 80` satisfies `c ≤ 2 · rad(abc)`. Since
-`2 < exp(π/4)`, none of them leaves the cone. The first exit is
-`1 + 80 = 81` (`1 + 2⁴·5 = 3⁴`), with radical `30` and ratio `27/10`: the
-seed is not admissible, yet the normalised height is still strictly less
-than one. The sum `3 + 5³ = 2⁷` has the same radical and ratio `64/15`, so
-the normalised height exceeds one, and that seed is likewise not admissible.
+`2 < exp(π/4)`, none of them leaves the cone. The shell between the cone
+wall and the unit-height surface is narrower than one halving. Inside the
+cone the quality is at most `log 9 / log 6`, the quality of `1 + 8 = 9`,
+and equality holds only for the two orderings of that sum. A greater quality
+lies outside the cone. The first exit is `1 + 80 = 81` (`1 + 2⁴·5 = 3⁴`),
+with radical `30` and ratio `27/10`: the seed is not admissible, yet the
+normalised height is still strictly less than one. The sum `3 + 5³ = 2⁷`
+has the same radical and ratio `64/15`, so the normalised height exceeds
+one, and that seed is likewise not admissible.
 
 ## Paper gap (not closed)
 
@@ -865,6 +869,261 @@ theorem not_admissible_abc_three_one_two_five :
       Real.lt_sqrt_of_sq_lt (by norm_num : (1 : ℝ) ^ 2 < 3)
     nlinarith [Real.pi_pos, hs]
   exact not_lt_of_ge hle.2 (hhalf.trans pi_sqrt_three_div_four_lt_abcLogGap_two_seven)
+
+/-! ### Admissible quality is maximised by `1 + 8 = 9` -/
+
+private theorem exp_pi_div_four_lt_eleven_div_five :
+    Real.exp (Real.pi / 4) < (11 : ℝ) / 5 := by
+  have harg : Real.pi / 4 < (3.141593 : ℝ) / 4 := by
+    have hπ : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
+    exact div_lt_div_of_pos_right hπ (by norm_num)
+  have hx0 : (0 : ℝ) ≤ (3.141593 : ℝ) / 4 := by norm_num
+  have hx1 : (3.141593 : ℝ) / 4 ≤ 1 := by norm_num
+  have hbound := Real.exp_bound' hx0 hx1 (n := 4) (by norm_num)
+  have h4 : (Nat.factorial 4 : ℝ) = 24 := by norm_num
+  have hclosed :
+      (∑ m ∈ Finset.range 4, ((3.141593 : ℝ) / 4) ^ m / m.factorial) +
+          ((3.141593 : ℝ) / 4) ^ 4 * (4 + 1) /
+            ((Nat.factorial 4 : ℝ) * 4) <
+        (11 : ℝ) / 5 := by
+    rw [h4]
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+      Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  exact (Real.exp_lt_exp.mpr harg).trans (hbound.trans_lt hclosed)
+
+private theorem nine_div_eight_lt_log_nine_div_log_six :
+    (9 : ℝ) / 8 < Real.log 9 / Real.log 6 := by
+  have h6 : 0 < Real.log 6 := Real.log_pos (by norm_num)
+  rw [div_lt_div_iff₀ (by norm_num) h6]
+  have hpow : (6 : ℝ) ^ 9 < (9 : ℝ) ^ 8 := by norm_num
+  have hlog : Real.log ((6 : ℝ) ^ 9) < Real.log ((9 : ℝ) ^ 8) :=
+    Real.log_lt_log (by positivity) hpow
+  rw [Real.log_pow, Real.log_pow] at hlog
+  have hlog' : (9 : ℝ) * Real.log 6 < (8 : ℝ) * Real.log 9 := by
+    simpa using hlog
+  calc
+    (9 : ℝ) * Real.log 6 < (8 : ℝ) * Real.log 9 := hlog'
+    _ = Real.log 9 * 8 := by ring
+
+theorem abcQuality_one_eight_nine :
+    abcQuality 1 8 9 = Real.log 9 / Real.log 6 := by
+  unfold abcQuality
+  rw [abcRadical_one_eight_nine]
+  rfl
+
+theorem abcQuality_eight_one_nine :
+    abcQuality 8 1 9 = abcQuality 1 8 9 := by
+  unfold abcQuality
+  have hprod : (8 * 1 * 9 : ℕ) = 1 * 8 * 9 := by decide
+  rw [hprod]
+
+private theorem abcQuality_lt_champion_of_pow8 {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hpow : c ^ 8 ≤ abcRadical (a * b * c) ^ 9) :
+    abcQuality a b c < abcQuality 1 8 9 := by
+  have hle : abcQuality a b c ≤ (9 : ℝ) / 8 := by
+    set R : ℕ := abcRadical (a * b * c)
+    have hL : 0 < Real.log R := log_radical_pos h
+    have hlog : 8 * Real.log (c : ℝ) ≤ 9 * Real.log (R : ℝ) := by
+      have hpowR : (c : ℝ) ^ 8 ≤ (R : ℝ) ^ 9 := by exact_mod_cast hpow
+      have hc : 0 < (c : ℝ) := Nat.cast_pos.mpr (isAbcTriple_c_pos h)
+      have hlogp : Real.log ((c : ℝ) ^ 8) ≤ Real.log ((R : ℝ) ^ 9) :=
+        Real.log_le_log (pow_pos hc 8) hpowR
+      rw [Real.log_pow, Real.log_pow] at hlogp
+      simpa using hlogp
+    rw [show abcQuality a b c = Real.log (c : ℝ) / Real.log (R : ℝ) by rfl]
+    rw [div_le_iff₀ hL]
+    have h8 : (0 : ℝ) < 8 := by norm_num
+    have hmul8 : Real.log (c : ℝ) * 8 ≤ ((9 : ℝ) / 8) * Real.log (R : ℝ) * 8 := by
+      have hrew : ((9 : ℝ) / 8) * Real.log (R : ℝ) * 8 = 9 * Real.log (R : ℝ) := by ring
+      linarith
+    exact le_of_mul_le_mul_right hmul8 h8
+  exact lt_of_le_of_lt hle (by
+    rw [abcQuality_one_eight_nine]
+    exact nine_div_eight_lt_log_nine_div_log_six)
+
+/-- `1 + 8 = 9` up to order, or a power that forces quality strictly below it. -/
+def abcQualityChampionOk (a b c : ℕ) : Bool :=
+  let r := abcRadical (a * b * c)
+  decide ((a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) ∨ c ^ 8 ≤ r ^ 9)
+
+theorem abc_quality_champion_of_le_seventy :
+    allPrimitiveAbcUpTo 70 abcQualityChampionOk = true := by
+  native_decide
+
+private theorem log_one_add_inv_thirty_two_gt :
+    (1 : ℝ) / 33 < Real.log (1 + 1 / 32) := by
+  have hpos : (0 : ℝ) < 1 + 1 / 32 := by norm_num
+  rw [Real.lt_log_iff_exp_lt hpos]
+  have htarget : (1 : ℝ) + 1 / 32 = 33 / 32 := by norm_num
+  rw [htarget]
+  have hx0 : (0 : ℝ) ≤ 1 / 33 := by norm_num
+  have hx1 : (1 : ℝ) / 33 ≤ 1 := by norm_num
+  have hbound := Real.exp_bound' hx0 hx1 (n := 2) (by norm_num)
+  have h2 : (Nat.factorial 2 : ℝ) = 2 := by norm_num
+  have hclosed :
+      (∑ m ∈ Finset.range 2, ((1 : ℝ) / 33) ^ m / m.factorial) +
+          ((1 : ℝ) / 33) ^ 2 * (2 + 1) / ((Nat.factorial 2 : ℝ) * 2) <
+        (33 : ℝ) / 32 := by
+    rw [h2]
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  exact hbound.trans_lt hclosed
+
+private theorem branch_at_thirty_three_lt_champion :
+    1 + (Real.pi / 4) / Real.log 33 < Real.log 9 / Real.log 6 := by
+  have h6pos : 0 < Real.log 6 := Real.log_pos (by norm_num)
+  have h33pos : 0 < Real.log 33 := Real.log_pos (by norm_num)
+  -- Prove the cross-multiplied form `π log 6 < 4 log 33 log(3/2)`.
+  have hlog2_lo : (0.6931471803 : ℝ) < Real.log 2 := Real.log_two_gt_d9
+  have hlog2_hi : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have hlog3_lo : (1.0986122885 : ℝ) < Real.log 3 := Real.log_three_gt_d9
+  have hlog3_hi : Real.log 3 < (1.0986122888 : ℝ) := Real.log_three_lt_d9
+  have hπ : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
+  have hlog6 : Real.log 6 = Real.log 2 + Real.log 3 := by
+    rw [show (6 : ℝ) = 2 * 3 by norm_num, Real.log_mul (by norm_num) (by norm_num)]
+  have hlog6_hi : Real.log 6 < (0.6931471808 : ℝ) + (1.0986122888 : ℝ) := by
+    linarith [hlog6, hlog2_hi, hlog3_hi]
+  have hlog6_pos : (0 : ℝ) < Real.log 6 := h6pos
+  have hupper : Real.pi * Real.log 6 <
+      (3.141593 : ℝ) * ((0.6931471808 : ℝ) + (1.0986122888 : ℝ)) := by
+    exact mul_lt_mul hπ hlog6_hi.le hlog6_pos (by positivity)
+  have h32 : Real.log (32 : ℝ) = 5 * Real.log 2 := by
+    rw [show (32 : ℝ) = (2 : ℝ) ^ (5 : ℕ) by norm_num, Real.log_pow]
+    simp
+  have hsplit : Real.log (33 : ℝ) = Real.log 32 + Real.log ((33 : ℝ) / 32) := by
+    have hmul : (33 : ℝ) = 32 * ((33 : ℝ) / 32) := by norm_num
+    conv_lhs => rw [hmul]
+    exact Real.log_mul (by norm_num : (32 : ℝ) ≠ 0) (by norm_num : (33 : ℝ) / 32 ≠ 0)
+  have hfrac : (33 : ℝ) / 32 = 1 + 1 / 32 := by norm_num
+  have hlog33_lo : 5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33 < Real.log 33 := by
+    rw [hsplit, h32, hfrac]
+    linarith [hlog2_lo, log_one_add_inv_thirty_two_gt]
+  have hhalf : Real.log ((3 : ℝ) / 2) = Real.log 3 - Real.log 2 := by
+    rw [Real.log_div (by norm_num) (by norm_num)]
+  have hhalf_lo : (1.0986122885 : ℝ) - (0.6931471808 : ℝ) < Real.log ((3 : ℝ) / 2) := by
+    rw [hhalf]
+    linarith [hlog3_lo, hlog2_hi]
+  have hlo_pos : (0 : ℝ) < 5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33 := by norm_num
+  have hprod_lo : 4 * (5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33) *
+      ((1.0986122885 : ℝ) - (0.6931471808 : ℝ)) <
+      4 * Real.log 33 * Real.log ((3 : ℝ) / 2) := by
+    have h1 : 5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33 < Real.log 33 := hlog33_lo
+    have h2 : (1.0986122885 : ℝ) - (0.6931471808 : ℝ) < Real.log ((3 : ℝ) / 2) := hhalf_lo
+    have hdiff_pos : (0 : ℝ) < (1.0986122885 : ℝ) - (0.6931471808 : ℝ) := by norm_num
+    have hstep : (5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33) *
+        ((1.0986122885 : ℝ) - (0.6931471808 : ℝ)) <
+        Real.log 33 * Real.log ((3 : ℝ) / 2) :=
+      mul_lt_mul h1 h2.le hdiff_pos (le_of_lt (hlo_pos.trans h1))
+    have hfour : (0 : ℝ) < 4 := by norm_num
+    calc
+      4 * (5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33) *
+          ((1.0986122885 : ℝ) - (0.6931471808 : ℝ))
+          = 4 * ((5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33) *
+            ((1.0986122885 : ℝ) - (0.6931471808 : ℝ))) := by ring
+      _ < 4 * (Real.log 33 * Real.log ((3 : ℝ) / 2)) :=
+          mul_lt_mul_of_pos_left hstep hfour
+      _ = 4 * Real.log 33 * Real.log ((3 : ℝ) / 2) := by ring
+  have hnum : (3.141593 : ℝ) * ((0.6931471808 : ℝ) + (1.0986122888 : ℝ)) <
+      4 * (5 * (0.6931471803 : ℝ) + (1 : ℝ) / 33) *
+        ((1.0986122885 : ℝ) - (0.6931471808 : ℝ)) := by
+    norm_num
+  have hcross : Real.pi * Real.log 6 < 4 * Real.log 33 * Real.log ((3 : ℝ) / 2) := by
+    linarith
+  have hdiv : (Real.pi / 4) / Real.log 33 < Real.log ((3 : ℝ) / 2) / Real.log 6 := by
+    rw [div_lt_div_iff₀ h33pos h6pos]
+    nlinarith
+  have hchamp : Real.log ((3 : ℝ) / 2) / Real.log 6 = Real.log 9 / Real.log 6 - 1 := by
+    have h96 : Real.log 9 - Real.log 6 = Real.log ((3 : ℝ) / 2) := by
+      rw [← Real.log_div (by norm_num) (by norm_num)]
+      norm_num
+    calc
+      Real.log ((3 : ℝ) / 2) / Real.log 6
+          = (Real.log 9 - Real.log 6) / Real.log 6 := by rw [← h96]
+      _ = Real.log 9 / Real.log 6 - Real.log 6 / Real.log 6 := by ring
+      _ = Real.log 9 / Real.log 6 - 1 := by rw [div_self h6pos.ne']
+  linarith
+
+private theorem abc_admissible_champion_dichotomy {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    (a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) ∨
+      abcQuality a b c < abcQuality 1 8 9 := by
+  by_cases hrad : abcRadical (a * b * c) ≤ 32
+  · have hc_exp := abc_c_le_exp_mul_radical_of_admissible h hadm
+    have hRle : (abcRadical (a * b * c) : ℝ) ≤ 32 := by exact_mod_cast hrad
+    have hexp : Real.exp (Real.pi / 4) * (abcRadical (a * b * c) : ℝ) ≤
+        Real.exp (Real.pi / 4) * 32 :=
+      mul_le_mul_of_nonneg_left hRle (le_of_lt (Real.exp_pos _))
+    have h32lt : Real.exp (Real.pi / 4) * 32 < (11 : ℝ) / 5 * 32 :=
+      mul_lt_mul_of_pos_right exp_pi_div_four_lt_eleven_div_five (by norm_num)
+    have hcap : (11 : ℝ) / 5 * 32 < 71 := by norm_num
+    have hc_lt : (c : ℝ) < 71 := by
+      have hle : (c : ℝ) ≤ Real.exp (Real.pi / 4) * 32 := hc_exp.trans hexp
+      exact hle.trans_lt (h32lt.trans hcap)
+    have hc70 : c ≤ 70 := by
+      have hlt : c < 71 := Nat.cast_lt.mp hc_lt
+      omega
+    have hok := allPrimitiveAbcUpTo_sound abc_quality_champion_of_le_seventy a b c h hc70
+    have hprop :
+        (a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) ∨
+          c ^ 8 ≤ abcRadical (a * b * c) ^ 9 := by
+      simpa [abcQualityChampionOk, decide_eq_true_eq] using hok
+    rcases hprop with h1 | h8 | hpow
+    · exact Or.inl h1
+    · exact Or.inr (Or.inl h8)
+    · exact Or.inr (Or.inr (abcQuality_lt_champion_of_pow8 h hpow))
+  · have h33 : 33 ≤ abcRadical (a * b * c) := by omega
+    have hceil := abc_quality_le_branch_of_admissible h hadm
+    have hlog_mono : Real.log 33 ≤ Real.log (abcRadical (a * b * c)) := by
+      refine (Real.log_le_log_iff (by norm_num) ?_).mpr ?_
+      · exact Nat.cast_pos.mpr (abcRadical_pos _)
+      · exact_mod_cast h33
+    have hlog_pos : 0 < Real.log 33 := Real.log_pos (by norm_num)
+    have hquot : (Real.pi / 4) / Real.log (abcRadical (a * b * c)) ≤
+        (Real.pi / 4) / Real.log 33 := by
+      refine div_le_div_of_nonneg_left (by positivity) hlog_pos hlog_mono
+    have hbranch : abcQuality a b c ≤ 1 + (Real.pi / 4) / Real.log 33 := by
+      have hstep : 1 + (Real.pi / 4) / Real.log (abcRadical (a * b * c)) ≤
+          1 + (Real.pi / 4) / Real.log 33 := by
+        linarith
+      exact hceil.trans hstep
+    have hstrict : abcQuality a b c < abcQuality 1 8 9 := by
+      rw [abcQuality_one_eight_nine]
+      exact hbranch.trans_lt branch_at_thirty_three_lt_champion
+    exact Or.inr (Or.inr hstrict)
+
+/-- Inside the cone, quality is at most that of `1 + 8 = 9`. -/
+theorem abcQuality_le_one_eight_nine_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    abcQuality a b c ≤ abcQuality 1 8 9 := by
+  rcases abc_admissible_champion_dichotomy h hadm with h1 | h8 | hlt
+  · rcases h1 with ⟨rfl, rfl, rfl⟩
+    exact le_rfl
+  · rcases h8 with ⟨rfl, rfl, rfl⟩
+    exact le_of_eq abcQuality_eight_one_nine
+  · exact le_of_lt hlt
+
+/-- Equality holds exactly for the two orderings of `1 + 8 = 9`. -/
+theorem abcQuality_eq_one_eight_nine_iff {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    abcQuality a b c = abcQuality 1 8 9 ↔
+      (a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) := by
+  constructor
+  · intro heq
+    rcases abc_admissible_champion_dichotomy h hadm with h1 | h8 | hlt
+    · exact Or.inl h1
+    · exact Or.inr h8
+    · exact absurd heq (ne_of_lt hlt)
+  · intro hmem
+    rcases hmem with h1 | h8
+    · rcases h1 with ⟨rfl, rfl, rfl⟩
+      rfl
+    · rcases h8 with ⟨rfl, rfl, rfl⟩
+      exact abcQuality_eight_one_nine.symm
 
 /-! ### Continuous bridge (diagnostic only) -/
 

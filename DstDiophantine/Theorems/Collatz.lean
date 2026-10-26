@@ -2,6 +2,7 @@ import DstDiophantine.Embedding.Height
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Fintype.Pigeonhole
@@ -28,8 +29,14 @@ contraction, and a certificate that every start up to `2^20` reaches `1`.
   height is still strictly less than one; every `n ≥ 4` has height greater
   than one.
 * The odd step is the pure boost `log(3n+1) = log n + log(3 + 1/n)` on that
-  same axis. The outgoing leg `1 → 4` has rapidity `2 log 2 > π/4`, so the
-  cycle `4 → 2 → 1` meets the cone and immediately leaves it.
+  same axis. The kick `log(3 + 1/n)` exceeds the cone radius `π/4`, and the
+  image `3n+1` is at least `4`, so every odd step lands beyond unit height.
+* The shell between the cone wall `π/4` and the unit-height surface
+  `π √3 / 4` is narrower than one halving `log 2`. On the positive integers
+  that shell is exactly `{3}`. The only step into the cone from outside it
+  is `4 → 2`, which skips the shell. The only step onto `3` is `6 → 3`.
+* The outgoing leg `1 → 4` has rapidity `2 log 2 > π/4`, so the cycle
+  `4 → 2 → 1` meets the cone and immediately leaves it.
 * The only periodic points whose orbit reaches `1` are `1`, `2`, and `4`.
 * On the accelerated map (one halving per step), every integer `n ≥ 3` whose
   first sixteen inputs include at most ten odd values returns strictly below
@@ -915,6 +922,119 @@ theorem collatz_periodic_above_bound_height {n : ℕ} (hper : IsCollatzPeriodic 
     Nat.pos_iff_ne_zero.mp (collatzIter_pos (by omega))
   exact lt_trans collatzHeight_two_pow_twenty_gt_hundred
     (collatzHeight_strictMono (by decide : (2 ^ 20) ≠ 0) hne hgt)
+
+/-! ### The cone as the stable phase -/
+
+theorem pi_div_four_lt_log_three : Real.pi / 4 < Real.log 3 := by
+  have h := pi_div_two_lt_two_log_three
+  linarith
+
+/-- Every odd step adds more rapidity than the radius of the cone. -/
+theorem collatz_odd_kick_gt_cone_radius {n : ℕ} (hn : 0 < n) :
+    Real.pi / 4 < Real.log (3 + 1 / (n : ℝ)) := by
+  refine lt_trans pi_div_four_lt_log_three ?_
+  have hlt : (3 : ℝ) < 3 + 1 / (n : ℝ) := by
+    have : (0 : ℝ) < 1 / (n : ℝ) := by positivity
+    linarith
+  exact Real.log_lt_log (by norm_num) hlt
+
+theorem collatz_odd_image_height_gt_one {n : ℕ} (_hn : 0 < n) (hodd : n % 2 = 1) :
+    1 < collatzHeight (3 * n + 1)
+      (Nat.pos_iff_ne_zero.mp
+        (Nat.lt_of_lt_of_le (by decide : 0 < 4) (by omega : 4 ≤ 3 * n + 1))) := by
+  have h4 : 4 ≤ 3 * n + 1 := by omega
+  have hgt := collatzHeight_ge_four_gt_one h4
+  rw [collatzHeight_eq_mul] at hgt ⊢
+  exact hgt
+
+/-- An odd step lands beyond unit height, hence outside the cone and the shell. -/
+theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 0 < n) (hodd : n % 2 = 1) :
+    4 ≤ 3 * n + 1 ∧
+      ¬ Discrete.IsAdmissibleContinuous
+        (pureBoost (2 * Real.log ((3 * n + 1 : ℕ) : ℝ))) := by
+  have h4 : 4 ≤ 3 * n + 1 := by omega
+  refine ⟨h4, ?_⟩
+  intro hadm
+  have hpos : 0 < 3 * n + 1 := by omega
+  have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
+  omega
+
+/-- The cone is entered from outside only by the halving `4 → 2`, and `2 → 1` stays inside. -/
+theorem collatzStep_eq_one_or_two_iff {n : ℕ} (hn : 0 < n) :
+    collatzStep n = 1 ∨ collatzStep n = 2 ↔ n = 2 ∨ n = 4 := by
+  constructor
+  · intro h
+    by_cases he : n % 2 = 0
+    · rw [collatzStep_even he] at h
+      have : 2 * (n / 2) = n := Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero he)
+      rcases h with h1 | h2
+      · omega
+      · omega
+    · have hodd : n % 2 = 1 := by
+        have := Nat.mod_lt n (by decide : 0 < 2)
+        omega
+      rw [collatzStep_odd hodd] at h
+      omega
+  · intro h
+    rcases h with rfl | rfl
+    · exact Or.inl collatzStep_two
+    · exact Or.inr collatzStep_four
+
+/-- The shell integer `3` is reached only by halving `6`. -/
+theorem collatzStep_eq_three_iff {n : ℕ} (hn : 0 < n) :
+    collatzStep n = 3 ↔ n = 6 := by
+  constructor
+  · intro h
+    by_cases he : n % 2 = 0
+    · rw [collatzStep_even he] at h
+      have : 2 * (n / 2) = n := Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero he)
+      omega
+    · have hodd : n % 2 = 1 := by
+        have := Nat.mod_lt n (by decide : 0 < 2)
+        omega
+      rw [collatzStep_odd hodd] at h
+      omega
+  · rintro rfl
+    decide
+
+/-- The shell between the cone wall and unit height is narrower than one halving. -/
+theorem pureBoostShell_narrower_than_log_two :
+    (Real.sqrt 3 - 1) * Real.pi / 4 < Real.log 2 := by
+  have hsqrt : Real.sqrt 3 < (1733 : ℝ) / 1000 :=
+    (Real.sqrt_lt' (by norm_num)).mpr (by norm_num)
+  have hπ : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
+  have hlog : (0.6931471803 : ℝ) < Real.log 2 := Real.log_two_gt_d9
+  have hspan : Real.sqrt 3 - 1 < (1733 : ℝ) / 1000 - 1 := by linarith
+  have hpos : (0 : ℝ) < Real.sqrt 3 - 1 := by
+    have h1 : (1 : ℝ) < Real.sqrt 3 :=
+      Real.lt_sqrt_of_sq_lt (by norm_num : (1 : ℝ) ^ 2 < 3)
+    linarith
+  have hwidth : (Real.sqrt 3 - 1) * Real.pi <
+      ((1733 : ℝ) / 1000 - 1) * (3.141593 : ℝ) :=
+    mul_lt_mul hspan hπ.le Real.pi_pos (by linarith : (0 : ℝ) ≤ (1733 : ℝ) / 1000 - 1)
+  have hnum : ((1733 : ℝ) / 1000 - 1) * (3.141593 : ℝ) <
+      4 * (0.6931471803 : ℝ) := by norm_num
+  have hfour : (Real.sqrt 3 - 1) * Real.pi < 4 * Real.log 2 := by linarith
+  linarith
+
+/-- Positive integers in the shell: outside the cone, with normalised height still below one. -/
+theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
+    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ∧
+        collatzHeight n (Nat.pos_iff_ne_zero.mp hn) < 1) ↔
+      n = 3 := by
+  constructor
+  · intro ⟨hnot, hht⟩
+    have hle : n ≤ 3 :=
+      (collatzHeight_le_one_iff (Nat.pos_iff_ne_zero.mp hn)).mp (le_of_lt hht)
+    have hnot12 : ¬ (n = 1 ∨ n = 2) := by
+      intro hmem
+      exact hnot ((positive_integer_boost_admissible_iff hn).mpr hmem)
+    omega
+  · rintro rfl
+    refine ⟨?_, collatzHeight_three_lt_one⟩
+    intro hadm
+    have hmem := (positive_integer_boost_admissible_iff (by decide : 0 < 3)).mp hadm
+    omega
 
 /-! ### Classical Collatz under an explicit bridge hypothesis -/
 
