@@ -44,6 +44,7 @@ import DstDiophantine.Logic.Quantum.DiracCovariance
 import DstDiophantine.Logic.Quantum.DiracField
 import DstDiophantine.Logic.Quantum.DiracGauge
 import DstDiophantine.Logic.Quantum.DiracConjugation
+import DstDiophantine.Logic.Quantum.DualEntanglement
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.LevelMatch
 import DstDiophantine.Logic.Quantum.StringCompare
@@ -94,6 +95,9 @@ and `DstDiophantine.CGA`).
   gauge covariance, kinetic momentum and a gauge-invariant conserved current,
   the second-order equation whose magnetic term is the dual generator on both
   Weyl blocks, the Klein–Gordon equation, spin precession as a dual rotor,
+  the dual map, charge conjugation and the antiparticle, two dual spinors
+  with the singlet as the unique state fixed by common dual rotors, its
+  correlation `-a·b`, no signalling, and the CHSH bounds `2` and `2√2`,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1075,6 +1079,40 @@ example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) :
     DiracGaugeField m (-e) (reflectPot A) (antiparticleField Ψ) :=
   diracGaugeField_antiparticleField hΨ
+
+/-- Regression: the joint states fixed by every common dual rotor form the
+line of the singlet. -/
+example {Ψ : PairState}
+    (h : ∀ β : DualRapidity, pairAct (dualRotorMat β) (dualRotorMat β) Ψ = Ψ) :
+    Ψ = Ψ 0 1 • singlet :=
+  eq_smul_singlet_of_dualRotor_fixed h
+
+/-- Regression: the singlet pairs a unit dual spinor with its quaternionic
+partner. -/
+example {u : DualSpinor} (hu : ‖u‖ = 1) :
+    pairTensor (quatJ u) u - pairTensor u (quatJ u) = singlet :=
+  quatJ_pair_eq_singlet_of_norm hu
+
+/-- Regression: a joint state is a product exactly when `det Ψ = 0`. -/
+example (Ψ : PairState) : (∃ u v : DualSpinor, Ψ = pairTensor u v) ↔ Ψ.det = 0 :=
+  exists_pairTensor_iff_det Ψ
+
+/-- Regression: the singlet correlation along `a` and `b` is `-a·b`. -/
+example (a b : Fin 3 → ℝ) : singletCorr a b = -axisDot a b :=
+  singletCorr_eq a b
+
+/-- Regression: a local dual rotor on one particle changes no expectation of
+the other. -/
+example (β : DualRapidity) (B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
+    pairInner (pairAct (dualRotorMat β) 1 Ψ) (pairAct 1 B (pairAct (dualRotorMat β) 1 Ψ)) =
+      pairInner Ψ (pairAct 1 B Ψ) :=
+  pairInner_local_dualRotor β B Ψ
+
+/-- Regression: the singlet reaches `|S| = 2√2` in the CHSH combination. -/
+example : chsh singletCorr ![0, 0, 1] ![1, 0, 0]
+    ![1 / Real.sqrt 2, 0, 1 / Real.sqrt 2] ![-(1 / Real.sqrt 2), 0, 1 / Real.sqrt 2] =
+      -(2 * Real.sqrt 2) :=
+  singletCorr_chsh
 
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=

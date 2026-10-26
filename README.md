@@ -620,6 +620,22 @@ current and density. The field $\omega\Psi^c(-x)$ solves the equation of
 charge $-e$ in the reflected potential $-A(-x)$, and at rest the antiparticle
 of $(u, iu)$ is $-(Ju, iJu)$.
 
+[`DualEntanglement.lean`](DstDiophantine/Logic/Quantum/DualEntanglement.lean):
+a joint state of two dual spinors is a $2 \times 2$ array $\Psi$, and local
+operators act by $\Psi \mapsto A\Psi B^{\mathsf T}$. The invariant
+$\det\Psi$ is unchanged by every pair of unit-determinant total rotors and
+vanishes exactly on product states, with $2|\det\Psi| \le \|\Psi\|^2$.
+The states fixed by every common dual rotor form the line of the singlet
+$\varepsilon = e_0 \otimes e_1 - e_1 \otimes e_0$, which every common total
+rotor also fixes, and $Ju \otimes u - u \otimes Ju = \varepsilon$ for every
+unit $u$. In the singlet $\langle \sigma\cdot a \otimes \sigma\cdot b \rangle
+= -a\cdot b$, each one-particle mean vanishes, and opposite outcomes along
+axes at angle $\theta$ have probability $\cos^2(\theta/2)$. A unitary on one
+particle, or the choice of a two-outcome measurement there, leaves every
+expectation of the other unchanged. Outcomes fixed by local variables keep
+the CHSH combination within $2$. The singlet reaches $2\sqrt2$, its maximum
+over unit axes.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
 produce a mass from torsion or position operators. The dual-rotor character,
 the spinor matrix element,
@@ -711,6 +727,7 @@ lake build DstDiophantine.Logic.Quantum.DiracCovariance
 lake build DstDiophantine.Logic.Quantum.DiracField
 lake build DstDiophantine.Logic.Quantum.DiracGauge
 lake build DstDiophantine.Logic.Quantum.DiracConjugation
+lake build DstDiophantine.Logic.Quantum.DualEntanglement
 lake build DstDiophantine.CGA
 ```
 
