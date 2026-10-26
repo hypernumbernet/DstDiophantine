@@ -29,6 +29,7 @@ b{color:#fff}
 .usualc{border-top:3px solid var(--usual)}.dualc{border-top:3px solid var(--dual)}
 .fig{width:100%;height:auto;display:block;margin:1.5rem 0;color:var(--mute);background:linear-gradient(180deg,#11152200,#11152299);border-radius:14px}
 .fig text{fill:var(--text);font-size:14px}
+.fig .ink{fill:#111}
 .fig .cap{font-size:15px;font-weight:600}
 .fig .small,.fig tspan.small{font-size:12px;fill:var(--mute)}
 .fig .note{font-size:13px;fill:var(--mute)}
