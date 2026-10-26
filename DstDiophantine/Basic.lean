@@ -15,6 +15,7 @@ import DstDiophantine.Framework.Representation
 import DstDiophantine.Framework.Search
 import DstDiophantine.Theorems.Fermat
 import DstDiophantine.Theorems.FermatMixed
+import DstDiophantine.Theorems.FermatGaussianSeat
 import DstDiophantine.Embedding.FermatMotor
 import DstDiophantine.Theorems.Beal
 import DstDiophantine.Theorems.BealSlice
@@ -159,6 +160,15 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   commutator_fermatTorsion_null3_two
   iteratedDeriv_two_sandwich_fermatTorsion_null3
   fermatMixedFreq J_fermatTorsion fermatBoost_lt_fermatAngle
+  fermatBoost_of_sum_sq_eq_pow fermatBoost_gt_half_pi_of_gaussian_norm
+  isMixedFermatMotor_of_gaussian_norm
+  not_isAdmissible_fermatTorsion_of_gaussian_norm
+  fermatAngle_pythagorean_eq_two_mul
+  fermatAngle_pythagorean_eq_two_mul_of_gt
+  isPureCyclic_pythagorean_generators
+  fermatTorsion_eq_pureRotation1_of_pythagorean
+  isAdmissible_pythagorean_generators
+  gaussian_hyp_split_of_exp_ge_five
   fermatMixedFreq_pos sandwich_fermatTorsion_null1_elliptic
   sandwich_fermatTorsion_null1_timeRemainder
   sandwich_fermatTorsion_null1_time_ne_zero_of_sol
