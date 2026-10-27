@@ -17,6 +17,7 @@ import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.NuclearLength
+import DstDiophantine.Gravity.SignReversal
 import DstDiophantine.Gravity.StrongChannel
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
@@ -186,15 +187,18 @@ The straight line of one fixed jet is not itself that geodesic.
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
   heuristic.
-* `NuclearLength` — the nuclear length is the charged-pion Compton wavelength
-  \(\lambda_\pi\). Repulsion at \(2/5\,\mathrm{fm}\) forces
-  \(\ell>56/75\,\mathrm{fm}\), and attraction at \(1\,\mathrm{fm}\) forces
-  \(\ell<19/10\,\mathrm{fm}\). The wavelength \(\lambda_\pi\) lies strictly between
-  those caps. Its first node lies in
-  \((14/19,\,213/280)\,\mathrm{fm}\), so the core scale \(1/2\,\mathrm{fm}\)
-  lies in the inversion layer, and the rapidity wall lies in
-  \((8/9,\,142/157)\,\mathrm{fm}\). Charge-radius lower edges and the
-  saturation spacing lie outside that wall.
+* `NuclearLength` — comparison of the charged-pion Compton wavelength with
+  laboratory caps. Not the definition of the sign-reversal scale.
+* `SignReversal` — the sign-reversal scale \(r_1\) is the observational
+  constant. Scattering places it in \((1/2,\,1)\,\mathrm{fm}\). The channel
+  length is the definition \(\ell=2 x_1 r_1\), hence
+  \(14/15<\ell<19/10\). The second node lies below \(1/2\,\mathrm{fm}\).
+  The rapidity wall is \(r_1\) times a factor in \((224/189,\,190/157)\).
+  At \(3/5\,\mathrm{fm}\) that wall is inside \(1\,\mathrm{fm}\), and at
+  \(9/10\,\mathrm{fm}\) it is outside. Charge-radius lower edges and the
+  saturation spacing lie outside the wall. \(ke^2/r_1>1439/1000\,\mathrm{MeV}\).
+  At a Bohr separation the mass term remains between \(4.40\times 10^{-40}\)
+  and \(4.42\times 10^{-40}\) of the charge term.
 * `StrongChannel` — the rapidity threshold on \((\pi/4,\pi/2)\) falls
   strictly and vanishes at the first node, with slope \(-4\cosh^2 x_1\).
   No finite rapidity inverts the channel at phase \(x\le\pi/4\). A
