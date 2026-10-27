@@ -6,6 +6,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -33,8 +34,10 @@ contraction, and a certificate that every start up to `2^20` reaches `1`.
   image `3n+1` is at least `4`, so every odd step lands beyond unit height.
 * The shell between the cone wall `π/4` and the unit-height surface
   `π √3 / 4` is narrower than one halving `log 2`. On the positive integers
-  that shell is exactly `{3}`. The only step into the cone from outside it
-  is `4 → 2`, which skips the shell. The only step onto `3` is `6 → 3`.
+  that shell is exactly `{3}`. The only prime on the stable phase is `2`,
+  and the only prime in the shell is `3`. The only step into the cone from
+  outside it is `4 → 2`, which skips the shell. The only step onto `3` is
+  `6 → 3`.
 * The outgoing leg `1 → 4` has rapidity `2 log 2 > π/4`, so the cycle
   `4 → 2 → 1` meets the cone and immediately leaves it.
 * The only periodic points whose orbit reaches `1` are `1`, `2`, and `4`.
@@ -1035,6 +1038,24 @@ theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
     intro hadm
     have hmem := (positive_integer_boost_admissible_iff (by decide : 0 < 3)).mp hadm
     omega
+
+/-- The only prime on the stable phase is `2`. -/
+theorem prime_boost_admissible_iff {p : ℕ} (hp : Nat.Prime p) :
+    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by
+  rw [positive_integer_boost_admissible_iff (Nat.Prime.pos hp)]
+  constructor
+  · rintro (rfl | rfl)
+    · exact absurd rfl (Nat.Prime.ne_one hp)
+    · rfl
+  · intro h
+    exact Or.inr h
+
+/-- The only prime in the shell between the cone and unit height is `3`. -/
+theorem prime_shell_iff {p : ℕ} (hp : Nat.Prime p) :
+    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+        collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos hp)) < 1) ↔
+      p = 3 :=
+  collatz_shell_iff (Nat.Prime.pos hp)
 
 /-! ### Classical Collatz under an explicit bridge hypothesis -/
 

@@ -1,3 +1,4 @@
+import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Framework.Representation
 import DstDiophantine.Embedding.Height
 import DstDiophantine.Algebra.Amplification
@@ -19,14 +20,23 @@ set_option linter.style.native false
 We formalise Chapter 9 of `dst-diophantine.tex` as an **even-gap null-translator
 + cumulative excess height** argument. Twin primes are the special case `k = 1`.
 
+## The cone as the stable phase
+
+The partner of `2` by an even gap `2k > 0` is composite, so no Polignac pair
+meets the admissible cone. The smaller member is an odd prime. It lies in the
+shell if and only if it is `3`, and the partner then has height greater than
+one, as does the partner of every other pair. A pair with smaller member at
+least `5` has height greater than one at both vertices.
+
 ## Paper gap (not closed)
 
 Classical Polignac (`∀ k > 0, infinitely many primes p with p+2k also prime`) is
-**not** claimed unconditionally. The paper's avoidance lower bound assumes that
-`g_n ≠ 2k` forces `(g_n - 2k)/p_n > 0` (even `≥ 2/p_n`); this is false because
-smaller even gaps may still occur. Lean proves a height lower bound only under
-**strong avoidance** `g_n ≥ 2k + 2`. Identifying a classical finite Polignac set
-with a strongly avoiding admissible chain is left as `PolignacAdmissibleBridge`.
+**not** claimed unconditionally. Avoidance of a single even gap does not force
+`(g_n - 2k)/p_n > 0`, because a smaller even gap may still occur. A height
+lower bound holds only under **strong avoidance** `g_n ≥ 2k + 2`. An admissible
+pure boost has height at most one, so `PolignacAdmissibleBridge` has no
+witness. The bridge holds if and only if the conjecture does
+(`polignacAdmissibleBridge_iff`). It is not a reduction.
 -/
 
 namespace DstDiophantine
@@ -206,6 +216,79 @@ theorem exists_polignac_gap_six_of_le_thirty :
     ∃ p ≤ 30, IsPolignacPair p 3 :=
   hasPolignacPairUpTo_sound (by native_decide : hasPolignacPairUpTo 30 3 = true)
 
+/-! ### The cone as the stable phase -/
+
+/-- The even translate of `2` by a positive gap is composite. -/
+theorem polignac_two_partner_composite {k : ℕ} (hk : 0 < k) :
+    ¬ Nat.Prime (2 + 2 * k) := by
+  refine Nat.not_prime_of_dvd_of_lt ?_ (by decide : 1 < 2) ?_
+  · exact ⟨1 + k, by ring⟩
+  · omega
+
+/-- No Polignac pair has smaller member `2`. -/
+theorem polignac_not_two {p k : ℕ} (h : IsPolignacPair p k) : p ≠ 2 := by
+  intro hp2
+  have hprime : Nat.Prime (p + 2 * k) := h.2.1
+  rw [hp2] at hprime
+  exact polignac_two_partner_composite h.2.2 hprime
+
+/-- Neither member of a Polignac pair lies on the stable phase. -/
+theorem polignac_outside_cone {p k : ℕ} (h : IsPolignacPair p k) :
+    ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+      ¬ Discrete.IsAdmissibleContinuous
+        (pureBoost (2 * Real.log ((p + 2 * k : ℕ) : ℝ))) := by
+  refine ⟨?_, ?_⟩
+  · intro hadm
+    exact polignac_not_two h ((prime_boost_admissible_iff h.1).mp hadm)
+  · intro hadm
+    have hq2 : p + 2 * k = 2 := (prime_boost_admissible_iff h.2.1).mp hadm
+    have hpge : 2 ≤ p := Nat.Prime.two_le h.1
+    have hk : 0 < k := h.2.2
+    omega
+
+/-- The smaller member lies in the shell if and only if it is `3`. -/
+theorem polignac_smaller_shell_iff {p k : ℕ} (h : IsPolignacPair p k) :
+    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+        collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) < 1) ↔
+      p = 3 :=
+  prime_shell_iff h.1
+
+/-- The partner of every Polignac pair has height greater than one. -/
+theorem polignac_partner_height {p k : ℕ} (h : IsPolignacPair p k) :
+    1 < collatzHeight (p + 2 * k)
+      (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.2.1)) := by
+  have hp : 3 ≤ p := by
+    have hne := polignac_not_two h
+    have := Nat.Prime.two_le h.1
+    omega
+  have hk : 0 < k := h.2.2
+  have h5 : 5 ≤ p + 2 * k := by omega
+  exact collatzHeight_ge_four_gt_one (le_trans (by decide : 4 ≤ 5) h5)
+
+/-- A smaller member at least `5` has height greater than one. -/
+theorem polignac_smaller_height {p k : ℕ} (h : IsPolignacPair p k) (hp : 5 ≤ p) :
+    1 < collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) :=
+  collatzHeight_ge_four_gt_one (by omega)
+
+/-- The first twin meets the shell at `3`, and `5` lies beyond unit height. -/
+theorem twin_three_five_phase :
+    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) ∧
+        collatzHeight 3 (by decide : (3 : ℕ) ≠ 0) < 1) ∧
+      1 < collatzHeight 5 (by decide : (5 : ℕ) ≠ 0) := by
+  refine ⟨(prime_shell_iff (by decide : Nat.Prime 3)).mpr rfl, ?_⟩
+  exact collatzHeight_ge_four_gt_one (by decide : 4 ≤ 5)
+
+/-- An admissible pure boost never has gap-chain height greater than one. -/
+theorem gapChainHeight_admissible_le_one {S : ℝ}
+    (hadm : IsAdmissibleContinuous (pureBoost S)) :
+    gapChainHeight S ≤ 1 := by
+  simpa [gapChainHeight] using torsion_bound_continuous (pureBoost S) hadm
+
+theorem polignac_admissible_witness_empty :
+    ¬ ∃ S : ℝ, IsAdmissibleContinuous (pureBoost S) ∧ 1 < gapChainHeight S := by
+  intro ⟨S, hadm, hgt⟩
+  exact not_lt_of_ge (gapChainHeight_admissible_le_one hadm) hgt
+
 /-! ### Classical Polignac under an explicit bridge hypothesis -/
 
 /--
@@ -234,6 +317,18 @@ theorem polignac_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
 theorem twin_prime_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
     ∀ B : ℕ, ∃ p, B < p ∧ IsTwinPrimePair p :=
   fun B => polignac_conjecture_of_bridge hbridge 1 (Nat.succ_pos 0) B
+
+theorem polignacAdmissibleBridge_of_infinite
+    (h : ∀ k : ℕ, 0 < k → ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k) :
+    PolignacAdmissibleBridge := by
+  intro k hk hnot
+  exact absurd (h k hk) hnot
+
+/-- The bridge holds exactly when every even gap returns infinitely often. -/
+theorem polignacAdmissibleBridge_iff :
+    PolignacAdmissibleBridge ↔
+      (∀ k : ℕ, 0 < k → ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k) :=
+  ⟨polignac_conjecture_of_bridge, polignacAdmissibleBridge_of_infinite⟩
 
 end Theorems
 
