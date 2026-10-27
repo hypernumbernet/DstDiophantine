@@ -5,8 +5,13 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -28,15 +33,31 @@ shell if and only if it is `3`, and the partner then has height greater than
 one, as does the partner of every other pair. A pair with smaller member at
 least `5` has height greater than one at both vertices.
 
+The gap integer `2k` itself lies on the stable phase if and only if `k = 1`.
+Every wider gap has height greater than one.
+
+## Relative rotor
+
+For `q = p + 2k` the rapidity is `δ = log(q/p)`. The relative rotor is the pure
+boost of angle `2δ`, with mismatch `J = 2δ²`. The gap is positive, so the
+mismatch is positive. The half-gap and the geometric mean are tied by
+`k = √(pq) sinh(δ/2)`. Once `p ≥ 2k`, the ratio is at most `2`, so the relative
+rotor lies in the cone; every twin pair is in this range, while neither prime
+meets the phase. The pair `(3, 7)` has gap `4` and relative angle past `π/2`.
+The pair `(7, 11)` has the same gap and an admissible relative rotor. For fixed
+`k` the normalised height is strictly less than `(16/(3π²))(2k/p)²`, which
+falls below every positive tolerance.
+
 ## Paper gap (not closed)
 
 Classical Polignac (`∀ k > 0, infinitely many primes p with p+2k also prime`) is
-**not** claimed unconditionally. Avoidance of a single even gap does not force
-`(g_n - 2k)/p_n > 0`, because a smaller even gap may still occur. A height
-lower bound holds only under **strong avoidance** `g_n ≥ 2k + 2`. An admissible
-pure boost has height at most one, so `PolignacAdmissibleBridge` has no
-witness. The bridge holds if and only if the conjecture does
-(`polignacAdmissibleBridge_iff`). It is not a reduction.
+**not** claimed unconditionally. A gap smaller than `2k` contributes a negative
+excess, so omitting one even value does not force the model height above one.
+A positive lower bound holds only under **strong avoidance** `g_n ≥ 2k + 2`.
+An admissible pure boost has height at most one, whether or not the Polignac
+set is finite, so `PolignacAdmissibleBridge` has no witness. The bridge holds
+if and only if the conjecture does (`polignacAdmissibleBridge_iff`). It is not
+a reduction.
 -/
 
 namespace DstDiophantine
@@ -147,6 +168,15 @@ theorem strong_avoidance_pair {g₁ g₂ p₁ p₂ k : ℕ}
   have h2 := strong_avoidance_term_ge hp2 hg2
   simp [gapExcessSum, List.zipWith]
   linarith
+
+/-- A gap strictly below the chosen even gap contributes a negative excess. -/
+theorem gapExcessTerm_neg_of_smaller {g p k : ℕ} (hp : 0 < p) (hg : g < 2 * k) :
+    gapExcessTerm g p k < 0 := by
+  unfold gapExcessTerm
+  have hnum : (g : ℝ) - (2 * (k : ℝ)) < 0 := by
+    have : (g : ℝ) < 2 * (k : ℝ) := by exact_mod_cast hg
+    linarith
+  exact div_neg_of_neg_of_pos hnum (by exact_mod_cast hp)
 
 theorem gapChainHeight_gt_one_of_sq {S : ℝ}
     (h : (3 * Real.pi ^ 2) / 4 < S ^ 2) :
@@ -288,6 +318,326 @@ theorem polignac_admissible_witness_empty :
     ¬ ∃ S : ℝ, IsAdmissibleContinuous (pureBoost S) ∧ 1 < gapChainHeight S := by
   intro ⟨S, hadm, hgt⟩
   exact not_lt_of_ge (gapChainHeight_admissible_le_one hadm) hgt
+
+/-! ### The gap integer on the axis -/
+
+/-- The even gap `2k` lies on the stable phase if and only if it is the twin gap. -/
+theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
+    IsAdmissibleContinuous (pureBoost (2 * Real.log ((2 * k : ℕ) : ℝ))) ↔ k = 1 := by
+  have hpos : 0 < 2 * k := by omega
+  rw [positive_integer_boost_admissible_iff hpos]
+  constructor
+  · intro h
+    rcases h with h1 | h2
+    · omega
+    · omega
+  · intro hk1
+    subst hk1
+    exact Or.inr rfl
+
+/-- Every even gap wider than `2` has integer height greater than one. -/
+theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
+    1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=
+  collatzHeight_ge_four_gt_one (by omega : 4 ≤ 2 * k)
+
+/-! ### Relative rotor of a pair
+
+The rapidity is `δ = log((p+2k)/p)`. The relative rotor is the pure boost of
+angle `2δ`, so the mismatch is `J = 2δ²`, on the same scale as an integer boost.
+-/
+
+/-- Rapidity of the ratio `(p + 2k) / p`. -/
+noncomputable def polignacRapidity (p k : ℕ) (_hp : p ≠ 0) : ℝ :=
+  Real.log ((p + 2 * k : ℕ) : ℝ) - Real.log (p : ℝ)
+
+theorem polignacRapidity_eq_log_div {p k : ℕ} (hp : 0 < p) :
+    polignacRapidity p k (Nat.pos_iff_ne_zero.mp hp) =
+      Real.log (((p + 2 * k : ℕ) : ℝ) / p) := by
+  unfold polignacRapidity
+  rw [Real.log_div (by exact_mod_cast (show p + 2 * k ≠ 0 by omega)) (by exact_mod_cast hp.ne')]
+
+/-- Mismatch scalar of `R(p)† R(p+2k)`. The rotor angle is `2δ`, so `J = 2δ²`. -/
+noncomputable def polignacMismatch (p k : ℕ) (hp : p ≠ 0) : ℝ :=
+  J (pureBoost (2 * polignacRapidity p k hp))
+
+theorem polignacMismatch_eq (p k : ℕ) (hp : p ≠ 0) :
+    polignacMismatch p k hp = 2 * (polignacRapidity p k hp) ^ 2 := by
+  unfold polignacMismatch
+  rw [J_pureBoost]
+  ring
+
+/-- Normalised height of the relative rotor. -/
+noncomputable def polignacMismatchHeight (p k : ℕ) (hp : p ≠ 0) : ℝ :=
+  |JNormalized (pureBoost (2 * polignacRapidity p k hp))|
+
+theorem polignacMismatchHeight_eq (p k : ℕ) (hp : p ≠ 0) :
+    polignacMismatchHeight p k hp =
+      (16 / (3 * Real.pi ^ 2)) * (polignacRapidity p k hp) ^ 2 := by
+  unfold polignacMismatchHeight
+  rw [JNormalized_pureBoost]
+  have hnonneg :
+      0 ≤ (4 / (3 * Real.pi ^ 2)) * (2 * polignacRapidity p k hp) ^ 2 := by
+    positivity
+  rw [abs_of_nonneg hnonneg]
+  ring
+
+theorem polignac_rapidity_pos {p k : ℕ} (hp : 0 < p) (hk : 0 < k) :
+    0 < polignacRapidity p k (Nat.pos_iff_ne_zero.mp hp) := by
+  rw [polignacRapidity_eq_log_div hp]
+  rw [Real.log_pos_iff (by positivity)]
+  rw [one_lt_div (by exact_mod_cast hp)]
+  exact_mod_cast (show p < p + 2 * k by omega)
+
+theorem polignac_mismatch_pos {p k : ℕ} (h : IsPolignacPair p k) :
+    0 < polignacMismatch p k (Nat.Prime.ne_zero h.1) := by
+  rw [polignacMismatch_eq]
+  have hδ := polignac_rapidity_pos (Nat.Prime.pos h.1) h.2.2
+  have hsq : 0 < (polignacRapidity p k (Nat.Prime.ne_zero h.1)) ^ 2 := sq_pos_of_pos hδ
+  nlinarith
+
+/-- Half-gap equals the geometric mean times `sinh` of half the mismatch rapidity. -/
+theorem polignac_equation_of_state {p k : ℕ} (h : IsPolignacPair p k) :
+    (k : ℝ) =
+      Real.sqrt ((p : ℝ) * (p + 2 * k : ℕ)) *
+        Real.sinh (polignacRapidity p k (Nat.Prime.ne_zero h.1) / 2) := by
+  set hp0 : p ≠ 0 := Nat.Prime.ne_zero h.1
+  set q : ℕ := p + 2 * k
+  set δ : ℝ := polignacRapidity p k hp0
+  have hp : 0 < p := Nat.Prime.pos h.1
+  have hq : 0 < q := Nat.Prime.pos h.2.1
+  have hp' : (0 : ℝ) < p := by exact_mod_cast hp
+  have hq' : (0 : ℝ) < q := by exact_mod_cast hq
+  have hsp : 0 < Real.sqrt (p : ℝ) := Real.sqrt_pos.mpr hp'
+  have hsq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hq'
+  have hexp : Real.exp (δ / 2) = Real.sqrt (q : ℝ) / Real.sqrt (p : ℝ) := by
+    have hlogp : Real.log (Real.sqrt (p : ℝ)) = Real.log (p : ℝ) / 2 := Real.log_sqrt hp'.le
+    have hlogq : Real.log (Real.sqrt (q : ℝ)) = Real.log (q : ℝ) / 2 := Real.log_sqrt hq'.le
+    have hδ : δ / 2 = Real.log (Real.sqrt (q : ℝ)) - Real.log (Real.sqrt (p : ℝ)) := by
+      unfold δ polignacRapidity
+      rw [hlogp, hlogq]
+      ring
+    rw [hδ, Real.exp_sub, Real.exp_log hsq, Real.exp_log hsp]
+  have hexpNeg : Real.exp (-(δ / 2)) = Real.sqrt (p : ℝ) / Real.sqrt (q : ℝ) := by
+    have hlogp : Real.log (Real.sqrt (p : ℝ)) = Real.log (p : ℝ) / 2 := Real.log_sqrt hp'.le
+    have hlogq : Real.log (Real.sqrt (q : ℝ)) = Real.log (q : ℝ) / 2 := Real.log_sqrt hq'.le
+    have hδ : -(δ / 2) = Real.log (Real.sqrt (p : ℝ)) - Real.log (Real.sqrt (q : ℝ)) := by
+      unfold δ polignacRapidity
+      rw [hlogp, hlogq]
+      ring
+    rw [hδ, Real.exp_sub, Real.exp_log hsp, Real.exp_log hsq]
+  have hsqrt : Real.sqrt ((p : ℝ) * q) = Real.sqrt (p : ℝ) * Real.sqrt (q : ℝ) :=
+    Real.sqrt_mul hp'.le q
+  have hs :
+      Real.sqrt ((p : ℝ) * q) * Real.sinh (δ / 2) = ((q : ℝ) - p) / 2 := by
+    rw [Real.sinh_eq, hexp, hexpNeg, hsqrt]
+    field_simp
+    rw [pow_two, pow_two, Real.mul_self_sqrt hq'.le, Real.mul_self_sqrt hp'.le]
+  have hgap : ((q : ℝ) - p) / 2 = (k : ℝ) := by
+    have hqcast : (q : ℝ) = (p : ℝ) + 2 * (k : ℝ) := by
+      dsimp [q]
+      push_cast
+      ring
+    rw [hqcast]
+    ring
+  have hprod : (p : ℝ) * (p + 2 * k : ℕ) = (p : ℝ) * q := by
+    dsimp [q]
+  rw [hprod, hs, hgap]
+
+/-- Once the smaller member is at least the gap, the ratio is at most `2`. -/
+theorem polignac_ratio_le_two {p k : ℕ} (hp : 0 < p) (hge : 2 * k ≤ p) :
+    ((p + 2 * k : ℕ) : ℝ) / p ≤ 2 := by
+  rw [div_le_iff₀ (by exact_mod_cast hp)]
+  exact_mod_cast (show p + 2 * k ≤ 2 * p by omega)
+
+/-- The relative rotor lies in the cone when the smaller member is at least the gap. -/
+theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge : 2 * k ≤ p) :
+    IsAdmissibleContinuous
+      (pureBoost (2 * polignacRapidity p k (Nat.Prime.ne_zero h.1))) := by
+  rw [isAdmissibleContinuous_pureBoost_iff]
+  have hp : 0 < p := Nat.Prime.pos h.1
+  rw [polignacRapidity_eq_log_div hp]
+  have hratio := polignac_ratio_le_two hp hge
+  have hlog :
+      Real.log (((p + 2 * k : ℕ) : ℝ) / p) ≤ Real.log 2 :=
+    (Real.log_le_log_iff (by positivity) (by positivity)).mpr hratio
+  have hmul :
+      2 * Real.log (((p + 2 * k : ℕ) : ℝ) / p) ≤ 2 * Real.log 2 :=
+    mul_le_mul_of_nonneg_left hlog (by norm_num)
+  have hlt : 2 * Real.log 2 < Real.pi / 2 := two_log_two_lt_pi_div_two
+  refine ⟨?_, le_trans hmul hlt.le⟩
+  have hge1 : (1 : ℝ) ≤ ((p + 2 * k : ℕ) : ℝ) / p := by
+    rw [one_le_div (by exact_mod_cast hp)]
+    exact_mod_cast (show p ≤ p + 2 * k by omega)
+  have hlog0 : 0 ≤ Real.log (((p + 2 * k : ℕ) : ℝ) / p) := Real.log_nonneg hge1
+  positivity
+
+/-- Every twin pair has an admissible relative rotor, positive mismatch, and both
+primes off the stable phase. -/
+theorem twin_relative_admissible {p : ℕ} (h : IsTwinPrimePair p) :
+    IsAdmissibleContinuous
+        (pureBoost (2 * polignacRapidity p 1 (Nat.Prime.ne_zero h.1))) ∧
+      0 < polignacMismatch p 1 (Nat.Prime.ne_zero h.1) ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log ((p + 2 : ℕ) : ℝ))) := by
+  have hpair : IsPolignacPair p 1 := h
+  have hp3 : 3 ≤ p := by
+    have hne := polignac_not_two hpair
+    have := Nat.Prime.two_le hpair.1
+    omega
+  refine ⟨polignac_relative_admissible hpair (by omega), polignac_mismatch_pos hpair,
+    (polignac_outside_cone hpair).1, (polignac_outside_cone hpair).2⟩
+
+/-- The pair `3` and `7` has gap `4`, and its relative angle exceeds `π/2`. -/
+theorem two_log_seven_div_three_gt_pi_div_two :
+    Real.pi / 2 < 2 * Real.log ((7 : ℝ) / 3) := by
+  have hlog3 : (1.0986122885 : ℝ) < Real.log 3 := Real.log_three_gt_d9
+  have hlog2 : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have hpi : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
+  have hcmp : (9 : ℝ) / 4 < 7 / 3 := by norm_num
+  have hloglt : Real.log ((9 : ℝ) / 4) < Real.log ((7 : ℝ) / 3) :=
+    (Real.log_lt_log_iff (by norm_num) (by norm_num)).mpr hcmp
+  have heq : Real.log ((9 : ℝ) / 4) = 2 * Real.log 3 - 2 * Real.log 2 := by
+    rw [Real.log_div (by norm_num) (by norm_num)]
+    have h9 : Real.log (9 : ℝ) = 2 * Real.log 3 := by
+      rw [show (9 : ℝ) = 3 ^ (2 : ℕ) by norm_num, Real.log_pow]
+      ring
+    have h4 : Real.log (4 : ℝ) = 2 * Real.log 2 := by
+      rw [show (4 : ℝ) = 2 ^ (2 : ℕ) by norm_num, Real.log_pow]
+      ring
+    rw [h9, h4]
+  have hlow : (1.6218604308 : ℝ) < 2 * (2 * Real.log 3 - 2 * Real.log 2) := by
+    nlinarith [hlog3, hlog2]
+  have htwice : 2 * (2 * Real.log 3 - 2 * Real.log 2) = 2 * Real.log ((9 : ℝ) / 4) := by
+    rw [heq]
+  nlinarith [hloglt, hpi]
+
+theorem polignac_three_seven_relative_outside :
+    IsPolignacPair 3 2 ∧
+      ¬ IsAdmissibleContinuous
+        (pureBoost (2 * polignacRapidity 3 2 (by decide : (3 : ℕ) ≠ 0))) := by
+  refine ⟨polignac_three_two, ?_⟩
+  intro hadm
+  rw [isAdmissibleContinuous_pureBoost_iff, polignacRapidity_eq_log_div (by decide : 0 < 3)] at hadm
+  have hcast : ((3 + 2 * 2 : ℕ) : ℝ) / ((3 : ℕ) : ℝ) = (7 : ℝ) / 3 := by norm_num
+  rw [hcast] at hadm
+  exact not_le_of_gt two_log_seven_div_three_gt_pi_div_two hadm.2
+
+theorem polignac_seven_two : IsPolignacPair 7 2 := by
+  refine ⟨?_, ?_, by decide⟩
+  · native_decide
+  · native_decide
+
+/-- The gap-`4` pair `7` and `11` has its relative rotor in the cone, and both
+primes off the phase. -/
+theorem polignac_seven_eleven_relative_admissible :
+    IsAdmissibleContinuous
+        (pureBoost (2 * polignacRapidity 7 2 (by decide : (7 : ℕ) ≠ 0))) ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (7 : ℝ))) ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (11 : ℝ))) := by
+  have h := polignac_seven_two
+  exact ⟨polignac_relative_admissible h (by decide : 2 * 2 ≤ 7),
+    (polignac_outside_cone h).1, (polignac_outside_cone h).2⟩
+
+/-- For a fixed gap the normalised mismatch is strictly below `(16/(3π²))(2k/p)²`. -/
+theorem polignac_mismatchHeight_lt_envelope {p k : ℕ} (hp : 0 < p) (hk : 0 < k) :
+    polignacMismatchHeight p k (Nat.pos_iff_ne_zero.mp hp) <
+      (16 / (3 * Real.pi ^ 2)) * ((2 * (k : ℝ)) / (p : ℝ)) ^ 2 := by
+  rw [polignacMismatchHeight_eq, polignacRapidity_eq_log_div hp]
+  set x : ℝ := (2 * (k : ℝ)) / (p : ℝ)
+  have hx : 0 < x := by positivity
+  have hratio : ((p + 2 * k : ℕ) : ℝ) / p = 1 + x := by
+    dsimp [x]
+    have hnum : ((p + 2 * k : ℕ) : ℝ) = (p : ℝ) + 2 * (k : ℝ) := by
+      push_cast
+      ring
+    rw [hnum]
+    field_simp
+  rw [hratio]
+  have hlog : Real.log (1 + x) < x := by
+    have h1 : 0 < 1 + x := by linarith
+    have hne : 1 + x ≠ 1 := by
+      intro h
+      exact hx.ne' (by linarith)
+    have hlt := Real.log_lt_sub_one_of_pos h1 hne
+    linarith
+  have hlog0 : 0 ≤ Real.log (1 + x) := Real.log_nonneg (by linarith : (1 : ℝ) ≤ 1 + x)
+  have hsq : (Real.log (1 + x)) ^ 2 < x ^ 2 := by
+    rw [sq_lt_sq, abs_of_nonneg hlog0, abs_of_pos hx]
+    exact hlog
+  exact mul_lt_mul_of_pos_left hsq (by positivity)
+
+/-- The envelope `(16/(3π²))(2k/p)²` falls below every positive tolerance. -/
+theorem polignac_envelope_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ} (hε : 0 < ε) :
+    ∃ B : ℕ, ∀ p : ℕ, B ≤ p →
+      (16 / (3 * Real.pi ^ 2)) * ((2 * (k : ℝ)) / (p : ℝ)) ^ 2 < ε := by
+  have hsqrt : 0 < Real.sqrt (3 * Real.pi ^ 2 * ε) := Real.sqrt_pos.mpr (by positivity)
+  obtain ⟨B, hB⟩ := exists_nat_gt ((8 * (k : ℝ)) / Real.sqrt (3 * Real.pi ^ 2 * ε))
+  refine ⟨B + 1, ?_⟩
+  intro p hp
+  have hp0 : 0 < p := by omega
+  have hgt : (8 * (k : ℝ)) / Real.sqrt (3 * Real.pi ^ 2 * ε) < (p : ℝ) := by
+    have hBp : (B : ℝ) < p := by exact_mod_cast (show B < p by omega)
+    exact lt_trans hB hBp
+  have hs : Real.sqrt (3 * Real.pi ^ 2 * ε) ^ 2 = 3 * Real.pi ^ 2 * ε := by
+    rw [pow_two, Real.mul_self_sqrt (by positivity)]
+  have hmul : (8 * (k : ℝ)) < (p : ℝ) * Real.sqrt (3 * Real.pi ^ 2 * ε) := by
+    have := mul_lt_mul_of_pos_right hgt hsqrt
+    rwa [div_mul_cancel₀ _ hsqrt.ne'] at this
+  have hsq : (8 * (k : ℝ)) ^ 2 < (p : ℝ) ^ 2 * (3 * Real.pi ^ 2 * ε) := by
+    have hsq' :=
+      mul_lt_mul' hmul.le hmul (by positivity) (mul_pos (by exact_mod_cast hp0) hsqrt)
+    nlinarith [hs]
+  have h64 : (8 * (k : ℝ)) ^ 2 = 64 * (k : ℝ) ^ 2 := by ring
+  have hform : (64 * (k : ℝ) ^ 2) / (3 * Real.pi ^ 2 * (p : ℝ) ^ 2) < ε := by
+    rw [div_lt_iff₀ (by positivity)]
+    nlinarith [hsq, h64]
+  have heq :
+      (16 / (3 * Real.pi ^ 2)) * ((2 * (k : ℝ)) / (p : ℝ)) ^ 2 =
+        (64 * (k : ℝ) ^ 2) / (3 * Real.pi ^ 2 * (p : ℝ) ^ 2) := by
+    field_simp
+    ring
+  linarith
+
+/-- For each fixed gap, every sufficiently large Polignac pair has mismatch height
+below a prescribed positive tolerance. -/
+theorem polignac_mismatch_height_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ} (hε : 0 < ε) :
+    ∃ B : ℕ, ∀ p : ℕ, B ≤ p → ∀ h : IsPolignacPair p k,
+      polignacMismatchHeight p k (Nat.Prime.ne_zero h.1) < ε := by
+  obtain ⟨B, hB⟩ := polignac_envelope_eventually_lt hk hε
+  refine ⟨B, ?_⟩
+  intro p hp hpair
+  have hlt := polignac_mismatchHeight_lt_envelope (Nat.Prime.pos hpair.1) hk
+  have henv := hB p hp
+  simpa using lt_trans hlt henv
+
+/-- For a fixed gap the mismatch height falls as the smaller member grows. -/
+theorem polignac_mismatchHeight_strictAnti {p q k : ℕ}
+    (hp : 0 < p) (hlt : p < q) (hk : 0 < k) :
+    polignacMismatchHeight q k (Nat.pos_iff_ne_zero.mp (by omega : 0 < q)) <
+      polignacMismatchHeight p k (Nat.pos_iff_ne_zero.mp hp) := by
+  rw [polignacMismatchHeight_eq, polignacMismatchHeight_eq,
+    polignacRapidity_eq_log_div (by omega : 0 < q), polignacRapidity_eq_log_div hp]
+  have hq : 0 < q := by omega
+  have hratio :
+      ((q + 2 * k : ℕ) : ℝ) / q < ((p + 2 * k : ℕ) : ℝ) / p := by
+    rw [div_lt_div_iff₀ (by exact_mod_cast hq) (by exact_mod_cast hp)]
+    have hcross : (q + 2 * k) * p < (p + 2 * k) * q := by
+      nlinarith
+    exact_mod_cast hcross
+  have hlog :
+      Real.log (((q + 2 * k : ℕ) : ℝ) / q) <
+        Real.log (((p + 2 * k : ℕ) : ℝ) / p) :=
+    (Real.log_lt_log_iff (by positivity) (by positivity)).mpr hratio
+  have hpos : 0 < Real.log (((q + 2 * k : ℕ) : ℝ) / q) := by
+    rw [Real.log_pos_iff (by positivity)]
+    rw [one_lt_div (by exact_mod_cast hq)]
+    exact_mod_cast (show q < q + 2 * k by omega)
+  have hsq :
+      (Real.log (((q + 2 * k : ℕ) : ℝ) / q)) ^ 2 <
+        (Real.log (((p + 2 * k : ℕ) : ℝ) / p)) ^ 2 := by
+    rw [sq_lt_sq, abs_of_pos hpos, abs_of_pos (lt_trans hpos hlog)]
+    exact hlog
+  exact mul_lt_mul_of_pos_left hsq (by positivity)
 
 /-! ### Classical Polignac under an explicit bridge hypothesis -/
 

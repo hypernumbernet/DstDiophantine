@@ -148,7 +148,7 @@ base. It is not a geometric proof of Beal.
 | abc | [`Abc.lean`](DstDiophantine/Theorems/Abc.lean) | The continuous bridge is false. The live statement is `AbcModularBridge`, together with the radical certificates below. |
 | Riemann | [`Riemann.lean`](DstDiophantine/Theorems/Riemann.lean) | `RiemannAdmissibleBridge`, with rational-grid certificates of denominator $\le 20$. This is not mathlib's `riemannZeta`. |
 | Goldbach | [`Goldbach.lean`](DstDiophantine/Theorems/Goldbach.lean) | `GoldbachAdmissibleBridge`. Even targets $4 \le n \le 100$ are certified. The integer height of a target does not depend on whether a prime pair exists. |
-| Polignac | [`Polignac.lean`](DstDiophantine/Theorems/Polignac.lean) | `PolignacAdmissibleBridge`. Twins with $p \le 20$, and gaps $4$ and $6$ with $p \le 30$, are certified. |
+| Polignac | [`Polignac.lean`](DstDiophantine/Theorems/Polignac.lean) | `PolignacAdmissibleBridge`. The gap $2k$ lies on the phase iff $k=1$. Every twin pair has an admissible relative rotor with positive mismatch. The pair $(3,7)$ has relative angle past $\pi/2$; $(7,11)$ lies back in the cone. The normalised mismatch is strictly below $\frac{16}{3\pi^2}(2k/p)^2$ and falls under every positive tolerance. |
 | Collatz | [`Collatz.lean`](DstDiophantine/Theorems/Collatz.lean) | `CollatzAdmissibleBridge`. The admissible integer-boost cone contains only $1$ and $2$. The return through $4$ leaves the cone. Every start $n \le 2^{20}$ reaches $1$. Any other cycle has normalised height greater than $100$. |
 
 ### Beal frontier
@@ -215,7 +215,7 @@ says nothing about the complement.
 | abc, radical square | $c \le \mathrm{rad}(abc)^2$ for every primitive triple with $c \le 100$ |
 | abc, twice the radical | $c \le 2\,\mathrm{rad}(abc)$, and log-gap $< \pi/4$, for $c \le 80$ |
 | Goldbach even sums | $4 \le n \le 100$ |
-| Polignac | Twins with $p \le 20$; gaps $4$ and $6$ with $p \le 30$ |
+| Polignac | Gap $2k$ on the phase iff $k=1$; twin relative rotors admissible; $(3,7)$ outside, $(7,11)$ inside; mismatch envelope $(2k/p)^2$ |
 | Collatz orbits | Every $n \le 2^{20}$ reaches $1$ |
 | Riemann rational grid | Denominator $\le 20$ |
 

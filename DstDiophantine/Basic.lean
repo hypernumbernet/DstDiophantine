@@ -409,7 +409,15 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   evenGap IsPolignacPair IsTwinPrimePair twin_prime_of_polignac
   polignac_gap_iff_motor even_gap_of_odd_prime_pair
   gapExcessTerm gapExcessSum gapChainHeight strong_avoidance_term_ge
+  gapExcessTerm_neg_of_smaller
   gapChainHeight_gt_one_of_sq exists_twin_of_le_twenty
+  polignac_gap_phase_iff polignac_wide_gap_height
+  polignacRapidity polignacMismatch polignacMismatchHeight
+  polignac_mismatch_pos polignac_equation_of_state
+  polignac_relative_admissible twin_relative_admissible
+  polignac_three_seven_relative_outside polignac_seven_eleven_relative_admissible
+  polignac_mismatchHeight_lt_envelope polignac_mismatch_height_eventually_lt
+  polignac_mismatchHeight_strictAnti
   PolignacAdmissibleBridge polignac_conjecture_of_bridge
   twin_prime_conjecture_of_bridge
   abcRadical IsAbcTriple abcQuality abcMismatchParams abcHeight
