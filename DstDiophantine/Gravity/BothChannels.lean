@@ -4,6 +4,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+
+set_option linter.style.native false
 
 /-!
 # Both channels at once
@@ -26,7 +29,9 @@ At a separation above `52917` fm, read with `ℓ_E < 387` fm and
 positive. The ratio of the mass term to the charge term there lies
 strictly between `440/10^42` and `442/10^42`. The prefactor
 `G m_e m_p/(k e²)` itself lies strictly between `4407/10^43` and
-`4408/10^43`.
+`4408/10^43`. The same scale gives
+`1.2355×10³⁶ < k e²/(G m_p²) < 1.2356×10³⁶` and
+`8.093×10⁻³⁷ < G m_p²/(k e²) < 8.094×10⁻³⁷`.
 -/
 
 namespace DstDiophantine
@@ -78,10 +83,14 @@ theorem unlike_both_negative_no_zero {κ coul γG γE r : ℝ}
 
 /-! ### The mass-to-charge prefactor -/
 
-/-- `G m_e m_p / (k e²)`, using `k e² = α ℏ c`. External stand-in. -/
+/-- `G m_e m_p / (k e²)`, with `k e² = α ℏ c`. -/
 def electronProtonGravToCoulomb : ℚ :=
-  GApprox * electronMassApprox * protonMassApprox /
-    (fineStructureApprox * hbarApprox * speedOfLight)
+  GApprox * electronMassApprox * protonMassApprox / coulombScale
+
+theorem electronProtonGravToCoulomb_scale :
+    fineStructureApprox * hbarApprox * speedOfLight = coulombScale := by
+  unfold coulombScale hbarC
+  ring
 
 def electronProtonGravToCoulomb_num : ℕ :=
   GMantissa * electronMassMantissa * protonMassMantissa
@@ -94,7 +103,7 @@ theorem electronProtonGravToCoulomb_eq_num_div_den :
       (electronProtonGravToCoulomb_num : ℚ) / electronProtonGravToCoulomb_den := by
   unfold electronProtonGravToCoulomb electronProtonGravToCoulomb_num
     electronProtonGravToCoulomb_den
-  unfold GApprox electronMassApprox protonMassApprox
+  unfold GApprox electronMassApprox protonMassApprox coulombScale hbarC
     fineStructureApprox hbarApprox speedOfLight
   unfold GMantissa GScale electronMassMantissa electronMassScale
     protonMassMantissa protonMassScale
@@ -131,6 +140,122 @@ theorem electronProtonGravToCoulomb_bounds :
         fineStructureMantissa hbarMantissa speedOfLightNat
       norm_num
     rw [div_lt_div_iff₀ hden (by norm_num)]
+    exact_mod_cast hnat
+
+/-- \(ke^{2}/(G m_p^{2})\) with the same observational scale. -/
+def protonCoulombOverNewton : ℚ :=
+  coulombScale / (GApprox * protonMassApprox ^ 2)
+
+/-- \(G m_p^{2}/(ke^{2})\). -/
+def protonNewtonOverCoulomb : ℚ :=
+  GApprox * protonMassApprox ^ 2 / coulombScale
+
+def protonCoulombOverNewton_num : ℕ :=
+  fineStructureMantissa * hbarMantissa * speedOfLightNat
+
+def protonCoulombOverNewton_den : ℕ :=
+  GMantissa * protonMassMantissa ^ 2
+
+theorem protonCoulombOverNewton_eq_num_div_den :
+    protonCoulombOverNewton =
+      (protonCoulombOverNewton_num : ℚ) * 10 ^ 36 / protonCoulombOverNewton_den := by
+  unfold protonCoulombOverNewton coulombScale hbarC hbarApprox fineStructureApprox
+    GApprox protonMassApprox protonCoulombOverNewton_num protonCoulombOverNewton_den
+  unfold fineStructureMantissa fineStructureScale hbarMantissa hbarScale
+    speedOfLight speedOfLightNat GMantissa GScale protonMassMantissa protonMassScale
+  field_simp
+  ring
+
+theorem protonNewtonOverCoulomb_eq_num_div_den :
+    protonNewtonOverCoulomb =
+      (protonCoulombOverNewton_den : ℚ) /
+        ((protonCoulombOverNewton_num : ℚ) * 10 ^ 36) := by
+  unfold protonNewtonOverCoulomb coulombScale hbarC hbarApprox fineStructureApprox
+    GApprox protonMassApprox protonCoulombOverNewton_num protonCoulombOverNewton_den
+  unfold fineStructureMantissa fineStructureScale hbarMantissa hbarScale
+    speedOfLight speedOfLightNat GMantissa GScale protonMassMantissa protonMassScale
+  field_simp
+  ring
+
+theorem proton_scales_inv :
+    protonCoulombOverNewton * protonNewtonOverCoulomb = 1 := by
+  unfold protonCoulombOverNewton protonNewtonOverCoulomb
+  field_simp [coulombScale_pos.ne', GApprox_pos.ne', protonMassApprox_pos.ne']
+
+private theorem protonCoulombOverNewton_den_pos :
+    (0 : ℚ) < protonCoulombOverNewton_den := by
+  unfold protonCoulombOverNewton_den GMantissa protonMassMantissa
+  norm_num
+
+/-- \(1.2355\times 10^{36} < ke^{2}/(G m_p^{2}) < 1.2356\times 10^{36}\). -/
+theorem protonCoulombOverNewton_bounds :
+    (12355 / 10000 : ℚ) * 10 ^ 36 < protonCoulombOverNewton ∧
+      protonCoulombOverNewton < (12356 / 10000) * 10 ^ 36 := by
+  rw [protonCoulombOverNewton_eq_num_div_den]
+  have hden := protonCoulombOverNewton_den_pos
+  constructor
+  · rw [lt_div_iff₀ hden]
+    have hnat : 12355 * protonCoulombOverNewton_den <
+        protonCoulombOverNewton_num * 10 ^ 4 := by
+      unfold protonCoulombOverNewton_num protonCoulombOverNewton_den
+        fineStructureMantissa hbarMantissa speedOfLightNat GMantissa protonMassMantissa
+      native_decide
+    have hcast : (12355 : ℚ) * protonCoulombOverNewton_den <
+        (protonCoulombOverNewton_num : ℚ) * 10 ^ 4 := by exact_mod_cast hnat
+    have hmul := mul_lt_mul_of_pos_left hcast
+      (by norm_num : (0 : ℚ) < 10 ^ 32)
+    have hl : (12355 : ℚ) * protonCoulombOverNewton_den * 10 ^ 32 =
+        (12355 / 10000) * 10 ^ 36 * protonCoulombOverNewton_den := by ring
+    have hr : (protonCoulombOverNewton_num : ℚ) * 10 ^ 4 * 10 ^ 32 =
+        (protonCoulombOverNewton_num : ℚ) * 10 ^ 36 := by ring
+    linarith
+  · rw [div_lt_iff₀ hden]
+    have hnat : protonCoulombOverNewton_num * 10 ^ 4 <
+        12356 * protonCoulombOverNewton_den := by
+      unfold protonCoulombOverNewton_num protonCoulombOverNewton_den
+        fineStructureMantissa hbarMantissa speedOfLightNat GMantissa protonMassMantissa
+      native_decide
+    have hcast : (protonCoulombOverNewton_num : ℚ) * 10 ^ 4 <
+        (12356 : ℚ) * protonCoulombOverNewton_den := by exact_mod_cast hnat
+    have hmul := mul_lt_mul_of_pos_left hcast
+      (by norm_num : (0 : ℚ) < 10 ^ 32)
+    have hl : (protonCoulombOverNewton_num : ℚ) * 10 ^ 4 * 10 ^ 32 =
+        (protonCoulombOverNewton_num : ℚ) * 10 ^ 36 := by ring
+    have hr : (12356 : ℚ) * protonCoulombOverNewton_den * 10 ^ 32 =
+        (12356 / 10000) * 10 ^ 36 * protonCoulombOverNewton_den := by ring
+    linarith
+
+/-- \(8.093\times 10^{-37} < G m_p^{2}/(ke^{2}) < 8.094\times 10^{-37}\). -/
+theorem protonNewtonOverCoulomb_bounds :
+    (8093 : ℚ) / 10 ^ 40 < protonNewtonOverCoulomb ∧
+      protonNewtonOverCoulomb < 8094 / 10 ^ 40 := by
+  rw [protonNewtonOverCoulomb_eq_num_div_den]
+  have hden : (0 : ℚ) < (protonCoulombOverNewton_num : ℚ) * 10 ^ 36 := by
+    unfold protonCoulombOverNewton_num fineStructureMantissa hbarMantissa
+      speedOfLightNat
+    positivity
+  constructor
+  · rw [lt_div_iff₀ hden]
+    have hclear : (8093 : ℚ) / 10 ^ 40 *
+          ((protonCoulombOverNewton_num : ℚ) * 10 ^ 36) =
+        (8093 : ℚ) * protonCoulombOverNewton_num / 10 ^ 4 := by ring
+    rw [hclear, div_lt_iff₀ (by norm_num)]
+    have hnat : 8093 * protonCoulombOverNewton_num <
+        protonCoulombOverNewton_den * 10 ^ 4 := by
+      unfold protonCoulombOverNewton_num protonCoulombOverNewton_den
+        fineStructureMantissa hbarMantissa speedOfLightNat GMantissa protonMassMantissa
+      native_decide
+    exact_mod_cast hnat
+  · rw [div_lt_iff₀ hden]
+    have hclear : (8094 : ℚ) / 10 ^ 40 *
+          ((protonCoulombOverNewton_num : ℚ) * 10 ^ 36) =
+        (8094 : ℚ) * protonCoulombOverNewton_num / 10 ^ 4 := by ring
+    rw [hclear, lt_div_iff₀ (by norm_num)]
+    have hnat : protonCoulombOverNewton_den * 10 ^ 4 <
+        8094 * protonCoulombOverNewton_num := by
+      unfold protonCoulombOverNewton_num protonCoulombOverNewton_den
+        fineStructureMantissa hbarMantissa speedOfLightNat GMantissa protonMassMantissa
+      native_decide
     exact_mod_cast hnat
 
 private theorem plateau_fraction_lo :

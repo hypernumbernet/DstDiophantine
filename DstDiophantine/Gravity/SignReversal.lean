@@ -217,9 +217,8 @@ theorem reversal_wall_below_spacing {r₁ s : ℝ}
 theorem coulomb_at_reversal {r₁ : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1) :
     (1439 / 1000 : ℝ) < (coulombMeVFm : ℝ) / r₁ ∧
       (1294 / 1000 : ℝ) < (coulombMeVFm : ℝ) / r₁ := by
-  have hke : (1439 / 1000 : ℚ) < coulombMeVFm := by
-    unfold coulombMeVFm
-    norm_num
+  have hke : (1439 / 1000 : ℚ) < coulombMeVFm :=
+    (by norm_num : (1439 / 1000 : ℚ) < 1439964 / 10 ^ 6).trans coulombMeVFm_bounds.1
   have hgap : (1294 / 1000 : ℝ) < 1439 / 1000 := by norm_num
   have hdiv : (coulombMeVFm : ℝ) < (coulombMeVFm : ℝ) / r₁ := by
     have hke0 : (0 : ℝ) < coulombMeVFm := by

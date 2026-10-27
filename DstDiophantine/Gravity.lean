@@ -352,8 +352,10 @@ The straight line of one fixed jet is not itself that geodesic.
   \(\hbar/(m_e c)\), strictly below the charge-\(92\) cap, in
   \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
   \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
-* `Rutherford` — the laboratory-frame Coulomb head-on distance of a
-  \(7.69\,\mathrm{MeV}\) alpha particle on gold lies in \((29,30)\,\mathrm{fm}\),
+* `Rutherford` — the electromagnetic scale is \(\alpha\hbar c\), strictly
+  between \(1.439964\) and \(1.439965\,\mathrm{MeV\,fm}\). The laboratory-frame
+  Coulomb head-on distance of a \(7.69\,\mathrm{MeV}\) alpha particle on gold
+  lies in \((29,30)\,\mathrm{fm}\),
   outside the first node of \(\lambda_\pi\) and beyond \(20\lambda_\pi\).
   At every separation of at least \(29\,\mathrm{fm}\) the signed factor
   exceeds one by less than \(6/10000\). In the centre-of-mass frame the

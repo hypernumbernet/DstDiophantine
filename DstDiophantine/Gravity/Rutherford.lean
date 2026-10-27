@@ -1,18 +1,24 @@
 import DstDiophantine.Gravity.NuclearLength
 import DstDiophantine.Gravity.TorsionalLayer
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+
+set_option linter.style.native false
 
 /-!
 # Alpha–gold scattering in the outer region of the nuclear length
 
 ## Paper boundary (do **not** claim)
 
-The Coulomb constant `k e² = 1.439964` MeV fm, the alpha energy `7.69` MeV,
-the charges `2` and `79`, and the mass numbers `4` and `197` are external
-inputs. Every particle carries both channels at once. The gravitational
+The electromagnetic scale is the observational product `k e² = α ℏ c`
+(`SI.coulombMeVFm`), which lies strictly between `1.439964` and `1.439965`
+MeV fm. The alpha energy `7.69` MeV, the charges `2` and `79`, and the mass
+numbers `4` and `197` are external inputs. Every particle carries both
+channels at once. The gravitational
 channel is governed by `λ_π`; the electric channel by `ℓ_E` for isolated
 charges and by the common length for protons in proton chaos. Between two
 nuclei the length is `λ_π`, and the Coulomb term is read with the
@@ -45,7 +51,7 @@ namespace DstDiophantine
 
 namespace Gravity
 
-open Real Set
+open Real Set SI
 
 /-- `γ_s(x) ≥ 1 - x² cosh x` for `x ≥ 0`. -/
 private lemma rf_gamma_ge {x : ℝ} (hx : 0 ≤ x) :
@@ -137,9 +143,6 @@ private lemma rf_exp_quarter : exp (1 / 4 : ℝ) ≤ 13 / 10 := by
   norm_num at h
   exact h.trans (by norm_num)
 
-/-- `k e²` in MeV fm (external stand-in). -/
-def coulombMeVFm : ℚ := 1439964 / 1000000
-
 /-- Alpha kinetic energy of the Geiger–Marsden source, `7.69` MeV (external). -/
 def alphaGoldEnergyMeV : ℚ := 769 / 100
 
@@ -151,8 +154,31 @@ def alphaGoldClosestFm : ℚ := 2 * goldCharge * coulombMeVFm / alphaGoldEnergyM
 
 theorem alphaGoldClosest_window :
     (29 : ℚ) < alphaGoldClosestFm ∧ alphaGoldClosestFm < 30 := by
-  unfold alphaGoldClosestFm goldCharge coulombMeVFm alphaGoldEnergyMeV
-  constructor <;> norm_num
+  have hden : (0 : ℚ) < (coulombMeVFm_den : ℚ) := by
+    unfold coulombMeVFm_den elementaryChargeMantissa
+    norm_num
+  have hform : alphaGoldClosestFm =
+      (15800 : ℚ) * coulombMeVFm_num / ((769 : ℚ) * coulombMeVFm_den) := by
+    unfold alphaGoldClosestFm goldCharge alphaGoldEnergyMeV
+    rw [coulombMeVFm_eq_num_div_den]
+    field_simp
+    ring
+  rw [hform]
+  have hden' : (0 : ℚ) < (769 : ℚ) * coulombMeVFm_den :=
+    mul_pos (by norm_num) hden
+  constructor
+  · rw [lt_div_iff₀ hden']
+    have hnat : 29 * 769 * coulombMeVFm_den < 15800 * coulombMeVFm_num := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    exact_mod_cast hnat
+  · rw [div_lt_iff₀ hden']
+    have hnat : 15800 * coulombMeVFm_num < 30 * 769 * coulombMeVFm_den := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    exact_mod_cast hnat
 
 private theorem rf_pion_lt : (pionComptonFm : ℝ) < 71 / 50 := by
   rw [show (71 / 50 : ℝ) = ((71 / 50 : ℚ) : ℝ) by norm_num]
@@ -573,9 +599,41 @@ def alphaGoldClosestCmFm : ℚ :=
 
 theorem alphaGoldClosestCm_window :
     (3018 / 100 : ℚ) < alphaGoldClosestCmFm ∧ alphaGoldClosestCmFm < 3019 / 100 := by
-  unfold alphaGoldClosestCmFm alphaGoldClosestFm goldMassNumber goldCharge
-    coulombMeVFm alphaGoldEnergyMeV
-  constructor <;> norm_num
+  have hden : (0 : ℚ) < (coulombMeVFm_den : ℚ) := by
+    unfold coulombMeVFm_den elementaryChargeMantissa
+    norm_num
+  have hform : alphaGoldClosestCmFm =
+      (15800 : ℚ) * coulombMeVFm_num * 201 /
+        ((769 : ℚ) * coulombMeVFm_den * 197) := by
+    unfold alphaGoldClosestCmFm alphaGoldClosestFm goldMassNumber goldCharge
+      alphaGoldEnergyMeV
+    rw [coulombMeVFm_eq_num_div_den]
+    field_simp
+    ring
+  rw [hform]
+  have hden' : (0 : ℚ) < (769 : ℚ) * coulombMeVFm_den * 197 :=
+    mul_pos (mul_pos (by norm_num) hden) (by norm_num)
+  constructor
+  · rw [lt_div_iff₀ hden']
+    have hclear : (3018 / 100 : ℚ) * ((769 : ℚ) * coulombMeVFm_den * 197) =
+        (3018 : ℚ) * (769 * coulombMeVFm_den * 197) / 100 := by ring
+    rw [hclear, div_lt_iff₀ (by norm_num)]
+    have hnat : 3018 * 769 * coulombMeVFm_den * 197 <
+        15800 * coulombMeVFm_num * 201 * 100 := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    exact_mod_cast hnat
+  · rw [div_lt_iff₀ hden']
+    have hclear : (3019 / 100 : ℚ) * ((769 : ℚ) * coulombMeVFm_den * 197) =
+        (3019 : ℚ) * (769 * coulombMeVFm_den * 197) / 100 := by ring
+    rw [hclear, lt_div_iff₀ (by norm_num)]
+    have hnat : 15800 * coulombMeVFm_num * 201 * 100 <
+        3019 * 769 * coulombMeVFm_den * 197 := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    exact_mod_cast hnat
 
 private lemma dev_lower_of_phase {x xL : ℝ} (hx0 : 0 ≤ xL) (hx : xL ≤ x) (hx1 : x ≤ 1 / 10)
     (hpoly : 0 < 1 - xL ^ 2 + xL ^ 4 / 12) :

@@ -1,5 +1,9 @@
 import Mathlib.Data.Rat.Defs
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Ring
+
+set_option linter.style.native false
 
 /-!
 # SI / CODATA bookkeeping for the DST gravity chart
@@ -20,9 +24,11 @@ binding energy per nucleon (all external; not derived).
 Mantissas are exposed as `ℕ` so cleared-denominator witnesses can reuse them
 without duplicating decimal literals.
 
-Electromagnetic stand-ins avoid \(\pi\) (no independent \(\varepsilon_0\) or
-\(R_\infty\)): Coulomb \(k=\alpha\,\hbar c/e^2\), Bohr \(a_0=\hbar/(m_e c\alpha)\),
-ionisation \(E_I=\tfrac12 m_e c^2\alpha^2\).
+The electromagnetic force scale is the single observational product
+\(ke^{2}=\alpha\hbar c\) (`coulombScale`). There is no second decimal for
+that scale. The Coulomb prefactor is \(k=\alpha\hbar c/e^{2}\). Bohr
+\(a_0=\hbar/(m_e c\alpha)\) and ionisation \(E_I=\tfrac12 m_e c^2\alpha^2\)
+are the same inputs, and they avoid an independent \(\varepsilon_0\).
 
 The shared lattice floor \(\varepsilon_N=16/(3N^2)\) lives here so both
 `NewtonFromLight` and `CoulombFromDual` can reuse it without cross-import.
@@ -127,9 +133,18 @@ theorem elementaryCharge_pos : (0 : ℚ) < elementaryCharge := by
 theorem fineStructureApprox_pos : (0 : ℚ) < fineStructureApprox := by
   unfold fineStructureApprox fineStructureMantissa fineStructureScale; norm_num
 
-/-- Coulomb constant stand-in \(k = \alpha\,\hbar c / e^2\) (N·m²/C²). -/
+/-- Electromagnetic pair scale \(ke^{2}=\alpha\hbar c\) (J·m).
+The single observational definition of the force scale. -/
+def coulombScale : ℚ := fineStructureApprox * hbarC
+
+/-- Coulomb prefactor \(k = \alpha\,\hbar c / e^2\) (N·m²/C²). -/
 def coulombKApprox : ℚ :=
-  fineStructureApprox * hbarC / elementaryCharge ^ 2
+  coulombScale / elementaryCharge ^ 2
+
+theorem coulombScale_eq_k_e_sq :
+    coulombKApprox * elementaryCharge ^ 2 = coulombScale := by
+  unfold coulombKApprox
+  field_simp [elementaryCharge_pos.ne']
 
 /-- Bohr radius stand-in \(a_0 = \hbar / (m_e c \alpha)\) (m). -/
 def bohrRadiusApprox : ℚ :=
@@ -139,10 +154,13 @@ def bohrRadiusApprox : ℚ :=
 def hydrogenIonisationApprox : ℚ :=
   (1 / 2) * electronMassApprox * speedOfLight ^ 2 * fineStructureApprox ^ 2
 
+theorem coulombScale_pos : (0 : ℚ) < coulombScale := by
+  unfold coulombScale
+  exact mul_pos fineStructureApprox_pos hbarC_pos
+
 theorem coulombKApprox_pos : (0 : ℚ) < coulombKApprox := by
   unfold coulombKApprox
-  exact div_pos (mul_pos fineStructureApprox_pos hbarC_pos)
-    (pow_pos elementaryCharge_pos 2)
+  exact div_pos coulombScale_pos (pow_pos elementaryCharge_pos 2)
 
 theorem bohrRadiusApprox_pos : (0 : ℚ) < bohrRadiusApprox := by
   unfold bohrRadiusApprox
@@ -208,6 +226,55 @@ def femtometerApprox : ℚ := 1 / (10 : ℚ) ^ 15
 /-- \(1\,\mathrm{MeV} = 10^6 e\) joules (2019 SI elementary charge). -/
 def MeVApprox : ℚ :=
   elementaryCharge * (10 : ℚ) ^ 6
+
+/-- \(ke^{2}=\alpha\hbar c\) in MeV·fm. Same product as `coulombScale`. -/
+def coulombMeVFm : ℚ :=
+  coulombScale / (MeVApprox * femtometerApprox)
+
+/-- Numerator of `coulombMeVFm` after clearing powers of ten. -/
+def coulombMeVFm_num : ℕ :=
+  fineStructureMantissa * hbarMantissa * speedOfLightNat
+
+/-- Denominator of `coulombMeVFm` after clearing powers of ten. -/
+def coulombMeVFm_den : ℕ :=
+  elementaryChargeMantissa * 10 ^ 19
+
+theorem coulombMeVFm_eq_num_div_den :
+    coulombMeVFm = (coulombMeVFm_num : ℚ) / coulombMeVFm_den := by
+  unfold coulombMeVFm coulombScale hbarC hbarApprox MeVApprox femtometerApprox
+    fineStructureApprox elementaryCharge
+  unfold coulombMeVFm_num coulombMeVFm_den
+  unfold fineStructureMantissa fineStructureScale hbarMantissa hbarScale
+    speedOfLight speedOfLightNat elementaryChargeMantissa elementaryChargeScale
+  field_simp
+  ring
+
+private theorem coulombMeVFm_den_pos : (0 : ℚ) < (coulombMeVFm_den : ℚ) := by
+  unfold coulombMeVFm_den elementaryChargeMantissa
+  norm_num
+
+/-- On the SI stand-ins, \(1.439964 < \alpha\hbar c < 1.439965\) MeV·fm. -/
+theorem coulombMeVFm_bounds :
+    (1439964 : ℚ) / 10 ^ 6 < coulombMeVFm ∧
+      coulombMeVFm < (1439965 : ℚ) / 10 ^ 6 := by
+  rw [coulombMeVFm_eq_num_div_den]
+  have hden := coulombMeVFm_den_pos
+  constructor
+  · have hnat : 1439964 * coulombMeVFm_den < coulombMeVFm_num * 10 ^ 6 := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    rw [div_lt_div_iff₀ (by norm_num) hden]
+    exact_mod_cast hnat
+  · have hnat : coulombMeVFm_num * 10 ^ 6 < 1439965 * coulombMeVFm_den := by
+      unfold coulombMeVFm_num coulombMeVFm_den fineStructureMantissa
+        hbarMantissa speedOfLightNat elementaryChargeMantissa
+      native_decide
+    rw [div_lt_div_iff₀ hden (by norm_num)]
+    exact_mod_cast hnat
+
+theorem coulombMeVFm_pos : (0 : ℚ) < coulombMeVFm :=
+  lt_trans (by norm_num) coulombMeVFm_bounds.1
 
 /-- Mantissa of charged-pion mass \(\approx 139.57039\) MeV/\(c^2\). -/
 def pionMassMeVMantissa : ℕ := 13957039

@@ -107,6 +107,12 @@ private theorem hbarC_MeVfm_den_pos : (0 : ℚ) < (hbarC_MeVfm_den : ℚ) := by
   unfold hbarC_MeVfm_den elementaryChargeMantissa
   norm_num
 
+/-- The MeV·fm force scale is the fine-structure constant times \(\hbar c\). -/
+theorem coulombMeVFm_eq_alpha_times_hbarC :
+    coulombMeVFm = fineStructureApprox * hbarC_MeVfm := by
+  unfold coulombMeVFm coulombScale hbarC_MeVfm
+  ring
+
 theorem hbarC_MeVfm_bounds :
     (197 : ℚ) < hbarC_MeVfm ∧ hbarC_MeVfm < (198 : ℚ) := by
   rw [hbarC_MeVfm_eq_num_div_den]
