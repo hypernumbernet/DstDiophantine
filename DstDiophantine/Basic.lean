@@ -401,7 +401,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   IsGoldbachPair goldbach_sum_iff_motor goldbach_solution_iff_motor
   goldbachTargetHeight goldbachTargetHeight_gt_one_of_four_le
   goldbachCandidates exists_min_goldbachMismatch
+  goldbachMismatch goldbach_equation_of_state goldbach_vacuum_outside_cone
+  goldbach_mismatch_floor goldbach_parity_floor_eventually_lt
+  goldbachWeight_anti exists_goldbach_ground
   goldbach_of_le_hundred GoldbachAdmissibleBridge goldbach_conjecture_of_bridge
+  goldbachAdmissibleBridge_iff
   evenGap IsPolignacPair IsTwinPrimePair twin_prime_of_polignac
   polignac_gap_iff_motor even_gap_of_odd_prime_pair
   gapExcessTerm gapExcessSum gapChainHeight strong_avoidance_term_ge

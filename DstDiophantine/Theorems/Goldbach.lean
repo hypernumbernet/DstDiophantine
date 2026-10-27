@@ -6,6 +6,7 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Algebra.Ring.Parity
@@ -14,34 +15,36 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
 
 set_option linter.style.native false
 
 /-!
-# Phase 5: Goldbach conjecture (DST additive / height core)
+# Phase 5: Goldbach conjecture (mismatch ensemble outside the cone)
 
-We formalise Chapter 9 of `dst-diophantine.tex` as a **null-translator
-decomposition + torsional height** argument, together with a finite
-computational certificate and a bridge hypothesis recovering the classical
-statement.
+We formalise Chapter 9 of `dst-diophantine.tex`. Configurations on the
+admissible cone are closed: the only Goldbach pair that meets the stable phase
+is `2 + 2 = 4`, and `GoldbachAdmissibleBridge` holds if and only if the
+classical conjecture does. It is not a reduction.
 
-## The cone as the stable phase
+## Mismatch ensemble
 
-The integer boost of an even target `n ≥ 4` lies beyond unit height, so the
-target is outside both the admissible cone and the shell `{3}`. The only prime
-on the stable phase is `2`, and the only Goldbach pair that meets the phase is
-`2 + 2 = 4`. For every even `n ≥ 6` both summands lie outside the cone. The
-only pair with both summands in the shell is `3 + 3 = 6`. For every even
-`n ≥ 8` the larger summand is at least `5` and its height exceeds one.
+Past unit height the additive channel is silent. The remaining observable is
+the mismatch of the relative rotor `R(p)† R(q)`, the pure boost of angle
+`2δ` with `δ = log q - log p`. Its scalar is `J = 2δ²`, and the normalised
+height carries the integer-boost coefficient `16/(3π²)`. The equation of
+state is `n/2 = √(pq) cosh(δ/2)`. The vacuum `δ = 0` is the identity rotor,
+hence admissible, while for every prime `p ≥ 3` the summands of `2p` lie
+outside the cone. An unbalanced pair is separated by the parity gap
+`d ∈ {2, 4}`, and that floor tends to zero. On a nonempty finite set of
+decompositions the statistical weight `exp(-β J)` is greatest on a pair
+closest to equality.
 
 ## Paper gap (not closed)
 
-Classical Goldbach (`∀ even n ≥ 4, ∃ primes p,q with p+q=n`) is **not** claimed
-unconditionally. `integerHeight n` is `≍ (log n)²` whether or not a prime pair
-exists. `GoldbachAdmissibleBridge` asks a missing pair to make the target
-admissible. No even `n ≥ 4` is admissible, so the bridge holds if and only if
-the conjecture does (`goldbachAdmissibleBridge_iff`). It is not a reduction.
-The coefficient of `integerHeight` is `16/(3π²)`.
+Classical Goldbach (`∀ even n ≥ 4, ∃ primes p,q with p+q=n`) is **not** claimed.
+The weight describes the ensemble. It does not decide whether the ensemble is
+empty. The coefficient of `integerHeight` is `16/(3π²)`.
 -/
 
 namespace DstDiophantine
@@ -156,16 +159,478 @@ theorem goldbachTargetHeight_gt_one_of_four_le {n : ℕ} (hn : 4 ≤ n) :
   have hmono := goldbachTargetHeight_mono (by decide : (4 : ℕ) ≠ 0) hn0 hn
   exact lt_of_lt_of_le goldbachTargetHeight_four_gt_one hmono
 
-/-! ### Pair mismatch height and finite minimisers -/
+/-! ### Mismatch of the relative rotor
 
-/-- Pure-boost mismatch height between two positive summands (model for `J_pq`). -/
+`logMismatch` is the half-angle seed. The relative rotor `R(p)† R(q)` is the
+pure boost of angle `2(log q - log p)`, the same scale as `integerRotor`.
+-/
+
+/-- Rapidity of the ratio `q / p`. -/
+noncomputable def goldbachRapidity (p q : ℕ) (_hp : p ≠ 0) (_hq : q ≠ 0) : ℝ :=
+  Real.log (q : ℝ) - Real.log (p : ℝ)
+
+/-- Mismatch scalar of `R(p)† R(q)`. The rotor angle is `2δ`, so `J = 2δ²`. -/
+noncomputable def goldbachMismatch (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) : ℝ :=
+  J (pureBoost (2 * goldbachRapidity p q hp hq))
+
+theorem goldbachMismatch_eq (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    goldbachMismatch p q hp hq = 2 * (goldbachRapidity p q hp hq) ^ 2 := by
+  unfold goldbachMismatch
+  rw [J_pureBoost]
+  ring
+
+theorem goldbachMismatch_nonneg (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    0 ≤ goldbachMismatch p q hp hq := by
+  rw [goldbachMismatch_eq]
+  positivity
+
+/-- Normalised height of the relative rotor, with the integer-boost coefficient. -/
 noncomputable def goldbachMismatchHeight (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) : ℝ :=
-  |JNormalized (logMismatch (p : ℤ) (q : ℤ) (Int.natCast_ne_zero.mpr hp)
-      (Int.natCast_ne_zero.mpr hq))|
+  |JNormalized (pureBoost (2 * goldbachRapidity p q hp hq))|
+
+theorem goldbachMismatchHeight_eq (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    goldbachMismatchHeight p q hp hq =
+      (16 / (3 * Real.pi ^ 2)) * (goldbachRapidity p q hp hq) ^ 2 := by
+  unfold goldbachMismatchHeight
+  rw [JNormalized_pureBoost]
+  have hnonneg :
+      0 ≤ (4 / (3 * Real.pi ^ 2)) * (2 * goldbachRapidity p q hp hq) ^ 2 := by
+    positivity
+  rw [abs_of_nonneg hnonneg]
+  ring
 
 theorem goldbachMismatchHeight_nonneg (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
     0 ≤ goldbachMismatchHeight p q hp hq :=
   abs_nonneg _
+
+theorem goldbachMismatchHeight_proof_irrel {p q : ℕ} (hp hp' : p ≠ 0) (hq hq' : q ≠ 0) :
+    goldbachMismatchHeight p q hp hq = goldbachMismatchHeight p q hp' hq' := rfl
+
+theorem goldbachRapidity_comm (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    goldbachRapidity p q hp hq = -goldbachRapidity q p hq hp := by
+  unfold goldbachRapidity
+  ring
+
+theorem goldbachMismatch_symm (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    goldbachMismatch p q hp hq = goldbachMismatch q p hq hp := by
+  rw [goldbachMismatch_eq, goldbachMismatch_eq, goldbachRapidity_comm]
+  ring
+
+theorem goldbachMismatchHeight_symm (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    goldbachMismatchHeight p q hp hq = goldbachMismatchHeight q p hq hp := by
+  rw [goldbachMismatchHeight_eq, goldbachMismatchHeight_eq, goldbachRapidity_comm]
+  ring
+
+theorem goldbachRapidity_eq_log_div {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
+    goldbachRapidity p q (Nat.pos_iff_ne_zero.mp hp) (Nat.pos_iff_ne_zero.mp hq) =
+      Real.log ((q : ℝ) / p) := by
+  unfold goldbachRapidity
+  rw [Real.log_div (by exact_mod_cast hq.ne') (by exact_mod_cast hp.ne')]
+
+theorem goldbachMismatch_eq_zero_iff {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
+    goldbachMismatch p q (Nat.pos_iff_ne_zero.mp hp) (Nat.pos_iff_ne_zero.mp hq) = 0 ↔
+      p = q := by
+  set hp0 : p ≠ 0 := Nat.pos_iff_ne_zero.mp hp
+  set hq0 : q ≠ 0 := Nat.pos_iff_ne_zero.mp hq
+  constructor
+  · intro h0
+    have hsq : goldbachRapidity p q hp0 hq0 = 0 := by
+      have := goldbachMismatch_eq p q hp0 hq0
+      rw [h0] at this
+      nlinarith [sq_nonneg (goldbachRapidity p q hp0 hq0)]
+    have hexp :
+        Real.exp (goldbachRapidity p q hp0 hq0) = (q : ℝ) / p := by
+      unfold goldbachRapidity
+      rw [Real.exp_sub, Real.exp_log (by exact_mod_cast hq), Real.exp_log (by exact_mod_cast hp)]
+    rw [hsq, Real.exp_zero] at hexp
+    have hp' : (0 : ℝ) < p := by exact_mod_cast hp
+    have hqp : (q : ℝ) = p := by
+      have hdiv : (q : ℝ) / p = 1 := hexp.symm
+      field_simp at hdiv
+      exact hdiv
+    exact_mod_cast hqp.symm
+  · intro h
+    subst h
+    rw [goldbachMismatch_eq]
+    unfold goldbachRapidity
+    ring
+
+/-! ### Equation of state
+
+The additive channel fixes `n = p + q`. The mismatch rapidity is the hyperbolic
+cost of the gap between the arithmetic mean `n/2` and the geometric mean
+`√(pq)`.
+-/
+
+theorem goldbach_equation_of_state {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
+    (p + q : ℝ) =
+      2 * Real.sqrt ((p : ℝ) * q) *
+        Real.cosh
+          (goldbachRapidity p q (Nat.pos_iff_ne_zero.mp hp) (Nat.pos_iff_ne_zero.mp hq) / 2) := by
+  set hp0 : p ≠ 0 := Nat.pos_iff_ne_zero.mp hp
+  set hq0 : q ≠ 0 := Nat.pos_iff_ne_zero.mp hq
+  set δ : ℝ := goldbachRapidity p q hp0 hq0
+  have hp' : (0 : ℝ) < p := by exact_mod_cast hp
+  have hq' : (0 : ℝ) < q := by exact_mod_cast hq
+  have hsp : 0 < Real.sqrt (p : ℝ) := Real.sqrt_pos.mpr hp'
+  have hsq : 0 < Real.sqrt (q : ℝ) := Real.sqrt_pos.mpr hq'
+  have hexp : Real.exp (δ / 2) = Real.sqrt (q : ℝ) / Real.sqrt (p : ℝ) := by
+    have hlogp : Real.log (Real.sqrt (p : ℝ)) = Real.log (p : ℝ) / 2 := Real.log_sqrt hp'.le
+    have hlogq : Real.log (Real.sqrt (q : ℝ)) = Real.log (q : ℝ) / 2 := Real.log_sqrt hq'.le
+    have hδ : δ / 2 = Real.log (Real.sqrt (q : ℝ)) - Real.log (Real.sqrt (p : ℝ)) := by
+      unfold δ goldbachRapidity
+      rw [hlogp, hlogq]
+      ring
+    rw [hδ, Real.exp_sub, Real.exp_log hsq, Real.exp_log hsp]
+  have hexpNeg : Real.exp (-(δ / 2)) = Real.sqrt (p : ℝ) / Real.sqrt (q : ℝ) := by
+    have hlogp : Real.log (Real.sqrt (p : ℝ)) = Real.log (p : ℝ) / 2 := Real.log_sqrt hp'.le
+    have hlogq : Real.log (Real.sqrt (q : ℝ)) = Real.log (q : ℝ) / 2 := Real.log_sqrt hq'.le
+    have hδ : -(δ / 2) = Real.log (Real.sqrt (p : ℝ)) - Real.log (Real.sqrt (q : ℝ)) := by
+      unfold δ goldbachRapidity
+      rw [hlogp, hlogq]
+      ring
+    rw [hδ, Real.exp_sub, Real.exp_log hsp, Real.exp_log hsq]
+  have hsqrt : Real.sqrt ((p : ℝ) * q) = Real.sqrt (p : ℝ) * Real.sqrt (q : ℝ) :=
+    Real.sqrt_mul hp'.le q
+  calc
+    (p + q : ℝ)
+        = Real.sqrt (q : ℝ) * Real.sqrt (q : ℝ) + Real.sqrt (p : ℝ) * Real.sqrt (p : ℝ) := by
+          rw [Real.mul_self_sqrt hq'.le, Real.mul_self_sqrt hp'.le]
+          ring
+      _ = (Real.sqrt (p : ℝ) * Real.sqrt (q : ℝ)) *
+            (Real.sqrt (q : ℝ) / Real.sqrt (p : ℝ) + Real.sqrt (p : ℝ) / Real.sqrt (q : ℝ)) := by
+          field_simp
+      _ = (Real.sqrt (p : ℝ) * Real.sqrt (q : ℝ)) *
+            (Real.exp (δ / 2) + Real.exp (-(δ / 2))) := by
+          rw [hexp, hexpNeg]
+      _ = 2 * (Real.sqrt (p : ℝ) * Real.sqrt (q : ℝ)) *
+            ((Real.exp (δ / 2) + Real.exp (-(δ / 2))) / 2) := by
+          ring
+      _ = 2 * Real.sqrt ((p : ℝ) * q) * Real.cosh (δ / 2) := by
+          rw [← hsqrt, Real.cosh_eq]
+
+/-! ### Vacuum of the mismatch, outside the cone -/
+
+theorem goldbach_double_prime {p : ℕ} (hp : Nat.Prime p) : IsGoldbachPair p p (2 * p) := by
+  have htwo : 2 ≤ p := hp.two_le
+  exact ⟨hp, hp, by omega, even_two_mul p, by omega⟩
+
+/-- Equal primes are the vacuum of the mismatch, and for `p ≥ 3` both summands
+lie outside the cone. The identity rotor does not pull them back. -/
+theorem goldbach_vacuum_outside_cone {p : ℕ} (hp : Nat.Prime p) (hp3 : 3 ≤ p) :
+    goldbachMismatch p p hp.ne_zero hp.ne_zero = 0 ∧
+      IsAdmissibleContinuous (pureBoost 0) ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) := by
+  refine ⟨?_, (isAdmissibleContinuous_pureBoost_iff 0).mpr ⟨le_rfl, by positivity⟩, ?_⟩
+  · rw [goldbachMismatch_eq]
+    unfold goldbachRapidity
+    ring
+  · intro hadm
+    have hp2 : p = 2 := (prime_boost_admissible_iff hp).mp hadm
+    omega
+
+theorem goldbach_three_three_vacuum :
+    goldbachMismatch 3 3 (by decide) (by decide) = 0 ∧
+      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) := by
+  have h := goldbach_vacuum_outside_cone (by decide : Nat.Prime 3) (by decide)
+  exact ⟨h.1, h.2.2⟩
+
+/-! ### Parity floor
+
+Both summands of an even target `n ≥ 6` are odd. Their difference is at least
+`2` when `4 ∣ n`, and a positive multiple of `4` when `n ≡ 2 (mod 4)`.
+-/
+
+/-- Minimal positive separation of an unbalanced odd-odd pair of sum `n`. -/
+def goldbachParitySep (n : ℕ) : ℕ :=
+  if n % 4 = 0 then 2 else 4
+
+theorem goldbach_summands_odd {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n) :
+    Odd p ∧ Odd q := by
+  have hsum : p + q = n := h.2.2.1
+  have heven : n % 2 = 0 := Nat.even_iff.mp h.2.2.2.1
+  have hp2 : p ≠ 2 := by
+    intro hp
+    have hpmod : p % 2 = 0 := by simp [hp]
+    rcases Nat.Prime.eq_two_or_odd h.2.1 with hq | hq
+    · omega
+    · omega
+  have hq2 : q ≠ 2 := by
+    intro hq
+    have hqmod : q % 2 = 0 := by simp [hq]
+    rcases Nat.Prime.eq_two_or_odd h.1 with hp | hp
+    · omega
+    · omega
+  rcases Nat.Prime.eq_two_or_odd h.1 with hp | hp
+  · exact absurd hp hp2
+  rcases Nat.Prime.eq_two_or_odd h.2.1 with hq | hq
+  · exact absurd hq hq2
+  · exact ⟨Nat.odd_iff.mpr hp, Nat.odd_iff.mpr hq⟩
+
+theorem goldbach_diff_ge {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n) (hlt : p < q) :
+    goldbachParitySep n ≤ q - p := by
+  obtain ⟨hpodd, hqodd⟩ := goldbach_summands_odd h hn
+  obtain ⟨a, ha⟩ := hpodd
+  obtain ⟨b, hb⟩ := hqodd
+  have hsum : p + q = n := h.2.2.1
+  have hdiff : q - p = 2 * (b - a) := by omega
+  have hba : a < b := by omega
+  have heven : Even n := h.2.2.2.1
+  have hmod : n % 4 = 0 ∨ n % 4 = 2 := by
+    have : n % 2 = 0 := Nat.even_iff.mp heven
+    omega
+  rcases hmod with h0 | h2mod
+  · have hsep : goldbachParitySep n = 2 := by simp [goldbachParitySep, h0]
+    have hge : 2 ≤ q - p := by
+      rw [hdiff]
+      have : 1 ≤ b - a := by omega
+      omega
+    simp [hsep, hge]
+  · have hsep : goldbachParitySep n = 4 := by simp [goldbachParitySep, h2mod]
+    have h4 : (q - p) % 4 = 0 := by
+      have hnp : q - p = n - 2 * p := by omega
+      have hpmod : p % 2 = 1 := by omega
+      omega
+    have hdvd : 4 ∣ q - p := Nat.dvd_of_mod_eq_zero h4
+    obtain ⟨k, hk⟩ := hdvd
+    have hkpos : 0 < k := by
+      have hpos : 0 < q - p := by omega
+      omega
+    have hge : 4 ≤ q - p := by omega
+    simp [hsep, hge]
+
+theorem goldbach_ratio_ge {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n) (hlt : p < q) :
+    ((n + goldbachParitySep n : ℕ) : ℝ) / ((n - goldbachParitySep n : ℕ) : ℝ) ≤
+      (q : ℝ) / p := by
+  have hsep := goldbach_diff_ge h hn hlt
+  have hsum : p + q = n := h.2.2.1
+  have hppos : 0 < p := h.1.pos
+  set d := goldbachParitySep n
+  have hnd : d < n := by
+    have hd_le : d ≤ 4 := by
+      unfold d goldbachParitySep
+      split_ifs <;> decide
+    omega
+  have h2q : n + d ≤ 2 * q := by omega
+  have h2p : 2 * p ≤ n - d := by omega
+  have hp0 : (0 : ℝ) < p := by exact_mod_cast hppos
+  have hden : (0 : ℝ) < ((n - d : ℕ) : ℝ) := by exact_mod_cast Nat.sub_pos_of_lt hnd
+  rw [div_le_div_iff₀ hden hp0]
+  have hcastq : ((n + d : ℕ) : ℝ) ≤ 2 * (q : ℝ) := by exact_mod_cast h2q
+  have hcastp : 2 * (p : ℝ) ≤ ((n - d : ℕ) : ℝ) := by exact_mod_cast h2p
+  nlinarith [hden.le, show (0 : ℝ) ≤ ((n + d : ℕ) : ℝ) by positivity]
+
+theorem goldbach_mismatch_floor {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n)
+    (hlt : p < q) :
+    (16 / (3 * Real.pi ^ 2)) *
+        (Real.log (((n + goldbachParitySep n : ℕ) : ℝ) /
+          ((n - goldbachParitySep n : ℕ) : ℝ))) ^ 2 ≤
+      goldbachMismatchHeight p q h.1.ne_zero h.2.1.ne_zero := by
+  have hp : 0 < p := h.1.pos
+  have hq : 0 < q := h.2.1.pos
+  have hp0 : p ≠ 0 := h.1.ne_zero
+  have hq0 : q ≠ 0 := h.2.1.ne_zero
+  set d := goldbachParitySep n
+  have hr := goldbach_ratio_ge h hn hlt
+  have hden : (0 : ℝ) < ((n - d : ℕ) : ℝ) := by
+    have hd_le : d ≤ 4 := by
+      unfold d goldbachParitySep
+      split_ifs <;> decide
+    exact_mod_cast Nat.sub_pos_of_lt (show d < n by omega)
+  have hfloor_pos : (0 : ℝ) < ((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ) := by positivity
+  have hratio_pos : (0 : ℝ) < (q : ℝ) / p := by positivity
+  have hlog := (Real.log_le_log_iff hfloor_pos hratio_pos).mpr hr
+  have hfloor_ge_one : (1 : ℝ) ≤ ((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ) := by
+    rw [one_le_div hden]
+    exact_mod_cast (show n - d ≤ n + d by omega)
+  have hlog_nonneg : 0 ≤ Real.log (((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ)) :=
+    Real.log_nonneg hfloor_ge_one
+  have hpair_nonneg : 0 ≤ Real.log ((q : ℝ) / p) := by
+    have hge : (1 : ℝ) ≤ (q : ℝ) / p := by
+      rw [one_le_div (by exact_mod_cast hp)]
+      exact_mod_cast (le_of_lt hlt)
+    exact Real.log_nonneg hge
+  have hsq :
+      (Real.log (((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ))) ^ 2 ≤ (Real.log ((q : ℝ) / p)) ^ 2 :=
+    pow_le_pow_left₀ hlog_nonneg hlog 2
+  rw [goldbachMismatchHeight_eq, goldbachRapidity_eq_log_div hp hq]
+  exact mul_le_mul_of_nonneg_left hsq (by positivity)
+
+private theorem goldbach_log_floor_le {n : ℕ} (hn : 8 ≤ n) :
+    Real.log (((n + goldbachParitySep n : ℕ) : ℝ) / ((n - goldbachParitySep n : ℕ) : ℝ)) ≤
+      (2 * (goldbachParitySep n : ℝ)) / ((n - goldbachParitySep n : ℕ) : ℝ) := by
+  set d := goldbachParitySep n
+  have hnd : d < n := by
+    have hd_le : d ≤ 4 := by
+      unfold d goldbachParitySep
+      split_ifs <;> decide
+    omega
+  have hden : (0 : ℝ) < ((n - d : ℕ) : ℝ) := by exact_mod_cast Nat.sub_pos_of_lt hnd
+  have hpos : (0 : ℝ) < ((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ) := by positivity
+  have hlog := Real.log_le_sub_one_of_pos hpos
+  have hsub : ((n + d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ) - 1 =
+      (2 * (d : ℝ)) / ((n - d : ℕ) : ℝ) := by
+    have hone : (1 : ℝ) = ((n - d : ℕ) : ℝ) / ((n - d : ℕ) : ℝ) := by
+      field_simp [hden.ne']
+    rw [hone, div_sub_div_same]
+    have hdiff : ((n + d : ℕ) : ℝ) - ((n - d : ℕ) : ℝ) = 2 * (d : ℝ) := by
+      rw [Nat.cast_add, Nat.cast_sub (le_of_lt hnd)]
+      ring
+    rw [hdiff]
+  linarith
+
+private theorem goldbach_crude_floor_le {n : ℕ} (hn : 8 ≤ n) :
+    (16 / (3 * Real.pi ^ 2)) *
+        ((2 * (goldbachParitySep n : ℝ)) / ((n - goldbachParitySep n : ℕ) : ℝ)) ^ 2 ≤
+      (1024 / (3 * Real.pi ^ 2)) / ((n - 4 : ℕ) : ℝ) ^ 2 := by
+  set d := goldbachParitySep n
+  have hd_le : (d : ℝ) ≤ 4 := by
+    have : d ≤ 4 := by
+      unfold d goldbachParitySep
+      split_ifs <;> decide
+    exact_mod_cast this
+  have hden : (0 : ℝ) < ((n - d : ℕ) : ℝ) := by
+    have hnd : d < n := by
+      have hd4 : d ≤ 4 := by exact_mod_cast hd_le
+      omega
+    exact_mod_cast Nat.sub_pos_of_lt hnd
+  have hfour : (0 : ℝ) < ((n - 4 : ℕ) : ℝ) := by
+    exact_mod_cast (Nat.sub_pos_of_lt (show 4 < n by omega))
+  have hgap : ((n - 4 : ℕ) : ℝ) ≤ ((n - d : ℕ) : ℝ) := by
+    have hle : n - 4 ≤ n - d := by
+      have hd4 : d ≤ 4 := by exact_mod_cast hd_le
+      omega
+    exact_mod_cast hle
+  have hfrac : (2 * (d : ℝ)) / ((n - d : ℕ) : ℝ) ≤ 8 / ((n - 4 : ℕ) : ℝ) := by
+    rw [div_le_div_iff₀ hden hfour]
+    nlinarith
+  have hsq :
+      ((2 * (d : ℝ)) / ((n - d : ℕ) : ℝ)) ^ 2 ≤ (8 / ((n - 4 : ℕ) : ℝ)) ^ 2 := by
+    have hnn : 0 ≤ (2 * (d : ℝ)) / ((n - d : ℕ) : ℝ) := div_nonneg (by linarith) hden.le
+    exact pow_le_pow_left₀ hnn hfrac 2
+  have hcoef : 0 ≤ 16 / (3 * Real.pi ^ 2) := by positivity
+  have h64 : (16 / (3 * Real.pi ^ 2)) * (8 / ((n - 4 : ℕ) : ℝ)) ^ 2 =
+      (1024 / (3 * Real.pi ^ 2)) / ((n - 4 : ℕ) : ℝ) ^ 2 := by
+    field_simp
+    ring
+  nlinarith [mul_le_mul_of_nonneg_left hsq hcoef]
+
+/-- The parity floor tends to zero: no uniform positive mismatch separates
+unbalanced pairs from the vacuum. -/
+theorem goldbach_parity_floor_eventually_lt {ε : ℝ} (hε : 0 < ε) :
+    ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
+      (16 / (3 * Real.pi ^ 2)) *
+          (Real.log (((n + goldbachParitySep n : ℕ) : ℝ) /
+            ((n - goldbachParitySep n : ℕ) : ℝ))) ^ 2 < ε := by
+  have hsqrt : 0 < Real.sqrt (3 * Real.pi ^ 2 * ε) := Real.sqrt_pos.mpr (by positivity)
+  obtain ⟨M, hM⟩ := exists_nat_gt (32 / Real.sqrt (3 * Real.pi ^ 2 * ε))
+  refine ⟨M + 8, ?_⟩
+  intro n hn
+  have hn8 : 8 ≤ n := by omega
+  set t : ℝ := ((n - 4 : ℕ) : ℝ)
+  have ht : 0 < t := by
+    dsimp [t]
+    exact_mod_cast (Nat.sub_pos_of_lt (show 4 < n by omega))
+  have hgt : 32 / Real.sqrt (3 * Real.pi ^ 2 * ε) < t := by
+    have hstep : (M : ℝ) < t := by
+      dsimp [t]
+      exact_mod_cast (show M < n - 4 by omega)
+    exact lt_trans hM hstep
+  have hs2 : Real.sqrt (3 * Real.pi ^ 2 * ε) ^ 2 = 3 * Real.pi ^ 2 * ε := by
+    rw [pow_two, Real.mul_self_sqrt (by positivity)]
+  have h32 : (32 : ℝ) < t * Real.sqrt (3 * Real.pi ^ 2 * ε) := by
+    have := mul_lt_mul_of_pos_right hgt hsqrt
+    rwa [div_mul_cancel₀ _ hsqrt.ne'] at this
+  have h1024 : (1024 : ℝ) < t ^ 2 * (3 * Real.pi ^ 2 * ε) := by
+    have hsq := mul_lt_mul' h32.le h32 (by norm_num) (mul_pos ht hsqrt)
+    nlinarith [hs2]
+  have hbound : (1024 / (3 * Real.pi ^ 2)) / t ^ 2 < ε := by
+    rw [div_lt_iff₀ (by positivity : 0 < t ^ 2), div_lt_iff₀ (by positivity : 0 < 3 * Real.pi ^ 2)]
+    linarith
+  have hlog := goldbach_log_floor_le hn8
+  have hden : (0 : ℝ) < ((n - goldbachParitySep n : ℕ) : ℝ) := by
+    have hd_le : goldbachParitySep n ≤ 4 := by
+      unfold goldbachParitySep
+      split_ifs <;> decide
+    exact_mod_cast Nat.sub_pos_of_lt (show goldbachParitySep n < n by omega)
+  have hlog_nn :
+      0 ≤ Real.log (((n + goldbachParitySep n : ℕ) : ℝ) /
+        ((n - goldbachParitySep n : ℕ) : ℝ)) := by
+    have hge : (1 : ℝ) ≤ ((n + goldbachParitySep n : ℕ) : ℝ) /
+        ((n - goldbachParitySep n : ℕ) : ℝ) := by
+      rw [one_le_div hden]
+      exact_mod_cast
+        (show n - goldbachParitySep n ≤ n + goldbachParitySep n by omega)
+    exact Real.log_nonneg hge
+  have hsqlog :
+      (Real.log (((n + goldbachParitySep n : ℕ) : ℝ) /
+        ((n - goldbachParitySep n : ℕ) : ℝ))) ^ 2 ≤
+        ((2 * (goldbachParitySep n : ℝ)) / ((n - goldbachParitySep n : ℕ) : ℝ)) ^ 2 :=
+    pow_le_pow_left₀ hlog_nn hlog 2
+  have hcoef : 0 ≤ 16 / (3 * Real.pi ^ 2) := by positivity
+  have hfloor := mul_le_mul_of_nonneg_left hsqlog hcoef
+  have hcrude := goldbach_crude_floor_le hn8
+  have : (1024 / (3 * Real.pi ^ 2)) / t ^ 2 =
+      (1024 / (3 * Real.pi ^ 2)) / ((n - 4 : ℕ) : ℝ) ^ 2 := rfl
+  linarith
+
+/-! ### Statistical weight
+
+The cone does not select a decomposition. On the finite set of prime pairs the
+weight `exp(-β J)` is greatest at a minimum of `J`, and that minimum is a pair
+closest to equality.
+-/
+
+noncomputable def goldbachWeight (β : ℝ) (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) : ℝ :=
+  Real.exp (-β * goldbachMismatch p q hp hq)
+
+theorem goldbachWeight_anti {β : ℝ} (hβ : 0 ≤ β) {p q p' q' : ℕ}
+    (hp : p ≠ 0) (hq : q ≠ 0) (hp' : p' ≠ 0) (hq' : q' ≠ 0)
+    (hle : goldbachMismatch p q hp hq ≤ goldbachMismatch p' q' hp' hq') :
+    goldbachWeight β p' q' hp' hq' ≤ goldbachWeight β p q hp hq := by
+  unfold goldbachWeight
+  apply Real.exp_le_exp.mpr
+  have := mul_le_mul_of_nonneg_left hle hβ
+  linarith
+
+theorem goldbachMismatchHeight_antitone {n p₁ p₂ : ℕ}
+    (hp1 : 0 < p₁) (hp2 : 0 < p₂) (hn1 : p₁ ≤ n - p₁) (hn2 : p₂ ≤ n - p₂)
+    (hle : p₁ ≤ p₂) :
+    goldbachMismatchHeight p₂ (n - p₂) (Nat.pos_iff_ne_zero.mp hp2)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - p₂)) ≤
+      goldbachMismatchHeight p₁ (n - p₁) (Nat.pos_iff_ne_zero.mp hp1)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - p₁)) := by
+  have hp1n : p₁ ≤ n := le_trans hn1 (Nat.sub_le n p₁)
+  have hp2n : p₂ ≤ n := le_trans hn2 (Nat.sub_le n p₂)
+  have hlt1 : p₁ < n := by omega
+  have hlt2 : p₂ < n := by omega
+  have hcomp1 : 0 < n - p₁ := Nat.sub_pos_of_lt hlt1
+  have hcomp2 : 0 < n - p₂ := Nat.sub_pos_of_lt hlt2
+  have hp1' : (0 : ℝ) < p₁ := by exact_mod_cast hp1
+  have hp2' : (0 : ℝ) < p₂ := by exact_mod_cast hp2
+  have hden1 : (0 : ℝ) < ((n - p₁ : ℕ) : ℝ) := by exact_mod_cast hcomp1
+  have hden2 : (0 : ℝ) < ((n - p₂ : ℕ) : ℝ) := by exact_mod_cast hcomp2
+  have hratio : ((n - p₂ : ℕ) : ℝ) / p₂ ≤ ((n - p₁ : ℕ) : ℝ) / p₁ := by
+    rw [div_le_div_iff₀ hp2' hp1']
+    have hcast1 : ((n - p₁ : ℕ) : ℝ) = (n : ℝ) - p₁ := Nat.cast_sub hp1n
+    have hcast2 : ((n - p₂ : ℕ) : ℝ) = (n : ℝ) - p₂ := Nat.cast_sub hp2n
+    rw [hcast1, hcast2]
+    have hleR : (p₁ : ℝ) ≤ p₂ := by exact_mod_cast hle
+    have hnR : (0 : ℝ) < n := by exact_mod_cast (lt_trans hp1 hlt1)
+    nlinarith [hleR, hnR]
+  have hlog :=
+    (Real.log_le_log_iff (div_pos hden2 hp2') (div_pos hden1 hp1')).mpr hratio
+  have hge1 : (1 : ℝ) ≤ ((n - p₂ : ℕ) : ℝ) / p₂ := by
+    rw [one_le_div hp2']
+    exact_mod_cast hn2
+  have hlog_nn : 0 ≤ Real.log (((n - p₂ : ℕ) : ℝ) / p₂) := Real.log_nonneg hge1
+  have hsq :
+      (Real.log (((n - p₂ : ℕ) : ℝ) / p₂)) ^ 2 ≤
+        (Real.log (((n - p₁ : ℕ) : ℝ) / p₁)) ^ 2 :=
+    pow_le_pow_left₀ hlog_nn hlog 2
+  rw [goldbachMismatchHeight_eq, goldbachMismatchHeight_eq,
+    goldbachRapidity_eq_log_div hp2 hcomp2, goldbachRapidity_eq_log_div hp1 hcomp1]
+  exact mul_le_mul_of_nonneg_left hsq (by positivity)
 
 /-- Candidate first summands `p ≤ n` with both `p` and `n - p` prime. -/
 def goldbachCandidates (n : ℕ) : Finset ℕ :=
@@ -207,6 +672,114 @@ theorem exists_min_goldbachMismatch {n : ℕ}
   obtain ⟨p, hp, hmin⟩ :=
     Finset.exists_min_image (goldbachCandidates n) (candidateMismatch n) hne
   exact ⟨p, hp, hmin⟩
+
+theorem goldbachCandidates_compl {n p : ℕ} (hp : p ∈ goldbachCandidates n) :
+    n - p ∈ goldbachCandidates n := by
+  obtain ⟨hle, hpp, hq⟩ := mem_goldbachCandidates_iff.mp hp
+  have hback : n - (n - p) = p := Nat.sub_sub_self hle
+  rw [mem_goldbachCandidates_iff]
+  exact ⟨Nat.sub_le _ _, hq, hback.symm ▸ hpp⟩
+
+/-- Prime summands on the balanced side of `n/2`. -/
+def goldbachBalancedCandidates (n : ℕ) : Finset ℕ :=
+  (goldbachCandidates n).filter fun p => decide (p ≤ n - p)
+
+theorem mem_goldbachBalancedCandidates {n p : ℕ} :
+    p ∈ goldbachBalancedCandidates n ↔ p ∈ goldbachCandidates n ∧ p ≤ n - p := by
+  simp [goldbachBalancedCandidates, decide_eq_true_eq]
+
+theorem goldbachBalancedCandidates_nonempty {n : ℕ}
+    (hne : (goldbachCandidates n).Nonempty) :
+    (goldbachBalancedCandidates n).Nonempty := by
+  classical
+  obtain ⟨p, hp⟩ := hne
+  by_cases hle : p ≤ n - p
+  · exact ⟨p, mem_goldbachBalancedCandidates.mpr ⟨hp, hle⟩⟩
+  · have hc := goldbachCandidates_compl hp
+    have hp_le : p ≤ n := (mem_goldbachCandidates_iff.mp hp).1
+    have hlt : n - p < p := lt_of_not_ge hle
+    have hbal : n - p ≤ n - (n - p) := by
+      rw [Nat.sub_sub_self hp_le]
+      exact le_of_lt hlt
+    exact ⟨n - p, mem_goldbachBalancedCandidates.mpr ⟨hc, hbal⟩⟩
+
+theorem candidateMismatch_eq {n p : ℕ} (hp : p ∈ goldbachCandidates n) :
+    candidateMismatch n p =
+      goldbachMismatchHeight p (n - p)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp).2.1)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp).2.2) := by
+  simp [candidateMismatch, hp]
+
+theorem candidateMismatch_symm {n p : ℕ} (hp : p ∈ goldbachCandidates n) :
+    candidateMismatch n p = candidateMismatch n (n - p) := by
+  have hc := goldbachCandidates_compl hp
+  have hle : p ≤ n := (mem_goldbachCandidates_iff.mp hp).1
+  have hback : n - (n - p) = p := Nat.sub_sub_self hle
+  rw [candidateMismatch_eq hp, candidateMismatch_eq hc, goldbachMismatchHeight_eq,
+    goldbachMismatchHeight_eq]
+  unfold goldbachRapidity
+  simp only [hback]
+  ring
+
+/-- The ground state is a prime pair closest to equality, and it minimises the mismatch. -/
+theorem exists_goldbach_ground {n : ℕ} (hne : (goldbachCandidates n).Nonempty) :
+    ∃ p ∈ goldbachBalancedCandidates n,
+      (∀ q ∈ goldbachBalancedCandidates n, q ≤ p) ∧
+        ∀ q ∈ goldbachCandidates n, candidateMismatch n p ≤ candidateMismatch n q := by
+  classical
+  have hS : (goldbachBalancedCandidates n).Nonempty :=
+    goldbachBalancedCandidates_nonempty hne
+  let p := (goldbachBalancedCandidates n).max' hS
+  have hp : p ∈ goldbachBalancedCandidates n := Finset.max'_mem _ hS
+  have hmax : ∀ q ∈ goldbachBalancedCandidates n, q ≤ p := fun q hq => Finset.le_max' _ q hq
+  refine ⟨p, hp, hmax, ?_⟩
+  intro q hq
+  have hp_mem : p ∈ goldbachCandidates n := (mem_goldbachBalancedCandidates.mp hp).1
+  have hp_bal : p ≤ n - p := (mem_goldbachBalancedCandidates.mp hp).2
+  have hppos : 0 < p := Nat.Prime.pos (mem_goldbachCandidates_iff.mp hp_mem).2.1
+  by_cases hbal : q ≤ n - q
+  · have hqS : q ∈ goldbachBalancedCandidates n :=
+      mem_goldbachBalancedCandidates.mpr ⟨hq, hbal⟩
+    have hq_le : q ≤ p := hmax q hqS
+    have hqpos : 0 < q := Nat.Prime.pos (mem_goldbachCandidates_iff.mp hq).2.1
+    have hanti := goldbachMismatchHeight_antitone hqpos hppos hbal hp_bal hq_le
+    rw [candidateMismatch_eq hq, candidateMismatch_eq hp_mem]
+    rw [goldbachMismatchHeight_proof_irrel
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hq).2.1)
+        (Nat.pos_iff_ne_zero.mp hqpos)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hq).2.2)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - q)),
+      goldbachMismatchHeight_proof_irrel
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp_mem).2.1)
+        (Nat.pos_iff_ne_zero.mp hppos)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp_mem).2.2)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - p))]
+    exact hanti
+  · have hc := goldbachCandidates_compl hq
+    have hq_le_n : q ≤ n := (mem_goldbachCandidates_iff.mp hq).1
+    have hlt : n - q < q := lt_of_not_ge hbal
+    have hsmall : n - q ≤ n - (n - q) := by
+      rw [Nat.sub_sub_self hq_le_n]
+      exact le_of_lt hlt
+    have hsmallS : n - q ∈ goldbachBalancedCandidates n :=
+      mem_goldbachBalancedCandidates.mpr ⟨hc, hsmall⟩
+    have hle_small : n - q ≤ p := hmax _ hsmallS
+    have hp_pos_small : 0 < n - q :=
+      Nat.Prime.pos (mem_goldbachCandidates_iff.mp hc).2.1
+    have hanti :=
+      goldbachMismatchHeight_antitone hp_pos_small hppos hsmall hp_bal hle_small
+    rw [candidateMismatch_symm hq, candidateMismatch_eq hc, candidateMismatch_eq hp_mem]
+    rw [goldbachMismatchHeight_proof_irrel
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hc).2.1)
+        (Nat.pos_iff_ne_zero.mp hp_pos_small)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hc).2.2)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - (n - q))),
+      goldbachMismatchHeight_proof_irrel
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp_mem).2.1)
+        (Nat.pos_iff_ne_zero.mp hppos)
+        (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp hp_mem).2.2)
+        (Nat.pos_iff_ne_zero.mp (by omega : 0 < n - p))]
+    exact hanti
 
 /-! ### Finite computational certificate -/
 
