@@ -70,6 +70,11 @@ theorem seatPattern_monopole (s : ℝ) (u w : Fin 3 → ℝ) :
 
 def dipoleValue (a u : Fin 3 → ℝ) : ℝ := dirDot a u
 
+theorem dipoleValue_expand (a v : Fin 3 → ℝ) :
+    dipoleValue a v = a 0 * v 0 + a 1 * v 1 + a 2 * v 2 := by
+  unfold dipoleValue dirDot
+  ring
+
 def dipoleForm (a : Fin 3 → ℝ) : (Fin 3 → ℝ) →ₗ[ℝ] ℝ where
   toFun u := dirDot a u
   map_add' u w := by
@@ -129,6 +134,15 @@ theorem seatPattern_dipole {a : Fin 3 → ℝ} (ha : dipoleValue a a ≠ 0) :
 
 def quadValue (M : Matrix (Fin 3) (Fin 3) ℝ) (v : Fin 3 → ℝ) : ℝ :=
   dirDot v (applyMat M v)
+
+theorem quadValue_expand (M : Matrix (Fin 3) (Fin 3) ℝ) (v : Fin 3 → ℝ) :
+    quadValue M v =
+      M 0 0 * v 0 ^ 2 + M 1 1 * v 1 ^ 2 + M 2 2 * v 2 ^ 2 +
+        (M 0 1 + M 1 0) * v 0 * v 1 +
+        (M 0 2 + M 2 0) * v 0 * v 2 +
+        (M 1 2 + M 2 1) * v 1 * v 2 := by
+  unfold quadValue dirDot applyMat
+  ring
 
 private def quadPolar (M : Matrix (Fin 3) (Fin 3) ℝ) (v w : Fin 3 → ℝ) : ℝ :=
   dirDot v (applyMat M w)

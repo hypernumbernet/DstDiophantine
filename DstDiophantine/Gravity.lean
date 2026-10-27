@@ -36,6 +36,7 @@ import DstDiophantine.Gravity.NeutronScatter
 import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
+import DstDiophantine.Gravity.ElectronAngular
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronAngle
@@ -398,9 +399,10 @@ The straight line of one fixed jet is not itself that geodesic.
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
   electrons at the vertices of a cube likewise have exactly one radial balance
   in that shell, and the outward force restores the radius. Monopole, dipole,
-  and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); two
-  complementary chiral seats give \(2\), \(8\), and \(18\). The traceless
-  octupole has dimension \(7\), and the count through degree \(3\) is \(32\).
+  and traceless quadrupole modes have dimensions \(1\), \(3\), and \(5\); a
+  dual spinor and its spin-reversed partner give \(2\), \(8\), and \(18\). The
+  traceless octupole has dimension \(7\), and the count through degree \(3\)
+  is \(32\).
   These counts are not indices of the equal-scale nodes. Degree by degree the
   same seats number \(2\), \(6\), \(10\), and \(14\). Where the interference
   factor of a separation is positive, the antipode is an angular minimum.
@@ -410,6 +412,15 @@ The straight line of one fixed jet is not itself that geodesic.
   zero set is a plane. A nonzero traceless quadrupole is unchanged under
   reversal of the direction, takes both signs, and vanishes along some nonzero
   direction. A nonzero traceless octupole changes sign under that reversal.
+* `ElectronAngular` — the square of the angular momentum is the response of a
+  directional pattern when the direction is turned, the product of its degree
+  and one more than that degree. The monopole, the dipole, the traceless
+  quadrupole, and the traceless octupole carry \(0\), \(2\), \(6\), and
+  \(12\). Their dimensions are one more than twice the degree, and both rays
+  through degree \(n-1\) number \(2n^{2}\) for \(n=1,2,3,4\). The circular
+  path in the outer well is the travel of the electron and leaves this square
+  as the degree fixes it. The degree is not a node index, and no
+  fine-structure splitting is claimed.
 * `ElectronBoundary` — the cube's far-field coefficient lies strictly between
   \(2\) and \(3\), so for every \(Z\ge 3\) the cube has no radial root in the
   outer well. The tetrahedron, the octahedron, and the icosahedron likewise
@@ -1111,6 +1122,28 @@ example : 2 * Module.finrank ℝ ℝ = 2 ∧
     2 * Module.finrank ℝ Gravity.quadrupole = 10 ∧
     2 * Module.finrank ℝ Gravity.octupole = 14 :=
   subshell_seat_counts
+
+/-- Regression: angular-momentum squares `0`, `2`, `6`, and `12`, and the
+running total `2 n²`. -/
+example (a : Fin 3 → ℝ) (v : Fin 3 → ℝ) {M : Matrix (Fin 3) (Fin 3) ℝ}
+    (hM : M ∈ quadrupole) {c : Fin 10 → ℝ} (hc : c ∈ octupole) :
+    -(dipoleValue (jDip 0 1 (jDip 0 1 a)) v +
+        dipoleValue (jDip 0 2 (jDip 0 2 a)) v +
+        dipoleValue (jDip 1 2 (jDip 1 2 a)) v) =
+      (1 * 2) * dipoleValue a v ∧
+    -(quadPoly (jQuadXY (jQuadXY (quadCoeff M))) v +
+        quadPoly (jQuadXZ (jQuadXZ (quadCoeff M))) v +
+        quadPoly (jQuadYZ (jQuadYZ (quadCoeff M))) v) =
+      (2 * 3) * quadValue M v ∧
+    -(octuValue (jOctuXY (jOctuXY c)) v +
+        octuValue (jOctuXZ (jOctuXZ c)) v +
+        octuValue (jOctuYZ (jOctuYZ c)) v) =
+      (3 * 4) * octuValue c v ∧
+    2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+      Module.finrank ℝ quadrupole + Module.finrank ℝ octupole) =
+      2 * 4 ^ 2 :=
+  ⟨angSq_dipole a v, angSq_quadrupole hM v, angSq_octupole hc v,
+    shell_capacity_two_n_sq.2.2.2⟩
 
 /-- Regression: a dipole changes sign across a plane. -/
 example {a : Fin 3 → ℝ} (ha : dipoleValue a a ≠ 0) :=
