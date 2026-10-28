@@ -33,7 +33,9 @@ Past unit height the additive channel is silent. The remaining observable is
 the mismatch of the relative rotor `R(p)† R(q)`, the pure boost of angle
 `2δ` with `δ = log q - log p`. Its scalar is `J = 2δ²`, and the normalised
 height carries the integer-boost coefficient `16/(3π²)`. The equation of
-state is `n/2 = √(pq) cosh(δ/2)`. The vacuum `δ = 0` is the identity rotor,
+state is `n/2 = √(pq) cosh(δ/2)`. The same rapidity is the gap channel of
+`AdditivePhase`: an unequal pair is a Polignac pair, and the two channels are
+the one hyperbola `(n/2)² - k² = pq`. The vacuum `δ = 0` is the identity rotor,
 hence admissible, while for every prime `p ≥ 3` the summands of `2p` lie
 outside the cone. An unbalanced pair is separated by the parity gap
 `d ∈ {2, 4}`, and that floor tends to zero. On a nonempty finite set of

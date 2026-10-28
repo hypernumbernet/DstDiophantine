@@ -36,6 +36,7 @@ import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Collatz
 import DstDiophantine.Theorems.Goldbach
 import DstDiophantine.Theorems.Polignac
+import DstDiophantine.Theorems.AdditivePhase
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Theorems.Riemann
 import DstDiophantine.FoundationRegression
@@ -420,6 +421,10 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   polignac_mismatchHeight_strictAnti
   PolignacAdmissibleBridge polignac_conjecture_of_bridge
   twin_prime_conjecture_of_bridge
+  halfGap additive_phase_relation
+  primePair_rapidity_eq primePair_mismatch_eq primePair_mismatchHeight_eq
+  polignac_is_goldbach goldbach_unequal_is_polignac goldbach_vacuum_phase
+  additive_phase_one_relation goldbach_unequal_same_phase
   abcRadical IsAbcTriple abcQuality abcMismatchParams abcHeight
   abcHeightCoef abcQualityCeiling discreteAbcCeiling
   abc_sum_iff_motor abc_solution_iff_motor abcHeight_eq_quality

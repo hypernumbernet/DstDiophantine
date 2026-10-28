@@ -38,7 +38,9 @@ Every wider gap has height greater than one.
 
 ## Relative rotor
 
-For `q = p + 2k` the rapidity is `δ = log(q/p)`. The relative rotor is the pure
+For `q = p + 2k` the rapidity is `δ = log(q/p)`, the same rapidity as the
+Goldbach sum channel (`AdditivePhase`). The two channels are the one hyperbola
+`(n/2)² - k² = pq`. The relative rotor is the pure
 boost of angle `2δ`, with mismatch `J = 2δ²`. The gap is positive, so the
 mismatch is positive. The half-gap and the geometric mean are tied by
 `k = √(pq) sinh(δ/2)`. Once `p ≥ 2k`, the ratio is at most `2`, so the relative
