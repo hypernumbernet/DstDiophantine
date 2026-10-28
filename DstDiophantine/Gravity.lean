@@ -41,6 +41,7 @@ import DstDiophantine.Gravity.ElectronAngular
 import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronAngle
+import DstDiophantine.Gravity.ElectronTrio
 import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronCrystal
@@ -484,6 +485,14 @@ The straight line of one fixed jet is not itself that geodesic.
   part is stronger as well. Moving one electron in, not past that fraction,
   and removing its proton narrows the angle among the other three. Two such
   electrons, at the same closer distance, contribute twice that narrowing.
+* `ElectronTrio` — three coplanar rays meet at cosine \(-1/2\). That angle
+  lies strictly between the four-pair angle and a straight angle, and it is
+  greater than a right angle. Three electrons at one distance and three
+  protons at one greater distance, with the electrons' nuclear distances and
+  the electron–proton gaps in the outer well, exert no tangential force.
+  A further electron on the axis, in the outer well and no farther from the
+  nucleus than the bonding electrons, drives each ray off the plane to the
+  opposite side. The nuclear charge does not enter that sign.
 * `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
   times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
   larger phase. On the segment between two positive charges, with separation
@@ -1313,6 +1322,33 @@ example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
     (hp : W * pairAttraction y < Z * pairAttraction x) :
     y < x :=
   weaker_charge_closer hZ hW hx hy hp
+
+/-- Regression: three shared pairs meet between the four-pair angle and a straight angle. -/
+example :
+    Real.pi / 2 < Real.arccos tetCos ∧
+      Real.arccos tetCos < Real.arccos triCos ∧
+      Real.arccos triCos < Real.pi :=
+  shared_angle_order
+
+/-- Regression: three coplanar shared pairs exert no tangential force. -/
+example {Z r R : ℝ} {i : Fin 3}
+    (hr : outerSep r) (hR : r < R) (hgap : outerSep (R - r)) :
+    vdot (triPerp i) (electronForce Z i r R) = 0 ∧
+      vdot triZ (electronForce Z i r R) = 0 ∧
+      vdot (triPerp i) (protonForce Z i r R) = 0 ∧
+      vdot triZ (protonForce Z i r R) = 0 :=
+  tri_tangent_zero hr hR hgap
+
+/-- Regression: an axial electron no farther than the bonds folds each ray the same way. -/
+example {Z r R s : ℝ} {i : Fin 3}
+    (hr : 0 < r) (hR : 0 < R) (hs : 0 ≤ s)
+    (hwell : outerSep s) (hsr : s ≤ r) (hrR : r < R) :
+    -r * (electronForce Z i r R 2 +
+        pairForce (-1) (-1) (vsmul r (triU i)) (triAxis s) 2) -
+      R * (protonForce Z i r R 2 +
+        pairForce 1 (-1) (vsmul R (triU i)) (triAxis s) 2) =
+      triBend r R s ∧ 0 < triBend r R s :=
+  ⟨triRay_bend_eq hr hR hs, triBend_pos hwell hsr hrR⟩
 
 /-- Regression: on the straight water molecule the outward sum is negative. -/
 example {Z r R : ℝ} (hZ : (1 / 4 : ℝ) ≤ Z) (hr : outerSep r) (hR : outerSep R)
