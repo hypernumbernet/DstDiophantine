@@ -6,20 +6,17 @@ set_option linter.style.native false
 /-!
 # One phase for the additive prime problems
 
-Goldbach and Polignac are two channels of one prime pair. For primes `p ≤ q`
-the rapidity is `δ = log(q/p)`, the relative rotor is the pure boost of angle
-`2δ`, and the mismatch is `J = 2δ²`. The sum `n = p + q` and the half-gap
-`k = (q - p)/2` obey
+Goldbach and Polignac are two channels of one prime pair with even
+difference. For primes `p ≤ q` the rapidity is `δ = log(q/p)`, the relative
+rotor is the pure boost of angle `2δ`, and the mismatch is `J = 2δ²`. The
+channels are `n/2 = √(pq) cosh(δ/2)` and `k = √(pq) sinh(δ/2)`, with
+`n = p + q` and `k = (q - p)/2`, and therefore
 
 `(n/2)² - k² = pq`,
 
-which is `cosh²(δ/2) - sinh²(δ/2) = 1` written on the two channels
-
-`n/2 = √(pq) cosh(δ/2)`, `k = √(pq) sinh(δ/2)`.
-
-Equal primes close the gap channel (`k = 0`, `δ = 0`). Every unequal pair is
-at once a Goldbach decomposition of `n` and a Polignac pair of gap `2k`, with
-the same rapidity and the same mismatch. The classical conjectures ask
+which is `cosh²(δ/2) - sinh²(δ/2) = 1`. Equal primes close the gap channel
+(`k = 0`). Every unequal pair of this kind is at once a Goldbach decomposition
+of `n` and a Polignac pair of gap `2k`. The classical conjectures ask
 different questions of this one family, and neither is claimed.
 -/
 
