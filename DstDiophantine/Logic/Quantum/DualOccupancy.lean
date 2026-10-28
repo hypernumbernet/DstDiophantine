@@ -13,7 +13,8 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 * Two dual spinors on the ray of `u` carry the same spin vector. Their joint
   state is symmetric, and the total-spin square acts on it by `8`, the value
   on every symmetric state. The singlet, of total-spin square `0`, is the
-  joint state of the ray with its reverse.
+  joint state of the ray with its reverse. A repeated ray of a nonzero dual
+  spinor is not a scalar multiple of that singlet.
 -/
 
 namespace DstDiophantine
@@ -175,6 +176,39 @@ acts on it by `8`. -/
 theorem sum_pairSpin_sq_parallel (u : DualSpinor) :
     ∑ k, pairSpin k (pairSpin k (pairTensor u u)) = (8 : ℂ) • pairTensor u u :=
   sum_pairSpin_sq_of_symm (by rw [pairSwap_tensor])
+
+theorem pairSwap_smul (c : ℂ) (Ψ : PairState) :
+    pairSwap (c • Ψ) = c • pairSwap Ψ := by
+  simp [pairSwap, Matrix.transpose_smul]
+
+/-- The singlet line carries total-spin square zero. -/
+theorem sum_pairSpin_sq_smul_singlet (c : ℂ) :
+    ∑ k, pairSpin k (pairSpin k (c • singlet)) = 0 := by
+  rw [sum_pairSpin_sq, pairSwap_smul, pairSwap_singlet, smul_neg, add_neg_cancel, smul_zero]
+
+theorem pairTensor_self_ne_zero {u : DualSpinor} (hu : u ≠ 0) :
+    pairTensor u u ≠ 0 := by
+  intro h
+  apply hu
+  ext i
+  have hii : u i * u i = 0 := by
+    have := congr_fun (congr_fun h i) i
+    simpa [pairTensor_apply] using this
+  exact (mul_eq_zero.mp hii).elim id id
+
+/-- A repeated ray of a nonzero dual spinor is not on the singlet line. -/
+theorem repeated_ray_not_smul_singlet {u : DualSpinor} (hu : u ≠ 0) (c : ℂ) :
+    pairTensor u u ≠ c • singlet := by
+  intro h
+  have hline : (8 : ℂ) • pairTensor u u = 0 := by
+    rw [← sum_pairSpin_sq_parallel u, h]
+    exact sum_pairSpin_sq_smul_singlet c
+  have hzero : pairTensor u u = 0 := by
+    ext i j
+    have hentry := congr_fun (congr_fun hline i) j
+    simp only [Matrix.smul_apply, Matrix.zero_apply, smul_eq_mul] at hentry
+    exact (mul_eq_zero.mp hentry).resolve_left (by norm_num)
+  exact pairTensor_self_ne_zero hu hzero
 
 end Logic
 

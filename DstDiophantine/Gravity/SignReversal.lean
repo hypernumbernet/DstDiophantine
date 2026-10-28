@@ -28,6 +28,11 @@ Compton wavelength, and nothing here computes `r₁` from one.
 * For every such `r₁` the wall lies strictly below each listed charge-radius
   lower edge and below the saturation spacing.
 * `k e² / r₁ > 1439/1000` MeV, hence above `1294/1000` MeV.
+  The deuteron binding is an external free-mass difference, strictly between
+  `2224/1000` and `2225/1000` MeV, and is not derived. On the scattering
+  window that Coulomb energy lies below the lower end when `r₁ ≥ 65/100`,
+  and above the upper end when `r₁ ≤ 64/100`. Both sample radii lie in the
+  window.
 * At a separation above `52917` fm the mass term is a fraction of the charge
   term strictly between `440/10⁴²` and `442/10⁴²`, for every such length and
   for an electromagnetic length below `387` fm.
@@ -297,6 +302,55 @@ theorem reversal_bohr_mass_fraction {ℓE a r₁ : ℝ}
       mul_lt_mul_of_pos_right hρhi hMpos
     have hprod : ρ * (γE / γG) = ρ * γE / γG := by ring
     linarith
+
+/-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\).
+The CODATA value lies strictly inside. Not derived. -/
+def deuteronBindingMeVLower : ℚ := 2224 / 1000
+
+def deuteronBindingMeVUpper : ℚ := 2225 / 1000
+
+/-- Both sample reversals lie in the open scattering window `(1/2, 1)`. -/
+theorem reversal_splits_deuteronBinding :
+    (1 / 2 : ℝ) < 64 / 100 ∧ (64 / 100 : ℝ) < 65 / 100 ∧ (65 / 100 : ℝ) < 1 := by
+  norm_num
+
+/-- At a reversal of at least `65/100` fm, and still below `1` fm,
+`k e²/r₁` lies strictly below the deuteron binding. -/
+theorem coulomb_lt_deuteronBinding_of_wide {r₁ : ℝ}
+    (hr : (65 / 100 : ℝ) ≤ r₁) (hr1 : r₁ < 1) :
+    (coulombMeVFm : ℝ) / r₁ < (deuteronBindingMeVLower : ℝ) := by
+  have hke : (coulombMeVFm : ℝ) < ((1439965 / 10 ^ 6 : ℚ) : ℝ) :=
+    Rat.cast_lt.mpr coulombMeVFm_bounds.2
+  have hr0 : (0 : ℝ) < r₁ := by linarith
+  have hdiv : (coulombMeVFm : ℝ) / r₁ < ((1439965 / 10 ^ 6 : ℚ) : ℝ) / r₁ :=
+    div_lt_div_of_pos_right hke hr0
+  have hmono : ((1439965 / 10 ^ 6 : ℚ) : ℝ) / r₁ ≤
+      ((1439965 / 10 ^ 6 : ℚ) : ℝ) / (65 / 100 : ℝ) :=
+    div_le_div_of_nonneg_left (by norm_num) (by norm_num) hr
+  have hnum : ((1439965 / 10 ^ 6 : ℚ) : ℝ) / (65 / 100 : ℝ) <
+      (deuteronBindingMeVLower : ℝ) := by
+    unfold deuteronBindingMeVLower
+    norm_num
+  exact (hdiv.trans_le hmono).trans hnum
+
+/-- At a reversal above `1/2` fm and at most `64/100` fm,
+`k e²/r₁` lies strictly above the deuteron binding. -/
+theorem coulomb_gt_deuteronBinding_of_narrow {r₁ : ℝ}
+    (hr0 : (1 / 2 : ℝ) < r₁) (hr : r₁ ≤ (64 / 100 : ℝ)) :
+    (deuteronBindingMeVUpper : ℝ) < (coulombMeVFm : ℝ) / r₁ := by
+  have hke : ((1439964 / 10 ^ 6 : ℚ) : ℝ) < (coulombMeVFm : ℝ) :=
+    Rat.cast_lt.mpr coulombMeVFm_bounds.1
+  have hpos : (0 : ℝ) < r₁ := lt_trans (by norm_num) hr0
+  have hdiv : ((1439964 / 10 ^ 6 : ℚ) : ℝ) / r₁ < (coulombMeVFm : ℝ) / r₁ :=
+    div_lt_div_of_pos_right hke hpos
+  have hmono : ((1439964 / 10 ^ 6 : ℚ) : ℝ) / (64 / 100 : ℝ) ≤
+      ((1439964 / 10 ^ 6 : ℚ) : ℝ) / r₁ :=
+    div_le_div_of_nonneg_left (by norm_num) hpos hr
+  have hnum : (deuteronBindingMeVUpper : ℝ) <
+      ((1439964 / 10 ^ 6 : ℚ) : ℝ) / (64 / 100 : ℝ) := by
+    unfold deuteronBindingMeVUpper
+    norm_num
+  exact (hnum.trans_le hmono).trans hdiv
 
 end Gravity
 
