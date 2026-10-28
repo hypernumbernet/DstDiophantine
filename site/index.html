@@ -494,12 +494,12 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <h3 class="sub"><span class="en">Goldbach and Polignac: mismatch outside the cone</span><span class="ja">ゴールドバッハとポリニャック：錐の外の不整合</span></h3>
   <p><span class="en">Classical Goldbach (“every even n ≥ 4 is a sum of two primes”) and Polignac (“every even gap occurs infinitely often”) are <em>not</em> claimed as theorems here. What Lean formalises is how prime pairs sit in the same admissible-cone geometry as gravity. On the stable phase, the only Goldbach decomposition is 2 + 2 = 4; for every p ≥ 3, both summands of 2p lie outside the cone. Past unit height the additive channel is quiet, and the remaining signal is the <b>mismatch</b> between the two primes: with δ = log q − log p (the rapidity of the ratio q/p), the relative rotor is a pure boost and its imbalance is J = 2δ² — the same “boost versus rotation” language as section 2. The <b>equation of state</b> n/2 = √(pq) cosh(δ/2) ties the even sum n to how equal the two primes are; δ = 0 is perfect balance. On a finite set of candidate pairs, a statistical weight exp(−βJ) favours the pair closest to equality — an ensemble description, not a proof that the ensemble is nonempty.</span><span class="ja">古典的なゴールドバッハ（「偶数 n ≥ 4 は二つの素数の和」）やポリニャック（「すべての偶数ギャップが無限に現れる」）は、ここでは定理として主張されていません。Lean で形式化されているのは、素数対が重力と同じ許容錐の幾何の中にどう座るかです。安定相では唯一のゴールドバッハ分解は 2 + 2 = 4 で、p ≥ 3 では 2p の両方の加数が錐の外にあります。高さ 1 を越えると加法的チャンネルは静かになり、残る信号は二つの素数の<b>不整合</b>です。δ = log q − log p（比 q/p のラピディティ）とすると、相対ローターは純ブーストで、その偏りは J = 2δ² — 第2節と同じ「ブースト対回転」の言葉です。<b>状態方程式</b> n/2 = √(pq) cosh(δ/2) は偶数の和 n を二素数の釣り合いの度合いに結びつけ、δ = 0 が完全な釣り合いです。有限個の候補対では、重み exp(−βJ) がいちばん等しい対を favour します。これは系の記述であり、系が空でないことの証明ではありません。</span></p>
   <p><span class="en">Polignac pairs (p and p + 2k both prime) use the same mismatch language: polignacRapidity and polignacMismatch in the code. Twin primes are k = 1. The even gap 2k itself lies on the stable phase only when k = 1; neither member of a twin pair meets the cone, yet when p ≥ 2k the relative rotor stays inside the admissible cone. Formal theorems record when heights exceed one and how normalised mismatch falls as p grows — geometry of gaps, not a closure of classical infinitude.</span><span class="ja">ポリニャック対（p と p + 2k がともに素数）も同じ不整合の言葉を使います。コードでは polignacRapidity と polignacMismatch です。双子素数は k = 1 の場合です。偶数ギャップ 2k 自体が安定相にあるのは k = 1 のときだけで、双子対のどちらの素数も錐に入りません。それでも p ≥ 2k なら相対ローターは許容錐の内に留まります。形式化された定理は、いつ高さが 1 を超えるか、正規化された不整合が p の増大とともにどう小さくなるかを記録します。ギャップの幾何の記述であり、古典的な無限性の証明ではありません。</span></p>
-  <svg class="fig" viewBox="0 0 640 210" role="img" aria-label="Schematic: stable cone, shell with 3, and prime-pair mismatch outside">
+  <svg class="fig" viewBox="0 0 640 248" role="img" aria-label="Schematic: stable cone, shell with 3, and prime-pair mismatch outside">
     <defs>
       <linearGradient id="coneFill" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#4fc3ff" stop-opacity=".35"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".08"/></linearGradient>
       <linearGradient id="shellFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a" stop-opacity=".25"/><stop offset="1" stop-color="#ffd27a" stop-opacity=".05"/></linearGradient>
     </defs>
-    <g transform="translate(70,175)">
+    <g transform="translate(55,158)">
       <path d="M0,0 L140,0 L0,-140z" fill="url(#coneFill)" class="region"/>
       <path d="M0,-98 L98,-98 L0,-140z" fill="url(#shellFill)"/>
       <line class="zero" x1="0" y1="0" x2="70" y2="-70"/>
@@ -509,10 +509,10 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
       <text class="lbl small" x="6" y="-148">β</text>
       <circle cx="118" cy="-22" r="5" class="dotw"/><text class="lbl small usualt" x="128" y="-18">2</text>
       <circle cx="42" cy="-98" r="5" class="dotw"/><text class="lbl small accentt" x="52" y="-94">3</text>
-      <text class="lbl small" x="72" y="22"><tspan class="en">stable phase</tspan><tspan class="ja">安定相</tspan></text>
-      <text class="lbl small" x="72" y="-118"><tspan class="en">shell</tspan><tspan class="ja">殻</tspan></text>
+      <text class="lbl small" x="8" y="28" text-anchor="start"><tspan class="en">stable phase</tspan><tspan class="ja">安定相</tspan></text>
+      <text class="lbl small" x="8" y="-108" text-anchor="start"><tspan class="en">shell</tspan><tspan class="ja">殻</tspan></text>
     </g>
-    <g transform="translate(320,105)">
+    <g transform="translate(320,98)">
       <circle cx="-40" cy="0" r="14" class="mass"/><text class="lbl small" x="-40" y="4" text-anchor="middle">p</text>
       <circle cx="40" cy="0" r="14" class="mass"/><text class="lbl small" x="40" y="4" text-anchor="middle">q</text>
       <line class="axis arrow" x1="-26" y1="0" x2="26" y2="0" marker-end="url(#ah)"/>
@@ -520,9 +520,12 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
       <text class="lbl small twistt" x="0" y="38" text-anchor="middle">J = 2δ²</text>
       <text class="cap" x="0" y="-48" text-anchor="middle"><tspan class="en">pair past unit height</tspan><tspan class="ja">高さ 1 を越えた対</tspan></text>
     </g>
-    <line x1="455" y1="40" x2="610" y2="40" class="ceil"/>
-    <text class="lbl small accentt" x="532" y="28" text-anchor="middle"><tspan class="en">ceiling |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan><tspan class="ja">上限 |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan></text>
-    <text class="note" x="320" y="198" text-anchor="middle"><tspan class="en">Schematic: same admissible cone as section 3; prime pairs live outside, read by mismatch.</tspan><tspan class="ja">模式図：第3節と同じ許容錐。素数対は外側にあり、不整合で読む。</tspan></text>
+    <line x1="455" y1="36" x2="610" y2="36" class="ceil"/>
+    <text class="lbl small accentt" x="532" y="24" text-anchor="middle"><tspan class="en">ceiling |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan><tspan class="ja">上限 |J<tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</tspan></text>
+    <text class="note" x="320" y="228" text-anchor="middle">
+      <tspan class="en" x="320">Same admissible cone as section 3; prime pairs outside, read by mismatch.</tspan>
+      <tspan class="ja" x="320" dy="0">第3節と同じ許容錐。素数対は外側にあり、不整合で読む。</tspan>
+    </text>
   </svg>
   <p class="note"><span class="en">abc and the Riemann Hypothesis remain in the same certificate pipeline. Residual <span class="mono">*Bridge</span> propositions (including GoldbachAdmissibleBridge and PolignacAdmissibleBridge) are equivalent to the classical statements when stated, but that equivalence is not a reduction to a proved theorem — see section 10.</span><span class="ja">abc 予想とリーマン予想は同じ証明書パイプラインに残っています。残差の <span class="mono">*Bridge</span> 命題（GoldbachAdmissibleBridge や PolignacAdmissibleBridge を含む）は、述べ方によって古典的命題と同値ですが、その同値性は証明済み定理への帰着ではありません。第10節を参照してください。</span></p>
 </section>
