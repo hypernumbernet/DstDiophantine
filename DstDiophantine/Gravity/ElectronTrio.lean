@@ -15,9 +15,9 @@ import Mathlib.Tactic.Ring
 ## Paper boundary (do **not** claim)
 
 The length `ℓ` is not derived. No bond angle in degrees and no dissociation
-energy is produced. The plane of three shared pairs is an angular equilibrium;
-a second-derivative test that it is restored is not claimed. The radius at
-which the axial electron rests is not located.
+energy is produced. The radius at which the axial electron rests is not
+located. A displacement that breaks the equal spacing about the axis is not
+treated.
 
 ## What is proved
 
@@ -34,6 +34,11 @@ of cosine `-1/3`, and a straight angle, and it is greater than a right angle.
   in the plane of the rays. The generalized force that increases the angle from
   that axis is strictly positive, so each ray is driven off the plane to the
   opposite side. The nuclear charge does not enter that sign.
+* Off the plane, with the three rays still equally spaced about the axis, the
+  tangential force on each bonding electron points back toward the plane while
+  that electron is closer than its proton and the electron–electron separation
+  lies in the outer well. The nuclear charge does not enter. On the plane the
+  force vanishes, and short of the rays falling together it vanishes only there.
 -/
 
 namespace DstDiophantine.Gravity
@@ -676,6 +681,482 @@ theorem triBend_pos {r R s : ℝ}
     linarith
   unfold triBend
   exact mul_pos hs0 (sub_pos.mpr hdiv)
+
+/-! ### The plane restores the bonding electrons -/
+
+/-- Cosine of the angle between two rays at polar angle `θ` from the axis. -/
+def umbCos (θ : ℝ) : ℝ := 3 / 2 * cos θ ^ 2 - 1 / 2
+
+/-- Azimuth of the three rays. -/
+def umbPhi : Fin 3 → ℝ
+  | 0 => 0
+  | 1 => 2 * π / 3
+  | 2 => 4 * π / 3
+
+/-- Unit vector of ray `i` at polar angle `θ` from the positive axis. -/
+def umbU (θ : ℝ) (i : Fin 3) : Fin 3 → ℝ
+  | 0 => sin θ * cos (umbPhi i)
+  | 1 => sin θ * sin (umbPhi i)
+  | 2 => cos θ
+
+/-- Unit tangent `∂/∂θ` of `umbU`. Positive increases the polar angle. -/
+def umbT (θ : ℝ) (i : Fin 3) : Fin 3 → ℝ
+  | 0 => cos θ * cos (umbPhi i)
+  | 1 => cos θ * sin (umbPhi i)
+  | 2 => -sin θ
+
+/-- Electron–electron separation of two rays at polar angle `θ`. -/
+def umbSep (ρ θ : ℝ) : ℝ := ρ * sqrt 3 * sin θ
+
+/-- Separation from an electron at `r` to a proton at `R` on another ray. -/
+def umbCross (r R θ : ℝ) : ℝ :=
+  sqrt ((R - r) ^ 2 + 3 * r * R * sin θ ^ 2)
+
+lemma cos_two_pi_div_three : cos (2 * π / 3) = -1 / 2 := by
+  have h : 2 * π / 3 = π - π / 3 := by ring
+  rw [h, cos_pi_sub, cos_pi_div_three]
+  ring
+
+lemma cos_four_pi_div_three : cos (4 * π / 3) = -1 / 2 := by
+  have h : 4 * π / 3 = π / 3 + π := by ring
+  rw [h, cos_add_pi, cos_pi_div_three]
+  ring
+
+lemma cos_umbPhi_sub {i j : Fin 3} (hij : i ≠ j) :
+    cos (umbPhi i - umbPhi j) = -1 / 2 := by
+  fin_cases i <;> fin_cases j
+  · exact (hij rfl).elim
+  · simp only [umbPhi]
+    have h : (0 : ℝ) - 2 * π / 3 = -(2 * π / 3) := by ring
+    rw [h, cos_neg, cos_two_pi_div_three]
+  · simp only [umbPhi]
+    have h : (0 : ℝ) - 4 * π / 3 = -(4 * π / 3) := by ring
+    rw [h, cos_neg, cos_four_pi_div_three]
+  · simp only [umbPhi]
+    rw [sub_zero, cos_two_pi_div_three]
+  · exact (hij rfl).elim
+  · simp only [umbPhi]
+    have h : 2 * π / 3 - 4 * π / 3 = -(2 * π / 3) := by ring
+    rw [h, cos_neg, cos_two_pi_div_three]
+  · simp only [umbPhi]
+    rw [sub_zero, cos_four_pi_div_three]
+  · simp only [umbPhi]
+    have h : 4 * π / 3 - 2 * π / 3 = 2 * π / 3 := by ring
+    rw [h, cos_two_pi_div_three]
+  · exact (hij rfl).elim
+
+lemma umbU_dot_self (θ : ℝ) (i : Fin 3) : vdot (umbU θ i) (umbU θ i) = 1 := by
+  unfold vdot umbU
+  have hφ := sin_sq_add_cos_sq (umbPhi i)
+  calc
+    sin θ * cos (umbPhi i) * (sin θ * cos (umbPhi i)) +
+          sin θ * sin (umbPhi i) * (sin θ * sin (umbPhi i)) +
+          cos θ * cos θ
+      = sin θ ^ 2 * (cos (umbPhi i) ^ 2 + sin (umbPhi i) ^ 2) + cos θ ^ 2 := by ring
+    _ = sin θ ^ 2 + cos θ ^ 2 := by
+      have hcomm : cos (umbPhi i) ^ 2 + sin (umbPhi i) ^ 2 =
+          sin (umbPhi i) ^ 2 + cos (umbPhi i) ^ 2 := by ring
+      rw [hcomm, hφ, mul_one]
+    _ = 1 := sin_sq_add_cos_sq θ
+
+lemma umbU_dot_T (θ : ℝ) (i : Fin 3) : vdot (umbT θ i) (umbU θ i) = 0 := by
+  unfold vdot umbT umbU
+  have hφ := sin_sq_add_cos_sq (umbPhi i)
+  calc
+    cos θ * cos (umbPhi i) * (sin θ * cos (umbPhi i)) +
+          cos θ * sin (umbPhi i) * (sin θ * sin (umbPhi i)) +
+          -sin θ * cos θ
+      = sin θ * cos θ * (cos (umbPhi i) ^ 2 + sin (umbPhi i) ^ 2) - sin θ * cos θ := by ring
+    _ = sin θ * cos θ - sin θ * cos θ := by
+      have hcomm : cos (umbPhi i) ^ 2 + sin (umbPhi i) ^ 2 =
+          sin (umbPhi i) ^ 2 + cos (umbPhi i) ^ 2 := by ring
+      rw [hcomm, hφ, mul_one]
+    _ = 0 := by ring
+
+lemma umbU_dot_ne {θ : ℝ} {i j : Fin 3} (hij : i ≠ j) :
+    vdot (umbU θ i) (umbU θ j) = umbCos θ := by
+  have hcos := cos_umbPhi_sub hij
+  unfold vdot umbU
+  have hmul : sin θ * cos (umbPhi i) * (sin θ * cos (umbPhi j)) +
+      sin θ * sin (umbPhi i) * (sin θ * sin (umbPhi j)) =
+      sin θ ^ 2 * cos (umbPhi i - umbPhi j) := by
+    rw [cos_sub]
+    ring
+  rw [hmul, hcos]
+  have hsin : sin θ ^ 2 = 1 - cos θ ^ 2 := by
+    have h := sin_sq_add_cos_sq θ
+    linarith
+  unfold umbCos
+  rw [hsin]
+  ring
+
+lemma umb_neighbor_dot {θ : ℝ} {i j : Fin 3} (hij : i ≠ j) :
+    vdot (umbT θ i) (umbU θ j) = -(3 / 2) * sin θ * cos θ := by
+  have hcos := cos_umbPhi_sub hij
+  unfold vdot umbT umbU
+  have hmul : cos θ * cos (umbPhi i) * (sin θ * cos (umbPhi j)) +
+      cos θ * sin (umbPhi i) * (sin θ * sin (umbPhi j)) =
+      sin θ * cos θ * cos (umbPhi i - umbPhi j) := by
+    rw [cos_sub]
+    ring
+  rw [hmul, hcos]
+  ring
+
+lemma umb_tangent_ee {r θ : ℝ} {i j : Fin 3} (hij : i ≠ j) :
+    vdot (umbT θ i) (vsub (vsmul r (umbU θ i)) (vsmul r (umbU θ j))) =
+      r * (3 / 2) * sin θ * cos θ := by
+  rw [vdot_sub, vdot_smul_right, vdot_smul_right, umbU_dot_T, umb_neighbor_dot hij]
+  ring
+
+lemma umb_tangent_cross {r R θ : ℝ} {i j : Fin 3} (hij : i ≠ j) :
+    vdot (umbT θ i) (vsub (vsmul r (umbU θ i)) (vsmul R (umbU θ j))) =
+      R * (3 / 2) * sin θ * cos θ := by
+  rw [vdot_sub, vdot_smul_right, vdot_smul_right, umbU_dot_T, umb_neighbor_dot hij]
+  ring
+
+lemma umb_ee_norm {r θ : ℝ} (hr : 0 ≤ r) (hs : 0 ≤ sin θ) {i j : Fin 3}
+    (hij : i ≠ j) :
+    vnorm (vsub (vsmul r (umbU θ i)) (vsmul r (umbU θ j))) = umbSep r θ := by
+  have hnn : 0 ≤ chordSq r r (umbCos θ) := by
+    unfold chordSq
+    have hcos : umbCos θ ≤ 1 := by
+      unfold umbCos
+      nlinarith [cos_sq_le_one θ, sq_nonneg (cos θ)]
+    nlinarith [sq_nonneg (r - r), hcos]
+  have hv := vnorm_unit_chord (umbU_dot_self θ i) (umbU_dot_self θ j)
+    (umbU_dot_ne hij) hnn
+  have hchord : chord r r (umbCos θ) = umbSep r θ := by
+    have hsq : chordSq r r (umbCos θ) = (umbSep r θ) ^ 2 := by
+      unfold chordSq umbCos umbSep
+      have hsin : sin θ ^ 2 = 1 - cos θ ^ 2 := by
+        have h := sin_sq_add_cos_sq θ
+        linarith
+      have h3 : (sqrt 3) ^ 2 = 3 := sq_sqrt (by norm_num)
+      have hL : r ^ 2 + r ^ 2 - 2 * r * r * (3 / 2 * cos θ ^ 2 - 1 / 2) =
+          3 * r ^ 2 * (1 - cos θ ^ 2) := by ring
+      calc
+        r ^ 2 + r ^ 2 - 2 * r * r * (3 / 2 * cos θ ^ 2 - 1 / 2)
+          = 3 * r ^ 2 * (1 - cos θ ^ 2) := hL
+        _ = 3 * r ^ 2 * sin θ ^ 2 := by rw [← hsin]
+        _ = (r * sqrt 3 * sin θ) ^ 2 := by
+          rw [show (r * sqrt 3 * sin θ) ^ 2 = r ^ 2 * (sqrt 3) ^ 2 * sin θ ^ 2 by ring, h3]
+          ring
+    unfold chord
+    rw [hsq, sqrt_sq]
+    unfold umbSep
+    positivity
+  simpa [hchord] using hv
+
+lemma umb_cross_norm {r R θ : ℝ} {i j : Fin 3} (hij : i ≠ j)
+    (hnn : 0 ≤ chordSq r R (umbCos θ)) :
+    vnorm (vsub (vsmul r (umbU θ i)) (vsmul R (umbU θ j))) = umbCross r R θ := by
+  have hv := vnorm_unit_chord (umbU_dot_self θ i) (umbU_dot_self θ j)
+    (umbU_dot_ne hij) hnn
+  have hchord : chord r R (umbCos θ) = umbCross r R θ := by
+    have hsq : chordSq r R (umbCos θ) = (R - r) ^ 2 + 3 * r * R * sin θ ^ 2 := by
+      unfold chordSq umbCos
+      have hsin : sin θ ^ 2 = 1 - cos θ ^ 2 := by
+        have h := sin_sq_add_cos_sq θ
+        linarith
+      rw [hsin]
+      ring
+    unfold chord umbCross
+    rw [hsq]
+  simpa [hchord] using hv
+
+private lemma umb_vdot_add (t u w : Fin 3 → ℝ) :
+    vdot t (fun i => u i + w i) = vdot t u + vdot t w := by
+  unfold vdot
+  ring
+
+private lemma umb_vdot_pairForce (qi qj : ℝ) (ri rj t : Fin 3 → ℝ)
+    (_hden : gammaSEqual (pairPhase (vnorm (vsub ri rj))) *
+      vnorm (vsub ri rj) ^ 3 ≠ 0) :
+    vdot t (fun i => pairForce qi qj ri rj i) =
+      qi * qj * vdot t (vsub ri rj) /
+        (gammaSEqual (pairPhase (vnorm (vsub ri rj))) * vnorm (vsub ri rj) ^ 3) := by
+  unfold vdot pairForce
+  field_simp [_hden]
+  unfold vsub
+  ring
+
+private lemma umb_vdot_pairForce_ortho {qi qj : ℝ} {ri rj t : Fin 3 → ℝ}
+    (hdot : vdot t (vsub ri rj) = 0) :
+    vdot t (fun i => pairForce qi qj ri rj i) = 0 := by
+  by_cases hden : gammaSEqual (pairPhase (vnorm (vsub ri rj))) *
+      vnorm (vsub ri rj) ^ 3 = 0
+  · have h0 (k : Fin 3) : pairForce qi qj ri rj k = 0 := by
+      unfold pairForce
+      rw [hden, div_zero]
+    unfold vdot
+    simp [h0]
+  · rw [umb_vdot_pairForce qi qj ri rj t hden, hdot, mul_zero, zero_div]
+
+private lemma vdot_erase_sum (t : Fin 3 → ℝ) (s : Finset (Fin 3)) (f : Fin 3 → Fin 3 → ℝ) :
+    vdot t (fun k => ∑ j ∈ s, f j k) = ∑ j ∈ s, vdot t (f j) := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty]
+    unfold vdot
+    simp
+  | insert a s ha ih =>
+    have hfun : (fun k => ∑ j ∈ insert a s, f j k) =
+        fun k => f a k + ∑ j ∈ s, f j k := by
+      funext k
+      rw [Finset.sum_insert ha]
+    rw [hfun, umb_vdot_add, ih, Finset.sum_insert ha]
+
+/-- Force on the bonding electron of ray `i`. -/
+def umbElectronForce (Z : ℝ) (i : Fin 3) (r R θ : ℝ) : Fin 3 → ℝ :=
+  fun k =>
+    pairForce (-1) Z (vsmul r (umbU θ i)) (fun _ => 0) k +
+    pairForce (-1) 1 (vsmul r (umbU θ i)) (vsmul R (umbU θ i)) k +
+    (∑ j ∈ Finset.univ.erase i,
+      pairForce (-1) (-1) (vsmul r (umbU θ i)) (vsmul r (umbU θ j)) k) +
+    (∑ j ∈ Finset.univ.erase i,
+      pairForce (-1) 1 (vsmul r (umbU θ i)) (vsmul R (umbU θ j)) k)
+
+/-- Tangential component of that force. Positive increases the polar angle. -/
+def umbElectronTangent (Z r R θ : ℝ) (i : Fin 3) : ℝ :=
+  vdot (umbT θ i) (umbElectronForce Z i r R θ)
+
+private lemma outer_umbCross {r R θ : ℝ}
+    (hr : 0 < r) (hR : r < R) (hs : 0 < sin θ)
+    (hee : outerSep (umbSep r θ)) : outerSep (umbCross r R θ) := by
+  have hR0 : 0 < R := lt_trans hr hR
+  have hdiff : (umbCross r R θ) ^ 2 - (umbSep r θ) ^ 2 =
+      (R - r) * (R - r + 3 * r * sin θ ^ 2) := by
+    have hrc : (umbCross r R θ) ^ 2 = (R - r) ^ 2 + 3 * r * R * sin θ ^ 2 := by
+      unfold umbCross
+      exact sq_sqrt (by positivity)
+    have hee2 : (umbSep r θ) ^ 2 = 3 * r ^ 2 * sin θ ^ 2 := by
+      unfold umbSep
+      have h3 : (sqrt 3) ^ 2 = 3 := sq_sqrt (by norm_num)
+      calc
+        (r * sqrt 3 * sin θ) ^ 2 = r ^ 2 * (sqrt 3) ^ 2 * sin θ ^ 2 := by ring
+        _ = 3 * r ^ 2 * sin θ ^ 2 := by rw [h3]; ring
+    rw [hrc, hee2]
+    ring
+  have hpos : 0 < (umbCross r R θ) ^ 2 - (umbSep r θ) ^ 2 := by
+    rw [hdiff]
+    positivity
+  have hsq : (umbSep r θ) ^ 2 < (umbCross r R θ) ^ 2 := by linarith
+  have hlt : umbSep r θ < umbCross r R θ := by
+    have habs : |umbSep r θ| < |umbCross r R θ| := (sq_lt_sq).mp hsq
+    have hse : 0 < umbSep r θ := hee.1
+    have hsc : 0 < umbCross r R θ := by
+      unfold umbCross
+      exact sqrt_pos.mpr (by positivity)
+    rwa [abs_of_pos hse, abs_of_pos hsc] at habs
+  exact outerSep_longer hee hlt
+
+private lemma umbBracket_pos {r R θ : ℝ}
+    (hθ : θ ∈ Ioo 0 π) (hr : 0 < r) (hR : r < R)
+    (hee : outerSep (umbSep r θ)) :
+    R / (gammaSEqual (pairPhase (umbCross r R θ)) * umbCross r R θ ^ 3) <
+      r / (gammaSEqual (pairPhase (umbSep r θ)) * umbSep r θ ^ 3) := by
+  have hs : 0 < sin θ := sin_pos_of_pos_of_lt_pi hθ.1 hθ.2
+  have hR0 : 0 < R := lt_trans hr hR
+  set ee : ℝ := umbSep r θ
+  set rc : ℝ := umbCross r R θ
+  have hee_pos : 0 < ee := hee.1
+  have hrc_out : outerSep rc := outer_umbCross hr hR hs hee
+  have hrc_pos : 0 < rc := hrc_out.1
+  have hrc_sq : rc ^ 2 = (R - r) ^ 2 + 3 * r * R * sin θ ^ 2 := by
+    unfold rc umbCross
+    exact sq_sqrt (by positivity)
+  have hee_sq : ee ^ 2 = 3 * r ^ 2 * sin θ ^ 2 := by
+    unfold ee umbSep
+    have h3 : (sqrt 3) ^ 2 = 3 := sq_sqrt (by norm_num)
+    calc
+      (r * sqrt 3 * sin θ) ^ 2 = r ^ 2 * (sqrt 3) ^ 2 * sin θ ^ 2 := by ring
+      _ = 3 * r ^ 2 * sin θ ^ 2 := by rw [h3]; ring
+  have hsq : R * ee ^ 2 < r * rc ^ 2 := by
+    have hdiff : r * rc ^ 2 - R * ee ^ 2 = r * (R - r) ^ 2 := by
+      rw [hrc_sq, hee_sq]
+      ring
+    have hpos : 0 < r * (R - r) ^ 2 :=
+      mul_pos hr (sq_pos_of_pos (sub_pos.mpr hR))
+    linarith
+  have hrc_ee : ee < rc := by
+    have h2 : ee ^ 2 < rc ^ 2 := by
+      have hlt : r * ee ^ 2 < r * rc ^ 2 := by
+        have hRR : r * ee ^ 2 < R * ee ^ 2 :=
+          mul_lt_mul_of_pos_right hR (sq_pos_of_pos hee_pos)
+        linarith
+      exact (mul_lt_mul_iff_of_pos_left hr).mp hlt
+    have habs : |ee| < |rc| := (sq_lt_sq).mp h2
+    rwa [abs_of_pos hee_pos, abs_of_pos hrc_pos] at habs
+  have hcube : R * ee ^ 3 < r * rc ^ 3 := by
+    have hmid : R * ee ^ 2 * ee < r * rc ^ 2 * rc := by
+      have h1 : R * ee ^ 2 * ee < r * rc ^ 2 * ee :=
+        mul_lt_mul_of_pos_right hsq hee_pos
+      have h2 : r * rc ^ 2 * ee < r * rc ^ 2 * rc :=
+        mul_lt_mul_of_pos_left hrc_ee (mul_pos hr (sq_pos_of_pos hrc_pos))
+      linarith
+    calc
+      R * ee ^ 3 = R * ee ^ 2 * ee := by ring
+      _ < r * rc ^ 2 * rc := hmid
+      _ = r * rc ^ 3 := by ring
+  have hphase : pairPhase rc < pairPhase ee := by
+    unfold pairPhase
+    exact div_lt_div_of_pos_left (by norm_num) (mul_pos (by norm_num) hee_pos)
+      (by linarith : (2 : ℝ) * ee < 2 * rc)
+  have hγe : 0 < gammaSEqual (pairPhase ee) := outer_gamma_pos hee
+  have hγc : 0 < gammaSEqual (pairPhase rc) := outer_gamma_pos hrc_out
+  have hγlt : gammaSEqual (pairPhase ee) < gammaSEqual (pairPhase rc) := by
+    refine gamma_strictAnti_phase ?_ hee.2 hphase
+    unfold pairPhase
+    exact div_nonneg (by norm_num) (mul_nonneg (by norm_num) hrc_pos.le)
+  have hclear : R * gammaSEqual (pairPhase ee) * ee ^ 3 <
+      r * gammaSEqual (pairPhase rc) * rc ^ 3 := by
+    have h1 : gammaSEqual (pairPhase ee) * (R * ee ^ 3) <
+        gammaSEqual (pairPhase ee) * (r * rc ^ 3) :=
+      mul_lt_mul_of_pos_left hcube hγe
+    have h2 : gammaSEqual (pairPhase ee) * (r * rc ^ 3) <
+        gammaSEqual (pairPhase rc) * (r * rc ^ 3) :=
+      mul_lt_mul_of_pos_right hγlt (mul_pos hr (pow_pos hrc_pos 3))
+    linarith
+  rw [div_lt_div_iff₀ (mul_pos hγc (pow_pos hrc_pos 3))
+    (mul_pos hγe (pow_pos hee_pos 3))]
+  linarith
+
+theorem umbElectronTangent_factor {Z r R θ : ℝ} {i : Fin 3}
+    (hθ : θ ∈ Ioo 0 π) (hr : 0 < r) (hR : r < R)
+    (hee : outerSep (umbSep r θ)) :
+    umbElectronTangent Z r R θ i =
+      3 * sin θ * cos θ *
+        (r / (gammaSEqual (pairPhase (umbSep r θ)) * umbSep r θ ^ 3) -
+          R / (gammaSEqual (pairPhase (umbCross r R θ)) * umbCross r R θ ^ 3)) := by
+  have hs : 0 < sin θ := sin_pos_of_pos_of_lt_pi hθ.1 hθ.2
+  have hR0 : 0 < R := lt_trans hr hR
+  set ee : ℝ := umbSep r θ
+  set rc : ℝ := umbCross r R θ
+  have hrc_out : outerSep rc := outer_umbCross hr hR hs hee
+  have hγe : 0 < gammaSEqual (pairPhase ee) := outer_gamma_pos hee
+  have hγc : 0 < gammaSEqual (pairPhase rc) := outer_gamma_pos hrc_out
+  have hnnC : 0 ≤ chordSq r R (umbCos θ) := by
+    have hsq : chordSq r R (umbCos θ) = (R - r) ^ 2 + 3 * r * R * sin θ ^ 2 := by
+      unfold chordSq umbCos
+      have hsin : sin θ ^ 2 = 1 - cos θ ^ 2 := by
+        have h := sin_sq_add_cos_sq θ
+        linarith
+      rw [hsin]
+      ring
+    rw [hsq]
+    positivity
+  have hnuc : vdot (umbT θ i) (fun k =>
+      pairForce (-1) Z (vsmul r (umbU θ i)) (fun _ => 0) k) = 0 := by
+    refine umb_vdot_pairForce_ortho ?_
+    have hsub : vsub (vsmul r (umbU θ i)) (fun _ => 0) = vsmul r (umbU θ i) := by
+      funext k
+      simp [vsub]
+    rw [hsub, vdot_smul_right, umbU_dot_T, mul_zero]
+  have hown : vdot (umbT θ i) (fun k =>
+      pairForce (-1) 1 (vsmul r (umbU θ i)) (vsmul R (umbU θ i)) k) = 0 := by
+    refine umb_vdot_pairForce_ortho ?_
+    rw [vdot_sub, vdot_smul_right, vdot_smul_right, umbU_dot_T]
+    ring
+  have hden_e {j : Fin 3} (hij : i ≠ j) :
+      gammaSEqual (pairPhase (vnorm (vsub (vsmul r (umbU θ i))
+        (vsmul r (umbU θ j))))) *
+        vnorm (vsub (vsmul r (umbU θ i)) (vsmul r (umbU θ j))) ^ 3 ≠ 0 := by
+    rw [umb_ee_norm hr.le hs.le hij]
+    exact mul_ne_zero hγe.ne' (pow_ne_zero 3 hee.1.ne')
+  have hden_c {j : Fin 3} (hij : i ≠ j) :
+      gammaSEqual (pairPhase (vnorm (vsub (vsmul r (umbU θ i))
+        (vsmul R (umbU θ j))))) *
+        vnorm (vsub (vsmul r (umbU θ i)) (vsmul R (umbU θ j))) ^ 3 ≠ 0 := by
+    rw [umb_cross_norm hij hnnC]
+    exact mul_ne_zero hγc.ne' (pow_ne_zero 3 hrc_out.1.ne')
+  have hee_one {j : Fin 3} (hij : i ≠ j) :
+      vdot (umbT θ i) (fun k => pairForce (-1) (-1)
+        (vsmul r (umbU θ i)) (vsmul r (umbU θ j)) k) =
+        r * (3 / 2) * sin θ * cos θ /
+          (gammaSEqual (pairPhase ee) * ee ^ 3) := by
+    rw [umb_vdot_pairForce _ _ _ _ _ (hden_e hij), umb_ee_norm hr.le hs.le hij,
+      umb_tangent_ee hij]
+    ring
+  have hcross_one {j : Fin 3} (hij : i ≠ j) :
+      vdot (umbT θ i) (fun k => pairForce (-1) 1
+        (vsmul r (umbU θ i)) (vsmul R (umbU θ j)) k) =
+        -(R * (3 / 2) * sin θ * cos θ) /
+          (gammaSEqual (pairPhase rc) * rc ^ 3) := by
+    rw [umb_vdot_pairForce _ _ _ _ _ (hden_c hij), umb_cross_norm hij hnnC,
+      umb_tangent_cross hij]
+    ring
+  unfold umbElectronTangent umbElectronForce
+  rw [umb_vdot_add, umb_vdot_add, umb_vdot_add, hnuc, hown, zero_add, zero_add]
+  rw [vdot_erase_sum, vdot_erase_sum]
+  have hfunE : ∀ j ∈ Finset.univ.erase i,
+      vdot (umbT θ i) (fun k => pairForce (-1) (-1)
+        (vsmul r (umbU θ i)) (vsmul r (umbU θ j)) k) =
+        r * (3 / 2) * sin θ * cos θ /
+          (gammaSEqual (pairPhase ee) * ee ^ 3) := by
+    intro j hj
+    exact hee_one (mem_erase.mp hj).1.symm
+  have hfunC : ∀ j ∈ Finset.univ.erase i,
+      vdot (umbT θ i) (fun k => pairForce (-1) 1
+        (vsmul r (umbU θ i)) (vsmul R (umbU θ j)) k) =
+        -(R * (3 / 2) * sin θ * cos θ) /
+          (gammaSEqual (pairPhase rc) * rc ^ 3) := by
+    intro j hj
+    exact hcross_one (mem_erase.mp hj).1.symm
+  rw [sum_congr rfl hfunE, sum_congr rfl hfunC, sum_const, sum_const]
+  have hcard : (Finset.univ.erase i).card = 2 := by
+    rw [Finset.card_erase_of_mem (mem_univ i), Finset.card_univ]
+    rfl
+  rw [hcard]
+  simp only [nsmul_eq_mul]
+  ring
+
+/-- On the plane the three shared pairs exert no tangential force on a
+bonding electron. -/
+theorem umbElectron_plane {Z r R : ℝ} {i : Fin 3}
+    (hr : 0 < r) (hR : r < R) (hee : outerSep (umbSep r (π / 2))) :
+    umbElectronTangent Z r R (π / 2) i = 0 := by
+  have hθ : π / 2 ∈ Ioo 0 π := ⟨div_pos pi_pos (by norm_num), half_lt_self pi_pos⟩
+  rw [umbElectronTangent_factor hθ hr hR hee, cos_pi_div_two, mul_zero, zero_mul]
+
+/-- Off the plane, on the side of the positive axis, each bonding electron is
+driven back toward the plane. The nuclear charge does not enter. -/
+theorem umbElectron_restores {Z r R θ : ℝ} {i : Fin 3}
+    (hθ : θ ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hR : r < R)
+    (hee : outerSep (umbSep r θ)) :
+    0 < umbElectronTangent Z r R θ i := by
+  have hθπ : θ ∈ Ioo 0 π := ⟨hθ.1, lt_trans hθ.2 (half_lt_self pi_pos)⟩
+  have hs : 0 < sin θ := sin_pos_of_pos_of_lt_pi hθπ.1 hθπ.2
+  have hcos : 0 < cos θ :=
+    cos_pos_of_mem_Ioo ⟨lt_trans (neg_lt_zero.mpr pi_div_two_pos) hθ.1, hθ.2⟩
+  have hbrack : 0 <
+      r / (gammaSEqual (pairPhase (umbSep r θ)) * umbSep r θ ^ 3) -
+        R / (gammaSEqual (pairPhase (umbCross r R θ)) * umbCross r R θ ^ 3) :=
+    sub_pos.mpr (umbBracket_pos hθπ hr hR hee)
+  rw [umbElectronTangent_factor hθπ hr hR hee]
+  positivity
+
+/-- Off the plane, on the opposite side, each bonding electron is driven back
+toward the plane. -/
+theorem umbElectron_restores_far {Z r R θ : ℝ} {i : Fin 3}
+    (hθ : θ ∈ Ioo (π / 2) π) (hr : 0 < r) (hR : r < R)
+    (hee : outerSep (umbSep r θ)) :
+    umbElectronTangent Z r R θ i < 0 := by
+  have hθπ : θ ∈ Ioo 0 π := ⟨lt_trans (div_pos pi_pos (by norm_num)) hθ.1, hθ.2⟩
+  have hs : 0 < sin θ := sin_pos_of_pos_of_lt_pi hθπ.1 hθπ.2
+  have hcos : cos θ < 0 := by
+    have hlt : cos θ < cos (π / 2) :=
+      cos_lt_cos_of_nonneg_of_le_pi (le_of_lt (div_pos pi_pos (by norm_num)))
+        (le_of_lt hθ.2) hθ.1
+    simpa [cos_pi_div_two] using hlt
+  have hbrack : 0 <
+      r / (gammaSEqual (pairPhase (umbSep r θ)) * umbSep r θ ^ 3) -
+        R / (gammaSEqual (pairPhase (umbCross r R θ)) * umbCross r R θ ^ 3) :=
+    sub_pos.mpr (umbBracket_pos hθπ hr hR hee)
+  rw [umbElectronTangent_factor hθπ hr hR hee]
+  have hprod : 3 * sin θ * cos θ < 0 :=
+    mul_neg_of_pos_of_neg (mul_pos (by norm_num) hs) hcos
+  exact mul_neg_of_neg_of_pos hprod hbrack
 
 end
 

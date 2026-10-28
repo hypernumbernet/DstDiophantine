@@ -490,6 +490,12 @@ The straight line of one fixed jet is not itself that geodesic.
   greater than a right angle. Three electrons at one distance and three
   protons at one greater distance, with the electrons' nuclear distances and
   the electron–proton gaps in the outer well, exert no tangential force.
+  Off the plane, with the three rays still equally spaced about the axis, the
+  tangential force on each bonding electron points back toward the plane while
+  the electron is closer than its proton and the electron–electron separation
+  lies in the outer well. On the plane that force vanishes, and short of the
+  rays falling together it vanishes only there. The nuclear charge does not
+  enter.
   A further electron on the axis, in the outer well and no farther from the
   nucleus than the bonding electrons, drives each ray off the plane to the
   opposite side. The nuclear charge does not enter that sign.
