@@ -14,6 +14,7 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.ChannelRange
+import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.NuclearLength
@@ -192,6 +193,17 @@ The straight line of one fixed jet is not itself that geodesic.
   excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) the ratio of that excess
   to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
   input. The comparison does not subtract the Coulomb coupling from \(G\).
+* `WeakLinearity` — where a fixed compactification radius stays linear in mass.
+  The dual acceleration of a sum is the sum of the accelerations, and the
+  fractional excess over inverse-square depends only on \(r/R\) and is strictly
+  less than \((r/R)^2/3\). On \((0,\pi)\) the three-sphere enhancement lies
+  strictly above \(1+x^2/3\). With \(R^2=GM/a_0\) the acceleration relation is
+  strictly subhomogeneous and strictly subadditive. The exterior rapidity
+  exceeds \(r_s/(2r)\) by a fraction strictly less than \(r_s/(r-r_s)\): below
+  \(1/(4\times 10^7)\) for a solar mass at one astronomical unit, and below
+  \(10^{-6}\) for the Milky-Way stand-in at its compactification radius. That
+  solar radius lies between \(7020\) and \(7040\) astronomical units, and at one
+  astronomical unit the dual fractional excess is below \(10^{-8}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
@@ -1815,6 +1827,38 @@ example {a0 gN : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) :
     gN < dualRAR a0 gN ∧ Real.sqrt (a0 * gN) < dualRAR a0 gN ∧
       dualRAR a0 gN < gN + Real.sqrt (a0 * gN) ∧ dualRAR a0 gN < gN + a0 / 3 :=
   dualRAR_bounds ha0 hgN
+
+/-- Regression: fixed radius is additive in mass. -/
+example (G R r M₁ M₂ : ℝ) :
+    dualAccel G (M₁ + M₂) R r = dualAccel G M₁ R r + dualAccel G M₂ R r :=
+  dualAccel_add G R r M₁ M₂
+
+/-- Regression: mass-scaled relation is strictly subhomogeneous. -/
+example {a0 gN k : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) (hk : 1 < k) :
+    dualRAR a0 (k * gN) < k * dualRAR a0 gN :=
+  dualRAR_strict_subhomogeneous ha0 hgN hk
+
+/-- Regression: three-sphere enhancement above the shared germ. -/
+example {x : ℝ} (hx : 0 < x) (hxπ : x < Real.pi) :
+    1 + x ^ 2 / 3 < enhancement x :=
+  enhancement_gt_curvatureGerm hx hxπ
+
+/-- Regression: solar compactification radius, in astronomical units. -/
+example :
+    (7020 : ℝ) * astronomicalUnit < solarCompactR ∧
+      solarCompactR < (7040 : ℝ) * astronomicalUnit :=
+  solarCompactR_bounds
+
+/-- Regression: solar dual excess at one astronomical unit. -/
+example :
+    dualEnhancement ((astronomicalUnit : ℝ) / solarCompactR) - 1 < 1 / 10 ^ 8 :=
+  solar_dualExcess_at_au
+
+/-- Regression: Milky-Way rapidity fraction at its compactification radius. -/
+example :
+    schwarzschildRapidity milkyWayRs milkyWayCompactR /
+        (milkyWayRs / (2 * milkyWayCompactR)) - 1 < 1 / 10 ^ 6 :=
+  milkyWay_fractionalRapidity_at_compactification
 
 /-- Regression: \(g=a_0\coth 1\) at \(g_N=a_0\). -/
 example {a0 : ℝ} (ha0 : 0 < a0) :
