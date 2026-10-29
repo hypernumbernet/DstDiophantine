@@ -68,6 +68,7 @@ import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
+import DstDiophantine.Algebra.SourceSuperposition
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -138,6 +139,13 @@ The straight line of one fixed jet is not itself that geodesic.
   not derive \(G\).
 * `EventBoundary` — the admissible ceiling read as a finite redshift floor.
   A one-way horizon \(A=0\) does not form on that chart.
+* `SourceSuperposition` — source bivectors add in coefficient space, and that
+  internal sum has no ceiling. The expressed configuration is the nearest
+  admissible point, so its \(|J|\) stays at most \(3\pi^2/8\). On one axis,
+  every positive number of coincident pure boosts of rapidity \(\pi/2\)
+  expresses \(J=\pi^2/8\), while the quadratic on the internal sum is
+  \(n^2\pi^2/8\). Two boosts of rapidity \(\pi/4\) express \(J=\pi^2/8\),
+  not the sum \(\pi^2/16\) of the separate values.
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
 * `ForceScale` — one integer, read as the Planck ratio \((m_P/m)^2\), places
@@ -625,7 +633,7 @@ namespace DstDiophantine
 
 namespace Gravity
 
-open Invariant PGA Generators Logic Operations
+open Invariant PGA Generators Logic Operations SourceSuperposition
 
 /-- Regression: auxiliary expression `(4/r²)(cosh√(2J)-1)`, not the teleparallel quadratic. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
@@ -727,6 +735,25 @@ example {rs r1 r2 : ℝ}
     (heq2 : J_field rs r2 = (1 / 2) * schwarzschildTeleparallelT rs r2) :
     r1 = r2 :=
   naive_half_ratio_at_most_one_sphere h1 h2 heq1 heq2
+
+/-- Regression: repeated pure boosts express a fixed mismatch. -/
+example {n : ℕ} (hn : 1 ≤ n) (a0 : Fin 3) :
+    J (expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
+      Real.pi ^ 2 / 8 :=
+  J_express_repeat_pure_boost hn a0
+
+/-- Regression: the internal quadratic of those boosts has no ceiling. -/
+example {n : ℕ} (hn : 2 ≤ n) (a0 : Fin 3) :
+    3 * Real.pi ^ 2 / 8 <
+      J (sumParams (List.replicate n (axisBoost a0 (Real.pi / 2)))) :=
+  J_internal_repeat_gt_ceiling hn a0
+
+/-- Regression: two quarter-boosts do not add their values of \(J\). -/
+example (a0 : Fin 3) :
+    let p := axisBoost a0 (Real.pi / 4)
+    let s := sumParams [p, p]
+    J s ≠ J p + J p :=
+  (J_two_quarter_boosts a0).2.2.2.2.2.2
 
 /-- Regression: admissible ceiling of the auxiliary expression. -/
 example {rs r : ℝ} (h : IsExterior rs r)
