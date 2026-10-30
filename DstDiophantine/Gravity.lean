@@ -634,6 +634,13 @@ magnetic increment that is not zero lowers \(J\) strictly and raises the
 unsigned mass by the same amount; on a balanced seed the result is
 repulsive, and the rest-frame sandwich still vanishes. Slack to the wall
 admits such an increment. A wall, the heaviest shield included, admits none.
+The nonnegative electric increment is the usual-only mirror: it raises \(J\),
+holds the magnetic square fixed, and along one axis its rest-frame sandwich
+does not vanish. On an equal-scale seed the two increments of one vector
+write opposite values of \(J\) at one mass. A decrease of a dual angle that
+stays nonnegative spends the magnetic square, lowers the mass by half that
+drop, and writes attraction. On one equal-scale axis the enlargement drives
+\(\gamma_{\mathrm{eff}}\) further from \(1\), and the decrease brings it back.
 
 ## Dual-only control of \((J,M)\)
 

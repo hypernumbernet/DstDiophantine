@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.ShieldCeiling
+import DstDiophantine.Gravity.ShieldClock
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
@@ -14,8 +15,8 @@ Two laboratory readings of a dual-only increment then separate.
 ## Paper boundary (do **not** claim)
 
 A V--A coupling, a Fermi constant, a lifetime, a helicity-odd drive of
-\(J\), and an identification of this increment with the weak-interaction
-operator are **not** derived.
+\(J\), the absolute mass gap, and an identification of either increment
+with the weak-interaction operator are **not** derived.
 
 ## What is proved
 
@@ -32,6 +33,16 @@ operator are **not** derived.
 * Where an axis still has room to the wall, an admissible increment of this
   kind exists. Where every axis is already on the wall, none does. The
   heaviest shield is such a wall.
+* A nonnegative electric increment is the usual-only mirror: it raises \(J\)
+  and the unsigned mass by the same amount, holds the magnetic square fixed,
+  and is blocked by the same wall. Along one axis its rest-frame sandwich
+  is a nonzero electric kick.
+* On an equal-scale seed the two increments of one vector write opposite
+  values of \(J\) and the same unsigned mass. The magnetic one enlarges the
+  magnetic square. A decrease of a dual angle that stays nonnegative spends
+  that square, lowers the mass by half the drop, writes attraction, and
+  remains admissible. On one equal-scale axis the enlargement drives
+  \(\gamma_{\mathrm{eff}}\) further from \(1\), and the decrease brings it back.
 -/
 
 namespace DstDiophantine
@@ -445,6 +456,395 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
         simpa using (hp b).2.2
   have hrep := balanced_magnetic_repels hJ (fun b => (hp b).2.1) hB hne
   exact ⟨B, hB, hne, hadm, hrep.1, hrep.2, magnetic_increment_rest_silent B⟩
+
+/-! ### The electric increment is the usual-only mirror -/
+
+theorem J_electricFaraday (E : Fin 3 → ℝ) :
+    J (toTorsion (electricFaraday E)) = (1 / 2) * ∑ a : Fin 3, E a ^ 2 := by
+  rw [J_faraday]
+  simp [electricFaraday, energySq, magneticSq]
+
+theorem faradayCross_electric (p : TorsionParams) (E : Fin 3 → ℝ) :
+    faradayCross (toFaraday p) (electricFaraday E) = ∑ a : Fin 3, p.alpha a * E a := by
+  simp [faradayCross, toFaraday, electricFaraday]
+
+theorem J_superpose_electric (p : TorsionParams) (E : Fin 3 → ℝ) :
+    J (superpose p (electricFaraday E)) =
+      J p + ∑ a : Fin 3, p.alpha a * E a + (1 / 2) * ∑ a : Fin 3, E a ^ 2 := by
+  rw [J_superpose, J_electricFaraday, faradayCross_electric]
+  ring
+
+theorem mass_rise_eq_J_rise_electric (p : TorsionParams) (E : Fin 3 → ℝ) :
+    mass (superpose p (electricFaraday E)) - mass p =
+      J (superpose p (electricFaraday E)) - J p := by
+  have h := superpose_electric_conserves_mass_sub_J p E
+  linarith
+
+theorem magneticSq_superpose_electric (p : TorsionParams) (E : Fin 3 → ℝ) :
+    magneticSq (toFaraday (superpose p (electricFaraday E))) =
+      magneticSq (toFaraday p) := by
+  simp [magneticSq, toFaraday, electricFaraday, superpose_beta]
+
+/-- A nonnegative electric increment that is not zero raises \(J\) strictly. -/
+theorem J_superpose_electric_gt {p : TorsionParams} {E : Fin 3 → ℝ}
+    (hα : ∀ a, 0 ≤ p.alpha a) (hE : ∀ a, 0 ≤ E a)
+    (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
+    J p < J (superpose p (electricFaraday E)) := by
+  have hcross : 0 ≤ ∑ a : Fin 3, p.alpha a * E a :=
+    Finset.sum_nonneg fun a _ => mul_nonneg (hα a) (hE a)
+  have hnn : 0 ≤ ∑ a : Fin 3, E a ^ 2 :=
+    Finset.sum_nonneg fun _ _ => sq_nonneg _
+  have hpos : 0 < ∑ a : Fin 3, E a ^ 2 := lt_of_le_of_ne hnn hne.symm
+  have hJ := J_superpose_electric p E
+  linarith
+
+theorem mass_superpose_electric_gt {p : TorsionParams} {E : Fin 3 → ℝ}
+    (hα : ∀ a, 0 ≤ p.alpha a) (hE : ∀ a, 0 ≤ E a)
+    (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
+    mass p < mass (superpose p (electricFaraday E)) := by
+  have hJ := J_superpose_electric_gt hα hE hne
+  have hmass := mass_rise_eq_J_rise_electric p E
+  linarith
+
+theorem balanced_electric_attracts {p : TorsionParams} {E : Fin 3 → ℝ}
+    (hJ : J p = 0) (hα : ∀ a, 0 ≤ p.alpha a) (hE : ∀ a, 0 ≤ E a)
+    (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
+    0 < J (superpose p (electricFaraday E)) ∧
+      mass p < mass (superpose p (electricFaraday E)) := by
+  have hlt := J_superpose_electric_gt hα hE hne
+  have hmass := mass_superpose_electric_gt hα hE hne
+  exact ⟨by linarith, hmass⟩
+
+theorem not_admissible_electric_on_wall {p : TorsionParams} {E : Fin 3 → ℝ}
+    (hw : ∀ a, p.alpha a + p.beta a = Real.pi / 2)
+    (hE : ∀ a, 0 ≤ E a) (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
+    ¬ IsAdmissibleContinuous (superpose p (electricFaraday E)) := by
+  intro hadm
+  have hex : ∃ a, 0 < E a := by
+    by_contra hnone
+    push Not at hnone
+    have hzero : ∀ a, E a = 0 := fun a => le_antisymm (hnone a) (hE a)
+    have : ∑ a : Fin 3, E a ^ 2 = 0 := by simp [hzero]
+    exact hne this
+  obtain ⟨a, ha⟩ := hex
+  have hsum := (hadm a).2.2
+  simp only [superpose_alpha, superpose_beta, electricFaraday] at hsum
+  linarith [hw a]
+
+/-- A one-axis electric increment of nonzero size kicks the rest frame. -/
+theorem electric_axis_rest_ne_zero {c : ℝ} {i : Fin 3} (hc : c ≠ 0) :
+    let E : Fin 3 → ℝ := fun b => if b = i then c else 0
+    sandwichIncrement (faradayUsual (electricFaraday E)) (ι 0) ≠ 0 := by
+  intro E
+  rw [sandwichIncrement_rest_faradayUsual]
+  fin_cases i
+  · intro h
+    have : c • spatialVec 0 = 0 := by
+      simpa [E, electricFaraday, spatialVec] using h
+    have hι : spatialVec 0 = 0 := (smul_eq_zero.mp this).resolve_left hc
+    exact spatialGen_ne_zero 0 (by simpa [spatialGen, spatialVec] using hι)
+  · intro h
+    have : c • spatialVec 1 = 0 := by
+      simpa [E, electricFaraday, spatialVec] using h
+    have hι : spatialVec 1 = 0 := (smul_eq_zero.mp this).resolve_left hc
+    exact spatialGen_ne_zero 1 (by simpa [spatialGen, spatialVec] using hι)
+  · intro h
+    have : c • spatialVec 2 = 0 := by
+      simpa [E, electricFaraday, spatialVec] using h
+    have hι : spatialVec 2 = 0 := (smul_eq_zero.mp this).resolve_left hc
+    exact spatialGen_ne_zero 2 (by simpa [spatialGen, spatialVec] using hι)
+
+theorem exists_admissible_electric_attraction {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (hJ : J p = 0)
+    (hslack : ∃ a, p.alpha a + p.beta a < Real.pi / 2) :
+    ∃ E : Fin 3 → ℝ,
+      (∀ a, 0 ≤ E a) ∧ ∑ a : Fin 3, E a ^ 2 ≠ 0 ∧
+        IsAdmissibleContinuous (superpose p (electricFaraday E)) ∧
+        0 < J (superpose p (electricFaraday E)) ∧
+        mass p < mass (superpose p (electricFaraday E)) ∧
+        magneticSq (toFaraday (superpose p (electricFaraday E))) =
+          magneticSq (toFaraday p) ∧
+        sandwichIncrement (faradayUsual (electricFaraday E)) (ι 0) ≠ 0 := by
+  obtain ⟨i, hi⟩ := hslack
+  have hε : 0 < Real.pi / 2 - p.alpha i - p.beta i := by linarith
+  let ε : ℝ := Real.pi / 2 - p.alpha i - p.beta i
+  let E : Fin 3 → ℝ := fun b => if b = i then ε else 0
+  have hE : ∀ b, 0 ≤ E b := by
+    intro b
+    by_cases hb : b = i
+    · simpa [E, hb, ε] using hε.le
+    · simp [E, hb]
+  have hne : ∑ b : Fin 3, E b ^ 2 ≠ 0 := by
+    intro hzero
+    have hnn : ∀ b ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ E b ^ 2 :=
+      fun _ _ => sq_nonneg _
+    have hterm :=
+      (Finset.sum_eq_zero_iff_of_nonneg hnn).mp hzero i (Finset.mem_univ i)
+    have hε0 : ε = 0 := sq_eq_zero_iff.mp (by simpa [E] using hterm)
+    exact absurd (by simpa [ε] using hε0) (ne_of_gt hε)
+  have hadm : IsAdmissibleContinuous (superpose p (electricFaraday E)) := by
+    intro b
+    by_cases hb : b = i
+    · refine ⟨?_, ?_, ?_⟩
+      · have hα : 0 ≤ p.alpha b + ε := add_nonneg (hp b).1 (le_of_lt (by simpa [ε] using hε))
+        simpa [superpose_alpha, electricFaraday, E, hb] using hα
+      · simpa [superpose_beta, electricFaraday] using (hp b).2.1
+      · have hsum : p.alpha b + ε + p.beta b = Real.pi / 2 := by
+          have hεb : ε = Real.pi / 2 - p.alpha b - p.beta b := by simp [ε, hb]
+          linarith
+        have : (superpose p (electricFaraday E)).alpha b +
+            (superpose p (electricFaraday E)).beta b = p.alpha b + ε + p.beta b := by
+          simp [superpose_alpha, superpose_beta, electricFaraday, E, hb]
+        linarith
+    · have hEz : E b = 0 := by simp [E, hb]
+      refine ⟨?_, ?_, ?_⟩
+      · simpa [superpose_alpha, electricFaraday, hEz] using (hp b).1
+      · simpa [superpose_beta, electricFaraday] using (hp b).2.1
+      · simpa [superpose_alpha, superpose_beta, electricFaraday, hEz] using (hp b).2.2
+  have hattr := balanced_electric_attracts hJ (fun b => (hp b).1) hE hne
+  have hkick := electric_axis_rest_ne_zero (ne_of_gt hε) (i := i)
+  exact ⟨E, hE, hne, hadm, hattr.1, hattr.2, magneticSq_superpose_electric p E,
+    by simpa [E, ε] using hkick⟩
+
+/-! ### Equal scale: the square is spent by unwinding, not by repulsion -/
+
+theorem equalScale_increments_opposite (α v : Fin 3 → ℝ) :
+    let p : TorsionParams := equalScaleOf { alpha := α, beta := fun _ => 0 }
+    J (superpose p (electricFaraday v)) = -J (superpose p (magneticFaraday v)) ∧
+      mass (superpose p (electricFaraday v)) =
+        mass (superpose p (magneticFaraday v)) := by
+  intro p
+  have hJ : J p = 0 := J_equalScaleOf _
+  have hβ : p.beta = α := by simp [p, equalScaleOf]
+  have hα : p.alpha = α := by simp [p, equalScaleOf]
+  have hJe := J_superpose_electric p v
+  have hJm := J_superpose_magnetic p v
+  have hJe' : J (superpose p (electricFaraday v)) =
+      ∑ a : Fin 3, α a * v a + (1 / 2) * ∑ a : Fin 3, v a ^ 2 := by
+    rw [hJe, hJ]
+    simp only [hα]
+    ring
+  have hJm' : J (superpose p (magneticFaraday v)) =
+      -(∑ a : Fin 3, α a * v a + (1 / 2) * ∑ a : Fin 3, v a ^ 2) := by
+    rw [hJm, hJ]
+    simp only [hβ]
+    ring
+  refine ⟨?_, ?_⟩
+  · rw [hJe', hJm']
+    ring
+  · have hMe := mass_rise_eq_J_rise_electric p v
+    have hMm := mass_rise_eq_J_drop_magnetic p v
+    rw [hJ] at hMe hMm
+    linarith [hJe', hJm']
+
+theorem mass_eq_half_squares (p : TorsionParams) :
+    mass p = (1 / 2) * (energySq (toFaraday p) + magneticSq (toFaraday p)) := by
+  simpa using mass_faraday (toFaraday p)
+
+theorem energySq_superpose_magnetic (p : TorsionParams) (B : Fin 3 → ℝ) :
+    energySq (toFaraday (superpose p (magneticFaraday B))) = energySq (toFaraday p) := by
+  simp [energySq, toFaraday, magneticFaraday, superpose_alpha]
+
+/-- A magnetic increment moves the unsigned mass by half the change in the
+magnetic square, and moves \(J\) by the opposite amount. -/
+theorem magnetic_increment_half_square (p : TorsionParams) (B : Fin 3 → ℝ) :
+    let q := superpose p (magneticFaraday B)
+    mass q - mass p =
+      (magneticSq (toFaraday q) - magneticSq (toFaraday p)) / 2 ∧
+      J q - J p = mass p - mass q := by
+  intro q
+  have hE : energySq (toFaraday q) = energySq (toFaraday p) :=
+    energySq_superpose_magnetic p B
+  have hm := mass_eq_half_squares p
+  have hq := mass_eq_half_squares q
+  have hcons := superpose_magnetic_conserves_J_add_mass p B
+  constructor
+  · rw [hm, hq, hE]
+    ring
+  · have : J q + mass q = J p + mass p := hcons
+    linarith
+
+theorem magneticSq_strict_mono_of_nonneg {p : TorsionParams} {B : Fin 3 → ℝ}
+    (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a)
+    (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
+    magneticSq (toFaraday p) <
+      magneticSq (toFaraday (superpose p (magneticFaraday B))) := by
+  have hdiff : magneticSq (toFaraday (superpose p (magneticFaraday B))) -
+      magneticSq (toFaraday p) =
+        ∑ a : Fin 3, (2 * p.beta a * B a + B a ^ 2) := by
+    simp only [magneticSq, toFaraday, magneticFaraday, superpose_beta, Fin.sum_univ_three]
+    ring
+  have hnn : 0 ≤ ∑ a : Fin 3, (2 * p.beta a * B a) :=
+    Finset.sum_nonneg fun a _ => mul_nonneg (mul_nonneg (by norm_num) (hβ a)) (hB a)
+  have hpos : 0 < ∑ a : Fin 3, B a ^ 2 :=
+    lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
+  have hsum : 0 < ∑ a : Fin 3, (2 * p.beta a * B a + B a ^ 2) := by
+    have : ∑ a : Fin 3, (2 * p.beta a * B a + B a ^ 2) =
+        ∑ a : Fin 3, (2 * p.beta a * B a) + ∑ a : Fin 3, B a ^ 2 := by
+      simp [Finset.sum_add_distrib]
+    linarith
+  linarith
+
+theorem isAdmissibleContinuous_dual_unwind {p : TorsionParams} {v : Fin 3 → ℝ}
+    (hp : IsAdmissibleContinuous p) (hv0 : ∀ a, 0 ≤ v a)
+    (hvβ : ∀ a, v a ≤ p.beta a) :
+    IsAdmissibleContinuous (superpose p (magneticFaraday (fun a => -v a))) := by
+  intro a
+  refine ⟨?_, ?_, ?_⟩
+  · simpa [superpose_alpha, magneticFaraday] using (hp a).1
+  · have hβ : 0 ≤ p.beta a + -v a := by linarith [hvβ a]
+    simpa [superpose_beta, magneticFaraday] using hβ
+  · have hle : p.alpha a + (p.beta a + -v a) ≤ p.alpha a + p.beta a := by linarith [hv0 a]
+    have : (superpose p (magneticFaraday (fun b => -v b))).alpha a +
+        (superpose p (magneticFaraday (fun b => -v b))).beta a =
+          p.alpha a + (p.beta a + -v a) := by
+      simp [superpose_alpha, superpose_beta, magneticFaraday]
+    linarith [(hp a).2.2]
+
+theorem J_unwind_pos_of_equalScale {α v : Fin 3 → ℝ}
+    (hv0 : ∀ a, 0 ≤ v a) (hvα : ∀ a, v a ≤ α a)
+    (hne : ∑ a : Fin 3, v a ^ 2 ≠ 0) :
+    let p : TorsionParams := equalScaleOf { alpha := α, beta := fun _ => 0 }
+    0 < J (superpose p (magneticFaraday (fun a => -v a))) := by
+  intro p
+  have hJ0 : J p = 0 := J_equalScaleOf _
+  have hβ : ∀ a, p.beta a = α a := by intro a; simp [p, equalScaleOf]
+  have hformula := J_superpose_magnetic p (fun a => -v a)
+  have hcross : ∑ a : Fin 3, p.beta a * -v a = -∑ a : Fin 3, α a * v a := by
+    simp only [hβ, mul_neg, Finset.sum_neg_distrib]
+  have hsq : ∑ a : Fin 3, (-v a) ^ 2 = ∑ a : Fin 3, v a ^ 2 := by
+    simp
+  have hJ : J (superpose p (magneticFaraday (fun a => -v a))) =
+      ∑ a : Fin 3, α a * v a - (1 / 2) * ∑ a : Fin 3, v a ^ 2 := by
+    rw [hformula, hJ0, hcross, hsq]
+    ring
+  have hlower : (1 / 2) * ∑ a : Fin 3, v a ^ 2 ≤
+      ∑ a : Fin 3, α a * v a - (1 / 2) * ∑ a : Fin 3, v a ^ 2 := by
+    have hterm : ∀ a, v a ^ 2 ≤ α a * v a := by
+      intro a
+      nlinarith [hv0 a, hvα a]
+    have hle : ∑ a : Fin 3, v a ^ 2 ≤ ∑ a : Fin 3, α a * v a :=
+      Finset.sum_le_sum fun a _ => hterm a
+    linarith
+  have hpos : 0 < ∑ a : Fin 3, v a ^ 2 :=
+    lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
+  linarith
+
+theorem magneticSq_unwind_lt_of_equalScale {α v : Fin 3 → ℝ}
+    (hv0 : ∀ a, 0 ≤ v a) (hvα : ∀ a, v a ≤ α a)
+    (hne : ∑ a : Fin 3, v a ^ 2 ≠ 0) :
+    let p : TorsionParams := equalScaleOf { alpha := α, beta := fun _ => 0 }
+    magneticSq (toFaraday (superpose p (magneticFaraday (fun a => -v a)))) <
+      magneticSq (toFaraday p) := by
+  intro p
+  have hβ : ∀ a, p.beta a = α a := by intro a; simp [p, equalScaleOf]
+  have hdiff : magneticSq (toFaraday p) -
+      magneticSq (toFaraday (superpose p (magneticFaraday (fun a => -v a)))) =
+        ∑ a : Fin 3, (2 * α a * v a - v a ^ 2) := by
+    simp only [magneticSq, toFaraday, magneticFaraday, superpose_beta, hβ, Fin.sum_univ_three]
+    ring
+  have hterm : ∀ a, v a ^ 2 ≤ 2 * α a * v a - v a ^ 2 := by
+    intro a
+    nlinarith [hv0 a, hvα a]
+  have hsum : ∑ a : Fin 3, v a ^ 2 ≤ ∑ a : Fin 3, (2 * α a * v a - v a ^ 2) :=
+    Finset.sum_le_sum fun a _ => hterm a
+  have hpos : 0 < ∑ a : Fin 3, v a ^ 2 :=
+    lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
+  linarith
+
+/-- On a positive equal-scale seed, decreasing a dual angle that is already
+present stays admissible, spends the magnetic square, lowers the mass by
+half that drop, and writes attraction. The rest-frame sandwich still vanishes. -/
+theorem exists_equalScale_unwind_spends {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (heq : ∀ a, p.alpha a = p.beta a)
+    (hM : 0 < mass p) :
+    ∃ v : Fin 3 → ℝ,
+      (∀ a, 0 ≤ v a) ∧ (∀ a, v a ≤ p.beta a) ∧ ∑ a : Fin 3, v a ^ 2 ≠ 0 ∧
+        let q := superpose p (magneticFaraday (fun a => -v a))
+        IsAdmissibleContinuous q ∧ 0 < J q ∧ mass q < mass p ∧
+          magneticSq (toFaraday q) < magneticSq (toFaraday p) ∧
+          mass p - mass q = (magneticSq (toFaraday p) - magneticSq (toFaraday q)) / 2 ∧
+          sandwichIncrement (faradayDual (magneticFaraday (fun a => -v a))) (ι 0) = 0 := by
+  have hex : ∃ i, 0 < p.alpha i := by
+    by_contra hnone
+    push Not at hnone
+    have hzero : ∀ a, p.alpha a = 0 := fun a => le_antisymm (hnone a) (hp a).1
+    have hβ0 : ∀ a, p.beta a = 0 := fun a => by rw [← heq a, hzero a]
+    have hmass : mass p = 0 := by
+      rw [mass_coef]
+      simp [hzero, hβ0]
+    linarith
+  obtain ⟨i, hi⟩ := hex
+  let v : Fin 3 → ℝ := fun a => if a = i then p.beta i else 0
+  have hv0 : ∀ a, 0 ≤ v a := by
+    intro a
+    by_cases ha : a = i
+    · have : 0 ≤ p.beta i := by simpa [heq] using (hp i).1
+      simpa [v, ha] using this
+    · simp [v, ha]
+  have hvβ : ∀ a, v a ≤ p.beta a := by
+    intro a
+    by_cases ha : a = i
+    · simp [v, ha]
+    · have : (0 : ℝ) ≤ p.beta a := (hp a).2.1
+      simpa [v, ha] using this
+  have hne : ∑ a : Fin 3, v a ^ 2 ≠ 0 := by
+    intro hzero
+    have hnn : ∀ a ∈ (Finset.univ : Finset (Fin 3)), 0 ≤ v a ^ 2 :=
+      fun _ _ => sq_nonneg _
+    have hterm :=
+      (Finset.sum_eq_zero_iff_of_nonneg hnn).mp hzero i (Finset.mem_univ i)
+    have hv0i : v i = 0 := sq_eq_zero_iff.mp (by simpa [v] using hterm)
+    have hβi : p.beta i = 0 := by simpa [v] using hv0i
+    have hαi : p.alpha i = 0 := by rw [heq i, hβi]
+    exact absurd hαi (ne_of_gt hi)
+  let q := superpose p (magneticFaraday (fun a => -v a))
+  have hadm := isAdmissibleContinuous_dual_unwind hp hv0 hvβ
+  have hvα : ∀ a, v a ≤ p.alpha a := by
+    intro a
+    simpa [heq] using hvβ a
+  have hseed : p = equalScaleOf { alpha := p.alpha, beta := fun _ => 0 } :=
+    torsionParams_ext (by simp [equalScaleOf]) (by
+      funext a
+      simp [equalScaleOf, heq])
+  have hJpos : 0 < J q := by
+    have hpos := J_unwind_pos_of_equalScale hv0 hvα hne
+    rwa [← hseed] at hpos
+  have hsq : magneticSq (toFaraday q) < magneticSq (toFaraday p) := by
+    have hlt := magneticSq_unwind_lt_of_equalScale hv0 hvα hne
+    rwa [← hseed] at hlt
+  have hhalf := magnetic_increment_half_square p (fun a => -v a)
+  have hmass : mass q < mass p := by
+    have hdrop : 0 < magneticSq (toFaraday p) - magneticSq (toFaraday q) := by linarith
+    have : mass p - mass q = (magneticSq (toFaraday p) - magneticSq (toFaraday q)) / 2 := by
+      have := hhalf.1
+      simp only [q] at this ⊢
+      linarith
+    linarith
+  have hhalf' : mass p - mass q =
+      (magneticSq (toFaraday p) - magneticSq (toFaraday q)) / 2 := by
+    have := hhalf.1
+    simp only [q] at this ⊢
+    linarith
+  exact ⟨v, hv0, hvβ, hne, hadm, hJpos, hmass, hsq, hhalf',
+    magnetic_increment_rest_silent (fun a => -v a)⟩
+
+/-! ### One equal-scale axis: the clock and the square move apart -/
+
+theorem equalScale_axis_magnetic_lowers_clock {α ε : ℝ}
+    (hα : 0 < α) (hε : 0 < ε) (hcone : 2 * α + ε ≤ Real.pi / 2) :
+    gammaEff α (α + ε) < gammaEff α α := by
+  have hlo : 0 ≤ α := le_of_lt hα
+  have hlt : α < α + ε := by linarith
+  have hhi : α + ε ≤ Real.pi / 2 := by linarith
+  exact gammaEff_lt_gammaEff_of_lt_beta hα hlo hlt hhi
+
+theorem equalScale_axis_unwind_raises_clock {α ε : ℝ}
+    (hα : 0 < α) (hε : 0 < ε) (hεα : ε ≤ α) (hαπ : α ≤ Real.pi / 2) :
+    gammaEff α α < gammaEff α (α - ε) := by
+  have hlo : 0 ≤ α - ε := by linarith
+  have hlt : α - ε < α := by linarith
+  exact gammaEff_lt_gammaEff_of_lt_beta hα hlo hlt hαπ
 
 end Gravity
 
