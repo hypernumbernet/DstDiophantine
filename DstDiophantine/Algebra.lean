@@ -19,6 +19,7 @@ import DstDiophantine.Algebra.Periodicity
 import DstDiophantine.Algebra.PGA
 import DstDiophantine.Algebra.QuadraticForm
 import DstDiophantine.Algebra.Sandwich
+import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Algebra.UnitGroup
 
 /-!

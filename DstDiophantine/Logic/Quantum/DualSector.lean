@@ -13,8 +13,9 @@ sector (`α = 0`) it is negative definite; restricted to the usual sector
 inner product on `ℝ³`.
 
 The inner-product space is the *linear span* of each sector, not the
-admissible cube. Superposition is a statement about that span, not about
-admissible amplitudes.
+admissible cone. The internal sum lives in that span and is unbounded.
+The expressed configuration is the nearest admissible point
+(`SourceSuperposition.express`).
 -/
 
 namespace DstDiophantine
