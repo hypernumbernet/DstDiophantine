@@ -62,6 +62,7 @@ import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.SilentControl
+import DstDiophantine.Gravity.ShieldHold
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -645,7 +646,7 @@ drop, and writes attraction. On one equal-scale axis the enlargement drives
 ## Dual-only control of \((J,M)\)
 
 `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`,
-`EnvelopeLock`.
+`EnvelopeLock`, `ShieldHold`.
 
 Dual-only motion conserves \(J+M\) and cannot raise \(J\). It reaches a
 shield \(J=0\) precisely when the dual wall is nonpositive. The mass
@@ -657,6 +658,16 @@ wall and at least two axes are corners, so a dual-only motion meets it at
 most once. On a boosted axis, \(\gamma_{\mathrm{eff}}\) returns to \(1\)
 at a dual angle strictly before the coaxial shield; a cross-axis shield of
 the same mass leaves that clock at \(\cosh\alpha\).
+
+`ShieldHold` separates that mass budget from the force that parks a
+configuration. Both angular accelerations vanish exactly when
+\(v_a=u_a=m(\alpha_a-\beta_a)\) on every axis, and at rest the Jacobi
+rates sum to zero. For nonzero stiffness the zero force is axiswise
+alignment: neutral, potential zero, and at most \(3\pi^2/16\) in unsigned
+mass. A neutral configuration has lag budget at most \(\pi^2/2\), attained
+by the heaviest shield. The equal-scale point of a pure usual seed has lag
+budget \(0\); the cross-axis shield of the same rapidity has lag budget
+\(2\alpha^2\).
 -/
 
 namespace DstDiophantine
@@ -2365,6 +2376,16 @@ example (α : ℝ) :
   ⟨J_crossAxisDual α, J_equalScaleOf (axisUsual α),
     mass_crossAxisDual_eq_equalScale α, gammaEff_crossAxisDual_boost α,
     gammaEff_crossAxisDual_comp α⟩
+
+/-- Regression: the heaviest shield saturates the neutral lag budget, and a
+pure usual seed relaxes under coaxial alignment while a silent axis doubles it. -/
+example (α : ℝ) (hα : α ≠ 0) :
+    lagSq maximalShield = Real.pi ^ 2 / 2 ∧
+      lagSq (equalScaleOf (axisUsual α)) = 0 ∧
+        lagSq (crossAxisDual α) = 2 * lagSq (axisUsual α) ∧
+          lagSq (axisUsual α) < lagSq (crossAxisDual α) :=
+  ⟨lagSq_maximalShield, lagSq_equalScale_axisUsual α, lagSq_cross_eq_two_axisUsual α,
+    lagSq_cross_gt_axisUsual hα⟩
 
 /-- Regression: a unit vacuum excess is gravitationally maximal. -/
 example {δ : ℝ} {p : Fin 3 → ℝ} (hδ : δ ≠ 0) (hp : ∑ a : Fin 3, p a ^ 2 = 1) :
