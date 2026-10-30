@@ -495,7 +495,7 @@ $c^4/(G\,\ell_P^{-2})$.
 | Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `DualImage`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
 | Dynamics | `TorsionalLayer`, `DualRotorDynamics`, `DualRotorRigidity`, `DualRotorFlow`, `DualRotorVacuum`, `DualRotorMotor`, `NullRotation`, `RestMass` |
 | Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `ElectronMetal`, `ElectronCrystal`, `Blackbody` |
-| Field and control | `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`, `ChiralityStabilizer`, `EMControl`, `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`, `EnvelopeLock` |
+| Field and control | `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`, `ChiralityStabilizer`, `EMControl`, `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`, `EnvelopeLock`, `NeutronMagnet`, `SilentControl` |
 | Optics | `Lensing`, `PhotonReturn` |
 
 `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, and `SI` are imported

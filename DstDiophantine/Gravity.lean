@@ -14,6 +14,7 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.ChannelRange
+import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.NuclearLength
@@ -60,6 +61,7 @@ import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.NeutronMagnet
+import DstDiophantine.Gravity.SilentControl
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -192,6 +194,17 @@ The straight line of one fixed jet is not itself that geodesic.
   excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) the ratio of that excess
   to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
   input. The comparison does not subtract the Coulomb coupling from \(G\).
+* `WeakLinearity` — where a fixed compactification radius stays linear in mass.
+  The dual acceleration of a sum is the sum of the accelerations, and the
+  fractional excess over inverse-square depends only on \(r/R\) and is strictly
+  less than \((r/R)^2/3\). On \((0,\pi)\) the three-sphere enhancement lies
+  strictly above \(1+x^2/3\). With \(R^2=GM/a_0\) the acceleration relation is
+  strictly subhomogeneous and strictly subadditive. The exterior rapidity
+  exceeds \(r_s/(2r)\) by a fraction strictly less than \(r_s/(r-r_s)\): below
+  \(1/(4\times 10^7)\) for a solar mass at one astronomical unit, and below
+  \(10^{-6}\) for the Milky-Way stand-in at its compactification radius. That
+  solar radius lies between \(7020\) and \(7040\) astronomical units, and at one
+  astronomical unit the dual fractional excess is below \(10^{-8}\).
 * `NuclearLayer` — saturation density, \(\mathrm{BE}/A\), and the
   pion-length window. Under \(\ell=\lambda_\pi\) every equal-scale node
   lies below \(1\,\mathrm{fm}\). The estimate \(A\sim 300\) is an external
@@ -611,6 +624,23 @@ depends only on the dual angles. A dual phase \(2\pi\) on one axis sends the
 rotor to \(-1\); a dual phase \(4\pi\) restores \(1\). At rest the dual
 Faraday summand gives no sandwich kick. The ratio of nucleon moments is not
 derived.
+
+`SilentControl` joins that magnet to dual-only control. On an admissible
+pure usual seed, \(\sum\alpha\le 3\pi/4\) already forces
+\(\sum\alpha^2\le 5\pi^2/16\), with equality exactly on the permutations of
+\((\pi/2,\pi/4,0)\). The shield of such a seed is its wall. With the charge
+label off, a circular potential drops no ponderomotive mean. A nonnegative
+magnetic increment that is not zero lowers \(J\) strictly and raises the
+unsigned mass by the same amount; on a balanced seed the result is
+repulsive, and the rest-frame sandwich still vanishes. Slack to the wall
+admits such an increment. A wall, the heaviest shield included, admits none.
+The nonnegative electric increment is the usual-only mirror: it raises \(J\),
+holds the magnetic square fixed, and along one axis its rest-frame sandwich
+does not vanish. On an equal-scale seed the two increments of one vector
+write opposite values of \(J\) at one mass. A decrease of a dual angle that
+stays nonnegative spends the magnetic square, lowers the mass by half that
+drop, and writes attraction. On one equal-scale axis the enlargement drives
+\(\gamma_{\mathrm{eff}}\) further from \(1\), and the decrease brings it back.
 
 ## Dual-only control of \((J,M)\)
 
@@ -1816,6 +1846,38 @@ example {a0 gN : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) :
       dualRAR a0 gN < gN + Real.sqrt (a0 * gN) ∧ dualRAR a0 gN < gN + a0 / 3 :=
   dualRAR_bounds ha0 hgN
 
+/-- Regression: fixed radius is additive in mass. -/
+example (G R r M₁ M₂ : ℝ) :
+    dualAccel G (M₁ + M₂) R r = dualAccel G M₁ R r + dualAccel G M₂ R r :=
+  dualAccel_add G R r M₁ M₂
+
+/-- Regression: mass-scaled relation is strictly subhomogeneous. -/
+example {a0 gN k : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) (hk : 1 < k) :
+    dualRAR a0 (k * gN) < k * dualRAR a0 gN :=
+  dualRAR_strict_subhomogeneous ha0 hgN hk
+
+/-- Regression: three-sphere enhancement above the shared germ. -/
+example {x : ℝ} (hx : 0 < x) (hxπ : x < Real.pi) :
+    1 + x ^ 2 / 3 < enhancement x :=
+  enhancement_gt_curvatureGerm hx hxπ
+
+/-- Regression: solar compactification radius, in astronomical units. -/
+example :
+    (7020 : ℝ) * astronomicalUnit < solarCompactR ∧
+      solarCompactR < (7040 : ℝ) * astronomicalUnit :=
+  solarCompactR_bounds
+
+/-- Regression: solar dual excess at one astronomical unit. -/
+example :
+    dualEnhancement ((astronomicalUnit : ℝ) / solarCompactR) - 1 < 1 / 10 ^ 8 :=
+  solar_dualExcess_at_au
+
+/-- Regression: Milky-Way rapidity fraction at its compactification radius. -/
+example :
+    schwarzschildRapidity milkyWayRs milkyWayCompactR /
+        (milkyWayRs / (2 * milkyWayCompactR)) - 1 < 1 / 10 ^ 6 :=
+  milkyWay_fractionalRapidity_at_compactification
+
 /-- Regression: \(g=a_0\coth 1\) at \(g_N=a_0\). -/
 example {a0 : ℝ} (ha0 : 0 < a0) :
     dualRAR a0 a0 = a0 * (Real.cosh 1 / Real.sinh 1) :=
@@ -2185,6 +2247,16 @@ example {p : FaradayParams} (hJ : J (toTorsion p) = 0) :
 example (p : Operations.TorsionParams) (A : Fin 3 → ℝ) :
     coupleA p 0 A = p :=
   coupleA_zero_label p A
+
+/-- Regression: a silent label drops no ponderomotive mean. -/
+example (p : Operations.TorsionParams) (A : ℝ → Fin 3 → ℝ) :
+    quadMean (fun ψ => J (coupleA p 0 (A ψ))) = J p :=
+  quadMean_J_coupleA_zero_label p A
+
+/-- Regression: the heaviest shield admits no further nonnegative magnetic increment. -/
+example {B : Fin 3 → ℝ} (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
+    ¬ Admissible.IsAdmissibleContinuous (superpose maximalShield (magneticFaraday B)) :=
+  maximalShield_magnetic_rigid hB hne
 
 /-- Regression: one-axis dual phase \(2\pi\) sends the dual rotor to \(-1\). -/
 example (a : Fin 3) (p : Operations.TorsionParams)
