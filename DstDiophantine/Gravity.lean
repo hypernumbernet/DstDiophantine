@@ -61,6 +61,7 @@ import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.NeutronMagnet
+import DstDiophantine.Gravity.SilentControl
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -623,6 +624,16 @@ depends only on the dual angles. A dual phase \(2\pi\) on one axis sends the
 rotor to \(-1\); a dual phase \(4\pi\) restores \(1\). At rest the dual
 Faraday summand gives no sandwich kick. The ratio of nucleon moments is not
 derived.
+
+`SilentControl` joins that magnet to dual-only control. On an admissible
+pure usual seed, \(\sum\alpha\le 3\pi/4\) already forces
+\(\sum\alpha^2\le 5\pi^2/16\), with equality exactly on the permutations of
+\((\pi/2,\pi/4,0)\). The shield of such a seed is its wall. With the charge
+label off, a circular potential drops no ponderomotive mean. A nonnegative
+magnetic increment that is not zero lowers \(J\) strictly and raises the
+unsigned mass by the same amount; on a balanced seed the result is
+repulsive, and the rest-frame sandwich still vanishes. Slack to the wall
+admits such an increment. A wall, the heaviest shield included, admits none.
 
 ## Dual-only control of \((J,M)\)
 
@@ -2229,6 +2240,16 @@ example {p : FaradayParams} (hJ : J (toTorsion p) = 0) :
 example (p : Operations.TorsionParams) (A : Fin 3 → ℝ) :
     coupleA p 0 A = p :=
   coupleA_zero_label p A
+
+/-- Regression: a silent label drops no ponderomotive mean. -/
+example (p : Operations.TorsionParams) (A : ℝ → Fin 3 → ℝ) :
+    quadMean (fun ψ => J (coupleA p 0 (A ψ))) = J p :=
+  quadMean_J_coupleA_zero_label p A
+
+/-- Regression: the heaviest shield admits no further nonnegative magnetic increment. -/
+example {B : Fin 3 → ℝ} (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
+    ¬ Admissible.IsAdmissibleContinuous (superpose maximalShield (magneticFaraday B)) :=
+  maximalShield_magnetic_rigid hB hne
 
 /-- Regression: one-axis dual phase \(2\pi\) sends the dual rotor to \(-1\). -/
 example (a : Fin 3) (p : Operations.TorsionParams)
