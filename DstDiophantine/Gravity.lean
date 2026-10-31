@@ -59,6 +59,7 @@ import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
+import DstDiophantine.Gravity.ChiralCurrent
 import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.CircularHold
 import DstDiophantine.Gravity.NeutronMagnet
@@ -74,6 +75,7 @@ import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
+import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 
 /-!
@@ -361,6 +363,13 @@ The straight line of one fixed jet is not itself that geodesic.
   term strictly between \(440/10^{42}\) and \(442/10^{42}\). The prefactor
   \(G m_e m_p/(k e^{2})\) lies strictly between \(4407/10^{43}\) and
   \(4408/10^{43}\).
+* `ChannelBridge` — where both interference factors are nonzero, the ratio of
+  the mass term to the charge term is \((\kappa/\mathrm{coul})\cdot(\gamma_E/\gamma_G)\)
+  with the sign of the written terms. Corresponding equal-scale nodes stand in
+  the ratio of the two lengths. For every sign-reversal in \((1/2,1)\,\mathrm{fm}\),
+  the electron's electromagnetic length over the nuclear length \(2x_1 r_1\)
+  lies strictly between \(203\) and \(414\), and so does the ratio of the
+  first nodes.
 * `ElectronNumbers` — the first node lies in \((14/15,19/20)\) and the
   restoring square in \((153/100,157/100)\). The circular radius, the first
   node, the diagonal, the side, the one-electron extremum, and the second
@@ -600,7 +609,7 @@ The straight line of one fixed jet is not itself that geodesic.
 ## One Faraday six-space
 
 `Faraday`, `Electroweak`, `CircularPolarization`, `ChiralSpectrum`,
-`ChiralityStabilizer`, `EMControl`.
+`ChiralityStabilizer`, `ChiralCurrent`, `EMControl`.
 
 Faraday coefficients occupy the dual-rotor generators: electric on the
 boosts, magnetic on the rotations, \(F=F_{\mathrm{usual}}+F_{\mathrm{dual}}\).
@@ -611,10 +620,14 @@ increment is the commutator; on \(e_0+v\) it is the Lorentz 4-force of
 \((E,-B)\). The outer product is not that increment.
 
 A spatial axis splits the six-space into an \(\mathfrak{so}(2,1)\)
-stabilizer and a complement that moves the axis. Distinct-axis projectors
-do not resolve the identity. Compact \(\mathrm{SU}(2)\) here is the dual
-rotor (\(IJ=K\)), not a symmetry of a fixed projector. In the parallel
-plane, \(c_B B_a+c_E E_a\) preserves the axis only when \(c_E=0\).
+stabilizer and a complement that moves the axis. A charged generator
+exchanges the two projectors; the cross sandwich retains it and does not
+vanish, while the same-side sandwich vanishes. A Cartan generator preserves
+each projector, and its cross sandwich vanishes. The mismatch adds across
+that split. Distinct-axis projectors do not resolve the identity. Compact
+\(\mathrm{SU}(2)\) here is the dual rotor (\(IJ=K\)), not a symmetry of a
+fixed projector. In the parallel plane, \(c_B B_a+c_E E_a\) preserves the
+axis only when \(c_E=0\).
 
 `EMControl` reads a dual-only increment in two ways: magnetic superposition,
 and the substitution \(\theta\mapsto\theta+eA\). Neither raises \(J\) against
@@ -2269,6 +2282,36 @@ example (a : Fin 3) :
           (NormedSpace.exp ((Real.pi / 2) • cyclic (a + 1))) =
       chiralityLAxis a :=
   dualRotation_exchanges_projectors a
+
+/-- Regression: a charged generator exchanges the projectors, and the cross
+sandwich does not vanish. -/
+example (a i : Fin 3) :
+    chargedGen a i * chiralityRAxis a = chiralityLAxis a * chargedGen a i ∧
+      chiralityLAxis a * chargedGen a i * chiralityRAxis a ≠ 0 :=
+  ⟨chargedGen_mul_chiralityRAxis a i, crossSandwich_charged_ne_zero a i⟩
+
+/-- Regression: a Cartan generator preserves the right projector. -/
+example (a i : Fin 3) :
+    cartanGen a i * chiralityRAxis a = chiralityRAxis a * cartanGen a i ∧
+      chiralityLAxis a * cartanGen a i * chiralityRAxis a = 0 :=
+  ⟨cartanGen_mul_chiralityRAxis a i, crossSandwich_cartan a i⟩
+
+/-- Regression: the mismatch adds across the chiral split. -/
+example (a : Fin 3) (p : FaradayParams) :
+    J (toTorsion p) =
+      J (toTorsion (evenParams a p)) + J (toTorsion (oddParams a p)) :=
+  J_even_add_odd a p
+
+/-- Regression: corresponding nodes stand in the ratio of the lengths. -/
+example {ℓ₁ ℓ₂ x : ℝ} (hℓ : ℓ₂ ≠ 0) (hx : x ≠ 0) :
+    layerRadius ℓ₁ x / layerRadius ℓ₂ x = ℓ₁ / ℓ₂ :=
+  layerRadius_ratio hℓ hx
+
+/-- Regression: the first charge-channel node lies between 203 and 414 nuclear reversals. -/
+example {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
+    (203 : ℝ) < layerRadius ((ellRepFm : ℚ) : ℝ) resonanceRoot1 / r₁ ∧
+      layerRadius ((ellRepFm : ℚ) : ℝ) resonanceRoot1 / r₁ < 414 :=
+  first_node_ratio hr0 hr1
 
 /-- Regression: the parallel electric mix preserves the axis only at a trivial angle. -/
 example (a : Fin 3) (cB cE : ℝ) :
