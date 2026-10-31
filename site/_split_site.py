@@ -1,32 +1,17 @@
 #!/usr/bin/env python3
 """One-off splitter: index.monolith.html -> multi-page site. Run from site/."""
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "index.monolith.html"
-text = SRC.read_text(encoding="utf-8")
 
-head_match = re.search(r"(?s)^(.+?)<body>\s*", text)
-footer_m = re.search(
-    r"(<footer>.*?</footer>)", text, re.S
-)
-if not footer_m:
-    raise SystemExit("footer parse failed")
-FOOTER_INNER = footer_m.group(1)
-
-main_match = re.search(r"(?s)<main id=\"top\">(.*?)</main>", text)
-if not (head_match and main_match):
-    raise SystemExit("parse failed")
-HEAD_PREFIX = head_match.group(1)
-MAIN_INNER = main_match.group(1)
-
-hero_m = re.search(r"(?s)(<section class=\"hero\">.*?</section>\s*)", MAIN_INNER)
-hero = hero_m.group(1) if hero_m else ""
-
-sections = {}
-for m in re.finditer(r'(?s)(<section id="([^"]+)">.*?</section>)', MAIN_INNER):
-    sections[m.group(2)] = m.group(1)
+HEAD_PREFIX = ""
+FOOTER_INNER = ""
+MAIN_INNER = ""
+hero = ""
+sections: dict[str, str] = {}
 
 # Composite pages (section id -> filename)
 PAGE_SECTIONS = [
@@ -83,29 +68,50 @@ PAGE_TITLES = {
 }
 
 TOC = [
-    ("overview.html", "two", "Two spacetimes inside one algebra", "一つの代数の中の二つの時空",
+    (1, "overview.html", "two", "Two spacetimes inside one algebra", "一つの代数の中の二つの時空",
      "Biquaternions, dual map, rotors.", "双四元数、双対写像、ローター。"),
-    ("gravity.html", "gravity", "Gravity as a mismatch", "重力は「ずれ」",
+    (2, "gravity.html", "gravity", "Gravity as a mismatch", "重力は「ずれ」",
      "Ω, Schwarzschild match, weak fields & galaxies.", "Ω、シュヴァルツシルト一致、弱い場と銀河。"),
-    ("admissible.html", "ceiling", "Ceiling & superposition", "上限と重ね合わせ",
+    (3, "admissible.html", "ceiling", "A ceiling on the twist", "ねじれには上限がある",
      "Admissible cone, internal sum vs expressed state.", "許容錐、内部の和と表出。"),
-    ("layers.html", "electron", "Sign-changing layers", "符号が入れ替わる層",
+    (4, "layers.html", "electron", "A sign-changing force", "符号が入れ替わる力",
      "One γ_s, two lengths; strong force, shells, scattering.", "一つの γ_s、二つの長さ；強い力、電子殻、散乱。"),
-    ("antiparticle.html", "antiparticle", "Antiparticles", "反粒子",
+    (5, "antiparticle.html", "antiparticle", "Antiparticles from the dual map", "双対写像から見える反粒子",
      "Dual map + charge conjugation; quantum superposition.", "双対写像と荷電共役、量子の重ね合わせ。"),
-    ("transport.html", "transport", "The geometry of parallel transport", "平行移動の幾何学",
+    (6, "transport.html", "transport", "The geometry of parallel transport", "平行移動の幾何学",
      "Motors, Killing axis, light that returns.", "モーター、キリング軸、戻る光。"),
-    ("control.html", "control", "Gravity control", "重力制御",
+    (7, "control.html", "control", "Gravity control", "重力制御",
      "Shields, fields, left/right split of J, circular drive, one scale.", "シールド、場、J の左右分解、円偏光駆動、ひとつの物差し。"),
-    ("rotation.html", "rotation", "Why things rotate", "なぜ回転するか",
+    (8, "rotation.html", "rotation", "A hypothesis: why do things rotate?", "仮説：なぜ回転が生まれるのか",
      "Hypothesis: offset spacetimes.", "仮説：ずれた二つの空間。"),
-    ("numbers.html", "numbers", "Diophantine geometry", "ディオファントス幾何",
+    (9, "numbers.html", "numbers", "Number theory: equations as geometry", "数論：方程式を幾何に変える",
      "Goldbach, Polignac, Collatz, bridges.", "ゴールドバッハ、ポリニャック、コラッツ。"),
-    ("logic.html", "logic", "Four-valued logic (D4L)", "4値論理（D4L）",
+    (10, "logic.html", "logic", "Four-valued logic (D4L)", "4値論理（D4L）",
      "J_norm readout, walls, no explosion.", "J_norm、壁、矛盾の非爆発。"),
-    ("lean.html", "lean", "Machine-checked Lean", "Lean による検証",
+    (11, "lean.html", "lean", "Checked by a machine", "機械による検証",
      "Proof assistant, residuals, further reading.", "証明支援、残差、さらに読む。"),
 ]
+
+CHAPTER_BY_PAGE = {href: (num, en, ja) for num, href, _aid, en, ja, *_ in TOC}
+
+
+def toc_link_spans(num: int, en: str, ja: str) -> str:
+    return (
+        f'<span class="en"><span class="ch-num">{num}.</span> {en}</span>'
+        f'<span class="ja"><span class="ch-num">{num}.</span> {ja}</span>'
+    )
+
+
+def chapter_nav_spans(num: int, en: str, ja: str, *, prev: bool) -> str:
+    if prev:
+        return (
+            f'<span class="en">← <span class="ch-num">{num}.</span> {en}</span>'
+            f'<span class="ja">← <span class="ch-num">{num}.</span> {ja}</span>'
+        )
+    return (
+        f'<span class="en"><span class="ch-num">{num}.</span> {en} →</span>'
+        f'<span class="ja"><span class="ch-num">{num}.</span> {ja} →</span>'
+    )
 
 OPEN_DISCLAIMER = """
 <aside class="open-disclaimer" aria-labelledby="open-disclaimer-heading">
@@ -190,10 +196,21 @@ def pager(current_file: str) -> str:
     nxt_l = PAGE_ORDER[i + 1] if i + 1 < len(PAGE_ORDER) else None
     parts = ['<nav class="pager" aria-label="Page navigation / ページ移動">']
     if prev_l:
-        parts.append(f'<a class="prev" href="{prev_l}"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>')
+        if prev_l == "index.html":
+            parts.append(
+                f'<a class="prev" href="{prev_l}"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>'
+            )
+        else:
+            num, en, ja = CHAPTER_BY_PAGE[prev_l]
+            parts.append(
+                f'<a class="prev" href="{prev_l}">{chapter_nav_spans(num, en, ja, prev=True)}</a>'
+            )
     parts.append('<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>')
     if nxt_l:
-        parts.append(f'<a class="next" href="{nxt_l}"><span class="en">Next →</span><span class="ja">次へ →</span></a>')
+        num, en, ja = CHAPTER_BY_PAGE[nxt_l]
+        parts.append(
+            f'<a class="next" href="{nxt_l}">{chapter_nav_spans(num, en, ja, prev=False)}</a>'
+        )
     parts.append("</nav>")
     return "\n".join(parts)
 
@@ -218,12 +235,36 @@ def wrap_page(fname: str, body_main: str, extra_scripts: str = "") -> str:
 
 # Landing
 toc_items = []
-for href, aid, en, ja, desc_en, desc_ja in TOC:
+for num, href, aid, en, ja, desc_en, desc_ja in TOC:
     toc_items.append(
-        f'    <li><a href="{href}#{aid}"><span class="en">{en}</span><span class="ja">{ja}</span></a>'
+        f'    <li><a href="{href}#{aid}">{toc_link_spans(num, en, ja)}</a>'
         f'<p class="toc-desc"><span class="en">{desc_en}</span><span class="ja">{desc_ja}</span></p></li>'
     )
-landing = f"""
+
+
+def load_monolith() -> None:
+    global HEAD_PREFIX, FOOTER_INNER, MAIN_INNER, hero, sections
+    text = SRC.read_text(encoding="utf-8")
+    head_match = re.search(r"(?s)^(.+?)<body>\s*", text)
+    footer_m = re.search(r"(<footer>.*?</footer>)", text, re.S)
+    if not footer_m:
+        raise SystemExit("footer parse failed")
+    FOOTER_INNER = footer_m.group(1)
+    main_match = re.search(r"(?s)<main id=\"top\">(.*?)</main>", text)
+    if not (head_match and main_match):
+        raise SystemExit("parse failed")
+    HEAD_PREFIX = head_match.group(1)
+    MAIN_INNER = main_match.group(1)
+    hero_m = re.search(r"(?s)(<section class=\"hero\">.*?</section>\s*)", MAIN_INNER)
+    hero = hero_m.group(1) if hero_m else ""
+    sections = {}
+    for m in re.finditer(r'(?s)(<section id="([^"]+)">.*?</section>)', MAIN_INNER):
+        sections[m.group(2)] = m.group(1)
+
+
+def build_from_monolith() -> None:
+    load_monolith()
+    landing = f"""
 {hero}
 <section class="toc-section" id="contents">
   <h2><span class="en">Table of contents</span><span class="ja">目次</span></h2>
@@ -232,19 +273,59 @@ landing = f"""
   </ol>
 </section>
 """
-index_html = wrap_page("index.html", landing, HASH_REDIRECT + "\n")
-(ROOT / "index.html").write_text(index_html, encoding="utf-8")
+    index_html = wrap_page("index.html", landing, HASH_REDIRECT + "\n")
+    (ROOT / "index.html").write_text(index_html, encoding="utf-8")
 
-for fname, ids in PAGE_SECTIONS:
-    chunks = []
-    for sid in ids:
-        if sid not in sections:
-            raise SystemExit(f"missing section {sid}")
-        chunks.append(sections[sid])
-    extra = ""
-    if fname == "numbers.html":
-        extra = OPEN_DISCLAIMER + "\n"
-    body = extra + "\n".join(chunks)
-    (ROOT / fname).write_text(wrap_page(fname, body), encoding="utf-8")
+    for fname, ids in PAGE_SECTIONS:
+        chunks = []
+        for sid in ids:
+            if sid not in sections:
+                raise SystemExit(f"missing section {sid}")
+            chunks.append(sections[sid])
+        extra = ""
+        if fname == "numbers.html":
+            extra = OPEN_DISCLAIMER + "\n"
+        body = extra + "\n".join(chunks)
+        (ROOT / fname).write_text(wrap_page(fname, body), encoding="utf-8")
 
-print("Wrote", len(PAGE_ORDER), "pages")
+    print("Wrote", len(PAGE_ORDER), "pages")
+
+
+def sync_nav_in_html() -> None:
+    """Refresh pager blocks (and index TOC) in existing HTML without the monolith."""
+    pager_re = re.compile(
+        r'<nav class="pager" aria-label="Page navigation / ページ移動">.*?</nav>',
+        re.S,
+    )
+    for fname in PAGE_ORDER:
+        path = ROOT / fname
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        text = pager_re.sub(pager(fname), text)
+        path.write_text(text, encoding="utf-8")
+    idx = ROOT / "index.html"
+    if idx.is_file():
+        text = idx.read_text(encoding="utf-8")
+        toc_block = f"""<section class="toc-section" id="contents">
+  <h2><span class="en">Table of contents</span><span class="ja">目次</span></h2>
+  <ol class="toc-list">
+{chr(10).join(toc_items)}
+  </ol>
+</section>"""
+        text = re.sub(
+            r'<section class="toc-section" id="contents">.*?</section>',
+            toc_block,
+            text,
+            count=1,
+            flags=re.S,
+        )
+        idx.write_text(text, encoding="utf-8")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--sync-nav":
+        sync_nav_in_html()
+        print("Synced pager + index TOC in HTML")
+    else:
+        build_from_monolith()

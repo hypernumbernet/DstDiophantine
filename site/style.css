@@ -74,7 +74,9 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 a.ref{color:var(--usual)}
 .toc-section{padding-top:2rem}
 .toc-list{list-style:none;padding:0;margin:1.2rem 0;display:grid;gap:1rem}
+.ch-num{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
 .toc-list a{font-size:1.05rem;font-weight:600;color:var(--usual);text-decoration:none}
+.pager .ch-num{font-weight:600}
 .toc-list a:hover{text-decoration:underline}
 .toc-desc{margin:.25rem 0 0;font-size:.9rem;color:var(--mute);font-weight:400}
 .open-disclaimer{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin:1.5rem 0}
