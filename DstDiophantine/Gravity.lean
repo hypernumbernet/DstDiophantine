@@ -63,6 +63,7 @@ import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.SilentControl
 import DstDiophantine.Gravity.ShieldHold
+import DstDiophantine.Gravity.HoldPrice
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -646,7 +647,7 @@ drop, and writes attraction. On one equal-scale axis the enlargement drives
 ## Dual-only control of \((J,M)\)
 
 `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`,
-`EnvelopeLock`, `ShieldHold`.
+`EnvelopeLock`, `ShieldHold`, `HoldPrice`.
 
 Dual-only motion conserves \(J+M\) and cannot raise \(J\). It reaches a
 shield \(J=0\) precisely when the dual wall is nonpositive. The mass
@@ -668,6 +669,15 @@ mass. A neutral configuration has lag budget at most \(\pi^2/2\), attained
 by the heaviest shield. The equal-scale point of a pure usual seed has lag
 budget \(0\); the cross-axis shield of the same rapidity has lag budget
 \(2\alpha^2\).
+
+`HoldPrice` prices that hold. On the cone the lag budget is at least
+\(4M-3\pi^2/4\), with equality exactly on the wall. For positive stiffness
+and \(M\ge 3\pi^2/16\), the written potential is at least
+\(2m(M-3\pi^2/16)\), with equality exactly on the wall. A neutral wall has
+vanishing sum of lags, so each channel's three holding forces sum to zero.
+The price is attained from the isotropic wall through to the heaviest
+shield. A matched hold exchanges no power whenever the two angular
+velocities agree on each axis.
 -/
 
 namespace DstDiophantine
@@ -2386,6 +2396,16 @@ example (α : ℝ) (hα : α ≠ 0) :
           lagSq (axisUsual α) < lagSq (crossAxisDual α) :=
   ⟨lagSq_maximalShield, lagSq_equalScale_axisUsual α, lagSq_cross_eq_two_axisUsual α,
     lagSq_cross_gt_axisUsual hα⟩
+
+/-- Regression: a neutral wall of given mass attains the holding price, and a
+matched hold does no work when the two rotors share a velocity. -/
+example {M : ℝ} (hlo : 3 * Real.pi ^ 2 / 16 ≤ M) (hhi : M ≤ 5 * Real.pi ^ 2 / 16) :=
+  balancedWallOfMass_spec hlo hhi
+
+example {m c : ℝ} {φ θ : Fin 3 → ℝ} :
+    holdPower (fun a => m * (φ a - θ a)) (fun a => m * (φ a - θ a))
+      (fun _ => c) (fun _ => c) = 0 :=
+  holdPower_matched_of_equal_velocity (fun _ => rfl)
 
 /-- Regression: a unit vacuum excess is gravitationally maximal. -/
 example {δ : ℝ} {p : Fin 3 → ℝ} (hδ : δ ≠ 0) (hp : ∑ a : Fin 3, p a ^ 2 = 1) :
