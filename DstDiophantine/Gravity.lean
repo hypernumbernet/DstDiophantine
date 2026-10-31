@@ -69,6 +69,7 @@ import DstDiophantine.Gravity.HoldPrice
 import DstDiophantine.Gravity.ControlScale
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
+import DstDiophantine.Gravity.ParityBridge
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Lensing
@@ -255,6 +256,15 @@ The straight line of one fixed jet is not itself that geodesic.
   Spatial inversion sends the pseudoscalar to its negative, negates each
   boost generator, and fixes each rotation generator. On \(\mathbb{C}^2\)
   the dual rotor has determinant \(1\).
+* `ParityBridge` — spatial inversion exchanges the two projectors of every
+  axis and acts by \((E,B)\mapsto(-E,B)\). \(J\) and \(M\) are even;
+  \(E\cdot B\) and the beam component of \(E\times B\) are odd. A pure-sector
+  excess, boost or rotation, has \(E\cdot B=0\). The bridge anticommutes
+  with the inversion. One order of the composition is the usual--dual swap,
+  which reverses \(J\) and preserves \(E\cdot B\); the other order is the
+  global sign of that swap. Inversion with laboratory time reversal is that
+  global sign, and \(J\), \(E\cdot B\), and the beam component are invariant
+  under it. The bridge is not identified with \(\mathrm{CP}\).
 * `ParticleStability` — a balanced massive seed is not emptied by either
   rapidity budget alone. On the SI stand-ins, \(1836<m_p/m_e<1837\),
   a hundred nuclear bindings and twenty optical wells each lie below the
@@ -628,6 +638,11 @@ that split. Distinct-axis projectors do not resolve the identity. Compact
 \(\mathrm{SU}(2)\) here is the dual rotor (\(IJ=K\)), not a symmetry of a
 fixed projector. In the parallel plane, \(c_B B_a+c_E E_a\) preserves the
 axis only when \(c_E=0\).
+
+`ParityBridge` — spatial inversion exchanges both projectors of every axis
+and sends \((E,B)\) to \((-E,B)\). \(J\) stays even and \(E\cdot B\) goes odd.
+A pure-sector excess has vanishing \(E\cdot B\). The bridge anticommutes
+with the inversion; one order of the composition is the usual--dual swap.
 
 `EMControl` reads a dual-only increment in two ways: magnetic superposition,
 and the substitution \(\theta\mapsto\theta+eA\). Neither raises \(J\) against
@@ -2594,6 +2609,25 @@ example {ℓE ℓG a : ℝ}
           gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
         442 / 10 ^ 42 :=
   bohr_mass_fraction hE0 hE hG0 hG ha
+
+/-- Regression: inversion exchanges the projectors and leaves \(J\) even. -/
+example (a : Fin 3) (p : FaradayParams) :
+    spatialParity (chiralityRAxis a) = chiralityLAxis a ∧
+      spatialParity (chiralityLAxis a) = chiralityRAxis a ∧
+        J (toTorsion (parityFaradayParams p)) = J (toTorsion p) ∧
+          faradayDot (parityFaradayParams p) = -faradayDot p ∧
+            faradayDot (swapFaradayParams p) = faradayDot p ∧
+              poyntingZ (parityFaradayParams (timeReverseFaradayParams p)) =
+                poyntingZ p := by
+  refine ⟨spatialParity_chiralityRAxis a, spatialParity_chiralityLAxis a,
+    J_parityFaraday p, faradayDot_parity p, faradayDot_swap p, ?_⟩
+  rw [parity_timeReverse_eq_neg, poyntingZ_neg]
+
+/-- Regression: a pure vacuum excess carries no \(E\cdot B\). -/
+example (δ : ℝ) (dir : Fin 3 → ℝ) :
+    faradayDot ({ E := fun a => δ * dir a, B := fun _ => 0 } : FaradayParams) = 0 ∧
+      faradayDot ({ E := fun _ => 0, B := fun a => δ * dir a } : FaradayParams) = 0 :=
+  ⟨faradayDot_boostAlong δ dir, faradayDot_rotationAlong δ dir⟩
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :
