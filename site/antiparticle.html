@@ -83,6 +83,77 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en"><b>Stueckelberg and Feynman, already in the algebra.</b> The reading of Stueckelberg and Feynman is that a charge conjugate is a negative-frequency solution of opposite charge — a particle running backward in time — and that reversing the time orientation turns it into a positive-energy antiparticle running forward. In DST both steps are already present: charge is reversed by the quaternionic structure of the dual spinor, and time orientation by the dual map. No second field has to be added by hand. The antiparticle is the same Dirac field read through the dual map.</span><span class="ja"><b>シュテュッケルベルクとファインマンの読みが、すでに代数の中にある。</b>シュテュッケルベルクとファインマンの読みでは、荷電共役は反対電荷の負振動数の解、すなわち時間を逆行する粒子であり、時間の向きを反転すると、時間を順行する正エネルギーの反粒子になります。DSTではこの二つの段階がすでにあります。電荷を反転するのは双対スピノルの四元数構造であり、時間の向きを反転するのは双対写像です。第二の場を手で足す必要はありません。反粒子は、双対写像を通して読んだ同じディラック場です。</span></p>
 
   <p><span class="en"><b>What this does not yet claim.</b> The algebra places the antiparticle inside the same Dirac field. A full identification of every Standard Model fermion with a dual-sector phase is not claimed. Connecting this reading to concrete production and annihilation rates is currently under research.</span><span class="ja"><b>まだ主張していないこと。</b>代数は反粒子を同じディラック場の内部に置きます。標準模型のすべてのフェルミオンを双対セクターの位相と同一視することは主張していません。この読みを具体的な生成・消滅の割合に結びつけることは、現在研究中です。</span></p>
+
+  <h3 class="sub" id="mirror"><span class="en">What a mirror changes</span><span class="ja">鏡に映すと何が変わるか</span></h3>
+  <p><span class="en">So far this chapter spoke of time reversal and charge conjugation on spinors. A different move is a <b>spatial mirror</b>: reflection through a plane, which mathematically inverts all three spatial directions at once. In the six directions that carry an electromagnetic-style field pair, that mirror exchanges the <b>left-handed and right-handed halves</b> tied to every spatial axis — the same left–right swap described for the mismatch split in <a class="ref" href="control.html#mismatch-split">gravity control</a>, but applied to every axis together.</span><span class="ja">ここまでこの章では、スピノルに対する時間反転と荷電共役を述べてきました。別の操作が<b>空間の鏡</b>です。平面での反射であり、三つの空間方向をいっせいに反転します。電磁気風の場の対を載せる六方向では、その鏡は<b>左手性と右手性の半分</b>を、すべての空間軸について入れ替えます — <a class="ref" href="control.html#mismatch-split">重力制御</a>で述べた不整合の左右分解と同じ入れ替えですが、すべての軸に同時に適用されます。</span></p>
+  <p><span class="en">On that field pair the mirror <b>flips the electric part and keeps the magnetic part</b>. The gravity-related <b>mismatch size</b> and the <b>unsigned mass</b> do not move: only the <b>handedness of the electric–magnetic twist</b> (whether the two parts lock clockwise or counterclockwise) and the <b>energy flow along the beam</b> pick up a minus sign. A configuration that is a pure boost excess — purely electric, with no magnetic part — or a pure rotation excess — purely magnetic, with no electric part — has no such twist at all; its handshake vanishes.</span><span class="ja">その場の対では、鏡は<b>電気的部分を反転し、磁気的部分は保ちます</b>。重力に関わる<b>不整合の大きさ</b>と<b>符号なし質量</b>は動きません。変わるのは<b>電気–磁気ねじれの左右性</b>（二つが時計回りに噛み合うか反時計回りか）と<b>ビームに沿ったエネルギー流</b>の符号だけです。純粋なブースト過剰 — 電気だけで磁気がない — や純粋な回転過剰 — 磁気だけで電気がない — には、そのねじれ自体がありません。噛み合いはゼロです。</span></p>
+
+  <svg class="fig" viewBox="0 0 640 280" role="img" aria-label="Mirror swaps left and right halves; electric arrow flips, magnetic arrow unchanged">
+    <defs>
+      <marker id="ah-mir" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <line x1="320" y1="36" x2="320" y2="244" stroke="#8a8fb0" stroke-width="2" stroke-dasharray="8 6"/>
+    <text class="lbl small" x="320" y="26" text-anchor="middle"><tspan class="en">mirror</tspan><tspan class="ja">鏡</tspan></text>
+    <text class="cap" x="160" y="58" text-anchor="middle"><tspan class="en">before</tspan><tspan class="ja">映す前</tspan></text>
+    <text class="cap" x="480" y="58" text-anchor="middle"><tspan class="en">after</tspan><tspan class="ja">映した後</tspan></text>
+    <rect x="48" y="72" width="224" height="148" rx="10" fill="#151a28" stroke="#596284"/>
+    <text class="lbl small warmt" x="88" y="98" text-anchor="middle">L</text>
+    <text class="lbl small warmt" x="232" y="98" text-anchor="middle">R</text>
+    <line class="usual arrow" x1="120" y1="150" x2="200" y2="150" marker-end="url(#ah-mir)"/>
+    <text class="lbl small usualt" x="160" y="136" text-anchor="middle"><tspan class="en">E</tspan><tspan class="ja">E</tspan></text>
+    <line class="dual arrow" x1="160" y1="190" x2="160" y2="130" marker-end="url(#ah-mir)"/>
+    <text class="lbl small dualt" x="178" y="168" text-anchor="start"><tspan class="en">B</tspan><tspan class="ja">B</tspan></text>
+    <rect x="368" y="72" width="224" height="148" rx="10" fill="#151a28" stroke="#596284"/>
+    <text class="lbl small warmt" x="408" y="98" text-anchor="middle">R</text>
+    <text class="lbl small warmt" x="552" y="98" text-anchor="middle">L</text>
+    <line class="usual arrow" x1="520" y1="150" x2="440" y2="150" marker-end="url(#ah-mir)"/>
+    <text class="lbl small usualt" x="480" y="136" text-anchor="middle"><tspan class="en">E flipped</tspan><tspan class="ja">E 反転</tspan></text>
+    <line class="dual arrow" x1="480" y1="190" x2="480" y2="130" marker-end="url(#ah-mir)"/>
+    <text class="lbl small dualt" x="498" y="168" text-anchor="start"><tspan class="en">B same</tspan><tspan class="ja">B 不変</tspan></text>
+    <text class="note" x="320" y="268" text-anchor="middle"><tspan class="en">Schematic: spatial inversion on the field pair.</tspan><tspan class="ja">模式図：場の対に対する空間反転。</tspan></text>
+  </svg>
+
+  <p><span class="en"><b>The ordinary–dual bridge.</b> Besides the mirror, the model has a bridge that sends the usual electromagnetic-style pair to the dual one by <b>swapping electric and magnetic parts</b>. That bridge <b>anticommutes</b> with the mirror: the order matters. Apply the mirror first and then the bridge, and the result is the sector swap — mismatch sign flips, twist handedness stays, beam flow flips. Reverse the order and you pick up the <b>overall minus sign</b> of that swap instead, leaving mismatch, twist, and beam flow all unchanged. A mirror followed by <b>laboratory time reversal</b> (the way fields are reversed in a time-reversal experiment, distinct from the dual map at the top of this chapter) is exactly that overall sign.</span><span class="ja"><b>通常–双対の橋。</b>鏡のほかに、モデルには通常の電磁気風の対を、<b>電気と磁気を入れ替えて</b>双対側へ送る橋があります。その橋は鏡と<b>反可換</b>です。順序が効きます。鏡を先に、橋を後にすると、部門の入れ替えになります — 不整合の符号は反転し、ねじれの左右性は保ち、ビーム流は反転します。順序を逆にすると、入れ替えの<b>全体のマイナス符号</b>になり、不整合・ねじれ・ビーム流はいずれも変わりません。鏡のあとに<b>実験室の時間反転</b>（本章冒頭の双対写像とは別の、時間反転実験での場の反転）を続けると、まさにその全体符号になります。</span></p>
+
+  <table class="datatable">
+    <thead>
+      <tr>
+        <th scope="col"><span class="en">Quantity</span><span class="ja">量</span></th>
+        <th scope="col"><span class="en">Mirror</span><span class="ja">鏡</span></th>
+        <th scope="col"><span class="en">Bridge (sector swap)</span><span class="ja">橋（部門入替）</span></th>
+        <th scope="col"><span class="en">Mirror + lab. time reversal</span><span class="ja">鏡＋実験室時間反転</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="en">Mismatch size</span><span class="ja">不整合の大きさ</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+        <td class="mid"><span class="en">sign flips</span><span class="ja">符号反転</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+      </tr>
+      <tr>
+        <td><span class="en">Unsigned mass</span><span class="ja">符号なし質量</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+      </tr>
+      <tr>
+        <td><span class="en">Twist handedness</span><span class="ja">ねじれの左右性</span></td>
+        <td class="mid"><span class="en">reverses</span><span class="ja">反転</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+      </tr>
+      <tr>
+        <td><span class="en">Beam energy flow</span><span class="ja">ビーム方向のエネルギー流</span></td>
+        <td class="mid"><span class="en">reverses</span><span class="ja">反転</span></td>
+        <td class="mid"><span class="en">reverses</span><span class="ja">反転</span></td>
+        <td class="mid"><span class="en">same</span><span class="ja">同じ</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="note"><span class="en"><b>Honesty boundary.</b> The bridge above is <b>not</b> identified with CP symmetry in particle physics. The spatial mirror is <b>not</b> charge conjugation. Nothing in this section derives the baryon asymmetry of the universe.</span><span class="ja"><b>正直な線引き。</b>上の橋は粒子物理学の CP 対称性と<b>同一視していません</b>。空間の鏡は荷電共役<b>ではありません</b>。この節のどこからも、宇宙のバリオン非対称性は導きません。</span></p>
+
   <p><span class="en"><b>Superposition on the cone.</b> In the quantum sector, combining on-shell wave solutions is an unbounded superposition in the same six-coefficient space. The mismatch that enters physical readouts is not the quadratic of that raw sum but the admissible configuration closest to it on the cone — the same internal-sum versus expressed-state split as <a class="ref" href="admissible.html#superposition">section 3</a>.</span><span class="ja"><b>錐上の重ね合わせ。</b>量子の分野では、オンシェルな波動解を重ね合わせることは、同じ六係数空間での上限のない重ね合わせです。物理的な読み取りに入る不整合は、その生の和の二次式ではなく、錐上でそれに最も近い許容配置です。<a class="ref" href="admissible.html#superposition">第3節</a>と同じ、内部の和対表出状態の分離です。</span></p>
 </section>
 </main>
