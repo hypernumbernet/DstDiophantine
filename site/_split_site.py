@@ -51,9 +51,9 @@ for sub in ("lean-coords", "weak-field"):
     ANCHOR_TO_PAGE[sub] = "gravity.html"
 for sub in ("superposition",):
     ANCHOR_TO_PAGE[sub] = "admissible.html"
-for sub in ("strong", "rutherford", "neutron", "shells", "coldfusion"):
+for sub in ("strong", "rutherford", "neutron", "shells", "coldfusion", "two-lengths"):
     ANCHOR_TO_PAGE[sub] = "layers.html"
-for sub in ("shield-ceiling", "holding-shield", "hold-price", "circular-hold", "one-scale", "field-control"):
+for sub in ("shield-ceiling", "holding-shield", "hold-price", "circular-hold", "one-scale", "field-control", "mismatch-split"):
     ANCHOR_TO_PAGE[sub] = "control.html"
 ANCHOR_TO_PAGE["physics"] = "transport.html"
 ANCHOR_TO_PAGE["transport"] = "transport.html"
@@ -90,13 +90,13 @@ TOC = [
     ("admissible.html", "ceiling", "Ceiling & superposition", "上限と重ね合わせ",
      "Admissible cone, internal sum vs expressed state.", "許容錐、内部の和と表出。"),
     ("layers.html", "electron", "Sign-changing layers", "符号が入れ替わる層",
-     "Strong force, shells, scattering, cold fusion.", "強い力、電子殻、散乱、常温核融合。"),
+     "One γ_s, two lengths; strong force, shells, scattering.", "一つの γ_s、二つの長さ；強い力、電子殻、散乱。"),
     ("antiparticle.html", "antiparticle", "Antiparticles", "反粒子",
      "Dual map + charge conjugation; quantum superposition.", "双対写像と荷電共役、量子の重ね合わせ。"),
     ("transport.html", "transport", "The geometry of parallel transport", "平行移動の幾何学",
      "Motors, Killing axis, light that returns.", "モーター、キリング軸、戻る光。"),
     ("control.html", "control", "Gravity control", "重力制御",
-     "Shields, hold price, field increments, circular drive, one scale.", "シールド、保持代価、場の増分、円偏光駆動、ひとつの物差し。"),
+     "Shields, fields, left/right split of J, circular drive, one scale.", "シールド、場、J の左右分解、円偏光駆動、ひとつの物差し。"),
     ("rotation.html", "rotation", "Why things rotate", "なぜ回転するか",
      "Hypothesis: offset spacetimes.", "仮説：ずれた二つの空間。"),
     ("numbers.html", "numbers", "Diophantine geometry", "ディオファントス幾何",
@@ -120,10 +120,10 @@ HASH_REDIRECT = """
   var map={
     top:'index.html',two:'overview.html',gravity:'gravity.html','lean-coords':'gravity.html','weak-field':'gravity.html',
     ceiling:'admissible.html',superposition:'admissible.html',electron:'layers.html',strong:'layers.html',
-    rutherford:'layers.html',neutron:'layers.html',shells:'layers.html',coldfusion:'layers.html',
+    rutherford:'layers.html',neutron:'layers.html',shells:'layers.html',coldfusion:'layers.html','two-lengths':'layers.html',
     antiparticle:'antiparticle.html',physics:'transport.html',transport:'transport.html',control:'control.html',
     'shield-ceiling':'control.html','holding-shield':'control.html','hold-price':'control.html',
-    'circular-hold':'control.html','one-scale':'control.html','field-control':'control.html',
+    'circular-hold':'control.html','one-scale':'control.html','field-control':'control.html','mismatch-split':'control.html',
     rotation:'rotation.html',numbers:'numbers.html',logic:'logic.html',
     lean:'lean.html',read:'lean.html#read'
   };
