@@ -72,6 +72,19 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 .card a{color:var(--usual)}
 .timelist{margin:.4rem 0 1rem;padding-left:1.3rem}.timelist li{margin:.25rem 0}
 a.ref{color:var(--usual)}
+.toc-section{padding-top:2rem}
+.toc-list{list-style:none;padding:0;margin:1.2rem 0;display:grid;gap:1rem}
+.toc-list a{font-size:1.05rem;font-weight:600;color:var(--usual);text-decoration:none}
+.toc-list a:hover{text-decoration:underline}
+.toc-desc{margin:.25rem 0 0;font-size:.9rem;color:var(--mute);font-weight:400}
+.open-disclaimer{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin:1.5rem 0}
+.pager{display:flex;flex-wrap:wrap;gap:.75rem 1.2rem;justify-content:space-between;align-items:center;padding:.75rem 1.2rem;margin:0 auto;max-width:920px;border-bottom:1px solid var(--line);font-size:.9rem}
+.pager a{color:var(--mute);text-decoration:none}
+.pager a:hover{color:var(--text)}
+.pager .contents{color:var(--accent);font-weight:600}
+html[data-lang=en] .pager .prev,html[data-lang=ja] .pager .next{margin-right:auto}
+html[data-lang=en] .pager .next,html[data-lang=ja] .pager .prev{margin-left:auto}
+@media (max-width:720px){.pager{font-size:.85rem;padding:.6rem 1rem}}
 .fig .att{stroke:var(--usual);color:var(--usual);stroke-width:3}
 .fig .lobe.pos{fill:#4fc3ff55;stroke:#4fc3ff}.fig .lobe.neg{fill:#ff5a7a44;stroke:#ff5a7a}
 .fig .ion{fill:#2a3d5c;stroke:#4fc3ff}.fig .prot{fill:#ff9a3c}

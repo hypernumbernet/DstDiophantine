@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two spacetimes · DST · 二つの時空 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="index.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="gravity.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="two">
+  <h2><span class="en">1. Two spacetimes inside one algebra</span><span class="ja">1. 一つの代数の中の二つの時空</span></h2>
+  <p><span class="en">DST works inside a 16-dimensional number system: the <b>biquaternions</b>, two copies of Hamilton's quaternions (<i>i, j, k</i> and <i>I, J, K</i>) multiplied together. This algebra is the same as the Clifford algebra Cl(3,1) of ordinary Minkowski spacetime. It has room for two complete copies of spacetime:</span><span class="ja">DSTは16次元の数の体系、<b>双四元数</b>の中で組み立てられます。ハミルトンの四元数を二組（<i>i, j, k</i> と <i>I, J, K</i>）掛け合わせたもので、通常のミンコフスキー時空のクリフォード代数 Cl(3,1) と同じものです。この中に、完全な時空が二つ入る余地があります。</span></p>
+  <div class="cards two">
+    <div class="card usualc"><h3><span class="en">Usual spacetime</span><span class="ja">通常時空</span></h3><p class="mono">X = ct·j + x·kI + y·kJ + z·kK</p><p><span class="en">The spacetime we live in and measure.</span><span class="ja">私たちが暮らし、測っている時空。</span></p></div>
+    <div class="card dualc"><h3><span class="en">Dual spacetime</span><span class="ja">双対時空</span></h3><p class="mono">X′ = ct′·k + x′·jI + y′·jJ + z′·jK</p><p><span class="en">Time-reversed relative to the first, with the same interval.</span><span class="ja">通常時空に対して時間が反転していて、間隔（距離の測り方）は同じ。</span></p></div>
+  </div>
+  <p><span class="en">The two are linked by one multiplication, the <b>dual map</b> X′ = X·i. It flips the direction of time (<span class="mono">j·i = −k</span>) but keeps the Minkowski norm −(ct)² + x² + y² + z² unchanged.</span><span class="ja">二つは一回の掛け算、<b>双対写像</b> X′ = X·i で結ばれています。これは時間の向きを反転させます（<span class="mono">j·i = −k</span>）が、ミンコフスキーノルム −(ct)² + x² + y² + z² は変えません。</span></p>
+  <svg class="fig" viewBox="0 0 640 275" role="img" aria-label="Dual map reverses time arrow and keeps the light cone">
+    <g transform="translate(160,120)">
+      <path class="cone usualf" d="M-90,-90L0,0L90,-90M-90,90L0,0L90,90"/>
+      <line class="axis" x1="-110" y1="0" x2="110" y2="0"/>
+      <line class="usual arrow" x1="0" y1="0" x2="0" y2="-95" marker-end="url(#ah)"/>
+      <text class="lbl usualt" x="8" y="-82"><tspan class="en">time</tspan><tspan class="ja">時間</tspan></text>
+      <text class="lbl" x="100" y="18">x</text>
+      <text class="cap" x="0" y="112" text-anchor="middle"><tspan class="en">usual: X</tspan><tspan class="ja">通常：X</tspan></text>
+    </g>
+    <g transform="translate(320,110)">
+      <line class="axis arrow" x1="-50" y1="0" x2="50" y2="0" marker-end="url(#ah)"/>
+      <text class="mono lbl" x="0" y="-12" text-anchor="middle">× i</text>
+      <text class="lbl small" x="0" y="24" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+    </g>
+    <g transform="translate(480,120)">
+      <path class="cone dualf" d="M-90,-90L0,0L90,-90M-90,90L0,0L90,90"/>
+      <line class="axis" x1="-110" y1="0" x2="110" y2="0"/>
+      <line class="dual arrow" x1="0" y1="0" x2="0" y2="95" marker-end="url(#ah)"/>
+      <text class="lbl dualt" x="8" y="90"><tspan class="en">time (reversed)</tspan><tspan class="ja">時間（反転）</tspan></text>
+      <text class="cap" x="0" y="112" text-anchor="middle"><tspan class="en">dual: X′ = X·i</tspan><tspan class="ja">双対：X′ = X·i</tspan></text>
+    </g>
+    <text class="note" x="320" y="265" text-anchor="middle"><tspan class="en">Same light cone (same interval), opposite arrow of time.</tspan><tspan class="ja">光円錐（間隔）は同じ、時間の矢は逆向き。</tspan></text>
+  </svg>
+  <p><span class="en">Motions are made by <b>rotors</b>. Six generators act: three with square +1 give Lorentz <b>boosts</b> (hyperbolic, measured by rapidities α) and three with square −1 give <b>rotations</b> (cyclic, measured by angles β). The theory says the same generators I, J, K that rotate ordinary space also generate the dual-sector rotations; they are not a second independent copy.</span><span class="ja">運動は<b>ローター</b>で表されます。働く生成子は6つ。2乗が +1 の3つはローレンツ<b>ブースト</b>（双曲的、ラピディティ α で測る）、2乗が −1 の3つは<b>回転</b>（周期的、角度 β で測る）を生みます。論文によれば、通常空間を回すのと同じ I, J, K が双対側の回転も生み出しており、独立した二組目があるわけではありません。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="index.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="gravity.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

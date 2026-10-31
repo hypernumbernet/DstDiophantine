@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lean verification · DST · Lean 検証 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="logic.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+</nav><main id="top">
+<section id="lean">
+  <h2><span class="en">11. Checked by a machine</span><span class="ja">11. 機械による検証</span></h2>
+  <p><span class="en">The mathematics is written in <b>Lean 4</b>, a proof assistant that checks every step. The repository contains no <span class="mono">sorry</span> (no unfinished proof). Eight classical theorems that the mathlib library does not yet provide (such as Wiles's Fermat theorem and Mihăilescu's theorem) are stated as explicit axioms. Steps still in progress are given names (residuals and <span class="mono">*Bridge</span> propositions), so the path ahead is clearly mapped.</span><span class="ja">数学は、すべての推論を検査する証明支援系 <b>Lean 4</b> で書かれています。リポジトリには <span class="mono">sorry</span>（未完成の証明）が一つもありません。mathlib にまだない古典的な定理8つ（ワイルズのフェルマーの定理、ミハイレスクの定理など）は明示的な公理として置かれています。研究中のステップには残差や <span class="mono">*Bridge</span> 命題という名前が付けられ、今後の道筋がはっきり示されています。</span></p>
+  <svg class="fig" viewBox="0 0 640 120" role="img" aria-label="Three layers of the Diophantine programme">
+    <g class="layer ok"><rect x="20" y="20" width="185" height="80" rx="10"/><text x="112" y="52" text-anchor="middle" class="lbl"><tspan class="en">1. Faithful encoding</tspan><tspan class="ja">1. 忠実な符号化</tspan></text><text x="112" y="78" text-anchor="middle" class="lbl small"><tspan class="en">proved</tspan><tspan class="ja">証明済み</tspan></text></g>
+    <g class="layer ok"><rect x="227" y="20" width="185" height="80" rx="10"/><text x="320" y="52" text-anchor="middle" class="lbl"><tspan class="en">2. Amplification no-go</tspan><tspan class="ja">2. 増幅の不可能定理</tspan></text><text x="320" y="78" text-anchor="middle" class="lbl small"><tspan class="en">proved</tspan><tspan class="ja">証明済み</tspan></text></g>
+    <g class="layer open"><rect x="434" y="20" width="185" height="80" rx="10"/><text x="527" y="52" text-anchor="middle" class="lbl"><tspan class="en">3. Bridge / residual</tspan><tspan class="ja">3. 橋渡し／残差</tspan></text><text x="527" y="78" text-anchor="middle" class="lbl small"><tspan class="en">in progress</tspan><tspan class="ja">研究中</tspan></text></g>
+  </svg>
+  <p><span class="en">Deriving constants such as Newton's G and the fine-structure constant from the theory is a goal still being worked out. Where a paper draft and the Lean code differ, the Lean code is the reference.</span><span class="ja">ニュートンの G や微細構造定数などの定数を理論から導くことは、これからの目標として鋭意研究中です。論文草稿と Lean のコードが異なる場合は、Lean のコードが基準です。</span></p>
+</section>
+<section id="read">
+  <h2><span class="en">Read further</span><span class="ja">さらに読む</span></h2>
+  <ul class="links">
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine"><span class="en">Repository and README</span><span class="ja">リポジトリと README</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/double-spacetime-theory.pdf"><span class="en">Main paper: Double Spacetime Theory — Gravity as Torsion between Usual and Dual Spacetime (PDF)</span><span class="ja">主論文：二重時空理論 — 通常時空と双対時空の間のねじれとしての重力（英語PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/double-spacetime-theory-ja.pdf"><span class="en">Japanese edition of the main paper (PDF)</span><span class="ja">主論文 日本語版（PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/dst-quantum-gravity.pdf"><span class="en">Quantum gravity paper (Dirac equation and antiparticles) (PDF)</span><span class="ja">量子重力の論文（ディラック方程式と反粒子）（英語PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/dst-quantum-gravity-ja.pdf"><span class="en">Japanese edition of the quantum gravity paper (PDF)</span><span class="ja">量子重力の論文 日本語版（PDF）</span></a></li>
+    <li><a href="https://github.com/hypernumbernet/DstDiophantine/tree/main/papers"><span class="en">All papers (English and Japanese)</span><span class="ja">全論文（英語・日本語）</span></a></li>
+  </ul>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="logic.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

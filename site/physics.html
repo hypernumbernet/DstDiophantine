@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0;url=transport.html#transport">
+<title>Redirect · DST</title>
+<script>
+(function(){
+  var map={
+    physics:'transport.html#transport',
+    transport:'transport.html#transport',
+    'shield-ceiling':'control.html#shield-ceiling',
+    'holding-shield':'control.html#holding-shield',
+    'hold-price':'control.html#hold-price',
+    'circular-hold':'control.html#circular-hold',
+    'one-scale':'control.html#one-scale',
+    'field-control':'control.html#field-control',
+    control:'control.html#control'
+  };
+  var h=(location.hash||'').replace(/^#/,'')||'physics';
+  var t=map[h]||'transport.html#transport';
+  location.replace(t);
+})();
+</script>
+</head>
+<body>
+<main id="top">
+<p><a href="transport.html#transport">Continue to parallel transport · 平行移動の幾何学へ</a></p>
+</main>
+</body>
+</html>
