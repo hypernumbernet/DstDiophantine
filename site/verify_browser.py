@@ -12,6 +12,8 @@ PAGES = [
     "admissible.html",
     "layers.html",
     "antiparticle.html",
+    "transport.html",
+    "control.html",
     "physics.html",
     "rotation.html",
     "numbers.html",
@@ -38,7 +40,7 @@ async def main():
                     await page.wait_for_selector("main", timeout=10000)
                     # SVG present
                     svg_count = await page.locator("svg.fig").count()
-                    if name != "index.html" and svg_count == 0:
+                    if name not in ("index.html", "physics.html") and svg_count == 0:
                         errors.append(f"{vp_name} {name}: no svg.fig")
                 except Exception as e:
                     errors.append(f"{vp_name} {name}: load failed {e}")

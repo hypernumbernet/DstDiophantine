@@ -35,7 +35,7 @@ PAGE_SECTIONS = [
     ("admissible.html", ["ceiling"]),
     ("layers.html", ["electron"]),
     ("antiparticle.html", ["antiparticle"]),
-    ("physics.html", ["physics"]),
+    # transport.html, control.html, physics.html (redirect): maintained manually, not from monolith
     ("rotation.html", ["rotation"]),
     ("numbers.html", ["numbers"]),
     ("logic.html", ["logic"]),
@@ -54,9 +54,17 @@ for sub in ("superposition",):
 for sub in ("strong", "rutherford", "neutron", "shells", "coldfusion"):
     ANCHOR_TO_PAGE[sub] = "layers.html"
 for sub in ("shield-ceiling", "holding-shield", "hold-price", "circular-hold", "one-scale", "field-control"):
-    ANCHOR_TO_PAGE[sub] = "physics.html"
+    ANCHOR_TO_PAGE[sub] = "control.html"
+ANCHOR_TO_PAGE["physics"] = "transport.html"
+ANCHOR_TO_PAGE["transport"] = "transport.html"
+ANCHOR_TO_PAGE["control"] = "control.html"
 
-PAGE_ORDER = ["index.html"] + [p[0] for p in PAGE_SECTIONS]
+PAGE_ORDER = (
+    ["index.html"]
+    + [p[0] for p in PAGE_SECTIONS[:5]]
+    + ["transport.html", "control.html"]
+    + [p[0] for p in PAGE_SECTIONS[5:]]
+)
 
 PAGE_TITLES = {
     "index.html": ("Contents · Double Spacetime Theory", "目次 · 二重時空理論"),
@@ -65,7 +73,9 @@ PAGE_TITLES = {
     "admissible.html": ("Admissible cone & superposition · DST", "許容錐と重ね合わせ · DST"),
     "layers.html": ("Layers & nuclear physics · DST", "層と原子核 · DST"),
     "antiparticle.html": ("Antiparticles · DST", "反粒子 · DST"),
-    "physics.html": ("Shields & field control · DST", "シールドと場 · DST"),
+    "transport.html": ("Parallel transport · DST", "平行移動 · DST"),
+    "control.html": ("Gravity control · DST", "重力制御 · DST"),
+    "physics.html": ("Redirect · DST", "リダイレクト · DST"),
     "rotation.html": ("Rotation hypothesis · DST", "回転の仮説 · DST"),
     "numbers.html": ("Number theory · DST", "数論 · DST"),
     "logic.html": ("Four-valued logic · DST", "4値論理 · DST"),
@@ -83,8 +93,10 @@ TOC = [
      "Strong force, shells, scattering, cold fusion.", "強い力、電子殻、散乱、常温核融合。"),
     ("antiparticle.html", "antiparticle", "Antiparticles", "反粒子",
      "Dual map + charge conjugation; quantum superposition.", "双対写像と荷電共役、量子の重ね合わせ。"),
-    ("physics.html", "physics", "Gravity, shields & control", "重力・シールド・制御",
-     "Killing axis, shields, hold price, circular hold, one scale, EM.", "キリング軸、保持、円偏光駆動、ひとつの物差し、電磁気。"),
+    ("transport.html", "transport", "The geometry of parallel transport", "平行移動の幾何学",
+     "Motors, Killing axis, light that returns.", "モーター、キリング軸、戻る光。"),
+    ("control.html", "control", "Gravity control", "重力制御",
+     "Shields, hold price, field increments, circular drive, one scale.", "シールド、保持代価、場の増分、円偏光駆動、ひとつの物差し。"),
     ("rotation.html", "rotation", "Why things rotate", "なぜ回転するか",
      "Hypothesis: offset spacetimes.", "仮説：ずれた二つの空間。"),
     ("numbers.html", "numbers", "Diophantine geometry", "ディオファントス幾何",
@@ -109,9 +121,10 @@ HASH_REDIRECT = """
     top:'index.html',two:'overview.html',gravity:'gravity.html','lean-coords':'gravity.html','weak-field':'gravity.html',
     ceiling:'admissible.html',superposition:'admissible.html',electron:'layers.html',strong:'layers.html',
     rutherford:'layers.html',neutron:'layers.html',shells:'layers.html',coldfusion:'layers.html',
-    antiparticle:'antiparticle.html',physics:'physics.html','shield-ceiling':'physics.html',
-    'holding-shield':'physics.html','hold-price':'physics.html','circular-hold':'physics.html',
-    'one-scale':'physics.html','field-control':'physics.html',rotation:'rotation.html',numbers:'numbers.html',logic:'logic.html',
+    antiparticle:'antiparticle.html',physics:'transport.html',transport:'transport.html',control:'control.html',
+    'shield-ceiling':'control.html','holding-shield':'control.html','hold-price':'control.html',
+    'circular-hold':'control.html','one-scale':'control.html','field-control':'control.html',
+    rotation:'rotation.html',numbers:'numbers.html',logic:'logic.html',
     lean:'lean.html',read:'lean.html#read'
   };
   var h=(location.hash||'').replace(/^#/,'');
