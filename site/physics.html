@@ -144,33 +144,44 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en">Over one full cycle the four-phase mean of J falls by at most <b>(e²/2)(E₀/ω)²</b>, hence at most <b>ρ²/2</b> and in particular <b>π²/32</b> at the transverse optimum. The increment conserves J + M, so mean unsigned mass rises by that same drop, and mean written stiffness rises by <i>m</i> times the drop — at the isotropic cap rapidity π/6 the aligned hold carries constant stiffness <b>mπ²/72</b>. <em>Intuition only, not part of the proved bound:</em> the drop scales like a quiver or ponderomotive energy in ρ² — a rotating drive costing mean mismatch the way an oscillating displacement costs kinetic energy — but the certified statement is the inequality on mean J inside the model, not a laboratory field identity.</span><span class="ja">一周期で J の四位相平均は高々 <b>(e²/2)(E₀/ω)²</b> だけ下がり、したがって高々 <b>ρ²/2</b>、垂直最良値では特に <b>π²/32</b> です。増分は J + M を保つので、符号なし質量の平均は同じ低下だけ上がり、書かれた剛性の平均はその低下の <i>m</i> 倍だけ上がります — 等方上限のラピディティ π/6 では整列した保持の定数剛性は <b>mπ²/72</b> です。<em>直観のみで、証明された境界の一部ではありません：</em>低下は ρ² の「震え」やポンデロモーティブエネルギーに似た尺度をもちます — 回転駆動が平均の不整合に代価を課す様子は、振動変位が運動エネルギーに代価を課すのに似ています — しかし保証されているのはモデル内部の平均 J に対する不等式であり、実験室の場の恒等式ではありません。</span></p>
   <div class="eq">⟨J⟩ − J<sub>seed</sub> ≥ −ρ²/2 &nbsp;&nbsp; (<span class="en">cycle mean; ≤ −π²/32 at ρ = π/4</span><span class="ja">周期平均；ρ = π/4 で ≤ −π²/32</span>)</div>
   <p><span class="en">If either transverse axis already sits on the wall α + β = π/2 — the isotropic wall α = β = π/4 included — no nontrivial cycle fits: the amplitude is forced to <b>ρ = 0</b>. The heaviest neutral shield has every axis on the wall, so it admits no such rotating drive for the same reason. When the two transverse rapidities already agree, the stiffness potential equals its cycle mean at every phase, and the stiffness-channel forces exchange <b>no net work</b> with the dual motion along the wave over a period — vanishing stiffness power is still not free fall.</span><span class="ja">垂直軸のどちらかがすでに壁 α + β = π/2 の上にある — 等方壁 α = β = π/4 を含む — と、非自明な周期は入りません。振幅は <b>ρ = 0</b> に強制されます。いちばん重い中性シールドはすべての軸が壁の上にあるため、同じ理由でそのような回転駆動を許しません。二つの垂直ラピディティがすでに一致すると、剛性ポテンシャルはすべての位相で周期平均と等しく、剛性チャネルの力は一周期にわたり波に沿う双対運動と<b>正味の仕事</b>を交換しません — 剛性の仕事率が零になることは、依然として自由落下ではありません。</span></p>
-  <svg class="fig" viewBox="0 0 640 320" role="img" aria-label="Transverse spare room and a rotating drive vector bounded by rho">
+  <svg class="fig" viewBox="0 0 680 360" role="img" aria-label="Transverse spare room and a rotating drive vector bounded by rho">
     <defs>
       <linearGradient id="spareg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".35"/><stop offset="1" stop-color="#b18cff" stop-opacity=".25"/></linearGradient>
+      <marker id="ah-spare" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <text class="cap" x="320" y="26" text-anchor="middle"><tspan class="en">Spare room for a rotating transverse drive</tspan><tspan class="ja">回転する垂直駆動のための余白</tspan></text>
-    <g transform="translate(55,265)">
-      <path d="M0,0 L0,-165 L145,-165 L145,0 Z" fill="url(#spareg)" stroke="#596284" stroke-width="1.2"/>
-      <line class="axis" x1="0" y1="0" x2="165" y2="0" marker-end="url(#ah)"/>
-      <line class="axis" x1="0" y1="0" x2="0" y2="-180" marker-end="url(#ah)"/>
-      <line class="zero" x1="0" y1="0" x2="145" y2="-145"/>
-      <text class="lbl small dualt" x="168" y="4"><tspan class="en">dual bias β</tspan><tspan class="ja">双対バイアス β</tspan></text>
-      <text class="lbl small usualt" x="-10" y="-182" text-anchor="end"><tspan class="en">slack to wall</tspan><tspan class="ja">壁までの余白</tspan></text>
-      <text class="lbl small" x="138" y="-148" text-anchor="middle">α+β=π/2</text>
-      <rect x="88" y="-145" width="44" height="44" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <text class="lbl small accentt" x="110" y="-92" text-anchor="middle">ρ</text>
-      <line x1="110" y1="-123" x2="110" y2="-101" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah)"/>
+    <g id="spare-geom">
+      <g transform="translate(88,268)">
+        <path d="M0,0 L0,-138 L138,-138 L138,0 Z" fill="url(#spareg)" stroke="#596284" stroke-width="1.2"/>
+        <line class="axis" x1="0" y1="0" x2="158" y2="0" marker-end="url(#ah-spare)"/>
+        <line class="axis" x1="0" y1="0" x2="0" y2="-158" marker-end="url(#ah-spare)"/>
+        <line class="zero" x1="0" y1="0" x2="138" y2="-138"/>
+        <rect x="84" y="-138" width="42" height="42" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <line x1="105" y1="-116" x2="105" y2="-96" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-spare)"/>
+      </g>
+      <g transform="translate(498,172)">
+        <circle r="52" fill="none" stroke="#596284" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <circle r="34" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+        <line x1="0" y1="0" x2="0" y2="-30" class="usual" marker-end="url(#ah-spare)"/>
+        <line x1="0" y1="0" x2="22" y2="-22" class="dual" marker-end="url(#ah-spare)"/>
+        <circle r="4" class="node"/>
+      </g>
     </g>
-    <g transform="translate(455,168)">
-      <circle r="55" fill="none" stroke="#596284" stroke-width="1.4" stroke-dasharray="5 4"/>
-      <circle r="36" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
-      <line x1="0" y1="0" x2="0" y2="-32" class="usual" marker-end="url(#ah)"/>
-      <line x1="0" y1="0" x2="24" y2="-24" class="dual" marker-end="url(#ah)"/>
-      <circle r="4" class="node"/>
-      <text class="lbl small usualt" x="0" y="-68" text-anchor="middle"><tspan class="en">drive vector (rotating)</tspan><tspan class="ja">駆動ベクトル（回転）</tspan></text>
-      <text class="lbl small accentt" x="0" y="70" text-anchor="middle"><tspan class="en">|vector| ≤ ρ</tspan><tspan class="ja">|ベクトル| ≤ ρ</tspan></text>
+    <g id="spare-labels">
+      <text class="cap" x="340" y="28" text-anchor="middle"><tspan class="en">Spare room for a rotating transverse drive</tspan><tspan class="ja">回転する垂直駆動のための余白</tspan></text>
+      <path d="M246,268 L252,284" class="dim" stroke-width="1"/>
+      <text class="lbl small dualt" x="254" y="288"><tspan class="en">dual bias β</tspan><tspan class="ja">双対バイアス β</tspan></text>
+      <path d="M88,198 L80,190" class="dim" stroke-width="1"/>
+      <text class="lbl small usualt" x="78" y="184" text-anchor="end"><tspan class="en">slack to wall</tspan><tspan class="ja">壁までの余白</tspan></text>
+      <path d="M218,142 L228,128" class="dim" stroke-width="1"/>
+      <text class="lbl small" x="232" y="124" text-anchor="start">α+β=π/2</text>
+      <path d="M105,152 L58,158" class="dim" stroke-width="1"/>
+      <text class="lbl small accentt" x="56" y="162" text-anchor="end">ρ</text>
+      <path d="M498,112 L498,96" class="dim" stroke-width="1"/>
+      <text class="lbl small usualt" x="498" y="90" text-anchor="middle"><tspan class="en">drive vector (rotating)</tspan><tspan class="ja">駆動ベクトル（回転）</tspan></text>
+      <path d="M498,224 L498,238" class="dim" stroke-width="1"/>
+      <text class="lbl small accentt" x="498" y="252" text-anchor="middle"><tspan class="en">|vector| ≤ ρ</tspan><tspan class="ja">|ベクトル| ≤ ρ</tspan></text>
+      <text class="note" x="340" y="342" text-anchor="middle"><tspan class="en">Schematic margin on one transverse axis; beam along the third axis.</tspan><tspan class="ja">一つの垂直軸での余白の模式図。第三軸に沿ってビーム。</tspan></text>
     </g>
-    <text class="note" x="320" y="305" text-anchor="middle"><tspan class="en">Schematic margin on one transverse axis; beam along the third axis.</tspan><tspan class="ja">一つの垂直軸での余白の模式図。第三軸に沿ってビーム。</tspan></text>
   </svg>
   <p class="note"><span class="en">These rotating-drive statements are theorems inside the DST model, not laboratory identities. There is no electromagnetic coupling beyond the model’s substitution rule, no lab protocol, and no identification of either channel force with a Faraday field. The quiver / ponderomotive picture is intuition only. Vanishing stiffness power along the wave is not free fall. Classical Fermat, Beal, abc, the Riemann hypothesis, Goldbach, Polignac, and Collatz remain open in the usual mathematical sense.</span><span class="ja">これらの回転駆動の記述は DST モデル内部の定理であり、実験室の恒等式ではありません。モデルの置換則を超える電磁気結合も、実験プロトコルも、どちらかのチャネル力をファラデー場と同一視することもありません。震え／ポンデロモーティブの比喩は直観のみです。波に沿って剛性の仕事率が零になることは自由落下ではありません。古典的なフェルマー、ビール、abc、リーマン予想、ゴールドバッハ、ポリニャック、コラッツは通常の数学的意味で未解決のままです。</span></p>
 
