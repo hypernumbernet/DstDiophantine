@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotation hypothesis · DST · 回転の仮説 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="physics.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="rotation">
+  <h2><span class="en">7. A hypothesis: why do things rotate?</span><span class="ja">7. 仮説：なぜ回転が生まれるのか</span></h2>
+  <p class="kicker"><span class="en">Hypothesis</span><span class="ja">仮説</span></p>
+  <p><span class="en">Why does the solar system rotate? If it formed from particles that were not rotating to begin with, the origin of its spin is not obvious. One explanation points to electromagnetic forces acting on the solar system and the planets. But rotation also appears at the scale of whole galaxies, where those forces do not reach that far. Electromagnetism therefore does not account for rotation at every scale, which suggests it is not the essence of rotation.</span><span class="ja">太陽系は、なぜ回転しているのでしょうか。もともと回転していなかった粒子が集まってできたと考えると、その回転の起源は自明ではありません。太陽系や惑星の回転には電磁力が働いている、という説もあります。しかし回転は銀河ほどの大きさでも見られ、そこまで遠くには電磁力は届きません。このため電磁力はあらゆる規模の回転を説明できず、回転の本質ではないと考えられます。</span></p>
+  <p><span class="en">Dual spacetime theory offers another answer as a hypothesis. Space itself comes with a built-in twist, and rotation arises from it naturally, much as air flowing into a typhoon on the Earth's surface is turned into a swirl by the Coriolis force. In this hypothesis, the space in which gravity acts between bodies and the space in which bodies move are not quite the same: they are slightly offset. The twist produced by that offset is why the solar system rotates.</span><span class="ja">二重時空理論は、別の答えを仮説として示します。空間にはもともと「ねじれ」が備わっていて、そこから回転が自然に生まれる、というものです。地球の表面で台風ができるとき、流れ込む空気がコリオリの力で渦を巻くのに似ています。この仮説では、重力が相互作用するための空間と、物体が移動するための空間は、実は同じではなく少しずれています。このずれが生むねじれが、太陽系が回転している理由だとされます。</span></p>
+  <svg class="fig" viewBox="0 0 640 300" role="img" aria-label="Schematic (Northern Hemisphere typhoon, counterclockwise): typhoon analogy and two slightly offset spaces producing a twist">
+    <defs><clipPath id="rc"><circle r="88"/></clipPath></defs>
+    <g transform="translate(160,140)">
+      <circle r="92" class="ring ph"/>
+      <polyline class="swirl" points="85.0,-0.0 83.0,-4.6 80.9,-8.9 78.4,-13.1 75.8,-17.0 73.0,-20.6 70.1,-24.0 66.9,-27.1 63.7,-30.0 60.3,-32.6 56.9,-34.9 53.4,-36.9 49.8,-38.7 46.3,-40.2 42.7,-41.4 39.1,-42.3 35.6,-43.0 32.1,-43.4 28.6,-43.6 25.3,-43.5 22.0,-43.2 18.9,-42.7 15.8,-42.0 13.0,-41.0 10.2,-39.9 7.7,-38.6 5.3,-37.2 3.1,-35.6 1.0,-33.9 -0.8,-32.1 -2.4,-30.2 -3.8,-28.2 -5.0,-26.1 -6.0,-24.0 -6.8,-21.9 -7.3,-19.8 -7.7,-17.7 -7.8,-15.6 -7.8,-13.6 -7.5,-11.6 -7.1,-9.7" marker-end="url(#ah)"/><polyline class="swirl" points="0.0,-85.0 -4.6,-83.0 -8.9,-80.9 -13.1,-78.4 -17.0,-75.8 -20.6,-73.0 -24.0,-70.1 -27.1,-66.9 -30.0,-63.7 -32.6,-60.3 -34.9,-56.9 -36.9,-53.4 -38.7,-49.8 -40.2,-46.3 -41.4,-42.7 -42.3,-39.1 -43.0,-35.6 -43.4,-32.1 -43.6,-28.6 -43.5,-25.3 -43.2,-22.0 -42.7,-18.9 -42.0,-15.8 -41.0,-13.0 -39.9,-10.2 -38.6,-7.7 -37.2,-5.3 -35.6,-3.1 -33.9,-1.0 -32.1,0.8 -30.2,2.4 -28.2,3.8 -26.1,5.0 -24.0,6.0 -21.9,6.8 -19.8,7.3 -17.7,7.7 -15.6,7.8 -13.6,7.8 -11.6,7.5 -9.7,7.1" marker-end="url(#ah)"/><polyline class="swirl" points="-85.0,-0.0 -83.0,4.6 -80.9,8.9 -78.4,13.1 -75.8,17.0 -73.0,20.6 -70.1,24.0 -66.9,27.1 -63.7,30.0 -60.3,32.6 -56.9,34.9 -53.4,36.9 -49.8,38.7 -46.3,40.2 -42.7,41.4 -39.1,42.3 -35.6,43.0 -32.1,43.4 -28.6,43.6 -25.3,43.5 -22.0,43.2 -18.9,42.7 -15.8,42.0 -13.0,41.0 -10.2,39.9 -7.7,38.6 -5.3,37.2 -3.1,35.6 -1.0,33.9 0.8,32.1 2.4,30.2 3.8,28.2 5.0,26.1 6.0,24.0 6.8,21.9 7.3,19.8 7.7,17.7 7.8,15.6 7.8,13.6 7.5,11.6 7.1,9.7" marker-end="url(#ah)"/><polyline class="swirl" points="-0.0,85.0 4.6,83.0 8.9,80.9 13.1,78.4 17.0,75.8 20.6,73.0 24.0,70.1 27.1,66.9 30.0,63.7 32.6,60.3 34.9,56.9 36.9,53.4 38.7,49.8 40.2,46.3 41.4,42.7 42.3,39.1 43.0,35.6 43.4,32.1 43.6,28.6 43.5,25.3 43.2,22.0 42.7,18.9 42.0,15.8 41.0,13.0 39.9,10.2 38.6,7.7 37.2,5.3 35.6,3.1 33.9,1.0 32.1,-0.8 30.2,-2.4 28.2,-3.8 26.1,-5.0 24.0,-6.0 21.9,-6.8 19.8,-7.3 17.7,-7.7 15.6,-7.8 13.6,-7.8 11.6,-7.5 9.7,-7.1" marker-end="url(#ah)"/>
+      <circle r="9" class="eye"/>
+      <text class="cap" x="0" y="-108" text-anchor="middle"><tspan class="en">Analogy: a typhoon (Coriolis)</tspan><tspan class="ja">たとえ：台風（コリオリの力）</tspan></text>
+      <text class="lbl small" x="0" y="122" text-anchor="middle"><tspan class="en">straight inflow turns into a swirl</tspan><tspan class="ja">まっすぐ流れ込む空気が渦になる</tspan></text>
+    </g>
+    <g transform="translate(470,140)">
+      <g clip-path="url(#rc)">
+        <g class="gridA" transform="rotate(-4)"><line x1="-90" y1="-90" x2="-90" y2="90"/><line x1="-90" y1="-90" x2="90" y2="-90"/><line x1="-75" y1="-90" x2="-75" y2="90"/><line x1="-90" y1="-75" x2="90" y2="-75"/><line x1="-60" y1="-90" x2="-60" y2="90"/><line x1="-90" y1="-60" x2="90" y2="-60"/><line x1="-45" y1="-90" x2="-45" y2="90"/><line x1="-90" y1="-45" x2="90" y2="-45"/><line x1="-30" y1="-90" x2="-30" y2="90"/><line x1="-90" y1="-30" x2="90" y2="-30"/><line x1="-15" y1="-90" x2="-15" y2="90"/><line x1="-90" y1="-15" x2="90" y2="-15"/><line x1="0" y1="-90" x2="0" y2="90"/><line x1="-90" y1="0" x2="90" y2="0"/><line x1="15" y1="-90" x2="15" y2="90"/><line x1="-90" y1="15" x2="90" y2="15"/><line x1="30" y1="-90" x2="30" y2="90"/><line x1="-90" y1="30" x2="90" y2="30"/><line x1="45" y1="-90" x2="45" y2="90"/><line x1="-90" y1="45" x2="90" y2="45"/><line x1="60" y1="-90" x2="60" y2="90"/><line x1="-90" y1="60" x2="90" y2="60"/><line x1="75" y1="-90" x2="75" y2="90"/><line x1="-90" y1="75" x2="90" y2="75"/><line x1="90" y1="-90" x2="90" y2="90"/><line x1="-90" y1="90" x2="90" y2="90"/></g>
+        <g class="gridB" transform="rotate(4)"><line x1="-90" y1="-90" x2="-90" y2="90"/><line x1="-90" y1="-90" x2="90" y2="-90"/><line x1="-75" y1="-90" x2="-75" y2="90"/><line x1="-90" y1="-75" x2="90" y2="-75"/><line x1="-60" y1="-90" x2="-60" y2="90"/><line x1="-90" y1="-60" x2="90" y2="-60"/><line x1="-45" y1="-90" x2="-45" y2="90"/><line x1="-90" y1="-45" x2="90" y2="-45"/><line x1="-30" y1="-90" x2="-30" y2="90"/><line x1="-90" y1="-30" x2="90" y2="-30"/><line x1="-15" y1="-90" x2="-15" y2="90"/><line x1="-90" y1="-15" x2="90" y2="-15"/><line x1="0" y1="-90" x2="0" y2="90"/><line x1="-90" y1="0" x2="90" y2="0"/><line x1="15" y1="-90" x2="15" y2="90"/><line x1="-90" y1="15" x2="90" y2="15"/><line x1="30" y1="-90" x2="30" y2="90"/><line x1="-90" y1="30" x2="90" y2="30"/><line x1="45" y1="-90" x2="45" y2="90"/><line x1="-90" y1="45" x2="90" y2="45"/><line x1="60" y1="-90" x2="60" y2="90"/><line x1="-90" y1="60" x2="90" y2="60"/><line x1="75" y1="-90" x2="75" y2="90"/><line x1="-90" y1="75" x2="90" y2="75"/><line x1="90" y1="-90" x2="90" y2="90"/><line x1="-90" y1="90" x2="90" y2="90"/></g>
+      </g>
+      <circle r="88" class="ring rs"/>
+      <path class="spin" d="M62,-62 A88,88 0 0 0 -62,-62" marker-end="url(#ah)"/>
+      <path class="spin" d="M-62,62 A88,88 0 0 0 62,62" marker-end="url(#ah)"/>
+      <text class="cap" x="0" y="-108" text-anchor="middle"><tspan class="en">Hypothesis: two offset spaces</tspan><tspan class="ja">仮説：少しずれた二つの空間</tspan></text>
+      <text class="lbl small usualt" x="-150" y="112"><tspan class="en">━ space of interaction (gravity)</tspan><tspan class="ja">━ 重力が相互作用する空間</tspan></text>
+      <text class="lbl small dualt" x="-150" y="130"><tspan class="en">━ space of motion</tspan><tspan class="ja">━ 移動のための空間</tspan></text>
+    </g>
+    <text class="note" x="630" y="294" text-anchor="end"><tspan class="en">Schematic; the offset is exaggerated.</tspan><tspan class="ja">模式図（ずれは誇張しています）</tspan></text>
+  </svg>
+  <p class="note"><span class="en">This hypothesis grows out of the same picture as section 2, where gravity is a twist (mismatch) between two frames. It is an idea being actively explored, not yet a formal result in the papers or the Lean development.</span><span class="ja">この仮説は、重力を二つのフレームのねじれ（不整合）とみる第2節と同じ発想から生まれたものです。論文や Lean ではまだ定式化されておらず、現在研究中のアイデアです。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="physics.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

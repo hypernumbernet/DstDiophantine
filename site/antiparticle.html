@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antiparticles · DST · 反粒子 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="layers.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="physics.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="antiparticle">
+  <h2><span class="en">5. Antiparticles from the dual map</span><span class="ja">5. 双対写像から見える反粒子</span></h2>
+  <p><span class="en">In ordinary quantum mechanics an antiparticle is introduced as another solution of the Dirac equation: same mass, opposite charge. Double Spacetime Theory (DST) already carries the two ingredients of that picture inside the algebra of section&nbsp;1. The <b>dual map</b> reverses the arrow of time. The dual spinor also carries a built-in flip of spin, and that flip defines <b>charge conjugation</b>, which reverses the charge. Neither step alone produces a positive-energy particle of opposite charge. Taken together they do: the antiparticle is the charge conjugate read through the dual spacetime.</span><span class="ja">ふつうの量子力学では、反粒子はディラック方程式の別の解として導入されます。質量は同じで、電荷は反対です。二重時空理論（DST）では、その描像に必要な二つの要素が、すでに第1節の代数の中にあります。<b>双対写像</b>は時間の矢を反転します。双対スピノルにはスピンをひっくり返すしくみも備わっており、それが<b>荷電共役</b>を定め、電荷を反転します。どちらの操作も単独では、反対の電荷をもつ正エネルギーの粒子を生みません。二つを合わせると生みます。反粒子とは、双対時空を通して読んだ荷電共役です。</span></p>
+
+  <div class="cards two">
+    <div class="card dualc"><h3><span class="en">Dual map</span><span class="ja">双対写像</span></h3><p><span class="en">Reverses time orientation. On a Dirac solution it reverses the four-momentum, so the sign of the energy flips, while the charge stays the same.</span><span class="ja">時間の向きを反転します。ディラックの解の上では四元運動量を反転するのでエネルギーの符号が変わり、電荷はそのままです。</span></p></div>
+    <div class="card usualc"><h3><span class="en">Charge conjugation</span><span class="ja">荷電共役</span></h3><p><span class="en">Reverses the charge and the energy. Alone it is a negative-frequency solution of opposite charge — a particle running backward in time.</span><span class="ja">電荷とエネルギーを反転します。単独では、反対電荷の負振動数の解、すなわち時間を逆行する粒子です。</span></p></div>
+  </div>
+
+  <svg class="fig" viewBox="0 0 640 250" role="img" aria-label="Charge conjugation then dual map yields the antiparticle at the same momentum">
+    <defs>
+      <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g transform="translate(90,110)">
+      <circle r="28" class="mass"/>
+      <text class="lbl ink" x="0" y="4" text-anchor="middle">e⁻</text>
+      <text class="cap" x="0" y="70" text-anchor="middle"><tspan class="en">particle</tspan><tspan class="ja">粒子</tspan></text>
+      <text class="lbl small" x="0" y="90" text-anchor="middle"><tspan class="en">charge e, momentum p</tspan><tspan class="ja">電荷 e、運動量 p</tspan></text>
+    </g>
+    <g transform="translate(250,70)">
+      <line class="axis arrow" x1="-40" y1="0" x2="40" y2="0" marker-end="url(#ah2)"/>
+      <text class="lbl small" x="0" y="-12" text-anchor="middle"><tspan class="en">charge conjugation</tspan><tspan class="ja">荷電共役</tspan></text>
+      <text class="lbl small coolt" x="0" y="22" text-anchor="middle"><tspan class="en">e → −e, energy flips</tspan><tspan class="ja">e → −e、エネルギー反転</tspan></text>
+    </g>
+    <g transform="translate(250,150)">
+      <line class="dual arrow" x1="-40" y1="0" x2="40" y2="0" marker-end="url(#ah2)"/>
+      <text class="lbl small dualt" x="0" y="-12" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+      <text class="lbl small dualt" x="0" y="22" text-anchor="middle"><tspan class="en">time reverses</tspan><tspan class="ja">時間反転</tspan></text>
+    </g>
+    <g transform="translate(410,110)">
+      <circle r="28" class="obs"/>
+      <text class="lbl ink" x="0" y="4" text-anchor="middle">e⁺</text>
+      <text class="cap" x="0" y="70" text-anchor="middle"><tspan class="en">antiparticle</tspan><tspan class="ja">反粒子</tspan></text>
+      <text class="lbl small" x="0" y="90" text-anchor="middle"><tspan class="en">charge −e, same p</tspan><tspan class="ja">電荷 −e、同じ p</tspan></text>
+    </g>
+    <text class="note" x="320" y="235" text-anchor="middle"><tspan class="en">Schematic. Same mass; density and current of one spinor are kept.</tspan><tspan class="ja">模式図。質量は同じ。一つのスピノルの密度とカレントは保たれます。</tspan></text>
+  </svg>
+
+  <p><span class="en"><b>What the composite does.</b> The two steps together carry a solution of mass <i>m</i> at momentum <i>p</i> to a solution of the same mass at the same <i>p</i>, with opposite charge. For a single spinor the density and the current are kept. At rest the antiparticle of a dual-spinor pair is the pair of the spin-reversed dual spinor. The composite is antilinear and reverses all four spacetime coordinates, the same overall pattern as the CPT operation of the Dirac equation.</span><span class="ja"><b>合成がすること。</b>二つの段階を合わせると、運動量 <i>p</i> における質量 <i>m</i> の解が、同じ <i>p</i> における同じ質量の、反対電荷の解へ写ります。一つのスピノルについては密度とカレントが保たれます。静止系では、双対スピノルの対の反粒子は、スピンを反転した双対スピノルの対です。この合成は反線形で、時空の四つの座標をすべて反転します。ディラック方程式の CPT 操作と同じ全体の形です。</span></p>
+
+  <p><span class="en"><b>Stueckelberg and Feynman, already in the algebra.</b> The reading of Stueckelberg and Feynman is that a charge conjugate is a negative-frequency solution of opposite charge — a particle running backward in time — and that reversing the time orientation turns it into a positive-energy antiparticle running forward. In DST both steps are already present: charge is reversed by the quaternionic structure of the dual spinor, and time orientation by the dual map. No second field has to be added by hand. The antiparticle is the same Dirac field read through the dual map.</span><span class="ja"><b>シュテュッケルベルクとファインマンの読みが、すでに代数の中にある。</b>シュテュッケルベルクとファインマンの読みでは、荷電共役は反対電荷の負振動数の解、すなわち時間を逆行する粒子であり、時間の向きを反転すると、時間を順行する正エネルギーの反粒子になります。DSTではこの二つの段階がすでにあります。電荷を反転するのは双対スピノルの四元数構造であり、時間の向きを反転するのは双対写像です。第二の場を手で足す必要はありません。反粒子は、双対写像を通して読んだ同じディラック場です。</span></p>
+
+  <p><span class="en"><b>What this does not yet claim.</b> The algebra places the antiparticle inside the same Dirac field. A full identification of every Standard Model fermion with a dual-sector phase is not claimed. Connecting this reading to concrete production and annihilation rates is currently under research.</span><span class="ja"><b>まだ主張していないこと。</b>代数は反粒子を同じディラック場の内部に置きます。標準模型のすべてのフェルミオンを双対セクターの位相と同一視することは主張していません。この読みを具体的な生成・消滅の割合に結びつけることは、現在研究中です。</span></p>
+  <p><span class="en"><b>Superposition on the cone.</b> In the quantum sector, combining on-shell wave solutions is an unbounded superposition in the same six-coefficient space. The mismatch that enters physical readouts is not the quadratic of that raw sum but the admissible configuration closest to it on the cone — the same internal-sum versus expressed-state split as <a class="ref" href="admissible.html#superposition">section 3</a>.</span><span class="ja"><b>錐上の重ね合わせ。</b>量子の分野では、オンシェルな波動解を重ね合わせることは、同じ六係数空間での上限のない重ね合わせです。物理的な読み取りに入る不整合は、その生の和の二次式ではなく、錐上でそれに最も近い許容配置です。<a class="ref" href="admissible.html#superposition">第3節</a>と同じ、内部の和対表出状態の分離です。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="layers.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="physics.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

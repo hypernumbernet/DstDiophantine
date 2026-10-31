@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admissible cone & superposition · DST · 許容錐と重ね合わせ · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="gravity.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="layers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="ceiling">
+  <h2><span class="en">3. A ceiling on the twist</span><span class="ja">3. ねじれには上限がある</span></h2>
+  <p><span class="en">DST places the rapidities on a compact range. On the <b>admissible cone</b> every axis has α<sub>a</sub>, β<sub>a</sub> ≥ 0 with α<sub>a</sub> + β<sub>a</sub> ≤ π/2. On that cone the height J can never exceed 3π²/8 in size. Dividing by that value gives J<sub>norm</sub>, with |J<sub>norm</sub>| ≤ 1. This bound is proved, and it is sharp.</span><span class="ja">DSTではラピディティを有限の範囲に置きます。<b>許容錐</b>では、各軸で α<sub>a</sub>, β<sub>a</sub> ≥ 0 かつ α<sub>a</sub> + β<sub>a</sub> ≤ π/2 です。この上では高さ J の大きさは 3π²/8 を超えません。この値で割ったものが J<sub>norm</sub> で、|J<sub>norm</sub>| ≤ 1 となります。この上限は証明済みで、ぎりぎり到達できる（最良の）値です。</span></p>
+  <svg class="fig" viewBox="0 0 640 300" role="img" aria-label="Admissible region on one axis, alpha plus beta at most pi over 2">
+    <defs>
+      <linearGradient id="jg" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".55"/><stop offset=".5" stop-color="#8a8fb0" stop-opacity=".12"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".55"/></linearGradient>
+    </defs>
+    <g transform="translate(90,260)">
+      <path d="M0,0L220,0L0,-220z" fill="url(#jg)" class="region"/>
+      <line class="axis arrow" x1="0" y1="0" x2="250" y2="0" marker-end="url(#ah)"/>
+      <line class="axis arrow" x1="0" y1="0" x2="0" y2="-245" marker-end="url(#ah)"/>
+      <line class="zero" x1="0" y1="0" x2="110" y2="-110"/>
+      <text class="lbl" x="255" y="5">α <tspan class="small"><tspan class="en">(boost)</tspan><tspan class="ja">（ブースト）</tspan></tspan></text>
+      <text class="lbl" x="8" y="-240">β <tspan class="small"><tspan class="en">(rotation)</tspan><tspan class="ja">（回転）</tspan></tspan></text>
+      <text class="lbl small" x="215" y="18">π/2</text><text class="lbl small" x="-30" y="-216">π/2</text>
+      <text class="lbl small" x="115" y="-114">J = 0</text>
+      <circle cx="220" cy="0" r="5" class="dotw"/><circle cx="0" cy="-220" r="5" class="dotc"/>
+    </g>
+    <g class="legend" transform="translate(370,70)">
+      <text class="lbl"><tspan class="en">One axis: J<tspan baseline-shift="sub" font-size="10">a</tspan> = ½(α² − β²)</tspan><tspan class="ja">一つの軸：J<tspan baseline-shift="sub" font-size="10">a</tspan> = ½(α² − β²)</tspan></text>
+      <text class="lbl small warmt" y="34"><tspan class="en">● pure boost corner: J<tspan baseline-shift="sub" font-size="9">a</tspan> = +π²/8</tspan><tspan class="ja">● 純ブーストの角：J<tspan baseline-shift="sub" font-size="9">a</tspan> = +π²/8</tspan></text>
+      <text class="lbl small coolt" y="58"><tspan class="en">● pure rotation corner: J<tspan baseline-shift="sub" font-size="9">a</tspan> = −π²/8</tspan><tspan class="ja">● 純回転の角：J<tspan baseline-shift="sub" font-size="9">a</tspan> = −π²/8</tspan></text>
+      <text class="lbl small" y="82"><tspan class="en">diagonal α = β: balanced, J<tspan baseline-shift="sub" font-size="9">a</tspan> = 0</tspan><tspan class="ja">対角線 α = β：釣り合い、J<tspan baseline-shift="sub" font-size="9">a</tspan> = 0</tspan></text>
+      <text class="lbl small" y="118"><tspan class="en">Three axes: |J| ≤ 3 × π²/8 = 3π²/8</tspan><tspan class="ja">3軸合計：|J| ≤ 3 × π²/8 = 3π²/8</tspan></text>
+      <text class="lbl small" y="142"><tspan class="en">so |J</tspan><tspan class="ja">よって |J</tspan><tspan baseline-shift="sub" font-size="9">norm</tspan>| ≤ 1</text>
+    </g>
+  </svg>
+
+  <h3 class="sub" id="superposition"><span class="en">Many sources: internal sum vs expressed state</span><span class="ja">多数の源：内部の和と表出状態</span></h3>
+  <p><span class="en">Each source contributes a small twist, written as a <b>source bivector</b> in a six-dimensional coefficient space (three axes, each with a boost part and a rotation part). Many sources add there in plain vector addition: the order does not matter, and that <b>internal sum</b> has <em>no</em> ceiling — the same quadratic height J, evaluated on the sum alone, can exceed 3π²/8.</span><span class="ja">各源は小さなねじれを寄せます。それは六次元の係数空間（三つの軸、それぞれにブースト成分と回転成分）の<b>源バイベクトル</b>として書けます。多数の源はそこで普通のベクトル和として足されます。順序は関係なく、その<b>内部の和</b>に天井はありません。同じ二次の高さ J を和だけの上で評価すれば、3π²/8 を超えうます。</span></p>
+  <p><span class="en">What a particle <b>expresses</b> is different. On each axis, take the triangle α ≥ 0, β ≥ 0, α + β ≤ π/2. The expressed coefficients are the admissible point closest to the internal sum on that triangle, axis by axis. Inside the triangle the closest point is the sum itself, so a weak collection of sources expresses the ordinary sum of their twists. Past the edge α + β = π/2 the expressed sum pins at π/2 while the expressed difference keeps tracking the internal difference; when that difference reaches π/2 the state <b>locks</b> to a pure-boost or pure-rotation corner, and more of the same kind of source changes nothing expressed.</span><span class="ja">粒子が<b>表出</b>するものは別です。各軸で三角形 α ≥ 0、β ≥ 0、α + β ≤ π/2 を考えます。表出される係数は、軸ごとに、その三角形上で内部の和に最も近い許容点です。三角形の内側では最近点は和そのものなので、弱い源の集まりはねじれの普通の和を表出します。辺 α + β = π/2 を越えると表出された和は π/2 に固定され、表出された差は内部の差を追い続けます。その差が π/2 に達すると状態は純ブーストまたは純回転の角に<b>ロック</b>し、同じ種類の源をさらに足しても表出は変わりません。</span></p>
+  <p><span class="en">Thus |J| of the <b>expressed configuration</b> stays at most 3π²/8 even when many sources pile up, while the internal quadratic can grow without bound. <b>Aligned</b> sources add rapidities, not values of J: n pure π/2 boosts on one axis have internal J = n²π²/8 but express J = π²/8 for every n ≥ 1; two π/4 boosts each have J = π²/32 but together express one π/2 boost with J = π²/8, not π²/16.</span><span class="ja">したがって<b>表出された配置</b>の |J| は、源がいくら重なっても高々 3π²/8 のままです。一方、内部の二次式は上限なく大きくなりえます。<b>揃った</b>源が足し合わせるのは J の値ではなくラピディティです。一軸上の π/2 の純ブーストを n 回重ねると内部 J = n²π²/8 ですが、n ≥ 1 では表出 J = π²/8 です。ラピディティ π/4 のブーストが二つあるとき、それぞれ J = π²/32 ですが、まとめて表出するのは J = π²/8 の一つの π/2 ブーストであり、π²/16 ではありません。</span></p>
+  <svg class="fig" viewBox="0 0 640 340" role="img" aria-label="One axis: internal sum outside the triangle and axis-wise projection to the expressed point">
+    <defs>
+      <linearGradient id="jg2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".45"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".45"/></linearGradient>
+      <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g transform="translate(72,278)">
+      <path d="M0,0L200,0L0,-200z" fill="url(#jg2)" class="region"/>
+      <line class="axis" x1="0" y1="0" x2="228" y2="0"/>
+      <line class="axis" x1="0" y1="0" x2="0" y2="-228"/>
+      <line class="zero" x1="0" y1="0" x2="100" y2="-100"/>
+      <line x1="200" y1="0" x2="0" y2="-200" class="zero"/>
+      <text class="lbl small" x="208" y="16">π/2</text><text class="lbl small" x="-36" y="-208">π/2</text>
+      <text class="lbl small" x="62" y="-138"><tspan class="en">edge: α+β=π/2</tspan><tspan class="ja">辺：α+β=π/2</tspan></text>
+      <circle cx="155" cy="-95" r="6" fill="#ff9a5a" stroke="#fff" stroke-width="1.2"/>
+      <line x1="155" y1="-95" x2="178" y2="-118" stroke="#ff9a5a" stroke-width="1" opacity=".85"/>
+      <text class="lbl small warmt" x="182" y="-114"><tspan class="en">internal sum</tspan><tspan class="ja">内部の和</tspan></text>
+      <circle cx="100" cy="-100" r="6" class="node"/>
+      <line x1="100" y1="-100" x2="78" y2="-82" stroke="var(--accent)" stroke-width="1" opacity=".85"/>
+      <text class="lbl small accentt" x="74" y="-78" text-anchor="end"><tspan class="en">expressed</tspan><tspan class="ja">表出</tspan></text>
+      <line x1="155" y1="-95" x2="100" y2="-100" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah3)" color="var(--accent)"/>
+      <text class="lbl small accentt" x="128" y="-66" text-anchor="middle"><tspan class="en">nearest on triangle</tspan><tspan class="ja">三角形上の最近点</tspan></text>
+      <circle cx="200" cy="0" r="5" class="dotw"/>
+      <text class="lbl small warmt" x="208" y="36"><tspan class="en">lock: pure boost</tspan><tspan class="ja">ロック：純ブースト</tspan></text>
+    </g>
+    <g transform="translate(360,40)">
+      <text class="lbl"><tspan class="en">Axis-wise projection (one axis shown)</tspan><tspan class="ja">軸ごとの射影（一軸を表示）</tspan></text>
+      <text class="lbl small" y="28"><tspan class="en">Inside: expressed = internal sum</tspan><tspan class="ja">内側：表出 = 内部の和</tspan></text>
+      <text class="lbl small" y="52"><tspan class="en">Outside: sum pins at π/2; difference may still move</tspan><tspan class="ja">外側：和は π/2 に固定、差は動きうる</tspan></text>
+      <text class="lbl small" y="76"><tspan class="en">|J| of expressed state ≤ 3π²/8 always</tspan><tspan class="ja">表出状態の |J| は常に ≤ 3π²/8</tspan></text>
+      <text class="lbl small" y="112"><tspan class="en">In the quantum and logic sectors, superposition is this internal sum; the readout is the nearest point on the cone (<a class="ref" href="antiparticle.html#antiparticle">section 5</a>, <a class="ref" href="logic.html#logic">section 9</a>).</tspan><tspan class="ja">量子・論理の分野では、重ね合わせはこの内部の和であり、読み取りは錐上の最近点です（<a class="ref" href="antiparticle.html#antiparticle">第5節</a>、<a class="ref" href="logic.html#logic">第9節</a>）。</tspan></text>
+    </g>
+    <text class="note" x="320" y="328" text-anchor="middle"><tspan class="en">Schematic. Six coefficients add freely; admissibility is enforced per axis.</tspan><tspan class="ja">模式図。六つの係数は自由に足される。許容性は軸ごとに課される。</tspan></text>
+  </svg>
+  <p><span class="en"><b>Gravity uses the same split.</b> Summing weak sources on the admissible cone expresses their twists additively (<a class="ref" href="gravity.html#weak-field">section 2</a>, fixed compactification radius). When the patch radius tracks enclosed mass instead, the acceleration relation grows slower than Newton: strictly subhomogeneous and strictly subadditive, so low-acceleration superposition fails even while the internal six-space still adds freely. High acceleration stays near inverse-square; the transition is fixed once a₀ is supplied as input.</span><span class="ja"><b>重力も同じ二層構造。</b>許容錐上で弱い源を足すとねじれは加法で表出されます（<a class="ref" href="gravity.html#weak-field">第2節</a>、コンパクト化半径固定）。パッチ半径が包まれた質量に従う場合は、加速度関係はニュートンより遅く伸び、厳密に次同次でも次加法でもなく、低加速度では重ね合わせが破れます。内部の六空間の自由な和とは別です。高加速度では逆二乗に近く、a₀ を入力として与えれば遷移は固定されます。</span></p>
+  <p class="note"><span class="en"><b>Not claimed here:</b> a Newtonian multi-body force law derived from this bookkeeping; coefficient-wise Faraday addition in the electromagnetic six-space is unchanged. See <a class="ref" href="#ceiling">section 3</a> for the proved ceiling on expressed |J|. Galaxy readings are model theorems, not an observational dark-matter verdict.</span><span class="ja"><b>ここでは主張しない：</b>この台帳からニュートン型の多体の力の法則を導くこと；電磁気の六空間における係数ごとのファラデー加法は変わらない。表出 |J| の証明済み上限は<a class="ref" href="#ceiling">第3節</a>を参照。銀河の読みはモデル内の定理であり、観測上のダークマター判定ではありません。</span></p>
+
+  <p><span class="en">The ceiling does real work elsewhere in the repository. In the gravity track it is read as a finite redshift floor, so a one-way horizon (A = 0) does not form on that chart, and a light ray that would be captured classically turns around and comes back. When the same discrete height lattice is read as a Planck-mass ratio, the normalised mismatch has a separate gravitational floor (16/3)α<sub>G</sub> for a mass m — not the electromagnetic fine-structure constant α. In the number-theory track, a shared “no-go” theorem says no seed can be amplified past this ceiling.</span><span class="ja">この上限はリポジトリの他の部分で重要な役割を果たします。重力の分野では有限の赤方偏移の下限として読まれ、その座標系では一方通行の地平（A = 0）ができません。古典的には捕らわれるはずの光線も、内部で向きを変えて戻ってきます。同じ離散の高さ格子をプランク質量比として読むと、正規化された不整合には質量 m に対する別の重力の下限 (16/3)α<sub>G</sub> があります。これは電磁気の微細構造定数 α とは別物です。数論の分野では、「どんな種もこの上限を超えて増幅できない」という共通の不可能定理になります。</span></p>
+  <p class="note"><span class="en">Placing boosts on a compact 2π-torus, with admissibility on top, is the modelling choice the theory builds on.</span><span class="ja">ブーストを周期 2π のトーラス上に置き、その上に許容性を課すことが、この理論の出発点となるモデル化です。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="gravity.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="layers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

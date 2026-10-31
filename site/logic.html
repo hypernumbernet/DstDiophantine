@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four-valued logic · DST · 4値論理 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="numbers.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="lean.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="logic">
+  <h2><span class="en">9. Four-valued logic (D4L)</span><span class="ja">9. 4値論理（D4L）</span></h2>
+  <p><span class="en">Classical logic is the logic of a decided world: true or false, and a contradiction entails everything. <b>Dual Spacetime 4-Valued Logic</b> (D4L) is the logic of the signed height J<sub>norm</sub> ∈ [−1, 1]. A proposition is an admissible torsion configuration, and measuring it reads J<sub>norm</sub>. The four names are the sign and saturation of that one number. The two ends of the interval are called <b>walls</b>: the positive wall +1 is |F⟩ (every axis a pure boost), and the negative wall −1 is the deepest point of |B⟩ (pure rotation). Perfect balance, 0, is |T⟩. Outside [−1, 1] no label is assigned.</span><span class="ja">古典論理は「決着した世界」の論理です。真か偽か、そして矛盾からは何でも導かれます。<b>双対時空4値論理</b>（D4L）は、符号付きの高さ J<sub>norm</sub> ∈ [−1, 1] の論理です。命題は許容されたねじれ配置で、測定すると J<sub>norm</sub> が読まれます。4つの名前は、この一つの数の符号と飽和の度合いです。区間の両端を<b>壁</b>と呼びます。正の壁 +1 は |F⟩（すべての軸が純ブースト）、負の壁 −1 は |B⟩ のいちばん深い点（純回転）です。完全な釣り合い 0 が |T⟩ です。[−1, 1] の外にはラベルを付けません。</span></p>
+  <p><span class="en">Logical combination can superpose configurations in the internal six-space without bound; the label you get is always from the <b>expressed</b> point nearest the cone, so composite propositions still obey |J<sub>norm</sub>| ≤ 1 (<a class="ref" href="admissible.html#superposition">section 3</a>).</span><span class="ja">論理的な合成は、内部の六空間で上限なく配置を重ね合わせられます。得られるラベルは常に、錐に最も近い<b>表出</b>点から来るので、合成された命題も |J<sub>norm</sub>| ≤ 1 を守ります（<a class="ref" href="admissible.html#superposition">第3節</a>）。</span></p>
+  <svg class="fig" viewBox="0 0 640 170" role="img" aria-label="The interval from -1 to 1 split into B, T, U, F">
+    <g transform="translate(60,80)">
+      <rect x="0" y="-14" width="260" height="28" class="seg b"/>
+      <rect x="260" y="-14" width="260" height="28" class="seg u"/>
+      <circle cx="260" cy="0" r="9" class="pt t"/>
+      <circle cx="520" cy="0" r="9" class="pt f"/>
+      <text class="lbl small" x="0" y="40" text-anchor="middle">−1</text><text class="lbl small" x="260" y="40" text-anchor="middle">0</text><text class="lbl small" x="520" y="40" text-anchor="middle">+1</text>
+      <text class="lbl" x="130" y="-26" text-anchor="middle">|B⟩</text>
+      <text class="lbl" x="260" y="-26" text-anchor="middle">|T⟩</text>
+      <text class="lbl" x="390" y="-26" text-anchor="middle">|U⟩</text>
+      <text class="lbl" x="520" y="-26" text-anchor="middle">|F⟩</text>
+      <text class="lbl small coolt" x="130" y="62" text-anchor="middle"><tspan class="en">rotation-dominant</tspan><tspan class="ja">回転が優勢</tspan></text><text class="lbl small coolt" x="0" y="80" text-anchor="middle"><tspan class="en">pure rotation</tspan><tspan class="ja">純回転</tspan></text>
+      <text class="lbl small" x="260" y="80" text-anchor="middle"><tspan class="en">perfect balance</tspan><tspan class="ja">完全な釣り合い</tspan></text>
+      <text class="lbl small warmt" x="390" y="62" text-anchor="middle"><tspan class="en">boost-dominant</tspan><tspan class="ja">ブーストが優勢</tspan></text>
+      <text class="lbl small warmt" x="520" y="80" text-anchor="middle"><tspan class="en">pure boost</tspan><tspan class="ja">純ブースト</tspan></text>
+    </g>
+    <text class="lbl small" x="320" y="18" text-anchor="middle">J<tspan baseline-shift="sub" font-size="9">norm</tspan></text>
+  </svg>
+  <p><span class="en">Negation is the usual–dual swap of the geometry. “And” and “or” are min and max on the height. A configuration and its swap cannot both sit at the positive wall, so <b>contradiction does not explode</b>: from P and not-P you cannot derive everything. The dual sector also carries a two-dimensional Hilbert space ℂ², linking the logic to spinors; that bridge is described in the paper as related to the logic by a dictionary rather than identified with it.</span><span class="ja">否定は幾何の通常–双対の入れ替えです。「かつ」と「または」は高さの min と max です。ある配置とその入れ替えが両方とも正の壁に乗ることはできないので、<b>矛盾は爆発しません</b>。P と ¬P から何でも導かれることはありません。双対の側には2次元のヒルベルト空間 ℂ² もあり、論理をスピノルと結びつけます。論文ではこの二つは同一視されず、辞書で対応づけられる関係として描かれています。</span></p>
+  <p class="note"><span class="en">The D4L definitions and theorems are machine-checked in Lean.</span><span class="ja">D4L の定義と定理は Lean で機械検証されています。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="numbers.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="lean.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>
