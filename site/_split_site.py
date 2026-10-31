@@ -53,7 +53,7 @@ for sub in ("superposition",):
     ANCHOR_TO_PAGE[sub] = "admissible.html"
 for sub in ("strong", "rutherford", "neutron", "shells", "coldfusion"):
     ANCHOR_TO_PAGE[sub] = "layers.html"
-for sub in ("shield-ceiling", "holding-shield", "hold-price", "circular-hold", "field-control"):
+for sub in ("shield-ceiling", "holding-shield", "hold-price", "circular-hold", "one-scale", "field-control"):
     ANCHOR_TO_PAGE[sub] = "physics.html"
 
 PAGE_ORDER = ["index.html"] + [p[0] for p in PAGE_SECTIONS]
@@ -84,7 +84,7 @@ TOC = [
     ("antiparticle.html", "antiparticle", "Antiparticles", "反粒子",
      "Dual map + charge conjugation; quantum superposition.", "双対写像と荷電共役、量子の重ね合わせ。"),
     ("physics.html", "physics", "Gravity, shields & control", "重力・シールド・制御",
-     "Killing axis, shields, hold price, circular hold, EM.", "キリング軸、保持、円偏光駆動、電磁気。"),
+     "Killing axis, shields, hold price, circular hold, one scale, EM.", "キリング軸、保持、円偏光駆動、ひとつの物差し、電磁気。"),
     ("rotation.html", "rotation", "Why things rotate", "なぜ回転するか",
      "Hypothesis: offset spacetimes.", "仮説：ずれた二つの空間。"),
     ("numbers.html", "numbers", "Diophantine geometry", "ディオファントス幾何",
@@ -111,7 +111,7 @@ HASH_REDIRECT = """
     rutherford:'layers.html',neutron:'layers.html',shells:'layers.html',coldfusion:'layers.html',
     antiparticle:'antiparticle.html',physics:'physics.html','shield-ceiling':'physics.html',
     'holding-shield':'physics.html','hold-price':'physics.html','circular-hold':'physics.html',
-    'field-control':'physics.html',rotation:'rotation.html',numbers:'numbers.html',logic:'logic.html',
+    'one-scale':'physics.html','field-control':'physics.html',rotation:'rotation.html',numbers:'numbers.html',logic:'logic.html',
     lean:'lean.html',read:'lean.html#read'
   };
   var h=(location.hash||'').replace(/^#/,'');
