@@ -60,6 +60,7 @@ import DstDiophantine.Gravity.EnvelopeLock
 import DstDiophantine.Gravity.ChiralSpectrum
 import DstDiophantine.Gravity.ChiralityStabilizer
 import DstDiophantine.Gravity.EMControl
+import DstDiophantine.Gravity.CircularHold
 import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.SilentControl
 import DstDiophantine.Gravity.ShieldHold
@@ -618,6 +619,16 @@ plane, \(c_B B_a+c_E E_a\) preserves the axis only when \(c_E=0\).
 and the substitution \(\theta\mapsto\theta+eA\). Neither raises \(J\) against
 a nonnegative dual seed. A circular potential drops mean \(J\) by the
 helicity-even ponderomotive \((e^2/2)(E_0/\omega)^2\).
+
+`CircularHold` prices a full cycle of that potential. With
+\(\rho=\lvert e E_0/\omega\rvert\), the cycle stays in the cone exactly when
+each transverse axis has dual bias and wall slack at least \(\rho\). Hence
+\(\rho\le\pi/4\) and the mean drop of \(J\) is at most \(\pi^2/32\), attained
+on a pure-dual transverse seed. Mean unsigned mass rises by the drop, and
+mean stiffness by \(m\) times the drop. On a transversely aligned seed the
+stiffness is that constant at every phase, and the stiffness forces exchange
+no power with the dual velocity. An isotropic aligned seed admits at most
+\(\rho=\pi/6\); a transverse wall admits none.
 
 `NeutronMagnet` records the charge-silent magnet. On \(J=0\) the magnetic
 square equals the unsigned mass, and a silent dual budget forces that mass
@@ -2316,6 +2327,23 @@ example (p : Operations.TorsionParams) (e E0 ω σ : ℝ) (hσ : σ ^ 2 = 1) :
         J (coupleA p e (circularPotential (-σ) E0 ω ψ))) :=
   ⟨quadMean_J_coupleA_circular p e E0 ω hσ,
     quadMean_J_coupleA_circular_helicity_even p e E0 ω σ hσ⟩
+
+/-- Regression: a full circular cycle drops mean \(J\) by at most \(\pi^2/32\),
+and the bound is attained. -/
+example {σ : ℝ} (hσ : σ ^ 2 = 1) :
+    ((1 : ℝ) ^ 2 / 2) * ((Real.pi / 4) / 1) ^ 2 = Real.pi ^ 2 / 32 ∧
+      (∀ ψ : ℝ, Admissible.IsAdmissibleContinuous
+        (coupleA transversePureDual 1 (circularPotential σ (Real.pi / 4) 1 ψ))) :=
+  ⟨ponderomotive_transverse_extremal, cycle_admissible_transverse_extremal hσ⟩
+
+/-- Regression: at rapidity \(\pi/6\) the isotropic cycle holds a constant
+potential \(m\pi^2/72\). -/
+example {m ψ σ : ℝ} (hσ : σ ^ 2 = 1) :
+    stiffnessPotential m
+        (coupleA (isotropicSeed (Real.pi / 6)) 1
+          (circularPotential σ (Real.pi / 6) 1 ψ)) =
+      m * (Real.pi ^ 2 / 72) :=
+  stiffness_isotropic_sixth hσ
 
 /-- Regression: a constant shift of \(A\) changes \(J\). -/
 example :
