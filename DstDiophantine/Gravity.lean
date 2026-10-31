@@ -65,6 +65,7 @@ import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.SilentControl
 import DstDiophantine.Gravity.ShieldHold
 import DstDiophantine.Gravity.HoldPrice
+import DstDiophantine.Gravity.ControlScale
 import DstDiophantine.Gravity.ParticleStability
 import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.KillingAxis
@@ -658,18 +659,23 @@ drop, and writes attraction. On one equal-scale axis the enlargement drives
 ## Dual-only control of \((J,M)\)
 
 `DualControl`, `ShieldClock`, `ShieldCeiling`, `ControlDomain`,
-`EnvelopeLock`, `ShieldHold`, `HoldPrice`.
+`EnvelopeLock`, `ShieldHold`, `HoldPrice`, `ControlScale`.
 
 Dual-only motion conserves \(J+M\) and cannot raise \(J\). It reaches a
-shield \(J=0\) precisely when the dual wall is nonpositive. The mass
-ceiling is the parabola
-\(M_{\mathrm{norm}}\le\frac56+\frac32 J_{\mathrm{norm}}^2\), sharp on
-\(|J|\le\pi^2/8\). The exact image of the cone is the three-lobed envelope
-of `ControlDomain`. That envelope is met only when every axis lies on the
-wall and at least two axes are corners, so a dual-only motion meets it at
-most once. On a boosted axis, \(\gamma_{\mathrm{eff}}\) returns to \(1\)
-at a dual angle strictly before the coaxial shield; a cross-axis shield of
-the same mass leaves that clock at \(\cosh\alpha\).
+shield \(J=0\) precisely when the dual wall is nonpositive. In units of
+\(k^2=(\pi/2)^2\), with \(j=J/k^2\), the exact image of the cone is
+\[
+M/k^2\le 5/4+\min(j^2,(j-1)^2,(j+1)^2),
+\]
+the squared distance from \(j\) to the nearest of \(\{-1,0,1\}\)
+(`ControlScale`). The central leaf \(|j|\le 1/2\) is the shield parabola.
+The envelope is met only when every axis lies on the wall and at least two
+axes are corners, so a dual-only motion meets it at most once. On that
+boundary the lag is \(k^2\) times \(2+4\min(j^2,(j-1)^2,(j+1)^2)\). The
+three centers share mass \(5k^2/4\) and lag \(2k^2\). On a boosted axis,
+\(\gamma_{\mathrm{eff}}\) returns to \(1\) at a dual angle strictly before
+the coaxial shield; a cross-axis shield of the same mass leaves that clock
+at \(\cosh\alpha\).
 
 `ShieldHold` separates that mass budget from the force that parks a
 configuration. Both angular accelerations vanish exactly when
@@ -681,14 +687,14 @@ by the heaviest shield. The equal-scale point of a pure usual seed has lag
 budget \(0\); the cross-axis shield of the same rapidity has lag budget
 \(2\alpha^2\).
 
-`HoldPrice` prices that hold. On the cone the lag budget is at least
-\(4M-3\pi^2/4\), with equality exactly on the wall. For positive stiffness
-and \(M\ge 3\pi^2/16\), the written potential is at least
-\(2m(M-3\pi^2/16)\), with equality exactly on the wall. A neutral wall has
+`HoldPrice` prices that hold in the same unit. On the cone the lag budget
+is at least \(4M-3k^2\), with equality exactly on the wall. For positive
+stiffness the written potential is at least \(2m(M-3k^2/4)\), with equality
+exactly on the wall. The price vanishes at the free-sitting mass \(3k^2/4\)
+and equals \(mk^2\) at each of the three centers. A neutral wall has
 vanishing sum of lags, so each channel's three holding forces sum to zero.
-The price is attained from the isotropic wall through to the heaviest
-shield. A matched hold exchanges no power whenever the two angular
-velocities agree on each axis.
+A matched hold exchanges no power whenever the two angular velocities agree
+on each axis.
 -/
 
 namespace DstDiophantine
@@ -2434,6 +2440,30 @@ example {m c : ℝ} {φ θ : Fin 3 → ℝ} :
     holdPower (fun a => m * (φ a - θ a)) (fun a => m * (φ a - θ a))
       (fun _ => c) (fun _ => c) = 0 :=
   holdPower_matched_of_equal_velocity (fun _ => rfl)
+
+/-- Regression: one scale \(k^2\) prices both the envelope and the hold,
+and the three centers share that price. -/
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p / coneScale ≤ 5 / 4 + lobeExcess (J p / coneScale) ∧
+      (mass p = controlCeiling (J p) →
+        lagSq p / coneScale = 2 + 4 * lobeExcess (J p / coneScale)) :=
+  ⟨scaledMass_le_lobe h, fun hE => lagSq_div_coneScale_of_onEnvelope h hE⟩
+
+example :
+    J maximalShield / coneScale = 0 ∧
+      J (twoUsualWitness (Real.pi / 4)) / coneScale = 1 ∧
+        J (twoDualWitness (Real.pi / 4)) / coneScale = -1 ∧
+          mass maximalShield = 5 * coneScale / 4 ∧
+            lagSq maximalShield = 2 * coneScale ∧
+              stiffnessPotential 1 maximalShield = coneScale ∧
+                stiffnessPotential 1 (twoUsualWitness (Real.pi / 4)) = coneScale := by
+  have hs := center_shield_mass_lag
+  have hu := center_usual_mass_lag
+  have hd := center_dual_mass_lag
+  refine ⟨hs.1, hu.1, hd.1, ?_, ?_, hs.2.2.2, hu.2.2.2⟩
+  · rw [mass_maximalShield, shield_mass_eq_scaled]
+  · rw [lagSq_maximalShield, neutral_lag_cap_eq_scaled]
 
 /-- Regression: a unit vacuum excess is gravitationally maximal. -/
 example {δ : ℝ} {p : Fin 3 → ℝ} (hδ : δ ≠ 0) (hp : ∑ a : Fin 3, p a ^ 2 = 1) :
