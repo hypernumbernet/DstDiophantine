@@ -212,7 +212,6 @@ for href, aid, en, ja, desc_en, desc_ja in TOC:
     )
 landing = f"""
 {hero}
-{OPEN_DISCLAIMER}
 <section class="toc-section" id="contents">
   <h2><span class="en">Table of contents</span><span class="ja">目次</span></h2>
   <ol class="toc-list">
