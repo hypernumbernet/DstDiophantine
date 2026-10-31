@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallel transport · DST · 平行移動 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="antiparticle.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="control.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="transport">
+    <p class="lead"><span class="en">Section 2 treated gravity as torsion between two frames on each particle. This chapter asks a <em>geometric</em> question: once translations join boosts and rotations in the same algebra, which direction does that mismatch point for a hovering observer? Section 3’s admissible ceiling then changes what happens to light skimming a compact mass. The next chapter turns to shields and control on the same cone.</span><span class="ja">第2節では、粒子ごとの二つのフレーム間のねじれとして重力を見ました。この章は<em>幾何</em>の問いを扱います。並進がブーストや回転と同じ代数に加わると、静止している観測者にとって、その不整合はどちらを向くのでしょうか。第3節の許容上限は、コンパクトな質量をかすめる光の運命も変えます。次の章では、同じ錐の上でのシールドと制御に移ります。</span></p>
+  <h2><span class="en">6. The geometry of parallel transport</span><span class="ja">6. 平行移動の幾何学</span></h2>
+  <p class="kicker"><span class="en">Where gravity points</span><span class="ja">重力はどこを向くか</span></p>
+  <p><span class="en">The biquaternion frames hold boosts and rotations but not movement from place to place. The companion paper on <b>projective geometric algebra</b> G(3,1,1) adds one null direction, e<sub>4</sub>. Translations then become generators on the same footing as boosts and rotations: 3 boosts + 3 rotations + 4 translations = 10, which together form the Poincaré algebra of special relativity. A twist R and a shift T combine into a single <b>motor</b> M = RT.</span><span class="ja">双四元数のフレームはブーストと回転を含みますが、場所の移動（並進）は含みません。姉妹論文は<b>射影幾何代数</b> G(3,1,1) を使い、ヌル方向 e<sub>4</sub> を一つ加えます。すると並進もブーストや回転と同じ立場の生成子になり、ブースト3＋回転3＋並進4＝10個で、特殊相対論のポアンカレ代数をなします。ねじれ R とずらし T は一つの<b>モーター</b> M = RT にまとまります。</span></p>
+  <p><span class="en">With translations available, the paper reads off the <b>direction</b> of gravity. An observer hovering above a mass is, at each moment, undergoing a single boost about an axis displaced inward by a distance ℓ, the inverse of the hover acceleration. Gravity points toward that axis. A body released from rest accelerates toward it at 1/ℓ. Far from the mass the axis recedes to infinity; at the horizon it reaches the observer. Integrated along the radius, the same law gives the radial fall of the exterior geometry.</span><span class="ja">並進が使えるようになると、論文は重力の<b>向き</b>を読み取ります。質量の上で静止している観測者は、各瞬間に、内側へ距離 ℓ（静止に必要な加速度の逆数）だけずれた軸のまわりで一つのブーストを受けています。重力はその軸の方を向きます。静かに手放した物体は加速度 1/ℓ で軸へ向かいます。質量から遠いと軸は無限遠へ退き、地平の位置では観測者に重なります。半径に沿って積分すると、同じ法則が外部幾何での動径落下になります。</span></p>
+  <svg class="fig" viewBox="0 0 640 250" role="img" aria-label="Killing axis displaced inward by ell; gravity points toward it">
+    <g transform="translate(70,125)">
+      <circle r="22" class="mass"/>
+      <text class="lbl small" x="0" y="44" text-anchor="middle"><tspan class="en">mass</tspan><tspan class="ja">質量</tspan></text>
+    </g>
+    <g class="kax">
+      <line x1="300" y1="30" x2="300" y2="220" class="axisline"/>
+      <text class="lbl small accentt" x="300" y="22" text-anchor="middle"><tspan class="en">boost axis</tspan><tspan class="ja">ブーストの軸</tspan></text>
+      <line x1="480" y1="30" x2="480" y2="220" class="axisline faint"/>
+    </g>
+    <g transform="translate(470,125)">
+      <circle r="9" class="obs"/>
+      <text class="lbl small" x="0" y="30" text-anchor="middle"><tspan class="en">hovering observer</tspan><tspan class="ja">静止観測者</tspan></text>
+    </g>
+    <line x1="460" y1="125" x2="312" y2="125" class="pull arrow" marker-end="url(#ah)"/>
+    <text class="lbl dualt" x="386" y="115" text-anchor="middle"><tspan class="en">gravity</tspan><tspan class="ja">重力</tspan></text>
+    <path d="M300,185 L470,185" class="dim"/><path d="M300,179v12M470,179v12" class="dim"/>
+    <text class="lbl small" x="385" y="205" text-anchor="middle">ℓ = 1 / <tspan class="en">acceleration</tspan><tspan class="ja">加速度</tspan></text>
+    <text class="note" x="600" y="242" text-anchor="end"><tspan class="en">Schematic. Far away: ℓ → ∞. At the horizon: ℓ → 0.</tspan><tspan class="ja">模式図。遠方では ℓ → ∞、地平では ℓ → 0。</tspan></text>
+  </svg>
+  <h3 class="sub"><span class="en">Light that comes back</span><span class="ja">戻ってくる光</span></h3>
+  <p><span class="en">The lensing paper looks at a <b>torsion star</b> (see section 4) from outside. It keeps the familiar exterior, including the photon sphere at 1.5 r<sub>s</sub> (3GM/c²). In general relativity this is the radius where light can circle the mass, but the orbit is unstable: light passing slightly inside spirals in and is captured, while light slightly outside escapes, which is why the photon sphere sets the edge of a black hole's shadow. What changes is capture: the admissible ceiling (section 3) freezes the redshift at a positive floor just outside r<sub>s</sub>, before a horizon can form. A ray aimed closely enough that a black hole would swallow it instead turns around inside that freeze and comes back out. Timed by a clock far away, a typical stay inside the freeze is on the order of 100 GM/c³, several times longer than the time light takes to go halfway around the photon sphere (about 16 GM/c³). The unit GM/c³ grows with the mass, so in everyday units a stay of about 100 GM/c³ becomes:</span><span class="ja">重力レンズの論文は<b>ねじれ星</b>（第4節）を外から見ます。外側はおなじみの幾何のままで、1.5 r<sub>s</sub>（3GM/c²）の光子球もあります。一般相対性理論では、光子球は光が質量のまわりを周回できる半径ですが、その軌道は不安定です。わずかに内側を通る光はらせんを描いて落ち込んで捕獲され、わずかに外側の光は逃げていくため、光子球がブラックホールの影の縁を決めます。変わるのは捕獲です。許容上限（第3節）が、地平ができる前に、r<sub>s</sub> のすぐ外で赤方偏移を正の下限に凍結します。ブラックホールなら飲み込まれるほど近くを狙った光線も、その凍結の内側で向きを変えて戻ってきます。遠くの時計で測ると、光線が凍結面の内側で過ごす時間は、典型的には 100 GM/c³ 程度です。これは光が光子球を半周する時間（約 16 GM/c³）の数倍にあたります。GM/c³ という単位は質量に比例するので、約 100 GM/c³ を身近な単位に直すと次のようになります。</span></p>
+  <ul class="timelist">
+    <li><span class="en"><b>A star-sized object</b> (10 solar masses): about 5 milliseconds</span><span class="ja"><b>恒星程度の天体</b>（太陽質量の10倍）：約 5 ミリ秒</span></li>
+    <li><span class="en"><b>Sgr A*</b>, the center of our galaxy (about 4 million solar masses): about half an hour</span><span class="ja"><b>いて座A*</b>（天の川銀河の中心、太陽質量の約400万倍）：約30分</span></li>
+    <li><span class="en"><b>M87*</b> (about 6.5 billion solar masses): about five weeks (37 days)</span><span class="ja"><b>M87*</b>（太陽質量の約65億倍）：約5週間（37日）</span></li>
+  </ul>
+  <p class="note"><span class="en">This is a rough typical value, not an exact one. On the more cautious of the two ceilings the paper considers, it gives lower bounds (not sharp) of more than 20 GM/c³ for the quickest ray, which only just passes the photon sphere, and more than 80 GM/c³ for a ray aimed straight at the center. On the other ceiling the bounds are more than 280 and more than 400 GM/c³, and the stay itself comes out about ten times longer. In general relativity the same ray never comes back at all.</span><span class="ja">これはおおよその典型値で、正確な値ではありません。論文が考える二つの上限のうち控えめな方では、下限（厳密な値ではありません）として、光子球をぎりぎり越えるいちばん早い光線で 20 GM/c³ 超、中心へまっすぐ向かう光線で 80 GM/c³ 超が示されています。もう一方の上限ではそれぞれ 280 GM/c³ 超、400 GM/c³ 超で、滞在時間そのものも約10倍長くなります。一般相対性理論では、同じ光線は二度と戻ってきません。</span></p>
+  <p><span class="en">In 2021 a team watching X-ray flares from the supermassive black hole at the center of the galaxy I Zwicky 1 (about 800 million light-years away, roughly 30 million solar masses) with the XMM-Newton and NuSTAR telescopes found short, delayed flashes as each flare faded. The explanation that has currently settled in, based on general relativity, is that these are light from behind the black hole: X-rays reflected from the far side of the surrounding gas disk and bent around the black hole toward us (<a href="https://www.nature.com/articles/s41586-021-03667-0" class="ref" target="_blank" rel="noopener">Wilkins et al., Nature 595, 657, 2021</a>). In DST the same kind of return also has a natural mechanism: light that enters a torsion star's freeze region turns around and comes back out. For this mass GM/c³ is about 150 seconds, so the lensing paper's lower bound for the stay inside the freeze, 20 GM/c³, comes to about 51 minutes. That lies roughly within the observed range of delays, from a disk echo of about 12 minutes to flashes just under 2 hours after each flare began. Whether some of these echoes are light returning from a freeze is a possibility currently under research.</span><span class="ja">2021年、XMM-Newton と NuSTAR の両X線望遠鏡で銀河 I Zwicky 1（約8億光年先）の中心にあるブラックホール（太陽質量の約3000万倍）のX線フレアを観測していたチームが、フレアが弱まるころに遅れて届く短い閃光を見つけました。現在定着している説明は、一般相対性理論にもとづき、これをブラックホールの裏側からの光、つまり周囲のガス円盤の裏側で反射したX線が、ブラックホールのまわりで曲げられてこちらに届いたものとする解釈です（<a href="https://www.nature.com/articles/s41586-021-03667-0" class="ref" target="_blank" rel="noopener">Wilkins ほか, Nature 595, 657, 2021</a>）。DSTでも、同じような戻りには自然なしくみがあります。ねじれ星の凍結領域に入った光が、内側で向きを変えて戻ってくるというものです。この質量では GM/c³ は約150秒なので、重力レンズの論文が凍結面の内側での滞在時間の下限として示す 20 GM/c³ は、約51分になります。これは、円盤のこだまの約12分からフレア開始後2時間弱の閃光まで、観測された遅れのおおよそ範囲内に入っています。これらのこだまの一部が凍結面から戻ってきた光である可能性は、現在研究中のテーマです。</span></p>
+  <svg class="fig" viewBox="0 0 640 260" role="img" aria-label="A ray that a black hole would capture turns inside the freeze and returns">
+    <g transform="translate(400,130)">
+      <circle r="90" class="ring ph"/><circle r="62" class="ring frz"/><circle r="58" class="ring rs"/>
+      <circle r="58" class="core"/>
+      <text class="lbl small" x="0" y="-96" text-anchor="middle"><tspan class="en">photon sphere 1.5 r</tspan><tspan class="ja">光子球 1.5 r</tspan><tspan baseline-shift="sub" font-size="9">s</tspan></text>
+      <text class="lbl small accentt" x="72" y="80"><tspan class="en">freeze (just outside r</tspan><tspan class="ja">凍結面（r</tspan><tspan baseline-shift="sub" font-size="9">s</tspan><tspan class="en">)</tspan><tspan class="ja"> のすぐ外）</tspan></text>
+    </g>
+    <path class="ray in" d="M20,70 C200,70 330,82 370,100 C395,112 400,124 392,134"/>
+    <path class="ray out" d="M392,134 C384,146 360,160 330,170 C260,192 160,212 20,228" marker-end="url(#ah)"/>
+    <path class="ray far" d="M20,20 C250,20 400,24 500,10" marker-end="url(#ah)"/>
+    <text class="lbl small usualt" x="24" y="62"><tspan class="en">ray a black hole would capture</tspan><tspan class="ja">ブラックホールなら捕獲される光線</tspan></text>
+    <text class="lbl small usualt" x="24" y="246"><tspan class="en">…returns after a delay</tspan><tspan class="ja">…遅れて戻る</tspan></text>
+    <text class="note" x="630" y="254" text-anchor="end"><tspan class="en">Schematic, not to scale.</tspan><tspan class="ja">模式図（縮尺は正確でない）</tspan></text>
+  </svg>
+  
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="antiparticle.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="control.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>

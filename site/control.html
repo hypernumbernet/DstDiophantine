@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gravity control · DST · 重力制御 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="transport.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="rotation.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="control">
+  <h2><span class="en">7. Gravity control</span><span class="ja">7. 重力制御</span></h2>
+  <p class="lead"><span class="en">Sections 2–3 fixed the mismatch J, its mass partner M, and the admissible cone. This chapter asks what it means to cancel gravity locally — a <b>shield</b> — and what the model says about how heavy that shield can be, what it costs to hold it still, field increments on the same six generators, a rotating drive, and one scale that ties the caps together.</span><span class="ja">第2–3節で不整合 J、その質量の相棒 M、許容錐が決まりました。この章では、重力を局所的に打ち消す — <b>シールド</b> — とは何か、シールドはどれほど重くなれるか、静止させる代価は何か、同じ六生成子への場の増分、回転駆動、そして上限を一本の物差しにまとめる尺度について、モデルが何と言うかを順にたどります。</span></p>
+<h3 class="sub" id="shield-ceiling"><span class="en">Shielding and the mass ceiling</span><span class="ja">シールドと質量の上限</span></h3>
+  <p><span class="en">A particle is <b>gravitationally neutral</b> (shielded) when J = 0: the usual and dual rapidity budgets match axis by axis in sum, even if the two rotors still differ. Dual-only excitation cannot raise J; it conserves J + M, so every drop in J is paid for by unsigned mass. From a pure usual seed, dual-only shielding reaches J = 0 only when the dual wall is nonpositive; repulsion needs a strictly negative wall. The cone itself limits how heavy a shield can be: at neutrality, unsigned mass cannot exceed <b>5π²/16</b>, five sixths of the cone’s own mass ceiling 3π²/8. The heaviest shield sits on the wall with one axis purely usual, one purely dual, and the third split evenly — maximally anisotropic, not the naive “align both rotors” picture.</span><span class="ja">粒子が<b>重力中立</b>（シールド）なのは J = 0 のときです。二つのローターがまだ異なっていても、通常と双対のラピディティ予算が軸ごとに和で一致します。双対だけの励起は J を上げられず、J + M を保つので、J が下がる分だけ符号なし質量が増えます。純粋な通常の種から、双対だけで J = 0 に届くのは双対の壁が非正のときだけです。斥力には厳密に負の壁が要ります。錐自体がシールドの重さを限ります。中立では符号なし質量は<b>5π²/16</b>を超えず、錐の質量上限 3π²/8 の六分の五です。いちばん重いシールドは壁の上にあり、一軸が純通常、一軸が純双対、第三軸が均等分割 — 最大の非等方性であり、「二つのローターを素直に揃える」描像ではありません。</span></p>
+  <p><span class="en">Configurations at the absolute mass ceiling have every axis locked to a pure corner; they cannot be shielded without first becoming lighter. Full repulsion at the negative wall carries the same maximal mass as full attraction at the positive wall — what is hard is crossing between attraction and neutrality, not reaching either extreme.</span><span class="ja">質量の絶対上限にある配置は各軸が純粋な角にロックされ、軽くならない限りシールドできません。負の壁での完全な斥力は、正の壁での完全な引力と同じ最大質量をもちます。難しいのは引力と中立の<b>間</b>を渡ることであり、どちらかの極端に達することではありません。</span></p>
+
+    <p><span class="en">Knowing how heavy a shield can be is only half the story: parking a neutral configuration without effort is a separate budget from unsigned mass.</span><span class="ja">シールドがどれほど重くなれるかが分かっても、話は半分です。力なしに中性配置を停めることは、符号なし質量とは別の予算です。</span></p>
+<h3 class="sub" id="holding-shield"><span class="en">Holding a shield still: mass vs holding force</span><span class="ja">シールドを静止させる：質量と保持力</span></h3>
+  <p><span class="en">Inside the DST model, <b>unsigned mass</b> and the <b>force needed to hold a configuration still</b> are separate budgets. Cross-axis compensation can buy very heavy neutral states, but parking them without effort is a different question.</span><span class="ja">DST モデルの内部では、<b>符号なし質量</b>と<b>配置を静止させるのに要る力</b>は別の予算です。軸をまたぐ補償で非常に重い中性状態を買えますが、力なしに停めることとは別問題です。</span></p>
+  <p><span class="en">On the written particle action, both angular accelerations vanish exactly when, on every axis, the usual-channel and dual-channel forces are equal and each equals the stiffness times the lag between the two rapidities — schematically v<sub>a</sub> = u<sub>a</sub> = m(α<sub>a</sub> − β<sub>a</sub>). While both rotors are at rest, the two controls exchange no net power: the sum of their pairing rates is zero.</span><span class="ja">書かれた粒子作用では、各軸で通常チャネルと双対チャネルの力が等しく、それぞれが二つのラピディティのあいだの<b>遅れ</b>に剛性をかけたもの — 模式図として v<sub>a</sub> = u<sub>a</sub> = m(α<sub>a</sub> − β<sub>a</sub>) — になったときに限り、二つの角加速度が厳密に消えます。二つのローターが静止しているあいだ、二つの制御は正味の仕事を交換しません。それらのペアリング率の和は零です。</span></p>
+  <p><span class="en">For nonzero stiffness, <b>zero holding force</b> occurs exactly when the rapidities agree axis by axis (α<sub>a</sub> = β<sub>a</sub>). Every such configuration is gravitationally neutral, its potential vanishes, and on the admissible cone its unsigned mass is at most <b>3π²/16</b>. That is not free fall: when the common scale is nonzero the relative rotor can remain away from the identity, so the parked body is still internally torsioned even though J = 0.</span><span class="ja">剛性が零でなければ、<b>保持力が零</b>になるのはラピディティが軸ごとに一致するとき（α<sub>a</sub> = β<sub>a</sub>）に限ります。そのような配置はすべて重力的中性で、ポテンシャルは零であり、許容錐上では符号なし質量は高々 <b>3π²/16</b> です。これは自由落下ではありません。共通の尺度が零でなければ相対ローターは恒等元から離れたままで、J = 0 でも内部にはねじれが残ります。</span></p>
+  <p><span class="en">A neutral configuration whose rapidities <em>disagree</em> must be held. On the cone the lag budget Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>)² is at most <b>π²/2</b>, and the heaviest shield on the site — mass <b>5π²/16</b> on the anisotropic wall — attains that bound. Intuition: buying heaviness at neutrality is paid for with held phase lag between the two rotors.</span><span class="ja">ラピディティが<b>一致しない</b>中性配置は保持されねばならません。錐上では遅れの予算 Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>)² は高々 <b>π²/2</b> で、サイトにすでにあるいちばん重いシールド — 非等方な壁上の質量 <b>5π²/16</b> — がその上限に達します。直観として、中立での重さは、二つのローター間に保持された位相遅れで買われます。</span></p>
+  <p><span class="en">From a pure usual seed of rapidity α: raising the dual angle on the boosted axis at equal scale gives lag budget 0 and, when admissible, sits with no holding force. Placing the same rapidity on a cross (silent) axis instead raises the lag budget to <b>2α²</b> — cross-axis compensation makes a heavy seed neutral; coaxial alignment leaves a lighter shield parked.</span><span class="ja">ラピディティ α の純通常の種から：ブーストされた軸そのもので等尺度に双対角を上げると遅れの予算は 0 で、許容なら保持力なしに停まります。同じラピディティを交差（沈黙）軸に置くと遅れの予算は <b>2α²</b> に上がります — 軸をまたぐ補償は重い種を中性にし、同軸の整合は軽いシールドをそのまま停めます。</span></p>
+  <div class="cards two" role="group" aria-label="Comparison of zero-force parking versus heaviest held shield">
+    <div class="card usualc">
+      <p><span class="en"><b>Zero holding force</b> (axiswise alignment)</span><span class="ja"><b>保持力ゼロ</b>（軸ごとの一致）</span></p>
+      <p><span class="en">Unsigned mass ≤ <b>3π²/16</b></span><span class="ja">符号なし質量 ≤ <b>3π²/16</b></span></p>
+      <p><span class="en">Lag budget Σ(α − β)² = 0 at the equal-scale coaxial point from a usual seed</span><span class="ja">通常の種の等尺度・同軸点では遅れ予算 Σ(α − β)² = 0</span></p>
+    </div>
+    <div class="card dualc">
+      <p><span class="en"><b>Heaviest neutral shield</b> (must be held)</span><span class="ja"><b>最も重い中性シールド</b>（保持が要る）</span></p>
+      <p><span class="en">Unsigned mass = <b>5π²/16</b> on the wall</span><span class="ja">壁上の符号なし質量 = <b>5π²/16</b></span></p>
+      <p><span class="en">Lag budget Σ(α − β)² = <b>π²/2</b> (sharp maximum on the cone)</span><span class="ja">遅れ予算 Σ(α − β)² = <b>π²/2</b>（錐上の鋭い上限）</span></p>
+    </div>
+  </div>
+  <p class="note"><span class="en">These holding statements are theorems inside the DST model, not laboratory identities. There is no electromagnetic coupling, no lab protocol, and no identification of either channel force with a Faraday field.</span><span class="ja">これらの保持の記述は DST モデル内部の定理であり、実験室の恒等式ではありません。電磁気結合も、実験プロトコルも、どちらかのチャネル力をファラデー場と同一視することもありません。</span></p>
+
+    <p><span class="en">When rapidities still disagree axis by axis, keeping the shield still has a quantitative <em>price</em> tied to mass and lag.</span><span class="ja">ラピディティが軸ごとに一致しないとき、シールドを静止させるには、質量と遅れに結びついた定量的な<em>代価</em>がかかります。</span></p>
+<h3 class="sub" id="hold-price"><span class="en">The price of holding a neutral shield</span><span class="ja">中性シールドを保持する代価</span></h3>
+  <p><span class="en">Once a configuration is gravitationally neutral but its rapidities still disagree axis by axis, keeping it still has a <b>price</b> tied to unsigned mass. On the admissible cone the lag budget Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>)² is at least <b>4M − 3π²/4</b>, with equality if and only if every axis lies on the wall (α<sub>a</sub> + β<sub>a</sub> = π/2 on each axis). Off the wall the same mass costs strictly more lag — the wall is the cheapest surface for holding.</span><span class="ja">配置が重力的中性でも軸ごとにラピディティが一致しないなら、静止させるには符号なし質量と結びついた<b>代価</b>がかかります。許容錐上では遅れの予算 Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>)² は少なくとも <b>4M − 3π²/4</b> で、等号が成り立つのはすべての軸が壁の上にあるとき（各軸で α<sub>a</sub> + β<sub>a</sub> = π/2）に限ります。壁を離れると同じ質量でも遅れは厳密に増え — 保持のいちばん安い面が壁です。</span></p>
+  <div class="eq">Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>)² ≥ 4M − 3π²/4 &nbsp;&nbsp; (<span class="en">equality on the wall only</span><span class="ja">等号は壁の上のみ</span>)</div>
+  <p><span class="en">For positive stiffness <i>m</i> and neutral mass <b>M ≥ 3π²/16</b>, the written potential satisfies <b>V ≥ 2m(M − 3π²/16)</b>, again with equality exactly on the wall and nowhere else among admissible holds. A neutral state of the same mass off the wall carries a strictly larger potential. Intuition: mass, the channel forces that park the shield, and this price are locked together by one inequality.</span><span class="ja">剛性 <i>m</i> が正で中性質量が <b>M ≥ 3π²/16</b> のとき、書かれたポテンシャルは <b>V ≥ 2m(M − 3π²/16)</b> を満たし、許容な保持のうち等号が成り立つのは再び壁の上だけです。同じ質量の中性状態が壁を離れると、ポテンシャルは厳密に大きくなります。直観として、質量・シールドを停めるチャネル力・この代価は一つの不等式で結ばれています。</span></p>
+  <div class="eq">V ≥ 2m(M − 3π²/16) &nbsp;&nbsp; (<span class="en">neutral, m &gt; 0, M ≥ 3π²/16; equality on the wall</span><span class="ja">中性、m &gt; 0、M ≥ 3π²/16；等号は壁の上</span>)</div>
+  <p><span class="en">On every such cheapest neutral hold the three lags sum to zero, Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>) = 0, and therefore the three holding forces of each channel sum to zero as well. The sum of the three scalar controls is not itself a spatial force vector.</span><span class="ja">このような最も安い中性保持では三つの遅れの和は零、Σ<sub>a</sub>(α<sub>a</sub> − β<sub>a</sub>) = 0 であり、各チャネルの三つの保持力の和も零になります。三つのスカラー制御の和自体は、空間的な力ベクトルではありません。</span></p>
+  <p><span class="en">The bound is attained all along the neutral wall from the isotropic point α<sub>a</sub> = β<sub>a</sub> = π/4 (unsigned mass <b>3π²/16</b>, hold price zero) through to the heaviest shield (mass <b>5π²/16</b>, potential <b>mπ²/4</b> at matched stiffness). Every mass between those endpoints is realised by some neutral wall configuration.</span><span class="ja">この上限は、等方点 α<sub>a</sub> = β<sub>a</sub> = π/4（符号なし質量 <b>3π²/16</b>、保持代価零）からいちばん重いシールド（質量 <b>5π²/16</b>、剛性を揃えたときのポテンシャル <b>mπ²/4</b>）まで、中性壁に沿って達成されます。その両端のあいだの質量は、すべてある中性壁配置で実現されます。</span></p>
+  <p><span class="en">A <b>matched hold</b> — on every axis the usual-channel and dual-channel forces equal the stiffness times the lag — exchanges power only through the lag rate. Whenever the two angular velocities agree axis by axis, that power vanishes. Vanishing power along such a joint motion is not free fall.</span><span class="ja"><b>遅れに揃った保持</b> — 各軸で通常チャネルと双対チャネルの力が、剛性×遅れに等しい — は、遅れの変化率を通じてだけ仕事を交換します。各軸で二つの角速度が一致すれば、その仕事率は消えます。こうした共同運動で仕事率が零になることは、自由落下ではありません。</span></p>
+  <svg class="fig" viewBox="0 0 640 260" role="img" aria-label="Neutral wall: hold price from isotropic point to heaviest shield">
+    <line x1="90" y1="145" x2="550" y2="145" class="ceil"/>
+    <circle cx="130" cy="145" r="7" class="node"/>
+    <circle cx="510" cy="145" r="7" class="node"/>
+    <text class="cap" x="320" y="38" text-anchor="middle"><tspan class="en">Cheapest holds live on the neutral wall</tspan><tspan class="ja">最も安い保持は中性壁の上</tspan></text>
+    <text class="lbl small usualt" x="130" y="78" text-anchor="middle"><tspan class="en">isotropic wall</tspan><tspan class="ja">等方な壁</tspan></text>
+    <text class="lbl small" x="130" y="96" text-anchor="middle">α = β = π/4</text>
+    <text class="lbl small" x="130" y="114" text-anchor="middle"><tspan class="en">M = 3π²/16, price 0</tspan><tspan class="ja">M = 3π²/16、代価 0</tspan></text>
+    <text class="lbl small dualt" x="510" y="78" text-anchor="middle"><tspan class="en">heaviest shield</tspan><tspan class="ja">最も重いシールド</tspan></text>
+    <text class="lbl small" x="510" y="96" text-anchor="middle"><tspan class="en">anisotropic wall</tspan><tspan class="ja">非等方な壁</tspan></text>
+    <text class="lbl small" x="510" y="114" text-anchor="middle"><tspan class="en">M = 5π²/16, V = mπ²/4</tspan><tspan class="ja">M = 5π²/16、V = mπ²/4</tspan></text>
+    <text class="lbl small accentt" x="320" y="168" text-anchor="middle"><tspan class="en">every neutral mass between is attained here</tspan><tspan class="ja">そのあいだの中性質量はすべてここで達成</tspan></text>
+    <path d="M320,55 L130,125" class="dim" stroke-dasharray="3 4"/>
+    <path d="M320,55 L510,125" class="dim" stroke-dasharray="3 4"/>
+    <text class="note" x="320" y="248" text-anchor="middle"><tspan class="en">Schematic wall segment; lag budget equals 4M − 3π²/4 on the wall.</tspan><tspan class="ja">模式図の壁区間。壁上では遅れ予算 = 4M − 3π²/4。</tspan></text>
+  </svg>
+
+    <p><span class="en">The same six-generator space also carries electromagnetic increments — magnetic, electric, or silent — before we ask what a <em>rotating</em> transverse drive does to an already held shield.</span><span class="ja">すでに保持されたシールドに<em>回転する</em>垂直駆動が何をするかを問う前に、同じ六生成子空間には磁気的・電気的・サイレントな増分も載ります。</span></p>
+<h3 class="sub" id="field-control"><span class="en">Fields and control on the same six generators</span><span class="ja">同じ六生成子上の場と制御</span></h3>
+  <p><span class="en">Electromagnetism occupies the same six-generator space as torsion, split into usual and dual Faraday parts. Adding a Faraday increment is superposition in that space. A purely <b>magnetic</b> increment holds usual rapidities fixed: it is dual-only, conserves J + M, and cannot raise J when existing dual angles and the increment are nonnegative. A purely <b>electric</b> increment is usual-only. A circular wave is mixed; with a charged label, cycle-averaged mismatch can shift through a ponderomotive drop proportional to (E₀/ω)² — helicity-even, not a free knob on J.</span><span class="ja">電磁気はねじれと同じ六生成子空間を占め、通常と双対のファラデー部分に分かれます。ファラデー増分を足すことは、その空間での重ね合わせです。<b>純粋に磁気的</b>な増分は通常ラピディティを固定したまま — 双対だけ、J + M を保ち、既存の双対角と増分が非負なら J は上がりません。<b>純粋に電気的</b>な増分は通常だけです。円偏波は混合です。荷電ラベルがあるとき、周期平均の不整合は (E₀/ω)² に比例する<b>ポンデロモーティブ</b>な低下で動き得ます — ヘリシティ偶で、J の自由なつまみではありません。</span></p>
+  <p><span class="en"><b>Silent control.</b> When the electromagnetic label is zero — a charge-silent body — the substitution that would tie a vector potential to dual angles becomes the identity. The ponderomotive channel closes: a circular wave no longer drags the cycle mean of J. What remains is <b>magnetic superposition</b> of a dual-only increment not tied to charge. If dual angles and the increment are nonnegative and the increment is not zero, J falls strictly, unsigned mass rises by the same amount, and on a balanced seed the particle turns repulsive. Where every axis already lies on the wall, no nontrivial nonnegative magnetic increment is admissible — <b>rigidity</b>. The heaviest usual seed sits exactly on that wall; a silent body parked there resists both potentials and further admissible magnetic pushes until the usual rotor moves.</span><span class="ja"><b>サイレント制御。</b>電磁気ラベルがゼロ — 荷電サイレントな物体 — のとき、ベクトルポテンシャルを双対角に結びつける置換は恒等写像になります。<b>ポンデロモーティブ</b>チャンネルは閉じ、円偏波は J の周期平均を引きずりません。残るのは荷電に結びつかない双対だけの増分の<b>磁気的重ね合わせ</b>です。双対角と増分が非負で増分がゼロでなければ、J は厳密に下がり、符号なし質量が同量だけ増え、釣り合った種では斥力に向きます。すべての軸がすでに壁にあるとき、非自明な非負の磁気増分は許されません — <b>剛性</b>です。いちばん重い通常の種はちょうどその壁の上にあり、そこに停めたサイレント物体は、通常ローターが動くまで、ポテンシャルもさらなる許容磁気押しも拒みます。</span></p>
+  <svg class="fig" viewBox="0 0 640 260" role="img" aria-label="Equal-scale locus: magnetic increment raises mass and lowers J; electric increment same mass opposite mismatch">
+    <g transform="translate(80,210)">
+      <line class="axis" x1="0" y1="0" x2="480" y2="0"/>
+      <line class="axis" x1="0" y1="0" x2="0" y2="-160"/>
+      <text class="lbl small" x="488" y="4">M</text>
+      <text class="lbl small" x="-8" y="-168" text-anchor="end">J</text>
+      <circle cx="200" cy="-80" r="7" class="node"/>
+      <text class="lbl small" x="200" y="-96" text-anchor="middle"><tspan class="en">seed</tspan><tspan class="ja">種</tspan></text>
+      <line x1="200" y1="-80" x2="320" y2="-40" class="curve2" marker-end="url(#ah)"/>
+      <text class="lbl small warmt" x="328" y="-38" text-anchor="start"><tspan class="en">+magnetic: M↑ J↓</tspan><tspan class="ja">＋磁気：M↑ J↓</tspan></text>
+      <line x1="200" y1="-80" x2="320" y2="-120" class="curve" marker-end="url(#ah)"/>
+      <text class="lbl small accentt" x="328" y="-138" text-anchor="start"><tspan class="en">+electric: same M, J mirrored</tspan><tspan class="ja">＋電気：同じ M、J は鏡像</tspan></text>
+      <line x1="200" y1="-80" x2="120" y2="-100" stroke="var(--dual)" stroke-width="2" marker-end="url(#ah)"/>
+      <text class="lbl small dualt" x="118" y="-106" text-anchor="start"><tspan class="en">−magnetic on cone: M↓ J↑</tspan><tspan class="ja">−磁気（錐上）：M↓ J↑</tspan></text>
+    </g>
+    <text class="note" x="320" y="248" text-anchor="middle"><tspan class="en">Equal-scale locus (schematic). Silent label: only magnetic arrows apply.</tspan><tspan class="ja">等スケール軌跡（模式図）。サイレントラベルでは磁気の矢印だけが効く。</tspan></text>
+  </svg>
+  <p><span class="en">On the equal-scale locus each squared coefficient equals unsigned mass. Enlarging the magnetic square raises mass and pushes J toward repulsion; reading the same vector as an electric increment keeps the magnetic square fixed and writes the opposite mismatch at the new mass, kicking the rest frame along one axis. Spending an existing dual angle lowers mass and writes attraction while the rest-frame sandwich still vanishes. With the label off, the electric route through potentials is absent and the magnetic steps remain. Proposed laboratory helicity protocols are extra model structure, not identities of the cone kinematics.</span><span class="ja">等スケール軌跡では各二乗係数が符号なし質量に等しくなります。磁気的二乗を大きくすると質量が増え J は斥力側へ。同じベクトルを電気増分として読むと磁気二乗は固定のまま新しい質量で反対の不整合を書き、一軸で静止系を蹴ります。既存の双対角を消費するステップは質量を下げ引力を書き、静止系サンドイッチは依然ゼロです。ラベルがオフならポテンシャル経由の電気ルートはなく、磁気ステップだけが残ります。実験室のヘリシティプロトコルの提案は錐運動学の恒等式ではなく、追加のモデル構造です。</span></p>
+  <p class="note"><span class="en">The same repository also explores the blackbody spectrum and other electromagnetic readings. Those directions are being actively researched.</span><span class="ja">同じリポジトリでは黒体スペクトルなど他の電磁気の読みも探究されています。いずれも現在研究中です。</span></p>
+</section>  <p><span class="en">Those field rules set the stage for a circular drive; the closing section collapses shield, hold, and drive caps onto one cone scale.</span><span class="ja">場の規則が円偏光駆動の舞台を整えます。最後の節では、シールド・保持・駆動の上限を一つの錐の尺度にまとめます。</span></p>
+<h3 class="sub" id="circular-hold"><span class="en">A rotating drive on a held shield</span><span class="ja">保持したシールドへの回転駆動</span></h3>
+  <p><span class="en">With mass, holding force, field increments, and hold price in place, A further step asks what happens when, inside the same model, a <b>circularly polarised</b> increment — a rotating drive in the plane transverse to the beam — is superposed on an already held neutral shield through the dual-angle substitution already used for charged labels. The drive is dual-only, helicity-even, and does not breathe its own square over a cycle; staying admissible is a question of <b>spare room</b> on the two axes perpendicular to the beam.</span><span class="ja">質量・保持力・場の増分・保持代価がそろったうえで、次の一歩は、同じモデル内部で、ビームに垂直な平面での<b>円偏光</b>増分 — 回転する駆動 — を、荷電ラベルで既に使われる双対角の置換を通じて、すでに保持された中性シールドに重ね合わせたときに何が起きるかを問います。駆動は双対だけ、ヘリシティ偶で、一周期で自らの二乗を「呼吸」しません。許容性は、ビームに垂直な二軸の<b>余白</b>の問題です。</span></p>
+  <p><span class="en">Write the oscillation amplitude as <b>ρ = |eE₀/ω|</b> (with <i>c</i> = 1 in the usual way). On each transverse axis the seed needs dual bias at least ρ and slack to the wall α + β + ρ ≤ π/2. The coupled state then lies in the cone at every phase if and only if the seed already does and both margins are met. In the best transverse case this caps ρ at <b>π/4</b>, attained when those two axes carry a pure dual angle π/4. An <b>isotropic</b> aligned seed α<sub>a</sub> = β<sub>a</sub> on every axis is tighter: only ρ ≤ <b>π/6</b>, attained at common rapidity π/6. Left- and right-handed circular drives obey the same caps — the bound depends on σ² = 1, not on the sign of helicity.</span><span class="ja">振動の振幅を <b>ρ = |eE₀/ω|</b> と書きます（<i>c</i> = 1 の通常の取り方）。各垂直軸では、種に双対バイアスが少なくとも ρ あり、壁までの余白が α + β + ρ ≤ π/2 を満たす必要があります。種自身が錐の中にあり、両方の余白が満たされるときに限り、結合した状態はすべての位相で錐の中に留まります。垂直方向の最良の場合、ρ は <b>π/4</b> で抑えられ、その二軸が純双対角 π/4 をもつときに達します。<b>等方的</b>に整列した種 — 各軸で α<sub>a</sub> = β<sub>a</sub> — はより厳しく、ρ ≤ <b>π/6</b> に限られ、共通ラピディティ π/6 で達します。右回り・左回りの円偏光駆動は同じ上限に従います — 境界は σ² = 1 に依存し、ヘリシティの符号には依存しません。</span></p>
+  <div class="eq">ρ ≤ π/4 &nbsp;&nbsp; (<span class="en">transverse optimum</span><span class="ja">垂直方向の最良値</span>) &nbsp;&nbsp;·&nbsp;&nbsp; ρ ≤ π/6 &nbsp;&nbsp; (<span class="en">isotropic aligned seed</span><span class="ja">等方整列の種</span>)</div>
+  <p><span class="en">Over one full cycle the four-phase mean of J falls by at most <b>(e²/2)(E₀/ω)²</b>, hence at most <b>ρ²/2</b> and in particular <b>π²/32</b> at the transverse optimum. The increment conserves J + M, so mean unsigned mass rises by that same drop, and mean written stiffness rises by <i>m</i> times the drop — at the isotropic cap rapidity π/6 the aligned hold carries constant stiffness <b>mπ²/72</b>. <em>Intuition only, not part of the proved bound:</em> the drop scales like a quiver or ponderomotive energy in ρ² — a rotating drive costing mean mismatch the way an oscillating displacement costs kinetic energy — but the certified statement is the inequality on mean J inside the model, not a laboratory field identity.</span><span class="ja">一周期で J の四位相平均は高々 <b>(e²/2)(E₀/ω)²</b> だけ下がり、したがって高々 <b>ρ²/2</b>、垂直最良値では特に <b>π²/32</b> です。増分は J + M を保つので、符号なし質量の平均は同じ低下だけ上がり、書かれた剛性の平均はその低下の <i>m</i> 倍だけ上がります — 等方上限のラピディティ π/6 では整列した保持の定数剛性は <b>mπ²/72</b> です。<em>直観のみで、証明された境界の一部ではありません：</em>低下は ρ² の「震え」やポンデロモーティブエネルギーに似た尺度をもちます — 回転駆動が平均の不整合に代価を課す様子は、振動変位が運動エネルギーに代価を課すのに似ています — しかし保証されているのはモデル内部の平均 J に対する不等式であり、実験室の場の恒等式ではありません。</span></p>
+  <div class="eq">⟨J⟩ − J<sub>seed</sub> ≥ −ρ²/2 &nbsp;&nbsp; (<span class="en">cycle mean; ≤ −π²/32 at ρ = π/4</span><span class="ja">周期平均；ρ = π/4 で ≤ −π²/32</span>)</div>
+  <p><span class="en">If either transverse axis already sits on the wall α + β = π/2 — the isotropic wall α = β = π/4 included — no nontrivial cycle fits: the amplitude is forced to <b>ρ = 0</b>. The heaviest neutral shield has every axis on the wall, so it admits no such rotating drive for the same reason. When the two transverse rapidities already agree, the stiffness potential equals its cycle mean at every phase, and the stiffness-channel forces exchange <b>no net work</b> with the dual motion along the wave over a period — vanishing stiffness power is still not free fall.</span><span class="ja">垂直軸のどちらかがすでに壁 α + β = π/2 の上にある — 等方壁 α = β = π/4 を含む — と、非自明な周期は入りません。振幅は <b>ρ = 0</b> に強制されます。いちばん重い中性シールドはすべての軸が壁の上にあるため、同じ理由でそのような回転駆動を許しません。二つの垂直ラピディティがすでに一致すると、剛性ポテンシャルはすべての位相で周期平均と等しく、剛性チャネルの力は一周期にわたり波に沿う双対運動と<b>正味の仕事</b>を交換しません — 剛性の仕事率が零になることは、依然として自由落下ではありません。</span></p>
+  <svg class="fig" viewBox="0 0 680 360" role="img" aria-label="Transverse spare room and a rotating drive vector bounded by rho">
+    <defs>
+      <linearGradient id="spareg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".35"/><stop offset="1" stop-color="#b18cff" stop-opacity=".25"/></linearGradient>
+      <marker id="ah-spare" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g id="spare-geom">
+      <g transform="translate(88,268)">
+        <path d="M0,0 L0,-138 L138,-138 L138,0 Z" fill="url(#spareg)" stroke="#596284" stroke-width="1.2"/>
+        <line class="axis" x1="0" y1="0" x2="158" y2="0" marker-end="url(#ah-spare)"/>
+        <line class="axis" x1="0" y1="0" x2="0" y2="-158" marker-end="url(#ah-spare)"/>
+        <line class="zero" x1="0" y1="0" x2="138" y2="-138"/>
+        <rect x="84" y="-138" width="42" height="42" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <line x1="105" y1="-116" x2="105" y2="-96" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah-spare)"/>
+      </g>
+      <g transform="translate(498,172)">
+        <circle r="52" fill="none" stroke="#596284" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <circle r="34" fill="none" stroke="var(--accent)" stroke-width="1.8"/>
+        <line x1="0" y1="0" x2="0" y2="-30" class="usual" marker-end="url(#ah-spare)"/>
+        <line x1="0" y1="0" x2="22" y2="-22" class="dual" marker-end="url(#ah-spare)"/>
+        <circle r="4" class="node"/>
+      </g>
+    </g>
+    <g id="spare-labels">
+      <text class="cap" x="340" y="28" text-anchor="middle"><tspan class="en">Spare room for a rotating transverse drive</tspan><tspan class="ja">回転する垂直駆動のための余白</tspan></text>
+      <path d="M246,268 L252,284" class="dim" stroke-width="1"/>
+      <text class="lbl small dualt" x="254" y="288"><tspan class="en">dual bias β</tspan><tspan class="ja">双対バイアス β</tspan></text>
+      <path d="M88,198 L80,190" class="dim" stroke-width="1"/>
+      <text class="lbl small usualt" x="78" y="184" text-anchor="end"><tspan class="en">slack to wall</tspan><tspan class="ja">壁までの余白</tspan></text>
+      <path d="M218,142 L228,128" class="dim" stroke-width="1"/>
+      <text class="lbl small" x="232" y="124" text-anchor="start">α+β=π/2</text>
+      <path d="M105,152 L58,158" class="dim" stroke-width="1"/>
+      <text class="lbl small accentt" x="56" y="162" text-anchor="end">ρ</text>
+      <path d="M498,112 L498,96" class="dim" stroke-width="1"/>
+      <text class="lbl small usualt" x="498" y="90" text-anchor="middle"><tspan class="en">drive vector (rotating)</tspan><tspan class="ja">駆動ベクトル（回転）</tspan></text>
+      <path d="M498,224 L498,238" class="dim" stroke-width="1"/>
+      <text class="lbl small accentt" x="498" y="252" text-anchor="middle"><tspan class="en">|vector| ≤ ρ</tspan><tspan class="ja">|ベクトル| ≤ ρ</tspan></text>
+      <text class="note" x="340" y="342" text-anchor="middle"><tspan class="en">Schematic margin on one transverse axis; beam along the third axis.</tspan><tspan class="ja">一つの垂直軸での余白の模式図。第三軸に沿ってビーム。</tspan></text>
+    </g>
+  </svg>
+  <p class="note"><span class="en">These rotating-drive statements are theorems inside the DST model, not laboratory identities. There is no electromagnetic coupling beyond the model’s substitution rule, no lab protocol, and no identification of either channel force with a Faraday field. The quiver / ponderomotive picture is intuition only. Vanishing stiffness power along the wave is not free fall.</span><span class="ja">これらの回転駆動の記述は DST モデル内部の定理であり、実験室の恒等式ではありません。モデルの置換則を超える電磁気結合も、実験プロトコルも、どちらかのチャネル力をファラデー場と同一視することもありません。震え／ポンデロモーティブの比喩は直観のみです。波に沿って剛性の仕事率が零になることは自由落下ではありません。</span></p>
+
+  <h3 class="sub" id="one-scale"><span class="en">One scale: three wells</span><span class="ja">ひとつの物差し：三つの井戸</span></h3>
+  <p><span class="en">The shield ceiling, holding price, and circular-drive caps in the sections above all use the same cone scale <b>k = π/2</b>, with <b>k² = (π/2)²</b> and <b>j = J/k²</b>. Measuring unsigned mass in units of k² collapses the whole controllable region on the admissible cone to one inequality: <b>M/k² ≤ 5/4 + d(j)²</b>, where <b>d(j)</b> is the distance from j to the nearest of the three centers −1, 0, and 1. Every point strictly below the boundary is realizable by some admissible configuration; no point above it is. That envelope is exactly the kinematic domain of gravitational control in the model — not a laboratory coupling.</span><span class="ja">上の節のシールド上限、保持代価、円偏光駆動の上限は、すべて同じ錐の尺度 <b>k = π/2</b> を使います。<b>k² = (π/2)²</b>、<b>j = J/k²</b> と書き、符号なし質量を k² で測れば、許容錐上の制御可能領域全体は一つの不等式にまとまります。<b>M/k² ≤ 5/4 + d(j)²</b>。ここで <b>d(j)</b> は j から三つの中心 −1、0、1 のうち最も近いものまでの距離です。境界の真下の点はすべてある許容配置で実現でき、上の点はどれも実現できません。この包絡は、モデル内部での重力制御の運動学的領域そのものです — 実験室の結合ではありません。</span></p>
+  <div class="eq">M/k² ≤ 5/4 + d(j)² &nbsp;&nbsp;·&nbsp;&nbsp; d(j) = min(|j−(−1)|, |j−0|, |j−1|) &nbsp;&nbsp; (<span class="en">three centers</span><span class="ja">三中心</span>)</div>
+  <p><span class="en">The center <b>j = 0</b> is the shield: there the envelope is the parabola <b>M/k² ≤ 5/4 + j²</b>, sharp on the band <b>|j| ≤ 1/2</b> — the only band where a shield can sit — with equality along a wall family on that band. The heaviest shield weighs <b>5k²/4</b>, five sixths of the cone’s mass ceiling <b>3k²/2</b>. The outer centers <b>j = ±1</b> are the lobes where two axes lock and the third acts as its own shield; they share the same mass and hold as the central shield.</span><span class="ja">中心 <b>j = 0</b> がシールドです。そこでは包絡は放物線 <b>M/k² ≤ 5/4 + j²</b> で、帯 <b>|j| ≤ 1/2</b> 上で鋭く — シールドが座れるのはその帯だけ — 等号はその帯の壁の上の族で達されます。いちばん重いシールドの重さは <b>5k²/4</b> で、錐の質量上限 <b>3k²/2</b> の六分の五です。外側の中心 <b>j = ±1</b> は、二軸が固定され第三軸がそれ自身のシールドになる葉であり、中央のシールドと同じ質量と保持を共有します。</span></p>
+  <p><span class="en">All three centers carry mass <b>5k²/4</b> and lag <b>2k²</b>. On the boundary every axis lies on the wall, and <b>L/k² = 2 + 4·d(j)²</b> for the lag budget L = Σ(α − β)². The holding price vanishes at the free-sitting mass <b>3k²/4</b>; at the shield mass the lag equals the neutral cap <b>2k²</b> and the matched potential is <b>mk²</b>. Read against the earlier sections in one scale: a wall half-width is <b>k/2 = π/4</b>; the isotropic aligned circular-drive cap uses rapidity <b>k/3 = π/6</b>; the transverse drive’s mean-J drop is capped by <b>k²/8 = π²/32</b>.</span><span class="ja">三つの中心はいずれも質量 <b>5k²/4</b>、遅れ <b>2k²</b> です。境界ではすべての軸が壁の上にあり、遅れの予算 L = Σ(α − β)² について <b>L/k² = 2 + 4·d(j)²</b> です。保持代価は力なしに停まる質量 <b>3k²/4</b> で消えます。シールドの質量では遅れが中性の上限 <b>2k²</b> に達し、遅れに揃ったポテンシャルは <b>mk²</b> です。前節の定数を同じ物差しで読むと、壁の半幅は <b>k/2 = π/4</b>、等方整列の円偏光上限のラピディティは <b>k/3 = π/6</b>、垂直駆動の平均 J の低下は <b>k²/8 = π²/32</b> で抑えられます。</span></p>
+  <svg class="fig" viewBox="0 0 680 340" role="img" aria-label="Three-well control envelope: M over k squared versus j with shield band">
+    <defs>
+      <linearGradient id="shieldband" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b18cff" stop-opacity=".22"/><stop offset="1" stop-color="#b18cff" stop-opacity=".05"/></linearGradient>
+    </defs>
+    <line x1="90" y1="268" x2="590" y2="268" class="axis" marker-end="url(#ah)"/>
+    <line x1="90" y1="268" x2="90" y2="48" class="axis" marker-end="url(#ah)"/>
+    <line x1="90" y1="108" x2="590" y2="108" class="ceil" stroke-dasharray="5 4"/>
+    <text class="lbl small" x="82" y="112" text-anchor="end">3/2</text>
+    <path fill="none" stroke="var(--accent)" stroke-width="2.2" d="M 90.0,47.6 L 92.5,50.0 L 95.0,52.4 L 97.5,54.6 L 100.1,56.8 L 102.6,58.9 L 105.1,61.0 L 107.6,63.0 L 110.1,64.9 L 112.6,66.7 L 115.1,68.5 L 117.6,70.2 L 120.2,71.9 L 122.7,73.4 L 125.2,74.9 L 127.7,76.4 L 130.2,77.7 L 132.7,79.0 L 135.2,80.3 L 137.7,81.4 L 140.3,82.5 L 142.8,83.5 L 145.3,84.5 L 147.8,85.4 L 150.3,86.2 L 152.8,86.9 L 155.3,87.6 L 157.8,88.2 L 160.4,88.7 L 162.9,89.2 L 165.4,89.6 L 167.9,89.9 L 170.4,90.2 L 172.9,90.4 L 175.4,90.5 L 177.9,90.6 L 180.5,90.6 L 183.0,90.5 L 185.5,90.3 L 188.0,90.1 L 190.5,89.8 L 193.0,89.5 L 195.5,89.0 L 198.0,88.5 L 200.6,88.0 L 203.1,87.3 L 205.6,86.6 L 208.1,85.9 L 210.6,85.0 L 213.1,84.1 L 215.6,83.1 L 218.1,82.1 L 220.7,81.0 L 223.2,79.8 L 225.7,78.5 L 228.2,77.2 L 230.7,75.8 L 233.2,74.4 L 235.7,72.8 L 238.2,71.2 L 240.8,69.6 L 243.3,67.8 L 245.8,66.0 L 248.3,64.2 L 250.8,62.2 L 253.3,60.2 L 255.8,58.1 L 258.3,56.0 L 260.9,56.4 L 263.4,58.5 L 265.9,60.6 L 268.4,62.6 L 270.9,64.5 L 273.4,66.4 L 275.9,68.2 L 278.4,69.9 L 281.0,71.6 L 283.5,73.1 L 286.0,74.7 L 288.5,76.1 L 291.0,77.5 L 293.5,78.8 L 296.0,80.0 L 298.5,81.2 L 301.1,82.3 L 303.6,83.3 L 306.1,84.3 L 308.6,85.2 L 311.1,86.0 L 313.6,86.8 L 316.1,87.5 L 318.6,88.1 L 321.2,88.6 L 323.7,89.1 L 326.2,89.5 L 328.7,89.9 L 331.2,90.2 L 333.7,90.4 L 336.2,90.5 L 338.7,90.6 L 341.3,90.6 L 343.8,90.5 L 346.3,90.4 L 348.8,90.2 L 351.3,89.9 L 353.8,89.5 L 356.3,89.1 L 358.8,88.6 L 361.4,88.1 L 363.9,87.5 L 366.4,86.8 L 368.9,86.0 L 371.4,85.2 L 373.9,84.3 L 376.4,83.3 L 378.9,82.3 L 381.5,81.2 L 384.0,80.0 L 386.5,78.8 L 389.0,77.5 L 391.5,76.1 L 394.0,74.7 L 396.5,73.1 L 399.0,71.6 L 401.6,69.9 L 404.1,68.2 L 406.6,66.4 L 409.1,64.5 L 411.6,62.6 L 414.1,60.6 L 416.6,58.5 L 419.1,56.4 L 421.7,56.0 L 424.2,58.1 L 426.7,60.2 L 429.2,62.2 L 431.7,64.2 L 434.2,66.0 L 436.7,67.8 L 439.2,69.6 L 441.8,71.2 L 444.3,72.8 L 446.8,74.4 L 449.3,75.8 L 451.8,77.2 L 454.3,78.5 L 456.8,79.8 L 459.3,81.0 L 461.9,82.1 L 464.4,83.1 L 466.9,84.1 L 469.4,85.0 L 471.9,85.9 L 474.4,86.6 L 476.9,87.3 L 479.4,88.0 L 482.0,88.5 L 484.5,89.0 L 487.0,89.5 L 489.5,89.8 L 492.0,90.1 L 494.5,90.3 L 497.0,90.5 L 499.5,90.6 L 502.1,90.6 L 504.6,90.5 L 507.1,90.4 L 509.6,90.2 L 512.1,89.9 L 514.6,89.6 L 517.1,89.2 L 519.6,88.7 L 522.2,88.2 L 524.7,87.6 L 527.2,86.9 L 529.7,86.2 L 532.2,85.4 L 534.7,84.5 L 537.2,83.5 L 539.7,82.5 L 542.3,81.4 L 544.8,80.3 L 547.3,79.0 L 549.8,77.7 L 552.3,76.4 L 554.8,74.9 L 557.3,73.4 L 559.8,71.9 L 562.4,70.2 L 564.9,68.5 L 567.4,66.7 L 569.9,64.9 L 572.4,63.0 L 574.9,61.0 L 577.4,58.9 L 579.9,56.8 L 582.5,54.6 L 585.0,52.4 L 587.5,50.0 L 590.0,47.6"/>
+    <rect x="259.4" y="55.1" width="161.3" height="212.9" fill="url(#shieldband)" stroke="none"/>
+    <line x1="340.0" y1="268" x2="340.0" y2="48" class="axisline faint"/>
+    <line x1="178.7" y1="268" x2="178.7" y2="120.6" class="axisline faint"/>
+    <line x1="501.3" y1="268" x2="501.3" y2="120.6" class="axisline faint"/>
+    <circle cx="340.0" cy="268" r="5" class="node"/>
+    <circle cx="178.7" cy="268" r="5" class="node"/>
+    <circle cx="501.3" cy="268" r="5" class="node"/>
+    <circle cx="340.0" cy="90.6" r="5" class="node"/>
+    <circle cx="178.7" cy="90.6" r="5" class="node"/>
+    <circle cx="501.3" cy="90.6" r="5" class="node"/>
+    <g id="onescale-labels">
+      <text class="cap" x="340" y="28" text-anchor="middle"><tspan class="en">Control envelope in units of k²</tspan><tspan class="ja">k² を単位とした制御包絡</tspan></text>
+      <text class="lbl small" x="598" y="272" text-anchor="end">j</text>
+      <text class="lbl small" x="78" y="52" text-anchor="end">M/k²</text>
+      <text class="lbl small accentt" x="320" y="286" text-anchor="middle">0</text>
+      <text class="lbl small" x="170" y="286" text-anchor="middle">−1</text>
+      <text class="lbl small" x="470" y="286" text-anchor="middle">+1</text>
+      <text class="lbl small usualt" x="320" y="182" text-anchor="middle"><tspan class="en">shield j = 0</tspan><tspan class="ja">シールド j = 0</tspan></text>
+      <text class="lbl small dualt" x="170" y="214" text-anchor="middle"><tspan class="en">lobe</tspan><tspan class="ja">葉</tspan></text>
+      <text class="lbl small dualt" x="470" y="214" text-anchor="middle"><tspan class="en">lobe</tspan><tspan class="ja">葉</tspan></text>
+      <text class="lbl small" x="248" y="248" text-anchor="middle"><tspan class="en">|j| ≤ 1/2</tspan><tspan class="ja">|j| ≤ 1/2</tspan></text>
+      <text class="lbl small" x="598" y="104" text-anchor="end"><tspan class="en">mass ceiling</tspan><tspan class="ja">質量天井</tspan></text>
+      <text class="note" x="340" y="326" text-anchor="middle"><tspan class="en">M/k² ≤ 5/4 + d(j)²; shaded band is the sharp shield parabola.</tspan><tspan class="ja">M/k² ≤ 5/4 + d(j)²；影は鋭いシールド放物線の帯。</tspan></text>
+    </g>
+  </svg>
+  <p class="note"><span class="en">These envelope statements are theorems inside the DST model, not laboratory identities. There is no electromagnetic coupling, no lab protocol, and no identification of either channel force with a Faraday field.</span><span class="ja">これらの包絡の記述は DST モデル内部の定理であり、実験室の恒等式ではありません。電磁気結合も、実験プロトコルも、どちらかのチャネル力をファラデー場と同一視することもありません。</span></p>
+
+  </section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="transport.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="rotation.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>
