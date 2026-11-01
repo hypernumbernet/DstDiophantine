@@ -26,8 +26,10 @@ cannot pay their rest energies.
 * The written one-axis flow with vanishing mismatch, mismatch rate, and
   common velocity keeps both angles fixed. A nonzero mismatch rate
   leaves that value.
-* On the SI stand-ins, \(1836 < m_p/m_e < 1837\), and
-  \(7294 < m_\alpha/m_e < 7295\) for the \(^4\mathrm{He}\) nucleus. One hundred times the
+* On the SI stand-ins, \(1836 < m_p/m_e < 1837\),
+  \(7294 < m_\alpha/m_e < 7295\) for the \(^4\mathrm{He}\) nucleus, and
+  \(41896 < m_{\mathrm{Na}}/m_e < 41897\) for the \(^{23}\mathrm{Na}\) nucleus
+  stand-in. One hundred times the
   empirical binding per nucleon, and twenty optical wells, each lie
   below the proton rest energy. Hydrogen ionisation is exactly
   \(\alpha^2/2\) of the electron rest energy, and that fraction lies in
@@ -196,6 +198,49 @@ theorem alphaElectronMassRatio_bounds :
         7295 * alphaElectronMassRatio_den := by
       unfold alphaElectronMassRatio_num alphaElectronMassRatio_den
         alphaMassMantissa electronMassScale electronMassMantissa alphaMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def sodiumElectronMassRatio : ℚ := sodiumMassApprox / electronMassApprox
+
+def sodiumElectronMassRatio_num : ℕ :=
+  sodiumMassMantissa * 10 ^ electronMassScale
+
+def sodiumElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ sodiumMassScale
+
+theorem sodiumElectronMassRatio_eq_num_div_den :
+    sodiumElectronMassRatio =
+      (sodiumElectronMassRatio_num : ℚ) / sodiumElectronMassRatio_den := by
+  unfold sodiumElectronMassRatio sodiumMassApprox electronMassApprox
+    sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem sodiumElectronMassRatio_den_pos :
+    (0 : ℚ) < (sodiumElectronMassRatio_den : ℚ) := by
+  unfold sodiumElectronMassRatio_den electronMassMantissa sodiumMassScale
+  norm_num
+
+theorem sodiumElectronMassRatio_bounds :
+    (41896 : ℚ) < sodiumElectronMassRatio ∧
+      sodiumElectronMassRatio < (41897 : ℚ) := by
+  rw [sodiumElectronMassRatio_eq_num_div_den]
+  have hden := sodiumElectronMassRatio_den_pos
+  constructor
+  · have hnat : 41896 * sodiumElectronMassRatio_den <
+        sodiumElectronMassRatio_num := by
+      unfold sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+        sodiumMassMantissa electronMassScale electronMassMantissa sodiumMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : sodiumElectronMassRatio_num <
+        41897 * sodiumElectronMassRatio_den := by
+      unfold sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+        sodiumMassMantissa electronMassScale electronMassMantissa sodiumMassScale
       native_decide
     rw [div_lt_iff₀ hden]
     exact_mod_cast hnat

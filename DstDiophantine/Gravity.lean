@@ -381,7 +381,11 @@ The straight line of one fixed jet is not itself that geodesic.
   \(4\to 3\) are three ionisations and \(7/36\), and its even steps
   \(4\to 2\), \(6\to 4\), \(8\to 4\), and \(10\to 4\) repeat \(3/4\),
   \(5/36\), \(3/16\), and \(21/100\), each within one part in ten thousand.
-  The radius law, including the charge, remains an input.
+  Charge eleven stays in that well. Its step \(4\to 3\) is \(847/144\),
+  within one part in ten thousand, and the shells \(22\to 11\),
+  \(33\to 22\), \(44\to 22\), and \(55\to 22\) repeat the same four
+  hydrogen fractions, each within one part in ten thousand. The radius
+  law, including the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
@@ -395,7 +399,15 @@ The straight line of one fixed jet is not itself that geodesic.
   inertia with a helium-nucleus mass ratio strictly between \(7294\) and
   \(7295\) places those four strictly between \(121518\) and \(121519\),
   \(656202\) and \(656203\), \(486075\) and \(486076\), and \(433996\) and
-  \(433997\) picometres, each short of the hydrogen line.
+  \(433997\) picometres, each short of the hydrogen line. With the nucleus
+  fixed, charge eleven places \(2\to 1\) and \(4\to 3\) strictly between
+  \(1004151\) and \(1004152\), and between \(15492615\) and \(15492616\),
+  in units of \(10^{-15}\,\mathrm{m}\). Shells scaled by eleven reproduce
+  the four hydrogen wavelengths exactly. Shared inertia with a
+  sodium-nucleus mass ratio strictly between \(41896\) and \(41897\)
+  places those four strictly between \(121505\) and \(121506\), \(656127\)
+  and \(656128\), \(486020\) and \(486021\), and \(433947\) and \(433948\)
+  picometres, each short of the hydrogen line.
 * `BothChannels` — an electron and a proton exert both terms at every
   separation. For an unlike pair, equal signs of the two interference factors
   make the two terms point the same way, so the separation-increasing force
