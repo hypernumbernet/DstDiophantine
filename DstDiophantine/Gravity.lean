@@ -391,7 +391,11 @@ The straight line of one fixed jet is not itself that geodesic.
   vanish. On the one-proton phases the multiplier one is the hydrogen line,
   and that residual charge is the multiplier one. Multiplier eleven on those
   phases makes the shell-\(3\) to shell-\(2\) step \(55/36\), within one part
-  in ten thousand. The radius law, including the charge, remains an input.
+  in ten thousand. Multiplier two on those phases doubles the five hydrogen
+  steps, to \(3/2\), \(5/18\), \(3/8\), \(21/50\), and \(7/72\), each within
+  one part in ten thousand. The first shell holds two electrons, so both
+  seats filled on that multiplier leave none over. The radius law, including
+  the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
@@ -404,8 +408,12 @@ The straight line of one fixed jet is not itself that geodesic.
   \(\mathrm{H}\beta\), and \(\mathrm{H}\gamma\) wavelengths exactly. Shared
   inertia with a helium-nucleus mass ratio strictly between \(7294\) and
   \(7295\) places those four strictly between \(121518\) and \(121519\),
-  \(656202\) and \(656203\), \(486075\) and \(486076\), and \(433996\) and
-  \(433997\) picometres, each short of the hydrogen line. With the nucleus
+  \(656202\) and \(656203\), \(486075\) and \(486076\), and   \(433996\) and
+  \(433997\) picometres, each short of the hydrogen line. Multiplier two on the
+  one-proton phases places the five hydrogen lines strictly between
+  \(60751\) and \(60752\), \(328056\) and \(328057\), \(243004\) and
+  \(243005\), \(216968\) and \(216969\), and \(937303\) and \(937304\)
+  picometres. With the nucleus
   fixed, charge eleven places \(2\to 1\) and \(4\to 3\) strictly between
   \(1004151\) and \(1004152\), and between \(15492615\) and \(15492616\),
   in units of \(10^{-15}\,\mathrm{m}\). Shells scaled by eleven reproduce

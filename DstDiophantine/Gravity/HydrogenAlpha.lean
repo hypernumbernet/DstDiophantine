@@ -77,8 +77,12 @@ wavelength, likewise an input.
   the circular energy is the charge times the one-proton energy. Charge
   eleven on those phases makes the same step \(55/36\), within one part in
   ten thousand. The charge is a multiplier, not an assembly of protons.
-  The radius law \(r_n=n^2 a_0/Z\), including the square of the charge,
-  remains an input. The vanishing step is not a wavelength.
+  Multiplier two on the same phases doubles the five hydrogen steps, to
+  \(3/2\), \(5/18\), \(3/8\), \(21/50\), and \(7/72\), each within one part
+  in ten thousand. The first shell holds two electrons, so both seats filled
+  on that multiplier leave none over. The radius law \(r_n=n^2 a_0/Z\),
+  including the square of the charge, remains an input. The vanishing step
+  is not a wavelength.
 -/
 
 namespace DstDiophantine
@@ -1222,6 +1226,103 @@ theorem fixedPhase_eleven_signed_shift :
   have hconst : 11 * ((1 / 10000) * (5 / 36)) = (1 / 10000) * (55 / 36) := by
     ring
   linarith
+
+theorem fixedPhase_scale_shift {Z : ℕ} {a b frac : ℝ} (hZ : 0 < Z)
+    (hstep : |b - a - frac| < (1 / 10000) * frac) :
+    |(Z : ℝ) * b - (Z : ℝ) * a - (Z : ℝ) * frac| <
+      (1 / 10000) * ((Z : ℝ) * frac) := by
+  have hsplit : (Z : ℝ) * b - (Z : ℝ) * a - (Z : ℝ) * frac =
+      (Z : ℝ) * (b - a - frac) := by ring
+  rw [hsplit, abs_mul, abs_of_pos (by exact_mod_cast hZ)]
+  have hZ' : (0 : ℝ) < Z := by exact_mod_cast hZ
+  have hmul := mul_lt_mul_of_pos_left hstep hZ'
+  have hconst : (Z : ℝ) * ((1 / 10000) * frac) =
+      (1 / 10000) * ((Z : ℝ) * frac) := by ring
+  linarith
+
+/-- The first shell holds two electrons. Both seats on multiplier two
+leave no electron over. -/
+theorem heliumShell_closed :
+    2 * 1 ^ 2 = 2 ∧ (2 - 2 * 1 ^ 2 : ℕ) = 0 := by
+  norm_num
+
+theorem fixedPhase_two_lyman_book :
+    (2 : ℝ) * bohrEnergyDiff 1 2 =
+      (3 / 2) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  have h : (1 : ℝ) / (1 : ℝ) ^ 2 - 1 / (2 : ℝ) ^ 2 = 3 / 4 := by norm_num
+  rw [h]
+  ring
+
+theorem fixedPhase_two_hAlpha_book :
+    (2 : ℝ) * bohrEnergyDiff 2 3 =
+      (5 / 18) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_hAlpha]
+  ring
+
+theorem fixedPhase_two_hBeta_book :
+    (2 : ℝ) * bohrEnergyDiff 2 4 =
+      (3 / 8) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  have h : (1 : ℝ) / (2 : ℝ) ^ 2 - 1 / (4 : ℝ) ^ 2 = 3 / 16 := by norm_num
+  rw [h]
+  ring
+
+theorem fixedPhase_two_hGamma_book :
+    (2 : ℝ) * bohrEnergyDiff 2 5 =
+      (21 / 50) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  have h : (1 : ℝ) / (2 : ℝ) ^ 2 - 1 / (5 : ℝ) ^ 2 = 21 / 100 := by norm_num
+  rw [h]
+  ring
+
+theorem fixedPhase_two_paschen_book :
+    (2 : ℝ) * bohrEnergyDiff 3 4 =
+      (7 / 72) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  have h : (1 : ℝ) / (3 : ℝ) ^ 2 - 1 / (4 : ℝ) ^ 2 = 7 / 144 := by norm_num
+  rw [h]
+  ring
+
+theorem fixedPhase_two_lyman :
+    |fixedPhaseCharge 2 2 - fixedPhaseCharge 2 1 - (3 / 2)| <
+      (1 / 10000) * (3 / 2) := by
+  unfold fixedPhaseCharge
+  have htwice : (2 : ℝ) * (3 / 4) = 3 / 2 := by norm_num
+  rw [← htwice]
+  exact fixedPhase_scale_shift (by norm_num) lyman_signed_shift
+
+theorem fixedPhase_two_hAlpha :
+    |fixedPhaseCharge 2 3 - fixedPhaseCharge 2 2 - (5 / 18)| <
+      (1 / 10000) * (5 / 18) := by
+  unfold fixedPhaseCharge
+  have htwice : (2 : ℝ) * (5 / 36) = 5 / 18 := by norm_num
+  rw [← htwice]
+  exact fixedPhase_scale_shift (by norm_num) hAlpha_signed_shift
+
+theorem fixedPhase_two_hBeta :
+    |fixedPhaseCharge 2 4 - fixedPhaseCharge 2 2 - (3 / 8)| <
+      (1 / 10000) * (3 / 8) := by
+  unfold fixedPhaseCharge
+  have htwice : (2 : ℝ) * (3 / 16) = 3 / 8 := by norm_num
+  rw [← htwice]
+  exact fixedPhase_scale_shift (by norm_num) hBeta_signed_shift
+
+theorem fixedPhase_two_hGamma :
+    |fixedPhaseCharge 2 5 - fixedPhaseCharge 2 2 - (21 / 50)| <
+      (1 / 10000) * (21 / 50) := by
+  unfold fixedPhaseCharge
+  have htwice : (2 : ℝ) * (21 / 100) = 21 / 50 := by norm_num
+  rw [← htwice]
+  exact fixedPhase_scale_shift (by norm_num) hGamma_signed_shift
+
+theorem fixedPhase_two_paschen :
+    |fixedPhaseCharge 2 4 - fixedPhaseCharge 2 3 - (7 / 72)| <
+      (1 / 10000) * (7 / 72) := by
+  unfold fixedPhaseCharge
+  have htwice : (2 : ℝ) * (7 / 144) = 7 / 72 := by norm_num
+  rw [← htwice]
+  exact fixedPhase_scale_shift (by norm_num) paschen_signed_shift
 
 theorem hydrogenicPhase_eleven_pos {n : ℕ} (hn : 0 < n) :
     (0 : ℚ) < hydrogenicPhase 11 n := by

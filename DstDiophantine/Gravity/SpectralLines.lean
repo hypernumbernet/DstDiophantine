@@ -48,6 +48,10 @@ and \(12787\), places those four strictly between \(121511\) and
 \(121512\), \(656163\) and \(656164\), \(486047\) and \(486048\), and
 \(433970\) and \(433971\) picometres, each short of the hydrogen line
 that carries a proton mass ratio strictly between \(1836\) and \(1837\).
+Multiplier two on the one-proton phases halves the five hydrogen
+wavelengths. With the center fixed they lie strictly between \(60751\) and
+\(60752\), \(328056\) and \(328057\), \(243004\) and \(243005\), \(216968\)
+and \(216969\), and \(937303\) and \(937304\) picometres.
 A charge of eleven on the one-proton phases, the scaling proved for the
 force, multiplies the shell-\(3\) to shell-\(2\) bookkeeping by eleven.
 With the center fixed, that vacuum wavelength lies strictly between
@@ -616,6 +620,24 @@ private theorem paschen_wavelength_eq :
 
 /-! ### Hydrogen windows -/
 
+theorem chargeScale_line {c n m : ℕ} (hc : 0 < c) (hn : 0 < n) (hm : n < m) :
+    vacuumWavelength ((c : ℝ) * bohrEnergyDiff n m) =
+      vacuumWavelength (bohrEnergyDiff n m) / (c : ℝ) := by
+  have hc' : (c : ℝ) ≠ 0 := by exact_mod_cast hc.ne'
+  have hE : bohrEnergyDiff n m ≠ 0 := by
+    unfold bohrEnergyDiff
+    apply mul_ne_zero
+    · exact_mod_cast hydrogenIonisationApprox_pos.ne'
+    · have hn0 : (0 : ℝ) < n := by exact_mod_cast hn
+      have hlt : (n : ℝ) < m := by exact_mod_cast hm
+      have hsq : (n : ℝ) ^ 2 < (m : ℝ) ^ 2 :=
+        pow_lt_pow_left₀ hlt (le_of_lt hn0) (by norm_num)
+      have hinv : (1 : ℝ) / (m : ℝ) ^ 2 < 1 / (n : ℝ) ^ 2 :=
+        one_div_lt_one_div_of_lt (pow_pos hn0 2) hsq
+      exact sub_ne_zero.mpr (ne_of_gt hinv)
+  unfold vacuumWavelength
+  field_simp [hc', hE]
+
 theorem chargeScale_hAlpha {c : ℕ} (hc : 0 < c) :
     vacuumWavelength ((c : ℝ) * bohrEnergyDiff 2 3) =
       vacuumWavelength (bohrEnergyDiff 2 3) / c := by
@@ -758,7 +780,89 @@ theorem paschen_proton_share :
   have h := protonElectronMassRatio_bounds
   exact paschen_shared_wavelength (by exact_mod_cast h.1) (by exact_mod_cast h.2)
 
-/-! ### Charge two -/
+/-! ### Multiplier two on the one-proton phases -/
+
+theorem chargeTwo_lyman_wavelength :
+    (60751 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 1 2) ∧
+      vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 1 2) <
+        (60752 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_line (by norm_num) (by norm_num) (by norm_num)]
+  have hbnd := lymanWavelength_bounds
+  have h2 : (0 : ℝ) < 2 := by norm_num
+  constructor
+  · have heq : (60751 : ℝ) / 10 ^ 12 = (121502 : ℝ) / 10 ^ 12 / 2 := by norm_num
+    rw [heq]
+    exact div_lt_div_of_pos_right hbnd.1 h2
+  · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h2)
+      (by norm_num : (121503 : ℝ) / 10 ^ 12 / 2 < (60752 : ℝ) / 10 ^ 12)
+
+theorem chargeTwo_hAlpha_wavelength :
+    (328056 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 3) ∧
+      vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 3) <
+        (328057 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_line (by norm_num) (by norm_num) (by norm_num)]
+  have heq : vacuumWavelength (bohrEnergyDiff 2 3) = hAlphaWavelength := by
+    rw [hAlpha_wavelength_eq]
+    rfl
+  rw [heq]
+  have hbnd := hAlphaWavelength_bounds
+  have h2 : (0 : ℝ) < 2 := by norm_num
+  constructor
+  · have heq2 : (328056 : ℝ) / 10 ^ 12 = (656112 : ℝ) / 10 ^ 12 / 2 := by norm_num
+    rw [heq2]
+    exact div_lt_div_of_pos_right hbnd.1 h2
+  · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h2)
+      (by norm_num : (656113 : ℝ) / 10 ^ 12 / 2 < (328057 : ℝ) / 10 ^ 12)
+
+theorem chargeTwo_hBeta_wavelength :
+    (243004 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 4) ∧
+      vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 4) <
+        (243005 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_line (by norm_num) (by norm_num) (by norm_num)]
+  have hbnd := hBetaWavelength_bounds
+  have h2 : (0 : ℝ) < 2 := by norm_num
+  constructor
+  · exact lt_trans (by norm_num : (243004 : ℝ) / 10 ^ 12 <
+        (486009 : ℝ) / 10 ^ 12 / 2)
+      (div_lt_div_of_pos_right hbnd.1 h2)
+  · have heq : (486010 : ℝ) / 10 ^ 12 / 2 = (243005 : ℝ) / 10 ^ 12 := by norm_num
+    rw [← heq]
+    exact div_lt_div_of_pos_right hbnd.2 h2
+
+theorem chargeTwo_hGamma_wavelength :
+    (216968 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 5) ∧
+      vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 2 5) <
+        (216969 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_line (by norm_num) (by norm_num) (by norm_num)]
+  have hbnd := hGammaWavelength_bounds
+  have h2 : (0 : ℝ) < 2 := by norm_num
+  constructor
+  · have heq : (216968 : ℝ) / 10 ^ 12 = (433936 : ℝ) / 10 ^ 12 / 2 := by norm_num
+    rw [heq]
+    exact div_lt_div_of_pos_right hbnd.1 h2
+  · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h2)
+      (by norm_num : (433937 : ℝ) / 10 ^ 12 / 2 < (216969 : ℝ) / 10 ^ 12)
+
+theorem chargeTwo_paschen_wavelength :
+    (937303 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 3 4) ∧
+      vacuumWavelength (((2 : ℕ) : ℝ) * bohrEnergyDiff 3 4) <
+        (937304 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_line (by norm_num) (by norm_num) (by norm_num)]
+  have hbnd := paschenWavelength_bounds
+  have h2 : (0 : ℝ) < 2 := by norm_num
+  constructor
+  · have heq : (937303 : ℝ) / 10 ^ 12 = (1874606 : ℝ) / 10 ^ 12 / 2 := by norm_num
+    rw [heq]
+    exact div_lt_div_of_pos_right hbnd.1 h2
+  · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h2)
+      (by norm_num : (1874607 : ℝ) / 10 ^ 12 / 2 < (937304 : ℝ) / 10 ^ 12)
+
+/-! ### Charge two, hydrogenic radii -/
 
 theorem chargeTwo_doubled {n m : ℕ} (hn : 0 < n) (hm : n < m) :
     (2 : ℝ) ^ 2 * bohrEnergyDiff (2 * n) (2 * m) = bohrEnergyDiff n m := by
