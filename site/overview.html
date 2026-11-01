@@ -47,29 +47,45 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <div class="card usualc"><h3><span class="en">Usual spacetime</span><span class="ja">通常時空</span></h3><p class="mono">X = ct·j + x·kI + y·kJ + z·kK</p><p><span class="en">The spacetime we live in and measure.</span><span class="ja">私たちが暮らし、測っている時空。</span></p></div>
     <div class="card dualc"><h3><span class="en">Dual spacetime</span><span class="ja">双対時空</span></h3><p class="mono">X′ = ct′·k + x′·jI + y′·jJ + z′·jK</p><p><span class="en">Time-reversed relative to the first, with the same interval.</span><span class="ja">通常時空に対して時間が反転していて、間隔（距離の測り方）は同じ。</span></p></div>
   </div>
-  <p><span class="en">The two are linked by one multiplication, the <b>dual map</b> X′ = X·i. It flips the direction of time (<span class="mono">j·i = −k</span>) but keeps the Minkowski norm −(ct)² + x² + y² + z² unchanged.</span><span class="ja">二つは一回の掛け算、<b>双対写像</b> X′ = X·i で結ばれています。これは時間の向きを反転させます（<span class="mono">j·i = −k</span>）が、ミンコフスキーノルム −(ct)² + x² + y² + z² は変えません。</span></p>
-  <svg class="fig" viewBox="0 0 640 275" role="img" aria-label="Dual map reverses time arrow and keeps the light cone">
-    <g transform="translate(160,120)">
-      <path class="cone usualf" d="M-90,-90L0,0L90,-90M-90,90L0,0L90,90"/>
-      <line class="axis" x1="-110" y1="0" x2="110" y2="0"/>
-      <line class="usual arrow" x1="0" y1="0" x2="0" y2="-95" marker-end="url(#ah)"/>
-      <text class="lbl usualt" x="8" y="-82"><tspan class="en">time</tspan><tspan class="ja">時間</tspan></text>
-      <text class="lbl" x="100" y="18">x</text>
-      <text class="cap" x="0" y="112" text-anchor="middle"><tspan class="en">usual: X</tspan><tspan class="ja">通常：X</tspan></text>
+  <p><span class="en">The two are linked by one multiplication, the <b>dual map</b> X′ = X·i (right multiplication by the pseudoscalar <i>i</i>). It sends the usual time generator <span class="mono">j</span> to the dual one <span class="mono">−k</span> (<span class="mono">j·i = −k</span>) and the usual spatial direction <span class="mono">kI</span> to the dual direction <span class="mono">jI</span>, while the Minkowski norm −(ct)² + x² + y² + z² is unchanged.</span><span class="ja">二つは一回の掛け算、<b>双対写像</b> X′ = X·i（擬スカラー <i>i</i> を右から掛ける）で結ばれます。通常の時間生成子 <span class="mono">j</span> を双対の <span class="mono">−k</span> へ（<span class="mono">j·i = −k</span>）、通常の空間方向 <span class="mono">kI</span> を双対の <span class="mono">jI</span> へ送り、ミンコフスキーノルム −(ct)² + x² + y² + z² は変えません。</span></p>
+  <svg class="fig" viewBox="0 0 720 330" role="img" aria-label="Usual and dual frame axes in one ct-x slice, linked by the dual map X prime equals X times i">
+    <defs>
+      <marker id="ov-ah-axis" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#596284"/></marker>
+      <marker id="ov-ah-map" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--accent)"/></marker>
+    </defs>
+    <!-- Usual frame: ct·j and x along kI (Cl(3,1) e0, e1) -->
+    <g transform="translate(125,148)">
+      <path class="cone usualf" d="M-78,-78L0,0L78,-78M-78,78L0,0L78,78"/>
+      <text class="lbl small usualt" x="-72" y="-62"><tspan class="en">light cone</tspan><tspan class="ja">光円錐</tspan></text>
+      <line class="axis" x1="0" y1="0" x2="0" y2="-88" marker-end="url(#ov-ah-axis)"/>
+      <text class="lbl usualt" x="6" y="-76"><tspan class="mono">ct·j</tspan></text>
+      <line class="axis" x1="0" y1="0" x2="88" y2="0" marker-end="url(#ov-ah-axis)"/>
+      <text class="lbl" x="72" y="-6"><tspan class="mono">x·kI</tspan></text>
+      <text class="cap" x="0" y="108" text-anchor="middle"><tspan class="en">usual spacetime</tspan><tspan class="ja">通常時空</tspan></text>
+      <text class="lbl small" x="0" y="124" text-anchor="middle"><tspan class="mono">X = ct·j + x·kI + …</tspan></text>
     </g>
-    <g transform="translate(320,110)">
-      <line class="axis arrow" x1="-50" y1="0" x2="50" y2="0" marker-end="url(#ah)"/>
-      <text class="mono lbl" x="0" y="-12" text-anchor="middle">× i</text>
-      <text class="lbl small" x="0" y="24" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+    <!-- Dual map: not a frame axis -->
+    <path fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="8 5" d="M208,148 C 288,88 432,208 512,148" marker-end="url(#ov-ah-map)"/>
+    <text class="mono lbl accentt" x="360" y="108" text-anchor="middle">X′ = X·i</text>
+    <text class="lbl small accentt" x="360" y="126" text-anchor="middle"><tspan class="en">dual map (× i)</tspan><tspan class="ja">双対写像（× i）</tspan></text>
+    <!-- Dual frame: ct′·k and x′ along jI (dual e0, e1) -->
+    <g transform="translate(595,148)">
+      <path class="cone dualf" d="M-78,-78L0,0L78,-78M-78,78L0,0L78,78"/>
+      <text class="lbl small dualt" x="-72" y="-62"><tspan class="en">same cone</tspan><tspan class="ja">同じ円錐</tspan></text>
+      <line class="axis" x1="0" y1="0" x2="0" y2="88" marker-end="url(#ov-ah-axis)"/>
+      <text class="lbl dualt" x="6" y="82"><tspan class="mono">ct′·k</tspan></text>
+      <line class="axis" x1="0" y1="0" x2="88" y2="0" marker-end="url(#ov-ah-axis)"/>
+      <text class="lbl" x="72" y="-6"><tspan class="mono">x′·jI</tspan></text>
+      <text class="cap" x="0" y="108" text-anchor="middle"><tspan class="en">dual spacetime</tspan><tspan class="ja">双対時空</tspan></text>
+      <text class="lbl small" x="0" y="124" text-anchor="middle"><tspan class="mono">X′ = ct′·k + x′·jI + …</tspan></text>
     </g>
-    <g transform="translate(480,120)">
-      <path class="cone dualf" d="M-90,-90L0,0L90,-90M-90,90L0,0L90,90"/>
-      <line class="axis" x1="-110" y1="0" x2="110" y2="0"/>
-      <line class="dual arrow" x1="0" y1="0" x2="0" y2="95" marker-end="url(#ah)"/>
-      <text class="lbl dualt" x="8" y="90"><tspan class="en">time (reversed)</tspan><tspan class="ja">時間（反転）</tspan></text>
-      <text class="cap" x="0" y="112" text-anchor="middle"><tspan class="en">dual: X′ = X·i</tspan><tspan class="ja">双対：X′ = X·i</tspan></text>
+    <g transform="translate(24,302)">
+      <line class="axis" x1="0" y1="0" x2="36" y2="0" marker-end="url(#ov-ah-axis)"/>
+      <text class="lbl small" x="44" y="5"><tspan class="en">frame axis (generator direction)</tspan><tspan class="ja">フレーム軸（生成子の向き）</tspan></text>
+      <path fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="8 5" d="M340,0 C 358,-14 376,14 394,0" marker-end="url(#ov-ah-map)"/>
+      <text class="lbl small accentt" x="402" y="5"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
     </g>
-    <text class="note" x="320" y="265" text-anchor="middle"><tspan class="en">Same light cone (same interval), opposite arrow of time.</tspan><tspan class="ja">光円錐（間隔）は同じ、時間の矢は逆向き。</tspan></text>
+    <text class="note" x="360" y="288" text-anchor="middle"><tspan class="en">One spatial slice: the map reverses the time arrow (j → −k) and preserves the null cone.</tspan><tspan class="ja">空間一方向の断面：写像は時間の矢を反転（j → −k）し、零円錐は保ちます。</tspan></text>
   </svg>
   <p><span class="en">Motions are made by <b>rotors</b>. Six generators act: three with square +1 give Lorentz <b>boosts</b> (hyperbolic, measured by rapidities α) and three with square −1 give <b>rotations</b> (cyclic, measured by angles β). The theory says the same generators I, J, K that rotate ordinary space also generate the dual-sector rotations; they are not a second independent copy.</span><span class="ja">運動は<b>ローター</b>で表されます。働く生成子は6つ。2乗が +1 の3つはローレンツ<b>ブースト</b>（双曲的、ラピディティ α で測る）、2乗が −1 の3つは<b>回転</b>（周期的、角度 β で測る）を生みます。論文によれば、通常空間を回すのと同じ I, J, K が双対側の回転も生み出しており、独立した二組目があるわけではありません。</span></p>
 </section>
