@@ -50,6 +50,16 @@ wavelength, likewise an input.
   The even shells repeat hydrogen fractions: \(4\to 2\), \(6\to 4\),
   \(8\to 4\), and \(10\to 4\) are \(3/4\), \(5/36\), \(3/16\), and
   \(21/100\), each within one part in ten thousand. With nuclear charge
+  three the hydrogenic phases stay below \(1/90\), in the outer well, on
+  the restoring side. The steps \(2\to 1\) and \(4\to 3\) are \(27/4\)
+  ionisations and \(7/16\) of one, each within one part in ten thousand.
+  Shells scaled by three, \(6\to 3\), \(9\to 6\), \(12\to 6\), and
+  \(15\to 6\), repeat \(3/4\), \(5/36\), \(3/16\), and \(21/100\), each
+  within one part in ten thousand. A nucleus of charge three together
+  with the two electrons of the first shell leaves one electron on the
+  second shell, feeling charge one. The monopole and the dipole of that
+  shell share its phase, so both the bookkeeping step and the
+  circular-energy step vanish. With nuclear charge
   eleven the hydrogenic phases stay below \(1/20\), in the outer well, on
   the restoring side. The bookkeeping steps \(2\to 1\) and \(4\to 3\) are
   \(363/4\) ionisations and \(847/144\) of one; the second departs from
@@ -193,9 +203,9 @@ private theorem cosh_le_exp_nonneg {t : ℝ} (ht : 0 ≤ t) : cosh t ≤ exp t :
   have hle : exp (-t) ≤ exp t := (exp_le_exp).mpr (by linarith)
   linarith [exp_pos t, exp_pos (-t)]
 
-private theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 100) :
+private theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 50) :
     1 - gammaSEqual x ≤ (11 / 10) * x ^ 2 := by
-  have hx50 : x ≤ 1 / 50 := by linarith
+  have hx50 : x ≤ 1 / 50 := hx
   have hderiv : ∀ t ∈ uIcc (0 : ℝ) x, HasDerivAt gammaSEqual (-2 * cosh t * sin t) t :=
     fun t _ => hasDerivAt_gammaSEqual t
   have hint : IntervalIntegrable (fun t => -2 * cosh t * sin t) volume 0 x := by
@@ -252,7 +262,7 @@ private theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 100) :
 
 private theorem gammaLower_pos {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 100) :
     1 - (11 / 10) * x ^ 2 ≤ gammaSEqual x := by
-  linarith [gammaDepart_le hx0 hx]
+  linarith [gammaDepart_le hx0 (le_trans hx (by norm_num : (1 / 100 : ℝ) ≤ 1 / 50))]
 
 private theorem circEnergy_coulomb_gap {x : ℝ}
     (hx : x ∈ Ioo (0 : ℝ) (1 / 100)) :
@@ -323,7 +333,8 @@ private theorem circEnergy_coulomb_gap {x : ℝ}
       have hx2 : x ^ 2 ≤ (1 / 100) ^ 2 := pow_le_pow_left₀ hx0 hxle 2
       nlinarith
     have hγ := gammaLower_pos hx0 hxle
-    have hnum := gammaDepart_le hx0 hxle
+    have hnum := gammaDepart_le hx0
+      (le_trans hxle (by norm_num : (1 / 100 : ℝ) ≤ 1 / 50))
     have hdiv : (1 - gammaSEqual x) / gammaSEqual x ≤
         ((11 / 10) * x ^ 2) / (1 - (11 / 10) * x ^ 2) := by
       rw [div_le_div_iff₀ hγx hden_pos]
@@ -1378,6 +1389,661 @@ theorem naMatchGamma_signed_shift :
       (1 / 10000) * (21 / 100) :=
   signedCharge_eleven_step (n := 22) (m := 55) (by norm_num) (by norm_num)
     (by norm_num) (by norm_num)
+
+/-! ### Charge three: the one-electron ion
+
+The ground phase \(3\alpha/2\) lies above \(1/100\), so the plateau gap of
+width \(6/5\) is too coarse for the step \(2\to 1\). On `(0, 1/90)` the
+same departure is at most half a cube, and that is enough.
+-/
+
+private theorem one_sub_gammaSEqual_integral {x : ℝ} (_hx : 0 ≤ x) :
+    1 - gammaSEqual x = ∫ t in (0 : ℝ)..x, 2 * cosh t * sin t := by
+  have hderiv : ∀ t ∈ uIcc (0 : ℝ) x, HasDerivAt gammaSEqual (-2 * cosh t * sin t) t :=
+    fun t _ => hasDerivAt_gammaSEqual t
+  have hint : IntervalIntegrable (fun t => -2 * cosh t * sin t) volume 0 x := by
+    refine Continuous.intervalIntegrable ?_ 0 x
+    fun_prop
+  have hftc := integral_eq_sub_of_hasDerivAt hderiv hint
+  rw [gammaSEqual_zero] at hftc
+  have hneg : ∫ t in (0 : ℝ)..x, 2 * cosh t * sin t =
+      -∫ t in (0 : ℝ)..x, -2 * cosh t * sin t := by
+    simp [intervalIntegral.integral_neg]
+  linarith [hneg]
+
+private theorem gammaDepart_cubic {x : ℝ} (hx : 0 ≤ x) (hx90 : x ≤ 1 / 90) :
+    x ^ 2 - x ^ 4 / 12 ≤ 1 - gammaSEqual x := by
+  rw [one_sub_gammaSEqual_integral hx]
+  have hbound : ∀ t ∈ Icc (0 : ℝ) x, 2 * t - t ^ 3 / 3 ≤ 2 * cosh t * sin t := by
+    intro t ht
+    have ht0 : 0 ≤ t := ht.1
+    have hsin_cubic : t - t ^ 3 / 6 ≤ sin t := by
+      rcases eq_or_lt_of_le ht0 with rfl | hpos
+      · simp
+      · exact (sin_gt_sub_cube hpos).le
+    have hsin0 : 0 ≤ sin t :=
+      sin_nonneg_of_nonneg_of_le_pi ht0 (by linarith [ht.2, hx90, pi_gt_three])
+    have hcosh : sin t ≤ cosh t * sin t := by
+      simpa [one_mul] using mul_le_mul_of_nonneg_right (one_le_cosh t) hsin0
+    have hge : t - t ^ 3 / 6 ≤ cosh t * sin t := le_trans hsin_cubic hcosh
+    have htwo : 2 * (t - t ^ 3 / 6) ≤ 2 * (cosh t * sin t) :=
+      mul_le_mul_of_nonneg_left hge (by norm_num)
+    have hrew : 2 * (t - t ^ 3 / 6) = 2 * t - t ^ 3 / 3 := by ring
+    linarith
+  have hintf : IntervalIntegrable (fun t => 2 * cosh t * sin t) volume 0 x := by
+    refine Continuous.intervalIntegrable ?_ 0 x
+    fun_prop
+  have hintg : IntervalIntegrable (fun t => 2 * t - t ^ 3 / 3) volume 0 x := by
+    refine Continuous.intervalIntegrable ?_ 0 x
+    fun_prop
+  have hmono := integral_mono_on hx hintg hintf hbound
+  have hquad : ∫ t in (0 : ℝ)..x, 2 * t - t ^ 3 / 3 = x ^ 2 - x ^ 4 / 12 := by
+    have hder : ∀ t ∈ uIcc (0 : ℝ) x,
+        HasDerivAt (fun s => s ^ 2 - s ^ 4 / 12) (2 * t - t ^ 3 / 3) t := by
+      intro t _
+      have h2 : HasDerivAt (fun s : ℝ => s ^ 2) (2 * t) t := by
+        simpa [pow_one] using hasDerivAt_pow 2 t
+      have h4 : HasDerivAt (fun s : ℝ => s ^ 4) (4 * t ^ 3) t := by
+        simpa [pow_succ, pow_one] using hasDerivAt_pow 4 t
+      have hsub := h2.sub (h4.div_const 12)
+      convert hsub using 1
+      ring
+    have hq := integral_eq_sub_of_hasDerivAt hder hintg
+    simp at hq
+    linarith
+  linarith
+
+private theorem circEnergy_half_cubic {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) (1 / 90)) :
+    0 < circEnergy x + x ∧ circEnergy x + x < (1 / 2) * x ^ 3 := by
+  have hx0 : 0 ≤ x := hx.1.le
+  have hxle : x ≤ 1 / 90 := hx.2.le
+  have hx50 : x ≤ 1 / 50 := by linarith
+  have hx1 : x < resonanceRoot1 := by
+    have hπ : (1 / 90 : ℝ) < π / 4 := by linarith [pi_gt_three]
+    exact lt_trans hx.2 (lt_trans hπ resonanceRoot1_sharp_bounds.1)
+  have hxπ : x ≤ π := by linarith [hx.2, pi_gt_three]
+  have hxsq : x ^ 2 < 1 / 8100 := by
+    have hlt : |x| < |(1 / 90 : ℝ)| := by
+      rw [abs_of_nonneg hx0, abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 90)]
+      exact hx.2
+    have hsq : x ^ 2 < (1 / 90) ^ 2 := (sq_lt_sq).mpr hlt
+    have heq : (1 / 90) ^ 2 = (1 : ℝ) / 8100 := by norm_num
+    linarith
+  set den : ℝ := 1 - (11 / 10) * x ^ 2
+  have hden_gt : (80989 : ℝ) / 81000 < den := by
+    have hmul : (11 / 10) * x ^ 2 < (11 / 10) * (1 / 8100) :=
+      mul_lt_mul_of_pos_left hxsq (by norm_num)
+    have hconst : (11 / 10) * (1 / 8100) = (11 : ℝ) / 81000 := by ring
+    dsimp [den]
+    linarith
+  have hden_pos : 0 < den := by
+    have hfloor : (0 : ℝ) < (80989 : ℝ) / 81000 := by norm_num
+    linarith
+  set kap : ℝ := 89100 / 80989
+  have hkap : (11 / 10) / den < kap := by
+    have hfloor : (0 : ℝ) < (80989 : ℝ) / 81000 := by norm_num
+    have hdiv : (11 / 10) / den < (11 / 10) / ((80989 : ℝ) / 81000) :=
+      div_lt_div_of_pos_left (by norm_num) hfloor hden_gt
+    have heq : (11 / 10) / ((80989 : ℝ) / 81000) = kap := by
+      dsimp [kap]
+      ring
+    linarith
+  have hγx : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node ⟨hx.1, hx1⟩
+  have hanti : AntitoneOn gammaSEqual (Icc (0 : ℝ) π) := by
+    simpa [Nat.cast_zero, zero_mul] using (strictAntiOn_gammaSEqual_even 0).antitoneOn
+  have hδ : 1 - gammaSEqual x ≤ (11 / 10) * x ^ 2 := gammaDepart_le hx0 hx50
+  have hγden : den ≤ gammaSEqual x := by
+    dsimp [den]
+    linarith
+  have hcont : ContinuousOn (fun t => (gammaSEqual t)⁻¹) (Icc 0 x) := by
+    refine continuous_gammaSEqual.continuousOn.inv₀ ?_
+    intro t ht
+    exact (gammaSEqual_pos_of_lt_firstNode ht.1 (lt_of_le_of_lt ht.2 hx1)).ne'
+  have hintInv := hcont.intervalIntegrable_of_Icc (μ := volume) hx0
+  have hone : IntervalIntegrable (fun _ : ℝ => (1 : ℝ)) volume 0 x :=
+    intervalIntegrable_const
+  have hintDiff : IntervalIntegrable (fun t => (gammaSEqual t)⁻¹ - 1) volume 0 x :=
+    hintInv.sub hone
+  have haccum : ∫ t in (0 : ℝ)..x, (gammaSEqual t)⁻¹ = layerAccum x := by
+    unfold layerAccum
+    rfl
+  have hone_int : ∫ t in (0 : ℝ)..x, (1 : ℝ) = x := by simp
+  have hsplit : ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1) = layerAccum x - x := by
+    rw [intervalIntegral.integral_sub hintInv hone, haccum, hone_int]
+  have hident : circEnergy x + x =
+      x * ((gammaSEqual x)⁻¹ - 1) -
+        2 * ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1) := by
+    unfold circEnergy
+    rw [div_eq_mul_inv, hsplit]
+    ring
+  have hAx : x * ((gammaSEqual x)⁻¹ - 1) ≤ (11 / 10) * x ^ 3 / den := by
+    have hrewrite : (gammaSEqual x)⁻¹ - 1 = (1 - gammaSEqual x) / gammaSEqual x := by
+      field_simp [hγx.ne']
+    rw [hrewrite]
+    have hle : (1 - gammaSEqual x) / gammaSEqual x ≤
+        ((11 / 10) * x ^ 2) / den := by
+      rw [div_le_div_iff₀ hγx hden_pos]
+      have hleft := mul_le_mul_of_nonneg_left hδ hden_pos.le
+      have hright : (11 / 10) * x ^ 2 * den ≤ (11 / 10) * x ^ 2 * gammaSEqual x :=
+        mul_le_mul_of_nonneg_left hγden (by positivity)
+      nlinarith
+    have hmul := mul_le_mul_of_nonneg_left hle hx0
+    calc x * ((1 - gammaSEqual x) / gammaSEqual x)
+        ≤ x * (((11 / 10) * x ^ 2) / den) := hmul
+      _ = (11 / 10) * x ^ 3 / den := by ring
+  have hcubic_int : ∫ t in (0 : ℝ)..x, t ^ 2 - t ^ 4 / 12 = x ^ 3 / 3 - x ^ 5 / 60 := by
+    have hintp : IntervalIntegrable (fun t => t ^ 2 - t ^ 4 / 12) volume 0 x := by
+      refine Continuous.intervalIntegrable ?_ 0 x
+      fun_prop
+    have hder : ∀ t ∈ uIcc (0 : ℝ) x,
+        HasDerivAt (fun s => s ^ 3 / 3 - s ^ 5 / 60) (t ^ 2 - t ^ 4 / 12) t := by
+      intro t _
+      have h3 : HasDerivAt (fun s : ℝ => s ^ 3) (3 * t ^ 2) t := by
+        simpa [pow_succ, pow_one] using hasDerivAt_pow 3 t
+      have h5 : HasDerivAt (fun s : ℝ => s ^ 5) (5 * t ^ 4) t := by
+        simpa [pow_succ, pow_one] using hasDerivAt_pow 5 t
+      have hsub := (h3.div_const 3).sub (h5.div_const 60)
+      convert hsub using 1
+      ring
+    have hq := integral_eq_sub_of_hasDerivAt hder hintp
+    have hzero : (0 : ℝ) ^ 3 / 3 - (0 : ℝ) ^ 5 / 60 = 0 := by norm_num
+    rw [hq, hzero, sub_zero]
+  have hIge : x ^ 3 / 3 - x ^ 5 / 60 ≤
+      ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1) := by
+    have hpoint : ∀ t ∈ Icc (0 : ℝ) x,
+        t ^ 2 - t ^ 4 / 12 ≤ (gammaSEqual t)⁻¹ - 1 := by
+      intro t ht
+      have ht0 : 0 ≤ t := ht.1
+      have ht90 : t ≤ 1 / 90 := le_trans ht.2 hxle
+      have hγt : 0 < gammaSEqual t :=
+        gammaSEqual_pos_of_lt_firstNode ht0 (lt_of_le_of_lt ht.2 hx1)
+      have hcub := gammaDepart_cubic ht0 ht90
+      have hge_δ : 1 - gammaSEqual t ≤ (gammaSEqual t)⁻¹ - 1 := by
+        have hrewrite : (gammaSEqual t)⁻¹ - 1 - (1 - gammaSEqual t) =
+            (1 - gammaSEqual t) ^ 2 / gammaSEqual t := by
+          field_simp [hγt.ne']
+        have hsq : 0 ≤ (1 - gammaSEqual t) ^ 2 / gammaSEqual t := by positivity
+        linarith
+      linarith
+    have hintp : IntervalIntegrable (fun t => t ^ 2 - t ^ 4 / 12) volume 0 x := by
+      refine Continuous.intervalIntegrable ?_ 0 x
+      fun_prop
+    have hmono := integral_mono_on hx0 hintp hintDiff hpoint
+    linarith [hcubic_int, hmono]
+  have hIlt : ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1) < kap * x ^ 3 / 3 := by
+    have hpoint : ∀ t ∈ Icc (0 : ℝ) x,
+        (gammaSEqual t)⁻¹ - 1 ≤ ((11 / 10) / den) * t ^ 2 := by
+      intro t ht
+      have ht0 : 0 ≤ t := ht.1
+      have ht50 : t ≤ 1 / 50 := by linarith [ht.2, hxle]
+      have hγt : 0 < gammaSEqual t :=
+        gammaSEqual_pos_of_lt_firstNode ht0 (lt_of_le_of_lt ht.2 hx1)
+      have hδt : 1 - gammaSEqual t ≤ (11 / 10) * t ^ 2 := gammaDepart_le ht0 ht50
+      have htsq : t ^ 2 ≤ x ^ 2 := pow_le_pow_left₀ ht0 ht.2 2
+      have hden_t : den ≤ 1 - (11 / 10) * t ^ 2 := by
+        dsimp [den]
+        have hmul := mul_le_mul_of_nonneg_left htsq (by norm_num : (0 : ℝ) ≤ 11 / 10)
+        linarith
+      have hγden_t : den ≤ gammaSEqual t := by
+        have hlow := gammaDepart_le ht0 ht50
+        linarith
+      have hrewrite : (gammaSEqual t)⁻¹ - 1 = (1 - gammaSEqual t) / gammaSEqual t := by
+        field_simp [hγt.ne']
+      rw [hrewrite]
+      have hle : (1 - gammaSEqual t) / gammaSEqual t ≤ ((11 / 10) * t ^ 2) / den := by
+        rw [div_le_div_iff₀ hγt hden_pos]
+        have hleft := mul_le_mul_of_nonneg_left hδt hden_pos.le
+        have hright : (11 / 10) * t ^ 2 * den ≤ (11 / 10) * t ^ 2 * gammaSEqual t :=
+          mul_le_mul_of_nonneg_left hγden_t (mul_nonneg (by norm_num) (sq_nonneg t))
+        nlinarith
+      have hform : ((11 / 10) * t ^ 2) / den = ((11 / 10) / den) * t ^ 2 := by ring
+      linarith
+    have hintp : IntervalIntegrable (fun t => ((11 / 10) / den) * t ^ 2) volume 0 x := by
+      refine Continuous.intervalIntegrable ?_ 0 x
+      fun_prop
+    have hmono := integral_mono_on hx0 hintDiff hintp hpoint
+    have hintq : IntervalIntegrable (fun t => t ^ 2) volume 0 x := by
+      refine Continuous.intervalIntegrable ?_ 0 x
+      fun_prop
+    have hq : ∫ t in (0 : ℝ)..x, t ^ 2 = x ^ 3 / 3 := by
+      have hder : ∀ t ∈ uIcc (0 : ℝ) x,
+          HasDerivAt (fun s => s ^ 3 / 3) (t ^ 2) t := by
+        intro t _
+        have h3 : HasDerivAt (fun s : ℝ => s ^ 3) (3 * t ^ 2) t := by
+          simpa [pow_succ, pow_one] using hasDerivAt_pow 3 t
+        have hdiv := h3.div_const 3
+        convert hdiv using 1
+        ring
+      have hqi := integral_eq_sub_of_hasDerivAt hder hintq
+      have hzero : (0 : ℝ) ^ 3 / 3 = 0 := by norm_num
+      rw [hqi, hzero, sub_zero]
+    have hscale : ∫ t in (0 : ℝ)..x, ((11 / 10) / den) * t ^ 2 =
+        ((11 / 10) / den) * (x ^ 3 / 3) := by
+      rw [intervalIntegral.integral_const_mul, hq]
+    have hcmp : ((11 / 10) / den) * (x ^ 3 / 3) < kap * x ^ 3 / 3 := by
+      have hx3 : 0 < x ^ 3 := pow_pos hx.1 3
+      have hmul := mul_lt_mul_of_pos_right hkap (div_pos hx3 (by norm_num : (0 : ℝ) < 3))
+      linarith
+    linarith
+  have hx3 : 0 < x ^ 3 := pow_pos hx.1 3
+  have hx5 : x ^ 5 / 30 < x ^ 3 / 243000 := by
+    have hdiv : x ^ 2 / 30 < (1 / 8100) / 30 := by
+      exact div_lt_div_of_pos_right hxsq (by norm_num)
+    have hconst : (1 / 8100) / 30 = (1 : ℝ) / 243000 := by ring
+    have hmul := mul_lt_mul_of_pos_left (lt_of_lt_of_eq hdiv hconst) hx3
+    have hleft : x ^ 3 * (x ^ 2 / 30) = x ^ 5 / 30 := by ring
+    have hright : x ^ 3 * (1 / 243000) = x ^ 3 / 243000 := by ring
+    linarith
+  have hcoeff : kap - 2 / 3 + 1 / 243000 < 1 / 2 := by
+    dsimp [kap]
+    norm_num
+  have hlow : (0 : ℝ) < 1 - 1 / 97200 - 2 * kap / 3 := by
+    dsimp [kap]
+    norm_num
+  have hx5lo : x ^ 5 / 12 < x ^ 3 / 97200 := by
+    have hdiv : x ^ 2 / 12 < (1 / 8100) / 12 :=
+      div_lt_div_of_pos_right hxsq (by norm_num)
+    have hconst : (1 / 8100) / 12 = (1 : ℝ) / 97200 := by ring
+    have hmul := mul_lt_mul_of_pos_left (lt_of_lt_of_eq hdiv hconst) hx3
+    have hleft : x ^ 3 * (x ^ 2 / 12) = x ^ 5 / 12 := by ring
+    have hright : x ^ 3 * (1 / 97200) = x ^ 3 / 97200 := by ring
+    linarith
+  constructor
+  · have hA : x ^ 3 - x ^ 5 / 12 ≤ x * ((gammaSEqual x)⁻¹ - 1) := by
+      have hcub := gammaDepart_cubic hx0 hxle
+      have hrewrite : (gammaSEqual x)⁻¹ - 1 = (1 - gammaSEqual x) / gammaSEqual x := by
+        field_simp [hγx.ne']
+      have hge : 1 - gammaSEqual x ≤ (gammaSEqual x)⁻¹ - 1 := by
+        rw [hrewrite]
+        have hform : (1 - gammaSEqual x) / gammaSEqual x - (1 - gammaSEqual x) =
+            (1 - gammaSEqual x) ^ 2 / gammaSEqual x := by
+          field_simp [hγx.ne']
+        have hsq : 0 ≤ (1 - gammaSEqual x) ^ 2 / gammaSEqual x := by positivity
+        linarith
+      have hmul := mul_le_mul_of_nonneg_left (le_trans hcub hge) hx0
+      have hleft : x * (x ^ 2 - x ^ 4 / 12) = x ^ 3 - x ^ 5 / 12 := by ring
+      linarith
+    rw [hident]
+    set A : ℝ := x * ((gammaSEqual x)⁻¹ - 1)
+    set Iint : ℝ := ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1)
+    have hI : Iint < kap * x ^ 3 / 3 := by
+      simpa [Iint] using hIlt
+    have hfloor : x ^ 3 - x ^ 3 / 97200 - 2 * (kap * x ^ 3 / 3) < A - 2 * Iint := by
+      have hstep : x ^ 3 - x ^ 5 / 12 - 2 * (kap * x ^ 3 / 3) < A - 2 * Iint := by
+        linarith [hA, hI]
+      linarith [hstep, hx5lo]
+    have hform : x ^ 3 - x ^ 3 / 97200 - 2 * (kap * x ^ 3 / 3) =
+        x ^ 3 * (1 - 1 / 97200 - 2 * kap / 3) := by ring
+    have hpos : 0 < x ^ 3 * (1 - 1 / 97200 - 2 * kap / 3) := mul_pos hx3 hlow
+    linarith
+  · rw [hident]
+    set A : ℝ := x * ((gammaSEqual x)⁻¹ - 1)
+    set Iint : ℝ := ∫ t in (0 : ℝ)..x, ((gammaSEqual t)⁻¹ - 1)
+    have hA : A ≤ (11 / 10) * x ^ 3 / den := by
+      simpa [A] using hAx
+    have hI : x ^ 3 / 3 - x ^ 5 / 60 ≤ Iint := by
+      simpa [Iint] using hIge
+    have hA' : A < kap * x ^ 3 := by
+      have hrew : (11 / 10) * x ^ 3 / den = ((11 / 10) / den) * x ^ 3 := by ring
+      rw [hrew] at hA
+      exact lt_of_le_of_lt hA (mul_lt_mul_of_pos_right hkap hx3)
+    have htail : -(2 * Iint) < -(2 / 3) * x ^ 3 + x ^ 3 / 243000 := by
+      have htwo : 2 * (x ^ 3 / 3 - x ^ 5 / 60) = (2 / 3) * x ^ 3 - x ^ 5 / 30 := by ring
+      linarith [hI, htwo, hx5]
+    have hbundle : kap * x ^ 3 - (2 / 3) * x ^ 3 + x ^ 3 / 243000 < (1 / 2) * x ^ 3 := by
+      have hrew : kap * x ^ 3 - (2 / 3) * x ^ 3 + x ^ 3 / 243000 =
+          x ^ 3 * (kap - 2 / 3 + 1 / 243000) := by ring
+      rw [hrew]
+      exact lt_of_lt_of_eq (mul_lt_mul_of_pos_left hcoeff hx3)
+        (by ring : x ^ 3 * (1 / 2) = (1 / 2) * x ^ 3)
+    calc A - 2 * Iint
+        = A + -(2 * Iint) := by ring
+      _ < kap * x ^ 3 + (-(2 / 3) * x ^ 3 + x ^ 3 / 243000) := add_lt_add hA' htail
+      _ = kap * x ^ 3 - (2 / 3) * x ^ 3 + x ^ 3 / 243000 := by ring
+      _ < (1 / 2) * x ^ 3 := hbundle
+
+theorem hydrogenicPhase_three_pos {n : ℕ} (hn : 0 < n) :
+    (0 : ℚ) < hydrogenicPhase 3 n := by
+  unfold hydrogenicPhase
+  exact div_pos (mul_pos (by norm_num) fineStructureApprox_pos)
+    (mul_pos (by norm_num) (pow_pos (Nat.cast_pos.mpr hn) 2))
+
+theorem hydrogenicPhase_three_le_ground {n : ℕ} (hn : 0 < n) :
+    hydrogenicPhase 3 n ≤ 3 * fineStructureApprox / 2 := by
+  unfold hydrogenicPhase
+  have hn1 : (1 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have hn' : (1 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 1) hn' 2
+    simpa using this
+  have hnum : (0 : ℚ) ≤ 3 * fineStructureApprox :=
+    mul_nonneg (by norm_num) fineStructureApprox_pos.le
+  exact div_le_div_of_nonneg_left hnum (by norm_num) (by nlinarith [hn1])
+
+theorem hydrogenicPhase_three_ground :
+    hydrogenicPhase 3 1 = 3 * fineStructureApprox / 2 := by
+  unfold hydrogenicPhase
+  norm_num
+
+theorem hydrogenicPhase_three_lt_ninety {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 3 n : ℝ) < 1 / 90 := by
+  have hle := hydrogenicPhase_three_le_ground hn
+  have hα : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hground : (3 : ℝ) * (fineStructureApprox : ℝ) / 2 < 1 / 90 := by
+    have hmul : (3 : ℝ) * (fineStructureApprox : ℝ) < (3 : ℝ) * (73 / 10000) :=
+      mul_lt_mul_of_pos_left hα (by norm_num)
+    have hdiv : (3 : ℝ) * (fineStructureApprox : ℝ) / 2 <
+        (3 : ℝ) * (73 / 10000) / 2 :=
+      div_lt_div_of_pos_right hmul (by norm_num)
+    have hconst : (3 : ℝ) * (73 / 10000) / 2 < 1 / 90 := by norm_num
+    linarith
+  exact lt_of_le_of_lt (by exact_mod_cast hle) hground
+
+theorem hydrogenicPhase_three_mem_outer {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 3 n : ℝ) ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+  refine ⟨by exact_mod_cast hydrogenicPhase_three_pos hn, ?_⟩
+  have h90 := hydrogenicPhase_three_lt_ninety hn
+  have hnode : (1 / 90 : ℝ) < resonanceRoot1 := by
+    have hπ : (1 / 90 : ℝ) < π / 4 := by linarith [pi_gt_three]
+    exact lt_trans hπ resonanceRoot1_sharp_bounds.1
+  exact lt_trans h90 hnode
+
+theorem hydrogenicThree_restoring {n : ℕ} (hn : 0 < n) :
+    0 < circStable (hydrogenicPhase 3 n) ∧
+      (hydrogenicPhase 3 n : ℝ) * deriv pairAttraction (hydrogenicPhase 3 n) /
+          pairAttraction (hydrogenicPhase 3 n) < 3 := by
+  obtain ⟨y, hy, _⟩ := exists_unique_circStable
+  have hx := hydrogenicPhase_three_mem_outer hn
+  have hlt : (hydrogenicPhase 3 n : ℝ) < y := by
+    have h90 := hydrogenicPhase_three_lt_ninety hn
+    have hhalf : (1 / 90 : ℝ) < 1 / 2 := by norm_num
+    linarith [hy.1.1, hhalf]
+  have hsign := circStable_outer_sign hx hy.1 hy.2
+  have hpos : 0 < circStable (hydrogenicPhase 3 n) := hsign.1.mpr hlt
+  exact ⟨hpos, (pairAttraction_logDeriv_lt_three_outer_iff hx).mpr hpos⟩
+
+theorem hydrogenicPhase_three_le_sixth {n : ℕ} (hn : 3 ≤ n) :
+    hydrogenicPhase 3 n ≤ fineStructureApprox / 6 := by
+  unfold hydrogenicPhase
+  have hn3 : (3 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+  have hn2 : (9 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 3) hn3 2
+    simpa [show (3 : ℚ) ^ 2 = 9 by norm_num] using this
+  have hnum : (0 : ℚ) ≤ 3 * fineStructureApprox :=
+    mul_nonneg (by norm_num) fineStructureApprox_pos.le
+  calc (3 : ℚ) * fineStructureApprox / (2 * (n : ℚ) ^ 2)
+      ≤ 3 * fineStructureApprox / (2 * 9) :=
+        div_le_div_of_nonneg_left hnum (by norm_num) (by nlinarith)
+    _ = fineStructureApprox / 6 := by ring
+
+theorem liLyman_book :
+    (3 : ℝ) ^ 2 * bohrEnergyDiff 1 2 =
+      (27 / 4) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_lymanAlpha]
+  norm_num
+  ring
+
+theorem liFourThree_book :
+    (3 : ℝ) ^ 2 * bohrEnergyDiff 3 4 =
+      (7 / 16) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_paschenAlpha]
+  norm_num
+  ring
+
+theorem signedCharge_three_ground :
+    |signedCharge 3 1 + 9| < 54 / 100000 := by
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 3 1 : ℝ) := by
+    exact_mod_cast hydrogenicPhase_three_pos (by norm_num : 0 < (1 : ℕ))
+  have hx_eq : (hydrogenicPhase 3 1 : ℝ) = 3 * (fineStructureApprox : ℝ) / 2 := by
+    exact_mod_cast hydrogenicPhase_three_ground
+  have hx_lt : (hydrogenicPhase 3 1 : ℝ) < 1 / 90 :=
+    hydrogenicPhase_three_lt_ninety (by norm_num)
+  have hgap := circEnergy_half_cubic ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hident : signedCharge 3 1 + 9 =
+      (6 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 3 1) + (hydrogenicPhase 3 1 : ℝ)) := by
+    unfold signedCharge
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  rw [hident]
+  have hnonneg : 0 ≤ circEnergy (hydrogenicPhase 3 1) + (hydrogenicPhase 3 1 : ℝ) :=
+    hgap.1.le
+  have habs : |(6 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 3 1) + (hydrogenicPhase 3 1 : ℝ))| =
+      (6 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 3 1) + (hydrogenicPhase 3 1 : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs, abs_of_nonneg hnonneg]
+  have hscale : (6 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 3 1) + (hydrogenicPhase 3 1 : ℝ)) <
+      (6 / (fineStructureApprox : ℝ)) * ((1 / 2) * (hydrogenicPhase 3 1 : ℝ) ^ 3) :=
+    mul_lt_mul_of_pos_left hgap.2 (div_pos (by norm_num) hα)
+  have hloose : (6 / (fineStructureApprox : ℝ)) *
+      ((1 / 2) * (hydrogenicPhase 3 1 : ℝ) ^ 3) =
+      (81 / 8) * (fineStructureApprox : ℝ) ^ 2 := by
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+  have hnum : (81 / 8) * (fineStructureApprox : ℝ) ^ 2 <
+      (81 / 8) * ((73 : ℝ) / 10000) ^ 2 :=
+    mul_lt_mul_of_pos_left hsq (by norm_num)
+  have hconst : (81 / 8) * ((73 : ℝ) / 10000) ^ 2 < 54 / 100000 := by norm_num
+  linarith
+
+theorem signedCharge_three_two :
+    |signedCharge 3 2 + 9 / (2 : ℝ) ^ 2| < 1 / 40000 := by
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 3 2 : ℝ) := by
+    exact_mod_cast hydrogenicPhase_three_pos (by norm_num)
+  have hx_eq : (hydrogenicPhase 3 2 : ℝ) = (3 / 8) * (fineStructureApprox : ℝ) := by
+    unfold hydrogenicPhase
+    push_cast
+    ring
+  have hx_lt : (hydrogenicPhase 3 2 : ℝ) < 1 / 100 := by
+    have hα := fineStructureApprox_lt_hundredth
+    linarith [hx_eq]
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hident : signedCharge 3 2 + 9 / (2 : ℝ) ^ 2 =
+      (6 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 3 2) + (hydrogenicPhase 3 2 : ℝ)) := by
+    unfold signedCharge
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  rw [hident]
+  have habs : |(6 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 3 2) + (hydrogenicPhase 3 2 : ℝ))| =
+      (6 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 3 2) + (hydrogenicPhase 3 2 : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (6 / (fineStructureApprox : ℝ)) *
+      |circEnergy (hydrogenicPhase 3 2) + (hydrogenicPhase 3 2 : ℝ)| ≤
+      (6 / (fineStructureApprox : ℝ)) * ((6 / 5) * (hydrogenicPhase 3 2 : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hloose : (6 / (fineStructureApprox : ℝ)) *
+      ((6 / 5) * (hydrogenicPhase 3 2 : ℝ) ^ 3) =
+      (243 / 640) * (fineStructureApprox : ℝ) ^ 2 := by
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+  have hnum : (243 / 640) * (fineStructureApprox : ℝ) ^ 2 <
+      (243 / 640) * ((73 : ℝ) / 10000) ^ 2 :=
+    mul_lt_mul_of_pos_left hsq (by norm_num)
+  have hconst : (243 / 640) * ((73 : ℝ) / 10000) ^ 2 < 1 / 40000 := by norm_num
+  linarith
+
+theorem liLyman_signed_shift :
+    |signedCharge 3 2 - signedCharge 3 1 - (27 / 4)| < (1 / 10000) * (27 / 4) := by
+  have h2 := signedCharge_three_two
+  have h1 := signedCharge_three_ground
+  have hsplit : signedCharge 3 2 - signedCharge 3 1 - (27 / 4) =
+      (signedCharge 3 2 + 9 / (2 : ℝ) ^ 2) - (signedCharge 3 1 + 9) := by
+    have hnum : (9 : ℝ) - 9 / 2 ^ 2 = 27 / 4 := by norm_num
+    linarith
+  obtain ⟨h2lo, h2hi⟩ := abs_lt.mp h2
+  obtain ⟨h1lo, h1hi⟩ := abs_lt.mp h1
+  rw [hsplit, abs_lt]
+  have hpart : (1 : ℝ) / 40000 + 54 / 100000 < (1 / 10000) * (27 / 4) := by norm_num
+  constructor <;> linarith
+
+private theorem signedCharge_three_close {n : ℕ} (hn : 3 ≤ n) :
+    |signedCharge 3 n + 9 / (n : ℝ) ^ 2| < 1 / 200000 := by
+  have hn0 : 0 < n := by omega
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 3 n : ℝ) := by
+    exact_mod_cast hydrogenicPhase_three_pos hn0
+  have hx_le : (hydrogenicPhase 3 n : ℝ) ≤ (fineStructureApprox : ℝ) / 6 := by
+    exact_mod_cast hydrogenicPhase_three_le_sixth hn
+  have hx_lt : (hydrogenicPhase 3 n : ℝ) < 1 / 100 := by
+    have hα := fineStructureApprox_lt_hundredth
+    linarith
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hxphase : (hydrogenicPhase 3 n : ℝ) =
+      (3 : ℝ) * (fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2) := by
+    unfold hydrogenicPhase
+    push_cast
+    ring
+  have hident : signedCharge 3 n + 9 / (n : ℝ) ^ 2 =
+      (6 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 3 n) + (hydrogenicPhase 3 n : ℝ)) := by
+    unfold signedCharge
+    rw [hxphase]
+    field_simp [hα.ne', (Nat.cast_pos.mpr hn0 : (0 : ℝ) < (n : ℝ)).ne']
+    ring
+  rw [hident]
+  have habs : |(6 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 3 n) + (hydrogenicPhase 3 n : ℝ))| =
+      (6 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 3 n) + (hydrogenicPhase 3 n : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (6 / (fineStructureApprox : ℝ)) *
+      |circEnergy (hydrogenicPhase 3 n) + (hydrogenicPhase 3 n : ℝ)| ≤
+      (6 / (fineStructureApprox : ℝ)) * ((6 / 5) * (hydrogenicPhase 3 n : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hcubic : (hydrogenicPhase 3 n : ℝ) ^ 3 ≤
+      ((fineStructureApprox : ℝ) / 6) ^ 3 := by
+    exact pow_le_pow_left₀ hx_pos.le hx_le 3
+  have hloose : (6 / (fineStructureApprox : ℝ)) *
+      ((6 / 5) * (hydrogenicPhase 3 n : ℝ) ^ 3) ≤
+      (1 / 30) * (fineStructureApprox : ℝ) ^ 2 := by
+    have hmul := mul_le_mul_of_nonneg_left
+      (mul_le_mul_of_nonneg_left hcubic (by norm_num : (0 : ℝ) ≤ 6 / 5))
+      (div_pos (by norm_num : (0 : ℝ) < 6) hα).le
+    calc (6 / (fineStructureApprox : ℝ)) *
+          ((6 / 5) * (hydrogenicPhase 3 n : ℝ) ^ 3)
+        ≤ (6 / (fineStructureApprox : ℝ)) *
+            ((6 / 5) * ((fineStructureApprox : ℝ) / 6) ^ 3) := hmul
+      _ = (1 / 30) * (fineStructureApprox : ℝ) ^ 2 := by
+          field_simp [hα.ne']
+          ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+  have hnum : (1 / 30) * (fineStructureApprox : ℝ) ^ 2 <
+      (1 / 30) * ((73 : ℝ) / 10000) ^ 2 :=
+    mul_lt_mul_of_pos_left hsq (by norm_num)
+  have hconst : (1 / 30) * ((73 : ℝ) / 10000) ^ 2 < 1 / 200000 := by norm_num
+  linarith
+
+theorem liFourThree_signed_shift :
+    |signedCharge 3 4 - signedCharge 3 3 - (7 / 16)| < (1 / 10000) * (7 / 16) := by
+  have h4 := signedCharge_three_close (by norm_num : 3 ≤ (4 : ℕ))
+  have h3 := signedCharge_three_close (by norm_num : 3 ≤ (3 : ℕ))
+  have hsplit : signedCharge 3 4 - signedCharge 3 3 - (7 / 16) =
+      (signedCharge 3 4 + 9 / (4 : ℝ) ^ 2) -
+        (signedCharge 3 3 + 9 / (3 : ℝ) ^ 2) := by
+    have hnum : (9 : ℝ) / 3 ^ 2 - 9 / 4 ^ 2 = 7 / 16 := by norm_num
+    linarith
+  obtain ⟨h4lo, h4hi⟩ := abs_lt.mp h4
+  obtain ⟨h3lo, h3hi⟩ := abs_lt.mp h3
+  rw [hsplit, abs_lt]
+  have hpart : (2 : ℝ) / 200000 < (1 / 10000) * (7 / 16) := by norm_num
+  constructor <;> linarith
+
+private theorem signedCharge_three_step {n m : ℕ} {frac : ℝ}
+    (hn : 3 ≤ n) (hm : 3 ≤ m)
+    (hfrac : (9 : ℝ) / (n : ℝ) ^ 2 - 9 / (m : ℝ) ^ 2 = frac)
+    (hroom : (2 : ℝ) / 200000 < (1 / 10000) * frac) :
+    |signedCharge 3 m - signedCharge 3 n - frac| < (1 / 10000) * frac := by
+  have hn' := signedCharge_three_close hn
+  have hm' := signedCharge_three_close hm
+  have hsplit : signedCharge 3 m - signedCharge 3 n - frac =
+      (signedCharge 3 m + 9 / (m : ℝ) ^ 2) -
+        (signedCharge 3 n + 9 / (n : ℝ) ^ 2) := by
+    linarith
+  obtain ⟨hmlo, hmhi⟩ := abs_lt.mp hm'
+  obtain ⟨hnlo, hnhi⟩ := abs_lt.mp hn'
+  rw [hsplit, abs_lt]
+  constructor <;> linarith
+
+theorem liMatchLyman_signed_shift :
+    |signedCharge 3 6 - signedCharge 3 3 - (3 / 4)| < (1 / 10000) * (3 / 4) :=
+  signedCharge_three_step (n := 3) (m := 6) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem liMatchAlpha_signed_shift :
+    |signedCharge 3 9 - signedCharge 3 6 - (5 / 36)| < (1 / 10000) * (5 / 36) :=
+  signedCharge_three_step (n := 6) (m := 9) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem liMatchBeta_signed_shift :
+    |signedCharge 3 12 - signedCharge 3 6 - (3 / 16)| < (1 / 10000) * (3 / 16) :=
+  signedCharge_three_step (n := 6) (m := 12) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem liMatchGamma_signed_shift :
+    |signedCharge 3 15 - signedCharge 3 6 - (21 / 100)| <
+      (1 / 10000) * (21 / 100) :=
+  signedCharge_three_step (n := 6) (m := 15) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+/-! ### Charge one after the first shell
+
+The first principal shell holds two electrons. Charge three minus those
+two leaves one, and the remaining electron sits on the second shell.
+The monopole and the dipole of one shell index share one phase, so the
+red doublet — that step — has circular energy zero. There is no
+fine-structure splitting.
+-/
+
+theorem lithiumCore_electrons :
+    2 * 1 ^ 2 = 2 ∧ 3 - (2 * 1 ^ 2) = 1 := by
+  constructor <;> norm_num
+
+theorem lithiumValence_restoring :
+    0 < circStable (hydrogenicPhase 1 2) ∧
+      (hydrogenicPhase 1 2 : ℝ) * deriv pairAttraction (hydrogenicPhase 1 2) /
+          pairAttraction (hydrogenicPhase 1 2) < 3 := by
+  rw [hydrogenicPhase_one (by norm_num : 0 < (2 : ℕ))]
+  exact bohrShell_restoring (by norm_num)
+
+theorem lithiumValence_book :
+    ((3 - (2 * 1 ^ 2) : ℕ) : ℝ) ^ 2 * bohrEnergyDiff 2 2 = 0 := by
+  have hcore : (3 - (2 * 1 ^ 2) : ℕ) = 1 := lithiumCore_electrons.2
+  rw [hcore]
+  unfold bohrEnergyDiff
+  norm_num
+
+theorem lithiumValence_circ :
+    signedCharge (3 - (2 * 1 ^ 2)) 2 - signedCharge (3 - (2 * 1 ^ 2)) 2 = 0 := by
+  ring
 
 end Gravity
 

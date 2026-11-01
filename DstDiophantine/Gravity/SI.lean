@@ -98,6 +98,18 @@ def sodiumMassScale : ℕ := 36
 def sodiumMassApprox : ℚ :=
   sodiumMassMantissa / (10 : ℚ) ^ sodiumMassScale
 
+/-- Mantissa of the \(^{7}\mathrm{Li}\) nucleus stand-in
+    \(1.1647614983\times 10^{-26}\) kg: the atomic mass \(7.0160034366\,\mathrm{u}\)
+    minus three electron masses. Electron binding, about \(200\,\mathrm{eV}\), lies
+    below this truncation and is not included. -/
+def lithiumMassMantissa : ℕ := 11647614983
+
+/-- Scale: \(m_{\mathrm{Li}} =\) `lithiumMassMantissa` `/ 10^lithiumMassScale`. -/
+def lithiumMassScale : ℕ := 36
+
+def lithiumMassApprox : ℚ :=
+  lithiumMassMantissa / (10 : ℚ) ^ lithiumMassScale
+
 theorem speedOfLight_pos : (0 : ℚ) < speedOfLight := by
   unfold speedOfLight speedOfLightNat; norm_num
 
@@ -118,6 +130,9 @@ theorem alphaMassApprox_pos : (0 : ℚ) < alphaMassApprox := by
 
 theorem sodiumMassApprox_pos : (0 : ℚ) < sodiumMassApprox := by
   unfold sodiumMassApprox sodiumMassMantissa sodiumMassScale; norm_num
+
+theorem lithiumMassApprox_pos : (0 : ℚ) < lithiumMassApprox := by
+  unfold lithiumMassApprox lithiumMassMantissa lithiumMassScale; norm_num
 
 /-- \(\hbar c\) in SI (J·m). -/
 def hbarC : ℚ := hbarApprox * speedOfLight

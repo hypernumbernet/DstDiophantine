@@ -29,7 +29,8 @@ cannot pay their rest energies.
 * On the SI stand-ins, \(1836 < m_p/m_e < 1837\),
   \(7294 < m_\alpha/m_e < 7295\) for the \(^4\mathrm{He}\) nucleus, and
   \(41896 < m_{\mathrm{Na}}/m_e < 41897\) for the \(^{23}\mathrm{Na}\) nucleus
-  stand-in. One hundred times the
+  stand-in, and \(12786 < m_{\mathrm{Li}}/m_e < 12787\) for the
+  \(^{7}\mathrm{Li}\) nucleus stand-in. One hundred times the
   empirical binding per nucleon, and twenty optical wells, each lie
   below the proton rest energy. Hydrogen ionisation is exactly
   \(\alpha^2/2\) of the electron rest energy, and that fraction lies in
@@ -241,6 +242,49 @@ theorem sodiumElectronMassRatio_bounds :
         41897 * sodiumElectronMassRatio_den := by
       unfold sodiumElectronMassRatio_num sodiumElectronMassRatio_den
         sodiumMassMantissa electronMassScale electronMassMantissa sodiumMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def lithiumElectronMassRatio : ℚ := lithiumMassApprox / electronMassApprox
+
+def lithiumElectronMassRatio_num : ℕ :=
+  lithiumMassMantissa * 10 ^ electronMassScale
+
+def lithiumElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ lithiumMassScale
+
+theorem lithiumElectronMassRatio_eq_num_div_den :
+    lithiumElectronMassRatio =
+      (lithiumElectronMassRatio_num : ℚ) / lithiumElectronMassRatio_den := by
+  unfold lithiumElectronMassRatio lithiumMassApprox electronMassApprox
+    lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem lithiumElectronMassRatio_den_pos :
+    (0 : ℚ) < (lithiumElectronMassRatio_den : ℚ) := by
+  unfold lithiumElectronMassRatio_den electronMassMantissa lithiumMassScale
+  norm_num
+
+theorem lithiumElectronMassRatio_bounds :
+    (12786 : ℚ) < lithiumElectronMassRatio ∧
+      lithiumElectronMassRatio < (12787 : ℚ) := by
+  rw [lithiumElectronMassRatio_eq_num_div_den]
+  have hden := lithiumElectronMassRatio_den_pos
+  constructor
+  · have hnat : 12786 * lithiumElectronMassRatio_den <
+        lithiumElectronMassRatio_num := by
+      unfold lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+        lithiumMassMantissa electronMassScale electronMassMantissa lithiumMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : lithiumElectronMassRatio_num <
+        12787 * lithiumElectronMassRatio_den := by
+      unfold lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+        lithiumMassMantissa electronMassScale electronMassMantissa lithiumMassScale
       native_decide
     rw [div_lt_iff₀ hden]
     exact_mod_cast hnat
