@@ -212,36 +212,95 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p class="note"><span class="en">Schematic, not to scale. The note does not quote a bond angle in degrees, derive a dissociation energy, or derive ℓ; it does not locate a resting radius for the axial electron, and tilts that break the even spacing are not treated.</span><span class="ja">模式図で、縮尺は正確ではありません。論文は結合角を度単位では示さず、解離エネルギーも ℓ も導出しません。軸上の電子の静止半径も定めず、等間隔を崩す傾きは扱いません。</span></p>
   <p><span class="en"><b>Still open.</b> The rule that two electrons cannot share one seat is read as the gravitational layer, the same one that keeps nucleons apart. Bohr's ladder of radii, the fine-structure constant and the size of an atom in laboratory units are not yet derived; matching the layers to measured atomic sizes is currently under research.</span><span class="ja"><b>これからの課題。</b>二つの電子が一つの席を共有できないという規則は、核子どうしを離しておくのと同じ重力の層として読まれます。ボーアの半径の階段、微細構造定数、実験室の単位での原子の大きさはまだ導出されておらず、層を実際の原子の大きさに対応づけることは現在研究中です。</span></p>
 
-  <h3 class="sub" id="h-alpha"><span class="en">Hydrogen's red line (Hα)</span><span class="ja">水素の赤い線（Hα）</span></h3>
-  <p><span class="en">Hydrogen's familiar red Balmer line is read as a step between two electron shells. Once Bohr's radius rule — radius proportional to n² — is taken as an input, and it is <em>not</em> derived from the sign-changing geometry here, the bookkeeping gap from shell 3 down to shell 2 is exactly 5/36 of the ionisation energy. That fraction is the Hα transition in this picture.</span><span class="ja">おなじみの水素の赤いバルマー線は、二つの電子殻のあいだの段差として読まれます。ボーアの半径則 — 半径が n² に比例する則 — を入力として置けば、ここでは符号の変わる幾何からは<b>導かれません</b>。殻 3 から殻 2 への段差は、イオン化エネルギーのちょうど 5/36 です。この分数が、この描像での Hα 遷移です。</span></p>
-  <p><span class="en">Under that radius rule, every shell sits in the <b>outer well</b>, on the side of a circular path where the radial force pulls the orbit back inward — not on a force-free circle cancelled by a separate centrifugal term. Shells 1, 2 and 3 all lie on that restoring side, well outside the first node.</span><span class="ja">その半径則のもとでは、どの殻も<b>外側の井戸</b>にあり、円軌道が動径方向に戻される側 — 別の遠心力項で打ち消された力のない円ではなく — に置かれます。殻 1、2、3 はいずれもその戻る側にあり、最初の節よりはるか外側です。</span></p>
-  <p><span class="en">Turning the energy step into a wavelength, with laboratory constants as inputs: if the proton is held fixed, the predicted vacuum wavelength lies between about 656.112 nm and 656.113 nm. If the proton and electron share inertia, the wavelength is stretched by the mass ratio and lies between about 656.469 nm and 656.470 nm. Measured vacuum values for the red Balmer line sit near 656.47 nm — often rounded to 656.5 nm in rough summaries — in line with the recoil-inclusive band.</span><span class="ja">そのエネルギー段差を波長に直すと、実験室の定数を入力として：陽子を固定すれば、予測される真空中の波長はおおよそ 656.112 nm と 656.113 nm のあいだにあります。陽子と電子が慣性を分け合うと、質量比の分だけ波長は伸び、おおよそ 656.469 nm と 656.470 nm のあいだに入ります。測定された真空中の赤いバルマー線は、おおよそ 656.47 nm 付近 — 粗い表では 656.5 nm に丸められることもあります — で、慣性を分けた予測帯と一致します。</span></p>
-  <p><span class="en">On this outer plateau the signed circular energy differs from the pure Coulomb bookkeeping by less than one millionth of the ionisation energy at every shell from 2 upward, and the 3→2 gap differs from 5/36 by less than one part in ten thousand. Ordinary atomic spectroscopy therefore sits inside the theory with only a tiny interference correction.</span><span class="ja">この外側の台地では、殻 2 以上のどれでも、符号つきの円軌道のエネルギーは純粋なクーロンの帳簿から、イオン化エネルギーの百万分の一未満しかずれません。3→2 の段差も 5/36 からその分数の一万分の一未満しかずれないので、通常の原子スペクトルは、ごく小さな干渉補正のうちに理論の内側に収まります。</span></p>
-  <p><span class="en"><b>Honest limit.</b> The ladder of radii proportional to n² remains an input matched to observation, not a consequence proved from the interference nodes alone. Nothing here derives fine-structure splittings or selection rules.</span><span class="ja"><b>率直な限界。</b>半径が n² に比例する階段は、観測に合わせた入力のままであり、干渉の節だけから証明された帰結ではありません。ここでは微細構造の分裂や選択則も導きません。</span></p>
-  <svg class="fig" viewBox="0 0 640 240" role="img" aria-label="Shells n equals 1, 2, 3 with a 3 to 2 transition and the outer-well phase plateau">
-    <defs><marker id="ah-ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
-    <text class="lbl small" x="24" y="28"><tspan class="en">shell energy (schematic)</tspan><tspan class="ja">殻のエネルギー（模式図）</tspan></text>
-    <line x1="48" y1="200" x2="48" y2="44" class="axis"/>
-    <line x1="48" y1="200" x2="300" y2="200" class="axis"/>
-    <line x1="80" y1="168" x2="280" y2="168" stroke="#4fc3ff" stroke-width="2.5"/>
-    <text class="lbl small" x="288" y="172"><tspan class="en">n = 1</tspan><tspan class="ja">n = 1</tspan></text>
-    <line x1="80" y1="118" x2="280" y2="118" stroke="#4fc3ff" stroke-width="2.5"/>
-    <text class="lbl small" x="288" y="122"><tspan class="en">n = 2</tspan><tspan class="ja">n = 2</tspan></text>
-    <line x1="80" y1="68" x2="280" y2="68" stroke="#4fc3ff" stroke-width="2.5"/>
-    <text class="lbl small" x="288" y="72"><tspan class="en">n = 3</tspan><tspan class="ja">n = 3</tspan></text>
-    <path d="M 200 68 L 200 118" fill="none" stroke="#ffd27a" stroke-width="3" marker-end="url(#ah-ha)"/>
-    <text class="lbl small accentt" x="208" y="96"><tspan class="en">Hα</tspan><tspan class="ja">Hα</tspan></text>
-    <text class="lbl small" x="360" y="28"><tspan class="en">phase x = ℓ/(2r)</tspan><tspan class="ja">位相 x = ℓ/(2r)</tspan></text>
-    <line x1="360" y1="200" x2="600" y2="200" class="axis"/>
-    <rect x="360" y="120" width="200" height="80" rx="6" class="band attract"/>
-    <text class="lbl small" x="460" y="108" text-anchor="middle"><tspan class="en">outer well</tspan><tspan class="ja">外側の井戸</tspan></text>
-    <text class="lbl small" x="460" y="148" text-anchor="middle"><tspan class="en">restoring side</tspan><tspan class="ja">戻る側</tspan></text>
-    <text class="lbl small" x="460" y="168" text-anchor="middle"><tspan class="en">(shells 1–3 here)</tspan><tspan class="ja">（殻 1–3 はここ）</tspan></text>
-    <line x1="560" y1="200" x2="560" y2="120" stroke="#fff" stroke-width="2"/>
-    <text class="lbl small" x="566" y="188"><tspan class="en">1st node</tspan><tspan class="ja">第1節</tspan></text>
-    <text class="lbl small" x="480" y="224" text-anchor="middle"><tspan class="en">small x → far from nucleus</tspan><tspan class="ja">x が小さい → 核から遠い</tspan></text>
+  <span id="spectral-lines" class="anchor" aria-hidden="true"></span>
+  <h3 class="sub" id="h-alpha"><span class="en">Hydrogen's spectrum</span><span class="ja">水素のスペクトル</span></h3>
+  <p><span class="en">Hydrogen's familiar spectral lines are read as steps between electron shells. Once Bohr's radius rule — each radius proportional to n² times the Bohr radius, divided by the nuclear charge — is taken as an <em>input</em>, and it is <em>not</em> derived from the sign-changing geometry here, the bookkeeping gaps are fixed fractions of the ionisation energy: 2→1 is 3/4 (Lyman&nbsp;α), 3→2 is 5/36 (Hα), 4→2 is 3/16 (Hβ), 5→2 is 21/100 (Hγ), and 4→3 is 7/144 (the first Paschen line). On the outer plateau each of those circular-energy steps differs from its fraction by less than one part in ten thousand of the fraction; the ground shell differs from the pure Coulomb value by less than one part in sixty thousand.</span><span class="ja">おなじみの水素のスペクトル線は、電子殻どうしの段差として読まれます。ボーアの半径則 — 各半径が n² 倍のボーア半径を核電荷で割ったもの — を<b>入力</b>として置けば、ここでは符号の変わる幾何からは<b>導かれません</b>。帳簿上の段差は、イオン化エネルギーに対する決まった分数です。2→1 は 3/4（ライマン&nbsp;α）、3→2 は 5/36（Hα）、4→2 は 3/16（Hβ）、5→2 は 21/100（Hγ）、4→3 は 7/144（最初のパッシェン線）です。この外側の台地では、どの段差もその分数から、分数の一万分の一未満しかずれず、基底の殻は純粋なクーロンの値から六万分の一未満しかずれません。</span></p>
+  <p><span class="en">Under that radius rule, every shell sits in the <b>outer well</b>, on the side of a circular path where the radial force pulls the orbit back inward — not on a force-free circle cancelled by a separate centrifugal term. Shells 1 through 5 all lie on that restoring side, well outside the first node.</span><span class="ja">その半径則のもとでは、どの殻も<b>外側の井戸</b>にあり、円軌道が動径方向に戻される側 — 別の遠心力項で打ち消された力のない円ではなく — に置かれます。殻 1 から 5 まですべて、その戻る側にあり、最初の節よりはるか外側です。</span></p>
+  <p><span class="en">Turning each energy step into a vacuum wavelength uses standard laboratory constants as inputs. The table lists representative hydrogen lines with the proton held fixed and with proton–electron inertia shared (proton recoil). The bands are narrow: for example Hα lies between about 656.112&nbsp;nm and 656.113&nbsp;nm with a fixed nucleus, and between about 656.469&nbsp;nm and 656.470&nbsp;nm with shared inertia — in line with the familiar measured red Balmer line near 656.47&nbsp;nm.</span><span class="ja">各エネルギー段差を真空中の波長に直すには、標準的な実験室定数を入力として使います。表には、陽子を固定した場合と、陽子と電子が慣性を分け合う場合（陽子の反跳）の代表線を示します。幅は狭く、例えば Hα は陽子固定でおおよそ 656.112&nbsp;nm と 656.113&nbsp;nm のあいだ、慣性を分け合えば 656.469&nbsp;nm と 656.470&nbsp;nm のあいだに入り、おおよそ 656.47&nbsp;nm 付近の測定された赤いバルマー線と一致します。</span></p>
+  <table class="datatable">
+    <thead>
+      <tr>
+        <th scope="col"><span class="en">Line</span><span class="ja">線</span></th>
+        <th scope="col"><span class="en">Transition</span><span class="ja">遷移</span></th>
+        <th scope="col"><span class="en">Fraction of ionisation</span><span class="ja">イオン化に対する分数</span></th>
+        <th scope="col"><span class="en">λ, fixed nucleus (nm)</span><span class="ja">λ、核固定（nm）</span></th>
+        <th scope="col"><span class="en">λ, shared inertia (nm)</span><span class="ja">λ、慣性共有（nm）</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Lyman&nbsp;α</td>
+        <td class="mid">2→1</td>
+        <td class="mid">3/4</td>
+        <td class="mid">≈ 121.50</td>
+        <td class="mid">≈ 121.57</td>
+      </tr>
+      <tr>
+        <td>Hα</td>
+        <td class="mid">3→2</td>
+        <td class="mid">5/36</td>
+        <td class="mid">≈ 656.11</td>
+        <td class="mid">≈ 656.47</td>
+      </tr>
+      <tr>
+        <td>Hβ</td>
+        <td class="mid">4→2</td>
+        <td class="mid">3/16</td>
+        <td class="mid">≈ 486.01</td>
+        <td class="mid">≈ 486.27</td>
+      </tr>
+      <tr>
+        <td>Hγ</td>
+        <td class="mid">5→2</td>
+        <td class="mid">21/100</td>
+        <td class="mid">≈ 433.94</td>
+        <td class="mid">≈ 434.17</td>
+      </tr>
+      <tr>
+        <td><span class="en">Paschen&nbsp;α</span><span class="ja">パッシェン&nbsp;α</span></td>
+        <td class="mid">4→3</td>
+        <td class="mid">7/144</td>
+        <td class="mid">≈ 1874.6</td>
+        <td class="mid">≈ 1875.6</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><span class="en">At every shell from 2 upward the signed circular energy differs from pure Coulomb bookkeeping by less than one millionth of the ionisation energy, so ordinary atomic spectroscopy sits inside the picture with only a tiny interference correction.</span><span class="ja">殻 2 以上のどれでも、符号つきの円軌道のエネルギーは純粋なクーロンの帳簿から、イオン化エネルギーの百万分の一未満しかずれるので、通常の原子スペクトルは、ごく小さな干渉補正のうちにこの描像の内側に収まります。</span></p>
+  <p><span class="en"><b>Singly ionised helium (charge 2).</b> The hydrogenic form of the same radius law keeps every shell of charge two in the same outer well. The 2→1 step is three ionisation energies and the 4→3 step is 7/36 of one, each within one part in ten thousand of its fraction. With the nucleus fixed, the vacuum wavelengths lie near 30.38&nbsp;nm and 468.65&nbsp;nm. Every helium line matching a hydrogen transition is four times shorter in wavelength than the hydrogen line at the same shell step.</span><span class="ja"><b>一価イオン化ヘリウム（電荷 2）。</b>同じ半径則の水素様の形では、電荷 2 のどの殻も同じ外側の井戸に留まります。2→1 の段差はイオン化三つ分、4→3 はイオン化の 7/36 で、いずれもその分数の一万分の一未満の範囲に留まります。核を固定すれば、真空中の波長はおおよそ 30.38&nbsp;nm と 468.65&nbsp;nm 付近です。水素と同じ殻の段差に対応するヘリウムの線は、いずれも水素の波長の四分の一です。</span></p>
+  <p><span class="en"><b>Honest limit.</b> The shell-radius law — n² times the Bohr radius, divided by the charge — remains an input matched to observation, not a consequence proved from the interference nodes alone. Nothing here derives fine-structure splittings or selection rules. The wavelength windows follow from those inputs plus standard constants; they are not an independent measurement.</span><span class="ja"><b>率直な限界。</b>殻半径の法則 — n² 倍のボーア半径を電荷で割る — は、観測に合わせた入力のままであり、干渉の節だけから証明された帰結ではありません。ここでは微細構造の分裂や選択則も導きません。波長の窓は、それらの入力と標準定数から従う帰結であり、独立した測定ではありません。</span></p>
+  <svg class="fig" viewBox="0 0 720 340" role="img" aria-label="Energy levels n equals 1 through 5 with labelled hydrogen transitions">
+    <defs><marker id="ah-spec" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+    <text class="lbl small" x="20" y="24"><tspan class="en">binding energy (schematic)</tspan><tspan class="ja">結合エネルギー（模式図）</tspan></text>
+    <line x1="44" y1="300" x2="44" y2="52" class="axis"/>
+    <line x1="44" y1="300" x2="320" y2="300" class="axis"/>
+    <line x1="64" y1="268" x2="300" y2="268" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="308" y="272"><tspan class="en">n = 1</tspan><tspan class="ja">n = 1</tspan></text>
+    <line x1="64" y1="218" x2="300" y2="218" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="308" y="222"><tspan class="en">n = 2</tspan><tspan class="ja">n = 2</tspan></text>
+    <line x1="64" y1="168" x2="300" y2="168" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="308" y="172"><tspan class="en">n = 3</tspan><tspan class="ja">n = 3</tspan></text>
+    <line x1="64" y1="118" x2="300" y2="118" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="308" y="122"><tspan class="en">n = 4</tspan><tspan class="ja">n = 4</tspan></text>
+    <line x1="64" y1="68" x2="300" y2="68" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="308" y="72"><tspan class="en">n = 5</tspan><tspan class="ja">n = 5</tspan></text>
+    <path d="M 108 218 L 108 268" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-spec)"/>
+    <text class="lbl small accentt" x="72" y="252"><tspan class="en">Ly α</tspan><tspan class="ja">Ly α</tspan></text>
+    <text class="lbl small" x="72" y="266"><tspan class="en">121.6 nm</tspan><tspan class="ja">121.6 nm</tspan></text>
+    <path d="M 148 168 L 148 218" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-spec)"/>
+    <text class="lbl small accentt" x="112" y="198"><tspan class="en">Hα 656 nm</tspan><tspan class="ja">Hα 656 nm</tspan></text>
+    <path d="M 188 118 L 188 218" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-spec)"/>
+    <text class="lbl small accentt" x="152" y="172"><tspan class="en">Hβ 486 nm</tspan><tspan class="ja">Hβ 486 nm</tspan></text>
+    <path d="M 228 68 L 228 218" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-spec)"/>
+    <text class="lbl small accentt" x="192" y="148"><tspan class="en">Hγ 434 nm</tspan><tspan class="ja">Hγ 434 nm</tspan></text>
+    <path d="M 268 118 L 268 168" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-spec)"/>
+    <text class="lbl small accentt" x="232" y="148"><tspan class="en">Pa α</tspan><tspan class="ja">Pa α</tspan></text>
+    <text class="lbl small" x="232" y="162"><tspan class="en">1876 nm</tspan><tspan class="ja">1876 nm</tspan></text>
+    <text class="lbl small" x="360" y="52"><tspan class="en">shared inertia λ (approx.)</tspan><tspan class="ja">慣性共有 λ（概算）</tspan></text>
+    <text class="lbl small" x="360" y="76"><tspan class="en">He⁺: same steps, λ ÷ 4</tspan><tspan class="ja">He⁺：同じ段差、λ ÷ 4</tspan></text>
+    <text class="lbl small" x="360" y="100"><tspan class="en">2→1 ≈ 30.4 nm</tspan><tspan class="ja">2→1 ≈ 30.4 nm</tspan></text>
+    <text class="lbl small" x="360" y="124"><tspan class="en">4→3 ≈ 468.7 nm</tspan><tspan class="ja">4→3 ≈ 468.7 nm</tspan></text>
   </svg>
-  <p class="note"><span class="en">Schematic only: shell spacing is not to scale. The gold arrow is the 3→2 transition; grey axes mark energy and phase, not transitions.</span><span class="ja">模式図のみ。殻の間隔は縮尺どおりではありません。金色の矢印が 3→2 遷移、灰色の軸はエネルギーと位相を示し、遷移矢印ではありません。</span></p>
+  <p class="note"><span class="en">Schematic only: level spacing is not to scale. Gold arrows are transitions; grey axes mark binding energy, not photon paths.</span><span class="ja">模式図のみ。殻の間隔は縮尺どおりではありません。金色の矢印が遷移、灰色の軸は結合エネルギーを示し、光子の経路ではありません。</span></p>
   </div>
 
   <div id="coldfusion-wrap">
