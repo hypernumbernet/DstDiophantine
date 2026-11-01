@@ -384,8 +384,11 @@ The straight line of one fixed jet is not itself that geodesic.
   Charge eleven stays in that well. Its step \(4\to 3\) is \(847/144\),
   within one part in ten thousand, and the shells \(22\to 11\),
   \(33\to 22\), \(44\to 22\), and \(55\to 22\) repeat the same four
-  hydrogen fractions, each within one part in ten thousand. The radius
-  law, including the charge, remains an input.
+  hydrogen fractions, each within one part in ten thousand. Charge eleven
+  with the ten electrons of the first two shells leaves one electron on
+  the third shell, feeling charge one. The monopole and the dipole share
+  that phase, and both the bookkeeping step and the circular-energy step
+  vanish. The radius law, including the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
