@@ -394,7 +394,10 @@ The straight line of one fixed jet is not itself that geodesic.
   in ten thousand. Multiplier two on those phases doubles the five hydrogen
   steps, to \(3/2\), \(5/18\), \(3/8\), \(21/50\), and \(7/72\), each within
   one part in ten thousand. The first shell holds two electrons, so both
-  seats filled on that multiplier leave none over. The radius law, including
+  seats filled on that multiplier leave none over. Two electrons on opposite
+  rays, one remaining on shell 1, give the differences \(7/90\), \(63/680\),
+  \(63/650\), \(164/1665\), \(9/10\), and \(91/6120\), each within one part in
+  ten thousand, and the two joint states share each difference. The radius law, including
   the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),

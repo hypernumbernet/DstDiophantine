@@ -49,7 +49,11 @@ and \(12787\), places those four strictly between \(121511\) and
 \(433970\) and \(433971\) picometres, each short of the hydrogen line
 that carries a proton mass ratio strictly between \(1836\) and \(1837\).
 Multiplier two on the one-proton phases halves the five hydrogen
-wavelengths. With the center fixed they lie strictly between \(60751\) and
+wavelengths. The antipodal pair, one electron remaining on shell 1, places
+its six bookkeeping wavelengths strictly between \(1171626\) and \(1171637\),
+\(983587\) and \(983596\), \(940194\) and \(940202\), \(925156\) and
+\(925164\), \(101251\) and \(101253\), and \(6128507\) and \(6128558\)
+picometres. With the center fixed, those five halved lines lie strictly between \(60751\) and
 \(60752\), \(328056\) and \(328057\), \(243004\) and \(243005\), \(216968\)
 and \(216969\), and \(937303\) and \(937304\) picometres.
 A charge of eleven on the one-proton phases, the scaling proved for the
@@ -846,6 +850,77 @@ theorem chargeTwo_hGamma_wavelength :
     exact div_lt_div_of_pos_right hbnd.1 h2
   · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h2)
       (by norm_num : (433937 : ℝ) / 10 ^ 12 / 2 < (216969 : ℝ) / 10 ^ 12)
+
+theorem fractionWavelength {f : ℚ} (hf : 0 < f) :
+    vacuumWavelength ((f : ℝ) * (hydrogenIonisationApprox : ℝ)) =
+      vacuumWavelength (bohrEnergyDiff 1 2) * ((3 / 4) / (f : ℝ)) := by
+  have hL : bohrEnergyDiff 1 2 = (3 / 4) * (hydrogenIonisationApprox : ℝ) :=
+    bohrEnergyDiff_lymanAlpha
+  have hf' : (f : ℝ) ≠ 0 := by exact_mod_cast hf.ne'
+  have hI : (hydrogenIonisationApprox : ℝ) ≠ 0 := by
+    exact_mod_cast hydrogenIonisationApprox_pos.ne'
+  unfold vacuumWavelength
+  rw [hL]
+  field_simp [hf', hI]
+
+theorem fractionWavelength_window {f : ℚ} {lo hi : ℕ} (hf : 0 < f)
+    (hlo : (lo : ℝ) / 10 ^ 12 <
+      (121502 : ℝ) / 10 ^ 12 * ((3 / 4) / (f : ℝ)))
+    (hhi : (121503 : ℝ) / 10 ^ 12 * ((3 / 4) / (f : ℝ)) <
+      (hi : ℝ) / 10 ^ 12) :
+    (lo : ℝ) / 10 ^ 12 <
+        vacuumWavelength ((f : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength ((f : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (hi : ℝ) / 10 ^ 12 := by
+  rw [fractionWavelength hf]
+  have hbnd := lymanWavelength_bounds
+  have hfac : (0 : ℝ) < (3 / 4) / (f : ℝ) :=
+    div_pos (by norm_num) (by exact_mod_cast hf)
+  constructor
+  · exact lt_trans hlo (mul_lt_mul_of_pos_right hbnd.1 hfac)
+  · exact lt_trans (mul_lt_mul_of_pos_right hbnd.2 hfac) hhi
+
+theorem heliumSeries_wavelength_32 :
+    (1171626 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((7 / 90 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((7 / 90 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (1171637 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
+
+theorem heliumSeries_wavelength_42 :
+    (983587 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((63 / 680 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((63 / 680 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (983596 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
+
+theorem heliumSeries_wavelength_52 :
+    (940194 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((63 / 650 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((63 / 650 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (940202 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
+
+theorem heliumSeries_wavelength_62 :
+    (925156 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((164 / 1665 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((164 / 1665 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (925164 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
+
+theorem heliumSeries_wavelength_21 :
+    (101251 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((9 / 10 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((9 / 10 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (101253 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
+
+theorem heliumSeries_wavelength_43 :
+    (6128507 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((91 / 6120 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) ∧
+      vacuumWavelength (((91 / 6120 : ℚ) : ℝ) * (hydrogenIonisationApprox : ℝ)) <
+        (6128558 : ℝ) / 10 ^ 12 :=
+  fractionWavelength_window (by norm_num) (by norm_num) (by norm_num)
 
 theorem chargeTwo_paschen_wavelength :
     (937303 : ℝ) / 10 ^ 12 <

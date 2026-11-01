@@ -80,7 +80,12 @@ wavelength, likewise an input.
   Multiplier two on the same phases doubles the five hydrogen steps, to
   \(3/2\), \(5/18\), \(3/8\), \(21/50\), and \(7/72\), each within one part
   in ten thousand. The first shell holds two electrons, so both seats filled
-  on that multiplier leave none over. The radius law \(r_n=n^2 a_0/Z\),
+  on that multiplier leave none over. Two electrons on opposite rays, one
+  remaining on shell 1, with that multiplier and with the Coulomb repulsion
+  at the sum of the one-proton radii, give the differences \(7/90\),
+  \(63/680\), \(63/650\), \(164/1665\), \(9/10\), and \(91/6120\), each within
+  one part in ten thousand. The joint state of total-spin square 0 and the
+  symmetric state share each difference. The radius law \(r_n=n^2 a_0/Z\),
   including the square of the charge, remains an input. The vanishing step
   is not a wavelength.
 -/
@@ -453,6 +458,47 @@ theorem signedShell_near_coulomb {n : ℕ} (hn : 2 ≤ n) :
     have hconst : 3 * ((73 : ℝ) / 10000) ^ 2 / 640 < 1 / 1000000 := by norm_num
     exact lt_trans hnum hconst
   linarith
+
+/-- The Coulomb gap at shell `n ≥ 2` is at most `(3/10) α²/n⁶` of the ionisation. -/
+theorem signedShell_coulomb_gap {n : ℕ} (hn : 2 ≤ n) :
+    |signedShell n + 1 / (n : ℝ) ^ 2| ≤
+      (3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (n : ℝ) ^ 6 := by
+  have hn0 : 0 < n := by omega
+  have hx_pos : (0 : ℝ) < (bohrShellPhase n : ℝ) := by
+    exact_mod_cast bohrShellPhase_pos hn0
+  have hx_lt : (bohrShellPhase n : ℝ) < 1 / 100 := bohrShellPhase_lt_hundredth hn0
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hxphase : (bohrShellPhase n : ℝ) =
+      (fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2) := by
+    unfold bohrShellPhase
+    norm_cast
+  have hident : signedShell n + 1 / (n : ℝ) ^ 2 =
+      (2 / (fineStructureApprox : ℝ)) *
+        (circEnergy (bohrShellPhase n) + (bohrShellPhase n : ℝ)) := by
+    unfold signedShell
+    rw [hxphase]
+    field_simp [hα.ne', (Nat.cast_pos.mpr hn0 : (0 : ℝ) < (n : ℝ)).ne']
+  rw [hident]
+  have habs : |(2 / (fineStructureApprox : ℝ)) *
+      (circEnergy (bohrShellPhase n) + (bohrShellPhase n : ℝ))| =
+      (2 / (fineStructureApprox : ℝ)) *
+        |circEnergy (bohrShellPhase n) + (bohrShellPhase n : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (2 / (fineStructureApprox : ℝ)) *
+      |circEnergy (bohrShellPhase n) + (bohrShellPhase n : ℝ)| ≤
+      (2 / (fineStructureApprox : ℝ)) * ((6 / 5) * (bohrShellPhase n : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  refine le_trans hscale ?_
+  rw [hxphase]
+  have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast hn0.ne'
+  have hpow : (2 / (fineStructureApprox : ℝ)) * ((6 / 5) *
+      ((fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2)) ^ 3) =
+      (3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (n : ℝ) ^ 6 := by
+    field_simp [hα.ne', hn']
+    ring
+  exact le_of_eq hpow
 
 theorem hAlpha_signed_shift :
     |signedShell 3 - signedShell 2 - (5 / 36)| < (1 / 10000) * (5 / 36) := by
@@ -1217,14 +1263,15 @@ theorem fixedPhase_eleven_signed_shift :
       (1 / 10000) * (55 / 36) := by
   unfold fixedPhaseCharge
   have h := hAlpha_signed_shift
-  have hsplit : (11 : ℝ) * signedShell 3 - 11 * signedShell 2 - (55 / 36) =
-      11 * (signedShell 3 - signedShell 2 - (5 / 36)) := by ring
-  rw [hsplit, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 11)]
-  have hmul : 11 * |signedShell 3 - signedShell 2 - (5 / 36)| <
-      11 * ((1 / 10000) * (5 / 36)) :=
+  have hsplit : ((11 : ℕ) : ℝ) * signedShell 3 - ((11 : ℕ) : ℝ) * signedShell 2 -
+      (55 / 36) =
+      ((11 : ℕ) : ℝ) * (signedShell 3 - signedShell 2 - (5 / 36)) := by ring
+  rw [hsplit, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < ((11 : ℕ) : ℝ))]
+  have hmul : ((11 : ℕ) : ℝ) * |signedShell 3 - signedShell 2 - (5 / 36)| <
+      ((11 : ℕ) : ℝ) * ((1 / 10000) * (5 / 36)) :=
     mul_lt_mul_of_pos_left h (by norm_num)
-  have hconst : 11 * ((1 / 10000) * (5 / 36)) = (1 / 10000) * (55 / 36) := by
-    ring
+  have hconst : ((11 : ℕ) : ℝ) * ((1 / 10000) * (5 / 36)) =
+      (1 / 10000) * (55 / 36) := by ring
   linarith
 
 theorem fixedPhase_scale_shift {Z : ℕ} {a b frac : ℝ} (hZ : 0 < Z)
@@ -1250,9 +1297,8 @@ theorem fixedPhase_two_lyman_book :
     (2 : ℝ) * bohrEnergyDiff 1 2 =
       (3 / 2) * (hydrogenIonisationApprox : ℝ) := by
   unfold bohrEnergyDiff
-  have h : (1 : ℝ) / (1 : ℝ) ^ 2 - 1 / (2 : ℝ) ^ 2 = 3 / 4 := by norm_num
-  rw [h]
-  ring
+  norm_num
+  ring_nf
 
 theorem fixedPhase_two_hAlpha_book :
     (2 : ℝ) * bohrEnergyDiff 2 3 =
@@ -1264,25 +1310,22 @@ theorem fixedPhase_two_hBeta_book :
     (2 : ℝ) * bohrEnergyDiff 2 4 =
       (3 / 8) * (hydrogenIonisationApprox : ℝ) := by
   unfold bohrEnergyDiff
-  have h : (1 : ℝ) / (2 : ℝ) ^ 2 - 1 / (4 : ℝ) ^ 2 = 3 / 16 := by norm_num
-  rw [h]
-  ring
+  norm_num
+  ring_nf
 
 theorem fixedPhase_two_hGamma_book :
     (2 : ℝ) * bohrEnergyDiff 2 5 =
       (21 / 50) * (hydrogenIonisationApprox : ℝ) := by
   unfold bohrEnergyDiff
-  have h : (1 : ℝ) / (2 : ℝ) ^ 2 - 1 / (5 : ℝ) ^ 2 = 21 / 100 := by norm_num
-  rw [h]
-  ring
+  norm_num
+  ring_nf
 
 theorem fixedPhase_two_paschen_book :
     (2 : ℝ) * bohrEnergyDiff 3 4 =
       (7 / 72) * (hydrogenIonisationApprox : ℝ) := by
   unfold bohrEnergyDiff
-  have h : (1 : ℝ) / (3 : ℝ) ^ 2 - 1 / (4 : ℝ) ^ 2 = 7 / 144 := by norm_num
-  rw [h]
-  ring
+  norm_num
+  ring_nf
 
 theorem fixedPhase_two_lyman :
     |fixedPhaseCharge 2 2 - fixedPhaseCharge 2 1 - (3 / 2)| <
@@ -1323,6 +1366,227 @@ theorem fixedPhase_two_paschen :
   have htwice : (2 : ℝ) * (7 / 144) = 7 / 72 := by norm_num
   rw [← htwice]
   exact fixedPhase_scale_shift (by norm_num) paschen_signed_shift
+
+/-! ### Two electrons on opposite rays
+
+The two-center square of charge two is not an equilibrium in the outer well.
+The configuration that remains is one center. Each electron keeps a one-proton
+Bohr radius, the circular energy carries the multiplier two, and the two
+electrons stand on opposite rays, so their separation is the sum of the radii.
+The repulsion there is the Coulomb value `ke²/(r_n+r_m)`. One electron stays
+on shell 1. The joint state of total-spin square 0 and the symmetric state
+use the same two radii, so they share each difference.
+-/
+
+theorem coulombScale_div_bohrRadius :
+    coulombScale / bohrRadiusApprox = 2 * hydrogenIonisationApprox := by
+  unfold coulombScale bohrRadiusApprox hydrogenIonisationApprox hbarC
+  field_simp [hbarApprox_pos.ne', electronMassApprox_pos.ne',
+    speedOfLight_pos.ne', fineStructureApprox_pos.ne']
+
+/-- Repulsion, in ionisation units, at separation `n² a₀ + m² a₀`. -/
+def antipodeRepulsion (n m : ℕ) : ℚ :=
+  2 / ((n : ℚ) ^ 2 + (m : ℚ) ^ 2)
+
+theorem antipodeRepulsion_eq_coulomb {n m : ℕ} (hn : 0 < n) (hm : 0 < m) :
+    (coulombScale : ℝ) /
+        (((n : ℝ) ^ 2 + (m : ℝ) ^ 2) * (bohrRadiusApprox : ℝ)) =
+      (antipodeRepulsion n m : ℝ) * (hydrogenIonisationApprox : ℝ) := by
+  have hpair : (coulombScale : ℝ) / (bohrRadiusApprox : ℝ) =
+      2 * (hydrogenIonisationApprox : ℝ) := by
+    exact_mod_cast coulombScale_div_bohrRadius
+  have hsum : (n : ℝ) ^ 2 + (m : ℝ) ^ 2 ≠ 0 := by positivity
+  have ha : (bohrRadiusApprox : ℝ) ≠ 0 := by exact_mod_cast bohrRadiusApprox_pos.ne'
+  have hleft : (coulombScale : ℝ) /
+      (((n : ℝ) ^ 2 + (m : ℝ) ^ 2) * (bohrRadiusApprox : ℝ)) =
+      ((coulombScale : ℝ) / (bohrRadiusApprox : ℝ)) /
+        ((n : ℝ) ^ 2 + (m : ℝ) ^ 2) := by
+    field_simp [hsum, ha]
+  rw [hleft, hpair]
+  unfold antipodeRepulsion
+  norm_cast
+  field_simp [hsum]
+
+/-- Circular energies of multiplier two, plus the antipodal repulsion. -/
+noncomputable def heliumPair (n m : ℕ) : ℝ :=
+  fixedPhaseCharge 2 n + fixedPhaseCharge 2 m + (antipodeRepulsion n m : ℝ)
+
+/-- Bookkeeping difference that drops the outer electron from shell `hi` to
+shell `lo`, the other electron remaining on shell 1. -/
+def heliumSeriesFraction (lo hi : ℕ) : ℚ :=
+  2 * (1 / ((lo : ℚ) ^ 2 * ((lo : ℚ) ^ 2 + 1)) -
+    1 / ((hi : ℚ) ^ 2 * ((hi : ℚ) ^ 2 + 1)))
+
+noncomputable def heliumSeries (lo hi : ℕ) : ℝ :=
+  heliumPair 1 hi - heliumPair 1 lo
+
+theorem antipodeRepulsion_split {k : ℕ} (hk : 0 < k) :
+    antipodeRepulsion 1 k =
+      2 / (k : ℚ) ^ 2 - 2 / ((k : ℚ) ^ 2 * ((k : ℚ) ^ 2 + 1)) := by
+  unfold antipodeRepulsion
+  have hk' : (k : ℚ) ≠ 0 := by exact_mod_cast hk.ne'
+  field_simp [hk']
+  ring
+
+theorem heliumSeries_error {lo hi : ℕ} (hlo : 0 < lo) (hhi : 0 < hi) :
+    heliumSeries lo hi - (heliumSeriesFraction lo hi : ℝ) =
+      2 * (signedShell hi + 1 / (hi : ℝ) ^ 2) -
+        2 * (signedShell lo + 1 / (lo : ℝ) ^ 2) := by
+  unfold heliumSeries heliumPair fixedPhaseCharge heliumSeriesFraction
+  rw [antipodeRepulsion_split hhi, antipodeRepulsion_split hlo]
+  push_cast
+  ring_nf
+
+theorem heliumSeries_gap_outer {lo hi : ℕ} (hlo : 2 ≤ lo) (hlt : lo < hi) :
+    |heliumSeries lo hi - (heliumSeriesFraction lo hi : ℝ)| ≤
+      (3 / 5) * (fineStructureApprox : ℝ) ^ 2 *
+        (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) := by
+  have hlo0 : 0 < lo := by omega
+  have hhi0 : 0 < hi := by omega
+  have hhi : 2 ≤ hi := by omega
+  rw [heliumSeries_error hlo0 hhi0]
+  have elo := signedShell_coulomb_gap hlo
+  have ehi := signedShell_coulomb_gap hhi
+  have htri : |2 * (signedShell hi + 1 / (hi : ℝ) ^ 2) -
+      2 * (signedShell lo + 1 / (lo : ℝ) ^ 2)| ≤
+      2 * |signedShell hi + 1 / (hi : ℝ) ^ 2| +
+        2 * |signedShell lo + 1 / (lo : ℝ) ^ 2| := by
+    have habs := abs_add_le (2 * (signedShell hi + 1 / (hi : ℝ) ^ 2))
+      (-(2 * (signedShell lo + 1 / (lo : ℝ) ^ 2)))
+    simpa [sub_eq_add_neg, abs_neg, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+      using habs
+  have hsum : 2 * ((3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (hi : ℝ) ^ 6) +
+      2 * ((3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (lo : ℝ) ^ 6) =
+      (3 / 5) * (fineStructureApprox : ℝ) ^ 2 *
+        (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) := by ring
+  have hle : |2 * (signedShell hi + 1 / (hi : ℝ) ^ 2) -
+      2 * (signedShell lo + 1 / (lo : ℝ) ^ 2)| ≤
+      2 * ((3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (hi : ℝ) ^ 6) +
+        2 * ((3 / 10) * (fineStructureApprox : ℝ) ^ 2 / (lo : ℝ) ^ 6) := by
+    refine le_trans htri (add_le_add ?_ ?_)
+    · exact mul_le_mul_of_nonneg_left ehi (by norm_num)
+    · exact mul_le_mul_of_nonneg_left elo (by norm_num)
+  linarith
+
+private theorem heliumSeries_shift_of_gap {lo hi : ℕ} {frac : ℝ}
+    (hlo : 2 ≤ lo) (hlt : lo < hi)
+    (hfrac : (heliumSeriesFraction lo hi : ℝ) = frac)
+    (hroom : (3 / 5) * ((73 : ℝ) / 10000) ^ 2 *
+      (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) < (1 / 10000) * frac) :
+    |heliumSeries lo hi - frac| < (1 / 10000) * frac := by
+  rw [← hfrac]
+  have hle := heliumSeries_gap_outer hlo hlt
+  have hα : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hα0 : (0 : ℝ) ≤ fineStructureApprox := by exact_mod_cast fineStructureApprox_pos.le
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < ((73 : ℝ) / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα hα0 (by norm_num)
+  have hpos : (0 : ℝ) < (3 / 5) * (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) := by
+    positivity
+  have hnum : (3 / 5) * (fineStructureApprox : ℝ) ^ 2 *
+      (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) <
+      (3 / 5) * ((73 : ℝ) / 10000) ^ 2 *
+        (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) := by
+    simpa [mul_assoc, mul_left_comm, mul_comm] using
+      mul_lt_mul_of_pos_left hsq hpos
+  have hroom' : (3 / 5) * ((73 : ℝ) / 10000) ^ 2 *
+      (1 / (lo : ℝ) ^ 6 + 1 / (hi : ℝ) ^ 6) <
+      (1 / 10000) * (heliumSeriesFraction lo hi : ℝ) := by
+    simpa [hfrac] using hroom
+  exact lt_of_le_of_lt hle (lt_trans hnum hroom')
+
+theorem heliumSeriesFraction_32 : heliumSeriesFraction 2 3 = 7 / 90 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeriesFraction_42 : heliumSeriesFraction 2 4 = 63 / 680 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeriesFraction_52 : heliumSeriesFraction 2 5 = 63 / 650 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeriesFraction_62 : heliumSeriesFraction 2 6 = 164 / 1665 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeriesFraction_21 : heliumSeriesFraction 1 2 = 9 / 10 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeriesFraction_43 : heliumSeriesFraction 3 4 = 91 / 6120 := by
+  unfold heliumSeriesFraction
+  norm_num
+
+theorem heliumSeries_shift_32 :
+    |heliumSeries 2 3 - (7 / 90)| < (1 / 10000) * (7 / 90) := by
+  exact heliumSeries_shift_of_gap (lo := 2) (hi := 3) (by norm_num) (by norm_num)
+    (by rw [heliumSeriesFraction_32]; push_cast; rfl) (by norm_num)
+
+theorem heliumSeries_shift_42 :
+    |heliumSeries 2 4 - (63 / 680)| < (1 / 10000) * (63 / 680) := by
+  exact heliumSeries_shift_of_gap (lo := 2) (hi := 4) (by norm_num) (by norm_num)
+    (by rw [heliumSeriesFraction_42]; push_cast; rfl) (by norm_num)
+
+theorem heliumSeries_shift_52 :
+    |heliumSeries 2 5 - (63 / 650)| < (1 / 10000) * (63 / 650) := by
+  exact heliumSeries_shift_of_gap (lo := 2) (hi := 5) (by norm_num) (by norm_num)
+    (by rw [heliumSeriesFraction_52]; push_cast; rfl) (by norm_num)
+
+theorem heliumSeries_shift_62 :
+    |heliumSeries 2 6 - (164 / 1665)| < (1 / 10000) * (164 / 1665) := by
+  exact heliumSeries_shift_of_gap (lo := 2) (hi := 6) (by norm_num) (by norm_num)
+    (by rw [heliumSeriesFraction_62]; push_cast; rfl) (by norm_num)
+
+theorem heliumSeries_shift_43 :
+    |heliumSeries 3 4 - (91 / 6120)| < (1 / 10000) * (91 / 6120) := by
+  exact heliumSeries_shift_of_gap (lo := 3) (hi := 4) (by norm_num) (by norm_num)
+    (by rw [heliumSeriesFraction_43]; push_cast; rfl) (by norm_num)
+
+theorem heliumSeries_shift_21 :
+    |heliumSeries 1 2 - (9 / 10)| < (1 / 10000) * (9 / 10) := by
+  have herr := heliumSeries_error (lo := 1) (hi := 2) (by norm_num) (by norm_num)
+  have hfrac : (heliumSeriesFraction 1 2 : ℝ) = 9 / 10 := by
+    rw [heliumSeriesFraction_21]
+    push_cast
+    rfl
+  rw [hfrac] at herr
+  rw [herr]
+  have hone : ((1 : ℕ) : ℝ) ^ 2 = 1 := by norm_num
+  have h2 := signedShell_coulomb_gap (n := 2) (by norm_num)
+  have h1 := signedShell_ground
+  have h1' : |signedShell 1 + 1 / ((1 : ℕ) : ℝ) ^ 2| < 1 / 60000 := by
+    simpa [hone] using h1
+  have htri : |2 * (signedShell 2 + 1 / ((2 : ℕ) : ℝ) ^ 2) -
+      2 * (signedShell 1 + 1 / ((1 : ℕ) : ℝ) ^ 2)| ≤
+      2 * |signedShell 2 + 1 / ((2 : ℕ) : ℝ) ^ 2| +
+        2 * |signedShell 1 + 1 / ((1 : ℕ) : ℝ) ^ 2| := by
+    have habs := abs_add_le (2 * (signedShell 2 + 1 / ((2 : ℕ) : ℝ) ^ 2))
+      (-(2 * (signedShell 1 + 1 / ((1 : ℕ) : ℝ) ^ 2)))
+    simpa [sub_eq_add_neg, abs_neg, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+      using habs
+  have hα : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < ((73 : ℝ) / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα (by exact_mod_cast fineStructureApprox_pos.le) (by norm_num)
+  have h2' : |signedShell 2 + 1 / ((2 : ℕ) : ℝ) ^ 2| <
+      (3 / 10) * ((73 : ℝ) / 10000) ^ 2 / ((2 : ℕ) : ℝ) ^ 6 := by
+    refine lt_of_le_of_lt h2 ?_
+    have hpos : (0 : ℝ) < (3 / 10) / ((2 : ℕ) : ℝ) ^ 6 := by norm_num
+    simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using
+      mul_lt_mul_of_pos_left hsq hpos
+  have hsum : 2 * ((3 / 10) * ((73 : ℝ) / 10000) ^ 2 / ((2 : ℕ) : ℝ) ^ 6) +
+      2 * (1 / 60000) < (1 / 10000) * (9 / 10) := by norm_num
+  have hstrict : 2 * |signedShell 2 + 1 / ((2 : ℕ) : ℝ) ^ 2| +
+      2 * |signedShell 1 + 1 / ((1 : ℕ) : ℝ) ^ 2| <
+      2 * ((3 / 10) * ((73 : ℝ) / 10000) ^ 2 / ((2 : ℕ) : ℝ) ^ 6) +
+        2 * (1 / 60000) :=
+    add_lt_add (mul_lt_mul_of_pos_left h2' (by norm_num))
+      (mul_lt_mul_of_pos_left h1' (by norm_num))
+  exact lt_of_le_of_lt htri (lt_trans hstrict hsum)
 
 theorem hydrogenicPhase_eleven_pos {n : ℕ} (hn : 0 < n) :
     (0 : ℚ) < hydrogenicPhase 11 n := by
