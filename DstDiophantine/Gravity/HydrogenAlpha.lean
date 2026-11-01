@@ -47,7 +47,10 @@ wavelength, likewise an input.
   below \(1/100\), in the outer well, on the restoring side. The steps
   \(2\to 1\) and \(4\to 3\) are three ionisations and \(7/36\) of one, and
   each departs from that fraction by less than one part in ten thousand.
-  The radius law, including the charge, remains an input.
+  The even shells repeat hydrogen fractions: \(4\to 2\), \(6\to 4\),
+  \(8\to 4\), and \(10\to 4\) are \(3/4\), \(5/36\), \(3/16\), and
+  \(21/100\), each within one part in ten thousand. The radius law,
+  including the charge, remains an input.
 -/
 
 namespace DstDiophantine
@@ -1045,6 +1048,45 @@ theorem heVisible_signed_shift :
   have hpart : (2 : ℝ) / 250000 < (1 / 10000) * (7 / 36) := by norm_num
   rw [abs_lt]
   constructor <;> linarith
+
+/-- Both shells excited: the two Coulomb gaps of `signedCharge_two_excited`
+add, and the photon step is the difference of the Coulomb values. -/
+private theorem signedCharge_two_step {n m : ℕ} {frac : ℝ}
+    (hn : 2 ≤ n) (hm : 2 ≤ m)
+    (hfrac : (4 : ℝ) / (n : ℝ) ^ 2 - 4 / (m : ℝ) ^ 2 = frac)
+    (hroom : (2 : ℝ) / 250000 < (1 / 10000) * frac) :
+    |signedCharge 2 m - signedCharge 2 n - frac| < (1 / 10000) * frac := by
+  have hn' := signedCharge_two_excited hn
+  have hm' := signedCharge_two_excited hm
+  have hsplit : signedCharge 2 m - signedCharge 2 n - frac =
+      (signedCharge 2 m + 4 / (m : ℝ) ^ 2) -
+        (signedCharge 2 n + 4 / (n : ℝ) ^ 2) := by
+    linarith
+  obtain ⟨hmlo, hmhi⟩ := abs_lt.mp hm'
+  obtain ⟨hnlo, hnhi⟩ := abs_lt.mp hn'
+  rw [hsplit, abs_lt]
+  constructor <;> linarith
+
+theorem heMatchLyman_signed_shift :
+    |signedCharge 2 4 - signedCharge 2 2 - (3 / 4)| < (1 / 10000) * (3 / 4) :=
+  signedCharge_two_step (n := 2) (m := 4) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem heMatchAlpha_signed_shift :
+    |signedCharge 2 6 - signedCharge 2 4 - (5 / 36)| < (1 / 10000) * (5 / 36) :=
+  signedCharge_two_step (n := 4) (m := 6) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem heMatchBeta_signed_shift :
+    |signedCharge 2 8 - signedCharge 2 4 - (3 / 16)| < (1 / 10000) * (3 / 16) :=
+  signedCharge_two_step (n := 4) (m := 8) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem heMatchGamma_signed_shift :
+    |signedCharge 2 10 - signedCharge 2 4 - (21 / 100)| <
+      (1 / 10000) * (21 / 100) :=
+  signedCharge_two_step (n := 4) (m := 10) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
 
 end Gravity
 

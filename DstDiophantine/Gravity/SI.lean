@@ -76,6 +76,16 @@ def protonMassScale : ℕ := 38
 def protonMassApprox : ℚ :=
   protonMassMantissa / (10 : ℚ) ^ protonMassScale
 
+/-- Mantissa of \(m_\alpha \approx 6.6446573357\times 10^{-27}\) kg,
+the \(^4\mathrm{He}\) nucleus. -/
+def alphaMassMantissa : ℕ := 66446573357
+
+/-- Scale: \(m_\alpha =\) `alphaMassMantissa` `/ 10^alphaMassScale`. -/
+def alphaMassScale : ℕ := 37
+
+def alphaMassApprox : ℚ :=
+  alphaMassMantissa / (10 : ℚ) ^ alphaMassScale
+
 theorem speedOfLight_pos : (0 : ℚ) < speedOfLight := by
   unfold speedOfLight speedOfLightNat; norm_num
 
@@ -90,6 +100,9 @@ theorem electronMassApprox_pos : (0 : ℚ) < electronMassApprox := by
 
 theorem protonMassApprox_pos : (0 : ℚ) < protonMassApprox := by
   unfold protonMassApprox protonMassMantissa protonMassScale; norm_num
+
+theorem alphaMassApprox_pos : (0 : ℚ) < alphaMassApprox := by
+  unfold alphaMassApprox alphaMassMantissa alphaMassScale; norm_num
 
 /-- \(\hbar c\) in SI (J·m). -/
 def hbarC : ℚ := hbarApprox * speedOfLight
