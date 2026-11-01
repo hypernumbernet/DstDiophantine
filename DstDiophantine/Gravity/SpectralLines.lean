@@ -168,6 +168,114 @@ private theorem ratioWavelength_bounds {num den : ℕ} {lo hi : ℚ}
             ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
               (fineStructureApprox : ℝ) ^ 2) := by ring
 
+private theorem ratioFactor_bounds {num den : ℕ} {lo hi flo fhi : ℚ} {ρ : ℝ}
+    (hnum : 0 < num) (hden : 0 < den)
+    (hflo : (0 : ℚ) < flo) (hfhi : (0 : ℚ) < fhi)
+    (hfacLo : (flo : ℝ) < (ρ + 1) / ρ)
+    (hfacHi : (ρ + 1) / ρ < (fhi : ℝ))
+    (hlo : lo < standInWavelength num den piDigitLo * flo)
+    (hhi : standInWavelength num den piDigitHi * fhi < hi) :
+    (lo : ℝ) <
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) ∧
+      ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
+        (hi : ℝ) := by
+  have hfac := closed_factor_pos hnum hden
+  have hpos : (0 : ℝ) < (num : ℝ) * π * (hbarApprox : ℝ) /
+      ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+        (fineStructureApprox : ℝ) ^ 2) := by
+    have hrew : (num : ℝ) * π * (hbarApprox : ℝ) /
+        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) =
+        ((num : ℝ) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
+    rw [hrew]
+    exact mul_pos hfac pi_pos
+  have hlowPos : (0 : ℝ) < (flo : ℝ) := by exact_mod_cast hflo
+  have hhighPos : (0 : ℝ) < (fhi : ℝ) := by exact_mod_cast hfhi
+  have hloR : (lo : ℝ) <
+      (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) * (flo : ℝ) := by
+    let q : ℚ := standInWavelength num den piDigitLo * flo
+    have hcast : (lo : ℝ) < (q : ℝ) := by
+      dsimp only [q]
+      exact_mod_cast hlo
+    have heq : (q : ℝ) =
+        (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2) * (flo : ℝ) := by
+      unfold q standInWavelength piDigitLo
+      push_cast
+      ring
+    exact lt_of_lt_of_eq hcast heq
+  have hhiR :
+      (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2) * (fhi : ℝ) <
+        (hi : ℝ) := by
+    let q : ℚ := standInWavelength num den piDigitHi * fhi
+    have heq :
+        (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * (fhi : ℝ) =
+          (q : ℝ) := by
+      unfold q standInWavelength piDigitHi
+      push_cast
+      ring
+    have hcast : (q : ℝ) < (hi : ℝ) := by
+      dsimp only [q]
+      exact_mod_cast hhi
+    exact lt_of_eq_of_lt heq hcast
+  constructor
+  · have hendpoint : (lo : ℝ) <
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * (flo : ℝ) := by
+      refine lt_trans hloR ?_
+      calc (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * (flo : ℝ)
+          = ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) *
+              ((314159265358979323846 : ℝ) / 10 ^ 20) * (flo : ℝ) := by ring
+        _ < ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) * π * (flo : ℝ) := by
+            have hmul := mul_lt_mul_of_pos_left piDigitLo_lt_pi hfac
+            exact mul_lt_mul_of_pos_right hmul hlowPos
+        _ = (num : ℝ) * π * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2) * (flo : ℝ) := by ring
+    exact lt_of_lt_of_le hendpoint (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
+  · have hendpoint :
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * (fhi : ℝ) <
+          (hi : ℝ) := by
+      refine lt_trans ?_ hhiR
+      calc (num : ℝ) * π * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * (fhi : ℝ)
+          = ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) * π * (fhi : ℝ) := by ring
+        _ < ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) *
+              ((314159265358979323847 : ℝ) / 10 ^ 20) * (fhi : ℝ) := by
+            have hmul := mul_lt_mul_of_pos_left piDigitHi_gt_pi hfac
+            exact mul_lt_mul_of_pos_right hmul hhighPos
+        _ = (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2) * (fhi : ℝ) := by ring
+    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+
 private theorem ratioShared_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
     (hnum : 0 < num) (hden : 0 < den)
     (hρlo : (1836 : ℝ) < ρ) (hρhi : ρ < 1837)
@@ -182,94 +290,12 @@ private theorem ratioShared_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
             (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
         (hi : ℝ) := by
   obtain ⟨hfacLo, hfacHi⟩ := massRatio_lengthens hρlo hρhi
-  have hfac := closed_factor_pos hnum hden
-  have hpos : (0 : ℝ) < (num : ℝ) * π * (hbarApprox : ℝ) /
-      ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-        (fineStructureApprox : ℝ) ^ 2) := by
-    have hrew : (num : ℝ) * π * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) =
-        ((num : ℝ) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
-    rw [hrew]
-    exact mul_pos hfac pi_pos
-  have hloR : (lo : ℝ) <
-      (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837) := by
-    let q : ℚ := standInWavelength num den piDigitLo * (1838 / 1837)
-    have hcast : (lo : ℝ) < (q : ℝ) := by
-      exact_mod_cast hlo
-    have heq : (q : ℝ) =
-        (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837) := by
-      unfold q standInWavelength piDigitLo
-      push_cast
-      ring
-    exact lt_of_lt_of_eq hcast heq
-  have hhiR :
-      (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836) <
-        (hi : ℝ) := by
-    let q : ℚ := standInWavelength num den piDigitHi * (1837 / 1836)
-    have heq :
-        (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836) =
-          (q : ℝ) := by
-      unfold q standInWavelength piDigitHi
-      push_cast
-      ring
-    have hcast : (q : ℝ) < (hi : ℝ) := by
-      exact_mod_cast hhi
-    exact lt_of_eq_of_lt heq hcast
-  constructor
-  · have hendpoint : (lo : ℝ) <
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((1838 : ℝ) / 1837) := by
-      refine lt_trans hloR ?_
-      calc (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323846 : ℝ) / 10 ^ 20) * ((1838 : ℝ) / 1837) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((1838 : ℝ) / 1837) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitLo_lt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < (1838 : ℝ) / 1837)
-        _ = (num : ℝ) * π * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837) := by ring
-    exact lt_of_lt_of_le hendpoint (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
-  · have hendpoint :
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((1837 : ℝ) / 1836) <
-          (hi : ℝ) := by
-      refine lt_trans ?_ hhiR
-      calc (num : ℝ) * π * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((1837 : ℝ) / 1836) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323847 : ℝ) / 10 ^ 20) * ((1837 : ℝ) / 1836) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitHi_gt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < (1837 : ℝ) / 1836)
-        _ = (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836) := by ring
-    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+  have hfacLo' : ((1838 / 1837 : ℚ) : ℝ) < (ρ + 1) / ρ := by
+    convert hfacLo using 1; norm_num
+  have hfacHi' : (ρ + 1) / ρ < ((1837 / 1836 : ℚ) : ℝ) := by
+    convert hfacHi using 1; norm_num
+  exact ratioFactor_bounds hnum hden (by norm_num) (by norm_num)
+    hfacLo' hfacHi' hlo hhi
 
 private theorem heliumMass_lengthens {ρ : ℝ} (hlo : (7294 : ℝ) < ρ) (hhi : ρ < 7295) :
     (7296 : ℝ) / 7295 < (ρ + 1) / ρ ∧ (ρ + 1) / ρ < (7295 : ℝ) / 7294 := by
@@ -294,94 +320,12 @@ private theorem ratioHelium_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
             (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
         (hi : ℝ) := by
   obtain ⟨hfacLo, hfacHi⟩ := heliumMass_lengthens hρlo hρhi
-  have hfac := closed_factor_pos hnum hden
-  have hpos : (0 : ℝ) < (num : ℝ) * π * (hbarApprox : ℝ) /
-      ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-        (fineStructureApprox : ℝ) ^ 2) := by
-    have hrew : (num : ℝ) * π * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) =
-        ((num : ℝ) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
-    rw [hrew]
-    exact mul_pos hfac pi_pos
-  have hloR : (lo : ℝ) <
-      (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) * ((7296 : ℝ) / 7295) := by
-    let q : ℚ := standInWavelength num den piDigitLo * (7296 / 7295)
-    have hcast : (lo : ℝ) < (q : ℝ) := by
-      exact_mod_cast hlo
-    have heq : (q : ℝ) =
-        (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((7296 : ℝ) / 7295) := by
-      unfold q standInWavelength piDigitLo
-      push_cast
-      ring
-    exact lt_of_lt_of_eq hcast heq
-  have hhiR :
-      (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((7295 : ℝ) / 7294) <
-        (hi : ℝ) := by
-    let q : ℚ := standInWavelength num den piDigitHi * (7295 / 7294)
-    have heq :
-        (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((7295 : ℝ) / 7294) =
-          (q : ℝ) := by
-      unfold q standInWavelength piDigitHi
-      push_cast
-      ring
-    have hcast : (q : ℝ) < (hi : ℝ) := by
-      exact_mod_cast hhi
-    exact lt_of_eq_of_lt heq hcast
-  constructor
-  · have hendpoint : (lo : ℝ) <
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((7296 : ℝ) / 7295) := by
-      refine lt_trans hloR ?_
-      calc (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((7296 : ℝ) / 7295)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323846 : ℝ) / 10 ^ 20) * ((7296 : ℝ) / 7295) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((7296 : ℝ) / 7295) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitLo_lt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < (7296 : ℝ) / 7295)
-        _ = (num : ℝ) * π * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((7296 : ℝ) / 7295) := by ring
-    exact lt_of_lt_of_le hendpoint (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
-  · have hendpoint :
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((7295 : ℝ) / 7294) <
-          (hi : ℝ) := by
-      refine lt_trans ?_ hhiR
-      calc (num : ℝ) * π * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((7295 : ℝ) / 7294)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((7295 : ℝ) / 7294) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323847 : ℝ) / 10 ^ 20) * ((7295 : ℝ) / 7294) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitHi_gt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < (7295 : ℝ) / 7294)
-        _ = (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((7295 : ℝ) / 7294) := by ring
-    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+  have hfacLo' : ((7296 / 7295 : ℚ) : ℝ) < (ρ + 1) / ρ := by
+    convert hfacLo using 1; norm_num
+  have hfacHi' : (ρ + 1) / ρ < ((7295 / 7294 : ℚ) : ℝ) := by
+    convert hfacHi using 1; norm_num
+  exact ratioFactor_bounds hnum hden (by norm_num) (by norm_num)
+    hfacLo' hfacHi' hlo hhi
 
 /-! ### Rational windows. `field_simp` clears the stand-ins. -/
 
@@ -999,104 +943,12 @@ private theorem ratioSodium_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
             (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
         (hi : ℝ) := by
   obtain ⟨hfacLo, hfacHi⟩ := sodiumMass_lengthens hρlo hρhi
-  have hfac := closed_factor_pos hnum hden
-  have hpos : (0 : ℝ) < (num : ℝ) * π * (hbarApprox : ℝ) /
-      ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-        (fineStructureApprox : ℝ) ^ 2) := by
-    have hrew : (num : ℝ) * π * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) =
-        ((num : ℝ) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
-    rw [hrew]
-    exact mul_pos hfac pi_pos
-  have hlowPos : (0 : ℝ) < (41898 : ℝ) / 41897 := by norm_num
-  have hhighPos : (0 : ℝ) < (41897 : ℝ) / 41896 := by norm_num
-  have hloR : (lo : ℝ) <
-      (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897) := by
-    let q : ℚ := standInWavelength num den piDigitLo * (41898 / 41897)
-    have hcast : (lo : ℝ) < (q : ℝ) := by
-      dsimp only [q]
-      exact_mod_cast hlo
-    have heq : (q : ℝ) =
-        (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897) := by
-      unfold q standInWavelength piDigitLo
-      push_cast
-      ring
-    exact lt_of_lt_of_eq hcast heq
-  have hhiR :
-      (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896) <
-        (hi : ℝ) := by
-    let q : ℚ := standInWavelength num den piDigitHi * (41897 / 41896)
-    have heq :
-        (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896) =
-          (q : ℝ) := by
-      unfold q standInWavelength piDigitHi
-      push_cast
-      ring
-    have hcast : (q : ℝ) < (hi : ℝ) := by
-      dsimp only [q]
-      exact_mod_cast hhi
-    exact lt_of_eq_of_lt heq hcast
-  constructor
-  · have hendpoint : (lo : ℝ) <
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((41898 : ℝ) / 41897) := by
-      refine lt_trans hloR ?_
-      calc (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323846 : ℝ) / 10 ^ 20) *
-              ((41898 : ℝ) / 41897) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π *
-              ((41898 : ℝ) / 41897) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitLo_lt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul hlowPos
-        _ = (num : ℝ) * π * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) *
-              ((41898 : ℝ) / 41897) := by ring
-    exact lt_of_lt_of_le hendpoint (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
-  · have hendpoint :
-        ((num : ℝ) * π * (hbarApprox : ℝ) /
-          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * ((41897 : ℝ) / 41896) <
-          (hi : ℝ) := by
-      refine lt_trans ?_ hhiR
-      calc (num : ℝ) * π * (hbarApprox : ℝ) /
-            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896)
-          = ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π *
-              ((41897 : ℝ) / 41896) := by ring
-        _ < ((num : ℝ) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((314159265358979323847 : ℝ) / 10 ^ 20) *
-              ((41897 : ℝ) / 41896) := by
-            have hmul := mul_lt_mul_of_pos_left piDigitHi_gt_pi hfac
-            exact mul_lt_mul_of_pos_right hmul hhighPos
-        _ = (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
-              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) *
-              ((41897 : ℝ) / 41896) := by ring
-    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+  have hfacLo' : ((41898 / 41897 : ℚ) : ℝ) < (ρ + 1) / ρ := by
+    convert hfacLo using 1; norm_num
+  have hfacHi' : (ρ + 1) / ρ < ((41897 / 41896 : ℚ) : ℝ) := by
+    convert hfacHi using 1; norm_num
+  exact ratioFactor_bounds hnum hden (by norm_num) (by norm_num)
+    hfacLo' hfacHi' hlo hhi
 
 theorem chargeIndex_scaled {Z n m : ℕ} (hZ : 0 < Z) (hn : 0 < n) (hm : n < m) :
     (Z : ℝ) ^ 2 * bohrEnergyDiff (Z * n) (Z * m) = bohrEnergyDiff n m := by
@@ -1134,7 +986,7 @@ private theorem naLyman_wavelength_eq :
   field_simp [hm, hc, hα]
   ring
 
-private theorem naVisible_wavelength_eq :
+private theorem naFourThree_wavelength_eq :
     vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) =
       576 * π * (hbarApprox : ℝ) /
         (847 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
@@ -1162,7 +1014,7 @@ private theorem naLyman_fixed_hi_rat :
   field_simp
   norm_cast
 
-private theorem naVisible_fixed_lo_rat :
+private theorem naFourThree_fixed_lo_rat :
     (15492615 : ℚ) / 10 ^ 15 < standInWavelength 576 847 piDigitLo := by
   unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
     speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
@@ -1170,7 +1022,7 @@ private theorem naVisible_fixed_lo_rat :
   field_simp
   norm_cast
 
-private theorem naVisible_fixed_hi_rat :
+private theorem naFourThree_fixed_hi_rat :
     standInWavelength 576 847 piDigitHi < (15492616 : ℚ) / 10 ^ 15 := by
   unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
     speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
@@ -1187,14 +1039,14 @@ theorem naLyman_wavelength_bounds :
       naLyman_fixed_lo_rat naLyman_fixed_hi_rat using 2 <;>
     push_cast <;> ring
 
-theorem naVisible_wavelength_bounds :
+theorem naFourThree_wavelength_bounds :
     (15492615 : ℝ) / 10 ^ 15 <
         vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) ∧
       vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) <
         (15492616 : ℝ) / 10 ^ 15 := by
-  rw [naVisible_wavelength_eq]
+  rw [naFourThree_wavelength_eq]
   convert ratioWavelength_bounds (by norm_num) (by norm_num)
-      naVisible_fixed_lo_rat naVisible_fixed_hi_rat using 2 <;>
+      naFourThree_fixed_lo_rat naFourThree_fixed_hi_rat using 2 <;>
     push_cast <;> ring
 
 theorem naMatchLyman_fixed :

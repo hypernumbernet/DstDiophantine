@@ -56,8 +56,7 @@ wavelength, likewise an input.
   that fraction by less than one part in ten thousand. Shells scaled by
   eleven, \(22\to 11\), \(33\to 22\), \(44\to 22\), and \(55\to 22\),
   repeat \(3/4\), \(5/36\), \(3/16\), and \(21/100\), each within one part
-  in ten thousand. The neutral yellow doublet is not a step of this
-  ladder. The radius law, including the charge, remains an input.
+  in ten thousand. The radius law, including the charge, remains an input.
 -/
 
 namespace DstDiophantine
@@ -1182,7 +1181,7 @@ theorem naLyman_book :
   norm_num
   ring
 
-theorem naVisible_book :
+theorem naFourThree_book :
     (11 : ℝ) ^ 2 * bohrEnergyDiff 3 4 =
       (847 / 144) * (hydrogenIonisationApprox : ℝ) := by
   rw [bohrEnergyDiff_paschenAlpha]
@@ -1277,7 +1276,7 @@ theorem signedCharge_eleven_four :
       (by norm_num) (hx_eq.le) (by norm_num) (by norm_num) ?_
   norm_num
 
-theorem naVisible_signed_shift :
+theorem naFourThree_signed_shift :
     |signedCharge 11 4 - signedCharge 11 3 - (847 / 144)| <
       (1 / 10000) * (847 / 144) := by
   have h4 := signedCharge_eleven_four
