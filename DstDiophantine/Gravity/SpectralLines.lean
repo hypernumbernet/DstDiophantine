@@ -48,6 +48,11 @@ and \(12787\), places those four strictly between \(121511\) and
 \(121512\), \(656163\) and \(656164\), \(486047\) and \(486048\), and
 \(433970\) and \(433971\) picometres, each short of the hydrogen line
 that carries a proton mass ratio strictly between \(1836\) and \(1837\).
+A charge of eleven on the one-proton phases, the scaling proved for the
+force, multiplies the shell-\(3\) to shell-\(2\) bookkeeping by eleven.
+With the center fixed, that vacuum wavelength lies strictly between
+\(59646\) and \(59647\) picometres. The multiplier is not an assembly of
+protons. The hydrogenic radii remain a separate input.
 With the nucleus fixed, charge eleven places the steps \(2\to 1\) and
 \(4\to 3\) strictly between \(1004151\) and \(1004152\), and between
 \(15492615\) and \(15492616\), in units of \(10^{-15}\,\mathrm{m}\).
@@ -610,6 +615,36 @@ private theorem paschen_wavelength_eq :
   ring_nf
 
 /-! ### Hydrogen windows -/
+
+theorem chargeScale_hAlpha {c : ℕ} (hc : 0 < c) :
+    vacuumWavelength ((c : ℝ) * bohrEnergyDiff 2 3) =
+      vacuumWavelength (bohrEnergyDiff 2 3) / c := by
+  have hc' : (c : ℝ) ≠ 0 := by exact_mod_cast hc.ne'
+  have hE : bohrEnergyDiff 2 3 ≠ 0 := by
+    rw [bohrEnergyDiff_hAlpha]
+    exact mul_ne_zero (by norm_num)
+      (by exact_mod_cast hydrogenIonisationApprox_pos.ne')
+  unfold vacuumWavelength
+  field_simp [hc', hE]
+
+theorem chargeEleven_fixedPhase_wavelength :
+    (59646 : ℝ) / 10 ^ 12 <
+        vacuumWavelength (((11 : ℕ) : ℝ) * bohrEnergyDiff 2 3) ∧
+      vacuumWavelength (((11 : ℕ) : ℝ) * bohrEnergyDiff 2 3) <
+        (59647 : ℝ) / 10 ^ 12 := by
+  rw [chargeScale_hAlpha (by norm_num : 0 < (11 : ℕ))]
+  have heq : vacuumWavelength (bohrEnergyDiff 2 3) = hAlphaWavelength := by
+    rw [hAlpha_wavelength_eq]
+    rfl
+  rw [heq]
+  have hbnd := hAlphaWavelength_bounds
+  have h11 : (0 : ℝ) < 11 := by norm_num
+  constructor
+  · exact lt_trans (by norm_num : (59646 : ℝ) / 10 ^ 12 <
+        (656112 : ℝ) / 10 ^ 12 / 11)
+      (div_lt_div_of_pos_right hbnd.1 h11)
+  · exact lt_trans (div_lt_div_of_pos_right hbnd.2 h11)
+      (by norm_num : (656113 : ℝ) / 10 ^ 12 / 11 < (59647 : ℝ) / 10 ^ 12)
 
 theorem lymanWavelength_bounds :
     (121502 : ℝ) / 10 ^ 12 < vacuumWavelength (bohrEnergyDiff 1 2) ∧

@@ -388,7 +388,10 @@ The straight line of one fixed jet is not itself that geodesic.
   with the ten electrons of the first two shells leaves one electron on
   the third shell, feeling charge one. The monopole and the dipole share
   that phase, and both the bookkeeping step and the circular-energy step
-  vanish. The radius law, including the charge, remains an input.
+  vanish. On the one-proton phases the multiplier one is the hydrogen line,
+  and that residual charge is the multiplier one. Multiplier eleven on those
+  phases makes the shell-\(3\) to shell-\(2\) step \(55/36\), within one part
+  in ten thousand. The radius law, including the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
@@ -485,8 +488,9 @@ The straight line of one fixed jet is not itself that geodesic.
   abundance-weighted mean of the five stable titanium lengths lies strictly
   between \(-3.44\) and \(-3.43\,\mathrm{fm}\). A scattering amplitude inside
   the wall, and a length in femtometres, are not derived.
-* `ElectronIon` — one electron about nuclear charge `Z`, the proton number,
-  feels `Z` times the one-proton force. On the outer well the logarithmic
+* `ElectronIon` — one electron about a charge `Z`, a multiplier in units of
+  the proton charge, feels `Z` times the one-proton force. The multiplier is
+  not a sum of proton forces at one centre. On the outer well the logarithmic
   derivative does not depend on `Z > 0`, so the restoring radius is the
   same for every positive charge. The circular energy is `Z` times the
   one-proton energy. It is strictly least at that same radius, the value

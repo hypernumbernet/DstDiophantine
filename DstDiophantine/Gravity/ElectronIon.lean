@@ -5,8 +5,10 @@ import Mathlib.Tactic.Ring
 /-!
 # One electron about a nucleus of charge `Z`
 
-The nuclear charge, counted in units of the proton charge, is the proton
-number. No centrifugal term is added. The length `ℓ` is not derived.
+The nuclear charge is a multiplier, in units of the proton charge. Calling
+that multiplier the proton number is an identification: nothing here sums
+the forces of several protons at one centre. No centrifugal term is added.
+The length `ℓ` is not derived.
 
 ## Paper boundary (do **not** claim)
 

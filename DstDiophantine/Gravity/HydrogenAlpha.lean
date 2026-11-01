@@ -1,4 +1,5 @@
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ParticleStability
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Complex.ExponentialBounds
@@ -70,7 +71,14 @@ wavelength, likewise an input.
   electrons of the first two shells leaves one electron on the third
   shell, feeling charge one. The monopole and the dipole of that shell
   share its phase, so both the bookkeeping step and the circular-energy
-  step vanish. The radius law, including the charge, remains an input.
+  step vanish. The step from shell \(3\) to shell \(2\) on that charge is
+  the Balmer fraction \(5/36\), within one part in ten thousand. The proved
+  force law is the other scaling: the phase stays the one-proton phase, and
+  the circular energy is the charge times the one-proton energy. Charge
+  eleven on those phases makes the same step \(55/36\), within one part in
+  ten thousand. The charge is a multiplier, not an assembly of protons.
+  The radius law \(r_n=n^2 a_0/Z\), including the square of the charge,
+  remains an input. The vanishing step is not a wavelength.
 -/
 
 namespace DstDiophantine
@@ -1113,9 +1121,11 @@ theorem heMatchGamma_signed_shift :
 
 The first two principal shells hold ten electrons. Charge eleven minus
 those ten leaves one, and the remaining electron sits on the third shell.
-The monopole and the dipole of one shell index share one phase, so the
-yellow doublet — that step — has circular energy zero. There is no
-fine-structure splitting. The bare charge \(Z=11\) is a separate ladder.
+The monopole and the dipole of one shell index share one phase, so that
+step has circular energy zero and is not a wavelength. The step from
+shell 3 to shell 2 on the same charge is the Balmer fraction \(5/36\).
+There is no fine-structure splitting. The bare charge \(Z=11\) is a
+separate ladder.
 -/
 
 theorem hydrogenicPhase_one {n : ℕ} (hn : 0 < n) :
@@ -1147,6 +1157,71 @@ theorem sodiumValence_circ :
     signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 3 -
         signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 3 = 0 := by
   ring
+
+theorem signedCharge_one {n : ℕ} (hn : 0 < n) :
+    signedCharge 1 n = signedShell n := by
+  unfold signedCharge signedShell
+  rw [hydrogenicPhase_one hn]
+  ring
+
+/-- Residual charge one, shell \(3\) to shell \(2\), is the Balmer bookkeeping. -/
+theorem sodiumResidual_book :
+    ((11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) : ℕ) : ℝ) ^ 2 * bohrEnergyDiff 2 3 =
+      (5 / 36) * (hydrogenIonisationApprox : ℝ) := by
+  have hcore : (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) : ℕ) = 1 := sodiumCore_electrons.2
+  rw [hcore, bohrEnergyDiff_hAlpha]
+  norm_num
+
+theorem sodiumResidual_signed_shift :
+    |signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 3 -
+        signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 2 - (5 / 36)| <
+      (1 / 10000) * (5 / 36) := by
+  have hcore : (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) : ℕ) = 1 := sodiumCore_electrons.2
+  rw [hcore, signedCharge_one (by norm_num : 0 < (3 : ℕ)),
+    signedCharge_one (by norm_num : 0 < (2 : ℕ))]
+  exact hAlpha_signed_shift
+
+/-! ### Charge as a multiplier on the one-proton phases
+
+`ionCircEnergy` multiplies the one-proton circular energy and leaves the
+phase where it is. `signedCharge` is the other input: the phase moves with
+the charge, and the Coulomb value carries the square. Residual charge one
+is the first of these, and it is the hydrogen line.
+-/
+
+/-- Circular energy, in ionisation units, of charge `Z` on the one-proton
+Bohr phase of shell `n`. -/
+noncomputable def fixedPhaseCharge (Z n : ℕ) : ℝ :=
+  (Z : ℝ) * signedShell n
+
+theorem fixedPhaseCharge_eq_ion {Z n : ℕ} :
+    fixedPhaseCharge Z n =
+      (2 / (fineStructureApprox : ℝ)) *
+        ionCircEnergy (Z : ℝ) (bohrShellPhase n) := by
+  unfold fixedPhaseCharge signedShell ionCircEnergy
+  ring
+
+theorem fixedPhase_eleven_book :
+    (11 : ℝ) * bohrEnergyDiff 2 3 =
+      (55 / 36) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_hAlpha]
+  norm_num
+  ring
+
+theorem fixedPhase_eleven_signed_shift :
+    |fixedPhaseCharge 11 3 - fixedPhaseCharge 11 2 - (55 / 36)| <
+      (1 / 10000) * (55 / 36) := by
+  unfold fixedPhaseCharge
+  have h := hAlpha_signed_shift
+  have hsplit : (11 : ℝ) * signedShell 3 - 11 * signedShell 2 - (55 / 36) =
+      11 * (signedShell 3 - signedShell 2 - (5 / 36)) := by ring
+  rw [hsplit, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 11)]
+  have hmul : 11 * |signedShell 3 - signedShell 2 - (5 / 36)| <
+      11 * ((1 / 10000) * (5 / 36)) :=
+    mul_lt_mul_of_pos_left h (by norm_num)
+  have hconst : 11 * ((1 / 10000) * (5 / 36)) = (1 / 10000) * (55 / 36) := by
+    ring
+  linarith
 
 theorem hydrogenicPhase_eleven_pos {n : ℕ} (hn : 0 < n) :
     (0 : ℚ) < hydrogenicPhase 11 n := by
@@ -2018,8 +2093,8 @@ theorem liMatchGamma_signed_shift :
 
 The first principal shell holds two electrons. Charge three minus those
 two leaves one, and the remaining electron sits on the second shell.
-The monopole and the dipole of one shell index share one phase, so the
-red doublet — that step — has circular energy zero. There is no
+The monopole and the dipole of one shell index share one phase, so that
+step has circular energy zero and is not a wavelength. There is no
 fine-structure splitting.
 -/
 
