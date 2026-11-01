@@ -37,6 +37,17 @@ between \(7294\) and \(7295\), places those four strictly between \(121518\)
 and \(121519\), \(656202\) and \(656203\), \(486075\) and \(486076\), and
 \(433996\) and \(433997\) picometres, each short of the hydrogen line that
 carries a proton mass ratio strictly between \(1836\) and \(1837\).
+With the nucleus fixed, charge three shortens the first and the
+\(4\to 3\) step by nine, into \(13500\)–\(13501\) and \(208289\)–\(208290\)
+picometres. The same charge on shells scaled by three reproduces a
+hydrogen difference exactly: \(6\to 3\), \(9\to 6\), \(12\to 6\), and
+\(15\to 6\) have the Lyman \(\alpha\), \(\mathrm{H}\alpha\),
+\(\mathrm{H}\beta\), and \(\mathrm{H}\gamma\) wavelengths. Shared
+inertia, for every lithium-nucleus mass ratio strictly between \(12786\)
+and \(12787\), places those four strictly between \(121511\) and
+\(121512\), \(656163\) and \(656164\), \(486047\) and \(486048\), and
+\(433970\) and \(433971\) picometres, each short of the hydrogen line
+that carries a proton mass ratio strictly between \(1836\) and \(1837\).
 With the nucleus fixed, charge eleven places the steps \(2\to 1\) and
 \(4\to 3\) strictly between \(1004151\) and \(1004152\), and between
 \(15492615\) and \(15492616\), in units of \(10^{-15}\,\mathrm{m}\).
@@ -1245,6 +1256,279 @@ theorem naMatch_short_of_hydrogen {ρ σ : ℝ}
       (lt_trans (by norm_num : (486021 : ℝ) / 10 ^ 12 < (486273 : ℝ) / 10 ^ 12) kB.1)
   · exact lt_trans hG.2
       (lt_trans (by norm_num : (433948 : ℝ) / 10 ^ 12 < (434172 : ℝ) / 10 ^ 12) kG.1)
+
+/-! ### Charge three -/
+
+private theorem lithiumMass_lengthens {ρ : ℝ} (hlo : (12786 : ℝ) < ρ) (hhi : ρ < 12787) :
+    (12788 : ℝ) / 12787 < (ρ + 1) / ρ ∧ (ρ + 1) / ρ < (12787 : ℝ) / 12786 := by
+  have hρ : 0 < ρ := by linarith
+  constructor
+  · rw [div_lt_div_iff₀ (by norm_num) hρ]
+    linarith
+  · rw [div_lt_div_iff₀ hρ (by norm_num)]
+    linarith
+
+private theorem ratioLithium_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
+    (hnum : 0 < num) (hden : 0 < den)
+    (hρlo : (12786 : ℝ) < ρ) (hρhi : ρ < 12787)
+    (hlo : lo < standInWavelength num den piDigitLo * (12788 / 12787))
+    (hhi : standInWavelength num den piDigitHi * (12787 / 12786) < hi) :
+    (lo : ℝ) <
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) ∧
+      ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
+        (hi : ℝ) := by
+  obtain ⟨hfacLo, hfacHi⟩ := lithiumMass_lengthens hρlo hρhi
+  have hfacLo' : ((12788 / 12787 : ℚ) : ℝ) < (ρ + 1) / ρ := by
+    convert hfacLo using 1; norm_num
+  have hfacHi' : (ρ + 1) / ρ < ((12787 / 12786 : ℚ) : ℝ) := by
+    convert hfacHi using 1; norm_num
+  exact ratioFactor_bounds hnum hden (by norm_num) (by norm_num)
+    hfacLo' hfacHi' hlo hhi
+
+private theorem chargeThree_ninth {E : ℝ} (hE : E ≠ 0) :
+    vacuumWavelength ((3 : ℝ) ^ 2 * E) = vacuumWavelength E / 9 := by
+  unfold vacuumWavelength
+  field_simp [hE]
+  ring
+
+theorem liLyman_wavelength_bounds :
+    (13500 : ℝ) / 10 ^ 12 < vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 1 2) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 1 2) <
+        (13501 : ℝ) / 10 ^ 12 := by
+  rw [chargeThree_ninth lyman_energy_ne]
+  have hparent := lymanWavelength_bounds
+  have h9 : (0 : ℝ) < 9 := by norm_num
+  constructor
+  · rw [lt_div_iff₀ h9]
+    calc (13500 : ℝ) / 10 ^ 12 * 9
+        = (121500 : ℝ) / 10 ^ 12 := by ring
+      _ < (121502 : ℝ) / 10 ^ 12 := by norm_num
+      _ < vacuumWavelength (bohrEnergyDiff 1 2) := hparent.1
+  · rw [div_lt_iff₀ h9]
+    calc vacuumWavelength (bohrEnergyDiff 1 2)
+        < (121503 : ℝ) / 10 ^ 12 := hparent.2
+      _ < (121509 : ℝ) / 10 ^ 12 := by norm_num
+      _ = (13501 : ℝ) / 10 ^ 12 * 9 := by ring
+
+theorem liFourThree_wavelength_bounds :
+    (208289 : ℝ) / 10 ^ 12 < vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 4) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 4) <
+        (208290 : ℝ) / 10 ^ 12 := by
+  rw [chargeThree_ninth paschen_energy_ne]
+  have hparent := paschenWavelength_bounds
+  have h9 : (0 : ℝ) < 9 := by norm_num
+  constructor
+  · rw [lt_div_iff₀ h9]
+    calc (208289 : ℝ) / 10 ^ 12 * 9
+        = (1874601 : ℝ) / 10 ^ 12 := by ring
+      _ < (1874606 : ℝ) / 10 ^ 12 := by norm_num
+      _ < vacuumWavelength (bohrEnergyDiff 3 4) := hparent.1
+  · rw [div_lt_iff₀ h9]
+    calc vacuumWavelength (bohrEnergyDiff 3 4)
+        < (1874607 : ℝ) / 10 ^ 12 := hparent.2
+      _ < (1874610 : ℝ) / 10 ^ 12 := by norm_num
+      _ = (208290 : ℝ) / 10 ^ 12 * 9 := by ring
+
+theorem liMatchLyman_fixed :
+    vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) =
+      vacuumWavelength (bohrEnergyDiff 1 2) :=
+  scaled_wavelength (Z := 3) (n := 1) (m := 2) (a := 3) (b := 6)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem liMatchAlpha_fixed :
+    vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) =
+      vacuumWavelength (bohrEnergyDiff 2 3) :=
+  scaled_wavelength (Z := 3) (n := 2) (m := 3) (a := 6) (b := 9)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem liMatchBeta_fixed :
+    vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) =
+      vacuumWavelength (bohrEnergyDiff 2 4) :=
+  scaled_wavelength (Z := 3) (n := 2) (m := 4) (a := 6) (b := 12)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem liMatchGamma_fixed :
+    vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) =
+      vacuumWavelength (bohrEnergyDiff 2 5) :=
+  scaled_wavelength (Z := 3) (n := 2) (m := 5) (a := 6) (b := 15)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+private theorem liMatchLyman_lo_rat :
+    (121511 : ℚ) / 10 ^ 12 < standInWavelength 16 3 piDigitLo * (12788 / 12787) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchLyman_hi_rat :
+    standInWavelength 16 3 piDigitHi * (12787 / 12786) < (121512 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchAlpha_lo_rat :
+    (656163 : ℚ) / 10 ^ 12 < standInWavelength 144 5 piDigitLo * (12788 / 12787) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchAlpha_hi_rat :
+    standInWavelength 144 5 piDigitHi * (12787 / 12786) < (656164 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchBeta_lo_rat :
+    (486047 : ℚ) / 10 ^ 12 < standInWavelength 64 3 piDigitLo * (12788 / 12787) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchBeta_hi_rat :
+    standInWavelength 64 3 piDigitHi * (12787 / 12786) < (486048 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchGamma_lo_rat :
+    (433970 : ℚ) / 10 ^ 12 < standInWavelength 400 21 piDigitLo * (12788 / 12787) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem liMatchGamma_hi_rat :
+    standInWavelength 400 21 piDigitHi * (12787 / 12786) < (433971 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+theorem liMatchLyman_shared {ρ : ℝ} (hlo : (12786 : ℝ) < ρ) (hhi : ρ < 12787) :
+    (121511 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) * ((ρ + 1) / ρ) <
+        (121512 : ℝ) / 10 ^ 12 := by
+  rw [liMatchLyman_fixed, lyman_wavelength_eq]
+  convert ratioLithium_bounds (by norm_num) (by norm_num) hlo hhi
+      liMatchLyman_lo_rat liMatchLyman_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem liMatchAlpha_shared {ρ : ℝ} (hlo : (12786 : ℝ) < ρ) (hhi : ρ < 12787) :
+    (656163 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) * ((ρ + 1) / ρ) <
+        (656164 : ℝ) / 10 ^ 12 := by
+  rw [liMatchAlpha_fixed, hAlpha_wavelength_eq]
+  convert ratioLithium_bounds (by norm_num) (by norm_num) hlo hhi
+      liMatchAlpha_lo_rat liMatchAlpha_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem liMatchBeta_shared {ρ : ℝ} (hlo : (12786 : ℝ) < ρ) (hhi : ρ < 12787) :
+    (486047 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) * ((ρ + 1) / ρ) <
+        (486048 : ℝ) / 10 ^ 12 := by
+  rw [liMatchBeta_fixed, hBeta_wavelength_eq]
+  convert ratioLithium_bounds (by norm_num) (by norm_num) hlo hhi
+      liMatchBeta_lo_rat liMatchBeta_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem liMatchGamma_shared {ρ : ℝ} (hlo : (12786 : ℝ) < ρ) (hhi : ρ < 12787) :
+    (433970 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) * ((ρ + 1) / ρ) <
+        (433971 : ℝ) / 10 ^ 12 := by
+  rw [liMatchGamma_fixed, hGamma_wavelength_eq]
+  convert ratioLithium_bounds (by norm_num) (by norm_num) hlo hhi
+      liMatchGamma_lo_rat liMatchGamma_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem liMatchLyman_nucleus :
+    (121511 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) <
+        (121512 : ℝ) / 10 ^ 12 := by
+  have h := lithiumElectronMassRatio_bounds
+  exact liMatchLyman_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem liMatchAlpha_nucleus :
+    (656163 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) <
+        (656164 : ℝ) / 10 ^ 12 := by
+  have h := lithiumElectronMassRatio_bounds
+  exact liMatchAlpha_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem liMatchBeta_nucleus :
+    (486047 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) <
+        (486048 : ℝ) / 10 ^ 12 := by
+  have h := lithiumElectronMassRatio_bounds
+  exact liMatchBeta_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem liMatchGamma_nucleus :
+    (433970 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) *
+        (((lithiumElectronMassRatio : ℝ) + 1) / (lithiumElectronMassRatio : ℝ)) <
+        (433971 : ℝ) / 10 ^ 12 := by
+  have h := lithiumElectronMassRatio_bounds
+  exact liMatchGamma_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem liMatch_short_of_hydrogen {ρ σ : ℝ}
+    (hρlo : (12786 : ℝ) < ρ) (hρhi : ρ < 12787)
+    (hσlo : (1836 : ℝ) < σ) (hσhi : σ < 1837) :
+    vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 3 6) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 1 2) * ((σ + 1) / σ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 9) * ((ρ + 1) / ρ) <
+        hAlphaWavelength * ((σ + 1) / σ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 12) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 2 4) * ((σ + 1) / σ) ∧
+      vacuumWavelength ((3 : ℝ) ^ 2 * bohrEnergyDiff 6 15) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 2 5) * ((σ + 1) / σ) := by
+  have hLy := liMatchLyman_shared hρlo hρhi
+  have hA := liMatchAlpha_shared hρlo hρhi
+  have hB := liMatchBeta_shared hρlo hρhi
+  have hG := liMatchGamma_shared hρlo hρhi
+  have kLy := lyman_shared_wavelength hσlo hσhi
+  have kA := hAlpha_shared_wavelength hσlo hσhi
+  have kB := hBeta_shared_wavelength hσlo hσhi
+  have kG := hGamma_shared_wavelength hσlo hσhi
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact lt_trans hLy.2
+      (lt_trans (by norm_num : (121512 : ℝ) / 10 ^ 12 < (121568 : ℝ) / 10 ^ 12) kLy.1)
+  · exact lt_trans hA.2
+      (lt_trans (by norm_num : (656164 : ℝ) / 10 ^ 12 < (656469 : ℝ) / 10 ^ 12) kA.1)
+  · exact lt_trans hB.2
+      (lt_trans (by norm_num : (486048 : ℝ) / 10 ^ 12 < (486273 : ℝ) / 10 ^ 12) kB.1)
+  · exact lt_trans hG.2
+      (lt_trans (by norm_num : (433971 : ℝ) / 10 ^ 12 < (434172 : ℝ) / 10 ^ 12) kG.1)
 
 end Gravity
 
