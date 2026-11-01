@@ -32,6 +32,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.HydrogenAlpha
+import DstDiophantine.Gravity.SpectralLines
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
@@ -373,7 +374,20 @@ The straight line of one fixed jet is not itself that geodesic.
   between \(656469\) and \(656470\) picometres. At shells \(n\ge 2\) the
   signed circular energy departs from the Coulomb value by less than
   \(10^{-6}\) of the ionisation, and the line itself by less than one part
-  in ten thousand. The radius law remains an input.
+  in ten thousand. The ground shell departs from \(-1\) by less than
+  \(1/60000\). The steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\)
+  are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
+  ten thousand. Charge two stays in that well; its steps \(2\to 1\) and
+  \(4\to 3\) are three ionisations and \(7/36\), likewise within one part
+  in ten thousand. The radius law, including the charge, remains an input.
+* `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
+  of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
+  \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
+  \(1874607\) picometres. Shared inertia with the same mass bracket places
+  them strictly between \(121568\) and \(121569\), \(486273\) and \(486274\),
+  \(434172\) and \(434174\), and \(1875626\) and \(1875628\) picometres. With
+  the nucleus fixed, the two charge-two wavelengths lie strictly between
+  \(30375\) and \(30376\), and between \(468651\) and \(468652\), picometres.
 * `BothChannels` — an electron and a proton exert both terms at every
   separation. For an unlike pair, equal signs of the two interference factors
   make the two terms point the same way, so the separation-increasing force
