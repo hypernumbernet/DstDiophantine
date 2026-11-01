@@ -38,6 +38,16 @@ wavelength, likewise an input.
   from the Coulomb value by less than \(10^{-6}\) of the ionisation, and
   the difference of the shells \(3\) and \(2\) departs from \(5/36\) by
   less than one part in ten thousand of that fraction.
+* The ground shell departs from \(-1\) by less than \(1/60000\). The
+  bookkeeping steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\) are
+  \(3/4\), \(3/16\), \(21/100\), and \(7/144\) of the ionisation, and each
+  circular-energy difference departs from that fraction by less than one
+  part in ten thousand of it.
+* With nuclear charge two the hydrogenic phases \(Z\alpha/(2n^2)\) stay
+  below \(1/100\), in the outer well, on the restoring side. The steps
+  \(2\to 1\) and \(4\to 3\) are three ionisations and \(7/36\) of one, and
+  each departs from that fraction by less than one part in ten thousand.
+  The radius law, including the charge, remains an input.
 -/
 
 namespace DstDiophantine
@@ -682,6 +692,359 @@ theorem hAlpha_proton_share :
         (656470 : ℝ) / 10 ^ 12 := by
   have h := protonElectronMassRatio_bounds
   exact hAlpha_shared_wavelength (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+/-! ### Further bookkeeping fractions -/
+
+theorem bohrEnergyDiff_lymanAlpha :
+    bohrEnergyDiff 1 2 = (3 / 4) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  norm_num
+  ring
+
+theorem bohrEnergyDiff_hBeta :
+    bohrEnergyDiff 2 4 = (3 / 16) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  norm_num
+  ring
+
+theorem bohrEnergyDiff_hGamma :
+    bohrEnergyDiff 2 5 = (21 / 100) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  norm_num
+  ring
+
+theorem bohrEnergyDiff_paschenAlpha :
+    bohrEnergyDiff 3 4 = (7 / 144) * (hydrogenIonisationApprox : ℝ) := by
+  unfold bohrEnergyDiff
+  norm_num
+  ring
+
+theorem fineStructureApprox_lt_hundredth :
+    (fineStructureApprox : ℝ) < 1 / 100 := by
+  unfold fineStructureApprox fineStructureMantissa fineStructureScale
+  norm_num
+
+/-! ### Ground shell, and the other hydrogen differences -/
+
+theorem signedShell_ground :
+    |signedShell 1 + 1| < 1 / 60000 := by
+  have hn0 : 0 < (1 : ℕ) := by norm_num
+  have hx_pos : (0 : ℝ) < (bohrShellPhase 1 : ℝ) := by
+    exact_mod_cast bohrShellPhase_pos hn0
+  have hx_eq : (bohrShellPhase 1 : ℝ) = (fineStructureApprox : ℝ) / 2 := by
+    unfold bohrShellPhase
+    norm_num
+  have hx_lt : (bohrShellPhase 1 : ℝ) < 1 / 100 := bohrShellPhase_lt_hundredth hn0
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hident : signedShell 1 + 1 =
+      (2 / (fineStructureApprox : ℝ)) *
+        (circEnergy (bohrShellPhase 1) + (bohrShellPhase 1 : ℝ)) := by
+    unfold signedShell
+    rw [hx_eq]
+    field_simp [hα.ne']
+  rw [hident]
+  have habs : |(2 / (fineStructureApprox : ℝ)) *
+      (circEnergy (bohrShellPhase 1) + (bohrShellPhase 1 : ℝ))| =
+      (2 / (fineStructureApprox : ℝ)) *
+        |circEnergy (bohrShellPhase 1) + (bohrShellPhase 1 : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (2 / (fineStructureApprox : ℝ)) *
+      |circEnergy (bohrShellPhase 1) + (bohrShellPhase 1 : ℝ)| ≤
+      (2 / (fineStructureApprox : ℝ)) * ((6 / 5) * (bohrShellPhase 1 : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hloose : (2 / (fineStructureApprox : ℝ)) * ((6 / 5) *
+      (bohrShellPhase 1 : ℝ) ^ 3) = (3 / 10) * (fineStructureApprox : ℝ) ^ 2 := by
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hfinal : (3 / 10) * (fineStructureApprox : ℝ) ^ 2 < 1 / 60000 := by
+    have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 := by
+      exact pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+    have hnum : (3 / 10) * (fineStructureApprox : ℝ) ^ 2 <
+        (3 / 10) * ((73 : ℝ) / 10000) ^ 2 := by gcongr
+    have hconst : (3 / 10) * ((73 : ℝ) / 10000) ^ 2 < 1 / 60000 := by norm_num
+    exact lt_trans hnum hconst
+  linarith
+
+theorem lyman_signed_shift :
+    |signedShell 2 - signedShell 1 - (3 / 4)| < (1 / 10000) * (3 / 4) := by
+  have h2 := signedShell_near_coulomb (n := 2) (by norm_num)
+  have h1 := signedShell_ground
+  have hsplit : signedShell 2 - signedShell 1 - (3 / 4) =
+      (signedShell 2 + 1 / (2 : ℝ) ^ 2) - (signedShell 1 + 1) := by
+    have hnum : (1 : ℝ) / 2 ^ 2 - 1 = -(3 / 4) := by norm_num
+    linarith
+  obtain ⟨h2lo, h2hi⟩ := abs_lt.mp h2
+  obtain ⟨h1lo, h1hi⟩ := abs_lt.mp h1
+  rw [hsplit]
+  have hpart : (1 : ℝ) / 1000000 + 1 / 60000 < (1 / 10000) * (3 / 4) := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
+
+theorem hBeta_signed_shift :
+    |signedShell 4 - signedShell 2 - (3 / 16)| < (1 / 10000) * (3 / 16) := by
+  have h2 := signedShell_near_coulomb (n := 2) (by norm_num)
+  have h4 := signedShell_near_coulomb (n := 4) (by norm_num)
+  have hsplit : signedShell 4 - signedShell 2 - (3 / 16) =
+      (signedShell 4 + 1 / (4 : ℝ) ^ 2) - (signedShell 2 + 1 / (2 : ℝ) ^ 2) := by
+    have hnum : (1 : ℝ) / 4 ^ 2 - 1 / 2 ^ 2 = -(3 / 16) := by norm_num
+    linarith
+  obtain ⟨h4lo, h4hi⟩ := abs_lt.mp h4
+  obtain ⟨h2lo, h2hi⟩ := abs_lt.mp h2
+  rw [hsplit]
+  have hpart : (2 : ℝ) / 1000000 < (1 / 10000) * (3 / 16) := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
+
+theorem hGamma_signed_shift :
+    |signedShell 5 - signedShell 2 - (21 / 100)| < (1 / 10000) * (21 / 100) := by
+  have h2 := signedShell_near_coulomb (n := 2) (by norm_num)
+  have h5 := signedShell_near_coulomb (n := 5) (by norm_num)
+  have hsplit : signedShell 5 - signedShell 2 - (21 / 100) =
+      (signedShell 5 + 1 / (5 : ℝ) ^ 2) - (signedShell 2 + 1 / (2 : ℝ) ^ 2) := by
+    have hnum : (1 : ℝ) / 5 ^ 2 - 1 / 2 ^ 2 = -(21 / 100) := by norm_num
+    linarith
+  obtain ⟨h5lo, h5hi⟩ := abs_lt.mp h5
+  obtain ⟨h2lo, h2hi⟩ := abs_lt.mp h2
+  rw [hsplit]
+  have hpart : (2 : ℝ) / 1000000 < (1 / 10000) * (21 / 100) := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
+
+theorem paschen_signed_shift :
+    |signedShell 4 - signedShell 3 - (7 / 144)| < (1 / 10000) * (7 / 144) := by
+  have h3 := signedShell_near_coulomb (n := 3) (by norm_num)
+  have h4 := signedShell_near_coulomb (n := 4) (by norm_num)
+  have hsplit : signedShell 4 - signedShell 3 - (7 / 144) =
+      (signedShell 4 + 1 / (4 : ℝ) ^ 2) - (signedShell 3 + 1 / (3 : ℝ) ^ 2) := by
+    have hnum : (1 : ℝ) / 4 ^ 2 - 1 / 3 ^ 2 = -(7 / 144) := by norm_num
+    linarith
+  obtain ⟨h4lo, h4hi⟩ := abs_lt.mp h4
+  obtain ⟨h3lo, h3hi⟩ := abs_lt.mp h3
+  rw [hsplit]
+  have hpart : (2 : ℝ) / 1000000 < (1 / 10000) * (7 / 144) := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
+
+/-! ### Charge two: the one-electron ion -/
+
+/-- Hydrogenic phase \(Z\alpha/(2n^2)\), the Bohr shell of charge \(Z\) once
+the electromagnetic length is the reduced Compton wavelength. -/
+def hydrogenicPhase (Z n : ℕ) : ℚ :=
+  (Z : ℚ) * fineStructureApprox / (2 * (n : ℚ) ^ 2)
+
+/-- Signed circular energy in units of the hydrogen ionisation. The Coulomb
+value is \(-Z^2/n^2\). -/
+noncomputable def signedCharge (Z n : ℕ) : ℝ :=
+  (2 * (Z : ℝ) / (fineStructureApprox : ℝ)) * circEnergy (hydrogenicPhase Z n)
+
+theorem hydrogenicPhase_two_pos {n : ℕ} (hn : 0 < n) :
+    (0 : ℚ) < hydrogenicPhase 2 n := by
+  unfold hydrogenicPhase
+  exact div_pos (mul_pos (by norm_num) fineStructureApprox_pos)
+    (mul_pos (by norm_num) (pow_pos (Nat.cast_pos.mpr hn) 2))
+
+theorem hydrogenicPhase_two_le_alpha {n : ℕ} (hn : 0 < n) :
+    hydrogenicPhase 2 n ≤ fineStructureApprox := by
+  unfold hydrogenicPhase
+  have hn' : (n : ℚ) ≠ 0 := by exact_mod_cast hn.ne'
+  have hn1 : (1 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+  have hsq : (1 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 1) hn1 2
+    simpa using this
+  have hα : (0 : ℚ) ≤ fineStructureApprox := fineStructureApprox_pos.le
+  calc (2 : ℚ) * fineStructureApprox / (2 * (n : ℚ) ^ 2)
+      = fineStructureApprox / (n : ℚ) ^ 2 := by field_simp [hn']
+    _ ≤ fineStructureApprox / 1 :=
+        div_le_div_of_nonneg_left hα (by norm_num) hsq
+    _ = fineStructureApprox := by ring
+
+theorem hydrogenicPhase_two_le_quarter {n : ℕ} (hn : 2 ≤ n) :
+    hydrogenicPhase 2 n ≤ fineStructureApprox / 4 := by
+  unfold hydrogenicPhase
+  have hn' : (n : ℚ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt (lt_of_lt_of_le (by norm_num : 0 < 2) hn))
+  have hn2 : (4 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have hn'' : (2 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 2) hn'' 2
+    simpa [show (2 : ℚ) ^ 2 = 4 by norm_num] using this
+  have hα : (0 : ℚ) ≤ fineStructureApprox := fineStructureApprox_pos.le
+  calc (2 : ℚ) * fineStructureApprox / (2 * (n : ℚ) ^ 2)
+      = fineStructureApprox / (n : ℚ) ^ 2 := by field_simp [hn']
+    _ ≤ fineStructureApprox / 4 :=
+        div_le_div_of_nonneg_left hα (by norm_num) hn2
+
+theorem hydrogenicPhase_two_lt_hundredth {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 2 n : ℝ) < 1 / 100 := by
+  have hle := hydrogenicPhase_two_le_alpha hn
+  exact lt_of_le_of_lt (by exact_mod_cast hle) fineStructureApprox_lt_hundredth
+
+theorem hydrogenicPhase_two_mem_outer {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 2 n : ℝ) ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+  refine ⟨by exact_mod_cast hydrogenicPhase_two_pos hn, ?_⟩
+  have h100 := hydrogenicPhase_two_lt_hundredth hn
+  have hnode : (1 / 100 : ℝ) < resonanceRoot1 := by
+    have hπ : (1 / 100 : ℝ) < π / 4 := by linarith [pi_gt_three]
+    exact lt_trans hπ resonanceRoot1_sharp_bounds.1
+  exact lt_trans h100 hnode
+
+theorem hydrogenicTwo_restoring {n : ℕ} (hn : 0 < n) :
+    0 < circStable (hydrogenicPhase 2 n) ∧
+      (hydrogenicPhase 2 n : ℝ) * deriv pairAttraction (hydrogenicPhase 2 n) /
+          pairAttraction (hydrogenicPhase 2 n) < 3 := by
+  obtain ⟨y, hy, _⟩ := exists_unique_circStable
+  have hx := hydrogenicPhase_two_mem_outer hn
+  have hlt : (hydrogenicPhase 2 n : ℝ) < y := by
+    have h100 := hydrogenicPhase_two_lt_hundredth hn
+    linarith [hy.1.1]
+  have hsign := circStable_outer_sign hx hy.1 hy.2
+  have hpos : 0 < circStable (hydrogenicPhase 2 n) := hsign.1.mpr hlt
+  exact ⟨hpos, (pairAttraction_logDeriv_lt_three_outer_iff hx).mpr hpos⟩
+
+theorem hydrogenicPhase_two_ground :
+    hydrogenicPhase 2 1 = fineStructureApprox := by
+  unfold hydrogenicPhase
+  norm_num
+
+theorem signedCharge_two_ground :
+    |signedCharge 2 1 + 4| < 1 / 3900 := by
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 2 1 : ℝ) := by
+    exact_mod_cast hydrogenicPhase_two_pos (by norm_num : 0 < (1 : ℕ))
+  have hx_eq : (hydrogenicPhase 2 1 : ℝ) = (fineStructureApprox : ℝ) := by
+    exact_mod_cast hydrogenicPhase_two_ground
+  have hx_lt : (hydrogenicPhase 2 1 : ℝ) < 1 / 100 :=
+    hydrogenicPhase_two_lt_hundredth (by norm_num)
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hident : signedCharge 2 1 + 4 =
+      (4 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 2 1) + (hydrogenicPhase 2 1 : ℝ)) := by
+    unfold signedCharge
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  rw [hident]
+  have habs : |(4 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 2 1) + (hydrogenicPhase 2 1 : ℝ))| =
+      (4 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 2 1) + (hydrogenicPhase 2 1 : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (4 / (fineStructureApprox : ℝ)) *
+      |circEnergy (hydrogenicPhase 2 1) + (hydrogenicPhase 2 1 : ℝ)| ≤
+      (4 / (fineStructureApprox : ℝ)) *
+        ((6 / 5) * (hydrogenicPhase 2 1 : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hloose : (4 / (fineStructureApprox : ℝ)) *
+      ((6 / 5) * (hydrogenicPhase 2 1 : ℝ) ^ 3) =
+      (24 / 5) * (fineStructureApprox : ℝ) ^ 2 := by
+    rw [hx_eq]
+    field_simp [hα.ne']
+    ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hfinal : (24 / 5) * (fineStructureApprox : ℝ) ^ 2 < 1 / 3900 := by
+    have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 := by
+      exact pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+    have hnum : (24 / 5) * (fineStructureApprox : ℝ) ^ 2 <
+        (24 / 5) * ((73 : ℝ) / 10000) ^ 2 := by gcongr
+    have hconst : (24 / 5) * ((73 : ℝ) / 10000) ^ 2 < 1 / 3900 := by norm_num
+    exact lt_trans hnum hconst
+  linarith
+
+theorem signedCharge_two_excited {n : ℕ} (hn : 2 ≤ n) :
+    |signedCharge 2 n + 4 / (n : ℝ) ^ 2| < 1 / 250000 := by
+  have hn0 : 0 < n := by omega
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 2 n : ℝ) := by
+    exact_mod_cast hydrogenicPhase_two_pos hn0
+  have hx_le : (hydrogenicPhase 2 n : ℝ) ≤ (fineStructureApprox : ℝ) / 4 := by
+    exact_mod_cast hydrogenicPhase_two_le_quarter hn
+  have hx_lt : (hydrogenicPhase 2 n : ℝ) < 1 / 100 :=
+    hydrogenicPhase_two_lt_hundredth hn0
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hident : signedCharge 2 n + 4 / (n : ℝ) ^ 2 =
+      (4 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 2 n) + (hydrogenicPhase 2 n : ℝ)) := by
+    have hxQ : hydrogenicPhase 2 n = fineStructureApprox / (n : ℚ) ^ 2 := by
+      unfold hydrogenicPhase
+      have hn' : (n : ℚ) ≠ 0 := by exact_mod_cast hn0.ne'
+      field_simp [hn']
+      ring
+    have hxphase : (hydrogenicPhase 2 n : ℝ) =
+        (fineStructureApprox : ℝ) / (n : ℝ) ^ 2 := by
+      exact_mod_cast hxQ
+    unfold signedCharge
+    rw [hxphase]
+    field_simp [hα.ne', (Nat.cast_pos.mpr hn0 : (0 : ℝ) < (n : ℝ)).ne']
+    ring
+  rw [hident]
+  have habs : |(4 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 2 n) + (hydrogenicPhase 2 n : ℝ))| =
+      (4 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 2 n) + (hydrogenicPhase 2 n : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (4 / (fineStructureApprox : ℝ)) *
+      |circEnergy (hydrogenicPhase 2 n) + (hydrogenicPhase 2 n : ℝ)| ≤
+      (4 / (fineStructureApprox : ℝ)) * ((6 / 5) * (hydrogenicPhase 2 n : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hloose : (4 / (fineStructureApprox : ℝ)) * ((6 / 5) *
+      (hydrogenicPhase 2 n : ℝ) ^ 3) ≤ (3 / 40) * (fineStructureApprox : ℝ) ^ 2 := by
+    calc (4 / (fineStructureApprox : ℝ)) * ((6 / 5) * (hydrogenicPhase 2 n : ℝ) ^ 3)
+        ≤ (4 / (fineStructureApprox : ℝ)) * ((6 / 5) *
+            ((fineStructureApprox : ℝ) / 4) ^ 3) := by gcongr
+      _ = (24 / 320) * (fineStructureApprox : ℝ) ^ 2 := by
+          field_simp [hα.ne']
+          ring
+      _ = (3 / 40) * (fineStructureApprox : ℝ) ^ 2 := by norm_num
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hfinal : (3 / 40) * (fineStructureApprox : ℝ) ^ 2 < 1 / 250000 := by
+    have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 := by
+      exact pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+    have hnum : (3 / 40) * (fineStructureApprox : ℝ) ^ 2 <
+        (3 / 40) * ((73 : ℝ) / 10000) ^ 2 := by gcongr
+    have hconst : (3 / 40) * ((73 : ℝ) / 10000) ^ 2 < 1 / 250000 := by norm_num
+    exact lt_trans hnum hconst
+  linarith
+
+theorem heLyman_signed_shift :
+    |signedCharge 2 2 - signedCharge 2 1 - 3| < (1 / 10000) * 3 := by
+  have h2 := signedCharge_two_excited (n := 2) (by norm_num)
+  have h1 := signedCharge_two_ground
+  have hsplit : signedCharge 2 2 - signedCharge 2 1 - 3 =
+      (signedCharge 2 2 + 4 / (2 : ℝ) ^ 2) - (signedCharge 2 1 + 4) := by
+    have hnum : (4 : ℝ) / 2 ^ 2 - 4 = -3 := by norm_num
+    linarith
+  obtain ⟨h2lo, h2hi⟩ := abs_lt.mp h2
+  obtain ⟨h1lo, h1hi⟩ := abs_lt.mp h1
+  rw [hsplit]
+  have hpart : (1 : ℝ) / 250000 + 1 / 3900 < (1 / 10000) * 3 := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
+
+theorem heVisible_signed_shift :
+    |signedCharge 2 4 - signedCharge 2 3 - (7 / 36)| < (1 / 10000) * (7 / 36) := by
+  have h4 := signedCharge_two_excited (n := 4) (by norm_num)
+  have h3 := signedCharge_two_excited (n := 3) (by norm_num)
+  have hsplit : signedCharge 2 4 - signedCharge 2 3 - (7 / 36) =
+      (signedCharge 2 4 + 4 / (4 : ℝ) ^ 2) - (signedCharge 2 3 + 4 / (3 : ℝ) ^ 2) := by
+    have hnum : (4 : ℝ) / 3 ^ 2 - 4 / 4 ^ 2 = 7 / 36 := by norm_num
+    linarith
+  obtain ⟨h4lo, h4hi⟩ := abs_lt.mp h4
+  obtain ⟨h3lo, h3hi⟩ := abs_lt.mp h3
+  rw [hsplit]
+  have hpart : (2 : ℝ) / 250000 < (1 / 10000) * (7 / 36) := by norm_num
+  rw [abs_lt]
+  constructor <;> linarith
 
 end Gravity
 
