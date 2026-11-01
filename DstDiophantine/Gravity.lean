@@ -378,8 +378,10 @@ The straight line of one fixed jet is not itself that geodesic.
   \(1/60000\). The steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\)
   are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
   ten thousand. Charge two stays in that well; its steps \(2\to 1\) and
-  \(4\to 3\) are three ionisations and \(7/36\), likewise within one part
-  in ten thousand. The radius law, including the charge, remains an input.
+  \(4\to 3\) are three ionisations and \(7/36\), and its even steps
+  \(4\to 2\), \(6\to 4\), \(8\to 4\), and \(10\to 4\) repeat \(3/4\),
+  \(5/36\), \(3/16\), and \(21/100\), each within one part in ten thousand.
+  The radius law, including the charge, remains an input.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
@@ -388,6 +390,12 @@ The straight line of one fixed jet is not itself that geodesic.
   \(434172\) and \(434174\), and \(1875626\) and \(1875628\) picometres. With
   the nucleus fixed, the two charge-two wavelengths lie strictly between
   \(30375\) and \(30376\), and between \(468651\) and \(468652\), picometres.
+  Doubled shells reproduce the Lyman \(\alpha\), \(\mathrm{H}\alpha\),
+  \(\mathrm{H}\beta\), and \(\mathrm{H}\gamma\) wavelengths exactly. Shared
+  inertia with a helium-nucleus mass ratio strictly between \(7294\) and
+  \(7295\) places those four strictly between \(121518\) and \(121519\),
+  \(656202\) and \(656203\), \(486075\) and \(486076\), and \(433996\) and
+  \(433997\) picometres, each short of the hydrogen line.
 * `BothChannels` — an electron and a proton exert both terms at every
   separation. For an unlike pair, equal signs of the two interference factors
   make the two terms point the same way, so the separation-increasing force

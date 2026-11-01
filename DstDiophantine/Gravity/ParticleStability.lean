@@ -26,7 +26,8 @@ cannot pay their rest energies.
 * The written one-axis flow with vanishing mismatch, mismatch rate, and
   common velocity keeps both angles fixed. A nonzero mismatch rate
   leaves that value.
-* On the SI stand-ins, \(1836 < m_p/m_e < 1837\). One hundred times the
+* On the SI stand-ins, \(1836 < m_p/m_e < 1837\), and
+  \(7294 < m_\alpha/m_e < 7295\) for the \(^4\mathrm{He}\) nucleus. One hundred times the
   empirical binding per nucleon, and twenty optical wells, each lie
   below the proton rest energy. Hydrogen ionisation is exactly
   \(\alpha^2/2\) of the electron rest energy, and that fraction lies in
@@ -152,6 +153,49 @@ theorem protonElectronMassRatio_bounds :
         1837 * protonElectronMassRatio_den := by
       unfold protonElectronMassRatio_num protonElectronMassRatio_den
         protonMassMantissa electronMassScale electronMassMantissa protonMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def alphaElectronMassRatio : ℚ := alphaMassApprox / electronMassApprox
+
+def alphaElectronMassRatio_num : ℕ :=
+  alphaMassMantissa * 10 ^ electronMassScale
+
+def alphaElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ alphaMassScale
+
+theorem alphaElectronMassRatio_eq_num_div_den :
+    alphaElectronMassRatio =
+      (alphaElectronMassRatio_num : ℚ) / alphaElectronMassRatio_den := by
+  unfold alphaElectronMassRatio alphaMassApprox electronMassApprox
+    alphaElectronMassRatio_num alphaElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem alphaElectronMassRatio_den_pos :
+    (0 : ℚ) < (alphaElectronMassRatio_den : ℚ) := by
+  unfold alphaElectronMassRatio_den electronMassMantissa alphaMassScale
+  norm_num
+
+theorem alphaElectronMassRatio_bounds :
+    (7294 : ℚ) < alphaElectronMassRatio ∧
+      alphaElectronMassRatio < (7295 : ℚ) := by
+  rw [alphaElectronMassRatio_eq_num_div_den]
+  have hden := alphaElectronMassRatio_den_pos
+  constructor
+  · have hnat : 7294 * alphaElectronMassRatio_den <
+        alphaElectronMassRatio_num := by
+      unfold alphaElectronMassRatio_num alphaElectronMassRatio_den
+        alphaMassMantissa electronMassScale electronMassMantissa alphaMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : alphaElectronMassRatio_num <
+        7295 * alphaElectronMassRatio_den := by
+      unfold alphaElectronMassRatio_num alphaElectronMassRatio_den
+        alphaMassMantissa electronMassScale electronMassMantissa alphaMassScale
       native_decide
     rw [div_lt_iff₀ hden]
     exact_mod_cast hnat
