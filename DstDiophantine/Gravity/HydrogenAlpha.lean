@@ -56,8 +56,11 @@ wavelength, likewise an input.
   that fraction by less than one part in ten thousand. Shells scaled by
   eleven, \(22\to 11\), \(33\to 22\), \(44\to 22\), and \(55\to 22\),
   repeat \(3/4\), \(5/36\), \(3/16\), and \(21/100\), each within one part
-  in ten thousand. The neutral yellow doublet is not a step of this
-  ladder. The radius law, including the charge, remains an input.
+  in ten thousand. A nucleus of charge eleven together with the ten
+  electrons of the first two shells leaves one electron on the third
+  shell, feeling charge one. The monopole and the dipole of that shell
+  share its phase, so both the bookkeeping step and the circular-energy
+  step vanish. The radius law, including the charge, remains an input.
 -/
 
 namespace DstDiophantine
@@ -1095,12 +1098,44 @@ theorem heMatchGamma_signed_shift :
   signedCharge_two_step (n := 4) (m := 10) (by norm_num) (by norm_num)
     (by norm_num) (by norm_num)
 
-/-! ### Charge eleven: the one-electron sodium ion
+/-! ### Charge one after the first two shells
 
-The neutral yellow doublet is not a step of this ladder. There is no
-fine-structure splitting, and two seats of one shell index share one
-bookkeeping energy. What follows is the bare charge, \(Z=11\).
+The first two principal shells hold ten electrons. Charge eleven minus
+those ten leaves one, and the remaining electron sits on the third shell.
+The monopole and the dipole of one shell index share one phase, so the
+yellow doublet — that step — has circular energy zero. There is no
+fine-structure splitting. The bare charge \(Z=11\) is a separate ladder.
 -/
+
+theorem hydrogenicPhase_one {n : ℕ} (hn : 0 < n) :
+    hydrogenicPhase 1 n = bohrShellPhase n := by
+  unfold hydrogenicPhase bohrShellPhase
+  have hn' : (n : ℚ) ≠ 0 := by exact_mod_cast hn.ne'
+  field_simp [hn']
+  ring
+
+theorem sodiumCore_electrons :
+    2 * 1 ^ 2 + 2 * 2 ^ 2 = 10 ∧ 11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) = 1 := by
+  constructor <;> norm_num
+
+theorem sodiumValence_restoring :
+    0 < circStable (hydrogenicPhase 1 3) ∧
+      (hydrogenicPhase 1 3 : ℝ) * deriv pairAttraction (hydrogenicPhase 1 3) /
+          pairAttraction (hydrogenicPhase 1 3) < 3 := by
+  rw [hydrogenicPhase_one (by norm_num : 0 < (3 : ℕ))]
+  exact bohrShell_restoring (by norm_num)
+
+theorem sodiumValence_book :
+    ((11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) : ℕ) : ℝ) ^ 2 * bohrEnergyDiff 3 3 = 0 := by
+  have hcore : (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2) : ℕ) = 1 := sodiumCore_electrons.2
+  rw [hcore]
+  unfold bohrEnergyDiff
+  norm_num
+
+theorem sodiumValence_circ :
+    signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 3 -
+        signedCharge (11 - (2 * 1 ^ 2 + 2 * 2 ^ 2)) 3 = 0 := by
+  ring
 
 theorem hydrogenicPhase_eleven_pos {n : ℕ} (hn : 0 < n) :
     (0 : ℚ) < hydrogenicPhase 11 n := by
@@ -1182,7 +1217,7 @@ theorem naLyman_book :
   norm_num
   ring
 
-theorem naVisible_book :
+theorem naFourThree_book :
     (11 : ℝ) ^ 2 * bohrEnergyDiff 3 4 =
       (847 / 144) * (hydrogenIonisationApprox : ℝ) := by
   rw [bohrEnergyDiff_paschenAlpha]
@@ -1277,7 +1312,7 @@ theorem signedCharge_eleven_four :
       (by norm_num) (hx_eq.le) (by norm_num) (by norm_num) ?_
   norm_num
 
-theorem naVisible_signed_shift :
+theorem naFourThree_signed_shift :
     |signedCharge 11 4 - signedCharge 11 3 - (847 / 144)| <
       (1 / 10000) * (847 / 144) := by
   have h4 := signedCharge_eleven_four
