@@ -211,6 +211,37 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   </svg>
   <p class="note"><span class="en">Schematic, not to scale. The note does not quote a bond angle in degrees, derive a dissociation energy, or derive ℓ; it does not locate a resting radius for the axial electron, and tilts that break the even spacing are not treated.</span><span class="ja">模式図で、縮尺は正確ではありません。論文は結合角を度単位では示さず、解離エネルギーも ℓ も導出しません。軸上の電子の静止半径も定めず、等間隔を崩す傾きは扱いません。</span></p>
   <p><span class="en"><b>Still open.</b> The rule that two electrons cannot share one seat is read as the gravitational layer, the same one that keeps nucleons apart. Bohr's ladder of radii, the fine-structure constant and the size of an atom in laboratory units are not yet derived; matching the layers to measured atomic sizes is currently under research.</span><span class="ja"><b>これからの課題。</b>二つの電子が一つの席を共有できないという規則は、核子どうしを離しておくのと同じ重力の層として読まれます。ボーアの半径の階段、微細構造定数、実験室の単位での原子の大きさはまだ導出されておらず、層を実際の原子の大きさに対応づけることは現在研究中です。</span></p>
+
+  <h3 class="sub" id="h-alpha"><span class="en">Hydrogen's red line (Hα)</span><span class="ja">水素の赤い線（Hα）</span></h3>
+  <p><span class="en">Hydrogen's familiar red Balmer line is read as a step between two electron shells. Once Bohr's radius rule — radius proportional to n² — is taken as an input, and it is <em>not</em> derived from the sign-changing geometry here, the bookkeeping gap from shell 3 down to shell 2 is exactly 5/36 of the ionisation energy. That fraction is the Hα transition in this picture.</span><span class="ja">おなじみの水素の赤いバルマー線は、二つの電子殻のあいだの段差として読まれます。ボーアの半径則 — 半径が n² に比例する則 — を入力として置けば、ここでは符号の変わる幾何からは<b>導かれません</b>。殻 3 から殻 2 への段差は、イオン化エネルギーのちょうど 5/36 です。この分数が、この描像での Hα 遷移です。</span></p>
+  <p><span class="en">Under that radius rule, every shell sits in the <b>outer well</b>, on the side of a circular path where the radial force pulls the orbit back inward — not on a force-free circle cancelled by a separate centrifugal term. Shells 1, 2 and 3 all lie on that restoring side, well outside the first node.</span><span class="ja">その半径則のもとでは、どの殻も<b>外側の井戸</b>にあり、円軌道が動径方向に戻される側 — 別の遠心力項で打ち消された力のない円ではなく — に置かれます。殻 1、2、3 はいずれもその戻る側にあり、最初の節よりはるか外側です。</span></p>
+  <p><span class="en">Turning the energy step into a wavelength, with laboratory constants as inputs: if the proton is held fixed, the predicted vacuum wavelength lies between about 656.112 nm and 656.113 nm. If the proton and electron share inertia, the wavelength is stretched by the mass ratio and lies between about 656.469 nm and 656.470 nm. Measured vacuum values for the red Balmer line sit near 656.47 nm — often rounded to 656.5 nm in rough summaries — in line with the recoil-inclusive band.</span><span class="ja">そのエネルギー段差を波長に直すと、実験室の定数を入力として：陽子を固定すれば、予測される真空中の波長はおおよそ 656.112 nm と 656.113 nm のあいだにあります。陽子と電子が慣性を分け合うと、質量比の分だけ波長は伸び、おおよそ 656.469 nm と 656.470 nm のあいだに入ります。測定された真空中の赤いバルマー線は、おおよそ 656.47 nm 付近 — 粗い表では 656.5 nm に丸められることもあります — で、慣性を分けた予測帯と一致します。</span></p>
+  <p><span class="en">On this outer plateau the signed circular energy differs from the pure Coulomb bookkeeping by less than one millionth of the ionisation energy at every shell from 2 upward, and the 3→2 gap differs from 5/36 by less than one part in ten thousand. Ordinary atomic spectroscopy therefore sits inside the theory with only a tiny interference correction.</span><span class="ja">この外側の台地では、殻 2 以上のどれでも、符号つきの円軌道のエネルギーは純粋なクーロンの帳簿から、イオン化エネルギーの百万分の一未満しかずれません。3→2 の段差も 5/36 からその分数の一万分の一未満しかずれないので、通常の原子スペクトルは、ごく小さな干渉補正のうちに理論の内側に収まります。</span></p>
+  <p><span class="en"><b>Honest limit.</b> The ladder of radii proportional to n² remains an input matched to observation, not a consequence proved from the interference nodes alone. Nothing here derives fine-structure splittings or selection rules.</span><span class="ja"><b>率直な限界。</b>半径が n² に比例する階段は、観測に合わせた入力のままであり、干渉の節だけから証明された帰結ではありません。ここでは微細構造の分裂や選択則も導きません。</span></p>
+  <svg class="fig" viewBox="0 0 640 240" role="img" aria-label="Shells n equals 1, 2, 3 with a 3 to 2 transition and the outer-well phase plateau">
+    <defs><marker id="ah-ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+    <text class="lbl small" x="24" y="28"><tspan class="en">shell energy (schematic)</tspan><tspan class="ja">殻のエネルギー（模式図）</tspan></text>
+    <line x1="48" y1="200" x2="48" y2="44" class="axis"/>
+    <line x1="48" y1="200" x2="300" y2="200" class="axis"/>
+    <line x1="80" y1="168" x2="280" y2="168" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="288" y="172"><tspan class="en">n = 1</tspan><tspan class="ja">n = 1</tspan></text>
+    <line x1="80" y1="118" x2="280" y2="118" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="288" y="122"><tspan class="en">n = 2</tspan><tspan class="ja">n = 2</tspan></text>
+    <line x1="80" y1="68" x2="280" y2="68" stroke="#4fc3ff" stroke-width="2.5"/>
+    <text class="lbl small" x="288" y="72"><tspan class="en">n = 3</tspan><tspan class="ja">n = 3</tspan></text>
+    <path d="M 200 68 L 200 118" fill="none" stroke="#ffd27a" stroke-width="3" marker-end="url(#ah-ha)"/>
+    <text class="lbl small accentt" x="208" y="96"><tspan class="en">Hα</tspan><tspan class="ja">Hα</tspan></text>
+    <text class="lbl small" x="360" y="28"><tspan class="en">phase x = ℓ/(2r)</tspan><tspan class="ja">位相 x = ℓ/(2r)</tspan></text>
+    <line x1="360" y1="200" x2="600" y2="200" class="axis"/>
+    <rect x="360" y="120" width="200" height="80" rx="6" class="band attract"/>
+    <text class="lbl small" x="460" y="108" text-anchor="middle"><tspan class="en">outer well</tspan><tspan class="ja">外側の井戸</tspan></text>
+    <text class="lbl small" x="460" y="148" text-anchor="middle"><tspan class="en">restoring side</tspan><tspan class="ja">戻る側</tspan></text>
+    <text class="lbl small" x="460" y="168" text-anchor="middle"><tspan class="en">(shells 1–3 here)</tspan><tspan class="ja">（殻 1–3 はここ）</tspan></text>
+    <line x1="560" y1="200" x2="560" y2="120" stroke="#fff" stroke-width="2"/>
+    <text class="lbl small" x="566" y="188"><tspan class="en">1st node</tspan><tspan class="ja">第1節</tspan></text>
+    <text class="lbl small" x="480" y="224" text-anchor="middle"><tspan class="en">small x → far from nucleus</tspan><tspan class="ja">x が小さい → 核から遠い</tspan></text>
+  </svg>
+  <p class="note"><span class="en">Schematic only: shell spacing is not to scale. The gold arrow is the 3→2 transition; grey axes mark energy and phase, not transitions.</span><span class="ja">模式図のみ。殻の間隔は縮尺どおりではありません。金色の矢印が 3→2 遷移、灰色の軸はエネルギーと位相を示し、遷移矢印ではありません。</span></p>
   </div>
 
   <div id="coldfusion-wrap">
