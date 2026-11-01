@@ -49,8 +49,15 @@ wavelength, likewise an input.
   each departs from that fraction by less than one part in ten thousand.
   The even shells repeat hydrogen fractions: \(4\to 2\), \(6\to 4\),
   \(8\to 4\), and \(10\to 4\) are \(3/4\), \(5/36\), \(3/16\), and
-  \(21/100\), each within one part in ten thousand. The radius law,
-  including the charge, remains an input.
+  \(21/100\), each within one part in ten thousand. With nuclear charge
+  eleven the hydrogenic phases stay below \(1/20\), in the outer well, on
+  the restoring side. The bookkeeping steps \(2\to 1\) and \(4\to 3\) are
+  \(363/4\) ionisations and \(847/144\) of one; the second departs from
+  that fraction by less than one part in ten thousand. Shells scaled by
+  eleven, \(22\to 11\), \(33\to 22\), \(44\to 22\), and \(55\to 22\),
+  repeat \(3/4\), \(5/36\), \(3/16\), and \(21/100\), each within one part
+  in ten thousand. The neutral yellow doublet is not a step of this
+  ladder. The radius law, including the charge, remains an input.
 -/
 
 namespace DstDiophantine
@@ -1086,6 +1093,255 @@ theorem heMatchGamma_signed_shift :
     |signedCharge 2 10 - signedCharge 2 4 - (21 / 100)| <
       (1 / 10000) * (21 / 100) :=
   signedCharge_two_step (n := 4) (m := 10) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+/-! ### Charge eleven: the one-electron sodium ion
+
+The neutral yellow doublet is not a step of this ladder. There is no
+fine-structure splitting, and two seats of one shell index share one
+bookkeeping energy. What follows is the bare charge, \(Z=11\).
+-/
+
+theorem hydrogenicPhase_eleven_pos {n : ℕ} (hn : 0 < n) :
+    (0 : ℚ) < hydrogenicPhase 11 n := by
+  unfold hydrogenicPhase
+  exact div_pos (mul_pos (by norm_num) fineStructureApprox_pos)
+    (mul_pos (by norm_num) (pow_pos (Nat.cast_pos.mpr hn) 2))
+
+theorem hydrogenicPhase_eleven_le_ground {n : ℕ} (hn : 0 < n) :
+    hydrogenicPhase 11 n ≤ 11 * fineStructureApprox / 2 := by
+  unfold hydrogenicPhase
+  have hn1 : (1 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have hn' : (1 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 1) hn' 2
+    simpa using this
+  have hnum : (0 : ℚ) ≤ 11 * fineStructureApprox :=
+    mul_nonneg (by norm_num) fineStructureApprox_pos.le
+  exact div_le_div_of_nonneg_left hnum (by norm_num)
+    (by nlinarith [hn1])
+
+theorem hydrogenicPhase_eleven_lt_twentieth {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 11 n : ℝ) < 1 / 20 := by
+  have hle := hydrogenicPhase_eleven_le_ground hn
+  have hα : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hground : (11 : ℝ) * (fineStructureApprox : ℝ) / 2 < 1 / 20 := by
+    have hmul : (11 : ℝ) * (fineStructureApprox : ℝ) <
+        (11 : ℝ) * (73 / 10000) :=
+      mul_lt_mul_of_pos_left hα (by norm_num)
+    have hdiv : (11 : ℝ) * (fineStructureApprox : ℝ) / 2 <
+        (11 : ℝ) * (73 / 10000) / 2 := by
+      exact div_lt_div_of_pos_right hmul (by norm_num)
+    have hconst : (11 : ℝ) * (73 / 10000) / 2 < 1 / 20 := by norm_num
+    linarith
+  exact lt_of_le_of_lt (by exact_mod_cast hle) hground
+
+theorem hydrogenicPhase_eleven_mem_outer {n : ℕ} (hn : 0 < n) :
+    (hydrogenicPhase 11 n : ℝ) ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+  refine ⟨by exact_mod_cast hydrogenicPhase_eleven_pos hn, ?_⟩
+  have h20 := hydrogenicPhase_eleven_lt_twentieth hn
+  have hnode : (1 / 20 : ℝ) < resonanceRoot1 := by
+    have hπ : (1 / 20 : ℝ) < π / 4 := by linarith [pi_gt_three]
+    exact lt_trans hπ resonanceRoot1_sharp_bounds.1
+  exact lt_trans h20 hnode
+
+theorem hydrogenicEleven_restoring {n : ℕ} (hn : 0 < n) :
+    0 < circStable (hydrogenicPhase 11 n) ∧
+      (hydrogenicPhase 11 n : ℝ) * deriv pairAttraction (hydrogenicPhase 11 n) /
+          pairAttraction (hydrogenicPhase 11 n) < 3 := by
+  obtain ⟨y, hy, _⟩ := exists_unique_circStable
+  have hx := hydrogenicPhase_eleven_mem_outer hn
+  have hlt : (hydrogenicPhase 11 n : ℝ) < y := by
+    have h20 := hydrogenicPhase_eleven_lt_twentieth hn
+    have hhalf : (1 / 20 : ℝ) < 1 / 2 := by norm_num
+    linarith [hy.1.1, hhalf]
+  have hsign := circStable_outer_sign hx hy.1 hy.2
+  have hpos : 0 < circStable (hydrogenicPhase 11 n) := hsign.1.mpr hlt
+  exact ⟨hpos, (pairAttraction_logDeriv_lt_three_outer_iff hx).mpr hpos⟩
+
+theorem hydrogenicPhase_eleven_le_div22 {n : ℕ} (hn : 11 ≤ n) :
+    hydrogenicPhase 11 n ≤ fineStructureApprox / 22 := by
+  unfold hydrogenicPhase
+  have hn11 : (11 : ℚ) ≤ (n : ℚ) := by exact_mod_cast hn
+  have hn2 : (121 : ℚ) ≤ (n : ℚ) ^ 2 := by
+    have := pow_le_pow_left₀ (by norm_num : (0 : ℚ) ≤ 11) hn11 2
+    simpa [show (11 : ℚ) ^ 2 = 121 by norm_num] using this
+  have hnum : (0 : ℚ) ≤ 11 * fineStructureApprox :=
+    mul_nonneg (by norm_num) fineStructureApprox_pos.le
+  have hden : (2 : ℚ) * 121 ≤ 2 * (n : ℚ) ^ 2 := by nlinarith
+  calc (11 : ℚ) * fineStructureApprox / (2 * (n : ℚ) ^ 2)
+      ≤ 11 * fineStructureApprox / (2 * 121) :=
+        div_le_div_of_nonneg_left hnum (by norm_num) hden
+    _ = fineStructureApprox / 22 := by ring
+
+theorem naLyman_book :
+    (11 : ℝ) ^ 2 * bohrEnergyDiff 1 2 =
+      (363 / 4) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_lymanAlpha]
+  norm_num
+  ring
+
+theorem naVisible_book :
+    (11 : ℝ) ^ 2 * bohrEnergyDiff 3 4 =
+      (847 / 144) * (hydrogenIonisationApprox : ℝ) := by
+  rw [bohrEnergyDiff_paschenAlpha]
+  norm_num
+  ring
+
+private theorem signedCharge_eleven_close {n : ℕ} {bound target : ℝ}
+    (hn : 0 < n)
+    (hxle : (hydrogenicPhase 11 n : ℝ) ≤ bound * (fineStructureApprox : ℝ))
+    (hbound : 0 < bound)
+    (hsmall : bound * (73 / 10000) < 1 / 100)
+    (hcoeff : (22 : ℝ) * (6 / 5) * bound ^ 3 * ((73 : ℝ) / 10000) ^ 2 < target) :
+    |signedCharge 11 n + 121 / (n : ℝ) ^ 2| < target := by
+  have hx_pos : (0 : ℝ) < (hydrogenicPhase 11 n : ℝ) := by
+    exact_mod_cast hydrogenicPhase_eleven_pos hn
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hxphase : (hydrogenicPhase 11 n : ℝ) =
+      (11 : ℝ) * (fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2) := by
+    unfold hydrogenicPhase
+    push_cast
+    ring
+  have hx_lt : (hydrogenicPhase 11 n : ℝ) < 1 / 100 := by
+    have hmul : bound * (fineStructureApprox : ℝ) < bound * (73 / 10000) :=
+      mul_lt_mul_of_pos_left hα_lt hbound
+    linarith [hxle, hsmall]
+  have hgap := circEnergy_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hident : signedCharge 11 n + 121 / (n : ℝ) ^ 2 =
+      (22 / (fineStructureApprox : ℝ)) *
+        (circEnergy (hydrogenicPhase 11 n) + (hydrogenicPhase 11 n : ℝ)) := by
+    unfold signedCharge
+    rw [hxphase]
+    field_simp [hα.ne', (Nat.cast_pos.mpr hn : (0 : ℝ) < (n : ℝ)).ne']
+    ring
+  rw [hident]
+  have habs : |(22 / (fineStructureApprox : ℝ)) *
+      (circEnergy (hydrogenicPhase 11 n) + (hydrogenicPhase 11 n : ℝ))| =
+      (22 / (fineStructureApprox : ℝ)) *
+        |circEnergy (hydrogenicPhase 11 n) + (hydrogenicPhase 11 n : ℝ)| := by
+    rw [abs_mul, abs_of_pos (div_pos (by norm_num) hα)]
+  rw [habs]
+  have hscale : (22 / (fineStructureApprox : ℝ)) *
+      |circEnergy (hydrogenicPhase 11 n) + (hydrogenicPhase 11 n : ℝ)| ≤
+      (22 / (fineStructureApprox : ℝ)) *
+        ((6 / 5) * (hydrogenicPhase 11 n : ℝ) ^ 3) :=
+    mul_le_mul_of_nonneg_left hgap (div_pos (by norm_num) hα).le
+  have hcubic : (hydrogenicPhase 11 n : ℝ) ^ 3 ≤
+      (bound * (fineStructureApprox : ℝ)) ^ 3 := by
+    have h0 : (0 : ℝ) ≤ (hydrogenicPhase 11 n : ℝ) := hx_pos.le
+    exact pow_le_pow_left₀ h0 hxle 3
+  have hloose : (22 / (fineStructureApprox : ℝ)) *
+      ((6 / 5) * (hydrogenicPhase 11 n : ℝ) ^ 3) ≤
+      (22 * (6 / 5) * bound ^ 3) * (fineStructureApprox : ℝ) ^ 2 := by
+    have hmul := mul_le_mul_of_nonneg_left
+      (mul_le_mul_of_nonneg_left hcubic (by norm_num : (0 : ℝ) ≤ 6 / 5))
+      (div_pos (by norm_num : (0 : ℝ) < 22) hα).le
+    calc (22 / (fineStructureApprox : ℝ)) *
+          ((6 / 5) * (hydrogenicPhase 11 n : ℝ) ^ 3)
+        ≤ (22 / (fineStructureApprox : ℝ)) *
+            ((6 / 5) * (bound * (fineStructureApprox : ℝ)) ^ 3) := hmul
+      _ = (22 * (6 / 5) * bound ^ 3) * (fineStructureApprox : ℝ) ^ 2 := by
+          field_simp [hα.ne']
+  have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 :=
+    pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+  have hnum : (22 * (6 / 5) * bound ^ 3) * (fineStructureApprox : ℝ) ^ 2 <
+      (22 * (6 / 5) * bound ^ 3) * ((73 : ℝ) / 10000) ^ 2 :=
+    mul_lt_mul_of_pos_left hsq
+      (mul_pos (mul_pos (by norm_num) (by norm_num)) (pow_pos hbound 3))
+  linarith
+
+theorem signedCharge_eleven_three :
+    |signedCharge 11 3 + 121 / (3 : ℝ) ^ 2| < 1 / 3000 := by
+  have hx_eq : (hydrogenicPhase 11 3 : ℝ) =
+      (11 / 18) * (fineStructureApprox : ℝ) := by
+    unfold hydrogenicPhase
+    push_cast
+    ring
+  refine signedCharge_eleven_close (n := 3) (bound := 11 / 18) (target := 1 / 3000)
+      (by norm_num) (hx_eq.le) (by norm_num) (by norm_num) ?_
+  norm_num
+
+theorem signedCharge_eleven_four :
+    |signedCharge 11 4 + 121 / (4 : ℝ) ^ 2| < 1 / 10000 := by
+  have hx_eq : (hydrogenicPhase 11 4 : ℝ) =
+      (11 / 32) * (fineStructureApprox : ℝ) := by
+    unfold hydrogenicPhase
+    push_cast
+    ring
+  refine signedCharge_eleven_close (n := 4) (bound := 11 / 32) (target := 1 / 10000)
+      (by norm_num) (hx_eq.le) (by norm_num) (by norm_num) ?_
+  norm_num
+
+theorem naVisible_signed_shift :
+    |signedCharge 11 4 - signedCharge 11 3 - (847 / 144)| <
+      (1 / 10000) * (847 / 144) := by
+  have h4 := signedCharge_eleven_four
+  have h3 := signedCharge_eleven_three
+  have hsplit : signedCharge 11 4 - signedCharge 11 3 - (847 / 144) =
+      (signedCharge 11 4 + 121 / (4 : ℝ) ^ 2) -
+        (signedCharge 11 3 + 121 / (3 : ℝ) ^ 2) := by
+    have hnum : (121 : ℝ) / 3 ^ 2 - 121 / 4 ^ 2 = 847 / 144 := by norm_num
+    linarith
+  obtain ⟨h4lo, h4hi⟩ := abs_lt.mp h4
+  obtain ⟨h3lo, h3hi⟩ := abs_lt.mp h3
+  rw [hsplit, abs_lt]
+  have hpart : (1 : ℝ) / 3000 + 1 / 10000 < (1 / 10000) * (847 / 144) := by norm_num
+  constructor <;> linarith
+
+theorem signedCharge_eleven_high {n : ℕ} (hn : 11 ≤ n) :
+    |signedCharge 11 n + 121 / (n : ℝ) ^ 2| < 1 / 1000000 := by
+  have hxle : (hydrogenicPhase 11 n : ℝ) ≤
+      (1 / 22) * (fineStructureApprox : ℝ) := by
+    have hcast : (hydrogenicPhase 11 n : ℝ) ≤ (fineStructureApprox : ℝ) / 22 := by
+      exact_mod_cast hydrogenicPhase_eleven_le_div22 hn
+    linarith [hcast]
+  refine signedCharge_eleven_close (n := n) (bound := 1 / 22) (target := 1 / 1000000)
+      (by omega) hxle (by norm_num) (by norm_num) ?_
+  norm_num
+
+private theorem signedCharge_eleven_step {n m : ℕ} {frac : ℝ}
+    (hn : 11 ≤ n) (hm : 11 ≤ m)
+    (hfrac : (121 : ℝ) / (n : ℝ) ^ 2 - 121 / (m : ℝ) ^ 2 = frac)
+    (hroom : (2 : ℝ) / 1000000 < (1 / 10000) * frac) :
+    |signedCharge 11 m - signedCharge 11 n - frac| < (1 / 10000) * frac := by
+  have hn' := signedCharge_eleven_high hn
+  have hm' := signedCharge_eleven_high hm
+  have hsplit : signedCharge 11 m - signedCharge 11 n - frac =
+      (signedCharge 11 m + 121 / (m : ℝ) ^ 2) -
+        (signedCharge 11 n + 121 / (n : ℝ) ^ 2) := by
+    linarith
+  obtain ⟨hmlo, hmhi⟩ := abs_lt.mp hm'
+  obtain ⟨hnlo, hnhi⟩ := abs_lt.mp hn'
+  rw [hsplit, abs_lt]
+  constructor <;> linarith
+
+theorem naMatchLyman_signed_shift :
+    |signedCharge 11 22 - signedCharge 11 11 - (3 / 4)| <
+      (1 / 10000) * (3 / 4) :=
+  signedCharge_eleven_step (n := 11) (m := 22) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem naMatchAlpha_signed_shift :
+    |signedCharge 11 33 - signedCharge 11 22 - (5 / 36)| <
+      (1 / 10000) * (5 / 36) :=
+  signedCharge_eleven_step (n := 22) (m := 33) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem naMatchBeta_signed_shift :
+    |signedCharge 11 44 - signedCharge 11 22 - (3 / 16)| <
+      (1 / 10000) * (3 / 16) :=
+  signedCharge_eleven_step (n := 22) (m := 44) (by norm_num) (by norm_num)
+    (by norm_num) (by norm_num)
+
+theorem naMatchGamma_signed_shift :
+    |signedCharge 11 55 - signedCharge 11 22 - (21 / 100)| <
+      (1 / 10000) * (21 / 100) :=
+  signedCharge_eleven_step (n := 22) (m := 55) (by norm_num) (by norm_num)
     (by norm_num) (by norm_num)
 
 end Gravity

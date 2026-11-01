@@ -86,6 +86,18 @@ def alphaMassScale : ℕ := 37
 def alphaMassApprox : ℚ :=
   alphaMassMantissa / (10 : ℚ) ^ alphaMassScale
 
+/-- Mantissa of the \(^{23}\mathrm{Na}\) nucleus stand-in
+    \(3.8165389703\times 10^{-26}\) kg: the atomic mass \(22.9897692820\,\mathrm{u}\)
+    minus eleven electron masses. Electron binding, a few keV, lies below this
+    truncation and is not included. -/
+def sodiumMassMantissa : ℕ := 38165389703
+
+/-- Scale: \(m_{\mathrm{Na}} =\) `sodiumMassMantissa` `/ 10^sodiumMassScale`. -/
+def sodiumMassScale : ℕ := 36
+
+def sodiumMassApprox : ℚ :=
+  sodiumMassMantissa / (10 : ℚ) ^ sodiumMassScale
+
 theorem speedOfLight_pos : (0 : ℚ) < speedOfLight := by
   unfold speedOfLight speedOfLightNat; norm_num
 
@@ -103,6 +115,9 @@ theorem protonMassApprox_pos : (0 : ℚ) < protonMassApprox := by
 
 theorem alphaMassApprox_pos : (0 : ℚ) < alphaMassApprox := by
   unfold alphaMassApprox alphaMassMantissa alphaMassScale; norm_num
+
+theorem sodiumMassApprox_pos : (0 : ℚ) < sodiumMassApprox := by
+  unfold sodiumMassApprox sodiumMassMantissa sodiumMassScale; norm_num
 
 /-- \(\hbar c\) in SI (J·m). -/
 def hbarC : ℚ := hbarApprox * speedOfLight

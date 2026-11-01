@@ -37,6 +37,18 @@ between \(7294\) and \(7295\), places those four strictly between \(121518\)
 and \(121519\), \(656202\) and \(656203\), \(486075\) and \(486076\), and
 \(433996\) and \(433997\) picometres, each short of the hydrogen line that
 carries a proton mass ratio strictly between \(1836\) and \(1837\).
+With the nucleus fixed, charge eleven places the steps \(2\to 1\) and
+\(4\to 3\) strictly between \(1004151\) and \(1004152\), and between
+\(15492615\) and \(15492616\), in units of \(10^{-15}\,\mathrm{m}\).
+The same charge on shells scaled by eleven reproduces a hydrogen
+difference exactly: \(22\to 11\), \(33\to 22\), \(44\to 22\), and
+\(55\to 22\) have the Lyman \(\alpha\), \(\mathrm{H}\alpha\),
+\(\mathrm{H}\beta\), and \(\mathrm{H}\gamma\) wavelengths. Shared
+inertia, for every sodium-nucleus mass ratio strictly between \(41896\)
+and \(41897\), places those four strictly between \(121505\) and
+\(121506\), \(656127\) and \(656128\), \(486020\) and \(486021\), and
+\(433947\) and \(433948\) picometres, each short of the hydrogen line
+that carries a proton mass ratio strictly between \(1836\) and \(1837\).
 -/
 
 namespace DstDiophantine
@@ -961,6 +973,426 @@ theorem heVisible_wavelength_bounds :
         < (1874607 : ℝ) / 10 ^ 12 := hparent.2
       _ < (1874608 : ℝ) / 10 ^ 12 := by norm_num
       _ = (468652 : ℝ) / 10 ^ 12 * 4 := by ring
+
+/-! ### Charge eleven -/
+
+private theorem sodiumMass_lengthens {ρ : ℝ} (hlo : (41896 : ℝ) < ρ) (hhi : ρ < 41897) :
+    (41898 : ℝ) / 41897 < (ρ + 1) / ρ ∧ (ρ + 1) / ρ < (41897 : ℝ) / 41896 := by
+  have hρ : 0 < ρ := by linarith
+  constructor
+  · rw [div_lt_div_iff₀ (by norm_num) hρ]
+    linarith
+  · rw [div_lt_div_iff₀ hρ (by norm_num)]
+    linarith
+
+private theorem ratioSodium_bounds {num den : ℕ} {lo hi : ℚ} {ρ : ℝ}
+    (hnum : 0 < num) (hden : 0 < den)
+    (hρlo : (41896 : ℝ) < ρ) (hρhi : ρ < 41897)
+    (hlo : lo < standInWavelength num den piDigitLo * (41898 / 41897))
+    (hhi : standInWavelength num den piDigitHi * (41897 / 41896) < hi) :
+    (lo : ℝ) <
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) ∧
+      ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((ρ + 1) / ρ) <
+        (hi : ℝ) := by
+  obtain ⟨hfacLo, hfacHi⟩ := sodiumMass_lengthens hρlo hρhi
+  have hfac := closed_factor_pos hnum hden
+  have hpos : (0 : ℝ) < (num : ℝ) * π * (hbarApprox : ℝ) /
+      ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+        (fineStructureApprox : ℝ) ^ 2) := by
+    have hrew : (num : ℝ) * π * (hbarApprox : ℝ) /
+        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) =
+        ((num : ℝ) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
+    rw [hrew]
+    exact mul_pos hfac pi_pos
+  have hlowPos : (0 : ℝ) < (41898 : ℝ) / 41897 := by norm_num
+  have hhighPos : (0 : ℝ) < (41897 : ℝ) / 41896 := by norm_num
+  have hloR : (lo : ℝ) <
+      (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+        ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897) := by
+    let q : ℚ := standInWavelength num den piDigitLo * (41898 / 41897)
+    have hcast : (lo : ℝ) < (q : ℝ) := by
+      dsimp only [q]
+      exact_mod_cast hlo
+    have heq : (q : ℝ) =
+        (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897) := by
+      unfold q standInWavelength piDigitLo
+      push_cast
+      ring
+    exact lt_of_lt_of_eq hcast heq
+  have hhiR :
+      (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896) <
+        (hi : ℝ) := by
+    let q : ℚ := standInWavelength num den piDigitHi * (41897 / 41896)
+    have heq :
+        (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896) =
+          (q : ℝ) := by
+      unfold q standInWavelength piDigitHi
+      push_cast
+      ring
+    have hcast : (q : ℝ) < (hi : ℝ) := by
+      dsimp only [q]
+      exact_mod_cast hhi
+    exact lt_of_eq_of_lt heq hcast
+  constructor
+  · have hendpoint : (lo : ℝ) <
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((41898 : ℝ) / 41897) := by
+      refine lt_trans hloR ?_
+      calc (num : ℝ) * ((314159265358979323846 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * ((41898 : ℝ) / 41897)
+          = ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) *
+              ((314159265358979323846 : ℝ) / 10 ^ 20) *
+              ((41898 : ℝ) / 41897) := by ring
+        _ < ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) * π *
+              ((41898 : ℝ) / 41897) := by
+            have hmul := mul_lt_mul_of_pos_left piDigitLo_lt_pi hfac
+            exact mul_lt_mul_of_pos_right hmul hlowPos
+        _ = (num : ℝ) * π * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2) *
+              ((41898 : ℝ) / 41897) := by ring
+    exact lt_of_lt_of_le hendpoint (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
+  · have hendpoint :
+        ((num : ℝ) * π * (hbarApprox : ℝ) /
+          ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+            (fineStructureApprox : ℝ) ^ 2)) * ((41897 : ℝ) / 41896) <
+          (hi : ℝ) := by
+      refine lt_trans ?_ hhiR
+      calc (num : ℝ) * π * (hbarApprox : ℝ) /
+            ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+              (fineStructureApprox : ℝ) ^ 2) * ((41897 : ℝ) / 41896)
+          = ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) * π *
+              ((41897 : ℝ) / 41896) := by ring
+        _ < ((num : ℝ) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2)) *
+              ((314159265358979323847 : ℝ) / 10 ^ 20) *
+              ((41897 : ℝ) / 41896) := by
+            have hmul := mul_lt_mul_of_pos_left piDigitHi_gt_pi hfac
+            exact mul_lt_mul_of_pos_right hmul hhighPos
+        _ = (num : ℝ) * ((314159265358979323847 : ℝ) / 10 ^ 20) * (hbarApprox : ℝ) /
+              ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+                (fineStructureApprox : ℝ) ^ 2) *
+              ((41897 : ℝ) / 41896) := by ring
+    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+
+theorem chargeIndex_scaled {Z n m : ℕ} (hZ : 0 < Z) (hn : 0 < n) (hm : n < m) :
+    (Z : ℝ) ^ 2 * bohrEnergyDiff (Z * n) (Z * m) = bohrEnergyDiff n m := by
+  unfold bohrEnergyDiff
+  simp only [Nat.cast_mul]
+  have hZ' : (Z : ℝ) ≠ 0 := by exact_mod_cast hZ.ne'
+  have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast hn.ne'
+  have hm' : (m : ℝ) ≠ 0 := by exact_mod_cast (hn.trans hm).ne'
+  field_simp [hZ', hn', hm']
+
+private theorem scaled_wavelength {Z n m a b : ℕ}
+    (hZ : 0 < Z) (hn : 0 < n) (hm : n < m)
+    (ha : Z * n = a) (hb : Z * m = b) :
+    vacuumWavelength ((Z : ℝ) ^ 2 * bohrEnergyDiff a b) =
+      vacuumWavelength (bohrEnergyDiff n m) := by
+  have h := chargeIndex_scaled hZ hn hm
+  rw [ha, hb] at h
+  exact congrArg vacuumWavelength h
+
+private theorem chargeEleven_div {E : ℝ} (hE : E ≠ 0) :
+    vacuumWavelength ((11 : ℝ) ^ 2 * E) = vacuumWavelength E / 121 := by
+  unfold vacuumWavelength
+  field_simp [hE]
+  ring
+
+private theorem naLyman_wavelength_eq :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 1 2) =
+      16 * π * (hbarApprox : ℝ) /
+        (363 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) := by
+  rw [chargeEleven_div lyman_energy_ne, lyman_wavelength_eq]
+  have hm : (electronMassApprox : ℝ) ≠ 0 := by exact_mod_cast electronMassApprox_pos.ne'
+  have hc : (speedOfLight : ℝ) ≠ 0 := by exact_mod_cast speedOfLight_pos.ne'
+  have hα : (fineStructureApprox : ℝ) ≠ 0 := by exact_mod_cast fineStructureApprox_pos.ne'
+  field_simp [hm, hc, hα]
+  ring
+
+private theorem naVisible_wavelength_eq :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) =
+      576 * π * (hbarApprox : ℝ) /
+        (847 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
+          (fineStructureApprox : ℝ) ^ 2) := by
+  rw [chargeEleven_div paschen_energy_ne, paschen_wavelength_eq]
+  have hm : (electronMassApprox : ℝ) ≠ 0 := by exact_mod_cast electronMassApprox_pos.ne'
+  have hc : (speedOfLight : ℝ) ≠ 0 := by exact_mod_cast speedOfLight_pos.ne'
+  have hα : (fineStructureApprox : ℝ) ≠ 0 := by exact_mod_cast fineStructureApprox_pos.ne'
+  field_simp [hm, hc, hα]
+  ring
+
+private theorem naLyman_fixed_lo_rat :
+    (1004151 : ℚ) / 10 ^ 15 < standInWavelength 16 363 piDigitLo := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naLyman_fixed_hi_rat :
+    standInWavelength 16 363 piDigitHi < (1004152 : ℚ) / 10 ^ 15 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naVisible_fixed_lo_rat :
+    (15492615 : ℚ) / 10 ^ 15 < standInWavelength 576 847 piDigitLo := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naVisible_fixed_hi_rat :
+    standInWavelength 576 847 piDigitHi < (15492616 : ℚ) / 10 ^ 15 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+theorem naLyman_wavelength_bounds :
+    (1004151 : ℝ) / 10 ^ 15 < vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 1 2) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 1 2) <
+        (1004152 : ℝ) / 10 ^ 15 := by
+  rw [naLyman_wavelength_eq]
+  convert ratioWavelength_bounds (by norm_num) (by norm_num)
+      naLyman_fixed_lo_rat naLyman_fixed_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naVisible_wavelength_bounds :
+    (15492615 : ℝ) / 10 ^ 15 <
+        vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 3 4) <
+        (15492616 : ℝ) / 10 ^ 15 := by
+  rw [naVisible_wavelength_eq]
+  convert ratioWavelength_bounds (by norm_num) (by norm_num)
+      naVisible_fixed_lo_rat naVisible_fixed_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naMatchLyman_fixed :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) =
+      vacuumWavelength (bohrEnergyDiff 1 2) :=
+  scaled_wavelength (Z := 11) (n := 1) (m := 2) (a := 11) (b := 22)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem naMatchAlpha_fixed :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) =
+      vacuumWavelength (bohrEnergyDiff 2 3) :=
+  scaled_wavelength (Z := 11) (n := 2) (m := 3) (a := 22) (b := 33)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem naMatchBeta_fixed :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) =
+      vacuumWavelength (bohrEnergyDiff 2 4) :=
+  scaled_wavelength (Z := 11) (n := 2) (m := 4) (a := 22) (b := 44)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+theorem naMatchGamma_fixed :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) =
+      vacuumWavelength (bohrEnergyDiff 2 5) :=
+  scaled_wavelength (Z := 11) (n := 2) (m := 5) (a := 22) (b := 55)
+    (by norm_num) (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+
+private theorem naMatchLyman_lo_rat :
+    (121505 : ℚ) / 10 ^ 12 < standInWavelength 16 3 piDigitLo * (41898 / 41897) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchLyman_hi_rat :
+    standInWavelength 16 3 piDigitHi * (41897 / 41896) < (121506 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchAlpha_lo_rat :
+    (656127 : ℚ) / 10 ^ 12 < standInWavelength 144 5 piDigitLo * (41898 / 41897) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchAlpha_hi_rat :
+    standInWavelength 144 5 piDigitHi * (41897 / 41896) < (656128 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchBeta_lo_rat :
+    (486020 : ℚ) / 10 ^ 12 < standInWavelength 64 3 piDigitLo * (41898 / 41897) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchBeta_hi_rat :
+    standInWavelength 64 3 piDigitHi * (41897 / 41896) < (486021 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchGamma_lo_rat :
+    (433947 : ℚ) / 10 ^ 12 < standInWavelength 400 21 piDigitLo * (41898 / 41897) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+private theorem naMatchGamma_hi_rat :
+    standInWavelength 400 21 piDigitHi * (41897 / 41896) < (433948 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
+    fineStructureMantissa fineStructureScale speedOfLightNat
+  field_simp
+  norm_cast
+
+theorem naMatchLyman_shared {ρ : ℝ} (hlo : (41896 : ℝ) < ρ) (hhi : ρ < 41897) :
+    (121505 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) * ((ρ + 1) / ρ) <
+        (121506 : ℝ) / 10 ^ 12 := by
+  rw [naMatchLyman_fixed, lyman_wavelength_eq]
+  convert ratioSodium_bounds (by norm_num) (by norm_num) hlo hhi
+      naMatchLyman_lo_rat naMatchLyman_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naMatchAlpha_shared {ρ : ℝ} (hlo : (41896 : ℝ) < ρ) (hhi : ρ < 41897) :
+    (656127 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) * ((ρ + 1) / ρ) <
+        (656128 : ℝ) / 10 ^ 12 := by
+  rw [naMatchAlpha_fixed, hAlpha_wavelength_eq]
+  convert ratioSodium_bounds (by norm_num) (by norm_num) hlo hhi
+      naMatchAlpha_lo_rat naMatchAlpha_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naMatchBeta_shared {ρ : ℝ} (hlo : (41896 : ℝ) < ρ) (hhi : ρ < 41897) :
+    (486020 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) * ((ρ + 1) / ρ) <
+        (486021 : ℝ) / 10 ^ 12 := by
+  rw [naMatchBeta_fixed, hBeta_wavelength_eq]
+  convert ratioSodium_bounds (by norm_num) (by norm_num) hlo hhi
+      naMatchBeta_lo_rat naMatchBeta_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naMatchGamma_shared {ρ : ℝ} (hlo : (41896 : ℝ) < ρ) (hhi : ρ < 41897) :
+    (433947 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) * ((ρ + 1) / ρ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) * ((ρ + 1) / ρ) <
+        (433948 : ℝ) / 10 ^ 12 := by
+  rw [naMatchGamma_fixed, hGamma_wavelength_eq]
+  convert ratioSodium_bounds (by norm_num) (by norm_num) hlo hhi
+      naMatchGamma_lo_rat naMatchGamma_hi_rat using 2 <;>
+    push_cast <;> ring
+
+theorem naMatchLyman_nucleus :
+    (121505 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) <
+        (121506 : ℝ) / 10 ^ 12 := by
+  have h := sodiumElectronMassRatio_bounds
+  exact naMatchLyman_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem naMatchAlpha_nucleus :
+    (656127 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) <
+        (656128 : ℝ) / 10 ^ 12 := by
+  have h := sodiumElectronMassRatio_bounds
+  exact naMatchAlpha_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem naMatchBeta_nucleus :
+    (486020 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) <
+        (486021 : ℝ) / 10 ^ 12 := by
+  have h := sodiumElectronMassRatio_bounds
+  exact naMatchBeta_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem naMatchGamma_nucleus :
+    (433947 : ℝ) / 10 ^ 12 <
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) *
+        (((sodiumElectronMassRatio : ℝ) + 1) / (sodiumElectronMassRatio : ℝ)) <
+        (433948 : ℝ) / 10 ^ 12 := by
+  have h := sodiumElectronMassRatio_bounds
+  exact naMatchGamma_shared (by exact_mod_cast h.1) (by exact_mod_cast h.2)
+
+theorem naMatch_short_of_hydrogen {ρ σ : ℝ}
+    (hρlo : (41896 : ℝ) < ρ) (hρhi : ρ < 41897)
+    (hσlo : (1836 : ℝ) < σ) (hσhi : σ < 1837) :
+    vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 11 22) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 1 2) * ((σ + 1) / σ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 33) * ((ρ + 1) / ρ) <
+        hAlphaWavelength * ((σ + 1) / σ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 44) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 2 4) * ((σ + 1) / σ) ∧
+      vacuumWavelength ((11 : ℝ) ^ 2 * bohrEnergyDiff 22 55) * ((ρ + 1) / ρ) <
+        vacuumWavelength (bohrEnergyDiff 2 5) * ((σ + 1) / σ) := by
+  have hLy := naMatchLyman_shared hρlo hρhi
+  have hA := naMatchAlpha_shared hρlo hρhi
+  have hB := naMatchBeta_shared hρlo hρhi
+  have hG := naMatchGamma_shared hρlo hρhi
+  have kLy := lyman_shared_wavelength hσlo hσhi
+  have kA := hAlpha_shared_wavelength hσlo hσhi
+  have kB := hBeta_shared_wavelength hσlo hσhi
+  have kG := hGamma_shared_wavelength hσlo hσhi
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact lt_trans hLy.2
+      (lt_trans (by norm_num : (121506 : ℝ) / 10 ^ 12 < (121568 : ℝ) / 10 ^ 12) kLy.1)
+  · exact lt_trans hA.2
+      (lt_trans (by norm_num : (656128 : ℝ) / 10 ^ 12 < (656469 : ℝ) / 10 ^ 12) kA.1)
+  · exact lt_trans hB.2
+      (lt_trans (by norm_num : (486021 : ℝ) / 10 ^ 12 < (486273 : ℝ) / 10 ^ 12) kB.1)
+  · exact lt_trans hG.2
+      (lt_trans (by norm_num : (433948 : ℝ) / 10 ^ 12 < (434172 : ℝ) / 10 ^ 12) kG.1)
 
 end Gravity
 
