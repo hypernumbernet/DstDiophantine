@@ -31,6 +31,7 @@ import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.HydrogenAlpha
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
@@ -364,6 +365,15 @@ The straight line of one fixed jet is not itself that geodesic.
   The root is not a zero of the electrostatic force. The energy of a
   circular path, kinetic term of the centripetal identity plus the
   outer-well potential, is strictly least there and is negative.
+* `HydrogenAlpha` — the bookkeeping step from shell \(3\) to shell \(2\) is
+  \(5/36\) of the ionisation. Every Bohr phase \(n\ge 1\) lies in the outer
+  well on the restoring side. The fixed-proton vacuum wavelength lies
+  strictly between \(656112\) and \(656113\) picometres; shared inertia, with
+  the mass ratio strictly between \(1836\) and \(1837\), places it strictly
+  between \(656469\) and \(656470\) picometres. At shells \(n\ge 2\) the
+  signed circular energy departs from the Coulomb value by less than
+  \(10^{-6}\) of the ionisation, and the line itself by less than one part
+  in ten thousand. The radius law remains an input.
 * `BothChannels` — an electron and a proton exert both terms at every
   separation. For an unlike pair, equal signs of the two interference factors
   make the two terms point the same way, so the separation-increasing force
