@@ -373,7 +373,11 @@ The straight line of one fixed jet is not itself that geodesic.
   signed circular energy departs from the Coulomb value by less than
   \(10^{-6}\) of the ionisation, and the line itself by less than one part
   in ten thousand. The ground shell departs from \(-1\) by less than
-  \(1/60000\). The steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\)
+  \(1/60000\). Outside the Bohr radius the outer-well potential lies
+  strictly below the Coulomb potential, by less than \(1/30000\) of the
+  ionisation; at shell \(n\) that potential's Coulomb value is \(-2/n^2\),
+  and the deepening is at most \((3/5)\alpha^2/n^6\). The steps \(2\to 1\),
+  \(4\to 2\), \(5\to 2\), and \(4\to 3\)
   are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
   ten thousand.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths

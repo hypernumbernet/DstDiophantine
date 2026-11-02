@@ -38,6 +38,13 @@ wavelength, likewise an input.
   from the Coulomb value by less than \(10^{-6}\) of the ionisation, and
   the difference of the shells \(3\) and \(2\) departs from \(5/36\) by
   less than one part in ten thousand of that fraction.
+* The outer-well potential itself, the term an orbital equation would use,
+  lies strictly below the Coulomb potential. Outside the Bohr radius the
+  deepening is less than \(1/30000\) of the ionisation. At shell \(n\) the
+  Coulomb value of that potential is \(-2/n^2\) of the ionisation, and the
+  deepening is at most \((3/5)\alpha^2/n^6\), hence less than \(1/30000\).
+  The potential keeps falling as the phase rises and is unbounded below
+  only at the node, so these shells are not minima of the potential.
 * The ground shell departs from \(-1\) by less than \(1/60000\). The
   bookkeeping steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\) are
   \(3/4\), \(3/16\), \(21/100\), and \(7/144\) of the ionisation, and each
@@ -235,6 +242,79 @@ private theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 50) :
 private theorem gammaLower_pos {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 100) :
     1 - (11 / 10) * x ^ 2 ≤ gammaSEqual x := by
   linarith [gammaDepart_le hx0 (le_trans hx (by norm_num : (1 / 100 : ℝ) ≤ 1 / 50))]
+
+/-- Below phase `1/100` the outer-well integral exceeds the Coulomb phase by
+at most `(6/5) x³`, and the excess is strict. -/
+theorem layerAccum_coulomb_gap {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) (1 / 100)) :
+    x < layerAccum x ∧ layerAccum x - x ≤ (6 / 5) * x ^ 3 := by
+  have hx0 : 0 ≤ x := hx.1.le
+  have hxle : x ≤ 1 / 100 := hx.2.le
+  have hx1 : x < resonanceRoot1 :=
+    lt_trans hx.2 <| lt_trans (by linarith [pi_gt_three] : (1 / 100 : ℝ) < π / 4)
+      resonanceRoot1_sharp_bounds.1
+  have hstrict := layerAccum_gt_phase ⟨hx.1, hx1⟩
+  have hγx : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node ⟨hx.1, hx1⟩
+  have hanti : AntitoneOn gammaSEqual (Icc (0 : ℝ) π) := by
+    simpa [Nat.cast_zero, zero_mul] using (strictAntiOn_gammaSEqual_even 0).antitoneOn
+  have hxπ : x ≤ π := by linarith [hx.2, pi_gt_three]
+  have hγmono : ∀ t ∈ Icc (0 : ℝ) x, gammaSEqual x ≤ gammaSEqual t := by
+    intro t ht
+    exact hanti ⟨ht.1, le_trans ht.2 hxπ⟩ ⟨hx0, hxπ⟩ ht.2
+  have hγt : ∀ t ∈ Icc (0 : ℝ) x, 0 < gammaSEqual t :=
+    fun t ht => gammaSEqual_pos_of_lt_firstNode ht.1 (lt_of_le_of_lt ht.2 hx1)
+  have hcont : ContinuousOn (fun t => (gammaSEqual t)⁻¹) (Icc 0 x) := by
+    refine continuous_gammaSEqual.continuousOn.inv₀ ?_
+    intro t ht
+    exact (hγt t ht).ne'
+  have hint := hcont.intervalIntegrable_of_Icc (μ := volume) hx0
+  have hconst : IntervalIntegrable (fun _ : ℝ => (gammaSEqual x)⁻¹) volume 0 x :=
+    intervalIntegrable_const
+  have hle : ∀ t ∈ Icc (0 : ℝ) x, (gammaSEqual t)⁻¹ ≤ (gammaSEqual x)⁻¹ := by
+    intro t ht
+    exact (inv_le_inv₀ (hγt t ht) hγx).mpr (hγmono t ht)
+  have hupper := integral_mono_on hx0 hint hconst hle
+  have hconst_int : ∫ t in (0 : ℝ)..x, (gammaSEqual x)⁻¹ = x * (gammaSEqual x)⁻¹ := by
+    simp
+  have haccum_le : layerAccum x ≤ x * (gammaSEqual x)⁻¹ := by
+    unfold layerAccum
+    linarith
+  have hrel : (gammaSEqual x)⁻¹ - 1 ≤ (6 / 5) * x ^ 2 := by
+    have hden_pos : 0 < 1 - (11 / 10) * x ^ 2 := by
+      have hx2 : x ^ 2 ≤ (1 / 100) ^ 2 := pow_le_pow_left₀ hx0 hxle 2
+      nlinarith
+    have hγ := gammaLower_pos hx0 hxle
+    have hdiv : (1 - gammaSEqual x) / gammaSEqual x ≤
+        ((11 / 10) * x ^ 2) / (1 - (11 / 10) * x ^ 2) := by
+      rw [div_le_div_iff₀ hγx hden_pos]
+      have hnum := gammaDepart_le hx0
+        (le_trans hxle (by norm_num : (1 / 100 : ℝ) ≤ 1 / 50))
+      nlinarith
+    have hcoeff : ((11 / 10) * x ^ 2) / (1 - (11 / 10) * x ^ 2) ≤
+        (6 / 5) * x ^ 2 := by
+      have hfloor : (99989 : ℝ) / 100000 ≤ 1 - (11 / 10) * x ^ 2 := by
+        have hx2 : x ^ 2 ≤ (1 / 100) ^ 2 := pow_le_pow_left₀ hx0 hxle 2
+        nlinarith
+      have hconst : (11 : ℝ) / 10 / ((99989 : ℝ) / 100000) < 6 / 5 := by norm_num
+      have hden_pos' : (0 : ℝ) < (99989 : ℝ) / 100000 := by norm_num
+      have hquot : (11 / 10) / (1 - (11 / 10) * x ^ 2) ≤
+          (11 / 10) / ((99989 : ℝ) / 100000) := by
+        apply div_le_div_of_nonneg_left (by norm_num) hden_pos' hfloor
+      have hquot_lt : (11 / 10) / (1 - (11 / 10) * x ^ 2) < 6 / 5 :=
+        lt_of_le_of_lt hquot hconst
+      have hx2_nonneg : 0 ≤ x ^ 2 := by positivity
+      have hmul := mul_le_mul_of_nonneg_right hquot_lt.le hx2_nonneg
+      have hform : ((11 / 10) * x ^ 2) / (1 - (11 / 10) * x ^ 2) =
+          x ^ 2 * ((11 / 10) / (1 - (11 / 10) * x ^ 2)) := by ring
+      linarith [hform, hmul]
+    have hrewrite : (gammaSEqual x)⁻¹ - 1 = (1 - gammaSEqual x) / gammaSEqual x := by
+      field_simp [hγx.ne']
+    linarith
+  refine ⟨hstrict, ?_⟩
+  calc layerAccum x - x
+      ≤ x * (gammaSEqual x)⁻¹ - x := by linarith
+    _ = x * ((gammaSEqual x)⁻¹ - 1) := by ring
+    _ ≤ x * ((6 / 5) * x ^ 2) := mul_le_mul_of_nonneg_left hrel hx0
+    _ = (6 / 5) * x ^ 3 := by ring
 
 private theorem circEnergy_coulomb_gap {x : ℝ}
     (hx : x ∈ Ioo (0 : ℝ) (1 / 100)) :
@@ -454,6 +534,100 @@ theorem signedShell_coulomb_gap {n : ℕ} (hn : 2 ≤ n) :
     field_simp [hα.ne', hn']
     ring
   exact le_of_eq hpow
+
+/-- Outer-well potential at phase `x`, in units of the ionisation.
+The Coulomb value is `-4x/α = -2 ke²/r` divided by the ionisation. -/
+noncomputable def potentialDeepening (x : ℝ) : ℝ :=
+  (4 / (fineStructureApprox : ℝ)) * (layerAccum x - x)
+
+/-- Outside the Bohr radius, phase `x ≤ α/2`, the signed potential lies
+strictly below the Coulomb potential, and the deepening is less than
+`1/30000` of the ionisation. -/
+theorem potentialDeepening_bohr_exterior {x : ℝ}
+    (hx0 : 0 < x) (hx : x ≤ (fineStructureApprox : ℝ) / 2) :
+    0 < potentialDeepening x ∧ potentialDeepening x < 1 / 30000 := by
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hxlt : x < 1 / 100 := by
+    have hα100 : (fineStructureApprox : ℝ) / 2 < 1 / 100 := by
+      have hα' := fineStructureApprox_lt_one_fifty
+      linarith
+    exact lt_of_le_of_lt hx hα100
+  have hgap := layerAccum_coulomb_gap ⟨hx0, hxlt⟩
+  unfold potentialDeepening
+  have hpos : 0 < (4 / (fineStructureApprox : ℝ)) * (layerAccum x - x) := by
+    exact mul_pos (div_pos (by norm_num) hα) (sub_pos.mpr hgap.1)
+  refine ⟨hpos, ?_⟩
+  have hcubic : layerAccum x - x ≤ (6 / 5) * ((fineStructureApprox : ℝ) / 2) ^ 3 := by
+    have hx3 : x ^ 3 ≤ ((fineStructureApprox : ℝ) / 2) ^ 3 := by
+      exact pow_le_pow_left₀ hx0.le hx 3
+    calc layerAccum x - x
+        ≤ (6 / 5) * x ^ 3 := hgap.2
+      _ ≤ (6 / 5) * ((fineStructureApprox : ℝ) / 2) ^ 3 := by gcongr
+  have hscale : (4 / (fineStructureApprox : ℝ)) * (layerAccum x - x) ≤
+      (3 / 5) * (fineStructureApprox : ℝ) ^ 2 := by
+    calc (4 / (fineStructureApprox : ℝ)) * (layerAccum x - x)
+        ≤ (4 / (fineStructureApprox : ℝ)) * ((6 / 5) * ((fineStructureApprox : ℝ) / 2) ^ 3) :=
+          mul_le_mul_of_nonneg_left hcubic (div_pos (by norm_num) hα).le
+      _ = (3 / 5) * (fineStructureApprox : ℝ) ^ 2 := by
+          field_simp [hα.ne']
+          ring
+  have hα_lt : (fineStructureApprox : ℝ) < 73 / 10000 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    norm_num
+  have hconst : (3 / 5) * (fineStructureApprox : ℝ) ^ 2 < 1 / 30000 := by
+    have hsq : (fineStructureApprox : ℝ) ^ 2 < (73 / 10000) ^ 2 := by
+      exact pow_lt_pow_left₀ hα_lt hα.le (by norm_num)
+    have hmul : (3 / 5) * (fineStructureApprox : ℝ) ^ 2 <
+        (3 / 5) * ((73 : ℝ) / 10000) ^ 2 := by gcongr
+    have hnum : (3 / 5) * ((73 : ℝ) / 10000) ^ 2 < 1 / 30000 := by norm_num
+    exact lt_trans hmul hnum
+  exact lt_of_le_of_lt hscale hconst
+
+/-- Signed outer-well potential at a Bohr shell, in units of the ionisation.
+The Coulomb value is `-2/n²`. -/
+noncomputable def signedPotential (n : ℕ) : ℝ :=
+  -((4 / (fineStructureApprox : ℝ)) * layerAccum (bohrShellPhase n))
+
+theorem signedPotential_gap {n : ℕ} (hn : 0 < n) :
+    0 < -(signedPotential n + 2 / (n : ℝ) ^ 2) ∧
+      -(signedPotential n + 2 / (n : ℝ) ^ 2) ≤
+        (3 / 5) * (fineStructureApprox : ℝ) ^ 2 / (n : ℝ) ^ 6 ∧
+      -(signedPotential n + 2 / (n : ℝ) ^ 2) < 1 / 30000 := by
+  have hx_pos : (0 : ℝ) < (bohrShellPhase n : ℝ) := by
+    exact_mod_cast bohrShellPhase_pos hn
+  have hx_lt : (bohrShellPhase n : ℝ) < 1 / 100 := bohrShellPhase_lt_hundredth hn
+  have hgap := layerAccum_coulomb_gap ⟨hx_pos, hx_lt⟩
+  have hα : (0 : ℝ) < (fineStructureApprox : ℝ) := by exact_mod_cast fineStructureApprox_pos
+  have hxphase : (bohrShellPhase n : ℝ) =
+      (fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2) := by
+    unfold bohrShellPhase
+    norm_cast
+  have hn' : (n : ℝ) ≠ 0 := by exact_mod_cast hn.ne'
+  have hident : -(signedPotential n + 2 / (n : ℝ) ^ 2) =
+      (4 / (fineStructureApprox : ℝ)) *
+        (layerAccum (bohrShellPhase n) - (bohrShellPhase n : ℝ)) := by
+    unfold signedPotential
+    rw [hxphase]
+    field_simp [hα.ne', hn']
+    ring
+  rw [hident]
+  have hpos : 0 < (4 / (fineStructureApprox : ℝ)) *
+      (layerAccum (bohrShellPhase n) - (bohrShellPhase n : ℝ)) :=
+    mul_pos (div_pos (by norm_num) hα) (sub_pos.mpr hgap.1)
+  refine ⟨hpos, ?_, ?_⟩
+  · calc (4 / (fineStructureApprox : ℝ)) *
+          (layerAccum (bohrShellPhase n) - (bohrShellPhase n : ℝ))
+        ≤ (4 / (fineStructureApprox : ℝ)) * ((6 / 5) * (bohrShellPhase n : ℝ) ^ 3) :=
+          mul_le_mul_of_nonneg_left hgap.2 (div_pos (by norm_num) hα).le
+      _ = (3 / 5) * (fineStructureApprox : ℝ) ^ 2 / (n : ℝ) ^ 6 := by
+          rw [hxphase]
+          field_simp [hα.ne', hn']
+          ring
+  · have hplateau := potentialDeepening_bohr_exterior hx_pos
+      (by
+        have hle := bohrShellPhase_le_half_alpha hn
+        exact_mod_cast hle)
+    simpa [potentialDeepening] using hplateau.2
 
 theorem hAlpha_signed_shift :
     |signedShell 3 - signedShell 2 - (5 / 36)| < (1 / 10000) * (5 / 36) := by
