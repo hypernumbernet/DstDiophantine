@@ -377,54 +377,13 @@ The straight line of one fixed jet is not itself that geodesic.
   in ten thousand. The ground shell departs from \(-1\) by less than
   \(1/60000\). The steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\)
   are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
-  ten thousand. Charge two stays in that well; its steps \(2\to 1\) and
-  \(4\to 3\) are three ionisations and \(7/36\), and its even steps
-  \(4\to 2\), \(6\to 4\), \(8\to 4\), and \(10\to 4\) repeat \(3/4\),
-  \(5/36\), \(3/16\), and \(21/100\), each within one part in ten thousand.
-  Charge eleven stays in that well. Its step \(4\to 3\) is \(847/144\),
-  within one part in ten thousand, and the shells \(22\to 11\),
-  \(33\to 22\), \(44\to 22\), and \(55\to 22\) repeat the same four
-  hydrogen fractions, each within one part in ten thousand. Charge eleven
-  with the ten electrons of the first two shells leaves one electron on
-  the third shell, feeling charge one. The monopole and the dipole share
-  that phase, and both the bookkeeping step and the circular-energy step
-  vanish. On the one-proton phases the multiplier one is the hydrogen line,
-  and that residual charge is the multiplier one. Multiplier eleven on those
-  phases makes the shell-\(3\) to shell-\(2\) step \(55/36\), within one part
-  in ten thousand. Multiplier two on those phases doubles the five hydrogen
-  steps, to \(3/2\), \(5/18\), \(3/8\), \(21/50\), and \(7/72\), each within
-  one part in ten thousand. The first shell holds two electrons, so both
-  seats filled on that multiplier leave none over. Two electrons on opposite
-  rays, one remaining on shell 1, give the differences \(7/90\), \(63/680\),
-  \(63/650\), \(164/1665\), \(9/10\), and \(91/6120\), each within one part in
-  ten thousand, and the two joint states share each difference. The radius law, including
-  the charge, remains an input.
+  ten thousand.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
   \(1874607\) picometres. Shared inertia with the same mass bracket places
   them strictly between \(121568\) and \(121569\), \(486273\) and \(486274\),
-  \(434172\) and \(434174\), and \(1875626\) and \(1875628\) picometres. With
-  the nucleus fixed, the two charge-two wavelengths lie strictly between
-  \(30375\) and \(30376\), and between \(468651\) and \(468652\), picometres.
-  Doubled shells reproduce the Lyman \(\alpha\), \(\mathrm{H}\alpha\),
-  \(\mathrm{H}\beta\), and \(\mathrm{H}\gamma\) wavelengths exactly. Shared
-  inertia with a helium-nucleus mass ratio strictly between \(7294\) and
-  \(7295\) places those four strictly between \(121518\) and \(121519\),
-  \(656202\) and \(656203\), \(486075\) and \(486076\), and   \(433996\) and
-  \(433997\) picometres, each short of the hydrogen line. Multiplier two on the
-  one-proton phases places the five hydrogen lines strictly between
-  \(60751\) and \(60752\), \(328056\) and \(328057\), \(243004\) and
-  \(243005\), \(216968\) and \(216969\), and \(937303\) and \(937304\)
-  picometres. With the nucleus
-  fixed, charge eleven places \(2\to 1\) and \(4\to 3\) strictly between
-  \(1004151\) and \(1004152\), and between \(15492615\) and \(15492616\),
-  in units of \(10^{-15}\,\mathrm{m}\). Shells scaled by eleven reproduce
-  the four hydrogen wavelengths exactly. Shared inertia with a
-  sodium-nucleus mass ratio strictly between \(41896\) and \(41897\)
-  places those four strictly between \(121505\) and \(121506\), \(656127\)
-  and \(656128\), \(486020\) and \(486021\), and \(433947\) and \(433948\)
-  picometres, each short of the hydrogen line.
+  \(434172\) and \(434174\), and \(1875626\) and \(1875628\) picometres.
 * `BothChannels` — an electron and a proton exert both terms at every
   separation. For an unlike pair, equal signs of the two interference factors
   make the two terms point the same way, so the separation-increasing force
