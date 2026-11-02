@@ -16,10 +16,12 @@ import Mathlib.Tactic.Ring
 
 ## Paper boundary (do **not** claim)
 
-The radius law \(r_n=n^2 a_0\) is an input. Nothing here derives it from
-\(\gamma_s=0\), and nothing here is a fine-structure splitting or a
-selection rule. The electromagnetic length is the reduced Compton
-wavelength, likewise an input.
+Nothing here derives the radii from \(\gamma_s=0\). The interference node
+is not a circular path. Nothing here is a fine-structure splitting, a
+selection rule, or a derivation of \(\alpha\). The electromagnetic length
+is the reduced Compton wavelength, an observational constant. The scalar
+phase on the path is the phase of a plane wave; it is not the free-lag
+reading of the particle action.
 
 ## What is proved
 
@@ -50,6 +52,14 @@ wavelength, likewise an input.
   \(3/4\), \(3/16\), \(21/100\), and \(7/144\) of the ionisation, and each
   circular-energy difference departs from that fraction by less than one
   part in ten thousand of it.
+* Single-valuedness \(p r=n\hbar\) and the centripetal identity give
+  \(r=n^2\hbar^2\gamma/(m k e^2)\). With \(\ell=\hbar/(m c)\) and
+  \(k e^2=\alpha\hbar c\), the phase \(x=\ell/(2r)\) solves
+  \(x\gamma_s(x)=\alpha/(2n^2)\).
+* That equation has exactly one root in \((0,1/200)\). The root lies on
+  the restoring side. The product \(x\gamma_s\) vanishes at the first
+  interference node, so the node is not the root. At the root,
+  \(0<1-\gamma_s<1/60000\), and the radius is \(n^2 a_0\gamma_s\).
 -/
 
 namespace DstDiophantine
@@ -1041,6 +1051,249 @@ theorem paschen_signed_shift :
   have hpart : (2 : ℝ) / 1000000 < (1 / 10000) * (7 / 144) := by norm_num
   rw [abs_lt]
   constructor <;> linarith
+
+/-! ### Single-valued phase on a circular path
+
+The interference node is a zero of \(\gamma_s\). The radius of a circular
+path is a different condition: the scalar phase closes, and the centripetal
+identity fixes the speed. No centrifugal term is added to the force.
+-/
+
+/-- Phase weight \(x\gamma_s(x)\). Its derivative is the circular comparison. -/
+noncomputable def phaseWeight (x : ℝ) : ℝ :=
+  x * gammaSEqual x
+
+theorem hasDerivAt_phaseWeight (x : ℝ) :
+    HasDerivAt phaseWeight (circStable x) x := by
+  have h := (hasDerivAt_id x).mul (hasDerivAt_gammaSEqual x)
+  simp only [id_eq, one_mul] at h
+  unfold phaseWeight
+  refine h.congr_deriv ?_
+  unfold circStable
+  ring
+
+theorem continuous_phaseWeight : Continuous phaseWeight :=
+  continuous_id.mul continuous_gammaSEqual
+
+/-- On \([0,1/2]\), below the restoring root, the weight is strictly increasing. -/
+theorem phaseWeight_strictMono_to_half :
+    StrictMonoOn phaseWeight (Icc (0 : ℝ) (1 / 2)) := by
+  refine strictMonoOn_of_deriv_pos (convex_Icc _ _) continuous_phaseWeight.continuousOn ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  rw [(hasDerivAt_phaseWeight x).deriv]
+  obtain ⟨y, hy, _⟩ := exists_unique_circStable
+  have hxwell : x ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+    refine ⟨hx.1, ?_⟩
+    have hπ : (1 / 2 : ℝ) < π / 4 := by linarith [pi_gt_three]
+    exact lt_trans hx.2 (lt_trans hπ resonanceRoot1_sharp_bounds.1)
+  have hsign := circStable_outer_sign hxwell hy.1 hy.2
+  have hlt : x < y := by linarith [hx.2, hy.1.1]
+  exact hsign.1.mpr hlt
+
+theorem phaseWeight_zero : phaseWeight 0 = 0 := by
+  unfold phaseWeight
+  simp [gammaSEqual_zero]
+
+theorem phaseWeight_firstNode : phaseWeight resonanceRoot1 = 0 := by
+  unfold phaseWeight
+  rw [resonanceRoot1_gammaSEqual_zero]
+  ring
+
+/-- Right-hand side of the closure, \(\alpha/(2n^2)\). -/
+noncomputable def closureCharge (n : ℕ) : ℝ :=
+  (fineStructureApprox : ℝ) / (2 * (n : ℝ) ^ 2)
+
+theorem closureCharge_pos {n : ℕ} (hn : 0 < n) : 0 < closureCharge n := by
+  unfold closureCharge
+  exact div_pos (by exact_mod_cast fineStructureApprox_pos)
+    (mul_pos (by norm_num) (pow_pos (Nat.cast_pos.mpr hn) 2))
+
+theorem closureCharge_le_half_alpha {n : ℕ} (hn : 0 < n) :
+    closureCharge n ≤ (fineStructureApprox : ℝ) / 2 := by
+  unfold closureCharge
+  have hn1 : (1 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn
+  have hsq : (1 : ℝ) ≤ (n : ℝ) ^ 2 := by
+    simpa using pow_le_pow_left₀ (by norm_num : (0 : ℝ) ≤ 1) hn1 2
+  have hden : (0 : ℝ) < 2 * (n : ℝ) ^ 2 := by positivity
+  rw [div_le_div_iff₀ hden (by norm_num)]
+  have hα : (0 : ℝ) ≤ (fineStructureApprox : ℝ) := by
+    exact_mod_cast fineStructureApprox_pos.le
+  nlinarith
+
+theorem fineStructureApprox_lt_73_10000 :
+    (fineStructureApprox : ℝ) < 73 / 10000 := by
+  unfold fineStructureApprox fineStructureMantissa fineStructureScale
+  norm_num
+
+theorem phaseWeight_twoHundredth_gt :
+    (73 / 20000 : ℝ) < phaseWeight (1 / 200) := by
+  have hdep := gammaDepart_le (x := 1 / 200) (by norm_num) (by norm_num)
+  have hγ : (399989 / 400000 : ℝ) ≤ gammaSEqual (1 / 200) := by
+    have hcalc : (1 : ℝ) - (11 / 10) * (1 / 200) ^ 2 = 399989 / 400000 := by norm_num
+    linarith
+  unfold phaseWeight
+  have hmul : (73 / 20000 : ℝ) < (1 / 200) * (399989 / 400000) := by norm_num
+  have hle : (1 / 200) * (399989 / 400000) ≤ (1 / 200) * gammaSEqual (1 / 200) :=
+    mul_le_mul_of_nonneg_left hγ (by norm_num)
+  exact lt_of_lt_of_le hmul hle
+
+/-- The closure \(x\gamma_s(x)=\alpha/(2n^2)\) has one root in \((0,1/200)\). -/
+theorem exists_unique_phaseClosure {n : ℕ} (hn : 0 < n) :
+    ∃! x : ℝ, x ∈ Ioo (0 : ℝ) (1 / 200) ∧ phaseWeight x = closureCharge n := by
+  have hc0 : 0 < closureCharge n := closureCharge_pos hn
+  have hc : closureCharge n < phaseWeight (1 / 200) := by
+    have hhalf : closureCharge n ≤ (fineStructureApprox : ℝ) / 2 :=
+      closureCharge_le_half_alpha hn
+    have hα : (fineStructureApprox : ℝ) / 2 < 73 / 20000 := by
+      have hα' := fineStructureApprox_lt_73_10000
+      linarith
+    exact lt_of_le_of_lt hhalf (lt_trans hα phaseWeight_twoHundredth_gt)
+  have hmem : closureCharge n ∈ Ioo (phaseWeight 0) (phaseWeight (1 / 200)) := by
+    refine ⟨?_, hc⟩
+    simpa [phaseWeight_zero] using hc0
+  obtain ⟨x, hx, hxeq⟩ :=
+    intermediate_value_Ioo (by norm_num : (0 : ℝ) ≤ 1 / 200)
+      continuous_phaseWeight.continuousOn hmem
+  refine ⟨x, ⟨hx, hxeq⟩, ?_⟩
+  intro y hy
+  have hxI : x ∈ Icc (0 : ℝ) (1 / 2) := ⟨hx.1.le, by linarith [hx.2]⟩
+  have hyI : y ∈ Icc (0 : ℝ) (1 / 2) := ⟨hy.1.1.le, by linarith [hy.1.2]⟩
+  exact (phaseWeight_strictMono_to_half.injOn hxI hyI (hxeq.trans hy.2.symm)).symm
+
+theorem phaseClosure_mem_outer {n : ℕ} (_hn : 0 < n) {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (1 / 200)) :
+    x ∈ Ioo (0 : ℝ) resonanceRoot1 := by
+  refine ⟨hx.1, ?_⟩
+  have hπ : (1 / 200 : ℝ) < π / 4 := by linarith [pi_gt_three]
+  exact lt_trans hx.2 (lt_trans hπ resonanceRoot1_sharp_bounds.1)
+
+theorem phaseClosure_restoring {n : ℕ} (hn : 0 < n) {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (1 / 200)) :
+    0 < circStable x := by
+  obtain ⟨y, hy, _⟩ := exists_unique_circStable
+  have hsign := circStable_outer_sign (phaseClosure_mem_outer hn hx) hy.1 hy.2
+  have hlt : x < y := by linarith [hx.2, hy.1.1]
+  exact hsign.1.mpr hlt
+
+theorem phaseClosure_ne_node {n : ℕ} (hn : 0 < n) {x : ℝ}
+    (hw : phaseWeight x = closureCharge n) :
+    x ≠ resonanceRoot1 := by
+  intro h
+  have h0 : phaseWeight x = 0 := by simpa [h] using phaseWeight_firstNode
+  linarith [closureCharge_pos hn, h0, hw]
+
+theorem gammaSEqual_lt_one_of_pos {x : ℝ} (hx0 : 0 < x) (hxπ : x ≤ π) :
+    gammaSEqual x < 1 := by
+  have hxI : x ∈ Icc (0 : ℝ) π := ⟨hx0.le, hxπ⟩
+  have h0I : (0 : ℝ) ∈ Icc (0 : ℝ) π := ⟨le_rfl, pi_pos.le⟩
+  have hlt := (strictAntiOn_gammaSEqual_even 0)
+    (by simpa [Nat.cast_zero, zero_mul] using h0I)
+    (by simpa [Nat.cast_zero, zero_mul] using hxI) hx0
+  simpa [gammaSEqual_zero] using hlt
+
+/-- At the closure, \(\gamma_s\) is strictly below \(1\) by less than \(1/60000\). -/
+theorem phaseClosure_fraction {n : ℕ} (hn : 0 < n) {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) (1 / 200)) (hw : phaseWeight x = closureCharge n) :
+    0 < 1 - gammaSEqual x ∧ 1 - gammaSEqual x < 1 / 60000 := by
+  have hx0 : 0 < x := hx.1
+  have hx200 : x < 1 / 200 := hx.2
+  have hxnode := (phaseClosure_mem_outer hn hx).2
+  have hγlt : gammaSEqual x < 1 :=
+    gammaSEqual_lt_one_of_pos hx0
+      (le_of_lt (lt_trans hxnode (lt_trans resonanceRoot1_sharp_bounds.2
+        (by linarith [pi_gt_three] : (1 : ℝ) < π))))
+  have hpos : 0 < 1 - gammaSEqual x := by linarith
+  have hγpos : 0 < gammaSEqual x :=
+    gammaSEqual_pos_left_of_first_node (phaseClosure_mem_outer hn hx)
+  have hdep := gammaDepart_le hx0.le (by linarith : x ≤ 1 / 50)
+  have hx2 : x ^ 2 < 1 / 40000 := by nlinarith
+  have hstrict : (11 / 10) * x ^ 2 < (11 / 10) * (1 / 40000) := by
+    exact mul_lt_mul_of_pos_left hx2 (by norm_num)
+  have hγgt : 399989 / 400000 < gammaSEqual x := by
+    have hcalc : (11 / 10) * (1 / 40000 : ℝ) = 11 / 400000 := by norm_num
+    linarith
+  have hxeq : x = closureCharge n / gammaSEqual x := by
+    rw [← hw]
+    unfold phaseWeight
+    field_simp [hγpos.ne']
+  have hcle : closureCharge n ≤ (fineStructureApprox : ℝ) / 2 :=
+    closureCharge_le_half_alpha hn
+  have hα : (fineStructureApprox : ℝ) / 2 < 73 / 20000 := by
+    have hα' := fineStructureApprox_lt_73_10000
+    linarith
+  have hc : closureCharge n < 73 / 20000 := lt_of_le_of_lt hcle hα
+  have hxup : x < (73 / 20000) * (400000 / 399989) := by
+    rw [hxeq]
+    have h1 : closureCharge n / gammaSEqual x < (73 / 20000) / gammaSEqual x :=
+      div_lt_div_of_pos_right hc hγpos
+    have hfloor : (0 : ℝ) < 399989 / 400000 := by norm_num
+    have hinv : (1 : ℝ) / gammaSEqual x < 1 / (399989 / 400000) := by
+      rw [one_div, one_div]
+      exact inv_strictAnti₀ hfloor hγgt
+    have hpos73 : (0 : ℝ) < 73 / 20000 := by norm_num
+    have h2 : (73 / 20000) / gammaSEqual x < (73 / 20000) / (399989 / 400000) := by
+      calc (73 / 20000) / gammaSEqual x
+          = (73 / 20000) * (1 / gammaSEqual x) := by ring
+        _ < (73 / 20000) * (1 / (399989 / 400000)) :=
+            mul_lt_mul_of_pos_left hinv hpos73
+        _ = (73 / 20000) / (399989 / 400000) := by ring
+    have hrew : ((73 : ℝ) / 20000) / ((399989 : ℝ) / 400000) =
+        (73 / 20000) * (400000 / 399989) := by ring
+    exact lt_trans h1 (h2.trans_eq hrew)
+  have hsq : x ^ 2 < ((73 / 20000) * (400000 / 399989)) ^ 2 := by
+    have hbound : (0 : ℝ) < (73 / 20000) * (400000 / 399989) := by norm_num
+    rw [sq_lt_sq, abs_of_pos hx0, abs_of_pos hbound]
+    exact hxup
+  have hgap : 1 - gammaSEqual x <
+      (11 / 10) * ((73 / 20000) * (400000 / 399989)) ^ 2 := by
+    have hmul : (11 / 10) * x ^ 2 <
+        (11 / 10) * ((73 / 20000) * (400000 / 399989)) ^ 2 := by
+      exact mul_lt_mul_of_pos_left hsq (by norm_num)
+    linarith
+  have hnum : (11 / 10) * ((73 / 20000 : ℝ) * (400000 / 399989)) ^ 2 < 1 / 60000 := by
+    norm_num
+  exact ⟨hpos, lt_trans hgap hnum⟩
+
+/-- \(p r = n\hbar\) and \(p^2/m = ke^2/(\gamma r)\) give \(r = n^2 a_0\gamma\). -/
+theorem deBroglie_closure_radius {n : ℕ} {ℏ m k e γ r p : ℝ}
+    (_hn : 0 < n) (hm : m ≠ 0) (hr : r ≠ 0) (hγ : γ ≠ 0) (hk : k ≠ 0) (he : e ≠ 0)
+    (hphase : p * r = (n : ℝ) * ℏ)
+    (hcent : p ^ 2 / m = k * e ^ 2 / (γ * r)) :
+    r = (n : ℝ) ^ 2 * ℏ ^ 2 * γ / (m * k * e ^ 2) := by
+  have hp : p = (n : ℝ) * ℏ / r := by
+    field_simp [hr] at hphase ⊢
+    linarith
+  rw [hp] at hcent
+  have hke : m * k * e ^ 2 ≠ 0 := by
+    exact mul_ne_zero (mul_ne_zero hm hk) (pow_ne_zero 2 he)
+  field_simp [hm, hr, hγ, hke] at hcent ⊢
+  nlinarith
+
+/-- With \(\ell=\hbar/(mc)\) and \(ke^2=\alpha\hbar c\),
+the closure is \(x\gamma=\alpha/(2n^2)\). -/
+theorem closure_phase_eq {n : ℕ} {α ℓ x γ : ℝ}
+    (hn : 0 < n) (hα : α ≠ 0) (hx : x ≠ 0)
+    (hw : x * γ = α / (2 * (n : ℝ) ^ 2)) :
+    ℓ / (2 * x) = (n : ℝ) ^ 2 * (ℓ / α) * γ := by
+  have hn0 : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (ne_of_gt hn)
+  have hmul : α = 2 * (n : ℝ) ^ 2 * (x * γ) := by
+    calc α
+        = (x * γ) * (2 * (n : ℝ) ^ 2) := by
+            rw [hw]
+            field_simp [hn0]
+      _ = 2 * (n : ℝ) ^ 2 * (x * γ) := by ring
+  have hrhs : (n : ℝ) ^ 2 * (ℓ / α) * γ * (2 * x) * α =
+      (n : ℝ) ^ 2 * ℓ * γ * (2 * x) := by
+    calc (n : ℝ) ^ 2 * (ℓ / α) * γ * (2 * x) * α
+        = (n : ℝ) ^ 2 * ((ℓ / α) * α) * γ * (2 * x) := by ring
+      _ = (n : ℝ) ^ 2 * ℓ * γ * (2 * x) := by rw [div_mul_cancel₀ ℓ hα]
+  rw [div_eq_iff (mul_ne_zero (by norm_num : (2 : ℝ) ≠ 0) hx)]
+  apply mul_right_cancel₀ hα
+  calc ℓ * α
+      = ℓ * (2 * (n : ℝ) ^ 2 * (x * γ)) := by rw [hmul]
+    _ = (n : ℝ) ^ 2 * ℓ * γ * (2 * x) := by ring
+    _ = (n : ℝ) ^ 2 * (ℓ / α) * γ * (2 * x) * α := by rw [← hrhs]
 
 end Gravity
 

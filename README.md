@@ -338,7 +338,7 @@ On the equal-scale locus $\alpha = \beta = \ell/r$ the electromagnetic force
 is the Coulomb force divided by the interference factor
 $\gamma_s(x) = \cosh x\cos x - \sinh x\sin x$, with phase $x = \ell/(2r)$.
 The sign of $\gamma_s$ is the repulsion. The length $\ell$ is an input.
-Bohr's $n^2$ and the fine-structure constant are not derived. No centrifugal
+The fine-structure constant is not derived. The radii $n^2 a_0\gamma_s$ are the single-valued scalar phase on a circular path; they are not the interference nodes. No centrifugal
 term is added.
 
 Zeros of $\gamma_s$ are simple, one in each interval $[n\pi,(n+1)\pi]$, and
