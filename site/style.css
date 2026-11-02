@@ -10,7 +10,7 @@ nav a{color:var(--mute);text-decoration:none;font-size:.9rem}nav a:hover{color:v
 .toggle{display:flex;border:1px solid var(--line);border-radius:999px;background:var(--panel);padding:3px;cursor:pointer;color:var(--mute);font:inherit;font-size:.85rem}
 .toggle .opt{padding:.15rem .7rem;border-radius:999px}
 html[data-lang=en] .opt[data-v=en],html[data-lang=ja] .opt[data-v=ja]{background:var(--accent);color:#120c22;font-weight:700}
-main{max-width:920px;margin:0 auto;padding:0 1.2rem 4rem}
+main{max-width:920px;margin:0 auto;padding:0 1.2rem 4rem;overflow-x:clip}
 section{padding:3.2rem 0 1rem;border-bottom:1px solid var(--line)}
 .hero{padding-top:4rem}
 .kicker{color:var(--accent);letter-spacing:.2em;text-transform:uppercase;font-size:.8rem;margin:0}
@@ -90,3 +90,9 @@ html[data-lang=en] .pager .next,html[data-lang=ja] .pager .prev{margin-left:auto
 .fig .att{stroke:var(--usual);color:var(--usual);stroke-width:3}
 .fig .lobe.pos{fill:#4fc3ff55;stroke:#4fc3ff}.fig .lobe.neg{fill:#ff5a7a44;stroke:#ff5a7a}
 .fig .ion{fill:#2a3d5c;stroke:#4fc3ff}.fig .prot{fill:#ff9a3c}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin:1.2rem 0}
+.table-scroll .datatable{margin:0}
+.datatable th,.datatable td{border:1px solid var(--line);padding:.55rem .65rem;text-align:left;vertical-align:top}
+.datatable th{background:var(--panel);color:#fff;font-weight:600}
+.datatable td.mid{text-align:center;white-space:nowrap}
+@media (max-width:720px){.datatable{font-size:.82rem}.datatable th,.datatable td{padding:.45rem .4rem}}
