@@ -37,7 +37,6 @@ import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
 import DstDiophantine.Gravity.NeutronScatter
-import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ElectronCapacity
 import DstDiophantine.Gravity.ElectronShape
 import DstDiophantine.Gravity.ElectronAngular
@@ -45,7 +44,6 @@ import DstDiophantine.Gravity.ElectronBoundary
 import DstDiophantine.Gravity.ElectronWater
 import DstDiophantine.Gravity.ElectronAngle
 import DstDiophantine.Gravity.ElectronTrio
-import DstDiophantine.Gravity.ElectronNegativity
 import DstDiophantine.Gravity.ElectronMetal
 import DstDiophantine.Gravity.ElectronCrystal
 import DstDiophantine.Gravity.MetalFusion
@@ -408,15 +406,12 @@ The straight line of one fixed jet is not itself that geodesic.
   the first node strictly between \(91/40\) and \(12/5\) Bohr radii.
 * `ElectronLength` — an outer-well radius \(r\) forces \(\ell<(19/10)r\).
   Attraction at the Bohr radius forces \(\ell<\mathtt{lambdaHyp}\) and
-  \(\ell<(19/10)a_0\). The same sign at \(a_0/Z\) forces
-  \(\ell<(19/10)a_0/Z\). On the SI stand-ins the caps for charges \(1\), \(2\),
-  and \(92\) lie in \((1005,1006)\times 10^{-13}\,\mathrm{m}\),
-  \((502,503)\times 10^{-13}\,\mathrm{m}\), and
-  \((1092,1093)\times 10^{-15}\,\mathrm{m}\). Placing the node at \(a_0\) puts
+  \(\ell<(19/10)a_0\). On the SI stand-ins that cap lies in
+  \((1005,1006)\times 10^{-13}\,\mathrm{m}\). Placing the node at \(a_0\) puts
   the phase of \(a_0/2\) where \(\gamma_s<0\). The electromagnetic length is
-  \(\hbar/(m_e c)\), strictly below the charge-\(92\) cap, in
+  \(\hbar/(m_e c)\), strictly below that cap, in
   \((3861,3862)\times 10^{-16}\,\mathrm{m}\). Its first node lies in
-  \((2032,2069)\times 10^{-16}\,\mathrm{m}\) and strictly inside \(a_0/92\).
+  \((2032,2069)\times 10^{-16}\,\mathrm{m}\). The radius \(a_0/Z\) is not an input.
 * `Rutherford` — the electromagnetic scale is \(\alpha\hbar c\), strictly
   between \(1.439964\) and \(1.439965\,\mathrm{MeV\,fm}\). The laboratory-frame
   Coulomb head-on distance of a \(7.69\,\mathrm{MeV}\) alpha particle on gold
@@ -458,14 +453,6 @@ The straight line of one fixed jet is not itself that geodesic.
   abundance-weighted mean of the five stable titanium lengths lies strictly
   between \(-3.44\) and \(-3.43\,\mathrm{fm}\). A scattering amplitude inside
   the wall, and a length in femtometres, are not derived.
-* `ElectronIon` — one electron about a charge `Z`, a multiplier in units of
-  the proton charge, feels `Z` times the one-proton force. The multiplier is
-  not a sum of proton forces at one centre. On the outer well the logarithmic
-  derivative does not depend on `Z > 0`, so the restoring radius is the
-  same for every positive charge. The circular energy is `Z` times the
-  one-proton energy. It is strictly least at that same radius, the value
-  is negative, and a larger charge makes it lower. The radius is not
-  `a₀/Z`, and the energy is not a laboratory ionization energy.
 * `ElectronCapacity` — two electrons at the ends of a diameter have no radial
   balance in the outer well and exactly one in the first repulsive shell, for
   every nuclear charge \(Z\ge 1\). That point is an angular maximum. Eight
@@ -564,14 +551,6 @@ The straight line of one fixed jet is not itself that geodesic.
   A further electron on the axis, in the outer well and no farther from the
   nucleus than the bonding electrons, drives each ray off the plane to the
   opposite side. The nuclear charge does not enter that sign.
-* `ElectronNegativity` — at one outer-well phase the pull is the nuclear charge
-  times \(4x^{2}/\gamma_s\). A smaller charge outpulls a larger one only at a
-  larger phase. On the segment between two positive charges, with separation
-  phase strictly below \(x_1/2\), the net pull toward the first charge is
-  strictly decreasing in the electron fraction and vanishes once. At the
-  midpoint it is \((Z-W)\) times the unit pull. When \(Z>W\) the root lies
-  strictly above \(1/2\), the side drawn toward \(Z\) is the longer side, and
-  raising \(Z\) moves the root toward \(W\). The cancellation is not restored.
 * `ElectronMetal` — along any line, the outward component of the force of one
   point charge has an explicit derivative. Summed over three orthonormal
   directions it is the charge times \(16x^4\cosh x\sin x/\gamma_s^2\), which
@@ -1446,33 +1425,6 @@ example {Z r R a : ℝ}
   intro i
   exact Fin.elim0 i
 
-/-- Regression: the outer-well cancellation lies toward the smaller charge. -/
-example {Z W φ t : ℝ} (hW : 0 < W) (hZ : W < Z)
-    (hφ : φ ∈ Set.Ioo 0 (resonanceRoot1 / 2))
-    (ht : t ∈ segmentSlot φ) (h0 : segmentPull Z W φ t = 0) :
-    1 / 2 < t ∧
-      (1 - φ / resonanceRoot1) - t < t - φ / resonanceRoot1 ∧
-      0 < segmentPull Z W φ (1 / 2) := by
-  refine ⟨segmentRoot_gt_half hW hZ hφ ht h0,
-    larger_charge_longer_reach hW hZ hφ ht h0, ?_⟩
-  rw [segmentPull_midpoint]
-  have h2 : 2 * φ ∈ Set.Ioo 0 resonanceRoot1 :=
-    ⟨by linarith [hφ.1], by linarith [hφ.2]⟩
-  exact mul_pos (sub_pos.mpr hZ) (pairAttraction_pos_outer h2)
-
-/-- Regression: the segment has one cancellation. -/
-example {Z W φ : ℝ} (hZ : 0 < Z) (hW : 0 < W)
-    (hφ : φ ∈ Set.Ioo 0 (resonanceRoot1 / 2)) :
-    ∃! t : ℝ, t ∈ segmentSlot φ ∧ segmentPull Z W φ t = 0 :=
-  exists_unique_segmentPull hZ hW hφ
-
-/-- Regression: a smaller charge outpulls a larger one only at a larger phase. -/
-example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
-    (hx : x ∈ Set.Ioo 0 resonanceRoot1) (hy : y ∈ Set.Ioo 0 resonanceRoot1)
-    (hp : W * pairAttraction y < Z * pairAttraction x) :
-    y < x :=
-  weaker_charge_closer hZ hW hx hy hp
-
 /-- Regression: three shared pairs meet between the four-pair angle and a straight angle. -/
 example :
     Real.pi / 2 < Real.arccos tetCos ∧
@@ -1539,20 +1491,6 @@ example {x y : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
     circEnergy y < 0 ∧ circEnergy y ≤ circEnergy x ∧
       (circEnergy x = circEnergy y ↔ x = y) :=
   circEnergy_least_outer hx hy h0
-
-/-- Regression: one electron about charge `Z > 0` keeps that phase.
-    The energy is `Z` times the one-proton energy, and a larger charge lowers it. -/
-example {Z W x y : ℝ} (hZ : 0 < Z) (hW : Z < W)
-    (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
-    (hy : y ∈ Set.Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
-    ionCircEnergy Z y = ionCircKinetic Z y + ionCircPotential Z y ∧
-      (x * deriv (ionAttraction Z) x / ionAttraction Z x < 3 ↔ 0 < circStable x) ∧
-      ionCircEnergy Z y < 0 ∧ ionCircEnergy Z y ≤ ionCircEnergy Z x ∧
-      (ionCircEnergy Z x = ionCircEnergy Z y ↔ x = y) ∧
-      ionCircEnergy W y < ionCircEnergy Z y := by
-  have hleast := ionCircEnergy_least_outer hZ hx hy h0
-  exact ⟨ionCircEnergy_eq_parts, ionAttraction_logDeriv_lt_three_outer_iff hZ hx,
-    hleast.1, hleast.2.1, hleast.2.2, ionCircEnergy_lt_of_lt_charge hW hy h0⟩
 
 /-- Regression: repulsive Coulombic layers yield no real circular speed. -/
 example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)

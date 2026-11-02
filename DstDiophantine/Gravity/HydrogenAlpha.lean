@@ -1,5 +1,4 @@
 import DstDiophantine.Gravity.ElectronForce
-import DstDiophantine.Gravity.ElectronIon
 import DstDiophantine.Gravity.ParticleStability
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Complex.ExponentialBounds

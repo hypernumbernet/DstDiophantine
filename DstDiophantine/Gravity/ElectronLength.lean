@@ -14,8 +14,8 @@ set_option linter.style.native false
 ## Paper boundary (do **not** claim)
 
 The electromagnetic length is the reduced Compton wavelength `ℏ/(m_e c)`.
-The laboratory caps lie above it. The Bohr radius, `α`, and the nuclear
-charges `1`, `2`, and `92` are external inputs. Nothing here produces a Bohr
+The laboratory cap lies above it. The Bohr radius and `α` are external
+inputs. The radius `a₀/Z` is not an input. Nothing here produces a Bohr
 spectrum, a dissociation energy, or an identification of the square with a
 laboratory bond.
 
@@ -24,16 +24,12 @@ laboratory bond.
 * A radius in the outer well forces `ℓ < (19/10) r`, because `x₁ < 19/20`.
 * Attraction at the Bohr radius forces `ℓ < lambdaHyp` and
   `ℓ < (19/10) a₀`. The rational cap lies strictly above `lambdaHyp`.
-* The same sign at the hydrogenic radius `a₀/Z` forces `ℓ < (19/10) a₀/Z`.
-  A larger charge tightens the cap.
-* On the SI stand-ins the caps for charges `1`, `2`, and `92` lie in
-  `(1005/10¹³, 1006/10¹³)` m, `(502/10¹³, 503/10¹³)` m, and
-  `(1092/10¹⁵, 1093/10¹⁵)` m.
+* On the SI stand-ins that cap lies in `(1005/10¹³, 1006/10¹³)` m.
 * Placing the first node at `a₀` puts the phase of the radius `a₀/2` where
   `γ_s < 0`.
-* The length `ℏ/(m_e c)` lies strictly below the charge-`92` cap, in
+* The length `ℏ/(m_e c)` lies strictly below that cap, in
   `(3861/10¹⁶, 3862/10¹⁶)` m. Its first node lies in
-  `(2032/10¹⁶, 2069/10¹⁶)` m and strictly inside `a₀/92`.
+  `(2032/10¹⁶, 2069/10¹⁶)` m.
 -/
 
 namespace DstDiophantine
@@ -85,31 +81,10 @@ theorem bohr_outer_well_lt_nineteen_tenths {ℓ : ℝ}
   outerWell_ell_lt_nineteen_tenths
     (by exact_mod_cast bohrRadiusApprox_pos) hwell
 
-/-! ### Hydrogenic radii -/
+/-! ### The Bohr cap -/
 
-/-- Hydrogenic Bohr radius `a₀/Z`, an external input for each charge `Z`. -/
-def hydrogenicRadius (Z : ℕ) : ℚ := bohrRadiusApprox / (Z : ℚ)
-
-/-- Rational cap `(19/10) a₀/Z` in metres. Not a value of `ℓ`. -/
-def ellCap (Z : ℕ) : ℚ := (19 / 10) * hydrogenicRadius Z
-
-theorem hydrogenic_outer_well_lt_ellCap {ℓ : ℝ} {Z : ℕ} (hZ : 0 < Z)
-    (hwell : ℓ / (2 * resonanceRoot1) < (hydrogenicRadius Z : ℝ)) :
-    ℓ < (ellCap Z : ℝ) := by
-  have hZq : (0 : ℚ) < (Z : ℚ) := Nat.cast_pos.mpr hZ
-  have hrQ : (0 : ℚ) < hydrogenicRadius Z := by
-    unfold hydrogenicRadius
-    exact div_pos bohrRadiusApprox_pos hZq
-  have hr : (0 : ℝ) < (hydrogenicRadius Z : ℝ) := by exact_mod_cast hrQ
-  simpa [ellCap] using outerWell_ell_lt_nineteen_tenths hr hwell
-
-theorem ellCap_anti {Z W : ℕ} (hZ : 0 < Z) (hZW : Z < W) :
-    ellCap W < ellCap Z := by
-  unfold ellCap hydrogenicRadius
-  have ha : (0 : ℚ) < (19 / 10) * bohrRadiusApprox :=
-    mul_pos (by norm_num) bohrRadiusApprox_pos
-  have hlt := div_lt_div_of_pos_left ha (Nat.cast_pos.mpr hZ) (Nat.cast_lt.mpr hZW)
-  simpa [mul_div_assoc] using hlt
+/-- Rational cap `(19/10) a₀` in metres. Not a value of `ℓ`. -/
+def bohrEllCap : ℚ := (19 / 10) * bohrRadiusApprox
 
 /-! ### Cleared denominator of the Bohr stand-in -/
 
@@ -165,34 +140,29 @@ private theorem bohrRadius_den_pos : (0 : ℚ) < (bohrRadius_den : ℚ) := by
   unfold bohrRadius_den electronMassMantissa speedOfLightNat fineStructureMantissa
   norm_num
 
-private theorem ellCap_eq_cleared {Z : ℕ} (hZ : 0 < Z) :
-    ellCap Z =
-      (19 * bohrRadius_num : ℚ) / ((10 * Z : ℕ) * bohrRadius_den) := by
-  unfold ellCap hydrogenicRadius
+private theorem bohrEllCap_eq_cleared :
+    bohrEllCap =
+      (19 * bohrRadius_num : ℚ) / ((10 : ℕ) * bohrRadius_den) := by
+  unfold bohrEllCap
   rw [bohrRadiusApprox_eq_num_div_den]
   have hden : (bohrRadius_den : ℚ) ≠ 0 := bohrRadius_den_pos.ne'
   have h10 : (10 : ℚ) ≠ 0 := by norm_num
-  have hZq : (Z : ℚ) ≠ 0 := (Nat.cast_pos.mpr hZ).ne'
-  have hcast : ((10 * Z : ℕ) : ℚ) = (10 : ℚ) * Z := by
-    simp [Nat.cast_mul]
-  rw [hcast]
-  field_simp [hden, h10, hZq]
+  field_simp [hden, h10]
+  ring
 
-/-! ### Metre windows on the SI stand-ins -/
+/-! ### Metre window on the SI stand-ins -/
 
-private theorem ellCap_window (Z loNum loDen hiNum hiDen : ℕ)
+private theorem bohrEllCap_window (loNum loDen hiNum hiDen : ℕ)
     (hlo : 0 < loDen) (hhi : 0 < hiDen)
-    (hZ : 0 < Z)
-    (hloNat : loNum * ((10 * Z) * bohrRadius_den) < 19 * bohrRadius_num * loDen)
-    (hhiNat : 19 * bohrRadius_num * hiDen < hiNum * ((10 * Z) * bohrRadius_den)) :
-    (loNum : ℚ) / loDen < ellCap Z ∧ ellCap Z < (hiNum : ℚ) / hiDen := by
-  rw [ellCap_eq_cleared hZ]
+    (hloNat : loNum * (10 * bohrRadius_den) < 19 * bohrRadius_num * loDen)
+    (hhiNat : 19 * bohrRadius_num * hiDen < hiNum * (10 * bohrRadius_den)) :
+    (loNum : ℚ) / loDen < bohrEllCap ∧ bohrEllCap < (hiNum : ℚ) / hiDen := by
+  rw [bohrEllCap_eq_cleared]
   have hdenNat : 0 < bohrRadius_den := by
     unfold bohrRadius_den electronMassMantissa speedOfLightNat fineStructureMantissa
     decide
-  have hden : (0 : ℚ) < ((10 * Z : ℕ) : ℚ) * bohrRadius_den :=
-    mul_pos (Nat.cast_pos.mpr (mul_pos (by decide : (0 : ℕ) < 10) hZ))
-      (Nat.cast_pos.mpr hdenNat)
+  have hden : (0 : ℚ) < ((10 : ℕ) : ℚ) * bohrRadius_den :=
+    mul_pos (by norm_num) (Nat.cast_pos.mpr hdenNat)
   have hloDen : (0 : ℚ) < (loDen : ℚ) := Nat.cast_pos.mpr hlo
   have hhiDen : (0 : ℚ) < (hiDen : ℚ) := Nat.cast_pos.mpr hhi
   constructor
@@ -201,10 +171,10 @@ private theorem ellCap_window (Z loNum loDen hiNum hiDen : ℕ)
   · rw [div_lt_div_iff₀ hden hhiDen]
     exact_mod_cast hhiNat
 
-theorem ellCap_one_meter_window :
-    (1005 : ℚ) / 10 ^ 13 < ellCap 1 ∧ ellCap 1 < (1006 : ℚ) / 10 ^ 13 := by
-  refine ellCap_window 1 1005 (10 ^ 13) 1006 (10 ^ 13)
-      (by norm_num) (by norm_num) (by norm_num) ?_ ?_
+theorem bohrEllCap_meter_window :
+    (1005 : ℚ) / 10 ^ 13 < bohrEllCap ∧ bohrEllCap < (1006 : ℚ) / 10 ^ 13 := by
+  refine bohrEllCap_window 1005 (10 ^ 13) 1006 (10 ^ 13)
+      (by norm_num) (by norm_num) ?_ ?_
   · unfold bohrRadius_den bohrRadius_num hbarMantissa electronMassMantissa
       speedOfLightNat fineStructureMantissa
     native_decide
@@ -212,33 +182,11 @@ theorem ellCap_one_meter_window :
       speedOfLightNat fineStructureMantissa
     native_decide
 
-theorem ellCap_two_meter_window :
-    (502 : ℚ) / 10 ^ 13 < ellCap 2 ∧ ellCap 2 < (503 : ℚ) / 10 ^ 13 := by
-  refine ellCap_window 2 502 (10 ^ 13) 503 (10 ^ 13)
-      (by norm_num) (by norm_num) (by norm_num) ?_ ?_
-  · unfold bohrRadius_den bohrRadius_num hbarMantissa electronMassMantissa
-      speedOfLightNat fineStructureMantissa
-    native_decide
-  · unfold bohrRadius_den bohrRadius_num hbarMantissa electronMassMantissa
-      speedOfLightNat fineStructureMantissa
-    native_decide
-
-theorem ellCap_ninetyTwo_meter_window :
-    (1092 : ℚ) / 10 ^ 15 < ellCap 92 ∧ ellCap 92 < (1093 : ℚ) / 10 ^ 15 := by
-  refine ellCap_window 92 1092 (10 ^ 15) 1093 (10 ^ 15)
-      (by norm_num) (by norm_num) (by norm_num) ?_ ?_
-  · unfold bohrRadius_den bohrRadius_num hbarMantissa electronMassMantissa
-      speedOfLightNat fineStructureMantissa
-    native_decide
-  · unfold bohrRadius_den bohrRadius_num hbarMantissa electronMassMantissa
-      speedOfLightNat fineStructureMantissa
-    native_decide
-
-/-! ### The node-at-`a₀` placement repels He⁺ -/
+/-! ### The node at `a₀` puts `a₀/2` where `γ_s < 0` -/
 
 /-- If the first node sits at `a₀`, the phase of the radius `a₀/2` is `2x₁`,
 where `γ_s < 0`. An unlike pair repels there. -/
-theorem bohr_node_repels_helium :
+theorem bohr_node_repels_half :
     gammaSEqual (lambdaHyp / (bohrRadiusApprox : ℝ)) < 0 := by
   have ha0 : (bohrRadiusApprox : ℝ) ≠ 0 :=
     (by exact_mod_cast bohrRadiusApprox_pos : (0 : ℝ) < (bohrRadiusApprox : ℝ)).ne'
@@ -299,72 +247,17 @@ theorem ellRep_eq_bohr_mul_alpha :
   have hc : speedOfLight ≠ 0 := speedOfLight_pos.ne'
   field_simp [hα, hm, hc]
 
-private theorem fineStructure_lt_nineteen_over_nineTwenty :
-    fineStructureApprox < 19 / 920 := by
-  unfold fineStructureApprox fineStructureMantissa fineStructureScale
-  rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
-  norm_cast
-
-private theorem fineStructure_lt_seven_over_threeFortyFive :
-    fineStructureApprox < 7 / 345 := by
-  unfold fineStructureApprox fineStructureMantissa fineStructureScale
-  rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
-  norm_cast
-
-/-- The electron Compton wavelength lies strictly under the tightest rational cap. -/
-theorem ellRep_lt_ellCap_ninetyTwo : ellRep < ellCap 92 := by
+/-- The electron Compton wavelength lies strictly under the Bohr cap. -/
+theorem ellRep_lt_bohrEllCap : ellRep < bohrEllCap := by
   rw [ellRep_eq_bohr_mul_alpha]
-  unfold ellCap hydrogenicRadius
+  unfold bohrEllCap
   have ha0 : (0 : ℚ) < bohrRadiusApprox := bohrRadiusApprox_pos
-  have hα := fineStructure_lt_nineteen_over_nineTwenty
-  have hmul : bohrRadiusApprox * fineStructureApprox <
-      bohrRadiusApprox * (19 / 920) := mul_lt_mul_of_pos_left hα ha0
-  have hid : bohrRadiusApprox * (19 / 920) = (19 / 10) * bohrRadiusApprox / 92 := by
-    ring
-  linarith
-
-theorem ellRep_lt_ellCap_one : ellRep < ellCap 1 :=
-  lt_trans ellRep_lt_ellCap_ninetyTwo (ellCap_anti (by decide) (by decide : 1 < 92))
-
-theorem ellRep_lt_ellCap_two : ellRep < ellCap 2 :=
-  lt_trans ellRep_lt_ellCap_ninetyTwo (ellCap_anti (by decide) (by decide : 2 < 92))
-
-/-- \((15/28)\hbar/(m_e c)\) lies strictly inside \(a_0/92\). -/
-theorem ellRep_fifteen_twentyEighth_lt_uranium :
-    ellRep * (15 / 28) < hydrogenicRadius 92 := by
-  rw [ellRep_eq_bohr_mul_alpha]
-  unfold hydrogenicRadius
-  have ha0 : (0 : ℚ) < bohrRadiusApprox := bohrRadiusApprox_pos
-  have hα := fineStructure_lt_seven_over_threeFortyFive
-  have hmul : bohrRadiusApprox * fineStructureApprox * (15 / 28) <
-      bohrRadiusApprox * (7 / 345) * (15 / 28) := by
-    have hstep : fineStructureApprox * (15 / 28) < (7 / 345) * (15 / 28) :=
-      mul_lt_mul_of_pos_right hα (by norm_num)
-    calc bohrRadiusApprox * fineStructureApprox * (15 / 28)
-        = bohrRadiusApprox * (fineStructureApprox * (15 / 28)) := by ring
-      _ < bohrRadiusApprox * ((7 / 345) * (15 / 28)) :=
-          mul_lt_mul_of_pos_left hstep ha0
-      _ = bohrRadiusApprox * (7 / 345) * (15 / 28) := by ring
-  have hid : bohrRadiusApprox * (7 / 345) * (15 / 28) = bohrRadiusApprox / 92 := by
-    ring
-  linarith
-
-/-- For `ℓ = ℏ/(m_e c)` the first node lies strictly inside `a₀/92`. -/
-theorem ellRep_node_inside_uranium :
-    (ellRep : ℝ) / (2 * resonanceRoot1) < (hydrogenicRadius 92 : ℝ) := by
-  have hx : (14 / 15 : ℝ) < resonanceRoot1 := firstNode_num_window.1
-  have hℓ : (0 : ℝ) < (ellRep : ℝ) := by exact_mod_cast ellRep_pos
-  have h2 : (0 : ℝ) < 2 * resonanceRoot1 := by
-    have hxpos : (0 : ℝ) < resonanceRoot1 := lt_trans (by norm_num) hx
-    positivity
-  have hupper : (ellRep : ℝ) / (2 * resonanceRoot1) < (ellRep : ℝ) * (15 / 28) := by
-    rw [div_lt_iff₀ h2]
-    nlinarith
-  have hrat : (ellRep : ℝ) * (15 / 28) < (hydrogenicRadius 92 : ℝ) := by
-    have hQ : ((ellRep * (15 / 28) : ℚ) : ℝ) < (hydrogenicRadius 92 : ℝ) := by
-      exact_mod_cast ellRep_fifteen_twentyEighth_lt_uranium
-    simpa [Rat.cast_mul, Rat.cast_div] using hQ
-  exact lt_trans hupper hrat
+  have hα : fineStructureApprox < 19 / 10 := by
+    unfold fineStructureApprox fineStructureMantissa fineStructureScale
+    rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    norm_cast
+  rw [mul_comm (19 / 10) bohrRadiusApprox]
+  exact mul_lt_mul_of_pos_left hα ha0
 
 private theorem ellRep_mul_window (p q loNum loDen hiNum hiDen : ℕ)
     (hq : 0 < q) (hlo : 0 < loDen) (hhi : 0 < hiDen)
