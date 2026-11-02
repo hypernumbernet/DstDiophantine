@@ -72,6 +72,9 @@ footer{text-align:center;color:var(--mute);font-size:.85rem;padding:2rem 1rem}
 .card a{color:var(--usual)}
 .timelist{margin:.4rem 0 1rem;padding-left:1.3rem}.timelist li{margin:.25rem 0}
 a.ref{color:var(--usual)}
+.intro-section{padding-top:1.25rem;padding-bottom:.5rem}
+.intro-section h2{margin-top:0}
+.intro-fig{max-width:620px;margin:1.25rem auto 0}
 .toc-section{padding-top:2rem}
 .toc-list{list-style:none;padding:0;margin:1.2rem 0;display:grid;gap:1rem}
 .ch-num{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
