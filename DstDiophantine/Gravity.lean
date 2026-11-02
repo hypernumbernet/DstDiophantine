@@ -364,16 +364,24 @@ The straight line of one fixed jet is not itself that geodesic.
   The root is not a zero of the electrostatic force. The energy of a
   circular path, kinetic term of the centripetal identity plus the
   outer-well potential, is strictly least there and is negative.
-* `HydrogenAlpha` — the bookkeeping step from shell \(3\) to shell \(2\) is
-  \(5/36\) of the ionisation. Every Bohr phase \(n\ge 1\) lies in the outer
-  well on the restoring side. The fixed-proton vacuum wavelength lies
+* `HydrogenAlpha` — single-valuedness \(pr=n\hbar\) and the centripetal
+  identity place a circular path at \(r=n^2 a_0\gamma_s\). The phase solves
+  \(x\gamma_s(x)=\alpha/(2n^2)\) at exactly one point of \((0,1/200)\), on
+  the restoring side. The interference node is not that point. There
+  \(0<1-\gamma_s<1/60000\). The bookkeeping step from shell \(3\) to shell \(2\) is
+  \(5/36\) of the ionisation. Every Coulomb phase \(n\ge 1\) lies in the outer
+  well on the restoring side.  The fixed-proton vacuum wavelength lies
   strictly between \(656112\) and \(656113\) picometres; shared inertia, with
   the mass ratio strictly between \(1836\) and \(1837\), places it strictly
   between \(656469\) and \(656470\) picometres. At shells \(n\ge 2\) the
   signed circular energy departs from the Coulomb value by less than
   \(10^{-6}\) of the ionisation, and the line itself by less than one part
   in ten thousand. The ground shell departs from \(-1\) by less than
-  \(1/60000\). The steps \(2\to 1\), \(4\to 2\), \(5\to 2\), and \(4\to 3\)
+  \(1/60000\). Outside the Bohr radius the outer-well potential lies
+  strictly below the Coulomb potential, by less than \(1/30000\) of the
+  ionisation; at shell \(n\) that potential's Coulomb value is \(-2/n^2\),
+  and the deepening is at most \((3/5)\alpha^2/n^6\). The steps \(2\to 1\),
+  \(4\to 2\), \(5\to 2\), and \(4\to 3\)
   are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
   ten thousand.
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths

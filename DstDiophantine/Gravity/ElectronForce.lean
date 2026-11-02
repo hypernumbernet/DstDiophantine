@@ -1445,6 +1445,36 @@ theorem circEnergy_neg_at_root {y : ℝ}
   have hlt := hanti ⟨le_rfl, hy0⟩ ⟨hy0, le_rfl⟩ (by linarith [hy.1])
   simpa [circEnergy_zero] using hlt
 
+/-- On the outer well, `∫ dt/γ_s` lies strictly above the phase. The
+outer-well potential `-2∫ dt/γ_s` is therefore strictly deeper than the
+Coulomb value `-2x`, and it keeps falling as the phase rises. -/
+theorem layerAccum_gt_phase {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    x < layerAccum x := by
+  have hanti : StrictAntiOn gammaSEqual (Icc (0 : ℝ) π) := by
+    simpa [Nat.cast_zero, zero_mul] using strictAntiOn_gammaSEqual_even 0
+  have hsm : StrictMonoOn (layerAccum - id) (Icc 0 x) := by
+    refine strictMonoOn_of_deriv_pos (convex_Icc 0 x) ?_ ?_
+    · exact (continuousOn_layerAccum hx.1.le hx.2).sub continuousOn_id
+    · intro t ht
+      rw [interior_Icc] at ht
+      have htwell : t ∈ Ioo (0 : ℝ) resonanceRoot1 := ⟨ht.1, lt_trans ht.2 hx.2⟩
+      have hder := (hasDerivAt_layerAccum htwell).sub (hasDerivAt_id t)
+      rw [hder.deriv]
+      have hγ := gammaSEqual_pos_left_of_first_node htwell
+      have htπ : t ≤ π := by
+        have hroot : resonanceRoot1 < 1 := resonanceRoot1_sharp_bounds.2
+        linarith [ht.2, hx.2, hroot, pi_gt_three]
+      have hγlt : gammaSEqual t < 1 := by
+        have hlt := hanti ⟨le_rfl, by linarith [pi_gt_three]⟩ ⟨ht.1.le, htπ⟩ ht.1
+        simpa [gammaSEqual_zero] using hlt
+      have hrewrite : (gammaSEqual t)⁻¹ - 1 = (1 - gammaSEqual t) / gammaSEqual t := by
+        field_simp [hγ.ne']
+      rw [hrewrite]
+      exact div_pos (sub_pos.mpr hγlt) hγ
+  have hlt := hsm ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
+  have h0 : layerAccum 0 = 0 := by simp [layerAccum, integral_same]
+  simpa [h0, id] using hlt
+
 /-- On the outer well the circular-path energy is strictly least at the stability boundary. -/
 theorem circEnergy_least_outer {x y : ℝ}
     (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1)
