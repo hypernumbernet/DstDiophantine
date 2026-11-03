@@ -153,21 +153,29 @@ The straight line of one fixed jet is not itself that geodesic.
   A one-way horizon \(A=0\) does not form on that chart.
 * `SourceSuperposition` — source bivectors add in coefficient space, and that
   internal sum has no ceiling. The expressed configuration is the nearest
-  admissible point, so its \(|J|\) stays at most \(3\pi^2/8\). On one axis,
-  every positive number of coincident pure boosts of rapidity \(\pi/2\)
-  expresses \(J=\pi^2/8\), while the quadratic on the internal sum is
+  admissible point, so its \(|J|\) stays at most \(3\pi^2/8\). On a nonnegative
+  axis the wall keeps the difference and replaces the sum by \(\pi/2\), so the
+  expressed \(J\) and \(M\) are fixed by the lag while the internal quadratics
+  keep growing. Balanced sources raise internal \(J+M\) and, on the wall, leave
+  the expressed value fixed. A wall of lag \(\pi/4\) with \(n\ge 6\) balanced
+  sources of rapidity \(\pi/4\) has internal mismatch \((n+1)\pi^2/16\), past
+  the ceiling, and expressed mismatch \(\pi^2/16\). Inside the triangle a
+  balanced source raises \(J\) and discards nothing. Coincident pure boosts of
+  rapidity \(\pi/2\) express \(J=\pi^2/8\), while the internal quadratic is
   \(n^2\pi^2/8\). Two boosts of rapidity \(\pi/4\) express \(J=\pi^2/8\),
   not the sum \(\pi^2/16\) of the separate values.
 * `MachSource` — surrounding matter fixes the expressed admissible point, not
   the stiffness \(m\). An empty source list expresses the origin, and the
-  written action assigns no angular acceleration at every \(m\). Aligned pure
-  boosts add common accelerations while \(n\varphi\le\pi/2\); once
-  \(n\varphi\ge\pi/2\) the common acceleration is \(-m\pi\). Two boosts of
-  rapidity \(\pi/4\) add their accelerations to \(-m\pi\) and do not add \(J\).
-  A further boost leaves the acceleration there. A pure boost of rapidity
-  \(\pi/4\) carried as the particle's own angles still has common acceleration
-  \(-m\pi/2\). No derivation of \(m\), no \(F=ma\), and no laboratory
-  acceleration ceiling.
+  written action assigns no angular acceleration at every \(m\). The common
+  acceleration follows the lag. Balanced sources leave it unchanged, on the
+  internal sum and on the expressed state. It overflows only when the lag
+  itself leaves the triangle: aligned pure boosts then express \(-m\pi\), while
+  the acceleration read from the internal lag is strictly more negative. Two
+  boosts of rapidity \(\pi/4\) add their accelerations to \(-m\pi\) and do not
+  add \(J\). A further boost leaves the acceleration there. A pure boost of
+  rapidity \(\pi/4\) carried as the particle's own angles still has common
+  acceleration \(-m\pi/2\). No derivation of \(m\), no \(F=ma\), and no
+  laboratory acceleration ceiling.
 * `MassOrigin` — the time-reversing dual map fixes a configuration only at
   vanishing unsigned mass. Where the rapidities agree, \(J\) and the
   stiffness potential vanish, the written action assigns no angular
@@ -886,6 +894,33 @@ example (a0 : Fin 3) :
     J s ≠ J p + J p :=
   (J_two_quarter_boosts a0).2.2.2.2.2.2
 
+/-- Regression: on the wall the lag passes through and the quadratics overflow. -/
+example {n : ℕ} (hn : 6 ≤ n) (a0 : Fin 3) :
+    J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        Real.pi ^ 2 / 16 ∧
+      mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        5 * Real.pi ^ 2 / 64 ∧
+      J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        ((n : ℝ) + 1) * Real.pi ^ 2 / 16 ∧
+      3 * Real.pi ^ 2 / 8 <
+        J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) ∧
+      J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) +
+          mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) <
+        J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) +
+          mass (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) :=
+  ⟨J_express_quarter_balancePile a0, mass_express_quarter_balancePile a0,
+    J_quarter_balancePile n a0, J_quarter_balancePile_gt_ceiling hn a0,
+    balancePile_JM_overflow (by positivity) (by linarith [Real.pi_pos])
+      (by positivity) (le_trans (by decide : (1 : ℕ) ≤ 6) hn)⟩
+
+/-- Regression: inside the triangle a balanced source raises \(J\). -/
+example (a0 : Fin 3) :
+    let b := axisBoost a0 (Real.pi / 8)
+    let s := sumParams [b, axisBalance a0 (Real.pi / 8)]
+    Admissible.IsAdmissibleContinuous s ∧ express s = s ∧ J b < J s :=
+  let h := eighth_balance_inside a0
+  ⟨h.1, h.2.1, h.2.2.2.2⟩
+
 /-- Regression: an empty source list assigns no angular acceleration, at every stiffness. -/
 example (m φddot θddot : ℝ) :
     PaperActualEL m 0 0 φddot θddot ↔ φddot = 0 ∧ θddot = 0 :=
@@ -898,6 +933,29 @@ example (m : ℝ) (a0 : Fin 3) :
         ((expressedSuperposition (List.replicate 2 (axisBoost a0 (Real.pi / 4)))).beta a0) =
       -m * Real.pi :=
   two_quarter_boosts_accel m a0
+
+/-- Regression: balanced sources do not change the common acceleration. -/
+example (m : ℝ) {n : ℕ} (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+      -m * Real.pi / 2 ∧
+      commonAccel m
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+        -m * Real.pi / 2 :=
+  quarter_balancePile_accel m a0
+
+/-- Regression: past the wall the internal lag pushes harder than the expressed state. -/
+example {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
+    (hm : 0 < m) (hφ : 0 ≤ φ) (hs : Real.pi / 2 < (n : ℝ) * φ) :
+    commonAccel m
+        ((sumParams (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((sumParams (List.replicate n (axisBoost a0 φ))).beta a0) <
+      commonAccel m
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).beta a0) :=
+  (pure_boost_force_overflows hm hφ hs).2.1
 
 /-- Regression: a further quarter-boost does not add another copy of the acceleration. -/
 example {m : ℝ} (hm : m ≠ 0) {n : ℕ} (hn : 3 ≤ n) (a0 : Fin 3) :
