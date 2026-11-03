@@ -114,97 +114,93 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en">With <b>no sources at all</b>, the expressed state is the origin: every rapidity vanishes on the admissible cone. The dynamics then assign <b>no angular acceleration</b>, however large the stiffness might be — so read physically, the pull we associate with inertia does not appear in an empty universe. That is a different claim from general relativity, where spacetime can exist without matter and still carry geometry and structure; Mach’s principle in the strict sense remains unfulfilled there. DST instead ties the <em>source</em> of the expressed mismatch to matter, while keeping stiffness as its own datum.</span><span class="ja"><b>源がまったくない</b>とき、表出状態は原点です。許容錐上ではすべてのラピディティが消えます。硬さがどれだけ大きくても、力学は<b>角加速度を割り当てません</b> — 物理的に読めば、慣性に結びつける引きは空っぽの宇宙には現れません。これは一般相対性理論とは異なる主張です。そちらでは、物質がなくても時空は存在し、幾何や構造を担えます。厳密な意味でのマッハの原理はそこでは満たされません。DST は表出された不整合の<em>源</em>を物質に結びつけつつ、硬さは別の与えられた量として保ちます。</span></p>
   <p><span class="en"><b>Aligned boosts from sources</b> illustrate the ceiling on motion. While the expressed lag stays below the admissible wall, each aligned pure boost adds its contribution to the common acceleration; once the wall is reached, adding more of the same kind leaves the acceleration fixed at the saturated value. The <b>twist measure</b> J does not add the same way: two moderate boosts can express one larger lag with a single J on the cone, not the sum of their J values. Accelerations from aligned sources add up to the ceiling; the twist measure does not. A mismatch the particle already carries in its <b>own rotors</b> is not the same reading as mismatch supplied by sources — it is part of the particle’s angles — yet it still drives acceleration through the same stiffness. The machine-checked development in the gravity part of the repository is the formal record for these statements.</span><span class="ja"><b>源からの揃ったブースト</b>は、運動に対する上限の働きを示します。表出された遅れが許容の壁より内側にある間、揃った純ブーストごとに共通加速度への寄与が足されます。壁に達すると、同じ種類をさらに足しても加速度は飽和した値のままです。<b>ねじれの尺度</b> J は同じように足されません。二つの中程度のブーストが、錐上では一つの大きな遅れと一つの J として表出され、J の値の和にはなりません。揃った源からの加速度は上限まで足されます。ねじれの尺度は足されません。粒子が<b>自分のローター</b>ですでに運ぶ不整合は、源が供給する不整合と同じ読み取りではありません — 粒子自身の角度の一部です — が、同じ硬さを通じて依然として加速を駆動します。リポジトリの重力部分の機械検証された展開が、これらの記述の形式的な記録です。</span></p>
   <p class="note"><span class="en">This Mach-style reading does not derive stiffness (what we call mass in laboratory language), does not replace Newton’s force–mass–acceleration law, and does not cap proper accelerations measured in a laboratory; it separates source-fixed expression from stiffness-driven response on the admissible cone.</span><span class="ja">このマッハ型の読み取りは、硬さ（実験室の言葉では質量）そのものを導きません。ニュートンの力と質量と加速度の法則の代わりにもなりません。実験室で測る固有加速度に上限を設けません。許容錐上で、源が決める表出と、硬さが駆動する応答を分ける、という内容です。</span></p>
-  <svg class="fig" viewBox="0 0 640 260" role="img" aria-label="Sources fix expressed twist; empty universe expresses origin; aligned boosts add acceleration to a ceiling while J does not add">
+  <svg class="fig" viewBox="0 0 720 220" role="img" aria-label="Surrounding matter fixes the expressed twist; stiffness is a separate input">
     <defs><marker id="ah-mach" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
-    <text class="lbl small" x="108" y="22" text-anchor="middle" font-weight="700"><tspan class="en">Matter fixes expression</tspan><tspan class="ja">物質が表出を決める</tspan></text>
-    <circle cx="48" cy="88" r="5" fill="#ff9a5a"/><circle cx="78" cy="68" r="5" fill="#ff9a5a"/><circle cx="88" cy="108" r="5" fill="#ff9a5a"/>
-    <text class="lbl small" x="68" y="128" text-anchor="middle"><tspan class="en">sources (order-free sum)</tspan><tspan class="ja">源（順序のない和）</tspan></text>
-    <line x1="92" y1="88" x2="148" y2="88" stroke="#8aa0c0" stroke-width="1.2" marker-end="url(#ah-mach)"/>
-    <circle cx="168" cy="88" r="7" class="node"/>
-    <text class="lbl small" x="168" y="128" text-anchor="middle"><tspan class="en">expressed nearest point</tspan><tspan class="ja">表出：最近点</tspan></text>
-    <line x1="208" y1="88" x2="248" y2="88" class="axis"/>
-    <text class="lbl small" x="228" y="78" text-anchor="middle"><tspan class="en">stiffness (not from sources)</tspan><tspan class="ja">硬さ（源由来ではない）</tspan></text>
-    <text class="lbl small" x="320" y="22" text-anchor="middle" font-weight="700"><tspan class="en">No sources</tspan><tspan class="ja">源なし</tspan></text>
-    <circle cx="320" cy="88" r="7" class="node"/>
-    <text class="lbl small" x="320" y="128" text-anchor="middle"><tspan class="en">origin — no inertial pull</tspan><tspan class="ja">原点 — 慣性の引きなし</tspan></text>
-    <text class="lbl small" x="480" y="22" text-anchor="middle" font-weight="700"><tspan class="en">Aligned boosts</tspan><tspan class="ja">揃ったブースト</tspan></text>
-    <line x1="400" y1="200" x2="560" y2="200" class="axis"/>
-    <line x1="400" y1="200" x2="400" y2="60" class="axis"/>
-    <text class="lbl small" x="572" y="204"><tspan class="en">more boosts</tspan><tspan class="ja">ブーストを増やす</tspan></text>
-    <text class="lbl small" x="388" y="52" text-anchor="end"><tspan class="en">acceleration</tspan><tspan class="ja">加速度</tspan></text>
-    <polyline fill="none" stroke="#4fc3ff" stroke-width="2.5" points="420,200 460,120 500,80 540,80"/>
-    <line x1="500" y1="80" x2="560" y2="80" stroke="#ffd27a" stroke-width="2" stroke-dasharray="5 4"/>
-    <text class="lbl small" x="530" y="68" text-anchor="middle"><tspan class="en">saturates at ceiling</tspan><tspan class="ja">上限で飽和</tspan></text>
-    <text class="lbl small" x="480" y="148" text-anchor="middle"><tspan class="en">J on cone ≠ sum of J values</tspan><tspan class="ja">錐上の J ≠ J の和</tspan></text>
-    <text class="note" x="320" y="248" text-anchor="middle"><tspan class="en">Schematic. Arrows show influence; axis lines show schematic axes only.</tspan><tspan class="ja">模式図。矢印は影響、軸線は模式の座標軸のみ。</tspan></text>
+    <line x1="360" y1="40" x2="360" y2="178" stroke="#596284" stroke-width="1" stroke-opacity="0.5"/>
+    <text class="lbl" x="180" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Matter fixes expression</tspan><tspan class="ja">物質が表出を決める</tspan></text>
+    <circle cx="56" cy="100" r="5" fill="#ff9a5a"/><circle cx="86" cy="80" r="5" fill="#ff9a5a"/><circle cx="96" cy="110" r="5" fill="#ff9a5a"/>
+    <text class="lbl small" x="78" y="138" text-anchor="middle"><tspan class="en">sources</tspan><tspan class="ja">源</tspan></text>
+    <line x1="102" y1="96" x2="152" y2="96" stroke="#8aa0c0" stroke-width="1.4" marker-end="url(#ah-mach)"/>
+    <text class="lbl small" x="127" y="86" text-anchor="middle"><tspan class="en">sum</tspan><tspan class="ja">和</tspan></text>
+    <circle cx="172" cy="96" r="8" class="node"/>
+    <text class="lbl small" x="172" y="138" text-anchor="middle"><tspan class="en">expressed point</tspan><tspan class="ja">表出点</tspan></text>
+    <text class="lbl" x="540" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Stiffness is separate</tspan><tspan class="ja">硬さは別入力</tspan></text>
+    <rect x="438" y="68" width="204" height="58" rx="8" fill="#1a2038" stroke="var(--accent)" stroke-width="1.2"/>
+    <text class="lbl small" x="540" y="94" text-anchor="middle" fill="#c8d4e8"><tspan class="en">not from sources</tspan><tspan class="ja">源からは決まらない</tspan></text>
+    <text class="lbl small" x="540" y="112" text-anchor="middle" fill="#c8d4e8"><tspan class="en">(separate input)</tspan><tspan class="ja">（別の入力）</tspan></text>
+    <line x1="540" y1="132" x2="540" y2="152" class="axis" marker-end="url(#ah-mach)"/>
+    <text class="lbl small" x="540" y="172" text-anchor="middle"><tspan class="en">drives acceleration</tspan><tspan class="ja">加速度を駆動</tspan></text>
   </svg>
+  <p class="note"><span class="en">Surrounding matter picks the admissible twist the particle expresses; how strongly that twist accelerates the body is a separate stiffness input.</span><span class="ja">周囲の物質が粒子の表出する許容ねじれを決めます。それがどれだけ強く加速するかは、別の硬さの入力です。</span></p>
 
   <span id="ceiling-overflow" class="anchor" aria-hidden="true"></span>
   <h3 class="sub"><span class="en">What passes through the wall and what overflows</span><span class="ja">壁を通るものと溢れるもの</span></h3>
   <p><span class="en">When many sources pile up, the admissible cone does not pass everything through unchanged. What <b>does</b> pass is the <b>lag</b> — on each axis, the difference between the usual and dual rapidities. The common acceleration in the written dynamics follows that lag alone, not the full uncapped internal sum. The <b>sum</b> of the two sectors on an axis is capped at the wall of the admissible triangle; only the lag keeps tracking the internal difference until it too runs out of room.</span><span class="ja">源がたくさん重なると、許容錐はすべてをそのまま通しません。<b>通る</b>のは<b>遅れ</b> — 各軸での通常と双対のラピディティの差 — です。記述された力学の共通加速度は、上限のない内部の和ではなく、その遅れだけに従います。一軸での二セクターの<b>和</b>は許容三角形の壁で抑えられます。遅れだけが、内部の差を追い続け、それも余地を失うまで。</span></p>
   <p><span class="en"><b>Balanced sources</b> — the same increment added to both sectors on an axis — illustrate the split. Internally the pile can grow without bound along the balanced direction, yet the lag, the expressed mismatch, and the unsigned mass on the cone can all stay fixed, and the acceleration does not change. Saturation appears only when the lag itself no longer fits in the triangle, as with aligned pure boosts where lag and sum move together. That shielding-like saturation has no analogue in the standard linear superposition of weak gravity, where fields add in proportion; on this point DST and standard theory reach different conclusions about what kind of property superposition is.</span><span class="ja"><b>釣り合った源</b> — 一軸で両セクターに同じ増分を足す場合 — がこの分離を示します。内部的には釣り合った方向に沿って山は上限なく大きくなれますが、遅れも表出された不整合も錐上の符号なし質量も固定のままで、加速度も変わりません。飽和は、遅れ自体が三角形に収まらなくなったとき — 遅れと和が一緒に動く、揃った純ブースト — に現れます。このシールドのような飽和は、弱い重力の標準的な線形重ね合わせ — 場が比例して足される — には対応物がありません。重ね合わせがどんな性質かについて、DST と標準理論はここで異なる結論に着きます。</span></p>
-  <svg class="fig" viewBox="0 0 640 240" role="img" aria-label="Balanced sources grow internally while lag stays; pure boosts saturate when lag hits the wall">
+  <svg class="fig" viewBox="0 0 720 360" role="img" aria-label="Balanced sources: lag passes while internal pile grows; aligned case: sum capped at wall, lag can overflow">
     <defs>
       <linearGradient id="jg2ov" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".45"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".45"/></linearGradient>
       <marker id="ah-ov" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <g transform="translate(88,200)">
-      <path d="M0,0L150,0L0,-150z" fill="url(#jg2ov)" class="region" opacity="0.85"/>
-      <line class="axis" x1="0" y1="0" x2="170" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-170"/>
-      <line x1="0" y1="0" x2="105" y2="-105" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="4 3"/>
-      <text class="lbl small" x="118" y="-118"><tspan class="en">balanced direction</tspan><tspan class="ja">釣り合い方向</tspan></text>
-      <circle cx="70" cy="-70" r="6" class="node"/>
-      <circle cx="95" cy="-95" r="5" fill="#ff9a5a" opacity="0.9"/>
-      <line x1="95" y1="-95" x2="70" y2="-70" stroke="#ff9a5a" stroke-width="1.2" marker-end="url(#ah-ov)"/>
-      <text class="lbl small" x="78" y="-48" text-anchor="middle"><tspan class="en">internal pile grows</tspan><tspan class="ja">内部は増える</tspan></text>
-      <text class="lbl small" x="78" y="-32" text-anchor="middle"><tspan class="en">lag fixed → accel fixed</tspan><tspan class="ja">遅れ固定 → 加速度固定</tspan></text>
+    <text class="lbl" x="180" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Balanced sources</tspan><tspan class="ja">釣り合った源</tspan></text>
+    <text class="lbl" x="540" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Sum hits the wall</tspan><tspan class="ja">和が壁に当たる</tspan></text>
+    <g transform="translate(48,228)">
+      <path d="M0,0L120,0L0,-120z" fill="url(#jg2ov)" class="region"/>
+      <line class="axis" x1="0" y1="0" x2="138" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-138"/>
+      <text class="lbl small" x="68" y="14" text-anchor="middle"><tspan class="en">usual α</tspan><tspan class="ja">通常 α</tspan></text>
+      <text class="lbl small" x="10" y="-62" text-anchor="start"><tspan class="en">dual β</tspan><tspan class="ja">双対 β</tspan></text>
+      <line x1="0" y1="0" x2="84" y2="-84" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <circle cx="48" cy="-48" r="7" class="node"/>
+      <circle cx="78" cy="-78" r="5" fill="#ff9a5a"/>
+      <line x1="78" y1="-78" x2="52" y2="-52" stroke="#ff9a5a" stroke-width="1.5" marker-end="url(#ah-ov)"/>
     </g>
-    <text class="lbl small" x="168" y="28" text-anchor="middle" font-weight="700"><tspan class="en">Through the wall</tspan><tspan class="ja">壁を通る</tspan></text>
-    <g transform="translate(388,200)">
-      <path d="M0,0L150,0L0,-150z" fill="url(#jg2ov)" class="region" opacity="0.85"/>
-      <line class="axis" x1="0" y1="0" x2="170" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-170"/>
-      <line x1="150" y1="0" x2="0" y2="-150" class="zero"/>
-      <circle cx="150" cy="0" r="6" class="dotw"/>
-      <text class="lbl small" x="158" y="18"><tspan class="en">sum at wall</tspan><tspan class="ja">和は壁</tspan></text>
-      <circle cx="110" cy="-40" r="6" class="node"/>
-      <text class="lbl small" x="110" y="-52" text-anchor="middle"><tspan class="en">lag still moves</tspan><tspan class="ja">遅れは動く</tspan></text>
-      <text class="lbl small" x="75" y="28" text-anchor="middle"><tspan class="en">overflow when lag fills</tspan><tspan class="ja">遅れが満ちれば溢れる</tspan></text>
+    <text class="lbl small" x="180" y="292" text-anchor="middle"><tspan class="en">Lag unchanged</tspan><tspan class="ja">遅れは不変</tspan></text>
+    <text class="lbl small" x="180" y="312" text-anchor="middle"><tspan class="en">Same acceleration</tspan><tspan class="ja">加速度も同じ</tspan></text>
+    <g transform="translate(408,228)">
+      <path d="M0,0L120,0L0,-120z" fill="url(#jg2ov)" class="region"/>
+      <line class="axis" x1="0" y1="0" x2="138" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-138"/>
+      <line x1="120" y1="0" x2="0" y2="-120" class="zero"/>
+      <circle cx="120" cy="0" r="7" class="dotw"/>
+      <circle cx="86" cy="-34" r="7" class="node"/>
+      <line x1="86" y1="-34" x2="108" y2="-12" stroke="#4fc3ff" stroke-width="1.5" marker-end="url(#ah-ov)"/>
     </g>
-    <text class="lbl small" x="488" y="28" text-anchor="middle" font-weight="700"><tspan class="en">Overflow</tspan><tspan class="ja">溢れる</tspan></text>
-    <text class="note" x="320" y="232" text-anchor="middle"><tspan class="en">One axis shown; dashed line is the balanced diagonal, not an axis.</tspan><tspan class="ja">一軸のみ。破線は釣り合いの対角線で、座標軸ではありません。</tspan></text>
+    <text class="lbl small" x="540" y="292" text-anchor="middle"><tspan class="en">Sum capped at wall</tspan><tspan class="ja">和は壁で固定</tspan></text>
+    <text class="lbl small" x="540" y="312" text-anchor="middle"><tspan class="en">Lag overflow → saturation</tspan><tspan class="ja">遅れ溢れ → 飽和</tspan></text>
   </svg>
+  <p class="note"><span class="en">Acceleration follows the lag through the triangle, not the uncapped internal sum; the wall caps the sector sum first, and saturation waits until the lag itself runs out of room.</span><span class="ja">加速度は上限のない内部の和ではなく、三角形を通る遅れに従います。壁はまずセクターの和を抑え、飽和は遅れ自体が余地を失うまで来ません。</span></p>
 
   <span id="resting-heavy" class="anchor" aria-hidden="true"></span>
   <h3 class="sub"><span class="en">Resting but heavy: where mass sits</span><span class="ja">静止しているのに重い：質量はどこにある</span></h3>
   <p><span class="en">Mass in DST is not the same thing as mismatch. On a state where both sectors carry the <b>same rapidity on every axis</b>, the twist measure J vanishes, the stiffness potential vanishes, and the written action assigns no acceleration — a genuinely resting configuration in the Mach sense above. Yet the <b>unsigned mass</b> need not be zero: it is carried in the common scale of those matched rapidities. The two rotors need not coincide; the body can still be internally torsioned while J stays zero.</span><span class="ja">DST では質量と不整合は同じものではありません。すべての軸で両セクターが<b>同じラピディティ</b>を運ぶ状態では、ねじれの尺度 J は零になり、硬さポテンシャルも零になり、記述された作用は加速度を割り当てません — 上のマッハの意味での本当の静止です。それでも<b>符号なし質量</b>は零でなくてよく、一致したラピディティの共通の尺度として載ります。二つのローターは一致する必要はなく、J が零でも内部にはねじれが残りえます。</span></p>
   <p><span class="en">The <b>time-reversing dual map</b> used in the antiparticle story (<a class="ref" href="antiparticle.html#antiparticle">chapter&nbsp;5</a>) acts differently on mass and mismatch. It fixes only the completely empty configuration, where mass vanishes. On a sector-symmetric resting state it preserves the unsigned mass but reverses J, creates stiffness potential, and sends a positive admissible state <b>outside</b> the admissible cone. Mass can sit quietly in a neutral rest while the dual image is energetically charged and inadmissible — linking inertia bookkeeping to the same dual structure that defines charge conjugation, without identifying the two stories.</span><span class="ja">反粒子の話で使う<b>時間反転の双対写像</b>（<a class="ref" href="antiparticle.html#antiparticle">第&nbsp;5&nbsp;章</a>）は、質量と不整合に異なる働きをします。完全に空の配置だけを固定し、そこでのみ質量は消えます。セクター対称の静止状態では符号なし質量を保ち、J を反転し、硬さポテンシャルを生み、正の許容状態を許容錐の<b>外</b>へ送ります。質量は中性の静止に静かに載り、双対像はエネルギーをもち許容外 — 慣性の台帳を荷電共役を定める同じ双対構造に結びつけますが、二つの物語を同一視はしません。</span></p>
   <p class="note"><span class="en">DST does not yet derive the numerical value of the mass coefficient in laboratory units, nor a mass gap from leaving a sector-symmetric rest state; it locates where unsigned mass can sit while mismatch and acceleration vanish.</span><span class="ja">DST は、実験室単位での質量係数の数値も、セクター対称の静止から離れることによる質量ギャップも、まだ導いていません。不整合と加速度が消えるとき、符号なし質量がどこに載りうるかを示す、という内容です。</span></p>
-  <svg class="fig" viewBox="0 0 640 200" role="img" aria-label="Sector-matched rest has mass but no lag; dual map sends positive states outside the cone">
+  <svg class="fig" viewBox="0 0 720 320" role="img" aria-label="Symmetric rest carries mass without mismatch; dual map sends the image outside the admissible cone">
     <defs>
       <linearGradient id="jg2rh" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".45"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".45"/></linearGradient>
       <marker id="ah-rh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <g transform="translate(120,168)">
-      <path d="M0,0L120,0L0,-120z" fill="url(#jg2rh)" class="region" opacity="0.7"/>
-      <line class="axis" x1="0" y1="0" x2="140" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-140"/>
-      <line x1="0" y1="0" x2="85" y2="-85" stroke="#4fc3ff" stroke-width="2"/>
-      <circle cx="55" cy="-55" r="7" class="node"/>
-      <text class="lbl small" x="55" y="-72" text-anchor="middle"><tspan class="en">α = β, J = 0</tspan><tspan class="ja">α = β、J = 0</tspan></text>
-      <text class="lbl small" x="55" y="28" text-anchor="middle"><tspan class="en">mass ≠ 0</tspan><tspan class="ja">質量 ≠ 0</tspan></text>
+    <text class="lbl" x="180" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Symmetric rest</tspan><tspan class="ja">対称な静止</tspan></text>
+    <text class="lbl" x="540" y="32" text-anchor="middle" font-weight="700"><tspan class="en">Dual image</tspan><tspan class="ja">双対像</tspan></text>
+    <g transform="translate(48,228)">
+      <path d="M0,0L110,0L0,-110z" fill="url(#jg2rh)" class="region"/>
+      <line class="axis" x1="0" y1="0" x2="126" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-126"/>
+      <line x1="0" y1="0" x2="72" y2="-72" stroke="#4fc3ff" stroke-width="2"/>
+      <circle cx="46" cy="-46" r="8" class="node"/>
     </g>
-    <text class="lbl small" x="120" y="24" text-anchor="middle" font-weight="700"><tspan class="en">Resting, heavy</tspan><tspan class="ja">静止で重い</tspan></text>
-    <line x1="280" y1="100" x2="340" y2="100" stroke="#8aa0c0" stroke-width="1.4" marker-end="url(#ah-rh)"/>
-    <text class="lbl small" x="310" y="88" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
-    <g transform="translate(420,168)">
-      <path d="M0,0L120,0L0,-120z" fill="none" stroke="#596284" stroke-width="1.2" stroke-dasharray="5 4"/>
-      <line class="axis" x1="0" y1="0" x2="140" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-140"/>
-      <circle cx="40" cy="-80" r="7" fill="#ff9a5a"/>
-      <text class="lbl small" x="95" y="-70" text-anchor="start"><tspan class="en">outside cone</tspan><tspan class="ja">錐の外</tspan></text>
-      <text class="lbl small" x="60" y="28" text-anchor="middle"><tspan class="en">potential on</tspan><tspan class="ja">ポテンシャルあり</tspan></text>
+    <text class="lbl small" x="180" y="268" text-anchor="middle"><tspan class="en">No mismatch</tspan><tspan class="ja">不整合なし</tspan></text>
+    <text class="lbl small" x="180" y="288" text-anchor="middle"><tspan class="en">Mass present, no acceleration</tspan><tspan class="ja">質量あり、加速度なし</tspan></text>
+    <line x1="292" y1="140" x2="428" y2="140" stroke="#8aa0c0" stroke-width="1.6" marker-end="url(#ah-rh)"/>
+    <text class="lbl small" x="360" y="128" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+    <g transform="translate(408,228)">
+      <path d="M0,0L110,0L0,-110z" fill="none" stroke="#596284" stroke-width="1.4" stroke-dasharray="6 4"/>
+      <line class="axis" x1="0" y1="0" x2="126" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-126"/>
+      <circle cx="34" cy="-86" r="8" fill="#ff9a5a"/>
+      <text class="lbl small" x="52" y="-82"><tspan class="en">outside</tspan><tspan class="ja">錐の外</tspan></text>
     </g>
-    <text class="lbl small" x="480" y="24" text-anchor="middle" font-weight="700"><tspan class="en">Dual image</tspan><tspan class="ja">双対像</tspan></text>
-    <text class="note" x="320" y="192" text-anchor="middle"><tspan class="en">Schematic one-axis slices; cone boundary dashed on the right.</tspan><tspan class="ja">模式の一軸切り出し。右は錐境界を破線で示す。</tspan></text>
+    <text class="lbl small" x="540" y="268" text-anchor="middle"><tspan class="en">Same mass</tspan><tspan class="ja">質量は同じ</tspan></text>
+    <text class="lbl small" x="540" y="288" text-anchor="middle"><tspan class="en">Potential on, not admissible</tspan><tspan class="ja">ポテンシャルあり・許容外</tspan></text>
   </svg>
+  <p class="note"><span class="en">Matching both sectors can rest without twist or acceleration yet still carry mass; the time-reversing dual map keeps that mass but pushes the image outside the admissible cone with potential energy switched on.</span><span class="ja">両セクターを揃えればねじれも加速度もなく静止できても、質量は載り得ます。時間反転の双対写像はその質量を保ちつつ、像を許容錐の外へ送り、ポテンシャルをオンにします。</span></p>
 
   <p><span class="en">The ceiling does real work elsewhere in the repository. In the gravity track it is read as a finite redshift floor, so a one-way horizon (A = 0) does not form on that chart, and a light ray that would be captured classically turns around and comes back. When the same discrete height lattice is read as a Planck-mass ratio, the normalised mismatch has a separate gravitational floor (16/3)α<sub>G</sub> for a mass m — not the electromagnetic fine-structure constant α. In the number-theory track, a shared “no-go” theorem says no seed can be amplified past this ceiling.</span><span class="ja">この上限はリポジトリの他の部分で重要な役割を果たします。重力の分野では有限の赤方偏移の下限として読まれ、その座標系では一方通行の地平（A = 0）ができません。古典的には捕らわれるはずの光線も、内部で向きを変えて戻ってきます。同じ離散の高さ格子をプランク質量比として読むと、正規化された不整合には質量 m に対する別の重力の下限 (16/3)α<sub>G</sub> があります。これは電磁気の微細構造定数 α とは別物です。数論の分野では、「どんな種もこの上限を超えて増幅できない」という共通の不可能定理になります。</span></p>
   <p class="note"><span class="en">Placing boosts on a compact 2π-torus, with admissibility on top, is the modelling choice the theory builds on.</span><span class="ja">ブーストを周期 2π のトーラス上に置き、その上に許容性を課すことが、この理論の出発点となるモデル化です。</span></p>
