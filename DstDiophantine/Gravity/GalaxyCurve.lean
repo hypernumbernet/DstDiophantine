@@ -13,9 +13,10 @@ set_option linter.style.native false
 /-!
 # Spherical dwarfs and disk galaxies
 
-Small galaxies are spherical: the stars fill a ball, with no preferred plane.
-Outside that ball the dual curve is the point-mass law of the whole baryonic
-mass, whatever the arrangement inside. A heavier galaxy settles into a disk;
+Small galaxies are spherical: the stars fill a ball. A source at the origin
+of the flat chart pulls along a ray. Outside that ball the dual curve is the
+point-mass law of the whole baryonic mass, whatever the arrangement inside.
+A heavier galaxy settles into a disk;
 the same acceleration relation is then read off the Newtonian curve of the disk.
 
 On the SI stand-ins, for a dwarf of mass \(4\times 10^8\,M_\odot\):

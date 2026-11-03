@@ -13,6 +13,7 @@ import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.GalaxyCurve
+import DstDiophantine.Gravity.SlerpTorque
 import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
@@ -235,6 +236,12 @@ The straight line of one fixed jet is not itself that geodesic.
   between \(4.53\) and \(4.56\).
   A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
   \(83.1<v_\infty<83.2\,\mathrm{km/s}\).
+* `SlerpTorque` — the pull follows a great circle of the three-sphere, and the
+  motion is the straight chord of the flat equidistant chart. With the body at
+  chart distance \(\chi\), the source at \(\psi\), and angle \(\alpha\) between
+  them, the moment of the pushed tangent about the source is `chordMoment`.
+  It vanishes on a common ray and when the source is the chart origin. For
+  equal chart distances and \(\chi,\alpha\in(0,\pi)\) the moment is positive.
 * `ChannelRange` — the same enhancement on two compactification radii.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
@@ -1985,6 +1992,16 @@ example {G M R r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (hr : 0 < r) :
       dualAccel G M R r < G * M / r ^ 2 + G * M / (r * R) ∧
       dualAccel G M R r < G * M / r ^ 2 + G * M / (3 * R ^ 2) :=
   dualAccel_bounds hGM hR hr
+
+/-- Regression: the pushed great-circle tangent has moment `chordMoment`. -/
+example (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
+    SlerpTorque.pushedMoment χ ψ α = SlerpTorque.chordMoment χ ψ α :=
+  SlerpTorque.pushedMoment_eq χ ψ α hs
+
+/-- Regression: equal chart distances give a positive moment on \((0,\pi)\). -/
+example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
+    0 < SlerpTorque.chordMoment χ χ α :=
+  SlerpTorque.chordMoment_equal_pos hχ hχu hα hαu
 
 /-- Regression: spherical rotation curve \((GM(r)/R)\coth(r/R)\). -/
 example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
