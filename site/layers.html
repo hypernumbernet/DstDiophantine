@@ -92,7 +92,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="lbl small" x="278" y="58" text-anchor="middle"><tspan class="en">matching nodes stand in the length ratio</tspan><tspan class="ja">対応する節は長さの比で並ぶ</tspan></text>
     <text class="note" x="320" y="248" text-anchor="middle"><tspan class="en">Schematic radial scales (not to scale); ℓ<sub>N</sub> from r<sub>1</sub>, ℓ<sub>E</sub> from the electron wavelength.</tspan><tspan class="ja">模式図の半径スケール（縮尺は正確でない）。ℓ<sub>N</sub> は r<sub>1</sub> から、ℓ<sub>E</sub> は電子の波長から。</tspan></text>
   </svg>
-  <p class="note"><span class="en"><b>What this section does not claim.</b> Particle masses, laboratory constants, and the 0.5–1 fm window for r<sub>1</sub> are inputs, not derived here. The nuclear length is a definition from scattering, not a Compton wavelength. This geometry does not by itself derive an atomic spectrum, a binding energy, or a radius where both interference factors vanish at once.</span><span class="ja"><b>ここで主張しないこと。</b>粒子の質量、実験室の定数、r<sub>1</sub> の 0.5–1 fm の窓は、ここでは導かず入力です。核の長さは散乱からの定義であり、コンプトン波長ではありません。この幾何だけから原子のスペクトル、結合エネルギー、二つの干渉因子が同時に零になる半径は導かれません。</span></p>
+  <p class="note"><span class="en"><b>What this section does not claim.</b> Particle masses, laboratory constants, and the 0.5–1 fm window for r<sub>1</sub> are inputs, not derived here. The nuclear length is a definition from scattering, not a Compton wavelength. Hydrogen shell radii and spectral fractions are developed later from phase closure on a circular path; this earlier geometry does not by itself fix every atomic quantity.</span><span class="ja"><b>ここで主張しないこと。</b>粒子の質量、実験室の定数、r<sub>1</sub> の 0.5–1 fm の窓は、ここでは導かず入力です。核の長さは散乱からの定義であり、コンプトン波長ではありません。水素の殻半径とスペクトルの分数は、後で円軌道上の位相の閉じ方から述べます。この前の幾何だけでは、原子のあらゆる量は決まりません。</span></p>
 
   <div id="strong-wrap">
   <h3 class="sub" id="strong"><span class="en">Inside the nucleus: the strong force up close</span><span class="ja">原子核の中：強い力をくわしく見る</span></h3>
@@ -210,12 +210,58 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="lbl small" x="400" y="154"><tspan class="en">axial electron → umbrella</tspan><tspan class="ja">軸上の電子 → 傘形</tspan></text>
   </svg>
   <p class="note"><span class="en">Schematic, not to scale. The note does not quote a bond angle in degrees, derive a dissociation energy, or derive ℓ; it does not locate a resting radius for the axial electron, and tilts that break the even spacing are not treated.</span><span class="ja">模式図で、縮尺は正確ではありません。論文は結合角を度単位では示さず、解離エネルギーも ℓ も導出しません。軸上の電子の静止半径も定めず、等間隔を崩す傾きは扱いません。</span></p>
-  <p><span class="en"><b>Still open.</b> The rule that two electrons cannot share one seat is read as the gravitational layer, the same one that keeps nucleons apart. Bohr's ladder of radii, the fine-structure constant and the size of an atom in laboratory units are not yet derived; matching the layers to measured atomic sizes is currently under research.</span><span class="ja"><b>これからの課題。</b>二つの電子が一つの席を共有できないという規則は、核子どうしを離しておくのと同じ重力の層として読まれます。ボーアの半径の階段、微細構造定数、実験室の単位での原子の大きさはまだ導出されておらず、層を実際の原子の大きさに対応づけることは現在研究中です。</span></p>
+  <p><span class="en"><b>Still open.</b> The rule that two electrons cannot share one seat is read as the gravitational layer, the same one that keeps nucleons apart. For hydrogen, the n² shell ladder follows from phase closure in the next subsection; the fine-structure constant and the overall laboratory scale of the atom are still taken from measurement. Matching seat layers to measured sizes of other atoms remains under research.</span><span class="ja"><b>これからの課題。</b>二つの電子が一つの席を共有できないという規則は、核子どうしを離しておくのと同じ重力の層として読まれます。水素については、次の小節で n² の殻のはしごが位相の閉じ方から出てきます。微細構造定数と、原子の大きさを実験室の単位で表す全体のスケールは、いまも測定から取ります。他の原子の大きさへの席の層の対応づけは、現在研究中です。</span></p>
+
+  <span id="shell-radius" class="anchor" aria-hidden="true"></span>
+  <h3 class="sub"><span class="en">Where the shells come from</span><span class="ja">殻はどこから来るのか</span></h3>
+  <p><span class="en">For hydrogen on a circular path, the electron’s <b>scalar phase</b> must return to the same value after one full turn — the wave must be single-valued. Together with the radial force balance on that circle, the closing condition puts shell <i>n</i> at a radius that scales as <i>n</i>². In DST the radius is the familiar Bohr scale times the scalar interference factor from above, which sits just slightly <em>inside</em> the textbook Bohr radius. Standard theory reaches the same n² ladder from Bohr or de Broglie quantisation; here the same conclusion comes from DST’s phase picture, without adding a separate centrifugal term by hand.</span><span class="ja">水素が円軌道を描くとき、電子の<b>スカラー位相</b>は一周して同じ値に戻らねばなりません — 波の単価性です。円上の動径方向の力の釣り合いと合わせると、位相が閉じる条件から殻 <i>n</i> の半径は <i>n</i>² に比例します。DST では、その半径はおなじみのボーアのスケールに、上で述べたスカラー干渉因子を掛けたもので、教科書のボーア半径よりわずかに<b>内側</b>にあります。標準理論もボーアやド・ブロイの量子化から同じ n² のはしごに着きます。ここでは DST の位相の描像から同じ結論が出て、遠心力項を別途手で足しません。</span></p>
+  <p><span class="en"><b>Nodes are not shells.</b> The places where the interference factor changes sign — the barriers and layers described earlier on this page — mark structure in the radial force, not seats for the electron. Those nodes set the sign pattern; the shells come from phase closing on a circle. For each shell number there is exactly one radius that satisfies the closure, and it lies on the restoring side of the <b>outer well</b>, not on a node.</span><span class="ja"><b>節は殻ではない。</b>干渉因子の符号が変わる場所 — このページの前で述べた障壁や層 — は、動径方向の力の構造を示すのであって、電子の席ではありません。節は符号の型を決め、殻は円上で位相が閉じることから来ます。各殻番号について閉じ方を満たす半径はちょうど一つあり、それは節の上ではなく、<b>外側の井戸</b>の戻る側にあります。</span></p>
+  <p><span class="en">Just outside the Bohr radius, the outer-well potential is very slightly <em>deeper</em> than the ordinary Coulomb potential — a tiny deepening on top of the same inverse-square law, not a different force law.</span><span class="ja">ボーア半径のすぐ外側では、外側の井戸のポテンシャルは、普通のクーロンポテンシャルよりごくわずかに<b>深い</b> — 同じ逆二乗の上に小さな掘り下げがあり、別の力の法則ではありません。</span></p>
+  <svg class="fig" viewBox="0 0 640 220" role="img" aria-label="Phase closing after n loops on a circle, and hydrogen shell radii between sign-change nodes">
+    <text class="lbl small" x="155" y="18" text-anchor="middle" font-weight="700"><tspan class="en">One orbit: phase must close</tspan><tspan class="ja">一周：位相が閉じる</tspan></text>
+    <circle cx="155" cy="108" r="56" fill="none" stroke="#596284" stroke-width="1.2"/>
+    <path d="M 155 52 A 56 56 0 0 1 206 108" fill="none" stroke="#ffd27a" stroke-width="3"/>
+    <path d="M 206 108 A 56 56 0 0 1 104 108" fill="none" stroke="#ffd27a" stroke-width="3"/>
+    <path d="M 104 108 A 56 56 0 0 1 155 52" fill="none" stroke="#ffd27a" stroke-width="3"/>
+    <text class="lbl small" x="155" y="188" text-anchor="middle"><tspan class="en">example: n = 3 loops (schematic)</tspan><tspan class="ja">例：n = 3 周（模式）</tspan></text>
+    <line x1="318" y1="24" x2="318" y2="196" stroke="#8aa0c0" stroke-opacity="0.35"/>
+    <text class="lbl small" x="480" y="18" text-anchor="middle" font-weight="700"><tspan class="en">Along the radius</tspan><tspan class="ja">半径方向</tspan></text>
+    <line x1="340" y1="178" x2="610" y2="178" stroke="#8a8fb0" stroke-width="1.4"/>
+    <text class="lbl small" x="475" y="204" text-anchor="middle"><tspan class="en">distance from nucleus</tspan><tspan class="ja">核からの距離</tspan></text>
+    <line x1="368" y1="162" x2="368" y2="194" stroke="#ff5a7a" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <line x1="428" y1="162" x2="428" y2="194" stroke="#ff5a7a" stroke-width="1.8" stroke-dasharray="4 3"/>
+    <text class="lbl small" x="398" y="152" text-anchor="middle"><tspan class="en">sign changes (nodes)</tspan><tspan class="ja">符号が変わる節</tspan></text>
+    <circle cx="392" cy="108" r="8" fill="#4fc3ff"/>
+    <circle cx="478" cy="88" r="8" fill="#4fc3ff"/>
+    <circle cx="572" cy="72" r="8" fill="#4fc3ff"/>
+    <text class="lbl small" x="392" y="128" text-anchor="middle"><tspan class="en">shell n = 1</tspan><tspan class="ja">殻 n = 1</tspan></text>
+    <text class="lbl small" x="478" y="108" text-anchor="middle"><tspan class="en">shell n = 2</tspan><tspan class="ja">殻 n = 2</tspan></text>
+    <text class="lbl small" x="572" y="92" text-anchor="middle"><tspan class="en">shell n = 3</tspan><tspan class="ja">殻 n = 3</tspan></text>
+  </svg>
+  <p class="note"><span class="en">Schematic only, not to scale. The circle shows phase wrapping; the horizontal segment is distance from the nucleus, not a spacetime diagram.</span><span class="ja">模式図のみ、縮尺どおりではありません。円は位相の巻き付け、横線は核からの距離を示し、時空図ではありません。</span></p>
+
+  <span id="three-returns" class="anchor" aria-hidden="true"></span>
+  <h3 class="sub"><span class="en">Three kinds of return</span><span class="ja">三つの戻り方</span></h3>
+  <p><span class="en">Three different «coming back» ideas sit behind hydrogen’s shells, and DST keeps them separate. <b>First,</b> after one full turn around a circular path, every point of the orbital plane is back where it started — ordinary closure of the orbit in space. <b>Second,</b> the <b>dual rotor</b>, the algebraic object that performs the turn, only matches itself again after <em>two</em> full turns: the same 720° story familiar from spin‑½ particles. <b>Third,</b> the hydrogen shells use another condition altogether: the matter wave’s scalar phase must close on itself, which yields the familiar n² pattern of radii and the same conclusion as Bohr’s model. In DST’s formal record, that shell closure is a condition on the phase of the path, distinct from the rotor’s two-turn return.</span><span class="ja">水素の殻の背後には、三つの異なる「戻る」考え方があり、DST はそれらを分けて扱います。<b>第一に、</b>円軌道を一周すれば、軌道面のどの点も出発位置に戻ります — 空間での普通の一周です。<b>第二に、</b>回転を担う代数の対象である<b>双対ローター</b>は、<em>二</em>周して初めて自分自身と一致します — スピン 1/2 粒子で知られるのと同じ 720° の話です。<b>第三に、</b>水素の殻は別の条件を使います。物質波のスカラー位相が自分自身に閉じること — それがおなじみの n² の半径の型を与え、ボーア模型と同じ結論に着きます。DST の形式的な記録では、この殻の閉じ方は経路の位相に関する条件であり、ローターの二周の戻りとは別物として扱われます。</span></p>
+  <p><span class="en">Confusing the plane’s one-turn closure with the rotor’s two-turn return, or with phase closure for shells, would mix three layers of description; the site keeps them apart on purpose. For a wider discussion of rotation as offset spacetimes, see <a class="ref" href="rotation.html#rotation">chapter&nbsp;8</a>.</span><span class="ja">平面の一周の戻りと、ローターの二周の戻り、殻のための位相の閉じ方を混同すると、三つの記述の層が一つに潰れます。このサイトでは意図的に分けています。ずれた二つの空間としての回転のより広い議論は、<a class="ref" href="rotation.html#rotation">第&nbsp;8&nbsp;章</a>を参照してください。</span></p>
+  <svg class="fig" viewBox="0 0 640 200" role="img" aria-label="One circle illustrating one-turn plane closure, two-turn rotor closure, and phase closure for shells">
+    <defs><marker id="ah-ret" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+    <circle cx="320" cy="102" r="62" fill="none" stroke="#596284" stroke-width="1.2"/>
+    <path d="M 320 40 A 62 62 0 1 1 319.9 40" fill="none" stroke="#4fc3ff" stroke-width="2.5" marker-end="url(#ah-ret)"/>
+    <text class="lbl small" x="320" y="22" text-anchor="middle"><tspan class="en">① one turn — plane point back</tspan><tspan class="ja">① 一周 — 平面の点が戻る</tspan></text>
+    <path d="M 320 40 A 62 62 0 1 1 258 102" fill="none" stroke="#ffd27a" stroke-width="2.5"/>
+    <path d="M 258 102 A 62 62 0 1 1 320 40" fill="none" stroke="#ffd27a" stroke-width="2.5" marker-end="url(#ah-ret)"/>
+    <text class="lbl small" x="408" y="98" text-anchor="start"><tspan class="en">② two turns — rotor back</tspan><tspan class="ja">② 二周 — ローターが戻る</tspan></text>
+    <circle cx="382" cy="102" r="5" fill="#4fc3ff"/>
+    <path d="M 382 102 Q 350 72 320 88" fill="none" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <text class="lbl small" x="408" y="148" text-anchor="start"><tspan class="en">③ phase closes — shell radius</tspan><tspan class="ja">③ 位相が閉じる — 殻の半径</tspan></text>
+  </svg>
+  <p class="note"><span class="en">Schematic only: one circle carries three labels; arrows show direction of closure, not a coordinate axis.</span><span class="ja">模式図のみ。一つの円に三つのラベル；矢印は閉じる向きを示し、座標軸ではありません。</span></p>
 
   <span id="spectral-lines" class="anchor" aria-hidden="true"></span>
   <h3 class="sub" id="h-alpha"><span class="en">Hydrogen's spectrum</span><span class="ja">水素のスペクトル</span></h3>
-  <p><span class="en">Hydrogen’s familiar spectral lines are energy steps between electron shells. Standard atomic theory — Bohr’s ladder, Schrödinger’s hydrogen atom, and the Dirac refinement — predicts the same qualitative pattern: each bright step is a fixed fraction of the ionisation energy, for example 3/4 for Lyman&nbsp;α (2→1), 5/36 for Hα (3→2), 3/16 for Hβ, 21/100 for Hγ, and 7/144 for the first Paschen line (4→3). Double Spacetime Theory (DST) reads those same fractions once the same Bohr radius rule — each shell radius proportional to n² over the nuclear charge — is supplied as an <em>input</em>; that radius law is <em>not</em> derived from the sign-changing geometry in this chapter.</span><span class="ja">おなじみの水素のスペクトル線は、電子殻どうしのエネルギー段差として読まれます。標準的な原子論 — ボーアのはしご、シュレーディンガーの水素原子、ディラックの修正 — は同じ質的な型を予言します。明るい段差ごとにイオン化エネルギーに対する決まった分数があり、例えば 2→1 は 3/4（ライマン&nbsp;α）、3→2 は 5/36（Hα）、4→2 は 3/16（Hβ）、5→2 は 21/100（Hγ）、4→3 は 7/144（最初のパッシェン線）です。二重時空理論（DST）も、同じボーア半径則 — 各殻半径が n² を核電荷で割ったものに比例 — を<b>入力</b>として置けば、これらと同じ分数を読みます。その半径則は、この章の符号が変わる幾何だけからは<b>導かれません</b>。</span></p>
-  <p><span class="en">Under that radius rule, every shell sits in the <b>outer well</b>, on the side of a circular path where the radial force pulls the orbit back inward — not on a force-free circle cancelled by a separate centrifugal term. Shells 1 through 5 all lie on that restoring side, well outside the first node.</span><span class="ja">その半径則のもとでは、どの殻も<b>外側の井戸</b>にあり、円軌道が動径方向に戻される側 — 別の遠心力項で打ち消された力のない円ではなく — に置かれます。殻 1 から 5 まですべて、その戻る側にあり、最初の節よりはるか外側です。</span></p>
+  <p><span class="en">Hydrogen’s familiar spectral lines are energy steps between electron shells. Standard atomic theory — Bohr’s ladder, Schrödinger’s hydrogen atom, and the Dirac refinement — predicts the same qualitative pattern: each bright step is a fixed fraction of the ionisation energy, for example 3/4 for Lyman&nbsp;α (2→1), 5/36 for Hα (3→2), 3/16 for Hβ, 21/100 for Hγ, and 7/144 for the first Paschen line (4→3). Double Spacetime Theory (DST) reads those same fractions once the shell radii follow the n² closure rule above on the outer well — the same ladder standard theory uses, now tied to phase single-valuedness rather than postulated by hand.</span><span class="ja">おなじみの水素のスペクトル線は、電子殻どうしのエネルギー段差として読まれます。標準的な原子論 — ボーアのはしご、シュレーディンガーの水素原子、ディラックの修正 — は同じ質的な型を予言します。明るい段差ごとにイオン化エネルギーに対する決まった分数があり、例えば 2→1 は 3/4（ライマン&nbsp;α）、3→2 は 5/36（Hα）、4→2 は 3/16（Hβ）、5→2 は 21/100（Hγ）、4→3 は 7/144（最初のパッシェン線）です。二重時空理論（DST）も、上で述べた n² の閉じ方の規則から殻半径が決まれば、同じ分数を読みます — 標準理論と同じはしごで、位相の単価性に結びつき、手で置いた仮定ではありません。</span></p>
+  <p><span class="en">With those radii, every shell sits in the <b>outer well</b>, on the side of a circular path where the radial force pulls the orbit back inward — not on a force-free circle cancelled by a separate centrifugal term. Shells 1 through 5 all lie on that restoring side, well outside the first node.</span><span class="ja">その半径では、どの殻も<b>外側の井戸</b>にあり、円軌道が動径方向に戻される側 — 別の遠心力項で打ち消された力のない円ではなく — に置かれます。殻 1 から 5 まですべて、その戻る側にあり、最初の節よりはるか外側です。</span></p>
   <p><span class="en">Turning those fractions into laboratory wavelengths uses the same constants and reduced-mass recipe as in ordinary hydrogenic theory; the red Hα line in vacuum lies near 656&nbsp;nm. The point for a general reader is not decimal places but whether DST and standard theory reach the same conclusions about the <em>kind</em> of property each line is.</span><span class="ja">分数を実験室の波長に直す手順も、普通の水素様理論と同じ定数と換算質量の取り方です。真空中の赤い Hα は 656&nbsp;nm 付近にあります。一般読者にとって大事なのは桁数ではなく、各線がどんな性質のものかについて、DST と標準理論が同じ結論に至るかどうかです。</span></p>
   <div class="table-scroll">
   <table class="datatable">
@@ -231,7 +277,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
       <tr>
         <td><span class="en">Energy ladder of hydrogen lines</span><span class="ja">水素線のエネルギーはしご</span></td>
         <td><span class="en">Levels with 1/n² spacing; steps are the familiar fractions of ionisation energy</span><span class="ja">1/n² の階段；段差はおなじみのイオン化エネルギーに対する分数</span></td>
-        <td><span class="en">Same fractional steps between numbered shells once the radius rule is input</span><span class="ja">半径則を入力に置けば、番号付き殻どうしで同じ分数の段差</span></td>
+        <td><span class="en">Same fractional steps between numbered shells once radii follow the n² phase-closure rule</span><span class="ja">半径が n² の位相閉じの規則に従えば、番号付き殻どうしで同じ分数の段差</span></td>
         <td class="mid"><span class="en">Same pattern</span><span class="ja">同じ型</span></td>
       </tr>
       <tr>
@@ -253,10 +299,10 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
         <td class="mid"><span class="en">Not yet distinguishable in the lab</span><span class="ja">実験ではまだ区別不能</span></td>
       </tr>
       <tr>
-        <td><span class="en">Orbit-radius law (n²/a<sub>0</sub>Z)</span><span class="ja">軌道半径の法則（n²/a<sub>0</sub>Z）</span></td>
-        <td><span class="en">Built into the quantum hydrogen problem / Bohr model</span><span class="ja">量子水素問題／ボーア模型の一部として与えられる</span></td>
-        <td><span class="en">Matched to observation as an input, not derived here from interference nodes alone</span><span class="ja">観測に合わせた入力のまま；干渉の節だけからはここでは導かない</span></td>
-        <td class="mid"><span class="en">DST: still taken as given</span><span class="ja">DST では未導出</span></td>
+        <td><span class="en">Orbit-radius law (n² for hydrogen)</span><span class="ja">軌道半径の法則（水素の n²）</span></td>
+        <td><span class="en">n² scaling in the Bohr / quantum hydrogen problem</span><span class="ja">ボーア／量子水素問題での n² スケーリング</span></td>
+        <td><span class="en">n² from scalar phase closing once around a circular path, at the Bohr scale times the interference factor (slightly inside textbook Bohr)</span><span class="ja">円軌道を一周したスカラー位相の閉じ方から n²；ボーアのスケール×干渉因子（教科書のボーアよりわずかに内側）</span></td>
+        <td class="mid"><span class="en">Same n² ladder</span><span class="ja">同じ n² のはしご</span></td>
       </tr>
       <tr>
         <td><span class="en">Fine structure &amp; selection rules</span><span class="ja">微細構造と選択則</span></td>
@@ -298,7 +344,7 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text x="438" y="132" style="font-size:13px;font-weight:700;fill:#ffd27a" text-anchor="start"><tspan class="en">1876 nm</tspan><tspan class="ja">1876 nm</tspan></text>
   </svg>
   <p class="note"><span class="en">Schematic only: level spacing is not to scale. Gold arrows mark transitions; the grey vertical line marks binding energy, not photon paths. Rounded vacuum wavelengths are shown for orientation.</span><span class="ja">模式図のみ。殻の間隔は縮尺どおりではありません。金色の矢印が遷移、灰色の縦線は束縛エネルギーを示し、光子の経路ではありません。真空中の波長は概算で、目安として示しています。</span></p>
-  <p><span class="en"><b>What is not settled yet in this picture.</b> The shell-radius law — including how it scales with nuclear charge — is still supplied from outside rather than derived from the interference geometry alone. Fine-structure splittings and selection rules are likewise not part of this shell-step story yet.</span><span class="ja"><b>まだ分かっていないこと。</b>殻半径の法則 — 核電荷への依存を含む — は、干渉の幾何だけからではなく、いまも外から与えています。微細構造の分裂や選択則も、この殻段差の話にはまだ含まれていません。</span></p>
+  <p><span class="en"><b>What is not settled yet in this picture.</b> The fine-structure constant that sets Coulomb strength in laboratory units is still taken from measurement, not derived from the rotor algebra alone. Fine-structure splittings and selection rules are not part of this shell-step story yet.</span><span class="ja"><b>まだ分かっていないこと。</b>実験室の単位でクーロン力の強さを決める微細構造定数は、いまも測定から取り、ローター代数だけからは導いていません。微細構造の分裂や選択則も、この殻段差の話にはまだ含まれていません。</span></p>
   </div>
 
   <div id="coldfusion-wrap">
