@@ -18,12 +18,17 @@ list expresses the origin: every rapidity vanishes, the stiffness potential
 vanishes at every `m`, and the written action assigns no angular acceleration.
 
 On one axis the written action drives the common rapidity by
-`σ̈ = -2m(α - β)`. Aligned pure boosts of rapidity `φ ≥ 0` add until the
-wall. While `nφ ≤ π/2`, the common acceleration of the expressed state is
-`n` times the acceleration of one boost. Once `nφ ≥ π/2`, the expressed lag
-is `π/2` and the common acceleration is `-mπ`, however large `nφ` becomes.
-Two boosts of rapidity `π/4` therefore add their accelerations and do not add
-their values of `J`. A third leaves the acceleration at `-mπ`.
+`σ̈ = -2m(α - β)`. That acceleration follows the lag. A balanced source
+adds the same rapidity to both sectors, so the lag, the stiffness potential,
+and the acceleration are unchanged on the internal sum and, once the axis
+lies on the wall, on the expressed state as well. The acceleration overflows
+only when the lag itself no longer fits in the triangle. Aligned pure boosts
+are that case, because for them the lag and the sum are one number: while
+`nφ ≤ π/2` the common acceleration of the expressed state is `n` times the
+acceleration of one boost, and once `nφ ≥ π/2` it is `-mπ`, however large
+`nφ` becomes. Past that wall the acceleration read from the internal lag is
+strictly more negative. Two boosts of rapidity `π/4` add their accelerations
+and do not add their values of `J`. A third leaves the acceleration at `-mπ`.
 
 A lag the particle already carries is not that reading. A pure boost of
 rapidity `π/4`, taken as the particle's own angles, still has common
@@ -263,6 +268,157 @@ theorem carried_quarter_boost_not_empty {m : ℝ} (hm : m ≠ 0) (a0 : Fin 3) :
   rcases mul_eq_zero.mp hprod with h0 | h0
   · exact hm h0
   · exact ne_of_gt hπ h0
+
+theorem lagSq_axisPair (a0 : Fin 3) (α β : ℝ) :
+    lagSq (axisPair a0 α β) = (α - β) ^ 2 := by
+  unfold lagSq
+  rw [Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisPair]
+
+theorem axisBoost_eq_axisPair (a0 : Fin 3) (φ : ℝ) :
+    axisBoost a0 φ = axisPair a0 φ 0 := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    rfl
+  · funext a
+    split_ifs <;> rfl
+
+theorem lagSq_axisBoost (a0 : Fin 3) (φ : ℝ) :
+    lagSq (axisBoost a0 φ) = φ ^ 2 := by
+  rw [axisBoost_eq_axisPair, lagSq_axisPair]
+  ring
+
+/-- A balanced pile keeps the lag, hence the potential and the common acceleration. -/
+theorem balancePile_lag_passes {a0 : Fin 3} {δ ε m : ℝ} {n : ℕ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 ≤ ε) :
+    let s := sumParams (balancePile a0 δ ε n)
+    let e := expressedSuperposition (balancePile a0 δ ε n)
+    s.alpha a0 - s.beta a0 = δ ∧
+      e.alpha a0 - e.beta a0 = δ ∧
+        commonAccel m (s.alpha a0) (s.beta a0) = -2 * m * δ ∧
+          commonAccel m (e.alpha a0) (e.beta a0) = -2 * m * δ ∧
+            stiffnessPotential m s = (m / 2) * δ ^ 2 ∧
+              stiffnessPotential m e = (m / 2) * δ ^ 2 := by
+  intro s e
+  have hs := sumParams_balancePile_eq a0 δ ε n
+  have he := express_balancePile (a0 := a0) (δ := δ) (ε := ε) (n := n) hδ0 hδ hε
+  have hdiff : s.alpha a0 - s.beta a0 = δ := by
+    unfold s
+    rw [hs]
+    simp only [axisPair, ite_true]
+    ring
+  have hdiffE : e.alpha a0 - e.beta a0 = δ := by
+    unfold e expressedSuperposition
+    rw [he]
+    unfold axisWall axisPair
+    simp
+    ring
+  refine ⟨hdiff, hdiffE, ?_, ?_, ?_, ?_⟩
+  · unfold commonAccel
+    rw [hdiff]
+  · unfold commonAccel
+    rw [hdiffE]
+  · rw [stiffnessPotential_eq_lag]
+    unfold s
+    rw [hs, lagSq_axisPair]
+    ring
+  · rw [stiffnessPotential_eq_lag]
+    unfold e expressedSuperposition
+    rw [he]
+    unfold axisWall
+    rw [lagSq_axisPair]
+    ring
+
+theorem quarter_balancePile_accel (m : ℝ) {n : ℕ} (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+      -m * Real.pi / 2 ∧
+      commonAccel m
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+        -m * Real.pi / 2 := by
+  have h := balancePile_lag_passes (a0 := a0) (δ := Real.pi / 4) (ε := Real.pi / 4)
+      (m := m) (n := n) (by positivity) (by linarith [Real.pi_pos]) (by positivity)
+  refine ⟨?_, ?_⟩
+  · convert h.2.2.2.1 using 1
+    ring
+  · convert h.2.2.1 using 1
+    ring
+
+theorem commonAccel_sum_boost {n : ℕ} (m φ : ℝ) (a0 : Fin 3) :
+    commonAccel m
+        ((sumParams (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((sumParams (List.replicate n (axisBoost a0 φ))).beta a0) =
+      -2 * m * ((n : ℝ) * φ) := by
+  rw [sumParams_replicate_axisBoost]
+  unfold commonAccel
+  simp [axisBoost]
+
+theorem stiffness_sum_boost (m : ℝ) (n : ℕ) (a0 : Fin 3) (φ : ℝ) :
+    stiffnessPotential m (sumParams (List.replicate n (axisBoost a0 φ))) =
+      (m / 2) * ((n : ℝ) * φ) ^ 2 := by
+  rw [stiffnessPotential_eq_lag, sumParams_replicate_axisBoost, lagSq_axisBoost]
+
+theorem stiffness_expressed_saturated_boost {n : ℕ} {φ : ℝ} (hφ : 0 ≤ φ)
+    (hs : Real.pi / 2 ≤ (n : ℝ) * φ) (m : ℝ) (a0 : Fin 3) :
+    stiffnessPotential m
+        (expressedSuperposition (List.replicate n (axisBoost a0 φ))) =
+      (m / 2) * (Real.pi / 2) ^ 2 := by
+  rw [stiffnessPotential_eq_lag]
+  unfold expressedSuperposition
+  rw [express_replicate_axisBoost hφ, min_eq_right hs, lagSq_axisBoost]
+
+/-- Past the wall the internal lag gives a strictly stronger force than the expressed state. -/
+theorem pure_boost_force_overflows {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
+    (hm : 0 < m) (hφ : 0 ≤ φ) (hs : Real.pi / 2 < (n : ℝ) * φ) :
+    commonAccel m
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).beta a0) =
+      -m * Real.pi ∧
+      commonAccel m
+          ((sumParams (List.replicate n (axisBoost a0 φ))).alpha a0)
+          ((sumParams (List.replicate n (axisBoost a0 φ))).beta a0) <
+        commonAccel m
+          ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).alpha a0)
+          ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).beta a0) ∧
+      stiffnessPotential m (expressedSuperposition (List.replicate n (axisBoost a0 φ))) <
+        stiffnessPotential m (sumParams (List.replicate n (axisBoost a0 φ))) := by
+  have hexp := aligned_boosts_accel_saturated (n := n) (m := m) (φ := φ) (a0 := a0)
+      hφ (le_of_lt hs)
+  have hint := commonAccel_sum_boost (n := n) m φ a0
+  have hse := stiffness_expressed_saturated_boost hφ (le_of_lt hs) m a0
+  have hsi := stiffness_sum_boost m n a0 φ
+  refine ⟨hexp, ?_, ?_⟩
+  · rw [hint, hexp]
+    nlinarith [hm, hs]
+  · rw [hse, hsi]
+    have hpos : 0 < (n : ℝ) * φ := by linarith [hs, Real.pi_pos]
+    have hsq : (Real.pi / 2) ^ 2 < ((n : ℝ) * φ) ^ 2 :=
+      (sq_lt_sq).mpr <| by
+        rw [abs_of_nonneg (by linarith [Real.pi_pos]), abs_of_pos hpos]
+        exact hs
+    nlinarith [hm, hsq]
+
+theorem eighth_balance_accel (m : ℝ) (a0 : Fin 3) :
+    let b := axisBoost a0 (Real.pi / 8)
+    let s := sumParams [b, axisBalance a0 (Real.pi / 8)]
+    commonAccel m (b.alpha a0) (b.beta a0) = -m * Real.pi / 4 ∧
+      commonAccel m (s.alpha a0) (s.beta a0) = -m * Real.pi / 4 := by
+  intro b s
+  have hs_eq : s = axisPair a0 (Real.pi / 4) (Real.pi / 8) := by
+    unfold s b
+    rw [sumParams_boost_then_balance]
+    apply congrArg₂ (axisPair a0)
+    · ring
+    · rfl
+  unfold commonAccel
+  refine ⟨?_, ?_⟩
+  · simp [b, axisBoost]
+    ring
+  · rw [hs_eq]
+    simp [axisPair]
+    ring
 
 end Gravity
 

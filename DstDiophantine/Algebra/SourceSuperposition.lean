@@ -11,7 +11,8 @@ import Mathlib.Tactic.Ring
 # Superposition of source bivectors
 
 Sources add in the six-dimensional coefficient space. That internal sum is
-commutative and has no ceiling: the quadratic `J` on it may exceed `3π²/8`.
+commutative and has no ceiling: the quadratics `J` and `M` on it may exceed
+`3π²/8`.
 
 The configuration a particle expresses is the unique admissible point closest
 to the internal sum in the squared Euclidean distance of the six coefficients.
@@ -19,8 +20,12 @@ The cone is a product of triangles, so the closest point is taken axis by
 axis. Inside the cone the closest point is the sum itself. On an axis with
 nonnegative coefficients, once their sum is at least `π/2` and their
 difference is still within `π/2`, the expressed sum is `π/2` and the
-expressed difference is the internal difference. Once the difference reaches
-`π/2`, the expressed state locks at a pure corner.
+expressed difference is the internal difference. The expressed mismatch and
+unsigned mass are then fixed by that difference alone, while the same
+quadratics on the internal sum keep the full sum and grow without bound.
+`J + M` does not pass through: a balanced source raises it internally.
+Once the difference reaches `π/2`, the expressed state locks at a pure
+corner, and the difference itself stops passing through.
 
 ## What is not claimed
 
@@ -675,6 +680,246 @@ theorem J_two_quarter_boosts (a0 : Fin 3) :
     intro h
     exfalso
     nlinarith [h, Real.pi_pos]
+
+/-! ### The lag passes through; the sum overflows -/
+
+/-- Equal rapidity on both sectors of one axis. -/
+def axisPair (a0 : Fin 3) (α β : ℝ) : TorsionParams where
+  alpha := fun a => if a = a0 then α else 0
+  beta := fun a => if a = a0 then β else 0
+
+theorem J_axisPair (a0 : Fin 3) (α β : ℝ) :
+    J (axisPair a0 α β) = (1 / 2) * (α ^ 2 - β ^ 2) := by
+  rw [J_coef, Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisPair]
+
+theorem mass_axisPair (a0 : Fin 3) (α β : ℝ) :
+    mass (axisPair a0 α β) = (1 / 2) * (α ^ 2 + β ^ 2) := by
+  rw [mass_coef, Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisPair]
+
+/-- `J + M` on one axis is the square of the usual rapidity. -/
+theorem J_add_mass_axisPair (a0 : Fin 3) (α β : ℝ) :
+    J (axisPair a0 α β) + mass (axisPair a0 α β) = α ^ 2 := by
+  rw [J_axisPair, mass_axisPair]
+  ring
+
+theorem axisPair_admissible {a0 : Fin 3} {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisPair a0 α β) := by
+  intro a
+  by_cases h : a = a0
+  · simp only [axisPair, h, ite_true]
+    exact ⟨hα, hβ, hs⟩
+  · simp only [axisPair, h, ite_false]
+    exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+
+/-- Equal rapidity added to both sectors of one axis. -/
+def axisBalance (a0 : Fin 3) (ε : ℝ) : TorsionParams :=
+  axisPair a0 ε ε
+
+/-- One axis on the wall `α + β = π/2`, with difference `δ`. -/
+noncomputable def axisWall (a0 : Fin 3) (δ : ℝ) : TorsionParams :=
+  axisPair a0 ((Real.pi / 2 + δ) / 2) ((Real.pi / 2 - δ) / 2)
+
+theorem J_axisWall (a0 : Fin 3) (δ : ℝ) :
+    J (axisWall a0 δ) = δ * Real.pi / 4 := by
+  unfold axisWall
+  rw [J_axisPair]
+  ring
+
+theorem mass_axisWall (a0 : Fin 3) (δ : ℝ) :
+    mass (axisWall a0 δ) = ((Real.pi / 2) ^ 2 + δ ^ 2) / 4 := by
+  unfold axisWall
+  rw [mass_axisPair]
+  ring
+
+/-- A wall seed followed by `n` balanced sources on the same axis. -/
+noncomputable def balancePile (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) : List TorsionParams :=
+  axisWall a0 δ :: List.replicate n (axisBalance a0 ε)
+
+theorem sumParams_replicate_axisBalance (n : ℕ) (a0 : Fin 3) (ε : ℝ) :
+    sumParams (List.replicate n (axisBalance a0 ε)) = axisBalance a0 ((n : ℝ) * ε) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisBalance, axisPair, List.map_replicate, List.sum_replicate, nsmul_eq_mul]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisBalance, axisPair, List.map_replicate, List.sum_replicate, nsmul_eq_mul]
+    split_ifs <;> ring
+
+theorem sumParams_balancePile (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    sumParams (balancePile a0 δ ε n) =
+      addParams (axisWall a0 δ) (axisBalance a0 ((n : ℝ) * ε)) := by
+  unfold balancePile
+  rw [sumParams_cons, sumParams_replicate_axisBalance]
+
+theorem sumParams_balancePile_eq (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    sumParams (balancePile a0 δ ε n) =
+      axisPair a0 ((Real.pi / 2 + δ) / 2 + (n : ℝ) * ε)
+        ((Real.pi / 2 - δ) / 2 + (n : ℝ) * ε) := by
+  rw [sumParams_balancePile]
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisWall, axisBalance, axisPair]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisWall, axisBalance, axisPair]
+    split_ifs <;> ring
+
+/-- On the wall slab the expressed difference is the internal difference,
+and the expressed sum is `π/2`. -/
+theorem axisExpress_wall_sum_diff {x y : ℝ}
+    (hx : 0 ≤ x) (hy : 0 ≤ y) (hs : Real.pi / 2 ≤ x + y)
+    (hd : |x - y| ≤ Real.pi / 2) :
+    (axisExpress x y).1 + (axisExpress x y).2 = Real.pi / 2 ∧
+      (axisExpress x y).1 - (axisExpress x y).2 = x - y := by
+  rw [axisExpress_eq_wallPoint hx hy hs hd]
+  exact wallPoint_sum_diff x y
+
+theorem express_balancePile {a0 : Fin 3} {δ ε : ℝ} {n : ℕ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 ≤ ε) :
+    express (sumParams (balancePile a0 δ ε n)) = axisWall a0 δ := by
+  rw [sumParams_balancePile_eq]
+  set x : ℝ := (Real.pi / 2 + δ) / 2 + (n : ℝ) * ε
+  set y : ℝ := (Real.pi / 2 - δ) / 2 + (n : ℝ) * ε
+  have hmul : 0 ≤ (n : ℝ) * ε := mul_nonneg (Nat.cast_nonneg n) hε
+  have hx : 0 ≤ x := by
+    unfold x
+    linarith [Real.pi_pos, hδ0, hmul]
+  have hy : 0 ≤ y := by
+    unfold y
+    linarith [hδ, hmul]
+  have hdiff : x - y = δ := by
+    unfold x y
+    ring
+  have hsum : Real.pi / 2 ≤ x + y := by
+    unfold x y
+    linarith [Real.pi_pos, hmul]
+  have habs : |x - y| ≤ Real.pi / 2 := by
+    rw [hdiff, abs_of_nonneg hδ0]
+    exact hδ
+  have he := axisExpress_eq_wallPoint hx hy hsum habs
+  have hfoot := wallPoint_sum_diff x y
+  rw [hdiff] at hfoot
+  have h1 : (wallPoint x y).1 = (Real.pi / 2 + δ) / 2 := by linarith [hfoot.1, hfoot.2]
+  have h2 : (wallPoint x y).2 = (Real.pi / 2 - δ) / 2 := by linarith [hfoot.1, hfoot.2]
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    by_cases ha : a = a0
+    · simp [axisPair, ha, he, h1]
+    · have ht := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisPair, ha, ht]
+  · funext a
+    by_cases ha : a = a0
+    · simp [axisPair, ha, he, h2]
+    · have ht := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisPair, ha, ht]
+
+theorem J_balancePile_sum (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    J (sumParams (balancePile a0 δ ε n)) =
+      δ * (Real.pi / 2 + 2 * (n : ℝ) * ε) / 2 := by
+  rw [sumParams_balancePile_eq, J_axisPair]
+  ring
+
+theorem mass_balancePile_sum (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    mass (sumParams (balancePile a0 δ ε n)) =
+      ((Real.pi / 2 + 2 * (n : ℝ) * ε) ^ 2 + δ ^ 2) / 4 := by
+  rw [sumParams_balancePile_eq, mass_axisPair]
+  ring
+
+/-- Balanced sources on a wall raise internal `J + M` and leave the expressed value fixed. -/
+theorem balancePile_JM_overflow {a0 : Fin 3} {δ ε : ℝ} {n : ℕ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 < ε) (hn : 1 ≤ n) :
+    J (expressedSuperposition (balancePile a0 δ ε n)) +
+        mass (expressedSuperposition (balancePile a0 δ ε n)) <
+      J (sumParams (balancePile a0 δ ε n)) +
+        mass (sumParams (balancePile a0 δ ε n)) := by
+  unfold expressedSuperposition
+  rw [express_balancePile hδ0 hδ (le_of_lt hε)]
+  unfold axisWall
+  rw [sumParams_balancePile_eq, J_add_mass_axisPair, J_add_mass_axisPair]
+  have hn1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
+  have hstep : 0 < (n : ℝ) * ε := by nlinarith
+  have hbase : 0 ≤ (Real.pi / 2 + δ) / 2 := by linarith [Real.pi_pos, hδ0]
+  nlinarith [sq_nonneg ((Real.pi / 2 + δ) / 2)]
+
+theorem J_quarter_balancePile (n : ℕ) (a0 : Fin 3) :
+    J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      ((n : ℝ) + 1) * Real.pi ^ 2 / 16 := by
+  rw [J_balancePile_sum]
+  ring
+
+theorem mass_quarter_balancePile (n : ℕ) (a0 : Fin 3) :
+    mass (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      (4 * ((n : ℝ) + 1) ^ 2 + 1) * Real.pi ^ 2 / 64 := by
+  rw [mass_balancePile_sum]
+  ring
+
+theorem J_express_quarter_balancePile {n : ℕ} (a0 : Fin 3) :
+    J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      Real.pi ^ 2 / 16 := by
+  unfold expressedSuperposition
+  rw [express_balancePile (δ := Real.pi / 4) (ε := Real.pi / 4) (n := n)
+      (by positivity) (by linarith [Real.pi_pos]) (by positivity), J_axisWall]
+  ring
+
+theorem mass_express_quarter_balancePile {n : ℕ} (a0 : Fin 3) :
+    mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      5 * Real.pi ^ 2 / 64 := by
+  unfold expressedSuperposition
+  rw [express_balancePile (δ := Real.pi / 4) (ε := Real.pi / 4) (n := n)
+      (by positivity) (by linarith [Real.pi_pos]) (by positivity), mass_axisWall]
+  ring
+
+/-- Six or more balanced quarter-sources drive the internal quadratic past the ceiling. -/
+theorem J_quarter_balancePile_gt_ceiling {n : ℕ} (hn : 6 ≤ n) (a0 : Fin 3) :
+    3 * Real.pi ^ 2 / 8 <
+      J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) := by
+  rw [J_quarter_balancePile]
+  have hn6 : (6 : ℝ) ≤ n := by exact_mod_cast hn
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  nlinarith [hn6, hπ]
+
+theorem sumParams_boost_then_balance (a0 : Fin 3) (φ ε : ℝ) :
+    sumParams [axisBoost a0 φ, axisBalance a0 ε] = axisPair a0 (φ + ε) ε := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisBoost, axisBalance, axisPair, List.map_cons, List.map_nil,
+      List.sum_cons, List.sum_nil, add_zero]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisBoost, axisBalance, axisPair, List.map_cons, List.map_nil,
+      List.sum_cons, List.sum_nil, add_zero]
+    split_ifs <;> ring
+
+/-- Inside the triangle a balanced source raises `J` and discards nothing. -/
+theorem eighth_balance_inside (a0 : Fin 3) :
+    let b := axisBoost a0 (Real.pi / 8)
+    let s := sumParams [b, axisBalance a0 (Real.pi / 8)]
+    IsAdmissibleContinuous s ∧ express s = s ∧
+      J b = Real.pi ^ 2 / 128 ∧ J s = 3 * Real.pi ^ 2 / 128 ∧ J b < J s := by
+  intro b s
+  have hs_eq : s = axisPair a0 (Real.pi / 4) (Real.pi / 8) := by
+    unfold s b
+    rw [sumParams_boost_then_balance]
+    apply congrArg₂ (axisPair a0)
+    · ring
+    · rfl
+  have hadm : IsAdmissibleContinuous s := by
+    rw [hs_eq]
+    exact axisPair_admissible (by positivity) (by positivity) (by linarith [Real.pi_pos])
+  have hJb : J b = Real.pi ^ 2 / 128 := by
+    rw [J_axisBoost]
+    ring
+  have hJs : J s = 3 * Real.pi ^ 2 / 128 := by
+    rw [hs_eq, J_axisPair]
+    ring
+  refine ⟨hadm, express_eq_of_admissible hadm, hJb, hJs, ?_⟩
+  rw [hJb, hJs]
+  nlinarith [Real.pi_pos]
 
 end SourceSuperposition
 
