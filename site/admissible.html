@@ -139,6 +139,73 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="note" x="320" y="248" text-anchor="middle"><tspan class="en">Schematic. Arrows show influence; axis lines show schematic axes only.</tspan><tspan class="ja">模式図。矢印は影響、軸線は模式の座標軸のみ。</tspan></text>
   </svg>
 
+  <span id="ceiling-overflow" class="anchor" aria-hidden="true"></span>
+  <h3 class="sub"><span class="en">What passes through the wall and what overflows</span><span class="ja">壁を通るものと溢れるもの</span></h3>
+  <p><span class="en">When many sources pile up, the admissible cone does not pass everything through unchanged. What <b>does</b> pass is the <b>lag</b> — on each axis, the difference between the usual and dual rapidities. The common acceleration in the written dynamics follows that lag alone, not the full uncapped internal sum. The <b>sum</b> of the two sectors on an axis is capped at the wall of the admissible triangle; only the lag keeps tracking the internal difference until it too runs out of room.</span><span class="ja">源がたくさん重なると、許容錐はすべてをそのまま通しません。<b>通る</b>のは<b>遅れ</b> — 各軸での通常と双対のラピディティの差 — です。記述された力学の共通加速度は、上限のない内部の和ではなく、その遅れだけに従います。一軸での二セクターの<b>和</b>は許容三角形の壁で抑えられます。遅れだけが、内部の差を追い続け、それも余地を失うまで。</span></p>
+  <p><span class="en"><b>Balanced sources</b> — the same increment added to both sectors on an axis — illustrate the split. Internally the pile can grow without bound along the balanced direction, yet the lag, the expressed mismatch, and the unsigned mass on the cone can all stay fixed, and the acceleration does not change. Saturation appears only when the lag itself no longer fits in the triangle, as with aligned pure boosts where lag and sum move together. That shielding-like saturation has no analogue in the standard linear superposition of weak gravity, where fields add in proportion; on this point DST and standard theory reach different conclusions about what kind of property superposition is.</span><span class="ja"><b>釣り合った源</b> — 一軸で両セクターに同じ増分を足す場合 — がこの分離を示します。内部的には釣り合った方向に沿って山は上限なく大きくなれますが、遅れも表出された不整合も錐上の符号なし質量も固定のままで、加速度も変わりません。飽和は、遅れ自体が三角形に収まらなくなったとき — 遅れと和が一緒に動く、揃った純ブースト — に現れます。このシールドのような飽和は、弱い重力の標準的な線形重ね合わせ — 場が比例して足される — には対応物がありません。重ね合わせがどんな性質かについて、DST と標準理論はここで異なる結論に着きます。</span></p>
+  <svg class="fig" viewBox="0 0 640 240" role="img" aria-label="Balanced sources grow internally while lag stays; pure boosts saturate when lag hits the wall">
+    <defs>
+      <linearGradient id="jg2ov" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".45"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".45"/></linearGradient>
+      <marker id="ah-ov" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g transform="translate(88,200)">
+      <path d="M0,0L150,0L0,-150z" fill="url(#jg2ov)" class="region" opacity="0.85"/>
+      <line class="axis" x1="0" y1="0" x2="170" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-170"/>
+      <line x1="0" y1="0" x2="105" y2="-105" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text class="lbl small" x="118" y="-118"><tspan class="en">balanced direction</tspan><tspan class="ja">釣り合い方向</tspan></text>
+      <circle cx="70" cy="-70" r="6" class="node"/>
+      <circle cx="95" cy="-95" r="5" fill="#ff9a5a" opacity="0.9"/>
+      <line x1="95" y1="-95" x2="70" y2="-70" stroke="#ff9a5a" stroke-width="1.2" marker-end="url(#ah-ov)"/>
+      <text class="lbl small" x="78" y="-48" text-anchor="middle"><tspan class="en">internal pile grows</tspan><tspan class="ja">内部は増える</tspan></text>
+      <text class="lbl small" x="78" y="-32" text-anchor="middle"><tspan class="en">lag fixed → accel fixed</tspan><tspan class="ja">遅れ固定 → 加速度固定</tspan></text>
+    </g>
+    <text class="lbl small" x="168" y="28" text-anchor="middle" font-weight="700"><tspan class="en">Through the wall</tspan><tspan class="ja">壁を通る</tspan></text>
+    <g transform="translate(388,200)">
+      <path d="M0,0L150,0L0,-150z" fill="url(#jg2ov)" class="region" opacity="0.85"/>
+      <line class="axis" x1="0" y1="0" x2="170" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-170"/>
+      <line x1="150" y1="0" x2="0" y2="-150" class="zero"/>
+      <circle cx="150" cy="0" r="6" class="dotw"/>
+      <text class="lbl small" x="158" y="18"><tspan class="en">sum at wall</tspan><tspan class="ja">和は壁</tspan></text>
+      <circle cx="110" cy="-40" r="6" class="node"/>
+      <text class="lbl small" x="110" y="-52" text-anchor="middle"><tspan class="en">lag still moves</tspan><tspan class="ja">遅れは動く</tspan></text>
+      <text class="lbl small" x="75" y="28" text-anchor="middle"><tspan class="en">overflow when lag fills</tspan><tspan class="ja">遅れが満ちれば溢れる</tspan></text>
+    </g>
+    <text class="lbl small" x="488" y="28" text-anchor="middle" font-weight="700"><tspan class="en">Overflow</tspan><tspan class="ja">溢れる</tspan></text>
+    <text class="note" x="320" y="232" text-anchor="middle"><tspan class="en">One axis shown; dashed line is the balanced diagonal, not an axis.</tspan><tspan class="ja">一軸のみ。破線は釣り合いの対角線で、座標軸ではありません。</tspan></text>
+  </svg>
+
+  <span id="resting-heavy" class="anchor" aria-hidden="true"></span>
+  <h3 class="sub"><span class="en">Resting but heavy: where mass sits</span><span class="ja">静止しているのに重い：質量はどこにある</span></h3>
+  <p><span class="en">Mass in DST is not the same thing as mismatch. On a state where both sectors carry the <b>same rapidity on every axis</b>, the twist measure J vanishes, the stiffness potential vanishes, and the written action assigns no acceleration — a genuinely resting configuration in the Mach sense above. Yet the <b>unsigned mass</b> need not be zero: it is carried in the common scale of those matched rapidities. The two rotors need not coincide; the body can still be internally torsioned while J stays zero.</span><span class="ja">DST では質量と不整合は同じものではありません。すべての軸で両セクターが<b>同じラピディティ</b>を運ぶ状態では、ねじれの尺度 J は零になり、硬さポテンシャルも零になり、記述された作用は加速度を割り当てません — 上のマッハの意味での本当の静止です。それでも<b>符号なし質量</b>は零でなくてよく、一致したラピディティの共通の尺度として載ります。二つのローターは一致する必要はなく、J が零でも内部にはねじれが残りえます。</span></p>
+  <p><span class="en">The <b>time-reversing dual map</b> used in the antiparticle story (<a class="ref" href="antiparticle.html#antiparticle">chapter&nbsp;5</a>) acts differently on mass and mismatch. It fixes only the completely empty configuration, where mass vanishes. On a sector-symmetric resting state it preserves the unsigned mass but reverses J, creates stiffness potential, and sends a positive admissible state <b>outside</b> the admissible cone. Mass can sit quietly in a neutral rest while the dual image is energetically charged and inadmissible — linking inertia bookkeeping to the same dual structure that defines charge conjugation, without identifying the two stories.</span><span class="ja">反粒子の話で使う<b>時間反転の双対写像</b>（<a class="ref" href="antiparticle.html#antiparticle">第&nbsp;5&nbsp;章</a>）は、質量と不整合に異なる働きをします。完全に空の配置だけを固定し、そこでのみ質量は消えます。セクター対称の静止状態では符号なし質量を保ち、J を反転し、硬さポテンシャルを生み、正の許容状態を許容錐の<b>外</b>へ送ります。質量は中性の静止に静かに載り、双対像はエネルギーをもち許容外 — 慣性の台帳を荷電共役を定める同じ双対構造に結びつけますが、二つの物語を同一視はしません。</span></p>
+  <p class="note"><span class="en">DST does not yet derive the numerical value of the mass coefficient in laboratory units, nor a mass gap from leaving a sector-symmetric rest state; it locates where unsigned mass can sit while mismatch and acceleration vanish.</span><span class="ja">DST は、実験室単位での質量係数の数値も、セクター対称の静止から離れることによる質量ギャップも、まだ導いていません。不整合と加速度が消えるとき、符号なし質量がどこに載りうるかを示す、という内容です。</span></p>
+  <svg class="fig" viewBox="0 0 640 200" role="img" aria-label="Sector-matched rest has mass but no lag; dual map sends positive states outside the cone">
+    <defs>
+      <linearGradient id="jg2rh" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff9a5a" stop-opacity=".45"/><stop offset="1" stop-color="#4fc3ff" stop-opacity=".45"/></linearGradient>
+      <marker id="ah-rh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <g transform="translate(120,168)">
+      <path d="M0,0L120,0L0,-120z" fill="url(#jg2rh)" class="region" opacity="0.7"/>
+      <line class="axis" x1="0" y1="0" x2="140" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-140"/>
+      <line x1="0" y1="0" x2="85" y2="-85" stroke="#4fc3ff" stroke-width="2"/>
+      <circle cx="55" cy="-55" r="7" class="node"/>
+      <text class="lbl small" x="55" y="-72" text-anchor="middle"><tspan class="en">α = β, J = 0</tspan><tspan class="ja">α = β、J = 0</tspan></text>
+      <text class="lbl small" x="55" y="28" text-anchor="middle"><tspan class="en">mass ≠ 0</tspan><tspan class="ja">質量 ≠ 0</tspan></text>
+    </g>
+    <text class="lbl small" x="120" y="24" text-anchor="middle" font-weight="700"><tspan class="en">Resting, heavy</tspan><tspan class="ja">静止で重い</tspan></text>
+    <line x1="280" y1="100" x2="340" y2="100" stroke="#8aa0c0" stroke-width="1.4" marker-end="url(#ah-rh)"/>
+    <text class="lbl small" x="310" y="88" text-anchor="middle"><tspan class="en">dual map</tspan><tspan class="ja">双対写像</tspan></text>
+    <g transform="translate(420,168)">
+      <path d="M0,0L120,0L0,-120z" fill="none" stroke="#596284" stroke-width="1.2" stroke-dasharray="5 4"/>
+      <line class="axis" x1="0" y1="0" x2="140" y2="0"/><line class="axis" x1="0" y1="0" x2="0" y2="-140"/>
+      <circle cx="40" cy="-80" r="7" fill="#ff9a5a"/>
+      <text class="lbl small" x="95" y="-70" text-anchor="start"><tspan class="en">outside cone</tspan><tspan class="ja">錐の外</tspan></text>
+      <text class="lbl small" x="60" y="28" text-anchor="middle"><tspan class="en">potential on</tspan><tspan class="ja">ポテンシャルあり</tspan></text>
+    </g>
+    <text class="lbl small" x="480" y="24" text-anchor="middle" font-weight="700"><tspan class="en">Dual image</tspan><tspan class="ja">双対像</tspan></text>
+    <text class="note" x="320" y="192" text-anchor="middle"><tspan class="en">Schematic one-axis slices; cone boundary dashed on the right.</tspan><tspan class="ja">模式の一軸切り出し。右は錐境界を破線で示す。</tspan></text>
+  </svg>
+
   <p><span class="en">The ceiling does real work elsewhere in the repository. In the gravity track it is read as a finite redshift floor, so a one-way horizon (A = 0) does not form on that chart, and a light ray that would be captured classically turns around and comes back. When the same discrete height lattice is read as a Planck-mass ratio, the normalised mismatch has a separate gravitational floor (16/3)α<sub>G</sub> for a mass m — not the electromagnetic fine-structure constant α. In the number-theory track, a shared “no-go” theorem says no seed can be amplified past this ceiling.</span><span class="ja">この上限はリポジトリの他の部分で重要な役割を果たします。重力の分野では有限の赤方偏移の下限として読まれ、その座標系では一方通行の地平（A = 0）ができません。古典的には捕らわれるはずの光線も、内部で向きを変えて戻ってきます。同じ離散の高さ格子をプランク質量比として読むと、正規化された不整合には質量 m に対する別の重力の下限 (16/3)α<sub>G</sub> があります。これは電磁気の微細構造定数 α とは別物です。数論の分野では、「どんな種もこの上限を超えて増幅できない」という共通の不可能定理になります。</span></p>
   <p class="note"><span class="en">Placing boosts on a compact 2π-torus, with admissibility on top, is the modelling choice the theory builds on.</span><span class="ja">ブーストを周期 2π のトーラス上に置き、その上に許容性を課すことが、この理論の出発点となるモデル化です。</span></p>
 </section>
