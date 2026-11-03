@@ -80,6 +80,7 @@ import DstDiophantine.Gravity.BothChannels
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
+import DstDiophantine.Gravity.MassOrigin
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -167,6 +168,13 @@ The straight line of one fixed jet is not itself that geodesic.
   \(\pi/4\) carried as the particle's own angles still has common acceleration
   \(-m\pi/2\). No derivation of \(m\), no \(F=ma\), and no laboratory
   acceleration ceiling.
+* `MassOrigin` — the time-reversing dual map fixes a configuration only at
+  vanishing unsigned mass. Where the rapidities agree, \(J\) and the
+  stiffness potential vanish, the written action assigns no angular
+  acceleration, and the unsigned mass equals \(\sum_a\alpha_a^2\). The map
+  preserves that mass and replaces the potential by \(2mM\). A positive
+  admissible state of this kind is sent outside the cone. On one axis the
+  rotors do not coincide. No derivation of \(m\).
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
 * `ForceScale` — one integer, read as the Planck ratio \((m_P/m)^2\), places
