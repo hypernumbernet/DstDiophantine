@@ -11,8 +11,11 @@ import Mathlib.Tactic.Ring
 Three quantities are distinct.
 
 * The stiffness potential \(V=(m/2)\sum_a(\alpha_a-\beta_a)^2\) is the
-  potential of the written particle action. The coefficient \(m\) is not
-  derived from the algebra.
+  potential of the written particle action. The value of \(m\) is not
+  fixed by the algebra. At equal rapidity a pure lag \(\delta\) adds
+  \((m/2)\delta^2\) to \(V\) and \(\delta^2/4\) to the unsigned mass, and
+  the common acceleration per unit lag is minus the ratio of those
+  coefficients of \(\delta^2\).
 * The unsigned mass is \(M=\tfrac12\sum_a(\alpha_a^2+\beta_a^2)\).
 * Free fall is \(\Omega=1\), the coincidence of the two rotors.
 

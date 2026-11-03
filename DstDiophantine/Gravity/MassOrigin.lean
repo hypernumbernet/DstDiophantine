@@ -23,8 +23,10 @@ sent outside the cone.
 
 ## What is not claimed
 
-No derivation of the coefficient `m`, no mass gap produced by leaving
+No value of `m`, no mass gap produced by leaving
 the sector-symmetric state, and no identification with `F = ma`.
+The coefficient in the common acceleration is the ratio of the
+coefficients of `δ²` in `MassCoefficient`.
 -/
 
 namespace DstDiophantine

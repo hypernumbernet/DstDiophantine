@@ -33,8 +33,9 @@ with Jacobi integral `¼ σ̇₀² + (m/2)(A² + B²)`. In units `ℏ = c = 1`
 the lines `√(2 m)` and the Compton frequency `m` meet only at `m = 0`
 and `m = 2`.
 
-No derivation of `m` from the dual-rotor algebra is claimed, and the
-de Broglie reading of `ν` remains out of scope.
+The value of `m` is not fixed here. Its role in the common acceleration
+is the ratio of the coefficients of `δ²` in `MassCoefficient`. The de Broglie reading of
+`ν` remains out of scope.
 -/
 
 namespace DstDiophantine

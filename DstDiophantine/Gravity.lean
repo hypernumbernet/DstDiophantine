@@ -81,6 +81,7 @@ import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
 import DstDiophantine.Gravity.MassOrigin
+import DstDiophantine.Gravity.MassCoefficient
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -174,15 +175,26 @@ The straight line of one fixed jet is not itself that geodesic.
   boosts of rapidity \(\pi/4\) add their accelerations to \(-m\pi\) and do not
   add \(J\). A further boost leaves the acceleration there. A pure boost of
   rapidity \(\pi/4\) carried as the particle's own angles still has common
-  acceleration \(-m\pi/2\). No derivation of \(m\), no \(F=ma\), and no
-  laboratory acceleration ceiling.
+  acceleration \(-m\pi/2\). The sources do not fix the value of \(m\).
+  No \(F=ma\), and no laboratory acceleration ceiling.
 * `MassOrigin` — the time-reversing dual map fixes a configuration only at
   vanishing unsigned mass. Where the rapidities agree, \(J\) and the
   stiffness potential vanish, the written action assigns no angular
   acceleration, and the unsigned mass equals \(\sum_a\alpha_a^2\). The map
   preserves that mass and replaces the potential by \(2mM\). A positive
   admissible state of this kind is sent outside the cone. On one axis the
-  rotors do not coincide. No derivation of \(m\).
+  rotors do not coincide.
+* `MassCoefficient` — a pure lag \(\delta\) off an equal-rapidity state
+  adds \(\delta^2/4\) to the unsigned mass, at every common rapidity, and
+  adds \((m/2)\delta^2\) to the potential. The second difference of the mass
+  in that lag is \(1/2\), and the second difference of the potential is
+  \(m\). The kinetic term is \(J\) on the angular velocity, and its cross
+  coefficient is that same \(1/2\). The common acceleration per unit lag is
+  minus the ratio of the two coefficients of \(\delta^2\). Off equal
+  rapidity, \(m\) is the quotient of the potential by twice the transverse
+  unsigned mass, and the quotient does not depend on the state. The Jacobi
+  integral along equal rapidity vanishes, so the coefficient is not the
+  unsigned mass of that state. The value of \(m\) is not fixed.
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
 * `ForceScale` — one integer, read as the Planck ratio \((m_P/m)^2\), places
@@ -1160,6 +1172,19 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
 example {m : ℝ} (hm : 0 ≤ m) :
     Real.sqrt (2 * m) = m ↔ m = 0 ∨ m = 2 :=
   sqrt_two_mul_eq_compton_iff hm
+
+/-- Regression: acceleration per unit lag is minus the lag-second ratio. -/
+example {m φ θ φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) (hδ : φ - θ ≠ 0) :
+    (φddot + θddot) / (φ - θ) =
+      -(lagPotentialSecond m ((φ + θ) / 2) (φ - θ) /
+          lagMassSecond ((φ + θ) / 2) (φ - θ)) :=
+  common_accel_eq_lagSecond_ratio h hδ
+
+/-- Regression: off equal rapidity the stiffness quotient is \(2m\). -/
+example {m : ℝ} {p : Operations.TorsionParams} (h : lagSq p ≠ 0) :
+    stiffnessPotential m p / transverseMass p = 2 * m :=
+  stiffness_quotient h
 
 /-- Regression: same-sign oscillator frees the common rapidity. -/
 example {m φ θ φddot θddot : ℝ}

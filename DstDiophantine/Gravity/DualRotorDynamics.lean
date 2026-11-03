@@ -19,7 +19,8 @@ is not that Euler–Lagrange system.
 
 The identities below are algebraic statements on jets
 \((\phi,\theta,\dot\phi,\dot\theta,\ddot\phi,\ddot\theta)\).
-No derivation of \(m\) from the dual-rotor algebra is claimed.
+No value of \(m\) is fixed here. Its role in the common acceleration is
+the ratio of the coefficients of \(\delta^2\) recorded in `MassCoefficient`.
 The de Broglie reading of free lag, and any identification of
 \(J_{\mathrm{osc}}\) with the Weitzenböck density, remain out of scope.
 
