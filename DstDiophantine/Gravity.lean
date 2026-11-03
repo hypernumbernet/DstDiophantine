@@ -32,6 +32,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.HydrogenAlpha
+import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.SpectralLines
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
@@ -384,6 +385,13 @@ The straight line of one fixed jet is not itself that geodesic.
   \(4\to 2\), \(5\to 2\), and \(4\to 3\)
   are \(3/4\), \(3/16\), \(21/100\), and \(7/144\), each within one part in
   ten thousand.
+* `OrbitClosure` — one revolution of the dual rotor restores every point of
+  the orbital plane and leaves the rotor at \(-1\), at every radius. Two
+  revolutions restore the rotor. The plane-wave factor on one revolution
+  equals \(1\) exactly when \(pr=n\hbar\). With the centripetal identity that
+  return places the radius at \(n^{2}\hbar^{2}\gamma/(mke^{2})\). The same
+  revolution can leave the plane-wave factor at \(-1\). A dual angle set
+  equal to the accumulated phase stands at \(-1\) when \(pr=\hbar\).
 * `SpectralLines` — on the SI stand-ins the fixed-proton vacuum wavelengths
   of those four hydrogen lines lie strictly between \(121502\) and \(121503\),
   \(486009\) and \(486010\), \(433936\) and \(433937\), and \(1874606\) and
@@ -2595,6 +2603,20 @@ example (δ : ℝ) (dir : Fin 3 → ℝ) :
     faradayDot ({ E := fun a => δ * dir a, B := fun _ => 0 } : FaradayParams) = 0 ∧
       faradayDot ({ E := fun _ => 0, B := fun a => δ * dir a } : FaradayParams) = 0 :=
   ⟨faradayDot_boostAlong δ dir, faradayDot_rotationAlong δ dir⟩
+
+/-- Regression: one revolution restores the orbital point and leaves the rotor at `-1`. -/
+example (a b : ℝ) :
+    Motor.rotorTorsion (Amplification.pureRotation1 (2 * Real.pi)) = -1 ∧
+      Sandwich.sandwich
+        (Motor.rotorTorsion (Amplification.pureRotation1 (2 * Real.pi)))
+        (a • ι 1 + b • ι 3) = a • ι 1 + b • ι 3 :=
+  ⟨dualRotor_one_revolution, orbitPoint_one_revolution a b⟩
+
+/-- Regression: the plane-wave factor on that revolution equals `1` exactly at `pr = nℏ`. -/
+example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
+    Complex.exp (Complex.I * ((p * r * (2 * Real.pi) / ℏ : ℝ) : ℂ)) = 1 ↔
+      ∃ n : ℤ, p * r = (n : ℝ) * ℏ :=
+  planeWave_revolution_iff hℏ
 
 /-- Regression: the dual-rotor determinant has vanishing argument. -/
 example (β : DualRapidity) :

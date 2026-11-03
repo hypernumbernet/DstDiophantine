@@ -1382,7 +1382,7 @@ lemma phaseLogNum_neg {u : ℝ} (hu : u ∈ Ioo resonanceRoot1 (branchNode 1)) :
     · exact phaseLogNum_neg_mid hge hlt2.le
     · exact phaseLogNum_neg_high hge2
 
-noncomputable def phaseWeight (y : ℝ) : ℝ :=
+noncomputable def capacityPhase (y : ℝ) : ℝ :=
   2 * y * cosh y * sin y / (-gammaSEqual y)
 
 lemma weightNumer_eq (y : ℝ) :
@@ -1397,17 +1397,17 @@ lemma weightNumer_eq (y : ℝ) :
 
 set_option maxHeartbeats 4000000 in
 -- `ring_nf` expands the phase-weight numerator before the square identities.
-lemma hasDerivAt_phaseWeight {y : ℝ} (hg : gammaSEqual y ≠ 0) :
-    HasDerivAt phaseWeight (phaseLogNum y / (2 * gammaSEqual y ^ 2)) y := by
+lemma hasDerivAt_capacityPhase {y : ℝ} (hg : gammaSEqual y ≠ 0) :
+    HasDerivAt capacityPhase (phaseLogNum y / (2 * gammaSEqual y ^ 2)) y := by
   have hnum :=
     ((hasDerivAt_id y).mul ((hasDerivAt_cosh y).mul (hasDerivAt_sin y))).const_mul 2
   have hden := (hasDerivAt_gammaSEqual y).neg
   simp only [Pi.mul_apply, id] at hnum
   have hdiv := hnum.div hden (by simpa using hg)
   simp only [Pi.neg_apply] at hdiv
-  have hfun : (fun t => 2 * (t * (cosh t * sin t))) / -gammaSEqual = phaseWeight := by
+  have hfun : (fun t => 2 * (t * (cosh t * sin t))) / -gammaSEqual = capacityPhase := by
     funext t
-    unfold phaseWeight
+    unfold capacityPhase
     simp [Pi.div_apply, Pi.neg_apply]
     ring
   rw [hfun] at hdiv
@@ -1419,10 +1419,10 @@ lemma hasDerivAt_phaseWeight {y : ℝ} (hg : gammaSEqual y ≠ 0) :
   field_simp [hg] at hW ⊢
   linarith
 
-lemma phaseWeight_strictAnti :
-    StrictAntiOn phaseWeight (Ioo resonanceRoot1 (branchNode 1)) := by
+lemma capacityPhase_strictAnti :
+    StrictAntiOn capacityPhase (Ioo resonanceRoot1 (branchNode 1)) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
-  · unfold phaseWeight
+  · unfold capacityPhase
     refine ContinuousOn.div ?_ ?_ ?_
     · exact (by continuity : Continuous fun y : ℝ => 2 * y * cosh y * sin y).continuousOn
     · exact continuous_gammaSEqual.neg.continuousOn
@@ -1431,7 +1431,7 @@ lemma phaseWeight_strictAnti :
   · intro y hy
     rw [interior_Ioo] at hy
     have hg : gammaSEqual y ≠ 0 := (gammaSEqual_neg_first_shell hy).ne
-    rw [(hasDerivAt_phaseWeight hg).deriv]
+    rw [(hasDerivAt_capacityPhase hg).deriv]
     exact div_neg_of_neg_of_pos (phaseLogNum_neg hy) (by positivity)
 
 /-! ### Scaled ratios and the cube -/
@@ -1537,9 +1537,9 @@ lemma scaledRatioSlope_eq_weight {c x : ℝ} (_hc : 0 < c) (hx : 0 < x)
     deriv gammaSEqual x * gammaSEqual (c * x) -
         gammaSEqual x * (deriv gammaSEqual (c * x) * c) =
       gammaSEqual x * gammaSEqual (c * x) *
-        (phaseWeight x - phaseWeight (c * x)) / x := by
+        (capacityPhase x - capacityPhase (c * x)) / x := by
   rw [deriv_gammaSEqual, deriv_gammaSEqual]
-  unfold phaseWeight
+  unfold capacityPhase
   field_simp [hg, hgc, hx.ne']
 
 lemma hasDerivAt_scaledRatio {c x : ℝ} (hgc : gammaSEqual (c * x) ≠ 0) :
@@ -1584,8 +1584,8 @@ lemma scaledRatio_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
     have hmemc : c * y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hcy_lo, hcy_hi⟩
     have hmemy : y ∈ Ioo resonanceRoot1 (branchNode 1) :=
       ⟨by linarith [hy.1, four_fifths_lt_resonanceRoot1], hy.2⟩
-    have hweight : phaseWeight y < phaseWeight (c * y) :=
-      phaseWeight_strictAnti hmemc hmemy hcy
+    have hweight : capacityPhase y < capacityPhase (c * y) :=
+      capacityPhase_strictAnti hmemc hmemy hcy
     have hgc : gammaSEqual (c * y) ≠ 0 := (gammaSEqual_neg_first_shell hmemc).ne
     have hg : gammaSEqual y ≠ 0 := (gammaSEqual_neg_first_shell hmemy).ne
     have hcpos : 0 < c := by linarith
@@ -1594,9 +1594,9 @@ lemma scaledRatio_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
     have hprod : gammaSEqual y * gammaSEqual (c * y) > 0 :=
       mul_pos_of_neg_of_neg (gammaSEqual_neg_first_shell hmemy)
         (gammaSEqual_neg_first_shell hmemc)
-    have hdiff : phaseWeight y - phaseWeight (c * y) < 0 := by linarith
+    have hdiff : capacityPhase y - capacityPhase (c * y) < 0 := by linarith
     have hnum : gammaSEqual y * gammaSEqual (c * y) *
-        (phaseWeight y - phaseWeight (c * y)) / y < 0 := by
+        (capacityPhase y - capacityPhase (c * y)) / y < 0 := by
       exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hprod hdiff) hy0
     exact div_neg_of_neg_of_pos hnum hden
 
@@ -1636,8 +1636,8 @@ lemma scaledRatio_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
         nlinarith [hc1, hroot]
       exact lt_trans hdiv hy.1
     have hmemy : y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hy_root, hy.2⟩
-    have hweight : phaseWeight y < phaseWeight (c * y) :=
-      phaseWeight_strictAnti hmemc hmemy hcy
+    have hweight : capacityPhase y < capacityPhase (c * y) :=
+      capacityPhase_strictAnti hmemc hmemy hcy
     have hgc : gammaSEqual (c * y) ≠ 0 := (gammaSEqual_neg_first_shell hmemc).ne
     have hg : gammaSEqual y ≠ 0 := (gammaSEqual_neg_first_shell hmemy).ne
     rw [(hasDerivAt_scaledRatio hgc).deriv, scaledRatioSlope_eq_weight hc0 hy0 hg hgc]
@@ -1645,9 +1645,9 @@ lemma scaledRatio_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
     have hprod : gammaSEqual y * gammaSEqual (c * y) > 0 :=
       mul_pos_of_neg_of_neg (gammaSEqual_neg_first_shell hmemy)
         (gammaSEqual_neg_first_shell hmemc)
-    have hdiff : phaseWeight y - phaseWeight (c * y) < 0 := by linarith
+    have hdiff : capacityPhase y - capacityPhase (c * y) < 0 := by linarith
     have hnum : gammaSEqual y * gammaSEqual (c * y) *
-        (phaseWeight y - phaseWeight (c * y)) / y < 0 := by
+        (capacityPhase y - capacityPhase (c * y)) / y < 0 := by
       exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hprod hdiff) hy0
     exact div_neg_of_neg_of_pos hnum hden
 

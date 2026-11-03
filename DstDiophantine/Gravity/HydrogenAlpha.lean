@@ -1055,8 +1055,9 @@ theorem paschen_signed_shift :
 /-! ### Single-valued phase on a circular path
 
 The interference node is a zero of \(\gamma_s\). The radius of a circular
-path is a different condition: the scalar phase closes, and the centripetal
-identity fixes the speed. No centrifugal term is added to the force.
+path is a different condition: on one revolution of the dual rotor the
+plane-wave factor returns, and the centripetal identity fixes the speed.
+No centrifugal term is added to the force.
 -/
 
 /-- Phase weight \(x\gamma_s(x)\). Its derivative is the circular comparison. -/
