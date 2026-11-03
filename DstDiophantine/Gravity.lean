@@ -79,6 +79,7 @@ import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
+import DstDiophantine.Gravity.MachSource
 
 /-!
 # Gravity / PGA–TEGR chart layer
@@ -156,6 +157,16 @@ The straight line of one fixed jet is not itself that geodesic.
   expresses \(J=\pi^2/8\), while the quadratic on the internal sum is
   \(n^2\pi^2/8\). Two boosts of rapidity \(\pi/4\) express \(J=\pi^2/8\),
   not the sum \(\pi^2/16\) of the separate values.
+* `MachSource` — surrounding matter fixes the expressed admissible point, not
+  the stiffness \(m\). An empty source list expresses the origin, and the
+  written action assigns no angular acceleration at every \(m\). Aligned pure
+  boosts add common accelerations while \(n\varphi\le\pi/2\); once
+  \(n\varphi\ge\pi/2\) the common acceleration is \(-m\pi\). Two boosts of
+  rapidity \(\pi/4\) add their accelerations to \(-m\pi\) and do not add \(J\).
+  A further boost leaves the acceleration there. A pure boost of rapidity
+  \(\pi/4\) carried as the particle's own angles still has common acceleration
+  \(-m\pi/2\). No derivation of \(m\), no \(F=ma\), and no laboratory
+  acceleration ceiling.
 * `CoulombFromDual`, `ElectronShell` — Coulombic stand-ins. Neither derives
   \(\alpha\) or \(\lambda\).
 * `ForceScale` — one integer, read as the Planck ratio \((m_P/m)^2\), places
@@ -866,6 +877,41 @@ example (a0 : Fin 3) :
     let s := sumParams [p, p]
     J s ≠ J p + J p :=
   (J_two_quarter_boosts a0).2.2.2.2.2.2
+
+/-- Regression: an empty source list assigns no angular acceleration, at every stiffness. -/
+example (m φddot θddot : ℝ) :
+    PaperActualEL m 0 0 φddot θddot ↔ φddot = 0 ∧ θddot = 0 :=
+  empty_sources_no_acceleration m φddot θddot
+
+/-- Regression: two quarter-boosts add their common accelerations to \(-m\pi\). -/
+example (m : ℝ) (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (List.replicate 2 (axisBoost a0 (Real.pi / 4)))).alpha a0)
+        ((expressedSuperposition (List.replicate 2 (axisBoost a0 (Real.pi / 4)))).beta a0) =
+      -m * Real.pi :=
+  two_quarter_boosts_accel m a0
+
+/-- Regression: a further quarter-boost does not add another copy of the acceleration. -/
+example {m : ℝ} (hm : m ≠ 0) {n : ℕ} (hn : 3 ≤ n) (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 4)))).alpha a0)
+        ((expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 4)))).beta a0) ≠
+      (n : ℝ) *
+        commonAccel m
+          ((expressedSuperposition (List.replicate 1 (axisBoost a0 (Real.pi / 4)))).alpha a0)
+          ((expressedSuperposition (List.replicate 1 (axisBoost a0 (Real.pi / 4)))).beta a0) :=
+  quarter_boosts_past_wall hm hn a0
+
+/-- Regression: a carried quarter-boost accelerates, and is not the empty reading. -/
+example {m : ℝ} (hm : m ≠ 0) (a0 : Fin 3) :
+    commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0)
+        ((axisBoost a0 (Real.pi / 4)).beta a0) = -m * Real.pi / 2 ∧
+      commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0)
+          ((axisBoost a0 (Real.pi / 4)).beta a0) ≠
+        commonAccel m
+          ((expressedSuperposition ([] : List TorsionParams)).alpha a0)
+          ((expressedSuperposition ([] : List TorsionParams)).beta a0) :=
+  ⟨carried_quarter_boost_accel m a0, carried_quarter_boost_not_empty hm a0⟩
 
 /-- Regression: admissible ceiling of the auxiliary expression. -/
 example {rs r : ℝ} (h : IsExterior rs r)
