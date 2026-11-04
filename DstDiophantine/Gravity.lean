@@ -14,6 +14,7 @@ import DstDiophantine.Gravity.CompactS3
 import DstDiophantine.Gravity.DualImage
 import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.SlerpTorque
+import DstDiophantine.Gravity.RelationalPosition
 import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
@@ -242,6 +243,14 @@ The straight line of one fixed jet is not itself that geodesic.
   them, the moment of the pushed tangent about the source is `chordMoment`.
   It vanishes on a common ray and when the source is the chart origin. For
   equal chart distances and \(\chi,\alpha\in(0,\pi)\) the moment is positive.
+* `RelationalPosition` — the position of element \(b\) relative to element \(a\)
+  is the rotor \(\rho(a,b)=a^{-1}b\). A left rotation of both elements leaves
+  \(\rho\) fixed. A right rotation conjugates it and preserves the geodesic
+  angle. The equidistant coordinate about pole \(a\) is the logarithm of
+  \(\rho\). A joint left rotation of body, source, and pole leaves
+  `chordMoment`. Moving the pole onto the source, and turning the axes so the
+  body lies on the first coordinate axis, changes that positive moment to zero.
+  This \(\rho\) is not the intra-particle mismatch \(\Omega\).
 * `ChannelRange` — the same enhancement on two compactification radii.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
@@ -2002,6 +2011,45 @@ example (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
 example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
     0 < SlerpTorque.chordMoment χ χ α :=
   SlerpTorque.chordMoment_equal_pos hχ hχu hα hαu
+
+/-- Regression: \(\rho(a,b)=1\) if and only if the two elements coincide. -/
+example (a b : RelationalPosition.S3) :
+    RelationalPosition.relative a b = 1 ↔ a = b :=
+  RelationalPosition.relative_eq_one_iff a b
+
+/-- Regression: a left rotation leaves the relative position fixed. -/
+example (g a b : RelationalPosition.S3) :
+    RelationalPosition.relative (g * a) (g * b) = RelationalPosition.relative a b :=
+  RelationalPosition.relative_left g a b
+
+/-- Regression: a right rotation preserves the geodesic angle. -/
+example (a b h : RelationalPosition.S3) :
+    RelationalPosition.separation (a * h) (b * h) = RelationalPosition.separation a b :=
+  RelationalPosition.separation_right a b h
+
+/-- Regression: body, source, and pole, rotated together, keep `chordMoment`. -/
+example (g : RelationalPosition.S3) {χ ψ α : ℝ}
+    (hχ : 0 < χ) (hχu : χ < Real.pi) (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
+    RelationalPosition.chartAt (g * 1) (g * RelationalPosition.bodyElem χ) =
+        SlerpTorque.bodyPoint χ ∧
+      RelationalPosition.chartAt (g * 1) (g * RelationalPosition.sourceElem ψ α) =
+        SlerpTorque.sourcePoint ψ α ∧
+      SlerpTorque.pushedMoment χ ψ α = SlerpTorque.chordMoment χ ψ α :=
+  RelationalPosition.charts_joint_left g hχ hχu hψ hψu
+
+/-- Regression: the same pair has positive moment about the identity pole and
+none when the pole lies on the source. -/
+example :
+    RelationalPosition.one ≠ RelationalPosition.sampleSource ∧
+      0 < SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
+          RelationalPosition.sampleχ ∧
+      SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 = 0 ∧
+      SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
+          RelationalPosition.sampleχ ≠
+        SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 := by
+  obtain ⟨hne, _, _, hpos, _, _, _, hzero, hdiff, _⟩ :=
+    RelationalPosition.pole_shift_changes_moment
+  exact ⟨hne, hpos, hzero, hdiff⟩
 
 /-- Regression: spherical rotation curve \((GM(r)/R)\coth(r/R)\). -/
 example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
