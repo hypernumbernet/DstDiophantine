@@ -89,6 +89,40 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
     <text class="lbl small usualt" x="24" y="246"><tspan class="en">…returns after a delay</tspan><tspan class="ja">…遅れて戻る</tspan></text>
     <text class="note" x="630" y="254" text-anchor="end"><tspan class="en">Schematic, not to scale.</tspan><tspan class="ja">模式図（縮尺は正確でない）</tspan></text>
   </svg>
+
+  <h3 class="sub" id="relational-position"><span class="en">Position is a relation</span><span class="ja">位置は関係である</span></h3>
+  <p><span class="en">Each particle carries a point on the <b>three-sphere</b> (三次元球面). Take two particles. The position of the second as seen from the first is the rotation that carries the first particle's point onto the second's. When the two points coincide, that rotation is «do nothing»—there is no separation. Otherwise the rotation's angle is how far apart they are: the separation between the two.</span><span class="ja">各粒子は<b>三次元球面</b>上の一点を運びます。二つの粒子を考えます。一方から見たもう一方の位置は、最初の粒子の点を二つ目の点へ運ぶ回転です。二点が一致するとき、その回転は「何もしない」に相当し、離れはありません。そうでなければ、その回転の角度が二つの離れ — 粒子間の距離 — です。</span></p>
+  <p><span class="en"><b>What depends on the description.</b> Turn every particle's point by the same rotation at once — spin the whole universe together — and every position-as-relation between pairs stays the same. Change the internal reference you use when writing a relation, and the rotation may look different on paper, but the separation angle does not. Move the centre of a flat map to another place on the chart, and only the coordinates change: the numbers you read off the map, not the relation itself. Coordinates are readings of the map, not a stage that exists on its own.</span><span class="ja"><b>記述のしかたで変わるもの。</b> すべての粒子の点を同じ回転で一度に回す — 宇宙全体をまとめて回す — としても、粒子の組ごとの「位置という関係」は変わりません。関係を書くときの内部の基準を変えると、紙の上の回転の見え方は変わっても、離れの角度は変わりません。平坦な地図の中心を別の場所へ移すと、変わるのは座標 — 地図から読み取る数 — だけで、関係そのものではありません。座標は地図の読み取りであり、それ自体が存在する舞台ではありません。</span></p>
+  <p><span class="en">In standard physics, position is often tied to a <b>background space</b>: coordinates on a grid that would exist even if nothing material were there. DST does not start from such a stage. What exists between particles are relations — Leibniz and Mach in spirit, but realized in the algebra the site has been describing.</span><span class="ja">標準的な物理学では、位置はしばしば<b>背景空間</b>に結びつきます — 物質がなくてもあるとされる座標の格子です。DST はそのような舞台から出発しません。粒子の間にあるのは関係です — ライプニッツやマッハの精神に近い考え方ですが、このサイトで述べてきた代数の中で具体化されています。</span></p>
+  <p><span class="en">This between-particle relation is <em>not</em> the mismatch between the two spacetime frames inside one particle — the twist behind gravity in <a class="ref" href="gravity.html#gravity">chapter&nbsp;2</a>.</span><span class="ja">粒子と粒子の間のこの関係は、一つの粒子の内側にある二つの時空フレームの不整合 — <a class="ref" href="gravity.html#gravity">第&nbsp;2&nbsp;章</a>の重力の背後にあるねじれ — とは別物です。</span></p>
+  <svg class="fig" viewBox="0 0 640 400" role="img" aria-label="Two views of the same pair on the three-sphere: the relation angle is unchanged; moving the map centre changes coordinates only">
+    <defs>
+      <marker id="ah-rp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+    </defs>
+    <text class="cap" x="160" y="28" text-anchor="middle"><tspan class="en">Same pair, same separation</tspan><tspan class="ja">同じ組、同じ離れ</tspan></text>
+    <g transform="translate(160,168)">
+      <circle r="88" class="ring rs"/>
+      <circle cx="-36" cy="-52" r="6" class="dotc"/>
+      <circle cx="48" cy="-28" r="6" class="dotw"/>
+      <text class="lbl small" x="-48" y="-58" text-anchor="end"><tspan class="en">particle A</tspan><tspan class="ja">粒子 A</tspan></text>
+      <text class="lbl small" x="60" y="-24" text-anchor="start"><tspan class="en">particle B</tspan><tspan class="ja">粒子 B</tspan></text>
+      <path class="curve" d="M-36,-52 A88,88 0 0 1 48,-28" marker-end="url(#ah-rp)"/>
+      <text class="lbl small twistt" x="6" y="-78" text-anchor="middle"><tspan class="en">relation (rotation angle)</tspan><tspan class="ja">関係（回転の角度）</tspan></text>
+    </g>
+    <text class="cap" x="480" y="28" text-anchor="middle"><tspan class="en">Same pair, new map centre</tspan><tspan class="ja">同じ組、地図の中心を移す</tspan></text>
+    <g transform="translate(480,168)">
+      <circle r="88" class="ring rs"/>
+      <circle cx="28" cy="42" r="4" class="node"/>
+      <text class="lbl small" x="28" y="62" text-anchor="middle"><tspan class="en">new centre</tspan><tspan class="ja">新しい中心</tspan></text>
+      <circle cx="-36" cy="-52" r="6" class="dotc"/>
+      <circle cx="48" cy="-28" r="6" class="dotw"/>
+      <line class="curve2" x1="-36" y1="-52" x2="48" y2="-28"/>
+      <path class="curve" d="M-36,-52 A88,88 0 0 1 48,-28"/>
+      <text class="lbl small" x="6" y="8" text-anchor="middle"><tspan class="en">coordinates change</tspan><tspan class="ja">座標だけ変わる</tspan></text>
+      <text class="lbl small twistt" x="6" y="-78" text-anchor="middle"><tspan class="en">same separation angle</tspan><tspan class="ja">離れの角度は同じ</tspan></text>
+    </g>
+    <text class="note" x="12" y="388"><tspan class="en">Schematic. Curved arrows mark the relation angle, not map axes.</tspan><tspan class="ja">模式図。曲線の矢印は関係の角度を示し、地図の軸ではありません。</tspan></text>
+  </svg>
   
 </main>
 <nav class="pager" aria-label="Page navigation / ページ移動">
