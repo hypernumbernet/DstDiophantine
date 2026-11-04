@@ -9,11 +9,14 @@ position of `b` relative to `a` is the rotor `ρ(a,b) = a⁻¹ b`. It is not the
 mismatch `Ω = R_usual† R_dual` inside one particle, and it is not a coordinate
 on a chart.
 
-The description group is a pair of unit quaternions. The left factor rotates
-every element at once and leaves `ρ` fixed; the same left factor moves the pole
-of the azimuthal equidistant map, which changes coordinates and does not change
-`ρ`. The right factor conjugates `ρ` and preserves the geodesic angle
-`arccos(Re ρ)`.
+The description group is a pair of unit quaternions, acting by `p ↦ g p h`.
+Left multiplication of both elements leaves `ρ` fixed. Right multiplication
+replaces `ρ` by `h⁻¹ ρ h` and preserves the geodesic angle `arccos(Re ρ)`.
+
+The equidistant coordinate of `p` about a pole is the logarithm of the relative
+position. Moving the pole alone changes that coordinate and does not change
+`ρ`. Left-multiplying the pole and the point together leaves the coordinate
+fixed. About the pole `a`, the coordinate of `b` is the logarithm of `ρ`.
 
 ## Proved
 
@@ -21,13 +24,15 @@ of the azimuthal equidistant map, which changes coordinates and does not change
 * Left invariance of `ρ`, right conjugation, and invariance of the angle under
   both, hence under the pair.
 * The equidistant coordinate of `p` about a pole `g` is the logarithm of
-  `g⁻¹ p`. About the pole `a`, the coordinate of `b` is the logarithm of `ρ`.
+  `g⁻¹ p`. The formula returns the origin when `p` is the pole. About the pole
+  `a`, the coordinate of `b` is the logarithm of `ρ`.
 * A joint left rotation of body, source, and pole leaves the chart readings
-  `bodyPoint` and `sourcePoint`, and therefore leaves `chordMoment`.
-* One pair has positive `chordMoment` about the identity pole, and moment zero
-  when the pole lies on the source and the axes are turned so the body lies on
-  the first coordinate axis. The relative rotor is the same element either way
-  up to that axis turn, which preserves the angle.
+  `bodyPoint` and `sourcePoint`. `chordMoment` is a function of those readings,
+  so that reading is unchanged.
+* One pair has positive `chordMoment` about the identity pole. After the right
+  translation that puts the source at the pole and the body on the first
+  coordinate axis, the source chart is the origin and `pushedMoment` is zero.
+  The angle is the same.
 
 ## Not claimed
 
@@ -82,28 +87,13 @@ instance : Group S3 where
 
 @[simp] theorem inv_val (a : S3) : (a⁻¹).val = star a.val := rfl
 
-/-- Unit quaternions invert by conjugation. -/
-theorem inv_eq_star (a : S3) : a.val⁻¹ = star a.val := by
-  have ha : a.val ≠ 0 := by
-    intro h
-    have := a.norm_one
-    rw [h, normSq.map_zero] at this
-    exact zero_ne_one this
-  have hstar : a.val * star a.val = 1 := by rw [self_mul_star, a.norm_one, coe_one]
-  have hinv : a.val * a.val⁻¹ = 1 := mul_inv_cancel₀ ha
-  have hcomm : a.val * a.val⁻¹ = a.val * star a.val := by rw [hinv, hstar]
-  exact mul_left_cancel₀ ha hcomm
+/-- Position of `b` relative to `a`: the rotor `a⁻¹ * b`. -/
+def relative (a b : S3) : S3 :=
+  a⁻¹ * b
 
-/-- Position of `b` relative to `a`. -/
-def relative (a b : S3) : S3 where
-  val := star a.val * b.val
-  norm_one := by rw [map_mul, normSq_star, a.norm_one, b.norm_one, one_mul]
-
-@[simp] theorem relative_val (a b : S3) : (relative a b).val = star a.val * b.val := rfl
-
-theorem relative_val_eq_inv_mul (a b : S3) :
-    (relative a b).val = a.val⁻¹ * b.val := by
-  rw [relative_val, inv_eq_star]
+@[simp] theorem relative_val (a b : S3) :
+    (relative a b).val = star a.val * b.val := by
+  rw [relative, mul_val, inv_val]
 
 /-- The real part of a product is symmetric. -/
 theorem re_mul_comm (x y : ℍ) : (x * y).re = (y * x).re := by
@@ -120,40 +110,18 @@ theorem re_relative_eq_inner (a b : S3) :
   rw [relative_val, inner_def, re_star_mul]
 
 theorem relative_eq_one_iff (a b : S3) : relative a b = 1 ↔ a = b := by
-  constructor
-  · intro h
-    apply S3.ext
-    have hv : star a.val * b.val = 1 := by
-      simpa [relative_val, one_val] using congrArg S3.val h
-    have hmul := congrArg (fun q : ℍ => a.val * q) hv
-    rw [mul_one, ← mul_assoc, self_mul_star, a.norm_one, coe_one, one_mul] at hmul
-    exact hmul.symm
-  · intro h
-    apply S3.ext
-    rw [relative_val, h, star_mul_self, b.norm_one, coe_one, one_val]
+  rw [relative, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
 
 /-- Left rotation of both elements leaves the position fixed. -/
 theorem relative_left (g a b : S3) : relative (g * a) (g * b) = relative a b := by
-  apply S3.ext
-  simp only [relative_val, mul_val, star_mul]
-  have hunit : star g.val * g.val = 1 := by rw [star_mul_self, g.norm_one, coe_one]
-  calc
-    (star a.val * star g.val) * (g.val * b.val)
-        = star a.val * (star g.val * (g.val * b.val)) := by rw [mul_assoc]
-    _ = star a.val * ((star g.val * g.val) * b.val) := by rw [← mul_assoc (star g.val)]
-    _ = star a.val * ((1 : ℍ) * b.val) := by rw [hunit]
-    _ = star a.val * b.val := by rw [one_mul]
+  simp only [relative, mul_inv_rev]
+  rw [mul_assoc, ← mul_assoc g⁻¹ g b, inv_mul_cancel, one_mul]
 
 /-- Right rotation conjugates the position. -/
 theorem relative_right (a b h : S3) :
     relative (a * h) (b * h) = h⁻¹ * relative a b * h := by
-  apply S3.ext
-  simp only [relative_val, mul_val, inv_val, star_mul]
-  calc
-    (star h.val * star a.val) * (b.val * h.val)
-        = star h.val * (star a.val * (b.val * h.val)) := by rw [mul_assoc]
-    _ = star h.val * ((star a.val * b.val) * h.val) := by rw [← mul_assoc (star a.val)]
-    _ = star h.val * (relative a b).val * h.val := by rw [relative_val, ← mul_assoc]
+  simp only [relative, mul_inv_rev]
+  rw [mul_assoc, ← mul_assoc a⁻¹ b h, ← mul_assoc]
 
 /-- Conjugation by a unit quaternion preserves the real part. -/
 theorem re_conj (h : S3) (q : ℍ) : (star h.val * q * h.val).re = q.re := by
@@ -204,6 +172,8 @@ structure Rotation where
 
 namespace Rotation
 
+/-- Pair product. The right factor is multiplied in the opposite order, so that
+`(g, h) · p = g p h` is a left action. -/
 def mul (x y : Rotation) : Rotation where
   left := x.left * y.left
   right := y.right * x.right
@@ -311,7 +281,16 @@ theorem chartAt_eq_log_position (a b : S3) :
     chartAt a b = SlerpTorque.logChart (toChart (relative a b).val) :=
   rfl
 
-/-- Moving the pole by a left rotation rewrites coordinates and leaves `ρ`. -/
+/-- At the pole the formula returns the origin. Off the pole, `logChart` is the
+equidistant projection. At the identity the written factor is `0 / 0`, and Lean
+division gives `0`, the value of the continuous extension. -/
+theorem chartAt_self (a : S3) : chartAt a a = fun _ => 0 := by
+  rw [chartAt, (relative_eq_one_iff a a).2 rfl, one_val]
+  funext i
+  simp only [SlerpTorque.logChart, toChart_apply, SlerpTorque.chartIdx]
+  fin_cases i <;> simp
+
+/-- Left-multiplying the pole and the point together leaves the coordinate. -/
 theorem chartAt_left (g pole p : S3) :
     chartAt (g * pole) (g * p) = chartAt pole p := by
   rw [chartAt, chartAt, relative_left]
@@ -364,33 +343,24 @@ theorem chartAt_source {ψ α : ℝ} (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
   funext i
   fin_cases i <;> simp [axisAngle, SlerpTorque.sourcePoint]
 
-/-- Body, source, and pole, rotated together, keep the chart figure. -/
+/-- Body, source, and pole, rotated together, keep the chart readings.
+`chordMoment` is a function of those readings, so it is unchanged. -/
 theorem charts_joint_left (g : S3) {χ ψ α : ℝ}
     (hχ : 0 < χ) (hχu : χ < Real.pi) (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
-    chartAt (g * 1) (g * bodyElem χ) = SlerpTorque.bodyPoint χ ∧
-      chartAt (g * 1) (g * sourceElem ψ α) = SlerpTorque.sourcePoint ψ α ∧
-      SlerpTorque.pushedMoment χ ψ α = SlerpTorque.chordMoment χ ψ α := by
-  have hs : Real.sin χ ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi hχ hχu).ne'
-  refine ⟨?_, ?_, SlerpTorque.pushedMoment_eq χ ψ α hs⟩
-  · rw [chartAt_left, chartAt_body hχ hχu]
-  · rw [chartAt_left, chartAt_source hψ hψu]
+    chartAt g (g * bodyElem χ) = SlerpTorque.bodyPoint χ ∧
+      chartAt g (g * sourceElem ψ α) = SlerpTorque.sourcePoint ψ α := by
+  refine ⟨?_, ?_⟩
+  · calc
+      chartAt g (g * bodyElem χ) = chartAt (g * 1) (g * bodyElem χ) := by rw [mul_one]
+      _ = chartAt 1 (bodyElem χ) := chartAt_left g 1 (bodyElem χ)
+      _ = SlerpTorque.bodyPoint χ := chartAt_body hχ hχu
+  · calc
+      chartAt g (g * sourceElem ψ α) = chartAt (g * 1) (g * sourceElem ψ α) := by
+        rw [mul_one]
+      _ = chartAt 1 (sourceElem ψ α) := chartAt_left g 1 (sourceElem ψ α)
+      _ = SlerpTorque.sourcePoint ψ α := chartAt_source hψ hψu
 
 /-! ### One pair, two poles -/
-
-def halfSqrt2 : ℝ :=
-  Real.sqrt 2 / 2
-
-theorem halfSqrt2_sq : halfSqrt2 ^ 2 = 1 / 2 := by
-  unfold halfSqrt2
-  rw [div_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
-  norm_num
-
-/-- A quarter turn of the chart axes about the second imaginary direction. -/
-def frameRot : S3 where
-  val := ⟨halfSqrt2, 0, -halfSqrt2, 0⟩
-  norm_one := by
-    rw [normSq_def', neg_sq, halfSqrt2_sq]
-    norm_num
 
 def sampleχ : ℝ :=
   Real.pi / 2
@@ -401,34 +371,56 @@ def sampleBody : S3 :=
 def sampleSource : S3 :=
   sourceElem sampleχ sampleχ
 
-theorem sampleχ_mem_Ioo : 0 < sampleχ ∧ sampleχ < Real.pi := by
+/-- Right translation that lays the sample body on the first chart axis.
+`relative_right` conjugates by `h⁻¹`, and that conjugate is the quaternion
+`logChart` sends to `bodyPoint (-sampleχ)`. -/
+def axisTurn : S3 where
+  val := ⟨Real.sqrt 2 / 2, 0, Real.sqrt 2 / 2, 0⟩
+  norm_one := by
+    rw [normSq_def']
+    have hsq : (Real.sqrt 2 / 2) ^ 2 = 1 / 2 := by
+      rw [div_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+      norm_num
+    rw [hsq]
+    norm_num
+
+private theorem sampleχ_mem_Ioo : 0 < sampleχ ∧ sampleχ < Real.pi := by
   unfold sampleχ
   constructor
   · exact div_pos Real.pi_pos two_pos
   · linarith [Real.pi_pos]
 
-theorem sample_relative_val :
+private theorem sample_relative_val :
     (relative sampleSource sampleBody).val = ⟨0, 0, 0, 1⟩ := by
   ext <;>
     simp [relative_val, sampleSource, sampleBody, sourceElem, bodyElem, elem, liftQuat, axis0,
       axisAngle, sampleχ, Real.cos_pi_div_two, Real.sin_pi_div_two]
 
-theorem frameRot_conj_sample :
-    frameRot.val * (relative sampleSource sampleBody).val * star frameRot.val =
+private theorem axisTurn_conj_sample :
+    star axisTurn.val * (relative sampleSource sampleBody).val * axisTurn.val =
       ⟨0, -1, 0, 0⟩ := by
   rw [sample_relative_val]
-  set c : ℝ := halfSqrt2
+  set c : ℝ := Real.sqrt 2 / 2
   have hc : c * c = 1 / 2 := by
-    rw [show c = halfSqrt2 from rfl, ← sq, halfSqrt2_sq]
-  have hstar : star frameRot.val = ⟨c, 0, c, 0⟩ := by
-    simp [frameRot, c]
+    rw [show c = Real.sqrt 2 / 2 from rfl, ← sq, div_pow,
+      Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+    norm_num
+  have hstar : star axisTurn.val = ⟨c, 0, -c, 0⟩ := by
+    simp [axisTurn, c]
   rw [hstar]
-  have hframe : frameRot.val = ⟨c, 0, -c, 0⟩ := by simp [frameRot, c]
-  rw [hframe]
+  have hturn : axisTurn.val = ⟨c, 0, c, 0⟩ := by simp [axisTurn, c]
+  rw [hturn]
   ext <;> simp; linarith [hc]
 
-theorem logChart_neg_i :
-    SlerpTorque.logChart (toChart (⟨0, -1, 0, 0⟩ : ℍ)) = SlerpTorque.bodyPoint (-sampleχ) := by
+private theorem relative_sample_turned_val :
+    (relative (sampleSource * axisTurn) (sampleBody * axisTurn)).val =
+      ⟨0, -1, 0, 0⟩ := by
+  rw [relative_right]
+  simpa [mul_val, inv_val] using axisTurn_conj_sample
+
+private theorem logChart_neg_i :
+    SlerpTorque.logChart (toChart (⟨0, -1, 0, 0⟩ : ℍ)) =
+      SlerpTorque.bodyPoint (-sampleχ) := by
   let n : SlerpTorque.V3 := fun i => -axis0 i
   have hn : SlerpTorque.dot3 n n = 1 := by
     simp [SlerpTorque.dot3, n, axis0]
@@ -440,40 +432,32 @@ theorem logChart_neg_i :
   rw [hlog]
   fin_cases i <;> simp [n, axis0, SlerpTorque.bodyPoint, sampleχ]
 
-theorem chartAt_sample_source_pole :
-    chartAt sampleSource sampleSource = fun _ => 0 := by
-  have hrel : relative sampleSource sampleSource = 1 :=
-    (relative_eq_one_iff sampleSource sampleSource).2 rfl
-  rw [chartAt, hrel, one_val]
-  funext i
-  simp only [SlerpTorque.logChart, toChart_apply, SlerpTorque.chartIdx]
-  fin_cases i <;> simp
+private theorem chartAt_sample_body_turned :
+    chartAt (sampleSource * axisTurn) (sampleBody * axisTurn) =
+      SlerpTorque.bodyPoint (-sampleχ) := by
+  rw [chartAt, relative_sample_turned_val]
+  exact logChart_neg_i
 
 /-- The same two elements, read from two poles.
 
 About the identity pole the chart figure is the equal-distance pair, and
-`chordMoment` is positive. About the source, that source sits at the origin.
-A turn of the axes fixing this pole lays the body on the first coordinate
-axis, where the moment is the origin value `0`. The position is `ρ` in the
-first reading and the conjugate of `ρ` in the second, so the angle agrees.
+`chordMoment` is positive. The right translation `axisTurn` puts the source at
+the pole of the new chart and lays the body on the first coordinate axis, where
+`pushedMoment` is the origin value `0`. The angle is unchanged.
 -/
 theorem pole_shift_changes_moment :
     one ≠ sampleSource ∧
       chartAt 1 sampleBody = SlerpTorque.bodyPoint sampleχ ∧
       chartAt 1 sampleSource = SlerpTorque.sourcePoint sampleχ sampleχ ∧
       0 < SlerpTorque.chordMoment sampleχ sampleχ sampleχ ∧
-      (chartAt sampleSource sampleSource = fun _ => 0) ∧
-      frameRot.val * (relative sampleSource sampleBody).val * star frameRot.val =
-        ⟨0, -1, 0, 0⟩ ∧
-      SlerpTorque.logChart
-          (toChart (frameRot.val * (relative sampleSource sampleBody).val *
-            star frameRot.val)) =
+      chartAt (sampleSource * axisTurn) (sampleBody * axisTurn) =
         SlerpTorque.bodyPoint (-sampleχ) ∧
+      (chartAt (sampleSource * axisTurn) (sampleSource * axisTurn) = fun _ => 0) ∧
       SlerpTorque.pushedMoment (-sampleχ) 0 0 = 0 ∧
       SlerpTorque.chordMoment sampleχ sampleχ sampleχ ≠
         SlerpTorque.pushedMoment (-sampleχ) 0 0 ∧
-      (relative (sampleSource * frameRot) (sampleBody * frameRot)).val.re =
-        (relative sampleSource sampleBody).val.re := by
+      separation (sampleSource * axisTurn) (sampleBody * axisTurn) =
+        separation sampleSource sampleBody := by
   have hmem := sampleχ_mem_Ioo
   have hpos : 0 < SlerpTorque.chordMoment sampleχ sampleχ sampleχ :=
     SlerpTorque.chordMoment_equal_pos hmem.1 hmem.2 hmem.1 hmem.2
@@ -481,14 +465,13 @@ theorem pole_shift_changes_moment :
     apply SlerpTorque.pushedMoment_origin
     simp [sampleχ, Real.sin_neg, Real.sin_pi_div_two]
   refine ⟨?_, chartAt_body hmem.1 hmem.2, chartAt_source hmem.1 hmem.2, hpos,
-    chartAt_sample_source_pole, frameRot_conj_sample, ?_, hzero, ?_,
-    re_relative_right sampleSource sampleBody frameRot⟩
+    chartAt_sample_body_turned, chartAt_self _, hzero, ?_,
+    separation_right sampleSource sampleBody axisTurn⟩
   · intro h
     have hre := congrArg (fun a : S3 => a.val.re) h
     simp only [sampleSource, sourceElem, elem, liftQuat, axisAngle, sampleχ,
       Real.cos_pi_div_two] at hre
     exact one_ne_zero hre
-  · rw [frameRot_conj_sample, logChart_neg_i]
   · exact ne_of_gt (by simpa [hzero] using hpos)
 
 end DstDiophantine.Gravity.RelationalPosition

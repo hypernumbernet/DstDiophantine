@@ -244,13 +244,18 @@ The straight line of one fixed jet is not itself that geodesic.
   It vanishes on a common ray and when the source is the chart origin. For
   equal chart distances and \(\chi,\alpha\in(0,\pi)\) the moment is positive.
 * `RelationalPosition` — the position of element \(b\) relative to element \(a\)
-  is the rotor \(\rho(a,b)=a^{-1}b\). A left rotation of both elements leaves
-  \(\rho\) fixed. A right rotation conjugates it and preserves the geodesic
-  angle. The equidistant coordinate about pole \(a\) is the logarithm of
-  \(\rho\). A joint left rotation of body, source, and pole leaves
-  `chordMoment`. Moving the pole onto the source, and turning the axes so the
-  body lies on the first coordinate axis, changes that positive moment to zero.
-  This \(\rho\) is not the intra-particle mismatch \(\Omega\).
+  is the rotor \(\rho(a,b)=a^{-1}b\). Left multiplication of both elements
+  leaves \(\rho\) fixed. Right multiplication replaces it by \(h^{-1}\rho h\)
+  and preserves the geodesic angle. Moving the pole alone changes equidistant
+  coordinates and does not change \(\rho\). Left-multiplying the pole and the
+  point together leaves the coordinate fixed; about the pole \(a\), the
+  coordinate of \(b\) is the logarithm of \(\rho\). A joint left rotation of
+  body, source, and pole leaves the chart readings, and therefore leaves
+  `chordMoment`, which is a function of those readings. One pair has positive
+  `chordMoment` about the identity pole. After the right translation that puts
+  the source at the pole and the body on the first coordinate axis, that moment
+  is zero, while the angle is unchanged. This \(\rho\) is not the intra-particle
+  mismatch \(\Omega\).
 * `ChannelRange` — the same enhancement on two compactification radii.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
@@ -2027,29 +2032,37 @@ example (a b h : RelationalPosition.S3) :
     RelationalPosition.separation (a * h) (b * h) = RelationalPosition.separation a b :=
   RelationalPosition.separation_right a b h
 
-/-- Regression: body, source, and pole, rotated together, keep `chordMoment`. -/
+/-- Regression: body, source, and pole, rotated together, keep the chart readings. -/
 example (g : RelationalPosition.S3) {χ ψ α : ℝ}
     (hχ : 0 < χ) (hχu : χ < Real.pi) (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
-    RelationalPosition.chartAt (g * 1) (g * RelationalPosition.bodyElem χ) =
+    RelationalPosition.chartAt g (g * RelationalPosition.bodyElem χ) =
         SlerpTorque.bodyPoint χ ∧
-      RelationalPosition.chartAt (g * 1) (g * RelationalPosition.sourceElem ψ α) =
-        SlerpTorque.sourcePoint ψ α ∧
-      SlerpTorque.pushedMoment χ ψ α = SlerpTorque.chordMoment χ ψ α :=
+      RelationalPosition.chartAt g (g * RelationalPosition.sourceElem ψ α) =
+        SlerpTorque.sourcePoint ψ α :=
   RelationalPosition.charts_joint_left g hχ hχu hψ hψu
 
-/-- Regression: the same pair has positive moment about the identity pole and
-none when the pole lies on the source. -/
+/-- Regression: one pair has positive moment about the identity pole. After the
+right translation that puts the source at the pole and the body on the first
+axis, the moment is zero and the angle is unchanged. -/
 example :
-    RelationalPosition.one ≠ RelationalPosition.sampleSource ∧
-      0 < SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
-          RelationalPosition.sampleχ ∧
+    0 < SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
+        RelationalPosition.sampleχ ∧
+      RelationalPosition.chartAt
+          (RelationalPosition.sampleSource * RelationalPosition.axisTurn)
+          (RelationalPosition.sampleBody * RelationalPosition.axisTurn) =
+        SlerpTorque.bodyPoint (-RelationalPosition.sampleχ) ∧
       SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 = 0 ∧
       SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
           RelationalPosition.sampleχ ≠
-        SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 := by
-  obtain ⟨hne, _, _, hpos, _, _, _, hzero, hdiff, _⟩ :=
+        SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 ∧
+      RelationalPosition.separation
+          (RelationalPosition.sampleSource * RelationalPosition.axisTurn)
+          (RelationalPosition.sampleBody * RelationalPosition.axisTurn) =
+        RelationalPosition.separation RelationalPosition.sampleSource
+          RelationalPosition.sampleBody := by
+  obtain ⟨_, _, _, hpos, hbody, _, hzero, hdiff, hsep⟩ :=
     RelationalPosition.pole_shift_changes_moment
-  exact ⟨hne, hpos, hzero, hdiff⟩
+  exact ⟨hpos, hbody, hzero, hdiff, hsep⟩
 
 /-- Regression: spherical rotation curve \((GM(r)/R)\coth(r/R)\). -/
 example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
