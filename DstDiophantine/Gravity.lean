@@ -254,8 +254,12 @@ The straight line of one fixed jet is not itself that geodesic.
   `chordMoment`, which is a function of those readings. One pair has positive
   `chordMoment` about the identity pole. After the right translation that puts
   the source at the pole and the body on the first coordinate axis, that moment
-  is zero, while the angle is unchanged. This \(\rho\) is not the intra-particle
-  mismatch \(\Omega\).
+  is zero, while the angle is unchanged. Every direction at geodesic distance
+  \(\pi\) lifts to one element, the central element \(-1\). It is the unique
+  element at angle \(\pi\) from a given element. The equidistant chart writes
+  both that element and the pole at the origin. Every rotation fixes the
+  relative rotor \(-1\) exactly. This \(\rho\) is not the intra-particle
+  mismatch \(\Omega\). No position operator is claimed.
 * `ChannelRange` — the same enhancement on two compactification radii.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
@@ -378,7 +382,12 @@ The straight line of one fixed jet is not itself that geodesic.
   is the reverse, so the shear preserves the Minkowski product. For
   \(t\neq 0\) the fixed vectors are the span of \(e_0-e_3\) and \(e_2\).
   Because \(e_4\) commutes with the Lorentz span, the null ideal carries
-  the same coefficients. A translator \(1+s N_1\) adds \(e_4\).
+  the same coefficients. A translator \(1+s N_1\) adds \(e_4\). The
+  transverse vector \(e_1\) is sent to \(e_1\) plus a multiple of the null
+  line: its transverse coordinates are unchanged, the displacement is
+  lightlike, and for \(t\neq 0\) the vector has moved. Off the ray the
+  transverse coordinate itself moves. The null coordinate \(x_0+x_3\) is
+  invariant. No position operator is claimed.
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -1180,6 +1189,23 @@ example (t s : ℝ) (x y : Fin 4 → ℝ) :
 example {t : ℝ} (ht : t ≠ 0) (x : Fin 4 → ℝ) :
     nullRotation t x = x ↔ ∃ a b : ℝ, x = a • nullLineVec + b • transverseVec :=
   nullRotation_eq_self_iff ht x
+
+/-- Regression: a null rotation keeps the null line and slides \(e_1\) along it.
+The transverse reading is unchanged and the displacement is lightlike. -/
+example {t : ℝ} (ht : t ≠ 0) :
+    nullRotation t nullLineVec = nullLineVec ∧
+      nullRotation t screenVec = screenVec + (2 * t) • nullLineVec ∧
+      (nullRotation t screenVec) 1 = 1 ∧
+      (nullRotation t screenVec) 2 = 0 ∧
+      Q31 (nullRotation t screenVec - screenVec) = 0 ∧
+      nullRotation t screenVec ≠ screenVec :=
+  light_kept_on_null_line ht
+
+/-- Regression: off the ray the transverse coordinate moves, while \(x_0+x_3\) does not. -/
+example {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0) (hs : x 0 + x 3 ≠ 0) :
+    (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 ∧
+      (nullRotation t x) 1 ≠ x 1 :=
+  ⟨null_sum_invariant t x, transverse_moves_off_ray ht hs⟩
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
@@ -2063,6 +2089,21 @@ example :
   obtain ⟨_, _, _, hpos, hbody, _, hzero, hdiff, hsep⟩ :=
     RelationalPosition.pole_shift_changes_moment
   exact ⟨hpos, hbody, hzero, hdiff, hsep⟩
+
+/-- Regression: the equidistant chart writes the pole and the antipode at one
+origin. Angle \(\pi\) occurs only there, and every rotation fixes the rotor \(-1\).
+Distinct directions at distance \(\pi\) are that one element. -/
+example (a b : RelationalPosition.S3) (r : RelationalPosition.Rotation) :
+    RelationalPosition.chartAt a a = RelationalPosition.chartAt a (RelationalPosition.antipode a) ∧
+      (RelationalPosition.separation a b = Real.pi ↔ b = RelationalPosition.antipode a) ∧
+      RelationalPosition.relative (r.act a) (r.act (RelationalPosition.antipode a)) =
+        RelationalPosition.negOne ∧
+      RelationalPosition.elem Real.pi RelationalPosition.axis0 RelationalPosition.axis0_unit =
+        RelationalPosition.elem Real.pi (RelationalPosition.axisAngle (Real.pi / 2))
+          (RelationalPosition.axisAngle_unit (Real.pi / 2)) := by
+  obtain ⟨hchart, _, _, _, _, hfix⟩ := RelationalPosition.flattened_chart_loses_antipode a r
+  obtain ⟨h0, h1, _⟩ := RelationalPosition.boundary_one_element
+  exact ⟨hchart, RelationalPosition.separation_eq_pi_iff a b, hfix, h0.trans h1.symm⟩
 
 /-- Regression: spherical rotation curve \((GM(r)/R)\coth(r/R)\). -/
 example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
