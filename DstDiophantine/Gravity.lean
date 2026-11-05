@@ -266,8 +266,15 @@ The straight line of one fixed jet is not itself that geodesic.
   For \(0<r\le R\) the electromagnetic fractional excess over inverse-square
   obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At \(r=R\) the gravitational
   excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) the ratio of that excess
-  to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
-  input. The comparison does not subtract the Coulomb coupling from \(G\).
+  to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). Reading
+  \(\Lambda\) as the Hubble length, for \(8\le R\le 9\) and \(67\le H_0\le 74\)
+  the patch radius stands to \(\Lambda\) strictly between \(1.787\times 10^{-6}\)
+  and \(2.222\times 10^{-6}\). Throughout the patch the equidistant Jacobian on
+  that sphere differs from \(1\) by less than \(1.646\times 10^{-12}\), and the
+  electromagnetic fraction lies under the same figure. At the edge the
+  gravitational fraction exceeds the electromagnetic one by more than
+  \(1.8836\times 10^{11}\). \(\Lambda\) is an input. The comparison does not
+  subtract the Coulomb coupling from \(G\).
 * `CliffordParallel` — two mirror families of parallels on the three-sphere.
   A left step has displacement rotor `hopfI s` at every base point; the same
   step stands on the left along a right parallel. Conjugation swaps the
@@ -284,6 +291,8 @@ The straight line of one fixed jet is not itself that geodesic.
   \(67\le H_0\le 74\) the electromagnetic mismatch lies strictly between
   \(3.57\times 10^{-6}\) and \(4.45\times 10^{-6}\), and the gravitational
   mismatch exceeds it by a factor strictly between \(450138\) and \(559315\).
+  The ratio of the patch radius to the Hubble length is the reciprocal, strictly
+  between \(1.787\times 10^{-6}\) and \(2.222\times 10^{-6}\).
   \(H_0\) is an input. No theorem asserts `dst_derives_lambda`.
 * `WeakLinearity` — where a fixed compactification radius stays linear in mass.
   The dual acceleration of a sum is the sum of the accelerations, and the
@@ -2165,6 +2174,21 @@ example {R H : ℝ} (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
       (357 : ℝ) / 10 ^ 8 < 2 * R / ((SI.speedOfLight : ℝ) / H) ∧
       2 * R / ((SI.speedOfLight : ℝ) / H) < (445 : ℝ) / 10 ^ 8 :=
   CliffordParallel.hubble_frame_window hRlo hRhi hHlo hHhi
+
+/-- Regression: the patch radius over the Hubble length, and the resulting
+ceilings on the cosmic Jacobian and the two fractional excesses. -/
+example {r R H : ℝ} (hr : 0 < r) (hrR : r ≤ R)
+    (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
+    (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
+    (1787 : ℝ) / 10 ^ 9 < R / ((SI.speedOfLight : ℝ) / H) ∧
+      R / ((SI.speedOfLight : ℝ) / H) < 2222 / 10 ^ 9 ∧
+      0 < 1 - compactJacobian (r / ((SI.speedOfLight : ℝ) / H)) ∧
+      1 - compactJacobian (r / ((SI.speedOfLight : ℝ) / H)) < 1646 / 10 ^ 15 ∧
+      dualEnhancement (r / ((SI.speedOfLight : ℝ) / H)) - 1 < 1646 / 10 ^ 15 ∧
+      (18836 : ℝ) * 10 ^ 7 <
+        (dualEnhancement 1 - 1) /
+          (dualEnhancement (R / ((SI.speedOfLight : ℝ) / H)) - 1) :=
+  hubble_patch_reading hr hrR hRlo hRhi hHlo hHhi
 
 /-- Regression: the equidistant chart writes the pole and the antipode at one
 origin. Angle \(\pi\) occurs only there, and every rotation fixes the rotor \(-1\).

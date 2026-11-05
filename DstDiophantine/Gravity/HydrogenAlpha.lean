@@ -1,4 +1,5 @@
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.LineWindow
 import DstDiophantine.Gravity.ParticleStability
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Complex.ExponentialBounds
@@ -672,110 +673,29 @@ theorem hAlphaWavelength_eq_photon :
   field_simp [hm, hc, hα]
   ring
 
-private theorem pi_gt_frac : (3141592 : ℝ) / 1000000 < π := by
-  have heq : (3141592 : ℝ) / 1000000 = 3.141592 := by norm_num
-  linarith [pi_gt_d6]
-
-private theorem pi_lt_frac : π < (3141593 : ℝ) / 1000000 := by
-  have heq : (3141593 : ℝ) / 1000000 = 3.141593 := by norm_num
-  linarith [pi_lt_d6]
-
-private theorem wavelength_factor_pos :
-    (0 : ℝ) < 144 * (hbarApprox : ℝ) /
-      (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) * (fineStructureApprox : ℝ) ^ 2) := by
-  have hnum : (0 : ℚ) < 144 * hbarApprox := mul_pos (by norm_num) hbarApprox_pos
-  have hden : (0 : ℚ) < 5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2 :=
-    mul_pos
-      (mul_pos (mul_pos (by norm_num) electronMassApprox_pos) speedOfLight_pos)
-      (pow_pos fineStructureApprox_pos 2)
-  exact_mod_cast (div_pos hnum hden)
-
 private theorem hAlpha_fixed_lo_rat :
-    (656112 : ℚ) / 10 ^ 12 <
-      144 * ((3141592 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) := by
-  unfold hbarApprox electronMassApprox fineStructureApprox speedOfLight
-    hbarMantissa hbarScale electronMassMantissa electronMassScale
+    (656112 : ℚ) / 10 ^ 12 < standInWavelength 144 5 piDigitLo := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
     fineStructureMantissa fineStructureScale speedOfLightNat
   field_simp
   norm_cast
 
 private theorem hAlpha_fixed_hi_rat :
-    144 * ((3141593 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) <
-      (656113 : ℚ) / 10 ^ 12 := by
-  unfold hbarApprox electronMassApprox fineStructureApprox speedOfLight
-    hbarMantissa hbarScale electronMassMantissa electronMassScale
+    standInWavelength 144 5 piDigitHi < (656113 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
     fineStructureMantissa fineStructureScale speedOfLightNat
   field_simp
   norm_cast
 
-private theorem hAlpha_fixed_lo_real :
-    (656112 : ℝ) / 10 ^ 12 <
-      144 * ((3141592 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-        (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) := by
-  have hcast :
-      ((656112 : ℚ) / 10 ^ 12 : ℝ) <
-        ((144 * ((3141592 : ℚ) / 1000000) * hbarApprox /
-          (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) : ℚ) : ℝ) := by
-    exact_mod_cast hAlpha_fixed_lo_rat
-  convert hcast using 1
-  · push_cast
-    rfl
-  · push_cast
-    ring
-
-private theorem hAlpha_fixed_hi_real :
-    144 * ((3141593 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-        (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) <
-      (656113 : ℝ) / 10 ^ 12 := by
-  have hcast :
-      ((144 * ((3141593 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) : ℚ) : ℝ) <
-        ((656113 : ℚ) / 10 ^ 12 : ℝ) := by
-    exact_mod_cast hAlpha_fixed_hi_rat
-  convert hcast using 1
-  · push_cast
-    ring
-  · push_cast
-    rfl
-
 theorem hAlphaWavelength_bounds :
     (656112 : ℝ) / 10 ^ 12 < hAlphaWavelength ∧
       hAlphaWavelength < (656113 : ℝ) / 10 ^ 12 := by
-  have hfac := wavelength_factor_pos
-  unfold hAlphaWavelength
-  constructor
-  · refine lt_trans hAlpha_fixed_lo_real ?_
-    calc 144 * ((3141592 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-          (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)
-        = (144 * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2)) * ((3141592 : ℝ) / 1000000) := by ring
-      _ < (144 * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2)) * π :=
-          mul_lt_mul_of_pos_left pi_gt_frac hfac
-      _ = 144 * π * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) := by ring
-  · refine lt_trans ?_ hAlpha_fixed_hi_real
-    calc 144 * π * (hbarApprox : ℝ) /
-          (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)
-        = (144 * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2)) * π := by ring
-      _ < (144 * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2)) * ((3141593 : ℝ) / 1000000) :=
-          mul_lt_mul_of_pos_left pi_lt_frac hfac
-      _ = 144 * ((3141593 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) := by ring
+  rw [hAlphaWavelength]
+  convert ratioWavelength_bounds (num := 144) (den := 5) (by norm_num) (by norm_num)
+      hAlpha_fixed_lo_rat hAlpha_fixed_hi_rat using 2 <;>
+    push_cast <;> ring
 
 theorem massRatio_lengthens {ρ : ℝ} (hlo : (1836 : ℝ) < ρ) (hhi : ρ < 1837) :
     (1838 : ℝ) / 1837 < (ρ + 1) / ρ ∧ (ρ + 1) / ρ < (1837 : ℝ) / 1836 := by
@@ -787,122 +707,34 @@ theorem massRatio_lengthens {ρ : ℝ} (hlo : (1836 : ℝ) < ρ) (hhi : ρ < 183
     linarith
 
 private theorem hAlpha_shared_lo_rat :
-    (656469 : ℚ) / 10 ^ 12 <
-      144 * ((3141592 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) *
-        ((1838 : ℚ) / 1837) := by
-  unfold hbarApprox electronMassApprox fineStructureApprox speedOfLight
-    hbarMantissa hbarScale electronMassMantissa electronMassScale
+    (656469 : ℚ) / 10 ^ 12 < standInWavelength 144 5 piDigitLo * (1838 / 1837) := by
+  unfold standInWavelength piDigitLo hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
     fineStructureMantissa fineStructureScale speedOfLightNat
   field_simp
   norm_cast
 
 private theorem hAlpha_shared_hi_rat :
-    144 * ((3141593 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) *
-        ((1837 : ℚ) / 1836) <
-      (656470 : ℚ) / 10 ^ 12 := by
-  unfold hbarApprox electronMassApprox fineStructureApprox speedOfLight
-    hbarMantissa hbarScale electronMassMantissa electronMassScale
+    standInWavelength 144 5 piDigitHi * (1837 / 1836) < (656470 : ℚ) / 10 ^ 12 := by
+  unfold standInWavelength piDigitHi hbarApprox electronMassApprox fineStructureApprox
+    speedOfLight hbarMantissa hbarScale electronMassMantissa electronMassScale
     fineStructureMantissa fineStructureScale speedOfLightNat
   field_simp
   norm_cast
 
-private theorem hAlpha_shared_lo_real :
-    (656469 : ℝ) / 10 ^ 12 <
-      144 * ((3141592 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-        (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837) := by
-  have hcast :
-      ((656469 : ℚ) / 10 ^ 12 : ℝ) <
-        ((144 * ((3141592 : ℚ) / 1000000) * hbarApprox /
-          (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) *
-          ((1838 : ℚ) / 1837) : ℚ) : ℝ) := by
-    exact_mod_cast hAlpha_shared_lo_rat
-  convert hcast using 1
-  · push_cast
-    rfl
-  · push_cast
-    ring
-
-private theorem hAlpha_shared_hi_real :
-    144 * ((3141593 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-        (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836) <
-      (656470 : ℝ) / 10 ^ 12 := by
-  have hcast :
-      ((144 * ((3141593 : ℚ) / 1000000) * hbarApprox /
-        (5 * electronMassApprox * speedOfLight * fineStructureApprox ^ 2) *
-        ((1837 : ℚ) / 1836) : ℚ) : ℝ) <
-        ((656470 : ℚ) / 10 ^ 12 : ℝ) := by
-    exact_mod_cast hAlpha_shared_hi_rat
-  convert hcast using 1
-  · push_cast
-    ring
-  · push_cast
-    rfl
-
 theorem hAlpha_shared_wavelength {ρ : ℝ} (hlo : (1836 : ℝ) < ρ) (hhi : ρ < 1837) :
     (656469 : ℝ) / 10 ^ 12 < hAlphaWavelength * ((ρ + 1) / ρ) ∧
       hAlphaWavelength * ((ρ + 1) / ρ) < (656470 : ℝ) / 10 ^ 12 := by
+  rw [hAlphaWavelength]
   obtain ⟨hfacLo, hfacHi⟩ := massRatio_lengthens hlo hhi
-  have hpos : 0 < hAlphaWavelength := by
-    unfold hAlphaWavelength
-    have hπ : (0 : ℝ) < π := Real.pi_pos
-    have hrew : 144 * π * (hbarApprox : ℝ) /
-        (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-          (fineStructureApprox : ℝ) ^ 2) =
-        (144 * (hbarApprox : ℝ) /
-          (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-            (fineStructureApprox : ℝ) ^ 2)) * π := by ring
-    rw [hrew]
-    exact mul_pos wavelength_factor_pos hπ
-  constructor
-  · have hendpoint : (656469 : ℝ) / 10 ^ 12 <
-        hAlphaWavelength * ((1838 : ℝ) / 1837) := by
-      refine lt_trans hAlpha_shared_lo_real ?_
-      unfold hAlphaWavelength
-      calc 144 * ((3141592 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837)
-          = (144 * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((3141592 : ℝ) / 1000000) * ((1838 : ℝ) / 1837) := by ring
-        _ < (144 * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((1838 : ℝ) / 1837) := by
-            have hpos := wavelength_factor_pos
-            have hmul := mul_lt_mul_of_pos_left pi_gt_frac hpos
-            have hscale := mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < 1838 / 1837)
-            simpa [mul_assoc, mul_left_comm, mul_comm] using hscale
-        _ = 144 * π * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((1838 : ℝ) / 1837) := by ring
-    exact lt_of_lt_of_le hendpoint
-      (mul_le_mul_of_nonneg_left hfacLo.le hpos.le)
-  · have hendpoint : hAlphaWavelength * ((1837 : ℝ) / 1836) <
-        (656470 : ℝ) / 10 ^ 12 := by
-      refine lt_trans ?_ hAlpha_shared_hi_real
-      unfold hAlphaWavelength
-      calc 144 * π * (hbarApprox : ℝ) /
-            (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-              (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836)
-          = (144 * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) * π * ((1837 : ℝ) / 1836) := by ring
-        _ < (144 * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2)) *
-              ((3141593 : ℝ) / 1000000) * ((1837 : ℝ) / 1836) := by
-            have hpos := wavelength_factor_pos
-            have hmul := mul_lt_mul_of_pos_left pi_lt_frac hpos
-            have hscale := mul_lt_mul_of_pos_right hmul (by norm_num : (0 : ℝ) < 1837 / 1836)
-            simpa [mul_assoc, mul_left_comm, mul_comm] using hscale
-        _ = 144 * ((3141593 : ℝ) / 1000000) * (hbarApprox : ℝ) /
-              (5 * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
-                (fineStructureApprox : ℝ) ^ 2) * ((1837 : ℝ) / 1836) := by ring
-    exact lt_of_le_of_lt (mul_le_mul_of_nonneg_left hfacHi.le hpos.le) hendpoint
+  have hfacLo' : ((1838 / 1837 : ℚ) : ℝ) < (ρ + 1) / ρ := by
+    convert hfacLo using 1; norm_num
+  have hfacHi' : (ρ + 1) / ρ < ((1837 / 1836 : ℚ) : ℝ) := by
+    convert hfacHi using 1; norm_num
+  convert ratioFactor_bounds (num := 144) (den := 5) (by norm_num) (by norm_num)
+      (by norm_num) (by norm_num) hfacLo' hfacHi' hAlpha_shared_lo_rat
+      hAlpha_shared_hi_rat using 2 <;>
+    push_cast <;> ring
 
 theorem hAlpha_proton_share :
     (656469 : ℝ) / 10 ^ 12 <

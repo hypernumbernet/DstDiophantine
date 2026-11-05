@@ -48,6 +48,8 @@ enclosed mass reproduces the point-mass shape; the negative well ends at
 \(\pi R/2\), strictly before \(r=2R\), while the acceleration remains
 center-directed on \((0,\pi R)\); on the SI stand-ins the Milky-Way
 compactification radius satisfies \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
+On \((0,1]\) the equidistant Jacobian lies strictly below \(1\), and the
+deficit is strictly less than \(x^2/3\).
 -/
 
 namespace DstDiophantine
@@ -1116,6 +1118,60 @@ theorem tendsto_compactJacobian_zero :
   have hx0 : x ≠ 0 := hx.1.ne'
   rw [sinc_of_ne_zero hx0, compactJacobian]
   field_simp [hx0]
+
+/-- On `(0,1]` the equidistant Jacobian lies strictly below `1`, and the
+deficit is strictly less than `x^2/3`. -/
+theorem jacobian_deficit_lt_sq_div_three {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :
+    0 < 1 - compactJacobian x ∧ 1 - compactJacobian x < x ^ 2 / 3 := by
+  have hxabs : |x| ≤ 1 := by rwa [abs_of_pos hx]
+  have hsinb := abs_sub_le_iff.mp (sin_bound hxabs)
+  have hs_ub : sin x ≤ x - x ^ 3 / 6 + x ^ 5 / 100 := by
+    have h := hsinb.1
+    rw [abs_of_pos hx] at h
+    linarith
+  have hs_lb : x - x ^ 3 / 6 - x ^ 5 / 100 ≤ sin x := by
+    have h := hsinb.2
+    rw [abs_of_pos hx] at h
+    linarith
+  set L : ℝ := 1 - x ^ 2 / 6 - x ^ 4 / 100
+  have hL : L * x = x - x ^ 3 / 6 - x ^ 5 / 100 := by
+    dsimp [L]
+    ring
+  have hLpos : 0 < L := by
+    dsimp [L]
+    have hx2 : x ^ 2 ≤ 1 := by nlinarith
+    have hx4 : x ^ 4 ≤ 1 := by nlinarith
+    have h2 : x ^ 2 / 6 ≤ 1 / 6 := div_le_div_of_nonneg_right hx2 (by norm_num)
+    have h4 : x ^ 4 / 100 ≤ 1 / 100 := div_le_div_of_nonneg_right hx4 (by norm_num)
+    linarith
+  have hsin_ge : L * x ≤ sin x := by linarith
+  have hsinpos : 0 < sin x := sin_pos_of_pos_of_le_one hx hx1
+  have hgap : x ^ 5 / 100 < x ^ 3 / 6 := by
+    rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    have hx2 : x ^ 2 < 100 / 6 := by nlinarith
+    have hx3 : 0 < x ^ 3 := by positivity
+    nlinarith
+  have hs_lt : sin x < x := by linarith
+  have hsq : sin x ^ 2 < x ^ 2 := (sq_lt_sq).mpr (by rwa [abs_of_pos hsinpos, abs_of_pos hx])
+  have hJlt : compactJacobian x < 1 := by
+    unfold compactJacobian
+    rw [div_lt_one (pow_pos hx 2)]
+    exact hsq
+  have hmul : (L * x) ^ 2 ≤ sin x ^ 2 :=
+    pow_le_pow_left₀ (mul_nonneg hLpos.le hx.le) hsin_ge 2
+  have hJge : L ^ 2 ≤ compactJacobian x := by
+    unfold compactJacobian
+    rw [le_div_iff₀ (pow_pos hx 2)]
+    simpa [mul_pow] using hmul
+  have hdiff : L ^ 2 - (1 - x ^ 2 / 3) =
+      (7 / 900) * x ^ 4 + (1 / 300) * x ^ 6 + (1 / 10000) * x ^ 8 := by
+    dsimp [L]
+    ring
+  have hpoly : 0 < L ^ 2 - (1 - x ^ 2 / 3) := by
+    rw [hdiff]
+    positivity
+  refine ⟨by linarith, ?_⟩
+  linarith
 
 /-- On \((0,1]\), \(\lvert\cot x-(1/x-x/3)\rvert\le x^3/6\). -/
 theorem abs_cot_sub_newton {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :

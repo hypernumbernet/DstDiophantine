@@ -65,18 +65,6 @@ private theorem impliedNsqEM_den_pos : (0 : ℚ) < (impliedNsqEM_den : ℚ) := b
   unfold impliedNsqEM_den fineStructureMantissa
   norm_num
 
-private theorem rat_div_gt
-    {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : k * den < num) :
-    (k : ℚ) < (num : ℚ) / den := by
-  rw [lt_div_iff₀ hden]
-  exact_mod_cast hnat
-
-private theorem rat_div_lt
-    {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : num < k * den) :
-    (num : ℚ) / den < (k : ℚ) := by
-  rw [div_lt_iff₀ hden]
-  exact_mod_cast hnat
-
 private theorem impliedNsqEM_nat_bounds :
     impliedNsqEM_den * 729 < impliedNsqEM_num ∧
       impliedNsqEM_num < impliedNsqEM_den * 732 := by

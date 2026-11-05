@@ -115,20 +115,6 @@ theorem impliedNsq_proton_eq_num_div_den :
   field_simp
   ring
 
-private theorem rat_div_gt_pow
-    {num den k e : ℕ} (hden : (0 : ℚ) < den)
-    (hnat : k * 10 ^ e * den < num) :
-    (k : ℚ) * 10 ^ e < (num : ℚ) / den := by
-  rw [lt_div_iff₀ hden]
-  exact_mod_cast hnat
-
-private theorem rat_div_lt_pow
-    {num den k e : ℕ} (hden : (0 : ℚ) < den)
-    (hnat : num < k * 10 ^ e * den) :
-    (num : ℚ) / den < (k : ℚ) * 10 ^ e := by
-  rw [div_lt_iff₀ hden]
-  exact_mod_cast hnat
-
 private theorem electronImpliedDen_pos :
     (0 : ℚ) < (electronImpliedDen : ℚ) := by
   unfold electronImpliedDen impliedDenOf electronMassMantissa GMantissa
