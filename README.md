@@ -225,24 +225,30 @@ The abc triples $(1,80,81)$ and $(3,125,128)$ lie outside the admissible cone.
 
 Parallel track, barrel [`DstDiophantine/Gravity.lean`](DstDiophantine/Gravity.lean).
 Narrative sources are the papers in the table at the end. The module
-docstring on `Gravity.lean` is the checked map of this track. This section
-is that map in prose.
+docstring on `Gravity.lean` is the index of this track. Each submodule
+docstring is the checked local map. This section is that map in prose.
+Regression examples live in
+[`DstDiophantine/Gravity/Regression.lean`](DstDiophantine/Gravity/Regression.lean).
 
 ### Chart and the direction of gravity
 
-On every static radial-boost chart the teleparallel density is
-$T = (4/r^2)(\cosh\sqrt{2J} - 1)$. Restricted to the admissible cone,
-$r^2 T$ lies in the open interval $(-8, 27)$, and both ends of the exact
-window $4(\cos\varphi_{\max}-1) \le r^2 T \le 4(\cosh\varphi_{\max}-1)$ are
-attained. A real radial boost cannot produce $T < 0$; a negative
-$T$ on the cone uses the elliptic sector. Exterior Schwarzschild is the
-vacuum gauge $A = 1 - r_s/r$. The identification $J_{\mathrm{field}} = \tfrac12 T$
-holds on at most one sphere.
+On the diagonal radial coframe the teleparallel quadratic is
+$T = -2(A + r A')/r^2$. The vacuum condition $(rA)' = 1$ freezes it at
+$-2/r^2$, the value of the flat spherical frame, and selects
+$A = 1 - r_s/r$. An inertial-plane boost of any rapidity profile induces
+the Minkowski metric and kills that quadratic, so $T = 0$. The exterior
+Schwarzschild coframe has $T = -2/r^2$. The same value of $J$ does not
+determine $T$.
 
-The same value of $J$ does not determine $T$ for every tetrad. An inertial-plane
-boost of any rapidity profile induces the Minkowski metric and kills the
-teleparallel quadratic, while the exterior Schwarzschild coframe with that
-same $J$ has positive $T$.
+The auxiliary expression on a static radial-boost chart is
+$T_{\mathrm{aux}} = (4/r^2)(\cosh\sqrt{2J} - 1)$. It is not the quadratic.
+On the exterior Schwarzschild chart it is positive. Restricted to the
+admissible cone, $r^2 T_{\mathrm{aux}}$ lies in the open interval $(-8, 27)$,
+and both ends of the exact window
+$4(\cos\varphi_{\max}-1) \le r^2 T_{\mathrm{aux}} \le 4(\cosh\varphi_{\max}-1)$
+are attained. A real radial boost cannot produce $T_{\mathrm{aux}} < 0$; a
+negative value on the cone uses the elliptic sector. The identification
+$J_{\mathrm{field}} = \tfrac12 T_{\mathrm{aux}}$ holds on at most one sphere.
 
 The static Killing field is the Poincaré bivector
 $K = \tfrac{\kappa}{2} B^{+} + \tfrac{\nu}{2} N_0$: a pure boost about an
@@ -499,8 +505,9 @@ $c^4/(G\,\ell_P^{-2})$.
 | Optics | `Lensing`, `PhotonReturn` |
 
 `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, and `SI` are imported
-by the modules above. They are part of the gravity build. They are not
-named again in the barrel's import list.
+by the modules above. They are part of the gravity build. `Gravity.lean`
+imports `Gravity.Regression`, and that file's import list does not name
+them again.
 
 ## Four-valued logic
 
