@@ -34,6 +34,8 @@ kilometres in `H₀`. For `8 ≤ R ≤ 9` and `67 ≤ H₀ ≤ 74` the edge mism
 the electromagnetic frame lies strictly between `3.57×10⁻⁶` and `4.45×10⁻⁶`,
 while the gravitational mismatch is `2`. The gravitational mismatch exceeds
 the electromagnetic one by a factor strictly between `450138` and `559315`.
+That factor is `Λ/R`, so the ratio of the patch radius to the Hubble length
+lies strictly between `1.787×10⁻⁶` and `2.222×10⁻⁶`.
 
 `H₀` is an input, as `a₀` is. No theorem asserts `dst_derives_lambda`.
 -/
@@ -345,6 +347,32 @@ theorem hubble_frame_window {R H : ℝ}
     have hcomp : 2 * (H * R) / 299792458 ≤ 1332 / 299792458 := by
       have hnum : 2 * (H * R) ≤ (1332 : ℝ) := by linarith
       exact div_le_div_of_nonneg_right hnum (by norm_num)
+    exact lt_of_le_of_lt hcomp hceil
+
+/-- The ratio of the galactic patch radius to the Hubble length `c/H₀`, in the
+same external window. It is the reciprocal of the frame-mismatch factor. -/
+theorem hubble_patch_ratio {R H : ℝ}
+    (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
+    (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
+    (1787 : ℝ) / 10 ^ 9 < R / ((SI.speedOfLight : ℝ) / H) ∧
+      R / ((SI.speedOfLight : ℝ) / H) < (2222 : ℝ) / 10 ^ 9 := by
+  rw [speedOfLight_coe]
+  have hRpos : (0 : ℝ) < R := lt_of_lt_of_le (by norm_num) hRlo
+  have hHpos : (0 : ℝ) < H := lt_of_lt_of_le (by norm_num) hHlo
+  have hprod_lo : (536 : ℝ) ≤ H * R := by nlinarith
+  have hprod_hi : H * R ≤ 666 := by nlinarith
+  have hratio : R / (299792458 / H) = H * R / 299792458 := by
+    field_simp
+  refine ⟨?_, ?_⟩
+  · rw [hratio]
+    have hfloor : (1787 : ℝ) / 10 ^ 9 < 536 / 299792458 := by norm_num
+    have hcomp : 536 / 299792458 ≤ H * R / 299792458 :=
+      div_le_div_of_nonneg_right hprod_lo (by norm_num)
+    exact hfloor.trans_le hcomp
+  · rw [hratio]
+    have hceil : 666 / 299792458 < (2222 : ℝ) / 10 ^ 9 := by norm_num
+    have hcomp : H * R / 299792458 ≤ 666 / 299792458 :=
+      div_le_div_of_nonneg_right hprod_hi (by norm_num)
     exact lt_of_le_of_lt hcomp hceil
 
 end DstDiophantine.Gravity.CliffordParallel
