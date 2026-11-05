@@ -38,6 +38,15 @@ That factor is `Λ/R`, so the ratio of the patch radius to the Hubble length
 lies strictly between `1.787×10⁻⁶` and `2.222×10⁻⁶`.
 
 `H₀` is an input, as `a₀` is. No theorem asserts `dst_derives_lambda`.
+
+A rotation `p ↦ a p b` carries each family onto itself. The right factor
+conjugates the axis of a left line, and the left factor conjugates the axis
+of a right line. Conjugation of a point, already recorded, is what exchanges
+the families. Through `J`, a quarter turn of the left family ends at `-K` and
+a quarter turn of the right family ends at `K`. On `(0, π/2)` the `K`
+component of the frame is `-sin(2φ)` for the family written above and
+`+sin(2φ)` for the reversed geodesic. The two screws are strict and opposite.
+No theorem names which family the universe carries.
 -/
 
 namespace DstDiophantine.Gravity.CliffordParallel
@@ -260,6 +269,78 @@ theorem mirror_twist_sense (φ : ℝ) :
     (twistedJ (-φ)).imJ = (twistedJ φ).imJ ∧
       (twistedJ (-φ)).imK = -((twistedJ φ).imK) := by
   simp [twistedJ, Real.cos_neg, Real.sin_neg]
+
+/-- A rotation carries a left parallel to a left parallel. The right factor
+conjugates the step and does not move it onto the left. -/
+theorem rotation_carries_left (a b q : S3) (t : ℝ) :
+    a * leftParallel q t * b = (a * q * b) * (b⁻¹ * hopfI t * b) := by
+  unfold leftParallel
+  conv_lhs =>
+    rw [← mul_assoc a q (hopfI t)]
+    rw [mul_assoc (a * q) (hopfI t) b]
+    rw [← one_mul (hopfI t * b)]
+    rw [← mul_inv_cancel b]
+    rw [mul_assoc b b⁻¹ (hopfI t * b)]
+    rw [← mul_assoc (a * q) b (b⁻¹ * (hopfI t * b))]
+    rw [← mul_assoc b⁻¹ (hopfI t) b]
+
+/-- A rotation carries a right parallel to a right parallel. The left factor
+conjugates the step and does not move it onto the right. -/
+theorem rotation_carries_right (a b q : S3) (t : ℝ) :
+    a * rightParallel q t * b = (a * hopfI t * a⁻¹) * (a * q * b) := by
+  unfold rightParallel
+  conv_lhs =>
+    rw [← mul_assoc a (hopfI t) q]
+    rw [mul_assoc (a * hopfI t) q b]
+    rw [← one_mul (q * b)]
+    rw [← inv_mul_cancel a]
+    rw [mul_assoc a⁻¹ a (q * b)]
+    rw [← mul_assoc (a * hopfI t) a⁻¹ (a * (q * b))]
+    rw [← mul_assoc a q b]
+
+/-- The point `J`. -/
+def sJ : S3 where
+  val := qJ
+  norm_one := qJ_norm
+
+theorem hopfI_quarter : (hopfI (Real.pi / 2)).val = qI := by
+  simp [hopfI, qI, Real.cos_pi_div_two, Real.sin_pi_div_two]
+
+/-- Through `J`, a quarter turn of the left family ends at `-K` and a quarter
+turn of the right family ends at `K`. -/
+theorem family_sense :
+    (leftParallel sJ (Real.pi / 2)).val = -qK ∧
+      (rightParallel sJ (Real.pi / 2)).val = qK ∧
+      leftParallel sJ (Real.pi / 2) ≠ rightParallel sJ (Real.pi / 2) := by
+  have hL : (leftParallel sJ (Real.pi / 2)).val = qJ * qI := by
+    simp [leftParallel, sJ, hopfI_quarter]
+  have hR : (rightParallel sJ (Real.pi / 2)).val = qI * qJ := by
+    simp [rightParallel, sJ, hopfI_quarter]
+  have hJI : qJ * qI = -qK := by
+    ext <;> simp [qJ, qI, qK]
+  have hIJ : qI * qJ = qK := by
+    ext <;> simp [qI, qJ, qK]
+  refine ⟨hL.trans hJI, hR.trans hIJ, ?_⟩
+  intro h
+  have him := congrArg (fun p : S3 => p.val.imK) h
+  rw [hL, hR, hJI, hIJ] at him
+  simp [qK] at him
+  linarith
+
+/-- On `(0, π/2)` the two screws are strict and opposite. -/
+theorem screw_sign {φ : ℝ} (h0 : 0 < φ) (hπ : φ < Real.pi / 2) :
+    (twistedJ φ).imK = -Real.sin (2 * φ) ∧
+      (twistedJ (-φ)).imK = Real.sin (2 * φ) ∧
+      (twistedJ φ).imK < 0 ∧
+      0 < (twistedJ (-φ)).imK := by
+  have h2lo : 0 < 2 * φ := by linarith
+  have h2hi : 2 * φ < Real.pi := by linarith [Real.pi_pos]
+  have hsin : 0 < Real.sin (2 * φ) := Real.sin_pos_of_pos_of_lt_pi h2lo h2hi
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simp [twistedJ]
+  · simp [twistedJ, Real.sin_neg]
+  · simpa [twistedJ] using neg_lt_zero.mpr hsin
+  · simpa [twistedJ, Real.sin_neg] using hsin
 
 theorem frames_differ_at_quarter :
     qJ * (hopfI (Real.pi / 4)).val ≠ (hopfI (Real.pi / 4)).val * qJ := by

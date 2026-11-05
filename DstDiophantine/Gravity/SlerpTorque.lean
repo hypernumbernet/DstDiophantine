@@ -28,7 +28,10 @@ them,
 
 The moment vanishes when `sin α = 0`, and when the source is the chart origin.
 For equal chart distances it is `(1 - cos α) χ (χ - sin χ cos χ) sin α`,
-which is positive for `χ, α ∈ (0, π)`.
+which is positive for `χ, α ∈ (0, π)`. It is odd in the oriented angle, so the
+moments at `α` and `-α` sum to zero, and on `(-π, 0)` the equal-distance
+moment is negative. The cancellation is inside one chart. It is not an
+exchange of the two parallel families.
 
 ## Not claimed
 
@@ -289,6 +292,30 @@ theorem chordMoment_equal_pos {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
     rw [hform]
     nlinarith [hsin]
   exact mul_pos (mul_pos (mul_pos hcos hχ) hrad) hsinα
+
+/-- Reversing the oriented angle reverses the moment. -/
+theorem chordMoment_neg_angle (χ ψ α : ℝ) :
+    chordMoment χ ψ (-α) = -chordMoment χ ψ α := by
+  simp only [chordMoment, Real.sin_neg, Real.cos_neg]
+  ring
+
+/-- A source and its reflection across the ray cancel. -/
+theorem chordMoment_cancels (χ ψ α : ℝ) :
+    chordMoment χ ψ α + chordMoment χ ψ (-α) = 0 := by
+  rw [chordMoment_neg_angle]
+  ring
+
+/-- Equal chart distances give a negative moment on `(-π, 0)`. -/
+theorem chordMoment_equal_neg {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
+    (hα : -Real.pi < α) (hα0 : α < 0) :
+    chordMoment χ χ α < 0 := by
+  have hflip : chordMoment χ χ α = -chordMoment χ χ (-α) := by
+    have h := chordMoment_neg_angle χ χ (-α)
+    simpa using h
+  rw [hflip]
+  have hpos : 0 < chordMoment χ χ (-α) :=
+    chordMoment_equal_pos hχ hχu (neg_pos.mpr hα0) (by linarith)
+  linarith
 
 theorem cross_pushedTangent (χ ψ α : ℝ) :
     cross3 (sub3 (bodyPoint χ) (sourcePoint ψ α)) (pushedTangent χ ψ α) =
