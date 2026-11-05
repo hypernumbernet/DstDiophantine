@@ -28,6 +28,7 @@ import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
 import DstDiophantine.Gravity.DualRotorMotor
 import DstDiophantine.Gravity.NullRotation
+import DstDiophantine.Gravity.ExponentialFamily
 import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
@@ -388,6 +389,16 @@ The straight line of one fixed jet is not itself that geodesic.
   lightlike, and for \(t\neq 0\) the vector has moved. Off the ray the
   transverse coordinate itself moves. The null coordinate \(x_0+x_3\) is
   invariant. No position operator is claimed.
+* `ExponentialFamily` — off axis, \(J_\varepsilon=B^+_0+\sqrt{1+\varepsilon^2}\,B^-_1\)
+  squares to \(-\varepsilon^2\). One formula covers every real \(\varepsilon\):
+  \(\exp(t J_\varepsilon)=\cos(\varepsilon t)+(t\,\mathrm{sinc}(\varepsilon t)) J_\varepsilon\).
+  For \(\varepsilon\neq 0\) this equals \(-1\) precisely when \(\cos(\varepsilon t)=-1\),
+  first at \(t=\pi/\varepsilon\). There \(\mathrm{sinc}\) vanishes, and so does the
+  equidistant Jacobian. As \(\varepsilon\to 0\) the exponential tends to the
+  parabolic rotor, \(\mathrm{sinc}(\varepsilon t)\to 1\), and \(\pi/\varepsilon\to\infty\)
+  through positive \(\varepsilon\). The commutator of \(J_\varepsilon\) with the null
+  line vanishes if and only if \(\varepsilon=0\). The sandwich tends to the null
+  rotation. No position operator is claimed.
 * `RestMass` — stiffness \(V=(m/2)\sum(\alpha_a-\beta_a)^2\), unsigned
   mass \(M\), and free fall \(\Omega=1\) are three different quantities.
   On one axis \(V=2m(M-\sigma^2/4)\). For \(m\neq 0\), \(V=mJ\) if and
@@ -1206,6 +1217,21 @@ example {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0) (hs : x 0 + x 3 ≠ 0) :
     (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 ∧
       (nullRotation t x) 1 ≠ x 1 :=
   ⟨null_sum_invariant t x, transverse_moves_off_ray ht hs⟩
+
+/-- Regression: one off-axis exponential is elliptic at `π/ε` and null at `ε = 0`. -/
+example {ε t : ℝ} (hε : ε ≠ 0) :
+    NormedSpace.exp (t • contractedGen ε) =
+        Real.cos (ε * t) • (1 : PGA) +
+          (t * Real.sinc (ε * t)) • contractedGen ε ∧
+      NormedSpace.exp ((Real.pi / ε) • contractedGen ε) = -1 ∧
+        (NormedSpace.exp (t • contractedGen ε) = -1 ↔ Real.cos (ε * t) = -1) ∧
+          (Generators.commutator (contractedGen ε) (minkowskiVector nullLineVec) = 0 ↔
+            ε = 0) ∧
+            Real.sinc Real.pi = 0 ∧
+              compactJacobian Real.pi = 0 :=
+  ⟨exp_contractedGen_formula ε t, exp_contractedGen_antipode hε,
+    exp_contractedGen_eq_neg_one_iff hε, commutator_contracted_nullLine_eq_zero_iff ε,
+    sinc_pi, compactJacobian_antipode⟩
 
 /-- Regression: the Jacobi integral of the cubic flow is initial data. -/
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
