@@ -182,61 +182,63 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en">The two families also twist in <b>opposite senses</b>. From the same starting point, a quarter turn along one family and a quarter turn along the other reach <b>opposite</b> destinations — like threading the same ball with a left-handed and a right-handed screw.</span><span class="ja">二つの族は<b>反対向き</b>にもねじれます。同じ出発点から、一方の族に沿って四分の一回転し、もう一方の族に沿って四分の一回転すると、<b>正反対</b>の着地点に着きます — 同じボールに左ねじと右ねじの糸を通すイメージです。</span></p>
   <p><span class="en">When a <b>pulling mass</b> (the source of the pull) tugs a <b>pulled object</b> along a great-circle relation, the flat map reads a sideways twisting effect about the source. That effect <b>reverses sign</b> when the source sits on the mirror-image side of the ray between source and body; mirror-placed sources then <b>cancel</b> within one chart. That cancellation lives inside a single map reading and is <em>not</em> the same thing as swapping the two parallel families.</span><span class="ja"><b>引っぱる側の質量</b>（引きの源）が<b>引っぱられる物体</b>を大円の関係に沿って引くとき、平坦な地図の読み取りでは源のまわりに横方向のねじれ効果が現れます。源が物体との光線の<b>鏡写し側</b>に置かれるとその効果は<b>符号が反転</b>し、鏡写しに置いた源同士は一つの地図の中で<b>相殺</b>します。この相殺は単一の地図読み取りの中の話であり、二つの平行の族を入れ替えることとは<em>同じではありません</em>。</span></p>
   <p><span class="en">The formalism does not yet single out which of the two families the physical universe actually uses.</span><span class="ja">形式化の段階では、物理的な宇宙が二つの族のどちらを実際に使うかはまだ特定していません。</span></p>
-  <svg class="fig" viewBox="0 0 640 420" role="img" aria-label="Left-handed and right-handed parallel screws from one point on the three-sphere">
+  <svg class="fig" viewBox="0 0 640 460" role="img" aria-label="Opposite-handed parallel routes from one start to two quarter-turn endpoints on the three-sphere">
     <defs>
       <marker id="ah-helix" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <text class="cap" x="320" y="22" text-anchor="middle"><tspan class="en">Opposite screw sense of the two parallel families</tspan><tspan class="ja">二つの平行の族の反対のねじれ向き</tspan></text>
-    <g transform="translate(320,72)">
+    <text class="cap" x="320" y="24" text-anchor="middle"><tspan class="en">Opposite screw sense (schematic quarter-turn routes)</tspan><tspan class="ja">反対のねじれ向き（四分の一回転経路の模式）</tspan></text>
+    <g transform="translate(320,108)">
       <circle r="5" class="node"/>
-      <text class="lbl small" x="10" y="5"><tspan class="en">same start</tspan><tspan class="ja">同じ出発点</tspan></text>
+      <text class="lbl small" x="14" y="5"><tspan class="en">shared start</tspan><tspan class="ja">共通の出発点</tspan></text>
+      <path fill="none" class="swirl" d="M0,5 C-36,40 -56,95 -72,155" marker-end="url(#ah-helix)"/>
+      <path fill="none" class="pull" d="M0,5 C36,40 56,95 72,155" marker-end="url(#ah-helix)"/>
+      <circle class="node" cx="-72" cy="155" r="4"/>
+      <circle class="node" cx="72" cy="155" r="4"/>
     </g>
-    <path class="swirl" d="M320,77 C280,110 260,160 250,210 C245,240 248,270 258,300" marker-end="url(#ah-helix)"/>
-    <path class="pull" d="M320,77 C360,110 380,160 390,210 C395,240 392,270 382,300" marker-end="url(#ah-helix)"/>
-    <circle class="node" cx="258" cy="300" r="4"/>
-    <circle class="node" cx="382" cy="300" r="4"/>
-    <text class="lbl small" x="228" y="318" text-anchor="middle"><tspan class="en">quarter-turn end (one family)</tspan><tspan class="ja">四分の一回転の着地点（一方の族）</tspan></text>
-    <text class="lbl small" x="412" y="318" text-anchor="middle"><tspan class="en">quarter-turn end (other family)</tspan><tspan class="ja">四分の一回転の着地点（もう一方）</tspan></text>
-    <g class="legend" transform="translate(20,340)">
-      <path class="swirl" d="M0,0 C-16,12 -24,28 -32,48" marker-end="url(#ah-helix)"/>
-      <text class="lbl small" x="42" y="18"><tspan class="en">left-parallel</tspan><tspan class="ja">左の平行</tspan></text>
-      <path class="pull" d="M0,36 C16,48 24,64 32,84" marker-end="url(#ah-helix)"/>
-      <text class="lbl small" x="42" y="54"><tspan class="en">right-parallel</tspan><tspan class="ja">右の平行</tspan></text>
-      <text class="lbl small" x="42" y="82"><tspan class="en">Curved strokes are parallel routes, not coordinate axes.</tspan><tspan class="ja">曲線は平行経路であり、座標軸ではありません。</tspan></text>
+    <text class="lbl small" x="248" y="280" text-anchor="middle"><tspan class="en">opposite ends</tspan><tspan class="ja">正反対の着地点</tspan></text>
+    <g class="legend" transform="translate(24,320)">
+      <path fill="none" class="swirl" d="M0,0 C-14,10 -22,26 -30,44" marker-end="url(#ah-helix)"/>
+      <text class="lbl small" x="44" y="18"><tspan class="en">left-parallel</tspan><tspan class="ja">左の平行</tspan></text>
+      <path fill="none" class="pull" d="M0,40 C14,50 22,66 30,84" marker-end="url(#ah-helix)"/>
+      <text class="lbl small" x="44" y="58"><tspan class="en">right-parallel</tspan><tspan class="ja">右の平行</tspan></text>
+      <text class="lbl small" x="44" y="88"><tspan class="en">Curved strokes are parallel routes on the three-sphere, not coordinate axes.</tspan><tspan class="ja">曲線は三次元球面上の平行経路であり、座標軸ではありません。</tspan></text>
     </g>
   </svg>
+  <p><span class="en">Both families exist on the <b>three-sphere</b>, but a given readout uses <b>one handed parallel framing at a time</b> — not both screws superposed. <b>Gravity</b> on its scale and <b>electromagnetism</b> on its scale each follow the twist seen along the family that channel adopts; the mirror family is the alternative framing (swapped only by conjugation), not an extra twist to add on top. That is a <b>handed choice of parallel framing</b> for how drift enters the chart, separate from mirror-source cancellation inside one map.</span><span class="ja"><b>三次元球面</b>上には二族とも存在しますが、ある読み取りは<b>一度に片方のねじれ向きの平行枠だけ</b>を使います — 二つのねじれを重ね合わせるわけではありません。<b>引力</b>のスケールでも<b>電磁気</b>のスケールでも、各チャンネルは採用する族に沿って見えるずれに従い、鏡写しの族は（共役でのみ入れ替わる）別の枠であり、上に足す第二のねじれではありません。地図にずれが入る仕方としての<b>平行枠の向きの選択</b>であり、一つの地図内での鏡写し源の相殺とは別の話です。</span></p>
   <p><span class="en">In DST, <b>gravity</b> reads this drift on a <b>galaxy-sized</b> sphere — the compact patch radius tied to enclosed mass in <a class="ref" href="gravity.html#weak-field">chapter&nbsp;2</a> — where the mismatch can be large at the disk's edge. <b>Electromagnetism</b> reads the same geometric effect on a <b>universe-sized</b> sphere set by the <b>Hubble length</b> from observation (not derived here), where the mismatch is extremely small for the same step. That is one geometric way to picture why <b>gravity and electromagnetism differ so much in strength</b> where a galaxy fades into its outskirts, while standard physics usually treats the two couplings as separate measured constants with no shared sphere behind them.</span><span class="ja">DST では、<b>引力</b>は<b>銀河サイズ</b>の球面 — <a class="ref" href="gravity.html#weak-field">第&nbsp;2&nbsp;章</a>の包まれた質量に結びつくコンパクトなパッチ半径 — 上でこのずれを読み取り、円盤の縁では不一致が大きくなりえます。<b>電磁気</b>は、観測から与える<b>ハッブル長</b>（ここでは導出しない）で決まる<b>宇宙サイズ</b>の球面上で同じ幾何効果を読み取り、同じ一歩でも不一致は極めて小さくなります。銀河が外縁に向かって薄くなる場所で<b>引力と電磁気の強さがこれほど違う</b>理由の、幾何学的な見方の一つです。標準的な物理学では、ふつう二つの結合定数を別々の測定値として扱い、その背後に共通の球面は置きません。</span></p>
   <p><span class="en"><b>Why the two forces feel so different on galactic scales.</b> The gravitational channel sees parallel-drift on a sphere about the size of a galaxy — large enough to change how whole galaxies rotate and how mass curves away from textbook inverse-square behaviour. The electromagnetic channel sees the same geometry on a sphere the size of the observable universe; across an entire galaxy that drift is far too small to measure, so electromagnetism keeps the ordinary textbook inverse-square form while gravity does not. DST is one geometry read at two sizes, not two unrelated constants pasted onto empty space. If a clear, galactic-scale departure from inverse-square electromagnetism were measured, this split-reading picture would be in serious trouble.</span><span class="ja"><b>銀河スケールで二つの力がこれほど違って感じられる理由。</b>引力のチャンネルは、銀河ほどの大きさの球面上の平行のずれを見ます — 銀河全体の回転の仕方を変えるほど大きく、質量が教科書の逆二乗からどれだけ離れるかも変えうる程度です。電磁気のチャンネルは、観測可能な宇宙ほどの大きさの球面上で同じ幾何を見ます。銀河全体を通してもそのずれは測定できるほどには小さく、電磁気は普通の教科書どおりの逆二乗の形のままですが、引力はそうなりません。DST では、空っぽの空間に無関係な二つの定数を貼るのではなく、ひとつの幾何を二つの大きさで読み取ります。もし銀河スケールで逆二乗からはっきり離れた電磁気の効果が測定されたら、この「二つの読み方」の絵は大きく危うくなります。</span></p>
-  <svg class="fig" viewBox="0 0 640 540" role="img" aria-label="Left-parallel and right-parallel great-circle families drift apart; small galaxy sphere versus large universe sphere">
+  <svg class="fig" viewBox="0 0 640 560" role="img" aria-label="One parallel framing read at a time; drift on galaxy-sized versus universe-sized three-sphere">
     <defs>
       <marker id="ah-mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+      <marker id="ah-mp-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="#8a8fb0"/></marker>
     </defs>
-    <text class="cap" x="320" y="22" text-anchor="middle"><tspan class="en">Two parallel families on the three-sphere</tspan><tspan class="ja">三次元球面上の二つの平行の族</tspan></text>
-    <g transform="translate(320,118)">
+    <text class="cap" x="320" y="24" text-anchor="middle"><tspan class="en">One handed framing read per channel (schematic drift)</tspan><tspan class="ja">チャンネルごとに片方の平行枠を読む（ずれの模式）</tspan></text>
+    <text class="lbl small" x="320" y="46" text-anchor="middle"><tspan class="en">Solid: framing the read follows · dashed: mirror family (not added)</tspan><tspan class="ja">実線：読み取りが従う枠 · 破線：鏡写しの族（足し合わせない）</tspan></text>
+    <g transform="translate(320,128)">
       <circle r="4" class="node"/>
-      <path class="swirl" d="M0,0 C-48,24 -72,72 -88,120" marker-end="url(#ah-mp)"/>
-      <path class="pull" d="M0,0 C48,24 72,72 88,120" marker-end="url(#ah-mp)"/>
+      <path fill="none" class="swirl" d="M0,0 C-48,24 -72,72 -88,120" marker-end="url(#ah-mp)"/>
+      <path fill="none" class="pull ph" d="M0,0 C48,24 72,72 88,120" marker-end="url(#ah-mp-dim)"/>
     </g>
-    <g transform="translate(168,300)">
+    <g transform="translate(168,310)">
       <circle r="40" class="ring rs"/>
-      <path class="swirl" d="M-8,-28 C-28,-8 -32,16 -36,36"/>
-      <path class="pull" d="M8,-28 C28,-8 32,16 36,36"/>
-      <text class="cap" x="0" y="58" text-anchor="middle"><tspan class="en">galaxy scale</tspan><tspan class="ja">銀河スケール</tspan></text>
+      <path fill="none" class="swirl" d="M-8,-28 C-28,-8 -32,16 -36,36" marker-end="url(#ah-mp)"/>
+      <path fill="none" class="pull ph" d="M8,-28 C28,-8 32,16 36,36" marker-end="url(#ah-mp-dim)"/>
+      <text class="cap" x="0" y="62" text-anchor="middle"><tspan class="en">galaxy scale · gravity read</tspan><tspan class="ja">銀河スケール · 引力の読み</tspan></text>
     </g>
-    <g transform="translate(472,300)">
+    <g transform="translate(472,310)">
       <circle r="52" class="ring rs"/>
-      <path class="swirl" d="M-4,-20 C-10,-12 -12,-4 -14,4"/>
-      <path class="pull" d="M4,-20 C10,-12 12,-4 14,4"/>
-      <text class="cap" x="0" y="70" text-anchor="middle"><tspan class="en">universe scale</tspan><tspan class="ja">宇宙スケール</tspan></text>
+      <path fill="none" class="swirl" d="M-4,-20 C-10,-12 -12,-4 -14,4" marker-end="url(#ah-mp)"/>
+      <path fill="none" class="pull ph" d="M4,-20 C10,-12 12,-4 14,4" marker-end="url(#ah-mp-dim)"/>
+      <text class="cap" x="0" y="74" text-anchor="middle"><tspan class="en">universe scale · EM read</tspan><tspan class="ja">宇宙スケール · 電磁気の読み</tspan></text>
     </g>
-    <g class="legend" transform="translate(20,400)">
-      <path class="swirl" d="M0,0 C12,8 20,20 28,32" marker-end="url(#ah-mp)"/>
-      <text class="lbl small" x="38" y="18"><tspan class="en">left-parallel</tspan><tspan class="ja">左の平行</tspan></text>
-      <path class="pull" d="M0,36 C12,44 20,56 28,68" marker-end="url(#ah-mp)"/>
-      <text class="lbl small" x="38" y="54"><tspan class="en">right-parallel</tspan><tspan class="ja">右の平行</tspan></text>
-      <text class="lbl small" x="38" y="82"><tspan class="en">drift grows with twice the angle travelled; larger on a small sphere</tspan><tspan class="ja">進んだ角度の二倍でずれが増える；小さい球ほど大きい</tspan></text>
+    <g class="legend" transform="translate(20,410)">
+      <path fill="none" class="swirl" d="M0,0 C12,8 20,20 28,32" marker-end="url(#ah-mp)"/>
+      <text class="lbl small" x="40" y="18"><tspan class="en">left-parallel (example read framing)</tspan><tspan class="ja">左の平行（読み取り枠の例）</tspan></text>
+      <path fill="none" class="pull ph" d="M0,36 C12,44 20,56 28,68" marker-end="url(#ah-mp-dim)"/>
+      <text class="lbl small" x="40" y="54"><tspan class="en">right-parallel (mirror alternative)</tspan><tspan class="ja">右の平行（鏡写しの別枠）</tspan></text>
+      <text class="lbl small" x="40" y="82"><tspan class="en">Drift ∝ twice the angle travelled; larger mismatch on a smaller sphere.</tspan><tspan class="ja">ずれは進んだ角度の二倍；球が小さいほど不一致は大きい。</tspan></text>
     </g>
-    <text class="note" x="12" y="528"><tspan class="en">Schematic. Curved strokes are parallel routes, not coordinate axes.</tspan><tspan class="ja">模式図。曲線は平行経路であり、座標軸ではありません。</tspan></text>
+    <text class="note" x="12" y="548"><tspan class="en">Schematic. Routes are parallel paths, not coordinate axes. Which family a channel uses is not fixed by theorems here.</tspan><tspan class="ja">模式図。経路は平行路であり座標軸ではありません。チャンネルがどちらの族を使うかは、ここでは定理で固定されません。</tspan></text>
   </svg>
   
 </section>
