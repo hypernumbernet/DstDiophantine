@@ -16,6 +16,7 @@ import DstDiophantine.Gravity.GalaxyCurve
 import DstDiophantine.Gravity.SlerpTorque
 import DstDiophantine.Gravity.RelationalPosition
 import DstDiophantine.Gravity.ChannelRange
+import DstDiophantine.Gravity.CliffordParallel
 import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
@@ -267,6 +268,23 @@ The straight line of one fixed jet is not itself that geodesic.
   excess lies in \((0.31,0.32)\). When \(0<R<\Lambda\) the ratio of that excess
   to the electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). \(\Lambda\) is an
   input. The comparison does not subtract the Coulomb coupling from \(G\).
+* `CliffordParallel` — two mirror families of parallels on the three-sphere.
+  A left step has displacement rotor `hopfI s` at every base point; the same
+  step stands on the left along a right parallel. Conjugation swaps the
+  families and reverses the parameter. The frames agree at the identity. At
+  geodesic angle \(\varphi\) along \(I\), the right-hand \(J\) direction is the
+  left-hand direction \(\cos 2\varphi\, J-\sin 2\varphi\, K\), and on
+  \([0,\pi/2]\) the angle between them is \(2\varphi\). Reversing \(\varphi\)
+  preserves the cosine and flips the sign of the \(K\) component. At
+  \(\pi/4\) the two \(J\) directions differ. On a sphere of radius \(\rho\) the
+  mismatch at distance \(s\) is \(2s/\rho\). The two channels therefore stand
+  in the ratio \(\Lambda/R\), and the difference of the mismatches is
+  \(2s(\Lambda-R)/(R\Lambda)\). At \(s=R\) the gravitational mismatch is \(2\).
+  Reading \(\Lambda\) as the Hubble length, for \(8\le R\le 9\) and
+  \(67\le H_0\le 74\) the electromagnetic mismatch lies strictly between
+  \(3.57\times 10^{-6}\) and \(4.45\times 10^{-6}\), and the gravitational
+  mismatch exceeds it by a factor strictly between \(450138\) and \(559315\).
+  \(H_0\) is an input. No theorem asserts `dst_derives_lambda`.
 * `WeakLinearity` — where a fixed compactification radius stays linear in mass.
   The dual acceleration of a sum is the sum of the accelerations, and the
   fractional excess over inverse-square depends only on \(r/R\) and is strictly
@@ -2115,6 +2133,38 @@ example :
   obtain ⟨_, _, _, hpos, hbody, _, hzero, hdiff, hsep⟩ :=
     RelationalPosition.pole_shift_changes_moment
   exact ⟨hpos, hbody, hzero, hdiff, hsep⟩
+
+/-- Regression: a left Clifford step is the same rotor at every base point. -/
+example (q : RelationalPosition.S3) (t s : ℝ) :
+    (CliffordParallel.leftParallel q t)⁻¹ * CliffordParallel.leftParallel q (t + s) =
+      CliffordParallel.hopfI s :=
+  CliffordParallel.leftParallel_step q t s
+
+/-- Regression: conjugation swaps the two parallel families and reverses the step. -/
+example (q : RelationalPosition.S3) (t : ℝ) :
+    (CliffordParallel.leftParallel q t)⁻¹ = CliffordParallel.rightParallel q⁻¹ (-t) :=
+  CliffordParallel.mirror_parallel q t
+
+/-- Regression: on \([0,\pi/2]\) the mirror frames differ by twice the geodesic angle. -/
+example {φ : ℝ} (h0 : 0 ≤ φ) (hπ : φ ≤ Real.pi / 2) :
+    Real.arccos ((star CliffordParallel.qJ * CliffordParallel.twistedJ φ).re) = 2 * φ :=
+  CliffordParallel.twist_angle h0 hπ
+
+/-- Regression: at the patch edge the gravitational mismatch is \(2\), and the
+ratio of the two channels' mismatches is \(\Lambda/R\). -/
+example {R s Λ : ℝ} (hR : R ≠ 0) (hs : s ≠ 0) (hΛ : Λ ≠ 0) :
+    CliffordParallel.mirrorTwist R R = 2 ∧
+      CliffordParallel.mirrorTwist s R / CliffordParallel.mirrorTwist s Λ = Λ / R :=
+  ⟨CliffordParallel.mirrorTwist_edge hR, CliffordParallel.mirrorTwist_ratio hs hR hΛ⟩
+
+/-- Regression: Hubble window for the frame mismatch. \(H_0\) is an external input. -/
+example {R H : ℝ} (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
+    (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
+    (450138 : ℝ) < ((SI.speedOfLight : ℝ) / H) / R ∧
+      ((SI.speedOfLight : ℝ) / H) / R < 559315 ∧
+      (357 : ℝ) / 10 ^ 8 < 2 * R / ((SI.speedOfLight : ℝ) / H) ∧
+      2 * R / ((SI.speedOfLight : ℝ) / H) < (445 : ℝ) / 10 ^ 8 :=
+  CliffordParallel.hubble_frame_window hRlo hRhi hHlo hHhi
 
 /-- Regression: the equidistant chart writes the pole and the antipode at one
 origin. Angle \(\pi\) occurs only there, and every rotation fixes the rotor \(-1\).
