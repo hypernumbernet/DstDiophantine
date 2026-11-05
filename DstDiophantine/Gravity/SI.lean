@@ -433,6 +433,32 @@ theorem nnCoreScaleFm_pos : (0 : ℚ) < nnCoreScaleFm := by
 theorem nnAttractionRadiusFm_pos : (0 : ℚ) < nnAttractionRadiusFm := by
   unfold nnAttractionRadiusFm; norm_num
 
+/-- A positive cleared denominator turns `k * den < num` into `k < num / den`. -/
+theorem rat_div_gt {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : k * den < num) :
+    (k : ℚ) < (num : ℚ) / den := by
+  rw [lt_div_iff₀ hden]
+  exact_mod_cast hnat
+
+/-- A positive cleared denominator turns `num < k * den` into `num / den < k`. -/
+theorem rat_div_lt {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : num < k * den) :
+    (num : ℚ) / den < (k : ℚ) := by
+  rw [div_lt_iff₀ hden]
+  exact_mod_cast hnat
+
+/-- The same comparison when the bound carries a power of ten. -/
+theorem rat_div_gt_pow {num den k e : ℕ} (hden : (0 : ℚ) < den)
+    (hnat : k * 10 ^ e * den < num) :
+    (k : ℚ) * 10 ^ e < (num : ℚ) / den := by
+  rw [lt_div_iff₀ hden]
+  exact_mod_cast hnat
+
+/-- The same comparison when the bound carries a power of ten. -/
+theorem rat_div_lt_pow {num den k e : ℕ} (hden : (0 : ℚ) < den)
+    (hnat : num < k * 10 ^ e * den) :
+    (num : ℚ) / den < (k : ℚ) * 10 ^ e := by
+  rw [div_lt_iff₀ hden]
+  exact_mod_cast hnat
+
 theorem chargeRadiusLower_gt_one :
     (1 : ℚ) < deuteronChargeRadiusFmLower ∧
       (1 : ℚ) < he4ChargeRadiusFmLower ∧

@@ -156,6 +156,60 @@ theorem hasDerivAt_dualFrom {σ δ : ℝ → ℝ} {σ' δ' t : ℝ}
   unfold dualFrom
   exact (hasDerivAt_pointwise_sub hσ hδ).div_const 2
 
+theorem deriv_usualFrom {σ δ : ℝ → ℝ} {σ' δ' t : ℝ}
+    (hσ : HasDerivAt σ σ' t) (hδ : HasDerivAt δ δ' t) :
+    deriv (usualFrom σ δ) t = (σ' + δ') / 2 :=
+  (hasDerivAt_usualFrom hσ hδ).deriv
+
+theorem deriv_dualFrom {σ δ : ℝ → ℝ} {σ' δ' t : ℝ}
+    (hσ : HasDerivAt σ σ' t) (hδ : HasDerivAt δ δ' t) :
+    deriv (dualFrom σ δ) t = (σ' - δ') / 2 :=
+  (hasDerivAt_dualFrom hσ hδ).deriv
+
+theorem deriv_usualFrom_fun {σ δ σ' δ' : ℝ → ℝ}
+    (hσ : ∀ t, HasDerivAt σ (σ' t) t) (hδ : ∀ t, HasDerivAt δ (δ' t) t) :
+    deriv (usualFrom σ δ) = fun t => (σ' t + δ' t) / 2 := by
+  funext t
+  exact deriv_usualFrom (hσ t) (hδ t)
+
+theorem deriv_dualFrom_fun {σ δ σ' δ' : ℝ → ℝ}
+    (hσ : ∀ t, HasDerivAt σ (σ' t) t) (hδ : ∀ t, HasDerivAt δ (δ' t) t) :
+    deriv (dualFrom σ δ) = fun t => (σ' t - δ' t) / 2 := by
+  funext t
+  exact deriv_dualFrom (hσ t) (hδ t)
+
+/-- Second derivative of `(σ' + c) / 2` when the mismatch speed is the constant `c`. -/
+theorem deriv2_sum_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt σ' σ'' t) :
+    deriv (fun s => (σ' s + c) / 2) t = σ'' / 2 := by
+  have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
+  have h := (hasDerivAt_pointwise_add hσ hc).div_const 2
+  rw [h.deriv]
+  ring
+
+/-- Second derivative of `(σ' - c) / 2` when the mismatch speed is the constant `c`. -/
+theorem deriv2_sub_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt σ' σ'' t) :
+    deriv (fun s => (σ' s - c) / 2) t = σ'' / 2 := by
+  have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
+  have h := (hasDerivAt_pointwise_sub hσ hc).div_const 2
+  rw [h.deriv]
+  ring
+
+/-- Second derivative of `(c + δ') / 2` when the rapidity speed is the constant `c`. -/
+theorem deriv2_const_add {δ' : ℝ → ℝ} {c δ'' t : ℝ} (hδ : HasDerivAt δ' δ'' t) :
+    deriv (fun s => (c + δ' s) / 2) t = δ'' / 2 := by
+  have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
+  have h := (hasDerivAt_pointwise_add hc hδ).div_const 2
+  rw [h.deriv]
+  ring
+
+/-- Second derivative of `(c - δ') / 2` when the rapidity speed is the constant `c`. -/
+theorem deriv2_const_sub {δ' : ℝ → ℝ} {c δ'' t : ℝ} (hδ : HasDerivAt δ' δ'' t) :
+    deriv (fun s => (c - δ' s) / 2) t = -δ'' / 2 := by
+  have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
+  have h := (hasDerivAt_pointwise_sub hc hδ).div_const 2
+  rw [h.deriv]
+  ring
+
 theorem usualFrom_sub_dualFrom (σ δ : ℝ → ℝ) (t : ℝ) :
     usualFrom σ δ t - dualFrom σ δ t = δ t := by
   unfold usualFrom dualFrom
@@ -206,45 +260,39 @@ theorem deriv2_writtenDelta (δ₀ ν t : ℝ) :
 theorem deriv_writtenUsual (σ₀ σd₀ m δ₀ ν t : ℝ) :
     deriv (writtenUsual σ₀ σd₀ m δ₀ ν) t =
       (cubicRapiditySpeed σd₀ m δ₀ ν t + ν) / 2 :=
-  (hasDerivAt_usualFrom (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν t)
-    (hasDerivAt_writtenDelta δ₀ ν t)).deriv
+  deriv_usualFrom (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν t)
+    (hasDerivAt_writtenDelta δ₀ ν t)
 
 theorem deriv_writtenDual (σ₀ σd₀ m δ₀ ν t : ℝ) :
     deriv (writtenDual σ₀ σd₀ m δ₀ ν) t =
       (cubicRapiditySpeed σd₀ m δ₀ ν t - ν) / 2 :=
-  (hasDerivAt_dualFrom (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν t)
-    (hasDerivAt_writtenDelta δ₀ ν t)).deriv
+  deriv_dualFrom (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν t)
+    (hasDerivAt_writtenDelta δ₀ ν t)
 
 theorem deriv_writtenUsual_fun (σ₀ σd₀ m δ₀ ν : ℝ) :
     deriv (writtenUsual σ₀ σd₀ m δ₀ ν) =
-      fun t => (cubicRapiditySpeed σd₀ m δ₀ ν t + ν) / 2 := by
-  funext t
-  exact deriv_writtenUsual σ₀ σd₀ m δ₀ ν t
+      fun t => (cubicRapiditySpeed σd₀ m δ₀ ν t + ν) / 2 :=
+  deriv_usualFrom_fun (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν)
+    (fun t => hasDerivAt_writtenDelta δ₀ ν t)
 
 theorem deriv_writtenDual_fun (σ₀ σd₀ m δ₀ ν : ℝ) :
     deriv (writtenDual σ₀ σd₀ m δ₀ ν) =
-      fun t => (cubicRapiditySpeed σd₀ m δ₀ ν t - ν) / 2 := by
-  funext t
-  exact deriv_writtenDual σ₀ σd₀ m δ₀ ν t
+      fun t => (cubicRapiditySpeed σd₀ m δ₀ ν t - ν) / 2 :=
+  deriv_dualFrom_fun (hasDerivAt_writtenSigma σ₀ σd₀ m δ₀ ν)
+    (fun t => hasDerivAt_writtenDelta δ₀ ν t)
 
 theorem deriv2_writtenUsual (σ₀ σd₀ m δ₀ ν t : ℝ) :
     deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t = -m * writtenDelta δ₀ ν t := by
-  rw [deriv_writtenUsual_fun]
-  have hσ : HasDerivAt (cubicRapiditySpeed σd₀ m δ₀ ν) (-2 * m * writtenDelta δ₀ ν t) t :=
-    hasDerivAt_cubicRapiditySpeed σd₀ m δ₀ ν t
-  have hδ : HasDerivAt (fun _ : ℝ => ν) 0 t := hasDerivAt_const t ν
-  have h := (hasDerivAt_pointwise_add hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_writtenUsual_fun,
+    deriv2_sum_const (c := ν) (hasDerivAt_cubicRapiditySpeed σd₀ m δ₀ ν t)]
+  unfold writtenDelta
   ring
 
 theorem deriv2_writtenDual (σ₀ σd₀ m δ₀ ν t : ℝ) :
     deriv (deriv (writtenDual σ₀ σd₀ m δ₀ ν)) t = -m * writtenDelta δ₀ ν t := by
-  rw [deriv_writtenDual_fun]
-  have hσ : HasDerivAt (cubicRapiditySpeed σd₀ m δ₀ ν) (-2 * m * writtenDelta δ₀ ν t) t :=
-    hasDerivAt_cubicRapiditySpeed σd₀ m δ₀ ν t
-  have hδ : HasDerivAt (fun _ : ℝ => ν) 0 t := hasDerivAt_const t ν
-  have h := (hasDerivAt_pointwise_sub hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_writtenDual_fun,
+    deriv2_sub_const (c := ν) (hasDerivAt_cubicRapiditySpeed σd₀ m δ₀ ν t)]
+  unfold writtenDelta
   ring
 
 /-- The cubic flow solves the written Euler–Lagrange system at every time. -/
@@ -452,48 +500,42 @@ theorem deriv_oscillatorDelta (A B ω : ℝ) :
 
 theorem deriv_oscillatorUsual (σ₀ σd₀ A B ω t : ℝ) :
     deriv (oscillatorUsual σ₀ σd₀ A B ω) t =
-      (σd₀ + harmonicSpeed A B ω t) / 2 := by
-  exact (hasDerivAt_usualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
-    (hasDerivAt_harmonicMismatch A B ω t)).deriv
+      (σd₀ + harmonicSpeed A B ω t) / 2 :=
+  deriv_usualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_harmonicMismatch A B ω t)
 
 theorem deriv_oscillatorDual (σ₀ σd₀ A B ω t : ℝ) :
     deriv (oscillatorDual σ₀ σd₀ A B ω) t =
-      (σd₀ - harmonicSpeed A B ω t) / 2 := by
-  exact (hasDerivAt_dualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
-    (hasDerivAt_harmonicMismatch A B ω t)).deriv
+      (σd₀ - harmonicSpeed A B ω t) / 2 :=
+  deriv_dualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_harmonicMismatch A B ω t)
 
 theorem deriv_oscillatorUsual_fun (σ₀ σd₀ A B ω : ℝ) :
     deriv (oscillatorUsual σ₀ σd₀ A B ω) =
-      fun t => (σd₀ + harmonicSpeed A B ω t) / 2 := by
-  funext t
-  exact deriv_oscillatorUsual σ₀ σd₀ A B ω t
+      fun t => (σd₀ + harmonicSpeed A B ω t) / 2 :=
+  deriv_usualFrom_fun (fun t => hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_harmonicMismatch A B ω)
 
 theorem deriv_oscillatorDual_fun (σ₀ σd₀ A B ω : ℝ) :
     deriv (oscillatorDual σ₀ σd₀ A B ω) =
-      fun t => (σd₀ - harmonicSpeed A B ω t) / 2 := by
-  funext t
-  exact deriv_oscillatorDual σ₀ σd₀ A B ω t
+      fun t => (σd₀ - harmonicSpeed A B ω t) / 2 :=
+  deriv_dualFrom_fun (fun t => hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_harmonicMismatch A B ω)
 
 theorem deriv2_oscillatorUsual (σ₀ σd₀ A B ω t : ℝ) :
     deriv (deriv (oscillatorUsual σ₀ σd₀ A B ω)) t =
       -(ω ^ 2) * oscillatorDelta A B ω t / 2 := by
-  rw [deriv_oscillatorUsual_fun]
-  have hσ : HasDerivAt (fun _ : ℝ => σd₀) 0 t := hasDerivAt_const t σd₀
-  have hδ : HasDerivAt (harmonicSpeed A B ω) (-(ω ^ 2) * oscillatorDelta A B ω t) t :=
-    hasDerivAt_harmonicSpeed A B ω t
-  have h := (hasDerivAt_pointwise_add hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_oscillatorUsual_fun,
+    deriv2_const_add (c := σd₀) (hasDerivAt_harmonicSpeed A B ω t)]
+  unfold oscillatorDelta
   ring
 
 theorem deriv2_oscillatorDual (σ₀ σd₀ A B ω t : ℝ) :
     deriv (deriv (oscillatorDual σ₀ σd₀ A B ω)) t =
       (ω ^ 2) * oscillatorDelta A B ω t / 2 := by
-  rw [deriv_oscillatorDual_fun]
-  have hσ : HasDerivAt (fun _ : ℝ => σd₀) 0 t := hasDerivAt_const t σd₀
-  have hδ : HasDerivAt (harmonicSpeed A B ω) (-(ω ^ 2) * oscillatorDelta A B ω t) t :=
-    hasDerivAt_harmonicSpeed A B ω t
-  have h := (hasDerivAt_pointwise_sub hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_oscillatorDual_fun,
+    deriv2_const_sub (c := σd₀) (hasDerivAt_harmonicSpeed A B ω t)]
+  unfold oscillatorDelta
   ring
 
 /-- The harmonic flow solves the same-sign oscillator when `ω² = 2 m`. -/
@@ -562,47 +604,41 @@ noncomputable def runawayDual (σ₀ σd₀ A B κ : ℝ) : ℝ → ℝ :=
 theorem deriv_runawayUsual (σ₀ σd₀ A B κ t : ℝ) :
     deriv (runawayUsual σ₀ σd₀ A B κ) t =
       (σd₀ + hyperbolicSpeed A B κ t) / 2 :=
-  (hasDerivAt_usualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
-    (hasDerivAt_hyperbolicMismatch A B κ t)).deriv
+  deriv_usualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_hyperbolicMismatch A B κ t)
 
 theorem deriv_runawayDual (σ₀ σd₀ A B κ t : ℝ) :
     deriv (runawayDual σ₀ σd₀ A B κ) t =
       (σd₀ - hyperbolicSpeed A B κ t) / 2 :=
-  (hasDerivAt_dualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
-    (hasDerivAt_hyperbolicMismatch A B κ t)).deriv
+  deriv_dualFrom (hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_hyperbolicMismatch A B κ t)
 
 theorem deriv_runawayUsual_fun (σ₀ σd₀ A B κ : ℝ) :
     deriv (runawayUsual σ₀ σd₀ A B κ) =
-      fun t => (σd₀ + hyperbolicSpeed A B κ t) / 2 := by
-  funext t
-  exact deriv_runawayUsual σ₀ σd₀ A B κ t
+      fun t => (σd₀ + hyperbolicSpeed A B κ t) / 2 :=
+  deriv_usualFrom_fun (fun t => hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_hyperbolicMismatch A B κ)
 
 theorem deriv_runawayDual_fun (σ₀ σd₀ A B κ : ℝ) :
     deriv (runawayDual σ₀ σd₀ A B κ) =
-      fun t => (σd₀ - hyperbolicSpeed A B κ t) / 2 := by
-  funext t
-  exact deriv_runawayDual σ₀ σd₀ A B κ t
+      fun t => (σd₀ - hyperbolicSpeed A B κ t) / 2 :=
+  deriv_dualFrom_fun (fun t => hasDerivAt_inertialRapidity σ₀ σd₀ t)
+    (hasDerivAt_hyperbolicMismatch A B κ)
 
 theorem deriv2_runawayUsual (σ₀ σd₀ A B κ t : ℝ) :
     deriv (deriv (runawayUsual σ₀ σd₀ A B κ)) t =
       κ ^ 2 * runawayDelta A B κ t / 2 := by
-  rw [deriv_runawayUsual_fun]
-  have hσ : HasDerivAt (fun _ : ℝ => σd₀) 0 t := hasDerivAt_const t σd₀
-  have hδ : HasDerivAt (hyperbolicSpeed A B κ) (κ ^ 2 * runawayDelta A B κ t) t :=
-    hasDerivAt_hyperbolicSpeed A B κ t
-  have h := (hasDerivAt_pointwise_add hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_runawayUsual_fun,
+    deriv2_const_add (c := σd₀) (hasDerivAt_hyperbolicSpeed A B κ t)]
+  unfold runawayDelta
   ring
 
 theorem deriv2_runawayDual (σ₀ σd₀ A B κ t : ℝ) :
     deriv (deriv (runawayDual σ₀ σd₀ A B κ)) t =
       -(κ ^ 2) * runawayDelta A B κ t / 2 := by
-  rw [deriv_runawayDual_fun]
-  have hσ : HasDerivAt (fun _ : ℝ => σd₀) 0 t := hasDerivAt_const t σd₀
-  have hδ : HasDerivAt (hyperbolicSpeed A B κ) (κ ^ 2 * runawayDelta A B κ t) t :=
-    hasDerivAt_hyperbolicSpeed A B κ t
-  have h := (hasDerivAt_pointwise_sub hσ hδ).div_const 2
-  rw [h.deriv]
+  rw [deriv_runawayDual_fun,
+    deriv2_const_sub (c := σd₀) (hasDerivAt_hyperbolicSpeed A B κ t)]
+  unfold runawayDelta
   ring
 
 /-- The hyperbolic flow solves the neighbouring runaway system when `κ² = 2 m`. -/
