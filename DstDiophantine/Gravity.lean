@@ -245,6 +245,9 @@ The straight line of one fixed jet is not itself that geodesic.
   them, the moment of the pushed tangent about the source is `chordMoment`.
   It vanishes on a common ray and when the source is the chart origin. For
   equal chart distances and \(\chi,\alpha\in(0,\pi)\) the moment is positive.
+  The moment is odd in the oriented angle, so the values at \(\alpha\) and
+  \(-\alpha\) sum to zero, and on \((-\pi,0)\) the equal-distance moment is
+  negative.
 * `RelationalPosition` — the position of element \(b\) relative to element \(a\)
   is the rotor \(\rho(a,b)=a^{-1}b\). Left multiplication of both elements
   leaves \(\rho\) fixed. Right multiplication replaces it by \(h^{-1}\rho h\)
@@ -293,7 +296,14 @@ The straight line of one fixed jet is not itself that geodesic.
   mismatch exceeds it by a factor strictly between \(450138\) and \(559315\).
   The ratio of the patch radius to the Hubble length is the reciprocal, strictly
   between \(1.787\times 10^{-6}\) and \(2.222\times 10^{-6}\).
-  \(H_0\) is an input. No theorem asserts `dst_derives_lambda`.
+  A rotation \(p\mapsto apb\) carries each family onto itself: the right factor
+  conjugates the axis of a left line, and the left factor conjugates the axis
+  of a right line. Through \(J\), a quarter turn of the left family ends at
+  \(-K\) and a quarter turn of the right family ends at \(K\). On \((0,\pi/2)\)
+  the \(K\) component of the frame is \(-\sin(2\varphi)\) for the family
+  written above and \(+\sin(2\varphi)\) for the reversed geodesic. The two
+  screws are strict and opposite. \(H_0\) is an input. No theorem asserts
+  `dst_derives_lambda`, and none names which family the universe carries.
 * `WeakLinearity` — where a fixed compactification radius stays linear in mass.
   The dual acceleration of a sum is the sum of the accelerations, and the
   fractional excess over inverse-square depends only on \(r/R\) and is strictly
@@ -2153,6 +2163,43 @@ example (q : RelationalPosition.S3) (t s : ℝ) :
 example (q : RelationalPosition.S3) (t : ℝ) :
     (CliffordParallel.leftParallel q t)⁻¹ = CliffordParallel.rightParallel q⁻¹ (-t) :=
   CliffordParallel.mirror_parallel q t
+
+/-- Regression: a rotation carries each parallel family onto itself. -/
+example (a b q : RelationalPosition.S3) (t : ℝ) :
+    a * CliffordParallel.leftParallel q t * b =
+      (a * q * b) * (b⁻¹ * CliffordParallel.hopfI t * b) ∧
+      a * CliffordParallel.rightParallel q t * b =
+        (a * CliffordParallel.hopfI t * a⁻¹) * (a * q * b) :=
+  ⟨CliffordParallel.rotation_carries_left a b q t,
+    CliffordParallel.rotation_carries_right a b q t⟩
+
+/-- Regression: through `J` the two families end a quarter turn at opposite points. -/
+example :
+    (CliffordParallel.leftParallel CliffordParallel.sJ (Real.pi / 2)).val =
+      -CliffordParallel.qK ∧
+      (CliffordParallel.rightParallel CliffordParallel.sJ (Real.pi / 2)).val =
+        CliffordParallel.qK ∧
+      CliffordParallel.leftParallel CliffordParallel.sJ (Real.pi / 2) ≠
+        CliffordParallel.rightParallel CliffordParallel.sJ (Real.pi / 2) :=
+  CliffordParallel.family_sense
+
+/-- Regression: on `(0, π/2)` the two screws are strict and opposite. -/
+example {φ : ℝ} (h0 : 0 < φ) (hπ : φ < Real.pi / 2) :
+    (CliffordParallel.twistedJ φ).imK = -Real.sin (2 * φ) ∧
+      (CliffordParallel.twistedJ (-φ)).imK = Real.sin (2 * φ) ∧
+      (CliffordParallel.twistedJ φ).imK < 0 ∧
+      0 < (CliffordParallel.twistedJ (-φ)).imK :=
+  CliffordParallel.screw_sign h0 hπ
+
+/-- Regression: the moment is odd in the oriented angle, the reflected pair
+cancels, and the equal-distance moment is negative on `(-π, 0)`. -/
+example {χ ψ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
+    (hα : -Real.pi < α) (hα0 : α < 0) :
+    SlerpTorque.chordMoment χ ψ (-α) = -SlerpTorque.chordMoment χ ψ α ∧
+      SlerpTorque.chordMoment χ ψ α + SlerpTorque.chordMoment χ ψ (-α) = 0 ∧
+      SlerpTorque.chordMoment χ χ α < 0 :=
+  ⟨SlerpTorque.chordMoment_neg_angle χ ψ α, SlerpTorque.chordMoment_cancels χ ψ α,
+    SlerpTorque.chordMoment_equal_neg hχ hχu hα hα0⟩
 
 /-- Regression: on \([0,\pi/2]\) the mirror frames differ by twice the geodesic angle. -/
 example {φ : ℝ} (h0 : 0 ≤ φ) (hπ : φ ≤ Real.pi / 2) :
