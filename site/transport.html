@@ -96,34 +96,38 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en">Coordinates are readings of the map, not a stage that exists on its own. The flat-map twist discussed in <a class="ref" href="rotation.html#flat-map-twist">chapter&nbsp;8</a> is one such reading — not a property of the pair alone. When a chart collapses the far point onto the pole or hides motion along a light ray on a transverse screen, the same lesson applies; see <a class="ref" href="transport.html#map-far-point-and-light">what a flat map loses at the far point and along a light ray</a> below.</span><span class="ja">座標は地図の読み取りであり、それ自体が存在する舞台ではありません。<a class="ref" href="rotation.html#flat-map-twist">第&nbsp;8&nbsp;章</a>で述べる平坦な地図上のねじれも、そのような読み取りの一つであり、組だけの性質ではありません。チャートが遠点を極に重ねたり、光線に沿う移動を横のスクリーンで見えなくしたりする場合も同じ教訓です。下の<a class="ref" href="transport.html#map-far-point-and-light">平坦な地図が遠点と光線で失うもの</a>を参照してください。</span></p>
   <p><span class="en">In standard physics, position is often tied to a <b>background space</b>: coordinates on a grid that would exist even if nothing material were there. DST does not start from such a stage. What exists between particles are relations — Leibniz and Mach in spirit, but realized in the algebra the site has been describing.</span><span class="ja">標準的な物理学では、位置はしばしば<b>背景空間</b>に結びつきます — 物質がなくてもあるとされる座標の格子です。DST はそのような舞台から出発しません。粒子の間にあるのは関係です — ライプニッツやマッハの精神に近い考え方ですが、このサイトで述べてきた代数の中で具体化されています。</span></p>
   <p><span class="en">This between-particle relation is <em>not</em> the mismatch between the two spacetime frames inside one particle — the twist behind gravity in <a class="ref" href="gravity.html#gravity">chapter&nbsp;2</a>.</span><span class="ja">粒子と粒子の間のこの関係は、一つの粒子の内側にある二つの時空フレームの不整合 — <a class="ref" href="gravity.html#gravity">第&nbsp;2&nbsp;章</a>の重力の背後にあるねじれ — とは別物です。</span></p>
-  <svg class="fig" viewBox="0 0 640 440" role="img" aria-label="Same separation angle on the three-sphere: flat-map torque reading can change with viewpoint, not with moving the map centre alone">
+  <svg class="fig" viewBox="0 0 640 520" role="img" aria-label="Same separation angle on the three-sphere: flat-map torque reading can change with viewpoint, not with moving the map centre alone">
     <defs>
       <marker id="ah-rp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <text class="cap" x="160" y="26" text-anchor="middle"><tspan class="en">One viewpoint on the map</tspan><tspan class="ja">地図上の一つの見方</tspan></text>
-    <g transform="translate(160,178)">
-      <circle r="82" class="ring rs"/>
-      <circle cx="-32" cy="-48" r="6" class="dotc"/>
-      <circle cx="42" cy="-26" r="6" class="dotw"/>
-      <text class="lbl small" x="-58" y="-44" text-anchor="end"><tspan class="en">object A</tspan><tspan class="ja">物体 A</tspan></text>
-      <text class="lbl small" x="58" y="-22" text-anchor="start"><tspan class="en">object B</tspan><tspan class="ja">物体 B</tspan></text>
-      <path class="curve" d="M-32,-48 A82,82 0 0 1 42,-26" marker-end="url(#ah-rp)"/>
-      <text class="lbl small twistt" x="4" y="-72" text-anchor="middle"><tspan class="en">separation angle</tspan><tspan class="ja">離れの角度</tspan></text>
-      <path class="twist" d="M-24,-48 A12,12 0 0 1 -30,-58"/>
-      <text class="lbl small" x="4" y="36" text-anchor="middle"><tspan class="en">flat-map torque: present</tspan><tspan class="ja">地図上のモーメント：あり</tspan></text>
+    <text class="cap" x="160" y="24" text-anchor="middle"><tspan class="en">One viewpoint</tspan><tspan class="ja">一つの見方</tspan></text>
+    <text class="cap" x="480" y="24" text-anchor="middle"><tspan class="en">Internal reference turn</tspan><tspan class="ja">内部基準の回転</tspan></text>
+    <g transform="translate(160,168)">
+      <circle r="72" class="ring rs"/>
+      <circle cx="-28" cy="-42" r="6" class="dotc"/>
+      <circle cx="36" cy="-22" r="6" class="dotw"/>
+      <text class="lbl small" x="-52" y="-38" text-anchor="end"><tspan class="en">A</tspan><tspan class="ja">A</tspan></text>
+      <text class="lbl small" x="52" y="-18" text-anchor="start"><tspan class="en">B</tspan><tspan class="ja">B</tspan></text>
+      <path class="curve" d="M-28,-42 A72,72 0 0 1 36,-22" marker-end="url(#ah-rp)"/>
+      <path class="twist" d="M-20,-42 A10,10 0 0 1 -26,-52"/>
     </g>
-    <text class="cap" x="480" y="26" text-anchor="middle"><tspan class="en">After internal reference turn</tspan><tspan class="ja">内部基準を回したあと</tspan></text>
-    <g transform="translate(480,178)">
-      <circle r="82" class="ring rs"/>
-      <circle cx="-32" cy="-48" r="6" class="dotc"/>
-      <circle cx="42" cy="-26" r="6" class="dotw"/>
-      <path class="curve" d="M-32,-48 A82,82 0 0 1 42,-26"/>
-      <text class="lbl small twistt" x="4" y="-72" text-anchor="middle"><tspan class="en">same separation angle</tspan><tspan class="ja">同じ離れの角度</tspan></text>
-      <path class="spin" d="M52,52 A28,28 0 1 1 20,52" marker-end="url(#ah-rp)"/>
-      <text class="lbl small" x="36" y="78" text-anchor="middle"><tspan class="en">internal reference</tspan><tspan class="ja">内部の基準</tspan></text>
-      <text class="lbl small" x="4" y="36" text-anchor="middle"><tspan class="en">flat-map torque: reads zero</tspan><tspan class="ja">地図上のモーメント：零と読む</tspan></text>
+    <g transform="translate(480,168)">
+      <circle r="72" class="ring rs"/>
+      <circle cx="-28" cy="-42" r="6" class="dotc"/>
+      <circle cx="36" cy="-22" r="6" class="dotw"/>
+      <path class="curve" d="M-28,-42 A72,72 0 0 1 36,-22"/>
+      <path class="spin" d="M46,46 A24,24 0 1 1 18,46" marker-end="url(#ah-rp)"/>
     </g>
-    <text class="note" x="12" y="424"><tspan class="en">Schematic. Moving the map centre alone only relabels coordinates; curved arrows show the relation angle or reference turn, not map axes.</tspan><tspan class="ja">模式図。地図の中心だけを移すのは座標の付け直しです。曲線の矢印は離れの角度か基準の回転を示し、地図の軸ではありません。</tspan></text>
+    <g class="legend" transform="translate(20,268)">
+      <path class="curve" d="M0,0 Q22,-18 44,0"/>
+      <text class="lbl small" x="54" y="5"><tspan class="en">separation angle (unchanged)</tspan><tspan class="ja">離れの角度（不変）</tspan></text>
+      <path class="twist" d="M0,32 A14,14 0 0 1 -8,20"/>
+      <text class="lbl small" x="54" y="37"><tspan class="en">flat-map torque: present</tspan><tspan class="ja">地図上のモーメント：あり</tspan></text>
+      <path class="spin" d="M0,64 A18,18 0 1 1 14,64" marker-end="url(#ah-rp)"/>
+      <text class="lbl small" x="54" y="69"><tspan class="en">internal reference turn</tspan><tspan class="ja">内部基準の回転</tspan></text>
+      <text class="lbl small" x="54" y="97"><tspan class="en">flat-map torque: reads zero (right panel)</tspan><tspan class="ja">地図上のモーメント：零と読む（右）</tspan></text>
+    </g>
+    <text class="note" x="12" y="508"><tspan class="en">Schematic. Moving the map centre alone only relabels coordinates; samples in the legend are not map axes.</tspan><tspan class="ja">模式図。地図の中心だけを移すのは座標の付け直しです。凡例の記号は地図の軸ではありません。</tspan></text>
   </svg>
 
   <h3 class="sub" id="map-far-point-and-light"><span class="en">What a flat map loses at the far point and along a light ray</span><span class="ja">平坦な地図が遠点と光線で失うもの</span></h3>
@@ -131,42 +135,43 @@ document.documentElement.setAttribute('data-lang',l);document.documentElement.la
   <p><span class="en">For <b>light</b>, a null rotation — a lightlike shear — keeps a light ray's direction fixed and slides a sideways vector along that ray. Picture a flat screen built only from transverse coordinates: the reading on the screen does not move, yet the vector has moved along the light line. Step off the ray and the transverse reading does change, while the coordinate tied to the light line stays the same. Where the light «is» is carried by the null line, not by the flat screen alone — the same pattern as coordinates versus relations above.</span><span class="ja"><b>光</b>について、ヌル回転 — 光様のせん断 — は光線の向きを固定したまま、横方向のベクトルをその光線に沿って滑らせます。横方向だけの平坦なスクリーンを想像すると、スクリーン上の読み取りは動きませんが、ベクトル自体は光線に沿って移動しています。光線から外れると横方向の読み取りは変わり、光線に結びついた座標は同じままです。光の「位置」は平坦なスクリーンだけではなく、ヌル線が運びます — 上で述べた座標と関係の区別と同型です。</span></p>
   <p><span class="en"><b>One family of rotations.</b> The antipode story and the light-ray story are not two unrelated tricks. One parameterized family of rotations covers both. When the generator carries curvature, turning far enough along it reaches a half-turn at a <em>finite</em> distance — the antipode on the closed <b>three-sphere</b> — and the equidistant map's area factor shrinks to zero there, which is why pole and antipode can land on the same chart point. As that curvature is dialed toward zero, the far point recedes to infinity and the same family becomes exactly the light-line shear above. The closed three-sphere and the light cone are then two <em>readings</em> of one rotation, not proof that they are the same space — they are not. Standard physics also connects curved and flat symmetries through a similar limit; DST carries that connection inside the algebra matter already bears, rather than on a background space that exists on its own.</span><span class="ja"><b>ひとつの回転の族。</b> 対蹠点の話と光線の話は、無関係な二つの工夫ではありません。パラメータ付きの<b>ひとつの回転の族</b>が両方を覆います。生成子に曲率があるとき、十分遠くまで回すと<b>有限</b>の距離で半回転に達します — 閉じた<b>三次元球面</b>上の対蹠点 — そして等距離地図の面積因子はそこで零に縮み、極と対蹠点が同じ地図の点に落ちうる理由になります。その曲率を零に近づけると、遠点は無限遠へ退き、同じ族は上の光線に沿うせん断そのものになります。閉じた三次元球面と光円錐は、ひとつの回転の<b>二つの読み方</b>であり、同じ空間であることの証明ではありません — 同じではありません。標準的な物理学も、曲がった対称性と平坦な対称性を似た極限で結びます。DST ではその結びつきを、もともとある背景空間の上ではなく、物質がすでに運ぶ代数の内側で扱います。</span></p>
   <p><span class="en">DST does not derive a position operator or an uncertainty relation for localization, and it does not derive a galactic acceleration scale or a measurable laboratory effect from this picture. The localization question is the same broad one standard quantum theory faces; the acceleration and lab questions are the same broad ones astrophysics and experiment face — here the story is framed in relational algebra, but those numbers and operators are not supplied.</span><span class="ja">DST は、局在化のための位置演算子や不確定性関係を導きませんし、この描像から銀河の加速度の物差しや、実験室で測れる効果も導きません。局在化の問いは標準的な量子論が向き合うのと同じ種類の一般論であり、加速度や実験の問いも天体物理学や実験が向き合うのと同じ種類の一般論です — ここでは関係の代数として書き直すにすぎず、それらの数値や演算子は与えていません。</span></p>
-  <svg class="fig" viewBox="0 0 640 500" role="img" aria-label="One rotation family: curved three-sphere limit with antipode on the map, flat limit with light-ray shear hidden on a screen">
+  <svg class="fig" viewBox="0 0 640 580" role="img" aria-label="One rotation family: curved three-sphere limit with antipode on the map, flat limit with light-ray shear hidden on a screen">
     <defs>
       <marker id="ah-edge" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
     </defs>
-    <text class="cap" x="320" y="22" text-anchor="middle"><tspan class="en">One rotation family — two limits (schematic dial)</tspan><tspan class="ja">ひとつの回転の族 — 二つの極限（模式のダイヤル）</tspan></text>
-    <text class="lbl small" x="118" y="48" text-anchor="middle"><tspan class="en">more curved</tspan><tspan class="ja">より曲がる</tspan></text>
-    <text class="lbl small" x="522" y="48" text-anchor="middle"><tspan class="en">flat (light shear)</tspan><tspan class="ja">平坦（光のせん断）</tspan></text>
-    <line class="curve2" x1="48" y1="56" x2="592" y2="56"/>
-    <circle cx="118" cy="56" r="7" class="dotc"/>
-    <circle cx="522" cy="56" r="7" class="dotw"/>
-    <path class="pull" d="M130,56 L510,56" marker-end="url(#ah-edge)"/>
-    <text class="cap" x="320" y="88" text-anchor="middle"><tspan class="en">Curved limit: closed three-sphere</tspan><tspan class="ja">曲がった極限：閉じた三次元球面</tspan></text>
-    <g transform="translate(320,148)">
-      <circle r="62" class="ring rs"/>
+    <text class="cap" x="320" y="22" text-anchor="middle"><tspan class="en">One rotation family — two limits</tspan><tspan class="ja">ひとつの回転の族 — 二つの極限</tspan></text>
+    <text class="lbl small" x="96" y="52" text-anchor="middle"><tspan class="en">more curved</tspan><tspan class="ja">より曲がる</tspan></text>
+    <text class="lbl small" x="544" y="52" text-anchor="middle"><tspan class="en">flat limit</tspan><tspan class="ja">平坦な極限</tspan></text>
+    <line class="curve2" x1="40" y1="58" x2="600" y2="58"/>
+    <circle cx="96" cy="58" r="6" class="dotc"/>
+    <circle cx="544" cy="58" r="6" class="dotw"/>
+    <path class="pull" d="M108,58 L532,58" marker-end="url(#ah-edge)"/>
+    <text class="cap" x="320" y="92" text-anchor="middle"><tspan class="en">Curved limit (closed three-sphere)</tspan><tspan class="ja">曲がった極限（閉じた三次元球面）</tspan></text>
+    <g transform="translate(320,168)">
+      <circle r="58" class="ring rs"/>
       <circle r="4" class="node"/>
-      <text class="lbl small" x="0" y="18" text-anchor="middle"><tspan class="en">pole + antipode</tspan><tspan class="ja">極＋対蹠点</tspan></text>
-      <path class="curve" d="M0,-62 A62,62 0 0 1 0,62" marker-end="url(#ah-edge)"/>
-      <text class="lbl small twistt" x="78" y="-6" text-anchor="start"><tspan class="en">half-turn</tspan><tspan class="ja">半回転</tspan></text>
-      <text class="lbl small" x="78" y="10" text-anchor="start"><tspan class="en">map area → 0</tspan><tspan class="ja">地図の面積→0</tspan></text>
+      <path class="curve" d="M0,-58 A58,58 0 0 1 0,58" marker-end="url(#ah-edge)"/>
     </g>
-    <text class="cap" x="320" y="268" text-anchor="middle"><tspan class="en">Flat limit: light cone reading</tspan><tspan class="ja">平坦な極限：光円錐の読み方</tspan></text>
-    <g transform="translate(64,308)">
-      <line class="pull" x1="0" y1="0" x2="420" y2="0" marker-end="url(#ah-edge)"/>
-      <text class="lbl small dualt" x="210" y="-10" text-anchor="middle"><tspan class="en">light ray</tspan><tspan class="ja">光線</tspan></text>
-      <circle cx="100" cy="0" r="4" class="dotc"/>
-      <circle cx="180" cy="0" r="4" class="dotw"/>
-      <path class="curve2" d="M100,0 L180,0"/>
-      <text class="lbl small" x="140" y="20" text-anchor="middle"><tspan class="en">slide along ray</tspan><tspan class="ja">光線に沿って滑る</tspan></text>
+    <text class="cap" x="320" y="252" text-anchor="middle"><tspan class="en">Flat limit (light cone reading)</tspan><tspan class="ja">平坦な極限（光円錐の読み方）</tspan></text>
+    <g transform="translate(48,292)">
+      <line class="pull" x1="0" y1="0" x2="400" y2="0" marker-end="url(#ah-edge)"/>
+      <circle cx="88" cy="0" r="4" class="dotc"/>
+      <circle cx="168" cy="0" r="4" class="dotw"/>
+      <path class="curve2" d="M88,0 L168,0"/>
     </g>
-    <g transform="translate(528,292)">
-      <line class="dim" x1="0" y1="0" x2="0" y2="64"/>
-      <text class="lbl small" x="10" y="28"><tspan class="en">flat screen</tspan><tspan class="ja">平坦スクリーン</tspan></text>
-      <circle cx="0" cy="32" r="3.5" class="node"/>
-      <text class="lbl small" x="12" y="36" text-anchor="start"><tspan class="en">no change</tspan><tspan class="ja">変化なし</tspan></text>
+    <g class="legend" transform="translate(20,340)">
+      <circle r="3" class="node" cx="0" cy="0"/>
+      <text class="lbl small" x="12" y="5"><tspan class="en">pole and antipode on one map point</tspan><tspan class="ja">極と対蹠点（地図上は同一点）</tspan></text>
+      <path class="curve" d="M0,28 Q20,10 40,28" marker-end="url(#ah-edge)"/>
+      <text class="lbl small" x="52" y="33"><tspan class="en">half-turn in the relation</tspan><tspan class="ja">関係としての半回転</tspan></text>
+      <text class="lbl small" x="52" y="53"><tspan class="en">equidistant map area → 0 at the far point</tspan><tspan class="ja">遠点で等距離地図の面積→0</tspan></text>
+      <line class="pull" x1="0" y1="72" x2="36" y2="72" marker-end="url(#ah-edge)"/>
+      <text class="lbl small" x="46" y="77"><tspan class="en">light ray; motion along the ray (dashed segment)</tspan><tspan class="ja">光線；光線に沿う移動（破線）</tspan></text>
+      <line class="dim" x1="0" y1="100" x2="0" y2="124"/>
+      <circle cx="0" cy="112" r="3" class="node"/>
+      <text class="lbl small" x="12" y="116"><tspan class="en">flat transverse screen: reading unchanged</tspan><tspan class="ja">平坦な横スクリーン：読み取り不変</tspan></text>
     </g>
-    <text class="note" x="12" y="488"><tspan class="en">Schematic. The dial links limits of one family; lines and curved arrows are mapping or motion, not coordinate axes. Not the same space.</tspan><tspan class="ja">模式図。ダイヤルは一つの族の極限を結びます。線と曲線矢印は写像か移動であり、座標軸ではありません。同じ空間ではありません。</tspan></text>
+    <text class="note" x="12" y="568"><tspan class="en">Schematic dial. Legend samples are mapping or motion, not coordinate axes. Sphere and light cone are not the same space.</tspan><tspan class="ja">模式のダイヤル。凡例は写像か移動であり、座標軸ではありません。球面と光円錐は同じ空間ではありません。</tspan></text>
   </svg>
   
 </section>
