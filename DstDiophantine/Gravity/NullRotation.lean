@@ -12,6 +12,12 @@ parameter the fixed vectors are the span of `e₀ - e₃` and `e₂`. The same
 coefficients act on the null ideal, because `e₄` commutes with the Lorentz
 span: `N(x)` is sent to `N(Λₜ x)`. A translator `1 + s N₁` sends `e₁` to
 `e₁ + s e₄`.
+
+The transverse vector `e₁` is sent to `e₁` plus a multiple of the null line.
+Its transverse coordinates are unchanged, the displacement is lightlike, and
+for a nonzero parameter the vector itself has moved. A vector whose null
+coordinate `x₀ + x₃` is nonzero has its transverse coordinate moved as well.
+The null coordinate is invariant. No position operator is claimed.
 -/
 
 namespace DstDiophantine
@@ -486,6 +492,72 @@ theorem sandwich_parabolic_null_fixedLine (t : ℝ) :
     ext i
     fin_cases i <;> simp [nullRotation, nullLineVec]
   rw [hvec, sandwich_parabolic_nullVector, hrot]
+
+/-! ### Where a transverse reading keeps no position -/
+
+/-- The transverse screen vector `e₁`. -/
+def screenVec : Fin 4 → ℝ := ![0, 1, 0, 0]
+
+theorem nullRotation_nullLine (t : ℝ) : nullRotation t nullLineVec = nullLineVec := by
+  funext i
+  fin_cases i <;> simp [nullRotation, nullLineVec]
+
+/-- `e₁` slides along the fixed null line. -/
+theorem screen_displaced_along_null (t : ℝ) :
+    nullRotation t screenVec = screenVec + (2 * t) • nullLineVec := by
+  funext i
+  fin_cases i <;> simp [nullRotation, screenVec, nullLineVec, Pi.add_apply]
+
+/-- The transverse reading of `e₁` is unchanged. -/
+theorem screen_reading (t : ℝ) :
+    (nullRotation t screenVec) 1 = 1 ∧ (nullRotation t screenVec) 2 = 0 := by
+  constructor <;> simp [nullRotation, screenVec]
+
+theorem Q31_smul (c : ℝ) (x : Fin 4 → ℝ) : Q31 (c • x) = c ^ 2 * Q31 x := by
+  simp only [Q31_eq_minkowskiDot, minkowskiDot, Pi.smul_apply]
+  ring
+
+theorem screen_displacement_lightlike (t : ℝ) :
+    Q31 (nullRotation t screenVec - screenVec) = 0 := by
+  have hsub : nullRotation t screenVec - screenVec = (2 * t) • nullLineVec := by
+    rw [screen_displaced_along_null]
+    abel
+  rw [hsub, Q31_smul, Q31_nullLineVec, mul_zero]
+
+theorem screen_moves {t : ℝ} (ht : t ≠ 0) : nullRotation t screenVec ≠ screenVec := by
+  intro h
+  have h0 : t = 0 := by simpa [nullRotation, screenVec] using congr_fun h 0
+  exact ht h0
+
+/-- The null coordinate `x₀ + x₃` is invariant. -/
+theorem null_sum_invariant (t : ℝ) (x : Fin 4 → ℝ) :
+    (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 := by
+  have h0 : (nullRotation t x) 0 = x 0 + 2 * t * x 1 + 2 * t ^ 2 * (x 0 + x 3) := by
+    simp [nullRotation]
+  have h3 : (nullRotation t x) 3 = x 3 - 2 * t * x 1 - 2 * t ^ 2 * (x 0 + x 3) := by
+    simp [nullRotation]
+  rw [h0, h3]
+  ring
+
+/-- Off the ray, the transverse coordinate itself moves. -/
+theorem transverse_moves_off_ray {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0)
+    (hs : x 0 + x 3 ≠ 0) : (nullRotation t x) 1 ≠ x 1 := by
+  intro h
+  have h' : x 1 + 2 * t * (x 0 + x 3) = x 1 := by simpa [nullRotation] using h
+  have : 2 * t * (x 0 + x 3) = 0 := by linarith
+  exact hs ((mul_eq_zero.mp this).resolve_left (mul_ne_zero two_ne_zero ht))
+
+/-- A nonzero null rotation keeps the null line, slides `e₁` along it by a
+lightlike displacement, and leaves the transverse reading of `e₁` unchanged. -/
+theorem light_kept_on_null_line {t : ℝ} (ht : t ≠ 0) :
+    nullRotation t nullLineVec = nullLineVec ∧
+      nullRotation t screenVec = screenVec + (2 * t) • nullLineVec ∧
+      (nullRotation t screenVec) 1 = 1 ∧
+      (nullRotation t screenVec) 2 = 0 ∧
+      Q31 (nullRotation t screenVec - screenVec) = 0 ∧
+      nullRotation t screenVec ≠ screenVec :=
+  ⟨nullRotation_nullLine t, screen_displaced_along_null t, (screen_reading t).1,
+    (screen_reading t).2, screen_displacement_lightlike t, screen_moves ht⟩
 
 end Gravity
 

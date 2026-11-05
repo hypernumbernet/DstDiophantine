@@ -33,6 +33,10 @@ fixed. About the pole `a`, the coordinate of `b` is the logarithm of `ρ`.
   translation that puts the source at the pole and the body on the first
   coordinate axis, the source chart is the origin and `pushedMoment` is zero.
   The angle is the same.
+* Every direction at geodesic distance `π` lifts to one element, the central
+  element `-1`. It is the unique element at angle `π` from a given element.
+  The equidistant chart writes both that element and the pole at the origin.
+  Every rotation fixes the relative rotor `-1` exactly.
 
 ## Not claimed
 
@@ -40,6 +44,7 @@ fixed. About the pole `a`, the coordinate of `b` is the logarithm of `ρ`.
 * That `chordMoment` is a function of the pair alone.
 * An identification of `ρ` with the intra-particle mismatch `Ω`.
 * A metric, a curvature tensor, or a diffeomorphism group of the three-sphere.
+* A position operator, or an uncertainty relation.
 -/
 
 noncomputable section
@@ -473,5 +478,115 @@ theorem pole_shift_changes_moment :
       Real.cos_pi_div_two] at hre
     exact one_ne_zero hre
   · exact ne_of_gt (by simpa [hzero] using hpos)
+
+/-! ### The antipode, where the chart flattens -/
+
+/-- The central element `-1`, antipode of the identity. -/
+def negOne : S3 where
+  val := -1
+  norm_one := by
+    rw [normSq_neg]
+    simp [normSq_def']
+
+/-- The antipode of an element. -/
+def antipode (a : S3) : S3 where
+  val := -a.val
+  norm_one := by simpa [normSq_neg] using a.norm_one
+
+theorem one_ne_negOne : (1 : S3) ≠ negOne := by
+  intro h
+  have hre := congrArg (fun a : S3 => a.val.re) h
+  simp [one_val, negOne] at hre
+  linarith
+
+theorem relative_antipode (a : S3) : relative a (antipode a) = negOne := by
+  apply S3.ext
+  change star a.val * -a.val = (-1 : ℍ)
+  rw [mul_neg, star_mul_self, a.norm_one, coe_one]
+
+theorem mul_negOne (a : S3) : a * negOne = antipode a := by
+  apply S3.ext
+  simp [mul_val, negOne, antipode, mul_neg, mul_one]
+
+/-- The relative rotor is `-1` precisely at the antipode. -/
+theorem relative_eq_negOne_iff (a b : S3) :
+    relative a b = negOne ↔ b = antipode a := by
+  rw [relative, inv_mul_eq_iff_eq_mul, mul_negOne]
+
+theorem eq_negOne_of_re {q : S3} (h : q.val.re = -1) : q = negOne := by
+  have hsq := q.norm_one
+  rw [normSq_def'] at hsq
+  have himI : q.val.imI = 0 := by nlinarith [sq_nonneg q.val.imJ, sq_nonneg q.val.imK, h]
+  have himJ : q.val.imJ = 0 := by nlinarith [sq_nonneg q.val.imI, sq_nonneg q.val.imK, h]
+  have himK : q.val.imK = 0 := by nlinarith [sq_nonneg q.val.imI, sq_nonneg q.val.imJ, h]
+  apply S3.ext
+  ext <;> simp [negOne, h, himI, himJ, himK]
+
+theorem separation_antipode (a : S3) : separation a (antipode a) = Real.pi := by
+  have hre : (negOne : S3).val.re = -1 := by simp [negOne]
+  rw [separation, relative_antipode, hre, Real.arccos_neg_one]
+
+/-- Angle `π` occurs at the antipode and nowhere else. -/
+theorem separation_eq_pi_iff (a b : S3) :
+    separation a b = Real.pi ↔ b = antipode a := by
+  constructor
+  · intro h
+    have hcos := cos_separation a b
+    rw [h, Real.cos_pi] at hcos
+    exact (relative_eq_negOne_iff a b).mp (eq_negOne_of_re hcos.symm)
+  · rintro rfl
+    exact separation_antipode a
+
+/-- The chart writes the antipode at the origin, where it also writes the pole.
+The factor in `logChart` divides by zero here; the imaginary part is zero, so
+the product is the origin. -/
+theorem chartAt_antipode (a : S3) : chartAt a (antipode a) = fun _ => 0 := by
+  rw [chartAt, relative_antipode]
+  funext i
+  simp [SlerpTorque.logChart, toChart_apply, negOne, SlerpTorque.chartIdx]
+
+theorem conj_negOne (h : S3) : h⁻¹ * negOne * h = negOne := by
+  apply S3.ext
+  change star h.val * (-1 : ℍ) * h.val = (-1 : ℍ)
+  calc
+    star h.val * (-1 : ℍ) * h.val = -(star h.val * h.val) := by
+      simp [mul_neg, neg_mul, mul_one]
+    _ = -((1 : ℍ)) := by rw [star_mul_self, h.norm_one, coe_one]
+    _ = -1 := by simp
+
+/-- Every rotation fixes the antipodal rotor exactly. -/
+theorem relative_antipode_act (r : Rotation) (a : S3) :
+    relative (r.act a) (r.act (antipode a)) = negOne := by
+  rw [relative_act, relative_antipode, conj_negOne]
+
+theorem liftQuat_pi (n : SlerpTorque.V3) : liftQuat Real.pi n = -1 := by
+  ext <;> simp [liftQuat, Real.cos_pi, Real.sin_pi]
+
+theorem elem_pi {n : SlerpTorque.V3} (hn : SlerpTorque.dot3 n n = 1) :
+    elem Real.pi n hn = negOne := by
+  apply S3.ext
+  simp [elem, liftQuat_pi, negOne]
+
+/-- Distinct directions at distance `π` are one element. -/
+theorem boundary_one_element :
+    elem Real.pi axis0 axis0_unit = negOne ∧
+      elem Real.pi (axisAngle (Real.pi / 2)) (axisAngle_unit (Real.pi / 2)) = negOne ∧
+      axis0 ≠ axisAngle (Real.pi / 2) := by
+  refine ⟨elem_pi axis0_unit, elem_pi (axisAngle_unit _), ?_⟩
+  intro h
+  have h0 := congrFun h 0
+  simp [axis0, axisAngle, Real.cos_pi_div_two] at h0
+
+/-- The flattened chart identifies the pole with the antipode. The rotor `-1`
+separates them, and every rotation fixes that rotor. -/
+theorem flattened_chart_loses_antipode (a : S3) (r : Rotation) :
+    chartAt a a = chartAt a (antipode a) ∧
+      chartAt a (antipode a) = (fun _ => 0) ∧
+      separation a (antipode a) = Real.pi ∧
+      relative a (antipode a) = negOne ∧
+      (1 : S3) ≠ negOne ∧
+      relative (r.act a) (r.act (antipode a)) = negOne := by
+  exact ⟨by rw [chartAt_self, chartAt_antipode], chartAt_antipode a, separation_antipode a,
+    relative_antipode a, one_ne_negOne, relative_antipode_act r a⟩
 
 end DstDiophantine.Gravity.RelationalPosition
