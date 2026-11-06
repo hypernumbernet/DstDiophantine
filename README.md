@@ -398,7 +398,20 @@ radius. Twenty is a vertex count.
 On the symmetric midplane pair, with both separations in the outer well,
 the two force components do not vanish together at any ratio. The square of
 that family closes in the reversed shell. Between phases $3/2$ and $8/5$
-that square restores the diagonal: a larger diagonal is drawn inward. The water molecule places the
+that square restores the diagonal: a larger diagonal is drawn inward.
+
+Relative to the nucleus, the two electrons of the one-center shell are two
+elements of the three-sphere. A common left rotation leaves both fixed. A
+common right rotation preserves the three cosines of the angles, and those
+cosines classify the pair, so a rotation-invariant amplitude is an amplitude
+of the three cosines. Exchange swaps the two angles from the nucleus, keeps
+the angle between the electrons, and inverts the relative rotor. The amplitude
+that accompanies the singlet is symmetric in the two angles from the nucleus.
+An amplitude that changes sign under the exchange vanishes when the two
+elements coincide. The angles are not the laboratory separations, and the
+amplitude is not an energy. At an atomic separation the curvature of a
+three-sphere of galactic or cosmic compactification radius does not enter the
+force. The water molecule places the
 nucleus at the origin and one proton on each of two rays, with one bonding
 electron on each ray, closer to the nucleus than its proton. While those
 electrons repel, the other bond drives each bonding electron toward a wider

@@ -130,6 +130,10 @@ import list of `Gravity.Regression`.
   repulsive shell there is exactly one restoring square.
 * `ElectronHelium` — charge `Z>0` with `Z≠1` is not that square equilibrium wherever both factors
   are nonzero.
+* `HeliumBody` — two electrons relative to a nucleus are two elements of the three-sphere.
+  The three cosines classify the pair. They are not the laboratory separations. At an
+  atomic separation the curvature of a galactic or cosmic compactification does not
+  enter the force.
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase.
   A circular path is radially restoring on one side of a single phase.
 * `HydrogenAlpha` — single-valuedness and the centripetal identity place a circular path at `r=n²
