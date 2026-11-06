@@ -207,6 +207,9 @@ import list of `Gravity.Regression`.
 
 * `DualControl` — dual-only motion conserves `J+M` and cannot raise `J`. It reaches a shield `J=0`
   precisely when the dual wall is nonpositive.
+* `ConeLabels` — four regimes of normalised mismatch on the admissible cone. Saturated
+  attraction is the unique dual-only rigid point. A negative wall carries repulsion and
+  balance; below the ceiling a positive wall stays in unsaturated attraction.
 * `ShieldClock` — `γ_eff` returns to `1` at a dual angle strictly before the coaxial shield. It is
   not the mismatch `J`.
 * `ShieldCeiling` — the admissible cone forbids a configuration from being simultaneously heavy and

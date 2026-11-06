@@ -59,6 +59,7 @@ import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
+import DstDiophantine.Gravity.ConeLabels
 import DstDiophantine.Gravity.ShieldClock
 import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
@@ -1744,6 +1745,37 @@ example :
               J q₁ = 0 ∧ J q₂ = 0 ∧ q₁ ≠ q₂ :=
   exists_two_dual_only_shields_axisUsual (by positivity)
     pi_div_three_le_pi_div_two
+
+/-- Regression: saturated attraction is the unique dual-only rigid point. -/
+example {p : Operations.TorsionParams} (hp : Admissible.IsAdmissibleContinuous p) :
+    (∀ q : Operations.TorsionParams,
+        Admissible.IsAdmissibleContinuous q → q.alpha = p.alpha → q = p) ↔
+      Logic.ofParams p hp = .F :=
+  dualOnly_rigid_iff_F hp
+
+/-- Regression: the attractive ceiling has no dual-only repulsive continuation. -/
+example {p : Operations.TorsionParams} (hp : Admissible.IsAdmissibleContinuous p)
+    (hF : Logic.ofParams p hp = .F) :
+    ¬ ∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B :=
+  no_dualOnly_repulsion_of_F hp hF
+
+/-- Regression: uniform \(\pi/6\) reaches repulsion, balance, and unsaturated attraction. -/
+example :
+    (∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+        q.alpha = (uniformTorsion (Real.pi / 6) 0).alpha ∧ Logic.ofParams q hq = .B) ∧
+      (∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+        q.alpha = (uniformTorsion (Real.pi / 6) 0).alpha ∧ Logic.ofParams q hq = .T) ∧
+      Logic.ofParams (uniformTorsion (Real.pi / 6) 0) uniform_pi_div_six_admissible = .U :=
+  ⟨uniform_pi_div_six_three_labels.1, uniform_pi_div_six_three_labels.2.1,
+    uniform_pi_div_six_three_labels.2.2.1⟩
+
+/-- Regression: uniform \(\pi/3\) stays in unsaturated attraction. -/
+example {q : Operations.TorsionParams}
+    (hα : ∀ a, q.alpha a = Real.pi / 3)
+    (hq : Admissible.IsAdmissibleContinuous q) :
+    Logic.ofParams q hq = .U :=
+  uniform_pi_div_three_dualOnly_U hα hq
 
 /-- Regression: dual-only cannot evacuate a positive usual seed. -/
 example {p q : Operations.TorsionParams}
