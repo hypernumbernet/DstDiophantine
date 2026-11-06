@@ -46,6 +46,7 @@ import DstDiophantine.Logic.Quantum.DiracGauge
 import DstDiophantine.Logic.Quantum.DiracConjugation
 import DstDiophantine.Logic.Quantum.DualEntanglement
 import DstDiophantine.Logic.Quantum.DualObservables
+import DstDiophantine.Logic.Quantum.LightFilter
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
@@ -108,6 +109,8 @@ and `DstDiophantine.CGA`).
   states with `S² = 1 + P`, and exclusion of parallel dual spinors from
   the singlet, the orthogonal complement of a dual-spinor ray as the ray of
   its spin-reversed partner, and the absence of a third orthogonal ray,
+  the information weight and spin vector of a dual spinor as a future
+  lightlike four-vector, fixed by a unit phase,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
