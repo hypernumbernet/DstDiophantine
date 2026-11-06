@@ -77,6 +77,8 @@ a.ref{color:var(--usual)}
 .intro-section h2{margin-top:0}
 .intro-fig{max-width:620px;margin:1.25rem auto 0}
 .toc-section{padding-top:2rem}
+.toc-part{margin:1.75rem 0 .4rem;font-size:1rem;color:var(--mute);font-weight:600;letter-spacing:.02em}
+.path-lead{margin-bottom:1.25rem}
 .toc-list{list-style:none;padding:0;margin:1.2rem 0;display:grid;gap:1rem}
 .ch-num{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
 .toc-list a{font-size:1.05rem;font-weight:600;color:var(--usual);text-decoration:none}
