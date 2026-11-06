@@ -153,8 +153,16 @@ theorem rodrigues_conj_pauliComb (c s : ℝ) (n a : Fin 3 → ℝ) :
   rw [realSmul_eq, realSmul_eq]
   ext i j
   fin_cases i <;> fin_cases j <;>
-    (simp [cyclicRepComb, cyclicRep, pauliComb, pauli, pauliX, pauliY, pauliZ, Matrix.mul_apply,
-      Fin.sum_univ_two, Fin.sum_univ_three, Matrix.conjTranspose_apply, axisDot, cross3]
+    (simp only [coe_smul, cyclicRepComb, cyclicRep, pauli, pauliX, pauliY, pauliZ, neg_smul,
+      smul_neg, Finset.sum_neg_distrib, Fin.sum_univ_three, Fin.isValue, smul_of, smul_cons,
+      smul_eq_mul, mul_zero, mul_one, smul_empty, smul_zero, real_smul, mul_neg, I_mul_I, neg_neg,
+      of_add_of, add_cons, head_cons, add_zero, tail_cons, empty_add_empty, zero_add, neg_of,
+      neg_cons, neg_add_rev, neg_empty, conjTranspose_add, conjTranspose_smul, star_trivial,
+      conjTranspose_one, pauliComb, Fin.zero_eta, Fin.mk_one, Matrix.mul_apply, Matrix.add_apply,
+      Matrix.smul_apply, conjTranspose_apply, of_apply, cons_val', cons_val_zero, cons_val_fin_one,
+      RCLike.star_def, Fin.sum_univ_two, one_apply_eq, map_neg, map_mul, conj_ofReal, conj_I, ne_eq,
+      zero_ne_one, not_false_eq_true, one_apply_ne, cons_val_one, map_add, one_ne_zero, axisDot,
+      cross3, ofReal_add, ofReal_sub, ofReal_mul, ofReal_pow, ofReal_ofNat, neg_sub]
      apply Complex.ext <;> simp [sq] <;> ring)
 
 private theorem unit_axis_of_ne {β : DualRapidity} (h : β ≠ 0) :
@@ -224,7 +232,9 @@ theorem eq_or_eq_neg_of_conj_pauli {U V : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ
   have e01 := congrFun (congrFun hz 0) 1
   have e10 := congrFun (congrFun hz 1) 0
   have e00 := congrFun (congrFun hx 0) 1
-  simp [pauli, pauliX, pauliZ, Matrix.mul_apply, Fin.sum_univ_two] at e01 e10 e00
+  simp only [pauli, pauliZ, Fin.isValue, Matrix.mul_apply, of_apply, cons_val', cons_val_one,
+    cons_val_fin_one, Fin.sum_univ_two, cons_val_zero, mul_zero, mul_neg, mul_one, zero_add,
+    one_mul, zero_mul, add_zero, neg_mul, pauliX] at e01 e10 e00
   have w01 : W 0 1 = 0 := by linear_combination -e01 / 2
   have w10 : W 1 0 = 0 := by linear_combination e10 / 2
   have hdet : W.det = 1 := by
@@ -297,7 +307,14 @@ theorem pauliComb_anticomm (a b : Fin 3 → ℝ) :
       ((2 * axisDot a b : ℝ) : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
-    (simp [pauliComb, pauli, pauliX, pauliY, pauliZ, Fin.sum_univ_three, axisDot]
+    (simp only [pauliComb, pauli, pauliX, pauliY, pauliZ, coe_smul, Fin.sum_univ_three, Fin.isValue,
+      smul_of, smul_cons, smul_zero, real_smul, mul_one, smul_empty, smul_neg, of_add_of, add_cons,
+      head_cons, add_zero, tail_cons, empty_add_empty, zero_add, cons_mul, Nat.succ_eq_add_one,
+      Nat.reduceAdd, vecMul_cons, smul_eq_mul, mul_neg, empty_vecMul, neg_smul, neg_cons, neg_neg,
+      neg_empty, empty_mul, Equiv.symm_apply_apply, Fin.zero_eta, Fin.mk_one, Matrix.add_apply,
+      of_apply, cons_val', cons_val_zero, cons_val_one, cons_val_fin_one, axisDot, ofReal_mul,
+      ofReal_ofNat, ofReal_add, Matrix.smul_apply, one_apply_eq, ne_eq, zero_ne_one, one_ne_zero,
+      not_false_eq_true, one_apply_ne, mul_zero]
      try (apply Complex.ext <;> simp <;> ring))
 
 /-- `[σ·a, σ·b] = 2i σ·(a × b)`. -/
@@ -306,7 +323,13 @@ theorem pauliComb_comm (a b : Fin 3 → ℝ) :
       (2 * I) • pauliComb (cross3 a b) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
-    (simp [pauliComb, pauli, pauliX, pauliY, pauliZ, Fin.sum_univ_three, cross3]
+    (simp only [pauliComb, pauli, pauliX, pauliY, pauliZ, coe_smul, Fin.sum_univ_three, Fin.isValue,
+      smul_of, smul_cons, smul_zero, real_smul, mul_one, smul_empty, smul_neg, of_add_of, add_cons,
+      head_cons, add_zero, tail_cons, empty_add_empty, zero_add, cons_mul, Nat.succ_eq_add_one,
+      Nat.reduceAdd, vecMul_cons, smul_eq_mul, mul_neg, empty_vecMul, neg_smul, neg_cons, neg_neg,
+      neg_empty, empty_mul, Equiv.symm_apply_apply, Fin.zero_eta, Fin.mk_one, Matrix.sub_apply,
+      of_apply, cons_val', cons_val_zero, cons_val_one, cons_val_fin_one, cross3, ofReal_sub,
+      ofReal_mul, neg_sub, Matrix.smul_apply]
      apply Complex.ext <;> simp <;> ring)
 
 theorem spinExp_sub (A B : Matrix (Fin 2) (Fin 2) ℂ) (u : DualSpinor) :
