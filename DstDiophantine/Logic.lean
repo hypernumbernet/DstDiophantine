@@ -112,7 +112,11 @@ and `DstDiophantine.CGA`).
   the information weight and spin vector of a dual spinor as a future
   lightlike four-vector, fixed by a unit phase, with image exactly the
   future light cone; superposition is not addition of those four-vectors,
-  and a relative phase turns the null direction,
+  and a relative phase turns the null direction; the Dirac current of two
+  Weyl blocks is the lower image plus the spatially reversed upper image,
+  so one chirality stays null and is the massless Weyl solution at that
+  image, while the rest pair `(u,iu)` assembles the same null image into
+  the timelike current `(2‖u‖², 0)`,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1180,6 +1184,23 @@ example : ∑ k, pairSpin k (pairSpin k singlet) = 0 :=
 /-- Regression: MW real 16 matches WeylSU4 real 16 (no Spin equivariance). -/
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
   majorana_dim_eq_weylSU4_real
+
+/-- Regression: the upper Weyl block solves the massless equation at the
+filter image. -/
+example (u : DualSpinor) : DiracMomentum 0 (manifest u) (weylUpper u) :=
+  dirac_upper_manifest u
+
+/-- Regression: two Weyl images assemble into the Dirac current. -/
+example (u l : DualSpinor) :
+    realCurrent (weylUpper u + weylLower l) = spaceReverse (manifest u) + manifest l :=
+  realCurrent_weyl u l
+
+/-- Regression: the rest pair's current is timelike, and the sum of its two
+filter images is not. -/
+example {u : DualSpinor} (hu : u ≠ 0) :
+    Q31 (realCurrent (restParticleSpinor u)) < 0 ∧
+      realCurrent (restParticleSpinor u) ≠ manifest u + manifest (Complex.I • u) :=
+  ⟨Q31_realCurrent_rest_timelike hu, realCurrent_rest_ne_manifest_sum hu⟩
 
 /-- Regression: light-cone 8+8 ≠ DST torsion 6; Super-Poincaré ≠ PGA 10. -/
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
