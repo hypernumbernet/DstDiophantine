@@ -34,6 +34,7 @@ import DstDiophantine.Gravity.RestMass
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
+import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.HydrogenAlpha
 import DstDiophantine.Gravity.OrbitClosure
@@ -1381,6 +1382,23 @@ example (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
 example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
     0 < SlerpTorque.chordMoment χ χ α :=
   SlerpTorque.chordMoment_equal_pos hχ hχu hα hαu
+
+/-- Regression: the nucleus frame keeps the electron–electron rotor. -/
+example (n a b : RelationalPosition.S3) :
+    HeliumBody.ee (HeliumBody.toFrame n a b) = RelationalPosition.relative a b :=
+  HeliumBody.ee_toFrame n a b
+
+/-- Regression: exchange swaps the two nuclear cosines and keeps the third. -/
+example (p : HeliumBody.Frame) :
+    HeliumBody.cosA (HeliumBody.exchange p) = HeliumBody.cosB p ∧
+      HeliumBody.cosEE (HeliumBody.exchange p) = HeliumBody.cosEE p :=
+  ⟨(HeliumBody.cos_exchange p).1, (HeliumBody.cos_exchange p).2.2⟩
+
+/-- Regression: the singlet sector changes sign under the joint exchange. -/
+example (F : HeliumBody.Frame → ℂ) (hF : HeliumBody.Symmetric F) (c : ℂ) (p : HeliumBody.Frame) :
+    F (HeliumBody.exchange p) • DstDiophantine.Logic.pairSwap (c • DstDiophantine.Logic.singlet) =
+      -(F p • (c • DstDiophantine.Logic.singlet)) :=
+  HeliumBody.singlet_sector_exchange F hF c p
 
 /-- Regression: \(\rho(a,b)=1\) if and only if the two elements coincide. -/
 example (a b : RelationalPosition.S3) :
