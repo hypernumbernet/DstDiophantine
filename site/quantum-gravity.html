@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantum gravity · DST · 量子重力 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="style.css">
+<script>
+(function(){var s=null;try{s=localStorage.getItem('dst-lang')}catch(e){}
+var l=s||((navigator.language||'en').toLowerCase().indexOf('ja')===0?'ja':'en');
+document.documentElement.setAttribute('data-lang',l);document.documentElement.lang=l;})();
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="quantum-gravity.html#quantum-gravity"><span class="en">QG</span><span class="ja">量子重力</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="rotation.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="quantum-gravity">
+  <h2><span class="en">9. Quantum gravity</span><span class="ja">9. 量子重力</span></h2>
+  <h3 class="sub" id="light-cone-filter"><span class="en">The light cone as filter</span><span class="ja">光円錐がフィルタになる</span></h3>
+  <p><span class="en">In the quantum-gravity layer of the theory, the <b>information in a state</b> lives in the compact <b>dual sector</b>: the body of the state is a vector there, not a spinor field already spread out in ordinary spacetime. Ordinary charts are reached only after a <b>filter</b> — the pairing that sends that dual-side description to a future-pointing, lightlike four-vector. The <b>time reading</b> of that vector is the <b>information weight</b> (the squared length of the dual vector); the <b>space reading</b> is the associated <b>spin direction</b>. A geometric identity ties those two parts together so tightly that every such manifestation sits on the <b>future light cone</b> in the usual <em>minus–plus–plus–plus</em> signature.</span><span class="ja">理論の量子重力の層では、<b>状態の情報</b>はコンパクトな<b>双対セクター</b>の中にあります。状態の「体」はそこでのベクトルであり、すでに普通の時空に広がったスピノル場として書かれているわけではありません。通常の地図に届くのは、その後で — 双対側の記述を未来向きの光様の四本のベクトルへ送る<b>フィルタ</b>を通したあとです。そのベクトルの<b>時間の読み</b>が<b>情報の重み</b>（双対ベクトルの長さの二乗）、<b>空間の読み</b>が対応する<b>スピン方向</b>です。両者を結びつける幾何的な恒等式がきわめて強く、かたちの現れはいずれも通常の<b>マイナス・プラス・プラス・プラス</b>符号の<b>未来の光円錐</b>の上に乗ります。</span></p>
+  <p><span class="en"><b>Dual rotations</b> act on that manifestation by turning the spatial part while <b>keeping the weight fixed</b>; multiplying the dual vector by a <b>unit phase</b> leaves the filtered four-vector unchanged. So the cone is not painted in by hand — it is where the dual-side magnitudes and directions are forced to land by this filter.</span><span class="ja"><b>双対回転</b>はその現れに対して<b>重みを変えずに</b>空間部分だけを回します。双対ベクトルに<b>単位の位相</b>を掛けても、フィルタを通した四本のベクトルは変わりません。光円錐は後から色を塗ったのではなく、双対側の大きさと向きがこのフィルタのもとでそこへ押し込められる場所です。</span></p>
+  <p><span class="en"><b>Superposition is built on the dual side first</b>, before the filter. <em>Adding</em> two filtered four-vectors in the chart is therefore <em>not</em> the same operation as superposing the underlying states: the naive chart sum can look <b>timelike</b>, while the true superposition can still be <b>null</b> — basis terms may each look lightlike in the chart, yet their quantum superposition changes direction through a relative phase that neither term shows on its own.</span><span class="ja">重ね合わせは、フィルタより<b>前</b>に、双対側でまず作られます。したがって地図上で二つの現れをいっしょに<b>足す</b>ことは、下にある状態を重ねる操作そのものではありません。素朴な地図の和は<b>時間様</b>に見えるのに、本当の重ね合わせはなお<b>光様</b>でありうます — 基底の各項は地図ではそれぞれ光様に見えても、量子の重ね合わせは、どちらの項だけでも見えない相対位相によって向きを変えます。</span></p>
+  <p><span class="en">The <b>constancy of the speed of light</b> — the same ceiling standard relativity encodes — appears here as a <b>single filter</b>: the identity that the spin part cannot “outrun” the weight part ties every classical ray to one invariant cone. You recover the usual conclusion about <i>c</i>, but through <b>how dual information is read into spacetime</b>, not only through the Lorentz metric as a free postulate.</span><span class="ja">光の速さの<b>不変性</b> — 標準的な相対論が一つの上限としてまとめるあの結論 — はここでは<b>一つのフィルタ</b>として現れます。スピン方向が情報の重みより「先を走れない」という恒等式が、古典的な各光線を一つの不変な円錐に結びつけます。〈c〉についての通常の結論は得られますが、ローレンツ計量を<b>ただの公理として置くだけ</b>でなく、<b>双対の情報が時空に読み込まれる仕方</b>から入ります。</span></p>
+  <p><span class="en">In natural wording, once: this light-cone filter story by itself does not introduce full <b>position or momentum operators</b>, nor a complete quantised account of mismatch dynamics.</span><span class="ja">自然な言い方で一度だけ述べます。この光円錐フィルタの話だけでは、完全な<b>位置や運動量の演算子</b>や、ずれの動力学の量子化までは用意されません。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="rotation.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>
