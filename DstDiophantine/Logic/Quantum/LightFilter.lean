@@ -2,6 +2,7 @@ import DstDiophantine.Algebra.Operations
 import DstDiophantine.Algebra.QuadraticForm
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.Separation
+import DstDiophantine.Logic.Quantum.DiracField
 
 /-!
 # Dual Hilbert space and the light-cone filter
@@ -19,6 +20,14 @@ only its spatial part. Superposition is not addition in the chart: the sum
 of two manifested four-vectors may be timelike, the discrepancy may be
 spacelike, and a relative phase, invisible in either summand, turns the
 null direction of the superposition.
+
+A Dirac spinor carries two such vectors, its Weyl blocks. The probability
+current adds the lower image to the spatially reversed upper image, so one
+chirality stays null. The upper block solves the massless Weyl equation at
+momentum `m(u)`; the lower block solves it at the spatially reversed image.
+The rest pair `(u, iu)` has one and the same null image on both blocks. The
+current reads one copy reversed, the spatial parts cancel, and the result
+`(2‖u‖², 0)` is timelike whenever `u` does not vanish.
 -/
 
 namespace DstDiophantine
@@ -521,6 +530,386 @@ theorem not_SameInformation_relativePhase :
     ¬ SameInformation (spinUp + spinDown) (spinUp + (I : ℂ) • spinDown) := by
   intro h
   exact manifest_relativePhase (manifest_sameInformation h)
+
+/-! ### Two chiral images, one probability current -/
+
+/-- Spatial reversal in the usual chart. The time component stays. -/
+def spaceReverse (v : Vec4) : Vec4 :=
+  fun i => if i = 0 then v 0 else -v i
+
+theorem spaceReverse_zero (v : Vec4) : spaceReverse v 0 = v 0 := by
+  simp [spaceReverse]
+
+theorem spaceReverse_ne_zero {i : Fin 4} (hi : i ≠ 0) (v : Vec4) :
+    spaceReverse v i = -v i := by
+  simp [spaceReverse, hi]
+
+theorem Q31_spaceReverse (v : Vec4) : Q31 (spaceReverse v) = Q31 v := by
+  simp only [Q31_eq_minkowskiDot, minkowskiDot]
+  rw [spaceReverse_zero, spaceReverse_ne_zero (by decide : (1 : Fin 4) ≠ 0),
+    spaceReverse_ne_zero (by decide : (2 : Fin 4) ≠ 0),
+    spaceReverse_ne_zero (by decide : (3 : Fin 4) ≠ 0)]
+  ring
+
+theorem Q31_eq_minkowskiQ (v : Vec4) : Q31 v = minkowskiQ v := by
+  rw [Q31_eq_minkowskiDot, minkowskiQ_eq, minkowskiDot]
+  ring
+
+/-- Direction of the spin of a nonzero dual spinor. -/
+noncomputable def spinAxis (u : DualSpinor) : Fin 3 → ℝ :=
+  fun k => spinVec u k / informationWeight u
+
+private theorem pauliComb_conjTranspose (n : Fin 3 → ℝ) :
+    (pauliComb n).conjTranspose = pauliComb n := by
+  unfold pauliComb
+  simp [Matrix.conjTranspose_sum, Matrix.conjTranspose_smul, pauli_conjTranspose]
+
+private theorem spinProj_conjTranspose (s : ℝ) (a : Fin 3 → ℝ) :
+    (spinProj s a).conjTranspose = spinProj s a := by
+  unfold spinProj pauliComb
+  simp [Matrix.conjTranspose_smul, Matrix.conjTranspose_add, Matrix.conjTranspose_one,
+    Matrix.conjTranspose_sum, pauli_conjTranspose, Complex.star_def]
+
+private theorem applyMat_eq_zero_of_proj {P : Matrix (Fin 2) (Fin 2) ℂ}
+    (hH : P.conjTranspose = P) (hP : P * P = P) {u : DualSpinor}
+    (h : spinExp P u = 0) : applyMat P u = 0 := by
+  have hinner : inner ℂ (applyMat P u) (applyMat P u) = 0 := by
+    rw [applyMat_inner_mul, hH, hP]
+    exact h
+  rw [inner_self_eq_norm_sq_to_K] at hinner
+  have hre := congrArg Complex.re hinner
+  rw [sq] at hre
+  simp [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, Complex.zero_re] at hre
+  exact hre
+
+private theorem axisDot_spin_sq (u : DualSpinor) :
+    spinVec u 0 ^ 2 + spinVec u 1 ^ 2 + spinVec u 2 ^ 2 = informationWeight u ^ 2 := by
+  have h := axisDot_spinVec u
+  rw [axisDot] at h
+  have h4 : ‖u‖ ^ 4 = informationWeight u ^ 2 := by
+    rw [informationWeight]
+    ring
+  rw [h4] at h
+  simpa [sq] using h
+
+private theorem axisDot_spinAxis_spinVec {u : DualSpinor} (hu : u ≠ 0) :
+    axisDot (spinAxis u) (spinVec u) = informationWeight u := by
+  have hw : informationWeight u ≠ 0 := by
+    intro h
+    exact hu ((informationWeight_eq_zero_iff u).mp h)
+  unfold spinAxis axisDot
+  field_simp [hw]
+  linear_combination axisDot_spin_sq u
+
+private theorem axisDot_spinAxis {u : DualSpinor} (hu : u ≠ 0) :
+    axisDot (spinAxis u) (spinAxis u) = 1 := by
+  have hw : informationWeight u ≠ 0 := by
+    intro h
+    exact hu ((informationWeight_eq_zero_iff u).mp h)
+  unfold spinAxis axisDot
+  field_simp [hw]
+  linear_combination axisDot_spin_sq u
+
+private theorem pauliComb_real_smul (t : ℝ) (n : Fin 3 → ℝ) :
+    pauliComb (fun k => t * n k) = (t : ℂ) • pauliComb n := by
+  unfold pauliComb
+  rw [Finset.smul_sum]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  simp only [smul_smul]
+  push_cast
+  rfl
+
+/-- `σ·r(u)` fixes a dual spinor up to its information weight. -/
+theorem applyMat_pauliComb_spinVec (u : DualSpinor) :
+    applyMat (pauliComb (spinVec u)) u = (informationWeight u : ℂ) • u := by
+  by_cases hu : u = 0
+  · simp [hu, applyMat, Matrix.mulVec_zero, informationWeight]
+  · have haxis : spinVec u = fun k => informationWeight u * spinAxis u k := by
+      funext k
+      simp [spinAxis]
+      field_simp [(informationWeight_eq_zero_iff u).not.mpr hu]
+    have hdot := axisDot_spinAxis_spinVec hu
+    have hunit := axisDot_spinAxis hu
+    have hExp : spinExp (spinProj (-1) (spinAxis u)) u = 0 := by
+      rw [spinExp_spinProj, hdot]
+      have : (‖u‖ ^ 2 + -1 * informationWeight u) / 2 = 0 := by
+        rw [informationWeight]; ring
+      rw [this]
+      simp
+    have hminus : applyMat (spinProj (-1) (spinAxis u)) u = 0 :=
+      applyMat_eq_zero_of_proj (spinProj_conjTranspose _ _)
+        (spinProj_mul_self hunit (by norm_num)) hExp
+    have hsplit : applyMat (spinProj 1 (spinAxis u)) u = u := by
+      have hadd := congrArg (fun M => applyMat M u) (spinProj_add_neg (spinAxis u))
+      rw [applyMat_add_mat, applyMat_one, hminus, add_zero] at hadd
+      exact hadd
+    have hhalf : (1 / 2 : ℂ) • (u + (1 : ℂ) • applyMat (pauliComb (spinAxis u)) u) = u := by
+      have h := hsplit
+      simp only [spinProj, applyMat_smul_mat, applyMat_add_mat, applyMat_one] at h
+      exact h
+    have hpauli : applyMat (pauliComb (spinAxis u)) u = u := by
+      have h2 := congrArg (fun v : DualSpinor => (2 : ℂ) • v) hhalf
+      simp only [smul_smul, one_smul] at h2
+      have hcoef : (2 : ℂ) * (1 / 2) = 1 := by norm_num
+      rw [hcoef, one_smul] at h2
+      have hsum : u + applyMat (pauliComb (spinAxis u)) u = u + u := by
+        simpa [two_smul, one_smul] using h2
+      exact add_left_cancel hsum
+    rw [haxis, pauliComb_real_smul, applyMat_smul_mat, hpauli]
+
+private theorem manifest_one (u : DualSpinor) : manifest u 1 = spinVec u 0 := by
+  simpa using manifest_succ u 0
+
+private theorem manifest_two (u : DualSpinor) : manifest u 2 = spinVec u 1 := by
+  simpa using manifest_succ u 1
+
+private theorem manifest_three (u : DualSpinor) : manifest u 3 = spinVec u 2 := by
+  simpa using manifest_succ u 2
+
+private theorem pauliSlashBar_manifest (u : DualSpinor) :
+    pauliSlashBar (manifest u) =
+      (-(informationWeight u : ℂ)) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        pauliComb (spinVec u) := by
+  unfold pauliSlashBar
+  rw [manifest_zero, manifest_one, manifest_two, manifest_three]
+  simp [pauliComb, pauli, Fin.sum_univ_three]
+  abel
+
+private theorem pauliSlash_spaceReverse_manifest (u : DualSpinor) :
+    pauliSlash (spaceReverse (manifest u)) =
+      (informationWeight u : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+        (-(1 : ℂ)) • pauliComb (spinVec u) := by
+  unfold pauliSlash
+  rw [spaceReverse_zero, manifest_zero, spaceReverse_ne_zero (by decide : (1 : Fin 4) ≠ 0),
+    spaceReverse_ne_zero (by decide : (2 : Fin 4) ≠ 0),
+    spaceReverse_ne_zero (by decide : (3 : Fin 4) ≠ 0), manifest_one, manifest_two, manifest_three]
+  simp [pauliComb, pauli, Fin.sum_univ_three, neg_smul]
+  abel
+
+theorem applyMat_pauliSlashBar_manifest (u : DualSpinor) :
+    applyMat (pauliSlashBar (manifest u)) u = 0 := by
+  rw [pauliSlashBar_manifest, applyMat_add_mat, applyMat_smul_mat, applyMat_one,
+    applyMat_pauliComb_spinVec]
+  simp [neg_smul]
+
+theorem applyMat_pauliSlash_spaceReverse_manifest (u : DualSpinor) :
+    applyMat (pauliSlash (spaceReverse (manifest u))) u = 0 := by
+  rw [pauliSlash_spaceReverse_manifest, applyMat_add_mat, applyMat_smul_mat, applyMat_smul_mat,
+    applyMat_one, applyMat_pauliComb_spinVec]
+  simp
+
+/-- The upper Weyl block is the massless solution whose null momentum is the
+filter image. -/
+theorem dirac_upper_manifest (u : DualSpinor) :
+    DiracMomentum 0 (manifest u) (weylUpper u) := by
+  unfold DiracMomentum
+  rw [slash_weylUpper, applyMat_pauliSlashBar_manifest, weylLower_zero]
+  simp
+
+/-- The lower Weyl block is the massless solution whose null momentum is the
+spatially reversed filter image. -/
+theorem dirac_lower_manifest (u : DualSpinor) :
+    DiracMomentum 0 (spaceReverse (manifest u)) (weylLower u) := by
+  unfold DiracMomentum
+  rw [slash_weylLower, applyMat_pauliSlash_spaceReverse_manifest, weylUpper_zero]
+  simp
+
+private theorem apply_dirac_pauli_upper (k : Fin 3) (ψ : DualSpinor) :
+    applyDiracMat (diracMat k.succ) (weylUpper ψ) =
+      weylLower (applyMat (pauli k) ψ) := by
+  fin_cases k
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat1, pauli, pauliX,
+        Matrix.vecHead, Matrix.vecTail]
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat2, pauli, pauliY,
+        Matrix.vecHead, Matrix.vecTail]
+    all_goals ring
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat3, pauli, pauliZ,
+        Matrix.vecHead, Matrix.vecTail]
+
+private theorem apply_dirac_pauli_lower (k : Fin 3) (ψ : DualSpinor) :
+    applyDiracMat (diracMat k.succ) (weylLower ψ) =
+      weylUpper (applyMat (pauli k) ψ) := by
+  fin_cases k
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat1, pauli, pauliX,
+        Matrix.vecHead, Matrix.vecTail]
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat2, pauli, pauliY,
+        Matrix.vecHead, Matrix.vecTail]
+    all_goals ring
+  · ext i
+    fin_cases i <;>
+      simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat, diracMat3, pauli, pauliZ,
+        Matrix.vecHead, Matrix.vecTail]
+
+private theorem diracCurrent_pauli (k : Fin 3) (u l : DualSpinor) :
+    diracCurrent k.succ (weylUpper u + weylLower l) (weylUpper u + weylLower l) =
+      (-I) * spinExp (pauli k) u + I * spinExp (pauli k) l := by
+  rw [diracCurrent_eq_scalar]
+  have hk : applyDiracMat (diracMat k.succ) (weylUpper u + weylLower l) =
+      weylLower (applyMat (pauli k) u) + weylUpper (applyMat (pauli k) l) := by
+    rw [applyDiracMat_add, apply_dirac_pauli_upper, apply_dirac_pauli_lower]
+  rw [hk, add_comm (weylLower _) (weylUpper _), diracScalar_weyl]
+  rfl
+
+private theorem negI_chiral (su sl : ℝ) :
+    (-I * ((-I) * (su : ℂ) + I * (sl : ℂ))).re = sl - su := by
+  have h : -I * ((-I) * (su : ℂ) + I * (sl : ℂ)) = ((sl - su : ℝ) : ℂ) := by
+    calc -I * ((-I) * (su : ℂ) + I * (sl : ℂ))
+        = ((-I) * (-I)) * su + ((-I) * I) * sl := by ring
+      _ = (I * I) * su + (-(I * I)) * sl := by ring
+      _ = (-1) * su + (-(-1)) * sl := by rw [I_mul_I]
+      _ = ((sl - su : ℝ) : ℂ) := by push_cast; ring
+  rw [h, Complex.ofReal_re]
+
+private theorem norm_sq_weyl_add (u l : DualSpinor) :
+    ‖weylUpper u + weylLower l‖ ^ 2 = ‖u‖ ^ 2 + ‖l‖ ^ 2 := by
+  have h : inner ℂ (weylUpper u + weylLower l) (weylUpper u + weylLower l) =
+      inner ℂ u u + inner ℂ l l := by
+    rw [inner_add_left, inner_add_right, inner_add_right, weylUpper_inner_upper,
+      weylUpper_inner_lower, weylLower_inner_upper, weylLower_inner_lower]
+    ring
+  rw [inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K] at h
+  exact_mod_cast h
+
+private theorem realCurrent_spatial (k : Fin 3) (u l : DualSpinor) :
+    realCurrent (weylUpper u + weylLower l) k.succ = spinVec l k - spinVec u k := by
+  have h := diracCurrent_pauli k u l
+  rw [spinExp_pauli, spinExp_pauli] at h
+  simp only [realCurrent, h, negI_chiral]
+
+/-- The probability current of two Weyl blocks is the lower filter image plus
+the spatially reversed upper image. -/
+theorem realCurrent_weyl (u l : DualSpinor) :
+    realCurrent (weylUpper u + weylLower l) = spaceReverse (manifest u) + manifest l := by
+  set Ψ := weylUpper u + weylLower l
+  have h0 : realCurrent Ψ 0 = (spaceReverse (manifest u) + manifest l) 0 := by
+    rw [realCurrent_zero, norm_sq_weyl_add]
+    simp only [Pi.add_apply, spaceReverse_zero, manifest_zero, informationWeight]
+  have h1 : realCurrent Ψ 1 = (spaceReverse (manifest u) + manifest l) 1 := by
+    rw [show (1 : Fin 4) = Fin.succ 0 by decide, realCurrent_spatial]
+    simp only [Pi.add_apply]
+    rw [spaceReverse_ne_zero (by decide : Fin.succ (0 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
+    ring
+  have h2 : realCurrent Ψ 2 = (spaceReverse (manifest u) + manifest l) 2 := by
+    rw [show (2 : Fin 4) = Fin.succ 1 by decide, realCurrent_spatial]
+    simp only [Pi.add_apply]
+    rw [spaceReverse_ne_zero (by decide : Fin.succ (1 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
+    ring
+  have h3 : realCurrent Ψ 3 = (spaceReverse (manifest u) + manifest l) 3 := by
+    rw [show (3 : Fin 4) = Fin.succ 2 by decide, realCurrent_spatial]
+    simp only [Pi.add_apply]
+    rw [spaceReverse_ne_zero (by decide : Fin.succ (2 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
+    ring
+  funext i
+  fin_cases i
+  · exact h0
+  · exact h1
+  · exact h2
+  · exact h3
+
+theorem realCurrent_weylUpper (u : DualSpinor) :
+    realCurrent (weylUpper u) = spaceReverse (manifest u) := by
+  have h0 : manifest (0 : DualSpinor) = 0 := by rw [manifest_eq_zero_iff]
+  have h := realCurrent_weyl u 0
+  rwa [weylLower_zero, add_zero, h0, add_zero] at h
+
+theorem realCurrent_weylLower (l : DualSpinor) :
+    realCurrent (weylLower l) = manifest l := by
+  have h0 : manifest (0 : DualSpinor) = 0 := by rw [manifest_eq_zero_iff]
+  have hz : spaceReverse (manifest (0 : DualSpinor)) = 0 := by
+    rw [h0]
+    funext i
+    by_cases hi : i = 0 <;> simp [spaceReverse, hi]
+  have h := realCurrent_weyl 0 l
+  rwa [weylUpper_zero, zero_add, hz, zero_add] at h
+
+theorem Q31_realCurrent_weylUpper (u : DualSpinor) :
+    Q31 (realCurrent (weylUpper u)) = 0 := by
+  rw [realCurrent_weylUpper, Q31_spaceReverse, Q31_manifest]
+
+theorem Q31_realCurrent_weylLower (l : DualSpinor) :
+    Q31 (realCurrent (weylLower l)) = 0 := by
+  rw [realCurrent_weylLower, Q31_manifest]
+
+theorem diracScalar_rest_re (u : DualSpinor) :
+    (diracScalar (restParticleSpinor u) (restParticleSpinor u)).re =
+      2 * informationWeight u := by
+  rw [restParticle_diracScalar, inner_self_eq_norm_sq_to_K, informationWeight]
+  rw [sq, sq]
+  simp [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im]
+
+/-- At rest the Dirac current is pure time, with weight twice the dual norm. -/
+theorem realCurrent_rest (u : DualSpinor) :
+    realCurrent (restParticleSpinor u) =
+      fun i => if i = 0 then 2 * informationWeight u else 0 := by
+  funext μ
+  have h := realCurrent_gordon (m := 1) (p := restMomentum 1) one_ne_zero
+    (restParticle_dirac 1 u) μ
+  rw [h, diracScalar_rest_re]
+  fin_cases μ <;>
+    simp [restMomentum, minkowskiEta, w31, Pi.single_eq_same, Pi.single_eq_of_ne]
+
+theorem filter_rest (u : DualSpinor) :
+    spaceReverse (manifest u) + manifest ((I : ℂ) • u) =
+      fun i => if i = 0 then 2 * informationWeight u else 0 := by
+  rw [manifest_phase u (by simp : ‖(I : ℂ)‖ = 1)]
+  funext i
+  by_cases hi : i = 0
+  · simp [spaceReverse, hi, manifest_zero, Pi.add_apply]
+    ring
+  · simp [spaceReverse, hi, Pi.add_apply]
+
+/-- The rest pair's two filter images assemble into the Dirac current. -/
+theorem realCurrent_rest_eq_filter (u : DualSpinor) :
+    realCurrent (restParticleSpinor u) =
+      spaceReverse (manifest u) + manifest ((I : ℂ) • u) := by
+  rw [realCurrent_rest, filter_rest]
+
+theorem Q31_realCurrent_rest (u : DualSpinor) :
+    Q31 (realCurrent (restParticleSpinor u)) = -(2 * informationWeight u) ^ 2 := by
+  rw [realCurrent_rest, Q31_eq_minkowskiDot]
+  simp only [minkowskiDot]
+  simp
+  ring
+
+theorem Q31_realCurrent_rest_timelike {u : DualSpinor} (hu : u ≠ 0) :
+    Q31 (realCurrent (restParticleSpinor u)) < 0 := by
+  rw [Q31_realCurrent_rest]
+  have hne : informationWeight u ≠ 0 := by
+    intro h
+    exact hu ((informationWeight_eq_zero_iff u).mp h)
+  have hw : 0 < informationWeight u := lt_of_le_of_ne (informationWeight_nonneg u) (Ne.symm hne)
+  nlinarith [sq_pos_of_pos hw]
+
+theorem Q31_manifest_rest_sum (u : DualSpinor) :
+    Q31 (manifest u + manifest ((I : ℂ) • u)) = 0 := by
+  rw [manifest_phase u (by simp : ‖(I : ℂ)‖ = 1)]
+  have htwo : manifest u + manifest u = (2 : ℝ) • manifest u := by
+    funext i
+    simp [Pi.add_apply, Pi.smul_apply]
+    ring
+  rw [htwo, Q31_eq_minkowskiDot, minkowskiDot]
+  have hQ := Q31_manifest u
+  rw [Q31_eq_minkowskiDot, minkowskiDot] at hQ
+  simp [Pi.smul_apply]
+  nlinarith
+
+/-- The sum of the two rest images stays null, while the current does not. -/
+theorem realCurrent_rest_ne_manifest_sum {u : DualSpinor} (hu : u ≠ 0) :
+    realCurrent (restParticleSpinor u) ≠ manifest u + manifest ((I : ℂ) • u) := by
+  intro h
+  have hQ := Q31_realCurrent_rest_timelike hu
+  rw [h, Q31_manifest_rest_sum] at hQ
+  exact lt_irrefl 0 hQ
 
 end Logic
 
