@@ -110,7 +110,9 @@ and `DstDiophantine.CGA`).
   the singlet, the orthogonal complement of a dual-spinor ray as the ray of
   its spin-reversed partner, and the absence of a third orthogonal ray,
   the information weight and spin vector of a dual spinor as a future
-  lightlike four-vector, fixed by a unit phase,
+  lightlike four-vector, fixed by a unit phase, with image exactly the
+  future light cone; superposition is not addition of those four-vectors,
+  and a relative phase turns the null direction,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)

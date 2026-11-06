@@ -375,9 +375,9 @@ private theorem apply_diracMat2_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat2 (weylUpper ψ) = weylLower (applyMat pauliY ψ) := by
   ext i
   fin_cases i <;>
-    (simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
-      vecHead, vecTail] <;>
-      ring)
+    simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
+      vecHead, vecTail]
+  all_goals ring
 
 private theorem apply_diracMat3_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat3 (weylUpper ψ) = weylLower (applyMat pauliZ ψ) := by
@@ -404,9 +404,9 @@ private theorem apply_diracMat2_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat2 (weylLower ψ) = weylUpper (applyMat pauliY ψ) := by
   ext i
   fin_cases i <;>
-    (simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
-      vecHead, vecTail] <;>
-      ring)
+    simp [applyDiracMat, applyMat, weylUpper, weylLower, diracMat2, pauliY,
+      vecHead, vecTail]
+  all_goals ring
 
 private theorem apply_diracMat3_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat3 (weylLower ψ) = weylUpper (applyMat pauliZ ψ) := by
