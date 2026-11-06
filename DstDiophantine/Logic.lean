@@ -47,6 +47,7 @@ import DstDiophantine.Logic.Quantum.DiracConjugation
 import DstDiophantine.Logic.Quantum.DualEntanglement
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
+import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
@@ -116,7 +117,12 @@ and `DstDiophantine.CGA`).
   Weyl blocks is the lower image plus the spatially reversed upper image,
   so one chirality stays null and is the massless Weyl solution at that
   image, while the rest pair `(u,iu)` assembles the same null image into
-  the timelike current `(2‖u‖², 0)`,
+  the timelike current `(2‖u‖², 0)`; a plane wave of one momentum has
+  density `‖u‖²` at every chart point and one ray there, a nonzero
+  solution of nonzero mass determines its four-momentum, the sum of two
+  distinct momenta is not a wave of one momentum, equal amplitudes have
+  density `4 cos²((q−p)·x/2) ‖u‖²`, and a chart translation fails to
+  commute with a momentum shift by the phase `e^{i k·a}`,
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1014,6 +1020,34 @@ its amplitude solves the momentum-space equation. -/
 example (m : ℝ) (p : Vec4) (u : DiracSpinor) :
     DiracField m (planeWave p u) ↔ DiracMomentum m p u :=
   diracField_planeWave_iff m p u
+
+/-- Regression: a plane wave has one density at every chart point. -/
+example (p : Vec4) (u : DiracSpinor) (x : Vec4) :
+    bornDensity (planeWave p u) x = ‖u‖ ^ 2 :=
+  bornDensity_planeWave p u x
+
+/-- Regression: a nonzero solution of nonzero mass determines its momentum. -/
+example {m : ℝ} {p q : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0) (hΨ : Ψ ≠ 0)
+    (hp : DiracMomentum m p Ψ) (hq : DiracMomentum m q Ψ) : p = q :=
+  diracMomentum_unique hm hΨ hp hq
+
+/-- Regression: two distinct momenta are not one momentum. -/
+example {p q : Vec4} (hpq : p ≠ q) {u v : DiracSpinor} (hu : u ≠ 0) (hv : v ≠ 0)
+    (r : Vec4) : ¬ MomentumEigen r (momentumSum p q u v) :=
+  momentumSum_not_eigen hpq hu hv r
+
+/-- Regression: equal amplitudes have density `4 cos²((q−p)·x/2) ‖u‖²`. -/
+example (p q : Vec4) (u : DiracSpinor) (x : Vec4) :
+    bornDensity (equalPacket p q u) x =
+      4 * Real.cos (wavePhase (q - p) x / 2) ^ 2 * ‖u‖ ^ 2 :=
+  bornDensity_equalPacket p q u x
+
+/-- Regression: a chart translation and a momentum shift differ by `e^{i k·a}`. -/
+example (k a p : Vec4) (u : DiracSpinor) (x : Vec4) :
+    chartTranslate a (momentumKick k (planeWave p u)) x =
+      Complex.exp (Complex.I * (wavePhase k a : ℂ)) •
+        momentumKick k (chartTranslate a (planeWave p u)) x :=
+  weyl_shift_kick k a p u x
 
 /-- Regression: the current of two solutions of one real mass is conserved. -/
 example {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (hΦ : DiracField m Φ)
