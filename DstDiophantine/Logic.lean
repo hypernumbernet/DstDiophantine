@@ -48,6 +48,7 @@ import DstDiophantine.Logic.Quantum.DualEntanglement
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
 import DstDiophantine.Logic.Quantum.Complementarity
+import DstDiophantine.Logic.Quantum.ExternalChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
@@ -122,7 +123,12 @@ and `DstDiophantine.CGA`).
   solution of nonzero mass determines its four-momentum, the sum of two
   distinct momenta is not a wave of one momentum, equal amplitudes have
   density `4 cos²((q−p)·x/2) ‖u‖²`, and a chart translation fails to
-  commute with a momentum shift by the phase `e^{i k·a}`,
+  commute with a momentum shift by the phase `e^{i k·a}`; dividing out the
+  de Broglie phase returns the carrier, the dual-rotor curve solves
+  `i u'=½(ω·σ)u` with the chart time component fixed at the information
+  weight, a phase times the identity is a dual rotor exactly at `±1`, a
+  constant potential is one at every time exactly when it vanishes, and a
+  nonzero momentum kick fails to be one at some chart point; also the
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1235,6 +1241,31 @@ example {u : DualSpinor} (hu : u ≠ 0) :
     Q31 (realCurrent (restParticleSpinor u)) < 0 ∧
       realCurrent (restParticleSpinor u) ≠ manifest u + manifest (Complex.I • u) :=
   ⟨Q31_realCurrent_rest_timelike hu, realCurrent_rest_ne_manifest_sum hu⟩
+
+/-- Regression: the spin curve solves the Pauli equation and holds the
+chart's time component at the information weight. A nonzero energy makes
+the de Broglie phase along that axis move. -/
+example (ω : DualRapidity) (u : DualSpinor) {p : Vec4} (hp : p 0 ≠ 0) (t : ℝ) :
+    Complex.I • deriv (spinCurve ω u) t =
+        (1 / 2 : ℂ) • applyMat (pauliComb (fun a => ω a)) (spinCurve ω u t) ∧
+      manifest (spinCurve ω u t) 0 = manifest u 0 ∧
+      ∃ s : ℝ, wavePhase p (s • (Pi.single 0 (1 : ℝ) : Vec4)) ≠ 0 :=
+  ⟨spinCurve_schrodinger ω u t, spinCurve_manifest_time ω u t,
+    (spin_parameter_not_chart_time ω u hp).2⟩
+
+/-- Regression: a constant potential phase is a dual rotor at every time
+exactly when the potential vanishes, and dividing out a plane-wave phase
+returns the carrier. -/
+example (V : ℝ) (p : Vec4) (u : DiracSpinor) (x : Vec4) :
+    ((∀ t : ℝ, ∃ β : DualRapidity, dualRotorMat β = phaseGate (-(V * t))) ↔ V = 0) ∧
+      Complex.exp (-(Complex.I * (wavePhase p x : ℂ))) • planeWave p u x = u :=
+  ⟨constPotential_dualRotor_iff V, planeWave_strip p u x⟩
+
+/-- Regression: a nonzero momentum kick fails to be a dual rotor at some
+chart point. -/
+example {k : Vec4} (hk : k ≠ 0) :
+    ∃ a : Vec4, ∀ β : DualRapidity, dualRotorMat β ≠ phaseGate (wavePhase k a) :=
+  kick_not_dualRotor hk
 
 /-- Regression: light-cone 8+8 ≠ DST torsion 6; Super-Poincaré ≠ PGA 10. -/
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
