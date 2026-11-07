@@ -90,7 +90,17 @@ export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
   dirichletKernel_two_pi abs_dirichletKernel_lattice)
 export DualFourier (dualCircleFourier dualCircleFourier_inversion
   dualCircleFourier_parseval inner_dualCircleFourierEquiv
+  dualCircleChar dualCircleShift dualCircleClock dualCircleConv dualCircle_weyl
+  dualCircleFourier_shift dualCircleFourier_clock dualCircleFourier_conv
+  inner_dualCircleShift inner_dualCircleClock
+  dualCircleShift_order dualCircleClock_order
+  dualCircleShift_iterate_ne dualCircleClock_iterate_ne
+  dualCircle_support_uncertainty dualCircle_support_eq_site
+  dualCircle_support_eq_winding
   dualAngleFourier dualAngleFourier_inversion dualAngleFourier_parseval
+  dualAngleFourier_separable
+  dualAngle_support_uncertainty dualAngle_support_eq_site
+  dualAngle_support_eq_winding
   dirichletKernel_eq_phaseAverage)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
@@ -200,6 +210,18 @@ open scoped BigOperators
 example {N : ℕ} [NeZero N] (f : ZMod N → ℂ) :
     ∑ k, ‖dualCircleFourier f k‖ ^ 2 = (N : ℝ) * ∑ j, ‖f j‖ ^ 2 :=
   dualCircleFourier_parseval f
+
+/-- Regression: shift and clock on the discrete dual circle differ by one character. -/
+example {N : ℕ} [NeZero N] (r s : ZMod N) (f : ZMod N → ℂ) (j : ZMod N) :
+    dualCircleClock r (dualCircleShift s f) j =
+      dualCircleChar r s * dualCircleShift s (dualCircleClock r f) j :=
+  dualCircle_weyl r s f j
+
+/-- Regression: circular convolution multiplies winding by winding. -/
+example {N : ℕ} [NeZero N] (f g : ZMod N → ℂ) (k : ZMod N) :
+    dualCircleFourier (dualCircleConv f g) k =
+      dualCircleFourier f k * dualCircleFourier g k :=
+  dualCircleFourier_conv f g k
 
 /-- Regression: the Dirichlet kernel is the average of centered phases. -/
 example {N : ℕ} [NeZero N] (θ : ℝ) :
