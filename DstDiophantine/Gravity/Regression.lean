@@ -8,6 +8,7 @@ import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
 import DstDiophantine.Gravity.Godel
+import DstDiophantine.Gravity.Kerr
 import DstDiophantine.Gravity.CoulombFromDual
 import DstDiophantine.Gravity.ForceScale
 import DstDiophantine.Gravity.ElectronShell
@@ -381,6 +382,22 @@ example {ψ r : ℝ} (hr : godelCriticalRadius < r) :
 example (ψ β : ℝ) :
     inducedMetric (cylBoostCoframe ψ β) 0 2 = 0 :=
   induced_cylBoost_tφ ψ β
+
+/-- Regression: the Kerr `(t,φ)` block has determinant `-Δ sin²θ`. -/
+example {M a r θ : ℝ} (hSig : kerrSigma a r θ ≠ 0) :
+    -(1 - 2 * M * r / kerrSigma a r θ) * kerrGφφ M a r θ - kerrGtφ M a r θ ^ 2 =
+      -kerrDelta M a r * Real.sin θ ^ 2 :=
+  kerr_timePhi_det M a r θ hSig
+
+/-- Regression: vanishing spin returns the exterior Schwarzschild coframe. -/
+example {M r θ : ℝ} (h : IsExterior (2 * M) r) :
+    kerrCoframe M 0 r θ = schwarzschildCoframe (2 * M) r θ :=
+  kerrCoframe_zero_spin h
+
+/-- Regression: a pure `(t,φ)` boost writes no Kerr cross term. -/
+example (ψ β : ℝ) :
+    inducedMetric (kerrAzimuthBoostCoframe ψ β) 0 3 = 0 :=
+  induced_kerrAzimuthBoost_tφ ψ β
 
 /-- Regression: exterior Schwarzschild is the vacuum specialisation of the gauge. -/
 example {rs r : ℝ} (h : IsExterior rs r) :

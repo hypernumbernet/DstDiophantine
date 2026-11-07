@@ -64,6 +64,9 @@ import list of `Gravity.Regression`.
 * `Godel` — the Gödel coframe. The azimuthal norm changes sign at `log(1+√2)`, with finite
   coframe legs. Every real rapidity of the tilt `√2 tanh r` is attained strictly before that
   radius, where the circles are still spacelike. A pure `(t,φ)` boost writes no cross term.
+* `Kerr` — the Kerr coframe on `Σ > 0` and `Δ > 0`. Vanishing spin returns the exterior
+  Schwarzschild coframe of gravitational radius `2M`. The `(t,φ)` block has determinant
+  `-Δ sin²θ`. A pure `(t,φ)` boost writes no cross term.
 * `Algebra.SourceSuperposition` — source bivectors add without a ceiling. The expressed point is
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,

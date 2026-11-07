@@ -478,7 +478,27 @@ Inside $r\le r_\star$ the redshift floor $A=A_{\min}>0$ is held fixed, so $A'=0$
 
 This layered structure prevents both singularities and event horizons. Matter never reaches a central singularity. Instead, the core settles into a quasi-stable, chaotic condensate of extreme-density torsional energy, continuously oscillating between attractive and repulsive phases.
 
-Conventional Kerr-type rotating black holes are ruled out: the theory forbids global frame-dragging of the required magnitude, as angular momentum is redistributed into dual rotor longitudinal modes rather than spacetime rotation.
+\subsection{Kerr Chart}
+\label{subsec:kerr}
+
+The exterior Schwarzschild coframe extends to a rotating chart. On $\Sigma>0$ and $\Delta>0$, with
+\[
+\Sigma=r^2+a^2\cos^2\theta,\qquad\Delta=r^2-2Mr+a^2,
+\]
+the orthonormal coframe
+\begin{align*}
+e^0&=\sqrt{\Delta/\Sigma}\,(dt-a\sin^2\theta\,d\phi),\\
+e^1&=\sqrt{\Sigma/\Delta}\,dr,\\
+e^2&=\sqrt{\Sigma}\,d\theta,\\
+e^3&=\frac{\sin\theta}{\sqrt{\Sigma}}\bigl((r^2+a^2)\,d\phi-a\,dt\bigr)
+\end{align*}
+induces the Kerr metric. The cross term is $g_{t\phi}=-2Mar\sin^2\theta/\Sigma$, and the azimuthal norm is
+\[
+g_{\phi\phi}=\frac{\sin^2\theta}{\Sigma}\Bigl((r^2+a^2)\Sigma+2Mra^2\sin^2\theta\Bigr).
+\]
+The $(t,\phi)$ block has determinant $-\Delta\sin^2\theta$, so the block stays non-degenerate wherever $\Delta$ and $\sin\theta$ are both nonzero. Vanishing spin, $a=0$, returns the exterior Schwarzschild coframe of gravitational radius $r_s=2M$.
+
+A pure boost of any rapidity in the $(t,\phi)$ plane, acting on a diagonal frame whose azimuthal scale is $\beta$, induces $g_{t\phi}=0$ and $g_{\phi\phi}=\beta^2$. The Kerr cross term belongs to the coframe written above.
 
 \subsection{Gödel Chart}
 \label{subsec:godel}
