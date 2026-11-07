@@ -60,6 +60,7 @@ import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
 import DstDiophantine.Gravity.DualControl
 import DstDiophantine.Gravity.ConeLabels
+import DstDiophantine.Gravity.MassCorners
 import DstDiophantine.Gravity.ShieldClock
 import DstDiophantine.Gravity.ShieldCeiling
 import DstDiophantine.Gravity.ControlDomain
@@ -1769,6 +1770,34 @@ example :
       Logic.ofParams (uniformTorsion (Real.pi / 6) 0) uniform_pi_div_six_admissible = .U :=
   ⟨uniform_pi_div_six_three_labels.1, uniform_pi_div_six_three_labels.2.1,
     uniform_pi_div_six_three_labels.2.2.1⟩
+
+/-- Regression: the mass ceiling has one of four normalised heights. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    JNormalized p = 1 ∨ JNormalized p = 1 / 3 ∨
+      JNormalized p = -(1 / 3) ∨ JNormalized p = -1 :=
+  JNormalized_mass_ceiling_four h hM
+
+/-- Regression: saturated attraction carries the whole mass ceiling. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hF : Logic.ofParams p h = .F) :
+    mass p = 3 * Real.pi ^ 2 / 8 ∧ massNormalized p = 1 ∧ JNormalized p = 1 :=
+  saturated_attraction_has_mass_ceiling h hF
+
+/-- Regression: balance stays at or below five sixths of the mass ceiling. -/
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hT : Logic.ofParams p h = .T) :
+    massNormalized p ≤ 5 / 6 :=
+  massNormalized_le_five_sixths_of_balance h hT
+
+/-- Regression: the heaviest shield attains five sixths and is balanced. -/
+example :
+    massNormalized maximalShield = 5 / 6 ∧
+      Logic.ofParams maximalShield isAdmissibleContinuous_maximalShield = .T :=
+  ⟨massNormalized_maximalShield, ofParams_maximalShield⟩
 
 /-- Regression: uniform \(\pi/3\) stays in unsaturated attraction. -/
 example {q : Operations.TorsionParams}

@@ -18,9 +18,10 @@ therefore not a wave of any one momentum. Where the two amplitudes are the
 same vector, the density is `4 cos²((q−p)·x/2) ‖u‖²` and does vanish.
 
 Translating the argument by `a` and multiplying by the phase `e^{i k·x}`
-differ by `e^{i k·a}`. This is the Weyl relation of the phase. It is not a
-position operator, not the canonical commutator on a common domain, and not
-an uncertainty bound for orbital angles.
+differ by `e^{i k·a}`. This is the Weyl relation of the phase. It is not
+itself the canonical commutator. The operators on differentiable chart
+fields, and the trace obstruction on the dual spinor space, are
+`ChartOperators`. An uncertainty bound for orbital angles is not claimed.
 -/
 
 namespace DstDiophantine

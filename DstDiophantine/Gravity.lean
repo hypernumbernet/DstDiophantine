@@ -210,6 +210,9 @@ import list of `Gravity.Regression`.
 * `ConeLabels` — four regimes of normalised mismatch on the admissible cone. Saturated
   attraction is the unique dual-only rigid point. A negative wall carries repulsion and
   balance; below the ceiling a positive wall stays in unsaturated attraction.
+* `MassCorners` — the unsigned mass shares the ceiling of `J`. Equality is eight
+  corners, at normalised heights `1`, `1/3`, `-1/3`, and `-1`. Balance reaches at
+  most five sixths of that mass. The unsigned mass is not the Dirac mass.
 * `ShieldClock` — `γ_eff` returns to `1` at a dual angle strictly before the coaxial shield. It is
   not the mismatch `J`.
 * `ShieldCeiling` — the admissible cone forbids a configuration from being simultaneously heavy and
