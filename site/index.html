@@ -15,14 +15,8 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="ja_JP">
   <meta name="twitter:card" content="summary">
+  <script src="lang-init.js"></script>
   <link rel="stylesheet" href="style.css">
-  <script>
-    (function () {
-      var s = null; try { s = localStorage.getItem('dst-lang') } catch (e) { }
-      var l = s || ((navigator.language || 'en').toLowerCase().indexOf('ja') === 0 ? 'ja' : 'en');
-      document.documentElement.setAttribute('data-lang', l); document.documentElement.lang = l;
-    })();
-  </script>
 </head>
 
 <body>
