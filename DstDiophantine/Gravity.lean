@@ -61,6 +61,9 @@ import list of `Gravity.Regression`.
 * `NewtonFromLight` — a comparison of `c` with `G`. It does not derive `G`.
 * `EventBoundary` — the admissible ceiling read as a finite redshift floor. A one-way horizon `A=0`
   does not form on that chart.
+* `Godel` — the Gödel coframe. The azimuthal norm changes sign at `log(1+√2)`, with finite
+  coframe legs. Every real rapidity of the tilt `√2 tanh r` is attained strictly before that
+  radius, where the circles are still spacelike. A pure `(t,φ)` boost writes no cross term.
 * `Algebra.SourceSuperposition` — source bivectors add without a ceiling. The expressed point is
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,

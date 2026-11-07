@@ -7,6 +7,7 @@ import DstDiophantine.Gravity.RadialQuadratic
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
 import DstDiophantine.Gravity.EventBoundary
+import DstDiophantine.Gravity.Godel
 import DstDiophantine.Gravity.CoulombFromDual
 import DstDiophantine.Gravity.ForceScale
 import DstDiophantine.Gravity.ElectronShell
@@ -359,6 +360,27 @@ example {rs r : ℝ} (h : IsExterior rs r) :
         Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =
       J (radialBoostParams rs r) :=
   J_radialBoostParams_eq_half_arcosh_sq h
+
+/-- Regression: the Gödel coframe induces the chart metric. -/
+example (r : ℝ) :
+    inducedMetric (godelCoframe r) 2 2 = godelGφφ r :=
+  induced_godel_φφ r
+
+/-- Regression: the three-axis ceiling meets the Gödel tilt before the null circle. -/
+example :
+    ∃ r, 0 < r ∧ r < godelCriticalRadius ∧ godelRapidity r = phiMax ∧
+      0 < godelGφφ r :=
+  exists_phiMax_godel_before_loop
+
+/-- Regression: past the null circle the tilt is not a real rapidity. -/
+example {ψ r : ℝ} (hr : godelCriticalRadius < r) :
+    godelTilt r ≠ Real.tanh ψ :=
+  godelTilt_ne_tanh_of_gt_critical hr
+
+/-- Regression: a pure `(t,φ)` boost writes no cross term. -/
+example (ψ β : ℝ) :
+    inducedMetric (cylBoostCoframe ψ β) 0 2 = 0 :=
+  induced_cylBoost_tφ ψ β
 
 /-- Regression: exterior Schwarzschild is the vacuum specialisation of the gauge. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
