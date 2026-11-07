@@ -49,6 +49,7 @@ import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
 import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.ExternalChart
+import DstDiophantine.Logic.Quantum.ChartOperators
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
@@ -128,7 +129,13 @@ and `DstDiophantine.CGA`).
   `i u'=½(ω·σ)u` with the chart time component fixed at the information
   weight, a phase times the identity is a dual rotor exactly at `±1`, a
   constant potential is one at every time exactly when it vanishes, and a
-  nonzero momentum kick fails to be one at some chart point; also the
+  nonzero momentum kick fails to be one at some chart point; the dual
+  spinor space carries no endomorphisms with `[A,B] = i I`, nor does one
+  Dirac value, while on differentiable chart fields multiplication by
+  `x^ν` and `P_μ = -i ∂_μ` satisfy `[X^ν, P_μ] = i δ`, a differentiable
+  field is a momentum eigenfield exactly when every `P_μ` multiplies it by
+  `p_μ`, and a nonzero plane wave is an eigenfield of no position
+  component; also the
   dual-rotor character, spinor
   amplitude, relative dual-rotor composition and noncommutative
   interference)
@@ -1266,6 +1273,39 @@ chart point. -/
 example {k : Vec4} (hk : k ≠ 0) :
     ∃ a : Vec4, ∀ β : DualRapidity, dualRotorMat β ≠ phaseGate (wavePhase k a) :=
   kick_not_dualRotor hk
+
+/-- Regression: the dual spinor space carries no canonical pair. -/
+example (A B : DualSpinor →ₗ[ℂ] DualSpinor) :
+    A.comp B - B.comp A ≠ Complex.I • LinearMap.id :=
+  no_ccr_dualSpinor A B
+
+/-- Regression: spin commutators on the dual matrices are traceless. -/
+example (a b : Fin 3 → ℝ) :
+    Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
+  trace_pauliComb_comm a b
+
+/-- Regression: on a differentiable field, `[X^ν, P_μ] = i δ^ν_μ`. -/
+example {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) (ν μ : Fin 4) (x : Vec4) :
+    positionOp ν (momentumOp μ Ψ) x - momentumOp μ (positionOp ν Ψ) x =
+      (if ν = μ then Complex.I else 0) • Ψ x :=
+  position_comm_momentum hΨ ν μ x
+
+/-- Regression: dividing out the phase of `P_μ` on a plane wave returns
+`p_μ` times the carrier. -/
+example (p : Vec4) (u : DiracSpinor) (μ : Fin 4) (x : Vec4) :
+    Complex.exp (-(Complex.I * (wavePhase p x : ℂ))) • momentumOp μ (planeWave p u) x =
+      (p μ : ℂ) • u :=
+  momentumOp_planeWave_strip p u μ x
+
+/-- Regression: momentum eigenfields are the eigenfields of `P_μ`. -/
+example {p : Vec4} {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) :
+    MomentumEigen p Ψ ↔ ∀ μ x, momentumOp μ Ψ x = (p μ : ℂ) • Ψ x :=
+  momentumEigen_iff_momentumOp hΨ
+
+/-- Regression: a nonzero plane wave is an eigenfield of no position component. -/
+example {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4) (ν : Fin 4) (lam : ℂ) :
+    ¬ PositionEigen ν lam (planeWave p u) :=
+  planeWave_not_positionEigen hu p ν lam
 
 /-- Regression: light-cone 8+8 ≠ DST torsion 6; Super-Poincaré ≠ PGA 10. -/
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=

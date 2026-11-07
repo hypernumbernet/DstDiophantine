@@ -16,7 +16,8 @@ The matrix `e^{iα} I` is a dual rotor exactly when the phase is `±1`. A
 constant potential `e^{-i V t}` is a dual rotor at every time exactly when
 `V = 0`, and a nonzero momentum kick fails to be one at some chart point.
 That phase is the argument written after the carrier. The Schrödinger
-equation takes the argument as its domain. No position operator is claimed.
+equation takes the argument as its domain. Position and momentum on that
+argument are the chart operators of `ChartOperators`.
 -/
 
 namespace DstDiophantine
