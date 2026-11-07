@@ -49,6 +49,7 @@ import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
 import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.ExternalChart
+import DstDiophantine.Logic.Quantum.SpinWaveBridge
 import DstDiophantine.Logic.Quantum.ChartOperators
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -129,7 +130,12 @@ and `DstDiophantine.CGA`).
   `i u'=½(ω·σ)u` with the chart time component fixed at the information
   weight, a phase times the identity is a dual rotor exactly at `±1`, a
   constant potential is one at every time exactly when it vanishes, and a
-  nonzero momentum kick fails to be one at some chart point; the dual
+  nonzero momentum kick fails to be one at some chart point; on a twice
+  differentiable carrier `(σ·Π)² = Π² - e σ·B`, the two Weyl blocks of the
+  field strength agree exactly when the charge or the electric field
+  vanishes, and for `m ≠ 0` the magnetic piece over `2m` is the dual-rotor
+  curve of rate `-(e/m) B`, of angular speed `|e| ‖B‖ / |m|`, and is never a
+  chart phase; the dual
   spinor space carries no endomorphisms with `[A,B] = i I`, nor does one
   Dirac value, while on differentiable chart fields multiplication by
   `x^ν` and `P_μ = -i ∂_μ` satisfy `[X^ν, P_μ] = i δ`, a differentiable
@@ -1259,6 +1265,26 @@ example (ω : DualRapidity) (u : DualSpinor) {p : Vec4} (hp : p 0 ≠ 0) (t : �
       ∃ s : ℝ, wavePhase p (s • (Pi.single 0 (1 : ℝ) : Vec4)) ≠ 0 :=
   ⟨spinCurve_schrodinger ω u t, spinCurve_manifest_time ω u t,
     (spin_parameter_not_chart_time ω u hp).2⟩
+
+/-- Regression: the wave's kinetic square splits off the magnetic dual
+generator, and that generator is the spin curve of rate `-(e/m) B`. -/
+example (e m : ℝ) (A : Vec4 → Vec4) (φ : Vec4 → DualSpinor)
+    (hA : Differentiable ℝ A) (hφ : ContDiff ℝ 2 φ) (hm : m ≠ 0)
+    (B : DualRapidity) (u : DualSpinor) (x : Vec4) (t α : ℝ) :
+    sigmaPiSq e A φ x =
+      kinSq e A φ x +
+        applyMat ((-(e : ℂ)) • pauliComb (magVec (fieldStrength A x))) (φ x) ∧
+      Complex.I • deriv (spinCurve (magneticRapidity e m B) u) t =
+        applyMat (((-(e / (2 * m)) : ℝ) : ℂ) • pauliComb (fun a => B a))
+          (spinCurve (magneticRapidity e m B) u t) ∧
+      ‖magneticRapidity e m B‖ = |e| * ‖B‖ / |m| ∧
+      ((-(e / (2 * m)) : ℝ) : ℂ) • pauliComb (fun a => B a) ≠ phaseGate α ∧
+      (((e : ℂ) • (pauliComb (fun a => B a) + Complex.I • pauliComb (fun a => B a)) =
+          (e : ℂ) • (pauliComb (fun a => B a) - Complex.I • pauliComb (fun a => B a))) ↔
+        e = 0 ∨ (fun a => B a) = 0) :=
+  ⟨sigmaPi_sq_split e (A := A) (φ := φ) hA hφ x, spinCurve_magnetic e m B u hm t,
+    magnetic_rapidity_norm e m B hm, magneticSpin_ne_phaseGate e m (fun a => B a) α hm,
+    fieldBlocks_eq_iff e (fun a => B a) (fun a => B a)⟩
 
 /-- Regression: a constant potential phase is a dual rotor at every time
 exactly when the potential vanishes, and dividing out a plane-wave phase
