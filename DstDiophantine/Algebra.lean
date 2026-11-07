@@ -6,6 +6,7 @@ import DstDiophantine.Algebra.Cl91
 import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.DirichletKernel
+import DstDiophantine.Algebra.DualFourier
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
@@ -87,6 +88,10 @@ export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
   admissible_beta_le_half_pi)
 export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
   dirichletKernel_two_pi abs_dirichletKernel_lattice)
+export DualFourier (dualCircleFourier dualCircleFourier_inversion
+  dualCircleFourier_parseval inner_dualCircleFourierEquiv
+  dualAngleFourier dualAngleFourier_inversion dualAngleFourier_parseval
+  dirichletKernel_eq_phaseAverage)
 export Motor (TransParams OmegaParams omegaTorsion omegaTrans omegaBiv expTrans rotorTorsion motor
   omegaTrans_sq omegaTorsion_reverse expTrans_unitary rotor_unitary motor_unitary
   reverse_mul_of_mul_reverse exp_of_sq_one exp_of_sq_neg_one exp_of_sq_zero
@@ -186,6 +191,24 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=
   abs_dirichletKernel_le_one hN θ
+
+section
+open Complex Finset
+open scoped BigOperators
+
+/-- Regression: Parseval on the discrete dual circle. -/
+example {N : ℕ} [NeZero N] (f : ZMod N → ℂ) :
+    ∑ k, ‖dualCircleFourier f k‖ ^ 2 = (N : ℝ) * ∑ j, ‖f j‖ ^ 2 :=
+  dualCircleFourier_parseval f
+
+/-- Regression: the Dirichlet kernel is the average of centered phases. -/
+example {N : ℕ} [NeZero N] (θ : ℝ) :
+    (dirichletKernel N θ : ℂ) =
+      (N : ℂ)⁻¹ * ∑ k ∈ range N,
+        exp (I * (((k : ℝ) - ((N : ℝ) - 1) / 2) * θ)) :=
+  dirichletKernel_eq_phaseAverage θ
+
+end
 
 /-- Regression: the relative rotor is the identity iff the two rotors coincide. -/
 example (p : Operations.TorsionParams) :
