@@ -1,0 +1,204 @@
+\documentclass[a4paper]{article}
+\usepackage{luatexja}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{margin=25mm}
+
+\title{三次元球面の対数チャートと中間軸反転}
+
+\author{https://github.com/hypernumbernet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+粒子は単位四元数の三次元球面上にあり、二つの粒子の相対位置はローター \(\rho(a,b)=a^{-1}b\) である。力は大円に沿う。実験室の読みは方位等距離図法であり、\(0<\chi<\pi\) に対して \(\log(\cos\chi+n\sin\chi)=\chi n\) である。チャートは原点で忠実であり、対蹠点で特異である。チャートの第三軸のまわりの回転と、初めの二軸が張る平面に関する鏡映は、チャートと交換する。\(\cos t+I\sin t\) による左乗法は、あらゆる相対ローターを不変に保つ。チャート位置が \((0,\chi,0)\) である点では、同じ乗法の恒等瞬間におけるチャート速度は \((\chi\cot\chi,\,0,\,\chi)\) であり、第一軸に沿う項とその軸とチャート位置との外積との和である。赤道では第一項が消え、速度は外積に等しい。大円をチャートへ押した接線の、他の物体のまわりのモーメントは、共通の射線上でも、源がチャート原点でも消える。チャート距離が等しければ \((1-\cos\alpha)\,\chi\,(\chi-\sin\chi\cos\chi)\sin\alpha\) に等しく、角が \((0,\pi)\) では正であり、角について奇であるから、鏡像はこれを打ち消す。切片 \((\pm a,0,0)\)、\((0,\pm b,0)\)、\((0,0,\pm c)\) にある六つの単位質量は、したがってチャートのトルクを持たない。各座標平面にある四つの直角モーメントは、各符号が二つずつあり、和は零である。慣性乗積はすべて消える。主慣性モーメントは \(I_x=2(b^2+c^2)\)、\(I_y=2(a^2+c^2)\)、\(I_z=2(a^2+b^2)\) であり、\(0<a<b<c\) ならば \(I_z<I_y<I_x\) であって、二つのモーメントが一致するのは対応する二つの長さが一致するときに限る。等しいチャート距離で、相手を射線から \((0,\pi)\) の角だけ外せばモーメントは正のまま残り、その相手の鏡像はこれを打ち消す。静止した雲はこうして角運動量を得る。この回転は、球面上の力をチャートで読んだものである。トルクが消え、一つの回転が形を運ぶとき、体軸の角速度はオイラー方程式に従い、三つの主軸回転のうち線形不安定なのは中間軸だけである。\(0<I_1<I_2<I_3\) かつ \(B>0\) に対し
+\[
+\omega_1=A\operatorname{sech}(kt),\qquad
+\omega_2=B\tanh(kt),\qquad
+\omega_3=C\operatorname{sech}(kt)
+\]
+は、\(k\)、\(A\)、\(C\) を慣性モーメントと \(B\) が定めるとき、その方程式を満たし、エネルギー \(\tfrac12 I_2 B^2\) と \(L^2=2EI_2\) を保つ。中間成分は一度だけ符号を変える。この速さで育つ相対的大きさ \(\varepsilon<1/6\) の残差が半分の振幅に達するまでの待ち時間は、反転が二つの半振幅状態の間を通過する時間より長く、残差が縮むとその待ち時間はあらゆる限界を超え、横断の尺度 \(1/k\) は変わらない。集団がこの運動に入るのは、慣性テンソルを通してだけである。
+\end{abstract}
+
+\section{はじめに}
+
+二重時空理論は、各質量粒子をコンパクトな三次元球面上に置く~\cite{dst-main}。二つの粒子 \(a\) と \(b\) の相対位置はローター
+\[
+\rho(a,b)=a^{-1}b
+\]
+である。これは、一方の粒子から見た他方の位置を記録する。一つの粒子の内部の不整合ではない。それらの間の力は、このローターが定める大円に沿う。実験室のチャートは方位等距離図法であり、単位四元数の対数
+\begin{equation}
+\label{eq:log}
+\log(\cos\chi+n\sin\chi)=\chi n\in\mathbb{R}^3,
+\qquad 0<\chi<\pi,
+\end{equation}
+である。ここで \(n\) はユークリッド単位ベクトルである。チャートは原点で忠実であり、対蹠点で特異である。図法はその一点を、半径 \(\pi\) の球の境界に沿って広げる。体積の歪みは、主論文のヤコビアン \(\sin^2\chi/\chi^2\) である。同じチャートから主論文が組み立てた銀河の回転曲線は、その論文に残す。ここで追うのは、チャートが雲に割り当てるトルクと、そのトルクの自由な剛体運動である。
+
+\section{チャート}
+\label{sec:chart}
+
+チャートの第三軸のまわりの回転は極を固定し、初めの二軸が張る平面に関する鏡映も極を固定する。いずれも方向のユークリッド・ノルムを保ち、いずれも虚部に作用して実軸を固定することで、周囲の空間 \(\mathbb{R}\times\mathbb{R}^3\) へ持ち上がる。半径 \(\chi\in(0,\pi)\) の持ち上がった単位方向の上で、対数はこれらの写像のそれぞれを、チャートの同じ写像と絡ませる。回転した点のチャートはチャート点の回転であり、鏡映した点のチャートはチャート点の鏡映である。
+
+左乗法は相対位置を動かさない。あらゆる実数 \(t\) と単位四元数のあらゆる対に対して
+\begin{equation}
+\label{eq:left-relative}
+\rho\bigl((\cos t+I\sin t)\,a,\;(\cos t+I\sin t)\,b\bigr)=\rho(a,b)
+\end{equation}
+である。同じ乗法はチャートを動かす。チャート位置が \((0,\chi,0)\) である点 \(\cos\chi+J\sin\chi\) を、\(\cos t+I\sin t\) で左から掛ける。瞬間 \(t=0\) におけるチャート速度は
+\begin{equation}
+\label{eq:left-velocity}
+\bigl(\chi\cot\chi,\;0,\;\chi\bigr)
+=
+\chi\cot\chi\,e_1
++
+e_1\times(\chi e_2)
+\end{equation}
+である。第二項は、生成子とチャート位置との外積である。赤道 \(\chi=\pi/2\) では余接が消え、速度はその外積に等しい。\(\chi\neq 0\) ならば第三成分 \(\chi\) は零ではない。あらゆる相対ローターから見えない共通の左移動は、チャートにおいては回転である。
+
+\section{二体}
+\label{sec:two}
+
+大円の初期速度をチャートへ押す。源のまわりのそのモーメントは、主論文のモーメントである。\(\sin\alpha=0\) のときモーメントは消える。したがって体と同じ射線上の源は寄与を持たず、源がチャート原点であるときも消える。原点を通る大円は、チャートの直線の射線だからである。二つのチャート距離がともに \(\chi\in(0,\pi)\) であり、向きの付いた角が \(\alpha\) であるとき、モーメントは
+\begin{equation}
+\label{eq:equal}
+(1-\cos\alpha)\,\chi\,(\chi-\sin\chi\cos\chi)\sin\alpha
+\end{equation}
+である。\((0,\pi)\times(0,\pi)\) の上でこの量は正である。\(\alpha\) について奇である。\(-\alpha\) におけるモーメントは \(\alpha\) におけるモーメントの符号を反転したものであり、二つを足すと消える。鏡像の対は相殺する。
+
+チャート距離が等しいとき、整列した角 \(\alpha=0\) のモーメントは零である。\(\sin 0=0\) だからである。同じ距離で角が \(\alpha\in(0,\pi)\) ならば、モーメントは正である。相手を共通の射線から外すか、これを打ち消す鏡像を欠くと、零でないモーメントが残る。
+
+\section{三軸不等の雲}
+\label{sec:cloud}
+
+雲のチャート・トルクは、これらの対ごとのモーメントの和である。長さがチャートの内側にあるとして、六つの単位質量を切片
+\[
+(\pm a,0,0),\qquad (0,\pm b,0),\qquad (0,0,\pm c)
+\]
+に置く。各対は一つの座標平面にある。一つの平面にある四つの直角モーメントは、各符号が二つずつであり、和は零である。各符号が他方を打ち消すからである。三つの平面はトルクの三成分であり、各成分は消える。切片の雲はトルクを持たない。
+
+同じ六点のユークリッド二次モーメントは
+\begin{equation}
+\label{eq:inertia}
+I_x=2(b^2+c^2),\qquad
+I_y=2(a^2+c^2),\qquad
+I_z=2(a^2+b^2)
+\end{equation}
+である。慣性乗積はすべて消える。したがってこれらは主慣性モーメントであり、座標軸は主軸である。\(0<a<b<c\) ならば
+\begin{equation}
+\label{eq:order}
+I_z<I_y<I_x
+\end{equation}
+である。長さが非負ならば、\(I_x=I_y\) は \(a=b\) のときに限り、\(I_y=I_z\) は \(b=c\) のときに限り、\(I_z=I_x\) は \(a=c\) のときに限る。二つの主慣性モーメントが一致するのは、切片の長さの二つが一致するときに限る。これは形の上の閉条件である。
+
+トルクを持たない雲は、釣り合った雲である。等しいチャート距離で、一人の相手を原点を通る射線から角 \(\alpha\in(0,\pi)\) へずらす。整列したモーメントは零であり、ずらしたモーメントは正であるから、初め静止していた雲は角運動量を得る。鏡像の相手を \(-\alpha\) に戻せば、そのモーメントは再び打ち消される。この角運動量は外からの偶力が供給するものではない。球面上の力を対数で読んだときに残るものである。
+
+\section{自由回転}
+\label{sec:euler}
+
+チャートのトルクが零のまま残り、一つの回転が形を運ぶとする。体軸における角速度は、そのときオイラー方程式に従う。主慣性モーメントが \(0<I_1<I_2<I_3\) ならば
+\begin{equation}
+\label{eq:euler}
+\begin{aligned}
+\dot\omega_1&=\frac{I_2-I_3}{I_1}\,\omega_2\omega_3,\\
+\dot\omega_2&=\frac{I_3-I_1}{I_2}\,\omega_3\omega_1,\\
+\dot\omega_3&=\frac{I_1-I_2}{I_3}\,\omega_1\omega_2
+\end{aligned}
+\end{equation}
+である。主軸に沿う定常な回転 \(\Omega\neq 0\) は、二つの隙間が平方を定める横断方向の率へ線形化する。中間軸のまわりでは、その平方は
+\begin{equation}
+\label{eq:rate-mid}
+\frac{(I_3-I_2)(I_2-I_1)}{I_1 I_3}\,\Omega^2
+\end{equation}
+であり、正である。小さい軸のまわりでは平方は
+\[
+-\frac{(I_3-I_1)(I_2-I_1)}{I_2 I_3}\,\Omega^2
+\]
+であり、大きい軸のまわりでは
+\[
+\frac{(I_2-I_3)(I_3-I_1)}{I_1 I_2}\,\Omega^2
+\]
+である。いずれも負である。正の実数の平方は正であるから、小さい軸も大きい軸も正の実固有値を持たない。\eqref{eq:rate-mid} の正の平方根は、中間軸の正の固有値である。\(I_1=I_2\) または \(I_2=I_3\) ならば、中間の率は零である。切片~\eqref{eq:inertia} では、その縮退は二つの長さの一致である。
+
+\section{反転}
+\label{sec:reversal}
+
+不安定な軸は、陽な軌道を担う。\(B>0\) とし、
+\begin{equation}
+\label{eq:amplitudes}
+\begin{aligned}
+k&=B\sqrt{\frac{(I_2-I_1)(I_3-I_2)}{I_1 I_3}},\\[4pt]
+A&=B\sqrt{\frac{I_2(I_3-I_2)}{I_1(I_3-I_1)}},\\[4pt]
+C&=B\sqrt{\frac{I_2(I_2-I_1)}{I_3(I_3-I_1)}}
+\end{aligned}
+\end{equation}
+と置く。プロファイル
+\begin{equation}
+\label{eq:separatrix}
+\omega_1=A\operatorname{sech}(kt),\qquad
+\omega_2=B\tanh(kt),\qquad
+\omega_3=C\operatorname{sech}(kt)
+\end{equation}
+は、あらゆる \(t\) で~\eqref{eq:euler} を満たす。その運動エネルギーは定数
+\begin{equation}
+\label{eq:energy}
+E=\frac12 I_2 B^2
+\end{equation}
+であり、角運動量の平方は定数 \(I_2^2 B^2\) である。したがって
+\begin{equation}
+\label{eq:critical}
+L^2=2EI_2
+\end{equation}
+である。\(k\) の平方は、中間の率~\eqref{eq:rate-mid} を \(\Omega=B\) で評価したものである。中間成分が消えるのは \(t=0\) のときに限る。\(t<0\) では負であり、\(t>0\) では正であるから、符号を変えるのは一度であり、軌道は \(-B\) から \(B\) へ進む。
+
+半振幅の状態は定まった時刻にある。\(\tanh((\log 3)/2)=1/2\) であり \(\tanh\) は奇であるから、
+\[
+\omega_2=\pm\frac B2
+\quad\text{となるのは}\quad
+t=\pm\frac{\log 3}{2k}
+\]
+である。一方から他方への横断が占める時間は
+\begin{equation}
+\label{eq:crossing}
+\frac{\log 3}{k}
+\end{equation}
+である。中間軸のまわりの線形な成長では、相対振幅 \(\varepsilon\in(0,1/2)\) の残差が半分の振幅に達するのは
+\begin{equation}
+\label{eq:waiting}
+\frac1k\log\frac{1}{2\varepsilon}
+\end{equation}
+の後である。\(0<\varepsilon<1/6\) ならば、対数 \(\log(1/(2\varepsilon))\) は \(\log 3\) を上回り、待ち時間~\eqref{eq:waiting} は横断~\eqref{eq:crossing} を上回る。同じ待ち時間はあらゆる限界を超える。各実数 \(N\) に対して、待ち時間が \(N\) より大きい正の \(\varepsilon<1/6\) が存在する。横断の尺度 \(1/k\) は \(\varepsilon\) に依らない。したがって~\eqref{eq:critical} に近い軌道は留まりうる。その後の反転は、慣性モーメントと \(B\) がすでに定めた尺度の上で起こる。
+
+雲がこの運動に入るのは、三つ組 \((I_1,I_2,I_3)\) としてだけである。切片ではその三つ組は~\eqref{eq:inertia} であり、軸の対が等しいのは \(a\)、\(b\)、\(c\) の二つが一致することである。正のモーメントを残す欠陥には方向がある。その残差のうち中間軸に沿う成分が不安定な成分であり、その成分が反転する軌道が~\eqref{eq:separatrix} である。これは自由な三軸不等体の中間軸反転である~\cite{ashbaugh1991}。\eqref{eq:waiting} と~\eqref{eq:crossing} の比較は、線形な成長をセパラトリックスの横断に当てたものである。近傍の軌道の周期ではない。
+
+\section{結論}
+
+対数~\eqref{eq:log} は原点で忠実であり、対蹠点で特異であり、\S\ref{sec:chart} の極を固定する回転と鏡映について等変である。共通の左移動はあらゆる相対ローター~\eqref{eq:left-relative} を保ち、チャート速度~\eqref{eq:left-velocity} に外積を加える。対ごとに、モーメントは射線上と原点で消え、等距離では~\eqref{eq:equal} で与えられ、鏡像と相殺する。六つの切片はトルクを持たず、主慣性モーメントは~\eqref{eq:inertia} であり、\(a<b<c\) のとき~\eqref{eq:order} の順に並ぶ。射線から外れた一人の相手は正のモーメントを残し、静止した雲は、チャートが読む球面上の力から角運動量を得る。
+
+トルクのない剛体運動の上で、体軸の角速度は~\eqref{eq:euler} を満たす。正の実の線形固有値を持つのは中間軸だけである。プロファイル~\eqref{eq:separatrix} はその不安定性を実現し、エネルギー~\eqref{eq:energy} と臨界値~\eqref{eq:critical} を保ち、中間成分を一度だけ反転させる。振幅の六分の一を下回る残差の待ち時間は、反転の横断より長く、残差が縮むとその待ち時間は限りなく伸びる。
+
+主論文の銀河曲線は、同じモーメントの別の用い方である。ここでの回転は、三軸不等の雲のトルクである。
+
+多体軌道の浮動小数による積分は主張しない。\(L^2\) の上のボルツマン重みは主張せず、反転の頻度を分配関数から取り出すこともしない。\(a_0\) の値は導出せず、この雲を銀河と同定することもしない。
+
+\begin{thebibliography}{9}
+\raggedright
+
+\bibitem{dst-main}
+Anonymous,
+「双対時空の間のねじれとしての重力：一般相対性理論の双四元数的再定式化」 (2025).
+\url{https://github.com/hypernumbernet/dual-spacetime-doc/blob/main/double-spacetime-theory.pdf}.
+
+\bibitem{ashbaugh1991}
+M.~S. Ashbaugh, C.~C. Chicone, and R.~H. Cushman,
+``The twisting tennis racket,''
+\textit{J.\ Dynam.\ Differential Equations} \textbf{3}, 67--85 (1991).
+
+\end{thebibliography}
+
+\end{document}

@@ -19,6 +19,8 @@ import DstDiophantine.Gravity.SlerpTorque
 import DstDiophantine.Gravity.RelationalPosition
 import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.CliffordParallel
+import DstDiophantine.Gravity.ChartRotation
+import DstDiophantine.Gravity.RacketFlip
 import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
@@ -1423,6 +1425,52 @@ example (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
 example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
     0 < SlerpTorque.chordMoment χ χ α :=
   SlerpTorque.chordMoment_equal_pos hχ hχu hα hαu
+
+/-- Regression: reflection through a chart plane commutes with the log chart. -/
+example {χ : ℝ} {n : SlerpTorque.V3} (hn : SlerpTorque.dot3 n n = 1)
+    (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    SlerpTorque.logChart (SlerpTorque.lift χ (ChartRotation.reflectZ n)) =
+      ChartRotation.reflectZ (SlerpTorque.logChart (SlerpTorque.lift χ n)) :=
+  ChartRotation.logChart_reflectZ hn hχ hχu
+
+/-- Regression: a common left translation preserves the relative rotor. -/
+example (t : ℝ) (a b : RelationalPosition.S3) :
+    RelationalPosition.relative (CliffordParallel.hopfI t * a)
+        (CliffordParallel.hopfI t * b) =
+      RelationalPosition.relative a b :=
+  ChartRotation.common_left_preserves_relative t a b
+
+/-- Regression: six axis intercepts are torque-free, and `a < b < c` makes them triaxial. -/
+example {a b c : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b < c) :
+    ChartRotation.axisPairTorque a b = 0 ∧
+      ChartRotation.secondZ a b c < ChartRotation.secondY a b c ∧
+      ChartRotation.secondY a b c < ChartRotation.secondX a b c :=
+  ⟨(ChartRotation.axisInterceptTorque_zero a b c).1,
+    (ChartRotation.principal_ordered ha hab hbc).1,
+    (ChartRotation.principal_ordered ha hab hbc).2⟩
+
+/-- Regression: moving one partner off the ray turns a vanishing moment positive. -/
+example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
+    SlerpTorque.chordMoment χ χ 0 = 0 ∧ 0 < ChartRotation.defectTorque χ α :=
+  ChartRotation.displacement_seeds_torque hχ hχu hα hαu
+
+/-- Regression: the separatrix keeps `L² = 2EI₂` and crosses zero only at the origin of time. -/
+example {I1 I2 I3 B t : ℝ} (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3) (hB : 0 < B) :
+    RacketFlip.racketLsq I1 I2 I3 B t = 2 * RacketFlip.racketEnergy I1 I2 I3 B t * I2 ∧
+      (RacketFlip.omega2 I1 I2 I3 B t = 0 ↔ t = 0) :=
+  ⟨RacketFlip.racket_critical h1 h12 h23 hB t, RacketFlip.omega2_eq_zero_iff h1 h12 h23 hB t⟩
+
+/-- Regression: only the intermediate axis has a positive squared rate. -/
+example {I1 I2 I3 Ω : ℝ} (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3) (hΩ : Ω ≠ 0) :
+    0 < RacketFlip.rateMid I1 I2 I3 Ω ∧ RacketFlip.rateSmall I1 I2 I3 Ω < 0 ∧
+      RacketFlip.rateLarge I1 I2 I3 Ω < 0 :=
+  ⟨RacketFlip.rateMid_pos h1 h12 h23 hΩ, RacketFlip.rateSmall_neg h1 h12 h23 hΩ,
+    RacketFlip.rateLarge_neg h1 h12 h23 hΩ⟩
+
+/-- Regression: a residual below one sixth waits longer than the crossing. -/
+example {k ε : ℝ} (hk : 0 < k) (hε : 0 < ε) (hεu : ε < 1 / 6) :
+    RacketFlip.crossingTime k < RacketFlip.waitingTime k ε :=
+  RacketFlip.waiting_gt_crossing hk hε hεu
 
 /-- Regression: the nucleus frame keeps the electron–electron rotor. -/
 example (n a b : RelationalPosition.S3) :
