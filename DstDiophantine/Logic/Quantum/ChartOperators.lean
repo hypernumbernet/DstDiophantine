@@ -195,20 +195,22 @@ private theorem differentiableAt_wavePhase (p : Vec4) (x : Vec4) :
   rw [hfun]
   exact (wavePhaseCLM p).differentiableAt
 
+private theorem vec4_eq_sum_single (v : Vec4) :
+    v = ∑ μ : Fin 4, v μ • Pi.single μ (1 : ℝ) := by
+  ext ν
+  simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+  rw [Finset.sum_eq_single ν]
+  · simp
+  · intro μ _ hμ
+    rw [Pi.single_eq_of_ne (Ne.symm hμ), mul_zero]
+  · intro hν
+    exact absurd (Finset.mem_univ ν) hν
+
 private theorem fderiv_eq_zero_of_partial {f : Vec4 → DiracSpinor} {x : Vec4}
     (h : ∀ μ, partialD f μ x = 0) : fderiv ℝ f x = 0 := by
   apply ContinuousLinearMap.ext
   intro v
-  have hv : v = ∑ μ : Fin 4, v μ • Pi.single μ (1 : ℝ) := by
-    ext ν
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-    rw [Finset.sum_eq_single ν]
-    · simp
-    · intro μ _ hμ
-      rw [Pi.single_eq_of_ne (Ne.symm hμ), mul_zero]
-    · intro hν
-      exact absurd (Finset.mem_univ ν) hν
-  rw [hv, map_sum]
+  rw [vec4_eq_sum_single v, map_sum]
   refine Finset.sum_eq_zero fun μ _ => ?_
   rw [map_smul]
   have hpartial : (fderiv ℝ f x) (Pi.single μ (1 : ℝ)) = partialD f μ x := rfl
@@ -326,8 +328,7 @@ theorem positionEigen_vanishes_at {ν : Fin 4} {lam : ℂ} {Ψ : Vec4 → DiracS
   rw [← sub_eq_zero, ← sub_smul] at hx'
   exact (smul_eq_zero.mp hx').resolve_left (sub_ne_zero.mpr hx)
 
-/-- Every complex number fails to be the value of some chart coordinate. -/
-theorem exists_coord_ne (ν : Fin 4) (lam : ℂ) : ∃ x : Vec4, (x ν : ℂ) ≠ lam := by
+private theorem exists_coord_ne (ν : Fin 4) (lam : ℂ) : ∃ x : Vec4, (x ν : ℂ) ≠ lam := by
   refine ⟨Pi.single ν (lam.re + 1), ?_⟩
   intro h
   have hre := congrArg Complex.re h
@@ -352,23 +353,9 @@ theorem momentumEigen_not_positionEigen {p : Vec4} {Ψ : Vec4 → DiracSpinor}
 
 /-- A plane wave of nonzero amplitude is an eigenfield of no position component. -/
 theorem planeWave_not_positionEigen {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4)
-    (ν : Fin 4) (lam : ℂ) : ¬ PositionEigen ν lam (planeWave p u) := by
-  intro h
-  have h0 := h 0
-  have hpw0 : planeWave p u 0 = u := by
-    unfold planeWave
-    rw [wavePhase_zero, ofReal_zero, mul_zero, exp_zero, one_smul]
-  unfold positionOp at h0
-  rw [show ((0 : Vec4) ν : ℂ) = 0 by simp, zero_smul, hpw0] at h0
-  have hlam : lam = 0 := by
-    have : lam • u = 0 := h0.symm
-    exact (smul_eq_zero.mp this).resolve_right hu
-  have h1 := h (Pi.single ν 1)
-  rw [hlam, zero_smul] at h1
-  unfold positionOp at h1
-  have hcoord : ((Pi.single ν (1 : ℝ) : Vec4) ν : ℂ) = 1 := by simp
-  rw [hcoord, one_smul] at h1
-  exact planeWave_ne_zero hu p (Pi.single ν 1) h1
+    (ν : Fin 4) (lam : ℂ) : ¬ PositionEigen ν lam (planeWave p u) :=
+  momentumEigen_not_positionEigen (planeWave_momentumEigen p u)
+    ⟨0, planeWave_ne_zero hu p 0⟩ ν lam
 
 /-- A continuous eigenfield of one position component vanishes at every chart point. -/
 theorem continuous_positionEigen_zero {ν : Fin 4} {lam : ℂ} {Ψ : Vec4 → DiracSpinor}
@@ -405,31 +392,21 @@ theorem continuous_positionEigen_zero {ν : Fin 4} {lam : ℂ} {Ψ : Vec4 → Di
     exact tendsto_nhds_unique hseq hseq0
   · exact positionEigen_vanishes_at hX hx
 
-/-- The derivative of `f` at `x` along `v` is the sum of the partial derivatives. -/
-theorem fderiv_eq_sum_partial {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+private theorem fderiv_eq_sum_partial {Ψ : Vec4 → DiracSpinor} {x : Vec4}
     (_hΨ : DifferentiableAt ℝ Ψ x) (v : Vec4) :
     fderiv ℝ Ψ x v = ∑ μ : Fin 4, (v μ : ℂ) • partialD Ψ μ x := by
-  have hv : v = ∑ μ : Fin 4, v μ • Pi.single μ (1 : ℝ) := by
-    ext ν
-    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-    rw [Finset.sum_eq_single ν]
-    · simp
-    · intro μ _ hμ
-      rw [Pi.single_eq_of_ne (Ne.symm hμ), mul_zero]
-    · intro hν
-      exact absurd (Finset.mem_univ ν) hν
-  conv_lhs => rw [hv]
+  conv_lhs => rw [vec4_eq_sum_single v]
   rw [map_sum]
   refine Finset.sum_congr rfl fun μ _ => ?_
   rw [map_smul, ← Complex.coe_smul]
   rfl
 
-theorem partialD_eq_momentum (Ψ : Vec4 → DiracSpinor) (μ : Fin 4) (x : Vec4) :
+private theorem partialD_eq_momentum (Ψ : Vec4 → DiracSpinor) (μ : Fin 4) (x : Vec4) :
     partialD Ψ μ x = I • momentumOp μ Ψ x := by
   unfold momentumOp
   rw [smul_smul, I_mul_neg_I, one_smul]
 
-theorem hasDerivAt_translate {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+private theorem hasDerivAt_translate {Ψ : Vec4 → DiracSpinor} {x : Vec4}
     (hΨ : DifferentiableAt ℝ Ψ x) (a : Vec4) :
     HasDerivAt (fun t : ℝ => Ψ (x + t • a)) (fderiv ℝ Ψ x a) 0 := by
   have hg : HasDerivAt (fun t : ℝ => x + t • a) a (0 : ℝ) := by
@@ -505,7 +482,7 @@ theorem fiberRotor_momentum (M : Matrix (Fin 2) (Fin 2) ℂ)
 noncomputable def orbitalZ (Ψ : Vec4 → DiracSpinor) : Vec4 → DiracSpinor :=
   fun x => positionOp 1 (momentumOp 2 Ψ) x - positionOp 2 (momentumOp 1 Ψ) x
 
-theorem orbitalZ_eq_partial (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
+private theorem orbitalZ_eq_partial (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
     orbitalZ Ψ x =
       (-I) • ((x 1 : ℂ) • partialD Ψ 2 x - (x 2 : ℂ) • partialD Ψ 1 x) := by
   unfold orbitalZ positionOp momentumOp
