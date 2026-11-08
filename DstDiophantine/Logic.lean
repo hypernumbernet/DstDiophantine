@@ -1333,6 +1333,24 @@ example {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4) (ν : Fin 4) (lam : ℂ) :
     ¬ PositionEigen ν lam (planeWave p u) :=
   planeWave_not_positionEigen hu p ν lam
 
+/-- Regression: the chart pair has one nonzero bracket, momentum generates
+translations, and only the zero field is an eigenfield of both. -/
+example {Ψ : Vec4 → DiracSpinor} (hΨ : ContDiff ℝ 2 Ψ) (hΨ1 : Differentiable ℝ Ψ)
+    (ν μ : Fin 4) (x a : Vec4) (p : Vec4) (lam : ℂ)
+    (hP : MomentumEigen p Ψ) (hX : PositionEigen ν lam Ψ)
+    (M : Matrix (Fin 2) (Fin 2) ℂ) :
+    positionOp ν (positionOp μ Ψ) x = positionOp μ (positionOp ν Ψ) x ∧
+      momentumOp μ (momentumOp ν Ψ) x = momentumOp ν (momentumOp μ Ψ) x ∧
+      deriv (fun t : ℝ => Ψ (x + t • a)) 0 =
+        Complex.I • ∑ κ : Fin 4, (a κ : ℂ) • momentumOp κ Ψ x ∧
+      momentumOp μ (fiberRotor M Ψ) x = fiberRotor M (momentumOp μ Ψ) x ∧
+      orbitalZ (positionOp 1 Ψ) x - positionOp 1 (orbitalZ Ψ) x =
+        Complex.I • positionOp 2 Ψ x ∧
+      Ψ x = 0 :=
+  ⟨position_comm ν μ Ψ x, momentum_comm hΨ μ ν x,
+    translate_deriv_momentum (hΨ1 x) a, fiberRotor_momentum M hΨ1 μ x,
+    orbitalZ_comm_position_x hΨ1 x, joint_position_momentum_zero hP hX x⟩
+
 /-- Regression: light-cone 8+8 ≠ DST torsion 6; Super-Poincaré ≠ PGA 10. -/
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
   ⟨LorentzDim.lightCone_ne_torsionGenerators, superPoincare_ne_pga⟩

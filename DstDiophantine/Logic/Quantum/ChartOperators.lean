@@ -2,7 +2,10 @@ import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.DiracGauge
 import DstDiophantine.Logic.Quantum.ExternalChart
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.Positivity
 
 /-!
 # Position and momentum on the chart
@@ -14,11 +17,20 @@ because they are traceless.
 
 Position and momentum answer the chart argument of the de Broglie phase.
 On a differentiable field, `X^ν` multiplies by the coordinate `x^ν` and
-`P_μ = -i ∂_μ`. They satisfy `[X^ν, P_μ] = i δ^ν_μ`. A differentiable field
-is an eigenfield of every `P_μ` with eigenvalues `p_μ` exactly when
-translation multiplies it by `e^{i p·a}`. A plane wave of nonzero amplitude
-is such an eigenfield, and it is an eigenfield of no position operator.
+`P_μ = -i ∂_μ`. They satisfy `[X^ν, P_μ] = i δ^ν_μ`. The position components
+commute with one another, and on a twice differentiable field so do the
+momenta. The derivative of a translation is `i a^μ P_μ`. A constant total
+rotor on the value, leaving the argument fixed, commutes with both.
+
+A position eigenfield vanishes off one coordinate hyperplane, or everywhere
+when the eigenvalue is not real. A momentum eigenfield with one zero vanishes
+everywhere, so the only joint eigenfield is zero. A continuous position
+eigenfield vanishes at every chart point. A plane wave of nonzero amplitude
+is a momentum eigenfield and an eigenfield of no position operator.
 Dividing out its phase from `P_μ` of the wave returns `p_μ` times the carrier.
+
+The orbital momentum `L_3 = X^1 P_2 - X^2 P_1` turns the transverse chart
+coordinates. An internal rotor still commutes with it.
 
 An uncertainty bound for orbital angles is not claimed.
 -/
@@ -27,7 +39,8 @@ namespace DstDiophantine
 
 namespace Logic
 
-open Complex Matrix
+open Complex Filter Matrix
+open scoped Topology
 
 /-! ### The dual Hilbert space does not carry the canonical pair -/
 
@@ -259,6 +272,84 @@ theorem bornDensity_momentumEigen {p : Vec4} {Ψ : Vec4 → DiracSpinor}
     simpa [planeWave] using (momentumEigen_iff_phase.mp h) z
   rw [hpw, bornDensity_planeWave_const]
 
+/-- The position components commute. -/
+theorem position_comm (ν μ : Fin 4) (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
+    positionOp ν (positionOp μ Ψ) x = positionOp μ (positionOp ν Ψ) x := by
+  unfold positionOp
+  rw [smul_smul, smul_smul, mul_comm]
+
+/-- On a twice differentiable field the momentum components commute. -/
+theorem momentum_comm {Ψ : Vec4 → DiracSpinor} (hΨ : ContDiff ℝ 2 Ψ)
+    (μ ν : Fin 4) (x : Vec4) :
+    momentumOp μ (momentumOp ν Ψ) x = momentumOp ν (momentumOp μ Ψ) x := by
+  have hsymm : IsSymmSndFDerivAt ℝ Ψ x :=
+    hΨ.contDiffAt.isSymmSndFDerivAt (by simp)
+  have hsec : ∀ α β : Fin 4,
+      partialD (fun y => partialD Ψ β y) α x =
+        fderiv ℝ (fderiv ℝ Ψ) x (Pi.single α 1) (Pi.single β 1) := by
+    intro α β
+    have hfd : DifferentiableAt ℝ (fderiv ℝ Ψ) x :=
+      (hΨ.fderiv_right (m := 1) (by norm_num)).differentiable (by norm_num) x
+    have hfun : (fun y => partialD Ψ β y) = fun y => (fderiv ℝ Ψ y) (Pi.single β 1) := rfl
+    rw [hfun]
+    unfold partialD
+    rw [fderiv_clm_apply hfd (differentiableAt_const _)]
+    simp
+  have hsmul : ∀ α β : Fin 4,
+      partialD (momentumOp β Ψ) α x =
+        (-I) • partialD (fun y => partialD Ψ β y) α x := by
+    intro α β
+    have hd : DifferentiableAt ℝ (fun y => partialD Ψ β y) x :=
+      differentiable_partialD hΨ β x
+    have hc : HasFDerivAt (fun y => (-I) • partialD Ψ β y)
+        ((-I) • fderiv ℝ (fun y => partialD Ψ β y) x) x :=
+      hd.hasFDerivAt.const_smul (-I)
+    have heq : momentumOp β Ψ = fun y => (-I) • partialD Ψ β y := rfl
+    rw [heq]
+    change (fderiv ℝ (fun y => (-I) • partialD Ψ β y) x) (Pi.single α 1) =
+      (-I) • (fderiv ℝ (fun y => partialD Ψ β y) x) (Pi.single α 1)
+    rw [hc.fderiv]
+    rfl
+  have happ : ∀ α β : Fin 4,
+      momentumOp α (momentumOp β Ψ) x =
+        (-I) • ((-I) • fderiv ℝ (fderiv ℝ Ψ) x (Pi.single α 1) (Pi.single β 1)) := by
+    intro α β
+    have h1 : momentumOp α (momentumOp β Ψ) x = (-I) • partialD (momentumOp β Ψ) α x := rfl
+    rw [h1, hsmul α β, hsec α β]
+  rw [happ μ ν, happ ν μ, hsymm (Pi.single μ 1) (Pi.single ν 1)]
+
+/-- A position eigenfield vanishes where the coordinate is not the eigenvalue. -/
+theorem positionEigen_vanishes_at {ν : Fin 4} {lam : ℂ} {Ψ : Vec4 → DiracSpinor}
+    (h : PositionEigen ν lam Ψ) {x : Vec4} (hx : (x ν : ℂ) ≠ lam) : Ψ x = 0 := by
+  have hx' := h x
+  unfold positionOp at hx'
+  rw [← sub_eq_zero, ← sub_smul] at hx'
+  exact (smul_eq_zero.mp hx').resolve_left (sub_ne_zero.mpr hx)
+
+/-- Every complex number fails to be the value of some chart coordinate. -/
+theorem exists_coord_ne (ν : Fin 4) (lam : ℂ) : ∃ x : Vec4, (x ν : ℂ) ≠ lam := by
+  refine ⟨Pi.single ν (lam.re + 1), ?_⟩
+  intro h
+  have hre := congrArg Complex.re h
+  simp only [Pi.single_eq_same, Complex.ofReal_re] at hre
+  linarith
+
+/-- The only field that is both a momentum eigenfield and an eigenfield of one
+position component is the zero field. -/
+theorem joint_position_momentum_zero {p : Vec4} {ν : Fin 4} {lam : ℂ}
+    {Ψ : Vec4 → DiracSpinor} (hP : MomentumEigen p Ψ) (hX : PositionEigen ν lam Ψ)
+    (x : Vec4) : Ψ x = 0 := by
+  obtain ⟨y, hy⟩ := exists_coord_ne ν lam
+  exact momentumEigen_zero hP (positionEigen_vanishes_at hX hy) x
+
+/-- A nonzero momentum eigenfield is an eigenfield of no position component. -/
+theorem momentumEigen_not_positionEigen {p : Vec4} {Ψ : Vec4 → DiracSpinor}
+    (h : MomentumEigen p Ψ) (hΨ : ∃ x, Ψ x ≠ 0) (ν : Fin 4) (lam : ℂ) :
+    ¬ PositionEigen ν lam Ψ := by
+  intro hX
+  obtain ⟨x, hx⟩ := hΨ
+  exact hx (joint_position_momentum_zero h hX x)
+
 /-- A plane wave of nonzero amplitude is an eigenfield of no position component. -/
 theorem planeWave_not_positionEigen {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4)
     (ν : Fin 4) (lam : ℂ) : ¬ PositionEigen ν lam (planeWave p u) := by
@@ -278,6 +369,241 @@ theorem planeWave_not_positionEigen {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4)
   have hcoord : ((Pi.single ν (1 : ℝ) : Vec4) ν : ℂ) = 1 := by simp
   rw [hcoord, one_smul] at h1
   exact planeWave_ne_zero hu p (Pi.single ν 1) h1
+
+/-- A continuous eigenfield of one position component vanishes at every chart point. -/
+theorem continuous_positionEigen_zero {ν : Fin 4} {lam : ℂ} {Ψ : Vec4 → DiracSpinor}
+    (hcont : Continuous Ψ) (hX : PositionEigen ν lam Ψ) (x : Vec4) : Ψ x = 0 := by
+  by_cases hx : (x ν : ℂ) = lam
+  · let γ : ℕ → Vec4 := fun n => x + (1 / ((n : ℝ) + 1)) • Pi.single ν (1 : ℝ)
+    have hγ : Filter.Tendsto γ Filter.atTop (𝓝 x) := by
+      have hinv : Filter.Tendsto (fun n : ℕ => (1 : ℝ) / ((n : ℝ) + 1)) Filter.atTop (𝓝 (0 : ℝ)) :=
+        tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ)
+      have hline : Filter.Tendsto
+          (fun n : ℕ => (1 / ((n : ℝ) + 1)) • (Pi.single ν (1 : ℝ) : Vec4))
+          Filter.atTop (𝓝 (0 : Vec4)) := by
+        simpa using hinv.smul_const (Pi.single ν (1 : ℝ) : Vec4)
+      simpa [γ, add_zero] using Filter.Tendsto.add tendsto_const_nhds hline
+    have hseq : Filter.Tendsto (fun n => Ψ (γ n)) Filter.atTop (𝓝 (Ψ x)) :=
+      (hcont.tendsto x).comp hγ
+    have hzero : ∀ n, Ψ (γ n) = 0 := by
+      intro n
+      apply positionEigen_vanishes_at hX
+      have hcoord : (γ n) ν = x ν + 1 / ((n : ℝ) + 1) := by
+        simp [γ, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same]
+      rw [hcoord]
+      intro h
+      rw [← hx] at h
+      have hre : x ν + 1 / ((n : ℝ) + 1) = x ν :=
+        Complex.ofReal_injective h
+      have hpos : (0 : ℝ) < 1 / ((n : ℝ) + 1) := by
+        apply div_pos one_pos
+        positivity
+      linarith
+    have hseq0 : Filter.Tendsto (fun n => Ψ (γ n)) Filter.atTop (𝓝 (0 : DiracSpinor)) := by
+      simp_rw [hzero]
+      exact tendsto_const_nhds
+    exact tendsto_nhds_unique hseq hseq0
+  · exact positionEigen_vanishes_at hX hx
+
+/-- The derivative of `f` at `x` along `v` is the sum of the partial derivatives. -/
+theorem fderiv_eq_sum_partial {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+    (_hΨ : DifferentiableAt ℝ Ψ x) (v : Vec4) :
+    fderiv ℝ Ψ x v = ∑ μ : Fin 4, (v μ : ℂ) • partialD Ψ μ x := by
+  have hv : v = ∑ μ : Fin 4, v μ • Pi.single μ (1 : ℝ) := by
+    ext ν
+    simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+    rw [Finset.sum_eq_single ν]
+    · simp
+    · intro μ _ hμ
+      rw [Pi.single_eq_of_ne (Ne.symm hμ), mul_zero]
+    · intro hν
+      exact absurd (Finset.mem_univ ν) hν
+  conv_lhs => rw [hv]
+  rw [map_sum]
+  refine Finset.sum_congr rfl fun μ _ => ?_
+  rw [map_smul, ← Complex.coe_smul]
+  rfl
+
+theorem partialD_eq_momentum (Ψ : Vec4 → DiracSpinor) (μ : Fin 4) (x : Vec4) :
+    partialD Ψ μ x = I • momentumOp μ Ψ x := by
+  unfold momentumOp
+  rw [smul_smul, I_mul_neg_I, one_smul]
+
+theorem hasDerivAt_translate {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+    (hΨ : DifferentiableAt ℝ Ψ x) (a : Vec4) :
+    HasDerivAt (fun t : ℝ => Ψ (x + t • a)) (fderiv ℝ Ψ x a) 0 := by
+  have hg : HasDerivAt (fun t : ℝ => x + t • a) a (0 : ℝ) := by
+    simpa using ((hasDerivAt_id (0 : ℝ)).smul_const a).const_add x
+  have hx0 : x + (0 : ℝ) • a = x := by simp
+  have hΨ0 : DifferentiableAt ℝ Ψ (x + (0 : ℝ) • a) := by
+    simpa [hx0] using hΨ
+  have hcomp := hΨ0.hasFDerivAt.comp_hasDerivAt (0 : ℝ) hg
+  simp only [hx0] at hcomp
+  change HasDerivAt (fun t : ℝ => Ψ (x + t • a)) (fderiv ℝ Ψ x a) 0 at hcomp
+  exact hcomp
+
+/-- Along `x + t a`, the derivative at `t = 0` is `i a^μ P_μ Ψ`. -/
+theorem translate_deriv_momentum {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+    (hΨ : DifferentiableAt ℝ Ψ x) (a : Vec4) :
+    deriv (fun t : ℝ => Ψ (x + t • a)) 0 =
+      I • ∑ μ : Fin 4, (a μ : ℂ) • momentumOp μ Ψ x := by
+  rw [(hasDerivAt_translate hΨ a).deriv, fderiv_eq_sum_partial hΨ a]
+  have hterm : ∀ μ : Fin 4, (a μ : ℂ) • partialD Ψ μ x =
+      I • ((a μ : ℂ) • momentumOp μ Ψ x) := by
+    intro μ
+    rw [partialD_eq_momentum, smul_smul, mul_comm, ← smul_smul]
+  rw [Finset.sum_congr rfl (fun μ _ => hterm μ), ← Finset.smul_sum]
+
+/-- On a momentum eigenfield the same derivative is `i (p·a)` times the field. -/
+theorem translate_deriv_momentumEigen {p : Vec4} {Ψ : Vec4 → DiracSpinor}
+    (hΨ : Differentiable ℝ Ψ) (h : MomentumEigen p Ψ) (x a : Vec4) :
+    deriv (fun t : ℝ => Ψ (x + t • a)) 0 =
+      (I * (wavePhase p a : ℂ)) • Ψ x := by
+  rw [translate_deriv_momentum (hΨ x) a]
+  simp_rw [momentumEigen_imp_momentumOp h]
+  have hlin : ∑ μ : Fin 4, (a μ : ℂ) • ((p μ : ℂ) • Ψ x) =
+      (∑ μ : Fin 4, (a μ : ℂ) * (p μ : ℂ)) • Ψ x := by
+    simp_rw [smul_smul]
+    rw [← Finset.sum_smul]
+  have hphase : ∑ μ : Fin 4, (a μ : ℂ) * (p μ : ℂ) = (wavePhase p a : ℂ) := by
+    unfold wavePhase
+    rw [Complex.ofReal_sum]
+    refine Finset.sum_congr rfl fun μ _ => ?_
+    push_cast
+    ring
+  rw [hlin, hphase, smul_smul]
+
+/-- A total rotor acting on the value at a fixed chart point. -/
+noncomputable def fiberRotor (M : Matrix (Fin 2) (Fin 2) ℂ)
+    (Ψ : Vec4 → DiracSpinor) : Vec4 → DiracSpinor :=
+  fun x => rotorDirac M (Ψ x)
+
+theorem fiberRotor_position (M : Matrix (Fin 2) (Fin 2) ℂ)
+    (Ψ : Vec4 → DiracSpinor) (ν : Fin 4) :
+    positionOp ν (fiberRotor M Ψ) = fiberRotor M (positionOp ν Ψ) := by
+  funext x
+  unfold positionOp fiberRotor
+  exact (rotorDirac_smul M ((x ν : ℂ)) (Ψ x)).symm
+
+theorem fiberRotor_momentum (M : Matrix (Fin 2) (Fin 2) ℂ)
+    {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) (μ : Fin 4) (x : Vec4) :
+    momentumOp μ (fiberRotor M Ψ) x = fiberRotor M (momentumOp μ Ψ) x := by
+  have heq : fiberRotor M Ψ = (diracCLM (rotorDiracMat M)) ∘ Ψ := by
+    funext y
+    simp [fiberRotor, rotorDirac_eq_mat, diracCLM_apply]
+  have hfd :=
+    ((diracCLM (rotorDiracMat M)).hasFDerivAt.comp x (hΨ x).hasFDerivAt)
+  unfold momentumOp
+  rw [heq]
+  unfold partialD
+  rw [hfd.fderiv]
+  simp only [ContinuousLinearMap.comp_apply, diracCLM_apply]
+  rw [← rotorDirac_eq_mat, ← rotorDirac_smul]
+  rfl
+
+/-- Orbital momentum about the chart axis `z`: `L_3 = X^1 P_2 - X^2 P_1`. -/
+noncomputable def orbitalZ (Ψ : Vec4 → DiracSpinor) : Vec4 → DiracSpinor :=
+  fun x => positionOp 1 (momentumOp 2 Ψ) x - positionOp 2 (momentumOp 1 Ψ) x
+
+theorem orbitalZ_eq_partial (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
+    orbitalZ Ψ x =
+      (-I) • ((x 1 : ℂ) • partialD Ψ 2 x - (x 2 : ℂ) • partialD Ψ 1 x) := by
+  unfold orbitalZ positionOp momentumOp
+  rw [smul_sub]
+  have h1 : (x 1 : ℂ) • ((-I) • partialD Ψ 2 x) =
+      (-I) • ((x 1 : ℂ) • partialD Ψ 2 x) := smul_comm_spinor _ _ _
+  have h2 : (x 2 : ℂ) • ((-I) • partialD Ψ 1 x) =
+      (-I) • ((x 2 : ℂ) • partialD Ψ 1 x) := smul_comm_spinor _ _ _
+  rw [h1, h2]
+
+private theorem partial_position_off {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+    (hΨ : DifferentiableAt ℝ Ψ x) {ν μ : Fin 4} (hνμ : ν ≠ μ) :
+    partialD (positionOp ν Ψ) μ x = (x ν : ℂ) • partialD Ψ μ x := by
+  rw [partialD_positionOp hΨ]
+  simp [hνμ]
+
+private theorem partial_position_diag {Ψ : Vec4 → DiracSpinor} {x : Vec4}
+    (hΨ : DifferentiableAt ℝ Ψ x) (ν : Fin 4) :
+    partialD (positionOp ν Ψ) ν x = (x ν : ℂ) • partialD Ψ ν x + Ψ x := by
+  rw [partialD_positionOp hΨ]
+  simp
+
+/-- `L_3` turns the first transverse coordinate: `[L_3, X^1] = i X^2`. -/
+theorem orbitalZ_comm_position_x {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ)
+    (x : Vec4) :
+    orbitalZ (positionOp 1 Ψ) x - positionOp 1 (orbitalZ Ψ) x =
+      I • positionOp 2 Ψ x := by
+  have hZx := orbitalZ_eq_partial (positionOp 1 Ψ) x
+  rw [partial_position_off (hΨ x) (by decide : (1 : Fin 4) ≠ 2),
+    partial_position_diag (hΨ x) 1] at hZx
+  have hXZ : positionOp 1 (orbitalZ Ψ) x = (x 1 : ℂ) • orbitalZ Ψ x := rfl
+  have hcomm : ∀ (c : ℂ) (w : DiracSpinor), c • ((-I) • w) = (-I) • (c • w) :=
+    fun c w => smul_comm_spinor c (-I) w
+  have hgoal :
+      (-I) • ((x 1 : ℂ) • ((x 1 : ℂ) • partialD Ψ 2 x) -
+          (x 2 : ℂ) • ((x 1 : ℂ) • partialD Ψ 1 x + Ψ x)) -
+        (x 1 : ℂ) • ((-I) • ((x 1 : ℂ) • partialD Ψ 2 x -
+          (x 2 : ℂ) • partialD Ψ 1 x)) =
+      I • ((x 2 : ℂ) • Ψ x) := by
+    rw [hcomm]
+    module
+  rw [hZx, hXZ, orbitalZ_eq_partial]
+  exact hgoal
+
+/-- `L_3` turns the second transverse coordinate: `[L_3, X^2] = -i X^1`. -/
+theorem orbitalZ_comm_position_y {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ)
+    (x : Vec4) :
+    orbitalZ (positionOp 2 Ψ) x - positionOp 2 (orbitalZ Ψ) x =
+      (-I) • positionOp 1 Ψ x := by
+  have hZx := orbitalZ_eq_partial (positionOp 2 Ψ) x
+  rw [partial_position_diag (hΨ x) 2,
+    partial_position_off (hΨ x) (by decide : (2 : Fin 4) ≠ 1)] at hZx
+  have hXZ : positionOp 2 (orbitalZ Ψ) x = (x 2 : ℂ) • orbitalZ Ψ x := rfl
+  have hcomm : ∀ (c : ℂ) (w : DiracSpinor), c • ((-I) • w) = (-I) • (c • w) :=
+    fun c w => smul_comm_spinor c (-I) w
+  have hgoal :
+      (-I) • ((x 1 : ℂ) • ((x 2 : ℂ) • partialD Ψ 2 x + Ψ x) -
+          (x 2 : ℂ) • ((x 2 : ℂ) • partialD Ψ 1 x)) -
+        (x 2 : ℂ) • ((-I) • ((x 1 : ℂ) • partialD Ψ 2 x -
+          (x 2 : ℂ) • partialD Ψ 1 x)) =
+      (-I) • ((x 1 : ℂ) • Ψ x) := by
+    rw [hcomm]
+    module
+  rw [hZx, hXZ, orbitalZ_eq_partial]
+  exact hgoal
+
+/-- `L_3` fixes the longitudinal coordinate. -/
+theorem orbitalZ_comm_position_z {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ)
+    (x : Vec4) :
+    orbitalZ (positionOp 3 Ψ) x - positionOp 3 (orbitalZ Ψ) x = 0 := by
+  have hZx := orbitalZ_eq_partial (positionOp 3 Ψ) x
+  rw [partial_position_off (hΨ x) (by decide : (3 : Fin 4) ≠ 2),
+    partial_position_off (hΨ x) (by decide : (3 : Fin 4) ≠ 1)] at hZx
+  have hXZ : positionOp 3 (orbitalZ Ψ) x = (x 3 : ℂ) • orbitalZ Ψ x := rfl
+  have hcomm : ∀ (c : ℂ) (w : DiracSpinor), c • ((-I) • w) = (-I) • (c • w) :=
+    fun c w => smul_comm_spinor c (-I) w
+  have hgoal :
+      (-I) • ((x 1 : ℂ) • ((x 3 : ℂ) • partialD Ψ 2 x) -
+          (x 2 : ℂ) • ((x 3 : ℂ) • partialD Ψ 1 x)) -
+        (x 3 : ℂ) • ((-I) • ((x 1 : ℂ) • partialD Ψ 2 x -
+          (x 2 : ℂ) • partialD Ψ 1 x)) = 0 := by
+    rw [hcomm]
+    module
+  rw [hZx, hXZ, orbitalZ_eq_partial]
+  exact hgoal
+
+/-- An internal rotor commutes with `L_3`. -/
+theorem fiberRotor_orbitalZ (M : Matrix (Fin 2) (Fin 2) ℂ)
+    {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) (x : Vec4) :
+    orbitalZ (fiberRotor M Ψ) x = fiberRotor M (orbitalZ Ψ) x := by
+  have hP : ∀ μ : Fin 4,
+      momentumOp μ (fiberRotor M Ψ) = fiberRotor M (momentumOp μ Ψ) := by
+    intro μ
+    funext y
+    exact fiberRotor_momentum M hΨ μ y
+  unfold orbitalZ
+  rw [hP 2, hP 1, fiberRotor_position, fiberRotor_position]
+  simp [fiberRotor, rotorDirac_eq_mat, applyDiracMat_sub]
 
 end Logic
 
