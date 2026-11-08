@@ -51,6 +51,7 @@ import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.ExternalChart
 import DstDiophantine.Logic.Quantum.SpinWaveBridge
 import DstDiophantine.Logic.Quantum.ChartOperators
+import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
 import DstDiophantine.Logic.Quantum.DeBroglie
@@ -1067,6 +1068,17 @@ example (k a p : Vec4) (u : DiracSpinor) (x : Vec4) :
       Complex.exp (Complex.I * (wavePhase k a : ℂ)) •
         momentumKick k (chartTranslate a (planeWave p u)) x :=
   weyl_shift_kick k a p u x
+
+/-- Regression: the samples of one chart axis return the discrete amplitude. -/
+example {N : ℕ} [NeZero N] (μ : Fin 4) (f : ZMod N → ℂ) (u : DiracSpinor) (j : ZMod N) :
+    angleChartField μ f u (angleChartPoint μ j) = (f j) • u :=
+  angleChartField_sample μ f u j
+
+/-- Regression: translation by one spacing is the opposite shift of the amplitude. -/
+example {N : ℕ} [NeZero N] (μ : Fin 4) (s : ZMod N) (f : ZMod N → ℂ) (u : DiracSpinor) :
+    chartTranslate (angleChartPoint μ s) (angleChartField μ f u) =
+      angleChartField μ (DualFourier.dualCircleShift (-s) f) u :=
+  angleChartField_translate μ s f u
 
 /-- Regression: the current of two solutions of one real mass is conserved. -/
 example {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (hΦ : DiracField m Φ)

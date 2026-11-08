@@ -35,8 +35,10 @@ have supports whose cardinalities multiply to at least `N`, and to at least
 separates across the three angles has transform equal to the product of the
 three circle transforms.
 
-This is not the state space `ℂ²`, not the indefinite Killing pairing, and not
-the canonical pair on the continuous chart.
+This is not the state space `ℂ²` and not the indefinite Killing pairing.
+The finite space is not the operator pair on the chart. On one chart axis
+the same shift and clock, read at the `N` samples of one period, are that
+chart's translation and momentum kick (`Logic.Quantum.AngleChart`).
 -/
 
 namespace DstDiophantine
