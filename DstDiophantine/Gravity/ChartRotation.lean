@@ -23,7 +23,13 @@ azimuthal equidistant chart `logChart`. A pole-fixing rotation or reflection of
 the sphere is the same rotation or reflection of that chart. A common left
 translation leaves every relative rotor fixed, and its chart velocity at a
 point on the second axis splits into a term along the generator and the cross
-product of the generator with the chart point.
+product of the generator with the chart point. The sphere and the chart are
+two copies, joined only by the logarithm of the relative rotor. A common left
+translation leaves that logarithm fixed. Logging the point again returns its
+chart vector, and the velocity does not return. The logarithm of the rotor
+from the point to its left translate is `(cos 2χ, 0, sin 2χ)`, unequal to the
+velocity on `(0, π)`. At the equator the velocity is `(0, 0, π/2)` and that
+second logarithm is `(-1, 0, 0)`.
 
 The chart torque of an aggregate is the sum of the pairwise `chordMoment`s.
 On the axis intercepts `(±a,0,0)`, `(0,±b,0)`, `(0,0,±c)` each coordinate
@@ -365,6 +371,132 @@ theorem hasDerivAt_leftChart_2 {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
     field_simp [hs]
   exact hpt.congr_of_eventuallyEq <| Filter.Eventually.of_forall fun t => by
     simp [leftChart_eq_coord, chartCoord]
+
+/-! ### Two copies, one logarithmic correspondence
+
+The sphere and the chart are two copies. The correspondence carries only the
+logarithm of the relative rotor. A common left translation leaves that
+logarithm fixed, so the chart velocity is absent from the correspondence.
+Logging the same point again, by lifting its chart vector back to the sphere,
+returns that vector. Logging the rotor from the point to its own left
+translate returns a different vector, `(cos 2χ, 0, sin 2χ)`. On `(0, π)` the
+two velocities are never equal. At the equator the chart velocity is
+`(0, 0, π/2)` and the second logarithm is `(-1, 0, 0)`.
+-/
+
+/-- The correspondence between the two copies: the logarithm of `ρ`. -/
+noncomputable def logLink (a b : RelationalPosition.S3) : V3 :=
+  RelationalPosition.chartAt a b
+
+theorem logLink_left (g a b : RelationalPosition.S3) :
+    logLink (g * a) (g * b) = logLink a b :=
+  RelationalPosition.chartAt_left g a b
+
+/-- Velocity of the logarithm of the rotor from the point to its left translate. -/
+noncomputable def secondLogVelocity (χ : ℝ) : V3
+  | 0 => Real.cos (2 * χ)
+  | 1 => 0
+  | 2 => Real.sin (2 * χ)
+
+theorem secondLogVelocity_unit (χ : ℝ) :
+    dot3 (secondLogVelocity χ) (secondLogVelocity χ) = 1 := by
+  simp only [dot3, secondLogVelocity]
+  linear_combination Real.sin_sq_add_cos_sq (2 * χ)
+
+open Quaternion
+open scoped Quaternion
+
+private theorem translateRotor_components (χ t : ℝ) :
+    let p : ℍ := ⟨Real.cos χ, 0, Real.sin χ, 0⟩
+    let g : ℍ := ⟨Real.cos t, Real.sin t, 0, 0⟩
+    (star p * (g * p)).re = Real.cos t ∧
+      (star p * (g * p)).imI = Real.sin t * Real.cos (2 * χ) ∧
+      (star p * (g * p)).imJ = 0 ∧
+      (star p * (g * p)).imK = Real.sin t * Real.sin (2 * χ) := by
+  simp only [re_mul, imI_mul, imJ_mul, imK_mul, re_star, imI_star, imJ_star, imK_star]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · have h := Real.sin_sq_add_cos_sq χ
+    linear_combination Real.cos t * h
+  · have h := Real.sin_sq_add_cos_sq χ
+    rw [Real.cos_two_mul]
+    linear_combination -Real.sin t * h
+  · ring
+  · rw [Real.sin_two_mul]
+    ring
+
+theorem translateRotor_axisJ (χ t : ℝ) :
+    (RelationalPosition.relative (RelationalPosition.elem χ axisJ axisJ_unit)
+        (CliffordParallel.hopfI t *
+          RelationalPosition.elem χ axisJ axisJ_unit)).val =
+      RelationalPosition.liftQuat t (secondLogVelocity χ) := by
+  apply Quaternion.ext
+  · have h := (translateRotor_components χ t).1
+    simpa [RelationalPosition.relative_val, RelationalPosition.mul_val,
+      RelationalPosition.inv_val, RelationalPosition.elem, CliffordParallel.hopfI,
+      RelationalPosition.liftQuat, secondLogVelocity, axisJ] using h
+  · have h := (translateRotor_components χ t).2.1
+    simpa [RelationalPosition.relative_val, RelationalPosition.mul_val,
+      RelationalPosition.inv_val, RelationalPosition.elem, CliffordParallel.hopfI,
+      RelationalPosition.liftQuat, secondLogVelocity, axisJ] using h
+  · have h := (translateRotor_components χ t).2.2.1
+    simpa [RelationalPosition.relative_val, RelationalPosition.mul_val,
+      RelationalPosition.inv_val, RelationalPosition.elem, CliffordParallel.hopfI,
+      RelationalPosition.liftQuat, secondLogVelocity, axisJ] using h
+  · have h := (translateRotor_components χ t).2.2.2
+    simpa [RelationalPosition.relative_val, RelationalPosition.mul_val,
+      RelationalPosition.inv_val, RelationalPosition.elem, CliffordParallel.hopfI,
+      RelationalPosition.liftQuat, secondLogVelocity, axisJ] using h
+
+/-- On `(0, π)` the second logarithm is `t` times its velocity. -/
+theorem second_log_chart {χ t : ℝ} (ht : 0 < t) (htu : t < Real.pi) :
+    logLink (RelationalPosition.elem χ axisJ axisJ_unit)
+        (CliffordParallel.hopfI t * RelationalPosition.elem χ axisJ axisJ_unit) =
+      fun i => t * secondLogVelocity χ i := by
+  rw [logLink, RelationalPosition.chartAt, translateRotor_axisJ,
+    RelationalPosition.toChart_liftQuat]
+  exact SlerpTorque.logChart_lift ht htu (secondLogVelocity_unit χ)
+
+/-- Lifting the logarithm of a point and logging again returns the same vector. -/
+theorem iterated_log_link {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    SlerpTorque.logChart (SlerpTorque.lift χ axisJ) = fun i => χ * axisJ i :=
+  SlerpTorque.logChart_lift hχ hχu axisJ_unit
+
+theorem iterated_log_ne_leftVelocity {χ : ℝ} (hχ : 0 < χ) (_hχu : χ < Real.pi) :
+    (fun i => χ * axisJ i) ≠ leftVelocity χ := by
+  intro h
+  have h2 := congrFun h 2
+  simp [axisJ, leftVelocity] at h2
+  exact hχ.ne' h2.symm
+
+theorem leftVelocity_ne_secondLog {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    leftVelocity χ ≠ secondLogVelocity χ := by
+  intro h
+  have hI : leftVelocity χ 0 = secondLogVelocity χ 0 := congrFun h 0
+  have hK : leftVelocity χ 2 = secondLogVelocity χ 2 := congrFun h 2
+  simp only [leftVelocity, secondLogVelocity] at hI hK
+  have hs : Real.sin χ ≠ 0 := (Real.sin_pos_of_pos_of_lt_pi hχ hχu).ne'
+  have hχsin : χ = 2 * Real.sin χ * Real.cos χ := by
+    simpa [Real.sin_two_mul] using hK
+  by_cases hc : Real.cos χ = 0
+  · exact hχ.ne' (by simpa [hc] using hχsin)
+  · have hnum := congrArg (fun z : ℝ => z * Real.cos χ) hχsin
+    have hquot : χ * Real.cos χ / Real.sin χ = 2 * Real.cos χ ^ 2 := by
+      rw [hnum]
+      field_simp [hs]
+    rw [hquot, Real.cos_two_mul] at hI
+    have hpyth := Real.sin_sq_add_cos_sq χ
+    linarith
+
+theorem leftVelocity_equator_value :
+    leftVelocity (Real.pi / 2) 0 = 0 ∧ leftVelocity (Real.pi / 2) 2 = Real.pi / 2 := by
+  simp [leftVelocity, Real.cos_pi_div_two, Real.sin_pi_div_two]
+
+theorem secondLogVelocity_equator_value :
+    secondLogVelocity (Real.pi / 2) 0 = -1 ∧ secondLogVelocity (Real.pi / 2) 2 = 0 := by
+  have hangle : 2 * (Real.pi / 2) = Real.pi := by ring
+  constructor
+  · simp only [secondLogVelocity, hangle, Real.cos_pi]
+  · simp only [secondLogVelocity, hangle, Real.sin_pi]
 
 /-! ### The aggregate: inertia and cancelling torque -/
 

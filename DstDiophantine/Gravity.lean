@@ -88,6 +88,8 @@ import list of `Gravity.Regression`.
   the chart origin.
 * `ChartRotation` — a pole-fixing reflection and a pole-fixing rotation commute with the log chart.
   A common left translation preserves `ρ` and adds a first-order cross product to the chart velocity.
+  Logging the point again returns its chart vector. The logarithm of the rotor from the point to its
+  left translate is `(cos 2χ, 0, sin 2χ)`, unequal to that velocity on `(0, π)`.
   Six axis intercepts are torque-free. For `0 < a < b < c` the principal moments are distinct, and
   one partner moved off the ray leaves a positive moment.
 * `RacketFlip` — the separatrix `A sech(kt)`, `B tanh(kt)`, `C sech(kt)` of Euler's equations.

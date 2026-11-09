@@ -1441,6 +1441,17 @@ example (t : ℝ) (a b : RelationalPosition.S3) :
       RelationalPosition.relative a b :=
   ChartRotation.common_left_preserves_relative t a b
 
+/-- Regression: a second logarithm does not return the chart velocity. -/
+example {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    (fun i => χ * ChartRotation.axisJ i) ≠ ChartRotation.leftVelocity χ ∧
+      ChartRotation.leftVelocity χ ≠ ChartRotation.secondLogVelocity χ ∧
+      ChartRotation.secondLogVelocity (Real.pi / 2) 0 = -1 ∧
+      ChartRotation.leftVelocity (Real.pi / 2) 2 = Real.pi / 2 :=
+  ⟨ChartRotation.iterated_log_ne_leftVelocity hχ hχu,
+    ChartRotation.leftVelocity_ne_secondLog hχ hχu,
+    ChartRotation.secondLogVelocity_equator_value.1,
+    ChartRotation.leftVelocity_equator_value.2⟩
+
 /-- Regression: six axis intercepts are torque-free, and `a < b < c` makes them triaxial. -/
 example {a b c : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b < c) :
     ChartRotation.axisPairTorque a b = 0 ∧
