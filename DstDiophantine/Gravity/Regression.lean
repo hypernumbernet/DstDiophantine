@@ -21,6 +21,7 @@ import DstDiophantine.Gravity.ChannelRange
 import DstDiophantine.Gravity.CliffordParallel
 import DstDiophantine.Gravity.ChartRotation
 import DstDiophantine.Gravity.RacketFlip
+import DstDiophantine.Gravity.RacketThermal
 import DstDiophantine.Gravity.WeakLinearity
 import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
@@ -1471,6 +1472,26 @@ example {I1 I2 I3 Ω : ℝ} (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3) (hΩ :
 example {k ε : ℝ} (hk : 0 < k) (hε : 0 < ε) (hεu : ε < 1 / 6) :
     RacketFlip.crossingTime k < RacketFlip.waitingTime k ε :=
   RacketFlip.waiting_gt_crossing hk hε hεu
+
+/-- Regression: a mirror ensemble has mean torque zero and mean square the sum of squares. -/
+example (m : Fin 2 → ℝ) :
+    RacketThermal.mirrorAverage (fun σ => RacketThermal.mirrorTorque m σ) = 0 ∧
+      RacketThermal.mirrorAverage (fun σ => RacketThermal.mirrorTorque m σ ^ 2) =
+        ∑ i, m i ^ 2 :=
+  ⟨RacketThermal.mirrorAverage_zero m, RacketThermal.mirrorAverage_sq m⟩
+
+/-- Regression: the canonical mean of the separatrix gap is `(I₁ + I₃ - 2 I₂)/β`. -/
+example {β I1 I2 I3 : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h2 : 0 < I2) (h3 : 0 < I3) :
+    ∫ p : ℝ × ℝ × ℝ, RacketThermal.separatrixGap I1 I2 I3 p.1 p.2.1 p.2.2
+        ∂RacketThermal.rotorMeasure β I1 I2 I3 =
+      (I1 + I3 - 2 * I2) / β :=
+  RacketThermal.meanGap hβ h1 h2 h3
+
+/-- Regression: residuals that wait longer than the crossing have positive canonical weight. -/
+example {β I1 I2 I3 B : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3)
+    (hB : 0 < B) :
+    0 < RacketThermal.rotorMeasure β I1 I2 I3 (RacketThermal.residualSet I1 I2 I3 B) :=
+  RacketThermal.residual_weight_pos hβ h1 h12 h23 hB
 
 /-- Regression: the nucleus frame keeps the electron–electron rotor. -/
 example (n a b : RelationalPosition.S3) :

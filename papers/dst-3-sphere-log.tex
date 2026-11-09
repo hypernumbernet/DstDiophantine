@@ -23,7 +23,7 @@ Particles sit on the three-sphere of unit quaternions, and the relative position
 \omega_2=B\tanh(kt),\qquad
 \omega_3=C\operatorname{sech}(kt),
 \]
-with \(k\), \(A\), and \(C\) fixed by the moments and by \(B\), satisfies those equations, keeps the energy \(\tfrac12 I_2 B^2\), and keeps \(L^2=2EI_2\). The intermediate component changes sign once. A residual of relative size \(\varepsilon<1/6\), growing at this rate, takes longer to reach half amplitude than the reversal takes to pass between the two half-amplitude states, and that wait exceeds every bound as the residual shrinks, while the crossing scale \(1/k\) stays fixed. The aggregate enters only through its inertia tensor.
+with \(k\), \(A\), and \(C\) fixed by the moments and by \(B\), satisfies those equations, keeps the energy \(\tfrac12 I_2 B^2\), and keeps \(L^2=2EI_2\). The intermediate component changes sign once. A residual of relative size \(\varepsilon<1/6\), growing at this rate, takes longer to reach half amplitude than the reversal takes to pass between the two half-amplitude states, and that wait exceeds every bound as the residual shrinks, while the crossing scale \(1/k\) stays fixed. The aggregate enters the free motion only through its inertia tensor. Over the \(2^n\) assignments of a sign to each of \(n\) moments, the uniform average of the signed sum is zero, and the uniform average of its square is the sum of the squares. The canonical weight at inverse temperature \(\beta>0\) is the product of three centered Gaussians of variances \(1/(\beta I_i)\), the normalized factor \(e^{-\beta E}\). The mean of the gap \(L^2-2EI_2\) is \((I_1+I_3-2I_2)/\beta\). That weight is positive on both signs of the gap, and on the transverse residuals of relative size in \((0,1/6)\). Each of those residuals waits longer than the reversal takes to cross.
 \end{abstract}
 
 \section{Introduction}
@@ -176,15 +176,45 @@ Whenever \(0<\varepsilon<1/6\), the logarithm \(\log(1/(2\varepsilon))\) exceeds
 
 The cloud enters this motion only as the triple \((I_1,I_2,I_3)\). For the intercepts, that triple is~\eqref{eq:inertia}, and an equal pair of axes is the agreement of two of \(a\), \(b\), and \(c\). A defect that leaves a positive moment has a direction. The component of that residual along the intermediate axis is the unstable one, and~\eqref{eq:separatrix} is the orbit in which that component reverses. This is the intermediate-axis reversal of a free triaxial body~\cite{ashbaugh1991}. The comparison of~\eqref{eq:waiting} with~\eqref{eq:crossing} is the linear growth against the separatrix transit. It is not the period of a neighbouring orbit.
 
+\section{A mirror ensemble}
+\label{sec:mirror}
+
+The equal-distance moment~\eqref{eq:equal} is odd in the angle, so a partner and its mirror cancel. Assign each of \(n\) partners a sign \(\sigma_j=\pm 1\), and let \(m_j\) be the moment that partner contributes. The uniform average of \(\sum_j\sigma_j m_j\), taken over the \(2^n\) assignments of the signs, is zero. The uniform average of the square of that sum is \(\sum_j m_j^2\). If some \(m_j\) is nonzero, the average of the square is positive. A mirror-symmetric cloud has no preferred sense of rotation, and a positive mean-square chart torque. The angular momentum read by the logarithm is this mean square.
+
+\section{The canonical weight}
+\label{sec:canonical}
+
+On the torque-free motion the energy is \(E=\tfrac12\sum_i I_i\omega_i^2\) and \(L^2=\sum_i I_i^2\omega_i^2\). The gap against~\eqref{eq:critical} is
+\begin{equation}
+\label{eq:gap}
+L^2-2EI_2=I_1(I_1-I_2)\omega_1^2+I_3(I_3-I_2)\omega_3^2.
+\end{equation}
+The intermediate component does not appear. The gap vanishes at every spin \((0,\omega_2,0)\). For \(0<I_1<I_2<I_3\) it is negative at \((1,0,0)\) and positive at \((0,0,1)\).
+
+The canonical weight at inverse temperature \(\beta>0\) is the product of three centered Gaussians, of variances \(1/(\beta I_i)\). That product is the normalized factor \(e^{-\beta E}\). Each principal term \(\tfrac12 I_i\omega_i^2\) has mean \(1/(2\beta)\), and the mean energy is \(3/(2\beta)\). The mean of the gap is
+\begin{equation}
+\label{eq:mean-gap}
+\frac{I_1+I_3-2I_2}{\beta}.
+\end{equation}
+It vanishes if and only if \(I_2\) is the arithmetic mean of \(I_1\) and \(I_3\). For the intercepts~\eqref{eq:inertia} that condition is \(2b^2=a^2+c^2\). Among \(0<a<b<c\) both signs occur: the lengths \(1\), \(2\), \(3\) make the mean negative, and the lengths \(1\), \(2\), \(5/2\) make it positive.
+
+The same weight is positive on every ball. About an intermediate spin \((0,B,0)\) the transverse residual
+\[
+\varepsilon=\sqrt{\frac{I_1\omega_1^2+I_3\omega_3^2}{I_2 B^2}}
+\]
+vanishes on the axis itself. The state \(\omega_1=B\sqrt{I_2/I_1}/12\), \(\omega_3=0\) has residual \(1/12\). The set of states whose residual lies in \((0,1/6)\) is open and contains that state, so it contains a ball about the state, and the weight of the set is positive. Every residual in the set is below one sixth, so the wait~\eqref{eq:waiting} exceeds the transit~\eqref{eq:crossing}. The canonical weight therefore charges the reversals that linger and then change the sign of the intermediate component.
+
 \section{Conclusion}
 
 The logarithm~\eqref{eq:log} is faithful at the origin, singular at the antipode, and equivariant under the pole-fixing rotation and reflection of~\S\ref{sec:chart}. A common left translation preserves every relative rotor~\eqref{eq:left-relative} and contributes the cross product in the chart velocity~\eqref{eq:left-velocity}. Pairwise, the chord moment vanishes on a ray and at the origin, is given at equal distance by~\eqref{eq:equal}, and cancels against its mirror. The six intercepts are torque-free, with principal moments~\eqref{eq:inertia} ordered by~\eqref{eq:order} when \(a<b<c\). One partner off the ray leaves a positive moment, and a cloud at rest acquires angular momentum from the spherical forces as the chart reads them.
 
 On the torque-free rigid motion the body angular velocity satisfies~\eqref{eq:euler}. Only the intermediate axis has a positive real linear eigenvalue. The profile~\eqref{eq:separatrix} realises that instability, holds the energy~\eqref{eq:energy} and the critical value~\eqref{eq:critical}, and reverses its intermediate component once. A residual below one sixth of the amplitude waits longer than the reversal takes to cross, and the wait lengthens without bound as the residual shrinks.
 
+Over the sign assignments of~\S\ref{sec:mirror} the uniform average of the signed sum of chart moments is zero, and the average of its square is the sum of the squares. The canonical weight of~\S\ref{sec:canonical} is the product of the three Gaussians of variances \(1/(\beta I_i)\), the normalized factor \(e^{-\beta E}\). Its mean gap is~\eqref{eq:mean-gap}. The weight is positive on both signs of~\eqref{eq:gap}, and on the residuals in \((0,1/6)\), each of which waits longer than the crossing.
+
 The galactic curve of the main paper is another use of the chord moment. The rotation here is the torque of the triaxial cloud.
 
-No floating-point integration of a many-body trajectory is claimed. No Boltzmann weight on \(L^2\) is claimed, and no frequency of reversals is drawn from a partition function. No value of \(a_0\) is derived, and the cloud is not identified with a galaxy.
+No floating-point integration of a many-body trajectory is claimed. No frequency of reversals is drawn from the weight. No value of \(a_0\) is derived, and the cloud is not identified with a galaxy.
 
 \begin{thebibliography}{9}
 \raggedright

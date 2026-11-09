@@ -38,7 +38,7 @@ that moment; removing the mirror leaves it.
 ## Not claimed
 
 * A floating-point many-body trajectory.
-* A Boltzmann weight on `L²`, or a frequency of reversals drawn from one.
+* A frequency of reversals. The canonical weight is `RacketThermal`.
 * A value of `a₀`, or an identification of a galaxy with this aggregate.
 -/
 

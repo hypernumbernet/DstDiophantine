@@ -93,6 +93,11 @@ import list of `Gravity.Regression`.
 * `RacketFlip` — the separatrix `A sech(kt)`, `B tanh(kt)`, `C sech(kt)` of Euler's equations.
   The energy is `½ I₂ B²` and `L² = 2 E I₂`. The intermediate component vanishes only at `t = 0`.
   Only that axis has a positive linear rate, and a residual `ε < 1/6` waits longer than the crossing.
+* `RacketThermal` — the uniform average of a signed sum of chart moments is zero, and the average
+  of its square is the sum of the squares. The canonical weight is the product of three centered
+  Gaussians of variances `1/(β Iᵢ)`, the normalized factor `exp(-β E)`. The mean gap is
+  `(I₁ + I₃ - 2 I₂)/β`. Both signs of the gap, and the residuals in `(0, 1/6)`, have positive
+  weight. No frequency of reversals is drawn from the weight.
 * `RelationalPosition` — relative position is the rotor `ρ(a,b)=a⁻¹b`. It is not the intra-particle
   mismatch `Ω`. No position operator is claimed.
 * `ChannelRange` — the same enhancement on two compactification radii. `Λ` is an input, and the

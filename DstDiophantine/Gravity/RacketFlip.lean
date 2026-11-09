@@ -33,8 +33,7 @@ curvature is zero.
 
 ## Not claimed
 
-* A Boltzmann weight on `L²`.
-* A count of reversals in a thermal ensemble.
+* A count of reversals. The canonical weight is `RacketThermal`.
 -/
 
 namespace DstDiophantine.Gravity.RacketFlip
