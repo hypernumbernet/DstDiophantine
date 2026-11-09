@@ -1224,6 +1224,18 @@ example : 1 < abcHeight 3 125 128 ∧
     ¬ IsAdmissibleContinuous (abcMismatchParams 3 125 128) :=
   ⟨one_lt_abcHeight_three_one_two_five, not_admissible_abc_three_one_two_five⟩
 
+/-- Label squares on the three axes collapse to the heaviest branch. -/
+example :
+    IsAdmissibleContinuous (abcMismatchParams 1 8 9) ∧
+      ¬ IsAdmissibleContinuous (abcTriplePacket 1 8 9) ∧
+      (∀ δ : ℝ, IsAdmissibleContinuous (abcLabelPacket δ) ↔
+        IsAdmissibleContinuous (pureBoost (18 * δ))) ∧
+      JNormalized (abcLabelPacket (Real.pi / 36)) = 98 / 243 :=
+  ⟨isAdmissibleContinuous_abc_one_eight_nine,
+    not_admissible_abcTriplePacket_one_eight_nine,
+    isAdmissibleContinuous_abcLabelPacket_iff_heaviest,
+    JNormalized_abcLabelPacket_wall⟩
+
 /-! ## DST / discrete-companion algebraic core -/
 
 /-- Pseudoscalar squares to `-1`. -/

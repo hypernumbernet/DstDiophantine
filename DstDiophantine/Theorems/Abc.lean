@@ -53,6 +53,16 @@ normalised height is still strictly less than one. The sum `3 + 5³ = 2⁷`
 has the same radical and ratio `64/15`, so the normalised height exceeds
 one, and that seed is likewise not admissible.
 
+The same gap may be placed on all three axes at once, with label squares
+`1`, `4`, and `9`. The packet has rapidities `2δ`, `8δ`, and `18δ` and
+vanishing dual angles. Its scalar is the sum of the three squares,
+`J = 196 δ²`, with no cross term. It is admissible precisely for
+`0 ≤ δ ≤ π/36`, the branch of the heaviest axis, and that membership is
+the membership of the single boost of rapidity `18δ`. The sum `1 + 8 = 9`
+stays inside the one-axis cone and leaves the packet. The packet of a
+triple depends on the triple only through `δ`, so the placement does not
+feed `AbcModularBridge`.
+
 ## Paper gap (not closed)
 
 Classical abc (`∀ ε > 0, ∃ Cε, c ≤ Cε · rad(abc)^{1+ε}` for primitive triples) is
@@ -1300,6 +1310,253 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
 -- FLT / Beal remain independent special cases (Ch.5–6); abc treats all
 -- coprime sums `a + b = c`. See `fermat_last_theorem_of_modular_bridge` /
 -- `beal_conjecture_of_modular_bridge`.
+
+/-! ### One-algebra label packet
+
+The three axes of a single `TorsionParams` receive the label squares
+`1`, `4`, and `9` times the pure-boost chart `2δ`. The Killing form adds
+the squares and produces no cross term, so admissibility collapses to the
+heaviest axis.
+-/
+
+/-- Squares of the labels `1`, `2`, `3`, one per axis. -/
+def abcLabelSquare : Fin 3 → ℕ
+  | 0 => 1
+  | 1 => 4
+  | 2 => 9
+
+/-- Pure-boost packet: axis `a` carries rapidity `abcLabelSquare a * 2δ`. -/
+noncomputable def abcLabelPacket (δ : ℝ) : TorsionParams where
+  alpha := fun a => (abcLabelSquare a : ℝ) * (2 * δ)
+  beta := fun _ => 0
+
+/-- The packet of a primitive triple, built from its logarithmic gap alone. -/
+noncomputable def abcTriplePacket (a b c : ℕ) : TorsionParams :=
+  abcLabelPacket (abcLogGap a b c)
+
+theorem J_abcLabelPacket (δ : ℝ) :
+    J (abcLabelPacket δ) = 196 * δ ^ 2 := by
+  have h0 : abcLabelSquare (0 : Fin 3) = 1 := rfl
+  have h1 : abcLabelSquare (1 : Fin 3) = 4 := rfl
+  have h2 : abcLabelSquare (2 : Fin 3) = 9 := rfl
+  rw [J_coef]
+  simp only [abcLabelPacket, Fin.sum_univ_three, h0, h1, h2, Nat.cast_one,
+    zero_pow two_ne_zero, sub_zero]
+  norm_num
+  ring
+
+/-- The scalar is the sum of the three squared rapidities. Distinct axes do not multiply. -/
+theorem J_abcLabelPacket_sum_squares (δ : ℝ) :
+    J (abcLabelPacket δ) =
+      (1 / 2) * ((2 * δ) ^ 2 + (8 * δ) ^ 2 + (18 * δ) ^ 2) := by
+  rw [J_abcLabelPacket]
+  ring
+
+theorem JNormalized_abcLabelPacket (δ : ℝ) :
+    JNormalized (abcLabelPacket δ) =
+      (1568 / (3 * Real.pi ^ 2)) * δ ^ 2 := by
+  unfold JNormalized
+  rw [J_abcLabelPacket]
+  ring
+
+theorem JNormalized_abcLabelPacket_wall :
+    JNormalized (abcLabelPacket (Real.pi / 36)) = 98 / 243 := by
+  rw [JNormalized_abcLabelPacket]
+  have hsq : (Real.pi / 36) ^ 2 = Real.pi ^ 2 / 1296 := by ring
+  rw [hsq]
+  field_simp
+  norm_num
+
+theorem mass_eq_J_abcLabelPacket (δ : ℝ) :
+    mass (abcLabelPacket δ) = J (abcLabelPacket δ) := by
+  rw [mass_coef, J_coef]
+  simp only [abcLabelPacket, Fin.sum_univ_three, zero_pow two_ne_zero, add_zero, sub_zero]
+
+theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
+    IsAdmissibleContinuous (abcLabelPacket δ) ↔ 0 ≤ δ ∧ δ ≤ Real.pi / 36 := by
+  constructor
+  · intro h
+    have h0 := h 0
+    have h2 := h 2
+    simp only [abcLabelPacket, abcLabelSquare, Nat.cast_one] at h0 h2
+    constructor
+    · linarith [h0.1]
+    · linarith [h2.2.2]
+  · rintro ⟨h0, hπ⟩ a
+    have hsq : (abcLabelSquare a : ℝ) ≤ 9 := by
+      fin_cases a <;> (simp only [abcLabelSquare]; norm_num)
+    have hw : (0 : ℝ) ≤ (abcLabelSquare a : ℝ) := by
+      fin_cases a <;> (simp only [abcLabelSquare]; norm_num)
+    have hα : 0 ≤ (abcLabelSquare a : ℝ) * (2 * δ) :=
+      mul_nonneg hw (mul_nonneg (by norm_num) h0)
+    have hle : (abcLabelSquare a : ℝ) * (2 * δ) ≤ 9 * (2 * δ) :=
+      mul_le_mul_of_nonneg_right hsq (mul_nonneg (by norm_num) h0)
+    have h18 : 9 * (2 * δ) ≤ Real.pi / 2 := by nlinarith
+    refine ⟨?_, ?_, ?_⟩
+    · simpa [abcLabelPacket] using hα
+    · simp [abcLabelPacket]
+    · simpa [abcLabelPacket] using le_trans hle h18
+
+/-- Packet membership is membership of the single heaviest boost. -/
+theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
+    IsAdmissibleContinuous (abcLabelPacket δ) ↔
+      IsAdmissibleContinuous (pureBoost (18 * δ)) := by
+  rw [isAdmissibleContinuous_abcLabelPacket_iff, isAdmissibleContinuous_pureBoost_iff]
+  constructor <;> intro h <;> constructor <;> nlinarith [h.1, h.2]
+
+theorem JNormalized_abcLabelPacket_le_of_admissible {δ : ℝ}
+    (hadm : IsAdmissibleContinuous (abcLabelPacket δ)) :
+    JNormalized (abcLabelPacket δ) ≤ 98 / 243 := by
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff δ).mp hadm
+  have hwall := JNormalized_abcLabelPacket_wall
+  rw [JNormalized_abcLabelPacket] at hwall ⊢
+  have hcoef : 0 ≤ 1568 / (3 * Real.pi ^ 2) := by positivity
+  have hsq : δ ^ 2 ≤ (Real.pi / 36) ^ 2 := by
+    have hpos : 0 ≤ Real.pi / 36 := by positivity
+    have habs : |δ| ≤ |Real.pi / 36| := by
+      rw [abs_of_nonneg hδ.1, abs_of_nonneg hpos]
+      exact hδ.2
+    exact sq_le_sq.mpr habs
+  have hmul := mul_le_mul_of_nonneg_left hsq hcoef
+  linarith
+
+theorem abcLabelPacket_wall_axes :
+    (abcLabelPacket (Real.pi / 36)).alpha 2 = Real.pi / 2 ∧
+      (abcLabelPacket (Real.pi / 36)).alpha 1 < Real.pi / 2 ∧
+      (abcLabelPacket (Real.pi / 36)).alpha 0 < Real.pi / 2 := by
+  have h2 : (abcLabelPacket (Real.pi / 36)).alpha 2 = 9 * (2 * (Real.pi / 36)) := by
+    simp [abcLabelPacket, abcLabelSquare]
+  have h1 : (abcLabelPacket (Real.pi / 36)).alpha 1 = 4 * (2 * (Real.pi / 36)) := by
+    simp [abcLabelPacket, abcLabelSquare]
+  have h0 : (abcLabelPacket (Real.pi / 36)).alpha 0 = 1 * (2 * (Real.pi / 36)) := by
+    simp [abcLabelPacket, abcLabelSquare]
+  have he2 : 9 * (2 * (Real.pi / 36)) = Real.pi / 2 := by ring
+  have he1 : 4 * (2 * (Real.pi / 36)) = (2 / 9) * Real.pi := by ring
+  have he0 : 1 * (2 * (Real.pi / 36)) = (1 / 18) * Real.pi := by ring
+  have hlt1 : (2 : ℝ) / 9 < 1 / 2 := by norm_num
+  have hlt0 : (1 : ℝ) / 18 < 1 / 2 := by norm_num
+  have hhalf : (1 / 2) * Real.pi = Real.pi / 2 := by ring
+  refine ⟨?_, ?_, ?_⟩
+  · rw [h2, he2]
+  · rw [h1, he1, ← hhalf]
+    exact mul_lt_mul_of_pos_right hlt1 Real.pi_pos
+  · rw [h0, he0, ← hhalf]
+    exact mul_lt_mul_of_pos_right hlt0 Real.pi_pos
+
+theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
+    IsAdmissibleContinuous (daggerParams (abcLabelPacket δ)) ↔
+      IsAdmissibleContinuous (abcLabelPacket δ) := by
+  constructor
+  · intro h a
+    have ha := h a
+    simp only [daggerParams, abcLabelPacket] at ha
+    refine ⟨ha.2.1, ?_, ?_⟩
+    · simp [abcLabelPacket]
+    · simpa [abcLabelPacket] using ha.2.2
+  · intro h a
+    have ha := h a
+    simp only [abcLabelPacket] at ha
+    refine ⟨?_, ?_, ?_⟩
+    · simp [daggerParams, abcLabelPacket]
+    · simpa [daggerParams, abcLabelPacket] using ha.1
+    · simpa [daggerParams, abcLabelPacket] using ha.2.2
+
+theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
+    J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧
+      mass (daggerParams (abcLabelPacket δ)) = mass (abcLabelPacket δ) ∧
+      (IsAdmissibleContinuous (daggerParams (abcLabelPacket δ)) ↔
+        IsAdmissibleContinuous (abcLabelPacket δ)) :=
+  ⟨J_dagger _, mass_dagger _, isAdmissibleContinuous_dagger_abcLabelPacket δ⟩
+
+theorem abcTriplePacket_eq_of_logGap {a b c a' b' c' : ℕ}
+    (h : abcLogGap a b c = abcLogGap a' b' c') :
+    abcTriplePacket a b c = abcTriplePacket a' b' c' := by
+  simp [abcTriplePacket, h]
+
+theorem abc_c_le_exp_packet_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcTriplePacket a b c)) :
+    (c : ℝ) ≤
+      Real.exp (Real.pi / 36) * (abcRadical (a * b * c) : ℝ) := by
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap a b c)).mp (by
+    simpa [abcTriplePacket] using hadm)
+  set R : ℝ := (abcRadical (a * b * c) : ℝ)
+  have hRpos : 0 < R := Nat.cast_pos.mpr (abcRadical_pos _)
+  have hlogR : Real.log (c : ℝ) ≤ Real.log R + Real.pi / 36 := by
+    have hgap : abcLogGap a b c ≤ Real.pi / 36 := hδ.2
+    rw [abcLogGap] at hgap
+    simp only [R] at hgap ⊢
+    linarith
+  have hcpos : 0 < (c : ℝ) := Nat.cast_pos.mpr (isAbcTriple_c_pos h)
+  have htarget : 0 < R * Real.exp (Real.pi / 36) := mul_pos hRpos (Real.exp_pos _)
+  have hlog :
+      Real.log (c : ℝ) ≤ Real.log (R * Real.exp (Real.pi / 36)) := by
+    rw [Real.log_mul hRpos.ne' (Real.exp_ne_zero _), Real.log_exp]
+    exact hlogR
+  have hle : (c : ℝ) ≤ R * Real.exp (Real.pi / 36) :=
+    (Real.log_le_log_iff hcpos htarget).mp hlog
+  simpa [mul_comm] using hle
+
+theorem abc_quality_le_packet_branch_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcTriplePacket a b c)) :
+    abcQuality a b c ≤
+      1 + (Real.pi / 36) / Real.log (abcRadical (a * b * c)) := by
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap a b c)).mp (by
+    simpa [abcTriplePacket] using hadm)
+  have hgap := abcLogGap_eq_quality h
+  have hLpos : 0 < Real.log (abcRadical (a * b * c)) := log_radical_pos h
+  have hle : (abcQuality a b c - 1) * Real.log (abcRadical (a * b * c)) ≤
+      Real.pi / 36 := by
+    rw [← hgap]
+    exact hδ.2
+  have hquot : abcQuality a b c - 1 ≤
+      (Real.pi / 36) / Real.log (abcRadical (a * b * c)) :=
+    (le_div_iff₀ hLpos).mpr hle
+  linarith
+
+private theorem exp_pi_div_thirty_six_lt_three_div_two :
+    Real.exp (Real.pi / 36) < (3 : ℝ) / 2 := by
+  have hπ : Real.pi < (3.15 : ℝ) := Real.pi_lt_d2
+  have hdiv : Real.pi / 36 < (3.15 : ℝ) / 36 :=
+    div_lt_div_of_pos_right hπ (by norm_num)
+  have hnum : (3.15 : ℝ) / 36 = (7 : ℝ) / 80 := by norm_num
+  have harg : Real.pi / 36 < (7 : ℝ) / 80 := by linarith
+  have hx0 : (0 : ℝ) ≤ (7 : ℝ) / 80 := by norm_num
+  have hx1 : (7 : ℝ) / 80 ≤ 1 := by norm_num
+  have hbound := Real.exp_bound' hx0 hx1 (n := 2) (by norm_num)
+  have hclosed :
+      (∑ m ∈ Finset.range 2, ((7 : ℝ) / 80) ^ m / m.factorial) +
+          ((7 : ℝ) / 80) ^ 2 * (2 + 1) / ((Nat.factorial 2 : ℝ) * 2) <
+        (3 : ℝ) / 2 := by
+    rw [show (Nat.factorial 2 : ℝ) = 2 by norm_num]
+    rw [Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_zero]
+    simp only [Nat.factorial_zero, Nat.factorial_succ, Nat.cast_one, pow_zero, pow_one,
+      zero_add]
+    norm_num
+  exact (Real.exp_lt_exp.mpr harg).trans (hbound.trans_lt hclosed)
+
+theorem abcLogGap_one_eight_nine :
+    abcLogGap 1 8 9 = Real.log ((3 : ℝ) / 2) := by
+  rw [abcLogGap, abcRadical_one_eight_nine]
+  push_cast
+  rw [← Real.log_div (by norm_num) (by norm_num)]
+  have hratio : (9 : ℝ) / 6 = (3 : ℝ) / 2 := by norm_num
+  rw [hratio]
+
+theorem pi_div_thirty_six_lt_abcLogGap_one_eight_nine :
+    Real.pi / 36 < abcLogGap 1 8 9 := by
+  rw [abcLogGap_one_eight_nine]
+  have hpos : (0 : ℝ) < (3 : ℝ) / 2 := by norm_num
+  rw [← Real.log_exp (Real.pi / 36)]
+  exact (Real.log_lt_log_iff (Real.exp_pos _) hpos).mpr
+    exp_pi_div_thirty_six_lt_three_div_two
+
+theorem not_admissible_abcTriplePacket_one_eight_nine :
+    ¬ IsAdmissibleContinuous (abcTriplePacket 1 8 9) := by
+  intro h
+  have hle :=
+    (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap 1 8 9)).mp
+      (by simpa [abcTriplePacket] using h)
+  exact not_le_of_gt pi_div_thirty_six_lt_abcLogGap_one_eight_nine hle.2
 
 end Theorems
 
