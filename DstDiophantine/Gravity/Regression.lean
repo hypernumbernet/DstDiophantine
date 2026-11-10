@@ -162,6 +162,19 @@ example (φ u v : ℝ) (μ ν : Fin 4) :
   ⟨inducedMetric_inertialBoost φ μ ν, boostCoordTorsion_ttx φ u v,
     boostTeleparallel_eq_zero u v⟩
 
+/-- Regression: an inertial rotation in one spatial plane keeps Minkowski and kills `T`.
+The mismatch of that angle is the negative of the pure boost. -/
+example (θ p q : ℝ) (μ ν : Fin 4) :
+    inducedMetric (inertialRotationCoframe θ) μ ν =
+        (if μ = ν then w31 μ else 0) ∧
+      rotationCoordTorsion θ p q 1 1 2 = p ∧
+      rotationCoordTorsion θ p q 2 1 2 = q ∧
+      rotationTeleparallel p q = 0 ∧
+      J (inertialRotationParams θ) = -J (DstDiophantine.Amplification.pureBoost θ) :=
+  ⟨inducedMetric_inertialRotation θ μ ν, rotationCoordTorsion_xxy θ p q,
+    rotationCoordTorsion_yxy θ p q, rotationTeleparallel_eq_zero p q,
+    J_inertialRotation_eq_neg_pureBoost θ⟩
+
 /-- Regression: the same `J` does not determine `T`. The inertial jet has `T=0`;
 the exterior quadratic is `-2/r²`. -/
 example {rs r θ : ℝ} (h : IsExterior rs r) (hs : Real.sin θ ≠ 0) :

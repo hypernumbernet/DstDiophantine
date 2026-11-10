@@ -30,6 +30,11 @@ and the teleparallel quadratic vanishes for every jet. The same
 \(J=\tfrac12\varphi^2\) does not determine \(T\): the inertial jet has
 \(T=0\), and the exterior Schwarzschild coframe has \(T=-2/r^2\).
 Distinct squared rapidities give the same metric and distinct \(J\).
+A rotation in one spatial plane, of any angle profile \(\theta(x,y)\),
+induces the Minkowski metric as well. Its coordinate torsion is
+\(T^x{}_{xy}=\partial_x\theta\) and \(T^y{}_{xy}=\partial_y\theta\), and the
+teleparallel quadratic vanishes for every in-plane jet. The one-axis
+mismatch of that angle is \(J=-\tfrac12\theta^2\), opposite the pure boost.
 
 `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `SI`, and
 `LineWindow` are imported by the modules below. They are not named in the
@@ -46,7 +51,7 @@ import list of `Gravity.Regression`.
   between `J` and the Weitzenböck scalar.
 * `ClassicalSchwarzschild` — exterior Schwarzschild as the vacuum gauge. Far-field statements about
   `schwarzschildTeleparallelT` concern the auxiliary expression.
-* `LorentzGauge` — an inertial-plane boost keeps the Minkowski metric and kills the quadratic.
+* `LorentzGauge` — an inertial-plane boost, and a rotation in one spatial plane, keep the Minkowski metric and kill the quadratic.
 
 ## The direction of gravity
 

@@ -28,12 +28,20 @@ The partials below are the 1-jet of a profile `φ(t,x)`: `u = ∂_t φ`, `v = �
   serves every tetrad. The auxiliary expression `schwarzschildTeleparallelT`
   is a different, positive quantity.
 * Two rapidities with distinct squares induce the same metric and distinct `J`.
+* A rotation in the `(x,y)` plane by an angle `θ` induces the Minkowski metric.
+  The `(x,y)` block has determinant `1`. Coordinate torsion of an in-plane jet
+  `(∂_x θ, ∂_y θ) = (p, q)` is `T^x_{xy} = p` and `T^y_{xy} = q`. It forgets `θ`.
+  The teleparallel quadratic vanishes for every such jet.
+* The one-axis mismatch on `cyclic 2 = e₂ e₁`, the bivector of that plane, is
+  `J = -½ θ²`, the negative of the pure boost of equal parameter.
 
 ## Not claimed
 
 * A dictionary for a general motor (translations, or a rotor about a moving axis).
-* Vanishing of `T` for an arbitrary local Lorentz transformation.
+* Vanishing of `T` for an arbitrary local Lorentz transformation, or for a profile
+  that varies off the plane of the generator.
 * The variational identity between `∫ e T` and the Einstein--Hilbert action.
+* Equality of the coordinate coframe with the sandwich of the one-axis rotor.
 -/
 
 namespace DstDiophantine
@@ -406,6 +414,364 @@ theorem no_pointwise_map_J_to_T :
   have hT := hSchw 2 4 hExt
   rw [hF] at hT
   exact (schwarzschild_T_pos hExt).ne' hT
+
+/-! ### Spatial rotation in the `(x,y)` plane -/
+
+/-- One-axis pure rotation on `cyclic 2 = e₂ e₁`, the `(x,y)` bivector. -/
+def inertialRotationParams (θ : ℝ) : DstDiophantine.Operations.TorsionParams where
+  alpha := fun _ => 0
+  beta := fun a => if a = 2 then θ else 0
+
+theorem J_inertialRotation (θ : ℝ) :
+    J (inertialRotationParams θ) = -(1 / 2) * θ ^ 2 := by
+  rw [J_coef]
+  simp only [inertialRotationParams, Fin.sum_univ_three]
+  simp
+
+/-- Equal parameters: the pure rotation is the negative of the pure boost. -/
+theorem J_inertialRotation_eq_neg_pureBoost (θ : ℝ) :
+    J (inertialRotationParams θ) = -J (pureBoost θ) := by
+  rw [J_inertialRotation, J_pureBoost]
+  ring
+
+/-- Inertial coframe rotated by `θ` in the `(x,y)` plane. -/
+noncomputable def inertialRotationCoframe (θ : ℝ) : Coframe :=
+  fun a μ =>
+    if a = 0 ∧ μ = 0 then 1
+    else if a = 1 ∧ μ = 1 then Real.cos θ
+    else if a = 1 ∧ μ = 2 then Real.sin θ
+    else if a = 2 ∧ μ = 1 then -Real.sin θ
+    else if a = 2 ∧ μ = 2 then Real.cos θ
+    else if a = 3 ∧ μ = 3 then 1
+    else 0
+
+/-- Inverse frame `e_a^μ` of `inertialRotationCoframe`. -/
+noncomputable def inertialRotationFrame (θ : ℝ) (μ a : Fin 4) : ℝ :=
+  if μ = 0 ∧ a = 0 then 1
+  else if μ = 1 ∧ a = 1 then Real.cos θ
+  else if μ = 1 ∧ a = 2 then -Real.sin θ
+  else if μ = 2 ∧ a = 1 then Real.sin θ
+  else if μ = 2 ∧ a = 2 then Real.cos θ
+  else if μ = 3 ∧ a = 3 then 1
+  else 0
+
+theorem inertialRotation_blockDet (θ : ℝ) :
+    inertialRotationCoframe θ 1 1 * inertialRotationCoframe θ 2 2 -
+        inertialRotationCoframe θ 1 2 * inertialRotationCoframe θ 2 1 = 1 := by
+  simp [inertialRotationCoframe]
+  ring_nf
+  exact Real.cos_sq_add_sin_sq θ
+
+/-- The rotated coframe induces the Minkowski metric, for every angle. -/
+theorem inducedMetric_inertialRotation (θ : ℝ) (μ ν : Fin 4) :
+    inducedMetric (inertialRotationCoframe θ) μ ν =
+      if μ = ν then w31 μ else 0 := by
+  rw [inducedMetric_eq_weighted]
+  have h := Real.cos_sq_add_sin_sq θ
+  fin_cases μ <;> fin_cases ν <;>
+    simp [Fin.sum_univ_four, inertialRotationCoframe, w31] <;>
+    ring_nf <;> linarith
+
+/-- Frame and coframe are dual. -/
+theorem inertialRotation_dual (θ : ℝ) (μ ν : Fin 4) :
+    ∑ a : Fin 4, inertialRotationCoframe θ a μ * inertialRotationFrame θ ν a =
+      if μ = ν then (1 : ℝ) else 0 := by
+  have h := Real.cos_sq_add_sin_sq θ
+  fin_cases μ <;> fin_cases ν <;>
+    simp [Fin.sum_univ_four, inertialRotationCoframe, inertialRotationFrame] <;>
+    ring_nf <;> linarith
+
+/-- Jet `(∂_x θ, ∂_y θ) = (p, q)` on the rotation plane; transverse derivatives vanish. -/
+def rotationDeriv (p q : ℝ) : Fin 4 → ℝ
+  | 1 => p
+  | 2 => q
+  | _ => 0
+
+/-- `∂_θ` of the rotated coframe. -/
+noncomputable def dθCoframe (θ : ℝ) (a ν : Fin 4) : ℝ :=
+  if a = 1 ∧ ν = 1 then -Real.sin θ
+  else if a = 1 ∧ ν = 2 then Real.cos θ
+  else if a = 2 ∧ ν = 1 then -Real.cos θ
+  else if a = 2 ∧ ν = 2 then -Real.sin θ
+  else 0
+
+/-- Partials `∂_λ e^a_ν = (∂_λ θ) · ∂_θ e^a_ν`. -/
+noncomputable def inertialRotationPartials (θ p q : ℝ) : CoframePartials :=
+  fun dir a ν => rotationDeriv p q dir * dθCoframe θ a ν
+
+/-- Rotation generator on the coordinate basis: `∂_x` into `∂_y`. -/
+def rotGen (ρ ν : Fin 4) : ℝ :=
+  if ρ = 1 ∧ ν = 2 then 1 else if ρ = 2 ∧ ν = 1 then -1 else 0
+
+theorem frame_mul_dθ (θ : ℝ) (ρ ν : Fin 4) :
+    ∑ a : Fin 4, inertialRotationFrame θ ρ a * dθCoframe θ a ν = rotGen ρ ν := by
+  have h := Real.cos_sq_add_sin_sq θ
+  fin_cases ρ <;> fin_cases ν <;>
+    simp [Fin.sum_univ_four, inertialRotationFrame, dθCoframe, rotGen] <;>
+    ring_nf <;> linarith
+
+/-- Coordinate torsion `T^ρ_{μν} = e_a^ρ T^a_{μν}`. -/
+noncomputable def rotationCoordTorsion (θ p q : ℝ) (ρ μ ν : Fin 4) : ℝ :=
+  ∑ a : Fin 4,
+    inertialRotationFrame θ ρ a *
+      weitzenbockTorsion (inertialRotationPartials θ p q) a μ ν
+
+/-- Closed form: `T^ρ_{μν} = (∂_μ θ) K^ρ_ν - (∂_ν θ) K^ρ_μ`. Independent of `θ`. -/
+theorem rotationCoordTorsion_eq_jet (θ p q : ℝ) (ρ μ ν : Fin 4) :
+    rotationCoordTorsion θ p q ρ μ ν =
+      rotationDeriv p q μ * rotGen ρ ν - rotationDeriv p q ν * rotGen ρ μ := by
+  unfold rotationCoordTorsion weitzenbockTorsion inertialRotationPartials
+  have hlin :
+      ∀ a,
+        inertialRotationFrame θ ρ a *
+            (rotationDeriv p q μ * dθCoframe θ a ν -
+              rotationDeriv p q ν * dθCoframe θ a μ) =
+          rotationDeriv p q μ * (inertialRotationFrame θ ρ a * dθCoframe θ a ν) -
+            rotationDeriv p q ν * (inertialRotationFrame θ ρ a * dθCoframe θ a μ) := by
+    intro a
+    ring
+  simp_rw [hlin, sum_sub_distrib]
+  have hμ :
+      ∑ a : Fin 4, rotationDeriv p q μ * (inertialRotationFrame θ ρ a * dθCoframe θ a ν) =
+        rotationDeriv p q μ *
+          ∑ a : Fin 4, inertialRotationFrame θ ρ a * dθCoframe θ a ν := by
+    rw [← Finset.mul_sum]
+  have hν :
+      ∑ a : Fin 4, rotationDeriv p q ν * (inertialRotationFrame θ ρ a * dθCoframe θ a μ) =
+        rotationDeriv p q ν *
+          ∑ a : Fin 4, inertialRotationFrame θ ρ a * dθCoframe θ a μ := by
+    rw [← Finset.mul_sum]
+  rw [hμ, hν, frame_mul_dθ, frame_mul_dθ]
+
+theorem rotationCoordTorsion_xxy (θ p q : ℝ) :
+    rotationCoordTorsion θ p q 1 1 2 = p := by
+  rw [rotationCoordTorsion_eq_jet]
+  simp [rotationDeriv, rotGen]
+
+theorem rotationCoordTorsion_yxy (θ p q : ℝ) :
+    rotationCoordTorsion θ p q 2 1 2 = q := by
+  rw [rotationCoordTorsion_eq_jet]
+  simp [rotationDeriv, rotGen]
+
+theorem rotationCoordTorsion_ne_zero_of_x (θ p q : ℝ) (hp : p ≠ 0) :
+    rotationCoordTorsion θ p q 1 1 2 ≠ 0 := by
+  rw [rotationCoordTorsion_xxy]
+  exact hp
+
+/-- Upper coordinate torsion in the closed form, written without `θ`. -/
+def rotationTorsionUp (p q : ℝ) (ρ μ ν : Fin 4) : ℝ :=
+  rotationDeriv p q μ * rotGen ρ ν - rotationDeriv p q ν * rotGen ρ μ
+
+theorem rotationCoordTorsion_eq_up (θ p q : ℝ) (ρ μ ν : Fin 4) :
+    rotationCoordTorsion θ p q ρ μ ν = rotationTorsionUp p q ρ μ ν := by
+  rw [rotationCoordTorsion_eq_jet]
+  rfl
+
+/-- `T_{ρμν} = η_{ρρ} T^ρ_{μν}`. -/
+def rotationTdown (p q : ℝ) (ρ μ ν : Fin 4) : ℝ :=
+  w31 ρ * rotationTorsionUp p q ρ μ ν
+
+/-- `T^{ρμν}`, indices raised by `η`. -/
+def rotationTup (p q : ℝ) (ρ μ ν : Fin 4) : ℝ :=
+  w31 ρ * w31 μ * w31 ν * rotationTdown p q ρ μ ν
+
+/-- Trace `T_ρ = T^σ_{ρσ}`. -/
+def rotationTrace (p q : ℝ) (ρ : Fin 4) : ℝ :=
+  ∑ σ : Fin 4, rotationTorsionUp p q σ ρ σ
+
+/-- Raised trace `T^ρ = η^{ρρ} T_ρ`. -/
+def rotationTraceUp (p q : ℝ) (ρ : Fin 4) : ℝ :=
+  w31 ρ * rotationTrace p q ρ
+
+/-- Teleparallel scalar of the rotation jet. -/
+noncomputable def rotationTeleparallel (p q : ℝ) : ℝ :=
+  (1 / 4) * (∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
+      rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν) +
+    (1 / 2) * (∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
+      rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ) -
+    ∑ ρ : Fin 4, rotationTrace p q ρ * rotationTraceUp p q ρ
+
+private lemma sum4_of_out {f : Fin 4 → ℝ} (h0 : f 0 = 0) (h3 : f 3 = 0) :
+    ∑ i : Fin 4, f i = f 1 + f 2 := by
+  rw [Fin.sum_univ_four]
+  simp [h0, h3]
+
+private lemma rot_out (i : Fin 4) (h : i = 0 ∨ i = 3) : i ≠ 1 ∧ i ≠ 2 := by
+  rcases h with rfl | rfl <;> decide
+
+private lemma rotUp_zero_ρ {p q : ℝ} {ρ μ ν : Fin 4} (h : ρ ≠ 1 ∧ ρ ≠ 2) :
+    rotationTorsionUp p q ρ μ ν = 0 := by
+  simp only [rotationTorsionUp, rotGen]
+  fin_cases ρ <;> simp_all
+
+private lemma rotUp_zero_μ {p q : ℝ} {ρ μ ν : Fin 4} (h : μ ≠ 1 ∧ μ ≠ 2) :
+    rotationTorsionUp p q ρ μ ν = 0 := by
+  have hμ : rotationDeriv p q μ = 0 := by
+    fin_cases μ <;> simp_all [rotationDeriv]
+  have hgen : rotGen ρ μ = 0 := by
+    simp only [rotGen]
+    fin_cases μ <;> simp_all
+  simp [rotationTorsionUp, hμ, hgen]
+
+private lemma rotUp_zero_ν {p q : ℝ} {ρ μ ν : Fin 4} (h : ν ≠ 1 ∧ ν ≠ 2) :
+    rotationTorsionUp p q ρ μ ν = 0 := by
+  have hν : rotationDeriv p q ν = 0 := by
+    fin_cases ν <;> simp_all [rotationDeriv]
+  have hgen : rotGen ρ ν = 0 := by
+    simp only [rotGen]
+    fin_cases ν <;> simp_all
+  simp [rotationTorsionUp, hν, hgen]
+
+private lemma rotSquare_out {p q : ℝ} {ρ μ ν : Fin 4}
+    (h : (ρ ≠ 1 ∧ ρ ≠ 2) ∨ (μ ≠ 1 ∧ μ ≠ 2) ∨ (ν ≠ 1 ∧ ν ≠ 2)) :
+    rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν = 0 := by
+  rcases h with hρ | hμ | hν
+  · simp [rotationTdown, rotationTup, rotUp_zero_ρ hρ]
+  · simp [rotationTdown, rotationTup, rotUp_zero_μ hμ]
+  · simp [rotationTdown, rotationTup, rotUp_zero_ν hν]
+
+private lemma rotCross_out {p q : ℝ} {ρ μ ν : Fin 4}
+    (h : (ρ ≠ 1 ∧ ρ ≠ 2) ∨ (μ ≠ 1 ∧ μ ≠ 2) ∨ (ν ≠ 1 ∧ ν ≠ 2)) :
+    rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ = 0 := by
+  rcases h with hρ | hμ | hν
+  · simp [rotationTdown, rotUp_zero_ρ hρ]
+  · have h1 : rotationTorsionUp p q ρ μ ν = 0 := rotUp_zero_μ hμ
+    have h2 : rotationTorsionUp p q ν μ ρ = 0 := by
+      simpa using rotUp_zero_μ (p := p) (q := q) (ρ := ν) (μ := μ) (ν := ρ) hμ
+    simp [rotationTdown, rotationTup, h1, h2]
+  · have h1 : rotationTorsionUp p q ρ μ ν = 0 := rotUp_zero_ν hν
+    have h2 : rotationTorsionUp p q ν μ ρ = 0 := by
+      simpa using rotUp_zero_ρ (p := p) (q := q) (ρ := ν) (μ := μ) (ν := ρ) hν
+    simp [rotationTdown, rotationTup, h1, h2]
+
+private lemma sum_rotSquare_out_μ (p q : ℝ) (ρ μ : Fin 4) (hμ : μ ≠ 1 ∧ μ ≠ 2) :
+    ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν = 0 := by
+  refine Finset.sum_eq_zero fun ν _ => ?_
+  exact rotSquare_out (Or.inr (Or.inl hμ))
+
+private lemma sum_rotSquare_out_ρ (p q : ℝ) (ρ : Fin 4) (hρ : ρ ≠ 1 ∧ ρ ≠ 2) :
+    ∑ μ : Fin 4, ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν = 0 := by
+  refine Finset.sum_eq_zero fun μ _ => ?_
+  refine Finset.sum_eq_zero fun ν _ => ?_
+  exact rotSquare_out (Or.inl hρ)
+
+theorem rotation_square_contraction (p q : ℝ) :
+    ∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
+        rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν =
+      2 * p ^ 2 + 2 * q ^ 2 := by
+  rw [sum4_of_out
+      (f := fun ρ => ∑ μ, ∑ ν, rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν)
+      (sum_rotSquare_out_ρ p q 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotSquare_out_ρ p q 3 (rot_out 3 (Or.inr rfl)))]
+  rw [sum4_of_out
+      (f := fun μ => ∑ ν, rotationTdown p q 1 μ ν * rotationTup p q 1 μ ν)
+      (sum_rotSquare_out_μ p q 1 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotSquare_out_μ p q 1 3 (rot_out 3 (Or.inr rfl))),
+    sum4_of_out
+      (f := fun μ => ∑ ν, rotationTdown p q 2 μ ν * rotationTup p q 2 μ ν)
+      (sum_rotSquare_out_μ p q 2 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotSquare_out_μ p q 2 3 (rot_out 3 (Or.inr rfl)))]
+  have hν :
+      ∀ ρ μ : Fin 4,
+        ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ρ μ ν =
+          rotationTdown p q ρ μ 1 * rotationTup p q ρ μ 1 +
+            rotationTdown p q ρ μ 2 * rotationTup p q ρ μ 2 := by
+    intro ρ μ
+    refine sum4_of_out ?_ ?_
+    · exact rotSquare_out (Or.inr (Or.inr (rot_out 0 (Or.inl rfl))))
+    · exact rotSquare_out (Or.inr (Or.inr (rot_out 3 (Or.inr rfl))))
+  simp only [hν]
+  simp [rotationTdown, rotationTup, rotationTorsionUp, rotationDeriv, rotGen, w31]
+  ring
+
+private lemma sum_rotCross_out_μ (p q : ℝ) (ρ μ : Fin 4) (hμ : μ ≠ 1 ∧ μ ≠ 2) :
+    ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ = 0 := by
+  refine Finset.sum_eq_zero fun ν _ => ?_
+  exact rotCross_out (Or.inr (Or.inl hμ))
+
+private lemma sum_rotCross_out_ρ (p q : ℝ) (ρ : Fin 4) (hρ : ρ ≠ 1 ∧ ρ ≠ 2) :
+    ∑ μ : Fin 4, ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ = 0 := by
+  refine Finset.sum_eq_zero fun μ _ => ?_
+  refine Finset.sum_eq_zero fun ν _ => ?_
+  exact rotCross_out (Or.inl hρ)
+
+theorem rotation_cross_contraction (p q : ℝ) :
+    ∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
+        rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ =
+      p ^ 2 + q ^ 2 := by
+  rw [sum4_of_out
+      (f := fun ρ => ∑ μ, ∑ ν, rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ)
+      (sum_rotCross_out_ρ p q 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotCross_out_ρ p q 3 (rot_out 3 (Or.inr rfl)))]
+  rw [sum4_of_out
+      (f := fun μ => ∑ ν, rotationTdown p q 1 μ ν * rotationTup p q ν μ 1)
+      (sum_rotCross_out_μ p q 1 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotCross_out_μ p q 1 3 (rot_out 3 (Or.inr rfl))),
+    sum4_of_out
+      (f := fun μ => ∑ ν, rotationTdown p q 2 μ ν * rotationTup p q ν μ 2)
+      (sum_rotCross_out_μ p q 2 0 (rot_out 0 (Or.inl rfl)))
+      (sum_rotCross_out_μ p q 2 3 (rot_out 3 (Or.inr rfl)))]
+  have hν :
+      ∀ ρ μ : Fin 4,
+        ∑ ν : Fin 4, rotationTdown p q ρ μ ν * rotationTup p q ν μ ρ =
+          rotationTdown p q ρ μ 1 * rotationTup p q 1 μ ρ +
+            rotationTdown p q ρ μ 2 * rotationTup p q 2 μ ρ := by
+    intro ρ μ
+    refine sum4_of_out ?_ ?_
+    · exact rotCross_out (Or.inr (Or.inr (rot_out 0 (Or.inl rfl))))
+    · exact rotCross_out (Or.inr (Or.inr (rot_out 3 (Or.inr rfl))))
+  simp only [hν]
+  simp [rotationTdown, rotationTup, rotationTorsionUp, rotationDeriv, rotGen, w31]
+  ring
+
+theorem rotationTrace_one (p q : ℝ) : rotationTrace p q 1 = q := by
+  rw [rotationTrace, Fin.sum_univ_four]
+  simp [rotationTorsionUp, rotationDeriv, rotGen]
+
+theorem rotationTrace_two (p q : ℝ) : rotationTrace p q 2 = -p := by
+  rw [rotationTrace, Fin.sum_univ_four]
+  simp [rotationTorsionUp, rotationDeriv, rotGen]
+
+theorem rotationTrace_out {p q : ℝ} {ρ : Fin 4} (h : ρ ≠ 1 ∧ ρ ≠ 2) :
+    rotationTrace p q ρ = 0 := by
+  rw [rotationTrace]
+  refine Finset.sum_eq_zero fun σ _ => ?_
+  exact rotUp_zero_μ (p := p) (q := q) (ρ := σ) (μ := ρ) (ν := σ) h
+
+theorem rotation_trace_contraction (p q : ℝ) :
+    ∑ ρ : Fin 4, rotationTrace p q ρ * rotationTraceUp p q ρ = p ^ 2 + q ^ 2 := by
+  rw [sum4_of_out
+      (f := fun ρ => rotationTrace p q ρ * rotationTraceUp p q ρ)
+      (by
+        rw [rotationTrace_out (p := p) (q := q) (rot_out 0 (Or.inl rfl))]
+        simp [rotationTraceUp])
+      (by
+        rw [rotationTrace_out (p := p) (q := q) (rot_out 3 (Or.inr rfl))]
+        simp [rotationTraceUp])]
+  simp only [rotationTraceUp, rotationTrace_one, rotationTrace_two, w31]
+  ring
+
+/-- The teleparallel scalar of every inertial-rotation jet vanishes. -/
+theorem rotationTeleparallel_eq_zero (p q : ℝ) : rotationTeleparallel p q = 0 := by
+  unfold rotationTeleparallel
+  rw [rotation_square_contraction, rotation_cross_contraction, rotation_trace_contraction]
+  ring
+
+/-- Nonzero torsion is compatible with a vanishing teleparallel scalar. -/
+theorem rotation_torsion_without_teleparallel (θ p q : ℝ) (hp : p ≠ 0) :
+    rotationCoordTorsion θ p q 1 1 2 ≠ 0 ∧ rotationTeleparallel p q = 0 :=
+  ⟨rotationCoordTorsion_ne_zero_of_x θ p q hp, rotationTeleparallel_eq_zero p q⟩
+
+/-- Same metric, distinct mismatch, whenever the squared angles differ. -/
+theorem inertialRotation_same_metric_distinct_J {θ ψ : ℝ} (h : θ ^ 2 ≠ ψ ^ 2) :
+    (∀ μ ν,
+        inducedMetric (inertialRotationCoframe θ) μ ν =
+          inducedMetric (inertialRotationCoframe ψ) μ ν) ∧
+      J (inertialRotationParams θ) ≠ J (inertialRotationParams ψ) := by
+  refine ⟨fun μ ν => ?_, ?_⟩
+  · rw [inducedMetric_inertialRotation, inducedMetric_inertialRotation]
+  · rw [J_inertialRotation, J_inertialRotation]
+    exact fun heq => h (by linarith)
 
 end Gravity
 
