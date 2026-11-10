@@ -165,6 +165,9 @@ import list of `Gravity.Regression`.
 * `OrbitClosure` — one revolution restores the orbital point and leaves the dual rotor at `-1`.
   That is not `pr=nℏ`.
 * `SpectralLines` — vacuum-wavelength windows of four hydrogen lines on the SI stand-ins.
+* `HeliumLines` — charge two with one electron, and the two-electron diameter.
+  The proton-shared hydrogen wavelength divided by four is not that line.
+  The radius `a₀/Z` is not an input.
 * `ElectronNumbers` — the circular radius, the first node, the diagonal, the side, the one-electron
   extremum, and the second node stand in that order.
 * `ElectronLength` — an outer-well radius caps `ℓ`. The radius `a₀/Z` is not an input.

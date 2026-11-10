@@ -193,7 +193,7 @@ private theorem cosh_le_exp_nonneg {t : ℝ} (ht : 0 ≤ t) : cosh t ≤ exp t :
   have hle : exp (-t) ≤ exp t := (exp_le_exp).mpr (by linarith)
   linarith [exp_pos t, exp_pos (-t)]
 
-private theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 50) :
+theorem gammaDepart_le {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ 1 / 50) :
     1 - gammaSEqual x ≤ (11 / 10) * x ^ 2 := by
   have hx50 : x ≤ 1 / 50 := hx
   have hderiv : ∀ t ∈ uIcc (0 : ℝ) x, HasDerivAt gammaSEqual (-2 * cosh t * sin t) t :=
@@ -327,7 +327,7 @@ theorem layerAccum_coulomb_gap {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) (1 / 100)) :
     _ ≤ x * ((6 / 5) * x ^ 2) := mul_le_mul_of_nonneg_left hrel hx0
     _ = (6 / 5) * x ^ 3 := by ring
 
-private theorem circEnergy_coulomb_gap {x : ℝ}
+theorem circEnergy_coulomb_gap {x : ℝ}
     (hx : x ∈ Ioo (0 : ℝ) (1 / 100)) :
     |circEnergy x + x| ≤ (6 / 5) * x ^ 3 := by
   have hx0 : 0 ≤ x := hx.1.le

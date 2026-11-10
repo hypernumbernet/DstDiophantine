@@ -44,6 +44,7 @@ import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.HydrogenAlpha
 import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.SpectralLines
+import DstDiophantine.Gravity.HeliumLines
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
@@ -2531,6 +2532,27 @@ example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
       ∃ n : ℤ, p * r = (n : ℝ) * ℏ :=
   planeWave_revolution_iff hℏ
 
+
+/-! ## Charge two -/
+
+/-- Regression: one electron and charge two, nucleus fixed, from shell \(2\) to shell \(1\). -/
+example :
+    (30375 : ℝ) / 10 ^ 12 < vacuumWavelength (lineBook 3 1) ∧
+      vacuumWavelength (lineBook 3 1) < (30376 : ℝ) / 10 ^ 12 :=
+  ionFixed_two_one
+
+/-- Regression: the proton-shared hydrogen wavelength divided by four lies above that window. -/
+example {ρp ρα : ℝ}
+    (hp0 : (1836 : ℝ) < ρp) (hp1 : ρp < 1837)
+    (ha0 : (7294 : ℝ) < ρα) (ha1 : ρα < 7295) :
+    vacuumWavelength (lineBook 3 1) * ((ρα + 1) / ρα) <
+      vacuumWavelength (bohrEnergyDiff 1 2) * ((ρp + 1) / ρp) / 4 :=
+  protonShared_above_ion_two_one hp0 hp1 ha0 ha1
+
+/-- Regression: on the diameter the net force is inward throughout the outer well. -/
+example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    0 < -diameterOutward 2 x :=
+  diameter_inward hx
 
 /-! ## Scales that are inputs -/
 
