@@ -773,6 +773,193 @@ theorem sandwich_pureRotation1_null3_ne_of_sin {θ : ℝ} (hsin : Real.sin θ �
     simpa [smul_smul, inv_mul_cancel₀ hsin, one_smul, ← div_eq_inv_mul] using h'
   exact null1_eq_smul_null3_false hN
 
+/-! ### Axis-2 pure rotation (`cyclic 2 = e₂ e₁`), the `(x,y)` plane -/
+
+def pureRotation2 (θ : ℝ) : TorsionParams where
+  alpha := fun _ => 0
+  beta := fun a => if a = 2 then θ else 0
+
+theorem rotorTorsion_pureRotation2_closed (θ : ℝ) :
+    rotorTorsion (pureRotation2 θ) =
+      Real.cos (θ / 2) • (1 : PGA) + Real.sin (θ / 2) • cyclic 2 := by
+  have hω : omegaTorsion (pureRotation2 θ) = (θ / 2) • cyclic 2 := by
+    simp [omegaTorsion, pureRotation2, Fin.sum_univ_three]
+  rw [rotorTorsion, hω, exp_of_sq_neg_one (cyclic_sq 2)]
+
+private theorem reverse_cs_cyclic2 (c s : ℝ) :
+    reverse (c • (1 : PGA) + s • cyclic 2) =
+      c • (1 : PGA) - s • cyclic 2 := by
+  rw [map_add, map_smul, map_smul, reverse.map_one, cyclic_reverse, smul_neg]
+  abel
+
+theorem reverse_rotorTorsion_pureRotation2 (θ : ℝ) :
+    reverse (rotorTorsion (pureRotation2 θ)) =
+      Real.cos (θ / 2) • (1 : PGA) - Real.sin (θ / 2) • cyclic 2 := by
+  rw [rotorTorsion_pureRotation2_closed, reverse_cs_cyclic2]
+
+private theorem e2_sq_one : ι 2 * ι 2 = (1 : PGA) := by
+  simp [e_sq, Q311_e5vec, w311]
+
+private theorem cyclic2_mul_ι1 : cyclic 2 * ι 1 = ι 2 := by
+  dsimp [cyclic]
+  calc (ι 2 * ι 1) * ι 1
+      = ι 2 * (ι 1 * ι 1) := by rw [mul_assoc]
+    _ = ι 2 := by simp [e1_sq]
+
+private theorem cyclic2_mul_ι2 : cyclic 2 * ι 2 = -ι 1 := by
+  dsimp [cyclic]
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  calc (ι 2 * ι 1) * ι 2
+      = ι 2 * (ι 1 * ι 2) := by rw [mul_assoc]
+    _ = ι 2 * (-(ι 2 * ι 1)) := by rw [h12]
+    _ = -(ι 2 * ι 2 * ι 1) := by simp [mul_assoc]
+    _ = -ι 1 := by simp [e2_sq_one]
+
+private theorem ι1_mul_cyclic2 : ι 1 * cyclic 2 = -ι 2 := by
+  dsimp [cyclic]
+  have h12 : ι 1 * ι 2 = -(ι 2 * ι 1) := e_mul_anticomm (by decide)
+  calc ι 1 * (ι 2 * ι 1)
+      = (ι 1 * ι 2) * ι 1 := (mul_assoc _ _ _).symm
+    _ = (-(ι 2 * ι 1)) * ι 1 := by rw [h12]
+    _ = -(ι 2 * (ι 1 * ι 1)) := by simp [mul_assoc]
+    _ = -ι 2 := by simp [e1_sq]
+
+private theorem ι2_mul_cyclic2 : ι 2 * cyclic 2 = ι 1 := by
+  dsimp [cyclic]
+  calc ι 2 * (ι 2 * ι 1)
+      = (ι 2 * ι 2) * ι 1 := (mul_assoc _ _ _).symm
+    _ = ι 1 := by simp [e2_sq_one]
+
+private theorem sandwich_cs_cyclic2_ι1 (c s : ℝ) :
+    (c • (1 : PGA) + s • cyclic 2) * ι 1 * (c • (1 : PGA) - s • cyclic 2) =
+      (c ^ 2 - s ^ 2) • ι 1 + (2 * c * s) • ι 2 := by
+  have hL : (c • (1 : PGA) + s • cyclic 2) * ι 1 = c • ι 1 + s • ι 2 := by
+    rw [add_mul, smul_mul_assoc, one_mul, smul_mul_assoc, cyclic2_mul_ι1]
+  rw [hL, sub_eq_add_neg]
+  have hexpand :
+      (c • ι 1 + s • ι 2) * (c • (1 : PGA) + -(s • cyclic 2)) =
+        (c • ι 1) * (c • (1 : PGA)) + (c • ι 1) * (-(s • cyclic 2)) +
+          (s • ι 2) * (c • (1 : PGA)) + (s • ι 2) * (-(s • cyclic 2)) := by
+    rw [add_mul, mul_add, mul_add]; abel
+  rw [hexpand]
+  have t11 : (c • ι 1) * (c • (1 : PGA)) = (c ^ 2) • ι 1 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, pow_two]
+  have t12 : (c • ι 1) * (-(s • cyclic 2)) = (c * s) • ι 2 := by
+    rw [mul_neg, smul_mul_assoc, mul_smul_comm, ι1_mul_cyclic2, smul_smul, smul_neg, neg_neg]
+  have t21 : (s • ι 2) * (c • (1 : PGA)) = (c * s) • ι 2 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, mul_comm]
+  have t22 : (s • ι 2) * (-(s • cyclic 2)) = (-(s ^ 2)) • ι 1 := by
+    rw [mul_neg, smul_mul_smul, ι2_mul_cyclic2, pow_two, neg_smul]
+  rw [t11, t12, t21, t22]
+  module
+
+private theorem sandwich_cs_cyclic2_ι2 (c s : ℝ) :
+    (c • (1 : PGA) + s • cyclic 2) * ι 2 * (c • (1 : PGA) - s • cyclic 2) =
+      (-(2 * c * s)) • ι 1 + (c ^ 2 - s ^ 2) • ι 2 := by
+  have hL : (c • (1 : PGA) + s • cyclic 2) * ι 2 = -(s • ι 1) + c • ι 2 := by
+    rw [add_mul, smul_mul_assoc, one_mul, smul_mul_assoc, cyclic2_mul_ι2, smul_neg, add_comm]
+  rw [hL, sub_eq_add_neg]
+  have hexpand :
+      (-(s • ι 1) + c • ι 2) * (c • (1 : PGA) + -(s • cyclic 2)) =
+        (-(s • ι 1)) * (c • (1 : PGA)) + (-(s • ι 1)) * (-(s • cyclic 2)) +
+          (c • ι 2) * (c • (1 : PGA)) + (c • ι 2) * (-(s • cyclic 2)) := by
+    rw [add_mul, mul_add, mul_add]; abel
+  rw [hexpand]
+  have t11 : (-(s • ι 1)) * (c • (1 : PGA)) = (-(c * s)) • ι 1 := by
+    rw [neg_mul, smul_mul_assoc, mul_smul_comm, mul_one, smul_smul, mul_comm, neg_smul]
+  have t12 : (-(s • ι 1)) * (-(s • cyclic 2)) = (-(s ^ 2)) • ι 2 := by
+    rw [neg_mul_neg, smul_mul_smul, ι1_mul_cyclic2, pow_two, smul_neg, neg_smul]
+  have t21 : (c • ι 2) * (c • (1 : PGA)) = (c ^ 2) • ι 2 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, pow_two]
+  have t22 : (c • ι 2) * (-(s • cyclic 2)) = (-(c * s)) • ι 1 := by
+    rw [mul_neg, smul_mul_assoc, mul_smul_comm, ι2_mul_cyclic2, smul_smul, ← neg_smul]
+  rw [t11, t12, t21, t22]
+  module
+
+private theorem commute_cyclic2_ι {μ : Fin 5} (h2 : μ ≠ 2) (h1 : μ ≠ 1) :
+    Commute (cyclic 2) (ι μ) := by
+  dsimp [cyclic, Commute, SemiconjBy]
+  have hμ2 : ι μ * ι 2 = -(ι 2 * ι μ) := e_mul_anticomm h2
+  have h1μ : ι 1 * ι μ = -(ι μ * ι 1) := e_mul_anticomm h1.symm
+  calc
+    (ι 2 * ι 1) * ι μ = ι 2 * (ι 1 * ι μ) := by rw [mul_assoc]
+    _ = ι 2 * (-(ι μ * ι 1)) := by rw [h1μ]
+    _ = -(ι 2 * ι μ) * ι 1 := by simp [mul_assoc]
+    _ = -(-(ι μ * ι 2)) * ι 1 := by rw [hμ2]; simp
+    _ = ι μ * ι 2 * ι 1 := by simp [mul_assoc]
+    _ = ι μ * (ι 2 * ι 1) := by rw [mul_assoc]
+
+private theorem sandwich_cs_cyclic2_fixed (c s : ℝ) (v : PGA)
+    (hv : Commute (cyclic 2) v) (hcs : c ^ 2 + s ^ 2 = 1) :
+    (c • (1 : PGA) + s • cyclic 2) * v * (c • (1 : PGA) - s • cyclic 2) = v := by
+  have hvB : v * cyclic 2 = cyclic 2 * v := hv.symm.eq
+  have hvR : v * (c • (1 : PGA) - s • cyclic 2) =
+      (c • (1 : PGA) - s • cyclic 2) * v := by
+    simp only [sub_eq_add_neg, mul_add, add_mul, smul_mul_assoc, mul_smul_comm, one_mul,
+      mul_neg, neg_mul, mul_one]
+    rw [hvB]
+  rw [mul_assoc, hvR, ← mul_assoc]
+  have hprod : (c • (1 : PGA) + s • cyclic 2) * (c • (1 : PGA) - s • cyclic 2) = (1 : PGA) := by
+    simp only [sub_eq_add_neg]
+    have hexpand :
+        (c • (1 : PGA) + s • cyclic 2) * (c • (1 : PGA) + -(s • cyclic 2)) =
+          (c • (1 : PGA)) * (c • (1 : PGA)) + (c • (1 : PGA)) * (-(s • cyclic 2)) +
+            (s • cyclic 2) * (c • (1 : PGA)) +
+            (s • cyclic 2) * (-(s • cyclic 2)) := by
+      rw [add_mul, mul_add, mul_add]; abel
+    rw [hexpand]
+    have a1 : (c • (1 : PGA)) * (c • (1 : PGA)) = (c * c) • (1 : PGA) := by
+      rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul]
+    have a2 : (c • (1 : PGA)) * (-(s • cyclic 2)) = (-(c * s)) • cyclic 2 := by
+      rw [mul_neg, smul_mul_assoc, one_mul, smul_smul, ← neg_smul]
+    have a3 : (s • cyclic 2) * (c • (1 : PGA)) = (c * s) • cyclic 2 := by
+      rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, mul_comm]
+    have a4 : (s • cyclic 2) * (-(s • cyclic 2)) = (s * s) • (1 : PGA) := by
+      rw [mul_neg, smul_mul_assoc, mul_smul_comm, cyclic_sq, smul_smul, smul_neg, neg_neg]
+    rw [a1, a2, a3, a4]
+    have hmid : (-(c * s)) • cyclic 2 + (c * s) • cyclic 2 = (0 : PGA) := by
+      rw [← add_smul, neg_add_cancel, zero_smul]
+    have hreduce :
+        (c * c) • (1 : PGA) + (-(c * s)) • cyclic 2 + (c * s) • cyclic 2 +
+            (s * s) • (1 : PGA) = (c * c + s * s) • (1 : PGA) := by
+      calc
+        (c * c) • (1 : PGA) + (-(c * s)) • cyclic 2 + (c * s) • cyclic 2 +
+              (s * s) • (1 : PGA)
+            = (c * c) • (1 : PGA) + ((-(c * s)) • cyclic 2 + (c * s) • cyclic 2) +
+                (s * s) • (1 : PGA) := by
+              ac_rfl
+        _ = (c * c) • (1 : PGA) + 0 + (s * s) • (1 : PGA) := by rw [hmid]
+        _ = (c * c) • (1 : PGA) + (s * s) • (1 : PGA) := by rw [add_zero]
+        _ = (c * c + s * s) • (1 : PGA) := by simp [add_smul]
+    rw [hreduce]
+    have hcs' : (c * c + s * s : ℝ) = 1 := by simpa [pow_two] using hcs
+    rw [hcs', one_smul]
+  rw [hprod, one_mul]
+
+theorem sandwich_pureRotation2_ι0 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation2 θ)) (ι 0) = ι 0 := by
+  rw [sandwich, rotorTorsion_pureRotation2_closed, reverse_cs_cyclic2]
+  exact sandwich_cs_cyclic2_fixed _ _ _ (commute_cyclic2_ι (by decide) (by decide))
+    (cos_sq_add_sin_sq_half θ)
+
+theorem sandwich_pureRotation2_ι1 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation2 θ)) (ι 1) =
+      Real.cos θ • ι 1 + Real.sin θ • ι 2 := by
+  rw [sandwich, rotorTorsion_pureRotation2_closed, reverse_cs_cyclic2, sandwich_cs_cyclic2_ι1,
+    cos_sq_sub_sin_sq_half, sin_half_two]
+
+theorem sandwich_pureRotation2_ι2 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation2 θ)) (ι 2) =
+      -Real.sin θ • ι 1 + Real.cos θ • ι 2 := by
+  rw [sandwich, rotorTorsion_pureRotation2_closed, reverse_cs_cyclic2, sandwich_cs_cyclic2_ι2,
+    cos_sq_sub_sin_sq_half, sin_half_two]
+
+theorem sandwich_pureRotation2_ι3 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation2 θ)) (ι 3) = ι 3 := by
+  rw [sandwich, rotorTorsion_pureRotation2_closed, reverse_cs_cyclic2]
+  exact sandwich_cs_cyclic2_fixed _ _ _ (commute_cyclic2_ι (by decide) (by decide))
+    (cos_sq_add_sin_sq_half θ)
+
 end Sandwich
 
 end DstDiophantine

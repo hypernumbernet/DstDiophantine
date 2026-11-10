@@ -1,8 +1,13 @@
 import DstDiophantine.Gravity.Sandwich
 import DstDiophantine.Gravity.Schwarzschild
+import DstDiophantine.Gravity.Weitzenbock
+import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Generators
+import DstDiophantine.Algebra.LorentzLie
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Module
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -15,6 +20,14 @@ import Mathlib.Tactic.NormNum
   `cosh φ · ι0 + sinh φ · ι1`.
 * Pure translator `T = 1 + Ω_trans` is nontrivial when `λ ≠ 0`, and does
   **not** by itself reproduce the classical Schwarzschild diagonal gauge.
+* For every `λ`, constant or not, `T e_μ T̃ = e_μ + (η_μμ λ^μ) e₄`. The
+  Minkowski leg is the inertial frame, so the induced metric is Minkowski and
+  the Weitzenböck torsion of that leg vanishes. The jet of `λ` is carried by
+  the coefficient of `e₄`.
+* A motor `M = R T` has the same Minkowski leg as `R`. The translation does
+  not enter the spacetime torsion. This is the chart reading of the proved
+  one-parameter rotors; a rotor about a moving axis is not given a
+  teleparallel scalar here.
 
 Light-cone eigenvalues and `(t,r)` coframe scales live in `Gravity.Sandwich` /
 `Gravity.Schwarzschild` (`sandwich_radialBoost_eigenvalues_eq_schwarzschild`,
@@ -111,6 +124,51 @@ theorem motor_of_pure_translation (p : TransParams) :
   have hω : omegaTorsion ⟨fun _ => 0, fun _ => 0⟩ = 0 := by
     simp [omegaTorsion]
   rw [hω, NormedSpace.exp_zero, one_mul]
+
+/-! ### A varying translator leaves the spacetime coframe inertial -/
+
+theorem translator_minkowski_leg (p : TransParams) (μ : Fin 4) :
+    sandwich (expTrans p) (frameVec μ) =
+      frameVec μ + (w31 μ * p.lambda μ) • ι e4Index := by
+  simpa [frameVec] using KillingAxis.sandwich_expTrans_ι p μ
+
+theorem translator_null_difference (p q : TransParams) (μ : Fin 4) :
+    sandwich (expTrans p) (frameVec μ) - sandwich (expTrans q) (frameVec μ) =
+      (w31 μ * (p.lambda μ - q.lambda μ)) • ι e4Index := by
+  rw [translator_minkowski_leg, translator_minkowski_leg]
+  module
+
+/-- Inertial coframe, the Minkowski leg of every translator. -/
+def inertialCoframe : Coframe :=
+  fun a μ => if a = μ then 1 else 0
+
+theorem inertial_weitzenbock (a μ ν : Fin 4) :
+    weitzenbockTorsion (fun _ _ _ => (0 : ℝ)) a μ ν = 0 := by
+  simp [weitzenbockTorsion]
+
+theorem inducedMetric_inertial (μ ν : Fin 4) :
+    inducedMetric inertialCoframe μ ν = if μ = ν then w31 μ else 0 := by
+  rw [inducedMetric_eq_weighted]
+  fin_cases μ <;> fin_cases ν <;>
+    simp [inertialCoframe, w31]
+
+/-! ### Motor `RT`: the spacetime leg is the rotor's leg -/
+
+theorem rotor_fixes_null (p : Operations.TorsionParams) :
+    sandwich (rotorTorsion p) (ι e4Index) = ι e4Index := by
+  have hω : Commute (ι e4Index) (omegaTorsion p) :=
+    KillingAxis.commute_e4_of_mem_lorentzSpan
+      (LorentzLie.omegaTorsion_mem_lorentzSpan p)
+  have hR : Commute (ι e4Index) (rotorTorsion p) := by
+    simpa [rotorTorsion] using hω.exp_right
+  rw [sandwich, hR.symm.eq, mul_assoc, rotor_unitary, mul_one]
+
+theorem motor_minkowski_leg (p : OmegaParams) (μ : Fin 4) :
+    sandwich (motor p) (frameVec μ) =
+      sandwich (rotorTorsion p.torsion) (frameVec μ) +
+        (w31 μ * p.trans.lambda μ) • ι e4Index := by
+  rw [motor, Sandwich.sandwich_comp, translator_minkowski_leg, Sandwich.sandwich_add,
+    Sandwich.sandwich_smul, rotor_fixes_null]
 
 end Gravity
 

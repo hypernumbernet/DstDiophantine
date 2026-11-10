@@ -29,6 +29,9 @@ condition.
   through `sinh(α/2) = 0`.
 * `J = 0` does not imply `Ω = 1`: a balanced massive one-axis seed has
   vanishing `J` with a nontrivial relative rotor.
+* A unitary element multiplying both rotors on the left leaves the relative
+  rotor unchanged. The one-axis mismatch, read from that rotor, is unchanged
+  with it. How the chart coframe moves is not discussed.
 
 ## Not claimed
 
@@ -348,6 +351,25 @@ theorem J_zero_not_relativeRotor_one :
   have hs : Real.sinh ((1 : ℝ) / 2) ≠ 0 :=
     (Real.sinh_pos_iff.mpr (by norm_num : (0 : ℝ) < (1 : ℝ) / 2)).ne'
   exact balanced_axis_rotors_ne hs hrot
+
+/-- A common left factor cancels in `R_usual† R_dual`. -/
+theorem common_left_preserves_relativeRotor (S : PGA) (hS : S * reverse S = 1)
+    (p : TorsionParams) :
+    reverse (S * rotorUsual p) * (S * rotorDual p) = relativeRotor p := by
+  have hright : reverse S * S = 1 := reverse_mul_of_mul_reverse hS
+  rw [CliffordAlgebra.reverse.map_mul, mul_assoc, ← mul_assoc (reverse S), hright, one_mul]
+  rfl
+
+/-- One-axis mismatch is unchanged by a common left rotor, because it is the
+Killing norm of the relative rotor and that rotor is unchanged. -/
+theorem J_axis_common_left (S : PGA) (hS : S * reverse S = 1) (α β : ℝ) :
+    relativeRotor (axisParams α β) =
+      reverse (S * rotorUsual (axisParams α β)) * (S * rotorDual (axisParams α β)) ∧
+      J (axisParams α β) = (1 / 2) * (α ^ 2 - β ^ 2) := by
+  refine ⟨?_, ?_⟩
+  · exact (common_left_preserves_relativeRotor S hS (axisParams α β)).symm
+  · rw [J_coef]
+    simp [axisParams]
 
 end RelativeRotor
 

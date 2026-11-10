@@ -529,6 +529,34 @@ theorem screen_moves {t : ℝ} (ht : t ≠ 0) : nullRotation t screenVec ≠ scr
   have h0 : t = 0 := by simpa [nullRotation, screenVec] using congr_fun h 0
   exact ht h0
 
+/-- Parameters add under composition: `Λ_t ∘ Λ_s = Λ_{t+s}`. -/
+theorem nullRotation_comp (t s : ℝ) (x : Fin 4 → ℝ) :
+    nullRotation t (nullRotation s x) = nullRotation (t + s) x := by
+  ext i
+  fin_cases i <;> simp [nullRotation] <;> ring
+
+theorem nullRotation_zero (x : Fin 4 → ℝ) : nullRotation 0 x = x := by
+  ext i
+  fin_cases i <;> simp [nullRotation]
+
+theorem nullRotation_inv (t : ℝ) (x : Fin 4 → ℝ) :
+    nullRotation (-t) (nullRotation t x) = x := by
+  rw [nullRotation_comp, neg_add_cancel, nullRotation_zero]
+
+/-- The velocity `d/dt Λ_t x` equals the constant generator acting on `Λ_t x`.
+Component `2` is fixed. The other three components are `2 y₁`, `2(y₀+y₃)` and `-2 y₁`. -/
+theorem nullRotation_velocity (t : ℝ) (x : Fin 4 → ℝ) :
+    2 * x 1 + 4 * t * (x 0 + x 3) = 2 * (nullRotation t x) 1 ∧
+      2 * (x 0 + x 3) = 2 * (nullRotation t x) 0 + 2 * (nullRotation t x) 3 ∧
+      -2 * x 1 - 4 * t * (x 0 + x 3) = -2 * (nullRotation t x) 1 := by
+  have h0 : (nullRotation t x) 0 = x 0 + 2 * t * x 1 + 2 * t ^ 2 * (x 0 + x 3) := by
+    simp [nullRotation]
+  have h1 : (nullRotation t x) 1 = x 1 + 2 * t * (x 0 + x 3) := by simp [nullRotation]
+  have h3 : (nullRotation t x) 3 = x 3 - 2 * t * x 1 - 2 * t ^ 2 * (x 0 + x 3) := by
+    simp [nullRotation]
+  rw [h0, h1, h3]
+  refine ⟨?_, ?_, ?_⟩ <;> ring
+
 /-- The null coordinate `x₀ + x₃` is invariant. -/
 theorem null_sum_invariant (t : ℝ) (x : Fin 4 → ℝ) :
     (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 := by
@@ -558,6 +586,55 @@ theorem light_kept_on_null_line {t : ℝ} (ht : t ≠ 0) :
       nullRotation t screenVec ≠ screenVec :=
   ⟨nullRotation_nullLine t, screen_displaced_along_null t, (screen_reading t).1,
     (screen_reading t).2, screen_displacement_lightlike t, screen_moves ht⟩
+
+/-! ### Coordinate generator of the one-parameter null rotation -/
+
+/-- Standard basis vector. -/
+def nullBasis (μ : Fin 4) : Fin 4 → ℝ :=
+  fun i => if i = μ then 1 else 0
+
+/-- `d/dt` of `nullRotation t x`, written in the original coordinates `x`. -/
+def nullVelocity (t : ℝ) (x : Fin 4 → ℝ) : Fin 4 → ℝ :=
+  fun ρ =>
+    if ρ = 0 then 2 * x 1 + 4 * t * (x 0 + x 3)
+    else if ρ = 1 then 2 * (x 0 + x 3)
+    else if ρ = 3 then -2 * x 1 - 4 * t * (x 0 + x 3)
+    else 0
+
+/-- Constant matrix `A` with `d/dt Λ_t = A Λ_t`. -/
+def nullGen (ρ ν : Fin 4) : ℝ :=
+  if ρ = 0 ∧ ν = 1 then 2
+  else if ρ = 1 ∧ ν = 0 then 2
+  else if ρ = 1 ∧ ν = 3 then 2
+  else if ρ = 3 ∧ ν = 1 then -2
+  else 0
+
+/-- Inverse coframe column: `Λ_{-t}` applied to a basis vector. -/
+def nullCoframe (t : ℝ) : Fin 4 → Fin 4 → ℝ :=
+  fun a μ => nullRotation (-t) (nullBasis μ) a
+
+/-- Frame dual to `nullCoframe`: `Λ_t`. -/
+def nullFrame (t : ℝ) (ρ a : Fin 4) : ℝ :=
+  nullRotation t (nullBasis a) ρ
+
+theorem null_frame_velocity (t : ℝ) (ρ ν : Fin 4) :
+    ∑ a : Fin 4, nullFrame t ρ a * nullVelocity (-t) (nullBasis ν) a = nullGen ρ ν := by
+  fin_cases ρ <;> fin_cases ν <;>
+    simp [Fin.sum_univ_four, nullFrame, nullVelocity, nullBasis, nullGen, nullRotation] <;>
+    ring
+
+theorem nullCoordTorsion (t : ℝ) (d : Fin 4 → ℝ) (ρ μ ν : Fin 4) :
+    (∑ a : Fin 4, nullFrame t ρ a *
+        (d μ * nullVelocity (-t) (nullBasis ν) a -
+          d ν * nullVelocity (-t) (nullBasis μ) a)) =
+      d μ * nullGen ρ ν - d ν * nullGen ρ μ := by
+  have hlin : ∀ a,
+      nullFrame t ρ a * (d μ * nullVelocity (-t) (nullBasis ν) a -
+          d ν * nullVelocity (-t) (nullBasis μ) a) =
+        d μ * (nullFrame t ρ a * nullVelocity (-t) (nullBasis ν) a) -
+          d ν * (nullFrame t ρ a * nullVelocity (-t) (nullBasis μ) a) := by
+    intro a; ring
+  simp_rw [hlin, Finset.sum_sub_distrib, ← Finset.mul_sum, null_frame_velocity]
 
 end Gravity
 

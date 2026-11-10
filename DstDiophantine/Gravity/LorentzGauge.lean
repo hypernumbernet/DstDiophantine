@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.Coframe
 import DstDiophantine.Gravity.Weitzenbock
+import DstDiophantine.Gravity.PlaneTorsion
 import DstDiophantine.Gravity.JTDictionary
 import DstDiophantine.Algebra.Amplification
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
@@ -22,7 +23,8 @@ The partials below are the 1-jet of a profile `φ(t,x)`: `u = ∂_t φ`, `v = �
   and every other component vanishes. It remembers `(u,v)` and forgets `φ`.
 * The teleparallel quadratic of the parent paper,
   `T = ¼ T_{ρμν} T^{ρμν} + ½ T_{ρμν} T^{νμρ} - T_ρ T^ρ`,
-  with indices moved by `η`, vanishes for every jet.
+  with indices moved by `η`, vanishes for every jet. Both vanishings are the
+  in-plane jets of `PlaneTorsion.genTeleparallel_eq_zero`.
 * The same algebraic value `J = ½ φ²` occurs on an exterior Schwarzschild
   coframe whose teleparallel quadratic is `-2/r²`. No pointwise map `J ↦ T`
   serves every tetrad. The auxiliary expression `schwarzschildTeleparallelT`
@@ -37,11 +39,14 @@ The partials below are the 1-jet of a profile `φ(t,x)`: `u = ∂_t φ`, `v = �
 
 ## Not claimed
 
-* A dictionary for a general motor (translations, or a rotor about a moving axis).
-* Vanishing of `T` for an arbitrary local Lorentz transformation, or for a profile
-  that varies off the plane of the generator.
+* A dictionary for a rotor about a moving axis. The Minkowski leg of a motor
+  `R T` is recorded in `Tetrad`.
+* Vanishing of `T` for an arbitrary local Lorentz transformation. One generator
+  with an arbitrary jet does vanish; two generators with independent jets need
+  not, as in `LorentzCounterexample`.
 * The variational identity between `∫ e T` and the Einstein--Hilbert action.
-* Equality of the coordinate coframe with the sandwich of the one-axis rotor.
+* Equality of the coordinate coframe with the sandwich when the angle varies
+  from event to event. The constant-angle rows are in `LorentzFamily`.
 -/
 
 namespace DstDiophantine
@@ -369,11 +374,19 @@ theorem boost_trace_contraction (u v : ℝ) :
   simp only [boostTraceUp, boostTrace_zero, boostTrace_one, w31]
   ring
 
+theorem boostGen_antisym : PlaneTorsion.MinkowskiAntisym boostGen := by
+  intro ρ ν
+  fin_cases ρ <;> fin_cases ν <;> simp [boostGen, w31]
+
+theorem boostTeleparallel_eq_gen (u v : ℝ) :
+    boostTeleparallel u v =
+      PlaneTorsion.genTeleparallel boostGen (derivJet u v) := by
+  rfl
+
 /-- The teleparallel scalar of every inertial-boost jet vanishes. -/
 theorem boostTeleparallel_eq_zero (u v : ℝ) : boostTeleparallel u v = 0 := by
-  unfold boostTeleparallel
-  rw [boost_square_contraction, boost_cross_contraction, boost_trace_contraction]
-  ring
+  rw [boostTeleparallel_eq_gen]
+  exact PlaneTorsion.genTeleparallel_eq_zero boostGen_antisym (derivJet u v)
 
 /-- Nonzero torsion is compatible with a vanishing teleparallel scalar. -/
 theorem torsion_without_teleparallel (φ u v : ℝ) (hu : u ≠ 0) :
@@ -751,11 +764,19 @@ theorem rotation_trace_contraction (p q : ℝ) :
   simp only [rotationTraceUp, rotationTrace_one, rotationTrace_two, w31]
   ring
 
+theorem rotGen_antisym : PlaneTorsion.MinkowskiAntisym rotGen := by
+  intro ρ ν
+  fin_cases ρ <;> fin_cases ν <;> simp [rotGen, w31]
+
+theorem rotationTeleparallel_eq_gen (p q : ℝ) :
+    rotationTeleparallel p q =
+      PlaneTorsion.genTeleparallel rotGen (rotationDeriv p q) := by
+  rfl
+
 /-- The teleparallel scalar of every inertial-rotation jet vanishes. -/
 theorem rotationTeleparallel_eq_zero (p q : ℝ) : rotationTeleparallel p q = 0 := by
-  unfold rotationTeleparallel
-  rw [rotation_square_contraction, rotation_cross_contraction, rotation_trace_contraction]
-  ring
+  rw [rotationTeleparallel_eq_gen]
+  exact PlaneTorsion.genTeleparallel_eq_zero rotGen_antisym (rotationDeriv p q)
 
 /-- Nonzero torsion is compatible with a vanishing teleparallel scalar. -/
 theorem rotation_torsion_without_teleparallel (θ p q : ℝ) (hp : p ≠ 0) :

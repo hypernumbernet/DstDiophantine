@@ -3,6 +3,12 @@ import DstDiophantine.Gravity.JTDictionary
 import DstDiophantine.Gravity.GaugeDictionary
 import DstDiophantine.Gravity.ClassicalSchwarzschild
 import DstDiophantine.Gravity.LorentzGauge
+import DstDiophantine.Gravity.LorentzFamily
+import DstDiophantine.Gravity.NullChart
+import DstDiophantine.Gravity.CommutingPlanes
+import DstDiophantine.Gravity.LorentzCounterexample
+import DstDiophantine.Algebra.RelativeRotor
+import DstDiophantine.Logic.Quantum.SpinConnection
 import DstDiophantine.Gravity.RadialQuadratic
 import DstDiophantine.Gravity.Tetrad
 import DstDiophantine.Gravity.NewtonFromLight
@@ -174,6 +180,81 @@ example (θ p q : ℝ) (μ ν : Fin 4) :
   ⟨inducedMetric_inertialRotation θ μ ν, rotationCoordTorsion_xxy θ p q,
     rotationCoordTorsion_yxy θ p q, rotationTeleparallel_eq_zero p q,
     J_inertialRotation_eq_neg_pureBoost θ⟩
+
+/-- Regression: a constant boost coframe row is the sandwich of that boost. -/
+example (φ : ℝ) :
+    Sandwich.sandwich (Motor.rotorTorsion (Amplification.pureBoost φ)) (ι 0) =
+      axisBoostCoframe 0 φ 0 0 • ι 0 + axisBoostCoframe 0 φ 0 1 • ι 1 +
+        axisBoostCoframe 0 φ 0 2 • ι 2 + axisBoostCoframe 0 φ 0 3 • ι 3 :=
+  sandwich_pureBoost_coframe_ι0 φ
+
+/-- Regression: a constant `(x,y)` rotation coframe row is the cyclic-2 sandwich. -/
+example (θ : ℝ) :
+    Sandwich.sandwich (Motor.rotorTorsion (Sandwich.pureRotation2 θ)) (ι 1) =
+      axisRotCoframe 2 θ 1 1 • ι 1 + axisRotCoframe 2 θ 1 2 • ι 2 :=
+  sandwich_rotation2_coframe_ι1 θ
+
+/-- Regression: every coordinate-plane boost keeps Minkowski and kills `T`. -/
+example (i : Fin 3) (φ : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (axisBoostCoframe i φ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      PlaneTorsion.genTeleparallel (axisBoostGen i) d = 0 ∧
+      J (axisBoostParams i φ) = (1 / 2) * φ ^ 2 :=
+  ⟨inducedMetric_axisBoost i φ μ ν, axisBoostTeleparallel_eq_zero i d, J_axisBoost i φ⟩
+
+/-- Regression: every coordinate-plane rotation keeps Minkowski and kills `T`. -/
+example (i : Fin 3) (θ : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (axisRotCoframe i θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      PlaneTorsion.genTeleparallel (axisRotGen i) d = 0 ∧
+      J (axisRotParams i θ) = -J (axisBoostParams i θ) :=
+  ⟨inducedMetric_axisRot i θ μ ν, axisRotTeleparallel_eq_zero i d, J_axisRot_eq_neg_boost i θ⟩
+
+/-- Regression: a one-parameter connection has vanishing curvature coefficient. -/
+example (c : PGA) : (0 : PGA) + (c * c - c * c) = 0 :=
+  oneParam_curvature c
+
+/-- Regression: a common left rotor leaves the relative rotor unchanged. -/
+example (S : PGA) (hS : S * CliffordAlgebra.reverse S = 1) (α β : ℝ) :
+    CliffordAlgebra.reverse (S * RelativeRotor.rotorUsual (RelativeRotor.axisParams α β)) *
+        (S * RelativeRotor.rotorDual (RelativeRotor.axisParams α β)) =
+      RelativeRotor.relativeRotor (RelativeRotor.axisParams α β) :=
+  RelativeRotor.common_left_preserves_relativeRotor S hS _
+
+/-- Regression: a null rotation keeps Minkowski, kills `T`, and has `J = 0`. -/
+example (t : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (nullCoframe t) μ ν = (if μ = ν then w31 μ else 0) ∧
+      J (nullMismatch t) = 0 ∧
+      PlaneTorsion.genTeleparallel nullCoGen d = 0 :=
+  ⟨inducedMetric_nullCoframe t μ ν, J_nullMismatch t, nullTeleparallel_eq_zero d⟩
+
+/-- Regression: a commuting boost and rotation keep Minkowski and kill `T`. -/
+example (φ θ : ℝ) (dφ dθ : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (productCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      productTeleparallel dφ dθ = 0 :=
+  ⟨inducedMetric_product φ θ μ ν, productTeleparallel_eq_zero dφ dθ⟩
+
+/-- Regression: a translator keeps the inertial leg, and a motor `RT` keeps the rotor's leg. -/
+example (p : Motor.TransParams) (q : Motor.OmegaParams) (μ : Fin 4) :
+    sandwich (Motor.expTrans p) (frameVec μ) =
+        frameVec μ + (w31 μ * p.lambda μ) • ι e4Index ∧
+      sandwich (Motor.motor q) (frameVec μ) =
+        sandwich (Motor.rotorTorsion q.torsion) (frameVec μ) +
+          (w31 μ * q.trans.lambda μ) • ι e4Index :=
+  ⟨translator_minkowski_leg p μ, motor_minkowski_leg q μ⟩
+
+/-- Regression: the pure-gauge boost derivative sends solutions to solutions. -/
+example (θ : ℝ) {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    blockDiag2 (embedR (halfDerivR θ * halfInvR θ))
+        (embedR (halfInvDerivR θ * halfR θ)) = spinGen 0 1 ∧
+      DiracMomentum m (lorentzAct (usualRotorMat (EuclideanSpace.single 0 θ)) p)
+        (rotorDirac (usualRotorMat (EuclideanSpace.single 0 θ)) Ψ) :=
+  ⟨boost_logDeriv θ, constant_boost_sends_solution θ h⟩
+
+/-- Regression: a Lorentz matrix keeps the Minkowski metric, and a mixed jet has `T = -2`. -/
+example (Λ : Coframe)
+    (h : ∀ μ ν, ∑ a : Fin 4, w31 a * Λ a μ * Λ a ν = if μ = ν then w31 μ else 0)
+    (μ ν : Fin 4) :
+    inducedMetric Λ μ ν = (if μ = ν then w31 μ else 0) ∧ mixedTeleparallel = -2 :=
+  ⟨inducedMetric_of_lorentz Λ h μ ν, mixedTeleparallel_eq⟩
 
 /-- Regression: the same `J` does not determine `T`. The inertial jet has `T=0`;
 the exterior quadratic is `-2/r²`. -/
