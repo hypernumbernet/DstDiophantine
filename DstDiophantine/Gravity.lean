@@ -87,14 +87,16 @@ import list of `Gravity.Regression`.
 * `SlerpTorque` — the pull follows a great circle. `chordMoment` vanishes on a common ray and at
   the chart origin.
 * `ChartRotation` — a pole-fixing reflection and a pole-fixing rotation commute with the log chart.
-  A common left translation preserves `ρ` and adds a first-order cross product to the chart velocity.
+  A common left translation preserves `ρ` and adds a first-order cross product
+  to the chart velocity.
   Logging the point again returns its chart vector. The logarithm of the rotor from the point to its
   left translate is `(cos 2χ, 0, sin 2χ)`, unequal to that velocity on `(0, π)`.
   Six axis intercepts are torque-free. For `0 < a < b < c` the principal moments are distinct, and
   one partner moved off the ray leaves a positive moment.
 * `RacketFlip` — the separatrix `A sech(kt)`, `B tanh(kt)`, `C sech(kt)` of Euler's equations.
   The energy is `½ I₂ B²` and `L² = 2 E I₂`. The intermediate component vanishes only at `t = 0`.
-  Only that axis has a positive linear rate, and a residual `ε < 1/6` waits longer than the crossing.
+  Only that axis has a positive linear rate, and a residual `ε < 1/6` waits
+  longer than the crossing.
 * `RacketThermal` — the uniform average of a signed sum of chart moments is zero, and the average
   of its square is the sum of the squares. The canonical weight is the product of three centered
   Gaussians of variances `1/(β Iᵢ)`, the normalized factor `exp(-β E)`. The mean gap is

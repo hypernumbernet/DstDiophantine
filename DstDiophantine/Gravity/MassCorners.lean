@@ -48,16 +48,14 @@ theorem isAdmissibleContinuous_massCorner (usual : Fin 3 → Bool) :
     IsAdmissibleContinuous (massCorner usual) := by
   intro a
   cases ha : usual a
-  · refine ⟨?_, ?_, ?_⟩
-    · simp [massCorner, ha]
-    · simp [massCorner, ha]
-      positivity
-    · simp [massCorner, ha]
-  · refine ⟨?_, ?_, ?_⟩
-    · simp [massCorner, ha]
-      positivity
-    · simp [massCorner, ha]
-    · simp [massCorner, ha]
+  · have hα : (massCorner usual).alpha a = 0 := by simp [massCorner, ha]
+    have hβ : (massCorner usual).beta a = Real.pi / 2 := by simp [massCorner, ha]
+    rw [hα, hβ]
+    exact ⟨le_rfl, by positivity, by simp⟩
+  · have hα : (massCorner usual).alpha a = Real.pi / 2 := by simp [massCorner, ha]
+    have hβ : (massCorner usual).beta a = 0 := by simp [massCorner, ha]
+    rw [hα, hβ]
+    exact ⟨by positivity, le_rfl, by simp⟩
 
 private theorem axis_sq_sum_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
     (massCorner usual).alpha a ^ 2 + (massCorner usual).beta a ^ 2 = (Real.pi / 2) ^ 2 := by
@@ -142,34 +140,43 @@ theorem mass_ceiling_axis_corner {p : TorsionParams}
     IsUsualCorner p a ∨ IsDualCorner p a :=
   axis_rigidity_of_mass_eq_max hp hM a
 
+private def axisBits (b0 b1 b2 : Bool) : Fin 3 → Bool
+  | 0 => b0
+  | 1 => b1
+  | 2 => b2
+
+private theorem corner_of_bit {p : TorsionParams} {a : Fin 3} {b : Bool}
+    (h : if b = true then IsUsualCorner p a else IsDualCorner p a) :
+    (b = true ∧ IsUsualCorner p a) ∨ (b = false ∧ IsDualCorner p a) := by
+  cases b
+  · exact Or.inr ⟨rfl, h⟩
+  · exact Or.inl ⟨rfl, h⟩
+
 private theorem eq_massCorner_of_bools {p : TorsionParams} {usual : Fin 3 → Bool}
     (h : ∀ a, if usual a = true then IsUsualCorner p a else IsDualCorner p a) :
     p = massCorner usual := by
-  refine torsionParams_ext ?_ ?_
-  · funext a
-    cases ha : usual a
-    · have hc : IsDualCorner p a := by
-        have := h a
-        simp [ha] at this
-        exact this
-      simp [massCorner, ha, hc.1]
-    · have hc : IsUsualCorner p a := by
-        have := h a
-        simp [ha] at this
-        exact this
-      simp [massCorner, ha, hc.1]
-  · funext a
-    cases ha : usual a
-    · have hc : IsDualCorner p a := by
-        have := h a
-        simp [ha] at this
-        exact this
-      simp [massCorner, ha, hc.2]
-    · have hc : IsUsualCorner p a := by
-        have := h a
-        simp [ha] at this
-        exact this
-      simp [massCorner, ha, hc.2]
+  have hbit a := corner_of_bit (h a)
+  refine torsionParams_ext (funext fun a => ?_) (funext fun a => ?_)
+  · rcases hbit a with ⟨ha, hc⟩ | ⟨ha, hc⟩ <;> simp [massCorner, ha, hc.1]
+  · rcases hbit a with ⟨ha, hc⟩ | ⟨ha, hc⟩ <;> simp [massCorner, ha, hc.2]
+
+private theorem branches_of_axes {p : TorsionParams} (b0 b1 b2 : Bool)
+    (c0 : if b0 = true then IsUsualCorner p 0 else IsDualCorner p 0)
+    (c1 : if b1 = true then IsUsualCorner p 1 else IsDualCorner p 1)
+    (c2 : if b2 = true then IsUsualCorner p 2 else IsDualCorner p 2) :
+    ∀ a, if axisBits b0 b1 b2 a = true then IsUsualCorner p a else IsDualCorner p a := by
+  intro a
+  fin_cases a
+  · exact c0
+  · exact c1
+  · exact c2
+
+private theorem exists_massCorner_of_axes {p : TorsionParams} (b0 b1 b2 : Bool)
+    (c0 : if b0 = true then IsUsualCorner p 0 else IsDualCorner p 0)
+    (c1 : if b1 = true then IsUsualCorner p 1 else IsDualCorner p 1)
+    (c2 : if b2 = true then IsUsualCorner p 2 else IsDualCorner p 2) :
+    ∃ usual : Fin 3 → Bool, p = massCorner usual :=
+  ⟨axisBits b0 b1 b2, eq_massCorner_of_bools (branches_of_axes b0 b1 b2 c0 c1 c2)⟩
 
 theorem exists_massCorner_of_mass_eq_max {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
@@ -178,72 +185,14 @@ theorem exists_massCorner_of_mass_eq_max {p : TorsionParams}
   have c1 := mass_ceiling_axis_corner hp hM 1
   have c2 := mass_ceiling_axis_corner hp hM 2
   rcases c0 with c0 | c0 <;> rcases c1 with c1 | c1 <;> rcases c2 with c2 | c2
-  · refine ⟨fun _ => true, eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · simp [c0]
-    · simp [c1]
-    · simp [c2]
-  · refine ⟨fun b => decide (b ≠ 2), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) ≠ 2) = true := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) ≠ 2) = true := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) ≠ 2) = false := by decide
-      simpa [hb] using c2
-  · refine ⟨fun b => decide (b ≠ 1), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) ≠ 1) = true := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) ≠ 1) = false := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) ≠ 1) = true := by decide
-      simpa [hb] using c2
-  · refine ⟨fun b => decide (b = 0), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) = 0) = true := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) = 0) = false := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) = 0) = false := by decide
-      simpa [hb] using c2
-  · refine ⟨fun b => decide (b ≠ 0), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) ≠ 0) = false := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) ≠ 0) = true := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) ≠ 0) = true := by decide
-      simpa [hb] using c2
-  · refine ⟨fun b => decide (b = 1), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) = 1) = false := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) = 1) = true := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) = 1) = false := by decide
-      simpa [hb] using c2
-  · refine ⟨fun b => decide (b = 2), eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · have hb : ((0 : Fin 3) = 2) = false := by decide
-      simpa [hb] using c0
-    · have hb : ((1 : Fin 3) = 2) = false := by decide
-      simpa [hb] using c1
-    · have hb : ((2 : Fin 3) = 2) = true := by decide
-      simpa [hb] using c2
-  · refine ⟨fun _ => false, eq_massCorner_of_bools ?_⟩
-    intro a
-    fin_cases a
-    · simp [c0]
-    · simp [c1]
-    · simp [c2]
+  · exact exists_massCorner_of_axes true true true c0 c1 c2
+  · exact exists_massCorner_of_axes true true false c0 c1 c2
+  · exact exists_massCorner_of_axes true false true c0 c1 c2
+  · exact exists_massCorner_of_axes true false false c0 c1 c2
+  · exact exists_massCorner_of_axes false true true c0 c1 c2
+  · exact exists_massCorner_of_axes false true false c0 c1 c2
+  · exact exists_massCorner_of_axes false false true c0 c1 c2
+  · exact exists_massCorner_of_axes false false false c0 c1 c2
 
 theorem JNormalized_mass_ceiling_height {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
