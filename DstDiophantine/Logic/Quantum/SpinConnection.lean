@@ -35,7 +35,7 @@ theorem spinGen_boost :
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [spinGen, gammaComm, diracMat, diracMat0, diracMat1, blockDiag2, pauli, pauliX,
-      Matrix.mul_apply, Matrix.sub_apply, Matrix.smul_apply, Fin.sum_univ_four] <;>
+      Matrix.smul_apply] <;>
     ring
 
 noncomputable def halfR (θ : ℝ) : Matrix (Fin 2) (Fin 2) ℝ :=
@@ -57,13 +57,13 @@ def embedR (M : Matrix (Fin 2) (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
 
 private theorem cosh_half (θ : ℝ) :
     Real.cosh (θ * (1 / 2)) ^ 2 - Real.sinh (θ * (1 / 2)) ^ 2 = 1 := by
-  simpa [div_eq_mul_inv] using Real.cosh_sq_sub_sinh_sq (θ / 2)
+  simp [div_eq_mul_inv]
 
 theorem halfR_mul_inv (θ : ℝ) : halfR θ * halfInvR θ = 1 := by
   have h := cosh_half θ
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [halfR, halfInvR, Matrix.mul_apply, Fin.sum_univ_two, Matrix.one_apply] <;>
+    simp [halfR, halfInvR, Matrix.mul_apply, Fin.sum_univ_two] <;>
     ring_nf <;> linarith
 
 theorem halfDerivR_mul_inv (θ : ℝ) :
@@ -105,7 +105,7 @@ theorem rotorLower_half (θ : ℝ) : rotorLower (embedR (halfR θ)) = embedR (ha
   rw [rotorLower, Matrix.adjugate_fin_two]
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [embedR, halfR, halfInvR, Matrix.conjTranspose_apply, map_neg, conj_cosh_half,
+    simp [embedR, halfR, halfInvR, Matrix.conjTranspose_apply, conj_cosh_half,
       conj_sinh_half]
 
 theorem boost_diracMat (θ : ℝ) :

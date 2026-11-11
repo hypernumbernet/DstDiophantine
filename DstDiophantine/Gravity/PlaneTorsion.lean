@@ -148,7 +148,8 @@ def genCleared (K : Fin 4 → Fin 4 → ℝ) (d : Fin 4 → ℝ) : ℝ :=
 private def unitCoeff (i : Fin 6) : Fin 6 → ℝ :=
   fun j => if j = i then 1 else 0
 
-set_option maxHeartbeats 2000000 in
+set_option maxHeartbeats 400000 in
+-- Each of the six generators expands to a degree-4 polynomial before `ring`.
 private theorem genCleared_unit (i : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (unitCoeff i)) d = 0 := by
   fin_cases i <;>
@@ -162,6 +163,7 @@ private def pairCoeff (i j : Fin 6) : Fin 6 → ℝ :=
   fun k => if k = i then 1 else if k = j then 1 else 0
 
 set_option maxHeartbeats 2000000 in
+-- Each ordered pair of generators expands to that same degree-4 normal form.
 private theorem genCleared_pair (i j : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (pairCoeff i j)) d = 0 := by
   fin_cases i <;> fin_cases j <;>
@@ -304,38 +306,33 @@ theorem soK_kAdd (c e : Fin 6 → ℝ) (ρ ν : Fin 4) :
 theorem pairCoeff_eq_add {i j : Fin 6} (hij : i ≠ j) :
     pairCoeff i j = fun k => unitCoeff i k + unitCoeff j k := by
   funext k
-  fin_cases i <;> fin_cases j <;> fin_cases k <;> simp [pairCoeff, unitCoeff] at hij ⊢
+  unfold pairCoeff unitCoeff
+  by_cases hki : k = i <;> by_cases hkj : k = j
+  · subst hki
+    exact (hij hkj).elim
+  · subst hki
+    rw [ite_eq_left rfl, ite_eq_left rfl, ite_eq_right hkj]
+    ring
+  · subst hkj
+    rw [ite_eq_right hki, ite_eq_right hki, ite_eq_left rfl]
+    ring
+  · rw [ite_eq_right hki, ite_eq_right hki, ite_eq_right hkj]
+    ring
 
 theorem genMix_unit {i j : Fin 6} (hij : i ≠ j) (d : Fin 4 → ℝ) :
     genMix (soK (unitCoeff i)) (soK (unitCoeff j)) d = 0 := by
   have hfun : kAdd (soK (unitCoeff i)) (soK (unitCoeff j)) = soK (pairCoeff i j) := by
     funext ρ ν
     rw [← soK_kAdd, pairCoeff_eq_add hij]
-  unfold genMix
-  have hcleared : genCleared (kAdd (soK (unitCoeff i)) (soK (unitCoeff j))) d = 0 := by
-    rw [hfun, genCleared_pair]
   have hexpand := genCleared_kAdd (soK (unitCoeff i)) (soK (unitCoeff j)) d
-  rw [hcleared, genCleared_unit, genCleared_unit] at hexpand
-  -- hexpand : 0 = 0 + 0 + genMix
-  unfold genMix at hexpand
+  rw [hfun, genCleared_pair, genCleared_unit, genCleared_unit] at hexpand
   linarith
 
 theorem genMix_kSmul (a b : ℝ) (K L : Fin 4 → Fin 4 → ℝ) (d : Fin 4 → ℝ) :
     genMix (kSmul a K) (kSmul b L) d = (a * b) * genMix K L d := by
   unfold genMix dotDown dotCross dotTrace
   simp_rw [genTdown_kSmul, genTup_kSmul, genTrace_kSmul, genTraceUp_kSmul]
-  simp_rw [show ∀ ρ μ ν, (a * genTdown K d ρ μ ν) * (b * genTup L d ρ μ ν) =
-      (a * b) * (genTdown K d ρ μ ν * genTup L d ρ μ ν) by intros; ring,
-    show ∀ ρ μ ν, (b * genTdown L d ρ μ ν) * (a * genTup K d ρ μ ν) =
-      (a * b) * (genTdown L d ρ μ ν * genTup K d ρ μ ν) by intros; ring,
-    show ∀ ρ μ ν, (a * genTdown K d ρ μ ν) * (b * genTup L d ν μ ρ) =
-      (a * b) * (genTdown K d ρ μ ν * genTup L d ν μ ρ) by intros; ring,
-    show ∀ ρ μ ν, (b * genTdown L d ρ μ ν) * (a * genTup K d ν μ ρ) =
-      (a * b) * (genTdown L d ρ μ ν * genTup K d ν μ ρ) by intros; ring,
-    show ∀ ρ, (a * genTrace K d ρ) * (b * genTraceUp L d ρ) =
-      (a * b) * (genTrace K d ρ * genTraceUp L d ρ) by intros; ring,
-    show ∀ ρ, (b * genTrace L d ρ) * (a * genTraceUp K d ρ) =
-      (a * b) * (genTrace L d ρ * genTraceUp K d ρ) by intros; ring]
+  simp_rw [show ∀ (p q x y : ℝ), (p * x) * (q * y) = (p * q) * (x * y) by intros; ring]
   simp_rw [← Finset.mul_sum]
   ring
 

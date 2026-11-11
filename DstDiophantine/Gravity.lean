@@ -51,7 +51,9 @@ import list of `Gravity.Regression`.
   between `J` and the Weitzenböck scalar.
 * `ClassicalSchwarzschild` — exterior Schwarzschild as the vacuum gauge. Far-field statements about
   `schwarzschildTeleparallelT` concern the auxiliary expression.
-* `LorentzGauge` — a one-parameter boost or rotation on any coordinate plane, a null rotation, and the commuting product of a `(t,x)` boost with a `(y,z)` rotation keep the Minkowski metric and kill the quadratic. An arbitrary local Lorentz jet need not.
+* `LorentzGauge` — a one-parameter boost or rotation on any coordinate plane, a null rotation, and
+  the commuting product of a `(t,x)` boost with a `(y,z)` rotation keep the Minkowski metric and
+  kill the quadratic. An arbitrary local Lorentz jet need not.
 
 ## The direction of gravity
 
