@@ -54,6 +54,11 @@ import list of `Gravity.Regression`.
 * `LorentzGauge` — a one-parameter boost or rotation on any coordinate plane, a null rotation, and
   the commuting product of a `(t,x)` boost with a `(y,z)` rotation keep the Minkowski metric and
   kill the quadratic. An arbitrary local Lorentz jet need not.
+* `OrderedPlanes` — a `(t,x)` boost of rapidity `φ(y)` and an `(x,y)` rotation of angle `θ(t)`
+  do not commute. Either order induces Minkowski. With the boost on the left,
+  `T = -2 (∂_y φ)(∂_t θ) cos θ`. With the rotation on the left,
+  `T = -2 (∂_y φ)(∂_t θ) cosh φ`. For a positive product of the derivatives the second stays
+  negative, the sign of the attractive vacuum. The first has that sign exactly when `cos θ > 0`.
 
 ## The direction of gravity
 

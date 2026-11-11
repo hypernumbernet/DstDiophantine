@@ -7,6 +7,7 @@ import DstDiophantine.Gravity.LorentzFamily
 import DstDiophantine.Gravity.NullChart
 import DstDiophantine.Gravity.CommutingPlanes
 import DstDiophantine.Gravity.LorentzCounterexample
+import DstDiophantine.Gravity.OrderedPlanes
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Logic.Quantum.SpinConnection
 import DstDiophantine.Gravity.RadialQuadratic
@@ -231,6 +232,28 @@ example (φ θ : ℝ) (dφ dθ : Fin 4 → ℝ) (μ ν : Fin 4) :
     inducedMetric (productCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
       productTeleparallel dφ dθ = 0 :=
   ⟨inducedMetric_product φ θ μ ν, productTeleparallel_eq_zero dφ dθ⟩
+
+/-- Regression: order of a noncommuting boost and rotation remains in `T`. -/
+example (φ θ u v : ℝ) (huv : u * v ≠ 0) (μ ν : Fin 4) :
+    inducedMetric (boostLeftCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      inducedMetric (rotLeftCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      (boostLeftTeleparallel φ θ u v = rotLeftTeleparallel φ θ u v ↔
+        φ = 0 ∧ Real.cos θ = 1) :=
+  ⟨inducedMetric_boostLeft φ θ μ ν, inducedMetric_rotLeft φ θ μ ν,
+    ordered_agree_iff φ θ u v huv⟩
+
+/-- Regression: a positive jet keeps the vacuum sign for one order only. -/
+example (φ θ u v : ℝ) (h : 0 < u * v) :
+    rotLeftTeleparallel φ θ u v < 0 ∧
+      (boostLeftTeleparallel φ θ u v < 0 ↔ 0 < Real.cos θ) ∧
+      boostLeftTeleparallel 0 Real.pi u v = 2 * u * v ∧
+      rotLeftTeleparallel 0 Real.pi u v = -2 * u * v ∧
+      boostLeftTeleparallel 0 (Real.pi / 2) u v = 0 ∧
+      rotLeftTeleparallel 0 (Real.pi / 2) u v = -2 * u * v := by
+  obtain ⟨hπb, hπr⟩ := ordered_opposite_at_pi u v
+  obtain ⟨hhb, hhr⟩ := ordered_split_at_half_pi u v
+  exact ⟨rotLeft_has_vacuum_sign φ θ u v h, boostLeft_has_vacuum_sign_iff φ θ u v h,
+    hπb, hπr, hhb, hhr⟩
 
 /-- Regression: a translator keeps the inertial leg, and a motor `RT` keeps the rotor's leg. -/
 example (p : Motor.TransParams) (q : Motor.OmegaParams) (μ : Fin 4) :
