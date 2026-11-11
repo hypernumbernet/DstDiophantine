@@ -1,3 +1,4 @@
+import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DiracEquation
 import DstDiophantine.Logic.Quantum.UsualRotor
 import Mathlib.LinearAlgebra.Matrix.Adjugate
@@ -23,6 +24,14 @@ when both are transformed.
 The rest momentum is fixed by `Λ_M` exactly when `M` is unitary. Usual
 rotors act on the lower block by their inverse, dual rotors act identically
 on both blocks and fix the rest momentum.
+
+Either order of a usual rotor and a dual rotor has determinant one, so each
+sends a Dirac solution to a solution and preserves the Minkowski square.
+With the dual factor on the right the rest momentum is the usual factor's
+momentum. With an axis-0 boost on the right of an axis-2 dual rotation the
+rest momentum is turned to `(m cosh φ, m sinh φ cos θ, m sinh φ sin θ, 0)`.
+Its time component is still `m cosh φ`, so the rapidity is not an extremum
+of the order.
 -/
 
 namespace DstDiophantine
@@ -812,6 +821,160 @@ theorem usualRotor_momentum_unique {m : ℝ} (hm : m ≠ 0) {α₁ α₂ : Usual
   exact herm_sqrt_unique (usualRotorMat_isHermitian α₁) (usualRotorMat_isHermitian α₂)
     (usualRotorMat_det α₁) (usualRotorMat_det α₂)
     (usualRotorMat_trace_pos α₁) (usualRotorMat_trace_pos α₂) hsq
+
+/-! ### Order of a usual boost and an orthogonal dual rotation -/
+
+theorem rotorProduct_det (α : UsualRapidity) (β : DualRapidity) :
+    (usualRotorMat α * dualRotorMat β).det = 1 ∧
+      (dualRotorMat β * usualRotorMat α).det = 1 := by
+  constructor
+  · rw [Matrix.det_mul, usualRotorMat_det, dualRotorMat_det, one_mul]
+  · rw [Matrix.det_mul, dualRotorMat_det, usualRotorMat_det, one_mul]
+
+theorem both_orders_preserve_mass (α : UsualRapidity) (β : DualRapidity) (p : Vec4) :
+    minkowskiQ (lorentzAct (usualRotorMat α * dualRotorMat β) p) = minkowskiQ p ∧
+      minkowskiQ (lorentzAct (dualRotorMat β * usualRotorMat α) p) = minkowskiQ p := by
+  obtain ⟨hUV, hVU⟩ := rotorProduct_det α β
+  exact ⟨minkowskiQ_lorentzAct hUV p, minkowskiQ_lorentzAct hVU p⟩
+
+theorem both_orders_send_solution (α : UsualRapidity) (β : DualRapidity) {m : ℝ}
+    {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    DiracMomentum m (lorentzAct (usualRotorMat α * dualRotorMat β) p)
+        (rotorDirac (usualRotorMat α * dualRotorMat β) Ψ) ∧
+      DiracMomentum m (lorentzAct (dualRotorMat β * usualRotorMat α) p)
+        (rotorDirac (dualRotorMat β * usualRotorMat α) Ψ) := by
+  obtain ⟨hUV, hVU⟩ := rotorProduct_det α β
+  exact ⟨diracMomentum_rotorDirac hUV h, diracMomentum_rotorDirac hVU h⟩
+
+private theorem axis0_square (φ : ℝ) :
+    usualRotorMat (EuclideanSpace.single 0 φ) *
+        usualRotorMat (EuclideanSpace.single 0 φ) =
+      Real.cosh φ • (1 : Matrix (Fin 2) (Fin 2) ℂ) + Real.sinh φ • pauli 0 := by
+  rw [usualRotorMat_axis0_rodrigues]
+  set c := Real.cosh (φ / 2)
+  set s := Real.sinh (φ / 2)
+  have hmul :
+      (c • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s • pauli 0) *
+          (c • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s • pauli 0) =
+        ((c * c + s * s : ℝ) : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
+          ((2 * c * s : ℝ) : ℂ) • pauli 0 := by
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [pauli, pauliX, Matrix.mul_apply, Fin.sum_univ_two, Matrix.add_apply,
+        Matrix.smul_apply] <;>
+      ring
+  rw [hmul]
+  have hc : Real.cosh φ = c * c + s * s := by
+    rw [show φ = 2 * (φ / 2) by ring, Real.cosh_two_mul]
+    simp [c, s, pow_two]
+  have hs : Real.sinh φ = 2 * c * s := by
+    rw [show φ = 2 * (φ / 2) by ring, Real.sinh_two_mul]
+    simp [c, s, mul_comm, mul_left_comm]
+    ring
+  rw [hc, hs]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauli, pauliX, Matrix.add_apply, Matrix.smul_apply, Complex.ofReal_mul]
+
+theorem axis0_rest_momentum (φ m : ℝ) :
+    lorentzAct (usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) =
+      ![m * Real.cosh φ, m * Real.sinh φ, 0, 0] := by
+  apply pauliSlash_injective
+  rw [pauliSlash_lorentzAct, usualRotorMat_isHermitian]
+  have hrest : pauliSlash (restMomentum m) =
+      (m : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
+    rw [pauliSlash_entries]
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [restMomentum, Pi.single_eq_same, Pi.single_eq_of_ne, Matrix.smul_apply]
+  rw [hrest, Matrix.mul_smul, Matrix.mul_one, Matrix.smul_mul, axis0_square, pauliSlash_entries]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [pauli, pauliX, Matrix.add_apply, Matrix.smul_apply]
+
+private theorem axis2_entries (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 2 θ) =
+      !![↑(Real.cos (θ / 2)) - I * ↑(Real.sin (θ / 2)), 0;
+         0, ↑(Real.cos (θ / 2)) + I * ↑(Real.sin (θ / 2))] := by
+  rw [dualRotorMat_axis2_rodrigues, cyclicRep_two_eq]
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.add_apply, Matrix.smul_apply]
+  all_goals ring
+
+/-- An axis-2 dual rotation standing on the left of an axis-0 boost turns the
+rest momentum off the boost axis. The time component stays `m cosh φ`. -/
+theorem dualLeft_rest_momentum (φ θ m : ℝ) :
+    lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
+        usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) =
+      ![m * Real.cosh φ, m * Real.sinh φ * Real.cos θ,
+        m * Real.sinh φ * Real.sin θ, 0] := by
+  set c := Real.cosh (φ / 2)
+  set s := Real.sinh (φ / 2)
+  set cb := Real.cos (θ / 2)
+  set sb := Real.sin (θ / 2)
+  have hc : Real.cosh φ = c ^ 2 + s ^ 2 := by
+    rw [show φ = 2 * (φ / 2) by ring, Real.cosh_two_mul]
+  have hs : Real.sinh φ = 2 * s * c := by
+    rw [show φ = 2 * (φ / 2) by ring, Real.sinh_two_mul]
+  have hcos : Real.cos θ = cb ^ 2 - sb ^ 2 := by
+    have hsq : cb ^ 2 + sb ^ 2 = 1 := by
+      simp [cb, sb, Real.cos_sq_add_sin_sq]
+    rw [show θ = 2 * (θ / 2) by ring, Real.cos_two_mul]
+    simp [cb, sb, pow_two]
+    linarith
+  have hsin : Real.sin θ = 2 * sb * cb := by
+    rw [show θ = 2 * (θ / 2) by ring, Real.sin_two_mul]
+  have hV : usualRotorMat (EuclideanSpace.single 0 φ) =
+      !![ (c : ℂ), (s : ℂ); (s : ℂ), (c : ℂ) ] := by
+    rw [usualRotorMat_axis0_rodrigues]
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [c, s, pauli, pauliX, Matrix.add_apply, Matrix.smul_apply]
+  have hU : dualRotorMat (EuclideanSpace.single 2 θ) =
+      !![ (cb : ℂ) - I * (sb : ℂ), 0; 0, (cb : ℂ) + I * (sb : ℂ) ] :=
+    axis2_entries θ
+  have hsb : sb ^ 2 = 1 - cb ^ 2 := by
+    have h := Real.cos_sq_add_sin_sq (θ / 2)
+    simp [pow_two] at h
+    linarith
+  have hP : pauliSlash (restMomentum m) = !![ (m : ℂ), 0; 0, (m : ℂ) ] := by
+    rw [pauliSlash_entries]
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [restMomentum, Pi.single_eq_same, Pi.single_eq_of_ne]
+  rw [lorentzAct, hU, hV, hP]
+  ext μ
+  fin_cases μ <;>
+    simp [hermVec, Matrix.mul_apply, Fin.sum_univ_two, Matrix.conjTranspose_apply,
+      Complex.conj_ofReal, Complex.conj_I]
+  all_goals ring_nf
+  all_goals try rw [hc]
+  all_goals try rw [hs]
+  all_goals try rw [hcos]
+  all_goals try rw [hsin]
+  all_goals try rw [hsb]
+  all_goals ring
+
+theorem orders_same_energy (φ θ m : ℝ) :
+    lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
+        usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) 0 =
+      lorentzAct (usualRotorMat (EuclideanSpace.single 0 φ) *
+        dualRotorMat (EuclideanSpace.single 2 θ)) (restMomentum m) 0 := by
+  rw [dualLeft_rest_momentum, lorentzAct_factor_rest, axis0_rest_momentum]
+  simp
+
+theorem dualLeft_turns_rest_momentum {φ θ m : ℝ}
+    (h : m * Real.sinh φ * Real.sin θ ≠ 0) :
+    lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
+        usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) ≠
+      lorentzAct (usualRotorMat (EuclideanSpace.single 0 φ) *
+        dualRotorMat (EuclideanSpace.single 2 θ)) (restMomentum m) := by
+  rw [dualLeft_rest_momentum, lorentzAct_factor_rest, axis0_rest_momentum]
+  intro heq
+  have h2 := congrFun heq 2
+  dsimp at h2
+  exact h h2
 
 /-! ### Non-collinear usual rotors leave a dual rotation -/
 
