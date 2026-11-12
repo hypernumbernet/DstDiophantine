@@ -97,6 +97,7 @@ import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
+import DstDiophantine.Gravity.ElectronExclusion
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
@@ -2609,6 +2610,50 @@ example {ℓE ℓG a : ℝ}
           gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
         442 / 10 ^ 42 :=
   bohr_mass_fraction hE0 hE hG0 hG ha
+
+/-- Regression: two electrons above the Bohr radius repel electrically.
+The gravitational term is between `2.398×10⁻⁴³` and `2.404×10⁻⁴³` of that
+repulsion. -/
+example {ℓE ℓG a : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) :
+    (2398 : ℝ) / 10 ^ 46 <
+        (electronElectronGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) ∧
+      (electronElectronGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
+        2404 / 10 ^ 46 :=
+  shell_electron_grav_fraction hE0 hE hG0 hG ha
+
+/-- Regression: at that separation the electric term increases the separation,
+the gravitational term decreases it, and the sum increases it. -/
+example {ℓE ℓG a coul r : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) (hc : 0 < coul) (hr : r ≠ 0) :
+    0 < coul / (gammaSEqual (ℓE / (2 * a)) * r ^ 2) ∧
+      -(electronElectronGravToCoulomb : ℝ) * coul /
+          (gammaSEqual (ℓG / (2 * a)) * r ^ 2) < 0 ∧
+        0 < pairChannelForce
+          ((electronElectronGravToCoulomb : ℝ) * coul) coul
+          (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
+  shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: inside the first node the outward excess over `ke²/r²` is a
+fractional depth below `1.64×10⁻⁴³`, and that depth is attained. -/
+example :
+    ∃ ε : ℝ, 0 < ε ∧ ε < (164 : ℝ) / 100 / 10 ^ 43 ∧
+      ε < 1 - resonanceRoot1 ∧
+        (electronElectronGravToCoulomb : ℝ) > -gammaSEqual (phaseAtDepth ε) :=
+  exists_grav_excess_depth
+
+/-- Regression: a node below `1` fm and a depth below `1.64×10⁻⁴³` is smaller
+than a radius above `52917` by more than `3×10⁴⁷`. -/
+example {r₁ a ε : ℝ}
+    (hr0 : 0 < r₁) (hr1 : r₁ < 1) (ha : 52917 < a)
+    (hε : 0 < ε) (hε1 : ε < (164 : ℝ) / 100 / 10 ^ 43) :
+    a / (ε * r₁) > 3 * 10 ^ 47 := by
+  have h := grav_depth_below_bohr hr0 hr1 ha hε.le hε1
+  exact h.resolve_right (ne_of_gt hε)
 
 
 /-! ## One Faraday six-space -/

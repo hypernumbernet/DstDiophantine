@@ -133,6 +133,12 @@ import list of `Gravity.Regression`.
 * `LengthRule` — both channels at once. Nothing here fixes `κ` or computes a binding.
 * `BothChannels` — an unlike pair exerts both terms at every separation. Where the factors have the
   same sign, the separation-increasing force does not vanish.
+* `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
+  gravitationally. The mass term is a fraction of the charge term strictly between `2398/10^46`
+  and `2404/10^46`. Inside the first gravitational node, while the phase is still below `1`, the
+  outward force exceeds `ke²/r²` only for a fractional depth below `164/100·10⁻⁴³`, and such a
+  depth exists. For `0 < r₁ < 1` that depth is smaller than a radius above `52917` by more than
+  `3×10⁴⁷`. No spin-statistics theorem is claimed.
 * `ChannelBridge` — where both factors are nonzero, the mass-to-charge ratio is
   `(κ/coul)·(γ_E/γ_G)`. Nothing here derives a radius at which the two factors vanish together.
 * `BaryonAsymmetry` — both signs of a vacuum rapidity. `J` and `M` are even in that rapidity. No
