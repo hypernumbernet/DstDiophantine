@@ -68,6 +68,7 @@ import DstDiophantine.Gravity.ElectronCrystal
 import DstDiophantine.Gravity.MetalFusion
 import DstDiophantine.Gravity.ElectronDodeca
 import DstDiophantine.Gravity.Blackbody
+import DstDiophantine.Gravity.ShellCollision
 import DstDiophantine.Gravity.Faraday
 import DstDiophantine.Gravity.Electroweak
 import DstDiophantine.Gravity.CircularPolarization
@@ -921,6 +922,16 @@ example :
       ∫ x in Set.Ioi (0 : ℝ), planckShape 3 x = Real.pi ^ 4 / 15 :=
   ⟨wavelengthPeak_bounds.1, wavelengthPeak_bounds.2,
     frequencyPeak_bounds.1, frequencyPeak_bounds.2, boseIntegral⟩
+
+/-- Regression: an impulse does not retune a root, and the thermal mean of the
+frequency shape lies strictly between `3` and `4`, above the peak. -/
+example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : κ1 < κ2) :
+    longitudinalOmega κ1 m < longitudinalOmega κ2 m ∧
+      impulseAmplitude m κ2 p < impulseAmplitude m κ1 p ∧
+      radialEnergy m κ1 0 (p / m) = p ^ 2 / (2 * m) ∧
+      (3 : ℝ) < shapeMean ∧ shapeMean < 4 ∧ planckPeak 3 < shapeMean :=
+  ⟨longitudinalOmega_strictMono hm hκ1 hκ, impulseAmplitude_strictAnti hm hp hκ1 hκ,
+    impulse_energy hm.ne', shapeMean_bounds.1, shapeMean_bounds.2, peak_lt_shapeMean⟩
 
 end
 

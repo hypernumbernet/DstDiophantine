@@ -216,6 +216,14 @@ import list of `Gravity.Regression`.
   separation. No rate and no heat are derived.
 * `Blackbody` — mean occupation `1/(eˣ-1)` on a harmonic ladder. The constants `h`, `k_B`, `c`, and
   the mode growth are not roots of `γ_s`.
+* `ShellCollision` — a partner on the line of centres meets the electron of larger radius first.
+  An impulse deposits `p²/(2m)` and does not enter `√(κ/m)`. A stiffer root has a higher frequency
+  and, for the same impulse, a smaller amplitude. Two positive weights on two distinct frequencies
+  have positive variance. The equipartition ratio of two roots does not depend on temperature. The
+  Larmor ratio `ν³/(e^{aν/T}-1)` of a higher frequency to a lower one is strictly increasing in `T`,
+  and so is their weighted mean, which stays strictly between them. The mean of `x³/(eˣ-1)` lies
+  strictly between `3` and `4`, above the maximum in `(5/2,3)`, and the shape has positive integral
+  on `(1,2)` and on `(4,5)`. No collision rate is derived, and no root is retuned.
 * `Lensing` — weak deflection by one thin shell. A repulsive shell has neither critical curve on
   its disk.
 * `PhotonReturn` — a ray below the photon sphere has no turning point on the classical exterior. On
