@@ -139,6 +139,11 @@ import list of `Gravity.Regression`.
   outward force exceeds `ke²/r²` only for a fractional depth below `164/100·10⁻⁴³`, and such a
   depth exists. For `0 < r₁ < 1` that depth is smaller than a radius above `52917` by more than
   `3×10⁴⁷`. No spin-statistics theorem is claimed.
+* `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector.
+  One place occurs with opposite rays, and that joint state is the singlet. One ray
+  occurs at the identity and at its antipode, and that joint state is not the singlet.
+  The two ray arrangements share the three cosines. Above the Bohr radius the masses
+  attract and a repeated ray is still not the singlet. No spin-statistics theorem is claimed.
 * `ChannelBridge` — where both factors are nonzero, the mass-to-charge ratio is
   `(κ/coul)·(γ_E/γ_G)`. Nothing here derives a radius at which the two factors vanish together.
 * `BaryonAsymmetry` — both signs of a vacuum rapidity. `J` and `M` are even in that rapidity. No

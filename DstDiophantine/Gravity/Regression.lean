@@ -99,6 +99,7 @@ import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
 import DstDiophantine.Gravity.ElectronExclusion
+import DstDiophantine.Gravity.SpinVersusExclusion
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
@@ -2648,6 +2649,39 @@ example {ℓE ℓG a coul r : ℝ}
           ((electronElectronGravToCoulomb : ℝ) * coul) coul
           (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
   shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: one place holds opposite rays, and the identity with its antipode holds one ray. -/
+example :
+    SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      ¬ SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) ∧
+      ¬ SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) := by
+  have hsing := SpinVersusExclusion.singlet_at_one_place
+  have hrep := SpinVersusExclusion.repeated_ray_at_antipodes (0 : ℂ)
+  exact ⟨hsing.1, hsing.2.1, hrep.1, hrep.2.1⟩
+
+/-- Regression: above the Bohr radius a repeated ray is still not the singlet. -/
+example {ℓE ℓG a coul r : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) (hc : 0 < coul) (hr : r ≠ 0) (c : ℂ) :
+    DstDiophantine.Logic.pairTensor SpinVersusExclusion.axisUp SpinVersusExclusion.axisUp ≠
+        c • DstDiophantine.Logic.singlet ∧
+      -(electronElectronGravToCoulomb : ℝ) * coul /
+          (gammaSEqual (ℓG / (2 * a)) * r ^ 2) < 0 ∧
+        0 < pairChannelForce
+          ((electronElectronGravToCoulomb : ℝ) * coul) coul
+          (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
+  SpinVersusExclusion.repeated_ray_where_masses_attract hE0 hE hG0 hG ha hc hr c
 
 /-- Regression: inside the first node the outward excess over `ke²/r²` is a
 fractional depth below `1.64×10⁻⁴³`, and that depth is attained. -/

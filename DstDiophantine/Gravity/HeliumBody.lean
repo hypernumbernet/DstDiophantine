@@ -31,7 +31,8 @@ A symmetric amplitude is not forced to vanish there.
 * An energy, a spectrum, a dissociation energy, or a value of `ℓ`.
 * A position operator, or a derivation of the spin-statistics theorem.
 * That coincidence of the two elements is the repeated ray of one dual spinor.
-  The ray is the spin factor. The element is the place.
+  The ray is the spin factor. The element is the place. `SpinVersusExclusion`
+  separates the two.
 -/
 
 noncomputable section
