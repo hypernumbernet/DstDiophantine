@@ -1013,6 +1013,31 @@ example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ} (hm : m ≠ 
       ∃ β : DualRapidity, M = dualRotorMat β :=
   lorentzAct_rest_iff_dualRotor hM hm
 
+/-- Regression: either order preserves mass and the Dirac equation. Only the
+dual-on-the-right order leaves a rest particle's momentum on the boost axis. -/
+example (φ θ m : ℝ) (α : UsualRapidity) (β : DualRapidity) {p : Vec4}
+    {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ)
+    (hturn : m * Real.sinh φ * Real.sin θ ≠ 0) :
+    minkowskiQ (lorentzAct (usualRotorMat α * dualRotorMat β) p) = minkowskiQ p ∧
+      minkowskiQ (lorentzAct (dualRotorMat β * usualRotorMat α) p) = minkowskiQ p ∧
+      DiracMomentum m (lorentzAct (usualRotorMat α * dualRotorMat β) p)
+        (rotorDirac (usualRotorMat α * dualRotorMat β) Ψ) ∧
+      DiracMomentum m (lorentzAct (dualRotorMat β * usualRotorMat α) p)
+        (rotorDirac (dualRotorMat β * usualRotorMat α) Ψ) ∧
+      lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
+          usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) 0 =
+        m * Real.cosh φ ∧
+      lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
+          usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) ≠
+        lorentzAct (usualRotorMat (EuclideanSpace.single 0 φ) *
+          dualRotorMat (EuclideanSpace.single 2 θ)) (restMomentum m) := by
+  refine ⟨(both_orders_preserve_mass α β p).1, (both_orders_preserve_mass α β p).2,
+    (both_orders_send_solution α β h).1, (both_orders_send_solution α β h).2, ?_,
+    dualLeft_turns_rest_momentum hturn⟩
+  have henergy := orders_same_energy φ θ m
+  rw [lorentzAct_factor_rest, axis0_rest_momentum] at henergy
+  simpa using henergy
+
 /-- Regression: Thomas–Wigner rotation about the perpendicular axis. -/
 example {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
     ∃ (α : UsualRapidity) (φ : ℝ),
