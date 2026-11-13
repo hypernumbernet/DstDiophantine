@@ -83,6 +83,10 @@ import list of `Gravity.Regression`.
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
+* `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum
+  rate. The potential gradient is the weight, below the surface as well as above. Outside, the
+  weak-field clock difference equals the potential difference. The Earth compactness rounds to
+  `6.96×10⁻¹⁰`. No claim that a frequency beat equals a wavelength.
 * `MassOrigin` — the time-reversing dual map fixes a configuration only at vanishing unsigned mass.
 * `MassCoefficient` — a pure lag off equal rapidity adds to the unsigned mass at every common
   rapidity. The value of `m` is not fixed.

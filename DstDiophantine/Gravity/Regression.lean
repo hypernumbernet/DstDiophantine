@@ -103,6 +103,7 @@ import DstDiophantine.Gravity.SpinVersusExclusion
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
+import DstDiophantine.Gravity.InteriorClock
 import DstDiophantine.Gravity.MassOrigin
 import DstDiophantine.Gravity.MassCoefficient
 
@@ -159,6 +160,40 @@ example {rs r : ℝ} (h : IsExterior rs r) :
         (KillingAxis.killingParams (KillingAxis.killingRate rs r) (KillingAxis.killingNorm rs r))
         (KillingAxis.releasedWorldline (KillingAxis.axisDistance rs r)) = 0 :=
   KillingAxis.released_on_staticHorizon h
+
+/-- Regression: above the surface the DST clock and the potential agree. -/
+example {GM c2 r h : ℝ} (hr : r ≠ 0) (hrh : r + h ≠ 0) (hc : c2 ≠ 0) :
+    InteriorClock.clockExterior GM c2 r h = InteriorClock.potentialExterior GM c2 r h :=
+  InteriorClock.exterior_agreement hr hrh hc
+
+/-- Regression: light climbing against the weight is shifted by `g h / c²`. -/
+example {grav c2 h : ℝ} :
+    InteriorClock.lightClimb grav c2 h = grav * h / c2 :=
+  InteriorClock.lightClimb_eq
+
+/-- Regression: the centre factor is the vacuum value.
+Its advance against the surface factor is `centreAdvance`. -/
+example {ε : ℝ} :
+    InteriorClock.centreFactor / InteriorClock.surfaceFactor ε - 1 =
+      InteriorClock.centreAdvance ε :=
+  InteriorClock.centreAdvance_eq_ratio
+
+/-- Regression: the shared potential gradient rounds to `1.093×10⁻¹⁶` per metre. -/
+example :
+    (10925 : ℝ) / 10 ^ 20 < InteriorClock.earthWeight ∧
+      InteriorClock.earthWeight < (10935 : ℝ) / 10 ^ 20 :=
+  InteriorClock.earth_potential_gradient_bins
+
+/-- Regression: compactness and the centre advance both round to `6.96×10⁻¹⁰`. -/
+example :
+    (6955 : ℝ) / 10 ^ 13 < (InteriorClock.earthCompactnessQ : ℝ) ∧
+      (InteriorClock.earthCompactnessQ : ℝ) < (6965 : ℝ) / 10 ^ 13 ∧
+      (6955 : ℝ) / 10 ^ 13 <
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) ∧
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) <
+          (6965 : ℝ) / 10 ^ 13 :=
+  ⟨InteriorClock.earth_centre_bins.1, InteriorClock.earth_centre_bins.2.1,
+    InteriorClock.earth_centre_bins.2.2.1, InteriorClock.earth_centre_bins.2.2.2.1⟩
 
 
 /-! ## Chart dictionary -/
