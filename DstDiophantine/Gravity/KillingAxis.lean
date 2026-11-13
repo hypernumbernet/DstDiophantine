@@ -51,6 +51,10 @@ derivative.
   fall law in this file is the Killing jet at one event. `RadialFall` writes
   it as \(d\psi/ds=-\cosh\psi/\rho\) and, with \(\ell(r)\) in place of \(\rho\),
   integrates it to \(d^2r/d\tau^2=-\kappa\) and \((dr/d\tau)^2=E^2-A\).
+  `Perihelion` keeps a constant angular momentum on the same coframe. The
+  correction \(-3\kappa L^2/r^2\) splits into one share from the transverse
+  speed in \(\gamma^2\) and two shares from the deficit \(A-1\) in the
+  centrifugal barrier.
 -/
 
 namespace DstDiophantine
