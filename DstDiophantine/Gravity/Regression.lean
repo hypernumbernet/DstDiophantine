@@ -99,9 +99,11 @@ import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
 import DstDiophantine.Gravity.ElectronExclusion
+import DstDiophantine.Gravity.SpinVersusExclusion
 import DstDiophantine.Gravity.ChannelBridge
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.MachSource
+import DstDiophantine.Gravity.InteriorClock
 import DstDiophantine.Gravity.MassOrigin
 import DstDiophantine.Gravity.MassCoefficient
 
@@ -158,6 +160,40 @@ example {rs r : ℝ} (h : IsExterior rs r) :
         (KillingAxis.killingParams (KillingAxis.killingRate rs r) (KillingAxis.killingNorm rs r))
         (KillingAxis.releasedWorldline (KillingAxis.axisDistance rs r)) = 0 :=
   KillingAxis.released_on_staticHorizon h
+
+/-- Regression: above the surface the DST clock and the potential agree. -/
+example {GM c2 r h : ℝ} (hr : r ≠ 0) (hrh : r + h ≠ 0) (hc : c2 ≠ 0) :
+    InteriorClock.clockExterior GM c2 r h = InteriorClock.potentialExterior GM c2 r h :=
+  InteriorClock.exterior_agreement hr hrh hc
+
+/-- Regression: light climbing against the weight is shifted by `g h / c²`. -/
+example {grav c2 h : ℝ} :
+    InteriorClock.lightClimb grav c2 h = grav * h / c2 :=
+  InteriorClock.lightClimb_eq
+
+/-- Regression: the centre factor is the vacuum value.
+Its advance against the surface factor is `centreAdvance`. -/
+example {ε : ℝ} :
+    InteriorClock.centreFactor / InteriorClock.surfaceFactor ε - 1 =
+      InteriorClock.centreAdvance ε :=
+  InteriorClock.centreAdvance_eq_ratio
+
+/-- Regression: the shared potential gradient rounds to `1.093×10⁻¹⁶` per metre. -/
+example :
+    (10925 : ℝ) / 10 ^ 20 < InteriorClock.earthWeight ∧
+      InteriorClock.earthWeight < (10935 : ℝ) / 10 ^ 20 :=
+  InteriorClock.earth_potential_gradient_bins
+
+/-- Regression: compactness and the centre advance both round to `6.96×10⁻¹⁰`. -/
+example :
+    (6955 : ℝ) / 10 ^ 13 < (InteriorClock.earthCompactnessQ : ℝ) ∧
+      (InteriorClock.earthCompactnessQ : ℝ) < (6965 : ℝ) / 10 ^ 13 ∧
+      (6955 : ℝ) / 10 ^ 13 <
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) ∧
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) <
+          (6965 : ℝ) / 10 ^ 13 :=
+  ⟨InteriorClock.earth_centre_bins.1, InteriorClock.earth_centre_bins.2.1,
+    InteriorClock.earth_centre_bins.2.2.1, InteriorClock.earth_centre_bins.2.2.2.1⟩
 
 
 /-! ## Chart dictionary -/
@@ -2648,6 +2684,39 @@ example {ℓE ℓG a coul r : ℝ}
           ((electronElectronGravToCoulomb : ℝ) * coul) coul
           (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
   shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: one place holds opposite rays, and the identity with its antipode holds one ray. -/
+example :
+    SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      ¬ SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) ∧
+      ¬ SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) := by
+  have hsing := SpinVersusExclusion.singlet_at_one_place
+  have hrep := SpinVersusExclusion.repeated_ray_at_antipodes (0 : ℂ)
+  exact ⟨hsing.1, hsing.2.1, hrep.1, hrep.2.1⟩
+
+/-- Regression: above the Bohr radius a repeated ray is still not the singlet. -/
+example {ℓE ℓG a coul r : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) (hc : 0 < coul) (hr : r ≠ 0) (c : ℂ) :
+    DstDiophantine.Logic.pairTensor SpinVersusExclusion.axisUp SpinVersusExclusion.axisUp ≠
+        c • DstDiophantine.Logic.singlet ∧
+      -(electronElectronGravToCoulomb : ℝ) * coul /
+          (gammaSEqual (ℓG / (2 * a)) * r ^ 2) < 0 ∧
+        0 < pairChannelForce
+          ((electronElectronGravToCoulomb : ℝ) * coul) coul
+          (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
+  SpinVersusExclusion.repeated_ray_where_masses_attract hE0 hE hG0 hG ha hc hr c
 
 /-- Regression: inside the first node the outward excess over `ke²/r²` is a
 fractional depth below `1.64×10⁻⁴³`, and that depth is attained. -/
