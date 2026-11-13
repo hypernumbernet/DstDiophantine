@@ -428,6 +428,8 @@ In a gravitational field, with the elevator at rest on Earth, the floor must acc
 
 Thus the equivalence principle is not an empirical coincidence but an algebraic identity: gravitational and inertial forces are indistinguishable because they are the same dual torsional phenomenon. Free fall is the coincidence $\Omega=1$. It is not the vanishing of $J$. A particle is not in free fall merely because its stiffness vanishes, and a massive particle is in free fall when the two rotors agree.
 
+The identity fixes a clock. Dilation and weight are one mismatch, so a weightless region runs at the vacuum rate. At the centre of the Earth the weight vanishes, and a clock there runs fast relative to a clock on the surface. The continuum interior does the opposite: it keeps the potential of every outer shell, proper time continues to slow underground, and the slowest clock sits where the weight is zero. The sign of a comparison between an underground clock and a surface clock is the identity, read inside matter. Above the surface the two readings agree. Section~\ref{subsec:floating-core} evaluates the comparison.
+
 \subsection{Consequences and Predictions}
 
 \begin{itemize}
@@ -560,6 +562,7 @@ Gravitational-wave signals from mergers feature repeated echoes from internal la
 The theory thus resolves the information paradox, explains the absence of Kerr spin signatures, and predicts that the most massive ``black holes'' ($\gtrsim 100 M_\odot$) will exhibit periodic modulations in accretion luminosity as inner repulsive layers periodically eject material.
 
 \subsection{Central Floating Core: Zero Time Dilation at the Center}
+\label{subsec:floating-core}
 
 A common point of confusion in discussions of stellar interiors is the behaviour of gravitational time dilation. In GR, for a spherically symmetric static mass distribution, gravitational time dilation increases monotonically toward the centre: proper time runs most slowly at \(r=0\), where the gravitational potential is deepest.
 
@@ -574,7 +577,44 @@ Consequently:
   \item Gravitational time dilation is also zero at the centre: proper time at \(r=0\) runs at the same rate as in the vacuum far from the star.
 \end{itemize}
 
-This vanishing of time dilation at the core is a distinctive, observable-in-principle prediction of the double spacetime theory. It contrasts sharply with GR, where the central region experiences the strongest time dilation.
+The contrast is the identity of Section~\ref{sec:unified}, read where the weight vanishes. In the continuum a static spherical body keeps the potential of every outer shell. Proper time continues to slow as one descends, and it is slowest at the centre. For a uniform ball the Newtonian potential passes from \(-GM/R\) on the surface to \(-3GM/(2R)\) at the centre, so a centre clock runs slow relative to a surface clock by
+\begin{equation}
+\label{eq:continuum-centre}
+\left(\frac{\tau(0)}{\tau(R)}-1\right)_{\mathrm{cont}}
+\approx -\frac{GM}{2Rc^{2}}.
+\end{equation}
+The constant-density interior metric of general relativity reproduces this fractional shift through order \(GM/Rc^{2}\). The weight at that centre is zero. Vanishing weight is a vanishing derivative of a potential that remains deep.
+
+Here a spherical shell cancels the boost parameters at every interior point, and therefore contributes neither mismatch nor time dilation inside. The clock at radius \(r\) runs at the exterior rate of the enclosed mass \(M(<r)\) alone,
+\begin{equation}
+\label{eq:interior-clock}
+\frac{d\tau}{dt}
+=\sqrt{1-\frac{2GM(<r)}{c^{2}r}},
+\end{equation}
+which equals \(1\) at the centre and meets the exterior Schwarzschild factor at the surface. Relative to the surface the centre clock runs fast,
+\begin{equation}
+\label{eq:dst-centre}
+\left(\frac{\tau(0)}{\tau(R)}-1\right)_{\mathrm{DST}}
+=\frac{1}{\sqrt{1-2GM/(Rc^{2})}}-1
+\approx +\frac{GM}{Rc^{2}}.
+\end{equation}
+Where the weight vanishes, the dilation vanishes with it, and proper time runs at the rate of the vacuum far from the body.
+
+On the Earth the sign is a measurement. With \(GM=3.986004418\times 10^{14}\,\mathrm{m^{3}\,s^{-2}}\), volumetric mean radius \(R=6.371\times 10^{6}\,\mathrm{m}\) and \(c=299792458\,\mathrm{m\,s^{-1}}\), one has \(GM/(Rc^{2})=6.96\times 10^{-10}\). Equation~\eqref{eq:dst-centre} is then an advance of \(6.96\times 10^{-10}\), and equation~\eqref{eq:continuum-centre} is a retardation of \(3.48\times 10^{-10}\). The two centre clocks differ by \(1.04\times 10^{-9}\). Central condensation deepens the continuum retardation and leaves its sign unchanged, so the gap for the real Earth is at least this large. The advance~\eqref{eq:dst-centre} depends only on the exterior factor and on the cancellation at the centre. It is independent of the interior density.
+
+The distinction is already present in a mine. Above the surface both readings give the gradient \(gh/c^{2}\), with the higher clock fast. Just below the surface, over a depth \(d\ll R\) and at density \(\rho\), losing the shell \(4\pi R^{2}\rho\, d\) from the enclosed mass changes the fractional rate relative to the surface by
+\begin{equation}
+\label{eq:mine-dst}
+\left(\frac{\tau(R-d)}{\tau(R)}-1\right)_{\mathrm{DST}}
+\approx\left(\frac{4\pi GR\rho-g}{c^{2}}\right)d.
+\end{equation}
+The continuum, with \(g\) continuous across a finite density, keeps slowing,
+\begin{equation}
+\label{eq:mine-cont}
+\left(\frac{\tau(R-d)}{\tau(R)}-1\right)_{\mathrm{cont}}
+\approx -\frac{gd}{c^{2}}.
+\end{equation}
+The coefficient of~\eqref{eq:mine-dst} is positive when \(\rho>\bar\rho/3\). The mean density of the Earth is \(5.51\times 10^{3}\,\mathrm{kg\,m^{-3}}\), so the threshold is \(1.84\times 10^{3}\,\mathrm{kg\,m^{-3}}\). Crustal rock lies above it. At \(\rho=2.7\times 10^{3}\,\mathrm{kg\,m^{-3}}\), with \(G=6.67430\times 10^{-11}\,\mathrm{m^{3}\,kg^{-1}\,s^{-2}}\) and \(g=GM/R^{2}=9.82\,\mathrm{m\,s^{-2}}\), one has \(4\pi GR\rho/c^{2}=1.605\times 10^{-16}\,\mathrm{m^{-1}}\) and \(g/c^{2}=1.093\times 10^{-16}\,\mathrm{m^{-1}}\). A deeper clock therefore runs fast by \(5.12\times 10^{-17}\) per metre, and the continuum clock runs slow by \(1.093\times 10^{-16}\) per metre. The discrepancy is the shell contribution the continuum keeps and the cancellation removes. A few metres of depth exceed the fractional resolution with which optical clocks have already measured the above-ground redshift. Comparing a clock underground with a clock on the surface is a direct test of the identity, and it is accessible with clocks that exist. The fast underground clock is that identity inside matter. A continued slowing underground would refute it. The centre is the same comparison taken to the point where the weight is zero.
 
 The zero-dilation central core also contributes to the stability of torsion stars by eliminating the infinite central compression and extreme clock-rate gradients that lead to singularities in the classical GR description.
 
@@ -1350,7 +1390,7 @@ The mismatch is the relative rotor $\Omega=R_{\text{usual}}^\dagger R_{\text{dua
 
 From the identity two recoveries follow, and they are the foundation rather than a later reading. The geometry outside a spherical mass is the mismatch, read on the vacuum radial chart. There the teleparallel scalar freezes at the value of the flat spherical frame, while $J$ tracks the Newtonian potential and is a different scalar. The Einstein equation constrains the teleparallel scalar. It does not select $J$, and it does not select the rotor. There is no background manifold on which the recovery is painted. The position of one particle relative to another is the rotor taking one element of the three-sphere to the other. The continuum is the bookkeeping of many such rotors. It is not a stage that exists in their absence.
 
-The same cone continues past the weak field, and there it meets a divergence that Newton and Einstein share. In both theories the force grows without bound as the distance falls. The interference of the paired rotors does not carry that growth inward to a point. It reverses the sign once in each period, and that reversal is the resolution: the inward continuation is a stack of attractive and repulsive layers, the plateaux between the barriers grow quiet, and the barriers themselves sharpen. Where the two rotors share a scale, $J$ vanishes while the interference still alternates, so the layers are ordered by that interference and not by $J$. Repulsive layers belong to the elliptic sector and are of bounded depth. In place of a true horizon the cone supplies a finite redshift floor. At the centre of a spherically symmetric torsion star the boosts from opposite mass elements cancel, the mismatch vanishes, and gravitational time dilation vanishes with it. On the Gödel chart the same ceiling keeps the azimuthal circles spacelike, and the time loop does not form. Electromagnetism occupies the six-generator space of the dual rotor, and the sandwich increment on a particle's 4-velocity is a Lorentz 4-force. Compact $\mathrm{SU}(2)$ is that dual rotor, not a chiral gauge symmetry of a fixed projector. Maxwell's equations are not recovered from the six-space, and a harmonic stiffness does not select a rotor rigidity away from alignment.
+The same cone continues past the weak field, and there it meets a divergence that Newton and Einstein share. In both theories the force grows without bound as the distance falls. The interference of the paired rotors does not carry that growth inward to a point. It reverses the sign once in each period, and that reversal is the resolution: the inward continuation is a stack of attractive and repulsive layers, the plateaux between the barriers grow quiet, and the barriers themselves sharpen. Where the two rotors share a scale, $J$ vanishes while the interference still alternates, so the layers are ordered by that interference and not by $J$. Repulsive layers belong to the elliptic sector and are of bounded depth. In place of a true horizon the cone supplies a finite redshift floor. At the centre of a spherically symmetric torsion star the boosts from opposite mass elements cancel, the mismatch vanishes, and gravitational time dilation vanishes with it. On the Earth that cancellation is the sign of a clock comparison. A clock deep underground runs fast relative to a surface clock, by \(6.96\times 10^{-10}\) at the centre and by \(5.12\times 10^{-17}\) per metre just below a crust of density \(2.7\times 10^{3}\,\mathrm{kg\,m^{-3}}\), while the continuum interior keeps slowing, by \(3.48\times 10^{-10}\) at the centre of a uniform ball and by \(1.093\times 10^{-16}\) per metre just below the surface. The fractional gap is within the reach of optical clocks over a few metres of depth. The measurement tests the identity where the weight vanishes. On the Gödel chart the same ceiling keeps the azimuthal circles spacelike, and the time loop does not form. Electromagnetism occupies the six-generator space of the dual rotor, and the sandwich increment on a particle's 4-velocity is a Lorentz 4-force. Compact $\mathrm{SU}(2)$ is that dual rotor, not a chiral gauge symmetry of a fixed projector. Maxwell's equations are not recovered from the six-space, and a harmonic stiffness does not select a rotor rigidity away from alignment.
 
 The state has its home in the dual sector. The usual chart does not hold the dual vector. It holds the future lightlike four-vector whose time component is the squared norm and whose spatial part is the spin vector, unchanged by a phase of unit modulus. The constancy of the speed of light is the filter that makes the appearance possible: nothing timelike and nothing spacelike is written by the map. A superposition does not pass through the filter as a sum. On a Dirac spinor the same dual vector sits in both Weyl blocks. With the rest pair the two images are one null vector, and the probability current, adding one of them with its space reversed, is timelike whenever the dual vector does not vanish. The filter writes no timelike vector from one dual vector alone. Quantum gravity is therefore not a separate theory. It is the dual-rotor kinematics of the same algebra, and the dynamics of the mismatch remain open.
 
