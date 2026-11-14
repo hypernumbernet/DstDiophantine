@@ -668,7 +668,7 @@ A short calculation collapses the squares:
 \label{eq:gamma-eff}
 \gamma_{\mathrm{eff}}(\alpha,\beta)=\cosh\alpha-\sinh\alpha\sin\beta.
 \end{equation}
-This factor is always at least $e^{-|\alpha|}$, hence never zero: a clock may be slowed or hastened, but it does not stop. If the dual sector is unexcited, $\beta=0$, one recovers the special-relativistic factor $\cosh\alpha$. If there is no usual boost, $\alpha=0$, then $\gamma_{\mathrm{eff}}=1$. The balanced locus $\alpha=\beta$, where $J=0$ on one axis, is a different kinematics: $\gamma_{\mathrm{eff}}(\alpha,\alpha)\neq\cosh\alpha$ as soon as $\alpha\neq 0$. Special relativity is the unexcited dual sector $\theta=0$, not the vanishing of $J$.
+This factor is always at least $e^{-|\alpha|}$, hence never zero: a clock may be slowed or hastened, but it does not stop. If the dual sector is unexcited, $\beta=0$, one recovers the special-relativistic factor $\cosh\alpha$. If there is no usual boost, $\alpha=0$, then $\gamma_{\mathrm{eff}}=1$. The balanced locus $\alpha=\beta$, where $J=0$ on one axis, is a different kinematics: $\gamma_{\mathrm{eff}}(\alpha,\alpha)=\cosh\alpha-\sinh\alpha\sin\alpha$, which differs from $\cosh\alpha$ precisely when $\sin\alpha\neq 0$. At $\alpha=n\pi$ the clock factor agrees with the special-relativistic value even though the dual angle is excited. Special relativity is the unexcited dual sector $\theta=0$, not the vanishing of $J$, and not this numerical agreement of the clock.
 
 \subsection{Vacuum Limit and Massless Particles}
 
@@ -732,9 +732,9 @@ The plateau amplitudes grow at least geometrically, \((\cosh\pi)^n\le\cosh(n\pi)
 \[
 |F|=\frac{k}{\ell^2}\cdot\frac{4\pi^2n^2}{\cosh(n\pi)},
 \]
-which decreases in \(n\) for \(n\ge 1\). What grows inward without bound is the barrier structure---the nodes at which \(\gamma_s\) vanishes and \(1/\gamma_s\) diverges. The derivative \(-2\cosh x\sin x\) does not vanish on \((0,\pi)\), so each zero is simple: the inward force has a simple pole, and the radial potential falls logarithmically, without a lower bound. The plateaux between barriers become exponentially quiet, successive factors falling like \(\mathrm{e}^{-n\pi}\). In radius the screening is \(1/\cosh\bigl(\ell/(2r)\bigr)\): the deep interior of a torsional condensate is quasi-free between the poles. The poles interrupt a smooth crossing. Reading that interruption as nuclear confinement remains a proposal.
+which decreases in \(n\) for \(n\ge 1\). What grows inward without bound is the barrier structure---the nodes at which \(\gamma_s\) vanishes and \(1/\gamma_s\) diverges. The derivative \(-2\cosh x\sin x\) vanishes only where \(\sin x=0\), and no node lies there, so each zero, on every branch, is simple: the inward force has a simple pole, and the radial potential falls logarithmically, without a lower bound. The plateaux between barriers become exponentially quiet, successive factors falling like \(\mathrm{e}^{-n\pi}\). In radius the screening is \(1/\cosh\bigl(\ell/(2r)\bigr)\): the deep interior of a torsional condensate is quasi-free between the poles. The poles interrupt a smooth crossing. Reading that interruption as nuclear confinement remains a proposal.
 
-A barrier is a force divergence, not a clock freeze: at a node \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. The ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are identical at nuclear and at stellar scales; \(\ell\) fixes the absolute radii and cancels from every ratio. That is the content of the scale invariance in the title of this section, and the only sense in which nuclear and stellar layering are the same structure.
+A barrier is a force divergence, not a clock freeze: at a node \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. At a plateau \(x=n\pi\) the full rapidity is \(2n\pi\). There \(\sin(2n\pi)=0\), so the clock agrees with \(\cosh(2n\pi)\) and is not the alternating force denominator \((-1)^n\cosh(n\pi)\). The ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are identical at nuclear and at stellar scales; \(\ell\) fixes the absolute radii and cancels from every ratio. That is the content of the scale invariance in the title of this section, and the only sense in which nuclear and stellar layering are the same structure.
 
 \subsection{Torsional Layers at Nuclear Densities}
 
@@ -825,7 +825,7 @@ The hyperbolic-trigonometric form of \(\gamma_s\) introduces extreme oscillatory
 
 \begin{itemize}
   \item At large \(r\), \(\alpha(r),\beta(r) \to 0\), so \(\gamma_s \to 1\), recovering the standard Coulomb attraction. The gravitational factor tends to \(1\) as well, and the mass term tends to the Newtonian attraction of the two masses.
-  \item At smaller radii, the interference term generates points where \(\gamma_s = 0\) (infinite repulsion) and regions where \(\gamma_s < 0\) (force reversal to repulsion).
+  \item At smaller radii, the interference term generates points where \(\gamma_s = 0\), at which the force diverges, and regions where \(\gamma_s < 0\), in which the force has reversed. An unlike pair is driven toward the first node from both sides: the outer well pulls inward, and the first shell pushes outward.
   \item These discrete radii \(r_n\) satisfy the resonance condition
   \[
   \tanh\!\left(\frac{\alpha(r_n)}{2}\right) \tan\!\left(\frac{\beta(r_n)}{2}\right) = 1.
@@ -850,7 +850,7 @@ The matter wave is the de Broglie phase \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\)
 
 \subsection{\texorpdfstring{$Z$-contraction}{Z-contraction}}
 
-On the equal-scale locus, \(\ell\mapsto\ell/Z\) contracts every layer radius by \(Z\), while \(\ell\mapsto Z\ell\) expands them. The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the expanding map: it evaluates the \(Z=1\) profile at \(r/Z\) and moves nodes outward. Observed shrinkage of electron shells with nuclear charge is the identification \(\ell(Z)=\ell/Z\).
+On the equal-scale locus, \(\ell\mapsto\ell/Z\) contracts every node radius by \(Z\), while \(\ell\mapsto Z\ell\) expands them. The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the expanding map: it evaluates the \(Z=1\) profile at \(r/Z\) and moves nodes outward. That map moves the nodes. It is not the hydrogenic radius \(a_0/Z\). With the electromagnetic length held at the reduced Compton wavelength, the curvature of a radial amplitude \(e^{-r/a}\) meets the signed force of one electron and one proton at the Bohr radius. At a larger radius the curvature increases the separation further, so the balance is unstable and does not hold the electron. That radius is not a node. The radius \(a_0/Z\) is not an input.
 
 \subsection{Energy Conservation in the Dual Structure}
 
@@ -864,7 +864,7 @@ The true potential \(V_\text{true}\) is proportional to the torsional mismatch s
 
 Photon emission corresponds to the release of stored dual-phase energy when the rotor unwinds into a lower torsional state. This dual bookkeeping ensures strict energy conservation without violating the discrete, particle-local nature of spacetime. Observed spectral differences are not read from an angular momentum, and they are not implied by equal-scale \(\gamma_s=0\) alone.
 
-The Coulombic force accounts for discrete torsional barriers. No angular momentum is assigned, and no circular orbit places a shell. Identifying the barriers with atomic electron shells is a proposal: the layer spectrum is the geometry, and its absolute scale is the electromagnetic length, adjusted by the laboratory sign. The matter wave is the de Broglie phase. The nodes are the zeros of the interference factor.
+The Coulombic force accounts for discrete torsional barriers. No angular momentum is assigned, and no circular orbit places a shell. The counts \(2\), \(8\), \(18\), and \(32\) are not labels of these barriers. The layer spectrum is the geometry of the nodes, and its absolute scale is the electromagnetic length. The matter wave is the de Broglie phase. The nodes are the zeros of the interference factor.
 
 \section{Stability on the balanced locus}
 \label{sec:particle-stability}

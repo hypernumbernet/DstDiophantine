@@ -611,6 +611,23 @@ example (α β : ℝ) : 0 < gammaEff α β :=
 example (α : ℝ) : gammaEff α 0 = Real.cosh α :=
   gammaEff_sr_is_beta_zero α
 
+/-- Regression: a balanced clock agrees with \(\cosh\) exactly at zeros of \(\sin\). -/
+example (α : ℝ) : gammaEff α α = Real.cosh α ↔ Real.sin α = 0 :=
+  gammaEff_balanced_eq_cosh_iff α
+
+/-- Regression: an equal-scale plateau clock is not the force denominator. -/
+example (n : ℕ) (hn : 0 < n) :
+    gammaSEqual ((n : ℝ) * Real.pi) ≠
+      gammaEff (2 * ((n : ℝ) * Real.pi)) (2 * ((n : ℝ) * Real.pi)) :=
+  plateau_gammaS_ne_gammaEff n hn
+
+/-- Regression: successive repulsive layers are not adjacent. -/
+example (n : ℕ) {x y : ℝ}
+    (hx : x ∈ Set.Ioo (branchNode n) (branchNode (n + 1)))
+    (hy : y ∈ Set.Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
+    gammaSEqual x * gammaSEqual y < 0 :=
+  successive_gaps_opposite_sign n hx hy
+
 
 /-! ## Layers and particle dynamics -/
 
@@ -994,6 +1011,17 @@ example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : 
       (3 : ℝ) < shapeMean ∧ shapeMean < 4 ∧ planckPeak 3 < shapeMean :=
   ⟨longitudinalOmega_strictMono hm hκ1 hκ, impulseAmplitude_strictAnti hm hp hκ1 hκ,
     impulse_energy hm.ne', shapeMean_bounds.1, shapeMean_bounds.2, peak_lt_shapeMean⟩
+
+/-- Regression: on the printed square curvatures the diagonal wavelength
+exceeds the electron wavelength by a factor strictly between `45.07` and `45.08`. -/
+example :
+    (4507 / 100 : ℝ) <
+        longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) ∧
+      longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) <
+        (4508 / 100 : ℝ) :=
+  squareFrequencyRatio_window
 
 end
 
@@ -2794,8 +2822,9 @@ example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     0 < -diameterOutward 2 x :=
   diameter_inward hx
 
-/-- Regression: the standing-wave shortening at the Bohr radius lies below the
-electron-to-proton mass ratio, and the first node lies between `a₀/261` and `a₀/255`. -/
+/-- Regression: the unstable curvature balance at the Bohr phase shortens `a₀` by less
+than the electron-to-proton mass ratio, and the first node lies between `a₀/261` and
+`a₀/255`. The balance does not hold the electron. -/
 example :
     (13312 / 10 ^ 9 : ℝ) < 1 - gammaSEqual bohrPhase ∧
       1 - gammaSEqual bohrPhase < 13314 / 10 ^ 9 ∧

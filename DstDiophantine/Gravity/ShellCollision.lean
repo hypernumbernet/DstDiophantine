@@ -14,6 +14,7 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 import DstDiophantine.Gravity.Blackbody
+import DstDiophantine.Gravity.SI
 
 /-!
 # Longitudinal excitation of an outermost electron
@@ -43,13 +44,18 @@ particular root with the peak of the enclosure.
 * The mean of that shape is strictly between `3` and `4`, so it lies above
   the maximum. The mean frequency of the enclosure is that mean times `T/a`
   and is strictly increasing in `T`.
+* Frequencies scale as `√(κ/m)`, so wavelengths scale as the reciprocal.
+  The ratio of the diagonal wavelength to the electron wavelength is
+  `√((κₑ/mₑ)/(κ_d/m_d))`. On the printed curvatures `18.10` and `8.178`,
+  with diagonal inertia `m_p/2`, that factor lies strictly between `45.07`
+  and `45.08`. Those curvatures are inputs.
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-open Real Set Filter MeasureTheory Asymptotics Topology intervalIntegral
+open Real Set Filter MeasureTheory Asymptotics Topology intervalIntegral SI
 
 /-! ### The outermost electron on the line of centres -/
 
@@ -100,6 +106,82 @@ theorem longitudinalOmega_pos {κ m : ℝ} (hκ : 0 < κ) (hm : 0 < m) :
     0 < longitudinalOmega κ m := by
   unfold longitudinalOmega
   exact sqrt_pos.mpr (div_pos hκ hm)
+
+/-- The frequency ratio is the square root of the ratio of `κ/m`.
+Wavelengths stand in the reciprocal ratio: if the first coordinate is the
+electron and the second is the diagonal, this square root is the diagonal
+wavelength divided by the electron wavelength. -/
+theorem omega_ratio_eq_sqrt {κ1 m1 κ2 m2 : ℝ}
+    (hκ1 : 0 ≤ κ1) (hm1 : 0 < m1) (hκ2 : 0 ≤ κ2) (hm2 : 0 < m2) :
+    longitudinalOmega κ1 m1 / longitudinalOmega κ2 m2 =
+      sqrt ((κ1 / m1) / (κ2 / m2)) := by
+  unfold longitudinalOmega
+  have ha : 0 ≤ κ1 / m1 := div_nonneg hκ1 hm1.le
+  have hb : 0 ≤ κ2 / m2 := div_nonneg hκ2 hm2.le
+  calc
+    sqrt (κ1 / m1) / sqrt (κ2 / m2)
+        = sqrt (κ1 / m1) * (sqrt (κ2 / m2))⁻¹ := by rw [div_eq_mul_inv]
+    _ = sqrt (κ1 / m1) * sqrt ((κ2 / m2)⁻¹) := by rw [sqrt_inv]
+    _ = sqrt ((κ1 / m1) * (κ2 / m2)⁻¹) := by rw [← sqrt_mul ha]
+    _ = sqrt ((κ1 / m1) / (κ2 / m2)) := by congr 1
+
+/-- On the printed curvatures `18.10` and `8.178`, the electron frequency
+exceeds the diagonal frequency by a factor strictly between `45.07` and
+`45.08`. That factor is the ratio of the diagonal wavelength to the electron
+wavelength. -/
+theorem squareFrequencyRatio_window :
+    (4507 / 100 : ℝ) <
+        longitudinalOmega ((1810 : ℝ) / 100) (electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((protonMassApprox : ℝ) / 2) ∧
+      longitudinalOmega ((1810 : ℝ) / 100) (electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((protonMassApprox : ℝ) / 2) <
+        (4508 / 100 : ℝ) := by
+  set κe : ℝ := (1810 : ℝ) / 100
+  set κd : ℝ := (8178 : ℝ) / 1000
+  set me : ℝ := (electronMassApprox : ℝ)
+  set md : ℝ := (protonMassApprox : ℝ) / 2
+  have hκe : 0 < κe := by norm_num [κe]
+  have hκd : 0 < κd := by norm_num [κd]
+  have hme : 0 < me := by
+    unfold me
+    exact_mod_cast electronMassApprox_pos
+  have hmp : (0 : ℝ) < protonMassApprox := by
+    exact_mod_cast protonMassApprox_pos
+  have hmd : 0 < md := by
+    unfold md
+    positivity
+  have hr : longitudinalOmega κe me / longitudinalOmega κd md =
+      sqrt ((κe / me) / (κd / md)) :=
+    omega_ratio_eq_sqrt hκe.le hme hκd.le hmd
+  have hquot : (κe / me) / (κd / md) =
+      ((9050 : ℝ) / 8178) * (protonMassApprox : ℝ) / me := by
+    unfold κe κd md
+    field_simp [hme.ne', hmp.ne', hκd.ne']
+    ring
+  have harg : 0 ≤ (κe / me) / (κd / md) := by positivity
+  have hsq : (longitudinalOmega κe me / longitudinalOmega κd md) ^ 2 =
+      ((9050 : ℝ) / 8178) * (protonMassApprox : ℝ) / me := by
+    rw [hr, sq_sqrt harg, hquot]
+  have hlo_sq : ((4507 : ℝ) / 100) ^ 2 <
+      (longitudinalOmega κe me / longitudinalOmega κd md) ^ 2 := by
+    rw [hsq]
+    unfold me protonMassApprox protonMassMantissa protonMassScale
+      electronMassApprox electronMassMantissa electronMassScale
+    norm_num
+  have hhi_sq : (longitudinalOmega κe me / longitudinalOmega κd md) ^ 2 <
+      ((4508 : ℝ) / 100) ^ 2 := by
+    rw [hsq]
+    unfold me protonMassApprox protonMassMantissa protonMassScale
+      electronMassApprox electronMassMantissa electronMassScale
+    norm_num
+  have hrpos : 0 < longitudinalOmega κe me / longitudinalOmega κd md :=
+    div_pos (longitudinalOmega_pos hκe hme) (longitudinalOmega_pos hκd hmd)
+  refine ⟨?_, ?_⟩
+  · have hbound : (0 : ℝ) ≤ 4507 / 100 := by norm_num
+    exact (sq_lt_sq₀ hbound hrpos.le).mp hlo_sq
+  · have hbound : (0 : ℝ) ≤ longitudinalOmega κe me / longitudinalOmega κd md := hrpos.le
+    have htop : (0 : ℝ) ≤ 4508 / 100 := by norm_num
+    exact (sq_lt_sq₀ hbound htop).mp hhi_sq
 
 /-- A stiffer root has a strictly higher longitudinal frequency. -/
 theorem longitudinalOmega_strictMono {m κ1 κ2 : ℝ} (hm : 0 < m) (hκ1 : 0 < κ1)

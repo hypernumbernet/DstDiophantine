@@ -12,34 +12,39 @@ set_option linter.style.native false
 set_option linter.unusedSimpArgs false
 
 /-!
-# One electron, one proton: a standing-wave boundary
+# One electron, one proton: an unstable curvature balance
 
 ## Paper boundary (do **not** claim)
 
-The amplitude `e^{-r/a}` is not asserted to be an energy eigenfunction.
-No binding energy, no Rydberg spectrum, and no reduced mass are derived.
-`α` is an input. The electromagnetic length is the reduced Compton
-wavelength already used as an identification, not a theorem. `pr = nℏ`
-does not select the radius. No angular momentum is assigned, and the
-outward term is not a centrifugal contribution `L²/(m r³)`.
+The amplitude `e^{-r/a}` is not an energy eigenfunction. The curvature force
+`ℏ²/(m a r²)` meets the signed force once in the outer well, and the balance
+is unstable: at larger radius the curvature increases the separation further,
+and at smaller radius the signed force decreases it further. The balance does
+not hold the electron. No binding energy, no Rydberg spectrum, and no reduced
+mass are derived. `α` is an input. The electromagnetic length is the reduced
+Compton wavelength already used as an identification, not a theorem. `pr = nℏ`
+does not select the radius. No angular momentum is assigned, and the outward
+term is not a centrifugal contribution `L²/(m r³)`.
 
 ## What is proved
 
 * The Laplacian of the radial amplitude `e^{-r/a}` is that amplitude times
   `1/a² - 2/(a r)`. The outward force read from this curvature is
   `ℏ²/(m a r²)`.
-* That force cancels the inward signed force `-k e²/(γ r²)` exactly when
+* That force cancels the signed force `-k e²/(γ r²)` exactly when
   `γ = a/a₀`, with `a₀ = ℏ²/(m k e²)`.
 * On the outer well, `1 - x² - x⁴/6 < γ_s(x) < 1 - x²`.
 * Every decay `0 < a < a₀` meets the signed force at exactly one outer-well
-  phase, and the net force restores that phase: the curvature increases the
-  separation at larger radius, and the signed force decreases it at smaller
-  radius. The Coulomb decay `a = a₀` has no such phase.
+  phase. The separation-increasing imbalance is positive at every smaller
+  phase, hence at larger radius, so the balance is unstable and does not hold
+  the radius. The decay `a = a₀` is inward at every finite outer-well phase.
 * With the Compton identification, the decay `a₀ γ_s(α/2)` meets the signed
-  force at the Bohr radius. The fractional shortening `1 - γ_s(α/2)`, and
-  the fractional excess `1/γ_s(α/2) - 1`, both lie strictly between
-  `13312/10⁹` and `13314/10⁹`. The shortening lies below the electron-to-proton
-  mass ratio. The first node lies strictly between `a₀/261` and `a₀/255`.
+  force at the Bohr phase. That balance is unstable. The fractional
+  shortening `1 - γ_s(α/2)`, and the fractional excess `1/γ_s(α/2) - 1`,
+  both lie strictly between `13312/10⁹` and `13314/10⁹`. The shortening lies
+  below the electron-to-proton mass ratio. The first node lies strictly
+  between `a₀/261` and `a₀/255`. The node is a divergence, and the curvature
+  balance does not hold the electron.
 -/
 
 namespace DstDiophantine
@@ -107,7 +112,7 @@ theorem standingAmplitude_laplacian {a r : ℝ} (ha : a ≠ 0) (hr : r ≠ 0) :
 noncomputable def standingOutward (ℏ m a r : ℝ) : ℝ :=
   ℏ ^ 2 / (m * a * r ^ 2)
 
-/-- Quantum potential `-(ℏ²/(2m)) (∇²R)/R` of the same amplitude. -/
+/-- Potential `-(ℏ²/(2m)) (∇²R)/R` of the same amplitude. -/
 noncomputable def standingPotential (ℏ m a r : ℝ) : ℝ :=
   -(ℏ ^ 2 / (2 * m)) * (1 / a ^ 2 - 2 / (a * r))
 
@@ -565,7 +570,8 @@ theorem hydrogenStanding_unique {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoo
   · rintro rfl
     rfl
 
-/-- Sign of the separation-increasing imbalance. Positive outside the Bohr phase. -/
+/-- Separation-increasing imbalance. Positive at smaller phase, hence at
+larger radius, so the curvature balance is unstable. -/
 noncomputable def hydrogenImbalance (x : ℝ) : ℝ :=
   1 / gammaSEqual bohrPhase - 1 / gammaSEqual x
 

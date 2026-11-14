@@ -135,15 +135,31 @@ theorem gammaEff_eq_one_of_alpha_zero (β : ℝ) : gammaEff 0 β = 1 := by
   rw [gammaEff_closed]
   simp
 
-/-- Balanced kinematics \(\alpha=\beta\) is not the special-relativistic factor \(\cosh\alpha\). -/
-theorem gammaEff_balanced_ne_cosh {α : ℝ} (hα : sin α ≠ 0) (hs : sinh α ≠ 0) :
-    gammaEff α α ≠ cosh α := by
+/-- On the balanced locus the clock is the special-relativistic factor
+precisely when \(\sin\alpha=0\). In particular the equality holds at every
+\(\alpha=n\pi\), including the equal-scale plateaus, where the dual angle is
+excited. It is not the case that \(\alpha\neq 0\) already separates the two. -/
+theorem gammaEff_balanced_eq_cosh_iff (α : ℝ) :
+    gammaEff α α = cosh α ↔ sin α = 0 := by
   rw [gammaEff_closed]
+  constructor
+  · intro h
+    have hmul : sinh α * sin α = 0 := by linarith
+    rcases mul_eq_zero.mp hmul with hs | hs
+    · rw [Real.sinh_eq_zero.mp hs, sin_zero]
+    · exact hs
+  · intro h
+    simp [h]
+
+theorem gammaEff_balanced_eq_cosh_of_sin_eq_zero {α : ℝ} (h : sin α = 0) :
+    gammaEff α α = cosh α :=
+  (gammaEff_balanced_eq_cosh_iff α).2 h
+
+/-- Balanced kinematics differs from \(\cosh\alpha\) exactly off the zeros of \(\sin\). -/
+theorem gammaEff_balanced_ne_cosh {α : ℝ} (hα : sin α ≠ 0) :
+    gammaEff α α ≠ cosh α := by
   intro h
-  have : sinh α * sin α = 0 := by linarith
-  rcases mul_eq_zero.mp this with h | h
-  · exact hs h
-  · exact hα h
+  exact hα ((gammaEff_balanced_eq_cosh_iff α).1 h)
 
 private theorem tanh_half_eq_of_sinh_ne (x : ℝ) :
     tanh (x / 2) = (cosh x - 1) / sinh x := by

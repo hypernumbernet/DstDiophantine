@@ -32,8 +32,12 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
   written, \(v^2\) is positive only on attractive layers \(\gamma_s>0\).
   Repulsive layers give \(v^2<0\); a node makes the written force undefined.
   No angular momentum is assigned.
-* The outermost well \(0<x<x_1\) is attractive; the first inner interval
-  \(x_1<x<\pi\) is repulsive. Barriers are force divergences, not clock freezes.
+* The outermost well \(0<x<x_1\) is attractive. Each later gap between
+  successive nodes has the opposite sign: even gaps are repulsive and odd
+  gaps are attractive, so two repulsive layers are never adjacent. A node is
+  a simple zero of \(\gamma_s\). The barrier diverges the force and leaves
+  the clock at \(\gamma_b^2>0\). At a plateau the clock is \(\cosh(2n\pi)\),
+  not the force denominator.
 * Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the
   external ratio \(4\). The equal-scale tower is inward; the ladder \(n^2 a_0\)
   runs outward. That ladder is not a radius of this force.
@@ -42,8 +46,9 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
   `s/r ≠ 4`), so those nodes cannot occupy two successive Bohr radii.
   The pair `a₀`, `4a₀` is the first such pair. Bohr radii themselves
   strictly increase. This order is not special to `λ/r`.
-* \(Z\)-contraction is the algebraic identity \(\ell\mapsto Z\ell\) \(\iff\)
-  \(r\mapsto r/Z\).
+* \(Z\)-contraction is the algebraic identity \(\ell\mapsto \ell/Z\) \(\iff\)
+  \(r\mapsto r/Z\). The map moves the nodes. It is not the hydrogenic radius
+  \(a_0/Z\), and that radius is not an input.
 * The first node is a simple zero. On \([\pi/4,x_1)\) one has
   \(c_-(x_1-x)<\gamma_s(x)<c_+(x_1-x)\) with positive slopes built from
   \(\pi/4\) and \(1\). The layer integral of \(1/\gamma_s\) is therefore
@@ -165,11 +170,15 @@ theorem gammaSEqual_neg_right_of_first_node {x : ℝ}
   rw [resonanceRoot1_gammaSEqual_zero] at hlt
   exact hlt
 
-/-- A Coulombic node is a force divergence, not a clock freeze. -/
+/-- A Coulombic node is a force divergence, not a clock freeze.
+The clock that remains is the square of the bivector coefficient. -/
 theorem node_is_force_divergence_not_clock_freeze {x : ℝ}
     (h : gammaSEqual x = 0) :
-    gammaS (2 * x) (2 * x) = 0 ∧ 0 < gammaEff (2 * x) (2 * x) :=
-  ⟨by rw [← gammaSEqual_eq_gammaS]; exact h, gammaEff_pos _ _⟩
+    gammaS (2 * x) (2 * x) = 0 ∧
+      gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 ∧
+      0 < gammaEff (2 * x) (2 * x) :=
+  ⟨by rw [← gammaSEqual_eq_gammaS]; exact h, gammaEff_eq_gammaB_sq_at_node h,
+    gammaEff_pos _ _⟩
 
 /-! ### Inward equal-scale tower versus outward Bohr shells -/
 
@@ -235,6 +244,103 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
     push_cast
     ring
   linarith
+
+private lemma gammaSEqual_neg_on_even_right (k : ℕ) {x : ℝ}
+    (hxlo : branchNode (2 * k) < x)
+    (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 := by
+  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
+  have hnode := (branchNode_spec (2 * k)).1
+  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
+  have hnI : branchNode (2 * k) ∈
+      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictAntiOn_gammaSEqual_even k hnI hxI hxlo
+  rwa [hzero] at hlt
+
+private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
+    (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
+    (hxhi : x < branchNode (2 * k + 1)) : gammaSEqual x < 0 := by
+  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
+    (branchNode_spec (2 * k + 1)).2
+  have hnode := (branchNode_spec (2 * k + 1)).1
+  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π)
+      (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
+  have hnI : branchNode (2 * k + 1) ∈
+      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictMonoOn_gammaSEqual_odd k hxI hnI hxhi
+  rwa [hzero] at hlt
+
+private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
+    (hxlo : branchNode (2 * k + 1) < x)
+    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqual x := by
+  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
+    (branchNode_spec (2 * k + 1)).2
+  have hnode := (branchNode_spec (2 * k + 1)).1
+  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π)
+      (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
+  have hnI : branchNode (2 * k + 1) ∈
+      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictMonoOn_gammaSEqual_odd k hnI hxI hxlo
+  rwa [hzero] at hlt
+
+private lemma gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
+    (hxlo : ((2 * k : ℕ) : ℝ) * π ≤ x)
+    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x := by
+  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
+  have hnode := (branchNode_spec (2 * k)).1
+  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
+  have hnI : branchNode (2 * k) ∈
+      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictAntiOn_gammaSEqual_even k hxI hnI hxhi
+  rwa [hzero] at hlt
+
+/-- Gap `(x_{2k}, x_{2k+1})` is repulsive for an unlike pair: `γ_s < 0`. -/
+theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo (branchNode (2 * k)) (branchNode (2 * k + 1))) :
+    gammaSEqual x < 0 := by
+  have hmid : ((2 * k : ℕ) : ℝ) * π + π = ((2 * k + 1 : ℕ) : ℝ) * π := by
+    push_cast
+    ring
+  rcases le_or_gt x (((2 * k : ℕ) : ℝ) * π + π) with hle | hgt
+  · exact gammaSEqual_neg_on_even_right k hx.1 hle
+  · exact gammaSEqual_neg_on_odd_left k (by linarith [hmid]) hx.2
+
+/-- Gap `(x_{2k+1}, x_{2k+2})` is attractive for an unlike pair: `γ_s > 0`. -/
+theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo (branchNode (2 * k + 1)) (branchNode (2 * k + 2))) :
+    0 < gammaSEqual x := by
+  have hmid : ((2 * k + 1 : ℕ) : ℝ) * π + π = ((2 * (k + 1) : ℕ) : ℝ) * π := by
+    push_cast
+    ring
+  rcases le_or_gt x (((2 * k + 1 : ℕ) : ℝ) * π + π) with hle | hgt
+  · exact gammaSEqual_pos_on_odd_right k hx.1 hle
+  · exact gammaSEqual_pos_on_even_left (k + 1) (by linarith [hmid]) hx.2
+
+/-- Successive gaps have opposite signs, so repulsive layers are not adjacent. -/
+theorem successive_gaps_opposite_sign (n : ℕ) {x y : ℝ}
+    (hx : x ∈ Ioo (branchNode n) (branchNode (n + 1)))
+    (hy : y ∈ Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
+    gammaSEqual x * gammaSEqual y < 0 := by
+  rcases Nat.even_or_odd n with hn | hn
+  · obtain ⟨k, hk⟩ := hn
+    have hn2 : n = 2 * k := by rw [hk, ← two_mul]
+    subst hn2
+    exact mul_neg_of_neg_of_pos (gammaSEqual_neg_between_even k hx)
+      (gammaSEqual_pos_between_odd k hy)
+  · obtain ⟨k, hk⟩ := hn
+    subst hk
+    have hy' : y ∈ Ioo (branchNode (2 * (k + 1))) (branchNode (2 * (k + 1) + 1)) := by
+      simpa [show 2 * (k + 1) = 2 * k + 2 by ring,
+        show 2 * (k + 1) + 1 = 2 * k + 3 by ring] using hy
+    exact mul_neg_of_pos_of_neg (gammaSEqual_pos_between_odd k hx)
+      (gammaSEqual_neg_between_even (k + 1) hy')
 
 /-- Bohr radii increase: \(r_n=n^2 a_0\) runs outward. -/
 theorem bohrShellRadius_strictMono {n : ℕ} (hn : 0 < n) :
@@ -302,8 +408,8 @@ theorem not_equalScale_bohr_pair
 
 /-- Scaling \(\ell\mapsto\ell/Z\) contracts every equal-scale radius by \(Z\).
 The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the inverse
-scaling and moves nodes *outward* by \(Z\). Observed shell shrinkage is the
-labelled identification \(\ell(Z)=\ell/Z\). -/
+scaling and moves nodes *outward* by \(Z\). The map moves the nodes. It is
+not the hydrogenic radius \(a_0/Z\), and that radius is not an input. -/
 theorem Z_contracts_layerRadius {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
     layerRadius (ℓ / Z) x = layerRadius ℓ x / Z := by
   unfold layerRadius
