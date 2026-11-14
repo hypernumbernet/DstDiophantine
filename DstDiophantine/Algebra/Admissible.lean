@@ -18,9 +18,10 @@ Parameter dictionary (DST papers ↔ Lean):
   on each axis. On this cone `|J| ≤ 3π²/8` and `|JNormalized| ≤ 1`
   (`Invariant`).
 
-Anti-synchronisation in the main paper is the rotor condition
-`R_dual = R_usual†`, which is not this cone inequality. The discrete
-companion uses the same phrase for `α_a + β_a ≤ π/2`.
+Anti-synchronisation in the parent theory is the rotor condition
+`R_dual = R_usual†`. On one axis that condition forces both bivector
+coefficients to vanish (`RelativeRotor.paperVacuumSync_axis`). It is not
+the cone inequality `α_a + β_a ≤ π/2`.
 -/
 
 namespace DstDiophantine

@@ -6,14 +6,21 @@ import DstDiophantine.Algebra.Motor
 
 ## Paper vs formalisation
 
-The discrete companion claims a “finite unit group of the integer biquaternion
-ring”.  That ring is never defined there, and a Lorentzian integer order may
-have **infinite** units (Pell-type).  What is finite—and what we prove—is the
-image of the compact torus `(ℤ/Nℤ)⁶` under `t ↦ rotorTorsion (toTorsionParams t)`.
+The discrete companion does not identify this image with the unit group of an
+integer biquaternion order. That order is not constructed, and a Lorentzian
+integer order may have **infinite** units (Pell-type). What is finite—and what
+we prove—is the image of the compact torus `(ℤ/Nℤ)⁶` under
+`t ↦ rotorTorsion (toTorsionParams t)`.
 
-`DiscreteUnit` is therefore a finite **set** (`Set.range`), not an instance of
-`Units` of an integer order.  Enumeration for small `N` is unnecessary: finiteness
-of the domain implies finiteness of the image (`discreteUnit_finite`).
+Same-axis generators commute, so a one-axis exponential factorises.
+The commutator of a boost on one axis with a rotation on another does not
+vanish, so a generic six-parameter exponential is not justified as a product
+of one-axis factors. That non-commutativity does not by itself decide whether
+the image set equals a Cartesian product of one-axis images.
+
+`DiscreteUnit` is a finite **set** (`Set.range`), not an instance of `Units`
+of an integer order. Enumeration for small `N` is unnecessary: finiteness of
+the domain implies finiteness of the image (`discreteUnit_finite`).
 -/
 
 namespace DstDiophantine

@@ -1417,12 +1417,18 @@ example : (10 : ℤ) ∉ threeMismatchSet 2 ∧ (11 : ℤ) ∉ threeMismatchSet 
 example : threeMismatchSet 2 ⊂ mismatchInterval 2 :=
   threeMismatchSet_proper_subset_interval_two
 
-/-- Discrete ceiling equality: same-wall configurations only. -/
+/-- Discrete torsion ceiling: same-wall configurations only. -/
 example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| = ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 ↔
       (∀ a, (t.n a).val = N / 4 ∧ (t.m a).val = 0) ∨
         (∀ a, (t.n a).val = 0 ∧ (t.m a).val = N / 4) :=
   JNormalized_eq_sharp_iff t h
+
+/-- Mixed walls meet the mass ceiling and miss the torsion ceiling. -/
+example :
+    axisMass 2 0 + axisMass 2 0 + axisMass 0 2 = 3 * 2 ^ 2 ∧
+      |axisMismatch 2 0 + axisMismatch 2 0 + axisMismatch 0 2| < 3 * (2 : ℤ) ^ 2 :=
+  mixed_wall_mass_ceiling_not_torsion (by decide : 1 ≤ 2)
 
 /-- Even mass–torsion lattice: `|Δ| ≤ Σ` and `Δ ≡ Σ [ZMOD 2]`. -/
 example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
@@ -1442,8 +1448,9 @@ example : (1 / 2 + 1) ^ 3 < (zeroHeightTriples 1).card :=
 example : (zeroHeightTriples 2).card = 32 :=
   zeroHeight_card_two
 
-/-- Distinct-axis generators do not commute, so the six-parameter rotor
-is not a product of independent one-axis factors. -/
+/-- Distinct-axis generators need not commute. That blocks justifying a
+six-parameter exponential as a product of one-axis factors. It does not
+decide whether the image set equals such a product. -/
 example : commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
   commutator_hyperbolic0_cyclic1_ne_zero
 
