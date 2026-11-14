@@ -995,6 +995,17 @@ example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : 
   ⟨longitudinalOmega_strictMono hm hκ1 hκ, impulseAmplitude_strictAnti hm hp hκ1 hκ,
     impulse_energy hm.ne', shapeMean_bounds.1, shapeMean_bounds.2, peak_lt_shapeMean⟩
 
+/-- Regression: on the printed square curvatures the diagonal wavelength
+exceeds the electron wavelength by a factor strictly between `45.07` and `45.08`. -/
+example :
+    (4507 / 100 : ℝ) <
+        longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) ∧
+      longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) <
+        (4508 / 100 : ℝ) :=
+  squareFrequencyRatio_window
+
 end
 
 /-- Regression: a cube has one radial balance in the first repulsive shell. -/

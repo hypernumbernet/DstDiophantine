@@ -42,8 +42,9 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
   `s/r ≠ 4`), so those nodes cannot occupy two successive Bohr radii.
   The pair `a₀`, `4a₀` is the first such pair. Bohr radii themselves
   strictly increase. This order is not special to `λ/r`.
-* \(Z\)-contraction is the algebraic identity \(\ell\mapsto Z\ell\) \(\iff\)
-  \(r\mapsto r/Z\).
+* \(Z\)-contraction is the algebraic identity \(\ell\mapsto \ell/Z\) \(\iff\)
+  \(r\mapsto r/Z\). The map moves the nodes. It is not the hydrogenic radius
+  \(a_0/Z\), and that radius is not an input.
 * The first node is a simple zero. On \([\pi/4,x_1)\) one has
   \(c_-(x_1-x)<\gamma_s(x)<c_+(x_1-x)\) with positive slopes built from
   \(\pi/4\) and \(1\). The layer integral of \(1/\gamma_s\) is therefore
@@ -302,8 +303,8 @@ theorem not_equalScale_bohr_pair
 
 /-- Scaling \(\ell\mapsto\ell/Z\) contracts every equal-scale radius by \(Z\).
 The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the inverse
-scaling and moves nodes *outward* by \(Z\). Observed shell shrinkage is the
-labelled identification \(\ell(Z)=\ell/Z\). -/
+scaling and moves nodes *outward* by \(Z\). The map moves the nodes. It is
+not the hydrogenic radius \(a_0/Z\), and that radius is not an input. -/
 theorem Z_contracts_layerRadius {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
     layerRadius (ℓ / Z) x = layerRadius ℓ x / Z := by
   unfold layerRadius

@@ -183,7 +183,7 @@ import list of `Gravity.Regression`.
 * `RestMass` — stiffness, unsigned mass, and free fall are three different quantities. No `F=ma` is
   claimed.
 * `ElectronOrbit` — the first Coulombic node lies in `(π/4,1)`. Equal-scale radii are not the Bohr
-  radii.
+  radii. The map `ℓ ↦ ℓ/Z` moves the nodes and is not the radius `a₀/Z`.
 * `ElectronSquare` — on the square the midplane pair has no outer-well equilibrium. In the first
   repulsive shell there is exactly one restoring square.
 * `ElectronHelium` — charge `Z>0` with `Z≠1` is not that square equilibrium wherever both factors
@@ -237,7 +237,9 @@ import list of `Gravity.Regression`.
 * `ShellCollision` — a partner on the line of centres meets the electron of larger radius first.
   An impulse deposits `p²/(2m)` and does not enter `√(κ/m)`. A stiffer root has a higher frequency
   and, for the same impulse, a smaller amplitude. Two positive weights on two distinct frequencies
-  have positive variance. The equipartition ratio of two roots does not depend on temperature. The
+  have positive variance. On the printed square curvatures the diagonal wavelength
+  exceeds the electron wavelength by a factor strictly between `45.07` and `45.08`.
+  The equipartition ratio of two roots does not depend on temperature. The
   Larmor ratio `ν³/(e^{aν/T}-1)` of a higher frequency to a lower one is strictly increasing in `T`,
   and so is their weighted mean, which stays strictly between them. The mean of `x³/(eˣ-1)` lies
   strictly between `3` and `4`, above the maximum in `(5/2,3)`, and the shape has positive integral
