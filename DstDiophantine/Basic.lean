@@ -112,6 +112,8 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   ceiling_gap_width
   one_mem_axisMismatchSet_iff neg_one_mem_axisMismatchSet_iff
   threeMismatchSet_subset_interval abs_three_axis_eq_ceiling_iff
+  axisMass_eq_Ksq_iff three_axisMass_eq_ceiling_iff
+  card_three_wall_corners mixed_wall_mass_ceiling_not_torsion
   card_balancedTriples card_zeroHeight_gt_balanced
   abs_latticeMismatch_le_latticeMass latticeMismatch_modEq_latticeMass
   latticeMass_eq_zero_iff latticeMismatch_mem_threeMismatchSet

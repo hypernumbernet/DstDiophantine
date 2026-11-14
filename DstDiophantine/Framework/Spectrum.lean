@@ -18,6 +18,11 @@ The slot `Δ = ±1` is occupied as soon as `N ≥ 4`, so the nonzero height
 floor `16/(3N²)` is attained. For every `K`, the integers strictly between
 the shoulder `2K²+(K−1)²` and the ceiling `3K²` are unoccupied; when `K ≥ 2`
 that positive band has width `2K−2`.
+
+The unsigned mass meets the same numerical ceiling on a larger locus.
+`n²+m² = K²` on the triangle only at a wall corner, so the three-axis mass
+`Σ = 3K²` if and only if every axis is a wall of either type. Mixed walls
+keep that mass ceiling and lie strictly inside the torsion ceiling.
 -/
 
 namespace DstDiophantine
@@ -153,6 +158,118 @@ theorem abs_axisMismatch_eq_Ksq_iff {K n m : ℕ} (h : n + m ≤ K) :
         have hmK : (m : ℤ) = K := by linarith
         exact Or.inr ⟨by exact_mod_cast hn0, by exact_mod_cast hmK⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [axisMismatch]
+
+/-- Unsigned axis mass is at most the square of the coordinate sum. -/
+theorem axisMass_le_add_sq (n m : ℕ) : axisMass n m ≤ (n + m) ^ 2 := by
+  unfold axisMass
+  calc
+    n ^ 2 + m ^ 2 ≤ n ^ 2 + m ^ 2 + 2 * n * m := Nat.le_add_right _ _
+    _ = (n + m) ^ 2 := by ring
+
+/-- On the triangle `n + m ≤ K`, the unsigned axis mass is at most `K²`. -/
+theorem axisMass_le_of_triangle {K n m : ℕ} (h : n + m ≤ K) :
+    axisMass n m ≤ K ^ 2 :=
+  (axisMass_le_add_sq n m).trans (Nat.pow_le_pow_left h 2)
+
+/-- Unsigned axis mass meets `K²` only at a wall corner. -/
+theorem axisMass_eq_Ksq_iff {K n m : ℕ} (h : n + m ≤ K) :
+    axisMass n m = K ^ 2 ↔ (n = K ∧ m = 0) ∨ (n = 0 ∧ m = K) := by
+  constructor
+  · intro heq
+    have hle_add := axisMass_le_add_sq n m
+    have hle_K : (n + m) ^ 2 ≤ K ^ 2 := Nat.pow_le_pow_left h 2
+    have hK_le : K ^ 2 ≤ (n + m) ^ 2 := by
+      rw [← heq]
+      exact hle_add
+    have heq_add : (n + m) ^ 2 = K ^ 2 := le_antisymm hle_K hK_le
+    have hsum : n + m = K :=
+      Nat.pow_left_injective (by decide : (2 : ℕ) ≠ 0) heq_add
+    have hring : n ^ 2 + m ^ 2 + 2 * n * m = (n + m) ^ 2 := by ring
+    have hmass : n ^ 2 + m ^ 2 = (n + m) ^ 2 := by
+      rw [heq_add]
+      simpa [axisMass] using heq
+    have hcross : n ^ 2 + m ^ 2 + 2 * n * m = n ^ 2 + m ^ 2 := by
+      rw [hring, hmass]
+    have h2 : 2 * n * m = 0 := Nat.add_left_cancel hcross
+    have h2assoc : 2 * (n * m) = 0 := by
+      simpa [Nat.mul_assoc] using h2
+    rcases Nat.mul_eq_zero.mp h2assoc with htwo | hprod
+    · exact absurd htwo (by decide)
+    rcases Nat.mul_eq_zero.mp hprod with hn | hm
+    · exact Or.inr ⟨hn, by simpa [hn] using hsum⟩
+    · exact Or.inl ⟨by simpa [hm] using hsum, hm⟩
+  · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [axisMass]
+
+private theorem three_axisMass_strict {K a b c : ℕ}
+    (ha : a < K ^ 2) (hb : b ≤ K ^ 2) (hc : c ≤ K ^ 2) :
+    a + b + c < 3 * K ^ 2 := by
+  have haZ : (a : ℤ) < (K : ℤ) ^ 2 := by exact_mod_cast ha
+  have hbZ : (b : ℤ) ≤ (K : ℤ) ^ 2 := by exact_mod_cast hb
+  have hcZ : (c : ℤ) ≤ (K : ℤ) ^ 2 := by exact_mod_cast hc
+  have hsum : (a + b + c : ℤ) < 3 * (K : ℤ) ^ 2 := by
+    nlinarith
+  exact_mod_cast hsum
+
+/-- Three-axis mass meets `3K²` iff every axis is a wall corner, of either type. -/
+theorem three_axisMass_eq_ceiling_iff {K n0 m0 n1 m1 n2 m2 : ℕ}
+    (h0 : n0 + m0 ≤ K) (h1 : n1 + m1 ≤ K) (h2 : n2 + m2 ≤ K) :
+    axisMass n0 m0 + axisMass n1 m1 + axisMass n2 m2 = 3 * K ^ 2 ↔
+      ((n0 = K ∧ m0 = 0) ∨ (n0 = 0 ∧ m0 = K)) ∧
+      ((n1 = K ∧ m1 = 0) ∨ (n1 = 0 ∧ m1 = K)) ∧
+      ((n2 = K ∧ m2 = 0) ∨ (n2 = 0 ∧ m2 = K)) := by
+  constructor
+  · intro heq
+    have b0 := axisMass_le_of_triangle h0
+    have b1 := axisMass_le_of_triangle h1
+    have b2 := axisMass_le_of_triangle h2
+    have e0 : axisMass n0 m0 = K ^ 2 := by
+      by_contra hne
+      exact ne_of_lt (three_axisMass_strict (lt_of_le_of_ne b0 hne) b1 b2) heq
+    have e1 : axisMass n1 m1 = K ^ 2 := by
+      by_contra hne
+      exact ne_of_lt (three_axisMass_strict (lt_of_le_of_ne b1 hne) b0 b2)
+        (by simpa [add_comm, add_left_comm, add_assoc] using heq)
+    have e2 : axisMass n2 m2 = K ^ 2 := by
+      by_contra hne
+      exact ne_of_lt (three_axisMass_strict (lt_of_le_of_ne b2 hne) b0 b1)
+        (by simpa [add_comm, add_left_comm, add_assoc] using heq)
+    exact ⟨(axisMass_eq_Ksq_iff h0).mp e0, (axisMass_eq_Ksq_iff h1).mp e1,
+      (axisMass_eq_Ksq_iff h2).mp e2⟩
+  · intro ⟨c0, c1, c2⟩
+    rw [(axisMass_eq_Ksq_iff h0).mpr c0, (axisMass_eq_Ksq_iff h1).mpr c1,
+      (axisMass_eq_Ksq_iff h2).mpr c2]
+    ring
+
+/-- For `K ≥ 1` the two wall corners are distinct, and the three-axis assignments number eight. -/
+theorem card_three_wall_corners {K : ℕ} (hK : 1 ≤ K) :
+    (({(K, 0), (0, K)} : Finset (ℕ × ℕ)) ×ˢ ({(K, 0), (0, K)} ×ˢ {(K, 0), (0, K)})).card = 8 := by
+  have hne : (K, 0) ≠ (0, K) := by
+    intro h
+    have : K = 0 := congrArg Prod.fst h
+    omega
+  have hpair : ({(K, 0), (0, K)} : Finset (ℕ × ℕ)).card = 2 := by
+    simp [hne]
+  rw [Finset.card_product, Finset.card_product, hpair]
+
+/-- Mixed walls meet the mass ceiling and miss the torsion ceiling. -/
+theorem mixed_wall_mass_ceiling_not_torsion {K : ℕ} (hK : 1 ≤ K) :
+    axisMass K 0 + axisMass K 0 + axisMass 0 K = 3 * K ^ 2 ∧
+      |axisMismatch K 0 + axisMismatch K 0 + axisMismatch 0 K| <
+        3 * (K : ℤ) ^ 2 := by
+  have htri : K + 0 ≤ K := by omega
+  have htriE : 0 + K ≤ K := by omega
+  refine ⟨?_, ?_⟩
+  · simpa using
+      (three_axisMass_eq_ceiling_iff (K := K) (n0 := K) (m0 := 0) (n1 := K) (m1 := 0)
+        (n2 := 0) (m2 := K) htri htri htriE).mpr
+        ⟨Or.inl ⟨rfl, rfl⟩, Or.inl ⟨rfl, rfl⟩, Or.inr ⟨rfl, rfl⟩⟩
+  · have hsum :
+        axisMismatch K 0 + axisMismatch K 0 + axisMismatch 0 K = (K : ℤ) ^ 2 := by
+      simp only [axisMismatch]
+      ring
+    rw [hsum, abs_of_nonneg (sq_nonneg ((K : ℤ)))]
+    have hpos : (1 : ℤ) ≤ (K : ℤ) := by exact_mod_cast hK
+    nlinarith
 
 /-! ### Triangle pairs and the three-fold sumset -/
 
