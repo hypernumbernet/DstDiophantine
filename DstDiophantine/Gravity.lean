@@ -66,6 +66,15 @@ import list of `Gravity.Regression`.
   The squared Killing norm has d'Alembertian `8J`.
 * `RadialFall` — the same release law on the exterior chart. The speed cancels and
   \(d^2r/d\tau^2=-r_s/(2r^2)\).
+* `Perihelion` — constant angular momentum on that coframe. The areal acceleration
+  is \(-\kappa+L^2/r^3-3\kappa L^2/r^2\). One share of the three is the transverse
+  speed in \(\gamma^2\); two shares are the deficit \(A-1\) in the centrifugal
+  barrier. For \(0<6M/p<1\) the excess over \(2\pi\) lies strictly between
+  \(6\pi M/p\) and that quantity over \(1-6M/p\). The precessing ellipse is not
+  an exact solution. A tangential tilt \(-\kappa\hat{u}_\varphi\) multiplies angular
+  momentum by \(\exp(-\kappa\tau)\). The torsional leg changes only with the radius,
+  the radial piece of \(\gamma^2\) cancels, and the transverse piece that remains is
+  the perihelion.
 
 ## Scales that are inputs
 

@@ -94,6 +94,7 @@ import DstDiophantine.Gravity.BaryonAsymmetry
 import DstDiophantine.Gravity.ParityBridge
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
+import DstDiophantine.Gravity.Perihelion
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
@@ -153,6 +154,33 @@ example {rs r : ℝ} (h : IsExterior rs r) :
     deriv (deriv (KillingAxis.releasedDisplacementProper (KillingAxis.axisDistance rs r))) 0 =
       -dSqrtA_dr rs r :=
   KillingAxis.released_initial_acceleration_exterior h
+
+/-- Regression: one share of the perihelion term is transverse speed, two are `A − 1`. -/
+example {rs r L : ℝ} (hr : r ≠ 0) :
+    (schwarzschildA rs r - 1) * L ^ 2 / r ^ 3 =
+        2 * (-(KillingAxis.killingRate rs r) * (L / r) ^ 2) ∧
+      -(KillingAxis.killingRate rs r) * (L / r) ^ 2 +
+          (schwarzschildA rs r - 1) * L ^ 2 / r ^ 3 =
+        -3 * KillingAxis.killingRate rs r * L ^ 2 / r ^ 2 :=
+  Perihelion.perihelion_three_shares hr
+
+/-- Regression: the perihelion excess lies strictly between `6π M/p` and that over `1 − 6M/p`. -/
+example {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
+    (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
+    let k := Real.sqrt (1 - 6 * M / p)
+    6 * Real.pi * M / p < 2 * Real.pi * (1 / k - 1) ∧
+      2 * Real.pi * (1 / k - 1) < (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
+  Perihelion.perihelion_excess_latus hM hp hx0 hx1
+
+/-- Regression: the radial piece of `γ²` cancels and the transverse piece remains. -/
+example {κ ur uφ : ℝ} :
+    κ * ur ^ 2 - κ * Perihelion.gammaSq ur uφ = -κ * (1 + uφ ^ 2) :=
+  Perihelion.radial_speed_cancels
+
+/-- Regression: a tangential tilt multiplies angular momentum by a decaying exponential. -/
+example {κ L0 τ₁ τ₂ : ℝ} (hL : 0 < L0) (hκ : 0 < κ) (hτ : τ₁ < τ₂) :
+    L0 * Real.exp (-κ * τ₂) < L0 * Real.exp (-κ * τ₁) :=
+  Perihelion.naiveAngular_strictAnti hL hκ hτ
 
 /-- Regression: on the exterior chart that meeting lies on the static horizon. -/
 example {rs r : ℝ} (h : IsExterior rs r) :

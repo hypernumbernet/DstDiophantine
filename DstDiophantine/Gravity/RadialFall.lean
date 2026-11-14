@@ -30,8 +30,8 @@ A body released from rest at radius `R` has `E² = A(R)`.
 
 * That one fixed flat jet, the straight line `s e₀` at a single `ℓ`, is itself
   a Schwarzschild geodesic.
-* A covariant transport of the full Killing bivector, or a treatment of
-  non-radial motion.
+* A covariant transport of the full Killing bivector, or motion off the
+  equatorial leg. `Perihelion` keeps a constant angular momentum on that leg.
 -/
 
 namespace DstDiophantine.Gravity.KillingAxis
