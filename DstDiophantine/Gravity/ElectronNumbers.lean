@@ -27,8 +27,8 @@ with the Bohr radius, or assigns a dissociation energy.
   and, as already recorded, strictly greater than `3`.
 * Placing the side at one Bohr radius would put the first node strictly
   between `91/40` and `12/5` Bohr radii.
-* The circular radius, the first node, the diagonal, the side, the
-  one-electron extremum, and the second node stand in that order.
+* The first node, the diagonal, the side, the one-electron extremum, and
+  the second node stand in that order. No circular radius is placed.
 -/
 
 namespace DstDiophantine
@@ -645,11 +645,10 @@ theorem secondNode_radius_window :
   · rw [div_lt_div_iff₀ (mul_pos (by norm_num) hx) (mul_pos (by norm_num) pi_pos)]
     nlinarith [hsharp.1]
 
-/-- Circular radius, first node, diagonal, side, one-electron extremum, and
-second node, each outside the next. Radii are in units of `ℓ`. -/
+/-- First node, diagonal, side, one-electron extremum, and second node, each
+outside the next. Radii are in units of `ℓ`. No circular radius enters. -/
 theorem shell_radius_order :
-    1 / (2 * resonanceRoot1) < 5 / 6 ∧
-      1 / (2 * squarePhase) < 1 / (2 * resonanceRoot1) ∧
+    1 / (2 * squarePhase) < 1 / (2 * resonanceRoot1) ∧
       1 / (2 * sqrt 2 * squarePhase) < 1 / (2 * squarePhase) ∧
       1 / (2 * quietPhase) < 1 / (2 * sqrt 2 * squarePhase) ∧
       1 / (2 * branchNode 1) < 1 / (2 * quietPhase) := by
@@ -657,13 +656,11 @@ theorem shell_radius_order :
   have hsq := square_radius_window
   have hquiet := forceQuiet_radius quietPhase_spec.1
   have hsec := secondNode_radius_window
-  have hfive : (15 / 28 : ℝ) < 5 / 6 := by norm_num
   have hsep : (50 / 153 : ℝ) < 10 / 19 := by norm_num
   have hpi : (2 / (5 * π) : ℝ) < 1 / (2 * π) := by
     rw [div_lt_div_iff₀ (mul_pos (by norm_num) pi_pos) (mul_pos (by norm_num) pi_pos)]
     nlinarith [pi_pos]
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-  · linarith
+  refine ⟨?_, ?_, ?_, ?_⟩
   · linarith
   · have hs : (1 : ℝ) < sqrt 2 := one_lt_sqrt_two
     have hx : 0 < squarePhase := lt_trans (by norm_num) squarePhase_num_window.1
@@ -671,7 +668,7 @@ theorem shell_radius_order :
       (mul_pos (by norm_num) hx)]
     nlinarith
   · linarith [hquiet.2, hsq.2.2.1]
-  · linarith [hquiet.1]
+  · linarith [hquiet.1, hsec.2, hpi]
 
 end Gravity
 

@@ -1,7 +1,6 @@
 import DstDiophantine.Algebra.Sandwich
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
@@ -11,22 +10,23 @@ import Mathlib.Tactic.Ring
 
 `pr = nℏ` is not the return of the dual rotor to `1`, and it is not the
 return of the orbital point. Both of those happen at an angle fixed by the
-rotor, with no momentum in them. Setting the dual angle equal to the
-accumulated phase `2π pr/ℏ` still leaves the rotor at `-1` when `pr = ℏ`,
-where the plane-wave factor has already returned to `1`. The identity of
-that rotor asks for an even multiple.
+rotor, with no momentum in them. The identity `exp(i 2π pr/ℏ) = 1` iff
+`pr = nℏ` is the phase of a plane wave on a circle. It is not used to place
+an atomic radius, and it is not combined with a centripetal identity.
+The de Broglie phase of the matter wave is `(Et − p·x)/ℏ`. Closing that
+phase on a nuclear circumference is not a step of this module.
 
 ## What is proved
 
 * One revolution, angle `2π`, sends the dual rotor to `-1` and restores
-  every point of the orbital plane.
+  every point of the orbital plane. That return contains no momentum.
 * Two revolutions, angle `4π`, restore the rotor to `1`.
 * On one revolution the plane-wave factor equals `1` exactly when
-  `pr = nℏ` for some `n : ℤ`.
+  `pr = nℏ` for some `n : ℤ`. This equivalence does not select a radius.
 * The same revolution can restore the point while the plane-wave factor
   equals `-1` (`pr = ℏ/2`).
-* With the centripetal identity, the return of the plane-wave factor places
-  the radius at `n² ℏ² γ / (m k e²)`.
+* Phase alignment at `pr = ℏ` leaves the rotor at `-1`. The rotor returns
+  to `1` at an even multiple.
 -/
 
 namespace DstDiophantine
@@ -146,41 +146,6 @@ theorem phaseAligned_rotor_identity :
     ring
   rw [harg]
   exact Complex.exp_eq_one_iff.mpr ⟨2, rfl⟩
-
-/-- `pr = nℏ` and `p²/m = ke²/(γ r)` give `r = n² ℏ² γ / (m k e²)`. -/
-theorem closure_radius_of_winding {n : ℤ} {ℏ m k e γ r p : ℝ}
-    (_hn : n ≠ 0) (hm : m ≠ 0) (hr : r ≠ 0) (hγ : γ ≠ 0) (hk : k ≠ 0) (he : e ≠ 0)
-    (hphase : p * r = (n : ℝ) * ℏ)
-    (hcent : p ^ 2 / m = k * e ^ 2 / (γ * r)) :
-    r = (n : ℝ) ^ 2 * ℏ ^ 2 * γ / (m * k * e ^ 2) := by
-  have hp : p = (n : ℝ) * ℏ / r := by
-    field_simp [hr] at hphase ⊢
-    linarith
-  rw [hp] at hcent
-  have hke : m * k * e ^ 2 ≠ 0 :=
-    mul_ne_zero (mul_ne_zero hm hk) (pow_ne_zero 2 he)
-  field_simp [hm, hr, hγ, hke] at hcent ⊢
-  nlinarith
-
-/-- The return of the plane-wave factor, with the centripetal identity,
-places the radius. -/
-theorem closure_radius_of_planeWave {ℏ m k e γ r p : ℝ}
-    (hℏ : ℏ ≠ 0) (hm : m ≠ 0) (hr : r ≠ 0) (hγ : γ ≠ 0) (hk : k ≠ 0) (he : e ≠ 0)
-    (hwave : Complex.exp (Complex.I * ((p * r * (2 * Real.pi) / ℏ : ℝ) : ℂ)) = 1)
-    (hcent : p ^ 2 / m = k * e ^ 2 / (γ * r)) :
-    ∃ n : ℤ, n ≠ 0 ∧ r = (n : ℝ) ^ 2 * ℏ ^ 2 * γ / (m * k * e ^ 2) := by
-  obtain ⟨n, hn⟩ := (planeWave_revolution_iff hℏ).1 hwave
-  have hn0 : n ≠ 0 := by
-    intro h0
-    subst h0
-    have hpr : p * r = 0 := by simpa using hn
-    have hp : p = 0 := (mul_eq_zero.mp hpr).resolve_right hr
-    rw [hp, zero_pow (by norm_num : 2 ≠ 0), zero_div] at hcent
-    have hden : γ * r ≠ 0 := mul_ne_zero hγ hr
-    have hrhs : k * e ^ 2 / (γ * r) ≠ 0 :=
-      div_ne_zero (mul_ne_zero hk (pow_ne_zero 2 he)) hden
-    exact hrhs hcent.symm
-  exact ⟨n, hn0, closure_radius_of_winding hn0 hm hr hγ hk he hn hcent⟩
 
 end Gravity
 

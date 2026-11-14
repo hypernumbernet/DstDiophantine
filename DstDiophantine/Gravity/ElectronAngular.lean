@@ -19,8 +19,9 @@ infinitesimal rotations of that pattern. On a constant pattern that square is
 `0`. On a dipole it is `2` times the pattern. On a traceless quadrupole it is
 `6` times the pattern. On a traceless octupole it is `12` times the pattern.
 These are the products of the degree with one more than the degree. The
-circular path in the outer well is the travel of the electron and leaves this
-square as the degree fixes it.
+square is the response of the pattern when the direction is turned. It is
+not the angular momentum of an electron in circulation, and it does not
+place a radius.
 
 A monopole, a dipole, a traceless quadrupole, and a traceless octupole have
 dimensions `1`, `3`, `5`, and `7`, one more than twice the degree. The running

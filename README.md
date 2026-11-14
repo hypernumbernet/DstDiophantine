@@ -343,9 +343,15 @@ coefficients act on translations.
 On the equal-scale locus $\alpha = \beta = \ell/r$ the electromagnetic force
 is the Coulomb force divided by the interference factor
 $\gamma_s(x) = \cosh x\cos x - \sinh x\sin x$, with phase $x = \ell/(2r)$.
-The sign of $\gamma_s$ is the repulsion. The length $\ell$ is an input.
-The fine-structure constant is not derived. The radii $n^2 a_0\gamma_s$ are the single-valued scalar phase on a circular path; they are not the interference nodes. No centrifugal
-term is added.
+The sign of $\gamma_s$ is the repulsion. The length $\ell$ is an input,
+adjusted by the laboratory sign: attraction at the measured atomic radius
+places that radius in the outer well and forces $\ell < (19/10)a_0$. The
+fine-structure constant is not derived. The nodes stand at $r = \ell/(2x)$.
+The outward ladder $n^2 a_0$ is an external comparison, and these nodes do
+not occupy it. No angular momentum is assigned, and $pr = n\hbar$ does not
+select a shell. The matter wave is the de Broglie phase
+$(Et - \mathbf{p}\cdot\mathbf{x})/\hbar$. It is not closed on a
+circumference about the nucleus. No centrifugal term is added.
 
 Zeros of $\gamma_s$ are simple, one in each interval $[n\pi,(n+1)\pi]$, and
 the first lies in $(\pi/4, \pi/2)$. The outer well is the region outside that
@@ -354,18 +360,9 @@ shell lies between the first and second nodes, and the signs reverse there.
 Attraction, counted positive, strengthens throughout the outer well, so a
 one-center pair has no stationary radius. The node is a pole of the force.
 
-A circular path in the outer well is radially restoring above one radius and
-unstable between that radius and the node. The restoring threshold is the
-unique phase in $(1/2, 3/5)$ where $d\ln Y/d\ln x = 3$ for
-$Y = 4x^2/\gamma_s$, so the radius lies in $(5\ell/6, \ell)$. The energy of
-those circular paths is negative and strictly least at the same radius.
-The electrostatic force does not vanish there. The path is not a shell and
-not $a_0$. One electron about a nucleus of positive charge $Z$, the proton
-number, feels $Z$ times the one-proton force. The restoring radius is the
-same for every such charge, and the circular energy is $Z$ times the
-one-proton energy, still negative. A larger charge makes that energy lower.
-The radius is not $a_0/Z$, and the energy is not a laboratory ionization
-energy.
+No angular momentum is assigned. A one-center electron occupies a place in
+the signed force and is not parked on a force-free circle. The radius
+$a_0/Z$ is not an input, and no circular energy is formed.
 
 The first repulsive shell has one extremum of $Y$, at a phase in
 $(5/2, \pi)$, so the radius lies in $(\ell/(2\pi), \ell/5)$. Counted with
