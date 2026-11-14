@@ -2805,8 +2805,9 @@ example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     0 < -diameterOutward 2 x :=
   diameter_inward hx
 
-/-- Regression: the standing-wave shortening at the Bohr radius lies below the
-electron-to-proton mass ratio, and the first node lies between `a₀/261` and `a₀/255`. -/
+/-- Regression: the unstable curvature balance at the Bohr phase shortens `a₀` by less
+than the electron-to-proton mass ratio, and the first node lies between `a₀/261` and
+`a₀/255`. The balance does not hold the electron. -/
 example :
     (13312 / 10 ^ 9 : ℝ) < 1 - gammaSEqual bohrPhase ∧
       1 - gammaSEqual bohrPhase < 13314 / 10 ^ 9 ∧

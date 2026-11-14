@@ -195,10 +195,12 @@ import list of `Gravity.Regression`.
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase.
   No angular momentum is assigned, and no circular energy is formed.
 * `ElectronStanding` — the curvature of `e^{-r/a}` supplies the outward force `ℏ²/(m a r²)`.
-  The decay `a₀ γ_s(α/2)` meets the signed force at the Bohr radius. The fractional
+  It meets the signed force once in the outer well, and the separation-increasing imbalance
+  is positive at larger radius, so the balance is unstable and does not hold the electron.
+  The decay `a₀ γ_s(α/2)` meets the signed force at the Bohr phase. The fractional
   shortening lies strictly between `13312/10⁹` and `13314/10⁹`, below the electron-to-proton
-  mass ratio, and the first node lies strictly between `a₀/261` and `a₀/255`. The amplitude
-  is not an eigenfunction, and no binding energy is derived.
+  mass ratio, and the first node lies strictly between `a₀/261` and `a₀/255`. The node is
+  a divergence. No binding energy is derived.
 * `LineWindow` — a rational bracket for `π` carries a rational window up to the real vacuum
   wavelength. It does not place an atomic radius.
 * `OrbitClosure` — one revolution restores the orbital point and leaves the dual rotor at `-1`.
