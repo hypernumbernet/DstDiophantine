@@ -91,39 +91,41 @@
       </tbody>
     </table>
   </div>
-  <svg class="fig" viewBox="0 0 640 268" role="img" aria-label="Schematic: traditional renormalization removes cutoff as distance goes to zero; Wilson and DST keep a finite smallest step">
-    <rect x="20" y="32" width="284" height="168" rx="8" fill="#0f1420" stroke="#3a4560"/>
-    <rect x="336" y="32" width="284" height="168" rx="8" fill="#0f1420" stroke="#3a4560"/>
-    <text class="lbl" x="162" y="54" text-anchor="middle"><tspan class="en">Traditional</tspan><tspan class="ja">伝統的</tspan></text>
-    <text class="lbl" x="478" y="54" text-anchor="middle"><tspan class="en">Wilson / DST</tspan><tspan class="ja">ウィルソン／二重時空理論</tspan></text>
-    <text class="lbl small" x="36" y="112" text-anchor="start"><tspan class="en">size of</tspan><tspan class="ja">修正の</tspan></text>
-    <text class="lbl small" x="36" y="128" text-anchor="start"><tspan class="en">correction</tspan><tspan class="ja">大きさ</tspan></text>
-    <text class="lbl small" x="352" y="112" text-anchor="start"><tspan class="en">size of</tspan><tspan class="ja">修正の</tspan></text>
-    <text class="lbl small" x="352" y="128" text-anchor="start"><tspan class="en">correction</tspan><tspan class="ja">大きさ</tspan></text>
-    <line x1="56" y1="178" x2="268" y2="178" class="axis" stroke-width="1.1"/>
-    <line x1="56" y1="72" x2="56" y2="178" class="axis" stroke-width="1.1"/>
-    <line x1="372" y1="178" x2="584" y2="178" class="axis" stroke-width="1.1"/>
-    <line x1="372" y1="72" x2="372" y2="178" class="axis" stroke-width="1.1"/>
-    <text class="lbl small" x="162" y="196" text-anchor="middle"><tspan class="en">distance</tspan><tspan class="ja">距離</tspan></text>
-    <text class="lbl small" x="478" y="196" text-anchor="middle"><tspan class="en">distance</tspan><tspan class="ja">距離</tspan></text>
-    <path d="M 72 178 C 100 150, 130 95, 268 72" fill="none" stroke="#4fc3ff" stroke-width="2.4"/>
-    <line x1="148" y1="72" x2="148" y2="178" stroke="#ff6b6b" stroke-width="1.8" stroke-dasharray="5 4"/>
-    <text class="lbl small" x="148" y="64" text-anchor="middle"><tspan class="en">cutoff</tspan><tspan class="ja">カットオフ</tspan></text>
-    <line x1="88" y1="125" x2="132" y2="125" stroke="#ffd27a" stroke-width="1.6" marker-end="url(#renArrL)"/>
-    <text class="lbl small warmt" x="168" y="122" text-anchor="start"><tspan class="en">removed at the end</tspan><tspan class="ja">最後に取り去る</tspan></text>
-    <path d="M 388 178 C 416 150, 446 100, 584 82" fill="none" stroke="#4fc3ff" stroke-width="2.4"/>
-    <line x1="448" y1="82" x2="448" y2="82" stroke="#ffd27a" stroke-width="3"/>
-    <circle cx="428" cy="82" r="3" fill="#ffd27a"/><circle cx="448" cy="82" r="3" fill="#ffd27a"/><circle cx="468" cy="82" r="3" fill="#ffd27a"/>
-    <circle cx="488" cy="82" r="3" fill="#ffd27a"/><circle cx="508" cy="82" r="3" fill="#ffd27a"/><circle cx="528" cy="82" r="3" fill="#ffd27a"/>
-    <circle cx="548" cy="82" r="3" fill="#ffd27a"/><circle cx="568" cy="82" r="3" fill="#ffd27a"/>
-    <line x1="424" y1="72" x2="424" y2="178" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="4 3"/>
-    <text class="lbl small" x="478" y="98" text-anchor="middle"><tspan class="en">smallest step kept (finite height)</tspan><tspan class="ja">最小の刻みを残す（有限の高さ）</tspan></text>
+  <svg class="fig" viewBox="0 0 660 240" role="img" aria-label="Schematic: correction diverges at small distance; traditional cutoff is removed; Wilson and DST keep a smallest step">
     <defs>
-      <marker id="renArrL" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L6,3 L0,6 Z" fill="#ffd27a"/>
+      <marker id="renArrLeft" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto">
+        <path d="M6,0 L0,3 L6,6 Z" fill="#ff9a5a"/>
       </marker>
     </defs>
-    <text class="note" x="320" y="256" text-anchor="middle"><tspan class="en">Schematic only, not to scale.</tspan><tspan class="ja">模式図のみ、縮尺どおりではありません。</tspan></text>
+    <g transform="translate(20, 18)">
+      <text class="lbl" x="150" y="22" text-anchor="middle"><tspan class="en">Traditional</tspan><tspan class="ja">従来の繰り込み</tspan></text>
+      <line x1="40" y1="40" x2="40" y2="160" class="axis" stroke-width="1.2"/>
+      <line x1="40" y1="160" x2="285" y2="160" class="axis" stroke-width="1.2"/>
+      <text class="lbl small" x="18" y="100" text-anchor="middle" transform="rotate(-90 18 100)"><tspan class="en">size of correction</tspan><tspan class="ja">修正の大きさ</tspan></text>
+      <text class="lbl small" x="250" y="180" text-anchor="middle"><tspan class="en">distance →</tspan><tspan class="ja">距離 →</tspan></text>
+      <polyline fill="none" stroke="#4fc3ff" stroke-width="2.4" points="48,40 60,100 80,125 110,140 160,150 285,156"/>
+      <text class="lbl small" x="52" y="36" text-anchor="middle">∞</text>
+      <line x1="90" y1="40" x2="90" y2="160" stroke="#ff6b6b" stroke-width="1.8" stroke-dasharray="5 4"/>
+      <text class="lbl small" x="96" y="56" text-anchor="start"><tspan class="en">cutoff</tspan><tspan class="ja">カットオフ</tspan></text>
+      <line x1="86" y1="75" x2="50" y2="75" stroke="#ff9a5a" stroke-width="1.8" marker-end="url(#renArrLeft)"/>
+      <text class="lbl small warmt" x="100" y="92" text-anchor="start"><tspan class="en">removed at the end</tspan><tspan class="ja">最後に取り去る</tspan></text>
+    </g>
+    <g transform="translate(340, 18)">
+      <text class="lbl" x="150" y="22" text-anchor="middle"><tspan class="en">Wilson / DST</tspan><tspan class="ja">ウィルソン流・二重時空理論</tspan></text>
+      <line x1="40" y1="40" x2="40" y2="160" class="axis" stroke-width="1.2"/>
+      <line x1="40" y1="160" x2="285" y2="160" class="axis" stroke-width="1.2"/>
+      <text class="lbl small" x="18" y="100" text-anchor="middle" transform="rotate(-90 18 100)"><tspan class="en">size of correction</tspan><tspan class="ja">修正の大きさ</tspan></text>
+      <text class="lbl small" x="250" y="180" text-anchor="middle"><tspan class="en">distance →</tspan><tspan class="ja">距離 →</tspan></text>
+      <circle cx="40" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="70" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="100" cy="160" r="2.2" fill="#8aa0c0"/>
+      <circle cx="130" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="160" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="190" cy="160" r="2.2" fill="#8aa0c0"/>
+      <circle cx="220" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="250" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="280" cy="160" r="2.2" fill="#8aa0c0"/>
+      <line x1="40" y1="118" x2="70" y2="118" stroke="#4fc3ff" stroke-width="2.4"/>
+      <polyline fill="none" stroke="#4fc3ff" stroke-width="2.4" points="70,118 80,125 110,140 160,150 285,156"/>
+      <line x1="70" y1="40" x2="70" y2="160" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text class="lbl small" x="76" y="56" text-anchor="start"><tspan class="en">smallest step</tspan><tspan class="ja">最小の刻み</tspan></text>
+      <text class="lbl small warmt" x="100" y="92" text-anchor="start"><tspan class="en">stops at a finite height</tspan><tspan class="ja">有限の高さで止まる</tspan></text>
+    </g>
+    <text class="note" x="330" y="228" text-anchor="middle"><tspan class="en">Schematic only, not to scale.</tspan><tspan class="ja">模式図のみ、縮尺どおりではありません。</tspan></text>
   </svg>
 
   <h3 class="sub" id="dst-discreteness"><span class="en">Double Spacetime Theory on the Wilson side</span><span class="ja">ウィルソン側から見た二重時空理論</span></h3>
