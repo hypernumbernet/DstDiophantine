@@ -12,7 +12,7 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
-# Coulombic circular orbits and the equal-scale / Bohr mismatch
+# Equal-scale layers against the external \(n^2\) ladder
 
 ## Paper boundary (do **not** claim)
 
@@ -28,13 +28,15 @@ No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
 
 * The first equal-scale node lies in \((\pi/4,\,1)\). Identifying that node
   with \(a_0\) forces \(\pi a_0/2<\lambda<2a_0\).
-* Coulombic circular balance \(mv^2/r=ke^2/(\gamma_s r^2)\) yields a positive
-  \(v^2\) only on attractive layers \(\gamma_s>0\). Repulsive layers give
-  \(v^2<0\); a node makes the written force undefined.
+* The centripetal rearrangement is not used to place a shell. Where it is
+  written, \(v^2\) is positive only on attractive layers \(\gamma_s>0\).
+  Repulsive layers give \(v^2<0\); a node makes the written force undefined.
+  No angular momentum is assigned.
 * The outermost well \(0<x<x_1\) is attractive; the first inner interval
   \(x_1<x<\pi\) is repulsive. Barriers are force divergences, not clock freezes.
-* Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the Bohr
-  ratio \(4\). The equal-scale tower is inward; Bohr shells are outward.
+* Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the
+  external ratio \(4\). The equal-scale tower is inward; the ladder \(n^2 a_0\)
+  runs outward. That ladder is not a radius of this force.
 * The node of branch `n` increases with `n`. A common phase that is strictly
   decreasing in distance places successive nodes inward (`s < r`, hence
   `s/r ≠ 4`), so those nodes cannot occupy two successive Bohr radii.

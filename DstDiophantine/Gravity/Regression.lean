@@ -48,10 +48,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
-import DstDiophantine.Gravity.HydrogenAlpha
 import DstDiophantine.Gravity.OrbitClosure
-import DstDiophantine.Gravity.SpectralLines
-import DstDiophantine.Gravity.HeliumLines
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
 import DstDiophantine.Gravity.Rutherford
@@ -1248,23 +1245,8 @@ example {x : ℝ} (hx : x ∈ Set.Ioo (5 / 2) Real.pi) (h0 : forceCrit x = 0) :
 example : StrictMonoOn pairAttraction (Set.Ioo (0 : ℝ) resonanceRoot1) :=
   pairAttraction_strictMono_outer
 
-/-- Regression: a circular path in the outer well changes stability once, in `(1/2, 3/5)`. -/
-example : ∃! x : ℝ, x ∈ Set.Ioo (1 / 2) (3 / 5) ∧ circStable x = 0 :=
-  exists_unique_circStable
-
-/-- Regression: that phase has radius strictly between `5/6` and `1`. -/
-example {x : ℝ} (hx : x ∈ Set.Ioo (1 / 2) (3 / 5)) :
-    5 / 6 < 1 / (2 * x) ∧ 1 / (2 * x) < 1 :=
-  circStable_radius hx
-
-/-- Regression: circular-path energy is negative and least at that phase. -/
-example {x y : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
-    (hy : y ∈ Set.Ioo (1 / 2) (3 / 5)) (h0 : circStable y = 0) :
-    circEnergy y < 0 ∧ circEnergy y ≤ circEnergy x ∧
-      (circEnergy x = circEnergy y ↔ x = y) :=
-  circEnergy_least_outer hx hy h0
-
-/-- Regression: repulsive Coulombic layers yield no real circular speed. -/
+/-- Regression: the centripetal formula is not a radius law. Where it is written,
+a repulsive layer gives a negative square. -/
 example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
     (hγ : γs < 0) (hr : 0 < r) :
     circularSpeedSq k e m γs r < 0 :=
@@ -2796,7 +2778,8 @@ example (a b : ℝ) :
         (a • ι 1 + b • ι 3) = a • ι 1 + b • ι 3 :=
   ⟨dualRotor_one_revolution, orbitPoint_one_revolution a b⟩
 
-/-- Regression: the plane-wave factor on that revolution equals `1` exactly at `pr = nℏ`. -/
+/-- Regression: the plane-wave factor on that revolution equals `1` exactly at `pr = nℏ`.
+This equivalence does not place a radius. -/
 example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
     Complex.exp (Complex.I * ((p * r * (2 * Real.pi) / ℏ : ℝ) : ℂ)) = 1 ↔
       ∃ n : ℤ, p * r = (n : ℝ) * ℏ :=
@@ -2804,20 +2787,6 @@ example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
 
 
 /-! ## Charge two -/
-
-/-- Regression: one electron and charge two, nucleus fixed, from shell \(2\) to shell \(1\). -/
-example :
-    (30375 : ℝ) / 10 ^ 12 < vacuumWavelength (lineBook 3 1) ∧
-      vacuumWavelength (lineBook 3 1) < (30376 : ℝ) / 10 ^ 12 :=
-  ionFixed_two_one
-
-/-- Regression: the proton-shared hydrogen wavelength divided by four lies above that window. -/
-example {ρp ρα : ℝ}
-    (hp0 : (1836 : ℝ) < ρp) (hp1 : ρp < 1837)
-    (ha0 : (7294 : ℝ) < ρα) (ha1 : ρα < 7295) :
-    vacuumWavelength (lineBook 3 1) * ((ρα + 1) / ρα) <
-      vacuumWavelength (bohrEnergyDiff 1 2) * ((ρp + 1) / ρp) / 4 :=
-  protonShared_above_ion_two_one hp0 hp1 ha0 ha1
 
 /-- Regression: on the diameter the net force is inward throughout the outer well. -/
 example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :

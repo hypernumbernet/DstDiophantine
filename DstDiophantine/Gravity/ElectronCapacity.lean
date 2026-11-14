@@ -2383,6 +2383,39 @@ theorem subshell_seat_counts :
     (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 3 → ℝ) = 3)
   simp [h3, quadrupole_rank, octupole_rank]
 
+/-! ### Diameter in the outer well
+
+The net force is inward. No angular momentum is assigned, and `pr = nℏ`
+does not place a radius on the diameter.
+-/
+
+theorem diameterFactor_eq {x : ℝ}
+    (hγ : gammaSEqual x ≠ 0) (hh : gammaSEqual (x / 2) ≠ 0) :
+    -diameterOutward 2 x =
+      2 / gammaSEqual x - 1 / (4 * gammaSEqual (x / 2)) := by
+  unfold diameterOutward
+  field_simp [hγ, hh]
+  ring
+
+/-- Throughout the outer well the diameter pushes inward. -/
+theorem diameter_inward {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
+    0 < -diameterOutward 2 x := by
+  have hxhalf : x / 2 < x := by linarith [hx.1]
+  have hx2 : x / 2 ∈ Ioo (0 : ℝ) resonanceRoot1 :=
+    ⟨by linarith [hx.1], lt_trans hxhalf hx.2⟩
+  have hγ := gammaSEqual_pos_left_of_first_node hx
+  have hγh := gammaSEqual_pos_left_of_first_node hx2
+  have hrootπ : resonanceRoot1 < π := by
+    linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three]
+  have hlt : gammaSEqual x < gammaSEqual (x / 2) :=
+    (strictAntiOn_gammaSEqual_even 0)
+      (by simpa [Nat.cast_zero, zero_mul] using ⟨hx2.1.le, (lt_trans hx2.2 hrootπ).le⟩)
+      (by simpa [Nat.cast_zero, zero_mul] using ⟨hx.1.le, (lt_trans hx.2 hrootπ).le⟩)
+      hxhalf
+  rw [diameterFactor_eq hγ.ne' hγh.ne', sub_pos]
+  rw [div_lt_div_iff₀ (mul_pos (by norm_num : (0 : ℝ) < 4) hγh) hγ]
+  nlinarith [hγh, hlt]
+
 end Gravity
 
 end DstDiophantine

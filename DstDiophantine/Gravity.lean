@@ -193,19 +193,13 @@ import list of `Gravity.Regression`.
   atomic separation the curvature of a galactic or cosmic compactification does not
   enter the force.
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase.
-  A circular path is radially restoring on one side of a single phase.
-* `HydrogenAlpha` — single-valuedness and the centripetal identity place a circular path at `r=n²
-  a₀ γ_s`. The interference node is not that point.
+  No angular momentum is assigned, and no circular energy is formed.
 * `LineWindow` — a rational bracket for `π` carries a rational window up to the real vacuum
-  wavelength.
+  wavelength. It does not place an atomic radius.
 * `OrbitClosure` — one revolution restores the orbital point and leaves the dual rotor at `-1`.
-  That is not `pr=nℏ`.
-* `SpectralLines` — vacuum-wavelength windows of four hydrogen lines on the SI stand-ins.
-* `HeliumLines` — charge two with one electron, and the two-electron diameter.
-  The proton-shared hydrogen wavelength divided by four is not that line.
-  The radius `a₀/Z` is not an input.
-* `ElectronNumbers` — the circular radius, the first node, the diagonal, the side, the one-electron
-  extremum, and the second node stand in that order.
+  That return contains no momentum. The plane-wave identity `pr=nℏ` does not select a radius.
+* `ElectronNumbers` — the first node, the diagonal, the side, the one-electron extremum, and the
+  second node stand in that order.
 * `ElectronLength` — an outer-well radius caps `ℓ`. The radius `a₀/Z` is not an input.
 * `Rutherford` — the electromagnetic scale on the SI stand-ins, and the head-on distance of a
   `7.69` MeV alpha particle on gold.
@@ -214,8 +208,9 @@ import list of `Gravity.Regression`.
 * `ElectronCapacity` — diameter, cube, and seat counts. Those counts are not indices of the
   equal-scale nodes.
 * `ElectronShape` — a seat is a pattern on directions, not a path.
-* `ElectronAngular` — the square of the angular momentum is the degree times one more than the
-  degree. No fine-structure splitting is claimed.
+* `ElectronAngular` — the square is the response of the pattern when its direction is turned,
+  the degree times one more than the degree. It is not the angular momentum of an electron in
+  circulation, and it does not place a radius. No fine-structure splitting is claimed.
 * `ElectronBoundary` — tetrahedron, octahedron, cube, and icosahedron have no outer radial root
   once the nuclear charge is large enough. An unlike pair is driven toward the first node.
 * `ElectronDodeca` — for every `Z≥8` the dodecahedron has one restoring root before the nearest

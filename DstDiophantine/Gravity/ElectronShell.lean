@@ -27,8 +27,11 @@ an equal-scale diagnostic, and a labelled \(\ell\) envelope.
 
 Under \(\alpha(r)=\beta(r)=\ell/r\), the dimensionless \(x=\ell/(2r)\) satisfies
 \(\tanh x\cdot\tan x=1\). Positive roots lie in branches \((n\pi,\,n\pi+\pi/2)\),
-so \(r_n=\ell/(2x_n)=\Theta(1/n)\), **not** \(\Theta(n^2)\). Rydberg \(n^2\)
-scaling requires separate Bohr bookkeeping \(r_n=n^2 a_0\).
+so \(r_n=\ell/(2x_n)=\Theta(1/n)\), **not** \(\Theta(n^2)\). The outward ladder
+\(r_n=n^2 a_0\) is an external comparison. It is not produced by an angular
+momentum, and \(pr=n\hbar\) is not used to place a radius. The scale \(\ell\)
+is adjusted by the laboratory sign. The de Broglie phase is not closed on a
+nuclear circumference.
 
 No theorem asserts `dst_derives_lambda`.
 -/
@@ -423,16 +426,13 @@ theorem equalScale_radius_O_of_one_over_n
         mul_lt_mul_of_pos_left this (div_pos hℓ (by norm_num))
     _ = ℓ / (2 * (n : ℝ) * π) := by ring
 
-/-! ### Bohr bookkeeping (separate hypothesis) -/
+/-! ### External ladder, for the mismatch only -/
 
-/-- Bohr radius stand-in \(r_n = n^2 a_0\) (separate from equal-scale roots). -/
+/-- External length \(r_n = n^2 a_0\). Not a radius of this force, and not
+produced by \(pr = n\hbar\). Used only to show that equal-scale nodes do not
+occupy it. -/
 noncomputable def bohrShellRadius (n : ℕ) : ℝ :=
   (n : ℝ) ^ 2 * (bohrRadiusApprox : ℝ)
-
-/-- Rydberg-style difference from Bohr radii only (not from \(\gamma_s=0\)). -/
-noncomputable def bohrEnergyDiff (n m : ℕ) : ℝ :=
-  (hydrogenIonisationApprox : ℝ) *
-    ((1 : ℝ) / (n : ℝ) ^ 2 - 1 / (m : ℝ) ^ 2)
 
 theorem bohrShellRadius_pos {n : ℕ} (hn : 0 < n) :
     0 < bohrShellRadius n := by
