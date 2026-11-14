@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Renormalization and discreteness · DST · 繰り込みと離散性 · DST</title>
+<meta name="description" content="A plain-language introduction to Double Spacetime Theory (DST) and its Lean 4 formalisation. 二重時空理論（DST）とその Lean 4 による形式化を一般向けに紹介します。">
+<meta name="theme-color" content="#0b0d14">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Double Spacetime Theory · 二重時空理論">
+<meta property="og:description" content="Gravity as the twist between two spacetimes carried by each particle. 重力は、粒子が運ぶ二つの時空の間のねじれ。">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<script src="lang-init.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html">DST</a>
+  <nav class="site-nav">
+    <a href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+    <a href="overview.html#two"><span class="en">Overview</span><span class="ja">概観</span></a>
+    <a href="gravity.html#gravity"><span class="en">Gravity</span><span class="ja">重力</span></a>
+    <a href="admissible.html#ceiling"><span class="en">Cone</span><span class="ja">錐</span></a>
+    <a href="transport.html#transport"><span class="en">S³</span><span class="ja">三次元球面</span></a>
+    <a href="layers.html#electron"><span class="en">Layers</span><span class="ja">層</span></a>
+    <a href="quantum-gravity.html#quantum-gravity"><span class="en">QG</span><span class="ja">量子重力</span></a>
+    <a href="renormalization.html#renormalization"><span class="en">Renorm</span><span class="ja">繰り込み</span></a>
+    <a href="numbers.html#numbers"><span class="en">Numbers</span><span class="ja">数論</span></a>
+    <a href="lean.html#lean"><span class="en">Lean</span><span class="ja">Lean</span></a>
+  </nav>
+  <button id="lang" class="toggle" type="button" aria-label="Switch language / 言語切替">
+    <span class="opt" data-v="en">EN</span><span class="opt" data-v="ja">日本語</span>
+  </button>
+</header>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="quantum-gravity.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><main id="top">
+<section id="renormalization">
+  <h2><span class="en">10. Taming infinities: renormalization and discreteness</span><span class="ja">10. 無限大、繰り込み、離散性</span></h2>
+  <p class="lead"><span class="en">Quantum field theory and Double Spacetime Theory both run into corrections that blow up when interactions are pushed to very small separations. This chapter compares how twentieth-century physics handled those infinities in a continuous description, and why DST keeps discreteness in the physics instead of removing it when the algebra is finished.</span><span class="ja">量子場の理論も二重時空理論も、相互作用をごく小さい間隔まで見ると発散する修正にぶつかります。本章では、二十世紀の物理学が連続体の記述のなかで無限大をどう扱ったかを整理し、二重時空理論が離散性を計算のあとで消すのではなく、もともと物理の一部として置く理由を述べます。</span></p>
+
+  <h3 class="sub" id="why-infinities"><span class="en">Where the infinities come from</span><span class="ja">無限大が生じる場所</span></h3>
+  <p><span class="en">In quantum electrodynamics and related theories, charges are usually treated as <b>point-like</b>. A point electron in its own electric field then has a <b>self-energy</b> that grows without limit as two points are brought together, and similar divergences appear in vacuum loops. Physicists <b>regulate</b> the integrals, often with a temporary <b>cutoff</b> on momentum or distance, separate the infinite part, and ask what finite physics remains.</span><span class="ja">量子電動力学などでは、電荷はしばしば<b>点</b>として扱われます。点電子が自分の電場のなかにあると、距離を短くするほど<b>自己エネルギー</b>は際限なく大きくなり、真空のループでも同様の発散が出ます。そこで物理学者は積分を<b>正則化</b>します。とくに<b>カットオフ</b>（計算で扱う距離やエネルギーの上限・下限）を一時的に入れ、無限に近い部分を分けて、有限な物理だけを残すかを見ます。</span></p>
+  <p><span class="en">DST also uses continuum formulas, but the electric law is not pure Coulomb. Unlike charges attract through the same <b>interference factor</b> introduced in <a class="ref" href="layers.html#two-lengths">chapter&nbsp;5</a> (the scalar pattern written γ<sub>s</sub> there), and it sits in the <b>denominator</b> of the force. On a discrete set of radii, the <b>nodes</b> between layers, that factor passes through zero. Where it vanishes, the written force is undefined and the barrier blows up outward. In the checked algebra, a node is a <b>divergence of force</b>, not a stop for local clocks. Even before discreteness is added, layer boundaries are warning signs: smooth point charges are not enough.</span><span class="ja">二重時空理論も連続体の式を使いますが、電気の法則は純粋なクーロンではありません。異符号の引力は、<a class="ref" href="layers.html#two-lengths">第5章</a>で述べた<b>干渉の因子</b>（そこでは γ<sub>s</sub> と書く）を通り、その因子は力の<b>分母</b>に入ります。層と層のあいだの<b>節</b>として現れる離散的な半径の列で、この因子はゼロを通過します。ゼロでは書かれた力は定義されず、障壁は外向きに吹き上がります。機械検査済みの代数では、節は局所の時計が止まる場所ではなく、<b>力が発散する場所</b>です。離散性を足す前から、層の境目は滑らかな点電荷だけでは足りない、という合図になっています。</span></p>
+
+  <h3 class="sub" id="traditional-renormalization"><span class="en">Traditional renormalization</span><span class="ja">伝統的な繰り込み</span></h3>
+  <p><span class="en">After the second world war, <b>朝永振一郎</b>, <b>シュウィンガー</b>, and <b>ファインマン</b> gave workable rules for quantum electrodynamics; <b>ダイソン</b> showed how their pictures fit together. The recipe is familiar: introduce a cutoff, pick out the part that diverges, <b>redefine</b> the measured mass and charge to soak it up, then remove the cutoff at the end (take the limit to infinite distance or momentum) while keeping finite predictions. The method matches experiment on the Lamb shift and the electron’s anomalous magnetic moment, among other classic tests.</span><span class="ja">第二次世界大戦後、<b>朝永振一郎</b>、<b>シュウィンガー</b>、<b>ファインマン</b>が量子電動力学の実用的な規則を与え、<b>ダイソン</b>がそれらの描像を一本の理論にまとめました。手順はおなじみです。カットオフを入れ、発散する部分を取り分け、測定された<b>質量</b>と電荷の定義を書き換えてそこへ吸収させ、有限な予言だけを残して<b>最後にカットオフを取り去る</b>（無限大の極限をとる）。ラムシフトや電子の異常磁気モーメントなど、教科書に載る代表例と実験はよく一致します。</span></p>
+  <p><span class="en">In that tradition the cutoff is a <b>calculational device</b>. <b>ディラック</b> and Feynman himself often said they were uneasy when the cutoff was taken away — yet the procedure worked. What mattered was that a finite answer survived after the redefinitions.</span><span class="ja">この伝統ではカットオフは<b>計算の道具</b>です。<b>ディラック</b>やファインマンも、最後にカットオフを取り除くことにしばしば違和感を言いました。それでも手順は成功し、再定義のあとに有限な答えが残ることが要点でした。</span></p>
+
+  <h3 class="sub" id="wilson-rg"><span class="en">Wilson and the renormalization group</span><span class="ja">ウィルソンと繰り込み群</span></h3>
+  <p><span class="en"><b>ウィルソン</b> gave the cutoff a physical reading. It can mark the <b>smallest distance</b> at which new physics appears; observers who only see long wavelengths use an <b>effective theory</b> with fewer degrees of freedom. Coarse-graining, averaging over short-distance ripples, defines how couplings <b>flow</b> as the resolution changes. <b>Lattice</b> field theory is the clearest example: the calculation lives on a grid, and the continuum limit is taken only when the spacing is small enough. Wilson explained why the older absorption method worked: it was secretly following how parameters change with scale.</span><span class="ja"><b>ウィルソン</b>は、カットオフに物理的な意味を与え直しました。そこに新しい物理が現れる<b>最短距離</b>があり、長い波長だけを見る観測者には自由度の少ない<b>有効理論</b>がかろうじて足ります。短距離のゆらぎを平均する粗視化により、分解能を変えると結合定数がどう<b>流れる</b>かが定義されます。<b>格子上の場</b>の理論が分かりやすい例で、計算は最初から格子の上に置かれ、間隔が十分細かいところでだけ連続体の極限を取ります。ウィルソンは、従来の繰り込みがなぜ成功したかを説明しました。パラメータがスケールとともにどう変わるかを、密かに追っていたのです。</span></p>
+
+  <h3 class="sub" id="renormalization-comparison"><span class="en">Two attitudes to the cutoff</span><span class="ja">カットオフへの二つの態度</span></h3>
+  <div class="table-scroll">
+    <table class="datatable">
+      <thead>
+        <tr>
+          <th><span class="en">Approach</span><span class="ja">立場</span></th>
+          <th><span class="en">Meaning of the cutoff</span><span class="ja">カットオフの意味</span></th>
+          <th><span class="en">Taken away at the end?</span><span class="ja">最後に取り去る？</span></th>
+          <th><span class="en">What is predicted</span><span class="ja">予言の内容</span></th>
+          <th><span class="en">Typical examples</span><span class="ja">代表例</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="en">Tomonaga–Schwinger–Feynman–Dyson</span><span class="ja">朝永・シュウィンガー・ファインマン・ダイソン</span></td>
+          <td><span class="en">Temporary bound on integrals while calculating</span><span class="ja">計算の間だけ積分に上限を入れる</span></td>
+          <td class="mid"><span class="en">Yes</span><span class="ja">はい</span></td>
+          <td><span class="en">Small shifts in energy levels and magnetic moment after redefining mass and charge</span><span class="ja">質量・電荷を再定義したあとの、エネルギーや磁気モーメントの有限のずれ</span></td>
+          <td><span class="en">Lamb shift; electron <i>g</i> − 2</span><span class="ja">ラムシフト、電子の <i>g</i> − 2</span></td>
+        </tr>
+        <tr>
+          <td><span class="en">Wilson / lattice</span><span class="ja">ウィルソン／格子</span></td>
+          <td><span class="en">Shortest distance or spacing on the grid</span><span class="ja">格子の最短距離（格子間隔）</span></td>
+          <td class="mid"><span class="en">Often kept</span><span class="ja">しばしば残す</span></td>
+          <td><span class="en">How couplings change with scale at long distance</span><span class="ja">長距離で結合定数がスケールとともにどう変わるか</span></td>
+          <td><span class="en">QCD confinement; critical phenomena</span><span class="ja">QCD の閉じ込め、臨界現象</span></td>
+        </tr>
+        <tr>
+          <td><span class="en">Double Spacetime Theory</span><span class="ja">二重時空理論</span></td>
+          <td><span class="en">Discreteness built into the theory from the start</span><span class="ja">理論にもともと備わる離散性</span></td>
+          <td class="mid"><span class="en">No — part of the physics</span><span class="ja">いいえ（物理の一部）</span></td>
+          <td><span class="en">Where layers sit; finite height of walls (currently under study)</span><span class="ja">層の位置、壁の有限の高さ（現在研究中）</span></td>
+          <td><span class="en">Signed force at nodes; measured inputs such as the fine-structure constant</span><span class="ja">節での符号つきの力；微細構造定数などは測定値を入力</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <svg class="fig" viewBox="0 0 660 240" role="img" aria-label="Schematic: correction diverges at small distance; traditional cutoff is removed; Wilson and DST keep a smallest step">
+    <defs>
+      <marker id="renArrLeft" markerWidth="8" markerHeight="8" refX="0" refY="3" orient="auto">
+        <path d="M6,0 L0,3 L6,6 Z" fill="#ff9a5a"/>
+      </marker>
+    </defs>
+    <g transform="translate(20, 18)">
+      <text class="lbl" x="150" y="22" text-anchor="middle"><tspan class="en">Traditional</tspan><tspan class="ja">従来の繰り込み</tspan></text>
+      <line x1="40" y1="40" x2="40" y2="160" class="axis" stroke-width="1.2"/>
+      <line x1="40" y1="160" x2="285" y2="160" class="axis" stroke-width="1.2"/>
+      <text class="lbl small" x="18" y="100" text-anchor="middle" transform="rotate(-90 18 100)"><tspan class="en">size of correction</tspan><tspan class="ja">修正の大きさ</tspan></text>
+      <text class="lbl small" x="250" y="180" text-anchor="middle"><tspan class="en">distance →</tspan><tspan class="ja">距離 →</tspan></text>
+      <polyline fill="none" stroke="#4fc3ff" stroke-width="2.4" points="48,40 60,100 80,125 110,140 160,150 285,156"/>
+      <text class="lbl small" x="52" y="36" text-anchor="middle">∞</text>
+      <line x1="90" y1="40" x2="90" y2="160" stroke="#ff6b6b" stroke-width="1.8" stroke-dasharray="5 4"/>
+      <text class="lbl small" x="96" y="56" text-anchor="start"><tspan class="en">cutoff</tspan><tspan class="ja">カットオフ</tspan></text>
+      <line x1="86" y1="75" x2="50" y2="75" stroke="#ff9a5a" stroke-width="1.8" marker-end="url(#renArrLeft)"/>
+      <text class="lbl small warmt" x="100" y="92" text-anchor="start"><tspan class="en">removed at the end</tspan><tspan class="ja">最後に取り去る</tspan></text>
+    </g>
+    <g transform="translate(340, 18)">
+      <text class="lbl" x="150" y="22" text-anchor="middle"><tspan class="en">Wilson / DST</tspan><tspan class="ja">ウィルソン流・二重時空理論</tspan></text>
+      <line x1="40" y1="40" x2="40" y2="160" class="axis" stroke-width="1.2"/>
+      <line x1="40" y1="160" x2="285" y2="160" class="axis" stroke-width="1.2"/>
+      <text class="lbl small" x="18" y="100" text-anchor="middle" transform="rotate(-90 18 100)"><tspan class="en">size of correction</tspan><tspan class="ja">修正の大きさ</tspan></text>
+      <text class="lbl small" x="250" y="180" text-anchor="middle"><tspan class="en">distance →</tspan><tspan class="ja">距離 →</tspan></text>
+      <circle cx="40" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="70" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="100" cy="160" r="2.2" fill="#8aa0c0"/>
+      <circle cx="130" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="160" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="190" cy="160" r="2.2" fill="#8aa0c0"/>
+      <circle cx="220" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="250" cy="160" r="2.2" fill="#8aa0c0"/><circle cx="280" cy="160" r="2.2" fill="#8aa0c0"/>
+      <line x1="40" y1="118" x2="70" y2="118" stroke="#4fc3ff" stroke-width="2.4"/>
+      <polyline fill="none" stroke="#4fc3ff" stroke-width="2.4" points="70,118 80,125 110,140 160,150 285,156"/>
+      <line x1="70" y1="40" x2="70" y2="160" stroke="#8aa0c0" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text class="lbl small" x="76" y="56" text-anchor="start"><tspan class="en">smallest step</tspan><tspan class="ja">最小の刻み</tspan></text>
+      <text class="lbl small warmt" x="100" y="92" text-anchor="start"><tspan class="en">stops at a finite height</tspan><tspan class="ja">有限の高さで止まる</tspan></text>
+    </g>
+    <text class="note" x="330" y="228" text-anchor="middle"><tspan class="en">Schematic only, not to scale.</tspan><tspan class="ja">模式図のみ、縮尺どおりではありません。</tspan></text>
+  </svg>
+
+  <h3 class="sub" id="dst-discreteness"><span class="en">Double Spacetime Theory on the Wilson side</span><span class="ja">ウィルソン側から見た二重時空理論</span></h3>
+  <p><span class="en">The integer-based strand was there from the start, not bolted on later. <a class="ref" href="numbers.html#numbers">Chapter&nbsp;11</a> places whole numbers on rotors over a <b>finite torus</b> (ℤ/<i>N</i>ℤ)<sup>6</sup>, a bounded grid of phases. The papers describe <b>discrete radii</b> where the interference factor vanishes, finite crystal pieces whose rotation symmetry is allowed only for <i>n</i> ∈ {1, 2, 3, 4, 6}, and a refusal to treat spacetime as a featureless continuum at the bottom. In the gravity part, one integer interpreted as a ratio to the Planck length sets a <b>lowest allowed strength</b> for a coupling; the machine proof does not pick which integer nature would use. What <em>is</em> proved for electrons is simpler: the Coulomb denominator hits zero at a node, the force blows up there while the clock factor stays finite, and equal-scale nodes move inward rather than along the outward hydrogen ladder used for line comparisons.</span><span class="ja">整数で語る路線は後から足した飾りではなく、最初からあります。<a class="ref" href="numbers.html#numbers">第11章</a>では、整数をローターに載せ、位相の有界な格子である<b>有限トーラス</b> (ℤ/<i>N</i>ℤ)<sup>6</sup> の上で問題を扱います。論文は、干渉の因子が消える<b>離散的な半径</b>、回転対称が <i>n</i> ∈ {1, 2, 3, 4, 6} に限られる有限の結晶片、根本では時空を何の特徴もない連続体とみなさない、という立場を述べます。引力の部分では、プランク長との比が整数になるという条件のもとで、結合定数に<b>これ以上下がらない強さ</b>を置きます。ただし機械検査だけでは、自然界がどの整数を使うかまでは決まりません。電子について<b>証明されている</b>ことは、クーロン力の分母が節でゼロになり、力はそこで発散する一方で時計の因子は有限のままであること、等スケールの節が水素の線との比較に使う外向きのはしごとは逆に、内側へ並ぶこと、です。</span></p>
+  <p><span class="en">Taken together, DST sides with Wilson: the cutoff is not a ghost to banish after the bookkeeping. In the continuum formula, a node is still a formally infinite barrier; discreteness on the compact dual direction, integer constraints in the Diophantine work, and finite shell counts in the crystal sections are how the theory looks for <b>finite walls</b> instead of naked infinities. <b>Currently under study</b> here are the finite height of those walls once a discrete step is chosen, how that step is fixed from measurement, whether long-distance results depend on the step, and whether one measured step lets other quantities be predicted without sliding the cutoff away again.</span><span class="ja">まとめると、二重時空理論はウィルソン側に立ちます。カットオフは仕訳のあとに祓う幽霊ではありません。連続体の式では、節は依然として形式的な無限の障壁です。コンパクトな双対方向への離散位相、整数に基づく部分、結晶に関する論文の有限の殻数などを通じて、裸の無限大の代わりに<b>有限の壁</b>を探します。離散の刻みの大きさをどう観測から決めるか、壁の有限の高さ、長距離の結果が刻みに依存するかどうか、一つの測定からほかの量をカットオフを取り除かずに予言できるか、は<b>現在研究中</b>です。</span></p>
+  <p><span class="en">For nodes and repulsive walls between layers, see <a class="ref" href="layers.html#two-lengths">chapter&nbsp;5</a>; for integers on the cone via motors and the finite torus, see <a class="ref" href="numbers.html#numbers">chapter&nbsp;11</a>.</span><span class="ja">層のあいだの節と斥力の壁は <a class="ref" href="layers.html#two-lengths">第5章</a>、錐への整数の入り方（モーターと有限トーラス）は <a class="ref" href="numbers.html#numbers">第11章</a>を参照してください。</span></p>
+</section>
+</main>
+<nav class="pager" aria-label="Page navigation / ページ移動">
+<a class="prev" href="quantum-gravity.html"><span class="en">← Previous</span><span class="ja">← 前へ</span></a>
+<a class="contents" href="index.html"><span class="en">Contents</span><span class="ja">目次</span></a>
+<a class="next" href="numbers.html"><span class="en">Next →</span><span class="ja">次へ →</span></a>
+</nav><footer><span class="en">An introduction for general readers. The papers and Lean sources are authoritative.</span><span class="ja">一般読者向けの紹介ページです。正確な内容は論文と Lean のソースを参照してください。</span></footer>
+<script src="lang.js"></script>
+</body>
+</html>
