@@ -34,7 +34,10 @@ Write `x = ℓ/(2r)` and `gammaSEqual x = cosh x * cos x - sinh x * sin x`
 * Exact extremal values `gammaSEqual (nπ) = (-1)^n cosh (nπ)`.
 * `gammaSEqual` is strictly monotone on each `[nπ, (n+1)π]` (decreasing for
   even `n`, increasing for odd `n`), so each such interval carries **exactly
-  one** node, and the sign of `gammaSEqual` strictly alternates.
+  one** node. Every positive node is a simple zero. The sign on successive
+  gaps alternates (`ElectronOrbit.successive_gaps_opposite_sign`).
+* At a plateau `x = nπ` the time-dilation factor is `cosh(2nπ)`, not the
+  force denominator `(-1)^n cosh(nπ)`. At a node the clock is `γ_b² > 0`.
 * Sharpened branch localisation: a positive node in `(nπ, (n+1)π)` in fact
   lies in `(nπ + π/4, nπ + π/2)`, because a node forces `tan x = 1/tanh x > 1`.
   This is strictly stronger than the `(nπ, nπ + π/2)` branch of
@@ -140,6 +143,41 @@ theorem gammaSEqual_nat_mul_pi_ne_zero (n : ℕ) :
   have := abs_gammaSEqual_nat_mul_pi n
   rw [h, abs_zero] at this
   exact absurd this.symm (cosh_pos _).ne'
+
+/-! ### The plateau clock is not the force denominator -/
+
+/-- At the equal-scale plateau `x = nπ` the full rapidity is `2nπ`.
+`sin` vanishes, so the time-dilation factor agrees with `cosh(2nπ)`. -/
+theorem gammaEff_equalScale_plateau (n : ℕ) :
+    gammaEff (2 * ((n : ℝ) * π)) (2 * ((n : ℝ) * π)) =
+      cosh (2 * ((n : ℝ) * π)) := by
+  refine gammaEff_balanced_eq_cosh_of_sin_eq_zero ?_
+  have harg : 2 * ((n : ℝ) * π) = ((2 * n : ℕ) : ℝ) * π := by
+    push_cast
+    ring
+  rw [harg, sin_nat_mul_pi]
+
+/-- For `n ≥ 1` the plateau amplitude `|γ_s(nπ)| = cosh(nπ)` is strictly
+smaller than the clock `cosh(2nπ)`. The force denominator is not `γ_eff`. -/
+theorem plateau_clock_gt_force_amplitude (n : ℕ) (hn : 0 < n) :
+    |gammaSEqual ((n : ℝ) * π)| <
+      gammaEff (2 * ((n : ℝ) * π)) (2 * ((n : ℝ) * π)) := by
+  rw [abs_gammaSEqual_nat_mul_pi, gammaEff_equalScale_plateau]
+  have hn0 : (0 : ℝ) < (n : ℝ) := by exact_mod_cast hn
+  have hlt : (n : ℝ) * π < 2 * ((n : ℝ) * π) := by nlinarith [pi_pos]
+  refine cosh_lt_cosh.mpr ?_
+  rw [abs_of_nonneg (by positivity : (0 : ℝ) ≤ (n : ℝ) * π),
+    abs_of_pos (by positivity : (0 : ℝ) < 2 * ((n : ℝ) * π))]
+  exact hlt
+
+/-- The signed plateau value that divides the force is not the clock. -/
+theorem plateau_gammaS_ne_gammaEff (n : ℕ) (hn : 0 < n) :
+    gammaSEqual ((n : ℝ) * π) ≠
+      gammaEff (2 * ((n : ℝ) * π)) (2 * ((n : ℝ) * π)) := by
+  intro heq
+  have hlt := plateau_clock_gt_force_amplitude n hn
+  rw [heq, abs_of_pos (gammaEff_pos _ _)] at hlt
+  exact lt_irrefl _ hlt
 
 /-! ### Sign of `sin` on a branch -/
 
@@ -302,6 +340,28 @@ theorem one_lt_tan_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
   have hsub := cosh_sub_sinh x
   have hp := exp_pos (-x)
   linarith
+
+/-- Every positive node is a simple zero. The derivative vanishes only where
+`sin` does, and a node forces `tan x > 1`, so it is not among those zeros.
+The restriction to `(0, π)` is not required. -/
+theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
+    deriv gammaSEqual x ≠ 0 := by
+  intro hderiv
+  have hsin : sin x = 0 := (deriv_gammaSEqual_eq_zero_iff x).1 hderiv
+  have htan := one_lt_tan_of_gammaSEqual_eq_zero hx h
+  rw [tan_eq_sin_div_cos, hsin, zero_div] at htan
+  exact lt_irrefl (1 : ℝ) (lt_trans htan (by norm_num : (0 : ℝ) < 1))
+
+/-- At a node the clock is the square of the bivector coefficient, hence the
+barrier is a force divergence and not a freeze of proper time. -/
+theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
+    gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 := by
+  have hs : gammaS (2 * x) (2 * x) = 0 := by
+    rw [← gammaSEqual_eq_gammaS]
+    exact h
+  unfold gammaEff
+  rw [hs]
+  ring
 
 /-! ### Sharpened branch localisation -/
 

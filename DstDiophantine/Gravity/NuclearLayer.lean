@@ -658,17 +658,8 @@ theorem paper_Amax_300_not_forced_by_equalScale_layers :
 
 /-! ### Proper time does not freeze at a torsional barrier -/
 
-/-- At a node the interference factor vanishes but the proper-time factor is
-carried entirely by the bivector part. -/
-theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
-    gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 := by
-  have hs : gammaS (2 * x) (2 * x) = 0 := by
-    rw [← gammaSEqual_eq_gammaS]; exact h
-  unfold gammaEff
-  rw [hs]
-  ring
-
-/-- Proper time never freezes at a torsional barrier. -/
+/-- Proper time never freezes at a torsional barrier. The node identity
+`γ_eff = γ_b²` is `gammaEff_eq_gammaB_sq_at_node`. -/
 theorem gammaEff_pos_at_node (x : ℝ) : 0 < gammaEff (2 * x) (2 * x) :=
   gammaEff_pos _ _
 

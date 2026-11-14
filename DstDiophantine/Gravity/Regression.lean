@@ -611,6 +611,23 @@ example (α β : ℝ) : 0 < gammaEff α β :=
 example (α : ℝ) : gammaEff α 0 = Real.cosh α :=
   gammaEff_sr_is_beta_zero α
 
+/-- Regression: a balanced clock agrees with \(\cosh\) exactly at zeros of \(\sin\). -/
+example (α : ℝ) : gammaEff α α = Real.cosh α ↔ Real.sin α = 0 :=
+  gammaEff_balanced_eq_cosh_iff α
+
+/-- Regression: an equal-scale plateau clock is not the force denominator. -/
+example (n : ℕ) (hn : 0 < n) :
+    gammaSEqual ((n : ℝ) * Real.pi) ≠
+      gammaEff (2 * ((n : ℝ) * Real.pi)) (2 * ((n : ℝ) * Real.pi)) :=
+  plateau_gammaS_ne_gammaEff n hn
+
+/-- Regression: successive repulsive layers are not adjacent. -/
+example (n : ℕ) {x y : ℝ}
+    (hx : x ∈ Set.Ioo (branchNode n) (branchNode (n + 1)))
+    (hy : y ∈ Set.Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
+    gammaSEqual x * gammaSEqual y < 0 :=
+  successive_gaps_opposite_sign n hx hy
+
 
 /-! ## Layers and particle dynamics -/
 
