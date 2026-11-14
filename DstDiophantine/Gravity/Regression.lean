@@ -51,6 +51,7 @@ import DstDiophantine.Gravity.ElectronForce
 import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
+import DstDiophantine.Gravity.ElectronStanding
 import DstDiophantine.Gravity.Rutherford
 import DstDiophantine.Gravity.NeutronScatter
 import DstDiophantine.Gravity.ElectronCapacity
@@ -2792,6 +2793,19 @@ example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
 example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     0 < -diameterOutward 2 x :=
   diameter_inward hx
+
+/-- Regression: the standing-wave shortening at the Bohr radius lies below the
+electron-to-proton mass ratio, and the first node lies between `a₀/261` and `a₀/255`. -/
+example :
+    (13312 / 10 ^ 9 : ℝ) < 1 - gammaSEqual bohrPhase ∧
+      1 - gammaSEqual bohrPhase < 13314 / 10 ^ 9 ∧
+        1 - gammaSEqual bohrPhase <
+          (SI.electronMassApprox : ℝ) / (SI.protonMassApprox : ℝ) ∧
+      (1 / 261 : ℝ) < (SI.fineStructureApprox : ℝ) / (2 * resonanceRoot1) ∧
+        (SI.fineStructureApprox : ℝ) / (2 * resonanceRoot1) < 1 / 255 := by
+  have hfrac := hydrogen_fraction_window
+  exact ⟨hfrac.1, hfrac.2.1, hydrogen_shortening_lt_mass_ratio,
+    firstNode_over_bohr_window.1, firstNode_over_bohr_window.2⟩
 
 /-! ## Scales that are inputs -/
 
