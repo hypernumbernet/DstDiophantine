@@ -89,6 +89,9 @@ a.ref{color:var(--usual)}
 .pager .ch-num{font-weight:600}
 .toc-list a:hover{text-decoration:underline}
 .toc-desc{margin:.25rem 0 0;font-size:.9rem;color:var(--mute);font-weight:400}
+.toc-subs{list-style:none;padding:0;margin:.45rem 0 0 1rem;font-size:.9rem}
+.toc-subs a{color:var(--mute);font-weight:500}
+.toc-subs a:hover{color:var(--accent)}
 .open-disclaimer{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1rem 1.2rem;margin:1.5rem 0}
 .pager{display:flex;flex-wrap:wrap;gap:.75rem 1.2rem;justify-content:space-between;align-items:center;padding:.75rem 1.2rem;margin:0 auto;max-width:920px;border-bottom:1px solid var(--line);font-size:.9rem}
 .pager a{color:var(--mute);text-decoration:none}
