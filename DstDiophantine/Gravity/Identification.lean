@@ -48,10 +48,14 @@ QCD \(\alpha_s\) is not paired with `epsN`.
 
 ## Proved / rejected
 
-* `J(φ) = ½ φ²`, `T = -r⁻² formal∂_r(r² B^r)`, Minkowski `T = J_field = 0`.
+* `J(φ) = ½ φ²`. The auxiliary `(2/r²)(1-√A)²/√A` is the divergence of
+  `B^r = 4(1-√A)/r`. The teleparallel quadratic is a different quantity,
+  `-2/r²` on the exterior vacuum, the divergence of `B^r = 2/r`.
 * Boost leg: `∂_r √A = - φ' · √A`.
 * **Rejected:** finite-angle `J = ½ T`; parametric `J5 = ½ T` on flat space;
-  `J_field = ½ T` on Schwarzschild (concrete point).
+  `J_field = ½` times the auxiliary on Schwarzschild (concrete point). At
+  `(rₛ,r)=(2,4)` the field seed is `1/128` and half the frozen quadratic
+  `-2/r²` is `-1/16`.
 * On the radial pure-boost gauge the auxiliary expression
   `(2/r²)(1-√A)²/√A` is not the teleparallel quadratic. `Gravity.RadialQuadratic`
   evaluates the quadratic as `-2(A + r A')/r²`, hence `-2/r²` on the exterior
@@ -149,7 +153,10 @@ theorem naive_parametric_J5_eq_half_flat_T_false :
     (minkowski_T_and_J_field_zero (by norm_num : (0 : ℝ) < 1)).1
   simpa [hT] using hJ5
 
-/-- Algebraic counterexample: `J_field ≠ ½ T` at `rₛ = 2`, `r = 4`. -/
+/-- Algebraic counterexample at `rₛ = 2`, `r = 4`: `J_field` is not half the
+auxiliary expression `(2/r²)(1-√A)²/√A`. That expression is not the
+teleparallel quadratic. The frozen quadratic is compared in
+`J_field_ne_half_frozen_T_two_four`. -/
 theorem J_field_ne_half_T_schwarzschild_point :
     J_field 2 4 ≠ (1 / 2) * schwarzschildTeleparallelT 2 4 := by
   intro h
@@ -185,6 +192,20 @@ theorem J_field_ne_half_T_schwarzschild_point :
   have : s ^ 2 = ((12 : ℝ) / 17) ^ 2 := by rw [hLin]
   rw [hs2] at this
   norm_num at this
+
+/-- At `(rₛ, r) = (2, 4)` the field seed is `1/128` and half the frozen
+teleparallel scalar `-2/r²` is `-1/16`. -/
+theorem J_field_ne_half_frozen_T_two_four :
+    J_field 2 4 = (1 : ℝ) / 128 ∧
+      (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) = -(1 : ℝ) / 16 ∧
+        J_field 2 4 ≠ (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) := by
+  have hA : schwarzschildA 2 4 = (1 : ℝ) / 2 := by
+    simp only [schwarzschildA]; norm_num
+  have hJf : J_field 2 4 = (1 : ℝ) / 128 := by
+    rw [J_field_coef isExterior_two_four, hA]; norm_num
+  refine ⟨hJf, by norm_num, ?_⟩
+  rw [hJf]
+  norm_num
 
 /-! ### Rejected field-seed specialisation of the old conjecture -/
 

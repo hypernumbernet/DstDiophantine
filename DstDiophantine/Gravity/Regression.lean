@@ -127,6 +127,12 @@ open Invariant PGA Generators Logic Operations SourceSuperposition
 
 /-! ## Chart dictionary -/
 
+/-- Regression: at `(rₛ,r)=(2,4)`, `J_field = 1/128` and half the frozen quadratic is `-1/16`. -/
+example :
+    J_field 2 4 = (1 : ℝ) / 128 ∧
+      (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) = -(1 : ℝ) / 16 :=
+  ⟨J_field_ne_half_frozen_T_two_four.1, J_field_ne_half_frozen_T_two_four.2.1⟩
+
 /-- Regression: auxiliary expression `(4/r²)(cosh√(2J)-1)`, not the teleparallel quadratic. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =

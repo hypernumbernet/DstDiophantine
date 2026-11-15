@@ -4,7 +4,8 @@ import DstDiophantine.Gravity.KillingAxis
 /-!
 # The parabolic rotor is a null rotation
 
-Off a common axis, `B⁺₀ + B⁻₁` squares to zero and lies in the Lorentz span,
+Off a common axis, `B⁺₀ + B⁻₁` squares to zero and lies in the Lorentz span.
+Paper labels run through `{1,2,3}`, so this generator is the paper's `B⁺₁ + B⁻₂`.
 complementary to the null ideal. Its exponential therefore truncates. The
 truncations multiply by adding the parameter, the opposite parameter is the
 reverse, and the sandwich preserves the Minkowski product. For a nonzero

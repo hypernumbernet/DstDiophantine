@@ -72,13 +72,17 @@ theorem commutator_sum_right {ι : Type*} (x : PGA) (s : Finset ι) (y : ι → 
   · intro a s ha ih
     simp [Finset.sum_insert ha, commutator_add_right, ih]
 
-/-- Hyperbolic boost generators `B⁺ₐ = e₀ e_{a+1}` for `a = 0,1,2`. -/
+/-- Hyperbolic boost generators `B⁺ₐ = e₀ e_{a+1}` for `a = 0,1,2`.
+The papers label the same list from one: paper `B⁺₁` is `hyperbolic 0`. -/
 noncomputable def hyperbolic : Fin 3 → PGA
   | 0 => ι 0 * ι 1
   | 1 => ι 0 * ι 2
   | 2 => ι 0 * ι 3
 
-/-- Cyclic rotation generators `B⁻₀ = e₃ e₂`, `B⁻₁ = e₁ e₃`, `B⁻₂ = e₂ e₁`. -/
+/-- Cyclic rotation generators `B⁻₀ = e₃ e₂`, `B⁻₁ = e₁ e₃`, `B⁻₂ = e₂ e₁`.
+Paper labels run through `{1,2,3}`, so paper `B⁻₁` is `cyclic 0` and paper
+`B⁻₂` is `cyclic 1`. The null rotation `hyperbolic 0 + cyclic 1` is the
+paper's `B⁺₁ + B⁻₂`. -/
 noncomputable def cyclic : Fin 3 → PGA
   | 0 => ι 3 * ι 2
   | 1 => ι 1 * ι 3

@@ -10,10 +10,16 @@ import Mathlib.Tactic.Ring
 On a fixed chart, `T^a_μν = ∂_μ e^a_ν - ∂_ν e^a_μ`. For the exterior Schwarzschild
 diagonal tetrad we record principal torsion components and prove
 
-* closed form `T = (2/r²)(1-√A)²/√A`;
-* divergence form `T = -r⁻² · formal∂_r(r² B^r)` with `B^r = 4(1-√A)/r`;
+* auxiliary expression `(2/r²)(1-√A)²/√A`, named
+  `schwarzschildTeleparallelT`. It is not the teleparallel quadratic;
+* divergence form of that auxiliary, `-r⁻² · formal∂_r(r² B^r)` with
+  `B^r = 4(1-√A)/r`;
 * field seed `J_field = ½ (φ')²` (see `Gravity.Identification` for the
   parameter-vs-field dictionary).
+
+The quadratic itself is `radialTeleparallel` in `Gravity.RadialQuadratic`:
+`-2(A + r A')/r²`, hence `-2/r²` on the exterior vacuum. The current of that
+frozen value is `B^r = 2/r`, not the auxiliary current above.
 -/
 
 namespace DstDiophantine
