@@ -41,9 +41,10 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
 
 ## Not claimed
 
-* Motion off the equatorial leg. The Levi-Civita action on the static
-  bivector is `Gravity.CurvedTransport`. Flat displacement along a
-  differentiable curve is `Gravity.KillingTransport`.
+* A fixed coordinate latitude. Off the equator the radial law is
+  `Gravity.OffEquator`: `cot θ` keeps `L²` and `r sin θ ûφ` constant, and
+  the polar rate vanishes only with `cot θ` or with `ûφ`. The chart stops
+  where `sin θ = 0`.
 * That the precessing ellipse solves the orbit equation. The residual is
   stated, and it has no resonant harmonic.
 * That the tangential tilt is the retarded field of a moving source. It is

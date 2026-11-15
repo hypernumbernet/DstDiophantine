@@ -20,9 +20,10 @@ one another.
 
 ## Not claimed
 
-* Motion off the equatorial leg, or an identification of the bivector with
-  the torsional mismatch of the parent theory. The Levi-Civita action on
-  the static bivector is `Gravity.CurvedTransport`.
+* An identification of the bivector with the torsional mismatch of the
+  parent theory. The Levi-Civita action on the static bivector is
+  `Gravity.CurvedTransport`. Motion off the equatorial leg is
+  `Gravity.OffEquator`.
 -/
 
 namespace DstDiophantine.Gravity.KillingTransport

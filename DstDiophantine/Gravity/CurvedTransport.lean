@@ -21,7 +21,8 @@ of one another.
 
 ## Not claimed
 
-* Motion off the equatorial leg of the static coframe.
+* A coordinate chart through the poles. Motion off the equatorial leg, with
+  `sin θ ≠ 0`, is `Gravity.OffEquator`.
 * An identification of this bivector with the torsional mismatch of the
   parent theory.
 * A formula that writes the teleparallel scalar as a total divergence for

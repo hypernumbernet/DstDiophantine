@@ -94,6 +94,7 @@ import DstDiophantine.Gravity.ParityBridge
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Perihelion
+import DstDiophantine.Gravity.OffEquator
 import DstDiophantine.Gravity.DegenerateSandwich
 import DstDiophantine.Gravity.KillingTransport
 import DstDiophantine.Gravity.CurvedTransport
@@ -304,6 +305,19 @@ example {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
     6 * Real.pi * M / p < 2 * Real.pi * (1 / k - 1) ∧
       2 * Real.pi * (1 / k - 1) < (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
   Perihelion.perihelion_excess_latus hM hp hx0 hx1
+
+/-- Regression: the sphere's tangent rotation cancels in `ûθ² + ûφ²`. -/
+example (uθ uφ c : ℝ) :
+    2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 :=
+  OffEquator.sphere_rotation_cancels uθ uφ c
+
+/-- Regression: that rotation does not enter the radial geodesic acceleration. -/
+example (rs r θ γ ur uθ uφ : ℝ) :
+    OffEquator.geodesicAccel (CurvedTransport.exteriorConn rs r θ)
+        (OffEquator.frameVel γ ur uθ uφ) 1 =
+      dSqrtA_dr rs r * γ ^ 2 -
+        (KillingAxis.killingNorm rs r / r) * (uθ ^ 2 + uφ ^ 2) :=
+  OffEquator.geodesicAccel_radial rs r θ γ ur uθ uφ
 
 /-- Regression: the radial piece of `γ²` cancels and the transverse piece remains. -/
 example {κ ur uφ : ℝ} :

@@ -97,6 +97,13 @@ import list of `Gravity.Regression`.
   momentum by \(\exp(-\kappa\tau)\). The torsional leg changes only with the radius,
   the radial piece of \(\gamma^2\) cancels, and the transverse piece that remains is
   the perihelion.
+* `OffEquator` — the same radial law with both angular legs. The rotation
+  `cot θ / r` in the tangent plane of the sphere cancels in
+  \(L^2=r^2(\hat{u}_\theta^2+\hat{u}_\varphi^2)\) and in \(r\sin\theta\,\hat{u}_\varphi\),
+  wherever \(\sin\theta\neq 0\), and it does not enter the radial rate. The areal
+  acceleration, \(E=\sqrt{A}\,\gamma\), and the first integral are the equatorial
+  ones in this \(L^2\). An angle advancing at \(L/r^2\) carries the Binet slope.
+  On the equator the polar rate vanishes and the azimuthal rate is the torsional leg.
 
 ## Scales that are inputs
 
