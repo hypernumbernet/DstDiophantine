@@ -194,6 +194,11 @@ import list of `Gravity.Regression`.
   enter the force.
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase.
   No angular momentum is assigned, and no circular energy is formed.
+* `ElectronDiscrete` — a dual step `2π/N` spaces the equal-scale phase by `π/N`. On `[π/4, 1]`,
+  one such step from the first node keeps `|4x²/γ_s| < N`. One step before the node the force
+  exceeds `π N/(4 s₁)`. The outer-well integral cut off one step short of the node is at most
+  a constant plus `(1/s₀) log N`. The continuum pole is the limit that removes the step.
+  A sample is not proved to stay a full step from the node, and the second node is not capped.
 * `ElectronStanding` — the curvature of `e^{-r/a}` supplies the outward force `ℏ²/(m a r²)`.
   It meets the signed force once in the outer well, and the separation-increasing imbalance
   is positive at larger radius, so the balance is unstable and does not hold the electron.
