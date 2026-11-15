@@ -19,8 +19,8 @@ against the derivative of `sin θ` in the azimuthal component, so
 rate. The areal acceleration, the constancy of `E = √A γ`, and the first
 integral are therefore the equatorial ones, read with this `L²`. An
 angle that advances at `L/r²` carries the same slope as the Binet
-residual, and the perihelion excess depends on the motion only through
-this `L²`.
+residual. The radial period of the ellipse that cancels the resonant
+cosine depends on the motion only through this `L²`.
 
 The two constants confine the colatitude:
 `(r sin θ ûφ)² ≤ L² sin²θ`, with equality exactly at `ûθ = 0`. Wherever
@@ -63,6 +63,8 @@ carries the radius,
 
 ## Not claimed
 
+* The radial period of the resonant ellipse as the advance of a solution
+  of the orbit equation. The bound is the period of that ellipse.
 * An identification of this bivector with the torsional mismatch of the
   parent theory.
 * A formula that writes the teleparallel scalar as a total divergence for
@@ -522,8 +524,8 @@ theorem speed_eq_binetResidual {E rs L r v : ℝ} (hr : r ≠ 0)
   rw [hv, binetResidual, schwarzschildA]
   field_simp [hr]
 
-/-- The perihelion excess reads the motion through `L²` alone, so the
-inclined angle that advances at `L/r²` lies in the equatorial interval. -/
+/-- The radial period of the resonant ellipse reads the motion through `L²`
+alone, the same bracket as on the equator. -/
 theorem excess_of_angular_square {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
     (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
     let k := Real.sqrt (1 - 6 * M / p)

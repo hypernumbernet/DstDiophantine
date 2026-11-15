@@ -47,7 +47,8 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
   momentum or the equator. Where the polar leg does not vanish, the
   azimuth gained per colatitude depends on `θ` and the two constants alone.
 * That the precessing ellipse solves the orbit equation. The residual is
-  stated, and it has no resonant harmonic.
+  stated, and it has no resonant harmonic. Its radial period is not the
+  perihelion advance of a solution.
 * That the tangential tilt is the retarded field of a moving source. It is
   the comparison against which the torsional leg is read. No arcseconds
   per century are computed.
@@ -562,7 +563,7 @@ theorem precessing_residual_at {M L e k φ : ℝ} (hL : L ≠ 0)
   simpa [precessingU, deriv_deriv_precessing] using
     precessing_residual (M := M) (L := L) (e := e) (k := k) (θ := k * φ) hL hk
 
-/-! ### The advance per revolution -/
+/-! ### One radial period of the resonant ellipse -/
 
 theorem inv_sqrt_sub_one {x : ℝ} (hx1 : x < 1) (_hx0 : 0 ≤ x) :
     1 / Real.sqrt (1 - x) - 1 =

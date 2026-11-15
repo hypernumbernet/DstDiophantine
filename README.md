@@ -275,6 +275,30 @@ $\ell(r)$ in place of the flat interval. The powers of the speed cancel and
 $d^2 r/d\tau^2 = -r_s/(2r^2)$. One integration recovers
 $(dr/d\tau)^2 = E^2 - A$.
 
+Constant angular momentum on the same coframe leaves
+$d^2 r/d\tau^2 = -\kappa + L^2/r^3 - 3\kappa L^2/r^2$. One share of the
+coefficient $3$ is the transverse speed inside $\gamma^2$, and two shares
+are the deficit $A-1$ in the centrifugal barrier. The precessing ellipse
+that cancels the resonant cosine leaves a constant and a double angle.
+For $0 < 6GM/p < 1$, with $p = L^2/(GM)$, one radial period of that ellipse
+exceeds $2\pi$ by an amount strictly between $6\pi GM/p$ and that quantity
+divided by $1-6GM/p$. Off the equator the same acceleration is read with
+$L^2 = r^2(\hat u_\theta^2 + \hat u_\varphi^2)$. Wherever $\sin\theta \neq 0$,
+the tangent rotation of the sphere cancels in that square and in
+$r\sin\theta\,\hat u_\varphi$.
+
+Inside a spherical mass the boost rate is the enclosed weight
+$\kappa = GM(<r)/r^2$, so it vanishes at the centre. The clock is the
+enclosed compactness, and at the centre it is the vacuum rate. The
+potential gradient remains the weight, below the surface as well as above.
+On the Earth stand-ins the centre clock runs fast relative to the surface
+by $6.96\times 10^{-10}$, the uniform continuum centre runs slow by
+$3.48\times 10^{-10}$, and the shared gradient is $1.093\times 10^{-16}$
+per metre. These figures are rounding bins for the external $GM$, $R$, and
+$c$. The sign of $J$ on a Poincaré bivector is the gravitational sign. The
+equal-scale layers alternate by the interference factor, a separate order
+parameter.
+
 ### Scales that stay inputs
 
 `SI` and `NewtonFromLight` are SI stand-ins. Comparing $c$ with $G$ does not
@@ -517,7 +541,7 @@ $c^4/(G\,\ell_P^{-2})$.
 
 | Group | Modules |
 | --- | --- |
-| Chart | `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `Tetrad`, `Identification`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`, `KillingAxis`, `RadialFall` |
+| Chart | `Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `Tetrad`, `DegenerateSandwich`, `Identification`, `JTDictionary`, `GaugeDictionary`, `ClassicalSchwarzschild`, `LorentzGauge`, `PlaneBracket`, `KillingAxis`, `KillingTransport`, `CurvedTransport`, `RadialFall`, `Perihelion`, `OffEquator`, `InteriorClock` |
 | Inputs | `SI`, `NewtonFromLight`, `EventBoundary`, `CoulombFromDual`, `ElectronShell`, `CompactS3`, `DualImage`, `NuclearLayer`, `ParticleStability`, `BaryonAsymmetry` |
 | Dynamics | `TorsionalLayer`, `DualRotorDynamics`, `DualRotorRigidity`, `DualRotorFlow`, `DualRotorVacuum`, `DualRotorMotor`, `NullRotation`, `RestMass` |
 | Electrons | `ElectronOrbit`, `ElectronForce`, `ElectronIon`, `ElectronSquare`, `ElectronCapacity`, `ElectronShape`, `ElectronBoundary`, `ElectronDodeca`, `ElectronWater`, `ElectronNegativity`, `ElectronMetal`, `ElectronCrystal`, `Blackbody` |

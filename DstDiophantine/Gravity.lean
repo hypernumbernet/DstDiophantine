@@ -91,9 +91,9 @@ import list of `Gravity.Regression`.
 * `Perihelion` — constant angular momentum on that coframe. The areal acceleration
   is \(-\kappa+L^2/r^3-3\kappa L^2/r^2\). One share of the three is the transverse
   speed in \(\gamma^2\); two shares are the deficit \(A-1\) in the centrifugal
-  barrier. For \(0<6M/p<1\) the excess over \(2\pi\) lies strictly between
-  \(6\pi M/p\) and that quantity over \(1-6M/p\). The precessing ellipse is not
-  an exact solution. A tangential tilt \(-\kappa\hat{u}_\varphi\) multiplies angular
+  barrier. For \(0<6M/p<1\) one radial period of the precessing ellipse
+  exceeds \(2\pi\) by an amount strictly between \(6\pi M/p\) and that quantity
+  over \(1-6M/p\). That ellipse is not an exact solution. A tangential tilt \(-\kappa\hat{u}_\varphi\) multiplies angular
   momentum by \(\exp(-\kappa\tau)\). The torsional leg changes only with the radius,
   the radial piece of \(\gamma^2\) cancels, and the transverse piece that remains is
   the perihelion.
@@ -103,7 +103,8 @@ import list of `Gravity.Regression`.
   wherever \(\sin\theta\neq 0\), and it does not enter the radial rate. The areal
   acceleration, \(E=\sqrt{A}\,\gamma\), and the first integral are the equatorial
   ones in this \(L^2\). An angle advancing at \(L/r^2\) carries the Binet slope,
-  and the perihelion excess depends on the motion only through this \(L^2\).
+  and the radial period of the resonant ellipse depends on the motion only
+  through this \(L^2\).
   The constants satisfy \((r\sin\theta\,\hat{u}_\varphi)^2\le L^2\sin^2\theta\),
   with equality exactly at \(\hat{u}_\theta=0\). A nonzero azimuthal constant
   keeps \(\sin^2\theta\) at least that ratio, so the trajectory stays off both

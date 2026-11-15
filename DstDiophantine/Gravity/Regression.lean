@@ -298,7 +298,8 @@ example {rs r L : ℝ} (hr : r ≠ 0) :
         -3 * KillingAxis.killingRate rs r * L ^ 2 / r ^ 2 :=
   Perihelion.perihelion_three_shares hr
 
-/-- Regression: the perihelion excess lies strictly between `6π M/p` and that over `1 − 6M/p`. -/
+/-- Regression: one radial period of the resonant ellipse exceeds `2π` by an
+amount strictly between `6π M/p` and that quantity over `1 − 6M/p`. -/
 example {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
     (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
     let k := Real.sqrt (1 - 6 * M / p)
