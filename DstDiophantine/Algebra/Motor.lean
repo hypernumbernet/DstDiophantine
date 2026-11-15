@@ -40,8 +40,9 @@ strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra expo
   (which differs from `Ω_trans` in general, consistent with `exists_omegaBiv_ne_motor`).
 * Not claimed: a fully closed parametrised product law on `OmegaParams` (this would
   need surjectivity of `exp` from `lorentzSpan` onto the rotor group).
-* Sandwich metric preservation for the full degenerate quadratic form is likewise
-  not claimed.
+* A motor preserves the degenerate square of `G(3,1,1)`. The statement is
+  `Gravity.DegenerateSandwich.motor_degenerate_isometry`. An arbitrary unitary
+  outside the motor subgroup is not treated there.
 -/
 
 namespace DstDiophantine

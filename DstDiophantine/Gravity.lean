@@ -44,6 +44,9 @@ import list of `Gravity.Regression`.
 
 * `Tetrad` — motor sandwich of the reference frame. A pure translator does not reproduce the
   classical Schwarzschild diagonal gauge.
+* `DegenerateSandwich` — a motor preserves the degenerate square. On each reference vector the
+  Minkowski leg is the rotor sandwich and the null coefficient is the pairing of `λ`. The metric
+  and `T` read that leg. They do not see `λ`, and they are not a function of the finite angle `J`.
 * `Identification` — parameter-space `J` against the teleparallel scalar. No pointwise map sends
   `J` to `T` on every tetrad.
 * `RadialQuadratic` — the teleparallel quadratic on the diagonal radial coframe.
@@ -64,6 +67,10 @@ import list of `Gravity.Regression`.
 
 * `KillingAxis` — the static Killing field as a pure boost about an inward axis at distance `ℓ`.
   The squared Killing norm has d'Alembertian `8J`.
+* `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x`
+  and leaves the Lorentz part fixed. Along a differentiable curve the translational part changes
+  at the rate `ω(ẋ)`. `J` is constant. Static bivectors at two exterior radii are not flat
+  transports of one another. Parallel transport in the curved exterior connection is not claimed.
 * `RadialFall` — the same release law on the exterior chart. The speed cancels and
   \(d^2r/d\tau^2=-r_s/(2r^2)\).
 * `Perihelion` — constant angular momentum on that coframe. The areal acceleration
