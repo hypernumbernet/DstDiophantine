@@ -20,9 +20,9 @@ one another.
 
 ## Not claimed
 
-* Parallel transport of the bivector in the curved exterior connection.
 * Motion off the equatorial leg, or an identification of the bivector with
-  the torsional mismatch of the parent theory.
+  the torsional mismatch of the parent theory. The Levi-Civita action on
+  the static bivector is `Gravity.CurvedTransport`.
 -/
 
 namespace DstDiophantine.Gravity.KillingTransport

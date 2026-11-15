@@ -258,6 +258,16 @@ observer is $1/\ell$. The axis reaches the observer at the horizon and
 recedes to infinity far away. For any Poincaré bivector the squared Killing
 norm has d'Alembertian $8J$.
 
+On the exterior orthonormal frame the Levi-Civita connection annihilates the
+outward radial leg. The static boost rate changes with proper radius at
+$-r_s\sqrt{A}/r^3$, and that change is the derivative of the coefficient.
+The Killing norm on the same leg changes at $\kappa$, the flat rate of a
+unit radial step. Along the observer the boost is parallel. Along either
+angular leg the connection tilts it out of the time-radial plane at
+$\kappa\sqrt{A}/r$, and the tangent rotation of the sphere does not enter.
+Static bivectors at two exterior radii are not radial parallel transports
+of one another.
+
 A body released from rest in the flat flow of $K$ accelerates toward the
 axis at $1/\ell$ and meets the light cone of the axis in proper time $\ell$.
 `RadialFall` keeps the same law on the exterior, with chart distance

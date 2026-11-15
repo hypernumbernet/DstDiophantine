@@ -70,14 +70,22 @@ import list of `Gravity.Regression`.
   of `n` is `N₀`. Both are pure translations, the bivector of a motor with vanishing torsion.
   The bracket with the dual of an in-plane axis vanishes. For an arbitrary spatial vector `n`
   the ideal plane `Π(n)` brackets with `k` to the translation along `n`, and with the dual of
-  `n` to `|n|² N₀`. The symmetric product vanishes in both cases. A plane displaced from the
-  origin is not treated.
+  `n` to `|n|² N₀`. The symmetric product vanishes in both cases. Displacing the plane by a
+  coefficient `δ` of the spatial volume keeps the translation, writes `-δ` as the symmetric
+  product, and adds the boost `-δ` along `n` to the time translation.
 * `KillingAxis` — the static Killing field as a pure boost about an inward axis at distance `ℓ`.
   The squared Killing norm has d'Alembertian `8J`.
+* `CurvedTransport` — the Levi-Civita connection of the exterior orthonormal frame annihilates
+  the outward radial leg. The static boost rate changes with proper radius at `-rₛ √A / r³`,
+  and the connection contributes nothing. The Killing norm on that leg changes at `κ`, the
+  flat rate of a unit radial step. Along the observer the boost is parallel. Along either
+  angular leg the connection tilts it out of the time-radial plane at `κ √A / r`; the tangent
+  rotation of the sphere does not enter. Static bivectors at two exterior radii are not radial
+  parallel transports of one another.
 * `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x`
   and leaves the Lorentz part fixed. Along a differentiable curve the translational part changes
   at the rate `ω(ẋ)`. `J` is constant. Static bivectors at two exterior radii are not flat
-  transports of one another. Parallel transport in the curved exterior connection is not claimed.
+  transports of one another. The Levi-Civita action on the static bivector is `CurvedTransport`.
 * `RadialFall` — the same release law on the exterior chart. The speed cancels and
   \(d^2r/d\tau^2=-r_s/(2r^2)\).
 * `Perihelion` — constant angular momentum on that coframe. The areal acceleration

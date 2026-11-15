@@ -96,6 +96,7 @@ import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Perihelion
 import DstDiophantine.Gravity.DegenerateSandwich
 import DstDiophantine.Gravity.KillingTransport
+import DstDiophantine.Gravity.CurvedTransport
 import DstDiophantine.Gravity.PlaneBracket
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
@@ -177,6 +178,43 @@ example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
       ![0, s, 0, 0]).trans.lambda = ![ν + κ * s, 0, 0, 0] :=
   KillingTransport.transported_killing_radial κ ν s
+
+/-- Regression: the exterior connection annihilates the outward radial leg. -/
+example (rs r θ : ℝ) (a b : Fin 4) :
+    CurvedTransport.exteriorConn rs r θ a b 1 = 0 :=
+  CurvedTransport.exteriorConn_radial rs r θ a b
+
+/-- Regression: proper radial change of the boost rate is `-2 κ √A / r`. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.killingNorm rs r * (-(rs / r ^ 3)) =
+      -2 * KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.properRadial_killingRate h
+
+/-- Regression: along the radial leg the Killing norm changes at the flat rate. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.lorentzAct (Amplification.pureBoost (KillingAxis.killingRate rs r))
+        ![0, 1, 0, 0] =
+      ![KillingAxis.killingNorm rs r * dSqrtA_dr rs r, 0, 0, 0] :=
+  CurvedTransport.properRadial_killingNorm_eq_flat h
+
+/-- Regression: the polar leg tilts the static boost at `κ √A / r`. -/
+example (rs r θ : ℝ) :
+    CurvedTransport.connOnBivector (CurvedTransport.exteriorConn rs r θ)
+        (CurvedTransport.staticBoost (KillingAxis.killingRate rs r)) 2 0 2 =
+      KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.conn_staticBoost_polar_02 rs r θ
+
+/-- Regression: the azimuthal tilt has the same rate, with no `cot θ`. -/
+example (rs r θ : ℝ) :
+    CurvedTransport.connOnBivector (CurvedTransport.exteriorConn rs r θ)
+        (CurvedTransport.staticBoost (KillingAxis.killingRate rs r)) 3 0 3 =
+      KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.conn_staticBoost_azimuth_03 rs r θ
+
+/-- Regression: static bivectors at two exterior radii are not a radial parallel transport. -/
+example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) :
+    KillingAxis.killingRate rs r₁ ≠ KillingAxis.killingRate rs r₂ :=
+  CurvedTransport.static_not_radial_parallel h₁ h₂ hne
 
 /-- Regression: static bivectors at two exterior radii are not a flat transport. -/
 example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂)

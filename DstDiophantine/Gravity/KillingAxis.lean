@@ -45,11 +45,12 @@ derivative.
 ## Not claimed
 
 * That the double-spacetime mismatch `Ω` itself is a Killing bivector.
-* Parallel transport in the curved exterior connection. Flat displacement of a
-  fixed bivector, with translational part `λ + ω x` along any differentiable
-  curve, is `Gravity.KillingTransport`. Static bivectors at two exterior radii
-  are not instances of that displacement. The motor's split of each reference
-  vector is `Gravity.DegenerateSandwich`.
+* Flat displacement of a fixed bivector, with translational part `λ + ω x`
+  along any differentiable curve, is `Gravity.KillingTransport`. The
+  Levi-Civita action on the static bivector is `Gravity.CurvedTransport`.
+  Static bivectors at two exterior radii are not instances of either
+  transport. The motor's split of each reference vector is
+  `Gravity.DegenerateSandwich`.
 * That the straight line of the flat flow is a Schwarzschild geodesic. The
   fall law in this file is the Killing jet at one event. `RadialFall` writes
   it as \(d\psi/ds=-\cosh\psi/\rho\) and, with \(\ell(r)\) in place of \(\rho\),

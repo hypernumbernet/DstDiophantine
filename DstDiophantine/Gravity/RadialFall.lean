@@ -30,10 +30,10 @@ A body released from rest at radius `R` has `E² = A(R)`.
 
 * That one fixed flat jet, the straight line `s e₀` at a single `ℓ`, is itself
   a Schwarzschild geodesic.
-* Parallel transport in the curved exterior connection, or motion off the
-  equatorial leg. Flat displacement of a fixed bivector is
-  `Gravity.KillingTransport`. `Perihelion` keeps a constant angular momentum
-  on that leg.
+* Motion off the equatorial leg. The Levi-Civita action on the static
+  bivector is `Gravity.CurvedTransport`. Flat displacement of a fixed
+  bivector is `Gravity.KillingTransport`. `Perihelion` keeps a constant
+  angular momentum on that leg.
 -/
 
 namespace DstDiophantine.Gravity.KillingAxis
