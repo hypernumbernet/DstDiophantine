@@ -331,6 +331,17 @@ example (rs r θ γ ur uθ uφ : ℝ) :
         (KillingAxis.killingNorm rs r / r) * (uθ ^ 2 + uφ ^ 2) :=
   OffEquator.geodesicAccel_radial rs r θ γ ur uθ uφ
 
+/-- Regression: a vanishing azimuthal constant is a meridian, and its polar leg is torsional. -/
+example {r θ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hM : OffEquator.azimuthalMomentum r θ uφ = 0) :
+    uφ = 0 :=
+  OffEquator.azimuthal_leg_of_zero hr hs hM
+
+/-- Regression: on that meridian the colatitude advances at `L/r²`. -/
+example {r uθ L : ℝ} (hr : r ≠ 0) (hL : L = r * uθ) :
+    uθ / r = L / r ^ 2 :=
+  OffEquator.meridian_colatitude_rate hr hL
+
 /-- Regression: the radial piece of `γ²` cancels and the transverse piece remains. -/
 example {κ ur uφ : ℝ} :
     κ * ur ^ 2 - κ * Perihelion.gammaSq ur uφ = -κ * (1 + uφ ^ 2) :=

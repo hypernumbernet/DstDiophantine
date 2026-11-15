@@ -110,6 +110,12 @@ import list of `Gravity.Regression`.
   poles. On the edge the polar acceleration is \((\cot\theta/r)\hat{u}_\varphi^2\):
   positive cosine raises \(\theta\) and negative cosine lowers it.
   On the equator the polar rate vanishes and the azimuthal rate is the torsional leg.
+  A vanishing azimuthal constant forces \(\hat{u}_\varphi=0\) off the poles
+  and keeps \(\varphi\) fixed, so the motion lies on a meridian. Both angular
+  accelerations then lose \(\cot\theta/r\). The polar leg changes by the
+  equatorial torsional law, the colatitude advances at \(L/r^2\) with
+  \(L=r\hat{u}_\theta\), and the radial acceleration is the equatorial one
+  in this \(L\). These rates do not divide by \(\sin\theta\).
 
 ## Scales that are inputs
 

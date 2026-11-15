@@ -21,11 +21,10 @@ of one another.
 
 ## Not claimed
 
-* A coordinate chart through the poles when the azimuthal constant vanishes.
-  A nonzero azimuthal momentum keeps `sin²θ` at least its ratio to `L²`;
-  that bound, and the turning of each edge, is `Gravity.OffEquator`.
 * An identification of this bivector with the torsional mismatch of the
-  parent theory.
+  parent theory. The off-equator orbit, the colatitude band, and the
+  meridian reached when the azimuthal constant vanishes are
+  `Gravity.OffEquator`.
 * A formula that writes the teleparallel scalar as a total divergence for
   an arbitrary motor.
 -/
