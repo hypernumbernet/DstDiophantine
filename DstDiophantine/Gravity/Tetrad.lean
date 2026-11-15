@@ -36,9 +36,10 @@ Light-cone eigenvalues and `(t,r)` coframe scales live in `Gravity.Sandwich` /
 ## Not claimed
 
 * General grade-1 projection for arbitrary multivectors in `G(3,1,1)`.
-* Degenerate-metric isometry of the full sandwich.
 * Angular legs `r`, `r sin θ` from a pure radial boost (spherical reference
   coframe, not `R(φ)`).
+* The degenerate-metric isometry, and the split of each reference vector into
+  a rotor leg and a null shear, are `Gravity.DegenerateSandwich`.
 -/
 
 namespace DstDiophantine

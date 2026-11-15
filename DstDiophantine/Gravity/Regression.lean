@@ -94,6 +94,8 @@ import DstDiophantine.Gravity.ParityBridge
 import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Perihelion
+import DstDiophantine.Gravity.DegenerateSandwich
+import DstDiophantine.Gravity.KillingTransport
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
@@ -140,6 +142,43 @@ example {rs r : ℝ} (h : IsExterior rs r) :
         ((KillingAxis.killingRate rs r / 2) • hyperbolic 0) ∧
       KillingAxis.axisDistance rs r * dSqrtA_dr rs r = 1 :=
   ⟨KillingAxis.staticKilling_eq_sandwich h, KillingAxis.axisDistance_mul_dSqrtA_dr h⟩
+
+/-- Regression: a motor preserves the degenerate square and shears only along the null line. -/
+example (p : Motor.OmegaParams) (v : Vec5) :
+    ∃ w : Vec5,
+      Sandwich.sandwich (Motor.motor p) (DegenerateSandwich.vec5 v) =
+          DegenerateSandwich.vec5 w ∧
+        w 4 = v 4 + DegenerateSandwich.minkowskiPair p.trans.lambda (restrict4 v) ∧
+        Q311 w = Q311 v :=
+  DegenerateSandwich.motor_degenerate_isometry p v
+
+/-- Regression: a pure boost has vanishing null shear while `J` need not. -/
+example (φ : ℝ) (hφ : φ ≠ 0) (μ : Fin 4) :
+    Sandwich.sandwich (Motor.motor ⟨Amplification.pureBoost φ, ⟨fun _ => 0⟩⟩) (frameVec μ) -
+        Sandwich.sandwich (Motor.rotorTorsion (Amplification.pureBoost φ)) (frameVec μ) = 0 ∧
+      J (Amplification.pureBoost φ) ≠ 0 :=
+  DegenerateSandwich.pureBoost_nullShear_zero_of_J φ hφ μ
+
+/-- Regression: moving the origin replaces the translation by the velocity field. -/
+example (p : Motor.OmegaParams) (x : Vec4) :
+    Sandwich.sandwich (Motor.expTrans (KillingTransport.originShift x)) (Motor.omegaBiv p) =
+      Motor.omegaBiv (KillingTransport.transportedParams p x) :=
+  KillingTransport.sandwich_originShift p x
+
+/-- Regression: along the radial line the transported translation is `(ν + κ s) e₀`. -/
+example (κ ν s : ℝ) :
+    (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
+      ![0, s, 0, 0]).trans.lambda = ![ν + κ * s, 0, 0, 0] :=
+  KillingTransport.transported_killing_radial κ ν s
+
+/-- Regression: static bivectors at two exterior radii are not a flat transport. -/
+example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂)
+    (x : Vec4) :
+    (KillingTransport.transportedParams
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r₁)
+          (KillingAxis.killingNorm rs r₁)) x).torsion ≠
+      Amplification.pureBoost (KillingAxis.killingRate rs r₂) :=
+  KillingTransport.static_not_flat_transport h₁ h₂ hne x
 
 /-- Regression: the d'Alembertian of the squared Killing norm is `8J`. -/
 example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :

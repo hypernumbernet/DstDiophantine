@@ -41,7 +41,8 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
 
 ## Not claimed
 
-* A covariant transport of the full Killing bivector along a general curve.
+* Parallel transport of the bivector in the curved exterior connection.
+  Flat displacement along a differentiable curve is `Gravity.KillingTransport`.
 * That the precessing ellipse solves the orbit equation. The residual is
   stated, and it has no resonant harmonic.
 * That the tangential tilt is the retarded field of a moving source. It is

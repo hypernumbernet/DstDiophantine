@@ -25,7 +25,9 @@ import Mathlib.Algebra.BigOperators.Fin
 
 * General grade-1 projection for arbitrary multivectors (chart bridge uses
   closed-form pure-boost sandwiches; see `Gravity.Tetrad`).
-* Isometry of the full degenerate quadratic form of `G(3,1,1)`.
+* Isometry of the degenerate square for a motor `M = RT` is
+  `Gravity.DegenerateSandwich.motor_degenerate_isometry`. An arbitrary unitary
+  outside the motor subgroup is not treated.
 -/
 
 namespace DstDiophantine
