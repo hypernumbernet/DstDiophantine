@@ -51,6 +51,16 @@ on the equator: the two constants are equal, the band collapses to
 torsional leg. Off the equator that leg does not remain zero on any
 interval of positive length.
 
+Where the polar leg does not vanish, the azimuthal slope in the
+colatitude is fixed by `θ` and the two constants. With
+`dθ/dτ = ûθ/r` and `dφ/dτ = ûφ/(r sin θ)`,
+`(dφ/dθ)² = M² / (sin²θ (L² sin²θ − M²))`,
+where `M = r sin θ ûφ`. The radius cancels, and so does the radial
+velocity: two events that share `θ` and the two constants share this
+slope at every radius. The proper-time rate of the colatitude still
+carries the radius,
+`(dθ/dτ)² = (L² sin²θ − M²) / (r⁴ sin²θ)`.
+
 ## Not claimed
 
 * An identification of this bivector with the torsional mismatch of the
@@ -901,6 +911,58 @@ theorem no_fixed_latitude_off_equator {a b : ℝ} {θ r uθ uφ ν ur : ℝ → 
     unfold sphereRotation
     exact div_ne_zero (div_ne_zero hc hs) hr
   exact mul_ne_zero hrot (pow_ne_zero 2 hφ) heq
+
+/-! ### Azimuth gained per colatitude -/
+
+/-- The gap between the two constants is the squared polar contribution. -/
+theorem angular_gap_ne_of_polar {r θ uθ uφ : ℝ}
+    (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hθ : uθ ≠ 0) :
+    angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 -
+        azimuthalMomentum r θ uφ ^ 2 ≠ 0 := by
+  rw [azimuthal_angular_gap]
+  exact pow_ne_zero 2 (mul_ne_zero (mul_ne_zero hr hs) hθ)
+
+/-- Squared azimuthal slope in the colatitude. The radius cancels. -/
+theorem azimuth_per_colatitude {r θ uθ uφ : ℝ}
+    (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hθ : uθ ≠ 0) :
+    ((uφ / (r * Real.sin θ)) / (uθ / r)) ^ 2 =
+      azimuthalMomentum r θ uφ ^ 2 /
+        ((Real.sin θ) ^ 2 *
+          (angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 -
+            azimuthalMomentum r θ uφ ^ 2)) := by
+  have hden : r * Real.sin θ ≠ 0 := mul_ne_zero hr hs
+  have hθr : uθ / r ≠ 0 := div_ne_zero hθ hr
+  have hlhs : ((uφ / (r * Real.sin θ)) / (uθ / r)) ^ 2 =
+      uφ ^ 2 / ((Real.sin θ) ^ 2 * uθ ^ 2) := by
+    field_simp [hden, hθr]
+  rw [hlhs, azimuthal_angular_gap]
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hs2 : (Real.sin θ) ^ 2 ≠ 0 := pow_ne_zero 2 hs
+  have hθ2 : uθ ^ 2 ≠ 0 := pow_ne_zero 2 hθ
+  unfold azimuthalMomentum
+  field_simp [hr2, hs2, hθ2]
+
+/-- Events that share `θ` and the two constants share this slope at every radius. -/
+theorem azimuth_slope_eq_of_constants {r₁ r₂ θ uθ₁ uφ₁ uθ₂ uφ₂ : ℝ}
+    (hr₁ : r₁ ≠ 0) (hr₂ : r₂ ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hθ₁ : uθ₁ ≠ 0) (hθ₂ : uθ₂ ≠ 0)
+    (hL : angularMomentumSq r₁ uθ₁ uφ₁ = angularMomentumSq r₂ uθ₂ uφ₂)
+    (hM : azimuthalMomentum r₁ θ uφ₁ = azimuthalMomentum r₂ θ uφ₂) :
+    ((uφ₁ / (r₁ * Real.sin θ)) / (uθ₁ / r₁)) ^ 2 =
+      ((uφ₂ / (r₂ * Real.sin θ)) / (uθ₂ / r₂)) ^ 2 := by
+  rw [azimuth_per_colatitude hr₁ hs hθ₁, azimuth_per_colatitude hr₂ hs hθ₂, hL, hM]
+
+/-- In proper time the colatitude still advances at a rate that carries the radius. -/
+theorem colatitude_rate_sq {r θ uθ uφ : ℝ}
+    (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
+    (uθ / r) ^ 2 =
+      (angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 -
+        azimuthalMomentum r θ uφ ^ 2) /
+        (r ^ 4 * (Real.sin θ) ^ 2) := by
+  rw [azimuthal_angular_gap]
+  have hr4 : r ^ 4 ≠ 0 := pow_ne_zero 4 hr
+  have hs2 : (Real.sin θ) ^ 2 ≠ 0 := pow_ne_zero 2 hs
+  field_simp [hr4, hs2]
 
 end DstDiophantine.Gravity.OffEquator
 

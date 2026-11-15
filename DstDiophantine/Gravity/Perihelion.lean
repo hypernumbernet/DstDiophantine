@@ -44,7 +44,8 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
 * A coordinate chart through the poles. A nonzero azimuthal constant keeps
   `sin²θ` away from zero. Where a colatitude stays fixed,
   `Gravity.OffEquator` gives either a radial motion of vanishing angular
-  momentum or the equator.
+  momentum or the equator. Where the polar leg does not vanish, the
+  azimuth gained per colatitude depends on `θ` and the two constants alone.
 * That the precessing ellipse solves the orbit equation. The residual is
   stated, and it has no resonant harmonic.
 * That the tangential tilt is the retarded field of a moving source. It is

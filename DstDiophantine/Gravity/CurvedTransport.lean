@@ -22,9 +22,9 @@ of one another.
 ## Not claimed
 
 * An identification of this bivector with the torsional mismatch of the
-  parent theory. The off-equator orbit, the colatitude band, and the
-  meridian reached when the azimuthal constant vanishes are
-  `Gravity.OffEquator`.
+  parent theory. The off-equator orbit, the colatitude band, the
+  meridian reached when the azimuthal constant vanishes, and the
+  azimuthal slope per colatitude are `Gravity.OffEquator`.
 * A formula that writes the teleparallel scalar as a total divergence for
   an arbitrary motor.
 -/

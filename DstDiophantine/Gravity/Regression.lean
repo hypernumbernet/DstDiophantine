@@ -356,6 +356,18 @@ example {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
     (Real.sin θ) ^ 2 = 1 ∧ uθ = 0 :=
   OffEquator.band_collapses_to_equator hr hs hL heq
 
+/-- Regression: the azimuthal slope in colatitude is the same at every radius. -/
+example {r₁ r₂ θ uθ₁ uφ₁ uθ₂ uφ₂ : ℝ}
+    (hr₁ : r₁ ≠ 0) (hr₂ : r₂ ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hθ₁ : uθ₁ ≠ 0) (hθ₂ : uθ₂ ≠ 0)
+    (hL : OffEquator.angularMomentumSq r₁ uθ₁ uφ₁ =
+      OffEquator.angularMomentumSq r₂ uθ₂ uφ₂)
+    (hM : OffEquator.azimuthalMomentum r₁ θ uφ₁ =
+      OffEquator.azimuthalMomentum r₂ θ uφ₂) :
+    ((uφ₁ / (r₁ * Real.sin θ)) / (uθ₁ / r₁)) ^ 2 =
+      ((uφ₂ / (r₂ * Real.sin θ)) / (uθ₂ / r₂)) ^ 2 :=
+  OffEquator.azimuth_slope_eq_of_constants hr₁ hr₂ hs hθ₁ hθ₂ hL hM
+
 /-- Regression: the radial piece of `γ²` cancels and the transverse piece remains. -/
 example {κ ur uφ : ℝ} :
     κ * ur ^ 2 - κ * Perihelion.gammaSq ur uφ = -κ * (1 + uφ ^ 2) :=

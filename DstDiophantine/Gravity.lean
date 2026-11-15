@@ -120,6 +120,9 @@ import list of `Gravity.Regression`.
   momentum, or the equator: there the two constants agree, the band
   collapses to \(\sin^2\theta=1\), and the polar leg remains zero. Off the
   equator that leg does not remain zero on an interval of positive length.
+  Where the polar leg does not vanish, \((d\varphi/d\theta)^2\) depends on
+  \(\theta\) and the two constants alone: the radius cancels. The
+  proper-time rate \((d\theta/d\tau)^2\) still carries the radius.
 
 ## Scales that are inputs
 
