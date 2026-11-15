@@ -42,9 +42,10 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
 ## Not claimed
 
 * A fixed coordinate latitude. Off the equator the radial law is
-  `Gravity.OffEquator`: `cot θ` keeps `L²` and `r sin θ ûφ` constant, and
-  the polar rate vanishes only with `cot θ` or with `ûφ`. The chart stops
-  where `sin θ = 0`.
+  `Gravity.OffEquator`: the two constants confine `sin²θ`, each edge turns
+  back toward the equator, and the polar acceleration vanishes there only
+  with `cot θ` or with `ûφ`. The chart still stops where `sin θ = 0`, which
+  a nonzero azimuthal constant does not meet.
 * That the precessing ellipse solves the orbit equation. The residual is
   stated, and it has no resonant harmonic.
 * That the tangential tilt is the retarded field of a moving source. It is

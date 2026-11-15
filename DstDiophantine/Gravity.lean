@@ -102,7 +102,13 @@ import list of `Gravity.Regression`.
   \(L^2=r^2(\hat{u}_\theta^2+\hat{u}_\varphi^2)\) and in \(r\sin\theta\,\hat{u}_\varphi\),
   wherever \(\sin\theta\neq 0\), and it does not enter the radial rate. The areal
   acceleration, \(E=\sqrt{A}\,\gamma\), and the first integral are the equatorial
-  ones in this \(L^2\). An angle advancing at \(L/r^2\) carries the Binet slope.
+  ones in this \(L^2\). An angle advancing at \(L/r^2\) carries the Binet slope,
+  and the perihelion excess depends on the motion only through this \(L^2\).
+  The constants satisfy \((r\sin\theta\,\hat{u}_\varphi)^2\le L^2\sin^2\theta\),
+  with equality exactly at \(\hat{u}_\theta=0\). A nonzero azimuthal constant
+  keeps \(\sin^2\theta\) at least that ratio, so the trajectory stays off both
+  poles. On the edge the polar acceleration is \((\cot\theta/r)\hat{u}_\varphi^2\):
+  positive cosine raises \(\theta\) and negative cosine lowers it.
   On the equator the polar rate vanishes and the azimuthal rate is the torsional leg.
 
 ## Scales that are inputs

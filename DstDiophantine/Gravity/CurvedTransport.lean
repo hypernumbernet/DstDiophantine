@@ -21,8 +21,9 @@ of one another.
 
 ## Not claimed
 
-* A coordinate chart through the poles. Motion off the equatorial leg, with
-  `sin θ ≠ 0`, is `Gravity.OffEquator`.
+* A coordinate chart through the poles when the azimuthal constant vanishes.
+  A nonzero azimuthal momentum keeps `sin²θ` at least its ratio to `L²`;
+  that bound, and the turning of each edge, is `Gravity.OffEquator`.
 * An identification of this bivector with the torsional mismatch of the
   parent theory.
 * A formula that writes the teleparallel scalar as a total divergence for

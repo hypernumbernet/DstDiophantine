@@ -311,6 +311,18 @@ example (uθ uφ c : ℝ) :
     2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 :=
   OffEquator.sphere_rotation_cancels uθ uφ c
 
+/-- Regression: the azimuthal constant cannot exceed `L²` on the sphere. -/
+example (r θ uθ uφ : ℝ) :
+    OffEquator.azimuthalMomentum r θ uφ ^ 2 ≤
+      OffEquator.angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 :=
+  OffEquator.azimuthal_le_angular r θ uθ uφ
+
+/-- Regression: north of the equator the band edge raises `θ`. -/
+example {r θ uφ : ℝ} (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ)
+    (hφ : uφ ≠ 0) :
+    0 < OffEquator.sphereRotation θ r * uφ ^ 2 :=
+  OffEquator.northern_edge_rate hr hs hc hφ
+
 /-- Regression: that rotation does not enter the radial geodesic acceleration. -/
 example (rs r θ γ ur uθ uφ : ℝ) :
     OffEquator.geodesicAccel (CurvedTransport.exteriorConn rs r θ)

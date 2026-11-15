@@ -19,15 +19,29 @@ against the derivative of `sin θ` in the azimuthal component, so
 rate. The areal acceleration, the constancy of `E = √A γ`, and the first
 integral are therefore the equatorial ones, read with this `L²`. An
 angle that advances at `L/r²` carries the same slope as the Binet
-residual. On the equator, `cos θ = 0` and `ûθ = 0` kill the polar rate
-and return the torsional azimuthal leg.
+residual, and the perihelion excess depends on the motion only through
+this `L²`.
+
+The two constants confine the colatitude:
+`(r sin θ ûφ)² ≤ L² sin²θ`, with equality exactly at `ûθ = 0`. Wherever
+`L² ≠ 0`, `sin²θ` is at least that ratio. A nonzero azimuthal constant
+therefore stays a definite distance from both poles, and `cot θ / r`
+remains finite along the motion. The polar leg carries the remainder
+`ûθ² = (L² − (r sin θ ûφ)² / sin²θ) / r²`. On the edge the polar
+acceleration is `(cot θ / r) ûφ²`. Positive cosine raises `θ` and
+negative cosine lowers it, so each edge turns back toward the equator.
+The edge is an orbit only where `cot θ = 0`. On the equator,
+`cos θ = 0` and `ûθ = 0` kill the polar rate and return the torsional
+azimuthal leg.
 
 ## Not claimed
 
-* A coordinate chart through the poles. Both conservations are stated
-  where `sin θ ≠ 0`, so that `cot θ` is a real connection coefficient.
-* That a fixed coordinate latitude is an orbit. The polar rate vanishes
-  with `cot θ` or with `ûφ`, and not otherwise.
+* A coordinate chart through the poles when the azimuthal constant
+  vanishes. A nonzero `r sin θ ûφ` keeps `sin²θ` at least the square of
+  its ratio to `L²`.
+* That a fixed coordinate latitude is an orbit. The band edge has
+  vanishing polar velocity, and the polar acceleration vanishes there
+  only with `cot θ` or with `ûφ`.
 * An identification of this bivector with the torsional mismatch of the
   parent theory.
 * A formula that writes the teleparallel scalar as a total divergence for
@@ -486,6 +500,147 @@ theorem speed_eq_binetResidual {E rs L r v : ℝ} (hr : r ≠ 0)
     v ^ 2 = binetResidual E rs L (1 / r) := by
   rw [hv, binetResidual, schwarzschildA]
   field_simp [hr]
+
+/-- The perihelion excess reads the motion through `L²` alone, so the
+inclined angle that advances at `L/r²` lies in the equatorial interval. -/
+theorem excess_of_angular_square {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
+    (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
+    let k := Real.sqrt (1 - 6 * M / p)
+    6 * Real.pi * M / p < 2 * Real.pi * (1 / k - 1) ∧
+      2 * Real.pi * (1 / k - 1) < (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
+  Perihelion.perihelion_excess_latus hM hp hx0 hx1
+
+/-! ### The colatitude band -/
+
+theorem angularMomentumSq_nonneg (r uθ uφ : ℝ) : 0 ≤ angularMomentumSq r uθ uφ := by
+  unfold angularMomentumSq
+  positivity
+
+/-- `(r sin θ ûφ)² ≤ L² sin²θ`. The difference is the polar leg. -/
+theorem azimuthal_le_angular (r θ uθ uφ : ℝ) :
+    azimuthalMomentum r θ uφ ^ 2 ≤
+      angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 := by
+  unfold azimuthalMomentum angularMomentumSq
+  have hpol : 0 ≤ (r * Real.sin θ * uθ) ^ 2 := sq_nonneg _
+  nlinarith [hpol]
+
+theorem azimuthal_angular_gap (r θ uθ uφ : ℝ) :
+    angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 -
+        azimuthalMomentum r θ uφ ^ 2 =
+      (r * Real.sin θ * uθ) ^ 2 := by
+  unfold azimuthalMomentum angularMomentumSq
+  ring
+
+/-- Equality is exactly the vanishing of the polar leg, off the poles and the origin. -/
+theorem azimuthal_eq_angular_iff {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
+    azimuthalMomentum r θ uφ ^ 2 =
+      angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 ↔ uθ = 0 := by
+  constructor
+  · intro h
+    have hgap := azimuthal_angular_gap r θ uθ uφ
+    have hzero : (r * Real.sin θ * uθ) ^ 2 = 0 := by
+      rw [← hgap, h, sub_self]
+    have hfac : r * Real.sin θ ≠ 0 := mul_ne_zero hr hs
+    exact (mul_eq_zero.mp (sq_eq_zero_iff.mp hzero)).resolve_left hfac
+  · intro hθ
+    unfold azimuthalMomentum angularMomentumSq
+    simp only [hθ]
+    ring
+
+/-- Wherever `L² ≠ 0`, `sin²θ` is at least the square of the ratio of the constants. -/
+theorem colatitude_band (r θ uθ uφ : ℝ) (hL : angularMomentumSq r uθ uφ ≠ 0) :
+    azimuthalMomentum r θ uφ ^ 2 / angularMomentumSq r uθ uφ ≤
+      (Real.sin θ) ^ 2 := by
+  have hpos : 0 < angularMomentumSq r uθ uφ :=
+    lt_of_le_of_ne (angularMomentumSq_nonneg r uθ uφ) (Ne.symm hL)
+  have hle : azimuthalMomentum r θ uφ ^ 2 ≤
+      (Real.sin θ) ^ 2 * angularMomentumSq r uθ uφ := by
+    simpa [mul_comm] using azimuthal_le_angular r θ uθ uφ
+  exact (div_le_iff₀ hpos).mpr hle
+
+/-- A nonzero azimuthal constant makes that lower bound positive. -/
+theorem band_ratio_pos {r θ uθ uφ : ℝ}
+    (hL : angularMomentumSq r uθ uφ ≠ 0) (hLz : azimuthalMomentum r θ uφ ≠ 0) :
+    0 < azimuthalMomentum r θ uφ ^ 2 / angularMomentumSq r uθ uφ := by
+  have hpos : 0 < angularMomentumSq r uθ uφ :=
+    lt_of_le_of_ne (angularMomentumSq_nonneg r uθ uφ) (Ne.symm hL)
+  exact div_pos (sq_pos_of_ne_zero hLz) hpos
+
+/-- The polar leg is what `L²` does not put into the azimuthal constant. -/
+theorem polar_leg {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
+    uθ ^ 2 =
+      (angularMomentumSq r uθ uφ -
+        azimuthalMomentum r θ uφ ^ 2 / (Real.sin θ) ^ 2) / r ^ 2 := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hs2 : (Real.sin θ) ^ 2 ≠ 0 := pow_ne_zero 2 hs
+  unfold angularMomentumSq azimuthalMomentum
+  field_simp [hr2, hs2]
+  ring
+
+/-- Along a motion that keeps both constants, the band holds at every time. -/
+theorem colatitude_band_of_constants {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
+    (hab : a ≤ b)
+    (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
+    (hs : ∀ τ ∈ Icc a b, Real.sin (θ τ) ≠ 0)
+    (hr : ∀ τ ∈ Icc a b, HasDerivAt r (ν τ * ur τ) τ)
+    (hθc : ∀ τ ∈ Icc a b, HasDerivAt θ (uθ τ / r τ) τ)
+    (hθ : ∀ τ ∈ Icc a b,
+      HasDerivAt uθ (-(ν τ / r τ) * ur τ * uθ τ +
+        sphereRotation (θ τ) (r τ) * (uφ τ) ^ 2) τ)
+    (hφ : ∀ τ ∈ Icc a b, HasDerivAt uφ
+      (-(ν τ / r τ) * ur τ * uφ τ -
+        sphereRotation (θ τ) (r τ) * uθ τ * uφ τ) τ)
+    {τ₀ τ : ℝ} (h₀ : τ₀ ∈ Icc a b) (hτ : τ ∈ Icc a b)
+    (hL : angularMomentumSq (r τ₀) (uθ τ₀) (uφ τ₀) ≠ 0) :
+    azimuthalMomentum (r τ₀) (θ τ₀) (uφ τ₀) ^ 2 /
+        angularMomentumSq (r τ₀) (uθ τ₀) (uφ τ₀) ≤
+      (Real.sin (θ τ)) ^ 2 := by
+  have hLeq := angularMomentumSq_eq_on hab hρ hr hθ hφ hτ h₀
+  have hMeq := azimuthalMomentum_eq_on hab hρ hs hr hθc hφ hτ h₀
+  have hLτ : angularMomentumSq (r τ) (uθ τ) (uφ τ) ≠ 0 := by
+    rw [hLeq]
+    exact hL
+  have hband := colatitude_band (r τ) (θ τ) (uθ τ) (uφ τ) hLτ
+  rw [hMeq, hLeq] at hband
+  exact hband
+
+/-! ### The edge turns back toward the equator -/
+
+theorem edge_polar_accel (rs r θ γ ur uφ : ℝ) :
+    geodesicAccel (exteriorConn rs r θ) (frameVel γ ur 0 uφ) 2 =
+      -(sphereRotation θ r * uφ ^ 2) := by
+  rw [geodesicAccel_polar]
+  ring
+
+/-- Off the equator, with azimuthal speed, the edge is not an orbit. -/
+theorem edge_polar_accel_ne {rs r θ γ ur uφ : ℝ}
+    (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hc : Real.cos θ ≠ 0) (hφ : uφ ≠ 0) :
+    geodesicAccel (exteriorConn rs r θ) (frameVel γ ur 0 uφ) 2 ≠ 0 := by
+  rw [edge_polar_accel]
+  unfold sphereRotation
+  have hrot : (Real.cos θ / Real.sin θ) / r ≠ 0 :=
+    div_ne_zero (div_ne_zero hc hs) hr
+  exact neg_ne_zero.mpr (mul_ne_zero hrot (pow_ne_zero 2 hφ))
+
+theorem sphereRotation_mul_cos (r θ : ℝ) (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
+    sphereRotation θ r = Real.cos θ / (Real.sin θ * r) := by
+  unfold sphereRotation
+  field_simp [hr, hs]
+
+/-- North of the equator the edge raises `θ`. -/
+theorem northern_edge_rate {r θ uφ : ℝ}
+    (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ) (hφ : uφ ≠ 0) :
+    0 < sphereRotation θ r * uφ ^ 2 := by
+  rw [sphereRotation_mul_cos r θ hr.ne' hs.ne']
+  exact mul_pos (div_pos hc (mul_pos hs hr)) (sq_pos_of_ne_zero hφ)
+
+/-- South of the equator the edge lowers `θ`. -/
+theorem southern_edge_rate {r θ uφ : ℝ}
+    (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : Real.cos θ < 0) (hφ : uφ ≠ 0) :
+    sphereRotation θ r * uφ ^ 2 < 0 := by
+  rw [sphereRotation_mul_cos r θ hr.ne' hs.ne']
+  exact mul_neg_of_neg_of_pos (div_neg_of_neg_of_pos hc (mul_pos hs hr))
+    (sq_pos_of_ne_zero hφ)
 
 end DstDiophantine.Gravity.OffEquator
 
