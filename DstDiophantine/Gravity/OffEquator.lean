@@ -43,11 +43,16 @@ equatorial torsional law, the colatitude advances at `L/r²` with
 stay finite at `θ = 0` and `θ = π`. The coordinate that degenerates
 there is the azimuthal one.
 
+A fixed colatitude occurs in two ways. Vanishing angular momentum kills
+both legs, so neither the colatitude nor the azimuth advances, and the
+motion is radial. Nonzero angular momentum keeps a colatitude fixed only
+on the equator: the two constants are equal, the band collapses to
+`sin²θ = 1`, and the polar leg remains zero, with the azimuthal rate the
+torsional leg. Off the equator that leg does not remain zero on any
+interval of positive length.
+
 ## Not claimed
 
-* That a fixed coordinate latitude is an orbit. The band edge has
-  vanishing polar velocity, and the polar acceleration vanishes there
-  only with `cot θ` or with `ûφ`.
 * An identification of this bivector with the torsional mismatch of the
   parent theory.
 * A formula that writes the teleparallel scalar as a total divergence for
@@ -738,6 +743,164 @@ theorem meridian_radial_is_equatorial {rs r ur uθ : ℝ} (h : IsExterior rs r)
   unfold radialMomentumRate gammaSq angularMomentum gammaSq3
   field_simp [hr]
   ring
+
+/-! ### A fixed colatitude is radial, or it is the equator -/
+
+/-- Vanishing angular momentum kills both angular legs. -/
+theorem angular_legs_of_zero {r uθ uφ : ℝ} (hr : r ≠ 0)
+    (hL : angularMomentumSq r uθ uφ = 0) : uθ = 0 ∧ uφ = 0 := by
+  unfold angularMomentumSq at hL
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hsum : uθ ^ 2 + uφ ^ 2 = 0 := (mul_eq_zero.mp hL).resolve_left hr2
+  refine ⟨?_, ?_⟩
+  · exact sq_eq_zero_iff.mp
+      (le_antisymm (by nlinarith [sq_nonneg uφ]) (sq_nonneg uθ))
+  · exact sq_eq_zero_iff.mp
+      (le_antisymm (by nlinarith [sq_nonneg uθ]) (sq_nonneg uφ))
+
+/-- A vanishing polar leg does not advance the colatitude. -/
+theorem colatitude_const_of_zero_polar {a b : ℝ} {θ r uθ : ℝ → ℝ} (_hab : a ≤ b)
+    (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
+    (hθ : ∀ τ ∈ Icc a b, HasDerivAt θ (uθ τ / r τ) τ)
+    (hleg : ∀ τ ∈ Icc a b, uθ τ = 0)
+    {τ₁ τ₂ : ℝ} (h₁ : τ₁ ∈ Icc a b) (h₂ : τ₂ ∈ Icc a b) :
+    θ τ₁ = θ τ₂ := by
+  have h0 : ∀ σ ∈ Icc a b, HasDerivAt θ 0 σ := by
+    intro σ hσ
+    have hden : r σ ≠ 0 := hρ σ hσ
+    have hrate : uθ σ / r σ = 0 := by
+      rw [hleg σ hσ]
+      exact (div_eq_iff hden).mpr (by ring)
+    exact (hθ σ hσ).congr_deriv hrate
+  have hlip :=
+    Convex.norm_image_sub_le_of_norm_deriv_le (𝕜 := ℝ) (C := 0) (f := θ) (s := Icc a b)
+      (fun σ hσ => (h0 σ hσ).differentiableAt)
+      (fun σ hσ => by
+        rw [(h0 σ hσ).deriv]
+        simp)
+      (convex_Icc a b) h₁ h₂
+  have hle : ‖θ τ₂ - θ τ₁‖ ≤ 0 := by simpa using hlip
+  have hsub : θ τ₂ - θ τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
+  exact (sub_eq_zero.mp hsub).symm
+
+/-- Vanishing angular momentum is a radial line at fixed angles. -/
+theorem radial_angles_fixed {a b : ℝ} {θ φ r uθ uφ ν ur : ℝ → ℝ}
+    (hab : a ≤ b)
+    (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
+    (hs : ∀ τ ∈ Icc a b, Real.sin (θ τ) ≠ 0)
+    (hr : ∀ τ ∈ Icc a b, HasDerivAt r (ν τ * ur τ) τ)
+    (hθc : ∀ τ ∈ Icc a b, HasDerivAt θ (uθ τ / r τ) τ)
+    (hφc : ∀ τ ∈ Icc a b, HasDerivAt φ (uφ τ / (r τ * Real.sin (θ τ))) τ)
+    (hθ : ∀ τ ∈ Icc a b,
+      HasDerivAt uθ (-(ν τ / r τ) * ur τ * uθ τ +
+        sphereRotation (θ τ) (r τ) * (uφ τ) ^ 2) τ)
+    (hφ : ∀ τ ∈ Icc a b, HasDerivAt uφ
+      (-(ν τ / r τ) * ur τ * uφ τ -
+        sphereRotation (θ τ) (r τ) * uθ τ * uφ τ) τ)
+    {τ₀ τ₁ τ₂ : ℝ} (h₀ : τ₀ ∈ Icc a b) (h₁ : τ₁ ∈ Icc a b) (h₂ : τ₂ ∈ Icc a b)
+    (hL : angularMomentumSq (r τ₀) (uθ τ₀) (uφ τ₀) = 0) :
+    θ τ₁ = θ τ₂ ∧ φ τ₁ = φ τ₂ := by
+  have hlegs : ∀ τ ∈ Icc a b, uθ τ = 0 ∧ uφ τ = 0 := by
+    intro τ hτ
+    have hEq := angularMomentumSq_eq_on hab hρ hr hθ hφ hτ h₀
+    exact angular_legs_of_zero (hρ τ hτ) (hEq.trans hL)
+  refine ⟨?_, ?_⟩
+  · exact colatitude_const_of_zero_polar hab hρ hθc (fun τ hτ => (hlegs τ hτ).1) h₁ h₂
+  · exact meridian_phi_const hab hρ hs hφc (fun τ hτ => (hlegs τ hτ).2) h₁ h₂
+
+/-- Where the constants agree, the band is the equator and the polar leg vanishes. -/
+theorem band_collapses_to_equator {r θ uθ uφ : ℝ}
+    (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hL : angularMomentumSq r uθ uφ ≠ 0)
+    (heq : azimuthalMomentum r θ uφ ^ 2 = angularMomentumSq r uθ uφ) :
+    (Real.sin θ) ^ 2 = 1 ∧ uθ = 0 := by
+  have hband := colatitude_band r θ uθ uφ hL
+  rw [heq, div_self hL] at hband
+  have hsin : (Real.sin θ) ^ 2 ≤ 1 := by
+    have h := Real.sin_sq_add_cos_sq θ
+    nlinarith [sq_nonneg (Real.cos θ)]
+  have h1 : (Real.sin θ) ^ 2 = 1 := le_antisymm hsin hband
+  have hleg : uθ = 0 :=
+    (azimuthal_eq_angular_iff hr hs).mp (by rw [heq, h1]; ring)
+  exact ⟨h1, hleg⟩
+
+/-- A motion that meets the equator with vanishing polar leg stays there. -/
+theorem equator_persists {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
+    (hab : a ≤ b)
+    (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
+    (hs : ∀ τ ∈ Icc a b, Real.sin (θ τ) ≠ 0)
+    (hr : ∀ τ ∈ Icc a b, HasDerivAt r (ν τ * ur τ) τ)
+    (hθc : ∀ τ ∈ Icc a b, HasDerivAt θ (uθ τ / r τ) τ)
+    (hθ : ∀ τ ∈ Icc a b,
+      HasDerivAt uθ (-(ν τ / r τ) * ur τ * uθ τ +
+        sphereRotation (θ τ) (r τ) * (uφ τ) ^ 2) τ)
+    (hφ : ∀ τ ∈ Icc a b, HasDerivAt uφ
+      (-(ν τ / r τ) * ur τ * uφ τ -
+        sphereRotation (θ τ) (r τ) * uθ τ * uφ τ) τ)
+    {τ₀ τ : ℝ} (h₀ : τ₀ ∈ Icc a b) (hτ : τ ∈ Icc a b)
+    (hL : angularMomentumSq (r τ₀) (uθ τ₀) (uφ τ₀) ≠ 0)
+    (hpol : uθ τ₀ = 0)
+    (heq : (Real.sin (θ τ₀)) ^ 2 = 1) :
+    (Real.sin (θ τ)) ^ 2 = 1 ∧ uθ τ = 0 := by
+  have hLeq := angularMomentumSq_eq_on hab hρ hr hθ hφ hτ h₀
+  have hMeq := azimuthalMomentum_eq_on hab hρ hs hr hθc hφ hτ h₀
+  have hM0 : azimuthalMomentum (r τ₀) (θ τ₀) (uφ τ₀) ^ 2 =
+      angularMomentumSq (r τ₀) (uθ τ₀) (uφ τ₀) := by
+    rw [(azimuthal_eq_angular_iff (hρ τ₀ h₀) (hs τ₀ h₀)).mpr hpol, heq]
+    ring
+  have hLτ : angularMomentumSq (r τ) (uθ τ) (uφ τ) ≠ 0 := by
+    rw [hLeq]
+    exact hL
+  have hMτ : azimuthalMomentum (r τ) (θ τ) (uφ τ) ^ 2 =
+      angularMomentumSq (r τ) (uθ τ) (uφ τ) := by
+    rw [hMeq, hLeq]
+    exact hM0
+  exact band_collapses_to_equator (hρ τ hτ) (hs τ hτ) hLτ hMτ
+
+/-- On that latitude the tangent rotation of the sphere is zero. -/
+theorem sphereRotation_of_equator {θ r : ℝ} (hs : (Real.sin θ) ^ 2 = 1) :
+    sphereRotation θ r = 0 := by
+  have hcos : Real.cos θ = 0 := by
+    have h := Real.sin_sq_add_cos_sq θ
+    exact sq_eq_zero_iff.mp (by nlinarith)
+  unfold sphereRotation
+  rw [hcos, zero_div, zero_div]
+
+/-- The azimuthal rate on that latitude is the torsional leg. -/
+theorem equator_latitude_azimuth {rs r θ γ ur uφ : ℝ}
+    (hs : (Real.sin θ) ^ 2 = 1) :
+    -geodesicAccel (exteriorConn rs r θ) (frameVel γ ur 0 uφ) 3 =
+      -((killingNorm rs r / r) * ur * uφ) := by
+  rw [geodesicAccel_azimuth, sphereRotation_of_equator hs]
+  ring
+
+/-- Off the equator a vanishing polar leg does not persist. -/
+theorem no_fixed_latitude_off_equator {a b : ℝ} {θ r uθ uφ ν ur : ℝ → ℝ}
+    {τ₀ : ℝ} (h₀ : τ₀ ∈ Ioo a b)
+    (hleg : ∀ τ ∈ Icc a b, uθ τ = 0)
+    (hθ : ∀ τ ∈ Icc a b, HasDerivAt uθ
+      (-(ν τ / r τ) * ur τ * uθ τ +
+        sphereRotation (θ τ) (r τ) * (uφ τ) ^ 2) τ)
+    (hr : r τ₀ ≠ 0) (hs : Real.sin (θ τ₀) ≠ 0)
+    (hc : Real.cos (θ τ₀) ≠ 0) (hφ : uφ τ₀ ≠ 0) :
+    False := by
+  have hτ₀ : τ₀ ∈ Icc a b := ⟨le_of_lt h₀.1, le_of_lt h₀.2⟩
+  have hzero : HasDerivAt uθ 0 τ₀ := by
+    refine (hasDerivAt_const τ₀ (0 : ℝ)).congr_of_eventuallyEq ?_
+    filter_upwards [Ioo_mem_nhds h₀.1 h₀.2] with τ hτ
+    exact hleg τ ⟨le_of_lt hτ.1, le_of_lt hτ.2⟩
+  have hrate : -(ν τ₀ / r τ₀) * ur τ₀ * uθ τ₀ +
+      sphereRotation (θ τ₀) (r τ₀) * (uφ τ₀) ^ 2 =
+      sphereRotation (θ τ₀) (r τ₀) * (uφ τ₀) ^ 2 := by
+    rw [hleg τ₀ hτ₀]
+    ring
+  have hgeo := (hθ τ₀ hτ₀).congr_deriv hrate
+  have heq : sphereRotation (θ τ₀) (r τ₀) * (uφ τ₀) ^ 2 = 0 := by
+    rw [← hgeo.deriv, hzero.deriv]
+  have hrot : sphereRotation (θ τ₀) (r τ₀) ≠ 0 := by
+    unfold sphereRotation
+    exact div_ne_zero (div_ne_zero hc hs) hr
+  exact mul_ne_zero hrot (pow_ne_zero 2 hφ) heq
 
 end DstDiophantine.Gravity.OffEquator
 

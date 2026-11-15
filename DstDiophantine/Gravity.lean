@@ -116,6 +116,10 @@ import list of `Gravity.Regression`.
   equatorial torsional law, the colatitude advances at \(L/r^2\) with
   \(L=r\hat{u}_\theta\), and the radial acceleration is the equatorial one
   in this \(L\). These rates do not divide by \(\sin\theta\).
+  A fixed colatitude is either the radial motion of vanishing angular
+  momentum, or the equator: there the two constants agree, the band
+  collapses to \(\sin^2\theta=1\), and the polar leg remains zero. Off the
+  equator that leg does not remain zero on an interval of positive length.
 
 ## Scales that are inputs
 

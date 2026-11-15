@@ -342,6 +342,20 @@ example {r uθ L : ℝ} (hr : r ≠ 0) (hL : L = r * uθ) :
     uθ / r = L / r ^ 2 :=
   OffEquator.meridian_colatitude_rate hr hL
 
+/-- Regression: vanishing angular momentum kills both angular legs. -/
+example {r uθ uφ : ℝ} (hr : r ≠ 0)
+    (hL : OffEquator.angularMomentumSq r uθ uφ = 0) :
+    uθ = 0 ∧ uφ = 0 :=
+  OffEquator.angular_legs_of_zero hr hL
+
+/-- Regression: equal constants collapse the band to the equator. -/
+example {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hL : OffEquator.angularMomentumSq r uθ uφ ≠ 0)
+    (heq : OffEquator.azimuthalMomentum r θ uφ ^ 2 =
+      OffEquator.angularMomentumSq r uθ uφ) :
+    (Real.sin θ) ^ 2 = 1 ∧ uθ = 0 :=
+  OffEquator.band_collapses_to_equator hr hs hL heq
+
 /-- Regression: the radial piece of `γ²` cancels and the transverse piece remains. -/
 example {κ ur uφ : ℝ} :
     κ * ur ^ 2 - κ * Perihelion.gammaSq ur uφ = -κ * (1 + uφ ^ 2) :=
