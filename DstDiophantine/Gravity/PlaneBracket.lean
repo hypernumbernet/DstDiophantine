@@ -1,4 +1,6 @@
 import DstDiophantine.Algebra.Motor
+import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 
 /-!
 # Brackets of coordinate planes
@@ -23,10 +25,17 @@ the dual of `e₁`, the product equals the grade-four element `e₀ e₁ e₃ e�
 `N_μ` is `Ω_trans` of the pure shift with coefficient `2` on axis `μ` and
 with vanishing torsion.
 
+An arbitrary spatial vector `n` determines the ideal plane
+`Π(n) = Σ nₐ Πₐ`. Its bracket with the spatial volume is the translation
+along `n`, and its bracket with the dual trivector of `n` is `|n|² N₀`.
+In both cases the symmetric product vanishes, so the geometric product is
+that translation. The cross brackets vanish because each coordinate normal
+lies in the other two coordinate planes, and the cross products cancel in
+pairs.
+
 ## Not claimed
 
-* A bracket for a plane rotated off the coordinate axes, or for a plane
-  displaced from the origin.
+* A bracket for a plane displaced from the origin.
 * An identification of the resulting translation with the torsional mismatch
   of the parent theory.
 -/
@@ -502,5 +511,440 @@ theorem vee_volume_blade12_eq_biv :
   rw [vee_volume_blade12, omegaBiv_pureShift]
   have : (2 : ℝ) / 2 = 1 := by norm_num
   rw [this, one_smul]
+
+/-! ### A plane rotated off the axes -/
+
+/-- `Π(n) = n₁ Π₂₃ + n₂ Π₃₁ + n₃ Π₁₂`. -/
+noncomputable def idealPlaneOf (n : Fin 3 → ℝ) : PGA :=
+  n 0 • idealPlane 0 + n 1 • idealPlane 1 + n 2 • idealPlane 2
+
+/-- Translation `n₁ N₁ + n₂ N₂ + n₃ N₃`. -/
+noncomputable def spatialTranslation (n : Fin 3 → ℝ) : PGA :=
+  n 0 • null 1 + n 1 • null 2 + n 2 • null 3
+
+/-- Dual trivector `n₁ jI + n₂ jJ + n₃ jK`. -/
+noncomputable def dualOf (n : Fin 3 → ℝ) : PGA :=
+  n 0 • dualNormal 0 + n 1 • dualNormal 1 + n 2 • dualNormal 2
+
+/-- Squared Euclidean length of a spatial vector. -/
+def spatialNormSq (n : Fin 3 → ℝ) : ℝ :=
+  n 0 ^ 2 + n 1 ^ 2 + n 2 ^ 2
+
+/-- Pure spatial shift `λ⁰ = 0`, `λ^{a+1} = -2 nₐ`. -/
+def pureSpatialShift (n : Fin 3 → ℝ) : OmegaParams where
+  torsion := ⟨fun _ => 0, fun _ => 0⟩
+  trans := ⟨fun
+    | 0 => 0
+    | 1 => -2 * n 0
+    | 2 => -2 * n 1
+    | 3 => -2 * n 2⟩
+
+theorem commutator_idealPlaneOf_volume (n : Fin 3 → ℝ) :
+    commutator (idealPlaneOf n) spatialVolume = (-2 : ℝ) • spatialTranslation n := by
+  rw [idealPlaneOf, spatialTranslation]
+  simp only [commutator_add_left, commutator_smul_left, commutator_ideal_volume, smul_smul]
+  have hmul (c : ℝ) : c * (-2) = (-2) * c := by ring
+  simp only [hmul, ← smul_smul, smul_add]
+  have s0 : Fin.succ (0 : Fin 3) = 1 := rfl
+  have s1 : Fin.succ (1 : Fin 3) = 2 := rfl
+  have s2 : Fin.succ (2 : Fin 3) = 3 := rfl
+  simp only [s0, s1, s2]
+
+theorem sym_idealPlaneOf_volume (n : Fin 3 → ℝ) :
+    idealPlaneOf n * spatialVolume + spatialVolume * idealPlaneOf n = 0 := by
+  rw [idealPlaneOf]
+  simp only [add_mul, mul_add, smul_mul_assoc, mul_smul_comm]
+  have regroup :
+      n 0 • (idealPlane 0 * spatialVolume) + n 1 • (idealPlane 1 * spatialVolume) +
+          n 2 • (idealPlane 2 * spatialVolume) +
+          (n 0 • (spatialVolume * idealPlane 0) + n 1 • (spatialVolume * idealPlane 1) +
+            n 2 • (spatialVolume * idealPlane 2)) =
+        n 0 • (idealPlane 0 * spatialVolume + spatialVolume * idealPlane 0) +
+          n 1 • (idealPlane 1 * spatialVolume + spatialVolume * idealPlane 1) +
+          n 2 • (idealPlane 2 * spatialVolume + spatialVolume * idealPlane 2) := by
+    module
+  rw [regroup, sym_ideal_volume, sym_ideal_volume, sym_ideal_volume]
+  module
+
+/-- `Π(n) ∨̲ k = -(n₁ N₁ + n₂ N₂ + n₃ N₃)`. -/
+theorem vee_idealPlaneOf_volume (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • commutator (idealPlaneOf n) spatialVolume = -spatialTranslation n := by
+  rw [commutator_idealPlaneOf_volume, smul_smul]
+  have : (1 / 2 : ℝ) * (-2) = -1 := by norm_num
+  rw [this, neg_one_smul]
+
+theorem omegaTrans_pureSpatialShift (n : Fin 3 → ℝ) :
+    omegaTrans (pureSpatialShift n).trans = -spatialTranslation n := by
+  rw [omegaTrans, Fin.sum_univ_four]
+  have h0 : (pureSpatialShift n).trans.lambda 0 = 0 := rfl
+  have h1 : (pureSpatialShift n).trans.lambda 1 = -2 * n 0 := rfl
+  have h2 : (pureSpatialShift n).trans.lambda 2 = -2 * n 1 := rfl
+  have h3 : (pureSpatialShift n).trans.lambda 3 = -2 * n 2 := rfl
+  rw [h0, h1, h2, h3, spatialTranslation]
+  have hdiv (c : ℝ) : (-2 * c) / 2 = -c := by ring
+  simp only [hdiv, zero_div, zero_smul, neg_smul]
+  module
+
+theorem omegaTorsion_zeroParams :
+    omegaTorsion ⟨fun _ => 0, fun _ => 0⟩ = 0 := by
+  simp [omegaTorsion]
+
+/-- The off-axis bracket is the bivector of that pure shift. -/
+theorem vee_idealPlaneOf_volume_eq_biv (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • commutator (idealPlaneOf n) spatialVolume =
+      omegaBiv (pureSpatialShift n) := by
+  rw [vee_idealPlaneOf_volume, omegaBiv]
+  have ht : (pureSpatialShift n).torsion = ⟨fun _ => 0, fun _ => 0⟩ := rfl
+  rw [ht, omegaTorsion_zeroParams, zero_add, omegaTrans_pureSpatialShift]
+
+/-! ### Cycling the spatial axes
+
+The permutation `e₁ ↦ e₂ ↦ e₃ ↦ e₁` preserves `Q311` and therefore induces an
+algebra automorphism. It cycles the three ideal planes and their dual
+trivectors, so one in-plane bracket determines the other two. -/
+
+/-- `e₁ ↦ e₂`, `e₂ ↦ e₃`, `e₃ ↦ e₁`, with `e₀` and `e₄` fixed. -/
+def cycleCoord : Fin 5 → Fin 5
+  | 0 => 0
+  | 1 => 2
+  | 2 => 3
+  | 3 => 1
+  | 4 => 4
+
+/-- Inverse permutation: component `j` of the image is component `cycleInv j`. -/
+def cycleInv : Fin 5 → Fin 5
+  | 0 => 0
+  | 1 => 3
+  | 2 => 1
+  | 3 => 2
+  | 4 => 4
+
+def cycleSpatial (v : Vec5) : Vec5 :=
+  fun i => v (cycleInv i)
+
+noncomputable def cycleSpatialLm : Vec5 →ₗ[ℝ] Vec5 where
+  toFun := cycleSpatial
+  map_add' x y := by
+    ext i
+    simp [cycleSpatial, Pi.add_apply]
+  map_smul' c x := by
+    ext i
+    simp [cycleSpatial, Pi.smul_apply]
+
+theorem cycleSpatial_Q (v : Vec5) : Q311 (cycleSpatialLm v) = Q311 v := by
+  simp only [Q311, QuadraticMap.weightedSumSquares_apply, cycleSpatialLm,
+    LinearMap.coe_mk, AddHom.coe_mk, cycleSpatial]
+  rw [Fin.sum_univ_five, Fin.sum_univ_five]
+  simp only [w311, cycleInv]
+  ring
+
+noncomputable def cycleSpatialIsometry : Q311 →qᵢ Q311 where
+  toLinearMap := cycleSpatialLm
+  map_app' := cycleSpatial_Q
+
+noncomputable def cycleAlg : PGA →ₐ[ℝ] PGA :=
+  CliffordAlgebra.map cycleSpatialIsometry
+
+theorem cycleSpatial_basis (i : Fin 5) :
+    cycleSpatialLm (e5vec i) = e5vec (cycleCoord i) := by
+  ext j
+  fin_cases i <;> fin_cases j <;>
+    simp [cycleSpatialLm, cycleSpatial, cycleInv, cycleCoord, e5vec]
+
+theorem cycleAlg_ι (i : Fin 5) : cycleAlg (ι i) = ι (cycleCoord i) := by
+  unfold cycleAlg ι
+  rw [CliffordAlgebra.map_apply_ι]
+  have hcoe : (cycleSpatialIsometry : Vec5 →ₗ[ℝ] Vec5) = cycleSpatialLm := rfl
+  have happ : cycleSpatialIsometry (e5vec i) = cycleSpatialLm (e5vec i) :=
+    congrArg (fun f : Vec5 →ₗ[ℝ] Vec5 => f (e5vec i)) hcoe
+  rw [happ, cycleSpatial_basis]
+
+theorem cycleAlg_mul3 (a b c : Fin 5) :
+    cycleAlg (ι a * ι b * ι c) = ι (cycleCoord a) * ι (cycleCoord b) * ι (cycleCoord c) := by
+  rw [map_mul, map_mul, cycleAlg_ι, cycleAlg_ι, cycleAlg_ι]
+
+/-- `0 ↦ 1 ↦ 2 ↦ 0` on the three coordinate planes. -/
+def cyclePlane : Fin 3 → Fin 3
+  | 0 => 1
+  | 1 => 2
+  | 2 => 0
+
+theorem cycleAlg_idealPlane (a : Fin 3) :
+    cycleAlg (idealPlane a) = idealPlane (cyclePlane a) := by
+  fin_cases a <;> simp only [idealPlane, cyclePlane] <;>
+    rw [cycleAlg_mul3] <;> simp [cycleCoord, e4Index]
+
+theorem cycleAlg_dualNormal (a : Fin 3) :
+    cycleAlg (dualNormal a) = dualNormal (cyclePlane a) := by
+  fin_cases a <;> simp only [dualNormal, cyclePlane] <;>
+    rw [cycleAlg_mul3] <;> simp [cycleCoord]
+
+theorem cycleAlg_commutator (x y : PGA) :
+    cycleAlg (commutator x y) = commutator (cycleAlg x) (cycleAlg y) := by
+  simp [Generators.commutator, map_sub, map_mul]
+
+/-- `Π₁₂` against `jJ`, the dual of the other in-plane axis `e₂`. -/
+private theorem mul_plane2_dual1 :
+    (ι e4Index * ι 1 * ι 2) * (ι 0 * ι 1 * ι 3) = ι 0 * ι 2 * ι 3 * ι e4Index := by
+  have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  have h01 : ι 0 * ι 1 = -(ι 1 * ι 0) := e_mul_anticomm (by decide)
+  have h40 : ι e4Index * ι 0 = -(ι 0 * ι e4Index) := e4_mul_anticomm 0
+  have h42 : ι e4Index * ι 2 = -(ι 2 * ι e4Index) := e4_mul_anticomm 2
+  have h43 : ι e4Index * ι 3 = -(ι 3 * ι e4Index) := e4_mul_anticomm 3
+  calc
+    (ι e4Index * ι 1 * ι 2) * (ι 0 * ι 1 * ι 3)
+        = ι e4Index * ι 1 * (ι 2 * ι 0) * ι 1 * ι 3 := by simp [mul_assoc]
+      _ = ι e4Index * ι 1 * (-(ι 0 * ι 2)) * ι 1 * ι 3 := by rw [h20]
+      _ = -(ι e4Index * ι 1 * ι 0 * (ι 2 * ι 1) * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(ι e4Index * ι 1 * ι 0 * (-(ι 1 * ι 2)) * ι 3) := by rw [h21]
+      _ = ι e4Index * ι 1 * ι 0 * ι 1 * ι 2 * ι 3 := by simp [mul_neg, mul_assoc]
+      _ = ι e4Index * ι 1 * (ι 0 * ι 1) * ι 2 * ι 3 := by simp [mul_assoc]
+      _ = ι e4Index * ι 1 * (-(ι 1 * ι 0)) * ι 2 * ι 3 := by rw [h01]
+      _ = -(ι e4Index * (ι 1 * ι 1) * ι 0 * ι 2 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(ι e4Index * ι 0 * ι 2 * ι 3) := by simp [e1_sq]
+      _ = -(-(ι 0 * ι e4Index) * ι 2 * ι 3) := by rw [h40]
+      _ = ι 0 * ι e4Index * ι 2 * ι 3 := by simp [mul_assoc]
+      _ = ι 0 * (ι e4Index * ι 2) * ι 3 := by simp [mul_assoc]
+      _ = ι 0 * (-(ι 2 * ι e4Index)) * ι 3 := by rw [h42]
+      _ = -(ι 0 * ι 2 * (ι e4Index * ι 3)) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 0 * ι 2 * -(ι 3 * ι e4Index)) := by rw [h43]
+      _ = ι 0 * ι 2 * ι 3 * ι e4Index := by simp [mul_neg, mul_assoc]
+
+private theorem mul_dual1_plane2 :
+    (ι 0 * ι 1 * ι 3) * (ι e4Index * ι 1 * ι 2) = ι 0 * ι 2 * ι 3 * ι e4Index := by
+  have h34 : ι 3 * ι e4Index = -(ι e4Index * ι 3) := e4_inner_anticomm 3
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  have h41 : ι e4Index * ι 1 = -(ι 1 * ι e4Index) := e4_mul_anticomm 1
+  have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+  have h42 : ι e4Index * ι 2 = -(ι 2 * ι e4Index) := e4_mul_anticomm 2
+  have h43 : ι e4Index * ι 3 = -(ι 3 * ι e4Index) := e4_mul_anticomm 3
+  calc
+    (ι 0 * ι 1 * ι 3) * (ι e4Index * ι 1 * ι 2)
+        = ι 0 * ι 1 * (ι 3 * ι e4Index) * ι 1 * ι 2 := by simp [mul_assoc]
+      _ = ι 0 * ι 1 * (-(ι e4Index * ι 3)) * ι 1 * ι 2 := by rw [h34]
+      _ = -(ι 0 * ι 1 * ι e4Index * (ι 3 * ι 1) * ι 2) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 0 * ι 1 * ι e4Index * (-(ι 1 * ι 3)) * ι 2) := by rw [h31]
+      _ = ι 0 * ι 1 * ι e4Index * ι 1 * ι 3 * ι 2 := by simp [mul_neg, mul_assoc]
+      _ = ι 0 * ι 1 * (ι e4Index * ι 1) * ι 3 * ι 2 := by simp [mul_assoc]
+      _ = ι 0 * ι 1 * (-(ι 1 * ι e4Index)) * ι 3 * ι 2 := by rw [h41]
+      _ = -(ι 0 * (ι 1 * ι 1) * ι e4Index * ι 3 * ι 2) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 0 * ι e4Index * ι 3 * ι 2) := by simp [e1_sq]
+      _ = -(ι 0 * ι e4Index * (ι 3 * ι 2)) := by simp [mul_assoc]
+      _ = -(ι 0 * ι e4Index * (-(ι 2 * ι 3))) := by rw [h32]
+      _ = ι 0 * ι e4Index * ι 2 * ι 3 := by simp [mul_neg, mul_assoc]
+      _ = ι 0 * (ι e4Index * ι 2) * ι 3 := by simp [mul_assoc]
+      _ = ι 0 * (-(ι 2 * ι e4Index)) * ι 3 := by rw [h42]
+      _ = -(ι 0 * ι 2 * (ι e4Index * ι 3)) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 0 * ι 2 * -(ι 3 * ι e4Index)) := by rw [h43]
+      _ = ι 0 * ι 2 * ι 3 * ι e4Index := by simp [mul_neg, mul_assoc]
+
+theorem commutator_plane2_dual1 :
+    commutator (idealPlane 2) (dualNormal 1) = 0 := by
+  rw [Generators.commutator, idealPlane, dualNormal, mul_plane2_dual1, mul_dual1_plane2, sub_self]
+
+private theorem commutator_cycled {a b : Fin 3}
+    (h : commutator (idealPlane a) (dualNormal b) = 0) :
+    commutator (idealPlane (cyclePlane a)) (dualNormal (cyclePlane b)) = 0 := by
+  have hmap := congrArg cycleAlg h
+  rw [cycleAlg_commutator, cycleAlg_idealPlane, cycleAlg_dualNormal, map_zero] at hmap
+  exact hmap
+
+theorem commutator_ideal_dual_off {a b : Fin 3} (hab : a ≠ b) :
+    commutator (idealPlane a) (dualNormal b) = 0 := by
+  fin_cases a <;> fin_cases b
+  · exact absurd rfl hab
+  · exact commutator_cycled commutator_plane12_inPlane
+  · exact commutator_cycled commutator_plane2_dual1
+  · exact commutator_cycled (commutator_cycled commutator_plane2_dual1)
+  · exact absurd rfl hab
+  · exact commutator_cycled (commutator_cycled commutator_plane12_inPlane)
+  · exact commutator_plane12_inPlane
+  · exact commutator_plane2_dual1
+  · exact absurd rfl hab
+
+private theorem cycleAlg_mul4 (a b c d : Fin 5) :
+    cycleAlg (ι a * ι b * ι c * ι d) =
+      ι (cycleCoord a) * ι (cycleCoord b) * ι (cycleCoord c) * ι (cycleCoord d) := by
+  have hassoc : ι a * ι b * ι c * ι d = (ι a * ι b * ι c) * ι d := by simp [mul_assoc]
+  rw [hassoc, map_mul, cycleAlg_mul3, cycleAlg_ι, mul_assoc]
+
+private theorem sort_e0314 :
+    ι 0 * ι 3 * ι 1 * ι e4Index = -(ι 0 * ι 1 * ι 3 * ι e4Index) := by
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  calc
+    ι 0 * ι 3 * ι 1 * ι e4Index
+        = ι 0 * (ι 3 * ι 1) * ι e4Index := by simp [mul_assoc]
+      _ = ι 0 * (-(ι 1 * ι 3)) * ι e4Index := by rw [h31]
+      _ = -(ι 0 * ι 1 * ι 3 * ι e4Index) := by simp [mul_neg, mul_assoc]
+
+private theorem sort_e0214 :
+    ι 0 * ι 2 * ι 1 * ι e4Index = -(ι 0 * ι 1 * ι 2 * ι e4Index) := by
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  calc
+    ι 0 * ι 2 * ι 1 * ι e4Index
+        = ι 0 * (ι 2 * ι 1) * ι e4Index := by simp [mul_assoc]
+      _ = ι 0 * (-(ι 1 * ι 2)) * ι e4Index := by rw [h21]
+      _ = -(ι 0 * ι 1 * ι 2 * ι e4Index) := by simp [mul_neg, mul_assoc]
+
+/-- `Π₂₃` against `jK` is opposite to `Π₁₂` against `jI`. -/
+theorem mul_plane0_dual2_neg :
+    idealPlane 0 * dualNormal 2 = -(idealPlane 2 * dualNormal 0) := by
+  have hcyc := congrArg cycleAlg mul_plane2_dual1
+  rw [map_mul, cycleAlg_mul3, cycleAlg_mul3, cycleAlg_mul4] at hcyc
+  simp only [cycleCoord, e4Index] at hcyc
+  have hform : idealPlane 0 * dualNormal 2 = ι 4 * ι 2 * ι 3 * (ι 0 * ι 2 * ι 1) := by
+    simp [idealPlane, dualNormal, e4Index, mul_assoc]
+  rw [hform, hcyc]
+  rw [show (4 : Fin 5) = e4Index from rfl]
+  rw [sort_e0314, mul_plane12_inPlane]
+
+private theorem mul_antisym_cycled {a b : Fin 3}
+    (h : idealPlane a * dualNormal b = -(idealPlane b * dualNormal a)) :
+    idealPlane (cyclePlane a) * dualNormal (cyclePlane b) =
+      -(idealPlane (cyclePlane b) * dualNormal (cyclePlane a)) := by
+  have hmap := congrArg cycleAlg h
+  rw [map_mul, map_neg, map_mul, cycleAlg_idealPlane, cycleAlg_dualNormal,
+    cycleAlg_idealPlane, cycleAlg_dualNormal] at hmap
+  exact hmap
+
+/-- `Π₂₃` against `jJ` is opposite to `Π₃₁` against `jI`. -/
+theorem mul_plane0_dual1_neg :
+    idealPlane 0 * dualNormal 1 = -(idealPlane 1 * dualNormal 0) := by
+  have hLeft := congrArg cycleAlg mul_plane12_inPlane
+  rw [map_mul, cycleAlg_idealPlane, cycleAlg_dualNormal, cycleAlg_mul4] at hLeft
+  simp only [cyclePlane, cycleCoord, e4Index] at hLeft
+  have hOnce := congrArg cycleAlg mul_plane2_dual1
+  rw [map_mul, cycleAlg_mul3, cycleAlg_mul3, cycleAlg_mul4] at hOnce
+  simp only [cycleCoord, e4Index] at hOnce
+  have hTwice := congrArg cycleAlg hOnce
+  rw [map_mul, cycleAlg_mul3, cycleAlg_mul3, cycleAlg_mul4] at hTwice
+  simp only [cycleCoord] at hTwice
+  rw [hLeft]
+  rw [show (4 : Fin 5) = e4Index from rfl]
+  rw [sort_e0214]
+  have hform : idealPlane 1 * dualNormal 0 = ι 0 * ι 1 * ι 2 * ι e4Index := by
+    simpa [idealPlane, dualNormal, e4Index, mul_assoc] using hTwice
+  rw [hform]
+
+theorem mul_cross_antisym {a b : Fin 3} (hab : a ≠ b) :
+    idealPlane a * dualNormal b = -(idealPlane b * dualNormal a) := by
+  fin_cases a <;> fin_cases b
+  · exact absurd rfl hab
+  · exact mul_plane0_dual1_neg
+  · exact mul_plane0_dual2_neg
+  · exact mul_antisym_cycled mul_plane0_dual2_neg
+  · exact absurd rfl hab
+  · exact mul_antisym_cycled mul_plane0_dual1_neg
+  · have h := mul_plane0_dual2_neg
+    simpa using (neg_eq_iff_eq_neg.mp h.symm)
+  · exact mul_antisym_cycled (mul_antisym_cycled mul_plane0_dual2_neg)
+  · exact absurd rfl hab
+
+theorem sym_cross {a b : Fin 3} (hab : a ≠ b) :
+    idealPlane a * dualNormal b + dualNormal b * idealPlane a +
+        (idealPlane b * dualNormal a + dualNormal a * idealPlane b) = 0 := by
+  have hcomm_ab : dualNormal b * idealPlane a = idealPlane a * dualNormal b := by
+    have h := commutator_ideal_dual_off hab
+    rw [Generators.commutator, sub_eq_zero] at h
+    exact h.symm
+  have hba : b ≠ a := hab.symm
+  have hcomm_ba : dualNormal a * idealPlane b = idealPlane b * dualNormal a := by
+    have h := commutator_ideal_dual_off hba
+    rw [Generators.commutator, sub_eq_zero] at h
+    exact h.symm
+  rw [hcomm_ab, hcomm_ba, mul_cross_antisym hab]
+  module
+
+@[simp] private theorem mul_smul_smul (c d : ℝ) (x y : PGA) :
+    (c • x) * (d • y) = (c * d) • (x * y) := by
+  rw [smul_mul_assoc, mul_smul_comm, ← smul_smul]
+
+theorem sym_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
+    idealPlaneOf n * dualOf n + dualOf n * idealPlaneOf n = 0 := by
+  rw [idealPlaneOf, dualOf]
+  simp only [add_mul, mul_add, mul_smul_smul]
+  have hdiag (a : Fin 3) :
+      (n a * n a) • (idealPlane a * dualNormal a + dualNormal a * idealPlane a) = 0 := by
+    rw [sym_ideal_dualNormal, smul_zero]
+  have h01 := sym_cross (a := 0) (b := 1) (by decide)
+  have h02 := sym_cross (a := 0) (b := 2) (by decide)
+  have h12 := sym_cross (a := 1) (b := 2) (by decide)
+  -- Nine scaled symmetric products. Diagonals vanish; each off-diagonal pair sums to zero.
+  have pair01 :
+      (n 0 * n 1) • (idealPlane 0 * dualNormal 1 + dualNormal 1 * idealPlane 0) +
+          (n 1 * n 0) • (idealPlane 1 * dualNormal 0 + dualNormal 0 * idealPlane 1) = 0 := by
+    rw [mul_comm (n 1) (n 0), ← smul_add, h01, smul_zero]
+  have pair02 :
+      (n 0 * n 2) • (idealPlane 0 * dualNormal 2 + dualNormal 2 * idealPlane 0) +
+          (n 2 * n 0) • (idealPlane 2 * dualNormal 0 + dualNormal 0 * idealPlane 2) = 0 := by
+    rw [mul_comm (n 2) (n 0), ← smul_add, h02, smul_zero]
+  have pair12 :
+      (n 1 * n 2) • (idealPlane 1 * dualNormal 2 + dualNormal 2 * idealPlane 1) +
+          (n 2 * n 1) • (idealPlane 2 * dualNormal 1 + dualNormal 1 * idealPlane 2) = 0 := by
+    rw [mul_comm (n 2) (n 1), ← smul_add, h12, smul_zero]
+  -- The expanded product is grouped by the right factor. Pair each plane with its dual.
+  have regroup :
+      (n 0 * n 0) • (idealPlane 0 * dualNormal 0) + (n 1 * n 0) • (idealPlane 1 * dualNormal 0) +
+            (n 2 * n 0) • (idealPlane 2 * dualNormal 0) +
+          ((n 0 * n 1) • (idealPlane 0 * dualNormal 1) +
+              (n 1 * n 1) • (idealPlane 1 * dualNormal 1) +
+            (n 2 * n 1) • (idealPlane 2 * dualNormal 1)) +
+        ((n 0 * n 2) • (idealPlane 0 * dualNormal 2) +
+            (n 1 * n 2) • (idealPlane 1 * dualNormal 2) +
+          (n 2 * n 2) • (idealPlane 2 * dualNormal 2)) +
+      ((n 0 * n 0) • (dualNormal 0 * idealPlane 0) + (n 1 * n 0) • (dualNormal 1 * idealPlane 0) +
+            (n 2 * n 0) • (dualNormal 2 * idealPlane 0) +
+          ((n 0 * n 1) • (dualNormal 0 * idealPlane 1) +
+              (n 1 * n 1) • (dualNormal 1 * idealPlane 1) +
+            (n 2 * n 1) • (dualNormal 2 * idealPlane 1)) +
+        ((n 0 * n 2) • (dualNormal 0 * idealPlane 2) +
+            (n 1 * n 2) • (dualNormal 1 * idealPlane 2) +
+          (n 2 * n 2) • (dualNormal 2 * idealPlane 2))) =
+        (n 0 * n 0) • (idealPlane 0 * dualNormal 0 + dualNormal 0 * idealPlane 0) +
+          (n 1 * n 1) • (idealPlane 1 * dualNormal 1 + dualNormal 1 * idealPlane 1) +
+          (n 2 * n 2) • (idealPlane 2 * dualNormal 2 + dualNormal 2 * idealPlane 2) +
+          ((n 0 * n 1) • (idealPlane 0 * dualNormal 1 + dualNormal 1 * idealPlane 0) +
+            (n 1 * n 0) • (idealPlane 1 * dualNormal 0 + dualNormal 0 * idealPlane 1)) +
+          ((n 0 * n 2) • (idealPlane 0 * dualNormal 2 + dualNormal 2 * idealPlane 0) +
+            (n 2 * n 0) • (idealPlane 2 * dualNormal 0 + dualNormal 0 * idealPlane 2)) +
+          ((n 1 * n 2) • (idealPlane 1 * dualNormal 2 + dualNormal 2 * idealPlane 1) +
+            (n 2 * n 1) • (idealPlane 2 * dualNormal 1 + dualNormal 1 * idealPlane 2)) := by
+    module
+  rw [regroup, hdiag, hdiag, hdiag, pair01, pair02, pair12]
+  module
+
+theorem commutator_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
+    commutator (idealPlaneOf n) (dualOf n) =
+      (2 * spatialNormSq n) • null 0 := by
+  rw [idealPlaneOf, dualOf, spatialNormSq]
+  have e (c d : ℝ) (x y : PGA) :
+      commutator (c • x) (d • y) = (c * d) • commutator x y := by
+    rw [commutator_smul_left, commutator_smul_right, ← smul_smul]
+  simp only [commutator_add_left, commutator_add_right, e]
+  have hoff {a b : Fin 3} (hab : a ≠ b) :
+      (n a * n b) • commutator (idealPlane a) (dualNormal b) = 0 := by
+    rw [commutator_ideal_dual_off hab, smul_zero]
+  simp only [commutator_ideal_dualNormal, hoff (a := 0) (b := 1) (by decide),
+    hoff (a := 0) (b := 2) (by decide), hoff (a := 1) (b := 0) (by decide),
+    hoff (a := 1) (b := 2) (by decide), hoff (a := 2) (b := 0) (by decide),
+    hoff (a := 2) (b := 1) (by decide), add_zero, zero_add]
+  module
+
+/-- `Π(n) ∨̲ ẽ(n) = |n|² N₀`. -/
+theorem vee_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • commutator (idealPlaneOf n) (dualOf n) =
+      spatialNormSq n • null 0 := by
+  rw [commutator_idealPlaneOf_dualOf, smul_smul]
+  have : (1 / 2 : ℝ) * (2 * spatialNormSq n) = spatialNormSq n := by ring
+  rw [this]
+
+/-- The time bracket is the pure shift `λ⁰ = 2 |n|²`. -/
+theorem vee_idealPlaneOf_dualOf_eq_biv (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • commutator (idealPlaneOf n) (dualOf n) =
+      omegaBiv (pureShift 0 (2 * spatialNormSq n)) := by
+  rw [vee_idealPlaneOf_dualOf, omegaBiv_pureShift]
+  have : (2 * spatialNormSq n) / 2 = spatialNormSq n := by ring
+  rw [this]
 
 end DstDiophantine.Gravity.PlaneBracket

@@ -204,6 +204,19 @@ example :
     Generators.commutator (PlaneBracket.idealPlane 2) (PlaneBracket.dualNormal 0) = 0 :=
   PlaneBracket.commutator_plane12_inPlane
 
+/-- Regression: an arbitrary normal brackets with the spatial volume to the translation along it. -/
+example (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlaneOf n)
+        PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureSpatialShift n) :=
+  PlaneBracket.vee_idealPlaneOf_volume_eq_biv n
+
+/-- Regression: the dual of that normal returns the time translation `|n|² N₀`. -/
+example (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlaneOf n) (PlaneBracket.dualOf n) =
+      Motor.omegaBiv (PlaneBracket.pureShift 0 (2 * PlaneBracket.spatialNormSq n)) :=
+  PlaneBracket.vee_idealPlaneOf_dualOf_eq_biv n
+
 /-- Regression: the d'Alembertian of the squared Killing norm is `8J`. -/
 example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
     ∑ μ : Fin 4, w31 μ * (KillingAxis.killingNormSq p (x + t • e4vec μ) +

@@ -68,7 +68,10 @@ import list of `Gravity.Regression`.
 * `PlaneBracket` — on a coordinate plane `Πᵢⱼ = e₄ ∧ eᵢ ∧ eⱼ` with right-handed normal `n`,
   the bracket with the spatial volume `k` is `-Nₙ`, and the bracket with the dual trivector
   of `n` is `N₀`. Both are pure translations, the bivector of a motor with vanishing torsion.
-  The bracket with the dual of an in-plane axis vanishes. A plane off the axes is not treated.
+  The bracket with the dual of an in-plane axis vanishes. For an arbitrary spatial vector `n`
+  the ideal plane `Π(n)` brackets with `k` to the translation along `n`, and with the dual of
+  `n` to `|n|² N₀`. The symmetric product vanishes in both cases. A plane displaced from the
+  origin is not treated.
 * `KillingAxis` — the static Killing field as a pure boost about an inward axis at distance `ℓ`.
   The squared Killing norm has d'Alembertian `8J`.
 * `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x`
