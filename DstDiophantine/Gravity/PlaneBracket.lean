@@ -33,11 +33,19 @@ that translation. The cross brackets vanish because each coordinate normal
 lies in the other two coordinate planes, and the cross products cancel in
 pairs.
 
+The same normal displaced from the origin is `Π(n, δ) = Π(n) + δ k`. The
+bracket with `k` is the translation along `n` for every `δ`, and the
+symmetric product is the scalar `-δ`, because `k² = -1` and the ideal plane
+anticommutes with `k`. The bracket with the dual trivector of `n` is the
+time translation `|n|² N₀` minus `δ` times the boost along `n`. The
+symmetric product still vanishes, so the geometric product is that sum. At
+`δ = 0` the boost drops out.
+
 ## Not claimed
 
-* A bracket for a plane displaced from the origin.
-* An identification of the resulting translation with the torsional mismatch
-  of the parent theory.
+* An identification of the resulting translation, or of the boost it
+  acquires when the plane is displaced, with the torsional mismatch of the
+  parent theory.
 -/
 
 namespace DstDiophantine.Gravity.PlaneBracket
@@ -946,5 +954,249 @@ theorem vee_idealPlaneOf_dualOf_eq_biv (n : Fin 3 → ℝ) :
   rw [vee_idealPlaneOf_dualOf, omegaBiv_pureShift]
   have : (2 * spatialNormSq n) / 2 = spatialNormSq n := by ring
   rw [this]
+
+/-! ### A plane displaced from the origin -/
+
+/-- Spatial boost `∑ nₐ B⁺ₐ`. -/
+noncomputable def spatialBoost (n : Fin 3 → ℝ) : PGA :=
+  n 0 • hyperbolic 0 + n 1 • hyperbolic 1 + n 2 • hyperbolic 2
+
+/-- `Π(n, δ) = Π(n) + δ k`. The coefficient `δ` displaces the normal off the origin. -/
+noncomputable def displacedPlane (n : Fin 3 → ℝ) (δ : ℝ) : PGA :=
+  idealPlaneOf n + δ • spatialVolume
+
+/-- Boost parameters `αₐ = -2 δ nₐ`, together with the time shift `λ⁰ = 2 |n|²`. -/
+def displacedMotor (n : Fin 3 → ℝ) (δ : ℝ) : OmegaParams where
+  torsion := ⟨fun a => -2 * δ * n a, fun _ => 0⟩
+  trans := ⟨Pi.single 0 (2 * spatialNormSq n)⟩
+
+theorem spatialVolume_sq : spatialVolume * spatialVolume = (-1 : PGA) := by
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
+  rw [spatialVolume]
+  calc
+    (ι 1 * ι 2 * ι 3) * (ι 1 * ι 2 * ι 3)
+        = ι 1 * ι 2 * (ι 3 * ι 1) * ι 2 * ι 3 := by simp [mul_assoc]
+      _ = ι 1 * ι 2 * (-(ι 1 * ι 3)) * ι 2 * ι 3 := by rw [h31]
+      _ = -(ι 1 * ι 2 * ι 1 * ι 3 * ι 2 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 1 * (ι 2 * ι 1) * ι 3 * ι 2 * ι 3) := by simp [mul_assoc]
+      _ = -(ι 1 * (-(ι 1 * ι 2)) * ι 3 * ι 2 * ι 3) := by rw [h21]
+      _ = ι 1 * ι 1 * ι 2 * ι 3 * ι 2 * ι 3 := by simp [mul_neg, mul_assoc]
+      _ = ι 2 * (ι 3 * ι 2) * ι 3 := by simp [e1_sq, mul_assoc]
+      _ = ι 2 * (-(ι 2 * ι 3)) * ι 3 := by rw [h32]
+      _ = -(ι 2 * ι 2 * ι 3 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -1 := by simp [e2_sq, e3_sq]
+
+private theorem volume_mul_dual0 :
+    spatialVolume * dualNormal 0 = -hyperbolic 0 := by
+  have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
+  have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
+  have h10 : ι 1 * ι 0 = -(ι 0 * ι 1) := e_mul_anticomm (by decide)
+  rw [spatialVolume, dualNormal]
+  calc
+    (ι 1 * ι 2 * ι 3) * (ι 0 * ι 3 * ι 2)
+        = ι 1 * ι 2 * (ι 3 * ι 0) * ι 3 * ι 2 := by simp [mul_assoc]
+      _ = ι 1 * ι 2 * (-(ι 0 * ι 3)) * ι 3 * ι 2 := by rw [h30]
+      _ = -(ι 1 * ι 2 * ι 0 * ι 3 * ι 3 * ι 2) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 1 * ι 2 * ι 0 * ι 2) := by simp [e3_sq, mul_assoc]
+      _ = -(ι 1 * (ι 2 * ι 0) * ι 2) := by simp [mul_assoc]
+      _ = -(ι 1 * (-(ι 0 * ι 2)) * ι 2) := by rw [h20]
+      _ = ι 1 * ι 0 * ι 2 * ι 2 := by simp [mul_neg, mul_assoc]
+      _ = ι 1 * ι 0 := by simp [e2_sq, mul_assoc]
+      _ = -(ι 0 * ι 1) := by rw [h10]
+      _ = -hyperbolic 0 := by simp [hyperbolic]
+
+private theorem dual0_mul_volume :
+    dualNormal 0 * spatialVolume = hyperbolic 0 := by
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  rw [dualNormal, spatialVolume]
+  calc
+    (ι 0 * ι 3 * ι 2) * (ι 1 * ι 2 * ι 3)
+        = ι 0 * ι 3 * (ι 2 * ι 1) * ι 2 * ι 3 := by simp [mul_assoc]
+      _ = ι 0 * ι 3 * (-(ι 1 * ι 2)) * ι 2 * ι 3 := by rw [h21]
+      _ = -(ι 0 * ι 3 * ι 1 * ι 2 * ι 2 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -(ι 0 * ι 3 * ι 1 * ι 3) := by simp [e2_sq, mul_assoc]
+      _ = -(ι 0 * (ι 3 * ι 1) * ι 3) := by simp [mul_assoc]
+      _ = -(ι 0 * (-(ι 1 * ι 3)) * ι 3) := by rw [h31]
+      _ = ι 0 * ι 1 * ι 3 * ι 3 := by simp [mul_neg, mul_assoc]
+      _ = ι 0 * ι 1 := by simp [e3_sq, mul_assoc]
+      _ = hyperbolic 0 := by simp [hyperbolic]
+
+theorem cycleAlg_spatialVolume : cycleAlg spatialVolume = spatialVolume := by
+  have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
+  have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
+  rw [spatialVolume, cycleAlg_mul3]
+  simp only [cycleCoord]
+  calc
+    ι 2 * ι 3 * ι 1 = ι 2 * (ι 3 * ι 1) := by simp [mul_assoc]
+      _ = ι 2 * (-(ι 1 * ι 3)) := by rw [h31]
+      _ = -(ι 2 * ι 1 * ι 3) := by simp [mul_neg, mul_assoc]
+      _ = -((-(ι 1 * ι 2)) * ι 3) := by rw [h21]
+      _ = ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
+
+theorem cycleAlg_hyperbolic (a : Fin 3) :
+    cycleAlg (hyperbolic a) = hyperbolic (cyclePlane a) := by
+  fin_cases a <;> simp [hyperbolic, cyclePlane, map_mul, cycleAlg_ι, cycleCoord]
+
+theorem volume_mul_dualNormal (a : Fin 3) :
+    spatialVolume * dualNormal a = -hyperbolic a := by
+  have h0 := volume_mul_dual0
+  fin_cases a
+  · exact h0
+  · have h := congrArg cycleAlg h0
+    rw [map_mul, map_neg, cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic] at h
+    simpa [cyclePlane] using h
+  · have h := congrArg (cycleAlg ∘ cycleAlg) h0
+    rw [Function.comp_apply, Function.comp_apply, map_mul, map_neg, map_mul, map_neg,
+      cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic,
+      cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic] at h
+    simpa [cyclePlane] using h
+
+theorem dualNormal_mul_volume (a : Fin 3) :
+    dualNormal a * spatialVolume = hyperbolic a := by
+  have h0 := dual0_mul_volume
+  fin_cases a
+  · exact h0
+  · have h := congrArg cycleAlg h0
+    rw [map_mul, cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic] at h
+    simpa [cyclePlane] using h
+  · have h := congrArg (cycleAlg ∘ cycleAlg) h0
+    rw [Function.comp_apply, Function.comp_apply, map_mul, map_mul,
+      cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic,
+      cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic] at h
+    simpa [cyclePlane] using h
+
+/-- The spatial volume brackets with the dual of an axis to `-2` times the boost. -/
+theorem commutator_volume_dualNormal (a : Fin 3) :
+    commutator spatialVolume (dualNormal a) = (-2 : ℝ) • hyperbolic a := by
+  rw [Generators.commutator, volume_mul_dualNormal, dualNormal_mul_volume]
+  module
+
+theorem sym_volume_dualNormal (a : Fin 3) :
+    spatialVolume * dualNormal a + dualNormal a * spatialVolume = 0 := by
+  rw [volume_mul_dualNormal, dualNormal_mul_volume]
+  module
+
+theorem commutator_volume_dualOf (n : Fin 3 → ℝ) :
+    commutator spatialVolume (dualOf n) = (-2 : ℝ) • spatialBoost n := by
+  rw [dualOf, spatialBoost]
+  simp only [commutator_add_right, commutator_smul_right, commutator_volume_dualNormal, smul_smul]
+  have hmul (c : ℝ) : c * (-2) = (-2) * c := by ring
+  simp only [hmul, ← smul_smul, smul_add]
+
+theorem sym_volume_dualOf (n : Fin 3 → ℝ) :
+    spatialVolume * dualOf n + dualOf n * spatialVolume = 0 := by
+  rw [dualOf]
+  have pair (c : ℝ) (x : PGA) (hx : spatialVolume * x + x * spatialVolume = 0) :
+      spatialVolume * (c • x) + (c • x) * spatialVolume = 0 := by
+    rw [mul_smul_comm, smul_mul_assoc, ← smul_add, hx, smul_zero]
+  have h0 := pair (n 0) (dualNormal 0) (sym_volume_dualNormal 0)
+  have h1 := pair (n 1) (dualNormal 1) (sym_volume_dualNormal 1)
+  have h2 := pair (n 2) (dualNormal 2) (sym_volume_dualNormal 2)
+  simp only [mul_add, add_mul]
+  have regroup :
+      spatialVolume * (n 0 • dualNormal 0) + spatialVolume * (n 1 • dualNormal 1) +
+          spatialVolume * (n 2 • dualNormal 2) +
+        ((n 0 • dualNormal 0) * spatialVolume + (n 1 • dualNormal 1) * spatialVolume +
+          (n 2 • dualNormal 2) * spatialVolume) =
+      (spatialVolume * (n 0 • dualNormal 0) + (n 0 • dualNormal 0) * spatialVolume) +
+        (spatialVolume * (n 1 • dualNormal 1) + (n 1 • dualNormal 1) * spatialVolume) +
+        (spatialVolume * (n 2 • dualNormal 2) + (n 2 • dualNormal 2) * spatialVolume) := by
+    abel
+  rw [regroup, h0, h1, h2]
+  abel
+
+theorem omegaTorsion_displaced (n : Fin 3 → ℝ) (δ : ℝ) :
+    omegaTorsion (displacedMotor n δ).torsion = (-δ) • spatialBoost n := by
+  simp only [omegaTorsion, displacedMotor, spatialBoost, Fin.sum_univ_three]
+  have hdiv (c : ℝ) : (-2 * δ * c) / 2 = -δ * c := by ring
+  simp only [hdiv, zero_div, zero_smul, add_zero]
+  have hpull (c : ℝ) (x : PGA) : (-δ * c) • x = (-δ) • (c • x) := by
+    rw [← smul_smul]
+  rw [hpull, hpull, hpull, ← smul_add, ← smul_add]
+
+/-- Displacing the plane does not change its bracket with the spatial volume. -/
+theorem commutator_displaced_volume (n : Fin 3 → ℝ) (δ : ℝ) :
+    commutator (displacedPlane n δ) spatialVolume = (-2 : ℝ) • spatialTranslation n := by
+  rw [displacedPlane, commutator_add_left, commutator_smul_left, commutator_self, smul_zero,
+    add_zero, commutator_idealPlaneOf_volume]
+
+/-- `Π(n, δ) ∨̲ k` is the pure spatial shift, for every displacement `δ`. -/
+theorem vee_displaced_volume_eq_biv (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • commutator (displacedPlane n δ) spatialVolume =
+      omegaBiv (pureSpatialShift n) := by
+  have h : commutator (displacedPlane n δ) spatialVolume =
+      commutator (idealPlaneOf n) spatialVolume := by
+    rw [commutator_displaced_volume, commutator_idealPlaneOf_volume]
+  rw [h, vee_idealPlaneOf_volume_eq_biv]
+
+/-- The displacement is the symmetric product with the spatial volume: `∨̄` equals `-δ`. -/
+theorem sym_displaced_volume (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • (displacedPlane n δ * spatialVolume +
+      spatialVolume * displacedPlane n δ) = (-δ) • (1 : PGA) := by
+  have hscale : (δ • spatialVolume) * spatialVolume = δ • (spatialVolume * spatialVolume) :=
+    smul_mul_assoc δ spatialVolume spatialVolume
+  have hscale' : spatialVolume * (δ • spatialVolume) = δ • (spatialVolume * spatialVolume) :=
+    mul_smul_comm δ spatialVolume spatialVolume
+  rw [displacedPlane, add_mul, mul_add, hscale, hscale']
+  have hsum :
+      idealPlaneOf n * spatialVolume + δ • (spatialVolume * spatialVolume) +
+          (spatialVolume * idealPlaneOf n + δ • (spatialVolume * spatialVolume)) =
+        (idealPlaneOf n * spatialVolume + spatialVolume * idealPlaneOf n) +
+          (δ • (spatialVolume * spatialVolume) + δ • (spatialVolume * spatialVolume)) := by
+    abel
+  rw [hsum, sym_idealPlaneOf_volume, zero_add, spatialVolume_sq]
+  have hscale (c : ℝ) : c • (-1 : PGA) = (-c) • (1 : PGA) := by
+    have hneg : (-1 : PGA) = (-1 : ℝ) • (1 : PGA) := by
+      simp
+    rw [hneg, smul_smul]
+    congr 1
+    ring
+  rw [hscale, ← add_smul, smul_smul]
+  have hcoef : (1 / 2 : ℝ) * (-δ + -δ) = -δ := by ring
+  rw [hcoef]
+
+theorem commutator_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
+    commutator (displacedPlane n δ) (dualOf n) =
+      (2 * spatialNormSq n) • null 0 + (-(2 * δ)) • spatialBoost n := by
+  rw [displacedPlane, commutator_add_left, commutator_smul_left, commutator_idealPlaneOf_dualOf,
+    commutator_volume_dualOf, smul_smul]
+  have hmul : δ * (-2) = -(2 * δ) := by ring
+  rw [hmul]
+
+theorem sym_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
+    displacedPlane n δ * dualOf n + dualOf n * displacedPlane n δ = 0 := by
+  have hscale (x : PGA) :
+      (δ • spatialVolume) * x + x * (δ • spatialVolume) =
+        δ • (spatialVolume * x + x * spatialVolume) := by
+    rw [smul_mul_assoc, mul_smul_comm, smul_add]
+  rw [displacedPlane, add_mul, mul_add]
+  have hsum :
+      idealPlaneOf n * dualOf n + (δ • spatialVolume) * dualOf n +
+          (dualOf n * idealPlaneOf n + dualOf n * (δ • spatialVolume)) =
+        (idealPlaneOf n * dualOf n + dualOf n * idealPlaneOf n) +
+          ((δ • spatialVolume) * dualOf n + dualOf n * (δ • spatialVolume)) := by
+    abel
+  rw [hsum, sym_idealPlaneOf_dualOf, zero_add, hscale, sym_volume_dualOf, smul_zero]
+
+/-- `Π(n, δ) ∨̲ ẽ(n) = |n|² N₀ - δ ∑ nₐ B⁺ₐ`. -/
+theorem vee_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • commutator (displacedPlane n δ) (dualOf n) =
+      spatialNormSq n • null 0 + (-δ) • spatialBoost n := by
+  rw [commutator_displaced_dualOf, smul_add, smul_smul, smul_smul]
+  have h1 : (1 / 2 : ℝ) * (2 * spatialNormSq n) = spatialNormSq n := by ring
+  have h2 : (1 / 2 : ℝ) * -(2 * δ) = -δ := by ring
+  rw [h1, h2]
+
+/-- The displaced dual bracket is the boost `αₐ = -2 δ nₐ` plus the time shift `λ⁰ = 2 |n|²`. -/
+theorem vee_displaced_dualOf_eq_biv (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • commutator (displacedPlane n δ) (dualOf n) =
+      omegaBiv (displacedMotor n δ) := by
+  rw [vee_displaced_dualOf, omegaBiv, omegaTorsion_displaced, displacedMotor, omegaTrans_single]
+  have hdiv : (2 * spatialNormSq n) / 2 = spatialNormSq n := by ring
+  rw [hdiv]
+  abel
 
 end DstDiophantine.Gravity.PlaneBracket

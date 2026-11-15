@@ -217,6 +217,26 @@ example (n : Fin 3 → ℝ) :
       Motor.omegaBiv (PlaneBracket.pureShift 0 (2 * PlaneBracket.spatialNormSq n)) :=
   PlaneBracket.vee_idealPlaneOf_dualOf_eq_biv n
 
+/-- Regression: displacing a plane leaves the bracket with the spatial volume unchanged. -/
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.displacedPlane n δ)
+        PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureSpatialShift n) :=
+  PlaneBracket.vee_displaced_volume_eq_biv n δ
+
+/-- Regression: the displacement is the symmetric product `−δ`. -/
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • (PlaneBracket.displacedPlane n δ * PlaneBracket.spatialVolume +
+        PlaneBracket.spatialVolume * PlaneBracket.displacedPlane n δ) =
+      (-δ) • (1 : PGA) :=
+  PlaneBracket.sym_displaced_volume n δ
+
+/-- Regression: the displaced plane against the dual of its normal is a boost plus a time shift. -/
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.displacedPlane n δ) (PlaneBracket.dualOf n) =
+      Motor.omegaBiv (PlaneBracket.displacedMotor n δ) :=
+  PlaneBracket.vee_displaced_dualOf_eq_biv n δ
+
 /-- Regression: the d'Alembertian of the squared Killing norm is `8J`. -/
 example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
     ∑ μ : Fin 4, w31 μ * (KillingAxis.killingNormSq p (x + t • e4vec μ) +
