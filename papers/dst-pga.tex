@@ -268,15 +268,19 @@ J^{(5)}
 \end{equation}
 Under the half-angle expansion of~\eqref{eq:Omega-decomp}, with \(B(B_{a}^{+},B_{a}^{+})=+8\) and \(B(B_{a}^{-},B_{a}^{-})=-8\), the first term equals \(\tfrac18\sum_{a}(\alpha_{a}^{2}-\beta_{a}^{2})\), which is one quarter of the discrete companion's \(J=\tfrac12\sum_{a}(\alpha_{a}^{2}-\beta_{a}^{2})\). The second term vanishes precisely on the light cone. The two contributions decouple because the Killing form of \(\mathfrak{iso}(3,1)\) vanishes between the semisimple and translation generators. The translational contribution is unbounded unless \(\lambda^{\mu}\) is constrained; the admissible ceiling \(|J|\le 3\pi^{2}/8\) of the discrete companion applies to the torsion part alone.
 
-One geometric reading of the same algebra is worth recording, although it is not needed for the motor calculus. Planes in \(G(3,1,1)\) are three-blades. The antisymmetric part of their geometric product,
+One geometric reading of the same algebra is worth recording, although it is not needed for the motor calculus. Planes in \(G(3,1,1)\) are three-blades. On a coordinate plane the antisymmetric part of the geometric product,
 \[
 A \mathbin{\underline{\vee}} B \;:=\; \tfrac12(AB-BA),
 \]
-takes values in grade two. On representative configurations, if \(P\) is a three-blade and \(D\) a dual-sector element aligned with the normal \(n\) of the plane of \(P\), the bracket is a null bivector along that normal,
+is a pure translation, and that translation is the translational half of a motor. Let \(\Pi_{ij}=e_{4}\wedge e_{i}\wedge e_{j}\), and let \(n\) be the unit normal of \((e_{i},e_{j})\), oriented so that \((e_{i},e_{j},n)\) is right-handed. The spatial volume \(k=e_{1}e_{2}e_{3}\), the dual of the time axis, brackets with the plane to the translation along the normal,
 \[
-P \mathbin{\underline{\vee}} D \;=\; k\,(e_{4}\wedge n).
+\Pi_{ij}\mathbin{\underline{\vee}} k \;=\; -N_{n}.
 \]
-The dual spacetime then acts as a carrier of normals, and the bracket produces a translation along the normal. The appendix works one such example. A fully covariant calculus relating these brackets to \(\Omega_{\mathrm{biv}}^{(5)}\) is not developed here.
+The dual trivector of the normal itself returns the time translation, the same generator on every coordinate plane,
+\[
+\Pi_{ij}\mathbin{\underline{\vee}}\tilde{e}_{n} \;=\; N_{0}.
+\]
+A dual trivector of an axis lying in the plane has vanishing bracket. Each of these translations is \(\Omega_{\mathrm{trans}}\) for a single coefficient and vanishing torsion. The appendix records the three planes. A bracket for a plane that does not lie on the axes is not developed here.
 
 \section{Gravity on a chart}
 \label{sec:gravity}
@@ -532,7 +536,7 @@ On a chart, sandwiching with \(M\) produces a tetrad, and the same sandwich is a
 
 The direction of gravity is carried by the translations. The static observer's Killing bivector is a pure boost of rate \(\kappa=GM/r^{2}\) about an axis moved inward through \(\ell=1/a\), where \(a=\partial_{r}\sqrt{A}\) is the hover acceleration and the Weitzenb\"{o}ck torsion of the time leg. Gravity points to that axis. In the flat flow a body released from rest accelerates toward it at rate \(1/\ell\) and meets its light cone in proper time \(\ell\). The same law, read for radial rapidity and integrated while \(\ell\) changes with radius, is the radial fall on the exterior. The areal radius accelerates at the boost rate \(\kappa\), and \((dr/d\tau)^{2}=E^{2}-A\), with \(E=\sqrt{A}\cosh\psi\) constant along the motion. A release from rest at radius \(R\) has \(E^{2}=A(R)\). Equatorial motion of constant angular momentum \(L\) on the same coframe accelerates the areal radius at \(-\kappa+L^{2}/r^{3}-3\kappa L^{2}/r^{2}\). One share of the coefficient \(3\) is the transverse speed inside \(\gamma^{2}\), and two shares are the deficit \(A-1=-r_{s}/r\) in the centrifugal barrier \(A L^{2}/r^{3}\). Both vanish with \(L\). Wherever \(du/d\varphi\neq 0\), the orbit equation is \(d^{2}u/d\varphi^{2}+u=GM/L^{2}+3GM\,u^{2}\). The precessing ellipse that cancels the resonant cosine, at \(k^{2}=1-6(GM)^{2}/L^{2}\), leaves a constant and a double angle. With \(p=L^{2}/(GM)\) and \(0<6GM/p<1\), the angle from one perihelion to the next exceeds \(2\pi\) by an amount strictly between \(6\pi GM/p\) and that quantity divided by \(1-6GM/p\). A tilt of the Newtonian acceleration by the transverse velocity multiplies the angular momentum by \(e^{-\kappa\tau}\). The torsional leg carries no such factor: it changes only with the radius, and the transverse piece of \(\gamma^{2}\) that remains after the radial cancellation is this perihelion. The axis recedes to infinity far away, where the static motion is a time translation, and reaches the observer at the horizon, where the motion is a boost at the surface gravity; the proper time \(\ell\) diverges in the first limit and vanishes in the second. Up to redshift, the field seed is the torsional scalar of that boost. Because the squared Killing norm has d'Alembertian \(8J\), a hyperbolic Lorentz part draws bodies toward its axis and an elliptic one drives them away; this is the kinematic content of the parent theory's sign rule. Inside a spherical mass the boost rate vanishes at the centre by the cancellation that removes the weight, and the clock's translation returns to \(\nu=1\). A clock at the centre therefore runs at the vacuum rate, fast relative to the surface by \(6.96\times 10^{-10}\). The potential gradient below the surface agrees with the continuum, \(g/c^{2}=1.093\times 10^{-16}\) per metre, and light from underground carries that shift. The continuum clock keeps \(\kappa=d\nu/ds\) and is slowest where the weight is zero, by \(3.48\times 10^{-10}\) at the centre of a uniform ball. The sign of that comparison is the equivalence principle of the parent theory, read on \(K\).
 
-A fixed Poincar\'{e} bivector, moved to a new origin by a translator, keeps its Lorentz part and acquires the velocity field \(\lambda+\omega x\). Along a differentiable curve that field changes at the rate \(\omega(\dot{x})\). Static bivectors at distinct exterior radii are not related by this displacement. What remains open is a covariant bracket calculus for planes, parallel transport of the Killing bivector in the curved exterior connection, motion off the equatorial leg, the identification of that bivector with the mismatch of the parent theory, and a formula that writes \(T\) as a total divergence for every motor. The radial rapidity on the exterior chart, and the equatorial orbit of constant angular momentum, are the integrals that have been carried out. The variational equivalence of TEGR with Einstein--Hilbert gravity is the input of~\cite{maluf2013}.
+A fixed Poincar\'{e} bivector, moved to a new origin by a translator, keeps its Lorentz part and acquires the velocity field \(\lambda+\omega x\). Along a differentiable curve that field changes at the rate \(\omega(\dot{x})\). Static bivectors at distinct exterior radii are not related by this displacement. What remains open is a bracket for a plane off the coordinate axes, parallel transport of the Killing bivector in the curved exterior connection, motion off the equatorial leg, the identification of that bivector with the mismatch of the parent theory, and a formula that writes \(T\) as a total divergence for every motor. The radial rapidity on the exterior chart, and the equatorial orbit of constant angular momentum, are the integrals that have been carried out. The variational equivalence of TEGR with Einstein--Hilbert gravity is the input of~\cite{maluf2013}.
 
 \appendix
 
@@ -544,15 +548,29 @@ Planes in \(G(3,1,1)\) are three-blades. For two three-blades \(A\) and \(B\) th
 A \mathbin{\underline{\vee}} B \;=\; \tfrac12(AB-BA),\qquad
 A \mathbin{\overline{\vee}} B \;=\; \tfrac12(AB+BA).
 \]
-These symbols are used only in this sense; they are not the anti-inner and anti-outer products of the PGA literature~\cite{Lengyel2024,DorstFontijneMann2007}. In a five-dimensional vector space the geometric product of two grade-three elements has grades \(0\), \(2\), and \(4\) only.
+These symbols are used only in this sense; they are not the anti-inner and anti-outer products of the PGA literature~\cite{Lengyel2024,DorstFontijneMann2007}. In a five-dimensional vector space the geometric product of two grade-three elements has grades \(0\), \(2\), and \(4\) only. Where a bracket below is a translation, the symmetric part vanishes, so the geometric product itself is that translation.
 
-Take \(P=e_{4}\wedge e_{1}\wedge e_{2}\) and \(D=jI=-e_{0}e_{3}e_{2}\), a dual-sector trivector of the parent theory. Anticommuting generators through the product \(PD-DP\) reduces the bracket to a multiple of \(e_{4}\wedge e_{3}\). The direction \(e_{3}\) is the unit normal to the spatial plane \(e_{1}\wedge e_{2}\), so
+Let \(\Pi_{12}=e_{4}\wedge e_{1}\wedge e_{2}\), with normal \(e_{3}\). Its bracket with the spatial volume \(k=e_{1}e_{2}e_{3}\) is
 \[
-P \mathbin{\underline{\vee}} D \;=\; k\, N_{3}
+\Pi_{12}\mathbin{\underline{\vee}} k \;=\; -N_{3},
 \]
-for a real coefficient \(k\). The right-hand side is a generator of translations along that normal. The dual element \(D\) has acted as the carrier of the normal direction.
+and the same plane against the dual trivector of that normal, \(jK=e_{0}e_{2}e_{1}\), returns
+\[
+\Pi_{12}\mathbin{\underline{\vee}} jK \;=\; N_{0}.
+\]
+The companion planes repeat the pattern. \(\Pi_{23}=e_{4}\wedge e_{2}\wedge e_{3}\) brackets with \(k\) to \(-N_{1}\) and with \(jI=e_{0}e_{3}e_{2}\), the dual of \(e_{1}\), to \(N_{0}\). \(\Pi_{31}=e_{4}\wedge e_{3}\wedge e_{1}\) brackets with \(k\) to \(-N_{2}\) and with \(jJ=e_{0}e_{1}e_{3}\) to \(N_{0}\).
 
-A second, purely spatial example confirms the grade pattern. For \(A=e_{1}e_{2}e_{3}\) and \(B=e_{1}e_{2}e_{4}\) one finds \(AB=-e_{3}e_{4}\) and \(BA=+e_{3}e_{4}\), hence \(A\mathbin{\underline{\vee}}B=-e_{3}e_{4}\) and \(A\mathbin{\overline{\vee}}B=0\): a pure grade-two commutator, as expected of an antisymmetric product.
+The dual of an axis lying in the plane does not produce a translation. For this same \(jI\),
+\[
+\Pi_{12}\mathbin{\underline{\vee}} jI \;=\; 0,
+\]
+and the product equals the four-vector \(e_{0}e_{1}e_{3}e_{4}\).
+
+The order with the spatial volume on the left is the same identity. For \(A=e_{1}e_{2}e_{3}\) and \(B=e_{1}e_{2}e_{4}\) one has \(B=\Pi_{12}\), \(AB=-e_{3}e_{4}\), \(BA=e_{3}e_{4}\), and therefore \(A\mathbin{\underline{\vee}}B=N_{3}\) together with \(A\mathbin{\overline{\vee}}B=0\).
+
+Under the half-angle normalisation, \(N_{\mu}\) is \(\Omega_{\mathrm{trans}}\) of the pure shift whose only coefficient is \(\lambda^{\mu}=2\). The torsion vanishes, so each bracket above is \(\Omega_{\mathrm{biv}}^{(5)}\) of that translator. \(-N_{n}\) is the shift \(\lambda^{n}=-2\), and \(N_{0}\) is the shift \(\lambda^{0}=2\).
+
+A bracket for a plane rotated off the coordinate axes, or for a plane displaced from the origin, is not obtained here.
 
 \section{An extended reading}
 \label{app:reading}
@@ -603,9 +621,9 @@ The translation does not enter \(\Box N^{2}\). It places the axis and leaves the
 
 \subsection{Where the reading stops}
 
-Section~\ref{sec:conclusions} leaves the bracket calculus, the curved transport, and the identification with the parent mismatch open. The degenerate sandwich, the split of a general motor, and the flat displacement of a bivector are part of the reading above. Each paragraph below records how far that reading goes.
+Section~\ref{sec:conclusions} leaves a bracket off the coordinate axes, the curved transport, and the identification with the parent mismatch open. The degenerate sandwich, the split of a general motor, the flat displacement of a bivector, and the coordinate-plane brackets are part of the reading above. Each paragraph below records how far that reading goes.
 
-Appendix~\ref{app:bracket} shows that the antisymmetric product of one spatial plane with one dual trivector returns a null bivector along the normal. The configuration is a single one. A covariant bracket calculus would have to locate that product inside \(\Omega_{\mathrm{biv}}^{(5)}\), so that the translation it returns is the translational half of a motor. The body records the grade and does not build the calculus.
+Appendix~\ref{app:bracket} places those brackets inside \(\Omega_{\mathrm{biv}}^{(5)}\). For an ideal coordinate plane with right-handed normal \(n\), the bracket with the spatial volume \(k\) is the translation \(-N_{n}\), and the bracket with the dual trivector of \(n\) is the time translation \(N_{0}\). The symmetric product vanishes, and each generator is the translational half of a motor with no torsion. The dual of an axis lying in the plane has vanishing bracket, and that product is the four-vector recorded there. A plane that does not lie on the axes is not treated.
 
 The tetrad of Section~\ref{sec:gravity} sandwiches the reference vectors of \(\mathrm{Cl}(3,1)\). The motor acts on the whole five-dimensional space and preserves the degenerate square. The rotor fixes the null line. The translator shears each vector along \(e_{4}\) by the Minkowski pairing and leaves the quotient by that line unchanged. The tetrad is that quotient, and the direction of a translation is the shear it drops. On the exterior chart the motor of the coframe is a pure radial rotor, so that shear vanishes and the pointing direction is read from the Killing bivector.
 

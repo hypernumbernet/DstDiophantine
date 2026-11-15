@@ -96,6 +96,7 @@ import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Perihelion
 import DstDiophantine.Gravity.DegenerateSandwich
 import DstDiophantine.Gravity.KillingTransport
+import DstDiophantine.Gravity.PlaneBracket
 import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
@@ -179,6 +180,23 @@ example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r
           (KillingAxis.killingNorm rs r₁)) x).torsion ≠
       Amplification.pureBoost (KillingAxis.killingRate rs r₂) :=
   KillingTransport.static_not_flat_transport h₁ h₂ hne x
+
+/-- Regression: a coordinate plane brackets with the spatial volume to `-Nₙ`. -/
+example (a : Fin 3) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlane a) PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureShift (Fin.succ a) (-2)) :=
+  PlaneBracket.vee_ideal_volume_eq_biv a
+
+/-- Regression: the dual of the normal returns the pure time translation `N₀`. -/
+example (a : Fin 3) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlane a) (PlaneBracket.dualNormal a) =
+      Motor.omegaBiv (PlaneBracket.pureShift 0 2) :=
+  PlaneBracket.vee_ideal_dualNormal_eq_biv a
+
+/-- Regression: the dual of an in-plane axis has vanishing bracket. -/
+example :
+    Generators.commutator (PlaneBracket.idealPlane 2) (PlaneBracket.dualNormal 0) = 0 :=
+  PlaneBracket.commutator_plane12_inPlane
 
 /-- Regression: the d'Alembertian of the squared Killing norm is `8J`. -/
 example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
