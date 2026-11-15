@@ -48,6 +48,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.ElectronDiscrete
 import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.ElectronNumbers
 import DstDiophantine.Gravity.ElectronLength
@@ -1273,6 +1274,20 @@ example {x : ℝ} (hx : x ∈ Set.Ioo (5 / 2) Real.pi) (h0 : forceCrit x = 0) :
 /-- Regression: attraction strengthens with phase throughout the outer well. -/
 example : StrictMonoOn pairAttraction (Set.Ioo (0 : ℝ) resonanceRoot1) :=
   pairAttraction_strictMono_outer
+
+/-- Regression: one dual half-step from the first node keeps the force below `N`. -/
+example {N : ℕ} (hN : N ≠ 0) {x : ℝ}
+    (hx : x ∈ Set.Icc (Real.pi / 4) 1)
+    (hgap : Real.pi / (N : ℝ) ≤ |x - resonanceRoot1|) :
+    |pairAttraction x| < (N : ℝ) :=
+  pairAttraction_abs_lt_step hN hx hgap
+
+/-- Regression: the outer-well integral, one step short of the node, is logarithmic in `N`. -/
+example {N : ℕ} (hN : 0 < N) (hfit : Real.pi / (N : ℝ) < resonanceRoot1 - Real.pi / 4) :
+    ∫ x in (0 : ℝ)..(resonanceRoot1 - Real.pi / (N : ℝ)), (1 / gammaSEqual x) ≤
+      (Real.pi / 4) * Real.sqrt 2 * Real.exp (Real.pi / 4) +
+        (1 / nodeSlopeLo) * Real.log ((N : ℝ) * (resonanceRoot1 - Real.pi / 4) / Real.pi) :=
+  outerWell_integral_oneStep hN hfit
 
 /-- Regression: the centripetal formula is not a radius law. Where it is written,
 a repulsive layer gives a negative square. -/
