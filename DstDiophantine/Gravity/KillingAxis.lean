@@ -41,10 +41,14 @@ derivative.
   `∂_r√A = T⁰_{rt} = -√A φ'`; `ℓ` increases strictly, tends to `0` at the
   horizon (where `K` becomes the pure boost of rate `1/(2rₛ)`) and to `∞` far
   away (where `K` becomes the pure time translation); `J(κ) = A² J_field`.
-* Per unit proper time `K/ν = ½((κ/ν) B⁺ + N₀)`. Its bracket with the radial
-  lightlike translations `N₀ ± N₁` is `±(κ/ν)` times the same translation.
-  On the exterior the rate is the hover acceleration `∂_r√A`. The time
-  translation contributes nothing: `N₀` commutes with both rays.
+* Per unit proper time `K/ν = ½((κ/ν) B⁺ + N₀)`. A radial momentum
+  `ε N₀ + π N₁` splits into null weights `(ε±π)/2`. The bracket scales those
+  weights at `±κ/ν`, hence sends the momentum to `(κ/ν)(π N₀ + ε N₁)`. At rest
+  the energy coefficient is stationary and the shift is the spatial momentum
+  `(κ/ν) ε N₁`. On the exterior the rate is the hover acceleration `∂_r√A`.
+  The time translation contributes nothing. A finite rapidity multiplies the
+  same weights by `e^{±φ}`, equal to `A^{-1/2}` and `√A` on this chart, and
+  their product is unchanged.
 
 ## Not claimed
 
@@ -987,6 +991,67 @@ theorem commutator_staticProper_light_minus {rs r : ℝ} (h : IsExterior rs r) :
   have hν := (killingNorm_pos h).ne'
   rw [staticKilling, commutator_proper_light_minus _ _ hν, killingRate_eq_norm_mul_deriv h]
   field_simp [hν]
+
+/-- Per unit proper time, `[K/ν, ε N₀ + π N₁] = (κ/ν)(π N₀ + ε N₁)`. -/
+theorem commutator_proper_radial (κ ν ε π : ℝ) (hν : ν ≠ 0) :
+    commutator ((1 / ν) • killingBivector κ ν) (radialMomentum ε π) =
+      (κ / ν) • radialMomentum π ε := by
+  rw [smul_killingBivector_proper κ ν hν, commutator_smul_left, commutator_add_left,
+    commutator_smul_left, commutator_hyperbolic0_radial, commutator_null0_radial]
+  simp only [add_zero, smul_smul]
+  module
+
+/-- At rest the energy coefficient is stationary and the shift is spatial. -/
+theorem commutator_proper_rest (κ ν ε : ℝ) (hν : ν ≠ 0) :
+    commutator ((1 / ν) • killingBivector κ ν) (radialMomentum ε 0) =
+      (ε * (κ / ν)) • null 1 := by
+  rw [commutator_proper_radial κ ν ε 0 hν, radialMomentum]
+  module
+
+/-- On the exterior the rate is the hover acceleration. -/
+theorem commutator_staticProper_radial {rs r ε π : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / killingNorm rs r) • staticKilling rs r) (radialMomentum ε π) =
+      dSqrtA_dr rs r • radialMomentum π ε := by
+  have hν := (killingNorm_pos h).ne'
+  rw [staticKilling, commutator_proper_radial _ _ _ _ hν, killingRate_eq_norm_mul_deriv h]
+  field_simp [hν]
+
+theorem commutator_staticProper_rest {rs r ε : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / killingNorm rs r) • staticKilling rs r) (radialMomentum ε 0) =
+      (ε * dSqrtA_dr rs r) • null 1 := by
+  have hν := (killingNorm_pos h).ne'
+  rw [staticKilling, commutator_proper_rest _ _ _ hν, killingRate_eq_norm_mul_deriv h]
+  field_simp [hν]
+
+/-- The null weights of a rest momentum take `A^{-1/2}` and `√A`. -/
+theorem rest_nullWeights_chart {rs r ε : ℝ} (h : IsExterior rs r) :
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 +
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε / killingNorm rs r ∧
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 -
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε * killingNorm rs r := by
+  obtain ⟨hplus, hminus⟩ :=
+    Sandwich.boostConj_radial_weights (schwarzschildRapidity rs r) ε 0
+  have hν : killingNorm rs r = Real.exp (-schwarzschildRapidity rs r) :=
+    killingNorm_eq_exp h
+  have hne : Real.exp (-schwarzschildRapidity rs r) ≠ 0 := Real.exp_ne_zero _
+  have hmul :
+      Real.exp (schwarzschildRapidity rs r) * Real.exp (-schwarzschildRapidity rs r) = 1 := by
+    simp [← Real.exp_add]
+  constructor
+  · have hsum :
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 +
+          Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+        ε * Real.exp (schwarzschildRapidity rs r) := by
+      simpa [add_zero] using hplus
+    rw [hsum, hν, eq_div_iff hne, mul_assoc, hmul, mul_one]
+  · have hdiff :
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 -
+          Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+        ε * Real.exp (-schwarzschildRapidity rs r) := by
+      simpa [sub_zero] using hminus
+    rw [hdiff, hν]
 
 /-- In rapidity: `ℓ · (-√A φ') = 1`; gravity points up the rapidity gradient. -/
 theorem axisDistance_mul_rapidity {rs r : ℝ} (h : IsExterior rs r) :

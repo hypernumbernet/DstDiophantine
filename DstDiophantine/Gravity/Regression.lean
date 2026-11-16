@@ -152,6 +152,24 @@ example {rs r : ℝ} (h : IsExterior rs r) :
       KillingAxis.axisDistance rs r * dSqrtA_dr rs r = 1 :=
   ⟨KillingAxis.staticKilling_eq_sandwich h, KillingAxis.axisDistance_mul_dSqrtA_dr h⟩
 
+/-- Regression: a rest momentum is shifted into the radial direction at the hover rate,
+and its null weights take the reciprocal clock factor and the clock factor. -/
+example {rs r ε : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (radialMomentum ε 0) =
+      (ε * dSqrtA_dr rs r) • null 1 ∧
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 +
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε / KillingAxis.killingNorm rs r ∧
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 -
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε * KillingAxis.killingNorm rs r ∧
+    minkowskiDot ![ε, 0, 0, 0] = -(ε * ε) :=
+  ⟨KillingAxis.commutator_staticProper_rest h,
+    (KillingAxis.rest_nullWeights_chart h).1,
+    (KillingAxis.rest_nullWeights_chart h).2,
+    by simpa [add_zero, sub_zero] using Sandwich.minkowskiDot_radial_weights ε 0⟩
+
 /-- Regression: the static generator scales radial lightlike momenta at the hover rate.
 A dual angle does not enter the scale of the outward ray. -/
 example {rs r : ℝ} (h : IsExterior rs r) (θ : ℝ) :

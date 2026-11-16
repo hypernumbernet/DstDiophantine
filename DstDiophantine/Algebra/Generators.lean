@@ -519,6 +519,36 @@ theorem commutator_null0_light_minus :
   rw [sub_eq_add_neg, commutator_add_right, ← neg_one_smul ℝ (null 1), commutator_smul_right,
     commutator_null_null, commutator_null_null, smul_zero, add_zero]
 
+/-- Radial momentum `ε N₀ + π N₁`. The time coefficient is `ε`. -/
+noncomputable def radialMomentum (ε π : ℝ) : PGA :=
+  ε • null 0 + π • null 1
+
+/-- Null weights `(ε ± π)/2` on the outward and inward rays. -/
+theorem radialMomentum_eq_weights (ε π : ℝ) :
+    radialMomentum ε π =
+      ((ε + π) / 2) • (null 0 + null 1) + ((ε - π) / 2) • (null 0 - null 1) := by
+  rw [radialMomentum]
+  module
+
+/-- `[B⁺₀, ε N₀ + π N₁] = 2(π N₀ + ε N₁)`. -/
+theorem commutator_hyperbolic0_radial (ε π : ℝ) :
+    commutator (hyperbolic 0) (radialMomentum ε π) = (2 : ℝ) • radialMomentum π ε := by
+  rw [radialMomentum, radialMomentum, commutator_add_right, commutator_smul_right,
+    commutator_smul_right, commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
+  module
+
+/-- A time translation does not move a radial momentum. -/
+theorem commutator_null0_radial (ε π : ℝ) :
+    commutator (null 0) (radialMomentum ε π) = 0 := by
+  rw [radialMomentum, commutator_add_right, commutator_smul_right, commutator_smul_right,
+    commutator_null_null, commutator_null_null, smul_zero, smul_zero, add_zero]
+
+/-- At rest the boost is purely spatial: `[B⁺₀, ε N₀] = 2ε N₁`. -/
+theorem commutator_hyperbolic0_rest (ε : ℝ) :
+    commutator (hyperbolic 0) (radialMomentum ε 0) = (2 * ε) • null 1 := by
+  rw [commutator_hyperbolic0_radial, radialMomentum]
+  module
+
 /-- Null translations form an \(\mathrm{ad}\)-invariant subspace under the radial boost. -/
 theorem commutator_hyperbolic0_null_mem_span (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) ∈

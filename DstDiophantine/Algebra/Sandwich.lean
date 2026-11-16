@@ -16,7 +16,10 @@ import Mathlib.Algebra.BigOperators.Fin
   `minkowskiVector v` is unchanged.
 * Closed-form pure-boost rotor and its action on the frame `{ι μ}` together with
   light-cone eigenvalues `e^{±φ}`, including the radial lightlike translations
-  `N₀ ± N₁`. A radial boost preserves the Minkowski square of every translation.
+  `N₀ ± N₁`. A general radial momentum splits into those two weights, a finite
+  rapidity scales them by `e^{±φ}`, and their product — the Minkowski square up
+  to sign — is unchanged. A radial boost preserves the Minkowski square of every
+  translation.
 * The pure-boost translator conjugation `sandwich_pureBoost_expTrans` is the closed-form
   instance of a general fact proved in `DstDiophantine.Algebra.MotorGroup`: *every*
   torsion rotor conjugates translators to translators and torsion rotors to torsion
@@ -425,6 +428,47 @@ theorem sandwich_pureBoost_omegaTrans (φ : ℝ) (p : TransParams) :
     sandwich_pureBoost_null2, sandwich_pureBoost_null3]
   simp only [boostConjLambda]
   module
+
+/-- The Minkowski square on the radial plane is minus the product of the null weights. -/
+theorem minkowskiDot_radial_weights (ε q : ℝ) :
+    minkowskiDot ![ε, q, 0, 0] = -((ε + q) * (ε - q)) := by
+  simp [minkowskiDot]
+  ring
+
+/-- A rapidity `φ` scales the outward null weight by `e^φ` and the inward weight by `e^{-φ}`. -/
+theorem boostConj_radial_weights (φ ε q : ℝ) :
+    boostConjLambda φ ![ε, q, 0, 0] 0 + boostConjLambda φ ![ε, q, 0, 0] 1 =
+      (ε + q) * Real.exp φ ∧
+    boostConjLambda φ ![ε, q, 0, 0] 0 - boostConjLambda φ ![ε, q, 0, 0] 1 =
+      (ε - q) * Real.exp (-φ) := by
+  have h0 : boostConjLambda φ ![ε, q, 0, 0] 0 = ε * cosh φ + q * sinh φ := by
+    simp [boostConjLambda]
+  have h1 : boostConjLambda φ ![ε, q, 0, 0] 1 = ε * sinh φ + q * cosh φ := by
+    simp [boostConjLambda]
+  constructor
+  · rw [h0, h1]
+    calc
+      ε * cosh φ + q * sinh φ + (ε * sinh φ + q * cosh φ) =
+          (ε + q) * (cosh φ + sinh φ) := by ring
+      _ = (ε + q) * Real.exp φ := by rw [Real.cosh_add_sinh]
+  · rw [h0, h1]
+    calc
+      ε * cosh φ + q * sinh φ - (ε * sinh φ + q * cosh φ) =
+          (ε - q) * (cosh φ - sinh φ) := by ring
+      _ = (ε - q) * Real.exp (-φ) := by rw [Real.cosh_sub_sinh]
+
+/-- Opposite scalings leave the product of the null weights unchanged. -/
+theorem boostConj_radial_weight_product (φ ε q : ℝ) :
+    (boostConjLambda φ ![ε, q, 0, 0] 0 + boostConjLambda φ ![ε, q, 0, 0] 1) *
+        (boostConjLambda φ ![ε, q, 0, 0] 0 - boostConjLambda φ ![ε, q, 0, 0] 1) =
+      (ε + q) * (ε - q) := by
+  obtain ⟨hplus, hminus⟩ := boostConj_radial_weights φ ε q
+  rw [hplus, hminus]
+  have hmul : Real.exp φ * Real.exp (-φ) = 1 := by simp [← Real.exp_add]
+  calc
+    (ε + q) * Real.exp φ * ((ε - q) * Real.exp (-φ)) =
+        (ε + q) * (ε - q) * (Real.exp φ * Real.exp (-φ)) := by ring
+    _ = (ε + q) * (ε - q) := by rw [hmul, mul_one]
 
 /-- A radial boost preserves the Minkowski square of every translation. -/
 theorem Q31_boostConjLambda (φ : ℝ) (lam : Fin 4 → ℝ) :
