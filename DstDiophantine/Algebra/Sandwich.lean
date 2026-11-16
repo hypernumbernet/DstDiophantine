@@ -15,7 +15,8 @@ import Mathlib.Algebra.BigOperators.Fin
   hence preserves Clifford squares; in particular the Minkowski square of
   `minkowskiVector v` is unchanged.
 * Closed-form pure-boost rotor and its action on the frame `{ι μ}` together with
-  light-cone eigenvalues `e^{±φ}`.
+  light-cone eigenvalues `e^{±φ}`, including the radial lightlike translations
+  `N₀ ± N₁`. A radial boost preserves the Minkowski square of every translation.
 * The pure-boost translator conjugation `sandwich_pureBoost_expTrans` is the closed-form
   instance of a general fact proved in `DstDiophantine.Algebra.MotorGroup`: *every*
   torsion rotor conjugates translators to translators and torsion rotors to torsion
@@ -373,6 +374,30 @@ theorem sandwich_pureBoost_null1 (φ : ℝ) :
   simp only [mul_smul_comm]
   simp [null]
 
+/-- A radial boost scales the outward lightlike translation by \(e^{\varphi}\). -/
+theorem sandwich_pureBoost_null_plus (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 0 + null 1) =
+      Real.exp φ • (null 0 + null 1) := by
+  rw [sandwich_add, sandwich_pureBoost_null0, sandwich_pureBoost_null1]
+  have h :
+      Real.cosh φ • null 0 + Real.sinh φ • null 1 +
+          (Real.sinh φ • null 0 + Real.cosh φ • null 1) =
+        (Real.cosh φ + Real.sinh φ) • (null 0 + null 1) := by
+    module
+  rw [h, cosh_add_sinh]
+
+/-- The opposite ray is scaled by \(e^{-\varphi}\). -/
+theorem sandwich_pureBoost_null_minus (φ : ℝ) :
+    sandwich (rotorTorsion (pureBoost φ)) (null 0 - null 1) =
+      Real.exp (-φ) • (null 0 - null 1) := by
+  rw [sandwich_sub, sandwich_pureBoost_null0, sandwich_pureBoost_null1]
+  have h :
+      Real.cosh φ • null 0 + Real.sinh φ • null 1 -
+          (Real.sinh φ • null 0 + Real.cosh φ • null 1) =
+        (Real.cosh φ - Real.sinh φ) • (null 0 - null 1) := by
+    module
+  rw [h, cosh_sub_sinh]
+
 theorem sandwich_pureBoost_null2 (φ : ℝ) :
     sandwich (rotorTorsion (pureBoost φ)) (null 2) = null 2 := by
   have hm := rotor_unitary (pureBoost φ)
@@ -400,6 +425,23 @@ theorem sandwich_pureBoost_omegaTrans (φ : ℝ) (p : TransParams) :
     sandwich_pureBoost_null2, sandwich_pureBoost_null3]
   simp only [boostConjLambda]
   module
+
+/-- A radial boost preserves the Minkowski square of every translation. -/
+theorem Q31_boostConjLambda (φ : ℝ) (lam : Fin 4 → ℝ) :
+    Q31 (boostConjLambda φ lam) = Q31 lam := by
+  rw [Q31_eq_minkowskiDot, Q31_eq_minkowskiDot]
+  simp only [minkowskiDot, boostConjLambda]
+  set c := Real.cosh φ
+  set s := Real.sinh φ
+  have hcs : c * c - s * s = 1 := by
+    simpa [c, s, pow_two] using Real.cosh_sq_sub_sinh_sq φ
+  have hplane :
+      -(lam 0 * c + lam 1 * s) * (lam 0 * c + lam 1 * s) +
+          (lam 0 * s + lam 1 * c) * (lam 0 * s + lam 1 * c) =
+        (c * c - s * s) * (-(lam 0 * lam 0) + lam 1 * lam 1) := by
+    ring
+  rw [hplane, hcs]
+  ring
 
 theorem sandwich_pureBoost_expTrans (φ : ℝ) (p : TransParams) :
     sandwich (rotorTorsion (pureBoost φ)) (expTrans p) =

@@ -152,6 +152,27 @@ example {rs r : ℝ} (h : IsExterior rs r) :
       KillingAxis.axisDistance rs r * dSqrtA_dr rs r = 1 :=
   ⟨KillingAxis.staticKilling_eq_sandwich h, KillingAxis.axisDistance_mul_dSqrtA_dr h⟩
 
+/-- Regression: the static generator scales radial lightlike momenta at the hover rate.
+A dual angle does not enter the scale of the outward ray. -/
+example {rs r : ℝ} (h : IsExterior rs r) (θ : ℝ) :
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (null 0 + null 1) =
+      dSqrtA_dr rs r • (null 0 + null 1) ∧
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (null 0 - null 1) =
+      (-dSqrtA_dr rs r) • (null 0 - null 1) ∧
+    Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+        (schwarzschildRapidity rs r) θ)) (null 0 + null 1) =
+      (Real.sqrt (schwarzschildA rs r))⁻¹ • (null 0 + null 1) ∧
+    Q31 (Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![1, 1, 0, 0]) = 0 := by
+  refine ⟨KillingAxis.commutator_staticProper_light_plus h,
+    KillingAxis.commutator_staticProper_light_minus h, ?_, ?_⟩
+  · have hrs := h.1
+    have hr := h.2
+    rw [sandwich_axis_null_plus, exp_schwarzschildRapidity hrs hr, schwarzschildA]
+  · have hcone : Q31 ![1, 1, 0, 0] = 0 := by simp [Q31_eq_minkowskiDot, minkowskiDot]
+    rw [Sandwich.Q31_boostConjLambda, hcone]
+
 /-- Regression: a motor preserves the degenerate square and shears only along the null line. -/
 example (p : Motor.OmegaParams) (v : Vec5) :
     ∃ w : Vec5,

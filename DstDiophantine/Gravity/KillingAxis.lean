@@ -41,6 +41,10 @@ derivative.
   `∂_r√A = T⁰_{rt} = -√A φ'`; `ℓ` increases strictly, tends to `0` at the
   horizon (where `K` becomes the pure boost of rate `1/(2rₛ)`) and to `∞` far
   away (where `K` becomes the pure time translation); `J(κ) = A² J_field`.
+* Per unit proper time `K/ν = ½((κ/ν) B⁺ + N₀)`. Its bracket with the radial
+  lightlike translations `N₀ ± N₁` is `±(κ/ν)` times the same translation.
+  On the exterior the rate is the hover acceleration `∂_r√A`. The time
+  translation contributes nothing: `N₀` commutes with both rays.
 
 ## Not claimed
 
@@ -943,6 +947,46 @@ theorem axisDistance_mul_torsion {rs r : ℝ} (h : IsExterior rs r) (θ : ℝ) :
     axisDistance rs r * weitzenbockTorsion (schwarzschildPartials rs r θ) 0 1 0 = 1 := by
   rw [schwarzschild_torsion_T0_r_t]
   exact axisDistance_mul_dSqrtA_dr h
+
+/-- Per unit proper time, `K/ν = ½((κ/ν) B⁺ + N₀)`. -/
+theorem smul_killingBivector_proper (κ ν : ℝ) (hν : ν ≠ 0) :
+    (1 / ν) • killingBivector κ ν =
+      (1 / 2 : ℝ) • ((κ / ν) • hyperbolic 0 + null 0) := by
+  rw [killingBivector, smul_add, smul_smul, smul_smul, smul_add, smul_smul]
+  field_simp [hν]
+
+/-- The boost scales an outward lightlike momentum; the time translation does not. -/
+theorem commutator_proper_light_plus (κ ν : ℝ) (hν : ν ≠ 0) :
+    commutator ((1 / ν) • killingBivector κ ν) (null 0 + null 1) =
+      (κ / ν) • (null 0 + null 1) := by
+  rw [smul_killingBivector_proper κ ν hν, commutator_smul_left, commutator_add_left,
+    commutator_smul_left, commutator_hyperbolic0_light_plus, commutator_null0_light_plus]
+  simp only [add_zero, smul_smul]
+  module
+
+/-- The opposite ray scales with the opposite sign. -/
+theorem commutator_proper_light_minus (κ ν : ℝ) (hν : ν ≠ 0) :
+    commutator ((1 / ν) • killingBivector κ ν) (null 0 - null 1) =
+      (-(κ / ν)) • (null 0 - null 1) := by
+  rw [smul_killingBivector_proper κ ν hν, commutator_smul_left, commutator_add_left,
+    commutator_smul_left, commutator_hyperbolic0_light_minus, commutator_null0_light_minus]
+  simp only [add_zero, smul_smul]
+  module
+
+/-- On the exterior the rate is the hover acceleration. -/
+theorem commutator_staticProper_light_plus {rs r : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / killingNorm rs r) • staticKilling rs r) (null 0 + null 1) =
+      dSqrtA_dr rs r • (null 0 + null 1) := by
+  have hν := (killingNorm_pos h).ne'
+  rw [staticKilling, commutator_proper_light_plus _ _ hν, killingRate_eq_norm_mul_deriv h]
+  field_simp [hν]
+
+theorem commutator_staticProper_light_minus {rs r : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / killingNorm rs r) • staticKilling rs r) (null 0 - null 1) =
+      (-dSqrtA_dr rs r) • (null 0 - null 1) := by
+  have hν := (killingNorm_pos h).ne'
+  rw [staticKilling, commutator_proper_light_minus _ _ hν, killingRate_eq_norm_mul_deriv h]
+  field_simp [hν]
 
 /-- In rapidity: `ℓ · (-√A φ') = 1`; gravity points up the rapidity gradient. -/
 theorem axisDistance_mul_rapidity {rs r : ℝ} (h : IsExterior rs r) :

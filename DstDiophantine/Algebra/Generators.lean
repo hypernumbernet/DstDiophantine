@@ -496,6 +496,29 @@ theorem commutator_hyperbolic0_null (μ : Fin 4) :
   | 2 => exact commutator_hyperbolic0_null2
   | 3 => exact commutator_hyperbolic0_null3
 
+/-- Outward radial lightlike translation: \([B^{+}_{0},N_{0}+N_{1}]=2(N_{0}+N_{1})\). -/
+theorem commutator_hyperbolic0_light_plus :
+    commutator (hyperbolic 0) (null 0 + null 1) = (2 : ℝ) • (null 0 + null 1) := by
+  rw [commutator_add_right, commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
+  module
+
+/-- Inward radial lightlike translation: \([B^{+}_{0},N_{0}-N_{1}]=-2(N_{0}-N_{1})\). -/
+theorem commutator_hyperbolic0_light_minus :
+    commutator (hyperbolic 0) (null 0 - null 1) = (-2 : ℝ) • (null 0 - null 1) := by
+  rw [sub_eq_add_neg, commutator_add_right, ← neg_one_smul ℝ (null 1), commutator_smul_right,
+    commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
+  module
+
+/-- A time translation does not move a radial lightlike momentum. -/
+theorem commutator_null0_light_plus :
+    commutator (null 0) (null 0 + null 1) = 0 := by
+  rw [commutator_add_right, commutator_null_null, commutator_null_null, add_zero]
+
+theorem commutator_null0_light_minus :
+    commutator (null 0) (null 0 - null 1) = 0 := by
+  rw [sub_eq_add_neg, commutator_add_right, ← neg_one_smul ℝ (null 1), commutator_smul_right,
+    commutator_null_null, commutator_null_null, smul_zero, add_zero]
+
 /-- Null translations form an \(\mathrm{ad}\)-invariant subspace under the radial boost. -/
 theorem commutator_hyperbolic0_null_mem_span (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) ∈

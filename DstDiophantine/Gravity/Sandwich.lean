@@ -130,6 +130,30 @@ theorem sandwich_radialBoost_lightlike_minus (rs r : ℝ) :
   simpa [radialBoostParams] using
     Sandwich.sandwich_pureBoost_lightlike_minus (schwarzschildRapidity rs r)
 
+/-- The same eigenvalues on the radial lightlike translations. -/
+theorem sandwich_radialBoost_null_plus (rs r : ℝ) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (null 0 + null 1) =
+      Real.exp (schwarzschildRapidity rs r) • (null 0 + null 1) := by
+  simpa [radialBoostParams] using
+    Sandwich.sandwich_pureBoost_null_plus (schwarzschildRapidity rs r)
+
+theorem sandwich_radialBoost_null_minus (rs r : ℝ) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (null 0 - null 1) =
+      Real.exp (-schwarzschildRapidity rs r) • (null 0 - null 1) := by
+  simpa [radialBoostParams] using
+    Sandwich.sandwich_pureBoost_null_minus (schwarzschildRapidity rs r)
+
+/-- Exterior chart: a radial ray's momentum scales by \(A^{-1/2}\) or by \(\sqrt{A}\). -/
+theorem sandwich_radialBoost_null_eigenvalue {rs r : ℝ}
+    (hrs : 0 < rs) (hr : rs < r) :
+    sandwich (rotorTorsion (radialBoostParams rs r)) (null 0 + null 1) =
+      (Real.sqrt (1 - rs / r))⁻¹ • (null 0 + null 1) ∧
+    sandwich (rotorTorsion (radialBoostParams rs r)) (null 0 - null 1) =
+      Real.sqrt (1 - rs / r) • (null 0 - null 1) := by
+  refine ⟨?_, ?_⟩
+  · rw [sandwich_radialBoost_null_plus, exp_schwarzschildRapidity hrs hr]
+  · rw [sandwich_radialBoost_null_minus, exp_neg_schwarzschildRapidity hrs hr]
+
 /-- Exterior chart: sandwich eigenvalues equal Schwarzschild `(t,r)` scale factors. -/
 theorem sandwich_radialBoost_eigenvalues_eq_schwarzschild {rs r : ℝ}
     (hrs : 0 < rs) (hr : rs < r) :
