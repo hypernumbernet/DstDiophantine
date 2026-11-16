@@ -111,6 +111,7 @@ import DstDiophantine.Gravity.MachSource
 import DstDiophantine.Gravity.InteriorClock
 import DstDiophantine.Gravity.MassOrigin
 import DstDiophantine.Gravity.MassCoefficient
+import DstDiophantine.Gravity.GravitonQuantum
 
 /-!
 # Gravity regression examples
@@ -3112,6 +3113,20 @@ example :
 example (β : DualRapidity) :
     (dualRotorMat β).det = 1 ∧ ((dualRotorMat β).det).arg = 0 :=
   dualRotor_det_arg β
+
+/-- Regression: one pure dual step has normalized height `-16/(3N²)`, and a transverse step
+moves the computational weight strictly between `1/2` and `1`. -/
+example {N : ℕ} (hN : 5 ≤ N) :
+    JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) =
+      -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) ∧
+      1 / 2 < GravitonQuantum.computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+          spinUp) ∧
+        GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) < 1 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  exact ⟨GravitonQuantum.JNormalized_oneStep hpos, GravitonQuantum.transverseStep_weight hN⟩
 
 end Gravity
 
