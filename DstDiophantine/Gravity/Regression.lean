@@ -3115,7 +3115,9 @@ example (β : DualRapidity) :
   dualRotor_det_arg β
 
 /-- Regression: one pure dual step has normalized height `-16/(3N²)`, and a transverse step
-moves the computational weight strictly between `1/2` and `1`. -/
+moves the computational weight strictly between `1/2` and `1`. The orthogonal probability is
+`sin²(π/N)`, strictly between `(3/4)` and `(3π²/16)` times that floor and strictly below `1/2`.
+One aligned step stays above the lock `-1/3`. -/
 example {N : ℕ} (hN : 5 ≤ N) :
     JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) =
       -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) ∧
@@ -3124,9 +3126,32 @@ example {N : ℕ} (hN : 5 ≤ N) :
           spinUp) ∧
         GravitonQuantum.computationalWeight
           (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
-            spinUp) < 1 := by
+            spinUp) < 1 ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) =
+        Real.sin (Real.pi / (N : ℝ)) ^ 2 ∧
+      (3 / 4 : ℝ) *
+          (-JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N))) <
+        1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) ∧
+        1 - GravitonQuantum.computationalWeight
+            (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+              spinUp) <
+          (3 * Real.pi ^ 2 / 16) *
+            (-JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N))) ∧
+      -((1 : ℝ) / 3) < JNormalized (GravitonQuantum.alignedSteps 1 N) := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
-  exact ⟨GravitonQuantum.JNormalized_oneStep hpos, GravitonQuantum.transverseStep_weight hN⟩
+  have hweight := GravitonQuantum.transverseStep_weight hN
+  have hfloor := GravitonQuantum.transverseDefect_vs_floor hN
+  refine ⟨GravitonQuantum.JNormalized_oneStep hpos, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact hweight.1
+  · exact hweight.2
+  · exact GravitonQuantum.transverseStep_defect hpos
+  · exact hfloor.1
+  · exact hfloor.2.1
+  · exact GravitonQuantum.oneExchange_above_lock hN
 
 end Gravity
 

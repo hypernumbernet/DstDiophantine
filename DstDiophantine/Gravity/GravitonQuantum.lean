@@ -3,6 +3,7 @@ import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
@@ -23,19 +24,27 @@ cone and the height they express is `n²` times one step. Once `4n ≥ N` the
 nearest admissible point on that axis is the pure dual corner: the expressed
 height locks at `-1/3`, and any further step remains in the internal sum.
 
-The same step is a dual rotation. About an axis transverse to a
-computational eigenstate it replaces the Born weight `1` by `cos²(π/N)`,
-which for `N ≥ 5` lies strictly between `1/2` and `1`. About the eigenaxis
-it multiplies the eigenstate by a phase, leaves the weight equal to `1`,
-and is not `±I`.
+The same step is a dual rotation, the graviton of one particle. About an
+axis transverse to a computational eigenstate it replaces the Born weight
+`1` by `cos²(π/N)`. The orthogonal outcome has probability `sin²(π/N)`.
+For `N ≥ 3` that probability lies strictly between `(3/4)ε_N` and
+`(3π²/16)ε_N`. For `N ≥ 5` it lies strictly below `1/2`, and the original
+outcome remains the majority. About the eigenaxis the step multiplies the
+eigenstate by a phase, leaves the weight equal to `1`, and the orthogonal
+probability is `0`.
+
+One aligned step expresses exactly `-ε_N`. For `N ≥ 5` that height lies
+strictly above the lock `-1/3`. Two aligned steps remain admissible for
+`N ≥ 8` and express four times one step. The weight of a body is this
+foot. One exchanged step is not the lock.
 
 ## Not claimed
 
 * A derivation of `G`, of `α_G`, or of a laboratory error rate. The integer
   `N` is not fixed. `NuclearLayer.alphaG_bounds` is a separate window, and
   it is not this Born weight.
-* That every device error is one step, or that a meson mass equals `ε_N`.
-  The exchange of one step is the step itself.
+* That every device error is one transverse step, or that a meson mass
+  equals `ε_N`. The exchange of one step is the step itself.
 * A Newtonian multi-body law. The expressed point is the admissible foot
   already constructed in `SourceSuperposition`.
 -/
@@ -464,6 +473,114 @@ theorem axialStep_not_sign_of_lattice {N : ℕ} (hN : 3 ≤ N) :
   rw [div_lt_iff₀ hN0]
   have h3 : (3 : ℝ) ≤ N := by exact_mod_cast hN
   nlinarith [Real.pi_pos]
+
+theorem stepAngle_half {N : ℕ} (hN : 0 < N) :
+    stepAngle N / 2 = Real.pi / (N : ℝ) := by
+  unfold stepAngle
+  have hNz : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+/-- Orthogonal probability of one transverse step. -/
+theorem transverseStep_defect {N : ℕ} (hN : 0 < N) :
+    1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) =
+      Real.sin (Real.pi / (N : ℝ)) ^ 2 := by
+  rw [computationalWeight_eq_cos_sq (stepAngle_pos hN), stepAngle_half hN]
+  have h := Real.cos_sq_add_sin_sq (Real.pi / (N : ℝ))
+  linarith
+
+theorem axialStep_defect (θ : ℝ) :
+    1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinUp) = 0 := by
+  rw [axialStep_weight]
+  norm_num
+
+/-- `sin²(π/N)` against the floor `ε_N = 16/(3N²)`, for `N ≥ 3`. -/
+theorem defect_between_floor {N : ℕ} (hN : 3 ≤ N) :
+    (3 / 4) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) < Real.sin (Real.pi / (N : ℝ)) ^ 2 ∧
+      Real.sin (Real.pi / (N : ℝ)) ^ 2 <
+        (3 * Real.pi ^ 2 / 16) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+  set x : ℝ := Real.pi / (N : ℝ)
+  have hx : 0 < x := div_pos Real.pi_pos hN0
+  have hxhalf : x < Real.pi / 2 := by
+    unfold x
+    rw [div_lt_div_iff₀ hN0 (by positivity : (0 : ℝ) < 2)]
+    have h3 : (3 : ℝ) ≤ N := by exact_mod_cast hN
+    nlinarith [Real.pi_pos]
+  have hlow : (2 : ℝ) / N < Real.sin x := by
+    have hmul := Real.mul_lt_sin hx hxhalf
+    have hcoeff : 2 / Real.pi * x = 2 / (N : ℝ) := by
+      unfold x
+      field_simp
+    simpa [hcoeff] using hmul
+  have hhigh : Real.sin x < x := Real.sin_lt hx
+  have hsin : 0 < Real.sin x :=
+    Real.sin_pos_of_pos_of_lt_pi hx (by linarith [hxhalf, Real.pi_pos])
+  have hsqLow : (2 / (N : ℝ)) ^ 2 < Real.sin x ^ 2 :=
+    (sq_lt_sq₀ (div_nonneg (by norm_num : (0 : ℝ) ≤ 2) hN0.le) hsin.le).mpr hlow
+  have hsqHigh : Real.sin x ^ 2 < x ^ 2 :=
+    (sq_lt_sq₀ hsin.le hx.le).mpr hhigh
+  have hfloor : (3 / 4) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) = (2 / (N : ℝ)) ^ 2 := by
+    field_simp
+    ring
+  have hceil : (3 * Real.pi ^ 2 / 16) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) = x ^ 2 := by
+    unfold x
+    field_simp
+  exact ⟨by simpa [hfloor] using hsqLow, by simpa [hceil] using hsqHigh⟩
+
+theorem transverseDefect_vs_floor {N : ℕ} (hN : 5 ≤ N) :
+    (3 / 4 : ℝ) * (-JNormalized (oneAxisDual (stepAngle N))) <
+        1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) <
+        (3 * Real.pi ^ 2 / 16) * (-JNormalized (oneAxisDual (stepAngle N))) ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) <
+        1 / 2 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  have hdef := transverseStep_defect hpos
+  have hJ := JNormalized_oneStep hpos
+  have hfloor := defect_between_floor (le_trans (by decide : 3 ≤ 5) hN)
+  have hweight := transverseStep_weight hN
+  have hneg : -JNormalized (oneAxisDual (stepAngle N)) =
+      (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+    rw [hJ]
+    ring
+  refine ⟨?_, ?_, ?_⟩
+  · rw [hdef, hneg]
+    exact hfloor.1
+  · rw [hdef, hneg]
+    exact hfloor.2
+  · linarith [hweight.1]
+
+/-- One aligned step expresses the floor, and stays strictly above the lock. -/
+theorem oneExchange_height {N : ℕ} (hN : 4 ≤ N) :
+    JNormalized (alignedSteps 1 N) = -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  rw [collective_square (n := 1) hpos, JNormalized_oneStep hpos]
+  norm_num
+
+theorem oneExchange_above_lock {N : ℕ} (hN : 5 ≤ N) :
+    -((1 : ℝ) / 3) < JNormalized (alignedSteps 1 N) := by
+  rw [oneExchange_height (le_trans (by decide : (4 : ℕ) ≤ 5) hN)]
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  rw [← JNormalized_oneStep hpos]
+  exact (oneStep_below_corner hN).1
+
+/-- Two aligned steps stay in the cone and express four times one step. -/
+theorem twoExchanges_fourfold {N : ℕ} (hN : 8 ≤ N) :
+    IsAdmissibleContinuous (alignedSteps 2 N) ∧
+      JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
+  have hadm : 4 * 2 ≤ N := by
+    have : 4 * 2 = 8 := by norm_num
+    simpa [this] using hN
+  refine ⟨collective_admissible hadm, ?_⟩
+  rw [collective_square (n := 2) hpos, collective_square (n := 1) hpos]
+  norm_num
 
 end DstDiophantine.Gravity.GravitonQuantum
 

@@ -148,12 +148,16 @@ import list of `Gravity.Regression`.
   `-Δ sin²θ`. A pure `(t,φ)` boost writes no cross term.
 * `Algebra.SourceSuperposition` — source bivectors add without a ceiling. The expressed point is
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
-* `GravitonQuantum` — one pure dual step of angle `2π/N`. For `N ≥ 4` it is admissible and its
-  normalized height is `-16/(3N²)`. While `4n ≤ N`, `n` aligned steps express `n²` times that
-  height. Once `4n ≥ N` the expressed height on that axis locks at `-1/3`, and the internal sum
-  keeps growing. A transverse step replaces the computational Born weight `1` by `cos²(π/N)`,
-  strictly between `1/2` and `1` for `N ≥ 5`. An axial step leaves that weight at `1` and is not
-  `±I`. No derivation of `α_G`, of a laboratory error rate, or of a meson mass.
+* `GravitonQuantum` — one pure dual step of angle `2π/N`, the graviton of one particle. For
+  `N ≥ 4` it is admissible and its normalized height is `-16/(3N²)`. While `4n ≤ N`, `n` aligned
+  steps express `n²` times that height. Once `4n ≥ N` the expressed height on that axis locks at
+  `-1/3`, and the internal sum keeps growing. One aligned step stays strictly above that lock for
+  `N ≥ 5`. Two aligned steps remain admissible for `N ≥ 8` and express four times one. A
+  transverse step replaces the computational Born weight `1` by `cos²(π/N)`. The orthogonal
+  probability is `sin²(π/N)`, strictly between `(3/4)` and `(3π²/16)` times the floor for
+  `N ≥ 3`, and strictly below `1/2` for `N ≥ 5`. An axial step leaves that weight at `1`, so its
+  orthogonal probability is `0`, and is not `±I`. No derivation of `α_G`, of a laboratory error
+  rate, or of a meson mass.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum
