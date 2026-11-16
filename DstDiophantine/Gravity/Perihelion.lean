@@ -1,7 +1,9 @@
 import DstDiophantine.Gravity.RadialFall
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 # Perihelion from the radial law with angular momentum
@@ -31,6 +33,15 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
   double angle. With `0 < 6 M²/L² < 1`, the excess of one radial period over
   `2π` lies strictly between `6π M²/L²` and that quantity divided by
   `1 − 6 M²/L²`.
+* The conserved slope is the cubic `2M(u−α)(β−u)(γ−u)` when
+  `α+β+γ = 1/(2M)` and the elementary symmetric sums are `E` and `L`.
+  For `0 ≤ α < β < γ` the angle from one visit of the larger root to the
+  next is `radialReturn M α β`. The semi-latus rectum fixed by the roots is
+  `2/(α+β)`. The return exceeds one radial period of the resonant ellipse of
+  that rectum, so the excess over `2π` is strictly greater than
+  `6π M / (2/(α+β))`, and therefore also strictly greater than `6π M²/L²`.
+  When `3M(α+β) ≤ 1/2`, the excess is strictly less than the turning-point
+  lower quantity divided by `1 − 3M(α+β)`.
 * In the areal acceleration the radial piece of `γ²` cancels against itself,
   `κ ûr² − κ γ² = −κ(1 + ûφ²)`, and the transverse piece remains.
 * A tangential rate `−κ ûφ` has power `−κ ûφ²`. At constant `κ > 0` an angular
@@ -47,8 +58,11 @@ At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
   momentum or the equator. Where the polar leg does not vanish, the
   azimuth gained per colatitude depends on `θ` and the two constants alone.
 * That the precessing ellipse solves the orbit equation. The residual is
-  stated, and it has no resonant harmonic. Its radial period is not the
-  perihelion advance of a solution.
+  stated, and it has no resonant harmonic. Its radial period is a lower
+  comparison for the return, not the return itself.
+* The upper bound when `3M(α+β) > 1/2`. Past that value a bound orbit can
+  return through a larger angle than the turning-point upper quantity, and
+  the angle is not bounded by `6π M²/L²` divided by `1 − 6M²/L²`.
 * That the tangential tilt is the retarded field of a moving source. It is
   the comparison against which the torsional leg is read. No arcseconds
   per century are computed.
@@ -762,5 +776,935 @@ theorem torsional_angular_power {ν r ur uφ : ℝ} :
 theorem torsional_circular_power {ν r uφ : ℝ} :
     uφ * (-(uφ * ν * (0 : ℝ)) / r) = 0 := by
   ring
+
+/-! ### Turning values
+
+The conserved slope `(du/dφ)²` is a cubic. A bound orbit turns at two positive
+roots `α < β`, with the third root `γ = 1/(2M) − α − β` above `β`. The
+substitution `u = (α+β)/2 + ((β−α)/2) cos θ` cancels the zeros of the slope,
+and the angle of one return to the larger root is `radialReturn`. -/
+
+open intervalIntegral MeasureTheory
+
+/-- Slope squared, as a cubic in the reciprocal radius. -/
+noncomputable def radialSlope (M α β γ u : ℝ) : ℝ :=
+  2 * M * (u - α) * (β - u) * (γ - u)
+
+/-- The cosine parameter that runs from the larger root to the smaller one. -/
+noncomputable def turningParam (α β θ : ℝ) : ℝ :=
+  (α + β) / 2 + ((β - α) / 2) * Real.cos θ
+
+/-- Integrand of the return angle, after the cosine substitution. -/
+noncomputable def returnIntegrand (M α β θ : ℝ) : ℝ :=
+  1 / Real.sqrt (1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ)
+
+/-- Angle from one visit of the larger turning value to the next. -/
+noncomputable def radialReturn (M α β : ℝ) : ℝ :=
+  2 * ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ
+
+theorem radialSlope_eq_cubic {M α β γ u : ℝ} (hM : M ≠ 0)
+    (hsum : α + β + γ = 1 / (2 * M)) :
+    radialSlope M α β γ u =
+      2 * M * u ^ 3 - u ^ 2 +
+        2 * M * (α * β + β * γ + γ * α) * u - 2 * M * α * β * γ := by
+  have hγ : γ = 1 / (2 * M) - α - β := by linarith
+  rw [radialSlope, hγ]
+  field_simp [hM]
+  ring
+
+/-- The energy and the angular momentum are the elementary symmetric sums of the
+three roots, so the conserved slope is this cubic. -/
+theorem binetResidual_eq_radialSlope {E L M α β γ u : ℝ}
+    (hM : M ≠ 0) (hL : L ≠ 0)
+    (hsum : α + β + γ = 1 / (2 * M))
+    (hσ : α * β + β * γ + γ * α = 1 / L ^ 2)
+    (hE : E ^ 2 = 1 - 2 * M * α * β * γ * L ^ 2) :
+    binetResidual E (2 * M) L u = L ^ 2 * radialSlope M α β γ u := by
+  rw [radialSlope_eq_cubic hM hsum, binetResidual, hE, hσ]
+  field_simp [hL]
+  ring
+
+theorem hasDerivAt_turningParam (α β θ : ℝ) :
+    HasDerivAt (turningParam α β) (-(((β - α) / 2) * Real.sin θ)) θ := by
+  have hcos := Real.hasDerivAt_cos θ
+  have hmul := hcos.const_mul ((β - α) / 2)
+  convert (hmul.const_add ((α + β) / 2)).congr_deriv ?_ using 1
+  · ext t
+    rfl
+  · ring
+
+theorem turningParam_product {α β θ : ℝ} :
+    (turningParam α β θ - α) * (β - turningParam α β θ) =
+      ((β - α) / 2) ^ 2 * (Real.sin θ) ^ 2 := by
+  unfold turningParam
+  have hpyth : (Real.sin θ) ^ 2 = 1 - (Real.cos θ) ^ 2 := by
+    have h := Real.sin_sq_add_cos_sq θ
+    linarith
+  rw [hpyth]
+  ring
+
+theorem turning_radicand {M α β γ θ : ℝ} (hM : M ≠ 0)
+    (hsum : α + β + γ = 1 / (2 * M)) :
+    2 * M * (γ - turningParam α β θ) =
+      1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ := by
+  have hγ : γ = 1 / (2 * M) - α - β := by linarith
+  rw [turningParam, hγ]
+  field_simp [hM]
+  ring
+
+theorem radialSlope_param {M α β γ θ : ℝ} (hM : M ≠ 0)
+    (hsum : α + β + γ = 1 / (2 * M)) :
+    radialSlope M α β γ (turningParam α β θ) =
+      (((β - α) / 2) * Real.sin θ) ^ 2 *
+        (1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ) := by
+  have hprod := turningParam_product (α := α) (β := β) (θ := θ)
+  have hrad := turning_radicand (M := M) (α := α) (β := β) (γ := γ) (θ := θ) hM hsum
+  unfold radialSlope
+  calc 2 * M * (turningParam α β θ - α) * (β - turningParam α β θ) *
+        (γ - turningParam α β θ)
+      = (2 * M) * ((turningParam α β θ - α) * (β - turningParam α β θ)) *
+          (γ - turningParam α β θ) := by ring
+    _ = (2 * M) * ((((β - α) / 2) ^ 2) * (Real.sin θ) ^ 2) *
+          (γ - turningParam α β θ) := by rw [hprod]
+    _ = (((β - α) / 2) * Real.sin θ) ^ 2 *
+          (2 * M * (γ - turningParam α β θ)) := by ring
+    _ = (((β - α) / 2) * Real.sin θ) ^ 2 *
+          (1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ) := by
+        rw [hrad]
+
+/-- The angular-momentum rectum `L²/M` is strictly longer than the rectum
+`2/(α+β)` fixed by the turning values. -/
+theorem angularLatus_gt_turning {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α)
+    (hαβ : α < β) (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
+    (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
+    2 / (α + β) < L ^ 2 / M := by
+  set s : ℝ := α + β
+  have hs : 0 < s := by
+    dsimp [s]
+    linarith
+  have hγ : γ = 1 / (2 * M) - s := by
+    dsimp [s]
+    linarith
+  have hab : 4 * (α * β) ≤ s ^ 2 := by
+    nlinarith [sq_nonneg (α - β)]
+  have hform : α * β + β * γ + γ * α = α * β + s / (2 * M) - s ^ 2 := by
+    rw [hγ]
+    dsimp [s]
+    ring
+  have hlt : α * β + s / (2 * M) - s ^ 2 < s / (2 * M) := by
+    have hdrop : α * β - s ^ 2 ≤ - (3 / 4) * s ^ 2 := by
+      nlinarith [hab]
+    have hpos : 0 < (3 / 4) * s ^ 2 := by positivity
+    linarith
+  have hσlt : 1 / L ^ 2 < s / (2 * M) := by
+    rw [← hσ, hform]
+    exact hlt
+  have hposσ : 0 < 1 / L ^ 2 := by
+    have hβ : 0 < β := lt_of_le_of_lt hα hαβ
+    have hγp : 0 < γ := lt_trans hβ hβγ
+    have hσpos : 0 < α * β + β * γ + γ * α := by
+      have : 0 < β * γ := mul_pos hβ hγp
+      nlinarith [mul_nonneg hα hβ.le, mul_nonneg hγp.le hα]
+    simpa [hσ] using hσpos
+  have hrec : 2 * M / s < L ^ 2 := by
+    have h := (one_div_lt_one_div (by positivity : 0 < s / (2 * M)) hposσ).mpr hσlt
+    simpa [one_div] using h
+  have hmul : (2 / s) * M < L ^ 2 := by
+    simpa [div_mul_eq_mul_div] using hrec
+  exact (lt_div_iff₀ hM).mpr hmul
+
+/-- Two distinct roots below the third force `3M(α+β) < 1`. -/
+theorem turning_sum_lt_one {M α β γ : ℝ} (hM : 0 < M) (hαβ : α < β) (hβγ : β < γ)
+    (hsum : α + β + γ = 1 / (2 * M)) :
+    3 * M * (α + β) < 1 := by
+  have hγ : γ = 1 / (2 * M) - α - β := by linarith
+  have hgap : 0 < 2 * M * (γ - β) := by positivity
+  have hcmp : 3 * (α + β) < 2 * (α + 2 * β) := by linarith
+  have hmul : 3 * M * (α + β) < 2 * M * (α + 2 * β) := by
+    nlinarith
+  have hclear : 2 * M * (α + 2 * β) < 1 := by
+    rw [hγ] at hgap
+    have h2 : (2 : ℝ) * M ≠ 0 := by positivity
+    field_simp [h2] at hgap
+    linarith
+  linarith
+
+private theorem inv_sqrt_gap {t c : ℝ} (ht : 0 < t) (hc : 0 < c) :
+    1 / Real.sqrt t -
+        (1 / Real.sqrt c - (t - c) / (2 * c * Real.sqrt c)) =
+      (Real.sqrt c - Real.sqrt t) ^ 2 *
+        (2 * Real.sqrt c + Real.sqrt t) /
+          (2 * Real.sqrt t * (Real.sqrt c) ^ 3) := by
+  set s : ℝ := Real.sqrt t
+  set r : ℝ := Real.sqrt c
+  have hs : 0 < s := Real.sqrt_pos.mpr ht
+  have hr : 0 < r := Real.sqrt_pos.mpr hc
+  have hst : s ^ 2 = t := Real.sq_sqrt ht.le
+  have hrc : r ^ 2 = c := Real.sq_sqrt hc.le
+  have hpoly : 2 * r ^ 3 - 3 * s * r ^ 2 + s ^ 3 = (r - s) ^ 2 * (2 * r + s) := by ring
+  have hfrac : 1 / s - (1 / r - (s ^ 2 - r ^ 2) / (2 * r ^ 3)) =
+      (2 * r ^ 3 - 3 * s * r ^ 2 + s ^ 3) / (2 * s * r ^ 3) := by
+    field_simp [hs.ne', hr.ne']
+    ring
+  calc 1 / s - (1 / r - (t - c) / (2 * c * r))
+      = 1 / s - (1 / r - (s ^ 2 - r ^ 2) / (2 * r ^ 2 * r)) := by
+        rw [hst, hrc]
+    _ = 1 / s - (1 / r - (s ^ 2 - r ^ 2) / (2 * r ^ 3)) := by
+        have hden : (2 : ℝ) * r ^ 2 * r = 2 * r ^ 3 := by ring
+        rw [hden]
+    _ = (r - s) ^ 2 * (2 * r + s) / (2 * s * r ^ 3) := by
+        rw [hfrac, hpoly]
+
+private theorem inv_sqrt_tangent {t c : ℝ} (ht : 0 < t) (hc : 0 < c) :
+    1 / Real.sqrt c - (t - c) / (2 * c * Real.sqrt c) ≤ 1 / Real.sqrt t := by
+  have hgap := inv_sqrt_gap ht hc
+  have hnonneg : 0 ≤ (Real.sqrt c - Real.sqrt t) ^ 2 *
+      (2 * Real.sqrt c + Real.sqrt t) /
+        (2 * Real.sqrt t * (Real.sqrt c) ^ 3) := by
+    positivity
+  linarith
+
+private theorem integral_cos_zero_pi :
+    ∫ θ in (0 : ℝ)..Real.pi, Real.cos θ = 0 := by
+  simp [integral_cos, Real.sin_pi, Real.sin_zero]
+
+private theorem integral_cos_sq_zero_pi :
+    ∫ θ in (0 : ℝ)..Real.pi, Real.cos θ ^ 2 = Real.pi / 2 := by
+  have hfun : (fun θ : ℝ => Real.cos θ ^ 2) = fun θ => (1 + Real.cos (2 * θ)) / 2 := by
+    ext θ
+    rw [Real.cos_sq]
+    ring
+  rw [hfun]
+  have hsplit : (fun θ : ℝ => (1 + Real.cos (2 * θ)) / 2) =
+      fun θ => (1 / 2) * (1 + Real.cos (2 * θ)) := by
+    ext θ
+    ring
+  rw [hsplit, intervalIntegral.integral_const_mul]
+  have hcont : Continuous (fun θ : ℝ => Real.cos (2 * θ)) :=
+    Real.continuous_cos.comp (continuous_const.mul continuous_id)
+  have hcos : ∫ θ in (0 : ℝ)..Real.pi, Real.cos (2 * θ) = 0 := by
+    rw [intervalIntegral.integral_comp_mul_left (f := Real.cos) two_ne_zero]
+    simp [integral_cos, Real.sin_zero, Real.sin_two_pi]
+  have hone : ∫ θ in (0 : ℝ)..Real.pi, (1 : ℝ) = Real.pi := by
+    simp [intervalIntegral.integral_const]
+  have hadd : ∫ θ in (0 : ℝ)..Real.pi, (1 + Real.cos (2 * θ)) =
+      (∫ θ in (0 : ℝ)..Real.pi, (1 : ℝ)) + ∫ θ in (0 : ℝ)..Real.pi, Real.cos (2 * θ) :=
+    intervalIntegral.integral_add intervalIntegrable_const (hcont.intervalIntegrable 0 Real.pi)
+  rw [hadd, hcos, hone]
+  field_simp
+  ring
+
+private theorem kRatio_antitone {s t : ℝ} (hs : 0 < s) (ht : 0 < t) (hst : s ≤ t) :
+    (2 + t) / (t * (1 + t) ^ 2) ≤ (2 + s) / (s * (1 + s) ^ 2) := by
+  have hfac : (2 + s) * t * (1 + t) ^ 2 - (2 + t) * s * (1 + s) ^ 2 =
+      (t - s) * (s ^ 2 * t + 2 * s ^ 2 + s * t ^ 2 + 4 * s * t + 4 * s +
+        2 * t ^ 2 + 4 * t + 2) := by
+    ring
+  have hpos : 0 < s ^ 2 * t + 2 * s ^ 2 + s * t ^ 2 + 4 * s * t + 4 * s +
+      2 * t ^ 2 + 4 * t + 2 := by
+    positivity
+  have hdiff : 0 ≤ (2 + s) * t * (1 + t) ^ 2 - (2 + t) * s * (1 + s) ^ 2 := by
+    rw [hfac]
+    exact mul_nonneg (sub_nonneg.mpr hst) (by positivity)
+  rw [div_le_div_iff₀ (by positivity) (by positivity)]
+  linarith
+
+private theorem invSqrt_ratio {w : ℝ} (hw : w < 1) (hw0 : w ≠ 0) :
+    (1 / Real.sqrt (1 - w) - 1 - w / 2) / w ^ 2 =
+      (2 + Real.sqrt (1 - w)) /
+        (2 * Real.sqrt (1 - w) * (1 + Real.sqrt (1 - w)) ^ 2) := by
+  set s : ℝ := Real.sqrt (1 - w)
+  have hs0 : 0 < 1 - w := sub_pos.mpr hw
+  have hs : 0 < s := Real.sqrt_pos.mpr hs0
+  have hsq : s ^ 2 = 1 - w := Real.sq_sqrt hs0.le
+  have hw' : w = 1 - s ^ 2 := by linarith
+  have hnum : 2 - 2 * s - w * s = (1 - s) ^ 2 * (2 + s) := by
+    rw [hw']
+    ring
+  have hleft : 1 / s - 1 - w / 2 = (2 - 2 * s - w * s) / (2 * s) := by
+    field_simp [hs.ne']
+  rw [hleft, hnum]
+  have hsne : s ≠ 1 := by
+    intro hs1
+    apply hw0
+    rw [hw', hs1]
+    ring
+  have hsub : (1 : ℝ) - s ≠ 0 := sub_ne_zero.mpr hsne.symm
+  have hw2 : w ^ 2 = (1 - s) ^ 2 * (1 + s) ^ 2 := by
+    rw [hw']
+    ring
+  rw [hw2]
+  field_simp [hs.ne', hsub]
+
+private theorem invSqrt_quadratic {w lam : ℝ} (_hlam0 : 0 ≤ lam) (hlam1 : lam < 1)
+    (hw : |w| ≤ lam) :
+    1 / Real.sqrt (1 - w) ≤
+      1 + w / 2 +
+        ((2 + Real.sqrt (1 - lam)) /
+          (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * w ^ 2 := by
+  have hw_le : w ≤ lam := (abs_le.mp hw).2
+  have hw1 : w < 1 := lt_of_le_of_lt hw_le hlam1
+  have h1w : 0 < 1 - w := sub_pos.mpr hw1
+  set s : ℝ := Real.sqrt (1 - lam)
+  have hspos : 0 < s := Real.sqrt_pos.mpr (sub_pos.mpr hlam1)
+  by_cases hw0 : w = 0
+  · simp [hw0, Real.sqrt_one]
+  · have hratio := invSqrt_ratio hw1 hw0
+    have hsw : s ≤ Real.sqrt (1 - w) := Real.sqrt_le_sqrt (by linarith)
+    have hK := kRatio_antitone hspos (Real.sqrt_pos.mpr h1w) hsw
+    have hK2 : (2 + Real.sqrt (1 - w)) /
+          (2 * Real.sqrt (1 - w) * (1 + Real.sqrt (1 - w)) ^ 2) ≤
+        (2 + s) / (2 * s * (1 + s) ^ 2) := by
+      have hdiv := div_le_div_of_nonneg_right hK (by norm_num : (0 : ℝ) ≤ 2)
+      have hrew : (2 + Real.sqrt (1 - w)) /
+            (2 * Real.sqrt (1 - w) * (1 + Real.sqrt (1 - w)) ^ 2) =
+          ((2 + Real.sqrt (1 - w)) /
+            (Real.sqrt (1 - w) * (1 + Real.sqrt (1 - w)) ^ 2)) / 2 := by
+        field_simp
+      have hrews : (2 + s) / (2 * s * (1 + s) ^ 2) =
+          ((2 + s) / (s * (1 + s) ^ 2)) / 2 := by
+        field_simp
+      rw [hrew, hrews]
+      exact hdiv
+    have hle : (1 / Real.sqrt (1 - w) - 1 - w / 2) / w ^ 2 ≤
+        (2 + s) / (2 * s * (1 + s) ^ 2) := by
+      rw [hratio]
+      exact hK2
+    have hw2 : 0 < w ^ 2 := sq_pos_of_ne_zero hw0
+    have hmul := mul_le_mul_of_nonneg_right hle hw2.le
+    have hcancel : (1 / Real.sqrt (1 - w) - 1 - w / 2) / w ^ 2 * w ^ 2 =
+        1 / Real.sqrt (1 - w) - 1 - w / 2 := by
+      field_simp [hw0]
+    linarith
+
+private theorem sqrt_two_gt_three_div_four :
+    (3 : ℝ) < 4 * Real.sqrt 2 := by
+  have hsq : (3 : ℝ) ^ 2 < (4 * Real.sqrt 2) ^ 2 := by
+    rw [mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+    norm_num
+  have habs := (sq_lt_sq).mp hsq
+  rw [abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 3),
+    abs_of_nonneg (by positivity : (0 : ℝ) ≤ 4 * Real.sqrt 2)] at habs
+  exact habs
+
+private theorem thirteen_sqrt_two_gt_three :
+    (3 : ℝ) < 13 * Real.sqrt 2 := by
+  have hsq : (3 : ℝ) ^ 2 < (13 * Real.sqrt 2) ^ 2 := by
+    rw [mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+    norm_num
+  have habs := (sq_lt_sq).mp hsq
+  rw [abs_of_nonneg (by norm_num : (0 : ℝ) ≤ 3),
+    abs_of_nonneg (by positivity : (0 : ℝ) ≤ 13 * Real.sqrt 2)] at habs
+  exact habs
+
+private theorem form_gap {z r : ℝ} (hr : r ^ 2 = 4 * z ^ 2 - 1) :
+    (r + 2 * Real.sqrt 3 * z) * (1 + z) ^ 2 -
+        6 * r * z * (r + Real.sqrt 3 * z) ^ 2 =
+      Real.sqrt 3 * (2 * z * (-24 * z ^ 3 + z ^ 2 + 8 * z + 1)) -
+        r * (42 * z ^ 3 - z ^ 2 - 8 * z - 1) := by
+  have hs3 : (Real.sqrt 3) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
+  linear_combination
+    (-6 * r * z - 12 * Real.sqrt 3 * z ^ 2) * hr +
+      (-6 * r * z ^ 3) * hs3
+
+private theorem returnFactor_lt {x : ℝ} (hx0 : 0 < x) (hx1 : x ≤ 1 / 2) :
+    (1 / Real.sqrt (1 - x)) *
+        (1 + ((2 + Real.sqrt (1 - (x / 3) / (1 - x))) /
+            (2 * Real.sqrt (1 - (x / 3) / (1 - x)) *
+              (1 + Real.sqrt (1 - (x / 3) / (1 - x))) ^ 2)) *
+          ((x / 3) / (1 - x)) ^ 2 / 2) <
+      (2 - x) / (2 * (1 - x)) := by
+  set z : ℝ := Real.sqrt (1 - x)
+  have hx1' : x < 1 := lt_of_le_of_lt hx1 (by norm_num)
+  have hzsq : z ^ 2 = 1 - x := Real.sq_sqrt (by linarith)
+  have hz0 : 0 < z := Real.sqrt_pos.mpr (by linarith)
+  have hz1 : z < 1 := by
+    have : z < Real.sqrt 1 := Real.sqrt_lt_sqrt (by linarith) (by linarith : 1 - x < 1)
+    simpa using this
+  have hz0le : Real.sqrt 2 / 2 ≤ z := by
+    have hle : 1 / 2 ≤ 1 - x := by linarith
+    have hsqrt := Real.sqrt_le_sqrt hle
+    have hhalf : Real.sqrt ((1 : ℝ) / 2) = Real.sqrt 2 / 2 := by
+      rw [Real.sqrt_div (by norm_num : (0 : ℝ) ≤ 1) 2, Real.sqrt_one]
+      rw [eq_div_iff (by norm_num : (2 : ℝ) ≠ 0)]
+      rw [div_mul_eq_mul_div, one_mul]
+      rw [div_eq_iff (Real.sqrt_pos.mpr (by norm_num : (0 : ℝ) < 2)).ne']
+      rw [← sq]
+      exact (Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)).symm
+    rw [hhalf] at hsqrt
+    change Real.sqrt 2 / 2 ≤ z at hsqrt
+    exact hsqrt
+  have hz2 : 1 / 2 ≤ z ^ 2 := by
+    have := mul_self_le_mul_self (by positivity : (0 : ℝ) ≤ Real.sqrt 2 / 2) hz0le
+    have hsq0 : (Real.sqrt 2 / 2) ^ 2 = 1 / 2 := by
+      rw [div_pow, Real.sq_sqrt (by norm_num)]
+      norm_num
+    linarith
+  set r : ℝ := Real.sqrt (4 * z ^ 2 - 1)
+  have hr0 : 0 < 4 * z ^ 2 - 1 := by nlinarith
+  have hrpos : 0 < r := Real.sqrt_pos.mpr hr0
+  have hr2 : r ^ 2 = 4 * z ^ 2 - 1 := Real.sq_sqrt hr0.le
+  have hf : -24 * z ^ 3 + z ^ 2 + 8 * z + 1 < 0 := by
+    have hupper : -24 * z ^ 3 + z ^ 2 + 8 * z + 1 ≤ z ^ 2 - 4 * z + 1 := by
+      nlinarith [hz2]
+    have hleft : z ^ 2 - 4 * z + 1 ≤ (Real.sqrt 2 / 2) ^ 2 - 4 * (Real.sqrt 2 / 2) + 1 := by
+      have hdiff : z ^ 2 - 4 * z - ((Real.sqrt 2 / 2) ^ 2 - 4 * (Real.sqrt 2 / 2)) =
+          (z - Real.sqrt 2 / 2) * (z + Real.sqrt 2 / 2 - 4) := by ring
+      have hnonpos : z ^ 2 - 4 * z - ((Real.sqrt 2 / 2) ^ 2 - 4 * (Real.sqrt 2 / 2)) ≤ 0 := by
+        rw [hdiff]
+        have h1 : 0 ≤ z - Real.sqrt 2 / 2 := by linarith
+        have h2 : z + Real.sqrt 2 / 2 - 4 ≤ 0 := by
+          have hzle : z ≤ 1 := hz1.le
+          have hz0le' : Real.sqrt 2 / 2 ≤ 1 := by
+            nlinarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
+          linarith
+        nlinarith
+      linarith
+    have hneg : (Real.sqrt 2 / 2) ^ 2 - 4 * (Real.sqrt 2 / 2) + 1 < 0 := by
+      have : (Real.sqrt 2 / 2) ^ 2 = 1 / 2 := by
+        rw [div_pow, Real.sq_sqrt (by norm_num)]
+        norm_num
+      linarith [sqrt_two_gt_three_div_four]
+    linarith
+  have hg : 0 < 42 * z ^ 3 - z ^ 2 - 8 * z - 1 := by
+    have hlower : -z ^ 2 + 13 * z - 1 ≤ 42 * z ^ 3 - z ^ 2 - 8 * z - 1 := by
+      nlinarith [hz2]
+    have hbase : 0 < -(Real.sqrt 2 / 2) ^ 2 + 13 * (Real.sqrt 2 / 2) - 1 := by
+      have : (Real.sqrt 2 / 2) ^ 2 = 1 / 2 := by
+        rw [div_pow, Real.sq_sqrt (by norm_num)]
+        norm_num
+      linarith [thirteen_sqrt_two_gt_three]
+    have hinc : -(Real.sqrt 2 / 2) ^ 2 + 13 * (Real.sqrt 2 / 2) - 1 ≤ -z ^ 2 + 13 * z - 1 := by
+      have hdiff : (-z ^ 2 + 13 * z) - (-(Real.sqrt 2 / 2) ^ 2 + 13 * (Real.sqrt 2 / 2)) =
+          (z - Real.sqrt 2 / 2) * (13 - (z + Real.sqrt 2 / 2)) := by ring
+      have hnonneg : 0 ≤ (z - Real.sqrt 2 / 2) * (13 - (z + Real.sqrt 2 / 2)) := by
+        have h1 : 0 ≤ z - Real.sqrt 2 / 2 := by linarith
+        have h2 : 0 ≤ 13 - (z + Real.sqrt 2 / 2) := by
+          have hzle : z ≤ 1 := hz1.le
+          nlinarith [Real.sq_sqrt (show (0 : ℝ) ≤ 2 by norm_num)]
+        nlinarith
+      linarith
+    linarith
+  have hform : (r + 2 * Real.sqrt 3 * z) * (1 + z) ^ 2 <
+      6 * r * z * (r + Real.sqrt 3 * z) ^ 2 := by
+    have hgap := form_gap hr2
+    have hleft : Real.sqrt 3 * (2 * z * (-24 * z ^ 3 + z ^ 2 + 8 * z + 1)) -
+        r * (42 * z ^ 3 - z ^ 2 - 8 * z - 1) < 0 := by
+      have hL : Real.sqrt 3 * (2 * z * (-24 * z ^ 3 + z ^ 2 + 8 * z + 1)) < 0 := by
+        have : -24 * z ^ 3 + z ^ 2 + 8 * z + 1 < 0 := hf
+        have : 0 < Real.sqrt 3 * (2 * z) := by positivity
+        nlinarith
+      have hR : 0 < r * (42 * z ^ 3 - z ^ 2 - 8 * z - 1) := by positivity
+      linarith
+    linarith
+  set s : ℝ := r / (z * Real.sqrt 3)
+  have hspos : 0 < s := by positivity
+  have hsdef : r = s * z * Real.sqrt 3 := by
+    dsimp [s]
+    field_simp [hz0.ne', Real.sqrt_pos.mpr (by norm_num : (0 : ℝ) < 3) |>.ne']
+  have hlameq : (1 - z ^ 2) / (3 * z ^ 2) = (x / 3) / (1 - x) := by
+    rw [hzsq]
+    field_simp
+    ring
+  have hs2 : s ^ 2 = 1 - (x / 3) / (1 - x) := by
+    have h3 : (Real.sqrt 3) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
+    calc s ^ 2 = r ^ 2 / (z * Real.sqrt 3) ^ 2 := by
+          dsimp [s]
+          exact div_pow _ _ 2
+      _ = (4 * z ^ 2 - 1) / (z ^ 2 * 3) := by
+          rw [hr2, mul_pow, h3]
+      _ = 1 - (1 - z ^ 2) / (3 * z ^ 2) := by
+          field_simp [hz0.ne']
+          ring
+      _ = 1 - (x / 3) / (1 - x) := by
+          rw [hlameq]
+  have hs_sqrt : s = Real.sqrt (1 - (x / 3) / (1 - x)) := by
+    have hnonneg : 0 ≤ 1 - (x / 3) / (1 - x) := by
+      rw [← hs2]
+      exact sq_nonneg _
+    exact ((Real.sqrt_eq_iff_eq_sq hnonneg hspos.le).mpr hs2.symm).symm
+  have hcut : (2 + s) * (1 + z) ^ 2 < 18 * s * z ^ 3 * (1 + s) ^ 2 := by
+    rw [hsdef] at hform
+    have hL : s * z * Real.sqrt 3 + 2 * Real.sqrt 3 * z = Real.sqrt 3 * z * (s + 2) := by ring
+    have hIn : s * z * Real.sqrt 3 + Real.sqrt 3 * z = Real.sqrt 3 * z * (s + 1) := by ring
+    rw [hL, hIn] at hform
+    have hsq : (Real.sqrt 3 * z * (s + 1)) ^ 2 = 3 * z ^ 2 * (s + 1) ^ 2 := by
+      have h3 : (Real.sqrt 3) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
+      calc (Real.sqrt 3 * z * (s + 1)) ^ 2
+          = (Real.sqrt 3) ^ 2 * z ^ 2 * (s + 1) ^ 2 := by ring
+        _ = 3 * z ^ 2 * (s + 1) ^ 2 := by rw [h3]
+    rw [hsq] at hform
+    have hc : 0 < Real.sqrt 3 * z := by positivity
+    have hform'' : (Real.sqrt 3 * z) * ((s + 2) * (1 + z) ^ 2) <
+        (Real.sqrt 3 * z) * (18 * s * z ^ 3 * (1 + s) ^ 2) := by
+      convert hform using 1 <;> ring
+    have hcancel := (mul_lt_mul_iff_of_pos_left hc).mp hform''
+    simpa [add_comm s 2] using hcancel
+  have hdiv : (2 + s) * (1 + z) ^ 2 / (9 * z ^ 3) < 2 * s * (1 + s) ^ 2 := by
+    have hpos : 0 < 9 * z ^ 3 := by positivity
+    have hcut' : (2 + s) * (1 + z) ^ 2 < 2 * s * (1 + s) ^ 2 * (9 * z ^ 3) := by
+      convert hcut using 1
+      ring
+    exact (div_lt_iff₀ hpos).mpr hcut'
+  have hmul : (2 + s) * (1 + z) ^ 2 * (1 - z) ^ 2 / (9 * z ^ 3) <
+      2 * s * (1 + s) ^ 2 * (1 - z) ^ 2 := by
+    have hne : (1 : ℝ) ≠ z := hz1.ne'
+    have hpos : 0 < (1 - z) ^ 2 := sq_pos_of_ne_zero (sub_ne_zero.mpr hne)
+    have h := mul_lt_mul_of_pos_right hdiv hpos
+    have heq : (2 + s) * (1 + z) ^ 2 * (1 - z) ^ 2 / (9 * z ^ 3) =
+        ((2 + s) * (1 + z) ^ 2 / (9 * z ^ 3)) * (1 - z) ^ 2 := by
+      field_simp
+    exact heq.trans_lt h
+  set lam : ℝ := (x / 3) / (1 - x)
+  have hlampos : 0 < lam := by
+    dsimp [lam]
+    positivity
+  have hleft : (2 + s) * lam ^ 2 * z =
+      (2 + s) * (1 + z) ^ 2 * (1 - z) ^ 2 / (9 * z ^ 3) := by
+    have hlam' : lam = (1 - z ^ 2) / (3 * z ^ 2) := by
+      dsimp [lam]
+      exact hlameq.symm
+    rw [hlam']
+    have hfac : (1 - z ^ 2) ^ 2 = (1 + z) ^ 2 * (1 - z) ^ 2 := by ring
+    field_simp [hz0.ne']
+    rw [hfac]
+    ring
+  have hcross : (2 + s) * lam ^ 2 * z < 2 * s * (1 + s) ^ 2 * (1 - z) ^ 2 := by
+    rw [hleft]
+    exact hmul
+  have hextra : (2 + s) * lam ^ 2 / (4 * s * (1 + s) ^ 2) < (1 - z) ^ 2 / (2 * z) := by
+    have hden : 0 < 4 * s * (1 + s) ^ 2 := by positivity
+    have hden2 : 0 < 2 * z := by positivity
+    rw [div_lt_div_iff₀ hden hden2]
+    have h2 : (2 + s) * lam ^ 2 * (2 * z) < 4 * s * (1 + s) ^ 2 * (1 - z) ^ 2 := by
+      nlinarith
+    simpa [mul_assoc, mul_left_comm, mul_comm] using h2
+  have hsum : 1 + (2 + s) * lam ^ 2 / (4 * s * (1 + s) ^ 2) < (2 - x) / (2 * z) := by
+    have hrew : (2 - x) / (2 * z) = 1 + (1 - z) ^ 2 / (2 * z) := by
+      have hx' : x = 1 - z ^ 2 := by linarith [hzsq]
+      rw [hx']
+      field_simp [hz0.ne']
+      ring
+    linarith
+  have hK : (2 + Real.sqrt (1 - lam)) /
+      (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2) =
+      (2 + s) / (2 * s * (1 + s) ^ 2) := by
+    have : Real.sqrt (1 - lam) = s := by
+      have : lam = (x / 3) / (1 - x) := rfl
+      rw [this, hs_sqrt]
+    rw [this]
+  have hscale : 0 < 1 / z := by positivity
+  have hfinal := mul_lt_mul_of_pos_left hsum hscale
+  have hgoalL : (1 / z) * (1 + (2 + s) * lam ^ 2 / (4 * s * (1 + s) ^ 2)) =
+      (1 / Real.sqrt (1 - x)) *
+        (1 + ((2 + Real.sqrt (1 - lam)) /
+          (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * lam ^ 2 / 2) := by
+    rw [show z = Real.sqrt (1 - x) from rfl, hK]
+    field_simp [hz0.ne', hspos.ne']
+    ring
+  have hgoalR : (1 / z) * ((2 - x) / (2 * z)) = (2 - x) / (2 * (1 - x)) := by
+    have hx' : x = 1 - z ^ 2 := by linarith [hzsq]
+    rw [hx']
+    field_simp [hz0.ne']
+    ring
+  rw [hgoalL, hgoalR] at hfinal
+  exact hfinal
+
+theorem returnIntegrand_pos {M α β θ : ℝ} (hM : 0 < M) (hαβ : α < β)
+    (hsum : 3 * M * (α + β) + M * (β - α) < 1) :
+    0 < returnIntegrand M α β θ := by
+  unfold returnIntegrand
+  have hrad : 0 < 1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ := by
+    have hcos : Real.cos θ ≤ 1 := Real.cos_le_one θ
+    have hMβ : 0 < M * (β - α) := by positivity
+    have : M * (β - α) * Real.cos θ ≤ M * (β - α) := by
+      nlinarith
+    linarith
+  positivity
+
+theorem returnIntegrand_continuous {M α β : ℝ}
+    (hrad : ∀ θ, 0 < 1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ) :
+    Continuous (returnIntegrand M α β) := by
+  unfold returnIntegrand
+  refine Continuous.div continuous_const ?_ ?_
+  · refine Real.continuous_sqrt.comp ?_
+    refine Continuous.sub continuous_const ?_
+    exact Continuous.mul continuous_const Real.continuous_cos
+  · intro θ
+    exact (Real.sqrt_pos.mpr (hrad θ)).ne'
+
+private theorem integral_affine_cos {A B : ℝ} :
+    ∫ θ in (0 : ℝ)..Real.pi, (A + B * Real.cos θ) = A * Real.pi := by
+  have hcont : Continuous (fun θ : ℝ => B * Real.cos θ) := by fun_prop
+  rw [intervalIntegral.integral_add intervalIntegrable_const (hcont.intervalIntegrable 0 Real.pi)]
+  simp [intervalIntegral.integral_const, intervalIntegral.integral_const_mul]
+  ring
+
+private theorem integral_quad_cos {A B C : ℝ} :
+    ∫ θ in (0 : ℝ)..Real.pi, (A + B * Real.cos θ + C * Real.cos θ ^ 2) =
+      A * Real.pi + C * Real.pi / 2 := by
+  have hsplit : (fun θ : ℝ => A + B * Real.cos θ + C * Real.cos θ ^ 2) =
+      fun θ => (A + B * Real.cos θ) + C * Real.cos θ ^ 2 := by
+    ext θ
+    ring
+  have h1 : Continuous (fun θ : ℝ => A + B * Real.cos θ) := by fun_prop
+  have h2 : Continuous (fun θ : ℝ => C * Real.cos θ ^ 2) := by fun_prop
+  rw [hsplit, intervalIntegral.integral_add (h1.intervalIntegrable 0 Real.pi)
+    (h2.intervalIntegrable 0 Real.pi), integral_affine_cos]
+  rw [intervalIntegral.integral_const_mul, integral_cos_sq_zero_pi]
+  ring
+
+private theorem integral_inv_sqrt_lower {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (hba : b < a) :
+    Real.pi / Real.sqrt a < ∫ θ in (0 : ℝ)..Real.pi, (1 / Real.sqrt (a - b * Real.cos θ)) := by
+  have hrad : ∀ θ, 0 < a - b * Real.cos θ := by
+    intro θ
+    have : b * Real.cos θ ≤ b := by nlinarith [Real.cos_le_one θ, hb.le]
+    linarith
+  let tangent : ℝ → ℝ := fun θ =>
+    1 / Real.sqrt a + (b / (2 * a * Real.sqrt a)) * Real.cos θ
+  let full : ℝ → ℝ := fun θ => 1 / Real.sqrt (a - b * Real.cos θ)
+  have hle : ∀ θ, tangent θ ≤ full θ := by
+    intro θ
+    have ht : 0 < a - b * Real.cos θ := hrad θ
+    have htan := inv_sqrt_tangent ht ha
+    have hrew : 1 / Real.sqrt a -
+        ((a - b * Real.cos θ) - a) / (2 * a * Real.sqrt a) = tangent θ := by
+      unfold tangent
+      field_simp [ha.ne', (Real.sqrt_pos.mpr ha).ne']
+      ring
+    linarith
+  have hlt0 : tangent 0 < full 0 := by
+    have hgap := inv_sqrt_gap (by linarith : 0 < a - b) ha
+    have hsne : Real.sqrt (a - b) ≠ Real.sqrt a := by
+      intro hsr
+      have hsq := congrArg (fun t : ℝ => t ^ 2) hsr
+      rw [Real.sq_sqrt (by linarith), Real.sq_sqrt ha.le] at hsq
+      linarith
+    have hpos : 0 < (Real.sqrt a - Real.sqrt (a - b)) ^ 2 *
+        (2 * Real.sqrt a + Real.sqrt (a - b)) /
+          (2 * Real.sqrt (a - b) * (Real.sqrt a) ^ 3) := by
+      have hsub : Real.sqrt a - Real.sqrt (a - b) ≠ 0 := sub_ne_zero.mpr hsne.symm
+      positivity
+    have hrew : 1 / Real.sqrt a - ((a - b) - a) / (2 * a * Real.sqrt a) = tangent 0 := by
+      unfold tangent
+      simp [Real.cos_zero]
+      field_simp [ha.ne', (Real.sqrt_pos.mpr ha).ne']
+      ring
+    have hfull : full 0 = 1 / Real.sqrt (a - b) := by
+      unfold full
+      simp [Real.cos_zero]
+    linarith
+  have hcontT : ContinuousOn tangent (Icc (0 : ℝ) Real.pi) := by
+    unfold tangent
+    exact (continuous_const.add (continuous_const.mul Real.continuous_cos)).continuousOn
+  have hcontF : ContinuousOn full (Icc (0 : ℝ) Real.pi) := by
+    unfold full
+    refine ContinuousOn.div continuousOn_const ?_ ?_
+    · exact Real.continuous_sqrt.comp_continuousOn
+        (continuous_const.sub (continuous_const.mul Real.continuous_cos)).continuousOn
+    · intro θ _
+      exact (Real.sqrt_pos.mpr (hrad θ)).ne'
+  have hlt := integral_lt_integral_of_continuousOn_of_le_of_exists_lt Real.pi_pos hcontT hcontF
+    (fun θ _ => hle θ) ⟨0, ⟨le_rfl, Real.pi_pos.le⟩, hlt0⟩
+  have htanI : ∫ θ in (0 : ℝ)..Real.pi, tangent θ = Real.pi / Real.sqrt a := by
+    unfold tangent
+    have h := integral_affine_cos (A := 1 / Real.sqrt a) (B := b / (2 * a * Real.sqrt a))
+    rw [h]
+    field_simp [(Real.sqrt_pos.mpr ha).ne']
+  linarith
+
+
+/-- The return exceeds one radial period of the resonant ellipse of rectum
+`2/(α+β)`, and therefore exceeds `2π` by more than `6π M` over that rectum.
+The same excess is strictly greater than `6π M²/L²`. -/
+theorem bound_return_gt_resonant {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β)
+    (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M)) :
+    let p := 2 / (α + β)
+    2 * Real.pi / Real.sqrt (1 - 6 * M / p) < radialReturn M α β ∧
+      6 * Real.pi * M / p < radialReturn M α β - 2 * Real.pi := by
+  dsimp
+  set p : ℝ := 2 / (α + β)
+  set x : ℝ := 3 * M * (α + β)
+  have hs : 0 < α + β := by linarith
+  have hp : 0 < p := by
+    dsimp [p]
+    positivity
+  have hx : x = 6 * M / p := by
+    dsimp [x, p]
+    field_simp [hM.ne', hs.ne']
+    ring
+  have hx1 : x < 1 := by
+    have := turning_sum_lt_one hM hαβ hβγ hsum
+    simpa [x] using this
+  have hx0 : 0 < x := by
+    dsimp [x]
+    positivity
+  have ha : 0 < 1 - x := by linarith
+  have hb : 0 < M * (β - α) := by positivity
+  have hba : M * (β - α) < 1 - x := by
+    have hγ : γ = 1 / (2 * M) - α - β := by linarith
+    have hpos : 0 < 2 * M * (γ - β) := by positivity
+    have heq : 1 - x - M * (β - α) = 2 * M * (γ - β) := by
+      dsimp [x]
+      rw [hγ]
+      field_simp [hM.ne']
+      ring
+    linarith
+  have hlow := integral_inv_sqrt_lower ha hb hba
+  have hret : radialReturn M α β =
+      2 * ∫ θ in (0 : ℝ)..Real.pi,
+        (1 / Real.sqrt ((1 - x) - M * (β - α) * Real.cos θ)) := by
+    unfold radialReturn returnIntegrand
+    apply congr_arg (fun I => 2 * I)
+    apply intervalIntegral.integral_congr
+    intro θ _
+    dsimp [x]
+  have hcmp : 2 * Real.pi / Real.sqrt (1 - x) < radialReturn M α β := by
+    rw [hret]
+    have := mul_lt_mul_of_pos_left hlow (by norm_num : (0 : ℝ) < 2)
+    simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using this
+  have hx0' : 0 < 6 * M / p := by simpa [hx] using hx0
+  have hx1' : 6 * M / p < 1 := by simpa [hx] using hx1
+  let L : ℝ := Real.sqrt (p * M)
+  have hL : L ≠ 0 := by
+    dsimp [L]
+    exact (Real.sqrt_pos.mpr (by positivity)).ne'
+  have hMne : M ≠ 0 := hM.ne'
+  have hpL : p = L ^ 2 / M := by
+    dsimp [L]
+    rw [Real.sq_sqrt (by positivity)]
+    field_simp [hMne]
+  have hellipse := perihelion_excess_latus (M := M) (L := L) (p := p) hMne hpL hx0' hx1'
+  have hk : Real.sqrt (1 - 6 * M / p) = Real.sqrt (1 - x) := by rw [hx]
+  constructor
+  · simpa [hk] using hcmp
+  · have hperiod : 2 * Real.pi * (1 / Real.sqrt (1 - x) - 1) <
+        radialReturn M α β - 2 * Real.pi := by
+      have : 2 * Real.pi / Real.sqrt (1 - x) - 2 * Real.pi <
+          radialReturn M α β - 2 * Real.pi := by linarith
+      have hrew : 2 * Real.pi / Real.sqrt (1 - x) - 2 * Real.pi =
+          2 * Real.pi * (1 / Real.sqrt (1 - x) - 1) := by
+        field_simp [(Real.sqrt_pos.mpr ha).ne']
+      linarith
+    have hlowE : 6 * Real.pi * M / p <
+        2 * Real.pi * (1 / Real.sqrt (1 - x) - 1) := by
+      simpa [hk] using hellipse.1
+    exact lt_trans hlowE hperiod
+
+/-- The rectum fixed by angular momentum is strictly longer than \(2/(\alpha+\beta)\),
+so the same excess is strictly greater than \(6\pi M^{2}/L^{2}\). -/
+theorem bound_return_gt_angular {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α)
+    (hαβ : α < β) (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
+    (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
+    6 * Real.pi * M ^ 2 / L ^ 2 < radialReturn M α β - 2 * Real.pi := by
+  have hlow := (bound_return_gt_resonant hM hα hαβ hβγ hsum).2
+  set p : ℝ := 2 / (α + β)
+  have hs : 0 < α + β := by linarith
+  have hp : 0 < p := by
+    dsimp [p]
+    exact div_pos (by norm_num) hs
+  have hrect : p < L ^ 2 / M := by
+    simpa [p] using angularLatus_gt_turning hM hα hαβ hβγ hsum hσ
+  have hden : 0 < L ^ 2 / M := lt_trans hp hrect
+  have hinv : M / L ^ 2 < 1 / p := by
+    have hrew : M / L ^ 2 = 1 / (L ^ 2 / M) := by field_simp [hM.ne']
+    rw [hrew]
+    exact (one_div_lt_one_div hden hp).mpr hrect
+  have hfrac : M ^ 2 / L ^ 2 < M / p := by
+    have hmul := mul_lt_mul_of_pos_left hinv hM
+    convert hmul using 1
+    · field_simp [hM.ne']
+    · field_simp [hM.ne', hp.ne']
+  have hcoef : 6 * Real.pi * (M ^ 2 / L ^ 2) < 6 * Real.pi * (M / p) :=
+    mul_lt_mul_of_pos_left hfrac (by positivity : 0 < 6 * Real.pi)
+  have hcoef' : 6 * Real.pi * M ^ 2 / L ^ 2 < 6 * Real.pi * M / p := by
+    convert hcoef using 1 <;> ring
+  exact lt_trans hcoef' hlow
+
+private theorem integral_inv_sqrt_envelope {a b lam : ℝ} (ha : 0 < a) (hb : 0 ≤ b)
+    (hlam0 : 0 ≤ lam) (hlam1 : lam < 1) (hblam : b ≤ a * lam) :
+    ∫ θ in (0 : ℝ)..Real.pi, (1 / Real.sqrt (a - b * Real.cos θ)) ≤
+      (Real.pi / Real.sqrt a) * (1 +
+        ((2 + Real.sqrt (1 - lam)) /
+          (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * lam ^ 2 / 2) := by
+  let K : ℝ := (2 + Real.sqrt (1 - lam)) /
+    (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)
+  have hK : 0 ≤ K := by
+    dsimp [K]
+    positivity
+  have hba : b < a := by
+    have hmul : a * lam < a * 1 := mul_lt_mul_of_pos_left hlam1 ha
+    have : a * lam < a := by simpa using hmul
+    linarith
+  have hrad : ∀ θ, 0 < a - b * Real.cos θ := by
+    intro θ
+    have : b * Real.cos θ ≤ b := by nlinarith [Real.cos_le_one θ, hb]
+    linarith
+  have hpoint : ∀ θ, 1 / Real.sqrt (a - b * Real.cos θ) ≤
+      (1 / Real.sqrt a) * (1 + ((b / a) * Real.cos θ) / 2 +
+        K * ((b / a) * Real.cos θ) ^ 2) := by
+    intro θ
+    have hdiv : 0 ≤ b / a := div_nonneg hb ha.le
+    have hble : b / a ≤ lam := by
+      have hmul : b ≤ lam * a := by simpa [mul_comm] using hblam
+      exact (div_le_iff₀ ha).mpr hmul
+    have hw : |(b / a) * Real.cos θ| ≤ lam := by
+      rw [abs_mul, abs_of_nonneg hdiv]
+      nlinarith [Real.abs_cos_le_one θ, hble]
+    have hquad := invSqrt_quadratic hlam0 hlam1 hw
+    have hsplit : a - b * Real.cos θ = a * (1 - (b / a) * Real.cos θ) := by
+      field_simp [ha.ne']
+    have hposw : 0 < 1 - (b / a) * Real.cos θ :=
+      sub_pos.mpr (lt_of_abs_lt (lt_of_le_of_lt hw hlam1))
+    rw [hsplit, Real.sqrt_mul ha.le]
+    have hsqrt_a : 0 < Real.sqrt a := Real.sqrt_pos.mpr ha
+    have hsqrt_w : 0 < Real.sqrt (1 - (b / a) * Real.cos θ) := Real.sqrt_pos.mpr hposw
+    have hleft : 1 / (Real.sqrt a * Real.sqrt (1 - (b / a) * Real.cos θ)) =
+        (1 / Real.sqrt a) * (1 / Real.sqrt (1 - (b / a) * Real.cos θ)) := by
+      field_simp [hsqrt_a.ne', hsqrt_w.ne']
+    rw [hleft]
+    exact mul_le_mul_of_nonneg_left (by simpa [K] using hquad) (by positivity)
+  let rhs : ℝ → ℝ := fun θ =>
+    (1 / Real.sqrt a) * (1 + ((b / a) * Real.cos θ) / 2 + K * ((b / a) * Real.cos θ) ^ 2)
+  have hcontL : ContinuousOn (fun θ : ℝ => 1 / Real.sqrt (a - b * Real.cos θ))
+      (Icc (0 : ℝ) Real.pi) := by
+    refine ContinuousOn.div continuousOn_const ?_ ?_
+    · exact Real.continuous_sqrt.comp_continuousOn
+        (continuous_const.sub (continuous_const.mul Real.continuous_cos)).continuousOn
+    · intro θ _
+      exact (Real.sqrt_pos.mpr (hrad θ)).ne'
+  have hcontR : ContinuousOn rhs (Icc (0 : ℝ) Real.pi) := by
+    unfold rhs
+    fun_prop
+  have hmono := integral_mono_on (μ := volume) Real.pi_pos.le
+    (hcontL.intervalIntegrable_of_Icc (μ := volume) Real.pi_pos.le)
+    (hcontR.intervalIntegrable_of_Icc (μ := volume) Real.pi_pos.le)
+    (fun θ _ => hpoint θ)
+  have hpoly : (fun θ : ℝ => rhs θ) = fun θ =>
+      (1 / Real.sqrt a) +
+        ((1 / Real.sqrt a) * ((b / a) / 2)) * Real.cos θ +
+        ((1 / Real.sqrt a) * K * (b / a) ^ 2) * Real.cos θ ^ 2 := by
+    ext θ
+    unfold rhs
+    ring
+  have hright : ∫ θ in (0 : ℝ)..Real.pi, rhs θ =
+      (Real.pi / Real.sqrt a) * (1 + K * (b / a) ^ 2 / 2) := by
+    rw [hpoly, integral_quad_cos]
+    field_simp [(Real.sqrt_pos.mpr ha).ne']
+  have hsq : (b / a) ^ 2 ≤ lam ^ 2 := by
+    have hble : b / a ≤ lam := by
+      have hmul : b ≤ lam * a := by simpa [mul_comm] using hblam
+      exact (div_le_iff₀ ha).mpr hmul
+    have hnonneg : 0 ≤ b / a := div_nonneg hb ha.le
+    nlinarith
+  have hstep1 : ∫ θ in (0 : ℝ)..Real.pi, 1 / Real.sqrt (a - b * Real.cos θ) ≤
+      (Real.pi / Real.sqrt a) * (1 + K * (b / a) ^ 2 / 2) := by
+    rw [← hright]
+    simpa [rhs] using hmono
+  have hstep2 : (Real.pi / Real.sqrt a) * (1 + K * (b / a) ^ 2 / 2) ≤
+      (Real.pi / Real.sqrt a) * (1 + K * lam ^ 2 / 2) := by
+    have hpi : 0 < Real.pi / Real.sqrt a := by positivity
+    exact mul_le_mul_of_nonneg_left (by nlinarith) hpi.le
+  exact hstep1.trans hstep2
+
+
+/-- When `3M(α+β) ≤ 1/2`, the return to the larger root lies strictly between
+`6π M/p` and that quantity divided by `1 − 6M/p`, where `p = 2/(α+β)` is the
+semi-latus rectum fixed by the turning values. -/
+theorem bound_return_bounds {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β)
+    (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
+    (hx : 3 * M * (α + β) ≤ 1 / 2) :
+    let p := 2 / (α + β)
+    6 * Real.pi * M / p < radialReturn M α β - 2 * Real.pi ∧
+      radialReturn M α β - 2 * Real.pi < (6 * Real.pi * M / p) / (1 - 6 * M / p) := by
+  dsimp
+  have hlow := (bound_return_gt_resonant hM hα hαβ hβγ hsum).2
+  set p : ℝ := 2 / (α + β)
+  set x : ℝ := 3 * M * (α + β)
+  have hs : 0 < α + β := by linarith
+  have hxeq : x = 6 * M / p := by
+    dsimp [x, p]
+    field_simp [hM.ne', hs.ne']
+    ring
+  have hx0 : 0 < x := by
+    dsimp [x]
+    positivity
+  have ha : 0 < 1 - x := by linarith
+  set ecc : ℝ := M * (β - α)
+  set lam : ℝ := (x / 3) / (1 - x)
+  have hlam0 : 0 ≤ lam := by
+    dsimp [lam]
+    positivity
+  have hlam1 : lam < 1 := by
+    dsimp [lam]
+    exact (div_lt_one ha).mpr (by linarith)
+  have hecc : 0 ≤ ecc := by
+    dsimp [ecc]
+    positivity
+  have hblam : ecc ≤ (1 - x) * lam := by
+    dsimp [ecc, lam, x]
+    have : M * (β - α) ≤ M * (α + β) := by nlinarith [hα]
+    have hx3 : x / 3 = M * (α + β) := by
+      dsimp [x]
+      ring
+    calc M * (β - α) ≤ M * (α + β) := this
+      _ = x / 3 := hx3.symm
+      _ = (1 - x) * ((x / 3) / (1 - x)) := by field_simp [ha.ne']
+  have henv := integral_inv_sqrt_envelope (a := 1 - x) (b := ecc) (lam := lam)
+    ha hecc hlam0 hlam1 hblam
+  have hhalf : ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ ≤
+      (Real.pi / Real.sqrt (1 - x)) * (1 +
+        ((2 + Real.sqrt (1 - lam)) /
+          (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * lam ^ 2 / 2) := by
+    have hcongr : ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ =
+        ∫ θ in (0 : ℝ)..Real.pi, 1 / Real.sqrt ((1 - x) - ecc * Real.cos θ) := by
+      refine intervalIntegral.integral_congr ?_
+      intro θ _
+      unfold returnIntegrand
+      congr 1
+    rw [hcongr]
+    simpa [lam] using henv
+  have hfac := returnFactor_lt hx0 hx
+  have hstrict : 2 * ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ <
+      Real.pi * (2 - x) / (1 - x) := by
+    have htwo : (0 : ℝ) < 2 := by norm_num
+    have hmul := mul_lt_mul_of_pos_left hfac (mul_pos (by exact Real.pi_pos) htwo)
+    have hrew : 2 * Real.pi * ((1 / Real.sqrt (1 - x)) *
+        (1 + ((2 + Real.sqrt (1 - (x / 3) / (1 - x))) /
+          (2 * Real.sqrt (1 - (x / 3) / (1 - x)) *
+            (1 + Real.sqrt (1 - (x / 3) / (1 - x))) ^ 2)) *
+          ((x / 3) / (1 - x)) ^ 2 / 2)) =
+        2 * ((Real.pi / Real.sqrt (1 - x)) * (1 +
+          ((2 + Real.sqrt (1 - lam)) /
+            (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * lam ^ 2 / 2)) := by
+      dsimp [lam]
+      field_simp [(Real.sqrt_pos.mpr ha).ne']
+    have htarget : 2 * Real.pi * ((2 - x) / (2 * (1 - x))) = Real.pi * (2 - x) / (1 - x) := by
+      field_simp [ha.ne']
+    have hle : 2 * ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ ≤
+        2 * ((Real.pi / Real.sqrt (1 - x)) * (1 +
+          ((2 + Real.sqrt (1 - lam)) /
+            (2 * Real.sqrt (1 - lam) * (1 + Real.sqrt (1 - lam)) ^ 2)) * lam ^ 2 / 2)) :=
+      mul_le_mul_of_nonneg_left hhalf (by norm_num)
+    linarith
+  have hupper : radialReturn M α β - 2 * Real.pi < (6 * Real.pi * M / p) / (1 - 6 * M / p) := by
+    have hret : radialReturn M α β = 2 * ∫ θ in (0 : ℝ)..Real.pi, returnIntegrand M α β θ := rfl
+    have hcap : Real.pi * (2 - x) / (1 - x) - 2 * Real.pi = Real.pi * x / (1 - x) := by
+      have hne : (1 - x) ≠ 0 := ha.ne'
+      calc Real.pi * (2 - x) / (1 - x) - 2 * Real.pi
+          = Real.pi * ((2 - x) / (1 - x) - 2) := by ring
+        _ = Real.pi * ((2 - x - 2 * (1 - x)) / (1 - x)) := by
+            congr 1
+            field_simp [hne]
+        _ = Real.pi * (x / (1 - x)) := by
+            congr 1
+            have : 2 - x - 2 * (1 - x) = x := by ring
+            rw [this]
+        _ = Real.pi * x / (1 - x) := by ring
+    have hpx : Real.pi * x / (1 - x) = (6 * Real.pi * M / p) / (1 - 6 * M / p) := by
+      rw [hxeq]
+      field_simp [ha.ne']
+    linarith
+  exact ⟨hlow, hupper⟩
 
 end DstDiophantine.Gravity.Perihelion

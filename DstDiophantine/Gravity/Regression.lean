@@ -307,6 +307,24 @@ example {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
       2 * Real.pi * (1 / k - 1) < (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
   Perihelion.perihelion_excess_latus hM hp hx0 hx1
 
+/-- Regression: a bound orbit returns above the resonant period of the
+turning-point rectum, and below the same upper shape when `3M(α+β) ≤ 1/2`. -/
+example {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β) (hβγ : β < γ)
+    (hsum : α + β + γ = 1 / (2 * M)) (hx : 3 * M * (α + β) ≤ 1 / 2) :
+    let p := 2 / (α + β)
+    6 * Real.pi * M / p < Perihelion.radialReturn M α β - 2 * Real.pi ∧
+      Perihelion.radialReturn M α β - 2 * Real.pi <
+        (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
+  Perihelion.bound_return_bounds hM hα hαβ hβγ hsum hx
+
+/-- Regression: the angular-momentum rectum is longer, so the excess also
+exceeds `6π M²/L²`. -/
+example {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β) (hβγ : β < γ)
+    (hsum : α + β + γ = 1 / (2 * M))
+    (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
+    6 * Real.pi * M ^ 2 / L ^ 2 < Perihelion.radialReturn M α β - 2 * Real.pi :=
+  Perihelion.bound_return_gt_angular hM hα hαβ hβγ hsum hσ
+
 /-- Regression: the sphere's tangent rotation cancels in `ûθ² + ûφ²`. -/
 example (uθ uφ c : ℝ) :
     2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 :=

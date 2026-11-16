@@ -93,7 +93,15 @@ import list of `Gravity.Regression`.
   speed in \(\gamma^2\); two shares are the deficit \(A-1\) in the centrifugal
   barrier. For \(0<6M/p<1\) one radial period of the precessing ellipse
   exceeds \(2\pi\) by an amount strictly between \(6\pi M/p\) and that quantity
-  over \(1-6M/p\). That ellipse is not an exact solution. A tangential tilt \(-\kappa\hat{u}_\varphi\) multiplies angular
+  over \(1-6M/p\). That ellipse is not an exact solution. A bound orbit
+  turning at \(0\le\alpha<\beta\), with third root \(\gamma\) above \(\beta\),
+  returns to the larger root at an angle strictly above one radial period of
+  the resonant ellipse of rectum \(2/(\alpha+\beta)\). The excess over \(2\pi\)
+  is therefore strictly greater than \(6\pi M\) over that rectum, and, because
+  \(L^{2}/M\) is strictly longer, strictly greater than \(6\pi M^{2}/L^{2}\).
+  When \(3M(\alpha+\beta)\le 1/2\) the excess is strictly less than the
+  turning-point quantity divided by \(1-3M(\alpha+\beta)\).
+  A tangential tilt \(-\kappa\hat{u}_\varphi\) multiplies angular
   momentum by \(\exp(-\kappa\tau)\). The torsional leg changes only with the radius,
   the radial piece of \(\gamma^2\) cancels, and the transverse piece that remains is
   the perihelion.
@@ -104,7 +112,8 @@ import list of `Gravity.Regression`.
   acceleration, \(E=\sqrt{A}\,\gamma\), and the first integral are the equatorial
   ones in this \(L^2\). An angle advancing at \(L/r^2\) carries the Binet slope,
   and the radial period of the resonant ellipse depends on the motion only
-  through this \(L^2\).
+  through this \(L^2\). The return to the larger turning value has the same
+  bounds.
   The constants satisfy \((r\sin\theta\,\hat{u}_\varphi)^2\le L^2\sin^2\theta\),
   with equality exactly at \(\hat{u}_\theta=0\). A nonzero azimuthal constant
   keeps \(\sin^2\theta\) at least that ratio, so the trajectory stays off both
