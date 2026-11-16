@@ -30,7 +30,7 @@
 \section{はじめに}
 \label{sec:introduction}
 
-1915年の誕生以来、一般相対性理論はわれわれがもつ重力記述のうち最も成功したものである。水星の近日点、光の遅れ、重力波、ブラックホールの撮像は、すべてそれを物語る。しかし哲学的な不安は残る。なぜ物質は時空を曲げ、なぜ曲がった時空が物質の運動を支配するのか。アインシュタイン方程式は重力がどのように働くかを極めて精密に教える。連続体がなぜ曲がるのかは、そこでは問われない。この不安はマッハの原理と対峙するといっそう鋭くなる。慣性は周囲の物質に応えるべきであるのに対し、一般相対性理論は時空を、完全な空虚さの中でも存在しうる独立した連続体として扱う。
+1915年の誕生以来、一般相対性理論はわれわれがもつ重力記述のうち最も成功したものである。水星の近日点~\cite{einstein1915}、光の遅れ~\cite{shapiro1964}、重力波~\cite{abbott2016}、ブラックホールの撮像~\cite{eht2019}は、すべてそれを物語る。しかし哲学的な不安は残る。なぜ物質は時空を曲げ、なぜ曲がった時空が物質の運動を支配するのか。アインシュタイン方程式~\cite{einstein1916}は重力がどのように働くかを極めて精密に教える。連続体がなぜ曲がるのかは、そこでは問われない。この不安はマッハの原理~\cite{mach1883}と対峙するといっそう鋭くなる。慣性は周囲の物質に応えるべきであるのに対し、一般相対性理論は時空を、完全な空虚さの中でも存在しうる独立した連続体として扱う。
 
 この隙間を埋めようとする一世紀の試みは、連続体そのものには手を触れなかった。時空は先験的に滑らかな多様体とされ、重力は計量の平坦さからのずれである。
 
@@ -47,11 +47,11 @@
 \section{数学的基礎：16次元双四元数代数}
 \label{sec:math}
 
-二重時空理論全体は、ミンコフスキー時空（符号 $(-,+,+,+)$）上のクリフォード幾何代数 $\mathrm{Cl}(3,1)$ と標準的に同型である双四元数（二重四元数とも呼ばれる）の16実次元代数の中に構築される。この代数は、すべての質量粒子に内在的に付随する単一代数構造の中に、通常と双対という二つの可換なミンコフスキー時空の完全なコピーを自然に収容する。
+二重時空理論全体は、ミンコフスキー時空~\cite{minkowski1909}（符号 $(-,+,+,+)$）上のクリフォード幾何代数~\cite{clifford1878} $\mathrm{Cl}(3,1)$ と標準的に同型である双四元数（二重四元数とも呼ばれる）の16実次元代数の中に構築される。この代数は、すべての質量粒子に内在的に付随する単一代数構造の中に、通常と双対という二つの可換なミンコフスキー時空の完全なコピーを自然に収容する。
 
 \subsection{双四元数代数}
 
-まずハミルトンの四元数代数の二つの独立したコピーから出発する。
+まずハミルトンの四元数代数~\cite{hamilton1844}の二つの独立したコピーから出発する。
 \begin{itemize}
   \item 生成子 $i,j,k$ が $i^2=j^2=k^2=-1$, \ $ij=k$, \ $ji=-k$（巡回）を満たす主四元数、
   \item 生成子 $I,J,K$ が同一の規則 $I^2=J^2=K^2=-1$, \ $IJ=K$, \ $JI=-K$（巡回）を満たす従四元数。
@@ -127,7 +127,7 @@ X' = X i,
 \[
 X'^2 = (X i)(X i) = X (i X) i = -X (X i) i = -X^2\, i^2 = -X^2 \cdot (-1) = X^2.
 \]
-この双対構造はすべての粒子に内在的である。通常時空は標準的運動学を支配し、双対時空は重力と慣性の存在下で動学的に関連する補完的自由度を符号化する。二つの時空の存在により、ローレンツ変換、平行移動、そして重力の本性のより豊かな幾何解釈が可能となる。
+この双対構造はすべての粒子に内在的である。通常時空は標準的運動学を支配し、双対時空は重力と慣性の存在下で動学的に関連する補完的自由度を符号化する。二つの時空の存在により、ローレンツ変換~\cite{lorentz1904}、平行移動、そして重力の本性のより豊かな幾何解釈が可能となる。
 
 \section{運動学的構造：ローター、ブースト、平行移動}
 \label{sec:kinematics}
@@ -207,7 +207,7 @@ R_\text{dual} = \exp\!\left( \frac{\theta}{2} \hat{q} \right)
 \section{双対時空間のねじれ不整合としての重力}
 \label{sec:gravity}
 
-本中心節では、重力が時空の曲率でも外力でもなく、すべての質量粒子が内在的に運ぶ通常時空と双対時空の間のねじれ不整合であることを確立する。クリストッフェル記号、リーマンテンソル、連続多様体は原始的対象ではない。ねじれは粒子局所的な双対ローター間の相対回転角である。パラメータ空間の $J$ はワイツェンベックスカラー $T$ とは別物である。
+本中心節では、重力が時空の曲率でも外力でもなく、すべての質量粒子が内在的に運ぶ通常時空と双対時空の間のねじれ不整合であることを確立する。クリストッフェル記号、リーマンテンソル、連続多様体は原始的対象ではない。ねじれは粒子局所的な双対ローター間の相対回転角である。パラメータ空間の $J$ はワイツェンベックスカラー $T$~\cite{weitzenboeck1923,maluf2013} とは別物である。
 
 \subsection{ねじれ不整合ローターの定義}
 
@@ -255,7 +255,7 @@ B(X,Y) = 4\,\mathrm{Tr}(X Y).
 \]
 \S\ref{sec:kinematics} の 2 次空間バイベクトルをまとめて $\Gamma_a$（$a=1,2,3$）と書き、$\Gamma_1 = I$, $\Gamma_2 = J$, $\Gamma_3 = K$ とする（\S\ref{sec:math} のクリフォード同型 $e_3e_2 = I$, $e_1e_3 = J$, $e_2e_1 = K$ に対応）。通常時空のブースト生成子は $i\Gamma_a$、双対セクターの回転を生成するのは $\Gamma_a$ である。キリング形式を評価すると $B(i\Gamma_a, i\Gamma_a) = +8$, $B(\Gamma_a, \Gamma_a) = -8$ となり、ローレンツ符号を完璧に再現する。同軸生成子は可換であり $[i\Gamma_a,\Gamma_a]=0$ である。異軸の交換子は必ずしも消えない。
 
-半角展開 $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ と書く。六つの生成子は $\mathfrak{so}(3,1)$ の一つのコピーを張る。並進と合わせて、周囲代数はポアンカレ候補 $\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}$ である。このとき
+半角展開 $\Omega_\text{biv}=\sum_a\bigl(\frac{\alpha_a}{2}i\Gamma_a+\frac{\beta_a}{2}\Gamma_a\bigr)$ と書く。六つの生成子は $\mathfrak{so}(3,1)$ の一つのコピーを張る。並進と合わせて、周囲代数はポアンカレ候補~\cite{poincare1906} $\mathfrak{iso}(3,1)\cong\mathfrak{so}(3,1)\ltimes\mathbb{R}^{3,1}$ である。このとき
 \[
 B(\Omega_\text{biv},\Omega_\text{biv})=2\sum_{a=1}^3(\alpha_a^2-\beta_a^2).
 \]
@@ -291,7 +291,7 @@ $J$ の符号は通常の引力重力と双対支配の斥力を区別する。�
 \[
 \mathrm{e}^{-\varphi}=\sqrt{A},\qquad \mathrm{e}^{\varphi}=A^{-1/2},\qquad A(r)=1-r_s/r.
 \]
-余枠 $\bigl(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta\bigr)$ はシュヴァルツシルト計量 $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$ を誘導する。より一般に、ローター場 $R_{\mathrm{total}}(x)$ は固定参照テトラッド $\{\mathring{e}^a\}$ にサンドイッチ積
+余枠 $\bigl(\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta\bigr)$ はシュヴァルツシルト計量~\cite{schwarzschild1916} $\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)$ を誘導する。より一般に、ローター場 $R_{\mathrm{total}}(x)$ は固定参照テトラッド $\{\mathring{e}^a\}$ にサンドイッチ積
 \[
 e^a{}_\mu(x) \;=\; \langle R_{\mathrm{total}}(x)\, \mathring{e}^a\, R_{\mathrm{total}}^\dagger(x) \rangle_{1,\mu}
 \]
@@ -338,7 +338,7 @@ T+\frac{2}{r^2}=-2\,G^t{}_t
 \[
 T=-\frac{2}{r^2}
 \]
-となる。これは平坦な球面枠と同じ値である。質量は $T$ から脱落する。ラピディティからは脱落しない。このチャート上では $\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}$ であり、無限遠で $r\varphi\to r_s/2$ となる。有限角ラピディティはニュートンポテンシャルを追跡し、$4r^2 J\to r_s^2/2$ である。$T$ に対応する減衰はなく、二つの密度は弱場でも一致しない。$r^2 T=-2$ である一方、$J=\tfrac12\varphi^2>0$ である。$r\to r_s^+$ では $A\to 0^+$、$\varphi\to\infty$ となるが、$T$ は $-2/r^2$ のままである。古典チャートの病理は非有界なラピディティであり、第\ref{subsec:quasi-horizon}節で許容錐がそれを切断する。斥力層は $J$ の負符号であり、楕円セクタに属する。この $T$ の負値ではない。引力の真空そのものが $T<0$ である。
+となる。これは平坦な球面枠と同じ値である。質量は $T$ から脱落する。ラピディティからは脱落しない。このチャート上では $\frac{r_s}{2r}\le\varphi(r)\le\frac{r_s}{2rA(r)}$ であり、無限遠で $r\varphi\to r_s/2$ となる。有限角ラピディティはニュートンポテンシャル~\cite{newton1687}を追跡し、$4r^2 J\to r_s^2/2$ である。$T$ に対応する減衰はなく、二つの密度は弱場でも一致しない。$r^2 T=-2$ である一方、$J=\tfrac12\varphi^2>0$ である。$r\to r_s^+$ では $A\to 0^+$、$\varphi\to\infty$ となるが、$T$ は $-2/r^2$ のままである。古典チャートの病理は非有界なラピディティであり、第\ref{subsec:quasi-horizon}節で許容錐がそれを切断する。斥力層は $J$ の負符号であり、楕円セクタに属する。この $T$ の負値ではない。引力の真空そのものが $T<0$ である。
 
 \subsection{提案する作用}
 
@@ -362,7 +362,7 @@ R_\text{usual} \approx 1 + \frac{1}{2} \sum \alpha_a \, i\Gamma_a, \quad R_\text
 \[
 \nabla^2 \Phi = 4\pi G \rho
 \]
-が標準係数で回復される。この一致は線形化チャートに $G$ を同定する。代数から $G$ を導出するものではない。外側のシュヴァルツシルトチャートでは、ラピディティはニュートン値 $r_s/(2r)$ を厳密に上回り、その値に対する割合の超過は $r_s/(r-r_s)$ より厳密に小さい。太陽質量を一天文単位に置いたときの割合は $1/(4\times 10^7)$ を下回る。天の川の代入質量を、銀河回転の別稿で置くコンパクト化半径で評価すると、同じ割合は $10^{-6}$ を下回る。
+が標準係数で回復される。この一致は線形化チャートに $G$ を同定する。代数から $G$ を導出するものではない。外側のシュヴァルツシルトチャートでは、ラピディティはニュートン値 $r_s/(2r)$ を厳密に上回り、その値に対する割合の超過は $r_s/(r-r_s)$ より厳密に小さい。太陽質量を一天文単位に置いたときの割合は $1/(4\times 10^7)$ を下回る。天の川の代入質量を、銀河回転の別稿~\cite{dst-galactic}で置くコンパクト化半径で評価すると、同じ割合は $10^{-6}$ を下回る。
 
 \subsection{双対時空におけるローター作用}
 \label{subsec:dual-rotors}
@@ -502,7 +502,7 @@ e^1&=\sqrt{\Sigma/\Delta}\,dr,\\
 e^2&=\sqrt{\Sigma}\,d\theta,\\
 e^3&=\frac{\sin\theta}{\sqrt{\Sigma}}\bigl((r^2+a^2)\,d\phi-a\,dt\bigr)
 \end{align*}
-はカー計量を誘導する。交差項は $g_{t\phi}=-2Mar\sin^2\theta/\Sigma$ であり、方位ノルムは
+はカー計量~\cite{kerr1963}を誘導する。交差項は $g_{t\phi}=-2Mar\sin^2\theta/\Sigma$ であり、方位ノルムは
 \[
 g_{\phi\phi}=\frac{\sin^2\theta}{\Sigma}\Bigl((r^2+a^2)\Sigma+2Mra^2\sin^2\theta\Bigr)
 \]
@@ -513,7 +513,7 @@ g_{\phi\phi}=\frac{\sin^2\theta}{\Sigma}\Bigl((r^2+a^2)\Sigma+2Mra^2\sin^2\theta
 \subsection{ゲーデルチャート}
 \label{subsec:godel}
 
-同じ上限は、時間ループを古典的な病理とするチャートにも届く。正規直交余枠
+同じ上限は、時間ループを古典的な病理とするチャート~\cite{godel1949}にも届く。正規直交余枠
 \[
 e^0=dt+\sqrt{2}\sinh^2 r\,d\phi,\qquad
 e^1=dr,\qquad
@@ -546,7 +546,7 @@ $\partial_\phi$ の二つの正規直交成分の比が傾き $\lambda(r)=\sqrt{
 
 回転マグネター模型を超える主要な予測：
 \begin{itemize}
-\item 理論的最小パルス周期はプランクスケールの二重ローター周波数によって決まり、観測される $\sim 1$ ms 限界より桁違いに短い。これにより回転パルサー描像では説明できなかった短周期パルサーを説明できる。
+\item 理論的最小パルス周期はプランクスケール~\cite{planck1900}の二重ローター周波数によって決まり、観測される $\sim 1$ ms 限界より桁違いに短い。これにより回転パルサー描像では説明できなかった短周期パルサーを説明できる。
 \item パルサーの「グリッチ」および周期微分 $\dot{P} < 0$（周期短縮）は、パルサーがエネルギーを失うことで振動界面が収縮し、振動周波数が時間とともに加速する結果である。回転のみの模型には見られない自然な機構である。
 \item マグネターフレアおよび高速電波バーストは、引力／斥力層間の激しい反転であり、$10^{15}$ G 場を必要とせずにねじれひずみを解放する。
 \item $P$-$\dot{P}$ 図の死線は、内部層化が安定化し縦モードが検出可能性以下に減衰する点に対応する。
@@ -557,11 +557,11 @@ $\partial_\phi$ の二つの正規直交成分の比が傾き $\lambda(r)=\sqrt{
 
 \subsection{新しいブラックホール描像：ねじれ星}
 
-観測者が「ブラックホール」と呼ぶものは、実際にはねじれ星である。事象地平も中心特異点もない準安定な層状凝縮体である。最内のカオスコアは永続的ねじれ乱流にあるプランク密度プラズマであり、ロータートンネリング（修正ホーキング過程）を通じて連続的に放射する。情報は双対ローター位相に保存される。
+観測者が「ブラックホール」と呼ぶものは、実際にはねじれ星である。事象地平も中心特異点もない準安定な層状凝縮体である。最内のカオスコアは永続的ねじれ乱流にあるプランク密度プラズマであり、ロータートンネリング（修正ホーキング過程~\cite{hawking1975}）を通じて連続的に放射する。情報は双対ローター位相に保存される。
 
-合体からの重力波信号は、内部層反射による繰り返しエコーを特徴とし、特性周波数はねじれ振動スペクトルに結びつく。これはすでに LIGO/Virgo データの再解析において示唆されている。
+合体からの重力波信号は、内部層反射による繰り返しエコーを特徴とし、特性周波数はねじれ振動スペクトルに結びつく。これはすでに LIGO/Virgo データの再解析~\cite{abedi2017}において示唆されている。
 
-したがって本理論は情報パラドックスを解消し、カー回転シグネチャの不在を説明し、最も質量の大きい「ブラックホール」（$\gtrsim 100 M_\odot$）が、内側の斥力層が周期的に物質を放出するにつれて降着光度に周期変調を示すと予測する。
+したがって本理論は情報パラドックス~\cite{hawking1976}を解消し、カー回転シグネチャの不在を説明し、最も質量の大きい「ブラックホール」（$\gtrsim 100 M_\odot$）が、内側の斥力層が周期的に物質を放出するにつれて降着光度に周期変調を示すと予測する。
 
 \subsection{中心浮遊コア：中心におけるゼロ時間膨張}
 \label{subsec:floating-core}
@@ -823,7 +823,7 @@ F_r
   =-\frac{G m_e m_p}{\gamma_{s,G}(r)\,r^{2}}
   -\frac{k e^{2}}{\gamma_s(r)\,r^{2}}
 \]
-である。二つの因子の符号が同じところでは、二つの項は同じ向きを向き、\(F_r\) は消えない。ボーア半径は両方の長さの外側の平坦部にあるので、そこでは両方の因子が正であり、両方の項が引き合う。質量の項は、そのとき電荷の項より、\(4.40\times 10^{-40}\) と \(4.42\times 10^{-40}\) のあいだに厳密にある因子だけ小さい。二つの因子がともに零でないところでは、質量の項の電荷の項に対する比は \(\frac{G m_e m_p}{k e^{2}}\cdot\frac{\gamma_s}{\gamma_{s,G}}\) である。等尺度の仮定では、対応する節は二つの長さの比に立つ。核の長さは \(2x_1 r_1\) であり、電磁の長さは電子の換算コンプトン波長である。\((\tfrac12,1)\,\mathrm{fm}\) のあらゆる符号反転に対して、その比は \(203\) と \(414\) のあいだに厳密にあり、したがって電荷チャンネルの第一節は、核の符号反転よりその倍数だけ外側にある。以下の節は、電荷チャンネルの節である。
+である。二つの因子の符号が同じところでは、二つの項は同じ向きを向き、\(F_r\) は消えない。ボーア半径~\cite{bohr1913}は両方の長さの外側の平坦部にあるので、そこでは両方の因子が正であり、両方の項が引き合う。質量の項は、そのとき電荷の項より、\(4.40\times 10^{-40}\) と \(4.42\times 10^{-40}\) のあいだに厳密にある因子だけ小さい。二つの因子がともに零でないところでは、質量の項の電荷の項に対する比は \(\frac{G m_e m_p}{k e^{2}}\cdot\frac{\gamma_s}{\gamma_{s,G}}\) である。等尺度の仮定では、対応する節は二つの長さの比に立つ。核の長さは \(2x_1 r_1\) であり、電磁の長さは電子の換算コンプトン波長~\cite{compton1923}である。\((\tfrac12,1)\,\mathrm{fm}\) のあらゆる符号反転に対して、その比は \(203\) と \(414\) のあいだに厳密にあり、したがって電荷チャンネルの第一節は、核の符号反転よりその倍数だけ外側にある。以下の節は、電荷チャンネルの節である。
 
 プランク単位における電子の静止質量として読んだ一つのコンパクト化整数は、非零の正規化された床を、重力の微細構造定数 \(G m_e^2/\hbar c\) の \(16/3\) 倍に置く。その定数は \(1.70\times 10^{-45}\) と \(1.77\times 10^{-45}\) のあいだに厳密にあり、電磁気の微細構造定数がこの床を上回る因子は \(7.7\times 10^{41}\) と \(8.1\times 10^{41}\) のあいだに厳密にある。同じ床を電磁気の定数に等しく置くには、平方が \(729\) と \(732\) のあいだに厳密にある整数、したがって \(27\) と \(28\) のあいだの整数が要る。床を \(G m_e^2/\hbar c\) に等しく置くには、平方が \(3\times 10^{45}\) と \(4\times 10^{45}\) のあいだに厳密にある整数が要る。代数が定めるのは、そのいずれの整数でもない。この読みが与えるスケールは、重力の床である。
 
@@ -849,11 +849,11 @@ F_r
 
 角運動量は割り当てない。向心の書き換えは用いず、\(pr=n\hbar\) は半径を選ばない。
 
-等スケールアンザッツのもとでは共鳴条件は \(\tanh x\cdot\tan x=1\) であり、\(\gamma_s=0\) と同一であるから、第\ref{subsec:layer-spectrum}節の層スペクトルがそのまま適用される。半径は \(r_n=\Theta(1/n)\) であり、\(\Theta(n^2)\) ではない。最初の二つの節は \(r_2/r_1<1\) を満たす一方、外部の梯子 \(r_n=n^2 a_0\) は \(r_2/r_1=4\) を与える。等スケールの塔は内向きであり、その梯子は外向きである。この順序はラピディティの順序であるから、\(\lambda/r\) に限らず、距離について狭義に減る共通位相はいずれも節を内へ置く。リュードベリ半径はこれらの節ではない。
+等スケールアンザッツのもとでは共鳴条件は \(\tanh x\cdot\tan x=1\) であり、\(\gamma_s=0\) と同一であるから、第\ref{subsec:layer-spectrum}節の層スペクトルがそのまま適用される。半径は \(r_n=\Theta(1/n)\) であり、\(\Theta(n^2)\) ではない。最初の二つの節は \(r_2/r_1<1\) を満たす一方、外部の梯子 \(r_n=n^2 a_0\) は \(r_2/r_1=4\) を与える。等スケールの塔は内向きであり、その梯子は外向きである。この順序はラピディティの順序であるから、\(\lambda/r\) に限らず、距離について狭義に減る共通位相はいずれも節を内へ置く。リュードベリ半径~\cite{rydberg1890}はこれらの節ではない。
 
 スケールは電磁の長さである。測られた原子半径、ボーア半径と呼ばれる長さ、における引力は、その半径を外側の井戸に置き、それによって \(\ell\) を限る。節はそのとき \(r=\ell/(2x)\) に立つ。
 
-物質波はド・ブロイ位相 \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\) である。書かれた作用の自由な遅れとの同定は、読みのままである。それを核のまわりの円周の上では閉じない。双対ローターの一周は、どの半径でも軌道上の点を元へ戻し、ローター自身を \(-1\) に置く。その戻りは運動量を含まない。
+物質波はド・ブロイ位相~\cite{debroglie1924} \((Et-\mathbf{p}\cdot\mathbf{x})/\hbar\) である。書かれた作用の自由な遅れとの同定は、読みのままである。それを核のまわりの円周の上では閉じない。双対ローターの一周は、どの半径でも軌道上の点を元へ戻し、ローター自身を \(-1\) に置く。その戻りは運動量を含まない。
 
 \subsection{\texorpdfstring{$Z$ 収縮}{Z contraction}}
 
@@ -944,23 +944,21 @@ e_a \mapsto \cosh\alpha\, e_a + \sinh\alpha\, e_0,
 \]
 その像の平方はなお $+1$ である。平行な電気生成子はそれ自身ローターではない。逆元との積は $-1$ であり、磁気生成子はいずれもローターである。固定された空間軸がこの六空間の中で選ぶものは、したがって非コンパクトな安定化子 $\mathfrak{so}(2,1)$ であり、その中のコンパクトな方向は単一の生成子 $B_a$ だけである。
 
-その生成子と平行な電場とが張る平面では、元 $c_B B_a + c_E E_a$ が $e_a$ と可換であるのは $c_E=0$ のときに限る。対の双対混合は、自明でない角ではすべて安定化子を離れる。この平面に、カイラリティを保つワインバーグ角はない。安定化子は、軸を固定したまま $B_a$ が混ざりうる第二のコンパクト生成子を含まない。
+その生成子と平行な電場とが張る平面では、元 $c_B B_a + c_E E_a$ が $e_a$ と可換であるのは $c_E=0$ のときに限る。対の双対混合は、自明でない角ではすべて安定化子を離れる。この平面に、カイラリティを保つワインバーグ角~\cite{weinberg1967}はない。安定化子は、軸を固定したまま $B_a$ が混ざりうる第二のコンパクト生成子を含まない。
 
 ローター $R=1+\varepsilon\Omega$ の一次サンドイッチ増分は交換子 $\Omega X-X\Omega$ であり、外積 $F\wedge X$ ではない。静止粒子に対し、純電気生成子は空間方向の蹴りを与え、すべての磁気生成子は何も与えない。$X=e_0+\mathbf{v}$ 上で交換子は四元ベクトル
 \begin{equation}
 \label{eq:faraday-lorentz}
 FX-XF=(E\cdot v)\,e_0+(E-v\times B)
 \end{equation}
-である。それは実験室の時間反転場 $(E,-B)$ のローレンツ四元力である。馴染みの三元力 $q(E+v\times B)$ はサンドイッチと $B$ の符号だけ異なり、実験室の時間反転が一方を他方へ移す。静止系は仕事なしに電気蹴り $E$ を受ける。円偏光ビームに沿った速度は縦成分のない横断蹴りを与える。マックスウェル方程式は導出しない。恒等式はサンドイッチの運動学である。
+である。それは実験室の時間反転場 $(E,-B)$ のローレンツ四元力である。馴染みの三元力 $q(E+v\times B)$ はサンドイッチと $B$ の符号だけ異なり、実験室の時間反転が一方を他方へ移す。静止系は仕事なしに電気蹴り $E$ を受ける。円偏光ビームに沿った速度は縦成分のない横断蹴りを与える。マックスウェル方程式~\cite{maxwell1865}は導出しない。恒等式はサンドイッチの運動学である。
 
-電磁チャンネルと弱いチャンネルはしたがって一つの六空間に住む。双対写像は二つのセクターを入れ替え、カイラリティ射影ではない。$J$ の符号は非コンパクトな電気セクターとコンパクトな磁気セクターを区別する。粒子の四元速度上のサンドイッチは $(E,-B)$ のローレンツ力である。各軸で $(E,B)$ を回す混合 $\omega$ は双対性の円であり、$\omega=\pi/2$ でカルタン $\mathfrak{so}(2,1)$ を、軸を動かす補空間と入れ替える。二つのコンパクト $\mathrm{SU}(2)$ 因子を互いに回すのではなく、平行な平面では自明な角においてのみカイラリティ軸を保つ。双対角の双対専用増分はその六空間を占める。磁気ファラデー場の重ね合わせと、双対ローターにおける置換 $\theta_a\mapsto\theta_a+e A_a$ とは、その同一増分の二つの実験室的読みである。それらの運動学は第\ref{sec:gravitycontrol}節に属する。$\int F\,ds$ から作る拡張ローターは開いたままである。調和剛性はローター剛性のヒッグス読みを与えない。その事実は第\ref{sec:dualrotordynamics}節の粒子作用に属する。双対写像も双対ローターも V--A 結合を供給しない。カイラリティについて奇数の部分は、一つの射影子の内側に留まるのではなく、二つの射影子を交換する。
+電磁チャンネルと弱いチャンネルはしたがって一つの六空間に住む。双対写像は二つのセクターを入れ替え、カイラリティ射影ではない。$J$ の符号は非コンパクトな電気セクターとコンパクトな磁気セクターを区別する。粒子の四元速度上のサンドイッチは $(E,-B)$ のローレンツ力である。各軸で $(E,B)$ を回す混合 $\omega$ は双対性の円であり、$\omega=\pi/2$ でカルタン $\mathfrak{so}(2,1)$ を、軸を動かす補空間と入れ替える。二つのコンパクト $\mathrm{SU}(2)$ 因子を互いに回すのではなく、平行な平面では自明な角においてのみカイラリティ軸を保つ。双対角の双対専用増分はその六空間を占める。磁気ファラデー場の重ね合わせと、双対ローターにおける置換 $\theta_a\mapsto\theta_a+e A_a$ とは、その同一増分の二つの実験室的読みである。それらの運動学は第\ref{sec:gravitycontrol}節に属する。$\int F\,ds$ から作る拡張ローターは開いたままである。調和剛性はローター剛性のヒッグス読み~\cite{higgs1964}を与えない。その事実は第\ref{sec:dualrotordynamics}節の粒子作用に属する。双対写像も双対ローターも V--A 結合を供給しない。カイラリティについて奇数の部分は、一つの射影子の内側に留まるのではなく、二つの射影子を交換する。
 
 \section{双対時空コンパクト性からの暗黒物質なし銀河回転曲線}
 \label{sec:darkmatter}
 
-双対ローターは三次元球面である。銀河の尺度で読むと、重力チャンネルはコンパクト化半径 $R=\sqrt{GM/a_0}$ のパッチとしてこの球面を組織する。$a_0$ は観測された入力であり、双対ローター代数の帰結ではない。球対称な源の像を双対方向に置くと、加速度は $(GM/(rR))\coth(r/R)$ となる。回転曲線はバリオンのニュートン曲線に $x\coth x$（$x^2=a_0 r/v_{\mathrm{bar}}^2$）を掛けたものであり、$v_\infty^4=GM_{\mathrm{b}}a_0$ で平坦になる。ハローはない。導出は別稿「暗黒物質を要しない銀河回転曲線：双対時空のコンパクト性」にある。
-
-{\raggedright\url{https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/dst-galactic-rotation-ja.tex}\par}
+双対ローターは三次元球面である。銀河の尺度で読むと、重力チャンネルはコンパクト化半径 $R=\sqrt{GM/a_0}$ のパッチとしてこの球面を組織する。$a_0$ は観測された入力であり、双対ローター代数の帰結ではない。球対称な源の像を双対方向に置くと、加速度は $(GM/(rR))\coth(r/R)$ となる。回転曲線はバリオンのニュートン曲線に $x\coth x$（$x^2=a_0 r/v_{\mathrm{bar}}^2$）を掛けたものであり、$v_\infty^4=GM_{\mathrm{b}}a_0$ で平坦になる。ハローはない。導出は別稿「暗黒物質を要しない銀河回転曲線：双対時空のコンパクト性」にある~\cite{dst-galactic}。
 
 \section{重力工学：双対時空ローターのコヒーレント励起}
 \label{sec:gravitycontrol}
@@ -1091,7 +1089,7 @@ R_{\text{dual}} \to \mathcal{P} \exp\!\left( \frac{1}{2} \int (\theta_a + e A_a)
 
 \subsection{共鳴周波数と超伝導体の役割}
 
-内在的双対時空スケールはプランク的である（$\sim 10^{43}$ Hz）。巨視的コヒーレンス（$N \sim 10^{26}$ 粒子）は、有効周波数を $10^{12}$--$10^{15}$ Hz へと赤方偏移させると提案される。超伝導体はジョセフソンプラズマ共鳴および集団位相ロックを通じてそれをさらに低減し、現行技術で到達可能な GHz--THz 範囲の可変モードを達成しうる。その低減は作業模型の一部である。書かれた作用そのものはコンプトン振動子を供給しない。
+内在的双対時空スケールはプランク的である（$\sim 10^{43}$ Hz）。巨視的コヒーレンス（$N \sim 10^{26}$ 粒子）は、有効周波数を $10^{12}$--$10^{15}$ Hz へと赤方偏移させると提案される。超伝導体はジョセフソンプラズマ共鳴~\cite{josephson1962}および集団位相ロックを通じてそれをさらに低減し、現行技術で到達可能な GHz--THz 範囲の可変モードを達成しうる。その低減は作業模型の一部である。書かれた作用そのものはコンプトン振動子を供給しない。
 
 \subsection{提案実験プロトコルと予測}
 
@@ -1102,7 +1100,7 @@ R_{\text{dual}} \to \mathcal{P} \exp\!\left( \frac{1}{2} \int (\theta_a + e A_a)
 \section{バリオン非対称と真空過剰の符号}
 \label{sec:baryonasymmetry}
 
-宇宙のバリオン非対称は、小さな数である。
+宇宙のバリオン非対称は、小さな数である~\cite{planck2018}。
 \[
 \eta \equiv \frac{n_B-n_{\bar B}}{n_\gamma}\approx 6\times 10^{-10}.
 \]
@@ -1146,7 +1144,7 @@ $\mathbb{C}^2$ の上で双対ローターはユニタリであり、その行�
 
 動径チャートでは正の符号は引力、負の符号は斥力であり、斥力の深さは有界である。両方の符号は、質量 $M=\delta^2/2$ において得られる。束縛する配置が占めるのは、正の符号である。その対はセクターの入れ替えであり、$J=-M$ と、同一の $M$ とを運ぶ。
 
-サハロフが宇宙の歴史に求めたのは、バリオン数の破れ、$\mathrm{C}$ および $\mathrm{CP}$ の破れ、そして熱平衡からの離脱であり、数密度を凍結するに足るものである。$\delta^2$ に比例する密度を凍結する後段があれば、観測される $\eta$ は、$\delta$ が $10^{-5}$ の程度であるときにそれに合う。その比例は凍結についての仮説であり、真空の過剰がすでに定めているパリティ偶な符号の上に、別に置かれる。
+サハロフ~\cite{sakharov1967}が宇宙の歴史に求めたのは、バリオン数の破れ、$\mathrm{C}$ および $\mathrm{CP}$ の破れ、そして熱平衡からの離脱であり、数密度を凍結するに足るものである。$\delta^2$ に比例する密度を凍結する後段があれば、観測される $\eta$ は、$\delta$ が $10^{-5}$ の程度であるときにそれに合う。その比例は凍結についての仮説であり、真空の過剰がすでに定めているパリティ偶な符号の上に、別に置かれる。
 
 \section{離散時間とコンパクト化されたねじれスカラー}
 \label{sec:discretetime}
@@ -1164,7 +1162,7 @@ $\mathbb{C}^2$ の上で双対ローターはユニタリであり、その行�
 
 この非対称は理論的整合性のために要求される。
 \begin{itemize}
-  \item 双対時空は楕円的（$\hat{q}^2 = -1$）であり本質的にコンパクトである。その離散化は $R_{\text{dual}}$ によってパラメトライズされる $S^3$ の $4\pi$ 周期位相を直接反映し、自然な量子離散性のための有限な位相体積を与える。ニュートン--ウィグナーの局在は、その体積とは別の問いである。方位正距図法は対蹠点を単一のローター $-1$ に潰し、極と同じ原点に書く。角は $\pi$ であり、球面のあらゆる回転がこのローターを固定する。光的な零回転は零直線を固定し、横断の読みを残したままベクトルをその直線へ送る。潰れた図が保たない光の位置は、零直線が保つ。ローター $-1$ とこの零回転は、一つの指数の二つの極限である。パラメーター $\pi/\varepsilon$ での値と、$\varepsilon\to 0$ の極限とである。位置演算子をコンパクトな双対球面上に導くことは、なおしない。
+  \item 双対時空は楕円的（$\hat{q}^2 = -1$）であり本質的にコンパクトである。その離散化は $R_{\text{dual}}$ によってパラメトライズされる $S^3$ の $4\pi$ 周期位相を直接反映し、自然な量子離散性のための有限な位相体積を与える。ニュートン--ウィグナーの局在~\cite{newtonwigner1949}は、その体積とは別の問いである。方位正距図法は対蹠点を単一のローター $-1$ に潰し、極と同じ原点に書く。角は $\pi$ であり、球面のあらゆる回転がこのローターを固定する。光的な零回転は零直線を固定し、横断の読みを残したままベクトルをその直線へ送る。潰れた図が保たない光の位置は、零直線が保つ。ローター $-1$ とこの零回転は、一つの指数の二つの極限である。パラメーター $\pi/\varepsilon$ での値と、$\varepsilon\to 0$ の極限とである。位置演算子をコンパクトな双対球面上に導くことは、なおしない。
   \item 通常時空は双曲的（$\hat{p}^2 = +1$）であり内在的に非コンパクトである。したがって $\phi$ の連続性は巨視的極限における完全ローレンツ群を保つ。
 \end{itemize}
 
@@ -1241,13 +1239,13 @@ $\ddot\theta$ に加えた双対チャネルの一般化加速度 $u$ は、書�
 \section{量子重力と完全統一に向けて}
 \label{sec:quantumgravity}
 
-これまでに提示した古典定式化は、重力を $\mathbb{H}\otimes_{\mathbb{R}}\mathbb{H}\cong\mathrm{Cl}(3,1)$ に符号化された粒子内在的な通常・双対時空のねじれ不整合として扱う。提案する作用はパラメータ空間スカラー $J$ を用いる。アインシュタイン--ヒルベルト積分とは同定しない。
+これまでに提示した古典定式化は、重力を $\mathbb{H}\otimes_{\mathbb{R}}\mathbb{H}\cong\mathrm{Cl}(3,1)$ に符号化された粒子内在的な通常・双対時空のねじれ不整合として扱う。提案する作用はパラメータ空間スカラー $J$ を用いる。アインシュタイン--ヒルベルト積分~\cite{hilbert1915}とは同定しない。
 
 双対ローター $R_\text{dual}=\exp(\theta/2\,\hat q)$ は $\mathrm{SU}(2)$ のスピン $1/2$ 回転演算子である。$\mathbb{C}^2$ 上で $\exp\bigl(\sum_a(\theta_a/2)(-i\sigma_a)\bigr)$ として表現され、ユニタリかつ行列式 $1$ である。双対時空のコンパクト性（$\theta\bmod 4\pi$）は、これらの位相をコンパクト多様体の上に置く。状態はその双対セクターのベクトル $u$ であり、通常と双対を合わせたラピディティ空間のベクトルではない。合わせた空間のキリング対は符号 $(3,3)$ をもち、負の値をとるので、ヒルベルト空間の内積ではない。二つの双対ベクトルが同じ情報を担うのは、絶対値 $1$ の位相だけが異なるときである。その位相は、二乗ノルム $\lVert u\rVert^2$ からもスピンベクトル $r(u)$ からも落ちる。離散双対円は別の有限ヒルベルト空間を担う。そこでは振幅が巻数へユニタリに変換される。その変換そのものは、チャート上の演算子の対ではない。一つの軸では、一周期の \(N\) 個の標本点が、並進と運動量の蹴りと同じ相補性を担う。その円の上では、角のずらしと巻数の指標は位相 \(\exp(-2\pi i\, rs/N)\) を除いて入れ替わり、零でない振幅の二つの台の大きさの積は \(N\) 以上であり、三つの双対角では \(N^3\) 以上である。
 
 通常時空のチャートが保持するのは、このベクトルそのものではない。保持するのは四元ベクトル $m(u)$ であり、その時間成分は $\lVert u\rVert^2$、空間成分は $r(u)$ である。恒等式 $|r(u)|^2=\lVert u\rVert^4$ を符号 $(-,+,+,+)$ のミンコフスキー二次形式で読むと、$m(u)$ は光的である。時間成分は非負であり、$m(u)$ が消えるのは $u$ が消えるときに限る。絶対値 $1$ の位相は $m(u)$ を変えず、複素スケールはそれを絶対値の二乗倍して同じヌル光線の上に留める。双対ローターは時間成分を保ち、空間成分を全角だけ回し、像は光的なままである。情報の住まいは双対セクターである。それが通常セクターに現れるのは、この未来向きの光的四元ベクトルを通じてのみであり、未来向きに光的な四元ベクトルはすべてこうして現れる。光速が一定であることは、その顕現を可能にするフィルターである。この写像が時間的なものを書くことも、空間的なものを書くこともない。重ね合わせは、和としてこのフィルターを通過しない。計算基底の対の顕現を足すと時間的なベクトルになり、重ね合わせそのものの顕現は別のヌルベクトルであり、食い違いは空間的である。どちらの顕現だけを見ても見えない相対位相が、そのヌル方向を回す。和として生き残るのは平行四辺形の恒等式であり、そこでは交差項が打ち消され、交差項自身は顕現ではない。
 
-ディラックスピノルは同じ双対ベクトルを二つのワイルブロックとして担う。確率カレントは、下ブロックの顕現と、上ブロックの顕現の空間を反転したものとの和である。一方のカイラリティだけならカレントは光的なままで、そのヌル運動量はフィルターの像、あるいはその空間反転である。静止対 \((u,iu)\) では位相 \(i\) の絶対値が \(1\) なので二つの顕現は同一のヌルベクトルであり、カレントは空間成分を消し、\((2\lVert u\rVert^2,0,0,0)\) となる。\(u\) が消えなければこれは時間的であり、二つの顕現の和は光的なままである。静止質量とは、一つの双対ベクトルの二つのカイラル写しを、互いに空間反転したヌル像としてカレントへ渡す結合である。フィルターが一つの双対ベクトルから時間的なものを書くことはない。同じ対をスピノルの積として書くと、順序は運動量の向きを分ける。通常ブーストを左に、それと直交する双対回転を右に置くと、静止運動量は通常ブーストだけで決まる。回転を左に置くと、ラピディティ $\varphi$ のブーストと角 $\theta$ の回転は $(m,0,0,0)$ を $(m\cosh\varphi,\, m\sinh\varphi\cos\theta,\, m\sinh\varphi\sin\theta,\, 0)$ へ送る。どちらの順序でも二次形式は $-m^2$ であり、時間成分は $m\cosh\varphi$ である。ラピディティの不変量は、この順序で極値を取らない。解はどちらの積でも同じ質量の解へ送られる。順序が分けるのは、運動量が通常因子だけに載ることである。
+ディラックスピノル~\cite{dirac1928}は同じ双対ベクトルを二つのワイルブロック~\cite{weyl1929}として担う。確率カレントは、下ブロックの顕現と、上ブロックの顕現の空間を反転したものとの和である。一方のカイラリティだけならカレントは光的なままで、そのヌル運動量はフィルターの像、あるいはその空間反転である。静止対 \((u,iu)\) では位相 \(i\) の絶対値が \(1\) なので二つの顕現は同一のヌルベクトルであり、カレントは空間成分を消し、\((2\lVert u\rVert^2,0,0,0)\) となる。\(u\) が消えなければこれは時間的であり、二つの顕現の和は光的なままである。静止質量とは、一つの双対ベクトルの二つのカイラル写しを、互いに空間反転したヌル像としてカレントへ渡す結合である。フィルターが一つの双対ベクトルから時間的なものを書くことはない。同じ対をスピノルの積として書くと、順序は運動量の向きを分ける。通常ブーストを左に、それと直交する双対回転を右に置くと、静止運動量は通常ブーストだけで決まる。回転を左に置くと、ラピディティ $\varphi$ のブーストと角 $\theta$ の回転は $(m,0,0,0)$ を $(m\cosh\varphi,\, m\sinh\varphi\cos\theta,\, m\sinh\varphi\sin\theta,\, 0)$ へ送る。どちらの順序でも二次形式は $-m^2$ であり、時間成分は $m\cosh\varphi$ である。ラピディティの不変量は、この順序で極値を取らない。解はどちらの積でも同じ質量の解へ送られる。順序が分けるのは、運動量が通常因子だけに載ることである。
 
 位置と運動量は双対セクターの演算子ではない。そのセクターは有限次元であり、交換子のトレースは消え、$iI$ のトレースは消えない。チャート上の微分可能な場では、それらは座標を掛けることと $-i\partial_\mu$ であり、交換子 $i\delta^\nu_\mu$ がその対の零でない括弧だけである。一つの座標の連続な固有場はすべてのチャート点で消え、位置成分と運動量の両方の固有場は零場だけである。不整合の力学の量子化は、このフィルターからは得られない。方位正距図法が極と対蹠点を同じ原点に書くとき、両者を分けるのは対蹠ローター $-1$ であり、その角は $\pi$ で、球面の回転はそれを固定する。零回転が横断の読みに残さないずれは、零直線が保つ。これらは、一つの異軸指数が $\pi/\varepsilon$ でとる値と、$\varepsilon\to 0$ の極限とである。特異点は第\ref{sec:gravity}節の上界により許容錐上で排除される。第\ref{subsec:quasi-horizon}節の準地平は、飽和シュヴァルツシルトチャート上でのその上界の読みである。
 
@@ -1326,5 +1324,230 @@ $\ddot\theta$ に加えた双対チャネルの一般化加速度 $u$ は、書�
   \end{center}
 \end{table}
 これらは実際に同一の結果であり同型である。
+
+\restoregeometry
+\clearpage
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem{einstein1915}
+A.~Einstein,
+``Erkl\"arung der Perihelbewegung des Merkur aus der allgemeinen Relativit\"atstheorie,''
+\textit{Sitzungsber.\ Preuss.\ Akad.\ Wiss.}, 831--839 (1915).
+\url{https://de.wikisource.org/wiki/Erkl%C3%A4rung_der_Perihelbewegung_des_Merkur_aus_der_allgemeinen_Relativit%C3%A4tstheorie}.
+
+\bibitem{shapiro1964}
+I.~I.~Shapiro,
+``Fourth test of general relativity,''
+\textit{Phys.\ Rev.\ Lett.} \textbf{13}, 789--791 (1964).
+\url{https://doi.org/10.1103/PhysRevLett.13.789}.
+
+\bibitem{abbott2016}
+B.~P.~Abbott \textit{et~al.}\ (LIGO Scientific and Virgo Collaborations),
+``Observation of gravitational waves from a binary black hole merger,''
+\textit{Phys.\ Rev.\ Lett.} \textbf{116}, 061102 (2016).
+\url{https://doi.org/10.1103/PhysRevLett.116.061102}.
+
+\bibitem{eht2019}
+Event Horizon Telescope Collaboration,
+``First M87 Event Horizon Telescope results. I. The shadow of the supermassive black hole,''
+\textit{Astrophys.\ J.\ Lett.} \textbf{875}, L1 (2019).
+\url{https://doi.org/10.3847/2041-8213/ab0ec7}.
+
+\bibitem{einstein1916}
+A.~Einstein,
+``Die Grundlage der allgemeinen Relativit\"atstheorie,''
+\textit{Ann.\ Phys.} \textbf{49}, 769--822 (1916).
+\url{https://doi.org/10.1002/andp.19163540702}.
+
+\bibitem{mach1883}
+E.~Mach,
+\textit{The Science of Mechanics},
+Open Court, Chicago (1893).
+English translation of \textit{Die Mechanik in ihrer Entwicklung} (1883).
+\url{https://archive.org/details/scienceofmechani005860mbp}.
+
+\bibitem{clifford1878}
+W.~K.~Clifford,
+``Applications of Grassmann's extensive algebra,''
+\textit{Am.\ J.\ Math.} \textbf{1}, 350--358 (1878).
+\url{https://doi.org/10.2307/2369379}.
+
+\bibitem{minkowski1909}
+H.~Minkowski,
+``Raum und Zeit,''
+\textit{Jahresber.\ Dtsch.\ Math.-Ver.} \textbf{18}, 75--88 (1909).
+English translation:
+\url{https://en.wikisource.org/wiki/Translation:Space_and_Time}.
+
+\bibitem{hamilton1844}
+W.~R.~Hamilton,
+``On quaternions; or on a new system of imaginaries in algebra,''
+\textit{Philos.\ Mag.} \textbf{25}, 489--495 (1844).
+\url{https://www.maths.tcd.ie/pub/HistMath/People/Hamilton/OnQuat/OnQuat.pdf}.
+
+\bibitem{lorentz1904}
+H.~A.~Lorentz,
+``Electromagnetic phenomena in a system moving with any velocity smaller than that of light,''
+\textit{Proc.\ Acad.\ Sci.\ Amsterdam} \textbf{6}, 809--831 (1904).
+\url{https://en.wikisource.org/wiki/Electromagnetic_phenomena_in_a_system_moving_with_any_velocity_smaller_than_that_of_light}.
+
+\bibitem{weitzenboeck1923}
+R.~Weitzenb\"ock,
+\textit{Invariantentheorie},
+P.~Noordhoff, Groningen (1923).
+\url{https://name.umdl.umich.edu/ABV0733.0001.001}.
+
+\bibitem{maluf2013}
+J.~W.~Maluf,
+``The teleparallel equivalent of general relativity,''
+\textit{Ann.\ Phys.\ (Berlin)} \textbf{525}, 339--359 (2013).
+\url{https://doi.org/10.1002/andp.201200272}.
+
+\bibitem{poincare1906}
+H.~Poincar\'e,
+``Sur la dynamique de l'\'electron,''
+\textit{Rend.\ Circ.\ Mat.\ Palermo} \textbf{21}, 129--175 (1906).
+\url{https://doi.org/10.1007/BF03013466}.
+
+\bibitem{schwarzschild1916}
+K.~Schwarzschild,
+``\"Uber das Gravitationsfeld eines Massenpunktes nach der Einsteinschen Theorie,''
+\textit{Sitzungsber.\ Preuss.\ Akad.\ Wiss.}, 189--196 (1916).
+English translation:
+\url{https://arxiv.org/abs/physics/9905030}.
+
+\bibitem{newton1687}
+I.~Newton,
+\textit{Philosophi\ae{} Naturalis Principia Mathematica},
+London (1687).
+\url{https://cudl.lib.cam.ac.uk/view/PR-ADV-B-00039-00001/1}.
+
+\bibitem{kerr1963}
+R.~P.~Kerr,
+``Gravitational field of a spinning mass as an example of algebraically special metrics,''
+\textit{Phys.\ Rev.\ Lett.} \textbf{11}, 237--238 (1963).
+\url{https://doi.org/10.1103/PhysRevLett.11.237}.
+
+\bibitem{godel1949}
+K.~G\"odel,
+``An example of a new type of cosmological solutions of Einstein's field equations of gravitation,''
+\textit{Rev.\ Mod.\ Phys.} \textbf{21}, 447--450 (1949).
+\url{https://doi.org/10.1103/RevModPhys.21.447}.
+
+\bibitem{planck1900}
+M.~Planck,
+``Ueber irreversible Strahlungsvorg\"ange,''
+\textit{Ann.\ Phys.} \textbf{306}, 69--122 (1900).
+\url{https://uni-tuebingen.de/fileadmin/Uni_Tuebingen/Fakultaeten/MathePhysik/Institute/IAP/Forschung/MOettel/Geburt_QM/planck_AnnPhys_306_69_1900.pdf}.
+
+\bibitem{hawking1975}
+S.~W.~Hawking,
+``Particle creation by black holes,''
+\textit{Commun.\ Math.\ Phys.} \textbf{43}, 199--220 (1975).
+\url{https://doi.org/10.1007/BF02345020}.
+
+\bibitem{abedi2017}
+J.~Abedi, H.~Dykaar, and N.~Afshordi,
+``Echoes from the abyss: tentative evidence for Planck-scale structure at black hole horizons,''
+\textit{Phys.\ Rev.\ D} \textbf{96}, 082004 (2017).
+\url{https://doi.org/10.1103/PhysRevD.96.082004}.
+
+\bibitem{hawking1976}
+S.~W.~Hawking,
+``Breakdown of predictability in gravitational collapse,''
+\textit{Phys.\ Rev.\ D} \textbf{14}, 2460--2473 (1976).
+\url{https://doi.org/10.1103/PhysRevD.14.2460}.
+
+\bibitem{bohr1913}
+N.~Bohr,
+``On the constitution of atoms and molecules,''
+\textit{Philos.\ Mag.} \textbf{26}, 1--25 (1913).
+\url{https://doi.org/10.1080/14786441308634955}.
+
+\bibitem{compton1923}
+A.~H.~Compton,
+``A quantum theory of the scattering of X-rays by light elements,''
+\textit{Phys.\ Rev.} \textbf{21}, 483--502 (1923).
+\url{https://doi.org/10.1103/PhysRev.21.483}.
+
+\bibitem{rydberg1890}
+J.~R.~Rydberg,
+``On the structure of the line-spectra of the chemical elements,''
+\textit{Philos.\ Mag.} \textbf{29}, 331--337 (1890).
+\url{https://doi.org/10.1080/14786449008619945}.
+
+\bibitem{debroglie1924}
+L.~de~Broglie,
+\textit{Recherches sur la th\'eorie des quanta},
+Th\`ese, Paris (1924).
+\url{https://tel.archives-ouvertes.fr/tel-00006807}.
+
+\bibitem{weinberg1967}
+S.~Weinberg,
+``A model of leptons,''
+\textit{Phys.\ Rev.\ Lett.} \textbf{19}, 1264--1266 (1967).
+\url{https://doi.org/10.1103/PhysRevLett.19.1264}.
+
+\bibitem{maxwell1865}
+J.~C.~Maxwell,
+``A dynamical theory of the electromagnetic field,''
+\textit{Philos.\ Trans.\ R.\ Soc.\ Lond.} \textbf{155}, 459--512 (1865).
+\url{https://doi.org/10.1098/rstl.1865.0008}.
+
+\bibitem{higgs1964}
+P.~W.~Higgs,
+``Broken symmetries and the masses of gauge bosons,''
+\textit{Phys.\ Rev.\ Lett.} \textbf{13}, 508--509 (1964).
+\url{https://doi.org/10.1103/PhysRevLett.13.508}.
+
+\bibitem{dst-galactic}
+Anonymous,
+「暗黒物質を要しない銀河回転曲線：双対時空のコンパクト性」 (2026).
+\url{https://github.com/hypernumbernet/DstDiophantine/blob/main/papers/japanese/dst-galactic-rotation-ja.tex}.
+
+\bibitem{josephson1962}
+B.~D.~Josephson,
+``Possible new effects in superconductive tunnelling,''
+\textit{Phys.\ Lett.} \textbf{1}, 251--253 (1962).
+\url{https://doi.org/10.1016/0031-9163(62)91369-0}.
+
+\bibitem{planck2018}
+N.~Aghanim \textit{et~al.}\ (Planck Collaboration),
+``Planck 2018 results. VI. Cosmological parameters,''
+\textit{Astron.\ Astrophys.} \textbf{641}, A6 (2020).
+\url{https://doi.org/10.1051/0004-6361/201833910}.
+
+\bibitem{sakharov1967}
+A.~D.~Sakharov,
+``Violation of CP invariance, C asymmetry, and baryon asymmetry of the universe,''
+\textit{JETP Lett.} \textbf{5}, 24--27 (1967).
+\url{http://jetpletters.ru/ps/1643/article_25089.shtml}.
+
+\bibitem{newtonwigner1949}
+T.~D.~Newton and E.~P.~Wigner,
+``Localized states for elementary systems,''
+\textit{Rev.\ Mod.\ Phys.} \textbf{21}, 400--406 (1949).
+\url{https://doi.org/10.1103/RevModPhys.21.400}.
+
+\bibitem{hilbert1915}
+D.~Hilbert,
+``Die Grundlagen der Physik. (Erste Mitteilung.),''
+\textit{Nachr.\ Ges.\ Wiss.\ G\"ottingen, Math.-Phys.\ Kl.} \textbf{1915}, 395--408 (1915).
+\url{https://eudml.org/doc/58946}.
+
+\bibitem{dirac1928}
+P.~A.~M.~Dirac,
+``The quantum theory of the electron,''
+\textit{Proc.\ R.\ Soc.\ Lond.\ A} \textbf{117}, 610--624 (1928).
+\url{https://doi.org/10.1098/rspa.1928.0023}.
+
+\bibitem{weyl1929}
+H.~Weyl,
+``Elektron und Gravitation. I,''
+\textit{Z.\ Phys.} \textbf{56}, 330--352 (1929).
+\url{https://doi.org/10.1007/BF01339504}.
+
+\end{thebibliography}
 
 \end{document}
