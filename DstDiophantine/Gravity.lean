@@ -208,7 +208,9 @@ import list of `Gravity.Regression`.
 * `NuclearLayer` — saturation density, binding energy per nucleon, and the pion-length window. The
   charged-pion mass over the proton mass lies strictly between `ε_6` and `ε_5`, equals no lattice
   floor, and exceeds the proton Planck floor by more than `10³⁶`. A floor at or below that Planck
-  floor forces `N > 10¹⁹`. The estimate `A∼300` is an external heuristic.
+  floor forces `N > 10¹⁹`. The estimate `A∼300` is an external heuristic. The oscillator counts
+  `2`, `8`, `20` and the shifted counts `28`, `50`, `82`, `126` are seat arithmetic, not node
+  indices, and the splitting is not derived.
 * `NuclearLength` — the charged-pion Compton wavelength against laboratory caps. Not the definition
   of the sign-reversal scale.
 * `SignReversal` — the sign-reversal scale `r₁` is an observational constant. The channel length is

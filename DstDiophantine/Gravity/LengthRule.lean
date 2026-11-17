@@ -144,9 +144,12 @@ theorem middle_proton_same_direction {Fs Ft : ℝ} (hs : Fs < 0) (ht : 0 < Ft) :
 /-! ### The slow charged entrance at the common length -/
 
 /-- At the common length the Coulomb factor of a nuclear pair is the static
-equal-scale factor at the same phase; on the entrance window `π/4 < x < x₁`
-it is strictly positive. The positivity assumed for the slow charged entrance
-holds there with no ordering of two lengths. -/
+equal-scale factor at the same phase. On the open entrance window
+`π/4 < x < x₁` it is strictly positive, so a rapidity threshold, which lies
+in that window, meets a finite Coulomb term. At the static node the factor
+vanishes and the two denominators vanish together. The positivity assumed
+for the slow charged entrance holds on the window with no ordering of two
+lengths. -/
 theorem cold_window_coulomb_factor_pos {x : ℝ} (h0 : π / 4 < x)
     (h1 : x < resonanceRoot1) : 0 < gammaSEqual x :=
   gammaSEqual_pos_below_root1 (by linarith [pi_pos]) h1
@@ -162,17 +165,20 @@ theorem cold_net_inward {γ γE ρ : ℝ} (hE : 0 < γE) (hρ : 0 < ρ) (hγ : 0
   have : -1 / γ = -(1 / γ) := by ring
   linarith
 
-/-- Two like charges held in an octahedral hole about `2 Å = 2·10⁵` fm apart
-are beyond `2ℓ_E/π`: at the seat the electric channel is governed by `ℓ_E`;
-the gravitational channel acts at `λ_π` throughout. -/
+/-- Two like charges about `2 Å = 2·10⁵` fm apart lie beyond `2ℓ_E/π` when
+`ℓ_E < 387` fm, so the electric factor is positive there. This statement
+does not place the gravitational channel at `λ_π`. The paper reads that
+channel at the sign-reversal scale. -/
 theorem octahedral_seat_isolated {ℓE : ℝ} (hℓ0 : 0 < ℓE) (hℓ : ℓE < 387) :
     0 < gammaSEqual (ℓE / (2 * 200000)) := by
   have hπ : (3 : ℝ) < π := pi_gt_three
   apply gammaSEqual_pos_beyond_two_ell_div_pi hℓ0
   rw [div_lt_iff₀ (by linarith)]; nlinarith
 
-/-- Nucleon separations of at least `1` fm, read at `λ_π < 71/50` fm, lie
-beyond the wall `2λ_π/π`, on the outer attractive chamber. -/
+/-- When the length is below `71/50` fm, as the charged-pion wavelength is,
+a separation of at least `1` fm lies beyond `2ℓ/π`. This is not every
+sign-reversal length: a reversal near `1` fm can place the rapidity wall
+outside `1` fm. -/
 theorem nucleon_window_outer_chamber {ℓ r : ℝ} (hℓ0 : 0 < ℓ) (hℓ : ℓ < 71 / 50)
     (hr : 1 ≤ r) : 2 * ℓ / π < r ∧ 0 < gammaSEqual (ℓ / (2 * r)) := by
   have hπ : (3 : ℝ) < π := pi_gt_three

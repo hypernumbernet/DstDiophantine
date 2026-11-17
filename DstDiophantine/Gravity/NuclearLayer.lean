@@ -65,6 +65,10 @@ Using `TorsionalLayer` (sharpened branch `(nπ+π/4, nπ+π/2)` and radius windo
 * No finite \(A_{\max}\) follows: with \(\ell\propto A^{1/3}\) the
   surface-to-node ratio is \(A\)-independent, and with \(\ell\) fixed the
   surface already lies outside every node at \(A=1\).
+* The spin-weighted oscillator counts are \(C(0)=2\), \(C(1)=8\), \(C(2)=20\),
+  and the shifted counts \(C(N)+2(N+2)\) for \(N=2,3,4,5\) are \(28\), \(50\),
+  \(82\), and \(126\). They are seat counts. The splitting is not derived
+  from the nodes.
 -/
 
 namespace DstDiophantine
@@ -779,6 +783,75 @@ theorem paper_Amax_300_not_forced_by_equalScale_layers :
 `γ_eff = γ_b²` is `gammaEff_eq_gammaB_sq_at_node`. -/
 theorem gammaEff_pos_at_node (x : ℝ) : 0 < gammaEff (2 * x) (2 * x) :=
   gammaEff_pos _ _
+
+/-! ### Seat counts
+
+The integers \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), and \(126\) are the
+oscillator arithmetic below. They are not indices of the equal-scale nodes,
+and the shell splitting is not derived from \(\gamma_s\). -/
+
+/-- Three consecutive integers are divisible by `3`. -/
+theorem three_dvd_mul_succ_succ (n : ℕ) : 3 ∣ n * (n + 1) * (n + 2) := by
+  induction n with
+  | zero => decide
+  | succ n ih =>
+    have hmul : (n + 1) * (n + 2) * (n + 3) =
+        n * (n + 1) * (n + 2) + ((n + 1) * (n + 2)) * 3 := by ring
+    rw [hmul]
+    exact dvd_add ih (dvd_mul_left 3 ((n + 1) * (n + 2)))
+
+/-- Cumulative spin-weighted oscillator count through shell `N`:
+\(C(N)=(N+1)(N+2)(N+3)/3\). -/
+def oscillatorClosure (N : ℕ) : ℕ :=
+  (N + 1) * (N + 2) * (N + 3) / 3
+
+theorem oscillatorClosure_succ (N : ℕ) :
+    oscillatorClosure (N + 1) = oscillatorClosure N + (N + 2) * (N + 3) := by
+  unfold oscillatorClosure
+  have hmul : (N + 2) * (N + 3) * (N + 4) =
+      (N + 1) * (N + 2) * (N + 3) + 3 * (N + 2) * (N + 3) := by ring
+  rw [hmul]
+  have hassoc : 3 * (N + 2) * (N + 3) = (N + 2) * (N + 3) * 3 := by ring
+  rw [hassoc, Nat.add_mul_div_right _ _ (by decide : 0 < 3)]
+
+/-- Adding one shell at a time. Shell `0` contributes two spin seats. -/
+def shellCum : ℕ → ℕ
+  | 0 => 2
+  | N + 1 => shellCum N + (N + 2) * (N + 3)
+
+theorem shellCum_succ (N : ℕ) :
+    shellCum (N + 1) = shellCum N + (N + 2) * (N + 3) := rfl
+
+theorem shellCum_eq_closure (N : ℕ) : shellCum N = oscillatorClosure N := by
+  induction N with
+  | zero =>
+    unfold shellCum oscillatorClosure
+    norm_num
+  | succ N ih =>
+    rw [shellCum_succ, oscillatorClosure_succ, ih]
+
+theorem oscillatorClosure_values :
+    oscillatorClosure 0 = 2 ∧ oscillatorClosure 1 = 8 ∧ oscillatorClosure 2 = 20 ∧
+      oscillatorClosure 3 = 40 ∧ oscillatorClosure 4 = 70 ∧ oscillatorClosure 5 = 112 := by
+  unfold oscillatorClosure
+  norm_num
+
+/-- One high-`j` orbital of the next shell, of degeneracy `2(N+2)`, counted
+with the shells through `N`. -/
+def shiftedClosure (N : ℕ) : ℕ :=
+  oscillatorClosure N + 2 * (N + 2)
+
+theorem shiftedClosure_values :
+    shiftedClosure 2 = 28 ∧ shiftedClosure 3 = 50 ∧
+      shiftedClosure 4 = 82 ∧ shiftedClosure 5 = 126 := by
+  unfold shiftedClosure oscillatorClosure
+  norm_num
+
+/-- The pure oscillator closures past shell `2` are not the shifted counts. -/
+theorem pure_shell_not_shifted :
+    oscillatorClosure 3 ≠ shiftedClosure 2 ∧ oscillatorClosure 3 ≠ shiftedClosure 3 ∧
+      oscillatorClosure 4 ≠ shiftedClosure 4 ∧ oscillatorClosure 5 ≠ shiftedClosure 5 := by
+  decide
 
 end Gravity
 

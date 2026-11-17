@@ -1171,6 +1171,15 @@ example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
 example : (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 :=
   pion_inside_sign_caps
 
+/-- Regression: the nuclear seat counts are the oscillator closures, not node indices. -/
+example :
+    oscillatorClosure 0 = 2 ∧ oscillatorClosure 1 = 8 ∧ oscillatorClosure 2 = 20 ∧
+      shiftedClosure 2 = 28 ∧ shiftedClosure 3 = 50 ∧
+        shiftedClosure 4 = 82 ∧ shiftedClosure 5 = 126 := by
+  have h := oscillatorClosure_values
+  have hs := shiftedClosure_values
+  exact ⟨h.1, h.2.1, h.2.2.1, hs.1, hs.2.1, hs.2.2.1, hs.2.2.2⟩
+
 /-- Regression: under `ℓ = λ_π` the core scale lies in the inversion layer. -/
 example {x : ℝ} (hx : x ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
     layerRadius (pionComptonFm : ℝ) x < (SI.nnCoreScaleFm : ℝ) ∧

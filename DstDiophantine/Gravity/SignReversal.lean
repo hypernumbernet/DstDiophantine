@@ -27,12 +27,13 @@ Compton wavelength, and nothing here computes `r₁` from one.
   lies outside. The window does not decide which.
 * For every such `r₁` the wall lies strictly below each listed charge-radius
   lower edge and below the saturation spacing.
-* `k e² / r₁ > 1439/1000` MeV, hence above `1294/1000` MeV.
-  The deuteron binding is an external free-mass difference, strictly between
-  `2224/1000` and `2225/1000` MeV, and is not derived. On the scattering
-  window that Coulomb energy lies below the lower end when `r₁ ≥ 65/100`,
-  and above the upper end when `r₁ ≤ 64/100`. Both sample radii lie in the
-  window.
+* `k e² / r₁ > 1439/1000` MeV, and hence above the rational `1294/1000` MeV.
+  That rational is not a mass difference. The deuteron binding
+  `m_n + m_p − m_d` is an external input, strictly between `2224/1000` and
+  `2225/1000` MeV, and is not derived. It is not the neutron–proton mass
+  difference. On the scattering window the Coulomb energy lies below the
+  lower end when `r₁ ≥ 65/100`, and above the upper end when `r₁ ≤ 64/100`.
+  Both sample radii lie in the window.
 * At a separation above `52917` fm the mass term is a fraction of the charge
   term strictly between `440/10⁴²` and `442/10⁴²`, for every such length and
   for an electromagnetic length below `387` fm.
