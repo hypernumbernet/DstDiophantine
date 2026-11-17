@@ -3220,6 +3220,72 @@ example (N : ℕ) :
   exact ⟨hbig, GravitonQuantum.transverse_defect_below_inv_pow hbig,
     (GravitonQuantum.threeHundred_square hbig).2.2.1⟩
 
+/-- Regression: `n` aligned gravitons split into `n` own shares and `n(n-1)` ordered-pair
+shares. Each share equals one graviton travelling alone. For `n ≥ 1` one further graviton
+adds one own share and `2n` pair shares, and the mutual sum becomes strictly more negative. -/
+example {n N : ℕ} (hN : 0 < N) (hn : 0 < n) :
+    JNormalized (GravitonQuantum.alignedSteps n N) =
+      GravitonQuantum.ownSum n N + GravitonQuantum.mutualSum n N ∧
+      GravitonQuantum.mutualSum n N =
+        ((n : ℝ) - 1) * GravitonQuantum.ownSum n N ∧
+      JNormalized (GravitonQuantum.alignedSteps 1 N) = GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum 1 N = 0 ∧
+      JNormalized (GravitonQuantum.alignedSteps (n + 1) N) -
+          JNormalized (GravitonQuantum.alignedSteps n N) =
+        GravitonQuantum.farHeight N + (2 * (n : ℝ)) * GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum (n + 1) N < GravitonQuantum.mutualSum n N ∧
+      (1 ≤ n → ∀ m : ℕ, n < m →
+        GravitonQuantum.mutualSum m N < GravitonQuantum.mutualSum n N) := by
+  refine ⟨GravitonQuantum.height_own_plus_mutual hN, GravitonQuantum.mutual_factor,
+    (GravitonQuantum.lone_eq_far hN).1, (GravitonQuantum.lone_eq_far hN).2,
+    GravitonQuantum.added_step_split hN, GravitonQuantum.mutual_strict hN hn, ?_⟩
+  intro h1 m hm
+  exact GravitonQuantum.mutual_grows hN h1 hm
+
+/-- Regression: for `n ≥ 3` inside the cone the mutual sum is strictly more negative than the
+own sum, and that sum is the expressed height. Two gravitons are two own shares and two
+ordered-pair shares. -/
+example {n N : ℕ} (hN : 0 < N) (hn : 3 ≤ n) (hcone : 4 * n ≤ N) :
+    GravitonQuantum.mutualSum n N < GravitonQuantum.ownSum n N ∧
+      GravitonQuantum.ownSum n N < 0 ∧
+      JNormalized (express (GravitonQuantum.alignedSteps n N)) =
+        GravitonQuantum.ownSum n N + GravitonQuantum.mutualSum n N ∧
+      GravitonQuantum.ownSum 2 N = 2 * GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum 2 N = 2 * GravitonQuantum.farHeight N := by
+  have htwo := GravitonQuantum.two_fourfold_split hN
+  exact ⟨(GravitonQuantum.mutual_below_own hN hn).1,
+    (GravitonQuantum.mutual_below_own hN hn).2,
+    GravitonQuantum.expressed_own_plus_mutual hN hcone, htwo.2.1, htwo.2.2⟩
+
+/-- Regression: on and past the wall the expressed height stays at `-1/3`, while one further
+graviton still makes the internal mutual sum strictly more negative. -/
+example {n N : ℕ} (hN : 0 < N) (hwall : N ≤ 4 * n) (hn : 0 < n) :
+    JNormalized (express (GravitonQuantum.alignedSteps n N)) = -((1 : ℝ) / 3) ∧
+      GravitonQuantum.mutualSum (n + 1) N < GravitonQuantum.mutualSum n N :=
+  GravitonQuantum.expressed_locks_while_mutual_grows hN hwall hn
+
+/-- Regression: the usual, dual, and equal-scale carriers of one angle are different.
+Negative equal-scale interference lies outside the cone. Past the wall the internal height
+lies strictly below the expressed lock. -/
+example {N n : ℕ} (hN : 5 ≤ N) (hn : N < 4 * n) :
+    1 < gammaS (GravitonQuantum.stepAngle N) 0 ∧
+      0 < gammaS 0 (GravitonQuantum.stepAngle N) ∧
+      gammaS 0 (GravitonQuantum.stepAngle N) < 1 ∧
+      0 < gammaS (GravitonQuantum.stepAngle N / 2) (GravitonQuantum.stepAngle N / 2) ∧
+      JNormalized (GravitonQuantum.oneAxisBalanced (GravitonQuantum.stepAngle N / 2)) = 0 ∧
+      JNormalized (GravitonQuantum.oneAxisUsual (GravitonQuantum.stepAngle N)) =
+        -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) ∧
+      gammaS (2 * Real.pi) (2 * Real.pi) < 0 ∧
+      ¬ Admissible.IsAdmissibleContinuous (GravitonQuantum.oneAxisBalanced (2 * Real.pi)) ∧
+      JNormalized (GravitonQuantum.alignedSteps n N) <
+        JNormalized (express (GravitonQuantum.alignedSteps n N)) ∧
+      JNormalized (express (GravitonQuantum.alignedSteps n N)) = -((1 : ℝ) / 3) := by
+  have hroles := GravitonQuantum.carrier_roles hN
+  have hneg := GravitonQuantum.negative_interference_not_admissible
+  have hex := GravitonQuantum.excess_unexpressed (lt_of_lt_of_le (by decide : 0 < 5) hN) hn
+  exact ⟨hroles.1, hroles.2.1, hroles.2.2.1, hroles.2.2.2.1, hroles.2.2.2.2.1,
+    hroles.2.2.2.2.2, hneg.1, hneg.2, hex.1, hex.2⟩
+
 end Gravity
 
 end DstDiophantine

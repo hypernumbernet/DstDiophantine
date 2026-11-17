@@ -153,8 +153,15 @@ import list of `Gravity.Regression`.
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
 * `GravitonQuantum` — one pure dual step of angle `2π/N`, the graviton of one particle. For
   `N ≥ 4` it is admissible and its normalized height is `-16/(3N²)`. While `4n ≤ N`, `n` aligned
-  steps express `n²` times that height. Once `4n ≥ N` the expressed height on that axis locks at
-  `-1/3`, and the internal sum keeps growing. One aligned step stays strictly above that lock for
+  steps express `n²` times that height: `n` own shares plus `n(n-1)` ordered-pair shares, and
+  every share equals one step travelling alone. For `n ≥ 1`, one further step makes the mutual
+  sum strictly more negative by `2n` shares, while the new own share stays equal to one. For
+  `n ≥ 3` the mutual sum is strictly more negative than the own sum. The same angle also
+  builds a usual step of height `+ε_N`, whose interference stays above `1`, and an equal-scale
+  step of height `0`, whose interference stays positive. The equal-scale phase `π` makes the
+  interference negative and is not admissible. Once `4n ≥ N` the expressed
+  height on that axis locks at `-1/3`, and further mutual growth stays in the internal sum. One
+  aligned step stays strictly above that lock for
   `N ≥ 5`. Two aligned steps remain admissible for `N ≥ 8` and express four times one. A
   transverse step replaces the computational Born weight `1` by `cos²(π/N)`. The orthogonal
   probability is `sin²(π/N)`, strictly between `(3/4)` and `(3π²/16)` times the floor for

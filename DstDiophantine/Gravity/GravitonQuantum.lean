@@ -1,4 +1,5 @@
 import DstDiophantine.Algebra.SourceSuperposition
+import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
@@ -20,10 +21,17 @@ least nonzero step is a pure dual angle `2π/N`. For `N ≥ 4` it lies in the
 admissible cone, and its normalized height is exactly the floor
 `-ε_N = -16/(3N²)`.
 
-`n` aligned copies add in the rapidity. While `4n ≤ N` they stay in the
-cone and the height they express is `n²` times one step. Once `4n ≥ N` the
-nearest admissible point on that axis is the pure dual corner: the expressed
-height locks at `-1/3`, and any further step remains in the internal sum.
+`n` aligned copies add in the rapidity. The square of that sum splits into
+`n` own shares and `n(n-1)` ordered-pair shares. Every share equals the
+height of one step, the graviton that travels alone, and that height does
+not depend on `n`. The ordered-pair sum vanishes for a single step. Once
+`n ≥ 1` steps are present, one further step keeps its own share equal to
+that lone height and makes the ordered-pair sum strictly more negative, by
+`2n` shares. For `n ≥ 3` the ordered-pair sum is strictly more negative
+than the own sum. While `4n ≤ N` the steps stay in the cone and the height
+they express is this split, `n²` times one step. Once `4n ≥ N` the nearest
+admissible point on that axis is the pure dual corner: the expressed height
+locks at `-1/3`, and any further mutual growth remains in the internal sum.
 
 The same step is a dual rotation, the graviton of one particle. About an
 axis transverse to a computational eigenstate it replaces the Born weight
@@ -53,8 +61,13 @@ foot. One exchanged step is not the lock.
   probability is not the height. A meson mass is not `ε_N`:
   `pion_over_proton_ne_any_floor`. The exchange of one step is the step
   itself.
-* A Newtonian multi-body law. The expressed point is the admissible foot
-  already constructed in `SourceSuperposition`.
+* A Newtonian multi-body law, or a force between mesons at separated
+  positions. The mutual share is the cross term of aligned rapidities on
+  one axis. The expressed point is the admissible foot already constructed
+  in `SourceSuperposition`.
+* A meson spectrum. The usual step, the dual step, the equal-scale step, and
+  the unexpressed excess are different carriers of one angle. No mass is
+  assigned to the phase at which the equal-scale interference is negative.
 -/
 
 noncomputable section
@@ -760,6 +773,480 @@ theorem threeHundred_square {N : ℕ} (hN : 10 ^ 19 < N) :
     exact neg_lt_neg htiny
   · rw [hform]
     exact neg_lt_zero.mpr hposFrac
+
+/-! ### Own shares and mutual shares
+
+The normalized height is quadratic in the rapidity, so `n` aligned steps
+split into `n` own shares and `n(n-1)` ordered-pair shares. Each share
+equals `farHeight`, the height of the one step that travels alone. Adding
+one step contributes one own share and `2n` new ordered-pair shares. Inside
+the cone the expressed height is the split. On and past the wall the
+expressed height is the lock `-1/3`, while the mutual sum of the internal
+rapidities keeps becoming more negative.
+-/
+
+/-- Height of one graviton, the step that travels alone. -/
+def farHeight (N : ℕ) : ℝ :=
+  JNormalized (oneAxisDual (stepAngle N))
+
+/-- Sum of the own shares of `n` aligned gravitons. -/
+def ownSum (n N : ℕ) : ℝ :=
+  (n : ℝ) * farHeight N
+
+/-- Sum of the ordered-pair shares among `n` aligned gravitons. -/
+def mutualSum (n N : ℕ) : ℝ :=
+  (n : ℝ) * ((n : ℝ) - 1) * farHeight N
+
+theorem farHeight_eq {N : ℕ} (hN : 0 < N) :
+    farHeight N = -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) :=
+  JNormalized_oneStep hN
+
+theorem farHeight_neg {N : ℕ} (hN : 0 < N) : farHeight N < 0 := by
+  rw [farHeight_eq hN]
+  have hden : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
+  exact neg_lt_zero.mpr (div_pos (by norm_num) hden)
+
+theorem height_own_plus_mutual {n N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps n N) = ownSum n N + mutualSum n N := by
+  rw [collective_square hN]
+  unfold ownSum mutualSum farHeight
+  ring
+
+theorem mutual_factor {n N : ℕ} :
+    mutualSum n N = ((n : ℝ) - 1) * ownSum n N := by
+  unfold mutualSum ownSum
+  ring
+
+theorem mutualSum_one (N : ℕ) : mutualSum 1 N = 0 := by
+  unfold mutualSum
+  ring
+
+/-- One graviton carries only its own height, equal to the graviton that travels alone. -/
+theorem lone_eq_far {N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps 1 N) = farHeight N ∧ mutualSum 1 N = 0 := by
+  refine ⟨?_, mutualSum_one N⟩
+  rw [height_own_plus_mutual (n := 1) hN]
+  unfold ownSum mutualSum
+  ring
+
+/-- One further graviton adds its own share and `2n` ordered-pair shares. -/
+theorem added_step_split {n N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps (n + 1) N) - JNormalized (alignedSteps n N) =
+      farHeight N + (2 * (n : ℝ)) * farHeight N := by
+  rw [collective_square (n := n + 1) hN, collective_square hN]
+  have hJ : JNormalized (oneAxisDual (stepAngle N)) = farHeight N := rfl
+  rw [hJ]
+  have h1 : ((n + 1 : ℕ) : ℝ) = (n : ℝ) + 1 := by norm_cast
+  rw [h1]
+  have hsq : ((n : ℝ) + 1) ^ 2 = (n : ℝ) ^ 2 + 2 * (n : ℝ) + 1 := by ring
+  rw [hsq]
+  ring
+
+/-- Once one graviton is present, one further graviton makes the mutual sum strictly
+more negative. -/
+theorem mutual_strict {n N : ℕ} (hN : 0 < N) (hn : 0 < n) :
+    mutualSum (n + 1) N < mutualSum n N := by
+  have hstep : mutualSum (n + 1) N =
+      mutualSum n N + (2 * (n : ℝ)) * farHeight N := by
+    unfold mutualSum
+    have h1 : ((n + 1 : ℕ) : ℝ) = (n : ℝ) + 1 := by norm_cast
+    rw [h1]
+    ring
+  have hpos : (0 : ℝ) < 2 * (n : ℝ) := by
+    have hn0 : (0 : ℝ) < n := by exact_mod_cast hn
+    positivity
+  linarith [hstep, mul_neg_of_pos_of_neg hpos (farHeight_neg hN)]
+
+/-- For `1 ≤ n < m` the mutual sum of the larger count is strictly more negative. -/
+theorem mutual_grows {n m N : ℕ} (hN : 0 < N) (hn : 1 ≤ n) (hnm : n < m) :
+    mutualSum m N < mutualSum n N := by
+  unfold mutualSum
+  have hf := farHeight_neg hN
+  have hcoef : (n : ℝ) * ((n : ℝ) - 1) < (m : ℝ) * ((m : ℝ) - 1) := by
+    have hn1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
+    have hnmR : (n : ℝ) < m := by exact_mod_cast hnm
+    have hpos : (0 : ℝ) < (m : ℝ) - 1 := by linarith
+    have hleft : (n : ℝ) * ((n : ℝ) - 1) ≤ (n : ℝ) * ((m : ℝ) - 1) :=
+      mul_le_mul_of_nonneg_left (by linarith : (n : ℝ) - 1 ≤ (m : ℝ) - 1) (by linarith)
+    have hright : (n : ℝ) * ((m : ℝ) - 1) < (m : ℝ) * ((m : ℝ) - 1) :=
+      mul_lt_mul_of_pos_right hnmR hpos
+    exact lt_of_le_of_lt hleft hright
+  have hgap : (0 : ℝ) < (m : ℝ) * ((m : ℝ) - 1) - (n : ℝ) * ((n : ℝ) - 1) := by
+    linarith
+  have hprod :
+      ((m : ℝ) * ((m : ℝ) - 1) - (n : ℝ) * ((n : ℝ) - 1)) * farHeight N < 0 :=
+    mul_neg_of_pos_of_neg hgap hf
+  have hassoc :
+      (m : ℝ) * ((m : ℝ) - 1) * farHeight N -
+          (n : ℝ) * ((n : ℝ) - 1) * farHeight N =
+        ((m : ℝ) * ((m : ℝ) - 1) - (n : ℝ) * ((n : ℝ) - 1)) * farHeight N := by
+    ring
+  linarith
+
+/-- For `n ≥ 3` the mutual sum is strictly more negative than the own sum. -/
+theorem mutual_below_own {n N : ℕ} (hN : 0 < N) (hn : 3 ≤ n) :
+    mutualSum n N < ownSum n N ∧ ownSum n N < 0 := by
+  have hnpos : 0 < n := lt_of_lt_of_le (by decide : (0 : ℕ) < 3) hn
+  have hownNeg : ownSum n N < 0 := by
+    unfold ownSum
+    exact mul_neg_of_pos_of_neg (by exact_mod_cast hnpos) (farHeight_neg hN)
+  have hlt : ((n : ℝ) - 1) * ownSum n N < ownSum n N := by
+    have hgap : (1 : ℝ) < (n : ℝ) - 1 := by
+      have h3 : (3 : ℝ) ≤ n := by exact_mod_cast hn
+      linarith
+    have hdiff :
+        ((n : ℝ) - 1) * ownSum n N - ownSum n N = ((n : ℝ) - 2) * ownSum n N := by
+      ring
+    have hpos : (0 : ℝ) < (n : ℝ) - 2 := by linarith
+    linarith [hdiff, mul_neg_of_pos_of_neg hpos hownNeg]
+  refine ⟨?_, hownNeg⟩
+  rw [mutual_factor]
+  exact hlt
+
+/-- Two aligned gravitons are two own shares and two ordered-pair shares. -/
+theorem two_fourfold_split {N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps 2 N) = ownSum 2 N + mutualSum 2 N ∧
+      ownSum 2 N = 2 * farHeight N ∧
+      mutualSum 2 N = 2 * farHeight N := by
+  refine ⟨height_own_plus_mutual hN, ?_, ?_⟩
+  · unfold ownSum
+    ring
+  · unfold mutualSum
+    ring
+
+theorem axisExpress_origin : axisExpress 0 0 = (0, 0) := by
+  refine axisExpress_triangle ⟨le_rfl, le_rfl, ?_⟩
+  simpa using div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2)
+
+theorem express_oneAxis (θ : ℝ) : express (oneAxisDual θ) = expressedOneAxis θ := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    fin_cases a
+    · rfl
+    · change (axisExpress 0 0).1 = 0
+      rw [axisExpress_origin]
+    · change (axisExpress 0 0).1 = 0
+      rw [axisExpress_origin]
+  · funext a
+    fin_cases a
+    · rfl
+    · change (axisExpress 0 0).2 = 0
+      rw [axisExpress_origin]
+    · change (axisExpress 0 0).2 = 0
+      rw [axisExpress_origin]
+
+theorem express_aligned (n N : ℕ) :
+    express (alignedSteps n N) = expressedOneAxis ((n : ℝ) * stepAngle N) := by
+  simpa [alignedSteps] using express_oneAxis ((n : ℝ) * stepAngle N)
+
+/-- Inside the cone the expressed height is the own sum plus the mutual sum. -/
+theorem expressed_own_plus_mutual {n N : ℕ} (hN : 0 < N) (h : 4 * n ≤ N) :
+    JNormalized (express (alignedSteps n N)) = ownSum n N + mutualSum n N := by
+  rw [express_eq_of_admissible (collective_admissible h)]
+  exact height_own_plus_mutual hN
+
+/-- On and past the wall the expressed height stays at the lock, while one further
+graviton still makes the internal mutual sum strictly more negative. -/
+theorem expressed_locks_while_mutual_grows {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n)
+    (hn : 0 < n) :
+    JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
+      mutualSum (n + 1) N < mutualSum n N := by
+  refine ⟨?_, mutual_strict hN hn⟩
+  rw [express_aligned]
+  exact collective_locks hN h
+
+/-! ### Four carriers of one angle
+
+One lattice angle builds four different carriers. The usual step has height
+`+ε_N` and interference strictly above `1`. The dual step has height `-ε_N`
+and lies in the repulsive regime of `J`, while its interference on the cone
+stays strictly between `0` and `1`. The equal-scale step has height `0` and
+positive interference. The equal-scale phase `π`, where the interference is
+negative, is not admissible. Past the wall the expressed height locks at
+`-1/3` and the internal height lies strictly below that lock.
+-/
+
+/-- Pure usual rapidity `θ` on axis 0. -/
+def oneAxisUsual (θ : ℝ) : TorsionParams where
+  alpha := fun
+    | 0 => θ
+    | 1 => 0
+    | 2 => 0
+  beta := fun
+    | 0 => 0
+    | 1 => 0
+    | 2 => 0
+
+/-- Equal-scale rapidity `θ` on axis 0. -/
+def oneAxisBalanced (θ : ℝ) : TorsionParams where
+  alpha := fun
+    | 0 => θ
+    | 1 => 0
+    | 2 => 0
+  beta := fun
+    | 0 => θ
+    | 1 => 0
+    | 2 => 0
+
+theorem J_oneAxisUsual (θ : ℝ) : J (oneAxisUsual θ) = θ ^ 2 / 2 := by
+  rw [J_coef]
+  simp [oneAxisUsual, Fin.sum_univ_three]
+  ring
+
+theorem JNormalized_oneAxisUsual (θ : ℝ) :
+    JNormalized (oneAxisUsual θ) = ((4 : ℝ) / (3 * Real.pi ^ 2)) * θ ^ 2 := by
+  unfold JNormalized
+  rw [J_oneAxisUsual]
+  ring
+
+theorem JNormalized_usualStep {N : ℕ} (hN : 0 < N) :
+    JNormalized (oneAxisUsual (stepAngle N)) = (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+  rw [JNormalized_oneAxisUsual, stepAngle]
+  have hNz : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+  ring
+
+theorem J_oneAxisBalanced (θ : ℝ) : J (oneAxisBalanced θ) = 0 := by
+  rw [J_coef]
+  simp [oneAxisBalanced]
+
+theorem JNormalized_balanced (θ : ℝ) : JNormalized (oneAxisBalanced θ) = 0 := by
+  unfold JNormalized
+  rw [J_oneAxisBalanced]
+  ring
+
+theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) := by
+  have hθ : 0 ≤ stepAngle N :=
+    (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
+  have hle := stepAngle_le_half_pi hN
+  intro a
+  fin_cases a
+  · simp only [oneAxisUsual]
+    exact ⟨hθ, le_rfl, by simpa using hle⟩
+  · simp only [oneAxisUsual]
+    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+  · simp only [oneAxisUsual]
+    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+
+theorem balancedStep_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) := by
+  have hsum := stepAngle_le_half_pi hN
+  have hhalf : 0 ≤ stepAngle N / 2 :=
+    div_nonneg (stepAngle_nonneg N) (by norm_num)
+  intro a
+  fin_cases a
+  · simp only [oneAxisBalanced]
+    exact ⟨hhalf, hhalf, by simpa using hsum⟩
+  · simp only [oneAxisBalanced]
+    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+  · simp only [oneAxisBalanced]
+    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+
+theorem gammaS_usual (θ : ℝ) : gammaS θ 0 = Real.cosh (θ / 2) := by
+  unfold gammaS
+  simp
+
+theorem gammaS_dual (θ : ℝ) : gammaS 0 θ = Real.cos (θ / 2) := by
+  unfold gammaS
+  simp
+
+theorem gammaS_balanced (θ : ℝ) : gammaS θ θ = gammaSEqual (θ / 2) := by
+  have h := gammaSEqual_eq_gammaS (θ / 2)
+  have htwice : 2 * (θ / 2) = θ := by ring
+  simpa [htwice] using h.symm
+
+theorem usual_interference_gt_one {θ : ℝ} (hθ : 0 < θ) : 1 < gammaS θ 0 := by
+  rw [gammaS_usual, Real.cosh_eq]
+  have hpos : 0 < θ / 2 := by linarith
+  set t : ℝ := Real.exp (θ / 2)
+  have ht0 : 0 < t := Real.exp_pos _
+  have hexp : 1 < t := by
+    rw [Real.one_lt_exp_iff]
+    exact hpos
+  have hinv : Real.exp (-(θ / 2)) = t⁻¹ := by
+    simp [t, Real.exp_neg]
+  rw [hinv]
+  have htwo : 2 * t < t ^ 2 + 1 := by nlinarith [hexp]
+  have hmul : (t + t⁻¹) * t = t ^ 2 + 1 := by field_simp [ht0.ne']
+  have hlt : 2 * t < (t + t⁻¹) * t := by simpa [hmul] using htwo
+  have hclear : 2 < t + t⁻¹ := (mul_lt_mul_iff_of_pos_right ht0).mp hlt
+  linarith
+
+theorem dual_interference_between {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi / 2) :
+    0 < gammaS 0 θ ∧ gammaS 0 θ < 1 := by
+  rw [gammaS_dual]
+  refine ⟨?_, ?_⟩
+  · exact Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith [hθ, Real.pi_pos]⟩
+  · have hlt : Real.cos (θ / 2) < Real.cos 0 :=
+      Real.cos_lt_cos_of_nonneg_of_le_pi (by linarith) (by linarith [hθ, Real.pi_pos])
+        (by linarith)
+    simpa [Real.cos_zero] using hlt
+
+theorem gammaSEqual_pos_up_to_quarter {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi / 4) :
+    0 < gammaSEqual x := by
+  rcases hx0.eq_or_lt with rfl | hxpos
+  · simp [gammaSEqual_zero]
+  · have hsin_pos : 0 < Real.sin x :=
+      Real.sin_pos_of_pos_of_lt_pi hxpos (by linarith [hx, Real.pi_pos])
+    have hsin_le : Real.sin x ≤ Real.sin (Real.pi / 4) := by
+      refine Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [hx0, Real.pi_pos])
+        (by linarith [Real.pi_pos]) hx
+    have hcos_ge : Real.cos (Real.pi / 4) ≤ Real.cos x := by
+      refine Real.cos_le_cos_of_nonneg_of_le_pi ?_ (by linarith [Real.pi_pos]) hx
+      linarith
+    have hid : Real.sin (Real.pi / 4) = Real.cos (Real.pi / 4) := by
+      rw [Real.sin_pi_div_four, Real.cos_pi_div_four]
+    have hsc : Real.sin x ≤ Real.cos x := by linarith [hsin_le, hcos_ge, hid]
+    have hsub : Real.cosh x - Real.sinh x = Real.exp (-x) := by
+      rw [Real.cosh_eq, Real.sinh_eq]
+      ring
+    unfold gammaSEqual
+    have hsplit : Real.cosh x * Real.cos x - Real.sinh x * Real.sin x =
+        Real.cosh x * (Real.cos x - Real.sin x) + Real.exp (-x) * Real.sin x := by
+      rw [← hsub]
+      ring
+    have hrest : 0 ≤ Real.cosh x * (Real.cos x - Real.sin x) :=
+      mul_nonneg (Real.cosh_pos x).le (sub_nonneg.mpr hsc)
+    have hmain : 0 < Real.exp (-x) * Real.sin x :=
+      mul_pos (Real.exp_pos _) hsin_pos
+    linarith [hsplit, hrest, hmain]
+
+theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
+    0 < gammaS (stepAngle N / 2) (stepAngle N / 2) := by
+  rw [gammaS_balanced]
+  have hstep := stepAngle_le_half_pi hN
+  refine gammaSEqual_pos_up_to_quarter ?_ ?_
+  · exact div_nonneg (div_nonneg (stepAngle_nonneg N) (by norm_num)) (by norm_num)
+  · have hform : stepAngle N / 2 / 2 = stepAngle N / 4 := by ring
+    rw [hform]
+    have hdiv : stepAngle N / 4 ≤ (Real.pi / 2) / 4 :=
+      div_le_div_of_nonneg_right hstep (by norm_num)
+    have hq : (Real.pi / 2) / 4 = Real.pi / 8 := by ring
+    have hcmp : Real.pi / 8 ≤ Real.pi / 4 := by
+      rw [div_le_div_iff₀ (by norm_num) (by norm_num)]
+      nlinarith [Real.pi_pos]
+    exact le_trans (by simpa [hq] using hdiv) hcmp
+
+theorem gammaSEqual_pi_neg : gammaSEqual Real.pi < 0 := by
+  have h := gammaSEqual_nat_mul_pi 1
+  simp only [Nat.cast_one, one_mul, pow_one] at h
+  rw [h]
+  linarith [Real.cosh_pos Real.pi]
+
+theorem negative_interference_not_admissible :
+    gammaS (2 * Real.pi) (2 * Real.pi) < 0 ∧
+      ¬ IsAdmissibleContinuous (oneAxisBalanced (2 * Real.pi)) := by
+  refine ⟨?_, ?_⟩
+  · rw [gammaS_balanced]
+    simpa using gammaSEqual_pi_neg
+  · intro h
+    have hsum := (h 0).2.2
+    simp [oneAxisBalanced] at hsum
+    linarith [Real.pi_pos]
+
+theorem carriers_distinct {N : ℕ} (hN : 4 ≤ N) :
+    oneAxisUsual (stepAngle N) ≠ oneAxisDual (stepAngle N) ∧
+      oneAxisDual (stepAngle N) ≠ oneAxisBalanced (stepAngle N / 2) ∧
+      oneAxisUsual (stepAngle N) ≠ oneAxisBalanced (stepAngle N / 2) := by
+  have hθ : 0 < stepAngle N := stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)
+  refine ⟨?_, ?_, ?_⟩
+  · intro h
+    have := congrArg (fun p : TorsionParams => p.beta 0) h
+    simp [oneAxisUsual, oneAxisDual] at this
+    linarith
+  · intro h
+    have := congrArg (fun p : TorsionParams => p.beta 0) h
+    simp [oneAxisDual, oneAxisBalanced] at this
+    linarith
+  · intro h
+    have := congrArg (fun p : TorsionParams => p.alpha 0) h
+    simp [oneAxisUsual, oneAxisBalanced] at this
+    linarith
+
+/-- The three admissible carriers have heights `+ε_N`, `-ε_N`, and `0`. The
+usual interference stays above `1`, the dual interference stays between `0`
+and `1`, and the equal-scale interference stays positive. -/
+theorem three_carriers {N : ℕ} (hN : 5 ≤ N) :
+    IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) ∧
+      IsAdmissibleContinuous (oneAxisDual (stepAngle N)) ∧
+      IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) ∧
+      JNormalized (oneAxisUsual (stepAngle N)) =
+        (16 : ℝ) / (3 * (N : ℝ) ^ 2) ∧
+      JNormalized (oneAxisDual (stepAngle N)) =
+        -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) ∧
+      JNormalized (oneAxisBalanced (stepAngle N / 2)) = 0 ∧
+      1 < gammaS (stepAngle N) 0 ∧
+      0 < gammaS 0 (stepAngle N) ∧ gammaS 0 (stepAngle N) < 1 ∧
+      0 < gammaS (stepAngle N / 2) (stepAngle N / 2) ∧
+      -((1 : ℝ) / 3) < JNormalized (oneAxisDual (stepAngle N)) ∧
+      JNormalized (oneAxisUsual (stepAngle N)) < (1 : ℝ) / 3 := by
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 5) hN
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  have hθ : 0 < stepAngle N := stepAngle_pos hpos
+  have hhalf := stepAngle_le_half_pi h4
+  have hheight := oneStep_below_corner hN
+  have hdual := dual_interference_between hθ hhalf
+  refine ⟨usualStep_admissible h4, oneStep_admissible h4, balancedStep_admissible h4,
+    JNormalized_usualStep hpos, JNormalized_oneStep hpos, JNormalized_balanced _,
+    usual_interference_gt_one hθ, hdual.1, hdual.2, balanced_interference_pos h4,
+    hheight.1, ?_⟩
+  rw [JNormalized_usualStep hpos]
+  have hden : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
+  rw [div_lt_iff₀ hden]
+  have hsq : (25 : ℝ) ≤ (N : ℝ) ^ 2 := by
+    exact_mod_cast Nat.pow_le_pow_left hN 2
+  have hright : (1 : ℝ) / 3 * (3 * (N : ℝ) ^ 2) = (N : ℝ) ^ 2 := by ring
+  linarith [hsq, hright]
+
+theorem excess_unexpressed {n N : ℕ} (hN : 0 < N) (h : N < 4 * n) :
+    JNormalized (alignedSteps n N) < JNormalized (express (alignedSteps n N)) ∧
+      JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) := by
+  have hlt : Real.pi / 2 < (n : ℝ) * stepAngle N := by
+    have hge := alignedAngle_ge_half_pi hN (le_of_lt h)
+    by_contra hnot
+    have hle : (n : ℝ) * stepAngle N ≤ Real.pi / 2 := le_of_not_gt hnot
+    have heq : (n : ℝ) * stepAngle N = Real.pi / 2 := le_antisymm hle hge
+    have hN0 : (0 : ℝ) < N := by exact_mod_cast hN
+    have hNz : (N : ℝ) ≠ 0 := ne_of_gt hN0
+    have hangle : (n : ℝ) * (2 * Real.pi / N) = Real.pi / 2 := by
+      simpa [stepAngle] using heq
+    have hmul : (n : ℝ) * (2 * Real.pi) = Real.pi / 2 * N := by
+      have hscaled := congrArg (fun t : ℝ => t * N) hangle
+      have hleft : (n : ℝ) * (2 * Real.pi / N) * N = (n : ℝ) * (2 * Real.pi) := by
+        field_simp [hNz]
+      linarith
+    have hNeq : (N : ℝ) = 4 * (n : ℝ) := by
+      have hπ : Real.pi ≠ 0 := Real.pi_ne_zero
+      have hdivL : (n : ℝ) * (2 * Real.pi) / Real.pi = (n : ℝ) * 2 := by
+        field_simp [hπ]
+      have hdivR : Real.pi / 2 * N / Real.pi = N / 2 := by
+        field_simp [hπ]
+      have hscaled := congrArg (fun t : ℝ => t / Real.pi) hmul
+      linarith
+    have hNat : N = 4 * n := by exact_mod_cast hNeq
+    simp [hNat] at h
+  refine ⟨?_, ?_⟩
+  · rw [express_aligned, alignedSteps]
+    have hJ := internal_exceeds_lock hlt
+    have hc : (0 : ℝ) < 8 / (3 * Real.pi ^ 2) := by positivity
+    unfold JNormalized
+    exact mul_lt_mul_of_pos_left hJ hc
+  · rw [express_aligned]
+    exact expressed_locks hlt.le
+
+/-- The usual, dual, and equal-scale carriers of one angle are separated by height and by
+interference. -/
+theorem carrier_roles {N : ℕ} (hN : 5 ≤ N) :
+    1 < gammaS (stepAngle N) 0 ∧
+      0 < gammaS 0 (stepAngle N) ∧ gammaS 0 (stepAngle N) < 1 ∧
+      0 < gammaS (stepAngle N / 2) (stepAngle N / 2) ∧
+      JNormalized (oneAxisBalanced (stepAngle N / 2)) = 0 ∧
+      JNormalized (oneAxisUsual (stepAngle N)) =
+        -JNormalized (oneAxisDual (stepAngle N)) := by
+  obtain ⟨_, _, _, hU, hD, hB, hγU, hγDpos, hγDlt, hγB, _, _⟩ := three_carriers hN
+  refine ⟨hγU, hγDpos, hγDlt, hγB, hB, ?_⟩
+  linarith
 
 end DstDiophantine.Gravity.GravitonQuantum
 
