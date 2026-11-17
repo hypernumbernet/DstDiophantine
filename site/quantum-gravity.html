@@ -58,28 +58,46 @@
   <h3 class="sub" id="graviton-step"><span class="en">One graviton: the smallest step of mismatch</span><span class="ja">重力子ひとつ：ずれの一刻み</span></h3>
   <p><span class="en">Here the two threads above meet: quantum states live on the dual side, and gravity is the mismatch between the usual and dual readings. That mismatch has a smallest unit. In DST, angles are divided into a fixed number N of steps, so the least nonzero move on one axis is a <b>single step</b> that turns only the dual side by the angle 2π/N. DST reads this step as one <b>graviton</b>. Once N is at least 4, the step sits inside the <a class="ref" href="admissible.html#cone-regimes">admissible cone</a> and carries exactly the smallest nonzero weight the steps allow. What is divided into steps is angle; space itself is not chopped up.</span><span class="ja">ここで、上の二つの話 — 量子の状態は双対側にあること、引力は通常読みと双対読みの<b>ずれ</b>であること — が一点で出会います。そのずれには、いちばん小さな単位があります。DST では角度が決まった数 N の刻みに区切られているので、一つの軸の上でゼロでない最小の動きは、双対側だけを角度 2π/N 回す<b>一刻み</b>です。DST はこれを<b>重力子</b>ひとつと読みます。N が 4 以上なら、この一刻みは<a class="ref" href="admissible.html#cone-regimes">許容錐</a>の中に収まり、刻みが許すゼロでない重みのうち、ちょうどいちばん小さな値を運びます。刻まれているのは角度であって、空間が細かく区切られているわけではありません。</span></p>
   <p><span class="en"><b>Lined up, they add as the square.</b> Stack n gravitons in the same direction and the weight shown outside becomes n² times that of one; two give four times one. This is the same pattern as waves in step reinforcing each other, the familiar behaviour of bosons, and DST arrives at it too. A body’s weight appears as such a collection of aligned gravitons. That growth has a <b>ceiling</b>, though. Past a certain number, the weight shown on that axis stops at a fixed value, and any further gravitons keep piling up in the <a class="ref" href="admissible.html#superposition">internal sum</a>. The distinction from chapter&nbsp;3, a capped expressed weight beside an uncapped hidden store, shows up here directly as a way of counting gravitons.</span><span class="ja"><b>そろうと二乗で効く。</b>同じ向きの重力子を n 個重ねると、表に出る重みは一個の n² 倍になります。二個なら四倍です。足並みをそろえた波が強め合うのと同じ形で、ボース粒子の振る舞いとして見慣れたものに DST も行き着きます。物体の重さは、こうしてそろった重力子の集まりとして表れます。ただし、この伸びには<b>天井</b>があります。ある数を超えると、その軸で表に出る重みは一定の値で止まり、それ以上の重力子は<a class="ref" href="admissible.html#superposition">内部の和</a>にたまり続けます。表に出る重さには上限があり、隠れた蓄えには上限がない、という第&nbsp;3&nbsp;章の区別が、重力子の数え方としてそのまま現れています。</span></p>
-  <svg class="fig" viewBox="0 0 720 248" role="img" aria-label="Aligned gravitons rise to a ceiling; a sideways step tilts a quantum state">
+  <svg class="fig" viewBox="0 0 720 268" role="img" aria-label="Aligned gravitons rise to a ceiling; a sideways step tilts a quantum state">
     <defs>
-      <marker id="gst-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--accent)"/></marker>
+      <marker id="gst-us" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--usual)"/></marker>
+      <marker id="gst-du" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--dual)"/></marker>
+      <marker id="gst-ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--accent)"/></marker>
     </defs>
-    <rect x="10" y="10" width="332" height="218" rx="6" fill="none" stroke="#3a4058" stroke-width="1.2"/>
-    <rect x="378" y="10" width="332" height="218" rx="6" fill="none" stroke="#3a4058" stroke-width="1.2"/>
-  <g transform="translate(56,188)">
-      <path fill="none" class="dual" stroke-width="1.6" d="M0,0 A10,10 0 0 1 8,-5"/>
-      <path fill="none" class="dual" stroke-width="1.6" d="M24,0 A10,10 0 0 1 32,-5"/>
-      <path fill="none" class="dual" stroke-width="1.6" d="M48,0 A10,10 0 0 1 56,-5"/>
-      <path fill="none" class="dual" stroke-width="1.6" d="M72,0 A10,10 0 0 1 80,-5"/>
-      <line x1="168" y1="0" x2="168" y2="-92" class="usual" stroke-width="8" stroke-linecap="round"/>
-      <line x1="140" y1="-108" x2="196" y2="-108" stroke="#8aa0c0" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <rect x="10" y="10" width="332" height="238" rx="6" fill="none" stroke="#3a4058" stroke-width="1.2"/>
+    <rect x="378" y="10" width="332" height="238" rx="6" fill="none" stroke="#3a4058" stroke-width="1.2"/>
+    <text class="cap" x="176" y="34" text-anchor="middle"><tspan class="en">aligned gravitons</tspan><tspan class="ja">そろった重力子</tspan></text>
+    <g transform="translate(52,214)">
+      <line x1="0" y1="0" x2="256" y2="0" class="axis" stroke-width="1.2"/>
+      <line x1="0" y1="-96" x2="256" y2="-96" stroke="#8aa0c0" stroke-width="1.5" stroke-dasharray="7 5"/>
+      <rect x="6" y="-12" width="28" height="12" fill="var(--usual)" rx="1"/>
+      <rect x="46" y="-48" width="28" height="48" fill="var(--usual)" rx="1"/>
+      <rect x="86" y="-88" width="28" height="88" fill="var(--usual)" rx="1"/>
+      <rect x="126" y="-96" width="28" height="96" fill="var(--usual)" rx="1"/>
+      <rect x="166" y="-96" width="28" height="96" fill="var(--usual)" rx="1"/>
+      <rect x="206" y="-96" width="28" height="96" fill="var(--usual)" rx="1"/>
+      <rect x="166" y="-134" width="28" height="38" fill="var(--dual)" opacity=".2" rx="1"/>
+      <rect x="206" y="-166" width="28" height="70" fill="var(--dual)" opacity=".16" rx="1"/>
+      <circle cx="180" cy="-140" r="2.6" class="dotw" opacity=".55"/>
+      <circle cx="180" cy="-150" r="2.6" class="dotw" opacity=".45"/>
+      <circle cx="180" cy="-160" r="2.6" class="dotw" opacity=".35"/>
+      <circle cx="220" cy="-146" r="2.6" class="dotw" opacity=".5"/>
+      <circle cx="220" cy="-156" r="2.6" class="dotw" opacity=".4"/>
+      <circle cx="220" cy="-166" r="2.6" class="dotw" opacity=".32"/>
+      <circle cx="220" cy="-176" r="2.6" class="dotw" opacity=".25"/>
+      <circle cx="220" cy="-186" r="2.6" class="dotw" opacity=".18"/>
     </g>
-    <text class="cap" x="176" y="30" text-anchor="middle"><tspan class="en">aligned gravitons</tspan><tspan class="ja">そろった重力子</tspan></text>
-    <text class="lbl small" x="218" y="68" text-anchor="middle"><tspan class="en">ceiling</tspan><tspan class="ja">天井</tspan></text>
-    <g transform="translate(520,140)">
-      <line x1="0" y1="0" x2="58" y2="-42" class="usual" stroke-width="2.6" marker-end="url(#gst-ar)"/>
-      <path fill="none" class="dual" stroke-width="1.8" d="M8,6 A18,18 0 0 1 26,-6" marker-end="url(#gst-ar)"/>
+    <text class="lbl small" x="318" y="126" text-anchor="end"><tspan class="en">ceiling</tspan><tspan class="ja">天井</tspan></text>
+    <text class="lbl small dualt" x="130" y="62" text-anchor="start"><tspan class="en">internal sum</tspan><tspan class="ja">内部の和</tspan></text>
+    <text class="lbl small" x="180" y="252" text-anchor="middle"><tspan font-style="italic">n</tspan></text>
+    <g transform="translate(544,210)">
+      <line x1="0" y1="0" x2="0" y2="-122" class="usual" stroke-width="2.8" marker-end="url(#gst-us)"/>
+      <line x1="0" y1="0" x2="24" y2="-120" stroke="var(--usual)" stroke-width="2.2" stroke-dasharray="8 6" opacity=".85" marker-end="url(#gst-us)"/>
+      <path fill="none" stroke="var(--accent)" stroke-width="2" d="M-5,-118 A16,16 0 0 1 20,-114" marker-end="url(#gst-ac)"/>
+      <line x1="-112" y1="-58" x2="-30" y2="-58" class="dual" stroke-width="2.6" marker-end="url(#gst-du)"/>
     </g>
-    <text class="lbl small" x="520" y="118" text-anchor="middle"><tspan class="en">state</tspan><tspan class="ja">状態</tspan></text>
-    <text class="lbl small dualt" x="468" y="172" text-anchor="middle"><tspan class="en">sideways step</tspan><tspan class="ja">横からの一刻み</tspan></text>
+    <text class="lbl small usualt" x="508" y="104" text-anchor="end"><tspan class="en">state</tspan><tspan class="ja">状態</tspan></text>
+    <text class="lbl small dualt" x="470" y="174" text-anchor="middle"><tspan class="en">sideways step</tspan><tspan class="ja">横からの一刻み</tspan></text>
   </svg>
   <p><span class="en"><b>The same step also turns a quantum state.</b> Because the <a class="ref" href="#dual-quantum">body of a quantum state</a> lives on the dual side, one dual step turns the state slightly. A single graviton is far too faint to be felt as weight, yet it still turns the state. If it arrives sideways to the direction in which the state is read, the chance of getting the original outcome drops a little below one, and a small chance of flipping to the opposite outcome appears; the original outcome stays the more likely one. That flip chance is pinned between bounds set by the same small number that fixes one graviton’s weight. So <b>one graviton’s weight and how strongly it disturbs a state are one quantity</b>. Standard treatments regard a single graviton’s effect as negligibly small and have no built-in step that sets its size; in DST it comes out as a finite amount fixed by the step count alone.</span><span class="ja"><b>同じ一刻みは、量子の状態も回す。</b><a class="ref" href="#dual-quantum">量子の状態の本体</a>は双対側にあるので、双対側の一刻みはそのまま状態を少し回します。重力子ひとつでは重さとして感じ取れないほどかすかでも、状態を回すことは回します。状態を読む向きに対して横から重力子が当たると、元の結果が出る確率は 1 からわずかに下がり、反対の結果に反転する確率が少しだけ生まれます。元の結果のほうが出やすいことは変わりません。この反転の確率は、重力子ひとつの重みを決めているのと同じ小さな数で上下から挟まれています。つまり、<b>重力子ひとつの重さと、それが状態を乱す強さは、同じ一つの量</b>です。標準的な扱いでは重力子ひとつの効果は無視できるほど小さいとされ、その大きさを決める刻みもありません。DST では、刻みの数だけで決まる有限の量として現れます。</span></p>
   <p><span class="en">If the graviton arrives along the reading direction, the probabilities do not change at all. Even so, the state is not merely flipped in sign: a phase is written into it. This graviton leaves no trace in the probabilities, only in the phase. What is not yet settled here is gathered at <a class="ref" href="#open-frontiers">the end of this chapter</a>.</span><span class="ja">状態を読む向きに沿って重力子が当たると、確率はまったく変わりません。それでも状態は符号が変わるだけでは終わらず、位相が書き込まれます。確率には跡を残さず、位相にだけ跡を残す重力子です。ここでまだ決まっていないことは、<a class="ref" href="#open-frontiers">この章の終わり</a>にまとめます。</span></p>
