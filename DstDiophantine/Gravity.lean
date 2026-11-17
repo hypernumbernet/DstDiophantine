@@ -155,9 +155,11 @@ import list of `Gravity.Regression`.
   `N ≥ 5`. Two aligned steps remain admissible for `N ≥ 8` and express four times one. A
   transverse step replaces the computational Born weight `1` by `cos²(π/N)`. The orthogonal
   probability is `sin²(π/N)`, strictly between `(3/4)` and `(3π²/16)` times the floor for
-  `N ≥ 3`, and strictly below `1/2` for `N ≥ 5`. An axial step leaves that weight at `1`, so its
-  orthogonal probability is `0`, and is not `±I`. No derivation of `α_G`, of a laboratory error
-  rate, or of a meson mass.
+  `N ≥ 3`, strictly above that floor, and strictly below `1/2` for `N ≥ 5`. On every
+  compactification with `N > 10¹⁹` the probability lies below `10⁻³⁷`. Three hundred aligned
+  steps there express `300²` times one and stay above `-10⁻³²`. An axial step leaves that weight
+  at `1`, so its orthogonal probability is `0`, and is not `±I`. No derivation of `α_G`, of a
+  laboratory error rate, or of a meson mass.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum
@@ -204,7 +206,9 @@ import list of `Gravity.Regression`.
 * `WeakLinearity` — at a fixed compactification radius the dual acceleration is linear in mass, and
   the mass-scaled relation is strictly subadditive.
 * `NuclearLayer` — saturation density, binding energy per nucleon, and the pion-length window. The
-  estimate `A∼300` is an external heuristic.
+  charged-pion mass over the proton mass lies strictly between `ε_6` and `ε_5`, equals no lattice
+  floor, and exceeds the proton Planck floor by more than `10³⁶`. A floor at or below that Planck
+  floor forces `N > 10¹⁹`. The estimate `A∼300` is an external heuristic.
 * `NuclearLength` — the charged-pion Compton wavelength against laboratory caps. Not the definition
   of the sign-reversal scale.
 * `SignReversal` — the sign-reversal scale `r₁` is an observational constant. The channel length is

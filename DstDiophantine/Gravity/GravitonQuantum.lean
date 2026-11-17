@@ -2,6 +2,7 @@ import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
+import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Tactic.FieldSimp
@@ -28,10 +29,14 @@ The same step is a dual rotation, the graviton of one particle. About an
 axis transverse to a computational eigenstate it replaces the Born weight
 `1` by `cos²(π/N)`. The orthogonal outcome has probability `sin²(π/N)`.
 For `N ≥ 3` that probability lies strictly between `(3/4)ε_N` and
-`(3π²/16)ε_N`. For `N ≥ 5` it lies strictly below `1/2`, and the original
-outcome remains the majority. About the eigenaxis the step multiplies the
-eigenstate by a phase, leaves the weight equal to `1`, and the orthogonal
-probability is `0`.
+`(3π²/16)ε_N`, and strictly above `ε_N` itself. For `N ≥ 5` it lies
+strictly below `1/2`, and the original outcome remains the majority. About
+the eigenaxis the step multiplies the eigenstate by a phase, leaves the
+weight equal to `1`, and the orthogonal probability is `0`. On every
+compactification with `N > 10¹⁹` the orthogonal probability lies strictly
+below `10⁻³⁷`. Three hundred aligned steps on that compactification remain
+in the cone, express `300²` times one step, and stay strictly above
+`-10⁻³²`.
 
 One aligned step expresses exactly `-ε_N`. For `N ≥ 5` that height lies
 strictly above the lock `-1/3`. Two aligned steps remain admissible for
@@ -42,9 +47,12 @@ foot. One exchanged step is not the lock.
 
 * A derivation of `G`, of `α_G`, or of a laboratory error rate. The integer
   `N` is not fixed. `NuclearLayer.alphaG_bounds` is a separate window, and
-  it is not this Born weight.
-* That every device error is one transverse step, or that a meson mass
-  equals `ε_N`. The exchange of one step is the step itself.
+  it is not this Born weight. What is fixed, once a compactification lies
+  under that window, is the size: `floor_at_most_proton_planck`.
+* That every device error is one transverse step. The orthogonal
+  probability is not the height. A meson mass is not `ε_N`:
+  `pion_over_proton_ne_any_floor`. The exchange of one step is the step
+  itself.
 * A Newtonian multi-body law. The expressed point is the admissible foot
   already constructed in `SourceSuperposition`.
 -/
@@ -581,6 +589,177 @@ theorem twoExchanges_fourfold {N : ℕ} (hN : 8 ≤ N) :
   refine ⟨collective_admissible hadm, ?_⟩
   rw [collective_square (n := 2) hpos, collective_square (n := 1) hpos]
   norm_num
+
+/-- The orthogonal probability strictly exceeds the height `ε_N`. -/
+theorem defect_gt_floor {N : ℕ} (hN : 3 ≤ N) :
+    (16 : ℝ) / (3 * (N : ℝ) ^ 2) < Real.sin (Real.pi / (N : ℝ)) ^ 2 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+  set x : ℝ := Real.pi / (N : ℝ)
+  have hx : 0 < x := div_pos Real.pi_pos hN0
+  have hxle : x ≤ Real.pi / 3 := by
+    unfold x
+    rw [div_le_div_iff₀ hN0 (by positivity : (0 : ℝ) < 3)]
+    have h3 : (3 : ℝ) ≤ N := by exact_mod_cast hN
+    nlinarith [Real.pi_pos]
+  have hcubic : x - x ^ 3 / 6 < Real.sin x := sin_gt_sub_cube hx
+  have hπlo : (3.14 : ℝ) < Real.pi := pi_gt_d2
+  have hπhi : Real.pi < 3.15 := pi_lt_d2
+  have hfacWall : (0 : ℝ) < 1 - ((3.15 : ℝ) / 3) ^ 2 / 6 := by norm_num
+  have hfacPi : (0 : ℝ) < 1 - (Real.pi / 3) ^ 2 / 6 := by
+    have hlt : (Real.pi / 3) ^ 2 < ((3.15 : ℝ) / 3) ^ 2 := by
+      have hdiv : Real.pi / 3 < (3.15 : ℝ) / 3 := by
+        rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+        nlinarith [hπhi]
+      exact pow_lt_pow_left₀ hdiv (div_nonneg Real.pi_nonneg (by norm_num))
+        (by decide : (2 : ℕ) ≠ 0)
+    have hsub : (Real.pi / 3) ^ 2 / 6 < ((3.15 : ℝ) / 3) ^ 2 / 6 := by
+      rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+      nlinarith [hlt]
+    linarith [hfacWall, hsub]
+  have hxsq : x ^ 2 ≤ (Real.pi / 3) ^ 2 :=
+    pow_le_pow_left₀ hx.le hxle 2
+  have hfac : (0 : ℝ) < 1 - x ^ 2 / 6 := by
+    have hsub : x ^ 2 / 6 ≤ (Real.pi / 3) ^ 2 / 6 := by
+      rw [div_le_div_iff₀ (by norm_num) (by norm_num)]
+      nlinarith [hxsq]
+    linarith [hfacPi, hsub]
+  have hlin : 0 < x - x ^ 3 / 6 := by
+    have : x - x ^ 3 / 6 = x * (1 - x ^ 2 / 6) := by ring
+    rw [this]
+    exact mul_pos hx hfac
+  have hsin : 0 < Real.sin x :=
+    Real.sin_pos_of_pos_of_lt_pi hx (by linarith [hxle, Real.pi_pos])
+  have hsqLt : (x - x ^ 3 / 6) ^ 2 < Real.sin x ^ 2 :=
+    (sq_lt_sq₀ hlin.le hsin.le).mpr hcubic
+  have hident : (x - x ^ 3 / 6) ^ 2 = x ^ 2 * (1 - x ^ 2 / 6) ^ 2 := by ring
+  have hratio : (16 : ℝ) / (3 * Real.pi ^ 2) < (1 - x ^ 2 / 6) ^ 2 := by
+    have hπsq : (3.14 : ℝ) ^ 2 < Real.pi ^ 2 :=
+      pow_lt_pow_left₀ hπlo (by norm_num) (by decide : (2 : ℕ) ≠ 0)
+    have hden : (16 : ℝ) / (3 * Real.pi ^ 2) < 16 / (3 * (3.14 : ℝ) ^ 2) := by
+      rw [div_lt_div_iff₀ (mul_pos (by norm_num) (pow_pos Real.pi_pos 2))
+        (mul_pos (by norm_num) (pow_pos (by norm_num : (0 : ℝ) < 3.14) 2))]
+      nlinarith [hπsq]
+    have hrat : (16 : ℝ) / (3 * (3.14 : ℝ) ^ 2) <
+        (1 - ((3.15 : ℝ) / 3) ^ 2 / 6) ^ 2 := by
+      norm_num
+    have hwall : (1 - ((3.15 : ℝ) / 3) ^ 2 / 6) ^ 2 <
+        (1 - (Real.pi / 3) ^ 2 / 6) ^ 2 := by
+      have hsub : (Real.pi / 3) ^ 2 / 6 < ((3.15 : ℝ) / 3) ^ 2 / 6 := by
+        have hdiv : Real.pi / 3 < (3.15 : ℝ) / 3 := by
+          rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+          nlinarith [hπhi]
+        have hpow : (Real.pi / 3) ^ 2 < ((3.15 : ℝ) / 3) ^ 2 :=
+          pow_lt_pow_left₀ hdiv (div_nonneg Real.pi_nonneg (by norm_num))
+            (by decide : (2 : ℕ) ≠ 0)
+        rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+        nlinarith [hpow]
+      have hbase : 1 - ((3.15 : ℝ) / 3) ^ 2 / 6 < 1 - (Real.pi / 3) ^ 2 / 6 := by
+        linarith [hsub]
+      exact pow_lt_pow_left₀ hbase hfacWall.le (by decide : (2 : ℕ) ≠ 0)
+    have hmono : (1 - (Real.pi / 3) ^ 2 / 6) ^ 2 ≤ (1 - x ^ 2 / 6) ^ 2 := by
+      have hbase : 1 - (Real.pi / 3) ^ 2 / 6 ≤ 1 - x ^ 2 / 6 := by
+        have hsub : x ^ 2 / 6 ≤ (Real.pi / 3) ^ 2 / 6 := by
+          rw [div_le_div_iff₀ (by norm_num) (by norm_num)]
+          nlinarith [hxsq]
+        linarith [hsub]
+      exact pow_le_pow_left₀ hfacPi.le hbase 2
+    exact lt_of_lt_of_le (lt_trans (lt_trans hden hrat) hwall) hmono
+  have hx2 : 0 < x ^ 2 := pow_pos hx 2
+  have hfloor : (16 : ℝ) / (3 * (N : ℝ) ^ 2) =
+      x ^ 2 * ((16 : ℝ) / (3 * Real.pi ^ 2)) := by
+    unfold x
+    field_simp
+  have hmul : x ^ 2 * ((16 : ℝ) / (3 * Real.pi ^ 2)) <
+      x ^ 2 * (1 - x ^ 2 / 6) ^ 2 :=
+    mul_lt_mul_of_pos_left hratio hx2
+  rw [hfloor]
+  exact hmul.trans (by simpa [hident] using hsqLt)
+
+/-- A transverse step registers a probability strictly above its height. -/
+theorem transverse_defect_gt_height {N : ℕ} (hN : 3 ≤ N) :
+    -JNormalized (oneAxisDual (stepAngle N)) <
+      1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
+  have hJ : -JNormalized (oneAxisDual (stepAngle N)) =
+      (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+    rw [JNormalized_oneStep hpos]
+    ring
+  rw [hJ, transverseStep_defect hpos]
+  exact defect_gt_floor hN
+
+/-- On every compactification past `10¹⁹`, one transverse step errs by less than `10⁻³⁷`. -/
+theorem transverse_defect_below_inv_pow {N : ℕ} (hN : 10 ^ 19 < N) :
+    Real.sin (Real.pi / (N : ℝ)) ^ 2 < (1 : ℝ) / 10 ^ 37 := by
+  have hpos : 0 < N := lt_trans (by decide : (0 : ℕ) < 10 ^ 19) hN
+  have h3 : 3 ≤ N := le_trans (by decide : (3 : ℕ) ≤ 10 ^ 19) (le_of_lt hN)
+  have hhigh := (defect_between_floor h3).2
+  have hceil : (3 * Real.pi ^ 2 / 16) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) =
+      Real.pi ^ 2 / (N : ℝ) ^ 2 := by
+    field_simp
+  rw [hceil] at hhigh
+  have hπsq : Real.pi ^ 2 < 10 := by
+    have hsq : Real.pi ^ 2 < (3.15 : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ pi_lt_d2 Real.pi_nonneg (by decide : (2 : ℕ) ≠ 0)
+    have hnum : (3.15 : ℝ) ^ 2 < 10 := by norm_num
+    exact hsq.trans hnum
+  have hcast : (10 : ℝ) ^ 19 < (N : ℝ) := by exact_mod_cast hN
+  have hsqN : (10 : ℝ) ^ 38 < (N : ℝ) ^ 2 := by
+    have hpow : ((10 : ℝ) ^ 19) ^ 2 < (N : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hcast (by positivity) (by decide : (2 : ℕ) ≠ 0)
+    have hid : ((10 : ℝ) ^ 19) ^ 2 = (10 : ℝ) ^ 38 := by
+      rw [← pow_mul]
+    simpa [hid] using hpow
+  have hdiv : Real.pi ^ 2 / (N : ℝ) ^ 2 < 10 / (10 : ℝ) ^ 38 := by
+    rw [div_lt_div_iff₀ (pow_pos (by exact_mod_cast hpos) 2) (by positivity)]
+    nlinarith [hπsq, hsqN, Real.pi_pos]
+  have hten : (10 : ℝ) / (10 : ℝ) ^ 38 = 1 / 10 ^ 37 := by norm_num
+  exact hhigh.trans (by simpa [hten] using hdiv)
+
+/-- Three hundred aligned steps on a compactification past `10¹⁹` express the
+square and stay strictly above `-10⁻³²`. -/
+theorem threeHundred_square {N : ℕ} (hN : 10 ^ 19 < N) :
+    IsAdmissibleContinuous (alignedSteps 300 N) ∧
+      JNormalized (alignedSteps 300 N) =
+        (300 : ℝ) ^ 2 * JNormalized (alignedSteps 1 N) ∧
+      -((1 : ℝ) / 10 ^ 32) < JNormalized (alignedSteps 300 N) ∧
+      JNormalized (alignedSteps 300 N) < 0 := by
+  have hpos : 0 < N := lt_trans (by decide : (0 : ℕ) < 10 ^ 19) hN
+  have hadm : 4 * 300 ≤ N :=
+    le_trans (by decide : 4 * 300 ≤ 10 ^ 19) (le_of_lt hN)
+  have hrel : JNormalized (alignedSteps 300 N) =
+      (300 : ℝ) ^ 2 * JNormalized (alignedSteps 1 N) := by
+    rw [collective_square (n := 300) hpos, collective_square (n := 1) hpos]
+    ring
+  have hform : JNormalized (alignedSteps 300 N) =
+      -((90000 : ℝ) * 16 / (3 * (N : ℝ) ^ 2)) := by
+    rw [collective_square (n := 300) hpos, JNormalized_oneStep hpos]
+    ring
+  have hcast : (10 : ℝ) ^ 19 < (N : ℝ) := by exact_mod_cast hN
+  have hsqN : (10 : ℝ) ^ 38 < (N : ℝ) ^ 2 := by
+    have hpow : ((10 : ℝ) ^ 19) ^ 2 < (N : ℝ) ^ 2 :=
+      pow_lt_pow_left₀ hcast (by positivity) (by decide : (2 : ℕ) ≠ 0)
+    have hid : ((10 : ℝ) ^ 19) ^ 2 = (10 : ℝ) ^ 38 := by
+      rw [← pow_mul]
+    simpa [hid] using hpow
+  have hposFrac : (0 : ℝ) < (90000 : ℝ) * 16 / (3 * (N : ℝ) ^ 2) := by
+    positivity
+  have htiny : (90000 : ℝ) * 16 / (3 * (N : ℝ) ^ 2) < 1 / 10 ^ 32 := by
+    have hcap : (90000 : ℝ) * 16 / (3 * (10 : ℝ) ^ 38) < 1 / 10 ^ 32 := by
+      norm_num
+    have hdenN : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
+    have hden10 : (0 : ℝ) < 3 * (10 : ℝ) ^ 38 := by positivity
+    have hlt : (90000 : ℝ) * 16 / (3 * (N : ℝ) ^ 2) <
+        (90000 : ℝ) * 16 / (3 * (10 : ℝ) ^ 38) := by
+      rw [div_lt_div_iff₀ hdenN hden10]
+      nlinarith [hsqN]
+    exact hlt.trans hcap
+  refine ⟨collective_admissible hadm, hrel, ?_, ?_⟩
+  · rw [hform]
+    exact neg_lt_neg htiny
+  · rw [hform]
+    exact neg_lt_zero.mpr hposFrac
 
 end DstDiophantine.Gravity.GravitonQuantum
 

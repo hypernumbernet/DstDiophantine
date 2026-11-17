@@ -3153,6 +3153,31 @@ example {N : ℕ} (hN : 5 ≤ N) :
   · exact hfloor.2.1
   · exact GravitonQuantum.oneExchange_above_lock hN
 
+/-- Regression: the orthogonal probability exceeds the height, and the charged-pion mass over the
+proton mass is the height of no lattice step. It exceeds the proton Planck floor by more than
+`10³⁶`. A floor at or below that Planck floor forces `N > 10¹⁹`, on which one transverse step
+errs by less than `10⁻³⁷` and three hundred aligned steps stay above `-10⁻³²`. -/
+example (N : ℕ) :
+    (3 ≤ N →
+      -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <
+        1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp)) ∧
+      SI.epsN N ≠ SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      (10 : ℚ) ^ 36 <
+        (SI.pionMassMeVApprox / SI.protonMassMeVApprox) / ((16 / 3) * alphaG) ∧
+      (0 < N → SI.epsN N ≤ (16 / 3) * alphaG →
+        10 ^ 19 < N ∧
+          Real.sin (Real.pi / (N : ℝ)) ^ 2 < (1 : ℝ) / 10 ^ 37 ∧
+          -((1 : ℝ) / 10 ^ 32) <
+            JNormalized (GravitonQuantum.alignedSteps 300 N)) := by
+  refine ⟨fun hN => GravitonQuantum.transverse_defect_gt_height hN,
+    pion_over_proton_ne_any_floor N, pion_proton_planck_factor, ?_⟩
+  intro hpos hfloor
+  have hbig := floor_at_most_proton_planck hpos hfloor
+  exact ⟨hbig, GravitonQuantum.transverse_defect_below_inv_pow hbig,
+    (GravitonQuantum.threeHundred_square hbig).2.2.1⟩
+
 end Gravity
 
 end DstDiophantine

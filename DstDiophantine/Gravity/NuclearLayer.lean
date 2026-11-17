@@ -42,6 +42,9 @@ heuristic, as in `discrete-dual-spacetime.tex`.
   optical well depth, a separate external label.
 * Gravity fine-structure \(\alpha_G = G m_p^2/\hbar c \in (10^{-39},10^{-38})\);
   not to be identified with \(O(1)\) nuclear strength or with `epsN 1`.
+* The charged-pion mass over the proton mass lies strictly between `epsN 6` and
+  `epsN 5`, equals no `epsN N`, and exceeds `(16/3) α_G` by more than `10³⁶`.
+  A positive lattice floor at or below that Planck floor forces `N > 10¹⁹`.
 
 ## Nuclear consequences of the sharpened layer window
 
@@ -464,6 +467,120 @@ theorem epsN_one_ne_nuclear_order :
   constructor
   · unfold epsN; norm_num
   · unfold epsN; norm_num
+
+/-- The charged-pion mass over the proton mass lies strictly between the floors
+`ε_6` and `ε_5`, and strictly below the lock `1/3`. -/
+theorem pion_over_proton_between_floors :
+    epsN 6 < pionMassMeVApprox / protonMassMeVApprox ∧
+      pionMassMeVApprox / protonMassMeVApprox < epsN 5 ∧
+      pionMassMeVApprox / protonMassMeVApprox < (1 : ℚ) / 3 := by
+  have hrat : pionMassMeVApprox / protonMassMeVApprox =
+      (139570390 : ℚ) / 938272088 := by
+    unfold pionMassMeVApprox protonMassMeVApprox pionMassMeVMantissa
+      pionMassMeVScale protonMassMeVMantissa protonMassMeVScale
+    norm_num
+  have he6 : epsN 6 = (4 : ℚ) / 27 := by
+    unfold epsN
+    norm_num
+  have he5 : epsN 5 = (16 : ℚ) / 75 := by
+    unfold epsN
+    norm_num
+  rw [hrat, he6, he5]
+  refine ⟨?_, ?_, ?_⟩
+  · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    norm_num
+  · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    norm_num
+  · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    norm_num
+
+theorem epsN_ge_of_le {M N : ℕ} (hM : 0 < M) (hMN : M ≤ N) : epsN N ≤ epsN M := by
+  unfold epsN
+  have hM0 : (0 : ℚ) < (M : ℚ) := Nat.cast_pos.mpr hM
+  have hN0 : (0 : ℚ) < (N : ℚ) := Nat.cast_pos.mpr (lt_of_lt_of_le hM hMN)
+  have hdenN : (0 : ℚ) < 3 * (N : ℚ) ^ 2 := by positivity
+  have hdenM : (0 : ℚ) < 3 * (M : ℚ) ^ 2 := by positivity
+  rw [div_le_div_iff₀ hdenN hdenM]
+  have hsq : (M : ℚ) ^ 2 ≤ (N : ℚ) ^ 2 :=
+    pow_le_pow_left₀ hM0.le (by exact_mod_cast hMN) 2
+  nlinarith
+
+/-- The charged-pion mass over the proton mass is the height of no lattice step. -/
+theorem pion_over_proton_ne_any_floor (N : ℕ) :
+    epsN N ≠ pionMassMeVApprox / protonMassMeVApprox := by
+  intro hEq
+  have hB := pion_over_proton_between_floors
+  rcases N.eq_zero_or_pos with rfl | hpos
+  · have h0 : epsN 0 = 0 := by
+      unfold epsN
+      norm_num
+    rw [h0] at hEq
+    exact (div_pos pionMassMeVApprox_pos protonMassMeVApprox_pos).ne' hEq.symm
+  · by_cases h6 : 6 ≤ N
+    · have hle := epsN_ge_of_le (M := 6) (by decide) h6
+      exact (lt_of_le_of_lt hle hB.1).ne hEq
+    · have h5 : N ≤ 5 := Nat.le_of_lt_succ (lt_of_not_ge h6)
+      have hge := epsN_ge_of_le hpos h5
+      exact (lt_of_lt_of_le hB.2.1 hge).ne' hEq
+
+/-- The pion-to-proton mass ratio exceeds the proton Planck floor by more than `10³⁶`. -/
+theorem pion_proton_exceeds_planck_floor :
+    10 ^ 36 * ((16 / 3) * alphaG) < pionMassMeVApprox / protonMassMeVApprox := by
+  have hr := pion_over_proton_between_floors.1
+  have he6 : epsN 6 = (4 : ℚ) / 27 := by
+    unfold epsN
+    norm_num
+  rw [he6] at hr
+  have hmul : (16 / 3) * alphaG < (16 / 3) * ((1 : ℚ) / 10 ^ 38) :=
+    mul_lt_mul_of_pos_left alphaG_bounds.2 (by norm_num)
+  have hleft : 10 ^ 36 * ((16 / 3) * alphaG) <
+      10 ^ 36 * ((16 / 3) * ((1 : ℚ) / 10 ^ 38)) :=
+    mul_lt_mul_of_pos_left hmul (by norm_num)
+  have hnum : 10 ^ 36 * ((16 / 3) * ((1 : ℚ) / 10 ^ 38)) = (4 : ℚ) / 75 := by
+    norm_num
+  have h75 : (4 : ℚ) / 75 < 4 / 27 := by norm_num
+  have hleft' : 10 ^ 36 * ((16 / 3) * alphaG) < (4 : ℚ) / 75 := by
+    rw [← hnum]
+    exact hleft
+  exact lt_trans hleft' (lt_trans h75 hr)
+
+theorem pion_proton_planck_factor :
+    (10 : ℚ) ^ 36 <
+      (pionMassMeVApprox / protonMassMeVApprox) / ((16 / 3) * alphaG) := by
+  have hf : (0 : ℚ) < (16 / 3) * alphaG :=
+    mul_pos (by norm_num) (lt_trans (by norm_num : (0 : ℚ) < 1 / 10 ^ 39) alphaG_bounds.1)
+  rw [lt_div_iff₀ hf]
+  exact pion_proton_exceeds_planck_floor
+
+/-- A lattice floor that does not exceed `(16/3)×10⁻³⁸` belongs to `N > 10¹⁹`. -/
+theorem floor_under_proton_cap {N : ℕ} (hN : 0 < N)
+    (h : epsN N < (16 / 3) / 10 ^ 38) : 10 ^ 19 < N := by
+  unfold epsN at h
+  have hsq : (10 : ℚ) ^ 38 < (N : ℚ) ^ 2 := by
+    have hdenN : (0 : ℚ) < 3 * (N : ℚ) ^ 2 := by positivity
+    have hden10 : (0 : ℚ) < 3 * (10 : ℚ) ^ 38 := by positivity
+    have hid : (16 / 3) / (10 : ℚ) ^ 38 = 16 / (3 * (10 : ℚ) ^ 38) := by ring
+    have h' : (16 : ℚ) / (3 * (N : ℚ) ^ 2) < 16 / (3 * (10 : ℚ) ^ 38) := by
+      simpa [hid] using h
+    rw [div_lt_div_iff₀ hdenN hden10] at h'
+    nlinarith
+  have hnat : (10 : ℕ) ^ 38 < N ^ 2 := by exact_mod_cast hsq
+  by_contra hle
+  have hle' : N ≤ 10 ^ 19 := le_of_not_gt hle
+  have hsqle : N ^ 2 ≤ (10 ^ 19) ^ 2 := Nat.pow_le_pow_left hle' 2
+  have hpow : ((10 : ℕ) ^ 19) ^ 2 = 10 ^ 38 := by
+    rw [← Nat.pow_mul]
+  exact not_lt_of_ge (by simpa [hpow] using hsqle) hnat
+
+/-- Every compactification whose floor does not exceed the proton Planck floor
+has `N > 10¹⁹`. -/
+theorem floor_at_most_proton_planck {N : ℕ} (hN : 0 < N)
+    (h : epsN N ≤ (16 / 3) * alphaG) : 10 ^ 19 < N := by
+  have hmul : (16 / 3) * alphaG < (16 / 3) * ((1 : ℚ) / 10 ^ 38) :=
+    mul_lt_mul_of_pos_left alphaG_bounds.2 (by norm_num)
+  have hrewrite : (16 / 3) * ((1 : ℚ) / 10 ^ 38) = (16 / 3) / 10 ^ 38 := by
+    ring
+  exact floor_under_proton_cap hN (lt_of_le_of_lt h (hrewrite ▸ hmul))
 
 /-- Reuse equal-scale \(\Theta(1/n)\) from `ElectronShell` (gravitational channel
 shares \(\gamma_s\)). Absolute fm/MeV scales need external \(\ell\). -/

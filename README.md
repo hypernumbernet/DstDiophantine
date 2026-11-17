@@ -330,7 +330,12 @@ an input.
 
 `NuclearLayer` compares saturation density, binding energy per nucleon, and
 the pion length. Under $\ell = \lambda_\pi$ every equal-scale node lies
-below $1\,\mathrm{fm}$. The estimate $A \sim 300$ is an external heuristic.
+below $1\,\mathrm{fm}$. The charged-pion mass over the proton mass lies
+strictly between $\varepsilon_6$ and $\varepsilon_5$, so it is the height of
+no lattice step, and it exceeds sixteen thirds of the proton's gravitational
+fine-structure constant by more than $10^{36}$. A floor at or below that
+Planck floor forces $N > 10^{19}$. The estimate $A \sim 300$ is an external
+heuristic.
 `ParticleStability` records, on the same stand-ins, $1836 < m_p/m_e < 1837$,
 and that a hundred nuclear bindings and twenty optical wells each lie below
 the proton rest energy.
