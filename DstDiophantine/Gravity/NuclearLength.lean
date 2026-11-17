@@ -21,7 +21,10 @@ the attractive radius `1` fm, the saturation density, and the charge-radius
 lower edges are external inputs. Nothing here produces a binding energy, a
 scattering length, or an identification of a charge radius with a pair
 separation. The hypothesis `ℓ = λ_π` is not a derivation of `ℓ`, and it is
-not the definition used by the strong-interaction note.
+not the definition used by the strong-interaction note. It is not the
+mass ratio `channelMassRatio` of `SignReversal`, which uses the
+sign-reversal scale and the proton Compton length and does not use a
+pion mass.
 
 ## What is proved
 

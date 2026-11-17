@@ -44,7 +44,10 @@ heuristic, as in `discrete-dual-spacetime.tex`.
   not to be identified with \(O(1)\) nuclear strength or with `epsN 1`.
 * The charged-pion mass over the proton mass lies strictly between `epsN 6` and
   `epsN 5`, equals no `epsN N`, and exceeds `(16/3) α_G` by more than `10³⁶`.
-  A positive lattice floor at or below that Planck floor forces `N > 10¹⁹`.
+  The same ratio lies in `(2/19, 9/28)`. `SignReversal.channelMassRatio`
+  occupies that interval for every scattering scale, and its definition does
+  not use this mass. Membership does not select a scale. A positive lattice
+  floor at or below that Planck floor forces `N > 10¹⁹`.
 
 ## Nuclear consequences of the sharpened layer window
 
@@ -497,6 +500,22 @@ theorem pion_over_proton_between_floors :
     norm_num
   · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
     norm_num
+
+/-- The laboratory charged-pion ratio lies in `(2/19, 9/28)`.
+`SignReversal.channelMassRatio` occupies that interval for every scattering
+scale `r₁`, and its definition does not use this mass. Membership does not
+select a scale and does not identify the pion with a lattice height. -/
+theorem pion_over_proton_in_channel_window :
+    (2 / 19 : ℚ) < pionMassMeVApprox / protonMassMeVApprox ∧
+      pionMassMeVApprox / protonMassMeVApprox < 9 / 28 := by
+  have h := pion_over_proton_between_floors
+  have hlo : (2 / 19 : ℚ) < epsN 6 := by
+    unfold epsN
+    norm_num
+  have hhi : epsN 5 < (9 / 28 : ℚ) := by
+    unfold epsN
+    norm_num
+  exact ⟨lt_trans hlo h.1, lt_trans h.2.1 hhi⟩
 
 theorem epsN_ge_of_le {M N : ℕ} (hM : 0 < M) (hMN : M ≤ N) : epsN N ≤ epsN M := by
   unfold epsN

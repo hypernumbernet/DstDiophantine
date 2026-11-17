@@ -20,12 +20,14 @@ Compton wavelength, and nothing here computes `r₁` from one.
 ## What is proved
 
 * For every such `r₁`, `14/15 < ℓ < 19/10`.
-* Reading the graviton at `ℓ` assigns the mass whose Compton length is `ℓ`.
-  The ratio of that mass to the proton is `λ_p/ℓ`. The definition of `ℓ`
-  is unchanged, and no meson mass enters. For every such `r₁` the ratio
-  lies strictly between `2/19` and `9/28`, hence strictly above `ε_8` and
-  strictly below the lock `ε_4 = 1/3`. It exceeds `(16/3) α_G` by more
-  than `10³⁶`. It is the height of no lattice step with `N ≤ 4` or `N ≥ 8`.
+* The mass ratio read from that length is `λ_p/ℓ`, the proton Compton
+  length over `ℓ`. A meson mass is not an input, and the definition of `ℓ`
+  is unchanged. For every such `r₁` the ratio lies strictly between `2/19`
+  and `9/28`, hence strictly above `ε_8` and strictly below the lock
+  `ε_4 = 1/3`. It exceeds `(16/3) α_G` by more than `10³⁶`. It equals no
+  lattice height `ε_N` for `N ≤ 4` or `N ≥ 8`. The laboratory charged pion
+  is not used here; `NuclearLayer` only compares that external ratio with
+  the same numerical interval.
 * The first node of that length is `r₁` itself. The second node lies strictly
   below `1/2` fm, so the core scale lies in the inversion layer.
 * The rapidity wall is `r₁` times a factor strictly between `224/189` and
@@ -310,17 +312,20 @@ theorem reversal_bohr_mass_fraction {ℓE a r₁ : ℝ}
     have hprod : ρ * (γE / γG) = ρ * γE / γG := by ring
     linarith
 
-/-! ### The exchanged graviton, read at the channel length -/
+/-! ### Channel-length mass ratio
 
-/-- Mass ratio of the graviton read at the channel length: the proton
-Compton length over that length. The length is still `2 x₁ r₁`. No meson
-mass enters. -/
-noncomputable def exchangeMassRatio (r₁ : ℝ) : ℝ :=
+Proton Compton length over `ℓ = 2 x₁ r₁`. A meson mass is not an input.
+For `N ≤ 4` or `N ≥ 8` the ratio equals no lattice height `ε_N`. This is
+not one graviton: a graviton is the dual step in `GravitonQuantum`. -/
+
+/-- Proton Compton length over the channel length `ℓ = 2 x₁ r₁`.
+A meson mass is not an input. -/
+noncomputable def channelMassRatio (r₁ : ℝ) : ℝ :=
   (protonComptonFm : ℝ) / lengthOfReversal r₁
 
-theorem exchangeMassRatio_window {r₁ : ℝ}
+theorem channelMassRatio_window {r₁ : ℝ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) :
-    (2 / 19 : ℝ) < exchangeMassRatio r₁ ∧ exchangeMassRatio r₁ < 9 / 28 := by
+    (2 / 19 : ℝ) < channelMassRatio r₁ ∧ channelMassRatio r₁ < 9 / 28 := by
   have hℓ := lengthOfReversal_bounds hr0 hr1
   have hℓpos : (0 : ℝ) < lengthOfReversal r₁ :=
     lengthOfReversal_pos (by linarith)
@@ -330,7 +335,7 @@ theorem exchangeMassRatio_window {r₁ : ℝ}
   have hhi : (protonComptonFm : ℝ) < 3 / 10 := by
     rw [show (3 / 10 : ℝ) = ((3 / 10 : ℚ) : ℝ) by norm_num]
     exact_mod_cast protonComptonFm_bounds.2
-  unfold exchangeMassRatio
+  unfold channelMassRatio
   constructor
   · have hcmp : (1 / 5 : ℝ) / lengthOfReversal r₁ <
         (protonComptonFm : ℝ) / lengthOfReversal r₁ :=
@@ -348,11 +353,11 @@ theorem exchangeMassRatio_window {r₁ : ℝ}
     linarith
 
 /-- The ratio lies strictly above `ε_8` and strictly below the lock `ε_4`. -/
-theorem exchangeMassRatio_between_remote_floors {r₁ : ℝ}
+theorem channelMassRatio_between_remote_floors {r₁ : ℝ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) :
-    (epsN 8 : ℝ) < exchangeMassRatio r₁ ∧
-      exchangeMassRatio r₁ < (epsN 4 : ℝ) := by
-  have h := exchangeMassRatio_window hr0 hr1
+    (epsN 8 : ℝ) < channelMassRatio r₁ ∧
+      channelMassRatio r₁ < (epsN 4 : ℝ) := by
+  have h := channelMassRatio_window hr0 hr1
   have h8 : (epsN 8 : ℝ) < 2 / 19 := by
     unfold epsN
     norm_num
@@ -361,18 +366,19 @@ theorem exchangeMassRatio_between_remote_floors {r₁ : ℝ}
     norm_num
   exact ⟨lt_trans h8 h.1, lt_trans h.2 h4⟩
 
-/-- Outside `N = 5, 6, 7` the ratio is the height of no lattice step. -/
-theorem exchangeMassRatio_ne_remote_floor {r₁ : ℝ} {N : ℕ}
+/-- For `N ≤ 4` or `N ≥ 8` the ratio equals no lattice height.
+The cases `N = 5, 6, 7` are not decided. -/
+theorem channelMassRatio_ne_remote_floor {r₁ : ℝ} {N : ℕ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) (hN : N ≤ 4 ∨ 8 ≤ N) :
-    (epsN N : ℝ) ≠ exchangeMassRatio r₁ := by
+    (epsN N : ℝ) ≠ channelMassRatio r₁ := by
   intro hEq
-  have hbetween := exchangeMassRatio_between_remote_floors hr0 hr1
+  have hbetween := channelMassRatio_between_remote_floors hr0 hr1
   rcases N.eq_zero_or_pos with rfl | hpos
   · have h0 : epsN 0 = 0 := by
       unfold epsN
       norm_num
-    have hposr : (0 : ℝ) < exchangeMassRatio r₁ :=
-      lt_trans (by norm_num) (exchangeMassRatio_window hr0 hr1).1
+    have hposr : (0 : ℝ) < channelMassRatio r₁ :=
+      lt_trans (by norm_num) (channelMassRatio_window hr0 hr1).1
     rw [h0, Rat.cast_zero] at hEq
     exact hposr.ne hEq
   · rcases hN with hle | hge
@@ -383,9 +389,9 @@ theorem exchangeMassRatio_ne_remote_floor {r₁ : ℝ} {N : ℕ}
         Rat.cast_le.mpr (epsN_ge_of_le (M := 8) (by decide) hge)
       exact (lt_of_le_of_lt hcast hbetween.1).ne hEq
 
-theorem exchangeMassRatio_exceeds_planck {r₁ : ℝ}
+theorem channelMassRatio_exceeds_planck {r₁ : ℝ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) :
-    (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < exchangeMassRatio r₁ := by
+    (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < channelMassRatio r₁ := by
   have hα : (alphaG : ℝ) < (1 : ℝ) / 10 ^ 38 := by
     rw [show (1 : ℝ) / 10 ^ 38 = (((1 : ℚ) / 10 ^ 38) : ℝ) by norm_num]
     exact_mod_cast alphaG_bounds.2
@@ -398,7 +404,7 @@ theorem exchangeMassRatio_exceeds_planck {r₁ : ℝ}
     have hnum : (10 : ℝ) ^ 36 * ((16 / 3) * ((1 : ℝ) / 10 ^ 38)) = 4 / 75 := by
       norm_num
     rwa [hnum] at hleft
-  exact lt_trans (lt_trans hscaled (by norm_num)) (exchangeMassRatio_window hr0 hr1).1
+  exact lt_trans (lt_trans hscaled (by norm_num)) (channelMassRatio_window hr0 hr1).1
 
 /-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\).
 The CODATA value lies strictly inside. Not derived. -/

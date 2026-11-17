@@ -151,25 +151,26 @@ import list of `Gravity.Regression`.
   `-Δ sin²θ`. A pure `(t,φ)` boost writes no cross term.
 * `Algebra.SourceSuperposition` — source bivectors add without a ceiling. The expressed point is
   the nearest admissible configuration, so its `|J|` stays at most \(3\pi^2/8\).
-* `GravitonQuantum` — one pure dual step of angle `2π/N`, the graviton of one particle. For
+* `GravitonQuantum` — one graviton is one pure dual step of angle `2π/N`. For
   `N ≥ 4` it is admissible and its normalized height is `-16/(3N²)`. While `4n ≤ N`, `n` aligned
-  steps express `n²` times that height: `n` own shares plus `n(n-1)` ordered-pair shares, and
-  every share equals one step travelling alone. For `n ≥ 1`, one further step makes the mutual
-  sum strictly more negative by `2n` shares, while the new own share stays equal to one. For
-  `n ≥ 3` the mutual sum is strictly more negative than the own sum. The same angle also
+  gravitons express `n²` times that height: `n` own shares plus `n(n-1)` ordered-pair shares, and
+  every share equals one graviton travelling alone. For `n ≥ 1`, one further graviton makes the
+  mutual sum strictly more negative by `2n` shares, while the new own share stays equal to one.
+  For `n ≥ 3` the mutual sum is strictly more negative than the own sum. The same angle also
   builds a usual step of height `+ε_N`, whose interference stays above `1`, and an equal-scale
   step of height `0`, whose interference stays positive. The equal-scale phase `π` makes the
-  interference negative and is not admissible. Once `4n ≥ N` the expressed
-  height on that axis locks at `-1/3`, and further mutual growth stays in the internal sum. One
-  aligned step stays strictly above that lock for
-  `N ≥ 5`. Two aligned steps remain admissible for `N ≥ 8` and express four times one. A
-  transverse step replaces the computational Born weight `1` by `cos²(π/N)`. The orthogonal
-  probability is `sin²(π/N)`, strictly between `(3/4)` and `(3π²/16)` times the floor for
-  `N ≥ 3`, strictly above that floor, and strictly below `1/2` for `N ≥ 5`. On every
-  compactification with `N > 10¹⁹` the probability lies below `10⁻³⁷`. Three hundred aligned
-  steps there express `300²` times one and stay above `-10⁻³²`. An axial step leaves that weight
-  at `1`, so its orthogonal probability is `0`, and is not `±I`. No derivation of `α_G`, of a
-  laboratory error rate, or of a meson mass.
+  interference negative and is not admissible. These carriers are not a mass spectrum. Once
+  `4n ≥ N` the expressed height on that axis locks at `-1/3`, and further mutual growth stays in
+  the internal sum. One graviton stays strictly above that lock for `N ≥ 5`. Two aligned gravitons
+  remain admissible for `N ≥ 8` and their height is four times one. A transverse step replaces the
+  computational Born weight `1` by `cos²(π/N)`. The orthogonal probability is `sin²(π/N)`,
+  strictly between `(3/4)` and `(3π²/16)` times the floor for `N ≥ 3`, strictly above that floor,
+  and strictly below `1/2` for `N ≥ 5`. On every compactification with `N > 10¹⁹` the probability
+  lies below `10⁻³⁷`. Three hundred aligned gravitons there express `300²` times one and stay
+  above `-10⁻³²`. An axial step leaves that weight at `1`, so its orthogonal probability is `0`,
+  and is not `±I`. No derivation of `α_G` or of a laboratory error rate. The charged-pion
+  comparison is `NuclearLayer`. The channel-length mass ratio, with no meson mass as an input,
+  is `SignReversal.channelMassRatio`.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum
@@ -217,16 +218,18 @@ import list of `Gravity.Regression`.
   the mass-scaled relation is strictly subadditive.
 * `NuclearLayer` — saturation density, binding energy per nucleon, and the pion-length window. The
   charged-pion mass over the proton mass lies strictly between `ε_6` and `ε_5`, equals no lattice
-  floor, and exceeds the proton Planck floor by more than `10³⁶`. A floor at or below that Planck
-  floor forces `N > 10¹⁹`. The estimate `A∼300` is an external heuristic. The oscillator counts
-  `2`, `8`, `20` and the shifted counts `28`, `50`, `82`, `126` are seat arithmetic, not node
-  indices, and the splitting is not derived.
+  floor, lies in the channel-length interval `(2/19, 9/28)`, and exceeds the proton Planck floor
+  by more than `10³⁶`. That inclusion does not select a scattering scale. A floor at or below that
+  Planck floor forces `N > 10¹⁹`. The estimate `A∼300` is an external heuristic. The oscillator
+  counts `2`, `8`, `20` and the shifted counts `28`, `50`, `82`, `126` are seat arithmetic, not
+  node indices, and the splitting is not derived.
 * `NuclearLength` — the charged-pion Compton wavelength against laboratory caps. Not the definition
   of the sign-reversal scale.
 * `SignReversal` — the sign-reversal scale `r₁` is an observational constant. The channel length is
-  the definition `ℓ=2 x₁ r₁`. The graviton read there has mass ratio `λ_p/ℓ` to the proton, strictly
-  between `2/19` and `9/28` on the scattering window, above `ε_8` and below the lock `1/3`, and
-  above `(16/3) α_G` by more than `10³⁶`. No meson mass enters.
+  the definition `ℓ=2 x₁ r₁`. The mass ratio read from that length is `λ_p/ℓ`, strictly between
+  `2/19` and `9/28` on the scattering window, above `ε_8` and below the lock `1/3`, and above
+  `(16/3) α_G` by more than `10³⁶`. A meson mass is not an input. For `N ≤ 4` or `N ≥ 8` the ratio
+  equals no lattice height `ε_N`. This ratio is not one graviton.
 * `StrongChannel` — the rapidity threshold on `(π/4,π/2)`. The prefactor `κ`, a fusion rate, and
   the `1/v` law are not derived.
 * `LengthRule` — both channels at once. Nothing here fixes `κ` or computes a binding.

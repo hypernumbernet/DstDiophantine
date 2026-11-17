@@ -14,42 +14,55 @@ import Mathlib.Tactic.Ring
 set_option linter.style.native false
 
 /-!
-# One dual step, and the mismatch a body expresses
+# One graviton
 
-A particle meets the mismatch one lattice step at a time. On one axis the
-least nonzero step is a pure dual angle `2π/N`. For `N ≥ 4` it lies in the
-admissible cone, and its normalized height is exactly the floor
-`-ε_N = -16/(3N²)`.
+A graviton is one pure dual step on a single axis, of angle `2π/N`. For
+`N ≥ 4` it lies in the admissible cone, and its normalized height is the
+floor `-ε_N = -16/(3N²)`.
 
-`n` aligned copies add in the rapidity. The square of that sum splits into
-`n` own shares and `n(n-1)` ordered-pair shares. Every share equals the
-height of one step, the graviton that travels alone, and that height does
-not depend on `n`. The ordered-pair sum vanishes for a single step. Once
-`n ≥ 1` steps are present, one further step keeps its own share equal to
-that lone height and makes the ordered-pair sum strictly more negative, by
-`2n` shares. For `n ≥ 3` the ordered-pair sum is strictly more negative
-than the own sum. While `4n ≤ N` the steps stay in the cone and the height
-they express is this split, `n²` times one step. Once `4n ≥ N` the nearest
-admissible point on that axis is the pure dual corner: the expressed height
-locks at `-1/3`, and any further mutual growth remains in the internal sum.
+## Aligned gravitons
 
-The same step is a dual rotation, the graviton of one particle. About an
-axis transverse to a computational eigenstate it replaces the Born weight
-`1` by `cos²(π/N)`. The orthogonal outcome has probability `sin²(π/N)`.
-For `N ≥ 3` that probability lies strictly between `(3/4)ε_N` and
-`(3π²/16)ε_N`, and strictly above `ε_N` itself. For `N ≥ 5` it lies
-strictly below `1/2`, and the original outcome remains the majority. About
-the eigenaxis the step multiplies the eigenstate by a phase, leaves the
-weight equal to `1`, and the orthogonal probability is `0`. On every
-compactification with `N > 10¹⁹` the orthogonal probability lies strictly
-below `10⁻³⁷`. Three hundred aligned steps on that compactification remain
-in the cone, express `300²` times one step, and stay strictly above
-`-10⁻³²`.
+`n` copies aligned on that axis add in the rapidity. The square of the sum
+splits into `n` own shares and `n(n-1)` ordered-pair shares. Every share
+equals `farHeight`, the height of the one graviton that travels alone, and
+that height does not depend on `n`. The ordered-pair sum vanishes for one
+graviton. Once `n ≥ 1` are present, one further graviton keeps its own
+share equal to `farHeight` and makes the ordered-pair sum strictly more
+negative, by `2n` shares. For `n ≥ 3` the ordered-pair sum is strictly more
+negative than the own sum.
 
-One aligned step expresses exactly `-ε_N`. For `N ≥ 5` that height lies
-strictly above the lock `-1/3`. Two aligned steps remain admissible for
-`N ≥ 8` and express four times one step. The weight of a body is this
-foot. One exchanged step is not the lock.
+While `4n ≤ N` the copies stay in the cone, and the height they express is
+this split, `n²` times one graviton. Once `4n ≥ N` the nearest admissible
+point on that axis is the pure dual corner: the expressed height locks at
+`-1/3`, and any further mutual growth remains in the internal sum. For
+`N ≥ 5` one graviton stays strictly above that lock. For `N ≥ 8` two
+gravitons stay in the cone, and their height is four times one.
+
+## The same step, read on a spinor
+
+The step is the dual rotor of that angle. About an axis transverse to a
+computational eigenstate it replaces the Born weight `1` by `cos²(π/N)`.
+The orthogonal outcome has probability `sin²(π/N)`. For `N ≥ 3` that
+probability lies strictly between `(3/4)ε_N` and `(3π²/16)ε_N`, and
+strictly above `ε_N` itself. For `N ≥ 5` it lies strictly below `1/2`, so
+the original outcome remains the majority. About the eigenaxis the step
+multiplies the eigenstate by a phase, leaves the weight equal to `1`, and
+the orthogonal probability is `0`. On every compactification with
+`N > 10¹⁹` the orthogonal probability lies strictly below `10⁻³⁷`. Three
+hundred aligned gravitons on that compactification remain in the cone,
+express `300²` times one, and stay strictly above `-10⁻³²`.
+
+## Same angle, other carriers
+
+The usual step, the dual step, and the equal-scale step are three
+admissible carriers of one lattice angle, with heights `+ε_N`, `-ε_N`, and
+`0`. The equal-scale phase `π` makes the interference negative and is not
+admissible. No mass is assigned to any carrier. A meson spectrum is not
+read off them.
+
+The charged-pion mass is an external stand-in, compared with the floors in
+`NuclearLayer`. The mass ratio read from the channel length, with no meson
+mass as an input, is `SignReversal.channelMassRatio`. Neither is a graviton.
 
 ## Not claimed
 
@@ -58,16 +71,11 @@ foot. One exchanged step is not the lock.
   it is not this Born weight. What is fixed, once a compactification lies
   under that window, is the size: `floor_at_most_proton_planck`.
 * That every device error is one transverse step. The orthogonal
-  probability is not the height. A meson mass is not `ε_N`:
-  `pion_over_proton_ne_any_floor`. The exchange of one step is the step
-  itself.
-* A Newtonian multi-body law, or a force between mesons at separated
+  probability is not the height `ε_N`.
+* A Newtonian multi-body law, or a force between bodies at separated
   positions. The mutual share is the cross term of aligned rapidities on
   one axis. The expressed point is the admissible foot already constructed
   in `SourceSuperposition`.
-* A meson spectrum. The usual step, the dual step, the equal-scale step, and
-  the unexpressed excess are different carriers of one angle. No mass is
-  assigned to the phase at which the equal-scale interference is negative.
 -/
 
 noncomputable section
@@ -156,9 +164,14 @@ theorem oneStep_admissible {N : ℕ} (hN : 4 ≤ N) :
   oneAxisDual_admissible (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
     (stepAngle_le_half_pi hN)
 
-/-- `n` aligned dual steps on axis 0. -/
+/-- `n` gravitons aligned on axis 0: `n` times one dual step. -/
 def alignedSteps (n N : ℕ) : TorsionParams :=
   oneAxisDual ((n : ℝ) * stepAngle N)
+
+theorem alignedSteps_one (N : ℕ) :
+    alignedSteps 1 N = oneAxisDual (stepAngle N) := by
+  unfold alignedSteps
+  rw [Nat.cast_one, one_mul]
 
 theorem alignedAngle_le_half_pi {n N : ℕ} (h : 4 * n ≤ N) :
     (n : ℝ) * stepAngle N ≤ Real.pi / 2 := by
@@ -213,6 +226,20 @@ theorem collective_square {n N : ℕ} (hN : 0 < N) :
   field_simp [hNz]
   ring
 
+/-- Two aligned gravitons stay in the cone, and their height is four times one.
+`two_fourfold_split` writes that height as two own shares and two ordered-pair
+shares. -/
+theorem twoGravitons_fourfold {N : ℕ} (hN : 8 ≤ N) :
+    IsAdmissibleContinuous (alignedSteps 2 N) ∧
+      JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
+  have hadm : 4 * 2 ≤ N := by
+    have : 4 * 2 = 8 := by norm_num
+    simpa [this] using hN
+  refine ⟨collective_admissible hadm, ?_⟩
+  rw [collective_square (n := 2) hpos, collective_square (n := 1) hpos]
+  norm_num
+
 /-- The admissible foot of a pure dual rapidity on axis 0. -/
 def expressedOneAxis (θ : ℝ) : TorsionParams where
   alpha := fun
@@ -265,7 +292,13 @@ theorem oneStep_below_corner {N : ℕ} (hN : 5 ≤ N) :
     nlinarith
   · exact neg_lt_zero.mpr (div_pos (by norm_num) hden)
 
-/-! ### The step as a dual rotation -/
+/-- One graviton stays strictly above the lock `-1/3`. -/
+theorem oneGraviton_above_lock {N : ℕ} (hN : 5 ≤ N) :
+    -((1 : ℝ) / 3) < JNormalized (alignedSteps 1 N) := by
+  rw [alignedSteps_one]
+  exact (oneStep_below_corner hN).1
+
+/-! ### The same step, read on a spinor -/
 
 theorem spinUp_zero : spinUp 0 = 1 := by
   simp [spinUp]
@@ -577,32 +610,6 @@ theorem transverseDefect_vs_floor {N : ℕ} (hN : 5 ≤ N) :
     exact hfloor.2
   · linarith [hweight.1]
 
-/-- One aligned step expresses the floor, and stays strictly above the lock. -/
-theorem oneExchange_height {N : ℕ} (hN : 4 ≤ N) :
-    JNormalized (alignedSteps 1 N) = -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) := by
-  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
-  rw [collective_square (n := 1) hpos, JNormalized_oneStep hpos]
-  norm_num
-
-theorem oneExchange_above_lock {N : ℕ} (hN : 5 ≤ N) :
-    -((1 : ℝ) / 3) < JNormalized (alignedSteps 1 N) := by
-  rw [oneExchange_height (le_trans (by decide : (4 : ℕ) ≤ 5) hN)]
-  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
-  rw [← JNormalized_oneStep hpos]
-  exact (oneStep_below_corner hN).1
-
-/-- Two aligned steps stay in the cone and express four times one step. -/
-theorem twoExchanges_fourfold {N : ℕ} (hN : 8 ≤ N) :
-    IsAdmissibleContinuous (alignedSteps 2 N) ∧
-      JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
-  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
-  have hadm : 4 * 2 ≤ N := by
-    have : 4 * 2 = 8 := by norm_num
-    simpa [this] using hN
-  refine ⟨collective_admissible hadm, ?_⟩
-  rw [collective_square (n := 2) hpos, collective_square (n := 1) hpos]
-  norm_num
-
 /-- The orthogonal probability strictly exceeds the height `ε_N`. -/
 theorem defect_gt_floor {N : ℕ} (hN : 3 ≤ N) :
     (16 : ℝ) / (3 * (N : ℝ) ^ 2) < Real.sin (Real.pi / (N : ℝ)) ^ 2 := by
@@ -776,13 +783,14 @@ theorem threeHundred_square {N : ℕ} (hN : 10 ^ 19 < N) :
 
 /-! ### Own shares and mutual shares
 
-The normalized height is quadratic in the rapidity, so `n` aligned steps
+The normalized height is quadratic in the rapidity, so `n` aligned gravitons
 split into `n` own shares and `n(n-1)` ordered-pair shares. Each share
-equals `farHeight`, the height of the one step that travels alone. Adding
-one step contributes one own share and `2n` new ordered-pair shares. Inside
-the cone the expressed height is the split. On and past the wall the
-expressed height is the lock `-1/3`, while the mutual sum of the internal
-rapidities keeps becoming more negative.
+equals `farHeight`, the height of the one graviton that travels alone.
+Adding one graviton contributes one own share and `2n` new ordered-pair
+shares. Inside the cone the expressed height is this split
+(`expressed_own_plus_mutual`). On and past the wall the expressed height is
+the lock `-1/3`, while the mutual sum of the internal rapidities keeps
+becoming more negative.
 -/
 
 /-- Height of one graviton, the step that travels alone. -/
@@ -955,15 +963,16 @@ theorem expressed_locks_while_mutual_grows {n N : ℕ} (hN : 0 < N) (h : N ≤ 4
   rw [express_aligned]
   exact collective_locks hN h
 
-/-! ### Four carriers of one angle
+/-! ### Carriers of one angle
 
-One lattice angle builds four different carriers. The usual step has height
-`+ε_N` and interference strictly above `1`. The dual step has height `-ε_N`
-and lies in the repulsive regime of `J`, while its interference on the cone
-stays strictly between `0` and `1`. The equal-scale step has height `0` and
-positive interference. The equal-scale phase `π`, where the interference is
-negative, is not admissible. Past the wall the expressed height locks at
-`-1/3` and the internal height lies strictly below that lock.
+One lattice angle builds three admissible carriers, and none is a mass.
+The usual step has height `+ε_N` and interference strictly above `1`. The
+dual step, one graviton, has height `-ε_N` and lies in the repulsive regime
+of `J`, while its interference on the cone stays strictly between `0` and
+`1`. The equal-scale step has height `0` and positive interference. The
+equal-scale phase `π`, where the interference is negative, is not
+admissible. Past the wall the expressed height locks at `-1/3` and the
+internal height lies strictly below that lock.
 -/
 
 /-- Pure usual rapidity `θ` on axis 0. -/

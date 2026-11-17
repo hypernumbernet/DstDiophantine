@@ -3177,48 +3177,67 @@ example {N : ℕ} (hN : 5 ≤ N) :
   · exact GravitonQuantum.transverseStep_defect hpos
   · exact hfloor.1
   · exact hfloor.2.1
-  · exact GravitonQuantum.oneExchange_above_lock hN
+  · exact GravitonQuantum.oneGraviton_above_lock hN
 
-/-- Regression: the graviton read at the channel length has proton-mass ratio strictly between
-`2/19` and `9/28`, above `ε_8` and below the lock, and above the proton Planck floor by more
-than `10³⁶`. No meson mass enters. -/
+/-- Regression: the mass ratio read from the channel length lies strictly between `2/19` and
+`9/28`, above `ε_8` and below the lock, and above the proton Planck floor by more than `10³⁶`.
+For `N ≤ 4` or `N ≥ 8` it equals no lattice height. A meson mass is not an input. -/
 example {r₁ : ℝ} {N : ℕ} (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1)
     (hN : N ≤ 4 ∨ 8 ≤ N) :
-    (2 / 19 : ℝ) < exchangeMassRatio r₁ ∧ exchangeMassRatio r₁ < 9 / 28 ∧
-      (SI.epsN 8 : ℝ) < exchangeMassRatio r₁ ∧
-      exchangeMassRatio r₁ < (SI.epsN 4 : ℝ) ∧
-      (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < exchangeMassRatio r₁ ∧
-      (SI.epsN N : ℝ) ≠ exchangeMassRatio r₁ := by
-  have hwindow := exchangeMassRatio_window hr0 hr1
-  have hfloors := exchangeMassRatio_between_remote_floors hr0 hr1
+    (2 / 19 : ℝ) < channelMassRatio r₁ ∧ channelMassRatio r₁ < 9 / 28 ∧
+      (SI.epsN 8 : ℝ) < channelMassRatio r₁ ∧
+      channelMassRatio r₁ < (SI.epsN 4 : ℝ) ∧
+      (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < channelMassRatio r₁ ∧
+      (SI.epsN N : ℝ) ≠ channelMassRatio r₁ := by
+  have hwindow := channelMassRatio_window hr0 hr1
+  have hfloors := channelMassRatio_between_remote_floors hr0 hr1
   exact ⟨hwindow.1, hwindow.2, hfloors.1, hfloors.2,
-    exchangeMassRatio_exceeds_planck hr0 hr1,
-    exchangeMassRatio_ne_remote_floor hr0 hr1 hN⟩
+    channelMassRatio_exceeds_planck hr0 hr1,
+    channelMassRatio_ne_remote_floor hr0 hr1 hN⟩
 
-/-- Regression: the orthogonal probability exceeds the height, and the charged-pion mass over the
-proton mass is the height of no lattice step. It exceeds the proton Planck floor by more than
-`10³⁶`. A floor at or below that Planck floor forces `N > 10¹⁹`, on which one transverse step
-errs by less than `10⁻³⁷` and three hundred aligned steps stay above `-10⁻³²`. -/
+/-- Regression: the orthogonal probability exceeds the height of one graviton. A floor at or
+below the proton Planck floor forces `N > 10¹⁹`, on which one transverse step errs by less than
+`10⁻³⁷` and three hundred aligned gravitons stay above `-10⁻³²`. -/
 example (N : ℕ) :
     (3 ≤ N →
       -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <
         1 - GravitonQuantum.computationalWeight
           (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
             spinUp)) ∧
-      SI.epsN N ≠ SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
-      (10 : ℚ) ^ 36 <
-        (SI.pionMassMeVApprox / SI.protonMassMeVApprox) / ((16 / 3) * alphaG) ∧
       (0 < N → SI.epsN N ≤ (16 / 3) * alphaG →
         10 ^ 19 < N ∧
           Real.sin (Real.pi / (N : ℝ)) ^ 2 < (1 : ℝ) / 10 ^ 37 ∧
           -((1 : ℝ) / 10 ^ 32) <
             JNormalized (GravitonQuantum.alignedSteps 300 N)) := by
-  refine ⟨fun hN => GravitonQuantum.transverse_defect_gt_height hN,
-    pion_over_proton_ne_any_floor N, pion_proton_planck_factor, ?_⟩
+  refine ⟨fun hN => GravitonQuantum.transverse_defect_gt_height hN, ?_⟩
   intro hpos hfloor
   have hbig := floor_at_most_proton_planck hpos hfloor
   exact ⟨hbig, GravitonQuantum.transverse_defect_below_inv_pow hbig,
     (GravitonQuantum.threeHundred_square hbig).2.2.1⟩
+
+/-- Regression: the charged-pion mass over the proton mass lies strictly between `ε_6` and `ε_5`,
+equals no lattice height, lies in the channel-length interval `(2/19, 9/28)`, and exceeds the
+proton Planck floor by more than `10³⁶`. The interval is not computed from this mass. -/
+example (N : ℕ) :
+    SI.epsN 6 < SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      SI.pionMassMeVApprox / SI.protonMassMeVApprox < SI.epsN 5 ∧
+      SI.epsN N ≠ SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      (2 / 19 : ℚ) < SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      SI.pionMassMeVApprox / SI.protonMassMeVApprox < 9 / 28 ∧
+      (10 : ℚ) ^ 36 <
+        (SI.pionMassMeVApprox / SI.protonMassMeVApprox) / ((16 / 3) * alphaG) := by
+  have h := pion_over_proton_between_floors
+  have hwin := pion_over_proton_in_channel_window
+  exact ⟨h.1, h.2.1, pion_over_proton_ne_any_floor N, hwin.1, hwin.2,
+    pion_proton_planck_factor⟩
+
+/-- Regression: two aligned gravitons remain admissible for `N ≥ 8`, and their height is four
+times one graviton. -/
+example {N : ℕ} (hN : 8 ≤ N) :
+    Admissible.IsAdmissibleContinuous (GravitonQuantum.alignedSteps 2 N) ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) =
+        4 * JNormalized (GravitonQuantum.alignedSteps 1 N) :=
+  GravitonQuantum.twoGravitons_fourfold hN
 
 /-- Regression: `n` aligned gravitons split into `n` own shares and `n(n-1)` ordered-pair
 shares. Each share equals one graviton travelling alone. For `n ≥ 1` one further graviton
