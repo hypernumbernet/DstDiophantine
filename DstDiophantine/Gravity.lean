@@ -217,7 +217,9 @@ import list of `Gravity.Regression`.
 * `NuclearLength` — the charged-pion Compton wavelength against laboratory caps. Not the definition
   of the sign-reversal scale.
 * `SignReversal` — the sign-reversal scale `r₁` is an observational constant. The channel length is
-  the definition `ℓ=2 x₁ r₁`.
+  the definition `ℓ=2 x₁ r₁`. The graviton read there has mass ratio `λ_p/ℓ` to the proton, strictly
+  between `2/19` and `9/28` on the scattering window, above `ε_8` and below the lock `1/3`, and
+  above `(16/3) α_G` by more than `10³⁶`. No meson mass enters.
 * `StrongChannel` — the rapidity threshold on `(π/4,π/2)`. The prefactor `κ`, a fusion rate, and
   the `1/v` law are not derived.
 * `LengthRule` — both channels at once. Nothing here fixes `κ` or computes a binding.

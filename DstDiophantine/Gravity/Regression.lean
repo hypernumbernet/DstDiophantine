@@ -3179,6 +3179,22 @@ example {N : ℕ} (hN : 5 ≤ N) :
   · exact hfloor.2.1
   · exact GravitonQuantum.oneExchange_above_lock hN
 
+/-- Regression: the graviton read at the channel length has proton-mass ratio strictly between
+`2/19` and `9/28`, above `ε_8` and below the lock, and above the proton Planck floor by more
+than `10³⁶`. No meson mass enters. -/
+example {r₁ : ℝ} {N : ℕ} (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1)
+    (hN : N ≤ 4 ∨ 8 ≤ N) :
+    (2 / 19 : ℝ) < exchangeMassRatio r₁ ∧ exchangeMassRatio r₁ < 9 / 28 ∧
+      (SI.epsN 8 : ℝ) < exchangeMassRatio r₁ ∧
+      exchangeMassRatio r₁ < (SI.epsN 4 : ℝ) ∧
+      (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < exchangeMassRatio r₁ ∧
+      (SI.epsN N : ℝ) ≠ exchangeMassRatio r₁ := by
+  have hwindow := exchangeMassRatio_window hr0 hr1
+  have hfloors := exchangeMassRatio_between_remote_floors hr0 hr1
+  exact ⟨hwindow.1, hwindow.2, hfloors.1, hfloors.2,
+    exchangeMassRatio_exceeds_planck hr0 hr1,
+    exchangeMassRatio_ne_remote_floor hr0 hr1 hN⟩
+
 /-- Regression: the orthogonal probability exceeds the height, and the charged-pion mass over the
 proton mass is the height of no lattice step. It exceeds the proton Planck floor by more than
 `10³⁶`. A floor at or below that Planck floor forces `N > 10¹⁹`, on which one transverse step
