@@ -51,7 +51,10 @@ of the visit is finite.
 
 * A mass on any nodal shell, or a magnification.
 * That `F = k/(γₛ r²)` is the force on a ray.
-* A boundary condition for a gravitational wave.
+* A boundary condition for a gravitational wave, or a late echo train.
+  The cavity crossing is one ringdown cycle and the interior visit is one
+  return. Neither is a pulse train from a reflector at a Planck proper
+  distance from a horizon.
 * Which of the two ceilings is the physical one.
 -/
 

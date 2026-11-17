@@ -328,7 +328,8 @@ import list of `Gravity.Regression`.
 * `Lensing` — weak deflection by one thin shell. A repulsive shell has neither critical curve on
   its disk.
 * `PhotonReturn` — a ray below the photon sphere has no turning point on the classical exterior. On
-  either recorded ceiling the same ray turns inside the freeze.
+  either recorded ceiling the same ray turns inside the freeze. No boundary condition for a
+  gravitational wave, and no late echo train.
 
 ## One Faraday six-space
 
