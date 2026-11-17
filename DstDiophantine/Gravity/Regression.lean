@@ -257,6 +257,23 @@ example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r
     KillingAxis.killingRate rs r₁ ≠ KillingAxis.killingRate rs r₂ :=
   CurvedTransport.static_not_radial_parallel h₁ h₂ hne
 
+/-- Regression: the incongruence redshift has proper derivative `κ = rₛ/(2r²)`. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    -(KillingAxis.killingNorm rs r) *
+        (KillingAxis.killingNorm rs r * dRapidity_dr rs r) =
+      rs / (2 * r ^ 2) := by
+  simpa [KillingAxis.killingRate] using
+    (KillingTransport.incongruence_kappa_eq_exterior h).1
+
+/-- Regression: the inward shift by `ℓ` leaves the pure boost of rate `κ`. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    Motor.omegaBiv (KillingTransport.transportedParams
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r)
+          (KillingAxis.killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]) =
+      (KillingAxis.killingRate rs r / 2) • Generators.hyperbolic 0 :=
+  KillingTransport.omegaBiv_axisShift_eq_boost h
+
 /-- Regression: static bivectors at two exterior radii are not a flat transport. -/
 example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂)
     (x : Vec4) :

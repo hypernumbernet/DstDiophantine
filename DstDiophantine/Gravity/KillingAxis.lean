@@ -52,7 +52,9 @@ derivative.
 
 ## Not claimed
 
-* That the double-spacetime mismatch `Ω` itself is a Killing bivector.
+* That the finite rotor of rapidity `φ` is itself a Killing bivector. The proper
+  derivative of its redshift is the coefficient `κ`, and the shift `ℓ` isolates
+  that boost: `Gravity.KillingTransport`.
 * Flat displacement of a fixed bivector, with translational part `λ + ω x`
   along any differentiable curve, is `Gravity.KillingTransport`. The
   Levi-Civita action on the static bivector is `Gravity.CurvedTransport`.

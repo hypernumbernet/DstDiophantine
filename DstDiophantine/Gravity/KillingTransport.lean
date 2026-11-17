@@ -18,12 +18,19 @@ On the exterior the boost rate `κ = rₛ/(2r²)` has radial derivative
 `-rₛ/r³`. Static bivectors at two exterior radii are not flat transports of
 one another.
 
+On that chart the mismatch is the radial boost of rapidity `φ`, and the
+redshift it carries is `ν = e^{-φ}`. The proper radial derivative of that
+redshift is the Lorentz coefficient of the static bivector,
+`κ = -ν dφ/ds = rₛ/(2r²)`. The inward translation of length `ℓ = ν/κ` carries
+the bivector onto the pure boost of this rate: the time translation drops out
+and the torsional scalar `½κ²` remains. That scalar is the same at every
+origin.
+
 ## Not claimed
 
-* An identification of the bivector with the torsional mismatch of the
-  parent theory. The Levi-Civita action on the static bivector is
-  `Gravity.CurvedTransport`. Motion off the equatorial leg is
-  `Gravity.OffEquator`.
+* That the finite rotor of rapidity `φ` is itself the Killing bivector.
+  The Levi-Civita action on the static bivector is `Gravity.CurvedTransport`.
+  Motion off the equatorial leg is `Gravity.OffEquator`.
 -/
 
 namespace DstDiophantine.Gravity.KillingTransport
@@ -255,5 +262,83 @@ theorem static_not_flat_transport {rs r₁ r₂ : ℝ}
     have hα := congrArg (fun t : TorsionParams => t.alpha 0) h
     simpa [pureBoost] using hα
   exact killingRate_ne_of_exterior h₁ h₂ hne hrate
+
+/-! ### The exterior rate read from the incongruence -/
+
+/-- The proper radial derivative of the incongruence redshift is the static
+boost rate `κ = rₛ/(2r²)`. Here `ν ∂_r φ` is `dφ/ds`. -/
+theorem incongruence_kappa_eq_exterior {rs r : ℝ} (h : IsExterior rs r) :
+    -(killingNorm rs r) * (killingNorm rs r * dRapidity_dr rs r) = killingRate rs r ∧
+      killingRate rs r = rs / (2 * r ^ 2) := by
+  refine ⟨?_, rfl⟩
+  rw [KillingAxis.killingRate_eq_norm_mul_deriv h,
+    dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA h]
+  simp only [killingNorm]
+  ring
+
+/-- `ℓ` is the length on which the incongruence rapidity would change by one. -/
+theorem axisDistance_eq_rapidity_length {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.axisDistance rs r = -1 / (killingNorm rs r * dRapidity_dr rs r) := by
+  have hden : killingNorm rs r * dRapidity_dr rs r ≠ 0 :=
+    mul_ne_zero (KillingAxis.killingNorm_pos h).ne' (KillingAxis.dRapidity_dr_neg h).ne
+  have hmul := KillingAxis.axisDistance_mul_rapidity h
+  have hre : KillingAxis.axisDistance rs r * (-(dRapidity_dr rs r) * killingNorm rs r) =
+      -(KillingAxis.axisDistance rs r * (killingNorm rs r * dRapidity_dr rs r)) := by
+    ring
+  rw [hre] at hmul
+  rw [eq_div_iff hden]
+  linarith
+
+/-- A radial displacement drops the time translation of `K` exactly at `s = -ℓ`. -/
+theorem radial_shift_drops_translation_iff {rs r s : ℝ} (h : IsExterior rs r) :
+    (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, s, 0, 0]).trans.lambda = (fun _ => 0) ↔
+      s = -KillingAxis.axisDistance rs r := by
+  rw [transported_killing_radial]
+  constructor
+  · intro hLam
+    have h0 : killingNorm rs r + killingRate rs r * s = 0 := by
+      have := congrFun hLam 0
+      simpa [Matrix.cons_val_zero, Pi.zero_apply] using this
+    have hkl := KillingAxis.killingRate_mul_axisDistance h
+    have hsum : killingRate rs r * (KillingAxis.axisDistance rs r + s) = 0 := by
+      rw [mul_add, hkl]
+      linarith
+    have hs : KillingAxis.axisDistance rs r + s = 0 :=
+      (mul_eq_zero.mp hsum).resolve_left (KillingAxis.killingRate_pos h).ne'
+    linarith
+  · intro hs
+    rw [hs]
+    ext μ
+    fin_cases μ <;> simp [KillingAxis.killingRate_mul_axisDistance h]
+
+/-- Moving the origin to the axis leaves the pure boost of rate `κ`. -/
+theorem omegaBiv_axisShift_eq_boost {rs r : ℝ} (h : IsExterior rs r) :
+    omegaBiv (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]) =
+      (killingRate rs r / 2) • hyperbolic 0 := by
+  have hdrop := (radial_shift_drops_translation_iff h).2 rfl
+  rw [omegaBiv]
+  have htrans : omegaTrans (transportedParams
+      (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]).trans = 0 := by
+    simp [omegaTrans, hdrop]
+  rw [htrans, add_zero, transported_killing_torsion, omegaTorsion_pureBoost]
+
+/-- The torsional scalar travels with the boost and stays positive. -/
+theorem J_axisShift_pos {rs r : ℝ} (h : IsExterior rs r) (x : Vec4) :
+    J (transportedParams (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion =
+      (1 / 2) * (killingRate rs r) ^ 2 ∧
+      0 < J (transportedParams
+        (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion := by
+  have hJ : J (transportedParams
+      (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion =
+        (1 / 2) * (killingRate rs r) ^ 2 := by
+    rw [J_transported]
+    simp [killingParams, J_pureBoost]
+  refine ⟨hJ, ?_⟩
+  have _hk := KillingAxis.killingRate_pos h
+  rw [hJ]
+  positivity
 
 end DstDiophantine.Gravity.KillingTransport

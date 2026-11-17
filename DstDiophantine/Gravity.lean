@@ -84,8 +84,11 @@ import list of `Gravity.Regression`.
   parallel transports of one another.
 * `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x`
   and leaves the Lorentz part fixed. Along a differentiable curve the translational part changes
-  at the rate `ω(ẋ)`. `J` is constant. Static bivectors at two exterior radii are not flat
-  transports of one another. The Levi-Civita action on the static bivector is `CurvedTransport`.
+  at the rate `ω(ẋ)`. `J` is constant. On the exterior the proper radial derivative of the
+  mismatch redshift is the static coefficient `κ = rₛ/(2r²)`, and the inward shift of length
+  `ℓ` drops the time translation, leaving the pure boost of that rate. Static bivectors at two
+  exterior radii are not flat transports of one another. The Levi-Civita action on the static
+  bivector is `CurvedTransport`.
 * `RadialFall` — the same release law on the exterior chart. The speed cancels and
   \(d^2r/d\tau^2=-r_s/(2r^2)\).
 * `Perihelion` — constant angular momentum on that coframe. The areal acceleration
