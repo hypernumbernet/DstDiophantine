@@ -36,9 +36,9 @@ induces the Minkowski metric as well. Its coordinate torsion is
 teleparallel quadratic vanishes for every in-plane jet. The one-axis
 mismatch of that angle is \(J=-\tfrac12\theta^2\), opposite the pure boost.
 
-`Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, `SI`, and
-`LineWindow` are imported by the modules below. They are not named in the
-import list of `Gravity.Regression`.
+`Coframe`, `Sandwich`, `Weitzenbock`, `Schwarzschild`, and `SI` are
+imported by the modules below. They are not named in the import list of
+`Gravity.Regression`. `LineWindow` is imported there.
 
 ## Chart dictionary
 

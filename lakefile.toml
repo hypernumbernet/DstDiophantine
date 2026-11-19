@@ -1,7 +1,9 @@
 name = "DstDiophantine"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["DstDiophantine"]
+# Root file (Diophantine path and gravity), plus the parallel barrels that
+# `Basic` does not re-export. A bare `lake build` then checks every track.
+defaultTargets = ["DstDiophantine", "DstDiophantine.Logic", "DstDiophantine.CGA"]
 # This package still uses ordinary Lean files. Mathlib is a module-system
 # package, so without this flag every import of Mathlib warns.
 allowNonModules = true

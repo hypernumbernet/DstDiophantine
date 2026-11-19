@@ -85,7 +85,7 @@ private theorem involution_isCompl {M : Type*} [AddCommGroup M] [Module ℝ M]
           rw [← mul_smul]; norm_num
         calc (1 / 2 : ℝ) • (x + φ x) + (1 / 2 : ℝ) • (x - φ x)
             = (1 / 2 : ℝ) • ((x + φ x) + (x - φ x)) := by rw [← smul_add]
-          _ = (1 / 2 : ℝ) • (x + x) := by abel
+          _ = (1 / 2 : ℝ) • (x + x) := by abel_nf
           _ = (1 / 2 : ℝ) • ((2 : ℝ) • x) := by rw [two_smul]
           _ = x := h2
 

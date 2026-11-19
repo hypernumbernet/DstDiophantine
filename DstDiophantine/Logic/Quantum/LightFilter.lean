@@ -260,12 +260,12 @@ theorem spinVec_coord_one (u : DualSpinor) :
     spinVec u 1 = 2 * ((starRingEnd ℂ) (u 0) * u 1).im := by
   set z := (starRingEnd ℂ) (u 0) * u 1
   have hsecond : (starRingEnd ℂ) (u 1) * (I * u 0) = I * star z := by
-    simp [z, star_mul', mul_assoc, mul_left_comm, mul_comm]
+    simp [z, star_mul', mul_assoc, mul_comm]
   have hfirst : (starRingEnd ℂ) (u 0) * (-I * u 1) = -I * z := by
-    simp [z, mul_assoc, mul_left_comm, mul_comm]
+    simp [z, mul_assoc, mul_comm]
   rw [spinVec, show pauli 1 = pauliY from rfl, spinExp_pauliY_coord, hfirst, hsecond]
-  simp [Complex.add_re, Complex.mul_re, Complex.mul_im, Complex.I_re, Complex.I_im,
-    Complex.conj_re, Complex.conj_im]
+  simp [Complex.add_re, Complex.mul_re, Complex.I_re, Complex.I_im, Complex.conj_re,
+    Complex.conj_im]
   ring
 
 theorem spinVec_coord_two (u : DualSpinor) :
@@ -327,11 +327,11 @@ theorem manifest_spinorOfNull {v : Vec4} (hQ : Q31 v = 0) (ht : 0 ≤ v 0) :
     have hs : (Real.sqrt (v 0)) ^ 2 = v 0 := Real.sq_sqrt ht
     funext i
     fin_cases i
-    · simp [manifest, informationWeight_coord, hx, hy, hz', hs]
+    · simp [manifest, informationWeight_coord, hs]
     · simp [manifest, spinVec_coord_zero, hx]
     · simp [manifest, spinVec_coord_one, hy]
-    · simp [manifest, spinVec_coord_two, hz', hs, Complex.norm_real, Real.norm_of_nonneg
-        (Real.sqrt_nonneg _), sq_abs]
+    · simp [manifest, spinVec_coord_two, hz', hs, Complex.norm_real,
+        Real.norm_of_nonneg (Real.sqrt_nonneg _)]
   · set s : ℝ := Real.sqrt ((v 0 + v 3) / 2)
     have hspos : 0 < s := by
       refine Real.sqrt_pos.mpr ?_
@@ -369,13 +369,13 @@ theorem manifest_spinorOfNull {v : Vec4} (hQ : Q31 v = 0) (ht : 0 ≤ v 0) :
       ring
     have hx : spinVec u 0 = v 1 := by
       rw [spinVec_coord_zero, hcross]
-      simp [Complex.div_re, Complex.add_re, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im,
-        Complex.I_re, Complex.I_im]
+      simp [Complex.add_re, Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re,
+        Complex.I_im]
       ring
     have hy : spinVec u 1 = v 2 := by
       rw [spinVec_coord_one, hcross]
-      simp [Complex.div_im, Complex.add_im, Complex.mul_im, Complex.mul_re, Complex.ofReal_re,
-        Complex.ofReal_im, Complex.I_re, Complex.I_im]
+      simp [Complex.add_im, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re,
+        Complex.I_im]
       ring
     have hzv : spinVec u 2 = v 3 := by
       rw [spinVec_coord_two, hnorm0, hnorm1]
@@ -437,11 +437,11 @@ theorem manifest_add_sub (u v : DualSpinor) :
 
 theorem spinUp_eq_dualOf : spinUp = dualOf 1 0 := by
   ext i
-  fin_cases i <;> simp [spinUp, EuclideanSpace.single, PiLp.single_apply]
+  fin_cases i <;> simp [spinUp, EuclideanSpace.single]
 
 theorem spinDown_eq_dualOf : spinDown = dualOf 0 1 := by
   ext i
-  fin_cases i <;> simp [spinDown, EuclideanSpace.single, PiLp.single_apply]
+  fin_cases i <;> simp [spinDown, EuclideanSpace.single]
 
 theorem manifest_spinUp : manifest spinUp = ![1, 0, 0, 1] := by
   rw [spinUp_eq_dualOf]
@@ -551,10 +551,6 @@ theorem Q31_spaceReverse (v : Vec4) : Q31 (spaceReverse v) = Q31 v := by
     spaceReverse_ne_zero (by decide : (3 : Fin 4) ≠ 0)]
   ring
 
-theorem Q31_eq_minkowskiQ (v : Vec4) : Q31 v = minkowskiQ v := by
-  rw [Q31_eq_minkowskiDot, minkowskiQ_eq, minkowskiDot]
-  ring
-
 /-- Direction of the spin of a nonzero dual spinor. -/
 noncomputable def spinAxis (u : DualSpinor) : Fin 3 → ℝ :=
   fun k => spinVec u k / informationWeight u
@@ -566,9 +562,9 @@ private theorem pauliComb_conjTranspose (n : Fin 3 → ℝ) :
 
 private theorem spinProj_conjTranspose (s : ℝ) (a : Fin 3 → ℝ) :
     (spinProj s a).conjTranspose = spinProj s a := by
-  unfold spinProj pauliComb
-  simp [Matrix.conjTranspose_smul, Matrix.conjTranspose_add, Matrix.conjTranspose_one,
-    Matrix.conjTranspose_sum, pauli_conjTranspose, Complex.star_def]
+  unfold spinProj
+  simp [pauliComb_conjTranspose, Matrix.conjTranspose_smul, Matrix.conjTranspose_add,
+    Matrix.conjTranspose_one]
 
 private theorem applyMat_eq_zero_of_proj {P : Matrix (Fin 2) (Fin 2) ℂ}
     (hH : P.conjTranspose = P) (hP : P * P = P) {u : DualSpinor}
@@ -577,10 +573,7 @@ private theorem applyMat_eq_zero_of_proj {P : Matrix (Fin 2) (Fin 2) ℂ}
     rw [applyMat_inner_mul, hH, hP]
     exact h
   rw [inner_self_eq_norm_sq_to_K] at hinner
-  have hre := congrArg Complex.re hinner
-  rw [sq] at hre
-  simp [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, Complex.zero_re] at hre
-  exact hre
+  exact norm_eq_zero.mp (Complex.ofReal_eq_zero.mp (sq_eq_zero_iff.mp hinner))
 
 private theorem axisDot_spin_sq (u : DualSpinor) :
     spinVec u 0 ^ 2 + spinVec u 1 ^ 2 + spinVec u 2 ^ 2 = informationWeight u ^ 2 := by
@@ -791,30 +784,16 @@ the spatially reversed upper image. -/
 theorem realCurrent_weyl (u l : DualSpinor) :
     realCurrent (weylUpper u + weylLower l) = spaceReverse (manifest u) + manifest l := by
   set Ψ := weylUpper u + weylLower l
-  have h0 : realCurrent Ψ 0 = (spaceReverse (manifest u) + manifest l) 0 := by
+  funext i
+  by_cases hi : i = 0
+  · subst i
     rw [realCurrent_zero, norm_sq_weyl_add]
     simp only [Pi.add_apply, spaceReverse_zero, manifest_zero, informationWeight]
-  have h1 : realCurrent Ψ 1 = (spaceReverse (manifest u) + manifest l) 1 := by
-    rw [show (1 : Fin 4) = Fin.succ 0 by decide, realCurrent_spatial]
+  · obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero hi
+    rw [realCurrent_spatial]
     simp only [Pi.add_apply]
-    rw [spaceReverse_ne_zero (by decide : Fin.succ (0 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
+    rw [spaceReverse_ne_zero (Fin.succ_ne_zero k), manifest_succ, manifest_succ]
     ring
-  have h2 : realCurrent Ψ 2 = (spaceReverse (manifest u) + manifest l) 2 := by
-    rw [show (2 : Fin 4) = Fin.succ 1 by decide, realCurrent_spatial]
-    simp only [Pi.add_apply]
-    rw [spaceReverse_ne_zero (by decide : Fin.succ (1 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
-    ring
-  have h3 : realCurrent Ψ 3 = (spaceReverse (manifest u) + manifest l) 3 := by
-    rw [show (3 : Fin 4) = Fin.succ 2 by decide, realCurrent_spatial]
-    simp only [Pi.add_apply]
-    rw [spaceReverse_ne_zero (by decide : Fin.succ (2 : Fin 3) ≠ 0), manifest_succ, manifest_succ]
-    ring
-  funext i
-  fin_cases i
-  · exact h0
-  · exact h1
-  · exact h2
-  · exact h3
 
 theorem realCurrent_weylUpper (u : DualSpinor) :
     realCurrent (weylUpper u) = spaceReverse (manifest u) := by

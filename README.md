@@ -186,7 +186,7 @@ an infinite leaf.
 
 ### Explicit axioms
 
-mathlib at `v4.34.0-rc1` does not contain these theorems. Each one is an
+mathlib at this pin (`v4.35.0`) does not contain these theorems. Each one is an
 `axiom` in `Theorems/`, used by the Beal reduction. None of them is a Lean
 proof of the cited theorem, and none of them is the live Fermat route.
 `FermatMixedMotorResidual` does not assume `fermatLastTheorem`.
@@ -787,7 +787,7 @@ the source. Japanese sources load `luatexja`.
 ## Build
 
 The toolchain is pinned in [`lean-toolchain`](lean-toolchain) at
-`leanprover/lean4:v4.34.0-rc1`. mathlib is the matching revision in
+`leanprover/lean4:v4.35.0`. mathlib is the matching revision in
 [`lakefile.toml`](lakefile.toml). Install [elan](https://github.com/leanprover/elan),
 then from the repository root:
 
@@ -795,31 +795,21 @@ then from the repository root:
 lake build
 ```
 
-A module can be built on its own. The gravity and logic barrels do not pull
-each other in through `Basic`:
+That builds the Diophantine root (and, through it, gravity), the logic barrel,
+and the conformal probe. `Basic` does not re-export those parallel barrels.
+A module can still be built on its own:
 
 ```bash
 lake build DstDiophantine.Gravity
 lake build DstDiophantine.Logic
-lake build DstDiophantine.Logic.Quantum.DiracEquation
-lake build DstDiophantine.Logic.Quantum.DiracCovariance
-lake build DstDiophantine.Logic.Quantum.DiracField
-lake build DstDiophantine.Logic.Quantum.DiracGauge
-lake build DstDiophantine.Logic.Quantum.DiracConjugation
-lake build DstDiophantine.Logic.Quantum.DualEntanglement
-lake build DstDiophantine.Logic.Quantum.DualObservables
-lake build DstDiophantine.Logic.Quantum.DualExchange
 lake build DstDiophantine.CGA
 ```
 
 Continuous integration
 ([`.github/workflows/lean_action_ci.yml`](.github/workflows/lean_action_ci.yml))
 runs that build with
-[lean-action](https://github.com/leanprover/lean-action) and generates
-documentation with
-[docgen-action](https://github.com/leanprover-community/docgen-action) on
-every push and pull request. A toolchain change on `main` or `master` is
-tagged by
+[lean-action](https://github.com/leanprover/lean-action) on pull requests.
+A toolchain change on `main` or `master` is tagged by
 [`.github/workflows/create-release.yml`](.github/workflows/create-release.yml).
 Dependency updates are manual, through
 [`.github/workflows/update.yml`](.github/workflows/update.yml).

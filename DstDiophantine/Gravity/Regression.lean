@@ -112,6 +112,7 @@ import DstDiophantine.Gravity.InteriorClock
 import DstDiophantine.Gravity.MassOrigin
 import DstDiophantine.Gravity.MassCoefficient
 import DstDiophantine.Gravity.GravitonQuantum
+import DstDiophantine.Gravity.LineWindow
 
 /-!
 # Gravity regression examples
@@ -1187,6 +1188,20 @@ example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
 /-- Regression: the charged-pion Compton wavelength lies strictly inside the sign caps. -/
 example : (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 :=
   pion_inside_sign_caps
+
+/-- Regression: a rational window on the π-brackets is a real window on the wavelength. -/
+example {num den : ℕ} {lo hi : ℚ} (hnum : 0 < num) (hden : 0 < den)
+    (hlo : lo < standInWavelength num den piDigitLo)
+    (hhi : standInWavelength num den piDigitHi < hi) :
+    (lo : ℝ) <
+        (num : ℝ) * Real.pi * (SI.hbarApprox : ℝ) /
+          ((den : ℝ) * (SI.electronMassApprox : ℝ) * (SI.speedOfLight : ℝ) *
+            (SI.fineStructureApprox : ℝ) ^ 2) ∧
+      (num : ℝ) * Real.pi * (SI.hbarApprox : ℝ) /
+          ((den : ℝ) * (SI.electronMassApprox : ℝ) * (SI.speedOfLight : ℝ) *
+            (SI.fineStructureApprox : ℝ) ^ 2) <
+        (hi : ℝ) :=
+  ratioWavelength_bounds hnum hden hlo hhi
 
 /-- Regression: the nuclear seat counts are the oscillator closures, not node indices. -/
 example :
