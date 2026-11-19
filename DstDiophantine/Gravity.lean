@@ -162,7 +162,15 @@ imported by the modules below. They are not named in the import list of
   interference negative and is not admissible. These carriers are not a mass spectrum. Once
   `4n ≥ N` the expressed height on that axis locks at `-1/3`, and further mutual growth stays in
   the internal sum. One graviton stays strictly above that lock for `N ≥ 5`. Two aligned gravitons
-  remain admissible for `N ≥ 8` and their height is four times one. A transverse step replaces the
+  remain admissible for `N ≥ 8` and their height is four times one. Gravitons on distinct axes
+  share no ordered-pair height. Two on perpendicular axes stay admissible for `N ≥ 4` and express
+  twice one; for `N ≥ 8` the aligned pair is lower by exactly the two ordered-pair shares. One on
+  each axis expresses three times one. At `N = 4` the three axes meet the pure dual corner and the
+  height is `-1`; for `N ≥ 5` the split stays above `-1`, and for `N ≥ 7` above the one-axis lock.
+  For `N ≥ 12` three aligned gravitons express nine times one, lower by the six ordered-pair shares.
+  The height does not see an order. On a spinor the perpendicular rotors do not commute for every
+  positive angle up to `π`, hence for every lattice step with `N ≥ 3`. A full turn of each axis is
+  `-I`, and those two turns commute. A transverse step replaces the
   computational Born weight `1` by `cos²(π/N)`. The orthogonal probability is `sin²(π/N)`,
   strictly between `(3/4)` and `(3π²/16)` times the floor for `N ≥ 3`, strictly above that floor,
   and strictly below `1/2` for `N ≥ 5`. On every compactification with `N > 10¹⁹` the probability

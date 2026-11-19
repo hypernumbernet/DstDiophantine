@@ -3320,6 +3320,56 @@ example {N n : ℕ} (hN : 5 ≤ N) (hn : N < 4 * n) :
   exact ⟨hroles.1, hroles.2.1, hroles.2.2.1, hroles.2.2.2.1, hroles.2.2.2.2.1,
     hroles.2.2.2.2.2, hneg.1, hneg.2, hex.1, hex.2⟩
 
+/-- Regression: gravitons on distinct axes share no ordered-pair height. The
+three-axis split meets the floor `-1` at `N = 4` and stays above the one-axis
+lock once `N ≥ 7`. -/
+example {N : ℕ} (h8 : 8 ≤ N) (h12 : 12 ≤ N) (h7 : 7 ≤ N) :
+    Admissible.IsAdmissibleContinuous (GravitonQuantum.perpSteps N) ∧
+      JNormalized (GravitonQuantum.perpSteps N) =
+        2 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) =
+        JNormalized (GravitonQuantum.perpSteps N) +
+          GravitonQuantum.mutualSum 2 N ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) <
+        JNormalized (GravitonQuantum.perpSteps N) ∧
+      Admissible.IsAdmissibleContinuous (GravitonQuantum.splitSteps N) ∧
+      JNormalized (GravitonQuantum.splitSteps N) =
+        3 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 3 N) =
+        JNormalized (GravitonQuantum.splitSteps N) +
+          6 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 3 N) <
+        JNormalized (GravitonQuantum.splitSteps N) ∧
+      -((1 : ℝ) / 3) < JNormalized (GravitonQuantum.splitSteps N) := by
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 8) h8
+  have hperp := GravitonQuantum.perp_twofold h4
+  have hmiss := GravitonQuantum.perp_missing_pair h8
+  have hsplit := GravitonQuantum.split_threefold h4
+  have hsix := GravitonQuantum.split_missing_pairs h12
+  exact ⟨hperp.1, hperp.2, hmiss.1, hmiss.2.1, hsplit.1, hsplit.2,
+    hsix.2.1, hsix.2.2, GravitonQuantum.split_above_lock h7⟩
+
+/-- Regression: at `N = 4` one graviton on each axis meets the pure dual corner
+and expresses the floor `-1`. -/
+example :
+    JNormalized (GravitonQuantum.splitSteps 4) = -1 ∧
+      (GravitonQuantum.splitSteps 4).beta 0 = Real.pi / 2 :=
+  ⟨GravitonQuantum.split_at_four.2.1, GravitonQuantum.split_at_four.2.2.1⟩
+
+/-- Regression: perpendicular gravitons do not commute on a spinor. A full turn
+of each axis does. -/
+example {N : ℕ} (hN : 3 ≤ N) :
+    dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 1 (GravitonQuantum.stepAngle N)) ≠
+      dualRotorMat (EuclideanSpace.single 1 (GravitonQuantum.stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)) ∧
+      dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) =
+        dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) :=
+  ⟨GravitonQuantum.perp_gravitons_not_commute hN,
+    GravitonQuantum.fullTurn_commute.2.2⟩
+
 end Gravity
 
 end DstDiophantine

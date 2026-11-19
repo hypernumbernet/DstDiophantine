@@ -74,8 +74,13 @@ mass as an input, is `SignReversal.channelMassRatio`. Neither is a graviton.
   probability is not the height `ε_N`.
 * A Newtonian multi-body law, or a force between bodies at separated
   positions. The mutual share is the cross term of aligned rapidities on
-  one axis. The expressed point is the admissible foot already constructed
-  in `SourceSuperposition`.
+  one axis. Gravitons on distinct axes share no such term: two on
+  perpendicular axes express twice one, and one on each of the three axes
+  expresses three times one. The expressed point is the admissible foot
+  already constructed in `SourceSuperposition`.
+* That the order of two perpendicular gravitons is immaterial on a spinor.
+  The height does not see the order. The dual rotors do not commute, for
+  every angle in `(0, π]`.
 -/
 
 noncomputable section
@@ -1256,6 +1261,328 @@ theorem carrier_roles {N : ℕ} (hN : 5 ≤ N) :
   obtain ⟨_, _, _, hU, hD, hB, hγU, hγDpos, hγDlt, hγB, _, _⟩ := three_carriers hN
   refine ⟨hγU, hγDpos, hγDlt, hγB, hB, ?_⟩
   linarith
+
+/-! ### Gravitons on distinct axes
+
+`J` is a sum of squares, one square on each axis. Gravitons that do not
+share an axis therefore share no ordered-pair height. Two gravitons on
+perpendicular axes express twice one graviton, not four times one. One
+graviton on each of the three axes expresses three times one. The two
+ordered-pair shares of an aligned pair, and the six ordered-pair shares of
+three aligned gravitons, are exactly the height those copies lose by
+leaving a common axis.
+
+At `N = 4` the three axes meet the pure dual corner together, and the
+expressed height is the floor `-1`. For `N ≥ 5` that split stays strictly
+above `-1`, and for `N ≥ 7` strictly above the one-axis lock `-1/3`.
+
+The height does not see an order. On a spinor the same two steps are dual
+rotors about perpendicular axes, and those rotors do not commute.
+-/
+
+/-- One graviton on axis 0 and one on axis 1. -/
+def perpSteps (N : ℕ) : TorsionParams where
+  alpha := fun
+    | 0 => 0
+    | 1 => 0
+    | 2 => 0
+  beta := fun
+    | 0 => stepAngle N
+    | 1 => stepAngle N
+    | 2 => 0
+
+/-- One graviton on each of the three axes. -/
+def splitSteps (N : ℕ) : TorsionParams where
+  alpha := fun
+    | 0 => 0
+    | 1 => 0
+    | 2 => 0
+  beta := fun
+    | 0 => stepAngle N
+    | 1 => stepAngle N
+    | 2 => stepAngle N
+
+theorem J_perpSteps (N : ℕ) :
+    JNormalized (perpSteps N) = 2 * JNormalized (oneAxisDual (stepAngle N)) := by
+  unfold JNormalized
+  rw [J_coef, J_oneAxisDual]
+  simp [perpSteps, Fin.sum_univ_three]
+  ring
+
+theorem J_splitSteps (N : ℕ) :
+    JNormalized (splitSteps N) = 3 * JNormalized (oneAxisDual (stepAngle N)) := by
+  unfold JNormalized
+  rw [J_coef, J_oneAxisDual]
+  simp [splitSteps, Fin.sum_univ_three]
+  ring
+
+theorem perpSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (perpSteps N) := by
+  have hθ : 0 ≤ stepAngle N :=
+    (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
+  have hle := stepAngle_le_half_pi hN
+  intro a
+  fin_cases a
+  · simp only [perpSteps]
+    exact ⟨le_rfl, hθ, by simpa using hle⟩
+  · simp only [perpSteps]
+    exact ⟨le_rfl, hθ, by simpa using hle⟩
+  · simp only [perpSteps]
+    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+
+theorem splitSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (splitSteps N) := by
+  have hθ : 0 ≤ stepAngle N :=
+    (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
+  have hle := stepAngle_le_half_pi hN
+  intro a
+  fin_cases a <;>
+    · simp only [splitSteps]
+      exact ⟨le_rfl, hθ, by simpa using hle⟩
+
+/-- Two gravitons on perpendicular axes stay in the cone and express twice one. -/
+theorem perp_twofold {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (perpSteps N) ∧
+      JNormalized (perpSteps N) = 2 * farHeight N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  refine ⟨perpSteps_admissible hN, ?_⟩
+  rw [J_perpSteps]
+  rfl
+
+/-- The two ordered-pair shares of an aligned pair are exactly what perpendicular
+gravitons do not share. Aligned copies express the lower height. -/
+theorem perp_missing_pair {N : ℕ} (hN : 8 ≤ N) :
+    JNormalized (alignedSteps 2 N) = JNormalized (perpSteps N) + mutualSum 2 N ∧
+      JNormalized (alignedSteps 2 N) < JNormalized (perpSteps N) ∧
+      mutualSum 2 N = 2 * farHeight N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 8) hN
+  have hsplit := two_fourfold_split hpos
+  have hperp := (perp_twofold h4).2
+  refine ⟨?_, ?_, hsplit.2.2⟩
+  · rw [hsplit.1, hsplit.2.1, hsplit.2.2, hperp]
+  · rw [hsplit.1, hsplit.2.1, hsplit.2.2, hperp]
+    have hneg := farHeight_neg hpos
+    linarith [hneg]
+
+/-- One graviton on each axis stays in the cone and expresses three times one. -/
+theorem split_threefold {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (splitSteps N) ∧
+      JNormalized (splitSteps N) = 3 * farHeight N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  refine ⟨splitSteps_admissible hN, ?_⟩
+  rw [J_splitSteps]
+  rfl
+
+/-- At `N = 4` the three axes meet the pure dual corner, and the height is `-1`. -/
+theorem split_at_four :
+    IsAdmissibleContinuous (splitSteps 4) ∧
+      JNormalized (splitSteps 4) = -1 ∧
+      (splitSteps 4).beta 0 = Real.pi / 2 ∧
+      (splitSteps 4).beta 1 = Real.pi / 2 ∧
+      (splitSteps 4).beta 2 = Real.pi / 2 := by
+  have hadm := splitSteps_admissible (N := 4) (by decide)
+  have hJ := (split_threefold (N := 4) (by decide)).2
+  have hfar := farHeight_eq (N := 4) (by decide)
+  refine ⟨hadm, ?_, ?_, ?_, ?_⟩
+  · rw [hJ, hfar]
+    norm_num
+  · simp [splitSteps, stepAngle]
+    ring
+  · simp [splitSteps, stepAngle]
+    ring
+  · simp [splitSteps, stepAngle]
+    ring
+
+/-- For `N ≥ 5` the three-axis split stays strictly above the floor `-1`. -/
+theorem split_above_floor {N : ℕ} (hN : 5 ≤ N) :
+    -1 < JNormalized (splitSteps N) ∧ JNormalized (splitSteps N) < 0 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 5) hN
+  have hJ := (split_threefold h4).2
+  rw [hJ, farHeight_eq hpos]
+  have hform : (3 : ℝ) * (-((16 : ℝ) / (3 * (N : ℝ) ^ 2))) =
+      -((16 : ℝ) / (N : ℝ) ^ 2) := by ring
+  rw [hform]
+  constructor
+  · rw [neg_lt_neg_iff]
+    have hden : (0 : ℝ) < (N : ℝ) ^ 2 := by positivity
+    rw [div_lt_one hden]
+    have h5 : (25 : ℝ) ≤ (N : ℝ) ^ 2 := by exact_mod_cast Nat.pow_le_pow_left hN 2
+    linarith
+  · have hden : (0 : ℝ) < (N : ℝ) ^ 2 := by positivity
+    exact neg_lt_zero.mpr (div_pos (by norm_num) hden)
+
+/-- For `N ≥ 7` the three-axis split stays strictly above the one-axis lock. -/
+theorem split_above_lock {N : ℕ} (hN : 7 ≤ N) :
+    -((1 : ℝ) / 3) < JNormalized (splitSteps N) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 7) hN
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 7) hN
+  have hJ := (split_threefold h4).2
+  rw [hJ, farHeight_eq hpos]
+  have hform : (3 : ℝ) * (-((16 : ℝ) / (3 * (N : ℝ) ^ 2))) =
+      -((16 : ℝ) / (N : ℝ) ^ 2) := by ring
+  rw [hform, neg_lt_neg_iff]
+  rw [div_lt_div_iff₀ (by positivity) (by norm_num)]
+  have h7 : (49 : ℝ) ≤ (N : ℝ) ^ 2 := by exact_mod_cast Nat.pow_le_pow_left hN 2
+  linarith
+
+/-- The six ordered-pair shares of three aligned gravitons are exactly what the
+three-axis split does not share. -/
+theorem split_missing_pairs {N : ℕ} (hN : 12 ≤ N) :
+    IsAdmissibleContinuous (alignedSteps 3 N) ∧
+      JNormalized (alignedSteps 3 N) =
+        JNormalized (splitSteps N) + 6 * farHeight N ∧
+      JNormalized (alignedSteps 3 N) < JNormalized (splitSteps N) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 12) hN
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 12) hN
+  have hcone : 4 * 3 ≤ N := by simpa [Nat.reduceMul] using hN
+  have hadm := collective_admissible hcone
+  have hsq := collective_square (n := 3) hpos
+  have hsplit := (split_threefold h4).2
+  have hfar : JNormalized (oneAxisDual (stepAngle N)) = farHeight N := rfl
+  refine ⟨hadm, ?_, ?_⟩
+  · rw [hsq, hsplit, hfar]
+    ring
+  · rw [hsq, hsplit, hfar]
+    have hneg := farHeight_neg hpos
+    have hsq3 : ((3 : ℕ) : ℝ) ^ 2 = 9 := by norm_num
+    rw [hsq3]
+    linarith [hneg]
+
+/-! ### The same two steps, read as rotors
+
+The height of perpendicular gravitons does not depend on an order. The dual
+rotors of those two axes do not commute, at every positive angle up to `π`.
+A lattice step of `N ≥ 3` lies in that range, and the `2π` step, which is
+`-I` on either axis, does commute.
+-/
+
+private theorem cyclicRep_one_oo : cyclicRep 1 0 0 = 0 := by
+  unfold cyclicRep pauli pauliY
+  simp [Matrix.smul_apply]
+
+private theorem cyclicRep_one_ol : cyclicRep 1 0 1 = -1 := by
+  unfold cyclicRep pauli pauliY
+  simp [Matrix.smul_apply, neg_mul, Complex.I_mul_I]
+
+private theorem cyclicRep_one_lo : cyclicRep 1 1 0 = 1 := by
+  unfold cyclicRep pauli pauliY
+  simp [Matrix.smul_apply, neg_mul, Complex.I_mul_I]
+
+private theorem cyclicRep_one_ll : cyclicRep 1 1 1 = 0 := by
+  unfold cyclicRep pauli pauliY
+  simp [Matrix.smul_apply]
+
+private theorem axis0_entry (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) 0 0 = (Real.cos (θ / 2) : ℂ) ∧
+      dualRotorMat (EuclideanSpace.single 0 θ) 0 1 =
+        -Complex.I * (Real.sin (θ / 2) : ℂ) ∧
+      dualRotorMat (EuclideanSpace.single 0 θ) 1 0 =
+        -Complex.I * (Real.sin (θ / 2) : ℂ) ∧
+      dualRotorMat (EuclideanSpace.single 0 θ) 1 1 = (Real.cos (θ / 2) : ℂ) := by
+  have hR := dualRotorMat_axis0_rodrigues θ
+  have hC := cyclicRep_zero_eq
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 0) hR
+    simpa [hC, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 1) hR
+    simpa [hC, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply, mul_comm] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 0) hR
+    simpa [hC, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply, mul_comm] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 1) hR
+    simpa [hC, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+
+private theorem axis1_entry (θ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 1 θ) 0 0 = (Real.cos (θ / 2) : ℂ) ∧
+      dualRotorMat (EuclideanSpace.single 1 θ) 0 1 = -((Real.sin (θ / 2) : ℂ)) ∧
+      dualRotorMat (EuclideanSpace.single 1 θ) 1 0 = (Real.sin (θ / 2) : ℂ) ∧
+      dualRotorMat (EuclideanSpace.single 1 θ) 1 1 = (Real.cos (θ / 2) : ℂ) := by
+  have hR := dualRotorMat_axis1_rodrigues θ
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 0) hR
+    simpa [cyclicRep_one_oo, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 1) hR
+    simpa [cyclicRep_one_ol, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 0) hR
+    simpa [cyclicRep_one_lo, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+  · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 1) hR
+    simpa [cyclicRep_one_ll, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
+
+/-- Perpendicular dual rotors of one positive angle do not commute. -/
+theorem perp_rotors_not_commute {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi) :
+    dualRotorMat (EuclideanSpace.single 0 θ) *
+        dualRotorMat (EuclideanSpace.single 1 θ) ≠
+      dualRotorMat (EuclideanSpace.single 1 θ) *
+        dualRotorMat (EuclideanSpace.single 0 θ) := by
+  set c : ℝ := Real.cos (θ / 2)
+  set s : ℝ := Real.sin (θ / 2)
+  intro h
+  have hU := axis0_entry θ
+  have hV := axis1_entry θ
+  have h00 := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 0 0) h
+  simp only [Matrix.mul_apply, Fin.sum_univ_two] at h00
+  rw [hU.1, hU.2.1, hV.1, hV.2.1] at h00
+  rw [hV.2.2.1, hU.2.2.1] at h00
+  have hnamed : (c : ℂ) * c + -Complex.I * (s : ℂ) * (s : ℂ) =
+      (c : ℂ) * c + -(s : ℂ) * (-Complex.I * (s : ℂ)) := by
+    simpa [c, s] using h00
+  have hsub := congrArg (fun z : ℂ => z - ((c : ℂ) * c + -(s : ℂ) * (-Complex.I * (s : ℂ)))) hnamed
+  have hzero : (c : ℂ) * c + -Complex.I * (s : ℂ) * (s : ℂ) -
+      ((c : ℂ) * c + -(s : ℂ) * (-Complex.I * (s : ℂ))) = 0 := by
+    simpa using hsub
+  have hfac : (c : ℂ) * c + -Complex.I * (s : ℂ) * (s : ℂ) -
+      ((c : ℂ) * c + -(s : ℂ) * (-Complex.I * (s : ℂ))) =
+        (-2 * Complex.I) * ((s : ℂ) * (s : ℂ)) := by ring
+  have hprod : (-2 * Complex.I) * ((s : ℂ) * (s : ℂ)) = 0 := by
+    rw [← hfac, hzero]
+  have hs0 : (s : ℂ) * (s : ℂ) = 0 := by
+    rcases mul_eq_zero.mp hprod with hcoe | hs0
+    · exact absurd hcoe (by simp [Complex.I_ne_zero])
+    · exact hs0
+  have hs : (s : ℂ) ≠ 0 := by
+    intro hs0
+    have hhalf : 0 < θ / 2 := by linarith
+    have hle : θ / 2 ≤ Real.pi / 2 := by linarith
+    have hpos := Real.sin_pos_of_pos_of_lt_pi hhalf (by linarith [hle, Real.pi_pos])
+    exact absurd (by simpa [s] using hs0) (Complex.ofReal_ne_zero.mpr (ne_of_gt hpos))
+  exact absurd hs0 (mul_ne_zero hs hs)
+
+/-- Two perpendicular gravitons do not commute on a spinor. A full turn of each
+axis is `-I`, and those two turns do commute. -/
+theorem perp_gravitons_not_commute {N : ℕ} (hN : 3 ≤ N) :
+    dualRotorMat (EuclideanSpace.single 0 (stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 1 (stepAngle N)) ≠
+      dualRotorMat (EuclideanSpace.single 1 (stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 0 (stepAngle N)) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
+  have hθ : stepAngle N ≤ Real.pi := by
+    unfold stepAngle
+    have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+    rw [div_le_iff₀ hN0]
+    have h3 : (2 : ℝ) ≤ N := by exact_mod_cast (le_trans (by decide : (2 : ℕ) ≤ 3) hN)
+    nlinarith [Real.pi_pos]
+  exact perp_rotors_not_commute (stepAngle_pos hpos) hθ
+
+theorem fullTurn_commute :
+    dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) = -1 ∧
+      dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) = -1 ∧
+      dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) =
+        dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) := by
+  have h0 : dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) = -1 := by
+    rw [dualRotorMat_axis0_rodrigues]
+    have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+    rw [hhalf, Real.cos_pi, Real.sin_pi]
+    simp
+  have h1 : dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) = -1 := by
+    rw [dualRotorMat_axis1_rodrigues]
+    have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+    rw [hhalf, Real.cos_pi, Real.sin_pi]
+    simp
+  refine ⟨h0, h1, ?_⟩
+  rw [h0, h1]
 
 end DstDiophantine.Gravity.GravitonQuantum
 
