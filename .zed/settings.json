@@ -1,0 +1,13 @@
+{
+  "file_scan_exclusions": [
+    "**/*.aux",
+    "**/*.log",
+    "**/*.out",
+    "**/*.toc",
+    "**/*.fls",
+    "**/*.fdb_latexmk",
+    "**/*.synctex.gz",
+    "**/*.synctex(busy)",
+    "..."
+  ]
+}

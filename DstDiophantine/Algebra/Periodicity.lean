@@ -15,7 +15,8 @@ import Mathlib.Tactic.Ring
 Cyclic generators square to `-1`, so `exp(θ B⁻)` is `2π`-periodic in `θ`.
 Hyperbolic generators square to `+1`, so `exp(θ B⁺)` is never `2π`-periodic.
 Quantizing boosts onto a `2π`-torus is therefore a modelling choice, not a
-consequence of the exponential map.
+consequence of the exponential map, and not a consequence of compactness of
+the dual sector.
 -/
 
 namespace DstDiophantine

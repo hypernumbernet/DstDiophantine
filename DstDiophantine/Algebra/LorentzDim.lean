@@ -65,6 +65,26 @@ theorem pgaGeneratorCount_ne_iso91Dim : pgaGeneratorCount ≠ iso91Dim := by
 /-- Light-cone physical dof `8 + 8` versus DST's six torsion generators. -/
 theorem lightCone_ne_torsionGenerators : 8 + 8 ≠ 6 := by decide
 
+/-- Real dimension of one quaternion algebra. -/
+def quaternionDim : ℕ := 4
+
+/-- Real dimension of the direct sum `ℍ ⊕ ℍ`. It is not `Cl(3,1)`. -/
+def quaternionDirectSumDim : ℕ := quaternionDim + quaternionDim
+
+/-- Real dimension of the tensor product `ℍ ⊗_ℝ ℍ`, the biquaternion algebra. -/
+def quaternionTensorDim : ℕ := quaternionDim * quaternionDim
+
+theorem quaternionDirectSumDim_eq : quaternionDirectSumDim = 8 := by
+  simp [quaternionDirectSumDim, quaternionDim]
+
+theorem quaternionTensorDim_eq : quaternionTensorDim = 16 := by
+  simp [quaternionTensorDim, quaternionDim]
+
+/-- The direct sum is not the tensor product, so `ℍ ⊕ ℍ` is not `Cl(3,1)`. -/
+theorem quaternionDirectSum_ne_tensor : quaternionDirectSumDim ≠ quaternionTensorDim := by
+  rw [quaternionDirectSumDim_eq, quaternionTensorDim_eq]
+  decide
+
 end LorentzDim
 
 end DstDiophantine

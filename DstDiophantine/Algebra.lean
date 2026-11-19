@@ -41,7 +41,9 @@ export LorentzDim (soDim isoDim so31Dim so91Dim so8Dim iso31Dim iso91Dim
   so31Dim_eq so91Dim_eq so8Dim_eq iso31Dim_eq iso91Dim_eq
   so31Dim_ne_so91Dim iso31Dim_ne_iso91Dim
   pgaGeneratorCount_eq_iso31Dim pgaGeneratorCount_ne_iso91Dim
-  lightCone_ne_torsionGenerators)
+  lightCone_ne_torsionGenerators
+  quaternionDim quaternionDirectSumDim quaternionTensorDim
+  quaternionDirectSumDim_eq quaternionTensorDim_eq quaternionDirectSum_ne_tensor)
 export Generators (hyperbolic cyclic null null_sq null_mul_null hyperbolic_sq cyclic_sq
   hyperbolic_smul_mul commutator commutator_null_null null_commute
   commutator_hyperbolic_cyclic_same commutator_hyperbolic0_cyclic1_ne_zero

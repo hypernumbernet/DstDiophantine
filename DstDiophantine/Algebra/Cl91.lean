@@ -11,6 +11,8 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 Used by the string-comparison layer. Embeds `Cl(3,1)` on the first four
 coordinates. Real dimensions: `dimℝ Cl(3,1) = 16`, `dimℝ Cl(9,1) = 1024`.
+The biquaternion algebra of that dimension is `ℍ ⊗_ℝ ℍ`. The direct sum
+`ℍ ⊕ ℍ` is eight-dimensional (`LorentzDim.quaternionDirectSum_ne_tensor`).
 -/
 
 namespace DstDiophantine

@@ -1392,6 +1392,11 @@ example {Ψ : Vec4 → DiracSpinor} (hΨ : ContDiff ℝ 2 Ψ) (hΨ1 : Differenti
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
   ⟨LorentzDim.lightCone_ne_torsionGenerators, superPoincare_ne_pga⟩
 
+/-- Regression: the biquaternion algebra is the tensor product, not the direct sum. -/
+example : LorentzDim.quaternionTensorDim = 16 ∧
+    LorentzDim.quaternionDirectSumDim ≠ LorentzDim.quaternionTensorDim :=
+  ⟨LorentzDim.quaternionTensorDim_eq, LorentzDim.quaternionDirectSum_ne_tensor⟩
+
 /-- Regression: balanced ray is level-matched (`J = 0`). -/
 example : IsLevelMatched (Invariant.balancedRay 1) :=
   isLevelMatched_balancedRay 1
