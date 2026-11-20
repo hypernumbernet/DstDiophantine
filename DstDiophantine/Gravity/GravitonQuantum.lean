@@ -77,7 +77,13 @@ express `300²` times one, and stay strictly above `-10⁻³²`. For `2 ≤ n` a
 strictly below `n²` times the probability of one, while the height is exactly
 `n²` times one. A full count of `N` aligned gravitons restores the
 computational weight to `1` and the orthogonal probability to `0`, while the
-expressed height on that axis is already the lock `-1/3`.
+expressed height on that axis is already the lock `-1/3`. When `4 ∣ N`, the
+quarter turn `N/4`, the half turn `N/2`, the three-quarter turn `3N/4`, and
+the full turn `N` express that same lock. Their orthogonal probabilities are
+`1/2`, `1`, `1/2`, and `0`. From the quarter turn through the half turn each
+added graviton raises the probability. From the half turn through the full
+turn each added graviton lowers it. The mutual sum falls through the whole
+range, and the expressed height does not move.
 
 ## Same angle, other carriers
 
@@ -2280,6 +2286,335 @@ theorem full_turn_locks {N : ℕ} (hN : 0 < N) :
   refine ⟨hfull.2.1, hfull.2.2.1, hfull.2.2.2, ?_⟩
   rw [express_aligned]
   exact collective_locks hN hwall
+
+/-! ### Past the lock the carrier keeps turning
+
+When `4 ∣ N`, four aligned counts share the expressed height `-1/3`: the
+quarter turn `N/4`, the half turn `N/2`, the three-quarter turn `3N/4`, and
+the full turn `N`. The orthogonal probabilities are `1/2`, `1`, `1/2`, and
+`0`. Between the quarter turn and the half turn each added graviton raises
+that probability. Between the half turn and the full turn each added graviton
+lowers it. The mutual sum falls through every step, and the expressed height
+does not move.
+-/
+
+theorem quarterTurn_angle {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((N / 4 : ℕ) : ℝ) * stepAngle N = Real.pi / 2 := by
+  have h4 : (N : ℝ) = 4 * ((N / 4 : ℕ) : ℝ) := by
+    exact_mod_cast (Nat.mul_div_cancel' hdiv).symm
+  have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
+  have hmul : ((N / 4 : ℕ) : ℝ) * (2 * Real.pi) = (Real.pi / 2) * N := by
+    rw [h4]
+    ring
+  have hdiv' : ((N / 4 : ℕ) : ℝ) * (2 * Real.pi) / N = Real.pi / 2 := by
+    rw [div_eq_iff hNz]
+    exact hmul
+  simpa [stepAngle, mul_div_assoc] using hdiv'
+
+theorem halfTurn_angle {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((N / 2 : ℕ) : ℝ) * stepAngle N = Real.pi := by
+  have h2dvd : 2 ∣ N := dvd_trans (by decide : 2 ∣ 4) hdiv
+  have h2 : (N : ℝ) = 2 * ((N / 2 : ℕ) : ℝ) := by
+    exact_mod_cast (Nat.mul_div_cancel' h2dvd).symm
+  have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
+  have hmul : ((N / 2 : ℕ) : ℝ) * (2 * Real.pi) = Real.pi * N := by
+    rw [h2]
+    ring
+  have hdiv' : ((N / 2 : ℕ) : ℝ) * (2 * Real.pi) / N = Real.pi := by
+    rw [div_eq_iff hNz]
+    exact hmul
+  simpa [stepAngle, mul_div_assoc] using hdiv'
+
+theorem threeQuarterTurn_angle {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((3 * (N / 4) : ℕ) : ℝ) * stepAngle N = 3 * Real.pi / 2 := by
+  have hcoe : ((3 * (N / 4) : ℕ) : ℝ) = 3 * ((N / 4 : ℕ) : ℝ) := by norm_cast
+  rw [hcoe, mul_assoc, quarterTurn_angle hdiv hN]
+  ring_nf
+
+private theorem countHalfAngle {n N : ℕ} (hN : 0 < N) :
+    (n : ℝ) * Real.pi / N = (n : ℝ) * stepAngle N / 2 := by
+  unfold stepAngle
+  have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+private theorem quarterCount_pos {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    0 < N / 4 := by
+  have hmul : 4 * (N / 4) = N := Nat.mul_div_cancel' hdiv
+  have h1 : 4 * 1 ≤ 4 * (N / 4) := by
+    rw [hmul]
+    exact hN
+  exact Nat.succ_le_iff.mp (Nat.le_of_mul_le_mul_left h1 (by decide : 0 < 4))
+
+private theorem half_of_quarter {N : ℕ} (hdiv : 4 ∣ N) :
+    N / 2 = 2 * (N / 4) := by
+  have h2dvd : 2 ∣ N := dvd_trans (by decide : 2 ∣ 4) hdiv
+  have h4 : 4 * (N / 4) = N := Nat.mul_div_cancel' hdiv
+  have h2 : 2 * (N / 2) = N := Nat.mul_div_cancel' h2dvd
+  apply Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2)
+  calc
+    2 * (N / 2) = N := h2
+    _ = 4 * (N / 4) := h4.symm
+    _ = 2 * (2 * (N / 4)) := by ring
+
+private theorem three_of_quarter {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    N / 4 < N / 2 ∧ N / 2 < 3 * (N / 4) ∧ 3 * (N / 4) < N := by
+  have hpos := quarterCount_pos hdiv hN
+  have hhalf := half_of_quarter hdiv
+  have h4 : 4 * (N / 4) = N := Nat.mul_div_cancel' hdiv
+  refine ⟨?_, ?_, ?_⟩
+  · rw [hhalf]
+    omega
+  · rw [hhalf]
+    omega
+  · have hlt : 3 * (N / 4) < 4 * (N / 4) := by omega
+    simpa [h4] using hlt
+
+private theorem lock_from_quarter {n N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N)
+    (hn : N / 4 ≤ n) :
+    JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) := by
+  rw [express_aligned]
+  have hwall : N ≤ 4 * n := by
+    calc
+      N = 4 * (N / 4) := (Nat.mul_div_cancel' hdiv).symm
+      _ ≤ 4 * n := Nat.mul_le_mul_left 4 hn
+  exact collective_locks hN hwall
+
+private theorem sin_increasing_on_right {a b : ℝ} (ha : 0 ≤ a) (hlt : a < b)
+    (hb : b ≤ Real.pi / 2) : Real.sin a < Real.sin b := by
+  have hsub : Real.sin b - Real.sin a =
+      2 * Real.sin ((b - a) / 2) * Real.cos ((b + a) / 2) := by
+    simpa [add_comm] using Real.sin_sub_sin b a
+  have hda : 0 < (b - a) / 2 := by linarith
+  have hda_pi : (b - a) / 2 < Real.pi := by
+    have hle : b - a ≤ Real.pi / 2 := by linarith [ha, hb]
+    linarith [Real.pi_pos]
+  have hsinp : 0 < Real.sin ((b - a) / 2) :=
+    Real.sin_pos_of_pos_of_lt_pi hda hda_pi
+  have hmid_gt : -(Real.pi / 2) < (b + a) / 2 := by linarith [Real.pi_pos]
+  have hmid_lt : (b + a) / 2 < Real.pi / 2 := by
+    have hltb : (a + b) / 2 < b := by linarith
+    have hab : (b + a) / 2 = (a + b) / 2 := by ring
+    rw [hab]
+    exact lt_of_lt_of_le hltb hb
+  have hcos : 0 < Real.cos ((b + a) / 2) :=
+    Real.cos_pos_of_mem_Ioo ⟨hmid_gt, hmid_lt⟩
+  have hpos : 0 < Real.sin b - Real.sin a := by
+    rw [hsub]
+    positivity
+  linarith
+
+private theorem sin_decreasing_on_left {a b : ℝ} (ha : Real.pi / 2 ≤ a) (hlt : a < b)
+    (hb : b ≤ Real.pi) : Real.sin b < Real.sin a := by
+  have hsub : Real.sin a - Real.sin b =
+      2 * Real.sin ((a - b) / 2) * Real.cos ((a + b) / 2) :=
+    Real.sin_sub_sin a b
+  have hx : 0 < (b - a) / 2 := by linarith
+  have hsinneg : Real.sin ((a - b) / 2) < 0 := by
+    rw [show (a - b) / 2 = -((b - a) / 2) by ring, Real.sin_neg]
+    have hsinp : 0 < Real.sin ((b - a) / 2) := by
+      refine Real.sin_pos_of_pos_of_lt_pi hx ?_
+      linarith [Real.pi_pos, ha, hb]
+    linarith
+  have hmid_gt : Real.pi / 2 < (a + b) / 2 := by linarith
+  have hmid_lt : (a + b) / 2 < Real.pi + Real.pi / 2 := by
+    have hltpi : (a + b) / 2 < Real.pi := by
+      have hltb : (a + b) / 2 < b := by linarith
+      exact lt_of_lt_of_le hltb hb
+    linarith [Real.pi_pos]
+  have hcos : Real.cos ((a + b) / 2) < 0 :=
+    Real.cos_neg_of_pi_div_two_lt_of_lt hmid_gt hmid_lt
+  have hpos : 0 < Real.sin a - Real.sin b := by
+    rw [hsub]
+    have hprod : 0 < Real.sin ((a - b) / 2) * Real.cos ((a + b) / 2) :=
+      mul_pos_of_neg_of_neg hsinneg hcos
+    linarith
+  linarith
+
+private theorem arg_mono {n m N : ℕ} (hN : 0 < N) (hlt : n < m) :
+    (n : ℝ) * Real.pi / N < (m : ℝ) * Real.pi / N := by
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hN
+  rw [div_lt_div_iff₀ hN0 hN0]
+  have hnm : (n : ℝ) < m := by exact_mod_cast hlt
+  have hmul := mul_lt_mul_of_pos_right hnm (mul_pos Real.pi_pos hN0)
+  convert hmul using 1 <;> ring
+
+private theorem arg_le_half {m N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) (hm : m ≤ N / 2) :
+    (m : ℝ) * Real.pi / N ≤ Real.pi / 2 := by
+  have h2dvd : 2 ∣ N := dvd_trans (by decide : 2 ∣ 4) hdiv
+  have hcancel : 2 * (N / 2) = N := Nat.mul_div_cancel' h2dvd
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hN
+  rw [div_le_div_iff₀ hN0 (by norm_num : (0 : ℝ) < 2)]
+  have hmle : (2 : ℝ) * m ≤ N := by
+    exact_mod_cast (Nat.mul_le_mul_left 2 hm).trans_eq hcancel
+  have hmul := mul_le_mul_of_nonneg_right hmle Real.pi_pos.le
+  convert hmul using 1 <;> ring
+
+private theorem arg_ge_half {n N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) (hn : N / 2 ≤ n) :
+    Real.pi / 2 ≤ (n : ℝ) * Real.pi / N := by
+  have h2dvd : 2 ∣ N := dvd_trans (by decide : 2 ∣ 4) hdiv
+  have hcancel : 2 * (N / 2) = N := Nat.mul_div_cancel' h2dvd
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hN
+  rw [div_le_div_iff₀ (by norm_num : (0 : ℝ) < 2) hN0]
+  have hnle : (N : ℝ) ≤ (2 : ℝ) * n := by
+    exact_mod_cast hcancel.symm.trans_le (Nat.mul_le_mul_left 2 hn)
+  have hmul := mul_le_mul_of_nonneg_left hnle Real.pi_pos.le
+  convert hmul using 1 ; ring
+
+private theorem arg_le_pi {n N : ℕ} (hN : 0 < N) (hn : n ≤ N) :
+    (n : ℝ) * Real.pi / N ≤ Real.pi := by
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hN
+  have hle : (n : ℝ) / N ≤ 1 := by
+    rw [div_le_one hN0]
+    exact_mod_cast hn
+  have hmul := mul_le_mul_of_nonneg_right hle Real.pi_pos.le
+  have hform : (n : ℝ) * Real.pi / N = (n : ℝ) / N * Real.pi := by ring
+  linarith [hform, hmul]
+
+private theorem defect_eq_sin {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
+    1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
+      Real.sin ((n : ℝ) * Real.pi / N) ^ 2 :=
+  aligned_transverse_defect hn hN
+
+private theorem sq_sin_lt {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hlt : a < b) :
+    a ^ 2 < b ^ 2 :=
+  (sq_lt_sq₀ ha hb).mpr hlt
+
+/-- From the quarter turn through the half turn, each added graviton keeps the
+expressed height at the lock and raises the orthogonal probability. The mutual
+sum becomes strictly more negative. -/
+theorem locked_error_rises {N n m : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N)
+    (hn : N / 4 ≤ n) (hm : m ≤ N / 2) (hlt : n < m) :
+    JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps m N)) = -((1 : ℝ) / 3) ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) <
+        1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((m : ℝ) * stepAngle N))) spinUp) ∧
+      mutualSum m N < mutualSum n N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : (0 : ℕ) < 4) hN
+  have hn0 : 0 < n := lt_of_lt_of_le (quarterCount_pos hdiv hN) hn
+  have hm0 : 0 < m := lt_trans hn0 hlt
+  have hlockn := lock_from_quarter hdiv hpos hn
+  have hlockm := lock_from_quarter hdiv hpos (le_trans hn (le_of_lt hlt))
+  refine ⟨hlockn, hlockm, ?_, mutual_grows hpos (Nat.succ_le_of_lt hn0) hlt⟩
+  rw [defect_eq_sin hn0 hpos, defect_eq_sin hm0 hpos]
+  have ha0 : 0 ≤ (n : ℝ) * Real.pi / N :=
+    div_nonneg (mul_nonneg (by exact_mod_cast hn0.le) Real.pi_pos.le) (by exact_mod_cast hpos.le)
+  have hltArg := arg_mono hpos hlt
+  have hb := arg_le_half hdiv hpos hm
+  have hsin := sin_increasing_on_right ha0 hltArg hb
+  have hpi : Real.pi / 2 ≤ Real.pi := half_le_self Real.pi_nonneg
+  have hsn := Real.sin_nonneg_of_nonneg_of_le_pi ha0
+    (le_trans (arg_le_half hdiv hpos (le_trans (le_of_lt hlt) hm)) hpi)
+  have hsm := Real.sin_nonneg_of_nonneg_of_le_pi (le_of_lt (lt_of_le_of_lt ha0 hltArg))
+    (le_trans hb hpi)
+  exact sq_sin_lt hsn hsm hsin
+
+/-- From the half turn through the full turn, each added graviton keeps the
+expressed height at the lock and lowers the orthogonal probability. The mutual
+sum becomes strictly more negative. -/
+theorem locked_error_falls {N n m : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N)
+    (hn : N / 2 ≤ n) (hm : m ≤ N) (hlt : n < m) :
+    JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps m N)) = -((1 : ℝ) / 3) ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((m : ℝ) * stepAngle N))) spinUp) <
+        1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) ∧
+      mutualSum m N < mutualSum n N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : (0 : ℕ) < 4) hN
+  have hhalf : N / 4 ≤ N / 2 := le_of_lt (three_of_quarter hdiv hN).1
+  have hn0 : 0 < n := lt_of_lt_of_le (quarterCount_pos hdiv hN) (le_trans hhalf hn)
+  have hm0 : 0 < m := lt_trans hn0 hlt
+  have hlockn := lock_from_quarter hdiv hpos (le_trans hhalf hn)
+  have hlockm := lock_from_quarter hdiv hpos (le_trans hhalf (le_trans hn (le_of_lt hlt)))
+  refine ⟨hlockn, hlockm, ?_, mutual_grows hpos (Nat.succ_le_of_lt hn0) hlt⟩
+  rw [defect_eq_sin hn0 hpos, defect_eq_sin hm0 hpos]
+  have ha : Real.pi / 2 ≤ (n : ℝ) * Real.pi / N := arg_ge_half hdiv hpos hn
+  have hltArg := arg_mono hpos hlt
+  have hb : (m : ℝ) * Real.pi / N ≤ Real.pi := arg_le_pi hpos hm
+  have hsin := sin_decreasing_on_left ha hltArg hb
+  have hsn := Real.sin_nonneg_of_nonneg_of_le_pi (le_trans (by linarith [Real.pi_pos]) ha)
+    (le_trans (le_of_lt hltArg) hb)
+  have hsm := Real.sin_nonneg_of_nonneg_of_le_pi
+    (le_trans (by linarith [Real.pi_pos]) (le_of_lt hltArg)) hb
+  exact sq_sin_lt hsm hsn hsin
+
+private theorem quarter_arg {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((N / 4 : ℕ) : ℝ) * Real.pi / N = Real.pi / 4 := by
+  rw [countHalfAngle (n := N / 4) hN, quarterTurn_angle hdiv hN]
+  ring
+
+private theorem half_arg {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((N / 2 : ℕ) : ℝ) * Real.pi / N = Real.pi / 2 := by
+  rw [countHalfAngle (n := N / 2) hN, halfTurn_angle hdiv hN]
+
+private theorem threeQuarter_arg {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
+    ((3 * (N / 4) : ℕ) : ℝ) * Real.pi / N = 3 * Real.pi / 4 := by
+  have hcoe : ((3 * (N / 4) : ℕ) : ℝ) = 3 * ((N / 4 : ℕ) : ℝ) := by norm_cast
+  rw [hcoe]
+  have hquarter := quarter_arg hdiv hN
+  calc
+    (3 * ((N / 4 : ℕ) : ℝ)) * Real.pi / N =
+        3 * (((N / 4 : ℕ) : ℝ) * Real.pi / N) := by ring
+    _ = 3 * (Real.pi / 4) := by rw [hquarter]
+    _ = 3 * Real.pi / 4 := by ring
+
+private theorem full_arg {N : ℕ} (hN : 0 < N) :
+    (N : ℝ) * Real.pi / N = Real.pi := by
+  have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+private theorem sinSq_quarter :
+    Real.sin (Real.pi / 4) ^ 2 = (1 : ℝ) / 2 := by
+  rw [Real.sin_pi_div_four, div_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
+  norm_num
+
+/-- The quarter turn, the half turn, the three-quarter turn, and the full turn
+express one height, `-1/3`. The orthogonal probabilities are `1/2`, `1`,
+`1/2`, and `0`, and the mutual sum is strictly lower at each later count. -/
+theorem fourCounts_lock {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    JNormalized (express (alignedSteps (N / 4) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps (N / 2) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps (3 * (N / 4)) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps N N)) = -((1 : ℝ) / 3) ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat
+            (EuclideanSpace.single 0 (((N / 4 : ℕ) : ℝ) * stepAngle N))) spinUp) = 1 / 2 ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat
+            (EuclideanSpace.single 0 (((N / 2 : ℕ) : ℝ) * stepAngle N))) spinUp) = 1 ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat
+            (EuclideanSpace.single 0 (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N))) spinUp) =
+        1 / 2 ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat
+            (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) = 0 ∧
+      mutualSum (N / 2) N < mutualSum (N / 4) N ∧
+      mutualSum (3 * (N / 4)) N < mutualSum (N / 2) N ∧
+      mutualSum N N < mutualSum (3 * (N / 4)) N := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : (0 : ℕ) < 4) hN
+  have hord := three_of_quarter hdiv hN
+  have hq : 1 ≤ N / 4 := Nat.succ_le_of_lt (quarterCount_pos hdiv hN)
+  have hhalfLe : N / 4 ≤ N / 2 := le_of_lt hord.1
+  have hthreeLe : N / 4 ≤ 3 * (N / 4) := le_of_lt (lt_trans hord.1 hord.2.1)
+  have hfullLe : N / 4 ≤ N := le_trans hthreeLe (le_of_lt hord.2.2)
+  refine ⟨lock_from_quarter hdiv hpos le_rfl, lock_from_quarter hdiv hpos hhalfLe,
+    lock_from_quarter hdiv hpos hthreeLe, lock_from_quarter hdiv hpos hfullLe, ?_, ?_, ?_, ?_,
+    mutual_grows hpos hq hord.1, mutual_grows hpos (le_trans hq hhalfLe) hord.2.1,
+    mutual_grows hpos (le_trans hq hthreeLe) hord.2.2⟩
+  · rw [defect_eq_sin (quarterCount_pos hdiv hN) hpos, quarter_arg hdiv hpos, sinSq_quarter]
+  · have hhalfPos : 0 < N / 2 := lt_trans (quarterCount_pos hdiv hN) hord.1
+    rw [defect_eq_sin hhalfPos hpos, half_arg hdiv hpos, Real.sin_pi_div_two]
+    norm_num
+  · have hthreePos : 0 < 3 * (N / 4) :=
+      lt_trans (quarterCount_pos hdiv hN) (lt_trans hord.1 hord.2.1)
+    rw [defect_eq_sin hthreePos hpos, threeQuarter_arg hdiv hpos,
+      show (3 : ℝ) * Real.pi / 4 = Real.pi - Real.pi / 4 by ring, Real.sin_pi_sub, sinSq_quarter]
+  · rw [defect_eq_sin hpos hpos, full_arg hpos, Real.sin_pi]
+    norm_num
 
 end DstDiophantine.Gravity.GravitonQuantum
 

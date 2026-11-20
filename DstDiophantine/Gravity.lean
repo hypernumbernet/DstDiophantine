@@ -183,7 +183,12 @@ imported by the modules below. They are not named in the import list of
   of angle `2π n/N`. For `2 ≤ n` and `4n ≤ N` their transverse orthogonal probability lies strictly
   below `n²` times one, while the height is exactly `n²` times one. A full count of `N` restores the
   computational weight to `1` and the orthogonal probability to `0`, with the expressed height
-  already at `-1/3`. A transverse step replaces the
+  already at `-1/3`. When `4 ∣ N`, the quarter turn `N/4`, the half turn
+  `N/2`, the three-quarter turn `3N/4`, and the full turn `N` express that
+  same lock. Their orthogonal probabilities are `1/2`, `1`, `1/2`, and `0`.
+  From the quarter turn through the half turn each added graviton raises the
+  probability, and from the half turn through the full turn each added
+  graviton lowers it, while the mutual sum falls throughout. A transverse step replaces the
   computational Born weight `1` by `cos²(π/N)`. The orthogonal probability is `sin²(π/N)`,
   strictly between `(3/4)` and `(3π²/16)` times the floor for `N ≥ 3`, strictly above that floor,
   and strictly below `1/2` for `N ≥ 5`. On every compactification with `N > 10¹⁹` the probability
@@ -206,7 +211,13 @@ imported by the modules below. They are not named in the import list of
   That error is exactly half the error of the same two gravitons aligned, and
   strictly less than twice the error of one. For `N ≥ 8` both censuses lie in
   the cone, the perpendicular height is twice one, and the ratio of the two
-  device errors equals the ratio of the two expressed heights. The
+  device errors equals the ratio of the two expressed heights. For
+  `0 < n ≤ N`, aligned transverse gravitons meet the original ray exactly at
+  the full turn and the negation exactly when `2n = N`. Every other count
+  occupies a third ray. When `4 ∣ N`, the quarter turn and the three-quarter
+  turn share the device error `1/2` on different third rays, the half turn is
+  the negation with error `1`, and the full turn returns to the original ray
+  with error `0`, while all four express the height `-1/3`. The
   device error is not the ray the carrier satisfies. No laboratory rate. The
   height does not see the order.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,

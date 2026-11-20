@@ -31,12 +31,22 @@ strictly less than twice the error of one. The height of the perpendicular
 pair is exactly twice the height of one. For `N ≥ 8` the ratio of the two
 device errors equals the ratio of the two expressed heights.
 
+For `0 < n ≤ N`, `n` aligned transverse gravitons put the carrier on the
+original ray exactly at the full turn, and on the negation exactly when
+`2n = N`. Every other count occupies a third ray, and the device error is
+then strictly between `0` and `1`. When `4 ∣ N`, the quarter turn, the half
+turn, the three-quarter turn, and the full turn express one height, `-1/3`.
+The quarter turn and the three-quarter turn share the device error `1/2`
+and occupy different third rays. The half turn is the negation, with device
+error `1`. The full turn returns to the original ray, with device error `0`.
+
 ## Not claimed
 
 * That the device error is the proposition the carrier satisfies.
 * A laboratory error rate. The integer `N` is not fixed.
 * That the order of the rotors is seen by the height. The height does not
   see it. The atoms do.
+* That the expressed height determines the device error or the ray.
 -/
 
 noncomputable section
@@ -45,7 +55,7 @@ namespace DstDiophantine.Gravity.GravitonLogic
 
 open DstDiophantine.Logic
 open DstDiophantine.Gravity.GravitonQuantum
-open Submodule Module Invariant
+open SourceSuperposition Submodule Module Invariant
 open scoped InnerProductSpace
 
 /-- Phase written by one axial dual rotor on the computational eigenstate. -/
@@ -845,6 +855,374 @@ theorem lattice_axial_order {N : ℕ} (hN : 3 ≤ N) :
   have hthird := transverse_step_third_atom hN
   have hax := axial_no_logical_error (stepAngle N)
   exact ⟨hord.1, hord.2.1, hord.2.2.1, hax.2.2, hthird.1, hthird.2.1⟩
+
+private theorem transverse_wedge (θ φ : ℝ) :
+    afterTransverse θ 0 * afterTransverse φ 1 - afterTransverse θ 1 * afterTransverse φ 0 =
+      -Complex.I * (Real.sin ((φ - θ) / 2) : ℂ) := by
+  have hu := transverse_coord θ
+  have hv := transverse_coord φ
+  rw [hu.1, hu.2, hv.1, hv.2]
+  have hsin := Real.sin_sub (φ / 2) (θ / 2)
+  rw [show φ / 2 - θ / 2 = (φ - θ) / 2 by ring] at hsin
+  apply Complex.ext
+  · simp only [Complex.sub_re, Complex.mul_re, Complex.mul_im, Complex.neg_re, Complex.neg_im,
+      Complex.I_re, Complex.I_im, Complex.ofReal_re, Complex.ofReal_im]
+    ring
+  · simp only [Complex.sub_im, Complex.mul_re, Complex.mul_im, Complex.neg_re, Complex.neg_im,
+      Complex.I_re, Complex.I_im, Complex.ofReal_re, Complex.ofReal_im]
+    rw [hsin]
+    ring
+
+private theorem transverse_atoms_ne {θ φ : ℝ} (h : Real.sin ((φ - θ) / 2) ≠ 0) :
+    atomOf (afterTransverse θ) ≠ atomOf (afterTransverse φ) := by
+  intro hspan
+  have hmem : afterTransverse θ ∈ atomOf (afterTransverse φ) := by
+    have hself : afterTransverse θ ∈ atomOf (afterTransverse θ) :=
+      Submodule.mem_span_singleton_self _
+    simpa [hspan] using hself
+  obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp hmem
+  have h0 := congrArg (fun v : DualSpinor => v 0) hc
+  have h1 := congrArg (fun v : DualSpinor => v 1) hc
+  simp only [PiLp.smul_apply, smul_eq_mul] at h0 h1
+  have hwedge : afterTransverse θ 0 * afterTransverse φ 1 -
+      afterTransverse θ 1 * afterTransverse φ 0 = 0 := by
+    rw [← h0, ← h1]
+    ring
+  rw [transverse_wedge θ φ] at hwedge
+  have hI : (-Complex.I : ℂ) ≠ 0 := by simp [Complex.I_ne_zero]
+  have hsin : (Real.sin ((φ - θ) / 2) : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr h
+  exact mul_ne_zero hI hsin hwedge
+
+private theorem halfArg_eq {n N : ℕ} (hN : 0 < N) :
+    (n : ℝ) * stepAngle N / 2 = (n : ℝ) * Real.pi / N := by
+  unfold stepAngle
+  have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+/-- For `0 < n ≤ N`, the carrier of `n` aligned transverse gravitons lies on the
+original ray exactly at the full turn, and on the negation exactly at the half
+turn. Every other count occupies a third ray, and the device error is then
+strictly between `0` and `1`. -/
+theorem aligned_carrier_ray {n N : ℕ} (hn : 0 < n) (hN : n ≤ N)
+    (u : DualSpinor) (hu : u = afterTransverse ((n : ℝ) * stepAngle N)) :
+    (n = N → u ∈ lineE0 ∧ atomOf u = lineE0 ∧ u ∉ qNot lineE0 ∧ deviceError u = 0) ∧
+      (2 * n = N → u ∈ qNot lineE0 ∧ atomOf u = qNot lineE0 ∧ u ∉ lineE0 ∧
+        deviceError u = 1) ∧
+      (n ≠ N → 2 * n ≠ N → u ∉ lineE0 ∧ u ∉ qNot lineE0 ∧
+        atomOf u ≠ lineE0 ∧ atomOf u ≠ qNot lineE0 ∧
+        0 < deviceError u ∧ deviceError u < 1) := by
+  have hpos : 0 < N := lt_of_lt_of_le hn hN
+  set α : ℝ := (n : ℝ) * Real.pi / N
+  have hα : (n : ℝ) * stepAngle N / 2 = α := by
+    simpa [α] using halfArg_eq (n := n) hpos
+  have hcoord := transverse_coord ((n : ℝ) * stepAngle N)
+  have hαpos : 0 < α := by
+    unfold α
+    have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+    exact div_pos (mul_pos (by exact_mod_cast hn) Real.pi_pos) hN0
+  have hαle : α ≤ Real.pi := by
+    unfold α
+    have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+    have hle : (n : ℝ) / N ≤ 1 := by
+      rw [div_le_one hN0]
+      exact_mod_cast hN
+    have hmul := mul_le_mul_of_nonneg_right hle Real.pi_pos.le
+    have hform : (n : ℝ) * Real.pi / N = (n : ℝ) / N * Real.pi := by ring
+    linarith [hform, hmul]
+  have hsin_zero : Real.sin α = 0 ↔ n = N := by
+    constructor
+    · intro hzero
+      by_contra hne
+      have hltn : n < N := lt_of_le_of_ne hN hne
+      have hαlt : α < Real.pi := by
+        unfold α
+        have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+        have hlt : (n : ℝ) < N := by exact_mod_cast hltn
+        have hdiv : (n : ℝ) / N < 1 := (div_lt_one hN0).mpr hlt
+        have hmul := mul_lt_mul_of_pos_right hdiv Real.pi_pos
+        have hform : (n : ℝ) * Real.pi / N = (n : ℝ) / N * Real.pi := by ring
+        linarith [hform, hmul]
+      exact (ne_of_gt (Real.sin_pos_of_pos_of_lt_pi hαpos hαlt)) hzero
+    · intro hnN
+      have hαpi : α = Real.pi := by
+        unfold α
+        rw [hnN]
+        have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hpos)
+        field_simp [hNz]
+      simp [hαpi, Real.sin_pi]
+  have hcos_zero : Real.cos α = 0 ↔ 2 * n = N := by
+    constructor
+    · intro hzero
+      have hαeq : α = Real.pi / 2 := by
+        rcases lt_trichotomy α (Real.pi / 2) with hlt | heq | hgt
+        · have hposc : 0 < Real.cos α := by
+            have hltc : Real.cos (Real.pi / 2) < Real.cos α :=
+              Real.cos_lt_cos_of_nonneg_of_le_pi (by linarith) (by linarith [Real.pi_pos]) hlt
+            simpa [Real.cos_pi_div_two] using hltc
+          exact absurd hzero (ne_of_gt hposc)
+        · exact heq
+        · have hneg : Real.cos α < 0 := by
+            have hltc : Real.cos α < Real.cos (Real.pi / 2) :=
+              Real.cos_lt_cos_of_nonneg_of_le_pi (by linarith [Real.pi_pos]) hαle hgt
+            simpa [Real.cos_pi_div_two] using hltc
+          exact absurd hzero (ne_of_lt hneg)
+      unfold α at hαeq
+      have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+      have hmul : (n : ℝ) * Real.pi = (Real.pi / 2) * N := by
+        have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hpos)
+        apply (div_eq_iff hNz).mp
+        exact hαeq
+      have hclear : (2 : ℝ) * n = N := by
+        have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
+        field_simp [hpi] at hmul
+        linarith
+      exact_mod_cast hclear
+    · intro hhalf
+      have hαhalf : α = Real.pi / 2 := by
+        unfold α
+        have hcast : (N : ℝ) = 2 * (n : ℝ) := by exact_mod_cast hhalf.symm
+        rw [hcast]
+        have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hn)
+        field_simp [hn0]
+      simp [hαhalf, Real.cos_pi_div_two]
+  have hnorm : ‖u‖ = 1 := by
+    have hsq := norm_applyMat_dualRotor_sq
+      (EuclideanSpace.single (0 : Fin 3) ((n : ℝ) * stepAngle N)) spinUp
+    rw [spinUp_norm_sq] at hsq
+    have hsq' : ‖u‖ ^ 2 = 1 := by simpa [hu, afterTransverse] using hsq
+    nlinarith [norm_nonneg u]
+  have herr : deviceError u = Real.sin α ^ 2 := by
+    rw [deviceError, weight_eq_coord hnorm, hu, hcoord.1, hα]
+    have hns : ‖(Real.cos α : ℂ)‖ ^ 2 = Real.cos α ^ 2 := by
+      rw [Complex.norm_real, Real.norm_eq_abs, sq_abs]
+    rw [hns]
+    have htrig := Real.cos_sq_add_sin_sq α
+    linarith
+  refine ⟨?_, ?_, ?_⟩
+  · intro hnN
+    have hsin0 : Real.sin α = 0 := hsin_zero.mpr hnN
+    have hcos : Real.cos α = -1 := by
+      have hαpi : α = Real.pi := by
+        unfold α
+        rw [hnN]
+        have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hpos)
+        field_simp [hNz]
+      simp [hαpi, Real.cos_pi]
+    have h1 : u 1 = 0 := by
+      rw [hu, hcoord.2, hα, hsin0]
+      simp
+    have h0 : u 0 = -1 := by
+      rw [hu, hcoord.1, hα, hcos]
+      norm_num
+    have hin : u ∈ lineE0 := by
+      rw [mem_lineE0_iff]
+      exact h1
+    have hnz : u ≠ 0 := by
+      intro hzero
+      have : u 0 = 0 := by
+        rw [hzero]
+        simp [PiLp.zero_apply]
+      rw [h0] at this
+      exact one_ne_zero (neg_eq_zero.mp this)
+    have hspan : atomOf u = lineE0 := by
+      have hle : atomOf u ≤ lineE0 := by
+        unfold atomOf
+        rw [Submodule.span_singleton_le_iff_mem]
+        exact hin
+      have hfr : Module.finrank ℂ (atomOf u) = 1 := finrank_span_singleton hnz
+      exact eq_of_le_of_finrank_eq hle (hfr.trans lineE0_finrank.symm)
+    refine ⟨hin, hspan, ?_, ?_⟩
+    · rw [← lineE1_eq_negation, mem_lineE1_iff, h0]
+      exact neg_ne_zero.mpr one_ne_zero
+    · rw [herr, hsin0]
+      norm_num
+  · intro hhalf
+    have hcos0 : Real.cos α = 0 := hcos_zero.mpr hhalf
+    have hsin1 : Real.sin α = 1 := by
+      have hαhalf : α = Real.pi / 2 := by
+        unfold α
+        have hcast : (N : ℝ) = 2 * (n : ℝ) := by exact_mod_cast hhalf.symm
+        rw [hcast]
+        have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hn)
+        field_simp [hn0]
+      simp [hαhalf, Real.sin_pi_div_two]
+    have h0 : u 0 = 0 := by
+      rw [hu, hcoord.1, hα, hcos0]
+      norm_num
+    have h1 : u 1 = -Complex.I := by
+      rw [hu, hcoord.2, hα, hsin1]
+      simp
+    have hin1 : u ∈ lineE1 := by
+      rw [mem_lineE1_iff]
+      exact h0
+    have hnz : u ≠ 0 := by
+      intro hzero
+      have : u 1 = 0 := by
+        rw [hzero]
+        simp [PiLp.zero_apply]
+      rw [h1] at this
+      exact Complex.I_ne_zero (neg_eq_zero.mp this)
+    have hspan : atomOf u = lineE1 := by
+      have hle : atomOf u ≤ lineE1 := by
+        unfold atomOf
+        rw [Submodule.span_singleton_le_iff_mem]
+        exact hin1
+      have hfr : Module.finrank ℂ (atomOf u) = 1 := finrank_span_singleton hnz
+      exact eq_of_le_of_finrank_eq hle (hfr.trans lineE1_finrank.symm)
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · rw [← lineE1_eq_negation]
+      exact hin1
+    · rw [← lineE1_eq_negation, hspan]
+    · rw [mem_lineE0_iff, h1]
+      exact neg_ne_zero.mpr Complex.I_ne_zero
+    · rw [herr, hsin1]
+      norm_num
+  · intro hneN hneHalf
+    have hsin_ne : Real.sin α ≠ 0 := by
+      intro hzero
+      exact hneN (hsin_zero.mp hzero)
+    have hcos_ne : Real.cos α ≠ 0 := by
+      intro hzero
+      exact hneHalf (hcos_zero.mp hzero)
+    have hne1 : u 1 ≠ 0 := by
+      rw [hu, hcoord.2, hα]
+      exact mul_ne_zero (by simp [Complex.I_ne_zero]) (Complex.ofReal_ne_zero.mpr hsin_ne)
+    have hne0 : u 0 ≠ 0 := by
+      rw [hu, hcoord.1, hα]
+      exact Complex.ofReal_ne_zero.mpr hcos_ne
+    have hout0 : u ∉ lineE0 := by
+      rw [mem_lineE0_iff]
+      exact hne1
+    have hout1 : u ∉ lineE1 := by
+      rw [mem_lineE1_iff]
+      exact hne0
+    refine ⟨hout0, by rwa [← lineE1_eq_negation], ?_, ?_, ?_, ?_⟩
+    · intro hspan
+      have hmem : u ∈ lineE0 := by
+        rw [← hspan]
+        exact Submodule.mem_span_singleton_self _
+      exact hout0 hmem
+    · intro hspan
+      have hmem : u ∈ qNot lineE0 := by
+        rw [← hspan]
+        exact Submodule.mem_span_singleton_self _
+      rw [← lineE1_eq_negation] at hmem
+      exact hout1 hmem
+    · rw [herr]
+      exact sq_pos_of_ne_zero hsin_ne
+    · rw [herr]
+      have hcosSq : 0 < Real.cos α ^ 2 := sq_pos_of_ne_zero hcos_ne
+      have hsum := Real.cos_sq_add_sin_sq α
+      linarith
+
+/-- On a compactification divisible by four, the quarter turn, the half turn,
+the three-quarter turn, and the full turn express one height. They occupy
+four rays. The quarter turn and the three-quarter turn share the device error
+`1/2` and lie on neither computational ray. The half turn is the negation.
+The full turn returns to the original ray. -/
+theorem locked_four_rays {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ≠ lineE0 ∧
+      atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ≠ qNot lineE0 ∧
+      atomOf (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N)) = qNot lineE0 ∧
+      afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N) ∉ lineE0 ∧
+      atomOf (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N)) ≠ lineE0 ∧
+      atomOf (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N)) ≠ qNot lineE0 ∧
+      atomOf (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N)) ≠
+        atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ∧
+      atomOf (afterTransverse ((N : ℝ) * stepAngle N)) = lineE0 ∧
+      afterTransverse ((N : ℝ) * stepAngle N) ∉ qNot lineE0 ∧
+      deviceError (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) = 1 / 2 ∧
+      deviceError (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N)) = 1 ∧
+      deviceError (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N)) = 1 / 2 ∧
+      deviceError (afterTransverse ((N : ℝ) * stepAngle N)) = 0 ∧
+      JNormalized (express (alignedSteps (N / 4) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps (N / 2) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps (3 * (N / 4)) N)) = -((1 : ℝ) / 3) ∧
+      JNormalized (express (alignedSteps N N)) = -((1 : ℝ) / 3) := by
+  set q := afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N) with hq_def
+  set h := afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N) with hh_def
+  set t := afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N) with ht_def
+  set f := afterTransverse ((N : ℝ) * stepAngle N) with hf_def
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : (0 : ℕ) < 4) hN
+  have h4 : 4 * (N / 4) = N := Nat.mul_div_cancel' hdiv
+  have hqpos : 0 < N / 4 := by
+    have h1 : 4 * 1 ≤ 4 * (N / 4) := by
+      rw [h4]
+      exact hN
+    exact Nat.succ_le_iff.mp (Nat.le_of_mul_le_mul_left h1 (by decide : 0 < 4))
+  have hqne : N / 4 ≠ N := by
+    intro heq
+    have : 4 * N = N := by simpa [heq] using h4
+    omega
+  have hhalfNe : 2 * (N / 4) ≠ N := by
+    intro heq
+    have htwice : 4 * (N / 4) = 2 * N := by
+      calc
+        4 * (N / 4) = 2 * (2 * (N / 4)) := by ring
+        _ = 2 * N := by rw [heq]
+    rw [h4] at htwice
+    omega
+  have hthreePos : 0 < 3 * (N / 4) := by omega
+  have hthreeNe : 3 * (N / 4) ≠ N := by
+    intro heq
+    have : 3 * (N / 4) = 4 * (N / 4) := by rw [heq, h4]
+    omega
+  have hthreeHalf : 2 * (3 * (N / 4)) ≠ N := by
+    intro heq
+    have : 6 * (N / 4) = 4 * (N / 4) := by
+      calc
+        6 * (N / 4) = 2 * (3 * (N / 4)) := by ring
+        _ = N := heq
+        _ = 4 * (N / 4) := h4.symm
+    omega
+  have hhalfPos : 0 < N / 2 := by
+    have h2dvd : 2 ∣ N := dvd_trans (by decide : 2 ∣ 4) hdiv
+    have h2 : 2 * (N / 2) = N := Nat.mul_div_cancel' h2dvd
+    have h1 : 2 * 1 ≤ 2 * (N / 2) := by
+      rw [h2]
+      exact le_trans (by decide : (2 : ℕ) ≤ 4) hN
+    exact Nat.succ_le_iff.mp (Nat.le_of_mul_le_mul_left h1 (by decide : 0 < 2))
+  have hhalfLe : N / 2 ≤ N := Nat.div_le_self N 2
+  have hthreeLe : 3 * (N / 4) ≤ N := by
+    have hle : 3 * (N / 4) ≤ 4 * (N / 4) := Nat.mul_le_mul_right (N / 4) (by decide : 3 ≤ 4)
+    simpa [h4] using hle
+  have hq := aligned_carrier_ray (n := N / 4) hqpos (Nat.div_le_self N 4) q hq_def
+  have hh := aligned_carrier_ray (n := N / 2) hhalfPos hhalfLe h hh_def
+  have ht := aligned_carrier_ray (n := 3 * (N / 4)) hthreePos hthreeLe t ht_def
+  have hf := aligned_carrier_ray (n := N) hpos le_rfl f hf_def
+  have hqRay := hq.2.2 hqne hhalfNe
+  have hhRay := hh.2.1 (Nat.mul_div_cancel' (dvd_trans (by decide : 2 ∣ 4) hdiv))
+  have htRay := ht.2.2 hthreeNe hthreeHalf
+  have hfRay := hf.1 rfl
+  have hcounts := fourCounts_lock hdiv hN
+  have hθ : ((N / 4 : ℕ) : ℝ) * stepAngle N = Real.pi / 2 := quarterTurn_angle hdiv hpos
+  have hφ : ((3 * (N / 4) : ℕ) : ℝ) * stepAngle N = 3 * Real.pi / 2 :=
+    threeQuarterTurn_angle hdiv hpos
+  have hsin : Real.sin ((3 * Real.pi / 2 - Real.pi / 2) / 2) ≠ 0 := by
+    have hdiff : (3 * Real.pi / 2 - Real.pi / 2) / 2 = Real.pi / 2 := by ring
+    rw [hdiff, Real.sin_pi_div_two]
+    norm_num
+  have hatoms : atomOf t ≠ atomOf q := by
+    have hne := transverse_atoms_ne (θ := ((N / 4 : ℕ) : ℝ) * stepAngle N)
+      (φ := ((3 * (N / 4) : ℕ) : ℝ) * stepAngle N) ?_
+    · simpa [q, t] using hne.symm
+    · rw [hθ, hφ]
+      exact hsin
+  have hdq : deviceError q = 1 / 2 := by
+    rw [hq_def, deviceError, afterTransverse]
+    exact hcounts.2.2.2.2.1
+  have hdh : deviceError h = 1 := by
+    rw [hh_def, deviceError, afterTransverse]
+    exact hcounts.2.2.2.2.2.1
+  have hdt : deviceError t = 1 / 2 := by
+    rw [ht_def, deviceError, afterTransverse]
+    exact hcounts.2.2.2.2.2.2.1
+  have hdf : deviceError f = 0 := by
+    rw [hf_def, deviceError, afterTransverse]
+    exact hcounts.2.2.2.2.2.2.2.1
+  exact ⟨hqRay.2.2.1, hqRay.2.2.2.1, hhRay.2.1, hhRay.2.2.1, htRay.2.2.1, htRay.2.2.2.1,
+    hatoms, hfRay.2.1, hfRay.2.2.1, hdq, hdh, hdt, hdf, hcounts.1, hcounts.2.1, hcounts.2.2.1,
+    hcounts.2.2.2.1⟩
 
 end DstDiophantine.Gravity.GravitonLogic
 
