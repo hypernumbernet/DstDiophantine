@@ -168,9 +168,22 @@ imported by the modules below. They are not named in the import list of
   each axis expresses three times one. At `N = 4` the three axes meet the pure dual corner and the
   height is `-1`; for `N ≥ 5` the split stays above `-1`, and for `N ≥ 7` above the one-axis lock.
   For `N ≥ 12` three aligned gravitons express nine times one, lower by the six ordered-pair shares.
+  The expressed height of a census is the sum of the three axis feet: the square of the count times
+  one graviton inside the cone, and the lock `-1/3` on or past the wall. Two locked axes express
+  `-2/3`, and three express the floor `-1`. Further gravitons on a locked axis are not expressed.
+  For every `n ≥ 1`, at `N = 4n`, `n` gravitons on each axis express that floor. While a total still
+  fits on one axis, the aligned census is strictly the lowest. Moving one graviton from a count `n`
+  onto a count `m` changes the internal height by `2(m + 1 - n)` shares. Inside the cone the
+  expressed height moves with it. Past one wall, gravitons on a second axis still inside the cone
+  make the expressed height strictly lower than `-1/3`. With `12n ≤ N`, `n` on each axis express
+  `3n²` times one, and the aligned `3n` is lower by `6n²` shares.
   The height does not see an order. On a spinor the perpendicular rotors do not commute for every
   positive angle up to `π`, hence for every lattice step with `N ≥ 3`. A full turn of each axis is
-  `-I`, and those two turns commute. A transverse step replaces the
+  `-I`, and those two turns commute. Aligned gravitons do commute, and `n` of them act as one rotor
+  of angle `2π n/N`. For `2 ≤ n` and `4n ≤ N` their transverse orthogonal probability lies strictly
+  below `n²` times one, while the height is exactly `n²` times one. A full count of `N` restores the
+  computational weight to `1` and the orthogonal probability to `0`, with the expressed height
+  already at `-1/3`. A transverse step replaces the
   computational Born weight `1` by `cos²(π/N)`. The orthogonal probability is `sin²(π/N)`,
   strictly between `(3/4)` and `(3π²/16)` times the floor for `N ≥ 3`, strictly above that floor,
   and strictly below `1/2` for `N ≥ 5`. On every compactification with `N > 10¹⁹` the probability

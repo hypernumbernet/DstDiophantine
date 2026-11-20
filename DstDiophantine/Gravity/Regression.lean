@@ -3370,6 +3370,82 @@ example {N : ℕ} (hN : 3 ≤ N) :
   ⟨GravitonQuantum.perp_gravitons_not_commute hN,
     GravitonQuantum.fullTurn_commute.2.2⟩
 
+/-- Regression: the expressed height of a census is the sum of the three axis
+feet. Two locked axes express `-2/3`. Three express `-1`, and further gravitons
+on a locked axis are not expressed. -/
+example {n0 n1 n2 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2) :
+    JNormalized (express (GravitonQuantum.occupation n0 n1 0 N)) = -((2 : ℝ) / 3) ∧
+      JNormalized (express (GravitonQuantum.occupation n0 n1 n2 N)) = -1 ∧
+      JNormalized (express (GravitonQuantum.occupation (n0 + n0) (n1 + 1) (n2 + 1) N)) = -1 := by
+  refine ⟨GravitonQuantum.expressed_two_locks hN h0 h1,
+    GravitonQuantum.expressed_three_locks hN h0 h1 h2, ?_⟩
+  exact GravitonQuantum.expressed_floor_stable hN h0 h1 h2
+    (Nat.le_add_left _ _) (Nat.le_succ _) (Nat.le_succ _)
+
+/-- Regression: past one wall, gravitons on a second axis still inside the cone
+make the expressed height strictly lower than the one-axis lock. -/
+example {n0 n1 N : ℕ} (hN : 0 < N) (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (hn1 : 0 < n1) :
+    JNormalized (express (GravitonQuantum.occupation n0 n1 0 N)) <
+      JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1) N)) ∧
+      JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1) N)) = -((1 : ℝ) / 3) := by
+  have h := GravitonQuantum.spread_past_wall hN h0 h1 hn1
+  exact ⟨h.2.1, h.2.2⟩
+
+/-- Regression: while the alignment fits, `n` on each axis expresses `3n²` times
+one, and the aligned `3n` is lower by `6n²` shares. At `N = 4n` the equal split
+expresses the floor `-1`. -/
+example {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
+    JNormalized (express (GravitonQuantum.alignedSteps (3 * n) N)) =
+      JNormalized (express (GravitonQuantum.occupation n n n N)) +
+        (6 * (n : ℝ) ^ 2) * GravitonQuantum.farHeight N ∧
+      JNormalized (express (GravitonQuantum.occupation n n n (4 * n))) = -1 :=
+  ⟨(GravitonQuantum.equal_vs_aligned hn h).2.2.1, GravitonQuantum.equal_split_floor hn⟩
+
+/-- Regression: while the total still fits on one axis, the aligned census is
+strictly the lowest expressed height. -/
+example {n0 n1 n2 N : ℕ} (hsum : 4 * (n0 + n1 + n2) ≤ N)
+    (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
+    JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1 + n2) N)) <
+      JNormalized (express (GravitonQuantum.occupation n0 n1 n2 N)) :=
+  GravitonQuantum.expressed_aligned_lowest hsum hcross
+
+/-- Regression: moving one graviton changes the internal height by `2(m+1-n)`
+shares. Axes one apart exchange, and the height is unchanged. -/
+example {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N) (heq : n = m + 1) :
+    JNormalized (GravitonQuantum.occupation (n - 1) (m + 1) k N) -
+        JNormalized (GravitonQuantum.occupation n m k N) =
+      (2 * ((m : ℝ) + 1 - n)) * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.occupation (n - 1) (m + 1) k N) =
+        JNormalized (GravitonQuantum.occupation n m k N) :=
+  ⟨GravitonQuantum.move_height_delta hn hN, GravitonQuantum.move_balances hn hN heq⟩
+
+/-- Regression: inside the cone the height is `n²` times one, while the
+transverse orthogonal probability is strictly below `n²` times one. A full
+count restores the computational weight and locks the expressed height. -/
+example {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤ N) :
+    JNormalized (express (GravitonQuantum.alignedSteps n N)) =
+      (n : ℝ) ^ 2 * GravitonQuantum.farHeight N ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0
+            ((n : ℝ) * GravitonQuantum.stepAngle N))) spinUp) <
+        (n : ℝ) ^ 2 *
+          (1 - GravitonQuantum.computationalWeight
+            (applyMat (dualRotorMat (EuclideanSpace.single 0
+              (GravitonQuantum.stepAngle N))) spinUp)) :=
+  GravitonQuantum.height_square_defect_below hn hcone
+
+example {N : ℕ} (hN : 0 < N) :
+    GravitonQuantum.computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0
+          ((N : ℝ) * GravitonQuantum.stepAngle N))) spinUp) = 1 ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0
+            ((N : ℝ) * GravitonQuantum.stepAngle N))) spinUp) = 0 ∧
+      JNormalized (express (GravitonQuantum.alignedSteps N N)) = -((1 : ℝ) / 3) := by
+  have h := GravitonQuantum.full_turn_locks hN
+  exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
+
 end Gravity
 
 end DstDiophantine

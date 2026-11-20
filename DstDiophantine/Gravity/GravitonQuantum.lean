@@ -38,6 +38,28 @@ point on that axis is the pure dual corner: the expressed height locks at
 `N ≥ 5` one graviton stays strictly above that lock. For `N ≥ 8` two
 gravitons stay in the cone, and their height is four times one.
 
+## A census of the three axes
+
+The expressed height of a census is the sum of the three axis feet. Inside
+the cone an axis contributes the square of its count times one graviton. On
+and past the wall it contributes the lock `-1/3`, and further gravitons on
+that axis stay in the internal sum. Two locked axes, with the third empty,
+express `-2/3`. Three express the floor `-1`. For every `n ≥ 1`, at
+`N = 4n`, `n` gravitons on each axis meet the pure dual corner and express
+that floor.
+
+While a fixed total still fits on one axis, the expressed height is strictly
+lowest for the aligned census. Moving one graviton from an axis that holds
+`n` onto an axis that holds `m` changes the internal height by `2(m + 1 - n)`
+shares. The third axis does not enter. Toward a thinner axis the height
+rises, toward a fuller axis it falls, and axes one apart exchange with the
+height unchanged. Inside the cone the expressed height moves with the
+internal height. Past one wall, gravitons on a second axis that is still
+inside the cone make the expressed height strictly lower than `-1/3`.
+
+`n` gravitons on each axis, with `12n ≤ N`, express `3n²` times one. The
+same `3n` aligned express `9n²` times one, lower by `6n²` shares.
+
 ## The same step, read on a spinor
 
 The step is the dual rotor of that angle. About an axis transverse to a
@@ -50,7 +72,12 @@ multiplies the eigenstate by a phase, leaves the weight equal to `1`, and
 the orthogonal probability is `0`. On every compactification with
 `N > 10¹⁹` the orthogonal probability lies strictly below `10⁻³⁷`. Three
 hundred aligned gravitons on that compactification remain in the cone,
-express `300²` times one, and stay strictly above `-10⁻³²`.
+express `300²` times one, and stay strictly above `-10⁻³²`. For `2 ≤ n` and
+`4n ≤ N` the orthogonal probability of `n` aligned transverse gravitons lies
+strictly below `n²` times the probability of one, while the height is exactly
+`n²` times one. A full count of `N` aligned gravitons restores the
+computational weight to `1` and the orthogonal probability to `0`, while the
+expressed height on that axis is already the lock `-1/3`.
 
 ## Same angle, other carriers
 
@@ -1583,6 +1610,674 @@ theorem fullTurn_commute :
     simp
   refine ⟨h0, h1, ?_⟩
   rw [h0, h1]
+
+/-! ### A split across the three axes
+
+`J` is a sum of squares, so an arbitrary census `(n₀, n₁, n₂)` expresses the sum of the
+three aligned heights and no cross term between axes. Against the same
+gravitons aligned on one axis, the missing height is exactly the ordered-pair
+shares of the pairs that do not share an axis. Moving one graviton off a
+fuller axis onto a strictly thinner axis therefore raises the height; moving
+it onto an axis that already holds at least as many lowers the height. The
+first two special cases are `perp_twofold` and `split_threefold`.
+-/
+
+/-- `n₀` gravitons on axis 0, `n₁` on axis 1, `n₂` on axis 2. -/
+def occupation (n0 n1 n2 N : ℕ) : TorsionParams where
+  alpha := fun
+    | 0 => 0
+    | 1 => 0
+    | 2 => 0
+  beta := fun
+    | 0 => (n0 : ℝ) * stepAngle N
+    | 1 => (n1 : ℝ) * stepAngle N
+    | 2 => (n2 : ℝ) * stepAngle N
+
+theorem J_occupation (n0 n1 n2 N : ℕ) :
+    J (occupation n0 n1 n2 N) =
+      -(((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * (stepAngle N) ^ 2) / 2 := by
+  rw [J_coef]
+  simp [occupation, Fin.sum_univ_three]
+  ring
+
+/-- A split expresses the sum of the three aligned heights. No ordered-pair
+share crosses an axis. -/
+theorem occupation_sq {n0 n1 n2 N : ℕ} :
+    JNormalized (occupation n0 n1 n2 N) =
+      ((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
+  unfold JNormalized farHeight
+  rw [J_occupation]
+  have hone : JNormalized (oneAxisDual (stepAngle N)) =
+      (8 / (3 * Real.pi ^ 2)) * (-(stepAngle N ^ 2) / 2) := by
+    unfold JNormalized
+    rw [J_oneAxisDual]
+  rw [hone]
+  ring
+
+/-- The ordered-pair shares that leave a common axis are exactly the height the
+split does not carry. -/
+theorem occupation_missing_cross {n0 n1 n2 N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps (n0 + n1 + n2) N) =
+      JNormalized (occupation n0 n1 n2 N) +
+        (2 * ((n0 : ℝ) * n1 + (n0 : ℝ) * n2 + (n1 : ℝ) * n2)) * farHeight N := by
+  rw [collective_square hN, occupation_sq]
+  have hsum : ((n0 + n1 + n2 : ℕ) : ℝ) = (n0 : ℝ) + n1 + n2 := by norm_cast
+  have hfar : JNormalized (oneAxisDual (stepAngle N)) = farHeight N := rfl
+  rw [hsum, hfar]
+  ring
+
+/-- Two axes occupied: the split stands strictly above the same gravitons
+aligned on one axis, by the ordered-pair shares that cross no axis. -/
+theorem occupation_above_aligned {n0 n1 n2 N : ℕ} (hN : 0 < N)
+    (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
+    JNormalized (alignedSteps (n0 + n1 + n2) N) <
+      JNormalized (occupation n0 n1 n2 N) := by
+  rw [occupation_missing_cross hN]
+  have hpos : (0 : ℝ) < (n0 : ℝ) * n1 + (n0 : ℝ) * n2 + (n1 : ℝ) * n2 := by
+    exact_mod_cast hcross
+  have hneg := farHeight_neg hN
+  have hprod : (2 * ((n0 : ℝ) * n1 + (n0 : ℝ) * n2 + (n1 : ℝ) * n2)) * farHeight N < 0 :=
+    mul_neg_of_pos_of_neg (by positivity) hneg
+  linarith
+
+/-- While every axis stays on its own side of the wall, the split is admissible. -/
+theorem occupation_admissible {n0 n1 n2 N : ℕ}
+    (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
+    IsAdmissibleContinuous (occupation n0 n1 n2 N) := by
+  have hβ {n : ℕ} (hn : 4 * n ≤ N) :
+      0 ≤ (n : ℝ) * stepAngle N ∧ (n : ℝ) * stepAngle N ≤ Real.pi / 2 := by
+    refine ⟨?_, alignedAngle_le_half_pi hn⟩
+    exact mul_nonneg (Nat.cast_nonneg _) (stepAngle_nonneg N)
+  intro a
+  fin_cases a
+  · simp only [occupation]
+    exact ⟨le_rfl, (hβ h0).1, by simpa using (hβ h0).2⟩
+  · simp only [occupation]
+    exact ⟨le_rfl, (hβ h1).1, by simpa using (hβ h1).2⟩
+  · simp only [occupation]
+    exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩
+
+/-- Moving one graviton from axis 0 onto axis 1 changes the height by
+`2(m + 1 - n)` shares of one graviton. The third axis does not enter. -/
+theorem move_height_delta {n m k N : ℕ} (hn : 0 < n) (_hN : 0 < N) :
+    JNormalized (occupation (n - 1) (m + 1) k N) -
+        JNormalized (occupation n m k N) =
+      (2 * ((m : ℝ) + 1 - n)) * farHeight N := by
+  rw [occupation_sq, occupation_sq]
+  have hn' : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
+    rw [Nat.cast_sub (Nat.succ_le_of_lt hn)]
+    simp
+  have hm' : ((m + 1 : ℕ) : ℝ) = (m : ℝ) + 1 := by norm_cast
+  rw [hn', hm']
+  ring
+
+/-- Off a fuller axis onto a strictly thinner one, the height rises. -/
+theorem move_to_thinner_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
+    (hthin : m + 1 < n) :
+    JNormalized (occupation n m k N) <
+      JNormalized (occupation (n - 1) (m + 1) k N) := by
+  have hδ := move_height_delta (n := n) (m := m) (k := k) hn hN
+  have hcoef : (m : ℝ) + 1 - (n : ℝ) < 0 := by
+    have hm : (m : ℝ) + 1 < (n : ℝ) := by exact_mod_cast hthin
+    linarith
+  have hneg := farHeight_neg hN
+  have hprod : (2 * ((m : ℝ) + 1 - (n : ℝ))) * farHeight N > 0 :=
+    mul_pos_of_neg_of_neg (by nlinarith) hneg
+  linarith
+
+/-- Onto an axis that already holds at least as many, the height falls. -/
+theorem move_to_fuller_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
+    (hfull : n ≤ m) :
+    JNormalized (occupation (n - 1) (m + 1) k N) <
+      JNormalized (occupation n m k N) := by
+  have hδ := move_height_delta (n := n) (m := m) (k := k) hn hN
+  have hcoef : (0 : ℝ) < (m : ℝ) + 1 - (n : ℝ) := by
+    have hm : (n : ℝ) < (m : ℝ) + 1 := by exact_mod_cast (Nat.lt_succ_of_le hfull)
+    linarith
+  have hneg := farHeight_neg hN
+  have hprod : (2 * ((m : ℝ) + 1 - (n : ℝ))) * farHeight N < 0 :=
+    mul_neg_of_pos_of_neg (by nlinarith) hneg
+  linarith
+
+/-- Axes one apart exchange under the move, and the height is unchanged. -/
+theorem move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N) (heq : n = m + 1) :
+    JNormalized (occupation (n - 1) (m + 1) k N) =
+      JNormalized (occupation n m k N) := by
+  have hδ := move_height_delta (n := n) (m := m) (k := k) hn hN
+  have hcoef : (m : ℝ) + 1 - (n : ℝ) = 0 := by
+    have hn' : (n : ℝ) = (m : ℝ) + 1 := by exact_mod_cast heq
+    linarith
+  rw [hcoef] at hδ
+  simp only [mul_zero, zero_mul] at hδ
+  linarith
+
+/-! ### The expressed foot of a census
+
+`J` adds over axes, and the admissible foot is taken axis by axis. The
+expressed height of a census is therefore the sum of the three heights those
+axes would express alone. Inside the cone that height is the sum of the
+squared counts times one graviton. On and past the wall an axis contributes
+the lock `-1/3` and ignores further gravitons. Two locked axes express
+`-2/3`. Three express `-1`.
+-/
+
+/-- A nonnegative pure dual rapidity expresses either itself or the corner. -/
+theorem pureDual_foot {θ : ℝ} (hθ : 0 ≤ θ) :
+    (axisExpress 0 θ).1 = 0 ∧
+      ((θ ≤ Real.pi / 2 ∧ (axisExpress 0 θ).2 = θ) ∨
+        (Real.pi / 2 < θ ∧ (axisExpress 0 θ).2 = Real.pi / 2)) := by
+  by_cases hle : θ ≤ Real.pi / 2
+  · have ht : InTriangle 0 θ := ⟨le_rfl, hθ, by simpa [zero_add] using hle⟩
+    have hax := axisExpress_triangle ht
+    refine ⟨?_, Or.inl ⟨hle, ?_⟩⟩
+    · simpa using congrArg Prod.fst hax
+    · simpa using congrArg Prod.snd hax
+  · have hgt : Real.pi / 2 < θ := lt_of_not_ge hle
+    have hpure : InPureDual 0 θ := ⟨hgt.le, by linarith⟩
+    have hax := axisExpress_pureDual hpure
+    refine ⟨?_, Or.inr ⟨hgt, ?_⟩⟩
+    · simpa using congrArg Prod.fst hax
+    · simpa using congrArg Prod.snd hax
+
+theorem J_expressedOneAxis {θ : ℝ} (hθ : 0 ≤ θ) :
+    J (expressedOneAxis θ) = -((axisExpress 0 θ).2 ^ 2) / 2 := by
+  have hα := (pureDual_foot hθ).1
+  rw [J_coef]
+  simp only [expressedOneAxis, Fin.sum_univ_three, hα]
+  ring
+
+theorem J_express_occupation (n0 n1 n2 N : ℕ) :
+    J (express (occupation n0 n1 n2 N)) =
+      J (expressedOneAxis ((n0 : ℝ) * stepAngle N)) +
+      J (expressedOneAxis ((n1 : ℝ) * stepAngle N)) +
+      J (expressedOneAxis ((n2 : ℝ) * stepAngle N)) := by
+  set θ0 : ℝ := (n0 : ℝ) * stepAngle N
+  set θ1 : ℝ := (n1 : ℝ) * stepAngle N
+  set θ2 : ℝ := (n2 : ℝ) * stepAngle N
+  have h0 : 0 ≤ θ0 := mul_nonneg (Nat.cast_nonneg _) (stepAngle_nonneg N)
+  have h1 : 0 ≤ θ1 := mul_nonneg (Nat.cast_nonneg _) (stepAngle_nonneg N)
+  have h2 : 0 ≤ θ2 := mul_nonneg (Nat.cast_nonneg _) (stepAngle_nonneg N)
+  rw [J_expressedOneAxis h0, J_expressedOneAxis h1, J_expressedOneAxis h2]
+  have ha0 : (axisExpress 0 θ0).1 = 0 := (pureDual_foot h0).1
+  have ha1 : (axisExpress 0 θ1).1 = 0 := (pureDual_foot h1).1
+  have ha2 : (axisExpress 0 θ2).1 = 0 := (pureDual_foot h2).1
+  rw [J_coef]
+  simp only [express, occupation, Fin.sum_univ_three]
+  rw [ha0, ha1, ha2]
+  ring
+
+/-- The expressed height of a census is the sum of the three axis feet. -/
+theorem expressed_occupation_sum (n0 n1 n2 N : ℕ) :
+    JNormalized (express (occupation n0 n1 n2 N)) =
+      JNormalized (express (alignedSteps n0 N)) +
+      JNormalized (express (alignedSteps n1 N)) +
+      JNormalized (express (alignedSteps n2 N)) := by
+  unfold JNormalized
+  rw [J_express_occupation, express_aligned, express_aligned, express_aligned]
+  ring
+
+theorem express_empty (N : ℕ) :
+    JNormalized (express (alignedSteps 0 N)) = 0 := by
+  rw [express_eq_of_admissible (collective_admissible (n := 0) (Nat.zero_le N))]
+  simp [alignedSteps, JNormalized_oneAxisDual]
+
+/-- Two axes on or past the wall, with the third empty, express `-2/3`. -/
+theorem expressed_two_locks {n0 n1 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) :
+    JNormalized (express (occupation n0 n1 0 N)) = -((2 : ℝ) / 3) := by
+  rw [expressed_occupation_sum, express_aligned, express_aligned, express_empty]
+  rw [collective_locks hN h0, collective_locks hN h1]
+  norm_num
+
+/-- Three axes on or past the wall express the floor `-1`. -/
+theorem expressed_three_locks {n0 n1 n2 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2) :
+    JNormalized (express (occupation n0 n1 n2 N)) = -1 := by
+  rw [expressed_occupation_sum, express_aligned, express_aligned, express_aligned]
+  rw [collective_locks hN h0, collective_locks hN h1, collective_locks hN h2]
+  norm_num
+
+/-- Further gravitons on axes that have already reached the wall are not expressed. -/
+theorem expressed_floor_stable {n0 n1 n2 m0 m1 m2 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2)
+    (hm0 : n0 ≤ m0) (hm1 : n1 ≤ m1) (hm2 : n2 ≤ m2) :
+    JNormalized (express (occupation m0 m1 m2 N)) = -1 := by
+  have h0' : N ≤ 4 * m0 := le_trans h0 (Nat.mul_le_mul_left 4 hm0)
+  have h1' : N ≤ 4 * m1 := le_trans h1 (Nat.mul_le_mul_left 4 hm1)
+  have h2' : N ≤ 4 * m2 := le_trans h2 (Nat.mul_le_mul_left 4 hm2)
+  exact expressed_three_locks hN h0' h1' h2'
+
+/-- For every `n ≥ 1`, `n` gravitons on each axis at `N = 4n` express `-1`. -/
+theorem equal_split_floor {n : ℕ} (hn : 0 < n) :
+    JNormalized (express (occupation n n n (4 * n))) = -1 := by
+  have hN : 0 < 4 * n := Nat.mul_pos (by decide : 0 < 4) hn
+  exact expressed_three_locks hN le_rfl le_rfl le_rfl
+
+/-- Inside the cone the expressed height is the sum of the squared counts. -/
+theorem expressed_occupation_squares {n0 n1 n2 N : ℕ}
+    (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
+    JNormalized (express (occupation n0 n1 n2 N)) =
+      ((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
+  rw [express_eq_of_admissible (occupation_admissible h0 h1 h2), occupation_sq]
+
+/-- One locked axis plus two axes still inside the cone. -/
+theorem expressed_lock_plus {n0 n1 n2 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
+    JNormalized (express (occupation n0 n1 n2 N)) =
+      -((1 : ℝ) / 3) + ((n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
+  have ha : JNormalized (express (alignedSteps n0 N)) = -((1 : ℝ) / 3) := by
+    rw [express_aligned]
+    exact collective_locks hN h0
+  have hb : JNormalized (express (alignedSteps n1 N)) = (n1 : ℝ) ^ 2 * farHeight N := by
+    rw [express_eq_of_admissible (collective_admissible h1), collective_square hN]
+    rfl
+  have hc : JNormalized (express (alignedSteps n2 N)) = (n2 : ℝ) ^ 2 * farHeight N := by
+    rw [express_eq_of_admissible (collective_admissible h2), collective_square hN]
+    rfl
+  rw [expressed_occupation_sum, ha, hb, hc]
+  ring
+
+/-- Past one wall, gravitons on a second axis still inside the cone make the
+expressed height strictly lower than the one-axis lock. -/
+theorem spread_past_wall {n0 n1 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (hn1 : 0 < n1) :
+    JNormalized (express (occupation n0 n1 0 N)) =
+      -((1 : ℝ) / 3) + ((n1 : ℝ) ^ 2) * farHeight N ∧
+      JNormalized (express (occupation n0 n1 0 N)) <
+        JNormalized (express (alignedSteps (n0 + n1) N)) ∧
+      JNormalized (express (alignedSteps (n0 + n1) N)) = -((1 : ℝ) / 3) := by
+  have hwall : N ≤ 4 * (n0 + n1) := le_trans h0 (Nat.mul_le_mul_left 4 (Nat.le_add_right n0 n1))
+  have hlock : JNormalized (express (alignedSteps (n0 + n1) N)) = -((1 : ℝ) / 3) := by
+    rw [express_aligned]
+    exact collective_locks hN hwall
+  have hraw := expressed_lock_plus (n2 := 0) hN h0 h1 (Nat.zero_le N)
+  have hsum : JNormalized (express (occupation n0 n1 0 N)) =
+      -((1 : ℝ) / 3) + ((n1 : ℝ) ^ 2) * farHeight N := by
+    rw [hraw]
+    ring
+  refine ⟨hsum, ?_, hlock⟩
+  rw [hsum, hlock]
+  have hsq : (0 : ℝ) < (n1 : ℝ) ^ 2 := by
+    have hpos : (0 : ℝ) < n1 := by exact_mod_cast hn1
+    positivity
+  have hneg := farHeight_neg hN
+  nlinarith [mul_neg_of_pos_of_neg hsq hneg]
+
+/-- While the total still fits on one axis, the aligned census is strictly the
+lowest expressed height. -/
+theorem expressed_aligned_lowest {n0 n1 n2 N : ℕ}
+    (hsum : 4 * (n0 + n1 + n2) ≤ N)
+    (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
+    JNormalized (express (alignedSteps (n0 + n1 + n2) N)) <
+      JNormalized (express (occupation n0 n1 n2 N)) := by
+  have htwo : 2 ≤ n0 + n1 + n2 := by
+    rcases Nat.eq_zero_or_pos n0 with hn0 | hn0
+    · rcases Nat.eq_zero_or_pos n1 with hn1 | hn1
+      · simp [hn0, hn1] at hcross
+      · rcases Nat.eq_zero_or_pos n2 with hn2 | hn2
+        · simp [hn0, hn2] at hcross
+        · omega
+    · rcases Nat.eq_zero_or_pos n1 with hn1 | hn1
+      · rcases Nat.eq_zero_or_pos n2 with hn2 | hn2
+        · simp [hn1, hn2] at hcross
+        · omega
+      · omega
+  have hN : 0 < N := by
+    have h8 : 8 ≤ 4 * (n0 + n1 + n2) := by omega
+    exact lt_of_lt_of_le (by decide : (0 : ℕ) < 8) (le_trans h8 hsum)
+  have h0 : 4 * n0 ≤ N := by
+    have hle : n0 ≤ n0 + n1 + n2 := by omega
+    exact le_trans (Nat.mul_le_mul_left 4 hle) hsum
+  have h1 : 4 * n1 ≤ N := by
+    have hle : n1 ≤ n0 + n1 + n2 := by omega
+    exact le_trans (Nat.mul_le_mul_left 4 hle) hsum
+  have h2 : 4 * n2 ≤ N := by
+    have hle : n2 ≤ n0 + n1 + n2 := by omega
+    exact le_trans (Nat.mul_le_mul_left 4 hle) hsum
+  rw [express_eq_of_admissible (collective_admissible hsum),
+    express_eq_of_admissible (occupation_admissible h0 h1 h2)]
+  exact occupation_above_aligned hN hcross
+
+/-- `n` on each axis, against the same `3n` aligned, while the alignment
+still fits in the cone. -/
+theorem equal_vs_aligned {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
+    JNormalized (express (alignedSteps (3 * n) N)) = (9 * (n : ℝ) ^ 2) * farHeight N ∧
+      JNormalized (express (occupation n n n N)) = (3 * (n : ℝ) ^ 2) * farHeight N ∧
+      JNormalized (express (alignedSteps (3 * n) N)) =
+        JNormalized (express (occupation n n n N)) + (6 * (n : ℝ) ^ 2) * farHeight N ∧
+      JNormalized (express (alignedSteps (3 * n) N)) <
+        JNormalized (express (occupation n n n N)) := by
+  have hN : 0 < N := lt_of_lt_of_le (Nat.mul_pos (by decide : 0 < 12) hn) h
+  have hcone : 4 * n ≤ N := by
+    have h4 : 4 * n ≤ 12 * n := by omega
+    exact le_trans h4 h
+  have hthree : 4 * (3 * n) ≤ N := by simpa [show 4 * (3 * n) = 12 * n by omega] using h
+  have halign : JNormalized (express (alignedSteps (3 * n) N)) =
+      (9 * (n : ℝ) ^ 2) * farHeight N := by
+    rw [express_eq_of_admissible (collective_admissible hthree), collective_square hN]
+    have hcast : ((3 * n : ℕ) : ℝ) = 3 * (n : ℝ) := by norm_cast
+    rw [hcast]
+    unfold farHeight
+    ring
+  have hequal : JNormalized (express (occupation n n n N)) =
+      (3 * (n : ℝ) ^ 2) * farHeight N := by
+    rw [expressed_occupation_squares hcone hcone hcone]
+    ring
+  refine ⟨halign, hequal, ?_, ?_⟩
+  · rw [halign, hequal]
+    ring
+  · rw [halign, hequal]
+    have hneg := farHeight_neg hN
+    have hsq : (0 : ℝ) < (n : ℝ) ^ 2 := by
+      have hpos : (0 : ℝ) < n := by exact_mod_cast hn
+      positivity
+    nlinarith [mul_neg_of_pos_of_neg hsq hneg]
+
+/-- Inside the cone, moving one graviton onto a strictly thinner axis raises
+the expressed height. -/
+theorem expressed_move_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
+    (hthin : m + 1 < n) (h0 : 4 * n ≤ N) (h1 : 4 * (m + 1) ≤ N) (hk : 4 * k ≤ N) :
+    JNormalized (express (occupation n m k N)) <
+      JNormalized (express (occupation (n - 1) (m + 1) k N)) := by
+  have hm : 4 * m ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.le_succ m)) h1
+  have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
+  rw [express_eq_of_admissible (occupation_admissible h0 hm hk),
+    express_eq_of_admissible (occupation_admissible hsrc h1 hk)]
+  exact move_to_thinner_raises hn hN hthin
+
+/-- Inside the cone, moving one graviton onto an axis that already holds at
+least as many lowers the expressed height. -/
+theorem expressed_move_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
+    (hfull : n ≤ m) (h0 : 4 * n ≤ N) (h1 : 4 * (m + 1) ≤ N) (hk : 4 * k ≤ N) :
+    JNormalized (express (occupation (n - 1) (m + 1) k N)) <
+      JNormalized (express (occupation n m k N)) := by
+  have hm : 4 * m ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.le_succ m)) h1
+  have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
+  rw [express_eq_of_admissible (occupation_admissible hsrc h1 hk),
+    express_eq_of_admissible (occupation_admissible h0 hm hk)]
+  exact move_to_fuller_lowers hn hN hfull
+
+/-- Inside the cone, axes one apart exchange and the expressed height holds. -/
+theorem expressed_move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
+    (heq : n = m + 1) (h0 : 4 * n ≤ N) (hk : 4 * k ≤ N) :
+    JNormalized (express (occupation (n - 1) (m + 1) k N)) =
+      JNormalized (express (occupation n m k N)) := by
+  have hm : 4 * m ≤ N := by
+    have hle : m ≤ n := by omega
+    exact le_trans (Nat.mul_le_mul_left 4 hle) h0
+  have hdest : 4 * (m + 1) ≤ N := by simpa [heq] using h0
+  have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
+  rw [express_eq_of_admissible (occupation_admissible hsrc hdest hk),
+    express_eq_of_admissible (occupation_admissible h0 hm hk)]
+  exact move_balances hn hN heq
+
+/-! ### The same aligned steps, read on a spinor
+
+Dual rotors about one axis commute, and their product is the rotor of the summed
+angle. Perpendicular rotors do not. `n` aligned gravitons about an axis transverse
+to a computational eigenstate therefore act as one dual rotor of angle `2π n/N`.
+The orthogonal probability is `sin²(nπ/N)`. For `2 ≤ n < N` that probability is
+strictly below `n²` times the probability of one transverse graviton, while the
+height, inside the cone, is exactly `n²` times one. A full count of `N` aligned
+gravitons is one dual turn: the rotor is `-I`, the computational weight returns
+to `1`, and the orthogonal probability is `0`, while the expressed height on
+that axis has already locked at `-1/3`.
+-/
+
+private theorem sin_step_lt {k : ℕ} {x : ℝ} (hk : 1 ≤ k) (hx : 0 < x)
+    (hbound : ((k + 1 : ℕ) : ℝ) * x ≤ Real.pi)
+    (ih : Real.sin ((k : ℝ) * x) ≤ (k : ℝ) * Real.sin x) :
+    Real.sin (((k + 1 : ℕ) : ℝ) * x) < ((k + 1 : ℕ) : ℝ) * Real.sin x := by
+  have hk0 : (0 : ℝ) < k := by exact_mod_cast hk
+  have hxpi : x < Real.pi := by
+    have hpos : (0 : ℝ) < (k + 1 : ℕ) := by exact_mod_cast (Nat.succ_pos k)
+    have hstep : x ≤ Real.pi / (k + 1 : ℕ) := by
+      rw [le_div_iff₀ hpos]
+      simpa [mul_comm] using hbound
+    exact lt_of_le_of_lt hstep (div_lt_self Real.pi_pos (by exact_mod_cast Nat.succ_le_succ hk))
+  have hcos : Real.cos x < 1 := by
+    have hlt : Real.cos x < Real.cos 0 :=
+      Real.cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (by linarith) hx
+    simpa [Real.cos_zero] using hlt
+  have hkAngle : 0 < (k : ℝ) * x := mul_pos hk0 hx
+  have hklt : (k : ℝ) * x < Real.pi := by
+    have hcoe : (k : ℝ) < (k + 1 : ℕ) := by exact_mod_cast (Nat.lt_succ_self k)
+    have hmul : (k : ℝ) * x < ((k + 1 : ℕ) : ℝ) * x :=
+      mul_lt_mul_of_pos_right hcoe hx
+    exact lt_of_lt_of_le hmul hbound
+  have hsinK : 0 < Real.sin ((k : ℝ) * x) :=
+    Real.sin_pos_of_pos_of_lt_pi hkAngle hklt
+  have hprod : Real.sin ((k : ℝ) * x) * Real.cos x < Real.sin ((k : ℝ) * x) := by
+    have hlt := mul_lt_mul_of_pos_left hcos hsinK
+    simpa [mul_one] using hlt
+  have hsinx : 0 < Real.sin x :=
+    Real.sin_pos_of_pos_of_lt_pi hx (by linarith)
+  have hcosK : Real.cos ((k : ℝ) * x) * Real.sin x ≤ Real.sin x := by
+    have hle : Real.cos ((k : ℝ) * x) ≤ 1 := Real.cos_le_one _
+    have hmul := mul_le_mul_of_nonneg_right hle hsinx.le
+    simpa [one_mul] using hmul
+  have hadd : ((k + 1 : ℕ) : ℝ) * x = (k : ℝ) * x + x := by
+    have h1 : ((k + 1 : ℕ) : ℝ) = (k : ℝ) + 1 := by norm_cast
+    rw [h1]
+    ring
+  have hsin : Real.sin (((k + 1 : ℕ) : ℝ) * x) =
+      Real.sin ((k : ℝ) * x) * Real.cos x + Real.cos ((k : ℝ) * x) * Real.sin x := by
+    rw [hadd, Real.sin_add]
+  have hlt : Real.sin (((k + 1 : ℕ) : ℝ) * x) < Real.sin ((k : ℝ) * x) + Real.sin x := by
+    rw [hsin]
+    linarith [hprod, hcosK]
+  have hright : Real.sin ((k : ℝ) * x) + Real.sin x ≤ ((k + 1 : ℕ) : ℝ) * Real.sin x := by
+    have h1 : ((k + 1 : ℕ) : ℝ) = (k : ℝ) + 1 := by norm_cast
+    rw [h1]
+    linarith [ih]
+  linarith
+
+private theorem sin_mul_nat_le {n : ℕ} {x : ℝ} (hx : 0 ≤ x)
+    (hbound : (n : ℝ) * x ≤ Real.pi) :
+    Real.sin ((n : ℝ) * x) ≤ (n : ℝ) * Real.sin x := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    cases n with
+    | zero =>
+      simp [one_mul]
+    | succ n =>
+      by_cases hx0 : x = 0
+      · simp [hx0]
+      · have hxpos : 0 < x := lt_of_le_of_ne hx (Ne.symm hx0)
+        have hprev : ((n + 1 : ℕ) : ℝ) * x ≤ Real.pi := by
+          have hcoe : ((n + 1 : ℕ) : ℝ) ≤ ((n + 2 : ℕ) : ℝ) := by exact_mod_cast (by omega)
+          exact (mul_le_mul_of_nonneg_right hcoe hx).trans hbound
+        have hih := ih hprev
+        exact (sin_step_lt (k := n + 1) (by omega) hxpos hbound hih).le
+
+private theorem sin_mul_nat_lt {n : ℕ} {x : ℝ} (hn : 2 ≤ n) (hx : 0 < x)
+    (hbound : (n : ℝ) * x ≤ Real.pi) :
+    Real.sin ((n : ℝ) * x) < (n : ℝ) * Real.sin x := by
+  have hpred : 1 ≤ n - 1 := by omega
+  have hprev : ((n - 1 : ℕ) : ℝ) * x ≤ Real.pi := by
+    have hcoe : ((n - 1 : ℕ) : ℝ) ≤ (n : ℝ) := by exact_mod_cast (Nat.sub_le n 1)
+    exact (mul_le_mul_of_nonneg_right hcoe hx.le).trans hbound
+  have hih : Real.sin (((n - 1 : ℕ) : ℝ) * x) ≤ ((n - 1 : ℕ) : ℝ) * Real.sin x :=
+    sin_mul_nat_le hx.le hprev
+  have hk : ((n - 1 : ℕ) : ℝ) = (n : ℝ) - 1 := by
+    rw [Nat.cast_sub (by omega : 1 ≤ n)]
+    simp
+  have hstep := sin_step_lt (k := n - 1) hpred hx ?_ ?_
+  · have hcast : ((n - 1 + 1 : ℕ) : ℝ) = (n : ℝ) := by
+      have h1 : n - 1 + 1 = n := by omega
+      rw [h1]
+    simpa [hcast] using hstep
+  · simpa [Nat.sub_add_cancel (by omega : 1 ≤ n)] using hbound
+  · simpa [hk] using hih
+
+private theorem axis0_single_smul (s θ : ℝ) :
+    s • (EuclideanSpace.single (0 : Fin 3) θ : DualRapidity) =
+      EuclideanSpace.single 0 (s * θ) := by
+  ext i
+  fin_cases i <;> simp
+
+theorem aligned_rotors_add (θ φ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) * dualRotorMat (EuclideanSpace.single 0 φ) =
+      dualRotorMat (EuclideanSpace.single 0 (θ + φ)) := by
+  have hθ : θ • (EuclideanSpace.single (0 : Fin 3) 1 : DualRapidity) =
+      EuclideanSpace.single 0 θ := by
+    simpa using axis0_single_smul θ 1
+  have hφ : φ • (EuclideanSpace.single (0 : Fin 3) 1 : DualRapidity) =
+      EuclideanSpace.single 0 φ := by
+    simpa using axis0_single_smul φ 1
+  have hsum : (θ + φ) • (EuclideanSpace.single (0 : Fin 3) 1 : DualRapidity) =
+      EuclideanSpace.single 0 (θ + φ) := by
+    simpa [add_mul] using axis0_single_smul (θ + φ) 1
+  rw [← hθ, ← hφ, ← hsum]
+  exact (dualRotorMat_ray_add θ φ (EuclideanSpace.single (0 : Fin 3) 1)).symm
+
+/-- Dual rotors about one axis commute. Their product is the rotor of the summed angle. -/
+theorem aligned_rotors_commute (θ φ : ℝ) :
+    dualRotorMat (EuclideanSpace.single 0 θ) * dualRotorMat (EuclideanSpace.single 0 φ) =
+      dualRotorMat (EuclideanSpace.single 0 φ) * dualRotorMat (EuclideanSpace.single 0 θ) := by
+  rw [aligned_rotors_add, aligned_rotors_add, add_comm]
+
+/-- `n` aligned gravitons about a transverse axis replace the computational weight
+by `cos²(nπ/N)`. -/
+theorem aligned_transverse_weight {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
+    computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
+      Real.cos ((n : ℝ) * Real.pi / N) ^ 2 := by
+  rw [computationalWeight_eq_cos_sq (mul_pos (by exact_mod_cast hn) (stepAngle_pos hN))]
+  have hhalf : (n : ℝ) * stepAngle N / 2 = (n : ℝ) * (stepAngle N / 2) := by ring
+  rw [hhalf, stepAngle_half hN]
+  ring
+
+/-- The orthogonal probability of `n` aligned transverse gravitons is `sin²(nπ/N)`. -/
+theorem aligned_transverse_defect {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
+    1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
+      Real.sin ((n : ℝ) * Real.pi / N) ^ 2 := by
+  rw [aligned_transverse_weight hn hN]
+  have h := Real.cos_sq_add_sin_sq ((n : ℝ) * Real.pi / N)
+  linarith
+
+/-- For `2 ≤ n < N` the orthogonal probability lies strictly below `n²` times one
+transverse graviton. The height, by contrast, multiplies by `n²`. -/
+theorem aligned_defect_below_square {n N : ℕ} (hn : 2 ≤ n) (hN : n < N) :
+    1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) <
+      (n : ℝ) ^ 2 * (1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp)) := by
+  have hpos : 0 < N := lt_trans (by decide : (0 : ℕ) < 2) (lt_of_le_of_lt hn hN)
+  have hnpos : 0 < n := lt_of_lt_of_le (by decide : (0 : ℕ) < 2) hn
+  rw [aligned_transverse_defect hnpos hpos, transverseStep_defect hpos]
+  set x : ℝ := Real.pi / (N : ℝ)
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+  have hx : 0 < x := div_pos Real.pi_pos hN0
+  have hbound : (n : ℝ) * x ≤ Real.pi := by
+    have hle : (n : ℝ) ≤ N := by exact_mod_cast le_of_lt hN
+    have hxeq : (n : ℝ) * x = (n : ℝ) / N * Real.pi := by
+      unfold x
+      ring
+    rw [hxeq]
+    have hdiv : (n : ℝ) / N ≤ 1 := by
+      rw [div_le_one hN0]
+      exact hle
+    have hmul := mul_le_mul_of_nonneg_right hdiv Real.pi_pos.le
+    simpa [one_mul] using hmul
+  have hsin := sin_mul_nat_lt hn hx hbound
+  have hsinx : 0 < Real.sin x := by
+    refine Real.sin_pos_of_pos_of_lt_pi hx ?_
+    have h2 : (2 : ℝ) ≤ N := by exact_mod_cast (le_trans hn (le_of_lt hN))
+    unfold x
+    rw [div_lt_iff₀ hN0]
+    nlinarith [Real.pi_pos, h2]
+  have hleft : 0 ≤ Real.sin ((n : ℝ) * x) := by
+    have hangle : 0 ≤ (n : ℝ) * x := mul_nonneg (by exact_mod_cast hnpos.le) hx.le
+    have hltpi : (n : ℝ) * x < Real.pi := by
+      have hlt : (n : ℝ) < N := by exact_mod_cast hN
+      have hxeq : (n : ℝ) * x = (n : ℝ) / N * Real.pi := by unfold x; ring
+      rw [hxeq]
+      have hdiv : (n : ℝ) / N < 1 := (div_lt_one hN0).mpr hlt
+      have hmul := mul_lt_mul_of_pos_right hdiv Real.pi_pos
+      simpa [one_mul] using hmul
+    exact (Real.sin_pos_of_pos_of_lt_pi (mul_pos (by exact_mod_cast hnpos) hx) hltpi).le
+  have hright0 : 0 ≤ (n : ℝ) * Real.sin x := mul_nonneg (by exact_mod_cast hnpos.le) hsinx.le
+  have hsq := (sq_lt_sq₀ hleft hright0).mpr hsin
+  have hform : ((n : ℝ) * Real.sin x) ^ 2 = (n : ℝ) ^ 2 * Real.sin x ^ 2 := by ring
+  rw [hform] at hsq
+  have hxeq : (n : ℝ) * Real.pi / N = (n : ℝ) * x := by
+    unfold x
+    ring
+  simpa [hxeq] using hsq
+
+/-- `N` aligned gravitons are one dual turn. The rotor is `-I`, the computational
+weight returns to `1`, and the orthogonal probability is `0`. -/
+theorem fullCount_restores {N : ℕ} (hN : 0 < N) :
+    (N : ℝ) * stepAngle N = 2 * Real.pi ∧
+      dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N)) = -1 ∧
+      computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) = 1 ∧
+      1 - computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) = 0 := by
+  have hangle : (N : ℝ) * stepAngle N = 2 * Real.pi := by
+    unfold stepAngle
+    field_simp
+  refine ⟨hangle, ?_, ?_, ?_⟩
+  · rw [hangle, dualRotorMat_axis0_rodrigues]
+    have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+    rw [hhalf, Real.cos_pi, Real.sin_pi]
+    simp
+  · have hpos : 0 < (N : ℝ) * stepAngle N :=
+      mul_pos (by exact_mod_cast hN) (stepAngle_pos hN)
+    rw [computationalWeight_eq_cos_sq hpos, hangle]
+    have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+    rw [hhalf, Real.cos_pi]
+    norm_num
+  · have hweight : computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) = 1 := by
+      have hpos : 0 < (N : ℝ) * stepAngle N :=
+        mul_pos (by exact_mod_cast hN) (stepAngle_pos hN)
+      rw [computationalWeight_eq_cos_sq hpos, hangle]
+      have hhalf : (2 * Real.pi) / 2 = Real.pi := by ring
+      rw [hhalf, Real.cos_pi]
+      norm_num
+    linarith [hweight]
+
+/-- Inside the cone the height is `n²` times one, while the orthogonal
+probability of the same aligned steps lies strictly below `n²` times one
+transverse graviton. -/
+theorem height_square_defect_below {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤ N) :
+    JNormalized (express (alignedSteps n N)) = (n : ℝ) ^ 2 * farHeight N ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) <
+        (n : ℝ) ^ 2 *
+          (1 - computationalWeight
+            (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp)) := by
+  have hpos : 0 < N := by
+    have h8 : (8 : ℕ) ≤ 4 * n := by omega
+    exact lt_of_lt_of_le (by decide : (0 : ℕ) < 8) (le_trans h8 hcone)
+  have hlt : n < N := by omega
+  refine ⟨?_, aligned_defect_below_square hn hlt⟩
+  rw [express_eq_of_admissible (collective_admissible hcone), collective_square hpos]
+  rfl
+
+/-- A full count of `N` aligned gravitons restores the computational weight
+and returns the orthogonal probability to `0`, while the expressed height
+on that axis is the lock `-1/3`. -/
+theorem full_turn_locks {N : ℕ} (hN : 0 < N) :
+    dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N)) = -1 ∧
+      computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) =
+        1 ∧
+      1 - computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N))) spinUp) =
+        0 ∧
+      JNormalized (express (alignedSteps N N)) = -((1 : ℝ) / 3) := by
+  have hfull := fullCount_restores hN
+  have hwall : N ≤ 4 * N := by
+    have hmul : 1 * N ≤ 4 * N := Nat.mul_le_mul_right N (by decide : 1 ≤ 4)
+    simpa using hmul
+  refine ⟨hfull.2.1, hfull.2.2.1, hfull.2.2.2, ?_⟩
+  rw [express_aligned]
+  exact collective_locks hN hwall
 
 end DstDiophantine.Gravity.GravitonQuantum
 
