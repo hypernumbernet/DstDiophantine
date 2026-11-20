@@ -192,6 +192,23 @@ imported by the modules below. They are not named in the import list of
   and is not `±I`. No derivation of `α_G` or of a laboratory error rate. The charged-pion
   comparison is `NuclearLayer`. The channel-length mass ratio, with no meson mass as an input,
   is `SignReversal.channelMassRatio`.
+* `GravitonLogic` — the computational observable is the ray of `spinUp` and its
+  negation. An axial graviton leaves that eigenstate inside the original ray and
+  outside the negation, and the device error is `0`. A transverse angle in
+  `(0, π)`, hence every lattice step with `N ≥ 3`, puts the carrier on a third
+  ray: neither ray, meeting each only at zero, and not orthogonal to the
+  computational ray. The device may record the negation at `sin²(π/N)`. The
+  carrier has not become that ray. The same axial step after the transverse step
+  leaves the device error unchanged and moves the ray; before it, the ray is the
+  transverse one. The ray depends on the order. The device error does not. One
+  graviton about each of two transverse axes, of one angle in `(0, π)`, hence
+  `N ≥ 3`, determines a different ray in the two orders and one device error.
+  That error is exactly half the error of the same two gravitons aligned, and
+  strictly less than twice the error of one. For `N ≥ 8` both censuses lie in
+  the cone, the perpendicular height is twice one, and the ratio of the two
+  device errors equals the ratio of the two expressed heights. The
+  device error is not the ray the carrier satisfies. No laboratory rate. The
+  height does not see the order.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum

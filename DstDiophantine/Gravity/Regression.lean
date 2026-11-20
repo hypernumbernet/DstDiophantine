@@ -112,6 +112,7 @@ import DstDiophantine.Gravity.InteriorClock
 import DstDiophantine.Gravity.MassOrigin
 import DstDiophantine.Gravity.MassCoefficient
 import DstDiophantine.Gravity.GravitonQuantum
+import DstDiophantine.Gravity.GravitonLogic
 import DstDiophantine.Gravity.LineWindow
 
 /-!
@@ -3445,6 +3446,42 @@ example {N : ℕ} (hN : 0 < N) :
       JNormalized (express (GravitonQuantum.alignedSteps N N)) = -((1 : ℝ) / 3) := by
   have h := GravitonQuantum.full_turn_locks hN
   exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
+
+/-- Regression: an axial graviton records no device error. Order with a
+transverse step changes the ray and not the error. Perpendicular orders share
+one error, half the aligned error, and for `N ≥ 8` that ratio equals the ratio
+of the expressed heights. -/
+example {N : ℕ} (hN : 8 ≤ N) :
+    GravitonLogic.deviceError
+        (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3)
+          (GravitonQuantum.stepAngle N))) spinUp) = 0 ∧
+      GravitonLogic.atomOf (GravitonLogic.afterTransverseAxial
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ≠
+        GravitonLogic.atomOf
+          (GravitonLogic.afterTransverse (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterTransverseAxial
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) =
+        GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.atomOf (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ≠
+        GravitonLogic.atomOf (GravitonLogic.afterPerpRev
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) =
+        (1 / 2) * GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (2 * GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) /
+        GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (2 * GravitonQuantum.stepAngle N)) =
+        JNormalized (GravitonQuantum.perpSteps N) /
+          JNormalized (GravitonQuantum.alignedSteps 2 N) := by
+  have h3 : 3 ≤ N := le_trans (by decide : (3 : ℕ) ≤ 8) hN
+  have hax := GravitonLogic.lattice_axial_order h3
+  have hperp := GravitonLogic.lattice_perp h3
+  exact ⟨hax.2.2.2.1, hax.2.1, hax.2.2.1, hperp.1, hperp.2.2.1,
+    GravitonLogic.error_ratio_eq_height_ratio hN⟩
 
 end Gravity
 
