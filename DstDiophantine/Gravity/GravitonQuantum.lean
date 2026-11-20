@@ -2145,6 +2145,8 @@ theorem aligned_transverse_weight {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
         (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
       Real.cos ((n : ℝ) * Real.pi / N) ^ 2 := by
   rw [computationalWeight_eq_cos_sq (mul_pos (by exact_mod_cast hn) (stepAngle_pos hN))]
+  congr 1
+  congr 1
   have hhalf : (n : ℝ) * stepAngle N / 2 = (n : ℝ) * (stepAngle N / 2) := by ring
   rw [hhalf, stepAngle_half hN]
   ring
