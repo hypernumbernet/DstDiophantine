@@ -10,6 +10,7 @@ import DstDiophantine.Logic.Consequence
 import DstDiophantine.Logic.Implication
 import DstDiophantine.Logic.ClassicalCore
 import DstDiophantine.Logic.HeightIdentity
+import DstDiophantine.Logic.WallRule
 import DstDiophantine.Logic.Example.FixedPoint
 import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
@@ -164,6 +165,11 @@ and `DstDiophantine.CGA`).
   identity on the height is decided by `{-1, 0, 1}`, and agreement on
   the two walls is strictly coarser (the two excluded middles); a height
   identity rewrites under every one-hole context
+* `Logic.WallRule` — modus ponens, tollens, disjunctive syllogism, and
+  the syllogism preserve the positive wall at every real height; every
+  formula returns balance at total balance, so discharge of those rules
+  into a formula is special to the walls; on the interval the same
+  consequence is decided by `{-1, 0, 1}`
 * `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
   detaches for every pair; it agrees with the classical expansion, and
   that expansion detaches, exactly on splitting pairs
@@ -352,6 +358,39 @@ example {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 :=
 example (j k : ℝ) :
     HoldsNotF (impJ j k) ↔ HoldsNotF (negJ j) ∧ HoldsNotF k :=
   holdsNotF_impJ j k
+
+/-- Regression: tollens, disjunctive syllogism, and the syllogism rule
+preserve the positive wall at every real height. -/
+example {j k : ℝ} (hjk : impJ j k = 1) (hk : k = -1) : j = -1 :=
+  impJ_tollens hjk hk
+
+example {j k : ℝ} (h : disjJ j k = 1) (hj : j = -1) : k = 1 :=
+  disjJ_tollens h hj
+
+example {j k m : ℝ} (hjk : impJ j k = 1) (hkm : impJ k m = 1) : impJ j m = 1 :=
+  impJ_chain hjk hkm
+
+/-- Regression: every formula returns balance at total balance. -/
+example (φ : Formula) : φ.eval (fun _ => 0) = 0 ∧ ¬ EntailsOne ∅ φ :=
+  ⟨eval_balance φ, not_entailsOne_empty φ⟩
+
+/-- Regression: discharge holds on the walls, and fails for excluded middle at balance. -/
+example (φ ψ : Formula) :
+    (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 → ψ.eval v = 1) ↔
+      (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → (impF φ ψ).eval v = 1) :=
+  discharge_on_walls φ ψ
+
+example :
+    EntailsOne {(Formula.atom 0)} (excludedMiddle 0) ∧
+      (impF (Formula.atom 0) (excludedMiddle 0)).eval (fun _ => 0) = 0 :=
+  ⟨entailsOne_excluded_middle, discharge_excluded_middle_balance⟩
+
+/-- Regression: on the interval, positive-wall consequence is decided by `{-1, 0, 1}`. -/
+example (Γ : Set Formula) (ψ : Formula) :
+    EntailsWall Γ ψ ↔
+      ∀ v : ℕ → ℝ, (∀ n, IsThreeHeight (v n)) →
+        (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1 :=
+  entailsWall_iff_threeHeight Γ ψ
 
 /-- Regression: balance materially implies every nonpositive height. -/
 example {k : ℝ} (hk : k ≤ 0) : impJ 0 k = 0 :=

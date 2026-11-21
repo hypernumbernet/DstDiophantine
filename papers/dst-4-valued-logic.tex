@@ -61,8 +61,11 @@ assignment of atoms to the two walls. The De~Morgan skeleton of a
 classical proof holds at every real height. An equational step holds
 at every real height exactly when it holds on the three heights
 \(-1\), \(0\), and \(1\). Excluded middle and the syllogism are the
-saturation \(|j|=1\). Material implication detaches the positive wall
-on every real height. In the spinor lattice a
+saturation \(|j|=1\). Material implication, modus tollens, disjunctive
+syllogism, and the syllogism rule preserve the positive wall at every
+real height. Discharge of a premise into a material implication holds
+on the walls, and at balance the discharged formula returns synchrony.
+In the spinor lattice a
 classical expansion detaches exactly when the antecedent splits along
 the consequent, and each complementary pair determines a four-element
 Boolean island. That island is two classical bits of one measurement.
@@ -131,7 +134,8 @@ the dictionary that refuses to identify it with the first.
 Section~\ref{sec:cons} says which heights hold.
 Section~\ref{sec:wall} separates a classical proof into a height
 identity, decided by the three heights \(-1\), \(0\), and \(1\), a
-saturation on the walls, and the three cuts of material implication. Section~\ref{sec:examples}
+saturation on the walls, the three cuts of material implication, and
+the positive-wall rules whose discharge is special to the walls. Section~\ref{sec:examples}
 shows why two-valued restrictions of the interval cannot host the
 situations D4L is built to record. Section~\ref{sec:block} names the
 splitting on which a classical expansion detaches in the spinor
@@ -880,10 +884,11 @@ returns the positive wall under every wall assignment. It is not an
 identity of the height. At total balance, every atom at \(0\), the same
 formula returns \(0\). Synchrony holds. The classical reading does not
 call that value truth. One computation, two readings, and they disagree
-on whether the inference has succeeded. A classical proof of the
-syllogism is a wall computation. The step that stays on the walls is
-the saturation \(|j|=1\). The De Morgan skeleton underneath it has
-already been proved on the height.
+on whether the packaged inference has succeeded. The formula is a wall
+computation: it demands the saturation \(|j|=1\). The De Morgan
+skeleton underneath it has already been proved on the height. Read as
+a rule, with both premises at the positive wall, the syllogism does
+not demand that saturation.
 
 The inference that uses the implication is detachment. Write \(j\to k\)
 for \(\max(-j,k)\).
@@ -914,17 +919,66 @@ proof is written in the implication that keeps all three cuts. The
 residuals of Section~\ref{sec:cons} restore one cut at a time, and they
 agree only on the locus already named there.
 
-Explosion has the same shape. On the walls a value and its negation
-cannot both be the positive wall, so the inference from a contradiction
-to an unrelated atom quantifies over an empty set of valuations. The
-classical proof is short because the premise does not occur.
+\begin{theorem}[Rules and discharge]
+\label{thm:rules}
+For all real heights, \(j\to k=1\) and \(k=-1\) imply \(j=-1\);
+\(\max(j,k)=1\) and \(j=-1\) imply \(k=1\); and \(j\to k=1\) together
+with \(k\to m=1\) imply \(j\to m=1\). A height and its negation are
+never both equal to \(1\). Every formula returns \(0\) when every atom
+does. On the interval, premises force a conclusion onto the positive
+wall under every assignment if and only if they do so whenever every
+atom lies in \(\{-1,0,1\}\). On the walls, \(\{\phi\}\) forces \(\psi\)
+onto the positive wall if and only if \(\phi\to\psi\) returns that wall
+under every wall assignment. The atom \(P\) forces \(P\vee\neg P\) onto
+the positive wall, while \(P\to(P\vee\neg P)\) returns \(0\) at balance.
+Inside the interval, a formula at the positive wall may be weakened by
+any disjunct.
+\end{theorem}
+
+Modus tollens, disjunctive syllogism, and the syllogism join detachment.
+Each one carries the value \(1\) from its premises to its conclusion
+at every real height. A proof that has put those premises on the
+positive wall may apply the rule while the remaining heights stay off
+the walls.
+The syllogism formula packages its rule by discharge. On the walls the
+packaging is faithful. A single premise moves into the antecedent of a
+material implication, and the resulting formula returns the positive
+wall under every wall assignment exactly when the rule does. At balance
+the packaged formula returns synchrony, as every formula does. The
+premises of the rule sit at the positive wall, and balance is a
+different height. The one-premise witness is an atom and its excluded
+middle. Whenever the atom is the positive wall, so is the disjunction
+with its negation. The implication from the atom to that disjunction
+returns synchrony at balance.
+
+A height and its negation are never both the positive wall. The
+inference from both to a third height preserves that wall, and it
+quantifies over an empty set of valuations. Synchrony is the other
+designation. There the same pair can hold, and Section~\ref{sec:ex-efq}
+records that the inference to an unrelated atom does not.
+
+An inference preserves the positive wall throughout the interval
+exactly when it preserves that wall on \(\{-1,0,1\}\). The collapse
+used for equational identity, taken at threshold \(1\), sends every
+non-wall height to balance and fixes both walls. It commutes with the
+connectives and fixes the value \(1\). A premise at the positive wall
+remains there, and a conclusion that arrives there after the collapse
+was already there. Inside the interval the bound \(|j|\le 1\) lets a
+positive wall be weakened by any disjunct: the max of \(1\) with a
+height at most \(1\) is \(1\). A height sitting above the wall, taken
+as that disjunct, carries the max above \(1\).
+
+Explosion has the same shape. The emptiness just recorded is why a
+classical proof of it is short: the premise does not occur.
 
 \section{What two-valued logic cannot host}
 \label{sec:examples}
 
 Section~\ref{sec:wall} factors a classical proof into a height identity,
 decided by the three heights \(-1\), \(0\), and \(1\), a wall saturation,
-and the three cuts of detachment. Two-valued algebras still cannot host the
+and the three cuts of detachment. The same section records the rules
+that preserve the positive wall at every real height, and the discharge
+of a premise, which holds on the walls. Two-valued algebras still cannot host the
 situations below, and D4L still realises them. The difference is fixed
 as a pair: emptiness (or vacuity, or collapse to a singleton) on the
 fragment, realisation on D4L.
@@ -1268,6 +1322,14 @@ syllogism are the saturation \(|j|=1\), and at balance the syllogism
 returns synchrony. Material implication detaches the positive wall on every
 real height, lies below that wall exactly when the negated antecedent
 and the consequent do, and returns balance when balance implies a nonpositive height.
+Modus tollens, disjunctive syllogism, and the syllogism rule preserve the
+positive wall at every real height. Every formula returns synchrony when
+every atom does, so the empty set of premises forces no formula onto the
+positive wall. On the interval that forcing is decided by \(\{-1,0,1\}\).
+On the walls a premise discharges into a material implication. The atom
+\(P\) forces \(P\vee\neg P\) onto the positive wall, and
+\(P\to(P\vee\neg P)\) returns synchrony at balance. Inside the interval a
+positive wall may be weakened by any disjunct.
 In the spinor lattice, \(A^\perp\vee(A\wedge B)\) is the
 whole space exactly when \(A\) is contained in \(B\). It agrees with
 \(A^\perp\vee B\), and \(A\wedge(A^\perp\vee B)\) lies in \(B\), exactly
