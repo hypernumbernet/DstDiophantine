@@ -19,6 +19,16 @@ programme. It is isolated from the main library: nothing under
 - If a paper claim cannot yet be expressed, record it in the index as
   *not yet stateable* and name the missing definition rather than inventing one.
 
+## Shape of a target
+
+- The `sorry` sits on an irreducible open `Prop`. If the main library proves
+  `P` from open props `Q₁, …, Qₙ`, then `Goals` proves `P` by that theorem
+  and puts `sorry` only on the `Qᵢ` that are still open.
+- A statement that is `True`, or an existence claim whose witness does not
+  use a definition from the main library, is not a target.
+- A bridge the main library marks diagnostic, demoted, legacy, or false is
+  not a target. `AbcAdmissibleBridge` is false (`AbcAdmissibleBridge_false`).
+
 ## CI
 
 - `lake build` on the default targets must remain sorry-free (main library).

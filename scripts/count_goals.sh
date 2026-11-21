@@ -13,13 +13,18 @@ if [[ -z "$GOAL_FILES" ]]; then
   exit 0
 fi
 
-count=$(grep -rhoE '\bsorry\b' $GOAL_FILES 2>/dev/null | wc -l | tr -d ' ')
-files=$(grep -rlE '\bsorry\b' $GOAL_FILES 2>/dev/null | wc -l | tr -d ' ')
+# `True` is proved by `trivial` and does not state a claim.
+if grep -nE '\bTrue :=' $GOAL_FILES; then
+  echo "error: Goals must not use True as a statement" >&2
+  exit 1
+fi
+
+count=$(grep -rhoE '\bby sorry\b' $GOAL_FILES 2>/dev/null | wc -l | tr -d ' ')
+files=$(grep -rlE '\bby sorry\b' $GOAL_FILES 2>/dev/null | wc -l | tr -d ' ')
 echo "open_goals: ${count}"
 echo "goal_files: ${files}"
-echo "by_topic:"
-grep -rlE '\bsorry\b' $GOAL_FILES 2>/dev/null |
-  sed 's|^Goals/||;s|/.*||' |
-  sort |
-  uniq -c |
-  sort -k2 || true
+echo "by_file:"
+grep -rlE '\bby sorry\b' $GOAL_FILES 2>/dev/null | sort | while read -r f; do
+  n=$(grep -oE '\bby sorry\b' "$f" | wc -l | tr -d ' ')
+  printf '%7s %s\n' "$n" "${f#Goals/}"
+done
