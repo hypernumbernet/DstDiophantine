@@ -36,12 +36,12 @@ the main library (`beal_conjecture_pos_of_fine_residuals_even_split`):
 
 | Leaf | Discharges |
 | --- | --- |
-| `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth`. Phase 7z: a common exponent divisible by `4` rewrites to `A⁴ + B² = Cⁿ` and is closed by `bennettEllenbergNg`. `(4,4,7)` leaves this leaf; `(10,10,7)` remains |
-| `BealTwoEqualEvenDiffOutsideCubePairResidual` | even two-equal difference, via `BealTwoEqualEvenDiffResidual_of_outside_cube_pair` |
-| `BealTwoEqualOddOutsideRepeatedFifthResidual` | odd two-equal, via `BealTwoEqualOddResidual_of_outside_repeated_fifth` |
-| `BealAllDistinctOutsideCubePairResidual` | pairwise distinct exponents, via `BealAllDistinctExpResidual_of_outside_cube_pair` |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth`. Phase 7z closes a common exponent divisible by `4`. Phase 8a closes a fifth-power pair (`5` divides both equal exponents and `7` or `19` divides the hypotenuse). `(4,4,7)` and `(10,10,7)` leave this leaf; `(10,10,9)` remains |
+| `BealTwoEqualEvenDiffOutsideFifthPairResidual` | even two-equal difference, via `BealTwoEqualEvenDiffResidual_of_outside_fifth`. `(7,10,10)` is a fifth-power pair |
+| `BealTwoEqualOddOutsideFifthPairResidual` | odd two-equal, via `BealTwoEqualOddResidual_of_outside_fifth_pair`. `(25,25,7)` and `(5,5,21)` are fifth-power pairs; `(5,5,11)` remains |
+| `BealAllDistinctOutsideFifthPairResidual` | pairwise distinct exponents, via `BealAllDistinctExpResidual_of_outside_fifth_pair`. `(5,10,7)` is a fifth-power pair; `(3,5,7)` remains |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | equal-odd Gaussian body, via `BealEqualOddTwoFactorResidual_of_ge_five` |
-| `BealPythagoreanUnequalOddOutsideCubePairResidual` | exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_cube_pair` |
+| `BealPythagoreanUnequalOddOutsideFifthPairResidual` | exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_fifth_pair`. `(10,10,14)` is a fifth-power pair |
 
 `FermatMixedMotorResidual` discharges classical FLT
 (`FermatLastTheorem_of_mixed_motor_residual`).
@@ -118,8 +118,13 @@ is not a substitute.
 | `BealAffineCubeAddTwoResidual` | The Euler axiom, by abbreviation |
 | `BealMordellCubeAddTwoResidual` | Diagnostic Weierstrass packaging. The cube leaf is the Euler theorem, not this packaging |
 | `BealCGADilationNoGo` | Legacy equal-exponent lattice. Mixed exponents miss it |
-| `BealTwoEqualEvenDiffFactorResidual`, `BealTwoEqualEvenDiffPerfectPowerResidual` | Older packaging of the even-difference body. The named leaf is `BealTwoEqualEvenDiffOutsideCubePairResidual` |
+| `BealTwoEqualEvenDiffFactorResidual`, `BealTwoEqualEvenDiffPerfectPowerResidual` | Older packaging of the even-difference body. The named leaf is `BealTwoEqualEvenDiffOutsideFifthPairResidual` |
 | `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` by `bennettEllenbergNg` |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` by `sumTwoFifthsNotSeventhOrNineteenth` (phase 8a) |
+| `BealTwoEqualEvenDiffOutsideCubePairResidual` | Follows from `BealTwoEqualEvenDiffOutsideFifthPairResidual` by the same axiom |
+| `BealTwoEqualOddOutsideRepeatedFifthResidual` | Follows from `BealTwoEqualOddOutsideFifthPairResidual` by the same axiom |
+| `BealAllDistinctOutsideCubePairResidual` | Follows from `BealAllDistinctOutsideFifthPairResidual` by the same axiom |
+| `BealPythagoreanUnequalOddOutsideCubePairResidual` | Follows from `BealPythagoreanUnequalOddOutsideFifthPairResidual` by the same axiom |
 | `BealAdmissibleBridge`, `FermatAdmissibleBridge` | Continuous bridges. Balanced seeds sit below the threshold |
 | `BealModularBridge`, `FermatModularBridge` | Payload incompatible with the conformal gauge, independently of a solution in the Beal case |
 | `BealWindingBridge` | Window regime only |

@@ -35,18 +35,18 @@ theorem classical_beal_conjecture :
       A ^ x + B ^ y = C ^ z →
       1 < bealGcd A B C :=
   beal_conjecture_pos_of_fine_residuals_even_split
-    (BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth
-      bealTwoEqualEvenSumExpGeSevenOutsideFourthResidual)
-    (BealTwoEqualEvenDiffResidual_of_outside_cube_pair
-      bealTwoEqualEvenDiffOutsideCubePairResidual)
-    (BealTwoEqualOddResidual_of_outside_repeated_fifth
-      bealTwoEqualOddOutsideRepeatedFifthResidual)
-    (BealAllDistinctExpResidual_of_outside_cube_pair
-      bealAllDistinctOutsideCubePairResidual)
+    (BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth
+      bealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual)
+    (BealTwoEqualEvenDiffResidual_of_outside_fifth
+      bealTwoEqualEvenDiffOutsideFifthPairResidual)
+    (BealTwoEqualOddResidual_of_outside_fifth_pair
+      bealTwoEqualOddOutsideFifthPairResidual)
+    (BealAllDistinctExpResidual_of_outside_fifth_pair
+      bealAllDistinctOutsideFifthPairResidual)
     (BealEqualOddTwoFactorResidual_of_ge_five
       bealEqualOddTwoFactorExpGeFiveResidual)
-    (BealPythagoreanUnequalOddResidual_of_outside_cube_pair
-      bealPythagoreanUnequalOddOutsideCubePairResidual)
+    (BealPythagoreanUnequalOddResidual_of_outside_fifth_pair
+      bealPythagoreanUnequalOddOutsideFifthPairResidual)
 
 /-- **Claim (EN):** Fermat's Last Theorem.
 

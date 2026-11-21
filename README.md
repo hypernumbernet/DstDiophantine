@@ -169,16 +169,17 @@ column.
 | Signature $(3,4,5)$ in every order | `siksekStoll345` |
 | Repeated five beside $7$ or $19$, in every order | `sumTwoFifthsNotSeventhOrNineteenth`. Signature $(7,7,5)$ is already the $(n,n,5)$ slice. The companions $11$ and $13$ are conditional on the generalised Riemann hypothesis in the same source and are not axioms here |
 | Even two-equal sum whose common exponent is divisible by $4$, with hypotenuse exponent at least $4$ | `bennettEllenbergNg`. $(4,4,7)$ is the first case. $(10,10,7)$ does not rewrite: the common exponent is twice an odd integer |
+| Two exponents divisible by $5$, with the third divisible by $7$ or by $19$ | `sumTwoFifthsNotSeventhOrNineteenth`, by replacing each base with a power (`IsFifthPairPowerShape`, phase 8a). $(10,10,7)$ is $(A^2)^5+(B^2)^5=C^7$. $(5,5,21)$ is a seventh power of $C^3$. $(10,10,9)$ does not rewrite |
 | Pythagorean slice in which $4$ divides at least two of the reduced exponents | Internal, from the classification of coprime Pythagorean triples |
 
 | Live leaf | What is still open |
 | --- | --- |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Odd Gaussian exponent $e \ge 5$ in the equal-odd two-factor body. The case $e = 3$ is the Euler leaf. Absolute value $1$ on the pure-power slot is closed for every odd $e \ge 3$ by Mihăilescu |
-| `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside cube-pair shapes, and not divisible by $4$. The case $z = 5$ is the $(n,n,5)$ axiom. $(6,6,7)$ is a cube-pair shape. $(4,4,7)$ is `bennettEllenbergNg`. $(10,10,7)$ remains |
-| `BealTwoEqualEvenDiffOutsideCubePairResidual` | Even-difference two-equal body outside cube-pair shapes. $(5,6,6)$ is removed with the two-cube prohibition |
-| `BealTwoEqualOddOutsideRepeatedFifthResidual` | Odd two-equal body outside cube-pair shapes and outside a repeated five beside $7$ or $19$ |
-| `BealAllDistinctOutsideCubePairResidual` | Pairwise distinct exponents outside cube-pair shapes. Signature $(3,4,5)$ has no coprime nonzero solution |
-| `BealPythagoreanUnequalOddOutsideCubePairResidual` | Exponent gcd $2$, at least two reduced exponents odd, outside the equal-odd Gaussian slices and outside cube-pair shapes |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside cube-pair shapes, not divisible by $4$, and outside a fifth-power pair. $(6,6,7)$ is a cube-pair shape. $(4,4,7)$ is `bennettEllenbergNg`. $(10,10,7)$ is phase 8a. $(10,10,9)$ remains |
+| `BealTwoEqualEvenDiffOutsideFifthPairResidual` | Even-difference two-equal body outside cube-pair shapes and outside a fifth-power pair. $(5,6,6)$ is removed with the two-cube prohibition. $(7,10,10)$ is phase 8a |
+| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal body outside cube-pair shapes, outside a repeated five beside $7$ or $19$, and outside a fifth-power pair. $(5,5,11)$ remains |
+| `BealAllDistinctOutsideFifthPairResidual` | Pairwise distinct exponents outside cube-pair shapes and outside a fifth-power pair. Signature $(3,4,5)$ has no coprime nonzero solution. $(5,10,7)$ is phase 8a. $(3,5,7)$ remains |
+| `BealPythagoreanUnequalOddOutsideFifthPairResidual` | Exponent gcd $2$, at least two reduced exponents odd, outside the equal-odd Gaussian slices, outside cube-pair shapes, and outside a fifth-power pair. $(10,10,14)$ is phase 8a |
 
 Window winding is proved: a fractional gap in $[2\pi/k, 4\pi/k)$ produces a
 modular witness. The balanced regime sits below that window, so winding does

@@ -870,12 +870,35 @@ example :
     classifyBealExponents_three_six_five, classifyBealExponents_five_six_six,
     classifyBealExponents_nine_nine_past_bound⟩
 
-/-- Phase 7z: a fourth-power sum is closed; twice an odd common exponent is not. -/
+/-- Phase 7z: a fourth-power sum is closed; `(4,7,7)` is not that shape. -/
 example :
     classifyBealExponents 4 4 7 = .T ∧ classifyBealExponents 8 8 7 = .T ∧
-      classifyBealExponents 4 4 9 = .T ∧ classifyBealExponents 10 10 7 = .U ∧
-        classifyBealExponents 4 7 7 = .U :=
+      classifyBealExponents 4 4 9 = .T ∧ classifyBealExponents 4 7 7 = .U :=
   ⟨classifyBealExponents_four_four_seven, classifyBealExponents_fourth_sum⟩
+
+/-- Phase 8a: a fifth-power pair is closed; `(10,10,9)` is not. -/
+example :
+    classifyBealExponents 10 10 7 = .T ∧ classifyBealExponents 10 10 19 = .T ∧
+      classifyBealExponents 7 10 10 = .T ∧ classifyBealExponents 5 10 7 = .T ∧
+        classifyBealExponents 25 25 7 = .T ∧ classifyBealExponents 5 5 21 = .T ∧
+          classifyBealExponents 10 10 14 = .T ∧
+            classifyBealExponents 10 10 9 = .U ∧
+              classifyBealExponents 22 22 7 = .U ∧
+                classifyBealExponents 5 5 11 = .U :=
+  classifyBealExponents_fifth_pair
+
+example {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1) :
+    ¬ A ^ 10 + B ^ 10 = C ^ 7 ∧ ¬ A ^ 7 + B ^ 10 = C ^ 10 ∧
+      ¬ A ^ 5 + B ^ 5 = C ^ 21 :=
+  ⟨fun h => not_beal_ten_ten_seven hA hB hC hgcd h,
+    fun h => not_beal_seven_ten_ten hA hB hC hgcd h,
+    fun h => not_beal_five_five_twenty_one hA hB hC hgcd h⟩
+
+example (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth hOut
 
 example {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)

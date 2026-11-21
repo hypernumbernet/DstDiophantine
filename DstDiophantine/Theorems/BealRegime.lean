@@ -213,11 +213,25 @@ theorem classifyBealExponents_five_six_six :
 theorem classifyBealExponents_four_four_seven :
     classifyBealExponents 4 4 7 = .T := by native_decide
 
-/-- Phase 7z: `(8,8,7)` and `(4,4,9)` close with `(4,4,7)`; `(10,10,7)` and
-`(4,7,7)` stay open. -/
+/-- Phase 7z: `(8,8,7)` and `(4,4,9)` close with `(4,4,7)`; `(4,7,7)` stays open. -/
 theorem classifyBealExponents_fourth_sum :
     classifyBealExponents 8 8 7 = .T ∧ classifyBealExponents 4 4 9 = .T ∧
-      classifyBealExponents 10 10 7 = .U ∧ classifyBealExponents 4 7 7 = .U := by
+      classifyBealExponents 4 7 7 = .U := by
+  native_decide
+
+/--
+Phase 8a: a fifth-power pair is closed. `(10,10,7)` is the first even sum that
+phase 7z left open. `(10,10,9)` and `(22,22,7)` stay open; `(5,5,11)` stays
+open because `11` is not `7` or `19`.
+-/
+theorem classifyBealExponents_fifth_pair :
+    classifyBealExponents 10 10 7 = .T ∧ classifyBealExponents 10 10 19 = .T ∧
+      classifyBealExponents 7 10 10 = .T ∧ classifyBealExponents 5 10 7 = .T ∧
+        classifyBealExponents 25 25 7 = .T ∧ classifyBealExponents 5 5 21 = .T ∧
+          classifyBealExponents 10 10 14 = .T ∧
+            classifyBealExponents 10 10 9 = .U ∧
+              classifyBealExponents 22 22 7 = .U ∧
+                classifyBealExponents 5 5 11 = .U := by
   native_decide
 
 /-- Repeated multiple of `3` with an odd companion past `10^9` stays open. -/

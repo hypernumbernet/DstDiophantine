@@ -72,8 +72,10 @@ geometric principle):
   `BealTwoEqualOddOutsideRepeatedFifthResidual`; an even two-equal sum whose
   common exponent is divisible by `4` rewrites to a fourth power plus a square
   and is closed for hypotenuse exponent `z ≥ 4` (`bennettEllenbergNg`,
-  phase 7z; `(4,4,7)` is the first case, `(10,10,7)` remains); the live
-  even-sum body is `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual`;
+  phase 7z; `(4,4,7)` is the first case); two exponents divisible by `5` with
+  the third divisible by `7` or by `19` rewrite to Dahmen–Siksek (phase 8a;
+  `(10,10,7)` is the first even sum, `(10,10,9)` remains); the live even-sum
+  body is `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”

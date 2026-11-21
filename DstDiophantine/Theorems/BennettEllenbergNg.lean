@@ -14,8 +14,9 @@ The rewrite is `A^{4k} + B^{4k} = (A^k)⁴ + (B^{2k})²`. A prime dividing two o
 the new bases divides the third, so three-way coprimality survives. `(4,4,7)`
 is the first case inside the `z ≥ 7` leaf; `(8,8,7)` and `(4,4,9)` close with
 it. The common exponent `10` is twice an odd integer, so `(10,10,7)` does not
-rewrite. An even difference with `d = 1` does not become this equation: the
-distinct exponent is odd. Classical Beal is **not** claimed unconditionally.
+rewrite to this equation; phase 8a closes it as a sum of two fifth powers.
+An even difference with `d = 1` does not become this equation: the distinct
+exponent is odd. Classical Beal is **not** claimed unconditionally.
 -/
 
 namespace DstDiophantine
@@ -116,7 +117,9 @@ theorem not_beal_fourth_sum_shape
 /--
 **Residual** (phase 7z, unproved): even-sum body at hypotenuse exponent
 `z ≥ 7`, outside cube-pair shapes and outside a common exponent divisible
-by `4`. `(4,4,7)` is removed; `(10,10,7)` remains.
+by `4`. `(4,4,7)` is removed. `(10,10,7)` is not this shape; phase 8a
+removes it as a fifth-power pair. The live body is the further narrowing
+`BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual`.
 -/
 def BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
