@@ -4,14 +4,10 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Order.Group.Abs
 
 /-!
-# Four D4L states from `JNormalized`
+# Four D4L states
 
-Truth values are the sign and saturation of the already-proved normalised
-torsional scalar. The interval \([-1,1]\) belongs to `JNormalized`, not raw
-`J` (whose admissible ceiling is \(3\pi^2/8\)).
-
-Outside `[-1, 1]` classification is refused. On the admissible cone the bound
-`|JNormalized| ≤ 1` makes the classifier total.
+Sign and saturation of `JNormalized` on `[-1, 1]`, not of raw `J`.
+`classify?` is `none` outside that interval.
 -/
 
 namespace DstDiophantine
@@ -20,7 +16,6 @@ namespace Logic
 
 open Admissible Invariant Operations Real
 
-/-- Four Dual-Spacetime 4-valued states. -/
 inductive TruthValue
   | T
   | U
@@ -28,14 +23,13 @@ inductive TruthValue
   | B
   deriving DecidableEq, Repr
 
-/-- Classify a real already known to lie in `[-1, 1]`. -/
 noncomputable def classifyOfMem (j : ℝ) (_hj : |j| ≤ 1) : TruthValue :=
   if j = 0 then .T
   else if j = 1 then .F
   else if 0 < j then .U
   else .B
 
-/-- Partial classifier: `none` outside `[-1, 1]`. -/
+/-- `none` outside `[-1, 1]`. -/
 noncomputable def classify? (j : ℝ) : Option TruthValue :=
   if h : |j| ≤ 1 then some (classifyOfMem j h) else none
 
@@ -92,7 +86,6 @@ theorem classifyOfMem_eq_B_iff {j : ℝ} (hj : |j| ≤ 1) :
     have hjle : -1 ≤ j := (abs_le.mp hj).1
     simp [hjle, hj0]
 
-/-- Truth value of an admissible continuous configuration. -/
 noncomputable def ofParams (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     TruthValue :=
   classifyOfMem (JNormalized p) (torsion_bound_continuous p h)

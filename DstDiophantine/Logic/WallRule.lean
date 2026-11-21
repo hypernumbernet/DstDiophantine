@@ -1,35 +1,9 @@
 import DstDiophantine.Logic.HeightIdentity
 
 /-!
-# Positive-wall rules, and where discharge stops
+# Positive-wall consequence
 
-Modus ponens, modus tollens, disjunctive syllogism, and the syllogism
-preserve the value `1` at every real height. So does the inference from
-a height and its negation, because those two premises never occur
-together. The formulas that package the same inferences do not: every
-formula returns balance when every atom does, so none of them is the
-positive wall under every assignment.
-
-On the wall fragment a premise may be discharged into a material
-implication. Off the walls the discharge fails. The atom `P` forces
-`P ∨ ¬P` onto the positive wall, and `P → (P ∨ ¬P)` returns balance.
-
-Inside the interval, preservation of the positive wall is decided by
-the same three heights that decide equational identity. Weakening a
-positive wall by a disjunct uses the bound `|j| ≤ 1`.
-
-For a finite set of premises that check mentions only atoms that occur,
-so it is an assignment of those atoms to `{-1, 0, 1}`. The wall
-assignments in that check are classical consequence. The assignments
-that send an occurring atom to balance are the case distinction on
-atoms the premises do not fix to a wall. Modus ponens, tollens,
-disjunctive syllogism, and the syllogism satisfy both. Excluded middle
-satisfies only the classical half.
-
-Discharge of any finite list of premises agrees with that classical
-consequence on the walls, and the packaged formula returns balance at
-total balance. Synchrony, non-refutation, and positive-wall forcing are
-pairwise incomparable.
+`EntailsOne` forces the value `1` at every real height. `EntailsWall` restricts assignments to `[-1, 1]`. Discharge into material implication holds on the walls and fails off them. `EntailsOne`, `EntailsT`, and `EntailsNotF` are pairwise incomparable.
 -/
 
 namespace DstDiophantine
@@ -40,7 +14,7 @@ attribute [local instance] Classical.propDecidable
 
 open scoped Set
 
-/-- Material implication as a formula, `¬φ ∨ ψ`. -/
+/-- Formula `¬φ ∨ ψ`. -/
 def impF (φ ψ : Formula) : Formula :=
   φ.neg.disj ψ
 
@@ -63,7 +37,6 @@ theorem max_eq_one {a b : ℝ} :
     · rw [h]
       exact max_eq_right ha
 
-/-- Modus tollens at every real height. -/
 theorem impJ_tollens {j k : ℝ} (himp : impJ j k = 1) (hk : k = -1) : j = -1 := by
   simp only [impJ, disjJ, negJ] at himp
   rw [hk] at himp
@@ -71,7 +44,6 @@ theorem impJ_tollens {j k : ℝ} (himp : impJ j k = 1) (hk : k = -1) : j = -1 :=
   · linarith
   · exact absurd hwall (by norm_num)
 
-/-- Disjunctive syllogism at every real height. -/
 theorem disjJ_tollens {j k : ℝ} (h : disjJ j k = 1) (hj : j = -1) : k = 1 := by
   simp only [disjJ] at h
   rw [hj] at h
@@ -79,7 +51,6 @@ theorem disjJ_tollens {j k : ℝ} (h : disjJ j k = 1) (hj : j = -1) : k = 1 := b
   · exact absurd hneg (by norm_num)
   · exact hk
 
-/-- The syllogism rule at every real height. The packaged formula is not an identity. -/
 theorem impJ_chain {j k m : ℝ} (hjk : impJ j k = 1) (hkm : impJ k m = 1) :
     impJ j m = 1 := by
   simp only [impJ, disjJ, negJ] at hjk hkm ⊢
@@ -94,13 +65,11 @@ theorem impJ_chain {j k m : ℝ} (hjk : impJ j k = 1) (hkm : impJ k m = 1) :
     · exact absurd hjk' (by rw [hkneg]; norm_num)
   · exact Or.inr hm
 
-/-- A height and its negation are never both the positive wall. -/
 theorem not_both_wall (j : ℝ) : ¬ (j = 1 ∧ negJ j = 1) := by
   rintro ⟨hj, hn⟩
   rw [negJ, hj] at hn
   norm_num at hn
 
-/-- Every formula returns balance when every atom does. -/
 theorem eval_balance (φ : Formula) : φ.eval (fun _ => 0) = 0 := by
   induction φ with
   | atom _ => simp
@@ -108,11 +77,11 @@ theorem eval_balance (φ : Formula) : φ.eval (fun _ => 0) = 0 := by
   | conj ψ χ ihψ ihχ => simp [ihψ, ihχ, conjJ]
   | disj ψ χ ihψ ihχ => simp [ihψ, ihχ, disjJ]
 
-/-- Premises at the positive wall force the conclusion there, at every real height. -/
+/-- Premises equal to `1` force the conclusion to `1`. -/
 def EntailsOne (Γ : Set Formula) (ψ : Formula) : Prop :=
   ∀ v : ℕ → ℝ, (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1
 
-/-- The same forcing, restricted to heights in the interval. -/
+/-- `EntailsOne` on assignments into `[-1, 1]`. -/
 def EntailsWall (Γ : Set Formula) (ψ : Formula) : Prop :=
   ∀ v : ℕ → ℝ, (∀ n, |v n| ≤ 1) → (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1
 
@@ -165,7 +134,6 @@ theorem entailsOne_chain (φ ψ χ : Formula) :
       (hv (impF ψ χ) (Set.mem_insert_of_mem _ (Set.mem_singleton _)))
   exact (eval_impF φ χ v).trans (impJ_chain hjk hkm)
 
-/-- From a height and its negation the positive wall is preserved, vacuously. -/
 theorem entailsOne_explosion (φ ψ : Formula) :
     EntailsOne {φ, φ.neg} ψ := by
   intro v hv
@@ -174,7 +142,6 @@ theorem entailsOne_explosion (φ ψ : Formula) :
     simpa using hv φ.neg (Set.mem_insert_of_mem _ (Set.mem_singleton _))
   exact absurd ⟨hj, hn⟩ (not_both_wall (φ.eval v))
 
-/-- No formula returns the positive wall under every real assignment. -/
 theorem not_entailsOne_empty (φ : Formula) : ¬ EntailsOne ∅ φ := by
   intro h
   have h1 : φ.eval (fun _ => 0) = 1 := h (fun _ => 0) (by intro _ hφ; simp at hφ)
@@ -188,13 +155,11 @@ theorem not_entailsWall_empty (φ : Formula) : ¬ EntailsWall ∅ φ := by
   rw [eval_balance φ] at h1
   exact zero_ne_one h1
 
-/-- On a wall assignment, material implication is the classical conditional. -/
 theorem boolEval_impF (φ ψ : Formula) (b : ℕ → Bool) :
     (impF φ ψ).boolEval b = true ↔
       (φ.boolEval b = true → ψ.boolEval b = true) := by
   cases hφ : φ.boolEval b <;> cases hψ : ψ.boolEval b <;> simp [impF, hφ, hψ]
 
-/-- Discharge is valid on the walls: one premise moves into the antecedent. -/
 theorem discharge_on_walls (φ ψ : Formula) :
     (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 → ψ.eval v = 1) ↔
       (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → (impF φ ψ).eval v = 1) := by
@@ -215,14 +180,12 @@ theorem discharge_on_walls (φ ψ : Formula) :
   · intro h v hv hφ
     exact impJ_detach_wall hφ ((eval_impF φ ψ v).symm.trans (h v hv))
 
-/-- The atom forces its excluded middle onto the positive wall. -/
 theorem entailsOne_excluded_middle :
     EntailsOne {(Formula.atom 0)} (excludedMiddle 0) := by
   intro v hv
   have h0 : v 0 = 1 := by simpa using hv (Formula.atom 0) (Set.mem_singleton _)
   simp [excludedMiddle_eval, h0]
 
-/-- Discharging that inference returns balance at total balance. -/
 theorem discharge_excluded_middle_balance :
     (impF (Formula.atom 0) (excludedMiddle 0)).eval (fun _ => 0) = 0 :=
   eval_balance _
@@ -234,7 +197,6 @@ theorem not_discharge_excluded_middle :
   rw [discharge_excluded_middle_balance] at h0
   exact zero_ne_one h0
 
-/-- Positive-wall consequence on the interval is decided by `{-1, 0, 1}`. -/
 theorem entailsWall_iff_threeHeight (Γ : Set Formula) (ψ : Formula) :
     EntailsWall Γ ψ ↔
       ∀ v : ℕ → ℝ, (∀ n, IsThreeHeight (v n)) →
@@ -262,7 +224,6 @@ theorem entailsWall_iff_threeHeight (Γ : Set Formula) (ψ : Formula) :
     have hle : ψ.eval v ≤ 1 := (abs_le.mp (Formula.eval_mem ψ hv)).2
     exact le_antisymm hle hge
 
-/-- Inside the interval a positive wall may be weakened by any disjunct. -/
 theorem entailsWall_disj (φ ψ : Formula) : EntailsWall {φ} (φ.disj ψ) := by
   intro v hv hprem
   have hφ : φ.eval v = 1 := hprem φ (Set.mem_singleton _)
@@ -272,7 +233,6 @@ theorem entailsWall_disj (φ ψ : Formula) : EntailsWall {φ} (φ.disj ψ) := by
     exact max_eq_left hψ
   simpa using hdisj
 
-/-- Above the wall the same weakening leaves the positive wall. -/
 theorem not_entailsOne_disj :
     ¬ EntailsOne {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 1)) := by
   intro h
@@ -284,24 +244,15 @@ theorem not_entailsOne_disj :
   have h1 := h v hprem
   simp [v, disjJ] at h1
 
-/-!
-## Support, and the cut from classical consequence
+/-! ## Classical cut -/
 
-Positive-wall forcing on the interval depends only on the atoms that
-occur. The check is then a finite assignment of those atoms to
-`{-1, 0, 1}`. Assignments into the two walls are classical consequence.
-Assignments that send at least one occurring atom to balance are the
-case distinction on atoms the premises do not fix to a wall.
--/
-
-/-- Classical consequence: wall bits that satisfy the premises satisfy the conclusion. -/
+/-- Classical consequence on Boolean assignments. -/
 def EntailsClassical (Γ : Set Formula) (ψ : Formula) : Prop :=
   ∀ b : ℕ → Bool, (∀ φ ∈ Γ, φ.boolEval b = true) → ψ.boolEval b = true
 
 theorem isWallTwo_abs {j : ℝ} (h : IsWallTwo j) : |j| ≤ 1 := by
   rcases h with rfl | rfl <;> norm_num
 
-/-- Restricting positive-wall forcing to the two walls is classical consequence. -/
 theorem entailsClassical_iff_wall (Γ : Set Formula) (ψ : Formula) :
     EntailsClassical Γ ψ ↔
       ∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
@@ -328,7 +279,7 @@ theorem entailsClassical_iff_wall (Γ : Set Formula) (ψ : Formula) :
     rw [eval_ofBool] at h1
     exact (ofBool_eq_one).mp h1
 
-/-- Atoms occurring in a finite set of premises or in the conclusion. -/
+/-- Atoms in the premises or the conclusion. -/
 def support (Γ : Finset Formula) (ψ : Formula) : Finset ℕ :=
   Γ.biUnion Formula.atoms ∪ ψ.atoms
 
@@ -340,7 +291,6 @@ theorem mem_support_of_conclusion {Γ : Finset Formula} {ψ : Formula} {n : ℕ}
     (hn : n ∈ ψ.atoms) : n ∈ support Γ ψ :=
   Finset.mem_union.mpr (Or.inr hn)
 
-/-- On the interval, positive-wall forcing mentions only atoms that occur. -/
 theorem entailsWall_iff_support (Γ : Finset Formula) (ψ : Formula) :
     EntailsWall (↑Γ) ψ ↔
       ∀ v : ℕ → ℝ, (∀ n ∈ support Γ ψ, IsThreeHeight (v n)) →
@@ -374,7 +324,7 @@ theorem entailsWall_iff_support (Γ : Finset Formula) (ψ : Formula) :
     intro v hv hprem
     exact h v (fun n _ => hv n) hprem
 
-/-- Three codes for the heights that decide the interval check. -/
+/-- Codes of `{-1, 0, 1}`. -/
 inductive HeightCode
   | neg
   | bal
@@ -388,7 +338,7 @@ def toReal : HeightCode → ℝ
   | bal => 0
   | pos => 1
 
-/-- Wall bit. Balance is not a wall; the bit is read only off balance. -/
+/-- `pos` is `true`. Balance is not a wall bit. -/
 def bit : HeightCode → Bool
   | neg => false
   | bal => false
@@ -423,7 +373,7 @@ theorem ofBool_bit_of_ne_zero {j : ℝ} (h : IsThreeHeight j) (h0 : j ≠ 0) :
 
 end HeightCode
 
-/-- A code assignment of a finite atom set, extended by balance off that set. -/
+/-- Codes on `s`, balance off `s`. -/
 noncomputable def extendHeight (s : Finset ℕ) (f : {n // n ∈ s} → HeightCode) (n : ℕ) : ℝ :=
   if h : n ∈ s then (f ⟨n, h⟩).toReal else 0
 
@@ -442,7 +392,6 @@ theorem extendHeight_eq_of_three {s : Finset ℕ} {v : ℕ → ℝ}
   rw [extendHeight, dite_eq_left hn]
   exact HeightCode.toReal_ofThree (hv n hn)
 
-/-- Boolean value of a formula, from a height assignment that matches the bits on its atoms. -/
 theorem eval_ofBool_on_atoms (φ : Formula) {v : ℕ → ℝ} {b : ℕ → Bool}
     (h : ∀ n ∈ φ.atoms, v n = ofBool (b n)) :
     φ.eval v = ofBool (φ.boolEval b) := by
@@ -458,18 +407,13 @@ theorem eval_ofBool_on_atoms (φ : Formula) {v : ℕ → ℝ} {b : ℕ → Bool}
     simp [ihψ (fun n hn => h n (Finset.mem_union.mpr (Or.inl hn))),
       ihχ (fun n hn => h n (Finset.mem_union.mpr (Or.inr hn))), ofBool_disj]
 
-/-- The case distinction on occurring atoms left at balance. -/
+/-- Atoms left at balance still force the conclusion to `1`. -/
 noncomputable def BalanceCase (Γ : Finset Formula) (ψ : Formula) : Prop :=
   ∀ f : {n // n ∈ support Γ ψ} → HeightCode,
     (∃ n, f n = .bal) →
     (∀ φ ∈ Γ, φ.eval (extendHeight (support Γ ψ) f) = 1) →
       ψ.eval (extendHeight (support Γ ψ) f) = 1
 
-/-- Positive-wall forcing on the interval, cut out of classical consequence.
-
-The second conjunct quantifies over codes of the atoms that occur. A code
-that hits balance is an assignment the premises have not fixed to a wall.
--/
 theorem entailsWall_cut (Γ : Finset Formula) (ψ : Formula) :
     EntailsWall (↑Γ) ψ ↔ EntailsClassical (↑Γ) ψ ∧ BalanceCase Γ ψ := by
   constructor
@@ -572,7 +516,6 @@ theorem chain_cut (φ ψ χ : Formula) :
   rw [coe_finset_pair]
   exact entailsOne_chain φ ψ χ
 
-/-- Excluded middle is classical, and the balance case is where the converse fails. -/
 theorem excludedMiddle_classical_not_balance :
     EntailsClassical (↑(∅ : Finset Formula)) (excludedMiddle 0) ∧
       ¬ BalanceCase ∅ (excludedMiddle 0) := by
@@ -593,7 +536,6 @@ theorem excludedMiddle_classical_not_balance :
     rw [heval] at hψ
     exact zero_ne_one hψ
 
-/-- The atom of excluded middle is not fixed to a wall by the empty premises. -/
 theorem excludedMiddle_atom_at_balance :
     ∃ v : ℕ → ℝ, (∀ n ∈ support ∅ (excludedMiddle 0), IsThreeHeight (v n)) ∧
       v 0 = 0 ∧ (excludedMiddle 0).eval v = 0 := by
@@ -602,15 +544,9 @@ theorem excludedMiddle_atom_at_balance :
     simp [IsThreeHeight]
   · simp [excludedMiddle_eval]
 
-/-!
-## Discharge at every finite depth
+/-! ## Discharge -/
 
-Packaging premises into nested material implications agrees with classical
-consequence on the walls, at every finite depth. At total balance the
-packaged formula returns synchrony, at every depth.
--/
-
-/-- Nested discharge. `discharge [φ₁, …, φₙ] ψ` is `φ₁ → (⋯ → (φₙ → ψ))`. -/
+/-- `φ₁ → (⋯ → (φₙ → ψ))`. -/
 def discharge : List Formula → Formula → Formula
   | [], ψ => ψ
   | φ :: Γ, ψ => impF φ (discharge Γ ψ)
@@ -632,7 +568,6 @@ theorem boolEval_discharge (Γ : List Formula) (ψ : Formula) (b : ℕ → Bool)
         · exact hφ
         · exact hΓ χ hχ)
 
-/-- At every depth, discharge on the walls is classical consequence of the rule. -/
 theorem discharge_wall_iff (Γ : List Formula) (ψ : Formula) :
     (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
         (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1) ↔
@@ -674,7 +609,6 @@ theorem discharge_balance (Γ : List Formula) (ψ : Formula) :
     (discharge Γ ψ).eval (fun _ => 0) = 0 :=
   eval_balance _
 
-/-- Wall agreement and the fall to balance, at every finite depth. -/
 theorem discharge_depth (Γ : List Formula) (ψ : Formula) :
     ((∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
           (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1) ↔
@@ -690,7 +624,6 @@ theorem syllogismFormula_discharge :
         (impF (Formula.atom 0) (Formula.atom 2)) := by
   rfl
 
-/-- The syllogism rule preserves the positive wall; its two-premise package does not. -/
 theorem chain_depth_two :
     EntailsOne {impF (Formula.atom 0) (Formula.atom 1),
         impF (Formula.atom 1) (Formula.atom 2)}
@@ -699,14 +632,7 @@ theorem chain_depth_two :
   ⟨entailsOne_chain (Formula.atom 0) (Formula.atom 1) (Formula.atom 2),
     syllogism_balance⟩
 
-/-!
-## The three consequence relations
-
-Synchrony, non-refutation, and positive-wall forcing are pairwise
-incomparable. The positive-wall inference from a height and its negation
-is vacuous. Synchrony and non-refutation both admit that pair and refuse
-the step to an unrelated atom.
--/
+/-! ## Incomparability -/
 
 theorem entailsOne_not_entailsT :
     EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
@@ -771,7 +697,6 @@ theorem entailsNotF_not_entailsT :
       ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) :=
   ⟨entailsNotF_conj_neg _, not_entailsT_conj_neg⟩
 
-/-- One diagram: none of the three relations contains another. -/
 theorem consequence_relations_incomparable :
     (EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
       ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1)) ∧

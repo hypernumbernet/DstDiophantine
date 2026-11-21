@@ -1,24 +1,9 @@
 import DstDiophantine.Logic.Consequence
 
 /-!
-# The Boolean core of the height
+# Boolean core on the walls
 
-Classical truth on the wall fragment is the positive wall `+1`, and
-classical falsity is the negative wall `-1`. With that reading, `negJ`,
-`min`, and `max` are the Boolean connectives, and a propositional formula
-is a classical tautology exactly when every wall assignment returns `+1`.
-
-Double negation, the De Morgan laws, distributivity, and absorption are
-identities of every real height. A classical proof of them is the
-specialisation of that identity; the two-valued case split is idle.
-Excluded middle and the syllogism do not lift. They hold on the walls,
-and they fail as soon as a height leaves them. At total balance the
-syllogism returns synchrony, which the classical reading does not call truth.
-
-Material implication `max (-j) k` detaches the positive wall on every
-real height. It lies strictly below that wall exactly when the negated
-antecedent and the consequent do. Balance implies every nonpositive
-height, and that implication is balance, so synchrony does not detach.
+On `{-1, 1}`, `+1` is classical truth. Height identities specialise to classical equivalences. Excluded middle and the syllogism hold only on the walls.
 -/
 
 namespace DstDiophantine
@@ -27,7 +12,7 @@ namespace Logic
 
 attribute [local instance] Classical.propDecidable
 
-/-- The two walls, read as classical bits. `true` is the positive wall. -/
+/-- `true ↦ 1`, `false ↦ -1`. -/
 def ofBool (b : Bool) : ℝ :=
   if b then 1 else -1
 
@@ -55,7 +40,7 @@ theorem ofBool_conj (a b : Bool) : conjJ (ofBool a) (ofBool b) = ofBool (a && b)
 theorem ofBool_disj (a b : Bool) : disjJ (ofBool a) (ofBool b) = ofBool (a || b) := by
   cases a <;> cases b <;> simp [disjJ]
 
-/-- Bit of a wall. Off the positive wall the bit is `false`. -/
+/-- `true` on the positive wall. -/
 noncomputable def wallBit (j : ℝ) : Bool :=
   if j = 1 then true else false
 
@@ -64,7 +49,6 @@ theorem wallBit_of_wall {j : ℝ} (h : IsWallTwo j) : j = ofBool (wallBit j) := 
 
 namespace Formula
 
-/-- Classical evaluation. `true` is the positive wall. -/
 def boolEval (φ : Formula) (v : ℕ → Bool) : Bool :=
   match φ with
   | atom n => v n
@@ -85,7 +69,6 @@ def boolEval (φ : Formula) (v : ℕ → Bool) : Bool :=
 
 end Formula
 
-/-- Wall evaluation is the Boolean evaluation of the same formula. -/
 theorem eval_ofBool (φ : Formula) (v : ℕ → Bool) :
     φ.eval (fun n => ofBool (v n)) = ofBool (φ.boolEval v) := by
   induction φ with
@@ -94,7 +77,6 @@ theorem eval_ofBool (φ : Formula) (v : ℕ → Bool) :
   | conj ψ χ ihψ ihχ => simp [ihψ, ihχ, ofBool_conj]
   | disj ψ χ ihψ ihχ => simp [ihψ, ihχ, ofBool_disj]
 
-/-- The wall fragment is closed under the scalar connectives. -/
 theorem eval_isWall {v : ℕ → ℝ} (hv : ∀ n, IsWallTwo (v n)) (φ : Formula) :
     IsWallTwo (φ.eval v) := by
   have hv' : v = fun n => ofBool (wallBit (v n)) := by
@@ -103,8 +85,6 @@ theorem eval_isWall {v : ℕ → ℝ} (hv : ∀ n, IsWallTwo (v n)) (φ : Formul
   rw [hv', eval_ofBool]
   exact ofBool_wall _
 
-/-- A formula is a classical tautology exactly when every wall assignment
-returns the positive wall. -/
 theorem classical_iff_positive_wall (φ : Formula) :
     (∀ b : ℕ → Bool, φ.boolEval b = true) ↔
       ∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 := by
@@ -120,8 +100,6 @@ theorem classical_iff_positive_wall (φ : Formula) :
     rw [eval_ofBool] at h1
     exact (ofBool_eq_one).mp h1
 
-/-- An identity of heights specialises to a classical equivalence.
-The two-valued case split is not required for that step. -/
 theorem height_identity_specialises {φ ψ : Formula}
     (h : ∀ v : ℕ → ℝ, φ.eval v = ψ.eval v) (b : ℕ → Bool) :
     φ.boolEval b = ψ.boolEval b := by
@@ -141,11 +119,9 @@ theorem eval_deMorgan_disj (φ ψ : Formula) (v : ℕ → ℝ) :
     (φ.disj ψ).neg.eval v = (φ.neg.conj ψ.neg).eval v := by
   simp [deMorgan_disj]
 
-/-- Conjunction absorbs a disjunction with the same height. -/
 theorem conjJ_absorb (a b : ℝ) : conjJ a (disjJ a b) = a := by
   simp [conjJ, disjJ]
 
-/-- Disjunction absorbs a conjunction with the same height. -/
 theorem disjJ_absorb (a b : ℝ) : disjJ a (conjJ a b) = a := by
   simp [conjJ, disjJ]
 
@@ -165,9 +141,6 @@ theorem deMorgan_conj_classical (φ ψ : Formula) (b : ℕ → Bool) :
     (φ.conj ψ).neg.boolEval b = (φ.neg.disj ψ.neg).boolEval b :=
   height_identity_specialises (eval_deMorgan_conj φ ψ) b
 
-/-- On the interval, the walls are exactly the saturation of excluded middle
-and of non-contradiction. Off the walls both laws fail, and what remains
-is the comparison `-|j| ≤ |k|`. -/
 theorem wall_saturation_iff {j : ℝ} (hj : |j| ≤ 1) :
     disjJ j (negJ j) = 1 ∧ conjJ j (negJ j) = -1 ↔ IsWallTwo j := by
   rw [disj_neg_eq_abs, conj_neg_eq_neg_abs]
@@ -187,11 +160,10 @@ theorem excluded_middle_classical (b : ℕ → Bool) :
     ((Formula.atom 0).disj (Formula.atom 0).neg).boolEval b = true := by
   cases h : b 0 <;> simp [h]
 
-/-- Material implication, read on the height as `¬j ∨ k`. -/
+/-- `¬j ∨ k`. -/
 def impJ (j k : ℝ) : ℝ :=
   disjJ (negJ j) k
 
-/-- The syllogism, written with material implication. -/
 def syllogismFormula : Formula :=
   let P := Formula.atom 0
   let Q := Formula.atom 1
@@ -203,7 +175,6 @@ theorem syllogism_classical (b : ℕ → Bool) : syllogismFormula.boolEval b = t
   cases h0 : b 0 <;> cases h1 : b 1 <;> cases h2 : b 2 <;>
     simp [syllogismFormula, h0, h1, h2]
 
-/-- At total balance the syllogism returns synchrony, not the positive wall. -/
 theorem syllogism_balance :
     syllogismFormula.eval (fun _ => 0) = 0 := by
   simp [syllogismFormula, negJ, disjJ]
@@ -216,7 +187,6 @@ theorem impJ_wall_iff {j k : ℝ} (hj : IsWallTwo j) (hk : IsWallTwo k) :
     impJ j k = 1 ↔ (j = 1 → k = 1) := by
   rcases hj with rfl | rfl <;> rcases hk with rfl | rfl <;> simp [impJ, disjJ, negJ]
 
-/-- Classical detachment on every real height: the positive wall is inherited. -/
 theorem impJ_detach_wall {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 := by
   subst hj
   simp only [impJ, disjJ, negJ] at himp
@@ -226,18 +196,14 @@ theorem impJ_detach_wall {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 
   · rw [max_eq_right hk] at himp
     exact himp
 
-/-- Non-refutation of a material implication is the pair of non-refutations
-of the negated antecedent and of the consequent. -/
 theorem holdsNotF_impJ (j k : ℝ) :
     HoldsNotF (impJ j k) ↔ HoldsNotF (negJ j) ∧ HoldsNotF k := by
   simp only [HoldsNotF, impJ, disjJ, negJ]
   exact max_lt_iff
 
-/-- Balance materially implies every nonpositive height, and the implication is balance. -/
 theorem impJ_zero_of_nonpos {k : ℝ} (hk : k ≤ 0) : impJ 0 k = 0 := by
   simp only [impJ, disjJ, negJ, neg_zero, max_eq_left hk]
 
-/-- The negative wall materially implying balance is the positive wall. -/
 theorem impJ_neg_wall_balance : impJ (-1) 0 = 1 := by
   have h0 : (0 : ℝ) ≤ 1 := by norm_num
   simp only [impJ, disjJ, negJ, neg_neg, max_eq_left h0]

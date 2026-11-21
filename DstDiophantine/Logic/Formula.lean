@@ -3,21 +3,16 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
-# Propositional syntax for D4L
+# Propositional syntax
 
-Formulas are built from atoms, negation, conjunction, and disjunction.
-Evaluation is on signed heights via `negJ` / `conjJ` / `disjJ`. There is
-no implication connective: synchrony and non-refutation have no common
-residual (`Logic.Implication`).
-
-This is not a Hilbert-space syntax and not Belnap FOUR.
+Atoms, negation, conjunction, and disjunction on signed heights.
+No implication connective.
 -/
 
 namespace DstDiophantine
 
 namespace Logic
 
-/-- Propositional formulas over `ℕ`-indexed atoms. -/
 inductive Formula
   | atom : ℕ → Formula
   | neg : Formula → Formula
@@ -27,7 +22,6 @@ inductive Formula
 
 namespace Formula
 
-/-- Scalar evaluation along an assignment of signed heights. -/
 def eval (φ : Formula) (v : ℕ → ℝ) : ℝ :=
   match φ with
   | atom n => v n
@@ -50,7 +44,6 @@ def eval (φ : Formula) (v : ℕ → ℝ) : ℝ :=
     (φ.disj ψ).eval v = disjJ (φ.eval v) (ψ.eval v) :=
   rfl
 
-/-- Evaluation stays in `[-1,1]` when every atom does. -/
 theorem eval_mem (φ : Formula) {v : ℕ → ℝ} (hv : ∀ n, |v n| ≤ 1) :
     |φ.eval v| ≤ 1 := by
   induction φ with
@@ -68,7 +61,6 @@ theorem eval_mem (φ : Formula) {v : ℕ → ℝ} (hv : ∀ n, |v n| ≤ 1) :
     refine abs_le.mpr ⟨?_, max_le ha.2 hb.2⟩
     exact ha.1.trans (le_max_left _ _)
 
-/-- Atoms that occur in a formula. -/
 def atoms : Formula → Finset ℕ
   | atom n => {n}
   | neg φ => φ.atoms
@@ -85,7 +77,6 @@ def atoms : Formula → Finset ℕ
 @[simp] theorem atoms_disj (φ ψ : Formula) :
     (φ.disj ψ).atoms = φ.atoms ∪ ψ.atoms := rfl
 
-/-- Evaluation reads only the atoms that occur. -/
 theorem eval_eq_of_agree_on_atoms {φ : Formula} {v w : ℕ → ℝ}
     (h : ∀ n ∈ φ.atoms, v n = w n) : φ.eval v = φ.eval w := by
   induction φ with

@@ -3,17 +3,9 @@ import DstDiophantine.Logic.Connective
 import Mathlib.Data.Set.Basic
 
 /-!
-# Proof-status (regime) layer of D4L
+# Proof-status layer
 
-The amplitude layer classifies a continuous height, so negation is not a
-function of the four labels. A DST *proof artefact* — a core lemma, a live
-bridge, a refuted diagnostic, a bookkeeping identity — carries a discrete
-status. On that discrete carrier the same four names become a label algebra,
-and implication is defined as a table, not as the residuum of `min`.
-
-The four names are shared with `TruthValue`. Measurement is **not**
-`JNormalized`. No Belnap-FOUR isomorphism is claimed. This module does not
-import `Theorems`.
+Discrete labels `{T, U, F, B}` with table implication `impR`, not the residuum of `min`. Measurement is not `JNormalized`.
 -/
 
 namespace DstDiophantine
@@ -22,22 +14,14 @@ namespace Logic
 
 open scoped Set
 
-/--
-Label negation (a function of the four names). Representatives are
-`T↦0`, `U↦1/2`, `F↦1`, `B↦-1/2`. Sign flip sends the representative of
-`F` to `-1`, which the four-state classifier reads as `B`; this map
-stores that label, whose own representative is `-1/2`.
--/
+/-- Label negation. `F ↦ B`, whose representative is `-1/2`, not the sign flip `-1`. -/
 def negR : TruthValue → TruthValue
   | .T => .T
   | .U => .B
   | .B => .U
   | .F => .B
 
-/--
-Amplitude-style conjunction (`min` of the same representatives).
-In particular `F ∧ ¬F = B`.
--/
+/-- `min` of the amplitude representatives. -/
 def conjR : TruthValue → TruthValue → TruthValue
   | .T, .T => .T
   | .T, .U => .T
@@ -56,7 +40,7 @@ def conjR : TruthValue → TruthValue → TruthValue
   | .B, .F => .B
   | .B, .B => .B
 
-/-- Amplitude-style disjunction (`max` of the same representatives). -/
+/-- `max` of the amplitude representatives. -/
 def disjR : TruthValue → TruthValue → TruthValue
   | .T, .T => .T
   | .T, .U => .U
@@ -75,25 +59,18 @@ def disjR : TruthValue → TruthValue → TruthValue
   | .B, .F => .T
   | .B, .B => .B
 
-/-- Establishedness rank: `F < B < U < T`. -/
+/-- `F < B < U < T`. -/
 def regimeRank : TruthValue → ℕ
   | .F => 0
   | .B => 1
   | .U => 2
   | .T => 3
 
-/-- Meet of establishedness (packaging two artefacts). `T ⊓ U = U`. -/
+/-- Meet of `regimeRank`. -/
 def meetR (a b : TruthValue) : TruthValue :=
   if regimeRank a ≤ regimeRank b then a else b
 
-/--
-Regime implication (not a lattice residuum).
-
-* `T → φ = φ`
-* `F → φ = T` (vacuous, from a refuted diagnostic)
-* `U → T = U` (an open bridge does not establish a theorem)
-* `B → T = U` (a conflicted reading does not explode to a theorem)
--/
+/-- Table implication. `U → T = U` and `B → T = U`. Not the residuum of `min`. -/
 def impR : TruthValue → TruthValue → TruthValue
   | .T, φ => φ
   | .F, _ => .T
@@ -118,19 +95,17 @@ theorem impR_U_T : impR .U .T = .U :=
 theorem impR_B_T : impR .B .T = .U :=
   rfl
 
-/-- Amplitude representatives used by `negR` / `conjR`. -/
+/-- `T↦0`, `U↦1/2`, `F↦1`, `B↦-1/2`. -/
 noncomputable def amplitudeRep : TruthValue → ℝ
   | .T => 0
   | .U => 1 / 2
   | .F => 1
   | .B => -1 / 2
 
-/-- The residuum of `min` disagrees with regime implication at `U → T`. -/
 theorem residuum_U_T_ne_impR :
     residuumJ (amplitudeRep .U) (amplitudeRep .T) = 0 ∧ impR .U .T = .U :=
   ⟨residuumJ_U_T, rfl⟩
 
-/-- The residuum of `min` disagrees with regime implication at `B → T`. -/
 theorem residuum_B_T_ne_impR :
     residuumJ (amplitudeRep .B) (amplitudeRep .T) = 1 ∧ impR .B .T = .U :=
   ⟨residuumJ_B_T, rfl⟩
@@ -149,7 +124,6 @@ theorem negR_U : negR .U = .B := by decide
 theorem negR_B : negR .B = .U := by decide
 theorem negR_F : negR .F = .B := by decide
 
-/-- `s ∧ ¬s` never saturates `F`. -/
 theorem conjR_negR_ne_F (s : TruthValue) : conjR s (negR s) ≠ .F := by
   cases s <;> decide
 
@@ -157,11 +131,11 @@ theorem conjR_negR_T_or_B (s : TruthValue) :
     conjR s (negR s) = .T ∨ conjR s (negR s) = .B := by
   cases s <;> decide
 
-/-- Designated synchrony / “adopt as a theorem”. -/
+/-- Adopted as a theorem: the status `T`. -/
 def HoldsTR (s : TruthValue) : Prop :=
   s = .T
 
-/-- Designated non-refutation: every status except `F`. -/
+/-- Every status except `F`. -/
 def HoldsNotFR (s : TruthValue) : Prop :=
   s ≠ .F
 
@@ -170,11 +144,11 @@ theorem holdsTR_holdsNotFR {s : TruthValue} (h : HoldsTR s) : HoldsNotFR s := by
   subst h
   simp [HoldsNotFR]
 
-/-- Named two-valued fragment `{T, F}`. -/
+/-- Fragment `{T, F}`. -/
 def IsNamedRegime (s : TruthValue) : Prop :=
   s = .T ∨ s = .F
 
-/-- Wall two-valued fragment `{B, F}`. -/
+/-- Fragment `{B, F}`. -/
 def IsWallRegime (s : TruthValue) : Prop :=
   s = .B ∨ s = .F
 
@@ -190,12 +164,10 @@ theorem wallRegime_not_T {s : TruthValue} (h : IsWallRegime s) : s ≠ .T := by
 theorem wallRegime_not_U {s : TruthValue} (h : IsWallRegime s) : s ≠ .U := by
   rcases h with h | h <;> simp [h]
 
-/-- On the named fragment, non-refutation collapses to synchrony. -/
 theorem namedRegime_holdsNotFR_iff_holdsTR {s : TruthValue} (h : IsNamedRegime s) :
     HoldsNotFR s ↔ HoldsTR s := by
   rcases h with h | h <;> simp [HoldsNotFR, HoldsTR, h]
 
-/-- Proof-status formulas, including implication. -/
 inductive RegimeFormula
   | atom : ℕ → RegimeFormula
   | neg : RegimeFormula → RegimeFormula
@@ -236,7 +208,6 @@ def eval (φ : RegimeFormula) (v : ℕ → TruthValue) : TruthValue :=
 
 end RegimeFormula
 
-/-- Assignment of atoms to discrete proof statuses. -/
 structure RegimeValuation where
   assign : ℕ → TruthValue
 
@@ -245,7 +216,7 @@ namespace RegimeValuation
 def const (s : TruthValue) : RegimeValuation where
   assign := fun _ => s
 
-/-- Atoms `0,1,2,3` independently; remaining atoms are `T`. -/
+/-- Atoms `0,1,2,3`; the rest are `T`. -/
 def quad (c d l k : TruthValue) : RegimeValuation where
   assign := fun n =>
     if n = 0 then c else if n = 1 then d else if n = 2 then l else if n = 3 then k else .T
@@ -266,10 +237,7 @@ def quad (c d l k : TruthValue) : RegimeValuation where
     (quad c d l k).assign 3 = k := by
   simp [quad]
 
-/--
-Atoms `0, …, xs.length - 1` from the list; remaining atoms are `T`.
-Extends `quad` when more than four independent statuses are needed.
--/
+/-- Listed atoms in order; the rest are `T`. -/
 def ofList (xs : List TruthValue) : RegimeValuation where
   assign := fun n => xs.getD n .T
 
@@ -290,7 +258,7 @@ theorem ofList_cons_zero (s : TruthValue) (xs : List TruthValue) :
 
 end RegimeValuation
 
-/-- Finite fold of `meetR` (establishedness meet). Empty list is `T`. -/
+/-- Fold of `meetR`. The empty list is `T`. -/
 def meetRList : List TruthValue → TruthValue
   | [] => .T
   | a :: as => meetR a (meetRList as)
@@ -313,7 +281,6 @@ theorem meetR_T_left (a : TruthValue) : meetR .T a = a := by
 theorem meetR_T_right (a : TruthValue) : meetR a .T = a := by
   cases a <;> rfl
 
-/-- Packaging any established (`T`) slices with a live residual stays live. -/
 theorem meetRList_T_append_U (n : ℕ) :
     meetRList (List.replicate n .T ++ [.U]) = .U := by
   induction n with
@@ -337,7 +304,6 @@ theorem modelsTR_to_modelsNotFR {v : RegimeValuation} {Γ : Set RegimeFormula}
     (h : ModelsTR v Γ) : ModelsNotFR v Γ :=
   fun φ hφ => holdsTR_holdsNotFR (h φ hφ)
 
-/-- Regime implication is refuted exactly when a non-refuted status implies a refuted one. -/
 theorem impR_eq_F_iff (a b : TruthValue) :
     impR a b = .F ↔ a ≠ .F ∧ b = .F := by
   cases a <;> cases b <;> simp [impR]
@@ -352,8 +318,6 @@ theorem holdsNotFR_impR (a b : TruthValue) :
     have ⟨ha, hb⟩ := (impR_eq_F_iff a b).mp hf
     exact (h ha) hb
 
-/-- Theoremhood is not residuated: an open status implying a theorem is a vacuous
-classical conditional, and the table records `U`. -/
 theorem impR_not_theoremhood_residual :
     ¬ (HoldsTR (impR .U .T) ↔ (HoldsTR .U → HoldsTR .T)) := by
   intro h

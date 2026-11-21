@@ -3,27 +3,18 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Tactic.Linarith
 
 /-!
-# Two DST-native orders on the signed height
+# Two orders on the signed height
 
-These are not the Belnap FOUR orders. Labels `{T,U,F,B}` do not match
-`{⊥, t, f, ⊤}`, and no bilattice isomorphism is claimed.
-
-* Height order `HeightLE`: more rotation-dominant → more boost-dominant.
-* Information order `InfoLE`: less decided → more saturated.
-
-On `[-1,1]`, `T` (`j = 0`) is the unique information bottom, and the two
-information tops are `F` (`j = 1`) and deepest `B` (`j = -1`).
+`HeightLE` is `≤`. `InfoLE` is `≤` on absolute value. Not the Belnap FOUR orders.
 -/
 
 namespace DstDiophantine
 
 namespace Logic
 
-/-- Height (truth-direction) preorder: the usual order of `ℝ`. -/
 def HeightLE (j k : ℝ) : Prop :=
   j ≤ k
 
-/-- Information (saturation) preorder. -/
 def InfoLE (j k : ℝ) : Prop :=
   |j| ≤ |k|
 
@@ -50,7 +41,6 @@ theorem info_le_one_of_mem {j : ℝ} (hj : |j| ≤ 1) : InfoLE j (1 : ℝ) := by
 theorem info_le_neg_one_of_mem {j : ℝ} (hj : |j| ≤ 1) : InfoLE j (-1 : ℝ) := by
   simpa [InfoLE, abs_neg, abs_one] using hj
 
-/-- On `[-1,1]`, `j = 0` is the unique information bottom. -/
 theorem info_bottom_iff {j : ℝ} (_hj : |j| ≤ 1) :
     (∀ k : ℝ, |k| ≤ 1 → InfoLE j k) ↔ j = 0 := by
   constructor
@@ -62,7 +52,6 @@ theorem info_bottom_iff {j : ℝ} (_hj : |j| ≤ 1) :
   · intro hj k _hk
     simp [InfoLE, hj]
 
-/-- On `[-1,1]`, the information tops are exactly the two walls `±1`. -/
 theorem info_top_iff {j : ℝ} (hj : |j| ≤ 1) :
     (∀ k : ℝ, |k| ≤ 1 → InfoLE k j) ↔ j = 1 ∨ j = -1 := by
   constructor
@@ -98,7 +87,6 @@ theorem classify_deepB_iff {j : ℝ} (hj : |j| ≤ 1) :
       constructor <;> norm_num
     · simp [hjneg]
 
-/-- Interior `B` is strictly below deepest `B` in the information order. -/
 theorem info_interiorB_lt_deepB {j : ℝ} (hj : |j| ≤ 1)
     (hB : classifyOfMem j hj = .B) (hne : j ≠ -1) :
     InfoLE j (-1) ∧ ¬InfoLE (-1) j := by

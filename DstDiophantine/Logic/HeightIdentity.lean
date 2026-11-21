@@ -1,19 +1,9 @@
 import DstDiophantine.Logic.ClassicalCore
 
 /-!
-# Which equivalences are identities of the height
+# Height identities
 
-Conjunction selects, disjunction selects, and negation swaps a sign, so
-every formula returns the value of one literal. Two formulas therefore
-agree at every real height if and only if they agree whenever every atom
-lies in `{-1, 0, 1}`. The comparison is a homomorphism: the odd monotone
-collapse at the threshold `max |φ| |ψ|` preserves `min`, `max`, and sign
-flip, and it separates any two distinct reals.
-
-Agreement on the two walls is strictly coarser. Both excluded middles
-return the positive wall under every wall assignment, and the assignment
-that sends one atom to the positive wall and the other to balance
-separates them. A height identity rewrites under every one-hole context.
+Agreement at every real height is agreement on atoms in `{-1, 0, 1}`. Agreement on the two walls is coarser.
 -/
 
 namespace DstDiophantine
@@ -22,13 +12,11 @@ namespace Logic
 
 attribute [local instance] Classical.propDecidable
 
-/-- The three heights that decide equational identity. -/
+/-- `j ∈ {-1, 0, 1}`. -/
 def IsThreeHeight (j : ℝ) : Prop :=
   j = -1 ∨ j = 0 ∨ j = 1
 
-/-- Odd monotone collapse onto those three heights.
-A positive threshold sends every height strictly inside `(-t, t)` to
-balance, and every height outside that interval to the wall of its sign. -/
+/-- Inside `(-t, t)` to `0`; otherwise the sign's wall. -/
 noncomputable def threeCollapse (t x : ℝ) : ℝ :=
   if |x| < t then 0 else if 0 ≤ x then 1 else -1
 
@@ -145,7 +133,6 @@ theorem threeCollapse_max {t : ℝ} (ht : 0 < t) (x y : ℝ) :
   · rw [max_eq_right h, max_eq_right (threeCollapse_mono ht h)]
   · rw [max_eq_left h, max_eq_left (threeCollapse_mono ht h)]
 
-/-- A formula returns one atom or the swap of one atom. -/
 theorem eval_eq_literal (φ : Formula) (v : ℕ → ℝ) :
     ∃ n, φ.eval v = v n ∨ φ.eval v = negJ (v n) := by
   induction φ with
@@ -244,7 +231,6 @@ theorem threeCollapse_separates {a b : ℝ} (hne : a ≠ b) :
   · have hswap := threeCollapse_separates_of_abs_lt hgt
     simpa [max_comm] using hswap.symm
 
-/-- A real disagreement is already a disagreement on `{-1, 0, 1}`. -/
 theorem exists_threeHeight_of_eval_ne {φ ψ : Formula} {v : ℕ → ℝ}
     (hne : φ.eval v ≠ ψ.eval v) :
     ∃ w : ℕ → ℝ, (∀ n, IsThreeHeight (w n)) ∧ φ.eval w ≠ ψ.eval w := by
@@ -256,7 +242,6 @@ theorem exists_threeHeight_of_eval_ne {φ ψ : Formula} {v : ℕ → ℝ}
   have hψ := eval_threeCollapse ht ψ v
   exact threeCollapse_separates hne (hφ.symm.trans (h.trans hψ))
 
-/-- Equational identity on the height is decided by `{-1, 0, 1}`. -/
 theorem height_identity_iff_threeHeight (φ ψ : Formula) :
     (∀ v : ℕ → ℝ, φ.eval v = ψ.eval v) ↔
       (∀ v : ℕ → ℝ, (∀ n, IsThreeHeight (v n)) → φ.eval v = ψ.eval v) := by
@@ -268,7 +253,7 @@ theorem height_identity_iff_threeHeight (φ ψ : Formula) :
     rcases exists_threeHeight_of_eval_ne hne with ⟨w, hw, hneq⟩
     exact hneq (h w hw)
 
-/-- A formula with one hole. Filling it is the rewrite used by an equational step. -/
+/-- One-hole formula context. -/
 inductive Ctx
   | hole
   | neg (C : Ctx)
@@ -288,7 +273,6 @@ def fill (C : Ctx) (φ : Formula) : Formula :=
   | disjL C χ => (C.fill φ).disj χ
   | disjR χ C => χ.disj (C.fill φ)
 
-/-- A height identity remains an identity inside any surrounding formula. -/
 theorem fill_height_identity {φ ψ : Formula}
     (h : ∀ v : ℕ → ℝ, φ.eval v = ψ.eval v) (C : Ctx) (v : ℕ → ℝ) :
     (C.fill φ).eval v = (C.fill ψ).eval v := by
@@ -312,7 +296,6 @@ theorem fill_height_identity {φ ψ : Formula}
 
 end Ctx
 
-/-- Excluded middle of one atom. -/
 def excludedMiddle (n : ℕ) : Formula :=
   (Formula.atom n).disj (Formula.atom n).neg
 
@@ -320,16 +303,12 @@ theorem excludedMiddle_eval (n : ℕ) (v : ℕ → ℝ) :
     (excludedMiddle n).eval v = |v n| := by
   simp [excludedMiddle, disj_neg_eq_abs]
 
-/-- Both excluded middles are classical tautologies: every wall assignment
-returns the positive wall. -/
 theorem excludedMiddle_on_wall (v : ℕ → ℝ) (hv : ∀ n, IsWallTwo (v n)) :
     (excludedMiddle 0).eval v = 1 ∧ (excludedMiddle 1).eval v = 1 := by
   have habs (n : ℕ) : |v n| = 1 := by
     rcases hv n with h | h <;> simp [h]
   exact ⟨by simp [excludedMiddle_eval, habs 0], by simp [excludedMiddle_eval, habs 1]⟩
 
-/-- The positive wall against balance separates the two excluded middles.
-The witness uses only the three heights. -/
 theorem excludedMiddle_separated :
     let v : ℕ → ℝ := fun n => if n = 0 then 1 else 0
     (excludedMiddle 0).eval v = 1 ∧

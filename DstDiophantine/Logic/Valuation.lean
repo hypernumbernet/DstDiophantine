@@ -3,36 +3,22 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 
 /-!
-# Valuations, designated values, and two-valued fragments
+# Valuations and designated values
 
-A valuation assigns each atom a height in `[-1,1]`. Two designated
-predicates turn heights into consequence:
-
-* `HoldsT` — synchrony, `j = 0` (the label `T`).
-* `HoldsNotF` — not refuted, `j < 1` (every label except `F`).
-
-Two-valued *restrictions* of the interval are not unique:
-
-* `IsNamedTwo` — `{0,1} = {T,F}`. The names match classical true/false,
-  but `negJ 0 = 0`, so this fragment is not a Boolean algebra.
-* `IsWallTwo` — `{-1,1}` = {deepest `B`, `F`}. Negation swaps the walls
-  and has no fixed point; this is the faithful classical core.
-
-No Belnap-FOUR isomorphism is claimed.
+`HoldsT` is `j = 0`. `HoldsNotF` is `j < 1`.
+`IsNamedTwo` is `{0, 1}` and is not closed under `negJ`. `IsWallTwo` is `{-1, 1}`.
 -/
 
 namespace DstDiophantine
 
 namespace Logic
 
-/-- An assignment of atoms to admissible signed heights. -/
 structure Valuation where
   assign : ℕ → ℝ
   mem : ∀ n, |assign n| ≤ 1
 
 namespace Valuation
 
-/-- Constant assignment. -/
 def const (j : ℝ) (hj : |j| ≤ 1) : Valuation where
   assign := fun _ => j
   mem := fun _ => hj
@@ -40,7 +26,7 @@ def const (j : ℝ) (hj : |j| ≤ 1) : Valuation where
 @[simp] theorem const_assign (j : ℝ) (hj : |j| ≤ 1) (n : ℕ) :
     (const j hj).assign n = j := rfl
 
-/-- Assignment with atom `0 ↦ j`, atom `1 ↦ k`, and `0` elsewhere. -/
+/-- Atom `0 ↦ j`, atom `1 ↦ k`, and `0` elsewhere. -/
 def pair (j k : ℝ) (hj : |j| ≤ 1) (hk : |k| ≤ 1) : Valuation where
   assign := fun n => if n = 0 then j else if n = 1 then k else 0
   mem := fun n => by
@@ -58,25 +44,24 @@ def pair (j k : ℝ) (hj : |j| ≤ 1) (hk : |k| ≤ 1) : Valuation where
     (pair j k hj hk).assign 1 = k := by
   simp [pair]
 
-/-- Every formula evaluates inside `[-1,1]`. -/
 theorem eval_mem (v : Valuation) (φ : Formula) : |φ.eval v.assign| ≤ 1 :=
   φ.eval_mem v.mem
 
 end Valuation
 
-/-- Designated synchrony: the unique information bottom. -/
+/-- Synchrony: `j = 0`. -/
 def HoldsT (j : ℝ) : Prop :=
   j = 0
 
-/-- Designated non-refutation: every label except the positive wall `F`. -/
+/-- Non-refutation: `j < 1`. -/
 def HoldsNotF (j : ℝ) : Prop :=
   j < 1
 
-/-- Named two-valued fragment `{T,F}`. -/
+/-- Fragment `{0, 1}`. -/
 def IsNamedTwo (j : ℝ) : Prop :=
   j = 0 ∨ j = 1
 
-/-- Wall two-valued fragment `{deep B, F}`. -/
+/-- Fragment `{-1, 1}`. -/
 def IsWallTwo (j : ℝ) : Prop :=
   j = -1 ∨ j = 1
 
@@ -97,8 +82,6 @@ theorem holdsT_holdsNotF {j : ℝ} (h : HoldsT j) : HoldsNotF j := by
   simp [HoldsT, HoldsNotF] at h ⊢
   linarith
 
-/-- A conjunction is refuted only when both heights sit at the positive wall.
-Non-refutation of a meet is the join of the non-refutations. -/
 theorem holdsNotF_conj (j k : ℝ) :
     HoldsNotF (conjJ j k) ↔ HoldsNotF j ∨ HoldsNotF k := by
   simp only [HoldsNotF, conjJ]
@@ -112,18 +95,14 @@ theorem holdsNotF_conj (j k : ℝ) :
     · exact lt_of_le_of_lt (min_le_left j k) h
     · exact lt_of_le_of_lt (min_le_right j k) h
 
-/-- A disjunction is refuted as soon as either height sits at the positive wall.
-Non-refutation of a join is the meet of the non-refutations. -/
 theorem holdsNotF_disj (j k : ℝ) :
     HoldsNotF (disjJ j k) ↔ HoldsNotF j ∧ HoldsNotF k := by
   simp only [HoldsNotF, disjJ, max_lt_iff]
 
-/-- Excluded middle is synchronous exactly at the negation fixed point. -/
 theorem holdsT_excluded_middle (j : ℝ) :
     HoldsT (disjJ j (negJ j)) ↔ HoldsT j := by
   simp only [disj_neg_eq_abs, HoldsT, abs_eq_zero]
 
-/-- On the interval, excluded middle is refuted exactly at the two walls. -/
 theorem not_holdsNotF_excluded_middle_iff {j : ℝ} (hj : |j| ≤ 1) :
     ¬ HoldsNotF (disjJ j (negJ j)) ↔ j = 1 ∨ j = -1 := by
   rw [disj_neg_eq_abs]
@@ -135,18 +114,15 @@ theorem not_holdsNotF_excluded_middle_iff {j : ℝ} (hj : |j| ≤ 1) :
     exact (abs_eq (by norm_num : (0 : ℝ) ≤ 1)).mp this
   · rintro (rfl | rfl) <;> norm_num
 
-/-- `j ∧ ¬j` never saturates `F`. -/
 theorem conj_neg_holdsNotF (j : ℝ) : HoldsNotF (conjJ j (negJ j)) := by
   unfold HoldsNotF
   rw [conj_neg_eq_neg_abs]
   linarith [abs_nonneg j]
 
-/-- On the named fragment, non-refutation collapses to synchrony. -/
 theorem namedTwo_holdsNotF_iff_holdsT {j : ℝ} (h : IsNamedTwo j) :
     HoldsNotF j ↔ HoldsT j := by
   rcases h with h | h <;> simp [HoldsNotF, HoldsT, h]
 
-/-- Named two-valued ∩ not-`F` is exactly `{T}`. -/
 theorem namedTwo_notF_only_T {j : ℝ} :
     IsNamedTwo j ∧ HoldsNotF j ↔ j = 0 := by
   constructor
@@ -158,7 +134,6 @@ theorem namedTwo_notF_only_T {j : ℝ} :
 @[simp] theorem negJ_zero : negJ (0 : ℝ) = 0 :=
   neg_zero
 
-/-- The named fragment is not closed under D4L negation: `F ↦` deepest `B`. -/
 theorem namedTwo_not_closed_under_neg :
     ∃ j, IsNamedTwo j ∧ ¬ IsNamedTwo (negJ j) :=
   ⟨1, Or.inr rfl, by simp [IsNamedTwo, negJ]; norm_num⟩
@@ -166,16 +141,13 @@ theorem namedTwo_not_closed_under_neg :
 theorem wallTwo_neg {j : ℝ} (h : IsWallTwo j) : IsWallTwo (negJ j) := by
   rcases h with h | h <;> simp [IsWallTwo, negJ, h]
 
-/-- On the walls, a value and its negation cannot both be `+1`. -/
 theorem wall_not_both_pos {j : ℝ} (h : IsWallTwo j) :
     ¬ (j = 1 ∧ negJ j = 1) := by
   rcases h with h | h <;> simp [negJ, h] <;> norm_num
 
-/-- The residuum of `min` designates `U → T` as synchrony. -/
 theorem residuumJ_U_T_holdsT : HoldsT (residuumJ (1 / 2 : ℝ) 0) := by
   rw [HoldsT, residuumJ_U_T]
 
-/-- The residuum of `min` sends `B → T` to the positive wall. -/
 theorem residuumJ_B_T_eq_F :
     classifyOfMem (residuumJ (-1 / 2 : ℝ) 0)
       (by simp [residuumJ_B_T]) = .F := by

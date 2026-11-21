@@ -6,9 +6,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Connectives on the signed height
 
-Algebraic operations live on `JNormalized ∈ [-1,1]`, not on the four labels:
-state-level negation is not a function of `TruthValue` (deepest `B` maps to
-`F`, interior `B` maps to `U`).
+`negJ`, `min`, and `max` on `[-1, 1]`. Negation is not a function of the four labels.
 -/
 
 namespace DstDiophantine
@@ -40,7 +38,7 @@ theorem conj_distrib_left (a b c : ℝ) :
     conjJ a (disjJ b c) = disjJ (conjJ a b) (conjJ a c) :=
   min_max_distrib_left a b c
 
-/-- Paraconsistent non-explosion: \(j\wedge\neg j=-|j|\) never saturates `F`. -/
+/-- `j ∧ ¬j = -|j|`. -/
 theorem conj_neg_eq_neg_abs (j : ℝ) : conjJ j (negJ j) = -|j| := by
   simp only [conjJ, negJ]
   rcases le_total j (-j) with h | h
@@ -53,7 +51,7 @@ theorem conj_neg_nonpos (j : ℝ) : conjJ j (negJ j) ≤ 0 := by
   rw [conj_neg_eq_neg_abs]
   exact neg_nonpos.mpr (abs_nonneg j)
 
-/-- Excluded middle on the height is the absolute value. -/
+/-- `j ∨ ¬j = |j|`. -/
 theorem disj_neg_eq_abs (j : ℝ) : disjJ j (negJ j) = |j| := by
   simp only [disjJ, negJ]
   rcases le_total j (-j) with h | h
@@ -62,11 +60,9 @@ theorem disj_neg_eq_abs (j : ℝ) : disjJ j (negJ j) = |j| := by
   · have hj : 0 ≤ j := by linarith
     rw [max_eq_left h, abs_of_nonneg hj]
 
-/-- Balance absorbs every nonnegative height under conjunction. -/
 theorem conjJ_zero_of_nonneg {k : ℝ} (hk : 0 ≤ k) : conjJ 0 k = 0 := by
   simp [conjJ, hk]
 
-/-- Balance absorbs every nonpositive height under disjunction. -/
 theorem disjJ_zero_of_nonpos {k : ℝ} (hk : k ≤ 0) : disjJ 0 k = 0 := by
   simp [disjJ, hk]
 
@@ -96,7 +92,6 @@ theorem classify_conj_neg_T_or_B {j : ℝ} (hj : |j| ≤ 1) :
     · linarith [abs_le.mp hj]
     · linarith
 
-/-- State-level negation is not a function of the four labels. -/
 theorem neg_not_a_function_of_TruthValue :
     ∃ j₁ j₂ : ℝ, ∃ h₁ : |j₁| ≤ 1, ∃ h₂ : |j₂| ≤ 1,
       classifyOfMem j₁ h₁ = .B ∧ classifyOfMem j₂ h₂ = .B ∧
@@ -119,9 +114,7 @@ theorem neg_not_a_function_of_TruthValue :
     rw [hL, hR, hF, hU]
     decide
 
-/-- Gödel residuum of `min`, with lattice top `1`. This is *not* D4L implication:
-it sends a boost-dominant height implying synchrony to the designated point
-`0`, and a rotation-dominant height implying synchrony to the wall `1`. -/
+/-- Gödel residuum of `min`, top `1`. Not D4L implication. -/
 noncomputable def residuumJ (j k : ℝ) : ℝ := if j ≤ k then (1 : ℝ) else k
 
 theorem residuumJ_of_le {j k : ℝ} (h : j ≤ k) : residuumJ j k = 1 := by
@@ -130,11 +123,9 @@ theorem residuumJ_of_le {j k : ℝ} (h : j ≤ k) : residuumJ j k = 1 := by
 theorem residuumJ_of_not_le {j k : ℝ} (h : ¬ j ≤ k) : residuumJ j k = k := by
   simp [residuumJ, h]
 
-/-- Open (boost-dominant) implying synchrony evaluates to synchrony. -/
 theorem residuumJ_U_T : residuumJ (1 / 2 : ℝ) 0 = 0 :=
   residuumJ_of_not_le (by norm_num)
 
-/-- Rotation-dominant implying synchrony evaluates to the positive wall. -/
 theorem residuumJ_B_T : residuumJ (-1 / 2 : ℝ) 0 = 1 :=
   residuumJ_of_le (by norm_num)
 

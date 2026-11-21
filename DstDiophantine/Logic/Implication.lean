@@ -1,31 +1,20 @@
 import DstDiophantine.Logic.Valuation
 
 /-!
-# Why the amplitude height has no implication
+# No common residual on the height
 
-Synchrony (`HoldsT`, the point `0`) and non-refutation (`HoldsNotF`, the
-cut `j < 1`) each admit a residual on `[-1,1]`. No single operation
-residuates both: a height other than balance or the positive wall,
-implying that wall, is forced to `0` by synchrony and to `1` by
-non-refutation.
-
-The normalised residuals agree on an open height implying synchrony, and
-both designate it. Regime implication refuses that designation. It
-residuates only the non-refutation cut on the four names.
+`syncImp` residuates synchrony and `nonrefImp` residuates non-refutation. No operation on `[-1, 1]` residuates both.
 -/
 
 namespace DstDiophantine
 
 namespace Logic
 
-/-- Synchrony residual. A balanced antecedent returns the consequent;
-every other antecedent sits at balance. -/
+/-- Consequent at balance, otherwise `0`. -/
 noncomputable def syncImp (j k : ℝ) : ℝ :=
   if j = 0 then k else 0
 
-/-- Non-refutation residual. A refuted antecedent returns balance; a
-non-refuted antecedent implying the positive wall returns that wall;
-otherwise the consequent is remembered. -/
+/-- Residual of non-refutation. -/
 noncomputable def nonrefImp (j k : ℝ) : ℝ :=
   if j = 1 then 0 else if k = 1 then 1 else k
 
@@ -43,7 +32,6 @@ theorem nonrefImp_of_pass {j k : ℝ} (hj : j ≠ 1) (hk : k ≠ 1) :
     nonrefImp j k = k := by
   simp [nonrefImp, hj, hk]
 
-/-- The synchrony residual is synchronous exactly under the synchrony conditional. -/
 theorem syncImp_holdsT_iff (j k : ℝ) :
     HoldsT (syncImp j k) ↔ (HoldsT j → HoldsT k) := by
   unfold syncImp HoldsT
@@ -51,7 +39,6 @@ theorem syncImp_holdsT_iff (j k : ℝ) :
   · simp [hj]
   · simp [hj]
 
-/-- Every synchrony residual returns balance when the antecedent is not balanced. -/
 theorem sync_residual_of_ne_zero (imp : ℝ → ℝ → ℝ) {j k : ℝ} (hj : j ≠ 0)
     (hiff : HoldsT (imp j k) ↔ (HoldsT j → HoldsT k)) :
     imp j k = 0 := by
@@ -61,7 +48,6 @@ theorem sync_residual_of_ne_zero (imp : ℝ → ℝ → ℝ) {j k : ℝ} (hj : j
     exact (hj hj0).elim
   simpa [HoldsT] using hT
 
-/-- Remembering the consequent at balance fixes the synchrony residual. -/
 theorem syncImp_unique (imp : ℝ → ℝ → ℝ)
     (hiff : ∀ j k : ℝ, HoldsT (imp j k) ↔ (HoldsT j → HoldsT k))
     (hnorm : ∀ k : ℝ, imp 0 k = k) :
@@ -73,7 +59,6 @@ theorem syncImp_unique (imp : ℝ → ℝ → ℝ)
   · have h0 : imp j k = 0 := sync_residual_of_ne_zero imp hj (hiff j k)
     simpa [syncImp, hj] using h0
 
-/-- The non-refutation residual tracks the non-refutation conditional. -/
 theorem nonrefImp_holdsNotF_iff {j k : ℝ} (hj : |j| ≤ 1) (hk : |k| ≤ 1) :
     HoldsNotF (nonrefImp j k) ↔ (HoldsNotF j → HoldsNotF k) := by
   classical
@@ -88,7 +73,6 @@ theorem nonrefImp_holdsNotF_iff {j k : ℝ} (hj : |j| ≤ 1) (hk : |k| ≤ 1) :
     · have hklt : k < 1 := lt_of_le_of_ne (abs_le.mp hk).2 hk1
       simp [hj1, hk1, hklt]
 
-/-- On the failure set, every non-refutation residual sits on the positive wall. -/
 theorem nonref_residual_on_failure (imp : ℝ → ℝ → ℝ) {j k : ℝ}
     (hj : |j| ≤ 1)
     (hmem : |imp j k| ≤ 1)
@@ -106,8 +90,6 @@ theorem nonref_residual_on_failure (imp : ℝ → ℝ → ℝ) {j k : ℝ}
   rw [holdsNotF_iff_ne_one hmem] at hnot
   exact Classical.not_not.mp hnot
 
-/-- Balance on a refuted antecedent, and the consequent off the failure set,
-fix the non-refutation residual. -/
 theorem nonrefImp_unique (imp : ℝ → ℝ → ℝ)
     (hmem : ∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 → |imp j k| ≤ 1)
     (hiff : ∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 →
@@ -126,7 +108,6 @@ theorem nonrefImp_unique (imp : ℝ → ℝ → ℝ)
       simpa [nonrefImp, hj1, hk1] using h1
     · simpa [nonrefImp, hj1, hk1] using hpass j k hj hk hj1 hk1
 
-/-- Synchrony places the value at balance; non-refutation places it on the wall. -/
 theorem residual_demands_collide (imp : ℝ → ℝ → ℝ)
     (hmem : |imp (1 / 2 : ℝ) 1| ≤ 1)
     (hT : HoldsT (imp (1 / 2 : ℝ) 1) ↔
@@ -137,7 +118,6 @@ theorem residual_demands_collide (imp : ℝ → ℝ → ℝ)
   refine ⟨sync_residual_of_ne_zero imp (by norm_num) hT, ?_⟩
   exact nonref_residual_on_failure imp (by norm_num) hmem hN ⟨by norm_num, rfl⟩
 
-/-- No operation on the height residuates both designated predicates. -/
 theorem no_common_residual :
     ¬ ∃ imp : ℝ → ℝ → ℝ,
       (∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 → |imp j k| ≤ 1) ∧
@@ -151,25 +131,19 @@ theorem no_common_residual :
     (hiff _ _ (by norm_num) (by norm_num)).2
   exact zero_ne_one (hpair.1.symm.trans hpair.2)
 
-/-- Normalised residuals at a boost-dominant height implying the wall. -/
 theorem sync_nonref_at_open_wall :
     syncImp (1 / 2 : ℝ) 1 = 0 ∧ nonrefImp (1 / 2 : ℝ) 1 = 1 :=
   ⟨syncImp_of_ne_zero (by norm_num), nonrefImp_of_failure (by norm_num) rfl⟩
 
-/-- Both residuals designate a boost-dominant height implying synchrony. -/
 theorem sync_nonref_agree_open_to_balance :
     syncImp (1 / 2 : ℝ) 0 = 0 ∧ nonrefImp (1 / 2 : ℝ) 0 = 0 :=
   ⟨syncImp_of_ne_zero (by norm_num),
     nonrefImp_of_pass (by norm_num) (by norm_num)⟩
 
-/-- The Gödel residuum refutes a rotation-dominant height implying synchrony.
-The non-refutation residual designates it. -/
 theorem residuum_refutes_B_T_nonref_designates :
     residuumJ (-1 / 2 : ℝ) 0 = 1 ∧ nonrefImp (-1 / 2 : ℝ) 0 = 0 :=
   ⟨residuumJ_B_T, nonrefImp_of_pass (by norm_num) (by norm_num)⟩
 
-/-- The normalised residuals agree exactly at balance, at the positive wall,
-and on a synchronous consequent. -/
 theorem syncImp_eq_nonrefImp_iff (j k : ℝ) :
     syncImp j k = nonrefImp j k ↔ j = 0 ∨ j = 1 ∨ k = 0 := by
   classical
