@@ -9,44 +9,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Clifford parallels on the three-sphere
 
-The three-sphere carries two global framings. Left translation along a pure
-unit imaginary draws a great circle whose relative rotor depends only on the
-parameter increment. Right translation draws another, with the same increment
-standing on the left. Conjugation swaps the two families and reverses the
-parameter, so the two parallelisms are mirrors.
-
-At the identity the frames agree. At geodesic angle `φ` along `I`, the right
-frame's `J` direction is the left frame's `cos(2φ) J - sin(2φ) K`. The frames
-therefore differ by `2φ`. That double angle is the twist the twistor
-correspondence reads in the Hopf fibration. No twistor space is constructed.
-
-On a sphere of radius `ρ` the same mismatch at physical distance `s` is
-`2s/ρ`. The gravitational channel reads it on the galactic radius `R`, the
-electromagnetic channel on `Λ`. The ratio of the two mismatches is `Λ/R`, and
-their difference is `2s(Λ-R)/(RΛ)`.
-
-## Hubble reading (external)
-
-Reading `Λ` as the Hubble length `c/H₀`, with `H₀` in km s⁻¹ Mpc⁻¹, gives
-`Λ` in kiloparsecs as `c/H₀` once `c` is the SI metre-per-second value: one
-megaparsec is a thousand kiloparsecs, and the kilometres in `c` cancel the
-kilometres in `H₀`. For `8 ≤ R ≤ 9` and `67 ≤ H₀ ≤ 74` the edge mismatch of
-the electromagnetic frame lies strictly between `3.57×10⁻⁶` and `4.45×10⁻⁶`,
-while the gravitational mismatch is `2`. The gravitational mismatch exceeds
-the electromagnetic one by a factor strictly between `450138` and `559315`.
-That factor is `Λ/R`, so the ratio of the patch radius to the Hubble length
-lies strictly between `1.787×10⁻⁶` and `2.222×10⁻⁶`.
-
-`H₀` is an input, as `a₀` is. No theorem asserts `dst_derives_lambda`.
-
-A rotation `p ↦ a p b` carries each family onto itself. The right factor
-conjugates the axis of a left line, and the left factor conjugates the axis
-of a right line. Conjugation of a point, already recorded, is what exchanges
-the families. Through `J`, a quarter turn of the left family ends at `-K` and
-a quarter turn of the right family ends at `K`. On `(0, π/2)` the `K`
-component of the frame is `-sin(2φ)` for the family written above and
-`+sin(2φ)` for the reversed geodesic. The two screws are strict and opposite.
-No theorem names which family the universe carries.
+Left and right translations draw mirror families of Clifford parallels, and
+the frames differ by twice the geodesic angle. Reading \(\Lambda\) as the
+Hubble length takes \(H_0\) as an input; no theorem asserts
+`dst_derives_lambda`, and none names which family the universe carries.
 -/
 
 namespace DstDiophantine.Gravity.CliffordParallel
@@ -124,8 +90,6 @@ theorem leftParallel_zero (q : S3) : leftParallel q 0 = q := by
 theorem rightParallel_zero (q : S3) : rightParallel q 0 = q := by
   simp [rightParallel, hopfI_zero]
 
-/-- Along a left parallel the displacement rotor is `hopfI s` at every base
-point and every instant. -/
 theorem leftParallel_step (q : S3) (t s : ℝ) :
     (leftParallel q t)⁻¹ * leftParallel q (t + s) = hopfI s := by
   unfold leftParallel
@@ -143,7 +107,6 @@ theorem leftParallel_step (q : S3) (t s : ℝ) :
       congr 1
       ring
 
-/-- Along a right parallel the same displacement stands on the left. -/
 theorem rightParallel_step (q : S3) (t s : ℝ) :
     rightParallel q (t + s) * (rightParallel q t)⁻¹ = hopfI s := by
   unfold rightParallel
@@ -161,8 +124,6 @@ theorem rightParallel_step (q : S3) (t s : ℝ) :
       congr 1
       ring
 
-/-- Conjugation sends a left parallel to the right parallel of the conjugate
-point and reverses the parameter. The two families are mirrors. -/
 theorem mirror_parallel (q : S3) (t : ℝ) :
     (leftParallel q t)⁻¹ = rightParallel q⁻¹ (-t) := by
   unfold leftParallel rightParallel
@@ -184,8 +145,6 @@ theorem parallel_dir_ne_zero (q : S3) {u : ℍ} (hu : u ≠ 0) : q.val * u ≠ 0
 theorem left_dir_ne_zero (q : S3) : q.val * qI ≠ 0 :=
   parallel_dir_ne_zero q qI_ne_zero
 
-/-- Pulling a pair of directions back by left translation recovers their
-inner product at the identity. -/
 theorem left_inner (q : S3) (u v : ℍ) :
     (star (q.val * u) * (q.val * v)).re = (star u * v).re := by
   rw [star_mul, mul_assoc, ← mul_assoc (star q.val) q.val v, star_mul_self, q.norm_one,
@@ -220,7 +179,6 @@ theorem left_frame_orthonormal (q : S3) :
   · rw [left_inner, qI_qK_orthogonal]
   · rw [left_inner, qJ_qK_orthogonal]
 
-/-- Right frame, the mirror of the left frame: conjugation swaps the order. -/
 theorem star_left_dir (q : S3) (u : ℍ) :
     star (q.val * u) = star u * star q.val :=
   star_mul q.val u
@@ -258,20 +216,15 @@ theorem twist_cosine (φ : ℝ) :
     (star qJ * twistedJ φ).re = Real.cos (2 * φ) := by
   simp [qJ, twistedJ]
 
-/-- On `[0, π/2]` the unsigned angle between the two `J` directions is `2φ`. -/
 theorem twist_angle {φ : ℝ} (h0 : 0 ≤ φ) (hπ : φ ≤ Real.pi / 2) :
     Real.arccos ((star qJ * twistedJ φ).re) = 2 * φ := by
   rw [twist_cosine, Real.arccos_cos (by linarith) (by linarith [Real.pi_pos])]
 
-/-- Reversing the geodesic angle reverses the sense of the twist and keeps
-the cosine. -/
 theorem mirror_twist_sense (φ : ℝ) :
     (twistedJ (-φ)).imJ = (twistedJ φ).imJ ∧
       (twistedJ (-φ)).imK = -((twistedJ φ).imK) := by
   simp [twistedJ, Real.cos_neg, Real.sin_neg]
 
-/-- A rotation carries a left parallel to a left parallel. The right factor
-conjugates the step and does not move it onto the left. -/
 theorem rotation_carries_left (a b q : S3) (t : ℝ) :
     a * leftParallel q t * b = (a * q * b) * (b⁻¹ * hopfI t * b) := by
   unfold leftParallel
@@ -284,8 +237,6 @@ theorem rotation_carries_left (a b q : S3) (t : ℝ) :
     rw [← mul_assoc (a * q) b (b⁻¹ * (hopfI t * b))]
     rw [← mul_assoc b⁻¹ (hopfI t) b]
 
-/-- A rotation carries a right parallel to a right parallel. The left factor
-conjugates the step and does not move it onto the right. -/
 theorem rotation_carries_right (a b q : S3) (t : ℝ) :
     a * rightParallel q t * b = (a * hopfI t * a⁻¹) * (a * q * b) := by
   unfold rightParallel
@@ -306,8 +257,6 @@ def sJ : S3 where
 theorem hopfI_quarter : (hopfI (Real.pi / 2)).val = qI := by
   simp [hopfI, qI, Real.cos_pi_div_two, Real.sin_pi_div_two]
 
-/-- Through `J`, a quarter turn of the left family ends at `-K` and a quarter
-turn of the right family ends at `K`. -/
 theorem family_sense :
     (leftParallel sJ (Real.pi / 2)).val = -qK ∧
       (rightParallel sJ (Real.pi / 2)).val = qK ∧
@@ -327,7 +276,6 @@ theorem family_sense :
   simp [qK] at him
   linarith
 
-/-- On `(0, π/2)` the two screws are strict and opposite. -/
 theorem screw_sign {φ : ℝ} (h0 : 0 < φ) (hπ : φ < Real.pi / 2) :
     (twistedJ φ).imK = -Real.sin (2 * φ) ∧
       (twistedJ (-φ)).imK = Real.sin (2 * φ) ∧
@@ -360,8 +308,7 @@ theorem frames_differ_at_quarter :
 
 /-! ### The two channels -/
 
-/-- Mirror mismatch at physical distance `s` on a three-sphere of radius `ρ`.
-Twice the geodesic angle `s/ρ`. -/
+/-- Mirror mismatch at physical distance `s` on a three-sphere of radius `ρ`. Twice the geodesic angle `s/ρ`. -/
 noncomputable def mirrorTwist (s ρ : ℝ) : ℝ :=
   2 * s / ρ
 
@@ -385,10 +332,6 @@ theorem speedOfLight_coe : (SI.speedOfLight : ℝ) = 299792458 := by
   unfold SI.speedOfLight SI.speedOfLightNat
   norm_num
 
-/-- For a galactic radius in kiloparsecs between `8` and `9`, and a Hubble
-parameter between `67` and `74` km s⁻¹ Mpc⁻¹, the electromagnetic mirror
-mismatch at the patch edge lies in `(3.57×10⁻⁶, 4.45×10⁻⁶)`, and the
-gravitational mismatch `2` exceeds it by a factor in `(450138, 559315)`. -/
 theorem hubble_frame_window {R H : ℝ}
     (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
     (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
@@ -430,8 +373,7 @@ theorem hubble_frame_window {R H : ℝ}
       exact div_le_div_of_nonneg_right hnum (by norm_num)
     exact lt_of_le_of_lt hcomp hceil
 
-/-- The ratio of the galactic patch radius to the Hubble length `c/H₀`, in the
-same external window. It is the reciprocal of the frame-mismatch factor. -/
+/-- Reciprocal of the frame-mismatch factor; `H₀` is an input. -/
 theorem hubble_patch_ratio {R H : ℝ}
     (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
     (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :

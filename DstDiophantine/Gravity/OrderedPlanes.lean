@@ -9,25 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Order of a noncommuting boost and rotation
 
-The `(t,x)` boost and the `(x,y)` rotation do not commute. Let the rapidity
-`φ` depend only on `y`, with derivative `u`, and the angle `θ` only on `t`,
-with derivative `v`. Both orders of the product coframe induce the Minkowski
-metric. The teleparallel scalar keeps the order.
-
-* Boost on the left: `T = -2 u v cos θ`.
-* Rotation on the left: `T = -2 u v cosh φ`.
-
-At vanishing rapidity and angle both equal `-2 u v`. For `u v ≠ 0` they agree
-if and only if `φ = 0` and `cos θ = 1`. When `u v > 0`, the rotation-on-the-left
-scalar is negative at every rapidity and every angle, the sign of the
-attractive vacuum. The boost-on-the-left scalar has that sign exactly when
-`cos θ > 0`.
-
-## Not claimed
-
-* Profiles in which either parameter depends on a coordinate other than the
-  one named above.
-* That the sign of this `T` is the sign of the mismatch `J`.
+Profiles in which a parameter depends on another coordinate are not derived, and the sign of this `T` is not identified with the sign of `J`.
 -/
 
 namespace DstDiophantine
@@ -124,7 +106,6 @@ noncomputable def boostLeftKθ (φ θ : ℝ) (ρ ν : Fin 4) : ℝ :=
   ∑ a : Fin 4, boostLeftFrame φ θ ρ a * boostLeftDθ φ θ a ν
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem boostLeftKφ_support (φ θ : ℝ) (ρ ν : Fin 4) :
     boostLeftKφ φ θ ρ ν =
       if ρ = 0 ∧ ν = 1 then Real.cos θ
@@ -141,7 +122,6 @@ theorem boostLeftKφ_support (φ θ : ℝ) (ρ ν : Fin 4) :
   all_goals ring
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem boostLeftKθ_support (φ θ : ℝ) (ρ ν : Fin 4) :
     boostLeftKθ φ θ ρ ν =
       if ρ = 1 ∧ ν = 2 then 1
@@ -176,7 +156,6 @@ noncomputable def boostLeftTorsion (φ θ u v : ℝ) (ρ μ ν : Fin 4) : ℝ :=
     (profileJetT v μ * boostLeftKθ φ θ ρ ν - profileJetT v ν * boostLeftKθ φ θ ρ μ)
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem boostLeftTorsion_support (φ θ u v : ℝ) (ρ μ ν : Fin 4) :
     boostLeftTorsion φ θ u v ρ μ ν = boostLeftTorsionVal θ u v ρ μ ν := by
   fin_cases ρ <;> fin_cases μ <;> fin_cases ν <;>
@@ -200,7 +179,6 @@ noncomputable def boostLeftTeleparallel (φ θ u v : ℝ) : ℝ :=
     ∑ ρ : Fin 4, boostLeftTrace φ θ u v ρ * (w31 ρ * boostLeftTrace φ θ u v ρ)
 
 set_option maxHeartbeats 2000000 in
--- The teleparallel sum expands to sixty-four monomials before `field_simp`.
 theorem boostLeftTeleparallel_eq (φ θ u v : ℝ) :
     boostLeftTeleparallel φ θ u v = -2 * u * v * Real.cos θ := by
   simp only [boostLeftTeleparallel, boostLeftDown, boostLeftUp, boostLeftTrace,
@@ -285,7 +263,6 @@ noncomputable def rotLeftKθ (φ θ : ℝ) (ρ ν : Fin 4) : ℝ :=
   ∑ a : Fin 4, rotLeftFrame φ θ ρ a * rotLeftDθ φ θ a ν
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem rotLeftKφ_support (φ θ : ℝ) (ρ ν : Fin 4) :
     rotLeftKφ φ θ ρ ν =
       if ρ = 0 ∧ ν = 1 then 1
@@ -303,7 +280,6 @@ theorem rotLeftKφ_support (φ θ : ℝ) (ρ ν : Fin 4) :
   all_goals ring
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem rotLeftKθ_support (φ θ : ℝ) (ρ ν : Fin 4) :
     rotLeftKθ φ θ ρ ν =
       if ρ = 0 ∧ ν = 2 then -Real.sinh φ
@@ -336,7 +312,6 @@ noncomputable def rotLeftTorsion (φ θ u v : ℝ) (ρ μ ν : Fin 4) : ℝ :=
     (profileJetT v μ * rotLeftKθ φ θ ρ ν - profileJetT v ν * rotLeftKθ φ θ ρ μ)
 
 set_option maxHeartbeats 800000 in
--- Sixteen index cases, each a four-term sum.
 theorem rotLeftTorsion_support (φ θ u v : ℝ) (ρ μ ν : Fin 4) :
     rotLeftTorsion φ θ u v ρ μ ν = rotLeftTorsionVal φ u v ρ μ ν := by
   fin_cases ρ <;> fin_cases μ <;> fin_cases ν <;>
@@ -360,7 +335,6 @@ noncomputable def rotLeftTeleparallel (φ θ u v : ℝ) : ℝ :=
     ∑ ρ : Fin 4, rotLeftTrace φ θ u v ρ * (w31 ρ * rotLeftTrace φ θ u v ρ)
 
 set_option maxHeartbeats 2000000 in
--- The teleparallel sum expands to sixty-four monomials before `field_simp`.
 theorem rotLeftTeleparallel_eq (φ θ u v : ℝ) :
     rotLeftTeleparallel φ θ u v = -2 * u * v * Real.cosh φ := by
   simp only [rotLeftTeleparallel, rotLeftDown, rotLeftUp, rotLeftTrace,
@@ -393,8 +367,6 @@ theorem cos_eq_cosh_iff (θ φ : ℝ) :
   · rintro ⟨hφ, hθ⟩
     rw [hφ, hθ, Real.cosh_zero]
 
-/-- For a nonzero product of derivatives, the two orders agree only at a
-vanishing boost whose rotation has cosine one. -/
 theorem ordered_agree_iff (φ θ u v : ℝ) (huv : u * v ≠ 0) :
     boostLeftTeleparallel φ θ u v = rotLeftTeleparallel φ θ u v ↔
       φ = 0 ∧ Real.cos θ = 1 := by

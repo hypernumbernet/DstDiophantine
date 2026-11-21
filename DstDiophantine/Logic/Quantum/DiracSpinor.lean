@@ -6,12 +6,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
-# Dirac spinor \(\mathbb{C}^4\) as a matrix representation of \(\mathrm{Cl}(3,1)\)
+# Dirac spinor as a matrix representation of `Cl(3,1)`
 
-Signature \((-,+,+,+)\). The four gamma matrices act on `DiracSpinor ≃ ℂ⁴`.
-This is a representation of the Clifford relations already proved in
-`Logic.Quantum.Dirac`; it is **not** the dual-sector Hilbert space
-`DualSpinor ≃ ℂ²`, and it is not a Dirac equation.
+The gamma matrices act on `ℂ⁴`. This is not the dual-sector space `ℂ²`, and it is not a Dirac equation.
 -/
 
 namespace DstDiophantine
@@ -124,7 +121,6 @@ private theorem diag_two_one (A : Matrix (Fin 4) (Fin 4) ℂ) (h : A * A = 1) {�
   simp [Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply]
   split_ifs <;> ring
 
-/-- Matrix Clifford relation \(\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}I\). -/
 theorem diracMat_clifford (μ ν : Fin 4) :
     diracMat μ * diracMat ν + diracMat ν * diracMat μ =
       (2 * minkowskiEta μ ν : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
@@ -161,7 +157,6 @@ theorem dualSpinor_ne_diracSpinor :
 def weylUpper (ψ : DualSpinor) : DiracSpinor :=
   WithLp.toLp 2 ![WithLp.ofLp ψ 0, WithLp.ofLp ψ 1, 0, 0]
 
-/-- Lower Weyl block. -/
 def weylLower (ψ : DualSpinor) : DiracSpinor :=
   WithLp.toLp 2 ![0, 0, WithLp.ofLp ψ 0, WithLp.ofLp ψ 1]
 
@@ -181,7 +176,6 @@ theorem weylLower_injective : Function.Injective weylLower := by
   · simpa [weylLower] using congrFun hvec 2
   · simpa [weylLower] using congrFun hvec 3
 
-/-- The two Weyl embeddings land in complementary coordinate subspaces. -/
 theorem weylUpper_add_lower (ψ φ : DualSpinor) :
     weylUpper ψ + weylLower φ =
       WithLp.toLp 2 ![WithLp.ofLp ψ 0, WithLp.ofLp ψ 1,
@@ -189,15 +183,12 @@ theorem weylUpper_add_lower (ψ φ : DualSpinor) :
   ext i
   fin_cases i <;> simp [weylUpper, weylLower, PiLp.add_apply]
 
-/-- Upper Weyl block of a Dirac spinor. -/
 def diracUpper (Ψ : DiracSpinor) : DualSpinor :=
   WithLp.toLp 2 ![WithLp.ofLp Ψ 0, WithLp.ofLp Ψ 1]
 
-/-- Lower Weyl block of a Dirac spinor. -/
 def diracLower (Ψ : DiracSpinor) : DualSpinor :=
   WithLp.toLp 2 ![WithLp.ofLp Ψ 2, WithLp.ofLp Ψ 3]
 
-/-- Every Dirac spinor is the sum of its upper and lower Weyl blocks. -/
 theorem weyl_decompose (Ψ : DiracSpinor) :
     weylUpper (diracUpper Ψ) + weylLower (diracLower Ψ) = Ψ := by
   rw [weylUpper_add_lower]
@@ -296,7 +287,6 @@ theorem weylUpper_zero : weylUpper (0 : DualSpinor) = 0 := by
 theorem weylLower_zero : weylLower (0 : DualSpinor) = 0 := by
   simpa using weylLower_smul 0 (0 : DualSpinor)
 
-/-- A Dirac spinor determines its two Weyl blocks. -/
 theorem weyl_pair_injective {u l u' l' : DualSpinor}
     (h : weylUpper u + weylLower l = weylUpper u' + weylLower l') :
     u = u' ∧ l = l' := by
@@ -306,7 +296,6 @@ theorem weyl_pair_injective {u l u' l' : DualSpinor}
     diracLower_weylUpper, diracLower_weylLower, add_zero, zero_add] at hu hl
   exact ⟨hu, hl⟩
 
-/-- Upper and lower Weyl images meet only at zero. -/
 theorem weylUpper_eq_lower_implies_zero {ψ φ : DualSpinor}
     (h : weylUpper ψ = weylLower φ) : ψ = 0 ∧ φ = 0 := by
   have h0 : (weylUpper ψ) 0 = (weylLower φ) 0 := congrArg (fun v => v 0) h
@@ -394,7 +383,6 @@ theorem diracSpinor_inner_eq (χ ψ : DiracSpinor) :
   simp [inner, Fin.sum_univ_four]
   ring
 
-/-- The adjoint of `applyDiracMat M` is `applyDiracMat Mᴴ`. -/
 theorem applyDiracMat_inner_ct (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ Φ : DiracSpinor) :
     inner ℂ Ψ (applyDiracMat M Φ) = inner ℂ (applyDiracMat Mᴴ Ψ) Φ := by
   simp only [applyDiracMat, PiLp.inner_apply, Matrix.mulVec, dotProduct, Fin.sum_univ_four,
@@ -427,12 +415,10 @@ theorem diracLower_blockDiag2 (P Q : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpin
     simp [blockDiag2, applyDiracMat, applyMat, diracLower, Matrix.mulVec, dotProduct,
       Fin.sum_univ_four, Fin.sum_univ_two]
 
-/-- Chirality matrix \(\gamma^5=-i\gamma^0\gamma^1\gamma^2\gamma^3\),
-so that this Weyl representation has \(\gamma^5=\mathrm{diag}(1,1,-1,-1)\). -/
+/-- `γ⁵ = -iγ⁰γ¹γ²γ³ = diag(1, 1, -1, -1)`. -/
 def diracMat5 : Matrix (Fin 4) (Fin 4) ℂ :=
   (-I) • (diracMat0 * diracMat1 * diracMat2 * diracMat3)
 
-/-- In this Weyl representation, \(\gamma^5=\mathrm{diag}(1,1,-1,-1)\). -/
 theorem diracMat5_eq :
     diracMat5 = !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, -1, 0; 0, 0, 0, -1] := by
   unfold diracMat5 diracMat0 diracMat1 diracMat2 diracMat3
@@ -507,14 +493,12 @@ theorem weylProjPlus_mul_minus : weylProjPlus * weylProjMinus = 0 := by
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.mul_apply, Fin.sum_univ_four]
 
-/-- Upper Weyl image is the \(+1\) eigenspace of \(\gamma^5\). -/
 theorem applyDiracMat5_weylUpper (ψ : DualSpinor) :
     applyDiracMat diracMat5 (weylUpper ψ) = weylUpper ψ := by
   rw [diracMat5_eq]
   ext i
   fin_cases i <;> simp [applyDiracMat, weylUpper]
 
-/-- Lower Weyl image is the \(-1\) eigenspace of \(\gamma^5\). -/
 theorem applyDiracMat5_weylLower (ψ : DualSpinor) :
     applyDiracMat diracMat5 (weylLower ψ) = -weylLower ψ := by
   rw [diracMat5_eq]
@@ -546,7 +530,6 @@ theorem applyWeylProjMinus_weylUpper (ψ : DualSpinor) :
   ext i
   fin_cases i <;> simp [applyDiracMat, weylUpper]
 
-/-- Real dimension of the Dirac spinor matches the commuting left ideal. -/
 theorem diracSpinor_finrank_real : Module.finrank ℝ DiracSpinor = 8 := by
   have h := Module.finrank_mul_finrank ℝ ℂ DiracSpinor
   have hℂ : Module.finrank ℝ ℂ = 2 := Complex.finrank_real_complex

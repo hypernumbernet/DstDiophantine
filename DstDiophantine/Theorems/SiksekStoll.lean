@@ -5,18 +5,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
-# Signature `(3,4,5)` (phase 7w)
+# Signature `(3,4,5)` via Siksek–Stoll
 
-mathlib (v4.34) does not contain Siksek–Stoll's determination of the primitive
-integer solutions of `x³ + y⁴ + z⁵ = 0`. We take that statement as an `axiom`
-(same contract as `darmonMerelCube`) and close every ordering of the Beal
-signature `(3,4,5)`.
-
-The only primitive solutions have a vanishing coordinate. A Beal solution has
-three nonzero bases, so the signature is empty in the coprime range. The
-exponent `4` is even and the exponents `3` and `5` are odd, so each ordering
-rewrites to the same equation by moving one term and absorbing the sign of an
-odd power into its base. Classical Beal is **not** claimed unconditionally.
+`siksekStoll345` assumes a primitive `x³ + y⁴ + z⁵ = 0` has a vanishing coordinate. It is an axiom, not a Lean proof of Siksek–Stoll, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -36,15 +27,7 @@ instance {x y z : ℕ} : Decidable (IsSignature345 x y z) := by
   unfold IsSignature345
   infer_instance
 
-/--
-Siksek–Stoll (2012): the only integer solutions of `x³ + y⁴ + z⁵ = 0` with
-`gcd(|x|,|y|,|z|) = 1` have a vanishing coordinate.
-
-Not present in mathlib at the pin used by this project; recorded explicitly as
-an axiom rather than smuggled into a `sorry`. This is **not** a Lean proof of
-Siksek–Stoll. The classical list of primitive solutions is contained in this
-vanishing statement, which is all the Beal application uses.
--/
+/-- Primitive `x³ + y⁴ + z⁵ = 0` has a zero coordinate. An axiom, not a proof. -/
 axiom siksekStoll345 :
     ∀ x y z : ℤ,
       Nat.gcd x.natAbs (Nat.gcd y.natAbs z.natAbs) = 1 →
@@ -63,9 +46,6 @@ private theorem bealGcd_abs_perm (A B C : ℤ) :
   refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;>
     simp [bealGcd, Nat.gcd_comm, Nat.gcd_left_comm]
 
-/--
-Phase 7w: no coprime nonzero Beal solution of signature `(3,4,5)`, in any order.
--/
 theorem not_beal_signature_345
     {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)

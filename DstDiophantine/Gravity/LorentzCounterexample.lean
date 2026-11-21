@@ -7,11 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # A local Lorentz 1-jet whose teleparallel scalar does not vanish
 
-Preserving the Minkowski metric is the definition of a Lorentz matrix. The
-teleparallel scalar of a single generator vanishes for every jet, but two
-generators with independent jets need not. At the identity,
-`exp(y K_{tx}) exp(t K_{xy})` has `∂_y` along the boost and `∂_t` along the
-rotation, and the teleparallel scalar of that 1-jet is `-2`.
+Two Minkowski-antisymmetric generators with independent jets need not have vanishing teleparallel scalar. At the identity, `exp(y K_{tx}) exp(t K_{xy})` has teleparallel scalar `-2`.
 -/
 
 namespace DstDiophantine
@@ -20,7 +16,6 @@ namespace Gravity
 
 open Finset PlaneTorsion
 
-/-- `Λᵀ η Λ = η` forces the induced metric to be Minkowski. -/
 theorem inducedMetric_of_lorentz (Λ : Coframe)
     (h : ∀ μ ν, ∑ a : Fin 4, w31 a * Λ a μ * Λ a ν = if μ = ν then w31 μ else 0)
     (μ ν : Fin 4) :
@@ -106,9 +101,7 @@ theorem mixedTeleparallel_eq : mixedTeleparallel = -2 := by
   rw [mixedTeleparallel, mixedSquare_eq, mixedCross_eq, mixedTraceContr_eq]
   norm_num
 
-/-- Two Minkowski-antisymmetric generators, with independent jets, can produce
-a nonzero teleparallel scalar. An arbitrary local Lorentz transformation is
-therefore not claimed to kill `T`. -/
+/-- An arbitrary local Lorentz transformation is not claimed to kill `T`. -/
 theorem localLorentz_teleparallel_not_always_zero :
     MinkowskiAntisym txGen ∧ MinkowskiAntisym xyGen ∧ mixedTeleparallel = -2 :=
   ⟨txGen_antisym, xyGen_antisym, mixedTeleparallel_eq⟩

@@ -12,57 +12,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Identification of `J` / `J⁵` with the teleparallel scalar
 
-## Dictionary
-
-| Symbol | Object | Role |
-|--------|--------|------|
-| `J(φ) = ½ φ²` | finite boost angle | parameter-space diagnostic |
-| `J5 = J + ½ η_μν λ^μ λ^ν` | Lean / discrete-companion | torsion + translation diagnostic |
-| `J_field = ½ (φ')²` | field seed from `∂_r φ` | same dimension class as `T` |
-| `T` | Weitzenböck scalar | TEGR Lagrangian density |
-
-Lean `J` is `½∑(α²−β²)`, four times `(1/16) B(Ω,Ω)` under the half-angle
-expansion. `J5` adds the Minkowski translation term to that scalar.
-
-**Quantity-class note.** Algebraic `J` / `JNormalized` are dimensionless
-parameter-space diagnostics. They must **not** be identified with the
-dimensionful Planck curvature scale \(c^4/(G\,\ell_P^{-2})\), nor with the
-TEGR Lagrangian density \(T\). Exploratory SI bridging lives in
-`Gravity.SI` / `Gravity.NewtonFromLight` and does **not** claim that DST
-derives \(G\) from \(c\). The labelled quasi-horizon cutoff
-(`Gravity.EventBoundary`) likewise does not derive \(G\).
-Electromagnetic stand-ins and hypotheses live in `Gravity.CoulombFromDual`
-(\(\alpha\leftrightarrow\varepsilon_N\)) and `Gravity.ElectronShell`
-(\(\gamma_s\), equal-scale \(\Theta(1/n)\) diagnostic); neither derives
-\(\alpha\) or \(\lambda\) from the dual-rotor algebra.
-Galactic S³ exploratory quantities live in `Gravity.CompactS3`
-(cotangent potential, \(\eta\), \(f_0\), Tully–Fisher algebra, Milky Way
-\(R\) windows). The MOND scale \(a_0\) is an **external** observational
-input in `Gravity.SI`; it must **not** be identified with the dimensionless
-Jacobian \(\mathcal{J}=1/\eta\) or with algebraic \(J\).
-Nuclear-scale exploratory diagnostics live in `Gravity.NuclearLayer`
-(Compton windows, equal-scale layer ratios, saturation \(\rho_0\), BE/\(A\)
-vs optical well depth, \(\alpha_G\)); no theorem asserts
-`dst_derives_alpha_s` / `dst_derives_lambdaN` / `dst_derives_Amax`.
-QCD \(\alpha_s\) is not paired with `epsN`.
-
-## Proved / rejected
-
-* `J(φ) = ½ φ²`. The auxiliary `(2/r²)(1-√A)²/√A` is the divergence of
-  `B^r = 4(1-√A)/r`. The teleparallel quadratic is a different quantity,
-  `-2/r²` on the exterior vacuum, the divergence of `B^r = 2/r`.
-* Boost leg: `∂_r √A = - φ' · √A`.
-* **Rejected:** finite-angle `J = ½ T`; parametric `J5 = ½ T` on flat space;
-  `J_field = ½` times the auxiliary on Schwarzschild (concrete point). At
-  `(rₛ,r)=(2,4)` the field seed is `1/128` and half the frozen quadratic
-  `-2/r²` is `-1/16`.
-* On the radial pure-boost gauge the auxiliary expression
-  `(2/r²)(1-√A)²/√A` is not the teleparallel quadratic. `Gravity.RadialQuadratic`
-  evaluates the quadratic as `-2(A + r A')/r²`, hence `-2/r²` on the exterior
-  vacuum, while `J = ½ φ²` stays positive.
-* `Gravity.LorentzGauge`: an inertial-plane boost of any rapidity profile has
-  Minkowski metric and vanishing teleparallel scalar, so no pointwise map
-  sends `J` to `T` on every tetrad. A dictionary for a general motor remains open.
+Algebraic `J` is a dimensionless parameter diagnostic and is not the TEGR density `T` or the Planck curvature scale. No theorem derives `G` from `c`, and `a₀` is an external input not identified with algebraic `J`.
 -/
 
 namespace DstDiophantine
@@ -81,7 +31,7 @@ structure SchwarzschildIdentification (rs r : ℝ) : Prop where
   /-- Parameter diagnostic (finite angle), not the field density. -/
   J_param :
     J (radialBoostParams rs r) = (1 / 2) * (schwarzschildRapidity rs r) ^ 2
-  /-- Teleparallel scalar as a radial divergence. -/
+  /-- Auxiliary radial expression, not the teleparallel quadratic. -/
   T_eq_div :
     schwarzschildTeleparallelT rs r =
       -(1 / r ^ 2) * formal_d_r2B_dr rs r
@@ -101,7 +51,6 @@ theorem schwarzschildIdentification_of_exterior {rs r : ℝ}
   J_field_coef' := J_field_coef h
   scales := boost_eigenvalues_eq_schwarzschild_scales h.1 h.2
 
-/-- On the diagonal gauge the translational sector vanishes, so `J⁵ = J`. -/
 theorem J5_eq_J_of_radialBoost (rs r : ℝ) :
     J5 ⟨radialBoostParams rs r, ⟨fun _ => 0⟩⟩ = J (radialBoostParams rs r) := by
   simp [J5, minkowskiDot]
@@ -117,9 +66,7 @@ theorem J5_and_T_on_schwarzschild_slice {rs r : ℝ} (h : IsExterior rs r) :
 
 /-! ### Rejection of naive point identification -/
 
-/-- Constant nonzero boost: parameter `J ≠ 0`. The auxiliary chart expression at
-`rₛ = 0` vanishes; the Cartesian inertial quadratic vanishes for a different
-reason (`Gravity.LorentzGauge`). -/
+/-- Constant nonzero boost: parameter `J ≠ 0`, while the auxiliary expression at `rₛ = 0` vanishes. -/
 theorem constant_boost_J_ne_zero_flat_T_zero (φ : ℝ) (hφ : φ ≠ 0) :
     J (Amplification.pureBoost φ) ≠ 0 ∧
       schwarzschildTeleparallelT 0 1 = 0 := by
@@ -153,10 +100,7 @@ theorem naive_parametric_J5_eq_half_flat_T_false :
     (minkowski_T_and_J_field_zero (by norm_num : (0 : ℝ) < 1)).1
   simpa [hT] using hJ5
 
-/-- Algebraic counterexample at `rₛ = 2`, `r = 4`: `J_field` is not half the
-auxiliary expression `(2/r²)(1-√A)²/√A`. That expression is not the
-teleparallel quadratic. The frozen quadratic is compared in
-`J_field_ne_half_frozen_T_two_four`. -/
+/-- At `rₛ = 2`, `r = 4`, `J_field` is not half the auxiliary expression, which is not the teleparallel quadratic. -/
 theorem J_field_ne_half_T_schwarzschild_point :
     J_field 2 4 ≠ (1 / 2) * schwarzschildTeleparallelT 2 4 := by
   intro h
@@ -193,8 +137,7 @@ theorem J_field_ne_half_T_schwarzschild_point :
   rw [hs2] at this
   norm_num at this
 
-/-- At `(rₛ, r) = (2, 4)` the field seed is `1/128` and half the frozen
-teleparallel scalar `-2/r²` is `-1/16`. -/
+/-- At `(rₛ, r) = (2, 4)` the field seed is `1/128` and half the frozen scalar `-2/r²` is `-1/16`. -/
 theorem J_field_ne_half_frozen_T_two_four :
     J_field 2 4 = (1 : ℝ) / 128 ∧
       (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) = -(1 : ℝ) / 16 ∧
@@ -213,9 +156,7 @@ theorem J_field_ne_half_frozen_T_two_four :
 def FieldSeedEqualsHalfT (rs r : ℝ) : Prop :=
   J_field rs r = (1 / 2) * schwarzschildTeleparallelT rs r
 
-/-- Former vacuous stub, now the rejected reading `∀ exterior, J_field = ½ T`.
-The radial-boost closed dictionary is `Gravity.JTDictionary`; a corrected
-dictionary for general motor fields remains open. -/
+/-- Rejected reading: `J_field = ½ T` at every exterior point. -/
 def conjectured_J_field_eq_half_T_plus_div : Prop :=
   ∀ rs r : ℝ, IsExterior rs r → FieldSeedEqualsHalfT rs r
 
@@ -230,7 +171,6 @@ abbrev conjectured_J5_eq_half_T_plus_div : Prop :=
 
 /-! ### Dual-map dictionary (parameter space) -/
 
-/-- Usual–dual swap flips `J` and preserves unsigned mass. -/
 theorem J_dagger_neg (p : Operations.TorsionParams) :
     J (Operations.daggerParams p) = -J p :=
   Invariant.J_dagger p

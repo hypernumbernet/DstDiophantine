@@ -4,14 +4,9 @@ import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.Tactic.Positivity
 
 /-!
-# Phase 7j: Beal residual splits and sub-assemblies
+# Mixed-exponent residual splits
 
-Refines `BealMixedExpResidual` / `BealPythagoreanResidual` into smaller residual
-types, assembles them (sorry-free), and lifts the even two-equal `d = 1` shape
-`x = y` to a Gaussian hypotenuse power.
-
-The `(n,n,3)` cube slice lives in `DarmonMerel`. Classical Beal is **not**
-claimed unconditionally.
+`BealMixedExpResidual` and `BealPythagoreanResidual` split into finer residuals. Classical Beal is not claimed; those sub-residuals stay open.
 -/
 
 namespace DstDiophantine
@@ -24,10 +19,7 @@ local notation "ℤ[i]" => GaussianInt
 
 /-! ### `d = 1` sub-residuals -/
 
-/--
-**Residual** (phase 7j, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 1` where two exponents agree and that common value is odd.
--/
+/-- Open residual: coprime `d = 1` with an odd repeated exponent. -/
 def BealTwoEqualOddResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -36,10 +28,7 @@ def BealTwoEqualOddResidual : Prop :=
     ((x = y ∧ Odd x) ∨ (y = z ∧ Odd y) ∨ (x = z ∧ Odd x)) →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-**Residual** (phase 7j, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 1` and pairwise-distinct exponents.
--/
+/-- Open residual: coprime `d = 1` and pairwise distinct exponents. -/
 def BealAllDistinctExpResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -48,9 +37,6 @@ def BealAllDistinctExpResidual : Prop :=
     x ≠ y → y ≠ z → x ≠ z →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-Phase 7j assembly: the three `d = 1` sub-residuals imply `BealMixedExpResidual`.
--/
 theorem beal_mixed_exp_of_subresiduals
     (hEven : BealTwoEqualEvenResidual)
     (hOdd : BealTwoEqualOddResidual)
@@ -74,11 +60,7 @@ theorem beal_mixed_exp_of_subresiduals
 
 /-! ### `d = 2` unequal-odd residual -/
 
-/--
-**Residual** (phase 7j, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 2` outside fourth-divisibility and outside equal-odd slices
-(even leg shares the hypotenuse's odd reduced exponent).
--/
+/-- Open residual: coprime `d = 2` outside fourth-powers and equal-odd slices. -/
 def BealPythagoreanUnequalOddResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -121,10 +103,6 @@ private theorem even_pow_ne_odd_sq_diff {K m n : ℤ} {e : ℕ}
     simpa [heq] using odd_sq_diff_of_opposite_parity hpar
   exact Int.not_odd_iff_even.mpr hpow hodd
 
-/--
-Classification of a coprime `d = 2` solution with even base `B` forces the
-even Pythagorean leg to be `B^{y/2}`.
--/
 theorem beal_pythagorean_even_leg_B_of_even_B
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -199,10 +177,6 @@ theorem not_beal_sol_eq_odd_xz_of_two_factor
   not_beal_sol_of_expGcd_eq_two_of_eq_odd_xz hRes hx hy hz hA hB hC hgcd hd hxz hodd hsol
     (beal_pythagorean_even_leg_A_of_even_A hx hy hz hA hB hC hgcd hd hAeven hsol)
 
-/--
-Phase 7j assembly: equal-odd two-factor residual + unequal-odd residual imply
-`BealPythagoreanResidual`.
--/
 theorem beal_pythagorean_of_subresiduals
     (hEq : BealEqualOddTwoFactorResidual)
     (hUneq : BealPythagoreanUnequalOddResidual) :
@@ -216,10 +190,6 @@ theorem beal_pythagorean_of_subresiduals
         h2.2.2 hsol
     · exact hUneq A B C x y z hx hy hz hA hB hC hgcd hd hxy hxz hyz h1 h2 hsol
 
-/--
-Phase 7j: positive classical Beal from the five fine residuals (under the FLT
-axiom, via the existing two-residual assembly).
--/
 theorem beal_conjecture_pos_of_fine_residuals
     (hEven : BealTwoEqualEvenResidual)
     (hOdd : BealTwoEqualOddResidual)
@@ -237,11 +207,6 @@ theorem beal_conjecture_pos_of_fine_residuals
 
 /-! ### Even two-equal `x = y` → Gaussian hypotenuse power -/
 
-/--
-Even two-equal `x = y` with `d = 1`: the progress identity
-`(A^{x/2})² + (B^{x/2})² = C^z` yields a Gaussian hypotenuse `z`-th power
-(`z` is odd by coprimality with even `x`).
--/
 theorem exists_gaussian_hyp_pow_of_two_equal_xy_even
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hz : 3 ≤ z) (hxy : x = y) (hd : bealExpGcd x y z = 1)

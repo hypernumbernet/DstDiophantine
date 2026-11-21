@@ -43,24 +43,9 @@ import DstDiophantine.Theorems.Riemann
 import DstDiophantine.FoundationRegression
 
 /-!
-Public API of the Diophantine path: the PGA / biquaternion algebra, the
-faithful integer embedding, the shared amplification core, and the
-problem-specific layers in `Theorems`.
+# Diophantine public API
 
-Algebraic DST primitives are re-exported via `DstDiophantine.Algebra`.
-The PGA–TEGR chart layer lives in `DstDiophantine.Gravity` and is **not**
-re-exported here, so the Diophantine path does not depend on gravity modules.
-
-## Export policy (Beal regime / D4L)
-
-`Theorems.BealRegime` (`classifyBealExponents`) and the D4L barrel
-`DstDiophantine.Logic` are **not** re-exported. The Diophantine public API
-exposes residual *types* and the exponent-shape filter
-`isOpenResidualExponents` / `IsClosedShapeExponents`; it does not expose the
-four-valued status board. `FoundationRegression` imports `BealRegime` so that
-the classifier and atlas correspondence are compiled on the Diophantine path,
-but a `.U → .T` update of an atlas atom must be made in
-`Logic.Example.BealRegime` and does not silently promote classical Beal.
+Re-exports the PGA algebra, the integer embedding, the amplification core, and `Theorems`. Gravity, `Theorems.BealRegime`, and `DstDiophantine.Logic` are not re-exported.
 -/
 
 namespace DstDiophantine

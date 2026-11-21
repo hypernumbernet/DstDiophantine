@@ -16,104 +16,7 @@ set_option linter.style.native false
 /-!
 # One graviton
 
-A graviton is one pure dual step on a single axis, of angle `2π/N`. For
-`N ≥ 4` it lies in the admissible cone, and its normalized height is the
-floor `-ε_N = -16/(3N²)`.
-
-## Aligned gravitons
-
-`n` copies aligned on that axis add in the rapidity. The square of the sum
-splits into `n` own shares and `n(n-1)` ordered-pair shares. Every share
-equals `farHeight`, the height of the one graviton that travels alone, and
-that height does not depend on `n`. The ordered-pair sum vanishes for one
-graviton. Once `n ≥ 1` are present, one further graviton keeps its own
-share equal to `farHeight` and makes the ordered-pair sum strictly more
-negative, by `2n` shares. For `n ≥ 3` the ordered-pair sum is strictly more
-negative than the own sum.
-
-While `4n ≤ N` the copies stay in the cone, and the height they express is
-this split, `n²` times one graviton. Once `4n ≥ N` the nearest admissible
-point on that axis is the pure dual corner: the expressed height locks at
-`-1/3`, and any further mutual growth remains in the internal sum. For
-`N ≥ 5` one graviton stays strictly above that lock. For `N ≥ 8` two
-gravitons stay in the cone, and their height is four times one.
-
-## A census of the three axes
-
-The expressed height of a census is the sum of the three axis feet. Inside
-the cone an axis contributes the square of its count times one graviton. On
-and past the wall it contributes the lock `-1/3`, and further gravitons on
-that axis stay in the internal sum. Two locked axes, with the third empty,
-express `-2/3`. Three express the floor `-1`. For every `n ≥ 1`, at
-`N = 4n`, `n` gravitons on each axis meet the pure dual corner and express
-that floor.
-
-While a fixed total still fits on one axis, the expressed height is strictly
-lowest for the aligned census. Moving one graviton from an axis that holds
-`n` onto an axis that holds `m` changes the internal height by `2(m + 1 - n)`
-shares. The third axis does not enter. Toward a thinner axis the height
-rises, toward a fuller axis it falls, and axes one apart exchange with the
-height unchanged. Inside the cone the expressed height moves with the
-internal height. Past one wall, gravitons on a second axis that is still
-inside the cone make the expressed height strictly lower than `-1/3`.
-
-`n` gravitons on each axis, with `12n ≤ N`, express `3n²` times one. The
-same `3n` aligned express `9n²` times one, lower by `6n²` shares.
-
-## The same step, read on a spinor
-
-The step is the dual rotor of that angle. About an axis transverse to a
-computational eigenstate it replaces the Born weight `1` by `cos²(π/N)`.
-The orthogonal outcome has probability `sin²(π/N)`. For `N ≥ 3` that
-probability lies strictly between `(3/4)ε_N` and `(3π²/16)ε_N`, and
-strictly above `ε_N` itself. For `N ≥ 5` it lies strictly below `1/2`, so
-the original outcome remains the majority. About the eigenaxis the step
-multiplies the eigenstate by a phase, leaves the weight equal to `1`, and
-the orthogonal probability is `0`. On every compactification with
-`N > 10¹⁹` the orthogonal probability lies strictly below `10⁻³⁷`. Three
-hundred aligned gravitons on that compactification remain in the cone,
-express `300²` times one, and stay strictly above `-10⁻³²`. For `2 ≤ n` and
-`4n ≤ N` the orthogonal probability of `n` aligned transverse gravitons lies
-strictly below `n²` times the probability of one, while the height is exactly
-`n²` times one. A full count of `N` aligned gravitons restores the
-computational weight to `1` and the orthogonal probability to `0`, while the
-expressed height on that axis is already the lock `-1/3`. When `4 ∣ N`, the
-quarter turn `N/4`, the half turn `N/2`, the three-quarter turn `3N/4`, and
-the full turn `N` express that same lock. Their orthogonal probabilities are
-`1/2`, `1`, `1/2`, and `0`. From the quarter turn through the half turn each
-added graviton raises the probability. From the half turn through the full
-turn each added graviton lowers it. The mutual sum falls through the whole
-range, and the expressed height does not move.
-
-## Same angle, other carriers
-
-The usual step, the dual step, and the equal-scale step are three
-admissible carriers of one lattice angle, with heights `+ε_N`, `-ε_N`, and
-`0`. The equal-scale phase `π` makes the interference negative and is not
-admissible. No mass is assigned to any carrier. A meson spectrum is not
-read off them.
-
-The charged-pion mass is an external stand-in, compared with the floors in
-`NuclearLayer`. The mass ratio read from the channel length, with no meson
-mass as an input, is `SignReversal.channelMassRatio`. Neither is a graviton.
-
-## Not claimed
-
-* A derivation of `G`, of `α_G`, or of a laboratory error rate. The integer
-  `N` is not fixed. `NuclearLayer.alphaG_bounds` is a separate window, and
-  it is not this Born weight. What is fixed, once a compactification lies
-  under that window, is the size: `floor_at_most_proton_planck`.
-* That every device error is one transverse step. The orthogonal
-  probability is not the height `ε_N`.
-* A Newtonian multi-body law, or a force between bodies at separated
-  positions. The mutual share is the cross term of aligned rapidities on
-  one axis. Gravitons on distinct axes share no such term: two on
-  perpendicular axes express twice one, and one on each of the three axes
-  expresses three times one. The expressed point is the admissible foot
-  already constructed in `SourceSuperposition`.
-* That the order of two perpendicular gravitons is immaterial on a spinor.
-  The height does not see the order. The dual rotors do not commute, for
-  every angle in `(0, π]`.
+A graviton is one pure dual step of angle `2π/N`, with normalized height `-ε_N` for `N ≥ 4`. No derivation of `G`, `α_G`, or a laboratory error rate is claimed, `N` is not fixed, and the orthogonal probability is not the height `ε_N`.
 -/
 
 noncomputable section
@@ -264,9 +167,6 @@ theorem collective_square {n N : ℕ} (hN : 0 < N) :
   field_simp [hNz]
   ring
 
-/-- Two aligned gravitons stay in the cone, and their height is four times one.
-`two_fourfold_split` writes that height as two own shares and two ordered-pair
-shares. -/
 theorem twoGravitons_fourfold {N : ℕ} (hN : 8 ≤ N) :
     IsAdmissibleContinuous (alignedSteps 2 N) ∧
       JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
@@ -330,7 +230,6 @@ theorem oneStep_below_corner {N : ℕ} (hN : 5 ≤ N) :
     nlinarith
   · exact neg_lt_zero.mpr (div_pos (by norm_num) hden)
 
-/-- One graviton stays strictly above the lock `-1/3`. -/
 theorem oneGraviton_above_lock {N : ℕ} (hN : 5 ≤ N) :
     -((1 : ℝ) / 3) < JNormalized (alignedSteps 1 N) := by
   rw [alignedSteps_one]
@@ -572,7 +471,6 @@ theorem stepAngle_half {N : ℕ} (hN : 0 < N) :
   have hNz : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hN)
   field_simp [hNz]
 
-/-- Orthogonal probability of one transverse step. -/
 theorem transverseStep_defect {N : ℕ} (hN : 0 < N) :
     1 - computationalWeight
         (applyMat (dualRotorMat (EuclideanSpace.single 0 (stepAngle N))) spinUp) =
@@ -587,7 +485,6 @@ theorem axialStep_defect (θ : ℝ) :
   rw [axialStep_weight]
   norm_num
 
-/-- `sin²(π/N)` against the floor `ε_N = 16/(3N²)`, for `N ≥ 3`. -/
 theorem defect_between_floor {N : ℕ} (hN : 3 ≤ N) :
     (3 / 4) * ((16 : ℝ) / (3 * (N : ℝ) ^ 2)) < Real.sin (Real.pi / (N : ℝ)) ^ 2 ∧
       Real.sin (Real.pi / (N : ℝ)) ^ 2 <
@@ -648,7 +545,6 @@ theorem transverseDefect_vs_floor {N : ℕ} (hN : 5 ≤ N) :
     exact hfloor.2
   · linarith [hweight.1]
 
-/-- The orthogonal probability strictly exceeds the height `ε_N`. -/
 theorem defect_gt_floor {N : ℕ} (hN : 3 ≤ N) :
     (16 : ℝ) / (3 * (N : ℝ) ^ 2) < Real.sin (Real.pi / (N : ℝ)) ^ 2 := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
@@ -734,7 +630,6 @@ theorem defect_gt_floor {N : ℕ} (hN : 3 ≤ N) :
   rw [hfloor]
   exact hmul.trans (by simpa [hident] using hsqLt)
 
-/-- A transverse step registers a probability strictly above its height. -/
 theorem transverse_defect_gt_height {N : ℕ} (hN : 3 ≤ N) :
     -JNormalized (oneAxisDual (stepAngle N)) <
       1 - computationalWeight
@@ -747,7 +642,6 @@ theorem transverse_defect_gt_height {N : ℕ} (hN : 3 ≤ N) :
   rw [hJ, transverseStep_defect hpos]
   exact defect_gt_floor hN
 
-/-- On every compactification past `10¹⁹`, one transverse step errs by less than `10⁻³⁷`. -/
 theorem transverse_defect_below_inv_pow {N : ℕ} (hN : 10 ^ 19 < N) :
     Real.sin (Real.pi / (N : ℝ)) ^ 2 < (1 : ℝ) / 10 ^ 37 := by
   have hpos : 0 < N := lt_trans (by decide : (0 : ℕ) < 10 ^ 19) hN
@@ -775,8 +669,6 @@ theorem transverse_defect_below_inv_pow {N : ℕ} (hN : 10 ^ 19 < N) :
   have hten : (10 : ℝ) / (10 : ℝ) ^ 38 = 1 / 10 ^ 37 := by norm_num
   exact hhigh.trans (by simpa [hten] using hdiv)
 
-/-- Three hundred aligned steps on a compactification past `10¹⁹` express the
-square and stay strictly above `-10⁻³²`. -/
 theorem threeHundred_square {N : ℕ} (hN : 10 ^ 19 < N) :
     IsAdmissibleContinuous (alignedSteps 300 N) ∧
       JNormalized (alignedSteps 300 N) =
@@ -819,17 +711,7 @@ theorem threeHundred_square {N : ℕ} (hN : 10 ^ 19 < N) :
   · rw [hform]
     exact neg_lt_zero.mpr hposFrac
 
-/-! ### Own shares and mutual shares
-
-The normalized height is quadratic in the rapidity, so `n` aligned gravitons
-split into `n` own shares and `n(n-1)` ordered-pair shares. Each share
-equals `farHeight`, the height of the one graviton that travels alone.
-Adding one graviton contributes one own share and `2n` new ordered-pair
-shares. Inside the cone the expressed height is this split
-(`expressed_own_plus_mutual`). On and past the wall the expressed height is
-the lock `-1/3`, while the mutual sum of the internal rapidities keeps
-becoming more negative.
--/
+/-! ### Own shares and mutual shares -/
 
 /-- Height of one graviton, the step that travels alone. -/
 def farHeight (N : ℕ) : ℝ :=
@@ -867,7 +749,6 @@ theorem mutualSum_one (N : ℕ) : mutualSum 1 N = 0 := by
   unfold mutualSum
   ring
 
-/-- One graviton carries only its own height, equal to the graviton that travels alone. -/
 theorem lone_eq_far {N : ℕ} (hN : 0 < N) :
     JNormalized (alignedSteps 1 N) = farHeight N ∧ mutualSum 1 N = 0 := by
   refine ⟨?_, mutualSum_one N⟩
@@ -875,7 +756,6 @@ theorem lone_eq_far {N : ℕ} (hN : 0 < N) :
   unfold ownSum mutualSum
   ring
 
-/-- One further graviton adds its own share and `2n` ordered-pair shares. -/
 theorem added_step_split {n N : ℕ} (hN : 0 < N) :
     JNormalized (alignedSteps (n + 1) N) - JNormalized (alignedSteps n N) =
       farHeight N + (2 * (n : ℝ)) * farHeight N := by
@@ -888,8 +768,6 @@ theorem added_step_split {n N : ℕ} (hN : 0 < N) :
   rw [hsq]
   ring
 
-/-- Once one graviton is present, one further graviton makes the mutual sum strictly
-more negative. -/
 theorem mutual_strict {n N : ℕ} (hN : 0 < N) (hn : 0 < n) :
     mutualSum (n + 1) N < mutualSum n N := by
   have hstep : mutualSum (n + 1) N =
@@ -903,7 +781,6 @@ theorem mutual_strict {n N : ℕ} (hN : 0 < N) (hn : 0 < n) :
     positivity
   linarith [hstep, mul_neg_of_pos_of_neg hpos (farHeight_neg hN)]
 
-/-- For `1 ≤ n < m` the mutual sum of the larger count is strictly more negative. -/
 theorem mutual_grows {n m N : ℕ} (hN : 0 < N) (hn : 1 ≤ n) (hnm : n < m) :
     mutualSum m N < mutualSum n N := by
   unfold mutualSum
@@ -929,7 +806,6 @@ theorem mutual_grows {n m N : ℕ} (hN : 0 < N) (hn : 1 ≤ n) (hnm : n < m) :
     ring
   linarith
 
-/-- For `n ≥ 3` the mutual sum is strictly more negative than the own sum. -/
 theorem mutual_below_own {n N : ℕ} (hN : 0 < N) (hn : 3 ≤ n) :
     mutualSum n N < ownSum n N ∧ ownSum n N < 0 := by
   have hnpos : 0 < n := lt_of_lt_of_le (by decide : (0 : ℕ) < 3) hn
@@ -949,7 +825,6 @@ theorem mutual_below_own {n N : ℕ} (hN : 0 < N) (hn : 3 ≤ n) :
   rw [mutual_factor]
   exact hlt
 
-/-- Two aligned gravitons are two own shares and two ordered-pair shares. -/
 theorem two_fourfold_split {N : ℕ} (hN : 0 < N) :
     JNormalized (alignedSteps 2 N) = ownSum 2 N + mutualSum 2 N ∧
       ownSum 2 N = 2 * farHeight N ∧
@@ -985,14 +860,11 @@ theorem express_aligned (n N : ℕ) :
     express (alignedSteps n N) = expressedOneAxis ((n : ℝ) * stepAngle N) := by
   simpa [alignedSteps] using express_oneAxis ((n : ℝ) * stepAngle N)
 
-/-- Inside the cone the expressed height is the own sum plus the mutual sum. -/
 theorem expressed_own_plus_mutual {n N : ℕ} (hN : 0 < N) (h : 4 * n ≤ N) :
     JNormalized (express (alignedSteps n N)) = ownSum n N + mutualSum n N := by
   rw [express_eq_of_admissible (collective_admissible h)]
   exact height_own_plus_mutual hN
 
-/-- On and past the wall the expressed height stays at the lock, while one further
-graviton still makes the internal mutual sum strictly more negative. -/
 theorem expressed_locks_while_mutual_grows {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n)
     (hn : 0 < n) :
     JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
@@ -1001,17 +873,7 @@ theorem expressed_locks_while_mutual_grows {n N : ℕ} (hN : 0 < N) (h : N ≤ 4
   rw [express_aligned]
   exact collective_locks hN h
 
-/-! ### Carriers of one angle
-
-One lattice angle builds three admissible carriers, and none is a mass.
-The usual step has height `+ε_N` and interference strictly above `1`. The
-dual step, one graviton, has height `-ε_N` and lies in the repulsive regime
-of `J`, while its interference on the cone stays strictly between `0` and
-`1`. The equal-scale step has height `0` and positive interference. The
-equal-scale phase `π`, where the interference is negative, is not
-admissible. Past the wall the expressed height locks at `-1/3` and the
-internal height lies strictly below that lock.
--/
+/-! ### Carriers of one angle -/
 
 /-- Pure usual rapidity `θ` on axis 0. -/
 def oneAxisUsual (θ : ℝ) : TorsionParams where
@@ -1211,9 +1073,6 @@ theorem carriers_distinct {N : ℕ} (hN : 4 ≤ N) :
     simp [oneAxisUsual, oneAxisBalanced] at this
     linarith
 
-/-- The three admissible carriers have heights `+ε_N`, `-ε_N`, and `0`. The
-usual interference stays above `1`, the dual interference stays between `0`
-and `1`, and the equal-scale interference stays positive. -/
 theorem three_carriers {N : ℕ} (hN : 5 ≤ N) :
     IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) ∧
       IsAdmissibleContinuous (oneAxisDual (stepAngle N)) ∧
@@ -1282,8 +1141,6 @@ theorem excess_unexpressed {n N : ℕ} (hN : 0 < N) (h : N < 4 * n) :
   · rw [express_aligned]
     exact expressed_locks hlt.le
 
-/-- The usual, dual, and equal-scale carriers of one angle are separated by height and by
-interference. -/
 theorem carrier_roles {N : ℕ} (hN : 5 ≤ N) :
     1 < gammaS (stepAngle N) 0 ∧
       0 < gammaS 0 (stepAngle N) ∧ gammaS 0 (stepAngle N) < 1 ∧
@@ -1295,23 +1152,7 @@ theorem carrier_roles {N : ℕ} (hN : 5 ≤ N) :
   refine ⟨hγU, hγDpos, hγDlt, hγB, hB, ?_⟩
   linarith
 
-/-! ### Gravitons on distinct axes
-
-`J` is a sum of squares, one square on each axis. Gravitons that do not
-share an axis therefore share no ordered-pair height. Two gravitons on
-perpendicular axes express twice one graviton, not four times one. One
-graviton on each of the three axes expresses three times one. The two
-ordered-pair shares of an aligned pair, and the six ordered-pair shares of
-three aligned gravitons, are exactly the height those copies lose by
-leaving a common axis.
-
-At `N = 4` the three axes meet the pure dual corner together, and the
-expressed height is the floor `-1`. For `N ≥ 5` that split stays strictly
-above `-1`, and for `N ≥ 7` strictly above the one-axis lock `-1/3`.
-
-The height does not see an order. On a spinor the same two steps are dual
-rotors about perpendicular axes, and those rotors do not commute.
--/
+/-! ### Gravitons on distinct axes -/
 
 /-- One graviton on axis 0 and one on axis 1. -/
 def perpSteps (N : ℕ) : TorsionParams where
@@ -1373,7 +1214,6 @@ theorem splitSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
     · simp only [splitSteps]
       exact ⟨le_rfl, hθ, by simpa using hle⟩
 
-/-- Two gravitons on perpendicular axes stay in the cone and express twice one. -/
 theorem perp_twofold {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (perpSteps N) ∧
       JNormalized (perpSteps N) = 2 * farHeight N := by
@@ -1382,8 +1222,6 @@ theorem perp_twofold {N : ℕ} (hN : 4 ≤ N) :
   rw [J_perpSteps]
   rfl
 
-/-- The two ordered-pair shares of an aligned pair are exactly what perpendicular
-gravitons do not share. Aligned copies express the lower height. -/
 theorem perp_missing_pair {N : ℕ} (hN : 8 ≤ N) :
     JNormalized (alignedSteps 2 N) = JNormalized (perpSteps N) + mutualSum 2 N ∧
       JNormalized (alignedSteps 2 N) < JNormalized (perpSteps N) ∧
@@ -1398,7 +1236,6 @@ theorem perp_missing_pair {N : ℕ} (hN : 8 ≤ N) :
     have hneg := farHeight_neg hpos
     linarith [hneg]
 
-/-- One graviton on each axis stays in the cone and expresses three times one. -/
 theorem split_threefold {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (splitSteps N) ∧
       JNormalized (splitSteps N) = 3 * farHeight N := by
@@ -1407,7 +1244,6 @@ theorem split_threefold {N : ℕ} (hN : 4 ≤ N) :
   rw [J_splitSteps]
   rfl
 
-/-- At `N = 4` the three axes meet the pure dual corner, and the height is `-1`. -/
 theorem split_at_four :
     IsAdmissibleContinuous (splitSteps 4) ∧
       JNormalized (splitSteps 4) = -1 ∧
@@ -1427,7 +1263,6 @@ theorem split_at_four :
   · simp [splitSteps, stepAngle]
     ring
 
-/-- For `N ≥ 5` the three-axis split stays strictly above the floor `-1`. -/
 theorem split_above_floor {N : ℕ} (hN : 5 ≤ N) :
     -1 < JNormalized (splitSteps N) ∧ JNormalized (splitSteps N) < 0 := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
@@ -1446,7 +1281,6 @@ theorem split_above_floor {N : ℕ} (hN : 5 ≤ N) :
   · have hden : (0 : ℝ) < (N : ℝ) ^ 2 := by positivity
     exact neg_lt_zero.mpr (div_pos (by norm_num) hden)
 
-/-- For `N ≥ 7` the three-axis split stays strictly above the one-axis lock. -/
 theorem split_above_lock {N : ℕ} (hN : 7 ≤ N) :
     -((1 : ℝ) / 3) < JNormalized (splitSteps N) := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 7) hN
@@ -1460,8 +1294,6 @@ theorem split_above_lock {N : ℕ} (hN : 7 ≤ N) :
   have h7 : (49 : ℝ) ≤ (N : ℝ) ^ 2 := by exact_mod_cast Nat.pow_le_pow_left hN 2
   linarith
 
-/-- The six ordered-pair shares of three aligned gravitons are exactly what the
-three-axis split does not share. -/
 theorem split_missing_pairs {N : ℕ} (hN : 12 ≤ N) :
     IsAdmissibleContinuous (alignedSteps 3 N) ∧
       JNormalized (alignedSteps 3 N) =
@@ -1483,13 +1315,7 @@ theorem split_missing_pairs {N : ℕ} (hN : 12 ≤ N) :
     rw [hsq3]
     linarith [hneg]
 
-/-! ### The same two steps, read as rotors
-
-The height of perpendicular gravitons does not depend on an order. The dual
-rotors of those two axes do not commute, at every positive angle up to `π`.
-A lattice step of `N ≥ 3` lies in that range, and the `2π` step, which is
-`-I` on either axis, does commute.
--/
+/-! ### The same two steps, read as rotors -/
 
 private theorem cyclicRep_one_oo : cyclicRep 1 0 0 = 0 := by
   unfold cyclicRep pauli pauliY
@@ -1542,7 +1368,6 @@ private theorem axis1_entry (θ : ℝ) :
   · have h := congrArg (fun A : Matrix (Fin 2) (Fin 2) ℂ => A 1 1) hR
     simpa [cyclicRep_one_ll, Matrix.add_apply, Matrix.smul_apply, Matrix.one_apply] using h
 
-/-- Perpendicular dual rotors of one positive angle do not commute. -/
 theorem perp_rotors_not_commute {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi) :
     dualRotorMat (EuclideanSpace.single 0 θ) *
         dualRotorMat (EuclideanSpace.single 1 θ) ≠
@@ -1581,8 +1406,6 @@ theorem perp_rotors_not_commute {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi) 
     exact absurd (by simpa [s] using hs0) (Complex.ofReal_ne_zero.mpr (ne_of_gt hpos))
   exact absurd hs0 (mul_ne_zero hs hs)
 
-/-- Two perpendicular gravitons do not commute on a spinor. A full turn of each
-axis is `-I`, and those two turns do commute. -/
 theorem perp_gravitons_not_commute {N : ℕ} (hN : 3 ≤ N) :
     dualRotorMat (EuclideanSpace.single 0 (stepAngle N)) *
         dualRotorMat (EuclideanSpace.single 1 (stepAngle N)) ≠
@@ -1617,16 +1440,7 @@ theorem fullTurn_commute :
   refine ⟨h0, h1, ?_⟩
   rw [h0, h1]
 
-/-! ### A split across the three axes
-
-`J` is a sum of squares, so an arbitrary census `(n₀, n₁, n₂)` expresses the sum of the
-three aligned heights and no cross term between axes. Against the same
-gravitons aligned on one axis, the missing height is exactly the ordered-pair
-shares of the pairs that do not share an axis. Moving one graviton off a
-fuller axis onto a strictly thinner axis therefore raises the height; moving
-it onto an axis that already holds at least as many lowers the height. The
-first two special cases are `perp_twofold` and `split_threefold`.
--/
+/-! ### A split across the three axes -/
 
 /-- `n₀` gravitons on axis 0, `n₁` on axis 1, `n₂` on axis 2. -/
 def occupation (n0 n1 n2 N : ℕ) : TorsionParams where
@@ -1646,8 +1460,6 @@ theorem J_occupation (n0 n1 n2 N : ℕ) :
   simp [occupation, Fin.sum_univ_three]
   ring
 
-/-- A split expresses the sum of the three aligned heights. No ordered-pair
-share crosses an axis. -/
 theorem occupation_sq {n0 n1 n2 N : ℕ} :
     JNormalized (occupation n0 n1 n2 N) =
       ((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
@@ -1660,8 +1472,6 @@ theorem occupation_sq {n0 n1 n2 N : ℕ} :
   rw [hone]
   ring
 
-/-- The ordered-pair shares that leave a common axis are exactly the height the
-split does not carry. -/
 theorem occupation_missing_cross {n0 n1 n2 N : ℕ} (hN : 0 < N) :
     JNormalized (alignedSteps (n0 + n1 + n2) N) =
       JNormalized (occupation n0 n1 n2 N) +
@@ -1672,8 +1482,6 @@ theorem occupation_missing_cross {n0 n1 n2 N : ℕ} (hN : 0 < N) :
   rw [hsum, hfar]
   ring
 
-/-- Two axes occupied: the split stands strictly above the same gravitons
-aligned on one axis, by the ordered-pair shares that cross no axis. -/
 theorem occupation_above_aligned {n0 n1 n2 N : ℕ} (hN : 0 < N)
     (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
     JNormalized (alignedSteps (n0 + n1 + n2) N) <
@@ -1686,7 +1494,6 @@ theorem occupation_above_aligned {n0 n1 n2 N : ℕ} (hN : 0 < N)
     mul_neg_of_pos_of_neg (by positivity) hneg
   linarith
 
-/-- While every axis stays on its own side of the wall, the split is admissible. -/
 theorem occupation_admissible {n0 n1 n2 N : ℕ}
     (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
     IsAdmissibleContinuous (occupation n0 n1 n2 N) := by
@@ -1703,8 +1510,6 @@ theorem occupation_admissible {n0 n1 n2 N : ℕ}
   · simp only [occupation]
     exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩
 
-/-- Moving one graviton from axis 0 onto axis 1 changes the height by
-`2(m + 1 - n)` shares of one graviton. The third axis does not enter. -/
 theorem move_height_delta {n m k N : ℕ} (hn : 0 < n) (_hN : 0 < N) :
     JNormalized (occupation (n - 1) (m + 1) k N) -
         JNormalized (occupation n m k N) =
@@ -1717,7 +1522,6 @@ theorem move_height_delta {n m k N : ℕ} (hn : 0 < n) (_hN : 0 < N) :
   rw [hn', hm']
   ring
 
-/-- Off a fuller axis onto a strictly thinner one, the height rises. -/
 theorem move_to_thinner_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     (hthin : m + 1 < n) :
     JNormalized (occupation n m k N) <
@@ -1731,7 +1535,6 @@ theorem move_to_thinner_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     mul_pos_of_neg_of_neg (by nlinarith) hneg
   linarith
 
-/-- Onto an axis that already holds at least as many, the height falls. -/
 theorem move_to_fuller_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     (hfull : n ≤ m) :
     JNormalized (occupation (n - 1) (m + 1) k N) <
@@ -1745,7 +1548,6 @@ theorem move_to_fuller_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     mul_neg_of_pos_of_neg (by nlinarith) hneg
   linarith
 
-/-- Axes one apart exchange under the move, and the height is unchanged. -/
 theorem move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N) (heq : n = m + 1) :
     JNormalized (occupation (n - 1) (m + 1) k N) =
       JNormalized (occupation n m k N) := by
@@ -1757,17 +1559,8 @@ theorem move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N) (heq : n = m + 1
   simp only [mul_zero, zero_mul] at hδ
   linarith
 
-/-! ### The expressed foot of a census
+/-! ### The expressed foot of a census -/
 
-`J` adds over axes, and the admissible foot is taken axis by axis. The
-expressed height of a census is therefore the sum of the three heights those
-axes would express alone. Inside the cone that height is the sum of the
-squared counts times one graviton. On and past the wall an axis contributes
-the lock `-1/3` and ignores further gravitons. Two locked axes express
-`-2/3`. Three express `-1`.
--/
-
-/-- A nonnegative pure dual rapidity expresses either itself or the corner. -/
 theorem pureDual_foot {θ : ℝ} (hθ : 0 ≤ θ) :
     (axisExpress 0 θ).1 = 0 ∧
       ((θ ≤ Real.pi / 2 ∧ (axisExpress 0 θ).2 = θ) ∨
@@ -1812,7 +1605,6 @@ theorem J_express_occupation (n0 n1 n2 N : ℕ) :
   rw [ha0, ha1, ha2]
   ring
 
-/-- The expressed height of a census is the sum of the three axis feet. -/
 theorem expressed_occupation_sum (n0 n1 n2 N : ℕ) :
     JNormalized (express (occupation n0 n1 n2 N)) =
       JNormalized (express (alignedSteps n0 N)) +
@@ -1827,7 +1619,6 @@ theorem express_empty (N : ℕ) :
   rw [express_eq_of_admissible (collective_admissible (n := 0) (Nat.zero_le N))]
   simp [alignedSteps, JNormalized_oneAxisDual]
 
-/-- Two axes on or past the wall, with the third empty, express `-2/3`. -/
 theorem expressed_two_locks {n0 n1 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) :
     JNormalized (express (occupation n0 n1 0 N)) = -((2 : ℝ) / 3) := by
@@ -1835,7 +1626,6 @@ theorem expressed_two_locks {n0 n1 N : ℕ} (hN : 0 < N)
   rw [collective_locks hN h0, collective_locks hN h1]
   norm_num
 
-/-- Three axes on or past the wall express the floor `-1`. -/
 theorem expressed_three_locks {n0 n1 n2 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2) :
     JNormalized (express (occupation n0 n1 n2 N)) = -1 := by
@@ -1843,7 +1633,6 @@ theorem expressed_three_locks {n0 n1 n2 N : ℕ} (hN : 0 < N)
   rw [collective_locks hN h0, collective_locks hN h1, collective_locks hN h2]
   norm_num
 
-/-- Further gravitons on axes that have already reached the wall are not expressed. -/
 theorem expressed_floor_stable {n0 n1 n2 m0 m1 m2 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2)
     (hm0 : n0 ≤ m0) (hm1 : n1 ≤ m1) (hm2 : n2 ≤ m2) :
@@ -1853,20 +1642,17 @@ theorem expressed_floor_stable {n0 n1 n2 m0 m1 m2 N : ℕ} (hN : 0 < N)
   have h2' : N ≤ 4 * m2 := le_trans h2 (Nat.mul_le_mul_left 4 hm2)
   exact expressed_three_locks hN h0' h1' h2'
 
-/-- For every `n ≥ 1`, `n` gravitons on each axis at `N = 4n` express `-1`. -/
 theorem equal_split_floor {n : ℕ} (hn : 0 < n) :
     JNormalized (express (occupation n n n (4 * n))) = -1 := by
   have hN : 0 < 4 * n := Nat.mul_pos (by decide : 0 < 4) hn
   exact expressed_three_locks hN le_rfl le_rfl le_rfl
 
-/-- Inside the cone the expressed height is the sum of the squared counts. -/
 theorem expressed_occupation_squares {n0 n1 n2 N : ℕ}
     (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
     JNormalized (express (occupation n0 n1 n2 N)) =
       ((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
   rw [express_eq_of_admissible (occupation_admissible h0 h1 h2), occupation_sq]
 
-/-- One locked axis plus two axes still inside the cone. -/
 theorem expressed_lock_plus {n0 n1 n2 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
     JNormalized (express (occupation n0 n1 n2 N)) =
@@ -1883,8 +1669,6 @@ theorem expressed_lock_plus {n0 n1 n2 N : ℕ} (hN : 0 < N)
   rw [expressed_occupation_sum, ha, hb, hc]
   ring
 
-/-- Past one wall, gravitons on a second axis still inside the cone make the
-expressed height strictly lower than the one-axis lock. -/
 theorem spread_past_wall {n0 n1 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (hn1 : 0 < n1) :
     JNormalized (express (occupation n0 n1 0 N)) =
@@ -1909,8 +1693,6 @@ theorem spread_past_wall {n0 n1 N : ℕ} (hN : 0 < N)
   have hneg := farHeight_neg hN
   nlinarith [mul_neg_of_pos_of_neg hsq hneg]
 
-/-- While the total still fits on one axis, the aligned census is strictly the
-lowest expressed height. -/
 theorem expressed_aligned_lowest {n0 n1 n2 N : ℕ}
     (hsum : 4 * (n0 + n1 + n2) ≤ N)
     (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
@@ -1944,8 +1726,6 @@ theorem expressed_aligned_lowest {n0 n1 n2 N : ℕ}
     express_eq_of_admissible (occupation_admissible h0 h1 h2)]
   exact occupation_above_aligned hN hcross
 
-/-- `n` on each axis, against the same `3n` aligned, while the alignment
-still fits in the cone. -/
 theorem equal_vs_aligned {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
     JNormalized (express (alignedSteps (3 * n) N)) = (9 * (n : ℝ) ^ 2) * farHeight N ∧
       JNormalized (express (occupation n n n N)) = (3 * (n : ℝ) ^ 2) * farHeight N ∧
@@ -1979,8 +1759,6 @@ theorem equal_vs_aligned {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
       positivity
     nlinarith [mul_neg_of_pos_of_neg hsq hneg]
 
-/-- Inside the cone, moving one graviton onto a strictly thinner axis raises
-the expressed height. -/
 theorem expressed_move_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     (hthin : m + 1 < n) (h0 : 4 * n ≤ N) (h1 : 4 * (m + 1) ≤ N) (hk : 4 * k ≤ N) :
     JNormalized (express (occupation n m k N)) <
@@ -1991,8 +1769,6 @@ theorem expressed_move_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     express_eq_of_admissible (occupation_admissible hsrc h1 hk)]
   exact move_to_thinner_raises hn hN hthin
 
-/-- Inside the cone, moving one graviton onto an axis that already holds at
-least as many lowers the expressed height. -/
 theorem expressed_move_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     (hfull : n ≤ m) (h0 : 4 * n ≤ N) (h1 : 4 * (m + 1) ≤ N) (hk : 4 * k ≤ N) :
     JNormalized (express (occupation (n - 1) (m + 1) k N)) <
@@ -2003,7 +1779,6 @@ theorem expressed_move_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     express_eq_of_admissible (occupation_admissible h0 hm hk)]
   exact move_to_fuller_lowers hn hN hfull
 
-/-- Inside the cone, axes one apart exchange and the expressed height holds. -/
 theorem expressed_move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     (heq : n = m + 1) (h0 : 4 * n ≤ N) (hk : 4 * k ≤ N) :
     JNormalized (express (occupation (n - 1) (m + 1) k N)) =
@@ -2017,18 +1792,7 @@ theorem expressed_move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     express_eq_of_admissible (occupation_admissible h0 hm hk)]
   exact move_balances hn hN heq
 
-/-! ### The same aligned steps, read on a spinor
-
-Dual rotors about one axis commute, and their product is the rotor of the summed
-angle. Perpendicular rotors do not. `n` aligned gravitons about an axis transverse
-to a computational eigenstate therefore act as one dual rotor of angle `2π n/N`.
-The orthogonal probability is `sin²(nπ/N)`. For `2 ≤ n < N` that probability is
-strictly below `n²` times the probability of one transverse graviton, while the
-height, inside the cone, is exactly `n²` times one. A full count of `N` aligned
-gravitons is one dual turn: the rotor is `-I`, the computational weight returns
-to `1`, and the orthogonal probability is `0`, while the expressed height on
-that axis has already locked at `-1/3`.
--/
+/-! ### The same aligned steps, read on a spinor -/
 
 private theorem sin_step_lt {k : ℕ} {x : ℝ} (hk : 1 ≤ k) (hx : 0 < x)
     (hbound : ((k + 1 : ℕ) : ℝ) * x ≤ Real.pi)
@@ -2138,14 +1902,11 @@ theorem aligned_rotors_add (θ φ : ℝ) :
   rw [← hθ, ← hφ, ← hsum]
   exact (dualRotorMat_ray_add θ φ (EuclideanSpace.single (0 : Fin 3) 1)).symm
 
-/-- Dual rotors about one axis commute. Their product is the rotor of the summed angle. -/
 theorem aligned_rotors_commute (θ φ : ℝ) :
     dualRotorMat (EuclideanSpace.single 0 θ) * dualRotorMat (EuclideanSpace.single 0 φ) =
       dualRotorMat (EuclideanSpace.single 0 φ) * dualRotorMat (EuclideanSpace.single 0 θ) := by
   rw [aligned_rotors_add, aligned_rotors_add, add_comm]
 
-/-- `n` aligned gravitons about a transverse axis replace the computational weight
-by `cos²(nπ/N)`. -/
 theorem aligned_transverse_weight {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
     computationalWeight
         (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
@@ -2157,7 +1918,6 @@ theorem aligned_transverse_weight {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
   rw [hhalf, stepAngle_half hN]
   ring
 
-/-- The orthogonal probability of `n` aligned transverse gravitons is `sin²(nπ/N)`. -/
 theorem aligned_transverse_defect {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
     1 - computationalWeight
         (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) =
@@ -2166,8 +1926,6 @@ theorem aligned_transverse_defect {n N : ℕ} (hn : 0 < n) (hN : 0 < N) :
   have h := Real.cos_sq_add_sin_sq ((n : ℝ) * Real.pi / N)
   linarith
 
-/-- For `2 ≤ n < N` the orthogonal probability lies strictly below `n²` times one
-transverse graviton. The height, by contrast, multiplies by `n²`. -/
 theorem aligned_defect_below_square {n N : ℕ} (hn : 2 ≤ n) (hN : n < N) :
     1 - computationalWeight
         (applyMat (dualRotorMat (EuclideanSpace.single 0 ((n : ℝ) * stepAngle N))) spinUp) <
@@ -2216,8 +1974,6 @@ theorem aligned_defect_below_square {n N : ℕ} (hn : 2 ≤ n) (hN : n < N) :
     ring
   simpa [hxeq] using hsq
 
-/-- `N` aligned gravitons are one dual turn. The rotor is `-I`, the computational
-weight returns to `1`, and the orthogonal probability is `0`. -/
 theorem fullCount_restores {N : ℕ} (hN : 0 < N) :
     (N : ℝ) * stepAngle N = 2 * Real.pi ∧
       dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N)) = -1 ∧
@@ -2249,9 +2005,6 @@ theorem fullCount_restores {N : ℕ} (hN : 0 < N) :
       norm_num
     linarith [hweight]
 
-/-- Inside the cone the height is `n²` times one, while the orthogonal
-probability of the same aligned steps lies strictly below `n²` times one
-transverse graviton. -/
 theorem height_square_defect_below {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤ N) :
     JNormalized (express (alignedSteps n N)) = (n : ℝ) ^ 2 * farHeight N ∧
       1 - computationalWeight
@@ -2267,9 +2020,6 @@ theorem height_square_defect_below {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤
   rw [express_eq_of_admissible (collective_admissible hcone), collective_square hpos]
   rfl
 
-/-- A full count of `N` aligned gravitons restores the computational weight
-and returns the orthogonal probability to `0`, while the expressed height
-on that axis is the lock `-1/3`. -/
 theorem full_turn_locks {N : ℕ} (hN : 0 < N) :
     dualRotorMat (EuclideanSpace.single 0 ((N : ℝ) * stepAngle N)) = -1 ∧
       computationalWeight
@@ -2287,16 +2037,7 @@ theorem full_turn_locks {N : ℕ} (hN : 0 < N) :
   rw [express_aligned]
   exact collective_locks hN hwall
 
-/-! ### Past the lock the carrier keeps turning
-
-When `4 ∣ N`, four aligned counts share the expressed height `-1/3`: the
-quarter turn `N/4`, the half turn `N/2`, the three-quarter turn `3N/4`, and
-the full turn `N`. The orthogonal probabilities are `1/2`, `1`, `1/2`, and
-`0`. Between the quarter turn and the half turn each added graviton raises
-that probability. Between the half turn and the full turn each added graviton
-lowers it. The mutual sum falls through every step, and the expressed height
-does not move.
--/
+/-! ### Past the lock the carrier keeps turning -/
 
 theorem quarterTurn_angle {N : ℕ} (hdiv : 4 ∣ N) (hN : 0 < N) :
     ((N / 4 : ℕ) : ℝ) * stepAngle N = Real.pi / 2 := by
@@ -2480,9 +2221,6 @@ private theorem sq_sin_lt {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hlt : a < b
     a ^ 2 < b ^ 2 :=
   (sq_lt_sq₀ ha hb).mpr hlt
 
-/-- From the quarter turn through the half turn, each added graviton keeps the
-expressed height at the lock and raises the orthogonal probability. The mutual
-sum becomes strictly more negative. -/
 theorem locked_error_rises {N n m : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N)
     (hn : N / 4 ≤ n) (hm : m ≤ N / 2) (hlt : n < m) :
     JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
@@ -2511,9 +2249,6 @@ theorem locked_error_rises {N n m : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N)
     (le_trans hb hpi)
   exact sq_sin_lt hsn hsm hsin
 
-/-- From the half turn through the full turn, each added graviton keeps the
-expressed height at the lock and lowers the orthogonal probability. The mutual
-sum becomes strictly more negative. -/
 theorem locked_error_falls {N n m : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N)
     (hn : N / 2 ≤ n) (hm : m ≤ N) (hlt : n < m) :
     JNormalized (express (alignedSteps n N)) = -((1 : ℝ) / 3) ∧
@@ -2571,9 +2306,6 @@ private theorem sinSq_quarter :
   rw [Real.sin_pi_div_four, div_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
   norm_num
 
-/-- The quarter turn, the half turn, the three-quarter turn, and the full turn
-express one height, `-1/3`. The orthogonal probabilities are `1/2`, `1`,
-`1/2`, and `0`, and the mutual sum is strictly lower at each later count. -/
 theorem fourCounts_lock {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     JNormalized (express (alignedSteps (N / 4) N)) = -((1 : ℝ) / 3) ∧
       JNormalized (express (alignedSteps (N / 2) N)) = -((1 : ℝ) / 3) ∧

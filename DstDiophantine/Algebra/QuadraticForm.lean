@@ -7,9 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Quadratic forms for Cl(3,1), G(3,1,1), and Cl(9,1)
 
-Signature `(3,1)` on four dimensions, `(3,1,1)` on five dimensions with a null
-direction `e₄` (`Q(e₄) = 0`), and textbook Minkowski `(9,1)` on ten dimensions
-for the superstring comparison layer.
+Signatures `(3,1)`, `(3,1,1)` with a null `e₄`, and textbook `(9,1)`.
 -/
 
 namespace DstDiophantine
@@ -34,31 +32,24 @@ def w91 : Fin 10 → ℝ
   | 0 => -1
   | _ => 1
 
-/-- Quadratic form for `Cl(3,1)`. -/
 noncomputable def Q31 : QuadraticForm ℝ Vec4 :=
   QuadraticMap.weightedSumSquares ℝ w31
 
-/-- Quadratic form for `G(3,1,1) = Cl(3,1,1)`. -/
 noncomputable def Q311 : QuadraticForm ℝ Vec5 :=
   QuadraticMap.weightedSumSquares ℝ w311
 
-/-- Quadratic form for textbook `Cl(9,1)`. -/
 noncomputable def Q91 : QuadraticForm ℝ Vec10 :=
   QuadraticMap.weightedSumSquares ℝ w91
 
-/-- Standard basis vector in `Fin 4 → ℝ`. -/
 def e4vec (μ : Fin 4) : Vec4 :=
   Pi.single μ 1
 
-/-- Standard basis vector in `Fin 5 → ℝ`. -/
 def e5vec (μ : Fin 5) : Vec5 :=
   Pi.single μ 1
 
-/-- Standard basis vector in `Fin 10 → ℝ`. -/
 def e10vec (μ : Fin 10) : Vec10 :=
   Pi.single μ 1
 
-/-- Distinct standard basis vectors are orthogonal for any weight function. -/
 theorem weightedSumSquares_isOrtho_single {ι : Type*} [Fintype ι] [DecidableEq ι]
     (w : ι → ℝ) {i j : ι} (hij : i ≠ j) :
     (QuadraticMap.weightedSumSquares ℝ w).IsOrtho (Pi.single i (1 : ℝ)) (Pi.single j (1 : ℝ)) := by
@@ -147,7 +138,6 @@ theorem restrict4_e5vec_last : restrict4 (e5vec 4) = 0 := by
   ext i
   fin_cases i <;> simp [restrict4, e5vec, Pi.single]
 
-/-- Every vector splits as a Minkowski part plus a multiple of \(e_4\). -/
 theorem extend4_restrict4_add_last (v : Vec5) :
     extend4 (restrict4 v) + v 4 • e5vec 4 = v := by
   ext i
@@ -159,7 +149,6 @@ theorem Q31_restrict4 (v : Vec5) : Q31 (restrict4 v) = Q311 v := by
   rw [Fin.sum_univ_four, Fin.sum_univ_five]
   simp
 
-/-- Sign flip of the null coordinate `e₄`. -/
 def flipE4 (v : Vec5) : Vec5 :=
   fun i => if i = 4 then -v i else v i
 
@@ -241,7 +230,6 @@ theorem Q311_isOrtho_basis (i j : Fin 5) (hij : i ≠ j) :
     Q311.IsOrtho (e5vec i) (e5vec j) :=
   weightedSumSquares_isOrtho_single w311 hij
 
-/-- The null basis vector is orthogonal to the whole space, including itself. -/
 theorem Q311_polar_e4 (m : Vec5) :
     QuadraticMap.polar Q311 (e5vec 4) m = 0 := by
   have hQe4 : Q311 (e5vec 4) = 0 := by simp [Q311_e5vec, w311]
@@ -262,7 +250,6 @@ theorem Q91_isOrtho_basis (i j : Fin 10) (hij : i ≠ j) :
     Q91.IsOrtho (e10vec i) (e10vec j) :=
   weightedSumSquares_isOrtho_single w91 hij
 
-/-- Minkowski inner product on translation parameters. -/
 def minkowskiDot (lam : Fin 4 → ℝ) : ℝ :=
   -lam 0 * lam 0 + lam 1 * lam 1 + lam 2 * lam 2 + lam 3 * lam 3
 

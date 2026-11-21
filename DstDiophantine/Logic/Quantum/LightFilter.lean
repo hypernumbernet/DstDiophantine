@@ -5,29 +5,9 @@ import DstDiophantine.Logic.Quantum.Separation
 import DstDiophantine.Logic.Quantum.DiracField
 
 /-!
-# Dual Hilbert space and the light-cone filter
+# The light-cone filter
 
-The body of a quantum state is a vector of the dual sector `ℂ²`. The joint
-rapidity pairing is indefinite, so it is not that space. Two dual spinors
-carry the same information when one is a unit-modulus phase times the other.
-
-Manifestation into the usual chart is the four-vector whose time component
-is the squared norm and whose spatial part is the spin vector. The identity
-`|r(u)|² = ‖u‖⁴`, read in signature `(-,+,+,+)`, places every such
-four-vector on the future light cone, and every future lightlike four-vector
-arises in this way. A unit phase leaves it fixed, and a dual rotor turns
-only its spatial part. Superposition is not addition in the chart: the sum
-of two manifested four-vectors may be timelike, the discrepancy may be
-spacelike, and a relative phase, invisible in either summand, turns the
-null direction of the superposition.
-
-A Dirac spinor carries two such vectors, its Weyl blocks. The probability
-current adds the lower image to the spatially reversed upper image, so one
-chirality stays null. The upper block solves the massless Weyl equation at
-momentum `m(u)`; the lower block solves it at the spatially reversed image.
-The rest pair `(u, iu)` has one and the same null image on both blocks. The
-current reads one copy reversed, the spatial parts cancel, and the result
-`(2‖u‖², 0)` is timelike whenever `u` does not vanish.
+Manifestation sends a dual vector to a future lightlike four-vector, and superposition is not addition in the chart. The joint rapidity pairing is indefinite, so it is not the information weight.
 -/
 
 namespace DstDiophantine
@@ -38,8 +18,7 @@ open Operations Invariant Complex
 
 /-! ### The body of the information -/
 
-/-- Two dual spinors carry the same information when one is a phase of
-modulus one times the other. -/
+/-- Unit-modulus phase times the other. -/
 def SameInformation (ψ φ : DualSpinor) : Prop :=
   ∃ z : ℂ, ‖z‖ = 1 ∧ φ = z • ψ
 
@@ -56,8 +35,7 @@ theorem informationWeight_eq_zero_iff (u : DualSpinor) :
   unfold informationWeight
   rw [sq_eq_zero_iff, norm_eq_zero]
 
-/-- The joint rapidity pairing takes negative values, so it is not the
-information weight. -/
+/-- Not the information weight. -/
 theorem killingForm_not_informationWeight :
     ¬ ∀ p : TorsionParams, 0 ≤ killingForm p p :=
   killingForm_not_positive_definite
@@ -95,8 +73,7 @@ theorem SameInformation_zero_iff (φ : DualSpinor) : SameInformation 0 φ ↔ φ
 
 /-! ### The four-vector written into the usual chart -/
 
-/-- Manifestation of a dual spinor. The time component is the information
-weight; the spatial components are the spin vector. -/
+/-- Time component is the information weight; spatial part is the spin vector. -/
 noncomputable def manifest (u : DualSpinor) : Vec4
   | 0 => informationWeight u
   | 1 => spinVec u 0
@@ -141,7 +118,6 @@ theorem manifest_smul (c : ℂ) (u : DualSpinor) :
   · simp [manifest, spinVec_smul]
   · simp [manifest, spinVec_smul]
 
-/-- A phase of modulus one does not change the manifested four-vector. -/
 theorem manifest_phase (u : DualSpinor) {z : ℂ} (hz : ‖z‖ = 1) :
     manifest (z • u) = manifest u := by
   rw [manifest_smul, hz]
@@ -166,7 +142,6 @@ theorem manifest_eq_zero_iff (u : DualSpinor) : manifest u = 0 ↔ u = 0 := by
     funext i
     fin_cases i <;> simp [manifest, informationWeight, spinVec_zero]
 
-/-- Every manifested four-vector is lightlike. -/
 theorem Q31_manifest (u : DualSpinor) : Q31 (manifest u) = 0 := by
   rw [Q31_eq_minkowskiDot]
   have h := axisDot_spinVec u
@@ -184,7 +159,6 @@ theorem manifest_not_spacelike (u : DualSpinor) : ¬ 0 < Q31 (manifest u) := by
 theorem manifest_time_of_norm {u : DualSpinor} (hu : ‖u‖ = 1) : manifest u 0 = 1 := by
   simp [manifest, informationWeight, hu]
 
-/-- On a unit dual spinor the spatial part of the manifestation is a unit vector. -/
 theorem axisDot_manifest_space_of_norm {u : DualSpinor} (hu : ‖u‖ = 1) :
     axisDot (fun k : Fin 3 => manifest u k.succ) (fun k => manifest u k.succ) = 1 := by
   have hfun : (fun k : Fin 3 => manifest u k.succ) = spinVec u := by
@@ -207,8 +181,6 @@ theorem manifest_dualRotor_zero (u : DualSpinor) :
     manifest (applyMat (dualRotorMat 0) u) = manifest u := by
   rw [dualRotorMat_zero, applyMat_one]
 
-/-- A nonzero dual rotor turns the spatial part by the full angle and leaves
-the four-vector lightlike. -/
 theorem manifest_space_dualRotor {β : DualRapidity} (hβ : β ≠ 0) (u : DualSpinor) :
     (fun k : Fin 3 => manifest (applyMat (dualRotorMat β) u) k.succ) =
       axisRot (fun k => β k / ‖β‖) ‖β‖ (spinVec u) := by
@@ -383,8 +355,6 @@ theorem manifest_spinorOfNull {v : Vec4} (hQ : Q31 v = 0) (ht : 0 ≤ v 0) :
     funext i
     fin_cases i <;> simp [manifest, htime, hx, hy, hzv]
 
-/-- A four-vector is the manifestation of some dual spinor exactly when it is
-future lightlike. -/
 theorem exists_manifest_iff (v : Vec4) :
     (∃ u : DualSpinor, manifest u = v) ↔ Q31 v = 0 ∧ 0 ≤ v 0 := by
   constructor
@@ -423,8 +393,6 @@ theorem spinVec_add_sub (u v : DualSpinor) :
     sub_zero] at h
   simpa [Pi.add_apply, Pi.smul_apply] using h
 
-/-- Addition of information, read after the filter, keeps only the parallelogram
-identity. The cross term cancels between the two relative signs. -/
 theorem manifest_add_sub (u v : DualSpinor) :
     manifest (u + v) + manifest (u - v) =
       (2 : ℝ) • manifest u + (2 : ℝ) • manifest v := by
@@ -479,13 +447,11 @@ theorem manifest_spinUp_add_manifest_spinDown :
   · simp
   · simp
 
-/-- The appearances of the two basis vectors add to a timelike four-vector. -/
 theorem Q31_add_manifest_basis :
     Q31 (manifest spinUp + manifest spinDown) < 0 := by
   rw [manifest_spinUp_add_manifest_spinDown, Q31_eq_minkowskiDot]
   simp [minkowskiDot]
 
-/-- The appearance of the superposition is not the sum of the appearances. -/
 theorem manifest_not_additive :
     manifest (spinUp + spinDown) ≠ manifest spinUp + manifest spinDown := by
   rw [manifest_spinUp_add_spinDown, manifest_spinUp_add_manifest_spinDown]
@@ -493,8 +459,6 @@ theorem manifest_not_additive :
   have := congrFun h 1
   simp at this
 
-/-- The discrepancy between the superposition and the sum of the appearances
-is spacelike. -/
 theorem Q31_manifest_discrepancy :
     0 < Q31 (manifest (spinUp + spinDown) - (manifest spinUp + manifest spinDown)) := by
   rw [manifest_spinUp_add_spinDown, manifest_spinUp_add_manifest_spinDown, Q31_eq_minkowskiDot]
@@ -517,8 +481,7 @@ theorem manifest_spinUp_add_phase : manifest (spinUp + (I : ℂ) • spinDown) =
   · simp [manifest, spinVec_coord_one]
   · simp [manifest, spinVec_coord_two]
 
-/-- A relative phase, which does not change either summand's appearance, turns
-the null direction of the superposition. -/
+/-- A relative phase, invisible on each summand, turns the null direction. -/
 theorem manifest_relativePhase :
     manifest (spinUp + (I : ℂ) • spinDown) ≠ manifest (spinUp + spinDown) := by
   rw [manifest_spinUp_add_phase, manifest_spinUp_add_spinDown]
@@ -612,7 +575,6 @@ private theorem pauliComb_real_smul (t : ℝ) (n : Fin 3 → ℝ) :
   push_cast
   rfl
 
-/-- `σ·r(u)` fixes a dual spinor up to its information weight. -/
 theorem applyMat_pauliComb_spinVec (u : DualSpinor) :
     applyMat (pauliComb (spinVec u)) u = (informationWeight u : ℂ) • u := by
   by_cases hu : u = 0
@@ -691,16 +653,12 @@ theorem applyMat_pauliSlash_spaceReverse_manifest (u : DualSpinor) :
     applyMat_one, applyMat_pauliComb_spinVec]
   simp
 
-/-- The upper Weyl block is the massless solution whose null momentum is the
-filter image. -/
 theorem dirac_upper_manifest (u : DualSpinor) :
     DiracMomentum 0 (manifest u) (weylUpper u) := by
   unfold DiracMomentum
   rw [slash_weylUpper, applyMat_pauliSlashBar_manifest, weylLower_zero]
   simp
 
-/-- The lower Weyl block is the massless solution whose null momentum is the
-spatially reversed filter image. -/
 theorem dirac_lower_manifest (u : DualSpinor) :
     DiracMomentum 0 (spaceReverse (manifest u)) (weylLower u) := by
   unfold DiracMomentum
@@ -779,8 +737,6 @@ private theorem realCurrent_spatial (k : Fin 3) (u l : DualSpinor) :
   rw [spinExp_pauli, spinExp_pauli] at h
   simp only [realCurrent, h, negI_chiral]
 
-/-- The probability current of two Weyl blocks is the lower filter image plus
-the spatially reversed upper image. -/
 theorem realCurrent_weyl (u l : DualSpinor) :
     realCurrent (weylUpper u + weylLower l) = spaceReverse (manifest u) + manifest l := by
   set Ψ := weylUpper u + weylLower l
@@ -826,7 +782,6 @@ theorem diracScalar_rest_re (u : DualSpinor) :
   rw [sq, sq]
   simp [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im]
 
-/-- At rest the Dirac current is pure time, with weight twice the dual norm. -/
 theorem realCurrent_rest (u : DualSpinor) :
     realCurrent (restParticleSpinor u) =
       fun i => if i = 0 then 2 * informationWeight u else 0 := by
@@ -847,7 +802,6 @@ theorem filter_rest (u : DualSpinor) :
     ring
   · simp [spaceReverse, hi, Pi.add_apply]
 
-/-- The rest pair's two filter images assemble into the Dirac current. -/
 theorem realCurrent_rest_eq_filter (u : DualSpinor) :
     realCurrent (restParticleSpinor u) =
       spaceReverse (manifest u) + manifest ((I : ℂ) • u) := by
@@ -882,7 +836,7 @@ theorem Q31_manifest_rest_sum (u : DualSpinor) :
   simp [Pi.smul_apply]
   nlinarith
 
-/-- The sum of the two rest images stays null, while the current does not. -/
+/-- The sum of the two rest images stays null; the current does not. -/
 theorem realCurrent_rest_ne_manifest_sum {u : DualSpinor} (hu : u ≠ 0) :
     realCurrent (restParticleSpinor u) ≠ manifest u + manifest ((I : ℂ) • u) := by
   intro h

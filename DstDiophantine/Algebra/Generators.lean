@@ -6,20 +6,7 @@ import Mathlib.Tactic.Module
 /-!
 # Ten bivector generators of G(3,1,1)
 
-Hyperbolic (`iI,iJ,iK`), cyclic (`I,J,K`), and null (`N₀…N₃`) generators.
-
-## Lie-algebra status
-
-The six hyperbolic–cyclic generators span a candidate copy of `𝔰𝔬(3,1)`
-(Lorentz), and the four null generators form an abelian translation ideal under
-the geometric product (`N_μ N_ν = 0`).  Together they are the standard
-**Poincaré** candidate `𝔰𝔬(3,1) ⋉ ℝ^{3,1}` inside `G(3,1,1)`.
-
-We deliberately **do not** call the six generators `𝔰𝔬(3,1) ⊕ 𝔰𝔬(3,1)`: that
-would be twelve-dimensional.  Full Lie-bracket isomorphism theorems are not
-claimed here; only product squares, strong null vanishing, the internal
-Lorentz commutator table among the six hyperbolic/cyclic generators, and a
-minimal commutator API are formalised.
+Hyperbolic, cyclic, and null generators inside `G(3,1,1)`. This is not an isomorphism with `𝔰𝔬(3,1)`, and not a sum of two copies.
 -/
 
 namespace DstDiophantine
@@ -28,7 +15,6 @@ open CliffordAlgebra PGA
 
 namespace Generators
 
-/-- Geometric commutator `[x,y] = xy - yx`. -/
 noncomputable def commutator (x y : PGA) : PGA :=
   x * y - y * x
 
@@ -72,17 +58,13 @@ theorem commutator_sum_right {ι : Type*} (x : PGA) (s : Finset ι) (y : ι → 
   · intro a s ha ih
     simp [Finset.sum_insert ha, commutator_add_right, ih]
 
-/-- Hyperbolic boost generators `B⁺ₐ = e₀ e_{a+1}` for `a = 0,1,2`.
-The papers label the same list from one: paper `B⁺₁` is `hyperbolic 0`. -/
+/-- Hyperbolic boost `B⁺ₐ = e₀ e_{a+1}`; paper `B⁺₁` is `hyperbolic 0`. -/
 noncomputable def hyperbolic : Fin 3 → PGA
   | 0 => ι 0 * ι 1
   | 1 => ι 0 * ι 2
   | 2 => ι 0 * ι 3
 
-/-- Cyclic rotation generators `B⁻₀ = e₃ e₂`, `B⁻₁ = e₁ e₃`, `B⁻₂ = e₂ e₁`.
-Paper labels run through `{1,2,3}`, so paper `B⁻₁` is `cyclic 0` and paper
-`B⁻₂` is `cyclic 1`. The null rotation `hyperbolic 0 + cyclic 1` is the
-paper's `B⁺₁ + B⁻₂`. -/
+/-- Cyclic generators `e₃e₂`, `e₁e₃`, `e₂e₁`; paper `B⁻₁` is `cyclic 0`. -/
 noncomputable def cyclic : Fin 3 → PGA
   | 0 => ι 3 * ι 2
   | 1 => ι 1 * ι 3
@@ -95,7 +77,6 @@ noncomputable def null (μ : Fin 4) : PGA :=
 @[simp] theorem reverse_ι (μ : Fin 5) : reverse (ι μ) = ι μ := by
   simp only [PGA.ι, CliffordAlgebra.reverse_ι]
 
-/-- Square of a simple bivector: `(eᵢ eⱼ)² = -Q(eᵢ) Q(eⱼ)`. -/
 theorem ι_mul_ι_sq (i j : Fin 5) (hij : i ≠ j) :
     (ι i * ι j) * (ι i * ι j) =
       -(algebraMap ℝ PGA (Q311 (e5vec i)) * algebraMap ℝ PGA (Q311 (e5vec j))) := by
@@ -106,7 +87,6 @@ theorem ι_mul_ι_sq (i j : Fin 5) (hij : i ≠ j) :
     _ = -(algebraMap ℝ PGA (Q311 (e5vec i)) * algebraMap ℝ PGA (Q311 (e5vec j))) := by
         rw [e_sq i, e_sq j]
 
-/-- Reverse of a simple bivector: `(eᵢ eⱼ)˜ = -eᵢ eⱼ` when `i ≠ j`. -/
 theorem reverse_ι_mul_ι (i j : Fin 5) (hij : i ≠ j) :
     reverse (ι i * ι j) = -(ι i * ι j) := by
   rw [CliffordAlgebra.reverse.map_mul, reverse_ι, reverse_ι, e_mul_anticomm hij.symm]
@@ -151,7 +131,6 @@ theorem null_sq (μ : Fin 4) : null μ * null μ = 0 := by
         simp [mul_assoc]
     _ = 0 := by simp [e4_sq_zero]
 
-/-- Strong null vanishing: `N_μ N_ν = 0` for all `μ, ν`. -/
 theorem null_mul_null (μ ν : Fin 4) : null μ * null ν = 0 := by
   dsimp [null]
   calc ι e4Index * ι (Fin.castAdd 1 μ) * (ι e4Index * ι (Fin.castAdd 1 ν))
@@ -166,13 +145,10 @@ theorem commutator_null_null (μ ν : Fin 4) :
     commutator (null μ) (null ν) = 0 := by
   simp [commutator, null_mul_null]
 
-/-- Null generators form an abelian ideal under the geometric product. -/
 theorem null_commute (μ ν : Fin 4) : Commute (null μ) (null ν) := by
   unfold Commute SemiconjBy
   simp [null_mul_null]
 
-/-- Contracting a null generator against its Minkowski leg recovers a nonzero
-multiple of \(e_4\). -/
 private theorem null_mul_own (μ : Fin 4) :
     null μ * ι (Fin.castAdd 1 μ) =
       algebraMap ℝ PGA (Q311 (e5vec (Fin.castAdd 1 μ))) * ι e4Index := by
@@ -241,8 +217,7 @@ theorem cyclic_reverse (a : Fin 3) : reverse (cyclic a) = -cyclic a := by
 
 /-! ### Commutators of hyperbolic / cyclic generators
 
-Same-axis pairs commute. The unrestricted identity `[iΓ_a, Γ_b] = 0`
-fails off-axis.
+Same-axis pairs commute. The identity `[iΓ_a, Γ_b] = 0` fails off-axis.
 -/
 
 private theorem mul_hyperbolic0_cyclic0 :
@@ -311,7 +286,6 @@ private theorem mul_cyclic2_hyperbolic2 :
     _ = -(ι 0 * (-(ι 3 * ι 2)) * ι 1) := by rw [h23]
     _ = ι 0 * ι 3 * ι 2 * ι 1 := by simp [mul_neg, mul_assoc]
 
-/-- Same-axis boost and rotation generators commute (paper: `[iΓ_a, Γ_a] = 0`). -/
 theorem commutator_hyperbolic_cyclic_same (a : Fin 3) :
     commutator (hyperbolic a) (cyclic a) = 0 := by
   fin_cases a
@@ -463,17 +437,14 @@ private theorem mul_hyperbolic0_null3 :
     hyperbolic 0 * null 3 = null 3 * hyperbolic 0 :=
   commute_hyperbolic0_null_off (by decide) (by decide)
 
-/-- Radial boost mixes time and \(x\) translations: \([B^{+}_{0},N_{0}]=2N_{1}\). -/
 theorem commutator_hyperbolic0_null0 :
     commutator (hyperbolic 0) (null 0) = (2 : ℝ) • null 1 := by
   simp only [commutator, mul_hyperbolic0_null0, mul_null0_hyperbolic0, sub_neg_eq_add, two_smul]
 
-/-- \([B^{+}_{0},N_{1}]=2N_{0}\). -/
 theorem commutator_hyperbolic0_null1 :
     commutator (hyperbolic 0) (null 1) = (2 : ℝ) • null 0 := by
   simp only [commutator, mul_hyperbolic0_null1, mul_null1_hyperbolic0, sub_neg_eq_add, two_smul]
 
-/-- Off-plane translations are invariant: \([B^{+}_{0},N_{2}]=0\). -/
 theorem commutator_hyperbolic0_null2 :
     commutator (hyperbolic 0) (null 2) = 0 := by
   simp [commutator, mul_hyperbolic0_null2, sub_self]
@@ -482,7 +453,6 @@ theorem commutator_hyperbolic0_null3 :
     commutator (hyperbolic 0) (null 3) = 0 := by
   simp [commutator, mul_hyperbolic0_null3, sub_self]
 
-/-- Closed commutator table of the radial boost with the four null generators. -/
 theorem commutator_hyperbolic0_null (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) =
       match μ with
@@ -496,20 +466,17 @@ theorem commutator_hyperbolic0_null (μ : Fin 4) :
   | 2 => exact commutator_hyperbolic0_null2
   | 3 => exact commutator_hyperbolic0_null3
 
-/-- Outward radial lightlike translation: \([B^{+}_{0},N_{0}+N_{1}]=2(N_{0}+N_{1})\). -/
 theorem commutator_hyperbolic0_light_plus :
     commutator (hyperbolic 0) (null 0 + null 1) = (2 : ℝ) • (null 0 + null 1) := by
   rw [commutator_add_right, commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
   module
 
-/-- Inward radial lightlike translation: \([B^{+}_{0},N_{0}-N_{1}]=-2(N_{0}-N_{1})\). -/
 theorem commutator_hyperbolic0_light_minus :
     commutator (hyperbolic 0) (null 0 - null 1) = (-2 : ℝ) • (null 0 - null 1) := by
   rw [sub_eq_add_neg, commutator_add_right, ← neg_one_smul ℝ (null 1), commutator_smul_right,
     commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
   module
 
-/-- A time translation does not move a radial lightlike momentum. -/
 theorem commutator_null0_light_plus :
     commutator (null 0) (null 0 + null 1) = 0 := by
   rw [commutator_add_right, commutator_null_null, commutator_null_null, add_zero]
@@ -523,33 +490,28 @@ theorem commutator_null0_light_minus :
 noncomputable def radialMomentum (ε π : ℝ) : PGA :=
   ε • null 0 + π • null 1
 
-/-- Null weights `(ε ± π)/2` on the outward and inward rays. -/
 theorem radialMomentum_eq_weights (ε π : ℝ) :
     radialMomentum ε π =
       ((ε + π) / 2) • (null 0 + null 1) + ((ε - π) / 2) • (null 0 - null 1) := by
   rw [radialMomentum]
   module
 
-/-- `[B⁺₀, ε N₀ + π N₁] = 2(π N₀ + ε N₁)`. -/
 theorem commutator_hyperbolic0_radial (ε π : ℝ) :
     commutator (hyperbolic 0) (radialMomentum ε π) = (2 : ℝ) • radialMomentum π ε := by
   rw [radialMomentum, radialMomentum, commutator_add_right, commutator_smul_right,
     commutator_smul_right, commutator_hyperbolic0_null0, commutator_hyperbolic0_null1]
   module
 
-/-- A time translation does not move a radial momentum. -/
 theorem commutator_null0_radial (ε π : ℝ) :
     commutator (null 0) (radialMomentum ε π) = 0 := by
   rw [radialMomentum, commutator_add_right, commutator_smul_right, commutator_smul_right,
     commutator_null_null, commutator_null_null, smul_zero, smul_zero, add_zero]
 
-/-- At rest the boost is purely spatial: `[B⁺₀, ε N₀] = 2ε N₁`. -/
 theorem commutator_hyperbolic0_rest (ε : ℝ) :
     commutator (hyperbolic 0) (radialMomentum ε 0) = (2 * ε) • null 1 := by
   rw [commutator_hyperbolic0_radial, radialMomentum]
   module
 
-/-- Null translations form an \(\mathrm{ad}\)-invariant subspace under the radial boost. -/
 theorem commutator_hyperbolic0_null_mem_span (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) ∈
       Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) := by
@@ -718,7 +680,6 @@ private theorem zero_ne_castAdd_succ (a : Fin 3) :
     (0 : Fin 5) ≠ Fin.castAdd 1 a.succ :=
   (castAdd_ne_zero (Fin.succ_ne_zero a)).symm
 
-/-- Boost against a time translation: \((e_0 e_k) N_0 = N_k\). -/
 private theorem mul_hyperbolic_null_time (a : Fin 3) :
     hyperbolic a * null 0 = null a.succ := by
   rw [hyperbolic_eq]
@@ -747,7 +708,6 @@ private theorem mul_null_time_hyperbolic (a : Fin 3) :
       = ι e4Index * (ι 0 * ι 0) * ι (Fin.castAdd 1 a.succ) := by simp [mul_assoc]
     _ = -(ι e4Index * ι (Fin.castAdd 1 a.succ)) := by simp [e0_sq]
 
-/-- Boost against its spatial translation: \((e_0 e_k) N_k = N_0\). -/
 private theorem mul_hyperbolic_null_space (a : Fin 3) :
     hyperbolic a * null a.succ = null 0 := by
   rw [hyperbolic_eq]
@@ -798,7 +758,6 @@ private theorem commute_hyperbolic_null_off (a : Fin 3) {μ : Fin 4}
   exact (commute_simple_bivector_ι (zero_ne_castAdd_succ a) hi0 hik).mul_right
     (commute_simple_bivector_ι (zero_ne_castAdd_succ a) hμ0 hμk)
 
-/-- Closed commutator table of a boost with the four null generators. -/
 theorem commutator_hyperbolic_null (a : Fin 3) (μ : Fin 4) :
     commutator (hyperbolic a) (null μ) =
       if μ = 0 then (2 : ℝ) • null a.succ
@@ -960,7 +919,6 @@ private theorem commute_cyclic_null_off (a : Fin 3) {μ : Fin 4}
   exact (commute_simple_bivector_ι hij hi4.symm hj4.symm).mul_right
     (commute_simple_bivector_ι hij hμL hμR)
 
-/-- Closed commutator table of a cyclic generator with the four null generators. -/
 theorem commutator_cyclic_null (a : Fin 3) (μ : Fin 4) :
     commutator (cyclic a) (null μ) =
       if μ = cyclicRight a then (2 : ℝ) • null (cyclicLeft a)
@@ -984,7 +942,6 @@ theorem commutator_cyclic_null_mem_span (a : Fin 3) (μ : Fin 4) :
   · exact smul_mem_nullSpan _ (mem_nullSpan _)
   · exact nullSpan.zero_mem
 
-/-- Time translation is inert under axis-1 rotation: \([B^-_1,N_0]=0\). -/
 theorem commutator_cyclic1_null0 :
     commutator (cyclic 1) (null 0) = 0 := by
   rw [commutator_cyclic_null]
@@ -992,7 +949,6 @@ theorem commutator_cyclic1_null0 :
   have hL : (0 : Fin 4) ≠ cyclicLeft (1 : Fin 3) := by decide
   simp [hR, hL]
 
-/-- Axis-1 rotation of the integer translator: \([B^-_1,N_1]=-2N_3\). -/
 theorem commutator_cyclic1_null1 :
     commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 := by
   rw [commutator_cyclic_null]
@@ -1001,7 +957,6 @@ theorem commutator_cyclic1_null1 :
   rw [ite_eq_right hne, ite_eq_left heq]
   rfl
 
-/-- Axis-1 rotation of the cyclic-plane translator: \([B^-_1,N_3]=2N_1\). -/
 theorem commutator_cyclic1_null3 :
     commutator (cyclic 1) (null 3) = (2 : ℝ) • null 1 := by
   rw [commutator_cyclic_null]
@@ -1041,7 +996,6 @@ private theorem mul_hyperbolic_hyperbolic (a b : Fin 3) :
           ι (Fin.castAdd 1 b.succ)) := by simp [mul_neg, mul_assoc]
     _ = ι (Fin.castAdd 1 a.succ) * ι (Fin.castAdd 1 b.succ) := by simp [e0_sq]
 
-/-- Distinct boosts close on twice the spatial bivector of their space legs. -/
 theorem commutator_hyperbolic_hyperbolic (a b : Fin 3) :
     commutator (hyperbolic a) (hyperbolic b) =
       if a = b then 0
@@ -1171,8 +1125,6 @@ private theorem mul_cyclic_addTwo_cyclic (a : Fin 3) :
   have h2 : a + 2 + 2 = a + 1 := by fin_cases a <;> decide
   simpa [h1, h2] using h
 
-/-- Cyclic generators close with the standard `𝔰𝔬(3)` structure constants
-`[B⁻_a, B⁻_{a+1}] = 2 B⁻_{a+2}`. -/
 theorem commutator_cyclic_cyclic (a b : Fin 3) :
     commutator (cyclic a) (cyclic b) =
       if a = b then 0
@@ -1263,8 +1215,6 @@ private theorem mul_cyclic_addTwo_hyperbolic (a : Fin 3) :
             e_mul_anticomm (castAdd_ne_zero (Fin.succ_ne_zero (a + 1)))
           simp [hn0]
 
-/-- Mixed boost–rotation brackets: same axis vanishes, adjacent axes produce
-the remaining boost (structure constants of a candidate `𝔰𝔬(3,1)` copy). -/
 theorem commutator_hyperbolic_cyclic (a b : Fin 3) :
     commutator (hyperbolic a) (cyclic b) =
       if a = b then 0
@@ -1299,7 +1249,6 @@ private theorem eq_add_two_of_ne_and_ne_succ {a b : Fin 3} (h : a ≠ b)
       b = b + 1 + 2 := hwrap.symm
       _ = a + 2 := by rw [hEq]
 
-/-- Off a common axis the product is the remaining boost, up to sign. -/
 theorem hyperbolic_mul_cyclic_off {a b : Fin 3} (h : a ≠ b) :
     hyperbolic a * cyclic b =
       if b = a + 1 then hyperbolic (a + 2) else -hyperbolic (a + 1) := by
@@ -1310,7 +1259,6 @@ theorem hyperbolic_mul_cyclic_off {a b : Fin 3} (h : a ≠ b) :
     subst hb
     simp [hsucc, mul_hyperbolic_cyclic_addTwo]
 
-/-- Off a common axis a boost and a rotation anticommute. -/
 theorem anticommute_hyperbolic_cyclic_off {a b : Fin 3} (h : a ≠ b) :
     hyperbolic a * cyclic b = -(cyclic b * hyperbolic a) := by
   rw [hyperbolic_mul_cyclic_off h]
@@ -1321,7 +1269,6 @@ theorem anticommute_hyperbolic_cyclic_off {a b : Fin 3} (h : a ≠ b) :
     subst hb
     simp [hsucc, mul_cyclic_addTwo_hyperbolic]
 
-/-- Off a common axis, \((p B^+_a + q B^-_b)^2 = (p^2 - q^2)\,1\). -/
 theorem offAxis_scaled_sq {a b : Fin 3} (h : a ≠ b) (p q : ℝ) :
     (p • hyperbolic a + q • cyclic b) * (p • hyperbolic a + q • cyclic b) =
       (p ^ 2 - q ^ 2) • (1 : PGA) := by
@@ -1346,7 +1293,6 @@ theorem offAxis_scaled_sq {a b : Fin 3} (h : a ≠ b) (p q : ℝ) :
     hyperbolic_sq, cyclic_sq, hanti]
   module
 
-/-- The axis-0 boost plus the axis-1 rotation sends \(N_1\) to \(N_0 - N_3\). -/
 theorem crossAxis01_mul_null1 :
     (hyperbolic 0 + cyclic 1) * null 1 = null 0 - null 3 := by
   rw [add_mul, mul_hyperbolic0_null1]
@@ -1355,7 +1301,6 @@ theorem crossAxis01_mul_null1 :
   rw [hC]
   abel
 
-/-- The same pair acts on the right by the opposite shear. -/
 theorem null1_mul_crossAxis01 :
     null 1 * (hyperbolic 0 + cyclic 1) = -(null 0 - null 3) := by
   rw [mul_add, mul_null1_hyperbolic0]
@@ -1364,7 +1309,6 @@ theorem null1_mul_crossAxis01 :
   rw [hC]
   abel
 
-/-- Any two elements of the null span multiply to zero. -/
 theorem nullSpan_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) : x * y = 0 := by
   refine Submodule.span_induction₂
     (s := Set.range (null : Fin 4 → PGA)) (t := Set.range (null : Fin 4 → PGA))
@@ -1384,7 +1328,6 @@ theorem nullSpan_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) : x
   · intro r _ _ _ _ h
     rw [mul_smul_comm, h, smul_zero]
 
-/-- Two null generators sandwich any element to zero. -/
 theorem null_mul_mul_null (μ ν : Fin 4) (z : PGA) :
     null μ * z * null ν = 0 := by
   dsimp [null]
@@ -1393,7 +1336,6 @@ theorem null_mul_mul_null (μ ν : Fin 4) (z : PGA) :
           ι (Fin.castAdd 1 ν) := by simp [mul_assoc]
     _ = 0 := by rw [e4_mul_mul_e4, zero_mul]
 
-/-- Null-span elements sandwich any element to zero. -/
 theorem nullSpan_mul_mul {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) (z : PGA) :
     x * z * y = 0 := by
   refine Submodule.span_induction₂

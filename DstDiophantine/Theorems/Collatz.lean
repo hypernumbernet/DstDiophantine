@@ -16,47 +16,9 @@ import Mathlib.Tactic.IntervalCases
 set_option linter.style.native false
 
 /-!
-# Phase 5: Collatz conjecture (DST orbit / height core)
+# Collatz height and the admissible cone
 
-We formalise Chapter 9 of `dst-diophantine.tex` as the pure-boost geometry of
-the Collatz map: the admissible window, the return cycle, a congruence
-contraction, and a certificate that every start up to `2^20` reaches `1`.
-
-## What is proved
-
-* The canonical pure boost of a positive integer lies in the admissible cone
-  if and only if the integer is `1` or `2`. The normalised height of `2` is
-  strictly less than one third; `3` has already left the cone, while its
-  height is still strictly less than one; every `n ≥ 4` has height greater
-  than one.
-* The odd step is the pure boost `log(3n+1) = log n + log(3 + 1/n)` on that
-  same axis. The kick `log(3 + 1/n)` exceeds the cone radius `π/4`, and the
-  image `3n+1` is at least `4`, so every odd step lands beyond unit height.
-* The shell between the cone wall `π/4` and the unit-height surface
-  `π √3 / 4` is narrower than one halving `log 2`. On the positive integers
-  that shell is exactly `{3}`. The only prime on the stable phase is `2`,
-  and the only prime in the shell is `3`. The only step into the cone from
-  outside it is `4 → 2`, which skips the shell. The only step onto `3` is
-  `6 → 3`.
-* The outgoing leg `1 → 4` has rapidity `2 log 2 > π/4`, so the cycle
-  `4 → 2 → 1` meets the cone and immediately leaves it.
-* The only periodic points whose orbit reaches `1` are `1`, `2`, and `4`.
-* On the accelerated map (one halving per step), every integer `n ≥ 3` whose
-  first sixteen inputs include at most ten odd values returns strictly below
-  itself. Exactly `6885` residue classes modulo `2^16` have eleven or more
-  odd inputs in that block.
-* Every positive integer up to `2^20` reaches `1`. Any other periodic point
-  is strictly larger, and the normalised height is then greater than `100` at
-  every vertex of its cycle.
-
-## Paper gap (not closed)
-
-Classical Collatz (`∀ n > 0, the orbit reaches 1`) is **not** claimed.
-`CollatzAdmissibleBridge` asks a counterexample to produce a cycle of height
-at most one. No cycle that avoids `1` has that height, so the bridge holds
-if and only if the conjecture does (`collatzAdmissibleBridge_iff`). It is not
-a reduction. Divergence is not forbidden by the torsion bound: the bound
-applies on the admissible cone, and the cone is not forward-invariant.
+Only `1` and `2` lie on the admissible cone, and every start up to `2^20` reaches `1`. Classical Collatz is not claimed; `CollatzAdmissibleBridge` is not a reduction of it.
 -/
 
 namespace DstDiophantine
@@ -92,7 +54,6 @@ theorem collatzStep_two : collatzStep 2 = 1 := by
 theorem collatzStep_four : collatzStep 4 = 2 := by
   native_decide
 
-/-- The attracting classical cycle `4 → 2 → 1 → 4`. -/
 theorem collatz_cycle_421 :
     collatzStep 4 = 2 ∧ collatzStep 2 = 1 ∧ collatzStep 1 = 4 :=
   ⟨collatzStep_four, collatzStep_two, collatzStep_one⟩
@@ -169,7 +130,6 @@ private theorem collatzHeight_mono_of_le {m n : ℕ} (hm : m ≠ 0) (hn : n ≠ 
     sq_le_sq.mpr (by rwa [abs_of_nonneg hlogm, abs_of_nonneg hlogn])
   exact mul_le_mul_of_nonneg_left hsq hcoef
 
-/-- Even Collatz step contracts the pure-boost height. -/
 theorem collatzHeight_even_le {n : ℕ} (hn : 2 ≤ n) (_he : n % 2 = 0) :
     collatzHeight (n / 2) (by
       have : 0 < n / 2 := Nat.div_pos hn (by decide : 0 < 2)
@@ -177,7 +137,6 @@ theorem collatzHeight_even_le {n : ℕ} (hn : 2 ≤ n) (_he : n % 2 = 0) :
       collatzHeight n (Nat.pos_iff_ne_zero.mp (Nat.lt_of_lt_of_le (by decide : 0 < 2) hn)) := by
   refine collatzHeight_mono_of_le _ _ (Nat.div_le_self n 2)
 
-/-- Strict contraction for even `n ≥ 4`. -/
 theorem collatzHeight_even_lt {n : ℕ} (hn : 4 ≤ n) (_he : n % 2 = 0) :
     collatzHeight (n / 2) (by
       have : 0 < n / 2 := Nat.div_pos (le_trans (by decide : 2 ≤ 4) hn) (by decide : 0 < 2)
@@ -206,10 +165,6 @@ theorem collatzHeight_even_lt {n : ℕ} (hn : 4 ≤ n) (_he : n % 2 = 0) :
     exact mul_lt_mul'' hloglt hloglt hlogm hlogm
   exact (mul_lt_mul_of_pos_left hsq hcoefPos)
 
-/-- Odd-step pure-boost delta: `log(3n+1) = log n + log(3 + 1/n)`.
-
-This replaces the paper's informal shear
-`exp(log 3 · iI + Γ₁ · log(1 + 1/n))` by a single hyperbolic boost. -/
 theorem collatz_odd_log_delta {n : ℕ} (hn : 0 < n) :
     Real.log ((3 * n + 1 : ℕ) : ℝ) =
       Real.log n + Real.log (3 + 1 / (n : ℝ)) := by
@@ -262,7 +217,6 @@ theorem collatzHeight_ge_four_gt_one {n : ℕ} (hn : 4 ≤ n) :
   have h4 : 1 < collatzHeight 4 (by decide) := collatzHeight_four_gt_one
   exact lt_of_lt_of_le h4 (collatzHeight_mono_of_le (by decide) hn0 hn)
 
-/-- Values with normalised height at most `1` are at most `3`. -/
 theorem collatzHeight_le_one_implies_le_three {n : ℕ} (hn : n ≠ 0)
     (hle : collatzHeight n hn ≤ 1) : n ≤ 3 := by
   by_contra hgt
@@ -282,7 +236,6 @@ theorem isCollatzCycle_421 :
   intro m hm
   fin_cases hm <;> simp [collatzStep_one, collatzStep_two, collatzStep_four]
 
-/-- Chapter 9 core: a Collatz cycle that avoids `1` must exceed height `1`. -/
 theorem collatz_cycle_avoids_one_exceeds_bound {s : Finset ℕ}
     (hcyc : IsCollatzCycle s)
     (hpos : ∀ m ∈ s, 0 < m)
@@ -290,7 +243,7 @@ theorem collatz_cycle_avoids_one_exceeds_bound {s : Finset ℕ}
     ∃ m ∈ s, ∃ hm : m ≠ 0, 1 < collatzHeight m hm := by
   obtain ⟨⟨m0, hm0⟩, hclosed⟩ := hcyc
   by_cases hle : ∀ m ∈ s, m ≤ 3
-  · -- Then s ⊆ {2,3} (positive, avoids 1), which cannot be a cycle.
+  ·
     have hs23 : ∀ m ∈ s, m = 2 ∨ m = 3 := by
       intro m hm
       have hmpos : 0 < m := hpos m hm
@@ -318,7 +271,6 @@ theorem collatz_cycle_avoids_one_exceeds_bound {s : Finset ℕ}
 
 /-! ### Finite-type eventual periodicity -/
 
-/-- On a finite type every orbit is eventually periodic (pigeonhole). -/
 theorem eventually_periodic_of_fintype {α : Type*} [Finite α]
     (f : α → α) (x : α) :
     ∃ m n : ℕ, m < n ∧ f^[n] x = f^[m] x := by
@@ -352,7 +304,6 @@ theorem pi_div_two_lt_two_log_three : Real.pi / 2 < 2 * Real.log 3 := by
   have hpi : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
   nlinarith
 
-/-- Positive integers whose canonical pure boost lies in the admissible cone. -/
 theorem positive_integer_boost_admissible_iff {n : ℕ} (hn : 0 < n) :
     Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ↔ n = 1 ∨ n = 2 := by
   rw [isAdmissibleContinuous_pureBoost_iff]
@@ -535,9 +486,7 @@ theorem not_collatz_periodic_three : ¬ IsCollatzPeriodic 3 := by
 
 /-! ### Accelerated map: one halving per step
 
-An even input is halved. An odd input is sent to `(3n+1)/2`, which is the
-ordinary odd step followed by the forced halving. `accelRun k n` returns the
-value after `k` such steps and the number of odd inputs among them.
+An even input is halved. An odd input goes to `(3n+1)/2`, and `accelRun` counts the odd inputs.
 -/
 
 /-- `k` accelerated steps, together with the number of odd inputs. -/
@@ -781,8 +730,7 @@ theorem reachesOne_of_iter {k n : ℕ} (h : ReachesOne (collatzIter k n)) : Reac
     rw [collatzIter_succ_left] at h
     exact reachesOne_of_step (ih h)
 
-/-- `dropsBelow fuel n start` follows the ordinary orbit of `n` until it falls
-strictly below `start`, or hits `1`. -/
+/-- `dropsBelow fuel n start` follows the ordinary orbit of `n` until it falls strictly below `start`, or hits `1`. -/
 def dropsBelow : ℕ → ℕ → ℕ → Bool
   | 0, _, _ => false
   | fuel + 1, n, start =>
@@ -932,7 +880,6 @@ theorem pi_div_four_lt_log_three : Real.pi / 4 < Real.log 3 := by
   have h := pi_div_two_lt_two_log_three
   linarith
 
-/-- Every odd step adds more rapidity than the radius of the cone. -/
 theorem collatz_odd_kick_gt_cone_radius {n : ℕ} (hn : 0 < n) :
     Real.pi / 4 < Real.log (3 + 1 / (n : ℝ)) := by
   refine lt_trans pi_div_four_lt_log_three ?_
@@ -950,7 +897,6 @@ theorem collatz_odd_image_height_gt_one {n : ℕ} (_hn : 0 < n) (hodd : n % 2 = 
   rw [collatzHeight_eq_mul] at hgt ⊢
   exact hgt
 
-/-- An odd step lands beyond unit height, hence outside the cone and the shell. -/
 theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 0 < n) (hodd : n % 2 = 1) :
     4 ≤ 3 * n + 1 ∧
       ¬ Discrete.IsAdmissibleContinuous
@@ -962,7 +908,6 @@ theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 0 < n) (hodd : n % 2
   have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
   omega
 
-/-- The cone is entered from outside only by the halving `4 → 2`, and `2 → 1` stays inside. -/
 theorem collatzStep_eq_one_or_two_iff {n : ℕ} (hn : 0 < n) :
     collatzStep n = 1 ∨ collatzStep n = 2 ↔ n = 2 ∨ n = 4 := by
   constructor
@@ -983,7 +928,6 @@ theorem collatzStep_eq_one_or_two_iff {n : ℕ} (hn : 0 < n) :
     · exact Or.inl collatzStep_two
     · exact Or.inr collatzStep_four
 
-/-- The shell integer `3` is reached only by halving `6`. -/
 theorem collatzStep_eq_three_iff {n : ℕ} (hn : 0 < n) :
     collatzStep n = 3 ↔ n = 6 := by
   constructor
@@ -1000,7 +944,6 @@ theorem collatzStep_eq_three_iff {n : ℕ} (hn : 0 < n) :
   · rintro rfl
     decide
 
-/-- The shell between the cone wall and unit height is narrower than one halving. -/
 theorem pureBoostShell_narrower_than_log_two :
     (Real.sqrt 3 - 1) * Real.pi / 4 < Real.log 2 := by
   have hsqrt : Real.sqrt 3 < (1733 : ℝ) / 1000 :=
@@ -1020,7 +963,6 @@ theorem pureBoostShell_narrower_than_log_two :
   have hfour : (Real.sqrt 3 - 1) * Real.pi < 4 * Real.log 2 := by linarith
   linarith
 
-/-- Positive integers in the shell: outside the cone, with normalised height still below one. -/
 theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
     (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ∧
         collatzHeight n (Nat.pos_iff_ne_zero.mp hn) < 1) ↔
@@ -1039,7 +981,6 @@ theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
     have hmem := (positive_integer_boost_admissible_iff (by decide : 0 < 3)).mp hadm
     omega
 
-/-- The only prime on the stable phase is `2`. -/
 theorem prime_boost_admissible_iff {p : ℕ} (hp : Nat.Prime p) :
     Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by
   rw [positive_integer_boost_admissible_iff (Nat.Prime.pos hp)]
@@ -1050,7 +991,6 @@ theorem prime_boost_admissible_iff {p : ℕ} (hp : Nat.Prime p) :
   · intro h
     exact Or.inr h
 
-/-- The only prime in the shell between the cone and unit height is `3`. -/
 theorem prime_shell_iff {p : ℕ} (hp : Nat.Prime p) :
     (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
         collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos hp)) < 1) ↔
@@ -1059,12 +999,7 @@ theorem prime_shell_iff {p : ℕ} (hp : Nat.Prime p) :
 
 /-! ### Classical Collatz under an explicit bridge hypothesis -/
 
-/--
-A counterexample would have to produce a cycle that avoids `1` and stays inside
-normalised height `1`. No such cycle exists, so the implication is vacuous
-precisely when every orbit reaches `1`. The bridge is therefore equivalent to
-the classical conjecture (`collatzAdmissibleBridge_iff`), not a reduction of it.
--/
+/-- Unproved bridge, equivalent to classical Collatz, not a reduction. -/
 def CollatzAdmissibleBridge : Prop :=
   ∀ n : ℕ, 0 < n → ¬ ReachesOne n →
     ∃ s : Finset ℕ,
@@ -1073,7 +1008,6 @@ def CollatzAdmissibleBridge : Prop :=
         1 ∉ s ∧
         (∀ m ∈ s, ∀ hm : m ≠ 0, collatzHeight m hm ≤ 1)
 
-/-- Conditional DST recovery of the Collatz conjecture. -/
 theorem collatz_conjecture_of_bridge (hbridge : CollatzAdmissibleBridge) :
     ∀ n : ℕ, 0 < n → ReachesOne n := by
   intro n hn

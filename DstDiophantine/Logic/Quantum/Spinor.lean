@@ -15,13 +15,9 @@ import Mathlib.Basic.Complex.Basic
 
 
 /-!
-# Dual-sector spinor Hilbert space `ℂ²`
+# Dual-sector spinor space `ℂ²`
 
-The cyclic generators are represented by `-i σ_a`, so that `IJ = K`
-matches `cyclic_zero_mul_one` and the rotation is `exp(-i/2 β · σ)`.
-
-This Hilbert space is D4L's dual-sector kinematics. It is not the space
-of scalar-layer propositions `{T,U,F,B}`.
+Cyclic generators act by `-i σ_a`, and the dual rotor is `exp(-i/2 β·σ)`. This is not the space of scalar-layer propositions `{T, U, F, B}`.
 -/
 
 namespace DstDiophantine
@@ -87,7 +83,6 @@ theorem pauli_sq (a : Fin 3) : pauli a * pauli a = 1 := by
 
 theorem cyclicRep_sq (a : Fin 3) : cyclicRep a * cyclicRep a = -1 := by
   unfold cyclicRep
-  -- (-I • σ) * (-I • σ) = (I * I) • (σ * σ) = (-1) • 1 = -1
   have hI : (-I) * (-I) = (-1 : ℂ) := by
     simp [neg_mul, mul_neg, I_mul_I]
   calc (-I) • pauli a * ((-I) • pauli a)
@@ -168,7 +163,6 @@ theorem dualSpinor_inner_eq (χ ψ : DualSpinor) :
   simp [inner, Fin.sum_univ_two]
   ring
 
-/-- The adjoint of `applyMat A` is `applyMat Aᴴ`. -/
 theorem applyMat_inner (A : Matrix (Fin 2) (Fin 2) ℂ) (χ ψ : DualSpinor) :
     inner ℂ (applyMat A χ) ψ = inner ℂ χ (applyMat A.conjTranspose ψ) := by
   simp only [dualSpinor_inner_eq, applyMat_apply, Fin.sum_univ_two]
@@ -194,7 +188,6 @@ theorem dualRotorMat_axis0 (θ : ℝ) :
   congr 1
   simp [PiLp.single_apply, Fin.sum_univ_three]
 
-/-- Pauli matrices are Hermitian. -/
 theorem pauliX_isHermitian : pauliX.IsHermitian := by
   ext i j
   fin_cases i <;> fin_cases j <;>
@@ -226,7 +219,6 @@ theorem cyclicRep_conjTranspose (a : Fin 3) :
     _ = I • pauli a := by rw [hstar, hσ]
     _ = -((-I) • pauli a) := by simp [neg_smul]
 
-/-- A projective measurement on `DualSpinor` has at most two orthogonal outcomes. -/
 theorem dualSpinor_finrank : Module.finrank ℂ DualSpinor = 2 := by
   simp
 
@@ -280,7 +272,6 @@ theorem exp_smul_mul_exp_neg_smul_mat
   rw [add_neg_cancel, NormedSpace.exp_zero] at h
   exact h
 
-/-- Circular closed form on `M₂(ℂ)`: `x² = -1 ⇒ exp(t • x) = cos t + sin t • x`. -/
 theorem exp_mat_of_sq_neg_one {x : Matrix (Fin 2) (Fin 2) ℂ}
     (hx : x * x = -1) (t : ℝ) :
     NormedSpace.exp (t • x) =
@@ -345,7 +336,6 @@ theorem exp_mat_of_sq_neg_one {x : Matrix (Fin 2) (Fin 2) ℂ}
     _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul_mat]
     _ = R t := one_mul _
 
-/-- Axis-0 dual rotor: `exp(-i θ/2 σ_x) = cos(θ/2) I + sin(θ/2) (-i σ_x)`. -/
 theorem dualRotorMat_axis0_rodrigues (θ : ℝ) :
     dualRotorMat (EuclideanSpace.single 0 θ) =
       Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -373,7 +363,6 @@ private theorem dualRotorMat_axis0_entries (θ : ℝ) :
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.add_apply, Matrix.smul_apply, mul_comm]
 
-/-- Axis-0 dual rotor is unitary. -/
 theorem dualRotorMat_axis0_unitary (θ : ℝ) :
     (dualRotorMat (EuclideanSpace.single 0 θ)).conjTranspose *
       dualRotorMat (EuclideanSpace.single 0 θ) = 1 := by
@@ -438,7 +427,6 @@ theorem dualRotorMat_axis0_unitary (θ : ℝ) :
   simp [smul_neg, add_smul, sub_eq_add_neg]
   abel
 
-/-- Axis-0 dual rotor has determinant `1`. -/
 theorem dualRotorMat_axis0_det (θ : ℝ) :
     (dualRotorMat (EuclideanSpace.single 0 θ)).det = 1 := by
   rw [dualRotorMat_axis0_entries, Matrix.det_fin_two]
@@ -451,7 +439,6 @@ theorem dualRotorMat_axis0_det (θ : ℝ) :
       _ = (I * I) * (s * s) := by simp
       _ = (-1) * (s * s) := by simp [I_mul_I]
       _ = -(s * s) := by ring
-  -- det = c*c - ((-I)s)*((-I)s)
   change c * c - ((-I) * s) * ((-I) * s) = 1
   rw [hI, sub_neg_eq_add, hcs]
 
@@ -477,7 +464,6 @@ theorem dualRotorGen_conjTranspose (β : DualRapidity) :
     rw [Matrix.conjTranspose_smul, cyclicRep_conjTranspose, hr, smul_neg]
   rw [Finset.sum_congr rfl hterm, Finset.sum_neg_distrib]
 
-/-- Three-axis dual rotor is unitary. -/
 theorem dualRotorMat_unitary (β : DualRapidity) :
     (dualRotorMat β).conjTranspose * dualRotorMat β = 1 := by
   rw [dualRotorMat_eq_exp_gen]
@@ -511,7 +497,6 @@ theorem pauliY_mul_pauliX : pauliY * pauliX = -I • pauliZ := by
   ext i j; fin_cases i <;> fin_cases j <;>
     simp [pauliX, pauliY, pauliZ, Matrix.mul_apply, Fin.sum_univ_two]
 
-/-- Quaternion table for `-iσ`: \(IJ=K\) and cyclic permutations. -/
 theorem cyclicRep_one_mul_two : cyclicRep 1 * cyclicRep 2 = cyclicRep 0 :=
   cyclicRep_of_pauli 1 2 0 rfl rfl rfl pauliY_mul_pauliZ
 
@@ -540,7 +525,6 @@ theorem cyclicRep_two_mul_one : cyclicRep 2 * cyclicRep 1 = -cyclicRep 0 :=
 theorem cyclicRep_zero_mul_two : cyclicRep 0 * cyclicRep 2 = -cyclicRep 1 :=
   cyclicRep_of_pauli_neg 0 2 1 rfl rfl rfl pauliX_mul_pauliZ
 
-/-- \((\vec n\cdot\vec\sigma)^2 = \|\vec n\|^2 I\). -/
 theorem pauli_dot_sq (n : Fin 3 → ℝ) :
     (∑ a : Fin 3, (n a : ℂ) • pauli a) * (∑ a : Fin 3, (n a : ℂ) • pauli a) =
       ((n 0) ^ 2 + (n 1) ^ 2 + (n 2) ^ 2 : ℂ) • 1 := by
@@ -608,7 +592,6 @@ private theorem cyclicRepComb_unit_sq {β : DualRapidity} (h : β ≠ 0) :
     mod_cast hn
   simpa [cyclicRepComb, hnC, one_smul] using h
 
-/-- Dual rotor matrix is the Rodrigues formula along \(\beta\). -/
 theorem dualRotorMat_rodrigues (β : DualRapidity) :
     dualRotorMat β =
       Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -625,7 +608,6 @@ theorem dualRotorMat_zero : dualRotorMat 0 = 1 := by
   rw [dualRotorMat_rodrigues]
   simp
 
-/-- Three-axis dual rotor has determinant `1`. -/
 theorem dualRotorMat_det (β : DualRapidity) :
     (dualRotorMat β).det = 1 := by
   rw [dualRotorMat_eq_exp_gen]
@@ -729,7 +711,6 @@ def cross3 (n m : Fin 3 → ℝ) : Fin 3 → ℝ
   | 1 => n 2 * m 0 - n 0 * m 2
   | 2 => n 0 * m 1 - n 1 * m 0
 
-/-- Quaternion product \(\Gamma(n)\Gamma(m)=-(n\cdot m)I+\Gamma(n\times m)\). -/
 theorem cyclicRepComb_mul (n m : Fin 3 → ℝ) :
     cyclicRepComb n * cyclicRepComb m =
       -((n 0 * m 0 + n 1 * m 1 + n 2 * m 2 : ℂ) •
@@ -771,7 +752,6 @@ private theorem commute_dualRotorGen_smul (s t : ℝ) (β : DualRapidity) :
     ((t : ℂ) • dualRotorGen β) * ((s : ℂ) • dualRotorGen β)
   rw [smul_mul_smul_matC, smul_mul_smul_matC, mul_comm (s : ℂ) (t : ℂ)]
 
-/-- Inverse dual rotor is the dual rotor of the opposite rapidity. -/
 theorem dualRotorMat_neg (β : DualRapidity) :
     dualRotorMat (-β) = (dualRotorMat β).conjTranspose := by
   have hgen : dualRotorGen (-β) = -dualRotorGen β := by
@@ -784,7 +764,6 @@ theorem dualRotorMat_neg (β : DualRapidity) :
     (Matrix.exp_conjTranspose (dualRotorGen β)).symm
   rw [hCT, dualRotorGen_conjTranspose]
 
-/-- Dual rotors along a common ray compose by adding the scale. -/
 theorem dualRotorMat_ray_add (s t : ℝ) (β : DualRapidity) :
     dualRotorMat ((s + t) • β) =
       dualRotorMat (s • β) * dualRotorMat (t • β) := by

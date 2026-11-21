@@ -63,13 +63,13 @@ theorem inducedMetric_schwarzschild {rs r θ : ℝ} (h : IsExterior rs r) :
     have hs : Real.sqrt (schwarzschildA rs r) ≠ 0 := (Real.sqrt_pos.mpr hA).ne'
     simp only [schwarzschildMetric, ↓reduceIte]
     fin_cases μ
-    · -- g₀₀ = -A
+    ·
       change w31 0 * (schwarzschildDiag rs r θ 0) ^ 2 = -(schwarzschildA rs r)
       have hsq' : √(1 - rs / r) * √(1 - rs / r) = 1 - rs / r := by
         simpa [schwarzschildA, pow_two] using hsq
       simp only [schwarzschildDiag, w31, pow_two, schwarzschildA]
       linarith
-    · -- g₁₁ = A⁻¹
+    ·
       change w31 1 * (schwarzschildDiag rs r θ 1) ^ 2 = (schwarzschildA rs r)⁻¹
       simp only [schwarzschildDiag, w31, pow_two, one_mul, schwarzschildA]
       have hsq' : √(1 - rs / r) * √(1 - rs / r) = 1 - rs / r := by
@@ -84,7 +84,6 @@ theorem inducedMetric_schwarzschild {rs r θ : ℝ} (h : IsExterior rs r) :
       ring
   · simp [schwarzschildMetric, hμν]
 
-/-- `(t,r)` diagonal scales coincide with boost scale factors from `Sandwich`. -/
 theorem schwarzschildDiag_eq_boostScales {rs r θ : ℝ} (h : IsExterior rs r) :
     schwarzschildDiag rs r θ 0 =
         boostScaleFactors (schwarzschildRapidity rs r) 0 ∧

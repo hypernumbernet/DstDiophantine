@@ -3,17 +3,7 @@ import DstDiophantine.Logic.Quantum.DualEntanglement
 /-!
 # Spin observables of a dual spinor
 
-* The spin vector `r(u)_k = ⟨u, σ_k u⟩` is real, `⟨u, σ·a u⟩ = a·r(u)`, and
-  `|r(u)|² = ‖u‖⁴`: a unit dual spinor is a point of the unit sphere, and the
-  outcome `s = ±1` along a unit axis has probability `(1 + s a·r) / 2`.
-* A dual rotor `U(β)` turns `r` by the full angle `‖β‖` about `β`; two
-  `SU(2)` matrices turn every axis alike exactly when they differ by sign.
-* The interference of `u` with `U(β) u` has intensity `cos² (‖β‖ / 4)` for
-  every `u`: the period `4π` of the dual angle is visible.
-* `[σ·a, σ·b] = 2i σ·(a × b)`, and on a unit dual spinor
-  `Var(σ·a) Var(σ·b) = (a·b - ⟨σ·a⟩⟨σ·b⟩)² + ⟨σ·(a × b)⟩²`, so the Robertson
-  bound holds with the covariance as the exact excess; along three
-  perpendicular axes the variances sum to `2`.
+`U(β)` turns the spin vector by the full angle `‖β‖`, and the interference of `u` with `U(β) u` has period `4π`. On a unit spinor the Robertson–Schrödinger relation is an equality.
 -/
 
 namespace DstDiophantine
@@ -85,7 +75,6 @@ theorem spinExp_pauli (k : Fin 3) (u : DualSpinor) :
   · simp [spinVec]
   · simp [spinExp_im_of_hermitian (pauli_conjTranspose k)]
 
-/-- `⟨u, σ·a u⟩ = a·r(u)`. -/
 theorem spinExp_pauliComb (a : Fin 3 → ℝ) (u : DualSpinor) :
     spinExp (pauliComb a) u = (axisDot a (spinVec u) : ℂ) := by
   simp only [pauliComb, Fin.sum_univ_three, spinExp_add, spinExp_smul, spinExp_pauli, axisDot]
@@ -98,7 +87,6 @@ private theorem dualSpinor_norm_sq (u : DualSpinor) :
     Complex.normSq_apply, Complex.normSq_apply]
   ring
 
-/-- `|r(u)|² = ‖u‖⁴`. -/
 theorem axisDot_spinVec (u : DualSpinor) :
     axisDot (spinVec u) (spinVec u) = ‖u‖ ^ 4 := by
   rw [show ‖u‖ ^ 4 = (‖u‖ ^ 2) ^ 2 by ring, dualSpinor_norm_sq]
@@ -110,7 +98,6 @@ theorem axisDot_spinVec_of_norm {u : DualSpinor} (hu : ‖u‖ = 1) :
     axisDot (spinVec u) (spinVec u) = 1 := by
   rw [axisDot_spinVec, hu, one_pow]
 
-/-- Born weight of the outcome `s` along `a`: `⟨u, (1 + s σ·a)/2 u⟩ = (‖u‖² + s a·r) / 2`. -/
 theorem spinExp_spinProj (s : ℝ) (a : Fin 3 → ℝ) (u : DualSpinor) :
     spinExp (spinProj s a) u = (((‖u‖ ^ 2 + s * axisDot a (spinVec u)) / 2 : ℝ) : ℂ) := by
   rw [spinProj, spinExp_smul, spinExp_add, spinExp_smul, spinExp_one, spinExp_pauliComb]
@@ -123,7 +110,6 @@ theorem spinExp_spinProj (s : ℝ) (a : Fin 3 → ℝ) (u : DualSpinor) :
 noncomputable def axisRot (n : Fin 3 → ℝ) (θ : ℝ) (a : Fin 3 → ℝ) : Fin 3 → ℝ :=
   fun k => Real.cos θ * a k + Real.sin θ * cross3 n a k + (1 - Real.cos θ) * axisDot n a * n k
 
-/-- A rotation about a unit axis preserves the dot product. -/
 theorem axisDot_axisRot {n : Fin 3 → ℝ} (hn : axisDot n n = 1) (θ : ℝ) (a b : Fin 3 → ℝ) :
     axisDot (axisRot n θ a) (axisRot n θ b) = axisDot a b := by
   have hcs := Real.cos_sq_add_sin_sq θ
@@ -135,7 +121,6 @@ theorem axisDot_axisRot {n : Fin 3 → ℝ} (hn : axisDot n n = 1) (θ : ℝ) (a
       ((a 0 * b 0 + a 1 * b 1 + a 2 * b 2) -
           (n 0 * a 0 + n 1 * a 1 + n 2 * a 2) * (n 0 * b 0 + n 1 * b 1 + n 2 * b 2)) * hcs
 
-/-- The rotation by `-θ` is the transpose of the rotation by `θ`. -/
 theorem axisDot_axisRot_neg (n : Fin 3 → ℝ) (θ : ℝ) (a r : Fin 3 → ℝ) :
     axisDot (axisRot n (-θ) a) r = axisDot a (axisRot n θ r) := by
   simp only [axisDot, axisRot, cross3, Real.cos_neg, Real.sin_neg]
@@ -144,7 +129,6 @@ theorem axisDot_axisRot_neg (n : Fin 3 → ℝ) (θ : ℝ) (a r : Fin 3 → ℝ)
 private theorem realSmul_eq (t : ℝ) (M : Matrix (Fin 2) (Fin 2) ℂ) : t • M = (t : ℂ) • M :=
   (algebraMap_smul ℂ t M).symm
 
-/-- Conjugation of `σ·a` by `c + s Γ(n)`. -/
 theorem rodrigues_conj_pauliComb (c s : ℝ) (n a : Fin 3 → ℝ) :
     (c • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s • cyclicRepComb n)ᴴ * pauliComb a *
         (c • (1 : Matrix (Fin 2) (Fin 2) ℂ) + s • cyclicRepComb n) =
@@ -175,7 +159,6 @@ private theorem unit_axis_of_ne {β : DualRapidity} (h : β ≠ 0) :
   field_simp
   linarith
 
-/-- Heisenberg form: `U(β)ᴴ (σ·a) U(β) = σ·(R_{-‖β‖} a)` about `β / ‖β‖`. -/
 theorem dualRotor_conj_pauliComb {β : DualRapidity} (h : β ≠ 0) (a : Fin 3 → ℝ) :
     (dualRotorMat β)ᴴ * pauliComb a * dualRotorMat β =
       pauliComb (axisRot (fun k => β k / ‖β‖) (-‖β‖) a) := by
@@ -199,7 +182,6 @@ theorem spinExp_applyMat (A M : Matrix (Fin 2) (Fin 2) ℂ) (u : DualSpinor) :
     spinExp A (applyMat M u) = spinExp (Mᴴ * A * M) u := by
   rw [spinExp, spinExp, ← applyMat_mul, applyMat_inner_mul, Matrix.mul_assoc]
 
-/-- The dual rotor `U(β)` turns the spin vector by the full angle `‖β‖` about `β`. -/
 theorem spinVec_dualRotor {β : DualRapidity} (h : β ≠ 0) (u : DualSpinor) :
     spinVec (applyMat (dualRotorMat β) u) =
       axisRot (fun k => β k / ‖β‖) ‖β‖ (spinVec u) := by
@@ -214,7 +196,6 @@ theorem spinVec_dualRotor {β : DualRapidity} (h : β ≠ 0) (u : DualSpinor) :
   have := key (fun j => if j = k then 1 else 0)
   fin_cases k <;> simpa [axisDot] using this
 
-/-- Two `SU(2)` matrices that conjugate every Pauli matrix alike differ by sign. -/
 theorem eq_or_eq_neg_of_conj_pauli {U V : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ * U = 1)
     (hV : Vᴴ * V = 1) (hdU : U.det = 1) (hdV : V.det = 1)
     (h : ∀ k, Uᴴ * pauli k * U = Vᴴ * pauli k * V) : U = V ∨ U = -V := by
@@ -256,7 +237,6 @@ theorem eq_or_eq_neg_of_conj_pauli {U V : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ
     calc U = -((V * Uᴴ) * U) := by rw [← hWdef, hW1]; simp
       _ = -V := by rw [Matrix.mul_assoc, hU, Matrix.mul_one]
 
-/-- Two dual rotors turn every spin vector alike exactly when they differ by sign. -/
 theorem dualRotor_conj_pauli_eq_iff (β γ : DualRapidity) :
     (∀ k, (dualRotorMat β)ᴴ * pauli k * dualRotorMat β =
         (dualRotorMat γ)ᴴ * pauli k * dualRotorMat γ) ↔
@@ -267,7 +247,6 @@ theorem dualRotor_conj_pauli_eq_iff (β γ : DualRapidity) :
 
 /-! ### The `4π` period in interference -/
 
-/-- `Re ⟨u, U(β) u⟩ = cos (‖β‖ / 2) ‖u‖²` for every dual spinor. -/
 theorem spinExp_dualRotor_re (β : DualRapidity) (u : DualSpinor) :
     (spinExp (dualRotorMat β) u).re = Real.cos (‖β‖ / 2) * ‖u‖ ^ 2 := by
   rw [dualRotorMat_rodrigues]
@@ -287,7 +266,6 @@ theorem norm_applyMat_dualRotor_sq (β : DualRapidity) (u : DualSpinor) :
   rw [inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K] at h1
   exact_mod_cast h1
 
-/-- Interference of `u` with `U(β) u`: `‖u + U(β) u‖² = 4 cos² (‖β‖ / 4) ‖u‖²`. -/
 theorem norm_add_dualRotor_sq (β : DualRapidity) (u : DualSpinor) :
     ‖u + applyMat (dualRotorMat β) u‖ ^ 2 = 4 * Real.cos (‖β‖ / 4) ^ 2 * ‖u‖ ^ 2 := by
   rw [@norm_add_sq ℂ, norm_applyMat_dualRotor_sq]
@@ -301,7 +279,6 @@ theorem norm_add_dualRotor_sq (β : DualRapidity) (u : DualSpinor) :
 
 /-! ### Uncertainty -/
 
-/-- `{σ·a, σ·b} = 2 a·b`. -/
 theorem pauliComb_anticomm (a b : Fin 3 → ℝ) :
     pauliComb a * pauliComb b + pauliComb b * pauliComb a =
       ((2 * axisDot a b : ℝ) : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
@@ -317,7 +294,6 @@ theorem pauliComb_anticomm (a b : Fin 3 → ℝ) :
       not_false_eq_true, one_apply_ne, mul_zero]
      try (apply Complex.ext <;> simp <;> ring))
 
-/-- `[σ·a, σ·b] = 2i σ·(a × b)`. -/
 theorem pauliComb_comm (a b : Fin 3 → ℝ) :
     pauliComb a * pauliComb b - pauliComb b * pauliComb a =
       (2 * I) • pauliComb (cross3 a b) := by
@@ -337,7 +313,6 @@ theorem spinExp_sub (A B : Matrix (Fin 2) (Fin 2) ℂ) (u : DualSpinor) :
   rw [sub_eq_add_neg, spinExp_add, show -B = (-1 : ℂ) • B by simp, spinExp_smul]
   ring
 
-/-- `⟨u, [σ·a, σ·b] u⟩ = 2i (a × b)·r(u)`. -/
 theorem spinExp_pauliComb_comm (a b : Fin 3 → ℝ) (u : DualSpinor) :
     spinExp (pauliComb a * pauliComb b - pauliComb b * pauliComb a) u =
       2 * I * (axisDot (cross3 a b) (spinVec u) : ℂ) := by
@@ -368,8 +343,6 @@ private theorem lagrange_cross (a b : Fin 3 → ℝ) :
   simp only [axisDot, cross3]
   ring
 
-/-- On a unit dual spinor the Robertson–Schrödinger relation is an equality:
-`Var(σ·a) Var(σ·b) = (a·b - ⟨σ·a⟩⟨σ·b⟩)² + ⟨σ·(a × b)⟩²`. -/
 theorem spinVar_mul_spinVar {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 → ℝ) :
     spinVar a u * spinVar b u =
       (axisDot a b - axisDot a (spinVec u) * axisDot b (spinVec u)) ^ 2 +
@@ -379,7 +352,6 @@ theorem spinVar_mul_spinVar {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 →
   linear_combination (axisDot a b ^ 2 - axisDot a a * axisDot b b) * hr -
     gram_cross a b (spinVec u)
 
-/-- Robertson bound: `|⟨[σ·a, σ·b]⟩|² / 4 ≤ Var(σ·a) Var(σ·b)`. -/
 theorem robertson_spin {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 → ℝ) :
     ‖spinExp (pauliComb a * pauliComb b - pauliComb b * pauliComb a) u‖ ^ 2 / 4 ≤
       spinVar a u * spinVar b u := by
@@ -389,8 +361,6 @@ theorem robertson_spin {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 → ℝ)
   rw [h2, mul_one, mul_pow, sq_abs]
   nlinarith [sq_nonneg (axisDot a b - axisDot a (spinVec u) * axisDot b (spinVec u))]
 
-/-- Along three perpendicular unit axes the spin variances of a unit dual spinor
-sum to `2`. -/
 theorem spinVar_add_add {u : DualSpinor} (hu : ‖u‖ = 1) {a b : Fin 3 → ℝ}
     (ha : axisDot a a = 1) (hb : axisDot b b = 1) (hab : axisDot a b = 0) :
     spinVar a u + spinVar b u + spinVar (cross3 a b) u = 2 := by
@@ -402,7 +372,6 @@ theorem spinVar_add_add {u : DualSpinor} (hu : ‖u‖ = 1) {a b : Fin 3 → ℝ
     (1 + x ^ 2) * hb + (axisDot (spinVec u) (spinVec u) * axisDot a b - axisDot a b -
       2 * x * y) * hab - axisDot a a * axisDot b b * hr
 
-/-- A dual spinor sharp along `a` has variance `1` along every perpendicular unit axis. -/
 theorem spinVar_eq_one_of_sharp {u : DualSpinor} (hu : ‖u‖ = 1) {a b : Fin 3 → ℝ}
     (ha : axisDot a a = 1) (hb : axisDot b b = 1) (hab : axisDot a b = 0)
     (hsharp : spinVar a u = 0) : spinVar b u = 1 := by

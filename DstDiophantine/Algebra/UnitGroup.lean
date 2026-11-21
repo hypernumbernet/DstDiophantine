@@ -4,23 +4,7 @@ import DstDiophantine.Algebra.Motor
 /-!
 # Finite discrete torsion-rotor image
 
-## Paper vs formalisation
-
-The discrete companion does not identify this image with the unit group of an
-integer biquaternion order. That order is not constructed, and a Lorentzian
-integer order may have **infinite** units (Pell-type). What is finite—and what
-we prove—is the image of the compact torus `(ℤ/Nℤ)⁶` under
-`t ↦ rotorTorsion (toTorsionParams t)`.
-
-Same-axis generators commute, so a one-axis exponential factorises.
-The commutator of a boost on one axis with a rotation on another does not
-vanish, so a generic six-parameter exponential is not justified as a product
-of one-axis factors. That non-commutativity does not by itself decide whether
-the image set equals a Cartesian product of one-axis images.
-
-`DiscreteUnit` is a finite **set** (`Set.range`), not an instance of `Units`
-of an integer order. Enumeration for small `N` is unnecessary: finiteness of
-the domain implies finiteness of the image (`discreteUnit_finite`).
+`DiscreteUnit` is the image of `(ℤ/Nℤ)⁶`, not the unit group of an integer biquaternion order.
 -/
 
 namespace DstDiophantine
@@ -31,15 +15,14 @@ namespace UnitGroup
 
 variable {N : ℕ} [NeZero N]
 
-/-- Rotor associated with a discrete torus point. -/
 noncomputable def discreteRotor (t : DiscreteTorsion N) : PGA :=
   rotorTorsion (toTorsionParams t)
 
-/-- Image of all discrete rotors on `(ℤ/Nℤ)⁶`. -/
+/-- Finite image of discrete rotors on `(ℤ/Nℤ)⁶`, not `Units`. -/
 def DiscreteUnit (N : ℕ) [NeZero N] : Set PGA :=
   Set.range (discreteRotor (N := N))
 
-/-- Preferred alias stressing that this is a finite image, not `Rˣ`. -/
+/-- Finite image alias, not `Rˣ`. -/
 abbrev DiscreteRotorImage (N : ℕ) [NeZero N] := DiscreteUnit N
 
 theorem mem_discreteUnit_iff {x : PGA} :
@@ -68,23 +51,17 @@ theorem omegaTorsion_neg (p : TorsionParams) :
   ext a
   simp [neg_add_rev, add_comm]
 
-/-- Algebraic inverse of a discrete rotor is the rotor of negated parameters. -/
 theorem reverse_discreteRotor (t : DiscreteTorsion N) :
     reverse (discreteRotor t) =
       rotorTorsion (negTorsionParams (toTorsionParams t)) := by
   dsimp [discreteRotor, rotorTorsion]
   rw [reverse_exp_of_reverse_neg (omegaTorsion_reverse _), ← omegaTorsion_neg]
 
-/-- Each discrete rotor is unitary: `R · R˜ = 1`. -/
 theorem discreteRotor_mul_reverse (t : DiscreteTorsion N) :
     discreteRotor t * reverse (discreteRotor t) = 1 :=
   rotor_unitary (toTorsionParams t)
 
-/--
-The reverse of the zero discrete rotor lies in the image (both are `1`).
-Signed rapidities from a general torus point need not match `toTorsionParams`
-(non-negative representatives), so the reverse need not lie in `DiscreteUnit`.
--/
+/-- The zero rotor's reverse lies in the image; a general reverse need not. -/
 theorem reverse_discreteRotor_zero_mem
     (t0 : DiscreteTorsion N)
     (h0 : toTorsionParams t0 = ⟨fun _ => 0, fun _ => 0⟩) :
@@ -92,7 +69,6 @@ theorem reverse_discreteRotor_zero_mem
   have h : discreteRotor t0 = 1 := by
     simp [discreteRotor, rotorTorsion, h0, omegaTorsion]
   refine ⟨t0, ?_⟩
-  -- Both sides equal `1`: reverse of the zero rotor is the zero rotor.
   rw [reverse_discreteRotor, h0]
   simp [negTorsionParams, rotorTorsion, omegaTorsion, h]
 

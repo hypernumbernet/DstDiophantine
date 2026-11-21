@@ -12,31 +12,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Relative rotor and same-axis factorisation
 
-The relative rotor is `Ω = R_usual† R_dual`. A six-parameter exponential
-factorises as `R_usual R_dual` only when the summands commute: they do on
-one axis, and they need not off-axis. `Ω = 1` if and only if
-`R_dual = R_usual`. Anti-synchronisation `R_dual = R_usual†` is a different
-condition.
-
-## Proved
-
-* Same-axis generators commute, so a *one-axis* exponential factorises.
-* Distinct-axis generators need not commute, so the unrestricted
-  six-parameter factorisation is not justified by same-axis commutators.
-* Defining `Ω = R_usual† R_dual`, one has `Ω = 1` if and only if
-  `R_dual = R_usual` (unitarity), not `R_dual = R_usual†`.
-* On a single axis `R_dual = R_usual†` forces the usual half-rapidity
-  through `sinh(α/2) = 0`.
-* `J = 0` does not imply `Ω = 1`: a balanced massive one-axis seed has
-  vanishing `J` with a nontrivial relative rotor.
-* A unitary element multiplying both rotors on the left leaves the relative
-  rotor unchanged. The one-axis mismatch, read from that rotor, is unchanged
-  with it. How the chart coframe moves is not discussed.
-
-## Not claimed
-
-* `exp(ω_usual + ω_dual) = exp(ω_usual) exp(ω_dual)` for a general
-  three-axis configuration.
+`Ω = R_usual† R_dual` is `1` iff the rotors coincide, which is not anti-synchronisation. A general six-parameter factorisation is not claimed.
 -/
 
 namespace DstDiophantine
@@ -102,7 +78,6 @@ theorem rotorDual_unitary (p : TorsionParams) :
   rw [← exp_add_of_commute (Commute.neg_right (Commute.refl (omegaDual p)))]
   simp
 
-/-- `Ω = 1` if and only if the two rotors coincide. -/
 theorem relativeRotor_eq_one_iff (p : TorsionParams) :
     relativeRotor p = 1 ↔ rotorDual p = rotorUsual p := by
   constructor
@@ -143,7 +118,6 @@ theorem commute_omegaUsual_omegaDual_axis (α β : ℝ) :
   rw [omegaUsual_axisParams, omegaDual_axisParams]
   exact ((commute_hyperbolic_cyclic_same 0).smul_left (α / 2)).smul_right (β / 2)
 
-/-- On a single axis the combined exponential factorises. -/
 theorem rotorTorsion_axis_factor (α β : ℝ) :
     rotorTorsion (axisParams α β) =
       rotorUsual (axisParams α β) * rotorDual (axisParams α β) := by
@@ -167,7 +141,6 @@ theorem reverse_rotorUsual_axis (α β : ℝ) :
     hyperbolic_reverse, smul_neg]
   abel
 
-/-- Off-axis commutator `[iΓ_0, Γ_1]` does not vanish. -/
 theorem paper_unrestricted_commutator_false :
     commutator (hyperbolic 0) (cyclic 1) ≠ 0 :=
   commutator_hyperbolic0_cyclic1_ne_zero
@@ -200,7 +173,6 @@ theorem hyperbolic0_ne_zero : hyperbolic 0 ≠ 0 := by
     (FaithfulSMul.algebraMap_eq_zero_iff (R := ℝ) (A := PGA)).mp this
   norm_num at hR
 
-/-- If `sD • B⁻ + sU • B⁺` vanishes, both coefficients vanish. -/
 private theorem axis_bivector_span_eq_zero {sD sU : ℝ}
     (h : sD • cyclic 0 + sU • hyperbolic 0 = 0) :
     sD = 0 ∧ sU = 0 := by
@@ -225,7 +197,6 @@ private theorem axis_bivector_span_eq_zero {sD sU : ℝ}
         _ = ((-sU) / sD) • hyperbolic 0 := hR
     exact (cyclic_ne_smul_hyperbolic 0 ((-sU) / sD) hscal).elim
 
-/-- Compare a dual closed form with a usual closed form (either sign of the boost). -/
 private theorem closed_forms_bivector
     {cD sD cU sU : ℝ}
     (h : cD • (1 : PGA) + sD • cyclic 0 = cU • (1 : PGA) + sU • hyperbolic 0) :
@@ -273,13 +244,11 @@ theorem relativeRotor_of_paperVacuumSync {p : TorsionParams}
   simp only [relativeRotor, PaperVacuumSync] at h ⊢
   rw [h]
 
-/-- Under the written condition, `Ω = 1` holds iff `(R_usual†)² = 1`. -/
 theorem relativeRotor_eq_one_of_paperVacuumSync {p : TorsionParams}
     (h : PaperVacuumSync p) :
     relativeRotor p = 1 ↔ reverse (rotorUsual p) * reverse (rotorUsual p) = 1 := by
   rw [relativeRotor_of_paperVacuumSync h]
 
-/-- On one axis, `R_dual = R_usual†` forces both bivector coefficients to vanish. -/
 theorem paperVacuumSync_axis {α β : ℝ}
     (h : PaperVacuumSync (axisParams α β)) :
     Real.sinh (α / 2) = 0 ∧ Real.sin (β / 2) = 0 := by
@@ -296,7 +265,6 @@ theorem axisParams_pureBoost (φ : ℝ) : axisParams φ 0 = pureBoost φ := by
   dsimp [axisParams, pureBoost]
   congr <;> funext a <;> fin_cases a <;> simp
 
-/-- A nontrivial one-axis boost does not satisfy the written vacuum condition. -/
 theorem not_paperVacuumSync_pureBoost {φ : ℝ} (hφ : Real.sinh (φ / 2) ≠ 0) :
     ¬ PaperVacuumSync (pureBoost φ) := by
   intro h
@@ -323,7 +291,6 @@ theorem mass_axisParams_balanced {t : ℝ} (ht : t ≠ 0) :
   rw [mass_axisParams]
   nlinarith [sq_pos_of_ne_zero ht]
 
-/-- On one axis the two rotors differ as soon as either bivector coefficient is nonzero. -/
 theorem axis_rotors_ne_of_bivector {α β : ℝ}
     (h : Real.sinh (α / 2) ≠ 0 ∨ Real.sin (β / 2) ≠ 0) :
     rotorDual (axisParams α β) ≠ rotorUsual (axisParams α β) := by
@@ -337,12 +304,11 @@ theorem axis_rotors_ne_of_bivector {α β : ℝ}
   · exact hsinh hb.2
   · exact hsin hb.1
 
-/-- Balanced one-axis rotors coincide only if the hyperbolic coefficient vanishes. -/
 theorem balanced_axis_rotors_ne {t : ℝ} (ht : Real.sinh (t / 2) ≠ 0) :
     rotorDual (axisParams t t) ≠ rotorUsual (axisParams t t) :=
   axis_rotors_ne_of_bivector (Or.inl ht)
 
-/-- `J = 0` does not force the relative rotor to be the identity. -/
+/-- `J = 0` does not force the relative rotor to be `1`. -/
 theorem J_zero_not_relativeRotor_one :
     ∃ p : TorsionParams, J p = 0 ∧ 0 < mass p ∧ relativeRotor p ≠ 1 := by
   refine ⟨axisParams 1 1, J_axisParams_balanced 1, mass_axisParams_balanced (by norm_num), ?_⟩
@@ -352,7 +318,6 @@ theorem J_zero_not_relativeRotor_one :
     (Real.sinh_pos_iff.mpr (by norm_num : (0 : ℝ) < (1 : ℝ) / 2)).ne'
   exact balanced_axis_rotors_ne hs hrot
 
-/-- A common left factor cancels in `R_usual† R_dual`. -/
 theorem common_left_preserves_relativeRotor (S : PGA) (hS : S * reverse S = 1)
     (p : TorsionParams) :
     reverse (S * rotorUsual p) * (S * rotorDual p) = relativeRotor p := by
@@ -360,8 +325,6 @@ theorem common_left_preserves_relativeRotor (S : PGA) (hS : S * reverse S = 1)
   rw [CliffordAlgebra.reverse.map_mul, mul_assoc, ← mul_assoc (reverse S), hright, one_mul]
   rfl
 
-/-- One-axis mismatch is unchanged by a common left rotor, because it is the
-Killing norm of the relative rotor and that rotor is unchanged. -/
 theorem J_axis_common_left (S : PGA) (hS : S * reverse S = 1) (α β : ℝ) :
     relativeRotor (axisParams α β) =
       reverse (S * rotorUsual (axisParams α β)) * (S * rotorDual (axisParams α β)) ∧

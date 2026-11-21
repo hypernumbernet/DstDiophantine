@@ -17,23 +17,9 @@ import Mathlib.Tactic.FieldSimp
 set_option linter.style.native false
 
 /-!
-# Phase 5: Riemann Hypothesis (DST critical-line balance core)
+# Critical-line balance
 
-We formalise Chapter 8 of `dst-diophantine.tex` as a **boost / dual-rotation
-balance** model on torsional parameters
-`α ∝ σ`, `β ∝ (1 − σ)`, together with a finite rational-grid certificate and a
-bridge hypothesis recovering the classical critical-line statement.
-
-## Paper gap (not closed)
-
-Classical RH (`∀ nontrivial zeros ρ of ζ, Re(ρ) = 1/2`) is **not** claimed
-unconditionally. The paper's Euler-product rotor substitution, analytic
-continuation, the equivalence `ζ(ρ) = 0 ↔` infinite rotor product vanishes
-`↔ J(ρ) = 0`, the derivation “layer scale invariance ⇒ functional equation ⇒
-`Re = 1/2`”, and the PNT error `ψ(x) = x + O(√x log x)` are left informal.
-Encoding an off-critical classical zero real part as an *admissible*
-positive-height mismatch configuration is `RiemannAdmissibleBridge`. Complex
-powers `R(p)^{-s}` and mathlib `riemannZeta` are not used.
+An off-critical real part is a boost–rotation mismatch of positive height. Classical RH is not claimed; `RiemannAdmissibleBridge` stays open.
 -/
 
 namespace DstDiophantine
@@ -67,10 +53,7 @@ noncomputable def finitePrimeEnsemble (ps : List ℕ) : PGA :=
 
 /-! ### Critical mismatch parameters -/
 
-/--
-Usual-sector boost `α₀ = θ · σ` and dual-sector rotation `β₀ = θ · (1 − σ)`.
-Paper §8.2–8.4 balance model for a putative real part `σ`.
--/
+/-- Boost `θ · σ` and dual rotation `θ · (1 − σ)`, for a real part `σ`. -/
 def criticalMismatchParams (θ σ : ℝ) : TorsionParams where
   alpha := fun a => match a with | 0 => θ * σ | _ => 0
   beta := fun a => match a with | 0 => θ * (1 - σ) | _ => 0
@@ -148,7 +131,6 @@ theorem critical_off_line_height_pos (θ σ : ℝ) (hθ : θ ≠ 0) (hne : σ �
   have h0 : criticalHeight θ σ = 0 := le_antisymm hle (abs_nonneg _)
   exact hne ((criticalHeight_eq_zero_iff θ σ hθ).mp h0)
 
-/-- Off-critical mismatch cannot be a zero ensemble. -/
 theorem critical_off_line_contradiction (θ σ : ℝ) (hθ : θ ≠ 0) (hne : σ ≠ 1 / 2)
     (hzero : IsCriticalZeroEnsemble θ σ) : False :=
   hne ((critical_zero_iff θ σ hθ).mp hzero)
@@ -160,7 +142,7 @@ theorem critical_dagger (θ σ : ℝ) :
   refine congr_arg₂ TorsionParams.mk ?_ ?_
   · funext a; fin_cases a <;> rfl
   · funext a; fin_cases a
-    · -- β₀: `θ * σ = θ * (1 - (1 - σ))`
+    ·
       change θ * σ = θ * (1 - (1 - σ))
       ring
     · rfl
@@ -189,7 +171,6 @@ theorem criticalHeight_dagger (θ σ : ℝ) :
     ring
   rw [← critical_dagger, hneg, abs_neg]
 
-/-- Axis-0 usual/dual balance iff critical line (any strength `θ`). -/
 theorem critical_balanced_iff (θ σ : ℝ) (hθ : θ ≠ 0) :
     (criticalMismatchParams θ σ).alpha 0 = (criticalMismatchParams θ σ).beta 0 ↔
       σ = 1 / 2 := by
@@ -214,10 +195,6 @@ theorem layerScale_pos (N : ℕ) [NeZero N] : 0 < layerScale N := by
   have : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
   positivity
 
-/--
-Layer rescaling does not change the critical-line balance condition: zero
-mismatch depends only on `σ`, not on the discrete length `ℓ_N`.
--/
 theorem critical_zero_layer_invariant (θ σ : ℝ) (hθ : θ ≠ 0) (N : ℕ) [NeZero N] :
     IsCriticalZeroEnsemble θ σ ↔ σ = 1 / 2 :=
   critical_zero_iff θ σ hθ
@@ -266,7 +243,6 @@ theorem allCriticalBalanceUpTo_sound {D num den : ℕ}
   simp only [hne, Bool.false_or] at hall_num
   exact (beq_iff_eq (a := criticalBalanceOk num den) (b := decide (2 * num = den))).mp hall_num
 
-/-- Chapter 8 finite-exploration certificate for denominators up to `20`. -/
 theorem critical_balance_of_le_twenty {num den : ℕ} (hden : den ≠ 0) (_hle : den ≤ 20)
     (_hnum : num ≤ den) {θ : ℝ} (hθ : θ ≠ 0) :
     criticalHeight θ ((num : ℝ) / den) = 0 ↔ 2 * num = den :=
@@ -285,25 +261,13 @@ theorem critical_balance_ok_of_le_twenty {num den : ℕ} (hden : den ≠ 0) (hle
 
 /-! ### Classical RH under an explicit bridge hypothesis -/
 
-/--
-Paper Chapter 8's missing bridge: an off-critical real part arising from a
-classical nontrivial zero produces an admissible continuous mismatch
-configuration of strictly positive normalised height (so the algebraic
-zero-mismatch condition `J = 0` is impossible).
-
-This proposition is **not** proved in this development.
--/
+/-- Unproved bridge: an off-critical zero would force positive admissible height. -/
 def RiemannAdmissibleBridge : Prop :=
   ∀ (ρ_re : ℝ), ρ_re ≠ 1 / 2 →
     ∃ θ : ℝ, 0 < θ ∧
       IsAdmissibleContinuous (criticalMismatchParams θ ρ_re) ∧
         0 < |JNormalized (criticalMismatchParams θ ρ_re)|
 
-/--
-Conditional DST recovery of the critical-line statement: under the bridge,
-every off-critical real part admits a positive-height admissible ensemble that
-cannot be a zero-mismatch ensemble.
--/
 theorem riemann_hypothesis_of_bridge (hbridge : RiemannAdmissibleBridge) :
     ∀ (ρ_re : ℝ), ρ_re ≠ 1 / 2 →
       ∃ θ : ℝ, 0 < θ ∧
@@ -317,7 +281,6 @@ theorem riemann_hypothesis_of_bridge (hbridge : RiemannAdmissibleBridge) :
   · intro hzero
     exact critical_off_line_contradiction θ ρ_re (ne_of_gt hθ) hne hzero
 
-/-- Algebraic form: any nonzero-strength zero ensemble lies on `Re = 1/2`. -/
 theorem critical_line_of_zero_ensemble (θ σ : ℝ) (hθ : θ ≠ 0)
     (h : IsCriticalZeroEnsemble θ σ) : σ = 1 / 2 :=
   (critical_zero_iff θ σ hθ).mp h

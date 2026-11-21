@@ -13,37 +13,7 @@ set_option linter.style.native false
 /-!
 # Stability of the proton and the electron
 
-Kinematic protection of a balanced massive seed, together with the
-external SI comparisons that say the structures around these particles
-cannot pay their rest energies.
-
-## What is proved
-
-* Usual-only motion cannot reach the vacuum from a positive dual budget.
-  On a balanced massive seed both budgets equal the unsigned mass, so
-  neither channel alone reaches the vacuum, and a vacuum image must
-  move both.
-* The written one-axis flow with vanishing mismatch, mismatch rate, and
-  common velocity keeps both angles fixed. A nonzero mismatch rate
-  leaves that value.
-* On the SI stand-ins, \(1836 < m_p/m_e < 1837\),
-  \(7294 < m_\alpha/m_e < 7295\) for the \(^4\mathrm{He}\) nucleus, and
-  \(41896 < m_{\mathrm{Na}}/m_e < 41897\) for the \(^{23}\mathrm{Na}\) nucleus
-  stand-in, and \(12786 < m_{\mathrm{Li}}/m_e < 12787\) for the
-  \(^{7}\mathrm{Li}\) nucleus stand-in. One hundred times the
-  empirical binding per nucleon, and twenty optical wells, each lie
-  below the proton rest energy. Hydrogen ionisation is exactly
-  \(\alpha^2/2\) of the electron rest energy, and that fraction lies in
-  \((2,3)\times 10^{-5}\). Equivalently the rest energy is between
-  \(3\times 10^4\) and \(5\times 10^4\) hydrogen ionisations. The
-  gravitational heights satisfy
-  \(N_*^2(m_e)/N_*^2(m_p) > 3\times 10^6\).
-
-## Not claimed
-
-No lifetime, no baryon-number selection rule, and no derivation of
-\(m_p\) or \(m_e\). The mass ratio and the two payment comparisons use
-external CODATA-style inputs.
+No lifetime, no baryon-number selection rule, and no derivation of \(m_p\) or \(m_e\). The mass ratio and the payment comparisons use external inputs.
 -/
 
 namespace DstDiophantine
@@ -62,7 +32,6 @@ theorem usual_only_not_vacuum_of_dual_pos {p q : TorsionParams}
   exact hD <| Finset.sum_eq_zero fun a _ => by
     simp [((mass_eq_zero_iff q).mp hM a).2]
 
-/-- On the balanced locus each rapidity budget equals the unsigned mass. -/
 theorem balanced_budgets_eq_mass {p : TorsionParams} (hJ : J p = 0) :
     ∑ a : Fin 3, p.alpha a ^ 2 = mass p ∧
       ∑ a : Fin 3, p.beta a ^ 2 = mass p := by
@@ -88,7 +57,6 @@ theorem balanced_massive_not_usual_only_vacuum {p q : TorsionParams}
     linarith
   exact usual_only_not_vacuum_of_dual_pos hβ hD hq
 
-/-- Reaching the vacuum from a balanced massive seed moves both budgets. -/
 theorem vacuum_moves_both_budgets {p q : TorsionParams}
     (hJ : J p = 0) (hM : 0 < mass p) (hq : mass q = 0) :
     q.alpha ≠ p.alpha ∧ q.beta ≠ p.beta := by
@@ -315,7 +283,6 @@ theorem hydrogen_ionisation_frac_bounds :
   unfold fineStructureApprox fineStructureMantissa fineStructureScale
   norm_num
 
-/-- Rest energy measured in hydrogen ionisations: \(3\times 10^4<2/\alpha^2<5\times 10^4\). -/
 theorem hydrogen_ionisations_per_rest_bounds :
     (3 : ℚ) * 10 ^ 4 < 2 / fineStructureApprox ^ 2 ∧
       2 / fineStructureApprox ^ 2 < (5 : ℚ) * 10 ^ 4 := by

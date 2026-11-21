@@ -8,31 +8,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Two electrons as elements of the three-sphere
 
-The nucleus and the two electrons are three elements of the three-sphere. In the
-nucleus frame the electrons are the two relative rotors. A common left rotation
-leaves that frame fixed. A common right rotation preserves the three cosines of
-the angles: each electron from the nucleus, and the electrons from each other.
-Those three cosines classify the frame. A spatial amplitude unchanged by every
-common right rotation is therefore an amplitude of the three cosines.
-
-Exchange of the electrons swaps the two angles from the nucleus, preserves the
-angle between them, and inverts the relative rotor. The singlet changes sign
-under exchange of the spin factors, so the spatial amplitude that accompanies it
-is the symmetric one, and the joint state changes sign once. An amplitude that
-changes sign under exchange of the elements vanishes when the elements coincide.
-A symmetric amplitude is not forced to vanish there.
-
-## Not claimed
-
-* An identification of these angles with the laboratory separations that enter
-  `γ_s`. The three cosines are relations of three elements. At an atomic
-  separation the curvature of a three-sphere of galactic or cosmic
-  compactification radius does not enter the force.
-* An energy, a spectrum, a dissociation energy, or a value of `ℓ`.
-* A position operator, or a derivation of the spin-statistics theorem.
-* That coincidence of the two elements is the repeated ray of one dual spinor.
-  The ray is the spin factor. The element is the place. `SpinVersusExclusion`
-  separates the two.
+The nucleus and the two electrons are three elements, and a spatial amplitude unchanged by every common right rotation is an amplitude of their three cosines. These angles are not identified with laboratory separations, and no energy, spectrum, or spin-statistics theorem is derived.
 -/
 
 noncomputable section
@@ -259,7 +235,6 @@ lemma align_sends {p : ℍ} (hre : p.re = 0) (hn : normSq p = 1) (hneg : p ≠ -
     linarith
   rw [hcoef, one_smul]
 
-/-- Right rotation carrying the imaginary part onto the positive `I` axis. -/
 theorem exists_align (q : ℍ) :
     ∃ h : S3, (star h.val * q * h.val).re = q.re ∧
       (star h.val * q * h.val).imJ = 0 ∧
@@ -732,8 +707,6 @@ def Antisymmetric (F : Frame → ℂ) : Prop := ∀ p, F (exchange p) = -F p
 
 def RotationInvariant (F : Frame → ℂ) : Prop := ∀ h p, F (conjFrame h p) = F p
 
-/-- A rotation-invariant amplitude of the two elements is an amplitude of the
-three cosines. -/
 theorem rotationInvariant_eq_of_cos {F : Frame → ℂ} (hF : RotationInvariant F) {p q : Frame}
     (hA : cosA p = cosA q) (hB : cosB p = cosB q) (hE : cosEE p = cosEE q) : F p = F q := by
   obtain ⟨h₁, hn₁⟩ := exists_normal p
@@ -749,8 +722,6 @@ theorem rotationInvariant_eq_of_cos {F : Frame → ℂ} (hF : RotationInvariant 
     _ = F (conjFrame h₂ q) := by rw [hsame]
     _ = F q := hF h₂ q
 
-/-- The symmetric rotation-invariant amplitudes are symmetric in the two angles
-from the nucleus. -/
 theorem symmetric_invariant_swap {F : Frame → ℂ} (hR : RotationInvariant F) (hS : Symmetric F)
     {p q : Frame} (hA : cosA p = cosB q) (hB : cosB p = cosA q) (hE : cosEE p = cosEE q) :
     F p = F q := by
@@ -762,7 +733,6 @@ theorem symmetric_invariant_swap {F : Frame → ℂ} (hR : RotationInvariant F) 
 theorem pairSwap_smul (c : ℂ) (Ψ : PairState) : pairSwap (c • Ψ) = c • pairSwap Ψ := by
   simp [pairSwap, Matrix.transpose_smul]
 
-/-- Symmetric spatial amplitude times the singlet: joint exchange changes the sign. -/
 theorem singlet_sector_exchange (F : Frame → ℂ) (hF : Symmetric F) (c : ℂ) (p : Frame) :
     F (exchange p) • pairSwap (c • singlet) = -(F p • (c • singlet)) := by
   rw [hF p, pairSwap_smul, pairSwap_singlet]

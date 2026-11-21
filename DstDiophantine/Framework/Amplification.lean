@@ -10,29 +10,7 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Shared amplification no-go core
 
-Problem-independent continuous and discrete amplification contradictions.
-Individual theorems (Fermat / Beal / abc) supply only the problem-specific
-bridge that produces a seed or lattice witness; the contradiction itself lives
-here.
-
-## Layering
-
-1. Integer equation ↔ null motor (additive, already in `Representation`).
-2. Problem-specific bridge: solution ⇒ amplification witness.
-3. Shared no-go: an admissible `k`-fold amplification cannot have seed taller
-   than `1/k²` (continuous) or cannot sit on a coarse nonzero lattice
-   (discrete).
-
-## Legacy coarse witness (diagnostic)
-
-`CoarseAmplificationWitness` asks for a nonzero lattice point that remains
-admissible after *real* `k`-fold scaling of rapidities.  Under the coarse
-threshold `3N² < 16k²` this payload is **structurally empty** (independent of
-any Diophantine equation): scaled admissibility forces `4k(n+m) ≤ N`, while
-coarseness forces `N < 4k`, hence all coordinates vanish.  The height-based
-no-go below remains valid.  Reusing this *same* payload for Beal/abc would
-again yield only a vacuous bridge; a non-vacuous replacement tracks modular
-wrapping — see `Algebra.ModularAmplification`.
+An admissible `k`-fold pure boost has seed height at most `1/k²`. `CoarseAmplificationWitness` is empty under the coarse threshold.
 -/
 
 namespace DstDiophantine
@@ -44,10 +22,6 @@ open _root_.DstDiophantine.Embedding
 
 /-! ### Continuous pure-boost no-go -/
 
-/--
-If a `k`-fold pure boost remains continuously admissible, the seed height is at
-most `1/k²`.
--/
 theorem amplification_implies_seed_le (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
     (hadm : IsAdmissibleContinuous (pureBoost (k * θ))) :
     |JNormalized (pureBoost θ)| ≤ 1 / (k : ℝ) ^ 2 := by
@@ -60,7 +34,6 @@ theorem amplification_implies_seed_le (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
   rw [abs_mul, abs_of_pos hk2] at hmul
   exact (le_div_iff₀ hk2).mpr (by linarith [hmul])
 
-/-- Continuous amplification contradiction for an arbitrary pure-boost seed. -/
 theorem continuous_amplification_contradiction (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
     (hadm : IsAdmissibleContinuous (pureBoost (k * θ)))
     (hbig : (1 : ℝ) / (k : ℝ) ^ 2 < |JNormalized (pureBoost θ)|) :
@@ -83,7 +56,6 @@ theorem JNormalized_toTorsionParams_abs_eq {N : ℕ} [NeZero N] (t : DiscreteTor
   rw [J_toTorsionParams, abs_mul, abs_mul, abs_of_nonneg hcoef1, abs_of_nonneg hcoef2]
   ring
 
-/-- Universal nonzero lattice height lower bound `ε_N = 16/(3N²)`. -/
 theorem discrete_nonzero_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
     (hne : latticeMismatch t ≠ 0) :
     (16 : ℝ) / (3 * N ^ 2) ≤ |JNormalized (toTorsionParams t)| := by
@@ -102,7 +74,6 @@ theorem discrete_nonzero_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
     _ ≤ (16 : ℝ) / (3 * (N : ℝ) ^ 2) * |(latticeMismatch t : ℝ)| := by
         gcongr
 
-/-- Discrete amplification contradiction for an arbitrary amplification factor. -/
 theorem discrete_amplification_contradiction {N : ℕ} [NeZero N] {k : ℕ} (hk : 1 ≤ k)
     (t : AdmissibleClass N)
     (hlb : (1 : ℝ) / (k : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t))
@@ -124,10 +95,6 @@ theorem discrete_amplification_contradiction {N : ℕ} [NeZero N] {k : ℕ} (hk 
 
 /-! ### Coarse torus threshold -/
 
-/--
-Exact coarse-torus criterion: `3N² < 16k²` makes the universal nonzero lattice
-height `16/(3N²)` strictly larger than the amplification threshold `1/k²`.
--/
 theorem coarse_height_gap {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) :
     (1 : ℝ) / (k : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
@@ -141,7 +108,6 @@ theorem coarse_height_gap {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
   simpa only [one_mul] using (by exact_mod_cast hcoarse :
     (3 : ℝ) * (N : ℝ) ^ 2 < 16 * (k : ℝ) ^ 2)
 
-/-- The simple linear choice `N ≤ 2k` satisfies the exact coarse-size criterion. -/
 theorem coarse_condition_of_le_two_mul {N k : ℕ} (hk : 1 ≤ k)
     (hN : N ≤ 2 * k) : 3 * N ^ 2 < 16 * k ^ 2 := by
   have hsquare : N ^ 2 ≤ (2 * k) ^ 2 := Nat.pow_le_pow_left hN 2
@@ -153,10 +119,6 @@ theorem coarse_height_gap_of_le_two_mul {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (1 : ℝ) / (k : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
   coarse_height_gap hk (coarse_condition_of_le_two_mul hk hN)
 
-/--
-No nonzero lattice mismatch on a coarse torus can remain admissible after
-`k`-fold scaling.
--/
 theorem coarse_discrete_contradiction {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) (t : AdmissibleClass N)
     (hne : latticeMismatch t.val ≠ 0)
@@ -173,22 +135,13 @@ theorem coarse_discrete_contradiction {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
 
 /-! ### Coarse amplification witness (legacy / diagnostic payload) -/
 
-/--
-Legacy discrete amplification certificate: a nonzero admissible lattice point
-that remains continuously admissible after *real* `k`-fold scaling.
-
-**Diagnostic status:** under `3N² < 16k²` this type is uninhabited for every
-`N,k` (see `CoarseAmplificationWitness.empty_of_coarse`), independently of any
-integer equation.  Retained only so conditional wrappers and regressions stay
-honest about the obsolete design.
--/
+/-- Legacy real-scale certificate; empty under the coarse threshold. -/
 structure CoarseAmplificationWitness (N k : ℕ) [NeZero N] where
   t : AdmissibleClass N
   nonzero : latticeMismatch t.val ≠ 0
   admissible_after :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (AdmissibleClass.toParams t))
 
-/-- Height-based no-go (unchanged). -/
 theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False :=
@@ -196,11 +149,6 @@ theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
 
 /-! ### Direct emptiness of the legacy witness -/
 
-/--
-Scaled continuous admissibility on a discrete seed is the integer inequality
-`4 k (n.val + m.val) ≤ N` on each axis (non-negative rapidities are automatic
-when `0 ≤ k`).
--/
 theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (hk0 : 0 ≤ (k : ℝ)) :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t)) ↔
@@ -212,7 +160,6 @@ theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     have hαnn := toTorsionParams_alpha_nonneg t a
     have hβnn := toTorsionParams_beta_nonneg t a
     have hsum := (hadm a).2.2
-    -- `k * (α + β) ≤ π/2` with α = 2π n/N, β = 2π m/N
     have hcomb :
         (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi / 2 := by
       convert hsum using 1
@@ -255,7 +202,6 @@ theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
     ring
 
-/-- Coarse threshold forces `N < 4k`. -/
 theorem coarse_implies_lt_four_mul {N k : ℕ} (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) :
     N < 4 * k := by
   by_contra hge
@@ -269,7 +215,6 @@ theorem coarse_implies_lt_four_mul {N k : ℕ} (hcoarse : 3 * N ^ 2 < 16 * k ^ 2
     exact this.trans h3
   exact absurd hcoarse (not_lt_of_ge this)
 
-/-- Under `N < 4k`, scaled admissibility forces every lattice coordinate to vanish. -/
 theorem scale_admissible_forces_zero {N k : ℕ} [NeZero N] (_hk : 1 ≤ k)
     (hN : N < 4 * k) (t : DiscreteTorsion N)
     (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
@@ -295,11 +240,7 @@ theorem scale_admissible_forces_latticeMismatch_zero {N k : ℕ} [NeZero N]
   have ⟨hn, hm⟩ := hzm a
   simp [hn, hm]
 
-/--
-**Structural emptiness (equation-independent):** under the coarse threshold the
-legacy witness is uninhabited, because scaled admissibility and coarseness
-force `latticeMismatch = 0`.
--/
+/-- Equation-independent: uninhabited under the coarse threshold. -/
 theorem CoarseAmplificationWitness.empty_of_coarse {N k : ℕ} [NeZero N]
     (hk : 1 ≤ k) (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False := by

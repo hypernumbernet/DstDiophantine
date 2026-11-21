@@ -4,26 +4,7 @@ import DstDiophantine.Gravity.EMControl
 /-!
 # Neutron spin and the charge-silent magnet
 
-## Paper boundary (do **not** claim)
-
-The ratio \(\mu_n/\mu_p=-2/3\), the weights \(4/3\) and \(-1/3\), a moment in
-nuclear magnetons, \(g_A/g_V\), and a V--A coupling are **not** derived.
-The electromagnetic label is not a Faraday coefficient.
-
-## What is proved
-
-* On \(J=0\) the magnetic square equals the electric square, and both equal
-  the unsigned mass. A positive mass on that locus is therefore magnetic.
-  Vanishing dual angles on the locus force the mass to vanish. Each square
-  contributes half the mass.
-* The substitution \(\theta\mapsto\theta+eA\) with \(e=0\) is the identity.
-  The dual rotor depends on the dual angles alone.
-* A dual phase \(2\pi\) supported on one axis sends that rotor to \(-1\).
-  A dual phase \(4\pi\) restores the identity. The parallel magnetic
-  generator is a rotor and is the unique direction in its plane with the
-  parallel electric generator that preserves the axis.
-* At rest the dual Faraday summand gives no sandwich kick. The same
-  generator kicks a moving frame.
+On `J = 0` the magnetic square equals the electric square and the unsigned mass. The ratio `μ_n/μ_p = −2/3`, the weights `4/3` and `−1/3`, a nuclear-magneton moment, `g_A/g_V`, a V-A coupling, and a Faraday reading of the electromagnetic label are not derived.
 -/
 
 namespace DstDiophantine
@@ -55,7 +36,6 @@ theorem mass_eq_energySq_of_balanced {p : FaradayParams}
     mass (toTorsion p) = energySq p := by
   rw [mass_eq_magneticSq_of_balanced hJ, magneticSq_eq_energySq_of_balanced hJ]
 
-/-- Each square contributes half the unsigned mass on the balanced locus. -/
 theorem balanced_shares {p : FaradayParams} (hJ : J (toTorsion p) = 0) :
     (1 / 2) * magneticSq p = mass (toTorsion p) / 2 ∧
       (1 / 2) * energySq p = mass (toTorsion p) / 2 := by
@@ -69,7 +49,6 @@ theorem magneticSq_pos_of_balanced {p : FaradayParams}
   rw [← mass_eq_magneticSq_of_balanced hJ]
   exact hM
 
-/-- A balanced configuration with every dual angle silent has no mass. -/
 theorem mass_zero_of_balanced_silent {p : TorsionParams}
     (hJ : J p = 0) (hβ : ∀ a, p.beta a = 0) :
     mass p = 0 := by
@@ -134,7 +113,6 @@ theorem omegaDual_single_axis (a : Fin 3) (β : ℝ) (p : TorsionParams)
     have h2 : p.beta 2 = β := by simpa using h 2
     simp [Fin.sum_univ_three, h0, h1, h2]
 
-/-- A dual phase \(2\pi\) on one axis sends the dual rotor to \(-1\). -/
 theorem rotorDual_single_axis_two_pi (a : Fin 3) (p : TorsionParams)
     (h : ∀ b, p.beta b = if b = a then 2 * Real.pi else 0) :
     rotorDual p = -1 := by
@@ -143,7 +121,6 @@ theorem rotorDual_single_axis_two_pi (a : Fin 3) (p : TorsionParams)
   rw [hhalf]
   exact exp_cyclic_pi a
 
-/-- A dual phase \(4\pi\) on one axis restores the identity. -/
 theorem rotorDual_single_axis_four_pi (a : Fin 3) (p : TorsionParams)
     (h : ∀ b, p.beta b = if b = a then 4 * Real.pi else 0) :
     rotorDual p = 1 := by

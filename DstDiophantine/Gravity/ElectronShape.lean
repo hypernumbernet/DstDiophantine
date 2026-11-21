@@ -11,24 +11,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Shapes of the seats
 
-## Paper boundary (do **not** claim)
-
-A seat is a pattern on directions. It is not a path, and it is not an
-`s`/`p`/`d`/`f` label. The zero of a pattern is not a node of `γ_s` and not a
-zero of the signed force. Nothing here is a force minimum, a Bohr radius, or a
-value of `ℓ`.
-
-## What is proved
-
-* The monopole takes the same value in every direction.
-* A dipole with nonzero axis is positive along that axis and negative along
-  the opposite direction. Its zero set is the orthogonal plane: the kernel of
-  the linear form has dimension `2`.
-* A nonzero traceless quadrupole is unchanged when the direction is reversed.
-  It is positive in some direction, negative in another, and zero along some
-  nonzero direction.
-* A nonzero traceless octupole changes sign when the direction is reversed, so
-  some direction and its opposite carry opposite values.
+A seat is a directional pattern, monopole through octupole, and its zero is
+not a node of \(\gamma_s\). It is not an \(s\)/\(p\)/\(d\)/\(f\) label, not a
+force minimum, and not a value of \(\ell\).
 -/
 
 namespace DstDiophantine
@@ -404,9 +389,8 @@ theorem seatPattern_quadrupole {M : Matrix (Fin 3) (Fin 3) ℝ}
 
 /-! ### Octupole
 
-Coefficients, matching `octuTrace`: `0,1,2` are `x³,y³,z³`; `3,4` are `x²y,x²z`;
-`5` is `xy²`; `6` is `y²z`; `7` is `xz²`; `8` is `yz²`; `9` is `xyz`.
-`octuTrace` is then half the Laplacian. -/
+Coefficients, matching `octuTrace`: `0,1,2` are `x³,y³,z³`; `3,4` are `x²y,x²z`; `5` is `xy²`; `6` is `y²z`; `7` is `xz²`; `8` is `yz²`; `9` is `xyz`. `octuTrace` is then half the Laplacian.
+-/
 
 def octuValue (c : Fin 10 → ℝ) (v : Fin 3 → ℝ) : ℝ :=
   c 0 * v 0 ^ 3 + c 1 * v 1 ^ 3 + c 2 * v 2 ^ 3 +

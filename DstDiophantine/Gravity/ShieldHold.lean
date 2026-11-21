@@ -9,31 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Holding a shield still
 
-Unsigned mass and the holding force are different budgets. Cross-axis
-compensation buys the heaviest neutral states. Axiswise alignment is what
-the written action can park with no force.
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, and no identification
-of either channel force with a Faraday field. Vanishing holding force is
-not free fall: a common scale can leave the relative rotor away from the
-identity.
-
-## What is proved
-
-* Both angular accelerations vanish if and only if, on every axis, the
-  usual force and the dual force equal the stiffness times the lag,
-  \(v_a=u_a=m(\alpha_a-\beta_a)\). At rest the sum of the Jacobi rates is
-  zero.
-* For \(m\neq 0\) the zero force occurs exactly on axiswise agreement of
-  the rapidities. Every such configuration is neutral, its potential
-  vanishes, and on the cone its unsigned mass is at most \(3\pi^2/16\).
-* On the cone a neutral configuration has lag budget
-  \(\sum(\alpha_a-\beta_a)^2\le\pi^2/2\). The heaviest shield attains it.
-* From a pure usual seed, the equal-scale dual-only point has lag budget
-  \(0\), and the cross-axis shield of the same rapidity has lag budget
-  \(2\alpha^2\).
+No electromagnetic coupling, no laboratory protocol, and no identification of either channel force with a Faraday field are derived. Vanishing holding force is not free fall.
 -/
 
 namespace DstDiophantine
@@ -83,7 +59,6 @@ theorem holdPower_at_rest {v u φdot θdot : Fin 3 → ℝ}
   intro a _
   simp [hφ a, hθ a]
 
-/-- Nonzero stiffness: the zero force parks exactly the aligned configurations. -/
 theorem bothHeld_zero_force_iff_aligned {m : ℝ} {φ θ : Fin 3 → ℝ} (hm : m ≠ 0) :
     BothHeld m φ θ (fun _ => 0) (fun _ => 0) (fun _ => 0) (fun _ => 0) ↔
       ∀ a, φ a = θ a := by
@@ -107,7 +82,6 @@ theorem aligned_is_neutral {p : TorsionParams} (h : p.beta = p.alpha) :
   · rw [lagSq, Fin.sum_univ_three, h0, h1, h2]
     ring
 
-/-- An aligned admissible shield weighs at most three sixteenths of \(\pi^2\). -/
 theorem aligned_mass_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
     IsGravNeutral p ∧ lagSq p = 0 ∧ mass p ≤ 3 * Real.pi ^ 2 / 16 :=
@@ -136,7 +110,6 @@ private theorem sq_sum_zero_of_nonneg {s0 s1 s2 d0 d1 d2 : ℝ}
   have h2sq : d2 ^ 2 ≤ s2 * d2 := by nlinarith
   exact ⟨by nlinarith, by nlinarith, by nlinarith⟩
 
-/-- One nonnegative lag and two nonpositive lags, balanced, stay within \(2k^2\). -/
 private theorem lag_sq_le_of_pos_side {k s0 s1 s2 d0 d1 d2 : ℝ}
     (hk0 : s0 ≤ k) (hs0 : 0 ≤ s0) (_hs1 : 0 ≤ s1) (_hs2 : 0 ≤ s2)
     (hd0 : |d0| ≤ s0) (hd1 : |d1| ≤ s1) (hd2 : |d2| ≤ s2)
@@ -172,7 +145,7 @@ private theorem lag_sq_le_of_balanced {k s0 s1 s2 d0 d1 d2 : ℝ}
         simp [z0, z1, z2]
         have hk : 0 ≤ k := le_trans hs0 hk0
         nlinarith
-      · -- Axes 0 and 1 nonnegative, axis 2 the unique negative side.
+      ·
         have h2le : d2 < 0 := lt_of_not_ge h2
         have hflip :
             (-d2) ^ 2 + (-d0) ^ 2 + (-d1) ^ 2 ≤ 2 * k ^ 2 :=
@@ -254,7 +227,6 @@ theorem abs_lag_le_axis_sum {p : TorsionParams}
   rw [abs_le]
   constructor <;> linarith
 
-/-- A neutral admissible configuration has lag budget at most \(\pi^2/2\). -/
 theorem lagSq_le_of_neutral {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hn : IsGravNeutral p) :
     lagSq p ≤ Real.pi ^ 2 / 2 := by

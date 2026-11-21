@@ -4,47 +4,7 @@ import DstDiophantine.Gravity.SlerpTorque
 /-!
 # Position as a relation of two elements
 
-Each substance carries an element of the three-sphere, a unit quaternion. The
-position of `b` relative to `a` is the rotor `ρ(a,b) = a⁻¹ b`. It is not the
-mismatch `Ω = R_usual† R_dual` inside one particle, and it is not a coordinate
-on a chart.
-
-The description group is a pair of unit quaternions, acting by `p ↦ g p h`.
-Left multiplication of both elements leaves `ρ` fixed. Right multiplication
-replaces `ρ` by `h⁻¹ ρ h` and preserves the geodesic angle `arccos(Re ρ)`.
-
-The equidistant coordinate of `p` about a pole is the logarithm of the relative
-position. Moving the pole alone changes that coordinate and does not change
-`ρ`. Left-multiplying the pole and the point together leaves the coordinate
-fixed. About the pole `a`, the coordinate of `b` is the logarithm of `ρ`.
-
-## Proved
-
-* `ρ(a,b) = 1` if and only if `a = b`, and `Re ρ(a,b)` is the inner product.
-* Left invariance of `ρ`, right conjugation, and invariance of the angle under
-  both, hence under the pair.
-* The equidistant coordinate of `p` about a pole `g` is the logarithm of
-  `g⁻¹ p`. The formula returns the origin when `p` is the pole. About the pole
-  `a`, the coordinate of `b` is the logarithm of `ρ`.
-* A joint left rotation of body, source, and pole leaves the chart readings
-  `bodyPoint` and `sourcePoint`. `chordMoment` is a function of those readings,
-  so that reading is unchanged.
-* One pair has positive `chordMoment` about the identity pole. After the right
-  translation that puts the source at the pole and the body on the first
-  coordinate axis, the source chart is the origin and `pushedMoment` is zero.
-  The angle is the same.
-* Every direction at geodesic distance `π` lifts to one element, the central
-  element `-1`. It is the unique element at angle `π` from a given element.
-  The equidistant chart writes both that element and the pole at the origin.
-  Every rotation fixes the relative rotor `-1` exactly.
-
-## Not claimed
-
-* A derivation of `a₀`, of circular speed, or of the chord-moment formula.
-* That `chordMoment` is a function of the pair alone.
-* An identification of `ρ` with the intra-particle mismatch `Ω`.
-* A metric, a curvature tensor, or a diffeomorphism group of the three-sphere.
-* A position operator, or an uncertainty relation.
+`ρ` is not the intra-particle mismatch `Ω` and not a chart coordinate. No `a₀`, circular speed, chord-moment formula, metric, or position operator is derived, and `chordMoment` is not a function of the pair alone.
 -/
 
 noncomputable section
@@ -100,7 +60,6 @@ def relative (a b : S3) : S3 :=
     (relative a b).val = star a.val * b.val := by
   rw [relative, mul_val, inv_val]
 
-/-- The real part of a product is symmetric. -/
 theorem re_mul_comm (x y : ℍ) : (x * y).re = (y * x).re := by
   simp only [re_mul]
   ring
@@ -109,7 +68,6 @@ theorem re_star_mul (x y : ℍ) : (star x * y).re = (x * star y).re := by
   simp only [re_mul, re_star, imI_star, imJ_star, imK_star]
   ring
 
-/-- `Re ρ(a,b)` is the Euclidean inner product of the two elements. -/
 theorem re_relative_eq_inner (a b : S3) :
     (relative a b).val.re = ⟪a.val, b.val⟫ := by
   rw [relative_val, inner_def, re_star_mul]
@@ -117,18 +75,15 @@ theorem re_relative_eq_inner (a b : S3) :
 theorem relative_eq_one_iff (a b : S3) : relative a b = 1 ↔ a = b := by
   rw [relative, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
 
-/-- Left rotation of both elements leaves the position fixed. -/
 theorem relative_left (g a b : S3) : relative (g * a) (g * b) = relative a b := by
   simp only [relative, mul_inv_rev]
   rw [mul_assoc, ← mul_assoc g⁻¹ g b, inv_mul_cancel, one_mul]
 
-/-- Right rotation conjugates the position. -/
 theorem relative_right (a b h : S3) :
     relative (a * h) (b * h) = h⁻¹ * relative a b * h := by
   simp only [relative, mul_inv_rev]
   rw [mul_assoc, ← mul_assoc a⁻¹ b h, ← mul_assoc]
 
-/-- Conjugation by a unit quaternion preserves the real part. -/
 theorem re_conj (h : S3) (q : ℍ) : (star h.val * q * h.val).re = q.re := by
   have hunit : h.val * star h.val = 1 := by rw [self_mul_star, h.norm_one, coe_one]
   have hcycle : ((star h.val * q) * h.val).re = (h.val * (star h.val * q)).re :=
@@ -177,8 +132,7 @@ structure Rotation where
 
 namespace Rotation
 
-/-- Pair product. The right factor is multiplied in the opposite order, so that
-`(g, h) · p = g p h` is a left action. -/
+/-- Pair product. The right factor is multiplied in the opposite order, so that `(g, h) · p = g p h` is a left action. -/
 def mul (x y : Rotation) : Rotation where
   left := x.left * y.left
   right := y.right * x.right
@@ -223,7 +177,6 @@ theorem act_mul (x y : Rotation) (p : S3) : (x * y).act p = x.act (y.act p) := b
 
 end Rotation
 
-/-- The whole rotation fixes the angle and the right factor alone moves `ρ`. -/
 theorem relative_act (r : Rotation) (a b : S3) :
     relative (r.act a) (r.act b) = r.right⁻¹ * relative a b * r.right := by
   simp only [Rotation.act]
@@ -281,21 +234,17 @@ def elem (χ : ℝ) (n : SlerpTorque.V3) (hn : SlerpTorque.dot3 n n = 1) : S3 wh
 def chartAt (pole p : S3) : SlerpTorque.V3 :=
   SlerpTorque.logChart (toChart (relative pole p).val)
 
-/-- About the pole `a`, the coordinate of `b` is the logarithm of the position. -/
 theorem chartAt_eq_log_position (a b : S3) :
     chartAt a b = SlerpTorque.logChart (toChart (relative a b).val) :=
   rfl
 
-/-- At the pole the formula returns the origin. Off the pole, `logChart` is the
-equidistant projection. At the identity the written factor is `0 / 0`, and Lean
-division gives `0`, the value of the continuous extension. -/
+/-- At the identity the factor is `0 / 0`, and division gives `0`. -/
 theorem chartAt_self (a : S3) : chartAt a a = fun _ => 0 := by
   rw [chartAt, (relative_eq_one_iff a a).2 rfl, one_val]
   funext i
   simp only [SlerpTorque.logChart, toChart_apply, SlerpTorque.chartIdx]
   fin_cases i <;> simp
 
-/-- Left-multiplying the pole and the point together leaves the coordinate. -/
 theorem chartAt_left (g pole p : S3) :
     chartAt (g * pole) (g * p) = chartAt pole p := by
   rw [chartAt, chartAt, relative_left]
@@ -348,8 +297,6 @@ theorem chartAt_source {ψ α : ℝ} (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
   funext i
   fin_cases i <;> simp [axisAngle, SlerpTorque.sourcePoint]
 
-/-- Body, source, and pole, rotated together, keep the chart readings.
-`chordMoment` is a function of those readings, so it is unchanged. -/
 theorem charts_joint_left (g : S3) {χ ψ α : ℝ}
     (hχ : 0 < χ) (hχu : χ < Real.pi) (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
     chartAt g (g * bodyElem χ) = SlerpTorque.bodyPoint χ ∧
@@ -376,9 +323,7 @@ def sampleBody : S3 :=
 def sampleSource : S3 :=
   sourceElem sampleχ sampleχ
 
-/-- Right translation that lays the sample body on the first chart axis.
-`relative_right` conjugates by `h⁻¹`, and that conjugate is the quaternion
-`logChart` sends to `bodyPoint (-sampleχ)`. -/
+/-- Right translation that lays the sample body on the first chart axis. `relative_right` conjugates by `h⁻¹`, and that conjugate is the quaternion `logChart` sends to `bodyPoint (-sampleχ)`. -/
 def axisTurn : S3 where
   val := ⟨Real.sqrt 2 / 2, 0, Real.sqrt 2 / 2, 0⟩
   norm_one := by
@@ -443,13 +388,6 @@ private theorem chartAt_sample_body_turned :
   rw [chartAt, relative_sample_turned_val]
   exact logChart_neg_i
 
-/-- The same two elements, read from two poles.
-
-About the identity pole the chart figure is the equal-distance pair, and
-`chordMoment` is positive. The right translation `axisTurn` puts the source at
-the pole of the new chart and lays the body on the first coordinate axis, where
-`pushedMoment` is the origin value `0`. The angle is unchanged.
--/
 theorem pole_shift_changes_moment :
     one ≠ sampleSource ∧
       chartAt 1 sampleBody = SlerpTorque.bodyPoint sampleχ ∧
@@ -508,7 +446,6 @@ theorem mul_negOne (a : S3) : a * negOne = antipode a := by
   apply S3.ext
   simp [mul_val, negOne, antipode, mul_neg, mul_one]
 
-/-- The relative rotor is `-1` precisely at the antipode. -/
 theorem relative_eq_negOne_iff (a b : S3) :
     relative a b = negOne ↔ b = antipode a := by
   rw [relative, inv_mul_eq_iff_eq_mul, mul_negOne]
@@ -526,7 +463,6 @@ theorem separation_antipode (a : S3) : separation a (antipode a) = Real.pi := by
   have hre : (negOne : S3).val.re = -1 := by simp [negOne]
   rw [separation, relative_antipode, hre, Real.arccos_neg_one]
 
-/-- Angle `π` occurs at the antipode and nowhere else. -/
 theorem separation_eq_pi_iff (a b : S3) :
     separation a b = Real.pi ↔ b = antipode a := by
   constructor
@@ -537,9 +473,7 @@ theorem separation_eq_pi_iff (a b : S3) :
   · rintro rfl
     exact separation_antipode a
 
-/-- The chart writes the antipode at the origin, where it also writes the pole.
-The factor in `logChart` divides by zero here; the imaginary part is zero, so
-the product is the origin. -/
+/-- The chart writes the antipode at the origin, where it also writes the pole. -/
 theorem chartAt_antipode (a : S3) : chartAt a (antipode a) = fun _ => 0 := by
   rw [chartAt, relative_antipode]
   funext i
@@ -554,7 +488,6 @@ theorem conj_negOne (h : S3) : h⁻¹ * negOne * h = negOne := by
     _ = -((1 : ℍ)) := by rw [star_mul_self, h.norm_one, coe_one]
     _ = -1 := by simp
 
-/-- Every rotation fixes the antipodal rotor exactly. -/
 theorem relative_antipode_act (r : Rotation) (a : S3) :
     relative (r.act a) (r.act (antipode a)) = negOne := by
   rw [relative_act, relative_antipode, conj_negOne]
@@ -567,7 +500,6 @@ theorem elem_pi {n : SlerpTorque.V3} (hn : SlerpTorque.dot3 n n = 1) :
   apply S3.ext
   simp [elem, liftQuat_pi, negOne]
 
-/-- Distinct directions at distance `π` are one element. -/
 theorem boundary_one_element :
     elem Real.pi axis0 axis0_unit = negOne ∧
       elem Real.pi (axisAngle (Real.pi / 2)) (axisAngle_unit (Real.pi / 2)) = negOne ∧
@@ -577,8 +509,7 @@ theorem boundary_one_element :
   have h0 := congrFun h 0
   simp [axis0, axisAngle, Real.cos_pi_div_two] at h0
 
-/-- The flattened chart identifies the pole with the antipode. The rotor `-1`
-separates them, and every rotation fixes that rotor. -/
+/-- The flattened chart identifies the pole with the antipode; the rotor `-1` separates them. -/
 theorem flattened_chart_loses_antipode (a : S3) (r : Rotation) :
     chartAt a a = chartAt a (antipode a) ∧
       chartAt a (antipode a) = (fun _ => 0) ∧

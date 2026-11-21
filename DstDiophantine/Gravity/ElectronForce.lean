@@ -17,28 +17,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Electron–proton force along the equal-scale ray
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a Bohr spectrum
-or a radius from `pr = nℏ`. The critical phase is not identified with a
-decimal, a spectroscopic shell, or an equilibrium. No centrifugal term
-is added, and no angular momentum is assigned.
-
-## What is proved
-
-* Counted with attraction positive, the electron–proton force at phase
-  `x = ℓ/(2r)` is `4x²/γ_s(x)`.
-* On the outer well `(0, x₁)` this force is positive and strictly increasing
-  in the phase.
-* On the first repulsive shell `(x₁, x₂)` the same force is negative, so an
-  unlike pair is driven back toward the first node.
-* On the first repulsive shell it has exactly one critical point. The phase
-  lies in `(5/2, π)`, so the radius `1/(2x)` lies in `(1/(2π), 1/5)`.
-* The attraction-positive value there lies strictly between `-3` and `0`.
-  At `x = π` the value is `-4π²/cosh π`, which is strictly less than `-3`.
-
-No angular momentum is assigned, and no circular energy is formed.
-The de Broglie phase is not closed into a radius here.
+On the outer well the attraction-positive force is strictly increasing, and on
+the first repulsive shell it has a single critical phase. The length \(\ell\)
+is not derived; that phase is not a spectroscopic shell or an equilibrium, and
+no radius is produced from \(pr=n\hbar\).
 -/
 
 namespace DstDiophantine
@@ -523,7 +505,6 @@ theorem pairAttraction_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
   unfold pairAttraction
   exact div_pos (by nlinarith [hx.1]) (gammaSEqual_pos_left_of_first_node hx)
 
-/-- `γ_s` stays negative from the first node up to the next node. -/
 private theorem gamma_neg_on_first_shell {x : ℝ}
     (hx : x ∈ Ioo resonanceRoot1 (branchNode 1)) : gammaSEqual x < 0 := by
   rcases le_or_gt x π with hle | hgt
@@ -543,8 +524,6 @@ private theorem gamma_neg_on_first_shell {x : ℝ}
     have hlt := strictMonoOn_gammaSEqual_odd 0 (by simpa using hxI) (by simpa using hnI) hx.2
     rwa [hzero] at hlt
 
-/-- Inside the first repulsive shell the attraction-positive force is negative,
-so an unlike pair is driven back toward the first node. -/
 theorem pairAttraction_neg_first_shell {x : ℝ}
     (hx : x ∈ Ioo resonanceRoot1 (branchNode 1)) : pairAttraction x < 0 := by
   unfold pairAttraction

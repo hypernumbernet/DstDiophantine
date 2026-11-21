@@ -46,7 +46,6 @@ theorem J_logMismatch (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
   dsimp [logMismatch]
   exact J_pureBoost _
 
-/-- Leading `p²` amplification on the pure-boost mismatch model. -/
 theorem J_pow_amplify_int {a c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0) (p : ℕ) :
     J (pureBoost (p * (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)))) =
       (p : ℝ) ^ 2 * J (logMismatch a c ha hc) := by

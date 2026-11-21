@@ -67,146 +67,36 @@ import DstDiophantine.Algebra.LorentzDim
 import Mathlib.Data.Matrix.Basic
 
 /-!
-# Dual Spacetime 4-valued logic (D4L) — parallel track
+# Dual Spacetime 4-valued logic
 
-The project's logic. A proposition is an admissible torsion configuration.
-Measurement is the already-proved PGA invariant `JNormalized`; collapse
-yields four labels. The amplitude layer (connectives, orders, Killing
-geometry) and the dual Hilbert layer (`Logic.Quantum`) belong to the
-same logic.
+A proposition is an admissible torsion configuration measured by `JNormalized`.
+The track is not re-exported from `DstDiophantine.Basic`.
 
-**Not** re-exported from `DstDiophantine.Basic`, so the Diophantine path
-does not depend on these modules (same policy as `DstDiophantine.Gravity`
-and `DstDiophantine.CGA`).
-
-## Contents
-
-* `Logic.Amplitude` — admissible configuration as the primary carrier;
-  second observable `mass`; predicates `IsVacuum` / `IsBalancedMassive`
-  (not a fifth label)
+* `Logic.Amplitude` — admissible configuration as the primary carrier
 * `Logic.TruthValue` — four states from `JNormalized ∈ [-1,1]`
 * `Logic.Connective` — min/max/neg, non-explosion
 * `Logic.Interpretation` — usual–dual swap is signed negation
-* `Logic.Order` — height and information preorders (not Belnap FOUR)
+* `Logic.Order` — height and information preorders
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
-* `Logic.Quantum` — dual Hilbert layer of D4L (sectors, quaternion table,
-  `ℂ²`, subspace lattice, internal dictionary, Dirac `ℂ⁴` representation,
-  usual-sector hyperbolic Rodrigues, Weyl chirality, momentum-space Dirac
-  equation as the Clifford square of the Minkowski quadratic,
-  on-shell Weyl construction recovering the rest pair \((u,iu)\),
-  longitudinal boost of that pair, the factor \(\cosh\alpha\) on its
-  Euclidean overlap, the boost-invariant mass bilinear
-  \(\Psi^\dagger(-i\gamma^0)\Phi\), and the Dirac current
-  \(i\bar\Psi\Phi(\cosh\alpha,0,0,-\sinh\alpha)\), covariance of the
-  momentum-space Dirac equation, mass bilinear and current under every
-  unit-determinant total rotor, its unique usual·dual factorization, the dual
-  sector as little group of the rest momentum, and the Thomas–Wigner dual
-  rotation of perpendicular usual rotors, the Gordon identity relating the
-  current of two solutions to the momentum and the mass bilinear, the
-  spacetime Dirac equation `γ^μ∂_μΨ = -mΨ` with its plane-wave solutions and
-  conserved current, its covariance under total rotors, minimal coupling with
-  gauge covariance, kinetic momentum and a gauge-invariant conserved current,
-  the second-order equation whose magnetic term is the dual generator on both
-  Weyl blocks, the Klein–Gordon equation, spin precession as a dual rotor,
-  the dual map, charge conjugation and the antiparticle, two dual spinors
-  with the singlet as the unique state fixed by common dual rotors, its
-  correlation `-a·b`, no signalling, and the CHSH bounds `2` and `2√2`,
-  the spin vector of a dual spinor as a point of the unit sphere, the
-  `4π` interference intensity, the Robertson–Schrödinger equality and
-  the bound for two spin axes, the polarization of each particle of a
-  joint state, exchange as the split into the singlet and the symmetric
-  states with `S² = 1 + P`, and exclusion of parallel dual spinors from
-  the singlet, the orthogonal complement of a dual-spinor ray as the ray of
-  its spin-reversed partner, and the absence of a third orthogonal ray,
-  the information weight and spin vector of a dual spinor as a future
-  lightlike four-vector, fixed by a unit phase, with image exactly the
-  future light cone; superposition is not addition of those four-vectors,
-  and a relative phase turns the null direction; the Dirac current of two
-  Weyl blocks is the lower image plus the spatially reversed upper image,
-  so one chirality stays null and is the massless Weyl solution at that
-  image, while the rest pair `(u,iu)` assembles the same null image into
-  the timelike current `(2‖u‖², 0)`; a plane wave of one momentum has
-  density `‖u‖²` at every chart point and one ray there, a nonzero
-  solution of nonzero mass determines its four-momentum, the sum of two
-  distinct momenta is not a wave of one momentum, equal amplitudes have
-  density `4 cos²((q−p)·x/2) ‖u‖²`, and a chart translation fails to
-  commute with a momentum shift by the phase `e^{i k·a}`; dividing out the
-  de Broglie phase returns the carrier, the dual-rotor curve solves
-  `i u'=½(ω·σ)u` with the chart time component fixed at the information
-  weight, a phase times the identity is a dual rotor exactly at `±1`, a
-  constant potential is one at every time exactly when it vanishes, and a
-  nonzero momentum kick fails to be one at some chart point; on a twice
-  differentiable carrier `(σ·Π)² = Π² - e σ·B`, the two Weyl blocks of the
-  field strength agree exactly when the charge or the electric field
-  vanishes, and for `m ≠ 0` the magnetic piece over `2m` is the dual-rotor
-  curve of rate `-(e/m) B`, of angular speed `|e| ‖B‖ / |m|`, and is never a
-  chart phase; the dual
-  spinor space carries no endomorphisms with `[A,B] = i I`, nor does one
-  Dirac value, while on differentiable chart fields multiplication by
-  `x^ν` and `P_μ = -i ∂_μ` satisfy `[X^ν, P_μ] = i δ`, a differentiable
-  field is a momentum eigenfield exactly when every `P_μ` multiplies it by
-  `p_μ`, and a nonzero plane wave is an eigenfield of no position
-  component; also the
-  dual-rotor character, spinor
-  amplitude, relative dual-rotor composition and noncommutative
-  interference)
-  plus the string-comparison slice (`Cl91`, MW16, spectrum labels,
-  level-match dictionary)
-* `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated
-  `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
-* `Logic.Implication` — separate residuals of the two predicates; no common
-  residual on the height
-* `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with
-  classical truth the positive wall; the De Morgan skeleton lifts off
-  the walls, excluded middle and the syllogism do not; material
-  implication detaches the positive wall, and its non-refutation is
-  the non-refutation of the negated antecedent
-* `Logic.HeightIdentity` — a formula returns one literal; equational
-  identity on the height is decided by `{-1, 0, 1}`, and agreement on
-  the two walls is strictly coarser (the two excluded middles); a height
-  identity rewrites under every one-hole context
-* `Logic.WallRule` — modus ponens, tollens, disjunctive syllogism, and
-  the syllogism preserve the positive wall at every real height; every
-  formula returns balance at total balance, so discharge of those rules
-  into a formula is special to the walls; on the interval the same
-  consequence is decided by `{-1, 0, 1}` on the atoms that occur, and
-  that check splits into classical consequence and the balance case;
-  discharge agrees with classical consequence on the walls at every
-  finite depth; synchrony, non-refutation, and positive-wall forcing
-  are pairwise incomparable
-* `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
-  detaches for every pair; it agrees with the classical expansion, and
-  that expansion detaches, exactly on splitting pairs
-* `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly
-  when the two are equal or orthogonal; the subspaces that split along a
-  ray are its four-element island `{⊥, ℓ, ℓ⊥, ⊤}`, on which meet
-  distributes over join and the two implications agree; the classical
-  expansion detaches exactly on those agreeing pairs, and fails on a
-  basis ray against the diagonal; distinct islands meet only at
-  `{⊥, ⊤}`; only `⊥` and `⊤` split along every subspace
-* `Logic.Quantum.BlockReading` — splitting along both arguments distributes
-  in `ℂ²`; a ray that does so keeps both subspaces in its island; the
-  island is two classical bits, orthocomplement negates both and fixes
-  nothing, the two atoms do not embed into the height order, and a height
-  assignment carrying that negation to sign flip misses a label
+* `Logic.Quantum` — dual Hilbert layer of D4L
+* `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
+* `Logic.Implication` — separate residuals of the two predicates
+* `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with classical truth the positive wall
+* `Logic.HeightIdentity` — a formula returns one literal
+* `Logic.WallRule` — modus ponens, tollens, disjunctive syllogism, and the syllogism preserve the positive wall at every real height
+* `Logic.Quantum.Sasaki` — the implication carried by orthomodularity detaches for every pair
+* `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly when the two are equal or orthogonal
+* `Logic.Quantum.BlockReading` — splitting along both arguments distributes in `ℂ²`
 * `Logic.Regime` — discrete proof-status algebra and implication table
-* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
-  Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
-  (complementarity is the existing `ℂ²` lattice theorems)
-* `Logic.DiscreteAmplitude` — torus amplitudes; `¬4 ∣ N` forbids `F`
-* `Logic.Dynamics` — amplification as a partial map on labels;
-  vacuum is a fixed point; balanced massive can stay `T` or leave the cone
-  invisibly to `classify?`
+* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`, Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
+* `Logic.DiscreteAmplitude` — torus amplitudes
+* `Logic.Dynamics` — amplification as a partial map on labels
 * `Logic.Winding` — height and winding are incompatible measurements
 * `Logic.MotorProp` — L2: additive motor ≠ multiplicative amplitude
 * `Logic.BalancedResidual` — L3: `BalancedResidualClass` vs window seeds
 
-Unconditional FLT / Beal / a Gödel-refutation are **not** claimed.
-The amplitude layer is not a Hilbert space, a Born rule, or an
-orthomodular lattice. `DualSpinor ≃ ℂ²` and its subspace lattice belong
-to the same logic; their operations are not identified with the four
-labels or with `min`/`max`. See `Logic.Quantum.Separation` and
-`Logic.Quantum.Dictionary`.
+Unconditional FLT / Beal / a Gödel-refutation are not claimed.
+The amplitude layer is not a Hilbert space, a Born rule, or an orthomodular lattice, and the `ℂ²` operations are not the four labels.
 -/
 
 namespace DstDiophantine
@@ -215,32 +105,26 @@ namespace Logic
 
 open Invariant Operations Generators Submodule
 
-/-- Regression: every D4L state is realised by an admissible configuration. -/
 example (tv : TruthValue) :
     ∃ (p : TorsionParams) (h : Admissible.IsAdmissibleContinuous p), ofParams p h = tv :=
   exists_ofParams tv
 
-/-- Regression: dual-swap flips `JNormalized`. -/
 example (p : TorsionParams) : JNormalized (daggerParams p) = -JNormalized p :=
   JNormalized_dagger p
 
-/-- Regression: conjunction with negation never saturates `F`. -/
 example {j : ℝ} (hj : |j| ≤ 1) :
     classifyOfMem (conjJ j (negJ j)) (abs_conj_neg_le hj) ≠ .F :=
   classify_conj_neg_ne_F hj
 
-/-- Regression: every label is realised by an amplitude. -/
 example (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv :=
   exists_amplitude tv
 
-/-- Regression: adjoint is involutive and flips the observable. -/
 example (a : Amplitude) : a.adjoint.adjoint = a :=
   a.adjoint_involutive
 
 example (a : Amplitude) : a.adjoint.measure = -a.measure :=
   a.measure_adjoint
 
-/-- Regression: information bottom is `T`; tops are the walls `±1`. -/
 example {j : ℝ} (hj : |j| ≤ 1) :
     classifyOfMem j hj = .T ↔ ∀ k : ℝ, |k| ≤ 1 → InfoLE j k :=
   classify_T_iff_info_bottom hj
@@ -249,14 +133,12 @@ example {j : ℝ} (hj : |j| ≤ 1) :
     (∀ k : ℝ, |k| ≤ 1 → InfoLE k j) ↔ j = 1 ∨ j = -1 :=
   info_top_iff hj
 
-/-- Regression: Killing overlap is symmetric; self-overlap is `16 J`. -/
 example (p q : TorsionParams) : overlap p q = overlap q p :=
   overlap_symm p q
 
 example (p : TorsionParams) : overlap p p = 16 * J p :=
   overlap_self p
 
-/-- Regression: distinct-axis torsion bivectors need not commute. -/
 example : interfere axis0Boost axis1Rotation ≠ 0 :=
   interfere_axis0_axis1_ne_zero
 
@@ -286,7 +168,6 @@ example : cyclic 0 * cyclic 1 = cyclic 2 :=
 example {β : DualRapidity} (h : killingForm (ofDual β) (ofDual β) = 0) : β = 0 :=
   killingForm_ofDual_neg_def h
 
-/-- Regression: `ℂ²` subspace lattice is orthomodular and not distributive. -/
 example {A B : QProp} (h : A ≤ B) : A ⊔ Aᗮ ⊓ B = B :=
   orthomodular h
 
@@ -302,7 +183,6 @@ example :
           (∀ tv₁ tv₂, tv₁ ≠ tv₂ → L tv₁ ⟂ L tv₂) :=
   four_labels_not_orthogonal_pvm
 
-/-- Regression: wall two-valued logic cannot host `P = ¬P`. -/
 example : ¬ ∃ v : Valuation,
     IsWallTwo (v.assign 0) ∧
       IsNegFixed ((Formula.atom 0).eval v.assign) :=
@@ -312,32 +192,26 @@ example : ¬ ∃ v : Valuation,
 example : ∃ v : Valuation, IsNegFixed ((Formula.atom 0).eval v.assign) :=
   exists_negFixed_valuation
 
-/-- Regression: non-refutation of a conjunction is the join of the non-refutations. -/
 example (j k : ℝ) : HoldsNotF (conjJ j k) ↔ HoldsNotF j ∨ HoldsNotF k :=
   holdsNotF_conj j k
 
-/-- Regression: non-refutation of a disjunction is the meet of the non-refutations. -/
 example (j k : ℝ) : HoldsNotF (disjJ j k) ↔ HoldsNotF j ∧ HoldsNotF k :=
   holdsNotF_disj j k
 
-/-- Regression: balance absorbs every nonnegative height, and every nonpositive height. -/
 example {k : ℝ} (hk : 0 ≤ k) : conjJ 0 k = 0 :=
   conjJ_zero_of_nonneg hk
 
 example {k : ℝ} (hk : k ≤ 0) : disjJ 0 k = 0 :=
   disjJ_zero_of_nonpos hk
 
-/-- Regression: on the interval, excluded middle is refuted exactly at the walls. -/
 example {j : ℝ} (hj : |j| ≤ 1) :
     ¬ HoldsNotF (disjJ j (negJ j)) ↔ j = 1 ∨ j = -1 :=
   not_holdsNotF_excluded_middle_iff hj
 
-/-- Regression: synchrony of an atom forces synchrony of excluded middle. -/
 example :
     EntailsT {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 0).neg) :=
   entailsT_excluded_middle (Formula.atom 0)
 
-/-- Regression: classical truth is the positive wall, on every formula. -/
 example (φ : Formula) :
     (∀ b : ℕ → Bool, φ.boolEval b = true) ↔
       ∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 :=
@@ -348,25 +222,19 @@ example (φ : Formula) (b : ℕ → Bool) :
     φ.neg.neg.boolEval b = φ.boolEval b :=
   double_neg_classical φ b
 
-/-- Regression: the syllogism is a classical tautology, and at balance it
-returns synchrony. -/
 example (b : ℕ → Bool) : syllogismFormula.boolEval b = true :=
   syllogism_classical b
 
 example : syllogismFormula.eval (fun _ => 0) = 0 :=
   syllogism_balance
 
-/-- Regression: material implication detaches the positive wall on every real height. -/
 example {j k : ℝ} (hj : j = 1) (himp : impJ j k = 1) : k = 1 :=
   impJ_detach_wall hj himp
 
-/-- Regression: non-refutation of a material implication reads the negated antecedent. -/
 example (j k : ℝ) :
     HoldsNotF (impJ j k) ↔ HoldsNotF (negJ j) ∧ HoldsNotF k :=
   holdsNotF_impJ j k
 
-/-- Regression: tollens, disjunctive syllogism, and the syllogism rule
-preserve the positive wall at every real height. -/
 example {j k : ℝ} (hjk : impJ j k = 1) (hk : k = -1) : j = -1 :=
   impJ_tollens hjk hk
 
@@ -376,11 +244,9 @@ example {j k : ℝ} (h : disjJ j k = 1) (hj : j = -1) : k = 1 :=
 example {j k m : ℝ} (hjk : impJ j k = 1) (hkm : impJ k m = 1) : impJ j m = 1 :=
   impJ_chain hjk hkm
 
-/-- Regression: every formula returns balance at total balance. -/
 example (φ : Formula) : φ.eval (fun _ => 0) = 0 ∧ ¬ EntailsOne ∅ φ :=
   ⟨eval_balance φ, not_entailsOne_empty φ⟩
 
-/-- Regression: discharge holds on the walls, and fails for excluded middle at balance. -/
 example (φ ψ : Formula) :
     (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → φ.eval v = 1 → ψ.eval v = 1) ↔
       (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) → (impF φ ψ).eval v = 1) :=
@@ -398,27 +264,22 @@ example (Γ : Set Formula) (ψ : Formula) :
         (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1 :=
   entailsWall_iff_threeHeight Γ ψ
 
-/-- Regression: balance materially implies every nonpositive height. -/
 example {k : ℝ} (hk : k ≤ 0) : impJ 0 k = 0 :=
   impJ_zero_of_nonpos hk
 
-/-- Regression: the negative wall implying balance is the positive wall. -/
 example : impJ (-1) 0 = 1 :=
   impJ_neg_wall_balance
 
-/-- Regression: non-refutation of the negative wall does not save excluded middle. -/
 example :
     ¬ EntailsNotF {(Formula.atom 0)}
         ((Formula.atom 0).disj (Formula.atom 0).neg) :=
   not_entailsNotF_excluded_middle
 
-/-- Regression: contradiction is non-refuted with no premises, but not synchronised. -/
 example :
     EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
       ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) :=
   ⟨entailsNotF_conj_neg _, not_entailsT_conj_neg⟩
 
-/-- Regression: `{P, ¬P}` does not explode to an unrelated atom. -/
 example : ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1) :=
   contradict_not_entailsT_atom
 
@@ -435,7 +296,6 @@ example :
         (∃ (j : ℝ) (hj : |j| ≤ 1), classifyOfMem j hj = .B ∧ HoldsNotF j) :=
   exists_three_notF_labels
 
-/-- Regression: named two-valued logic cannot host the three-layer split. -/
 example :
     ¬ ∃ v : RegimeValuation,
         IsNamedRegime (v.assign 0) ∧
@@ -463,7 +323,6 @@ example :
         (RegimeFormula.atom 3) :=
   window_nogo_not_entailsNotFR_conjecture
 
-/-- Regression: Beal atlas realises closed `T`, diagnostic `F`, bookkeeping `B`, live `U`. -/
 example :
     ∃ v : RegimeValuation,
       sliceFLT.eval v.assign = .T ∧
@@ -484,13 +343,11 @@ example :
         bealConjecture :=
   closed_slices_not_entailsTR_beal
 
-/-- Regression: promoting one live residual, or every artefact, still fails. -/
 example :
     ¬ EntailsTR (bealClosedSliceAtomSet ∪ {liveMordell}) bealConjecture ∧
       ¬ EntailsTR bealArtefactAtomSet bealConjecture :=
   ⟨promote_liveMordell_not_entailsTR_beal, artefacts_not_entailsTR_beal⟩
 
-/-- Regression: FLT atlas realises closed `T`, diagnostic `F`, live `U`. -/
 example :
     ∃ v : RegimeValuation,
       sliceCore.eval v.assign = .T ∧
@@ -506,22 +363,18 @@ example :
 example : ¬ EntailsTR {sliceCore, sliceLp, sliceElliptic} fltConjecture :=
   closed_slices_not_entailsTR_flt
 
-/-- Regression: closed slices packaged with a live residual stay live. -/
 example : meetRList (closedSliceStatuses ++ [.U]) = .U :=
   meetRList_closed_with_live
 
-/-- Regression: L2 pure-translation torsion amplitude is vacuum. -/
 example :
     (⟨zeroTorsion, isAdmissibleContinuous_zeroTorsion⟩ : Amplitude).IsVacuum :=
   pure_translation_torsion_isVacuum
 
-/-- Regression: L2 additive vacuum ≠ multiplicative balanced massive. -/
 example :
     vacuumAmplitude.IsVacuum ∧ balancedAmplitude.IsBalancedMassive ∧
       ¬ vacuumAmplitude.IsBalancedMassive ∧ ¬ balancedAmplitude.IsVacuum :=
   additive_vacuum_ne_multiplicative_balanced
 
-/-- Regression: L3 balanced residual class excludes window seeds. -/
 example : BalancedResidualClass balancedAmplitude ∧ ¬ BalancedResidualClass halfWindowSeed :=
   ⟨balancedAmplitude_mem_balancedResidualClass, halfWindowSeed_not_balanced⟩
 
@@ -529,32 +382,26 @@ example : BalancedResidualClass balancedAmplitude ∧ ¬ BalancedResidualClass h
 example : impR .U .T = .U :=
   impR_U_T
 
-/-- Regression: regime `s ∧ ¬s` never saturates `F`. -/
 example (s : TruthValue) : conjR s (negR s) ≠ .F :=
   conjR_negR_ne_F s
 
-/-- Regression: `¬ 4 ∣ N` forbids discrete `F`. -/
 example {N : ℕ} [NeZero N] (h4 : ¬ 4 ∣ N) (a : DiscreteAmplitude N) :
     a.collapse ≠ .F :=
   DiscreteAmplitude.collapse_ne_F_of_not_four_dvd h4 a
 
-/-- Regression: a `U` seed can be scaled onto `F`. -/
 example {k : ℕ} (hk : 2 ≤ k) :
     (⟨Amplification.scaleTorsion (k : ℝ) (seedU_to_F hk).params,
         seedU_to_F_scale_admissible hk⟩ : Amplitude).collapse = .F :=
   seedU_to_F_scales_to_F hk
 
-/-- Regression: label `T` splits into vacuum and balanced massive. -/
 example :
     (∃ a : Amplitude, a.collapse = .T ∧ a.IsVacuum) ∧
       (∃ b : Amplitude, b.collapse = .T ∧ b.IsBalancedMassive) :=
   T_splits_vacuum_and_balancedMassive
 
-/-- Regression: height cannot exceed mass. -/
 example (a : Amplitude) : |a.measure| ≤ a.massNormalized :=
   a.abs_measure_le_massNormalized
 
-/-- Regression: vanishing height is not axiswise balance. -/
 example :
     ∃ a : Amplitude, a.collapse = .T ∧ 0 < a.mass ∧ ¬ IsAxiswiseBalanced a.params :=
   T_has_cross_axis_cancellation
@@ -568,7 +415,6 @@ example :
     classifyOfMem (residuumJ (-1 / 2 : ℝ) 0) (by simp [residuumJ_B_T]) = .F :=
   residuumJ_B_T_eq_F
 
-/-- Regression: no height operation residuates both designated predicates. -/
 example :
     ¬ ∃ imp : ℝ → ℝ → ℝ,
       (∀ j k : ℝ, |j| ≤ 1 → |k| ≤ 1 → |imp j k| ≤ 1) ∧
@@ -597,74 +443,60 @@ example (a b : TruthValue) :
 example : ¬ (HoldsTR (impR .U .T) ↔ (HoldsTR .U → HoldsTR .T)) :=
   impR_not_theoremhood_residual
 
-/-- Regression: regime implication disagrees with the residuum at `U → T` and `B → T`. -/
 example :
     residuumJ (amplitudeRep .U) (amplitudeRep .T) = 0 ∧ impR .U .T = .U ∧
       residuumJ (amplitudeRep .B) (amplitudeRep .T) = 1 ∧ impR .B .T = .U :=
   ⟨residuum_U_T_ne_impR.1, residuum_U_T_ne_impR.2,
     residuum_B_T_ne_impR.1, residuum_B_T_ne_impR.2⟩
 
-/-- Regression: when `4 ∣ N`, both discrete walls are attained. -/
 example : (discreteF (by decide : 4 ∣ 4)).collapse = .F ∧
     (discreteB (by decide : 4 ∣ 4)).collapse = .B :=
   ⟨discreteF_collapse (by decide), discreteB_collapse (by decide)⟩
 
-/-- Regression: native implication is the whole space exactly on inclusion. -/
 example {A B : QProp} : sasaki A B = ⊤ ↔ A ≤ B :=
   sasaki_eq_top_iff
 
-/-- Regression: a basis ray and the diagonal separate the two implications. -/
 example :
     Compatible lineE0 lineE1 ∧ ¬ Compatible lineE0 lineD ∧
       sasaki lineE0 lineD = lineE1 ∧ material lineE0 lineD = ⊤ :=
   ⟨lineE0_compatible_lineE1, diagonal_not_compatible,
     diagonal_classical_overshoots.1, diagonal_classical_overshoots.2⟩
 
-/-- Regression: the lattice implication detaches for every pair. -/
 example (A B : QProp) : A ⊓ sasaki A B ≤ B :=
   sasaki_detach A B
 
-/-- Regression: the classical expansion detaches exactly on a splitting pair. -/
 example {A B : QProp} : A ⊓ material A B ≤ B ↔ Compatible A B :=
   material_detach_iff_compatible
 
-/-- Regression: a basis ray and the diagonal refuse detachment of the expansion. -/
 example : ¬ lineE0 ⊓ material lineE0 lineD ≤ lineD :=
   material_detach_iff_compatible.not.mpr diagonal_not_compatible
 
-/-- Regression: a ray splits along another ray exactly when they coincide or are orthogonal. -/
 example {A B : QProp} (hA : Module.finrank ℂ A = 1) (hB : Module.finrank ℂ B = 1) :
     Compatible A B ↔ A = B ∨ A ⟂ B :=
   compatible_line_iff hA hB
 
-/-- Regression: splitting along a ray is membership in its island. -/
 example {L A : QProp} (hL : Module.finrank ℂ L = 1) :
     Compatible A L ↔ A ∈ Island L :=
   compatible_ray_iff_mem_island hL
 
-/-- Regression: on an island the two implications agree, and meet distributes over join. -/
 example {L A B C : QProp} (hA : A ∈ Island L) (hB : B ∈ Island L) (hC : C ∈ Island L) :
     sasaki A B = material A B ∧ A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) :=
   ⟨island_implications_agree hA hB, island_inf_sup_distrib hA hB hC⟩
 
-/-- Regression: distinct islands meet only at the trivial subspaces. -/
 example {L M : QProp} (hL : Module.finrank ℂ L = 1) (hM : Module.finrank ℂ M = 1)
     (hne : L ≠ M) (hneO : L ≠ Mᗮ) :
     Island L ∩ Island M = ({⊥, ⊤} : Set QProp) :=
   island_inter_trivial hL hM hne hneO
 
-/-- Regression: only the trivial subspaces split along every subspace. -/
 example {A : QProp} : (∀ B : QProp, Compatible A B) ↔ A = ⊥ ∨ A = ⊤ :=
   compatible_all_iff
 
-/-- Regression: three distinct rays never split pairwise. -/
 example {A B C : QProp}
     (hA : Module.finrank ℂ A = 1) (hB : Module.finrank ℂ B = 1)
     (hC : Module.finrank ℂ C = 1) (hAB : A ≠ B) (hAC : A ≠ C) (hBC : B ≠ C)
     (hABc : Compatible A B) (hACc : Compatible A C) (hBCc : Compatible B C) : False :=
   no_three_pairwise_compatible_lines hA hB hC hAB hAC hBC hABc hACc hBCc
 
-/-- Regression: splitting along both arguments distributes, and a ray keeps both in its island. -/
 example {A B C : QProp} (hB : Compatible A B) (hC : Compatible A C) :
     A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) :=
   distributes_of_splits hB hC
@@ -694,31 +526,25 @@ example :
         ∀ tv : TruthValue, ∃ p, classifyOfMem (φ p) (_hφ p) = tv :=
   no_sign_flip_realizes_four_labels
 
-/-- Regression: a height meets its sign flip at zero only at balance. -/
 example (j : ℝ) : conjJ j (negJ j) = 0 ↔ j = 0 :=
   height_meet_neg_eq_zero_iff j
 
-/-- Regression: complementary rays exist in `ℂ²`. -/
 example : lineE0 ⟂ lineE1 :=
   lineE0_isOrtho_lineE1
 
-/-- Regression: the dual Hilbert layer has infinitely many atoms. -/
 example : Infinite {A : QProp // Module.finrank ℂ A = 1} :=
   infinite_one_dim_subspaces
 
-/-- Regression: vacuum stays vacuum under admissible scaling. -/
 example {k : ℕ} (h : Admissible.IsAdmissibleContinuous
     (Amplification.scaleTorsion (k : ℝ) vacuumAmplitude.params)) :
     (⟨Amplification.scaleTorsion (k : ℝ) vacuumAmplitude.params, h⟩ : Amplitude).IsVacuum :=
   scale_vacuum_stays_vacuum vacuumAmplitude_isVacuum h
 
-/-- Regression: a small balanced seed stays balanced massive after `k`-fold scaling. -/
 example {k : ℕ} (hk : 1 ≤ k) :
     (⟨Amplification.scaleTorsion (k : ℝ) (seedBalanced_stays hk).params,
         seedBalanced_stays_scale_admissible hk⟩ : Amplitude).IsBalancedMassive :=
   seedBalanced_stays_scales_balanced hk
 
-/-- Regression: full balanced ray exits the cone under 2-fold scaling. -/
 example :
     ¬ Admissible.IsAdmissibleContinuous
         (Amplification.scaleTorsion (2 : ℝ) balancedAmplitude.params) :=
@@ -730,22 +556,18 @@ example :
       some .T :=
   balancedAmplitude_scale_classify_T
 
-/-- Regression: height and winding are incompatible measurements. -/
 example {N : ℕ} [NeZero N] (k : ℕ) (t : Discrete.DiscreteTorsion N) :
     ¬ (Admissible.IsAdmissibleContinuous
           (Amplification.scaleTorsion (k : ℝ) (Discrete.toTorsionParams t)) ∧
         ModularAmplification.windingTotal k t ≠ 0) :=
   not_both_admissibleScale_and_winding k t
 
-/-- Regression: Cl(3,1) and Cl(9,1) have different real dimensions. -/
 example : Module.finrank ℝ Cl31 = 16 ∧ Module.finrank ℝ Cl91 = 1024 :=
   ⟨Cl91.finrank_cl31, Cl91.finrank_cl91⟩
 
-/-- Regression: the algebras are not isomorphic. -/
 example : ¬ Nonempty (Cl31 ≃ₐ[ℝ] Cl91) :=
   not_cl31_algEquiv_cl91
 
-/-- Regression: working chirality / spinor projectors are idempotent. -/
 example : chiralityL * chiralityL = chiralityL ∧
     chiralityR * chiralityR = chiralityR ∧
       spinorIdem * spinorIdem = spinorIdem :=
@@ -755,17 +577,14 @@ example : chiralityL * chiralityL = chiralityL ∧
 example : paperChiralityL * paperChiralityL ≠ paperChiralityL :=
   paper_chirality_rejected
 
-/-- Regression: composite `spinorIdem * chiralityR` is not idempotent. -/
 example : (spinorIdem * chiralityR) * (spinorIdem * chiralityR) ≠
     spinorIdem * chiralityR :=
   paperComposite_not_idempotent
 
-/-- Regression: commuting square-+1 pair yields an idempotent composite. -/
 example : (chiralityR * spinorIdemAxis1) * (chiralityR * spinorIdemAxis1) =
     chiralityR * spinorIdemAxis1 :=
   chiralityR_mul_spinorIdemAxis1_sq
 
-/-- Regression: Cl(3,1) Dirac gammas obey `{γ^μ,γ^ν}=2η^{μν}`. -/
 example (μ ν : Fin 4) :
     diracGamma μ * diracGamma ν + diracGamma ν * diracGamma μ =
       algebraMap ℝ Cl31 (2 * minkowskiEta μ ν) :=
@@ -775,58 +594,49 @@ example (μ ν : Fin 4) :
 example : Cl31.toPGA (diracGamma 0) ≠ Generators.hyperbolic 0 :=
   paper_gamma0_not_hyperbolic
 
-/-- Regression: axis-0 dual rotor is the Rodrigues SU(2) matrix. -/
 example (θ : ℝ) :
     dualRotorMat (EuclideanSpace.single 0 θ) =
       Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
         Real.sin (θ / 2) • cyclicRep 0 :=
   dualRotorMat_axis0_rodrigues θ
 
-/-- Regression: axis-0 dual rotor is unitary with determinant 1. -/
 example (θ : ℝ) :
     (dualRotorMat (EuclideanSpace.single 0 θ)).conjTranspose *
         dualRotorMat (EuclideanSpace.single 0 θ) = 1 ∧
       (dualRotorMat (EuclideanSpace.single 0 θ)).det = 1 :=
   ⟨dualRotorMat_axis0_unitary θ, dualRotorMat_axis0_det θ⟩
 
-/-- Regression: three-axis dual rotor is SU(2). -/
 example (β : DualRapidity) :
     (dualRotorMat β).conjTranspose * dualRotorMat β = 1 ∧
       (dualRotorMat β).det = 1 :=
   ⟨dualRotorMat_unitary β, dualRotorMat_det β⟩
 
-/-- Regression: dual-rotor character is the real half-angle cosine. -/
 example (β : DualRapidity) :
     (dualRotorMat β).trace = 2 * (Real.cos (‖β‖ / 2) : ℂ) :=
   dualRotorMat_trace β
 
-/-- Regression: along \(\sigma_z\) the spinor amplitude is \(e^{-i\theta/2}\). -/
 example (θ : ℝ) :
     dualRotorAmplitude (EuclideanSpace.single 2 θ) spinUp =
       Complex.exp (-(θ / 2 : ℂ) * Complex.I) :=
   dualRotorAmplitude_axis2 θ
 
-/-- Regression: along \(\sigma_x\) the spinor amplitude is the real cosine. -/
 example (θ : ℝ) :
     dualRotorAmplitude (EuclideanSpace.single 0 θ) spinUp =
       (Real.cos (θ / 2) : ℂ) :=
   dualRotorAmplitude_axis0 θ
 
-/-- Regression: observer–particle pairing is the relative-rotor matrix element. -/
 example (βO βA : DualRapidity) (χ : DualSpinor) :
     inner ℂ (applyMat (dualRotorMat βO) χ) (applyMat (dualRotorMat βA) χ) =
       inner ℂ χ
         (applyMat ((dualRotorMat βO).conjTranspose * dualRotorMat βA) χ) :=
   dualRotor_relative_overlap βO βA χ
 
-/-- Regression: same-axis dual rotors compose by adding angles. -/
 example (θ φ : ℝ) :
     dualRotorMat (EuclideanSpace.single 2 (θ + φ)) =
       dualRotorMat (EuclideanSpace.single 2 θ) *
         dualRotorMat (EuclideanSpace.single 2 φ) :=
   dualRotorMat_axis2_add θ φ
 
-/-- Regression: the character is the sum of opposite computational amplitudes. -/
 example (β : DualRapidity) :
     (dualRotorMat β).trace =
       dualRotorAmplitude β spinUp + dualRotorAmplitude β spinDown :=
@@ -837,18 +647,15 @@ example (β : DualRapidity) :
     (dualRotorAmplitude β spinUp).re = Real.cos (‖β‖ / 2) :=
   dualRotorAmplitude_spinUp_re β
 
-/-- Regression: \(2\pi\) dual rotation about the observer axis is \(-I\). -/
 example : dualRotorMat (EuclideanSpace.single 2 (2 * Real.pi)) = -1 :=
   dualRotorMat_axis2_two_pi
 
-/-- Regression: the relative dual rotor is unitary of determinant \(1\). -/
 example (βO βA : DualRapidity) :
     ((dualRotorMat βO).conjTranspose * dualRotorMat βA).conjTranspose *
         ((dualRotorMat βO).conjTranspose * dualRotorMat βA) = 1 ∧
       ((dualRotorMat βO).conjTranspose * dualRotorMat βA).det = 1 :=
   ⟨dualRotor_relative_unitary βO βA, dualRotor_relative_det βO βA⟩
 
-/-- Regression: distinct-axis dual rotors need not commute. -/
 example :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) ≠
@@ -856,38 +663,32 @@ example :
         dualRotorMat (EuclideanSpace.single 0 Real.pi) :=
   dualRotorMat_axes_not_commute
 
-/-- Regression: inverse dual rotor is the opposite rapidity. -/
 example (β : DualRapidity) :
     dualRotorMat (-β) = (dualRotorMat β).conjTranspose :=
   dualRotorMat_neg β
 
-/-- Regression: dual rotors along a common ray compose by adding the scale. -/
 example (s t : ℝ) (β : DualRapidity) :
     dualRotorMat ((s + t) • β) =
       dualRotorMat (s • β) * dualRotorMat (t • β) :=
   dualRotorMat_ray_add s t β
 
-/-- Regression: on a common ray the relative dual rotor is a single difference. -/
 example (s t : ℝ) (β : DualRapidity) :
     (dualRotorMat (s • β)).conjTranspose * dualRotorMat (t • β) =
       dualRotorMat ((t - s) • β) :=
   dualRotor_relative_ray s t β
 
-/-- Regression: character of a composite records dual-axis alignment. -/
 example (β γ : DualRapidity) :
     (dualRotorMat β * dualRotorMat γ).trace =
       2 * ((Real.cos (‖β‖ / 2) : ℂ) * Real.cos (‖γ‖ / 2) -
         (dualAxisInner β γ : ℂ) * Real.sin (‖β‖ / 2) * Real.sin (‖γ‖ / 2)) :=
   dualRotorMat_mul_trace β γ
 
-/-- Regression: relative-rotor character is the aligned half-angle cosine. -/
 example (βO βA : DualRapidity) :
     ((dualRotorMat βO).conjTranspose * dualRotorMat βA).trace =
       2 * ((Real.cos (‖βO‖ / 2) : ℂ) * Real.cos (‖βA‖ / 2) +
         (dualAxisInner βO βA : ℂ) * Real.sin (‖βO‖ / 2) * Real.sin (‖βA‖ / 2)) :=
   dualRotor_relative_trace βO βA
 
-/-- Regression: group commutator of perpendicular π dual rotations is -I. -/
 example :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) *
@@ -896,17 +697,14 @@ example :
       -1 :=
   dualRotorMat_axes_group_commutator
 
-/-- Regression: commuting projector is nonzero and generates a nonzero left ideal. -/
 example :
     commutingSpinorIdem ≠ 0 ∧
       ∃ x ∈ leftIdealOf commutingSpinorIdem, x ≠ 0 :=
   ⟨commutingSpinorIdem_ne_zero, leftIdeal_commutingSpinorIdem_nontrivial⟩
 
-/-- Regression: vanishing interference does not force a common single axis. -/
 example : ∃ p q : TorsionParams, interfere p q = 0 ∧ ¬ SameAxis p q :=
   compatible_not_implies_same_axis
 
-/-- Regression: Dirac \(\mathbb{C}^4\) matrices obey the Clifford relations. -/
 example (μ ν : Fin 4) :
     diracMat μ * diracMat ν + diracMat ν * diracMat μ =
       (2 * minkowskiEta μ ν : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) :=
@@ -916,15 +714,12 @@ example (μ ν : Fin 4) :
 example : Module.finrank ℂ DualSpinor ≠ Module.finrank ℂ DiracSpinor :=
   dualSpinor_ne_diracSpinor
 
-/-- Regression: commuting left ideal has real dimension exactly eight. -/
 example : Module.finrank ℝ (leftIdealSub commutingSpinorIdem) = 8 :=
   finrank_leftIdeal_commuting
 
-/-- Regression: Minkowski core of the commuting left ideal is four-dimensional. -/
 example : Module.finrank ℝ minkowskiLeftIdeal = 4 :=
   finrank_minkowskiLeftIdeal
 
-/-- Regression: the eight-dimensional ideal splits as Minkowski core plus null copy. -/
 example :
     minkowskiLeftIdeal ⊔ nullSlice = leftIdealSub commutingSpinorIdem ∧
       minkowskiLeftIdeal ⊓ nullSlice = (⊥ : Submodule ℝ PGA) :=
@@ -940,7 +735,6 @@ example :
 example : Module.finrank ℝ DiracSpinor = 8 :=
   diracSpinor_finrank_real
 
-/-- Regression: dual-sector PGA exponential is the Rodrigues formula. -/
 example (β : DualRapidity) :
     Motor.rotorTorsion (ofDual β) =
       Real.cos (‖β‖ / 2) • (1 : PGA) +
@@ -948,7 +742,6 @@ example (β : DualRapidity) :
           else Real.sin (‖β‖ / 2) • cyclicUnit β h) :=
   rotorTorsion_ofDual β
 
-/-- Regression: matrix dual rotor is the Rodrigues formula along β. -/
 example (β : DualRapidity) :
     dualRotorMat β =
       Real.cos (‖β‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -956,7 +749,6 @@ example (β : DualRapidity) :
           else Real.sin (‖β‖ / 2) • cyclicRepComb (fun a => β a / ‖β‖)) :=
   dualRotorMat_rodrigues β
 
-/-- Regression: usual-sector PGA exponential is the hyperbolic Rodrigues formula. -/
 example (α : UsualRapidity) :
     Motor.rotorTorsion (ofUsual α) =
       Real.cosh (‖α‖ / 2) • (1 : PGA) +
@@ -964,13 +756,11 @@ example (α : UsualRapidity) :
           else Real.sinh (‖α‖ / 2) • hyperbolicUnit α h) :=
   rotorTorsion_ofUsual α
 
-/-- Regression: axis-0 usual rotor is \(\cosh(\theta/2)I+\sinh(\theta/2)B^+_0\). -/
 example (θ : ℝ) :
     Motor.rotorTorsion (ofUsual (EuclideanSpace.single 0 θ)) =
       Real.cosh (θ / 2) • (1 : PGA) + Real.sinh (θ / 2) • Generators.hyperbolic 0 :=
   rotorTorsion_ofUsual_axis0 θ
 
-/-- Regression: usual matrix rotor is Hermitian of determinant 1. -/
 example (α : UsualRapidity) :
     (usualRotorMat α).IsHermitian ∧ (usualRotorMat α).det = 1 :=
   ⟨usualRotorMat_isHermitian α, usualRotorMat_det α⟩
@@ -981,7 +771,6 @@ example :
       usualRotorMat (EuclideanSpace.single 0 (2 : ℝ)) ≠ 1 :=
   usualRotorMat_axis0_not_unitary
 
-/-- Regression: matrix usual rotor is the hyperbolic Rodrigues formula along α. -/
 example (α : UsualRapidity) :
     usualRotorMat α =
       Real.cosh (‖α‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -989,53 +778,43 @@ example (α : UsualRapidity) :
           else Real.sinh (‖α‖ / 2) • pauliComb (fun a => α a / ‖α‖)) :=
   usualRotorMat_rodrigues α
 
-/-- Regression: every Dirac spinor decomposes into Weyl blocks. -/
 example (Ψ : DiracSpinor) :
     weylUpper (diracUpper Ψ) + weylLower (diracLower Ψ) = Ψ :=
   weyl_decompose Ψ
 
-/-- Regression: \(\gamma^5\) squares to the identity. -/
 example : diracMat5 * diracMat5 = 1 :=
   diracMat5_sq
 
-/-- Regression: Weyl projectors are complementary idempotents. -/
 example : weylProjPlus * weylProjPlus = weylProjPlus ∧
     weylProjMinus * weylProjMinus = weylProjMinus ∧
       weylProjPlus + weylProjMinus = 1 :=
   ⟨weylProjPlus_sq, weylProjMinus_sq, weylProjPlus_add_minus⟩
 
-/-- Regression: upper Weyl block is the \(+1\) eigenspace of \(\gamma^5\). -/
 example (ψ : DualSpinor) :
     applyDiracMat diracMat5 (weylUpper ψ) = weylUpper ψ :=
   applyDiracMat5_weylUpper ψ
 
-/-- Regression: lower Weyl block is the \(-1\) eigenspace of \(\gamma^5\). -/
 example (ψ : DualSpinor) :
     applyDiracMat diracMat5 (weylLower ψ) = -weylLower ψ :=
   applyDiracMat5_weylLower ψ
 
-/-- Regression: Clifford slash squares to the Minkowski quadratic. -/
 example (p : Vec4) :
     slashCl p * slashCl p = algebraMap ℝ Cl31 (minkowskiQ p) :=
   slashCl_sq p
 
-/-- Regression: matrix slash squares to \(Q(p)\,I\). -/
 example (p : Vec4) :
     slashMat p * slashMat p = (minkowskiQ p : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) :=
   slashMat_sq p
 
-/-- Regression: a nonzero Dirac eigenspinor lies on the mass shell. -/
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
     minkowskiQ p = -m ^ 2 :=
   diracMomentum_implies_mass_shell hΨ h
 
-/-- Regression: rest-frame particle solutions exist. -/
 example (m : ℝ) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
   exists_rest_particle m
 
-/-- Regression: chiral slashes multiply to the Minkowski quadratic. -/
 example (p : Vec4) :
     pauliSlash p * pauliSlashBar p = (minkowskiQ p : ℂ) • 1 :=
   pauliSlash_mul_pauliSlashBar p
@@ -1045,46 +824,36 @@ example {m : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
     onShellParticleSpinor m (restMomentum m) u = restParticleSpinor u :=
   onShellParticleSpinor_rest hm u
 
-/-- Regression: a massive on-shell four-momentum carries a Dirac solution. -/
 example {m : ℝ} {p : Vec4} (hm : m ≠ 0) (hQ : minkowskiQ p = -m ^ 2)
     (u : DualSpinor) :
     DiracMomentum m p (onShellParticleSpinor m p u) :=
   onShellParticle_dirac hm hQ u
 
-/-- Regression: a longitudinal boost of rest momentum lies on the mass shell. -/
 example (m α : ℝ) : minkowskiQ (boostZMomentum m α) = -m ^ 2 :=
   minkowskiQ_boostZ m α
 
-/-- Regression: a longitudinal Dirac boost of the rest pair is the on-shell
-Weyl construction after a chiral factor on the Weyl parameter. -/
 example {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
     applyDiracBoostZ α (restParticleSpinor u) =
       onShellParticleSpinor m (boostZMomentum m α)
         (applyMat (chiralBoostZ α) u) :=
   applyDiracBoostZ_rest hm u
 
-/-- Regression: dual rotation about the boost axis commutes with the chiral
-boost factor. -/
 example (α θ : ℝ) :
     chiralBoostZ α * dualRotorMat (EuclideanSpace.single 2 θ) =
       dualRotorMat (EuclideanSpace.single 2 θ) * chiralBoostZ α :=
   chiralBoostZ_comm_dualRotor_axis2 α θ
 
-/-- Regression: dual rotation about a perpendicular axis need not commute
-with the chiral boost factor. -/
 example :
     chiralBoostZ 2 * dualRotorMat (EuclideanSpace.single 0 Real.pi) ≠
       dualRotorMat (EuclideanSpace.single 0 Real.pi) * chiralBoostZ 2 :=
   chiralBoostZ_not_comm_dualRotor_axis0
 
-/-- Regression: rest-frame Dirac overlap is twice the dual-rotor amplitude. -/
 example (β : DualRapidity) (u : DualSpinor) :
     inner ℂ (restParticleSpinor u)
         (restParticleSpinor (applyMat (dualRotorMat β) u)) =
       2 * dualRotorAmplitude β u :=
   restParticle_dualRotor_overlap β u
 
-/-- Regression: a longitudinal boost multiplies that overlap by `cosh α`. -/
 example (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
     inner ℂ
         (applyDiracBoostZ α (restParticleSpinor u))
@@ -1095,8 +864,6 @@ example (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
           (restParticleSpinor (applyMat (dualRotorMat β) u)) :=
   boostedRest_overlap_factor α β u
 
-/-- Regression: boosted and rest overlaps agree for every dual rotation
-only at vanishing rapidity. -/
 example (α : ℝ) :
     (∀ (β : DualRapidity) (u : DualSpinor),
       inner ℂ
@@ -1108,29 +875,24 @@ example (α : ℝ) :
       α = 0 :=
   boostedRest_overlap_eq_rest_iff α
 
-/-- Regression: massless Dirac decouples into Weyl equations. -/
 example {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum 0 p Ψ) :
     applyMat (pauliSlash p) (diracLower Ψ) = 0 ∧
       applyMat (pauliSlashBar p) (diracUpper Ψ) = 0 :=
   dirac_massless_decouple h
 
-/-- Regression: \(\gamma^5\) sends mass \(m\) to mass \(-m\). -/
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum (-m) p (applyDiracMat diracMat5 Ψ) :=
   diracMat5_flips_mass h
 
-/-- Regression: every unit-determinant total rotor maps solutions to solutions. -/
 example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ} {p : Vec4}
     {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum m (lorentzAct M p) (rotorDirac M Ψ) :=
   diracMomentum_rotorDirac hM h
 
-/-- Regression: the mass bilinear is invariant under every total rotor. -/
 example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (Ψ Φ : DiracSpinor) :
     diracScalar (rotorDirac M Ψ) (rotorDirac M Φ) = diracScalar Ψ Φ :=
   diracScalar_rotorDirac hM Ψ Φ
 
-/-- Regression: total rotor = usual rotor · dual rotor. -/
 example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
     ∃ (α : UsualRapidity) (β : DualRapidity), M = usualRotorMat α * dualRotorMat β :=
   totalRotor_factor hM
@@ -1141,8 +903,6 @@ example {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ} (hm : m ≠ 
       ∃ β : DualRapidity, M = dualRotorMat β :=
   lorentzAct_rest_iff_dualRotor hM hm
 
-/-- Regression: either order preserves mass and the Dirac equation. Only the
-dual-on-the-right order leaves a rest particle's momentum on the boost axis. -/
 example (φ θ m : ℝ) (α : UsualRapidity) (β : DualRapidity) {p : Vec4}
     {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ)
     (hturn : m * Real.sinh φ * Real.sin θ ≠ 0) :
@@ -1174,104 +934,81 @@ example {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
       dualRotorMat (EuclideanSpace.single 1 φ) ≠ 1 :=
   usualRotor_perp_wigner ha hb
 
-/-- Regression: Gordon identity, the current of two solutions is the raised
-momentum times the mass bilinear. -/
 example {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor} (hΨ : DiracMomentum m p Ψ)
     (hΦ : DiracMomentum m p Φ) (μ : Fin 4) :
     (m : ℂ) * diracCurrent μ Ψ Φ =
       -Complex.I * ((minkowskiEta μ μ * p μ : ℝ) : ℂ) * diracScalar Ψ Φ :=
   diracCurrent_gordon hΨ hΦ μ
 
-/-- Regression: the real current of a solution has Minkowski square `-(Ψ̄Ψ)²`. -/
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0) (hΨ : Ψ ≠ 0)
     (h : DiracMomentum m p Ψ) :
     minkowskiQ (realCurrent Ψ) = -((diracScalar Ψ Ψ).re) ^ 2 :=
   minkowskiQ_realCurrent hm hΨ h
 
-/-- Regression: a plane wave solves the spacetime Dirac equation exactly when
-its amplitude solves the momentum-space equation. -/
 example (m : ℝ) (p : Vec4) (u : DiracSpinor) :
     DiracField m (planeWave p u) ↔ DiracMomentum m p u :=
   diracField_planeWave_iff m p u
 
-/-- Regression: a plane wave has one density at every chart point. -/
 example (p : Vec4) (u : DiracSpinor) (x : Vec4) :
     bornDensity (planeWave p u) x = ‖u‖ ^ 2 :=
   bornDensity_planeWave p u x
 
-/-- Regression: a nonzero solution of nonzero mass determines its momentum. -/
 example {m : ℝ} {p q : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0) (hΨ : Ψ ≠ 0)
     (hp : DiracMomentum m p Ψ) (hq : DiracMomentum m q Ψ) : p = q :=
   diracMomentum_unique hm hΨ hp hq
 
-/-- Regression: two distinct momenta are not one momentum. -/
 example {p q : Vec4} (hpq : p ≠ q) {u v : DiracSpinor} (hu : u ≠ 0) (hv : v ≠ 0)
     (r : Vec4) : ¬ MomentumEigen r (momentumSum p q u v) :=
   momentumSum_not_eigen hpq hu hv r
 
-/-- Regression: equal amplitudes have density `4 cos²((q−p)·x/2) ‖u‖²`. -/
 example (p q : Vec4) (u : DiracSpinor) (x : Vec4) :
     bornDensity (equalPacket p q u) x =
       4 * Real.cos (wavePhase (q - p) x / 2) ^ 2 * ‖u‖ ^ 2 :=
   bornDensity_equalPacket p q u x
 
-/-- Regression: a chart translation and a momentum shift differ by `e^{i k·a}`. -/
 example (k a p : Vec4) (u : DiracSpinor) (x : Vec4) :
     chartTranslate a (momentumKick k (planeWave p u)) x =
       Complex.exp (Complex.I * (wavePhase k a : ℂ)) •
         momentumKick k (chartTranslate a (planeWave p u)) x :=
   weyl_shift_kick k a p u x
 
-/-- Regression: the samples of one chart axis return the discrete amplitude. -/
 example {N : ℕ} [NeZero N] (μ : Fin 4) (f : ZMod N → ℂ) (u : DiracSpinor) (j : ZMod N) :
     angleChartField μ f u (angleChartPoint μ j) = (f j) • u :=
   angleChartField_sample μ f u j
 
-/-- Regression: translation by one spacing is the opposite shift of the amplitude. -/
 example {N : ℕ} [NeZero N] (μ : Fin 4) (s : ZMod N) (f : ZMod N → ℂ) (u : DiracSpinor) :
     chartTranslate (angleChartPoint μ s) (angleChartField μ f u) =
       angleChartField μ (DualFourier.dualCircleShift (-s) f) u :=
   angleChartField_translate μ s f u
 
-/-- Regression: the current of two solutions of one real mass is conserved. -/
 example {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (hΦ : DiracField m Φ)
     (x : Vec4) :
     ∑ μ : Fin 4, fderiv ℝ (currentField Ψ Φ μ) x (Pi.single μ 1) = 0 :=
   currentField_conserved hΨ hΦ x
 
-/-- Regression: dual rotors leave the density `Ψ†Ψ` unchanged. -/
 example (β : DualRapidity) (Ψ : DiracSpinor) :
     ‖rotorDirac (dualRotorMat β) Ψ‖ = ‖Ψ‖ :=
   norm_rotorDirac_dualRotor β Ψ
 
-/-- Regression: total rotors carry solutions of the spacetime Dirac equation
-to solutions. -/
 example {m : ℝ} {M : Matrix (Fin 2) (Fin 2) ℂ} {Ψ : Vec4 → DiracSpinor} (hM : M.det = 1)
     (hΨ : DiracField m Ψ) : DiracField m (rotorField M Ψ) :=
   diracField_rotorField hM hΨ
 
-/-- Regression: solutions of the minimally coupled equation are carried to
-solutions by a gauge transformation. -/
 example {m e : ℝ} {A : Vec4 → Vec4} {χ : Vec4 → ℝ} {Ψ : Vec4 → DiracSpinor}
     (hχ : Differentiable ℝ χ) (hΨ : DiracGaugeField m e A Ψ) :
     DiracGaugeField m e (gaugePot A χ) (gaugePhase e χ Ψ) :=
   diracGaugeField_gauge hχ hΨ
 
-/-- Regression: in a constant potential a plane wave solves the coupled
-equation exactly at the kinetic momentum `p - e a`. -/
 example (m e : ℝ) (a p : Vec4) (u : DiracSpinor) :
     DiracGaugeField m e (fun _ => a) (planeWave p u) ↔ DiracMomentum m (p - e • a) u :=
   diracGaugeField_planeWave_iff m e a p u
 
-/-- Regression: the commutator of covariant derivatives is the field strength. -/
 example {e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor} (hA : Differentiable ℝ A)
     (hΨ : ContDiff ℝ 2 Ψ) (μ ν : Fin 4) (x : Vec4) :
     covD e A (covD e A Ψ ν) μ x - covD e A (covD e A Ψ μ) ν x =
       (-(Complex.I * ((e * fieldStrength A x μ ν : ℝ) : ℂ))) • Ψ x :=
   covD_comm e hA hΨ μ ν x
 
-/-- Regression: upper Weyl block of the second-order equation, with the
-magnetic field through `e σ·B` and the electric field through `i e σ·E`. -/
 example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor} (hA : Differentiable ℝ A)
     (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracGaugeField m e A Ψ) (x : Vec4) :
     diracUpper (∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • covD e A (covD e A Ψ μ) μ x) +
@@ -1280,28 +1017,23 @@ example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor} (hA : Differ
       ((m : ℂ) ^ 2) • diracUpper (Ψ x) :=
   diracGaugeField_pauli_upper hA hΨ2 hΨ x
 
-/-- Regression: the Pauli combination is `i` times the dual generator. -/
 example (n : Fin 3 → ℝ) : pauliComb n = Complex.I • cyclicRepComb n :=
   pauliComb_eq_I_cyclicRepComb n
 
-/-- Regression: free solutions obey the Klein–Gordon equation. -/
 example {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracField m Ψ)
     (x : Vec4) :
     ∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • partialD (fun y => partialD Ψ μ y) μ x =
       ((m : ℂ) ^ 2) • Ψ x :=
   diracField_kleinGordon hΨ2 hΨ x
 
-/-- Regression: the dual map reverses the four-momentum of a solution. -/
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum m (-p) (dualFlip Ψ) :=
   diracMomentum_dualFlip h
 
-/-- Regression: charge conjugation reverses the charge in the same potential. -/
 example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) : DiracGaugeField m (-e) A (conjField Ψ) :=
   diracGaugeField_conjField hΨ
 
-/-- Regression: the antiparticle of a solution at `p` is a solution at `p`. -/
 example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum m p (antiparticle Ψ) :=
   diracMomentum_antiparticle h
@@ -1310,36 +1042,26 @@ example {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
 example (u : DualSpinor) : antiparticle (restParticleSpinor u) = -restParticleSpinor (quatJ u) :=
   antiparticle_restParticle u
 
-/-- Regression: the antiparticle field solves the equation of opposite charge
-in the reflected potential. -/
 example {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) :
     DiracGaugeField m (-e) (reflectPot A) (antiparticleField Ψ) :=
   diracGaugeField_antiparticleField hΨ
 
-/-- Regression: the joint states fixed by every common dual rotor form the
-line of the singlet. -/
 example {Ψ : PairState}
     (h : ∀ β : DualRapidity, pairAct (dualRotorMat β) (dualRotorMat β) Ψ = Ψ) :
     Ψ = Ψ 0 1 • singlet :=
   eq_smul_singlet_of_dualRotor_fixed h
 
-/-- Regression: the singlet pairs a unit dual spinor with its quaternionic
-partner. -/
 example {u : DualSpinor} (hu : ‖u‖ = 1) :
     pairTensor (quatJ u) u - pairTensor u (quatJ u) = singlet :=
   quatJ_pair_eq_singlet_of_norm hu
 
-/-- Regression: a joint state is a product exactly when `det Ψ = 0`. -/
 example (Ψ : PairState) : (∃ u v : DualSpinor, Ψ = pairTensor u v) ↔ Ψ.det = 0 :=
   exists_pairTensor_iff_det Ψ
 
-/-- Regression: the singlet correlation along `a` and `b` is `-a·b`. -/
 example (a b : Fin 3 → ℝ) : singletCorr a b = -axisDot a b :=
   singletCorr_eq a b
 
-/-- Regression: a local dual rotor on one particle changes no expectation of
-the other. -/
 example (β : DualRapidity) (B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
     pairInner (pairAct (dualRotorMat β) 1 Ψ) (pairAct 1 B (pairAct (dualRotorMat β) 1 Ψ)) =
       pairInner Ψ (pairAct 1 B Ψ) :=
@@ -1351,51 +1073,40 @@ example : chsh singletCorr ![0, 0, 1] ![1, 0, 0]
       -(2 * Real.sqrt 2) :=
   singletCorr_chsh
 
-/-- Regression: a unit dual spinor is a point of the unit sphere. -/
 example {u : DualSpinor} (hu : ‖u‖ = 1) :
     axisDot (spinVec u) (spinVec u) = 1 :=
   axisDot_spinVec_of_norm hu
 
-/-- Regression: interference of a dual spinor with its dual rotate has
-intensity `cos²(‖β‖/4)`. -/
 example (β : DualRapidity) (u : DualSpinor) :
     ‖u + applyMat (dualRotorMat β) u‖ ^ 2 =
       4 * Real.cos (‖β‖ / 4) ^ 2 * ‖u‖ ^ 2 :=
   norm_add_dualRotor_sq β u
 
-/-- Regression: Robertson bound for two spin axes on a unit dual spinor. -/
 example {u : DualSpinor} (hu : ‖u‖ = 1) (a b : Fin 3 → ℝ) :
     ‖spinExp (pauliComb a * pauliComb b - pauliComb b * pauliComb a) u‖ ^ 2 / 4 ≤
       spinVar a u * spinVar b u :=
   robertson_spin hu a b
 
-/-- Regression: polarization of each particle of a unit joint state. -/
 example {Ψ : PairState} (hΨ : pairNormSq Ψ = 1) :
     axisDot (leftSpinVec Ψ) (leftSpinVec Ψ) = 1 - (2 * ‖Ψ.det‖) ^ 2 :=
   (axisDot_spinVec_pair_of_norm hΨ).1
 
-/-- Regression: two parallel dual spinors have vanishing antisymmetrized
-product. -/
 example {u : DualSpinor} (hu : u ≠ 0) (c : ℂ) :
     pairTensor u (c • u) - pairTensor (c • u) u = 0 :=
   (pairTensor_sub_swap_eq_zero_iff hu (c • u)).mpr ⟨c, rfl⟩
 
-/-- Regression: `J` reverses the spin vector. -/
 example (u : DualSpinor) : spinVec (quatJ u) = fun k => -spinVec u k :=
   spinVec_quatJ u
 
-/-- Regression: the orthogonal complement of a dual-spinor ray is the ray of `Ju`. -/
 example {u : DualSpinor} (hu : u ≠ 0) (v : DualSpinor) :
     inner ℂ u v = 0 ↔ ∃ c : ℂ, v = c • quatJ u :=
   inner_eq_zero_iff_smul_quatJ hu v
 
-/-- Regression: no third dual spinor is orthogonal to a ray and its reverse. -/
 example {u v w : DualSpinor} (hu : u ≠ 0) (hv : v ≠ 0)
     (huv : inner ℂ u v = 0) (huw : inner ℂ u w = 0) (hvw : inner ℂ v w = 0) :
     w = 0 :=
   eq_zero_of_orthogonal_pair hu hv huv huw hvw
 
-/-- Regression: total spin squared vanishes on the singlet. -/
 example : ∑ k, pairSpin k (pairSpin k singlet) = 0 :=
   sum_pairSpin_sq_singlet
 
@@ -1403,26 +1114,20 @@ example : ∑ k, pairSpin k (pairSpin k singlet) = 0 :=
 example : Module.finrank ℝ MajoranaWeyl10 = Module.finrank ℝ WeylSU4 :=
   majorana_dim_eq_weylSU4_real
 
-/-- Regression: the upper Weyl block solves the massless equation at the
-filter image. -/
 example (u : DualSpinor) : DiracMomentum 0 (manifest u) (weylUpper u) :=
   dirac_upper_manifest u
 
-/-- Regression: two Weyl images assemble into the Dirac current. -/
 example (u l : DualSpinor) :
     realCurrent (weylUpper u + weylLower l) = spaceReverse (manifest u) + manifest l :=
   realCurrent_weyl u l
 
-/-- Regression: the rest pair's current is timelike, and the sum of its two
-filter images is not. -/
+/-- Regression: the rest pair's current is timelike, and the sum of its two filter images is not. -/
 example {u : DualSpinor} (hu : u ≠ 0) :
     Q31 (realCurrent (restParticleSpinor u)) < 0 ∧
       realCurrent (restParticleSpinor u) ≠ manifest u + manifest (Complex.I • u) :=
   ⟨Q31_realCurrent_rest_timelike hu, realCurrent_rest_ne_manifest_sum hu⟩
 
-/-- Regression: the spin curve solves the Pauli equation and holds the
-chart's time component at the information weight. A nonzero energy makes
-the de Broglie phase along that axis move. -/
+/-- Regression: the spin curve solves the Pauli equation and holds the chart's time component at the information weight. A nonzero energy makes the de Broglie phase along that axis move. -/
 example (ω : DualRapidity) (u : DualSpinor) {p : Vec4} (hp : p 0 ≠ 0) (t : ℝ) :
     Complex.I • deriv (spinCurve ω u) t =
         (1 / 2 : ℂ) • applyMat (pauliComb (fun a => ω a)) (spinCurve ω u t) ∧
@@ -1431,8 +1136,6 @@ example (ω : DualRapidity) (u : DualSpinor) {p : Vec4} (hp : p 0 ≠ 0) (t : �
   ⟨spinCurve_schrodinger ω u t, spinCurve_manifest_time ω u t,
     (spin_parameter_not_chart_time ω u hp).2⟩
 
-/-- Regression: the wave's kinetic square splits off the magnetic dual
-generator, and that generator is the spin curve of rate `-(e/m) B`. -/
 example (e m : ℝ) (A : Vec4 → Vec4) (φ : Vec4 → DualSpinor)
     (hA : Differentiable ℝ A) (hφ : ContDiff ℝ 2 φ) (hm : m ≠ 0)
     (B : DualRapidity) (u : DualSpinor) (x : Vec4) (t α : ℝ) :
@@ -1451,16 +1154,11 @@ example (e m : ℝ) (A : Vec4 → Vec4) (φ : Vec4 → DualSpinor)
     magnetic_rapidity_norm e m B hm, magneticSpin_ne_phaseGate e m (fun a => B a) α hm,
     fieldBlocks_eq_iff e (fun a => B a) (fun a => B a)⟩
 
-/-- Regression: a constant potential phase is a dual rotor at every time
-exactly when the potential vanishes, and dividing out a plane-wave phase
-returns the carrier. -/
 example (V : ℝ) (p : Vec4) (u : DiracSpinor) (x : Vec4) :
     ((∀ t : ℝ, ∃ β : DualRapidity, dualRotorMat β = phaseGate (-(V * t))) ↔ V = 0) ∧
       Complex.exp (-(Complex.I * (wavePhase p x : ℂ))) • planeWave p u x = u :=
   ⟨constPotential_dualRotor_iff V, planeWave_strip p u x⟩
 
-/-- Regression: a nonzero momentum kick fails to be a dual rotor at some
-chart point. -/
 example {k : Vec4} (hk : k ≠ 0) :
     ∃ a : Vec4, ∀ β : DualRapidity, dualRotorMat β ≠ phaseGate (wavePhase k a) :=
   kick_not_dualRotor hk
@@ -1470,36 +1168,28 @@ example (A B : DualSpinor →ₗ[ℂ] DualSpinor) :
     A.comp B - B.comp A ≠ Complex.I • LinearMap.id :=
   no_ccr_dualSpinor A B
 
-/-- Regression: spin commutators on the dual matrices are traceless. -/
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
   trace_pauliComb_comm a b
 
-/-- Regression: on a differentiable field, `[X^ν, P_μ] = i δ^ν_μ`. -/
 example {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) (ν μ : Fin 4) (x : Vec4) :
     positionOp ν (momentumOp μ Ψ) x - momentumOp μ (positionOp ν Ψ) x =
       (if ν = μ then Complex.I else 0) • Ψ x :=
   position_comm_momentum hΨ ν μ x
 
-/-- Regression: dividing out the phase of `P_μ` on a plane wave returns
-`p_μ` times the carrier. -/
 example (p : Vec4) (u : DiracSpinor) (μ : Fin 4) (x : Vec4) :
     Complex.exp (-(Complex.I * (wavePhase p x : ℂ))) • momentumOp μ (planeWave p u) x =
       (p μ : ℂ) • u :=
   momentumOp_planeWave_strip p u μ x
 
-/-- Regression: momentum eigenfields are the eigenfields of `P_μ`. -/
 example {p : Vec4} {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) :
     MomentumEigen p Ψ ↔ ∀ μ x, momentumOp μ Ψ x = (p μ : ℂ) • Ψ x :=
   momentumEigen_iff_momentumOp hΨ
 
-/-- Regression: a nonzero plane wave is an eigenfield of no position component. -/
 example {u : DiracSpinor} (hu : u ≠ 0) (p : Vec4) (ν : Fin 4) (lam : ℂ) :
     ¬ PositionEigen ν lam (planeWave p u) :=
   planeWave_not_positionEigen hu p ν lam
 
-/-- Regression: the chart pair has one nonzero bracket, momentum generates
-translations, and only the zero field is an eigenfield of both. -/
 example {Ψ : Vec4 → DiracSpinor} (hΨ : ContDiff ℝ 2 Ψ) (hΨ1 : Differentiable ℝ Ψ)
     (ν μ : Fin 4) (x a : Vec4) (p : Vec4) (lam : ℂ)
     (hP : MomentumEigen p Ψ) (hX : PositionEigen ν lam Ψ)
@@ -1520,7 +1210,6 @@ example {Ψ : Vec4 → DiracSpinor} (hΨ : ContDiff ℝ 2 Ψ) (hΨ1 : Differenti
 example : 8 + 8 ≠ 6 ∧ StringSpectrum.superPoincareN1Dim ≠ LorentzDim.pgaGeneratorCount :=
   ⟨LorentzDim.lightCone_ne_torsionGenerators, superPoincare_ne_pga⟩
 
-/-- Regression: the biquaternion algebra is the tensor product, not the direct sum. -/
 example : LorentzDim.quaternionTensorDim = 16 ∧
     LorentzDim.quaternionDirectSumDim ≠ LorentzDim.quaternionTensorDim :=
   ⟨LorentzDim.quaternionTensorDim_eq, LorentzDim.quaternionDirectSum_ne_tensor⟩

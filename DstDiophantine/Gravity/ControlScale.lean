@@ -8,29 +8,9 @@ import Mathlib.Tactic.Ring
 /-!
 # One scale for the control inequalities
 
-The shield parabola, the two outer lobes, and the price of a hold are one
-comparison once mass, mismatch, and lag are read in units of
-\(k^2=(\pi/2)^2\).
-
-With \(j=J/k^2\),
-\[
-M/k^2 \le 5/4 + \min\bigl(j^2,(j-1)^2,(j+1)^2\bigr),
-\]
-the square of the distance from \(j\) to the nearest of the centers
-\(\{-1,0,1\}\). This is identical to `controlCeiling`. On that boundary
-every axis lies on the wall, so the lag is the holding price of the same
-distance,
-\[
-L/k^2 = 2 + 4\min\bigl(j^2,(j-1)^2,(j+1)^2\bigr).
-\]
-The three centers share the mass \(5k^2/4\) and the lag \(2k^2\). The
-neutral lag ceiling is that shared lag, and the holding price vanishes at
-the free-sitting mass \(3k^2/4\).
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, and no identification
-of either channel force with a Faraday field.
+In units of \(k^2=(\pi/2)^2\), the shield parabola, the outer lobes, and the
+price of a hold are one comparison. No electromagnetic coupling, no laboratory
+protocol, and no identification of either channel force with a Faraday field.
 -/
 
 namespace DstDiophantine
@@ -82,14 +62,11 @@ theorem isotropic_drop_eq_scaled : Real.pi ^ 2 / 72 = coneScale / 18 := by
   rw [coneScale_eq]
   ring
 
-/-- Five sixths is the shield mass over the cone's own mass ceiling. -/
 theorem shield_div_coneMass : (5 * coneScale / 4) / (3 * coneScale / 2) = 5 / 6 := by
   have hc : coneScale ≠ 0 := ne_of_gt coneScale_pos
   field_simp
   ring
 
-/-- The holding price vanishes at the free-sitting mass and equals the
-neutral lag ceiling at the shield mass. -/
 theorem holdPrice_freeSit_and_shield :
     4 * (3 * coneScale / 4) - 3 * coneScale = 0 ∧
       4 * (5 * coneScale / 4) - 3 * coneScale = 2 * coneScale := by
@@ -108,7 +85,6 @@ private theorem min_sq_of_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   · have hsq : b ^ 2 ≤ a ^ 2 := by nlinarith
     rw [min_eq_right h, min_eq_right hsq]
 
-/-- The excess is the squared distance to the nearest of \(-1\), \(0\), and \(1\). -/
 theorem lobeExcess_eq_distSq (j : ℝ) :
     lobeExcess j = (min |j| (min |j - 1| |j + 1|)) ^ 2 := by
   unfold lobeExcess
@@ -164,7 +140,6 @@ private theorem envelopeNum_div_scale (Jval : ℝ) :
   unfold controlEnvelopeNum lobeExcess
   rw [hmul, hmul, four_sq_scale, sub_sq_scale, add_sq_scale]
 
-/-- `controlCeiling`, divided by \(k^2\), is the distance bound. -/
 theorem controlCeiling_div_coneScale (Jval : ℝ) :
     controlCeiling Jval / coneScale = 5 / 4 + lobeExcess (Jval / coneScale) := by
   have hfloor : (5 * Real.pi ^ 2 / 16) / coneScale = 5 / 4 := by

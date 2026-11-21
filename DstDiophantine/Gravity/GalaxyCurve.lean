@@ -13,30 +13,7 @@ set_option linter.style.native false
 /-!
 # Spherical dwarfs and disk galaxies
 
-Small galaxies are spherical: the stars fill a ball. A source at the origin
-of the flat chart pulls along a ray. Outside that ball the dual curve is the
-point-mass law of the whole baryonic mass, whatever the arrangement inside.
-A heavier galaxy settles into a disk;
-the same acceleration relation is then read off the Newtonian curve of the disk.
-
-On the SI stand-ins, for a dwarf of mass \(4\times 10^8\,M_\odot\):
-
-* \(50.2 < v_\infty < 50.3\,\mathrm{km/s}\) and
-  \(0.6816\,\mathrm{kpc} < R < 0.6817\,\mathrm{kpc}\), so
-  \(2.04\,\mathrm{kpc} < 3R < 2.05\,\mathrm{kpc}\) and
-  \(2.141\,\mathrm{kpc} < \pi R < 2.142\,\mathrm{kpc}\).
-* If the baryons lie inside a ball of radius \(0.8\,\mathrm{kpc}\), the
-  speed at the surface lies between \(55.2\) and \(55.3\,\mathrm{km/s}\),
-  at \(2\,\mathrm{kpc}\) between \(50.38\) and \(50.39\,\mathrm{km/s}\), and
-  at \(4\,\mathrm{kpc}\) again between \(50.2\) and \(50.3\,\mathrm{km/s}\).
-  The circular specific angular momentum there is larger than at the surface
-  by a factor strictly between \(4.53\) and \(4.56\), while the radius is
-  larger by five.
-
-A low-surface-brightness mass \(3\times 10^9\,M_\odot\) has
-\(83.1 < v_\infty < 83.2\,\mathrm{km/s}\).
-
-\(a_0\) and \(G\) are external inputs. No theorem asserts `dst_derives_a0`.
+Outside a spherical baryonic ball the dual curve is the point-mass law of the whole mass, and a disk reads the same acceleration off its Newtonian curve. `a₀` and `G` are external inputs, and no theorem asserts `dst_derives_a0`.
 -/
 
 namespace DstDiophantine
@@ -190,8 +167,7 @@ theorem dwarfAntipode_bounds :
 
 /-! ### Speed outside a ball -/
 
-/-- Squared circular speed of a point mass on the dual lattice, in (m/s)²,
-read at a radius of `aKpc` kiloparsecs on the dwarf stand-in. -/
+/-- Squared circular speed of a point mass on the dual lattice, in (m/s)², read at a radius of `aKpc` kiloparsecs on the dwarf stand-in. -/
 noncomputable def dwarfPointSpeedSq (aKpc : ℝ) : ℝ :=
   sqrt (dwarfFlatSpeedFourth : ℝ) *
     (cosh (aKpc / dwarfROverKpc) / sinh (aKpc / dwarfROverKpc))
@@ -509,15 +485,7 @@ theorem dwarfFourKpcSpeed_bounds :
       mondAccelMantissa mondAccelScale
     norm_num
 
-/-! ### From a random aggregate to a larger orbit
-
-Outside the ball the circular specific angular momentum is \(a\,v(a)\).
-It increases strictly with radius (`strictMonoOn_dualSpecificAngMomSq`), so a
-fluctuation that sets its value sets the radius. On the dwarf stand-in the
-step from the surface of the \(0.8\,\mathrm{kpc}\) ball to \(4\,\mathrm{kpc}\)
-multiplies the radius by five and the specific angular momentum by a factor
-between \(4.53\) and \(4.56\).
--/
+/-! ### From a random aggregate to a larger orbit -/
 
 noncomputable def dwarfCircSpeed (aKpc : ℝ) : ℝ :=
   sqrt (dwarfPointSpeedSq aKpc)

@@ -18,24 +18,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
-# Phase 5–7 / dual-axis: Fermat's Last Theorem (problem-specific layer)
+# Diagnostic bridges for Fermat
 
-Additive null encoding and Fermat-specific bridges / balanced-seed diagnostics.
-Shared amplification no-go theorems live in `Framework.Amplification`; pure-boost
-algebra lives in `Algebra.Amplification`.
-
-## Paper gap (not closed)
-
-Classical FLT is **not** claimed unconditionally. Continuous
-`FermatAdmissibleBridge` is only a diagnostic device (false on the balanced
-scale). The legacy `FermatCoarseDiscreteBridge` uses a structurally empty
-payload (`CoarseAmplificationWitness.empty_of_coarse`). The single-axis
-`FermatModularBridge` is **demoted to diagnostic**: geometric FLT seeds with
-the larger base have winding `0` (`fermat_larger_base_no_modularWitness`).
-The dual-axis seat is `Embedding.FermatMotor`. Mixedness of a positive
-`n ≥ 3` solution is a finite-time property of the integer axis
-(`sandwich_fermatTorsion_null1_time_ne_zero_of_sol`). The live residual
-is power-sum incompatibility (`FermatMixedMotorResidual`).
+Classical FLT is not claimed. `FermatAdmissibleBridge` and `FermatModularBridge` are diagnostic, and `FermatMixedMotorResidual` stays open.
 -/
 
 namespace DstDiophantine
@@ -122,7 +107,6 @@ theorem mismatchRotor_eq_rotorTorsion (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) 
     _ = rotorTorsion (pureBoost (2 * (lc - la))) :=
         (rotorTorsion_pureBoost (2 * (lc - la))).symm
 
-/-- Relates `mismatchRotor` to the `logMismatch` seed (factor-of-two convention). -/
 theorem mismatchRotor_eq_logMismatch_scale (a c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     mismatchRotor a c ha hc =
       rotorTorsion (scaleTorsion 2 (logMismatch a c ha hc)) := by
@@ -144,10 +128,6 @@ private theorem log_two_lt_one : Real.log 2 < 1 := by
   norm_num at h ⊢
   exact h
 
-/--
-The dimensionless coefficient controlling the balanced seed is strictly below
-one.  Proved from `log 2 < 1` and `3 < π`, without decimal approximations.
--/
 theorem fermat_balanced_seed_constant_lt_one :
     (4 / (3 * Real.pi ^ 2)) * Real.log 2 ^ 2 < (1 : ℝ) := by
   have hnum : 4 * Real.log 2 ^ 2 < 4 := by
@@ -156,17 +136,12 @@ theorem fermat_balanced_seed_constant_lt_one :
   rw [div_mul_eq_mul_div, div_lt_one (by positivity)]
   exact hnum.trans hden
 
-/-- Exact height of the balanced scale `θ = log 2 / p`. -/
 theorem fermat_balanced_seed_height_eq (p : ℕ) :
     |JNormalized (pureBoost (Real.log 2 / (p : ℝ)))| =
       ((4 / (3 * Real.pi ^ 2)) * Real.log 2 ^ 2) / (p : ℝ) ^ 2 := by
   rw [abs_of_nonneg (JNormalized_pureBoost_nonneg _), JNormalized_pureBoost]
   ring
 
-/--
-At the balanced scale, the present pure-boost seed is too small for the
-`1/p²` amplification contradiction.
--/
 theorem fermat_balanced_seed_lt_threshold {p : ℕ} (hp : 1 ≤ p) :
     |JNormalized (pureBoost (Real.log 2 / (p : ℝ)))| < (1 : ℝ) / (p : ℝ) ^ 2 := by
   rw [fermat_balanced_seed_height_eq]
@@ -175,7 +150,6 @@ theorem fermat_balanced_seed_lt_threshold {p : ℕ} (hp : 1 ≤ p) :
     positivity
   exact (div_lt_div_iff_of_pos_right hp2).mpr fermat_balanced_seed_constant_lt_one
 
-/-- The balanced seed remains admissible after `p`-fold amplification. -/
 theorem fermat_balanced_amplification_admissible {p : ℕ} (hp : 1 ≤ p) :
     IsAdmissibleContinuous (pureBoost (p * (Real.log 2 / (p : ℝ)))) := by
   have hp0 : (p : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.ne_of_gt (Nat.zero_lt_of_lt hp))
@@ -187,7 +161,6 @@ theorem fermat_balanced_amplification_admissible {p : ℕ} (hp : 1 ≤ p) :
 
 /-! ### Fermat wrappers around the shared no-go core -/
 
-/-- Fermat continuous core: tall log-mismatch seed cannot amplify admissibly. -/
 theorem fermat_amplification_contradiction
     {a c : ℤ} (ha : a ≠ 0) (hc : c ≠ 0) {p : ℕ} (hp : 1 ≤ p)
     (hadm :
@@ -199,7 +172,6 @@ theorem fermat_amplification_contradiction
   change (1 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
   exact continuous_amplification_contradiction _ hp hadm hbig
 
-/-- Fermat specialisation of the coarse height gap. -/
 theorem fermat_coarse_height_gap {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
     (hcoarse : 3 * N ^ 2 < 16 * p ^ 2) :
     (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
@@ -225,20 +197,7 @@ theorem fermat_coarse_discrete_contradiction {N p : ℕ} [NeZero N] (hp : 1 ≤ 
 
 /-! ### Legacy coarse discrete bridge (structurally vacuous) -/
 
-/--
-**Legacy / diagnostic** coarse bridge.
-
-* **Payload:** `CoarseAmplificationWitness N p` under `3N² < 16p²`.
-* **Proved independently of any equation:** that payload is uninhabited
-  (`CoarseAmplificationWitness.empty_of_coarse`).  Real `p`-fold scaling plus
-  coarseness force every lattice coordinate to vanish.
-* **Conditional wrapper:** `fermat_last_theorem_of_coarse_discrete_bridge`
-  remains valid as a vacuous implication, but is not a mid-term research
-  target: the same real-scaling design stays empty if reused elsewhere.
-  The live quantisation programme uses modular wrapping
-  (`Algebra.ModularAmplification`).
-* **Does not claim:** unconditional classical FLT.
--/
+/-- Diagnostic: the coarse witness is empty, so the FLT wrapper is vacuous. -/
 def FermatCoarseDiscreteBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (_ha : a ≠ 0) (_hb : b ≠ 0) (_hc : c ≠ 0),
     a ^ p + b ^ p = c ^ p →
@@ -246,12 +205,7 @@ def FermatCoarseDiscreteBridge : Prop :=
         letI : NeZero N := ⟨hN⟩
         3 * N ^ 2 < 16 * p ^ 2 ∧ Nonempty (CoarseAmplificationWitness N p)
 
-/--
-Vacuous conditional recovery of classical FLT via the legacy coarse witness.
-Under the coarse threshold the witness is already empty
-(`CoarseAmplificationWitness.empty_of_coarse`), so the implication holds but
-does not encode a viable quantisation map.
--/
+/-- Vacuous: the coarse witness is already empty. -/
 theorem fermat_last_theorem_of_coarse_discrete_bridge
     (hbridge : FermatCoarseDiscreteBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
@@ -264,16 +218,7 @@ theorem fermat_last_theorem_of_coarse_discrete_bridge
 
 /-! ### Classical FLT under continuous bridge (diagnostic only) -/
 
-/--
-Continuous diagnostic bridge (balanced-seed obstruction).
-
-* **Assumption (unproved):** an FLT solution yields an admissible powered
-  pure-boost whose seed already exceeds `1/p²`.
-* **Proved core:** `fermat_amplification_contradiction` /
-  `continuous_amplification_contradiction`.
-* **Does not claim:** unconditional classical FLT. The seed inequality fails on
-  the balanced model scale `θ = log 2 / p` (`fermat_balanced_seed_lt_threshold`).
--/
+/-- Diagnostic, unproved assumption. Does not claim classical FLT. -/
 def FermatAdmissibleBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (ha : a ≠ 0) (_hb : b ≠ 0) (hc : c ≠ 0),
     a ^ p + b ^ p = c ^ p →
@@ -281,7 +226,6 @@ def FermatAdmissibleBridge : Prop :=
           (pureBoost (p * (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)))) ∧
         (1 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (logMismatch a c ha hc)|
 
-/-- Conditional DST recovery of Fermat's Last Theorem (continuous bridge). -/
 theorem fermat_last_theorem_of_bridge (hbridge : FermatAdmissibleBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
       ¬ (a ^ p + b ^ p = c ^ p) := by
@@ -292,23 +236,7 @@ theorem fermat_last_theorem_of_bridge (hbridge : FermatAdmissibleBridge) :
 
 /-! ### Modular bridge (diagnostic / demoted from live programme) -/
 
-/--
-**Diagnostic modular bridge** (demoted; unproved as a live path).
-
-* **Payload (solution-dependent):** the quantised log-mismatch
-  `t := quantizeMismatch N a c` is admissible, carries a
-  `ModularAmplificationWitness N p` with `w.t.val = t`, and the powered
-  real-scale configuration is `ConformalGaugeAdmissible`.
-* **Why demoted:** on the geometric FLT scale with the *larger* base
-  (`a ≤ b` ⇒ `log(c/b) ≤ (log 2)/p < 2π/p`), the solution-tied pure-boost
-  seed has total winding `0` (`fermat_larger_base_no_modularWitness`).
-  Nonzero winding is the only modular no-go hook; balanced / near-balanced
-  seeds never fire it.
-* **Conditional wrapper retained** for regression / Beal transport only.
-* **Live programme:** dual-axis Fermat motor
-  (`Embedding.FermatMotor`, `FermatMixedMotorResidual`).
-* **Does not claim:** unconditional classical FLT.
--/
+/-- Diagnostic, demoted: larger-base geometric seeds have winding `0`. -/
 def FermatModularBridge : Prop :=
   ∀ (a b c : ℤ) (p : ℕ) (_hp : 3 ≤ p) (ha : a ≠ 0) (_hb : b ≠ 0) (hc : c ≠ 0),
     a ^ p + b ^ p = c ^ p →
@@ -320,10 +248,6 @@ def FermatModularBridge : Prop :=
             ModularAmplification.ConformalGaugeAdmissible
               (scaleTorsion (p : ℝ) (toTorsionParams t))
 
-/--
-Conditional FLT from the modular bridge: a solution-dependent winding witness
-cannot be conformally / real-scale admissible.
--/
 theorem fermat_last_theorem_of_modular_bridge
     (hbridge : FermatModularBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →
@@ -344,10 +268,6 @@ private theorem natAbs_coe_eq_coe_of_pos {z : ℤ} (hz : 0 < z) :
   calc (z.natAbs : ℝ) = ((z.natAbs : ℤ) : ℝ) := rfl
     _ = (z : ℝ) := by rw [h]
 
-/--
-On a positive Fermat solution with `a ≤ b`, the larger-base log-mismatch is at
-most the balanced scale `(log 2)/p`.
--/
 theorem fermat_larger_base_log_le {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
     (hsol : a ^ p + b ^ p = c ^ p) :
@@ -382,7 +302,6 @@ theorem fermat_larger_base_log_le {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
     (le_div_iff₀ hp0).mpr hlog'
   rwa [hrewrite]
 
-/-- Balanced scale is strictly below the modular wrap threshold `2π/p`. -/
 theorem fermat_balanced_scale_lt_wrap {p : ℕ} (hp : 0 < p) :
     Real.log 2 / (p : ℝ) < 2 * Real.pi / (p : ℝ) := by
   have hp0 : (0 : ℝ) < p := Nat.cast_pos.mpr hp
@@ -406,7 +325,6 @@ private theorem fermat_larger_base_log_nonneg {a b c : ℤ} {p : ℕ}
   rw [natAbs_coe_eq_coe_of_pos hb, natAbs_coe_eq_coe_of_pos hc, sub_nonneg]
   exact Real.log_le_log (by exact_mod_cast hb) this.le
 
-/-- Larger-base geometric seed never yields a modular winding witness. -/
 theorem fermat_larger_base_no_modularWitness
     (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
@@ -424,7 +342,6 @@ theorem fermat_larger_base_no_modularWitness
   exact not_exists_modularWitness_of_rapidity_lt N p
     (Nat.succ_le_iff.mp hp) _ h0 hθlt hw
 
-/-- `quantizeMismatch` of the larger base is a pure-boost seed with winding 0. -/
 theorem fermat_larger_base_windingTotal_eq_zero
     (N : ℕ) [NeZero N] {a b c : ℤ} {p : ℕ} (hp : 1 ≤ p)
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hle : a ≤ b)
@@ -442,13 +359,6 @@ theorem fermat_larger_base_windingTotal_eq_zero
 
 /-! ### Mathlib FLT hypothesis (for Beal exponent-gcd reduction) -/
 
-/--
-Modular bridge implies mathlib's `FermatLastTheorem` (phase 7f).
-
-Not an `axiom`: Beal's exponent-gcd reduction takes `FermatLastTheorem` as an
-assumption. Mathlib states FLT over `ℕ`; we transport via
-`fermatLastTheoremFor_iff_int`.
--/
 theorem FermatLastTheorem_of_modular_bridge
     (hbridge : FermatModularBridge) : FermatLastTheorem := by
   intro n hn

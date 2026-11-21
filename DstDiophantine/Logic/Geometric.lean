@@ -8,18 +8,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Geometric operations on D4L amplitudes
+# Geometric operations on amplitudes
 
-Parameter-space Killing pairing is the commutative overlap. The geometric
-commutator of torsion bivectors is the non-commutative interference term.
-
-Rotor composition stays in `PGA`. It is **not** pulled back through BCH to
-`TorsionParams`: when `[Ω(p), Ω(q)] ≠ 0` one has
-`exp(Ω(p)) exp(Ω(q)) ≠ exp(Ω(p)+Ω(q))` in general (same boundary as
-`Algebra.Motor`).
-
-Sandwich is imported from `Algebra.Sandwich` so `Logic` does not depend on
-`Gravity`. Metric preservation of the degenerate quadratic form is not claimed.
+The Killing pairing is the commutative overlap and the bivector commutator is the interference. Rotor composition stays in `PGA` and is not pulled back through BCH; metric preservation is not claimed.
 -/
 
 namespace DstDiophantine
@@ -31,7 +22,7 @@ open Sandwich (sandwich)
 
 export Sandwich (sandwich sandwich_one)
 
-/-- Commutative overlap: the already-defined parameter Killing form. -/
+/-- Parameter Killing form. -/
 def overlap (p q : TorsionParams) : ℝ :=
   killingForm p q
 
@@ -45,14 +36,14 @@ theorem overlap_self (p : TorsionParams) : overlap p p = 16 * J p := by
   unfold overlap J
   ring
 
-/-- Normalised self-overlap, a multiple of `JNormalized`. Not a Born probability. -/
+/-- A multiple of `JNormalized`. Not a Born probability. -/
 theorem overlap_self_normalized (p : TorsionParams) :
     overlap p p = (6 * Real.pi ^ 2) * JNormalized p := by
   rw [overlap_self, JNormalized]
   field_simp
   ring
 
-/-- Geometric interference: commutator of torsion bivectors. -/
+/-- Commutator of torsion bivectors. -/
 noncomputable def interfere (p q : TorsionParams) : PGA :=
   Generators.commutator (omegaTorsion p) (omegaTorsion q)
 
@@ -61,11 +52,11 @@ theorem interfere_antisymm (p q : TorsionParams) :
   unfold interfere Generators.commutator
   abel
 
-/-- Rotor composition in `PGA`. Not a binary operation on `TorsionParams`. -/
+/-- Product in `PGA`. Not an operation on `TorsionParams`. -/
 noncomputable def composeRotor (p q : TorsionParams) : PGA :=
   rotorTorsion p * rotorTorsion q
 
-/-- Evaluate a test vector in the frame of a torsion rotor. -/
+/-- Sandwich of a test vector by the torsion rotor. -/
 noncomputable def eval (p : TorsionParams) (v : PGA) : PGA :=
   sandwich (rotorTorsion p) v
 
@@ -109,15 +100,13 @@ private theorem omegaTorsion_axis1Rotation :
     omegaTorsion axis1Rotation = cyclic 1 := by
   simp [omegaTorsion, axis1Rotation, Fin.sum_univ_three]
 
-/-- Distinct-axis torsion bivectors need not commute. This is the
-geometric interference that the scalar `min`/`max` layer cannot see. -/
+/-- Invisible to scalar `min`/`max`. -/
 theorem interfere_axis0_axis1_ne_zero :
     interfere axis0Boost axis1Rotation ≠ 0 := by
   unfold interfere
   rw [omegaTorsion_axis0Boost, omegaTorsion_axis1Rotation]
   exact commutator_hyperbolic0_cyclic1_ne_zero
 
-/-- Explicit same-axis vanishing on axis `0`. -/
 theorem interfere_axis0_self (α β : ℝ) :
     interfere
         ⟨fun a => if a = 0 then α else 0, fun _ => 0⟩

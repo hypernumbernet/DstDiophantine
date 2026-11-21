@@ -5,9 +5,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 /-!
 # Chart coframes and induced metrics
 
-Pointwise tetrads `e^a_μ` on a fixed coordinate chart (`Fin 4` indices), with the
-Minkowski fibre metric `η = diag(-1,+1,+1,+1)` and the induced spacetime metric
-`g_μν = η_ab e^a_μ e^b_ν`.
+Pointwise tetrads \(e^a_\mu\) carry the Minkowski fibre metric and the induced
+metric \(g_{\mu\nu}=\eta_{ab}e^a_\mu e^b_\nu\).
 -/
 
 namespace DstDiophantine
@@ -56,7 +55,6 @@ def zeroCoframe : Coframe := fun _ _ => 0
     inducedMetric zeroCoframe μ ν = 0 := by
   simp [inducedMetric_eq_weighted, zeroCoframe]
 
-/-- Diagonal coframe constructor. -/
 def diagonalCoframe (d : Fin 4 → ℝ) : Coframe :=
   fun a μ => if a = μ then d a else 0
 

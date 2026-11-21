@@ -9,12 +9,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
-# Phase 7i: Gaussian-integer UFD descent for Beal
+# Gaussian descent under the FLT axiom
 
-Tools for the `d = 2` / even two-equal `d = 1` programme, plus assembly of
-positive classical Beal from the two residuals under the FLT axiom.
-
-Classical Beal is **not** claimed unconditionally.
+Positive classical Beal follows from `BealMixedExpResidual` and `BealPythagoreanResidual` once `fermatLastTheorem` is assumed. That axiom is not a Lean proof of Wiles, and both residuals stay open.
 -/
 
 namespace DstDiophantine
@@ -283,10 +280,6 @@ theorem isGaussianHypotenusePower_of_hyp_eq_pow {m n c : ℤ} {e : ℕ}
 
 /-! ### Assembly (FLT axiom + residuals) -/
 
-/--
-Phase 7i assembly: under the FLT axiom, positive classical Beal follows from the
-two residuals `BealMixedExpResidual` and `BealPythagoreanResidual`.
--/
 theorem beal_conjecture_pos_of_residuals
     (hMix : BealMixedExpResidual)
     (hPyth : BealPythagoreanResidual) :
@@ -343,10 +336,6 @@ private theorem odd_div_two_ge_three {n : ℕ}
     intro h; exact Nat.not_even_iff_odd.mpr hodd (by simp [h])
   omega
 
-/--
-If both legs of a primitive sum of squares are pure `e`-th powers (`e ≥ 3`),
-the FLT axiom forbids the hypotenuse from also being an `e`-th power.
--/
 theorem not_hyp_pow_of_both_legs_pow {u v c : ℤ} {e : ℕ}
     (he : 3 ≤ e) (hu : u ≠ 0) (hv : v ≠ 0) (hc : c ≠ 0)
     (heq : (u ^ e) ^ 2 + (v ^ e) ^ 2 = c ^ e) : False := by
@@ -376,10 +365,6 @@ theorem exists_natAbs_pow_of_two_mul_eq_pow {m n K : ℤ} {e : ℕ}
     simpa [Int.natAbs_mul, Int.natAbs_pow] using this
   exact exists_pow_of_two_mul_coprime_eq_pow hcopN hparN heqN
 
-/--
-`d = 2` with `y = z` and odd reduced exponent: Pythagorean parameters yield a
-Gaussian hypotenuse `e`-th power (`e = y/2`), as a unit times an `e`-th power.
--/
 theorem exists_gaussian_hyp_pow_of_expGcd_eq_two_of_eq_odd_yz
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -407,7 +392,6 @@ theorem exists_gaussian_hyp_pow_of_expGcd_eq_two_of_eq_odd_yz
     isGaussianHypotenusePower_of_hyp_eq_pow he hmn hpar' heq, ?_⟩
   exact exists_associated_pow_of_hyp_eq_pow he hmn hpar' heq
 
-/-- Symmetric `x = z` equal-odd slice. -/
 theorem exists_gaussian_hyp_pow_of_expGcd_eq_two_of_eq_odd_xz
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -435,11 +419,6 @@ theorem exists_gaussian_hyp_pow_of_expGcd_eq_two_of_eq_odd_xz
     isGaussianHypotenusePower_of_hyp_eq_pow he hmn hpar' heq, ?_⟩
   exact exists_associated_pow_of_hyp_eq_pow he hmn hpar' heq
 
-/--
-From even leg `2mn = K^e` and hyp `m^2+n^2 = C^e` with odd `e ≥ 3`, the Nat-UFD
-coordinate powers together with the FLT axiom forbid pure both-leg `e`-th powers.
-This is the FLT gate used by the equal-odd Beal slices.
--/
 theorem not_pure_coord_pow_hyp {u v c : ℤ} {e : ℕ}
     (he : 3 ≤ e) (hu : u ≠ 0) (hv : v ≠ 0) (hc : c ≠ 0)
     (heq : u ^ (2 * e) + v ^ (2 * e) = c ^ e) : False := by
@@ -452,9 +431,6 @@ theorem not_pure_coord_pow_hyp {u v c : ℤ} {e : ℕ}
 
 /-! ### Equal-odd descent package -/
 
-/--
-Equal-odd `y = z` package: Gaussian hypotenuse associate power with `e = y/2 ≥ 3`.
--/
 theorem eq_odd_yz_descent {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -477,7 +453,6 @@ theorem eq_odd_yz_descent {A B C : ℤ} {x y z : ℕ}
     exact odd_div_two_ge_three hy2 hy hodd
   exact ⟨m, n, hmn, hpar, hIs, hG, he3⟩
 
-/-- Symmetric `x = z` package. -/
 theorem eq_odd_xz_descent {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -581,11 +556,7 @@ theorem not_eq_odd_pure_coords {m n C : ℤ} {e : ℕ}
         simp [sq, add_comm]
     _ = (C.natAbs : ℤ) ^ e := heq
 
-/--
-Equal-odd two-factor residual. The witnesses `u,v` are required positive so that
-the degenerate associate-cube `⟨0,1⟩` (with `v = 0`) is excluded; Beal call sites
-always have `2 m n = K^e` with `K ≠ 0`, hence `u,v > 0`.
--/
+/-- Open residual. Witnesses `u, v` are positive, so `⟨0,1⟩` is excluded. -/
 def BealEqualOddTwoFactorResidual : Prop :=
   ∀ (m n : ℤ) (e : ℕ),
     3 ≤ e → Odd e →
@@ -700,7 +671,6 @@ private theorem even_pow_of_even {a : ℤ} {n : ℕ} (ha : Even a) (hn : n ≠ 0
   rw [even_iff_two_dvd] at ha ⊢
   exact dvd_pow ha hn
 
-/-- If `x` is even and `gcd(x, z) = 1`, then `z` is odd. -/
 theorem odd_of_even_coprime {x z : ℕ}
     (hxeven : Even x) (hgcd : Nat.gcd x z = 1) : Odd z := by
   have hx2 : 2 ∣ x := even_iff_two_dvd.mp hxeven

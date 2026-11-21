@@ -4,21 +4,7 @@ import DstDiophantine.Gravity.KillingAxis
 /-!
 # The parabolic rotor is a null rotation
 
-Off a common axis, `B⁺₀ + B⁻₁` squares to zero and lies in the Lorentz span.
-Paper labels run through `{1,2,3}`, so this generator is the paper's `B⁺₁ + B⁻₂`.
-complementary to the null ideal. Its exponential therefore truncates. The
-truncations multiply by adding the parameter, the opposite parameter is the
-reverse, and the sandwich preserves the Minkowski product. For a nonzero
-parameter the fixed vectors are the span of `e₀ - e₃` and `e₂`. The same
-coefficients act on the null ideal, because `e₄` commutes with the Lorentz
-span: `N(x)` is sent to `N(Λₜ x)`. A translator `1 + s N₁` sends `e₁` to
-`e₁ + s e₄`.
-
-The transverse vector `e₁` is sent to `e₁` plus a multiple of the null line.
-Its transverse coordinates are unchanged, the displacement is lightlike, and
-for a nonzero parameter the vector itself has moved. A vector whose null
-coordinate `x₀ + x₃` is nonzero has its transverse coordinate moved as well.
-The null coordinate is invariant. No position operator is claimed.
+Off a common axis, `B⁺₀ + B⁻₁` squares to zero, so its exponential truncates and the truncations add in the parameter. No position operator is claimed.
 -/
 
 namespace DstDiophantine
@@ -201,7 +187,6 @@ private theorem sandwich_one_add_nilpotent {K v : PGA} (hK : K * K = 0)
           (t ^ 2 / 2) • Generators.commutator K (Generators.commutator K v) := by
           rw [hcomm, hrest]
 
-/-- The parabolic rotor acts on Minkowski vectors by the null rotation. -/
 theorem sandwich_parabolic_minkowski (t : ℝ) (x : Fin 4 → ℝ) :
     sandwich ((1 : PGA) + t • parabolicGen) (minkowskiVector x) =
       minkowskiVector (nullRotation t x) := by
@@ -234,7 +219,6 @@ theorem sandwich_parabolic_e1 (t : ℝ) :
   rw [himg]
   module
 
-/-- The shear of `e₁`, written along the fixed null line. -/
 theorem sandwich_parabolic_e1_shear (t : ℝ) :
     sandwich ((1 : PGA) + t • parabolicGen) (ι 1) =
       ι 1 + (2 * t) • (ι 0 - ι 3) := by
@@ -283,14 +267,12 @@ theorem sandwich_parabolic_nullPlus (t : ℝ) :
   rw [himg]
   module
 
-/-- The shear of the complementary null vector `e₀ + e₃`. -/
 theorem sandwich_parabolic_nullPlus_shear (t : ℝ) :
     sandwich ((1 : PGA) + t • parabolicGen) (ι 0 + ι 3) =
       ι 0 + ι 3 + (4 * t) • ι 1 + (4 * t ^ 2) • (ι 0 - ι 3) := by
   rw [sandwich_parabolic_nullPlus]
   module
 
-/-- A translator along `e₁` adds `e₄`. -/
 theorem sandwich_translator_e1 (s : ℝ) :
     sandwich (expTrans ⟨![0, s, 0, 0]⟩) (ι 1) = ι 1 + s • ι e4Index := by
   have hcast : (Fin.castAdd 1 (1 : Fin 4) : Fin 5) = 1 := rfl
@@ -333,7 +315,6 @@ theorem parabolicRotor_mul_reverse (t : ℝ) :
   rw [reverse_parabolicRotor, parabolicRotor_mul, add_neg_cancel]
   simp [parabolicRotor]
 
-/-- The third adjoint of the nilpotent generator vanishes. -/
 theorem adjoint_parabolic_cube (v : PGA) :
     Generators.commutator parabolicGen
         (Generators.commutator parabolicGen (Generators.commutator parabolicGen v)) = 0 := by
@@ -362,7 +343,6 @@ theorem nullRotation_smul (t c : ℝ) (x : Fin 4 → ℝ) :
   funext i
   fin_cases i <;> simp [nullRotation, Pi.smul_apply] <;> ring
 
-/-- The null rotation preserves Minkowski squares. -/
 theorem Q31_nullRotation (t : ℝ) (x : Fin 4 → ℝ) : Q31 (nullRotation t x) = Q31 x := by
   have hsq := sandwich_minkowskiVector_sq (parabolicRotor_mul_reverse t) x
   rw [parabolicRotor, sandwich_parabolic_minkowski t x, minkowskiVector_sq] at hsq
@@ -373,7 +353,6 @@ private theorem minkowskiProd_polar (x y : Fin 4 → ℝ) :
   simp only [KillingAxis.minkowskiProd, Q31_eq_minkowskiDot, minkowskiDot, Pi.add_apply]
   ring
 
-/-- The null rotation preserves the Minkowski product. -/
 theorem minkowskiProd_nullRotation (t : ℝ) (x y : Fin 4 → ℝ) :
     KillingAxis.minkowskiProd (nullRotation t x) (nullRotation t y) =
       KillingAxis.minkowskiProd x y := by
@@ -390,12 +369,10 @@ theorem minkowskiProd_nullLine_transverse :
     KillingAxis.minkowskiProd nullLineVec transverseVec = 0 := by
   simp [KillingAxis.minkowskiProd, nullLineVec, transverseVec]
 
-/-- A lightlike vector remains lightlike. -/
 theorem nullRotation_lightlike {t : ℝ} {x : Fin 4 → ℝ} (hx : Q31 x = 0) :
     Q31 (nullRotation t x) = 0 := by
   rw [Q31_nullRotation, hx]
 
-/-- For `t ≠ 0` the fixed vectors are the span of the null line and `e₂`. -/
 theorem nullRotation_eq_self_iff {t : ℝ} (ht : t ≠ 0) (x : Fin 4 → ℝ) :
     nullRotation t x = x ↔ ∃ a b : ℝ, x = a • nullLineVec + b • transverseVec := by
   constructor
@@ -441,7 +418,6 @@ theorem commute_e4_parabolicRotor (t : ℝ) : Commute (ι e4Index) (parabolicRot
     KillingAxis.commute_e4_of_mem_lorentzSpan parabolicGen_mem_lorentzSpan
   simpa [parabolicRotor] using h1.add_right (hK.smul_right t)
 
-/-- `e₄` commutes through the rotor, so translations transform as vectors. -/
 theorem sandwich_parabolic_nullVector (t : ℝ) (x : Fin 4 → ℝ) :
     sandwich (parabolicRotor t) (nullVector x) = nullVector (nullRotation t x) := by
   have hcomm : parabolicRotor t * ι e4Index = ι e4Index * parabolicRotor t :=
@@ -503,13 +479,11 @@ theorem nullRotation_nullLine (t : ℝ) : nullRotation t nullLineVec = nullLineV
   funext i
   fin_cases i <;> simp [nullRotation, nullLineVec]
 
-/-- `e₁` slides along the fixed null line. -/
 theorem screen_displaced_along_null (t : ℝ) :
     nullRotation t screenVec = screenVec + (2 * t) • nullLineVec := by
   funext i
   fin_cases i <;> simp [nullRotation, screenVec, nullLineVec, Pi.add_apply]
 
-/-- The transverse reading of `e₁` is unchanged. -/
 theorem screen_reading (t : ℝ) :
     (nullRotation t screenVec) 1 = 1 ∧ (nullRotation t screenVec) 2 = 0 := by
   constructor <;> simp [nullRotation, screenVec]
@@ -530,7 +504,6 @@ theorem screen_moves {t : ℝ} (ht : t ≠ 0) : nullRotation t screenVec ≠ scr
   have h0 : t = 0 := by simpa [nullRotation, screenVec] using congr_fun h 0
   exact ht h0
 
-/-- Parameters add under composition: `Λ_t ∘ Λ_s = Λ_{t+s}`. -/
 theorem nullRotation_comp (t s : ℝ) (x : Fin 4 → ℝ) :
     nullRotation t (nullRotation s x) = nullRotation (t + s) x := by
   ext i
@@ -544,8 +517,6 @@ theorem nullRotation_inv (t : ℝ) (x : Fin 4 → ℝ) :
     nullRotation (-t) (nullRotation t x) = x := by
   rw [nullRotation_comp, neg_add_cancel, nullRotation_zero]
 
-/-- The velocity `d/dt Λ_t x` equals the constant generator acting on `Λ_t x`.
-Component `2` is fixed. The other three components are `2 y₁`, `2(y₀+y₃)` and `-2 y₁`. -/
 theorem nullRotation_velocity (t : ℝ) (x : Fin 4 → ℝ) :
     2 * x 1 + 4 * t * (x 0 + x 3) = 2 * (nullRotation t x) 1 ∧
       2 * (x 0 + x 3) = 2 * (nullRotation t x) 0 + 2 * (nullRotation t x) 3 ∧
@@ -558,7 +529,6 @@ theorem nullRotation_velocity (t : ℝ) (x : Fin 4 → ℝ) :
   rw [h0, h1, h3]
   refine ⟨?_, ?_, ?_⟩ <;> ring
 
-/-- The null coordinate `x₀ + x₃` is invariant. -/
 theorem null_sum_invariant (t : ℝ) (x : Fin 4 → ℝ) :
     (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 := by
   have h0 : (nullRotation t x) 0 = x 0 + 2 * t * x 1 + 2 * t ^ 2 * (x 0 + x 3) := by
@@ -568,7 +538,6 @@ theorem null_sum_invariant (t : ℝ) (x : Fin 4 → ℝ) :
   rw [h0, h3]
   ring
 
-/-- Off the ray, the transverse coordinate itself moves. -/
 theorem transverse_moves_off_ray {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0)
     (hs : x 0 + x 3 ≠ 0) : (nullRotation t x) 1 ≠ x 1 := by
   intro h
@@ -576,8 +545,6 @@ theorem transverse_moves_off_ray {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0)
   have : 2 * t * (x 0 + x 3) = 0 := by linarith
   exact hs ((mul_eq_zero.mp this).resolve_left (mul_ne_zero two_ne_zero ht))
 
-/-- A nonzero null rotation keeps the null line, slides `e₁` along it by a
-lightlike displacement, and leaves the transverse reading of `e₁` unchanged. -/
 theorem light_kept_on_null_line {t : ℝ} (ht : t ≠ 0) :
     nullRotation t nullLineVec = nullLineVec ∧
       nullRotation t screenVec = screenVec + (2 * t) • nullLineVec ∧

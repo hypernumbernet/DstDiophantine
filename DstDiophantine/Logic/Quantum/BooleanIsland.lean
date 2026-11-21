@@ -5,16 +5,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Boolean islands in the spinor lattice
 
-A ray splits along another ray exactly when the two are equal or orthogonal.
-A subspace splits along a ray exactly when it lies in the four-element island
-`{⊥, ℓ, ℓ⊥, ⊤}` of that ray, and splitting along the ray already splits along
-the orthogonal ray. The island is closed under meet, join, and orthocomplement;
-meet distributes over join; and the lattice implication agrees with the
-classical expansion throughout the island. The expansion detaches exactly
-on pairs where the two implications agree, hence on the island, and it
-does not detach on a basis ray against the diagonal. Distinct complementary pairs
-determine islands that meet only at `{⊥, ⊤}`. The only subspaces that split
-along every subspace are `⊥` and `⊤`.
+A ray's island is `{⊥, ℓ, ℓ⊥, ⊤}`, and the classical expansion detaches exactly where the two implications agree. It does not detach on a basis ray against the diagonal.
 -/
 
 namespace DstDiophantine
@@ -150,7 +141,6 @@ theorem compatible_top (B : QProp) : Compatible ⊤ B := by
 theorem compatible_orthogonal (A : QProp) : Compatible A Aᗮ := by
   rw [Compatible, A.inf_orthogonal_eq_bot, orthogonal_orthogonal, inf_idem, bot_sup_eq]
 
-/-- A ray splits along another ray exactly when the two are equal or orthogonal. -/
 theorem compatible_line_iff {A B : QProp}
     (hA : finrank ℂ A = 1) (hB : finrank ℂ B = 1) :
     Compatible A B ↔ A = B ∨ A ⟂ B := by
@@ -171,7 +161,6 @@ theorem compatible_line_iff {A B : QProp}
       rw [hAeq]
       simpa using compatible_orthogonal Bᗮ
 
-/-- Three distinct rays are never pairwise splitting. -/
 theorem no_three_pairwise_compatible_lines {A B C : QProp}
     (hA : finrank ℂ A = 1) (hB : finrank ℂ B = 1) (hC : finrank ℂ C = 1)
     (hAB : A ≠ B) (hAC : A ≠ C) (hBC : B ≠ C)
@@ -266,7 +255,6 @@ theorem island_sup_mem {L A B : QProp} (hA : A ∈ Island L) (hB : B ∈ Island 
   rw [ofBits_sup]
   exact ofBits_mem L _
 
-/-- On the island, meet distributes over join. -/
 theorem island_inf_sup_distrib {L A B C : QProp}
     (hA : A ∈ Island L) (hB : B ∈ Island L) (hC : C ∈ Island L) :
     A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) := by
@@ -289,32 +277,26 @@ theorem island_compatible {L A B : QProp}
       | exact compatible_right (compatible_bot _)
       | exact compatible_right (compatible_top _)
 
-/-- Throughout an island the two implications agree. -/
 theorem island_implications_agree {L A B : QProp}
     (hA : A ∈ Island L) (hB : B ∈ Island L) :
     sasaki A B = material A B :=
   compatible_iff_sasaki_eq_material.mp (island_compatible hA hB)
 
-/-- The classical expansion detaches exactly on pairs whose two implications
-already agree. This is not a map from formulas into the lattice. -/
+/-- Not a map from formulas into the lattice. -/
 theorem expansion_detaches_iff_agree {A B : QProp} :
     A ⊓ material A B ≤ B ↔ sasaki A B = material A B := by
   rw [material_detach_iff_compatible, compatible_iff_sasaki_eq_material]
 
-/-- On an island the expansion detaches, because the two implications agree. -/
 theorem island_expansion_detaches {L A B : QProp}
     (hA : A ∈ Island L) (hB : B ∈ Island L) :
     A ⊓ material A B ≤ B :=
   expansion_detaches_iff_agree.mpr (island_implications_agree hA hB)
 
-/-- On a basis ray and the diagonal the expansion does not detach. -/
 theorem diagonal_expansion_does_not_detach :
     ¬ (lineE0 ⊓ material lineE0 lineD ≤ lineD) := by
   intro h
   exact diagonal_not_compatible (material_detach_iff_compatible.mp h)
 
-/-- A subspace splits along a ray exactly when it lies in that ray's island.
-Splitting along the ray already splits along the orthogonal ray. -/
 theorem compatible_ray_iff_mem_island {L A : QProp} (hL : finrank ℂ L = 1) :
     Compatible A L ↔ A ∈ Island L := by
   constructor
@@ -403,7 +385,6 @@ theorem lineE1_not_ortho_lineD : ¬ lineE1 ⟂ lineD := by
   rw [inner_e1_d01] at h0
   exact one_ne_zero h0
 
-/-- A subspace splits along every subspace exactly when it is `⊥` or `⊤`. -/
 theorem compatible_all_iff {A : QProp} :
     (∀ B : QProp, Compatible A B) ↔ A = ⊥ ∨ A = ⊤ := by
   constructor

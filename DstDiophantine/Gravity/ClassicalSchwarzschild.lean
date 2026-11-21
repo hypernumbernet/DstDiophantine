@@ -17,34 +17,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Exterior Schwarzschild as the classical special case
 
-The vacuum condition \(\frac{d}{dr}(rA)=1\) on an open ray forces the exterior
-factor \(A=1-r_s/r\). The teleparallel quadratic on that factor is \(-2/r^2\).
-Lemmas about the auxiliary expression `(2/r²)(1-√A)²/√A` specialise to the
-same factor; they are not identities for the quadratic.
-
-## Proved
-
-* Gauge specialisation: every exterior Schwarzschild identity is the
-  \(A=1-r_s/r\) instance of the corresponding abstract-gauge theorem.
-* Vacuum characterisation: \(\frac{d}{dr}(rA)=1\) on an open ray forces
-  \(A(r)=1-r_s/r\) for a unique \(r_s\). On that factor the teleparallel
-  quadratic is \(-2/r^2\) (`Gravity.RadialQuadratic`).
-* Newtonian sandwich \(\frac{r_s}{2r}\le\varphi\le\frac{r_s}{2rA}\) and
-  \(r\varphi\to r_s/2\), and \(4r^2 J\to r_s^2/2\).
-* The far-field statement \(r^4 T\to r_s^2/2\) below is about the auxiliary
-  expression `schwarzschildTeleparallelT`, not about the quadratic.
-* Exterior layering of the auxiliary expression: \(A\) strictly increasing,
-  \(\varphi,J\) and that expression strictly decreasing; \(A\to 0^+\) and
-  \(\varphi\to\infty\) as \(r\to r_s^+\). The quadratic stays \(-2/r^2\).
-* Exact witness of the auxiliary expression at \(r=\frac43 r_s\): \(A=\frac14\),
-  \(\varphi=\log 2\), auxiliary \(r^2 T=1\), \(4J=2\log^2 2<1\),
-  \(r^2 J_{\mathrm{field}}=\frac98\).
-
-## Not claimed
-
-* A dictionary for a general tetrad field (off-axis or with translations).
-  `Gravity.LorentzGauge` rules out a pointwise map from \(J\) alone.
-* Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
+The vacuum condition \(\frac{d}{dr}(rA)=1\) forces \(A=1-r_s/r\), and the
+teleparallel quadratic on that factor is \(-2/r^2\). The auxiliary expression
+is not that quadratic, and \(\int J\) is not identified with the TEGR integral
+of \(T\).
 -/
 
 namespace DstDiophantine
@@ -106,7 +82,6 @@ theorem schwarzschild_T_nonneg_via_gauge {rs r : ℝ} (h : IsExterior rs r) :
   rw [schwarzschildTeleparallelT_eq_teleparallelTofA]
   exact teleparallelTofA_nonneg hA hr
 
-/-- The two derivations of the closed form agree. -/
 example {rs r : ℝ} (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =
       (4 / r ^ 2) * (cosh (schwarzschildRapidity rs r) - 1) :=
@@ -156,8 +131,6 @@ private theorem eq_of_hasDerivAt_zero_on_Icc {f : ℝ → ℝ} {a b : ℝ}
     (div_eq_zero_iff.mp hEq.symm).resolve_right hden
   exact (sub_eq_zero.mp hdiff).symm
 
-/-- On an open ray \(r>c\ge 0\), the vacuum condition \(\frac{d}{dr}(rA)=1\)
-forces \(A\) to be a Schwarzschild factor. -/
 theorem eq_schwarzschildA_of_vacuum {A : ℝ → ℝ} {c : ℝ} (hc : 0 ≤ c)
     (hA : ∀ r ∈ Ioi c, HasDerivAt (fun x => x * A x) 1 r) :
     ∃ rs, ∀ r ∈ Ioi c, A r = schwarzschildA rs r := by
@@ -645,7 +618,6 @@ theorem two_mul_log_two_sq_lt_one : 2 * (Real.log 2) ^ 2 < 1 := by
   have hbound : 2 * (0.6931471808 : ℝ) ^ 2 < 1 := by norm_num
   linarith
 
-/-- Strict sandwich \(4J<r^2 T\) at the reference sphere. -/
 theorem four_J_lt_r_sq_T_reference {rs : ℝ} (hrs : 0 < rs) :
     4 * J (radialBoostParams rs (referenceRadius rs)) <
       referenceRadius rs ^ 2 *

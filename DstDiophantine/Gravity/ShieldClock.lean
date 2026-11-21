@@ -17,34 +17,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Dual-only shielding and the one-axis clock are distinct displacements
 
-The factor \(\gamma_{\mathrm{eff}}(\alpha,\beta)=\cosh\alpha-\sinh\alpha\sin\beta\)
-of `ElectronShell` is a one-axis observable. It is **not** a product of
-three sandwiches, and it is **not** the mismatch \(J\). Dual-only motion
-on a boosted axis moves both, but they do not return together.
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, no helicity drive of
-\(J\), and no identification of a many-axis clock with a product of
-one-axis factors.
-
-## What is proved
-
-* For \(\alpha>0\) the map \(\beta\mapsto\gamma_{\mathrm{eff}}(\alpha,\beta)\)
-  is strictly decreasing on \([0,\pi/2]\).
-* \(\gamma_{\mathrm{eff}}(\alpha,\beta)=1\) holds on that interval at a
-  unique dual angle \(\beta_\ast=\arcsin\tanh(\alpha/2)\in(0,\pi/2)\).
-* For \(0<\alpha\le\pi/2\) one has \(\beta_\ast<\alpha\), so every
-  admissible coaxial shield \(\beta=\alpha\) (which requires
-  \(\alpha\le\pi/4\)) already has \(\gamma_{\mathrm{eff}}<1\).
-* \(\cos\alpha=\tanh(\alpha/2)\) has a unique root \(\alpha_\dagger\) in
-  \((\pi/3,\pi/2)\). Below that root a coaxial dual ray meets
-  \(\gamma_{\mathrm{eff}}=1\) before the wall; above it every admissible
-  dual angle on the boosted axis remains on the side \(\gamma_{\mathrm{eff}}>1\).
-* The coaxial and cross-axis shields of a pure-usual seed have the same
-  \(J=0\) and the same unsigned mass. The cross-axis shield leaves the
-  boosted axis at \((\alpha,0)\), hence at \(\cosh\alpha\), while the
-  compensating axis contributes the trivial factor \(1\).
+`γ_eff` is not a product of three sandwiches and is not the mismatch `J`. No electromagnetic coupling, laboratory protocol, helicity drive of `J`, or many-axis clock is derived.
 -/
 
 namespace DstDiophantine
@@ -235,7 +208,6 @@ theorem clockAngle_lt_alpha {α : ℝ} (hα0 : 0 < α) (hα : α ≤ π / 2) :
       (mem_sin_Icc (le_of_lt hclk.1) (le_of_lt hclk.2))
       (mem_sin_Icc hα0.le hα)).mp hsin
 
-/-- An admissible coaxial shield has already passed the clock return. -/
 theorem gammaEff_coaxial_lt_one {α : ℝ} (hα0 : 0 < α) (hα : α ≤ π / 4) :
     gammaEff α α < 1 := by
   have hαπ : α ≤ π / 2 := le_trans hα (by linarith [pi_pos])
@@ -387,8 +359,6 @@ private theorem wallClockProbe_neg_of_gt {α : ℝ}
     ⟨(pos_of_gt_wallClockRoot hgt).le, hα⟩ hgt
   rwa [wallClockProbe_root] at this
 
-/-- Below the threshold, coaxial dual excitation meets \(\gamma_{\mathrm{eff}}=1\)
-before the wall. -/
 theorem clockAngle_lt_wall_of_lt_root {α : ℝ}
     (hα0 : 0 < α) (hα : α ≤ π / 2) (hlt : α < wallClockRoot) :
     clockAngle α < π / 2 - α := by
@@ -402,7 +372,6 @@ theorem clockAngle_lt_wall_of_lt_root {α : ℝ}
       (mem_sin_Icc (le_of_lt hclk.1) (le_of_lt hclk.2))
       (mem_sin_Icc hwall0 hwall)).mp hsin
 
-/-- Above the threshold, the wall lies before the clock return. -/
 theorem wall_lt_clockAngle_of_gt_root {α : ℝ}
     (hα : α ≤ π / 2) (hgt : wallClockRoot < α) :
     π / 2 - α < clockAngle α := by
@@ -417,8 +386,6 @@ theorem wall_lt_clockAngle_of_gt_root {α : ℝ}
       (mem_sin_Icc hwall0 hwall)
       (mem_sin_Icc (le_of_lt hclk.1) (le_of_lt hclk.2))).mp hsin
 
-/-- Above the threshold every admissible dual angle on the boosted axis
-stays on the side \(\gamma_{\mathrm{eff}}>1\). -/
 theorem gammaEff_gt_one_of_le_wall_of_gt_root {α β : ℝ}
     (hα : α ≤ π / 2) (hgt : wallClockRoot < α)
     (hβ0 : 0 ≤ β) (hβ : β ≤ π / 2 - α) :

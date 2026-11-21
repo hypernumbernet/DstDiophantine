@@ -5,17 +5,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
 
 /-!
-# Dual and usual sectors as Euclidean 3-spaces
+# Dual and usual sectors
 
-The parameter Killing form has signature `(3,3)`. Restricted to the dual
-sector (`α = 0`) it is negative definite; restricted to the usual sector
-(`β = 0`) it is positive definite. Flipping the dual sign yields a genuine
-inner product on `ℝ³`.
-
-The inner-product space is the *linear span* of each sector, not the
-admissible cone. The internal sum lives in that span and is unbounded.
-The expressed configuration is the nearest admissible point
-(`SourceSuperposition.express`).
+On the dual sector the Killing form is negative definite, and on the usual sector it is positive definite. The inner-product space is the linear span of each sector, not the admissible cone.
 -/
 
 namespace DstDiophantine
@@ -29,7 +21,6 @@ def addParams (p q : TorsionParams) : TorsionParams where
   alpha := fun a => p.alpha a + q.alpha a
   beta := fun a => p.beta a + q.beta a
 
-/-- Scalar multiplication on parameter space. -/
 def smulParams (c : ℝ) (p : TorsionParams) : TorsionParams where
   alpha := fun a => c * p.alpha a
   beta := fun a => c * p.beta a
@@ -143,7 +134,6 @@ theorem killingForm_ofUsual (α γ : UsualRapidity) :
   simp only [mul_zero, sub_zero]
   rw [← sum_inner α γ]
 
-/-- On the dual sector the Killing form is negative definite. -/
 theorem killingForm_ofDual_neg_def {β : DualRapidity} (h : killingForm (ofDual β) (ofDual β) = 0) :
     β = 0 := by
   have : inner ℝ β β = 0 := by
@@ -151,7 +141,6 @@ theorem killingForm_ofDual_neg_def {β : DualRapidity} (h : killingForm (ofDual 
     linarith
   exact inner_self_eq_zero.mp this
 
-/-- On the usual sector the Killing form is positive definite. -/
 theorem killingForm_ofUsual_pos_def {α : UsualRapidity}
     (h : killingForm (ofUsual α) (ofUsual α) = 0) :
     α = 0 := by

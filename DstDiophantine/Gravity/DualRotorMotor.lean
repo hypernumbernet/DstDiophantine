@@ -17,30 +17,9 @@ import Mathlib.Tactic.Ring
 /-!
 # One axis splits the null ideal
 
-On one axis the usual generator is the boost bivector `B⁺₀ = e₀e₁` and the
-dual generator is the rotation `B⁻₀ = e₃e₂`. They commute, so the torsional
-exponential factorises. The two factors stabilise complementary planes of
-the translational ideal:
-
-* `R_usual(φ)` scales `N₀ ± N₁` by `e^{±φ}` and fixes `N₂`, `N₃`;
-* `R_dual(θ)` rotates the `(N₂, N₃)` plane through `θ` and fixes `N₀`, `N₁`.
-
-The common rapidity `σ = φ + θ` therefore dresses both planes by the same
-function, and the mismatch `δ = φ - θ` is the split between them. Along the
-written flow that split is the affine lag and the common dressing is the
-cubic rapidity. The stiffness accelerates both planes together.
-
-The relative rotor `Ω = R_usual† R_dual` acts by the inverse boost `−φ` on
-the first plane and by the rotation `θ` on the second. Neither action is a
-function of `δ` alone. Its derivative at the identity along the ray `(φ, θ)`
-is `−(φ/2) B⁺₀ + (θ/2) B⁻₀`, which in `(σ, δ)` retains a term in `σ`.
-Alignment `δ = 0` with `σ ≠ 0` still moves the null ideal.
-
-Off a common axis the usual generator and the dual generator anticommute, so
-`p B⁺_a + q B⁻_b` squares to the scalar `p² - q²`. The sign of that scalar is
-the type of one rotor: hyperbolic, elliptic, or parabolic. The parabolic
-rotor `1 + t(B⁺₀ + B⁻₁)` shears `N₁` to `N₁ + 2t(N₀ - N₃)`, which leaves the
-boost plane of the first axis.
+On one axis the boost and the rotation stabilise complementary planes of the
+null ideal, and the mismatch is the split between them. Off a common axis the
+joint exponential is not the product of the separate factors.
 -/
 
 namespace DstDiophantine
@@ -336,7 +315,6 @@ theorem sandwich_axis_null3 (φ θ : ℝ) :
     sandwich_smul, sandwich_smul, rotorUsual_axis_eq_pureBoost, sandwich_pureBoost_null2,
     sandwich_pureBoost_null3]
 
-/-- Lightlike combination in the boost plane, scaled by the usual rapidity alone. -/
 theorem sandwich_axis_null_plus (φ θ : ℝ) :
     sandwich (rotorTorsion (axisParams φ θ)) (null 0 + null 1) =
       Real.exp φ • (null 0 + null 1) := by
@@ -348,7 +326,6 @@ theorem sandwich_axis_null_plus (φ θ : ℝ) :
     module
   rw [h, cosh_add_sinh]
 
-/-- The opposite ray of the boost plane, scaled by `e^{-φ}`. -/
 theorem sandwich_axis_null_minus (φ θ : ℝ) :
     sandwich (rotorTorsion (axisParams φ θ)) (null 0 - null 1) =
       Real.exp (-φ) • (null 0 - null 1) := by
@@ -539,7 +516,6 @@ private theorem hasDerivAt_rotorDual_ray (φ θ : ℝ) :
   refine (hc.add hs).congr_deriv ?_
   simp [Real.sin_zero, Real.cos_zero, zero_smul]
 
-/-- Derivative at the identity along the ray of rapidities `(φ, θ)`. -/
 theorem relativeRotor_ray_deriv (φ θ : ℝ) :
     deriv (fun t => relativeRotor (axisParams (t * φ) (t * θ))) 0 =
       -(φ / 2) • hyperbolic 0 + (θ / 2) • cyclic 0 := by
@@ -566,7 +542,6 @@ theorem relativeRotor_ray_deriv (φ θ : ℝ) :
     rw [h0u, h0d, mul_one, one_mul]
   exact (hmul.congr_deriv hderiv).deriv
 
-/-- The same derivative in the sum `σ` and the difference `δ`. -/
 theorem relativeRotor_ray_deriv_channels (σ δ : ℝ) :
     deriv (fun t => relativeRotor (axisParams (t * ((σ + δ) / 2)) (t * ((σ - δ) / 2)))) 0 =
       -(σ / 4) • (hyperbolic 0 - cyclic 0) - (δ / 4) • (hyperbolic 0 + cyclic 0) := by
@@ -580,7 +555,6 @@ theorem cyclic_sub_hyperbolic_ne_zero : cyclic 0 - hyperbolic 0 ≠ 0 := by
     exact sub_eq_zero.mp h
   exact cyclic_ne_smul_hyperbolic 0 1 this
 
-/-- Along alignment the first-order mismatch is the common rapidity. -/
 theorem aligned_linear_eq (σ : ℝ) :
     deriv (fun t => relativeRotor (axisParams (t * (σ / 2)) (t * (σ / 2)))) 0 =
       (σ / 4) • (cyclic 0 - hyperbolic 0) := by
@@ -607,7 +581,6 @@ theorem aligned_linear_ne_zero {σ : ℝ} (hσ : σ ≠ 0) :
   rw [h, smul_zero] at this
   exact cyclic_sub_hyperbolic_ne_zero this
 
-/-- Alignment with a nonzero common rapidity moves the boost plane of the null ideal. -/
 theorem aligned_moves_null {σ : ℝ} (hσ : σ ≠ 0) :
     sandwich (rotorTorsion (axisParams (σ / 2) (σ / 2))) (null 0 + null 1) ≠
       null 0 + null 1 := by
@@ -656,7 +629,6 @@ theorem written_flow_rotation_plane (σ₀ σd₀ m δ₀ ν t : ℝ) :
         Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • null 3 :=
   sandwich_axis_null2 _ _
 
-/-- The written flow dresses the boost plane by `(σ+δ)/2` and rotates the other by `(σ−δ)/2`. -/
 theorem written_flow_null_split (σ₀ σd₀ m δ₀ ν t : ℝ) :
     writtenUsual σ₀ σd₀ m δ₀ ν t =
         (writtenSigma σ₀ σd₀ m δ₀ ν t + writtenDelta δ₀ ν t) / 2 ∧
@@ -923,7 +895,6 @@ private theorem offAxis_remainder_independent {a b : Fin 3} (hab : a ≠ b) {δ 
     simp only [Fin.isValue, hidx, ↓reduceIte, f] at hcoef
     exact hδ hcoef
 
-/-- The joint exponential is not the product of the separate boost and rotation. -/
 theorem exp_offAxis_ne_factor {a b : Fin 3} (hab : a ≠ b) {p q : ℝ}
     (h : Real.sinh p * Real.sin q ≠ 0) :
     exp (p • hyperbolic a + q • cyclic b) ≠
@@ -960,7 +931,6 @@ private theorem reverse_parabolic01 (t : ℝ) :
   rw [map_add, map_smul, reverse.map_one, map_add, hyperbolic_reverse, cyclic_reverse]
   module
 
-/-- `1 + t(B⁺₀ + B⁻₁)` shears `N₁` out of the boost plane. -/
 theorem sandwich_parabolic_null1 (t : ℝ) :
     sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) =
       null 1 + (2 * t) • null 0 - (2 * t) • null 3 := by

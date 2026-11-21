@@ -4,37 +4,16 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
-# Repeated fifth powers (phase 7y)
+# Repeated fifth powers
 
-mathlib (v4.34) does not contain Dahmen–Siksek's determination of the
-coprime solutions of `x⁵ + y⁵ = zˡ` for `l = 7` and `l = 19`. We take that
-statement as an `axiom` (same contract as `siksekStoll345`) and close every
-ordering of the Beal signatures `(5,5,7)` and `(5,5,19)`.
-
-Every exponent is odd, so each ordering rewrites to a sum of two fifth powers
-by carrying one term and absorbing its sign into the base. The only coprime
-solutions have a vanishing coordinate, hence none is a Beal solution.
-
-The signature `(7,7,5)` is not a new case: it is the position `(n,n,5)` with
-odd common exponent, already closed by `not_beal_two_equal_fifth_slice`,
-including the odd permutations `(5,7,7)` and `(7,5,7)`. The companions `11`
-and `13` are conditional on the generalised Riemann hypothesis in the same
-source and are **not** closed here.
-
-Phase 8a uses the same axiom on a wider shape. Two exponents divisible by `5`,
-with the third divisible by `7` or by `19`, rewrite to a coprime sum of two
-fifth powers equal to a seventh or a nineteenth power. `(10,10,7)` is the
-first even two-equal sum that phase 7z does not close; `(10,10,9)` remains.
-Classical Beal is **not** claimed unconditionally.
+`sumTwoFifthsNotSeventhOrNineteenth` assumes no nonzero coprime `a⁵ + b⁵ = cˡ` for `l = 7` or `19`. It is an axiom, not a Lean proof of Dahmen–Siksek, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
 
 namespace Theorems
 
-/--
-Two of the exponents equal `5` and the third equals `l`, in any order.
--/
+/-- Two of the exponents equal `5` and the third equals `l`, in any order. -/
 def IsRepeatedFifthTo (l x y z : ℕ) : Prop :=
   (x = 5 ∧ y = 5 ∧ z = l) ∨
     (y = 5 ∧ z = 5 ∧ x = l) ∨
@@ -44,11 +23,7 @@ instance {l x y z : ℕ} : Decidable (IsRepeatedFifthTo l x y z) := by
   unfold IsRepeatedFifthTo
   infer_instance
 
-/--
-Repeated fifth power beside an unmatched exponent `7` or `19`, every order.
-These are the unconditional Dahmen–Siksek signatures inside the odd two-equal
-family. `(7,7,5)` is excluded: it is already signature `(n,n,5)`.
--/
+/-- Repeated `5` beside `7` or `19`. `(7,7,5)` is `(n,n,5)`, not this. -/
 def IsRepeatedFifthShape (x y z : ℕ) : Prop :=
   IsRepeatedFifthTo 7 x y z ∨ IsRepeatedFifthTo 19 x y z
 
@@ -56,16 +31,7 @@ instance {x y z : ℕ} : Decidable (IsRepeatedFifthShape x y z) := by
   unfold IsRepeatedFifthShape
   infer_instance
 
-/--
-Dahmen–Siksek: there is no nonzero coprime solution of `a⁵ + b⁵ = cˡ`
-for `l = 7` or `l = 19`.
-
-Not present in mathlib at the pin used by this project; recorded explicitly as
-an axiom rather than smuggled into a `sorry`. This is **not** a Lean proof of
-Dahmen–Siksek. The published list of coprime solutions consists entirely of
-triples with a vanishing coordinate, which is all the Beal application uses.
-The companions `11` and `13` are not included.
--/
+/-- No nonzero coprime `a⁵ + b⁵ = cˡ` for `l ∈ {7,19}`. An axiom, not a proof. -/
 axiom sumTwoFifthsNotSeventhOrNineteenth :
     ∀ (a b c : ℤ) (l : ℕ),
       (l = 7 ∨ l = 19) →
@@ -81,10 +47,6 @@ private theorem bealGcd_fifth_perm (A B C : ℤ) :
       bealGcd C (-A) B = bealGcd A B C := by
   constructor <;> simp [bealGcd, Nat.gcd_comm, Nat.gcd_left_comm]
 
-/--
-No coprime nonzero Beal solution whose exponents are a repeated five beside
-`7` or `19`, in any order.
--/
 theorem not_beal_repeated_fifth_to
     {A B C : ℤ} {x y z l : ℕ}
     (hl : l = 7 ∨ l = 19)
@@ -121,10 +83,7 @@ theorem not_beal_repeated_fifth_shape
   · exact not_beal_repeated_fifth_to (Or.inl rfl) hA hB hC hgcd h hsol
   · exact not_beal_repeated_fifth_to (Or.inr rfl) hA hB hC hgcd h hsol
 
-/--
-**Residual** (phase 7y, unproved): odd two-equal Beal outside cube-pair shapes
-and outside a repeated five beside `7` or `19`.
--/
+/-- Open: odd two-equal outside cube pairs and a repeated five beside `7` or `19`. -/
 def BealTwoEqualOddOutsideRepeatedFifthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -135,10 +94,6 @@ def BealTwoEqualOddOutsideRepeatedFifthResidual : Prop :=
     ¬ IsRepeatedFifthShape x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-The odd two-equal body outside cube pairs follows once a repeated five beside
-`7` or `19` has also been removed.
--/
 theorem BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth
     (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
     BealTwoEqualOddOutsideCubePairResidual := by
@@ -147,7 +102,6 @@ theorem BealTwoEqualOddOutsideCubePairResidual_of_outside_repeated_fifth
   · exact not_beal_repeated_fifth_shape hA hB hC hgcd hfifth hsol
   · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hfifth hsol
 
-/-- Phase 7y: the odd two-equal residual follows from that narrower body. -/
 theorem BealTwoEqualOddResidual_of_outside_repeated_fifth
     (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
     BealTwoEqualOddResidual :=
@@ -160,12 +114,7 @@ theorem BealTwoEqualOddResidual_of_outside_repeated_fifth
 abbrev IsDahmenSiksekMultiple (n : ℕ) : Prop :=
   7 ∣ n ∨ 19 ∣ n
 
-/--
-Two exponents are divisible by `5`, and the third is divisible by `7` or by
-`19`. The repeated signatures `(5,5,7)` and `(5,5,19)` are the first cases.
-`(10,10,7)` and `(5,5,21)` are the same shape: the right-hand side of the
-latter is `(C³)⁷`.
--/
+/-- Two exponents divisible by `5`, the third by `7` or `19`. -/
 def IsFifthPairPowerShape (x y z : ℕ) : Prop :=
   (5 ∣ x ∧ 5 ∣ y ∧ IsDahmenSiksekMultiple z) ∨
     (5 ∣ y ∧ 5 ∣ z ∧ IsDahmenSiksekMultiple x) ∨
@@ -238,15 +187,6 @@ private theorem exists_dahmen_divisor {n : ℕ} (h : IsDahmenSiksekMultiple n) :
   · exact ⟨7, Or.inl rfl, h7⟩
   · exact ⟨19, Or.inr rfl, h19⟩
 
-/--
-Phase 8a: if two exponents are divisible by `5` and the third is divisible by
-`7` or by `19`, a three-way-coprime solution is impossible.
-
-The two powers divisible by `5` are fifth powers. The exponent `5` is odd, so
-moving either fifth power across the equation changes only a sign. The
-remaining exponent is a multiple of `7` or of `19`, so that side is a seventh
-or a nineteenth power, and `sumTwoFifthsNotSeventhOrNineteenth` applies.
--/
 theorem not_beal_fifth_pair_power_shape
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -302,7 +242,6 @@ theorem not_beal_fifth_pair_power_shape
       (B ^ (y / l)) l hl (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hA))
       (pow_ne_zero _ hB) hgcd' hrew
 
-/-- `(10,10,7)` is a coprime sum of two fifth powers equal to a seventh power. -/
 theorem not_beal_ten_ten_seven {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
@@ -310,7 +249,6 @@ theorem not_beal_ten_ten_seven {A B C : ℤ}
   not_beal_fifth_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/-- `(7,10,10)` is an even difference and the same fifth-power equation. -/
 theorem not_beal_seven_ten_ten {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
@@ -318,7 +256,6 @@ theorem not_beal_seven_ten_ten {A B C : ℤ}
   not_beal_fifth_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/-- `(5,10,7)` has pairwise distinct exponents and is a fifth-power pair. -/
 theorem not_beal_five_ten_seven {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
@@ -326,7 +263,6 @@ theorem not_beal_five_ten_seven {A B C : ℤ}
   not_beal_fifth_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/-- `(5,5,21)` rewrites as a seventh power of `C³`, not as the exponent `7`. -/
 theorem not_beal_five_five_twenty_one {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1)
@@ -334,11 +270,7 @@ theorem not_beal_five_five_twenty_one {A B C : ℤ}
   not_beal_fifth_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/--
-**Residual** (phase 8a, unproved): even-sum body at hypotenuse exponent
-`z ≥ 7`, outside cube pairs, outside a common exponent divisible by `4`, and
-outside a fifth-power pair. `(10,10,7)` is removed; `(10,10,9)` remains.
--/
+/-- Open: even sum `z ≥ 7` outside fourth- and fifth-power cuts. `(10,10,9)` remains. -/
 def BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -365,10 +297,7 @@ theorem BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth
   BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth
     (BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual_of_outside_fifth h7)
 
-/--
-**Residual** (phase 8a, unproved): even-difference body outside cube pairs and
-outside a fifth-power pair. `(7,10,10)` is removed.
--/
+/-- Open: even difference outside cube pairs and fifth-power pairs. -/
 def BealTwoEqualEvenDiffOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -393,11 +322,7 @@ theorem BealTwoEqualEvenDiffResidual_of_outside_fifth
   BealTwoEqualEvenDiffResidual_of_outside_cube_pair
     (BealTwoEqualEvenDiffOutsideCubePairResidual_of_outside_fifth hOut)
 
-/--
-**Residual** (phase 8a, unproved): odd two-equal body outside cube pairs,
-outside a repeated five beside `7` or `19`, and outside a fifth-power pair.
-`(25,25,7)` and `(5,5,21)` are removed; `(5,5,11)` remains.
--/
+/-- Open: odd two-equal outside those cuts. `(5,5,11)` remains. -/
 def BealTwoEqualOddOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -423,10 +348,7 @@ theorem BealTwoEqualOddResidual_of_outside_fifth_pair
   BealTwoEqualOddResidual_of_outside_repeated_fifth
     (BealTwoEqualOddOutsideRepeatedFifthResidual_of_outside_fifth hOut)
 
-/--
-**Residual** (phase 8a, unproved): pairwise distinct exponents outside cube
-pairs and outside a fifth-power pair. `(5,10,7)` is removed; `(3,5,7)` remains.
--/
+/-- Open: distinct exponents outside those cuts. `(3,5,7)` remains. -/
 def BealAllDistinctOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -451,10 +373,7 @@ theorem BealAllDistinctExpResidual_of_outside_fifth_pair
   BealAllDistinctExpResidual_of_outside_cube_pair
     (BealAllDistinctOutsideCubePairResidual_of_outside_fifth hOut)
 
-/--
-**Residual** (phase 8a, unproved): unequal-odd Pythagorean body outside cube
-pairs and outside a fifth-power pair. `(10,10,14)` is removed.
--/
+/-- Open: unequal-odd body outside those cuts. `(10,10,14)` is removed. -/
 def BealPythagoreanUnequalOddOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),

@@ -6,17 +6,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Normalised Dirichlet kernel on the dual-sector torus
+# Normalised Dirichlet kernel
 
-The synchronisation factor
-\[
-D_N(\theta)=\frac{\sin(N\theta/2)}{N\sin(\theta/2)}
-\]
-has a removable singularity on the lattice \(\theta=2\pi k\). Filling those
-points by the L'Hôpital value \(\cos(N\theta/2)/\cos(\theta/2)\) yields a
-function bounded by \(1\) for every positive integer \(N\) (primality is
-not required). Mass spectra and \(\prod_p p\) regularisation are not treated
-here.
+Lattice singularities are filled in. The bound does not need primality, and mass spectra are not treated.
 -/
 
 namespace DstDiophantine
@@ -73,7 +65,6 @@ theorem cos_half_ne_zero_of_sin_half_eq_zero {θ : ℝ}
   rw [h, hc] at this
   norm_num at this
 
-/-- At every lattice point \(\theta = 2\pi k\) one has \(D_N = \pm 1\). -/
 theorem dirichletKernel_two_pi {N k : ℕ} :
     dirichletKernel N (2 * π * k) = (-1 : ℝ) ^ (k * (N + 1)) := by
   have hsin : sin ((2 * π * k) / 2) = 0 := by
@@ -100,7 +91,6 @@ theorem abs_dirichletKernel_lattice {N k : ℕ} :
     |dirichletKernel N (2 * π * k)| = 1 := by
   rw [dirichletKernel_two_pi, abs_neg_one_pow]
 
-/-- \(|D_N(\theta)|\le 1\) for every positive integer \(N\). -/
 theorem abs_dirichletKernel_le_one {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 := by
   by_cases hsin : sin (θ / 2) = 0

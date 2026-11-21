@@ -7,14 +7,7 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 /-!
 # Occupancy of one dual-spinor ray
 
-* `J` reverses the spin vector: `r(Ju) = -r(u)`.
-* For `u ≠ 0` the orthogonal complement of the ray of `u` is the ray of `Ju`.
-  Any third dual spinor orthogonal to both is zero.
-* Two dual spinors on the ray of `u` carry the same spin vector. Their joint
-  state is symmetric, and the total-spin square acts on it by `8`, the value
-  on every symmetric state. The singlet, of total-spin square `0`, is the
-  joint state of the ray with its reverse. A repeated ray of a nonzero dual
-  spinor is not a scalar multiple of that singlet.
+For `u ≠ 0` the orthogonal complement of the ray of `u` is the ray of `Ju`, and `J` reverses the spin vector. A repeated ray of a nonzero dual spinor is not a scalar multiple of the singlet.
 -/
 
 namespace DstDiophantine
@@ -51,7 +44,6 @@ theorem linearIndependent_quatJ {u : DualSpinor} (hu : u ≠ 0) :
   refine ⟨?_, not_smul_quatJ hu⟩
   simpa using hu
 
-/-- A dual spinor and its quaternionic partner span the whole space. -/
 theorem span_quatJ_eq_top {u : DualSpinor} (hu : u ≠ 0) :
     Submodule.span ℂ (Set.range ![quatJ u, u]) = ⊤ := by
   have hdim : finrank ℂ (Submodule.span ℂ (Set.range ![quatJ u, u])) = 2 := by
@@ -61,7 +53,6 @@ theorem span_quatJ_eq_top {u : DualSpinor} (hu : u ≠ 0) :
     rw [finrank_top, dualSpinor_finrank]
   exact eq_of_le_of_finrank_eq le_top (hdim.trans htop.symm)
 
-/-- The orthogonal complement of the ray of `u` is the ray of `Ju`. -/
 theorem inner_eq_zero_iff_smul_quatJ {u : DualSpinor} (hu : u ≠ 0) (v : DualSpinor) :
     inner ℂ u v = 0 ↔ ∃ c : ℂ, v = c • quatJ u := by
   constructor
@@ -83,7 +74,6 @@ theorem inner_eq_zero_iff_smul_quatJ {u : DualSpinor} (hu : u ≠ 0) (v : DualSp
   · rintro ⟨c, rfl⟩
     rw [inner_smul_right, inner_self_quatJ, mul_zero]
 
-/-- No third dual spinor is orthogonal to both members of the pair `(u, Ju)`. -/
 theorem eq_zero_of_orthogonal_pair {u v w : DualSpinor} (hu : u ≠ 0) (hv : v ≠ 0)
     (huv : inner ℂ u v = 0) (huw : inner ℂ u w = 0) (hvw : inner ℂ v w = 0) :
     w = 0 := by
@@ -123,7 +113,6 @@ theorem applyMat_pauli_quatJ (k : Fin 3) (u : DualSpinor) :
   rw [pauli_eq_pauliComb] at h
   exact neg_eq_iff_eq_neg.mp h.symm
 
-/-- `⟨Ju, σ_k Ju⟩ = -⟨u, σ_k u⟩`. -/
 theorem spinExp_quatJ_pauli (k : Fin 3) (u : DualSpinor) :
     spinExp (pauli k) (quatJ u) = -spinExp (pauli k) u := by
   have hJ : inner ℂ (quatJ u) (applyMat (pauli k) (quatJ u)) =
@@ -138,14 +127,12 @@ theorem spinExp_quatJ_pauli (k : Fin 3) (u : DualSpinor) :
       (by simpa [spinExp] using spinExp_im_of_hermitian (pauli_conjTranspose k) u)
   rw [spinExp, spinExp, hJ, hswap, hreal]
 
-/-- The quaternionic partner reverses the spin vector. -/
 theorem spinVec_quatJ (u : DualSpinor) : spinVec (quatJ u) = fun k => -spinVec u k := by
   funext k
   have h := spinExp_quatJ_pauli k u
   rw [spinVec, spinVec, h]
   simp
 
-/-- The second particle of a product carries the spin vector of its own factor. -/
 theorem rightSpinVec_tensor (u v : DualSpinor) :
     rightSpinVec (pairTensor u v) = fun k => ‖u‖ ^ 2 * spinVec v k := by
   funext k
@@ -165,14 +152,11 @@ theorem rightSpinVec_tensor (u v : DualSpinor) :
   rw [rightSpinVec, hact, pairInner_tensor, spinVec, spinExp, Complex.mul_re, him, hure, huim]
   ring
 
-/-- Two dual spinors on one ray carry the same spin vector. -/
 theorem spinVec_pair_parallel (u : DualSpinor) :
     leftSpinVec (pairTensor u u) = (fun k => ‖u‖ ^ 2 * spinVec u k) ∧
       rightSpinVec (pairTensor u u) = (fun k => ‖u‖ ^ 2 * spinVec u k) := by
   exact ⟨leftSpinVec_tensor u u, rightSpinVec_tensor u u⟩
 
-/-- The joint state of a repeated ray is symmetric, so the total-spin square
-acts on it by `8`. -/
 theorem sum_pairSpin_sq_parallel (u : DualSpinor) :
     ∑ k, pairSpin k (pairSpin k (pairTensor u u)) = (8 : ℂ) • pairTensor u u :=
   sum_pairSpin_sq_of_symm (by rw [pairSwap_tensor])
@@ -181,7 +165,6 @@ theorem pairSwap_smul (c : ℂ) (Ψ : PairState) :
     pairSwap (c • Ψ) = c • pairSwap Ψ := by
   simp [pairSwap, Matrix.transpose_smul]
 
-/-- The singlet line carries total-spin square zero. -/
 theorem sum_pairSpin_sq_smul_singlet (c : ℂ) :
     ∑ k, pairSpin k (pairSpin k (c • singlet)) = 0 := by
   rw [sum_pairSpin_sq, pairSwap_smul, pairSwap_singlet, smul_neg, add_neg_cancel, smul_zero]
@@ -196,7 +179,6 @@ theorem pairTensor_self_ne_zero {u : DualSpinor} (hu : u ≠ 0) :
     simpa [pairTensor_apply] using this
   exact (mul_eq_zero.mp hii).elim id id
 
-/-- A repeated ray of a nonzero dual spinor is not on the singlet line. -/
 theorem repeated_ray_not_smul_singlet {u : DualSpinor} (hu : u ≠ 0) (c : ℂ) :
     pairTensor u u ≠ c • singlet := by
   intro h

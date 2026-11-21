@@ -11,18 +11,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Discrete torsional spectrum
 
-The admissible image of `latticeMismatch` is the three-fold sumset of
-one-axis differences of squares in the triangle `n + m ≤ ⌊N/4⌋`.  That
-sumset is a proper subset of `{−3K²,…,3K²}` for some `K` (spectral holes).
-The slot `Δ = ±1` is occupied as soon as `N ≥ 4`, so the nonzero height
-floor `16/(3N²)` is attained. For every `K`, the integers strictly between
-the shoulder `2K²+(K−1)²` and the ceiling `3K²` are unoccupied; when `K ≥ 2`
-that positive band has width `2K−2`.
-
-The unsigned mass meets the same numerical ceiling on a larger locus.
-`n²+m² = K²` on the triangle only at a wall corner, so the three-axis mass
-`Σ = 3K²` if and only if every axis is a wall of either type. Mixed walls
-keep that mass ceiling and lie strictly inside the torsion ceiling.
+The admissible mismatch image is a proper subset of `{-3K²,…,3K²}`. Mixed walls meet the mass ceiling and miss the torsion ceiling.
 -/
 
 namespace DstDiophantine
@@ -103,7 +92,6 @@ theorem abs_axisMismatch_le_of_triangle {K n m : ℕ} (h : n + m ≤ K) :
   (abs_axisMismatch_le_add_sq n m).trans <|
     pow_le_pow_left₀ (Nat.cast_nonneg _) (by exact_mod_cast h) 2
 
-/-- Wall pairs saturating `|n² − m²| = K²`. -/
 theorem abs_axisMismatch_eq_Ksq_iff {K n m : ℕ} (h : n + m ≤ K) :
     |axisMismatch n m| = (K : ℤ) ^ 2 ↔
       (n = K ∧ m = 0) ∨ (n = 0 ∧ m = K) := by
@@ -159,19 +147,16 @@ theorem abs_axisMismatch_eq_Ksq_iff {K n m : ℕ} (h : n + m ≤ K) :
         exact Or.inr ⟨by exact_mod_cast hn0, by exact_mod_cast hmK⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [axisMismatch]
 
-/-- Unsigned axis mass is at most the square of the coordinate sum. -/
 theorem axisMass_le_add_sq (n m : ℕ) : axisMass n m ≤ (n + m) ^ 2 := by
   unfold axisMass
   calc
     n ^ 2 + m ^ 2 ≤ n ^ 2 + m ^ 2 + 2 * n * m := Nat.le_add_right _ _
     _ = (n + m) ^ 2 := by ring
 
-/-- On the triangle `n + m ≤ K`, the unsigned axis mass is at most `K²`. -/
 theorem axisMass_le_of_triangle {K n m : ℕ} (h : n + m ≤ K) :
     axisMass n m ≤ K ^ 2 :=
   (axisMass_le_add_sq n m).trans (Nat.pow_le_pow_left h 2)
 
-/-- Unsigned axis mass meets `K²` only at a wall corner. -/
 theorem axisMass_eq_Ksq_iff {K n m : ℕ} (h : n + m ≤ K) :
     axisMass n m = K ^ 2 ↔ (n = K ∧ m = 0) ∨ (n = 0 ∧ m = K) := by
   constructor
@@ -210,7 +195,6 @@ private theorem three_axisMass_strict {K a b c : ℕ}
     nlinarith
   exact_mod_cast hsum
 
-/-- Three-axis mass meets `3K²` iff every axis is a wall corner, of either type. -/
 theorem three_axisMass_eq_ceiling_iff {K n0 m0 n1 m1 n2 m2 : ℕ}
     (h0 : n0 + m0 ≤ K) (h1 : n1 + m1 ≤ K) (h2 : n2 + m2 ≤ K) :
     axisMass n0 m0 + axisMass n1 m1 + axisMass n2 m2 = 3 * K ^ 2 ↔
@@ -240,7 +224,6 @@ theorem three_axisMass_eq_ceiling_iff {K n0 m0 n1 m1 n2 m2 : ℕ}
       (axisMass_eq_Ksq_iff h2).mpr c2]
     ring
 
-/-- For `K ≥ 1` the two wall corners are distinct, and the three-axis assignments number eight. -/
 theorem card_three_wall_corners {K : ℕ} (hK : 1 ≤ K) :
     (({(K, 0), (0, K)} : Finset (ℕ × ℕ)) ×ˢ ({(K, 0), (0, K)} ×ˢ {(K, 0), (0, K)})).card = 8 := by
   have hne : (K, 0) ≠ (0, K) := by
@@ -251,7 +234,6 @@ theorem card_three_wall_corners {K : ℕ} (hK : 1 ≤ K) :
     simp [hne]
   rw [Finset.card_product, Finset.card_product, hpair]
 
-/-- Mixed walls meet the mass ceiling and miss the torsion ceiling. -/
 theorem mixed_wall_mass_ceiling_not_torsion {K : ℕ} (hK : 1 ≤ K) :
     axisMass K 0 + axisMass K 0 + axisMass 0 K = 3 * K ^ 2 ∧
       |axisMismatch K 0 + axisMismatch K 0 + axisMismatch 0 K| <
@@ -430,20 +412,9 @@ theorem threeMismatchSet_subset_interval (K : ℕ) :
 def mismatchHoles (K : ℕ) : Finset ℤ :=
   mismatchInterval K \ threeMismatchSet K
 
-/-! ### Ceiling band
+/-! ### Ceiling band -/
 
-On one axis, `K²` is isolated from the rest of the triangle. The factorisation
-`n² − m² = (n − m)(n + m)` forces every non-wall pair to land at most at
-`(K − 1)²`: either `n + m ≤ K − 1`, or the pair sits on the hypotenuse
-`n + m = K` with both coordinates positive, where parity drops `|n − m|` by at
-least two and the product is at most `K(K − 2) = K² − 2K < (K − 1)²`.
-A three-axis sum can therefore pass the shoulder `2K² + (K − 1)²` only by
-placing every axis on the same pure wall, which jumps to `3K²` and leaves the
-open interval between them empty.
--/
-
-/-- Largest three-axis mismatch that still uses a shortened wall:
-`2K² + (K − 1)²`. -/
+/-- Largest three-axis mismatch that still uses a shortened wall: `2K² + (K − 1)²`. -/
 def mismatchShoulder (K : ℕ) : ℤ :=
   2 * (K : ℤ) ^ 2 + ((K - 1 : ℕ) : ℤ) ^ 2
 
@@ -454,14 +425,12 @@ theorem mismatchShoulder_eq_of_pos {K : ℕ} (hK : 1 ≤ K) :
   rw [hcast]
   ring
 
-/-- The shortened wall `(K − 1, 0)` realises the second one-axis maximum. -/
 theorem pred_sq_mem_axisMismatchSet (K : ℕ) :
     ((K - 1 : ℕ) : ℤ) ^ 2 ∈ axisMismatchSet K := by
   rw [mem_axisMismatchSet]
   refine ⟨K - 1, 0, by omega, ?_⟩
   simp [axisMismatch]
 
-/-- A one-axis mismatch strictly above `(K − 1)²` is the pure hyperbolic wall. -/
 theorem axisMismatch_eq_wall_of_gt_pred {K n m : ℕ} (h : n + m ≤ K)
     (hgt : ((K - 1 : ℕ) : ℤ) ^ 2 < axisMismatch n m) :
     n = K ∧ m = 0 := by
@@ -508,7 +477,6 @@ theorem axisMismatch_eq_wall_of_gt_pred {K n m : ℕ} (h : n + m ≤ K)
       rw [hfac, hsumZ] at hgt
       linarith
 
-/-- No one-axis mismatch lies strictly between `(K − 1)²` and `K²`. -/
 theorem not_mem_axisMismatchSet_of_one_axis_gap {K : ℕ} {x : ℤ}
     (hlo : ((K - 1 : ℕ) : ℤ) ^ 2 < x) (hhi : x < (K : ℤ) ^ 2) :
     x ∉ axisMismatchSet K := by
@@ -537,7 +505,6 @@ theorem threeMismatchSet_neg {K : ℕ} {x : ℤ} (hx : x ∈ threeMismatchSet K)
   rw [axisMismatch_comm m0 n0, axisMismatch_comm m1 n1, axisMismatch_comm m2 n2]
   ring
 
-/-- Integers strictly between the shoulder and the ceiling are unoccupied. -/
 theorem not_mem_threeMismatchSet_of_ceiling_gap {K : ℕ} {x : ℤ}
     (hlo : mismatchShoulder K < x) (hhi : x < 3 * (K : ℤ) ^ 2) :
     x ∉ threeMismatchSet K := by
@@ -600,7 +567,6 @@ theorem not_mem_threeMismatchSet_of_ceiling_gap_neg {K : ℕ} {x : ℤ}
   exact not_mem_threeMismatchSet_of_ceiling_gap
     (x := -x) (by linarith) (by linarith) (threeMismatchSet_neg hx)
 
-/-- The integer immediately below the ceiling is empty once `K ≥ 2`. -/
 theorem ceiling_predecessor_not_mem {K : ℕ} (hK : 2 ≤ K) :
     3 * (K : ℤ) ^ 2 - 1 ∉ threeMismatchSet K := by
   refine not_mem_threeMismatchSet_of_ceiling_gap ?_ ?_
@@ -608,7 +574,6 @@ theorem ceiling_predecessor_not_mem {K : ℕ} (hK : 2 ≤ K) :
     nlinarith
   · nlinarith
 
-/-- Width of the positive ceiling band: `2K − 2` unoccupied integers. -/
 theorem ceiling_gap_width {K : ℕ} (hK : 1 ≤ K) :
     3 * (K : ℤ) ^ 2 - 1 - mismatchShoulder K = 2 * (K : ℤ) - 2 := by
   rw [mismatchShoulder_eq_of_pos hK]
@@ -668,7 +633,6 @@ private theorem signed_sum_of_walls {c d0 d1 d2 : ℤ} (hc : 0 < c)
     linarith
   · exact Or.inr ⟨h0, h1, h2⟩
 
-/-- The three-axis ceiling is attained iff every axis sits on the same wall. -/
 theorem abs_three_axis_eq_ceiling_iff {K n0 m0 n1 m1 n2 m2 : ℕ}
     (h0 : n0 + m0 ≤ K) (h1 : n1 + m1 ≤ K) (h2 : n2 + m2 ≤ K) :
     |axisMismatch n0 m0 + axisMismatch n1 m1 + axisMismatch n2 m2| =
@@ -1081,7 +1045,6 @@ theorem exists_admissible_mismatch_neg_one {N : ℕ} [NeZero N] (hN : 4 ≤ N) :
   ⟨unitEllipticDiscrete N, unitEllipticDiscrete_admissible hN,
     latticeMismatch_unitEllipticDiscrete hN⟩
 
-/-- For `N ≥ 4` the universal floor `16/(3N²)` is attained. -/
 theorem torsion_gap_attained {N : ℕ} [NeZero N] (hN : 4 ≤ N) :
     ∃ t : DiscreteTorsion N, IsAdmissible t ∧
       |JNormalized (toTorsionParams t)| = (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
@@ -1089,8 +1052,7 @@ theorem torsion_gap_attained {N : ℕ} [NeZero N] (hN : 4 ≤ N) :
   rw [JNormalized_eq_sixteen_lattice, latticeMismatch_unitHyperbolicDiscrete hN]
   simp [abs_of_pos (by positivity : (0 : ℝ) < 16 / (3 * (N : ℝ) ^ 2))]
 
-/-- Cross-axis cancellation on the torus: vanishing `J` with positive mass,
-not from balanced axes. -/
+/-- Cross-axis cancellation on the torus: vanishing `J` with positive mass, not from balanced axes. -/
 def unbalancedZeroDiscrete (N : ℕ) [NeZero N] : DiscreteTorsion N where
   n := fun a => if a = 0 then 1 else 0
   m := fun a => if a = 1 then 1 else 0

@@ -9,42 +9,7 @@ set_option linter.style.native false
 /-!
 # The sign-reversal scale as an observational constant
 
-## Paper boundary (do **not** claim)
-
-The sign-reversal scale `r₁` is the separation at which a slow nucleon pair
-changes from attraction to repulsion. Scattering potentials are repulsive
-through `1/2` fm and attractive from `1` fm, so `1/2 < r₁ < 1`. That window
-is an input. The channel length is the definition `ℓ = 2 x₁ r₁`. It is not a
-Compton wavelength, and nothing here computes `r₁` from one.
-
-## What is proved
-
-* For every such `r₁`, `14/15 < ℓ < 19/10`.
-* The mass ratio read from that length is `λ_p/ℓ`, the proton Compton
-  length over `ℓ`. A meson mass is not an input, and the definition of `ℓ`
-  is unchanged. For every such `r₁` the ratio lies strictly between `2/19`
-  and `9/28`, hence strictly above `ε_8` and strictly below the lock
-  `ε_4 = 1/3`. It exceeds `(16/3) α_G` by more than `10³⁶`. It equals no
-  lattice height `ε_N` for `N ≤ 4` or `N ≥ 8`. The laboratory charged pion
-  is not used here; `NuclearLayer` only compares that external ratio with
-  the same numerical interval.
-* The first node of that length is `r₁` itself. The second node lies strictly
-  below `1/2` fm, so the core scale lies in the inversion layer.
-* The rapidity wall is `r₁` times a factor strictly between `224/189` and
-  `190/157`. At `r₁ = 3/5` the wall lies inside `1` fm, and at `r₁ = 9/10` it
-  lies outside. The window does not decide which.
-* For every such `r₁` the wall lies strictly below each listed charge-radius
-  lower edge and below the saturation spacing.
-* `k e² / r₁ > 1439/1000` MeV, and hence above the rational `1294/1000` MeV.
-  That rational is not a mass difference. The deuteron binding
-  `m_n + m_p − m_d` is an external input, strictly between `2224/1000` and
-  `2225/1000` MeV, and is not derived. It is not the neutron–proton mass
-  difference. On the scattering window the Coulomb energy lies below the
-  lower end when `r₁ ≥ 65/100`, and above the upper end when `r₁ ≤ 64/100`.
-  Both sample radii lie in the window.
-* At a separation above `52917` fm the mass term is a fraction of the charge
-  term strictly between `440/10⁴²` and `442/10⁴²`, for every such length and
-  for an electromagnetic length below `387` fm.
+The window `1/2 < r₁ < 1` is an input: `ℓ = 2 x₁ r₁` is not a Compton wavelength, and `r₁` is not computed from one.
 -/
 
 namespace DstDiophantine
@@ -81,7 +46,6 @@ theorem lengthOfReversal_bounds {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 
   exact mul_lt_mul (mul_lt_mul_of_pos_left hx (by norm_num)) hr0.le
     (by norm_num) (by nlinarith [hx])
 
-/-- The first node of the defined length is the reversal scale. -/
 theorem reversal_is_first_node {r₁ : ℝ} (hr : r₁ ≠ 0) :
     layerRadius (lengthOfReversal r₁) resonanceRoot1 = r₁ := by
   unfold lengthOfReversal layerRadius
@@ -120,7 +84,6 @@ theorem wall_over_reversal {r₁ : ℝ} (hr : 0 < r₁) :
       nlinarith
     linarith
 
-/-- `r₁ = 3/5` places the wall inside `1` fm; `r₁ = 9/10` places it outside. -/
 theorem window_does_not_fix_wall_against_one :
     2 * lengthOfReversal (3 / 5) / π < 1 ∧
       1 < 2 * lengthOfReversal (9 / 10) / π := by
@@ -227,7 +190,6 @@ theorem reversal_wall_below_spacing {r₁ s : ℝ}
   have hcmp : (190 / 157 : ℝ) < 46 / 25 := by norm_num
   linarith
 
-/-- At the reversal, `k e²/r₁` exceeds `1.439` MeV and hence `1.294` MeV. -/
 theorem coulomb_at_reversal {r₁ : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1) :
     (1439 / 1000 : ℝ) < (coulombMeVFm : ℝ) / r₁ ∧
       (1294 / 1000 : ℝ) < (coulombMeVFm : ℝ) / r₁ := by
@@ -245,7 +207,6 @@ theorem coulomb_at_reversal {r₁ : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1) :
     exact Rat.cast_lt.mpr hke
   exact ⟨h1439.trans hdiv, hgap.trans (h1439.trans hdiv)⟩
 
-/-- The Bohr comparison survives for every length in the observational window. -/
 theorem reversal_bohr_mass_fraction {ℓE a r₁ : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387)
     (hr0 : 0 < r₁) (hr1 : r₁ < 1)
@@ -314,12 +275,10 @@ theorem reversal_bohr_mass_fraction {ℓE a r₁ : ℝ}
 
 /-! ### Channel-length mass ratio
 
-Proton Compton length over `ℓ = 2 x₁ r₁`. A meson mass is not an input.
-For `N ≤ 4` or `N ≥ 8` the ratio equals no lattice height `ε_N`. This is
-not one graviton: a graviton is the dual step in `GravitonQuantum`. -/
+A meson mass is not an input, and this ratio is not one graviton.
+-/
 
-/-- Proton Compton length over the channel length `ℓ = 2 x₁ r₁`.
-A meson mass is not an input. -/
+/-- Proton Compton length over the channel length `ℓ = 2 x₁ r₁`. A meson mass is not an input. -/
 noncomputable def channelMassRatio (r₁ : ℝ) : ℝ :=
   (protonComptonFm : ℝ) / lengthOfReversal r₁
 
@@ -352,7 +311,6 @@ theorem channelMassRatio_window {r₁ : ℝ}
     have hrat : (3 / 10 : ℝ) / (14 / 15) = 9 / 28 := by norm_num
     linarith
 
-/-- The ratio lies strictly above `ε_8` and strictly below the lock `ε_4`. -/
 theorem channelMassRatio_between_remote_floors {r₁ : ℝ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) :
     (epsN 8 : ℝ) < channelMassRatio r₁ ∧
@@ -366,8 +324,7 @@ theorem channelMassRatio_between_remote_floors {r₁ : ℝ}
     norm_num
   exact ⟨lt_trans h8 h.1, lt_trans h.2 h4⟩
 
-/-- For `N ≤ 4` or `N ≥ 8` the ratio equals no lattice height.
-The cases `N = 5, 6, 7` are not decided. -/
+/-- For `N ≤ 4` or `N ≥ 8` the ratio equals no lattice height; `N = 5, 6, 7` are not decided. -/
 theorem channelMassRatio_ne_remote_floor {r₁ : ℝ} {N : ℕ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1) (hN : N ≤ 4 ∨ 8 ≤ N) :
     (epsN N : ℝ) ≠ channelMassRatio r₁ := by
@@ -406,19 +363,15 @@ theorem channelMassRatio_exceeds_planck {r₁ : ℝ}
     rwa [hnum] at hleft
   exact lt_trans (lt_trans hscaled (by norm_num)) (channelMassRatio_window hr0 hr1).1
 
-/-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\).
-The CODATA value lies strictly inside. Not derived. -/
+/-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\). The CODATA value lies strictly inside. Not derived. -/
 def deuteronBindingMeVLower : ℚ := 2224 / 1000
 
 def deuteronBindingMeVUpper : ℚ := 2225 / 1000
 
-/-- Both sample reversals lie in the open scattering window `(1/2, 1)`. -/
 theorem reversal_splits_deuteronBinding :
     (1 / 2 : ℝ) < 64 / 100 ∧ (64 / 100 : ℝ) < 65 / 100 ∧ (65 / 100 : ℝ) < 1 := by
   norm_num
 
-/-- At a reversal of at least `65/100` fm, and still below `1` fm,
-`k e²/r₁` lies strictly below the deuteron binding. -/
 theorem coulomb_lt_deuteronBinding_of_wide {r₁ : ℝ}
     (hr : (65 / 100 : ℝ) ≤ r₁) (hr1 : r₁ < 1) :
     (coulombMeVFm : ℝ) / r₁ < (deuteronBindingMeVLower : ℝ) := by
@@ -436,8 +389,6 @@ theorem coulomb_lt_deuteronBinding_of_wide {r₁ : ℝ}
     norm_num
   exact (hdiv.trans_le hmono).trans hnum
 
-/-- At a reversal above `1/2` fm and at most `64/100` fm,
-`k e²/r₁` lies strictly above the deuteron binding. -/
 theorem coulomb_gt_deuteronBinding_of_narrow {r₁ : ℝ}
     (hr0 : (1 / 2 : ℝ) < r₁) (hr : r₁ ≤ (64 / 100 : ℝ)) :
     (deuteronBindingMeVUpper : ℝ) < (coulombMeVFm : ℝ) / r₁ := by

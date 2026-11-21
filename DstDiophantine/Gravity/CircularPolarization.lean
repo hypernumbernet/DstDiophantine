@@ -9,47 +9,10 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Circular polarisation in the Faraday 6-space
 
-## Paper boundary (do **not** claim)
-
-Maxwell's equations, a laboratory electromagnetic identification, a
-path-ordered dual-rotor coupling, a resonance frequency, and helicity
-drive of the particle mismatch \(J\) are **not** derived. Axis chirality
-is not photon helicity. The linear quadrature mean of a circular Faraday
-field vanishes, so a dual-sector drive proportional to a mean
-\(F_{\mathrm{dual}}\) is not a coefficient identity.
-
-## What is proved
-
-* A \(z\)-propagating circular wave with helicity \(\sigma^2=1\) is null
-  at every phase: \(J=0\), \(E\cdot B=0\), and \(M=E_0^2\) (massive if
-  \(E_0\neq 0\)). The existing snapshot is the phase-zero special case.
-* The signed Poynting component along the propagation axis equals
-  \(\sigma E_0^2\) at every phase. Laboratory \(T\) flips that sign;
-  Hodge duality preserves it. A linearly polarised wave is also null,
-  but its Poynting component is \(E_0^2\cos^2\psi\ge 0\) and carries no
-  helicity sign, while \(M\) oscillates.
-* Each linear Faraday coefficient of the circular wave has vanishing
-  four-phase mean, so \(\langle F_{\mathrm{usual}}\rangle=
-  \langle F_{\mathrm{dual}}\rangle=0\).
-* Linear superposition onto a background torsion shifts \(J\) by a
-  first harmonic in the phase; the four-phase mean of \(J\) is the
-  background value. Helicity enters only the phase of that harmonic.
-* The Faraday mix cannot create \(J\) from a circular wave.
-* Relative to \(e_1\), the wave is the phase quadrature of the Cartan
-  and charged triples. Both summands are null; their \(z\)-Poynting
-  parts are \(\sigma E_0^2\sin^2\psi\) and \(\sigma E_0^2\cos^2\psi\),
-  and add without a cross term. Same-projector sandwiches \(P_{L,R}\)
-  kill the charged summand, so the snapshot \(\psi=0\) is annihilated
-  and neither projector selects \(\sigma=\pm 1\).
-* The rest sandwich of a circular wave is the oscillating electric
-  kick; its four-phase mean vanishes. A velocity along the beam yields
-  a transverse sandwich force \(E-v\times B\) with vanishing \(z\)
-  component, not a helicity-odd scalar \(J\).
-* Among the six classical Faraday quadratics
-  \(\{E^2,B^2,E\cdot B,P_x,P_y,P_z\}\), a real linear combination that is
-  helicity-odd on circular waves equals a multiple of \(P_z\) on those
-  waves. Helicity drive of the particle mismatch \(J\) is still not
-  derived.
+A circular Faraday wave is null at every phase, and its four-phase mean does
+not shift \(J\). Maxwell's equations, a laboratory identification, and
+helicity drive of \(J\) are not derived; axis chirality is not photon
+helicity.
 -/
 
 namespace DstDiophantine
@@ -62,8 +25,7 @@ open scoped Real
 
 /-! ### Circular and linear travelling waves -/
 
-/-- Circularly polarised wave of helicity \(\sigma\) at phase
-\(\psi=kz-\omega t\) (units \(c=1\)). -/
+/-- Circularly polarised wave of helicity \(\sigma\) at phase \(\psi=kz-\omega t\) (units \(c=1\)). -/
 noncomputable def circularWave (σ E0 ψ : ℝ) : FaradayParams where
   E := fun
     | 0 => E0 * Real.cos ψ
@@ -74,8 +36,7 @@ noncomputable def circularWave (σ E0 ψ : ℝ) : FaradayParams where
     | 1 => σ * E0 * Real.cos ψ
     | _ => 0
 
-/-- Linearly polarised wave along \(z\): \(E=E_0\cos\psi\,\hat x\),
-\(B=E_0\cos\psi\,\hat y\). -/
+/-- Linearly polarised wave along \(z\): \(E=E_0\cos\psi\,\hat x\), \(B=E_0\cos\psi\,\hat y\). -/
 noncomputable def linearWave (E0 ψ : ℝ) : FaradayParams where
   E := fun
     | 0 => E0 * Real.cos ψ
@@ -426,7 +387,6 @@ theorem poyntingZ_circularWave_cartan_add_charged (σ E0 ψ : ℝ) :
       poyntingZ (circularWave σ E0 ψ) :=
   (poyntingZ_cartan_add_charged (circularWave σ E0 ψ)).symm
 
-/-- Phase-zero circular snapshot is purely charged: Cartan coefficients vanish. -/
 theorem cartanParams_circularWave_zero (σ E0 : ℝ) :
     cartanParams (circularWave σ E0 0) =
       { E := fun _ => 0, B := fun _ => 0 } := by
@@ -436,7 +396,6 @@ theorem faradayCartan_circularWave_zero (σ E0 : ℝ) :
     faradayCartan (circularWave σ E0 0) = 0 := by
   simp [faradayCartan, circularWave, Real.sin_zero]
 
-/-- Same-projector sandwich annihilates the circular snapshot. -/
 theorem chiralSandwich_circularWave_zero (σ E0 : ℝ) :
     chiralSandwich (faraday (circularWave σ E0 0)) = 0 := by
   rw [chiralSandwich_faraday, faradayCartan_circularWave_zero, mul_zero]
@@ -451,7 +410,6 @@ theorem faradayCharged_circularWave_pi_div_two (σ E0 : ℝ) :
     faradayCharged (circularWave σ E0 (Real.pi / 2)) = 0 := by
   simp [faradayCharged, circularWave, Real.cos_pi_div_two]
 
-/-- At quadrature the wave is purely Cartan, so the sandwich retains it. -/
 theorem chiralSandwich_circularWave_pi_div_two (σ E0 : ℝ) :
     chiralSandwich (faraday (circularWave σ E0 (Real.pi / 2))) =
       chiralityR * faraday (circularWave σ E0 (Real.pi / 2)) := by
@@ -467,8 +425,6 @@ theorem chiralSandwichL_circularWave_charged (σ E0 ψ : ℝ) :
     chiralSandwichL (faradayCharged (circularWave σ E0 ψ)) = 0 :=
   chiralSandwichL_charged _
 
-/-- Both left and right axis sandwiches kill the charged summand of a circular
-wave: neither projector selects a helicity sign. -/
 theorem chiralSandwichL_circularWave (σ E0 ψ : ℝ) :
     chiralSandwichL (faraday (circularWave σ E0 ψ)) =
       chiralSandwichL (faradayCartan (circularWave σ E0 ψ)) :=
@@ -498,7 +454,6 @@ def zVelocity (vz : ℝ) : Fin 3 → ℝ
   | 2 => vz
   | _ => 0
 
-/-- A beam-direction velocity yields a transverse kick: no \(z\)-component. -/
 theorem sandwichForce_circularWave_zVelocity_transverse (σ E0 ψ vz : ℝ) :
     sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 := by
   simp [sandwichForce, circularWave, zVelocity, cross]
@@ -529,8 +484,6 @@ theorem classicalQuadratic_circularWave {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1)
   simp [cross, circularWave]
   ring
 
-/-- Helicity-oddness on circular waves forces the even quadratic sector to
-vanish, so the combination equals a multiple of \(P_z\) on those waves. -/
 theorem classicalQuadratic_helicity_odd_even_sector
     {cE2 cB2 cEB cPx cPy cPz : ℝ}
     (h : ∀ σ E0 ψ : ℝ, σ ^ 2 = 1 →

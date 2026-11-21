@@ -2,38 +2,9 @@ import DstDiophantine.Logic.Regime
 import Mathlib.Tactic.IntervalCases
 
 /-!
-# Phase 7p / 7r / 7s: abstract Beal residual atlas (D4L regime layer)
+# Beal residual atlas
 
-Atoms are names only (no `Theorems` import). Arithmetic witnesses live in
-`Theorems.BealRegime`. Layout: slices `T` (0–3), diagnostics `F` (4–5),
-bookkeeping `B` (6), live residuals `U` (7–13; Odd/AllDistinct/UnequalOdd
-split at 11–13), conjecture `U` (14), closed `(n,n,5)` slice `T` (15),
-closed two-cube fourth/fifth-power slice `T` (16).
-
-Correspondence with residual *types* (comments only; types live in Theorems):
-
-* `sliceFLT` — `d ≥ 3` (`not_beal_sol_of_expGcd_ge_three`)
-* `sliceDM` — Darmon–Merel cube positions (`not_beal_two_equal_cube_slice`)
-* `sliceAbsOne` — equal-odd `|u| = 1` (Mihăilescu; coefficient, not a shape)
-* `sliceFourth` — `d = 2` with two fourth-divisible exponents
-* `sliceNN5` — signature `(n,n,5)` (`not_beal_two_equal_fifth_slice`)
-* `sliceBruin` — two cubes summing to a fourth or fifth power
-  (`not_beal_bruin_two_cube_shape`)
-* `diagModular` / `diagBalanced` — demoted winding / balanced-seed diagnostics
-* `bookRealization` — CGA discrete closure ≡ `|A| = 1`
-* `liveMordell` — `BealMordellCubeAddTwoResidual`
-* `liveGeFive` — `BealEqualOddTwoFactorExpGeFiveResidual`
-* `liveDiffPP` — `BealTwoEqualEvenDiffPerfectPowerResidual`
-* `liveSumOut` — `BealTwoEqualEvenSumExpGeSevenResidual`
-* `liveOdd` — `BealTwoEqualOddResidual`
-* `liveAllDistinct` — `BealAllDistinctExpResidual`
-* `liveUnequalOdd` — `BealPythagoreanUnequalOddResidual`
-* `bealConjecture` — positive coprime Beal
-
-The status board does **not** encode the arithmetic assembly
-`beal_conjecture_pos_of_fine_residuals_even_split`. Promoting a live atom
-from `U` to `T` therefore cannot silently `T`-entail the conjecture; even
-the full artefact set fails to. Unconditional classical Beal is not claimed.
+Atoms are names only. The status board does not encode the arithmetic assembly, and unconditional classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -85,11 +56,10 @@ def sliceNN5 : RegimeFormula := atom 15
 /-- Closed slice: two cubes as a fourth or fifth power (phase 7v). -/
 def sliceBruin : RegimeFormula := atom 16
 
-/-- Honest atlas status list (indices match the atoms above). -/
+/-- Statuses of atoms `0`–`16`. -/
 def bealAtlasStatuses : List TruthValue :=
   [.T, .T, .T, .T, .F, .F, .B, .U, .U, .U, .U, .U, .U, .U, .U, .T, .T]
 
-/-- Honest Beal atlas valuation. -/
 def bealAtlasVal : RegimeValuation :=
   RegimeValuation.ofList bealAtlasStatuses
 
@@ -154,19 +124,17 @@ theorem bealAtlasVal_sliceNN5 : sliceNN5.eval bealAtlasVal.assign = .T :=
 theorem bealAtlasVal_sliceBruin : sliceBruin.eval bealAtlasVal.assign = .T :=
   bealAtlasVal_at 16 (by decide)
 
-/-- Closed-slice statuses under the honest atlas (atoms 0–3). -/
+/-- Statuses of atoms `0`–`3`. -/
 def closedSliceStatuses : List TruthValue :=
   List.replicate 4 .T
 
 theorem meetRList_closed_slices : meetRList closedSliceStatuses = .T :=
   meetRList_all_T 4
 
-/-- Closed slices packaged with any live residual stay live. -/
 theorem meetRList_closed_with_live :
     meetRList (closedSliceStatuses ++ [.U]) = .U :=
   meetRList_T_append_U 4
 
-/-- Named `{T,F}` cannot host a live residual atom. -/
 theorem not_exists_named_beal_live :
     ¬ ∃ v : RegimeValuation,
         IsNamedRegime (v.assign 7) ∧
@@ -175,7 +143,6 @@ theorem not_exists_named_beal_live :
   have : v.assign 7 = .U := by simpa [liveMordell] using hl
   exact namedRegime_not_U hn this
 
-/-- Wall `{B,F}` cannot host a proved closed slice. -/
 theorem not_exists_wall_beal_slice :
     ¬ ∃ v : RegimeValuation,
         IsWallRegime (v.assign 0) ∧
@@ -184,7 +151,6 @@ theorem not_exists_wall_beal_slice :
   have : v.assign 0 = .T := by simpa [sliceFLT] using hc
   exact wallRegime_not_T hw this
 
-/-- The honest atlas realises closed `T`, diagnostic `F`, bookkeeping `B`, live `U`. -/
 theorem exists_beal_atlas_valuation :
     ∃ v : RegimeValuation,
       sliceFLT.eval v.assign = .T ∧
@@ -202,7 +168,6 @@ theorem exists_beal_atlas_valuation :
     bealAtlasVal_liveAllDistinct, bealAtlasVal_liveUnequalOdd,
     bealAtlasVal_conjecture, bealAtlasVal_sliceNN5, bealAtlasVal_sliceBruin⟩
 
-/-- Closed slices alone do not T-entail classical Beal. -/
 theorem closed_slices_not_entailsTR_beal :
     ¬ EntailsTR {sliceFLT, sliceDM, sliceAbsOne, sliceFourth, sliceNN5, sliceBruin}
         bealConjecture := by
@@ -221,10 +186,7 @@ theorem closed_slices_not_entailsTR_beal :
   have := h bealAtlasVal hmod
   simp [HoldsTR, bealAtlasVal_conjecture] at this
 
-/--
-Window reading: closed slice `T` with bookkeeping conflict `B` still fails to
-force the conjecture off `F` (non-explosion of status packaging).
--/
+/-- Conjecture set to `F`. Packaging `T` with `B` does not explode. -/
 def bealWindowBookVal : RegimeValuation :=
   RegimeValuation.ofList
     (bealAtlasStatuses.set 14 .F)
@@ -261,17 +223,15 @@ def bealArtefactAtomSet : Set RegimeFormula :=
     bookRealization, liveMordell, liveGeFive, liveDiffPP, liveSumOut,
     liveOdd, liveAllDistinct, liveUnequalOdd, sliceNN5, sliceBruin}
 
-/-- Establishedness of the seven live residuals is live. -/
 theorem meetRList_beal_live_residuals :
     meetRList [.U, .U, .U, .U, .U, .U, .U] = .U :=
   rfl
 
-/-- Promoting a single live residual to `T` still packages as live. -/
 theorem meetRList_beal_promote_one_live :
     meetRList [.T, .U, .U, .U, .U, .U, .U] = .U :=
   rfl
 
-/-- Honest atlas with `liveMordell` promoted `U → T`. Conjecture stays `U`. -/
+/-- `liveMordell` promoted to `T`. -/
 def bealPromoteMordellVal : RegimeValuation :=
   RegimeValuation.ofList (bealAtlasStatuses.set 7 .T)
 
@@ -285,7 +245,6 @@ theorem bealPromoteMordellVal_conjecture :
   simp [bealConjecture, bealPromoteMordellVal, RegimeValuation.ofList,
     bealAtlasStatuses, List.set]
 
-/-- Closing one live residual does not `T`-entail classical Beal. -/
 theorem promote_liveMordell_not_entailsTR_beal :
     ¬ EntailsTR (bealClosedSliceAtomSet ∪ {liveMordell}) bealConjecture := by
   intro h
@@ -311,7 +270,7 @@ theorem promote_liveMordell_not_entailsTR_beal :
   have := h bealPromoteMordellVal hmod
   simp [HoldsTR, bealPromoteMordellVal_conjecture] at this
 
-/-- Status board with every artefact at `T` and the conjecture still `U`. -/
+/-- Every artefact `T`, conjecture `U`. -/
 def bealAllArtefactsClosedStatuses : List TruthValue :=
   List.replicate 14 .T ++ [.U, .T, .T]
 
@@ -339,10 +298,7 @@ private theorem bealAllArtefactsClosedVal_eval_Bruin :
   simp [bealAllArtefactsClosedVal, RegimeValuation.ofList,
     bealAllArtefactsClosedStatuses]
 
-/--
-The status algebra does not encode the arithmetic assembly. Even with every
-named artefact forced to `T`, classical Beal is not `T`-entailed.
--/
+/-- The status algebra does not encode the arithmetic assembly. -/
 theorem artefacts_not_entailsTR_beal :
     ¬ EntailsTR bealArtefactAtomSet bealConjecture := by
   intro h

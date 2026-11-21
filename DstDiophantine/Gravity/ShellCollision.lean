@@ -19,36 +19,7 @@ import DstDiophantine.Gravity.SI
 /-!
 # Longitudinal excitation of an outermost electron
 
-## Paper boundary (do **not** claim)
-
-A collision rate, a cross section, and a mean free path are not derived.
-`h` and `k_B` stay external. The growth of cavity modes as `ν²` is not a
-consequence of the collision. No theorem retunes the frequency of one root
-by the temperature or by the size of the impulse, and none identifies a
-particular root with the peak of the enclosure.
-
-## What is proved
-
-* Along the line of centres the electron of larger radius is the closer one.
-  A radial impulse deposits energy `p²/(2m)`, with no stiffness in that
-  energy. The subsequent frequency is `√(κ/m)`, with no impulse in that
-  frequency. A stiffer root has a higher frequency and, for the same
-  impulse, a smaller amplitude.
-* Two positive weights on two distinct frequencies have positive variance.
-* Equipartition weights the two roots in a ratio independent of temperature.
-  The Larmor weight `ν³/(e^{aν/T}-1)` does not: if `0 < ν₁ < ν₂`, the ratio
-  of the higher weight to the lower one is strictly increasing in `T`, and
-  so is the weighted mean, which remains strictly between `ν₁` and `ν₂`.
-* The shape `x³/(eˣ-1)` has positive integral on `(1,2)` and on `(4,5)`,
-  hence on both sides of its maximum in `(5/2,3)`.
-* The mean of that shape is strictly between `3` and `4`, so it lies above
-  the maximum. The mean frequency of the enclosure is that mean times `T/a`
-  and is strictly increasing in `T`.
-* Frequencies scale as `√(κ/m)`, so wavelengths scale as the reciprocal.
-  The ratio of the diagonal wavelength to the electron wavelength is
-  `√((κₑ/mₑ)/(κ_d/m_d))`. On the printed curvatures `18.10` and `8.178`,
-  with diagonal inertia `m_p/2`, that factor lies strictly between `45.07`
-  and `45.08`. Those curvatures are inputs.
+A collision rate, cross section, and mean free path are not derived; `h` and `k_B` stay external, and cavity growth as `ν²` is not a consequence of the collision. No theorem retunes a root by temperature or impulse, or identifies a root with the enclosure peak.
 -/
 
 namespace DstDiophantine
@@ -63,7 +34,6 @@ open Real Set Filter MeasureTheory Asymptotics Topology intervalIntegral SI
 def separationToPartner (d r : ℝ) : ℝ :=
   d - r
 
-/-- On the segment toward the partner, the larger radius is the closer electron. -/
 theorem outer_closer {rInner rOuter d : ℝ} (h0 : 0 ≤ rInner) (hlt : rInner < rOuter)
     (hd : rOuter < d) :
     0 ≤ rInner ∧ 0 < separationToPartner d rOuter ∧
@@ -74,7 +44,6 @@ theorem outer_closer {rInner rOuter d : ℝ} (h0 : 0 ≤ rInner) (hlt : rInner <
   · unfold separationToPartner
     linarith
 
-/-- The electron that meets the partner is the one of greater radius. -/
 theorem contact_eq_outer {rInner rOuter : ℝ} (hlt : rInner ≤ rOuter) :
     max rInner rOuter = rOuter :=
   max_eq_right hlt
@@ -107,10 +76,6 @@ theorem longitudinalOmega_pos {κ m : ℝ} (hκ : 0 < κ) (hm : 0 < m) :
   unfold longitudinalOmega
   exact sqrt_pos.mpr (div_pos hκ hm)
 
-/-- The frequency ratio is the square root of the ratio of `κ/m`.
-Wavelengths stand in the reciprocal ratio: if the first coordinate is the
-electron and the second is the diagonal, this square root is the diagonal
-wavelength divided by the electron wavelength. -/
 theorem omega_ratio_eq_sqrt {κ1 m1 κ2 m2 : ℝ}
     (hκ1 : 0 ≤ κ1) (hm1 : 0 < m1) (hκ2 : 0 ≤ κ2) (hm2 : 0 < m2) :
     longitudinalOmega κ1 m1 / longitudinalOmega κ2 m2 =
@@ -125,10 +90,6 @@ theorem omega_ratio_eq_sqrt {κ1 m1 κ2 m2 : ℝ}
     _ = sqrt ((κ1 / m1) * (κ2 / m2)⁻¹) := by rw [← sqrt_mul ha]
     _ = sqrt ((κ1 / m1) / (κ2 / m2)) := by congr 1
 
-/-- On the printed curvatures `18.10` and `8.178`, the electron frequency
-exceeds the diagonal frequency by a factor strictly between `45.07` and
-`45.08`. That factor is the ratio of the diagonal wavelength to the electron
-wavelength. -/
 theorem squareFrequencyRatio_window :
     (4507 / 100 : ℝ) <
         longitudinalOmega ((1810 : ℝ) / 100) (electronMassApprox : ℝ) /
@@ -183,7 +144,6 @@ theorem squareFrequencyRatio_window :
     have htop : (0 : ℝ) ≤ 4508 / 100 := by norm_num
     exact (sq_lt_sq₀ hbound htop).mp hhi_sq
 
-/-- A stiffer root has a strictly higher longitudinal frequency. -/
 theorem longitudinalOmega_strictMono {m κ1 κ2 : ℝ} (hm : 0 < m) (hκ1 : 0 < κ1)
     (hκ : κ1 < κ2) :
     longitudinalOmega κ1 m < longitudinalOmega κ2 m := by
@@ -196,7 +156,6 @@ theorem radialAccel_eq_omega {κ m ξ : ℝ} (hκ : 0 ≤ κ) (hm : 0 < m) :
   unfold radialAccel
   rw [longitudinalOmega_sq hκ hm]
 
-/-- From rest at the root, the deposited energy is `p²/(2m)`. The stiffness is absent. -/
 theorem impulse_energy {m κ p : ℝ} (hm : m ≠ 0) :
     radialEnergy m κ 0 (p / m) = p ^ 2 / (2 * m) := by
   unfold radialEnergy
@@ -208,7 +167,6 @@ theorem impulseAmplitude_sq {m κ p : ℝ} (hm : 0 < m) (hκ : 0 < κ) :
   unfold impulseAmplitude
   exact sq_sqrt (div_nonneg (sq_nonneg p) (mul_pos hm hκ).le)
 
-/-- The same impulse reaches a smaller amplitude on a stiffer root. -/
 theorem impulseAmplitude_strictAnti {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0)
     (hκ1 : 0 < κ1) (hκ : κ1 < κ2) :
     impulseAmplitude m κ2 p < impulseAmplitude m κ1 p := by
@@ -218,7 +176,6 @@ theorem impulseAmplitude_strictAnti {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠
   have hp2 : 0 < p ^ 2 := sq_pos_of_ne_zero hp
   exact mul_lt_mul_of_pos_left (mul_lt_mul_of_pos_left hκ hm) hp2
 
-/-- At the turning point the deposited energy is again `p²/(2m)`. -/
 theorem amplitude_energy {m κ p : ℝ} (hm : 0 < m) (hκ : 0 < κ) :
     radialEnergy m κ (impulseAmplitude m κ p) 0 = p ^ 2 / (2 * m) := by
   unfold radialEnergy
@@ -256,7 +213,6 @@ theorem mixtureVar_pos {w1 w2 ν1 ν2 : ℝ} (hw1 : 0 < w1) (hw2 : 0 < w2) (hν 
   have hden : 0 < (w1 + w2) ^ 2 := by positivity
   exact div_pos (mul_pos (mul_pos hw1 hw2) (sq_pos_of_ne_zero (sub_ne_zero.mpr hν))) hden
 
-/-- Raising the relative weight of the higher frequency raises the mean. -/
 theorem weightedMean_lt_of_ratio_lt {w1 w2 w1' w2' ν1 ν2 : ℝ}
     (hw1 : 0 < w1) (hw2 : 0 < w2) (hw1' : 0 < w1') (hw2' : 0 < w2')
     (hν : ν1 < ν2) (hr : w2 / w1 < w2' / w1') :
@@ -405,8 +361,6 @@ private theorem occupationRatio_strictAnti {lam : ℝ} (hlam : 1 < lam) :
     rw [interior_Ioi] at hx
     exact occupationRatio_deriv_neg hlam hx
 
-/-- For `0 < ν₁ < ν₂`, the ratio of the higher Larmor weight to the lower one
-increases strictly with temperature. -/
 theorem larmorWeight_ratio_strictMono {a ν1 ν2 T1 T2 : ℝ} (ha : 0 < a) (hν : 0 < ν1)
     (hlt : ν1 < ν2) (hT1 : 0 < T1) (hT : T1 < T2) :
     larmorWeight a T1 ν2 / larmorWeight a T1 ν1 <
@@ -433,7 +387,6 @@ theorem larmorWeight_ratio_strictMono {a ν1 ν2 T1 T2 : ℝ} (ha : 0 < a) (hν 
   have hscale2 : a * ν2 / T2 = (ν2 / ν1) * (a * ν1 / T2) := by field_simp
   unfold occupationRatio at hanti
   rw [← hscale1, ← hscale2] at hanti
-  -- Both ratios equal `(ν2/ν1)³` times the occupation ratio.
   have hpow : 0 < (ν2 / ν1) ^ 3 := by positivity
   have hleft : larmorWeight a T1 ν2 / larmorWeight a T1 ν1 =
       (ν2 / ν1) ^ 3 * ((exp (a * ν1 / T1) - 1) / (exp (a * ν2 / T1) - 1)) := by
@@ -446,7 +399,6 @@ theorem larmorWeight_ratio_strictMono {a ν1 ν2 T1 T2 : ℝ} (ha : 0 < a) (hν 
   rw [hleft, hright]
   exact mul_lt_mul_of_pos_left hanti hpow
 
-/-- The weighted mean of two longitudinal frequencies increases with temperature. -/
 theorem larmorMean_strictMono {a ν1 ν2 T1 T2 : ℝ} (ha : 0 < a) (hν : 0 < ν1)
     (hlt : ν1 < ν2) (hT1 : 0 < T1) (hT : T1 < T2) :
     weightedMean (larmorWeight a T1 ν1) (larmorWeight a T1 ν2) ν1 ν2 <
@@ -479,11 +431,9 @@ theorem shape_interval_pos {a b : ℝ} (ha : 0 < a) (hab : a < b) :
     exact (planckShape_pos (lt_trans ha hx.1)).le
   · exact ⟨a, left_mem_Icc.mpr hab.le, planckShape_pos ha⟩
 
-/-- The shape has positive mass on `(1,2)`, below the frequency maximum. -/
 theorem shapeMass_below_peak : 0 < ∫ x in (1 : ℝ)..2, planckShape 3 x :=
   shape_interval_pos (by norm_num) (by norm_num)
 
-/-- The shape has positive mass on `(4,5)`, above the frequency maximum. -/
 theorem shapeMass_above_peak : 0 < ∫ x in (4 : ℝ)..5, planckShape 3 x :=
   shape_interval_pos (by norm_num) (by norm_num)
 
@@ -668,7 +618,6 @@ private theorem sum_moment_integrals :
           ring
     _ = 24 * zetaFive := by rw [zetaFive_shift]
 
-/-- `∫₀^∞ x⁴/(eˣ-1) dx = 24 ∑ n⁻⁵`. -/
 theorem momentIntegral : ∫ x in Ioi (0 : ℝ), planckShape 4 x = 24 * zetaFive := by
   have hint : ∀ n : ℕ, Integrable (momentTerm n) (volume.restrict (Ioi (0 : ℝ))) := by
     intro n
@@ -729,7 +678,6 @@ theorem shapeMean_bounds : (3 : ℝ) < shapeMean ∧ shapeMean < 4 := by
   · rw [div_lt_iff₀ hden]
     exact hhigh
 
-/-- The mean of the shape lies strictly above the frequency maximum. -/
 theorem peak_lt_shapeMean : planckPeak 3 < shapeMean :=
   frequencyPeak_bounds.2.trans shapeMean_bounds.1
 
@@ -744,7 +692,6 @@ private theorem frequencyDensity_shape {a T ν : ℝ} (ha : 0 < a) (hT : 0 < T) 
     sub_ne_zero.mpr (one_lt_exp_iff.mpr (by positivity)).ne'
   field_simp [ha.ne', hT.ne', hν.ne', hden]
 
-/-- The mean of `ν` under the normalized enclosure density is `shapeMean · T / a`. -/
 theorem meanFrequency_eq_ratio {a T : ℝ} (ha : 0 < a) (hT : 0 < T) :
     (∫ ν in Ioi 0, ν * frequencyDensity a T ν) /
         (∫ ν in Ioi 0, frequencyDensity a T ν) =
@@ -780,7 +727,6 @@ theorem meanFrequency_strictMono {a T1 T2 : ℝ} (ha : 0 < a) (hT : T1 < T2) :
   refine div_lt_div_of_pos_right ?_ ha
   exact mul_lt_mul_of_pos_left hT (lt_trans (by norm_num) shapeMean_bounds.1)
 
-/-- The mean frequency lies strictly above the frequency of the maximum. -/
 theorem meanFrequency_gt_peak {a T : ℝ} (ha : 0 < a) (hT : 0 < T) :
     planckPeak 3 * T / a < meanFrequency a T := by
   unfold meanFrequency

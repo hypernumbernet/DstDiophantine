@@ -5,13 +5,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
-# Dual-sector Rodrigues formula in \(G(3,1,1)\)
+# Dual-sector Rodrigues formula
 
-For a pure dual rapidity \(\beta\), the torsion bivector is the cyclic
-combination \(\Gamma(\beta)=\sum\beta_a\Gamma_a\). The quaternion table
-gives \(\Gamma(\beta)^2=-\lVert\beta\rVert^2\), so the Banach exponential
-collapses to the Rodrigues formula. Mixed usual/dual generators are not
-identified with a matrix exponential here.
+`Γ(β)² = -‖β‖²`, so the Banach exponential collapses to the Rodrigues formula. Mixed usual/dual generators are not identified with a matrix exponential here.
 -/
 
 namespace DstDiophantine
@@ -31,7 +27,6 @@ private theorem smul_mul_smul (c d : ℝ) (u v : PGA) :
     (c • u) * (d • v) = (c * d) • (u * v) := by
   rw [mul_smul_comm, smul_mul_assoc, smul_smul, mul_comm d c]
 
-/-- Distinct cyclic generators anticommute. -/
 theorem cyclic_anticomm {a b : Fin 3} (h : a ≠ b) :
     cyclic a * cyclic b + cyclic b * cyclic a = 0 := by
   fin_cases a <;> fin_cases b <;> try contradiction
@@ -56,7 +51,6 @@ private theorem cyclicComb_sq_expand (β : DualRapidity) :
   simp only [cyclicComb, Fin.sum_univ_three, mul_add, add_mul, smul_mul_smul]
   abel
 
-/-- \(\Gamma(\beta)^2 = -\lVert\beta\rVert^2\). -/
 theorem cyclicComb_sq (β : DualRapidity) :
     cyclicComb β * cyclicComb β = (-(‖β‖ ^ 2)) • (1 : PGA) := by
   have hnorm : ‖β‖ ^ 2 = (β 0) ^ 2 + (β 1) ^ 2 + (β 2) ^ 2 := by
@@ -133,7 +127,6 @@ theorem omegaTorsion_ofDual_unit {β : DualRapidity} (h : β ≠ 0) :
   simp [smul_smul]
   field_simp [hr]
 
-/-- Dual-sector Banach exponential is the Rodrigues formula. -/
 theorem rotorTorsion_ofDual (β : DualRapidity) :
     rotorTorsion (ofDual β) =
       Real.cos (‖β‖ / 2) • (1 : PGA) +
@@ -145,7 +138,6 @@ theorem rotorTorsion_ofDual (β : DualRapidity) :
   · rw [rotorTorsion, omegaTorsion_ofDual_unit h]
     simpa [h] using exp_of_sq_neg_one (cyclicUnit_sq h) (‖β‖ / 2)
 
-/-- Closed form along the (possibly zero) cyclic combination. -/
 theorem rotorTorsion_ofDual_comb (β : DualRapidity) :
     rotorTorsion (ofDual β) =
       Real.cos (‖β‖ / 2) • (1 : PGA) +

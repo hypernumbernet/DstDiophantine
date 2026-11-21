@@ -17,35 +17,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Chart rotation of a three-sphere aggregate
 
-Particles are points of the three-sphere. The force between two of them
-follows the great circle, and the laboratory reads the sphere through the
-azimuthal equidistant chart `logChart`. A pole-fixing rotation or reflection of
-the sphere is the same rotation or reflection of that chart. A common left
-translation leaves every relative rotor fixed, and its chart velocity at a
-point on the second axis splits into a term along the generator and the cross
-product of the generator with the chart point. The sphere and the chart are
-two copies, joined only by the logarithm of the relative rotor. A common left
-translation leaves that logarithm fixed. Logging the point again returns its
-chart vector, and the velocity does not return. The logarithm of the rotor
-from the point to its left translate is `(cos 2χ, 0, sin 2χ)`, unequal to the
-velocity on `(0, π)`. At the equator the velocity is `(0, 0, π/2)` and that
-second logarithm is `(-1, 0, 0)`.
-
-The chart torque of an aggregate is the sum of the pairwise `chordMoment`s.
-On the axis intercepts `(±a,0,0)`, `(0,±b,0)`, `(0,0,±c)` each coordinate
-plane is a mirror pair, so every component vanishes. The second moments on
-those axes are `2(b²+c²)`, `2(a²+c²)`, and `2(a²+b²)`. For `0 < a < b < c`
-they stand in that order, and two of them agree exactly when two of the
-lengths agree. A body on the first axis, with a partner at the same chart
-distance, has moment zero while the partner lies on the axis and a positive
-moment once the partner is moved off the axis. The mirror partner cancels
-that moment; removing the mirror leaves it.
-
-## Not claimed
-
-* A floating-point many-body trajectory.
-* A frequency of reversals. The canonical weight is `RacketThermal`.
-* A value of `a₀`, or an identification of a galaxy with this aggregate.
+A pole-fixing map of the three-sphere is the same map of the azimuthal chart,
+and a common left translation leaves every relative rotor fixed. No many-body
+trajectory, no reversal frequency, and no value of \(a_0\) or galactic
+identification is claimed.
 -/
 
 namespace DstDiophantine.Gravity.ChartRotation
@@ -372,17 +347,7 @@ theorem hasDerivAt_leftChart_2 {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
   exact hpt.congr_of_eventuallyEq <| Filter.Eventually.of_forall fun t => by
     simp [leftChart_eq_coord, chartCoord]
 
-/-! ### Two copies, one logarithmic correspondence
-
-The sphere and the chart are two copies. The correspondence carries only the
-logarithm of the relative rotor. A common left translation leaves that
-logarithm fixed, so the chart velocity is absent from the correspondence.
-Logging the same point again, by lifting its chart vector back to the sphere,
-returns that vector. Logging the rotor from the point to its own left
-translate returns a different vector, `(cos 2χ, 0, sin 2χ)`. On `(0, π)` the
-two velocities are never equal. At the equator the chart velocity is
-`(0, 0, π/2)` and the second logarithm is `(-1, 0, 0)`.
--/
+/-! ### Two copies, one logarithmic correspondence -/
 
 /-- The correspondence between the two copies: the logarithm of `ρ`. -/
 noncomputable def logLink (a b : RelationalPosition.S3) : V3 :=
@@ -447,7 +412,6 @@ theorem translateRotor_axisJ (χ t : ℝ) :
       RelationalPosition.inv_val, RelationalPosition.elem, CliffordParallel.hopfI,
       RelationalPosition.liftQuat, secondLogVelocity, axisJ] using h
 
-/-- On `(0, π)` the second logarithm is `t` times its velocity. -/
 theorem second_log_chart {χ t : ℝ} (ht : 0 < t) (htu : t < Real.pi) :
     logLink (RelationalPosition.elem χ axisJ axisJ_unit)
         (CliffordParallel.hopfI t * RelationalPosition.elem χ axisJ axisJ_unit) =
@@ -456,7 +420,6 @@ theorem second_log_chart {χ t : ℝ} (ht : 0 < t) (htu : t < Real.pi) :
     RelationalPosition.toChart_liftQuat]
   exact SlerpTorque.logChart_lift ht htu (secondLogVelocity_unit χ)
 
-/-- Lifting the logarithm of a point and logging again returns the same vector. -/
 theorem iterated_log_link {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
     SlerpTorque.logChart (SlerpTorque.lift χ axisJ) = fun i => χ * axisJ i :=
   SlerpTorque.logChart_lift hχ hχu axisJ_unit
@@ -621,8 +584,7 @@ theorem secondZ_eq_secondX_iff {a b c : ℝ} (ha : 0 ≤ a) (hc : 0 ≤ c) :
     rw [h]
     ring
 
-/-- Signed moments of the four cross pairs in one coordinate plane.
-The two opposite arms each see both signs of the right angle. -/
+/-- Signed moments of the four cross pairs in one coordinate plane. The two opposite arms each see both signs of the right angle. -/
 noncomputable def axisPairTorque (χ ψ : ℝ) : ℝ :=
   chordMoment χ ψ (Real.pi / 2) + chordMoment χ ψ (-Real.pi / 2) +
     chordMoment χ ψ (-Real.pi / 2) + chordMoment χ ψ (Real.pi / 2)
@@ -634,7 +596,6 @@ theorem axisPairTorque_zero (χ ψ : ℝ) : axisPairTorque χ ψ = 0 := by
   rw [hneg]
   linarith
 
-/-- The three components of the axis-intercept torque, one plane each. -/
 theorem axisInterceptTorque_zero (a b c : ℝ) :
     axisPairTorque a b = 0 ∧ axisPairTorque b c = 0 ∧ axisPairTorque c a = 0 :=
   ⟨axisPairTorque_zero a b, axisPairTorque_zero b c, axisPairTorque_zero c a⟩
@@ -651,11 +612,9 @@ theorem defectTorque_pos {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα
     (hαu : α < Real.pi) : 0 < defectTorque χ α :=
   chordMoment_equal_pos hχ hχu hα hαu
 
-/-- The mirror partner cancels the defect. -/
 theorem mirrorTorque_zero (χ α : ℝ) : defectTorque χ α + chordMoment χ χ (-α) = 0 :=
   chordMoment_cancels χ χ α
 
-/-- Moving the partner off the axis turns a vanishing moment into a positive one. -/
 theorem displacement_seeds_torque {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α)
     (hαu : α < Real.pi) :
     chordMoment χ χ 0 = 0 ∧ 0 < defectTorque χ α := by

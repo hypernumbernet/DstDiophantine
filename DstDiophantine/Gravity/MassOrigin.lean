@@ -9,24 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Where unsigned mass sits
 
-The time-reversing dual map on rapidity parameters is the quarter-turn
-`(α, β) ↦ (β, -α)`. It preserves the unsigned mass and reverses `J`.
-The only configuration it fixes is the origin, where that mass vanishes.
-
-Exchange of the two sectors fixes a larger set: the rapidities agree on
-every axis. There `J` vanishes, the stiffness potential vanishes, and the
-written action assigns no angular acceleration, while the unsigned mass
-equals `∑ α_a²` and need not vanish. On one axis the rotors do not
-coincide. The dual map sends this state to one of equal unsigned mass
-whose potential is `2mM`. A positive admissible state of this kind is
-sent outside the cone.
-
-## What is not claimed
-
-No value of `m`, no mass gap produced by leaving
-the sector-symmetric state, and no identification with `F = ma`.
-The coefficient in the common acceleration is the ratio of the
-coefficients of `δ²` in `MassCoefficient`.
+The time-reversing map `(α, β) ↦ (β, −α)` preserves unsigned mass and fixes only the origin, where that mass vanishes. No value of `m`, no mass gap from leaving the sector-symmetric state, and no identification with `F = ma` are claimed.
 -/
 
 namespace DstDiophantine
@@ -67,7 +50,6 @@ theorem dualParams_eq_self_iff (p : TorsionParams) :
       rw [(h a).1, (h a).2]
       ring
 
-/-- The time-reversing map fixes a configuration exactly at vanishing unsigned mass. -/
 theorem dualParams_eq_self_iff_mass (p : TorsionParams) :
     dualParams p = p ↔ mass p = 0 := by
   rw [dualParams_eq_self_iff, mass_eq_zero_iff]
@@ -92,7 +74,6 @@ theorem sectorFixed_potential {m : ℝ} {p : TorsionParams} (h : daggerParams p 
   simp only [hax 0, hax 1, hax 2]
   ring
 
-/-- Where the sectors agree, the written action assigns no angular acceleration. -/
 theorem sectorFixed_sits {p : TorsionParams} (h : daggerParams p = p) (m : ℝ) (a : Fin 3) :
     PaperActualEL m (p.alpha a) (p.beta a) 0 0 := by
   rw [paperActualEL_eq]
@@ -122,7 +103,6 @@ theorem sectorFixed_pair_sum {p : TorsionParams} (h : daggerParams p = p) :
   rw [← hax 0, ← hax 1, ← hax 2]
   ring
 
-/-- On a sector-symmetric state the image potential is `2mM`. -/
 theorem sectorFixed_dual_potential {m : ℝ} {p : TorsionParams} (h : daggerParams p = p) :
     stiffnessPotential m (dualParams p) = 2 * m * mass p := by
   have hsub := stiffness_dual_sub m p
@@ -182,7 +162,6 @@ theorem dual_aligned_not_admissible {φ : ℝ} (hφ : 0 < φ) :
   simp [axisParams] at hβ
   linarith
 
-/-- A positive admissible state with the sectors in agreement leaves the cone. -/
 theorem sectorFixed_admissible_image_leaves {p : TorsionParams}
     (hsec : daggerParams p = p) (hadm : IsAdmissibleContinuous p) (hM : 0 < mass p) :
     ¬ IsAdmissibleContinuous (dualParams p) := by
@@ -208,7 +187,6 @@ theorem quarter_balance_mass :
   rw [mass_axisParams]
   ring
 
-/-- The wall balance `φ = π/4` sits, is massive, and its dual image leaves the cone. -/
 theorem quarter_balance_sits (m : ℝ) :
     let p := axisParams (Real.pi / 4) (Real.pi / 4)
     daggerParams p = p ∧

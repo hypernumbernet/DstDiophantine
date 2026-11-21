@@ -14,45 +14,7 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 /-!
 # Group-level structure of torsion rotors and null translators
 
-`DstDiophantine.Algebra.LorentzLie` proves the Lie-algebra statement: the ten
-generators span `𝔰𝔬(3,1) ⋉ ℝ^{3,1}` with the null span as an abelian ideal.  This
-module lifts that statement to the exponentiated objects actually used by the
-motor construction.
-
-## Main results
-
-* `exp_apply_mem_of_forall_mem`, `exp_smul_mul_mul_exp_neg_smul`, `sandwich_exp_mem`,
-  `sandwich_exp_smul_eq_exp_ad`, `hasDerivAt_sandwich_exp_smul`,
-  `hasDerivAt_sandwich_exp_smul_at`, `iteratedDeriv_two_sandwich_exp_smul`,
-  `exists_sandwich_exp_ne_of_commutator_ne`:
-  conjugation by `exp Ω` is `exp(ad Ω)`; the one-parameter sandwich has derivative
-  `sandwich(exp(tΩ),[Ω,·])` at every time, hence `[Ω,·]` at the identity, and second
-  jet `[Ω,[Ω,·]]`; disagreement of brackets implies disagreement of sandwich
-  groups; every `ad Ω`-invariant subspace is invariant under
-  the sandwich `exp Ω · exp(-Ω)`.
-* `sandwich_rotorTorsion_mem_nullSpan`, `exists_sandwich_rotorTorsion_expTrans`:
-  a torsion rotor conjugates a null translator to a null translator
-  (`R T R˜ = T'`), for **every** torsion rotor, not only for the pure radial boost of
-  `Sandwich.sandwich_pureBoost_expTrans`.
-* `exists_sandwich_rotorTorsion_rotorTorsion`: torsion rotors conjugate torsion
-  rotors to torsion rotors (`R exp(Ω) R˜ = exp(R Ω R˜)`).
-* `exists_motor_mul`, `exists_motor_pow`: the motor product law in semidirect form,
-  `(R_p T_p)(R_q T_q) = (R_p R_q) T'` with `T'` an explicit translator, and its
-  iterate `(RT)^n = R^n T_n`: only the torsion rotor amplifies under powers.
-* `exists_exp_add_eq_exp_mul_one_add`, `exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans`:
-  the Banach exponential of the full bivector `Ω_torsion + Ω_trans` is itself a
-  motor `R · T_dressed` with the *same* rotor and a dressed translation
-  `Z = ∫₀¹ exp(-sΩ_torsion) Ω_trans exp(sΩ_torsion) ds`; by
-  `Motor.exists_omegaBiv_ne_motor` the dressed translation differs from
-  `Ω_trans` in general (`exists_dressed_translation_ne`).
-* `smul_mul_smul_comm_of_commute`, `cyclic_smul_mul`, `hyperbolic_smul_cyclic_smul_same`:
-  scalar multiples of commuting generators commute on every axis.
-
-## Not claimed
-
-That the product of two torsion rotors is again `exp` of a torsion bivector
-(surjectivity of `exp` onto the rotor group), and hence a fully closed
-parametrised product law on `OmegaParams`.
+A torsion rotor normalises translators, and `exp(Ω_biv)` is a motor with a dressed translation. Surjectivity of `exp` onto the rotor group is not claimed.
 -/
 
 namespace DstDiophantine
@@ -110,7 +72,6 @@ noncomputable def adL (Ω : PGA) : PGA →L[ℝ] PGA :=
 @[simp] theorem adL_apply (Ω x : PGA) : adL Ω x = commutator Ω x := by
   simp [adL, Generators.commutator]
 
-/-- The exponential of an operator preserving a subspace preserves that subspace. -/
 theorem exp_apply_mem_of_forall_mem {W : Submodule ℝ PGA} (L : PGA →L[ℝ] PGA)
     (hL : ∀ y ∈ W, L y ∈ W) {x : PGA} (hx : x ∈ W) : exp L x ∈ W := by
   have hclosed : IsClosed (W : Set PGA) := W.closed_of_finiteDimensional
@@ -130,7 +91,6 @@ theorem exp_apply_mem_of_forall_mem {W : Submodule ℝ PGA} (L : PGA →L[ℝ] P
   simp only [ContinuousLinearMap.apply_apply]
   exact W.smul_mem _ (hpow i)
 
-/-- Conjugation by `exp(tΩ)` is the exponential of `t · ad Ω`. -/
 theorem exp_smul_mul_mul_exp_neg_smul (Ω x : PGA) (t : ℝ) :
     exp (t • Ω) * x * exp ((-t) • Ω) = exp (t • adL Ω) x := by
   set A := adL Ω
@@ -171,7 +131,6 @@ theorem exp_smul_mul_mul_exp_neg_smul (Ω x : PGA) (t : ℝ) :
     _ = exp (t • A) (exp ((-t) • A) (f t)) := rfl
     _ = exp (t • A) x := by rw [ht]
 
-/-- An `ad Ω`-invariant subspace is invariant under conjugation by `exp Ω`. -/
 theorem exp_mul_mul_exp_neg_mem {W : Submodule ℝ PGA} {Ω : PGA}
     (hW : ∀ y ∈ W, commutator Ω y ∈ W) {x : PGA} (hx : x ∈ W) :
     exp Ω * x * exp (-Ω) ∈ W := by
@@ -180,21 +139,17 @@ theorem exp_mul_mul_exp_neg_mem {W : Submodule ℝ PGA} {Ω : PGA}
   rw [h]
   exact exp_apply_mem_of_forall_mem (adL Ω) (fun y hy => by rw [adL_apply]; exact hW y hy) hx
 
-/-- Sandwich version: for a reverse-odd generator `Ω`, `exp Ω · W · (exp Ω)˜ ⊆ W`
-whenever `[Ω, W] ⊆ W`. -/
 theorem sandwich_exp_mem {W : Submodule ℝ PGA} {Ω : PGA} (hΩ : reverse Ω = -Ω)
     (hW : ∀ y ∈ W, commutator Ω y ∈ W) {x : PGA} (hx : x ∈ W) :
     sandwich (exp Ω) x ∈ W := by
   rw [sandwich, reverse_exp_of_reverse_neg hΩ]
   exact exp_mul_mul_exp_neg_mem hW hx
 
-/-- For a reverse-odd generator, sandwich by `exp(tΩ)` is `exp(t · ad Ω)`. -/
 theorem sandwich_exp_smul_eq_exp_ad {Ω : PGA} (hΩ : reverse Ω = -Ω) (t : ℝ) (x : PGA) :
     sandwich (exp (t • Ω)) x = exp (t • adL Ω) x := by
   have hrev : reverse (t • Ω) = -(t • Ω) := by rw [map_smul, hΩ, smul_neg]
   rw [sandwich, reverse_exp_of_reverse_neg hrev, ← neg_smul, exp_smul_mul_mul_exp_neg_smul]
 
-/-- Sandwich by `exp(tΩ)` has derivative `sandwich(exp(tΩ), [Ω,x])` at every time. -/
 theorem hasDerivAt_sandwich_exp_smul_at {Ω : PGA} (hΩ : reverse Ω = -Ω)
     (x : PGA) (t : ℝ) :
     HasDerivAt (fun s : ℝ => sandwich (exp (s • Ω)) x)
@@ -212,13 +167,11 @@ theorem hasDerivAt_sandwich_exp_smul_at {Ω : PGA} (hΩ : reverse Ω = -Ω)
   convert hx using 1
   rw [adL_apply, ← sandwich_exp_smul_eq_exp_ad hΩ t]
 
-/-- Infinitesimal sandwich of a reverse-odd generator is the Lie bracket. -/
 theorem hasDerivAt_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω) (x : PGA) :
     HasDerivAt (fun t : ℝ => sandwich (exp (t • Ω)) x) (commutator Ω x) 0 := by
   simpa [zero_smul, exp_zero, sandwich_one] using
     hasDerivAt_sandwich_exp_smul_at hΩ x 0
 
-/-- Second jet of the one-parameter sandwich at the identity. -/
 theorem iteratedDeriv_two_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω)
     (x : PGA) :
     iteratedDeriv 2 (fun s : ℝ => sandwich (exp (s • Ω)) x) 0 =
@@ -230,8 +183,6 @@ theorem iteratedDeriv_two_sandwich_exp_smul {Ω : PGA} (hΩ : reverse Ω = -Ω)
   simpa [zero_smul, exp_zero, sandwich_one] using
     (hasDerivAt_sandwich_exp_smul_at hΩ (commutator Ω x) 0).deriv
 
-/-- If two reverse-odd generators disagree on `[·, x]`, their one-parameter
-sandwich groups disagree on `x`. -/
 theorem exists_sandwich_exp_ne_of_commutator_ne {Ω₁ Ω₂ : PGA}
     (hΩ₁ : reverse Ω₁ = -Ω₁) (hΩ₂ : reverse Ω₂ = -Ω₂) {x : PGA}
     (hne : commutator Ω₁ x ≠ commutator Ω₂ x) :
@@ -295,7 +246,6 @@ theorem exists_sandwich_rotorTorsion_omegaTrans (t : TorsionParams) (p : TransPa
   exists_omegaTrans_eq_of_mem_nullSpan
     (sandwich_rotorTorsion_mem_nullSpan t (omegaTrans_mem_nullSpan p))
 
-/-- Every torsion rotor conjugates a null translator to a null translator. -/
 theorem exists_sandwich_rotorTorsion_expTrans (t : TorsionParams) (p : TransParams) :
     ∃ q : TransParams, sandwich (rotorTorsion t) (expTrans p) = expTrans q := by
   obtain ⟨q, hq⟩ := exists_sandwich_rotorTorsion_omegaTrans t p
@@ -317,14 +267,12 @@ noncomputable def sandwichAlgHom {m : PGA} (hm : m * reverse m = 1) : PGA →ₐ
 theorem sandwichAlgHom_apply {m : PGA} (hm : m * reverse m = 1) (x : PGA) :
     sandwichAlgHom hm x = sandwich m x := rfl
 
-/-- A unitary sandwich commutes with the Banach exponential. -/
 theorem sandwich_exp {m : PGA} (hm : m * reverse m = 1) (x : PGA) :
     sandwich m (exp x) = exp (sandwich m x) := by
   have hcont : Continuous (sandwichAlgHom hm) :=
     (sandwichAlgHom hm).toLinearMap.continuous_of_finiteDimensional
   exact map_exp (sandwichAlgHom hm) hcont x
 
-/-- Torsion rotors conjugate torsion rotors to torsion rotors. -/
 theorem exists_sandwich_rotorTorsion_rotorTorsion (t s : TorsionParams) :
     ∃ s' : TorsionParams, sandwich (rotorTorsion t) (rotorTorsion s) = rotorTorsion s' := by
   obtain ⟨s', hs'⟩ := exists_omegaTorsion_eq_of_mem_lorentzSpan
@@ -341,8 +289,6 @@ theorem reverse_rotorTorsion (t : TorsionParams) :
   rw [rotorTorsion, reverse_exp_of_reverse_neg (omegaTorsion_reverse t), ← omegaTorsion_neg]
   rfl
 
-/-- `(R_p T_p)(R_q T_q) = (R_p R_q) T'` with `T'` a translator: the translators form a
-normal abelian subgroup normalised by the torsion rotors. -/
 theorem exists_motor_mul (p q : OmegaParams) :
     ∃ r : TransParams,
       motor p * motor q = rotorTorsion p.torsion * rotorTorsion q.torsion * expTrans r := by
@@ -373,7 +319,6 @@ theorem exists_motor_mul (p q : OmegaParams) :
           expTrans ⟨fun μ => r₁.lambda μ + q.trans.lambda μ⟩ := by
         rw [mul_assoc, expTrans_mul]
 
-/-- A translator can be moved through a torsion rotor: `T R = R T'`. -/
 theorem exists_expTrans_mul_rotorTorsion (r : TransParams) (t : TorsionParams) :
     ∃ r' : TransParams, expTrans r * rotorTorsion t = rotorTorsion t * expTrans r' := by
   obtain ⟨r', hr'⟩ := exists_sandwich_rotorTorsion_expTrans (negTorsionParams t) r
@@ -390,8 +335,6 @@ theorem exists_expTrans_mul_rotorTorsion (r : TransParams) (t : TorsionParams) :
 theorem expTrans_zero : expTrans ⟨fun _ => 0⟩ = 1 := by
   simp [expTrans, omegaTrans]
 
-/-- Powers of a mixed motor: `(RT)^n = R^n T_n` with `T_n` a translator, so the torsion
-rotor is the only factor that amplifies. -/
 theorem exists_motor_pow (p : OmegaParams) (n : ℕ) :
     ∃ r : TransParams, motor p ^ n = rotorTorsion p.torsion ^ n * expTrans r := by
   induction n with
@@ -456,8 +399,6 @@ theorem hasDerivAt_nullDress (X Y : PGA) (t : ℝ) :
   exact intervalIntegral.integral_hasDerivAt_right (hcont.intervalIntegrable 0 t)
     (hcont.stronglyMeasurableAtFilter _ _) hcont.continuousAt
 
-/-- If `Y` lies in the null ideal and `ad X` preserves it, then
-`exp(X + Y) = exp X · (1 + Z)` with `Z` again in the null ideal. -/
 theorem exists_exp_add_eq_exp_mul_one_add {X Y : PGA} (hY : Y ∈ nullSpan)
     (hX : ∀ y ∈ nullSpan, commutator X y ∈ nullSpan) :
     ∃ Z ∈ nullSpan, exp (X + Y) = exp X * (1 + Z) := by
@@ -502,8 +443,6 @@ theorem exists_exp_add_eq_exp_mul_one_add {X Y : PGA} (hY : Y ∈ nullSpan)
         rw [one_smul, mul_assoc]
     _ = exp X * (1 + Z 1) := by rw [exp_smul_mul_exp_neg_smul, one_mul]
 
-/-- The Banach exponential of the full bivector `Ω_biv = Ω_torsion + Ω_trans` is a motor
-with the same torsion rotor and a dressed translation. -/
 theorem exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans (p : OmegaParams) :
     ∃ q : TransParams, exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q := by
   obtain ⟨Z, hZ, hexp⟩ := exists_exp_add_eq_exp_mul_one_add (omegaTrans_mem_nullSpan p.trans)
@@ -511,8 +450,6 @@ theorem exists_exp_omegaBiv_eq_rotorTorsion_mul_expTrans (p : OmegaParams) :
   obtain ⟨q, rfl⟩ := exists_omegaTrans_eq_of_mem_nullSpan hZ
   exact ⟨q, hexp⟩
 
-/-- The dressed translation differs from `Ω_trans` in general: `exp(Ω_biv)` is a motor,
-but not the motor `RT` of the same parameters. -/
 theorem exists_dressed_translation_ne :
     ∃ (p : OmegaParams) (q : TransParams),
       exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q ∧ q ≠ p.trans := by
@@ -522,7 +459,6 @@ theorem exists_dressed_translation_ne :
   rw [hq, h]
   rfl
 
-/-- `exp(Ω_biv)` is unitary. -/
 theorem exp_omegaBiv_unitary (p : OmegaParams) :
     exp (omegaBiv p) * reverse (exp (omegaBiv p)) = 1 := by
   have hrev : reverse (omegaBiv p) = -omegaBiv p := by

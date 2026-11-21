@@ -14,45 +14,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Closed-form structure of the equal-scale torsional layers
 
-## Paper boundary (do **not** claim)
-
-The characteristic length `ℓ` is **not** a theorem of the dual-rotor algebra,
-and neither is the identification of the layered phase with the strong force.
-What this module establishes is the *shape* of the layer sequence once the
-equal-scale ansatz `α(r) = β(r) = ℓ/r` is granted.
-
-No theorem asserts `dst_derives_lambda`, `dst_derives_alpha_s`, or
-`dst_derives_Amax`.
-
-## What is proved
-
-Write `x = ℓ/(2r)` and `gammaSEqual x = cosh x * cos x - sinh x * sin x`
-(the equal-scale specialisation of `gammaS`).
-
-* Exact derivative `gammaSEqual' x = -2 cosh x sin x`. Hence the critical
-  points are exactly the multiples of `π`.
-* Exact extremal values `gammaSEqual (nπ) = (-1)^n cosh (nπ)`.
-* `gammaSEqual` is strictly monotone on each `[nπ, (n+1)π]` (decreasing for
-  even `n`, increasing for odd `n`), so each such interval carries **exactly
-  one** node. Every positive node is a simple zero. The sign on successive
-  gaps alternates (`ElectronOrbit.successive_gaps_opposite_sign`).
-* At a plateau `x = nπ` the time-dilation factor is `cosh(2nπ)`, not the
-  force denominator `(-1)^n cosh(nπ)`. At a node the clock is `γ_b² > 0`.
-* Sharpened branch localisation: a positive node in `(nπ, (n+1)π)` in fact
-  lies in `(nπ + π/4, nπ + π/2)`, because a node forces `tan x = 1/tanh x > 1`.
-  This is strictly stronger than the `(nπ, nπ + π/2)` branch of
-  `ElectronShell.resonanceBranch`.
-* Consequent radius window `ℓ/((2n+1)π) < r_n < 2ℓ/((4n+1)π)`.
-* Amplitude growth `cosh π * cosh (nπ) ≤ cosh ((n+1)π)`, hence
-  `(cosh π)^n ≤ cosh (nπ)` with `11 < cosh π`; and the one-sided ceiling
-  `cosh (a+π) < e^π cosh a`.
-* Inward screening: the mid-layer (plateau) force factor
-  `4π²n²/cosh (nπ)` is strictly decreasing for `n ≥ 1`. Plateau amplitudes
-  do not grow toward the centre. What diverges inward is the barrier, where
-  `gammaS` vanishes.
-* On the equal-scale locus the Killing-form scalar vanishes identically,
-  `J = 0`, while the unsigned mass `M` is positive. The layer order parameter
-  is therefore `gammaS`, not `J`.
+The length `ℓ` and the identification of the layered phase with the strong force are not derived. No theorem asserts `dst_derives_lambda`, `dst_derives_alpha_s`, or `dst_derives_Amax`.
 -/
 
 namespace DstDiophantine
@@ -63,8 +25,7 @@ open Real Set Operations Invariant
 
 /-! ### Equal-scale interference factor -/
 
-/-- Equal-scale specialisation of `gammaS` in the dimensionless variable
-`x = ℓ/(2r)`. -/
+/-- Equal-scale specialisation of `gammaS` in the dimensionless variable `x = ℓ/(2r)`. -/
 noncomputable def gammaSEqual (x : ℝ) : ℝ :=
   cosh x * cos x - sinh x * sin x
 
@@ -81,7 +42,6 @@ theorem continuous_gammaSEqual : Continuous gammaSEqual := by
 
 /-! ### The exact derivative -/
 
-/-- Exact derivative identity `γ_s'(x) = -2 cosh x sin x`. -/
 theorem hasDerivAt_gammaSEqual (x : ℝ) :
     HasDerivAt gammaSEqual (-2 * cosh x * sin x) x := by
   have h1 : HasDerivAt (fun y : ℝ => cosh y * cos y)
@@ -102,7 +62,6 @@ theorem deriv_gammaSEqual (x : ℝ) :
     deriv gammaSEqual x = -2 * cosh x * sin x :=
   (hasDerivAt_gammaSEqual x).deriv
 
-/-- The critical points are exactly the zeros of `sin`. -/
 theorem deriv_gammaSEqual_eq_zero_iff (x : ℝ) :
     deriv gammaSEqual x = 0 ↔ sin x = 0 := by
   rw [deriv_gammaSEqual]
@@ -124,8 +83,6 @@ private theorem neg_one_pow_mul_self (n : ℕ) : ((-1 : ℝ) ^ n) * ((-1 : ℝ) 
   rw [← pow_add, ← two_mul, pow_mul]
   norm_num
 
-/-- `γ_s(nπ) = (-1)^n cosh(nπ)`: the plateau amplitudes alternate in sign and
-grow like `cosh`. -/
 theorem gammaSEqual_nat_mul_pi (n : ℕ) :
     gammaSEqual ((n : ℝ) * π) = (-1) ^ n * cosh ((n : ℝ) * π) := by
   unfold gammaSEqual
@@ -146,8 +103,6 @@ theorem gammaSEqual_nat_mul_pi_ne_zero (n : ℕ) :
 
 /-! ### The plateau clock is not the force denominator -/
 
-/-- At the equal-scale plateau `x = nπ` the full rapidity is `2nπ`.
-`sin` vanishes, so the time-dilation factor agrees with `cosh(2nπ)`. -/
 theorem gammaEff_equalScale_plateau (n : ℕ) :
     gammaEff (2 * ((n : ℝ) * π)) (2 * ((n : ℝ) * π)) =
       cosh (2 * ((n : ℝ) * π)) := by
@@ -157,8 +112,7 @@ theorem gammaEff_equalScale_plateau (n : ℕ) :
     ring
   rw [harg, sin_nat_mul_pi]
 
-/-- For `n ≥ 1` the plateau amplitude `|γ_s(nπ)| = cosh(nπ)` is strictly
-smaller than the clock `cosh(2nπ)`. The force denominator is not `γ_eff`. -/
+/-- The force denominator is not `γ_eff`. -/
 theorem plateau_clock_gt_force_amplitude (n : ℕ) (hn : 0 < n) :
     |gammaSEqual ((n : ℝ) * π)| <
       gammaEff (2 * ((n : ℝ) * π)) (2 * ((n : ℝ) * π)) := by
@@ -191,7 +145,6 @@ private theorem cos_nat_mul_pi_add (n : ℕ) (t : ℝ) :
   rw [cos_add, cos_nat_mul_pi, sin_nat_mul_pi]
   ring
 
-/-- On the interior of the `n`-th `π`-interval the signed sine is positive. -/
 theorem signed_sin_pos_on_branch (n : ℕ) {x : ℝ}
     (hx : x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) :
     0 < (-1 : ℝ) ^ n * sin x := by
@@ -205,8 +158,7 @@ theorem signed_sin_pos_on_branch (n : ℕ) {x : ℝ}
 
 /-! ### Strict monotonicity on each branch -/
 
-/-- Sign-corrected interference factor: strictly decreasing on the `n`-th
-`π`-interval for every `n`. -/
+/-- Sign-corrected interference factor: strictly decreasing on the `n`-th `π`-interval for every `n`. -/
 noncomputable def gammaSSigned (n : ℕ) (x : ℝ) : ℝ := (-1 : ℝ) ^ n * gammaSEqual x
 
 theorem gammaSSigned_eq_zero_iff (n : ℕ) (x : ℝ) :
@@ -240,7 +192,6 @@ theorem strictAntiOn_gammaSSigned (n : ℕ) :
   rw [deriv_gammaSSigned, hrw]
   nlinarith [hs, hc]
 
-/-- `γ_s` is strictly decreasing on `[2kπ, (2k+1)π]`. -/
 theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
     StrictAntiOn gammaSEqual
       (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
@@ -252,7 +203,6 @@ theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
   norm_num at hlt
   exact hlt
 
-/-- `γ_s` is strictly increasing on `[(2k+1)π, (2k+2)π]`. -/
 theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
     StrictMonoOn gammaSEqual
       (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
@@ -281,7 +231,6 @@ private theorem gammaSSigned_right (n : ℕ) :
     neg_one_pow_mul_self]
   ring
 
-/-- Each `π`-interval carries exactly one torsional node. -/
 theorem exists_unique_node_branch (n : ℕ) :
     ∃! x : ℝ, x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π) ∧ gammaSEqual x = 0 := by
   have hab : (n : ℝ) * π ≤ (n : ℝ) * π + π := by linarith [pi_pos]
@@ -332,7 +281,6 @@ theorem tan_eq_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
   rw [tan_eq_sin_div_cos, div_eq_div_iff hc hs.ne', mul_comm (sin x) (sinh x)]
   exact hbal.symm
 
-/-- A node forces `tan x = 1/tanh x > 1`. -/
 theorem one_lt_tan_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
     (h : gammaSEqual x = 0) : 1 < tan x := by
   have hs : 0 < sinh x := sinh_pos_iff.mpr hx
@@ -341,9 +289,7 @@ theorem one_lt_tan_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
   have hp := exp_pos (-x)
   linarith
 
-/-- Every positive node is a simple zero. The derivative vanishes only where
-`sin` does, and a node forces `tan x > 1`, so it is not among those zeros.
-The restriction to `(0, π)` is not required. -/
+/-- The restriction to `(0, π)` is not required. -/
 theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
     deriv gammaSEqual x ≠ 0 := by
   intro hderiv
@@ -352,8 +298,7 @@ theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
   rw [tan_eq_sin_div_cos, hsin, zero_div] at htan
   exact lt_irrefl (1 : ℝ) (lt_trans htan (by norm_num : (0 : ℝ) < 1))
 
-/-- At a node the clock is the square of the bivector coefficient, hence the
-barrier is a force divergence and not a freeze of proper time. -/
+/-- At a node the barrier is a force divergence, not a freeze of proper time. -/
 theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
     gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 := by
   have hs : gammaS (2 * x) (2 * x) = 0 := by
@@ -399,8 +344,7 @@ private theorem mem_quarter_half_of_one_lt_tan {t : ℝ}
     rw [tan_pi_div_four] at hstep
     linarith
 
-/-- Sharpened localisation: a node of the `n`-th branch lies in
-`(nπ + π/4, nπ + π/2)`, not merely in `(nπ, nπ + π/2)`. -/
+/-- A node lies in `(nπ + π/4, nπ + π/2)`, not merely in `(nπ, nπ + π/2)`. -/
 theorem node_mem_sharp_branch (n : ℕ) {x : ℝ}
     (hx : x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) (h : gammaSEqual x = 0) :
     x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2) := by
@@ -445,7 +389,6 @@ theorem resonanceRoot1_gammaSEqual_zero : gammaSEqual resonanceRoot1 = 0 := by
     linarith [pi_gt_d2]
   exact (gammaSEqual_eq_zero_iff_resonanceProd hcos).mpr resonanceRoot1_prod
 
-/-- Sharpened bracket for the outermost root: `π/4 < x₁ < 1`. -/
 theorem resonanceRoot1_sharp_bounds :
     π / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 := by
   obtain ⟨hlo, hhi⟩ := resonanceRoot1_bounds
@@ -458,7 +401,6 @@ theorem resonanceRoot1_sharp_bounds :
   simp only [Nat.cast_zero, zero_mul, zero_add, mem_Ioo] at hsharp
   exact ⟨hsharp.1, hhi⟩
 
-/-- The second node exists and lies in the sharpened second branch. -/
 theorem exists_second_node_sharp :
     ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 := by
   obtain ⟨x, ⟨hxIoo, hxeq⟩, -⟩ := exists_unique_node_branch 1
@@ -471,8 +413,6 @@ theorem exists_second_node_sharp :
 /-- Equal-scale layer radius `r = ℓ/(2x)`. -/
 noncomputable def layerRadius (ℓ x : ℝ) : ℝ := ℓ / (2 * x)
 
-/-- The sharpened branch window `(nπ + π/4, nπ + π/2)` converts into the radius
-window `ℓ/((2n+1)π) < r < 2ℓ/((4n+1)π)`. -/
 theorem layerRadius_window {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
     (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
     ℓ / ((2 * (n : ℝ) + 1) * π) < layerRadius ℓ x ∧
@@ -490,7 +430,6 @@ theorem layerRadius_window {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
   · rw [div_lt_div_iff₀ (by positivity : (0 : ℝ) < 2 * x) hden2]
     nlinarith [h1]
 
-/-- Outermost branch `n = 0`: `ℓ/π < r₁ < 2ℓ/π`. -/
 theorem layerRadius_window_zero {ℓ x : ℝ} (hℓ : 0 < ℓ)
     (hx : x ∈ Ioo (π / 4) (π / 2)) :
     ℓ / π < layerRadius ℓ x ∧ layerRadius ℓ x < 2 * ℓ / π := by
@@ -499,8 +438,6 @@ theorem layerRadius_window_zero {ℓ x : ℝ} (hℓ : 0 < ℓ)
   have h := layerRadius_window hℓ 0 hx'
   simpa using h
 
-/-- Every node, on every branch, satisfies `r < 2ℓ/π`: the outermost node is
-the largest layer radius. -/
 theorem layerRadius_lt_two_ell_div_pi {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
     (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
     layerRadius ℓ x < 2 * ℓ / π := by
@@ -513,8 +450,6 @@ theorem layerRadius_lt_two_ell_div_pi {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
 
 /-! ### Amplitude growth of the plateau values -/
 
-/-- `cosh π · cosh(nπ) ≤ cosh((n+1)π)`: each layer amplifies by at least
-`cosh π`. -/
 theorem cosh_pi_mul_cosh_le (a : ℝ) (ha : 0 ≤ a) :
     cosh π * cosh a ≤ cosh (a + π) := by
   rw [cosh_add]
@@ -531,7 +466,6 @@ theorem cosh_pi_mul_growth (n : ℕ) :
   rw [harg]
   exact cosh_pi_mul_cosh_le _ (by positivity)
 
-/-- Exponential amplitude growth `(cosh π)^n ≤ cosh(nπ)`. -/
 theorem cosh_pi_pow_le_cosh_nat_mul_pi (n : ℕ) :
     cosh π ^ n ≤ cosh ((n : ℝ) * π) := by
   induction n with
@@ -547,7 +481,6 @@ theorem cosh_pi_pow_le_cosh_nat_mul_pi (n : ℕ) :
       _ ≤ cosh (((k : ℝ) + 1) * π) := hgrow
       _ = cosh (((k + 1 : ℕ) : ℝ) * π) := by rw [hcast]
 
-/-- Numeric floor `11 < cosh π`, so the per-layer amplification exceeds `11`. -/
 theorem eleven_lt_cosh_pi : (11 : ℝ) < cosh π := by
   have he1 : (2.7182818283 : ℝ) < exp 1 := exp_one_gt_d9
   have he1pos : (0 : ℝ) < exp 1 := exp_pos 1
@@ -576,7 +509,6 @@ theorem eleven_pow_le_cosh_nat_mul_pi (n : ℕ) :
   le_trans (pow_le_pow_left₀ (by norm_num) eleven_lt_cosh_pi.le n)
     (cosh_pi_pow_le_cosh_nat_mul_pi n)
 
-/-- Exact shortfall below the `e^π` ceiling. -/
 theorem exp_pi_mul_cosh_sub_cosh_add_pi (a : ℝ) :
     exp π * cosh a - cosh (a + π) = sinh π * exp (-a) := by
   have h1 : exp π = cosh π + sinh π := (cosh_add_sinh π).symm
@@ -586,7 +518,6 @@ theorem exp_pi_mul_cosh_sub_cosh_add_pi (a : ℝ) :
   rw [hrw]
   ring
 
-/-- One-sided ceiling: the per-layer amplification never reaches `e^π`. -/
 theorem cosh_add_pi_lt_exp_pi_mul (a : ℝ) :
     cosh (a + π) < exp π * cosh a := by
   have hid := exp_pi_mul_cosh_sub_cosh_add_pi a
@@ -594,8 +525,6 @@ theorem cosh_add_pi_lt_exp_pi_mul (a : ℝ) :
     mul_pos (sinh_pos_iff.mpr pi_pos) (exp_pos _)
   linarith
 
-/-- The per-layer amplification ratio `cosh(a+π)/cosh a` is strictly increasing
-in `a`, so it climbs strictly below the `e^π` ceiling. -/
 theorem cosh_add_pi_ratio_strictMono {a b : ℝ} (hab : a < b) :
     cosh (a + π) * cosh b < cosh (b + π) * cosh a := by
   have hid : cosh (a + π) * cosh b - cosh (b + π) * cosh a
@@ -607,8 +536,6 @@ theorem cosh_add_pi_ratio_strictMono {a b : ℝ} (hab : a < b) :
       (sinh_neg_iff.mpr (by linarith))
   linarith
 
-/-- `cosh` never exceeds `exp` on the non-negative reals, so plateau amplitudes
-grow no faster than `e^{nπ}`. -/
 theorem cosh_le_exp_of_nonneg {a : ℝ} (ha : 0 ≤ a) : cosh a ≤ exp a := by
   rw [cosh_eq]
   have hle : exp (-a) ≤ exp a := exp_le_exp.mpr (by linarith)
@@ -620,8 +547,7 @@ theorem cosh_nat_mul_pi_le_exp (n : ℕ) :
 
 /-! ### Inward screening of the mid-layer force -/
 
-/-- Mid-layer (plateau) force factor: the force at the extremal radius
-`r = ℓ/(2nπ)` is `k/(γ_s r²)`, i.e. `k/ℓ²` times this factor. -/
+/-- Mid-layer (plateau) force factor: the force at the extremal radius `r = ℓ/(2nπ)` is `k/(γ_s r²)`, i.e. `k/ℓ²` times this factor. -/
 noncomputable def plateauForceFactor (n : ℕ) : ℝ :=
   4 * π ^ 2 * (n : ℝ) ^ 2 / cosh ((n : ℝ) * π)
 
@@ -629,8 +555,6 @@ theorem plateauForceFactor_nonneg (n : ℕ) : 0 ≤ plateauForceFactor n := by
   unfold plateauForceFactor
   positivity
 
-/-- The plateau force factor strictly decreases inward: layer amplitudes are
-exponentially screened, not amplified. -/
 theorem plateauForceFactor_strictAnti (n : ℕ) (hn : 1 ≤ n) :
     plateauForceFactor (n + 1) < plateauForceFactor n := by
   have hπ := pi_pos
@@ -660,7 +584,6 @@ theorem plateauForceFactor_strictAnti (n : ℕ) (hn : 1 ≤ n) :
     _ ≤ (4 * π ^ 2 * (n : ℝ) ^ 2) * cosh ((((n + 1 : ℕ)) : ℝ) * π) :=
         mul_le_mul_of_nonneg_left hgrow hnum.le
 
-/-- The mid-layer force factor is not strictly increasing in `n`. -/
 theorem paper_amplitude_increase_inward_false :
     ¬ (∀ n : ℕ, 1 ≤ n → plateauForceFactor n < plateauForceFactor (n + 1)) := by
   intro h
@@ -675,7 +598,6 @@ def equalScaleParams (α : Fin 3 → ℝ) : TorsionParams where
   alpha := α
   beta := α
 
-/-- On the equal-scale locus the Killing-form scalar vanishes identically. -/
 theorem J_equalScaleParams (α : Fin 3 → ℝ) : J (equalScaleParams α) = 0 := by
   rw [J_coef]
   simp [equalScaleParams]
@@ -686,7 +608,6 @@ theorem mass_equalScaleParams (α : Fin 3 → ℝ) :
   simp only [equalScaleParams, Fin.sum_univ_three]
   ring
 
-/-- The equal-scale locus is massive: `J = 0` with `M > 0`. -/
 theorem mass_equalScaleParams_pos {α : Fin 3 → ℝ} (h : ∃ a, α a ≠ 0) :
     0 < mass (equalScaleParams α) := by
   obtain ⟨a, ha⟩ := h
@@ -694,8 +615,7 @@ theorem mass_equalScaleParams_pos {α : Fin 3 → ℝ} (h : ∃ a, α a ≠ 0) :
   refine Finset.sum_pos' (fun i _ => sq_nonneg (α i)) ⟨a, Finset.mem_univ a, ?_⟩
   exact pow_pos (abs_pos.mpr ha) 2 |>.trans_le (by rw [sq_abs])
 
-/-- The layer order parameter is `gammaS`, not `J`: on the equal-scale locus
-`J` vanishes while `gammaSEqual` changes sign. -/
+/-- The layer order parameter is `gammaS`, not `J`. -/
 theorem layer_order_parameter_is_gammaS :
     (∀ α : Fin 3 → ℝ, J (equalScaleParams α) = 0) ∧
       ∃ x y : ℝ, 0 < gammaSEqual x ∧ gammaSEqual y < 0 := by

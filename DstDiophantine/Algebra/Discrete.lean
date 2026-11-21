@@ -9,12 +9,7 @@ import Mathlib.Tactic.Positivity
 /-!
 # Discrete torsion torus `(ℤ/Nℤ)⁶`
 
-Rapidities are discretised as in the DST discrete companion:
-`ω_a = 2π n_a / N`, `φ_a = 2π m_a / N` for `n_a, m_a ∈ ℤ/Nℤ`
-(Lean: `alpha` / `beta` via `toTorsionParams`).
-
-Admissibility predicates live in `Admissible`; this module only embeds the
-torus and characterises discrete admissibility.
+Rapidities are `2π k / N`. This module only embeds the torus; admissibility lives in `Admissible`.
 -/
 
 namespace DstDiophantine
@@ -42,7 +37,6 @@ noncomputable instance : Fintype (DiscreteTorsion N) :=
 instance : Finite (DiscreteTorsion N) :=
   inferInstance
 
-/-- The discrete phase space is the six-torus of cardinality `N⁶`. -/
 theorem card_discreteTorsion : Fintype.card (DiscreteTorsion N) = N ^ 6 := by
   rw [Fintype.card_congr discreteEquiv, Fintype.card_prod]
   simp [Fintype.card_fin, ZMod.card]
@@ -95,16 +89,14 @@ theorem toTorsionParams_beta_lt_two_pi (t : DiscreteTorsion N) (a : Fin 3) :
 abbrev IsPrincipalBranch := Admissible.IsPrincipalBranch
 abbrev IsAdmissibleContinuous := Admissible.IsAdmissibleContinuous
 
-/-- Admissible discrete configuration: embedded parameters are continuously admissible. -/
 def IsAdmissible (t : DiscreteTorsion N) : Prop :=
   IsAdmissibleContinuous (toTorsionParams t)
 
-/-- Discrete admissibility coincides with continuous admissibility of the embedding. -/
 theorem isAdmissible_iff_admissibleContinuous (t : DiscreteTorsion N) :
     IsAdmissible t ↔ IsAdmissibleContinuous (toTorsionParams t) :=
   Iff.rfl
 
-/-- Legacy name: discrete admissibility implies the principal-branch condition. -/
+/-- Legacy name: the conclusion is continuous admissibility. -/
 theorem admissible_continuous_of_discrete (t : DiscreteTorsion N) (h : IsAdmissible t) :
     IsAdmissibleContinuous (toTorsionParams t) :=
   h

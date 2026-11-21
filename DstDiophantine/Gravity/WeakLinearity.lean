@@ -13,28 +13,7 @@ set_option linter.style.native false
 /-!
 # Where the weak field stays linear
 
-Two readings of one source are compared.
-
-On the exterior Schwarzschild chart the rapidity lies strictly above the
-Newtonian value \(r_s/(2r)\), and the fractional excess is strictly less than
-\(r_s/(r-r_s)\). On the SI stand-ins that fraction is below \(1/(4\times 10^7)\)
-for a solar mass at one astronomical unit, and below \(10^{-6}\) for the
-Milky-Way mass at the compactification radius fixed by the same mass and by
-\(a_0\).
-
-At a fixed compactification radius the dual-image acceleration is linear in
-the mass, and the fractional excess over the inverse square depends only on
-\(r/R\). It is positive and strictly less than \((r/R)^2/3\). A solar mass has
-compactification radius between \(7020\) and \(7040\) astronomical units, so
-at one astronomical unit the excess is below \(10^{-8}\).
-
-The three-sphere enhancement is the reciprocal of the volume Jacobian. On
-\((0,\pi)\) it lies strictly above the shared germ \(1+x^2/3\), while the dual
-enhancement lies strictly below it.
-
-Once the patch radius scales with the enclosed mass, `dualRAR` is strictly
-subhomogeneous and strictly subadditive. \(a_0\), \(G\), and the astronomical
-unit are external inputs. No theorem asserts `dst_derives_a0`.
+`a₀`, `G`, and the astronomical unit are external inputs, and no theorem asserts `dst_derives_a0`.
 -/
 
 namespace DstDiophantine
@@ -56,7 +35,6 @@ theorem dualAccel_smul (G R r c M : ℝ) :
   unfold dualAccel
   ring
 
-/-- The ratio to the inverse square depends only on \(r/R\). -/
 theorem dualAccel_div_newton {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0)
     (hGM : G * M ≠ 0) :
     dualAccel G M R r / (G * M / r ^ 2) = dualEnhancement (r / R) := by
@@ -105,8 +83,6 @@ theorem strictAntiOn_dualRAR_div {a0 : ℝ} (ha0 : 0 < a0) :
     sqrt_lt_sqrt (div_nonneg ha0.le hy2.le) hdiv
   exact strictMonoOn_dualEnhancement (mem_Ioi.mpr hs2) (mem_Ioi.mpr hs1) hsqrt
 
-/-- For \(k>1\), scaling the Newtonian acceleration by \(k\) scales the dual
-acceleration by a strictly smaller factor. -/
 theorem dualRAR_strict_subhomogeneous {a0 gN k : ℝ}
     (ha0 : 0 < a0) (hgN : 0 < gN) (hk : 1 < k) :
     dualRAR a0 (k * gN) < k * dualRAR a0 gN := by
@@ -292,7 +268,6 @@ private theorem logExcess_pos {x : ℝ} (hx : 0 < x) (hxπ : x < π) :
   obtain ⟨t, ht1, ht2⟩ := hev.exists
   exact lt_asymm ht1 (hmono ⟨ht2.1, lt_trans ht2.2 hhalf.2⟩ hhalf ht2.2)
 
-/-- On \((0,\pi)\) the three-sphere enhancement lies strictly above \(1+x^2/3\). -/
 theorem enhancement_gt_curvatureGerm {x : ℝ} (hx : 0 < x) (hxπ : x < π) :
     1 + x ^ 2 / 3 < enhancement x := by
   have hs : 0 < sin x := sin_pos_of_mem_Ioo ⟨hx, hxπ⟩

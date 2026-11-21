@@ -17,45 +17,10 @@ import Mathlib.Tactic.Ring
 /-!
 # The water molecule
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a bond angle in degrees,
-a dissociation energy, a value of `a₀`, or a count of lone pairs. The molecule
-is two bonds — one electron and one proton on each ray — together with any
-further electrons off those rays. It is not a shell of eight and not the
-cube. No equilibrium is claimed in the reversed shell. Oxygen is not the
-dodecahedron. No degree of a bond angle is computed.
-
-## What is proved
-
-* While the bonding electron is closer than its proton and the two bonding
-  electrons repel, the other bond drives that electron toward a wider angle.
-  The nuclear charge does not enter. An electron on the same ray adds
-  nothing. An electron that repels from the side toward the other bond adds
-  a wider push; one that repels from the opposite side adds a narrower push.
-  With every added electron contributing a nonnegative tangent, the total
-  stays positive. Distances are in units of `ℓ`.
-* On a straight line, while both distances from the nucleus lie in the outer
-  well, the two bonds alone have no tangential force. An electron on the axis
-  opposite the bonds then makes the bonding electron's tangent strictly
-  negative.
-* On that straight line, with each electron between the nucleus and its
-  proton and with both nucleus distances in the outer well, the outward force
-  on the electron plus the outward force on the proton is strictly negative
-  whenever the nuclear charge is at least `1/4` and the factor on the segment
-  between them is not a node.
-* The older ratio statement remains: while the electron–electron and
-  proton–proton separations lie in the outer well and the cross factor is
-  not a node, the two tangential forces do not vanish together.
-* The angle at which the protons are as far apart as each is from the other
-  electron is strictly less than a third of a straight angle. While both
-  separations lie in the outer well and the protons are no farther apart
-  than that cross separation, the tangential force on each proton points
-  toward the wider angle. The nuclear charge does not enter. When the
-  electron lies at least a quarter as far from the nucleus as the proton
-  and the equal separation still lies in the outer well, that force is
-  positive at the equal separation, negative at some greater angle short of
-  a straight line, and zero at an angle strictly between the two.
+Two bonds, one electron and one proton on each ray, hold a proton angle
+strictly between the equal separation and the straight line. The length
+\(\ell\) is not derived; no degree of a bond angle, no dissociation energy,
+and no count of lone pairs is produced, and oxygen is not the dodecahedron.
 -/
 
 namespace DstDiophantine.Gravity
@@ -302,8 +267,7 @@ private theorem quarter_bracket_neg {Z x y : ℝ}
 
 /-! ### Pair force and the straight skeleton -/
 
-/-- Separation-increasing force on charge `qi` at `ri` from charge `qj` at `rj`,
-in units of `k e²`, with `ℓ = 1`. -/
+/-- Separation-increasing force on charge `qi` at `ri` from charge `qj` at `rj`, in units of `k e²`, with `ℓ = 1`. -/
 def pairForce (qi qj : ℝ) (ri rj : Fin 3 → ℝ) (i : Fin 3) : ℝ :=
   qi * qj * (ri i - rj i) /
     (gammaSEqual (pairPhase (vnorm (vsub ri rj))) * vnorm (vsub ri rj) ^ 3)
@@ -353,8 +317,7 @@ private theorem pairForce_axis_in {qi qj s t : ℝ} (hst : s < t)
   field_simp [_hγ, hne]
   ring
 
-/-- Outward force on the electron of the straight water molecule.
-The nucleus is at the origin, the electron at `+r`, its proton at `+R`. -/
+/-- Outward force on the electron of the straight water molecule. The nucleus is at the origin, the electron at `+r`, its proton at `+R`. -/
 def waterStraightElectron (Z r R : ℝ) : ℝ :=
   pairForce (-1) Z (axisPoint r) (axisPoint 0) 0 +
     pairForce (-1) 1 (axisPoint r) (axisPoint R) 0 +
@@ -406,8 +369,6 @@ private theorem pairPhase_add {r R : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) (hsum : 
   unfold pairPhase
   field_simp [hr, hR, hsum]
 
-/-- On the straight skeleton the sum of the outward forces is negative for
-every nuclear charge at least `1/4`. -/
 theorem water_straight_sum_neg {Z r R : ℝ}
     (hZ : (1 / 4 : ℝ) ≤ Z) (hr : outerSep r) (hR : outerSep R) (hrR : r < R)
     (hgap : gammaSEqual (pairPhase (R - r)) ≠ 0) :
@@ -673,8 +634,7 @@ private theorem cross_sep_pos {r R θ : ℝ}
       (r - R) ^ 2 + 2 * r * R * (1 - cos θ) := by ring
   linarith [sq_nonneg (r - R), hid]
 
-/-- Tangential component of the force on the electron at distance `r`
-on the ray of half-angle `a`. -/
+/-- Tangential component of the force on the electron at distance `r` on the ray of half-angle `a`. -/
 def waterBendElectron (Z r R a : ℝ) : ℝ :=
   vdot (waterT a) (fun i =>
     pairForce (-1) Z (vsmul r (waterU a)) (fun _ => 0) i +
@@ -737,8 +697,6 @@ private theorem tangent_ratio {r R ee hh rc γe γh γc : ℝ}
     γe * r = γh * R := hlin
     _ = R * γh := by ring
 
-/-- The tangential forces on the electron and on its proton do not vanish
-together. `θ` is the angle between the rays. -/
 theorem water_no_outer_tangent {Z r R θ : ℝ}
     (hθ : θ ∈ Ioo 0 π) (hr : 0 < r) (hR : 0 < R) (hne : r ≠ R)
     (hee : outerSep (2 * r * sin (θ / 2)))
@@ -965,8 +923,6 @@ private theorem outerSep_of_gt {d s : ℝ} (hd : outerSep d) (hlt : d < s) : out
       (by linarith : (2 : ℝ) * d < 2 * s)
   exact lt_trans hφ hd.2
 
-/-- The electron tangent of the two bonds factors through `sin` of the angle.
-`a` is the half-angle. The nuclear charge does not appear. -/
 theorem waterBendElectron_factor {Z r R a : ℝ}
     (ha : a ∈ Ioo 0 π) (hr : 0 < r) (hR : 0 < R)
     (hee : outerSep (2 * r * sin a))
@@ -1027,8 +983,6 @@ theorem waterBendElectron_factor {Z r R a : ℝ}
   rw [hnuc, hown, hee_c, hcross, vdot_T_ee, vdot_T_cross, hvee, hvrc]
   ring
 
-/-- Closer than its proton, and repelling the other bonding electron, the
-electron is driven toward a wider angle. -/
 theorem waterBendElectron_opening {Z r R a : ℝ}
     (ha : a ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hrR : r < R)
     (hee : outerSep (2 * r * sin a)) :
@@ -1124,8 +1078,6 @@ theorem waterBendElectron_opening {Z r R a : ℝ}
   rw [hfac]
   exact mul_pos hsin2 hAe
 
-/-- On the straight line the two bonds exert no tangential force on the
-bonding electron. Both distances from the nucleus lie in the outer well. -/
 theorem waterBendElectron_straight {Z r R : ℝ}
     (hr : outerSep r) (hR : outerSep R) :
     waterBendElectron Z r R (π / 2) = 0 := by
@@ -1142,8 +1094,7 @@ theorem waterBendElectron_straight {Z r R : ℝ}
     exact (outer_gamma_pos ⟨by linarith [hr.1, hR.1], (phase_sum_mem hr hR.1).2⟩).ne'
   rw [waterBendElectron_factor ha hr.1 hR.1 hee hc, hangle, sin_pi, zero_mul]
 
-/-- A point on the axis between the two rays, or, for a negative coordinate,
-on the opposite axis. -/
+/-- A point on the axis between the two rays, or, for a negative coordinate, on the opposite axis. -/
 def bondAxis (z : ℝ) : Fin 3 → ℝ :=
   ![0, 0, z]
 
@@ -1158,8 +1109,7 @@ private theorem vdot_T_bondAxis (a z : ℝ) :
     bondAxis_two]
   ring
 
-/-- Tangential force on the bonding electron at distance `r` from an extra
-charge `q` at `X`. -/
+/-- Tangential force on the bonding electron at distance `r` from an extra charge `q` at `X`. -/
 def waterExtraTangent (r a q : ℝ) (X : Fin 3 → ℝ) : ℝ :=
   vdot (waterT a) (fun i => pairForce (-1) q (vsmul r (waterU a)) X i)
 
@@ -1183,7 +1133,6 @@ private theorem waterExtraTangent_repel {r a q : ℝ} {X : Fin 3 → ℝ}
   have hnum : (-1) * q * (-vdot (waterT a) X) = q * vdot (waterT a) X := by ring
   rw [hnum]
 
-/-- An electron that repels from the side toward the other bond pushes wider. -/
 theorem waterExtraTangent_inner {r a q : ℝ} {X : Fin 3 → ℝ}
     (hq : q < 0) (hside : vdot (waterT a) X < 0)
     (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) X))) :
@@ -1193,7 +1142,6 @@ theorem waterExtraTangent_inner {r a q : ℝ} {X : Fin 3 → ℝ}
   · exact mul_pos_of_neg_of_neg hq hside
   · exact mul_pos (outer_gamma_pos hsep) (pow_pos hsep.1 3)
 
-/-- An electron that repels from the opposite side pushes narrower. -/
 theorem waterExtraTangent_outer {r a q : ℝ} {X : Fin 3 → ℝ}
     (hq : q < 0) (hside : 0 < vdot (waterT a) X)
     (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) X))) :
@@ -1203,13 +1151,11 @@ theorem waterExtraTangent_outer {r a q : ℝ} {X : Fin 3 → ℝ}
   · exact mul_neg_of_neg_of_pos hq hside
   · exact mul_pos (outer_gamma_pos hsep) (pow_pos hsep.1 3)
 
-/-- An electron on the same ray adds no tangential force. -/
 theorem waterExtraTangent_same_ray (r a q s : ℝ) :
     waterExtraTangent r a q (vsmul s (waterU a)) = 0 := by
   unfold waterExtraTangent
   exact vdot_pairForce_ortho (vdot_T_partner r s a)
 
-/-- An electron on the axis opposite the bonds, while it repels, pushes narrower. -/
 theorem waterExtraTangent_far_neg {r a lam : ℝ}
     (ha : a ∈ Ioo 0 π) (hlam : 0 < lam)
     (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis (-lam))))) :
@@ -1219,7 +1165,6 @@ theorem waterExtraTangent_far_neg {r a lam : ℝ}
   have hsin : 0 < sin a := sin_pos_of_pos_of_lt_pi ha.1 ha.2
   nlinarith
 
-/-- An electron on the axis between the bonds, while it repels, pushes wider. -/
 theorem waterExtraTangent_bisector_pos {r a μ : ℝ}
     (ha : a ∈ Ioo 0 (π / 2)) (hμ : 0 < μ)
     (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis μ)))) :
@@ -1230,8 +1175,6 @@ theorem waterExtraTangent_bisector_pos {r a μ : ℝ}
     sin_pos_of_pos_of_lt_pi ha.1 (lt_trans ha.2 (half_lt_self pi_pos))
   nlinarith
 
-/-- The bonding electron is still driven wider when every extra tangent is
-nonnegative. -/
 theorem waterMolecule_opening {n : ℕ} {Z r R a : ℝ}
     {q : Fin n → ℝ} {X : Fin n → Fin 3 → ℝ}
     (ha : a ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hrR : r < R)
@@ -1245,8 +1188,6 @@ theorem waterMolecule_opening {n : ℕ} {Z r R a : ℝ}
     exact Finset.sum_nonneg fun i _ => hnn i
   linarith
 
-/-- On the straight line, an electron on the opposite axis drives the bonding
-electron off the line. -/
 theorem water_straight_far_neg {Z r R lam : ℝ}
     (hr : outerSep r) (hR : outerSep R) (hlam : 0 < lam) :
     waterBendElectron Z r R (π / 2) +
@@ -1474,9 +1415,6 @@ private theorem eight_sep_gt {r R : ℝ} (hr : 0 < r) (hR : r < R) (hq : R ≤ 4
     _ = 8 * R ^ 2 * (t * R) := by ring
     _ = 8 * R ^ 2 * r := by rw [hrad]
 
-/-- On the straight line the parenthesis is negative once the electron is at
-least a quarter as far out as the proton and the straight cross separation
-lies in the outer well. -/
 theorem protonParen_neg_straight {r R : ℝ}
     (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r) (hcross : outerSep (R + r)) :
     protonParen (π / 2) r R < 0 := by
@@ -1513,9 +1451,6 @@ theorem protonParen_neg_straight {r R : ℝ}
       R * (gammaSEqual (pairPhase (2 * R)) * (8 * R ^ 2 * r)) by ring]
   exact hmul
 
-/-- While the protons are no farther apart than each is from the other
-electron, and both separations lie in the outer well, the parenthesis is
-positive. -/
 theorem protonParen_pos_of_le {a r R : ℝ}
     (hr : 0 < r) (hR : r < R)
     (hh : outerSep (protonSep a R)) (hc : outerSep (protonCross a r R))
@@ -1589,8 +1524,6 @@ private theorem sin_two_pos {a : ℝ} (ha : a ∈ Ioo 0 (π / 2)) : 0 < sin (2 *
     cos_pos_of_mem_Ioo ⟨by linarith [pi_pos, ha.1], ha.2⟩
   positivity
 
-/-- The tangential force on the proton is `sin` of the bond angle times the
-parenthesis. The nuclear charge does not appear. -/
 theorem waterBendProton_factor {Z r R a : ℝ}
     (ha : a ∈ Ioo 0 π) (_hr : 0 < r) (hR : 0 < R)
     (hhh : outerSep (protonSep a R)) (hc : outerSep (protonCross a r R)) :
@@ -1717,11 +1650,6 @@ private theorem continuousOn_protonParen {r R : ℝ}
   rw [Pi.sub_apply]
   exact hpoint a
 
-/-- The protons hold an angle strictly between the equal separation and the
-straight line. That equal separation is strictly less than a third of a
-straight angle. A smaller angle, down to the equal separation, is driven
-wider whenever the parenthesis has not changed sign, and the parenthesis is
-positive there and negative on the straight line. -/
 theorem water_proton_angle {Z r R : ℝ}
     (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r)
     (hchord : outerSep (equalChord r R)) :
@@ -1769,8 +1697,6 @@ theorem water_proton_angle {Z r R : ℝ}
   have hzero_paren : protonParen a r R = 0 := by simpa using hfa
   rw [hzero_paren, mul_zero]
 
-/-- At the equal separation the tangential force on the proton points toward
-the wider angle. -/
 theorem waterBendProton_equal_pos {Z r R : ℝ}
     (hr : 0 < r) (hR : r < R) (hchord : outerSep (equalChord r R)) :
     0 < waterBendProton Z r R (equalHalf r R) := by
@@ -1788,8 +1714,6 @@ theorem waterBendProton_equal_pos {Z r R : ℝ}
   rw [waterBendProton_factor haπ hr hRpos houter.1 houter.2]
   exact mul_pos (sin_two_pos ha) hp
 
-/-- Somewhere short of the straight line the tangential force on the proton
-points toward the narrower angle. -/
 theorem waterBendProton_narrow {Z r R : ℝ}
     (hr : 0 < r) (hR : r < R) (hq : R ≤ 4 * r)
     (hchord : outerSep (equalChord r R)) :

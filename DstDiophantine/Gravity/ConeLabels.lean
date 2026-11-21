@@ -5,16 +5,9 @@ import DstDiophantine.Logic.Interpretation
 /-!
 # Four regimes of the admissible cone
 
-The normalised mismatch on an admissible configuration takes one of four
-values of sign and saturation. Saturated attraction is a single point of
-the cone, and it is the unique point whose usual rapidities admit no
-other admissible dual completion. Dual-only motion is frozen there, so a
-repulsive continuation is not available without moving the usual sector.
-A usual seed with negative dual wall carries repulsion and balance on
-that fiber; a positive wall keeps the whole fiber in unsaturated
-attraction whenever the pure-usual height lies strictly below the
-ceiling. The conjunction of a height with its sector swap is balance
-when the height vanishes and repulsion otherwise.
+The normalised mismatch on an admissible configuration is one of four regimes
+of sign and saturation. Saturated attraction is the unique point whose usual
+rapidities admit no other dual completion.
 -/
 
 namespace DstDiophantine
@@ -77,8 +70,6 @@ theorem ofParams_eq_B_iff_neg {p : TorsionParams} (hp : IsAdmissibleContinuous p
   · intro h
     exact ⟨(abs_le.mp (torsion_bound_continuous p hp)).1, h⟩
 
-/-- Saturated attraction is the unique admissible point whose usual
-rapidities admit no other dual completion. -/
 theorem dualOnly_rigid_iff_F {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
     (∀ q : TorsionParams, IsAdmissibleContinuous q → q.alpha = p.alpha → q = p) ↔
       Logic.ofParams p hp = .F := by
@@ -117,7 +108,6 @@ theorem dualOnly_rigid_iff_F {p : TorsionParams} (hp : IsAdmissibleContinuous p)
     have hpβ : p.beta a = 0 := (hpure a).2
     simp [hqβ, hpβ]
 
-/-- A repulsive dual-only continuation exists exactly on a negative wall. -/
 theorem exists_dualOnly_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
     (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
       q.alpha = p.alpha ∧ Logic.ofParams q hq = .B) ↔
@@ -131,7 +121,6 @@ theorem exists_dualOnly_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p
     exact (ofParams_eq_B_iff_neg (isAdmissibleContinuous_dualWallParams hp)).mpr
       ((JNormalized_lt_zero_iff _).mpr hwall)
 
-/-- A balanced dual-only continuation exists exactly on a nonpositive wall. -/
 theorem exists_dualOnly_T_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
     (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
       q.alpha = p.alpha ∧ Logic.ofParams q hq = .T) ↔
@@ -147,7 +136,6 @@ theorem exists_dualOnly_T_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p
     refine ⟨q, hq, hα, ?_⟩
     exact (Logic.ofParams_eq_T_iff hq).mpr ((JNormalized_eq_zero_iff q).mpr hJ)
 
-/-- The attractive ceiling has no dual-only repulsive continuation. -/
 theorem no_dualOnly_repulsion_of_F {p : TorsionParams} (hp : IsAdmissibleContinuous p)
     (hF : Logic.ofParams p hp = .F) :
     ¬ ∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
@@ -159,7 +147,6 @@ theorem no_dualOnly_repulsion_of_F {p : TorsionParams} (hp : IsAdmissibleContinu
   rw [hq_eq] at hJB
   linarith
 
-/-- A balanced dual-only continuation of a nonzero usual seed is massive. -/
 theorem dualOnly_T_mass_pos {p q : TorsionParams} (hα : q.alpha = p.alpha)
     (hq : IsAdmissibleContinuous q) (hT : Logic.ofParams q hq = .T)
     (hseed : ∃ a, p.alpha a ≠ 0) :
@@ -171,7 +158,6 @@ theorem dualOnly_T_mass_pos {p q : TorsionParams} (hα : q.alpha = p.alpha)
   exact Finset.sum_pos' (fun _ _ => sq_nonneg _)
     ⟨a, Finset.mem_univ a, sq_pos_of_ne_zero ha⟩
 
-/-- Sector swap sends saturated attraction to the repulsive endpoint. -/
 theorem dagger_of_F {p : TorsionParams} (hp : IsAdmissibleContinuous p)
     (hF : Logic.ofParams p hp = .F) :
     JNormalized (daggerParams p) = -1 ∧
@@ -211,8 +197,6 @@ theorem meet_swap_eq_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
     · exact absurd ((meet_swap_eq_T_iff hp).mp hT) hne
     · exact hB
 
-/-- Below the ceiling, a positive wall freezes every dual-only continuation
-in unsaturated attraction. -/
 theorem dualOnly_eq_U_of_positive_wall {p q : TorsionParams}
     (hq : IsAdmissibleContinuous q)
     (hα : q.alpha = p.alpha) (hwall : 0 < J (dualWallParams p))
@@ -281,8 +265,6 @@ theorem uniform_pi_div_six_three_labels :
     have hpos : 0 < Real.pi := Real.pi_pos
     nlinarith
 
-/-- A uniform usual rapidity \(\pi/3\) keeps every dual-only continuation
-in unsaturated attraction. -/
 theorem uniform_pi_div_three_dualOnly_U {q : TorsionParams}
     (hα : ∀ a, q.alpha a = Real.pi / 3) (hq : IsAdmissibleContinuous q) :
     Logic.ofParams q hq = .U := by

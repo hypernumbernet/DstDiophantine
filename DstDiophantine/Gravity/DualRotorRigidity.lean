@@ -6,26 +6,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Rotor rigidity for a mismatch potential
 
-The written action uses one potential, the harmonic stiffness `(m/2) δ²`.
-The Euler–Lagrange jets below keep that stiffness as the special case
-`slope = m δ`, and compare it with a general slope `V'(δ)` and with the
-quartic
-`V(δ) = (λ/4) (δ² - v²)²`.
-
-Opposite kinetic signs make `δ̈ = 0` for every slope, and source the common
-rapidity by `σ̈ = -2 V'(δ)`. A frozen lag is then inertial if and only if
-the slope vanishes. The harmonic stiffness vanishes only at alignment, so
-a nonzero constant lag accelerates `σ`.
-
-Same-sign kinetics free `σ` for every slope and set `δ̈ = -2 V'(δ)`.
-Constant lag is again the critical set of `V`, but the slope now restores.
-The quartic, for `λ > 0`, is minimized at `δ = ±v` and is strictly higher
-at the symmetric point `δ = 0`. Inside the interval the same-sign force
-points away from the origin. The radial curvature there is `4 λ v²`, which
-is not identically a prescribed Compton value `m²`, and the common rate is
-not fixed by `(λ, v)`.
-
-No electroweak vacuum, Weinberg angle, or `W`/`Z` mass is claimed.
+Opposite kinetic signs leave the lag free and source the common rapidity by
+the slope of \(V\); same-sign kinetics restore. No electroweak vacuum,
+Weinberg angle, or \(W\)/\(Z\) mass is claimed, and the quartic curvature is
+not a prescribed Compton value.
 -/
 
 namespace DstDiophantine
@@ -111,14 +95,12 @@ theorem sameSignPotentialDot_conserved {slope φdot θdot φddot θddot : ℝ}
 theorem harmonic_critical {m δ : ℝ} (hm : m ≠ 0) : m * δ = 0 ↔ δ = 0 := by
   simp [hm]
 
-/-- A nonzero harmonic lag is not an inertial common rapidity. -/
 theorem opposite_harmonic_inertial_iff {m δ φddot θddot : ℝ}
     (h : OppositePotentialEL (m * δ) φddot θddot) :
     φddot + θddot = 0 ↔ m * δ = 0 := by
   have hσ := opposite_common h
   constructor <;> intro h0 <;> linarith
 
-/-- Same-sign harmonic rigidity is alignment, once the rest mass is nonzero. -/
 theorem sameSign_harmonic_rigid_iff {m δ : ℝ} (hm : m ≠ 0) :
     SameSignPotentialEL (m * δ) 0 0 ↔ δ = 0 := by
   rw [sameSign_rigid_iff, harmonic_critical hm]
@@ -193,7 +175,6 @@ theorem quartic_vacuum_opposite (lam v : ℝ) :
     ring
   simp [OppositePotentialEL, h]
 
-/-- Inside the wells the same-sign force has the sign of `δ`. -/
 theorem sameSign_repels_origin {lam v δ φddot θddot : ℝ}
     (hl : 0 < lam) (hδ : δ ≠ 0) (hinside : δ ^ 2 < v ^ 2)
     (h : SameSignPotentialEL (quarticSlope lam v δ) φddot θddot) :
@@ -214,7 +195,6 @@ theorem quarticSlope_linearization (lam v ε : ℝ) :
   unfold quarticSlope
   ring
 
-/-- The linear slope `2 λ v² ε` restores at squared frequency `4 λ v²`. -/
 theorem linearized_mismatch {lam v ε φddot θddot : ℝ}
     (h : SameSignPotentialEL (2 * lam * v ^ 2 * ε) φddot θddot) :
     φddot - θddot = -radialFreqSq lam v * ε := by
@@ -222,7 +202,7 @@ theorem linearized_mismatch {lam v ε φddot θddot : ℝ}
   unfold radialFreqSq at *
   linarith
 
-/-- The curvature `4 λ v²` is not a prescribed Compton value. -/
+/-- The curvature `4λv²` is not a prescribed Compton value. -/
 theorem radial_not_identically_compton :
     ∃ lam v m : ℝ, 0 < lam ∧ v ≠ 0 ∧ 0 < m ∧ radialFreqSq lam v ≠ m ^ 2 := by
   refine ⟨1, 1, 1, by norm_num, by norm_num, by norm_num, ?_⟩

@@ -11,47 +11,7 @@ import Mathlib.Tactic.Module
 /-!
 # Faraday bivector in the dual-rotor 6-space
 
-## Paper boundary (do **not** claim)
-
-Maxwell's equations are **not** derived. The identification of the Faraday
-bivector with a laboratory electromagnetic field is a working hypothesis.
-This module records coefficient-level identities on the same six generators
-that carry the dual-rotor torsion.
-
-No theorem asserts a derivation of Maxwell or of the Lorentz force from the
-DST action. Helicity drive of \(J\) is not a theorem. Phase-dependent
-circular-wave identities live in `CircularPolarization`.
-
-## What is proved
-
-* The Faraday coefficients \((E_a,B_a)\) live in the same 6-generator space
-  as \(\Omega_{\mathrm{biv}}\). The split is
-  \(F=F_{\mathrm{usual}}+F_{\mathrm{dual}}\), with \(E\) on the boost
-  generators and \(B\) on the rotation generators.
-* Duality \(X\mapsto Xi\) sends \((E,B)\mapsto(B,-E)\).
-* On that identification the torsional scalar is the Faraday quadratic
-  \(J=\tfrac12(E^2-B^2)\), with unsigned mass \(M=\tfrac12(E^2+B^2)\).
-  Null fields \(E^2=B^2\) have \(J=0\); a circular snapshot with
-  \(|\sigma|=1\) is null and has \(E\cdot B=0\), yet \(M=E_0^2>0\) if
-  \(E_0\neq 0\).
-* Hodge duality has period 4 and sends \(J\mapsto -J\), \(E\cdot B\mapsto -E\cdot B\),
-  preserving \(M\). The usual--dual parameter swap \((\alpha,\beta)\mapsto(\beta,\alpha)\)
-  also sends \(J\mapsto -J\) but has period 2 and is not Hodge. Laboratory
-  \(T:(E,B)\mapsto(E,-B)\) preserves \(J\) and is neither map.
-* Superposition of Faraday coefficients is componentwise: \(J\) of a sum
-  is \(J(p)+J(q)\) plus the interference \(\mathbf{E}_p\cdot\mathbf{E}_q
-  -\mathbf{B}_p\cdot\mathbf{B}_q\).
-* The first-order sandwich increment is the commutator \(\Omega X-X\Omega\),
-  not the outer product. On a rest particle a pure electric generator
-  produces a spatial kick and every magnetic generator produces none, so
-  the dual Faraday summand never kicks a rest frame. On a \(y\)-velocity a
-  pure \(B_x\) generator produces a \(z\)-kick, while the outer product
-  vanishes, so the outer product is not the Lorentz increment.
-* On the Minkowski vector \(X=e_0+v\) the same commutator of the Faraday
-  bivector is the 4-vector \((E\cdot v)\,e_0+(E-v\times B)\). That is the
-  Lorentz 4-force of the laboratory time-reversed field \((E,-B)\); the
-  coefficient 3-force \(q(E+v\times B)\) differs by the sign of \(B\).
-  Maxwell is not derived; this is kinematics of the written sandwich.
+The coefficients `(E_a, B_a)` live on the same six generators as the dual-rotor torsion, with `J = ½(E² − B²)`. Maxwell's equations and the Lorentz force are not derived, and helicity drive of `J` is not a theorem.
 -/
 
 namespace DstDiophantine
@@ -97,7 +57,6 @@ theorem faraday_eq_add (p : FaradayParams) :
     faraday p = faradayUsual p + faradayDual p :=
   omegaTorsion_eq_add (toTorsion p)
 
-/-- The Faraday bivector is the sum of its usual and dual summands. -/
 theorem paper_sec10_Fdual_is_full_faraday (p : FaradayParams) :
     faraday p = faradayUsual p + faradayDual p :=
   faraday_eq_add p
@@ -180,8 +139,7 @@ theorem mass_pos_of_null {p : FaradayParams}
     0 < mass (toTorsion p) :=
   (mass_eq_energySq_of_null h).symm ▸ lt_of_le_of_ne (energySq_nonneg p) hE.symm
 
-/-- Interference of two Faraday configurations:
-\(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q\). -/
+/-- Interference of two Faraday configurations: \(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q\). -/
 def faradayCross (p q : FaradayParams) : ℝ :=
   (∑ a : Fin 3, p.E a * q.E a) - (∑ a : Fin 3, p.B a * q.B a)
 
@@ -337,8 +295,7 @@ def pureB (Bx : ℝ) : FaradayParams where
     | 0 => Bx
     | _ => 0
 
-/-- Helicity snapshot of a \(z\)-propagating circular wave at one instant:
-\(E=E_0\hat x\), \(B=\sigma E_0\hat y\) (units \(c=1\)). -/
+/-- Helicity snapshot of a \(z\)-propagating circular wave at one instant: \(E=E_0\hat x\), \(B=\sigma E_0\hat y\) (units \(c=1\)). -/
 def circularSnapshot (σ E0 : ℝ) : FaradayParams where
   E := fun
     | 0 => E0
@@ -395,12 +352,10 @@ theorem ne_of_E_ne {p q : FaradayParams} {a : Fin 3} (h : p.E a ≠ q.E a) : p �
 theorem ne_of_B_ne {p q : FaradayParams} {a : Fin 3} (h : p.B a ≠ q.B a) : p ≠ q :=
   fun hp => h (hp ▸ rfl)
 
-/-- On a pure magnetic field Hodge dual and the parameter swap coincide. -/
 theorem dual_eq_swap_of_pureB (Bx : ℝ) :
     dualFaradayParams (pureB Bx) = swapFaradayParams (pureB Bx) := by
   ext a <;> fin_cases a <;> simp [dualFaradayParams, swapFaradayParams, pureB]
 
-/-- On a pure electric field they differ by the sign of the dual image. -/
 theorem dual_ne_swap_of_pureE :
     dualFaradayParams (pureE 1) ≠ swapFaradayParams (pureE 1) :=
   ne_of_B_ne (a := 0)
@@ -500,7 +455,6 @@ private theorem cyclic2_mul_ι0 :
     _ = ι 0 * (ι 2 * ι 1) := by simp [mul_assoc]
     _ = ι 0 * cyclic 2 := rfl
 
-/-- Every magnetic generator commutes with the rest frame \(e_0\). -/
 theorem sandwichIncrement_rest_cyclic (a : Fin 3) :
     sandwichIncrement (cyclic a) (ι 0) = 0 := by
   match a with
@@ -528,7 +482,6 @@ private theorem sandwichIncrement_sum_fin3 (f : Fin 3 → PGA) (X : PGA) :
     sandwichIncrement (∑ a, f a) X = ∑ a, sandwichIncrement (f a) X := by
   simp [Fin.sum_univ_three, sandwichIncrement_add]
 
-/-- The dual Faraday summand never kicks a rest frame at first order. -/
 theorem sandwichIncrement_rest_faradayDual (p : FaradayParams) :
     sandwichIncrement (faradayDual p) (ι 0) = 0 := by
   unfold faradayDual toTorsion omegaDual
@@ -587,7 +540,6 @@ private theorem ι2_mul_cyclic0 :
     _ = -(ι 3 * (1 : PGA) ) := by rw [e2_sq']
     _ = -ι 3 := by simp
 
-/-- A \(y\)-velocity against a pure \(B_x\) generator produces a \(z\)-kick. -/
 theorem sandwichIncrement_moving_pureB :
     sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 := by
   unfold sandwichIncrement
@@ -610,14 +562,11 @@ theorem sandwichIncrement_moving_pureB_ne_zero :
   have : (1 : PGA) = 0 := by rw [← e3_sq', hι, mul_zero]
   exact one_ne_zero this
 
-/-- On a moving magnetic rest-frame the commutator is the kick and the wedge
-vanishes — the opposite of the rest-magnetic case. -/
 theorem sandwich_moving_pureB_ne_wedge :
     sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 ∧
       paperWedgeIncrement (cyclic 0) (ι 2) = 0 :=
   ⟨sandwichIncrement_moving_pureB, paperWedge_moving_pureB⟩
 
-/-- The rest-magnetic blade squares against its reverse to \(-1\). -/
 private theorem rest_magnetic_blade_sq :
     (ι 0 * cyclic 0) * (ι 2 * ι 3 * ι 0) = (-1 : PGA) := by
   unfold cyclic

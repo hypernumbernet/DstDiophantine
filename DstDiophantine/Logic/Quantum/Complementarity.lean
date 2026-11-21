@@ -3,25 +3,7 @@ import DstDiophantine.Logic.Quantum.DiracField
 /-!
 # Position and momentum on the de Broglie phase
 
-The body of a state is a dual vector. A chart point enters only through the
-phase `p_μ x^μ` of a plane wave.
-
-A wave of one momentum has density `‖u‖²` at every chart point, and the
-value at one point is a unit-modulus phase times the value at any other.
-If the amplitude does not vanish, the wave vanishes nowhere. A field that
-translation multiplies by one such phase — a momentum eigenfield — inherits
-that rigidity: a single zero forces the field to vanish everywhere.
-
-A nonzero solution of one nonzero mass determines its four-momentum. The
-sum of two plane waves of distinct momenta, with neither amplitude zero, is
-therefore not a wave of any one momentum. Where the two amplitudes are the
-same vector, the density is `4 cos²((q−p)·x/2) ‖u‖²` and does vanish.
-
-Translating the argument by `a` and multiplying by the phase `e^{i k·x}`
-differ by `e^{i k·a}`. This is the Weyl relation of the phase. It is not
-itself the canonical commutator. The operators on differentiable chart
-fields, and the trace obstruction on the dual spinor space, are
-`ChartOperators`. An uncertainty bound for orbital angles is not claimed.
+A chart point enters only through the phase `p_μ x^μ`. The Weyl relation of that phase is not the canonical commutator, and an uncertainty bound for orbital angles is not claimed.
 -/
 
 namespace DstDiophantine
@@ -88,8 +70,7 @@ theorem exp_I_pi : exp (I * (Real.pi : ℂ)) = -1 := by
 
 /-! ### One momentum is the same ray at every chart point -/
 
-/-- The value at one chart point lies on the ray of the value at another
-when one is a unit-modulus phase times the other. -/
+/-- One is a unit-modulus phase times the other. -/
 def SameRay (ψ φ : DiracSpinor) : Prop :=
   ∃ z : ℂ, ‖z‖ = 1 ∧ φ = z • ψ
 
@@ -129,7 +110,6 @@ theorem planeWave_sameRay (p : Vec4) (u : DiracSpinor) (x y : Vec4) :
   unfold planeWave
   rw [smul_smul, ← exp_add, ofReal_sub, mul_sub, sub_add_cancel]
 
-/-- A wave of one momentum has one density at every chart point. -/
 theorem bornDensity_planeWave_const (p : Vec4) (u : DiracSpinor) (x y : Vec4) :
     bornDensity (planeWave p u) x = bornDensity (planeWave p u) y := by
   rw [bornDensity_planeWave, bornDensity_planeWave]
@@ -155,7 +135,6 @@ theorem momentumEigen_iff_phase {p : Vec4} {Ψ : Vec4 → DiracSpinor} :
         I * (wavePhase p a : ℂ) + I * (wavePhase p x : ℂ) := by ring
     rw [hsplit]
 
-/-- A momentum eigenfield with one zero vanishes at every chart point. -/
 theorem momentumEigen_zero {p : Vec4} {Ψ : Vec4 → DiracSpinor}
     (h : MomentumEigen p Ψ) {x : Vec4} (hx : Ψ x = 0) (y : Vec4) : Ψ y = 0 := by
   have hy := h x (y - x)
@@ -187,7 +166,6 @@ theorem momentumEigen_planeWave_eq {p q : Vec4} {u : DiracSpinor}
   rw [wavePhase_pi_axis μ hδ, exp_I_pi] at hx
   exact absurd hx (by norm_num)
 
-/-- A nonzero solution of one nonzero mass determines its four-momentum. -/
 theorem diracMomentum_unique {m : ℝ} {p q : Vec4} {Ψ : DiracSpinor}
     (hm : m ≠ 0) (hΨ : Ψ ≠ 0)
     (hp : DiracMomentum m p Ψ) (hq : DiracMomentum m q Ψ) : p = q := by
@@ -411,8 +389,6 @@ theorem equalPacket_node {p q : Vec4} (hpq : p ≠ q) (u : DiracSpinor) :
     ring
   rw [hsum, zero_smul]
 
-/-- A wave of one nonzero amplitude has no node; the equal superposition of
-two distinct momenta does, so it is not a wave of any one momentum. -/
 theorem equalPacket_not_eigen {p q : Vec4} (hpq : p ≠ q) {u : DiracSpinor}
     (hu : u ≠ 0) (r : Vec4) : ¬ MomentumEigen r (equalPacket p q u) := by
   intro h

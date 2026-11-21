@@ -16,29 +16,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Fourier analysis on the discrete dual circle
 
-The dual angle is discretised as `θ ∈ (2π/N) ℤ`, with the usual rapidity left
-continuous. Amplitudes on that circle, and on the three dual angles
-`(ℤ/Nℤ)³`, form finite Hilbert spaces. The Fourier transform onto winding
-labels is unitary there.
-
-The normalised Dirichlet kernel is the average of `N` phases of unit modulus.
-Those centered phases are not identified with the characters of `ℤ/Nℤ`: the
-offset `(N-1)/2` is an integer mode only for odd `N`.
-
-Shift of the angle and multiplication by a winding character preserve the
-inner product, return the amplitude after `N` steps and after no fewer positive
-number of steps, and differ by the phase `χ_r(s)`. The transform turns a shift
-into that multiplication, a multiplication into a shift of the winding label,
-and circular convolution into a product. A nonzero amplitude and its transform
-have supports whose cardinalities multiply to at least `N`, and to at least
-`N³` on the three dual angles; both bounds are attained. An amplitude that
-separates across the three angles has transform equal to the product of the
-three circle transforms.
-
-This is not the state space `ℂ²` and not the indefinite Killing pairing.
-The finite space is not the operator pair on the chart. On one chart axis
-the same shift and clock, read at the `N` samples of one period, are that
-chart's translation and momentum kick (`Logic.Quantum.AngleChart`).
+Centered Dirichlet phases are characters of `ℤ/Nℤ` only for odd `N`. This is not `ℂ²` and not the indefinite Killing pairing.
 -/
 
 namespace DstDiophantine
@@ -117,7 +95,6 @@ lemma expAngle_neg_two_pi_div_eq_one_iff {N : ℕ} (hN : N ≠ 0) (r : ℤ) :
     push_cast
     ring
 
-/-- Geometric sum of the characters `exp(-2π i r n / N)`. -/
 lemma sum_range_expAngle {N : ℕ} (hN : N ≠ 0) (r : ℤ) :
     ∑ n ∈ range N, expAngle (n * (-(2 * π * r) / N)) =
       if (N : ℤ) ∣ r then (N : ℂ) else 0 := by
@@ -209,7 +186,6 @@ lemma dualCircleChar_mul_star (k m j : ZMod N) :
   push_cast
   ring
 
-/-- The characters are orthogonal: the sum is `N` on the diagonal and `0` off it. -/
 theorem dualCircle_orthogonality (k m : ZMod N) :
     ∑ j : ZMod N, dualCircleChar k j * star (dualCircleChar m j) =
       if k = m then (N : ℂ) else 0 := by
@@ -369,7 +345,6 @@ theorem dualCircleFourier_fourier_adj (f : ZMod N → ℂ) (k : ZMod N) :
     fourier_right_inverse dualCircleChar (N : ℂ) dualCircle_orthogonality
       dualCircleChar_comm f k
 
-/-- Inversion: the value is the conjugate average of the transform. -/
 theorem dualCircleFourier_inversion (f : ZMod N → ℂ) (j : ZMod N) :
     f j = (N : ℂ)⁻¹ * ∑ k, dualCircleFourier f k * star (dualCircleChar k j) := by
   have hN : (N : ℂ) ≠ 0 := by exact_mod_cast NeZero.ne N
@@ -386,7 +361,6 @@ theorem dualCircleFourier_inner (f g : ZMod N → ℂ) :
     fourier_inner dualCircleChar (N : ℂ) dualCircle_orthogonality
       dualCircleChar_comm f g
 
-/-- Parseval: `∑_k |f̂(k)|² = N ∑_j |f(j)|²`. -/
 theorem dualCircleFourier_parseval (f : ZMod N → ℂ) :
     ∑ k, ‖dualCircleFourier f k‖ ^ 2 = (N : ℝ) * ∑ j, ‖f j‖ ^ 2 := by
   have h := dualCircleFourier_inner f f
@@ -486,7 +460,6 @@ def dualCircleFourierEquiv :
 @[simp] lemma dualCircleFourierEquiv_apply (f : EuclideanSpace ℂ (ZMod N)) :
     dualCircleFourierEquiv f = dualCircleFourierNormed f := rfl
 
-/-- The normalised transform is unitary. -/
 theorem inner_dualCircleFourierEquiv (f g : EuclideanSpace ℂ (ZMod N)) :
     inner ℂ (dualCircleFourierEquiv f) (dualCircleFourierEquiv g) = inner ℂ f g := by
   have h := dualCircleFourier_inner (fun j => f j) (fun j => g j)
@@ -590,7 +563,6 @@ theorem dualAngleFourier_inner (f g : (Fin 3 → ZMod N) → ℂ) :
     fourier_inner dualAngleChar ((N : ℂ) ^ 3) dualAngle_orthogonality
       dualAngleChar_comm f g
 
-/-- Parseval on the three dual angles: `∑ |f̂|² = N³ ∑ |f|²`. -/
 theorem dualAngleFourier_parseval (f : (Fin 3 → ZMod N) → ℂ) :
     ∑ k, ‖dualAngleFourier f k‖ ^ 2 = (N : ℝ) ^ 3 * ∑ j, ‖f j‖ ^ 2 := by
   have h := dualAngleFourier_inner f f
@@ -633,7 +605,6 @@ lemma dualCircleChar_ne_zero (k j : ZMod N) : dualCircleChar k j ≠ 0 := by
   rw [h, norm_zero] at this
   exact absurd this zero_ne_one
 
-/-- A carry of `N` in the exponents does not change the character product. -/
 lemma expAngle_mul_of_sum {a b n q : ℕ} (h : a + b = n + N * q) :
     expAngle (-(2 * π * a) / N) * expAngle (-(2 * π * b) / N) =
       expAngle (-(2 * π * n) / N) := by
@@ -838,7 +809,6 @@ theorem inner_dualCircleClock (r : ZMod N) (f g : ZMod N → ℂ) :
         = star (f j) * g j * (star (dualCircleChar r j) * dualCircleChar r j) := by ring
     _ = star (f j) * g j := by rw [hχ, mul_one]
 
-/-- Clock after shift differs from shift after clock by the character `χ_r(s)`. -/
 theorem dualCircle_weyl (r s : ZMod N) (f : ZMod N → ℂ) (j : ZMod N) :
     dualCircleClock r (dualCircleShift s f) j =
       dualCircleChar r s * dualCircleShift s (dualCircleClock r f) j := by
@@ -1354,8 +1324,6 @@ lemma phaseSum_on_lattice (θ : ℝ) (hs : Real.sin (θ / 2) = 0) :
   push_cast
   ring
 
-/-- Off the lattice and on it,
-`D_N(θ) = (1/N) ∑_{k<N} exp(i (k-(N-1)/2) θ)`. -/
 theorem dirichletKernel_eq_phaseAverage (θ : ℝ) :
     (DirichletKernel.dirichletKernel N θ : ℂ) =
       (N : ℂ)⁻¹ * ∑ k ∈ range N,

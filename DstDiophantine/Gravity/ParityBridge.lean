@@ -9,26 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Parity, the bridge, and the two disorders
 
-## Paper boundary (do **not** claim)
-
-No baryon current, no Sakharov identity, and no derivation of \(\eta\).
-Spatial inversion is not charge conjugation, and the bridge is not
-\(\mathrm{CP}\).
-
-## What is proved
-
-* Spatial inversion negates every spatial generator and exchanges the two
-  chirality projectors of every axis.
-* On Faraday coefficients it acts by \((E,B)\mapsto(-E,B)\). It preserves
-  \(J\) and \(M\), and it flips \(E\cdot B\) and the beam component of
-  \(E\times B\). A pure-sector field has \(E\cdot B=0\). A boost excess is
-  pure electric; a rotation excess is pure magnetic.
-* The bridge anticommutes with inversion: \(P(Xi)=-(PX)i\). One order of
-  the composition is the usual--dual swap \((E,B)\mapsto(B,E)\); the other
-  is the global sign of that swap. The swap reverses \(J\), preserves
-  \(E\cdot B\), and flips the beam component.
-* Inversion composed with laboratory time reversal is that global sign.
-  \(J\), \(E\cdot B\), and the beam component are invariant under it.
+No baryon current, no Sakharov identity, and no derivation of \(\eta\). Spatial inversion is not charge conjugation, and the bridge is not \(\mathrm{CP}\).
 -/
 
 namespace DstDiophantine

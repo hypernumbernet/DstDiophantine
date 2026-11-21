@@ -22,30 +22,9 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
-# Dual-axis Fermat motor slices (real Lᵖ comparison)
+# Dual-axis Fermat motors
 
-Closes the geometric dichotomy used by the dual-axis programme:
-
-* `n = 2` positive solutions are pure cyclic (`α = 0`);
-* `n ≥ 3` positive solutions are mixed (`α > 0` and `β ∈ (0, π/2)`).
-
-The mixed seed leaks the additive null axis \(N_1\) into the time-null
-generator \(N_0\) at first order. On a positive solution the dual-axis
-characteristic is elliptic (\(\beta^2>\alpha^2\)), so the finite sandwich of
-\(N_1\) is a harmonic oscillator whose time-null remainder is a strictly
-positive multiple of \(N_0\) precisely when \(\alpha>0\). The power sum of
-positive bases is the scalar `exp(n α) (cos β ^ n + sin β ^ n)` on that seat.
-Equal positive real legs realise the scalar with `α > 0`, so the relation
-survives over `ℝ`. Neither positive integer base divides the other. On a
-positive integer solution the excess `a² + b² - c²` is a positive integer,
-so the boost equals `½ log(1 + (a²+b²-c²)/c²)` and is at least
-`½ log(1 + 1/c²)`. For an odd prime exponent dividing none of three coprime
-positive bases, `a + b`, `c - a`, and `c - b` are pairwise coprime pure `n`th
-powers summing to `2c`, with positive roots. The quotient of the power sum
-by `a + b` is a pure `n`th power coprime to that sum. The third base is the
-product of the root of `a + b` and the root of that quotient, both greater
-than one.
-Unconditional classical FLT is **not** claimed.
+Positive solutions of degree `n = 2` are pure cyclic, and degree `n ≥ 3` are mixed. Classical FLT is not claimed; `FermatMixedMotorResidual` stays open.
 -/
 
 namespace DstDiophantine
@@ -64,10 +43,6 @@ private theorem natAbs_coe_eq_coe_of_pos {z : ℤ} (hz : 0 < z) :
 
 /-! ### Real Lᵖ comparison on the positive quadrant -/
 
-/--
-For `0 < x,y` and `n ≥ 3`, if `xⁿ + yⁿ = 1` then both coordinates lie in
-`(0,1)`, hence `tⁿ < t²` and the Euclidean radius exceeds `1`.
--/
 theorem fermat_unit_lp_radius_gt_one {x y : ℝ} {n : ℕ}
     (hn : 3 ≤ n) (hx : 0 < x) (hy : 0 < y)
     (h : x ^ n + y ^ n = 1) :
@@ -125,14 +100,12 @@ theorem pythagorean_of_fermatBoost_eq_zero {a b c : ℤ}
     rwa [← haR, ← hbR, ← hcR]
   exact_mod_cast this
 
-/-- Positive Pythagorean triples are exactly the pure-cyclic Fermat motors. -/
 theorem fermatBoost_eq_zero_iff_pythagorean {a b c : ℤ}
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     IsPureCyclicFermatMotor a b c (ne_of_gt hc) ↔ a ^ 2 + b ^ 2 = c ^ 2 :=
   ⟨pythagorean_of_fermatBoost_eq_zero ha hb hc,
     fermatBoost_eq_zero_of_pythagorean ha hb hc⟩
 
-/-- Degree-`n ≥ 3` positive solutions force a strictly positive radius boost. -/
 theorem fermatBoost_pos_of_sol {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
@@ -173,7 +146,6 @@ theorem fermatBoost_pos_of_sol {a b c : ℤ} {n : ℕ}
     exact (lt_sqrt (le_of_lt hcR)).mpr hsq
   exact (fermatBoost_pos_iff (ne_of_gt hc) (Or.inl (ne_of_gt ha))).mpr hL2
 
-/-- Degree-`n ≥ 3` positive solutions sit in the mixed dual-axis seat. -/
 theorem isMixedFermatMotor_of_sol {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
@@ -184,8 +156,7 @@ theorem isMixedFermatMotor_of_sol {a b c : ℤ} {n : ℕ}
 
 /-! ### Sandwich / commutator connection (geometric, independent of FLT)
 
-The mixed seed is the sum of a radial boost and an axis-1 rotation. Brackets
-are linear, so the jets on \(N_1\) and \(N_3\) assemble from the two factors.
+The mixed seed is a radial boost plus an axis-1 rotation. The jets on \(N_1\) and \(N_3\) assemble from those two factors.
 -/
 
 /-! #### First jet and finite sandwich on \(N_3\) -/
@@ -202,15 +173,12 @@ theorem commutator_fermatAngle_null3 (a b : ℤ) (ha : a ≠ 0) :
     commutator_cyclic1_null3]
   module
 
-/-- Mixed first jet on the cyclic-plane translator: \([\Omega,N_3]=\beta N_1\). -/
 theorem commutator_fermatTorsion_null3 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3) =
       fermatAngle a b ha • null 1 := by
   rw [omegaTorsion_fermatTorsion_add, commutator_add_left,
     commutator_fermatBoost_null3, commutator_fermatAngle_null3, zero_add]
 
-/-- Infinitesimal sandwich defect: mixed Fermat seeds move `N₃`, while a pure
-axis-0 boost leaves it inert. -/
 theorem commutator_fermatTorsion_null3_ne_pureBoost {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc) :
@@ -231,7 +199,6 @@ theorem sandwich_fermatAngle_null3 (a b : ℤ) (ha : a ≠ 0) :
         Real.cos (fermatAngle a b ha) • null 3 :=
   sandwich_pureRotation1_null3 (fermatAngle a b ha)
 
-/-- The cyclic Fermat factor rotates `N₃`; a pure boost does not. -/
 theorem sandwich_fermatAngle_null3_ne_pureBoost {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (hβ : 0 < fermatAngle a b ha) :
@@ -241,8 +208,6 @@ theorem sandwich_fermatAngle_null3_ne_pureBoost {a b c : ℤ}
   simpa [fermatAngleSeed] using
     sandwich_pureRotation1_null3_ne_of_sin (ne_of_gt (fermatAngle_sin_pos ha hβ))
 
-/-- The one-parameter sandwich groups of a mixed Fermat seed and of its
-pure-boost part disagree on `N₃`. -/
 theorem exists_sandwich_fermat_ne_pureBoost {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc) :
@@ -256,7 +221,6 @@ theorem exists_sandwich_fermat_ne_pureBoost {a b c : ℤ}
 
 /-! #### First jet on the integer axis \(N_1\) (temporal leak) -/
 
-/-- Cyclic Fermat factor rotates the additive axis: \([\Omega_\beta,N_1]=-\beta N_3\). -/
 theorem commutator_fermatAngle_null1 (a b : ℤ) (ha : a ≠ 0) :
     Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 1) =
       -fermatAngle a b ha • null 3 := by
@@ -264,7 +228,6 @@ theorem commutator_fermatAngle_null1 (a b : ℤ) (ha : a ≠ 0) :
     commutator_cyclic1_null1]
   module
 
-/-- Radial Fermat boost mixes the additive axis into time: \([\Omega_\alpha,N_1]=\alpha N_0\). -/
 theorem commutator_fermatBoost_null1 (a b c : ℤ) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc)) (null 1) =
       fermatBoost a b c hc • null 0 := by
@@ -272,8 +235,6 @@ theorem commutator_fermatBoost_null1 (a b c : ℤ) (hc : c ≠ 0) :
     commutator_hyperbolic0_null1]
   module
 
-/-- Mixed Fermat seed on the integer translator axis:
-\([\Omega,N_1]=\alpha N_0-\beta N_3\). -/
 theorem commutator_fermatTorsion_null1 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1) =
       fermatBoost a b c hc • null 0 - fermatAngle a b ha • null 3 := by
@@ -281,7 +242,6 @@ theorem commutator_fermatTorsion_null1 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 
     commutator_fermatBoost_null1, commutator_fermatAngle_null1, neg_smul,
     sub_eq_add_neg]
 
-/-- Radial boost of the time translator: \([\Omega_\alpha,N_0]=\alpha N_1\). -/
 theorem commutator_fermatBoost_null0 (a b c : ℤ) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc)) (null 0) =
       fermatBoost a b c hc • null 1 := by
@@ -289,21 +249,17 @@ theorem commutator_fermatBoost_null0 (a b c : ℤ) (hc : c ≠ 0) :
     commutator_hyperbolic0_null0]
   module
 
-/-- Axis-1 rotation leaves the time translator inert. -/
 theorem commutator_fermatAngle_null0 (a b : ℤ) (ha : a ≠ 0) :
     Generators.commutator (omegaTorsion (fermatAngleSeed a b ha)) (null 0) = 0 := by
   rw [fermatAngleSeed, omegaTorsion_pureRotation1, commutator_smul_left,
     commutator_cyclic1_null0, smul_zero]
 
-/-- Mixed first jet on the time translator: \([\Omega,N_0]=\alpha N_1\). -/
 theorem commutator_fermatTorsion_null0 (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 0) =
       fermatBoost a b c hc • null 1 := by
   rw [omegaTorsion_fermatTorsion_add, commutator_add_left,
     commutator_fermatBoost_null0, commutator_fermatAngle_null0, add_zero]
 
-/-- Second nested bracket on the integer axis:
-\([\Omega,[\Omega,N_1]]=(\alpha^2-\beta^2)N_1\). -/
 theorem commutator_fermatTorsion_null1_two (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
       (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 1)) =
@@ -325,8 +281,6 @@ private theorem commutator_fermatTorsion_null1_ne_cyclic {a b c : ℤ}
     simpa [sub_eq_add_neg, add_assoc, add_neg_cancel, add_zero] using h'
   exact null_ne_zero 0 ((smul_eq_zero.mp this).resolve_left (ne_of_gt h.1))
 
-/-- One-parameter sandwich groups of mixed vs cyclic Fermat seeds disagree on
-the integer axis \(N_1\). -/
 theorem exists_sandwich_fermat_ne_cyclic_null1 {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc) :
@@ -340,7 +294,6 @@ theorem exists_sandwich_fermat_ne_cyclic_null1 {a b c : ℤ}
 
 /-! #### Second jet on \(N_3\) (feedback into time) -/
 
-/-- Second nested bracket on \(N_3\): \([\Omega,[\Omega,N_3]]=\alpha\beta N_0-\beta^2 N_3\). -/
 theorem commutator_fermatTorsion_null3_two (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc))
       (Generators.commutator (omegaTorsion (fermatTorsion a b c ha hc)) (null 3)) =
@@ -350,7 +303,6 @@ theorem commutator_fermatTorsion_null3_two (a b c : ℤ) (ha : a ≠ 0) (hc : c 
     commutator_fermatTorsion_null1]
   module
 
-/-- The mixed sandwich 2-jet on \(N_3\) is \(\alpha\beta N_0-\beta^2 N_3\). -/
 theorem iteratedDeriv_two_sandwich_fermatTorsion_null3
     (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     iteratedDeriv 2
@@ -362,7 +314,6 @@ theorem iteratedDeriv_two_sandwich_fermatTorsion_null3
     (omegaTorsion_reverse (fermatTorsion a b c ha hc)),
     commutator_fermatTorsion_null3_two]
 
-/-- Every Fermat torsion rotor still conjugates translators to translators. -/
 theorem exists_sandwich_fermatTorsion_expTrans (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0)
     (p : TransParams) :
     ∃ q : TransParams,
@@ -719,7 +670,6 @@ theorem sandwich_fermatTorsion_null1_elliptic {a b c : ℤ}
   ext i
   simpa [pgaCoord, f, cand, map_add, map_smul, smul_eq_mul] using hcoords i
 
-/-- Time-null remainder of the finite sandwich of the integer axis. -/
 theorem sandwich_fermatTorsion_null1_timeRemainder {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (hω : 0 < fermatMixedFreq a b c ha hc) (t : ℝ) :
@@ -732,7 +682,6 @@ theorem sandwich_fermatTorsion_null1_timeRemainder {a b c : ℤ}
   rw [sandwich_fermatTorsion_null1_elliptic ha hc hω t]
   module
 
-/-- On a mixed elliptic seat the time-null remainder at unit time is nonzero. -/
 private theorem sandwich_fermatTorsion_null1_time_ne_zero {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc)
@@ -820,10 +769,6 @@ theorem fermat_exp_boost_of_pos {a b c : ℤ} (ha : 0 < a) (hc : 0 < c) :
   unfold fermatBoost
   rw [Real.exp_log hpos, natAbs_coe_eq_coe_of_pos hc]
 
-/--
-For positive bases the power-sum ratio is the dual-axis scalar
-`exp(n α) (cos β ^ n + sin β ^ n)`.
--/
 theorem fermat_polar_ratio {a b c : ℤ} {n : ℕ}
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     ((a : ℝ) ^ n + (b : ℝ) ^ n) / (c : ℝ) ^ n =
@@ -874,7 +819,6 @@ theorem fermat_solution_iff_polar {a b c : ℤ} {n : ℕ}
       simpa [one_mul] using (div_eq_iff (pow_ne_zero n hc0)).mp hratio
     exact_mod_cast hR
 
-/-- Equal positive real legs solve the degree-`n` equation and carry a positive boost. -/
 theorem equal_leg_real_boost_pos {n : ℕ} (hn : 3 ≤ n) :
     let c : ℝ := 2 ^ ((1 : ℝ) / n)
     0 < c ∧ (1 : ℝ) ^ n + (1 : ℝ) ^ n = c ^ n ∧
@@ -943,7 +887,6 @@ private theorem nat_pow_add_one_lt_succ_pow {k n : ℕ} (hk : 0 < k) (hn : 3 ≤
     have : k ^ n + 1 < k ^ n + k ^ (n - 1) := by omega
     exact this.trans_le (by rwa [hexp] at hstep)
 
-/-- If one positive base divides the other, degree `n ≥ 3` has no solution in `ℕ`. -/
 theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hdvd : a ∣ b) :
     a ^ n + b ^ n ≠ c ^ n := by
@@ -1010,7 +953,6 @@ theorem not_nat_pow_add_pow_eq_pow_of_dvd {a b c n : ℕ}
       _ = k ^ n + 1 := by rw [← hunit, Nat.add_comm]
   exact absurd hsmall (not_le_of_gt (nat_pow_add_one_lt_succ_pow hk0 hn))
 
-/-- On a positive integer solution of degree `n ≥ 3`, `c² < a² + b²`. -/
 theorem fermat_sq_excess_pos {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
@@ -1024,7 +966,6 @@ theorem fermat_sq_excess_pos {a b c : ℤ} {n : ℕ}
     (Real.lt_sqrt hc0).mp hcmp
   exact_mod_cast hsq
 
-/-- For positive bases the boost is the half-logarithm of the normalised excess. -/
 theorem fermatBoost_eq_half_log_excess {a b c : ℤ}
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
     fermatBoost a b c (ne_of_gt hc) =
@@ -1062,7 +1003,6 @@ theorem fermatBoost_eq_half_log_excess {a b c : ℤ}
     _ = Real.log (1 + ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2) / 2 := by
         rw [harg]
 
-/-- On a positive integer solution the boost is at least `½ log(1 + 1/c²)`. -/
 theorem fermatBoost_ge_half_log_one_over_sq {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     (hsol : a ^ n + b ^ n = c ^ n) :
@@ -1110,11 +1050,6 @@ theorem not_fermat_pos_of_dvd_leg {a b c : ℤ} {n : ℕ}
     exact_mod_cast this
   exact not_nat_pow_add_pow_eq_pow_of_dvd hn haN hbN hdvdN hsolN
 
-/--
-Odd prime exponent, coprime positive bases, exponent dividing none of the three
-bases: `a + b = m^n`, `(a^n + b^n)/(a + b) = t^n`, and `c = m * t`, with
-`m` and `t` coprime and `m > 1`.
--/
 theorem fermat_odd_prime_leg_sum_pow {a b c n : ℕ}
     (hp : Nat.Prime n) (hodd : Odd n)
     (ha : 0 < a) (hb : 0 < b)
@@ -1419,13 +1354,6 @@ private theorem fermat_gcd_diff_quot {a b c n : ℕ}
     rw [hcop.gcd_eq_one] at hpg
     exact hpprime.not_dvd_one hpg
 
-/--
-Odd prime exponent, coprime positive bases, exponent dividing none of them:
-`a + b`, `c - a`, and `c - b` are pairwise coprime pure `n`th powers summing
-to `2c`, with positive roots. The quotient of the power sum by `a + b` is
-a pure `n`th power coprime to that sum. The third base is the product of the
-root of `a + b` and the root of that quotient, both greater than one.
--/
 theorem fermat_odd_prime_three_powers {a b c n : ℕ}
     (hp : Nat.Prime n) (hodd : Odd n)
     (ha : 0 < a) (hb : 0 < b)
@@ -1590,23 +1518,12 @@ theorem fermat_odd_prime_three_powers {a b c n : ℕ}
 
 /-! ### Live residual (sandwich / commutator attack; unproved) -/
 
-/--
-**Live residual** (dual-axis programme).
-
-A mixed dual-axis Fermat motor cannot coexist with a positive degree-`n ≥ 3`
-power sum. The finite elliptic sandwich of \(N_1\) already isolates a
-nonzero time-null remainder on any mixed seed; the residual is to promote
-that remainder to an incompatibility with \(a^n+b^n=c^n\). Height
-amplification and single-axis modular winding are **not** the intended hooks.
-
-Does **not** claim unconditional classical FLT.
--/
+/-- Open residual: mixed motor against a positive power sum of degree `n ≥ 3`. -/
 def FermatMixedMotorResidual : Prop :=
   ∀ (a b c : ℤ) (n : ℕ) (_hn : 3 ≤ n) (ha : 0 < a) (_hb : 0 < b) (hc : 0 < c),
     IsMixedFermatMotor a b c (ne_of_gt ha) (ne_of_gt hc) →
       ¬ a ^ n + b ^ n = c ^ n
 
-/-- Conditional positive classical FLT from the dual-axis residual. -/
 theorem fermat_pos_of_mixed_motor_residual
     (hres : FermatMixedMotorResidual) :
     ∀ (a b c : ℤ) (n : ℕ), 3 ≤ n → 0 < a → 0 < b → 0 < c →
@@ -1614,7 +1531,6 @@ theorem fermat_pos_of_mixed_motor_residual
   intro a b c n hn ha hb hc hsol
   exact hres a b c n hn ha hb hc (isMixedFermatMotor_of_sol hn ha hb hc hsol) hsol
 
-/-- Mathlib `FermatLastTheorem` from the dual-axis residual (ℕ form). -/
 theorem FermatLastTheorem_of_mixed_motor_residual
     (hres : FermatMixedMotorResidual) : FermatLastTheorem := by
   intro n hn a b c ha hb hc hsol

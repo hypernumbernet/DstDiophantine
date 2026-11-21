@@ -13,9 +13,7 @@ import Mathlib.Algebra.Order.Group.Abs
 /-!
 # Admissible lattice and zero-height configurations
 
-Diophantine search on the discrete torus is restricted to admissible points.
-Zero torsional height is characterised by an integer lattice condition, which
-is decidable without comparing transcendental reals.
+Search runs on admissible points. Zero height is an integer lattice condition.
 -/
 
 namespace DstDiophantine
@@ -168,10 +166,6 @@ private theorem sum_le_half_pi_iff (n m N : ℕ) [NeZero N] :
     convert hπbound using 1
     ring
 
-/--
-Admissibility on the discrete torus is the integer inequality
-`4 (n.val + m.val) ≤ N` on each axis (non-negative rapidities are automatic).
--/
 theorem isAdmissible_iff_four_le (t : DiscreteTorsion N) :
     IsAdmissible t ↔ ∀ a : Fin 3, 4 * ((t.n a).val + (t.m a).val) ≤ N := by
   rw [isAdmissible_iff_principalBranch]
@@ -216,7 +210,6 @@ theorem existsZeroHeight_iff (N : ℕ) [NeZero N] :
   · rintro ⟨t, ht, hz⟩
     refine ⟨⟨t, ht⟩, (AdmissibleClass.isZero_iff_latticeMismatch ⟨t, ht⟩).mpr hz⟩
 
-/-- Balanced axes (`n = m`) give zero height (sufficient but not necessary). -/
 theorem zeroHeight_of_balanced (t : DiscreteTorsion N)
     (hbal : ∀ a, t.n a = t.m a) : IsZeroHeight (toTorsionParams t) := by
   rw [isZeroHeight_toTorsionParams_iff]
@@ -225,7 +218,6 @@ theorem zeroHeight_of_balanced (t : DiscreteTorsion N)
   intro a _
   simp [hbal a]
 
-/-- The origin is an admissible zero-height point. -/
 theorem zero_admissible_zeroHeight (N : ℕ) [NeZero N] :
     IsAdmissible (Embedding.zeroTorsion N) ∧
       IsZeroHeight (toTorsionParams (Embedding.zeroTorsion N)) := by
@@ -273,7 +265,6 @@ private theorem axis_mismatch_le_floor
   exact (nat_sq_diff_le_sum_sq n m).trans <|
     pow_le_pow_left₀ (Nat.cast_nonneg _) (by exact_mod_cast hsum) 2
 
-/-- On an admissible lattice point, `|latticeMismatch| ≤ 3 ⌊N/4⌋²`. -/
 theorem abs_latticeMismatch_le_of_admissible {N : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |latticeMismatch t| ≤ 3 * ((N / 4 : ℕ) : ℤ) ^ 2 := by
@@ -306,7 +297,6 @@ theorem JNormalized_eq_sixteen_lattice {N : ℕ} [NeZero N] (t : DiscreteTorsion
   field_simp [hN, hπ]
   ring
 
-/-- Sharp admissible discrete bound `|JNormalized| ≤ (4⌊N/4⌋/N)²`. -/
 theorem torsion_bound_discrete_sharp {N : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| ≤ ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by
@@ -431,7 +421,6 @@ private theorem axis_mass_le_floor
   have hsq : n ^ 2 + m ^ 2 ≤ (n + m) ^ 2 := by nlinarith
   exact hsq.trans (Nat.pow_le_pow_left hsum 2)
 
-/-- On an admissible lattice point, `latticeMass ≤ 3 ⌊N/4⌋²`. -/
 theorem latticeMass_le_of_admissible {N : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (h : IsAdmissible t) :
     latticeMass t ≤ 3 * (N / 4) ^ 2 := by
@@ -443,7 +432,6 @@ theorem latticeMass_le_of_admissible {N : ℕ} [NeZero N]
   have h2 := axis_mass_le_floor (hfour 2)
   linarith
 
-/-- Sharp admissible discrete mass bound `M_norm ≤ (4⌊N/4⌋/N)²`. -/
 theorem massNormalized_discrete_sharp {N : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (h : IsAdmissible t) :
     massNormalized (toTorsionParams t) ≤ ((4 * (N / 4 : ℕ) : ℝ) / N) ^ 2 := by
@@ -474,7 +462,6 @@ theorem massNormalized_discrete_le_one {N : ℕ} [NeZero N]
     pow_le_pow_left₀ hnn hfrac 2
   simpa using hsharp.trans hsq
 
-/-- If `N < 4`, the only admissible lattice point is the origin. -/
 theorem admissible_eq_zero_of_lt_four {N : ℕ} [NeZero N] (hN : N < 4)
     (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
     t.n a = 0 ∧ t.m a = 0 := by
@@ -498,7 +485,6 @@ theorem JNormalized_eq_zero_of_lt_four {N : ℕ} [NeZero N] (hN : N < 4)
     simp [ha.1, ha.2]
   simp [hz]
 
-/-- For `N ≥ 8` there is an admissible balanced point with vanishing `J` and positive mass. -/
 theorem exists_admissible_balanced_massive {N : ℕ} [NeZero N] (hN : 8 ≤ N) :
     ∃ t : DiscreteTorsion N, IsAdmissible t ∧ latticeMismatch t = 0 ∧
       0 < mass (toTorsionParams t) := by
@@ -527,7 +513,6 @@ theorem exists_admissible_balanced_massive {N : ℕ} [NeZero N] (hN : 8 ≤ N) :
     exact mul_pos hcoef hL
   exact ⟨t, hadm, hmis, hmass⟩
 
-/-- If `4` does not divide `N`, every admissible point has `|JNormalized| < 1`. -/
 theorem torsion_bound_discrete_strict {N : ℕ} [NeZero N]
     (h4 : ¬ 4 ∣ N) (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| < 1 := by

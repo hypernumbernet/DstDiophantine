@@ -8,9 +8,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Vacuum-wavelength window on the SI stand-ins
 
-The photon wavelength of an energy, and the rational stand-in that replaces
-\(\pi\) by a twenty-digit bracket. A positive numerator and denominator then
-carry a rational inequality between those brackets up to the real wavelength.
+The photon wavelength of an energy, with `π` replaced by a twenty-digit rational bracket. A positive numerator and denominator carry a rational inequality between those brackets up to the real wavelength.
 -/
 
 namespace DstDiophantine
@@ -61,7 +59,6 @@ private theorem closed_factor_pos {num den : ℕ} (hnum : 0 < num) (hden : 0 < d
     exact pow_pos (by exact_mod_cast fineStructureApprox_pos) 2
   positivity
 
-/-- A rational window on the \(\pi\)-brackets is a real window on the wavelength. -/
 theorem ratioWavelength_bounds {num den : ℕ} {lo hi : ℚ}
     (hnum : 0 < num) (hden : 0 < den)
     (hlo : lo < standInWavelength num den piDigitLo)
@@ -137,7 +134,6 @@ theorem ratioWavelength_bounds {num den : ℕ} {lo hi : ℚ}
             ((den : ℝ) * (electronMassApprox : ℝ) * (speedOfLight : ℝ) *
               (fineStructureApprox : ℝ) ^ 2) := by ring
 
-/-- The same window after multiplying by a factor bracketed around \((\rho+1)/\rho\). -/
 theorem ratioFactor_bounds {num den : ℕ} {lo hi flo fhi : ℚ} {ρ : ℝ}
     (hnum : 0 < num) (hden : 0 < den)
     (hflo : (0 : ℚ) < flo) (hfhi : (0 : ℚ) < fhi)

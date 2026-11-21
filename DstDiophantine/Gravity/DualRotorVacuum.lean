@@ -8,24 +8,10 @@ import Mathlib.Tactic.Ring
 /-!
 # The critical lag is not the vacuum
 
-On one axis the Killing scalar and the unsigned mass, written in the
-common rapidity `σ = φ + θ` and the mismatch `δ = φ - θ`, are
-`J = δ σ / 2` and `M = (σ² + δ²) / 4`.
-
-The harmonic stiffness is critical only at alignment `δ = 0`. Along the
-written flow that alignment persists when the lag rate vanishes, and then
-`σ` coasts. `J` stays zero while `M = σ(t)² / 4`. That mass is constant
-in time if and only if the common rate vanishes. A nonzero common rate
-crosses `M = 0` once; away from that instant the two
-rotors still disagree, so the state is not free fall.
-
-A frozen quartic well `δ = v` is a different line. There
-`J = v σ / 2` and `M = (σ² + v²) / 4`. Coasting `σ` carries both scalars.
-At rest, with `σ = 0` and `v ≠ 0`, the well is balanced and massive,
-`J = 0` and `M = v² / 4`, and the rotors do not coincide.
-
-An affine lag of nonzero rate meets every critical value once and does
-not stop there. No electroweak vacuum is claimed.
+Alignment \(\delta=0\) keeps \(J=0\) while the unsigned mass coasts with
+\(\sigma\), and that state is not free fall unless the common rate vanishes. A
+frozen quartic well is balanced and massive at rest; no electroweak vacuum is
+claimed.
 -/
 
 namespace DstDiophantine
@@ -72,7 +58,6 @@ theorem written_aligned_mass (σ₀ σd₀ m t : ℝ) :
   rw [h.2.2.1, h.2.2.2, mass_axisParams]
   ring
 
-/-- Coasting alignment has stationary mass iff the common rate vanishes. -/
 theorem written_aligned_mass_const_iff {σ₀ σd₀ m : ℝ} :
     (∀ t, mass (axisParams (writtenUsual σ₀ σd₀ m 0 0 t) (writtenDual σ₀ σd₀ m 0 0 t)) =
         mass (axisParams (writtenUsual σ₀ σd₀ m 0 0 0) (writtenDual σ₀ σd₀ m 0 0 0))) ↔
@@ -99,7 +84,6 @@ theorem written_aligned_mass_const_iff {σ₀ σd₀ m : ℝ} :
     rw [written_aligned_mass, written_aligned_mass, hσ]
     ring
 
-/-- A nonzero common rate meets the empty state once. -/
 theorem written_aligned_crosses_empty {σ₀ σd₀ m : ℝ} (hσ : σd₀ ≠ 0) :
     ∃! t, mass (axisParams (writtenUsual σ₀ σd₀ m 0 0 t)
       (writtenDual σ₀ σd₀ m 0 0 t)) = 0 := by
@@ -143,7 +127,6 @@ theorem frozen_well_mass (v σ : ℝ) :
     mass (axisParams ((σ + v) / 2) ((σ - v) / 2)) = (σ ^ 2 + v ^ 2) / 4 :=
   axis_mass_sum_diff σ v
 
-/-- At rest the well is balanced and massive, and the rotors disagree. -/
 theorem frozen_well_at_rest_not_empty {v : ℝ} (hv : v ≠ 0)
     (hs : Real.sinh (v / 4) ≠ 0 ∨ Real.sin (-v / 4) ≠ 0) :
     J (axisParams (v / 2) (-v / 2)) = 0 ∧
@@ -168,7 +151,6 @@ theorem frozen_well_at_rest_not_empty {v : ℝ} (hv : v ≠ 0)
         simpa [this] using hsin
     exact _root_.DstDiophantine.RelativeRotor.axis_rotors_ne_of_bivector hs' hrot
 
-/-- Coasting through a frozen well carries `J` unless the common rate vanishes. -/
 theorem frozen_well_J_const_iff {v σ₀ σd₀ : ℝ} (hv : v ≠ 0) :
     (∀ t, J (axisParams ((σ₀ + σd₀ * t + v) / 2) ((σ₀ + σd₀ * t - v) / 2)) =
         J (axisParams ((σ₀ + v) / 2) ((σ₀ - v) / 2))) ↔

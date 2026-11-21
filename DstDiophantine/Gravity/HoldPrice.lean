@@ -7,28 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The price of holding a shield
 
-Cross-axis compensation buys unsigned mass. Axiswise alignment is what sits
-with no force. Between those extremes the cone prices the hold.
-
-On the admissible cone the lag budget is at least \(4M-3\pi^2/4\), with
-equality if and only if every axis lies on the wall. For positive stiffness
-and \(M\ge 3\pi^2/16\), the written potential is therefore at least
-\(2m(M-3\pi^2/16)\), with equality on the wall and nowhere else. A neutral
-wall has vanishing sum of lags, so each channel's three holding forces sum
-to zero. The bound is attained from the isotropic wall
-\(\alpha_a=\beta_a=\pi/4\) through to the heaviest shield, which is the
-endpoint of that wall.
-
-A matched hold \(v_a=u_a=m(\alpha_a-\beta_a)\) exchanges power only through
-the lag rate. Whenever the two angular velocities agree on each axis, the
-power vanishes.
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, and no identification
-of either channel force with a Faraday field. The sum of the three scalar
-controls is not a spatial force. Vanishing power along a joint motion is
-not free fall.
+On the admissible cone the lag budget is at least `4M − 3π²/4`, with equality exactly on the wall. No electromagnetic coupling or laboratory protocol is claimed, and vanishing power along a joint motion is not free fall.
 -/
 
 namespace DstDiophantine
@@ -89,7 +68,6 @@ private theorem sum_axisSum_sq_eq_iff {p : TorsionParams}
     rw [Fin.sum_univ_three, hw 0, hw 1, hw 2]
     ring
 
-/-- On the cone the lag budget is at least \(4M-3\pi^2/4\). -/
 theorem lagSq_ge_mass_wall {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     4 * mass p - 3 * Real.pi ^ 2 / 4 ≤ lagSq p := by
   have h4 := four_mass_eq_axisSum_add_lag p
@@ -98,7 +76,6 @@ theorem lagSq_ge_mass_wall {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     linarith [axisSum_sq_le h 0, axisSum_sq_le h 1, axisSum_sq_le h 2]
   linarith
 
-/-- Equality holds exactly on the wall. -/
 theorem lagSq_eq_mass_wall_iff {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     lagSq p = 4 * mass p - 3 * Real.pi ^ 2 / 4 ↔ OnWall p := by
   constructor
@@ -129,7 +106,6 @@ private theorem potential_price_identity (m M : ℝ) :
       2 * m * (M - 3 * Real.pi ^ 2 / 16) := by
   ring
 
-/-- The written potential is at least \(2m(M-3\pi^2/16)\). -/
 theorem stiffness_ge_excess {m : ℝ} {p : TorsionParams}
     (hm : 0 ≤ m) (h : IsAdmissibleContinuous p) :
     2 * m * (mass p - 3 * Real.pi ^ 2 / 16) ≤ stiffnessPotential m p := by
@@ -140,7 +116,6 @@ theorem stiffness_ge_excess {m : ℝ} {p : TorsionParams}
     mul_le_mul_of_nonneg_left hlag (by linarith)
   linarith [potential_price_identity m (mass p)]
 
-/-- For positive stiffness the price is attained exactly on the wall. -/
 theorem stiffness_eq_excess_iff {m : ℝ} {p : TorsionParams}
     (hm : 0 < m) (h : IsAdmissibleContinuous p) :
     stiffnessPotential m p = 2 * m * (mass p - 3 * Real.pi ^ 2 / 16) ↔
@@ -185,8 +160,6 @@ theorem sum_lag_eq_zero_of_onWall_neutral {p : TorsionParams}
   rw [Fin.sum_univ_three]
   exact hsum
 
-/-- The three usual-channel forces of a neutral wall sum to zero, and the
-three dual-channel forces are the same coefficients. -/
 theorem sum_holdForce_eq_zero_of_onWall_neutral {m : ℝ} {p : TorsionParams}
     (hw : OnWall p) (hn : IsGravNeutral p) :
     ∑ a : Fin 3, m * (p.alpha a - p.beta a) = 0 := by
@@ -197,9 +170,7 @@ private theorem fin3_cases : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by
 
 /-! ### The wall from the free sit to the heaviest shield -/
 
-/-- Neutral wall with lags \((t,-t,0)\). At \(t=0\) the lag vanishes and the
-mass is the free-sitting ceiling; at \(t=\pi/2\) the mass and the lag are
-those of the heaviest shield. -/
+/-- Neutral wall with lags `(t, -t, 0)`, from the free sit at `t = 0` to the heaviest shield at `t = π/2`. -/
 noncomputable def balancedWall (t : ℝ) : TorsionParams where
   alpha := fun a =>
     if a.val = 0 then Real.pi / 4 + t / 2
@@ -255,7 +226,6 @@ theorem sum_lag_balancedWall (t : ℝ) :
   norm_num
   ring
 
-/-- The far end of the family is the heaviest shield. -/
 theorem balancedWall_half_pi : balancedWall (Real.pi / 2) = maximalShield := by
   refine congrArg₂ TorsionParams.mk ?_ ?_
   · funext a
@@ -273,8 +243,7 @@ theorem stiffness_balancedWall {m t : ℝ} :
   rw [stiffnessPotential_eq_lag, lagSq_balancedWall, mass_balancedWall]
   ring
 
-/-- Neutral wall of unsigned mass \(M\), for \(M\) between the free-sitting
-ceiling and the heaviest shield. -/
+/-- Neutral wall of unsigned mass \(M\), for \(M\) between the free-sitting ceiling and the heaviest shield. -/
 noncomputable def balancedWallOfMass (M : ℝ) : TorsionParams :=
   balancedWall (Real.sqrt (2 * (M - 3 * Real.pi ^ 2 / 16)))
 
@@ -336,8 +305,6 @@ private theorem holdPower_matched {m : ℝ} {φ θ φdot θdot : Fin 3 → ℝ} 
   intro a _
   ring
 
-/-- A matched hold does no work when the two rotors share an angular
-velocity on every axis. Rest is the case of vanishing velocity. -/
 theorem holdPower_matched_of_equal_velocity {m : ℝ} {φ θ φdot θdot : Fin 3 → ℝ}
     (h : ∀ a, φdot a = θdot a) :
     holdPower (fun a => m * (φ a - θ a)) (fun a => m * (φ a - θ a))

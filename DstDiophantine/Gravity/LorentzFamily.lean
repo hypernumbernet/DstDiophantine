@@ -15,16 +15,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The six inertial planes, and one-parameter curvature
 
-Each coordinate plane carries a one-parameter coframe. Boosts are the three
-`hyperbolic` axes and rotations the three `cyclic` axes. In every case the
-induced metric is Minkowski, the plane block has determinant one, the
-coordinate torsion remembers only the jet of the angle, and the teleparallel
-scalar vanishes for an arbitrary four-component jet. The same parameter has
-mismatch `+½φ²` on a boost and `-½θ²` on a rotation.
-
-The Maurer–Cartan coefficient `(dR/dφ) R̃` of a one-parameter rotor is the
-constant generator. A connection proportional to one `dφ` therefore has
-vanishing curvature. That curvature is not the teleparallel scalar.
+Each coordinate plane carries a one-parameter coframe with Minkowski metric and vanishing teleparallel scalar. The Maurer–Cartan curvature of a connection proportional to one `dφ` vanishes, and that curvature is not the teleparallel scalar.
 -/
 
 namespace DstDiophantine
@@ -71,12 +62,10 @@ theorem axisBoostGen_antisym (i : Fin 3) : MinkowskiAntisym (axisBoostGen i) :=
 theorem axisRotGen_antisym (i : Fin 3) : MinkowskiAntisym (axisRotGen i) :=
   soK_minkowskiAntisym _
 
-/-- Teleparallel scalar of a boost jet, including derivatives off the plane. -/
 theorem axisBoostTeleparallel_eq_zero (i : Fin 3) (d : Fin 4 → ℝ) :
     genTeleparallel (axisBoostGen i) d = 0 :=
   genTeleparallel_eq_zero (axisBoostGen_antisym i) d
 
-/-- Teleparallel scalar of a rotation jet, including derivatives off the plane. -/
 theorem axisRotTeleparallel_eq_zero (i : Fin 3) (d : Fin 4 → ℝ) :
     genTeleparallel (axisRotGen i) d = 0 :=
   genTeleparallel_eq_zero (axisRotGen_antisym i) d
@@ -280,7 +269,6 @@ private theorem boost_half_expand (c s : ℝ) :
     smul_smul, hsq, mul_neg, neg_smul, smul_add, add_smul]
   module
 
-/-- `(dR/dφ) R̃ = ½ B` for the pure `(t,x)` boost. The coefficient does not depend on `φ`. -/
 theorem pureBoost_mc (φ : ℝ) :
     ((((1 : ℝ) / 2) * Real.sinh (φ / 2)) • (1 : PGA) +
         (((1 : ℝ) / 2) * Real.cosh (φ / 2)) • hyperbolic 0) *
@@ -322,7 +310,6 @@ private theorem rot_half_expand (c s : ℝ) (B : PGA) (hB : B * B = -1) :
   rw [a1, a2, a3, a4]
   module
 
-/-- `(dR/dθ) R̃ = ½ B` for the pure rotation on `cyclic 2`. -/
 theorem pureRotation2_mc (θ : ℝ) :
     ((((1 : ℝ) / 2) * (-Real.sin (θ / 2))) • (1 : PGA) +
         (((1 : ℝ) / 2) * Real.cos (θ / 2)) • cyclic 2) *
@@ -330,8 +317,6 @@ theorem pureRotation2_mc (θ : ℝ) :
       ((1 : ℝ) / 2) • cyclic 2 := by
   rw [rot_half_expand _ _ _ (cyclic_sq 2), Real.cos_sq_add_sin_sq, mul_one]
 
-/-- Curvature coefficient of a connection `c dφ`. The parameter derivative of a
-constant coefficient vanishes, and `dφ ∧ dφ` contributes the commutator `[c,c]`. -/
 theorem oneParam_curvature (c : PGA) : (0 : PGA) + (c * c - c * c) = 0 := by
   simp
 

@@ -8,18 +8,7 @@ import Mathlib.Data.Finset.Sort
 /-!
 # The ten bivectors are a basis of the bivector grade
 
-The binomial count `C(5,2) = 10` names a dimension. What is proved here is that
-the three geometric classes realise it:
-
-* `linearIndependent_tenGen`: boosts, rotations, and translations are linearly
-  independent;
-* `poincareSpan_eq_bivectorGrade`: their span is the whole grade-2 summand of
-  `G(3,1,1)`, transported along the canonical module isomorphism with the
-  exterior algebra;
-* the three classes are complementary, of dimensions 3, 3, and 4, so
-  `lorentzSpan ⊔ nullSpan` is a direct sum and equals that grade.
-
-An abstract Lie-algebra isomorphism with `𝔦𝔰𝔬(3,1)` is not claimed.
+Boosts, rotations, and translations span the grade-2 summand. An abstract isomorphism with `𝔦𝔰𝔬(3,1)` is not claimed.
 -/
 
 namespace DstDiophantine
@@ -39,8 +28,6 @@ private theorem associated_neg_basis_ortho {i j : Fin 5} (hij : i ≠ j) :
   rw [h]
   abel
 
-/-- Off-diagonal products of basis vectors are sent to the corresponding
-exterior products. The polar term vanishes because the basis is orthogonal. -/
 theorem equivExterior_ι_mul_ι {i j : Fin 5} (hij : i ≠ j) :
     equivExterior Q311 (ι i * ι j) =
       ExteriorAlgebra.ι ℝ (e5vec i) * ExteriorAlgebra.ι ℝ (e5vec j) := by
@@ -252,8 +239,7 @@ theorem finrank_poincareSpan : Module.finrank ℝ LorentzLie.poincareSpan = 10 :
   rw [← span_tenGen_eq_poincare, finrank_span_eq_card linearIndependent_tenGen]
   simp
 
-/-- Grade-2 summand of `G(3,1,1)`, as a submodule, via the module isomorphism
-with the exterior algebra. -/
+/-- Grade-2 summand of `G(3,1,1)`, via the exterior-algebra isomorphism. -/
 noncomputable def bivectorGrade : Submodule ℝ PGA :=
   (⋀[ℝ]^2 Vec5).map (equivExterior Q311).symm.toLinearMap
 
@@ -275,7 +261,6 @@ theorem poincareSpan_le_bivectorGrade :
   rw [ExteriorAlgebra.ιMulti_family]
   exact ExteriorAlgebra.ιMulti_range ℝ 2 (Set.mem_range_self _)
 
-/-- The Poincaré span is the entire bivector grade. -/
 theorem poincareSpan_eq_bivectorGrade :
     LorentzLie.poincareSpan = bivectorGrade :=
   Submodule.eq_of_le_of_finrank_eq poincareSpan_le_bivectorGrade
@@ -371,7 +356,6 @@ private theorem linearIndependent_lorentzGen :
   simpa [tenGen_lorentzIndex] using
     linearIndependent_tenGen.comp lorentzIndex lorentzIndex_injective
 
-/-- A vanishing sum of boosts and rotations has every coefficient zero. -/
 theorem sum_elim_hyperbolic_cyclic_eq_zero {f g : Fin 3 → ℝ}
     (h : (∑ a : Fin 3, f a • hyperbolic a) + (∑ a : Fin 3, g a • cyclic a) = 0) :
     (∀ a, f a = 0) ∧ (∀ a, g a = 0) := by

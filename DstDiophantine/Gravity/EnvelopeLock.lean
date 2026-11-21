@@ -7,17 +7,10 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # The envelope is a lock
 
-`ControlDomain` shows that the admissible cone fills the three-lobed region
-under the envelope, and names families that attain it. Attainment is
-exhaustive. A configuration lies on the envelope if and only if every axis
-is on the wall and at least two axes occupy corners of the cone. The usual
-rotor then determines the dual angles, so a dual-only motion meets the
-envelope at most once.
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, and no identification
-of the dual-channel force \(u\).
+An admissible configuration meets the envelope if and only if every axis is on
+the wall and at least two axes are corners, so a dual-only motion meets it at
+most once. No electromagnetic coupling, no laboratory protocol, and no
+identification of the dual-channel force \(u\).
 -/
 
 namespace DstDiophantine
@@ -1102,8 +1095,6 @@ private theorem abs_J_le_of_opposed {p : TorsionParams}
 
 /-! ### The lock -/
 
-/-- An admissible configuration meets the envelope if and only if every
-axis is on the wall and at least two axes are corners. -/
 theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     mass p = controlCeiling (J p) ↔ OnWall p ∧ TwoCorners p := by
   constructor
@@ -1144,8 +1135,6 @@ theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuous p) :
         have hnum := controlEnvelopeNum_eq_shield hJ
         exact (mass_eq_controlCeiling_iff_raw (p := p)).mpr (by rw [heq, hnum])
 
-/-- On the wall the usual rotor determines the dual angles, so two ceiling
-configurations in the same dual-only slice coincide. -/
 theorem eq_of_onEnvelope_of_alpha_eq {p q : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hq : IsAdmissibleContinuous q)
     (hα : q.alpha = p.alpha)
@@ -1177,8 +1166,6 @@ private theorem quarter_of_density_zero {p : TorsionParams}
   rw [hβ, hα]
   ring
 
-/-- The heaviest shield assigns the three roles once each: one axis purely
-usual, one purely dual, and the third split evenly, every axis on the wall. -/
 theorem exists_heaviest_shield_roles {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hJ : J p = 0)
     (hM : mass p = 5 * Real.pi ^ 2 / 16) :

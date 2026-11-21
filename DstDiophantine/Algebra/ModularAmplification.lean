@@ -17,19 +17,7 @@ set_option linter.style.native false
 /-!
 # Modular torsional amplification with winding
 
-Real `k`-fold scaling of rapidities is incompatible with coarseness: the legacy
-`CoarseAmplificationWitness` is structurally empty.  The replacement tracks
-multiplication on `(ℤ/Nℤ)⁶` and records the integer winding forced by reduction
-modulo `N`.
-
-For each coordinate `x : ZMod N`,
-`k * x.val = (k • x).val + N * winding`,
-and the continuous lift satisfies
-`k * (2π x.val / N) = 2π (k • x).val / N + 2π * winding`.
-
-Consequently `JNormalized` after modular amplification equals the naive
-`k²`-scaled seed plus an explicit winding error term — the live bridge target
-is a number-theoretic lower bound on that error, not a vacuous coarse witness.
+Scaling on `(ℤ/Nℤ)⁶` records an integer winding. The live gap is that winding error, not the empty coarse witness.
 -/
 
 namespace DstDiophantine
@@ -56,7 +44,6 @@ theorem mul_val_eq_val_add_winding (k : ℕ) (x : ZMod N) :
   have hdiv := Nat.div_add_mod (k * x.val) N
   linarith [hdiv, hmod]
 
-/-- Strict upper bound: each coordinate winds fewer than `k` times. -/
 theorem windingCoord_lt (k : ℕ) (x : ZMod N) (hk : 0 < k) :
     windingCoord k x < k := by
   unfold windingCoord
@@ -65,7 +52,6 @@ theorem windingCoord_lt (k : ℕ) (x : ZMod N) (hk : 0 < k) :
   rw [Nat.div_lt_iff_lt_mul hN]
   exact Nat.mul_lt_mul_of_pos_left hval hk
 
-/-- Positive winding is exactly the overflow `N ≤ k · x.val`. -/
 theorem windingCoord_pos_iff (k : ℕ) (x : ZMod N) :
     0 < windingCoord k x ↔ N ≤ k * x.val := by
   unfold windingCoord
@@ -76,7 +62,6 @@ theorem windingCoord_eq_zero_of_lt {N : ℕ} (k : ℕ) (x : ZMod N) (h : k * x.v
     windingCoord k x = 0 :=
   Nat.div_eq_of_lt h
 
-/-- Continuous-angle form of the winding identity. -/
 theorem scale_angle_eq_mod_plus_winding (k : ℕ) (x : ZMod N) :
     (k : ℝ) * (2 * Real.pi * x.val / N) =
       2 * Real.pi * (k • x).val / N + 2 * Real.pi * windingCoord k x := by
@@ -107,14 +92,6 @@ def amplifyDiscrete (k : ℕ) (t : DiscreteTorsion N) : DiscreteTorsion N where
 def windingTotal (k : ℕ) (t : DiscreteTorsion N) : ℕ :=
   ∑ a : Fin 3, (windingCoord k (t.n a) + windingCoord k (t.m a))
 
-/--
-Real `k`-fold scaling that stays continuously admissible forces every lattice
-coordinate below the wrap threshold, hence total winding vanishes.
-
-Consequently a modular witness with `has_winding` cannot feed the continuous
-amplification no-go directly — the live gap is a conformal / gauge condition
-that is not the PGA real-scale cone.
--/
 private theorem four_mul_le_implies_mul_lt (k v N : ℕ) [NeZero N]
     (h : 4 * k * v ≤ N) : k * v < N := by
   have hle : k * v ≤ 4 * k * v := by
@@ -159,7 +136,6 @@ theorem admissible_scale_implies_windingTotal_eq_zero (k : ℕ)
       exact hle.trans this
     exact four_mul_le_implies_mul_lt k (t.m a).val N hbound
   simp [hn, hm]
-/-- Dual form: nonzero total winding rules out real-scale continuous admissibility. -/
 theorem windingTotal_ne_zero_implies_not_admissible_scale (k : ℕ)
     (t : DiscreteTorsion N) (hw : windingTotal k t ≠ 0) :
     ¬ IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t)) := by
@@ -207,11 +183,7 @@ theorem axis_sq_scale_eq_amplified_add_error (k : ℕ) (t : DiscreteTorsion N) (
   unfold axisWindingError
   exact sq_diff_expand _ _ _ _
 
-/--
-Real `k`-scaling of `J` equals the modular lift plus an explicit winding error.
-The simple identity `J(scale k p) = k² J(p)` therefore fails for modular
-amplification; bridges must control this error term.
--/
+/-- Modular amplification adds a winding error, so `J(scale k p) = k² J(p)` fails. -/
 theorem J_scale_eq_J_amplified_add_error (k : ℕ) (t : DiscreteTorsion N) :
     J (scaleTorsion (k : ℝ) (toTorsionParams t)) =
       J (amplifiedParams k t) + (1 / 2) * ∑ a : Fin 3, axisWindingError k t a := by
@@ -304,10 +276,6 @@ theorem pureBoostSeedOfRapidity_isPureBoost (N : ℕ) [NeZero N] (θ : ℝ) :
     fin_cases a <;> first | exact (ha rfl).elim | rfl
   · intro a; rfl
 
-/--
-If `0 ≤ θ < 2π`, the floor index lies in `[0, N)` and agrees with the
-`ZMod` representative after casting.
--/
 theorem quantizeRapidity_of_lt_two_pi (N : ℕ) [NeZero N] (θ : ℝ)
     (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi) :
     0 ≤ quantizeRapidity N θ ∧
@@ -350,10 +318,6 @@ private theorem rapidity_frac_ge_of_ge (N k : ℕ) [NeZero N] (hk : 0 < k) (θ :
         div_le_div_of_nonneg_right
           (mul_le_mul_of_nonneg_right hle (Nat.cast_nonneg _)) hden.le
 
-/--
-Pure-boost quantisation of a rapidity in `[0, 2π)` winds under `k`-fold modular
-amplification whenever `2π / k ≤ θ` and `k ∣ N`.
--/
 theorem windingTotal_ne_zero_of_rapidity_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     (θ : ℝ) (h0 : 0 ≤ θ) (hle : 2 * Real.pi / k ≤ θ) (hlt : θ < 2 * Real.pi)
     (hdvd : k ∣ N) :
@@ -382,11 +346,7 @@ theorem windingTotal_ne_zero_of_rapidity_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     exact_mod_cast this
   exact (windingTotal_pureBoost_ne_zero_iff k t hp).mpr hmul
 
-/--
-Converse direction (no `k ∣ N` hypothesis): if `0 ≤ θ < 2π/k`, the pure-boost
-seed has total winding `0`. Consequently the balanced model gap
-`log 2 / m < 2π/k` never yields a modular winding witness on any lattice.
--/
+/-- A rapidity below `2π/k` has winding zero, so the balanced gap never winds. -/
 theorem windingTotal_eq_zero_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
     (θ : ℝ) (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi / k) :
     windingTotal k (pureBoostSeedOfRapidity N θ) = 0 := by
@@ -433,13 +393,7 @@ theorem windingTotal_eq_zero_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
 
 /-! ### Modular amplification witness (non-vacuous) -/
 
-/--
-Non-vacuous discrete amplification certificate: a nonzero admissible seed whose
-*modular* `k`-fold image remains admissible and wraps at least once.
-
-Unlike `CoarseAmplificationWitness`, this type is inhabited for concrete
-`(N,k)` (see `modularWitness_example`).
--/
+/-- Non-vacuous certificate: admissible seed, admissible modular image, and a wrap. -/
 structure ModularAmplificationWitness (N k : ℕ) [NeZero N] where
   t : AdmissibleClass N
   nonzero_seed : latticeMismatch t.val ≠ 0
@@ -466,7 +420,7 @@ private theorem example_amplified_admissible :
 private theorem example_has_winding : windingTotal 5 exampleSeed ≠ 0 := by
   native_decide
 
-/-- Concrete inhabited example: `N = 16`, `k = 5`, pure boost `n₀ = 4`. -/
+/-- Witness: `N = 16`, `k = 5`, pure boost `n₀ = 4`. -/
 def modularWitness_example : ModularAmplificationWitness 16 5 where
   t := ⟨exampleSeed, exampleSeed_admissible⟩
   nonzero_seed := exampleSeed_mismatch
@@ -477,7 +431,6 @@ theorem ModularAmplificationWitness.nonempty_example :
     Nonempty (ModularAmplificationWitness 16 5) :=
   ⟨modularWitness_example⟩
 
-/-- No modular winding witness exists for a pure-boost rapidity below `2π/k`. -/
 theorem not_exists_modularWitness_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 < k)
     (θ : ℝ) (h0 : 0 ≤ θ) (hlt : θ < 2 * Real.pi / k)
     (hw : ∃ w : ModularAmplificationWitness N k,
@@ -488,7 +441,7 @@ theorem not_exists_modularWitness_of_rapidity_lt (N k : ℕ) [NeZero N] (hk : 0 
     simpa [heq] using w.has_winding
   exact hwind (windingTotal_eq_zero_of_rapidity_lt N k hk θ h0 hlt)
 
-/-- Balanced model gap `log 2 / m` never produces a modular winding witness. -/
+/-- The balanced gap `log 2 / m` never yields a modular winding witness. -/
 theorem not_exists_modularWitness_of_balanced_gap (N m k : ℕ) [NeZero N]
     (hk : 0 < k)
     (hgap : Real.log 2 / (m : ℝ) < 2 * Real.pi / (k : ℝ))
@@ -499,12 +452,7 @@ theorem not_exists_modularWitness_of_balanced_gap (N m k : ℕ) [NeZero N]
     div_nonneg (Real.log_nonneg (by norm_num : (1 : ℝ) ≤ 2)) (Nat.cast_nonneg _)
   exact not_exists_modularWitness_of_rapidity_lt N k hk _ h0 hgap hw
 
-/--
-Admissibility (`4 · val ≤ N` on each axis) and nonzero winding
-(`N ≤ k · val` on some coordinate) force `4 ≤ k`. Consequently witnesses with
-`k < 4` are empty — in particular the old Beal payload with amplification
-factor `m = 3` was structurally vacuous.
--/
+/-- Nonzero winding and admissibility force `k ≥ 4`; factor `3` is vacuous. -/
 theorem modularWitness_four_le {N k : ℕ} [NeZero N]
     (w : ModularAmplificationWitness N k) : 4 ≤ k := by
   have hadm := (AdmissibleClass.isAdmissible_iff_four_le w.t.val).mp w.t.property
@@ -543,17 +491,14 @@ theorem modularWitness_four_le {N k : ℕ} [NeZero N]
     have : 4 * (w.t.val.m a).val ≤ k * (w.t.val.m a).val := h4m.trans hN
     exact Nat.le_of_mul_le_mul_right this hval
 
-/-- No modular winding witness exists when the amplification factor is below 4. -/
 theorem modularWitness_empty_of_lt_four {N k : ℕ} [NeZero N] (hk : k < 4) :
     IsEmpty (ModularAmplificationWitness N k) :=
   ⟨fun w => Nat.not_lt.mpr (modularWitness_four_le w) hk⟩
 
-/-- Specialisation: amplification factor `3` never yields a modular witness. -/
 theorem modularWitness_empty_of_eq_three {N : ℕ} [NeZero N] :
     IsEmpty (ModularAmplificationWitness N 3) :=
   modularWitness_empty_of_lt_four (by decide : (3 : ℕ) < 4)
 
-/-- Pure-boost lattice mismatch collapses to the axis-`0` square. -/
 theorem latticeMismatch_pureBoost (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
     latticeMismatch t = ((t.n 0).val : ℤ) ^ 2 := by
   unfold latticeMismatch
@@ -561,7 +506,6 @@ theorem latticeMismatch_pureBoost (t : DiscreteTorsion N) (hp : IsPureBoostSeed 
     hp.2 0, hp.2 1, hp.2 2, ZMod.val_zero]
   ring
 
-/-- Pure-boost nonzero winding forces a nonzero lattice mismatch. -/
 theorem latticeMismatch_ne_zero_of_winding_pureBoost (k : ℕ) (t : DiscreteTorsion N)
     (hp : IsPureBoostSeed t) (hw : windingTotal k t ≠ 0) :
     latticeMismatch t ≠ 0 := by
@@ -573,7 +517,6 @@ theorem latticeMismatch_ne_zero_of_winding_pureBoost (k : ℕ) (t : DiscreteTors
   rw [latticeMismatch_pureBoost t hp]
   exact pow_ne_zero 2 (by exact_mod_cast ne_of_gt hval)
 
-/-- Discrete admissibility for a pure-boost seed is `4 · n₀.val ≤ N`. -/
 theorem isAdmissible_of_pureBoost_n0_le (t : DiscreteTorsion N)
     (hp : IsPureBoostSeed t) (h : 4 * (t.n 0).val ≤ N) :
     IsAdmissible t := by
@@ -584,7 +527,6 @@ theorem isAdmissible_of_pureBoost_n0_le (t : DiscreteTorsion N)
   · simp [hp.1 1 (by decide), hp.2 1, ZMod.val_zero]
   · simp [hp.1 2 (by decide), hp.2 2, ZMod.val_zero]
 
-/-- If modular amplification kills the pure-boost coordinate, the image is admissible. -/
 theorem isAdmissible_amplifyDiscrete_of_pureBoost_smul_n0
     (k : ℕ) (t : DiscreteTorsion N) (hp : IsPureBoostSeed t)
     (h0 : k • t.n 0 = 0) :
@@ -619,25 +561,14 @@ def modularWitness_of_pureBoost_winding (k : ℕ) (t : DiscreteTorsion N)
   modularWitness_of_pureBoost k t hadm hamp hwind
     (latticeMismatch_ne_zero_of_winding_pureBoost k t hp hwind)
 
-/-- A modular witness with nonzero winding is not continuously admissible after
-real `k`-scaling — it cannot be fed to `continuous_amplification_contradiction`. -/
+/-- A winding witness is not real-scale admissible. -/
 theorem ModularAmplificationWitness.not_admissible_real_scale
     {N k : ℕ} [NeZero N] (w : ModularAmplificationWitness N k) :
     ¬ IsAdmissibleContinuous
         (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
   windingTotal_ne_zero_implies_not_admissible_scale k w.t.val w.has_winding
 
-/--
-Explicit residual gap label for modular bridges: "conformal / CGA gauge
-admissibility" of a torsion configuration.
-
-In this cycle it is **provisionally identified** with the PGA continuous
-admissible cone `IsAdmissibleContinuous`.  A modular witness with nonzero
-winding is never conformally admissible under this identification
-(`not_admissible_real_scale`).  The 1D CGA probe investigates whether a
-homogeneous null-cone gauge can replace this identification without collapsing
-to the same obstruction.
--/
+/-- Provisional alias of `IsAdmissibleContinuous`, not a separate CGA gauge. -/
 abbrev ConformalGaugeAdmissible (p : TorsionParams) : Prop :=
   IsAdmissibleContinuous p
 

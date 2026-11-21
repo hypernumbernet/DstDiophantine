@@ -10,38 +10,7 @@ import Mathlib.Topology.Order.IntermediateValue
 /-!
 # Strong channel: rapidity threshold and dual excitation
 
-## Paper boundary (do **not** claim)
-
-The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity inside a
-compound nucleus, and the laboratory `1/v` law are **not** derived. Neither
-is a capture cross section. QCD and `A_max` stay outside this module.
-
-## What is proved
-
-On the window `(π/4, π/2)` the rapidity threshold
-`φ_*(x) = log(sin x + cos x) - log(sin x - cos x) - 2x`
-is strictly decreasing, vanishes at the first equal-scale node, and has
-derivative `-4 cosh(x₁)²` there. No finite rapidity makes the interference
-factor negative at phase `x ≤ π/4`. Below the threshold the factor is
-positive. A nonnegative rapidity that increases from a value below `φ_*`
-meets `φ_*` at one phase strictly before `x₁`.
-
-A dual excitation `ψ_*(x) = 2 arctan(γ_s(x)/τ(x))` is strictly decreasing on
-the outer well, vanishes at the first node, and tends to `π` at large
-separation.
-
-## Charged entrance (do **not** claim)
-
-The host that holds a rapidity down, a fusion rate, and the value of the
-Coulomb-to-nuclear ratio are **not** derived. What is proved is the sign
-comparison. Above the threshold the nuclear term adds to a positive Coulomb
-term. Below it, every finite positive ratio is overcome on a nonempty
-interval of rapidity abutting the threshold, and a higher sub-threshold
-rapidity pulls harder. A smaller positive rapidity keeps that onset closer
-to the node: the phase gap is strictly smaller than `φ/(4 cosh(x₁)²)`, and
-the fractional widening of the radius is strictly smaller than `φ/π`. If
-`0 < T/mc² ≤ 10⁻¹⁰`, that widening is strictly less than `5 × 10⁻⁶`.
-Outside phase `π/4`, a sufficiently large rapidity leaves a net repulsion.
+The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity, the laboratory `1/v` law, and a capture cross section are not derived. The host that holds a rapidity down, a fusion rate, and the Coulomb-to-nuclear ratio are not derived.
 -/
 
 namespace DstDiophantine
@@ -170,7 +139,6 @@ private theorem cos_sub_sin_nonneg {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ π / 4)
       rw [tan_eq_sin_div_cos, div_lt_one hcos] at htan
       linarith
 
-/-- No finite rapidity inverts the channel at phase `x ≤ π/4`. -/
 theorem gammaRapidity_pos_of_le_quarter {x δ : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ π / 4) :
     0 < gammaRapidity x δ := by
   rw [gammaRapidity_closed]
@@ -333,7 +301,6 @@ theorem phiStar_deriv_node :
   field_simp
   nlinarith [hplus]
 
-/-- Below the threshold the channel attracts; above it the channel repels. -/
 theorem gammaRapidity_pos_iff {x δ : ℝ} (hx : π / 4 < x) (hx2 : x < π / 2) :
     0 < gammaRapidity x δ ↔ δ < phiStar x / 2 := by
   have hden : 0 < sin x - cos x := sin_sub_cos_pos hx hx2
@@ -419,7 +386,6 @@ theorem gammaRapidity_eq_zero_iff {x δ : ℝ} (hx : π / 4 < x) (hx2 : x < π /
       ring
     exact mul_eq_zero.mpr (Or.inr hrest)
 
-/-- While the channel attracts, an inward rapidity increases. -/
 theorem infall_phase_deriv_pos {φ γ K dφ : ℝ}
     (hφ : 0 < φ) (hγ : 0 < γ) (hK : 0 < K)
     (h : sinh φ * γ * dφ = K) : 0 < dφ := by
@@ -428,8 +394,6 @@ theorem infall_phase_deriv_pos {φ γ K dφ : ℝ}
   have hmul : 0 < sinh φ * γ * dφ := by rw [h]; exact hK
   exact (mul_pos_iff_of_pos_left hprod).mp hmul
 
-/-- A nonnegative increasing rapidity that starts below the threshold meets it
-before the static node. -/
 theorem inward_rapidity_meets_threshold {c : ℝ} {φ : ℝ → ℝ}
     (hc : π / 4 < c) (hc1 : c < resonanceRoot1)
     (h0 : 0 ≤ φ c) (hlt : φ c < phiStar c)
@@ -631,8 +595,6 @@ theorem cosh_sub_one_local (φ : ℝ) :
   have hsq := cosh_sq_sub_sinh_sq (φ / 2)
   linarith
 
-/-- Above the threshold the nuclear term is outward, so the net coefficient
-strictly exceeds the Coulomb piece. -/
 theorem chargedShift_gt_coulomb_of_neg {γ ρ γE : ℝ}
     (hγ : γ < 0) (_hρ : 0 < ρ) (_hγE : 0 < γE) :
     ρ / γE < chargedShift γ ρ γE := by
@@ -712,7 +674,6 @@ theorem gammaRapidityDeltaDeriv_neg {x δ : ℝ}
   unfold gammaRapidityDeltaDeriv
   linarith
 
-/-- On the window the interference factor falls strictly as the rapidity rises. -/
 theorem gammaRapidity_lt_of_lt_delta {x δ₁ δ₂ : ℝ}
     (hx : π / 4 < x) (hx2 : x < π / 2) (hδ : δ₁ < δ₂) :
     gammaRapidity x δ₂ < gammaRapidity x δ₁ := by
@@ -736,7 +697,6 @@ theorem gammaRapidity_lt_of_lt_delta {x δ₁ δ₂ : ℝ}
     exact mul_neg_of_neg_of_pos hquot hden
   linarith
 
-/-- `γ < γ_E/ρ` with all three positive is an inward net coefficient. -/
 theorem chargedShift_neg_of_gamma_lt {γ ρ γE : ℝ}
     (hγ : 0 < γ) (hρ : 0 < ρ) (hγE : 0 < γE) (hlt : γ < γE / ρ) :
     chargedShift γ ρ γE < 0 := by
@@ -749,8 +709,6 @@ theorem chargedShift_neg_of_gamma_lt {γ ρ γE : ℝ}
   rw [hrew]
   linarith
 
-/-- A higher rapidity that is still below the threshold makes the net
-coefficient more inward. -/
 theorem higher_subthreshold_pulls_harder {x δ₁ δ₂ ρ γE : ℝ}
     (hx : π / 4 < x) (hx2 : x < π / 2)
     (hδ : δ₁ < δ₂) (h2 : δ₂ < phiStar x / 2) :
@@ -811,7 +769,6 @@ theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
     exact ⟨δ, hδ.1.le, by simpa [δs] using hδ.2,
       chargedShift_neg_of_gamma_lt hpos hρ hγE hbelow⟩
 
-/-- At rest, every finite Coulomb ratio is overcome somewhere before the node. -/
 theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
     ∃ x, π / 4 < x ∧ x < resonanceRoot1 ∧
       chargedShift (gammaRapidity x 0) ρ γE < 0 := by
@@ -892,8 +849,6 @@ private theorem phiStarSlope_node :
     exact (hasDerivAt_phiStar hx.1 hπ).deriv.symm
   rw [heq, phiStar_deriv_node]
 
-/-- Every positive rapidity meets the threshold at a phase strictly closer to
-the node than the tangent estimate `φ/(4 cosh(x₁)²)`. -/
 theorem phase_gap_lt_linear {φ x : ℝ}
     (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
     resonanceRoot1 - x < φ / (4 * cosh resonanceRoot1 ^ 2) := by
@@ -932,7 +887,6 @@ theorem phase_gap_lt_linear {φ x : ℝ}
   rw [lt_div_iff₀ hcosh]
   linarith
 
-/-- The fractional widening `(r_*-r₁)/r₁` is strictly smaller than `φ/π`. -/
 theorem fractional_widening_lt_phi_div_pi {φ x : ℝ} (hφ : 0 < φ)
     (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
     (resonanceRoot1 - x) / x < φ / π := by
@@ -987,8 +941,6 @@ theorem exists_threshold_phase {φ : ℝ} (hφ : 0 < φ) :
   obtain ⟨x, hx, hxφ⟩ := intermediate_value_Ioo' hx0mem.2.le hcont hval
   exact ⟨x, ⟨lt_trans hx0mem.1 hx.1, hx.2⟩, hxφ⟩
 
-/-- A smaller rapidity meets the threshold at a larger phase, hence at a
-smaller radius. -/
 theorem slower_threshold_deeper {φ₁ φ₂ x₁ x₂ : ℝ}
     (hφ : φ₁ < φ₂)
     (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)

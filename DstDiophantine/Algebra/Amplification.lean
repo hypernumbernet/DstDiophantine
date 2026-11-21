@@ -8,8 +8,7 @@ import Mathlib.Tactic.Positivity
 /-!
 # Torsional amplification under scaling and rotor powers
 
-Problem-independent pure-boost API used by the continuous and discrete
-amplification no-go theorems in `Framework.Amplification`.
+Pure-boost scaling used by the amplification no-go theorems.
 -/
 
 namespace DstDiophantine
@@ -64,7 +63,6 @@ theorem rotorTorsion_pureBoost (θ : ℝ) :
     rotorTorsion (pureBoost θ) = exp ((θ / 2) • hyperbolic 0) := by
   rw [rotorTorsion, omegaTorsion_pureBoost]
 
-/-- Real scaling of a one-axis pure boost. -/
 theorem pureBoost_scale_real (c θ : ℝ) :
     pureBoost (c * θ) = scaleTorsion c (pureBoost θ) := by
   dsimp [pureBoost, scaleTorsion]
@@ -91,7 +89,6 @@ theorem J_pureBoost (θ : ℝ) :
   simp only [pureBoost, Fin.sum_univ_three, zero_pow two_ne_zero, sub_zero, mul_zero, add_zero,
     pow_two]
 
-/-- The normalised height coefficient of a one-axis pure boost. -/
 theorem JNormalized_pureBoost (θ : ℝ) :
     JNormalized (pureBoost θ) = (4 / (3 * Real.pi ^ 2)) * θ ^ 2 := by
   unfold JNormalized
@@ -111,7 +108,6 @@ theorem JNormalized_pow_amplify (θ : ℝ) (p : ℕ) :
     JNormalized (pureBoost (p * θ)) = (p : ℝ) ^ 2 * JNormalized (pureBoost θ) := by
   rw [pureBoost_scale, JNormalized_scale]
 
-/-- A one-axis pure boost is admissible exactly on the non-negative half principal branch. -/
 theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
     IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
   constructor
@@ -121,8 +117,7 @@ theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
     have hhalf_pi : (0 : ℝ) ≤ Real.pi / 2 := by positivity
     fin_cases a <;> simp [pureBoost, hθ0, hθπ, hhalf_pi]
 
-/-- Pure cyclic rotation on axis `1` (`B⁻₁ = e₁ e₃`). Dual-axis Fermat seeds
-place their angle here, complementary to `pureBoost` on axis `0`. -/
+/-- Pure cyclic rotation on axis `1` (`B⁻₁ = e₁ e₃`). -/
 def pureRotation1 (θ : ℝ) : TorsionParams where
   alpha := fun _ => 0
   beta := fun a => if a = 1 then θ else 0

@@ -4,11 +4,9 @@ import DstDiophantine.Framework.Representation
 import Mathlib.Data.Fintype.Basic
 
 /-!
-# Finite search and decidability on the admissible lattice
+# Finite search on the admissible lattice
 
-`ExistsZeroHeight N` is a finite existential over a decidable predicate, hence
-decidable. The search function `findZeroHeight` returns a witness when one
-exists (and always does: the origin is admissible of zero height).
+`ExistsZeroHeight` is decidable. The origin is always a zero-height witness.
 -/
 
 namespace DstDiophantine
@@ -67,12 +65,7 @@ theorem latticeSearch_terminates (N : ℕ) [NeZero N] :
     ∃ s' : LatticeSearchState N, LatticeSearchState.terminal s' :=
   latticeSearch_reaches_terminal N
 
-/--
-Three-layer Phase-4 interface (not a single biconditional):
-1. Integer power-sum equations ↔ null motors.
-2. Admissible lattice zero-height search always finds a witness.
-3. Amplification / contradiction schemas are supplied by Phase 5.
--/
+/-- Not one biconditional: motors, lattice search, then amplification. -/
 theorem phase4_layers (e : PowerSumEquation) (N : ℕ) [NeZero N] :
     (powerSumMotor e = 1 ↔ evalPowerSum e = 0) ∧
       (findZeroHeight N).isSome ∧

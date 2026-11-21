@@ -9,18 +9,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Teleparallel quadratic on the diagonal radial coframe
 
-The coframe \((\sqrt{A},\,A^{-1/2},\,r,\,r\sin\theta)\) induces
-\(\mathrm{diag}(-A,\,A^{-1},\,r^2,\,r^2\sin^2\theta)\). Its coordinate torsion
-is the spherical-frame anholonomy together with the radial derivative of the
-time leg. The quadratic
-\[
-T=\tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu}+\tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho}-T_\rho T^\rho,
-\]
-indices moved by \(g\), evaluates to \(-2(A+r A')/r^2\).
-
-On the exterior vacuum \(A+r A'=1\) this is \(-2/r^2\), the same value as the
-flat spherical frame. The auxiliary expression `(2/r²)(1-√A)²/√A` is not this
-quadratic.
+The auxiliary `(2/r²)(1-√A)²/√A` is not this quadratic.
 -/
 
 namespace DstDiophantine
@@ -45,9 +34,7 @@ def radialGUp (A r θ : ℝ) : Fin 4 → ℝ
   | 2 => (r ^ 2)⁻¹
   | 3 => (r ^ 2 * sin θ ^ 2)⁻¹
 
-/-- Coordinate torsion \(T^\rho{}_{\mu\nu}\) of the diagonal coframe.
-`Ap` is the radial derivative \(A'\). Matching on values lets concrete
-indices reduce. -/
+/-- Coordinate torsion \(T^\rho{}_{\mu\nu}\); `Ap` is \(A'\). -/
 def radialTUp (A Ap r θ : ℝ) (ρ μ ν : Fin 4) : ℝ :=
   match ρ.1, μ.1, ν.1 with
   | 0, 0, 1 => -(Ap / (2 * A))
@@ -76,7 +63,6 @@ def radialTrace (A Ap r θ : ℝ) (ρ : Fin 4) : ℝ :=
 def radialTraceUp (A Ap r θ : ℝ) (ρ : Fin 4) : ℝ :=
   radialGUp A r θ ρ * radialTrace A Ap r θ ρ
 
-/-- Teleparallel quadratic on the diagonal radial coframe. -/
 def radialTeleparallel (A Ap r θ : ℝ) : ℝ :=
   (1 / 4) * (∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
       radialTDown A Ap r θ ρ μ ν * radialTAllUp A Ap r θ ρ μ ν) +
@@ -126,7 +112,6 @@ private lemma crossTerm_expand :
   simp only [radialTDown, radialTAllUp]
   ring
 
-/-- The three quadratic pieces, cleared of the metric factors. -/
 private lemma square_contraction (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin θ ≠ 0) :
     ∑ ρ : Fin 4, ∑ μ : Fin 4, ∑ ν : Fin 4,
         radialTDown A Ap r θ ρ μ ν * radialTAllUp A Ap r θ ρ μ ν =
@@ -155,7 +140,6 @@ private lemma trace_contraction (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin θ ≠ 0
   field_simp [hA, hr, hs]
   ring
 
-/-- The teleparallel quadratic is \(-2(A + r A')/r^2\). -/
 theorem radialTeleparallel_eq (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin θ ≠ 0) :
     radialTeleparallel A Ap r θ = -2 * (A + r * Ap) / r ^ 2 := by
   unfold radialTeleparallel
@@ -163,7 +147,6 @@ theorem radialTeleparallel_eq (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin θ ≠ 0) 
   field_simp [hr]
   ring
 
-/-- Departure from the flat spherical value is the vacuum obstruction. -/
 theorem radialTeleparallel_sub_spherical (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin θ ≠ 0) :
     radialTeleparallel A Ap r θ - (-2 / r ^ 2) =
       -2 * (A + r * Ap - 1) / r ^ 2 := by
@@ -171,7 +154,6 @@ theorem radialTeleparallel_sub_spherical (hA : A ≠ 0) (hr : r ≠ 0) (hs : sin
   field_simp [hr]
   ring
 
-/-- Flat spherical frame: \(A=1\), \(A'=0\) gives \(T=-2/r^2\). -/
 theorem radialTeleparallel_flat (hr : r ≠ 0) (hs : sin θ ≠ 0) :
     radialTeleparallel 1 0 r θ = -2 / r ^ 2 := by
   rw [radialTeleparallel_eq (by norm_num) hr hs]
@@ -183,7 +165,6 @@ theorem schwarzschild_vacuum_obstruction {rs r : ℝ} (hr : r ≠ 0) :
   field_simp [hr]
   ring
 
-/-- Exterior Schwarzschild freezes the quadratic at the spherical-frame value. -/
 theorem radialTeleparallel_schwarzschild {rs r θ : ℝ}
     (h : IsExterior rs r) (hs : sin θ ≠ 0) :
     radialTeleparallel (schwarzschildA rs r) (rs / r ^ 2) r θ = -2 / r ^ 2 := by
@@ -219,7 +200,6 @@ theorem schwarzschildTeleparallelT_ne_radial {rs r θ : ℝ}
     div_neg_of_neg_of_pos (by norm_num) (sq_pos_of_pos hr)
   exact (ne_of_lt (lt_trans hneg hpos)).symm
 
-/-- On the exterior vacuum, \(J=\tfrac12\varphi^2>0\) while \(r^2 T=-2\). -/
 theorem schwarzschild_J_pos_T_frozen {rs r θ : ℝ}
     (h : IsExterior rs r) (hs : sin θ ≠ 0) :
     0 < J (radialBoostParams rs r) ∧

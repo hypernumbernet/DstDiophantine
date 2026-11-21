@@ -5,47 +5,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 /-!
 # Brackets of coordinate planes
 
-Planes in `G(3,1,1)` are three-blades. On the coordinate planes the
-antisymmetric product
-`A ∨̲ B = (1/2) (A B - B A)`
-is a pure translation, and that translation is the translational half of a
-motor.
-
-Write `Πᵢⱼ = e₄ ∧ eᵢ ∧ eⱼ` and let `n` be the unit normal of `(eᵢ, eⱼ)`,
-oriented so that `(eᵢ, eⱼ, n)` is right-handed. The spatial volume
-`k = e₁ e₂ e₃`, the dual of the time axis, brackets with the plane to the
-translation along the normal,
-`Πᵢⱼ ∨̲ k = -Nₙ`.
-The dual trivector of the normal brackets to the time translation,
-`Πᵢⱼ ∨̲ ẽₙ = N₀`,
-the same generator for every coordinate plane. The dual trivector of an
-axis lying in the plane has vanishing bracket. For `Π₁₂` and `jI = e₀ e₃ e₂`,
-the dual of `e₁`, the product equals the grade-four element `e₀ e₁ e₃ e₄`.
-
-`N_μ` is `Ω_trans` of the pure shift with coefficient `2` on axis `μ` and
-with vanishing torsion.
-
-An arbitrary spatial vector `n` determines the ideal plane
-`Π(n) = Σ nₐ Πₐ`. Its bracket with the spatial volume is the translation
-along `n`, and its bracket with the dual trivector of `n` is `|n|² N₀`.
-In both cases the symmetric product vanishes, so the geometric product is
-that translation. The cross brackets vanish because each coordinate normal
-lies in the other two coordinate planes, and the cross products cancel in
-pairs.
-
-The same normal displaced from the origin is `Π(n, δ) = Π(n) + δ k`. The
-bracket with `k` is the translation along `n` for every `δ`, and the
-symmetric product is the scalar `-δ`, because `k² = -1` and the ideal plane
-anticommutes with `k`. The bracket with the dual trivector of `n` is the
-time translation `|n|² N₀` minus `δ` times the boost along `n`. The
-symmetric product still vanishes, so the geometric product is that sum. At
-`δ = 0` the boost drops out.
-
-## Not claimed
-
-* An identification of the resulting translation, or of the boost it
-  acquires when the plane is displaced, with the torsional mismatch of the
-  parent theory.
+The resulting translation, and the boost a displaced plane acquires, are not identified with the torsional mismatch.
 -/
 
 namespace DstDiophantine.Gravity.PlaneBracket
@@ -326,7 +286,6 @@ private theorem sort_e4301 :
       _ = -(ι 0 * ι 1 * ι 3 * ι e4Index) := by simp [neg_mul, mul_assoc]
 
 
-/-- `Π₁₂` against `jI = e₀ e₃ e₂` is the four-vector `e₀ e₁ e₃ e₄`. -/
 private theorem mul_plane2_inPlane :
     (ι e4Index * ι 1 * ι 2) * (ι 0 * ι 3 * ι 2) = ι 0 * ι 1 * ι 3 * ι e4Index := by
   have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
@@ -410,19 +369,16 @@ theorem commutator_ideal_volume (a : Fin 3) :
   rw [Generators.commutator, idealPlane_mul_volume, volume_mul_idealPlane]
   module
 
-/-- The symmetric product with the spatial volume vanishes. -/
 theorem sym_ideal_volume (a : Fin 3) :
     idealPlane a * spatialVolume + spatialVolume * idealPlane a = 0 := by
   rw [idealPlane_mul_volume, volume_mul_idealPlane]
   module
 
-/-- `Πᵢⱼ ∨̲ k = -Nₙ`. -/
 theorem vee_ideal_volume (a : Fin 3) :
     (1 / 2 : ℝ) • commutator (idealPlane a) spatialVolume = -null (Fin.succ a) := by
   rw [commutator_ideal_volume, smul_smul]
   norm_num
 
-/-- `Πᵢⱼ` against the dual of its normal has commutator `2 N₀`. -/
 theorem commutator_ideal_dualNormal (a : Fin 3) :
     commutator (idealPlane a) (dualNormal a) = (2 : ℝ) • null 0 := by
   rw [Generators.commutator, idealPlane_mul_dualNormal, dualNormal_mul_idealPlane,
@@ -434,18 +390,15 @@ theorem sym_ideal_dualNormal (a : Fin 3) :
   rw [idealPlane_mul_dualNormal, dualNormal_mul_idealPlane]
   module
 
-/-- `Πᵢⱼ ∨̲ ẽₙ = N₀`. -/
 theorem vee_ideal_dualNormal (a : Fin 3) :
     (1 / 2 : ℝ) • commutator (idealPlane a) (dualNormal a) = null 0 := by
   rw [commutator_ideal_dualNormal, smul_smul]
   norm_num
 
-/-- The blade `e₁ e₂ e₄` is the ideal plane normal to `e₃`. -/
 theorem blade12_eq_idealPlane :
     ι 1 * ι 2 * ι e4Index = idealPlane 2 := by
   simpa [idealPlane] using plane12_blade
 
-/-- Appendix order: `(e₁ e₂ e₃) ∨̲ (e₁ e₂ e₄) = N₃`. -/
 theorem vee_volume_blade12 :
     (1 / 2 : ℝ) • commutator spatialVolume (ι 1 * ι 2 * ι e4Index) = null 3 := by
   have hmul : (ι 1 * ι 2 * ι e4Index) * (ι 1 * ι 2 * ι 3) = -null 3 := by
@@ -462,7 +415,6 @@ theorem sym_volume_blade12 :
   rw [spatialVolume, mul_volume_blade12, hmul]
   module
 
-/-- `Π₁₂` against `jI`, the dual of the in-plane axis `e₁`, is grade four. -/
 theorem mul_plane12_inPlane :
     idealPlane 2 * dualNormal 0 = ι 0 * ι 1 * ι 3 * ι e4Index := by
   simpa [idealPlane, dualNormal] using mul_plane2_inPlane
@@ -496,7 +448,6 @@ theorem omegaBiv_pureShift (μ : Fin 4) (c : ℝ) :
     omegaBiv (pureShift μ c) = (c / 2) • null μ := by
   simp [omegaBiv, pureShift, omegaTorsion, omegaTrans_single]
 
-/-- `Πᵢⱼ ∨̲ k = Ω_biv` of the pure shift `λⁿ = -2`. -/
 theorem vee_ideal_volume_eq_biv (a : Fin 3) :
     (1 / 2 : ℝ) • commutator (idealPlane a) spatialVolume =
       omegaBiv (pureShift (Fin.succ a) (-2)) := by
@@ -504,7 +455,6 @@ theorem vee_ideal_volume_eq_biv (a : Fin 3) :
   have : (-2 : ℝ) / 2 = -1 := by norm_num
   rw [this, neg_one_smul]
 
-/-- `Πᵢⱼ ∨̲ ẽₙ = Ω_biv` of the pure time shift `λ⁰ = 2`. -/
 theorem vee_ideal_dualNormal_eq_biv (a : Fin 3) :
     (1 / 2 : ℝ) • commutator (idealPlane a) (dualNormal a) =
       omegaBiv (pureShift 0 2) := by
@@ -512,7 +462,6 @@ theorem vee_ideal_dualNormal_eq_biv (a : Fin 3) :
   have : (2 : ℝ) / 2 = 1 := by norm_num
   rw [this, one_smul]
 
-/-- The appendix order is the pure shift `λ³ = 2`. -/
 theorem vee_volume_blade12_eq_biv :
     (1 / 2 : ℝ) • commutator spatialVolume (ι 1 * ι 2 * ι e4Index) =
       omegaBiv (pureShift 3 2) := by
@@ -574,7 +523,6 @@ theorem sym_idealPlaneOf_volume (n : Fin 3 → ℝ) :
   rw [regroup, sym_ideal_volume, sym_ideal_volume, sym_ideal_volume]
   module
 
-/-- `Π(n) ∨̲ k = -(n₁ N₁ + n₂ N₂ + n₃ N₃)`. -/
 theorem vee_idealPlaneOf_volume (n : Fin 3 → ℝ) :
     (1 / 2 : ℝ) • commutator (idealPlaneOf n) spatialVolume = -spatialTranslation n := by
   rw [commutator_idealPlaneOf_volume, smul_smul]
@@ -597,7 +545,6 @@ theorem omegaTorsion_zeroParams :
     omegaTorsion ⟨fun _ => 0, fun _ => 0⟩ = 0 := by
   simp [omegaTorsion]
 
-/-- The off-axis bracket is the bivector of that pure shift. -/
 theorem vee_idealPlaneOf_volume_eq_biv (n : Fin 3 → ℝ) :
     (1 / 2 : ℝ) • commutator (idealPlaneOf n) spatialVolume =
       omegaBiv (pureSpatialShift n) := by
@@ -605,11 +552,7 @@ theorem vee_idealPlaneOf_volume_eq_biv (n : Fin 3 → ℝ) :
   have ht : (pureSpatialShift n).torsion = ⟨fun _ => 0, fun _ => 0⟩ := rfl
   rw [ht, omegaTorsion_zeroParams, zero_add, omegaTrans_pureSpatialShift]
 
-/-! ### Cycling the spatial axes
-
-The permutation `e₁ ↦ e₂ ↦ e₃ ↦ e₁` preserves `Q311` and therefore induces an
-algebra automorphism. It cycles the three ideal planes and their dual
-trivectors, so one in-plane bracket determines the other two. -/
+/-! ### Cycling the spatial axes -/
 
 /-- `e₁ ↦ e₂`, `e₂ ↦ e₃`, `e₃ ↦ e₁`, with `e₀` and `e₄` fixed. -/
 def cycleCoord : Fin 5 → Fin 5
@@ -691,7 +634,6 @@ theorem cycleAlg_commutator (x y : PGA) :
     cycleAlg (commutator x y) = commutator (cycleAlg x) (cycleAlg y) := by
   simp [Generators.commutator, map_sub, map_mul]
 
-/-- `Π₁₂` against `jJ`, the dual of the other in-plane axis `e₂`. -/
 private theorem mul_plane2_dual1 :
     (ι e4Index * ι 1 * ι 2) * (ι 0 * ι 1 * ι 3) = ι 0 * ι 2 * ι 3 * ι e4Index := by
   have h20 : ι 2 * ι 0 = -(ι 0 * ι 2) := e_mul_anticomm (by decide)
@@ -795,7 +737,6 @@ private theorem sort_e0214 :
       _ = ι 0 * (-(ι 1 * ι 2)) * ι e4Index := by rw [h21]
       _ = -(ι 0 * ι 1 * ι 2 * ι e4Index) := by simp [mul_neg, mul_assoc]
 
-/-- `Π₂₃` against `jK` is opposite to `Π₁₂` against `jI`. -/
 theorem mul_plane0_dual2_neg :
     idealPlane 0 * dualNormal 2 = -(idealPlane 2 * dualNormal 0) := by
   have hcyc := congrArg cycleAlg mul_plane2_dual1
@@ -816,7 +757,6 @@ private theorem mul_antisym_cycled {a b : Fin 3}
     cycleAlg_idealPlane, cycleAlg_dualNormal] at hmap
   exact hmap
 
-/-- `Π₂₃` against `jJ` is opposite to `Π₃₁` against `jI`. -/
 theorem mul_plane0_dual1_neg :
     idealPlane 0 * dualNormal 1 = -(idealPlane 1 * dualNormal 0) := by
   have hLeft := congrArg cycleAlg mul_plane12_inPlane
@@ -878,7 +818,6 @@ theorem sym_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
   have h01 := sym_cross (a := 0) (b := 1) (by decide)
   have h02 := sym_cross (a := 0) (b := 2) (by decide)
   have h12 := sym_cross (a := 1) (b := 2) (by decide)
-  -- Nine scaled symmetric products. Diagonals vanish; each off-diagonal pair sums to zero.
   have pair01 :
       (n 0 * n 1) • (idealPlane 0 * dualNormal 1 + dualNormal 1 * idealPlane 0) +
           (n 1 * n 0) • (idealPlane 1 * dualNormal 0 + dualNormal 0 * idealPlane 1) = 0 := by
@@ -891,7 +830,6 @@ theorem sym_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
       (n 1 * n 2) • (idealPlane 1 * dualNormal 2 + dualNormal 2 * idealPlane 1) +
           (n 2 * n 1) • (idealPlane 2 * dualNormal 1 + dualNormal 1 * idealPlane 2) = 0 := by
     rw [mul_comm (n 2) (n 1), ← smul_add, h12, smul_zero]
-  -- The expanded product is grouped by the right factor. Pair each plane with its dual.
   have regroup :
       (n 0 * n 0) • (idealPlane 0 * dualNormal 0) + (n 1 * n 0) • (idealPlane 1 * dualNormal 0) +
             (n 2 * n 0) • (idealPlane 2 * dualNormal 0) +
@@ -939,7 +877,6 @@ theorem commutator_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
     hoff (a := 2) (b := 1) (by decide), add_zero, zero_add]
   module
 
-/-- `Π(n) ∨̲ ẽ(n) = |n|² N₀`. -/
 theorem vee_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
     (1 / 2 : ℝ) • commutator (idealPlaneOf n) (dualOf n) =
       spatialNormSq n • null 0 := by
@@ -947,7 +884,6 @@ theorem vee_idealPlaneOf_dualOf (n : Fin 3 → ℝ) :
   have : (1 / 2 : ℝ) * (2 * spatialNormSq n) = spatialNormSq n := by ring
   rw [this]
 
-/-- The time bracket is the pure shift `λ⁰ = 2 |n|²`. -/
 theorem vee_idealPlaneOf_dualOf_eq_biv (n : Fin 3 → ℝ) :
     (1 / 2 : ℝ) • commutator (idealPlaneOf n) (dualOf n) =
       omegaBiv (pureShift 0 (2 * spatialNormSq n)) := by
@@ -1068,7 +1004,6 @@ theorem dualNormal_mul_volume (a : Fin 3) :
       cycleAlg_spatialVolume, cycleAlg_dualNormal, cycleAlg_hyperbolic] at h
     simpa [cyclePlane] using h
 
-/-- The spatial volume brackets with the dual of an axis to `-2` times the boost. -/
 theorem commutator_volume_dualNormal (a : Fin 3) :
     commutator spatialVolume (dualNormal a) = (-2 : ℝ) • hyperbolic a := by
   rw [Generators.commutator, volume_mul_dualNormal, dualNormal_mul_volume]
@@ -1117,13 +1052,11 @@ theorem omegaTorsion_displaced (n : Fin 3 → ℝ) (δ : ℝ) :
     rw [← smul_smul]
   rw [hpull, hpull, hpull, ← smul_add, ← smul_add]
 
-/-- Displacing the plane does not change its bracket with the spatial volume. -/
 theorem commutator_displaced_volume (n : Fin 3 → ℝ) (δ : ℝ) :
     commutator (displacedPlane n δ) spatialVolume = (-2 : ℝ) • spatialTranslation n := by
   rw [displacedPlane, commutator_add_left, commutator_smul_left, commutator_self, smul_zero,
     add_zero, commutator_idealPlaneOf_volume]
 
-/-- `Π(n, δ) ∨̲ k` is the pure spatial shift, for every displacement `δ`. -/
 theorem vee_displaced_volume_eq_biv (n : Fin 3 → ℝ) (δ : ℝ) :
     (1 / 2 : ℝ) • commutator (displacedPlane n δ) spatialVolume =
       omegaBiv (pureSpatialShift n) := by
@@ -1132,7 +1065,6 @@ theorem vee_displaced_volume_eq_biv (n : Fin 3 → ℝ) (δ : ℝ) :
     rw [commutator_displaced_volume, commutator_idealPlaneOf_volume]
   rw [h, vee_idealPlaneOf_volume_eq_biv]
 
-/-- The displacement is the symmetric product with the spatial volume: `∨̄` equals `-δ`. -/
 theorem sym_displaced_volume (n : Fin 3 → ℝ) (δ : ℝ) :
     (1 / 2 : ℝ) • (displacedPlane n δ * spatialVolume +
       spatialVolume * displacedPlane n δ) = (-δ) • (1 : PGA) := by
@@ -1181,7 +1113,6 @@ theorem sym_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
     abel
   rw [hsum, sym_idealPlaneOf_dualOf, zero_add, hscale, sym_volume_dualOf, smul_zero]
 
-/-- `Π(n, δ) ∨̲ ẽ(n) = |n|² N₀ - δ ∑ nₐ B⁺ₐ`. -/
 theorem vee_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
     (1 / 2 : ℝ) • commutator (displacedPlane n δ) (dualOf n) =
       spatialNormSq n • null 0 + (-δ) • spatialBoost n := by
@@ -1190,7 +1121,6 @@ theorem vee_displaced_dualOf (n : Fin 3 → ℝ) (δ : ℝ) :
   have h2 : (1 / 2 : ℝ) * -(2 * δ) = -δ := by ring
   rw [h1, h2]
 
-/-- The displaced dual bracket is the boost `αₐ = -2 δ nₐ` plus the time shift `λ⁰ = 2 |n|²`. -/
 theorem vee_displaced_dualOf_eq_biv (n : Fin 3 → ℝ) (δ : ℝ) :
     (1 / 2 : ℝ) • commutator (displacedPlane n δ) (dualOf n) =
       omegaBiv (displacedMotor n δ) := by

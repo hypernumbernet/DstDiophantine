@@ -3,31 +3,9 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
-# Dirac current, Gordon identity, and the spacetime Dirac equation
+# Dirac current and the spacetime equation
 
-The adjoint matrix `A = -iγ⁰` is Hermitian and every `Aγ^μ` is
-anti-Hermitian. The current of a single spinor is therefore `i` times a
-real four-vector, whose time component is `Ψ†Ψ`.
-
-For two solutions of mass `m` at the same momentum the current is the
-momentum with its index raised, times the mass bilinear:
-`m j^μ = -i η^{μμ} p_μ Ψ̄Φ`. The time component gives
-`m ⟨Ψ, Φ⟩ = p₀ Ψ̄Φ`, so on a solution with `m ≠ 0` the mass bilinear is a
-nonzero real multiple of `Ψ†Ψ`. The real current of one solution has
-Minkowski square `-(Ψ̄Ψ)²`. A total rotor carrying the rest momentum to
-`p` multiplies the density of a rest solution by `p₀ / m`; dual rotors
-leave the density unchanged.
-
-On spacetime the correspondence `p_μ ↦ -i∂_μ` gives the field equation
-`γ^μ ∂_μ Ψ = -m Ψ`. A plane wave `e^{i p·x} u` solves it exactly when `u`
-solves the momentum-space equation, and solutions of one mass form a
-complex vector space. For any two differentiable solutions of the same
-real mass the current is conserved: `∂_μ j^μ = 0`.
-
-A total rotor `M` with `det M = 1` acts on a field by
-`Ψ ↦ S(M) Ψ(L_M x)`, where `L_M` is the coordinate map dual to the Lorentz
-action `Λ_M` on momenta. This carries solutions to solutions and carries the
-plane wave of momentum `p` to the plane wave of momentum `Λ_M p`.
+On spacetime, `γ^μ ∂_μ Ψ = -m Ψ`, and the current of two solutions of one real mass is conserved. A total rotor acts by `Ψ ↦ S(M) Ψ(L_M x)` and carries solutions to solutions.
 -/
 
 namespace DstDiophantine
@@ -102,7 +80,6 @@ theorem realCurrent_zero (Ψ : DiracSpinor) : realCurrent Ψ 0 = ‖Ψ‖ ^ 2 :=
   rw [← mul_assoc, show -I * I = (1 : ℂ) by rw [neg_mul, I_mul_I, neg_neg], one_mul]
   norm_cast
 
-/-- The density `Ψ†Ψ` is nonnegative and vanishes only at `Ψ = 0`. -/
 theorem realCurrent_zero_pos {Ψ : DiracSpinor} (hΨ : Ψ ≠ 0) : 0 < realCurrent Ψ 0 := by
   rw [realCurrent_zero]
   have : 0 < ‖Ψ‖ := norm_pos_iff.mpr hΨ
@@ -129,8 +106,6 @@ theorem slashMat_anticomm (p : Vec4) (μ : Fin 4) :
     simp
   · simp
 
-/-- Gordon identity: for two solutions of mass `m` at `p`, the current is
-the raised momentum times the mass bilinear. -/
 theorem diracCurrent_gordon {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor}
     (hΨ : DiracMomentum m p Ψ) (hΦ : DiracMomentum m p Φ) (μ : Fin 4) :
     (m : ℂ) * diracCurrent μ Ψ Φ =
@@ -162,8 +137,6 @@ theorem diracCurrent_gordon {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor}
   push_cast at hsum ⊢
   linear_combination (I / 2) * hsum + ((m : ℂ) * diracCurrent μ Ψ Φ) * I_sq
 
-/-- Time component of the Gordon identity: the Euclidean overlap of two
-solutions is `p₀ / m` times their mass bilinear. -/
 theorem inner_gordon {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor}
     (hΨ : DiracMomentum m p Ψ) (hΦ : DiracMomentum m p Φ) :
     (m : ℂ) * inner ℂ Ψ Φ = (p 0 : ℂ) * diracScalar Ψ Φ := by
@@ -175,8 +148,6 @@ theorem inner_gordon {m : ℝ} {p : Vec4} {Ψ Φ : DiracSpinor}
     linear_combination h
   exact mul_left_cancel₀ I_ne_zero h'
 
-/-- On a nonzero solution with `m ≠ 0` the energy component is nonzero and
-the mass bilinear is `m / p₀` times `Ψ†Ψ`. -/
 theorem diracScalar_self_eq {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0)
     (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
     p 0 ≠ 0 ∧ diracScalar Ψ Ψ = ((m / p 0 * ‖Ψ‖ ^ 2 : ℝ) : ℂ) := by
@@ -197,8 +168,6 @@ theorem diracScalar_self_eq {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 
   field_simp
   linear_combination -hg
 
-/-- On the forward shell with positive mass the mass bilinear is positive
-and at most the density `Ψ†Ψ`. -/
 theorem diracScalar_self_pos_le {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : 0 < m)
     (hp : 0 < p 0) (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
     0 < (diracScalar Ψ Ψ).re ∧ (diracScalar Ψ Ψ).re ≤ ‖Ψ‖ ^ 2 := by
@@ -215,8 +184,6 @@ theorem diracScalar_self_pos_le {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : 0 
   have : m / p 0 ≤ 1 := (div_le_one hp).mpr hmp
   nlinarith
 
-/-- The real current of a solution is the raised momentum scaled by the mass
-bilinear, and its Minkowski square is `-(Ψ̄Ψ)²`. -/
 theorem realCurrent_gordon {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0)
     (h : DiracMomentum m p Ψ) (μ : Fin 4) :
     realCurrent Ψ μ = -(minkowskiEta μ μ * p μ) * (diracScalar Ψ Ψ).re / m := by
@@ -243,8 +210,6 @@ theorem minkowskiQ_realCurrent {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m �
   field_simp
   linear_combination (diracScalar Ψ Ψ).re ^ 2 * hQ
 
-/-- A total rotor that carries the rest momentum to `Λ p_rest` multiplies the
-density of a rest solution by `(Λ p_rest)₀ / m`. -/
 theorem norm_sq_rotorDirac_rest {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ}
     (hm : m ≠ 0) {Ψ : DiracSpinor} (h : DiracMomentum m (restMomentum m) Ψ) :
     m * ‖rotorDirac M Ψ‖ ^ 2 = lorentzAct M (restMomentum m) 0 * ‖Ψ‖ ^ 2 := by
@@ -264,7 +229,6 @@ theorem norm_sq_rotorDirac_rest {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1
     exact g1
   exact ofReal_injective h2
 
-/-- Dual rotors leave the density unchanged. -/
 theorem norm_rotorDirac_dualRotor (β : DualRapidity) (Ψ : DiracSpinor) :
     ‖rotorDirac (dualRotorMat β) Ψ‖ = ‖Ψ‖ := by
   have hinner : ∀ ψ : DualSpinor,
@@ -296,8 +260,7 @@ noncomputable def partialD (Ψ : Vec4 → DiracSpinor) (μ : Fin 4) (x : Vec4) :
 noncomputable def diracOp (Ψ : Vec4 → DiracSpinor) (x : Vec4) : DiracSpinor :=
   ∑ μ : Fin 4, applyDiracMat (diracMat μ) (partialD Ψ μ x)
 
-/-- Spacetime Dirac equation `γ^μ ∂_μ Ψ = -m Ψ`, the image of
-`γ(p) Ψ = i m Ψ` under `p_μ ↦ -i ∂_μ`. -/
+/-- Spacetime Dirac equation `γ^μ ∂_μ Ψ = -m Ψ`, the image of `γ(p) Ψ = i m Ψ` under `p_μ ↦ -i ∂_μ`. -/
 def DiracField (m : ℝ) (Ψ : Vec4 → DiracSpinor) : Prop :=
   Differentiable ℝ Ψ ∧ ∀ x, diracOp Ψ x = (-(m : ℂ)) • Ψ x
 
@@ -364,8 +327,6 @@ theorem planeWave_diracOp (p : Vec4) (u : DiracSpinor) (x : Vec4) :
     applyDiracMat_smul_mat, smul_add]
   module
 
-/-- A plane wave solves the spacetime equation exactly when its amplitude
-solves the momentum-space equation. -/
 theorem diracField_planeWave_iff (m : ℝ) (p : Vec4) (u : DiracSpinor) :
     DiracField m (planeWave p u) ↔ DiracMomentum m p u := by
   constructor
@@ -404,13 +365,11 @@ theorem diracOp_smul {Ψ : Vec4 → DiracSpinor} (hΨ : Differentiable ℝ Ψ) (
   rw [fderiv_const_smul (hΨ x) c]
   simp only [_root_.smul_apply, applyDiracMat_smul, Finset.smul_sum]
 
-/-- Solutions of one mass add. -/
 theorem DiracField.add {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ)
     (hΦ : DiracField m Φ) : DiracField m (Ψ + Φ) := by
   refine ⟨hΨ.1.add hΦ.1, fun x => ?_⟩
   rw [diracOp_add hΨ.1 hΦ.1, hΨ.2, hΦ.2, Pi.add_apply, smul_add]
 
-/-- Solutions of one mass are closed under complex scaling. -/
 theorem DiracField.smul {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) (c : ℂ) :
     DiracField m (c • Ψ) := by
   refine ⟨hΨ.1.const_smul c, fun x => ?_⟩
@@ -447,7 +406,6 @@ theorem currentField_partial {Ψ Φ : Vec4 → DiracSpinor} (hΨ : Differentiabl
   rw [hcf, fderiv_inner_apply ℂ (hΨ x) hg.differentiableAt, hg.fderiv]
   rfl
 
-/-- The current between two plane waves of one momentum is uniform. -/
 theorem currentField_planeWave (p : Vec4) (u v : DiracSpinor) (μ : Fin 4) (x : Vec4) :
     currentField (planeWave p u) (planeWave p v) μ x = diracCurrent μ u v := by
   unfold currentField planeWave diracCurrent
@@ -458,8 +416,6 @@ theorem currentField_planeWave (p : Vec4) (u v : DiracSpinor) (μ : Fin 4) (x : 
     simp [Complex.conj_ofReal]
   rw [h, one_mul]
 
-/-- Continuity equation: for two differentiable solutions of the same real
-mass the current is conserved, `∂_μ j^μ = 0`. -/
 theorem currentField_conserved {m : ℝ} {Ψ Φ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ)
     (hΦ : DiracField m Φ) (x : Vec4) :
     ∑ μ : Fin 4, fderiv ℝ (currentField Ψ Φ μ) x (Pi.single μ 1) = 0 := by
@@ -541,7 +497,6 @@ theorem partialD_rotorField (M : Matrix (Fin 2) (Fin 2) ℂ) {Ψ : Vec4 → Dira
   refine Finset.sum_congr rfl fun ν _ => ?_
   simp only [← Complex.coe_smul, applyDiracMat_smul]
 
-/-- Covariance of the spacetime Dirac equation under every total rotor. -/
 theorem diracField_rotorField {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) {m : ℝ}
     {Ψ : Vec4 → DiracSpinor} (hΨ : DiracField m Ψ) : DiracField m (rotorField M Ψ) := by
   refine ⟨differentiable_rotorField M hΨ.1, fun x => ?_⟩
@@ -566,7 +521,6 @@ theorem diracField_rotorField {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) 
   unfold diracOp at h2
   rw [h2, applyDiracMat_smul, rotorField, rotorDirac_eq_mat]
 
-/-- The phase is invariant: `p · (L_M x) = (Λ_M p) · x`. -/
 theorem wavePhase_coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) (p x : Vec4) :
     wavePhase p (coordAct M x) = wavePhase (lorentzAct M p) x := by
   rw [lorentzAct_eq_sum]
@@ -576,7 +530,6 @@ theorem wavePhase_coordAct (M : Matrix (Fin 2) (Fin 2) ℂ) (p x : Vec4) :
   refine Finset.sum_congr rfl fun μ _ => Finset.sum_congr rfl fun ν _ => ?_
   ring
 
-/-- A plane wave of momentum `p` is carried to the plane wave of momentum `Λ_M p`. -/
 theorem rotorField_planeWave (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) (u : DiracSpinor) :
     rotorField M (planeWave p u) = planeWave (lorentzAct M p) (rotorDirac M u) := by
   funext x

@@ -1,32 +1,9 @@
 import DstDiophantine.Logic.Quantum.DiracGauge
 
 /-!
-# Charge conjugation, the dual map, and the antiparticle
+# Charge conjugation and the antiparticle
 
-The quaternionic structure of the dual spinor is `J u = ε ū` with `ε = iσ_y`.
-It is antilinear, `J² = -1`, `J u ⊥ u`, and `J (M u) = (adj M)† J u` for every
-`2 × 2` matrix `M`. In particular `J` commutes with every dual rotor and
-reverses `σ·n` along every axis.
-
-Charge conjugation on `ℂ⁴` is `Ψᶜ = (-J l, J u)` for `Ψ = (u, l)`. It is an
-antilinear involution that commutes with every `γ^μ` and every total rotor.
-It carries a solution at `p` to a solution at `-p`, and a solution of charge
-`e` in a potential `A` to a solution of charge `-e` in the same potential.
-It preserves the density and the current of one spinor and reverses the mass
-bilinear.
-
-The pseudoscalar `e₀e₁e₂e₃` of the dual map `X ↦ X i` acts on `ℂ⁴` as
-`ω = γ⁰γ¹γ²γ³ = iγ⁵`. It squares to `-1`, anticommutes with every `γ^μ`, and
-commutes with every total rotor, so it carries a solution at `p` to a solution
-of the same mass at `-p`. It preserves the current and reverses the mass
-bilinear. On spacetime `x ↦ ω Ψ(-x)` solves the equation in the reflected
-potential `-A(-x)`.
-
-The antiparticle `ω Ψᶜ` is a solution at the same momentum `p`, with the same
-mass bilinear, current, and density. The field `x ↦ ω Ψᶜ(-x)` solves the
-equation of charge `-e` in the reflected potential and carries a plane wave of
-momentum `p` to a plane wave of momentum `p`. At rest the antiparticle of
-`(u, iu)` is `-(J u, i J u)`.
+Charge conjugation `Ψᶜ = (-J l, J u)` carries a solution at `p` to a solution at `-p`, and the antiparticle `ω Ψᶜ` stays at momentum `p`. The field `x ↦ ω Ψᶜ(-x)` solves the equation of charge `-e` in the reflected potential.
 -/
 
 namespace DstDiophantine
@@ -62,7 +39,6 @@ theorem quatJ_sub (u v : DualSpinor) : quatJ (u - v) = quatJ u - quatJ v := by
 theorem quatJ_zero : quatJ 0 = 0 := by
   ext i; fin_cases i <;> simp [quatJ]
 
-/-- `J² = -1`. -/
 theorem quatJ_quatJ (u : DualSpinor) : quatJ (quatJ u) = -u := by
   ext i; fin_cases i <;> simp [quatJ]
 
@@ -72,7 +48,6 @@ theorem inner_quatJ_quatJ (u v : DualSpinor) :
     star_star, star_neg]
   ring
 
-/-- `J u` is orthogonal to `u`. -/
 theorem inner_self_quatJ (u : DualSpinor) : inner ℂ u (quatJ u) = 0 := by
   simp only [dualSpinor_inner_eq, Fin.sum_univ_two, quatJ_apply_zero, quatJ_apply_one]
   ring
@@ -84,7 +59,6 @@ theorem norm_quatJ (u : DualSpinor) : ‖quatJ u‖ = ‖u‖ := by
   nlinarith [norm_nonneg (quatJ u), norm_nonneg u, sq_nonneg (‖quatJ u‖ - ‖u‖),
     sq_nonneg (‖quatJ u‖ + ‖u‖)]
 
-/-- `J (M u) = (adj M)† J u` for every `2 × 2` matrix. -/
 theorem quatJ_applyMat (M : Matrix (Fin 2) (Fin 2) ℂ) (u : DualSpinor) :
     quatJ (applyMat M u) = applyMat (rotorLower M) (quatJ u) := by
   ext i
@@ -102,12 +76,10 @@ theorem quatJ_applyMat_rotorLower (M : Matrix (Fin 2) (Fin 2) ℂ) (u : DualSpin
     quatJ (applyMat (rotorLower M) u) = applyMat M (quatJ u) := by
   rw [quatJ_applyMat, rotorLower_rotorLower]
 
-/-- `J` commutes with every dual rotor. -/
 theorem quatJ_dualRotor (β : DualRapidity) (u : DualSpinor) :
     quatJ (applyMat (dualRotorMat β) u) = applyMat (dualRotorMat β) (quatJ u) := by
   rw [quatJ_applyMat, rotorLower_dualRotor]
 
-/-- `J` reverses the spin along every axis: `J (σ·n u) = -σ·n (J u)`. -/
 theorem quatJ_pauliComb (n : Fin 3 → ℝ) (u : DualSpinor) :
     quatJ (applyMat (pauliComb n) u) = -applyMat (pauliComb n) (quatJ u) := by
   ext i
@@ -143,7 +115,6 @@ theorem applyDiracMat_neg_right (M : Matrix (Fin 4) (Fin 4) ℂ) (Ψ : DiracSpin
 @[simp] theorem diracLower_neg (Ψ : DiracSpinor) : diracLower (-Ψ) = -diracLower Ψ := by
   simpa using diracLower_smul (-1) Ψ
 
-/-- A Dirac spinor is determined by its two Weyl blocks. -/
 theorem dirac_ext_weyl {Ψ Φ : DiracSpinor} (hu : diracUpper Ψ = diracUpper Φ)
     (hl : diracLower Ψ = diracLower Φ) : Ψ = Φ := by
   rw [← weyl_decompose Ψ, ← weyl_decompose Φ, hu, hl]
@@ -167,7 +138,6 @@ theorem chargeConj_weyl (u l : DualSpinor) :
   rw [chargeConj, diracUpper_add, diracLower_add, diracUpper_weylUpper, diracUpper_weylLower,
     diracLower_weylUpper, diracLower_weylLower, add_zero, zero_add]
 
-/-- Charge conjugation is an involution. -/
 theorem chargeConj_chargeConj (Ψ : DiracSpinor) : chargeConj (chargeConj Ψ) = Ψ := by
   apply dirac_ext_weyl
   · simp [quatJ_quatJ]
@@ -186,7 +156,6 @@ theorem chargeConj_sub (Ψ Φ : DiracSpinor) :
     abel
   · simp [diracUpper_sub, diracLower_sub, quatJ_sub]
 
-/-- Charge conjugation is antilinear. -/
 theorem chargeConj_smul (c : ℂ) (Ψ : DiracSpinor) :
     chargeConj (c • Ψ) = star c • chargeConj Ψ := by
   apply dirac_ext_weyl
@@ -208,14 +177,12 @@ theorem chargeConj_finset_sum {ι : Type*} (s : Finset ι) (f : ι → DiracSpin
 theorem chargeConj_injective : Function.Injective chargeConj := fun Ψ Φ h => by
   rw [← chargeConj_chargeConj Ψ, h, chargeConj_chargeConj]
 
-/-- Charge conjugation commutes with the slash of every real four-vector. -/
 theorem slash_chargeConj (p : Vec4) (Ψ : DiracSpinor) :
     applyDiracMat (slashMat p) (chargeConj Ψ) = chargeConj (applyDiracMat (slashMat p) Ψ) := by
   apply dirac_ext_weyl
   · simp [diracUpper_slash, diracLower_slash, quatJ_pauliSlashBar]
   · simp [diracUpper_slash, diracLower_slash, quatJ_pauliSlash]
 
-/-- Charge conjugation commutes with every `γ^μ`. -/
 theorem diracMat_chargeConj (μ : Fin 4) (Ψ : DiracSpinor) :
     applyDiracMat (diracMat μ) (chargeConj Ψ) = chargeConj (applyDiracMat (diracMat μ) Ψ) := by
   rw [← slashMat_single, slash_chargeConj]
@@ -223,7 +190,6 @@ theorem diracMat_chargeConj (μ : Fin 4) (Ψ : DiracSpinor) :
 theorem slashMat_neg (p : Vec4) : slashMat (-p) = -slashMat p := by
   simp [slashMat, Finset.sum_neg_distrib, neg_smul]
 
-/-- The charge conjugate of a solution at `p` is a solution of the same mass at `-p`. -/
 theorem diracMomentum_chargeConj {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum m p Ψ) : DiracMomentum m (-p) (chargeConj Ψ) := by
   unfold DiracMomentum at h ⊢
@@ -231,14 +197,12 @@ theorem diracMomentum_chargeConj {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
   simp only [star_mul', Complex.star_def, Complex.conj_I, Complex.conj_ofReal, ← neg_smul]
   ring_nf
 
-/-- Charge conjugation is a bijection between solutions at `p` and at `-p`. -/
 theorem diracMomentum_chargeConj_iff {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} :
     DiracMomentum m (-p) (chargeConj Ψ) ↔ DiracMomentum m p Ψ := by
   refine ⟨fun h => ?_, diracMomentum_chargeConj⟩
   have h2 := diracMomentum_chargeConj h
   rwa [neg_neg, chargeConj_chargeConj] at h2
 
-/-- Charge conjugation commutes with every total rotor. -/
 theorem chargeConj_rotorDirac (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
     chargeConj (rotorDirac M Ψ) = rotorDirac M (chargeConj Ψ) := by
   apply dirac_ext_weyl
@@ -256,7 +220,6 @@ theorem inner_chargeConj (Ψ Φ : DiracSpinor) :
     inner_quatJ_quatJ]
   ring
 
-/-- Charge conjugation preserves the density `Ψ†Ψ`. -/
 theorem norm_chargeConj (Ψ : DiracSpinor) : ‖chargeConj Ψ‖ = ‖Ψ‖ := by
   have h := inner_chargeConj Ψ Ψ
   rw [inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K] at h
@@ -264,7 +227,6 @@ theorem norm_chargeConj (Ψ : DiracSpinor) : ‖chargeConj Ψ‖ = ‖Ψ‖ := b
   nlinarith [norm_nonneg (chargeConj Ψ), norm_nonneg Ψ, sq_nonneg (‖chargeConj Ψ‖ - ‖Ψ‖),
     sq_nonneg (‖chargeConj Ψ‖ + ‖Ψ‖)]
 
-/-- Charge conjugation reverses the mass bilinear. -/
 theorem diracScalar_chargeConj (Ψ Φ : DiracSpinor) :
     diracScalar (chargeConj Ψ) (chargeConj Φ) = -diracScalar Φ Ψ := by
   rw [← weyl_decompose Ψ, ← weyl_decompose Φ, chargeConj_weyl, chargeConj_weyl,
@@ -282,8 +244,6 @@ theorem diracScalar_gamma_swap (μ : Fin 4) (Ψ Φ : DiracSpinor) :
       applyDiracMat_neg, inner_neg_left, applyDiracMat_mul, inner_diracAdjoint_left]
   rw [h, neg_neg]
 
-/-- The current of two charge conjugates is the current with the arguments
-exchanged; for one spinor it is unchanged. -/
 theorem diracCurrent_chargeConj (μ : Fin 4) (Ψ Φ : DiracSpinor) :
     diracCurrent μ (chargeConj Ψ) (chargeConj Φ) = diracCurrent μ Φ Ψ := by
   rw [diracCurrent_eq_scalar, diracCurrent_eq_scalar, diracMat_chargeConj,
@@ -308,7 +268,6 @@ theorem dualPseudoMat_eq : dualPseudoMat = I • diracMat5 := by
 noncomputable def dualFlip (Ψ : DiracSpinor) : DiracSpinor :=
   applyDiracMat dualPseudoMat Ψ
 
-/-- `ω` is `+i` on the upper Weyl block and `-i` on the lower. -/
 theorem dualFlip_weyl (u l : DualSpinor) :
     dualFlip (weylUpper u + weylLower l) = weylUpper (I • u) + weylLower (-I • l) := by
   rw [dualFlip, dualPseudoMat_eq, applyDiracMat_smul_mat, applyDiracMat_add,
@@ -325,7 +284,6 @@ theorem dualFlip_weyl (u l : DualSpinor) :
   conv_lhs => rw [← weyl_decompose Ψ, dualFlip_weyl]
   rw [diracLower_add, diracLower_weylUpper, diracLower_weylLower, zero_add]
 
-/-- `ω² = -1`. -/
 theorem dualFlip_dualFlip (Ψ : DiracSpinor) : dualFlip (dualFlip Ψ) = -Ψ := by
   apply dirac_ext_weyl
   · simp [smul_smul]
@@ -344,7 +302,6 @@ theorem dualFlip_finset_sum {ι : Type*} (s : Finset ι) (f : ι → DiracSpinor
     dualFlip (∑ i ∈ s, f i) = ∑ i ∈ s, dualFlip (f i) :=
   applyDiracMat_finset_sum _ _ _
 
-/-- `ω` anticommutes with the slash of every four-vector. -/
 theorem slash_dualFlip (p : Vec4) (Ψ : DiracSpinor) :
     applyDiracMat (slashMat p) (dualFlip Ψ) = -dualFlip (applyDiracMat (slashMat p) Ψ) := by
   apply dirac_ext_weyl
@@ -355,14 +312,11 @@ theorem diracMat_dualFlip (μ : Fin 4) (Ψ : DiracSpinor) :
     applyDiracMat (diracMat μ) (dualFlip Ψ) = -dualFlip (applyDiracMat (diracMat μ) Ψ) := by
   rw [← slashMat_single, slash_dualFlip]
 
-/-- The dual map reverses the four-momentum: a solution at `p` goes to a
-solution of the same mass at `-p`. -/
 theorem diracMomentum_dualFlip {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum m p Ψ) : DiracMomentum m (-p) (dualFlip Ψ) := by
   unfold DiracMomentum at h ⊢
   rw [slashMat_neg, applyDiracMat_neg, slash_dualFlip, neg_neg, h, dualFlip_smul]
 
-/-- `ω` commutes with every total rotor. -/
 theorem dualFlip_rotorDirac (M : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : DiracSpinor) :
     dualFlip (rotorDirac M Ψ) = rotorDirac M (dualFlip Ψ) := by
   apply dirac_ext_weyl
@@ -379,7 +333,6 @@ theorem inner_dualFlip (Ψ Φ : DiracSpinor) :
   simp only [I_sq]
   ring
 
-/-- The dual map preserves the density `Ψ†Ψ`. -/
 theorem norm_dualFlip (Ψ : DiracSpinor) : ‖dualFlip Ψ‖ = ‖Ψ‖ := by
   have h := inner_dualFlip Ψ Ψ
   rw [inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K] at h
@@ -387,7 +340,6 @@ theorem norm_dualFlip (Ψ : DiracSpinor) : ‖dualFlip Ψ‖ = ‖Ψ‖ := by
   nlinarith [norm_nonneg (dualFlip Ψ), norm_nonneg Ψ, sq_nonneg (‖dualFlip Ψ‖ - ‖Ψ‖),
     sq_nonneg (‖dualFlip Ψ‖ + ‖Ψ‖)]
 
-/-- The dual map reverses the mass bilinear. -/
 theorem diracScalar_dualFlip (Ψ Φ : DiracSpinor) :
     diracScalar (dualFlip Ψ) (dualFlip Φ) = -diracScalar Ψ Φ := by
   rw [← weyl_decompose Ψ, ← weyl_decompose Φ, dualFlip_weyl, dualFlip_weyl,
@@ -402,13 +354,11 @@ private theorem diracScalar_neg_right (Ψ Φ : DiracSpinor) :
   unfold diracScalar
   rw [applyDiracMat_neg_right, inner_neg_right]
 
-/-- The dual map preserves the current. -/
 theorem diracCurrent_dualFlip (μ : Fin 4) (Ψ Φ : DiracSpinor) :
     diracCurrent μ (dualFlip Ψ) (dualFlip Φ) = diracCurrent μ Ψ Φ := by
   rw [diracCurrent_eq_scalar, diracCurrent_eq_scalar, diracMat_dualFlip, diracScalar_neg_right,
     diracScalar_dualFlip, neg_neg]
 
-/-- At rest the dual map carries the particle pair `(u, iu)` to `i (u, -iu)`. -/
 theorem dualFlip_restParticle (u : DualSpinor) :
     dualFlip (restParticleSpinor u) = I • restAntiparticleSpinor u := by
   rw [restParticleSpinor, dualFlip_weyl, restAntiparticleSpinor, smul_add, ← weylUpper_smul,
@@ -422,7 +372,6 @@ theorem dualFlip_restParticle (u : DualSpinor) :
 noncomputable def antiparticle (Ψ : DiracSpinor) : DiracSpinor :=
   dualFlip (chargeConj Ψ)
 
-/-- The antiparticle of a solution at `p` is a solution at the same `p`. -/
 theorem diracMomentum_antiparticle {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum m p Ψ) : DiracMomentum m p (antiparticle Ψ) := by
   have h2 := diracMomentum_dualFlip (diracMomentum_chargeConj h)
@@ -448,8 +397,6 @@ theorem realCurrent_antiparticle (Ψ : DiracSpinor) :
   funext μ
   simp only [realCurrent, diracCurrent_antiparticle]
 
-/-- At rest the antiparticle of `(u, iu)` is `-(J u, i J u)`: a particle pair
-whose dual spinor is `J u`. -/
 theorem antiparticle_restParticle (u : DualSpinor) :
     antiparticle (restParticleSpinor u) = -restParticleSpinor (quatJ u) := by
   apply dirac_ext_weyl
@@ -494,8 +441,6 @@ theorem covD_conjField (e : ℝ) (A : Vec4 → Vec4) {Ψ : Vec4 → DiracSpinor}
   push_cast
   ring
 
-/-- The charge conjugate of a solution of charge `e` in a potential `A` is a
-solution of charge `-e` in the same potential. -/
 theorem diracGaugeField_conjField {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) : DiracGaugeField m (-e) A (conjField Ψ) := by
   refine ⟨chargeConjCLM.differentiable.comp hΨ.1, fun x => ?_⟩
@@ -519,8 +464,6 @@ theorem wavePhase_neg_left (p x : Vec4) : wavePhase (-p) x = -wavePhase p x := b
 theorem wavePhase_neg_right (p x : Vec4) : wavePhase p (-x) = wavePhase (-p) x := by
   simp [wavePhase, Finset.sum_neg_distrib]
 
-/-- The charge conjugate of the plane wave of momentum `p` is the plane wave of
-momentum `-p`: positive frequency becomes negative frequency. -/
 theorem conjField_planeWave (p : Vec4) (u : DiracSpinor) :
     conjField (planeWave p u) = planeWave (-p) (chargeConj u) := by
   funext x
@@ -570,8 +513,6 @@ theorem covD_reflectField (e : ℝ) (A : Vec4 → Vec4) {Ψ : Vec4 → DiracSpin
   simp only [Pi.neg_apply, mul_neg, ofReal_neg, neg_smul, sub_neg_eq_add, neg_sub]
   abel
 
-/-- Point reflection by the dual map carries a solution in `A` to a solution of
-the same mass and charge in the reflected potential. -/
 theorem diracGaugeField_reflectField {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) : DiracGaugeField m e (reflectPot A) (reflectField Ψ) := by
   refine ⟨?_, fun x => ?_⟩
@@ -591,8 +532,6 @@ theorem diracField_reflectField {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ : Dir
   rw [reflectPot_zero] at h
   exact (diracGaugeField_zero m 0 _).1 h
 
-/-- Point reflection by the dual map carries the plane wave of momentum `p` to
-the plane wave of momentum `-p`. -/
 theorem reflectField_planeWave (p : Vec4) (u : DiracSpinor) :
     reflectField (planeWave p u) = planeWave (-p) (dualFlip u) := by
   funext x
@@ -604,8 +543,6 @@ theorem reflectField_planeWave (p : Vec4) (u : DiracSpinor) :
 noncomputable def antiparticleField (Ψ : Vec4 → DiracSpinor) : Vec4 → DiracSpinor :=
   reflectField (conjField Ψ)
 
-/-- The antiparticle field of a solution of charge `e` in `A` solves the
-equation of charge `-e` in the reflected potential. -/
 theorem diracGaugeField_antiparticleField {m e : ℝ} {A : Vec4 → Vec4}
     {Ψ : Vec4 → DiracSpinor} (hΨ : DiracGaugeField m e A Ψ) :
     DiracGaugeField m (-e) (reflectPot A) (antiparticleField Ψ) :=
@@ -615,8 +552,6 @@ theorem diracField_antiparticleField {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ 
     DiracField m (antiparticleField Ψ) :=
   diracField_reflectField (diracField_conjField hΨ)
 
-/-- The antiparticle field of a plane wave of momentum `p` is a plane wave of
-the same momentum `p`. -/
 theorem antiparticleField_planeWave (p : Vec4) (u : DiracSpinor) :
     antiparticleField (planeWave p u) = planeWave p (antiparticle u) := by
   rw [antiparticleField, conjField_planeWave, reflectField_planeWave, neg_neg, antiparticle]

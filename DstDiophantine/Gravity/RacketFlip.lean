@@ -15,25 +15,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The intermediate-axis reversal
 
-A torque-free aggregate whose principal moments satisfy `0 < I1 < I2 < I3`
-spins on the separatrix
-
-`ω1 = A sech(k t)`, `ω2 = B tanh(k t)`, `ω3 = C sech(k t)`,
-
-with `k`, `A`, and `C` fixed by `I1`, `I2`, `I3`, and `B > 0`. The profile
-satisfies Euler's equations, keeps the energy `½ I2 B²`, and keeps
-`L² = 2 E I2`. The intermediate component changes sign at `t = 0` and nowhere
-else.
-
-The transverse curvature is positive only about that intermediate axis. A
-residual of relative size `ε < 1/6` takes longer to reach half amplitude than
-the reversal itself takes to cross from half to half, and the wait exceeds
-every bound as the residual shrinks. If two principal moments agree, the
-curvature is zero.
-
-## Not claimed
-
-* A count of reversals. The canonical weight is `RacketThermal`.
+A count of reversals is not derived; the canonical weight is `RacketThermal`.
 -/
 
 namespace DstDiophantine.Gravity.RacketFlip
@@ -506,7 +488,6 @@ theorem waiting_gt_crossing {k ε : ℝ} (hk : 0 < k) (hε : 0 < ε) (hεu : ε 
   have hk' : 0 < 1 / k := one_div_pos.mpr hk
   simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using mul_lt_mul_of_pos_left hlog hk'
 
-/-- The wait exceeds every bound as the residual shrinks. -/
 theorem waiting_unbounded {k : ℝ} (hk : 0 < k) (N : ℝ) :
     ∃ ε : ℝ, 0 < ε ∧ ε < 1 / 6 ∧ N < waitingTime k ε := by
   by_cases hN : N < Real.log 6 / k

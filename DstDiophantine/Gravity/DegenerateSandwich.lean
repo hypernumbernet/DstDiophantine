@@ -5,28 +5,10 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Sandwich in the degenerate metric of `G(3,1,1)`
 
-A motor `M = R T` acts on the five-dimensional vector space of `G(3,1,1)`.
-The rotor fixes the null line and acts on the Minkowski complement. The
-translator shears each vector along the null line by the Minkowski pairing
-and does not change the class in the quotient by that line. The square is
-preserved, so the sandwich is an isometry of the degenerate metric.
-
-The same splitting is the field dictionary of a general motor. On each
-reference vector the Minkowski leg is the rotor's sandwich and the null
-coefficient is the pairing of the translational parameters with that leg.
-The metric, the Weitzenböck torsion, and the teleparallel scalar read the
-Minkowski leg. They do not see `λ`, and the null coefficient is not a
-function of the finite angle `J`.
-
-## Not claimed
-
-* A coordinate formula for the rotor's action on a general Minkowski vector.
-  The pure-boost case remains `Sandwich.sandwich_pureBoost_ι`.
-* That an arbitrary unitary, outside the motor subgroup, preserves the
-  vector space.
-* A pointwise identification of `J` or `J_field` with the teleparallel
-  scalar. The gauge families of `LorentzGauge` still have `T = 0` for every
-  jet, and the exterior chart still has `T = -2/r²`.
+A motor fixes the null line up to the translational shear and acts on the
+Minkowski complement, so the sandwich is an isometry of the degenerate metric.
+The null coefficient is not a function of the finite angle \(J\), and \(J\) is
+not identified with the teleparallel scalar.
 -/
 
 namespace DstDiophantine.Gravity.DegenerateSandwich
@@ -86,7 +68,6 @@ theorem mem_nullLine_iff {x : PGA} : x ∈ nullLine ↔ ∃ c : ℝ, x = c • �
   · rintro ⟨c, hc⟩
     exact ⟨c, hc.symm⟩
 
-/-- A Minkowski vector equals a null vector only when both vanish. -/
 theorem eq_zero_of_minkowski_eq_null {y : Vec4} {c : ℝ}
     (h : minkowskiVector y = c • ι e4Index) : y = 0 ∧ c = 0 := by
   have hι : vec5 (extend4 y) = vec5 (c • e5vec 4) := by
@@ -112,7 +93,6 @@ theorem minkowskiSpan_inf_nullLine : minkowskiSpan ⊓ nullLine = ⊥ := by
   rw [hc, hc0, zero_smul]
   exact Submodule.zero_mem _
 
-/-- The Minkowski-plus-null decomposition of a vector is unique. -/
 theorem split_unique {a a' : PGA} {c c' : ℝ}
     (ha : a ∈ minkowskiSpan) (ha' : a' ∈ minkowskiSpan)
     (h : a + c • ι e4Index = a' + c' • ι e4Index) : a = a' ∧ c = c' := by
@@ -173,7 +153,6 @@ theorem rotor_frame_mem_minkowskiSpan (t : TorsionParams) (μ : Fin 4) :
     sandwich (rotorTorsion t) (frameVec μ) ∈ minkowskiSpan :=
   sandwich_rotor_mem_minkowskiSpan t (frameVec_mem μ)
 
-/-- A rotor fixes `e₄`, so it does not feed the null line into the complement. -/
 theorem sandwich_rotor_vec5 (t : TorsionParams) (v : Vec5) :
     ∃ w : Vec5, sandwich (rotorTorsion t) (vec5 v) = vec5 w ∧ w 4 = v 4 ∧
       Q311 w = Q311 v := by
@@ -237,7 +216,6 @@ theorem Q311_add_null (v : Vec5) (c : ℝ) : Q311 (v + c • e5vec 4) = Q311 v :
   refine Finset.sum_congr rfl fun i _ => ?_
   fin_cases i <;> simp [w311, Pi.single_eq_same, Pi.single_eq_of_ne]
 
-/-- A translator adds the pairing to the null coordinate and leaves the quotient. -/
 theorem sandwich_expTrans_vec5 (p : TransParams) (v : Vec5) :
     sandwich (expTrans p) (vec5 v) =
       vec5 (v + minkowskiPair p.lambda (restrict4 v) • e5vec 4) := by
@@ -264,9 +242,6 @@ theorem translator_preserves_Q311 (p : TransParams) (v : Vec5) :
 
 /-! ### Motors are degenerate isometries, and the field splits -/
 
-/-- Every motor acts on the five-dimensional space, preserves `Q311`, fixes the
-null coefficient up to the translational pairing, and does not mix that
-pairing into the Minkowski quotient. -/
 theorem motor_degenerate_isometry (p : OmegaParams) (v : Vec5) :
     ∃ w : Vec5,
       sandwich (motor p) (vec5 v) = vec5 w ∧
@@ -289,14 +264,12 @@ theorem motor_frame_split (p : OmegaParams) (μ : Fin 4) :
       sandwich (rotorTorsion p.torsion) (frameVec μ) ∈ minkowskiSpan :=
   ⟨motor_minkowski_leg p μ, rotor_frame_mem_minkowskiSpan p.torsion μ⟩
 
-/-- Changing the translation, at fixed rotor, changes only the null shear. -/
 theorem motor_difference_null {p q : OmegaParams} (h : p.torsion = q.torsion) (μ : Fin 4) :
     sandwich (motor p) (frameVec μ) - sandwich (motor q) (frameVec μ) =
       (w31 μ * (p.trans.lambda μ - q.trans.lambda μ)) • ι e4Index := by
   rw [motor_minkowski_leg, motor_minkowski_leg, h]
   module
 
-/-- The null shear depends on `λ` and not on the rotor. -/
 theorem nullShear_eq_of_trans {p q : OmegaParams} (h : p.trans = q.trans) (μ : Fin 4) :
     sandwich (motor p) (frameVec μ) - sandwich (rotorTorsion p.torsion) (frameVec μ) =
       sandwich (motor q) (frameVec μ) -
@@ -304,7 +277,6 @@ theorem nullShear_eq_of_trans {p q : OmegaParams} (h : p.trans = q.trans) (μ : 
   rw [motor_minkowski_leg, motor_minkowski_leg, h]
   abel
 
-/-- The Minkowski leg depends on the rotor and not on `λ`. -/
 theorem minkowskiLeg_eq_of_torsion {p q : OmegaParams} (h : p.torsion = q.torsion)
     (μ : Fin 4) :
     sandwich (motor p) (frameVec μ) - (w31 μ * p.trans.lambda μ) • ι e4Index =
@@ -312,14 +284,12 @@ theorem minkowskiLeg_eq_of_torsion {p q : OmegaParams} (h : p.torsion = q.torsio
   rw [motor_minkowski_leg, motor_minkowski_leg, h]
   abel
 
-/-- A pure translation keeps the inertial Minkowski leg for every `λ`. -/
 theorem pureTranslation_minkowski_leg (p : TransParams) (μ : Fin 4) :
     sandwich (motor ⟨⟨fun _ => 0, fun _ => 0⟩, p⟩) (frameVec μ) =
       frameVec μ + (w31 μ * p.lambda μ) • ι e4Index := by
   rw [motor_of_pure_translation, translator_minkowski_leg]
 
-/-- The null shear of a pure boost vanishes, while `J` need not. The finite
-angle is not the null coefficient. -/
+/-- The finite angle is not the null coefficient. -/
 theorem pureBoost_nullShear_zero_of_J (φ : ℝ) (hφ : φ ≠ 0) (μ : Fin 4) :
     sandwich (motor ⟨pureBoost φ, ⟨fun _ => 0⟩⟩) (frameVec μ) -
         sandwich (rotorTorsion (pureBoost φ)) (frameVec μ) = 0 ∧

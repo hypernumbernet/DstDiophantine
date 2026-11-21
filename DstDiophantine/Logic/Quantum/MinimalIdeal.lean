@@ -4,20 +4,9 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.NormNum
 
 /-!
-# Chiral / spinor projectors inside `G(3,1,1)`
+# Chiral and spinor projectors
 
-The factors `(1 ± i)/2`, with the Cl(3,1) pseudoscalar `i` satisfying
-`i² = -1`, are not idempotent. Working projectors use generators that
-square to `+1`:
-
-* spatial `e₁` (`ι 1`) for a complementary pair `chiralityL` / `chiralityR`;
-* hyperbolic `e₀e₁` for `spinorIdem`.
-
-The product of `spinorIdem` with `chiralityR` is not idempotent
-(`Logic.Quantum.CompositeProjector`). The commuting left ideal has real
-dimension 8 (`LeftIdealDim`) and splits as a Minkowski core plus a null
-copy, hence is reducible as a PGA-module (`LeftIdealSplit`). Irreducibility
-of that core as a `Cl(3,1)`-module is not claimed.
+The factors `(1 ± i)/2` are not idempotent; working projectors use generators that square to `+1`. Irreducibility of the Minkowski core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine
@@ -63,7 +52,6 @@ theorem mul_half_mul_half (a b : PGA) :
     _ = a * (b * half) * half := by rw [half_comm]
     _ = a * b * (half * half) := by noncomm_ring
 
-/-- If `a² = 2a`, then `(a/2)² = a/2`. -/
 theorem idempotent_half {a : PGA}
     (ha : a * a = algebraMap ℝ PGA 2 * a) :
     a * half * (a * half) = a * half := by
@@ -119,7 +107,6 @@ noncomputable def chiralityL : PGA := ((1 : PGA) - chiralityGen) * half
 noncomputable def chiralityR : PGA := ((1 : PGA) + chiralityGen) * half
 noncomputable def spinorIdem : PGA := ((1 : PGA) + hyperbolic 0) * half
 
-/-- With `i² = -1`, `((1 - i)/2)² = -i/2`. -/
 theorem paperChiralityL_sq_eq :
     paperChiralityL * paperChiralityL = (-pseudoscalar) * half := by
   unfold paperChiralityL

@@ -8,23 +8,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Chirality-even and chirality-odd Faraday summands
 
-## Paper boundary (do **not** claim)
-
-A Weinberg angle, \(W/Z\) masses, and a V--A coupling are **not** derived.
-The chirality-odd summand exchanges the two projectors. It does not remain
-inside one of them, and the chirality-even summand is the Cartan
-\(\mathfrak{so}(2,1)\), not a left-handed current.
-
-## What is proved
-
-* Left multiplication by a charged generator exchanges the projectors of its
-  axis. The cross sandwich \(P_L X P_R\) retains that generator and does not
-  vanish. The same-side sandwich vanishes.
-* Left multiplication by a Cartan generator preserves each projector. The
-  cross sandwich vanishes.
-* Relative to any one axis the Faraday coefficients split into that even
-  piece and that odd piece, and the mismatch adds: the cross term in \(J\)
-  is zero.
+Relative to one axis the Faraday mismatch splits into a Cartan piece and a
+charged piece, and the cross term in \(J\) vanishes. A Weinberg angle, \(W/Z\)
+masses, and a V--A coupling are not derived; the even summand is not a
+left-handed current.
 -/
 
 namespace DstDiophantine
@@ -87,7 +74,6 @@ theorem chargedGen_mul_chiralityLAxis (a i : Fin 3) :
       _ = (chargedGen a i + spatialGen a * chargedGen a i) * half := by rw [one_mul]
   exact hL.trans hR.symm
 
-/-- The cross sandwich retains the charged generator. -/
 theorem crossSandwich_charged (a i : Fin 3) :
     chiralityLAxis a * chargedGen a i * chiralityRAxis a =
       chiralityLAxis a * chargedGen a i := by
@@ -98,7 +84,6 @@ theorem crossSandwich_charged (a i : Fin 3) :
     _ = (chiralityLAxis a * chiralityLAxis a) * chargedGen a i := by simp [mul_assoc]
     _ = chiralityLAxis a * chargedGen a i := by rw [chiralityLAxis_sq]
 
-/-- The same-side sandwich kills the charged generator. -/
 theorem sameSandwich_charged (a i : Fin 3) :
     chiralityRAxis a * chargedGen a i * chiralityRAxis a = 0 := by
   calc chiralityRAxis a * chargedGen a i * chiralityRAxis a
@@ -238,7 +223,6 @@ theorem faradayCross_even_odd (a : Fin 3) (p : FaradayParams) :
   unfold faradayCross evenParams oddParams
   fin_cases a <;> simp [Fin.sum_univ_three]
 
-/-- The mismatch of a Faraday field is the sum of its even and odd mismatches. -/
 theorem J_even_add_odd (a : Fin 3) (p : FaradayParams) :
     J (toTorsion p) =
       J (toTorsion (evenParams a p)) + J (toTorsion (oddParams a p)) := by

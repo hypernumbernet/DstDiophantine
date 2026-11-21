@@ -6,15 +6,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Quaternion relations among the cyclic generators
 
-The three cyclic generators satisfy the quaternion multiplication table
-\[
-(\texttt{cyclic } a)^2 = -1,\qquad
-\texttt{cyclic } 0\cdot\texttt{cyclic } 1 = \texttt{cyclic } 2
-\]
-and cyclic permutations, with opposite order giving the minus sign.
-
-These identities are computed in `G(3,1,1)` from the vector anticommutators.
-The cyclic table is `IJ = K`.
+`cyclic a` squares to `-1` and `cyclic 0 * cyclic 1 = cyclic 2`, with opposite order the minus sign.
 -/
 
 namespace DstDiophantine
@@ -29,7 +21,6 @@ private theorem e2_sq' : ι 2 * ι 2 = (1 : PGA) := by
 private theorem e3_sq' : ι 3 * ι 3 = (1 : PGA) := by
   simpa [Q311_e5vec, w311] using e_sq (3 : Fin 5)
 
-/-- `I J = K`. -/
 theorem cyclic_zero_mul_one : cyclic 0 * cyclic 1 = cyclic 2 := by
   dsimp [cyclic]
   have h21 : ι 2 * ι 1 = -(ι 1 * ι 2) := e_mul_anticomm (by decide)
@@ -49,7 +40,6 @@ theorem cyclic_zero_mul_one : cyclic 0 * cyclic 1 = cyclic 2 := by
     _ = ι 2 * ι 1 := by
         rw [h12, neg_neg]
 
-/-- `J K = I`. -/
 theorem cyclic_one_mul_two : cyclic 1 * cyclic 2 = cyclic 0 := by
   dsimp [cyclic]
   have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
@@ -70,7 +60,6 @@ theorem cyclic_one_mul_two : cyclic 1 * cyclic 2 = cyclic 0 := by
     _ = ι 3 * ι 2 := by
         rw [h23, neg_neg]
 
-/-- `K I = J`. -/
 theorem cyclic_two_mul_zero : cyclic 2 * cyclic 0 = cyclic 1 := by
   dsimp [cyclic]
   have h13 : ι 1 * ι 3 = -(ι 3 * ι 1) := e_mul_anticomm (by decide)
@@ -90,20 +79,15 @@ theorem cyclic_two_mul_zero : cyclic 2 * cyclic 0 = cyclic 1 := by
     _ = ι 1 * ι 3 := by
         rw [h31, neg_neg]
 
-/-- Opposite order: `J I = -K`. -/
 theorem cyclic_one_mul_zero : cyclic 1 * cyclic 0 = -cyclic 2 := by
   have hsq : cyclic 1 * cyclic 1 = -1 := cyclic_sq 1
-  -- cyclic 0 * cyclic 1 = cyclic 2, multiply left by cyclic 1:
-  -- cyclic 1 * cyclic 0 * cyclic 1 = cyclic 1 * cyclic 2 = cyclic 0
   have hL : cyclic 1 * cyclic 0 * cyclic 1 = cyclic 0 := by
     calc cyclic 1 * cyclic 0 * cyclic 1
         = cyclic 1 * (cyclic 0 * cyclic 1) := by simp [mul_assoc]
       _ = cyclic 1 * cyclic 2 := by rw [cyclic_zero_mul_one]
       _ = cyclic 0 := cyclic_one_mul_two
-  -- multiply right by -cyclic 1
   have : cyclic 1 * cyclic 0 * cyclic 1 * (-cyclic 1) = cyclic 0 * (-cyclic 1) := by
     rw [hL]
-  -- LHS reduces by `cyclic 1 * cyclic 1 = -1`.
   have hLHS : cyclic 1 * cyclic 0 * cyclic 1 * (-cyclic 1) = cyclic 1 * cyclic 0 := by
     have : cyclic 1 * (-cyclic 1) = - (cyclic 1 * cyclic 1) := by simp [mul_neg]
     calc cyclic 1 * cyclic 0 * cyclic 1 * (-cyclic 1)
@@ -118,7 +102,6 @@ theorem cyclic_one_mul_zero : cyclic 1 * cyclic 0 = -cyclic 2 := by
   rw [hLHS] at this
   rw [this, hRHS]
 
-/-- Opposite order: `K J = -I`. -/
 theorem cyclic_two_mul_one : cyclic 2 * cyclic 1 = -cyclic 0 := by
   have hsq : cyclic 2 * cyclic 2 = -1 := cyclic_sq 2
   have hL : cyclic 2 * cyclic 1 * cyclic 2 = cyclic 1 := by
@@ -142,7 +125,6 @@ theorem cyclic_two_mul_one : cyclic 2 * cyclic 1 = -cyclic 0 := by
   rw [hLHS] at this
   rw [this, hRHS]
 
-/-- Opposite order: `I K = -J`. -/
 theorem cyclic_zero_mul_two : cyclic 0 * cyclic 2 = -cyclic 1 := by
   have hsq : cyclic 0 * cyclic 0 = -1 := cyclic_sq 0
   have hL : cyclic 0 * cyclic 2 * cyclic 0 = cyclic 2 := by
@@ -166,7 +148,6 @@ theorem cyclic_zero_mul_two : cyclic 0 * cyclic 2 = -cyclic 1 := by
   rw [hLHS] at this
   rw [this, hRHS]
 
-/-- Pure dual torsion bivector is the cyclic combination of the dual rapidity. -/
 theorem omegaTorsion_ofDual (β : DualRapidity) :
     Motor.omegaTorsion (ofDual β) = ∑ a : Fin 3, (β a / 2) • cyclic a := by
   simp [Motor.omegaTorsion, ofDual]

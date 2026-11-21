@@ -15,35 +15,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Baryon asymmetry and the sign of a vacuum excess
 
-The observed yield \(\eta\) is not derived. What is fixed is the Killing
-response of a chiral excess.
-
-## What is proved
-
-* A pure boost excess of magnitude \(\delta\) along a direction \(p\) has
-  \(J = M = (\delta^2/2)\lVert p\rVert^2\). The pure rotation excess has the
-  same mass and the opposite scalar. For \(\delta\neq 0\) and \(p\neq 0\),
-  \(J/M = \pm 1\). Both scalars are even in \(\delta\).
-* Swapping the sectors, or applying the dual map to the torsion bivector,
-  exchanges the two excesses up to the sign of the rapidity and reverses \(J\).
-  A second dual map multiplies every element by \(-1\).
-* On one axis a balanced background of rapidity \(\varphi\), shifted by a
-  boost excess \(\delta\), has \(J = \varphi\delta + \delta^2/2\) and
-  \(M = \varphi^2 + \varphi\delta + \delta^2/2\). The two signs of \(\delta\)
-  differ in mass by \(2\varphi\delta\). The cross term, and this mass
-  difference, vanish for every \(\delta\) if and only if \(\varphi = 0\).
-  Equal nonzero rapidities give \(J = 0\), \(M = \varphi^2\), and a relative
-  rotor different from \(1\).
-* Spatial inversion sends the pseudoscalar to its negative, negates each
-  boost generator, and fixes each rotation generator. It preserves sectors:
-  the image of a boost excess \(\delta\) is the boost excess \(-\delta\).
-* On \(\mathbb{C}^2\) the dual rotor has determinant \(1\), so the argument
-  of the determinant vanishes.
-
-## Not claimed
-
-No baryon current, no Sakharov identity, and no derivation of
-\(\eta\sim 6\times 10^{-10}\).
+A chiral excess fixes the sign of the Killing scalar, and both signs are even
+in the rapidity. No baryon current, no Sakharov identity, and no yield
+\(\eta\sim 6\times 10^{-10}\) is derived.
 -/
 
 namespace DstDiophantine
@@ -182,7 +156,6 @@ theorem balancedBoostShift_mass_split (φ δ : ℝ) :
   rw [balancedBoostShift_mass, balancedBoostShift_mass]
   ring
 
-/-- The vacuum quadratic law holds for every excess iff the background vanishes. -/
 theorem balancedBoostShift_J_eq_quadratic_iff (φ : ℝ) :
     (∀ δ : ℝ, J (balancedBoostShift φ δ) = δ ^ 2 / 2) ↔ φ = 0 := by
   constructor
@@ -194,7 +167,6 @@ theorem balancedBoostShift_J_eq_quadratic_iff (φ : ℝ) :
     rw [balancedBoostShift_J, hφ]
     ring
 
-/-- The two signs of the excess carry equal mass for every excess iff the background vanishes. -/
 theorem balancedBoostShift_mass_split_iff (φ : ℝ) :
     (∀ δ : ℝ, mass (balancedBoostShift φ δ) = mass (balancedBoostShift φ (-δ))) ↔
       φ = 0 := by

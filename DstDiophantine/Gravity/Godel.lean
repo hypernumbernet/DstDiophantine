@@ -14,32 +14,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Gödel chart and the azimuthal time loop
 
-The orthonormal coframe
-`e⁰ = dt + √2 sinh²r dφ`, `e¹ = dr`, `e² = sinh r cosh r dφ`, `e³ = dz`
-induces the Gödel metric. For `r > 0` the norm of `∂φ` has the sign of
-`1 - sinh²r`. It vanishes at `r_c = log(1+√2)` and is negative beyond, so a
-periodic identification of `φ` makes those circles closed and timelike. The
-coframe legs stay finite there, and the `(t,φ)` block stays non-degenerate.
-The norm of `∂t` stays `-1`.
-
-The ratio of the orthonormal components of `∂φ` is the tilt `√2 tanh r`.
-A real rapidity represents that ratio only as `tanh ψ`. Every such radius
-lies strictly before `r_c`, where the azimuthal norm is still positive.
-The three-axis ceiling `phiMax` and the one-axis bound `π/2` are two
-instances. No real rapidity makes the circles timelike.
-
-A pure boost in the `(t,φ)` plane of a diagonal cylindrical frame does not
-produce the Gödel cross term. The rapidity bounded here is the component
-ratio of `∂φ`, not the parameter of that boost.
-
-## Not claimed
-
-* The periodic identification of `φ`. The sign of the norm is proved; the
-  closing of the circle is the classical chart.
-* That the Gödel coframe is a pure boost, or that `J = ½ ψ²` is derived
-  rather than read by the same working identification as the quasi-horizon.
-* A teleparallel scalar for this coframe, dust, or a cosmological constant.
-* That every closed timelike curve, in every spacetime, is excluded.
+For `r > log(1+√2)` the azimuthal norm is negative, while no real rapidity makes those circles timelike. The periodic identification of `φ`, a pure-boost reading of the coframe, and a teleparallel scalar are not claimed.
 -/
 
 namespace DstDiophantine
@@ -167,7 +142,6 @@ theorem induced_godel_φφ (r : ℝ) :
   simp [godelCoframe, w31]
   exact godel_azimuth_identity r
 
-/-- The coframe induces the Gödel metric. -/
 theorem inducedMetric_godel (r : ℝ) (μ ν : Fin 4) :
     inducedMetric (godelCoframe r) μ ν = godelMetric r μ ν := by
   fin_cases μ <;> fin_cases ν <;> first
@@ -286,7 +260,6 @@ theorem godelTilt_gt_one_of_gt_critical {r : ℝ} (hr : godelCriticalRadius < r)
   have h := godelTilt_strictMono hr
   simpa [godelTilt_critical] using h
 
-/-- Past the null circle the tilt is not the hyperbolic tangent of any real rapidity. -/
 theorem godelTilt_ne_tanh_of_gt_critical {ψ r : ℝ} (hr : godelCriticalRadius < r) :
     godelTilt r ≠ Real.tanh ψ := by
   intro h
@@ -327,8 +300,6 @@ theorem godelRapidity_eq_of_tilt {ψ r : ℝ} (h0 : 0 ≤ r) (hr : r < godelCrit
   apply tanh_strictMono.injective
   rw [tanh_godelRapidity_of_lt_critical h0 hr, h]
 
-/-- A positive real rapidity is attained strictly before the null circle,
-where the azimuthal norm is still positive. -/
 theorem exists_godel_before_loop {ψ : ℝ} (hψ : 0 < ψ) :
     ∃ r, 0 < r ∧ r < godelCriticalRadius ∧ godelRapidity r = ψ ∧ 0 < godelGφφ r := by
   have hu0 : 0 < Real.tanh ψ := by
@@ -361,7 +332,6 @@ theorem exists_halfPi_godel_before_loop :
       0 < godelGφφ r :=
   exists_godel_before_loop (half_pos Real.pi_pos)
 
-/-- The azimuthal norm of a tilt that equals `tanh ψ` cannot be negative. -/
 theorem godelGφφ_not_neg_of_eq_tanh {ψ r : ℝ} (hr0 : 0 < r)
     (h : godelTilt r = Real.tanh ψ) :
     ¬ godelGφφ r < 0 := by
@@ -380,8 +350,7 @@ theorem godelGφφ_not_neg_of_eq_tanh {ψ r : ℝ} (hr0 : 0 < r)
 
 /-! ### A pure boost does not write the cross term -/
 
-/-- Diagonal cylindrical coframe, boosted by rapidity `ψ` in the `(t,φ)` plane.
-`β` is the circumferential scale of the reference leg. -/
+/-- Diagonal cylindrical coframe, boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the circumferential scale of the reference leg. -/
 noncomputable def cylBoostCoframe (ψ β : ℝ) : Coframe :=
   fun a μ =>
     if a = 0 ∧ μ = 0 then Real.cosh ψ

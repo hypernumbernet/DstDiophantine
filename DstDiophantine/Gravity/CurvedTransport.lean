@@ -3,30 +3,10 @@ import DstDiophantine.Gravity.KillingTransport
 /-!
 # The static Killing bivector in the exterior Levi-Civita connection
 
-On the exterior orthonormal frame the nonzero connection forms are the hover
-acceleration along the observer, the geodesic curvature `√A / r` of each
-angular leg, and the rotation `cot θ / r` within the tangent plane of the
-sphere. Every form annihilates the outward unit radial vector.
-
-Parallel transport along that leg therefore preserves frame components. The
-static boost rate `κ = rₛ/(2r²)` does not: its proper radial derivative is
-`-rₛ √A / r³`, and the connection contributes nothing. The Killing norm on
-the same leg changes at the rate `κ`, which is the rate flat transport
-assigns to a unit radial step. Along the static observer the boost is
-parallel. Along either angular leg the coefficient `κ` is constant, while
-the connection tilts the boost out of the time-radial plane at the rate
-`κ √A / r`. The tangent rotation of the sphere does not enter that tilt.
-Static bivectors at two exterior radii are not radial parallel transports
-of one another.
-
-## Not claimed
-
-* An identification of this bivector with the torsional mismatch of the
-  parent theory. The off-equator orbit, the colatitude band, the
-  meridian reached when the azimuthal constant vanishes, and the
-  azimuthal slope per colatitude are `Gravity.OffEquator`.
-* A formula that writes the teleparallel scalar as a total divergence for
-  an arbitrary motor.
+On the exterior frame the static boost is parallel along the observer, and an
+angular leg tilts it at the rate \(\kappa\sqrt{A}/r\). This bivector is not
+identified with the torsional mismatch, and the teleparallel scalar is not
+claimed to be a total divergence.
 -/
 
 namespace DstDiophantine.Gravity.CurvedTransport
@@ -48,8 +28,7 @@ def radialBoost : Fin 4 → Fin 4 → ℝ
 def staticBoost (κ : ℝ) : Fin 4 → Fin 4 → ℝ :=
   fun a b => κ * radialBoost a b
 
-/-- Levi-Civita coefficient `ω^a_b(e_c)` of the exterior orthonormal frame.
-`a` is the value slot, `b` the argument slot, `c` the direction. -/
+/-- Levi-Civita coefficient `ω^a_b(e_c)` of the exterior orthonormal frame. `a` is the value slot, `b` the argument slot, `c` the direction. -/
 noncomputable def exteriorConn (rs r θ : ℝ) : Fin 4 → Fin 4 → Fin 4 → ℝ
   | 0, 1, 0 => dSqrtA_dr rs r
   | 1, 0, 0 => dSqrtA_dr rs r
@@ -69,9 +48,7 @@ def connOnBivector (ω : Fin 4 → Fin 4 → Fin 4 → ℝ) (Λ : Fin 4 → Fin 
     (ω a 2 c * Λ 2 b - Λ a 2 * ω 2 b c) +
     (ω a 3 c * Λ 3 b - Λ a 3 * ω 3 b c)
 
-/-- Covariant derivative of `ξ = ν e₀` along `e_c`. The radial leg
-differentiates the coefficient; every other leg contributes only the
-connection. -/
+/-- Covariant derivative of `ξ = ν e₀` along `e_c`. The radial leg differentiates the coefficient; every other leg contributes only the connection. -/
 noncomputable def killingCov (rs r θ : ℝ) (c a : Fin 4) : ℝ :=
   (if c = 1 ∧ a = 0 then killingRate rs r else 0) +
     exteriorConn rs r θ a 0 c * killingNorm rs r
@@ -80,7 +57,6 @@ theorem exteriorConn_radial (rs r θ : ℝ) (a b : Fin 4) :
     exteriorConn rs r θ a b 1 = 0 := by
   fin_cases a <;> fin_cases b <;> rfl
 
-/-- Lowering the first index with the frame metric makes `ω` antisymmetric. -/
 theorem exteriorConn_lowered_antisym (rs r θ : ℝ) (a b c : Fin 4) :
     frameSign a * exteriorConn rs r θ a b c +
         frameSign b * exteriorConn rs r θ b a c = 0 := by
@@ -159,7 +135,6 @@ theorem killingCov_azimuth_3 (rs r θ : ℝ) : killingCov rs r θ 3 3 = 0 := by
 
 /-! ### Proper radial change of the boost -/
 
-/-- `dκ/ds = √A · ∂_r κ = -rₛ √A / r³ = -2 κ √A / r`. -/
 theorem properRadial_killingRate {rs r : ℝ} (h : IsExterior rs r) :
     killingNorm rs r * (-(rs / r ^ 3)) =
       -2 * killingRate rs r * killingNorm rs r / r := by
@@ -173,14 +148,10 @@ theorem properRadial_killingRate_ne {rs r : ℝ} (h : IsExterior rs r) :
   have hr : 0 < r := lt_trans h.1 h.2
   exact mul_ne_zero hν.ne' (neg_ne_zero.mpr (div_ne_zero h.1.ne' (pow_ne_zero 3 hr.ne')))
 
-/-- Along the radial leg the connection does not act, so the covariant
-derivative of the boost is the proper derivative of its rate. -/
 theorem conn_staticBoost_radial (rs r θ κ : ℝ) (a b : Fin 4) :
     connOnBivector (exteriorConn rs r θ) (staticBoost κ) 1 a b = 0 := by
   simp only [connOnBivector, exteriorConn_radial, zero_mul, mul_zero, sub_self, add_zero]
 
-/-- The boost is parallel along the static observer. The two nonzero
-connection terms cancel. -/
 theorem conn_staticBoost_time_00 (rs r θ : ℝ) :
     connOnBivector (exteriorConn rs r θ) (staticBoost (killingRate rs r)) 0 0 0 = 0 := by
   dsimp [connOnBivector, exteriorConn, staticBoost, radialBoost]
@@ -227,7 +198,6 @@ theorem conn_staticBoost_time_30 (rs r θ : ℝ) :
   simp only [mul_zero, add_zero, sub_zero]
   ring
 
-/-- Proper radial derivative of the norm, equal to the flat rate on `e₁`. -/
 theorem properRadial_killingNorm {rs r : ℝ} (h : IsExterior rs r) :
     killingNorm rs r * dSqrtA_dr rs r = killingRate rs r :=
   (killingRate_eq_norm_mul_deriv h).symm
@@ -244,7 +214,6 @@ theorem properRadial_killingNorm_eq_flat {rs r : ℝ} (h : IsExterior rs r) :
 
 /-! ### Angular tilt -/
 
-/-- Polar tilt out of the time-radial plane, at rate `κ √A / r`. -/
 theorem conn_staticBoost_polar_02 (rs r θ : ℝ) :
     connOnBivector (exteriorConn rs r θ) (staticBoost (killingRate rs r)) 2 0 2 =
       killingRate rs r * killingNorm rs r / r := by
@@ -259,7 +228,6 @@ theorem conn_staticBoost_polar_20 (rs r θ : ℝ) :
   simp only [mul_zero, add_zero, zero_add, sub_zero]
   ring
 
-/-- The same rate in the azimuthal plane. `cot θ` multiplies a vanishing boost component. -/
 theorem conn_staticBoost_azimuth_03 (rs r θ : ℝ) :
     connOnBivector (exteriorConn rs r θ) (staticBoost (killingRate rs r)) 3 0 3 =
       killingRate rs r * killingNorm rs r / r := by
@@ -274,7 +242,6 @@ theorem conn_staticBoost_azimuth_30 (rs r θ : ℝ) :
   simp only [mul_zero, add_zero, zero_add, sub_zero]
   ring
 
-/-- Radial parallel transport would preserve `κ`. The exterior rate does not. -/
 theorem static_not_radial_parallel {rs r₁ r₂ : ℝ}
     (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) :
     killingRate rs r₁ ≠ killingRate rs r₂ :=

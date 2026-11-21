@@ -8,12 +8,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Amplification as a D4L dynamics
 
-Pure-boost scaling multiplies `JNormalized` by `k²`. On labels this is a
-partial map: `T` is fixed, `U` can be driven to `F` or out of the
-admissible cone (`classify? = none`). The shared no-go is that reading —
-no new arithmetic.
-
-Does not import `Theorems`.
+Pure-boost scaling multiplies `JNormalized` by `k²`: `T` stays fixed, and `U` can reach `F` or leave the cone. No new arithmetic.
 -/
 
 namespace DstDiophantine
@@ -28,7 +23,6 @@ theorem measure_scale (k : ℕ) (a : Amplitude)
       (k : ℝ) ^ 2 * a.measure := by
   simp [Amplitude.measure, JNormalized_scale]
 
-/-- Synchrony is a fixed point of every admissible scaling. -/
 theorem scale_T_stays_T {k : ℕ} {a : Amplitude} (ha : a.collapse = .T)
     (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
     (⟨scaleTorsion (k : ℝ) a.params, h⟩ : Amplitude).collapse = .T := by
@@ -38,7 +32,7 @@ theorem scale_T_stays_T {k : ℕ} {a : Amplitude} (ha : a.collapse = .T)
     simp [hm, h0]
   exact (Amplitude.measure_eq_zero_iff _).mp this
 
-/-- A `U` seed whose `k`-fold image is the wall `F`. -/
+/-- `U` seed scaled onto the wall `F`. -/
 noncomputable def seedU_to_F {k : ℕ} (hk : 2 ≤ k) : Amplitude :=
   ⟨pureHyperbolicRay (1 / (k : ℝ)), by
     have hk0 : 0 ≤ (1 : ℝ) / k := by positivity
@@ -95,7 +89,7 @@ theorem seedU_to_F_scales_to_F {k : ℕ} (hk : 2 ≤ k) :
     field_simp [hkpos]
   exact (Amplitude.measure_eq_one_iff _).mp this
 
-/-- A `U` seed driven out of the admissible cone (`classify? = none`). -/
+/-- `U` seed driven out of the cone (`classify? = none`). -/
 noncomputable def seedU_exits : Amplitude :=
   ⟨pureHyperbolicRay (Real.sqrt (1 / 2)), by
     refine isAdmissibleContinuous_pureHyperbolicRay (Real.sqrt_nonneg _) ?_
@@ -135,14 +129,13 @@ theorem mass_scale_amplitude (k : ℕ) (a : Amplitude)
     Amplitude.mass ⟨scaleTorsion (k : ℝ) a.params, h⟩ = (k : ℝ) ^ 2 * a.mass := by
   simp [Amplitude.mass, mass_scale]
 
-/-- Vacuum is a fixed point of every admissible scaling (label and mass). -/
 theorem scale_vacuum_stays_vacuum {k : ℕ} {a : Amplitude} (ha : a.IsVacuum)
     (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
     (⟨scaleTorsion (k : ℝ) a.params, h⟩ : Amplitude).IsVacuum := by
   refine ⟨scale_T_stays_T ha.1 h, ?_⟩
   simp [mass_scale_amplitude k a h, ha.2]
 
-/-- For `k ≥ 1`, balanced massive stays balanced massive: `T` with mass `k² M`. -/
+/-- Mass scales by `k²`. -/
 theorem scale_balancedMassive_stays_balanced {k : ℕ} (hk : 1 ≤ k) {a : Amplitude}
     (ha : a.IsBalancedMassive)
     (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :
@@ -153,7 +146,7 @@ theorem scale_balancedMassive_stays_balanced {k : ℕ} (hk : 1 ≤ k) {a : Ampli
   have : 0 < (k : ℝ) ^ 2 * a.mass := mul_pos (sq_pos_of_pos hkpos) ha.2
   simpa [hM] using this
 
-/-- Small balanced seed: `balancedRay (1/k)` is admissible and balanced massive. -/
+/-- `balancedRay (1/k)`. -/
 noncomputable def seedBalanced_stays {k : ℕ} (hk : 1 ≤ k) : Amplitude :=
   ⟨balancedRay (1 / (k : ℝ)), by
     have hk0 : 0 ≤ (1 : ℝ) / k := by positivity
@@ -184,25 +177,19 @@ theorem seedBalanced_stays_scale_admissible {k : ℕ} (hk : 1 ≤ k) :
   simpa [hparams] using
     isAdmissibleContinuous_balancedRay (by norm_num : (0 : ℝ) ≤ 1) (by norm_num)
 
-/-- Small balanced seed remains `T` and admissible after `k`-fold scaling. -/
 theorem seedBalanced_stays_scales_balanced {k : ℕ} (hk : 1 ≤ k) :
     (⟨scaleTorsion (k : ℝ) (seedBalanced_stays hk).params,
         seedBalanced_stays_scale_admissible hk⟩ : Amplitude).IsBalancedMassive :=
   scale_balancedMassive_stays_balanced hk (seedBalanced_stays_isBalancedMassive hk)
     (seedBalanced_stays_scale_admissible hk)
 
-/-- Full balanced ray `t = 1` leaves the cone under 2-fold scaling. -/
 theorem balancedAmplitude_exits_not_admissible :
     ¬ IsAdmissibleContinuous (scaleTorsion (2 : ℝ) balancedAmplitude.params) := by
   have heq : scaleTorsion (2 : ℝ) balancedAmplitude.params = balancedRay 2 := by
     simp [balancedAmplitude, scaleTorsion_balancedRay]
   simpa [heq] using not_admissible_balancedRay_of_one_lt (by norm_num : (1 : ℝ) < 2)
 
-/--
-Cone exit of a balanced seed is invisible to the signed-height classifier:
-`J` stays 0, so `classify?` still returns `T`. Mass and the cone predicate
-are the observables that see the exit.
--/
+/-- Cone exit is invisible to signed height: `classify?` stays `T`. -/
 theorem balancedAmplitude_scale_classify_T :
     classify? (JNormalized (scaleTorsion (2 : ℝ) balancedAmplitude.params)) =
       some .T := by

@@ -7,10 +7,9 @@ import DstDiophantine.Algebra.Generators
 import Mathlib.Tactic.Linarith
 
 /-!
-# Dictionary between the D4L amplitude layer and the dual Hilbert layer
+# Dictionary of the amplitude layer and the dual Hilbert layer
 
-Maps are explicit and one-way. None of them is a lattice isomorphism,
-a Born rule, or a Hilbert-space adjoint.
+Maps are explicit and one-way. None of them is a lattice isomorphism, a Born rule, or a Hilbert-space adjoint.
 -/
 
 namespace DstDiophantine
@@ -28,7 +27,6 @@ noncomputable def Amplitude.dualMat (a : Amplitude) (h : IsDualSector a.params) 
     Matrix (Fin 2) (Fin 2) ℂ :=
   dualRotorMat (a.dualRapidity h)
 
-/-- Dual-sector amplitudes yield \(\mathrm{SU}(2)\) matrix rotors. -/
 theorem Amplitude.dualMat_unitary (a : Amplitude) (h : IsDualSector a.params) :
     (a.dualMat h).conjTranspose * a.dualMat h = 1 :=
   dualRotorMat_unitary (a.dualRapidity h)
@@ -37,26 +35,22 @@ theorem Amplitude.dualMat_det (a : Amplitude) (h : IsDualSector a.params) :
     (a.dualMat h).det = 1 :=
   dualRotorMat_det (a.dualRapidity h)
 
-/-- Usual–dual swap sends a dual-sector configuration out of the dual sector
-whenever the dual rapidity is nonzero. It is not the Hilbert-space adjoint. -/
+/-- Not the Hilbert-space adjoint. -/
 theorem dagger_leaves_dual_sector {p : TorsionParams}
     (_hd : IsDualSector p) (hn : ¬ IsUsualSector p) :
     ¬ IsDualSector (daggerParams p) := by
   intro h
-  -- dagger swaps α and β; dual sector has α = 0, so dagger has β = 0 (usual)
   have : IsUsualSector p := by
     intro a
     have := h a
-    -- daggerParams p .alpha a = p.beta a = 0
     simpa [daggerParams] using this
   exact hn this
 
-/-- Killing self-overlap is a multiple of `J`, not a spinor Born probability. -/
+/-- Not a spinor Born probability. -/
 theorem overlap_ne_spinor_born :
     ∃ p : TorsionParams, overlap p p < 0 :=
   overlap_self_can_be_neg
 
-/-- Four D4L labels cannot be four pairwise orthogonal lines in `ℂ²`. -/
 theorem four_labels_not_orthogonal_pvm :
     ¬ ∃ L : TruthValue → QProp,
         (∀ tv, finrank ℂ (L tv) = 1) ∧
@@ -68,21 +62,19 @@ theorem four_labels_not_orthogonal_pvm :
     (horth .T .F (by decide))
     (horth .U .F (by decide))
 
-/-- Scalar `min`/`max` distribute; the subspace lattice of `ℂ²` does not.
-Hence there is no lattice isomorphism carrying one to the other. -/
+/-- No lattice isomorphism carries one to the other. -/
 theorem scalar_lattice_not_iso_qprop :
     (∀ a b c : ℝ, conjJ a (disjJ b c) = disjJ (conjJ a b) (conjJ a c)) ∧
       lineE0 ⊓ (lineE1 ⊔ lineD) ≠ (lineE0 ⊓ lineE1) ⊔ (lineE0 ⊓ lineD) :=
   ⟨scalar_connectives_distributive, not_distributive⟩
 
-/-- Same-axis interference vanishes (already proved). -/
+/-- Already proved. -/
 theorem same_axis_compatible (α β : ℝ) :
     interfere
         ⟨fun a => if a = 0 then α else 0, fun _ => 0⟩
         ⟨fun _ => 0, fun a => if a = 0 then β else 0⟩ = 0 :=
   interfere_axis0_self α β
 
-/-- Self-interference always vanishes: \([\Omega,\Omega]=0\). -/
 theorem interfere_self (p : TorsionParams) : interfere p p = 0 := by
   simp [interfere, Generators.commutator]
 
@@ -106,8 +98,7 @@ theorem not_sameAxis_axis01Boost : ¬ SameAxis axis01Boost axis01Boost := by
   · have h := hp 0 (by decide)
     simp [axis01Boost] at h
 
-/-- Vanishing interference does not force a common single axis.
-The witness is a two-axis boost, whose self-commutator is zero. -/
+/-- Witness: a two-axis boost. -/
 theorem compatible_not_implies_same_axis :
     ∃ p q : TorsionParams, interfere p q = 0 ∧ ¬ SameAxis p q :=
   ⟨axis01Boost, axis01Boost, interfere_self axis01Boost, not_sameAxis_axis01Boost⟩

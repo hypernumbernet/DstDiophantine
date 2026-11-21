@@ -26,54 +26,9 @@ import Mathlib.Tactic.FieldSimp
 set_option linter.style.native false
 
 /-!
-# Phase 5–7: abc conjecture (quality / modular bridge)
+# Quality height for abc
 
-We formalise Chapter 7 of `dst-diophantine.tex` as a **quality–torsional height**
-argument on the pure-boost mismatch model
-`Ω = pureBoost(2(log c − log rad(abc)))`, together with a finite computational
-certificate and bridges recovering the classical Oesterlé–Masser statement.
-
-## What is proved
-
-On the pure-boost chart `Ω = pureBoost(2 δ)` with `δ = log c − log rad(abc)`,
-the normalised height is exactly `(16/(3π²)) δ²`. Continuous admissibility is
-the branch `0 ≤ δ ≤ π/4`, so an admissible seed obeys
-`c ≤ exp(π/4) · rad(abc)` and `|JNormalized| ≤ 1/3`. The torsional ceiling
-`|JNormalized| ≤ 1` lies strictly outside that cone: it becomes active only
-for `δ > π √3 / 4`.
-
-Every primitive triple with `c ≤ 80` satisfies `c ≤ 2 · rad(abc)`. Since
-`2 < exp(π/4)`, none of them leaves the cone. The shell between the cone
-wall and the unit-height surface is narrower than one halving. Inside the
-cone the quality is at most `log 9 / log 6`, the quality of `1 + 8 = 9`,
-and equality holds only for the two orderings of that sum. A greater quality
-lies outside the cone. The first exit is `1 + 80 = 81` (`1 + 2⁴·5 = 3⁴`),
-with radical `30` and ratio `27/10`: the seed is not admissible, yet the
-normalised height is still strictly less than one. The sum `3 + 5³ = 2⁷`
-has the same radical and ratio `64/15`, so the normalised height exceeds
-one, and that seed is likewise not admissible.
-
-The same gap may be placed on all three axes at once, with label squares
-`1`, `4`, and `9`. The packet has rapidities `2δ`, `8δ`, and `18δ` and
-vanishing dual angles. Its scalar is the sum of the three squares,
-`J = 196 δ²`, with no cross term. It is admissible precisely for
-`0 ≤ δ ≤ π/36`, the branch of the heaviest axis, and that membership is
-the membership of the single boost of rapidity `18δ`. The sum `1 + 8 = 9`
-stays inside the one-axis cone and leaves the packet. The packet of a
-triple depends on the triple only through `δ`, so the placement does not
-feed `AbcModularBridge`.
-
-## Paper gap (not closed)
-
-Classical abc (`∀ ε > 0, ∃ Cε, c ≤ Cε · rad(abc)^{1+ε}` for primitive triples) is
-**not** claimed unconditionally. The cone estimate is the strong form, but
-only for admissible seeds. `AbcAdmissibleBridge` is diagnostic: it asks for an
-admissible configuration already past the model quality ceiling, which is
-impossible (`AbcAdmissibleBridge_false`). The live programme is
-`AbcModularBridge`: a **solution-dependent** modular witness on
-`quantizeAbcMismatch`, together with the residual conformal-gauge gap
-`ConformalGaugeAdmissible` (provisionally identified with the PGA real-scale
-cone). Legacy coarse real-scale witnesses stay equation-independently empty.
+Pure-boost height tracks `log c − log rad(abc)`. Classical abc is not claimed; `AbcAdmissibleBridge` is false and `AbcModularBridge` stays open.
 -/
 
 namespace DstDiophantine
@@ -262,7 +217,6 @@ theorem abcHeight_eq (a b c : ℕ) :
     add_zero]
   ring
 
-/-- Quality–height identity in the pure-boost chart. -/
 theorem abcHeight_eq_quality {a b c : ℕ} (h : IsAbcTriple a b c) :
     abcHeight a b c =
       (16 / (3 * Real.pi ^ 2)) *
@@ -339,20 +293,17 @@ theorem abc_quality_bound_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     abcQualityCeiling_eq hrad_lt
   linarith [hsqrt, hceil]
 
-/-- Exceeding the model ceiling contradicts continuous admissibility. -/
 theorem abc_amplification_contradiction {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c))
     (hbig : abcQualityCeiling (abcRadical (a * b * c)) < abcQuality a b c) :
     False :=
   not_le_of_gt hbig (abc_quality_bound_of_admissible h hadm)
 
-/-- Contrapositive form of the quality ceiling. -/
 theorem abc_quality_gt_ceiling_not_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hbig : abcQualityCeiling (abcRadical (a * b * c)) < abcQuality a b c) :
     ¬ IsAdmissibleContinuous (abcMismatchParams a b c) :=
   fun hadm => abc_amplification_contradiction h hadm hbig
 
-/-- Log-gap form of quality: `1 < q ↔ rad(abc) < c`. -/
 theorem one_lt_abcQuality_iff {a b c : ℕ} (h : IsAbcTriple a b c) :
     1 < abcQuality a b c ↔ abcRadical (a * b * c) < c := by
   set R := abcRadical (a * b * c)
@@ -372,7 +323,6 @@ theorem one_lt_abcQuality_iff {a b c : ℕ} (h : IsAbcTriple a b c) :
       (Real.log_lt_log_iff hRpos hcpos).mpr (Nat.cast_lt.mpr hlt)
     exact (one_lt_div hLpos).mpr hlog
 
-/-- Pure-boost rapidity of an abc mismatch: `θ = 2 (q − 1) log rad`. -/
 theorem abcMismatch_rapidity {a b c : ℕ} (h : IsAbcTriple a b c) :
     2 * (Real.log c - Real.log (abcRadical (a * b * c))) =
       2 * (abcQuality a b c - 1) * Real.log (abcRadical (a * b * c)) := by
@@ -388,7 +338,6 @@ theorem abcMismatch_rapidity {a b c : ℕ} (h : IsAbcTriple a b c) :
   rw [hdiff]
   ring
 
-/-- Continuous admissibility of the abc pure-boost seed. -/
 theorem isAdmissibleContinuous_abcMismatch_iff {a b c : ℕ} (_h : IsAbcTriple a b c) :
     IsAdmissibleContinuous (abcMismatchParams a b c) ↔
       0 ≤ Real.log c - Real.log (abcRadical (a * b * c)) ∧
@@ -548,7 +497,6 @@ theorem abcHeight_eq_logGap (a b c : ℕ) :
       (16 / (3 * Real.pi ^ 2)) * (abcLogGap a b c) ^ 2 := by
   simpa [abcLogGap] using abcHeight_eq a b c
 
-/-- Normalised height equals one at rapidity `π √3 / 4`. -/
 private theorem abcHeight_unit_at_threshold :
     (16 / (3 * Real.pi ^ 2)) * (Real.pi * Real.sqrt 3 / 4) ^ 2 = 1 := by
   have hsq : (Real.pi * Real.sqrt 3 / 4) ^ 2 = 3 * Real.pi ^ 2 / 16 := by
@@ -558,7 +506,6 @@ private theorem abcHeight_unit_at_threshold :
   rw [hsq]
   field_simp
 
-/-- Normalised height passes below 1 exactly inside rapidity `π √3 / 4`. -/
 theorem abcHeight_lt_one_iff (a b c : ℕ) :
     abcHeight a b c < 1 ↔
       |abcLogGap a b c| < Real.pi * Real.sqrt 3 / 4 := by
@@ -605,7 +552,6 @@ theorem one_lt_abcHeight_of_abs_logGap_gt (a b c : ℕ)
   have hlt : κ * ρ ^ 2 < κ * δ ^ 2 := mul_lt_mul_of_pos_left hsq hκ
   simpa [hunit, mul_comm] using hlt
 
-/-- Admissible pure-boost seeds obey the strong radical bound `c ≤ e^{π/4} rad`. -/
 theorem abc_c_le_exp_mul_radical_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     (c : ℝ) ≤
@@ -626,7 +572,6 @@ theorem abc_c_le_exp_mul_radical_of_admissible {a b c : ℕ} (h : IsAbcTriple a 
     (Real.log_le_log_iff hcpos htarget).mp hlog
   simpa [mul_comm] using hle
 
-/-- Inside the cone the quality cannot exceed the branch ceiling. -/
 theorem abc_quality_le_branch_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤
@@ -643,7 +588,6 @@ theorem abc_quality_le_branch_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c
     (le_div_iff₀ hLpos).mpr hle
   linarith
 
-/-- On the admissible cone the normalised height is at most one third. -/
 theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcHeight a b c ≤ 1 / 3 := by
@@ -671,21 +615,15 @@ theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b 
 
 /-! ### Coarser ceiling from `|JNormalized| ≤ 1` -/
 
-/--
-Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with
-`ε_N = 16/(3N²)` from `discrete_nonzero_height_lb`.
--/
+/-- Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with `ε_N = 16/(3N²)` from `discrete_nonzero_height_lb`. -/
 noncomputable def discreteAbcCeiling (N rad : ℕ) : ℝ :=
   1 + Real.sqrt (1 / (abcHeightCoef rad * ((16 : ℝ) / (3 * (N : ℝ) ^ 2))))
 
-/-- Admissibility also implies the coarser ceiling coming from `|JNormalized| ≤ 1`.
-The branch `δ ≤ π/4` is the stricter cut. -/
 theorem discrete_abc_bound {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) :=
   abc_quality_bound_of_admissible h hadm
 
-/-- Nonzero discrete seeds are at least `ε_N` tall (shared core). -/
 theorem discrete_abc_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
     (hne : latticeMismatch t ≠ 0) :
     (16 : ℝ) / (3 * (N : ℝ) ^ 2) ≤ |JNormalized (toTorsionParams t)| :=
@@ -738,7 +676,6 @@ theorem allAbcRadicalPowBoundUpTo_sound {N : ℕ}
   have hok := allPrimitiveAbcUpTo_sound hcert a b c h hc
   simpa [abcRadicalPowOk, decide_eq_true_eq] using hok
 
-/-- Chapter 7 finite-exploration certificate for targets up to `100`. -/
 theorem abc_radical_pow_of_le_hundred {a b c : ℕ} (h : IsAbcTriple a b c)
     (hc : c ≤ 100) : c ≤ (abcRadical (a * b * c)) ^ 2 :=
   allAbcRadicalPowBoundUpTo_sound
@@ -758,7 +695,6 @@ theorem abc_twice_radical_of_le_eighty {a b c : ℕ} (h : IsAbcTriple a b c)
     (by native_decide : allAbcTwiceRadicalUpTo 80 = true) a b c h hc
   simpa [abcTwiceRadicalOk, decide_eq_true_eq] using hok
 
-/-- Sums up to `80` stay strictly inside the upper wall of the cone. -/
 theorem abc_logGap_lt_pi_div_four_of_le_eighty {a b c : ℕ} (h : IsAbcTriple a b c)
     (hc : c ≤ 80) : abcLogGap a b c < Real.pi / 4 := by
   have htwice := abc_twice_radical_of_le_eighty h hc
@@ -786,7 +722,6 @@ theorem isAbcTriple_one_eighty_eighty_one : IsAbcTriple 1 80 81 := by
 theorem abcRadical_one_eighty_eighty_one : abcRadical (1 * 80 * 81) = 30 := by
   native_decide
 
-/-- `1 + 2^4 · 5 = 3^4` is the first primitive sum that leaves the cone. -/
 theorem pi_div_four_lt_abcLogGap_one_eighty :
     Real.pi / 4 < abcLogGap 1 80 81 := by
   rw [abcLogGap, abcRadical_one_eighty_eighty_one]
@@ -805,7 +740,6 @@ theorem not_admissible_abc_one_eighty :
     (isAdmissibleContinuous_abcMismatch_iff isAbcTriple_one_eighty_eighty_one).mp hadm
   exact not_lt_of_ge hle.2 pi_div_four_lt_abcLogGap_one_eighty
 
-/-- The first exit still has normalised height strictly below one. -/
 theorem abcHeight_lt_one_one_eighty : abcHeight 1 80 81 < 1 := by
   rw [abcHeight_lt_one_iff]
   have hpos : 0 < abcLogGap 1 80 81 :=
@@ -852,7 +786,6 @@ theorem isAbcTriple_three_one_two_five : IsAbcTriple 3 125 128 := by
 theorem abcRadical_three_one_two_five : abcRadical (3 * 125 * 128) = 30 := by
   native_decide
 
-/-- `3 + 5³ = 2⁷` crosses the height threshold, hence leaves the cone. -/
 theorem pi_sqrt_three_div_four_lt_abcLogGap_two_seven :
     Real.pi * Real.sqrt 3 / 4 < abcLogGap 3 125 128 := by
   rw [abcLogGap, abcRadical_three_one_two_five]
@@ -988,7 +921,6 @@ private theorem branch_at_thirty_three_lt_champion :
     1 + (Real.pi / 4) / Real.log 33 < Real.log 9 / Real.log 6 := by
   have h6pos : 0 < Real.log 6 := Real.log_pos (by norm_num)
   have h33pos : 0 < Real.log 33 := Real.log_pos (by norm_num)
-  -- Prove the cross-multiplied form `π log 6 < 4 log 33 log(3/2)`.
   have hlog2_lo : (0.6931471803 : ℝ) < Real.log 2 := Real.log_two_gt_d9
   have hlog2_hi : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
   have hlog3_lo : (1.0986122885 : ℝ) < Real.log 3 := Real.log_three_gt_d9
@@ -1106,7 +1038,6 @@ private theorem abc_admissible_champion_dichotomy {a b c : ℕ} (h : IsAbcTriple
       exact hbranch.trans_lt branch_at_thirty_three_lt_champion
     exact Or.inr (Or.inr hstrict)
 
-/-- Inside the cone, quality is at most that of `1 + 8 = 9`. -/
 theorem abcQuality_le_one_eight_nine_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQuality 1 8 9 := by
@@ -1117,7 +1048,6 @@ theorem abcQuality_le_one_eight_nine_of_admissible {a b c : ℕ} (h : IsAbcTripl
     exact le_of_eq abcQuality_eight_one_nine
   · exact le_of_lt hlt
 
-/-- Equality holds exactly for the two orderings of `1 + 8 = 9`. -/
 theorem abcQuality_eq_one_eight_nine_iff {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c = abcQuality 1 8 9 ↔
@@ -1137,18 +1067,7 @@ theorem abcQuality_eq_one_eight_nine_iff {a b c : ℕ} (h : IsAbcTriple a b c)
 
 /-! ### Continuous bridge (diagnostic only) -/
 
-/--
-Continuous diagnostic abc quality bridge.
-
-* **Assumption:** a primitive triple with quality `> 1 + ε` yields an
-  admissible continuous pure-boost already past the model quality ceiling.
-* **Proved core:** `abc_amplification_contradiction` /
-  `torsion_bound_continuous`.
-* **Obstruction:** the two conjuncts cannot hold together
-  (`abc_quality_bound_of_admissible`). Explicitly `¬ AbcAdmissibleBridge`
-  via the triple `1 + 8 = 9`.
-* **Does not claim:** unconditional classical abc (Oesterlé–Masser).
--/
+/-- Diagnostic bridge: admissible and already past the quality ceiling. Proved impossible. -/
 def AbcAdmissibleBridge : Prop :=
   ∀ (ε : ℝ), 0 < ε → ∀ (a b c : ℕ),
     IsAbcTriple a b c →
@@ -1156,7 +1075,7 @@ def AbcAdmissibleBridge : Prop :=
       IsAdmissibleContinuous (abcMismatchParams a b c) ∧
         abcQualityCeiling (abcRadical (a * b * c)) < abcQuality a b c
 
-/-- Conditional DST recovery of the classical abc conjecture (vacuous bridge). -/
+/-- Conditional; the continuous bridge is vacuous. -/
 theorem abc_conjecture_of_bridge (hbridge : AbcAdmissibleBridge) :
     ∀ (ε : ℝ), 0 < ε →
       ∃ C : ℝ, 0 < C ∧
@@ -1178,8 +1097,7 @@ theorem one_lt_abcQuality_one_eight_nine : 1 < abcQuality 1 8 9 := by
   rw [one_lt_abcQuality_iff h, abcRadical_one_eight_nine]
   decide
 
-/-- The continuous quality bridge is false: it demands an impossible pair of
-conjuncts on any triple with quality `> 1` (e.g. `1 + 8 = 9`). -/
+/-- False for every quality `> 1`, including `1 + 8 = 9`. -/
 theorem AbcAdmissibleBridge_false : ¬ AbcAdmissibleBridge := by
   intro hbridge
   set q := abcQuality 1 8 9
@@ -1231,21 +1149,7 @@ theorem quantizeAbcMismatch_error (N : ℕ) [NeZero N] {a b c : ℕ}
 
 /-! ### Live modular bridge (solution-dependent payload) -/
 
-/--
-**Live modular abc bridge** (unproved).
-
-* **Payload (solution-dependent):** the quantised log-gap
-  `t := quantizeAbcMismatch N a b c` is admissible, carries a
-  `ModularAmplificationWitness N k` with `w.t.val = t`, and the powered
-  real-scale configuration is `ConformalGaugeAdmissible`.
-* **Unlike** `AbcAdmissibleBridge`: the continuous ceiling contradiction is
-  avoided; the witness type is inhabited in general, but the bridge demands
-  that the *triple's* quantised gap be that witness.
-* **Proved core used by the conditional wrapper:**
-  `ModularAmplificationWitness.not_admissible_real_scale`.
-* **Residual gap:** conformal / CGA gauge vs PGA real-scale cone (same as FLT).
-* **Does not claim:** unconditional classical abc.
--/
+/-- Unproved live bridge: a modular witness on the quantised log-gap. -/
 def AbcModularBridge : Prop :=
   ∀ (ε : ℝ), 0 < ε → ∀ (a b c : ℕ) (h : IsAbcTriple a b c),
     1 + ε < abcQuality a b c →
@@ -1257,7 +1161,6 @@ def AbcModularBridge : Prop :=
             ModularAmplification.ConformalGaugeAdmissible
               (scaleTorsion (k : ℝ) (toTorsionParams t))
 
-/-- Conditional classical abc from the modular bridge. -/
 theorem abc_conjecture_of_modular_bridge (hbridge : AbcModularBridge) :
     ∀ (ε : ℝ), 0 < ε →
       ∃ C : ℝ, 0 < C ∧
@@ -1280,11 +1183,6 @@ theorem abc_conjecture_of_modular_bridge (hbridge : AbcModularBridge) :
 
 /-! ### Partial winding construction on the principal interval -/
 
-/--
-Specialisation to abc log-gaps on the principal interval: if
-`2π/k ≤ δ < 2π` and `k ∣ N`, the quantised abc seed has nonzero total winding.
-General rapidity helpers live in `Algebra.ModularAmplification`.
--/
 theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
     {a b c : ℕ} (h : IsAbcTriple a b c)
     (hle : 2 * Real.pi / k ≤ abcLogGap a b c)
@@ -1307,16 +1205,11 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
   rw [heq]
   exact windingTotal_ne_zero_of_rapidity_ge N k hk (abcLogGap a b c) h0 hle hlt hdvd
 
--- FLT / Beal remain independent special cases (Ch.5–6); abc treats all
--- coprime sums `a + b = c`. See `fermat_last_theorem_of_modular_bridge` /
--- `beal_conjecture_of_modular_bridge`.
+-- Classical FLT and Beal are not consequences of this development.
 
 /-! ### One-algebra label packet
 
-The three axes of a single `TorsionParams` receive the label squares
-`1`, `4`, and `9` times the pure-boost chart `2δ`. The Killing form adds
-the squares and produces no cross term, so admissibility collapses to the
-heaviest axis.
+Axes carry label squares `1`, `4`, and `9` times `2δ`. The Killing form adds those squares, so admissibility is the heaviest axis.
 -/
 
 /-- Squares of the labels `1`, `2`, `3`, one per axis. -/
@@ -1345,7 +1238,6 @@ theorem J_abcLabelPacket (δ : ℝ) :
   norm_num
   ring
 
-/-- The scalar is the sum of the three squared rapidities. Distinct axes do not multiply. -/
 theorem J_abcLabelPacket_sum_squares (δ : ℝ) :
     J (abcLabelPacket δ) =
       (1 / 2) * ((2 * δ) ^ 2 + (8 * δ) ^ 2 + (18 * δ) ^ 2) := by
@@ -1397,7 +1289,6 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
     · simp [abcLabelPacket]
     · simpa [abcLabelPacket] using le_trans hle h18
 
-/-- Packet membership is membership of the single heaviest boost. -/
 theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
       IsAdmissibleContinuous (pureBoost (18 * δ)) := by

@@ -5,19 +5,9 @@ import DstDiophantine.Algebra.UnitGroup
 import Mathlib.Data.Fintype.Card
 
 /-!
-# Unified algebraic descent (honest Phase-4 version)
+# Unified algebraic descent
 
-## Paper gap
-
-Chapter 10 of `dst-diophantine.tex` claims that dagger → unit-group filter →
-dual reconstruction **strictly decreases** the torsional height `J`. Lean proves
-the opposite equality: dagger only swaps sectors and preserves
-`torsionHeight` (`dagger_preserves_height`). The unit-group filter is likewise
-vacuous for the present `DiscreteUnit` (every `RotorClass` lies in it).
-
-Termination of a decision procedure is therefore obtained from a separate
-well-founded measure on a finite search state (`DescentSchema`), not from
-dagger itself.
+Dagger preserves height; it is not a strict descent. Termination uses a well-founded measure on a finite search state.
 -/
 
 namespace DstDiophantine
@@ -32,27 +22,21 @@ variable {N : ℕ} [NeZero N]
 def dualReconstruct (p : TorsionParams) : TorsionParams :=
   daggerParams p
 
-/-- Paper gap: dagger / dual reconstruction preserves normalised height. -/
 theorem dagger_preserves_height (p : TorsionParams) :
     Embedding.torsionHeight (dualReconstruct p) = Embedding.torsionHeight p :=
   Embedding.descent_height_eq p
 
-/-- Corollary: dagger never yields a strict height decrease. -/
+/-- Dagger never strictly decreases height. -/
 theorem dagger_not_strict_descent (p : TorsionParams) :
     ¬ Embedding.torsionHeight (dualReconstruct p) < Embedding.torsionHeight p := by
   rw [dagger_preserves_height]
   exact lt_irrefl _
 
-/-- Every rotor class already lies in `DiscreteUnit` (filter is vacuous). -/
+/-- Every rotor class is already a unit; the filter is vacuous. -/
 theorem unitFilter_trivial (c : Embedding.RotorClass N) : Embedding.IsUnitClass c :=
   Embedding.isUnitClass_of_any c
 
-/--
-Abstract descent / search schema for Phase 5 instances.
-
-A step either reaches a terminal state (solution or contradiction branch)
-or produces a new state with strictly smaller `measure`.
--/
+/-- Terminal, or a step of strictly smaller `measure`. -/
 structure DescentSchema where
   State : Type
   measure : State → ℕ
@@ -64,7 +48,6 @@ namespace DescentSchema
 
 variable (D : DescentSchema)
 
-/-- From any state, some finite iteration reaches a terminal state. -/
 theorem reaches_terminal (s : D.State) :
     ∃ s' : D.State, D.terminal s' := by
   generalize hm : D.measure s = n
@@ -160,17 +143,11 @@ instance : DecidablePred IntegerSizeState.terminal := fun s =>
     | inl hempty => exact h hempty
     | inr hall => exact h' hall)
 
-/--
-Trivial step for the placeholder: clear the list when non-terminal.
-Phase 5 replaces this with genuine amplification / factor-extraction descent.
--/
+/-- Clears the list; not a descent step on solutions. -/
 def IntegerSizeState.step (s : IntegerSizeState) (_h : ¬ s.terminal) : IntegerSizeState :=
   ⟨[]⟩
 
-/--
-Weak schema for integer size: terminate immediately by moving to the empty list.
-Useful only as an API hook for Phase 5; not a mathematical descent on solutions.
--/
+/-- API hook only; not a descent on solutions. -/
 def integerSizeSchema : DescentSchema where
   State := IntegerSizeState
   measure := fun s => if IntegerSizeState.terminal s then 0 else s.measure + 1

@@ -15,26 +15,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Algebra of the auxiliary radial expression
 
-`teleparallelTofA` is `(2/r²)(1-√A)²/√A`. It is not the teleparallel
-quadratic. `Gravity.RadialQuadratic` evaluates that quadratic as
-\(-2(A+r A')/r^2\). The lemmas below rewrite the auxiliary expression.
-
-## Proved
-
-The symbol \(T\) in the bullets below is the auxiliary expression, not the quadratic.
-
-* The auxiliary expression equals \((4/r^2)(\cosh\varphi-1)\) whenever \(0<A\) and \(r\neq 0\).
-* \(r^2 T=4(\cosh\sqrt{2J}-1)\) on that gauge, with sandwich \(4J\le r^2 T\).
-* Real radial factors make the auxiliary expression nonnegative. This is not
-  a sign constraint on the quadratic, which is negative on the attractive vacuum.
-* Chart densities satisfy \(e\cdot(4J/r^2)\le e\cdot T\), with equality only
-  in the flat limit (when \(\sin\theta>0\)).
-
-## Not claimed
-
-* A dictionary for a general tetrad field (off-axis or with translations).
-  `Gravity.LorentzGauge` rules out a pointwise map from \(J\) alone.
-* Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
+`teleparallelTofA` is `(2/r²)(1−√A)²/√A`, not the teleparallel quadratic. No dictionary for a general tetrad is claimed, and `∫ J` is not identified with the TEGR integral of `T`.
 -/
 
 namespace DstDiophantine
@@ -50,7 +31,7 @@ open scoped Topology
 noncomputable def rapidityOfA (A : ℝ) : ℝ :=
   -(1 / 2) * Real.log A
 
-/-- Weitzenböck scalar of the diagonal coframe with time-leg \(\sqrt{A}\). -/
+/-- Auxiliary expression `(2/r²)(1−√A)²/√A`, not the teleparallel quadratic. -/
 noncomputable def teleparallelTofA (A r : ℝ) : ℝ :=
   (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
 
@@ -175,13 +156,11 @@ theorem teleparallelTofA_pos_of_ne_one {A r : ℝ}
   intro h0
   exact hA1 ((teleparallelTofA_eq_zero_iff hA hr).mp h0.symm)
 
-/-- A real static radial boost cannot produce a negative Weitzenböck scalar. -/
 theorem teleparallelTofA_not_lt_zero {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
     ¬ teleparallelTofA A r < 0 :=
   not_lt.mpr (teleparallelTofA_nonneg hA hr)
 
-/-- Repulsive layers \(T<0\) on the admissible cone require a negative \(J\)
-(elliptic sector). A real radial boost has \(J\ge 0\) and cannot supply them. -/
+/-- Repulsive layers need `J < 0`; a real radial boost has `J ≥ 0` and cannot supply them. -/
 theorem repulsive_requires_negative_J {Jval r : ℝ} (hr : r ≠ 0)
     (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) :
     Jval < 0 := by
@@ -323,7 +302,7 @@ theorem coframeDet_schwarzschild {rs r θ : ℝ} (h : IsExterior rs r) :
   simp only [coframeDet, schwarzschildDiag]
   field_simp [hs]
 
-/-- TEGR chart density \(e\,T\) on the spherical radial-boost coframe. -/
+/-- Chart density `e` times the auxiliary expression, not the TEGR integral. -/
 noncomputable def tegrDensity (A r θ : ℝ) : ℝ :=
   coframeDet (boostSphericalDiag A r θ) * teleparallelTofA A r
 

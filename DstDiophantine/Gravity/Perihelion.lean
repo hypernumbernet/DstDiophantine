@@ -8,66 +8,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 /-!
 # Perihelion from the radial law with angular momentum
 
-The radial fall has no perihelion: every share of the advance is proportional
-to `L²`. On the same static coframe the equatorial motion keeps
-`L = r² dφ/dτ`, and the static observer measures
-`γ² = 1 + ûr² + (L/r)²`, with `dr/dτ = √A · ûr`.
-
-The rapidity law is the radial one with this `γ²` in place of `cosh² ψ`,
-plus the centrifugal change of a constant `L` along the angular leg,
-`dûr/dτ = −γ²/ℓ + (√A / r) (L/r)²`.
-At `L = 0` and `ûr = sinh ψ` this is `dψ/dτ = −cosh ψ / ℓ`.
-
-## Proved
-
-* Differentiating `√A · ûr` cancels the radial speed and leaves
-  `d²r/dτ² = −κ + L²/r³ − 3 κ L²/r²`.
-* The correction splits with nothing left over: one share `−κ L²/r²` is the
-  transverse speed inside `γ²`, and two shares `−2 κ L²/r²` are the deficit
-  `A − 1 = −rₛ/r` in the centrifugal barrier `A L²/r³`.
-* `E = √A · γ` has vanishing derivative, and
-  `(dr/dτ)² = E² − A(1 + L²/r²)`.
-* Wherever `du/dφ ≠ 0`, `d²u/dφ² + u = rₛ/(2L²) + (3/2) rₛ u²`.
-* The precessing ellipse `u = (M/L²)(1 + e cos(kφ))` cancels the resonant
-  harmonic exactly when `k² = 1 − 6 M²/L²`. The residual is a constant and a
-  double angle. With `0 < 6 M²/L² < 1`, the excess of one radial period over
-  `2π` lies strictly between `6π M²/L²` and that quantity divided by
-  `1 − 6 M²/L²`.
-* The conserved slope is the cubic `2M(u−α)(β−u)(γ−u)` when
-  `α+β+γ = 1/(2M)` and the elementary symmetric sums are `E` and `L`.
-  For `0 ≤ α < β < γ` the angle from one visit of the larger root to the
-  next is `radialReturn M α β`. The semi-latus rectum fixed by the roots is
-  `2/(α+β)`. The return exceeds one radial period of the resonant ellipse of
-  that rectum, so the excess over `2π` is strictly greater than
-  `6π M / (2/(α+β))`, and therefore also strictly greater than `6π M²/L²`.
-  When `3M(α+β) ≤ 1/2`, the excess is strictly less than the turning-point
-  lower quantity divided by `1 − 3M(α+β)`.
-* In the areal acceleration the radial piece of `γ²` cancels against itself,
-  `κ ûr² − κ γ² = −κ(1 + ûφ²)`, and the transverse piece remains.
-* A tangential rate `−κ ûφ` has power `−κ ûφ²`. At constant `κ > 0` an angular
-  momentum `L₀ exp(−κτ)` is strictly smaller at every later time. On the
-  virial circle `ûφ² = κ r` its logarithmic derivative per radian is `−ûφ`.
-* The torsional angular leg changes only with the radius, and its power
-  vanishes whenever the radial velocity does.
-
-## Not claimed
-
-* A coordinate chart through the poles. A nonzero azimuthal constant keeps
-  `sin²θ` away from zero. Where a colatitude stays fixed,
-  `Gravity.OffEquator` gives either a radial motion of vanishing angular
-  momentum or the equator. Where the polar leg does not vanish, the
-  azimuth gained per colatitude depends on `θ` and the two constants alone.
-* That the precessing ellipse solves the orbit equation. The residual is
-  stated, and it has no resonant harmonic. Its radial period is a lower
-  comparison for the return, not the return itself.
-* The upper bound when `3M(α+β) > 1/2`. Past that value a bound orbit can
-  return through a larger angle than the turning-point upper quantity, and
-  the angle is not bounded by `6π M²/L²` divided by `1 − 6M²/L²`.
-* That the tangential tilt is the retarded field of a moving source. It is
-  the comparison against which the torsional leg is read. No arcseconds
-  per century are computed.
-* An identification of this bivector with the torsional mismatch of the
-  parent theory.
+No chart through the poles is derived, the precessing ellipse is not identified as a solution of the orbit equation, and the upper bound is not claimed when `3M(α+β) > 1/2`. The tangential tilt is not the retarded field of a moving source, and this bivector is not the torsional mismatch.
 -/
 
 namespace DstDiophantine.Gravity.Perihelion
@@ -85,8 +26,7 @@ def gammaSq (ur uφ : ℝ) : ℝ :=
 noncomputable def angularMomentum (L r : ℝ) : ℝ :=
   L / r
 
-/-- Rate of the orthonormal radial momentum. The first term is the rapidity
-law; the second is the centrifugal change along the angular leg. -/
+/-- Rate of the orthonormal radial momentum. The first term is the rapidity law; the second is the centrifugal change along the angular leg. -/
 noncomputable def radialMomentumRate (rs r ur L : ℝ) : ℝ :=
   -(gammaSq ur (angularMomentum L r)) / axisDistance rs r +
     (killingNorm rs r / r) * (angularMomentum L r) ^ 2
@@ -98,8 +38,6 @@ noncomputable def orbitEnergySq (rs L r ur : ℝ) : ℝ :=
 theorem gammaSq_zero_angular (ur : ℝ) : gammaSq ur 0 = 1 + ur ^ 2 := by
   simp [gammaSq]
 
-/-- At vanishing angular momentum the momentum rate is `−cosh² ψ / ℓ`,
-which is `cosh ψ` times the radial law `dψ/dτ = −cosh ψ / ℓ`. -/
 theorem zero_angular_reduces {ℓ ψ : ℝ} :
     Real.cosh ψ * (-Real.cosh ψ / ℓ) = -(1 + (Real.sinh ψ) ^ 2) / ℓ := by
   have h := Real.cosh_sq_sub_sinh_sq ψ
@@ -116,8 +54,6 @@ theorem radialMomentumRate_zero_angular {rs r ψ : ℝ} (h : IsExterior rs r) :
 
 /-! ### The three shares -/
 
-/-- Algebraic acceleration produced by the redshift transport and the
-momentum rate. -/
 theorem areal_accel_parts {ν ℓ ur uφ r : ℝ} (hℓ : ℓ ≠ 0) (hr : r ≠ 0) :
     (ν / ℓ) * ur ^ 2 + ν * (-(gammaSq ur uφ) / ℓ + (ν / r) * uφ ^ 2) =
       -(ν / ℓ) - (ν / ℓ) * uφ ^ 2 + (ν ^ 2 / r) * uφ ^ 2 := by
@@ -137,8 +73,6 @@ theorem centrifugal_deficit {rs r L : ℝ} (hr : r ≠ 0) :
   field_simp [hr]
   ring
 
-/-- One share from `γ²`, two shares from `A − 1`. Their sum is the perihelion
-term `−3 κ L²/r²`. -/
 theorem perihelion_three_shares {rs r L : ℝ} (hr : r ≠ 0) :
     (schwarzschildA rs r - 1) * L ^ 2 / r ^ 3 =
         2 * (-(killingRate rs r) * (L / r) ^ 2) ∧
@@ -154,7 +88,6 @@ theorem perihelion_three_shares {rs r L : ℝ} (hr : r ≠ 0) :
     field_simp [hr, h2]
     ring
 
-/-- Newtonian pieces plus the two shares recover the areal acceleration. -/
 theorem areal_accel_newton_plus_shares {rs r L : ℝ} (hr : r ≠ 0) :
     -(killingRate rs r) + L ^ 2 / r ^ 3 +
         (-(killingRate rs r) * (L / r) ^ 2) +
@@ -244,7 +177,6 @@ theorem gammaSq_hasDerivAt {rs L : ℝ} {r ur : ℝ → ℝ} {τ : ℝ}
     _ = 2 * ur τ * (-γ / ℓ) := by rw [hcent, add_zero]
     _ = -(2 * ur τ * γ) / ℓ := by ring
 
-/-- Redshift and the full factor `γ²` trade exactly, so `E²` is stationary. -/
 theorem orbitEnergy_hasDerivAt {rs L : ℝ} {r ur : ℝ → ℝ} {τ : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * ur τ) τ)
@@ -280,8 +212,6 @@ theorem orbitEnergy_hasDerivAt {rs L : ℝ} {r ur : ℝ → ℝ} {τ : ℝ}
   field_simp [hℓ]
   ring
 
-/-- Where the two laws hold, the areal acceleration is the Newtonian
-acceleration plus the perihelion term. -/
 theorem arealAccel_hasDerivAt {rs L : ℝ} {r ur : ℝ → ℝ} {τ : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * ur τ) τ)
@@ -366,7 +296,6 @@ theorem orbitEnergy_eq_on {rs L a b : ℝ} {r ur : ℝ → ℝ} (_hab : a ≤ b)
   have hsub : E τ₂ - E τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
   exact (sub_eq_zero.mp hsub).symm
 
-/-- The first integral on an interval where the two laws hold. -/
 theorem orbit_first_integral {rs L a b : ℝ} {r ur : ℝ → ℝ} (hab : a ≤ b)
     (hExt : ∀ τ ∈ Icc a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Icc a b, HasDerivAt r (killingNorm rs (r τ) * ur τ) τ)
@@ -393,8 +322,6 @@ theorem orbit_first_integral {rs L a b : ℝ} {r ur : ℝ → ℝ} (hab : a ≤ 
 
 /-! ### The orbit equation -/
 
-/-- Differentiating the first integral removes every term but the Newtonian
-inhomogeneity and `3 M u²`. -/
 theorem binet_rearrange {u u' u'' rs L : ℝ} (hL : L ≠ 0) (hu' : u' ≠ 0)
     (h : 2 * L ^ 2 * u' * u'' =
       rs * u' * (1 + L ^ 2 * u ^ 2) - (1 - rs * u) * (2 * L ^ 2 * u * u')) :
@@ -529,7 +456,6 @@ theorem deriv_deriv_precessing (A e k φ : ℝ) :
   rw [hfun]
   exact (hasDerivAt_precessing_velocity A e k φ).deriv
 
-/-- Matching the coefficient of `cos θ` fixes `k² = 1 − 6 M²/L²`. -/
 theorem resonant_coefficient {M L e k : ℝ} (hL : L ≠ 0) (he : e ≠ 0) (hM : M ≠ 0) :
     (M / L ^ 2) * e * (1 - k ^ 2) = 6 * M * (M / L ^ 2) ^ 2 * e ↔
       k ^ 2 = 1 - 6 * M ^ 2 / L ^ 2 := by
@@ -554,8 +480,7 @@ theorem resonant_coefficient {M L e k : ℝ} (hL : L ≠ 0) (he : e ≠ 0) (hM :
       _ = 6 * M * (M / L ^ 2) ^ 2 * e := by
           field_simp [hL2]
 
-/-- On the rate that cancels the resonant harmonic, the failure of the orbit
-equation is a constant plus a double angle. -/
+/-- The failure of the orbit equation is a constant plus a double angle. -/
 theorem precessing_residual {M L e k θ : ℝ} (hL : L ≠ 0)
     (hk : k ^ 2 = 1 - 6 * M ^ 2 / L ^ 2) :
     let A := M / L ^ 2
@@ -638,8 +563,6 @@ theorem inv_sqrt_sub_one_bounds {x : ℝ} (hx0 : 0 < x) (hx1 : x < 1) :
       field_simp [h1x.ne']
     linarith
 
-/-- One radial period of the precessing ellipse exceeds `2π` by an angle
-strictly between `6π M²/L²` and that quantity over `1 − 6 M²/L²`. -/
 theorem perihelion_excess_bounds {M L : ℝ}
     (hx0 : 0 < 6 * M ^ 2 / L ^ 2) (hx1 : 6 * M ^ 2 / L ^ 2 < 1) :
     let x := 6 * M ^ 2 / L ^ 2
@@ -664,7 +587,6 @@ theorem perihelion_excess_bounds {M L : ℝ}
   · simpa [hlowEq] using hlow
   · simpa [hhighEq] using hhigh
 
-/-- With semi-latus rectum `p = L²/M`, the same bracket is `6π M/p`. -/
 theorem perihelion_excess_latus {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
     (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
     let k := Real.sqrt (1 - 6 * M / p)
@@ -697,15 +619,11 @@ theorem perihelion_excess_latus {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M
 
 /-! ### A light-speed tilt drains; the torsional leg does not -/
 
-/-- The radial piece of `γ²` cancels in the areal acceleration, and the
-transverse piece remains. -/
 theorem radial_speed_cancels {κ ur uφ : ℝ} :
     κ * ur ^ 2 - κ * gammaSq ur uφ = -κ * (1 + uφ ^ 2) := by
   unfold gammaSq
   ring
 
-/-- After that cancellation, the transverse piece and the deficit in `A`
-are the perihelion term. -/
 theorem transverse_remains_perihelion {rs r L : ℝ} (hr : r ≠ 0) :
     -killingRate rs r * (1 + (L / r) ^ 2) + schwarzschildA rs r * L ^ 2 / r ^ 3 =
       -killingRate rs r + L ^ 2 / r ^ 3 - 3 * killingRate rs r * L ^ 2 / r ^ 2 := by
@@ -713,7 +631,6 @@ theorem transverse_remains_perihelion {rs r L : ℝ} (hr : r ≠ 0) :
   field_simp [hr]
   ring
 
-/-- Power of a tangential tilt `−κ ûφ`. -/
 theorem aberration_power {κ uφ : ℝ} : (-κ * uφ) * uφ = -κ * uφ ^ 2 := by
   ring
 
@@ -723,7 +640,6 @@ theorem aberration_power_neg {κ uφ : ℝ} (hκ : 0 < κ) (hφ : uφ ≠ 0) :
   have hsq : 0 < uφ ^ 2 := sq_pos_of_ne_zero hφ
   nlinarith [hκ, hsq]
 
-/-- At constant boost rate the tilted angular momentum is an exponential decay. -/
 theorem naiveAngular_hasDerivAt (κ L0 τ : ℝ) :
     HasDerivAt (fun σ => L0 * Real.exp (-κ * σ))
       (-κ * (L0 * Real.exp (-κ * τ))) τ := by
@@ -748,8 +664,6 @@ theorem naiveAngular_strictAnti {κ L0 τ₁ τ₂ : ℝ} (hL : 0 < L0) (hκ : 0
   have hneg : -κ * τ₂ < -κ * τ₁ := by nlinarith
   exact mul_lt_mul_of_pos_left (Real.exp_lt_exp.mpr hneg) hL
 
-/-- On the virial circle `ûφ² = κ r`, the tilt changes `log|ûφ|` at the rate
-`−ûφ` per radian. -/
 theorem naive_log_per_radian {κ r uφ : ℝ} (hφ : uφ ≠ 0) (hr : r ≠ 0)
     (hvir : uφ ^ 2 = κ * r) :
     ((-κ * uφ) / (uφ / r)) / uφ = -uφ := by
@@ -768,7 +682,6 @@ theorem naive_log_per_revolution {κ r uφ : ℝ} (hφ : uφ ≠ 0) (hr : r ≠ 
   rw [naive_log_per_radian hφ hr hvir]
   ring
 
-/-- Power of the torsional angular leg `dûφ/dτ = −ûφ (√A ûr) / r`. -/
 theorem torsional_angular_power {ν r ur uφ : ℝ} :
     uφ * (-(uφ * ν * ur) / r) = -(uφ ^ 2 * ν * ur) / r := by
   ring
@@ -777,12 +690,7 @@ theorem torsional_circular_power {ν r uφ : ℝ} :
     uφ * (-(uφ * ν * (0 : ℝ)) / r) = 0 := by
   ring
 
-/-! ### Turning values
-
-The conserved slope `(du/dφ)²` is a cubic. A bound orbit turns at two positive
-roots `α < β`, with the third root `γ = 1/(2M) − α − β` above `β`. The
-substitution `u = (α+β)/2 + ((β−α)/2) cos θ` cancels the zeros of the slope,
-and the angle of one return to the larger root is `radialReturn`. -/
+/-! ### Turning values -/
 
 open intervalIntegral MeasureTheory
 
@@ -812,8 +720,6 @@ theorem radialSlope_eq_cubic {M α β γ u : ℝ} (hM : M ≠ 0)
   field_simp [hM]
   ring
 
-/-- The energy and the angular momentum are the elementary symmetric sums of the
-three roots, so the conserved slope is this cubic. -/
 theorem binetResidual_eq_radialSlope {E L M α β γ u : ℝ}
     (hM : M ≠ 0) (hL : L ≠ 0)
     (hsum : α + β + γ = 1 / (2 * M))
@@ -872,8 +778,6 @@ theorem radialSlope_param {M α β γ θ : ℝ} (hM : M ≠ 0)
           (1 - 3 * M * (α + β) - M * (β - α) * Real.cos θ) := by
         rw [hrad]
 
-/-- The angular-momentum rectum `L²/M` is strictly longer than the rectum
-`2/(α+β)` fixed by the turning values. -/
 theorem angularLatus_gt_turning {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α)
     (hαβ : α < β) (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
     (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
@@ -913,7 +817,6 @@ theorem angularLatus_gt_turning {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ �
     simpa [div_mul_eq_mul_div] using hrec
   exact (lt_div_iff₀ hM).mpr hmul
 
-/-- Two distinct roots below the third force `3M(α+β) < 1`. -/
 theorem turning_sum_lt_one {M α β γ : ℝ} (hM : 0 < M) (hαβ : α < β) (hβγ : β < γ)
     (hsum : α + β + γ = 1 / (2 * M)) :
     3 * M * (α + β) < 1 := by
@@ -1414,9 +1317,6 @@ private theorem integral_inv_sqrt_lower {a b : ℝ} (ha : 0 < a) (hb : 0 < b) (h
   linarith
 
 
-/-- The return exceeds one radial period of the resonant ellipse of rectum
-`2/(α+β)`, and therefore exceeds `2π` by more than `6π M` over that rectum.
-The same excess is strictly greater than `6π M²/L²`. -/
 theorem bound_return_gt_resonant {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β)
     (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M)) :
     let p := 2 / (α + β)
@@ -1491,8 +1391,6 @@ theorem bound_return_gt_resonant {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α
       simpa [hk] using hellipse.1
     exact lt_trans hlowE hperiod
 
-/-- The rectum fixed by angular momentum is strictly longer than \(2/(\alpha+\beta)\),
-so the same excess is strictly greater than \(6\pi M^{2}/L^{2}\). -/
 theorem bound_return_gt_angular {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α)
     (hαβ : α < β) (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
     (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
@@ -1608,9 +1506,6 @@ private theorem integral_inv_sqrt_envelope {a b lam : ℝ} (ha : 0 < a) (hb : 0 
   exact hstep1.trans hstep2
 
 
-/-- When `3M(α+β) ≤ 1/2`, the return to the larger root lies strictly between
-`6π M/p` and that quantity divided by `1 − 6M/p`, where `p = 2/(α+β)` is the
-semi-latus rectum fixed by the turning values. -/
 theorem bound_return_bounds {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β)
     (hβγ : β < γ) (hsum : α + β + γ = 1 / (2 * M))
     (hx : 3 * M * (α + β) ≤ 1 / 2) :

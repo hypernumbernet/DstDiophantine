@@ -7,14 +7,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormNum
 
 /-!
-# Usual-sector Rodrigues formula in \(G(3,1,1)\)
+# Usual-sector Rodrigues formula
 
-For a pure usual rapidity \(\alpha\), the torsion bivector is the hyperbolic
-combination \(\Gamma^+(\alpha)=\sum\alpha_a B^+_a\). Distinct hyperbolic
-generators anticommute and each squares to \(+1\), so
-\(\Gamma^+(\alpha)^2=\lVert\alpha\rVert^2\) and the Banach exponential
-collapses to the hyperbolic Rodrigues formula. Mixed usual/dual generators
-are not identified with a matrix exponential here.
+`Γ⁺(α)² = ‖α‖²`, so the Banach exponential collapses to the hyperbolic Rodrigues formula. Mixed usual/dual generators are not identified with a matrix exponential here.
 -/
 
 namespace DstDiophantine
@@ -37,7 +32,6 @@ private theorem smul_mul_smul (c d : ℝ) (u v : PGA) :
 private theorem e0_sq_neg_one : ι 0 * ι 0 = (-1 : PGA) := by
   rw [e0_sq, map_neg, map_one]
 
-/-- `B⁺₀ B⁺₁ = e₁ e₂`. -/
 private theorem mul_hyperbolic0_hyperbolic1 :
     hyperbolic 0 * hyperbolic 1 = ι 1 * ι 2 := by
   dsimp [hyperbolic]
@@ -49,7 +43,6 @@ private theorem mul_hyperbolic0_hyperbolic1 :
     _ = -(-1) * (ι 1 * ι 2) := by rw [e0_sq_neg_one]
     _ = ι 1 * ι 2 := by simp
 
-/-- `B⁺₁ B⁺₀ = e₂ e₁`. -/
 private theorem mul_hyperbolic1_hyperbolic0 :
     hyperbolic 1 * hyperbolic 0 = ι 2 * ι 1 := by
   dsimp [hyperbolic]
@@ -61,7 +54,6 @@ private theorem mul_hyperbolic1_hyperbolic0 :
     _ = -(-1) * (ι 2 * ι 1) := by rw [e0_sq_neg_one]
     _ = ι 2 * ι 1 := by simp
 
-/-- `B⁺₀ B⁺₂ = e₁ e₃`. -/
 private theorem mul_hyperbolic0_hyperbolic2 :
     hyperbolic 0 * hyperbolic 2 = ι 1 * ι 3 := by
   dsimp [hyperbolic]
@@ -73,7 +65,6 @@ private theorem mul_hyperbolic0_hyperbolic2 :
     _ = -(-1) * (ι 1 * ι 3) := by rw [e0_sq_neg_one]
     _ = ι 1 * ι 3 := by simp
 
-/-- `B⁺₂ B⁺₀ = e₃ e₁`. -/
 private theorem mul_hyperbolic2_hyperbolic0 :
     hyperbolic 2 * hyperbolic 0 = ι 3 * ι 1 := by
   dsimp [hyperbolic]
@@ -85,7 +76,6 @@ private theorem mul_hyperbolic2_hyperbolic0 :
     _ = -(-1) * (ι 3 * ι 1) := by rw [e0_sq_neg_one]
     _ = ι 3 * ι 1 := by simp
 
-/-- `B⁺₁ B⁺₂ = e₂ e₃`. -/
 private theorem mul_hyperbolic1_hyperbolic2 :
     hyperbolic 1 * hyperbolic 2 = ι 2 * ι 3 := by
   dsimp [hyperbolic]
@@ -97,7 +87,6 @@ private theorem mul_hyperbolic1_hyperbolic2 :
     _ = -(-1) * (ι 2 * ι 3) := by rw [e0_sq_neg_one]
     _ = ι 2 * ι 3 := by simp
 
-/-- `B⁺₂ B⁺₁ = e₃ e₂`. -/
 private theorem mul_hyperbolic2_hyperbolic1 :
     hyperbolic 2 * hyperbolic 1 = ι 3 * ι 2 := by
   dsimp [hyperbolic]
@@ -109,7 +98,6 @@ private theorem mul_hyperbolic2_hyperbolic1 :
     _ = -(-1) * (ι 3 * ι 2) := by rw [e0_sq_neg_one]
     _ = ι 3 * ι 2 := by simp
 
-/-- Distinct hyperbolic generators anticommute. -/
 theorem hyperbolic_anticomm {a b : Fin 3} (h : a ≠ b) :
     hyperbolic a * hyperbolic b + hyperbolic b * hyperbolic a = 0 := by
   fin_cases a <;> fin_cases b <;> try contradiction
@@ -140,7 +128,6 @@ private theorem hyperbolicComb_sq_expand (α : UsualRapidity) :
   simp only [hyperbolicComb, Fin.sum_univ_three, mul_add, add_mul, smul_mul_smul]
   abel
 
-/-- \(\Gamma^+(\alpha)^2 = \lVert\alpha\rVert^2\). -/
 theorem hyperbolicComb_sq (α : UsualRapidity) :
     hyperbolicComb α * hyperbolicComb α = (‖α‖ ^ 2) • (1 : PGA) := by
   have hnorm : ‖α‖ ^ 2 = (α 0) ^ 2 + (α 1) ^ 2 + (α 2) ^ 2 := by
@@ -192,7 +179,6 @@ theorem hyperbolicComb_sq (α : UsualRapidity) :
     abel
   rw [hgroup, hcross01, hcross02, hcross12, add_zero, add_zero, add_zero, hdiag, hnorm]
 
-/-- Pure usual torsion bivector is the hyperbolic combination of the usual rapidity. -/
 theorem omegaTorsion_ofUsual (α : UsualRapidity) :
     omegaTorsion (ofUsual α) = ∑ a : Fin 3, (α a / 2) • hyperbolic a := by
   simp [omegaTorsion, ofUsual]
@@ -229,7 +215,6 @@ theorem omegaTorsion_ofUsual_unit {α : UsualRapidity} (h : α ≠ 0) :
   simp [smul_smul]
   field_simp [hr]
 
-/-- Usual-sector Banach exponential is the hyperbolic Rodrigues formula. -/
 theorem rotorTorsion_ofUsual (α : UsualRapidity) :
     rotorTorsion (ofUsual α) =
       Real.cosh (‖α‖ / 2) • (1 : PGA) +
@@ -242,14 +227,12 @@ theorem rotorTorsion_ofUsual (α : UsualRapidity) :
     simp only [h, ↓reduceDIte]
     exact exp_of_sq_one (hyperbolicUnit_sq h) (‖α‖ / 2)
 
-/-- Axis-0 usual rotor: \(\cosh(\theta/2)\,I+\sinh(\theta/2)\,B^+_0\). -/
 theorem rotorTorsion_ofUsual_axis0 (θ : ℝ) :
     rotorTorsion (ofUsual (EuclideanSpace.single 0 θ)) =
       Real.cosh (θ / 2) • (1 : PGA) + Real.sinh (θ / 2) • hyperbolic 0 := by
   rw [rotorTorsion, omegaTorsion_ofUsual_axis0]
   exact exp_of_sq_one (hyperbolic_sq 0) (θ / 2)
 
-/-- Closed form along the (possibly zero) hyperbolic combination. -/
 theorem rotorTorsion_ofUsual_comb (α : UsualRapidity) :
     rotorTorsion (ofUsual α) =
       Real.cosh (‖α‖ / 2) • (1 : PGA) +

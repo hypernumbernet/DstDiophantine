@@ -7,24 +7,10 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 /-!
 # One exponential, two limits
 
-Off a common axis, `J_ε = B⁺₀ + √(1+ε²) B⁻₁` squares to `-ε²`. At `ε = 0` it is
-the null generator. One closed form covers every real `ε`:
-
-`exp(t J_ε) = cos(ε t) + (t sinc(ε t)) J_ε`.
-
-For `ε ≠ 0` this equals `-1` precisely when `cos(ε t) = -1`, first at
-`t = π/ε`. There `sinc` vanishes, and so does the equidistant Jacobian. As
-`ε → 0⁺` the parameter `π/ε` recedes to infinity, `sinc(ε t) → 1`, and at each
-fixed `t` the exponential tends to the parabolic rotor. The commutator of
-`J_ε` with the null line vanishes if and only if `ε = 0`. The sandwich by the
-exponential tends to the null rotation: the null line stays fixed, and `e₁`
-is carried along it.
-
-## Not claimed
-
-* A position operator, or an uncertainty relation.
-* That the light cone and the three-sphere are the same manifold.
-* A derivation of `a₀`, of proper acceleration, or of a laboratory coupling.
+One closed form covers \(J_\varepsilon=B^+_0+\sqrt{1+\varepsilon^2}\,B^-_1\),
+the null rotor at \(\varepsilon=0\) and a compact rotor for \(\varepsilon\ne
+0\). No position operator, no identification of the light cone with the
+three-sphere, and no derivation of \(a_0\) is claimed.
 -/
 
 namespace DstDiophantine
@@ -101,7 +87,6 @@ theorem reverse_contractedUnit (ε : ℝ) :
   unfold contractedUnit
   rw [map_smul, reverse_contractedGen, smul_neg]
 
-/-- Elliptic closed form, `ε ≠ 0`. -/
 theorem exp_contractedGen_closed {ε : ℝ} (hε : ε ≠ 0) (t : ℝ) :
     exp (t • contractedGen ε) =
       Real.cos (ε * t) • (1 : PGA) +
@@ -126,7 +111,6 @@ private theorem bivectorCoeff_eq {ε t : ℝ} (hε : ε ≠ 0) :
     rw [mul_comm (t * (Real.sin (ε * t) / (ε * t))) ε, ← mul_assoc]
     exact (mul_div_cancel₀ _ ht).symm
 
-/-- One formula for the elliptic rotors and for the null rotor at `ε = 0`. -/
 theorem exp_contractedGen_formula (ε t : ℝ) :
     exp (t • contractedGen ε) =
       Real.cos (ε * t) • (1 : PGA) +
@@ -137,7 +121,6 @@ theorem exp_contractedGen_formula (ε t : ℝ) :
     simp [Real.cos_zero, Real.sinc_zero]
   · rw [exp_contractedGen_closed hε, bivectorCoeff_eq hε]
 
-/-- At parameter `π/ε` the exponential is the antipodal rotor `-1`. -/
 theorem exp_contractedGen_antipode {ε : ℝ} (hε : ε ≠ 0) :
     exp ((Real.pi / ε) • contractedGen ε) = -1 := by
   rw [exp_contractedGen_closed hε]
@@ -189,7 +172,6 @@ private theorem cos_sin_unit_eq_neg_one_iff (ε θ : ℝ) :
     rw [hcos, hsin]
     simp
 
-/-- The exponential meets the antipode exactly on `cos(ε t) = -1`. -/
 theorem exp_contractedGen_eq_neg_one_iff {ε t : ℝ} (hε : ε ≠ 0) :
     exp (t • contractedGen ε) = -1 ↔ Real.cos (ε * t) = -1 := by
   rw [exp_contractedGen_closed hε]
@@ -203,7 +185,6 @@ theorem exp_contractedGen_eq_neg_one_iff {ε t : ℝ} (hε : ε ≠ 0) :
   rw [hunit]
   exact cos_sin_unit_eq_neg_one_iff ε (ε * t)
 
-/-- The antipodal parameter recedes to infinity as the curvature tends to zero. -/
 theorem antipodalParam_tendsto :
     Tendsto (fun ε : ℝ => Real.pi / ε) (nhdsWithin 0 (Set.Ioi 0)) atTop := by
   rw [tendsto_atTop]
@@ -232,7 +213,6 @@ theorem exp_contractedGen_zero (t : ℝ) :
     exp (t • contractedGen 0) = parabolicRotor t := by
   rw [contractedGen_zero, parabolicRotor, exp_of_sq_zero parabolicGen_sq]
 
-/-- At fixed parameter the elliptic exponential contracts to the null rotor. -/
 theorem exp_contractedGen_tendsto (t : ℝ) :
     Tendsto (fun ε => exp (t • contractedGen ε)) (nhds 0) (nhds (parabolicRotor t)) := by
   have hcont : Continuous (fun ε => t • contractedGen ε) :=
@@ -262,7 +242,6 @@ theorem compactJacobian_antipode : compactJacobian Real.pi = 0 := by
   rw [compactJacobian_eq_sinc_sq Real.pi_ne_zero, sinc_pi]
   norm_num
 
-/-- Infinitesimal displacement of the null line. It vanishes only at `ε = 0`. -/
 theorem lorentzAct_contracted_nullLine (ε : ℝ) :
     KillingAxis.lorentzAct (contractedParams ε) nullLineVec =
       ![0, 2 * (1 - Real.sqrt (1 + ε ^ 2)), 0, 0] := by
@@ -314,7 +293,6 @@ private theorem continuous_sandwich_left (v : PGA) :
   exact ((continuous_mul.comp (continuous_id.prodMk continuous_const)).mul
     (continuous_reverse.comp continuous_id))
 
-/-- The null line, read through the contracting family, stays fixed in the limit. -/
 theorem sandwich_contracted_tendsto_nullLine (t : ℝ) :
     Tendsto (fun ε => sandwich (exp (t • contractedGen ε)) (ι 0 - ι 3))
       (nhds 0) (nhds (ι 0 - ι 3)) := by
@@ -324,7 +302,6 @@ theorem sandwich_contracted_tendsto_nullLine (t : ℝ) :
   simp only [Function.comp_def, parabolicRotor] at hsand
   rwa [sandwich_parabolic_fixedNull t] at hsand
 
-/-- The transverse vector is carried along the null line in the same limit. -/
 theorem sandwich_contracted_tendsto_screen (t : ℝ) :
     Tendsto (fun ε => sandwich (exp (t • contractedGen ε)) (ι 1))
       (nhds 0) (nhds (ι 1 + (2 * t) • (ι 0 - ι 3))) := by

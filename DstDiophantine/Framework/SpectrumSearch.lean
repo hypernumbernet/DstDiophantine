@@ -6,13 +6,7 @@ set_option linter.style.native false
 /-!
 # Finite certificates for the discrete mismatch spectrum
 
-One-axis and three-axis mismatch sets are finite `Finset`s, so occupancy of
-any given integer slot is decidable.  The certificates below record:
-
-* `K = 1` (`N = 4`): the bound interval is fully occupied;
-* `K = 2` (`N = 8`): holes at `|Δ| ∈ {10, 11}`;
-* `K = 3` (`N = 12`): a strictly larger hole set inside `[-27, 27]`;
-* zero-height counts strictly above the balanced cube once `K ≥ 1`.
+Slot occupancy is decidable. `K = 1` fills the interval; `K = 2` has holes at `|Δ| ∈ {10, 11}`.
 -/
 
 namespace DstDiophantine
@@ -113,8 +107,6 @@ theorem zeroHeight_card_three : (zeroHeightTriples 3).card = 68 := by
 theorem balanced_card_three : (balancedTriples 3).card = 8 := by
   native_decide
 
-/-- Occupied three-axis mismatches form a proper subset of the bound interval
-as soon as `K = 2`. -/
 theorem threeMismatchSet_proper_subset_interval_two :
     threeMismatchSet 2 ⊂ mismatchInterval 2 := by
   refine Finset.ssubset_iff_subset_ne.2 ⟨threeMismatchSet_subset_interval 2, ?_⟩

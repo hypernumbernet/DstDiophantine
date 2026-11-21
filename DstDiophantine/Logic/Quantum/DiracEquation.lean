@@ -7,44 +7,9 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
-# Momentum-space Dirac equation from the Clifford square
+# Momentum-space Dirac equation
 
-The Minkowski quadratic is already a square in `Cl(3,1)`:
-`γ(p)² = Q(p)`. On the Dirac module `ℂ⁴` the same identity is
-`slash(p)² = Q(p) I`. A spinor eigenvector `slash(p) Ψ = i m Ψ`
-therefore sits on the mass shell `Q(p) = -m²`.
-
-A rest-frame particle solution is assembled from a dual spinor `u`.
-On any mass shell `Q(p)=-m²` with `m≠0` the same Weyl parameter
-determines a solution whose rest-frame specialisation is `(u,iu)`.
-A longitudinal boost of that rest pair is the on-shell Weyl
-construction after the chiral hyperbolic Rodrigues factor along the
-boost axis. Dual rotation about that axis commutes with the factor;
-a perpendicular dual rotation need not. The `ℂ⁴` overlap of two
-rest-frame solutions is twice the dual-rotor amplitude. The same
-boost multiplies that overlap by `cosh α`, for every dual rotation.
-The factor equals `1` only at vanishing rapidity.
-
-The mass bilinear is the Hermitian form `Ψ†(-iγ⁰)Φ`. On every pair of
-rest-frame solutions it equals the Euclidean overlap, and a longitudinal
-boost leaves it unchanged. In this representation `(-iγ⁰)γ⁰ = i`, so the
-time component of the Dirac current is `i` times the Euclidean overlap.
-Along the boosted rest pair the current is
-`i Ψ̄Φ (cosh α, 0, 0, −sinh α)`, its Clifford contraction with the
-boosted momentum is `i m Ψ̄Φ`, and `(j⁰, −j³)` is parallel to that
-momentum.
-
-The eigenrays of `σ_z` label spin along that momentum. `V(α)` multiplies
-the eigenvalue `+1` by `e^{α/2}` on the upper block and by `e^{-α/2}` on
-the lower, and both blocks stay in that ray; the opposite ray exchanges
-the two factors. The mass bilinear and every current component between
-the two rays vanish. A dual rotation about the boost axis multiplies each
-ray by a phase. A dual rotation of angle `π` about a perpendicular axis
-exchanges the rays.
-
-This is the first-order factor of Klein–Gordon in momentum space. Covariance
-under every total rotor is in `DiracCovariance`, the spacetime equation in
-`DiracField`, and the coupling to a potential in `DiracGauge`.
+`slash(p)² = Q(p) I`, so an eigenspinor `slash(p) Ψ = i m Ψ` sits on the shell `Q(p) = -m²`. This is the first-order factor of Klein–Gordon in momentum space, not the spacetime equation.
 -/
 
 namespace DstDiophantine
@@ -134,7 +99,6 @@ private theorem slashCl_diag (p : Vec4) :
   simp only [minkowskiQ, minkowskiEta_diag, Fin.sum_univ_four, w31]
   simp [map_add, map_neg, map_mul]
 
-/-- `γ(p)² = Q(p)` in `Cl(3,1)`. -/
 theorem slashCl_sq (p : Vec4) :
     slashCl p * slashCl p = algebraMap ℝ Cl31 (minkowskiQ p) := by
   have h01 := slashCl_cross (by decide : (0 : Fin 4) ≠ 1) p
@@ -226,7 +190,6 @@ private theorem slashMat_diag (p : Vec4) :
   rw [diracMat0_sq, diracMat1_sq, diracMat2_sq, diracMat3_sq, minkowskiQ_eq]
   simp [smul_neg, add_smul, sq]
 
-/-- Matrix Clifford square `slash(p)² = Q(p) I`. -/
 theorem slashMat_sq (p : Vec4) :
     slashMat p * slashMat p = (minkowskiQ p : ℂ) • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
   have h01 := slashMat_cross (by decide : (0 : Fin 4) ≠ 1) diracMat0 diracMat1
@@ -266,7 +229,6 @@ theorem slashMat_sq (p : Vec4) :
   simp only [add_zero]
   exact hdiag
 
-/-- First-order factorization of the Klein–Gordon symbol. -/
 theorem slashMat_factor (p : Vec4) (m : ℝ) :
     (slashMat p - (I * (m : ℂ)) • 1) * (slashMat p + (I * (m : ℂ)) • 1) =
       slashMat p * slashMat p + ((m : ℂ) ^ 2) • 1 := by
@@ -302,7 +264,6 @@ theorem slashMat_factor (p : Vec4) (m : ℝ) :
 def DiracMomentum (m : ℝ) (p : Vec4) (Ψ : DiracSpinor) : Prop :=
   applyDiracMat (slashMat p) Ψ = (I * (m : ℂ)) • Ψ
 
-/-- A nonzero Dirac eigenspinor lies on the mass shell `Q(p) = -m²`. -/
 theorem diracMomentum_implies_mass_shell {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
     minkowskiQ p = -m ^ 2 := by
@@ -438,7 +399,6 @@ private theorem apply_pauliSlash_eq (p : Vec4) (ψ : DualSpinor) :
         (p 2 : ℂ) • applyMat pauliY ψ + (p 3 : ℂ) • applyMat pauliZ ψ := by
   simp only [pauliSlash, applyMat_add_mat, applyMat_smul_mat, applyMat_one]
 
-/-- Slash sends the upper Weyl block into the lower block. -/
 theorem slash_weylUpper (p : Vec4) (ψ : DualSpinor) :
     applyDiracMat (slashMat p) (weylUpper ψ) =
       weylLower (applyMat (pauliSlashBar p) ψ) := by
@@ -457,7 +417,6 @@ theorem slash_weylUpper (p : Vec4) (ψ : DualSpinor) :
   rw [hL, apply_pauliSlashBar_eq, h0]
   simp only [weylLower_add, weylLower_smul]
 
-/-- Slash sends the lower Weyl block into the upper block. -/
 theorem slash_weylLower (p : Vec4) (ψ : DualSpinor) :
     applyDiracMat (slashMat p) (weylLower ψ) =
       weylUpper (applyMat (pauliSlash p) ψ) := by
@@ -494,7 +453,6 @@ theorem slashMat_single (ν : Fin 4) : slashMat (Pi.single ν 1) = diracMat ν :
     simp [Pi.single_eq_of_ne h]
   · simp
 
-/-- Chiral slashes multiply to the Minkowski quadratic. -/
 theorem pauliSlash_mul_pauliSlashBar (p : Vec4) :
     pauliSlash p * pauliSlashBar p = (minkowskiQ p : ℂ) • 1 := by
   refine applyMat_eq_of_forall fun ψ => ?_
@@ -523,7 +481,6 @@ theorem pauliSlashBar_mul_pauliSlash (p : Vec4) :
     rw [slashMat_sq, applyDiracMat_smul_one, weylLower_smul]
   exact weylLower_injective (hsq.symm.trans hQ)
 
-/-- Massless Dirac decouples into two independent Weyl equations. -/
 theorem dirac_massless_decouple {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum 0 p Ψ) :
     applyMat (pauliSlash p) (diracLower Ψ) = 0 ∧
@@ -537,7 +494,6 @@ theorem dirac_massless_decouple {p : Vec4} {Ψ : DiracSpinor}
     rw [← slash_weyl_decompose, h0, weylUpper_zero, weylLower_zero, add_zero]
   exact weyl_pair_injective heq
 
-/-- A mass term mixes the two Weyl blocks. -/
 theorem dirac_massive_mix {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum m p Ψ) :
     applyMat (pauliSlash p) (diracLower Ψ) = (I * (m : ℂ)) • diracUpper Ψ ∧
@@ -632,7 +588,6 @@ theorem restAntiparticle_dirac_neg (m : ℝ) (u : DualSpinor) :
   rw [applyDiracMat_add, slash_weylUpper, slash_weylLower, hsl, hbar]
   rw [weylLower_smul, weylUpper_smul, h1, h2, smul_add, add_comm]
 
-/-- Massive rest-frame particle solutions exist and are nonzero. -/
 theorem exists_rest_particle (m : ℝ) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m (restMomentum m) Ψ :=
   ⟨restParticleSpinor (EuclideanSpace.single 0 (1 : ℂ)),
@@ -640,8 +595,7 @@ theorem exists_rest_particle (m : ℝ) :
 
 /-! ### On-shell solutions from a Weyl parameter -/
 
-/-- On-shell particle spinor: the lower Weyl block is fixed by the chiral slash.
-At rest this is the pair \((u,iu)\). -/
+/-- Lower block fixed by the chiral slash. At rest, `(u, iu)`. -/
 noncomputable def onShellParticleSpinor (m : ℝ) (p : Vec4) (u : DualSpinor) :
     DiracSpinor :=
   weylUpper u + weylLower (-(I / (m : ℂ)) • applyMat (pauliSlashBar p) u)
@@ -670,7 +624,6 @@ private theorem dualSpinor_single_ne_zero :
   have h0 := congrArg (fun v : DualSpinor => WithLp.ofLp v 0) h
   simp [EuclideanSpace.single] at h0
 
-/-- Any dual spinor determines a massive Dirac solution on the mass shell. -/
 theorem onShellParticle_dirac {m : ℝ} {p : Vec4} (hm : m ≠ 0)
     (hQ : minkowskiQ p = -m ^ 2) (u : DualSpinor) :
     DiracMomentum m p (onShellParticleSpinor m p u) := by
@@ -710,7 +663,6 @@ theorem onShellParticle_dirac {m : ℝ} {p : Vec4} (hm : m ≠ 0)
     rw [hbar, weylLower_smul]
   rw [h1, h2, smul_add, add_comm]
 
-/-- Massive on-shell particle solutions exist for every four-momentum on the shell. -/
 theorem exists_onShell_particle {m : ℝ} {p : Vec4} (hm : m ≠ 0)
     (hQ : minkowskiQ p = -m ^ 2) :
     ∃ Ψ : DiracSpinor, Ψ ≠ 0 ∧ DiracMomentum m p Ψ :=
@@ -749,8 +701,7 @@ theorem minkowskiQ_boostZ (m α : ℝ) :
 
 /-! ### Chiral boost along \(z\) and internal dual rotation -/
 
-/-- Hyperbolic Rodrigues factor along \(\sigma_z\):
-\(\cosh(\alpha/2)\,I+\sinh(\alpha/2)\,\sigma_z\). -/
+/-- Hyperbolic Rodrigues factor along \(\sigma_z\): \(\cosh(\alpha/2)\,I+\sinh(\alpha/2)\,\sigma_z\). -/
 noncomputable def chiralBoostZ (α : ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
   (Real.cosh (α / 2) : ℂ) • 1 + (Real.sinh (α / 2) : ℂ) • pauliZ
 
@@ -767,7 +718,6 @@ private theorem chiralBoostZ_eq (α : ℝ) :
   · simp [Matrix.add_apply, Matrix.smul_apply]
     simpa [sub_eq_add_neg] using Complex.cosh_sub_sinh (↑α / 2 : ℂ)
 
-/-- Same-axis chiral boosts compose by adding rapidities. -/
 private theorem chiralBoostZ_add (α β : ℝ) :
     chiralBoostZ (α + β) = chiralBoostZ α * chiralBoostZ β := by
   have h1 : Real.exp ((α + β) / 2) = Real.exp (α / 2) * Real.exp (β / 2) := by
@@ -784,8 +734,7 @@ private theorem pauliSlashBar_boostZ (m α : ℝ) :
   simp [pauliSlashBar, boostZMomentum_zero, boostZMomentum_one,
     boostZMomentum_two, boostZMomentum_three]
 
-/-- Weyl-block action of a longitudinal Dirac boost: the upper block
-by \(V(\alpha)\) and the lower by \(V(-\alpha)\). -/
+/-- Upper block by `V(α)`, lower by `V(-α)`. -/
 noncomputable def applyDiracBoostZ (α : ℝ) (Ψ : DiracSpinor) : DiracSpinor :=
   weylUpper (applyMat (chiralBoostZ α) (diracUpper Ψ)) +
     weylLower (applyMat (chiralBoostZ (-α)) (diracLower Ψ))
@@ -828,9 +777,6 @@ private theorem onShell_boostZ_lower {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor
     smul_sub, smul_smul, smul_smul, mul_comm (I : ℂ), mul_comm (I : ℂ),
     sub_eq_add_neg, neg_smul]
 
-/-- The on-shell Weyl construction at a longitudinal boost of rest
-momentum is the Dirac-boosted rest pair, after a chiral factor on the
-Weyl parameter. -/
 theorem applyDiracBoostZ_rest {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
     applyDiracBoostZ α (restParticleSpinor u) =
       onShellParticleSpinor m (boostZMomentum m α)
@@ -845,7 +791,6 @@ theorem applyDiracBoostZ_rest {m α : ℝ} (hm : m ≠ 0) (u : DualSpinor) :
     rw [this]
   rw [hcomp]
 
-/-- Dual rotation about the boost axis commutes with the chiral factor. -/
 theorem chiralBoostZ_comm_dualRotor_axis2 (α θ : ℝ) :
     chiralBoostZ α * dualRotorMat (EuclideanSpace.single 2 θ) =
       dualRotorMat (EuclideanSpace.single 2 θ) * chiralBoostZ α := by
@@ -862,8 +807,6 @@ theorem chiralBoostZ_comm_dualRotor_axis2 (α θ : ℝ) :
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.mul_apply, Fin.sum_univ_two] <;> ring
 
-/-- Dual rotation about a perpendicular axis need not commute with the
-chiral boost factor. -/
 theorem chiralBoostZ_not_comm_dualRotor_axis0 :
     chiralBoostZ 2 * dualRotorMat (EuclideanSpace.single 0 Real.pi) ≠
       dualRotorMat (EuclideanSpace.single 0 Real.pi) * chiralBoostZ 2 := by
@@ -899,7 +842,6 @@ theorem slashMat_anticomm_gamma5 (p : Vec4) :
     _ = (p μ : ℂ) • 0 := by rw [h]
     _ = 0 := by simp
 
-/-- Chirality `γ⁵` sends a mass-`m` solution to a mass-`(-m)` solution. -/
 theorem diracMat5_flips_mass {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
     (h : DiracMomentum m p Ψ) :
     DiracMomentum (-m) p (applyDiracMat diracMat5 Ψ) := by
@@ -921,7 +863,6 @@ theorem diracMat5_flips_mass {m : ℝ} {p : Vec4} {Ψ : DiracSpinor}
 
 /-! ### Dual-rotor amplitude as rest-frame Dirac overlap -/
 
-/-- Weyl blocks are orthogonal in \(\mathbb{C}^4\). -/
 theorem weylUpper_inner_lower (ψ φ : DualSpinor) :
     inner ℂ (weylUpper ψ) (weylLower φ) = 0 := by
   rw [diracSpinor_inner_eq]
@@ -951,7 +892,6 @@ private theorem inner_I_smul (u v : DualSpinor) :
     simp
   rw [this, one_mul]
 
-/-- Rest-frame particle overlap is twice the dual-spinor pairing. -/
 theorem restParticle_inner (u v : DualSpinor) :
     inner ℂ (restParticleSpinor u) (restParticleSpinor v) = 2 * inner ℂ u v := by
   unfold restParticleSpinor
@@ -960,9 +900,6 @@ theorem restParticle_inner (u v : DualSpinor) :
     weylLower_inner_lower, inner_I_smul]
   ring
 
-/-- The \(\mathbb{C}^4\) overlap of rest-frame solutions that differ by a dual
-rotation is twice the dual-rotor amplitude. Dual rotation of the Weyl
-parameter stays on the rest-frame mass shell by `restParticle_dirac`. -/
 theorem restParticle_dualRotor_overlap (β : DualRapidity) (u : DualSpinor) :
     inner ℂ (restParticleSpinor u)
         (restParticleSpinor (applyMat (dualRotorMat β) u)) =
@@ -1010,7 +947,6 @@ private theorem cosh_eq_one_iff (α : ℝ) : Real.cosh α = 1 ↔ α = 0 := by
   · intro h
     simp [h]
 
-/-- The two chiral grams along a longitudinal boost sum to a scalar. -/
 private theorem chiralBoostZ_gram (α : ℝ) :
     chiralBoostZ (2 * α) + chiralBoostZ (-(2 * α)) =
       (2 * Real.cosh α : ℂ) • (1 : Matrix (Fin 2) (Fin 2) ℂ) := by
@@ -1044,8 +980,6 @@ private theorem boosted_blocks (α : ℝ) (u : DualSpinor) :
   unfold restParticleSpinor
   rw [applyDiracBoostZ_weyl, applyMat_smul]
 
-/-- A longitudinal boost of rapidity `α` multiplies the rest-frame
-`ℂ⁴` overlap by `cosh α`, for every dual rotation. -/
 theorem boostedRest_dualRotor_overlap (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
     inner ℂ
         (applyDiracBoostZ α (restParticleSpinor u))
@@ -1068,7 +1002,6 @@ theorem boostedRest_dualRotor_overlap (α : ℝ) (β : DualRapidity) (u : DualSp
   rw [← inner_add_right, ← applyMat_add_mat, chiralBoostZ_gram,
     applyMat_smul_mat, applyMat_one, inner_smul_right, dualRotorAmplitude]
 
-/-- The boosted overlap is the rest-frame overlap multiplied by `cosh α`. -/
 theorem boostedRest_overlap_factor (α : ℝ) (β : DualRapidity) (u : DualSpinor) :
     inner ℂ
         (applyDiracBoostZ α (restParticleSpinor u))
@@ -1092,8 +1025,6 @@ private theorem spinUp_inner_self : inner ℂ spinUp spinUp = 1 := by
   rw [dualSpinor_inner_eq]
   simp [spinUp]
 
-/-- The boosted overlap agrees with the rest-frame overlap for every dual
-rotation if and only if the boost rapidity vanishes. -/
 theorem boostedRest_overlap_eq_rest_iff (α : ℝ) :
     (∀ (β : DualRapidity) (u : DualSpinor),
       inner ℂ
@@ -1119,11 +1050,11 @@ theorem boostedRest_overlap_eq_rest_iff (α : ℝ) :
     rw [boostedRest_overlap_factor, Real.cosh_zero]
     simp
 
-/-! ### Mass bilinear and Dirac current
+/-!
+### Mass bilinear and Dirac current
 
-`(-iγ⁰)` is Hermitian. On a rest pair it reproduces the Euclidean overlap.
-A longitudinal boost leaves that bilinear fixed and turns the Euclidean
-growth `cosh α` into the time component of the current. -/
+On a rest pair `(-iγ⁰)` reproduces the Euclidean overlap. A longitudinal boost leaves that bilinear fixed and turns `cosh α` into the time component of the current.
+-/
 
 /-- Dirac adjoint matrix \(-i\gamma^0\) in the Weyl representation. -/
 noncomputable def diracAdjointMat : Matrix (Fin 4) (Fin 4) ℂ :=
@@ -1147,8 +1078,6 @@ theorem diracCurrent_eq_scalar (μ : Fin 4) (Ψ Φ : DiracSpinor) :
   unfold diracCurrent diracScalar
   rw [applyDiracMat_mul]
 
-/-- \((-i\gamma^0)\gamma^0=i\), so the time component is \(i\) times the
-Euclidean overlap, for every pair of Dirac spinors. -/
 theorem diracCurrent_zero (Ψ Φ : DiracSpinor) :
     diracCurrent 0 Ψ Φ = I * inner ℂ Ψ Φ := by
   have hmul : diracAdjointMat * diracMat 0 = I • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
@@ -1185,8 +1114,6 @@ theorem diracScalar_weyl (u l v m : DualSpinor) :
     weylLower_inner_lower, inner_smul_right, inner_smul_right]
   ring
 
-/-- At rest the mass bilinear is the Euclidean overlap, twice the
-dual-spinor pairing. -/
 theorem restParticle_diracScalar (u v : DualSpinor) :
     diracScalar (restParticleSpinor u) (restParticleSpinor v) =
       2 * inner ℂ u v := by
@@ -1314,8 +1241,6 @@ private theorem boosted_pauli_current
     spatial_current_weyl σ γ hkU hkL]
   simp only [applyMat_smul, inner_I_smul]
 
-/-- The Euclidean overlap of two boosted rest solutions is `cosh α` times
-twice the dual-spinor pairing. -/
 theorem boostedRest_inner (α : ℝ) (u v : DualSpinor) :
     inner ℂ
         (applyDiracBoostZ α (restParticleSpinor u))
@@ -1337,7 +1262,6 @@ theorem boostedRest_inner (α : ℝ) (u v : DualSpinor) :
   rw [← inner_add_right, ← applyMat_add_mat, chiralBoostZ_gram,
     applyMat_smul_mat, applyMat_one, inner_smul_right]
 
-/-- A longitudinal boost leaves the mass bilinear unchanged. -/
 theorem boostedRest_diracScalar (α : ℝ) (u v : DualSpinor) :
     diracScalar
         (applyDiracBoostZ α (restParticleSpinor u))
@@ -1362,8 +1286,6 @@ theorem boostedRest_diracScalar_dualRotor (α : ℝ) (β : DualRapidity) (u : Du
       2 * dualRotorAmplitude β u := by
   rw [boostedRest_diracScalar, dualRotorAmplitude]
 
-/-- The mass bilinear and the Euclidean overlap of the boosted rest pair
-agree for every dual spinors if and only if the rapidity vanishes. -/
 theorem boostedRest_scalar_eq_inner_iff (α : ℝ) :
     (∀ u v : DualSpinor,
       diracScalar
@@ -1468,7 +1390,6 @@ theorem boostedRest_current_three (α : ℝ) (u v : DualSpinor) :
     ofReal_neg, boostedRest_diracScalar]
   ring
 
-/-- Clifford contraction of the current with the boosted momentum. -/
 theorem boostedRest_current_contract (m α : ℝ) (u v : DualSpinor) :
     (boostZMomentum m α 0 : ℂ) *
         diracCurrent 0
@@ -1505,8 +1426,6 @@ theorem boostedRest_current_contract (m α : ℝ) (u v : DualSpinor) :
   rw [hid]
   ring
 
-/-- \((j^0,-j^3)\) tracks the boosted momentum, up to the factor \(i\)
-fixed by the adjoint. Dividing by \(m\) needs \(m\neq 0\). -/
 theorem boostedRest_current_parallel (m α : ℝ) (u v : DualSpinor) :
     let Ψ := applyDiracBoostZ α (restParticleSpinor u)
     let Φ := applyDiracBoostZ α (restParticleSpinor v)
@@ -1522,14 +1441,11 @@ theorem boostedRest_current_parallel (m α : ℝ) (u v : DualSpinor) :
   rw [hcosh, hsinh]
   constructor <;> ring
 
-/-! ### Spin along the longitudinal momentum
+/-!
+### Spin along the longitudinal momentum
 
-`σ_z` eigenrays are labels of the free solution. The chiral factor is
-diagonal in that basis, so a longitudinal boost preserves each ray and a
-same-axis dual rotation only multiplies it by a phase. A perpendicular
-dual rotation of angle `π` exchanges the rays. Opposite rays are
-orthogonal in the invariant mass bilinear, and the Dirac current between
-them vanishes. -/
+A longitudinal boost preserves each `σ_z` ray, and a perpendicular dual rotation of angle `π` exchanges the rays. Opposite rays are orthogonal in the mass bilinear, and the current between them vanishes.
+-/
 
 private theorem spinUp_inner_spinDown : inner ℂ spinUp spinDown = 0 := by
   rw [dualSpinor_inner_eq]
@@ -1582,13 +1498,11 @@ private theorem boosted_spin_lower (α : ℝ) (u : DualSpinor) :
   rw [boosted_blocks, diracLower_add, diracLower_weylUpper, diracLower_weylLower,
     zero_add]
 
-/-- Upper block of the boosted eigenvalue \(+1\): the factor \(e^{\alpha/2}\). -/
 theorem boostedRest_spinUp_upper (α : ℝ) :
     diracUpper (applyDiracBoostZ α (restParticleSpinor spinUp)) =
       (Real.exp (α / 2) : ℂ) • spinUp := by
   rw [boosted_spin_upper, chiralBoostZ_on_spinUp]
 
-/-- Lower block of the boosted eigenvalue \(+1\): the factor \(e^{-\alpha/2}\). -/
 theorem boostedRest_spinUp_lower (α : ℝ) :
     diracLower (applyDiracBoostZ α (restParticleSpinor spinUp)) =
       I • (Real.exp (-(α / 2)) : ℂ) • spinUp := by
@@ -1596,13 +1510,11 @@ theorem boostedRest_spinUp_lower (α : ℝ) :
   have harg : (-α) / 2 = -(α / 2) := by ring
   rw [harg]
 
-/-- Upper block of the boosted eigenvalue \(-1\): the factor \(e^{-\alpha/2}\). -/
 theorem boostedRest_spinDown_upper (α : ℝ) :
     diracUpper (applyDiracBoostZ α (restParticleSpinor spinDown)) =
       (Real.exp (-(α / 2)) : ℂ) • spinDown :=
   by rw [boosted_spin_upper, chiralBoostZ_on_spinDown]
 
-/-- Lower block of the boosted eigenvalue \(-1\): the factor \(e^{\alpha/2}\). -/
 theorem boostedRest_spinDown_lower (α : ℝ) :
     diracLower (applyDiracBoostZ α (restParticleSpinor spinDown)) =
       I • (Real.exp (α / 2) : ℂ) • spinDown := by
@@ -1638,7 +1550,6 @@ private theorem cyclicRep_two_spinDown : applyMat (cyclicRep 2) spinDown = I •
   fin_cases i <;>
     simp [applyMat, spinDown]
 
-/-- Dual rotation about the boost axis multiplies the eigenvalue \(+1\) by a phase. -/
 theorem dualRotor_axis2_spinUp (θ : ℝ) :
     applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinUp =
       Complex.exp ((-↑(θ / 2)) * I) • spinUp := by
@@ -1646,7 +1557,6 @@ theorem dualRotor_axis2_spinUp (θ : ℝ) :
     applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
     cyclicRep_two_spinUp, smul_smul, ← add_smul, exp_half_phase]
 
-/-- Dual rotation about the boost axis multiplies the eigenvalue \(-1\) by the opposite phase. -/
 theorem dualRotor_axis2_spinDown (θ : ℝ) :
     applyMat (dualRotorMat (EuclideanSpace.single 2 θ)) spinDown =
       Complex.exp (↑(θ / 2) * I) • spinDown := by
@@ -1654,7 +1564,6 @@ theorem dualRotor_axis2_spinDown (θ : ℝ) :
     applyMat_add_mat, applyMat_smul_mat, applyMat_one, applyMat_smul_mat,
     cyclicRep_two_spinDown, smul_smul, ← add_smul, exp_half_phase_down]
 
-/-- A dual rotation of angle \(\pi\) about a perpendicular axis exchanges the two rays. -/
 theorem dualRotor_axis0_pi_exchange :
     applyMat (dualRotorMat (EuclideanSpace.single 0 Real.pi)) spinUp =
         -I • spinDown ∧
@@ -1670,8 +1579,6 @@ theorem dualRotor_axis0_pi_exchange :
     fin_cases i <;>
       simp [applyMat, spinUp, spinDown]
 
-/-- After a same-axis dual rotation, the boosted upper block stays in the ray of
-eigenvalue \(+1\). -/
 theorem boostedRest_axis2_spinUp_upper (α θ : ℝ) :
     diracUpper (applyDiracBoostZ α
         (restParticleSpinor
@@ -1680,8 +1587,6 @@ theorem boostedRest_axis2_spinUp_upper (α θ : ℝ) :
   rw [boosted_spin_upper, dualRotor_axis2_spinUp, applyMat_smul, chiralBoostZ_on_spinUp,
     smul_smul]
 
-/-- After a perpendicular dual rotation of angle \(\pi\), the boosted upper block lies in
-the opposite ray. -/
 theorem boostedRest_axis0_pi_spinUp_upper (α : ℝ) :
     diracUpper (applyDiracBoostZ α
         (restParticleSpinor
@@ -1690,14 +1595,12 @@ theorem boostedRest_axis0_pi_spinUp_upper (α : ℝ) :
   rw [boosted_spin_upper, dualRotor_axis0_pi_exchange.1, applyMat_smul,
     chiralBoostZ_on_spinDown, smul_smul]
 
-/-- Opposite spin rays have vanishing invariant mass bilinear at every longitudinal rapidity. -/
 theorem boostedRest_oppositeSpin_scalar (α : ℝ) :
     diracScalar
         (applyDiracBoostZ α (restParticleSpinor spinUp))
         (applyDiracBoostZ α (restParticleSpinor spinDown)) = 0 := by
   rw [boostedRest_diracScalar, spinUp_inner_spinDown, mul_zero]
 
-/-- Opposite spin rays carry no Dirac current into each other. -/
 theorem boostedRest_oppositeSpin_current (α : ℝ) (μ : Fin 4) :
     diracCurrent μ
         (applyDiracBoostZ α (restParticleSpinor spinUp))

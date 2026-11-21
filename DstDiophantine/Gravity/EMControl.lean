@@ -9,44 +9,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Algebraic couplings of electromagnetism to dual-only control
 
-A dual-only increment of the dual angles is the algebraic channel.
-Superposing a magnetic Faraday field and substituting
-\(\theta\mapsto\theta+eA\) are two laboratory readings of that same
-increment. Neither is a derivation of Maxwell, of a laboratory
-protocol, or of a helicity-odd drive of \(J\).
-
-## Paper boundary (do **not** claim)
-
-* The identification of Faraday coefficients with a laboratory
-  electromagnetic field remains a working hypothesis.
-* Minimal coupling \(\theta_a\mapsto\theta_a+e A_a\) is a substitution
-  in the dual rotor, not a derivation of that substitution from the
-  Faraday bivector, and it is not Maxwell-gauge invariant.
-* Helicity drive of \(J\), a resonance frequency, and a path-ordered
-  laboratory protocol are **not** derived.
-
-## What is proved
-
-* Superposing Faraday coefficients is addition in the shared 6-space.
-  A pure magnetic increment is dual-only and cannot raise \(J\) when
-  both the existing dual angles and the increment are nonnegative.
-  A pure electric increment is usual-only. Superposing a circular wave
-  does not shift the four-phase mean of \(J\).
-* The substitution \(\theta\mapsto\theta+eA\) is the same map:
-  `coupleA p e A` equals magnetic superposition of \(eA\). It
-  conserves \(J+M\) and yields
-  \(J\mapsto J-e\,\beta\cdot A-(e^2/2)A^2\).
-  For a circular Coulomb-gauge potential with \(\sigma^2=1\),
-  \(A^2=(E_0/\omega)^2\) is constant and helicity-even; the four-phase
-  mean of \(J\) drops by \((e^2/2)(E_0/\omega)^2\). A linearly
-  polarised potential of the same \(E_0\) drops the mean by half that
-  amount. Cycle-averaged \(\dot J\) vanishes; the shift is
-  ponderomotive, not a secular drift. The two readings part company
-  under a constant shift of \(A\).
-* From a vanishing dual seed, a zero-mean circular \(A\) makes a dual
-  angle negative, hence leaves the admissible cone. Dual-only
-  realisation of \(\theta=\theta_0+e A\) on the written action requires
-  the constraint pair \(v=m\delta\) and \(u=e\ddot A+m\delta\).
+Magnetic superposition and the substitution \(\theta\mapsto\theta+eA\) are two
+readings of one dual-only increment. Neither derives Maxwell's equations, a
+laboratory protocol, or a helicity-odd drive of \(J\), and the substitution is
+not Maxwell-gauge invariant.
 -/
 
 namespace DstDiophantine
@@ -140,8 +106,6 @@ theorem J_superpose_magnetic (p : TorsionParams) (B : Fin 3 → ℝ) :
   rw [J_superpose, J_magneticFaraday, faradayCross_magnetic]
   ring
 
-/-- Nonnegative magnetic increments cannot raise \(J\) against a
-nonnegative dual seed. -/
 theorem J_superpose_magnetic_le {p : TorsionParams} {B : Fin 3 → ℝ}
     (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a) :
     J (superpose p (magneticFaraday B)) ≤ J p := by
@@ -174,7 +138,6 @@ theorem not_admissible_superpose_magnetic_of_neg_beta
   intro hp
   exact (not_le.mpr h) (by simpa [magneticFaraday] using (hp a).2.1)
 
-/-- Superposing a circular wave does not shift mean particle \(J\). -/
 theorem quadMean_J_superpose_circular (p : TorsionParams) {σ E0 : ℝ}
     (hσ : σ ^ 2 = 1) :
     quadMean (fun ψ => J (superpose p (circularWave σ E0 ψ))) = J p := by
@@ -195,8 +158,6 @@ def coupleA (p : TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) : TorsionParams wh
     (coupleA p e A).beta a = p.beta a + e * A a :=
   rfl
 
-/-- The substitution \(\theta\mapsto\theta+eA\) is magnetic superposition
-of the increment \(eA\). -/
 theorem coupleA_eq_superpose_magnetic (p : TorsionParams) (e : ℝ)
     (A : Fin 3 → ℝ) :
     coupleA p e A = superpose p (magneticFaraday (fun a => e * A a)) := by
@@ -231,8 +192,7 @@ theorem JDot_coupleA (p : TorsionParams) (e : ℝ) (A Adot : Fin 3 → ℝ) :
 
 /-! ### Coulomb-gauge potentials of circular and linear waves -/
 
-/-- Coulomb-gauge potential of a \(z\)-propagating circular wave,
-\(E=-\partial_t A\) under \(\dot\psi=-\omega\). -/
+/-- Coulomb-gauge potential of a \(z\)-propagating circular wave, \(E=-\partial_t A\) under \(\dot\psi=-\omega\). -/
 noncomputable def circularPotential (σ E0 ω ψ : ℝ) : Fin 3 → ℝ
   | 0 => E0 / ω * Real.sin ψ
   | 1 => -σ * (E0 / ω) * Real.cos ψ
@@ -290,7 +250,6 @@ theorem quadMean_dot_circularPotential (β : Fin 3 → ℝ) (σ E0 ω : ℝ) :
     ring
   rw [hfun, quadMean_harmonic]
 
-/-- Helicity-even ponderomotive drop of mean \(J\) on a circular potential. -/
 theorem quadMean_J_coupleA_circular (p : TorsionParams) (e E0 ω : ℝ)
     {σ : ℝ} (hσ : σ ^ 2 = 1) :
     quadMean (fun ψ => J (coupleA p e (circularPotential σ E0 ω ψ))) =
@@ -346,8 +305,6 @@ theorem quadMean_dot_linearPotential (β : Fin 3 → ℝ) (E0 ω : ℝ) :
     ring
   rw [hfun, quadMean_smul, quadMean_sin, mul_zero]
 
-/-- Linear polarisation of the same \(E_0\) drops mean \(J\) by half the
-circular amount. -/
 theorem quadMean_J_coupleA_linear (p : TorsionParams) (e E0 ω : ℝ) :
     quadMean (fun ψ => J (coupleA p e (linearPotential E0 ω ψ))) =
       J p - (e ^ 2 / 4) * (E0 / ω) ^ 2 := by
@@ -365,8 +322,6 @@ theorem quadMean_J_coupleA_linear (p : TorsionParams) (e E0 ω : ℝ) :
 
 /-! ### Gauge non-invariance and the admissible cone -/
 
-/-- Constant shifts of \(A\) change \(J\); both potentials have vanishing
-\(\dot A\). -/
 theorem exists_constant_potential_changes_J :
     ∃ p : TorsionParams, ∃ e : ℝ, ∃ A c : Fin 3 → ℝ,
       J (coupleA p e A) ≠ J (coupleA p e (fun a => A a + c a)) := by
@@ -405,7 +360,6 @@ theorem circularPotential_neg_x {E0 ω : ℝ} :
     circularPotential 1 E0 ω (3 * Real.pi / 2) 0 = -(E0 / ω) := by
   simp [circularPotential, sin_three_pi_div_two]
 
-/-- A zero-mean circular \(A\) on a vanishing dual seed leaves the cone. -/
 theorem not_admissible_coupleA_circular_from_zeroDual
     {p : TorsionParams} {e E0 ω : ℝ} (hβ : p.beta 0 = 0)
     (he : 0 < e) (hE : 0 < E0) (hω : 0 < ω) :
@@ -418,8 +372,6 @@ theorem not_admissible_coupleA_circular_from_zeroDual
 
 /-! ### Written action: dual-only realisation of \(\theta=\theta_0+e A\) -/
 
-/-- Holding \(\ddot\phi=0\) along \(\theta=\theta_0+e A\) uniquely requires
-the constraint pair \(v=m\delta\), \(u=e\ddot A+m\delta\). -/
 theorem paperBothSourcedEL_coupleA_jet (m φ θ0 e A Addot : ℝ) :
     PaperBothSourcedEL m φ (θ0 + e * A) 0 (e * Addot)
       (m * (φ - (θ0 + e * A)))

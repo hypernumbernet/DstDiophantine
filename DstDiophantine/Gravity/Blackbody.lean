@@ -19,33 +19,10 @@ import Mathlib.Topology.Order.IntermediateValue
 /-!
 # Occupation of a harmonic ladder, and the thermal spectrum of an enclosure
 
-## Paper boundary (do **not** claim)
-
-`h`, `k_B`, and `c` are laboratory constants. The growth of the number of
-modes as the square of the frequency is the geometry of a large enclosure.
-Neither is a root of `γ_s`, and neither is derived from the signed force.
-The zero-point energy of the ladder is not part of the mean computed here.
-No theorem identifies a restoring root of the signed force with the peak of
-the enclosure.
-
-## What is proved
-
-* On a harmonic ladder of spacing `x > 0`, measured in units of `k_B T`, the
-  Boltzmann sum is geometric. The mean number of quanta is `1/(eˣ − 1)`.
-  Once `x ≥ 1` that mean is less than `2 e^{−x}`.
-  The mean energy above the ground state is strictly less than `k_B T`,
-  and returns to `k_B T` as `x → 0`.
-* The shape `xⁿ/(eˣ − 1)` for `n ≥ 2` has a single positive maximum, at the
-  unique root of `(n − x) eˣ = n` in the interval `(n − 1, n)`.
-* The frequency density, proportional to `x³/(eˣ − 1)`, therefore peaks in
-  `(5/2, 3)`. The wavelength density, proportional to `x⁵/(eˣ − 1)`, peaks
-  in `(9/2, 5)`. The wavelength peak lies at the larger multiple of `k_B T`.
-  The maximizing ratio does not depend on `T`, so the product of the peak
-  wavelength and the temperature is constant.
-* The equipartition density `T ν²` is strictly increasing and has no peak.
-* `∫₀^∞ x³/(eˣ − 1) dx = π⁴/15`. The frequency integral of an enclosure
-  whose modes grow as `ν²` therefore scales as `T⁴`, while one classical
-  root scales as `T`.
+On a harmonic ladder the mean occupation is \(1/(e^x-1)\), and an enclosure
+whose modes grow as \(\nu^2\) integrates as \(T^4\). Laboratory \(h\),
+\(k_B\), and \(c\), and any identification of a restoring root of the signed
+force with the enclosure peak, are not derived.
 -/
 
 namespace DstDiophantine
@@ -56,8 +33,7 @@ open Real Set Filter MeasureTheory Asymptotics Topology
 
 /-! ### Geometric occupation -/
 
-/-- Mean number of quanta on a harmonic ladder whose spacing is `x` units of
-\(k_B T\). -/
+/-- Mean number of quanta on a harmonic ladder whose spacing is `x` units of \(k_B T\). -/
 noncomputable def meanQuantum (x : ℝ) : ℝ :=
   1 / (exp x - 1)
 
@@ -99,7 +75,6 @@ private theorem ladder_tsum {x : ℝ} (hx : 0 < x) :
   simp_rw [hpow]
   simpa using tsum_coe_mul_geometric_of_norm_lt_one (r := exp (-x)) hr
 
-/-- The ratio of the two geometric sums is the mean occupation. -/
 theorem meanQuantum_eq_ladder {x : ℝ} (hx : 0 < x) :
     (∑' n : ℕ, (n : ℝ) * exp (-(n : ℝ) * x)) /
         (∑' n : ℕ, exp (-(n : ℝ) * x)) = meanQuantum x := by
@@ -111,15 +86,12 @@ theorem meanQuantum_eq_ladder {x : ℝ} (hx : 0 < x) :
         = exp (-x) / (1 - exp (-x)) := by field_simp [hden]
     _ = 1 / (exp x - 1) := exp_neg_div_sub hx
 
-/-- The mean energy above the ground state is strictly below equipartition. -/
 theorem quantumEnergy_lt_one {x : ℝ} (hx : 0 < x) : x * meanQuantum x < 1 := by
   unfold meanQuantum
   have hden : 0 < exp x - 1 := sub_pos.mpr (one_lt_exp_iff.mpr hx)
   rw [mul_div_assoc', mul_one, div_lt_one hden]
   linarith [add_one_lt_exp hx.ne']
 
-/-- Once the quantum is at least \(k_B T\), the mean occupation is less than
-\(2 e^{-x}\). -/
 theorem meanQuantum_lt_two_exp {x : ℝ} (hx : 1 ≤ x) :
     meanQuantum x < 2 * exp (-x) := by
   have hlog : log 2 < x :=
@@ -132,7 +104,6 @@ theorem meanQuantum_lt_two_exp {x : ℝ} (hx : 1 ≤ x) :
   rw [div_lt_div_iff₀ hpos (exp_pos x)]
   nlinarith [htwo]
 
-/-- As the spacing tends to zero, the mean energy returns to \(k_B T\). -/
 theorem tendsto_quantumEnergy_atZero :
     Tendsto (fun x : ℝ => x * meanQuantum x) (𝓝[>] 0) (𝓝 1) := by
   have hslope : Tendsto (slope exp 0) (𝓝[>] 0) (𝓝 1) := by
@@ -147,7 +118,6 @@ theorem tendsto_quantumEnergy_atZero :
   rw [slope_def_field, exp_zero, sub_zero, meanQuantum]
   field_simp [hy0, hden]
 
-/-- The mean occupation tends to zero for a large quantum. -/
 theorem tendsto_meanQuantum_atTop : Tendsto meanQuantum atTop (𝓝 0) := by
   have hexp : Tendsto (fun x : ℝ => 2 * exp (-x)) atTop (𝓝 0) := by
     simpa [Function.comp_def] using
@@ -190,7 +160,6 @@ private theorem planckSlope_at_n (n : ℕ) : planckSlope n (n : ℝ) = -(n : ℝ
   unfold planckSlope
   simp
 
-/-- \(\exp(n-1) > n\) for every integer \(n \ge 2\). -/
 private theorem exp_pred_gt (n : ℕ) (hn : 2 ≤ n) : (n : ℝ) < exp ((n : ℝ) - 1) := by
   have hne : (n : ℝ) - 1 ≠ 0 := by
     have : (2 : ℝ) ≤ n := by exact_mod_cast hn
@@ -328,7 +297,6 @@ private theorem planckShape_deriv_neg {n : ℕ} (hn : 2 ≤ n) {y : ℝ}
     (mul_neg_of_pos_of_neg (pow_pos hy0 _) (planckSlope_neg_after hn hy))
     (pow_pos (sub_pos.mpr (one_lt_exp_iff.mpr hy0)) _)
 
-/-- For \(n \ge 2\) the shape has a unique positive maximum, at `planckPeak n`. -/
 theorem planckShape_lt_peak {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 0 < x)
     (hne : x ≠ planckPeak n) :
     planckShape n x < planckShape n (planckPeak n) := by
@@ -383,7 +351,6 @@ private theorem exp_four_gt_sixteen : (16 : ℝ) < exp 4 := by
   have : exp 4 = exp 2 * exp 2 := by rw [← exp_add]; norm_num
   nlinarith
 
-/-- The frequency shape \(x^3/(e^x-1)\) peaks strictly between \(5/2\) and \(3\). -/
 theorem frequencyPeak_bounds : (5 / 2 : ℝ) < planckPeak 3 ∧ planckPeak 3 < 3 := by
   have hmem := planckPeak_mem_Ioo 3 (by norm_num)
   refine ⟨planckPeak_gt_of_slope_pos (by norm_num) (by norm_num) (by norm_num) ?_,
@@ -400,7 +367,6 @@ theorem frequencyPeak_bounds : (5 / 2 : ℝ) < planckPeak 3 ∧ planckPeak 3 < 3
     ring
   linarith
 
-/-- The wavelength shape \(x^5/(e^x-1)\) peaks strictly between \(9/2\) and \(5\). -/
 theorem wavelengthPeak_bounds : (9 / 2 : ℝ) < planckPeak 5 ∧ planckPeak 5 < 5 := by
   have hmem := planckPeak_mem_Ioo 5 (by norm_num)
   refine ⟨planckPeak_gt_of_slope_pos (by norm_num) (by norm_num) (by norm_num) ?_,
@@ -423,7 +389,6 @@ theorem wavelengthPeak_bounds : (9 / 2 : ℝ) < planckPeak 5 ∧ planckPeak 5 < 
 noncomputable def rayleighJeans (T ν : ℝ) : ℝ :=
   T * ν ^ 2
 
-/-- The classical density has no maximum: every frequency is dimmer than a higher one. -/
 theorem rayleighJeans_no_maximum {T ν : ℝ} (hT : 0 < T) (hν : 0 < ν) :
     ∃ ν', ν < ν' ∧ rayleighJeans T ν < rayleighJeans T ν' := by
   refine ⟨ν + 1, by linarith, ?_⟩
@@ -454,7 +419,6 @@ private theorem wavelengthDensity_eq_shape {b T lam : ℝ}
     sub_ne_zero.mpr (one_lt_exp_iff.mpr hx).ne'
   field_simp [hb.ne', hT.ne', hlam.ne', hden]
 
-/-- Wien's displacement: the maximizing wavelength times \(T\) does not depend on \(T\). -/
 theorem wien_product {b T : ℝ} (hT : T ≠ 0) :
     (b / (planckPeak 5 * T)) * T = b / planckPeak 5 := by
   have hp : planckPeak 5 ≠ 0 :=
@@ -607,7 +571,6 @@ private theorem sum_bose_integrals :
           rw [hzeta]
           ring
 
-/-- \(\int_0^\infty x^3/(e^x-1)\,dx = \pi^4/15\). -/
 theorem boseIntegral : ∫ x in Ioi (0 : ℝ), planckShape 3 x = Real.pi ^ 4 / 15 := by
   have hint : ∀ n : ℕ, Integrable (boseTerm n) (volume.restrict (Ioi (0 : ℝ))) := by
     intro n
@@ -640,7 +603,6 @@ theorem boseIntegral : ∫ x in Ioi (0 : ℝ), planckShape 3 x = Real.pi ^ 4 / 1
           simpa using hswap.symm
     _ = Real.pi ^ 4 / 15 := sum_bose_integrals
 
-/-- The integrated frequency density of the enclosure scales as \(T^4\). -/
 theorem frequencyDensity_integral {a T : ℝ} (ha : 0 < a) (hT : 0 < T) :
     ∫ ν in Ioi 0, frequencyDensity a T ν =
       (T / a) ^ 4 * (Real.pi ^ 4 / 15) := by

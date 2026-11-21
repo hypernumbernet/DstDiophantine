@@ -23,33 +23,10 @@ set_option linter.style.native false
 /-!
 # Compact \(S^3\) cotangent gravity (galaxy scale)
 
-## Paper boundary (do **not** claim)
-
-Sec.~darkmatter writes an \(S^3\) cotangent potential, enhancement
-\(\eta=(x/\sin x)^2\), shape \(f(x)=x/\sin^2 x\), and the scaling
-\(R=\sqrt{GM/a_0}\). The acceleration \(a_0\) and Newton \(G\) are **external**
-inputs (`Gravity.SI`); this module does **not** derive them from the dual-rotor
-algebra. No theorem asserts `dst_derives_a0`. The point values
-\(f_0=1.10\) and \(R=27\,\mathrm{kpc}\) lie outside the windows below.
-
-The radial force does **not** change sign at the equator: `s3Accel` stays
-negative wherever the sine is nonzero. The equator is only the zero of the
-potential. Do not identify it with a sign change of \(J\) or of \(\gamma_s\).
-
-Of the \(S^3\) chart the following are theorems (not a derivation of \(a_0\)):
-the cotangent potential is radially harmonic and differentiates to the Gauss
-acceleration; the flux \(R^2\sin^2(r/R)\,\Phi'\) equals \(GM\); circular
-\(v^2=(GM/R)\,f(r/R)\); \(f\) has a unique minimum on \((0,\pi/2)\) at the
-plateau root, with \(1.35<f_0<1.41\), and on \([1,6/5]\) one has
-\(f<(11/10)f_0\); \(\eta\to 1\) as \(x\to 0^+\) and is strictly increasing on
-\((0,\pi)\); for \(0<r\le R\) the potential is the Newtonian germ
-\(-GM/r+GMr/(3R^2)\) up to a remainder of order \(r^3/R^4\); a constant
-enclosed mass reproduces the point-mass shape; the negative well ends at
-\(\pi R/2\), strictly before \(r=2R\), while the acceleration remains
-center-directed on \((0,\pi R)\); on the SI stand-ins the Milky-Way
-compactification radius satisfies \(8\,\mathrm{kpc}<R<9\,\mathrm{kpc}\).
-On \((0,1]\) the equidistant Jacobian lies strictly below \(1\), and the
-deficit is strictly less than \(x^2/3\).
+The cotangent potential on the three-sphere is radially harmonic and yields
+the circular law \(v^2=(GM/R)\,f(r/R)\). The acceleration \(a_0\) and Newton
+\(G\) are external inputs; the equator is a zero of the potential, not a force
+reversal, and no theorem asserts `dst_derives_a0`.
 -/
 
 namespace DstDiophantine
@@ -210,7 +187,6 @@ theorem strictMonoOn_plateauProbe_pi4_pi2 :
     have : (0 : ℝ) < tan x ^ 2 - 1 := by nlinarith [htan]
     rwa [heq]
 
-/-- \(h(57/50)<0\) via double-angle Taylor window at \(57/100\). -/
 theorem plateauProbe_57_50 : plateauProbe (57 / 50 : ℝ) < 0 := by
   set y : ℝ := 57 / 100
   have hy : |y| ≤ 1 := by norm_num [y]
@@ -245,7 +221,6 @@ theorem plateauProbe_57_50 : plateauProbe (57 / 50 : ℝ) < 0 := by
     norm_num
   linarith
 
-/-- \(h(6/5)>0\) via double-angle Taylor window at \(3/5\). -/
 theorem plateauProbe_6_5 : (0 : ℝ) < plateauProbe (6 / 5) := by
   set y : ℝ := 3 / 5
   have hy : |y| ≤ 1 := by norm_num [y]
@@ -261,7 +236,6 @@ theorem plateauProbe_6_5 : (0 : ℝ) < plateauProbe (6 / 5) := by
   have htan_ge : (y - y ^ 3 / 6 - y ^ 5 / 100) /
       (1 - y ^ 2 / 2 + y ^ 4 * (5 / 96)) ≤ tan y := by
     rw [tan_eq_sin_div_cos]
-    -- num/den_ub ≤ sin/cos : a=num, b=den_ub, c=sin, d=cos
     exact div_le_div₀ (le_trans (by positivity) hsin_lb) hsin_lb hcos_pos hcos_ub
   have htl : (68 / 100 : ℝ) < tan y :=
     lt_of_lt_of_le (by norm_num [y]) htan_ge
@@ -458,7 +432,6 @@ theorem milkyWayRsqOverKpc2_bounds :
         milkyWayMassCoeff
       native_decide : milkyWayRsqOverKpc2_num < 81 * milkyWayRsqOverKpc2_den)
 
-/-- `R²` on the Milky-Way stand-in lies strictly below `(27 kpc)²`. -/
 theorem paper_R_MW_27_kpc_false :
     milkyWayRsqOverKpc2 < (27 : ℚ) ^ 2 :=
   milkyWayRsqOverKpc2_bounds.2.trans (by norm_num)
@@ -510,7 +483,6 @@ theorem enhancement_one_bounds :
     rw [div_pow, one_pow, div_lt_iff₀ (sq_pos_of_pos hspos)]
     nlinarith [hsin_lb]
 
-/-- Paper value \(2.26\) lies in \((9/4,\, 10/3)\). -/
 theorem enhancement_three_halves_bounds :
     (9 / 4 : ℝ) < enhancement (3 / 2) ∧ enhancement (3 / 2) < (10 / 3 : ℝ) := by
   have hxπ : (3 / 2 : ℝ) < π := by linarith [pi_gt_three]
@@ -545,7 +517,6 @@ theorem enhancement_three_halves_bounds :
     rw [div_pow, div_lt_iff₀ (sq_pos_of_pos hspos)]
     nlinarith [hsin1_lb, hmono]
 
-/-- Paper value \(4.84\) lies in \((4,\, 8)\). -/
 theorem enhancement_two_bounds :
     (4 : ℝ) < enhancement 2 ∧ enhancement 2 < (8 : ℝ) := by
   have hxπ : (2 : ℝ) < π := by linarith [pi_gt_three]
@@ -569,7 +540,6 @@ theorem enhancement_two_bounds :
   have hc1 : (0 : ℝ) < cos 1 := cos_pos_of_le_one hx
   have hsin2 : sin 2 = 2 * sin 1 * cos 1 := by
     have h := sin_two_mul (1 : ℝ)
-    -- h : sin (2 * 1) = 2 * sin 1 * cos 1
     simpa only [mul_one] using h
   have hlb : 2 * (247 / 300 : ℝ) * (43 / 96) ≤ sin 2 := by
     rw [hsin2]; nlinarith [hsin_lb, hcos_lb]
@@ -595,8 +565,6 @@ private theorem hasDerivAt_cot {x : ℝ} (hs : sin x ≠ 0) :
     rw [hnum, sin_sq_add_cos_sq, neg_div, one_div]
   rwa [heq] at h
 
-/-- \(\Phi'(r)=-g(r)\): the written \(S^3\) acceleration is minus the radial
-derivative of the cotangent potential. -/
 theorem hasDerivAt_cotPotential (G M R r : ℝ) (hR : R ≠ 0)
     (hs : sin (r / R) ≠ 0) :
     HasDerivAt (cotPotential G M R) (-s3Accel G M R r) r := by
@@ -617,7 +585,6 @@ theorem hasDerivAt_cotPotential (G M R r : ℝ) (hR : R ≠ 0)
 noncomputable def s3CircularSpeedSq (G M R r : ℝ) : ℝ :=
   r * (-s3Accel G M R r)
 
-/-- Compactness-to-shape identity: \(v^2=(GM/R)\,f(r/R)\). -/
 theorem s3CircularSpeedSq_eq_shape (G M R r : ℝ) (hR : R ≠ 0)
     (hs : sin (r / R) ≠ 0) :
     s3CircularSpeedSq G M R r = (G * M / R) * rotationShape (r / R) := by
@@ -693,7 +660,6 @@ theorem deriv_rotationShape_eq_zero_iff {x : ℝ}
 theorem two_gt_pi_div_two : π / 2 < (2 : ℝ) := by
   linarith [pi_lt_four]
 
-/-- The attractive patch \(r<\pi R/2\) ends strictly before \(r=2R\). -/
 theorem attractive_patch_before_two :
     plateauRoot < π / 2 ∧ π / 2 < (2 : ℝ) :=
   ⟨plateauRoot_lt_pi_div_two, two_gt_pi_div_two⟩
@@ -803,7 +769,6 @@ private theorem rotationShape_gt_f0_of_gt_root {x : ℝ}
   have := hmono ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
   simpa [f0] using this
 
-/-- Unique minimum of the rotation-curve shape on the attractive interval. -/
 theorem rotationShape_min {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) (π / 2)) :
     f0 ≤ rotationShape x ∧ (rotationShape x = f0 ↔ x = plateauRoot) := by
   rcases lt_trichotomy x plateauRoot with h | h | h
@@ -959,7 +924,6 @@ open scoped Topology
 noncomputable def radialLaplace (R : ℝ) (Φ : ℝ → ℝ) (r : ℝ) : ℝ :=
   deriv (deriv Φ) r + (2 / R) * cot (r / R) * deriv Φ r
 
-/-- Geodesic-sphere flux of the cotangent potential is the enclosed mass. -/
 theorem geodesicFlux_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) :
     R ^ 2 * sin (r / R) ^ 2 * deriv (cotPotential G M R) r = G * M := by
   rw [(hasDerivAt_cotPotential G M R r hR hs).deriv]
@@ -1021,7 +985,6 @@ theorem hasDerivAt_deriv_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (
   filter_upwards [eventually_sin_ne hs] with t ht
   exact (hasDerivAt_cotPotential G M R t hR ht).deriv
 
-/-- Away from the origin the cotangent potential is radially harmonic. -/
 theorem radialLaplace_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r / R) ≠ 0) :
     radialLaplace R (cotPotential G M R) r = 0 := by
   unfold radialLaplace
@@ -1032,14 +995,12 @@ theorem radialLaplace_cotPotential {G M R r : ℝ} (hR : R ≠ 0) (hs : sin (r /
   field_simp [hR, hs]
   ring
 
-/-- The chart acceleration points toward the mass wherever it is defined. -/
 theorem s3Accel_lt_zero {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
     (hs : sin (r / R) ≠ 0) : s3Accel G M R r < 0 := by
   unfold s3Accel
   refine neg_lt_zero.mpr (div_pos (mul_pos hG hM) ?_)
   exact mul_pos (pow_pos hR 2) ((sq_pos_iff).mpr hs)
 
-/-- On the open three-sphere the force stays center-directed, equator included. -/
 theorem s3Accel_lt_zero_of_mem_Ioo {G M R r : ℝ}
     (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) (hr : r ∈ Ioo (0 : ℝ) (π * R)) :
     s3Accel G M R r < 0 := by
@@ -1047,7 +1008,7 @@ theorem s3Accel_lt_zero_of_mem_Ioo {G M R r : ℝ}
     ⟨div_pos hr.1 hR, (div_lt_iff₀ hR).mpr hr.2⟩
   exact s3Accel_lt_zero hG hM hR (sin_pos_of_mem_Ioo hx).ne'
 
-/-- The negative well is the open hemisphere. The equator is its edge, not a force reversal. -/
+/-- The equator is the edge of the well, not a force reversal. -/
 theorem cotPotential_neg_iff_lt_equator {G M R r : ℝ}
     (hG : 0 < G) (hM : 0 < M) (hR : 0 < R) (hr : 0 < r) (hπ : r < π * R) :
     cotPotential G M R r < 0 ↔ r < π * R / 2 := by
@@ -1119,8 +1080,6 @@ theorem tendsto_compactJacobian_zero :
   rw [sinc_of_ne_zero hx0, compactJacobian]
   field_simp [hx0]
 
-/-- On `(0,1]` the equidistant Jacobian lies strictly below `1`, and the
-deficit is strictly less than `x^2/3`. -/
 theorem jacobian_deficit_lt_sq_div_three {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :
     0 < 1 - compactJacobian x ∧ 1 - compactJacobian x < x ^ 2 / 3 := by
   have hxabs : |x| ≤ 1 := by rwa [abs_of_pos hx]
@@ -1173,7 +1132,6 @@ theorem jacobian_deficit_lt_sq_div_three {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) 
   refine ⟨by linarith, ?_⟩
   linarith
 
-/-- On \((0,1]\), \(\lvert\cot x-(1/x-x/3)\rvert\le x^3/6\). -/
 theorem abs_cot_sub_newton {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :
     |cot x - (1 / x - x / 3)| ≤ x ^ 3 / 6 := by
   have hxabs : |x| ≤ 1 := by rwa [abs_of_pos hx]
@@ -1308,7 +1266,6 @@ theorem abs_cot_sub_newton {x : ℝ} (hx : 0 < x) (hx1 : x ≤ 1) :
       have heq : (1 / 6) * x ^ 3 = x ^ 3 / 6 := by ring
       linarith only [hmul, heq]
 
-/-- For \(0<r\le R\), the cotangent potential is the Newtonian germ up to \(O(r^3/R^4)\). -/
 theorem abs_cotPotential_newton {G M R r : ℝ}
     (hR : 0 < R) (hr : 0 < r) (hrR : r ≤ R) :
     |cotPotential G M R r + G * M / r - G * M * r / (3 * R ^ 2)|
@@ -1390,7 +1347,6 @@ theorem rotationShape_six_fifths_lt :
   have hsq : (91 / 100 : ℝ) ^ 2 < sin (6 / 5) ^ 2 := by nlinarith [hsin_gt]
   nlinarith [hcmp, hsq]
 
-/-- On \([1,6/5]\), \(f\) stays strictly within a tenth of its minimum. -/
 theorem rotationShape_lt_eleven_tenths_f0 {x : ℝ} (hx : x ∈ Icc (1 : ℝ) (6 / 5)) :
     rotationShape x < (11 / 10) * f0 := by
   have hroot_lo : (1 : ℝ) < plateauRoot :=

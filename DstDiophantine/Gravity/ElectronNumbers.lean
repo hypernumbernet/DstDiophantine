@@ -8,27 +8,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Numerical windows for the electron-shell radii
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here identifies a side of the square
-with the Bohr radius, or assigns a dissociation energy.
-
-## What is proved
-
-* The first node lies in `(14/15, 19/20)`, so its radius lies in
-  `(10/19, 15/28)` in units of `ℓ`.
-* The restoring square lies in `(153/100, 157/100)`, so the diagonal lies in
-  `(50/157, 50/153)`. The side lies strictly below `50/157` and strictly
-  above `1/5`.
-* At that square the diagonal force, in units of `k e²/ℓ²`, is strictly
-  greater than `4`. The side force is that force divided by `√2`, hence
-  strictly greater than `2√2`.
-* The outward force at `x = π` is `4π²/cosh π`, strictly less than `7/2`
-  and, as already recorded, strictly greater than `3`.
-* Placing the side at one Bohr radius would put the first node strictly
-  between `91/40` and `12/5` Bohr radii.
-* The first node, the diagonal, the side, the one-electron extremum, and
-  the second node stand in that order. No circular radius is placed.
+The first node and the restoring square lie in explicit rational windows. The
+length \(\ell\) is not derived, and a side of the square is not identified
+with the Bohr radius.
 -/
 
 namespace DstDiophantine
@@ -162,7 +144,6 @@ private lemma gamma_nineteen_twentieths_neg : gammaSEqual (19 / 20) < 0 := by
     norm_num
   linarith [hbounds.2]
 
-/-- The first equal-scale node lies strictly between `14/15` and `19/20`. -/
 theorem firstNode_num_window :
     (14 / 15 : ℝ) < resonanceRoot1 ∧ resonanceRoot1 < 19 / 20 := by
   have hroot : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
@@ -189,7 +170,6 @@ theorem firstNode_num_window :
     · have := hanti h19I hrootI hlt
       linarith [gamma_nineteen_twentieths_neg, hroot]
 
-/-- In units of `ℓ`, the first-node radius lies strictly between `10/19` and `15/28`. -/
 theorem firstNode_radius_window :
     (10 / 19 : ℝ) < 1 / (2 * resonanceRoot1) ∧ 1 / (2 * resonanceRoot1) < 15 / 28 := by
   have h := firstNode_num_window
@@ -418,7 +398,6 @@ theorem squarePhase_spec :
       squareBalance squarePhase = 0 :=
   Classical.choose_spec (exists_unique_square_shell).exists
 
-/-- The restoring square lies strictly between `153/100` and `157/100`. -/
 theorem squarePhase_num_window :
     (153 / 100 : ℝ) < squarePhase ∧ squarePhase < 157 / 100 := by
   obtain ⟨hx, h0⟩ := squarePhase_spec
@@ -439,7 +418,6 @@ theorem squarePhase_num_window :
     · have := hmono hmem hx hlt
       linarith [squareBalance_oneFiveSeven_pos, h0]
 
-/-- Diagonal and side, in units of `ℓ`. -/
 theorem square_radius_window :
     (50 / 157 : ℝ) < 1 / (2 * squarePhase) ∧ 1 / (2 * squarePhase) < 50 / 153 ∧
       1 / 5 < 1 / (2 * sqrt 2 * squarePhase) ∧
@@ -487,7 +465,6 @@ theorem square_radius_window :
 
 /-! ### Forces -/
 
-/-- At `x = π` the outward factor `4π²/cosh π` is strictly less than `7/2`. -/
 theorem plateau_lt_seven_halves : 4 * π ^ 2 / cosh π < 7 / 2 := by
   have hπlo : 3141592 / 1000000 < π := by
     have h := pi_gt_d6
@@ -547,7 +524,6 @@ private lemma gamma_high_gt_neg_sq :
     norm_num
   linarith
 
-/-- The diagonal force at the square, in units of `k e²/ℓ²`, exceeds `4`. -/
 theorem square_diag_force_gt_four :
     4 < 4 * squarePhase ^ 2 / -gammaSEqual squarePhase := by
   have hwin := squarePhase_num_window
@@ -570,7 +546,6 @@ theorem square_diag_force_gt_four :
   rw [lt_div_iff₀ hden]
   nlinarith
 
-/-- The side force exceeds `2√2` in the same units. -/
 theorem square_side_force_gt_two_sqrt_two :
     2 * sqrt 2 <
       (4 * squarePhase ^ 2 / -gammaSEqual squarePhase) / sqrt 2 := by
@@ -585,8 +560,6 @@ theorem square_side_force_gt_two_sqrt_two :
     div_lt_div_of_pos_right h hs
   linarith [hid]
 
-/-- Identifying the side with one Bohr radius would place the first node
-strictly between `91/40` and `12/5` Bohr radii. -/
 theorem bohr_side_ratio_window :
     (91 / 40 : ℝ) < sqrt 2 * squarePhase / resonanceRoot1 ∧
       sqrt 2 * squarePhase / resonanceRoot1 < 12 / 5 := by
@@ -645,8 +618,6 @@ theorem secondNode_radius_window :
   · rw [div_lt_div_iff₀ (mul_pos (by norm_num) hx) (mul_pos (by norm_num) pi_pos)]
     nlinarith [hsharp.1]
 
-/-- First node, diagonal, side, one-electron extremum, and second node, each
-outside the next. Radii are in units of `ℓ`. No circular radius enters. -/
 theorem shell_radius_order :
     1 / (2 * squarePhase) < 1 / (2 * resonanceRoot1) ∧
       1 / (2 * sqrt 2 * squarePhase) < 1 / (2 * squarePhase) ∧

@@ -7,60 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!
 # Neutron scattering outside the rapidity wall
 
-## Paper boundary (do **not** claim)
-
-The prefactor `κ`, a scattering amplitude inside the wall, and the value in
-femtometres of a measured scattering length are **not** derived. The neutron
-rest energy `939.565` MeV is an external input. The rapidity is the
-nonnegative parameter of the pair. Abundances and tabulated lengths are
-external inputs.
-
-## What is proved
-
-At vanishing phase the interference factor equals `cosh(φ/2)`, so the pair
-force is the inverse-square law of strength `κ/cosh(φ/2)`. That coefficient
-is `κ/√(1 + T/(2mc²))`. At `1` MeV the square root lies in
-`(1.000266, 1.000267)`; at `14` MeV, in `(1.003718, 1.003719)`. From the
-first energy to the second the coefficient falls by a fraction strictly less
-than `4/1000`.
-
-On `0 < x < π/4`, at every nonnegative rapidity, the force stays inward and
-exceeds that inverse-square law by a fraction strictly smaller than
-`e^{-x}/(cos x - sin x) - 1`. For `x ≤ 7/100` the fraction is strictly less
-than `6/1000`.
-
-If the nucleons lie in a ball and the neutron lies outside the concentric
-ball enlarged by the rapidity wall, every pair is outside its wall and the
-net force has a negative radial component.
-
-If the nucleons lie in a ball of radius `R` and the neutron lies at a
-distance `D > R` from the centre, and if the phase at distance `D - R` is
-at most `7/100`, the net force differs from the point field of strength
-`A κ / cosh(φ/2)` by a fraction of that field strictly less than
-`6/1000 + (1 + 6/1000) · 2(R/D)/(1 - R/D)³`. When `D ≥ 50 R` the fraction
-is strictly less than `1/20`.
-
-The fixed-angle cross section of an inverse-square field of that strength
-scales as `1/(T² (1 + T/(2mc²)))`. The angular law is the classical
-Rutherford law and is not re-derived. From `1` MeV to `14` MeV the ratio of
-those prefactors lies strictly between `197` and `198`. With the evaluated
-gold totals `5.755` b and `5.295` b, the later total is strictly above nine
-tenths of the earlier one.
-
-At vanishing phase the interference factor with rapidity `δ` and relative
-dual phase `ε` is `cosh δ · cos ε − sinh δ · sin ε`. It reduces to the
-rapidity factor at `ε = 0` and to the dual-excitation factor at `δ = 0`.
-For `δ ≥ 0` that factor is at least `1` when `ε = 0`. It is negative when
-`ε` lies past the right angle. It stays positive when `ε` lies short of the
-right angle and `δ` does not exceed the gap. At zero rapidity it can lie
-strictly between `0` and `1/M` for every `M > 0`, and likewise just below
-zero. The mean-square fluctuation of a weighted sample is nonnegative and
-vanishes exactly when every nucleus that occurs has the same coefficient.
-Opposite signs put the mean strictly between the two coefficients, and
-strictly below the larger magnitude. The tabulated hydrogen and vanadium
-incoherent cross sections exceed their coherent ones by more than `45` and
-`200`. The abundance-weighted mean of the five stable titanium lengths lies
-strictly between `-3.44` and `-3.43` fm.
+At vanishing phase the pair force is the inverse-square law of strength `κ/cosh(φ/2)`, and a neutron outside the rapidity wall of a nucleon ball is pulled inward. The prefactor `κ`, a scattering length in femtometres, and the rest energy `939.565` MeV are not derived.
 -/
 
 namespace DstDiophantine
@@ -162,9 +109,6 @@ theorem gammaRapidity_ratio {x δ : ℝ} :
   rw [tanh_eq_sinh_div_cosh]
   field_simp [(cosh_pos δ).ne']
 
-/-- Outside the wall the pair force exceeds the inverse-square law of strength
-`κ/cosh(φ/2)`. The fractional excess is strictly smaller than
-`e^{-x}/(cos x - sin x) - 1`. -/
 theorem farField_excess {x δ : ℝ} (hx0 : 0 < x) (hx : x < π / 4) (hδ : 0 ≤ δ) :
     gammaRapidity x δ < cosh δ ∧
       cosh δ / gammaRapidity x δ - 1 < exp (-x) / (cos x - sin x) - 1 := by
@@ -386,8 +330,7 @@ theorem fourteenMeV_halfAngle {φ : ℝ}
   · rw [← sq_lt_sq₀ hpos.le (by norm_num), hsq]
     norm_num
 
-/-- From `1` MeV to `14` MeV the far-field coefficient `1/cosh(φ/2)` falls by
-a fraction strictly less than `4/1000`. -/
+/-- From `1` MeV to `14` MeV the far-field coefficient falls by a fraction strictly less than `4/1000`. -/
 theorem farField_strength_drop {c₁ c₁₄ : ℝ}
     (h₁ : (1000266 : ℝ) / 1000000 < c₁)
     (h₁₄lo : (1003718 : ℝ) / 1000000 < c₁₄)
@@ -441,8 +384,7 @@ private theorem radial_gap_pos
   have hrew : ‖n - C‖ * (‖n - C‖ - R) = ‖n - C‖ ^ 2 - R * ‖n - C‖ := by ring
   linarith
 
-/-- The force on the neutron from one nucleon, along the separation. A positive
-coefficient is an attraction. -/
+/-- The force on the neutron from one nucleon, along the separation. A positive coefficient is an attraction. -/
 noncomputable def neutronPairForce
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (κ ℓ δ : ℝ) (n p : E) : E :=
@@ -721,9 +663,7 @@ private theorem phase_le_of_ball
     linarith
   exact ⟨by positivity, hle.trans hphase⟩
 
-/-- At phase at most `7/100`, the net force differs from the point field of
-strength `A κ / cosh δ` by a fraction of that field strictly less than
-`6/1000 + (1 + 6/1000) · 2(R/D)/(1 - R/D)³`. -/
+/-- At phase at most `7/100`, the fractional gap from the point field is `< 6/1000 + (1 + 6/1000) · 2(R/D)/(1 − R/D)³`. -/
 theorem neutron_force_near_point
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     {ι : Type*} {s : Finset ι} {n C : E} {p : ι → E} {κ ℓ δ R : ℝ}
@@ -915,8 +855,7 @@ theorem neutron_force_near_point
     simpa [α, A, D, ε] using habs.trans_eq hmatch
   simpa [D, ε] using this
 
-/-- When the neutron is at least fifty radii out, the fraction is strictly
-less than `1/20`. -/
+/-- At `D ≥ 50 R` that fraction is strictly less than `1/20`. -/
 theorem neutron_force_near_point_fifty
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     {ι : Type*} {s : Finset ι} {n C : E} {p : ι → E} {κ ℓ δ R : ℝ}
@@ -978,10 +917,7 @@ theorem neutron_force_near_point_fifty
   have hlt := lt_trans hnear' hscaled
   simpa [div_eq_mul_inv] using hlt
 
-/-- From `1` MeV to `14` MeV, `T² (1 + T/(2mc²))` grows by a factor strictly
-between `197` and `198`. For the inverse-square point field this is the factor
-by which the fixed-angle Rutherford cross section falls. The angular law is
-classical and is not re-derived. The rest energy `939.565` MeV is external. -/
+/-- From `1` MeV to `14` MeV the Rutherford prefactor grows by a factor in `(197, 198)`; the angular law is not re-derived. -/
 theorem pointField_cross_section_ratio :
     (197 : ℝ) < 14 ^ 2 * (1 + 14 / (2 * ((939565 : ℝ) / 1000))) /
         (1 + 1 / (2 * ((939565 : ℝ) / 1000))) ∧
@@ -989,16 +925,14 @@ theorem pointField_cross_section_ratio :
         (1 + 1 / (2 * ((939565 : ℝ) / 1000))) < 198 := by
   constructor <;> norm_num
 
-/-- The evaluated gold totals `5.295` b and `5.755` b (external) leave the
-later total strictly above nine tenths of the earlier one. -/
+/-- External gold totals `5.295` b and `5.755` b leave the later total above nine tenths of the earlier one. -/
 theorem goldTotal_above_nine_tenths :
     (9 : ℝ) / 10 < ((5295 : ℝ) / 1000) / (5755 / 1000) := by
   norm_num
 
 /-! ### Relative dual phase -/
 
-/-- Interference factor at phase `x`, rapidity half-angle `δ`, and relative
-dual half-angle `ε`. At equal scale both angles sit on top of `x`. -/
+/-- Interference factor at phase `x`, rapidity half-angle `δ`, and relative dual half-angle `ε`. At equal scale both angles sit on top of `x`. -/
 noncomputable def gammaChannel (x δ ε : ℝ) : ℝ :=
   cosh (x + δ) * cos (x + ε) - sinh (x + δ) * sin (x + ε)
 
@@ -1018,7 +952,6 @@ theorem gammaChannel_eq_dual (x ε : ℝ) :
   rw [show x + (0 : ℝ) = x by ring, cos_add x ε, sin_add x ε]
   ring
 
-/-- A pure rapidity weakens the far field and does not reverse it. -/
 theorem rapidity_farField_attractive_bounded {δ : ℝ} (_hδ : 0 ≤ δ) :
     0 < gammaChannel 0 δ 0 ∧ 1 ≤ gammaChannel 0 δ 0 := by
   have hcosh : gammaChannel 0 δ 0 = cosh δ := by
@@ -1030,7 +963,6 @@ theorem farField_right_angle {δ : ℝ} :
     gammaChannel 0 δ (π / 2) = -sinh δ := by
   simp [gammaChannel, cos_pi_div_two, sin_pi_div_two]
 
-/-- Past the right angle the far field repels at every nonnegative rapidity. -/
 theorem farField_repulsive {δ ε : ℝ} (hδ : 0 ≤ δ) (hε : π / 2 < ε) (hεπ : ε ≤ π) :
     gammaChannel 0 δ ε < 0 := by
   rw [gammaChannel_zero_phase]
@@ -1100,8 +1032,6 @@ private theorem tanh_lt_self {x : ℝ} (hx : 0 < x) : tanh x < x := by
   unfold f at hmul
   linarith
 
-/-- Short of the right angle, a half-rapidity no larger than the angular gap
-leaves the far field attractive. -/
 theorem farField_attractive_of_gap {δ ε : ℝ}
     (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hεlt : ε < π / 2) (hgap : δ + ε ≤ π / 2) :
     0 < gammaChannel 0 δ ε := by
@@ -1129,8 +1059,6 @@ theorem farField_attractive_of_gap {δ ε : ℝ}
     rw [div_lt_div_iff₀ hcosh hsin] at hcot
     linarith
 
-/-- At zero rapidity the far-field factor can lie strictly between `0` and
-`1/M`, so the strength exceeds every bound. -/
 theorem dualPhase_factor_arbitrarily_small {M : ℝ} (hM : 0 < M) :
     ∃ ε : ℝ, 0 < ε ∧ ε < π / 2 ∧ 0 < gammaChannel 0 0 ε ∧
       gammaChannel 0 0 ε < 1 / M := by
@@ -1264,8 +1192,6 @@ theorem channel_mean_strictly_between {p b₁ b₂ : ℝ}
     have : b₂ - (p * b₁ + (1 - p) * b₂) = p * (b₂ - b₁) := by ring
     linarith
 
-/-- Opposite signs put the coherent coefficient strictly between the two
-channels and strictly below the larger magnitude. -/
 theorem opposite_channel_mean_smaller {p b₁ b₂ : ℝ}
     (hp : 0 < p) (hp1 : p < 1) (h₁ : b₁ < 0) (h₂ : 0 < b₂) :
     |p * b₁ + (1 - p) * b₂| < max (-b₁) b₂ := by
@@ -1278,21 +1204,17 @@ theorem opposite_channel_mean_smaller {p b₁ b₂ : ℝ}
   · rw [abs_of_nonneg hμ]
     exact lt_of_lt_of_le hbetween.2 (le_max_right _ _)
 
-/-- External Sears values. The incoherent cross section of natural hydrogen
-exceeds the coherent one by more than `45`. -/
+/-- External Sears values: natural hydrogen's incoherent cross section exceeds the coherent one by more than `45`. -/
 theorem hydrogen_incoherent_dominates :
     (45 : ℝ) < ((8026 : ℝ) / 100) / (17568 / 10000) := by
   norm_num
 
-/-- External Sears values. The incoherent cross section of natural vanadium
-exceeds the coherent one by more than `200`. -/
+/-- External Sears values: natural vanadium's incoherent cross section exceeds the coherent one by more than `200`. -/
 theorem vanadium_incoherent_dominates :
     (200 : ℝ) < ((508 : ℝ) / 100) / (184 / 10000) := by
   norm_num
 
-/-- External Sears abundances and bound coherent lengths of the five stable
-titanium isotopes. `46` and `48` have opposite signs, and the weighted mean
-lies strictly between `-3.44` and `-3.43` fm. -/
+/-- External Sears data: the weighted mean of five stable titanium lengths lies in `(-3.44, -3.43)` fm. -/
 theorem titanium_sample_mean :
     ((82 : ℝ) / 1000) * (493 / 100) + (74 / 1000) * (363 / 100) +
         (738 / 1000) * (-608 / 100) + (54 / 1000) * (104 / 100) +

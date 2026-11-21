@@ -6,14 +6,9 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring
 
 /-!
-# Pure-gauge spin connection of a one-parameter boost
+# Pure-gauge spin connection
 
-`¼[γ⁰, γ¹]` is the logarithmic derivative of the Dirac-matrix image of the
-axis-0 boost rotor. Subtracting that term from the partial derivative cancels
-the derivative which hits the rotor, so the coupled derivative is the rotor
-applied to the flat derivative. A constant rotor, the same substitution with
-vanishing profile derivative, sends a momentum-space solution to a solution.
-The ponderomotive Hamiltonian is not used.
+`¼[γ⁰, γ¹]` is the logarithmic derivative of the axis-0 boost, and subtracting it leaves the rotor applied to the flat derivative. The ponderomotive Hamiltonian is not used.
 -/
 
 namespace DstDiophantine
@@ -113,7 +108,6 @@ theorem boost_diracMat (θ : ℝ) :
       blockDiag2 (embedR (halfR θ)) (embedR (halfInvR θ)) := by
   rw [rotorDiracMat, usual_boost_eq_half, rotorLower_half]
 
-/-- Block embedding of the logarithmic derivatives equals `¼[γ⁰,γ¹]`. -/
 theorem boost_logDeriv (θ : ℝ) :
     blockDiag2 (embedR (halfDerivR θ * halfInvR θ))
         (embedR (halfInvDerivR θ * halfR θ)) =
@@ -133,8 +127,6 @@ theorem pureGauge_cancels (G S dS : Matrix (Fin 4) (Fin 4) ℂ) (hdS : dS = G * 
   rw [hdS, hmul]
   abel
 
-/-- After the pure-gauge subtraction, each partial of the dressed spinor is the
-rotor applied to the flat partial. -/
 theorem pureGauge_reduces (S dS : Matrix (Fin 4) (Fin 4) ℂ)
     (hdS : dS = spinGen 0 1 * S) (rate : ℂ) (ψ dψ : DiracSpinor)
     (dressed : DiracSpinor)
@@ -144,7 +136,6 @@ theorem pureGauge_reduces (S dS : Matrix (Fin 4) (Fin 4) ℂ)
   rw [hchain]
   exact pureGauge_cancels (spinGen 0 1) S dS hdS rate ψ dψ
 
-/-- A constant axis-0 boost sends a momentum-space solution to a solution. -/
 theorem constant_boost_sends_solution {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (θ : ℝ)
     (h : DiracMomentum m p Ψ) :
     DiracMomentum m (lorentzAct (usualRotorMat (EuclideanSpace.single 0 θ)) p)

@@ -8,41 +8,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Laboratory shell boundary
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a Bohr spectrum, a
-numerical ionization energy, or the noble-gas counts from a polyhedron.
-Twenty is the number of vertices of the dodecahedron, not a principal shell.
-Monotonicity of the response on the whole outer interval is not claimed.
-
-## What is proved
-
-* The cube's far-field coefficient lies strictly between `2` and `3`. On the
-  outer well every chord scale is less than one, so the cube response lies
-  strictly below that coefficient. For every nuclear charge `Z ≥ 3` the cube
-  therefore has no radial root in the outer well.
-* The tetrahedron, the octahedron, and the icosahedron likewise have every
-  chord longer than the radius. Their far-field coefficients lie strictly
-  below `1`, `2`, and `5`. For every nuclear charge at least that large, the
-  outward force stays inward through the outer well.
-* The nearest chord of a regular dodecahedron is shorter than the radius, and
-  the far-field coefficient of its twenty vertices lies strictly between
-  `15/2` and `8`. Before that chord meets the first node the response stays
-  strictly above `7`, so every nuclear charge `Z ≤ 7` is pushed outward on
-  the whole of that interval. For every `Z ≥ 8` the force is inward at large
-  separation, and the response passes through `Z` while every pair is still
-  outside the first node. For every `Z ≥ 8` it meets the charge exactly once,
-  at a radius strictly between `7ℓ/10` and `10ℓ/7`, and the outward force
-  restores that radius. The comparison is in `ElectronDodeca`.
-* Two electrons whose mutual separation and whose distances to the nucleus all
-  lie in the outer well have no force-free placement once the nuclear charge
-  is at least `1/4`. On opposite rays the repulsion is strictly less than a
-  quarter of the attraction of unit nuclear charge. Distances are in units of `ℓ`.
-* Four vertices of a regular tetrahedron, and six of a regular octahedron,
-  each have exactly one radial balance in the first repulsive shell for every
-  nuclear charge `Z ≥ 1`. The outward force restores that radius. Four and six
-  are vertex counts, not seat counts. The icosahedron's reversed-shell root is
-  not claimed here.
+For \(Z\ge 8\) the dodecahedral response meets the charge once before the
+nearest chord reaches the first node. The length \(\ell\) is not derived;
+twenty is a vertex count, not a principal shell, and monotonicity on the whole
+outer interval is not claimed.
 -/
 
 namespace DstDiophantine
@@ -102,8 +71,6 @@ theorem cubeResponse_lt_cubeFar {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoo
   unfold cubeResponse cubeFar
   nlinarith
 
-/-- For every nuclear charge `Z ≥ 3`, eight electrons at the vertices of a cube
-have no radial balance in the outer well. -/
 theorem cube_no_outer_root {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     cubeOutward Z x < 0 := by
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
@@ -616,8 +583,6 @@ theorem tetraResponse_lt_tetraCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanc
   unfold tetraResponse
   nlinarith
 
-/-- For every nuclear charge `Z ≥ 1`, four electrons at the vertices of a
-regular tetrahedron have no radial balance in the outer well. -/
 theorem tetra_no_outer_root {Z x : ℝ} (hZ : 1 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     tetraOutward Z x < 0 := by
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
@@ -670,8 +635,6 @@ theorem octaResponse_lt_octaCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceR
   unfold octaResponse octaCoeff
   nlinarith
 
-/-- For every nuclear charge `Z ≥ 2`, six electrons at the vertices of a
-regular octahedron have no radial balance in the outer well. -/
 theorem octa_no_outer_root {Z x : ℝ} (hZ : 2 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     octaOutward Z x < 0 := by
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
@@ -823,8 +786,6 @@ theorem icosaResponse_lt_icosaCoeff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanc
   unfold icosaResponse
   nlinarith
 
-/-- For every nuclear charge `Z ≥ 5`, twelve electrons at the vertices of a
-regular icosahedron have no radial balance in the outer well. -/
 theorem icosa_no_outer_root {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     icosaOutward Z x < 0 := by
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
@@ -1913,7 +1874,7 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
         · exact (dodecaFarTerm_strictAnti hx ⟨by norm_num, lt_trans (by norm_num) hcut⟩ hlt).le
         · exact le_rfl
       linarith [dodeca_slot_1, hnear, hfar, hfarx]
-    · -- Remaining slots use the same split. The cut 33/50 is the last right endpoint.
+    ·
       have hmono := dodecaNearTerm_strictMono
       have hanti := dodecaFarTerm_strictAnti
       rcases le_or_gt x (66 / 250) with h2 | h2
@@ -2110,9 +2071,6 @@ theorem dodecaOutward_eq_on_wall {Z x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWal
       (by norm_num : (0 : ℝ) < 1 / 2) hsc.2.2.2.le hx
   exact dodecaOutward_eq_response hγ.ne' hnear.ne' h3.ne' h6.ne' hf.ne' hh.ne'
 
-/-- For every nuclear charge `Z ≤ 7`, twenty vertices of a regular dodecahedron
-are pushed outward on the whole interval before the nearest chord meets the
-first node. -/
 theorem dodeca_outward_pos_of_le_seven {Z x : ℝ} (hZ : Z ≤ 7)
     (hx : x ∈ Ioo (0 : ℝ) dodecaWall) : 0 < dodecaOutward Z x := by
   have hresp : 7 < dodecaResponse x := dodecaResponse_gt_seven hx
@@ -2121,8 +2079,6 @@ theorem dodeca_outward_pos_of_le_seven {Z x : ℝ} (hZ : Z ≤ 7)
   rw [dodecaOutward_eq_on_wall hx]
   exact div_pos (by linarith) hγ
 
-/-- For every nuclear charge `Z ≥ 8`, the dodecahedral shell is drawn inward
-at sufficiently large separation. -/
 theorem dodeca_far_field_inward {Z : ℝ} (hZ : 8 ≤ Z) :
     ∃ a ∈ Ioo (0 : ℝ) dodecaWall, ∀ x ∈ Ioo (0 : ℝ) a, dodecaOutward Z x < 0 := by
   have hcoeff : dodecaCoeff < Z := lt_of_lt_of_le dodecaCoeff_lt_eight hZ
@@ -2230,8 +2186,6 @@ lemma outer_gamma_pos {r : ℝ} (hr : outerSep r) :
     exact div_pos (by norm_num) (by linarith [hr.1])
   exact gammaSEqual_pos_of_lt_firstNode hx.le hr.2
 
-/-- Two electrons in the outer well, about a nucleus of charge `Z ≥ 1/4`,
-are not simultaneously force-free. Distances are in units of `ℓ`. -/
 theorem two_electron_no_outer_balance {Z : ℝ} {a b : Fin 3 → ℝ}
     (hZ : (1 / 4 : ℝ) ≤ Z) (ha : outerSep (vnorm a)) (hb : outerSep (vnorm b))
     (hd : outerSep (vnorm (vsub a b))) :
@@ -2425,12 +2379,7 @@ theorem two_electron_no_outer_balance {Z : ℝ} {a b : Fin 3 → ℝ}
       simpa [← hga_eq] using this
     exact lt_irrefl _ (hγ.trans hlt)
 
-/-! ### Reversed-shell closure of the tetrahedron and the octahedron
-
-Every chord is longer than the radius, so the first repulsive shell is the
-window in which the longest chord has passed the first node and the radius
-has not reached the second. The response falls from above every positive
-charge to below `1`, and the outward force restores the root. -/
+/-! ### Reversed-shell closure of the tetrahedron and the octahedron -/
 
 lemma exp_quarter_gt : (128 / 100 : ℝ) < exp (1 / 4) := by
   exact (exp_between (x := 1 / 4) (lo := 128 / 100) (hi := 2) (n := 8)
@@ -2575,7 +2524,6 @@ lemma tetraResponse_of_outward {Z x : ℝ}
   field_simp [hphases.1.ne] at this
   linarith
 
-/-- Just after the edge enters the shell, the tetrahedral response exceeds `Z`. -/
 lemma tetraResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
     Z < tetraResponse ((resonanceRoot1 + 1 / (40 * Z)) / tetraScale) := by
   have hZ0 : 0 < Z := by linarith
@@ -2770,9 +2718,6 @@ theorem tetraOutward_restores {Z x y : ℝ}
     rw [tetraOutward_eq_response hphases.1.ne hphases.2.ne]
     exact div_pos_of_neg_of_neg hnum hphases.1
 
-/-- For every nuclear charge `Z ≥ 1`, four electrons at the vertices of a
-regular tetrahedron have exactly one radial balance in the window where the
-radius and the edge both lie in the first repulsive shell. -/
 theorem exists_unique_tetra_shell {Z : ℝ} (hZ : 1 ≤ Z) :
     ∃! x : ℝ, x ∈ Ioo (resonanceRoot1 / tetraScale) (branchNode 1) ∧
       tetraOutward Z x = 0 := by
@@ -2912,8 +2857,6 @@ lemma octaResponse_of_outward {Z x : ℝ}
   field_simp [hphases.1.ne] at this
   linarith
 
-/-- The opposite-vertex term alone exceeds `Z` just after that chord enters
-the shell, and the four edges add a positive contribution. -/
 lemma octaResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
     Z < octaResponse (2 * (resonanceRoot1 + 1 / (40 * Z))) := by
   have hZ0 : 0 < Z := by linarith
@@ -3092,9 +3035,6 @@ theorem octaOutward_restores {Z x y : ℝ}
     rw [octaOutward_eq_response hphases.1.ne hphases.2.1.ne hphases.2.2.ne]
     exact div_pos_of_neg_of_neg hnum hphases.1
 
-/-- For every nuclear charge `Z ≥ 1`, six electrons at the vertices of a
-regular octahedron have exactly one radial balance in the window where the
-radius, the edge, and the opposite vertex all lie in the first repulsive shell. -/
 theorem exists_unique_octa_shell {Z : ℝ} (hZ : 1 ≤ Z) :
     ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) ∧ octaOutward Z x = 0 := by
   have hZ0 : 0 < Z := by linarith

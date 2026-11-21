@@ -7,34 +7,10 @@ import Mathlib.Tactic.Ring
 /-!
 # A circular cycle and the hold it costs
 
-The substitution \(\theta\mapsto\theta+eA\) along a Coulomb-gauge circular
-potential is a dual-only increment whose square does not breathe. A full
-cycle stays in the admissible cone only inside a two-sided margin on the
-axes transverse to the beam.
-
-## Paper boundary (do **not** claim)
-
-No helicity-odd drive of \(J\), no Maxwell equation, and no identification
-of the stiffness force with a laboratory field. The bound \(\pi^2/32\) is a
-bound on the dual-angle oscillation in the units of \(J\), not a laboratory
-field strength. Vanishing stiffness power along the wave is not free fall.
-
-## What is proved
-
-* Write \(\rho=\lvert e E_0/\omega\rvert\). For helicity \(\sigma^2=1\), the
-  coupled state lies in the cone at every phase if and only if the seed does
-  and each transverse axis has dual bias at least \(\rho\) and wall slack at
-  least \(\rho\). Hence \(\rho\le\pi/4\), and the ponderomotive drop of mean
-  \(J\) is at most \(\pi^2/32\). Both bounds are attained on a pure-dual
-  transverse seed of angle \(\pi/4\).
-* The cycle raises mean unsigned mass by that drop, and mean stiffness by
-  \(m\) times the drop. When the transverse rapidities already agree, the
-  stiffness equals that value at every phase, and the stiffness forces
-  exchange no power with the dual velocity along the wave.
-* An isotropic aligned seed admits a cycle only for \(\rho\le\pi/6\),
-  attained at rapidity \(\pi/6\), where the constant potential is
-  \(m\pi^2/72\). A transverse wall, the isotropic wall included, admits
-  only \(\rho=0\).
+The substitution along a Coulomb-gauge circular potential stays in the cone
+only inside a two-sided transverse margin, and the drop of mean \(J\) is at
+most \(\pi^2/32\). No Maxwell equation and no laboratory field strength are
+derived; vanishing stiffness power is not free fall.
 -/
 
 namespace DstDiophantine
@@ -257,7 +233,6 @@ theorem circAmp_le_pi_div_four {p : TorsionParams} {e σ E0 ω : ℝ}
   have hα : 0 ≤ p.alpha 0 := (hseed 0).1
   linarith
 
-/-- A full cycle drops mean \(J\) by at most \(\pi^2/32\). -/
 theorem ponderomotive_le_pi_sq_div_32 {p : TorsionParams} {e σ E0 ω : ℝ}
     (hσ : σ ^ 2 = 1)
     (h : ∀ ψ : ℝ,
@@ -399,8 +374,6 @@ theorem stiffness_circular_of_transverse_aligned {m : ℝ} {p : TorsionParams}
   rw [hcross]
   ring
 
-/-- Stiffness forces do no work on a transversely aligned seed, because a
-circular potential is orthogonal to its formal time derivative. -/
 theorem stiffness_power_circular_of_transverse_aligned {m : ℝ}
     {p : TorsionParams} {e σ E0 ω ψ : ℝ}
     (h0 : p.alpha 0 = p.beta 0) (h1 : p.alpha 1 = p.beta 1)

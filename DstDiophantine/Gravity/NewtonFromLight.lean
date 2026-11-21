@@ -9,30 +9,7 @@ set_option linter.style.native false
 /-!
 # Exploratory hypothesis: discrete height → Newton coupling
 
-## Paper boundary (do **not** claim)
-
-DST does **not** derive \(G\) from \(c\) alone. The action inserts \(G\) as an
-external coupling; \(c\) alone lacks a mass dimension. This module explores a
-**labelled hypothesis** that pairs the already-proved dimensionless lattice
-floor \(\varepsilon_N = 16/(3N^2)\) (`SI.epsN`, matching
-`Framework.discrete_nonzero_height_lb`) with the Planck bridge
-\(G = \ell^2 c^3/\hbar\).
-
-## Working hypothesis (not a derivation)
-
-\[
-G_{\mathrm{hyp}}(N,m) = \varepsilon_N\cdot\frac{\hbar c}{m^2}
-  = \frac{16}{3N^2}\frac{\hbar c}{m^2}.
-\]
-
-If \(N \propto m\) then \(G_{\mathrm{hyp}}\) is species-independent. Taking
-\(N = m_P/m\) yields exactly the factor \(16/3\) relative to CODATA \(G\).
-`ForceScale` records that factor as the scale of the reading: the nonzero
-floor is \((16/3)\alpha_G\), not the electromagnetic constant.
-
-No theorem asserts `dst_derives_G`. Numerics use `Gravity.SI` rationals only.
-Dimensionless \(|J|\le 3\pi^2/8\) must not be conflated with
-\(c^4/(G\,\ell_P^{-2})\) — see `Identification` docstring.
+The labelled hypothesis is `G_hyp(N, m) = ε_N · ℏc / m²`, not a derivation of `G` from `c`. No theorem asserts `dst_derives_G`, and dimensionless `|J| ≤ 3π²/8` is not `c⁴/(G ℓ_P⁻²)`.
 -/
 
 namespace DstDiophantine
@@ -52,21 +29,18 @@ def impliedNsq (m : ℚ) : ℚ :=
 /-- Planck-mass squared stand-in \(m_P^2 = \hbar c / G\). -/
 def planckMassSqApprox : ℚ := hbarC / GApprox
 
-/-- On the SI stand-ins, \(G_{\mathrm{hyp}}(1,m)/G =\) `impliedNsq m`. -/
 theorem G_hyp_one_div_G (m : ℚ) (hm : m ≠ 0) (hG : GApprox ≠ 0) :
     G_hyp 1 m / GApprox = impliedNsq m := by
   unfold G_hyp epsN impliedNsq
   simp only [Nat.cast_one, one_pow]
   field_simp [hG, hm]
 
-/-- Ratio \(G_{\mathrm{hyp}}/G\) on the SI stand-ins. -/
 theorem G_hyp_div_G (N : ℕ) (m : ℚ) (hm : m ≠ 0) (hG : GApprox ≠ 0) :
     G_hyp N m / GApprox =
       (16 : ℚ) / 3 * (planckMassSqApprox / ((N : ℚ) ^ 2 * m ^ 2)) := by
   unfold G_hyp epsN planckMassSqApprox
   field_simp [hG, hm]
 
-/-- If \(N^2 m^2 = m_P^2\), then \(G_{\mathrm{hyp}}/G = 16/3\) (algebraic identity). -/
 theorem G_hyp_div_G_of_planckN {N : ℕ} {m : ℚ}
     (hm : m ≠ 0) (hG : GApprox ≠ 0)
     (hN : (N : ℚ) ^ 2 * m ^ 2 = planckMassSqApprox) :
@@ -78,9 +52,7 @@ theorem G_hyp_div_G_of_planckN {N : ℕ} {m : ℚ}
 
 /-! ### Cleared-denominator witnesses
 
-For mass \(m = M/10^s\),
-`impliedNsq = (16 · ħₘ · c · 10^(2s+GScale−ħScale)) / (3 · Gₘ · M²)`,
-with mantissas from `SI`.
+For mass `m = M/10^s`, `impliedNsq = (16 · ħₘ · c · 10^(2s+GScale−ħScale)) / (3 · Gₘ · M²)`.
 -/
 
 /-- Cleared numerator for mass scale \(s\) (`ħScale ≤ 2s + GScale`). -/

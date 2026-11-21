@@ -6,32 +6,9 @@ import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
-# Covariance of the momentum-space Dirac equation under the total rotor
+# Covariance under the total rotor
 
-A total rotor is represented on the upper Weyl block by a `2×2` complex
-matrix `M` of determinant `1`, and on the lower block by `(M†)⁻¹`, which is
-`(adj M)†` at unit determinant. The four-momentum is carried by the
-Hermitian matrix `p₀ I + p·σ`, whose determinant is `-Q(p)`. Conjugation
-`X ↦ M X M†` preserves Hermiticity and determinant, so it defines a real
-Lorentz action `Λ_M` on four-momenta.
-
-The two Weyl blocks intertwine the slash at `p` with the slash at `Λ_M p`.
-Every momentum-space Dirac solution of mass `m` at `p` is therefore sent to
-a solution of the same mass at `Λ_M p`. The mass bilinear is invariant, and
-the Clifford contraction of the current with a four-vector is invariant
-when both are transformed.
-
-The rest momentum is fixed by `Λ_M` exactly when `M` is unitary. Usual
-rotors act on the lower block by their inverse, dual rotors act identically
-on both blocks and fix the rest momentum.
-
-Either order of a usual rotor and a dual rotor has determinant one, so each
-sends a Dirac solution to a solution and preserves the Minkowski square.
-With the dual factor on the right the rest momentum is the usual factor's
-momentum. With an axis-0 boost on the right of an axis-2 dual rotation the
-rest momentum is turned to `(m cosh φ, m sinh φ cos θ, m sinh φ sin θ, 0)`.
-Its time component is still `m cosh φ`, so the rapidity is not an extremum
-of the order.
+A unit-determinant total rotor sends a solution of mass `m` at `p` to a solution of the same mass at `Λ_M p`. An axis-2 dual rotation on the left of an axis-0 boost keeps the time component `m cosh φ`, so the rapidity is not an extremum of the order.
 -/
 
 namespace DstDiophantine
@@ -99,7 +76,6 @@ theorem pauliSlash_hermitian (p : Vec4) : (pauliSlash p)ᴴ = pauliSlash p := by
   fin_cases i <;> fin_cases j <;> simp [Matrix.conjTranspose_apply]
   ring
 
-/-- `det(p₀ I + p·σ) = -Q(p)`. -/
 theorem pauliSlash_det (p : Vec4) :
     (pauliSlash p).det = -(minkowskiQ p : ℂ) := by
   rw [pauliSlash_entries, Matrix.det_fin_two_of, minkowskiQ_eq]
@@ -108,7 +84,6 @@ theorem pauliSlash_det (p : Vec4) :
   rw [I_sq]
   ring
 
-/-- The chiral partner is minus the adjugate of the momentum matrix. -/
 theorem pauliSlashBar_eq_neg_adjugate (p : Vec4) :
     pauliSlashBar p = -(pauliSlash p).adjugate := by
   rw [Matrix.adjugate_fin_two, pauliSlash_entries]
@@ -140,7 +115,6 @@ noncomputable def pauliSlashLM : Vec4 →ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℂ whe
   map_smul' r p := by
     rw [pauliSlash_smul, RingHom.id_apply, ← Complex.coe_smul]
 
-/-- The Lorentz action of a total rotor is linear in the momentum. -/
 theorem lorentzAct_eq_sum (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) :
     lorentzAct M p = ∑ ν : Fin 4, p ν • lorentzAct M (Pi.single ν 1) := by
   apply pauliSlash_injective
@@ -159,7 +133,6 @@ theorem lorentzAct_eq_sum (M : Matrix (Fin 2) (Fin 2) ℂ) (p : Vec4) :
   simp only [map_smul, Finset.mul_sum, Finset.sum_mul, Matrix.mul_smul, Matrix.smul_mul]
   rfl
 
-/-- A unit-determinant rotor preserves the Minkowski quadratic. -/
 theorem minkowskiQ_lorentzAct {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (p : Vec4) :
     minkowskiQ (lorentzAct M p) = minkowskiQ p := by
   have h := congrArg Matrix.det (pauliSlash_lorentzAct M p)
@@ -179,14 +152,12 @@ private theorem rotorLower_conjTranspose_mul {M : Matrix (Fin 2) (Fin 2) ℂ}
   unfold rotorLower
   rw [Matrix.conjTranspose_conjTranspose, Matrix.adjugate_mul, hM, one_smul]
 
-/-- Upper intertwiner: `slash(Λp)` on the lower block. -/
 theorem pauliSlash_lorentzAct_intertwine {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (p : Vec4) :
     pauliSlash (lorentzAct M p) * rotorLower M = M * pauliSlash p := by
   rw [pauliSlash_lorentzAct, Matrix.mul_assoc, conjTranspose_mul_rotorLower hM,
     Matrix.mul_one]
 
-/-- Lower intertwiner: the chiral partner on the upper block. -/
 theorem pauliSlashBar_lorentzAct_intertwine {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (p : Vec4) :
     pauliSlashBar (lorentzAct M p) * M = rotorLower M * pauliSlashBar p := by
@@ -228,7 +199,6 @@ theorem rotorDirac_smul (M : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (Ψ : DiracSp
     applyMat_smul, weylUpper_smul, weylLower_smul, ← smul_add]
   rfl
 
-/-- The total rotor intertwines the slash at `p` with the slash at `Λ_M p`. -/
 theorem slash_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (p : Vec4)
     (Ψ : DiracSpinor) :
     applyDiracMat (slashMat (lorentzAct M p)) (rotorDirac M Ψ) =
@@ -240,15 +210,12 @@ theorem slash_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) (p : 
     ← applyMat_mul, ← applyMat_mul, ← applyMat_mul, ← applyMat_mul,
     pauliSlash_lorentzAct_intertwine hM, pauliSlashBar_lorentzAct_intertwine hM]
 
-/-- Covariance: a solution of mass `m` at `p` goes to a solution of mass `m`
-at `Λ_M p`. -/
 theorem diracMomentum_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
     DiracMomentum m (lorentzAct M p) (rotorDirac M Ψ) := by
   unfold DiracMomentum at h ⊢
   rw [slash_rotorDirac hM, h, rotorDirac_smul]
 
-/-- The mass bilinear is invariant under every unit-determinant total rotor. -/
 theorem diracScalar_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (Ψ Φ : DiracSpinor) :
     diracScalar (rotorDirac M Ψ) (rotorDirac M Φ) = diracScalar Ψ Φ := by
@@ -279,8 +246,6 @@ theorem currentContract_eq (q : Vec4) (Ψ Φ : DiracSpinor) :
   simp only [diracCurrent_eq_scalar, slashMat, Fin.sum_univ_four, applyDiracMat_add_mat,
     applyDiracMat_smul_mat, diracScalar_add_right, diracScalar_smul_right]
 
-/-- Current covariance: contracting the transformed current with the
-transformed vector gives the original contraction. -/
 theorem currentContract_rotorDirac {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (q : Vec4) (Ψ Φ : DiracSpinor) :
     currentContract (lorentzAct M q) (rotorDirac M Ψ) (rotorDirac M Φ) =
@@ -295,7 +260,6 @@ theorem lorentzAct_rest (M : Matrix (Fin 2) (Fin 2) ℂ) (m : ℝ) :
   rw [pauliSlash_lorentzAct, pauliSlash_rest, Matrix.mul_smul, Matrix.mul_one,
     Matrix.smul_mul]
 
-/-- A total rotor fixes the rest momentum exactly when it is unitary. -/
 theorem lorentzAct_rest_iff {M : Matrix (Fin 2) (Fin 2) ℂ} {m : ℝ} (hm : m ≠ 0) :
     lorentzAct M (restMomentum m) = restMomentum m ↔ M * Mᴴ = 1 := by
   have hmC : (m : ℂ) ≠ 0 := ofReal_ne_zero.mpr hm
@@ -309,14 +273,12 @@ theorem lorentzAct_rest_iff {M : Matrix (Fin 2) (Fin 2) ℂ} {m : ℝ} (hm : m �
     apply pauliSlash_injective
     rw [lorentzAct_rest, pauliSlash_rest, h]
 
-/-- Dual rotors fix the rest momentum. -/
 theorem lorentzAct_dualRotor_rest (β : DualRapidity) (m : ℝ) :
     lorentzAct (dualRotorMat β) (restMomentum m) = restMomentum m := by
   apply pauliSlash_injective
   rw [lorentzAct_rest, pauliSlash_rest,
     mul_eq_one_comm.mp (dualRotorMat_unitary β)]
 
-/-- On a dual rotor the lower partner is the rotor itself. -/
 theorem rotorLower_dualRotor (β : DualRapidity) :
     rotorLower (dualRotorMat β) = dualRotorMat β := by
   have hU := dualRotorMat_unitary β
@@ -328,7 +290,6 @@ theorem rotorLower_dualRotor (β : DualRapidity) :
         rw [mul_eq_one_comm.mp hU, Matrix.one_mul]
     _ = dualRotorMat β := by rw [Matrix.mul_assoc, h1, Matrix.mul_one]
 
-/-- On a usual rotor the lower partner is the inverse rotor. -/
 theorem rotorLower_usualRotor (α : UsualRapidity) :
     rotorLower (usualRotorMat α) * usualRotorMat α = 1 := by
   have hH : (usualRotorMat α)ᴴ = usualRotorMat α := usualRotorMat_isHermitian α
@@ -375,8 +336,7 @@ private theorem trace_eq_re_of_herm {A : Matrix (Fin 2) (Fin 2) ℂ} (hA : Aᴴ 
     A.trace = (A.trace.re : ℂ) := by
   apply Complex.ext <;> simp [trace_im_of_herm hA]
 
-/-- Positive square root `(A + 1)/√(tr A + 2)` of a unit-determinant
-Hermitian `2×2` matrix. -/
+/-- Positive square root `(A + 1)/√(tr A + 2)` of a unit-determinant Hermitian `2×2` matrix. -/
 noncomputable def posSqrt (A : Matrix (Fin 2) (Fin 2) ℂ) : Matrix (Fin 2) (Fin 2) ℂ :=
   (((Real.sqrt (A.trace.re + 2))⁻¹ : ℝ) : ℂ) • (A + 1)
 
@@ -446,8 +406,6 @@ theorem posSqrt_trace_pos (hA : Aᴴ = A) (htr : 0 < A.trace.re + 2) :
 
 end PosSqrt
 
-/-- A unit-determinant Hermitian matrix of positive trace is determined by
-its square. -/
 theorem herm_sqrt_unique {H₁ H₂ : Matrix (Fin 2) (Fin 2) ℂ}
     (h₁ : H₁ᴴ = H₁) (h₂ : H₂ᴴ = H₂) (d₁ : H₁.det = 1) (d₂ : H₂.det = 1)
     (t₁ : 0 < H₁.trace.re) (t₂ : 0 < H₂.trace.re) (h : H₁ * H₁ = H₂ * H₂) :
@@ -496,8 +454,6 @@ private theorem mul_conjTranspose_trace_nonneg (M : Matrix (Fin 2) (Fin 2) ℂ) 
     sq_nonneg (M 0 1).im, sq_nonneg (M 1 0).re, sq_nonneg (M 1 0).im,
     sq_nonneg (M 1 1).re, sq_nonneg (M 1 1).im]
 
-/-- Polar factorization: every unit-determinant `2×2` matrix is a positive
-Hermitian factor of determinant `1` times a unitary factor of determinant `1`. -/
 theorem polar_factor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
     ∃ H U : Matrix (Fin 2) (Fin 2) ℂ,
       Hᴴ = H ∧ H.det = 1 ∧ 0 < H.trace.re ∧ U * Uᴴ = 1 ∧ U.det = 1 ∧ M = H * U := by
@@ -528,7 +484,6 @@ theorem polar_factor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
     simp
   · rw [← Matrix.mul_assoc, hr, Matrix.one_mul]
 
-/-- The polar factors are unique. -/
 theorem polar_unique {H₁ H₂ U₁ U₂ : Matrix (Fin 2) (Fin 2) ℂ}
     (h₁ : H₁ᴴ = H₁) (h₂ : H₂ᴴ = H₂) (d₁ : H₁.det = 1) (d₂ : H₂.det = 1)
     (t₁ : 0 < H₁.trace.re) (t₂ : 0 < H₂.trace.re)
@@ -563,7 +518,6 @@ private theorem euclid_norm_scaled (w : Fin 3 → ℝ) {r a : ℝ} (hr : 0 < r) 
     field_simp
   rw [h, Real.sqrt_sq ha]
 
-/-- Every positive Hermitian matrix of determinant `1` is a usual rotor. -/
 theorem usualRotor_surj {H : Matrix (Fin 2) (Fin 2) ℂ} (hH : Hᴴ = H) (hdet : H.det = 1)
     (htr : 0 < H.trace.re) : ∃ α : UsualRapidity, usualRotorMat α = H := by
   set v := hermVec H with hv
@@ -637,7 +591,6 @@ private theorem unitary_conjTranspose_eq_adjugate {U : Matrix (Fin 2) (Fin 2) �
         rw [Matrix.mul_adjugate, hdet, one_smul, Matrix.mul_one]
     _ = U.adjugate := by rw [← Matrix.mul_assoc, hU', Matrix.one_mul]
 
-/-- Every unitary matrix of determinant `1` is a dual rotor. -/
 theorem dualRotor_surj {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1) (hdet : U.det = 1) :
     ∃ β : DualRapidity, dualRotorMat β = U := by
   have hadj := unitary_conjTranspose_eq_adjugate hU hdet
@@ -728,8 +681,6 @@ theorem dualRotor_surj {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1) (hde
       ext i j
       fin_cases i <;> fin_cases j <;> simp
 
-/-- Total-rotor factorization: every unit-determinant matrix is a usual rotor
-followed by a dual rotor. -/
 theorem totalRotor_factor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
     ∃ (α : UsualRapidity) (β : DualRapidity), M = usualRotorMat α * dualRotorMat β := by
   obtain ⟨H, U, hH, hHdet, hHtr, hU, hUdet, rfl⟩ := polar_factor hM
@@ -748,7 +699,6 @@ theorem usualRotorMat_trace_pos (α : UsualRapidity) : 0 < (usualRotorMat α).tr
   rw [key, Complex.re_ofReal_mul, h2]
   positivity
 
-/-- The usual and dual factors of a total rotor are unique. -/
 theorem totalRotor_factor_unique {α₁ α₂ : UsualRapidity} {β₁ β₂ : DualRapidity}
     (h : usualRotorMat α₁ * dualRotorMat β₁ = usualRotorMat α₂ * dualRotorMat β₂) :
     usualRotorMat α₁ = usualRotorMat α₂ ∧ dualRotorMat β₁ = dualRotorMat β₂ :=
@@ -758,7 +708,6 @@ theorem totalRotor_factor_unique {α₁ α₂ : UsualRapidity} {β₁ β₂ : Du
     (mul_eq_one_comm.mp (dualRotorMat_unitary β₁))
     (mul_eq_one_comm.mp (dualRotorMat_unitary β₂)) h
 
-/-- The stabilizer of the rest momentum is exactly the dual rotors. -/
 theorem lorentzAct_rest_iff_dualRotor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     {m : ℝ} (hm : m ≠ 0) :
     lorentzAct M (restMomentum m) = restMomentum m ↔ ∃ β : DualRapidity, M = dualRotorMat β := by
@@ -772,13 +721,11 @@ theorem lorentzAct_rest_iff_dualRotor {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.d
 
 /-! ### Momentum is carried by the usual factor -/
 
-/-- The dual factor does not move the rest momentum. -/
 theorem lorentzAct_factor_rest (α : UsualRapidity) (β : DualRapidity) (m : ℝ) :
     lorentzAct (usualRotorMat α * dualRotorMat β) (restMomentum m) =
       lorentzAct (usualRotorMat α) (restMomentum m) := by
   rw [lorentzAct_mul, lorentzAct_dualRotor_rest]
 
-/-- Every forward on-shell momentum is reached from rest by a usual rotor. -/
 theorem exists_usualRotor_momentum {m : ℝ} (hm : 0 < m) {p : Vec4}
     (hQ : minkowskiQ p = -m ^ 2) (hp : 0 < p 0) :
     ∃ α : UsualRapidity, lorentzAct (usualRotorMat α) (restMomentum m) = p := by
@@ -808,7 +755,6 @@ theorem exists_usualRotor_momentum {m : ℝ} (hm : 0 < m) {p : Vec4}
   rw [lorentzAct_rest, hα, posSqrt_hermitian hA, posSqrt_mul_self hA hdetA htrA, hAdef,
     smul_smul, ← ofReal_mul, mul_inv_cancel₀ hm.ne', ofReal_one, one_smul]
 
-/-- The usual rotor that carries the rest momentum to a given momentum is unique. -/
 theorem usualRotor_momentum_unique {m : ℝ} (hm : m ≠ 0) {α₁ α₂ : UsualRapidity}
     (h : lorentzAct (usualRotorMat α₁) (restMomentum m) =
       lorentzAct (usualRotorMat α₂) (restMomentum m)) :
@@ -902,8 +848,6 @@ private theorem axis2_entries (θ : ℝ) :
     simp [Matrix.add_apply, Matrix.smul_apply]
   all_goals ring
 
-/-- An axis-2 dual rotation standing on the left of an axis-0 boost turns the
-rest momentum off the boost axis. The time component stays `m cosh φ`. -/
 theorem dualLeft_rest_momentum (φ θ m : ℝ) :
     lorentzAct (dualRotorMat (EuclideanSpace.single 2 θ) *
         usualRotorMat (EuclideanSpace.single 0 φ)) (restMomentum m) =
@@ -978,7 +922,6 @@ theorem dualLeft_turns_rest_momentum {φ θ m : ℝ}
 
 /-! ### Non-collinear usual rotors leave a dual rotation -/
 
-/-- Usual rotors along perpendicular axes do not commute. -/
 theorem usualRotor_perp_not_comm {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
     usualRotorMat (EuclideanSpace.single 0 a) * usualRotorMat (EuclideanSpace.single 2 b) ≠
       usualRotorMat (EuclideanSpace.single 2 b) * usualRotorMat (EuclideanSpace.single 0 a) := by
@@ -1019,8 +962,7 @@ theorem usualRotor_perp_not_comm {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · exact hsa h0
   · exact hsb h0
 
-/-- Thomas–Wigner rotation: the product of usual rotors along perpendicular
-axes is a usual rotor followed by a nontrivial dual rotor. -/
+/-- Thomas–Wigner rotation. -/
 theorem usualRotor_perp_dual_factor {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0)
     (α : UsualRapidity) (β : DualRapidity)
     (h : usualRotorMat (EuclideanSpace.single 0 a) * usualRotorMat (EuclideanSpace.single 2 b) =
@@ -1061,7 +1003,6 @@ private theorem matConj_trace (M : Matrix (Fin 2) (Fin 2) ℂ) :
     (matConj M).trace = star M.trace := by
   simp [matConj, Matrix.trace_fin_two]
 
-/-- The unitary polar factor of a real matrix is real. -/
 theorem polar_real {M H U : Matrix (Fin 2) (Fin 2) ℂ} (hM : matConj M = M)
     (hH : Hᴴ = H) (hHdet : H.det = 1) (hHtr : 0 < H.trace.re) (hU : U * Uᴴ = 1)
     (h : M = H * U) : matConj U = U := by
@@ -1073,7 +1014,6 @@ theorem polar_real {M H U : Matrix (Fin 2) (Fin 2) ℂ} (hM : matConj M = M)
   · rw [matConj_conjTranspose, ← matConj_mul, hU, matConj_one]
   · rw [← matConj_mul, ← h, hM]
 
-/-- A real unitary matrix of determinant `1` is a dual rotor about axis `1`. -/
 theorem real_unitary_axis1 {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : U * Uᴴ = 1)
     (hdet : U.det = 1) (hr : matConj U = U) :
     ∃ φ : ℝ, U = dualRotorMat (EuclideanSpace.single 1 φ) := by
@@ -1140,9 +1080,7 @@ private theorem matConj_real_comb (r s : ℝ) {k : Fin 3} (hk : k ≠ 1) :
     fin_cases i <;> fin_cases j <;>
       simp [matConj, pauli, pauliZ, Matrix.add_apply, Matrix.smul_apply, Complex.real_smul]
 
-/-- Thomas–Wigner rotation about the perpendicular axis: usual rotors along
-axes `0` and `2` compose to a usual rotor followed by a nontrivial dual rotor
-about axis `1`. -/
+/-- Thomas–Wigner rotation about axis `1`. -/
 theorem usualRotor_perp_wigner {a b : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) :
     ∃ (α : UsualRapidity) (φ : ℝ),
       usualRotorMat (EuclideanSpace.single 0 a) * usualRotorMat (EuclideanSpace.single 2 b) =

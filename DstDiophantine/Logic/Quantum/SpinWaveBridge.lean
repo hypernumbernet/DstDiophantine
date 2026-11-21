@@ -1,17 +1,9 @@
 import DstDiophantine.Logic.Quantum.ExternalChart
 
 /-!
-# What joins the internal spin to the chart wave
+# Internal spin and the chart wave
 
-A chart phase multiplies the identity. The magnetic spin Hamiltonian is
-traceless, so the two never agree. The join is the field strength of the
-wave. On a twice differentiable carrier the spatial kinetic momenta
-`Π_a = -i D_a` satisfy `(σ·Π)² = Π² - e σ·B`. The orbital square is the
-wave; the remainder is one dual generator on both Weyl blocks. For `m ≠ 0`
-that remainder divided by `2m` is the dual rotor of rapidity rate
-`-(e/m) B`, whose angular speed is `|e| ‖B‖ / |m|`. The electric part
-changes sign between the blocks, and the blocks agree exactly when the
-charge or the electric field vanishes.
+On a twice differentiable carrier `(σ·Π)² = Π² - e σ·B`, and the magnetic remainder is a dual rotor. A chart phase multiplies the identity, so the magnetic spin Hamiltonian is never that phase.
 -/
 
 namespace DstDiophantine
@@ -87,9 +79,7 @@ private theorem smul_mat_eq_zero {c : ℂ} {M : Matrix (Fin 2) (Fin 2) ℂ} :
     · simp [hc]
     · simp [hM]
 
-/-- The two Weyl blocks of the field strength agree exactly when the charge
-vanishes or the electric field does. The shared matrix is then the magnetic
-dual generator. -/
+/-- The shared matrix is the magnetic dual generator. -/
 theorem fieldBlocks_eq_iff (e : ℝ) (B E : Fin 3 → ℝ) :
     (e : ℂ) • (pauliComb B + I • pauliComb E) =
         (e : ℂ) • (pauliComb B - I • pauliComb E) ↔
@@ -449,7 +439,6 @@ private theorem neg_e_pauli (e c : ℝ) (σ : Matrix (Fin 2) (Fin 2) ℂ) (φ : 
   push_cast
   module
 
-/-- On a twice differentiable carrier, `(σ·Π)² = Π² - e σ·B`. -/
 theorem sigmaPi_sq_split (e : ℝ) {A : Vec4 → Vec4} {φ : Vec4 → DualSpinor}
     (hA : Differentiable ℝ A) (hφ : ContDiff ℝ 2 φ) (x : Vec4) :
     sigmaPiSq e A φ x =
@@ -492,7 +481,6 @@ theorem sigmaPi_sq_split (e : ℝ) {A : Vec4 → Vec4} {φ : Vec4 → DualSpinor
       module
     rw [← applyMat_add_mat, ← applyMat_add_mat]
     exact congrArg (fun M => applyMat M (φ x)) hB
-  -- nine terms, regrouped into the diagonal and the three pairs
   have hgroup :
       (applyMat (pauli 0 * pauli 0) (p 0 0) + applyMat (pauli 0 * pauli 1) (p 0 1) +
           applyMat (pauli 0 * pauli 2) (p 0 2)) +
@@ -546,7 +534,6 @@ theorem magnetic_rapidity_norm (e m : ℝ) (B : DualRapidity) (hm : m ≠ 0) :
   have hm0 : |m| ≠ 0 := abs_ne_zero.mpr hm
   field_simp [hm0]
 
-/-- For `m ≠ 0` the magnetic spin Hamiltonian is never a chart phase. -/
 theorem magneticSpin_ne_phaseGate (e m : ℝ) (B : Fin 3 → ℝ) (α : ℝ) (_hm : m ≠ 0) :
     ((-(e / (2 * m)) : ℝ) : ℂ) • pauliComb B ≠ phaseGate α := by
   intro h

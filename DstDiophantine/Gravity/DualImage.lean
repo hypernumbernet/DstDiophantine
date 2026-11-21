@@ -8,44 +8,9 @@ import Mathlib.Topology.Order.IntermediateValue
 /-!
 # Dual image lattice and the galactic rotation curve
 
-The \(S^3\) chart of `CompactS3` places the images of a source along the
-radius, at spacing \(\pi R\): \(1/(R^2\sin^2(r/R))=\sum_n 1/(r-n\pi R)^2\).
-The image at \(r=\pi R\) is the antipode, and there the circular speed has no
-finite value. Here the same period is laid along the dual direction. Image
-\(n\) sits at squared distance \(r^2+(n\pi R)^2\), and the lattice sum is
-
-\[
-\sum_{n\in\mathbb Z}\frac{GM}{r^2+(n\pi R)^2}=\frac{GM}{rR}\coth\frac rR .
-\]
-
-The ratio to the Newtonian term is the dual enhancement \(x\coth x\), with
-\(x=r/R\). These are theorems: the lattice identity, from the Mittag-Leffler
-expansion of the cotangent; \(\max(1,x)<x\coth x<\min(1+x,\,1+x^2/3)\) for
-\(x>0\); strict increase; limit \(1\) at the origin; \(\coth\) strictly
-decreasing to \(1\). On the chart: the acceleration exceeds Newton by less
-than \(GM/(3R^2)\) and by less than \(GM/(rR)\), and exceeds \(GM/(rR)\);
-\(v^2=(GM(r)/R)\coth(r/R)=v_{\mathrm{bar}}^2\,x\coth x\); a Newtonian
-baryonic curve with \(r\,v_{\mathrm{bar}}^2\to GM\) tends to \(GM/R\); a
-regular centre gives \(v\to 0\); outside the mass \(v^2\) strictly decreases,
-and past \(3R\) it lies within \(1/200\) of \(GM/R\). The circular specific
-angular momentum satisfies \(\ell^2=GMr\,x\coth x\): it tends to \(0\) at the
-origin, is strictly increasing, tends to infinity, and attains every positive
-value at exactly one radius. Given
-\(R^2=GM/a_0\): \((GM/R)^2=GMa_0\), \((GM/(rR))^2=a_0\,GM/r^2\), and
-\(x^2\,GM/r^2=a_0\), so the lattice acceleration is
-\(g=\sqrt{a_0g_N}\coth\sqrt{a_0/g_N}\), with
-\(\max(g_N,\sqrt{a_0g_N})<g<g_N+\min(\sqrt{a_0g_N},a_0/3)\). Read on the
-patch of the enclosed mass, \(v^2=r\,g(v_{\mathrm{bar}}^2/r)\) lies between
-\(\max(v_{\mathrm{bar}}^2,\sqrt{a_0rv_{\mathrm{bar}}^2})\) and
-\(v_{\mathrm{bar}}^2+\sqrt{a_0rv_{\mathrm{bar}}^2}\), and a Keplerian tail
-flattens at \(\sqrt{GMa_0}\). At \(GM/r^2=a_0\) the enhancement is
-\(\coth 1\in(1.31,1.32)\). On the SI stand-ins the Milky-Way \(GMa_0\) lies between
-\((175\,\mathrm{km/s})^4\) and \((176\,\mathrm{km/s})^4\), and the
-\(S^3\) antipode \(\pi R\) between \(25\) and \(29\,\mathrm{kpc}\); the
-\(S^3\) shape \(f\) tends to \(+\infty\) at \(\pi^-\).
-
-The lattice reading, \(R^2=GM/a_0\), and \(a_0\) itself are inputs. No
-theorem asserts `dst_derives_a0`.
+Images spaced by \(\pi R\) along the dual direction sum to the enhancement
+\(x\coth x\). The lattice reading, \(R^2=GM/a_0\), and \(a_0\) itself are
+inputs; no theorem asserts `dst_derives_a0`.
 -/
 
 namespace DstDiophantine
@@ -132,7 +97,6 @@ theorem hasSum_inv_sq_add_succ_sq {y : ℝ} (hy : y ≠ 0) :
     field_simp
   · field_simp
 
-/-- The dual image lattice: \(\sum_{n\in\mathbb Z} x^2/(x^2+(n\pi)^2)=x\coth x\). -/
 theorem hasSum_dualImage {x : ℝ} (hx : x ≠ 0) :
     HasSum (fun n : ℤ => x ^ 2 / (x ^ 2 + ((n : ℝ) * π) ^ 2)) (dualEnhancement x) := by
   obtain ⟨y, rfl⟩ : ∃ y : ℝ, x = π * y := ⟨x / π, by field_simp⟩
@@ -338,7 +302,6 @@ theorem dualAccel_eq_newton_mul {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
   unfold dualAccel dualEnhancement
   field_simp
 
-/-- Each winding of the dual phase contributes \(GM/(r^2+(n\pi R)^2)\). -/
 theorem hasSum_dualAccel {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
     HasSum (fun n : ℤ => G * M / (r ^ 2 + ((n : ℝ) * π * R) ^ 2)) (dualAccel G M R r) := by
   have hx : r / R ≠ 0 := div_ne_zero hr hR
@@ -384,8 +347,7 @@ theorem dualAccel_bounds {G M R r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (hr : 0 
 
 /-! ### Rotation curve -/
 
-/-- Rotation curve from a Newtonian baryonic curve `vbarSq`:
-\(v^2=v_{\mathrm{bar}}^2\,x\coth x\). -/
+/-- Rotation curve from a Newtonian baryonic curve `vbarSq`: \(v^2=v_{\mathrm{bar}}^2\,x\coth x\). -/
 noncomputable def dualRotationSq (R : ℝ) (vbarSq : ℝ → ℝ) (r : ℝ) : ℝ :=
   vbarSq r * dualEnhancement (r / R)
 
@@ -404,7 +366,6 @@ theorem dualRotationSq_spherical {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) 
   unfold dualRotationSq dualCircularSpeedSq dualEnhancement
   field_simp
 
-/-- A baryonic curve with Keplerian tail \(r\,v_{\mathrm{bar}}^2\to GM\) flattens at \(GM/R\). -/
 theorem tendsto_dualRotationSq_atTop {R GM : ℝ} {vbarSq : ℝ → ℝ} (hR : 0 < R)
     (h : Tendsto (fun r => r * vbarSq r) atTop (𝓝 GM)) :
     Tendsto (dualRotationSq R vbarSq) atTop (𝓝 (GM / R)) := by
@@ -444,18 +405,7 @@ theorem strictAntiOn_dualCircularSpeedSq {G R M0 a : ℝ} {M : ℝ → ℝ}
     (div_lt_div_of_pos_right hrs hR)
   exact mul_lt_mul_of_pos_left hc (div_pos hGM hR)
 
-/-! ### Specific angular momentum of a circular orbit
-
-A fluctuation that leaves a star with specific angular momentum \(\ell\) can
-ride a circular orbit only where \(r v(r)=\ell\). Because \(v\) falls with
-radius, it is not obvious that \(\ell\) itself rises. It does:
-\(\ell^2=GMr\,x\coth x\) is strictly increasing, so each positive value
-belongs to exactly one radius. Near the origin \(x\coth x\to 1\) and the orbit
-is the Keplerian germ \(\ell^2\sim GMr\); a slight angular momentum stays on a
-small orbit. Far out \(v\to\sqrt{GM/R}\), so \(\ell\) grows in proportion to
-the radius and outward transport of angular momentum enlarges the body at
-nearly constant speed.
--/
+/-! ### Specific angular momentum of a circular orbit -/
 
 private theorem strictMonoOn_mul_id_dualEnhancement :
     StrictMonoOn (fun x : ℝ => x * dualEnhancement x) (Ioi 0) := by
@@ -473,7 +423,6 @@ private theorem continuousOn_dualEnhancement : ContinuousOn dualEnhancement (Ioi
   exact ((continuous_id.mul continuous_cosh).continuousAt.div continuous_sinh.continuousAt
     (sinh_pos_iff.mpr hx).ne').continuousWithinAt
 
-/-- Circular specific angular momentum squared: \(\ell^2=GMr\,(r/R)\coth(r/R)\). -/
 theorem dualSpecificAngMomSq_eq {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
     r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r =
       G * M * r * dualEnhancement (r / R) := by
@@ -530,7 +479,6 @@ theorem tendsto_dualSpecificAngMomSq_atTop {G M R : ℝ} (hGM : 0 < G * M) (hR :
     mul_lt_mul_of_pos_left hη (mul_pos hGM hr)
   simpa using hlt.le
 
-/-- Every positive specific angular momentum belongs to exactly one circular radius. -/
 theorem exists_unique_dualSpecificAngMomSq {G M R ℓ2 : ℝ}
     (hGM : 0 < G * M) (hR : 0 < R) (hℓ : 0 < ℓ2) :
     ∃! r : ℝ, 0 < r ∧ r ^ 2 * dualCircularSpeedSq G R (fun _ => M) r = ℓ2 := by
@@ -715,7 +663,6 @@ theorem dualLocalRotationSq_bounds {a0 r : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 
   · calc _ < r * (vbarSq r / r + sqrt (a0 * (vbarSq r / r))) := mul_lt_mul_of_pos_left h3 hr
       _ = _ := by rw [mul_add, hk, mul_sqrt_div hr]
 
-/-- A Keplerian baryonic tail \(r\,v_{\mathrm{bar}}^2\to GM\) flattens at \(\sqrt{GMa_0}\). -/
 theorem tendsto_dualLocalRotationSq_atTop {a0 GM : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0)
     (hGM : 0 < GM) (h : Tendsto (fun r => r * vbarSq r) atTop (𝓝 GM)) :
     Tendsto (dualLocalRotationSq a0 vbarSq) atTop (𝓝 (sqrt (a0 * GM))) := by
@@ -759,14 +706,12 @@ theorem coth_one_bounds :
       rw [div_lt_iff₀ hpos]; linarith
     linarith
 
-/-- At \(GM/r^2=a_0\), i.e. \(x=1\), the enhancement is \(\coth 1\in(1.31,1.32)\). -/
 theorem dualEnhancement_one_bounds :
     (131 / 100 : ℝ) < dualEnhancement 1 ∧ dualEnhancement 1 < 132 / 100 := by
   have h : dualEnhancement 1 = cosh 1 / sinh 1 := by unfold dualEnhancement; ring
   rw [h]
   exact coth_one_bounds
 
-/-- At \(g_N=a_0\) the relation gives \(g=a_0\coth 1\). -/
 theorem dualRAR_self {a0 : ℝ} (ha0 : 0 < a0) : dualRAR a0 a0 = a0 * (cosh 1 / sinh 1) := by
   unfold dualRAR
   rw [div_self ha0.ne', sqrt_one, ← sq, sqrt_sq ha0.le]
@@ -786,7 +731,6 @@ theorem coth_three_lt : cosh 3 / sinh 3 < 1 + 1 / 200 := by
     rw [div_lt_iff₀ hpos]; linarith
   linarith
 
-/-- Outside the mass, past three compactification radii, \(v^2<(1+1/200)\,GM/R\). -/
 theorem dualCircularSpeedSq_near_flat {G R M0 r : ℝ} {M : ℝ → ℝ}
     (hGM : 0 < G * M0) (hR : 0 < R) (hr : 3 * R ≤ r) (hM : M r = M0) :
     dualCircularSpeedSq G R M r < (1 + 1 / 200) * (G * M0 / R) := by
@@ -803,7 +747,6 @@ theorem dualCircularSpeedSq_near_flat {G R M0 r : ℝ} {M : ℝ → ℝ}
     _ < G * M0 / R * (1 + 1 / 200) := mul_lt_mul_of_pos_left coth_three_lt hpos
     _ = (1 + 1 / 200) * (G * M0 / R) := by ring
 
-/-- The \(S^3\) shape has no finite value at the antipode. -/
 theorem tendsto_rotationShape_pi : Tendsto rotationShape (𝓝[<] π) atTop := by
   have hsin : Tendsto (fun x => sin x ^ 2) (𝓝[<] π) (𝓝[>] 0) := by
     refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_

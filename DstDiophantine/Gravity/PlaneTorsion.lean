@@ -7,15 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # One-generator coordinate torsion
 
-A constant generator `K` of the Minkowski Lie algebra and a 1-jet `d`
-determine the coordinate torsion
-
-`T^ρ_{μν} = d_μ K^ρ_ν - d_ν K^ρ_μ`.
-
-The generator is recovered from six coefficients, the boosts `(t,x)`, `(t,y)`,
-`(t,z)` and the rotations `(x,y)`, `(x,z)`, `(y,z)`. For every such generator
-and every jet, the teleparallel quadratic vanishes. Two generators with
-independent jets are not covered: that sum need not vanish.
+Two generators with independent jets are not covered: that sum need not vanish.
 -/
 
 namespace DstDiophantine
@@ -30,8 +22,7 @@ open Finset
 def MinkowskiAntisym (K : Fin 4 → Fin 4 → ℝ) : Prop :=
   ∀ ρ ν, w31 ρ * K ρ ν + w31 ν * K ν ρ = 0
 
-/-- Six coefficients: boosts on axes `0,1,2`, then rotations in planes
-`(x,y)`, `(x,z)`, `(y,z)`. -/
+/-- Six coefficients: boosts on axes `0,1,2`, then rotations in planes `(x,y)`, `(x,z)`, `(y,z)`. -/
 def soK (c : Fin 6 → ℝ) : Fin 4 → Fin 4 → ℝ
   | 0, 1 => c 0
   | 1, 0 => c 0
@@ -149,7 +140,6 @@ private def unitCoeff (i : Fin 6) : Fin 6 → ℝ :=
   fun j => if j = i then 1 else 0
 
 set_option maxHeartbeats 400000 in
--- Each of the six generators expands to a degree-4 polynomial before `ring`.
 private theorem genCleared_unit (i : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (unitCoeff i)) d = 0 := by
   fin_cases i <;>
@@ -157,13 +147,11 @@ private theorem genCleared_unit (i : Fin 6) (d : Fin 4 → ℝ) :
       genTup, genTorsion, Fin.sum_univ_four, unitCoeff, soK, w31] <;>
     ring
 
-/-- Two-coefficient jets are the pairs needed for a null generator and for the
-quadratic polarisation. `i` and `j` are arbitrary, including equals. -/
+/-- Two-coefficient jets are the pairs needed for a null generator and for the quadratic polarisation. `i` and `j` are arbitrary, including equals. -/
 private def pairCoeff (i j : Fin 6) : Fin 6 → ℝ :=
   fun k => if k = i then 1 else if k = j then 1 else 0
 
 set_option maxHeartbeats 2000000 in
--- Each ordered pair of generators expands to that same degree-4 normal form.
 private theorem genCleared_pair (i j : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (pairCoeff i j)) d = 0 := by
   fin_cases i <;> fin_cases j <;>
@@ -384,7 +372,6 @@ theorem genCleared_soK (c : Fin 6 → ℝ) (d : Fin 4 → ℝ) : genCleared (soK
     hmix 0 4 (by decide), hmix 0 5 (by decide)]
   ring
 
-/-- Every one-generator jet has vanishing teleparallel scalar. -/
 theorem genTeleparallel_eq_zero {K : Fin 4 → Fin 4 → ℝ} (h : MinkowskiAntisym K)
     (d : Fin 4 → ℝ) : genTeleparallel K d = 0 := by
   have hK : K = soK (soCoeff K) := by

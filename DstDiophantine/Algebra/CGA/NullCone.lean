@@ -11,13 +11,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 
 /-!
-# Null pair and algebra API for 1D CGA
+# Null pair for 1D CGA
 
-Null infinity / origin as grade-1 vectors in Cl(2,1):
-
-Inf = e₋ - e₊, 
-0 = (e₋ + e₊) / 2.
-Squares are proved via Q21 on the underlying vectors.
+Null infinity and the origin are grade-1 vectors in `Cl(2,1)`.
 -/
 
 namespace DstDiophantine
@@ -90,13 +86,11 @@ theorem Q21_n0Vec : Q21 n0Vec = 0 := by
   rw [Fin.sum_univ_three]
   norm_num
 
-/-- Null infinity 
-∞. -/
+/-- Null infinity ∞. -/
 noncomputable def nInf : CGA1 :=
   CliffordAlgebra.ι Q21 nInfVec
 
-/-- Null origin 
-₀. -/
+/-- Null origin ₀. -/
 noncomputable def n0 : CGA1 :=
   CliffordAlgebra.ι Q21 n0Vec
 
@@ -108,10 +102,7 @@ theorem n0_sq : n0 * n0 = 0 := by
   unfold n0
   rw [ι_sq_scalar (Q := Q21) n0Vec, Q21_n0Vec, map_zero]
 
-/--
-Conformal point vector on the null cone:
-X(x) = n₀ + x e + (1/2) x² n∞ as a grade-1 element of Cl(2,1).
--/
+/-- Conformal point `X(x) = n₀ + x e + (1/2) x² n∞`. -/
 noncomputable def pointVec (x : ℝ) : Vec3 :=
   fun i =>
     match i with
@@ -140,7 +131,6 @@ theorem point_sq (x : ℝ) : point x * point x = 0 := by
   unfold point
   rw [ι_sq_scalar (Q := Q21) (pointVec x), Q21_pointVec x, map_zero]
 
-/-- Algebraic dilation on the null cone: weights (1, c, c²). -/
 theorem pointVec_smul_weights (c x : ℝ) :
     pointVec (c * x) =
       n0Vec + c • (x • eLineVec) + (c ^ 2) • ((1 / 2 * x ^ 2) • nInfVec) := by
@@ -150,7 +140,6 @@ theorem pointVec_smul_weights (c x : ℝ) :
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]
   · simp [pointVec, n0Vec, eLineVec, nInfVec, Pi.add_apply, Pi.smul_apply, smul_smul]; try ring
 
-/-- Integer multiplication as a dilation of the conformal point. -/
 theorem pointVec_mul (m n : ℤ) :
     pointVec ((m * n : ℤ) : ℝ) =
       n0Vec + ((m : ℝ) * (n : ℝ)) • eLineVec
@@ -177,12 +166,10 @@ theorem bilin21_eq (u v : Vec3) :
   rw [Fin.sum_univ_three, Fin.sum_univ_three, Fin.sum_univ_three]
   ring
 
-/-- Normalised conformal points pair with null infinity to `-1`. -/
 theorem bilin21_pointVec_nInf (x : ℝ) : bilin21 (pointVec x) nInfVec = -1 := by
   simp only [bilin21_eq, pointVec, nInfVec]
   ring
 
-/-- Normalised conformal points pair with null origin to `-x²/2`. -/
 theorem bilin21_pointVec_n0 (x : ℝ) : bilin21 (pointVec x) n0Vec = -(x ^ 2) / 2 := by
   simp only [bilin21_eq, pointVec, n0Vec]
   ring
@@ -195,7 +182,6 @@ theorem pointVec_injective : Function.Injective pointVec := by
   have := congr_fun h eIndex
   simpa [pointVec_eLine] using this
 
-/-- Dilation of a positive seed is injective in the rapidity (null-cone vectors). -/
 theorem pointVec_dilation_injective {a : ℝ} (ha : 0 < a) :
     Function.Injective fun δ : ℝ => pointVec (Real.exp δ * a) := by
   intro δ₁ δ₂ h
@@ -205,7 +191,7 @@ theorem pointVec_dilation_injective {a : ℝ} (ha : 0 < a) :
     mul_right_cancel₀ (ne_of_gt ha) hxy
   exact Real.exp_injective this
 
-/-- Unlike the rapidity torus, CGA dilation is not `2π`-periodic on null-cone seeds. -/
+/-- Not `2π`-periodic on null-cone seeds, unlike a rapidity torus. -/
 theorem pointVec_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) :
     pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
       pointVec (Real.exp δ * a) := by
@@ -214,7 +200,6 @@ theorem pointVec_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) 
   have : δ + 2 * Real.pi = δ := hinj
   linarith [Real.pi_pos]
 
-/-- `k`-fold rapidity dilation: `e^{kδ} = (e^δ)^k` on null-cone seeds. -/
 theorem pointVec_exp_nat_mul (a δ : ℝ) (k : ℕ) :
     pointVec (Real.exp ((k : ℝ) * δ) * a) =
       pointVec (Real.exp δ ^ k * a) :=
@@ -222,20 +207,12 @@ theorem pointVec_exp_nat_mul (a δ : ℝ) (k : ℕ) :
 
 /-! ### Point–point pairing and scale-invariant dilation mismatch -/
 
-/--
-Standard 1D CGA point–point polarisation:
-`B(X(x), X(y)) = −(x − y)² / 2`.
--/
 theorem bilin21_pointVec_pointVec (x y : ℝ) :
     bilin21 (pointVec x) (pointVec y) = -((x - y) ^ 2) / 2 := by
   simp only [bilin21_eq, pointVec]
   ring
 
-/--
-Scale-invariant CGA dilation mismatch of a positive seed `a` under rapidity `δ`:
-`−2 · B(X(a), X(e^δ a)) / a² = (e^δ − 1)²`.
-Independent of `a > 0`; contrasts with PGA rapidity tori that ignore small `δ`.
--/
+/-- Scale-invariant mismatch `(e^δ - 1)²`, independent of the positive seed. -/
 noncomputable def cgaDilationMismatch (δ : ℝ) : ℝ :=
   (Real.exp δ - 1) ^ 2
 
@@ -268,7 +245,6 @@ theorem cgaDilationMismatch_pos_of_ne_zero {δ : ℝ} (hδ : δ ≠ 0) :
     exact hδ this
   exact sq_pos_of_ne_zero (sub_ne_zero.mpr this)
 
-/-- Balanced Beal model `δ = log 2 / m` yields mismatch `(2^{1/m} − 1)²`. -/
 theorem cgaDilationMismatch_balanced (m : ℕ) (hm : 0 < m) :
     cgaDilationMismatch (Real.log 2 / (m : ℝ)) =
       ((2 : ℝ) ^ ((1 : ℝ) / m) - 1) ^ 2 := by
@@ -280,10 +256,6 @@ theorem cgaDilationMismatch_balanced (m : ℕ) (hm : 0 < m) :
     field_simp [hm0]
   rw [hlog, Real.exp_log (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)]
 
-/--
-CGA sees the balanced gap: mismatch is strictly positive, while the PGA
-modular window threshold `2π/k` sits above `log 2 / m`.
--/
 theorem cgaDilationMismatch_balanced_pos (m : ℕ) (hm : 0 < m) :
     0 < cgaDilationMismatch (Real.log 2 / (m : ℝ)) := by
   rw [cgaDilationMismatch_balanced m hm]
@@ -307,7 +279,6 @@ theorem cgaDilation_smul_weights (c x : ℝ) :
       n0Vec + c • (x • eLineVec) + (c ^ 2) • ((1 / 2 * x ^ 2) • nInfVec) :=
   pointVec_smul_weights c x
 
-/-- The unique scale sending a positive seed `α` to `γ` is `γ / α`. -/
 theorem cgaDilation_scale_unique {α γ : ℝ} (hα : 0 < α) (_hγ : 0 < γ) :
     cgaDilation (γ / α) α = pointVec γ := by
   unfold cgaDilation

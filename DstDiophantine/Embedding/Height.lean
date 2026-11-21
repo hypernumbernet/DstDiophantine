@@ -55,7 +55,6 @@ private theorem JNormalized_dagger_neg (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring_nf
 
-/-- Dagger extraction does not increase torsion height (involutive swap). -/
 theorem descent_height_eq (p : TorsionParams) :
     torsionHeight (descentCandidate p) = torsionHeight p := by
   unfold torsionHeight descentCandidate

@@ -12,32 +12,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Shell seat counts and one-center closures
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a Bohr spectrum, a
-dissociation energy, or a value of `G`. The integers `2`, `8`, and `18` are
-seat counts. They are not indices of equal-scale nodes, and the node radii
-remain `Θ(1/n)`.
-
-## What is proved
-
-* Two electrons at opposite ends of a diameter about a nucleus of charge
-  `Z ≥ 1` have no radial balance in the outer well. In the first repulsive
-  shell there is exactly one. There the outward force is negative on the
-  large-radius side of the root and positive on the small-radius side.
-* At a fixed radius whose diameter lies where `γ < 0`, that separation is a
-  strict maximum, and any energy that increases with separation therefore has
-  a strict local maximum at the antipode.
-* Eight electrons at the vertices of a cube about a nucleus of charge `Z ≥ 1`
-  have exactly one radial balance in the first repulsive shell, and the
-  outward force restores that radius.
-* Monopole, dipole, and quadrupole modes number `1`, `3`, and `5`. A dual
-  spinor and its spin-reversed partner put one seat on each mode, giving `2`,
-  `8`, and `18` through degrees `0`, `1`, and `2`. The traceless octupole has
-  dimension `7`, and the count through degree `3` is `32`. Degree by degree
-  the same seats number `2`, `6`, `10`, and `14`.
-* Where the interference factor of a separation is positive, the antipode is
-  an angular minimum of an energy that falls as the separation grows.
+The integers \(2\), \(8\), and \(18\) are seat counts on one centre, not
+indices of equal-scale nodes. The length \(\ell\) is not derived; nothing here
+produces a Bohr spectrum, a dissociation energy, a value of \(G\), or a radius
+from \(pr=n\hbar\).
 -/
 
 namespace DstDiophantine
@@ -365,7 +343,6 @@ lemma cos_two_ge : -1 / 2 ≤ cos 2 := by
   linarith
 
 set_option maxHeartbeats 4000000 in
--- The six chord bounds call `norm_num` on products of four-digit rationals.
 lemma shell_numerator_neg {t : ℝ} (ht : t ∈ Icc (4 / 5) (π / 2)) :
     2 * sinh t ^ 3 * sin (2 * t) < cosh t * cosh (2 * t) * (2 + cos (2 * t)) := by
   have hpi : π / 2 < 8 / 5 := by linarith [pi_lt_d6]
@@ -944,8 +921,6 @@ lemma gamma_seven_halves_gt : -11 < gammaSEqual (7 / 2) := by
       cosHi (358 / 1000) (359 / 1000)) -
       (sinHi (359 / 1000) + cosHi (358 / 1000) (359 / 1000)) / (2 * 32) > -11 := by
     simp only [sinLo, sinHi, cosHi]; norm_num
-  -- exp/2 * D ≥ (34/2) * Dlo because D ≤ Dlo < 0 and exp < 34, so exp*D > 34*Dlo
-  -- (more negative times larger magnitude). And the subtracted term is at most S_hi/(2*33).
   have hDge : sinLo (358 / 1000) (359 / 1000) - cosHi (358 / 1000) (359 / 1000) ≤
       sin (7 / 2 - π) - cos (7 / 2 - π) := by
     linarith [hsin.1, hcos.2]
@@ -1142,9 +1117,6 @@ theorem pairSeparation_antipode_curvature {r : ℝ} (hr : 0 < r) :
     ring
   exact ⟨hzero, by linarith [hr, hsecond]⟩
 
-/-- The product is the angular second derivative of an energy whose separation
-derivative is `likePairEnergySlope`, evaluated where the separation derivative
-vanishes. -/
 theorem antipode_energy_curvature_neg {k e γ r : ℝ}
     (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : γ < 0) :
     likePairEnergySlope k e γ (2 * r) *
@@ -1162,7 +1134,6 @@ theorem likePairEnergySlope_neg {k e γ d : ℝ}
   have hneg : -(k * e ^ 2) < 0 := neg_lt_zero.mpr hnum
   exact div_neg_of_neg_of_pos hneg hden
 
-/-- In the outer well the pair repels, so the antipode is an angular minimum. -/
 theorem antipode_energy_curvature_pos {k e γ r : ℝ}
     (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :
     0 < likePairEnergySlope k e γ (2 * r) *
@@ -1171,12 +1142,7 @@ theorem antipode_energy_curvature_pos {k e γ r : ℝ}
   have hslope := likePairEnergySlope_neg (d := 2 * r) hk he hγ (by linarith)
   exact mul_pos_of_neg_of_neg hslope hsep
 
-/-! ### Phase weight
-
-The logarithmic slope of `γ`, weighted by its argument, is strictly decreasing
-on the first repulsive shell. Every scale `c ∈ (0, 1)` therefore has a strictly
-decreasing ratio `γ(x) / γ(c x)` there. The cube response is a positive
-combination of three such ratios. -/
+/-! ### Phase weight -/
 
 noncomputable def phaseLogNum (u : ℝ) : ℝ :=
   2 * u * cos (2 * u) - 2 * u * cosh (2 * u) - 4 * u -
@@ -1396,7 +1362,6 @@ lemma weightNumer_eq (y : ℝ) :
   ring
 
 set_option maxHeartbeats 4000000 in
--- `ring_nf` expands the phase-weight numerator before the square identities.
 lemma hasDerivAt_capacityPhase {y : ℝ} (hg : gammaSEqual y ≠ 0) :
     HasDerivAt capacityPhase (phaseLogNum y / (2 * gammaSEqual y ^ 2)) y := by
   have hnum :=
@@ -1600,8 +1565,6 @@ lemma scaledRatio_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
       exact div_neg_of_neg_of_pos (mul_neg_of_pos_of_neg hprod hdiff) hy0
     exact div_neg_of_neg_of_pos hnum hden
 
-/-- Once the chord of scale `c ∈ (0, 1)` has passed the first node, the ratio
-`γ(x) / γ(c x)` keeps falling through the rest of the first repulsive shell. -/
 lemma scaledRatio_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
     StrictAntiOn (scaledRatio c) (Ioo (resonanceRoot1 / c) (branchNode 1)) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
@@ -2162,11 +2125,8 @@ theorem cubeOutward_sign {Z x : ℝ}
 
 /-! ### Seats
 
-A monopole, a dipole, a traceless quadrupole, and a traceless octupole are
-vector spaces of dimensions `1`, `3`, `5`, and `7`. One seat for a dual spinor
-and one for its spin-reversed partner on each mode give `2`, `8`, `18`, and
-`32`. The axis projectors `(1 ± e₁)/2` are a different split of the algebra.
-These integers are not indices of the equal-scale nodes. -/
+The axis projectors `(1 ± e₁)/2` are a different split of the algebra.
+-/
 
 theorem chiral_projectors :
     Logic.chiralityL * Logic.chiralityR = 0 ∧
@@ -2255,11 +2215,7 @@ lemma quadrupole_rank : Module.finrank ℝ quadrupole = 5 := by
   rw [← e.finrank_eq]
   exact (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 5 → ℝ) = 5)
 
-/-! ### Octupole seats
-
-A homogeneous cubic has ten coefficients. The Laplacian is a vector, three
-linear conditions, and those conditions are independent. The traceless
-octupole therefore has dimension `7`. -/
+/-! ### Octupole seats -/
 
 def octuTrace (c : Fin 10 → ℝ) : Fin 3 → ℝ
   | 0 => 3 * c 0 + c 5 + c 7
@@ -2383,11 +2339,7 @@ theorem subshell_seat_counts :
     (Module.finrank_fin_fun ℝ : Module.finrank ℝ (Fin 3 → ℝ) = 3)
   simp [h3, quadrupole_rank, octupole_rank]
 
-/-! ### Diameter in the outer well
-
-The net force is inward. No angular momentum is assigned, and `pr = nℏ`
-does not place a radius on the diameter.
--/
+/-! ### Diameter in the outer well -/
 
 theorem diameterFactor_eq {x : ℝ}
     (hγ : gammaSEqual x ≠ 0) (hh : gammaSEqual (x / 2) ≠ 0) :
@@ -2397,7 +2349,6 @@ theorem diameterFactor_eq {x : ℝ}
   field_simp [hγ, hh]
   ring
 
-/-- Throughout the outer well the diameter pushes inward. -/
 theorem diameter_inward {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     0 < -diameterOutward 2 x := by
   have hxhalf : x / 2 < x := by linarith [hx.1]

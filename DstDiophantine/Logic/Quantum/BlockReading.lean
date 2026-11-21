@@ -4,13 +4,7 @@ import DstDiophantine.Logic.Connective
 /-!
 # From a Boolean block to the four labels
 
-In dimension two, a classical distributive step is a step inside one
-four-element island. That island is two classical bits: orthocomplement
-negates both and fixes nothing. On those bits, modus ponens, tollens,
-disjunctive syllogism, and the syllogism are the classical rules. The
-height order is total, so it cannot receive the two atoms. Sign flip
-fixes balance, and any height assignment that carries the bit-wise
-negation to sign flip misses a label. No map sends a formula to a subspace.
+A classical step in dimension two stays inside one four-element island, and the height order cannot receive its two atoms. No map sends a formula to a subspace.
 -/
 
 namespace DstDiophantine
@@ -40,7 +34,6 @@ theorem bot_ne_top_qprop : (⊥ : QProp) ≠ ⊤ := by
   rw [finrank_bot, finrank_top, dualSpinor_finrank] at hdim
   exact absurd hdim (by decide : ¬ (0 : ℕ) = 2)
 
-/-- The two atoms of a ray's island are incomparable under inclusion. -/
 theorem ray_incomparable {L : QProp} (hL : finrank ℂ L = 1) :
     ¬ L ≤ Lᗮ ∧ ¬ Lᗮ ≤ L := by
   constructor
@@ -57,7 +50,6 @@ theorem ray_incomparable {L : QProp} (hL : finrank ℂ L = 1) :
       exact le_bot_iff.mp hle'
     exact (orthogonal_ne_bot_of_line hL) hbot.symm
 
-/-- The island order does not embed into the total order of the height. -/
 theorem no_height_order_embedding {L : QProp} (hL : finrank ℂ L = 1) :
     ¬ ∃ φ : QProp → ℝ,
       ∀ A B : QProp, A ∈ Island L → B ∈ Island L → (A ≤ B ↔ φ A ≤ φ B) := by
@@ -75,7 +67,6 @@ theorem no_height_order_embedding {L : QProp} (hL : finrank ℂ L = 1) :
   · exact n1 hle
   · exact n2 hle
 
-/-- Splitting along both arguments is enough for distributivity in `ℂ²`. -/
 theorem distributes_of_splits {A B C : QProp}
     (hB : Compatible A B) (hC : Compatible A C) :
     A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) := by
@@ -89,7 +80,6 @@ theorem distributes_of_splits {A B C : QProp}
     exact island_inf_sup_distrib hAi hBi hCi
   · rw [eq_top_of_finrank_two h2, top_inf_eq, top_inf_eq, top_inf_eq]
 
-/-- A ray that splits along two subspaces forces both into its island. -/
 theorem splits_ray_forces_island {A B C : QProp}
     (hA : finrank ℂ A = 1) (hB : Compatible A B) (hC : Compatible A C) :
     B ∈ Island A ∧ C ∈ Island A ∧ Compatible B C := by
@@ -111,7 +101,6 @@ theorem bitComplement_ne (p : Bool × Bool) : bitComplement p ≠ p := by
   rcases p with ⟨a, b⟩
   cases a <;> cases b <;> decide
 
-/-- On an island, orthocomplement negates both bits. -/
 theorem ofBits_orthogonal (L : QProp) (p : Bool × Bool) :
     (ofBits L p)ᗮ = ofBits L (bitComplement p) := by
   rcases p with ⟨a, b⟩
@@ -185,7 +174,6 @@ private theorem zero_class_T {hx : |(0 : ℝ)| ≤ 1} :
     classifyOfMem (0 : ℝ) hx = .T :=
   (classifyOfMem_eq_T_iff hx).mpr rfl
 
-/-- Two negation-pairs in `[-1,1]` miss a D4L label. -/
 theorem two_negation_pairs_miss_label {z a : ℝ} (hz : |z| ≤ 1) (ha : |a| ≤ 1) :
     ∃ tv : TruthValue,
       classifyOfMem z hz ≠ tv ∧
@@ -232,8 +220,6 @@ theorem two_negation_pairs_miss_label {z a : ℝ} (hz : |z| ≤ 1) (ha : |a| ≤
       · exact (ne_zero_misses_T ha ha0).1
       · exact (ne_zero_misses_T ha ha0).2
 
-/-- A height assignment intertwining bit-wise negation with sign flip
-misses a label. -/
 theorem no_sign_flip_realizes_four_labels :
     ¬ ∃ (φ : Bool × Bool → ℝ) (_hφ : ∀ p, |φ p| ≤ 1),
       (∀ p, φ (bitComplement p) = - φ p) ∧
@@ -260,11 +246,9 @@ theorem no_sign_flip_realizes_four_labels :
     have heq := classifyOfMem_eq_of_eq hq (hφ _) (by rw [abs_neg]; exact hzφ)
     exact h2 (heq.symm.trans hp)
 
-/-- On the lattice, an element meets its orthocomplement at zero. -/
 theorem meet_orthogonal_bot (A : QProp) : A ⊓ Aᗮ = ⊥ :=
   A.inf_orthogonal_eq_bot
 
-/-- On the height, a value meets its sign flip at zero only at balance. -/
 theorem height_meet_neg_eq_zero_iff (j : ℝ) :
     conjJ j (negJ j) = 0 ↔ j = 0 := by
   rw [conj_neg_eq_neg_abs, neg_eq_zero, abs_eq_zero]
@@ -272,9 +256,7 @@ theorem height_meet_neg_eq_zero_iff (j : ℝ) :
 /-!
 ## Classical rules on an island
 
-The four positive-wall rules, read on the two bits of an island, are the
-classical ones. The reading uses the Boolean operations already carried by
-`ofBits`. It does not send a formula to a subspace.
+The four positive-wall rules, read on the two bits, are the classical ones. The reading does not send a formula to a subspace.
 -/
 
 theorem ofBits_material (L : QProp) (p q : Bool × Bool) :
@@ -303,7 +285,6 @@ private theorem bool_chain (a b c : Bool)
     (hab : (!a || b) = true) (hbc : (!b || c) = true) : (!a || c) = true := by
   cases a <;> cases b <;> cases c <;> simp_all
 
-/-- Modus ponens on an island is the classical bit rule. -/
 theorem island_modus_ponens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
     (hp : ofBits L p = ⊤) (hi : material (ofBits L p) (ofBits L q) = ⊤) :
     ofBits L q = ⊤ := by
@@ -315,7 +296,6 @@ theorem island_modus_ponens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × 
     simpa using hbits
   exact (ofBits_eq_top_iff hL).mpr hq
 
-/-- Modus tollens on an island is the classical bit rule. -/
 theorem island_tollens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
     (hi : material (ofBits L p) (ofBits L q) = ⊤) (hq : ofBits L q = ⊥) :
     ofBits L p = ⊥ := by
@@ -329,7 +309,6 @@ theorem island_tollens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
       cases a <;> cases b <;> simp_all
   exact (ofBits_eq_bot_iff hL).mpr hp
 
-/-- Disjunctive syllogism on an island is the classical bit rule. -/
 theorem island_disjunctive {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
     (h : ofBits L p ⊔ ofBits L q = ⊤) (hp : ofBits L p = ⊥) :
     ofBits L q = ⊤ := by
@@ -341,7 +320,6 @@ theorem island_disjunctive {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × B
     simpa using hbits
   exact (ofBits_eq_top_iff hL).mpr hq
 
-/-- The syllogism rule on an island is the classical bit rule. -/
 theorem island_chain {L : QProp} (hL : finrank ℂ L = 1) {p q r : Bool × Bool}
     (hq : material (ofBits L p) (ofBits L q) = ⊤)
     (hr : material (ofBits L q) (ofBits L r) = ⊤) :

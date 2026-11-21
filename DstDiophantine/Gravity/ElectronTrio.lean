@@ -12,33 +12,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Three equal shared pairs
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. No bond angle in degrees and no dissociation
-energy is produced. The radius at which the axial electron rests is not
-located. A displacement that breaks the equal spacing about the axis is not
-treated.
-
-## What is proved
-
-Distances are in units of `ℓ`. The cosine of the angle between two of three
-coplanar rays is `-1/2`. That angle lies strictly between the four-pair angle,
-of cosine `-1/3`, and a straight angle, and it is greater than a right angle.
-
-* Three electrons at one distance and three protons at one greater distance,
-  with the nuclear distances of the electrons and the electron–proton gaps in
-  the outer well, exert no tangential force: on each ray the force lies along
-  the ray.
-* A further electron on the axis, at a positive distance no greater than the
-  bonding electrons' distance and itself in the outer well, contributes nothing
-  in the plane of the rays. The generalized force that increases the angle from
-  that axis is strictly positive, so each ray is driven off the plane to the
-  opposite side. The nuclear charge does not enter that sign.
-* Off the plane, with the three rays still equally spaced about the axis, the
-  tangential force on each bonding electron points back toward the plane while
-  that electron is closer than its proton and the electron–electron separation
-  lies in the outer well. The nuclear charge does not enter. On the plane the
-  force vanishes, and short of the rays falling together it vanishes only there.
+Three equal shared pairs in a plane are restored toward the plane by an axial
+electron. The length \(\ell\) is not derived; no bond angle in degrees and no
+dissociation energy is produced, and the axial rest radius is not located.
 -/
 
 namespace DstDiophantine.Gravity
@@ -89,8 +65,6 @@ theorem triCos_lt_zero : triCos < 0 := by
   unfold triCos
   norm_num
 
-/-- The three-pair angle lies strictly between the four-pair angle and a
-straight angle, and both exceed a right angle. -/
 theorem shared_angle_order :
     π / 2 < arccos tetCos ∧ arccos tetCos < arccos triCos ∧ arccos triCos < π := by
   refine ⟨tetAngle_gt_right, ?_, ?_⟩
@@ -353,8 +327,7 @@ lemma cross_sum_along {q₁ q₂ ρ σ : ℝ} {i : Fin 3}
   rw [hpull, hlin]
   field_simp [hD]
 
-/-- Force on the bonding electron of ray `i`, from the nucleus, its proton,
-the other two electrons, and the other two protons. -/
+/-- Force on the bonding electron of ray `i`, from the nucleus, its proton, the other two electrons, and the other two protons. -/
 def electronForce (Z : ℝ) (i : Fin 3) (r R : ℝ) : Fin 3 → ℝ :=
   fun k =>
     pairForce (-1) Z (vsmul r (triU i)) (fun _ => 0) k +
@@ -441,8 +414,6 @@ private lemma vdot_ray {t u : Fin 3 → ℝ} {c : ℝ} (F : Fin 3 → ℝ)
     ring
   rw [hmul, ht, mul_zero]
 
-/-- On each ray the force lies along the ray, so both tangential components
-vanish. The nuclear charge does not enter the direction. -/
 theorem tri_tangent_zero {Z r R : ℝ} {i : Fin 3}
     (hr : outerSep r) (hR : r < R) (hgap : outerSep (R - r)) :
     vdot (triPerp i) (electronForce Z i r R) = 0 ∧
@@ -472,12 +443,10 @@ theorem tri_tangent_zero {Z r R : ℝ} {i : Fin 3}
 
 /-! ### An electron on the axis -/
 
-/-- Distance from a charge at radius `ρ` in the plane to an electron at
-height `s` on the axis. -/
+/-- Distance from a charge at radius `ρ` in the plane to an electron at height `s` on the axis. -/
 def axialDist (ρ s : ℝ) : ℝ := sqrt (ρ ^ 2 + s ^ 2)
 
-/-- Generalized force that increases the angle from the positive axis, at the
-plane. Positive drives every ray to the side opposite an electron at `+s`. -/
+/-- Generalized force that increases the angle from the positive axis, at the plane. Positive drives every ray to the side opposite an electron at `+s`. -/
 def triBend (r R s : ℝ) : ℝ :=
   s * (r / (gammaSEqual (pairPhase (axialDist r s)) * axialDist r s ^ 3) -
     R / (gammaSEqual (pairPhase (axialDist R s)) * axialDist R s ^ 3))
@@ -508,7 +477,6 @@ lemma plane_pair_normal {q₁ q₂ : ℝ} {a b : Fin 3 → ℝ}
   rw [ha, hb]
   simp
 
-/-- In the plane, only the axial electron contributes to the normal component. -/
 theorem tri_plane_normal {Z r R : ℝ} {i : Fin 3}
     (_hr : 0 < r) (_hR : 0 < R) :
     electronForce Z i r R 2 = 0 ∧ protonForce Z i r R 2 = 0 := by
@@ -562,7 +530,6 @@ lemma axial_proton_normal {R s : ℝ} (_hR : 0 ≤ R) (i : Fin 3) :
   simp only [vsmul, triAxis, triU_z]
   ring
 
-/-- The axial force has no component in the plane orthogonal to the ray. -/
 theorem tri_axis_inplane {q ρ s : ℝ} (_hρ : 0 ≤ ρ) (i : Fin 3) :
     vdot (triPerp i) (fun k =>
       pairForce q (-1) (vsmul ρ (triU i)) (triAxis s) k) = 0 := by
@@ -572,8 +539,7 @@ theorem tri_axis_inplane {q ρ s : ℝ} (_hρ : 0 ≤ ρ) (i : Fin 3) :
   simp only [vsmul, triAxis, triPerp, triU_z]
   ring
 
-/-- At the plane, the generalized force on each ray is `triBend`. The charges
-already in the plane do not contribute to it. -/
+/-- The charges already in the plane do not contribute to `triBend`. -/
 theorem triRay_bend_eq {Z r R s : ℝ} {i : Fin 3}
     (hr : 0 < r) (hR : 0 < R) (_hs : 0 ≤ s) :
     -r * (electronForce Z i r R 2 +
@@ -597,8 +563,6 @@ theorem outerSep_axial {ρ s : ℝ} (hρ : outerSep ρ) (hs : 0 < s) :
     outerSep (axialDist ρ s) :=
   outerSep_longer hρ (axialDist_gt hρ.1 hs)
 
-/-- A non-shared electron on the axis, no farther out than the bonding
-electrons, drives every ray off the plane to the opposite side. -/
 theorem triBend_pos {r R s : ℝ}
     (hs : outerSep s) (hsr : s ≤ r) (hrR : r < R) :
     0 < triBend r R s := by
@@ -1111,16 +1075,12 @@ theorem umbElectronTangent_factor {Z r R θ : ℝ} {i : Fin 3}
   simp only [nsmul_eq_mul]
   ring
 
-/-- On the plane the three shared pairs exert no tangential force on a
-bonding electron. -/
 theorem umbElectron_plane {Z r R : ℝ} {i : Fin 3}
     (hr : 0 < r) (hR : r < R) (hee : outerSep (umbSep r (π / 2))) :
     umbElectronTangent Z r R (π / 2) i = 0 := by
   have hθ : π / 2 ∈ Ioo 0 π := ⟨div_pos pi_pos (by norm_num), half_lt_self pi_pos⟩
   rw [umbElectronTangent_factor hθ hr hR hee, cos_pi_div_two, mul_zero, zero_mul]
 
-/-- Off the plane, on the side of the positive axis, each bonding electron is
-driven back toward the plane. The nuclear charge does not enter. -/
 theorem umbElectron_restores {Z r R θ : ℝ} {i : Fin 3}
     (hθ : θ ∈ Ioo 0 (π / 2)) (hr : 0 < r) (hR : r < R)
     (hee : outerSep (umbSep r θ)) :
@@ -1136,8 +1096,6 @@ theorem umbElectron_restores {Z r R θ : ℝ} {i : Fin 3}
   rw [umbElectronTangent_factor hθπ hr hR hee]
   positivity
 
-/-- Off the plane, on the opposite side, each bonding electron is driven back
-toward the plane. -/
 theorem umbElectron_restores_far {Z r R θ : ℝ} {i : Fin 3}
     (hθ : θ ∈ Ioo (π / 2) π) (hr : 0 < r) (hR : r < R)
     (hee : outerSep (umbSep r θ)) :

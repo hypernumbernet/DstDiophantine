@@ -9,10 +9,10 @@ import Mathlib.Tactic.Ring
 /-!
 # The dodecahedral shell in the outer well
 
-For every nuclear charge `Z ≥ 8` the radial response of twenty vertices of a
-regular dodecahedron meets `Z` exactly once before the nearest chord reaches
-the first node. The root lies at a radius strictly between `7ℓ/10` and
-`10ℓ/7`, and the outward force restores it.
+For every nuclear charge \(Z\ge 8\) the radial response of twenty dodecahedral
+vertices meets \(Z\) once before the nearest chord reaches the first node. The
+root lies strictly between \(7\ell/10\) and \(10\ell/7\), and the outward
+force restores it.
 -/
 
 namespace DstDiophantine
@@ -5092,7 +5092,6 @@ private lemma phaseAt_924 :
   refine ⟨ht0, ht1, by norm_num, by norm_num, hph.1, hph.2.1, by norm_num, hph.2.2.1, hph.2.2.2⟩
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_350_360 {x : ℝ}
     (hx : x ∈ Ioc ((350 : ℝ) / 1000) ((360 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5193,7 +5192,6 @@ private lemma deriv_pos_Ioc_350_360 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_360_375 {x : ℝ}
     (hx : x ∈ Ioc ((360 : ℝ) / 1000) ((375 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5294,7 +5292,6 @@ private lemma deriv_pos_Ioc_360_375 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_375_395 {x : ℝ}
     (hx : x ∈ Ioc ((375 : ℝ) / 1000) ((395 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5395,7 +5392,6 @@ private lemma deriv_pos_Ioc_375_395 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_395_415 {x : ℝ}
     (hx : x ∈ Ioc ((395 : ℝ) / 1000) ((415 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5496,7 +5492,6 @@ private lemma deriv_pos_Ioc_395_415 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_415_445 {x : ℝ}
     (hx : x ∈ Ioc ((415 : ℝ) / 1000) ((445 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5597,7 +5592,6 @@ private lemma deriv_pos_Ioc_415_445 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_445_485 {x : ℝ}
     (hx : x ∈ Ioc ((445 : ℝ) / 1000) ((485 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5698,7 +5692,6 @@ private lemma deriv_pos_Ioc_445_485 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_485_525 {x : ℝ}
     (hx : x ∈ Ioc ((485 : ℝ) / 1000) ((525 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5799,7 +5792,6 @@ private lemma deriv_pos_Ioc_485_525 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_525_565 {x : ℝ}
     (hx : x ∈ Ioc ((525 : ℝ) / 1000) ((565 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5900,7 +5892,6 @@ private lemma deriv_pos_Ioc_525_565 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_565_605 {x : ℝ}
     (hx : x ∈ Ioc ((565 : ℝ) / 1000) ((605 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -6001,7 +5992,6 @@ private lemma deriv_pos_Ioc_565_605 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_605_645 {x : ℝ}
     (hx : x ∈ Ioc ((605 : ℝ) / 1000) ((645 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -6102,7 +6092,6 @@ private lemma deriv_pos_Ioc_605_645 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioc_645_660 {x : ℝ}
     (hx : x ∈ Ioc ((645 : ℝ) / 1000) ((660 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -6204,7 +6193,6 @@ private lemma deriv_pos_Ioc_645_660 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
--- The cleared gap is a rational with several hundred bits.
 private lemma deriv_pos_Ioo_660_wall {x : ℝ}
     (hx : x ∈ Ioo ((660 : ℝ) / 1000) dodecaWall) :
     0 < deriv dodecaResponse x := by
@@ -6441,7 +6429,6 @@ theorem dodeca_outer_root_restoring {Z x y : ℝ} (hZ : (8 : ℝ) ≤ Z)
       ⟨hx7.le, hx.2⟩ ⟨(lt_trans hx7 hxy).le, hy.2⟩ hxy
     linarith
 
-/-- A larger nuclear charge places the dodecahedral root at a larger phase. -/
 private theorem dodeca_root_phase_lt_of_lt_charge {Z W x y : ℝ}
     (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
     (hx : x ∈ Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Ioo (0 : ℝ) dodecaWall)
@@ -6460,7 +6447,6 @@ private theorem dodeca_root_phase_lt_of_lt_charge {Z W x y : ℝ}
       ⟨hy7.le, hy.2⟩ ⟨hx7.le, hx.2⟩ hlt
     linarith
 
-/-- The same increase of charge places the balance at a smaller radius. -/
 theorem dodeca_root_radius_lt_of_lt_charge {Z W x y : ℝ}
     (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
     (hx : x ∈ Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Ioo (0 : ℝ) dodecaWall)

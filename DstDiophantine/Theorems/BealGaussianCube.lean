@@ -11,30 +11,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity
 
 /-!
-# Phase 7k / 7l / 7m: equal-odd two-factor cube slice (`e = 3`)
+# Equal-odd cube leaf
 
-Infrastructure and closed branches for `BealEqualOddTwoFactorResidual` at
-exponent 3:
-
-* Gaussian cube expansion `(a+bi)³`;
-* mod-8 obstruction when the factor `2` sits on an odd coordinate;
-* Mihăilescu when the pure-cube coordinate has absolute value `1`;
-* reduction of the `|u| ≥ 1` body to the positive equation `α³ + 2β³ = γ³`;
-* 2-adic/gcd reduction of any positive solution to a primitive odd-`α,γ` slice;
-* mod-7 / mod-9 / mod-13 / mod-19 cube-residue tables and allowed classes;
-* split assembly `e = 3` vs `e ≥ 5`;
-* phase 7m: primitivity / parity / difference-factor / 2-adic packaging for
-  `α³ + 2β³ = γ³`, and assembly from the affine residual `X³ + 2Y³ = 1`;
-* phase 7q: 3-descent of the difference factors (`gcd ∈ {1,3}`), almost-cube
-  assignment, and reduction to `s³ = t⁶ + 3τ²` or `s³ = τ² + (3^{2k-1} t²)³`;
-* phase 7o: birational packaging of that Affine curve onto the Mordell model
-  `y² = x³ - 1728`, with assembly `BealMordellCubeAddTwoResidual → Affine`;
-* phase 7u: Euler axiom `eulerAffineCubeAddTwo` closes the affine residual and
-  therefore the positive-cube residual (the `e = 3` leaf).
-
-The live residual for equal-odd two-factor is now the odd-exponent body
-`e ≥ 5`. Classical Beal is **not** claimed unconditionally. The Mordell rank
-is not in mathlib; phase 7o does **not** close the Weierstrass model by itself.
+Positive `α³ + 2β³ = γ³` is closed by the axiom `eulerAffineCubeAddTwo`, which is not a Lean proof of Euler. `BealEqualOddTwoFactorExpGeFiveResidual` stays open.
 -/
 
 namespace DstDiophantine
@@ -48,17 +27,12 @@ local notation "ℤ[i]" => GaussianInt
 
 /-! ### Cube expansion -/
 
-/-- `(a + bi)³ = (a³ − 3ab²) + (3a²b − b³)i`. -/
 theorem gaussian_cube_eq (a b : ℤ) :
     (⟨a, b⟩ : ℤ[i]) ^ 3 = ⟨a ^ 3 - 3 * a * b ^ 2, 3 * a ^ 2 * b - b ^ 3⟩ := by
   ext <;> simp [pow_three, re_mul, im_mul] <;> ring
 
 /-! ### Mod-8 obstruction -/
 
-/--
-Cubes modulo 8 are `0, 1,` or `7`. Hence `2 * (odd)` cannot be a cube
-(for any `v`, including `0`: then `m = 0` is even).
--/
 theorem not_two_mul_odd_eq_cube {m v : ℕ} (hm : Odd m) :
     ¬ 2 * m = v ^ 3 := by
   intro heq
@@ -78,10 +52,6 @@ theorem not_two_mul_odd_natAbs_eq_cube {m : ℤ} {v : ℕ}
     (hm : Odd m) : ¬ 2 * m.natAbs = v ^ 3 :=
   not_two_mul_odd_eq_cube (Int.natAbs_odd.mpr hm)
 
-/--
-For `e = 3`, the two-factor form must place `2 * ·.natAbs = cube` on the
-**even** coordinate (otherwise mod 8 forbids it).
--/
 theorem eq_odd_two_factor_cube_even_slot
     {m n : ℤ} {u v : ℕ}
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
@@ -98,7 +68,6 @@ theorem eq_odd_two_factor_cube_even_slot
 
 /-! ### Mihăilescu slice: pure-power coordinate of absolute value 1 -/
 
-/-- `c^e − t² = 1` with positive integers and `e ≥ 3` is impossible (Mihăilescu). -/
 theorem not_nat_pow_sub_sq_eq_one {c t e : ℕ}
     (hc : 0 < c) (ht : 0 < t) (he : 3 ≤ e) : ¬ c ^ e = t ^ 2 + 1 := by
   intro heq
@@ -106,15 +75,10 @@ theorem not_nat_pow_sub_sq_eq_one {c t e : ℕ}
   obtain ⟨_, hx2, _, _⟩ := mihailescu c t e 2 he1 (by decide) hc ht heq
   exact absurd hx2 (by omega : e ≠ 2)
 
-/-- Specialization of `not_nat_pow_sub_sq_eq_one` at `e = 3`. -/
 theorem not_nat_cube_sub_sq_eq_one {c t : ℕ}
     (hc : 0 < c) (ht : 0 < t) : ¬ c ^ 3 = t ^ 2 + 1 :=
   not_nat_pow_sub_sq_eq_one hc ht (by decide : 3 ≤ 3)
 
-/--
-If `m² + n² = c^e` (natural `c`, `e ≥ 3`) and `|n| = 1` with `m ≠ 0`, contradiction via
-Mihăilescu.
--/
 theorem not_sum_sq_eq_pow_of_natAbs_one {m n : ℤ} {c e : ℕ}
     (hm0 : m ≠ 0) (hn1 : n.natAbs = 1) (he : 3 ≤ e)
     (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ e) : False := by
@@ -142,7 +106,6 @@ theorem not_sum_sq_eq_pow_of_natAbs_one_left {m n : ℤ} {c e : ℕ}
     (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ e) : False :=
   not_sum_sq_eq_pow_of_natAbs_one hn0 hm1 he (by rw [add_comm]; exact heq)
 
-/-- Cube specialization retained for Phase 7k call sites. -/
 theorem not_sum_sq_eq_cube_of_natAbs_one {m n : ℤ} {c : ℕ}
     (hm0 : m ≠ 0) (hn1 : n.natAbs = 1)
     (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ 3) : False :=
@@ -153,10 +116,6 @@ theorem not_sum_sq_eq_cube_of_natAbs_one_left {m n : ℤ} {c : ℕ}
     (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ 3) : False :=
   not_sum_sq_eq_pow_of_natAbs_one_left hn0 hm1 (by decide : 3 ≤ 3) heq
 
-/--
-Phase 7m: two-factor data at odd `e ≥ 3` with pure-power absolute value `1`
-contradicts a sum-of-squares power identity (Mihăilescu).
--/
 theorem not_eq_odd_two_factor_of_exp_ge_three_abs_one
     {m n : ℤ} {c e : ℕ}
     (hm0 : m ≠ 0) (hn0 : n ≠ 0) (he : 3 ≤ e)
@@ -169,10 +128,6 @@ theorem not_eq_odd_two_factor_of_exp_ge_three_abs_one
   · exact not_sum_sq_eq_pow_of_natAbs_one hm0 hn1 he heq
   · exact not_sum_sq_eq_pow_of_natAbs_one_left hn0 hm1 he heq
 
-/--
-Phase 7k cube slice: two-factor data at `e = 3` with pure-cube absolute value
-`1` contradicts a sum-of-squares cube identity (Mihăilescu).
--/
 theorem not_eq_odd_two_factor_of_exp_three_abs_one
     {m n : ℤ} {c : ℕ}
     (hm0 : m ≠ 0) (hn0 : n ≠ 0)
@@ -183,9 +138,6 @@ theorem not_eq_odd_two_factor_of_exp_three_abs_one
     False :=
   not_eq_odd_two_factor_of_exp_ge_three_abs_one hm0 hn0 (by decide : 3 ≤ 3) heq hform
 
-/--
-From `IsGaussianHypotenusePower m n e` recover `m² + n² = (|Norm g|)^e`.
--/
 theorem sum_sq_eq_natAbs_norm_pow_of_gaussian_hyp
     {m n : ℤ} {e : ℕ} (hIs : IsGaussianHypotenusePower m n e) :
     ∃ c : ℕ, m ^ 2 + n ^ 2 = (c : ℤ) ^ e := by
@@ -202,18 +154,11 @@ theorem sum_sq_eq_natAbs_norm_pow_of_gaussian_hyp
     _ = (Zsqrtd.norm g) ^ e := hpow e
     _ = ((Zsqrtd.norm g).natAbs : ℤ) ^ e := by rw [Int.natAbs_of_nonneg hnn]
 
-/--
-From `IsGaussianHypotenusePower m n 3` recover `m² + n² = (|Norm g|)³`.
--/
 theorem sum_sq_eq_natAbs_norm_cube_of_gaussian_hyp
     {m n : ℤ} (hIs : IsGaussianHypotenusePower m n 3) :
     ∃ c : ℕ, m ^ 2 + n ^ 2 = (c : ℤ) ^ 3 :=
   sum_sq_eq_natAbs_norm_pow_of_gaussian_hyp hIs
 
-/--
-Phase 7k: Gaussian hypotenuse cube + two-factor form with pure-cube `|·|=1`
-is impossible (both coordinates nonzero).
--/
 theorem not_eq_odd_two_factor_of_exp_three
     {m n : ℤ}
     (hm0 : m ≠ 0) (hn0 : n ≠ 0)
@@ -239,10 +184,6 @@ theorem exists_t_of_two_mul_eq_cube {m v : ℕ} (heq : 2 * m = v ^ 3) :
       _ = 8 * t ^ 3 := by ring
   omega
 
-/--
-Two-factor cube data plus `m² + n² = c³` yields a positive solution of
-`α³ + 2β³ = γ³` (`α = u²`, `β = 2 t²`).
--/
 theorem exists_pos_cube_add_two_cube_of_two_factor
     {m n : ℤ} {u v c : ℕ}
     (hu0 : 0 < u) (hv0 : 0 < v) (hc0 : 0 < c)
@@ -257,7 +198,6 @@ theorem exists_pos_cube_add_two_cube_of_two_factor
     subst this
     simp [hv2] at hv0
   have hNat : (4 * t ^ 3) ^ 2 + (u ^ 3) ^ 2 = c ^ 3 := by
-    -- Work in ℤ: (↑m.natAbs)² + (↑n.natAbs)² = ↑c³
     have heqZ : (m.natAbs : ℤ) ^ 2 + (n.natAbs : ℤ) ^ 2 = (c : ℤ) ^ 3 := by
       calc (m.natAbs : ℤ) ^ 2 + (n.natAbs : ℤ) ^ 2
           = m ^ 2 + n ^ 2 := by rw [Int.natAbs_sq, Int.natAbs_sq]
@@ -285,22 +225,12 @@ theorem exists_pos_cube_add_two_cube_of_two_factor_symm
 
 /-! ### Residual: no positive solutions of `α³ + 2β³ = γ³` -/
 
-/--
-**Cube leaf** (phase 7l / 7u): no positive integers satisfy `α³ + 2β³ = γ³`.
-Signed solutions exist (e.g. `(-1)³ + 2·1³ = 1³`); the Beal two-factor
-reduction only produces positive `α = u²`. Closed under the Euler axiom via
-`BealPosCubeAddTwoCubeResidual_of_euler` below.
--/
+/-- Positive cube equation, closed by `eulerAffineCubeAddTwo`, not by signed points. -/
 def BealPosCubeAddTwoCubeResidual : Prop :=
   ∀ (α β γ : ℕ), 0 < α → 0 < β → 0 < γ → ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3
 
 /-! ### Phase 7m: packaging for `α³ + 2β³ = γ³` -/
 
-/--
-If `α` and `β` are both even in a positive solution of `α³ + 2β³ = γ³`, then
-`γ` is even and the halved triple is again a positive solution (the only place
-a 2-adic descent step applies).
--/
 theorem pos_cube_add_two_cube_halve_of_even
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hαe : Even α) (hβe : Even β)
@@ -338,7 +268,6 @@ theorem pos_cube_add_two_cube_halve_of_even
       _ = 8 * γ' ^ 3 := by ring
   exact Nat.mul_left_cancel (by decide : 0 < 8) h8
 
-/-- Cubes are never `2` or `6` modulo 8. -/
 theorem not_nat_cube_mod_eight_eq_two_or_six (v : ℕ) :
     v ^ 3 % 8 ≠ 2 ∧ v ^ 3 % 8 ≠ 6 := by
   have h : v % 8 = 0 ∨ v % 8 = 1 ∨ v % 8 = 2 ∨ v % 8 = 3 ∨
@@ -346,14 +275,12 @@ theorem not_nat_cube_mod_eight_eq_two_or_six (v : ℕ) :
   have hv : v ^ 3 % 8 = (v % 8) ^ 3 % 8 := by rw [← Nat.pow_mod]
   rcases h with h | h | h | h | h | h | h | h <;> simp [hv, h]
 
-/-- Even cubes are `0` modulo 8. -/
 theorem even_nat_cube_mod_eight_eq_zero {v : ℕ} (hv : Even v) :
     v ^ 3 % 8 = 0 := by
   obtain ⟨k, hk⟩ := even_iff_exists_two_mul.mp hv
   rw [hk, show (2 * k) ^ 3 = 8 * k ^ 3 by ring]
   exact Nat.mul_mod_right _ _
 
-/-- If `α` is odd in a positive solution, then `γ` is odd (parity). -/
 theorem odd_gamma_of_odd_alpha_pos_cube
     {α β γ : ℕ} (hαo : Odd α) (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     Odd γ := by
@@ -363,7 +290,6 @@ theorem odd_gamma_of_odd_alpha_pos_cube
   have : Odd (γ ^ 3) := by simpa [heq] using hsum
   exact Nat.Odd.of_mul_right this
 
-/-- `α` even and `β` odd cannot occur for `α³ + 2β³ = γ³`. -/
 theorem not_even_alpha_odd_beta_pos_cube
     {α β γ : ℕ} (hαe : Even α) (hβo : Odd β)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) : False := by
@@ -408,10 +334,6 @@ theorem not_even_alpha_odd_beta_pos_cube
     · exact Or.inr (by rw [hγeq, h])
   omega
 
-/--
-Primitive positive solutions (`gcd(α,β,γ) = 1`) of `α³ + 2β³ = γ³` have
-both `α` and `γ` odd.
--/
 theorem odd_alpha_gamma_of_pos_cube_primitive
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -430,10 +352,6 @@ theorem odd_alpha_gamma_of_pos_cube_primitive
   · have hαo : Odd α := Nat.not_even_iff_odd.mp hαe
     exact ⟨hαo, odd_gamma_of_odd_alpha_pos_cube hαo heq⟩
 
-/--
-Any positive solution of `α³ + 2β³ = γ³` yields a primitive solution with both
-`α` and `γ` odd (divide out `gcd(α,β,γ)`; the surviving triple cannot be even).
--/
 theorem exists_primitive_odd_pos_cube_of_pos
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
@@ -473,10 +391,6 @@ theorem exists_primitive_odd_pos_cube_of_pos
   have hodd := odd_alpha_gamma_of_pos_cube_primitive hα'0 hβ'0 hγ'0 hg heq'
   exact ⟨α', β', γ', hα'0, hβ'0, hγ'0, hg, hodd.1, hodd.2, heq'⟩
 
-/--
-The positive-cube residual is equivalent to the absence of primitive solutions
-with both `α` and `γ` odd.
--/
 theorem BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd :
     BealPosCubeAddTwoCubeResidual ↔
       ∀ (α β γ : ℕ), 0 < α → 0 < β → 0 < γ →
@@ -490,7 +404,6 @@ theorem BealPosCubeAddTwoCubeResidual_iff_no_primitive_odd :
       exists_primitive_odd_pos_cube_of_pos hα hβ hγ heq
     exact h α' β' γ' hα' hβ' hγ' hg hoα hoγ heq'
 
-/-- Positive solutions satisfy `α < γ`. -/
 theorem alpha_lt_gamma_of_pos_cube
     {α β γ : ℕ} (hβ0 : 0 < β) (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α < γ := by
@@ -500,7 +413,6 @@ theorem alpha_lt_gamma_of_pos_cube
     rwa [heq] at this
   exact lt_of_pow_lt_pow_left₀ 3 (Nat.zero_le _) hlt
 
-/-- Convenience: `γ³ − α³ = 2β³`. -/
 theorem gamma_cube_sub_alpha_cube_eq_two_beta
     {α β γ : ℕ} (hβ0 : 0 < β) (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     γ ^ 3 - α ^ 3 = 2 * β ^ 3 := by
@@ -508,7 +420,6 @@ theorem gamma_cube_sub_alpha_cube_eq_two_beta
   have : α ^ 3 ≤ γ ^ 3 := Nat.pow_le_pow_left hle 3
   omega
 
-/-- Difference-of-cubes identity on `ℕ` when `α ≤ γ`. -/
 theorem cube_sub_eq_mul_of_le {γ α : ℕ} (hle : α ≤ γ) :
     γ ^ 3 - α ^ 3 = (γ - α) * (γ ^ 2 + γ * α + α ^ 2) := by
   have hγ3 : α ^ 3 ≤ γ ^ 3 := Nat.pow_le_pow_left hle 3
@@ -522,7 +433,6 @@ theorem cube_sub_eq_mul_of_le {γ α : ℕ} (hle : α ≤ γ) :
           rw [hγa]; push_cast; ring
     _ = ((γ - α) * (γ ^ 2 + γ * α + α ^ 2) : ℕ) := by simp
 
-/-- Quadratic factor of a difference of cubes, as a polynomial identity on `ℕ`. -/
 theorem quad_factor_eq_of_le {γ α : ℕ} (hle : α ≤ γ) :
     γ ^ 2 + γ * α + α ^ 2 = (γ - α) * (γ + 2 * α) + 3 * α ^ 2 := by
   apply Int.ofNat_inj.mp
@@ -534,16 +444,13 @@ theorem quad_factor_eq_of_le {γ α : ℕ} (hle : α ≤ γ) :
           rw [hγa]; push_cast; ring
     _ = ((γ - α) * (γ + 2 * α) + 3 * α ^ 2 : ℕ) := by simp
 
-/-- Under `Nat.Coprime α γ` and `α ≤ γ`, the difference-factor gcd divides 3. -/
 theorem gcd_cube_diff_factors_dvd_three_of_coprime
     {γ α : ℕ} (hle : α ≤ γ) (hcop : Nat.Coprime α γ) :
     Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) ∣ 3 := by
   have hga : Nat.Coprime (γ - α) α := by
     refine (Nat.coprime_iff_gcd_eq_one.2 ?_).symm
-    -- gcd α (γ - α) = gcd α γ = 1
     have : Nat.gcd α (γ - α) = Nat.gcd α γ := by
       have h := Nat.gcd_add_self_right α (γ - α)
-      -- h : gcd α ((γ - α) + α) = gcd α (γ - α)
       rw [Nat.add_comm] at h
       rw [← h, Nat.add_sub_of_le hle]
     rwa [this, ← Nat.coprime_iff_gcd_eq_one]
@@ -555,7 +462,6 @@ theorem gcd_cube_diff_factors_dvd_three_of_coprime
   rw [hga2.symm.gcd_mul_right_cancel_right 3]
   exact Nat.gcd_dvd_right _ _
 
-/-- Primitive solutions are pairwise coprime in `(α, γ)`. -/
 theorem coprime_alpha_gamma_of_pos_cube_primitive
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -587,7 +493,6 @@ theorem coprime_alpha_gamma_of_pos_cube_primitive
   have : d ∣ 1 := by simpa [hgcd] using this
   exact Nat.eq_one_of_dvd_one this
 
-/-- Factorisation package for a positive primitive solution. -/
 theorem pos_cube_diff_factor_package
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -607,10 +512,6 @@ theorem pos_cube_diff_factor_package
   exact ⟨hlt, hodd.1, hodd.2, hcop, hsub, by rw [← hfac]; exact hsub,
     gcd_cube_diff_factors_dvd_three_of_coprime hle hcop⟩
 
-/--
-For a positive solution with both `α` and `γ` odd, the second difference factor
-is odd, so `padicValNat 2 (γ - α) = 1 + 3 * padicValNat 2 β`.
--/
 theorem padicValNat_two_gamma_sub_alpha_of_odd
     {α β γ : ℕ} (hβ0 : 0 < β) (hαo : Odd α) (hγo : Odd γ)
     (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
@@ -652,9 +553,6 @@ theorem eq_of_nat_cube_eq {a b : ℕ} (h : a ^ 3 = b ^ 3) : a = b :=
     (le_of_pow_le_pow_left₀ (by decide : (3 : ℕ) ≠ 0) (Nat.zero_le _) (le_of_eq h))
     (le_of_pow_le_pow_left₀ (by decide : (3 : ℕ) ≠ 0) (Nat.zero_le _) (le_of_eq h.symm))
 
-/--
-Odd coordinates yield an integer half-sum and half-difference.
--/
 theorem exists_half_sum_diff_of_odd {α γ : ℕ}
     (hαo : Odd α) (hγo : Odd γ) (hle : α ≤ γ) :
     ∃ τ δ : ℕ, γ + α = 2 * τ ∧ γ - α = 2 * δ ∧
@@ -682,10 +580,6 @@ theorem exists_half_sum_diff_of_odd {α γ : ℕ}
       omega
     exact Nat.mul_left_cancel (by decide : 0 < 2) this
 
-/--
-On a half-sum / half-difference splitting, the quadratic factor is
-`3 τ² + δ²`.
--/
 theorem quad_factor_of_half_sum_diff {γ α τ δ : ℕ}
     (hle : α ≤ γ) (hsum : γ + α = 2 * τ) (hdiff : γ - α = 2 * δ) :
     γ ^ 2 + γ * α + α ^ 2 = 3 * τ ^ 2 + δ ^ 2 := by
@@ -706,10 +600,6 @@ theorem quad_factor_of_half_sum_diff {γ α τ δ : ℕ}
       _ = 4 * (3 * τ ^ 2 + δ ^ 2) := by ring
   exact Nat.mul_left_cancel (by decide : 0 < 4) this
 
-/--
-Elementary reconstruction identity:
-`(τ+δ)³ − (τ−δ)³ = 2δ(3τ²+δ²)`.
--/
 theorem cube_sub_of_half_sum_diff {τ δ : ℕ} (h : δ ≤ τ) :
     (τ + δ) ^ 3 - (τ - δ) ^ 3 = 2 * δ * (3 * τ ^ 2 + δ ^ 2) := by
   have hle : τ - δ ≤ τ + δ :=
@@ -735,7 +625,6 @@ theorem pos_cube_eq_of_half_sum_diff {τ δ β : ℕ} (hδ : δ ≤ τ)
     _ = (τ - δ) ^ 3 + ((τ + δ) ^ 3 - (τ - δ) ^ 3) := by rw [hsub]
     _ = (τ + δ) ^ 3 := Nat.add_sub_of_le hle
 
-/-- Coprime difference factors have gcd `1` or `3`. -/
 theorem gcd_cube_diff_eq_one_or_three {γ α : ℕ}
     (hlt : α < γ) (hcop : Nat.Coprime α γ) :
     Nat.gcd (γ - α) (γ ^ 2 + γ * α + α ^ 2) = 1 ∨
@@ -749,7 +638,6 @@ theorem three_dvd_quad_factor_of_three_dvd_diff {γ α : ℕ}
   rw [quad_factor_eq_of_le hle]
   exact dvd_add (dvd_mul_of_dvd_left h3 _) ⟨α ^ 2, rfl⟩
 
-/-- The gcd is `3` if and only if `3` divides the difference. -/
 theorem three_dvd_gamma_sub_alpha_iff_gcd_eq_three {α γ : ℕ}
     (hlt : α < γ) (hcop : Nat.Coprime α γ) :
     3 ∣ γ - α ↔
@@ -777,11 +665,6 @@ theorem not_three_dvd_alpha_of_three_dvd_diff {α γ : ℕ}
   exact (by decide : ¬ 3 ∣ (1 : ℕ))
     ((Nat.coprime_iff_gcd_eq_one.mp hcop) ▸ this)
 
-/--
-If the difference factors are coprime, each is a cube up to the explicit
-factor of `2` on the even difference: `γ − α = 2 t³` and
-`γ² + γα + α² = s³`.
--/
 theorem exists_pos_cube_gcd_one_almost_cubes
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -869,9 +752,6 @@ theorem exists_pos_cube_gcd_one_almost_cubes
   · rw [hD2, ht]
   · exact eq_of_nat_cube_eq (by rw [← hprod, ht, hs, mul_pow])
 
-/--
-Cubes modulo 9 of an integer not divisible by 3 are `1` or `8`.
--/
 theorem nat_cube_mod_nine_of_not_three_dvd {v : ℕ} (h : ¬ 3 ∣ v) :
     v ^ 3 % 9 = 1 ∨ v ^ 3 % 9 = 8 := by
   have h9 : v % 9 = 1 ∨ v % 9 = 2 ∨ v % 9 = 4 ∨ v % 9 = 5 ∨
@@ -881,10 +761,6 @@ theorem nat_cube_mod_nine_of_not_three_dvd {v : ℕ} (h : ¬ 3 ∣ v) :
   have hv : v ^ 3 % 9 = (v % 9) ^ 3 % 9 := by rw [← Nat.pow_mod]
   rcases h9 with h | h | h | h | h | h <;> simp [hv, h]
 
-/--
-On `s³ = t⁶ + 3 τ²` with `3 ∤ t`, the half-sum is divisible by `3`.
-(Otherwise the left-hand side would be `4` modulo `9`, which is not a cube.)
--/
 theorem three_dvd_tau_of_cube_sixth {t s τ : ℕ}
     (ht3 : ¬ 3 ∣ t) (heq : s ^ 3 = t ^ 6 + 3 * τ ^ 2) : 3 ∣ τ := by
   have ht6 : t ^ 6 % 9 = 1 := by
@@ -915,10 +791,6 @@ theorem three_dvd_tau_of_cube_sixth {t s τ : ℕ}
     rcases h with h | h | h | h | h | h | h | h | h <;> simp [hv, h]
   omega
 
-/--
-Coprime difference factors collapse to the single equation
-`s³ = t⁶ + 3 τ²` with `α = τ − t³`, `γ = τ + t³`, `β = t s`, and `3 ∣ τ`.
--/
 theorem exists_pos_cube_gcd_one_half_sum
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -956,10 +828,6 @@ theorem exists_pos_cube_gcd_one_half_sum
     exact ht3 (Nat.Prime.dvd_of_dvd_pow Nat.prime_three this)
   exact ⟨t, s, τ, ht0, hs0, hτt, hcop, hsodd, ht3, hs3n, hτ3, hαeq, hγeq, hβ, hs3⟩
 
-/--
-The coprime parametrisation reconstructs a positive solution of
-`α³ + 2β³ = γ³`.
--/
 theorem pos_cube_eq_of_gcd_one_params {t s τ : ℕ}
     (h : t ^ 3 ≤ τ) (heq : s ^ 3 = t ^ 6 + 3 * τ ^ 2) :
     (τ - t ^ 3) ^ 3 + 2 * (t * s) ^ 3 = (τ + t ^ 3) ^ 3 := by
@@ -1002,10 +870,6 @@ theorem three_pow_t_sixth_eq_cube {k t : ℕ} (_hk : 0 < k) :
     _ = (3 ^ (2 * k - 1)) ^ 3 * (t ^ 2) ^ 3 := by rw [pow_mul]
     _ = (3 ^ (2 * k - 1) * t ^ 2) ^ 3 := (mul_pow _ _ 3).symm
 
-/--
-If `3` divides the difference of a primitive positive solution, then
-`v₃(γ−α) = 3 v₃(β) − 1` and `v₃(γ²+γα+α²) = 1`.
--/
 theorem padicValNat_three_of_pos_cube_three_dvd
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -1094,10 +958,6 @@ theorem padicValNat_three_of_pos_cube_three_dvd
     omega
   exact ⟨hvD, hvQ, hkpos⟩
 
-/--
-If the difference-factor gcd is `3`, stripping the 3-primary part yields
-`γ − α = 2 · 3^{3k−1} t³` and `γ² + γα + α² = 3 s³` with `k = v₃(β) ≥ 1`.
--/
 theorem exists_pos_cube_gcd_three_almost_cubes
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -1294,9 +1154,6 @@ theorem exists_pos_cube_gcd_three_almost_cubes
       _ = 3 ^ k * t * s := by rw [hβ0]; ring
   exact ⟨k, t, s, hk, ht0, hs0, hcopts, hsodd, ht3, hs3n, rfl, hDform, hQform, hβform⟩
 
-/--
-The gcd-`3` branch collapses to `s³ = τ² + (3^{2k−1} t²)³`.
--/
 theorem exists_pos_cube_gcd_three_half_sum
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -1344,10 +1201,6 @@ theorem exists_pos_cube_gcd_three_half_sum
   exact ⟨k, t, s, τ, hk, ht0, hs0, hτt, hcop, hsodd, ht3, hs3n, hkEq,
     hαeq, hγeq, hβ, hs3⟩
 
-/--
-A primitive positive solution occupies exactly one of the two 3-descent
-branches.
--/
 theorem pos_cube_three_descent_dichotomy
     {α β γ : ℕ} (hα0 : 0 < α) (hβ0 : 0 < β) (hγ0 : 0 < γ)
     (hgcd : Nat.gcd α (Nat.gcd β γ) = 1)
@@ -1372,10 +1225,6 @@ theorem pos_cube_three_descent_dichotomy
   · exact Or.inr
       (exists_pos_cube_gcd_three_half_sum hα0 hβ0 hγ0 hgcd heq hg3)
 
-/--
-The gcd-`3` parametrisation reconstructs a positive solution of
-`α³ + 2β³ = γ³`.
--/
 theorem pos_cube_eq_of_gcd_three_params {k t s τ : ℕ}
     (hk : 0 < k) (h : 3 ^ (3 * k - 1) * t ^ 3 ≤ τ)
     (heq : s ^ 3 = τ ^ 2 + (3 ^ (2 * k - 1) * t ^ 2) ^ 3) :
@@ -1420,19 +1269,10 @@ theorem pos_cube_eq_of_gcd_three_params {k t s τ : ℕ}
 
 /-! ### Phase 7o: Weierstrass model of `X³ + 2Y³ = 1` -/
 
-/--
-Forward map (for `X ≠ 1`):
-`x = 24 Y / (1 - X)`, `y = 72 (1 + X) / (1 - X)`.
-On solutions of `X³ + 2Y³ = 1` this lands on the Mordell curve
-`y² = x³ - 1728` (equivalently `y² = x³ - 432 · 2²`).
--/
+/-- For `X ≠ 1`, sends solutions to `y² = x³ - 1728`. -/
 def affineCubeAddTwoToMordell (X Y : ℚ) : ℚ × ℚ :=
   (24 * Y / (1 - X), 72 * (1 + X) / (1 - X))
 
-/--
-Algebraic identity underlying the forward map: on `X³ + 2Y³ = 1`,
-`8Y³ - (1-X)³ = 3(1-X)(1+X)²`.
--/
 theorem eight_Y_cube_sub_one_sub_X_cube
     {X Y : ℚ} (heq : X ^ 3 + 2 * Y ^ 3 = 1) :
     8 * Y ^ 3 - (1 - X) ^ 3 = 3 * (1 - X) * (1 + X) ^ 2 := by
@@ -1441,22 +1281,16 @@ theorem eight_Y_cube_sub_one_sub_X_cube
   rw [h8, show 1 - X ^ 3 = (1 - X) * (1 + X + X ^ 2) by ring]
   ring
 
-/--
-Identity: if `X³ + 2Y³ = 1` and `X ≠ 1`, then the forward image lies on
-`y² = x³ - 1728`.
--/
 theorem mordell_of_affine_cube_add_two
     {X Y : ℚ} (heq : X ^ 3 + 2 * Y ^ 3 = 1) (hX : X ≠ 1) :
     let p := affineCubeAddTwoToMordell X Y
     p.2 ^ 2 = p.1 ^ 3 - 1728 := by
   have hne : (1 - X : ℚ) ≠ 0 := sub_ne_zero.mpr (Ne.symm hX)
   have h8 := eight_Y_cube_sub_one_sub_X_cube heq
-  -- Clear a common denominator `(1-X)³`.
   have hclear :
       ((72 * (1 + X) / (1 - X)) ^ 2 - ((24 * Y / (1 - X)) ^ 3 - 1728)) *
         (1 - X) ^ 3 = 0 := by
     field_simp [hne]
-    -- Goal becomes a polynomial identity using h8.
     have := congrArg (· * (1 - X) ^ 3) h8
     ring_nf at this ⊢
     linarith
@@ -1466,14 +1300,10 @@ theorem mordell_of_affine_cube_add_two
     (mul_eq_zero.mp hclear).resolve_right hden
   simpa [affineCubeAddTwoToMordell, sub_eq_zero] using this
 
-/-- Forward map sends `(-1, 1)` to the 2-torsion point `(12, 0)`. -/
 theorem affineCubeAddTwoToMordell_neg_one_one :
     affineCubeAddTwoToMordell (-1) 1 = (12, 0) := by
   simp [affineCubeAddTwoToMordell]; norm_num
 
-/--
-If the forward image is `(12, 0)`, the Affine point is `(-1, 1)`.
--/
 theorem eq_neg_one_one_of_affine_to_mordell_twelve
     {X Y : ℚ} (hX : X ≠ 1)
     (hx : (affineCubeAddTwoToMordell X Y).1 = 12)
@@ -1495,9 +1325,6 @@ theorem eq_neg_one_one_of_affine_to_mordell_twelve
   field_simp at hx'
   linarith
 
-/--
-If `Y = 0` on `X³ + 2Y³ = 1`, then `X = 1` (only rational cube root of 1).
--/
 theorem eq_one_of_affine_cube_add_two_Y_zero
     {X : ℚ} (heq : X ^ 3 + 2 * (0 : ℚ) ^ 3 = 1) : X = 1 := by
   have hX3 : X ^ 3 = 1 := by simpa using heq
@@ -1515,27 +1342,15 @@ theorem eq_one_of_affine_cube_add_two_Y_zero
       linarith
     exact False.elim (hdisc ⟨X, h⟩)
 
-/--
-**Affine residual** (phase 7m / 7u): the only rational points on
-`X³ + 2Y³ = 1` are `(1, 0)` and `(-1, 1)`. Definitionally the Euler axiom.
--/
+/-- Definitionally the Euler axiom: only `(1, 0)` and `(-1, 1)`. -/
 abbrev BealAffineCubeAddTwoResidual : Prop :=
   ∀ (X Y : ℚ), X ^ 3 + 2 * Y ^ 3 = 1 →
     (X = 1 ∧ Y = 0) ∨ (X = -1 ∧ Y = 1)
 
-/--
-**Diagnostic packaging** (phase 7o): only rational Weierstrass point on
-`y² = x³ - 1728` is the 2-torsion `(12, 0)`. (Infinity corresponds to the
-Affine point `(1, 0)`.) The cube leaf is closed by the Euler axiom on the
-affine model, not by this packaging; mathlib has no rank for the curve.
--/
+/-- Diagnostic Mordell packaging. The cube leaf is closed by Euler, not by this. -/
 def BealMordellCubeAddTwoResidual : Prop :=
   ∀ (x y : ℚ), y ^ 2 = x ^ 3 - 1728 → x = 12 ∧ y = 0
 
-/--
-The Mordell residual implies the Affine residual via the birational map
-`affineCubeAddTwoToMordell`.
--/
 theorem BealAffineCubeAddTwoResidual_of_mordell
     (hMor : BealMordellCubeAddTwoResidual) :
     BealAffineCubeAddTwoResidual := by
@@ -1553,10 +1368,6 @@ theorem BealAffineCubeAddTwoResidual_of_mordell
       obtain ⟨hx, hy⟩ := hMor _ _ hlm
       exact Or.inr (eq_neg_one_one_of_affine_to_mordell_twelve hX hx hy)
 
-/--
-The affine residual implies there are no positive integer solutions of
-`α³ + 2β³ = γ³`.
--/
 theorem BealPosCubeAddTwoCubeResidual_of_affine
     (hAff : BealAffineCubeAddTwoResidual) :
     BealPosCubeAddTwoCubeResidual := by
@@ -1576,19 +1387,16 @@ theorem BealPosCubeAddTwoCubeResidual_of_affine
     have : (0 : ℚ) < γ := by exact_mod_cast hγ0
     linarith
 
-/-- Mordell residual ⇒ positive-cube residual (via Affine). -/
 theorem BealPosCubeAddTwoCubeResidual_of_mordell
     (hMor : BealMordellCubeAddTwoResidual) :
     BealPosCubeAddTwoCubeResidual :=
   BealPosCubeAddTwoCubeResidual_of_affine
     (BealAffineCubeAddTwoResidual_of_mordell hMor)
 
-/-- Phase 7u: Euler axiom closes the positive-cube residual. -/
 theorem BealPosCubeAddTwoCubeResidual_of_euler :
     BealPosCubeAddTwoCubeResidual :=
   BealPosCubeAddTwoCubeResidual_of_affine eulerAffineCubeAddTwo
 
-/-- Phase 7u: no positive integers satisfy `α³ + 2β³ = γ³`. -/
 theorem not_pos_cube_add_two_cube
     {α β γ : ℕ} (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ) :
     ¬ α ^ 3 + 2 * β ^ 3 = γ ^ 3 :=
@@ -1674,7 +1482,6 @@ theorem not_pos_cube_add_two_cube_mod_nine_of_alpha8_beta8
   have : γ ^ 3 % 9 = 6 := by rw [← heq]; exact hLHS
   omega
 
-/-- Reducing `α³ + 2β³` modulo `n > 2` to the cube residues of `α` and `β`. -/
 theorem cube_add_two_mod {n : ℕ} (hn : 2 < n) (α β : ℕ) :
     (α ^ 3 + 2 * β ^ 3) % n =
       (α ^ 3 % n + (2 * (β ^ 3 % n)) % n) % n := by
@@ -1704,10 +1511,6 @@ theorem nat_cube_mod_nineteen (v : ℕ) :
   rcases h with h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h | h
     <;> simp [hv, h]
 
-/--
-Cube residues of a positive solution modulo 7 occupy one of the five locally
-admissible pairs. (The complementary pairs are cubes but the weighted sum is not.)
--/
 theorem pos_cube_add_two_cube_mod_seven_classes
     {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α ^ 3 % 7 = 0 ∧ β ^ 3 % 7 = 0 ∨
@@ -1726,7 +1529,6 @@ theorem pos_cube_add_two_cube_mod_seven_classes
     <;> simp [hα, hβ] at hLHS ⊢
     <;> omega
 
-/-- Allowed cube-residue pairs modulo 9. -/
 theorem pos_cube_add_two_cube_mod_nine_classes
     {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α ^ 3 % 9 = 0 ∧ β ^ 3 % 9 = 0 ∨
@@ -1745,7 +1547,6 @@ theorem pos_cube_add_two_cube_mod_nine_classes
     <;> simp [hα, hβ] at hLHS ⊢
     <;> omega
 
-/-- Allowed cube-residue pairs modulo 13. -/
 theorem pos_cube_add_two_cube_mod_thirteen_classes
     {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α ^ 3 % 13 = 0 ∧ β ^ 3 % 13 = 0 ∨
@@ -1768,7 +1569,6 @@ theorem pos_cube_add_two_cube_mod_thirteen_classes
     <;> simp [hα, hβ] at hLHS ⊢
     <;> omega
 
-/-- Allowed cube-residue pairs modulo 19. -/
 theorem pos_cube_add_two_cube_mod_nineteen_classes
     {α β γ : ℕ} (heq : α ^ 3 + 2 * β ^ 3 = γ ^ 3) :
     α ^ 3 % 19 = 0 ∧ β ^ 3 % 19 = 0 ∨
@@ -1820,7 +1620,6 @@ theorem isGaussianHypotenusePower_of_associated_pow
     IsGaussianHypotenusePower m n e := by
   refine ⟨g, ?_⟩
   have hn := Zsqrtd.norm_eq_of_associated (by simp : (-1 : ℤ) ≤ 0) h
-  -- hn : norm (g^e) = norm ⟨m,n⟩
   simpa [Zsqrtd.norm, sq, gaussian_norm_mk] using hn
 
 theorem not_eq_odd_two_factor_exp_three_full_of_pos_cube
@@ -1871,11 +1670,7 @@ theorem not_eq_odd_two_factor_exp_three_of_pos_cube_associated
 
 /-! ### Split `e = 3` / `e ≥ 5` -/
 
-/--
-**Residual** (phase 7m): equal-odd two-factor body for odd exponents `e ≥ 5`
-with pure-power absolute value at least 3 (equivalently `1 < u`). The `|u| = 1`
-branch is closed for all odd `e ≥ 3` by Mihăilescu.
--/
+/-- Open residual: odd `e ≥ 5` with `1 < u`. The case `|u| = 1` is closed. -/
 def BealEqualOddTwoFactorExpGeFiveResidual : Prop :=
   ∀ (m n : ℤ) (e : ℕ),
     5 ≤ e → Odd e →
@@ -1886,7 +1681,6 @@ def BealEqualOddTwoFactorExpGeFiveResidual : Prop :=
       (∃ u v : ℕ, 1 < u ∧ 0 < v ∧ m.natAbs = u ^ e ∧ 2 * n.natAbs = v ^ e)) →
     False
 
-/-- Absolute value 1 on the pure-power slot is impossible for `e ≥ 3`. -/
 theorem not_eq_odd_two_factor_abs_one_of_associated
     {m n : ℤ} {e v : ℕ}
     (he : 3 ≤ e) (hv0 : 0 < v)
@@ -1910,11 +1704,6 @@ theorem not_eq_odd_two_factor_abs_one_of_associated
       exact Nat.pos_iff_ne_zero.mp hv0 (Nat.pow_eq_zero.mp this).1
     exact not_sum_sq_eq_pow_of_natAbs_one_left hn0 hm1 he heq
 
-/--
-Phase 7m assembly: positive-cube residual + narrowed `e ≥ 5` residual (with
-`1 < u`) imply the full `BealEqualOddTwoFactorResidual`; `|u| = 1` is closed by
-Mihăilescu for every odd `e ≥ 3`.
--/
 theorem BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five
     (hCube : BealPosCubeAddTwoCubeResidual)
     (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
@@ -1955,7 +1744,6 @@ theorem BealEqualOddTwoFactorResidual_of_pos_cube_and_ge_five
         exact hGe5 m n e he5 hodd hcop hpar hAssoc
           (Or.inr ⟨u, v, hu', hv0, hm, hn⟩)
 
-/-- Phase 7u: equal-odd two-factor residual follows from the `e ≥ 5` leaf alone. -/
 theorem BealEqualOddTwoFactorResidual_of_ge_five
     (hGe5 : BealEqualOddTwoFactorExpGeFiveResidual) :
     BealEqualOddTwoFactorResidual :=

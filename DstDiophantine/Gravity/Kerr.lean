@@ -10,22 +10,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Kerr chart
 
-On `Σ > 0` and `Δ > 0` the orthonormal coframe
-`e⁰ = √(Δ/Σ) (dt − a sin²θ dφ)`, `e¹ = √(Σ/Δ) dr`, `e² = √Σ dθ`,
-`e³ = sinθ/√Σ ((r²+a²) dφ − a dt)` induces the Kerr metric. The `(t,φ)`
-block has determinant `-Δ sin²θ`. Vanishing spin returns the exterior
-Schwarzschild coframe of gravitational radius `2M`.
-
-A pure boost in the `(t,φ)` plane of a diagonal frame writes no cross
-term. The Kerr cross term belongs to the coframe above.
-
-## Not claimed
-
-* The horizon `Δ = 0`, where the classical radial leg diverges. Division
-  by zero is not that leg.
-* A real coframe on `Δ < 0`.
-* That the Kerr coframe is a pure boost, or that `J = ½ ψ²` is derived.
-* A teleparallel scalar for this coframe.
+On `Σ > 0` and `Δ > 0` the orthonormal coframe induces the Kerr metric, and vanishing spin returns exterior Schwarzschild. The horizon `Δ = 0`, a real coframe on `Δ < 0`, and a pure-boost reading of the cross term are not claimed.
 -/
 
 namespace DstDiophantine
@@ -44,8 +29,7 @@ noncomputable def kerrSigma (a r θ : ℝ) : ℝ :=
 noncomputable def kerrDelta (M a r : ℝ) : ℝ :=
   r ^ 2 - 2 * M * r + a ^ 2
 
-/-- Azimuthal coefficient
-`g_φφ = sin²θ ((r²+a²)Σ + 2Mra² sin²θ) / Σ`. -/
+/-- Azimuthal coefficient `g_φφ = sin²θ ((r²+a²)Σ + 2Mra² sin²θ) / Σ`. -/
 noncomputable def kerrGφφ (M a r θ : ℝ) : ℝ :=
   Real.sin θ ^ 2 *
       ((r ^ 2 + a ^ 2) * kerrSigma a r θ + 2 * M * r * a ^ 2 * Real.sin θ ^ 2) /
@@ -88,8 +72,7 @@ theorem kerr_timePhi_det (M a r θ : ℝ) (hSig : kerrSigma a r θ ≠ 0) :
 
 /-! ### Coframe -/
 
-/-- Orthonormal Kerr coframe. Real on `Δ ≥ 0`, classically normalised on `Δ > 0`.
-Boolean tests on `Fin.val` reduce on concrete indices. -/
+/-- Orthonormal Kerr coframe, real on `Δ ≥ 0` and classically normalised on `Δ > 0`. -/
 noncomputable def kerrCoframe (M a r θ : ℝ) : Coframe :=
   fun b μ =>
     if b.val == 0 && μ.val == 0 then Real.sqrt (kerrDelta M a r / kerrSigma a r θ)
@@ -270,7 +253,6 @@ theorem induced_kerr_32 (M a r θ : ℝ) : inducedMetric (kerrCoframe M a r θ) 
   induced_kerr_vanish (by simp [w31, kerr_e03, kerr_e02]) (by simp [w31, kerr_e13, kerr_e12])
     (by simp [w31, kerr_e23, kerr_e22]) (by simp [w31, kerr_e33, kerr_e32])
 
-/-- The coframe induces the Kerr metric on `Σ > 0` and `Δ > 0`. -/
 theorem inducedMetric_kerr {M a r θ : ℝ} (hSig : 0 < kerrSigma a r θ)
     (hΔ : 0 < kerrDelta M a r) (μ ν : Fin 4) :
     inducedMetric (kerrCoframe M a r θ) μ ν = kerrMetric M a r θ μ ν := by
@@ -379,8 +361,7 @@ theorem kerrCoframe_zero_spin {M r θ : ℝ} (h : IsExterior (2 * M) r) :
 
 /-! ### A pure boost does not write the cross term -/
 
-/-- Diagonal frame boosted by rapidity `ψ` in the `(t,φ)` plane.
-`β` is the azimuthal scale of the reference leg. `φ` is index `3`. -/
+/-- Diagonal frame boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the azimuthal scale of the reference leg. `φ` is index `3`. -/
 noncomputable def kerrAzimuthBoostCoframe (ψ β : ℝ) : Coframe :=
   fun b μ =>
     if b = 0 ∧ μ = 0 then Real.cosh ψ

@@ -10,13 +10,7 @@ import Mathlib.Tactic.NoncommRing
 /-!
 # Dirac Clifford relations inside `Cl(3,1)`
 
-The Dirac matrices of signature `(-,+,+,+)` are the grade-1 generators
-`Cl31.ι μ`. They are **not** the hyperbolic bivectors `e₀eₐ` (which square
-to `+1`). In particular `γ⁰` is not the generator `j` of `P_spin`.
-
-The Dirac *equation* as a spacetime PDE, a torsional mass, and rotor
-covariance are not formalised here. The momentum-space first-order
-factor of the Minkowski quadratic is `Logic.Quantum.DiracEquation`.
+The Dirac matrices are the grade-1 generators `Cl31.ι μ`, not the hyperbolic bivectors `e₀eₐ`. The spacetime Dirac equation is not formalised here.
 -/
 
 namespace DstDiophantine
@@ -64,7 +58,6 @@ private theorem add_self_eq_two_smul (x : Cl31) :
   calc x + x = (1 + 1 : Cl31) * x := by noncomm_ring
     _ = algebraMap ℝ Cl31 2 * x := by rw [h]
 
-/-- Clifford relation `{γ^μ, γ^ν} = 2 η^{μν}`. -/
 theorem diracGamma_clifford (μ ν : Fin 4) :
     diracGamma μ * diracGamma ν + diracGamma ν * diracGamma μ =
       algebraMap ℝ Cl31 (2 * minkowskiEta μ ν) := by
@@ -79,7 +72,7 @@ theorem diracGamma_clifford (μ ν : Fin 4) :
       _ = algebraMap ℝ Cl31 (2 * w31 μ) := by rw [← map_mul]
   · simp [minkowskiEta, h, diracGamma, Cl31.e_anticomm h]
 
-/-- Time gamma squares to `-1`, so it is not a hyperbolic (`j² = +1`) generator. -/
+/-- Not a hyperbolic (`j² = +1`) generator. -/
 theorem diracGamma_zero_sq_ne_one :
     diracGamma 0 * diracGamma 0 ≠ 1 := by
   intro h
@@ -94,12 +87,12 @@ theorem diracGamma_zero_sq_ne_one :
     (FaithfulSMul.algebraMap_eq_zero_iff (R := ℝ) (A := PGA)).mp this
   norm_num at hR
 
-/-- Embedding of `γ⁰` is the time vector `e₀`, not the boost bivector `e₀e₁`. -/
+/-- Not the boost bivector `e₀e₁`. -/
 theorem toPGA_diracGamma_zero :
     Cl31.toPGA (diracGamma 0) = PGA.ι 0 := by
   simp [diracGamma]
 
-/-- Paper identification `γ⁰ = j` with `j = hyperbolic 0` is false. -/
+/-- Paper identification `γ⁰ = j` is false. -/
 theorem paper_gamma0_not_hyperbolic :
     Cl31.toPGA (diracGamma 0) ≠ hyperbolic 0 := by
   intro h

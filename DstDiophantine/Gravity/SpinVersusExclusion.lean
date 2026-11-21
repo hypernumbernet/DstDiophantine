@@ -5,32 +5,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # Spin and the exclusion of a repeated ray
 
-The place of an electron is an element of the three-sphere. Its spin factor
-is a dual spinor. Spin reversal keeps the place and reverses the spin vector.
-The repeated ray is a joint state of two spin factors. It is not the singlet,
-at every place, including places at which the mass channel attracts.
-
-## Not claimed
-
-* A derivation of the spin-statistics theorem.
-* That the outward pole is absent as a force. Two electron masses whose
-  laboratory separation has crossed the first gravitational node still meet it.
-* An identification of the three cosines with the separations that enter `γ_s`.
-
-## What is proved
-
-* Spin reversal keeps the place, is not the same ray, and reverses the spin
-  vector.
-* One place occurs with opposite rays, and the joint state is the singlet. A
-  symmetric amplitude of the places does not vanish there. The identity and
-  its antipode occur with one ray, and that joint state is not the singlet.
-* The two arrangements of the rays share a frame, hence share the three
-  cosines, while one arrangement is a repeated ray and the other is not.
-  One ray has electron–electron cosine `1` at one place and `-1` at the
-  antipode.
-* Above the Bohr radius, with the stated length windows, the gravitational
-  term decreases the separation and the net force increases it, and a repeated
-  ray is still not the singlet.
+The spin-statistics theorem is not derived, the outward pole is not claimed absent as a force, and the three cosines are not identified with the separations in `γ_s`.
 -/
 
 noncomputable section
@@ -100,8 +75,6 @@ theorem not_samePlace_antipode :
   intro h
   exact one_ne_negOne (by simpa [atPlace, samePlace] using h)
 
-/-- Opposite rays at one place. The joint state is the singlet, and a symmetric
-amplitude of the places does not vanish. -/
 theorem singlet_at_one_place :
     samePlace (atPlace 1 axisUp) (spinReverse (atPlace 1 axisUp)) ∧
       ¬ sameRay (atPlace 1 axisUp) (spinReverse (atPlace 1 axisUp)) ∧
@@ -112,7 +85,6 @@ theorem singlet_at_one_place :
   · exact quatJ_pair_eq_singlet_of_norm axisUp_norm
   · simp
 
-/-- One ray at the identity and at its antipode is not the singlet. -/
 theorem repeated_ray_at_antipodes (c : ℂ) :
     sameRay (atPlace 1 axisUp) (atPlace negOne axisUp) ∧
       ¬ samePlace (atPlace 1 axisUp) (atPlace negOne axisUp) ∧
@@ -136,8 +108,7 @@ theorem cosEE_antipodes :
   rw [hrel]
   simp [negOne]
 
-/-- The three cosines do not record the ray. The two ray arrangements share a
-frame, one is a repeated ray, and the other is not. -/
+/-- The three cosines do not record the ray. -/
 theorem cosines_miss_the_ray :
     frameOf (atPlace 1 axisUp) (atPlace 1 axisUp) =
         frameOf (atPlace 1 axisUp) (spinReverse (atPlace 1 axisUp)) ∧
@@ -145,8 +116,7 @@ theorem cosines_miss_the_ray :
         ¬ sameRay (atPlace 1 axisUp) (spinReverse (atPlace 1 axisUp)) :=
   ⟨rfl, ⟨1, by simp [atPlace]⟩, spinReverse_not_sameRay (a := atPlace 1 axisUp) axisUp_ne_zero⟩
 
-/-- One ray does not record the places. The electron–electron cosine is `1` at
-one place and `-1` at the antipode. -/
+/-- One ray does not record the places. -/
 theorem ray_misses_the_places :
     sameRay (atPlace 1 axisUp) (atPlace 1 axisUp) ∧
       sameRay (atPlace 1 axisUp) (atPlace negOne axisUp) ∧
@@ -156,8 +126,6 @@ theorem ray_misses_the_places :
   ⟨⟨1, by simp [atPlace]⟩, ⟨1, by simp [atPlace]⟩, cosEE_one_place, cosEE_antipodes,
     not_samePlace_antipode⟩
 
-/-- Above the Bohr radius the masses attract and the net force increases the
-separation, while a repeated ray is still not the singlet. -/
 theorem repeated_ray_where_masses_attract {ℓE ℓG a coul r : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387)
     (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)

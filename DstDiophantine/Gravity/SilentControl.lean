@@ -9,40 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Charge-silent dual control
 
-The neutron is the case in which the electromagnetic label vanishes.
-Two laboratory readings of a dual-only increment then separate.
-
-## Paper boundary (do **not** claim)
-
-A V--A coupling, a Fermi constant, a lifetime, a helicity-odd drive of
-\(J\), the absolute mass gap, and an identification of either increment
-with the weak-interaction operator are **not** derived.
-
-## What is proved
-
-* On an admissible pure usual seed, \(\sum_a\alpha_a\le 3\pi/4\) already
-  forces \(\sum_a\alpha_a^2\le 5\pi^2/16\). Equality holds precisely on the
-  permutations of \((\pi/2,\pi/4,0)\). The dual-only shield of such a seed
-  is its wall, of mass \(5\pi^2/16\).
-* With the label at zero the substitution \(\theta\mapsto\theta+eA\) is the
-  identity, so a circular potential drops no ponderomotive mean.
-* A nonnegative magnetic increment that is not zero lowers \(J\) strictly
-  and raises the unsigned mass by the same amount. On a balanced seed the
-  result is repulsive. The rest-frame sandwich of every magnetic increment
-  vanishes.
-* Where an axis still has room to the wall, an admissible increment of this
-  kind exists. Where every axis is already on the wall, none does. The
-  heaviest shield is such a wall.
-* A nonnegative electric increment is the usual-only mirror: it raises \(J\)
-  and the unsigned mass by the same amount, holds the magnetic square fixed,
-  and is blocked by the same wall. Along one axis its rest-frame sandwich
-  is a nonzero electric kick.
-* On an equal-scale seed the two increments of one vector write opposite
-  values of \(J\) and the same unsigned mass. The magnetic one enlarges the
-  magnetic square. A decrease of a dual angle that stays nonnegative spends
-  that square, lowers the mass by half the drop, writes attraction, and
-  remains admissible. On one equal-scale axis the enlargement drives
-  \(\gamma_{\mathrm{eff}}\) further from \(1\), and the decrease brings it back.
+A V--A coupling, a Fermi constant, a lifetime, a helicity-odd drive of \(J\), the absolute mass gap, and an identification of either increment with the weak-interaction operator are not derived.
 -/
 
 namespace DstDiophantine
@@ -123,8 +90,6 @@ private theorem sum_sq_le_of_largest {a b c : ℝ}
     have hcap : 3 * a ^ 2 ≤ 3 * (Real.pi / 4) ^ 2 := by nlinarith
     linarith [three_quarter_sq_lt]
 
-/-- An admissible pure usual seed whose dual wall is nonpositive already
-weighs at most the shield ceiling. -/
 theorem sum_sq_le_of_cone_and_wall_budget {α : Fin 3 → ℝ}
     (h0 : ∀ a, 0 ≤ α a) (hcap : ∀ a, α a ≤ Real.pi / 2)
     (hs : ∑ a : Fin 3, α a ≤ 3 * Real.pi / 4) :
@@ -234,9 +199,6 @@ private theorem sum_sq_eq_of_largest {a b c : ℝ}
       positivity
     linarith [hprod]
 
-/-- Equality in the shield ceiling, for a usual seed inside the cone and
-under the linear wall bound, holds exactly on the permutations of
-\((\pi/2,\pi/4,0)\). -/
 theorem sum_sq_eq_shield_ceiling_iff {α : Fin 3 → ℝ}
     (h0 : ∀ a, 0 ≤ α a) (hcap : ∀ a, α a ≤ Real.pi / 2)
     (hs : ∑ a : Fin 3, α a ≤ 3 * Real.pi / 4) :
@@ -287,8 +249,6 @@ theorem sum_heaviestUsualSeed {α : Fin 3 → ℝ} (h : IsHeaviestUsualSeed α) 
     simp only [Fin.sum_univ_three, h.1, h.2.1, h.2.2] <;>
     constructor <;> ring
 
-/-- The dual-only shield of a heaviest usual seed is the wall itself, and
-that wall weighs \(5\pi^2/16\). -/
 theorem heaviestUsualSeed_wall {α : Fin 3 → ℝ} (h : IsHeaviestUsualSeed α) :
     let p : TorsionParams := { alpha := α, beta := fun _ => 0 }
     J (dualWallParams p) = 0 ∧
@@ -330,7 +290,6 @@ theorem mass_rise_eq_J_drop_magnetic (p : TorsionParams) (B : Fin 3 → ℝ) :
   have h := superpose_magnetic_conserves_J_add_mass p B
   linarith
 
-/-- A nonnegative magnetic increment that is not zero lowers \(J\) strictly. -/
 theorem J_superpose_magnetic_lt {p : TorsionParams} {B : Fin 3 → ℝ}
     (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a)
     (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
@@ -351,8 +310,6 @@ theorem mass_superpose_magnetic_lt {p : TorsionParams} {B : Fin 3 → ℝ}
   have hmass := mass_rise_eq_J_drop_magnetic p B
   linarith
 
-/-- On a balanced seed the same increment is repulsive, and the unsigned
-mass rises by the drop in \(J\). -/
 theorem balanced_magnetic_repels {p : TorsionParams} {B : Fin 3 → ℝ}
     (hJ : J p = 0) (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a)
     (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
@@ -366,7 +323,6 @@ theorem magnetic_increment_rest_silent (B : Fin 3 → ℝ) :
     sandwichIncrement (faradayDual (magneticFaraday B)) (ι 0) = 0 :=
   magnet_rest_kick (magneticFaraday B)
 
-/-- A wall configuration admits no further nonnegative magnetic increment. -/
 theorem not_admissible_magnetic_on_wall {p : TorsionParams} {B : Fin 3 → ℝ}
     (hw : ∀ a, p.alpha a + p.beta a = Real.pi / 2)
     (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
@@ -392,9 +348,6 @@ theorem maximalShield_magnetic_rigid {B : Fin 3 → ℝ}
     ¬ IsAdmissibleContinuous (superpose maximalShield (magneticFaraday B)) :=
   not_admissible_magnetic_on_wall maximalShield_on_wall hB hne
 
-/-- Slack to the wall supplies an admissible magnetic increment. It lowers
-a balanced seed into repulsion, raises the unsigned mass, and still exerts
-no rest-frame force. -/
 theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hJ : J p = 0)
     (hslack : ∃ a, p.alpha a + p.beta a < Real.pi / 2) :
@@ -485,7 +438,6 @@ theorem magneticSq_superpose_electric (p : TorsionParams) (E : Fin 3 → ℝ) :
       magneticSq (toFaraday p) := by
   simp [magneticSq, toFaraday, electricFaraday, superpose_beta]
 
-/-- A nonnegative electric increment that is not zero raises \(J\) strictly. -/
 theorem J_superpose_electric_gt {p : TorsionParams} {E : Fin 3 → ℝ}
     (hα : ∀ a, 0 ≤ p.alpha a) (hE : ∀ a, 0 ≤ E a)
     (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
@@ -531,7 +483,6 @@ theorem not_admissible_electric_on_wall {p : TorsionParams} {E : Fin 3 → ℝ}
   simp only [superpose_alpha, superpose_beta, electricFaraday] at hsum
   linarith [hw a]
 
-/-- A one-axis electric increment of nonzero size kicks the rest frame. -/
 theorem electric_axis_rest_ne_zero {c : ℝ} {i : Fin 3} (hc : c ≠ 0) :
     let E : Fin 3 → ℝ := fun b => if b = i then c else 0
     sandwichIncrement (faradayUsual (electricFaraday E)) (ι 0) ≠ 0 := by
@@ -645,8 +596,6 @@ theorem energySq_superpose_magnetic (p : TorsionParams) (B : Fin 3 → ℝ) :
     energySq (toFaraday (superpose p (magneticFaraday B))) = energySq (toFaraday p) := by
   simp [energySq, toFaraday, magneticFaraday, superpose_alpha]
 
-/-- A magnetic increment moves the unsigned mass by half the change in the
-magnetic square, and moves \(J\) by the opposite amount. -/
 theorem magnetic_increment_half_square (p : TorsionParams) (B : Fin 3 → ℝ) :
     let q := superpose p (magneticFaraday B)
     mass q - mass p =
@@ -752,9 +701,6 @@ theorem magneticSq_unwind_lt_of_equalScale {α v : Fin 3 → ℝ}
     lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
   linarith
 
-/-- On a positive equal-scale seed, decreasing a dual angle that is already
-present stays admissible, spends the magnetic square, lowers the mass by
-half that drop, and writes attraction. The rest-frame sandwich still vanishes. -/
 theorem exists_equalScale_unwind_spends {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (heq : ∀ a, p.alpha a = p.beta a)
     (hM : 0 < mass p) :

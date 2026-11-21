@@ -2,12 +2,9 @@ import DstDiophantine.Algebra.Invariant
 import Mathlib.Tactic.Positivity
 
 /-!
-# Level-matching dictionary (usual–dual ↔ string L₀ = L̄₀)
+# Level-matching dictionary
 
-String level matching `L₀ = L̄₀` is **not** identified with a DST equation.
-The dictionary records the Killing-neutral slice `J = 0` as the algebraic
-stand-in for “usual / dual mismatch vanishes”, and proves that balanced
-rays sit on that slice.
+String level matching `L₀ = L̄₀` is not identified with a DST equation. The dictionary records the slice `J = 0`, and balanced rays sit on it.
 -/
 
 namespace DstDiophantine
@@ -29,7 +26,6 @@ theorem isLevelMatched_iff_JNormalized (p : TorsionParams) :
     have hcoef : (8 / (3 * Real.pi ^ 2) : ℝ) ≠ 0 := by positivity
     exact (mul_eq_zero.mp h).resolve_left hcoef
 
-/-- Balanced equal usual–dual rapidity is level-matched. -/
 theorem isLevelMatched_balancedRay (t : ℝ) :
     IsLevelMatched (balancedRay t) :=
   (isLevelMatched_iff_JNormalized _).mpr (JNormalized_balancedRay t)

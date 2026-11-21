@@ -13,33 +13,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Motor-induced reference vectors (chart tetrad bridge)
 
-## Proved
-
-* Motor sandwich of the Cl(3,1) frame vectors `ι a` (`a : Fin 4`).
-* Pure radial boost recovers the hyperbolic `(t,r)` mixing
-  `cosh φ · ι0 + sinh φ · ι1`.
-* Pure translator `T = 1 + Ω_trans` is nontrivial when `λ ≠ 0`, and does
-  **not** by itself reproduce the classical Schwarzschild diagonal gauge.
-* For every `λ`, constant or not, `T e_μ T̃ = e_μ + (η_μμ λ^μ) e₄`. The
-  Minkowski leg is the inertial frame, so the induced metric is Minkowski and
-  the Weitzenböck torsion of that leg vanishes. The jet of `λ` is carried by
-  the coefficient of `e₄`.
-* A motor `M = R T` has the same Minkowski leg as `R`. The translation does
-  not enter the spacetime torsion. This is the chart reading of the proved
-  one-parameter rotors; a rotor about a moving axis is not given a
-  teleparallel scalar here.
-
-Light-cone eigenvalues and `(t,r)` coframe scales live in `Gravity.Sandwich` /
-`Gravity.Schwarzschild` (`sandwich_radialBoost_eigenvalues_eq_schwarzschild`,
-`schwarzschildDiag_eq_boostScales`).
-
-## Not claimed
-
-* General grade-1 projection for arbitrary multivectors in `G(3,1,1)`.
-* Angular legs `r`, `r sin θ` from a pure radial boost (spherical reference
-  coframe, not `R(φ)`).
-* The degenerate-metric isometry, and the split of each reference vector into
-  a rotor leg and a null shear, are `Gravity.DegenerateSandwich`.
+A general grade-1 projection, angular legs from a pure radial boost, and the degenerate-metric isometry are not derived here.
 -/
 
 namespace DstDiophantine
@@ -53,9 +27,7 @@ open Sandwich (sandwich)
 noncomputable def frameVec (a : Fin 4) : PGA :=
   ι (Fin.castAdd 1 a)
 
-/-- Motor-induced reference vector `M ê^a M̃` (no grade projection).
-For pure Lorentz rotors on `{ι 0..3}` the result stays in the Minkowski
-grade-1 span (proved below for radial boosts). -/
+/-- Motor-induced reference vector `M ê^a M̃`, with no grade projection. -/
 noncomputable def motorInducedVector (m : PGA) (a : Fin 4) : PGA :=
   sandwich m (frameVec a)
 
@@ -103,8 +75,7 @@ theorem omegaTrans_spatial_one :
       (1 / 2 : ℝ) • null 1 := by
   simp [omegaTrans, Fin.sum_univ_four, null]
 
-/-- Pure spatial translator is not the identity; hence it cannot by itself
-reproduce the classical diagonal Schwarzschild coframe. -/
+/-- A pure spatial translator is not the identity, so it does not reproduce the diagonal Schwarzschild coframe. -/
 theorem pure_translator_ne_identity_of_spatial :
     expTrans ⟨fun μ => if μ = 1 then (1 : ℝ) else 0⟩ ≠ 1 := by
   intro h
@@ -118,7 +89,6 @@ theorem pure_translator_ne_identity_of_spatial :
     · exact hnull hn
   exact this hω
 
-/-- Full motor with vanishing torsion reduces to the translator. -/
 theorem motor_of_pure_translation (p : TransParams) :
     motor ⟨⟨fun _ => 0, fun _ => 0⟩, p⟩ = expTrans p := by
   simp only [motor, rotorTorsion]

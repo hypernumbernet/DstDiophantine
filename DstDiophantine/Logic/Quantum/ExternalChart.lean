@@ -6,18 +6,7 @@ import DstDiophantine.Logic.Quantum.LightFilter
 /-!
 # The carrier before the chart
 
-The curve of a dual rotor lies on a dual spinor. Its parameter scales the
-dual rapidity and solves `i u' = ½ (ω·σ) u`, while the time component the
-chart receives stays the information weight. A chart time of nonzero energy
-writes a de Broglie phase of slope `p₀`. Dividing the phase `e^{i p·x}` out
-of a plane wave returns the carrier.
-
-The matrix `e^{iα} I` is a dual rotor exactly when the phase is `±1`. A
-constant potential `e^{-i V t}` is a dual rotor at every time exactly when
-`V = 0`, and a nonzero momentum kick fails to be one at some chart point.
-That phase is the argument written after the carrier. The Schrödinger
-equation takes the argument as its domain. Position and momentum on that
-argument are the chart operators of `ChartOperators`.
+The spin curve solves `i u' = ½ (ω·σ) u`, and a chart time of nonzero energy does not keep the de Broglie phase fixed. `e^{iα} I` is a dual rotor only at the phases `±1`.
 -/
 
 namespace DstDiophantine
@@ -44,7 +33,6 @@ private theorem I_mul_neg_I_div_two : I * (-(I / 2)) = (1 / 2 : ℂ) := by
     _ = -((-1) / 2) := by rw [I_mul_I]
     _ = (1 / 2 : ℂ) := by ring
 
-/-- The spin curve solves `i u' = ½ (ω·σ) u`. -/
 theorem spinCurve_schrodinger (ω : DualRapidity) (u : DualSpinor) (t : ℝ) :
     I • deriv (spinCurve ω u) t =
       (1 / 2 : ℂ) • applyMat (pauliComb (fun a => ω a)) (spinCurve ω u t) := by
@@ -55,18 +43,14 @@ theorem spinCurve_informationWeight (ω : DualRapidity) (u : DualSpinor) (t : �
   unfold spinCurve informationWeight
   rw [norm_applyMat_dualRotor_sq]
 
-/-- The time component the chart receives does not move with the parameter. -/
 theorem spinCurve_manifest_time (ω : DualRapidity) (u : DualSpinor) (t : ℝ) :
     manifest (spinCurve ω u t) 0 = manifest u 0 := by
   rw [manifest_zero, manifest_zero, spinCurve_informationWeight]
 
-/-- De Broglie phase along the chart's time axis, of slope `p₀`. -/
 theorem wavePhase_time_axis (p : Vec4) (t : ℝ) :
     wavePhase p (t • (Pi.single 0 (1 : ℝ) : Vec4)) = t * p 0 := by
   rw [wavePhase_smul_right, wavePhase_single]
 
-/-- The spin parameter keeps the filter's time component fixed. A chart time
-of nonzero energy does not keep the de Broglie phase fixed. -/
 theorem spin_parameter_not_chart_time (ω : DualRapidity) (u : DualSpinor) {p : Vec4}
     (hp : p 0 ≠ 0) :
     (∀ t, manifest (spinCurve ω u t) 0 = manifest u 0) ∧
@@ -116,7 +100,6 @@ private theorem exp_I_neg_pi_div_two :
   rw [Complex.ofReal_neg, mul_neg, mul_comm I _, exp_neg, exp_mul_I]
   simp [inv_I]
 
-/-- `e^{iα} I` is a dual rotor exactly at the phases `±1`. -/
 theorem phaseGate_dualRotor_iff (α : ℝ) :
     (∃ β : DualRapidity, dualRotorMat β = phaseGate α) ↔
       exp (I * (α : ℂ)) = 1 ∨ exp (I * (α : ℂ)) = -1 := by
@@ -132,8 +115,6 @@ theorem phaseGate_dualRotor_iff (α : ℝ) :
     · refine ⟨EuclideanSpace.single 2 (2 * Real.pi), ?_⟩
       rw [dualRotorMat_axis2_two_pi, phaseGate, h, neg_one_smul]
 
-/-- A constant potential phase is a dual rotor at every time exactly when the
-potential vanishes. -/
 theorem constPotential_dualRotor_iff (V : ℝ) :
     (∀ t : ℝ, ∃ β : DualRapidity, dualRotorMat β = phaseGate (-(V * t))) ↔ V = 0 := by
   constructor
@@ -174,8 +155,6 @@ theorem exists_wavePhase_half_pi {δ : Vec4} (hδ : δ ≠ 0) :
   rw [wavePhase_smul_right, wavePhase_single]
   field_simp [hμ]
 
-/-- A nonzero momentum kick is a phase on the identity, and that phase fails
-to be a dual rotor at some chart point. -/
 theorem kick_not_dualRotor {k : Vec4} (hk : k ≠ 0) :
     ∃ x : Vec4, ∀ β : DualRapidity, dualRotorMat β ≠ phaseGate (wavePhase k x) := by
   obtain ⟨x, hx⟩ := exists_wavePhase_half_pi hk

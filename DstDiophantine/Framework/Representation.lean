@@ -5,10 +5,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 /-!
 # Power-sum Diophantine representation
 
-Phase 4 restricts the paper's informal “arbitrary polynomial” embedding to
-**integer linear combinations of pure powers**
-`∑ᵢ cᵢ · bᵢ^{eᵢ} = 0`, which covers the additive skeletons of FLT, Beal,
-Goldbach, and abc. The null-translator motor is faithful for this class.
+Integer linear combinations of pure powers, with a faithful null-translator motor. Arbitrary polynomials are not represented.
 -/
 
 namespace DstDiophantine
@@ -145,12 +142,7 @@ theorem gapMotor_one_iff (p q k : ℤ) :
   · intro h
     linarith
 
-/--
-Paper shape `R(f) · exp(∑ T) = 1` specialised to the null sector:
-vanishing of `eval` is equivalent to the translator motor being the identity.
-The rotor factor is supplied separately via `mismatchRotor` for amplification
-arguments (Phase 5).
--/
+/-- Null-sector form only; the rotor factor is not part of this equivalence. -/
 theorem paperForm_null_sector (e : PowerSumEquation) :
     powerSumMotor e = 1 ↔ evalPowerSum e = 0 :=
   powerSumMotor_one_iff e

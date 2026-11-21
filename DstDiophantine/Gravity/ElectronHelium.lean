@@ -8,27 +8,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Charge two, the one-center shell and the midplane pair
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a dissociation energy, a
-bond length, or a four-electron dimer. The one-center shell of two is not a
-zero of the signed force. No reversed-shell root is claimed except the absence
-of the square. A square is an equilibrium only where both interference factors
-are finite and nonzero; a node is not a balance.
-
-## What is proved
-
-* On the square, two nuclei of charge `Z > 0` with `Z ≠ 1` and two electrons
-  are not an equilibrium wherever both interference factors are nonzero. The
-  axial balance asks for the factor on the side to be `2√2 / Z` times the
-  factor on the diagonal, and the cylindrical balance asks for `2√2 Z` times
-  that factor.
-* For `1 ≤ Z ≤ 2√2`, while the internuclear separation and the electron
-  separation both lie in the outer well, the two forces do not vanish together
-  at any ratio. Charge `1` is the proton pair already proved. Charge `2` lies
-  in the interval.
-* Opposite signs of those two factors likewise give no equilibrium, for every
-  `Z > 0`.
+A square is an equilibrium only where both interference factors are finite and
+nonzero, and a node is not a balance. The length \(\ell\) is not derived; no
+dissociation energy, bond length, or four-electron dimer is produced.
 -/
 
 namespace DstDiophantine
@@ -80,7 +62,6 @@ lemma heliumRadial_square {Z ℓ R : ℝ} (hR : 0 < R) :
   rw [div_sqrt_two_cube]
   field_simp [hR.ne', hs]
 
-/-- The square asks for two different ratios unless the nuclear charge is one. -/
 theorem helium_square_not_balance {Z ℓ R : ℝ} (hZ : 0 < Z) (hZ1 : Z ≠ 1) (hR : 0 < R)
     (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
     (hγs : gammaSEqual (sqrt 2 * (ℓ / (2 * R))) ≠ 0) :
@@ -132,8 +113,6 @@ private lemma helium_cross_ne_of_axial {Z ℓ R ρ : ℝ} (hZ : Z ≠ 0) (hR : 0
     mul_ne_zero hγR (pow_ne_zero 2 hR.ne')
   exact div_ne_zero (pow_ne_zero 2 hZ) hdenR hA
 
-/-- Vanishing of both forces forces the interference factors at the two
-separations to stand in the ratio `Z² s³`. -/
 theorem helium_gamma_ratio {Z ℓ R ρ : ℝ} (hZ : Z ≠ 0) (hR : 0 < R) (hρ : 0 < ρ)
     (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
     (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
@@ -226,8 +205,6 @@ private lemma evenInterval_outer {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) resonanceRo
     rw [hzero, zero_add]
     exact htπ.le
 
-/-- For every nuclear charge from `1` through `2√2`, the symmetric midplane
-pair has no equilibrium while both separations lie in the outer well. -/
 theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : Z ≤ 2 * sqrt 2)
     (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
     (hRwell : ℓ / (2 * R) ∈ Ioo (0 : ℝ) resonanceRoot1)
@@ -258,8 +235,7 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
   have hxI := evenInterval_outer hx
   have hyI := evenInterval_outer hy
   rcases lt_trichotomy x y with hlt | heq | hgt
-  · -- Electrons closer than the nuclei: the axial balance asks for a larger
-    -- factor on the shorter electron–nucleus separation.
+  ·
     set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
     set s : ℝ := x / y
     have hs0 : 0 < s := div_pos hx.1 hy.1
@@ -409,8 +385,6 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
       nlinarith
     linarith
 
-/-- Two nuclei of charge two and two electrons have no equilibrium in the
-outer well, at any ratio of the separations. -/
 theorem helium_no_outer_equilibrium {ℓ R ρ : ℝ}
     (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
     (hRwell : ℓ / (2 * R) ∈ Ioo (0 : ℝ) resonanceRoot1)

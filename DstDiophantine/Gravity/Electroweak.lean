@@ -12,38 +12,10 @@ import Mathlib.Tactic.Abel
 /-!
 # Faraday 6-space versus axis chirality (electroweak skeleton)
 
-## Paper boundary (do **not** claim)
-
-Maxwell's equations, a Weinberg angle, \(W/Z\) masses, and a Lorentz-invariant
-Weyl V--A gauge theory are **not** derived. The dual map \(X\mapsto Xi\) is
-not a chirality projector. Axis-dependent sandwich selection is not identified
-with the Standard Model, nor with photon helicity.
-
-## What is proved
-
-* The Cl(3,1) pseudoscalar squares to \(-1\), so \((1\pm i)/2\) is not
-  idempotent. Complementary projectors \(P_{L,R}=(1\pm e_1)/2\) from
-  \(e_1^2=+1\) are idempotent, sum to \(1\), and multiply to \(0\). Duality
-  sends \(e_1\) to a trivector, not to a real multiple of \(e_1\).
-* Relative to the chirality axis \(e_1\), the Faraday generators split
-  \(3+3\): \(\Gamma_0,\,i\Gamma_1,\,i\Gamma_2\) commute with \(e_1\);
-  \(i\Gamma_0,\,\Gamma_1,\,\Gamma_2\) anticommute. Same-projector sandwich
-  \(P_R X P_R\) kills the anticommuting summand and retains the commuting one.
-  The coefficient split \(p=\mathrm{Cartan}+\mathrm{Charged}\) realises that
-  decomposition on \(E,B\); the \(z\)-Poynting cross of Cartan against Charged
-  vanishes. The left sandwich \(P_L X P_L\) likewise kills the anticommuting
-  summand, so \(P_{L,R}\) do not select a helicity sign.
-* A one-parameter mix rotating \((E,B)\) in every axis acts on the
-  Faraday quadratic by \(J\mapsto J\cos 2\omega+(E\cdot B)\sin 2\omega\).
-  Hodge duality is the special angle \(\omega=\pi/2\). Same-axis \(E_a,B_a\)
-  commute, so the mix is simultaneously diagonalisable on each axis.
-* Pure electric configurations have \(J\ge 0\); pure magnetic ones have
-  \(J\le 0\). That is the Killing-form signature of usual versus dual
-  sectors, written in Faraday coefficients.
-
-The Cartan \(\mathfrak{so}(2,1)\) brackets, the non-closure of the charged
-triple, duality exchanging the two, and the dual-rotor quaternion table
-are in `ChiralSpectrum`.
+The same-projector sandwich on one axis retains the commuting Faraday summand
+and kills the charged summand. Maxwell's equations, a Weinberg angle, \(W/Z\)
+masses, and a Weyl V--A theory are not derived; the dual map is not a
+chirality projector and not photon helicity.
 -/
 
 namespace DstDiophantine
@@ -74,7 +46,6 @@ theorem chiralityR_mul_chiralityL :
     noncomm_ring
   rw [mul_half_mul_half, hdiff, chiralityGen_sq, sub_self, zero_mul]
 
-/-- Duality sends the chirality axis to the trivector \(-e_0 e_2 e_3\). -/
 theorem dual_chiralityGen :
     dual chiralityGen = -((ι 0 * ι 2) * ι 3) := by
   unfold dual chiralityGen pseudoscalar
@@ -86,7 +57,6 @@ theorem dual_chiralityGen :
     _ = -(ι 0 * ι 2 * ι 3) := by simp [e1_sq]
     _ = -((ι 0 * ι 2) * ι 3) := by simp [mul_assoc]
 
-/-- Duality does not preserve the chirality axis as a real line. -/
 theorem dual_chiralityGen_not_real_span :
     ¬ ∃ c : ℝ, dual chiralityGen = c • chiralityGen := by
   rintro ⟨c, hc⟩
@@ -234,7 +204,6 @@ theorem not_commute_chiralityGen_cyclic2 :
     exact this.symm.trans hprod
   exact iota_ne_zero_of_sq_one e2_sq_one hι
 
-/-- Commuting Faraday triple relative to \(e_1\): \(B_x,\,E_y,\,E_z\). -/
 theorem faraday_commuting_triple :
     Commute chiralityGen (cyclic 0) ∧
       Commute chiralityGen (hyperbolic 1) ∧
@@ -242,7 +211,6 @@ theorem faraday_commuting_triple :
   ⟨commute_chiralityGen_cyclic0, commute_chiralityGen_hyperbolic1,
     commute_chiralityGen_hyperbolic2⟩
 
-/-- Anticommuting Faraday triple relative to \(e_1\): \(E_x,\,B_y,\,B_z\). -/
 theorem faraday_anticommuting_triple :
     chiralityGen * hyperbolic 0 = -(hyperbolic 0 * chiralityGen) ∧
       chiralityGen * cyclic 1 = -(cyclic 1 * chiralityGen) ∧
@@ -326,14 +294,12 @@ private theorem one_add_mul_comm {g x : PGA} (hg : g * g = 1)
     _ = algebraMap ℝ PGA 2 * (((1 : PGA) + g) * x) := by
           simp [add_mul, one_mul]
 
-/-- Anticommuting generators are killed by \(P_R(-)P_R\). -/
 theorem chiralSandwich_eq_zero_of_anticomm {x : PGA}
     (hanti : chiralityGen * x = -(x * chiralityGen)) :
     chiralSandwich x = 0 := by
   rw [chiralSandwich_expand, one_add_mul_anticomm chiralityGen_sq hanti,
     zero_mul]
 
-/-- Commuting generators survive as \(P_R X\). -/
 theorem chiralSandwich_eq_of_commute {x : PGA}
     (hc : Commute chiralityGen x) :
     chiralSandwich x = chiralityR * x := by
@@ -436,7 +402,6 @@ theorem faraday_chargedParams (p : FaradayParams) :
   simp [zero_div, zero_smul]
   abel
 
-/-- The \(z\)-Poynting cross of a Cartan field against a charged field vanishes. -/
 theorem cross_z_cartan_charged (p q : FaradayParams) :
     cross (cartanParams p).E (chargedParams q).B 2 = 0 ∧
       cross (chargedParams q).E (cartanParams p).B 2 = 0 := by
@@ -467,7 +432,6 @@ theorem chiralSandwich_cartan (p : FaradayParams) :
     chiralSandwich_hyperbolic1, chiralSandwich_hyperbolic2]
   simp [mul_add, add_assoc]
 
-/-- The same-projector sandwich retains only the commuting Faraday summand. -/
 theorem chiralSandwich_faraday (p : FaradayParams) :
     chiralSandwich (faraday p) = chiralityR * faradayCartan p := by
   rw [faraday_eq_cartan_add_charged, chiralSandwich_add,
@@ -539,7 +503,6 @@ theorem chiralSandwichL_cyclic2 :
     chiralSandwichL (cyclic 2) = 0 :=
   chiralSandwichL_eq_zero_of_anticomm chiralityGen_anticomm_cyclic2
 
-/-- The left sandwich likewise kills the anticommuting Faraday summand. -/
 theorem chiralSandwichL_charged (p : FaradayParams) :
     chiralSandwichL (faradayCharged p) = 0 := by
   unfold faradayCharged
@@ -603,7 +566,6 @@ theorem J_mixFaraday_of_orthogonal {ω : ℝ} {p : FaradayParams}
       Real.cos (2 * ω) * J (toTorsion p) := by
   rw [J_mixFaraday, h, mul_zero, add_zero]
 
-/-- Same-axis electric and magnetic generators commute, so a mix factorises. -/
 theorem commute_same_axis_faraday (a : Fin 3) :
     Commute (hyperbolic a) (cyclic a) :=
   commute_hyperbolic_cyclic_same a

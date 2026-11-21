@@ -1,20 +1,9 @@
 import DstDiophantine.Logic.Regime
 
 /-!
-# Dual-axis FLT regime atlas (D4L)
+# Dual-axis FLT regime atlas
 
-Atoms are names only (no `Theorems` import). Layout: closed slices
-`T` (0–2), diagnostics `F` (3–4), live residual and conjecture `U` (5–6).
-
-* slice `T` (0) — additive faithfulness / shared no-go core
-* slice `T` (1) — real Lᵖ dichotomy (`n = 2` pure cyclic / `n ≥ 3` mixed)
-* slice `T` (2) — elliptic characteristic and finite sandwich of \(N_1\)
-* diagnostic `F` (3) — single-axis modular winding (demoted)
-* diagnostic `F` (4) — continuous balanced-seed obstruction
-* live residual `U` (5) — `FermatMixedMotorResidual` (power-sum incompatibility)
-* conjecture `U` (6) — classical FLT
-
-Closed slices alone do not T-entail classical FLT. Unconditional FLT is not claimed.
+Atoms are names only. Closed slices do not T-entail classical FLT, and unconditional FLT is not claimed.
 -/
 
 namespace DstDiophantine
@@ -41,11 +30,9 @@ def liveMixedMotor : RegimeFormula := atom 5
 /-- Classical Fermat's Last Theorem. -/
 def fltConjecture : RegimeFormula := atom 6
 
-/-- Honest atlas status list. -/
 def fermatAtlasStatuses : List TruthValue :=
   [.T, .T, .T, .F, .F, .U, .U]
 
-/-- Honest FLT atlas valuation. -/
 def fermatAtlasVal : RegimeValuation :=
   RegimeValuation.ofList fermatAtlasStatuses
 
@@ -81,7 +68,6 @@ theorem fermatAtlasVal_liveMixedMotor :
 theorem fermatAtlasVal_conjecture : fltConjecture.eval fermatAtlasVal.assign = .U :=
   fermatAtlasVal_at 6 (by decide)
 
-/-- Named `{T,F}` cannot host the live mixed-motor residual. -/
 theorem not_exists_named_fermat_live :
     ¬ ∃ v : RegimeValuation,
         IsNamedRegime (v.assign 5) ∧
@@ -90,7 +76,6 @@ theorem not_exists_named_fermat_live :
   have : v.assign 5 = .U := by simpa [liveMixedMotor] using hl
   exact namedRegime_not_U hn this
 
-/-- Wall `{B,F}` cannot host a proved closed slice. -/
 theorem not_exists_wall_fermat_slice :
     ¬ ∃ v : RegimeValuation,
         IsWallRegime (v.assign 0) ∧
@@ -99,7 +84,6 @@ theorem not_exists_wall_fermat_slice :
   have : v.assign 0 = .T := by simpa [sliceCore] using hc
   exact wallRegime_not_T hw this
 
-/-- The honest atlas realises closed `T`, diagnostic `F`, live `U`. -/
 theorem exists_fermat_atlas_valuation :
     ∃ v : RegimeValuation,
       sliceCore.eval v.assign = .T ∧
@@ -114,7 +98,6 @@ theorem exists_fermat_atlas_valuation :
     fermatAtlasVal_diagBalancedSeed, fermatAtlasVal_liveMixedMotor,
     fermatAtlasVal_conjecture⟩
 
-/-- Closed slices alone do not T-entail classical FLT. -/
 theorem closed_slices_not_entailsTR_flt :
     ¬ EntailsTR {sliceCore, sliceLp, sliceElliptic} fltConjecture := by
   intro h

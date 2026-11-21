@@ -5,17 +5,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Boolean blocks inside the spinor lattice
 
-The implication carried by the orthomodular law is
-`A → B = A⊥ ∨ (A ∧ B)`. It equals the whole space exactly when `A ≤ B`,
-so an inclusion is one identity and does not need a distributive expansion.
-
-That implication agrees with the classical expansion `A⊥ ∨ B` exactly when
-`A` decomposes as `(A ∧ B) ∨ (A ∧ B⊥)`. The same splitting is the condition
-under which the expansion detaches. The native implication detaches for
-every pair. Orthogonal computational rays are compatible, and the two
-implications agree. A computational ray and the diagonal are not: the
-classical expansion returns the whole space, and the native implication
-returns only the orthogonal line.
+The native implication `A⊥ ∨ (A ∧ B)` equals the whole space exactly when `A ≤ B`, and it agrees with `A⊥ ∨ B` exactly on a splitting. On a basis ray and the diagonal the classical expansion is the whole space.
 -/
 
 namespace DstDiophantine
@@ -40,7 +30,6 @@ def Compatible (A B : QProp) : Prop :=
 theorem sasaki_le_material (A B : QProp) : sasaki A B ≤ material A B :=
   sup_le_sup le_rfl inf_le_right
 
-/-- The native implication is the whole space exactly on the subspace order. -/
 theorem sasaki_eq_top_iff {A B : QProp} : sasaki A B = ⊤ ↔ A ≤ B := by
   constructor
   · intro h
@@ -61,7 +50,6 @@ theorem sasaki_eq_top_iff {A B : QProp} : sasaki A B = ⊤ ↔ A ≤ B := by
     rw [sasaki, hAB, sup_comm]
     exact sup_orthogonal_of_hasOrthogonalProjection
 
-/-- The zero subspace implies every subspace. No nonzero vector sits in it. -/
 theorem sasaki_bot (B : QProp) : sasaki ⊥ B = ⊤ := by
   rw [sasaki, Submodule.bot_orthogonal_eq_top, bot_inf_eq, top_sup_eq]
 
@@ -101,7 +89,6 @@ theorem compatible_right {A B : QProp} (h : Compatible A B) : Compatible B A := 
   have hvwB : v - w ∈ B := B.sub_mem hv hwB.2
   exact mem_sup.mpr ⟨w, ⟨hwB.2, hwB.1⟩, v - w, ⟨hvwB, hvwA⟩, add_sub_cancel w v⟩
 
-/-- Compatibility is exactly the agreement of the two implications. -/
 theorem compatible_iff_sasaki_eq_material {A B : QProp} :
     Compatible A B ↔ sasaki A B = material A B := by
   constructor
@@ -216,16 +203,12 @@ theorem lineE0_split_lineD :
   rw [inner_smul_right, hde, mul_one] at hinner
   simp [hinner]
 
-/-- A basis ray and the diagonal: the classical expansion is the whole
-space, and the native implication is the orthogonal line. -/
 theorem diagonal_classical_overshoots :
     sasaki lineE0 lineD = lineE1 ∧ material lineE0 lineD = ⊤ := by
   constructor
   · simp [sasaki, lineE0_orthogonal_eq_lineE1, lineE0_inf_lineD]
   · simp [material, lineE0_orthogonal_eq_lineE1, lineE1_sup_lineD]
 
-/-- The lattice implication detaches: a vector in the antecedent and the
-implication already lies in the consequent. -/
 theorem sasaki_detach (A B : QProp) : A ⊓ sasaki A B ≤ B := by
   intro v hv
   rcases mem_inf.mp hv with ⟨hvA, hvS⟩
@@ -244,7 +227,6 @@ theorem sasaki_detach (A B : QProp) : A ⊓ sasaki A B ≤ B := by
   rw [sub_eq_zero.mp hdiff0]
   exact hyB
 
-/-- The classical expansion detaches if and only if the antecedent splits. -/
 theorem material_detach_iff_compatible {A B : QProp} :
     A ⊓ material A B ≤ B ↔ Compatible A B := by
   constructor

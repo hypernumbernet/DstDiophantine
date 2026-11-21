@@ -5,15 +5,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 /-!
 # Reverse, dual, and dagger operations
 
-The dual map `X ↦ X · i` uses the Cl(3,1) pseudoscalar `i = e₀e₁e₂e₃`.
-
-## Paper §2 coverage
-
-* Proved: `i² = -1`, grade-1 Minkowski vectors anticommute with `i`,
-  Minkowski vectors `X` satisfy `X² = Q(X)`, and `(X i)² = X²`.
-* Proved: dual of a pure time vector flips sign onto the spatial trivector
-  (paper: `(ct j) i = -ct k`).
-* Rejected elsewhere: null-bivector ideal closure under dual (`dual_null`).
+Duality is right multiplication by the `Cl(3,1)` pseudoscalar. It does not send null bivectors to null bivectors.
 -/
 
 namespace DstDiophantine
@@ -30,14 +22,11 @@ noncomputable def pseudoscalar : PGA :=
 noncomputable def dual (x : PGA) : PGA :=
   x * pseudoscalar
 
-/-- Right multiplication by the pseudoscalar is a right-module morphism. -/
 theorem dual_mul (x y : PGA) : dual (x * y) = x * dual y := by
   simp [dual, mul_assoc]
 
-/-- Paper: the Cl(3,1) pseudoscalar satisfies `i² = -1`. -/
 theorem pseudoscalar_sq : pseudoscalar * pseudoscalar = (-1 : PGA) := by
   dsimp [pseudoscalar]
-  -- `(e₀e₁e₂e₃)² = e₀e₁e₂e₃ e₀e₁e₂e₃`; move each factor through with anticommutators.
   have h30 : ι 3 * ι 0 = -(ι 0 * ι 3) := e_mul_anticomm (by decide)
   have h31 : ι 3 * ι 1 = -(ι 1 * ι 3) := e_mul_anticomm (by decide)
   have h32 : ι 3 * ι 2 = -(ι 2 * ι 3) := e_mul_anticomm (by decide)
@@ -170,7 +159,6 @@ private theorem pseudoscalar_mul_ι3 :
   dsimp [pseudoscalar]
   simp [mul_assoc, e3_sq]
 
-/-- Grade-1 Minkowski basis vectors anticommute with the pseudoscalar. -/
 theorem ι_anticomm_pseudoscalar (μ : Fin 4) :
     ι (Fin.castAdd 1 μ) * pseudoscalar = -(pseudoscalar * ι (Fin.castAdd 1 μ)) := by
   fin_cases μ
@@ -211,7 +199,6 @@ theorem minkowskiVector_anticomm_pseudoscalar (v : Fin 4 → ℝ) :
   ext μ
   rw [ι_anticomm_pseudoscalar μ, smul_neg]
 
-/-- Paper: dual preserves the Minkowski square, `(X i)² = X²`. -/
 theorem dual_minkowskiVector_sq (v : Fin 4 → ℝ) :
     dual (minkowskiVector v) * dual (minkowskiVector v) =
       minkowskiVector v * minkowskiVector v := by
@@ -226,14 +213,13 @@ theorem dual_minkowskiVector_sq (v : Fin 4 → ℝ) :
     _ = -(X * X) * (-1 : PGA) := by rw [pseudoscalar_sq]
     _ = X * X := by simp
 
-/-- Paper: `(ct · e₀) i = -ct · (e₁e₂e₃)` (time arrow reversal). -/
 theorem dual_time (c : ℝ) :
     dual (c • ι 0) = -((c : ℝ) • (ι 1 * ι 2 * ι 3)) := by
   simp [dual, ι0_mul_pseudoscalar, smul_neg]
 
 theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
   fin_cases a
-  · -- `(e₀e₁)·i = e₂e₃ = -e₃e₂`
+  ·
     dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     have hsq : (ι 0 * ι 1) * (ι 0 * ι 1) = 1 := by
       simpa [hyperbolic] using hyperbolic_sq (0 : Fin 3)
@@ -242,7 +228,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
       _ = (1 : PGA) * (ι 2 * ι 3) := by rw [hsq]
       _ = ι 2 * ι 3 := by simp
       _ = -(ι 3 * ι 2) := (e_mul_anticomm (by decide : (2 : Fin 5) ≠ 3))
-  · -- `(e₀e₂)·i = -e₁e₃`
+  ·
     dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     calc ι 0 * ι 2 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 0 * (ι 2 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
@@ -256,7 +242,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
           rw [e_mul_anticomm (by decide : (1 : Fin 5) ≠ 2)]
       _ = -((ι 2 * ι 2) * ι 1 * ι 3) := by simp [mul_neg, mul_assoc]
       _ = -(ι 1 * ι 3) := by simp [e2_sq]
-  · -- `(e₀e₃)·i = -e₂e₁`
+  ·
     dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     calc ι 0 * ι 3 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 0 * (ι 3 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
@@ -277,7 +263,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
 
 theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
   fin_cases a
-  · -- `(e₃e₂)·i = e₀e₁`
+  ·
     dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 3 * ι 2 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 3 * (ι 2 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
@@ -297,7 +283,7 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
           rw [e_mul_anticomm (by decide : (3 : Fin 5) ≠ 1)]
       _ = ι 0 * ι 1 * (ι 3 * ι 3) := by simp [mul_neg, mul_assoc]
       _ = ι 0 * ι 1 := by simp [e3_sq]
-  · -- `(e₁e₃)·i = e₀e₂`
+  ·
     dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 1 * ι 3 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 1 * (ι 3 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
@@ -317,7 +303,7 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
           rw [e_mul_anticomm (by decide : (2 : Fin 5) ≠ 3)]
       _ = ι 0 * (ι 3 * ι 3) * ι 2 := by simp [mul_neg, mul_assoc]
       _ = ι 0 * ι 2 := by simp [e3_sq]
-  · -- `(e₂e₁)·i = e₀e₃`
+  ·
     dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 2 * ι 1 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 2 * (ι 1 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
@@ -333,10 +319,6 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
 
 /-! ### Duality on the null sector (does **not** close as bivectors) -/
 
-/--
-`e₄` commutes with the Cl(3,1) pseudoscalar `i = e₀e₁e₂e₃` because it
-anticommutes with each of the four factors (four sign flips).
--/
 theorem e4_commute_pseudoscalar :
     ι e4Index * pseudoscalar = pseudoscalar * ι e4Index := by
   dsimp [pseudoscalar, e4Index]
@@ -355,13 +337,7 @@ theorem e4_commute_pseudoscalar :
     _ = -(ι 0 * ι 1 * ι 2 * (-(ι 3 * ι 4))) := by rw [h3]
     _ = ι 0 * ι 1 * ι 2 * ι 3 * ι 4 := by simp [mul_neg, mul_assoc]
 
-/--
-Dual of a null generator: `N_μ · i = e₄ · (e_μ · i)` by associativity.
-
-**Grade warning:** `e_μ · i` is grade 3 in the Cl(3,1) subalgebra, so the
-right-hand side is grade 4 in `G(3,1,1)`. Duality therefore does **not** map
-the null bivector sector into itself.
--/
+/-- Dual of a null generator is grade 4, so the null sector is not closed. -/
 theorem dual_null (μ : Fin 4) :
     dual (null μ) = ι e4Index * (ι (Fin.castAdd 1 μ) * pseudoscalar) := by
   simp [dual, null, mul_assoc]

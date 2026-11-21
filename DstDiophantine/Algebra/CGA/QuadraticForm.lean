@@ -5,9 +5,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 /-!
 # Quadratic form for 1D conformal GA `Cl(2,1)`
 
-Diagnostic probe (not the spacetime algebra of the Diophantine path).
-Signature weights `(-,+,+)` on `Fin 3`: time-like `e₋`, Euclidean line `e`,
-space-like `e₊`.
+Diagnostic probe, not the spacetime algebra of the Diophantine path.
 -/
 
 namespace DstDiophantine
@@ -21,7 +19,6 @@ def w21 : Fin 3 → ℝ
   | 0 => -1
   | 1 | 2 => 1
 
-/-- Quadratic form for `Cl(2,1)`. -/
 noncomputable def Q21 : QuadraticForm ℝ Vec3 :=
   QuadraticMap.weightedSumSquares ℝ w21
 

@@ -9,16 +9,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Separation theorems: D4L is not Hilbert / Born / BvN
+# D4L is not Hilbert, Born, or Birkhoff–von Neumann
 
-The parameter Killing form is an indefinite pairing of signature `(3,3)`.
-Self-overlap can be negative, so it is not a Born probability. The scalar
-connectives `min`/`max` are distributive, so they cannot present the
-non-distributive subspace lattice of a Hilbert space of dimension ≥ 2.
-
-These theorems record the relation between D4L's two layers: the Killing
-form is not a Hilbert inner product, and `min`/`max` is not the subspace
-lattice of `ℂ²`.
+The Killing form is indefinite, so self-overlap is not a Born probability. Distributive `min`/`max` is not the subspace lattice of `ℂ²`.
 -/
 
 namespace DstDiophantine
@@ -31,7 +24,6 @@ theorem killingForm_symm (p q : TorsionParams) :
     killingForm p q = killingForm q p :=
   overlap_symm p q
 
-/-- The Killing form takes a strictly positive value on the pure-boost extremal. -/
 theorem killingForm_pos_pureHyperbolic :
     0 < killingForm (pureHyperbolicRay 1) (pureHyperbolicRay 1) := by
   have hJ : J (pureHyperbolicRay 1) = 3 * Real.pi ^ 2 / 8 := by
@@ -47,7 +39,6 @@ theorem killingForm_pos_pureHyperbolic :
   rw [this, hJ]
   positivity
 
-/-- The Killing form takes a strictly negative value on the pure-rotation extremal. -/
 theorem killingForm_neg_pureElliptic :
     killingForm (pureEllipticRay 1) (pureEllipticRay 1) < 0 := by
   have hJ : J (pureEllipticRay 1) = -(3 * Real.pi ^ 2 / 8) := by
@@ -63,14 +54,12 @@ theorem killingForm_neg_pureElliptic :
   rw [this, hJ]
   nlinarith [Real.pi_pos]
 
-/-- Signature witness: the pairing is indefinite. -/
 theorem killingForm_indefinite :
     (∃ p : TorsionParams, 0 < killingForm p p) ∧
       (∃ q : TorsionParams, killingForm q q < 0) :=
   ⟨⟨pureHyperbolicRay 1, killingForm_pos_pureHyperbolic⟩,
     ⟨pureEllipticRay 1, killingForm_neg_pureElliptic⟩⟩
 
-/-- The Killing form is not a positive-definite inner product. -/
 theorem killingForm_not_positive_definite :
     ¬ ∀ p : TorsionParams, 0 ≤ killingForm p p := by
   intro h
@@ -78,12 +67,12 @@ theorem killingForm_not_positive_definite :
   have := killingForm_neg_pureElliptic
   linarith
 
-/-- Self-overlap equals `16 J` and can be negative. Not a Born probability. -/
+/-- Not a Born probability. -/
 theorem overlap_self_can_be_neg :
     ∃ p : TorsionParams, overlap p p < 0 :=
   ⟨pureEllipticRay 1, killingForm_neg_pureElliptic⟩
 
-/-- A quantity that takes a negative value cannot be a Born probability. -/
+/-- Not a Born probability. -/
 theorem overlap_self_not_born_probability :
     ¬ ∀ p : TorsionParams, 0 ≤ overlap p p := by
   intro h
@@ -91,16 +80,12 @@ theorem overlap_self_not_born_probability :
   have := h p
   linarith
 
-/-- Scalar conjunction and disjunction distribute. Already proved; recorded here
-as the lattice-theoretic obstruction to Birkhoff–von Neumann. -/
+/-- Already proved. Obstruction to Birkhoff–von Neumann. -/
 theorem scalar_connectives_distributive (a b c : ℝ) :
     conjJ a (disjJ b c) = disjJ (conjJ a b) (conjJ a c) :=
   conj_distrib_left a b c
 
-/-- The four D4L labels are inhabited, so any identification with Hilbert
-propositions would need four distinct atoms. Dimension 2 cannot supply four
-pairwise orthogonal lines; that fact is proved on `DualSpinor` in
-`Logic.Quantum.QuantumLogic`. -/
+/-- Not an identification with four orthogonal lines. -/
 theorem four_labels_inhabited (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv :=
   exists_amplitude tv
 

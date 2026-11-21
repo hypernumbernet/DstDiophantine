@@ -16,24 +16,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Electron shells via Coulombic torsional layers
 
-## Paper boundary (do **not** claim)
-
-Sec.~electronshells rewrites Coulomb with \(\gamma_s\) and places shells at
-\(\tanh(\alpha/2)\tan(\beta/2)=1\). Characteristic length \(\ell\) is **not**
-a theorem of the dual-rotor algebra. This module records algebraic identities,
-an equal-scale diagnostic, and a labelled \(\ell\) envelope.
-
-## Equal-scale diagnostic
-
-Under \(\alpha(r)=\beta(r)=\ell/r\), the dimensionless \(x=\ell/(2r)\) satisfies
-\(\tanh x\cdot\tan x=1\). Positive roots lie in branches \((n\pi,\,n\pi+\pi/2)\),
-so \(r_n=\ell/(2x_n)=\Theta(1/n)\), **not** \(\Theta(n^2)\). The outward ladder
-\(r_n=n^2 a_0\) is an external comparison. It is not produced by an angular
-momentum, and \(pr=n\hbar\) is not used to place a radius. The scale \(\ell\)
-is adjusted by the laboratory sign. The de Broglie phase is not closed on a
-nuclear circumference.
-
-No theorem asserts `dst_derives_lambda`.
+Coulomb rewritten with \(\gamma_s\) places equal-scale shells where
+\(\tanh(\alpha/2)\tan(\beta/2)=1\). The characteristic length \(\ell\) is not
+a theorem of the dual-rotor algebra.
 -/
 
 namespace DstDiophantine
@@ -78,7 +63,6 @@ private theorem sin_half_two (φ : ℝ) :
   simpa [mul_div_cancel₀ φ (by norm_num : (2 : ℝ) ≠ 0)] using
     (sin_two_mul (φ / 2)).symm
 
-/-- Closed form \(\gamma_{\mathrm{eff}}=\cosh\alpha-\sinh\alpha\sin\beta\). -/
 theorem gammaEff_closed (α β : ℝ) :
     gammaEff α β = cosh α - sinh α * sin β := by
   unfold gammaEff gammaS gammaB
@@ -103,7 +87,6 @@ theorem gammaEff_closed (α β : ℝ) :
     rw [this, hS, hsin]
   rw [hcross]
 
-/-- \(\gamma_{\mathrm{eff}}\ge e^{-|\alpha|}>0\). In particular it never vanishes. -/
 theorem gammaEff_pos (α β : ℝ) : 0 < gammaEff α β := by
   rw [gammaEff_closed]
   have habs : |sinh α * sin β| ≤ |sinh α| :=
@@ -135,10 +118,7 @@ theorem gammaEff_eq_one_of_alpha_zero (β : ℝ) : gammaEff 0 β = 1 := by
   rw [gammaEff_closed]
   simp
 
-/-- On the balanced locus the clock is the special-relativistic factor
-precisely when \(\sin\alpha=0\). In particular the equality holds at every
-\(\alpha=n\pi\), including the equal-scale plateaus, where the dual angle is
-excited. It is not the case that \(\alpha\neq 0\) already separates the two. -/
+/-- It is not the case that `α ≠ 0` already separates the clock from the special-relativistic factor. -/
 theorem gammaEff_balanced_eq_cosh_iff (α : ℝ) :
     gammaEff α α = cosh α ↔ sin α = 0 := by
   rw [gammaEff_closed]
@@ -155,7 +135,6 @@ theorem gammaEff_balanced_eq_cosh_of_sin_eq_zero {α : ℝ} (h : sin α = 0) :
     gammaEff α α = cosh α :=
   (gammaEff_balanced_eq_cosh_iff α).2 h
 
-/-- Balanced kinematics differs from \(\cosh\alpha\) exactly off the zeros of \(\sin\). -/
 theorem gammaEff_balanced_ne_cosh {α : ℝ} (hα : sin α ≠ 0) :
     gammaEff α α ≠ cosh α := by
   intro h
@@ -204,7 +183,7 @@ theorem sin_one_gt_half : (1 / 2 : ℝ) < sin 1 := by
     pi_div_six_lt_one
   simpa [sin_pi_div_six] using hmono
 
-/-- Balanced kinematics is not the vacuum factor \(1\), already at \(\alpha=\beta=1\). -/
+/-- Balanced kinematics is not the vacuum factor `1`. -/
 theorem gammaEff_balanced_one_ne_one : gammaEff 1 1 ≠ 1 := by
   rw [gammaEff_closed]
   intro h
@@ -217,11 +196,10 @@ theorem gammaEff_balanced_one_ne_one : gammaEff 1 1 ≠ 1 := by
     linarith [sin_one_gt_half, hsin, hth]
   exact (lt_irrefl _ (this.trans tanh_half_one_lt_half))
 
-/-- Special relativity is the unexcited dual sector \(\beta=0\), not the locus \(J=0\). -/
+/-- Special relativity is the unexcited dual sector `β = 0`, not the locus `J = 0`. -/
 theorem gammaEff_sr_is_beta_zero (α : ℝ) :
     gammaEff α 0 = cosh α :=
   gammaEff_of_beta_zero α
-
 
 
 theorem gammaS_eq_zero_iff (α β : ℝ) (hc : cos (β / 2) ≠ 0) :
@@ -444,9 +422,7 @@ theorem equalScale_radius_O_of_one_over_n
 
 /-! ### External ladder, for the mismatch only -/
 
-/-- External length \(r_n = n^2 a_0\). Not a radius of this force, and not
-produced by \(pr = n\hbar\). Used only to show that equal-scale nodes do not
-occupy it. -/
+/-- External length \(r_n = n^2 a_0\). Not a radius of this force, and not produced by \(pr = n\hbar\). -/
 noncomputable def bohrShellRadius (n : ℕ) : ℝ :=
   (n : ℝ) ^ 2 * (bohrRadiusApprox : ℝ)
 

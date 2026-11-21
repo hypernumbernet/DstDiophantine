@@ -8,32 +8,10 @@ set_option linter.style.native false
 /-!
 # Exploratory hypothesis: discrete height → fine-structure coupling
 
-## Paper boundary (do **not** claim)
-
-DST does **not** derive the fine-structure constant \(\alpha\) from the dual
-rotor algebra. Electromagnetic \(k,e,\alpha\) enter Sec.~electronshells as
-external replacements for \((G,M,m)\). This module explores a **labelled
-hypothesis** that pairs the shared lattice floor `SI.epsN` with CODATA \(\alpha\).
-
-## Working hypothesis (not a derivation)
-
-\[
-\alpha_{\mathrm{hyp}}(N) = \varepsilon_N = \frac{16}{3N^2}.
-\]
-
-Matching CODATA \(\alpha\) yields \(N_*^2 = 16/(3\alpha)\). Numerically
-\(729 = 27^2 < N_*^2 < 732 < 28^2\), so \(N_* \approx 27\).
-
-That integer is not the scale one compactification produces. `ForceScale`
-reads \(N^2\) as the Planck ratio and obtains the floor \((16/3)\alpha_G\).
-For the electron the electromagnetic constant exceeds that floor by a factor
-strictly between \(7.7\times 10^{41}\) and \(8.1\times 10^{41}\).
-
-No theorem asserts `dst_derives_alpha`. The integer that sets the floor
-equal to the electron's \(\alpha_G\) has square in \((3\times 10^{45},4\times 10^{45})\)
-and must **not** be identified with this \(N_*\). The Planck reading itself,
-recorded in `ForceScale`, places the floor at \((16/3)\alpha_G\).
-Dimensionless \(|J|\le 3\pi^2/8\) must not be conflated with \(\alpha\).
+The labelled hypothesis \(\alpha_{\mathrm{hyp}}(N)=\varepsilon_N=16/(3N^2)\)
+is not a derivation of the fine-structure constant. No theorem asserts
+`dst_derives_alpha`; the integer near \(27\) must not be identified with the
+Planck compactification, and \(|J|\le 3\pi^2/8\) is not \(\alpha\).
 -/
 
 namespace DstDiophantine
@@ -71,7 +49,6 @@ private theorem impliedNsqEM_nat_bounds :
   unfold impliedNsqEM_num impliedNsqEM_den fineStructureMantissa fineStructureScale
   exact ⟨by native_decide, by native_decide⟩
 
-/-- Window: \(27^2 = 729 < N_*^2 < 732\). -/
 theorem impliedNsqEM_bounds :
     (729 : ℚ) < impliedNsqEM ∧ impliedNsqEM < (732 : ℚ) := by
   rw [impliedNsqEM_eq_num_div_den]
@@ -79,20 +56,17 @@ theorem impliedNsqEM_bounds :
   exact ⟨rat_div_gt impliedNsqEM_den_pos hlo,
     rat_div_lt impliedNsqEM_den_pos hhi⟩
 
-/-- Between consecutive squares: \(27^2 < N_*^2 < 28^2\). -/
 theorem impliedNsqEM_between_27_28_sq :
     (27 : ℚ) ^ 2 < impliedNsqEM ∧ impliedNsqEM < (28 : ℚ) ^ 2 := by
   have h := impliedNsqEM_bounds
   refine ⟨by convert h.1 using 1; norm_num, lt_trans h.2 (by norm_num)⟩
 
-/-- On the SI stand-ins, \(\alpha_{\mathrm{hyp}}(1)/\alpha =\) `impliedNsqEM`. -/
 theorem alpha_hyp_one_div_alpha (hα : fineStructureApprox ≠ 0) :
     alpha_hyp 1 / fineStructureApprox = impliedNsqEM := by
   unfold alpha_hyp epsN impliedNsqEM
   simp only [Nat.cast_one, one_pow]
   field_simp [hα]
 
-/-- With \(N=1\), \(\varepsilon_1=16/3\) overshoots CODATA \(\alpha\) by \(>700\). -/
 theorem alpha_hyp_one_overshoots :
     fineStructureApprox * (700 : ℚ) < alpha_hyp 1 := by
   have himp := impliedNsqEM_bounds.1
@@ -106,12 +80,9 @@ theorem alpha_hyp_one_overshoots :
     _ = alpha_hyp 1 := by
         rw [← hratio]; field_simp [hα]
 
-/-- Algebraic identity: \(\alpha_{\mathrm{hyp}}(27) = 16/2187\). -/
 theorem alpha_hyp_27_eq : alpha_hyp 27 = (16 : ℚ) / 2187 := by
   unfold alpha_hyp epsN; norm_num
 
-/-- Relative proximity: \(\alpha_{\mathrm{hyp}}(27)/\alpha = N_*^2/27^2\), and
-\(729 < N_*^2 < 732\) yields \(1 <\) ratio \(< 732/729\). -/
 theorem alpha_hyp_27_close :
     fineStructureApprox < alpha_hyp 27 ∧
       alpha_hyp 27 < (732 : ℚ) / 729 * fineStructureApprox := by

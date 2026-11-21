@@ -6,33 +6,7 @@ set_option linter.style.native false
 /-!
 # Which scale one compactification produces
 
-## Paper boundary (do **not** claim)
-
-No theorem asserts `dst_derives_G` or `dst_derives_alpha`. The integer \(N\)
-is not derived. What follows is the scale that reading produces, once \(N^2\)
-is the Planck ratio \((m_P/m)^2=\hbar c/(G m^2)\).
-
-## The scale
-
-On that reading the nonzero normalized floor is exactly
-\[
-\frac{16}{3}\,\alpha_G(m),\qquad \alpha_G(m)=\frac{G m^2}{\hbar c}.
-\]
-It is a gravitational scale. It is not the electromagnetic constant.
-
-On the SI stand-ins the electron has
-\[
-\frac{17}{10}\times 10^{-45}
-  < \alpha_G(m_e)
-  < \frac{177}{100}\times 10^{-45},
-\]
-and the electromagnetic constant exceeds the resulting floor by a factor
-strictly between \(7.7\times 10^{41}\) and \(8.1\times 10^{41}\).
-
-Forcing the floor to equal the electromagnetic constant asks for an integer
-whose square lies in \((729,732)\), between \(27\) and \(28\). The integer
-that matches \(\alpha_G(m_e)\) itself has square in \((3\times 10^{45},\,4\times 10^{45})\).
-The two squares are not one compactification.
+Once `N²` is the Planck ratio, the nonzero floor is `(16/3) α_G(m)`, a gravitational scale. No theorem asserts `dst_derives_G` or `dst_derives_alpha`, and the integer `N` is not derived.
 -/
 
 namespace DstDiophantine
@@ -160,8 +134,7 @@ theorem electron_em_over_floor_bounds :
     unfold fineStructureApprox fineStructureMantissa fineStructureScale
     norm_num
 
-/-- The integer that matches the electromagnetic constant is not the electron's
-Planck ratio. -/
+/-- The integer that matches the electromagnetic constant is not the electron's Planck ratio. -/
 theorem em_matching_square_lt_electron_gravitational :
     impliedNsqEM < impliedNsq electronMassApprox := by
   exact lt_trans impliedNsqEM_bounds.2

@@ -8,35 +8,6 @@ import Mathlib.Tactic.Ring
 /-!
 # Rest mass, unsigned mass, and free fall
 
-Three quantities are distinct.
-
-* The stiffness potential \(V=(m/2)\sum_a(\alpha_a-\beta_a)^2\) is the
-  potential of the written particle action. The value of \(m\) is not
-  fixed by the algebra. At equal rapidity a pure lag \(\delta\) adds
-  \((m/2)\delta^2\) to \(V\) and \(\delta^2/4\) to the unsigned mass, and
-  the common acceleration per unit lag is minus the ratio of those
-  coefficients of \(\delta^2\).
-* The unsigned mass is \(M=\tfrac12\sum_a(\alpha_a^2+\beta_a^2)\).
-* Free fall is \(\Omega=1\), the coincidence of the two rotors.
-
-On one axis, with \(\sigma=\alpha+\beta\) and \(\delta=\alpha-\beta\),
-\(V=2m(M-\sigma^2/4)\) and \(J=\delta\sigma/2\). For \(m\neq 0\),
-\(V=mJ\) if and only if the lag vanishes or the dual angle vanishes.
-The two sides can both be nonzero only on the pure-usual ray.
-
-A cross-axis shield has \(J=0\), positive unsigned mass, and positive
-\(V\). On one axis with nonnegative rapidities, \(J=0\) is alignment, and
-then \(V=0\) while \(M\) may not vanish. Anti-alignment \(\theta=-\phi\neq 0\)
-has \(J=0\) and \(V>0\), and is not free fall.
-
-Vanishing stiffness makes both angular accelerations of the written action
-zero for every angle, and still admits a pure boost with \(J\neq 0\),
-\(M\neq 0\), and \(\Omega\neq 1\).
-
-A frozen lag on the written flow keeps \(V\) constant. If \(m\delta\neq 0\),
-both \(J\) and \(M\) move with the common rapidity. The same-sign kinetic
-model is the one that restores the lag, and it is not the written action.
-
 No identification with \(F=ma\), and no acceleration ceiling, is claimed.
 -/
 
@@ -66,20 +37,17 @@ theorem stiffness_axis (m α β : ℝ) :
   rw [Fin.sum_univ_three]
   simp [axisParams]
 
-/-- On one axis, \(V=2m(M-\sigma^2/4)\) with \(\sigma=\alpha+\beta\). -/
 theorem stiffness_axis_massShift (m α β : ℝ) :
     stiffnessPotential m (axisParams α β) =
       2 * m * (mass (axisParams α β) - (α + β) ^ 2 / 4) := by
   rw [stiffness_axis, mass_axisParams]
   ring
 
-/-- On the pure-usual ray, \(V=mJ\). -/
 theorem stiffness_eq_mul_J_of_dual_zero (m α : ℝ) :
     stiffnessPotential m (axisParams α 0) = m * J (axisParams α 0) := by
   rw [stiffness_axis, J_axisParams]
   ring
 
-/-- For nonzero stiffness, \(V=mJ\) iff the lag vanishes or the dual angle does. -/
 theorem stiffness_eq_mul_J_iff {m α β : ℝ} (hm : m ≠ 0) :
     stiffnessPotential m (axisParams α β) = m * J (axisParams α β) ↔
       α = β ∨ β = 0 := by
@@ -114,7 +82,6 @@ private theorem mass_crossAxisDual (α : ℝ) :
   simp [crossAxisDual, finCoord]
   ring
 
-/-- A cross-axis shield is neutral, massive, and stiff. -/
 theorem crossAxis_neutral_stiff {m α : ℝ} (hm : 0 < m) (hα : α ≠ 0) :
     J (crossAxisDual α) = 0 ∧
       0 < mass (crossAxisDual α) ∧
@@ -125,7 +92,6 @@ theorem crossAxis_neutral_stiff {m α : ℝ} (hm : 0 < m) (hα : α ≠ 0) :
   · rw [stiffnessPotential_eq_lag, lagSq_crossAxisDual]
     nlinarith [sq_pos_of_ne_zero hα, hm]
 
-/-- Nonnegative one-axis rapidities: \(J=0\) iff the two angles agree. -/
 theorem J_axis_eq_zero_iff_aligned {α β : ℝ} (hα : 0 ≤ α) (hβ : 0 ≤ β) :
     J (axisParams α β) = 0 ↔ α = β := by
   rw [J_axisParams]
@@ -146,7 +112,6 @@ theorem stiffness_aligned (m α : ℝ) :
   rw [stiffness_axis]
   ring
 
-/-- Anti-alignment keeps \(J=0\) and makes the potential positive. -/
 theorem antialigned_potential {m φ : ℝ} (hm : 0 < m) (hφ : φ ≠ 0) :
     J (axisParams φ (-φ)) = 0 ∧
       0 < mass (axisParams φ (-φ)) ∧
@@ -175,7 +140,6 @@ theorem written_zero_stiffness (φ θ : ℝ) :
     PaperActualEL 0 φ θ 0 0 :=
   (paperActualEL_eq 0 φ θ 0 0).mpr ⟨by ring, by ring⟩
 
-/-- A pure boost satisfies the massless jet and is not free fall. -/
 theorem zero_stiffness_pureBoost :
     PaperActualEL 0 1 0 0 0 ∧
       J (axisParams 1 0) ≠ 0 ∧
@@ -224,7 +188,6 @@ theorem written_frozen_potential (m σ₀ σd₀ δ₀ t : ℝ) :
   rw [stiffness_axis, writtenUsual, writtenDual]
   rw [usualFrom_sub_dualFrom, written_frozen_delta]
 
-/-- A frozen lag does not move \(J\) for every initial rate. -/
 theorem written_frozen_J_moves {σ₀ σd₀ m δ₀ : ℝ} (h : m * δ₀ ≠ 0) :
     ¬ ∀ t,
       J (axisParams (writtenUsual σ₀ σd₀ m δ₀ 0 t)

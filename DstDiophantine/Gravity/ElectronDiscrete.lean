@@ -10,25 +10,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Dual-step ceiling on the first Coulomb node
 
-## Paper boundary (do **not** claim)
-
-The compactification integer `N` is not derived. A lattice sample is not
-proved to stay a full step `π/N` away from a node: the node may fall
-arbitrarily close to a sample. Nothing here removes the continuum pole, caps
-the second node, or places a radius. No angular momentum is assigned.
-
-## What is proved
-
-The dual angle of the discrete torus advances by `2π/N`, so the equal-scale
-phase `x = ℓ/(2r)` advances by `π/N`. On `[π/4, 1]`, every phase at least
-that far from the first node has dimensionless force strictly smaller than
-`N` in absolute value. One step before the node, once the step still lies
-beyond `π/4`, the force exceeds `π N / (4 s₁)` with
-`s₁ = 2 cosh 1 sin 1`. The outer-well integral of `1/γ_s`, cut off one step
-short of the node, does not exceed
-`(π √2 / 4) e^{π/4} + (1/s₀) log(N (x₁ - π/4) / π)`, where
-`s₀ = 2 cosh(π/4) sin(π/4)`. The continuum divergence is the limit that
-removes this step.
+One step before the first node, once that step still lies beyond \(\pi/4\), the
+dimensionless force is bounded by the compactification integer \(N\). \(N\) is
+not derived, a sample need not stay a full step \(\pi/N\) off a node, and no
+angular momentum is assigned.
 -/
 
 namespace DstDiophantine
@@ -95,7 +80,6 @@ private theorem four_lt_nodeSlopeLo_mul_pi : 4 < nodeSlopeLo * π := by
     simpa [mul_one] using hmul
   linarith
 
-/-- To the right of the first node, still inside the slope window `(π/4, 1)`. -/
 theorem gammaSEqual_linear_right_firstNode {x : ℝ} (hx : x ∈ Ioc resonanceRoot1 1) :
     nodeSlopeLo * (x - resonanceRoot1) < -gammaSEqual x ∧
       -gammaSEqual x < nodeSlopeHi * (x - resonanceRoot1) := by
@@ -146,8 +130,6 @@ theorem gammaSEqual_abs_firstNode {x : ℝ} (hx : x ∈ Icc (π / 4) 1)
 
 /-! ### Force ceiling -/
 
-/-- On `[π/4, 1]`, one equal-scale step `π/N` from the first node keeps the
-dimensionless force strictly below `N`. -/
 theorem pairAttraction_abs_lt_step {N : ℕ} (hN : N ≠ 0) {x : ℝ}
     (hx : x ∈ Icc (π / 4) 1)
     (hgap : π / (N : ℝ) ≤ |x - resonanceRoot1|) :
@@ -187,7 +169,6 @@ theorem pairAttraction_abs_lt_step {N : ℕ} (hN : N ≠ 0) {x : ℝ}
     nlinarith
   linarith
 
-/-- One step before the node the force still grows linearly in `N`. -/
 theorem pairAttraction_step_before_node {N : ℕ} (hN : 0 < N)
     (hfit : π / (N : ℝ) ≤ resonanceRoot1 - π / 4) :
     (π / (4 * nodeSlopeHi)) * (N : ℝ) <
@@ -254,8 +235,6 @@ private theorem inv_gamma_le_quarter {x : ℝ} (hx : x ∈ Icc 0 (π / 4)) :
     gammaSEqual_pos_of_lt_firstNode (by positivity) resonanceRoot1_sharp_bounds.1
   exact div_le_div_of_nonneg_left zero_le_one hpos hγ
 
-/-- The outer-well integral of \(1/\gamma_s\), cut off one step \(\pi/N\) short of
-the first node, grows at most logarithmically in \(N\). -/
 theorem outerWell_integral_oneStep {N : ℕ} (hN : 0 < N)
     (hfit : π / (N : ℝ) < resonanceRoot1 - π / 4) :
     ∫ x in (0 : ℝ)..(resonanceRoot1 - π / (N : ℝ)), (1 / gammaSEqual x) ≤

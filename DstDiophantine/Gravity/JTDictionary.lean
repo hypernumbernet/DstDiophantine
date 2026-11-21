@@ -26,44 +26,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 /-!
 # Auxiliary expression on the radial chart, not the teleparallel quadratic
 
-`schwarzschildTeleparallelT` and `teleparallelTofA` are the expression
-`(2/r²)(1-√A)²/√A`. `Gravity.RadialQuadratic` proves that the quadratic
-\(T=\tfrac14 T_{\rho\mu\nu}T^{\rho\mu\nu}+\tfrac12 T_{\rho\mu\nu}T^{\nu\mu\rho}-T_\rho T^\rho\)
-on this coframe is \(-2(A+r A')/r^2\), hence \(-2/r^2\) on the exterior
-vacuum. The lemmas below are algebraic properties of the auxiliary
-expression. They are not a dictionary between \(J\) and the Weitzenböck scalar.
-
-## Proved
-
-The symbol \(T\) in the bullets below is the auxiliary expression, not the quadratic.
-
-* Chart identities of that expression, \((4/r^2)(\cosh\varphi-1)=(8/r^2)\sinh^2(\varphi/2)\).
-* \(r^2 T=4(\cosh\sqrt{2J}-1)\) on the radial boost slice.
-* Sandwich \(4J\le r^2 T\) and \(T\le 4J_{\mathrm{field}}\), both strict on the
-  exterior; weak-field limit \(r^2 T/(4J)\to 1\).
-* \(J_{\mathrm{field}}/T=(1+\sqrt{A})^2/(16 A^{3/2})\), strictly increasing in
-  \(\varphi\), with infimum \(\tfrac14\). Hence \(J_{\mathrm{field}}=\tfrac12 T\)
-  holds on at most one sphere.
-* Analytic continuation \(E(J)=\cosh\sqrt{2J}-1\) has \(\operatorname{sign}E=\operatorname{sign}J\)
-  on the admissible cone \(|J|\le 3\pi^2/8\).
-* Under \(\varphi\le\varphi_{\max}\), \(r^2 T\le 4(\cosh\varphi_{\max}-1)\) with
-  numerical envelope \(26<\cdots<27\). Classical Schwarzschild has unbounded
-  \(r^2 T\) as \(r\to r_s^+\).
-* Two-sided window on the admissible cone:
-  \(4(\cos\varphi_{\max}-1)\le r^2 T\le 4(\cosh\varphi_{\max}-1)\), with
-  \(-7.7<4(\cos\varphi_{\max}-1)<-7.6\); both ends are attained at
-  \(J=\mp J_{\max}\), so \(-8<r^2 T<27\) is sharp in that sense.
-* \(E\) is strictly monotone on the cone, hence \(T\) at a fixed radius
-  determines \(J\), and the dictionary inverts in closed form as
-  \(J=\tfrac12(\operatorname{arcosh}(1+\tfrac14 r^2 T))^2\) on the hyperbolic
-  branch and \(J=-\tfrac12(\arccos(1+\tfrac14 r^2 T))^2\) on the elliptic one.
-
-## Not claimed
-
-* A dictionary for a general motor field (off-axis or with translations).
-  `Gravity.LorentzGauge` shows that no pointwise map \(J\mapsto T\) serves
-  every tetrad: an inertial-plane boost has \(T=0\) for every jet.
-* Identification of the proposed action \(\int J\) with the TEGR integral of \(T\).
+`schwarzschildTeleparallelT` is `(2/r²)(1−√A)²/√A`; the quadratic on this coframe is `-2(A+r A')/r²`. No dictionary for a general motor is claimed, and `∫ J` is not the TEGR integral of `T`.
 -/
 
 namespace DstDiophantine
@@ -412,7 +375,6 @@ theorem J_field_eq_jFieldRatio_mul_T {rs r : ℝ} (h : IsExterior rs r) :
   have hrpos : 0 < r := lt_trans h.1 h.2
   have hr0 : r ≠ 0 := hrpos.ne'
   have hrs0 : rs ≠ 0 := h.1.ne'
-  -- Direct computation from the \(A\)-forms.
   have hrsA : rs / r = 1 - schwarzschildA rs r := by
     unfold schwarzschildA
     field_simp [hr0]
@@ -585,7 +547,6 @@ theorem JMax_pos : (0 : ℝ) < JMax := by
   unfold JMax
   positivity
 
-/-- The admissible ceiling inverts to exactly the quasi-horizon rapidity. -/
 theorem sqrt_two_JMax : Real.sqrt (2 * JMax) = phiMax := by
   unfold JMax phiMax
   have hsq : (Real.pi * Real.sqrt 3 / 2) ^ 2 = 2 * (3 * Real.pi ^ 2 / 8) := by
@@ -594,7 +555,6 @@ theorem sqrt_two_JMax : Real.sqrt (2 * JMax) = phiMax := by
     ring
   exact (Real.sqrt_eq_iff_eq_sq (by positivity) (by positivity)).mpr hsq.symm
 
-/-- On the admissible cone the dictionary argument never leaves `[0, φ_max]`. -/
 theorem sqrt_two_abs_le_phiMax {J : ℝ} (hbound : |J| ≤ JMax) :
     Real.sqrt (2 * |J|) ≤ phiMax := by
   rw [← sqrt_two_JMax]
@@ -636,7 +596,6 @@ theorem sign_T_eq_sign_J_on_cone {Jval r : ℝ} (hr : r ≠ 0)
 
 /-! ### Admissible ceiling on \(r^2 T\) -/
 
-/-- A rapidity ceiling caps \(r^2 T\); both admissible envelopes specialise this. -/
 theorem r_sq_T_le_of_rapidity_le {rs r c : ℝ} (h : IsExterior rs r)
     (hφ : schwarzschildRapidity rs r ≤ c) :
     r ^ 2 * schwarzschildTeleparallelT rs r ≤ 4 * (cosh c - 1) := by
@@ -707,7 +666,6 @@ private theorem exp_le_taylor3 {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     _ = 1 + x + x ^ 2 / 2 + x ^ 3 * 4 / (6 * 3) := by
         rw [hsum, hrem]
 
-/-- Numeric wrapper: a `norm_num`-checkable third-order bound on `exp`. -/
 private theorem exp_lt_of_taylor3 {x c : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1)
     (hc : 1 + x + x ^ 2 / 2 + x ^ 3 * 4 / (6 * 3) < c) : Real.exp x < c :=
   (exp_le_taylor3 hx0 hx1).trans_lt hc
@@ -851,14 +809,7 @@ theorem classical_r_sq_T_unbounded {rs : ℝ} (hrs : 0 < rs) (M : ℝ) :
     linarith [le_abs_self M, abs_nonneg M]
   exact ⟨r, hr, hval ▸ lt_of_lt_of_le hM hlower⟩
 
-/-! ### Two-sided admissible window on \(r^2 T\)
-
-The rapidity ceiling above caps \(r^2 T\) from one side only. On the admissible
-cone the elliptic branch supplies the matching floor: `sqrt_two_abs_le_phiMax`
-keeps the cosine argument inside `[0, φ_max]` with `φ_max < π`, where the cosine
-is still strictly decreasing. Repulsion is therefore no deeper than
-\(4(\cos\varphi_{\max}-1)\), and both ends are attained at \(J=\pm J_{\max}\).
--/
+/-! ### Two-sided admissible window on \(r^2 T\) -/
 
 theorem coshDefect_le_cosh_phiMax {J : ℝ} (hbound : |J| ≤ JMax) :
     coshDefect J ≤ cosh phiMax - 1 := by
@@ -973,7 +924,7 @@ theorem r_sq_teleparallelTofJ_window_sharp {r : ℝ} (hr : r ≠ 0) :
     coshDefect_neg_JMax, coshDefect_JMax]
   exact ⟨rfl, rfl⟩
 
-/-- Numeric form of the window: admissible torsion confines `r² T` to `(-8, 27)`. -/
+/-- Numeric window for the auxiliary expression: admissible `r² T` lies in `(-8, 27)`. -/
 theorem r_sq_teleparallelTofJ_bounds {Jval r : ℝ} (hr : r ≠ 0)
     (hbound : |Jval| ≤ JMax) :
     -8 < r ^ 2 * teleparallelTofJ Jval r ∧
@@ -1018,7 +969,6 @@ theorem coshDefect_strictMonoOn :
 theorem coshDefect_injOn : Set.InjOn coshDefect (Icc (-JMax) JMax) :=
   coshDefect_strictMonoOn.injOn
 
-/-- At a fixed radius the teleparallel density determines the algebraic scalar. -/
 theorem J_unique_of_teleparallelTofJ_eq {J₁ J₂ r : ℝ} (hr : r ≠ 0)
     (h₁ : |J₁| ≤ JMax) (h₂ : |J₂| ≤ JMax)
     (heq : teleparallelTofJ J₁ r = teleparallelTofJ J₂ r) : J₁ = J₂ := by
@@ -1041,14 +991,12 @@ theorem arcosh_one_add_quarter_r_sq_T {Jval r : ℝ} (hr : r ≠ 0) (hJ : 0 ≤ 
       = cosh (Real.sqrt (2 * Jval)) from by ring]
   exact Real.arcosh_cosh (Real.sqrt_nonneg _)
 
-/-- Hyperbolic branch: the algebraic scalar is recovered from `r² T` in closed form. -/
 theorem J_eq_half_arcosh_sq {Jval r : ℝ} (hr : r ≠ 0) (hJ : 0 ≤ Jval) :
     (1 / 2) * Real.arcosh (1 + r ^ 2 * teleparallelTofJ Jval r / 4) ^ 2 = Jval := by
   rw [arcosh_one_add_quarter_r_sq_T hr hJ,
     Real.sq_sqrt (by linarith : (0 : ℝ) ≤ 2 * Jval)]
   ring
 
-/-- Elliptic branch: the same inversion with the cosine reading of the kernel. -/
 theorem J_eq_neg_half_arccos_sq {Jval r : ℝ} (hr : r ≠ 0) (hJ : Jval < 0)
     (hbound : |Jval| ≤ JMax) :
     -(1 / 2) * Real.arccos (1 + r ^ 2 * teleparallelTofJ Jval r / 4) ^ 2 = Jval := by
@@ -1064,7 +1012,6 @@ theorem J_eq_neg_half_arccos_sq {Jval r : ℝ} (hr : r ≠ 0) (hJ : Jval < 0)
     Real.sq_sqrt (by linarith : (0 : ℝ) ≤ -(2 * Jval))]
   ring
 
-/-- Exterior Schwarzschild specialisation of the closed-form inversion. -/
 theorem J_radialBoostParams_eq_half_arcosh_sq {rs r : ℝ} (h : IsExterior rs r) :
     (1 / 2) *
         Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =

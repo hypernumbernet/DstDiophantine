@@ -1,25 +1,9 @@
 import DstDiophantine.Logic.Quantum.DiracConjugation
 
 /-!
-# Two dual spinors: the singlet, correlations, and the CHSH bound
+# The singlet and the CHSH bound
 
-A joint state of two dual spinors is a vector of `ℂ² ⊗ ℂ²`, stored as the
-`2 × 2` array `Ψ i j` of amplitudes of `e_i ⊗ e_j`. Local operators act by
-`A ⊗ B : Ψ ↦ A Ψ Bᵀ`.
-
-* `det Ψ` is unchanged by every pair of total rotors and vanishes exactly on
-  product states `u ⊗ v`; `2 ‖det Ψ‖ ≤ ‖Ψ‖²`, with equality for the singlet.
-  Local dual rotors preserve both `det Ψ` and `‖Ψ‖²`.
-* The states fixed by every common dual rotor form the line of the singlet
-  `ε = e₀ ⊗ e₁ - e₁ ⊗ e₀`, which every common total rotor also fixes.
-* `J u ⊗ u - u ⊗ J u = ‖u‖² ε`, and the singlet overlap of `u ⊗ v` is
-  `-⟨J u, v⟩`.
-* In the singlet `⟨σ·a ⊗ σ·b⟩ = -a·b`, each one-particle mean vanishes, and
-  the outcomes `(s, t)` along `a` and `b` occur with weight `(1 - s t a·b) / 4`.
-* No signalling: a unitary on one particle, or the choice of a two-outcome
-  measurement there, leaves every expectation of the other unchanged.
-* CHSH: outcomes fixed by local variables under any finite distribution give
-  `|S| ≤ 2`; the singlet reaches `|S| = 2√2`, its maximum over unit axes.
+`det Ψ` vanishes exactly on product states, and the states fixed by every common dual rotor are the line of the singlet. Local variables keep `|S| ≤ 2`; the singlet reaches `2√2`.
 -/
 
 namespace DstDiophantine
@@ -48,7 +32,6 @@ def pairAct (A B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) : PairState :=
 def pairInner (Ψ Φ : PairState) : ℂ :=
   ∑ i, ∑ j, star (Ψ i j) * Φ i j
 
-/-- Squared norm of a joint state. -/
 noncomputable def pairNormSq (Ψ : PairState) : ℝ :=
   ∑ i, ∑ j, ‖Ψ i j‖ ^ 2
 
@@ -87,7 +70,6 @@ theorem pairInner_self (Ψ : PairState) : pairInner Ψ Ψ = (pairNormSq Ψ : ℂ
   simp only [pairInner, pairNormSq, Fin.sum_univ_two, Complex.ofReal_add, Complex.ofReal_pow,
     Complex.star_def, Complex.conj_mul']
 
-/-- Local unitaries preserve the inner product. -/
 theorem pairInner_pairAct_unitary {U V : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ * U = 1)
     (hV : Vᴴ * V = 1) (Ψ Φ : PairState) :
     pairInner (pairAct U V Ψ) (pairAct U V Φ) = pairInner Ψ Φ := by
@@ -113,13 +95,10 @@ theorem det_pairAct (A B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
     (pairAct A B Ψ).det = A.det * Ψ.det * B.det := by
   simp [pairAct, Matrix.det_mul, Matrix.det_transpose]
 
-/-- Total rotors on the two particles, each of determinant one, leave `det Ψ`
-unchanged. -/
 theorem det_pairAct_of_det_one {M N : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1)
     (hN : N.det = 1) (Ψ : PairState) : (pairAct M N Ψ).det = Ψ.det := by
   rw [det_pairAct, hM, hN, one_mul, mul_one]
 
-/-- Independent dual rotors on the two particles preserve `det Ψ` and `‖Ψ‖²`. -/
 theorem det_pairAct_dualRotor (β γ : DualRapidity) (Ψ : PairState) :
     (pairAct (dualRotorMat β) (dualRotorMat γ) Ψ).det = Ψ.det :=
   det_pairAct_of_det_one (dualRotorMat_det β) (dualRotorMat_det γ) Ψ
@@ -133,7 +112,6 @@ theorem det_pairTensor (u v : DualSpinor) : (pairTensor u v).det = 0 := by
   simp only [pairTensor_apply]
   ring
 
-/-- A joint state is a product of two dual spinors exactly when `det Ψ = 0`. -/
 theorem exists_pairTensor_iff_det (Ψ : PairState) :
     (∃ u v : DualSpinor, Ψ = pairTensor u v) ↔ Ψ.det = 0 := by
   refine ⟨fun ⟨u, v, h⟩ => h ▸ det_pairTensor u v, fun h => ?_⟩
@@ -157,7 +135,6 @@ theorem exists_pairTensor_iff_det (Ψ : PairState) :
     field_simp
     linear_combination h
 
-/-- `2 ‖det Ψ‖ ≤ ‖Ψ‖²`. -/
 theorem two_norm_det_le (Ψ : PairState) : 2 * ‖Ψ.det‖ ≤ pairNormSq Ψ := by
   rw [Matrix.det_fin_two]
   have h1 := norm_sub_le (Ψ 0 0 * Ψ 1 1) (Ψ 0 1 * Ψ 1 0)
@@ -174,7 +151,6 @@ theorem pairNormSq_singlet : pairNormSq singlet = 2 := by
   simp [pairNormSq, singlet, Fin.sum_univ_two]
   norm_num
 
-/-- The singlet attains `2 ‖det Ψ‖ = ‖Ψ‖²`. -/
 theorem two_norm_det_singlet : 2 * ‖singlet.det‖ = pairNormSq singlet := by
   rw [det_singlet, pairNormSq_singlet, norm_one, mul_one]
 
@@ -184,14 +160,12 @@ theorem singlet_ne_pairTensor (u v : DualSpinor) : singlet ≠ pairTensor u v :=
   rw [← h, det_singlet] at h2
   exact one_ne_zero h2
 
-/-- `M ⊗ M` multiplies the singlet by `det M`. -/
 theorem pairAct_singlet (M : Matrix (Fin 2) (Fin 2) ℂ) :
     pairAct M M singlet = M.det • singlet := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [pairAct, singlet, Matrix.mul_apply, Fin.sum_univ_two, Matrix.det_fin_two] <;> ring
 
-/-- Every common total rotor fixes the singlet. -/
 theorem pairAct_singlet_of_det_one {M : Matrix (Fin 2) (Fin 2) ℂ} (hM : M.det = 1) :
     pairAct M M singlet = singlet := by
   rw [pairAct_singlet, hM, one_smul]
@@ -218,8 +192,6 @@ private theorem exists_dualRotor_halfTurnY : ∃ β : DualRapidity, dualRotorMat
       simp [halfTurnY, Matrix.mul_apply, Fin.sum_univ_two, Matrix.conjTranspose_apply]
   · simp [halfTurnY, Matrix.det_fin_two]
 
-/-- The joint states fixed by every common dual rotor form the line of the
-singlet. -/
 theorem eq_smul_singlet_of_dualRotor_fixed {Ψ : PairState}
     (h : ∀ β : DualRapidity, pairAct (dualRotorMat β) (dualRotorMat β) Ψ = Ψ) :
     Ψ = Ψ 0 1 • singlet := by
@@ -243,8 +215,6 @@ theorem eq_smul_singlet_of_dualRotor_fixed {Ψ : PairState}
   · linear_combination -e10
   · linear_combination -e11 / 2
 
-/-- The singlet pairs a dual spinor with its quaternionic partner:
-`J u ⊗ u - u ⊗ J u = ‖u‖² ε`. -/
 theorem quatJ_pair_eq_singlet (u : DualSpinor) :
     pairTensor (quatJ u) u - pairTensor u (quatJ u) = inner ℂ u u • singlet := by
   rw [dualSpinor_inner_eq]
@@ -257,12 +227,10 @@ theorem quatJ_pair_eq_singlet_of_norm {u : DualSpinor} (hu : ‖u‖ = 1) :
   rw [quatJ_pair_eq_singlet, inner_self_eq_norm_sq_to_K, hu]
   simp
 
-/-- The singlet overlap of a product state `u ⊗ v` is `-⟨J u, v⟩`. -/
 theorem pairInner_singlet_tensor (u v : DualSpinor) :
     pairInner singlet (pairTensor u v) = -inner ℂ (quatJ u) v := by
   simp [pairInner, singlet, dualSpinor_inner_eq, Fin.sum_univ_two]
 
-/-- Parallel spins have no singlet component. -/
 theorem pairInner_singlet_tensor_parallel (c : ℂ) (u : DualSpinor) :
     pairInner singlet (pairTensor u (c • u)) = 0 := by
   rw [pairInner_singlet_tensor, inner_smul_right]
@@ -270,7 +238,6 @@ theorem pairInner_singlet_tensor_parallel (c : ℂ) (u : DualSpinor) :
     rw [← inner_conj_symm, inner_self_quatJ, map_zero]
   rw [h, mul_zero, neg_zero]
 
-/-- The spin-reversed partner `J u` has singlet overlap `-‖u‖²`. -/
 theorem pairInner_singlet_tensor_quatJ (u : DualSpinor) :
     pairInner singlet (pairTensor u (quatJ u)) = -inner ℂ u u := by
   rw [pairInner_singlet_tensor, inner_quatJ_quatJ]
@@ -285,7 +252,6 @@ theorem pairInner_singlet_singlet : pairInner singlet singlet = 2 := by
   rw [pairInner_self, pairNormSq_singlet]
   norm_num
 
-/-- `⟨ε| σ·a ⊗ σ·b |ε⟩ = -2 a·b`. -/
 theorem pairInner_singlet_pauli (a b : Fin 3 → ℝ) :
     pairInner singlet (pairAct (pauliComb a) (pauliComb b) singlet) =
       -2 * (axisDot a b : ℂ) := by
@@ -295,7 +261,6 @@ theorem pairInner_singlet_pauli (a b : Fin 3 → ℝ) :
   simp only [I_sq]
   ring
 
-/-- Each one-particle spin mean vanishes in the singlet. -/
 theorem pairInner_singlet_pauli_left (a : Fin 3 → ℝ) :
     pairInner singlet (pairAct (pauliComb a) 1 singlet) = 0 := by
   simp [pairInner, pairAct, singlet, pauliComb, pauli, pauliX, pauliY, pauliZ, Matrix.mul_apply,
@@ -314,7 +279,6 @@ theorem spinProj_add_neg (a : Fin 3 → ℝ) : spinProj 1 a + spinProj (-1) a = 
   ext i j
   fin_cases i <;> fin_cases j <;> simp [spinProj] <;> ring
 
-/-- Along a unit axis the spin projector is idempotent. -/
 theorem spinProj_mul_self {a : Fin 3 → ℝ} (ha : axisDot a a = 1) {s : ℝ} (hs : s ^ 2 = 1) :
     spinProj s a * spinProj s a = spinProj s a := by
   have hsq := pauli_dot_sq a
@@ -331,8 +295,6 @@ theorem spinProj_mul_self {a : Fin 3 → ℝ} (ha : axisDot a a = 1) {s : ℝ} (
   simp only [Matrix.smul_apply, Matrix.add_apply, smul_eq_mul]
   ring
 
-/-- In the singlet the outcomes `s, t = ±1` along `a` and `b` have joint weight
-`(1 - s t a·b) / 2` against the norm `2`. -/
 theorem pairInner_singlet_spinProj (s t : ℝ) (a b : Fin 3 → ℝ) :
     pairInner singlet (pairAct (spinProj s a) (spinProj t b) singlet) =
       ((1 - s * t * axisDot a b) / 2 : ℝ) := by
@@ -342,7 +304,6 @@ theorem pairInner_singlet_spinProj (s t : ℝ) (a b : Fin 3 → ℝ) :
   simp only [I_sq]
   ring
 
-/-- Probability of opposite outcomes along axes at angle `θ`: `cos² (θ / 2)`. -/
 theorem singlet_opposite_prob {a b : Fin 3 → ℝ} {θ : ℝ} (hθ : axisDot a b = Real.cos θ) :
     ((pairInner singlet (pairAct (spinProj 1 a) (spinProj (-1) b) singlet) +
         pairInner singlet (pairAct (spinProj (-1) a) (spinProj 1 b) singlet)) /
@@ -356,8 +317,6 @@ theorem singlet_opposite_prob {a b : Fin 3 → ℝ} {θ : ℝ} (hθ : axisDot a 
 
 /-! ### No signalling -/
 
-/-- A unitary on the first particle leaves every expectation of the second
-unchanged. -/
 theorem pairInner_local_unitary {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ * U = 1)
     (B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
     pairInner (pairAct U 1 Ψ) (pairAct 1 B (pairAct U 1 Ψ)) = pairInner Ψ (pairAct 1 B Ψ) := by
@@ -366,16 +325,12 @@ theorem pairInner_local_unitary {U : Matrix (Fin 2) (Fin 2) ℂ} (hU : Uᴴ * U 
       Matrix.one_mul]
   rw [h, pairInner_pairAct_unitary hU (by simp)]
 
-/-- A local dual rotor on the first particle leaves every expectation of the
-second unchanged. -/
 theorem pairInner_local_dualRotor (β : DualRapidity) (B : Matrix (Fin 2) (Fin 2) ℂ)
     (Ψ : PairState) :
     pairInner (pairAct (dualRotorMat β) 1 Ψ) (pairAct 1 B (pairAct (dualRotorMat β) 1 Ψ)) =
       pairInner Ψ (pairAct 1 B Ψ) :=
   pairInner_local_unitary (dualRotorMat_unitary β) B Ψ
 
-/-- Summing over the outcomes of a two-outcome measurement on the first particle
-returns the expectation of the second alone, whatever the first measurement. -/
 theorem pairInner_marginal (P B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
     pairInner Ψ (pairAct P B Ψ) + pairInner Ψ (pairAct (1 - P) B Ψ) =
       pairInner Ψ (pairAct 1 B Ψ) := by
@@ -412,8 +367,6 @@ private theorem chsh_pointwise {A A' B B' : ℝ} (hA : |A| ≤ 1) (hA' : |A'| �
   calc |A * (B + B') + A' * (B - B')| ≤ |A * (B + B')| + |A' * (B - B')| := abs_add_le _ _
     _ ≤ 2 := by linarith
 
-/-- Outcomes in `[-1, 1]` fixed by a local variable `i`, averaged over any finite
-distribution `w`, keep the CHSH combination within `2`. -/
 theorem chsh_local_bound {ι : Type*} (s : Finset ι) (w A A' B B' : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hsum : ∑ i ∈ s, w i = 1)
     (hA : ∀ i, |A i| ≤ 1) (hA' : ∀ i, |A' i| ≤ 1) (hB : ∀ i, |B i| ≤ 1)
@@ -438,7 +391,6 @@ theorem singletCorr_eq (a b : Fin 3 → ℝ) : singletCorr a b = -axisDot a b :=
     show (-2 * (axisDot a b : ℂ)) / 2 = ((-axisDot a b : ℝ) : ℂ) by push_cast; ring,
     Complex.ofReal_re]
 
-/-- With `a ⊥ a'` and `b, b'` bisecting them, the singlet gives `S = -2√2`. -/
 theorem singletCorr_chsh :
     chsh singletCorr ![0, 0, 1] ![1, 0, 0]
       ![1 / Real.sqrt 2, 0, 1 / Real.sqrt 2] ![-(1 / Real.sqrt 2), 0, 1 / Real.sqrt 2] =
@@ -456,7 +408,6 @@ private theorem axisDot_sq_le (a x : Fin 3 → ℝ) :
   nlinarith [sq_nonneg (a 0 * x 1 - a 1 * x 0), sq_nonneg (a 0 * x 2 - a 2 * x 0),
     sq_nonneg (a 1 * x 2 - a 2 * x 1)]
 
-/-- Along unit axes the singlet CHSH combination does not exceed `2√2`. -/
 theorem singletCorr_chsh_le {a a' b b' : Fin 3 → ℝ} (ha : axisDot a a = 1)
     (ha' : axisDot a' a' = 1) (hb : axisDot b b = 1) (hb' : axisDot b' b' = 1) :
     |chsh singletCorr a a' b b'| ≤ 2 * Real.sqrt 2 := by

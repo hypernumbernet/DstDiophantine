@@ -9,39 +9,6 @@ import Mathlib.Tactic.Ring
 /-!
 # Mass ceiling of a shielded configuration
 
-The admissible cone bounds the unsigned mass by \(M\le 3\pi^2/8\) and the
-mismatch by \(|J|\le M\). Those two bounds are independent. Here the two
-observables are bounded **against each other**: the cone forbids a
-configuration from being simultaneously heavy and gravitationally neutral.
-
-## What is proved
-
-* Gravitational neutrality (`IsGravNeutral`) is named as `J = 0`, equivalently
-  equality of the two rapidity budgets. It constrains the signed scalar and
-  nothing else: a neutral configuration keeps the whole usual budget as
-  unsigned mass, and some neutral configuration is massive with a relative
-  rotor away from the identity, so neutrality is neither the vacuum nor
-  agreement of the two rotors.
-* The sharp trade-off \(\pi^2M\le\frac{5\pi^4}{16}+4J^2\), equivalently
-  \(M_{\mathrm{norm}}\le\frac56+\frac32 J_{\mathrm{norm}}^2\). The axis
-  inequality behind it is \(2k^2(\alpha^2+\beta^2)\le k^4+(\alpha^2-\beta^2)^2\)
-  with \(k=\pi/2\); the three axes are coupled by the elementary bound
-  \(e_2\ge -k^4\) on the axis densities \(\alpha_a^2-\beta_a^2\).
-* Hence a shield \(J=0\) obeys \(M\le 5\pi^2/16\), i.e. five sixths of the
-  cone's mass ceiling. The bound is attained, and attained along a whole
-  one-parameter family: two axes maximally opposed (one purely usual, one
-  purely dual) and a third axis on the wall carrying the residual mismatch.
-  The heaviest shield is the wall configuration
-  \(\alpha=(\pi/2,0,\pi/4)\), \(\beta=(0,\pi/2,\pi/4)\).
-* Optimal shielding is therefore necessarily anisotropic: an equal-scale
-  shield \(\beta=\alpha\) cannot exceed \(3\pi^2/16\), a factor \(3/5\) of
-  the ceiling.
-* At the cone's mass ceiling \(M=3\pi^2/8\) every axis is either purely
-  usual or purely dual, and \(|J|\ge\pi^2/8\): a maximal-mass configuration
-  admits no shield at all.
-* Combined with dual-only control: a usual seed that can be shielded by
-  dual excitation alone has \(\sum_a\alpha_a^2\le 5\pi^2/16\).
-
 No electromagnetic coupling and no laboratory protocol is derived.
 -/
 
@@ -64,9 +31,6 @@ private theorem axis_diff_sq_le {k α β : ℝ}
     (α - β) ^ 2 ≤ k ^ 2 := by
   nlinarith
 
-/-- Axis trade-off between unsigned density and signed density:
-\(2k^2(\alpha^2+\beta^2)\le k^4+(\alpha^2-\beta^2)^2\). It is the factored
-inequality \((k^2-(\alpha+\beta)^2)(k^2-(\alpha-\beta)^2)\ge 0\). -/
 theorem axis_trade_off {k α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
     2 * k ^ 2 * (α ^ 2 + β ^ 2) ≤ k ^ 4 + (α ^ 2 - β ^ 2) ^ 2 := by
@@ -76,7 +40,6 @@ theorem axis_trade_off {k α β : ℝ}
     sub_nonneg.mpr (axis_diff_sq_le hα hβ hs)
   nlinarith [mul_nonneg h1 h2]
 
-/-- The axis density is bounded by the square of the cone angle. -/
 theorem axis_abs_density_le {k α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ k) :
     |α ^ 2 - β ^ 2| ≤ k ^ 2 := by
@@ -84,9 +47,6 @@ theorem axis_abs_density_le {k α β : ℝ}
   rw [abs_le]
   constructor <;> nlinarith
 
-/-- Second elementary symmetric function of three numbers bounded by `K`
-in absolute value is at least `-K²`. The bound is attained at two equal
-extremes of one sign and a third of the other. -/
 private theorem elementary_two_ge {K t₀ t₁ t₂ : ℝ}
     (h₀ : |t₀| ≤ K) (h₁ : |t₁| ≤ K) (h₂ : |t₂| ≤ K) :
     -(K ^ 2) ≤ t₀ * t₁ + t₀ * t₂ + t₁ * t₂ := by
@@ -102,7 +62,6 @@ private theorem elementary_two_ge {K t₀ t₁ t₂ : ℝ}
       mul_nonneg (by linarith : (0 : ℝ) ≤ K - t₂)
         (by linarith : (0 : ℝ) ≤ -(t₀ + t₁))]
 
-/-- Three-axis assembly of the axis trade-off. -/
 private theorem three_axis_assembly {k t₀ t₁ t₂ u₀ u₁ u₂ : ℝ}
     (h₀ : 2 * k ^ 2 * u₀ ≤ k ^ 4 + t₀ ^ 2)
     (h₁ : 2 * k ^ 2 * u₁ ≤ k ^ 4 + t₁ ^ 2)
@@ -113,7 +72,6 @@ private theorem three_axis_assembly {k t₀ t₁ t₂ u₀ u₁ u₂ : ℝ}
 
 /-! ### The trade-off between unsigned mass and mismatch -/
 
-/-- Sharp mass–mismatch trade-off on the admissible cone. -/
 theorem pi_sq_mass_le_shield_ceiling_add_J_sq (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
     Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 := by
@@ -135,7 +93,6 @@ theorem pi_sq_mass_le_shield_ceiling_add_J_sq (p : TorsionParams)
   simp only [Fin.sum_univ_three]
   nlinarith [hcore]
 
-/-- Normalized form: \(M_{\mathrm{norm}}\le\frac56+\frac32J_{\mathrm{norm}}^2\). -/
 theorem massNormalized_le_shield_curve (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
     massNormalized p ≤ 5 / 6 + (3 / 2) * JNormalized p ^ 2 := by
@@ -155,8 +112,7 @@ theorem massNormalized_le_shield_curve (p : TorsionParams)
 
 /-! ### The ceiling is attained -/
 
-/-- Wall family attaining the trade-off: axis `0` purely usual, axis `1`
-purely dual, axis `2` on the wall with free split `γ`. -/
+/-- Wall family attaining the trade-off: axis `0` purely usual, axis `1` purely dual, axis `2` on the wall with free split `γ`. -/
 noncomputable def ceilingWitness (γ : ℝ) : TorsionParams where
   alpha := fun a => if a.val = 0 then Real.pi / 2 else if a.val = 1 then 0 else γ
   beta := fun a =>
@@ -189,7 +145,6 @@ theorem isAdmissibleContinuous_ceilingWitness {γ : ℝ}
     norm_num <;>
     linarith
 
-/-- The trade-off is an equality along the whole wall family. -/
 theorem ceilingWitness_attains (γ : ℝ) :
     Real.pi ^ 2 * mass (ceilingWitness γ)
       = 5 * Real.pi ^ 4 / 16 + 4 * J (ceilingWitness γ) ^ 2 := by
@@ -214,30 +169,22 @@ theorem isAdmissibleContinuous_maximalShield :
 
 /-! ### Gravitational neutrality
 
-The target state of a control programme, named so that the ceiling below
-is a statement about something definite. Neutrality constrains the signed
-scalar and nothing else: it is neither the vacuum nor agreement of the two
-rotors.
+Neutrality is neither the vacuum nor agreement of the two rotors.
 -/
 
-/-- Gravitational neutrality, equivalently shielding: the invariant
-torsional mismatch vanishes. -/
+/-- Gravitational neutrality, equivalently shielding: the invariant torsional mismatch vanishes. -/
 def IsGravNeutral (p : TorsionParams) : Prop := J p = 0
 
-/-- Neutrality is exactly equality of the two rapidity budgets. -/
 theorem isGravNeutral_iff_budgets_agree (p : TorsionParams) :
     IsGravNeutral p ↔
       ∑ a : Fin 3, p.alpha a ^ 2 = ∑ a : Fin 3, p.beta a ^ 2 :=
   J_eq_zero_iff p
 
-/-- A neutral configuration still carries the full usual budget as
-unsigned mass. -/
 theorem mass_eq_usual_budget_of_isGravNeutral {p : TorsionParams}
     (h : IsGravNeutral p) : mass p = ∑ a : Fin 3, p.alpha a ^ 2 :=
   mass_eq_sum_alpha_of_J_eq_zero h
 
-/-- Neutrality is neither the vacuum nor coincidence of the two rotors:
-some neutral configuration is massive and still internally torsioned. -/
+/-- Neutrality is neither the vacuum nor coincidence of the two rotors. -/
 theorem exists_isGravNeutral_massive_torsioned :
     ∃ p : TorsionParams, IsGravNeutral p ∧ 0 < mass p ∧
       RelativeRotor.relativeRotor p ≠ 1 :=
@@ -245,8 +192,6 @@ theorem exists_isGravNeutral_massive_torsioned :
 
 /-! ### Consequences for shielding -/
 
-/-- A shielded admissible configuration cannot exceed five sixths of the
-cone's mass ceiling. -/
 theorem mass_le_shield_ceiling {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hJ : J p = 0) :
     mass p ≤ 5 * Real.pi ^ 2 / 16 := by
@@ -266,8 +211,7 @@ theorem exists_admissible_shield_of_mass_eq_ceiling :
   ⟨maximalShield, isAdmissibleContinuous_maximalShield, J_maximalShield,
     mass_maximalShield⟩
 
-/-- The ceiling is a statement about neutrality, not about gravity: full
-repulsion carries no mass penalty at all. -/
+/-- The ceiling is about neutrality, not about gravity: full repulsion carries no mass penalty. -/
 theorem exists_admissible_max_mass_full_repulsion :
     ∃ p : TorsionParams, IsAdmissibleContinuous p ∧
       mass p = 3 * Real.pi ^ 2 / 8 ∧ J p = -(3 * Real.pi ^ 2 / 8) := by
@@ -280,8 +224,6 @@ theorem exists_admissible_max_mass_full_repulsion :
     simp only [Fin.sum_univ_three]
     ring
 
-/-- Equal-scale (isotropic) shields are strictly lighter: the optimal shield
-is necessarily anisotropic. -/
 theorem mass_le_equalScale_ceiling {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
     mass p ≤ 3 * Real.pi ^ 2 / 16 := by
@@ -297,7 +239,6 @@ theorem mass_le_equalScale_ceiling {p : TorsionParams}
   simp only [Fin.sum_univ_three]
   linarith [haxis 0, haxis 1, haxis 2]
 
-/-- At the cone's mass ceiling no shield exists: `|J| ≥ π²/8`. -/
 theorem pi_sq_div_eight_le_abs_J_of_mass_eq_max {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
     Real.pi ^ 2 / 8 ≤ |J p| := by
@@ -309,7 +250,6 @@ theorem pi_sq_div_eight_le_abs_J_of_mass_eq_max {p : TorsionParams}
     exact Real.sqrt_le_sqrt hsq
   rwa [abs_of_nonneg (by positivity : (0 : ℝ) ≤ Real.pi ^ 2 / 8)] at habs
 
-/-- A configuration at the cone's mass ceiling is not neutral. -/
 theorem not_isGravNeutral_of_mass_eq_max {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
     ¬ IsGravNeutral p := by
@@ -320,7 +260,6 @@ theorem not_isGravNeutral_of_mass_eq_max {p : TorsionParams}
   have : (0 : ℝ) < Real.pi ^ 2 / 8 := by positivity
   linarith
 
-/-- At the cone's mass ceiling every axis is purely usual or purely dual. -/
 theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8)
     (a : Fin 3) :
@@ -360,8 +299,6 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
 
 /-! ### Link with dual-only control -/
 
-/-- A usual seed that dual-only excitation can shield carries at most the
-ceiling budget. -/
 theorem sum_alpha_sq_le_shield_ceiling_of_dual_only_shield
     {p q : TorsionParams} (hα : q.alpha = p.alpha)
     (hq : IsAdmissibleContinuous q) (hJ : J q = 0) :

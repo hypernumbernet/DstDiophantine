@@ -12,21 +12,9 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Gaussian generator versus the Pythagorean dual rotor
+# Gaussian generator and the dual rotor
 
-On the equal-odd Beal leaf the hypotenuse is a norm in `ℤ[i]`. That one
-Gaussian integer carries two seats:
-
-* the square-difference legs `(m² − n², 2mn, m² + n²)` are a pure dual rotor
-  (vanishing boost) whose cyclic angle is twice the argument of `m + ni`;
-* the generators read against the integer base of `m² + n² = c^e`, for odd
-  `e ≥ 5`, are a mixed motor. The boost equals `((e − 2) / 2) log c` and
-  exceeds a right angle, so the seed lies outside the admissible cone.
-
-The boost sits on axis `0` and the cyclic angle on axis `1`. The two axes
-do not commute. This is the same split that forces every positive solution
-of degree `n ≥ 3` to be mixed. The cone excludes the generator as a particle
-configuration; it does not decide the integer residual.
+One hypotenuse norm carries a pure dual rotor and, for odd `e ≥ 5`, a mixed motor outside the cone. The cone does not decide the integer residual.
 -/
 
 namespace DstDiophantine
@@ -70,7 +58,6 @@ private theorem sq_ge_of_natAbs_ge {z : ℤ} {k : ℕ} (hk : k ≤ z.natAbs) :
     exact_mod_cast hnat
   simpa [hcast] using this
 
-/-- Opposite parity makes `m² + n²` an odd integer at least `5`. -/
 theorem sum_sq_ge_five_of_opposite_parity {m n : ℤ}
     (hm : m ≠ 0) (hn : n ≠ 0)
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n)) :
@@ -106,7 +93,6 @@ theorem sum_sq_ge_five_of_opposite_parity {m n : ℤ}
       rw [Int.add_emod, hsq, hsq, hm_mod, hn_mod]
     simpa using this
 
-/-- A pure odd power of an opposite-parity norm has base at least `3`. -/
 theorem nat_base_ge_three_of_opposite_parity_pow {m n : ℤ} {c e : ℕ}
     (hm : m ≠ 0) (hn : n ≠ 0)
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
@@ -136,10 +122,6 @@ theorem nat_base_ge_three_of_opposite_parity_pow {m n : ℤ} {c e : ℕ}
     ring
   exact Int.not_odd_iff_even.mpr heven hodd'
 
-/--
-`m² + n² = c^e` fixes the radius boost:
-`α = ((e − 2) / 2) log c`.
--/
 theorem fermatBoost_of_sum_sq_eq_pow {m n c : ℤ} {e : ℕ}
     (hm : 0 < m) (hn : 0 < n) (hc : 0 < c)
     (heq : m ^ 2 + n ^ 2 = c ^ e) :
@@ -174,7 +156,6 @@ private theorem half_pi_lt_three_halves_log_three :
   have hpi : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
   nlinarith
 
-/-- For `e ≥ 5` and base at least `3`, the norm boost exceeds a right angle. -/
 theorem fermatBoost_gt_half_pi_of_sum_sq_eq_pow {m n c : ℤ} {e : ℕ}
     (hm : 0 < m) (hn : 0 < n) (hc : 3 ≤ c) (he : 5 ≤ e)
     (heq : m ^ 2 + n ^ 2 = c ^ e) :
@@ -322,7 +303,6 @@ theorem natAbs_ne_of_opposite_parity {m n : ℤ}
   · exact Nat.not_even_iff_odd.mpr ho he
   · exact Nat.not_even_iff_odd.mpr ho he
 
-/-- The cyclic angle of the legs is twice the argument of the Gaussian generator. -/
 theorem fermatAngle_pythagorean_eq_two_mul {m n : ℤ}
     (hm : 0 < m) (hn : 0 < n) (hlt : n < m) :
     fermatAngle (m ^ 2 - n ^ 2) (2 * m * n)
@@ -353,7 +333,6 @@ theorem fermatAngle_pythagorean_eq_two_mul {m n : ℤ}
     field_simp
   rw [hcast, htwo]
 
-/-- The same doubling, measured from the larger coordinate when it is the second generator. -/
 theorem fermatAngle_pythagorean_eq_two_mul_of_gt {m n : ℤ}
     (hm : 0 < m) (hn : 0 < n) (hlt : m < n) :
     fermatAngle (m ^ 2 - n ^ 2) (2 * m * n)
@@ -394,7 +373,6 @@ private theorem torsionParams_eq {p q : TorsionParams}
   cases hβ
   rfl
 
-/-- The Pythagorean seat is the dual rotor of its cyclic angle. -/
 theorem fermatTorsion_eq_pureRotation1_of_pythagorean {m n : ℤ}
     (hm : m ≠ 0) (_hn : n ≠ 0) (hne : m.natAbs ≠ n.natAbs) :
     fermatTorsion (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2)
@@ -419,7 +397,6 @@ theorem fermatTorsion_eq_pureRotation1_of_pythagorean {m n : ℤ}
     fin_cases i <;> simp [fermatTorsion, pureRotation1]
   exact torsionParams_eq hα hβ
 
-/-- The square-difference seat lies in the admissible cone. -/
 theorem isAdmissible_pythagorean_generators {m n : ℤ}
     (hm : m ≠ 0) (_hn : n ≠ 0) (hne : m.natAbs ≠ n.natAbs) :
     IsAdmissibleContinuous
@@ -445,11 +422,6 @@ theorem isAdmissible_pythagorean_generators {m n : ℤ}
   · refine ⟨by simp [fermatTorsion], by simp [fermatTorsion], ?_⟩
     simpa [fermatTorsion] using Real.pi_div_two_pos.le
 
-/--
-Equal-odd Gaussian hypotenuse of exponent `e ≥ 5`: the generator is a mixed
-hyperbolic motor outside the admissible cone, and the square-difference legs
-are an admissible pure dual rotor.
--/
 theorem gaussian_hyp_split_of_exp_ge_five {m n : ℤ} {e : ℕ}
     (he : 5 ≤ e) (hm : m ≠ 0) (hn : n ≠ 0)
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))

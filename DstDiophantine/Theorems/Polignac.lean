@@ -20,46 +20,9 @@ import Mathlib.Tactic.Ring
 set_option linter.style.native false
 
 /-!
-# Phase 5: Polignac / twin primes (DST even-gap core)
+# Even prime gaps
 
-We formalise Chapter 9 of `dst-diophantine.tex` as an **even-gap null-translator
-+ cumulative excess height** argument. Twin primes are the special case `k = 1`.
-
-## The cone as the stable phase
-
-The partner of `2` by an even gap `2k > 0` is composite, so no Polignac pair
-meets the admissible cone. The smaller member is an odd prime. It lies in the
-shell if and only if it is `3`, and the partner then has height greater than
-one, as does the partner of every other pair. A pair with smaller member at
-least `5` has height greater than one at both vertices.
-
-The gap integer `2k` itself lies on the stable phase if and only if `k = 1`.
-Every wider gap has height greater than one.
-
-## Relative rotor
-
-For `q = p + 2k` the rapidity is `δ = log(q/p)`, the same rapidity as the
-Goldbach sum channel (`AdditivePhase`). The two channels are the one hyperbola
-`(n/2)² - k² = pq`. The relative rotor is the pure
-boost of angle `2δ`, with mismatch `J = 2δ²`. The gap is positive, so the
-mismatch is positive. The half-gap and the geometric mean are tied by
-`k = √(pq) sinh(δ/2)`. Once `p ≥ 2k`, the ratio is at most `2`, so the relative
-rotor lies in the cone; every twin pair is in this range, while neither prime
-meets the phase. The pair `(3, 7)` has gap `4` and relative angle past `π/2`.
-The pair `(7, 11)` has the same gap and an admissible relative rotor. For fixed
-`k` the normalised height is strictly less than `(16/(3π²))(2k/p)²`, which
-falls below every positive tolerance.
-
-## Paper gap (not closed)
-
-Classical Polignac (`∀ k > 0, infinitely many primes p with p+2k also prime`) is
-**not** claimed unconditionally. A gap smaller than `2k` contributes a negative
-excess, so omitting one even value does not force the model height above one.
-A positive lower bound holds only under **strong avoidance** `g_n ≥ 2k + 2`.
-An admissible pure boost has height at most one, whether or not the Polignac
-set is finite, so `PolignacAdmissibleBridge` has no witness. The bridge holds
-if and only if the conjecture does (`polignacAdmissibleBridge_iff`). It is not
-a reduction.
+No Polignac pair meets the admissible cone, and twin primes are the gap `2`. Classical Polignac is not claimed; `PolignacAdmissibleBridge` is not a reduction.
 -/
 
 namespace DstDiophantine
@@ -143,7 +106,6 @@ theorem gapChainHeight_eq (S : ℝ) :
   have hnonneg : 0 ≤ (4 / (3 * Real.pi ^ 2)) * S ^ 2 := by positivity
   exact abs_of_nonneg hnonneg
 
-/-- Strong avoidance: each gap is at least two more than the target even gap. -/
 theorem strong_avoidance_term_ge {g p k : ℕ} (hp : 0 < p) (hg : 2 * k + 2 ≤ g) :
     (2 : ℝ) / p ≤ gapExcessTerm g p k := by
   unfold gapExcessTerm
@@ -171,7 +133,6 @@ theorem strong_avoidance_pair {g₁ g₂ p₁ p₂ k : ℕ}
   simp [gapExcessSum, List.zipWith]
   linarith
 
-/-- A gap strictly below the chosen even gap contributes a negative excess. -/
 theorem gapExcessTerm_neg_of_smaller {g p k : ℕ} (hp : 0 < p) (hg : g < 2 * k) :
     gapExcessTerm g p k < 0 := by
   unfold gapExcessTerm
@@ -250,21 +211,18 @@ theorem exists_polignac_gap_six_of_le_thirty :
 
 /-! ### The cone as the stable phase -/
 
-/-- The even translate of `2` by a positive gap is composite. -/
 theorem polignac_two_partner_composite {k : ℕ} (hk : 0 < k) :
     ¬ Nat.Prime (2 + 2 * k) := by
   refine Nat.not_prime_of_dvd_of_lt ?_ (by decide : 1 < 2) ?_
   · exact ⟨1 + k, by ring⟩
   · omega
 
-/-- No Polignac pair has smaller member `2`. -/
 theorem polignac_not_two {p k : ℕ} (h : IsPolignacPair p k) : p ≠ 2 := by
   intro hp2
   have hprime : Nat.Prime (p + 2 * k) := h.2.1
   rw [hp2] at hprime
   exact polignac_two_partner_composite h.2.2 hprime
 
-/-- Neither member of a Polignac pair lies on the stable phase. -/
 theorem polignac_outside_cone {p k : ℕ} (h : IsPolignacPair p k) :
     ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
       ¬ Discrete.IsAdmissibleContinuous
@@ -278,14 +236,12 @@ theorem polignac_outside_cone {p k : ℕ} (h : IsPolignacPair p k) :
     have hk : 0 < k := h.2.2
     omega
 
-/-- The smaller member lies in the shell if and only if it is `3`. -/
 theorem polignac_smaller_shell_iff {p k : ℕ} (h : IsPolignacPair p k) :
     (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
         collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) < 1) ↔
       p = 3 :=
   prime_shell_iff h.1
 
-/-- The partner of every Polignac pair has height greater than one. -/
 theorem polignac_partner_height {p k : ℕ} (h : IsPolignacPair p k) :
     1 < collatzHeight (p + 2 * k)
       (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.2.1)) := by
@@ -297,12 +253,10 @@ theorem polignac_partner_height {p k : ℕ} (h : IsPolignacPair p k) :
   have h5 : 5 ≤ p + 2 * k := by omega
   exact collatzHeight_ge_four_gt_one (le_trans (by decide : 4 ≤ 5) h5)
 
-/-- A smaller member at least `5` has height greater than one. -/
 theorem polignac_smaller_height {p k : ℕ} (h : IsPolignacPair p k) (hp : 5 ≤ p) :
     1 < collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) :=
   collatzHeight_ge_four_gt_one (by omega)
 
-/-- The first twin meets the shell at `3`, and `5` lies beyond unit height. -/
 theorem twin_three_five_phase :
     (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) ∧
         collatzHeight 3 (by decide : (3 : ℕ) ≠ 0) < 1) ∧
@@ -310,7 +264,6 @@ theorem twin_three_five_phase :
   refine ⟨(prime_shell_iff (by decide : Nat.Prime 3)).mpr rfl, ?_⟩
   exact collatzHeight_ge_four_gt_one (by decide : 4 ≤ 5)
 
-/-- An admissible pure boost never has gap-chain height greater than one. -/
 theorem gapChainHeight_admissible_le_one {S : ℝ}
     (hadm : IsAdmissibleContinuous (pureBoost S)) :
     gapChainHeight S ≤ 1 := by
@@ -323,7 +276,6 @@ theorem polignac_admissible_witness_empty :
 
 /-! ### The gap integer on the axis -/
 
-/-- The even gap `2k` lies on the stable phase if and only if it is the twin gap. -/
 theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
     IsAdmissibleContinuous (pureBoost (2 * Real.log ((2 * k : ℕ) : ℝ))) ↔ k = 1 := by
   have hpos : 0 < 2 * k := by omega
@@ -337,15 +289,13 @@ theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
     subst hk1
     exact Or.inr rfl
 
-/-- Every even gap wider than `2` has integer height greater than one. -/
 theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
     1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=
   collatzHeight_ge_four_gt_one (by omega : 4 ≤ 2 * k)
 
 /-! ### Relative rotor of a pair
 
-The rapidity is `δ = log((p+2k)/p)`. The relative rotor is the pure boost of
-angle `2δ`, so the mismatch is `J = 2δ²`, on the same scale as an integer boost.
+The rapidity is `δ = log((p+2k)/p)`. The relative rotor is the pure boost of angle `2δ`, so `J = 2δ²`.
 -/
 
 /-- Rapidity of the ratio `(p + 2k) / p`. -/
@@ -397,7 +347,6 @@ theorem polignac_mismatch_pos {p k : ℕ} (h : IsPolignacPair p k) :
   have hsq : 0 < (polignacRapidity p k (Nat.Prime.ne_zero h.1)) ^ 2 := sq_pos_of_pos hδ
   nlinarith
 
-/-- Half-gap equals the geometric mean times `sinh` of half the mismatch rapidity. -/
 theorem polignac_equation_of_state {p k : ℕ} (h : IsPolignacPair p k) :
     (k : ℝ) =
       Real.sqrt ((p : ℝ) * (p + 2 * k : ℕ)) *
@@ -445,13 +394,11 @@ theorem polignac_equation_of_state {p k : ℕ} (h : IsPolignacPair p k) :
     dsimp [q]
   rw [hprod, hs, hgap]
 
-/-- Once the smaller member is at least the gap, the ratio is at most `2`. -/
 theorem polignac_ratio_le_two {p k : ℕ} (hp : 0 < p) (hge : 2 * k ≤ p) :
     ((p + 2 * k : ℕ) : ℝ) / p ≤ 2 := by
   rw [div_le_iff₀ (by exact_mod_cast hp)]
   exact_mod_cast (show p + 2 * k ≤ 2 * p by omega)
 
-/-- The relative rotor lies in the cone when the smaller member is at least the gap. -/
 theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge : 2 * k ≤ p) :
     IsAdmissibleContinuous
       (pureBoost (2 * polignacRapidity p k (Nat.Prime.ne_zero h.1))) := by
@@ -473,8 +420,6 @@ theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge :
   have hlog0 : 0 ≤ Real.log (((p + 2 * k : ℕ) : ℝ) / p) := Real.log_nonneg hge1
   positivity
 
-/-- Every twin pair has an admissible relative rotor, positive mismatch, and both
-primes off the stable phase. -/
 theorem twin_relative_admissible {p : ℕ} (h : IsTwinPrimePair p) :
     IsAdmissibleContinuous
         (pureBoost (2 * polignacRapidity p 1 (Nat.Prime.ne_zero h.1))) ∧
@@ -489,7 +434,6 @@ theorem twin_relative_admissible {p : ℕ} (h : IsTwinPrimePair p) :
   refine ⟨polignac_relative_admissible hpair (by omega), polignac_mismatch_pos hpair,
     (polignac_outside_cone hpair).1, (polignac_outside_cone hpair).2⟩
 
-/-- The pair `3` and `7` has gap `4`, and its relative angle exceeds `π/2`. -/
 theorem two_log_seven_div_three_gt_pi_div_two :
     Real.pi / 2 < 2 * Real.log ((7 : ℝ) / 3) := by
   have hlog3 : (1.0986122885 : ℝ) < Real.log 3 := Real.log_three_gt_d9
@@ -529,8 +473,6 @@ theorem polignac_seven_two : IsPolignacPair 7 2 := by
   · native_decide
   · native_decide
 
-/-- The gap-`4` pair `7` and `11` has its relative rotor in the cone, and both
-primes off the phase. -/
 theorem polignac_seven_eleven_relative_admissible :
     IsAdmissibleContinuous
         (pureBoost (2 * polignacRapidity 7 2 (by decide : (7 : ℕ) ≠ 0))) ∧
@@ -540,7 +482,6 @@ theorem polignac_seven_eleven_relative_admissible :
   exact ⟨polignac_relative_admissible h (by decide : 2 * 2 ≤ 7),
     (polignac_outside_cone h).1, (polignac_outside_cone h).2⟩
 
-/-- For a fixed gap the normalised mismatch is strictly below `(16/(3π²))(2k/p)²`. -/
 theorem polignac_mismatchHeight_lt_envelope {p k : ℕ} (hp : 0 < p) (hk : 0 < k) :
     polignacMismatchHeight p k (Nat.pos_iff_ne_zero.mp hp) <
       (16 / (3 * Real.pi ^ 2)) * ((2 * (k : ℝ)) / (p : ℝ)) ^ 2 := by
@@ -568,7 +509,6 @@ theorem polignac_mismatchHeight_lt_envelope {p k : ℕ} (hp : 0 < p) (hk : 0 < k
     exact hlog
   exact mul_lt_mul_of_pos_left hsq (by positivity)
 
-/-- The envelope `(16/(3π²))(2k/p)²` falls below every positive tolerance. -/
 theorem polignac_envelope_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ} (hε : 0 < ε) :
     ∃ B : ℕ, ∀ p : ℕ, B ≤ p →
       (16 / (3 * Real.pi ^ 2)) * ((2 * (k : ℝ)) / (p : ℝ)) ^ 2 < ε := by
@@ -600,8 +540,6 @@ theorem polignac_envelope_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ} (hε :
     ring
   linarith
 
-/-- For each fixed gap, every sufficiently large Polignac pair has mismatch height
-below a prescribed positive tolerance. -/
 theorem polignac_mismatch_height_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ} (hε : 0 < ε) :
     ∃ B : ℕ, ∀ p : ℕ, B ≤ p → ∀ h : IsPolignacPair p k,
       polignacMismatchHeight p k (Nat.Prime.ne_zero h.1) < ε := by
@@ -612,7 +550,6 @@ theorem polignac_mismatch_height_eventually_lt {k : ℕ} (hk : 0 < k) {ε : ℝ}
   have henv := hB p hp
   simpa using lt_trans hlt henv
 
-/-- For a fixed gap the mismatch height falls as the smaller member grows. -/
 theorem polignac_mismatchHeight_strictAnti {p q k : ℕ}
     (hp : 0 < p) (hlt : p < q) (hk : 0 < k) :
     polignacMismatchHeight q k (Nat.pos_iff_ne_zero.mp (by omega : 0 < q)) <
@@ -643,19 +580,12 @@ theorem polignac_mismatchHeight_strictAnti {p q k : ℕ}
 
 /-! ### Classical Polignac under an explicit bridge hypothesis -/
 
-/--
-Paper Chapter 9's missing bridge: if Polignac pairs for gap `2k` are bounded,
-then a strongly avoiding prime-gap tail yields an admissible pure-boost
-configuration with `gapChainHeight > 1`.
-
-This proposition is **not** proved in this development.
--/
+/-- Unproved bridge, equivalent to classical Polignac, not a reduction. -/
 def PolignacAdmissibleBridge : Prop :=
   ∀ k : ℕ, 0 < k →
     (¬ ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k) →
       ∃ S : ℝ, IsAdmissibleContinuous (pureBoost S) ∧ 1 < gapChainHeight S
 
-/-- Conditional DST recovery of Polignac's conjecture. -/
 theorem polignac_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
     ∀ k : ℕ, 0 < k → ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k := by
   intro k hk
@@ -665,7 +595,6 @@ theorem polignac_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
   unfold gapChainHeight at hgt
   exact (not_le_of_gt hgt) hbound
 
-/-- Twin-prime conjecture as the `k = 1` case under the same bridge. -/
 theorem twin_prime_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
     ∀ B : ℕ, ∃ p, B < p ∧ IsTwinPrimePair p :=
   fun B => polignac_conjecture_of_bridge hbridge 1 (Nat.succ_pos 0) B
@@ -676,7 +605,6 @@ theorem polignacAdmissibleBridge_of_infinite
   intro k hk hnot
   exact absurd (h k hk) hnot
 
-/-- The bridge holds exactly when every even gap returns infinitely often. -/
 theorem polignacAdmissibleBridge_iff :
     PolignacAdmissibleBridge ↔
       (∀ k : ℕ, 0 < k → ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k) :=

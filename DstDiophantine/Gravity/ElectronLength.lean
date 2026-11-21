@@ -11,25 +11,10 @@ set_option linter.style.native false
 /-!
 # Outer-well cap on the electromagnetic length
 
-## Paper boundary (do **not** claim)
-
-The electromagnetic length is the reduced Compton wavelength `ℏ/(m_e c)`.
-The laboratory cap lies above it. The Bohr radius and `α` are external
-inputs. The radius `a₀/Z` is not an input. Nothing here produces a Bohr
-spectrum, a dissociation energy, or an identification of the square with a
-laboratory bond.
-
-## What is proved
-
-* A radius in the outer well forces `ℓ < (19/10) r`, because `x₁ < 19/20`.
-* Attraction at the Bohr radius forces `ℓ < lambdaHyp` and
-  `ℓ < (19/10) a₀`. The rational cap lies strictly above `lambdaHyp`.
-* On the SI stand-ins that cap lies in `(1005/10¹³, 1006/10¹³)` m.
-* Placing the first node at `a₀` puts the phase of the radius `a₀/2` where
-  `γ_s < 0`.
-* The length `ℏ/(m_e c)` lies strictly below that cap, in
-  `(3861/10¹⁶, 3862/10¹⁶)` m. Its first node lies in
-  `(2032/10¹⁶, 2069/10¹⁶)` m.
+The representative electromagnetic length is the reduced Compton wavelength
+\(\hbar/(m_e c)\), and the laboratory cap lies above it. The Bohr radius and
+\(\alpha\) are inputs; no Bohr spectrum is produced, and the radius \(a_0/Z\)
+is not an input.
 -/
 
 namespace DstDiophantine
@@ -40,7 +25,6 @@ open Real Set SI
 
 /-! ### Phase cap -/
 
-/-- An outer-well radius `r > ℓ/(2x₁)` forces `ℓ < (19/10) r`. -/
 theorem outerWell_ell_lt_nineteen_tenths {ℓ r : ℝ} (hr : 0 < r)
     (hwell : ℓ / (2 * resonanceRoot1) < r) :
     ℓ < (19 / 10) * r := by
@@ -55,7 +39,6 @@ theorem outerWell_ell_lt_nineteen_tenths {ℓ r : ℝ} (hr : 0 < r)
     _ < 2 * r * (19 / 20) := by nlinarith
     _ = (19 / 10) * r := by ring
 
-/-- Attraction at the Bohr radius forces `ℓ` strictly below `lambdaHyp`. -/
 theorem bohr_outer_well_lt_lambdaHyp {ℓ : ℝ}
     (hwell : ℓ / (2 * resonanceRoot1) < (bohrRadiusApprox : ℝ)) :
     ℓ < lambdaHyp := by
@@ -67,7 +50,6 @@ theorem bohr_outer_well_lt_lambdaHyp {ℓ : ℝ}
   unfold lambdaHyp
   linarith
 
-/-- The rational cap sits strictly above the sharp cap `lambdaHyp`. -/
 theorem lambdaHyp_lt_nineteen_tenths_bohr :
     lambdaHyp < (19 / 10) * (bohrRadiusApprox : ℝ) := by
   unfold lambdaHyp
@@ -184,8 +166,6 @@ theorem bohrEllCap_meter_window :
 
 /-! ### The node at `a₀` puts `a₀/2` where `γ_s < 0` -/
 
-/-- If the first node sits at `a₀`, the phase of the radius `a₀/2` is `2x₁`,
-where `γ_s < 0`. An unlike pair repels there. -/
 theorem bohr_node_repels_half :
     gammaSEqual (lambdaHyp / (bohrRadiusApprox : ℝ)) < 0 := by
   have ha0 : (bohrRadiusApprox : ℝ) ≠ 0 :=
@@ -336,8 +316,7 @@ theorem ellRep_nodeUpper_meter_window :
   rw [rat_pow_ten_sixteen]
   exact h
 
-/-- The first node of the electron Compton wavelength lies strictly between
-`2032×10⁻¹⁶` m and `2069×10⁻¹⁶` m. -/
+/-- The first node of the electron Compton wavelength lies strictly between `2032×10⁻¹⁶` m and `2069×10⁻¹⁶` m. -/
 theorem ellRep_node_meter_window :
     (2032 : ℝ) / 10 ^ 16 < (ellRep : ℝ) / (2 * resonanceRoot1) ∧
       (ellRep : ℝ) / (2 * resonanceRoot1) < (2069 : ℝ) / 10 ^ 16 := by

@@ -6,27 +6,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Algebra.Order.Group.Abs
 
 /-!
-# Torsional invariants `J`, `J⁽⁵⁾`, and unsigned mass `M`
+# Torsional invariants `J`, `J₅`, and unsigned mass
 
-The six-dimensional torsional scalar, its five-dimensional extension with the
-Minkowski translation term, and the unsigned Euclidean mass that splits
-label `T` into vacuum versus balanced massive.
-
-## Boundedness
-
-On admissible configurations (`IsAdmissibleContinuous`: non-negative rapidities
-with `α + β ≤ π/2` on each axis) one has `|J| ≤ 3π²/8` and `|JNormalized| ≤ 1`,
-where `JNormalized = (8/(3π²)) J`. The raw bound `|J| ≤ 1` is not this
-statement. `IsPrincipalBranch` alone, without the sign restriction, does not
-bound `J` (`torsion_bound_naive_false`).
-
-## Killing form
-
-Assume generator orthonormality `B(B⁺_a,B⁺_b)=8 δ_{ab}`, `B(B⁻_a,B⁻_b)=-8 δ_{ab}`
-and expand `Ω = omegaTorsion p = ∑ (α_a/2) B⁺_a + (β_a/2) B⁻_a`. Then
-`B(Ω,Ω) = 2 ∑(α²-β²)`. The scalar `J = ½∑(α²-β²)` is four times
-`(1/16) B(Ω,Ω)` under that expansion. The coefficient `8 ∑(α²-β²)` is not
-this pairing (`paper_appendix_killing_coeff_false`).
+On the admissible cone `|JNormalized| ≤ 1`. `IsPrincipalBranch` alone does not bound `J`, and `8 ∑(α²-β²)` is not the Killing pairing.
 -/
 
 namespace DstDiophantine
@@ -39,10 +21,7 @@ namespace Invariant
 def killingForm (p q : TorsionParams) : ℝ :=
   8 * (∑ a : Fin 3, (p.alpha a * q.alpha a - p.beta a * q.beta a))
 
-/--
-Generator Killing form evaluated on the half-angle coefficients of `omegaTorsion`:
-`∑_a 8 (α_a/2)² + (-8) (β_a/2)²`.
--/
+/-- Generator Killing form evaluated on the half-angle coefficients of `omegaTorsion`: `∑_a 8 (α_a/2)² + (-8) (β_a/2)²`. -/
 noncomputable def omegaTorsionGeneratorKilling (p : TorsionParams) : ℝ :=
   ∑ a : Fin 3, (8 * (p.alpha a / 2) ^ 2 + (-8) * (p.beta a / 2) ^ 2)
 
@@ -53,8 +32,6 @@ theorem omegaTorsionGeneratorKilling_eq (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring_nf
 
-/-- Under generator orthonormality, `B(omegaTorsion p, omegaTorsion p)` equals
-`omegaTorsionGeneratorKilling p = 2 ∑(α²-β²)`. -/
 theorem omegaTorsion_killing_vs_param (p : TorsionParams) :
     omegaTorsionGeneratorKilling p = (1 / 4) * killingForm p p := by
   rw [omegaTorsionGeneratorKilling_eq]
@@ -62,10 +39,7 @@ theorem omegaTorsion_killing_vs_param (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring_nf
 
-/--
-The coefficient `8 ∑(α²-β²)` is not `B(Ω,Ω)` for
-`Ω = ∑(α/2)iΓ+(β/2)Γ`. The generator expansion yields `2 ∑(α²-β²)`.
--/
+/-- The coefficient `8 ∑(α²-β²)` is not this Killing expansion. -/
 theorem paper_appendix_killing_coeff_false :
     ∃ p : TorsionParams,
       omegaTorsionGeneratorKilling p ≠
@@ -85,7 +59,7 @@ theorem J_coef (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring_nf
 
-/-- `(1/16) B(Ω,Ω)` under the generator expansion is `⅛∑(α²-β²)`, not `J`. -/
+/-- `(1/16) B(Ω,Ω)` equals `⅛∑(α²-β²)`, not `J`. -/
 theorem one_sixteenth_omegaKilling_eq (p : TorsionParams) :
     (1 / 16) * omegaTorsionGeneratorKilling p =
       (1 / 8) * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := by
@@ -112,11 +86,7 @@ theorem JNormalized_coef (p : TorsionParams) :
 def euclideanForm (p q : TorsionParams) : ℝ :=
   8 * (∑ a : Fin 3, (p.alpha a * q.alpha a + p.beta a * q.beta a))
 
-/--
-Unsigned torsional mass `M = ½∑(α²+β²)`. Same normalisation coefficient as
-`J`, so a pure-boost extremal has `massNormalized = 1 = JNormalized`.
-This is a second observable, not a fifth D4L label.
--/
+/-- Unsigned mass `M = ½∑(α²+β²)`; not a fifth D4L label. -/
 noncomputable def mass (p : TorsionParams) : ℝ :=
   (1 / 16) * euclideanForm p p
 
@@ -159,13 +129,11 @@ theorem J_eq_zero_of_mass_eq_zero {p : TorsionParams} (h : mass p = 0) :
   rw [J_coef]
   simp [Fin.sum_univ_three, (hz 0).1, (hz 0).2, (hz 1).1, (hz 1).2, (hz 2).1, (hz 2).2]
 
-/-- Usual–dual swap flips the sign of `J`. -/
 theorem J_dagger (p : TorsionParams) : J (daggerParams p) = -J p := by
   rw [J_coef, J_coef]
   simp only [daggerParams, Fin.sum_univ_three]
   ring
 
-/-- Usual–dual swap preserves unsigned mass. -/
 theorem mass_dagger (p : TorsionParams) : mass (daggerParams p) = mass p := by
   rw [mass_coef, mass_coef]
   simp only [daggerParams, Fin.sum_univ_three]
@@ -203,7 +171,6 @@ theorem JNormalized_eq_zero_of_massNormalized_eq_zero {p : TorsionParams}
   unfold JNormalized
   simp [J_eq_zero_of_mass_eq_zero ((massNormalized_eq_zero_iff p).mp h)]
 
-/-- Height cannot exceed mass. Equality holds iff one sector vanishes. -/
 theorem abs_J_le_mass (p : TorsionParams) : |J p| ≤ mass p := by
   rw [abs_le, J_coef, mass_coef]
   constructor
@@ -277,23 +244,18 @@ theorem abs_J_eq_mass_iff (p : TorsionParams) :
         simp [hα0]
       rw [hJ, abs_neg, abs_eq_self.mpr (mass_nonneg p)]
 
-/-- Unconditional: \(J+M=\sum\alpha^2\). Dual-only motion therefore
-conserves \(J+M\). -/
 theorem J_add_mass (p : TorsionParams) :
     J p + mass p = ∑ a : Fin 3, p.alpha a ^ 2 := by
   rw [J_coef, mass_coef]
   simp only [Fin.sum_univ_three]
   ring
 
-/-- Unconditional: \(M-J=\sum\beta^2\). Usual-only motion therefore
-conserves \(M-J\). -/
 theorem mass_sub_J (p : TorsionParams) :
     mass p - J p = ∑ a : Fin 3, p.beta a ^ 2 := by
   rw [J_coef, mass_coef]
   simp only [Fin.sum_univ_three]
   ring
 
-/-- Unconditional: \(J=0\) iff the two rapidity budgets agree. -/
 theorem J_eq_zero_iff (p : TorsionParams) :
     J p = 0 ↔ ∑ a : Fin 3, p.alpha a ^ 2 = ∑ a : Fin 3, p.beta a ^ 2 := by
   constructor <;> intro h <;> linarith [J_add_mass p, mass_sub_J p]
@@ -311,7 +273,6 @@ theorem abs_JNormalized_le_massNormalized (p : TorsionParams) :
   rw [abs_mul, abs_of_nonneg hcoef]
   exact mul_le_mul_of_nonneg_left (abs_J_le_mass p) hcoef
 
-/-- Axis-wise factorisation behind the Killing quadratic form. -/
 theorem axis_sq_diff_eq (α β : ℝ) : α ^ 2 - β ^ 2 = (α - β) * (α + β) := by ring
 
 /-- Pure hyperbolic dominance on every axis (positive extremal of the cone). -/
@@ -322,7 +283,6 @@ def IsPureHyperbolic (p : TorsionParams) : Prop :=
 def IsPureElliptic (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, p.alpha a = 0 ∧ p.beta a = Real.pi / 2
 
-/-- Axis-wise bound under non-negative rapidities with `α + β ≤ π/2`. -/
 theorem sq_diff_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
@@ -336,13 +296,11 @@ theorem sq_diff_le_half_pi_sq {α β : ℝ}
     rw [abs_of_nonneg hnonneg]
     nlinarith [sq_nonneg (α - β)]
 
-/-- Unsigned axis mass is bounded by the same cone ceiling as the signed gap. -/
 theorem sq_sum_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     α ^ 2 + β ^ 2 ≤ (Real.pi / 2) ^ 2 := by
   nlinarith [sq_nonneg (α + β), mul_nonneg hα hβ]
 
-/-- Equality in the unsigned axis bound is the same pair of extremes. -/
 theorem sq_sum_eq_half_pi_sq_iff {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     α ^ 2 + β ^ 2 = (Real.pi / 2) ^ 2 ↔
@@ -364,7 +322,6 @@ theorem sq_sum_eq_half_pi_sq_iff {α β : ℝ}
     · exact Or.inl ⟨by linarith [hsum_eq], hβ0⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
 
-/-- Equality in the axis-wise bound holds exactly at the two extremes. -/
 theorem sq_diff_eq_half_pi_sq_iff {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     |α ^ 2 - β ^ 2| = (Real.pi / 2) ^ 2 ↔
@@ -377,7 +334,6 @@ theorem sq_diff_eq_half_pi_sq_iff {α β : ℝ}
     rcases le_total α β with hle | hle
     · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
       rw [abs_of_nonpos hnonpos] at heq
-      -- β² - α² = (π/2)² and β - α ≤ β + α ≤ π/2, so both factors saturate
       have hfac : (β - α) * (α + β) = (Real.pi / 2) ^ 2 := by
         have : β ^ 2 - α ^ 2 = (β - α) * (α + β) := by ring
         linarith
@@ -436,7 +392,6 @@ theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContin
       mul_le_mul_of_nonneg_left habs (by norm_num)
     _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by linarith [hsum]
 
-/-- Explicit raw ceiling `|J| ≤ 3π²/8` on admissible continuous configurations. -/
 theorem torsion_bound_raw_continuous_pi_sq (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
     |J p| ≤ 3 * Real.pi ^ 2 / 8 := by
@@ -444,7 +399,6 @@ theorem torsion_bound_raw_continuous_pi_sq (p : TorsionParams)
   convert hJ using 1
   ring
 
-/-- Raw bound `|J| ≤ 3π²/8` on admissible discrete configurations. -/
 theorem torsion_bound_raw {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
   torsion_bound_raw_continuous _ (admissible_continuous_of_discrete t h)
@@ -453,7 +407,6 @@ theorem torsion_bound_raw_pi_sq {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h 
     |J (toTorsionParams t)| ≤ 3 * Real.pi ^ 2 / 8 :=
   torsion_bound_raw_continuous_pi_sq _ (admissible_continuous_of_discrete t h)
 
-/-- Normalized bound `|JNormalized| ≤ 1` on admissible continuous configurations. -/
 theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |JNormalized p| ≤ 1 := by
   unfold JNormalized
@@ -465,12 +418,10 @@ theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous
         ≤ (8 / (3 * Real.pi ^ 2)) * (3 * (Real.pi / 2) ^ 2 / 2) := by gcongr
     _ = 1 := by field_simp; ring
 
-/-- Normalized bound on admissible discrete configurations. -/
 theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
     |JNormalized (toTorsionParams t)| ≤ 1 :=
   torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
 
-/-- Raw mass ceiling `M ≤ 3π²/8` on the admissible cone. -/
 theorem mass_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     mass p ≤ 3 * Real.pi ^ 2 / 8 := by
   rw [mass_coef]
@@ -485,7 +436,6 @@ theorem mass_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuou
   convert this using 1
   ring
 
-/-- Normalized mass `0 ≤ M_norm ≤ 1` on the admissible cone. -/
 theorem massNormalized_bound_continuous (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
     massNormalized p ≤ 1 := by
@@ -497,7 +447,6 @@ theorem massNormalized_bound_continuous (p : TorsionParams)
         ≤ (8 / (3 * Real.pi ^ 2)) * (3 * Real.pi ^ 2 / 8) := by gcongr
     _ = 1 := by field_simp
 
-/-- Appendix pure-boost extremal attains `JNormalized = 1`. -/
 theorem JNormalized_extremal :
     JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
   unfold JNormalized J killingForm
@@ -505,7 +454,6 @@ theorem JNormalized_extremal :
   field_simp [Real.pi_ne_zero]
   ring_nf
 
-/-- Appendix pure-elliptic extremal attains `JNormalized = -1`. -/
 theorem JNormalized_extremal_neg :
     JNormalized { alpha := fun _ => 0, beta := fun _ => Real.pi / 2 } = -1 := by
   unfold JNormalized J killingForm
@@ -541,10 +489,7 @@ noncomputable def pureEllipticRay (t : ℝ) : TorsionParams where
   alpha := fun _ => 0
   beta := fun _ => t * (Real.pi / 2)
 
-/--
-Uniform equal usual–dual rapidity on every axis. Label `T` with positive
-mass when `t ≠ 0`: the geometric seat of balanced Beal seeds.
--/
+/-- Equal usual and dual rapidity on every axis. -/
 noncomputable def balancedRay (t : ℝ) : TorsionParams where
   alpha := fun _ => t * (Real.pi / 4)
   beta := fun _ => t * (Real.pi / 4)
@@ -631,14 +576,13 @@ theorem not_admissible_balancedRay_of_one_lt {t : ℝ} (ht : 1 < t) :
   have hπ : 0 < Real.pi / 2 := by positivity
   nlinarith
 
-/-- Paper Ch.6 step “`J = 0` ⇒ vacuum / trivial bases” is false. -/
+/-- `J = 0` on the cone does not force vanishing mass. -/
 theorem JNormalized_zero_not_implies_vacuum :
     ∃ p : TorsionParams,
       IsAdmissibleContinuous p ∧ JNormalized p = 0 ∧ 0 < mass p :=
   ⟨balancedRay 1, isAdmissibleContinuous_balancedRay (by norm_num) (by norm_num),
     JNormalized_balancedRay 1, mass_balancedRay_pos (by norm_num)⟩
 
-/-- On the admissible cone, `JNormalized` attains every value in `[-1, 1]`. -/
 theorem exists_admissible_JNormalized (y : ℝ) (hy : |y| ≤ 1) :
     ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ JNormalized p = y := by
   rcases le_total 0 y with hy0 | hy0
@@ -718,7 +662,6 @@ theorem JNormalized_of_pureElliptic (p : TorsionParams) (h : IsPureElliptic p) :
   field_simp [Real.pi_ne_zero]
   ring
 
-/-- `|JNormalized| = 1` on an admissible configuration iff pure hyperbolic or pure elliptic. -/
 theorem abs_JNormalized_eq_one_iff (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p := by
   constructor
@@ -800,7 +743,6 @@ def IsSpatialTrans (p : TransParams) : Prop :=
 def IsBoundedTrans (R : ℝ) (p : TransParams) : Prop :=
   IsSpatialTrans p ∧ ∑ μ : Fin 4, p.lambda μ ^ 2 ≤ R ^ 2
 
-/-- Without translation constraints, `J⁽⁵⁾` is unbounded. -/
 theorem J5_unbounded (M : ℝ) :
     ∃ p : OmegaParams, M < |J5 p| := by
   set L := Real.sqrt (2 * max (M + 1) 1)
@@ -836,7 +778,7 @@ theorem minkowskiDot_le_sq (lam : Fin 4 → ℝ) (h0 : lam 0 = 0) :
   apply le_of_eq
   ring
 
-/-- Counterexample showing `IsPrincipalBranch` alone does not bound `J`. -/
+/-- Witness that `IsPrincipalBranch` does not bound `J`. -/
 noncomputable def counterExampleParams : TorsionParams where
   alpha := fun a => match a with | 0 => 10 | 1 => 0 | 2 => 0
   beta := fun a => match a with | 0 => -10 + Real.pi / 4 | 1 => 0 | 2 => 0
@@ -865,7 +807,6 @@ theorem torsion_bound_naive_false :
     rw [abs_of_pos hpos]
     nlinarith [Real.pi_gt_three, Real.pi_pos, Real.pi_le_four]
 
-/-- `J⁽⁵⁾` is bounded under admissible torsion and bounded spatial translation. -/
 theorem J5_bound_spatial (R : ℝ) (p : OmegaParams)
     (ht : IsAdmissibleContinuous p.torsion) (hb : IsBoundedTrans R p.trans) :
     |J5 p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 + R ^ 2 / 2 := by

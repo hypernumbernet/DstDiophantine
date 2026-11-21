@@ -166,10 +166,6 @@ private def admissibleEquivAxes : AdmissibleClass N ≃ (Fin 3 → AxisPair N) w
     apply Subtype.ext
     rfl
 
-/--
-The admissible class has cardinality `T(⌊N/4⌋)³`, where
-`T(K)=(K+1)(K+2)/2` is the triangular number.
--/
 theorem card_admissibleClass :
     Fintype.card (AdmissibleClass N) = triangleNum (N / 4) ^ 3 := by
   rw [Fintype.card_congr admissibleEquivAxes, Fintype.card_fun, Fintype.card_fin,

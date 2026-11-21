@@ -10,11 +10,7 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Usual-sector matrix rotor
 
-The usual generators are represented by Pauli matrices \(\sigma_a\), which
-square to \(+1\). The matrix rotor is therefore
-\(V(\alpha)=\exp(\alpha\cdot\sigma/2)\). Each such matrix is Hermitian of
-determinant \(1\), and is not unitary for a nonzero boost. Mixed usual/dual
-exponentials are not identified with an \(\mathrm{SL}(2,\mathbb{C})\) product.
+The usual rotor is `exp(α·σ/2)`, Hermitian of determinant `1`, and not unitary for a nonzero boost. Mixed usual/dual exponentials are not identified with an `SL(2,ℂ)` product.
 -/
 
 namespace DstDiophantine
@@ -45,7 +41,6 @@ noncomputable local instance :
 noncomputable def usualRotorMat (α : UsualRapidity) : Matrix (Fin 2) (Fin 2) ℂ :=
   NormedSpace.exp (∑ a : Fin 3, (α a / 2 : ℂ) • pauli a)
 
-/-- Generator of the usual rotor. -/
 noncomputable def usualRotorGen (α : UsualRapidity) : Matrix (Fin 2) (Fin 2) ℂ :=
   ∑ a : Fin 3, (α a / 2 : ℂ) • pauli a
 
@@ -83,7 +78,6 @@ theorem usualRotorGen_conjTranspose (α : UsualRapidity) :
   have hr : star (α a / 2 : ℂ) = (α a / 2 : ℂ) := by simp
   rw [Matrix.conjTranspose_smul, pauli_isHermitian a, hr]
 
-/-- Usual rotor matrix is Hermitian. -/
 theorem usualRotorMat_isHermitian (α : UsualRapidity) :
     (usualRotorMat α).IsHermitian := by
   rw [usualRotorMat_eq_exp_gen]
@@ -92,7 +86,6 @@ theorem usualRotorMat_isHermitian (α : UsualRapidity) :
   rw [(Matrix.exp_conjTranspose (usualRotorGen α)).symm,
     usualRotorGen_conjTranspose]
 
-/-- Hyperbolic closed form on `M₂(ℂ)`: `x² = 1 ⇒ exp(t • x) = cosh t + sinh t • x`. -/
 theorem exp_mat_of_sq_one {x : Matrix (Fin 2) (Fin 2) ℂ}
     (hx : x * x = 1) (t : ℝ) :
     NormedSpace.exp (t • x) =
@@ -157,7 +150,6 @@ theorem exp_mat_of_sq_one {x : Matrix (Fin 2) (Fin 2) ℂ}
     _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul_mat]
     _ = R t := one_mul _
 
-/-- Axis-0 usual rotor: \(\cosh(\theta/2)\,I+\sinh(\theta/2)\,\sigma_x\). -/
 theorem usualRotorMat_axis0_rodrigues (θ : ℝ) :
     usualRotorMat (EuclideanSpace.single 0 θ) =
       Real.cosh (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -165,7 +157,6 @@ theorem usualRotorMat_axis0_rodrigues (θ : ℝ) :
   rw [usualRotorMat_axis0, axis0UsualGen_eq_real_smul]
   exact exp_mat_of_sq_one (pauli_sq 0) (θ / 2)
 
-/-- Axis-2 usual rotor: \(\cosh(\theta/2)\,I+\sinh(\theta/2)\,\sigma_z\). -/
 theorem usualRotorMat_axis2_rodrigues (θ : ℝ) :
     usualRotorMat (EuclideanSpace.single 2 θ) =
       Real.cosh (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -192,7 +183,6 @@ private theorem usualRotorMat_axis0_entries (θ : ℝ) :
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.add_apply, Matrix.smul_apply]
 
-/-- Axis-0 usual rotor has determinant `1`. -/
 theorem usualRotorMat_axis0_det (θ : ℝ) :
     (usualRotorMat (EuclideanSpace.single 0 θ)).det = 1 := by
   rw [usualRotorMat_axis0_entries, Matrix.det_fin_two]
@@ -205,7 +195,6 @@ theorem usualRotorMat_axis0_det (θ : ℝ) :
     simp
   exact hC
 
-/-- A nonzero usual boost is not unitary. -/
 theorem usualRotorMat_axis0_not_unitary :
     (usualRotorMat (EuclideanSpace.single 0 (2 : ℝ))).conjTranspose *
       usualRotorMat (EuclideanSpace.single 0 (2 : ℝ)) ≠ 1 := by
@@ -249,7 +238,6 @@ noncomputable def pauliComb (n : Fin 3 → ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
 theorem pauliComb_trace (n : Fin 3 → ℝ) : (pauliComb n).trace = 0 := by
   simp [pauliComb, Fin.sum_univ_three, Matrix.trace_fin_two, pauli, pauliX, pauliY, pauliZ]
 
-/-- `σ·n = i Γ(n)`: a Pauli combination is `i` times the dual generator `-i σ·n`. -/
 theorem pauliComb_eq_I_cyclicRepComb (n : Fin 3 → ℝ) :
     pauliComb n = I • cyclicRepComb n := by
   unfold pauliComb cyclicRepComb cyclicRep
@@ -259,7 +247,6 @@ theorem pauliComb_eq_I_cyclicRepComb (n : Fin 3 → ℝ) :
   congr 1
   linear_combination (n a : ℂ) * I_sq
 
-/-- The dual-rotor generator is `-(i/2) σ·β`. -/
 theorem dualRotorGen_eq_pauliComb (β : DualRapidity) :
     dualRotorGen β = (-(I / 2)) • pauliComb (fun a => β a) := by
   unfold dualRotorGen pauliComb cyclicRep
@@ -305,7 +292,6 @@ private theorem pauliComb_unit_sq {α : UsualRapidity} (h : α ≠ 0) :
     mod_cast hn
   simpa [pauliComb, hnC, one_smul] using hsq
 
-/-- Usual rotor matrix is the hyperbolic Rodrigues formula along \(\alpha\). -/
 theorem usualRotorMat_rodrigues (α : UsualRapidity) :
     usualRotorMat α =
       Real.cosh (‖α‖ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -322,7 +308,6 @@ theorem usualRotorMat_zero : usualRotorMat 0 = 1 := by
   rw [usualRotorMat_rodrigues]
   simp
 
-/-- Three-axis usual rotor has determinant `1`. -/
 theorem usualRotorMat_det (α : UsualRapidity) :
     (usualRotorMat α).det = 1 := by
   by_cases hr : α = 0

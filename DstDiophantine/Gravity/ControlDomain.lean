@@ -9,32 +9,10 @@ import Mathlib.Tactic.GCongr
 /-!
 # Kinematic domain of \((J,M)\) on the admissible cone
 
-The parabola \(\pi^2 M\le 5\pi^4/16+4J^2\) of `ShieldCeiling` is valid
-everywhere and sharp on the central band \(|J|\le\pi^2/8\). Outside that
-band two axes lock to the same sector at the cone's edge, and a strictly
-tighter envelope takes over. Together with \(|J|\le M\), this envelope is
-the exact image of the admissible cone in the \((J,M)\)-plane.
-
-## Paper boundary (do **not** claim)
-
-No electromagnetic coupling, no laboratory protocol, and no identification
-of the dual-channel force \(u\) with Faraday coefficients.
-
-## What is proved
-
-* Three quadratic upper bounds hold on the whole cone. Their pointwise
-  minimum is the sharp envelope
-  \(M\le 5\pi^2/16+\min\bigl(4J^2,(2J-\pi^2/2)^2,(2J+\pi^2/2)^2\bigr)/\pi^2\),
-  equivalently
-  \(M_{\mathrm{norm}}\le\tfrac56+\tfrac16\min\bigl(9J_n^2,(3J_n-2)^2,(3J_n+2)^2\bigr)\).
-* The central arc \(|J|\le\pi^2/8\) recovers the shield parabola; the
-  attractive lobe \(J\ge\pi^2/8\) is attained by two pure-usual axes plus
-  a wall; the repulsive lobe is its usual–dual swap.
-* The envelope meets the absolute mass ceiling \(M=3\pi^2/8\) at
-  \(|J|=\pi^2/8\) and at \(|J|=3\pi^2/8\), and falls back to the shield
-  value \(5\pi^2/16\) at \(|J|=\pi^2/4\).
-* Every pair with \(|J|\le M\le\) the envelope is realised by an
-  admissible configuration.
+With \(|J|\le M\), the sharp envelope is the exact image of the admissible
+cone in the \((J,M)\)-plane. No electromagnetic coupling, no laboratory
+protocol, and no identification of the dual-channel force \(u\) with Faraday
+coefficients.
 -/
 
 namespace DstDiophantine
@@ -611,7 +589,6 @@ private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}
       _ = Real.pi ^ 2 / 16 := hid
   linarith
 
-/-- \(\sqrt{m+j}+\sqrt{m-j}\le\pi/2\) on a single admissible axis. -/
 private theorem sqrt_pair_sum_le_half_pi {j m : ℝ}
     (habs : |j| ≤ m)
     (hJ : |j| ≤ Real.pi ^ 2 / 8)
@@ -696,7 +673,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
   have hπ : 0 < Real.pi := Real.pi_pos
   have hπ2 : 0 < Real.pi ^ 2 := by positivity
   by_cases h8 : Jval ≤ Real.pi ^ 2 / 8
-  · -- Central band: independent axes, then opposed wall.
+  ·
     by_cases hcross : Mval ≤ Real.pi ^ 2 / 4 - Jval
     · refine ⟨crossUsualDual (Real.sqrt (Mval + Jval)) (Real.sqrt (Mval - Jval)),
         ?_, ?_, ?_⟩
@@ -710,7 +687,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
       · rw [mass_crossUsualDual, Real.sq_sqrt (add_nonneg (le_trans hJ0 hMlo) hJ0),
           Real.sq_sqrt (sub_nonneg.mpr hMlo)]
         ring
-    · -- Opposed wall. The split is the central-family parameter.
+    ·
       set γ := Real.pi / 4 + 2 * Jval / Real.pi with hγdef
       have hγ0 : 0 ≤ γ := by
         unfold γ
@@ -780,7 +757,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
         ring
       · rw [mass_opposedWall, hwall, hsdef, Real.sq_sqrt hs2]
         ring
-  · -- Outside the central band: `π²/8 < J ≤ 3π²/8`.
+  ·
     have h8lt : Real.pi ^ 2 / 8 < Jval := lt_of_not_ge h8
     by_cases h4 : Jval ≤ Real.pi ^ 2 / 4
     · by_cases hpin : Mval ≤ Real.pi ^ 2 / 2 - Jval
@@ -812,7 +789,6 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
       · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         nlinarith [hJmax]
 
-/-- Every pair under the envelope is realised. -/
 theorem exists_admissible_of_JM {Jval Mval : ℝ}
     (hJmax : |Jval| ≤ 3 * Real.pi ^ 2 / 8)
     (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :

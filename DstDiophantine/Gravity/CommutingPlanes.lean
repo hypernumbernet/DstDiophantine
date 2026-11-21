@@ -9,11 +9,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Commuting boost and rotation
 
-`hyperbolic 0` and `cyclic 0` commute, so the `(t,x)` boost and the `(y,z)`
-rotation may be multiplied in either order. The product coframe keeps the
-Minkowski metric. Its coordinate torsion is the sum of the two one-generator
-torsions, and that sum has vanishing teleparallel scalar for every pair of
-jets. A noncommuting pair is not claimed.
+`hyperbolic 0` and `cyclic 0` commute, so the product coframe keeps the
+Minkowski metric and its teleparallel scalar vanishes. A noncommuting pair is
+not claimed.
 -/
 
 namespace DstDiophantine
@@ -214,7 +212,6 @@ theorem productTeleparallel_eq_zero (dφ dθ : Fin 4 → ℝ) :
     ring
   rw [hsplit, hBoost, hRot, add_zero]
 
-/-- The generators commute, so the product does not depend on an ordering of planes. -/
 theorem orth_generators_commute :
     Commute (hyperbolic 0) (cyclic 0) :=
   RelativeRotor.commute_hyperbolic_cyclic_same 0

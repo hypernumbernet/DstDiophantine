@@ -11,42 +11,10 @@ set_option linter.style.native false
 /-!
 # Neutron β decay as a replacement of rotor class
 
-## Paper boundary (do **not** claim)
-
-The V--A coupling, the lifetime, the shape of the spectrum, \(g_A/g_V\),
-the Fermi constant, the neutrino mass, the generations, the
-Cabibbo--Kobayashi--Maskawa matrix, the structure functions, the ratio
-\(R\) as a measured plateau, the absolute mass gap, and either moment in
-nuclear magnetons are **not** derived. The weights \(4/3\) and \(-1/3\) are
-chart inputs. Baryon number and winding are labels taken from the discrete
-companion.
-
-## What is proved
-
-* The only rational solution of \(2u+d=1\), \(u+2d=0\) is \(u=2/3\), \(d=-1/3\).
-  Every sum of three such labels is an integer. With a separate colour count
-  of three the chart value of \(R\) for \(u,d,s\) is \(2\); without it the sum
-  of squares is \(2/3\).
-* Under \(\mu_u=-2\mu_d\) the chart moments satisfy \(\mu_n/\mu_p=-2/3\) and
-  \((\mu_p+\mu_n)/(\mu_p-\mu_n)=1/5\). On the stated CODATA rectangle the
-  measured ratio lies strictly between \(-137/200\) and \(-171/250\), the
-  chart value \(-2/3\) exceeds it by a gap strictly between \(1/55\) and
-  \(1/54\), and the deficit of the sum-to-difference ratio from \(1/5\) lies
-  strictly between \(1/80\) and \(1/70\).
-* Replacing one factor preserves the number of factors and the winding sum
-  \(3A\). Replacing a neutron by a proton raises the electromagnetic label
-  by \(1\), so emitting charge \(-1\) preserves the total.
-* The free-gap window \((12933/10000,12934/10000)\) MeV and the electron
-  window \((51099/100000,51101/100000)\) MeV are external. On the closed
-  windows the ratio \((m_n-m_p)/m_e\) lies strictly between \(5/2\) and
-  \(38/15\), the excess over the electron lies strictly between \(782/1000\)
-  and \(783/1000\) MeV, and the neutron window lies strictly above the
-  electron window. At every reversal inside \(1\) fm the Coulomb energy
-  exceeds the free gap.
-* If \(\hbar c<198\) MeV·fm and \(c>2.99\times 10^{23}\) fm/s, then
-  \(\hbar/(1.293\,\mathrm{MeV})<6\times 10^{-22}\) s. A mean life of at
-  least \(870\) s then exceeds that time by more than \(10^{24}\). The SI
-  stand-ins meet the two hypotheses.
+Replacing one rotor class preserves the factor count and the winding sum, and
+raises the electromagnetic label by \(1\). The V--A coupling, the lifetime,
+the spectrum, masses, and the moments in nuclear magnetons are not derived;
+the weights \(4/3\) and \(-1/3\) are chart inputs.
 -/
 
 namespace DstDiophantine
@@ -71,7 +39,6 @@ theorem quarkChart_unique {u d : ℚ} (hp : 2 * u + d = 1) (hn : u + 2 * d = 0) 
   refine ⟨?_, hd⟩
   linarith
 
-/-- The four three-label sums are the integers \(2\), \(1\), \(0\), and \(-1\). -/
 theorem quarkChart_three_sums :
     3 * ((2 : ℚ) / 3) = 2 ∧
       2 * ((2 : ℚ) / 3) + ((-1 : ℚ) / 3) = 1 ∧
@@ -326,7 +293,6 @@ theorem replaceAt_winding (xs : List NucleonClass) (i : ℕ) (c : NucleonClass) 
     totalWinding (replaceAt xs i c) = totalWinding xs := by
   rw [totalWinding_eq_three, totalWinding_eq_three, replaceAt_length]
 
-/-- Replacing a neutron by a proton and emitting charge \(-1\) preserves the total. -/
 theorem charge_with_emission (xs : List NucleonClass) (i : ℕ)
     (h : nthIsNeutron xs i) :
     totalEm (replaceAt xs i .proton) + (-1) = totalEm xs := by
@@ -343,8 +309,7 @@ theorem charge_with_emission (xs : List NucleonClass) (i : ℕ)
       have ih' := ih n h
       linarith
 
-/-- When the extra Coulomb cost exceeds the free gap, the proton-richer product
-is the heavier one. Both quantities are inputs. -/
+/-- When the extra Coulomb cost exceeds the free gap, the proton-richer product is heavier; both quantities are inputs. -/
 theorem reverse_opens_when_coulomb_exceeds {gap cost : ℚ} (hcost : gap < cost) :
     0 < cost - gap := by
   linarith

@@ -13,65 +13,7 @@ set_option linter.style.native false
 /-!
 # Nuclear torsional layers (strong-force scale)
 
-## Paper boundary (do **not** claim)
-
-Sec.~nuclear identifies the strong force with layered gravitational repulsion
-at nuclear densities and quotes empirical scales (fm, MeV, \(A\gtrsim 300\)).
-This module machine-checks SI stand-in windows and equal-scale diagnostics.
-It does **not** derive nuclear couplings from the dual-rotor algebra.
-
-No theorem asserts `dst_derives_alpha_s`, `dst_derives_lambdaN`, or
-`dst_derives_Amax`. QCD \(\alpha_s\) is **not** paired with `epsN` (the paper
-rejects colour charge as torsional charge; copying the EM hypothesis would
-break that narrative). The numerical cutoff \(A\sim 300\) remains an underived
-heuristic, as in `discrete-dual-spacetime.tex`.
-
-## What is proved
-
-* \(\hbar c \in (197,198)\) MeV·fm on the SI stand-ins.
-* Pion Compton wavelength \(\lambda_\pi \in (1,2)\) fm; proton Compton
-  \(\lambda_p \in (1/5,3/10)\) fm, outside that pion window.
-* Equal-scale layer radii \(r_n=\ell/(2x_n)\) satisfy
-  \(r_2/r_1 \in (1/(3\pi),1/\pi)\); a hard-core \(0.5\) fm is compatible with
-  an outer \(r_1\in(1,2)\) fm but is not forced.
-* Labelled pion–\(\ell\) hypothesis: \(\lambda_\pi/2 < r_1 < \lambda_\pi\).
-  A lower bound of \(1\) fm is not forced by this hypothesis alone.
-* Saturation density \(\rho_0 \in (2,3)\times 10^{14}\) g/cm³.
-  The value \(10^{18}\) g/cm³ lies outside that window.
-* Empirical BE/\(A \in (7,9)\) MeV. The band \(40\)–\(50\) MeV is the
-  optical well depth, a separate external label.
-* Gravity fine-structure \(\alpha_G = G m_p^2/\hbar c \in (10^{-39},10^{-38})\);
-  not to be identified with \(O(1)\) nuclear strength or with `epsN 1`.
-* The charged-pion mass over the proton mass lies strictly between `epsN 6` and
-  `epsN 5`, equals no `epsN N`, and exceeds `(16/3) α_G` by more than `10³⁶`.
-  The same ratio lies in `(2/19, 9/28)`. `SignReversal.channelMassRatio`
-  occupies that interval for every scattering scale, and its definition does
-  not use this mass. Membership does not select a scale. A positive lattice
-  floor at or below that Planck floor forces `N > 10¹⁹`.
-
-## Nuclear consequences of the sharpened layer window
-
-Using `TorsionalLayer` (sharpened branch `(nπ+π/4, nπ+π/2)` and radius window
-`ℓ/((2n+1)π) < r < 2ℓ/((4n+1)π)`):
-
-* \(\lambda_\pi < \pi/2\) fm, hence under \(\ell=\lambda_\pi\) **every** node
-  satisfies \(r<1\) fm, and the outermost node lies in the hard-core band
-  \(0.44\,\mathrm{fm}<r_1<0.91\,\mathrm{fm}\). An outermost shell in
-  \(1\)–\(2\) fm is incompatible with \(\ell=\lambda_\pi\); it
-  requires \(\ell>\pi/2\) fm.
-* Sharpened ratio window \(r_2/r_1\in(1/6,\,4/(5\pi))\), strictly inside the
-  previous \((1/(3\pi),1/\pi)\).
-* Constant nucleon number density is exactly the \(A^{1/3}\) radius law, and
-  \(3/(4\pi r_0^3)\in(0.13,0.14)\,\mathrm{fm}^{-3}\) for \(r_0=1.2\) fm — so
-  \(r_0=1.2\) fm is **not** consistent with \(n_0=0.16\,\mathrm{fm}^{-3}\); the
-  matching coefficient satisfies \((1.14)^3<3/(4\pi n_0)<(1.15)^3\).
-* No finite \(A_{\max}\) follows: with \(\ell\propto A^{1/3}\) the
-  surface-to-node ratio is \(A\)-independent, and with \(\ell\) fixed the
-  surface already lies outside every node at \(A=1\).
-* The spin-weighted oscillator counts are \(C(0)=2\), \(C(1)=8\), \(C(2)=20\),
-  and the shifted counts \(C(N)+2(N+2)\) for \(N=2,3,4,5\) are \(28\), \(50\),
-  \(82\), and \(126\). They are seat counts. The splitting is not derived
-  from the nodes.
+SI stand-in windows and equal-scale layer ratios are checked against external nuclear scales. No theorem asserts `dst_derives_alpha_s`, `dst_derives_lambdaN`, or `dst_derives_Amax`, and QCD `α_s` is not paired with `epsN`.
 -/
 
 namespace DstDiophantine
@@ -262,8 +204,6 @@ theorem equalScaleLayerRadius_ratio
   unfold equalScaleLayerRadius
   field_simp [hℓ, hx₁, hx₂]
 
-/-- If \(x_1\in(1/2,1)\) and \(x_2\in(\pi,3\pi/2)\), then
-\(r_2/r_1 = x_1/x_2 \in (1/(3\pi), 1/\pi)\). -/
 theorem equalScale_layer_ratio_bounds
     {x₁ x₂ : ℝ}
     (hx₁ : x₁ ∈ Ioo (1 / 2 : ℝ) 1)
@@ -273,38 +213,35 @@ theorem equalScale_layer_ratio_bounds
   have hx₂pos : (0 : ℝ) < x₂ := lt_trans pi_pos hx₂.1
   have hπpos : (0 : ℝ) < π := pi_pos
   constructor
-  · -- 1/(3π) < x₁/x₂ ↔ x₂ < 3π · x₁
+  ·
     rw [div_lt_div_iff₀ (mul_pos (by norm_num) hπpos) hx₂pos]
     calc (1 : ℝ) * x₂ = x₂ := one_mul _
       _ < 3 * π / 2 := hx₂.2
       _ = (1 / 2) * (3 * π) := by ring
       _ < x₁ * (3 * π) :=
           mul_lt_mul_of_pos_right hx₁.1 (mul_pos (by norm_num) hπpos)
-  · -- x₁/x₂ < 1/π ↔ x₁ · π < x₂
+  ·
     rw [div_lt_div_iff₀ hx₂pos hπpos]
     calc x₁ * π < 1 * π := mul_lt_mul_of_pos_right hx₁.2 hπpos
       _ = π := one_mul _
       _ < 1 * x₂ := by simpa using hx₂.1
 
-/-- Compatibility (not uniqueness): outer \(r_1\in(1,2)\) fm and a ratio in
-\((1/(3\pi),1/\pi)\) can place \(r_2\) at \(1/2\) fm. -/
+/-- Compatibility (not uniqueness): outer \(r_1\in(1,2)\) fm and a ratio in \((1/(3\pi),1/\pi)\) can place \(r_2\) at \(1/2\) fm. -/
 theorem hardCore_half_fm_compatible :
     ∃ r₁ ratio : ℝ,
       r₁ ∈ Ioo (1 : ℝ) 2 ∧
         ratio ∈ Ioo (1 / (3 * π)) (1 / π) ∧
         r₁ * ratio = (1 / 2 : ℝ) := by
-  -- \(r_1 = 15/8\), \(\mathrm{ratio} = 4/15\): product \(1/2\);
-  -- \(4/15 \approx 0.267 \in (1/(3\pi), 1/\pi)\) using only \(\pi\in(3,4)\).
   refine ⟨(15 / 8 : ℝ), (4 / 15 : ℝ), ?_, ?_, by norm_num⟩
   · simp only [mem_Ioo]; constructor <;> norm_num
   · simp only [mem_Ioo]
     constructor
-    · -- 1/(3π) < 4/15 ↔ 15 < 12π ↔ 5/4 < π
+    ·
       have : (1 : ℝ) / (3 * π) < 4 / 15 := by
         rw [div_lt_div_iff₀ (mul_pos (by norm_num) pi_pos) (by norm_num)]
         nlinarith [pi_gt_three]
       exact this
-    · -- 4/15 < 1/π ↔ 4π < 15 ↔ π < 15/4 (use π < 3.15)
+    ·
       have : (4 : ℝ) / 15 < 1 / π := by
         rw [div_lt_div_iff₀ (by norm_num : (0 : ℝ) < 15) pi_pos]
         nlinarith [pi_lt_d2]
@@ -409,8 +346,7 @@ theorem paper_binding_40_50_as_BE_A_false :
   have : bindingEnergyPerNucleonMeVApprox < 40 := lt_trans hhi (by norm_num)
   exact absurd h.1 (not_le.mpr this)
 
-/-- Optical well depth \(45\) MeV lies in the \(40\)–\(50\) MeV band
-(separate external label, not BE/\(A\)). -/
+/-- Optical well depth \(45\) MeV lies in the \(40\)–\(50\) MeV band (separate external label, not BE/\(A\)). -/
 theorem nuclearWellDepth_in_40_50 :
     (40 : ℚ) ≤ nuclearWellDepthMeVApprox ∧
       nuclearWellDepthMeVApprox ≤ 50 := by
@@ -475,8 +411,7 @@ theorem epsN_one_ne_nuclear_order :
   · unfold epsN; norm_num
   · unfold epsN; norm_num
 
-/-- The charged-pion mass over the proton mass lies strictly between the floors
-`ε_6` and `ε_5`, and strictly below the lock `1/3`. -/
+/-- The charged-pion mass over the proton mass lies strictly between the floors `ε_6` and `ε_5`, and strictly below the lock `1/3`. -/
 theorem pion_over_proton_between_floors :
     epsN 6 < pionMassMeVApprox / protonMassMeVApprox ∧
       pionMassMeVApprox / protonMassMeVApprox < epsN 5 ∧
@@ -501,10 +436,7 @@ theorem pion_over_proton_between_floors :
   · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
     norm_num
 
-/-- The laboratory charged-pion ratio lies in `(2/19, 9/28)`.
-`SignReversal.channelMassRatio` occupies that interval for every scattering
-scale `r₁`, and its definition does not use this mass. Membership does not
-select a scale and does not identify the pion with a lattice height. -/
+/-- The charged-pion ratio lies in `(2/19, 9/28)`; membership does not select a scale or a lattice height. -/
 theorem pion_over_proton_in_channel_window :
     (2 / 19 : ℚ) < pionMassMeVApprox / protonMassMeVApprox ∧
       pionMassMeVApprox / protonMassMeVApprox < 9 / 28 := by
@@ -595,8 +527,7 @@ theorem floor_under_proton_cap {N : ℕ} (hN : 0 < N)
     rw [← Nat.pow_mul]
   exact not_lt_of_ge (by simpa [hpow] using hsqle) hnat
 
-/-- Every compactification whose floor does not exceed the proton Planck floor
-has `N > 10¹⁹`. -/
+/-- Every compactification whose floor does not exceed the proton Planck floor has `N > 10¹⁹`. -/
 theorem floor_at_most_proton_planck {N : ℕ} (hN : 0 < N)
     (h : epsN N ≤ (16 / 3) * alphaG) : 10 ^ 19 < N := by
   have hmul : (16 / 3) * alphaG < (16 / 3) * ((1 : ℚ) / 10 ^ 38) :=
@@ -605,8 +536,7 @@ theorem floor_at_most_proton_planck {N : ℕ} (hN : 0 < N)
     ring
   exact floor_under_proton_cap hN (lt_of_le_of_lt h (hrewrite ▸ hmul))
 
-/-- Reuse equal-scale \(\Theta(1/n)\) from `ElectronShell` (gravitational channel
-shares \(\gamma_s\)). Absolute fm/MeV scales need external \(\ell\). -/
+/-- Equal-scale `Θ(1/n)` is reused; absolute fm/MeV scales need an external `ℓ`. -/
 theorem nuclear_equalScale_radius_O_of_one_over_n
     (ℓ : ℝ) (n : ℕ) (hn : 1 ≤ n) (x : ℝ)
     (hx : x ∈ resonanceBranch n) (hℓ : 0 < ℓ) :
@@ -644,8 +574,7 @@ theorem pionLambda_node_lt_one_fm (n : ℕ) {x : ℝ}
     linarith [pionComptonFm_real_lt, pi_gt_d2]
   linarith
 
-/-- Outermost node under the pion hypothesis: the hard-core band
-`0.44 fm < r₁ < 0.91 fm`, not `1`–`2` fm. -/
+/-- Outermost node under the pion hypothesis: the hard-core band `0.44 fm < r₁ < 0.91 fm`, not `1`–`2` fm. -/
 theorem pionLambda_outer_node_band {x : ℝ} (hx : x ∈ Ioo (π / 4) (π / 2)) :
     (44 / 100 : ℝ) < layerRadius (pionComptonFm : ℝ) x ∧
       layerRadius (pionComptonFm : ℝ) x < 91 / 100 := by
@@ -667,8 +596,7 @@ theorem paper_outer_layer_1_2_fm_incompatible_with_pionLambda (n : ℕ) {x : ℝ
   have hlt := pionLambda_node_lt_one_fm n hx
   linarith [h.1]
 
-/-- Conversely, an outermost node at `1` fm or beyond forces the characteristic
-length above `π/2` fm, hence strictly above `λ_π`. -/
+/-- Conversely, an outermost node at `1` fm or beyond forces the characteristic length above `π/2` fm, hence strictly above `λ_π`. -/
 theorem outer_node_one_fm_forces_ell_gt_pi_div_two
     {ℓ x : ℝ} (hℓ : 0 < ℓ) (hx : x ∈ Ioo (π / 4) (π / 2))
     (h1 : 1 ≤ layerRadius ℓ x) : π / 2 < ℓ := by
@@ -694,8 +622,7 @@ theorem equalScale_layer_ratio_sharp
   · rw [div_lt_div_iff₀ hx₂pos (by positivity)]
     nlinarith [hx₁.2, hx₂.1]
 
-/-- Concrete instance: the first two nodes exist and their radius ratio lies in
-the sharpened window. -/
+/-- Concrete instance: the first two nodes exist and their radius ratio lies in the sharpened window. -/
 theorem layer_ratio_first_second_sharp :
     ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 ∧
       resonanceRoot1 / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
@@ -715,16 +642,14 @@ theorem equalScale_layer_ratio_sharp_refines :
 
 /-! ### Saturation density versus the `A^{1/3}` radius law -/
 
-/-- Nucleon number density of a uniform sphere of radius `r₀ A^{1/3}`,
-parameterised by `s = A^{1/3}`. -/
+/-- Nucleon number density of a uniform sphere of radius `r₀ A^{1/3}`, parameterised by `s = A^{1/3}`. -/
 noncomputable def nucleonNumberDensity (r0 s : ℝ) : ℝ :=
   s ^ 3 / ((4 / 3) * π * (r0 * s) ^ 3)
 
 /-- Constant-density limit `3/(4π r₀³)`. -/
 noncomputable def numberDensityOfRadiusCoeff (r0 : ℝ) : ℝ := 3 / (4 * π * r0 ^ 3)
 
-/-- Saturation of nuclear density is exactly the `A^{1/3}` radius law: the
-density is independent of `A`. -/
+/-- Saturation of nuclear density is exactly the `A^{1/3}` radius law: the density is independent of `A`. -/
 theorem nucleonNumberDensity_eq_const {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
     nucleonNumberDensity r0 s = numberDensityOfRadiusCoeff r0 := by
   unfold nucleonNumberDensity numberDensityOfRadiusCoeff
@@ -751,8 +676,7 @@ theorem numberDensity_radiusCoeff_1_2_ne_saturation :
   rw [h] at hhi
   norm_num at hhi
 
-/-- The radius coefficient matching `n₀ = 0.16` fm⁻³ satisfies
-`(1.14)³ < 3/(4π n₀) < (1.15)³`, i.e. `r₀* ≈ 1.14` fm. -/
+/-- The radius coefficient matching `n₀ = 0.16` fm⁻³ satisfies `(1.14)³ < 3/(4π n₀) < (1.15)³`, i.e. `r₀* ≈ 1.14` fm. -/
 theorem saturation_matching_radiusCoeff_cube_window :
     (114 / 100 : ℝ) ^ 3 < 3 / (4 * π * (4 / 25)) ∧
       3 / (4 * π * (4 / 25)) < (115 / 100 : ℝ) ^ 3 := by
@@ -765,16 +689,14 @@ theorem saturation_matching_radiusCoeff_cube_window :
 
 /-! ### No finite `A_max` from the equal-scale layer geometry -/
 
-/-- With a collective `ℓ ∝ A^{1/3}` the surface-to-node ratio is
-`A`-independent, so no mass number is singled out. -/
+/-- With a collective `ℓ ∝ A^{1/3}` the surface-to-node ratio is `A`-independent, so no mass number is singled out. -/
 theorem surface_to_node_ratio_scale_free
     {r0 c x s : ℝ} (hc : c ≠ 0) (hx : x ≠ 0) (hs : s ≠ 0) :
     (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c := by
   unfold layerRadius
   field_simp
 
-/-- With `ℓ` independent of `A` the nuclear surface already lies outside every
-torsional node at `A = 1`, so again no cutoff appears. -/
+/-- With `ℓ` independent of `A` the nuclear surface already lies outside every torsional node at `A = 1`, so again no cutoff appears. -/
 theorem nuclearSurface_outside_every_node_at_A_one (n : ℕ) {x : ℝ}
     (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
     layerRadius (pionComptonFm : ℝ) x < (nuclearRadiusCoeffFmApprox : ℝ) := by
@@ -786,8 +708,7 @@ theorem nuclearSurface_outside_every_node_at_A_one (n : ℕ) {x : ℝ}
   rw [hr0]
   linarith
 
-/-- The heuristic `A ≈ 300` is not forced: the layer geometry provides no finite
-termination of the nuclear chart. -/
+/-- The heuristic `A ≈ 300` is not forced: the layer geometry provides no finite termination of the nuclear chart. -/
 theorem paper_Amax_300_not_forced_by_equalScale_layers :
     (∀ r0 c x s : ℝ, c ≠ 0 → x ≠ 0 → s ≠ 0 →
         (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c) ∧
@@ -798,18 +719,15 @@ theorem paper_Amax_300_not_forced_by_equalScale_layers :
 
 /-! ### Proper time does not freeze at a torsional barrier -/
 
-/-- Proper time never freezes at a torsional barrier. The node identity
-`γ_eff = γ_b²` is `gammaEff_eq_gammaB_sq_at_node`. -/
+/-- Proper time never freezes at a torsional barrier. -/
 theorem gammaEff_pos_at_node (x : ℝ) : 0 < gammaEff (2 * x) (2 * x) :=
   gammaEff_pos _ _
 
 /-! ### Seat counts
 
-The integers \(2\), \(8\), \(20\), \(28\), \(50\), \(82\), and \(126\) are the
-oscillator arithmetic below. They are not indices of the equal-scale nodes,
-and the shell splitting is not derived from \(\gamma_s\). -/
+The integers `2`, `8`, `20`, `28`, `50`, `82`, and `126` are oscillator arithmetic, not indices of the equal-scale nodes.
+-/
 
-/-- Three consecutive integers are divisible by `3`. -/
 theorem three_dvd_mul_succ_succ (n : ℕ) : 3 ∣ n * (n + 1) * (n + 2) := by
   induction n with
   | zero => decide
@@ -819,8 +737,7 @@ theorem three_dvd_mul_succ_succ (n : ℕ) : 3 ∣ n * (n + 1) * (n + 2) := by
     rw [hmul]
     exact dvd_add ih (dvd_mul_left 3 ((n + 1) * (n + 2)))
 
-/-- Cumulative spin-weighted oscillator count through shell `N`:
-\(C(N)=(N+1)(N+2)(N+3)/3\). -/
+/-- Cumulative spin-weighted oscillator count through shell `N`: \(C(N)=(N+1)(N+2)(N+3)/3\). -/
 def oscillatorClosure (N : ℕ) : ℕ :=
   (N + 1) * (N + 2) * (N + 3) / 3
 
@@ -855,8 +772,7 @@ theorem oscillatorClosure_values :
   unfold oscillatorClosure
   norm_num
 
-/-- One high-`j` orbital of the next shell, of degeneracy `2(N+2)`, counted
-with the shells through `N`. -/
+/-- One high-`j` orbital of the next shell, of degeneracy `2(N+2)`, counted with the shells through `N`. -/
 def shiftedClosure (N : ℕ) : ℕ :=
   oscillatorClosure N + 2 * (N + 2)
 

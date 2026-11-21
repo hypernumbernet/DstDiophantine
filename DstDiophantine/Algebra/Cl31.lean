@@ -40,12 +40,10 @@ noncomputable def restrict4LM : Vec5 →ₗ[ℝ] Vec4 where
 
 @[simp] theorem restrict4LM_apply (v : Vec5) : restrict4LM v = restrict4 v := rfl
 
-/-- The Minkowski inclusion is a quadratic-form isometry. -/
 noncomputable def extend4Isometry : Q31 →qᵢ Q311 where
   toLinearMap := extend4LM
   map_app' := Q311_extend4
 
-/-- Dropping the null coordinate is a quadratic-form isometry. -/
 noncomputable def restrict4Isometry : Q311 →qᵢ Q31 where
   toLinearMap := restrict4LM
   map_app' := Q31_restrict4
@@ -83,7 +81,6 @@ theorem ofPGA_comp_toPGA : Function.LeftInverse ofPGA toPGA := by
 @[simp] theorem ofPGA_toPGA (c : Cl31) : ofPGA (toPGA c) = c :=
   ofPGA_comp_toPGA c
 
-/-- The Minkowski embedding is injective: restriction is an algebra retraction. -/
 theorem toPGA_injective : Function.Injective toPGA :=
   ofPGA_comp_toPGA.injective
 

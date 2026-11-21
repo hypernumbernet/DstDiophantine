@@ -13,8 +13,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Rotor equivalence classes modulo the discrete unit group
 
-Each admissible rotor class is represented by a point on `(ℤ/Nℤ)⁶`. Continuous
-integer rotors are quantised to the nearest lattice representative.
+Each class is represented by a point of `(ℤ/Nℤ)⁶`.
 -/
 
 namespace DstDiophantine
@@ -128,22 +127,14 @@ theorem quantizeRapidity_zmod_eq_principal (N : ℕ) [NeZero N] {θ : ℝ}
   rw [h]
   simp
 
-/-- Quantise `log|n|` to the nearest lattice rapidity on axis `0`.
-
-Uses the integer-rotor convention `pureBoost (2 log|n|)`, so the index is
-`⌊(2 log|n|) N / (2π)⌋ = ⌊N log|n| / π⌋`.
--/
+/-- Quantise `log|n|` on axis `0`; the index is `⌊N log|n| / π⌋`. -/
 noncomputable def quantizeInt (N : ℕ) [NeZero N] (n : ℤ) (_hn : n ≠ 0) : DiscreteTorsion N :=
   { n := fun a => match a with
       | 0 => (quantizeRapidity N (2 * Real.log (Int.natAbs n)) : ZMod N)
       | _ => 0
     m := fun _ => 0 }
 
-/--
-Quantise the continuous log-mismatch `logMismatch a c` to a pure-boost lattice
-seed.  Uses the same floor map as `quantizeInt`, applied to the mismatch
-rapidity `log|c| - log|a|` (so index `⌊N (log|c|-log|a|) / (2π)⌋`).
--/
+/-- Quantise `log|c| - log|a|`; the index is `⌊N (log|c|-log|a|) / (2π)⌋`. -/
 noncomputable def quantizeMismatch (N : ℕ) [NeZero N] (a c : ℤ)
     (_ha : a ≠ 0) (_hc : c ≠ 0) : DiscreteTorsion N :=
   { n := fun i => match i with
@@ -181,7 +172,6 @@ theorem quantizeInt_n_of_ne_zero (n : ℤ) (hn : n ≠ 0) {a : Fin 3} (ha : a �
     (quantizeInt N n hn).n a = 0 := by
   fin_cases a <;> first | exact (ha rfl).elim | rfl
 
-/-- `quantizeInt` is a pure-boost seed (only axis `0` of `n` may be nonzero). -/
 theorem quantizeInt_pureBoost (n : ℤ) (hn : n ≠ 0) :
     (∀ a : Fin 3, a ≠ 0 → (quantizeInt N n hn).n a = 0) ∧
       (∀ a : Fin 3, (quantizeInt N n hn).m a = 0) :=
@@ -211,14 +201,6 @@ theorem quantizeInt_one (n : ℤ) (hn : n ≠ 0) (habs : Int.natAbs n = 1) :
       simp [quantizeRapidity, habs, Real.log_one]
   · funext a; rfl
 
-/--
-Floor error for the continuous lift of a quantised rapidity: the reconstructed
-axis-`0` angle differs from `θ` by less than one lattice step `2π/N`, after
-accounting for the integral part that is reduced mod `N`.
-
-Here we record the standard floor inequality before modular reduction:
-`quantizeRapidity N θ ≤ θ N / (2π) < quantizeRapidity N θ + 1`.
--/
 theorem quantizeRapidity_le (θ : ℝ) :
     (quantizeRapidity N θ : ℝ) ≤ θ * N / (2 * Real.pi) :=
   Int.floor_le _

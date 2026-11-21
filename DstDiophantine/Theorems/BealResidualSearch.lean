@@ -7,26 +7,9 @@ import DstDiophantine.Theorems.SiksekStoll
 set_option linter.style.native false
 
 /-!
-# Residual-shaped Beal finite search
+# Search aimed at open residuals
 
-Finite certificates aimed at residual shapes where a classical Beal
-counterexample could still hide. This module is diagnostic / computational;
-it does **not** close residual bodies (`BealPosCubeAddTwoCubeResidual`, etc.).
-
-* **Positive cube kernel** `α³ + 2β³ = γ³`: closed under the Euler axiom
-  (`BealPosCubeAddTwoCubeResidual_of_euler`); the finite certificate bases
-  `≤ 400` remain as a complementary diagnostic.
-* **Open-residual filter** on classical coprime `A^x+B^y=C^z` (skips closed
-  slices `d ≥ 3`, two exponents divisible by 4, Darmon–Merel cube positions,
-  signature-`(n,n,5)` with common exponent `≥ 4`, two-cube powers, signature
-  `(3,4,5)`, cube pairs — two exponents divisible by `3` with the third a
-  `TwoCubeExponent` — a repeated five beside `7` or `19`, a fourth-power
-  sum — two equal exponents divisible by `4` with the third at least `4` —
-  and a fifth-power pair — two exponents divisible by `5` with the third
-  divisible by `7` or by `19`):
-  current certificate bases `≤ 80`, exponents `3…7`.
-
-Classical Beal is **not** claimed unconditionally.
+Finite certificates look where a counterexample could still hide. They do not close those residuals, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -35,11 +18,7 @@ namespace Theorems
 
 /-! ### Positive cube kernel `α³ + 2β³ = γ³` -/
 
-/--
-True when `α³ + 2β³` is a positive perfect cube `γ³` with
-`gcd(α,β,γ) = 1` and `α` odd (primitive positive slice; both-even is 2-adically
-reducible, even-α/odd-β is impossible).
--/
+/-- Primitive odd-`α` positive cube hit with `gcd = 1`. -/
 def isPosCubeAddTwoPrimitive (α β : ℕ) : Bool :=
   decide (0 < α ∧ 0 < β ∧ α % 2 = 1) &&
     match findNthRoot (α ^ 3 + 2 * β ^ 3) 3 with
@@ -112,10 +91,6 @@ theorem noPosCubeAddTwoPrimitiveUpTo_sound {N : ℕ}
     simpa [noPosCubeAddTwoPrimitiveUpTo, Bool.not_eq_true'] using h
   exact absurd hany (by simp [this])
 
-/--
-Phase 7t: no primitive positive solution of `α³ + 2β³ = γ³` with
-`α,β ≤ 400` (odd `α`, three-way gcd 1). Finite slice only.
--/
 theorem no_pos_cube_add_two_primitive_of_le_fourhundred
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -127,7 +102,6 @@ theorem no_pos_cube_add_two_primitive_of_le_fourhundred
     (by native_decide : noPosCubeAddTwoPrimitiveUpTo 400 = true)
     hα hβ hγ hαN hβN hαodd hγodd hgcd heq
 
-/-- Phase 7s certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_hundredtwenty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -138,7 +112,6 @@ theorem no_pos_cube_add_two_primitive_of_le_hundredtwenty
   no_pos_cube_add_two_primitive_of_le_fourhundred
     hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Phase 7r certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_hundred
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -149,7 +122,6 @@ theorem no_pos_cube_add_two_primitive_of_le_hundred
   no_pos_cube_add_two_primitive_of_le_hundredtwenty
     hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Phase 7q certificate; follows from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_eighty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -160,7 +132,6 @@ theorem no_pos_cube_add_two_primitive_of_le_eighty
   no_pos_cube_add_two_primitive_of_le_hundredtwenty
     hα hβ hγ (by omega) (by omega) hαodd hγodd hgcd heq
 
-/-- Weaker cube-kernel certificates (phases 7n–7p); follow from ≤ 400. -/
 theorem no_pos_cube_add_two_primitive_of_le_forty
     {α β γ : ℕ}
     (hα : 0 < α) (hβ : 0 < β) (hγ : 0 < γ)
@@ -193,34 +164,7 @@ theorem no_pos_cube_add_two_primitive_of_le_sixty
 
 /-! ### Open-residual filter on classical Beal -/
 
-/--
-Beal-range exponent triples whose *shape* is closed by a named slice:
-
-* `d ≥ 3` (FLT axiom);
-* `d = 2` with at least two of `{x,y,z}` divisible by 4;
-* Darmon–Merel cube positions, matching `not_beal_two_equal_cube_slice`
-  (the even permutations `(3,n,n)` / `(n,3,n)` with even `n` stay live);
-* signature `(n,n,5)` positions, matching `not_beal_two_equal_fifth_slice`
-  (even permutations likewise stay live; `(3,3,5)` is not this signature);
-* two-cube powers (`IsTwoCubePowerShape`): repeated exponent `3` with the
-  remaining exponent in `3 … 10^9`, or any even remaining exponent at least `4`,
-  every position (Bruin's `4` and `5` are the first cases);
-* cube pairs (`IsCubePairPowerShape`): at least two exponents divisible by `3`
-  and the remaining one a `TwoCubeExponent` (phase 7x; the repeated exponent
-  need not equal `3`, and `d` need not equal `1`);
-* signature `(3,4,5)` in every order (`IsSignature345`);
-* a repeated five beside `7` or `19`, every order (`IsRepeatedFifthShape`;
-  phase 7y). `(7,7,5)` is already signature `(n,n,5)`;
-* a fourth-power sum (`IsFourthSumShape`): two equal exponents divisible by
-  `4` and a third exponent at least `4` (phase 7z; `(4,4,7)` is the first
-  case). `(10,10,7)` is not this shape;
-* a fifth-power pair (`IsFifthPairPowerShape`): two exponents divisible by `5`
-  and the third divisible by `7` or by `19` (phase 8a). `(10,10,7)` is the
-  first even sum in this shape. `(10,10,9)` is not.
-
-This is strictly coarser than the residual atlas: Mihăilescu's `|u| = 1`
-slice is a coefficient condition, not an exponent shape.
--/
+/-- Closed shapes. Even Darmon–Merel and `(n,n,5)` permutations stay open. -/
 def IsClosedShapeExponents (x y z : ℕ) : Prop :=
   3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
     (3 ≤ bealExpGcd x y z ∨
@@ -244,14 +188,7 @@ instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   unfold IsClosedShapeExponents
   infer_instance
 
-/--
-Exponents that still sit in an **open** residual after skipping closed
-*shapes* (`IsClosedShapeExponents`). Even permutations of the
-Darmon–Merel and `(n,n,5)` signatures are kept open: they belong to the
-even two-equal difference residual, because an even common exponent does
-not rewrite to Darmon–Merel or `(n,n,5)` form. Divisibility of that
-common exponent by three is a separate closure.
--/
+/-- Open after closed shapes. An even common exponent does not rewrite. -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
   let d := bealExpGcd x y z
   decide
@@ -400,10 +337,6 @@ theorem noOpenResidualBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
     simpa [noOpenResidualBealPerfectPowerUpTo, Bool.not_eq_true'] using h
   exact absurd hany (by simp [this])
 
-/--
-Phase 7t: no open-residual coprime perfect-power Beal solution with bases
-`≤ 80` and exponents in `3…7` (`C` unbounded).
--/
 theorem beal_no_open_residual_perfect_power_of_le_eighty_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -417,7 +350,6 @@ theorem beal_no_open_residual_perfect_power_of_le_eighty_seven
     (by native_decide : noOpenResidualBealPerfectPowerUpTo 80 7 = true)
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hopen hsol hgcd
 
-/-- Phase 7s certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_sixty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -431,7 +363,6 @@ theorem beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega)
     hopen hsol hgcd
 
-/-- Phase 7t certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_eighty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -445,7 +376,6 @@ theorem beal_no_open_residual_perfect_power_of_le_eighty_six
     hA hB hC hAmax hBmax hx hy hz (by omega) (by omega) (by omega)
     hopen hsol hgcd
 
-/-- Phase 7t certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_sixty_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -459,7 +389,6 @@ theorem beal_no_open_residual_perfect_power_of_le_sixty_seven
     hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE
     hopen hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_fifty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -472,7 +401,6 @@ theorem beal_no_open_residual_perfect_power_of_le_fifty_six
   beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hopen hsol hgcd
 
-/-- Phase 7q certificate; follows from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_forty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -485,7 +413,6 @@ theorem beal_no_open_residual_perfect_power_of_le_forty_six
   beal_no_open_residual_perfect_power_of_le_sixty_six
     hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hopen hsol hgcd
 
-/-- Weaker open-residual certificates (phases 7n–7p); follow from ≤ 80 · 7. -/
 theorem beal_no_open_residual_perfect_power_of_le_twenty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)

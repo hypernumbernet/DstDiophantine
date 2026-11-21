@@ -11,26 +11,10 @@ set_option linter.style.native false
 /-!
 # Electron exclusion: electric repulsion, gravitational attraction, and a short pole
 
-## Paper boundary (do **not** claim)
-
-`G`, the masses, `α`, `ℏ`, and `c` are external inputs. The windows
-`ℓ_E < 387` fm, `ℓ_G < 19/10` fm, `a₀ > 52917` fm, and `1/2 < r₁ < 1` fm
-are external comparisons. Nothing here derives a spectrum, a binding, or
-the spin-statistics theorem. The reading of the gravitational pole as
-exclusion is not a theorem of this file.
-
-## What is proved
-
-* `2.400×10⁻⁴³ < G m_e²/(k e²) < 2.401×10⁻⁴³`.
-* Above the Bohr radius, with those length windows, two electrons repel
-  electrically and attract gravitationally. The gravitational term is a
-  fraction of the electric term strictly between `2398/10⁴⁶` and
-  `2404/10⁴⁶`, and the separation-increasing force stays positive.
-* Inside the first node, while the phase is still below `1`, that outward
-  gravitational force exceeds the scale `k e²/r²` only for a fractional
-  depth `ε < 1.64×10⁻⁴³`. Such a depth exists.
-* For `0 < r₁ < 1`, that depth is a separation smaller than a radius above
-  `52917` by more than `3×10⁴⁷`.
+Inside the first node the outward gravitational force exceeds \(ke^2/r^2\) only
+on a fractional depth below \(1.64\times 10^{-43}\). \(G\), the masses,
+\(\alpha\), \(\hbar\), and \(c\) are inputs; the spin-statistics theorem is
+not derived, and that pole is not a theorem of exclusion.
 -/
 
 namespace DstDiophantine
@@ -104,9 +88,6 @@ private theorem shell_fraction_hi :
 
 /-! ### A shell separation -/
 
-/-- Above the Bohr radius, two electrons repel electrically and attract
-gravitationally, and the gravitational term is a fraction of the electric
-term strictly between `2.398×10⁻⁴³` and `2.404×10⁻⁴³`. -/
 theorem shell_electron_grav_fraction {ℓE ℓG a : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387)
     (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
@@ -174,8 +155,6 @@ theorem shell_electron_grav_fraction {ℓE ℓG a : ℝ}
     have hprod : ρ * (γE / γG) = ρ * γE / γG := by ring
     linarith
 
-/-- At that separation the electric term increases the separation, the
-gravitational term decreases it, and the sum increases it. -/
 theorem shell_electron_net_repels {ℓE ℓG a coul r : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387)
     (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
@@ -355,7 +334,6 @@ private theorem strictMonoOn_cosh_nonneg : StrictMonoOn cosh (Ici 0) :=
     rw [congrFun Real.deriv_cosh x]
     exact sinh_pos_iff.mpr hx
 
-/-- The linear coefficient at the first node exceeds `22/15`. -/
 theorem firstNode_slope_gt_twentyTwo_fifteenths :
     (22 : ℝ) / 15 < nodeSlopeLo * resonanceRoot1 := by
   have hwin := resonanceRoot1_sharp_bounds
@@ -414,8 +392,6 @@ theorem firstNode_slope_gt_twentyTwo_fifteenths :
     mul_lt_mul_of_pos_right hwin.1 hslope
   linarith [hcoeff, hL]
 
-/-- Just inside the first node, and still below phase `1`, the factor is a
-negative multiple of the phase gap, between the two comparison slopes. -/
 theorem gammaSEqual_linear_inside {x : ℝ} (hx : x ∈ Ioo resonanceRoot1 1) :
     nodeSlopeLo * (x - resonanceRoot1) < -gammaSEqual x ∧
       -gammaSEqual x < nodeSlopeHi * (x - resonanceRoot1) := by
@@ -469,9 +445,6 @@ private theorem depth_cut :
     (2401 : ℚ) * 15 / (22 * 10 ^ 46) < (164 : ℚ) / 100 / 10 ^ 43 := by
   norm_num
 
-/-- While the phase is still below `1`, the outward gravitational force of two
-electrons exceeds `k e²/r²` only for a fractional depth strictly less than
-`1.64×10⁻⁴³`. -/
 theorem grav_excess_depth {ε : ℝ} (hε : 0 < ε) (hε1 : ε < 1 - resonanceRoot1)
     (hexcess : (electronElectronGravToCoulomb : ℝ) > -gammaSEqual (phaseAtDepth ε)) :
     ε < (164 : ℝ) / 100 / 10 ^ 43 := by
@@ -517,8 +490,6 @@ theorem grav_excess_depth {ε : ℝ} (hε : 0 < ε) (hε1 : ε < 1 - resonanceRo
     nlinarith
   linarith
 
-/-- The excess is attained: some fractional depth below `1.64×10⁻⁴³` makes the
-outward force larger than `k e²/r²`. -/
 theorem exists_grav_excess_depth :
     ∃ ε : ℝ, 0 < ε ∧ ε < (164 : ℝ) / 100 / 10 ^ 43 ∧
       ε < 1 - resonanceRoot1 ∧
@@ -583,8 +554,6 @@ theorem exists_grav_excess_depth :
   · exact grav_excess_depth hε0 hε1 (by simpa [hphase] using habs)
   · simpa [hphase] using habs
 
-/-- A node below `1` fm and a fractional depth below `1.64×10⁻⁴³` is a
-separation smaller than a radius above `52917` by more than `3×10⁴⁷`. -/
 theorem grav_depth_below_bohr {r₁ a ε : ℝ}
     (hr0 : 0 < r₁) (hr1 : r₁ < 1) (ha : 52917 < a)
     (hε0 : 0 ≤ ε) (hε : ε < (164 : ℝ) / 100 / 10 ^ 43) :

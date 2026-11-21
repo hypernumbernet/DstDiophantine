@@ -11,42 +11,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Inertial-boost gauge: metric, torsion, and the teleparallel scalar
 
-Boost the inertial coframe in the fixed `(t,x)` plane by a rapidity `φ`.
-The partials below are the 1-jet of a profile `φ(t,x)`: `u = ∂_t φ`, `v = ∂_x φ`.
-
-## Proved
-
-* The induced metric is Minkowski for every `φ`. The `(t,x)` block has
-  determinant `1`.
-* Coordinate torsion of the jet is
-  `T^t_{tx} = u`, `T^t_{xt} = -u`, `T^x_{tx} = -v`, `T^x_{xt} = v`,
-  and every other component vanishes. It remembers `(u,v)` and forgets `φ`.
-* The teleparallel quadratic of the parent paper,
-  `T = ¼ T_{ρμν} T^{ρμν} + ½ T_{ρμν} T^{νμρ} - T_ρ T^ρ`,
-  with indices moved by `η`, vanishes for every jet. Both vanishings are the
-  in-plane jets of `PlaneTorsion.genTeleparallel_eq_zero`.
-* The same algebraic value `J = ½ φ²` occurs on an exterior Schwarzschild
-  coframe whose teleparallel quadratic is `-2/r²`. No pointwise map `J ↦ T`
-  serves every tetrad. The auxiliary expression `schwarzschildTeleparallelT`
-  is a different, positive quantity.
-* Two rapidities with distinct squares induce the same metric and distinct `J`.
-* A rotation in the `(x,y)` plane by an angle `θ` induces the Minkowski metric.
-  The `(x,y)` block has determinant `1`. Coordinate torsion of an in-plane jet
-  `(∂_x θ, ∂_y θ) = (p, q)` is `T^x_{xy} = p` and `T^y_{xy} = q`. It forgets `θ`.
-  The teleparallel quadratic vanishes for every such jet.
-* The one-axis mismatch on `cyclic 2 = e₂ e₁`, the bivector of that plane, is
-  `J = -½ θ²`, the negative of the pure boost of equal parameter.
-
-## Not claimed
-
-* A dictionary for a rotor about a moving axis. The Minkowski leg of a motor
-  `R T` is recorded in `Tetrad`.
-* Vanishing of `T` for an arbitrary local Lorentz transformation. One generator
-  with an arbitrary jet does vanish; two generators with independent jets need
-  not, as in `LorentzCounterexample`.
-* The variational identity between `∫ e T` and the Einstein--Hilbert action.
-* Equality of the coordinate coframe with the sandwich when the angle varies
-  from event to event. The constant-angle rows are in `LorentzFamily`.
+A rapidity profile in a fixed inertial plane keeps the Minkowski metric, and the teleparallel quadratic of its 1-jet vanishes. Vanishing of `T` for an arbitrary local Lorentz transformation is not claimed, and `J = ½ φ²` does not determine `T`.
 -/
 
 namespace DstDiophantine
@@ -86,7 +51,6 @@ theorem inertialBoost_blockDet (φ : ℝ) :
   ring_nf
   exact Real.cosh_sq_sub_sinh_sq φ
 
-/-- The boosted coframe induces the Minkowski metric, for every rapidity. -/
 theorem inducedMetric_inertialBoost (φ : ℝ) (μ ν : Fin 4) :
     inducedMetric (inertialBoostCoframe φ) μ ν =
       if μ = ν then w31 μ else 0 := by
@@ -96,7 +60,6 @@ theorem inducedMetric_inertialBoost (φ : ℝ) (μ ν : Fin 4) :
     simp [Fin.sum_univ_four, inertialBoostCoframe, w31] <;>
     ring_nf <;> linarith
 
-/-- Frame and coframe are dual. -/
 theorem inertialBoost_dual (φ : ℝ) (μ ν : Fin 4) :
     ∑ a : Fin 4, inertialBoostCoframe φ a μ * inertialBoostFrame φ ν a =
       if μ = ν then (1 : ℝ) else 0 := by
@@ -142,7 +105,6 @@ noncomputable def boostCoordTorsion (φ u v : ℝ) (ρ μ ν : Fin 4) : ℝ :=
     inertialBoostFrame φ ρ a *
       weitzenbockTorsion (inertialBoostPartials φ u v) a μ ν
 
-/-- Closed form: `T^ρ_{μν} = (∂_μ φ) K^ρ_ν - (∂_ν φ) K^ρ_μ`. Independent of `φ`. -/
 theorem boostCoordTorsion_eq_jet (φ u v : ℝ) (ρ μ ν : Fin 4) :
     boostCoordTorsion φ u v ρ μ ν =
       derivJet u v μ * boostGen ρ ν - derivJet u v ν * boostGen ρ μ := by
@@ -298,7 +260,6 @@ theorem boost_square_contraction (u v : ℝ) :
       (f := fun μ => ∑ ν, boostTdown u v 1 μ ν * boostTup u v 1 μ ν)
       (sum_square_high_μ u v 1 2 (plane_ne 2 (Or.inl rfl)))
       (sum_square_high_μ u v 1 3 (plane_ne 3 (Or.inr rfl)))]
-  -- eight plane sums, each reduced to the two in-plane `ν`
   have hν :
       ∀ ρ μ : Fin 4,
         ∑ ν : Fin 4, boostTdown u v ρ μ ν * boostTup u v ρ μ ν =
@@ -383,17 +344,14 @@ theorem boostTeleparallel_eq_gen (u v : ℝ) :
       PlaneTorsion.genTeleparallel boostGen (derivJet u v) := by
   rfl
 
-/-- The teleparallel scalar of every inertial-boost jet vanishes. -/
 theorem boostTeleparallel_eq_zero (u v : ℝ) : boostTeleparallel u v = 0 := by
   rw [boostTeleparallel_eq_gen]
   exact PlaneTorsion.genTeleparallel_eq_zero boostGen_antisym (derivJet u v)
 
-/-- Nonzero torsion is compatible with a vanishing teleparallel scalar. -/
 theorem torsion_without_teleparallel (φ u v : ℝ) (hu : u ≠ 0) :
     boostCoordTorsion φ u v 0 0 1 ≠ 0 ∧ boostTeleparallel u v = 0 :=
   ⟨boostCoordTorsion_ne_zero_of_time φ u v hu, boostTeleparallel_eq_zero u v⟩
 
-/-- Same metric, distinct mismatch, whenever the squared rapidities differ. -/
 theorem inertialBoost_same_metric_distinct_J {φ ψ : ℝ} (h : φ ^ 2 ≠ ψ ^ 2) :
     (∀ μ ν,
         inducedMetric (inertialBoostCoframe φ) μ ν =
@@ -404,8 +362,7 @@ theorem inertialBoost_same_metric_distinct_J {φ ψ : ℝ} (h : φ ^ 2 ≠ ψ ^ 
   · rw [J_pureBoost, J_pureBoost]
     exact fun heq => h (by linarith)
 
-/-- The value `J = ½ φ²` does not determine `T`: it vanishes on the inertial
-boost and is positive on the exterior Schwarzschild coframe of the same rapidity. -/
+/-- `J = ½ φ²` vanishes on the inertial boost and is positive on the exterior Schwarzschild coframe of that rapidity. -/
 theorem sameJ_inertial_T_zero_schwarzschild_T_pos {rs r : ℝ} (h : IsExterior rs r) :
     J (pureBoost (schwarzschildRapidity rs r)) = J (radialBoostParams rs r) ∧
       boostTeleparallel 0 0 = 0 ∧
@@ -413,7 +370,6 @@ theorem sameJ_inertial_T_zero_schwarzschild_T_pos {rs r : ℝ} (h : IsExterior r
   refine ⟨?_, boostTeleparallel_eq_zero 0 0, schwarzschild_T_pos h⟩
   rw [J_pureBoost, J_radialBoostParams]
 
-/-- No pointwise function of `J` reproduces `T` on every tetrad. -/
 theorem no_pointwise_map_J_to_T :
     ¬ ∃ F : ℝ → ℝ,
         (∀ u v φ, boostTeleparallel u v = F ((1 / 2) * φ ^ 2)) ∧
@@ -441,7 +397,6 @@ theorem J_inertialRotation (θ : ℝ) :
   simp only [inertialRotationParams, Fin.sum_univ_three]
   simp
 
-/-- Equal parameters: the pure rotation is the negative of the pure boost. -/
 theorem J_inertialRotation_eq_neg_pureBoost (θ : ℝ) :
     J (inertialRotationParams θ) = -J (pureBoost θ) := by
   rw [J_inertialRotation, J_pureBoost]
@@ -475,7 +430,6 @@ theorem inertialRotation_blockDet (θ : ℝ) :
   ring_nf
   exact Real.cos_sq_add_sin_sq θ
 
-/-- The rotated coframe induces the Minkowski metric, for every angle. -/
 theorem inducedMetric_inertialRotation (θ : ℝ) (μ ν : Fin 4) :
     inducedMetric (inertialRotationCoframe θ) μ ν =
       if μ = ν then w31 μ else 0 := by
@@ -485,7 +439,6 @@ theorem inducedMetric_inertialRotation (θ : ℝ) (μ ν : Fin 4) :
     simp [Fin.sum_univ_four, inertialRotationCoframe, w31] <;>
     ring_nf <;> linarith
 
-/-- Frame and coframe are dual. -/
 theorem inertialRotation_dual (θ : ℝ) (μ ν : Fin 4) :
     ∑ a : Fin 4, inertialRotationCoframe θ a μ * inertialRotationFrame θ ν a =
       if μ = ν then (1 : ℝ) else 0 := by
@@ -529,7 +482,6 @@ noncomputable def rotationCoordTorsion (θ p q : ℝ) (ρ μ ν : Fin 4) : ℝ :
     inertialRotationFrame θ ρ a *
       weitzenbockTorsion (inertialRotationPartials θ p q) a μ ν
 
-/-- Closed form: `T^ρ_{μν} = (∂_μ θ) K^ρ_ν - (∂_ν θ) K^ρ_μ`. Independent of `θ`. -/
 theorem rotationCoordTorsion_eq_jet (θ p q : ℝ) (ρ μ ν : Fin 4) :
     rotationCoordTorsion θ p q ρ μ ν =
       rotationDeriv p q μ * rotGen ρ ν - rotationDeriv p q ν * rotGen ρ μ := by
@@ -773,17 +725,14 @@ theorem rotationTeleparallel_eq_gen (p q : ℝ) :
       PlaneTorsion.genTeleparallel rotGen (rotationDeriv p q) := by
   rfl
 
-/-- The teleparallel scalar of every inertial-rotation jet vanishes. -/
 theorem rotationTeleparallel_eq_zero (p q : ℝ) : rotationTeleparallel p q = 0 := by
   rw [rotationTeleparallel_eq_gen]
   exact PlaneTorsion.genTeleparallel_eq_zero rotGen_antisym (rotationDeriv p q)
 
-/-- Nonzero torsion is compatible with a vanishing teleparallel scalar. -/
 theorem rotation_torsion_without_teleparallel (θ p q : ℝ) (hp : p ≠ 0) :
     rotationCoordTorsion θ p q 1 1 2 ≠ 0 ∧ rotationTeleparallel p q = 0 :=
   ⟨rotationCoordTorsion_ne_zero_of_x θ p q hp, rotationTeleparallel_eq_zero p q⟩
 
-/-- Same metric, distinct mismatch, whenever the squared angles differ. -/
 theorem inertialRotation_same_metric_distinct_J {θ ψ : ℝ} (h : θ ^ 2 ≠ ψ ^ 2) :
     (∀ μ ν,
         inducedMetric (inertialRotationCoframe θ) μ ν =

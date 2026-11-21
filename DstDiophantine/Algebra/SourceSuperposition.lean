@@ -10,29 +10,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Superposition of source bivectors
 
-Sources add in the six-dimensional coefficient space. That internal sum is
-commutative and has no ceiling: the quadratics `J` and `M` on it may exceed
-`3π²/8`.
-
-The configuration a particle expresses is the unique admissible point closest
-to the internal sum in the squared Euclidean distance of the six coefficients.
-The cone is a product of triangles, so the closest point is taken axis by
-axis. Inside the cone the closest point is the sum itself. On an axis with
-nonnegative coefficients, once their sum is at least `π/2` and their
-difference is still within `π/2`, the expressed sum is `π/2` and the
-expressed difference is the internal difference. The expressed mismatch and
-unsigned mass are then fixed by that difference alone, while the same
-quadratics on the internal sum keep the full sum and grow without bound.
-`J + M` does not pass through: a balanced source raises it internally.
-Once the difference reaches `π/2`, the expressed state locks at a pure
-corner, and the difference itself stops passing through.
-
-## What is not claimed
-
-The nearest-point readout is not a derivation of the Newtonian multi-body
-law, and it does not alter the coefficient-wise Faraday addition. A Faraday
-increment that leaves the cone is an internal departure; the mismatch then
-expressed is the closest admissible point.
+The expressed point is the nearest admissible point to the coefficient sum. This is not a derivation of the Newtonian multi-body law.
 -/
 
 namespace DstDiophantine
@@ -129,7 +107,6 @@ theorem axisExpress_pureDual {x y : ℝ} (h : InPureDual x y) :
       linarith [hyx, hxy, Real.pi_pos]
     · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_left h]
 
-/-- Nonnegative coefficients with `σ ≥ π/2` and `|δ| ≤ π/2` express the wall formula. -/
 theorem axisExpress_eq_wallPoint {x y : ℝ}
     (hx : 0 ≤ x) (hy : 0 ≤ y) (hs : Real.pi / 2 ≤ x + y)
     (hd : |x - y| ≤ Real.pi / 2) :
@@ -163,7 +140,6 @@ theorem axisExpress_eq_wallPoint {x y : ℝ}
       · unfold axisExpress
         rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hdual, ite_eq_left hwall]
 
-/-- A nonnegative excess of usual over dual locks the axis at `(π/2, 0)`. -/
 theorem axisExpress_lock_usual {x y : ℝ}
     (_hx : 0 ≤ x) (hy : 0 ≤ y) (hd : Real.pi / 2 ≤ x - y) :
     axisExpress x y = (Real.pi / 2, 0) := by
@@ -173,7 +149,6 @@ theorem axisExpress_lock_usual {x y : ℝ}
     · linarith
   exact axisExpress_pureUsual h
 
-/-- A nonnegative excess of dual over usual locks the axis at `(0, π/2)`. -/
 theorem axisExpress_lock_dual {x y : ℝ}
     (hx : 0 ≤ x) (_hy : 0 ≤ y) (hd : Real.pi / 2 ≤ y - x) :
     axisExpress x y = (0, Real.pi / 2) := by
@@ -601,7 +576,6 @@ theorem express_axisBoost_saturated {a0 : Fin 3} {φ : ℝ} (hφ : Real.pi / 2 �
         ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
       simp [axisBoost, h, he]
 
-/-- `n ≥ 1` coincident pure boosts of rapidity `π/2` express `J = π²/8` on that axis. -/
 theorem J_express_repeat_pure_boost {n : ℕ} (hn : 1 ≤ n) (a0 : Fin 3) :
     J (expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
       Real.pi ^ 2 / 8 := by
@@ -613,7 +587,6 @@ theorem J_express_repeat_pure_boost {n : ℕ} (hn : 1 ≤ n) (a0 : Fin 3) :
   rw [hsum, express_axisBoost_saturated hφ, J_axisBoost]
   ring
 
-/-- The quadratic on the same internal sum is `n² π²/8`, with no ceiling. -/
 theorem J_internal_repeat_pure_boost (n : ℕ) (a0 : Fin 3) :
     J (sumParams (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
       (n : ℝ) ^ 2 * (Real.pi ^ 2 / 8) := by
@@ -630,7 +603,6 @@ theorem J_internal_repeat_gt_ceiling {n : ℕ} (hn : 2 ≤ n) (a0 : Fin 3) :
   have hπ : 0 < Real.pi ^ 2 := by positivity
   nlinarith [hn2, hπ]
 
-/-- The internal quadratic is unbounded, while every expressed mismatch stays within the ceiling. -/
 theorem internal_unbounded_expressed_bounded :
     (∀ p : TorsionParams, |J (express p)| ≤ 3 * Real.pi ^ 2 / 8) ∧
       (∀ C : ℝ, ∃ p : TorsionParams, C < J p) := by
@@ -641,7 +613,7 @@ theorem internal_unbounded_expressed_bounded :
   have habs : 0 ≤ |C| := abs_nonneg C
   nlinarith [sq_abs C, sq_nonneg (|C|)]
 
-/-- Two aligned boosts of rapidity `π/4` express `J = π²/8`, not the sum `π²/16` of their values. -/
+/-- Two boosts of rapidity `π/4` express `π²/8`, not the sum of their heights. -/
 theorem J_two_quarter_boosts (a0 : Fin 3) :
     let p := axisBoost a0 (Real.pi / 4)
     let s := sumParams [p, p]
@@ -698,7 +670,6 @@ theorem mass_axisPair (a0 : Fin 3) (α β : ℝ) :
   rw [mass_coef, Fin.sum_univ_three]
   fin_cases a0 <;> simp [axisPair]
 
-/-- `J + M` on one axis is the square of the usual rapidity. -/
 theorem J_add_mass_axisPair (a0 : Fin 3) (α β : ℝ) :
     J (axisPair a0 α β) + mass (axisPair a0 α β) = α ^ 2 := by
   rw [J_axisPair, mass_axisPair]
@@ -767,8 +738,6 @@ theorem sumParams_balancePile_eq (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
     simp only [axisWall, axisBalance, axisPair]
     split_ifs <;> ring
 
-/-- On the wall slab the expressed difference is the internal difference,
-and the expressed sum is `π/2`. -/
 theorem axisExpress_wall_sum_diff {x y : ℝ}
     (hx : 0 ≤ x) (hy : 0 ≤ y) (hs : Real.pi / 2 ≤ x + y)
     (hd : |x - y| ≤ Real.pi / 2) :
@@ -830,7 +799,6 @@ theorem mass_balancePile_sum (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
   rw [sumParams_balancePile_eq, mass_axisPair]
   ring
 
-/-- Balanced sources on a wall raise internal `J + M` and leave the expressed value fixed. -/
 theorem balancePile_JM_overflow {a0 : Fin 3} {δ ε : ℝ} {n : ℕ}
     (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 < ε) (hn : 1 ≤ n) :
     J (expressedSuperposition (balancePile a0 δ ε n)) +
@@ -874,7 +842,6 @@ theorem mass_express_quarter_balancePile {n : ℕ} (a0 : Fin 3) :
       (by positivity) (by linarith [Real.pi_pos]) (by positivity), mass_axisWall]
   ring
 
-/-- Six or more balanced quarter-sources drive the internal quadratic past the ceiling. -/
 theorem J_quarter_balancePile_gt_ceiling {n : ℕ} (hn : 6 ≤ n) (a0 : Fin 3) :
     3 * Real.pi ^ 2 / 8 <
       J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) := by
@@ -895,7 +862,6 @@ theorem sumParams_boost_then_balance (a0 : Fin 3) (φ ε : ℝ) :
       List.sum_cons, List.sum_nil, add_zero]
     split_ifs <;> ring
 
-/-- Inside the triangle a balanced source raises `J` and discards nothing. -/
 theorem eighth_balance_inside (a0 : Fin 3) :
     let b := axisBoost a0 (Real.pi / 8)
     let s := sumParams [b, axisBalance a0 (Real.pi / 8)]

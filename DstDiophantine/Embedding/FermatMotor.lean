@@ -12,15 +12,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Dual-axis Fermat motor embedding
 
-Separates the FLT multiplicative seed from the single-axis hyperbolic
-`integerRotor` (axis 0 only). For a projective triple `[a:b:c]` with
-`a, b, c ≠ 0`:
-
-* boost rapidity `α = log(√(a²+b²)/|c|)` on hyperbolic axis 0;
-* cyclic angle `β = arctan(|b|/|a|)` on cyclic axis 1.
-
-Does **not** claim that mixed `R·T` equals `exp(Ω_biv)`. Unconditional FLT
-is not claimed.
+Boost on hyperbolic axis `0`, cyclic angle on axis `1`. This is not a proof that `R·T = exp(Ω_biv)`, nor of FLT.
 -/
 
 namespace DstDiophantine
@@ -41,9 +33,7 @@ noncomputable def fermatBoost (a b c : ℤ) (_hc : c ≠ 0) : ℝ :=
 noncomputable def fermatAngle (a b : ℤ) (_ha : a ≠ 0) : ℝ :=
   Real.arctan ((b.natAbs : ℝ) / (a.natAbs : ℝ))
 
-/--
-Dual-axis torsion seed: hyperbolic on axis `0`, cyclic on axis `1`.
--/
+/-- Dual-axis torsion seed: hyperbolic on axis `0`, cyclic on axis `1`. -/
 noncomputable def fermatTorsion (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     TorsionParams where
   alpha := fun i => if i = 0 then fermatBoost a b c hc else 0
@@ -151,7 +141,6 @@ theorem fermatBoost_pos_iff {a b c : ℤ} (hc : c ≠ 0)
   have harg : 0 < fermatL2 a b / (c.natAbs : ℝ) := div_pos hL hc0
   rw [Real.log_pos_iff (le_of_lt harg), one_lt_div hc0]
 
-/-- When boost and angle stay in the cone, the dual-axis seed is admissible. -/
 theorem isAdmissibleContinuous_fermatTorsion {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (hα : 0 ≤ fermatBoost a b c hc) (hαπ : fermatBoost a b c hc ≤ Real.pi / 2)
@@ -189,8 +178,7 @@ theorem omegaTorsion_fermatTorsion_add (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 
   rw [omegaTorsion_fermatTorsion, fermatBoostSeed, fermatAngleSeed,
     omegaTorsion_pureBoost, omegaTorsion_pureRotation1]
 
-/-- Geometric interference of the Fermat boost against its cyclic angle:
-`[Ω_boost, Ω_cyclic] = (α β / 2) B⁺₂`. -/
+/-- Geometric interference of the Fermat boost against its cyclic angle: `[Ω_boost, Ω_cyclic] = (α β / 2) B⁺₂`. -/
 noncomputable def fermatInterfere (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) : PGA :=
   Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc))
     (omegaTorsion (fermatAngleSeed a b ha))
@@ -241,9 +229,6 @@ theorem fermatInterfere_ne_zero_of_mixed {a b c : ℤ}
   have hB : hyperbolic (2 : Fin 3) ≠ 0 := Periodicity.hyperbolic_ne_zero 2
   exact hB ((smul_eq_zero.mp hz).resolve_left hcoeff)
 
-/-- Vanishing interference on a Fermat seed with `b ≠ 0` is exactly the
-pure-cyclic (Pythagorean-radius) seat: the angle is then strictly positive,
-so the product `α β` vanishes only through the boost. -/
 theorem fermatInterfere_eq_zero_iff_pureCyclic {a b c : ℤ}
     (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) :
     fermatInterfere a b c ha hc = 0 ↔ IsPureCyclicFermatMotor a b c hc := by
@@ -262,7 +247,6 @@ theorem fermatInterfere_eq_zero_iff_pureCyclic {a b c : ℤ}
     exact hα
   · exact fermatInterfere_eq_zero_of_pureCyclic ha hc
 
-/-- Mixed Fermat seeds do not split as a commuting boost–rotation pair. -/
 theorem not_commute_fermat_boost_angle {a b c : ℤ}
     (ha : a ≠ 0) (hc : c ≠ 0)
     (h : IsMixedFermatMotor a b c ha hc) :

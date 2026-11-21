@@ -9,39 +9,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Free electrons among ions in the outer well
 
-Lengths are in units of `ℓ` and forces in units of `k e²/ℓ²`. A point
-charge `Q` (in units of `e`) at `c` acts on an electron at `p` with the
-force `-(Q · 8x³/γ_s(x)) (p - c)`, where `x = 1/(2‖p - c‖)`. The radial
-magnitude is `Q · 4x²/γ_s(x)`, the attraction-positive force of
-`ElectronForce`.
-
-## Paper boundary (do **not** claim)
-
-No lattice sum over an infinite crystal is taken. No conductivity, no Fermi
-surface, and no cohesive energy is derived. Screening is not introduced:
-an ion is a point charge. The length `ℓ` is not derived.
-
-## What is proved
-
-* Along a line `p + t v`, the outward component `⟪F, v⟫` of the force of one
-  point charge has an explicit derivative at `t = 0`.
-* Summed over any orthonormal frame of three directions, that derivative is
-  `Q · 16x⁴ cosh x sin x / γ_s(x)²`. For an ion (`Q > 0`) in the outer well
-  this is strictly positive; for another electron (`Q = -1`) it is strictly
-  negative. With `γ_s = 1` the same sum is zero.
-* The outflow `16x⁴ cosh x sin x / γ_s²` is strictly increasing on the outer
-  well.
-* An electron in the outer well of ions of any positive charges has, in
-  every orthonormal frame, a direction along which a displacement is pushed
-  further by the ions.
-* The same holds with further electrons, when every distance lies in the
-  outer well, the ion charges are at least one, and each further electron is
-  farther away than a distinct ion.
-* At the centre of a regular octahedron, a cube, and a cuboctahedron of ions
-  (any of the three charges may vanish), the force on an electron vanishes,
-  and every displacement is pushed further, by the same amount in every
-  direction. The same shells hold a positive ion at that centre: every
-  displacement of the ion is restored.
+Point-charge ions in the outer well drive a free electron, with no screening
+and no infinite lattice sum. No conductivity, Fermi surface, or cohesive
+energy is derived, and the length \(\ell\) is not derived.
 -/
 
 namespace DstDiophantine
@@ -81,14 +51,12 @@ theorem hasDerivAt_pullRate {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
   field_simp
   ring
 
-/-- The phase-weighted derivative minus three times the rate is the outflow. -/
 theorem pullRate_outflow {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
     x * pullRateDeriv x - 3 * pullRate x = ionOutflow x := by
   unfold pullRateDeriv pullRate ionOutflow
   field_simp
   ring
 
-/-- With `γ_s = 1` the rate is `8x³`, and the same combination vanishes. -/
 theorem coulomb_outflow_zero (x : ℝ) :
     x * (24 * x ^ 2) - 3 * (8 * x ^ 3) = 0 := by
   ring
@@ -114,7 +82,6 @@ theorem ionOutflow_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
   ionOutflow_pos hx.1 (by linarith [outer_lt_one hx, pi_gt_three])
     (gammaSEqual_pos_left_of_first_node hx).ne'
 
-/-- On the outer well the outflow strictly increases with the phase. -/
 theorem ionOutflow_strictMonoOn_outer :
     StrictMonoOn ionOutflow (Ioo 0 resonanceRoot1) := by
   intro x hx y hy hxy
@@ -167,9 +134,7 @@ noncomputable def vecPhase (w : E) : ℝ :=
 noncomputable def pointForce (Q : ℝ) (c p : E) : E :=
   -(Q * pullRate (vecPhase (p - c))) • (p - c)
 
-/-- Derivative, along `v`, of the component along `v` of the force of a
-point charge `Q` at separation `w`. Positive means the displacement is
-pushed further. -/
+/-- Derivative, along `v`, of the component along `v` of the force of a point charge `Q` at separation `w`. Positive means the displacement is pushed further. -/
 noncomputable def lineStiff (Q : ℝ) (w v : E) : ℝ :=
   -(Q * (pullRate (vecPhase w) * ‖v‖ ^ 2 -
     pullRateDeriv (vecPhase w) * ⟪w, v⟫ ^ 2 / (2 * ‖w‖ ^ 3)))
@@ -239,8 +204,6 @@ theorem hasDerivAt_pointForce_line (Q : ℝ) {c p : E} (v : E) (hpc : p ≠ c)
   field_simp
   ring
 
-/-- Summed over an orthonormal frame, the line derivative is the charge
-times the outflow. -/
 theorem sum_lineStiff_basis (b : OrthonormalBasis (Fin 3) ℝ E) (Q : ℝ) {w : E}
     (hw : w ≠ 0) (hγ : gammaSEqual (vecPhase w) ≠ 0) :
     ∑ i, lineStiff Q w (b i) = Q * ionOutflow (vecPhase w) := by
@@ -282,8 +245,7 @@ theorem hasDerivAt_ionsForce_line {ι : Type*} [Fintype ι] (c : ι → E) (Z : 
   rw [hfun]
   exact HasDerivAt.fun_sum fun j _ => hasDerivAt_pointForce_line (Z j) v (hpc j) (hγ j)
 
-/-- Total force on an electron at `p` from ions `(c, Z)` and further
-electrons at `e`. -/
+/-- Total force on an electron at `p` from ions `(c, Z)` and further electrons at `e`. -/
 noncomputable def metalForce {ι κ : Type*} [Fintype ι] [Fintype κ]
     (c : ι → E) (Z : ι → ℝ) (e : κ → E) (p : E) : E :=
   ionsForce c Z p + ionsForce e (fun _ => -1) p
@@ -310,8 +272,6 @@ theorem hasDerivAt_metalForce_line {ι κ : Type*} [Fintype ι] [Fintype κ]
   exact (hasDerivAt_ionsForce_line c Z v hpc hγc).add
     (hasDerivAt_ionsForce_line e (fun _ => -1) v hpe hγe)
 
-/-- In any orthonormal frame the three line derivatives sum to the ion
-outflow minus the electron outflow. -/
 theorem sum_metalStiff_basis {ι κ : Type*} [Fintype ι] [Fintype κ]
     (b : OrthonormalBasis (Fin 3) ℝ E) (c : ι → E) (Z : ι → ℝ) (e : κ → E) {p : E}
     (hpc : ∀ j, p ≠ c j) (hpe : ∀ k, p ≠ e k)
@@ -335,8 +295,6 @@ theorem sum_metalStiff_basis {ι κ : Type*} [Fintype ι] [Fintype κ]
   rw [Finset.sum_add_distrib, e1, e2]
   ring
 
-/-- The ions win against the further electrons once each electron is
-farther away than a distinct ion of charge at least one. -/
 theorem outflow_balance_pos {ι κ : Type*} [Fintype ι] [Fintype κ] [Nonempty ι]
     (x : ι → ℝ) (y : κ → ℝ) (Z : ι → ℝ) (hZ : ∀ j, 1 ≤ Z j)
     (hx : ∀ j, x j ∈ Ioo 0 resonanceRoot1) (hy : ∀ k, y k ∈ Ioo 0 resonanceRoot1)
@@ -362,8 +320,6 @@ theorem outflow_balance_pos {ι κ : Type*} [Fintype ι] [Fintype κ] [Nonempty 
         ionOutflow_strictMonoOn_outer (hy k) (hx (σ k)) (hclose k)
     linarith
 
-/-- A free electron: in every orthonormal frame some direction pushes a
-displacement further, so no point of the outer well holds the electron. -/
 theorem free_electron_pushed {ι κ : Type*} [Fintype ι] [Fintype κ] [Nonempty ι]
     (b : OrthonormalBasis (Fin 3) ℝ E) (c : ι → E) (Z : ι → ℝ) (e : κ → E) (p : E)
     (hZ : ∀ j, 1 ≤ Z j)
@@ -392,8 +348,6 @@ theorem free_electron_pushed {ι κ : Type*} [Fintype ι] [Fintype κ] [Nonempty
     linarith
   exact ⟨i, hi, hasDerivAt_metalForce_line c Z e (b i) hpc hpe hγc hγe⟩
 
-/-- Ions alone, of any positive charges: in every orthonormal frame some
-direction pushes a displacement of the electron further. -/
 theorem ions_alone_pushed {ι : Type*} [Fintype ι] [Nonempty ι]
     (b : OrthonormalBasis (Fin 3) ℝ E) (c : ι → E) (Z : ι → ℝ) (p : E)
     (hZ : ∀ j, 0 < Z j) (hxc : ∀ j, vecPhase (p - c j) ∈ Ioo 0 resonanceRoot1) :
@@ -419,7 +373,6 @@ theorem ions_alone_pushed {ι : Type*} [Fintype ι] [Nonempty ι]
 
 /-! ### Octahedral and cubic sites -/
 
-/-- Separations of equal length whose second moment is isotropic. -/
 theorem sum_lineStiff_isotropic {ι : Type*} [Fintype ι] (Q : ℝ) (w : ι → E) {r : ℝ}
     (v : E) (hr : ∀ j, ‖w j‖ = r) (hr0 : 0 < r)
     (hγ : gammaSEqual (1 / (2 * r)) ≠ 0)
@@ -596,7 +549,6 @@ theorem cuboSite_sep (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {g : ℝ} (hg 
       sgn_false, f01, f02, f11, f12, f21, f22]
     module
 
-/-- A shell of equal ions about `p`, with zero vector sum, exerts no force at `p`. -/
 theorem shell_force_zero {V : Type*} [Fintype V] (Q : ℝ) (f : V → E) (p : E) {r : ℝ}
     (hr : ∀ j, ‖p - f j‖ = r) (hsum : ∑ j, (p - f j) = 0) :
     ∑ j, pointForce Q (f j) p = 0 := by
@@ -604,8 +556,7 @@ theorem shell_force_zero {V : Type*} [Fintype V] (Q : ℝ) (f : V → E) (p : E)
   simp only [hr]
   rw [← Finset.smul_sum, hsum, smul_zero]
 
-/-- Ions on a regular octahedron (radius `a`), a cube (half-edge `h`), and a
-cuboctahedron (`g (±bⱼ ± bₖ)`), all centred at `p`. -/
+/-- Ions on a regular octahedron (radius `a`), a cube (half-edge `h`), and a cuboctahedron (`g (±bⱼ ± bₖ)`), all centred at `p`. -/
 noncomputable def cubicSite (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) (a h g : ℝ) :
     ((Fin 3 × Bool) ⊕ (Bool × Bool × Bool)) ⊕ (Fin 3 × Bool × Bool) → E
   | Sum.inl (Sum.inl js) => octaSite b p a js
@@ -630,9 +581,6 @@ private theorem pos_of_phase_mem {r : ℝ} (hr : 1 / (2 * r) ∈ Ioo 0 resonance
   rw [one_div, inv_pos] at this
   linarith
 
-/-- At the centre of a regular octahedron, a cube, and a cuboctahedron of ions
-(any of the charges may vanish), the force on an electron is zero, and the
-line derivative along every `v` is `cubicStiff · ‖v‖² > 0`. -/
 theorem cubic_center_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E)
     {a h g Zo Zc Zq : ℝ}
     (ho : 1 / (2 * a) ∈ Ioo 0 resonanceRoot1)
@@ -727,8 +675,6 @@ noncomputable def ionOnIon {ι : Type*} [Fintype ι] (Zi : ℝ) (c : ι → E) (
     (p : E) : E :=
   (-Zi) • ionsForce c Z p
 
-/-- The same shells hold an ion of positive charge at their centre: the
-force vanishes and every displacement is restored. -/
 theorem cubic_center_holds_ion (b : OrthonormalBasis (Fin 3) ℝ E) (p : E)
     {a h g Zo Zc Zq Zi : ℝ}
     (ho : 1 / (2 * a) ∈ Ioo 0 resonanceRoot1)
@@ -764,4 +710,3 @@ end Space
 end Gravity
 
 end DstDiophantine
-

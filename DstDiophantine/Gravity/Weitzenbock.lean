@@ -7,19 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Chart Weitzenböck torsion
 
-On a fixed chart, `T^a_μν = ∂_μ e^a_ν - ∂_ν e^a_μ`. For the exterior Schwarzschild
-diagonal tetrad we record principal torsion components and prove
-
-* auxiliary expression `(2/r²)(1-√A)²/√A`, named
-  `schwarzschildTeleparallelT`. It is not the teleparallel quadratic;
-* divergence form of that auxiliary, `-r⁻² · formal∂_r(r² B^r)` with
-  `B^r = 4(1-√A)/r`;
-* field seed `J_field = ½ (φ')²` (see `Gravity.Identification` for the
-  parameter-vs-field dictionary).
-
-The quadratic itself is `radialTeleparallel` in `Gravity.RadialQuadratic`:
-`-2(A + r A')/r²`, hence `-2/r²` on the exterior vacuum. The current of that
-frozen value is `B^r = 2/r`, not the auxiliary current above.
+The auxiliary `(2/r²)(1-√A)²/√A` is not the teleparallel quadratic.
 -/
 
 namespace DstDiophantine
@@ -88,7 +76,6 @@ theorem schwarzschild_torsion_T3_theta_phi (rs r θ : ℝ) :
     weitzenbockTorsion (schwarzschildPartials rs r θ) 3 2 3 = r * Real.cos θ := by
   simp [weitzenbockTorsion, schwarzschildPartials]
 
-/-- Boost-leg identity: `∂_r √A = - φ' · √A` (since `φ' < 0` on the exterior). -/
 theorem dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA {rs r : ℝ} (h : IsExterior rs r) :
     dSqrtA_dr rs r = -(dRapidity_dr rs r) * Real.sqrt (schwarzschildA rs r) := by
   have hA := schwarzschildA_pos h
@@ -101,10 +88,7 @@ theorem dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA {rs r : ℝ} (h : IsExterior rs r) 
   field_simp [hr0, hs, hA0]
   rw [hs2]
 
-/-- Closed-form evaluation of the auxiliary expression
-`(2/r²)(1-√A)²/√A`. This is not the teleparallel quadratic: that contraction
-is `radialTeleparallel` in `Gravity.RadialQuadratic`, equal to `-2/r²` on
-the exterior vacuum. -/
+/-- Auxiliary `(2/r²)(1-√A)²/√A`, not the teleparallel quadratic. -/
 noncomputable def schwarzschildTeleparallelT (rs r : ℝ) : ℝ :=
   let A := schwarzschildA rs r
   (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
@@ -152,7 +136,6 @@ theorem schwarzschild_T_eq_divClosed {rs r : ℝ} (h : IsExterior rs r) :
   simp only [schwarzschildTeleparallelT, schwarzschildDivClosed]
   field_simp [hrpos.ne', hs]
 
-/-- Expanded form: `∂_r [4 r (1-√A)] = - DivClosed`. -/
 theorem schwarzschildDivClosed_eq_neg_expanded {rs r : ℝ} (h : IsExterior rs r) :
     -schwarzschildDivClosed rs r =
       4 * (1 - Real.sqrt (schwarzschildA rs r)) -
@@ -176,7 +159,6 @@ theorem formal_d_r2B_dr_eq_neg_DivClosed {rs r : ℝ} (h : IsExterior rs r) :
     formal_d_r2B_dr rs r = -schwarzschildDivClosed rs r := by
   rw [formal_d_r2B_dr_eq h, ← schwarzschildDivClosed_eq_neg_expanded h]
 
-/-- `T = - r⁻² · formal∂_r(r² B^r)` on the exterior chart. -/
 theorem schwarzschild_T_eq_neg_r_inv_sq_formal_d_r2B {rs r : ℝ}
     (h : IsExterior rs r) :
     schwarzschildTeleparallelT rs r =
@@ -184,7 +166,6 @@ theorem schwarzschild_T_eq_neg_r_inv_sq_formal_d_r2B {rs r : ℝ}
   rw [schwarzschild_T_eq_divClosed h, formal_d_r2B_dr_eq_neg_DivClosed h]
   ring
 
-/-- Explicit form `J_field = rₛ² / (8 r⁴ A²)`. -/
 theorem J_field_coef {rs r : ℝ} (h : IsExterior rs r) :
     J_field rs r =
       rs ^ 2 / (8 * r ^ 4 * (schwarzschildA rs r) ^ 2) := by
@@ -195,8 +176,7 @@ theorem J_field_coef {rs r : ℝ} (h : IsExterior rs r) :
   field_simp [hr0, hA0]
   ring
 
-/-- Auxiliary expression at `rₛ = 0`: it vanishes, as does `J_field` (`r > 0`).
-The teleparallel quadratic of the spherical frame does not. -/
+/-- At `rₛ = 0` the auxiliary and `J_field` vanish; the spherical-frame quadratic does not. -/
 theorem minkowski_T_and_J_field_zero {r : ℝ} (_hr : 0 < r) :
     schwarzschildTeleparallelT 0 r = 0 ∧ J_field 0 r = 0 := by
   have hA : schwarzschildA 0 r = 1 := by

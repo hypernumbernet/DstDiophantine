@@ -15,7 +15,6 @@ import Mathlib.Algebra.Algebra.Basic
 # Normed algebra structure on `PGA`
 
 Finite-dimensional `Cl(3,1,1)` inherits a `NormedAlgebra` from left-multiplication matrices.
-This enables `NormedSpace.exp` for torsion rotors.
 -/
 
 namespace DstDiophantine

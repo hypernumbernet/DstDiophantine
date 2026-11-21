@@ -1,17 +1,9 @@
 import DstDiophantine.Logic.Quantum.DualObservables
 
 /-!
-# Two dual spinors: partial spin vectors and exchange
+# Partial spin vectors and exchange
 
-* The spin vectors `r_A`, `r_B` of the two particles of a joint state satisfy
-  `|r_A|² + 4 ‖det Ψ‖² = |r_B|² + 4 ‖det Ψ‖² = ‖Ψ‖⁴`: on a unit state each
-  particle has polarization `√(1 - C²)` with `C = 2 ‖det Ψ‖`.
-* Exchange `Ψ ↦ Ψᵀ` commutes with every common rotor. The antisymmetric
-  states are the multiples of the singlet, and
-  `u ⊗ v - v ⊗ u = -⟨J u, v⟩ ε` vanishes exactly when `v ∥ u` (exclusion).
-* `Σ σ_k ⊗ σ_k = 2 P - 1` and `Σ Γ_k ⊗ Γ_k = 1 - 2 P` with `P` the exchange;
-  the total spin squared is `S² = 1 + P`: `2` on symmetric states, `0` on the
-  singlet.
+On a unit joint state each particle has polarization `√(1 - (2‖det Ψ‖)²)`, and the antisymmetric states are the multiples of the singlet. `u ⊗ v - v ⊗ u` vanishes exactly when `v` is parallel to `u`.
 -/
 
 namespace DstDiophantine
@@ -151,7 +143,6 @@ private theorem rightSpinVec_comp (Ψ : PairState) :
   · simp only [rightSpinVec, pauli, pairInner_sum, h0, h1]
   · simp only [rightSpinVec, pauli, pairInner_sum, h0, h1]
 
-/-- `|r_A|² + 4 ‖det Ψ‖² = ‖Ψ‖⁴`. -/
 theorem axisDot_leftSpinVec (Ψ : PairState) :
     axisDot (leftSpinVec Ψ) (leftSpinVec Ψ) + 4 * ‖Ψ.det‖ ^ 2 = pairNormSq Ψ ^ 2 := by
   obtain ⟨hx, hy, hz⟩ := leftSpinVec_comp Ψ
@@ -168,7 +159,6 @@ theorem axisDot_leftSpinVec (Ψ : PairState) :
     Complex.conj_re, Complex.conj_im]
   ring
 
-/-- `|r_B|² + 4 ‖det Ψ‖² = ‖Ψ‖⁴`. -/
 theorem axisDot_rightSpinVec (Ψ : PairState) :
     axisDot (rightSpinVec Ψ) (rightSpinVec Ψ) + 4 * ‖Ψ.det‖ ^ 2 = pairNormSq Ψ ^ 2 := by
   obtain ⟨hx, hy, hz⟩ := rightSpinVec_comp Ψ
@@ -185,7 +175,6 @@ theorem axisDot_rightSpinVec (Ψ : PairState) :
     Complex.conj_re, Complex.conj_im]
   ring
 
-/-- On a unit joint state both particles have polarization `√(1 - (2 ‖det Ψ‖)²)`. -/
 theorem axisDot_spinVec_pair_of_norm {Ψ : PairState} (hΨ : pairNormSq Ψ = 1) :
     axisDot (leftSpinVec Ψ) (leftSpinVec Ψ) = 1 - (2 * ‖Ψ.det‖) ^ 2 ∧
       axisDot (rightSpinVec Ψ) (rightSpinVec Ψ) = 1 - (2 * ‖Ψ.det‖) ^ 2 := by
@@ -199,7 +188,6 @@ theorem pairInner_tensor (u v u' v' : DualSpinor) :
   simp only [pairInner, pairTensor_apply, dualSpinor_inner_eq, Fin.sum_univ_two, star_mul]
   ring
 
-/-- A product state leaves each particle with the spin vector of its own factor. -/
 theorem leftSpinVec_tensor (u v : DualSpinor) :
     leftSpinVec (pairTensor u v) = fun k => ‖v‖ ^ 2 * spinVec u k := by
   funext k
@@ -225,7 +213,6 @@ private theorem pauliComb_axis (k : Fin 3) :
   simp only [pauliComb, Fin.sum_univ_three]
   fin_cases k <;> simp
 
-/-- Neither particle of the singlet has a spin direction. -/
 theorem leftSpinVec_singlet : leftSpinVec singlet = 0 := by
   funext k
   have h := pairInner_singlet_pauli_left (fun j => if j = k then 1 else 0)
@@ -250,7 +237,6 @@ theorem pairSwap_tensor (u v : DualSpinor) : pairSwap (pairTensor u v) = pairTen
   ext i j
   simp [pairSwap, mul_comm]
 
-/-- Exchange intertwines `M ⊗ N` with `N ⊗ M`; it commutes with every common rotor. -/
 theorem pairAct_pairSwap (M N : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : PairState) :
     pairAct M N (pairSwap Ψ) = pairSwap (pairAct N M Ψ) := by
   simp [pairAct, pairSwap, Matrix.transpose_mul, Matrix.mul_assoc]
@@ -259,7 +245,6 @@ theorem pairSwap_singlet : pairSwap singlet = -singlet := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [pairSwap, singlet]
 
-/-- The antisymmetric joint states are the multiples of the singlet. -/
 theorem pairSwap_eq_neg_iff (Ψ : PairState) : pairSwap Ψ = -Ψ ↔ Ψ = Ψ 0 1 • singlet := by
   constructor
   · intro h
@@ -281,7 +266,6 @@ theorem pairSwap_eq_neg_iff (Ψ : PairState) : pairSwap Ψ = -Ψ ↔ Ψ = Ψ 0 1
     ext i j
     fin_cases i <;> fin_cases j <;> simp [pairSwap, singlet]
 
-/-- Every joint state is a symmetric state plus a multiple of the singlet. -/
 theorem pair_eq_symm_add_singlet (Ψ : PairState) :
     Ψ = (1 / 2 : ℂ) • (Ψ + pairSwap Ψ) + ((Ψ 0 1 - Ψ 1 0) / 2) • singlet ∧
       pairSwap ((1 / 2 : ℂ) • (Ψ + pairSwap Ψ)) = (1 / 2 : ℂ) • (Ψ + pairSwap Ψ) := by
@@ -291,15 +275,12 @@ theorem pair_eq_symm_add_singlet (Ψ : PairState) :
   · ext i j
     fin_cases i <;> fin_cases j <;> simp [pairSwap] <;> ring
 
-/-- Antisymmetrized product: `u ⊗ v - v ⊗ u = -⟨J u, v⟩ ε`. -/
 theorem pairTensor_sub_swap (u v : DualSpinor) :
     pairTensor u v - pairTensor v u = (-inner ℂ (quatJ u) v) • singlet := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [singlet, dualSpinor_inner_eq, Fin.sum_univ_two] <;> ring
 
-/-- Exclusion: two dual spinors have a nonzero antisymmetrized product exactly
-when they are not parallel. -/
 theorem pairTensor_sub_swap_eq_zero_iff {u : DualSpinor} (hu : u ≠ 0) (v : DualSpinor) :
     pairTensor u v - pairTensor v u = 0 ↔ ∃ c : ℂ, v = c • u := by
   rw [pairTensor_sub_swap, smul_eq_zero, neg_eq_zero]
@@ -347,7 +328,6 @@ private theorem pairAct_double_apply (A B : Matrix (Fin 2) (Fin 2) ℂ) (Ψ : Pa
   simp [pairAct, Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_two]
   ring
 
-/-- Dirac exchange identity: `Σ σ_k ⊗ σ_k = 2 P - 1`. -/
 theorem sum_pairAct_pauli (Ψ : PairState) :
     ∑ k, pairAct (pauli k) (pauli k) Ψ = (2 : ℂ) • pairSwap Ψ - Ψ := by
   ext i j
@@ -358,7 +338,6 @@ theorem sum_pairAct_pauli (Ψ : PairState) :
     pairSwap, Matrix.transpose_apply, hx, hy, hz]
   fin_cases i <;> fin_cases j <;> simp <;> ring_nf <;> simp only [I_sq] <;> ring
 
-/-- In dual generators: `Σ Γ_k ⊗ Γ_k = 1 - 2 P`. -/
 theorem sum_pairAct_cyclicRep (Ψ : PairState) :
     ∑ k, pairAct (cyclicRep k) (cyclicRep k) Ψ = Ψ - (2 : ℂ) • pairSwap Ψ := by
   have h : ∀ k, pairAct (cyclicRep k) (cyclicRep k) Ψ = -pairAct (pauli k) (pauli k) Ψ := by
@@ -403,7 +382,6 @@ private theorem pairSpin_sq (k : Fin 3) (Ψ : PairState) :
         simp [two_smul]
         abel
 
-/-- `Σ (σ_k ⊗ 1 + 1 ⊗ σ_k)² = 4 (1 + P)`, so `S² = 1 + P`. -/
 theorem sum_pairSpin_sq (Ψ : PairState) :
     ∑ k, pairSpin k (pairSpin k Ψ) = (4 : ℂ) • (Ψ + pairSwap Ψ) := by
   simp only [pairSpin_sq]
@@ -412,7 +390,6 @@ theorem sum_pairSpin_sq (Ψ : PairState) :
   simp [two_smul]
   module
 
-/-- `S² = 2` on symmetric states (spin one) and `0` on the singlet (spin zero). -/
 theorem sum_pairSpin_sq_of_symm {Ψ : PairState} (h : pairSwap Ψ = Ψ) :
     ∑ k, pairSpin k (pairSpin k Ψ) = (8 : ℂ) • Ψ := by
   rw [sum_pairSpin_sq, h, ← two_smul ℂ Ψ, smul_smul]

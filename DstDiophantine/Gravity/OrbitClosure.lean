@@ -6,27 +6,7 @@ import Mathlib.Tactic.Ring
 /-!
 # One revolution of the dual rotor, and the scalar phase on it
 
-## Paper boundary (do **not** claim)
-
-`pr = nℏ` is not the return of the dual rotor to `1`, and it is not the
-return of the orbital point. Both of those happen at an angle fixed by the
-rotor, with no momentum in them. The identity `exp(i 2π pr/ℏ) = 1` iff
-`pr = nℏ` is the phase of a plane wave on a circle. It is not used to place
-an atomic radius, and it is not combined with a centripetal identity.
-The de Broglie phase of the matter wave is `(Et − p·x)/ℏ`. Closing that
-phase on a nuclear circumference is not a step of this module.
-
-## What is proved
-
-* One revolution, angle `2π`, sends the dual rotor to `-1` and restores
-  every point of the orbital plane. That return contains no momentum.
-* Two revolutions, angle `4π`, restore the rotor to `1`.
-* On one revolution the plane-wave factor equals `1` exactly when
-  `pr = nℏ` for some `n : ℤ`. This equivalence does not select a radius.
-* The same revolution can restore the point while the plane-wave factor
-  equals `-1` (`pr = ℏ/2`).
-* Phase alignment at `pr = ℏ` leaves the rotor at `-1`. The rotor returns
-  to `1` at an even multiple.
+`pr = nℏ` is not the rotor's return to `1` or the orbital return, and it is not used to place a radius or to close a matter-wave phase on a nuclear circumference.
 -/
 
 namespace DstDiophantine
@@ -36,7 +16,6 @@ namespace Gravity
 open CliffordAlgebra PGA Generators Motor Amplification Operations
 open Sandwich
 
-/-- One revolution sends the dual rotor to `-1`. -/
 theorem dualRotor_one_revolution :
     rotorTorsion (pureRotation1 (2 * Real.pi)) = -1 := by
   rw [rotorTorsion_pureRotation1_closed]
@@ -44,7 +23,6 @@ theorem dualRotor_one_revolution :
   rw [hhalf, Real.cos_pi, Real.sin_pi]
   simp
 
-/-- Two revolutions restore the dual rotor to the identity. -/
 theorem dualRotor_two_revolutions :
     rotorTorsion (pureRotation1 (4 * Real.pi)) = 1 := by
   rw [rotorTorsion_pureRotation1_closed]
@@ -62,14 +40,12 @@ private theorem sandwich_one_revolution_ι3 :
   have h := sandwich_pureRotation1_ι3 (2 * Real.pi)
   simpa [Real.cos_two_pi, Real.sin_two_pi] using h
 
-/-- One revolution restores every point of the orbital plane. -/
 theorem orbitPoint_one_revolution (a b : ℝ) :
     sandwich (rotorTorsion (pureRotation1 (2 * Real.pi))) (a • ι 1 + b • ι 3) =
       a • ι 1 + b • ι 3 := by
   rw [sandwich_add, sandwich_smul, sandwich_smul, sandwich_one_revolution_ι1,
     sandwich_one_revolution_ι3]
 
-/-- Plane-wave factor on one revolution: `exp(i 2π pr/ℏ) = 1` iff `pr = nℏ`. -/
 theorem planeWave_revolution_iff {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
     Complex.exp (Complex.I * ((p * r * (2 * Real.pi) / ℏ : ℝ) : ℂ)) = 1 ↔
       ∃ n : ℤ, p * r = (n : ℝ) * ℏ := by
@@ -110,7 +86,6 @@ theorem planeWave_revolution_iff {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
     push_cast
     ring
 
-/-- The revolution that restores the point can leave the plane-wave factor at `-1`. -/
 theorem revolution_with_open_phase :
     rotorTorsion (pureRotation1 (2 * Real.pi)) = -1 ∧
       sandwich (rotorTorsion (pureRotation1 (2 * Real.pi))) (ι 1) = ι 1 ∧
@@ -122,8 +97,7 @@ theorem revolution_with_open_phase :
     ring
   rw [harg, Complex.exp_pi_mul_I]
 
-/-- Phase-aligned dual angle `2π` is the case `pr = ℏ`: the rotor is `-1`
-while the plane-wave factor equals `1`. -/
+/-- Phase alignment at angle `2π` is the case `pr = ℏ`. -/
 theorem phaseAligned_one_quantum :
     rotorTorsion (pureRotation1 (2 * Real.pi)) = -1 ∧
       Complex.exp (Complex.I * ((2 * Real.pi : ℝ) : ℂ)) = 1 := by

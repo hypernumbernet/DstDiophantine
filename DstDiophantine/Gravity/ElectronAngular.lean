@@ -5,27 +5,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Angular momentum of a directional seat
 
-## Paper boundary (do **not** claim)
-
-The degree of a pattern is not an index of an equal-scale node, and it is not
-a Bohr radius. Nothing here is a fine-structure splitting, a spin-orbit term,
-or a value of `ℓ`. The length `ℓ` stays an external scale.
-
-## What is proved
-
-The square of the angular momentum is the response of a directional pattern
-when the direction is turned: minus the sum of the squares of the three
-infinitesimal rotations of that pattern. On a constant pattern that square is
-`0`. On a dipole it is `2` times the pattern. On a traceless quadrupole it is
-`6` times the pattern. On a traceless octupole it is `12` times the pattern.
-These are the products of the degree with one more than the degree. The
-square is the response of the pattern when the direction is turned. It is
-not the angular momentum of an electron in circulation, and it does not
-place a radius.
-
-A monopole, a dipole, a traceless quadrupole, and a traceless octupole have
-dimensions `1`, `3`, `5`, and `7`, one more than twice the degree. The running
-total of both rays through degree `n - 1` is `2 n²` for `n = 1, 2, 3, 4`.
+The squared angular momentum of a directional pattern is the sum of the three
+infinitesimal rotations. The degree is not an equal-scale index and not a Bohr
+radius; nothing here is a fine-structure splitting, and \(\ell\) stays an
+external scale.
 -/
 
 namespace DstDiophantine
@@ -40,8 +23,6 @@ theorem mono_shift (s : ℝ) (v : Fin 3 → ℝ) (i : Fin 3) (t : ℝ) :
     monoValue s (fun k => v k + if k = i then t else 0) = monoValue s v := by
   simp [monoValue]
 
-/-- Each infinitesimal rotation of a constant pattern is the zero function, so
-the sum of their squares is zero. -/
 theorem angSq_monopole (s : ℝ) (v : Fin 3 → ℝ) :
     -((v 0 * (0 : ℝ) - v 1 * 0) + (v 0 * 0 - v 2 * 0) + (v 1 * 0 - v 2 * 0)) =
       (0 * 1) * monoValue s v := by
@@ -107,8 +88,7 @@ theorem angSq_dipole (a v : Fin 3 → ℝ) :
 
 /-! ### Quadrupole
 
-A homogeneous quadratic is stored as `x²`, `y²`, `z²`, `xy`, `xz`, `yz`.
-For a symmetric matrix the cross coefficients are twice the off-diagonal entries.
+A homogeneous quadratic is stored as `x²`, `y²`, `z²`, `xy`, `xz`, `yz`. For a symmetric matrix the cross coefficients are twice the off-diagonal entries.
 -/
 
 def quadPoly (c : Fin 6 → ℝ) (v : Fin 3 → ℝ) : ℝ :=
@@ -184,9 +164,7 @@ theorem jQuadYZ_eval (c : Fin 6 → ℝ) (v : Fin 3 → ℝ) :
   unfold quadPoly jQuadYZ dQuadZ dQuadY
   ring
 
-/-- Sum of the three squared rotations on a homogeneous quadratic.
-On the diagonal coefficients the trace term remains; the cross coefficients
-are pure. -/
+/-- Sum of the three squared rotations on a homogeneous quadratic. On the diagonal coefficients the trace term remains; the cross coefficients are pure. -/
 def quadGenSq (c : Fin 6 → ℝ) : Fin 6 → ℝ
   | 0 => -6 * c 0 + 2 * (c 0 + c 1 + c 2)
   | 1 => -6 * c 1 + 2 * (c 0 + c 1 + c 2)

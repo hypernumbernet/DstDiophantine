@@ -8,43 +8,9 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.NormNum
 
 /-!
-# Lie closure of the ten generators and the duality complex structure
+# Lie closure of the ten generators
 
-This module upgrades the generator-level commutator tables of
-`DstDiophantine.Algebra.Generators` to statements about the *spans*.
-
-## Main results
-
-* `commutator_mem_lorentzSpan`: the six-dimensional span of the hyperbolic and
-  cyclic generators is closed under the geometric commutator (a Lie subalgebra of
-  `G(3,1,1)` under `[x,y] = xy - yx`).
-* `commutator_mem_poincareSpan`, `commutator_poincare_null_mem_nullSpan`,
-  `commutator_null_null_eq_zero`: the ten-dimensional span is a Lie subalgebra in
-  which the null span is an abelian ideal.  This is the semidirect-product
-  structure `𝔰𝔬(3,1) ⋉ ℝ^{3,1}` stated on the whole generator space, not only on
-  basis elements.
-* `commute_pseudoscalar_of_mem_lorentzSpan`, `dual_dual`, `commutator_dual_left`,
-  `commutator_dual_right`, `commutator_dual_dual`: the DST duality `X ↦ X i`
-  (right multiplication by the Cl(3,1) pseudoscalar) is a complex structure on
-  the Lorentz span — `i² = -1`, `i` is central there — and the bracket is
-  complex-bilinear for it.
-* `lorentzSpan_eq_sup`, `mem_lorentzSpan_iff`: boosts are the duals of rotations,
-  so the Lorentz span is the complexification of the rotation span.  In
-  particular the boost–boost table is *forced* by the rotation table:
-  `commutator_hyperbolic_hyperbolic_eq_neg` / `commutator_hyperbolic_hyperbolic_cyclic`
-  give `[B⁺_a, B⁺_{a+1}] = -2 B⁻_{a+2}`, the minus sign being `i² = -1`, i.e. the
-  Lorentz signature (the compact `𝔰𝔬(4)` would carry `+`).
-* `dual_omegaTorsion`, `J_dualParams`, `mass_dualParams`: on torsion parameters the
-  duality acts as the quarter-turn `(α, β) ↦ (β, -α)` in every axis plane; it
-  reverses the signed scalar `J` and preserves the unsigned mass.  This realises
-  the parent theory's usual/dual swap inside the algebra.
-
-## Not claimed
-
-An abstract Lie-algebra isomorphism with `𝔰𝔬(3,1)` / `𝔦𝔰𝔬(3,1)` is not
-formalised. Linear independence of the ten generators, the dimensions
-`3 + 3 + 4 = 10`, and the identification of their span with the bivector grade
-are proved in `Algebra.BivectorBasis`.
+The Lorentz and Poincaré spans are closed under the commutator, with duality a complex structure on the Lorentz span. An abstract isomorphism with `𝔰𝔬(3,1)` is not claimed.
 -/
 
 namespace DstDiophantine
@@ -136,7 +102,6 @@ private theorem commute_pseudoscalar_bivector {i j : Fin 5}
     _ = -(ι i * (-(ι j * pseudoscalar))) := by rw [hj']
     _ = ι i * ι j * pseudoscalar := by simp [mul_assoc]
 
-/-- The Cl(3,1) pseudoscalar commutes with every boost generator. -/
 theorem commute_pseudoscalar_hyperbolic (a : Fin 3) :
     Commute pseudoscalar (hyperbolic a) := by
   fin_cases a
@@ -144,7 +109,6 @@ theorem commute_pseudoscalar_hyperbolic (a : Fin 3) :
   · exact commute_pseudoscalar_bivector (i := 0) (j := 2) (by decide) (by decide)
   · exact commute_pseudoscalar_bivector (i := 0) (j := 3) (by decide) (by decide)
 
-/-- The Cl(3,1) pseudoscalar commutes with every rotation generator. -/
 theorem commute_pseudoscalar_cyclic (a : Fin 3) :
     Commute pseudoscalar (cyclic a) := by
   fin_cases a
@@ -152,7 +116,6 @@ theorem commute_pseudoscalar_cyclic (a : Fin 3) :
   · exact commute_pseudoscalar_bivector (i := 1) (j := 3) (by decide) (by decide)
   · exact commute_pseudoscalar_bivector (i := 2) (j := 1) (by decide) (by decide)
 
-/-- Every Lorentz element is reversal-odd, as each generator is. -/
 theorem reverse_neg_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :
     reverse x = -x := by
   refine Submodule.span_induction (p := fun y _ => reverse y = -y) ?_ ?_ ?_ ?_ hx
@@ -165,7 +128,6 @@ theorem reverse_neg_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :
   · intro r y _ hy
     simp [map_smul, hy]
 
-/-- A scalar plus a Lorentz element vanishes only if both do. -/
 theorem scalar_add_lorentz_eq_zero {c : ℝ} {x : PGA} (hx : x ∈ lorentzSpan)
     (h : c • (1 : PGA) + x = 0) : c = 0 ∧ x = 0 := by
   have hrev : c • (1 : PGA) - x = 0 := by
@@ -189,7 +151,6 @@ theorem scalar_add_lorentz_eq_zero {c : ℝ} {x : PGA} (hx : x ∈ lorentzSpan)
   refine ⟨hc0, ?_⟩
   simpa [hc0] using h
 
-/-- The pseudoscalar is central on the whole Lorentz span. -/
 theorem commute_pseudoscalar_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :
     Commute pseudoscalar x := by
   refine Submodule.span_induction (p := fun y _ => Commute pseudoscalar y) ?_ ?_ ?_ ?_ hx
@@ -205,23 +166,18 @@ theorem commute_pseudoscalar_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpa
 
 /-! ### Duality as a complex structure on the Lorentz sector -/
 
-/-- Boosts are the duals of rotations: `B⁺_a = B⁻_a · i`. -/
 theorem hyperbolic_eq_dual_cyclic (a : Fin 3) : hyperbolic a = dual (cyclic a) :=
   (dual_cyclic a).symm
 
-/-- Duality squares to `-1` on every element: `(X i) i = -X`. -/
 theorem dual_dual (x : PGA) : dual (dual x) = -x := by
   simp [dual, mul_assoc, pseudoscalar_sq]
 
-/-- Duality is additive (right multiplication by `i`). -/
 theorem dual_add (x y : PGA) : dual (x + y) = dual x + dual y := by
   simp [dual, add_mul]
 
-/-- Duality is real-homogeneous. -/
 theorem dual_smul (c : ℝ) (x : PGA) : dual (c • x) = c • dual x := by
   simp [dual]
 
-/-- Duality closes the Lorentz sector. -/
 theorem dual_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) : dual x ∈ lorentzSpan := by
   refine Submodule.span_induction (p := fun y _ => dual y ∈ lorentzSpan) ?_ ?_ ?_ ?_ hx
   · rintro y (⟨a, rfl⟩ | ⟨a, rfl⟩)
@@ -234,38 +190,30 @@ theorem dual_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) : dual x ∈ lor
   · intro r y _ hy
     rw [dual_smul]; exact lorentzSpan.smul_mem r hy
 
-/-- The bracket is complex-linear in its first slot for the duality structure. -/
 theorem commutator_dual_left {x y : PGA} (hy : y ∈ lorentzSpan) :
     commutator (dual x) y = dual (commutator x y) := by
   have hc : pseudoscalar * y = y * pseudoscalar := commute_pseudoscalar_of_mem_lorentzSpan hy
   simp only [Generators.commutator, dual, sub_mul, mul_assoc, hc]
 
-/-- The bracket is complex-linear in its second slot for the duality structure. -/
 theorem commutator_dual_right {x y : PGA} (hx : x ∈ lorentzSpan) :
     commutator x (dual y) = dual (commutator x y) := by
   have hc : pseudoscalar * x = x * pseudoscalar := commute_pseudoscalar_of_mem_lorentzSpan hx
   simp only [Generators.commutator, dual, sub_mul, mul_assoc, hc]
 
-/-- `[X i, Y i] = -[X, Y]` on the Lorentz span: the sign is `i² = -1`. -/
 theorem commutator_dual_dual {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
     commutator (dual x) (dual y) = -commutator x y := by
   rw [commutator_dual_left (dual_mem_lorentzSpan hy), commutator_dual_right hx, dual_dual]
 
-/-- The boost–boost bracket is minus the rotation–rotation bracket. -/
 theorem commutator_hyperbolic_hyperbolic_eq_neg (a b : Fin 3) :
     commutator (hyperbolic a) (hyperbolic b) = -commutator (cyclic a) (cyclic b) := by
   rw [hyperbolic_eq_dual_cyclic, hyperbolic_eq_dual_cyclic]
   exact commutator_dual_dual (cyclic_mem_lorentzSpan a) (cyclic_mem_lorentzSpan b)
 
-/-- The boost–rotation bracket is the dual of the rotation–rotation bracket. -/
 theorem commutator_hyperbolic_cyclic_eq_dual (a b : Fin 3) :
     commutator (hyperbolic a) (cyclic b) = dual (commutator (cyclic a) (cyclic b)) := by
   rw [hyperbolic_eq_dual_cyclic]
   exact commutator_dual_left (cyclic_mem_lorentzSpan b)
 
-/-- Closed boost–boost table in terms of the cyclic generators:
-`[B⁺_a, B⁺_{a+1}] = -2 B⁻_{a+2}`.  The minus sign relative to
-`[B⁻_a, B⁻_{a+1}] = 2 B⁻_{a+2}` is `i² = -1`, i.e. the Lorentz signature. -/
 theorem commutator_hyperbolic_hyperbolic_cyclic (a b : Fin 3) :
     commutator (hyperbolic a) (hyperbolic b) =
       if a = b then 0
@@ -274,7 +222,6 @@ theorem commutator_hyperbolic_hyperbolic_cyclic (a b : Fin 3) :
   rw [commutator_hyperbolic_hyperbolic_eq_neg, commutator_cyclic_cyclic]
   split_ifs <;> simp
 
-/-- Boosts span exactly the dual of the rotation span. -/
 theorem lorentzSpan_eq_sup :
     lorentzSpan = cyclicSpan ⊔ cyclicSpan.map (LinearMap.mulRight ℝ pseudoscalar) := by
   have hrange : Set.range (hyperbolic : Fin 3 → PGA) =
@@ -286,8 +233,6 @@ theorem lorentzSpan_eq_sup :
   rw [lorentzSpan, Submodule.span_union, hrange, Submodule.span_image, sup_comm]
   rfl
 
-/-- Every Lorentz element is `rotation + dual rotation`: the Lorentz span is the
-complexification of the rotation span under the duality structure. -/
 theorem mem_lorentzSpan_iff {x : PGA} :
     x ∈ lorentzSpan ↔ ∃ u ∈ cyclicSpan, ∃ v ∈ cyclicSpan, x = u + dual v := by
   rw [lorentzSpan_eq_sup, Submodule.mem_sup]
@@ -327,12 +272,10 @@ private theorem commutator_gen_mem :
     · exact lorentzSpan.smul_mem _ (cyclic_mem_lorentzSpan _)
     · exact lorentzSpan.neg_mem (lorentzSpan.smul_mem _ (cyclic_mem_lorentzSpan _))
 
-/-- The Lorentz span is closed under the commutator: a Lie subalgebra of `G(3,1,1)`. -/
 theorem commutator_mem_lorentzSpan {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
     commutator x y ∈ lorentzSpan :=
   commutator_span_mem commutator_gen_mem hx hy
 
-/-- Lorentz–null brackets stay in the null span (on the whole spans). -/
 theorem commutator_lorentz_null_mem_nullSpan {x y : PGA}
     (hx : x ∈ lorentzSpan) (hy : y ∈ nullSpan) :
     commutator x y ∈ nullSpan := by
@@ -341,12 +284,10 @@ theorem commutator_lorentz_null_mem_nullSpan {x y : PGA}
   · exact commutator_hyperbolic_null_mem_span a μ
   · exact commutator_cyclic_null_mem_span a μ
 
-/-- The null span is abelian. -/
 theorem commutator_null_null_eq_zero {x y : PGA} (hx : x ∈ nullSpan) (hy : y ∈ nullSpan) :
     commutator x y = 0 := by
   simp [Generators.commutator, nullSpan_mul hx hy, nullSpan_mul hy hx]
 
-/-- The null span is an ideal of the Poincaré span. -/
 theorem commutator_poincare_null_mem_nullSpan {x y : PGA}
     (hx : x ∈ poincareSpan) (hy : y ∈ nullSpan) :
     commutator x y ∈ nullSpan := by
@@ -356,7 +297,6 @@ theorem commutator_poincare_null_mem_nullSpan {x y : PGA}
   rw [commutator_null_null_eq_zero hw hy]
   exact nullSpan.zero_mem
 
-/-- The Poincaré span is closed under the commutator: a Lie subalgebra of `G(3,1,1)`. -/
 theorem commutator_mem_poincareSpan {x y : PGA}
     (hx : x ∈ poincareSpan) (hy : y ∈ poincareSpan) :
     commutator x y ∈ poincareSpan := by
@@ -372,8 +312,7 @@ theorem commutator_mem_poincareSpan {x y : PGA}
   · rw [commutator_null_null_eq_zero hw hw']
     exact poincareSpan.zero_mem
 
-/-- The Poincaré span is *not* abelian, and the Lorentz span does not centralise the
-null span: the radial boost moves the time translation. -/
+/-- The Poincaré span is not abelian: the radial boost moves the time translation. -/
 theorem commutator_hyperbolic0_null0_ne_zero : commutator (hyperbolic 0) (null 0) ≠ 0 := by
   rw [commutator_hyperbolic0_null0]
   intro h
@@ -382,8 +321,7 @@ theorem commutator_hyperbolic0_null0_ne_zero : commutator (hyperbolic 0) (null 0
 
 /-! ### Duality on torsion parameters -/
 
-/-- Duality on torsion parameters: `(α, β) ↦ (β, -α)`, a quarter-turn in every
-axis plane `(α_a, β_a)`. -/
+/-- Quarter-turn `(α, β) ↦ (β, -α)` on each axis. -/
 def dualParams (p : TorsionParams) : TorsionParams where
   alpha := p.beta
   beta := fun a => -p.alpha a
@@ -392,8 +330,6 @@ theorem dualParams_dualParams (p : TorsionParams) : dualParams (dualParams p) =
     { alpha := fun a => -p.alpha a, beta := fun a => -p.beta a } := by
   simp [dualParams]
 
-/-- The torsion bivector is sent by duality to the torsion bivector of the
-quarter-turned parameters: `(Ω_torsion(α,β)) i = Ω_torsion(β, -α)`. -/
 theorem dual_omegaTorsion (p : TorsionParams) :
     dual (omegaTorsion p) = omegaTorsion (dualParams p) := by
   have hlin : ∀ x, dual x = LinearMap.mulRight ℝ pseudoscalar x := fun _ => rfl
@@ -403,19 +339,16 @@ theorem dual_omegaTorsion (p : TorsionParams) :
   rw [map_add, map_smul, map_smul, ← hlin, ← hlin, dual_hyperbolic, dual_cyclic]
   module
 
-/-- Every torsion bivector lies in the Lorentz span. -/
 theorem omegaTorsion_mem_lorentzSpan (p : TorsionParams) : omegaTorsion p ∈ lorentzSpan := by
   refine Submodule.sum_mem _ fun a _ => Submodule.add_mem _ ?_ ?_
   · exact lorentzSpan.smul_mem _ (hyperbolic_mem_lorentzSpan a)
   · exact lorentzSpan.smul_mem _ (cyclic_mem_lorentzSpan a)
 
-/-- Duality reverses the signed torsional scalar `J`. -/
 theorem J_dualParams (p : TorsionParams) : Invariant.J (dualParams p) = -Invariant.J p := by
   rw [Invariant.J_coef, Invariant.J_coef]
   simp only [dualParams, Fin.sum_univ_three]
   ring
 
-/-- Duality preserves the unsigned torsional mass. -/
 theorem mass_dualParams (p : TorsionParams) :
     Invariant.mass (dualParams p) = Invariant.mass p := by
   rw [Invariant.mass_coef, Invariant.mass_coef]
@@ -430,8 +363,8 @@ theorem JNormalized_dualParams (p : TorsionParams) :
 
 /-! ### Packaging as mathlib Lie subalgebras
 
-The bracket of `LieRing.ofAssociativeRing` is the ring commutator, so the closure
-theorems above are exactly the `lie_mem'` fields. -/
+The bracket is the ring commutator, so closure is the `lie_mem'` field.
+-/
 
 section LieStructure
 

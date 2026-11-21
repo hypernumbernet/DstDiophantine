@@ -115,7 +115,7 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
   have hβval (a : Fin 3) : (t.m a : ZMod N).val = βk a := by
     simp [t, ZMod.val_natCast, Nat.mod_eq_of_lt (hβklt a)]
   refine ⟨N, hNe, t, ?_, ?_, ?_⟩
-  · -- `IsAdmissible` = continuous admissibility of the embedding
+  ·
     intro a
     have hαle := natFloor_le hNpos (h a).1
     have hβle := natFloor_le hNpos (h a).2.1
@@ -199,13 +199,11 @@ private theorem abs_J_sub_le_of_coord_bound {p q : TorsionParams}
       ≤ (1 / 2) * (3 * (2 * δ * Real.pi)) := by gcongr
     _ = 3 * δ * Real.pi := by ring
 
-/-- Discrete configurations approximate the torsional scalar `J` arbitrarily closely. -/
 theorem exists_discrete_approx_J {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ}
     (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
       ∃ t : DiscreteTorsion N, IsAdmissible t ∧
         |J p - J (toTorsionParams t)| < ε := by
-  -- Choose coordinate tolerance so that `3 δ π < ε`.
   set δ := ε / (6 * Real.pi) with hδdef
   have hπ : 0 < Real.pi := Real.pi_pos
   have hδ : 0 < δ := by
@@ -223,7 +221,6 @@ theorem exists_discrete_approx_J {p : TorsionParams} (h : IsAdmissibleContinuous
     _ = ε / 2 := hbound
     _ < ε := by linarith
 
-/-- Admissible discrete values of `JNormalized` are dense in `[-1, 1]`. -/
 theorem dense_discrete_JNormalized {y ε : ℝ} (hy : |y| ≤ 1) (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
       ∃ t : DiscreteTorsion N, IsAdmissible t ∧

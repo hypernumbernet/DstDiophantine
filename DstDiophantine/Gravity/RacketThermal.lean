@@ -20,29 +20,7 @@ import Mathlib.Topology.Order.Compact
 /-!
 # Mirror average and the canonical weight of the reversal
 
-A partner and its mirror cancel. Over the `2ⁿ` assignments of a sign to each
-of `n` moments, the uniform average of the signed sum is zero, and the
-uniform average of its square is the sum of the squares of the moments. One
-positive equal-distance moment therefore leaves a positive mean square.
-
-On the torque-free rotor the gap `L² - 2 E I₂` drops the intermediate
-component. The canonical weight is the product of three centered Gaussians of
-variances `1/(β Iᵢ)`, which is the normalized factor `exp(-β E)`. Each
-principal term has mean `1/(2β)`, and the mean gap is `(I₁ + I₃ - 2 I₂)/β`.
-It vanishes if and only if `I₂` is the arithmetic mean of the other two. For
-the six intercepts that condition is `2b² = a² + c²`, and both signs occur
-among `0 < a < b < c`.
-
-Every nonempty open set in the angular velocity has positive weight. In
-particular both signs of the gap do, and so does the set of transverse
-residuals about an intermediate spin that lie in `(0, 1/6)`. Every such
-residual waits longer than the reversal takes to cross.
-
-## Not claimed
-
-* A frequency of reversals, or any count drawn from the weight.
-* A floating-point many-body trajectory.
-* A value of `a₀`, or an identification of a galaxy with this aggregate.
+No reversal frequency, floating-point trajectory, value of `a₀`, or identification of a galaxy with this aggregate is derived.
 -/
 
 namespace DstDiophantine.Gravity.RacketThermal
@@ -207,7 +185,6 @@ theorem mirrorAverage_sq_pos {n : ℕ} {m : Fin n → ℝ} {i : Fin n} (hm : m i
     _ = ∑ j, m j ^ 2 := by
       rw [← Finset.add_sum_erase Finset.univ (fun j => m j ^ 2) (Finset.mem_univ i)]
 
-/-- One off-axis partner, copied across the assignments, leaves a positive mean square. -/
 theorem mirror_defect_sq_pos {n : ℕ} (i : Fin n) {χ α : ℝ}
     (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
     0 < mirrorAverage (fun σ =>
@@ -294,7 +271,6 @@ theorem axis_exponent {β I ω : ℝ} (hβ : 0 < β) (hI : 0 < I) :
   rw [axisVar_coe hβ hI]
   field_simp [hβ.ne', hI.ne']
 
-/-- The product of the three Gaussians is the normalized Boltzmann factor. -/
 theorem boltzmannDensity_eq {β I1 I2 I3 : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h2 : 0 < I2)
     (h3 : 0 < I3) (p : ℝ × ℝ × ℝ) :
     boltzmannDensity β I1 I2 I3 p =
@@ -720,7 +696,6 @@ theorem residualState_mem {I1 I2 I3 B : ℝ} (h1 : 0 < I1) (h2 : 0 < I2) (hB : 0
   · rw [h]; norm_num
   · rw [h]; norm_num
 
-/-- The canonical weight of the residuals that wait longer than the crossing is positive. -/
 theorem residual_weight_pos {β I1 I2 I3 B : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h12 : I1 < I2)
     (h23 : I2 < I3) (hB : 0 < B) :
     0 < rotorMeasure β I1 I2 I3 (residualSet I1 I2 I3 B) := by

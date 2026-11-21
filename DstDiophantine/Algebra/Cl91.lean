@@ -9,10 +9,7 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 /-!
 # Textbook Clifford algebra `Cl(9,1)`
 
-Used by the string-comparison layer. Embeds `Cl(3,1)` on the first four
-coordinates. Real dimensions: `dimℝ Cl(3,1) = 16`, `dimℝ Cl(9,1) = 1024`.
-The biquaternion algebra of that dimension is `ℍ ⊗_ℝ ℍ`. The direct sum
-`ℍ ⊕ ℍ` is eight-dimensional (`LorentzDim.quaternionDirectSum_ne_tensor`).
+Embeds `Cl(3,1)` on the first four coordinates. `ℍ ⊕ ℍ` is not this algebra.
 -/
 
 namespace DstDiophantine
@@ -64,13 +61,11 @@ instance instFiniteCl31 : Module.Finite ℝ Cl31 :=
 instance instFiniteCl91 : Module.Finite ℝ Cl91 :=
   Module.Finite.equiv (CliffordAlgebra.equivExterior Q91).symm
 
-/-- Real dimension of `Cl(3,1)`. -/
 theorem finrank_cl31 : finrank ℝ Cl31 = 16 := by
   have h := LinearEquiv.finrank_eq (CliffordAlgebra.equivExterior Q31)
   rw [h, finrank_exterior 4]
   norm_num
 
-/-- Real dimension of `Cl(9,1)`. -/
 theorem finrank_cl91 : finrank ℝ Cl91 = 1024 := by
   have h := LinearEquiv.finrank_eq (CliffordAlgebra.equivExterior Q91)
   rw [h, finrank_exterior 10]
@@ -80,7 +75,6 @@ theorem finrank_cl31_ne_cl91 : finrank ℝ Cl31 ≠ finrank ℝ Cl91 := by
   rw [finrank_cl31, finrank_cl91]
   norm_num
 
-/-- The algebras are not isomorphic: dimensions differ. -/
 theorem not_algEquiv_cl31 :
     ¬ Nonempty (Cl31 ≃ₐ[ℝ] Cl91) := by
   intro ⟨e⟩

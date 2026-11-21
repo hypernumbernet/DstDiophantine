@@ -10,35 +10,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Chiral axes, Cartan $\mathfrak{so}(2,1)$, and the dual $\mathrm{SU}(2)$
 
-## Paper boundary (do **not** claim)
-
-A Weinberg angle, $W/Z$ masses, three Standard-Model generations, and a
-Lorentz-invariant V--A gauge theory are **not** derived. Axis chirality is
-not photon helicity (already in `Electroweak`). Compact $\mathrm{SU}(2)$ in
-the Faraday six-space is identified only as the dual-rotor cyclic span at
-the level of squares and the quaternion table; an abstract Lie-algebra
-isomorphism is not formalised.
-
-## What is proved
-
-* Each spatial generator $e_1,e_2,e_3$ squares to $+1$ and yields a
-  complementary projector pair. The time generator $e_0$ squares to $-1$,
-  so $(1\pm e_0)/2$ fails to be idempotent for the same reason as
-  $(1\pm i)/2$.
-* Distinct-axis projectors do not commute, and the three right projectors
-  do not sum to the unit: they are alternative embeddings of one $3+3$
-  split, not a resolution of the identity and not three simultaneous
-  generation labels.
-* Relative to axis $e_a$ the commuting (Cartan) triple is
-  $(B_a,E_{a+1},E_{a+2})$ and the anticommuting (charged) triple is
-  $(E_a,B_{a+1},B_{a+2})$. Cartan brackets close as
-  $\mathfrak{so}(2,1)$: one compact generator and two noncompact. The
-  charged triple does not close; $[E_a,B_{a+1}]$ is the remaining Cartan
-  electric. Duality exchanges the two triples (up to signs).
-* Among the six written Faraday generators, every cyclic generator squares
-  to $-1$ and every hyperbolic generator squares to $+1$. A Cartan triple
-  therefore has mixed signature, while the dual-rotor triple is compact
-  and satisfies the quaternion table $IJ=K$.
+Each spatial generator yields a projector pair, and the Cartan triple closes
+as \(\mathfrak{so}(2,1)\) while the charged triple does not. A Weinberg angle,
+\(W/Z\) masses, three generations, and a Lorentz-invariant V--A theory are not
+derived; axis chirality is not photon helicity.
 -/
 
 namespace DstDiophantine
@@ -121,7 +96,6 @@ theorem chiralityLAxis_mul_chiralityRAxis (a : Fin 3) :
     noncomm_ring
   rw [mul_half_mul_half, hdiff, spatialGen_sq, sub_self, zero_mul]
 
-/-- A generator with square \(-1\) cannot furnish a chirality projector. -/
 theorem half_one_add_not_idempotent_of_sq_neg_one {g : PGA}
     (hg : g * g = -1) :
     ((1 : PGA) + g) * half * (((1 : PGA) + g) * half) ≠
@@ -169,7 +143,6 @@ theorem half_one_add_not_idempotent_of_sq_neg_one {g : PGA}
     (FaithfulSMul.algebraMap_eq_zero_iff (R := ℝ) (A := PGA)).mp this
   norm_num at hℝ
 
-/-- The time axis cannot serve as a chirality generator. -/
 theorem timeAxis_not_chirality_projector :
     ((1 : PGA) + ι 0) * half * (((1 : PGA) + ι 0) * half) ≠
       ((1 : PGA) + ι 0) * half :=
@@ -203,7 +176,6 @@ theorem chiralityRAxis_not_commute {a b : Fin 3} (h : a ≠ b) :
         spatialGen a * spatialGen b - spatialGen b * spatialGen a := by
     noncomm_ring
   rw [hsub, spatialGen_anticomm h, half_mul_half] at hdiff
-  -- `hdiff` is now `(-(b*a) - (b*a)) * (1/4) = 0`, i.e. `-2 (b*a) / 4 = 0`.
   have hneg2 :
       -(spatialGen b * spatialGen a) - spatialGen b * spatialGen a =
         -(algebraMap ℝ PGA 2 * (spatialGen b * spatialGen a)) := by
@@ -267,7 +239,6 @@ private theorem one_add_one_add_one_eq_three :
     _ = algebraMap ℝ PGA (1 + 1 + 1) := by simp [map_add]
     _ = algebraMap ℝ PGA 3 := by norm_num
 
-/-- The three right projectors are not a resolution of the identity. -/
 theorem chiralityRAxis_sum_ne_one :
     chiralityRAxis 0 + chiralityRAxis 1 + chiralityRAxis 2 ≠ 1 := by
   intro h
@@ -299,16 +270,14 @@ theorem chiralityRAxis_sum_ne_one :
 
 /-! ### Cartan versus charged triples -/
 
-/-- Cartan generators of axis `a`: parallel magnetic and the two perpendicular
-electrics, \((B_a, E_{a+1}, E_{a+2})\). -/
+/-- Cartan generators of axis `a`: parallel magnetic and the two perpendicular electrics, \((B_a, E_{a+1}, E_{a+2})\). -/
 noncomputable def cartanGen (a i : Fin 3) : PGA :=
   match i with
   | 0 => cyclic a
   | 1 => hyperbolic (a + 1)
   | 2 => hyperbolic (a + 2)
 
-/-- Charged generators of axis `a`: parallel electric and the two perpendicular
-magnetics, \((E_a, B_{a+1}, B_{a+2})\). -/
+/-- Charged generators of axis `a`: parallel electric and the two perpendicular magnetics, \((E_a, B_{a+1}, B_{a+2})\). -/
 noncomputable def chargedGen (a i : Fin 3) : PGA :=
   match i with
   | 0 => hyperbolic a
@@ -327,7 +296,6 @@ theorem chargedGen_sq (a : Fin 3) :
         chargedGen a 2 * chargedGen a 2 = -1 :=
   ⟨hyperbolic_sq a, cyclic_sq (a + 1), cyclic_sq (a + 2)⟩
 
-/-- Cartan signature is mixed: one compact generator, two noncompact. -/
 theorem cartan_mixed_signature (a : Fin 3) :
     cartanGen a 0 * cartanGen a 0 = -1 ∧
       cartanGen a 1 * cartanGen a 1 ≠ -1 := by
@@ -339,11 +307,9 @@ theorem cartan_mixed_signature (a : Fin 3) :
       (by simpa [map_one, map_neg] using h)
   norm_num at this
 
-/-- Dual-rotor (magnetic) generators are compact. -/
 theorem cyclic_compact (a : Fin 3) : cyclic a * cyclic a = -1 :=
   cyclic_sq a
 
-/-- Usual-sector (electric) generators are noncompact. -/
 theorem hyperbolic_noncompact (a : Fin 3) : hyperbolic a * hyperbolic a ≠ -1 := by
   rw [hyperbolic_sq]
   intro h
@@ -401,39 +367,39 @@ private theorem anticomm_biv_right {i j : Fin 5} (hij : i ≠ j) :
 theorem cartanGen_commute_axis (a i : Fin 3) :
     Commute (spatialGen a) (cartanGen a i) := by
   fin_cases a <;> fin_cases i
-  · -- e1 with cyclic 0 = e3 e2
+  ·
     simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (3 : Fin 5) ≠ 2)
         (by decide : (1 : Fin 5) ≠ 3) (by decide : (1 : Fin 5) ≠ 2)).symm
-  · -- e1 with hyperbolic 1 = e0 e2
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 2)
         (by decide : (1 : Fin 5) ≠ 0) (by decide : (1 : Fin 5) ≠ 2)).symm
-  · -- e1 with hyperbolic 2 = e0 e3
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 3)
         (by decide : (1 : Fin 5) ≠ 0) (by decide : (1 : Fin 5) ≠ 3)).symm
-  · -- e2 with cyclic 1 = e1 e3
+  ·
     simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (1 : Fin 5) ≠ 3)
         (by decide : (2 : Fin 5) ≠ 1) (by decide : (2 : Fin 5) ≠ 3)).symm
-  · -- e2 with hyperbolic 2 = e0 e3
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 3)
         (by decide : (2 : Fin 5) ≠ 0) (by decide : (2 : Fin 5) ≠ 3)).symm
-  · -- e2 with hyperbolic 0 = e0 e1
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 1)
         (by decide : (2 : Fin 5) ≠ 0) (by decide : (2 : Fin 5) ≠ 1)).symm
-  · -- e3 with cyclic 2 = e2 e1
+  ·
     simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (2 : Fin 5) ≠ 1)
         (by decide : (3 : Fin 5) ≠ 2) (by decide : (3 : Fin 5) ≠ 1)).symm
-  · -- e3 with hyperbolic 0 = e0 e1
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 1)
         (by decide : (3 : Fin 5) ≠ 0) (by decide : (3 : Fin 5) ≠ 1)).symm
-  · -- e3 with hyperbolic 1 = e0 e2
+  ·
     simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 2)
         (by decide : (3 : Fin 5) ≠ 0) (by decide : (3 : Fin 5) ≠ 2)).symm
@@ -443,37 +409,36 @@ theorem chargedGen_anticomm_axis (a i : Fin 3) :
   have hneg {x y : PGA} (h : y * x = -(x * y)) : x * y = -(y * x) := by
     rw [h, neg_neg]
   fin_cases a <;> fin_cases i
-  · -- e1 with hyperbolic 0 = e0 e1 (right factor)
+  ·
     simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 1))
-  · -- e1 with cyclic 1 = e1 e3 (left factor)
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (1 : Fin 5) ≠ 3))
-  · -- e1 with cyclic 2 = e2 e1 (right factor)
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (2 : Fin 5) ≠ 1))
-  · -- e2 with hyperbolic 1 = e0 e2
+  ·
     simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 2))
-  · -- e2 with cyclic 2 = e2 e1
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (2 : Fin 5) ≠ 1))
-  · -- e2 with cyclic 0 = e3 e2
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (3 : Fin 5) ≠ 2))
-  · -- e3 with hyperbolic 2 = e0 e3
+  ·
     simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 3))
-  · -- e3 with cyclic 0 = e3 e2
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (3 : Fin 5) ≠ 2))
-  · -- e3 with cyclic 1 = e1 e3
+  ·
     simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (1 : Fin 5) ≠ 3))
 
 /-! ### Cartan $\mathfrak{so}(2,1)$ brackets -/
 
-/-- \([B_a, E_{a+1}] = 2 E_{a+2}\). -/
 theorem commutator_cartan_K_P1 (a : Fin 3) :
     commutator (cartanGen a 0) (cartanGen a 1) = (2 : ℝ) • cartanGen a 2 := by
   fin_cases a
@@ -487,7 +452,6 @@ theorem commutator_cartan_K_P1 (a : Fin 3) :
     rw [commutator_neg]
     simp [commutator_hyperbolic_cyclic]
 
-/-- \([B_a, E_{a+2}] = -2 E_{a+1}\). -/
 theorem commutator_cartan_K_P2 (a : Fin 3) :
     commutator (cartanGen a 0) (cartanGen a 2) = -((2 : ℝ) • cartanGen a 1) := by
   fin_cases a
@@ -501,7 +465,6 @@ theorem commutator_cartan_K_P2 (a : Fin 3) :
     rw [commutator_neg]
     simp [commutator_hyperbolic_cyclic]
 
-/-- \([E_{a+1}, E_{a+2}] = -2 B_a\). -/
 theorem commutator_cartan_P1_P2 (a : Fin 3) :
     commutator (cartanGen a 1) (cartanGen a 2) = -((2 : ℝ) • cartanGen a 0) := by
   fin_cases a
@@ -509,7 +472,6 @@ theorem commutator_cartan_P1_P2 (a : Fin 3) :
   · simp [cartanGen, commutator_hyperbolic_hyperbolic_cyclic]
   · simp [cartanGen, commutator_hyperbolic_hyperbolic_cyclic]
 
-/-- The charged bracket \([E_a, B_{a+1}]\) leaks into the Cartan triple. -/
 theorem charged_bracket_is_cartan (a : Fin 3) :
     commutator (chargedGen a 0) (chargedGen a 1) = (2 : ℝ) • cartanGen a 2 := by
   fin_cases a
@@ -517,8 +479,6 @@ theorem charged_bracket_is_cartan (a : Fin 3) :
   · simp [chargedGen, cartanGen, commutator_hyperbolic_cyclic]
   · simp [chargedGen, cartanGen, commutator_hyperbolic_cyclic]
 
-/-- The charged triple is not Lie-closed: its first bracket commutes with the
-chirality axis, whereas every charged generator anticommutes. -/
 theorem charged_triple_not_lie_closed (a : Fin 3) :
     ¬ (spatialGen a *
           commutator (chargedGen a 0) (chargedGen a 1) =
@@ -552,7 +512,6 @@ theorem charged_triple_not_lie_closed (a : Fin 3) :
     (FaithfulSMul.algebraMap_eq_zero_iff (R := ℝ) (A := PGA)).mp this
   norm_num at hℝ
 
-/-- Duality exchanges Cartan with charged, up to signs. -/
 theorem dual_cartanGen (a : Fin 3) :
     dual (cartanGen a 0) = chargedGen a 0 ∧
       dual (cartanGen a 1) = -chargedGen a 1 ∧
@@ -562,7 +521,6 @@ theorem dual_cartanGen (a : Fin 3) :
   · simp [cartanGen, chargedGen, dual_hyperbolic]
   · simp [cartanGen, chargedGen, dual_hyperbolic]
 
-/-- Dual-rotor cyclic generators satisfy the quaternion table \(IJ=K\). -/
 theorem dual_rotor_quaternion :
     cyclic 0 * cyclic 1 = cyclic 2 ∧
       cyclic 1 * cyclic 2 = cyclic 0 ∧

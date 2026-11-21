@@ -8,17 +8,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Conformal integer embedding (1D CGA probe)
+# Conformal integer embedding
 
-PGA integer rotors `R(n) = exp(log|n| · B)` are **not** homogeneous: the
-torsional height `integerHeight n ≍ (log|n|)²` diverges as `|n| → ∞`, which is
-the quantisation gap behind continuous / coarse bridges.
-
-1D CGA places nonzero integers on the null cone via
-`X(n) = n₀ + n e + (1/2) n² n∞` with `X(n)² = 0`.
-Dilation acts by the algebraic weight pattern `(1, c, c²)` on
-`(n₀, e, n∞)` components — the multiplicative layer that PGA Poincaré-type
-null translators do not supply.
+Nonzero integers lie on the `Cl(2,1)` null cone. PGA integer-rotor height is not globally bounded.
 -/
 
 namespace DstDiophantine
@@ -42,7 +34,6 @@ theorem conformalInteger_sq (n : ℤ) :
     conformalInteger n * conformalInteger n = 0 :=
   conformalPoint_sq _
 
-/-- Multiplicative dilation on conformal integers. -/
 theorem conformalInteger_mul (m n : ℤ) :
     conformalInteger (m * n) =
       CliffordAlgebra.ι CGA.Q21
@@ -50,7 +41,6 @@ theorem conformalInteger_mul (m n : ℤ) :
           + (1 / 2 * ((m : ℝ) * (n : ℝ)) ^ 2) • CGA1.nInfVec) := by
   simpa [conformalInteger, conformalPoint] using CGA1.point_mul m n
 
-/-- Algebraic dilation weights `(1, c, c²)` on the null-cone embedding. -/
 theorem conformalPoint_smul (c x : ℝ) :
     conformalPoint (c * x) =
       CliffordAlgebra.ι CGA.Q21
@@ -61,12 +51,12 @@ theorem conformalPoint_smul (c x : ℝ) :
 theorem pointVec_on_null_cone (x : ℝ) : CGA.Q21 (CGA1.pointVec x) = 0 :=
   CGA1.Q21_pointVec x
 
-/-- Dilation rapidity is injective for positive null-cone seeds (not a torus). -/
+/-- Injective in the rapidity; not a torus. -/
 theorem conformalPoint_dilation_injective {a : ℝ} (ha : 0 < a) :
     Function.Injective fun δ : ℝ => CGA1.pointVec (Real.exp δ * a) :=
   CGA1.pointVec_dilation_injective ha
 
-/-- CGA dilation is not `2π`-periodic — contrast with PGA rapidity quantisation. -/
+/-- Not `2π`-periodic, unlike PGA rapidity quantisation. -/
 theorem conformalPoint_dilation_not_two_pi_periodic {a : ℝ} (ha : 0 < a) (δ : ℝ) :
     CGA1.pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
       CGA1.pointVec (Real.exp δ * a) :=
@@ -90,11 +80,7 @@ theorem cgaDilationMismatch_eq (a δ : ℝ) (ha : 0 < a) :
         a ^ 2 :=
   CGA1.cgaDilationMismatch_eq_of_pos a δ ha
 
-/--
-Nonzero real coordinate lying on the DST discrete null lattice:
-`∃ n ≠ 0, x = n` (i.e. the conformal point is `X(n)` for a nonzero integer).
-Not identified with PGA `IsAdmissibleContinuous`.
--/
+/-- Nonzero integer on the null lattice; not `IsAdmissibleContinuous`. -/
 def IsCGAIntegerPoint (x : ℝ) : Prop :=
   ∃ n : ℤ, n ≠ 0 ∧ x = (n : ℝ)
 
@@ -110,7 +96,6 @@ theorem IsCGAIntegerPoint_of_eq {x : ℝ} {k : ℤ} (hk : k ≠ 0)
     (heq : x = (k : ℝ)) : IsCGAIntegerPoint x :=
   ⟨k, hk, heq⟩
 
-/-- Shared identity: `(2^{4/3})³ = 16`. -/
 private theorem two_rpow_four_thirds_pow_three :
     ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (16 : ℝ) := by
   have hnn : (0 : ℝ) ≤ 2 := by norm_num
@@ -120,7 +105,6 @@ private theorem two_rpow_four_thirds_pow_three :
     rw [← Real.rpow_natCast _ 3, ← Real.rpow_mul hnn]; norm_cast
   rw [hstep]; norm_num
 
-/-- Diagnostic: `2^{4/3}` is not an integer null-lattice point. -/
 theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
     ¬ IsCGAIntegerPoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) := by
   rintro ⟨k, hk, heq⟩
@@ -133,7 +117,6 @@ theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
     have hpow : ((2 : ℝ) ^ ((4 : ℝ) / 3)) ^ (3 : ℕ) = (k : ℝ) ^ 3 := by rw [heq]
     linarith [two_rpow_four_thirds_pow_three, hpow]
   have hk3 : k ^ 3 = (16 : ℤ) := by exact_mod_cast h16R
-  -- No integer cube equals 16: 2³ = 8 < 16 < 27 = 3³.
   have hle : k ≤ 2 := by
     by_contra h
     have : (3 : ℤ) ^ 3 ≤ k ^ 3 :=
@@ -149,13 +132,7 @@ theorem not_isCGAIntegerPoint_two_rpow_four_thirds :
 
 /-! ### m-power null lattice (Beal fractional roots) -/
 
-/--
-Nonzero real whose `m`-th power is a nonzero integer:
-`∃ n ≠ 0, x^m = n`. Strictly coarser than `IsCGAIntegerPoint`
-(e.g. `2^{4/3}` is a 3-power lattice point with witness `16`).
-Do **not** use membership alone as a live no-go hypothesis — Beal root
-magnitudes always lie here; the live constraint is `k`-fold dilation closure.
--/
+/-- Coarser than `IsCGAIntegerPoint`; membership alone is not a no-go. -/
 def IsCGAPowerLatticePoint (x : ℝ) (m : ℕ) : Prop :=
   ∃ n : ℤ, n ≠ 0 ∧ x ^ m = (n : ℝ)
 
@@ -166,18 +143,13 @@ theorem IsCGAIntegerPoint.isCGAPowerLatticePoint {x : ℝ} {m : ℕ}
   refine ⟨k ^ m, pow_ne_zero m hk, ?_⟩
   rw [heq, ← Int.cast_pow]
 
-/-- Diagnostic: `2^{4/3}` lies on the 3-power lattice even though it misses
-the integer lattice (`(2^{4/3})³ = 16`). -/
 theorem isCGAPowerLatticePoint_two_rpow_four_thirds :
     IsCGAPowerLatticePoint ((2 : ℝ) ^ ((4 : ℝ) / 3)) 3 :=
   ⟨16, by decide, two_rpow_four_thirds_pow_three⟩
 
 /-! ### Integer CGA dilations (discrete multiplicative group) -/
 
-/--
-Nonzero real scale that is a nonzero integer: the discrete multiplicative
-group acting on the CGA null lattice by `X(x) ↦ X(c x)`.
--/
+/-- Nonzero integer scale. -/
 def IsCGAIntegerDilation (c : ℝ) : Prop :=
   ∃ n : ℤ, n ≠ 0 ∧ c = (n : ℝ)
 
@@ -196,7 +168,6 @@ theorem IsCGAIntegerDilation_mul {c d : ℝ}
   refine ⟨n * m, mul_ne_zero hn hm, ?_⟩
   rw [hnEq, hmEq, Int.cast_mul]
 
-/-- Integer dilations preserve the integer null lattice. -/
 theorem IsCGAIntegerPoint_cgaDilation {x c : ℝ}
     (hx : IsCGAIntegerPoint x) (hc : IsCGAIntegerDilation c) :
     IsCGAIntegerPoint (c * x) := by
@@ -205,7 +176,6 @@ theorem IsCGAIntegerPoint_cgaDilation {x c : ℝ}
   refine ⟨m * n, mul_ne_zero hm hn, ?_⟩
   rw [hnEq, hmEq, Int.cast_mul]
 
-/-- Integer dilations preserve the m-power null lattice. -/
 theorem IsCGAPowerLatticePoint_cgaDilation {x c : ℝ} {m : ℕ}
     (hx : IsCGAPowerLatticePoint x m) (hc : IsCGAIntegerDilation c)
     (_hm : 0 < m) :
@@ -215,10 +185,6 @@ theorem IsCGAPowerLatticePoint_cgaDilation {x c : ℝ} {m : ℕ}
   refine ⟨k ^ m * n, mul_ne_zero (pow_ne_zero m hk) hn, ?_⟩
   rw [mul_pow, hnEq, hkEq, Int.cast_mul, Int.cast_pow]
 
-/--
-Ratio of absolute values is an integer dilation iff the denominator divides
-the numerator in `ℕ`.
--/
 theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
     (hα : α ≠ 0) (hγ : γ ≠ 0) :
     IsCGAIntegerDilation ((γ.natAbs : ℝ) / (α.natAbs : ℝ)) ↔
@@ -255,7 +221,6 @@ theorem IsCGAIntegerDilation_div_iff {α γ : ℤ}
     push_cast
     ring
 
-/-- Diagnostic: `5/3` is not an integer CGA dilation (Pythagorean `3²+4²=5²`). -/
 theorem not_isCGAIntegerDilation_five_div_three :
     ¬ IsCGAIntegerDilation ((5 : ℝ) / 3) := by
   have h :
@@ -266,10 +231,6 @@ theorem not_isCGAIntegerDilation_five_div_three :
       (by decide : ¬ (3 : ℕ) ∣ 5)
   simpa using h
 
-/--
-PGA integer-rotor height is unbounded: for every real bound `M` there is a
-nonzero integer whose torsional height exceeds `M`.
--/
 theorem exists_integerHeight_gt (M : ℝ) :
     ∃ (n : ℤ) (hn : n ≠ 0), M < integerHeight n hn := by
   have hcoef : (0 : ℝ) < 16 / (3 * Real.pi ^ 2) := by positivity
@@ -287,7 +248,6 @@ theorem exists_integerHeight_gt (M : ℝ) :
   have habs : Int.natAbs ((2 : ℤ) ^ (k + 1)) = 2 ^ (k + 1) := by
     rw [Int.natAbs_pow]; simp
   rw [habs, Nat.cast_pow]
-  -- Goal contains `log (↑2 ^ (k+1))`.
   have h2 : ((2 : ℕ) : ℝ) = (2 : ℝ) := by norm_num
   rw [h2]
   have hlog : Real.log ((2 : ℝ) ^ (k + 1)) = (↑(k + 1) : ℝ) * Real.log 2 := by
@@ -324,7 +284,6 @@ theorem exists_integerHeight_gt (M : ℝ) :
     linarith
   exact hMlt.trans hgt
 
-/-- Convenience form of the unboundedness diagnostic. -/
 theorem integerHeight_not_globally_bounded :
     ¬ ∃ M : ℝ, ∀ (n : ℤ) (hn : n ≠ 0), integerHeight n hn ≤ M := by
   rintro ⟨M, hM⟩

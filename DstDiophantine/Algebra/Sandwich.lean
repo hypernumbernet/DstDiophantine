@@ -8,30 +8,7 @@ import Mathlib.Algebra.BigOperators.Fin
 /-!
 # Geometric sandwich `M v M˜`
 
-## Proved
-
-* Algebraic laws: linearity in the second argument, composition, reverse intertwining.
-* Unitary conjugation (`m * reverse m = 1`) is a geometric-product automorphism,
-  hence preserves Clifford squares; in particular the Minkowski square of
-  `minkowskiVector v` is unchanged.
-* Closed-form pure-boost rotor and its action on the frame `{ι μ}` together with
-  light-cone eigenvalues `e^{±φ}`, including the radial lightlike translations
-  `N₀ ± N₁`. A general radial momentum splits into those two weights, a finite
-  rapidity scales them by `e^{±φ}`, and their product — the Minkowski square up
-  to sign — is unchanged. A radial boost preserves the Minkowski square of every
-  translation.
-* The pure-boost translator conjugation `sandwich_pureBoost_expTrans` is the closed-form
-  instance of a general fact proved in `DstDiophantine.Algebra.MotorGroup`: *every*
-  torsion rotor conjugates translators to translators and torsion rotors to torsion
-  rotors, because the sandwich by `exp Ω` is `exp(ad Ω)` on any `ad Ω`-invariant span.
-
-## Not claimed
-
-* General grade-1 projection for arbitrary multivectors (chart bridge uses
-  closed-form pure-boost sandwiches; see `Gravity.Tetrad`).
-* Isometry of the degenerate square for a motor `M = RT` is
-  `Gravity.DegenerateSandwich.motor_degenerate_isometry`. An arbitrary unitary
-  outside the motor subgroup is not treated.
+Unitary conjugation preserves products and Minkowski squares. A general grade projection, and degenerate isometry outside the motor subgroup, are not claimed.
 -/
 
 namespace DstDiophantine
@@ -42,7 +19,6 @@ open CliffordAlgebra (reverse reverse_reverse)
 
 namespace Sandwich
 
-/-- Geometric sandwich `M v M˜`. -/
 noncomputable def sandwich (m v : PGA) : PGA :=
   m * v * reverse m
 
@@ -76,7 +52,6 @@ theorem sandwich_reverse (m v : PGA) :
 
 /-! ### Unitary conjugation -/
 
-/-- Unitary sandwich preserves geometric products. -/
 theorem sandwich_mul {m : PGA} (hm : m * reverse m = 1) (x y : PGA) :
     sandwich m (x * y) = sandwich m x * sandwich m y := by
   have hrm : reverse m * m = 1 := reverse_mul_of_mul_reverse hm
@@ -89,7 +64,7 @@ theorem sandwich_sq {m : PGA} (hm : m * reverse m = 1) (v : PGA) :
     sandwich m v * sandwich m v = sandwich m (v * v) :=
   (sandwich_mul hm v v).symm
 
-/-- Minkowski square is invariant under unitary sandwich (no grade claim). -/
+/-- Unitary sandwich preserves the Minkowski square; no grade claim. -/
 theorem sandwich_minkowskiVector_sq {m : PGA} (hm : m * reverse m = 1) (v : Fin 4 → ℝ) :
     sandwich m (minkowskiVector v) * sandwich m (minkowskiVector v) =
       algebraMap ℝ PGA (Q31 v) := by
@@ -377,7 +352,6 @@ theorem sandwich_pureBoost_null1 (φ : ℝ) :
   simp only [mul_smul_comm]
   simp [null]
 
-/-- A radial boost scales the outward lightlike translation by \(e^{\varphi}\). -/
 theorem sandwich_pureBoost_null_plus (φ : ℝ) :
     sandwich (rotorTorsion (pureBoost φ)) (null 0 + null 1) =
       Real.exp φ • (null 0 + null 1) := by
@@ -389,7 +363,6 @@ theorem sandwich_pureBoost_null_plus (φ : ℝ) :
     module
   rw [h, cosh_add_sinh]
 
-/-- The opposite ray is scaled by \(e^{-\varphi}\). -/
 theorem sandwich_pureBoost_null_minus (φ : ℝ) :
     sandwich (rotorTorsion (pureBoost φ)) (null 0 - null 1) =
       Real.exp (-φ) • (null 0 - null 1) := by
@@ -429,13 +402,11 @@ theorem sandwich_pureBoost_omegaTrans (φ : ℝ) (p : TransParams) :
   simp only [boostConjLambda]
   module
 
-/-- The Minkowski square on the radial plane is minus the product of the null weights. -/
 theorem minkowskiDot_radial_weights (ε q : ℝ) :
     minkowskiDot ![ε, q, 0, 0] = -((ε + q) * (ε - q)) := by
   simp [minkowskiDot]
   ring
 
-/-- A rapidity `φ` scales the outward null weight by `e^φ` and the inward weight by `e^{-φ}`. -/
 theorem boostConj_radial_weights (φ ε q : ℝ) :
     boostConjLambda φ ![ε, q, 0, 0] 0 + boostConjLambda φ ![ε, q, 0, 0] 1 =
       (ε + q) * Real.exp φ ∧
@@ -457,7 +428,6 @@ theorem boostConj_radial_weights (φ ε q : ℝ) :
           (ε - q) * (cosh φ - sinh φ) := by ring
       _ = (ε - q) * Real.exp (-φ) := by rw [Real.cosh_sub_sinh]
 
-/-- Opposite scalings leave the product of the null weights unchanged. -/
 theorem boostConj_radial_weight_product (φ ε q : ℝ) :
     (boostConjLambda φ ![ε, q, 0, 0] 0 + boostConjLambda φ ![ε, q, 0, 0] 1) *
         (boostConjLambda φ ![ε, q, 0, 0] 0 - boostConjLambda φ ![ε, q, 0, 0] 1) =
@@ -470,7 +440,6 @@ theorem boostConj_radial_weight_product (φ ε q : ℝ) :
         (ε + q) * (ε - q) * (Real.exp φ * Real.exp (-φ)) := by ring
     _ = (ε + q) * (ε - q) := by rw [hmul, mul_one]
 
-/-- A radial boost preserves the Minkowski square of every translation. -/
 theorem Q31_boostConjLambda (φ : ℝ) (lam : Fin 4 → ℝ) :
     Q31 (boostConjLambda φ lam) = Q31 lam := by
   rw [Q31_eq_minkowskiDot, Q31_eq_minkowskiDot]
@@ -514,7 +483,6 @@ theorem rotorTorsion_pureBoost_mul (φ ψ : ℝ) :
   have hcoeff : φ / 2 + ψ / 2 = (φ + ψ) / 2 := by ring
   rw [hcoeff]
 
-/-- Circular closed form for a pure spatial rotation about axis 0 (`cyclic 0`). -/
 theorem rotorTorsion_pureRotation_closed (θ : ℝ) :
     rotorTorsion ⟨fun _ => 0, fun a => if a = 0 then θ else 0⟩ =
       Real.cos (θ / 2) • (1 : PGA) + Real.sin (θ / 2) • cyclic 0 := by
@@ -845,8 +813,6 @@ private theorem null1_eq_smul_null3_false {k : ℝ} (h : null 1 = k • null 3) 
     (add_pos_of_pos_of_nonneg (by norm_num : (0 : ℝ) < 1) (sq_nonneg k)).ne'
   exact ι_e4_ne_zero ((smul_eq_zero.mp this).resolve_left hk)
 
-/-- Axis-1 rotation moves `N₃` in the `(N₁,N₃)` plane; a pure boost of axis 0
-leaves `N₃` inert. -/
 theorem sandwich_pureRotation1_null3_ne_of_sin {θ : ℝ} (hsin : Real.sin θ ≠ 0) :
     sandwich (rotorTorsion (pureRotation1 θ)) (null 3) ≠ null 3 := by
   intro h

@@ -6,31 +6,7 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
 /-!
 # Flat transport of a Poincaré bivector along an arbitrary curve
 
-Rewriting a fixed bivector at a displaced origin is conjugation by the
-translator of that displacement. For every Poincaré bivector and every
-displacement `x`, the Lorentz part is unchanged and the translational part
-becomes the velocity field `λ + ω x`. Along a differentiable curve the
-translational part therefore changes at the rate `ω(ẋ)`, whether or not the
-curve is an orbit of the bivector. The torsional scalar `J` is constant.
-The squared norm `N²` moves with the event.
-
-On the exterior the boost rate `κ = rₛ/(2r²)` has radial derivative
-`-rₛ/r³`. Static bivectors at two exterior radii are not flat transports of
-one another.
-
-On that chart the mismatch is the radial boost of rapidity `φ`, and the
-redshift it carries is `ν = e^{-φ}`. The proper radial derivative of that
-redshift is the Lorentz coefficient of the static bivector,
-`κ = -ν dφ/ds = rₛ/(2r²)`. The inward translation of length `ℓ = ν/κ` carries
-the bivector onto the pure boost of this rate: the time translation drops out
-and the torsional scalar `½κ²` remains. That scalar is the same at every
-origin.
-
-## Not claimed
-
-* That the finite rotor of rapidity `φ` is itself the Killing bivector.
-  The Levi-Civita action on the static bivector is `Gravity.CurvedTransport`.
-  Motion off the equatorial leg is `Gravity.OffEquator`.
+Conjugation by the translator of a displacement leaves the Lorentz part unchanged and replaces the translation by `λ + ω x`. The finite rotor of rapidity `φ` is not the Killing bivector, and static bivectors at two exterior radii are not flat transports of one another.
 -/
 
 namespace DstDiophantine.Gravity.KillingTransport
@@ -71,7 +47,6 @@ theorem commutator_omegaTrans_omegaTrans (p q : TransParams) :
     commutator (omegaTrans p) (omegaTrans q) = 0 := by
   rw [Generators.commutator, omegaTrans_mul, omegaTrans_mul, sub_zero]
 
-/-- `[Ω_torsion, Ω_trans(λ)]` is the translation by the Lorentz action on `λ`. -/
 theorem commutator_omegaTorsion_omegaTrans (t : TorsionParams) (q : TransParams) :
     commutator (omegaTorsion t) (omegaTrans q) =
       omegaTrans ⟨lorentzAct t q.lambda⟩ := by
@@ -95,7 +70,6 @@ theorem commutator_omegaTorsion_omegaTrans (t : TorsionParams) (q : TransParams)
           rw [← Generators.commutator, commutator_omegaTorsion_minkowskiVector]
   rw [hbr, ← omegaTrans_eq_half_e4]
 
-/-- Moving the origin to `x` replaces the translation by the velocity field. -/
 theorem sandwich_originShift (p : OmegaParams) (x : Vec4) :
     sandwich (expTrans (originShift x)) (omegaBiv p) =
       omegaBiv (transportedParams p x) := by
@@ -124,11 +98,9 @@ theorem transported_lambda (p : OmegaParams) (x : Vec4) (μ : Fin 4) :
     (transportedParams p x).trans.lambda μ =
       p.trans.lambda μ + lorentzAct p.torsion x μ := rfl
 
-/-- The torsional scalar is invariant under the transport. -/
 theorem J_transported (p : OmegaParams) (x : Vec4) :
     J (transportedParams p x).torsion = J p.torsion := rfl
 
-/-- At the new origin the squared norm equals the old norm at `x`. -/
 theorem killingNormSq_at_new_origin (p : OmegaParams) (x : Vec4) :
     killingNormSq (transportedParams p x) 0 = killingNormSq p x := by
   have hfun : (fun μ => p.trans.lambda μ + lorentzAct p.torsion x μ) =
@@ -137,14 +109,12 @@ theorem killingNormSq_at_new_origin (p : OmegaParams) (x : Vec4) :
     rfl
   simp [killingNormSq, transportedParams, lorentzAct_zero, hfun, add_zero]
 
-/-- Along the radial line the transported translation is the velocity `(ν + κ s) e₀`. -/
 theorem transported_killing_radial (κ ν s : ℝ) :
     (transportedParams (killingParams κ ν) ![0, s, 0, 0]).trans.lambda =
       ![ν + κ * s, 0, 0, 0] := by
   ext μ
   fin_cases μ <;> simp [transportedParams, killingParams, lorentzAct, pureBoost]
 
-/-- Flat transport does not change the boost rate. -/
 theorem transported_killing_torsion (κ ν : ℝ) (x : Vec4) :
     (transportedParams (killingParams κ ν) x).torsion = pureBoost κ := rfl
 
@@ -191,7 +161,6 @@ theorem hasDerivAt_lorentzAct (t : TorsionParams) {x : ℝ → Vec4} {v : Vec4} 
       ring
     · ring
 
-/-- Along any differentiable curve, `dλ/dτ = ω(ẋ)`. The curve need not be an orbit. -/
 theorem hasDerivAt_transportedLambda (p : OmegaParams) {x : ℝ → Vec4} {v : Vec4} {τ : ℝ}
     (hx : ∀ μ, HasDerivAt (fun s => x s μ) (v μ) τ) (μ : Fin 4) :
     HasDerivAt (fun s => (transportedParams p (x s)).trans.lambda μ)
@@ -249,9 +218,6 @@ theorem killingRate_ne_of_exterior {rs r₁ r₂ : ℝ}
   have hpos₂ : 0 < r₂ := lt_trans h₂.1 h₂.2
   exact hne (by linarith [abs_of_pos hpos₁, abs_of_pos hpos₂, habs])
 
-/-- No flat displacement carries the static bivector at one exterior radius
-to the static bivector at another. The torsional part would have to agree,
-and flat transport does not change it. -/
 theorem static_not_flat_transport {rs r₁ r₂ : ℝ}
     (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) (x : Vec4) :
     (transportedParams (killingParams (killingRate rs r₁) (killingNorm rs r₁)) x).torsion ≠
@@ -265,8 +231,6 @@ theorem static_not_flat_transport {rs r₁ r₂ : ℝ}
 
 /-! ### The exterior rate read from the incongruence -/
 
-/-- The proper radial derivative of the incongruence redshift is the static
-boost rate `κ = rₛ/(2r²)`. Here `ν ∂_r φ` is `dφ/ds`. -/
 theorem incongruence_kappa_eq_exterior {rs r : ℝ} (h : IsExterior rs r) :
     -(killingNorm rs r) * (killingNorm rs r * dRapidity_dr rs r) = killingRate rs r ∧
       killingRate rs r = rs / (2 * r ^ 2) := by
@@ -276,7 +240,6 @@ theorem incongruence_kappa_eq_exterior {rs r : ℝ} (h : IsExterior rs r) :
   simp only [killingNorm]
   ring
 
-/-- `ℓ` is the length on which the incongruence rapidity would change by one. -/
 theorem axisDistance_eq_rapidity_length {rs r : ℝ} (h : IsExterior rs r) :
     KillingAxis.axisDistance rs r = -1 / (killingNorm rs r * dRapidity_dr rs r) := by
   have hden : killingNorm rs r * dRapidity_dr rs r ≠ 0 :=
@@ -289,7 +252,6 @@ theorem axisDistance_eq_rapidity_length {rs r : ℝ} (h : IsExterior rs r) :
   rw [eq_div_iff hden]
   linarith
 
-/-- A radial displacement drops the time translation of `K` exactly at `s = -ℓ`. -/
 theorem radial_shift_drops_translation_iff {rs r s : ℝ} (h : IsExterior rs r) :
     (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
         ![0, s, 0, 0]).trans.lambda = (fun _ => 0) ↔
@@ -312,7 +274,6 @@ theorem radial_shift_drops_translation_iff {rs r s : ℝ} (h : IsExterior rs r) 
     ext μ
     fin_cases μ <;> simp [KillingAxis.killingRate_mul_axisDistance h]
 
-/-- Moving the origin to the axis leaves the pure boost of rate `κ`. -/
 theorem omegaBiv_axisShift_eq_boost {rs r : ℝ} (h : IsExterior rs r) :
     omegaBiv (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
         ![0, -KillingAxis.axisDistance rs r, 0, 0]) =
@@ -325,7 +286,6 @@ theorem omegaBiv_axisShift_eq_boost {rs r : ℝ} (h : IsExterior rs r) :
     simp [omegaTrans, hdrop]
   rw [htrans, add_zero, transported_killing_torsion, omegaTorsion_pureBoost]
 
-/-- The torsional scalar travels with the boost and stays positive. -/
 theorem J_axisShift_pos {rs r : ℝ} (h : IsExterior rs r) (x : Vec4) :
     J (transportedParams (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion =
       (1 / 2) * (killingRate rs r) ^ 2 ∧

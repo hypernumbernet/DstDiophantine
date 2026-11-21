@@ -2,38 +2,16 @@ import DstDiophantine.Theorems.BealEven
 import Mathlib.Tactic.Linarith
 
 /-!
-# Fourth power plus a square (phase 7z)
+# Fourth power plus a square
 
-mathlib (v4.34) does not contain Bennett–Ellenberg–Ng's theorem that
-`A⁴ + B² = Cⁿ` has no nonzero coprime solution for `n ≥ 4`. We take that
-statement as an `axiom` (same contract as `sumTwoFifthsNotSeventhOrNineteenth`)
-and close every even two-equal sum whose common exponent is divisible by `4`
-and whose hypotenuse exponent is at least `4`.
-
-The rewrite is `A^{4k} + B^{4k} = (A^k)⁴ + (B^{2k})²`. A prime dividing two of
-the new bases divides the third, so three-way coprimality survives. `(4,4,7)`
-is the first case inside the `z ≥ 7` leaf; `(8,8,7)` and `(4,4,9)` close with
-it. The common exponent `10` is twice an odd integer, so `(10,10,7)` does not
-rewrite to this equation; phase 8a closes it as a sum of two fifth powers.
-An even difference with `d = 1` does not become this equation: the distinct
-exponent is odd. Classical Beal is **not** claimed unconditionally.
+`bennettEllenbergNg` assumes no nonzero coprime `A⁴ + B² = Cⁿ` for `n ≥ 4`. It is an axiom, not a Lean proof; classical Beal is not claimed and `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` stays open.
 -/
 
 namespace DstDiophantine
 
 namespace Theorems
 
-/--
-Bennett–Ellenberg–Ng (2010): no nonzero coprime solution of `A⁴ + B² = Cⁿ`
-for an integer `n ≥ 4`.
-
-Not present in mathlib at the pin used by this project; recorded explicitly as
-an axiom rather than smuggled into a `sorry`. This is **not** a Lean proof of
-Bennett–Ellenberg–Ng. A vanishing coordinate satisfies the equation
-(`0⁴ + 1² = 1ⁿ`) and is excluded here: it is not a Beal solution. Signs on
-`A` and `B` are absorbed by the even powers, and a negative `C` with odd `n`
-makes the right side negative.
--/
+/-- No nonzero coprime `A⁴ + B² = Cⁿ` for `n ≥ 4`. An axiom, not a Lean proof. -/
 axiom bennettEllenbergNg :
     ∀ (A B C : ℤ) (n : ℕ),
       4 ≤ n →
@@ -41,10 +19,7 @@ axiom bennettEllenbergNg :
       Nat.gcd A.natAbs (Nat.gcd B.natAbs C.natAbs) = 1 →
       ¬ A ^ 4 + B ^ 2 = C ^ n
 
-/--
-Two equal exponents divisible by `4`, and a third exponent at least `4`.
-The Beal sum `A^x + B^x = C^z` then rewrites as a fourth power plus a square.
--/
+/-- Equal exponents divisible by `4`: the sum is a fourth power plus a square. -/
 def IsFourthSumShape (x y z : ℕ) : Prop :=
   x = y ∧ 4 ∣ x ∧ 4 ≤ z
 
@@ -70,9 +45,6 @@ private theorem bealGcd_pow_pow_eq_one {A B C : ℤ} {r s : ℕ}
   rw [hgcd] at this
   exact hp.not_dvd_one this
 
-/--
-No coprime nonzero Beal sum `A^x + B^x = C^z` with `4 ∣ x` and `z ≥ 4`.
--/
 theorem not_beal_fourth_sum
     {A B C : ℤ} {x z : ℕ}
     (hx : 3 ≤ x) (hz : 4 ≤ z)
@@ -100,9 +72,6 @@ theorem not_beal_fourth_sum
     (pow_ne_zero k hA) (pow_ne_zero (2 * k) hB) hC
     (by simpa [bealGcd] using hgcd') hsol'
 
-/--
-No coprime nonzero Beal solution whose exponents are a fourth-power sum shape.
--/
 theorem not_beal_fourth_sum_shape
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
@@ -114,13 +83,7 @@ theorem not_beal_fourth_sum_shape
   subst hxy
   exact not_beal_fourth_sum hx hz4 hA hB hC hgcd h4 hsol
 
-/--
-**Residual** (phase 7z, unproved): even-sum body at hypotenuse exponent
-`z ≥ 7`, outside cube-pair shapes and outside a common exponent divisible
-by `4`. `(4,4,7)` is removed. `(10,10,7)` is not this shape; phase 8a
-removes it as a fifth-power pair. The live body is the further narrowing
-`BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual`.
--/
+/-- Open: even sum `z ≥ 7` outside cube pairs and `4 ∣ x`. Not `(10,10,7)`. -/
 def BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -131,10 +94,6 @@ def BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual : Prop :=
     ¬ 4 ∣ x →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-The even-sum body outside cube pairs follows once a common exponent divisible
-by `4` has also been removed.
--/
 theorem BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual_of_outside_fourth
     (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual) :
     BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual := by
@@ -144,10 +103,6 @@ theorem BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual_of_outside_fourth
     exact not_beal_fourth_sum hx (by omega) hA hB hC hgcd h4 hsol
   · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hshape h4 hsol
 
-/--
-Phase 7z: the even-sum residual follows from the `z ≥ 7` body outside cube
-pairs and outside a common exponent divisible by `4`.
--/
 theorem BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth
     (h7 : BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual) :
     BealTwoEqualEvenSumResidual :=

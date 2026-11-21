@@ -3,8 +3,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Lorentz and Poincaré dimension counts
 
-Pure `ℕ` identities used by the 10D comparison layer. No Lie-algebra
-isomorphism theorems are claimed here.
+Pure `ℕ` identities. No Lie-algebra isomorphism is claimed.
 -/
 
 namespace DstDiophantine
@@ -32,7 +31,7 @@ def iso31Dim : ℕ := isoDim 4
 /-- Poincaré `𝔦𝔰𝔬(9,1)` dimension label. -/
 def iso91Dim : ℕ := isoDim 10
 
-/-- PGA hyperbolic + cyclic + null generator count (not a Lie isomorphism claim). -/
+/-- PGA generator count; not a Lie-isomorphism claim. -/
 def pgaGeneratorCount : ℕ := 6 + 4
 
 @[simp] theorem soDim_zero : soDim 0 = 0 := by simp [soDim]
@@ -62,13 +61,13 @@ theorem pgaGeneratorCount_eq_iso31Dim : pgaGeneratorCount = iso31Dim := by
 theorem pgaGeneratorCount_ne_iso91Dim : pgaGeneratorCount ≠ iso91Dim := by
   rw [pgaGeneratorCount_eq, iso91Dim_eq]; decide
 
-/-- Light-cone physical dof `8 + 8` versus DST's six torsion generators. -/
+/-- Light-cone count `8 + 8` versus six torsion generators. -/
 theorem lightCone_ne_torsionGenerators : 8 + 8 ≠ 6 := by decide
 
 /-- Real dimension of one quaternion algebra. -/
 def quaternionDim : ℕ := 4
 
-/-- Real dimension of the direct sum `ℍ ⊕ ℍ`. It is not `Cl(3,1)`. -/
+/-- Real dimension of `ℍ ⊕ ℍ`. It is not `Cl(3,1)`. -/
 def quaternionDirectSumDim : ℕ := quaternionDim + quaternionDim
 
 /-- Real dimension of the tensor product `ℍ ⊗_ℝ ℍ`, the biquaternion algebra. -/
@@ -80,7 +79,7 @@ theorem quaternionDirectSumDim_eq : quaternionDirectSumDim = 8 := by
 theorem quaternionTensorDim_eq : quaternionTensorDim = 16 := by
   simp [quaternionTensorDim, quaternionDim]
 
-/-- The direct sum is not the tensor product, so `ℍ ⊕ ℍ` is not `Cl(3,1)`. -/
+/-- `ℍ ⊕ ℍ` is not the tensor product, hence not `Cl(3,1)`. -/
 theorem quaternionDirectSum_ne_tensor : quaternionDirectSumDim ≠ quaternionTensorDim := by
   rw [quaternionDirectSumDim_eq, quaternionTensorDim_eq]
   decide

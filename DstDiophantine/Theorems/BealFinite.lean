@@ -7,16 +7,7 @@ set_option linter.style.native false
 /-!
 # Finite Beal certificates
 
-* **Box search** (phase 7j): bases and `C` all `≤ Amax`, exponents in `3…Emax`.
-* **Perfect-power search** (phase 7k–7t): bases `≤ Amax`, exponents in `3…Emax`,
-  but `C` is recovered as a positive `z`-th root of `A^x + B^y` (unbounded).
-  Current certificates: bases `≤ 24`, exponents `3…8` (weaker named bounds
-  follow by monotonicity).
-* **Finders** (phase 7n): `findCoprimeBealUpTo` / `findCoprimeBealPerfectPowerUpTo`
-  return the first hit (for `#eval` / diagnostics), with soundness and completeness.
-
-Known **non-coprime** solutions are kept as regression witnesses (they are not
-Beal counterexamples). Classical Beal is **not** claimed unconditionally.
+Bounded searches report coprime hits inside a box or as perfect powers. They are diagnostic and do not claim classical Beal.
 -/
 
 namespace DstDiophantine
@@ -25,9 +16,7 @@ namespace Theorems
 
 /-! ### Bool search (bounded box) -/
 
-/--
-True when `(A,B,C,x,y,z)` is a positive coprime Beal solution (exponents ≥ 3).
--/
+/-- True when `(A,B,C,x,y,z)` is a positive coprime Beal solution (exponents ≥ 3). -/
 def isCoprimeBeal (A B C x y z : ℕ) : Bool :=
   decide
     (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
@@ -35,9 +24,7 @@ def isCoprimeBeal (A B C x y z : ℕ) : Bool :=
       A ^ x + B ^ y = C ^ z ∧
       Nat.gcd A (Nat.gcd B C) = 1)
 
-/--
-Bases `1…Amax` and exponents `3…Emax` (empty when `Emax < 3`).
--/
+/-- Bases `1…Amax` and exponents `3…Emax` (empty when `Emax < 3`). -/
 def hasCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
   (List.range' 1 Amax).any fun A =>
     (List.range' 1 Amax).any fun B =>
@@ -51,10 +38,7 @@ def hasCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
 def noCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
   !(hasCoprimeBealUpTo Amax Emax)
 
-/--
-First positive coprime Beal solution in the bounded box, if any
-(`C` also bounded by `Amax`). Diagnostic / `#eval` finder.
--/
+/-- First positive coprime Beal solution in the bounded box, if any (`C` also bounded by `Amax`). Diagnostic / `#eval` finder. -/
 def findCoprimeBealUpTo (Amax Emax : ℕ) : Option (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
   (List.range' 1 Amax).findSome? fun A =>
     (List.range' 1 Amax).findSome? fun B =>
@@ -72,12 +56,10 @@ private theorem mem_exps {x Emax : ℕ} (hx : 3 ≤ x) (hxE : x ≤ Emax) :
     x ∈ List.range' 3 (Emax + 1 - 3) :=
   List.mem_range'_1.mpr ⟨hx, by omega⟩
 
-/-- Membership in the base search range `1…Amax` (shared by finite certificates). -/
 theorem mem_beal_bases {A Amax : ℕ} (hA : 0 < A) (hAmax : A ≤ Amax) :
     A ∈ List.range' 1 Amax :=
   mem_bases hA hAmax
 
-/-- Membership in the exponent search range `3…Emax`. -/
 theorem mem_beal_exps {x Emax : ℕ} (hx : 3 ≤ x) (hxE : x ≤ Emax) :
     x ∈ List.range' 3 (Emax + 1 - 3) :=
   mem_exps hx hxE
@@ -187,10 +169,6 @@ theorem noCoprimeBealUpTo_sound {Amax Emax : ℕ}
     simpa [noCoprimeBealUpTo, Bool.not_eq_true'] using h
   exact absurd hany (by simp [this])
 
-/--
-Finite-exploration certificate: no positive coprime Beal solution with bases
-`≤ 8` and exponents in `3…5`.
--/
 theorem beal_no_coprime_of_le_eight_five
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -205,10 +183,7 @@ theorem beal_no_coprime_of_le_eight_five
 
 /-! ### Perfect-power search (phase 7k; `C` unbounded) -/
 
-/--
-Grow an exclusive upper bound on a positive `z`-th root of `s` by doubling.
-Fuel exhaustion falls back to `max hi (s + 1)`, which still exceeds any root.
--/
+/-- Double until `hi` exceeds a `z`-th root; the fuel fallback still does. -/
 def growNthRootHi (s z hi fuel : ℕ) : ℕ :=
   match fuel with
   | 0 => max hi (s + 1)
@@ -247,10 +222,7 @@ private theorem bin_mid_bounds {lo hi : ℕ} (h : lo < hi) :
       Nat.div_lt_self hpos (by decide : 1 < 2)
     omega
 
-/--
-Binary search for a positive `z`-th root of `s` in the half-open interval
-`[lo, hi)`. Returns `some C` when `C ^ z = s`.
--/
+/-- Binary search for a positive `z`-th root of `s` in the half-open interval `[lo, hi)`. Returns `some C` when `C ^ z = s`. -/
 def findNthRootBin (s z lo hi fuel : ℕ) : Option ℕ :=
   match fuel with
   | 0 => none
@@ -358,7 +330,6 @@ theorem findNthRoot_complete {s z C : ℕ}
   have hChi : C < hi := (Nat.pow_lt_pow_iff_left hzne).mp hpow
   exact findNthRootBin_complete hz (Nat.succ_le_of_lt hC) hChi heq (by omega)
 
-/-- Completeness + uniqueness: the positive `z`-th root is exactly `C`. -/
 theorem findNthRoot_eq_some_of {s z C : ℕ}
     (hz : 0 < z) (hC : 0 < C) (heq : C ^ z = s) :
     findNthRoot s z = some C := by
@@ -371,20 +342,14 @@ theorem findNthRoot_eq_some_of {s z C : ℕ}
       Nat.pow_left_injective (Nat.pos_iff_ne_zero.mp hz) (heq'.trans heq.symm)
     exact congrArg some this
 
-/--
-True when `A^x + B^y` is a positive perfect `z`-th power `C^z` with
-three-way gcd 1 and exponents / bases positive as in Beal.
--/
+/-- True when `A^x + B^y` is a positive perfect `z`-th power `C^z` with three-way gcd 1 and exponents / bases positive as in Beal. -/
 def isCoprimeBealPerfectPower (A B x y z : ℕ) : Bool :=
   decide (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧ 0 < A ∧ 0 < B) &&
     match findNthRoot (A ^ x + B ^ y) z with
     | some C => decide (Nat.gcd A (Nat.gcd B C) = 1)
     | none => false
 
-/--
-Bases `1…Amax`, exponents `3…Emax`: whether a coprime perfect-power Beal
-solution exists (`C` recovered as a root, not bounded by `Amax`).
--/
+/-- Whether a coprime perfect-power hit exists for bases `≤ Amax`. `C` is a root. -/
 def hasCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) : Bool :=
   (List.range' 1 Amax).any fun A =>
     (List.range' 1 Amax).any fun B =>
@@ -396,10 +361,7 @@ def hasCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) : Bool :=
 def noCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) : Bool :=
   !(hasCoprimeBealPerfectPowerUpTo Amax Emax)
 
-/--
-First positive coprime perfect-power Beal solution with bases `≤ Amax` and
-exponents in `3…Emax`, if any (`C` recovered as a root). Diagnostic finder.
--/
+/-- First coprime perfect-power hit with bases `≤ Amax`, if any. Diagnostic. -/
 def findCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) :
     Option (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
   (List.range' 1 Amax).findSome? fun A =>
@@ -527,10 +489,6 @@ theorem noCoprimeBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
     simpa [noCoprimeBealPerfectPowerUpTo, Bool.not_eq_true'] using h
   exact absurd hany (by simp [this])
 
-/--
-Phase 7t: no positive coprime Beal solution with bases `≤ 24` and exponents in
-`3…8`, allowing unbounded `C` recovered as a perfect power.
--/
 theorem beal_no_coprime_perfect_power_of_le_twentyfour_eight
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -543,7 +501,6 @@ theorem beal_no_coprime_perfect_power_of_le_twentyfour_eight
     (by native_decide : noCoprimeBealPerfectPowerUpTo 24 8 = true)
     hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
 
-/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twentyone_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -555,7 +512,6 @@ theorem beal_no_coprime_perfect_power_of_le_twentyone_six
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twenty_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -567,7 +523,6 @@ theorem beal_no_coprime_perfect_power_of_le_twenty_six
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7q certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -579,7 +534,6 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_six
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Weaker perfect-power certificates (phases 7k–7p); follow from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twelve_six
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -646,7 +600,6 @@ theorem beal_no_coprime_perfect_power_of_le_seventeen_six
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_twenty_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -658,7 +611,6 @@ theorem beal_no_coprime_perfect_power_of_le_twenty_seven
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7r certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_seven
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -670,7 +622,6 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_seven
   beal_no_coprime_perfect_power_of_le_twentyfour_eight
     hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
 
-/-- Phase 7s certificate; follows from ≤ 24 · 8. -/
 theorem beal_no_coprime_perfect_power_of_le_nineteen_eight
     {A B C x y z : ℕ}
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -684,40 +635,34 @@ theorem beal_no_coprime_perfect_power_of_le_nineteen_eight
 
 /-! ### Known non-coprime solutions (not counterexamples) -/
 
-/-- Classic non-coprime identity `3³ + 6³ = 3⁵` (gcd 3). -/
 theorem beal_known_noncoprime_three_six :
     (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 := by
   constructor
   · norm_num
   · native_decide
 
-/-- Classic non-coprime identity `2³ + 2³ = 2⁴` (gcd 2). -/
 theorem beal_known_noncoprime_two_two :
     (2 : ℤ) ^ 3 + 2 ^ 3 = 2 ^ 4 ∧ bealGcd 2 2 2 = 2 := by
   constructor
   · norm_num
   · native_decide
 
-/-- Non-coprime identity `7³ + 7⁴ = 14³` (gcd 7). -/
 theorem beal_known_noncoprime_seven_fourteen :
     (7 : ℤ) ^ 3 + 7 ^ 4 = 14 ^ 3 ∧ bealGcd 7 7 14 = 7 := by
   constructor
   · norm_num
   · native_decide
 
-/-- Non-coprime identity `2⁵ + 2⁵ = 2⁶` (gcd 2). -/
 theorem beal_known_noncoprime_two_five :
     (2 : ℤ) ^ 5 + 2 ^ 5 = 2 ^ 6 ∧ bealGcd 2 2 2 = 2 := by
   constructor
   · norm_num
   · native_decide
 
-/-- Perfect-power witness: `3³ + 6³` is a 5th power (non-coprime). -/
 theorem beal_known_noncoprime_is_perfect_power :
     isNthPower (3 ^ 3 + 6 ^ 3) 5 = true := by
   native_decide
 
-/-- Known non-coprime solutions are not flagged as coprime Beal hits. -/
 theorem known_noncoprime_not_isCoprimeBeal :
     isCoprimeBeal 3 6 3 3 3 5 = false ∧
       isCoprimeBeal 2 2 2 3 3 4 = false ∧

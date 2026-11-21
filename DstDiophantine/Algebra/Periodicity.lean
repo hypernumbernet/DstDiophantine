@@ -10,13 +10,9 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 /-!
-# Periodicity of cyclic versus hyperbolic rotor exponentials
+# Periodicity of cyclic versus hyperbolic exponentials
 
-Cyclic generators square to `-1`, so `exp(θ B⁻)` is `2π`-periodic in `θ`.
-Hyperbolic generators square to `+1`, so `exp(θ B⁺)` is never `2π`-periodic.
-Quantizing boosts onto a `2π`-torus is therefore a modelling choice, not a
-consequence of the exponential map, and not a consequence of compactness of
-the dual sector.
+Cyclic exponentials are `2π`-periodic and hyperbolic ones are not. Putting boosts on a `2π`-torus is a modelling choice, not a consequence of the exponential.
 -/
 
 namespace DstDiophantine
@@ -73,7 +69,6 @@ private theorem cosh_eq_iff_abs_eq {x y : ℝ} : cosh x = cosh y ↔ |x| = |y| :
   · intro h
     rw [← cosh_abs x, ← cosh_abs y, h]
 
-/-- Hyperbolic rotor exponentials are nowhere `2π`-periodic. -/
 theorem exp_hyperbolic_add_two_pi_ne (a : Fin 3) (θ : ℝ) :
     exp ((θ + 2 * π) • hyperbolic a) ≠ exp (θ • hyperbolic a) := by
   intro h

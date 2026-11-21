@@ -10,16 +10,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Null doubling of the commuting left ideal
 
-The commuting projector \(P\) lives in the Minkowski subalgebra. The
-principal left ideal \(\mathcal{I}=G(3,1,1)\,P\) therefore splits as
-\(\mathcal{I}_0\oplus e_4\mathcal{I}_0\), where
-\(\mathcal{I}_0=\mathrm{Cl}(3,1)\,P\) is four-dimensional. The null
-copy is a proper left \(G(3,1,1)\)-submodule, so \(\mathcal{I}\) is
-reducible as a PGA-module.
-
-Irreducibility of \(\mathcal{I}_0\) as a \(\mathrm{Cl}(3,1)\)-module is
-not claimed, nor is an identification with the matrix representation on
-\(\mathbb{C}^4\).
+The principal left ideal splits as a four-dimensional Minkowski core plus a null copy, so it is reducible as a PGA-module. Irreducibility of that core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine
@@ -162,7 +153,6 @@ theorem e4_mul_e4_mul (w : PGA) :
     PGA.ι PGA.e4Index * (PGA.ι PGA.e4Index * w) = 0 := by
   rw [← mul_assoc, e4_sq_zero, zero_mul]
 
-/-- Every PGA element is a Minkowski part plus an \(e_4\) copy. -/
 theorem minkowski_sup_nullMinkowski :
     minkowskiSub ⊔ nullMinkowski = ⊤ := by
   have hxall (x : PGA) : x ∈ minkowskiSub ⊔ nullMinkowski := by
@@ -368,7 +358,6 @@ theorem leftIdeal_eq_core_sup_null :
   exact add_mem (Submodule.mem_sup_left ⟨hyI, hy⟩)
     (Submodule.mem_sup_right ⟨z, ⟨hzI, hz⟩, rfl⟩)
 
-/-- \(\mathcal{I}=\mathcal{I}_0\oplus e_4\mathcal{I}_0\). -/
 theorem leftIdeal_directSum_null :
     minkowskiLeftIdeal ⊔ nullSlice = leftIdealSub commutingSpinorIdem ∧
       minkowskiLeftIdeal ⊓ nullSlice = (⊥ : Submodule ℝ PGA) := by
@@ -376,7 +365,6 @@ theorem leftIdeal_directSum_null :
   · exact leftIdeal_eq_core_sup_null.symm
   · exact minkowskiLeftIdeal_disjoint_nullSlice.eq_bot
 
-/-- Real dimension of the Minkowski core \(\mathrm{Cl}(3,1)\,P\). -/
 theorem finrank_minkowskiLeftIdeal : finrank ℝ minkowskiLeftIdeal = 4 := by
   have hsum := Submodule.finrank_sup_add_finrank_inf_eq
     minkowskiLeftIdeal nullSlice
@@ -445,7 +433,6 @@ theorem involute_mem_minkowski {z : PGA} (hz : z ∈ minkowskiSub) :
   rcases (mem_minkowskiSub.mp hz) with ⟨c, rfl⟩
   exact ⟨CliffordAlgebra.involute c, (involute_toPGA c).symm⟩
 
-/-- Left multiplication by an arbitrary PGA element preserves the null slice. -/
 theorem mul_mem_nullSlice (a : PGA) {x : PGA} (hx : x ∈ nullSlice) :
     a * x ∈ nullSlice := by
   rcases hx with ⟨y, hy, rfl⟩
@@ -488,7 +475,6 @@ theorem iota_e4_mul_P_ne_zero :
     commutingSpinorIdem_mem_minkowski h
   exact commutingSpinorIdem_ne_zero hP0
 
-/-- The null copy is a proper nontrivial left \(G(3,1,1)\)-submodule of \(\mathcal{I}\). -/
 theorem nullSlice_is_proper_submodule :
     nullSlice ≤ leftIdealSub commutingSpinorIdem ∧
       nullSlice ≠ ⊥ ∧

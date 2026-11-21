@@ -14,48 +14,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Equal-scale layers against the external \(n^2\) ladder
 
-## Paper boundary (do **not** claim)
-
-The characteristic length `ℓ`, the Bohr radius `a₀`, and the identification of
-the electromagnetic channel with atomic shells are **not** theorems of the
-dual-rotor algebra. This module records algebraic identities of the written
-Coulombic force \(F=ke^2/(\gamma_s r^2)\) and of the equal-scale layer radii.
-
-No theorem asserts `dst_derives_lambda` or a Rydberg \(n^2\) spectrum from
-\(\gamma_s=0\).
-
-## What is proved
-
-* The first equal-scale node lies in \((\pi/4,\,1)\). Identifying that node
-  with \(a_0\) forces \(\pi a_0/2<\lambda<2a_0\).
-* The centripetal rearrangement is not used to place a shell. Where it is
-  written, \(v^2\) is positive only on attractive layers \(\gamma_s>0\).
-  Repulsive layers give \(v^2<0\); a node makes the written force undefined.
-  No angular momentum is assigned.
-* The outermost well \(0<x<x_1\) is attractive. Each later gap between
-  successive nodes has the opposite sign: even gaps are repulsive and odd
-  gaps are attractive, so two repulsive layers are never adjacent. A node is
-  a simple zero of \(\gamma_s\). The barrier diverges the force and leaves
-  the clock at \(\gamma_b^2>0\). At a plateau the clock is \(\cosh(2n\pi)\),
-  not the force denominator.
-* Equal-scale \(r_2/r_1\in(1/6,\,4/(5\pi))\subset(0,1)\) cannot equal the
-  external ratio \(4\). The equal-scale tower is inward; the ladder \(n^2 a_0\)
-  runs outward. That ladder is not a radius of this force.
-* The node of branch `n` increases with `n`. A common phase that is strictly
-  decreasing in distance places successive nodes inward (`s < r`, hence
-  `s/r ≠ 4`), so those nodes cannot occupy two successive Bohr radii.
-  The pair `a₀`, `4a₀` is the first such pair. Bohr radii themselves
-  strictly increase. This order is not special to `λ/r`.
-* \(Z\)-contraction is the algebraic identity \(\ell\mapsto \ell/Z\) \(\iff\)
-  \(r\mapsto r/Z\). The map moves the nodes. It is not the hydrogenic radius
-  \(a_0/Z\), and that radius is not an input.
-* The first node is a simple zero. On \([\pi/4,x_1)\) one has
-  \(c_-(x_1-x)<\gamma_s(x)<c_+(x_1-x)\) with positive slopes built from
-  \(\pi/4\) and \(1\). The layer integral of \(1/\gamma_s\) is therefore
-  logarithmic, and it is unbounded as the upper limit approaches \(x_1\).
-  The equal-scale Coulomb increment equals \(-(2ke^2/\lambda)\) times that
-  integral, so the radial potential falls without a lower bound. The node
-  is not a wall of finite height.
+The written Coulombic force \(F=ke^2/(\gamma_s r^2)\) and the equal-scale
+layer radii are algebraic identities. The length \(\ell\), the Bohr radius,
+and an atomic identification are not theorems; no theorem asserts
+`dst_derives_lambda` or a Rydberg spectrum from \(\gamma_s=0\).
 -/
 
 namespace DstDiophantine
@@ -66,13 +28,10 @@ open Real Set SI
 
 /-! ### First-root window and labelled characteristic length -/
 
-/-- Combined first-root window: \(\pi/4<x_1<1\). -/
 theorem firstNode_window :
     π / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
   resonanceRoot1_sharp_bounds
 
-/-- If the outermost node is placed at \(a_0\), then
-\(\tfrac\pi2 a_0<\lambda<2a_0\). -/
 theorem lambdaHyp_sharp_bounds :
     (π / 2) * (bohrRadiusApprox : ℝ) < lambdaHyp ∧
       lambdaHyp < 2 * (bohrRadiusApprox : ℝ) := by
@@ -88,8 +47,7 @@ theorem lambdaHyp_sharp_bounds :
 
 /-! ### Coulombic circular balance -/
 
-/-- Written Coulombic force \(F=ke^2/(\gamma_s r^2)\). The sign of \(F\) is
-the sign of \(\gamma_s\). -/
+/-- Written Coulombic force \(F=ke^2/(\gamma_s r^2)\). The sign of \(F\) is the sign of \(\gamma_s\). -/
 noncomputable def coulombForce (k e γs r : ℝ) : ℝ :=
   k * e ^ 2 / (γs * r ^ 2)
 
@@ -104,7 +62,6 @@ theorem circularSpeedSq_eq_force_balance
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   field_simp [hm, hr, hr2]
 
-/-- Attractive layers \(\gamma_s>0\) yield a real circular speed. -/
 theorem circularSpeedSq_pos
     {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
     (hγ : 0 < γs) (hr : 0 < r) :
@@ -113,7 +70,6 @@ theorem circularSpeedSq_pos
   exact div_pos (mul_pos hk (sq_pos_of_ne_zero he))
     (mul_pos (mul_pos hm hγ) hr)
 
-/-- Repulsive layers \(\gamma_s<0\) make the written circular \(v^2\) negative. -/
 theorem circularSpeedSq_neg_of_repulsive
     {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
     (hγ : γs < 0) (hr : 0 < r) :
@@ -125,7 +81,6 @@ theorem circularSpeedSq_neg_of_repulsive
     exact mul_neg_of_neg_of_pos this hr
   exact div_neg_of_pos_of_neg hnum hden
 
-/-- The written force is undefined at a torsional node. -/
 theorem coulombForce_denom_zero_at_node (r γs : ℝ) (hγ : γs = 0) :
     γs * r ^ 2 = 0 := by
   simp [hγ]
@@ -170,8 +125,7 @@ theorem gammaSEqual_neg_right_of_first_node {x : ℝ}
   rw [resonanceRoot1_gammaSEqual_zero] at hlt
   exact hlt
 
-/-- A Coulombic node is a force divergence, not a clock freeze.
-The clock that remains is the square of the bivector coefficient. -/
+/-- A Coulombic node is a force divergence, not a clock freeze. -/
 theorem node_is_force_divergence_not_clock_freeze {x : ℝ}
     (h : gammaSEqual x = 0) :
     gammaS (2 * x) (2 * x) = 0 ∧
@@ -218,7 +172,6 @@ theorem bohrShellRadius_ratio_two :
   field_simp [ha0]
   norm_num
 
-/-- Equal-scale Coulombic nodes cannot reproduce the Bohr radius ratio. -/
 theorem equalScale_ratio_ne_bohr
     {x₂ : ℝ} (hx₂ : x₂ ∈ Ioo (π + π / 4) (π + π / 2)) :
     resonanceRoot1 / x₂ ≠ bohrShellRadius 2 / bohrShellRadius 1 := by
@@ -236,7 +189,6 @@ theorem branchNode_spec (n : ℕ) :
       gammaSEqual (branchNode n) = 0 :=
   Classical.choose_spec (ExistsUnique.exists (exists_unique_node_branch n))
 
-/-- Neighbouring branches meet only at an endpoint, so the nodes increase. -/
 theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := by
   have hlo := (mem_Ioo.mp (branchNode_spec n).1).2
   have hhi := (mem_Ioo.mp (branchNode_spec (n + 1)).1).1
@@ -301,7 +253,6 @@ private lemma gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
   have hlt := strictAntiOn_gammaSEqual_even k hxI hnI hxhi
   rwa [hzero] at hlt
 
-/-- Gap `(x_{2k}, x_{2k+1})` is repulsive for an unlike pair: `γ_s < 0`. -/
 theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k)) (branchNode (2 * k + 1))) :
     gammaSEqual x < 0 := by
@@ -312,7 +263,6 @@ theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
   · exact gammaSEqual_neg_on_even_right k hx.1 hle
   · exact gammaSEqual_neg_on_odd_left k (by linarith [hmid]) hx.2
 
-/-- Gap `(x_{2k+1}, x_{2k+2})` is attractive for an unlike pair: `γ_s > 0`. -/
 theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k + 1)) (branchNode (2 * k + 2))) :
     0 < gammaSEqual x := by
@@ -323,7 +273,6 @@ theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
   · exact gammaSEqual_pos_on_odd_right k hx.1 hle
   · exact gammaSEqual_pos_on_even_left (k + 1) (by linarith [hmid]) hx.2
 
-/-- Successive gaps have opposite signs, so repulsive layers are not adjacent. -/
 theorem successive_gaps_opposite_sign (n : ℕ) {x y : ℝ}
     (hx : x ∈ Ioo (branchNode n) (branchNode (n + 1)))
     (hy : y ∈ Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
@@ -342,7 +291,6 @@ theorem successive_gaps_opposite_sign (n : ℕ) {x y : ℝ}
     exact mul_neg_of_pos_of_neg (gammaSEqual_pos_between_odd k hx)
       (gammaSEqual_neg_between_even (k + 1) hy')
 
-/-- Bohr radii increase: \(r_n=n^2 a_0\) runs outward. -/
 theorem bohrShellRadius_strictMono {n : ℕ} (hn : 0 < n) :
     bohrShellRadius n < bohrShellRadius (n + 1) := by
   unfold bohrShellRadius
@@ -355,8 +303,6 @@ theorem bohrShellRadius_strictMono {n : ℕ} (hn : 0 < n) :
     nlinarith [hn0]
   exact mul_lt_mul_of_pos_right hsq ha0
 
-/-- A common phase that decreases with distance places successive nodes inward.
-`ρ` is the shared rapidity, so a node of branch `n` is the level `2 * branchNode n`. -/
 theorem equalScale_phase_nodes_inward
     {ρ : ℝ → ℝ} {n : ℕ} (hanti : StrictAntiOn ρ (Ioi 0))
     {r s : ℝ} (hr : 0 < r) (hs : 0 < s)
@@ -370,7 +316,6 @@ theorem equalScale_phase_nodes_inward
   · exact absurd hρ (by rw [heq]; exact lt_irrefl _)
   · exact absurd (hanti (mem_Ioi.mpr hr) (mem_Ioi.mpr hs) hrs) (not_lt_of_gt hρ)
 
-/-- Successive inward nodes stand in a ratio different from the Bohr ratio `4`. -/
 theorem equalScale_node_ratio_ne_four
     {ρ : ℝ → ℝ} {n : ℕ} (hanti : StrictAntiOn ρ (Ioi 0))
     {r s : ℝ} (hr : 0 < r) (hs : 0 < s)
@@ -380,8 +325,6 @@ theorem equalScale_node_ratio_ne_four
   have hratio : s / r < 1 := (div_lt_one₀ hr).mpr hs_lt
   exact ne_of_lt (lt_trans hratio (by norm_num : (1 : ℝ) < 4))
 
-/-- No decreasing equal phase can place two successive Bohr shells on two
-successive nodes: one sequence increases and the other decreases. -/
 theorem equalScale_successive_nodes_ne_bohr
     {ρ : ℝ → ℝ} {n k : ℕ} (hk : 0 < k) (hanti : StrictAntiOn ρ (Ioi 0))
     (hr : ρ (bohrShellRadius k) = 2 * branchNode n)
@@ -391,7 +334,6 @@ theorem equalScale_successive_nodes_ne_bohr
       (bohrShellRadius_pos (Nat.succ_pos k)) hr hs
   exact absurd hinward (lt_asymm (bohrShellRadius_strictMono hk))
 
-/-- The radii \(a_0\) and \(4a_0\) are the first successive Bohr pair. -/
 theorem not_equalScale_bohr_pair
     {ρ : ℝ → ℝ} (hanti : StrictAntiOn ρ (Ioi 0))
     (h1 : ρ (bohrRadiusApprox : ℝ) = 2 * branchNode 0)
@@ -406,16 +348,12 @@ theorem not_equalScale_bohr_pair
 
 /-! ### \(Z\)-contraction -/
 
-/-- Scaling \(\ell\mapsto\ell/Z\) contracts every equal-scale radius by \(Z\).
-The substitution \(\alpha,\beta\propto Z/r\) at fixed \(\ell\) is the inverse
-scaling and moves nodes *outward* by \(Z\). The map moves the nodes. It is
-not the hydrogenic radius \(a_0/Z\), and that radius is not an input. -/
+/-- It is not the hydrogenic radius `a₀/Z`, and that radius is not an input. -/
 theorem Z_contracts_layerRadius {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
     layerRadius (ℓ / Z) x = layerRadius ℓ x / Z := by
   unfold layerRadius
   field_simp [hZ]
 
-/-- Inverse: \(\ell\mapsto Z\ell\) expands every equal-scale radius by \(Z\). -/
 theorem Z_expands_layerRadius {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
     layerRadius (Z * ℓ) x = Z * layerRadius ℓ x := by
   unfold layerRadius
@@ -455,7 +393,6 @@ theorem nodeSlopeHi_pos : 0 < nodeSlopeHi := by
   refine mul_pos (mul_pos (by norm_num) (cosh_pos _)) ?_
   exact sin_pos_of_mem_Ioo ⟨by positivity, by linarith [pi_gt_three]⟩
 
-/-- On \((\pi/4,1)\) the derivative sits strictly between the two slopes. -/
 theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) 1) :
     -nodeSlopeHi < deriv gammaSEqual ξ ∧ deriv gammaSEqual ξ < -nodeSlopeLo := by
   rw [deriv_gammaSEqual]
@@ -489,7 +426,6 @@ theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) 1) 
   · unfold nodeSlopeLo
     linarith
 
-/-- The coefficient of \(\varepsilon\) in \(|\gamma_s|\) at the first node. -/
 theorem firstNode_eps_coeff_bounds :
     (π / (2 * sqrt 2)) * cosh (π / 4) <
       resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) ∧
@@ -536,7 +472,6 @@ theorem gammaSEqual_pos_of_lt_firstNode {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < res
   · simp [gammaSEqual_zero]
   · exact gammaSEqual_pos_left_of_first_node ⟨hx, hx1⟩
 
-/-- Simple-zero comparison on the approach to the first node. -/
 theorem gammaSEqual_linear_firstNode {x : ℝ} (hx : x ∈ Ico (π / 4) resonanceRoot1) :
     nodeSlopeLo * (resonanceRoot1 - x) < gammaSEqual x ∧
       gammaSEqual x < nodeSlopeHi * (resonanceRoot1 - x) := by
@@ -585,7 +520,6 @@ private theorem continuousOn_inv_slope_gap {c d a b : ℝ} (hc : 0 < c)
     (continuousOn_const.mul (continuousOn_const.sub continuousOn_id))
     fun x hx => (mul_pos hc (hgap x hx)).ne'
 
-/-- The layer integral of \(1/\gamma_s\) grows exactly like a logarithm. -/
 theorem firstNode_layer_integral_log_bounds {a b : ℝ} (ha : π / 4 ≤ a) (hab : a < b)
     (hb : b < resonanceRoot1) :
     (1 / nodeSlopeHi) * log ((resonanceRoot1 - a) / (resonanceRoot1 - b)) ≤
@@ -637,7 +571,6 @@ theorem firstNode_layer_integral_log_bounds {a b : ℝ} (ha : π / 4 ≤ a) (hab
   · rw [hfactorLo, hlog] at hmonoLo
     exact hmonoLo
 
-/-- Approaching the first node, the layer integral of \(1/\gamma_s\) is unbounded. -/
 theorem firstNode_layer_integral_unbounded {a : ℝ} (ha : π / 4 ≤ a) (ha1 : a < resonanceRoot1) :
     ∀ C : ℝ, ∃ b, a < b ∧ b < resonanceRoot1 ∧
       C < ∫ x in a..b, (1 / gammaSEqual x) := by
@@ -699,8 +632,6 @@ private theorem coulomb_layer_integrand {k e lam x : ℝ} (hx : x ≠ 0) (hlam :
   have hx2 : x ^ 2 ≠ 0 := pow_ne_zero 2 hx
   field_simp [hx, hlam, hγ, hx2]
 
-/-- Moving inward in an equal-scale Coulomb layer drops the potential by a
-positive multiple of \(\int dx/\gamma_s\). The multiple is \(2ke^2/\lambda\). -/
 theorem coulomb_potential_increment {k e lam a b : ℝ} (hlam : 0 < lam) (ha : 0 < a) (hab : a ≤ b)
     (hγ : ∀ x ∈ Icc a b, gammaSEqual x ≠ 0) :
     (∫ r in lam / (2 * a)..lam / (2 * b),
@@ -762,8 +693,6 @@ theorem coulomb_potential_increment {k e lam a b : ℝ} (hlam : 0 < lam) (ha : 0
     exact hpoint x (uIcc_of_le hab ▸ hx)
   rw [← hsub, hint, intervalIntegral.integral_const_mul]
 
-/-- In the outer attractive layer the equal-scale Coulomb potential falls
-without a lower bound as the first node is approached. -/
 theorem coulomb_potential_unbounded_below {k e lam a : ℝ} (hk : 0 < k) (he : e ≠ 0)
     (hlam : 0 < lam) (ha : π / 4 ≤ a) (ha1 : a < resonanceRoot1) :
     ∀ C : ℝ, ∃ b, a < b ∧ b < resonanceRoot1 ∧

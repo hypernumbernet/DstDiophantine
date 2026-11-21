@@ -8,9 +8,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Real dimension of the commuting left ideal
 
-Right multiplication by the commuting square-\(+1\) generators \(e_1\) and
-\(e_0e_2\) cuts \(G(3,1,1)\) down to an \(8\)-dimensional principal left
-ideal. Irreducibility as a spinor module is not claimed.
+Right multiplication by `e₁` and `e₀e₂` cuts `G(3,1,1)` down to an 8-dimensional principal left ideal. Irreducibility as a spinor module is not claimed.
 -/
 
 namespace DstDiophantine
@@ -41,7 +39,6 @@ private theorem mem_ker_add_id {M : Type*} [AddCommGroup M] [Module ℝ M]
   eq_neg_of_add_eq_zero_left (show φ x + x = 0 from by
     simpa only [LinearMap.add_apply, LinearMap.id_apply] using mem_ker.mp h)
 
-/-- For an involution \(\varphi\), the \(\pm 1\) eigenspaces are complementary. -/
 private theorem involution_isCompl {M : Type*} [AddCommGroup M] [Module ℝ M]
     {φ : M →ₗ[ℝ] M} (hφ : φ.comp φ = LinearMap.id) :
     IsCompl (ker (φ - LinearMap.id)) (ker (φ + LinearMap.id)) := by
@@ -290,7 +287,6 @@ noncomputable def rightBoost03_hypPlusToMinus :
       rw [hanti, hx, neg_add_cancel]⟩
   invFun y :=
     ⟨rightBoost03OnE1Plus y.1, by
-      -- R03² = +1, so the same map swaps the ± eigenspaces of R_h
       apply mem_ker.mpr
       change rightHyp1OnE1Plus (rightBoost03OnE1Plus y.1) - rightBoost03OnE1Plus y.1 = 0
       have hy := mem_ker_add_id (φ := rightHyp1OnE1Plus) y.2
@@ -466,7 +462,6 @@ noncomputable def leftIdealEquivDoublePlus :
     apply Subtype.ext
     rfl
 
-/-- Real dimension of the commuting left ideal is exactly \(8\). -/
 theorem finrank_leftIdeal_commuting :
     finrank ℝ (leftIdealSub commutingSpinorIdem) = 8 := by
   rw [LinearEquiv.finrank_eq leftIdealEquivDoublePlus]

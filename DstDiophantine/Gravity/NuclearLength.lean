@@ -11,38 +11,7 @@ set_option linter.style.native false
 /-!
 # Laboratory caps on the nuclear length
 
-## Paper boundary (do **not** claim)
-
-The paper defines the channel length by the sign-reversal scale,
-`ℓ = 2 x₁ r₁`, in `SignReversal`. This module compares the separate
-hypothesis `ℓ = λ_π` with the laboratory caps. The caps place a length
-between `56/75` fm and `19/10` fm. The core radii `2/5` fm and `1/2` fm,
-the attractive radius `1` fm, the saturation density, and the charge-radius
-lower edges are external inputs. Nothing here produces a binding energy, a
-scattering length, or an identification of a charge radius with a pair
-separation. The hypothesis `ℓ = λ_π` is not a derivation of `ℓ`, and it is
-not the definition used by the strong-interaction note. It is not the
-mass ratio `channelMassRatio` of `SignReversal`, which uses the
-sign-reversal scale and the proton Compton length and does not use a
-pion mass.
-
-## What is proved
-
-* A slow separation that repels lies inside the first node, so
-  `ℓ > (28/15) r`. At the interior core radius `2/5` fm this is
-  `ℓ > 56/75` fm.
-* A slow separation that attracts lies in the outer well, so
-  `ℓ < (19/10) r`. At `1` fm this is `ℓ < 19/10` fm.
-* A widening by one fifth still leaves both `2/5` fm and `1/2` fm inside
-  `1` fm.
-* `56/75 < λ_π < 19/10`.
-* Under `ℓ = λ_π` the first node lies in `(14/19, 213/280)` fm, hence
-  strictly above `1/2` fm and strictly below `1` fm. The second node lies
-  strictly below `1/2` fm, so the core scale lies in the inversion layer.
-* The rapidity wall `2λ_π/π` lies in `(8/9, 142/157)` fm, hence strictly
-  below `1` fm. The attractive radius, the saturation spacing, and each
-  charge-radius lower edge lie outside that wall.
-* The cap from the saturation spacing is weaker than the cap from `1` fm.
+The hypothesis `ℓ = λ_π` is compared with laboratory caps that place a length between `56/75` fm and `19/10` fm. That hypothesis is not a derivation of `ℓ`, and it is not `SignReversal.channelMassRatio`.
 -/
 
 namespace DstDiophantine
@@ -53,8 +22,7 @@ open Real Set SI
 
 /-! ### Sign caps -/
 
-/-- Repulsion at a slow separation `r` places `r` inside the first node, so
-`ℓ > (28/15) r`. -/
+/-- Repulsion at a slow separation `r` places `r` inside the first node, so `ℓ > (28/15) r`. -/
 theorem repulsive_separation_ell_gt {ℓ r : ℝ} (hr : 0 < r)
     (hrep : r < ℓ / (2 * resonanceRoot1)) :
     (28 / 15) * r < ℓ := by

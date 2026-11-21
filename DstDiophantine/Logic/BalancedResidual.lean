@@ -2,11 +2,9 @@ import DstDiophantine.Logic.MotorProp
 import DstDiophantine.Algebra.Amplification
 
 /-!
-# Phase 7r L3: balanced residual class
+# Balanced residual class
 
-`BalancedResidualClass` packages `IsBalancedMassive` as the seat that
-continuous / winding no-go miss. Mutually exclusive with window seeds
-(pure hyperbolic, height in `(0,1)`). No `Theorems` import; no new arithmetic.
+`BalancedResidualClass` is `IsBalancedMassive`, exclusive of window seeds. No new arithmetic.
 -/
 
 namespace DstDiophantine
@@ -34,7 +32,7 @@ theorem vacuum_not_mem_balancedResidualClass :
 
 /-! ### Window seeds (exclusive) -/
 
-/-- Pure hyperbolic ray with height in `(0,1)` (boost-dominant, label `U`). -/
+/-- Pure hyperbolic ray with rapidity in `(0, 1)`. -/
 def IsWindowSeed (a : Amplitude) : Prop :=
   ∃ t : ℝ, 0 < t ∧ t < 1 ∧ a.params = pureHyperbolicRay t
 
@@ -72,7 +70,6 @@ theorem halfWindowSeed_not_balanced :
     ¬ BalancedResidualClass halfWindowSeed :=
   windowSeed_not_mem_balancedResidualClass halfWindowSeed_isWindowSeed
 
-/-- Admissible scaling of a balanced seat keeps label `T`. -/
 theorem balancedResidual_scale_stays_T {k : ℕ} (hk : 1 ≤ k)
     {a : Amplitude} (ha : BalancedResidualClass a)
     (h : IsAdmissibleContinuous (scaleTorsion (k : ℝ) a.params)) :

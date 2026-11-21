@@ -11,33 +11,9 @@ import Mathlib.Tactic.Ring
 /-!
 # The covalent square
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. Nothing here produces a Bohr spectrum, a
-dissociation energy, or a value of `G`.
-
-## What is proved
-
-* On the square the axial and cylindrical factors reduce to one balance
-  `squareBalance x = γ(√2 x) - 2√2 γ(x)`, with `x = ℓ/(2R)`.
-* That balance is strictly negative throughout the outer well.
-* While the proton separation and the electron separation both lie in the
-  outer well, the midplane pair has no equilibrium at any ratio of those
-  separations. Opposite signs of the two interference factors likewise give
-  no equilibrium.
-* Both forces vanish, with all three factors nonzero, exactly when
-  `γ(R) R³`, `γ(r_ee) r_ee³`, and `γ(r_ep) r_ep³` are equal. While the
-  electron–proton separation lies in the outer well there is no such balance.
-* At every square root the side force is the diagonal force divided by `√2`.
-* The second node lies below `4`. Every square whose diagonal and side both
-  lie in the first repulsive shell therefore has its phase in `(π/4, π)`.
-* On that shell the balance is strictly increasing, and it changes sign between
-  `3/2` and `8/5`. There is exactly one such square, and both interference
-  factors are negative there.
-* On the bracket `(3/2, 8/5)` the common force on the square has the sign of
-  that balance. A larger diagonal is drawn inward and a smaller one is pushed
-  outward, so the root restores the square. The two-variable Hessian is not
-  identified here.
+The square balance is strictly negative throughout the outer well, so there is
+no equilibrium while the diagonal lies there. The length \(\ell\) is not
+derived; no Bohr spectrum, dissociation energy, or value of \(G\) is produced.
 -/
 
 namespace DstDiophantine
@@ -398,8 +374,6 @@ private lemma evenInterval_of_lt_firstNode {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) r
     rw [hzero, zero_add]
     exact htπ.le
 
-/-- Vanishing of both midplane forces forces the interference factors at the
-proton separation and the electron separation to stand in the ratio `s^3`. -/
 theorem midplane_gamma_ratio {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
     (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
     (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
@@ -463,8 +437,6 @@ theorem no_midplane_opposite_gamma {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
     div_neg_iff.mpr (mul_neg_iff.mp hopp)
   linarith
 
-/-- While the proton separation and the electron separation both lie in the
-outer well, the midplane pair has no equilibrium at any aspect ratio. -/
 theorem no_midplane_outer_equilibrium {ℓ R ρ : ℝ}
     (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
     (hRwell : ℓ / (2 * R) ∈ Ioo (0 : ℝ) resonanceRoot1)
@@ -1420,8 +1392,6 @@ theorem covalentAxial_eq_squareForce {ℓ R : ℝ} (hR : 0 < R) :
   rw [covalentAxial_square hR]
   rfl
 
-/-- On `(3/2, 8/5)` the square's diagonal is restored.
-A larger diagonal is drawn inward and a smaller one is pushed outward. -/
 theorem square_diagonal_restores {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
     (hx : ℓ / (2 * R) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
     (hy : ℓ / (2 * S) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
@@ -1528,8 +1498,6 @@ private lemma gamma_quot_inj {a b : ℝ}
   · exact heq
   · exact absurd h (ne_of_lt (gamma_quot_strictAnti hb ha hgt))
 
-/-- Both midplane forces vanish exactly when the three separations carry one
-value of `γ(r) r³`. -/
 theorem covalent_forces_iff_weights {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
     (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
     (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
@@ -1602,8 +1570,6 @@ theorem covalent_forces_iff_weights {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
       have hterms := mul_right_cancel₀ hden hmul
       linarith
 
-/-- While the electron–proton separation lies in the outer well, the midplane
-pair has no equilibrium. -/
 theorem no_midplane_ep_outer {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
     (hEp : ℓ / (2 * sqrt ((R / 2) ^ 2 + ρ ^ 2)) ∈ Ioo (0 : ℝ) resonanceRoot1) :
     ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) := by
@@ -1761,7 +1727,6 @@ theorem no_midplane_ep_outer {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
         nlinarith [one_lt_sqrt_two, hx1]
       linarith [hxEp.2, hle, hbig]
 
-/-- At a square root the side force is the diagonal force divided by `√2`. -/
 theorem square_side_eq_diag_div_sqrtTwo {ℓ R : ℝ} (hR : 0 < R)
     (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
     (_hγs : gammaSEqual (sqrt 2 * (ℓ / (2 * R))) ≠ 0)

@@ -26,17 +26,14 @@ import DstDiophantine.Algebra.UnitGroup
 /-!
 # DST algebraic core barrel
 
-Re-exports the PGA / biquaternion / discrete-torus layer used by the main paper
-and the discrete companion. Diophantine theorems and Gravity chart modules are
-**not** imported here.
+Re-exports the PGA / biquaternion / discrete-torus layer. Diophantine theorems and Gravity chart modules are not imported here.
 -/
 
 namespace DstDiophantine
 
 export PGA (ι e4Index e4_sq_zero e4_anticomm e4_inner_anticomm)
 export Cl31 (ι toPGA toPGA_ι)
--- `Cl91` / `Q91` / `Cl31.toCl91` / finrank facts are available via the import
--- above; they are not re-exported here to avoid clashing with `PGA`/`Cl31` `ι`.
+-- `Cl91` is not re-exported here to avoid clashing with `PGA`/`Cl31` `ι`.
 export LorentzDim (soDim isoDim so31Dim so91Dim so8Dim iso31Dim iso91Dim
   so31Dim_eq so91Dim_eq so8Dim_eq iso31Dim_eq iso91Dim_eq
   so31Dim_ne_so91Dim iso31Dim_ne_iso91Dim
@@ -199,7 +196,6 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
   not_paperVacuumSync_pureBoost J_axisParams_balanced
   axis_rotors_ne_of_bivector J_zero_not_relativeRotor_one)
 
-/-- Regression: normalised Dirichlet kernel is bounded by 1. -/
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=
   abs_dirichletKernel_le_one hN θ
@@ -208,24 +204,20 @@ section
 open Complex Finset
 open scoped BigOperators
 
-/-- Regression: Parseval on the discrete dual circle. -/
 example {N : ℕ} [NeZero N] (f : ZMod N → ℂ) :
     ∑ k, ‖dualCircleFourier f k‖ ^ 2 = (N : ℝ) * ∑ j, ‖f j‖ ^ 2 :=
   dualCircleFourier_parseval f
 
-/-- Regression: shift and clock on the discrete dual circle differ by one character. -/
 example {N : ℕ} [NeZero N] (r s : ZMod N) (f : ZMod N → ℂ) (j : ZMod N) :
     dualCircleClock r (dualCircleShift s f) j =
       dualCircleChar r s * dualCircleShift s (dualCircleClock r f) j :=
   dualCircle_weyl r s f j
 
-/-- Regression: circular convolution multiplies winding by winding. -/
 example {N : ℕ} [NeZero N] (f g : ZMod N → ℂ) (k : ZMod N) :
     dualCircleFourier (dualCircleConv f g) k =
       dualCircleFourier f k * dualCircleFourier g k :=
   dualCircleFourier_conv f g k
 
-/-- Regression: the Dirichlet kernel is the average of centered phases. -/
 example {N : ℕ} [NeZero N] (θ : ℝ) :
     (dirichletKernel N θ : ℂ) =
       (N : ℂ)⁻¹ * ∑ k ∈ range N,
@@ -234,67 +226,55 @@ example {N : ℕ} [NeZero N] (θ : ℝ) :
 
 end
 
-/-- Regression: the relative rotor is the identity iff the two rotors coincide. -/
 example (p : Operations.TorsionParams) :
     relativeRotor p = 1 ↔ rotorDual p = rotorUsual p :=
   relativeRotor_eq_one_iff p
 
-/-- Regression: vanishing \(J\) does not force \(\Omega=1\). -/
 example : ∃ p : Operations.TorsionParams,
     Invariant.J p = 0 ∧ 0 < Invariant.mass p ∧ relativeRotor p ≠ 1 :=
   J_zero_not_relativeRotor_one
 
-/-- Regression: cyclic generators give a \(2\pi\)-periodic exponential. -/
 example (a : Fin 3) :
     NormedSpace.exp ((2 * Real.pi) • hyperbolic a) ≠ (1 : PGA) ∧
       NormedSpace.exp ((2 * Real.pi) • cyclic a) = 1 :=
   ⟨exp_hyperbolic_two_pi_ne_one a, exp_cyclic_two_pi a⟩
 
-/-- Regression: the Banach exponential of a null generator truncates. -/
 example (p : Motor.TransParams) :
     NormedSpace.exp (omegaTrans p) = expTrans p :=
   exp_omegaTrans p
 
-/-- Regression: translators multiply by adding coefficients. -/
 example (p q : Motor.TransParams) :
     expTrans p * expTrans q = expTrans ⟨fun μ => p.lambda μ + q.lambda μ⟩ :=
   expTrans_mul p q
 
-/-- Regression: null translations are ad-invariant under the radial boost. -/
 example (μ : Fin 4) :
     commutator (hyperbolic 0) (null μ) ∈
       Submodule.span ℝ (Set.range (null : Fin 4 → PGA)) :=
   commutator_hyperbolic0_null_mem_span μ
 
-/-- Regression: every null generator is nonzero. -/
 example (μ : Fin 4) : null μ ≠ 0 :=
   null_ne_zero μ
 
-/-- Regression: axis-1 rotation of the integer and cyclic-plane translators. -/
 example :
     commutator (cyclic 1) (null 1) = (-2 : ℝ) • null 3 ∧
       commutator (cyclic 1) (null 3) = (2 : ℝ) • null 1 :=
   ⟨commutator_cyclic1_null1, commutator_cyclic1_null3⟩
 
-/-- Regression: a pure boost conjugates a translator to a translator. -/
 example (φ : ℝ) (p : Motor.TransParams) :
     sandwich (rotorTorsion (pureBoost φ)) (expTrans p) =
       expTrans ⟨boostConjLambda φ p.lambda⟩ :=
   sandwich_pureBoost_expTrans φ p
 
-/-- Regression: commuting torsion and translation give \(\exp(\Omega_{\mathrm{biv}})=RT\). -/
 example (p : Motor.OmegaParams)
     (h : Commute (omegaTorsion p.torsion) (omegaTrans p.trans)) :
     NormedSpace.exp (omegaBiv p) = motor p :=
   exp_omegaBiv_eq_motor_of_commute p h
 
-/-- Regression: every Lorentz–null bracket remains translational. -/
 example (a : Fin 3) (μ : Fin 4) :
     commutator (hyperbolic a) (null μ) ∈ nullSpan ∧
       commutator (cyclic a) (null μ) ∈ nullSpan :=
   ⟨commutator_hyperbolic_null_mem_span a μ, commutator_cyclic_null_mem_span a μ⟩
 
-/-- Regression: same-axis Lorentz generators commute; adjacent axes close. -/
 example (a : Fin 3) :
     commutator (hyperbolic a) (hyperbolic a) = 0 ∧
       commutator (cyclic a) (cyclic (a + 1)) = (2 : ℝ) • cyclic (a + 2) ∧
@@ -306,8 +286,6 @@ example (a : Fin 3) :
   · simp [commutator_cyclic_cyclic, hne]
   · simp [commutator_hyperbolic_cyclic, hne]
 
-/-- Regression: the Lorentz span and the Poincaré span are closed under the bracket,
-and the null span is an abelian ideal of the latter. -/
 example {x y : PGA} (hx : x ∈ poincareSpan) (hy : y ∈ poincareSpan) (hn : y ∈ nullSpan) :
     commutator x y ∈ poincareSpan ∧ commutator x y ∈ nullSpan :=
   ⟨commutator_mem_poincareSpan hx hy, commutator_poincare_null_mem_nullSpan hx hn⟩
@@ -316,8 +294,6 @@ example {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
     commutator x y ∈ lorentzSpan :=
   commutator_mem_lorentzSpan hx hy
 
-/-- Regression: duality is a complex structure on the Lorentz sector and the bracket is
-complex-bilinear for it; hence boosts bracket to minus the rotation bracket. -/
 example {x y : PGA} (hx : x ∈ lorentzSpan) (hy : y ∈ lorentzSpan) :
     dual (dual x) = -x ∧ dual x ∈ lorentzSpan ∧
       commutator (dual x) (dual y) = -commutator x y :=
@@ -328,69 +304,54 @@ example (a : Fin 3) :
   have hne : a ≠ a + 1 := by fin_cases a <;> decide
   simp [commutator_hyperbolic_hyperbolic_cyclic, hne]
 
-/-- Regression: every Lorentz element is a rotation plus a dualised rotation. -/
 example {x : PGA} (hx : x ∈ lorentzSpan) :
     ∃ u ∈ cyclicSpan, ∃ v ∈ cyclicSpan, x = u + dual v :=
   mem_lorentzSpan_iff.mp hx
 
-/-- Regression: duality acts on torsion parameters as the quarter-turn `(α,β) ↦ (β,-α)`,
-reversing `J` and preserving the mass. -/
 example (p : Operations.TorsionParams) :
     dual (omegaTorsion p) = omegaTorsion (dualParams p) ∧
       Invariant.J (dualParams p) = -Invariant.J p ∧
         Invariant.mass (dualParams p) = Invariant.mass p :=
   ⟨dual_omegaTorsion p, J_dualParams p, mass_dualParams p⟩
 
-/-- Regression: boost scalars on every axis commute. -/
 example (a : Fin 3) (x y : ℝ) :
     (x • hyperbolic a) * (y • hyperbolic a) =
       (y • hyperbolic a) * (x • hyperbolic a) :=
   hyperbolic_smul_mul a x y
 
-/-- Regression: mixed motors are not the Banach exponential of \(\Omega_{\mathrm{biv}}\). -/
 example : ∃ p : Motor.OmegaParams, NormedSpace.exp (omegaBiv p) ≠ motor p :=
   exists_omegaBiv_ne_motor
 
-/-- Regression: the ordered product and the second-order BCH exponential share a 2-jet. -/
 example (p : Motor.OmegaParams) :
     motorPath p 0 = bch2Path p 0 ∧
       deriv (motorPath p) 0 = deriv (bch2Path p) 0 ∧
       iteratedDeriv 2 (motorPath p) 0 = iteratedDeriv 2 (bch2Path p) 0 :=
   motor_bch2_jet p
 
-/-- Regression: the ordered product and the third-order BCH exponential share a 3-jet. -/
 example (p : Motor.OmegaParams) :
     iteratedDeriv 3 (motorPath p) 0 = iteratedDeriv 3 (bch3Path p) 0 :=
   (motor_bch3_jet p).2.2.2
 
-/-- Regression: conjugation by `exp(tΩ)` is `exp(t · ad Ω)`; hence `ad`-invariant subspaces
-are invariant under the sandwich. -/
 example (Ω x : PGA) (t : ℝ) :
     NormedSpace.exp (t • Ω) * x * NormedSpace.exp ((-t) • Ω) =
       NormedSpace.exp (t • adL Ω) x :=
   exp_smul_mul_mul_exp_neg_smul Ω x t
 
-/-- Regression: every torsion rotor conjugates a null translator to a null translator,
-and a torsion rotor to a torsion rotor. -/
 example (t : Operations.TorsionParams) (p : Motor.TransParams) (s : Operations.TorsionParams) :
     (∃ q : Motor.TransParams, sandwich (rotorTorsion t) (expTrans p) = expTrans q) ∧
       ∃ s' : Operations.TorsionParams,
         sandwich (rotorTorsion t) (rotorTorsion s) = rotorTorsion s' :=
   ⟨exists_sandwich_rotorTorsion_expTrans t p, exists_sandwich_rotorTorsion_rotorTorsion t s⟩
 
-/-- Regression: the motor product law in semidirect form. -/
 example (p q : Motor.OmegaParams) :
     ∃ r : Motor.TransParams,
       motor p * motor q = rotorTorsion p.torsion * rotorTorsion q.torsion * expTrans r :=
   exists_motor_mul p q
 
-/-- Regression: powers of a mixed motor amplify only through the torsion rotor. -/
 example (p : Motor.OmegaParams) (n : ℕ) :
     ∃ r : Motor.TransParams, motor p ^ n = rotorTorsion p.torsion ^ n * expTrans r :=
   exists_motor_pow p n
 
-/-- Regression: `exp(Ω_biv)` is a motor with the same rotor and a dressed translation, and
-the dressed translation differs from `Ω_trans` in general. -/
 example (p : Motor.OmegaParams) :
     ∃ q : Motor.TransParams,
       NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q :=
@@ -400,13 +361,11 @@ example : ∃ (p : Motor.OmegaParams) (q : Motor.TransParams),
     NormedSpace.exp (omegaBiv p) = rotorTorsion p.torsion * expTrans q ∧ q ≠ p.trans :=
   exists_dressed_translation_ne
 
-/-- Regression: same-axis boost/rotation scalars commute on every axis. -/
 example (a : Fin 3) (x y : ℝ) :
     (x • hyperbolic a) * (y • cyclic a) = (y • cyclic a) * (x • hyperbolic a) ∧
       (x • cyclic a) * (y • cyclic a) = (y • cyclic a) * (x • cyclic a) :=
   ⟨hyperbolic_smul_cyclic_smul_same a x y, cyclic_smul_mul a x y⟩
 
-/-- Regression: the sandwich 2-jet at the identity is the nested bracket. -/
 example {Ω : PGA} (hΩ : CliffordAlgebra.reverse Ω = -Ω) (x : PGA) :
     iteratedDeriv 2 (fun s : ℝ => sandwich (NormedSpace.exp (s • Ω)) x) 0 =
       commutator Ω (commutator Ω x) :=

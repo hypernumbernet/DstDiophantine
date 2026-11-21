@@ -4,20 +4,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 /-!
 # Electromagnetic coupling of the Dirac field
 
-Minimal coupling `D_μ = ∂_μ - i e A_μ` gives `γ^μ D_μ Ψ = -m Ψ`. Solutions are
-carried to solutions by `Ψ ↦ e^{i e χ} Ψ`, `A ↦ A + ∂χ`; in a constant
-potential a plane wave solves the coupled equation exactly when its amplitude
-solves the free equation at the kinetic momentum `p - e a`. The current is
-gauge invariant and conserved for real mass, charge, and potential.
-
-For a twice-differentiable spinor `[D_μ, D_ν] = -i e F_{μν}`, so every
-solution obeys `η^{μμ} D_μ D_μ Ψ - (i e / 2) F_{μν} γ^μ γ^ν Ψ = m² Ψ`. In the
-Weyl blocks the field-strength term is `e σ·(B + iE)` above and
-`e σ·(B - iE)` below, with `B = (F₂₃, F₃₁, F₁₂)` and `E_k = F_{k0}`. Since
-`σ·B = i Γ(B)` with `Γ` the dual generators, the magnetic field enters both
-blocks through the same dual-rotor generator. At zero charge the equation is
-the Klein–Gordon equation. A Hamiltonian `½ ω·σ` evolves a dual spinor by the
-dual rotor of rapidity `t ω`.
+Minimal coupling gives `γ^μ D_μ Ψ = -m Ψ`, and `[D_μ, D_ν] = -i e F_{μν}`. The magnetic field enters both Weyl blocks through the same dual-rotor generator.
 -/
 
 namespace DstDiophantine
@@ -40,8 +27,7 @@ noncomputable def gaugeDiracOp (e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → Dira
     (x : Vec4) : DiracSpinor :=
   ∑ μ : Fin 4, applyDiracMat (diracMat μ) (covD e A Ψ μ x)
 
-/-- Dirac equation in a potential, `γ^μ (∂_μ - i e A_μ) Ψ = -m Ψ`: the image of
-`γ(p - eA) Ψ = i m Ψ` under `p_μ ↦ -i ∂_μ`. -/
+/-- `γ^μ (∂_μ - i e A_μ) Ψ = -m Ψ`. -/
 def DiracGaugeField (m e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → DiracSpinor) : Prop :=
   Differentiable ℝ Ψ ∧ ∀ x, gaugeDiracOp e A Ψ x = (-(m : ℂ)) • Ψ x
 
@@ -53,7 +39,6 @@ theorem gaugeDiracOp_eq (e : ℝ) (A : Vec4 → Vec4) (Ψ : Vec4 → DiracSpinor
     applyDiracMat_sub, applyDiracMat_smul, ofReal_mul]
   module
 
-/-- Without a potential the coupled equation is the free equation. -/
 theorem diracGaugeField_zero (m e : ℝ) (Ψ : Vec4 → DiracSpinor) :
     DiracGaugeField m e 0 Ψ ↔ DiracField m Ψ := by
   have h : ∀ x, gaugeDiracOp e 0 Ψ x = diracOp Ψ x := fun x => by
@@ -97,7 +82,6 @@ theorem partialD_gaugePhase (e : ℝ) {χ : Vec4 → ℝ} {Ψ : Vec4 → DiracSp
   push_cast
   ring_nf
 
-/-- Gauge covariance of the covariant derivative. -/
 theorem covD_gauge (e : ℝ) (A : Vec4 → Vec4) {χ : Vec4 → ℝ} {Ψ : Vec4 → DiracSpinor}
     {x : Vec4} (hχ : DifferentiableAt ℝ χ x) (hΨ : DifferentiableAt ℝ Ψ x) (μ : Fin 4) :
     covD e (gaugePot A χ) (gaugePhase e χ Ψ) μ x =
@@ -108,7 +92,6 @@ theorem covD_gauge (e : ℝ) (A : Vec4 → Vec4) {χ : Vec4 → ℝ} {Ψ : Vec4 
   push_cast
   module
 
-/-- Gauge covariance of the coupled Dirac equation. -/
 theorem diracGaugeField_gauge {m e : ℝ} {A : Vec4 → Vec4} {χ : Vec4 → ℝ}
     {Ψ : Vec4 → DiracSpinor} (hχ : Differentiable ℝ χ) (hΨ : DiracGaugeField m e A Ψ) :
     DiracGaugeField m e (gaugePot A χ) (gaugePhase e χ Ψ) := by
@@ -128,9 +111,6 @@ theorem slashMat_sub_smul (p a : Vec4) (e : ℝ) :
   simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, ofReal_sub, ofReal_mul, sub_smul,
     Finset.sum_sub_distrib, Finset.smul_sum, smul_smul]
 
-/-- In a constant potential a plane wave of momentum `p` solves the coupled
-equation exactly when its amplitude solves the momentum-space equation at the
-kinetic momentum `p - e a`. -/
 theorem diracGaugeField_planeWave_iff (m e : ℝ) (a p : Vec4) (u : DiracSpinor) :
     DiracGaugeField m e (fun _ => a) (planeWave p u) ↔ DiracMomentum m (p - e • a) u := by
   have hop : ∀ x, gaugeDiracOp e (fun _ => a) (planeWave p u) x =
@@ -166,7 +146,6 @@ theorem diracGaugeField_planeWave_iff (m e : ℝ) (a p : Vec4) (u : DiracSpinor)
 
 /-! ### Current in a potential -/
 
-/-- The current is gauge invariant. -/
 theorem currentField_gaugePhase (e : ℝ) (χ : Vec4 → ℝ) (Ψ Φ : Vec4 → DiracSpinor)
     (μ : Fin 4) (x : Vec4) :
     currentField (gaugePhase e χ Ψ) (gaugePhase e χ Φ) μ x = currentField Ψ Φ μ x := by
@@ -178,8 +157,6 @@ theorem currentField_gaugePhase (e : ℝ) (χ : Vec4 → ℝ) (Ψ Φ : Vec4 → 
     simp [Complex.conj_ofReal]
   rw [h, one_mul]
 
-/-- Continuity equation in a real potential: for two differentiable solutions
-of the same mass and charge the current is conserved. -/
 theorem currentField_conserved_gauge {m e : ℝ} {A : Vec4 → Vec4} {Ψ Φ : Vec4 → DiracSpinor}
     (hΨ : DiracGaugeField m e A Ψ) (hΦ : DiracGaugeField m e A Φ) (x : Vec4) :
     ∑ μ : Fin 4, fderiv ℝ (currentField Ψ Φ μ) x (Pi.single μ 1) = 0 := by
@@ -302,8 +279,6 @@ theorem partialD_covD (e : ℝ) {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
   push_cast
   module
 
-/-- Covariant derivatives commute up to the field strength:
-`[D_μ, D_ν] Ψ = -i e F_{μν} Ψ`. -/
 theorem covD_comm (e : ℝ) {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ : ContDiff ℝ 2 Ψ) (μ ν : Fin 4) (x : Vec4) :
     covD e A (covD e A Ψ ν) μ x - covD e A (covD e A Ψ μ) ν x =
@@ -334,7 +309,6 @@ theorem covD_sum_mat (e : ℝ) (A : Vec4 → Vec4) (Mν : Fin 4 → Matrix (Fin 
   simp only [_root_.sum_apply, ContinuousLinearMap.comp_apply, diracCLM_apply,
     applyDiracMat_sub, applyDiracMat_smul, Finset.smul_sum, Finset.sum_sub_distrib]
 
-/-- `(γ^μ D_μ)² Ψ = Σ_{μν} γ^μ γ^ν D_μ D_ν Ψ`. -/
 theorem gaugeDiracOp_sq (e : ℝ) {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ : ContDiff ℝ 2 Ψ) (x : Vec4) :
     gaugeDiracOp e A (gaugeDiracOp e A Ψ) x =
@@ -350,8 +324,6 @@ theorem gaugeDiracOp_sq (e : ℝ) {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor
   conv_lhs => rw [gaugeDiracOp]
   simp only [hcs, applyDiracMat_finset_sum, applyDiracMat_mul]
 
-/-- Clifford split of a double sum: the symmetric part is the Minkowski
-contraction, the antisymmetric part is carried by the bivectors. -/
 theorem clifford_double_sum (X : Fin 4 → Fin 4 → DiracSpinor) :
     ∑ μ : Fin 4, ∑ ν : Fin 4, applyDiracMat (diracMat μ * diracMat ν) (X μ ν) =
       ∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • X μ μ +
@@ -388,8 +360,6 @@ theorem clifford_double_sum (X : Fin 4 → Fin 4 → DiracSpinor) :
 noncomputable def fieldMat (F : Fin 4 → Fin 4 → ℝ) : Matrix (Fin 4) (Fin 4) ℂ :=
   ∑ μ : Fin 4, ∑ ν : Fin 4, (F μ ν : ℂ) • (diracMat μ * diracMat ν)
 
-/-- Second-order coupled equation operator:
-`(γ^μ D_μ)² = η^{μμ} D_μ D_μ - (i e / 2) F_{μν} γ^μ γ^ν`. -/
 theorem gaugeDiracOp_sq_eq (e : ℝ) {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ : ContDiff ℝ 2 Ψ) (x : Vec4) :
     gaugeDiracOp e A (gaugeDiracOp e A Ψ) x =
@@ -415,8 +385,6 @@ theorem gaugeDiracOp_smul (e : ℝ) (A : Vec4 → Vec4) {Ψ : Vec4 → DiracSpin
   rw [gaugeDiracOp_eq, gaugeDiracOp_eq, diracOp_smul hΨ, Pi.smul_apply, applyDiracMat_smul]
   module
 
-/-- Every twice-differentiable solution in a differentiable potential obeys the
-second-order equation `η^{μμ} D_μ D_μ Ψ - (i e/2) F_{μν} γ^μ γ^ν Ψ = m² Ψ`. -/
 theorem diracGaugeField_second_order {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracGaugeField m e A Ψ)
     (x : Vec4) :
@@ -443,14 +411,12 @@ def elecVec (F : Fin 4 → Fin 4 → ℝ) : Fin 3 → ℝ
   | 1 => F 2 0
   | 2 => F 3 0
 
-/-- Upper Weyl block of a bivector `γ^μ γ^ν`. -/
 theorem diracUpper_gamma_pair (μ ν : Fin 4) (Ψ : DiracSpinor) :
     diracUpper (applyDiracMat (diracMat μ * diracMat ν) Ψ) =
       applyMat (pauliSlash (Pi.single μ 1) * pauliSlashBar (Pi.single ν 1)) (diracUpper Ψ) := by
   rw [applyDiracMat_mul, ← slashMat_single μ, ← slashMat_single ν, diracUpper_slash,
     diracLower_slash, applyMat_mul]
 
-/-- Lower Weyl block of a bivector `γ^μ γ^ν`. -/
 theorem diracLower_gamma_pair (μ ν : Fin 4) (Ψ : DiracSpinor) :
     diracLower (applyDiracMat (diracMat μ * diracMat ν) Ψ) =
       applyMat (pauliSlashBar (Pi.single μ 1) * pauliSlash (Pi.single ν 1)) (diracLower Ψ) := by
@@ -479,7 +445,6 @@ theorem diracLower_fieldMat (F : Fin 4 → Fin 4 → ℝ) (Ψ : DiracSpinor) :
   simp only [applyDiracMat_finset_sum_mat, applyDiracMat_smul_mat, diracLower_finset_sum,
     diracLower_smul, diracLower_gamma_pair, applyMat_finset_sum_mat, applyMat_smul_mat]
 
-/-- Upper block: `-(i e/2) F_{μν} s_μ s̄_ν = e (σ·B + i σ·E)`. -/
 theorem fieldUpper_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -F ν μ) (e : ℝ) :
     (-(I * (e : ℂ) / 2)) • fieldUpper F =
       (e : ℂ) • (pauliComb (magVec F) + I • pauliComb (elecVec F)) := by
@@ -501,7 +466,6 @@ theorem fieldUpper_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -
   push_cast
   match_scalars <;> (try ring_nf) <;> (try simp only [I_sq]) <;> (try ring)
 
-/-- Lower block: `-(i e/2) F_{μν} s̄_μ s_ν = e (σ·B - i σ·E)`. -/
 theorem fieldLower_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -F ν μ) (e : ℝ) :
     (-(I * (e : ℂ) / 2)) • fieldLower F =
       (e : ℂ) • (pauliComb (magVec F) - I • pauliComb (elecVec F)) := by
@@ -523,8 +487,6 @@ theorem fieldLower_eq (F : Fin 4 → Fin 4 → ℝ) (hF : ∀ μ ν, F μ ν = -
   push_cast
   match_scalars <;> (try ring_nf) <;> (try simp only [I_sq]) <;> (try ring)
 
-/-- Upper Weyl block of the second-order equation: the magnetic field couples
-through `e σ·B`, the electric field through `i e σ·E`. -/
 theorem diracGaugeField_pauli_upper {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracGaugeField m e A Ψ)
     (x : Vec4) :
@@ -537,8 +499,6 @@ theorem diracGaugeField_pauli_upper {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 �
   rw [← fieldUpper_eq _ (fieldStrength_antisymm A x), applyMat_smul_mat, ← h]
   module
 
-/-- Lower Weyl block of the second-order equation: the same magnetic matrix
-`e σ·B`, the opposite electric term `-i e σ·E`. -/
 theorem diracGaugeField_pauli_lower {m e : ℝ} {A : Vec4 → Vec4} {Ψ : Vec4 → DiracSpinor}
     (hA : Differentiable ℝ A) (hΨ2 : ContDiff ℝ 2 Ψ) (hΨ : DiracGaugeField m e A Ψ)
     (x : Vec4) :
@@ -556,8 +516,6 @@ theorem covD_charge_zero (A : Vec4 → Vec4) (Ψ : Vec4 → DiracSpinor) (μ : F
   funext y
   simp [covD]
 
-/-- Klein–Gordon: every component of a twice-differentiable free solution obeys
-`η^{μμ} ∂_μ ∂_μ Ψ = m² Ψ`. -/
 theorem diracField_kleinGordon {m : ℝ} {Ψ : Vec4 → DiracSpinor} (hΨ2 : ContDiff ℝ 2 Ψ)
     (hΨ : DiracField m Ψ) (x : Vec4) :
     ∑ μ : Fin 4, (minkowskiEta μ μ : ℂ) • partialD (fun y => partialD Ψ μ y) μ x =
@@ -573,8 +531,6 @@ section Precession
 
 attribute [local instance] Matrix.linftyOpNormedRing Matrix.linftyOpNormedAlgebra
 
-/-- `t ↦ U(t ω) u` solves `i u' = ½ (ω·σ) u`: a spin Hamiltonian linear in
-the Pauli matrices generates a dual rotor whose rapidity grows linearly. -/
 theorem hasDerivAt_dualRotor_ray (ω : DualRapidity) (u : DualSpinor) (t : ℝ) :
     HasDerivAt (fun s : ℝ => applyMat (dualRotorMat (s • ω)) u)
       ((-(I / 2)) • applyMat (pauliComb (fun a => ω a)) (applyMat (dualRotorMat (t • ω)) u))

@@ -1,10 +1,9 @@
 import DstDiophantine.Algebra.LorentzDim
 
 /-!
-# Massless string spectrum labels (ℕ counts only)
+# Massless string spectrum labels
 
-Textbook SO(8) little-group dimensions and heterotic gauge adjoint dimensions.
-No worldsheet, no GSO derivation, no root-system construction.
+Textbook `SO(8)` little-group dimensions and heterotic adjoint dimensions, as bare `ℕ` counts. No worldsheet, no GSO derivation, and no root system.
 -/
 
 namespace DstDiophantine
@@ -64,7 +63,6 @@ theorem superPoincareN1_ne_pgaGenerators :
   rw [superPoincareN1Dim_eq, LorentzDim.pgaGeneratorCount_eq]
   decide
 
-/-- Light-cone `8_v + 8_s` versus DST torsion-parameter count `6`. -/
 theorem lightCone_ne_dstGenerators : eightV + eightS ≠ 6 :=
   LorentzDim.lightCone_ne_torsionGenerators
 

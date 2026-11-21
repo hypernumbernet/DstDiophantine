@@ -7,22 +7,7 @@ import Mathlib.Tactic.Ring
 /-!
 # The rest-mass coefficient, read at equal rapidity
 
-An equal-rapidity state is critical for both the stiffness potential and
-the unsigned mass. A pure lag `δ` adds `δ²/4` to the unsigned mass at every
-common rapidity, and adds `(m/2)δ²` to the potential. The second difference
-of the mass in that lag is `1/2`, and the second difference of the potential
-is `m`. The kinetic term is `J` on the angular velocity, and its cross
-coefficient is that same `1/2`. The common acceleration per unit lag is
-minus the ratio of the two coefficients of `δ²`.
-
-The quotient of the potential by twice the transverse unsigned mass — the
-excess of `M` over the equal-rapidity state of the same sums — equals `m`
-at every configuration that is not itself of equal rapidity, and does not
-depend on which state is used.
-
-The Jacobi integral along an equal-rapidity motion is zero, so the
-coefficient is not an energy of that state and not the unsigned mass
-sitting there. The value of `m` is not fixed.
+An equal-rapidity state is critical for the stiffness potential and the unsigned mass, and a pure lag adds `δ²/4` to the mass. The Jacobi integral along an equal-rapidity motion is zero, so `m` is not an energy of that state and is not fixed.
 -/
 
 namespace DstDiophantine
@@ -73,7 +58,6 @@ theorem transverseMass_ne_of_lag {p : Operations.TorsionParams} (h : lagSq p ≠
   rw [transverseMass_eq]
   exact mul_ne_zero (by norm_num) h
 
-/-- Off equal rapidity, `m` is the potential divided by twice the transverse mass. -/
 theorem stiffness_quotient {m : ℝ} {p : Operations.TorsionParams} (h : lagSq p ≠ 0) :
     stiffnessPotential m p / transverseMass p = 2 * m := by
   rw [stiffness_eq_transverse]
@@ -126,14 +110,12 @@ theorem lagSecond_ratio_eq {m φ δ : ℝ} (hδ : δ ≠ 0) :
   rw [lagPotentialSecond_eq hδ, lagMassSecond_eq hδ]
   field_simp
 
-/-- The kinetic cross coefficient equals the mass second difference. -/
 theorem mixed_coeff_eq_lagMassSecond (m φ θ φdot θdot φ₀ δ : ℝ) (hδ : δ ≠ 0) :
     paperLagrangian m φ θ φdot θdot =
       lagMassSecond φ₀ δ * (φdot + θdot) * (φdot - θdot) -
         (m / 2) * (φ - θ) ^ 2 := by
   rw [paperLagrangian_eq_mixed, lagMassSecond_eq hδ]
 
-/-- Common acceleration per unit lag is minus the ratio of the second differences. -/
 theorem common_accel_eq_lagSecond_ratio {m φ θ φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) (hδ : φ - θ ≠ 0) :
     (φddot + θddot) / (φ - θ) =

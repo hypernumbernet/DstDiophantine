@@ -8,28 +8,9 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Abel
 
 /-!
-# Dual-rotor character, spinor amplitude, and relative overlap
+# Dual-rotor character and relative overlap
 
-The dual rotor is already an element of \(\mathrm{SU}(2)\). Three
-invariants of that matrix are distinguished here.
-
-* The character \(\operatorname{Tr} R = 2\cos(\lVert\beta\rVert/2)\) is
-  the sum of opposite computational amplitudes, hence real.
-* The spinor matrix element \(\langle\uparrow\rvert R\lvert\uparrow\rangle\)
-  is \(\cos(\theta/2)-i n_z\sin(\theta/2)\). Along \(\sigma_z\) it is the
-  pure phase \(e^{-i\theta/2}\); along \(\sigma_x\) it is the real cosine.
-  Its squared modulus is the polar tilt of the dual axis.
-* The observer–particle pairing is the Hilbert inner product
-  \(\langle R_{\mathcal{O}}\chi\mid R_A\chi\rangle\), equal to
-  \(\langle\chi\mid R_{\mathcal{O}}^{\dagger}R_A\chi\rangle\).
-  The relative rotor stays in \(\mathrm{SU}(2)\). Inverse is opposite
-  rapidity; on a common ray the relative rotor is a single difference;
-  off-axis the product character records axis alignment and the remainder
-  is traceless. Perpendicular \(\pi\) dual rotations have group commutator
-  \(-I\). A \(2\pi\) dual rotation about the observer axis is \(-I\).
-
-None of these is a spacetime Schrödinger wave, a Born position density,
-or a derivation of \(E/\hbar\) from rest mass.
+The character, the spinor matrix element, and the observer–particle pairing are invariants of an `SU(2)` dual rotor. None of them is a spacetime Schrödinger wave, a Born position density, or a derivation of `E/ℏ` from rest mass.
 -/
 
 namespace DstDiophantine
@@ -84,7 +65,6 @@ private theorem trace_real_smul (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [algebraMap_smul_mat, trace_smul]
   simp [smul_eq_mul]
 
-/-- Dual-rotor character: \(\operatorname{Tr} R(\beta)=2\cos(\lVert\beta\rVert/2)\). -/
 theorem dualRotorMat_trace (β : DualRapidity) :
     (dualRotorMat β).trace = 2 * (Real.cos (‖β‖ / 2) : ℂ) := by
   rw [dualRotorMat_rodrigues]
@@ -96,7 +76,6 @@ theorem dualRotorMat_trace (β : DualRapidity) :
     rw [trace_add, trace_real_smul_one, trace_real_smul, cyclicRepComb_trace]
     simp
 
-/-- Half-trace character is a real cosine. -/
 theorem dualRotorMat_character_real (β : DualRapidity) :
     ((dualRotorMat β).trace / 2).im = 0 := by
   rw [dualRotorMat_trace]
@@ -122,7 +101,6 @@ theorem axis2Gen_eq_real_smul (θ : ℝ) :
   rw [h]
   rfl
 
-/-- Axis-2 dual rotor: \(\exp(-i\theta\sigma_z/2)=\cos(\theta/2)I+\sin(\theta/2)(-i\sigma_z)\). -/
 theorem dualRotorMat_axis2_rodrigues (θ : ℝ) :
     dualRotorMat (EuclideanSpace.single 2 θ) =
       Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -130,7 +108,6 @@ theorem dualRotorMat_axis2_rodrigues (θ : ℝ) :
   rw [dualRotorMat_axis2, axis2Gen_eq_real_smul]
   exact exp_mat_of_sq_neg_one (cyclicRep_sq 2) (θ / 2)
 
-/-- Axis-1 dual rotor: \(\cos(\theta/2)I+\sin(\theta/2)(-i\sigma_y)\). -/
 theorem dualRotorMat_axis1_rodrigues (θ : ℝ) :
     dualRotorMat (EuclideanSpace.single 1 θ) =
       Real.cos (θ / 2) • (1 : Matrix (Fin 2) (Fin 2) ℂ) +
@@ -190,7 +167,6 @@ private theorem complex_sin_half (θ : ℝ) :
       = Complex.sin (↑(θ / 2)) := by simp [Complex.ofReal_div]
     _ = ↑(Real.sin (θ / 2)) := (Complex.ofReal_sin _).symm
 
-/-- Along \(\sigma_z\), the amplitude is the half-angle phase \(e^{-i\theta/2}\). -/
 theorem dualRotorAmplitude_axis2 (θ : ℝ) :
     dualRotorAmplitude (EuclideanSpace.single 2 θ) spinUp =
       Complex.exp (-(θ / 2 : ℂ) * I) := by
@@ -200,7 +176,6 @@ theorem dualRotorAmplitude_axis2 (θ : ℝ) :
     complex_cos_half, complex_sin_half]
   ring
 
-/-- Along \(\sigma_x\), the amplitude is the real half-angle cosine. -/
 theorem dualRotorAmplitude_axis0 (θ : ℝ) :
     dualRotorAmplitude (EuclideanSpace.single 0 θ) spinUp =
       (Real.cos (θ / 2) : ℂ) := by
@@ -223,7 +198,6 @@ private theorem real_smul_apply (r : ℝ) (A : Matrix (Fin 2) (Fin 2) ℂ)
   rw [algebraMap_smul_mat, Matrix.smul_apply]
   simp
 
-/-- Closed form of the spin-up matrix element along a general dual rapidity. -/
 theorem dualRotorAmplitude_spinUp (β : DualRapidity) :
     dualRotorAmplitude β spinUp =
       (Real.cos (‖β‖ / 2) : ℂ) - I *
@@ -241,7 +215,6 @@ theorem dualRotorAmplitude_spinUp (β : DualRapidity) :
 
 /-! ### Relative overlap and the unitarity bound -/
 
-/-- Observer–particle pairing equals the relative-rotor matrix element. -/
 theorem dualRotor_relative_overlap (βO βA : DualRapidity) (χ : DualSpinor) :
     inner ℂ (applyMat (dualRotorMat βO) χ) (applyMat (dualRotorMat βA) χ) =
       inner ℂ χ
@@ -261,7 +234,6 @@ private theorem applyMat_dualRotor_norm (β : DualRapidity) (ψ : DualSpinor) :
     exact congrArg Complex.re hinner
   exact (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp hU
 
-/-- Unitarity bound on a dual-rotor matrix element. -/
 theorem dualRotor_matrix_element_bound (β : DualRapidity) (χ ψ : DualSpinor) :
     ‖inner ℂ χ (applyMat (dualRotorMat β) ψ)‖ ≤ ‖χ‖ * ‖ψ‖ := by
   have h :=
@@ -280,7 +252,6 @@ private theorem dualRapidity_single_smul (a : Fin 3) (x : ℝ) :
   ext i
   simp [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul]
 
-/-- Same-axis dual rotors compose by adding angles. -/
 theorem dualRotorMat_axis2_add (θ φ : ℝ) :
     dualRotorMat (EuclideanSpace.single 2 (θ + φ)) =
       dualRotorMat (EuclideanSpace.single 2 θ) *
@@ -313,14 +284,12 @@ private theorem dualRotorAmplitude_spinDown_eq_entry (β : DualRapidity) :
   have h := mulVec_spinDown (dualRotorMat β)
   simp [Fin.sum_univ_two, spinDown_apply_zero, spinDown_apply_one, h]
 
-/-- The character is the sum of the two computational matrix elements. -/
 theorem dualRotorMat_trace_eq_amplitudes (β : DualRapidity) :
     (dualRotorMat β).trace =
       dualRotorAmplitude β spinUp + dualRotorAmplitude β spinDown := by
   rw [dualRotorAmplitude_spinUp_eq_entry, dualRotorAmplitude_spinDown_eq_entry,
     Matrix.trace_fin_two]
 
-/-- Along \(\sigma_z\), the down amplitude is the opposite half-angle phase. -/
 theorem dualRotorAmplitude_axis2_down (θ : ℝ) :
     dualRotorAmplitude (EuclideanSpace.single 2 θ) spinDown =
       Complex.exp ((θ / 2 : ℂ) * I) := by
@@ -378,12 +347,10 @@ private theorem norm_sq_ofReal_sub_I (a b : ℝ) :
   rw [this, ← Complex.normSq_eq_norm_sq, Complex.normSq_add_mul_I]
   ring
 
-/-- Half-trace character equals the real part of the spin-up matrix element. -/
 theorem dualRotorAmplitude_spinUp_re (β : DualRapidity) :
     (dualRotorAmplitude β spinUp).re = Real.cos (‖β‖ / 2) := by
   rw [dualRotorAmplitude_spinUp, dualNzSin_coe, re_ofReal_sub_I]
 
-/-- Squared modulus of the spin-up matrix element: polar tilt of the dual axis. -/
 theorem dualRotorAmplitude_spinUp_normSq (β : DualRapidity) :
     ‖dualRotorAmplitude β spinUp‖ ^ 2 =
       Real.cos (‖β‖ / 2) ^ 2 + dualNzSin β ^ 2 := by
@@ -403,7 +370,6 @@ private theorem dualRapidity_unit_sq {β : DualRapidity} (h : β ≠ 0) :
     field_simp [hr]
   rw [hdiv, ← dualRapidity_norm_sq, div_self (pow_ne_zero 2 hr)]
 
-/-- Equivalently, the squared modulus is one minus the equatorial weight. -/
 theorem dualRotorAmplitude_spinUp_normSq_equator {β : DualRapidity} (h : β ≠ 0) :
     ‖dualRotorAmplitude β spinUp‖ ^ 2 =
       1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) * Real.sin (‖β‖ / 2) ^ 2 := by
@@ -427,14 +393,12 @@ theorem dualRotorAmplitude_spinUp_normSq_equator {β : DualRapidity} (h : β ≠
     _ = 1 - ((β 0 / ‖β‖) ^ 2 + (β 1 / ‖β‖) ^ 2) *
           Real.sin (‖β‖ / 2) ^ 2 := by rw [hcs]
 
-/-- Along the observer axis the spin-up matrix element is a pure phase. -/
 theorem dualRotorAmplitude_axis2_norm (θ : ℝ) :
     ‖dualRotorAmplitude (EuclideanSpace.single 2 θ) spinUp‖ = 1 := by
   rw [dualRotorAmplitude_axis2, Complex.norm_exp]
   have hre : (-(θ / 2 : ℂ) * I).re = 0 := by simp
   rw [hre, Real.exp_zero]
 
-/-- \(2\pi\) dual rotation about the observer axis is \(-I\). -/
 theorem dualRotorMat_axis2_two_pi :
     dualRotorMat (EuclideanSpace.single 2 (2 * Real.pi)) = -1 := by
   rw [dualRotorMat_axis2_rodrigues]
@@ -442,7 +406,6 @@ theorem dualRotorMat_axis2_two_pi :
   rw [hhalf, Real.cos_pi, Real.sin_pi]
   simp
 
-/-- \(4\pi\) dual rotation about the observer axis is the identity. -/
 theorem dualRotorMat_axis2_four_pi :
     dualRotorMat (EuclideanSpace.single 2 (4 * Real.pi)) = 1 := by
   rw [dualRotorMat_axis2_rodrigues]
@@ -470,7 +433,6 @@ theorem dualRotorMat_mul_conjTranspose (β : DualRapidity) :
   rw [← Matrix.inv_eq_left_inv (dualRotorMat_unitary β)]
   exact Matrix.mul_nonsing_inv _ hdet
 
-/-- The observer–particle relative dual rotor is unitary. -/
 theorem dualRotor_relative_unitary (βO βA : DualRapidity) :
     ((dualRotorMat βO).conjTranspose * dualRotorMat βA).conjTranspose *
       ((dualRotorMat βO).conjTranspose * dualRotorMat βA) = 1 := by
@@ -484,7 +446,6 @@ theorem dualRotor_relative_unitary (βO βA : DualRapidity) :
         rw [dualRotorMat_mul_conjTranspose, mul_one]
     _ = 1 := dualRotorMat_unitary βA
 
-/-- The observer–particle relative dual rotor has determinant \(1\). -/
 theorem dualRotor_relative_det (βO βA : DualRapidity) :
     ((dualRotorMat βO).conjTranspose * dualRotorMat βA).det = 1 := by
   rw [det_mul, det_conjTranspose, dualRotorMat_det, dualRotorMat_det]
@@ -505,7 +466,6 @@ private theorem cyclicRep_one_eq : cyclicRep 1 = !![0, -1; 1, 0] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [neg_mul, I_mul_I]
 
-/-- Distinct-axis dual rotors need not commute. -/
 theorem dualRotorMat_axes_not_commute :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) ≠
@@ -563,13 +523,11 @@ private theorem dualAxisInner_neg_left (β γ : DualRapidity) :
   unfold dualAxisInner
   simp [dualAxis_neg, Fin.sum_univ_three]
 
-/-- Observer–particle relative dual rotor is \(R(-\beta_{\mathcal{O}})R(\beta_A)\). -/
 private theorem dualRotor_relative_eq_neg_mul (βO βA : DualRapidity) :
     (dualRotorMat βO).conjTranspose * dualRotorMat βA =
       dualRotorMat (-βO) * dualRotorMat βA := by
   rw [dualRotorMat_neg]
 
-/-- On a common ray the relative dual rotor is a single dual rotation by the difference. -/
 theorem dualRotor_relative_ray (s t : ℝ) (β : DualRapidity) :
     (dualRotorMat (s • β)).conjTranspose * dualRotorMat (t • β) =
       dualRotorMat ((t - s) • β) := by
@@ -594,8 +552,6 @@ private theorem cyclicRepComb_mul_trace (n m : Fin 3 → ℝ) :
   rw [hI]
   ring
 
-/-- Character of a composite: \(\frac12\operatorname{Tr}(R(\beta)R(\gamma))=
-\cos(\theta/2)\cos(\phi/2)-(\hat n\cdot\hat m)\sin(\theta/2)\sin(\phi/2)\). -/
 theorem dualRotorMat_mul_trace (β γ : DualRapidity) :
     (dualRotorMat β * dualRotorMat γ).trace =
       2 * ((Real.cos (‖β‖ / 2) : ℂ) * Real.cos (‖γ‖ / 2) -
@@ -622,7 +578,6 @@ theorem dualRotorMat_mul_trace (β γ : DualRapidity) :
     Complex.ofReal_mul, Complex.ofReal_add]
   ring
 
-/-- Relative-rotor character records the alignment of the two dual axes. -/
 theorem dualRotor_relative_trace (βO βA : DualRapidity) :
     ((dualRotorMat βO).conjTranspose * dualRotorMat βA).trace =
       2 * ((Real.cos (‖βO‖ / 2) : ℂ) * Real.cos (‖βA‖ / 2) +
@@ -631,14 +586,12 @@ theorem dualRotor_relative_trace (βO βA : DualRapidity) :
     dualAxisInner_neg_left]
   simp [Complex.ofReal_neg]
 
-/-- \(\pi\) dual rotations about \(x\) and \(z\) compose to \(-\Gamma_y\). -/
 private theorem dualRotorMat_pi_compose :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) =
       -cyclicRep 1 := by
   rw [dualRotorMat_axis0_pi, dualRotorMat_axis2_pi, cyclicRep_zero_mul_two]
 
-/-- Group commutator of perpendicular \(\pi\) dual rotations is the double-cover element \(-I\). -/
 theorem dualRotorMat_axes_group_commutator :
     dualRotorMat (EuclideanSpace.single 0 Real.pi) *
         dualRotorMat (EuclideanSpace.single 2 Real.pi) *

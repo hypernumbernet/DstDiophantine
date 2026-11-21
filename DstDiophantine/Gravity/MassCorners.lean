@@ -4,20 +4,7 @@ import DstDiophantine.Gravity.ShieldCeiling
 /-!
 # Mass ceiling of the admissible cone
 
-The unsigned mass shares the ceiling of the mismatch. Equality holds
-exactly on the corner configurations: every axis is a pure boost or a
-pure rotation. If `n` axes are pure boosts, the normalised mismatch is
-the discrete height `(2n-3)/3`, hence one of `1`, `1/3`, `-1/3`, `-1`.
-Saturated attraction is the unique corner of height `1` and carries the
-whole mass ceiling. Unsaturated attraction meets that ceiling only at
-height `1/3`, on the three corners with a single pure rotation.
-Repulsion meets it at `-1/3` and at the pure rotation `-1`. Balance does
-not meet it: a balanced configuration has normalised mass at most `5/6`,
-and that bound is attained. Sector swap preserves the mass and sends `n`
-to `3-n`.
-
-The unsigned mass is the Euclidean size of the rapidities. It is not the
-value of the Dirac mass.
+The unsigned mass meets the mismatch ceiling exactly on the pure-boost and pure-rotation corners. That mass is the Euclidean size of the rapidities, and it is not the Dirac mass.
 -/
 
 namespace DstDiophantine
@@ -133,8 +120,6 @@ theorem height_of_usualCount {n : ℕ} (hn : n ≤ 3) :
   · right; left; norm_num
   · left; norm_num
 
-/-- At the mass ceiling every axis is a corner, so the configuration is one
-of the eight corner points. -/
 theorem mass_ceiling_axis_corner {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) (a : Fin 3) :
     IsUsualCorner p a ∨ IsDualCorner p a :=
@@ -295,8 +280,6 @@ theorem usualCount_dagger (usual : Fin 3 → Bool) :
   have h := usualCount_compl usual
   omega
 
-/-- Sector swap preserves the mass ceiling and sends height `(2n-3)/3` to
-its negative, exchanging `n` pure boosts with `3-n`. -/
 theorem dagger_mass_ceiling {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
     IsAdmissibleContinuous (daggerParams p) ∧

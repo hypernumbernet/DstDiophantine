@@ -8,12 +8,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Null rotation on the inertial chart
 
-The parabolic rotor `1 + t(B⁺₀ + B⁻₁)` acts on Minkowski coordinates by
-`nullRotation`. The coframe is the inverse action. It keeps the Minkowski
-metric. Its Maurer–Cartan generator is constant, so the coordinate torsion is
-the one-generator torsion of that generator, and the teleparallel scalar
-vanishes for every jet. The mismatch of the coefficients `α₀ = β₁ = 2t` is
-zero.
+The coframe is the inverse of the parabolic rotor `1 + t(B⁺₀ + B⁻₁)` on Minkowski coordinates. Its Maurer–Cartan generator is constant, and the coefficient mismatch `α₀ = β₁ = 2t` is zero.
 -/
 
 namespace DstDiophantine

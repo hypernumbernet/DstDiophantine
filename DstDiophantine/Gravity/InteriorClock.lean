@@ -11,25 +11,7 @@ set_option linter.style.native false
 /-!
 # Interior clock, apart from the potential
 
-Two separate readings of a static spherical body.
-
-DST time at a station is the enclosed compactness
-`μ = G M(<r) / (c² r)`, the value at that station. At the centre the
-enclosed mass vanishes and the rate equals the vacuum rate at infinity.
-The advance of that centre clock against the surface factor is `centreAdvance`.
-
-The potential is a different quantity. Its radial slope is the weight
-`grav`, below the surface as well as above, and a carrier that tracks
-`Φ` is shifted by `potentialSlope`. Outside, where `M` is constant, the
-weak-field clock difference and the potential difference agree, and the
-finite height shift is `GM/c² (1/r - 1/(r+h))` for both. The uniform
-Newtonian centre, relative to the surface, is `-ε/2`.
-
-## What is not claimed
-
-No theorem says that a frequency beat of two clocks equals the wavelength
-change of the carrier. The Earth figures are rounding bins for the external
-`GM`, `R`, `G`, and `c` of the papers. They are not derived from the rotor algebra.
+DST time at a station is the enclosed compactness, while the potential is a different quantity whose slope is the weight. No theorem equates a frequency beat with a wavelength change, and the Earth figures are rounding bins for external `GM`, `R`, `G`, and `c`.
 -/
 
 namespace DstDiophantine
@@ -46,8 +28,7 @@ open Real SI
 def compactness (GM c2 r : ℝ) : ℝ :=
   GM / (c2 * r)
 
-/-- Weak-field DST clock shift of the upper station against the lower, outside
-the body. -/
+/-- Weak-field DST clock shift of the upper station against the lower, outside the body. -/
 def clockExterior (GM c2 r h : ℝ) : ℝ :=
   compactness GM c2 r - compactness GM c2 (r + h)
 
@@ -66,7 +47,6 @@ theorem potentialExterior_eq {GM c2 r h : ℝ} (hr : r ≠ 0) (hrh : r + h ≠ 0
   field_simp [hr, hrh, hc]
   ring
 
-/-- Above the surface the weak-field clock and the potential agree. -/
 theorem exterior_agreement {GM c2 r h : ℝ} (hr : r ≠ 0) (hrh : r + h ≠ 0) (hc : c2 ≠ 0) :
     clockExterior GM c2 r h = potentialExterior GM c2 r h := by
   rw [clockExterior_eq hr hrh hc, potentialExterior_eq hr hrh hc]
@@ -175,9 +155,8 @@ theorem centre_signs {ε : ℝ} (h0 : 0 < ε) (hε : ε < 1 / 2) :
 
 /-! ### Earth rounding bins
 
-External inputs of the papers: `GM = 3.986004418 × 10¹⁴`, `R = 6.371 × 10⁶`,
-with `G` and `c` from `SI`. A displayed figure means the exact value lies
-in that figure's rounding bin. -/
+External inputs: `GM = 3.986004418 × 10¹⁴` and `R = 6.371 × 10⁶`, with `G` and `c` from `SI`.
+-/
 
 def earthGM : ℕ := 3986004418 * 10 ^ 5
 
@@ -324,8 +303,6 @@ private theorem centreAdvance_at_6962 :
     have he : (0 : ℝ) < (10 : ℝ) ^ 13 := by norm_num
     have hdiv := div_lt_div_of_pos_right hcast (pow_pos he 3)
     have hone : ((10 : ℝ) ^ 13) ^ 3 / ((10 : ℝ) ^ 13) ^ 3 = 1 := by field_simp
-    -- (e * S) / e^3 > (e^3 + 13924 * S) / e^3
-    -- S / e^2 > 1 + 13924 * S / e^3
     field_simp [he.ne'] at hdiv
     have : (1 - (13924 : ℝ) / 10 ^ 13) * (1 + (6965 : ℝ) / 10 ^ 13) ^ 2 > 1 := by
       field_simp [he.ne']
@@ -360,9 +337,7 @@ private theorem centreAdvance_at_6962 :
   rw [one_div]
   linarith
 
-/-- `GM/(Rc²)` and the centre advance both round to `6.96×10⁻¹⁰`. The uniform
-Newtonian centre rounds to a retardation of `3.48×10⁻¹⁰`, and the gap of the
-two centre clocks rounds to `1.04×10⁻⁹`. -/
+/-- `GM/(Rc²)` and the centre advance round to `6.96×10⁻¹⁰`; the Newtonian centre is a separate bin. -/
 theorem earth_centre_bins :
     (6955 : ℝ) / 10 ^ 13 < (earthCompactnessQ : ℝ) ∧
       (earthCompactnessQ : ℝ) < (6965 : ℝ) / 10 ^ 13 ∧

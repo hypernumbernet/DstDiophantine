@@ -5,40 +5,9 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 /-!
 # Crystals in the signed electrostatic force
 
-Lengths are in units of `ℓ` and forces in units of `k e²/ℓ²`, as in
-`ElectronMetal`. A test charge `q` (in units of `e`) at `p` feels the force
-`(-q) • pointForce Q c p` from a point charge `Q` at `c`; the electron is
-`q = -1`.
-
-## Paper boundary (do **not** claim)
-
-No infinite lattice sum is taken: every statement counts a finite set of
-sites. No cohesive energy, no lattice constant, no elastic constant of a
-whole crystal, and no conductivity is derived. Ions are point charges, and
-the electrons of an ion core are not counted. The length `ℓ` is not derived.
-
-## What is proved
-
-* The three-direction outflow `16x⁴ cosh x sin x / γ_s²` has the sign of
-  `sin x`: it is positive for every phase in `(0, π)` off the first node, on
-  both sides of that node, it vanishes at `π`, and it is negative on
-  `(π, 2π)` wherever `γ_s ≠ 0`.
-* A finite set of point charges about a site, carried into itself, charges
-  included, by the rotations of a regular tetrahedron (the three-fold turn
-  about a body diagonal and the half-turn about a coordinate axis), exerts
-  no force at the site. Along every direction a displacement of a test
-  charge changes the outward component at one rate, `-q/3` times
-  `∑ Q · outflow`. With `γ_s = 1` the same rate is zero.
-* Truncations of the simple cubic, body-centred cubic, and face-centred
-  cubic lattices to any box and any radius are such sets.
-* On the outer well `outflow(x)/x⁴` is strictly increasing. Hence a site
-  whose nearest shell is unlike and whose next shell is like is pushed off
-  in every direction once `N₂ Q₂ k₁² ≤ N₁ Q₁ k₂²` (`kᵢ` squared distances).
-  Rock salt, caesium chloride, zincblende, and both sites of fluorite meet
-  this with their nearest two shells.
-* A linear map carrying a lattice into itself has an integer trace. A
-  rotation, proper or improper, through `2π/n` carries a lattice of a
-  three-dimensional space into itself only for `n ∈ {1, 2, 3, 4, 6}`.
+Every statement counts a finite set of point-charge sites closed under a
+crystal's rotations. No cohesive energy, lattice constant, elastic constant,
+or conductivity is derived, and the length \(\ell\) is not derived.
 -/
 
 namespace DstDiophantine
@@ -56,7 +25,6 @@ theorem gammaSEqual_ne_zero_below_pi {x : ℝ} (hx0 : 0 < x) (hxπ : x < π)
   · exact (gammaSEqual_pos_left_of_first_node ⟨hx0, h⟩).ne'
   · exact (gammaSEqual_neg_right_of_first_node ⟨h, hxπ⟩).ne
 
-/-- Below `π` the outflow is positive on both sides of the first node. -/
 theorem ionOutflow_pos_below_pi {x : ℝ} (hx0 : 0 < x) (hxπ : x < π)
     (hx1 : x ≠ resonanceRoot1) : 0 < ionOutflow x :=
   ionOutflow_pos hx0 hxπ (gammaSEqual_ne_zero_below_pi hx0 hxπ hx1)
@@ -254,7 +222,6 @@ private theorem parseval3' (b : OrthonormalBasis (Fin 3) ℝ E) (v : E) :
 
 variable {T : Finset (ℤ × ℤ × ℤ)}
 
-/-- Isotropy of the second moment under the rotations of a tetrahedron. -/
 theorem tetra_quad_sum (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ) (hT : TetraClosed T)
     (β : ℤ × ℤ × ℤ → ℝ) (hβc : ∀ t, β (cyc3 t) = β t) (hβf : ∀ t, β (flip3 t) = β t)
     (v : E) :
@@ -283,7 +250,6 @@ theorem tetra_quad_sum (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ) (hT : Tetr
   rw [← hp]
   ring
 
-/-- The first moment vanishes under the rotations of a tetrahedron. -/
 theorem tetra_lin_sum (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ) (hT : TetraClosed T)
     (β : ℤ × ℤ × ℤ → ℝ) (hβc : ∀ t, β (cyc3 t) = β t) (hβf : ∀ t, β (flip3 t) = β t) :
     ∑ t ∈ T, β t • latticeVec b h t = 0 := by
@@ -297,8 +263,7 @@ theorem tetra_lin_sum (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ) (hT : Tetra
   rw [mom1 β hT hβf, mom2 β hT hβf, mom3 β hT hβc hβf]
   simp
 
-/-- Isotropic rate of a tetrahedrally symmetric site, per unit `‖v‖²`, for
-an electron. A test charge `q` has `-q` times this rate. -/
+/-- Isotropic rate of a tetrahedrally symmetric site, per unit `‖v‖²`, for an electron. A test charge `q` has `-q` times this rate. -/
 noncomputable def siteRate (h : ℝ) (T : Finset (ℤ × ℤ × ℤ)) (Q : ℤ × ℤ × ℤ → ℝ) : ℝ :=
   (∑ t ∈ T, Q t * ionOutflow (sitePhase h t)) / 3
 
@@ -307,9 +272,6 @@ noncomputable def siteForce (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ)
     (T : Finset (ℤ × ℤ × ℤ)) (Q : ℤ × ℤ × ℤ → ℝ) (q : ℝ) (p x : E) : E :=
   ∑ t ∈ T, (-q) • pointForce (Q t) (p - latticeVec b h t) x
 
-/-- A site carried into itself by the rotations of a tetrahedron: the force
-vanishes, and along every direction the outward component changes at one
-rate, `-q · siteRate`. -/
 theorem tetra_site (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     (hT : TetraClosed T) (Q : ℤ × ℤ × ℤ → ℝ) (hQc : ∀ t, Q (cyc3 t) = Q t)
     (hQf : ∀ t, Q (flip3 t) = Q t) (h0 : ∀ t ∈ T, t ≠ 0)
@@ -410,9 +372,6 @@ theorem siteRate_pos {h : ℝ} {Q : ℤ × ℤ × ℤ → ℝ} (hQ : ∀ t ∈ T
       ⟨t0, ht0, mul_pos hq0 (hS t0 ht0)⟩
   positivity
 
-/-- Like charges about a tetrahedrally symmetric site, every separation with
-phase below `π` and off the first node: a positive test charge is held, at
-one rate in every direction. -/
 theorem tetra_site_like_held (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     (hT : TetraClosed T) (Q : ℤ × ℤ × ℤ → ℝ) (hQc : ∀ t, Q (cyc3 t) = Q t)
     (hQf : ∀ t, Q (flip3 t) = Q t)
@@ -428,7 +387,6 @@ theorem tetra_site_like_held (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : �
   have hr := siteRate_pos hQ hne hx
   exact ⟨hF, by nlinarith, hD⟩
 
-/-- The same site pushes an electron off in every direction. -/
 theorem tetra_site_electron_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ}
     (hh : 0 < h) (hT : TetraClosed T) (Q : ℤ × ℤ × ℤ → ℝ) (hQc : ∀ t, Q (cyc3 t) = Q t)
     (hQf : ∀ t, Q (flip3 t) = Q t)
@@ -449,7 +407,6 @@ noncomputable def coulombLineStiff (Q : ℝ) (w v : E) : ℝ :=
   -(Q * (8 * vecPhase w ^ 3 * ‖v‖ ^ 2 -
     24 * vecPhase w ^ 2 * ⟪w, v⟫ ^ 2 / (2 * ‖w‖ ^ 3)))
 
-/-- Under the Coulomb law the rate of every tetrahedrally symmetric site is zero. -/
 theorem coulomb_tetra_site_zero (b : OrthonormalBasis (Fin 3) ℝ E) {h : ℝ} (hh : 0 < h)
     (hT : TetraClosed T) (Q : ℤ × ℤ × ℤ → ℝ) (hQc : ∀ t, Q (cyc3 t) = Q t)
     (hQf : ∀ t, Q (flip3 t) = Q t) (h0 : ∀ t ∈ T, t ≠ 0) (v : E) :
@@ -542,8 +499,6 @@ theorem fcc_closed (N : ℕ) (R : ℤ) : TetraClosed (cubicBox fccSite N R) :=
 
 /-! ### Unlike nearest shells -/
 
-/-- On the outer well the outflow falls at least as the fourth power of the
-phase: `outflow(y) x⁴ < outflow(x) y⁴` for `0 < y < x < x₁`. -/
 theorem ionOutflow_fourth {x y : ℝ} (hy0 : 0 < y) (hyx : y < x) (hx1 : x < resonanceRoot1) :
     ionOutflow y * x ^ 4 < ionOutflow x * y ^ 4 := by
   have hx0 : 0 < x := lt_trans hy0 hyx
@@ -580,8 +535,6 @@ theorem ionOutflow_fourth {x y : ℝ} (hy0 : 0 < y) (hyx : y < x) (hx1 : x < res
   have hk : 0 < 16 * x ^ 4 * y ^ 4 := by positivity
   nlinarith
 
-/-- Two shells at squared distances `k₁ < k₂` (scale `h`), the nearer in the
-outer well: `outflow₂ · k₂² < outflow₁ · k₁²`. -/
 theorem shell_outflow_compare {h k₁ k₂ : ℝ} (hh : 0 < h) (hk₁ : 0 < k₁) (hk : k₁ < k₂)
     (hx : 1 / (2 * (h * √k₁)) < resonanceRoot1) :
     ionOutflow (1 / (2 * (h * √k₂))) * k₂ ^ 2 < ionOutflow (1 / (2 * (h * √k₁))) * k₁ ^ 2 := by
@@ -623,9 +576,6 @@ variable {T : Finset (ℤ × ℤ × ℤ)}
 noncomputable def shellCharge (k₁ : ℤ) (Q₁ Q₂ : ℝ) (t : ℤ × ℤ × ℤ) : ℝ :=
   if sq3 t = k₁ then -Q₁ else Q₂
 
-/-- A tetrahedrally symmetric site with two shells, the nearer unlike and in
-the outer well: when `N₂ Q₂ k₁² ≤ N₁ Q₁ k₂²` a positive test charge is pushed
-off in every direction. -/
 theorem two_shell_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     (hT : TetraClosed T) {k₁ k₂ : ℤ} (hk₁ : 0 < k₁) (hk : k₁ < k₂)
     (hmem : ∀ t ∈ T, sq3 t = k₁ ∨ sq3 t = k₂) {N₁ N₂ : ℕ}
@@ -726,17 +676,14 @@ end Ionic
 
 /-! ### The nearest two shells of four ionic arrangements -/
 
-/-- Zincblende, in units of a quarter of the cube edge: the face-centred
-sites of even coordinate sum divisible by four, and one tetrahedron of the
-odd sites. -/
+/-- Zincblende, in units of a quarter of the cube edge: the face-centred sites of even coordinate sum divisible by four, and one tetrahedron of the odd sites. -/
 def zincblendeSite (t : ℤ × ℤ × ℤ) : Prop :=
   (t.1 % 2 = 0 ∧ t.2.1 % 2 = 0 ∧ t.2.2 % 2 = 0 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 0) ∨
     (t.1 % 2 = 1 ∧ t.2.1 % 2 = 1 ∧ t.2.2 % 2 = 1 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 3)
 
 instance : DecidablePred zincblendeSite := fun t => by unfold zincblendeSite; infer_instance
 
-/-- Fluorite, seen from a cation: the same face-centred sites, and every
-odd site. -/
+/-- Fluorite, seen from a cation: the same face-centred sites, and every odd site. -/
 def fluoriteCationSite (t : ℤ × ℤ × ℤ) : Prop :=
   (t.1 % 2 = 0 ∧ t.2.1 % 2 = 0 ∧ t.2.2 % 2 = 0 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 0) ∨
     (t.1 % 2 = 1 ∧ t.2.1 % 2 = 1 ∧ t.2.2 % 2 = 1)
@@ -744,8 +691,7 @@ def fluoriteCationSite (t : ℤ × ℤ × ℤ) : Prop :=
 instance : DecidablePred fluoriteCationSite := fun t => by
   unfold fluoriteCationSite; infer_instance
 
-/-- Fluorite, seen from an anion: every even site, and the odd sites whose
-coordinate sum is congruent to one modulo four. -/
+/-- Fluorite, seen from an anion: every even site, and the odd sites whose coordinate sum is congruent to one modulo four. -/
 def fluoriteAnionSite (t : ℤ × ℤ × ℤ) : Prop :=
   (t.1 % 2 = 1 ∧ t.2.1 % 2 = 1 ∧ t.2.2 % 2 = 1 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 1) ∨
     (t.1 % 2 = 0 ∧ t.2.1 % 2 = 0 ∧ t.2.2 % 2 = 0)
@@ -820,10 +766,6 @@ private theorem sqrt_one_phase {h : ℝ} :
     1 / (2 * (h * √(1 : ℝ))) = 1 / (2 * h) := by
   simp [Real.sqrt_one]
 
-/-- Rock salt, nearest two shells, the nearer unlike and in the outer well.
-Six unlike neighbours at squared distance `1` and twelve like neighbours at
-squared distance `2`: a positive test charge is pushed off in every direction
-once `Q₂ ≤ 2 Q₁`. -/
 theorem rockSalt_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     {Q₁ Q₂ q : ℝ} (hQ₁ : 0 < Q₁) (hQ₂ : 0 ≤ Q₂) (hq : 0 < q)
     (hx : 1 / (2 * h) < resonanceRoot1) (hcond : Q₂ ≤ 2 * Q₁) :
@@ -837,9 +779,6 @@ theorem rockSalt_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (
     (by norm_num) (by norm_num) hs.1 hs.2.1 hs.2.2 (by norm_num) hQ₁ hQ₂ hq
     (by simpa [sqrt_one_phase] using hx) (by push_cast; nlinarith)
 
-/-- Caesium chloride, nearest two shells. Eight unlike neighbours at squared
-distance `3` and six like neighbours at squared distance `4`: a positive test
-charge is pushed off once `27 Q₂ ≤ 64 Q₁`. -/
 theorem caesiumChloride_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     {Q₁ Q₂ q : ℝ} (hQ₁ : 0 < Q₁) (hQ₂ : 0 ≤ Q₂) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) (hcond : 27 * Q₂ ≤ 64 * Q₁) :
@@ -854,9 +793,6 @@ theorem caesiumChloride_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h :
     (by norm_num) (by norm_num) hs.1 hs.2.1 hs.2.2 (by norm_num) hQ₁ hQ₂ hq hx
     (by push_cast; nlinarith)
 
-/-- Zincblende, nearest two shells. Four unlike neighbours at squared distance
-`3` and twelve like neighbours at squared distance `8`: a positive test charge
-is pushed off once `27 Q₂ ≤ 64 Q₁`. -/
 theorem zincblende_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     {Q₁ Q₂ q : ℝ} (hQ₁ : 0 < Q₁) (hQ₂ : 0 ≤ Q₂) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) (hcond : 27 * Q₂ ≤ 64 * Q₁) :
@@ -871,9 +807,6 @@ theorem zincblende_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ}
     (zincblende_closed 2 8) (by norm_num) (by norm_num) hs.1 hs.2.1 hs.2.2
     (by norm_num) hQ₁ hQ₂ hq hx (by push_cast; nlinarith)
 
-/-- Fluorite, seen from a cation. Eight unlike neighbours at squared distance
-`3` and twelve like neighbours at squared distance `8`: a positive test charge
-is pushed off once `27 Q₂ ≤ 128 Q₁`. -/
 theorem fluoriteCation_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     {Q₁ Q₂ q : ℝ} (hQ₁ : 0 < Q₁) (hQ₂ : 0 ≤ Q₂) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) (hcond : 27 * Q₂ ≤ 128 * Q₁) :
@@ -888,9 +821,6 @@ theorem fluoriteCation_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : 
     (fluoriteCation_closed 2 8) (by norm_num) (by norm_num) hs.1 hs.2.1 hs.2.2
     (by norm_num) hQ₁ hQ₂ hq hx (by push_cast; nlinarith)
 
-/-- Fluorite, seen from an anion. Four unlike neighbours at squared distance
-`3` and six like neighbours at squared distance `4`: a positive test charge is
-pushed off once `27 Q₂ ≤ 32 Q₁`. -/
 theorem fluoriteAnion_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ} (hh : 0 < h)
     {Q₁ Q₂ q : ℝ} (hQ₁ : 0 < Q₁) (hQ₂ : 0 ≤ Q₂) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) (hcond : 27 * Q₂ ≤ 32 * Q₁) :
@@ -935,7 +865,6 @@ theorem zincblende_equal_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h 
         (-q * siteRate h zincblendeShells (shellCharge 3 Q Q) * ‖v‖ ^ 2) 0 :=
   zincblende_pushed b p hh hQ hQ.le hq hx (by nlinarith)
 
-/-- The cation carries twice the anion's charge. -/
 theorem fluoriteCation_twice_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ}
     (hh : 0 < h) {Q q : ℝ} (hQ : 0 < Q) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) :
@@ -947,7 +876,6 @@ theorem fluoriteCation_twice_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E)
         (-q * siteRate h fluoriteCationShells (shellCharge 3 Q (2 * Q)) * ‖v‖ ^ 2) 0 :=
   fluoriteCation_pushed b p hh hQ (by positivity) hq hx (by nlinarith)
 
-/-- The cation carries twice the anion's charge, seen from the anion. -/
 theorem fluoriteAnion_twice_pushed (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) {h : ℝ}
     (hh : 0 < h) {Q q : ℝ} (hQ : 0 < Q) (hq : 0 < q)
     (hx : 1 / (2 * (h * √(3 : ℝ))) < resonanceRoot1) :
@@ -967,8 +895,6 @@ section Symmetry
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-/-- A linear map carrying each basis vector to an integer combination of the
-basis has an integer trace. -/
 theorem latticeMap_trace_int (b : OrthonormalBasis (Fin 3) ℝ E) (f : E →ₗ[ℝ] E)
     (m : Fin 3 → Fin 3 → ℤ) (hf : ∀ i, f (b i) = ∑ j, (m i j : ℝ) • b j) :
     ∃ n : ℤ, LinearMap.trace ℝ E f = (n : ℝ) := by
@@ -984,8 +910,6 @@ theorem latticeMap_trace_int (b : OrthonormalBasis (Fin 3) ℝ E) (f : E →ₗ[
   push_cast
   ring
 
-/-- A rotation through `θ` about `b 2`, proper when `ε = 1` and improper when
-`ε = -1`, has trace `2 cos θ + ε`. -/
 theorem rotation_trace (b : OrthonormalBasis (Fin 3) ℝ E) (f : E →ₗ[ℝ] E) {θ ε : ℝ}
     (h0 : f (b 0) = cos θ • b 0 + sin θ • b 1)
     (h1 : f (b 1) = -sin θ • b 0 + cos θ • b 1) (h2 : f (b 2) = ε • b 2) :
@@ -999,8 +923,6 @@ theorem rotation_trace (b : OrthonormalBasis (Fin 3) ℝ E) (f : E →ₗ[ℝ] E
   simp [h01, h10, inner_add_right, real_inner_smul_right, b.inner_eq_ite]
   ring
 
-/-- `2 cos(2π/n) + ε` is an integer, with `ε = ±1`, only for
-`n ∈ {1, 2, 3, 4, 6}`. -/
 theorem rotation_order_of_int_trace {n : ℕ} (hn : 0 < n) {ε : ℝ} (hε : ε = 1 ∨ ε = -1)
     {k : ℤ} (h : 2 * cos (2 * π / n) + ε = (k : ℝ)) :
     n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 ∨ n = 6 := by
@@ -1064,8 +986,6 @@ theorem rotation_order_of_int_trace {n : ℕ} (hn : 0 < n) {ε : ℝ} (hε : ε 
       have hb : k < 1 := Int.cast_lt.mp hlt
       omega
 
-/-- A rotation through `2π/n`, proper or improper, carries a lattice of a
-three-dimensional space into itself only for `n ∈ {1, 2, 3, 4, 6}`. -/
 theorem lattice_rotation_order {n : ℕ} (hn : 0 < n) (b : OrthonormalBasis (Fin 3) ℝ E)
     (f : E →ₗ[ℝ] E) (m : Fin 3 → Fin 3 → ℤ)
     (hf : ∀ i, f (b i) = ∑ j, (m i j : ℝ) • b j) {θ ε : ℝ} (hε : ε = 1 ∨ ε = -1)

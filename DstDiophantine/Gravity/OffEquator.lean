@@ -5,70 +5,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 # Motion off the equatorial leg
 
-On the exterior orthonormal frame the geodesic acceleration of a
-four-velocity is the Levi-Civita contraction already recorded in
-`CurvedTransport.exteriorConn`. The radial rate is the equatorial one,
-with `(L/r)²` replaced by `ûθ² + ûφ²`. The rotation `cot θ / r` within
-the tangent plane of the sphere appears in the two angular rates, with
-opposite signs.
-
-That rotation cancels in the derivative of `ûθ² + ûφ²`, so
-`L² = r²(ûθ² + ûφ²)` is constant wherever `sin θ ≠ 0`. It cancels
-against the derivative of `sin θ` in the azimuthal component, so
-`r sin θ ûφ` is constant on the same set. It does not enter the radial
-rate. The areal acceleration, the constancy of `E = √A γ`, and the first
-integral are therefore the equatorial ones, read with this `L²`. An
-angle that advances at `L/r²` carries the same slope as the Binet
-residual. The radial period of the ellipse that cancels the resonant
-cosine depends on the motion only through this `L²`.
-
-The two constants confine the colatitude:
-`(r sin θ ûφ)² ≤ L² sin²θ`, with equality exactly at `ûθ = 0`. Wherever
-`L² ≠ 0`, `sin²θ` is at least that ratio. A nonzero azimuthal constant
-therefore stays a definite distance from both poles, and `cot θ / r`
-remains finite along the motion. The polar leg carries the remainder
-`ûθ² = (L² − (r sin θ ûφ)² / sin²θ) / r²`. On the edge the polar
-acceleration is `(cot θ / r) ûφ²`. Positive cosine raises `θ` and
-negative cosine lowers it, so each edge turns back toward the equator.
-The edge is an orbit only where `cot θ = 0`. On the equator,
-`cos θ = 0` and `ûθ = 0` kill the polar rate and return the torsional
-azimuthal leg.
-
-A vanishing azimuthal constant is a meridian. Off the poles it forces
-`ûφ = 0`, and along such a motion `φ` stays fixed. Both angular
-accelerations then lose `cot θ / r`. The polar leg changes by the
-equatorial torsional law, the colatitude advances at `L/r²` with
-`L = r ûθ`, and the radial acceleration is the equatorial one in this
-`L`. None of these rates divides by `sin θ`, so the same expressions
-stay finite at `θ = 0` and `θ = π`. The coordinate that degenerates
-there is the azimuthal one.
-
-A fixed colatitude occurs in two ways. Vanishing angular momentum kills
-both legs, so neither the colatitude nor the azimuth advances, and the
-motion is radial. Nonzero angular momentum keeps a colatitude fixed only
-on the equator: the two constants are equal, the band collapses to
-`sin²θ = 1`, and the polar leg remains zero, with the azimuthal rate the
-torsional leg. Off the equator that leg does not remain zero on any
-interval of positive length.
-
-Where the polar leg does not vanish, the azimuthal slope in the
-colatitude is fixed by `θ` and the two constants. With
-`dθ/dτ = ûθ/r` and `dφ/dτ = ûφ/(r sin θ)`,
-`(dφ/dθ)² = M² / (sin²θ (L² sin²θ − M²))`,
-where `M = r sin θ ûφ`. The radius cancels, and so does the radial
-velocity: two events that share `θ` and the two constants share this
-slope at every radius. The proper-time rate of the colatitude still
-carries the radius,
-`(dθ/dτ)² = (L² sin²θ − M²) / (r⁴ sin²θ)`.
-
-## Not claimed
-
-* The radial period of the resonant ellipse as the advance of a solution
-  of the orbit equation. The bound is the period of that ellipse.
-* An identification of this bivector with the torsional mismatch of the
-  parent theory.
-* A formula that writes the teleparallel scalar as a total divergence for
-  an arbitrary motor.
+The radial period of the resonant ellipse is not identified with the advance of a solution of the orbit equation. This bivector is not the torsional mismatch, and no formula writes the teleparallel scalar as a total divergence for an arbitrary motor.
 -/
 
 namespace DstDiophantine.Gravity.OffEquator
@@ -138,8 +75,6 @@ theorem geodesicAccel_azimuth (rs r θ γ ur uθ uφ : ℝ) :
   simp only [zero_mul, add_zero, zero_add]
   ring
 
-/-- Once `γ²` is the Lorentz factor, the radial geodesic rate is the
-equatorial law with `ûθ² + ûφ²` in place of `(L/r)²`. -/
 theorem radial_rate_normalized {rs r θ γ ur uθ uφ : ℝ} (h : IsExterior rs r)
     (hγ : γ ^ 2 = gammaSq3 ur uθ uφ) :
     -geodesicAccel (exteriorConn rs r θ) (frameVel γ ur uθ uφ) 1 =
@@ -153,7 +88,6 @@ theorem radial_rate_normalized {rs r θ γ ur uθ uφ : ℝ} (h : IsExterior rs 
   rw [hα, hγ]
   ring
 
-/-- At vanishing polar velocity the radial rate is the equatorial one. -/
 theorem equator_radial_rate {rs r ur L : ℝ} (h : IsExterior rs r) (θ : ℝ) :
     -geodesicAccel (exteriorConn rs r θ)
         (frameVel (Real.sqrt (gammaSq3 ur 0 (angularMomentum L r))) ur 0
@@ -168,13 +102,11 @@ theorem equator_radial_rate {rs r ur L : ℝ} (h : IsExterior rs r) (θ : ℝ) :
   simp only [gammaSq3, radialMomentumRate, angularMomentum, gammaSq]
   ring
 
-/-- On the equator the polar geodesic acceleration vanishes at `ûθ = 0`. -/
 theorem equator_polar_accel {rs r ur uφ : ℝ} :
     geodesicAccel (exteriorConn rs r (Real.pi / 2)) (frameVel 0 ur 0 uφ) 2 = 0 := by
   rw [geodesicAccel_polar]
   simp [sphereRotation, Real.cos_pi_div_two, Real.sin_pi_div_two]
 
-/-- On the equator the azimuthal rate is the torsional leg. -/
 theorem equator_azimuth_rate {rs r γ ur uφ : ℝ} :
     -geodesicAccel (exteriorConn rs r (Real.pi / 2)) (frameVel γ ur 0 uφ) 3 =
       -((killingNorm rs r / r) * ur * uφ) := by
@@ -184,19 +116,16 @@ theorem equator_azimuth_rate {rs r γ ur uφ : ℝ} :
 
 /-! ### The tangent rotation cancels -/
 
-/-- The two appearances of the tangent rotation cancel in `ûθ² + ûφ²`. -/
 theorem sphere_rotation_cancels (uθ uφ c : ℝ) :
     2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 := by
   ring
 
-/-- What remains is the geodesic curvature of the sphere. -/
 theorem transverse_rate (β ur uθ uφ c : ℝ) :
     2 * uθ * (-(β * ur * uθ) + c * uφ ^ 2) +
         2 * uφ * (-(β * ur * uφ) - c * uθ * uφ) =
       -2 * β * ur * (uθ ^ 2 + uφ ^ 2) := by
   ring
 
-/-- The same rotation cancels against `d(sin θ)/dτ` in `r sin θ ûφ`. -/
 theorem azimuthal_rotation_cancels {cθ s ρ uθ uφ ν ur : ℝ}
     (hs : s ≠ 0) (hρ : ρ ≠ 0) :
     (cθ * (uθ / ρ)) * uφ +
@@ -255,8 +184,6 @@ theorem angularMomentumSq_hasDerivAt {r uθ uφ : ℝ → ℝ} {τ ν ur c : ℝ
   field_simp [hρ']
   ring
 
-/-- `L²` takes the same value at any two times of an interval on which the
-angular rates hold. -/
 theorem angularMomentumSq_eq_on {a b : ℝ} {r uθ uφ ν ur c : ℝ → ℝ}
     (_hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
@@ -361,8 +288,6 @@ theorem inclined_speed_sq (ν ur uθ uφ : ℝ) :
   unfold gammaSq3
   ring
 
-/-- Where the radial law holds, the areal acceleration is the equatorial one
-in the instantaneous `L² = r²(ûθ² + ûφ²)`. -/
 theorem arealAccel_hasDerivAt {rs : ℝ} {r ur uθ uφ : ℝ → ℝ} {τ : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * ur τ) τ)
@@ -426,7 +351,6 @@ theorem arealAccel_hasDerivAt {rs : ℝ} {r ur uθ uφ : ℝ → ℝ} {τ : ℝ}
           ring
   exact hgoal
 
-/-- Redshift and `γ` trade exactly, off the equator as on it. -/
 theorem observerEnergy_hasDerivAt {rs : ℝ} {r γ : ℝ → ℝ} {τ ur : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * ur) τ)
@@ -471,7 +395,6 @@ theorem observerEnergy_eq_on {rs a b : ℝ} {r γ ur : ℝ → ℝ} (_hab : a �
   have hsub : E τ₂ - E τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
   exact (sub_eq_zero.mp hsub).symm
 
-/-- The first integral, with both angular legs inside `L²`. -/
 theorem inclined_first_integral {rs a b : ℝ} {r ur uθ uφ γ : ℝ → ℝ} (hab : a ≤ b)
     (hExt : ∀ τ ∈ Icc a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Icc a b, HasDerivAt r (killingNorm rs (r τ) * ur τ) τ)
@@ -511,21 +434,17 @@ theorem inclined_first_integral {rs a b : ℝ} {r ur uθ uφ γ : ℝ → ℝ} (
             (killingNorm rs (r τ) * γ τ) ^ 2 := by ring
         rw [hsqγ, hE, hν, hL']
 
-/-- The slope in an angle that advances at `L/r²` squares to the radial speed. -/
 theorem orbital_slope {L r v : ℝ} (hL : L ≠ 0) (hr : r ≠ 0) :
     (L * ((-v / r ^ 2) / (L / r ^ 2))) ^ 2 = v ^ 2 := by
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   field_simp [hL, hr2]
 
-/-- That radial speed is the Binet residual of `u = 1/r`. -/
 theorem speed_eq_binetResidual {E rs L r v : ℝ} (hr : r ≠ 0)
     (hv : v ^ 2 = E ^ 2 - schwarzschildA rs r * (1 + L ^ 2 / r ^ 2)) :
     v ^ 2 = binetResidual E rs L (1 / r) := by
   rw [hv, binetResidual, schwarzschildA]
   field_simp [hr]
 
-/-- The radial period of the resonant ellipse reads the motion through `L²`
-alone, the same bracket as on the equator. -/
 theorem excess_of_angular_square {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
     (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
     let k := Real.sqrt (1 - 6 * M / p)
@@ -539,7 +458,6 @@ theorem angularMomentumSq_nonneg (r uθ uφ : ℝ) : 0 ≤ angularMomentumSq r u
   unfold angularMomentumSq
   positivity
 
-/-- `(r sin θ ûφ)² ≤ L² sin²θ`. The difference is the polar leg. -/
 theorem azimuthal_le_angular (r θ uθ uφ : ℝ) :
     azimuthalMomentum r θ uφ ^ 2 ≤
       angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 := by
@@ -554,7 +472,6 @@ theorem azimuthal_angular_gap (r θ uθ uφ : ℝ) :
   unfold azimuthalMomentum angularMomentumSq
   ring
 
-/-- Equality is exactly the vanishing of the polar leg, off the poles and the origin. -/
 theorem azimuthal_eq_angular_iff {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
     azimuthalMomentum r θ uφ ^ 2 =
       angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 ↔ uθ = 0 := by
@@ -570,7 +487,6 @@ theorem azimuthal_eq_angular_iff {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.
     simp only [hθ]
     ring
 
-/-- Wherever `L² ≠ 0`, `sin²θ` is at least the square of the ratio of the constants. -/
 theorem colatitude_band (r θ uθ uφ : ℝ) (hL : angularMomentumSq r uθ uφ ≠ 0) :
     azimuthalMomentum r θ uφ ^ 2 / angularMomentumSq r uθ uφ ≤
       (Real.sin θ) ^ 2 := by
@@ -581,7 +497,6 @@ theorem colatitude_band (r θ uθ uφ : ℝ) (hL : angularMomentumSq r uθ uφ �
     simpa [mul_comm] using azimuthal_le_angular r θ uθ uφ
   exact (div_le_iff₀ hpos).mpr hle
 
-/-- A nonzero azimuthal constant makes that lower bound positive. -/
 theorem band_ratio_pos {r θ uθ uφ : ℝ}
     (hL : angularMomentumSq r uθ uφ ≠ 0) (hLz : azimuthalMomentum r θ uφ ≠ 0) :
     0 < azimuthalMomentum r θ uφ ^ 2 / angularMomentumSq r uθ uφ := by
@@ -589,7 +504,6 @@ theorem band_ratio_pos {r θ uθ uφ : ℝ}
     lt_of_le_of_ne (angularMomentumSq_nonneg r uθ uφ) (Ne.symm hL)
   exact div_pos (sq_pos_of_ne_zero hLz) hpos
 
-/-- The polar leg is what `L²` does not put into the azimuthal constant. -/
 theorem polar_leg {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
     uθ ^ 2 =
       (angularMomentumSq r uθ uφ -
@@ -600,7 +514,6 @@ theorem polar_leg {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
   field_simp [hr2, hs2]
   ring
 
-/-- Along a motion that keeps both constants, the band holds at every time. -/
 theorem colatitude_band_of_constants {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
     (hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
@@ -635,7 +548,6 @@ theorem edge_polar_accel (rs r θ γ ur uφ : ℝ) :
   rw [geodesicAccel_polar]
   ring
 
-/-- Off the equator, with azimuthal speed, the edge is not an orbit. -/
 theorem edge_polar_accel_ne {rs r θ γ ur uφ : ℝ}
     (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hc : Real.cos θ ≠ 0) (hφ : uφ ≠ 0) :
     geodesicAccel (exteriorConn rs r θ) (frameVel γ ur 0 uφ) 2 ≠ 0 := by
@@ -650,14 +562,12 @@ theorem sphereRotation_mul_cos (r θ : ℝ) (hr : r ≠ 0) (hs : Real.sin θ ≠
   unfold sphereRotation
   field_simp [hr, hs]
 
-/-- North of the equator the edge raises `θ`. -/
 theorem northern_edge_rate {r θ uφ : ℝ}
     (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ) (hφ : uφ ≠ 0) :
     0 < sphereRotation θ r * uφ ^ 2 := by
   rw [sphereRotation_mul_cos r θ hr.ne' hs.ne']
   exact mul_pos (div_pos hc (mul_pos hs hr)) (sq_pos_of_ne_zero hφ)
 
-/-- South of the equator the edge lowers `θ`. -/
 theorem southern_edge_rate {r θ uφ : ℝ}
     (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : Real.cos θ < 0) (hφ : uφ ≠ 0) :
     sphereRotation θ r * uφ ^ 2 < 0 := by
@@ -667,13 +577,11 @@ theorem southern_edge_rate {r θ uφ : ℝ}
 
 /-! ### A vanishing azimuthal constant is a meridian -/
 
-/-- Off the poles, vanishing azimuthal momentum is a vanishing azimuthal leg. -/
 theorem azimuthal_leg_of_zero {r θ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
     (hM : azimuthalMomentum r θ uφ = 0) : uφ = 0 := by
   unfold azimuthalMomentum at hM
   exact (mul_eq_zero.mp hM).resolve_left (mul_ne_zero hr hs)
 
-/-- Where the azimuthal constant is zero, the leg stays zero. -/
 theorem azimuthal_leg_zero_of_constant {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
     (hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
@@ -689,7 +597,6 @@ theorem azimuthal_leg_zero_of_constant {a b : ℝ} {r θ uθ uφ ν ur : ℝ →
   have hEq := azimuthalMomentum_eq_on hab hρ hs hr hθc hφ hτ h₀
   exact azimuthal_leg_of_zero (hρ τ hτ) (hs τ hτ) (hEq.trans hM)
 
-/-- The azimuthal coordinate of that leg does not advance. -/
 theorem meridian_phi_const {a b : ℝ} {φ r θ uφ : ℝ → ℝ} (_hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
     (hs : ∀ τ ∈ Icc a b, Real.sin (θ τ) ≠ 0)
@@ -715,7 +622,6 @@ theorem meridian_phi_const {a b : ℝ} {φ r θ uφ : ℝ → ℝ} (_hab : a ≤
   have hsub : φ τ₂ - φ τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
   exact (sub_eq_zero.mp hsub).symm
 
-/-- Both angular accelerations lose the sphere's rotation. -/
 theorem meridian_polar_accel (rs r θ γ ur uθ : ℝ) :
     geodesicAccel (exteriorConn rs r θ) (frameVel γ ur uθ 0) 2 =
       (killingNorm rs r / r) * uθ * ur := by
@@ -727,7 +633,6 @@ theorem meridian_azimuth_accel (rs r θ γ ur uθ : ℝ) :
   rw [geodesicAccel_azimuth]
   ring
 
-/-- The polar leg changes by the equatorial torsional law, at every colatitude. -/
 theorem meridian_polar_matches_torsional (rs r θ γ ur uθ : ℝ) :
     -geodesicAccel (exteriorConn rs r θ) (frameVel γ ur uθ 0) 2 =
       -((killingNorm rs r / r) * ur * uθ) := by
@@ -739,13 +644,11 @@ theorem meridian_angularMomentumSq (r uθ : ℝ) :
   unfold angularMomentumSq
   ring
 
-/-- The colatitude itself advances at `L/r²`, with `L = r ûθ`. -/
 theorem meridian_colatitude_rate {r uθ L : ℝ} (hr : r ≠ 0) (hL : L = r * uθ) :
     uθ / r = L / r ^ 2 := by
   rw [hL]
   field_simp [hr]
 
-/-- The radial acceleration is the equatorial one in this `L`. -/
 theorem meridian_radial_is_equatorial {rs r ur uθ : ℝ} (h : IsExterior rs r)
     (θ γ : ℝ) (hγ : γ ^ 2 = gammaSq3 ur uθ 0) :
     -geodesicAccel (exteriorConn rs r θ) (frameVel γ ur uθ 0) 1 =
@@ -758,7 +661,6 @@ theorem meridian_radial_is_equatorial {rs r ur uθ : ℝ} (h : IsExterior rs r)
 
 /-! ### A fixed colatitude is radial, or it is the equator -/
 
-/-- Vanishing angular momentum kills both angular legs. -/
 theorem angular_legs_of_zero {r uθ uφ : ℝ} (hr : r ≠ 0)
     (hL : angularMomentumSq r uθ uφ = 0) : uθ = 0 ∧ uφ = 0 := by
   unfold angularMomentumSq at hL
@@ -770,7 +672,6 @@ theorem angular_legs_of_zero {r uθ uφ : ℝ} (hr : r ≠ 0)
   · exact sq_eq_zero_iff.mp
       (le_antisymm (by nlinarith [sq_nonneg uθ]) (sq_nonneg uφ))
 
-/-- A vanishing polar leg does not advance the colatitude. -/
 theorem colatitude_const_of_zero_polar {a b : ℝ} {θ r uθ : ℝ → ℝ} (_hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
     (hθ : ∀ τ ∈ Icc a b, HasDerivAt θ (uθ τ / r τ) τ)
@@ -795,7 +696,6 @@ theorem colatitude_const_of_zero_polar {a b : ℝ} {θ r uθ : ℝ → ℝ} (_ha
   have hsub : θ τ₂ - θ τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
   exact (sub_eq_zero.mp hsub).symm
 
-/-- Vanishing angular momentum is a radial line at fixed angles. -/
 theorem radial_angles_fixed {a b : ℝ} {θ φ r uθ uφ ν ur : ℝ → ℝ}
     (hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
@@ -820,7 +720,6 @@ theorem radial_angles_fixed {a b : ℝ} {θ φ r uθ uφ ν ur : ℝ → ℝ}
   · exact colatitude_const_of_zero_polar hab hρ hθc (fun τ hτ => (hlegs τ hτ).1) h₁ h₂
   · exact meridian_phi_const hab hρ hs hφc (fun τ hτ => (hlegs τ hτ).2) h₁ h₂
 
-/-- Where the constants agree, the band is the equator and the polar leg vanishes. -/
 theorem band_collapses_to_equator {r θ uθ uφ : ℝ}
     (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
     (hL : angularMomentumSq r uθ uφ ≠ 0)
@@ -836,7 +735,6 @@ theorem band_collapses_to_equator {r θ uθ uφ : ℝ}
     (azimuthal_eq_angular_iff hr hs).mp (by rw [heq, h1]; ring)
   exact ⟨h1, hleg⟩
 
-/-- A motion that meets the equator with vanishing polar leg stays there. -/
 theorem equator_persists {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
     (hab : a ≤ b)
     (hρ : ∀ τ ∈ Icc a b, r τ ≠ 0)
@@ -869,7 +767,6 @@ theorem equator_persists {a b : ℝ} {r θ uθ uφ ν ur : ℝ → ℝ}
     exact hM0
   exact band_collapses_to_equator (hρ τ hτ) (hs τ hτ) hLτ hMτ
 
-/-- On that latitude the tangent rotation of the sphere is zero. -/
 theorem sphereRotation_of_equator {θ r : ℝ} (hs : (Real.sin θ) ^ 2 = 1) :
     sphereRotation θ r = 0 := by
   have hcos : Real.cos θ = 0 := by
@@ -878,7 +775,6 @@ theorem sphereRotation_of_equator {θ r : ℝ} (hs : (Real.sin θ) ^ 2 = 1) :
   unfold sphereRotation
   rw [hcos, zero_div, zero_div]
 
-/-- The azimuthal rate on that latitude is the torsional leg. -/
 theorem equator_latitude_azimuth {rs r θ γ ur uφ : ℝ}
     (hs : (Real.sin θ) ^ 2 = 1) :
     -geodesicAccel (exteriorConn rs r θ) (frameVel γ ur 0 uφ) 3 =
@@ -886,7 +782,6 @@ theorem equator_latitude_azimuth {rs r θ γ ur uφ : ℝ}
   rw [geodesicAccel_azimuth, sphereRotation_of_equator hs]
   ring
 
-/-- Off the equator a vanishing polar leg does not persist. -/
 theorem no_fixed_latitude_off_equator {a b : ℝ} {θ r uθ uφ ν ur : ℝ → ℝ}
     {τ₀ : ℝ} (h₀ : τ₀ ∈ Ioo a b)
     (hleg : ∀ τ ∈ Icc a b, uθ τ = 0)
@@ -916,7 +811,6 @@ theorem no_fixed_latitude_off_equator {a b : ℝ} {θ r uθ uφ ν ur : ℝ → 
 
 /-! ### Azimuth gained per colatitude -/
 
-/-- The gap between the two constants is the squared polar contribution. -/
 theorem angular_gap_ne_of_polar {r θ uθ uφ : ℝ}
     (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hθ : uθ ≠ 0) :
     angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 -
@@ -924,7 +818,6 @@ theorem angular_gap_ne_of_polar {r θ uθ uφ : ℝ}
   rw [azimuthal_angular_gap]
   exact pow_ne_zero 2 (mul_ne_zero (mul_ne_zero hr hs) hθ)
 
-/-- Squared azimuthal slope in the colatitude. The radius cancels. -/
 theorem azimuth_per_colatitude {r θ uθ uφ : ℝ}
     (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) (hθ : uθ ≠ 0) :
     ((uφ / (r * Real.sin θ)) / (uθ / r)) ^ 2 =
@@ -944,7 +837,6 @@ theorem azimuth_per_colatitude {r θ uθ uφ : ℝ}
   unfold azimuthalMomentum
   field_simp [hr2, hs2, hθ2]
 
-/-- Events that share `θ` and the two constants share this slope at every radius. -/
 theorem azimuth_slope_eq_of_constants {r₁ r₂ θ uθ₁ uφ₁ uθ₂ uφ₂ : ℝ}
     (hr₁ : r₁ ≠ 0) (hr₂ : r₂ ≠ 0) (hs : Real.sin θ ≠ 0)
     (hθ₁ : uθ₁ ≠ 0) (hθ₂ : uθ₂ ≠ 0)
@@ -954,7 +846,6 @@ theorem azimuth_slope_eq_of_constants {r₁ r₂ θ uθ₁ uφ₁ uθ₂ uφ₂ 
       ((uφ₂ / (r₂ * Real.sin θ)) / (uθ₂ / r₂)) ^ 2 := by
   rw [azimuth_per_colatitude hr₁ hs hθ₁, azimuth_per_colatitude hr₂ hs hθ₂, hL, hM]
 
-/-- In proper time the colatitude still advances at a rate that carries the radius. -/
 theorem colatitude_rate_sq {r θ uθ uφ : ℝ}
     (hr : r ≠ 0) (hs : Real.sin θ ≠ 0) :
     (uθ / r) ^ 2 =

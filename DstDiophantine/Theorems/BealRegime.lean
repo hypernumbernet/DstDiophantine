@@ -7,18 +7,9 @@ import DstDiophantine.Algebra.Amplification
 set_option linter.style.native false
 
 /-!
-# Phase 7p / 7r: Beal regime witnesses (D4L ↔ Theorems)
+# Exponent regime labels
 
-Connects `Logic.Example.BealRegime` to the exponent-shape filter
-`IsClosedShapeExponents` and the L3 balanced class.
-
-**Not** re-exported from `Basic`. The Diophantine public API exposes residual
-types and the shape filter; this module is the witness layer that reads those
-shapes as D4L labels. A `.U → .T` atlas update lives in
-`Logic.Example.BealRegime` and does not silently promote classical Beal
-(`artefacts_not_entailsTR_beal`).
-
-Unconditional classical Beal is **not** claimed.
+`classifyBealExponents` marks a closed shape `T` or the open residual `U`, and never bookkeeping `B`. A `.U` label does not claim classical Beal.
 -/
 
 namespace DstDiophantine
@@ -29,16 +20,7 @@ open Logic Amplification Admissible Invariant
 
 /-! ### Open-residual Bool ↔ regime label `U` -/
 
-/--
-Classifier of exponent triples, landing in `{T, U, F}` and never `B`:
-
-* `U` — Beal-range open residual (`isOpenResidualExponents`)
-* `T` — Beal-range closed *shape* (`IsClosedShapeExponents`)
-* `F` — exponents outside Beal range (`min < 3`)
-
-Bookkeeping `B` is an atlas status for identities, not for exponent triples.
-The `|u| = 1` Mihăilescu slice is `T` on the atlas and does not force `T` here.
--/
+/-- `T` closed shape, `U` open residual, `F` off range. Never bookkeeping `B`. -/
 def classifyBealExponents (x y z : ℕ) : TruthValue :=
   if isOpenResidualExponents x y z then .U
   else if 3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z then .T
@@ -136,18 +118,17 @@ theorem classifyBealExponents_three_five_five :
 theorem classifyBealExponents_four_four_five :
     classifyBealExponents 4 4 5 = .T := by native_decide
 
-/-- Even permutation `(3,4,4)` is *not* Darmon–Merel; it is even two-equal. -/
+/-- `(3,4,4)` is not Darmon–Merel; it is even two-equal. -/
 theorem classifyBealExponents_three_four_four :
     classifyBealExponents 3 4 4 = .U := by native_decide
 
 theorem classifyBealExponents_four_three_four :
     classifyBealExponents 4 3 4 = .U := by native_decide
 
-/-- Even permutation `(5,4,4)` is *not* signature `(n,n,5)`. -/
+/-- `(5,4,4)` is not signature `(n,n,5)`. -/
 theorem classifyBealExponents_five_four_four :
     classifyBealExponents 5 4 4 = .U := by native_decide
 
-/-- Two cubes summing to a fifth power: closed shape (Bruin), every position. -/
 theorem classifyBealExponents_three_three_five :
     classifyBealExponents 3 3 5 = .T := by native_decide
 
@@ -160,11 +141,10 @@ theorem classifyBealExponents_five_three_three :
 theorem classifyBealExponents_three_four_three :
     classifyBealExponents 3 4 3 = .T := by native_decide
 
-/-- Repeated exponent `3` with companion `7` is inside the two-cube bound. -/
 theorem classifyBealExponents_three_three_seven :
     classifyBealExponents 3 3 7 = .T := by native_decide
 
-/-- Even companion `8` is a two-cube power, with no appeal to the bound. -/
+/-- Even `8` is closed with no appeal to the `10^9` bound. -/
 theorem classifyBealExponents_three_three_eight :
     classifyBealExponents 3 3 8 = .T := by native_decide
 
@@ -174,28 +154,22 @@ theorem classifyBealExponents_three_three_past_bound :
       classifyBealExponents 3 3 1000000001 = .U := by
   native_decide
 
-/-- Signature `(3,4,5)` is closed in every order. -/
 theorem classifyBealExponents_three_four_five :
     classifyBealExponents 3 4 5 = .T := by native_decide
 
 theorem classifyBealExponents_five_three_four :
     classifyBealExponents 5 3 4 = .T := by native_decide
 
-/-- The prime signature `(3,5,7)` stays in the all-distinct body. -/
+/-- `(3,5,7)` stays in the all-distinct body. -/
 theorem classifyBealExponents_three_five_seven :
     classifyBealExponents 3 5 7 = .U := by native_decide
 
-/--
-A repeated five beside `7` or `19` is closed in every order.
-Beside `11` the same shape stays open.
--/
 theorem classifyBealExponents_repeated_fifth :
     classifyBealExponents 5 5 7 = .T ∧ classifyBealExponents 7 5 5 = .T ∧
       classifyBealExponents 5 7 5 = .T ∧ classifyBealExponents 5 5 19 = .T ∧
         classifyBealExponents 19 5 5 = .T ∧ classifyBealExponents 5 5 11 = .U := by
   native_decide
 
-/-- Two exponents divisible by `3` collapse to a sum of two cubes. -/
 theorem classifyBealExponents_six_six_seven :
     classifyBealExponents 6 6 7 = .T := by native_decide
 
@@ -205,25 +179,19 @@ theorem classifyBealExponents_nine_nine_four :
 theorem classifyBealExponents_three_six_five :
     classifyBealExponents 3 6 5 = .T := by native_decide
 
-/-- Even permutation `(5,6,6)` of signature `(n,n,5)`: the common exponent is divisible by `3`. -/
+/-- `(5,6,6)` is closed because the common exponent is divisible by `3`. -/
 theorem classifyBealExponents_five_six_six :
     classifyBealExponents 5 6 6 = .T := by native_decide
 
-/-- The even sum whose common exponent is not divisible by `3` stays open. -/
 theorem classifyBealExponents_four_four_seven :
     classifyBealExponents 4 4 7 = .T := by native_decide
 
-/-- Phase 7z: `(8,8,7)` and `(4,4,9)` close with `(4,4,7)`; `(4,7,7)` stays open. -/
+/-- `(4,7,7)` stays open; it is not a fourth-power sum. -/
 theorem classifyBealExponents_fourth_sum :
     classifyBealExponents 8 8 7 = .T ∧ classifyBealExponents 4 4 9 = .T ∧
       classifyBealExponents 4 7 7 = .U := by
   native_decide
 
-/--
-Phase 8a: a fifth-power pair is closed. `(10,10,7)` is the first even sum that
-phase 7z left open. `(10,10,9)` and `(22,22,7)` stay open; `(5,5,11)` stays
-open because `11` is not `7` or `19`.
--/
 theorem classifyBealExponents_fifth_pair :
     classifyBealExponents 10 10 7 = .T ∧ classifyBealExponents 10 10 19 = .T ∧
       classifyBealExponents 7 10 10 = .T ∧ classifyBealExponents 5 10 7 = .T ∧
@@ -234,7 +202,6 @@ theorem classifyBealExponents_fifth_pair :
                 classifyBealExponents 5 5 11 = .U := by
   native_decide
 
-/-- Repeated multiple of `3` with an odd companion past `10^9` stays open. -/
 theorem classifyBealExponents_nine_nine_past_bound :
     classifyBealExponents 9 9 1000000001 = .U := by native_decide
 
@@ -248,7 +215,6 @@ theorem beal_balanced_diagnostic_seat :
   ⟨balancedAmplitude_isBalancedMassive,
     Amplitude.not_vacuum_of_balancedMassive balancedAmplitude_isBalancedMassive⟩
 
-/-- Open-residual `U` is not sufficient for the L3 balanced seat. -/
 theorem open_residual_U_not_implies_balancedSeat :
     classifyBealExponents 3 5 7 = .U ∧
       IsWindowSeed halfWindowSeed ∧
@@ -283,7 +249,6 @@ theorem beal_model_rapidity_measure_pos {m : ℕ} (hm : 0 < m) :
   refine mul_pos (by positivity) (sq_pos_of_pos ?_)
   exact div_pos (Real.log_pos (by norm_num : (1 : ℝ) < 2)) (Nat.cast_pos.mpr hm)
 
-/-- Beal model rapidity is boost-dominant (`J > 0`), not `BalancedResidualClass`. -/
 theorem beal_model_rapidity_not_mem_balancedResidualClass {m : ℕ} (hm : 0 < m) :
     ¬ BalancedResidualClass
         ⟨Amplification.pureBoost (Real.log 2 / (m : ℝ)),

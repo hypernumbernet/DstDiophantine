@@ -8,11 +8,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Geometric-algebra reading of D4L
 
-The four states are the sign and saturation of `JNormalized`, itself the
-(normalised) Killing quadratic of the PGA torsion bivector `omegaTorsion`.
-
-Usual–dual swap `daggerParams` (`α ↔ β`) sends `JNormalized ↦ -JNormalized`,
-so signed negation is the algebra involution, not a new connective.
+The four states are the sign and saturation of `JNormalized`. Signed negation is the usual–dual swap, not a new connective.
 -/
 
 namespace DstDiophantine
@@ -21,7 +17,6 @@ namespace Logic
 
 open Admissible Invariant Motor Operations Real Framework
 
-/-- Dagger / usual–dual swap flips the sign of raw and normalised \(J\). -/
 theorem J_dagger (p : TorsionParams) : J (daggerParams p) = -J p :=
   Invariant.J_dagger p
 
@@ -48,9 +43,7 @@ theorem ofParams_T_iff_zeroHeight {p : TorsionParams} (h : IsAdmissibleContinuou
     ofParams p h = .T ↔ IsZeroHeight p := by
   rw [ofParams_eq_T_iff, isZeroHeight_iff_JNormalized]
 
-/-- The torsion bivector is the PGA carrier of the height that is classified.
-`J` equals four times `(1/16) B(Ω,Ω)` under the half-angle expansion.
-The coefficient `8∑(α²-β²)` is rejected by `paper_appendix_killing_coeff_false`. -/
+/-- The coefficient `8∑(α²-β²)` is rejected. -/
 theorem J_of_omegaTorsion (p : TorsionParams) :
     J p = 4 * ((1 / 16) * omegaTorsionGeneratorKilling p) :=
   J_eq_four_times_one_sixteenth_omegaKilling p

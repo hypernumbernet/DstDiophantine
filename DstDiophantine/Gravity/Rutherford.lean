@@ -12,39 +12,7 @@ set_option linter.style.native false
 /-!
 # Alpha–gold scattering in the outer region of the nuclear length
 
-## Paper boundary (do **not** claim)
-
-The electromagnetic scale is the observational product `k e² = α ℏ c`
-(`SI.coulombMeVFm`), which lies strictly between `1.439964` and `1.439965`
-MeV fm. The alpha energy `7.69` MeV, the charges `2` and `79`, and the mass
-numbers `4` and `197` are external inputs. Every particle carries both
-channels at once. The gravitational
-channel is governed by `λ_π`; the electric channel by `ℓ_E` for isolated
-charges and by the common length for protons in proton chaos. Between two
-nuclei the length is `λ_π`, and the Coulomb term is read with the
-equal-scale factor at that length: the protons of a nucleus sit in the sign
-cell of the chaotic proton force and are not isolated charges. The head-on
-distance is the laboratory-frame Coulomb value
-`2 Z k e² / E`. No cross section or half-life is computed here. The coherent
-sum `A₁ A₂ κ` of the nuclear prefactor over nucleon pairs is an option, not a
-statement of the papers.
-
-## What is proved
-
-* The head-on distance lies in `(29, 30)` fm, outside the first node of `λ_π`,
-  and strictly beyond `20 λ_π`.
-* For `0 ≤ x ≤ 1/40`, `0 ≤ 1/γ_s(x) - 1 ≤ 13/15987`.
-* At every separation `r ≥ 29` fm the phase `λ_π/(2r)` lies in `[0, 1/40]`,
-  and the signed Coulomb factor exceeds one by less than `6/10000`.
-* In the centre-of-mass frame the head-on distance lies in `(30.18, 30.19)` fm
-  and the departure lies strictly between `548/1000000` and `55/100000`.
-* At `10` fm the departure lies strictly between `5/1000` and `51/10000`.
-* If the nuclear prefactor adds coherently over the `4 · 197` nucleon pairs
-  and its far-field share is at most `1/200` of the charge term `2 · 79 k e²`,
-  then `κ < k e²/997`.
-* Chadwick's three charges, weighted by one percent, give a coherent ratio
-  `κ/(k e²)` strictly between `94/100000` and `95/100000`, with standard
-  deviation strictly between `123/100000` and `124/100000`.
+The electromagnetic scale, the alpha energy, the charges, and the mass numbers are external inputs. No cross section or half-life is computed, and the coherent sum `A₁ A₂ κ` is not a claim.
 -/
 
 namespace DstDiophantine
@@ -53,7 +21,6 @@ namespace Gravity
 
 open Real Set SI
 
-/-- `γ_s(x) ≥ 1 - x² cosh x` for `x ≥ 0`. -/
 private lemma rf_gamma_ge {x : ℝ} (hx : 0 ≤ x) :
     1 - x ^ 2 * cosh x ≤ gammaSEqual x := by
   let f : ℝ → ℝ := fun y => gammaSEqual y - 1 + y ^ 2 * cosh y
@@ -94,7 +61,6 @@ private lemma rf_gamma_ge {x : ℝ} (hx : 0 ≤ x) :
     norm_num
   linarith
 
-/-- Up to phase `1`, `γ_s(x) ≤ 2 cos x - 1`. -/
 private lemma rf_gamma_le {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     gammaSEqual x ≤ 2 * cos x - 1 := by
   let f : ℝ → ℝ := fun y => 2 * cos y - 1 - gammaSEqual y
@@ -190,7 +156,6 @@ private theorem rf_pion_pos : (0 : ℝ) < (pionComptonFm : ℝ) := by
     exact_mod_cast pionComptonFm_tight_bounds.1
   linarith
 
-/-- The head-on distance lies outside the first node of `λ_π`. -/
 theorem alphaGold_outside_pion_node :
     (pionComptonFm : ℝ) / (2 * resonanceRoot1) < (alphaGoldClosestFm : ℝ) := by
   have hx := firstNode_num_window
@@ -201,7 +166,6 @@ theorem alphaGold_outside_pion_node :
   rw [div_lt_iff₀ (by positivity)]
   nlinarith
 
-/-- For `0 ≤ x ≤ 1/40` the signed factor departs from one by at most `13/15987`. -/
 theorem invGamma_dev_le {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 40) :
     0 ≤ 1 / gammaSEqual x - 1 ∧ 1 / gammaSEqual x - 1 ≤ 13 / 15987 := by
   have hup : gammaSEqual x ≤ 1 := by
@@ -227,7 +191,6 @@ theorem invGamma_dev_le {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 40) :
   · rw [div_le_iff₀ hpos]
     linarith
 
-/-- At every separation `r ≥ 29` fm the phase of `λ_π` lies in `[0, 1/40]`. -/
 theorem pion_phase_le_of_ge {r : ℝ} (hr : 29 ≤ r) :
     0 ≤ (pionComptonFm : ℝ) / (2 * r) ∧ (pionComptonFm : ℝ) / (2 * r) ≤ 1 / 40 := by
   have hp := rf_pion_lt
@@ -237,14 +200,11 @@ theorem pion_phase_le_of_ge {r : ℝ} (hr : 29 ≤ r) :
   rw [div_le_iff₀ hr0]
   linarith
 
-/-- At `r ≥ 29` fm the signed Coulomb factor at `λ_π` departs from one by at most
-`13/15987`. -/
 theorem nuclear_dev_of_ge {r : ℝ} (hr : 29 ≤ r) :
     0 ≤ 1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * r)) - 1 ∧
       1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * r)) - 1 ≤ 13 / 15987 :=
   invGamma_dev_le (pion_phase_le_of_ge hr).1 (pion_phase_le_of_ge hr).2
 
-/-- At the alpha–gold head-on distance the departure is at most `13/15987`. -/
 theorem alphaGold_dev :
     0 ≤ 1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * (alphaGoldClosestFm : ℝ))) - 1 ∧
       1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * (alphaGoldClosestFm : ℝ))) - 1 ≤
@@ -256,29 +216,23 @@ theorem alphaGold_dev :
 
 /-! ### Mass numbers -/
 
-/-- Nucleon pairs over charge pairs for alpha on gold: `4·197 / (2·79)`. -/
 theorem alphaGold_pair_ratio :
     (498 / 100 : ℚ) < (4 * 197) / (2 * 79) ∧ (4 * 197 : ℚ) / (2 * 79) < 499 / 100 := by
   constructor <;> norm_num
 
-/-- A coherent nuclear prefactor whose far-field share is at most `1/200` of the
-charge term forces `κ < k e²/997`. -/
 theorem coherent_kappa_cap {κ k : ℝ} (hk : 0 < k)
     (h : 4 * 197 * κ ≤ (1 / 200) * (2 * 79 * k)) : κ < k / 997 := by
   linarith
 
 /-! ### Chadwick's three charges -/
 
-/-- The alpha coefficient `2A/Z` for copper, silver, and platinum (external
-mass numbers `63.55`, `107.87`, `195.08`). -/
+/-- Mass numbers `63.55`, `107.87`, and `195.08` are external. -/
 theorem chadwick_coeff_windows :
     ((438 : ℚ) / 100 < 2 * (6355 / 100) / 29 ∧ 2 * (6355 / 100 : ℚ) / 29 < 439 / 100) ∧
     ((459 : ℚ) / 100 < 2 * (10787 / 100) / 47 ∧ 2 * (10787 / 100 : ℚ) / 47 < 460 / 100) ∧
     ((500 : ℚ) / 100 < 2 * (19508 / 100) / 78 ∧ 2 * (19508 / 100 : ℚ) / 78 < 501 / 100) := by
   refine ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ⟨?_, ?_⟩⟩ <;> norm_num
 
-/-- A coherent nuclear share of at most `1/50` of the platinum charge forces
-`κ < k e²/250`. -/
 theorem platinum_kappa_cap {κ k : ℝ} (hk : 0 < k)
     (h : 2 * (19508 / 100) / 78 * κ ≤ (1 / 50) * k) : κ < k / 250 := by
   have hk' := hk
@@ -286,9 +240,6 @@ theorem platinum_kappa_cap {κ k : ℝ} (hk : 0 < k)
 
 /-! ### Thermal neutrons -/
 
-/-- A thermal neutron of `0.0253` eV has `2T/(m c²)` below `6×10⁻¹¹`, with the
-neutron rest energy `939.565` MeV (external), so `(v/c)²` and the rapidity
-squared are of that order. -/
 theorem thermalNeutron_speedSq_lt :
     2 * ((253 : ℚ) / 10 ^ 10) / (939565 / 1000) < 6 / 10 ^ 11 := by
   norm_num
@@ -382,7 +333,6 @@ private lemma c0_nonneg {y : ℝ} (hy0 : 0 ≤ y) (hy1 : y ≤ 1 / 10) : 0 ≤ c
   have hc0 := nonneg_up_to hc0_0 (by unfold c0; continuity) hasDerivAt_c0 hnn1
   exact hc0 y ⟨hy0, hy1⟩
 
-/-- `cosh x ≤ 1 + x²/2 + x⁴/12` up to phase `1/10`. -/
 private lemma cosh_le_poly {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 10) :
     cosh x ≤ 1 + x ^ 2 / 2 + x ^ 4 / 12 := by
   have h := c0_nonneg hx0 hx1
@@ -456,7 +406,6 @@ private lemma k0_nonneg {y : ℝ} (hy0 : 0 ≤ y) (hy1 : y ≤ 1) : 0 ≤ k0 y :
   have hk0 := nonneg_up_to hk0_0 (by unfold k0; continuity) hasDerivAt_k0 hnn1
   exact hk0 y ⟨hy0, hy1⟩
 
-/-- `cos x ≤ 1 - x²/2 + x⁴/24` on `[0, 1]`. -/
 private lemma cos_le_poly {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     cos x ≤ 1 - x ^ 2 / 2 + x ^ 4 / 24 := by
   have h := k0_nonneg hx0 hx1
@@ -510,7 +459,6 @@ private theorem rf_pion_scattering_bounds :
   · rw [show (14139 / 10000 : ℝ) = ((14139 / 10000 : ℚ) : ℝ) by norm_num]
     exact_mod_cast hhi
 
-/-- The laboratory head-on distance lies beyond twenty pion wavelengths. -/
 theorem alphaGold_beyond_twenty_pion :
     20 * (pionComptonFm : ℝ) < (alphaGoldClosestFm : ℝ) := by
   have hpion := rf_pion_scattering_bounds.2
@@ -539,8 +487,6 @@ private lemma dev_upper_of_delta {x δ : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 1
     exact mul_le_mul_of_nonneg_left this (by linarith)
   linarith
 
-/-- At every separation `r ≥ 29` fm the signed factor exceeds one by less than
-six parts in ten thousand. -/
 theorem nuclear_dev_six {r : ℝ} (hr : 29 ≤ r) :
     0 ≤ 1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * r)) - 1 ∧
       1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * r)) - 1 < 6 / 10000 := by
@@ -694,8 +640,6 @@ private lemma dev_lower_of_phase {x xL : ℝ} (hx0 : 0 ≤ xL) (hx : xL ≤ x) (
     linarith
   linarith
 
-/-- At the centre-of-mass head-on distance the departure lies strictly between
-`5.48×10⁻⁴` and `5.50×10⁻⁴`. -/
 theorem alphaGoldCm_dev :
     (548 / 1000000 : ℝ) <
         1 / gammaSEqual ((pionComptonFm : ℝ) / (2 * (alphaGoldClosestCmFm : ℝ))) - 1 ∧
@@ -775,8 +719,6 @@ theorem alphaGoldCm_dev :
         ((14138 / 10000 : ℝ) / (2 * (3019 / 100))) ^ 4 / 12) := by norm_num
   exact ⟨lt_of_lt_of_le hlowfin hlow, lt_of_le_of_lt hup hupfin⟩
 
-/-- At `10` fm the signed factor departs from one by just over five parts in a
-thousand, and by less than `5.1` parts. -/
 theorem dev_at_ten_fm :
     (5 / 1000 : ℝ) < 1 / gammaSEqual ((pionComptonFm : ℝ) / 20) - 1 ∧
       1 / gammaSEqual ((pionComptonFm : ℝ) / 20) - 1 < 51 / 10000 := by
@@ -826,8 +768,7 @@ theorem dev_at_ten_fm :
 /-- Inverse-variance weight for a one-percent error on a charge `Z`. -/
 def chadwickWeight (Z : ℚ) : ℚ := 1 / (Z / 100) ^ 2
 
-/-- Coherent ratio `κ/(k e²)` from copper, silver, and platinum, weighted by
-one percent on each measured charge. The charges and mass numbers are external. -/
+/-- Coherent ratio `κ/(k e²)` from copper, silver, and platinum, weighted by one percent on each measured charge. The charges and mass numbers are external. -/
 def chadwickBeta : ℚ :=
   let wCu := chadwickWeight 29
   let wAg := chadwickWeight 47

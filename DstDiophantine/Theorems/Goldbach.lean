@@ -20,33 +20,9 @@ import Mathlib.Tactic.FieldSimp
 set_option linter.style.native false
 
 /-!
-# Phase 5: Goldbach conjecture (mismatch ensemble outside the cone)
+# Goldbach outside the cone
 
-We formalise Chapter 9 of `dst-diophantine.tex`. Configurations on the
-admissible cone are closed: the only Goldbach pair that meets the stable phase
-is `2 + 2 = 4`, and `GoldbachAdmissibleBridge` holds if and only if the
-classical conjecture does. It is not a reduction.
-
-## Mismatch ensemble
-
-Past unit height the additive channel is silent. The remaining observable is
-the mismatch of the relative rotor `R(p)† R(q)`, the pure boost of angle
-`2δ` with `δ = log q - log p`. Its scalar is `J = 2δ²`, and the normalised
-height carries the integer-boost coefficient `16/(3π²)`. The equation of
-state is `n/2 = √(pq) cosh(δ/2)`. The same rapidity is the gap channel of
-`AdditivePhase`: an unequal pair is a Polignac pair, and the two channels are
-the one hyperbola `(n/2)² - k² = pq`. The vacuum `δ = 0` is the identity rotor,
-hence admissible, while for every prime `p ≥ 3` the summands of `2p` lie
-outside the cone. An unbalanced pair is separated by the parity gap
-`d ∈ {2, 4}`, and that floor tends to zero. On a nonempty finite set of
-decompositions the statistical weight `exp(-β J)` is greatest on a pair
-closest to equality.
-
-## Paper gap (not closed)
-
-Classical Goldbach (`∀ even n ≥ 4, ∃ primes p,q with p+q=n`) is **not** claimed.
-The weight describes the ensemble. It does not decide whether the ensemble is
-empty. The coefficient of `integerHeight` is `16/(3π²)`.
+The only pair on the stable phase is `2 + 2 = 4`, and `GoldbachAdmissibleBridge` is not a reduction. Classical Goldbach is not claimed.
 -/
 
 namespace DstDiophantine
@@ -151,8 +127,6 @@ private theorem goldbachTargetHeight_mono {m n : ℕ} (hm : m ≠ 0) (hn : n ≠
     sq_le_sq.mpr (by rwa [abs_of_nonneg hlogm, abs_of_nonneg hlogn])
   exact mul_le_mul_of_nonneg_left hsq hcoef
 
-/-- Every target `n ≥ 4` already has integer-rotor height `> 1` (independent of
-Goldbach decompositions). -/
 theorem goldbachTargetHeight_gt_one_of_four_le {n : ℕ} (hn : 4 ≤ n) :
     1 < goldbachTargetHeight n
       (Nat.pos_iff_ne_zero.mp (Nat.lt_of_lt_of_le (by decide : 0 < 4) hn)) := by
@@ -163,8 +137,7 @@ theorem goldbachTargetHeight_gt_one_of_four_le {n : ℕ} (hn : 4 ≤ n) :
 
 /-! ### Mismatch of the relative rotor
 
-`logMismatch` is the half-angle seed. The relative rotor `R(p)† R(q)` is the
-pure boost of angle `2(log q - log p)`, the same scale as `integerRotor`.
+`logMismatch` is the half-angle seed. The relative rotor `R(p)† R(q)` is the pure boost of angle `2(log q - log p)`.
 -/
 
 /-- Rapidity of the ratio `q / p`. -/
@@ -259,9 +232,7 @@ theorem goldbachMismatch_eq_zero_iff {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
 
 /-! ### Equation of state
 
-The additive channel fixes `n = p + q`. The mismatch rapidity is the hyperbolic
-cost of the gap between the arithmetic mean `n/2` and the geometric mean
-`√(pq)`.
+The additive channel fixes `n = p + q`. The rapidity is the hyperbolic gap between `n/2` and `√(pq)`.
 -/
 
 theorem goldbach_equation_of_state {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
@@ -317,8 +288,6 @@ theorem goldbach_double_prime {p : ℕ} (hp : Nat.Prime p) : IsGoldbachPair p p 
   have htwo : 2 ≤ p := hp.two_le
   exact ⟨hp, hp, by omega, even_two_mul p, by omega⟩
 
-/-- Equal primes are the vacuum of the mismatch, and for `p ≥ 3` both summands
-lie outside the cone. The identity rotor does not pull them back. -/
 theorem goldbach_vacuum_outside_cone {p : ℕ} (hp : Nat.Prime p) (hp3 : 3 ≤ p) :
     goldbachMismatch p p hp.ne_zero hp.ne_zero = 0 ∧
       IsAdmissibleContinuous (pureBoost 0) ∧
@@ -339,8 +308,7 @@ theorem goldbach_three_three_vacuum :
 
 /-! ### Parity floor
 
-Both summands of an even target `n ≥ 6` are odd. Their difference is at least
-`2` when `4 ∣ n`, and a positive multiple of `4` when `n ≡ 2 (mod 4)`.
+Both summands of an even target `n ≥ 6` are odd. Their difference is at least `2` when `4 ∣ n`, and a positive multiple of `4` when `n ≡ 2 (mod 4)`.
 -/
 
 /-- Minimal positive separation of an unbalanced odd-odd pair of sum `n`. -/
@@ -517,8 +485,6 @@ private theorem goldbach_crude_floor_le {n : ℕ} (hn : 8 ≤ n) :
     ring
   nlinarith [mul_le_mul_of_nonneg_left hsq hcoef]
 
-/-- The parity floor tends to zero: no uniform positive mismatch separates
-unbalanced pairs from the vacuum. -/
 theorem goldbach_parity_floor_eventually_lt {ε : ℝ} (hε : 0 < ε) :
     ∃ N : ℕ, ∀ n : ℕ, N ≤ n →
       (16 / (3 * Real.pi ^ 2)) *
@@ -578,9 +544,7 @@ theorem goldbach_parity_floor_eventually_lt {ε : ℝ} (hε : 0 < ε) :
 
 /-! ### Statistical weight
 
-The cone does not select a decomposition. On the finite set of prime pairs the
-weight `exp(-β J)` is greatest at a minimum of `J`, and that minimum is a pair
-closest to equality.
+The cone does not select a decomposition. The weight `exp(-β J)` is greatest at a minimum of `J`, a pair closest to equality.
 -/
 
 noncomputable def goldbachWeight (β : ℝ) (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) : ℝ :=
@@ -649,7 +613,6 @@ theorem mem_goldbachCandidates_iff {n p : ℕ} :
     simp only [goldbachCandidates, Finset.mem_filter, Finset.mem_range, decide_eq_true_eq]
     exact ⟨Nat.lt_succ_of_le hle, ⟨hpp, hle, hq⟩⟩
 
-/-- Nonempty candidate sets yield a Goldbach pair when `n` is even and `≥ 4`. -/
 theorem exists_goldbachPair_of_candidates {n : ℕ} (he : Even n) (hn : 4 ≤ n)
     (hne : (goldbachCandidates n).Nonempty) :
     ∃ p q, IsGoldbachPair p q n := by
@@ -665,7 +628,6 @@ noncomputable def candidateMismatch (n p : ℕ) : ℝ :=
       (Nat.Prime.ne_zero (mem_goldbachCandidates_iff.mp h).2.2)
   else 0
 
-/-- On a nonempty finite candidate set the mismatch height attains a minimum. -/
 theorem exists_min_goldbachMismatch {n : ℕ}
     (hne : (goldbachCandidates n).Nonempty) :
     ∃ p ∈ goldbachCandidates n,
@@ -723,7 +685,6 @@ theorem candidateMismatch_symm {n p : ℕ} (hp : p ∈ goldbachCandidates n) :
   simp only [hback]
   ring
 
-/-- The ground state is a prime pair closest to equality, and it minimises the mismatch. -/
 theorem exists_goldbach_ground {n : ℕ} (hne : (goldbachCandidates n).Nonempty) :
     ∃ p ∈ goldbachBalancedCandidates n,
       (∀ q ∈ goldbachBalancedCandidates n, q ≤ p) ∧
@@ -817,14 +778,12 @@ theorem allEvenGoldbachUpTo_sound {N : ℕ} (h : allEvenGoldbachUpTo N = true) :
   simp only [hcond, ↓reduceIte] at hall
   exact hasGoldbachPair_of_even he hn4 hall
 
-/-- Chapter 9 finite-exploration certificate for even targets up to `100`. -/
 theorem goldbach_of_le_hundred {n : ℕ} (hn4 : 4 ≤ n) (hn : n ≤ 100) (he : Even n) :
     ∃ p q, IsGoldbachPair p q n :=
   allEvenGoldbachUpTo_sound (by native_decide : allEvenGoldbachUpTo 100 = true) n hn4 hn he
 
 /-! ### The cone as the stable phase -/
 
-/-- An even target `n ≥ 4` lies outside the admissible cone. -/
 theorem goldbach_target_not_admissible {n : ℕ} (hn : 4 ≤ n) :
     ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) := by
   intro hadm
@@ -832,7 +791,6 @@ theorem goldbach_target_not_admissible {n : ℕ} (hn : 4 ≤ n) :
   have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
   omega
 
-/-- The pair `2 + 2 = 4` is Goldbach, and both summands lie on the stable phase. -/
 theorem goldbach_two_two : IsGoldbachPair 2 2 4 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨2, by decide⟩, by decide⟩
 
@@ -840,7 +798,6 @@ theorem goldbach_two_two_in_cone :
     Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (2 : ℝ))) :=
   (prime_boost_admissible_iff (by decide : Nat.Prime 2)).mpr rfl
 
-/-- A summand on the stable phase forces the pair `2 + 2 = 4`. -/
 theorem goldbach_summand_in_cone {p q n : ℕ} (h : IsGoldbachPair p q n)
     (hadm : Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ)))) :
     p = 2 ∧ q = 2 ∧ n = 4 := by
@@ -856,7 +813,6 @@ theorem goldbach_summand_in_cone {p q n : ℕ} (h : IsGoldbachPair p q n)
     exact ⟨rfl, rfl, by omega⟩
   · omega
 
-/-- For every even target `n ≥ 6`, both summands lie outside the cone. -/
 theorem goldbach_pair_outside_cone {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n) :
     ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
       ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (q : ℝ))) := by
@@ -868,7 +824,6 @@ theorem goldbach_pair_outside_cone {p q n : ℕ} (h : IsGoldbachPair p q n) (hn 
     have := goldbach_summand_in_cone (isGoldbachPair_symm h) hadm
     omega
 
-/-- The pair `3 + 3 = 6` is Goldbach, and both summands lie in the shell. -/
 theorem goldbach_three_three : IsGoldbachPair 3 3 6 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨3, by decide⟩, by decide⟩
 
@@ -877,7 +832,6 @@ theorem goldbach_three_in_shell :
       collatzHeight 3 (by decide : (3 : ℕ) ≠ 0) < 1 :=
   (prime_shell_iff (by decide : Nat.Prime 3)).mpr rfl
 
-/-- Both summands lie in the shell only for `3 + 3 = 6`. -/
 theorem goldbach_both_shell {p q n : ℕ} (h : IsGoldbachPair p q n)
     (hp : ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
       collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) < 1)
@@ -891,7 +845,6 @@ theorem goldbach_both_shell {p q n : ℕ} (h : IsGoldbachPair p q n)
   obtain ⟨_, _, hsum, _, _⟩ := h
   exact ⟨rfl, rfl, by omega⟩
 
-/-- For every even target `n ≥ 8`, the larger summand is at least `5`. -/
 theorem goldbach_max_ge_five {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 8 ≤ n) :
     5 ≤ max p q := by
   have hout := goldbach_pair_outside_cone h (by omega)
@@ -922,7 +875,6 @@ theorem goldbach_max_ge_five {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 8 �
     · exact absurd hq (by decide : ¬ Nat.Prime 4)
   omega
 
-/-- The larger summand of an even target `n ≥ 8` has height greater than one. -/
 theorem goldbach_larger_summand_height {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 8 ≤ n) :
     1 < collatzHeight (max p q)
       (Nat.pos_iff_ne_zero.mp
@@ -932,20 +884,12 @@ theorem goldbach_larger_summand_height {p q n : ℕ} (h : IsGoldbachPair p q n) 
 
 /-! ### Classical Goldbach under an explicit bridge hypothesis -/
 
-/--
-Paper Chapter 9's missing bridge: a classical Goldbach counterexample forces the
-pure-boost integer embedding of `n` to be an admissible continuous configuration
-(so that `goldbachTargetHeight n > 1` would contradict `torsion_bound_continuous`).
-
-This proposition is **not** proved in this development: for `n ≥ 4` the boost
-angle `2 log n` already exits the principal admissible chamber.
--/
+/-- Unproved bridge, equivalent to classical Goldbach, not a reduction. -/
 def GoldbachAdmissibleBridge : Prop :=
   ∀ n : ℕ, Even n → 4 ≤ n →
     (¬ ∃ p q, IsGoldbachPair p q n) →
       IsAdmissibleContinuous (pureBoost (2 * Real.log n))
 
-/-- Conditional DST recovery of the Goldbach conjecture. -/
 theorem goldbach_conjecture_of_bridge (hbridge : GoldbachAdmissibleBridge) :
     ∀ n : ℕ, Even n → 4 ≤ n → ∃ p q, IsGoldbachPair p q n := by
   intro n he hn4
@@ -965,7 +909,6 @@ theorem goldbachAdmissibleBridge_of_pairs
   intro n he hn4 hnone
   exact absurd (h n he hn4) hnone
 
-/-- The bridge holds exactly when every even target has a prime pair. -/
 theorem goldbachAdmissibleBridge_iff :
     GoldbachAdmissibleBridge ↔
       (∀ n : ℕ, Even n → 4 ≤ n → ∃ p q, IsGoldbachPair p q n) :=

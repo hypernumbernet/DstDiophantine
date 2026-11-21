@@ -4,35 +4,16 @@ import DstDiophantine.Gravity.CliffordParallel
 /-!
 # Gravitational and electromagnetic compactification ranges
 
-Both channels read the same dual-image enhancement \(\eta(x)=x\coth x\).
-The gravitational channel is organized on a galactic compactification radius
-\(R\); the electromagnetic channel is read on a larger radius \(\Lambda\).
-
-On \(0<r\le R\) the electromagnetic fractional departure from inverse-square
-obeys \(0<\eta(r/\Lambda)-1<(R/\Lambda)^2/3\). At the gravitational
-compactification radius the gravitational departure lies in \((0.31,0.32)\).
-When \(0<R<\Lambda\), the ratio of those fractional departures exceeds
-\((93/100)(\Lambda/R)^2\).
-
-Reading \(\Lambda\) as the Hubble length, for \(8\le R\le 9\) and
-\(67\le H_0\le 74\), the patch radius stands to \(\Lambda\) strictly between
-\(1.787\times 10^{-6}\) and \(2.222\times 10^{-6}\). Throughout the patch the
-equidistant Jacobian on that sphere differs from \(1\) by less than
-\(1.646\times 10^{-12}\), and the electromagnetic fraction lies under the same
-figure. At the patch edge the gravitational fraction exceeds the
-electromagnetic one by more than \(1.8836\times 10^{11}\).
-
-\(\Lambda\) is an input, as \(a_0\) is. No theorem asserts `dst_derives_lambda`.
-The comparison is of fractional departures from each channel's own
-inverse-square law. It does not subtract the Coulomb coupling from \(G\).
+Both channels read \(\eta(x)=x\coth x\), on a galactic radius \(R\) and a
+larger radius \(\Lambda\). \(\Lambda\) is an input, as \(a_0\) is; no theorem
+asserts `dst_derives_lambda`, and the comparison does not subtract the Coulomb
+coupling from \(G\).
 -/
 
 namespace DstDiophantine
 
 namespace Gravity
 
-/-- Across a patch \(0<r\le R\), the electromagnetic fractional excess over
-its own inverse-square law is positive and strictly less than \((R/\Lambda)^2/3\). -/
 theorem emExcess_pos_lt_patch {r R Λ : ℝ} (hr : 0 < r) (hR : 0 < R) (hΛ : 0 < Λ)
     (hrR : r ≤ R) :
     0 < dualEnhancement (r / Λ) - 1 ∧
@@ -50,15 +31,11 @@ theorem emExcess_pos_lt_patch {r R Λ : ℝ} (hr : 0 < r) (hR : 0 < R) (hΛ : 0 
     exact div_le_div_of_nonneg_right hsq (by norm_num)
   exact ⟨hpos, hlt.trans_le hle⟩
 
-/-- At one gravitational compactification radius the fractional excess over
-inverse-square lies between \(0.31\) and \(0.32\). -/
 theorem gravExcess_one_bounds :
     (31 / 100 : ℝ) < dualEnhancement 1 - 1 ∧ dualEnhancement 1 - 1 < 32 / 100 := by
   obtain ⟨hlo, hhi⟩ := dualEnhancement_one_bounds
   constructor <;> linarith
 
-/-- At \(r=R<\Lambda\), the ratio of the gravitational fractional excess to the
-electromagnetic one exceeds \((93/100)(\Lambda/R)^2\). -/
 theorem excess_ratio_at_compactification {R Λ : ℝ} (hR : 0 < R) (hΛR : R < Λ) :
     (93 / 100 : ℝ) * (Λ / R) ^ 2 <
       (dualEnhancement 1 - 1) / (dualEnhancement (R / Λ) - 1) := by
@@ -80,12 +57,7 @@ theorem excess_ratio_at_compactification {R Λ : ℝ} (hR : 0 < R) (hΛR : R < �
     ring
   exact hrew.trans_lt (hsmallerDen.trans hlargerNum)
 
-/-- In the external Milky-Way and Hubble window, the patch is a fraction of the
-Hubble length between `1.787×10⁻⁶` and `2.222×10⁻⁶`. Throughout the patch the
-equidistant Jacobian on that sphere differs from `1` by less than
-`1.646×10⁻¹²`, and so does the electromagnetic fractional excess. At the edge
-the gravitational fraction exceeds the electromagnetic one by more than
-`1.8836×10¹¹`. `H₀` is an input. -/
+/-- `H₀` is an input. -/
 theorem hubble_patch_reading {r R H : ℝ}
     (hr : 0 < r) (hrR : r ≤ R)
     (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)

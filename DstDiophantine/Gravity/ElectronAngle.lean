@@ -13,34 +13,10 @@ import Mathlib.Tactic.Ring
 /-!
 # The angle of a covalent bond
 
-## Paper boundary (do **not** claim)
-
-The length `ℓ` is not derived. No bond angle in degrees, no dissociation energy,
-and no count of seats is produced. The radius at which a non-shared electron
-rests is not located. The comparison holds while that electron remains at least
-`1/√2` times as far from the nucleus as a bonding electron.
-
-## What is proved
-
-Distances are in units of `ℓ`. The rays are the four vertices of a regular
-tetrahedron, and the cosine of the angle between two of them is `-1/3`, so the
-angle is greater than a right angle.
-
-* At one common electron distance, with protons at one greater common distance
-  on a subset of the rays and with those separations in the outer well, the
-  outward force on an electron whose ray carries a proton is strictly greater
-  than the outward force on an electron whose ray carries none.
-* While the angle is at least a right angle and both separations lie in the
-  outer well, a closer electron repels a neighbor more strongly.
-* If the closer electron is still at least `1/√2` times as far out as the
-  neighbor, the tangential part of that repulsion is stronger as well.
-* Four electrons at one distance, and four protons at one greater distance,
-  exert no tangential force. Move one electron inward, not past the fraction
-  above, and remove the proton on its ray. At this angle the tangential force
-  on each of the other three drives the angle with the remaining bonds
-  narrower. A second electron moved inward by the same amount, with its proton
-  likewise removed, contributes the same narrowing, so the two together
-  contribute twice one.
+On a regular tetrahedron a shared electron is driven outward and the bond
+angle is driven narrower while a non-shared electron stays at least
+\(1/\sqrt{2}\) as far out. The length \(\ell\) is not derived; no bond angle
+in degrees, no dissociation energy, and no seat count is produced.
 -/
 
 namespace DstDiophantine.Gravity
@@ -606,8 +582,6 @@ private theorem electronRadialSum_eq {i i' : Fin 4} {r : ℝ}
     simp
   rw [hconst i, hconst i']
 
-/-- At one common electron distance, an electron with a proton on its ray is
-pushed outward more strongly than an electron with none. -/
 theorem shared_outward_gt {Z r R : ℝ} {bond lone : Fin 4} {P : Finset (Fin 4)}
     (hr : outerSep r) (hR : r < R) (hown : outerSep (R - r))
     (hcross : outerSep (chord r R tetCos))
@@ -746,13 +720,11 @@ lemma tet_widen_dot : tetCos * (1 - tetCos) = -4 / 9 := by
   unfold tetCos
   ring
 
-/-- Tangential shift on ray `i` when the electron on `lone` moves from `r` to
-`s` and the proton on `lone` is removed. -/
+/-- Tangential shift on ray `i` when the electron on `lone` moves from `r` to `s` and the proton on `lone` is removed. -/
 def loneShift (i lone : Fin 4) (r s R : ℝ) : Fin 3 → ℝ :=
   fun k => eeTang i lone r s k - eeTang i lone r r k - peTang i lone r R k
 
-/-- Component of that shift along the direction that widens the angle with
-`partner`. Negative means the bond angle is driven narrower. -/
+/-- Component of that shift along the direction that widens the angle with `partner`. Negative means the bond angle is driven narrower. -/
 def narrowComponent (i lone partner : Fin 4) (r s R : ℝ) : ℝ :=
   vdot (loneShift i lone r s R) (widenDir i partner)
 
@@ -895,8 +867,6 @@ theorem pe_cross_tang_zero {i : Fin 4} {r R : ℝ}
     rw [← mul_sum]
   rw [hpull, sum_widen_zero, mul_zero]
 
-/-- Four electrons at one distance and four protons at one greater distance
-exert no tangential force. -/
 theorem tetra_equal_tang_zero {i : Fin 4} {r R : ℝ}
     (hr : 0 < r) (hR : r < R)
     (hee : outerSep (chord r r tetCos)) (hown : outerSep (R - r))

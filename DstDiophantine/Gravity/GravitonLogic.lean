@@ -11,49 +11,7 @@ set_option linter.style.native false
 /-!
 # Gravitons on the quantum logic of one device
 
-The computational observable has two atoms, the line of `spinUp` and its
-negation, the line of the orthogonal outcome. An axial graviton maps each
-atom into itself. The carrier of an eigenstate stays in the original atom,
-and the device error is zero.
-
-A transverse graviton of angle strictly between `0` and `π` puts the carrier
-on a third atom. That atom is neither computational line, it meets each of
-them at the bottom, and it is not orthogonal to the original line. The
-device can still record the negation. The carrier has not become it.
-
-The same axial graviton, taken after the transverse step, leaves the device
-error unchanged and moves the carrier onto a different atom. Taken before
-it, the atom is the one the transverse step determines. The proposition
-depends on the order. The device error does not.
-
-One graviton about each of two transverse axes: the two orders determine
-distinct atoms and share one device error. That error is exactly half the
-error of the same two gravitons aligned on one transverse axis, and it is
-strictly less than twice the error of one. The height of the perpendicular
-pair is exactly twice the height of one. For `N ≥ 8` the ratio of the two
-device errors equals the ratio of the two expressed heights.
-
-For `0 < n ≤ N`, `n` aligned transverse gravitons put the carrier on the
-original ray exactly at the full turn, and on the negation exactly when
-`2n = N`. Every other count occupies a third ray, and the device error is
-then strictly between `0` and `1`. When `4 ∣ N`, the quarter turn, the half
-turn, the three-quarter turn, and the full turn express one height, `-1/3`,
-and therefore one amplitude label, the negative unsaturated label. The half
-turn and the full turn are the two atoms of the computational island. The
-quarter turns lie off that island, so the classical expansion along the
-computational ray does not detach onto either. The untouched eigenstate
-occupies the same ray as the full turn and expresses synchrony. The device
-errors `0`, `1/2`, and `1`, read as heights, are the other three labels.
-
-## Not claimed
-
-* That the device error is the proposition the carrier satisfies.
-* That the device error is a height. The reading that treats it as one
-  assigns different labels from the expressed height.
-* A laboratory error rate. The integer `N` is not fixed.
-* That the order of the rotors is seen by the height. The height does not
-  see it. The atoms do.
-* That the expressed height determines the device error or the ray.
+An axial graviton stays in the computational atom, and a transverse graviton of angle in `(0, π)` occupies a third atom whose device error is not that proposition. The integer `N` is not fixed, and the device error is not a height.
 -/
 
 noncomputable section
@@ -124,7 +82,6 @@ theorem mem_lineE1_iff (v : DualSpinor) : v ∈ lineE1 ↔ v 0 = 0 := by
     · simp [e1, PiLp.smul_apply, hv]
     · simp [e1, PiLp.smul_apply]
 
-/-- The orthogonal outcome is the negation of the computational atom. -/
 theorem lineE1_eq_negation : lineE1 = qNot lineE0 := by
   have hle : lineE1 ≤ lineE0ᗮ := by
     intro y hy
@@ -267,8 +224,6 @@ theorem axial_preserves_negation (φ : ℝ) {v : DualSpinor} (hv : v ∈ lineE1)
   rw [applyMat_apply, Fin.sum_univ_two, hv, hA.2.1]
   simp
 
-/-- An axial graviton leaves the eigenstate in its proposition and out of the negation.
-The device records no error. -/
 theorem axial_no_logical_error (φ : ℝ) :
     applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) φ)) spinUp ∈ lineE0 ∧
       applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) φ)) spinUp ∉ qNot lineE0 ∧
@@ -348,8 +303,6 @@ private theorem meet_bot_of_outside {u : DualSpinor} {L : QProp}
     rw [hinv] at hout
     exact hout (Submodule.smul_mem _ _ hx.2)
 
-/-- A transverse graviton of angle in `(0, π)` occupies a third atom. The device
-error is the Born weight of the negation, which the carrier does not satisfy. -/
 theorem transverse_third_atom {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
     afterTransverse θ ∉ lineE0 ∧
       afterTransverse θ ∉ qNot lineE0 ∧
@@ -465,8 +418,6 @@ private theorem wedge_axial_phase (α β : ℝ) :
   rw [Complex.I_sq]
   ring
 
-/-- After a transverse step, an axial graviton moves the atom and leaves the
-device error unchanged. Before it, the atom is the transverse one. -/
 theorem axial_order_changes_atom {θ φ : ℝ}
     (hθ0 : 0 < θ) (hθπ : θ < Real.pi) (hφ0 : 0 < φ) (hφ2 : φ < 2 * Real.pi) :
     atomOf (afterAxialTransverse θ φ) = atomOf (afterTransverse θ) ∧
@@ -642,7 +593,6 @@ private theorem perpRev_weight (θ φ : ℝ) :
     Complex.I_im, Complex.ofReal_re, Complex.ofReal_im, mul_zero, zero_add, sub_zero]
   ring
 
-/-- The two orders of perpendicular gravitons share one device error. -/
 theorem perp_orders_same_error (θ φ : ℝ) :
     deviceError (afterPerp θ φ) = deviceError (afterPerpRev θ φ) := by
   rw [deviceError, deviceError, perp_weight, perpRev_weight]
@@ -738,9 +688,6 @@ private theorem aligned_error_trig {θ : ℝ} (hθ : 0 < θ) :
   rw [hhalf]
   linarith
 
-/-- Perpendicular gravitons of one angle in `(0, π)` occupy different atoms in the
-two orders, and they share a device error. That error is half the error of the
-same two gravitons aligned, and strictly less than twice the error of one. -/
 theorem perp_device_and_logic {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
     atomOf (afterPerp θ θ) ≠ atomOf (afterPerpRev θ θ) ∧
       deviceError (afterPerp θ θ) = deviceError (afterPerpRev θ θ) ∧
@@ -796,8 +743,6 @@ theorem lattice_perp {N : ℕ} (hN : 3 ≤ N) :
   have h := perp_device_and_logic hθ hπ
   exact ⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1⟩
 
-/-- For `N ≥ 8` the perpendicular pair and the aligned pair are both in the cone,
-and the ratio of their device errors equals the ratio of their expressed heights. -/
 theorem error_ratio_eq_height_ratio {N : ℕ} (hN : 8 ≤ N) :
     deviceError (afterPerp (stepAngle N) (stepAngle N)) /
         deviceError (afterTransverse (2 * stepAngle N)) =
@@ -906,10 +851,6 @@ private theorem halfArg_eq {n N : ℕ} (hN : 0 < N) :
   have hNz : (N : ℝ) ≠ 0 := by exact_mod_cast (Nat.pos_iff_ne_zero.mp hN)
   field_simp [hNz]
 
-/-- For `0 < n ≤ N`, the carrier of `n` aligned transverse gravitons lies on the
-original ray exactly at the full turn, and on the negation exactly at the half
-turn. Every other count occupies a third ray, and the device error is then
-strictly between `0` and `1`. -/
 theorem aligned_carrier_ray {n N : ℕ} (hn : 0 < n) (hN : n ≤ N)
     (u : DualSpinor) (hu : u = afterTransverse ((n : ℝ) * stepAngle N)) :
     (n = N → u ∈ lineE0 ∧ atomOf u = lineE0 ∧ u ∉ qNot lineE0 ∧ deviceError u = 0) ∧
@@ -1122,11 +1063,6 @@ theorem aligned_carrier_ray {n N : ℕ} (hn : 0 < n) (hN : n ≤ N)
       have hsum := Real.cos_sq_add_sin_sq α
       linarith
 
-/-- On a compactification divisible by four, the quarter turn, the half turn,
-the three-quarter turn, and the full turn express one height. They occupy
-four rays. The quarter turn and the three-quarter turn share the device error
-`1/2` and lie on neither computational ray. The half turn is the negation.
-The full turn returns to the original ray. -/
 theorem locked_four_rays {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ≠ lineE0 ∧
       atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ≠ qNot lineE0 ∧
@@ -1281,13 +1217,6 @@ private theorem not_compatible_third_ray {L A : QProp} (hL : finrank ℂ L = 1)
       eq_of_le_of_finrank_eq hle (hL.trans (finrank_orthogonal_line hA).symm)
     exact hneo (by rw [← orthogonal_orthogonal A, hLeq])
 
-/-- On a circle divisible by four, the quarter turn, the half turn, the
-three-quarter turn, and the full turn express one height and one amplitude
-label. The half turn and the full turn are the atoms of the computational
-island. The quarter turns lie off it, and the classical expansion along the
-computational ray does not detach onto either. The untouched eigenstate
-occupies the same ray as the full turn and expresses synchrony. The device
-error, read as a height, receives the other three labels. -/
 theorem four_turns_one_label {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     let jq := JNormalized (express (alignedSteps (N / 4) N))
     let jh := JNormalized (express (alignedSteps (N / 2) N))
@@ -1425,7 +1354,6 @@ theorem four_turns_one_label {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     norm_num at hzero
   · exact hj0
 
-/-- The same four turns, read at the level of labels, islands, and device error. -/
 theorem four_turns_read {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     classify? (JNormalized (express (alignedSteps (N / 4) N))) = some .B ∧
       classify? (JNormalized (express (alignedSteps (N / 2) N))) = some .B ∧

@@ -11,38 +11,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Weak deflection by a thin signed shell
 
-## What this is
-
-The lens map of one thin spherical shell in the weak-deflection normalisation
-already used for a point mass. Angles are measured in units of the shell's
-angular radius, so the dimensionless radius `ξ = b / R` is the angular
-coordinate, and `dᾱ/dθ` in those units is the physical radial derivative.
-The parameter `c` is `(bₘ / R)²` when the shell is attractive. It is
-negative, with `|c| = (bₘ / R)²`, when the shell is repulsive.
-
-## What is proved
-
-* The tangential ratio `ᾱ/θ` stays strictly below `c` on the open disk and
-  the radial slope does not stay finite: for `c > 0` it exceeds every bound
-  at some radius short of the limb.
-* On an attractive shell there is a unique interior radial critical curve
-  precisely when `c < 2`, i.e. `R > bₘ / √2`, and a unique interior
-  tangential critical curve precisely when `1 < c < 2`, i.e.
-  `bₘ / √2 < R < bₘ`. In that window the tangential curve lies outside the
-  radial one. Outside the shell the map is the point mass of the shell:
-  an Einstein ring when `R < bₘ`, and never a radial critical curve.
-* On a repulsive shell both `ᾱ/θ` and the interior slope stay negative, so
-  the disk contains neither critical curve.
-
-## Not claimed
-
-* A value for the shell mass, hence a prediction of which window is
-  occupied, or of any magnification.
-* The critical curves of a stack. An interior mass shifts the tangential
-  ratio by a finite amount and does not cancel the radial divergence, but
-  the windows above are the case of vanishing interior mass.
-* A null integration through the frozen chart, or the identification of
-  `F = k/(γₛ r²)` with a ray.
+The lens map is the weak deflection of one thin spherical shell, with angles in units of the shell's angular radius. No shell mass, no stack of critical curves, and no identification of `F = k/(γₛ r²)` with a ray are claimed.
 -/
 
 namespace DstDiophantine
@@ -337,7 +306,6 @@ theorem tangential_s_lt_radial_s {c : ℝ} (h1 : 1 < c) (h2 : c < 2) :
   unfold tangentialCriticalS
   nlinarith [hmul, hsq]
 
-/-- In the window, the tangential critical curve lies outside the radial one. -/
 theorem radial_caustic_lt_tangential {c : ℝ} (h1 : 1 < c) (h2 : c < 2) :
     xiOfS (radialCriticalS c) < xiOfS (tangentialCriticalS c) := by
   have hs0 : 0 < tangentialCriticalS c := by unfold tangentialCriticalS; linarith
@@ -437,7 +405,6 @@ theorem exterior_radial_of_neg {c : ℝ} (hc : c < -1) :
 
 /-! ### The window in areal radii -/
 
-/-- Attractive window `bₘ/√2 < R < bₘ` is exactly `1 < (bₘ/R)² < 2`. -/
 theorem attractive_window_iff {bm R : ℝ} (hbm : 0 < bm) (hR : 0 < R) :
     bm / Real.sqrt 2 < R ∧ R < bm ↔ 1 < (bm / R) ^ 2 ∧ (bm / R) ^ 2 < 2 := by
   have h2 : (0 : ℝ) < Real.sqrt 2 := Real.sqrt_pos.mpr (by norm_num)
@@ -483,7 +450,6 @@ theorem attractive_window_iff {bm R : ℝ} (hbm : 0 < bm) (hR : 0 < R) :
       exact (mul_self_lt_mul_self_iff hR0 hbm0).mpr hsq
     exact ⟨hhiR, hloR⟩
 
-/-- An interior radial curve exists precisely when `R > bₘ/√2`. -/
 theorem radial_window_iff {bm R : ℝ} (hbm : 0 < bm) (hR : 0 < R) :
     bm / Real.sqrt 2 < R ↔ (bm / R) ^ 2 < 2 := by
   constructor

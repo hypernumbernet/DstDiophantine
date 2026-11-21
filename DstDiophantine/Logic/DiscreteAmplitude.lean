@@ -6,11 +6,7 @@ import Mathlib.Tactic.NormNum
 /-!
 # Discrete D4L amplitudes
 
-The amplitude layer on the finite torus. When `¬ 4 ∣ N` the sharp discrete
-bound is strict, so the label `F` is uninhabited — a discrete strengthening
-of Example 3. When `4 ∣ N` both walls are attained.
-
-Does not import `Theorems`.
+When `¬ 4 ∣ N` the label `F` is uninhabited; when `4 ∣ N` both walls are attained. Does not import `Theorems`.
 -/
 
 namespace DstDiophantine
@@ -21,7 +17,7 @@ open Discrete Framework Invariant
 
 variable {N : ℕ} [NeZero N]
 
-/-- An admissible discrete configuration, viewed as a D4L amplitude. -/
+/-- Admissible discrete configuration. -/
 structure DiscreteAmplitude (N : ℕ) [NeZero N] where
   point : AdmissibleClass N
 
@@ -36,7 +32,6 @@ theorem abs_measure (a : DiscreteAmplitude N) : |a.measure| ≤ 1 :=
 noncomputable def collapse (a : DiscreteAmplitude N) : TruthValue :=
   classifyOfMem a.measure a.abs_measure
 
-/-- If `4` does not divide `N`, no discrete amplitude saturates `F`. -/
 theorem collapse_ne_F_of_not_four_dvd (h4 : ¬ 4 ∣ N) (a : DiscreteAmplitude N) :
     a.collapse ≠ .F := by
   intro hf
@@ -48,7 +43,6 @@ theorem collapse_ne_F_of_not_four_dvd (h4 : ¬ 4 ∣ N) (a : DiscreteAmplitude N
 
 end DiscreteAmplitude
 
-/-- The zero lattice point is admissible. -/
 theorem zeroDiscrete_admissible : IsAdmissible (N := N) ⟨fun _ => 0, fun _ => 0⟩ := by
   intro a
   have hπ : (0 : ℝ) ≤ Real.pi / 2 := by positivity
@@ -57,13 +51,12 @@ theorem zeroDiscrete_admissible : IsAdmissible (N := N) ⟨fun _ => 0, fun _ => 
   · simp [toTorsionParams]
   · simpa [toTorsionParams] using hπ
 
-/-- Discrete `T` is inhabited at every compactification. -/
+/-- Zero lattice point. -/
 noncomputable def discreteZero : DiscreteAmplitude N :=
   ⟨⟨⟨fun _ => 0, fun _ => 0⟩, zeroDiscrete_admissible⟩⟩
 
 theorem discreteZero_collapse_T : (discreteZero (N := N)).collapse = .T := by
   have hJ : JNormalized (toTorsionParams (N := N) ⟨fun _ => 0, fun _ => 0⟩) = 0 := by
-    -- `latticeMismatch` of the origin is 0, hence `JNormalized = 0`.
     have hzm : latticeMismatch (N := N) ⟨fun _ => 0, fun _ => 0⟩ = 0 := by
       simp [latticeMismatch]
     have := JNormalized_eq_sixteen_lattice (N := N) ⟨fun _ => 0, fun _ => 0⟩
@@ -73,7 +66,7 @@ theorem discreteZero_collapse_T : (discreteZero (N := N)).collapse = .T := by
     simpa [DiscreteAmplitude.measure, AdmissibleClass.toParams, discreteZero] using hJ
   exact (classifyOfMem_eq_T_iff habs).mpr hmeas
 
-/-- When `4 ∣ N`, the discrete all-boost wall realises `F`. -/
+/-- All-boost wall when `4 ∣ N`. -/
 noncomputable def discreteF (h4 : 4 ∣ N) : DiscreteAmplitude N :=
   ⟨⟨pureHyperbolicDiscrete N, pureHyperbolicDiscrete_admissible h4⟩⟩
 
@@ -84,7 +77,7 @@ theorem discreteF_collapse (h4 : 4 ∣ N) : (discreteF h4).collapse = .F := by
     simpa [DiscreteAmplitude.measure, AdmissibleClass.toParams, discreteF] using hJ
   exact (classifyOfMem_eq_F_iff habs).mpr hmeas
 
-/-- When `4 ∣ N`, the discrete all-rotation wall realises deepest `B`. -/
+/-- All-rotation wall when `4 ∣ N`. -/
 noncomputable def discreteB (h4 : 4 ∣ N) : DiscreteAmplitude N :=
   ⟨⟨pureEllipticDiscrete N, pureEllipticDiscrete_admissible h4⟩⟩
 

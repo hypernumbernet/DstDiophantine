@@ -8,30 +8,7 @@ set_option linter.style.native false
 /-!
 # SI / CODATA bookkeeping for the DST gravity chart
 
-**External inputs only.** These rationals are *not* derived from the double
-spacetime algebra. The DST action writes \(G\) as a coupling constant in
-\(S = (c^4/(16\pi G))\int J\,d^4x\); the present module records CODATA-style
-placeholders so that exploratory numerical comparisons in `NewtonFromLight`,
-`CoulombFromDual`, `ElectronShell`, `CompactS3`, and `NuclearLayer` can be
-machine-checked without `Float`.
-
-Units (SI): \(c\) in m/s, \(\hbar\) in J·s, \(G\) in m³·kg⁻¹·s⁻², masses in kg,
-elementary charge in C. Fine-structure \(\alpha\) is dimensionless.
-Galaxy-scale inputs: \(M_\odot\) in kg, kpc in m, MOND \(a_0\) in m/s².
-Nuclear-scale inputs: fm, MeV, pion/proton mass in MeV, saturation density,
-binding energy per nucleon (all external; not derived).
-
-Mantissas are exposed as `ℕ` so cleared-denominator witnesses can reuse them
-without duplicating decimal literals.
-
-The electromagnetic force scale is the single observational product
-\(ke^{2}=\alpha\hbar c\) (`coulombScale`). There is no second decimal for
-that scale. The Coulomb prefactor is \(k=\alpha\hbar c/e^{2}\). Bohr
-\(a_0=\hbar/(m_e c\alpha)\) and ionisation \(E_I=\tfrac12 m_e c^2\alpha^2\)
-are the same inputs, and they avoid an independent \(\varepsilon_0\).
-
-The shared lattice floor \(\varepsilon_N=16/(3N^2)\) lives here so both
-`NewtonFromLight` and `CoulombFromDual` can reuse it without cross-import.
+These rationals are external CODATA-style inputs and are not derived from the double spacetime algebra.
 -/
 
 namespace DstDiophantine
@@ -76,8 +53,7 @@ def protonMassScale : ℕ := 38
 def protonMassApprox : ℚ :=
   protonMassMantissa / (10 : ℚ) ^ protonMassScale
 
-/-- Mantissa of \(m_\alpha \approx 6.6446573357\times 10^{-27}\) kg,
-the \(^4\mathrm{He}\) nucleus. -/
+/-- Mantissa of \(m_\alpha \approx 6.6446573357\times 10^{-27}\) kg, the \(^4\mathrm{He}\) nucleus. -/
 def alphaMassMantissa : ℕ := 66446573357
 
 /-- Scale: \(m_\alpha =\) `alphaMassMantissa` `/ 10^alphaMassScale`. -/
@@ -86,10 +62,7 @@ def alphaMassScale : ℕ := 37
 def alphaMassApprox : ℚ :=
   alphaMassMantissa / (10 : ℚ) ^ alphaMassScale
 
-/-- Mantissa of the \(^{23}\mathrm{Na}\) nucleus stand-in
-    \(3.8165389703\times 10^{-26}\) kg: the atomic mass \(22.9897692820\,\mathrm{u}\)
-    minus eleven electron masses. Electron binding, a few keV, lies below this
-    truncation and is not included. -/
+/-- Mantissa of the \(^{23}\mathrm{Na}\) nucleus stand-in \(3.8165389703\times 10^{-26}\) kg. Electron binding is not included. -/
 def sodiumMassMantissa : ℕ := 38165389703
 
 /-- Scale: \(m_{\mathrm{Na}} =\) `sodiumMassMantissa` `/ 10^sodiumMassScale`. -/
@@ -98,10 +71,7 @@ def sodiumMassScale : ℕ := 36
 def sodiumMassApprox : ℚ :=
   sodiumMassMantissa / (10 : ℚ) ^ sodiumMassScale
 
-/-- Mantissa of the \(^{7}\mathrm{Li}\) nucleus stand-in
-    \(1.1647614983\times 10^{-26}\) kg: the atomic mass \(7.0160034366\,\mathrm{u}\)
-    minus three electron masses. Electron binding, about \(200\,\mathrm{eV}\), lies
-    below this truncation and is not included. -/
+/-- Mantissa of the \(^{7}\mathrm{Li}\) nucleus stand-in \(1.1647614983\times 10^{-26}\) kg. Electron binding is not included. -/
 def lithiumMassMantissa : ℕ := 11647614983
 
 /-- Scale: \(m_{\mathrm{Li}} =\) `lithiumMassMantissa` `/ 10^lithiumMassScale`. -/
@@ -142,9 +112,7 @@ theorem hbarC_pos : (0 : ℚ) < hbarC :=
 
 /-! ### Shared discrete lattice floor (both gravity and EM hypotheses) -/
 
-/-- Dimensionless discrete height \(\varepsilon_N = 16/(3N^2)\).
-Used by `NewtonFromLight` (\(G_{\mathrm{hyp}}\)) and `CoulombFromDual`
-(\(\alpha_{\mathrm{hyp}}\)); not derived from the dual-rotor algebra. -/
+/-- Dimensionless height \(\varepsilon_N = 16/(3N^2)\), not derived from the dual-rotor algebra. -/
 def epsN (N : ℕ) : ℚ := 16 / (3 * (N : ℚ) ^ 2)
 
 theorem epsN_pos {N : ℕ} (hN : 0 < N) : (0 : ℚ) < epsN N := by
@@ -176,8 +144,7 @@ theorem elementaryCharge_pos : (0 : ℚ) < elementaryCharge := by
 theorem fineStructureApprox_pos : (0 : ℚ) < fineStructureApprox := by
   unfold fineStructureApprox fineStructureMantissa fineStructureScale; norm_num
 
-/-- Electromagnetic pair scale \(ke^{2}=\alpha\hbar c\) (J·m).
-The single observational definition of the force scale. -/
+/-- Electromagnetic pair scale \(ke^{2}=\alpha\hbar c\) (J·m). The single observational definition of the force scale. -/
 def coulombScale : ℚ := fineStructureApprox * hbarC
 
 /-- Coulomb prefactor \(k = \alpha\,\hbar c / e^2\) (N·m²/C²). -/
@@ -296,7 +263,6 @@ private theorem coulombMeVFm_den_pos : (0 : ℚ) < (coulombMeVFm_den : ℚ) := b
   unfold coulombMeVFm_den elementaryChargeMantissa
   norm_num
 
-/-- On the SI stand-ins, \(1.439964 < \alpha\hbar c < 1.439965\) MeV·fm. -/
 theorem coulombMeVFm_bounds :
     (1439964 : ℚ) / 10 ^ 6 < coulombMeVFm ∧
       coulombMeVFm < (1439965 : ℚ) / 10 ^ 6 := by
@@ -365,15 +331,13 @@ def nuclearWellDepthMeVApprox : ℚ := 45
 
 /-! ### Nucleon-nucleon sign radii and charge radii (external) -/
 
-/-- A separation inside the repulsive core. The quoted core scale is
-`1/2` fm; `2/5` fm lies strictly inside it. -/
+/-- A separation inside the repulsive core. The quoted core scale is `1/2` fm; `2/5` fm lies strictly inside it. -/
 def nnCoreInteriorFm : ℚ := 2 / 5
 
 /-- Quoted repulsive-core scale, `1/2` fm. -/
 def nnCoreScaleFm : ℚ := 1 / 2
 
-/-- Inner edge of the attractive interval of a realistic nucleon-nucleon
-potential, `1` fm. -/
+/-- Inner edge of the attractive interval of a realistic nucleon-nucleon potential, `1` fm. -/
 def nnAttractionRadiusFm : ℚ := 1
 
 /-- Angeli--Marinova lower edge: central value minus the quoted uncertainty. -/
@@ -433,26 +397,22 @@ theorem nnCoreScaleFm_pos : (0 : ℚ) < nnCoreScaleFm := by
 theorem nnAttractionRadiusFm_pos : (0 : ℚ) < nnAttractionRadiusFm := by
   unfold nnAttractionRadiusFm; norm_num
 
-/-- A positive cleared denominator turns `k * den < num` into `k < num / den`. -/
 theorem rat_div_gt {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : k * den < num) :
     (k : ℚ) < (num : ℚ) / den := by
   rw [lt_div_iff₀ hden]
   exact_mod_cast hnat
 
-/-- A positive cleared denominator turns `num < k * den` into `num / den < k`. -/
 theorem rat_div_lt {num den k : ℕ} (hden : (0 : ℚ) < den) (hnat : num < k * den) :
     (num : ℚ) / den < (k : ℚ) := by
   rw [div_lt_iff₀ hden]
   exact_mod_cast hnat
 
-/-- The same comparison when the bound carries a power of ten. -/
 theorem rat_div_gt_pow {num den k e : ℕ} (hden : (0 : ℚ) < den)
     (hnat : k * 10 ^ e * den < num) :
     (k : ℚ) * 10 ^ e < (num : ℚ) / den := by
   rw [lt_div_iff₀ hden]
   exact_mod_cast hnat
 
-/-- The same comparison when the bound carries a power of ten. -/
 theorem rat_div_lt_pow {num den k e : ℕ} (hden : (0 : ℚ) < den)
     (hnat : num < k * 10 ^ e * den) :
     (num : ℚ) / den < (k : ℚ) * 10 ^ e := by

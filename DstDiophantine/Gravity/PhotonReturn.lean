@@ -16,46 +16,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Return of rays that a horizon would capture
 
-## What this is
-
-On the Schwarzschild chart a ray with impact parameter below the photon
-sphere has no turning point. The Killing time down to `rₛ` diverges, and for
-`r < rₛ` the factor `A` has changed sign, so the radial direction is timelike
-and the ray cannot turn around.
-
-The saturated chart freezes `A` at a positive floor before that sign change.
-Every such ray then has a periapsis inside the freeze, and the Killing time
-of the visit is finite.
-
-## What is proved
-
-* `4u³ - 27u + 27 = (2u - 3)² (u + 3)` for the dimensionless radius, so
-  `r²/A` on `r > rₛ` is minimised at the photon sphere with value `b_c²`.
-  A ray with `b < b_c` therefore has no turning point on the classical
-  exterior.
-* For `0 < r < rₛ` one has `A < 0`, and a negative factor admits no turning
-  point of positive impact parameter. The saturated factor stays positive.
-* On either recorded ceiling the freeze lies inside the photon sphere, and
-  the periapsis `r = b √A` of every `0 < b < b_c` lies inside the freeze.
-* `d/dr (r + rₛ log(r - rₛ)) = 1/A`. The same antiderivative is unbounded
-  as `r ↓ rₛ` and finite from the freeze out to the photon sphere.
-* Numerical brackets, in units of `GM/c³`, for the photon half-orbit, the
-  radial cavity from the photon sphere down to the freeze, and the Killing
-  time spent inside the freeze. Inside the freeze the round trip is
-  `(4/A) √(u★² − u_peri²)`. It is shortest as `b ↑ b_c`, at `82.83` on the
-  one-axis saturation and `913.54` on the three-axis ceiling. A radial ray
-  takes `96.74` and `927.08`. The radial cavity times are `11.44` and
-  `20.96`, shorter than the half-orbit by `4.89` and longer by `4.63`.
-
-## Not claimed
-
-* A mass on any nodal shell, or a magnification.
-* That `F = k/(γₛ r²)` is the force on a ray.
-* A boundary condition for a gravitational wave, or a late echo train.
-  The cavity crossing is one ringdown cycle and the interior visit is one
-  return. Neither is a pulse train from a reflector at a Planck proper
-  distance from a horizon.
-* Which of the two ceilings is the physical one.
+No mass on a nodal shell and no magnification are derived, and `F = k/(γₛ r²)` is not the force on a ray. No gravitational-wave boundary condition or late echo train is derived, and neither ceiling is identified as the physical one.
 -/
 
 namespace DstDiophantine
@@ -90,8 +51,7 @@ noncomputable def photonHalfOrbit : ℝ :=
 noncomputable def killingAntideriv (rs r : ℝ) : ℝ :=
   r + rs * Real.log (r - rs)
 
-/-- Dimensionless round trip from the freeze out to the photon sphere.
-In units where `rₛ = 2GM/c²`, this is `Δt` in units of `GM/c³`. -/
+/-- Dimensionless round trip from the freeze out to the photon sphere. In units where `rₛ = 2GM/c²`, this is `Δt` in units of `GM/c³`. -/
 noncomputable def cavityFactor (A : ℝ) : ℝ :=
   4 * (3 / 2 - 1 / (1 - A) + Real.log ((1 - A) / (2 * A)))
 
@@ -99,8 +59,7 @@ noncomputable def cavityFactor (A : ℝ) : ℝ :=
 noncomputable def interiorRadialFactor (A : ℝ) : ℝ :=
   4 / (A * (1 - A))
 
-/-- Chord lower bound on the marginal interior round trip.
-The geodesic time is `interiorVisit`, which is strictly longer. -/
+/-- Chord lower bound on the marginal interior round trip. The geodesic time is `interiorVisit`, which is strictly longer. -/
 noncomputable def shallowInteriorFactor (A : ℝ) : ℝ :=
   4 * (1 / (1 - A) - (3 * Real.sqrt 3 / 2) * Real.sqrt A) / A
 
@@ -162,7 +121,6 @@ theorem impactRatio_ge {u : ℝ} (hu : 1 < u) :
       subst hu'
       norm_num
 
-/-- A ray from infinity with `b < b_c` does not turn on `r > rₛ`. -/
 theorem no_exterior_turning {rs r b : ℝ} (hrs : 0 < rs) (hr : rs < r)
     (hb : 0 ≤ b) (hlt : b < criticalImpact rs) :
     b ^ 2 * schwarzschildA rs r < r ^ 2 := by
@@ -197,7 +155,6 @@ theorem schwarzschildA_neg_of_interior {rs r : ℝ}
   have : rs / r > 1 := (one_lt_div hr0).mpr hr
   linarith
 
-/-- A negative redshift admits no turning point of positive impact parameter. -/
 theorem no_turning_of_neg_A {A b r : ℝ} (hA : A < 0) (hb : 0 < b) :
     b ^ 2 ≠ r ^ 2 / A := by
   intro h
@@ -205,8 +162,6 @@ theorem no_turning_of_neg_A {A b r : ℝ} (hA : A < 0) (hb : 0 < b) :
   have hpos : 0 < b ^ 2 := by positivity
   linarith
 
-/-- Below `rₛ` the classical factor is negative, while the saturated chart
-is still the positive floor. -/
 theorem interior_sign_contrast {rs r : ℝ}
     (hrs : 0 < rs) (hr0 : 0 < r) (hr : r < rs) :
     schwarzschildA rs r < 0 ∧ 0 < saturatedA rs r := by
@@ -325,7 +280,6 @@ theorem sqrt_AOne_lt_quarter : Real.sqrt AOne < (1 : ℝ) / 4 := by
     linarith
   exact (Real.sqrt_lt' (by norm_num)).mpr hA
 
-/-- Marginal periapsis of the three-axis floor, strictly inside the freeze. -/
 theorem threeAxis_cut_inside {rs : ℝ} (hrs : 0 < rs) :
     criticalImpact rs * Real.sqrt AMin < eventBoundaryRadius rs := by
   have hsqrt : Real.sqrt AMin < (1 : ℝ) / 10 := sqrt_AMin_lt_tenth
@@ -348,7 +302,6 @@ theorem threeAxis_cut_inside {rs : ℝ} (hrs : 0 < rs) :
   rw [hcomm]
   exact mul_lt_mul_of_pos_left hlt hrs
 
-/-- Marginal periapsis of the one-axis floor, strictly inside the freeze. -/
 theorem oneAxis_cut_inside {rs : ℝ} (hrs : 0 < rs) :
     criticalImpact rs * Real.sqrt AOne < rs * radiusRatioOne := by
   have hsqrt := sqrt_AOne_lt_quarter
@@ -376,7 +329,6 @@ theorem periapsis_sq {b A : ℝ} (hA : 0 ≤ A) :
     (b * Real.sqrt A) ^ 2 = b ^ 2 * A := by
   rw [mul_pow, Real.sq_sqrt hA]
 
-/-- Every subcritical ray turns inside the freeze, and nowhere on `r > rₛ`. -/
 theorem penetrating_turns_inside {rs A b : ℝ}
     (hrs : 0 < rs) (hA : 0 < A) (hA1 : A < 1)
     (hstar : rs / (1 - A) < photonSphere rs)
@@ -476,8 +428,7 @@ theorem cavityFactor_eq_killing {rs A : ℝ}
   rw [hgap, hdiff, hlog_arg]
   field_simp [hrs.ne']
 
-/-- The classical antiderivative is unbounded as the horizon is approached,
-so there is no finite Killing time in which a radial ray reaches `rₛ`. -/
+/-- There is no finite Killing time in which a radial ray reaches `rₛ`. -/
 theorem exists_classical_delay_gt {rs T : ℝ} (hrs : 0 < rs) :
     ∃ r, rs < r ∧ r < photonSphere rs ∧
       T < killingAntideriv rs (photonSphere rs) - killingAntideriv rs r := by
@@ -829,8 +780,6 @@ theorem marginalVisit_gt_shallow {A : ℝ}
   dsimp [u, p]
   exact div_lt_div_of_pos_right (mul_lt_mul_of_pos_left hgap (by norm_num)) hA
 
-/-- A subcritical ray turns before the marginal periapsis, so its interior
-visit is strictly longer than the marginal value. -/
 theorem subcritical_visit_gt_marginal {rs A b : ℝ}
     (hrs : 0 < rs) (hA : 0 < A) (hA1 : A < 1)
     (hcut : marginalPeriRatio A < 1 / (1 - A))
@@ -1440,7 +1389,6 @@ theorem marginalVisit_oneAxis_bounds :
           4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) :=
         mul_lt_mul_of_pos_left hsqrt_lo (by norm_num)
       have hden : AOne < (0.04321393 : ℝ) := hA.2
-      -- a/b < c/d when a < c, d < b, all positive: a/b < c/b < c/d
       have hpos_den : 0 < AOne := AOne_pos
       have h1 : 4 * (0.89480570 : ℝ) / (0.04321393 : ℝ) <
           4 * Real.sqrt ((1 / (1 - AOne)) ^ 2 - marginalPeriRatio AOne ^ 2) /

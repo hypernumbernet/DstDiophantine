@@ -13,33 +13,11 @@ import Mathlib.Tactic.Ring
 /-!
 # Quasi-horizon cutoff from the admissible torsional ceiling
 
-## Working hypothesis (not a derivation)
-
-Identify the proved admissible ceiling `|J| ≤ 3π²/8` (equivalently
-`|JNormalized| ≤ 1`) with the DST quasi-horizon / event-boundary shell.
-On the radial pure-boost chart `J = ½ φ²`, this inverts to the finite cutoff
-
-\[
-\varphi_{\max} = \frac{\pi\sqrt{3}}{2},\qquad
-A_{\min} = e^{-2\varphi_{\max}} = e^{-\pi\sqrt{3}}.
-\]
-
-Classical Schwarzschild has `φ → ∞` and `A → 0` as `r → rₛ⁺`. The cutoff
-replaces that divergence by a finite redshift floor, matching the paper claim
-that a true one-way horizon (`A = 0`) does not form.
-
-## Not claimed
-
-* Derivation of Newton `G` from `c` (see `NewtonFromLight`).
-* Identification of dimensionless `J` with `c⁴/(G ℓ_P⁻²)`.
-* That `pureBoost φ_max` lies in `IsAdmissibleContinuous` (single-axis
-  admissibility requires `φ ≤ π/2 < φ_max`; the ceiling `JNormalized = 1`
-  comes from the three-axis normalisation inverted on one boost axis).
-* Rewriting the exterior Schwarzschild metric theorems.
-* A general-motor \(J\)–\(T\) dictionary (the radial pure-boost dictionary
-  is in `Gravity.JTDictionary`; the saturated interior only supplies an
-  additional identification failure: frozen \(\varphi\) forces
-  \(J_{\mathrm{field}}=0\) while angular Weitzenböck torsion remains).
+The ceiling \(|J|\le 3\pi^2/8\) is read as a finite radial cutoff
+\(\varphi_{\max}=\pi\sqrt{3}/2\), not as a derivation of that identification.
+Newton \(G\) is not derived from \(c\), dimensionless \(J\) is not identified
+with a Planck density, and an admissible one-axis boost cannot reach
+\(\varphi_{\max}\).
 -/
 
 namespace DstDiophantine
@@ -247,7 +225,6 @@ theorem saturatedA_ne_zero {rs r : ℝ} (hrs : 0 < rs) :
     saturatedA rs r ≠ 0 :=
   (saturatedA_pos hrs).ne'
 
-/-- The saturated factor never reaches the classical horizon value `A = 0`. -/
 theorem saturatedA_ne_horizon {rs r : ℝ} (hrs : 0 < rs) :
     saturatedA rs r ≠ 0 :=
   saturatedA_ne_zero hrs
@@ -281,7 +258,6 @@ theorem saturatedRapidity_eq_classical_at_boundary {rs : ℝ} (hrs : 0 < rs) :
       schwarzschildRapidity rs (eventBoundaryRadius rs) := by
   rw [saturatedRapidity_at_boundary hrs, classicalRapidity_at_boundary hrs]
 
-/-- Classical Schwarzschild factor vanishes at `r = rₛ`. -/
 theorem classicalA_eq_zero_at_horizon {rs : ℝ} (hrs : 0 < rs) :
     1 - rs / rs = 0 := by
   rw [div_self hrs.ne']
@@ -289,7 +265,6 @@ theorem classicalA_eq_zero_at_horizon {rs : ℝ} (hrs : 0 < rs) :
 
 /-! ### Three-axis ceiling versus single-axis radial gauge -/
 
-/-- The three-axis pure-boost wall saturates the raw admissible ceiling. -/
 theorem J_threeAxisPureHyperbolic :
     J { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = JMax := by
   unfold JMax
@@ -298,7 +273,6 @@ theorem J_threeAxisPureHyperbolic :
   field_simp [Real.pi_ne_zero]
   ring
 
-/-- Single-axis admissible maximum: `J(pureBoost (π/2)) = π²/8`. -/
 theorem J_pureBoost_half_pi :
     J (pureBoost (Real.pi / 2)) = Real.pi ^ 2 / 8 := by
   rw [J_pureBoost]
@@ -311,7 +285,6 @@ theorem JMax_eq_three_single_axis :
   unfold JMax
   ring
 
-/-- An admissible one-axis boost cannot exceed one third of the three-axis ceiling. -/
 theorem J_pureBoost_of_admissible {θ : ℝ}
     (h : IsAdmissibleContinuous (pureBoost θ)) :
     J (pureBoost θ) ≤ Real.pi ^ 2 / 8 := by
@@ -321,8 +294,6 @@ theorem J_pureBoost_of_admissible {θ : ℝ}
     nlinarith [hθ.1, hθ.2, Real.pi_pos]
   nlinarith
 
-/-- Inverting the three-axis ceiling on a single boost axis yields `φ_max`,
-which lies outside the admissible cone. -/
 theorem phiMax_inverts_three_axis_ceiling_on_one_axis :
     J (pureBoost phiMax) = JMax ∧
       ¬ IsAdmissibleContinuous (pureBoost phiMax) :=
@@ -346,7 +317,6 @@ private theorem pi_mul_sqrt_three_gt :
     _ < Real.pi * Real.sqrt 3 :=
         mul_lt_mul hπ hs.le (by norm_num) (le_of_lt (hπpos.trans hπ))
 
-/-- Shared bridge: `log n < π√3` ⇒ `A_min < 1/n`. -/
 private theorem AMin_lt_inv_of {n : ℕ} (hn : 0 < n)
     (hlog : Real.log (n : ℝ) < Real.pi * Real.sqrt 3) :
     AMin < (1 : ℝ) / n := by
@@ -374,7 +344,6 @@ private theorem log_100_lt_pi_sqrt_three :
     linarith
   exact hlog.trans pi_mul_sqrt_three_gt
 
-/-- `0 < A_min < 10^{-2}`. -/
 theorem AMin_bounds :
     (0 : ℝ) < AMin ∧ AMin < (1 : ℝ) / 100 :=
   ⟨AMin_pos, AMin_lt_inv_of (by norm_num) log_100_lt_pi_sqrt_three⟩
@@ -410,7 +379,6 @@ private theorem log_201_lt_pi_sqrt_three :
 private theorem AMin_lt_inv_201 : AMin < (1 : ℝ) / 201 :=
   AMin_lt_inv_of (by norm_num) log_201_lt_pi_sqrt_three
 
-/-- `1 < radiusRatio < 1005/1000`. -/
 theorem radiusRatio_bounds :
     (1 : ℝ) < radiusRatio ∧ radiusRatio < (1005 : ℝ) / 1000 := by
   refine ⟨one_lt_radiusRatio, ?_⟩
@@ -425,8 +393,7 @@ theorem radiusRatio_bounds :
 
 /-! ### Saturated interior coframe: frozen boost legs, angular torsion remains -/
 
-/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing
-radial derivatives; angular legs match the Schwarzschild coframe. -/
+/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing radial derivatives; angular legs match the Schwarzschild coframe. -/
 noncomputable def constantAPartials (r θ : ℝ) : CoframePartials :=
   fun μ a ν =>
     if μ = 1 ∧ a = 2 ∧ ν = 2 then 1
@@ -464,8 +431,7 @@ noncomputable def saturatedJ_field (rs r : ℝ) : ℝ :=
 noncomputable def pluggedConstantAT (A r : ℝ) : ℝ :=
   (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
 
-/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)):
-\(T = -4(1-\sqrt{A})/r^2\). -/
+/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)): \(T = -4(1-\sqrt{A})/r^2\). -/
 noncomputable def frozenDivT (A r : ℝ) : ℝ :=
   -(4 / r ^ 2) * (1 - Real.sqrt A)
 
@@ -487,8 +453,7 @@ theorem pluggedConstantAT_AMin_pos {r : ℝ} (hr : r ≠ 0) :
   have hr2 : 0 < r ^ 2 := sq_pos_of_ne_zero hr
   positivity
 
-/-- Blindly substituting \(A_{\min}\) into the exterior \(T\) formula does not
-reproduce the frozen-divergence expression. -/
+/-- Substituting `A_min` into the exterior `T` formula does not reproduce the frozen divergence. -/
 theorem pluggedConstantAT_ne_frozenDivT {r : ℝ} (hr : r ≠ 0) :
     pluggedConstantAT AMin r ≠ frozenDivT AMin r := by
   intro h
@@ -512,8 +477,6 @@ theorem pluggedConstantAT_ne_frozenDivT {r : ℝ} (hr : r ≠ 0) :
     linarith
   nlinarith [sqrt_AMin_pos]
 
-/-- On the saturated interior the field seed vanishes while the coframe still
-carries angular Weitzenböck torsion. -/
 theorem saturated_interior_J_field_zero_of_angular_torsion {rs r θ : ℝ}
     (_hrs : 0 < rs) (hr : 0 < r) (hle : r ≤ eventBoundaryRadius rs) :
     saturatedJ_field rs r = 0 ∧
@@ -524,8 +487,6 @@ theorem saturated_interior_J_field_zero_of_angular_torsion {rs r θ : ℝ}
   have hpos := pluggedConstantAT_AMin_pos hr.ne'
   exact (mul_ne_zero (by norm_num : (1 / 2 : ℝ) ≠ 0) hpos.ne').symm
 
-/-- \(C^0\) matching of the saturated factor at \(r_\star\) together with a
-strictly positive redshift floor. -/
 theorem saturated_interior_redshift_floor {rs : ℝ} (hrs : 0 < rs) :
     saturatedA rs (eventBoundaryRadius rs) = AMin ∧
       0 < AMin ∧ AMin < 1 :=

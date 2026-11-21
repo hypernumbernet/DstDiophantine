@@ -5,70 +5,7 @@ import DstDiophantine.Algebra.BivectorBasis
 /-!
 # The direction of gravity: the axis of the static Killing bivector
 
-At an event, a Killing field `ξ` is determined by its value and by the
-antisymmetric derivative `∇ξ`: a translation and a Lorentz generator, that is,
-an element of the Poincaré algebra. In `G(3,1,1)` that element is a bivector.
-For the static field `∂_t` of a radial-boost chart it is
-`K = (κ/2) B⁺ + (ν/2) N₀`, with `ν` the Killing norm and `κ` its proper radial
-derivative.
-
-## Proved
-
-* Translator conjugation is exact at first order, `T x T˜ = x + [Ω_trans, x]`;
-  a translator moves the hyperplane `e_μ` to `e_μ + w_μ λ^μ e₄`, and
-  `[Ω_torsion, x] = ω x` is the Lorentz action on vectors.
-* `K` is the conjugate of the pure boost `(κ/2) B⁺` by the radial translator of
-  length `ℓ = ν/κ`, and that radial displacement is unique; `K` is the meet of the
-  time hyperplane with the displaced radial hyperplane; `K² = κ²/4`. For `ν > 0`
-  the axis lies on the side `-sign κ`, and `κ` has the sign of the mass.
-* Events `P(x) = (1 + e₄ x) i`: the velocity of a general `Ω_biv` at `P(x)` is
-  `e₄ (λ + ω x) i`. For `K` it is `(ν + κ s) e₀` along the radial line,
-  vanishing only at `s = -ν/κ`.
-* `exp(τK) = T R(κτ) T˜` fixes every event of the axis; the orbit of the origin
-  is the hyperbola at constant interval `ℓ` from the axis, bending away from it.
-* The squared Killing norm `N² = -(λ + ω x)²` satisfies the exact
-  second-difference identity `□N² = 8J`. Hyperbolic model: `N²` grows away from
-  the axis; elliptic model: it shrinks.
-* In that flat flow the inertial frame of release, seen from the hovering
-  observer, is `exp(-τ K)`, still a boost about the same axis. A body released
-  from rest travels on `s e₀`. At observer proper time `σ` its simultaneous
-  separation is `ℓ (sech(σ/ℓ) - 1)` along the outward normal: nonpositive,
-  with vanishing first derivative at release and second derivative `-1/ℓ`.
-  The same line meets the light cone of the axis, where `N = 0`, at proper
-  time `ℓ`, and the separation tends to `-ℓ`.
-* Exterior Schwarzschild: `ν = √A`, `κ = ½A' = √A ∂_r√A = rₛ/(2r²)`,
-  `r²κ = rₛ/2`, `ℓ = ν/κ > 0` inward with `ℓ · ∂_r√A = 1`,
-  `∂_r√A = T⁰_{rt} = -√A φ'`; `ℓ` increases strictly, tends to `0` at the
-  horizon (where `K` becomes the pure boost of rate `1/(2rₛ)`) and to `∞` far
-  away (where `K` becomes the pure time translation); `J(κ) = A² J_field`.
-* Per unit proper time `K/ν = ½((κ/ν) B⁺ + N₀)`. A radial momentum
-  `ε N₀ + π N₁` splits into null weights `(ε±π)/2`. The bracket scales those
-  weights at `±κ/ν`, hence sends the momentum to `(κ/ν)(π N₀ + ε N₁)`. At rest
-  the energy coefficient is stationary and the shift is the spatial momentum
-  `(κ/ν) ε N₁`. On the exterior the rate is the hover acceleration `∂_r√A`.
-  The time translation contributes nothing. A finite rapidity multiplies the
-  same weights by `e^{±φ}`, equal to `A^{-1/2}` and `√A` on this chart, and
-  their product is unchanged.
-
-## Not claimed
-
-* That the finite rotor of rapidity `φ` is itself a Killing bivector. The proper
-  derivative of its redshift is the coefficient `κ`, and the shift `ℓ` isolates
-  that boost: `Gravity.KillingTransport`.
-* Flat displacement of a fixed bivector, with translational part `λ + ω x`
-  along any differentiable curve, is `Gravity.KillingTransport`. The
-  Levi-Civita action on the static bivector is `Gravity.CurvedTransport`.
-  Static bivectors at two exterior radii are not instances of either
-  transport. The motor's split of each reference vector is
-  `Gravity.DegenerateSandwich`.
-* That the straight line of the flat flow is a Schwarzschild geodesic. The
-  fall law in this file is the Killing jet at one event. `RadialFall` writes
-  it as \(d\psi/ds=-\cosh\psi/\rho\) and, with \(\ell(r)\) in place of \(\rho\),
-  integrates it to \(d^2r/d\tau^2=-\kappa\) and \((dr/d\tau)^2=E^2-A\).
-  `Perihelion` keeps a constant angular momentum on the same coframe. The
-  correction \(-3\kappa L^2/r^2\) splits into one share from the transverse
-  speed in \(\gamma^2\) and two shares from the deficit \(A-1\) in the
-  centrifugal barrier.
+For the static field `∂_t` the Killing element is `K = (κ/2) B⁺ + (ν/2) N₀`, the pure boost of rate `κ` displaced by `ℓ = ν/κ`. The finite rotor of rapidity `φ` is not itself that bivector, and the flat-flow line is not claimed to be a Schwarzschild geodesic.
 -/
 
 namespace DstDiophantine
@@ -102,7 +39,6 @@ theorem reverse_expTrans (p : TransParams) : reverse (expTrans p) = expTrans (ne
   rw [expTrans, expTrans, map_add, CliffordAlgebra.reverse.map_one, reverse_omegaTrans,
     omegaTrans_negTrans]
 
-/-- A translator conjugates exactly at first order: `T x T˜ = x + [Ω_trans, x]`. -/
 theorem sandwich_expTrans (p : TransParams) (x : PGA) :
     sandwich (expTrans p) x = x + commutator (omegaTrans p) x := by
   have h := omegaTrans_mul_mul p x
@@ -111,7 +47,6 @@ theorem sandwich_expTrans (p : TransParams) (x : PGA) :
   simp only [add_mul, mul_add, one_mul, mul_one, mul_neg, h]
   abel
 
-/-- `Ω_trans = ½ e₄ λ`. -/
 theorem omegaTrans_eq_half_e4 (p : TransParams) :
     omegaTrans p = (1 / 2 : ℝ) • (ι e4Index * minkowskiVector p.lambda) := by
   rw [minkowskiVector_eq_sum, Finset.mul_sum, Finset.smul_sum]
@@ -151,7 +86,6 @@ theorem polar_Q311_e5vec_extend4 (j : Fin 5) (x : Fin 4 → ℝ) :
     simp [QuadraticMap.polar, Q311, QuadraticMap.weightedSumSquares_apply, Fin.sum_univ_five,
       e5vec, Pi.single_apply, extend4, w311] <;> ring
 
-/-- `[e₄ v, e_μ] = polar(v, e_μ) e₄`. -/
 theorem commutator_e4_vec_ι (v : Fin 4 → ℝ) (μ : Fin 5) :
     commutator (ι e4Index * minkowskiVector v) (ι μ) =
       QuadraticMap.polar Q311 (extend4 v) (e5vec μ) • ι e4Index := by
@@ -163,8 +97,6 @@ theorem commutator_e4_vec_ι (v : Fin 4 → ℝ) (μ : Fin 5) :
   rw [Generators.commutator, ← mul_assoc (ι μ), hμ, neg_mul, sub_neg_eq_add, mul_assoc,
     mul_assoc, ← mul_add, hswap, Algebra.algebraMap_eq_smul_one, mul_smul_comm, mul_one]
 
-/-- A translator moves the hyperplane `e_μ` by the Minkowski pairing:
-`T e_μ T˜ = e_μ + w_μ λ^μ e₄`. -/
 theorem sandwich_expTrans_ι (p : TransParams) (μ : Fin 4) :
     sandwich (expTrans p) (ι (Fin.castAdd 1 μ)) =
       ι (Fin.castAdd 1 μ) + (w31 μ * p.lambda μ) • ι e4Index := by
@@ -173,7 +105,6 @@ theorem sandwich_expTrans_ι (p : TransParams) (μ : Fin 4) :
     QuadraticMap.polar_comm, polar_Q311_e5vec_extend4, extend4_apply, hw, smul_smul]
   module
 
-/-- `[a b, m] = polar(b,m) a - polar(a,m) b` for any three vectors. -/
 theorem commutator_ι_mul_ι_ι (a b m : Vec5) :
     commutator (CliffordAlgebra.ι Q311 a * CliffordAlgebra.ι Q311 b)
         (CliffordAlgebra.ι Q311 m) =
@@ -196,7 +127,6 @@ def lorentzAct (t : TorsionParams) (x : Fin 4 → ℝ) : Fin 4 → ℝ :=
     t.alpha 1 * x 0 + t.beta 2 * x 1 - t.beta 0 * x 3,
     t.alpha 2 * x 0 - t.beta 1 * x 1 + t.beta 0 * x 2]
 
-/-- `[Ω_torsion, x] = ω x`. -/
 theorem commutator_omegaTorsion_minkowskiVector (t : TorsionParams) (x : Fin 4 → ℝ) :
     commutator (omegaTorsion t) (minkowskiVector x) = minkowskiVector (lorentzAct t x) := by
   have hgen : ∀ i j : Fin 5, commutator (ι i * ι j) (minkowskiVector x) =
@@ -236,7 +166,6 @@ theorem commutator_omegaTrans_hyperbolic0 (p : TransParams) :
     commutator_hyperbolic0_null2, commutator_hyperbolic0_null3]
   module
 
-/-- The static Killing bivector is a pure boost about an axis displaced by `ℓ`. -/
 theorem sandwich_radialShift_boost (κ ℓ : ℝ) :
     sandwich (expTrans (radialShift ℓ)) ((κ / 2) • hyperbolic 0) =
       killingBivector κ (κ * ℓ) := by
@@ -246,8 +175,6 @@ theorem sandwich_radialShift_boost (κ ℓ : ℝ) :
     neg_smul, neg_neg]
   module
 
-/-- The radial displacement that turns the pure boost into `K` is unique:
-no time component, radial component `-ν/κ`; translations along the axis are free. -/
 theorem sandwich_expTrans_boost_eq_killing_iff {κ ν : ℝ} (hκ : κ ≠ 0) (p : TransParams) :
     sandwich (expTrans p) ((κ / 2) • hyperbolic 0) = killingBivector κ ν ↔
       p.lambda 0 = 0 ∧ p.lambda 1 = -(ν / κ) := by
@@ -278,11 +205,9 @@ theorem sandwich_expTrans_boost_eq_killing_iff {κ ν : ℝ} (hκ : κ ≠ 0) (p
     congr 1
     rw [mul_neg, neg_neg, div_mul_div_comm, mul_comm κ ν, mul_div_mul_right _ _ hκ]
 
-/-- A positive time translation puts the axis on the side `-sign(κ)`. -/
 theorem axis_neg_iff {κ ν : ℝ} (hν : 0 < ν) : -(ν / κ) < 0 ↔ 0 < κ := by
   rw [neg_lt_zero, div_pos_iff_of_pos_left hν]
 
-/-- `K` is the meet of the time hyperplane with the displaced radial hyperplane. -/
 theorem killingBivector_eq_meet (κ ℓ : ℝ) :
     killingBivector κ (κ * ℓ) =
       (κ / 2) • (sandwich (expTrans (radialShift ℓ)) (ι 0) *
@@ -310,7 +235,6 @@ private theorem hyperbolic0_mul_null0 : hyperbolic 0 * null 0 = null 1 := by
   have : hyperbolic 0 * null 0 = (2 : ℝ) • null 1 - null 1 := eq_sub_of_add_eq h
   rw [this, two_smul, add_sub_cancel_right]
 
-/-- `K² = κ²/4`: the translation part does not enter the invariant. -/
 theorem killingBivector_sq (κ ν : ℝ) :
     killingBivector κ ν * killingBivector κ ν = algebraMap ℝ PGA (κ ^ 2 / 4) := by
   simp only [killingBivector, add_mul, mul_add, smul_mul_smul_comm, hyperbolic_sq,
@@ -335,7 +259,6 @@ private theorem commute_e4_bivector {i j : Fin 5} (hi : i ≠ e4Index) (hj : j �
     _ = -(ι i * (-(ι j * ι e4Index))) := by rw [hj']
     _ = ι i * ι j * ι e4Index := by simp [mul_assoc]
 
-/-- The null vector commutes with the whole Lorentz sector. -/
 theorem commute_e4_of_mem_lorentzSpan {x : PGA} (hx : x ∈ lorentzSpan) :
     Commute (ι e4Index) x := by
   refine Submodule.span_induction (p := fun y _ => Commute (ι e4Index) y) ?_ ?_ ?_ ?_ hx
@@ -393,7 +316,6 @@ theorem commutator_e4_mul_e4_mul (v X : PGA) :
       e4_mul_mul_e4, zero_mul, zero_mul]
   rw [Generators.commutator, h1, h2, sub_zero]
 
-/-- Velocity field of a Poincaré bivector: `[Ω_biv, P(x)] = e₄ (λ + [Ω_torsion, x]) i`. -/
 theorem commutator_omegaBiv_event (p : OmegaParams) (x : Fin 4 → ℝ) :
     commutator (omegaBiv p) (event x) =
       ι e4Index * (minkowskiVector p.trans.lambda +
@@ -408,7 +330,6 @@ theorem commutator_omegaBiv_event (p : OmegaParams) (x : Fin 4 → ℝ) :
   simp only [mul_add, add_mul, smul_zero, add_zero, zero_add, smul_smul]
   module
 
-/-- A translator moves events by its parameter: `T(λ) P(x) T(λ)˜ = P(x + λ)`. -/
 theorem sandwich_expTrans_event (p : TransParams) (x : Fin 4 → ℝ) :
     sandwich (expTrans p) (event x) = event (x + p.lambda) := by
   rw [sandwich_expTrans, omegaTrans_eq_half_e4]
@@ -436,7 +357,6 @@ theorem e4_e0_pseudoscalar_ne_zero : ι e4Index * ι 0 * pseudoscalar ≠ 0 := b
   rw [h1, show dual (0 : PGA) = 0 by simp [dual]] at h2
   exact null_ne_zero 0 (neg_eq_zero.mp h2.symm)
 
-/-- Along the radial line the velocity of `K` is `(ν + κ s) e₀`. -/
 theorem commutator_killing_event_radial (κ ν s : ℝ) :
     commutator (killingBivector κ ν) (event ![0, s, 0, 0]) =
       (ν + κ * s) • (ι e4Index * ι 0 * pseudoscalar) := by
@@ -448,7 +368,6 @@ theorem commutator_killing_event_radial (κ ν s : ℝ) :
     commutator_omegaTorsion_minkowskiVector, ← minkowskiVector_add, hv, minkowskiVector_vec]
   simp only [zero_smul, add_zero, mul_smul_comm, smul_mul_assoc]
 
-/-- The velocity of `K` vanishes on the radial line exactly at `s = -ν/κ`. -/
 theorem killing_velocity_eq_zero_iff (κ ν s : ℝ) :
     commutator (killingBivector κ ν) (event ![0, s, 0, 0]) = 0 ↔ ν + κ * s = 0 := by
   rw [commutator_killing_event_radial, smul_eq_zero]
@@ -471,7 +390,6 @@ theorem sandwich_pureBoost_minkowskiVector (φ : ℝ) (y : Fin 4 → ℝ) :
     Sandwich.sandwich_pureBoost_ι3, Sandwich.boostConjLambda]
   module
 
-/-- A pure radial boost moves events by its Lorentz action. -/
 theorem sandwich_pureBoost_event (φ : ℝ) (y : Fin 4 → ℝ) :
     sandwich (rotorTorsion (pureBoost φ)) (event y) =
       event (Sandwich.boostConjLambda φ y) := by
@@ -483,7 +401,6 @@ theorem sandwich_pureBoost_event (φ : ℝ) (y : Fin 4 → ℝ) :
   rw [event, event, sandwich_mul hm, sandwich_add, h1, sandwich_mul hm,
     Sandwich.sandwich_pureBoost_ι4, sandwich_pureBoost_minkowskiVector, hi]
 
-/-- `exp(τK) = T R(κτ) T˜`: the static motion is a boost about the displaced axis. -/
 theorem exp_smul_killingBivector (κ ℓ τ : ℝ) :
     exp (τ • killingBivector κ (κ * ℓ)) =
       sandwich (expTrans (radialShift ℓ)) (rotorTorsion (pureBoost (τ * κ))) := by
@@ -506,7 +423,6 @@ theorem sandwich_exp_killingBivector (κ ℓ τ : ℝ) (y : Fin 4 → ℝ) :
 noncomputable def hoverWorldline (κ ℓ τ : ℝ) : Fin 4 → ℝ :=
   ![ℓ * Real.sinh (τ * κ), ℓ * (Real.cosh (τ * κ) - 1), 0, 0]
 
-/-- The observer at the origin moves on `ℓ (sinh κτ, cosh κτ - 1, 0, 0)`. -/
 theorem sandwich_exp_killing_event_zero (κ ℓ τ : ℝ) :
     sandwich (exp (τ • killingBivector κ (κ * ℓ))) (event 0) =
       event (hoverWorldline κ ℓ τ) := by
@@ -517,7 +433,6 @@ theorem sandwich_exp_killing_event_zero (κ ℓ τ : ℝ) :
   all_goals simp [Sandwich.boostConjLambda, negTrans, radialShift, hoverWorldline]
   all_goals ring
 
-/-- Every event of the axis `{t = 0, x = -ℓ}` is fixed by `exp(τK)`. -/
 theorem sandwich_exp_killing_event_axis (κ ℓ τ y z : ℝ) :
     sandwich (exp (τ • killingBivector κ (κ * ℓ))) (event ![0, -ℓ, y, z]) =
       event ![0, -ℓ, y, z] := by
@@ -527,7 +442,6 @@ theorem sandwich_exp_killing_event_axis (κ ℓ τ y z : ℝ) :
   fin_cases μ <;> simp [Sandwich.boostConjLambda, negTrans, radialShift, Matrix.vecHead,
     Matrix.vecTail]
 
-/-- The hovering orbit keeps the constant interval `ℓ²` from the axis event `-ℓ e₁`. -/
 theorem hoverWorldline_interval (κ ℓ τ : ℝ) :
     Q31 (hoverWorldline κ ℓ τ - (radialShift ℓ).lambda) = ℓ ^ 2 := by
   have h := Real.cosh_sq_sub_sinh_sq (τ * κ)
@@ -536,7 +450,6 @@ theorem hoverWorldline_interval (κ ℓ τ : ℝ) :
   simp
   linear_combination ℓ ^ 2 * h
 
-/-- The orbit bends away from the axis: its radial coordinate never becomes negative. -/
 theorem hoverWorldline_radial_nonneg {ℓ : ℝ} (hℓ : 0 ≤ ℓ) (κ τ : ℝ) :
     0 ≤ hoverWorldline κ ℓ τ 1 := by
   simp only [hoverWorldline, Matrix.cons_val_one, Matrix.cons_val_zero]
@@ -548,7 +461,6 @@ theorem hoverWorldline_radial_nonneg {ℓ : ℝ} (hℓ : 0 ≤ ℓ) (κ τ : ℝ
 noncomputable def killingNormSq (p : OmegaParams) (x : Fin 4 → ℝ) : ℝ :=
   -Q31 (p.trans.lambda + lorentzAct p.torsion x)
 
-/-- The velocity `λ + [Ω_torsion, x]` of `P(x)` squares to `-N²(x)`. -/
 theorem killingVelocity_sq (p : OmegaParams) (x : Fin 4 → ℝ) :
     (minkowskiVector p.trans.lambda + commutator (omegaTorsion p.torsion) (minkowskiVector x)) *
       (minkowskiVector p.trans.lambda +
@@ -557,8 +469,6 @@ theorem killingVelocity_sq (p : OmegaParams) (x : Fin 4 → ℝ) :
   rw [commutator_omegaTorsion_minkowskiVector, ← minkowskiVector_add, minkowskiVector_sq,
     killingNormSq, neg_neg]
 
-/-- Exact second differences: the d'Alembertian of `N²` is `8J`, at every event,
-for every step, whatever the translation part. -/
 theorem killingNormSq_dAlembertian (p : OmegaParams) (x : Fin 4 → ℝ) (h : ℝ) :
     ∑ μ : Fin 4, w31 μ * (killingNormSq p (x + h • e4vec μ) +
         killingNormSq p (x - h • e4vec μ) - 2 * killingNormSq p x) =
@@ -568,7 +478,6 @@ theorem killingNormSq_dAlembertian (p : OmegaParams) (x : Fin 4 → ℝ) (h : �
     Fin.sum_univ_three, e4vec, w31, Pi.single_apply]
   ring
 
-/-- Hyperbolic model: along the radial line `N² = (ν + κ s)²`, growing away from the axis. -/
 theorem killingNormSq_killingParams_radial (κ ν s : ℝ) :
     killingNormSq (killingParams κ ν) ![0, s, 0, 0] = (ν + κ * s) ^ 2 := by
   simp [killingNormSq, killingParams, Q31_eq_minkowskiDot, minkowskiDot, lorentzAct, pureBoost]
@@ -581,7 +490,6 @@ theorem omegaTorsion_rotationParams (ω ν : ℝ) :
     omegaTorsion (rotationParams ω ν).torsion = (ω / 2) • cyclic 0 := by
   simp [omegaTorsion, rotationParams, Fin.sum_univ_three]
 
-/-- Elliptic model: `N² = ν² - ω² y²`, shrinking away from the axis. -/
 theorem killingNormSq_rotationParams (ω ν y : ℝ) :
     killingNormSq (rotationParams ω ν) ![0, 0, y, 0] = ν ^ 2 - ω ^ 2 * y ^ 2 := by
   simp [killingNormSq, rotationParams, Q31_eq_minkowskiDot, minkowskiDot, lorentzAct]
@@ -658,14 +566,12 @@ theorem hasDerivAt_hoverRadial (κ ℓ τ : ℝ) :
   rw [← hfun]
   exact hcosh.congr_deriv (by ring)
 
-/-- The tangent `(d/dτ) X = (ℓ κ) • hoverVelocity` has interval `-(ℓ κ)²`. -/
 theorem hoverTangent_interval (κ ℓ τ : ℝ) :
     Q31 ((ℓ * κ) • hoverVelocity κ τ) = -(ℓ * κ) ^ 2 := by
   rw [QuadraticMap.map_smul, Q31_hoverVelocity]
   simp
   ring
 
-/-- Proper-time reparametrization: rapidity `κτ` becomes `σ/ℓ` when `σ = ℓ κ τ`. -/
 theorem hoverWorldline_proper {κ ℓ σ : ℝ} (hℓ : ℓ ≠ 0) (hκ : κ ≠ 0) :
     hoverWorldline κ ℓ (σ / (ℓ * κ)) =
       ![ℓ * Real.sinh (σ / ℓ), ℓ * (Real.cosh (σ / ℓ) - 1), 0, 0] := by
@@ -678,16 +584,13 @@ theorem hoverWorldline_proper {κ ℓ σ : ℝ} (hℓ : ℓ ≠ 0) (hκ : κ ≠
   · simp [hoverWorldline]
   · simp [hoverWorldline]
 
-/-- Seen from the hovering observer, the inertial frame of release is the inverse motor:
-a boost of rapidity `-κτ` about the same axis. -/
 theorem exp_neg_killing_eq_displacedBoost (κ ℓ τ : ℝ) :
     exp ((-τ) • killingBivector κ (κ * ℓ)) =
       sandwich (expTrans (radialShift ℓ)) (rotorTorsion (pureBoost (-(τ * κ)))) := by
   rw [show -(τ * κ) = (-τ) * κ by ring]
   exact exp_smul_killingBivector κ ℓ (-τ)
 
-/-- Proper time on the inertial line at which the event is simultaneous with
-the observer at flow parameter `τ`. -/
+/-- Proper time on the inertial line at which the event is simultaneous with the observer at flow parameter `τ`. -/
 noncomputable def releasedSimulTime (ℓ κ τ : ℝ) : ℝ :=
   ℓ * Real.tanh (τ * κ)
 
@@ -721,7 +624,6 @@ theorem released_simultaneous_iff (ℓ κ τ s : ℝ) :
     field_simp
     ring
 
-/-- The simultaneous separation is the signed multiple of the outward normal. -/
 theorem released_separation_eq_displacement (ℓ κ τ : ℝ) :
     releasedWorldline (releasedSimulTime ℓ κ τ) - hoverWorldline κ ℓ τ =
       releasedDisplacement ℓ κ τ • hoverOutward κ τ := by
@@ -793,7 +695,6 @@ private theorem hasDerivAt_releasedSpeed_zero {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
     simp [Real.sinh_zero, Real.cosh_zero, zero_div]
     field_simp [hℓ]
 
-/-- Initial acceleration toward the negative outward normal: `ξ''(0) = -1/ℓ`. -/
 theorem released_initial_acceleration {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
     deriv (deriv (releasedDisplacementProper ℓ)) 0 = -1 / ℓ := by
   have hfun : deriv (releasedDisplacementProper ℓ) =
@@ -803,8 +704,6 @@ theorem released_initial_acceleration {ℓ : ℝ} (hℓ : ℓ ≠ 0) :
   rw [hfun]
   exact (hasDerivAt_releasedSpeed_zero hℓ).deriv
 
-/-- As the observer's proper time tends to infinity, the simultaneous separation
-approaches `-ℓ`: the body approaches the axis on the observer's simultaneity. -/
 theorem tendsto_releasedDisplacementProper_atTop {ℓ : ℝ} (hℓ : 0 < ℓ) :
     Tendsto (releasedDisplacementProper ℓ) atTop (𝓝 (-ℓ)) := by
   have hdiv : Tendsto (fun σ : ℝ => σ / ℓ) atTop atTop :=
@@ -831,7 +730,6 @@ theorem released_axis_interval (ℓ s : ℝ) :
   simp
   ring
 
-/-- The inertial line meets the light cone of the axis event at proper time `±ℓ`. -/
 theorem released_lightcone_iff (ℓ s : ℝ) :
     Q31 (releasedWorldline s - (radialShift ℓ).lambda) = 0 ↔ s = ℓ ∨ s = -ℓ := by
   rw [released_axis_interval]
@@ -841,7 +739,6 @@ theorem released_lightcone_iff (ℓ s : ℝ) :
     exact (sq_eq_sq_iff_eq_or_eq_neg).1 hs
   · rintro (rfl | rfl) <;> ring
 
-/-- That meeting point lies on the Killing horizon `N = 0`. -/
 theorem released_on_killingHorizon (κ ℓ : ℝ) :
     killingNormSq (killingParams κ (κ * ℓ)) (releasedWorldline ℓ) = 0 := by
   simp [killingNormSq, killingParams, releasedWorldline, lorentzAct, pureBoost,
@@ -876,7 +773,6 @@ theorem hasDerivAt_schwarzschildA (rs : ℝ) {r : ℝ} (hr : r ≠ 0) :
   convert h using 1
   ring
 
-/-- `ν' = ∂_r √A`. -/
 theorem hasDerivAt_killingNorm {rs r : ℝ} (h : IsExterior rs r) :
     HasDerivAt (killingNorm rs) (dSqrtA_dr rs r) r := by
   have hr : r ≠ 0 := (lt_trans h.1 h.2).ne'
@@ -891,7 +787,6 @@ theorem hasDerivAt_killingNorm {rs r : ℝ} (h : IsExterior rs r) :
 theorem killingNorm_pos {rs r : ℝ} (h : IsExterior rs r) : 0 < killingNorm rs r :=
   Real.sqrt_pos.mpr (schwarzschildA_pos h)
 
-/-- The boost rate has the sign of the mass. -/
 theorem killingRate_pos_iff {rs r : ℝ} (hr : r ≠ 0) : 0 < killingRate rs r ↔ 0 < rs := by
   unfold killingRate
   have h2 : 0 < 2 * r ^ 2 := by positivity
@@ -900,12 +795,10 @@ theorem killingRate_pos_iff {rs r : ℝ} (hr : r ≠ 0) : 0 < killingRate rs r �
 theorem killingRate_pos {rs r : ℝ} (h : IsExterior rs r) : 0 < killingRate rs r :=
   (killingRate_pos_iff (lt_trans h.1 h.2).ne').mpr h.1
 
-/-- `κ = ½ A'`. -/
 theorem killingRate_eq_half_deriv (rs r : ℝ) : killingRate rs r = (1 / 2) * (rs / r ^ 2) := by
   unfold killingRate
   ring
 
-/-- `κ = ν ν'`: the proper radial derivative of the Killing norm. -/
 theorem killingRate_eq_norm_mul_deriv {rs r : ℝ} (h : IsExterior rs r) :
     killingRate rs r = killingNorm rs r * dSqrtA_dr rs r := by
   have hs := (killingNorm_pos h).ne'
@@ -913,7 +806,6 @@ theorem killingRate_eq_norm_mul_deriv {rs r : ℝ} (h : IsExterior rs r) :
   rw [killingRate, dSqrtA_dr]
   field_simp
 
-/-- Gauss's law for the boost part: `r² κ = rₛ/2`. -/
 theorem sq_mul_killingRate (rs : ℝ) {r : ℝ} (hr : r ≠ 0) : r ^ 2 * killingRate rs r = rs / 2 := by
   unfold killingRate
   field_simp
@@ -925,7 +817,6 @@ theorem killingNorm_eq_exp {rs r : ℝ} (h : IsExterior rs r) :
 theorem axisDistance_pos {rs r : ℝ} (h : IsExterior rs r) : 0 < axisDistance rs r :=
   div_pos (killingNorm_pos h) (killingRate_pos h)
 
-/-- `κ ℓ = ν`. -/
 theorem killingRate_mul_axisDistance {rs r : ℝ} (h : IsExterior rs r) :
     killingRate rs r * axisDistance rs r = killingNorm rs r :=
   mul_div_cancel₀ _ (killingRate_pos h).ne'
@@ -937,7 +828,6 @@ theorem axisDistance_eq {rs r : ℝ} (h : IsExterior rs r) :
   rw [axisDistance, killingRate]
   field_simp
 
-/-- `ℓ · ∂_r√A = 1`: the axis distance is the inverse hover acceleration. -/
 theorem axisDistance_mul_dSqrtA_dr {rs r : ℝ} (h : IsExterior rs r) :
     axisDistance rs r * dSqrtA_dr rs r = 1 := by
   have hs := (killingNorm_pos h).ne'
@@ -948,20 +838,17 @@ theorem axisDistance_mul_dSqrtA_dr {rs r : ℝ} (h : IsExterior rs r) :
   unfold killingNorm killingRate at *
   field_simp
 
-/-- The hover acceleration is the time-leg Weitzenböck torsion `T⁰_{rt}`. -/
 theorem axisDistance_mul_torsion {rs r : ℝ} (h : IsExterior rs r) (θ : ℝ) :
     axisDistance rs r * weitzenbockTorsion (schwarzschildPartials rs r θ) 0 1 0 = 1 := by
   rw [schwarzschild_torsion_T0_r_t]
   exact axisDistance_mul_dSqrtA_dr h
 
-/-- Per unit proper time, `K/ν = ½((κ/ν) B⁺ + N₀)`. -/
 theorem smul_killingBivector_proper (κ ν : ℝ) (hν : ν ≠ 0) :
     (1 / ν) • killingBivector κ ν =
       (1 / 2 : ℝ) • ((κ / ν) • hyperbolic 0 + null 0) := by
   rw [killingBivector, smul_add, smul_smul, smul_smul, smul_add, smul_smul]
   field_simp [hν]
 
-/-- The boost scales an outward lightlike momentum; the time translation does not. -/
 theorem commutator_proper_light_plus (κ ν : ℝ) (hν : ν ≠ 0) :
     commutator ((1 / ν) • killingBivector κ ν) (null 0 + null 1) =
       (κ / ν) • (null 0 + null 1) := by
@@ -970,7 +857,6 @@ theorem commutator_proper_light_plus (κ ν : ℝ) (hν : ν ≠ 0) :
   simp only [add_zero, smul_smul]
   module
 
-/-- The opposite ray scales with the opposite sign. -/
 theorem commutator_proper_light_minus (κ ν : ℝ) (hν : ν ≠ 0) :
     commutator ((1 / ν) • killingBivector κ ν) (null 0 - null 1) =
       (-(κ / ν)) • (null 0 - null 1) := by
@@ -979,7 +865,6 @@ theorem commutator_proper_light_minus (κ ν : ℝ) (hν : ν ≠ 0) :
   simp only [add_zero, smul_smul]
   module
 
-/-- On the exterior the rate is the hover acceleration. -/
 theorem commutator_staticProper_light_plus {rs r : ℝ} (h : IsExterior rs r) :
     commutator ((1 / killingNorm rs r) • staticKilling rs r) (null 0 + null 1) =
       dSqrtA_dr rs r • (null 0 + null 1) := by
@@ -994,7 +879,6 @@ theorem commutator_staticProper_light_minus {rs r : ℝ} (h : IsExterior rs r) :
   rw [staticKilling, commutator_proper_light_minus _ _ hν, killingRate_eq_norm_mul_deriv h]
   field_simp [hν]
 
-/-- Per unit proper time, `[K/ν, ε N₀ + π N₁] = (κ/ν)(π N₀ + ε N₁)`. -/
 theorem commutator_proper_radial (κ ν ε π : ℝ) (hν : ν ≠ 0) :
     commutator ((1 / ν) • killingBivector κ ν) (radialMomentum ε π) =
       (κ / ν) • radialMomentum π ε := by
@@ -1003,14 +887,12 @@ theorem commutator_proper_radial (κ ν ε π : ℝ) (hν : ν ≠ 0) :
   simp only [add_zero, smul_smul]
   module
 
-/-- At rest the energy coefficient is stationary and the shift is spatial. -/
 theorem commutator_proper_rest (κ ν ε : ℝ) (hν : ν ≠ 0) :
     commutator ((1 / ν) • killingBivector κ ν) (radialMomentum ε 0) =
       (ε * (κ / ν)) • null 1 := by
   rw [commutator_proper_radial κ ν ε 0 hν, radialMomentum]
   module
 
-/-- On the exterior the rate is the hover acceleration. -/
 theorem commutator_staticProper_radial {rs r ε π : ℝ} (h : IsExterior rs r) :
     commutator ((1 / killingNorm rs r) • staticKilling rs r) (radialMomentum ε π) =
       dSqrtA_dr rs r • radialMomentum π ε := by
@@ -1025,7 +907,6 @@ theorem commutator_staticProper_rest {rs r ε : ℝ} (h : IsExterior rs r) :
   rw [staticKilling, commutator_proper_rest _ _ _ hν, killingRate_eq_norm_mul_deriv h]
   field_simp [hν]
 
-/-- The null weights of a rest momentum take `A^{-1/2}` and `√A`. -/
 theorem rest_nullWeights_chart {rs r ε : ℝ} (h : IsExterior rs r) :
     Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 +
         Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
@@ -1055,7 +936,6 @@ theorem rest_nullWeights_chart {rs r ε : ℝ} (h : IsExterior rs r) :
       simpa [sub_zero] using hminus
     rw [hdiff, hν]
 
-/-- In rapidity: `ℓ · (-√A φ') = 1`; gravity points up the rapidity gradient. -/
 theorem axisDistance_mul_rapidity {rs r : ℝ} (h : IsExterior rs r) :
     axisDistance rs r * (-(dRapidity_dr rs r) * killingNorm rs r) = 1 := by
   rw [killingNorm, ← dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA h]
@@ -1069,27 +949,23 @@ theorem dRapidity_dr_neg {rs r : ℝ} (h : IsExterior rs r) : dRapidity_dr rs r 
   have : 0 < rs / (2 * r ^ 2 * schwarzschildA rs r) := by positivity
   linarith
 
-/-- The static Killing bivector is the pure boost `(κ/2) B⁺` moved inward by `ℓ`. -/
 theorem staticKilling_eq_sandwich {rs r : ℝ} (h : IsExterior rs r) :
     staticKilling rs r =
       sandwich (expTrans (radialShift (axisDistance rs r)))
         ((killingRate rs r / 2) • hyperbolic 0) := by
   rw [sandwich_radialShift_boost, killingRate_mul_axisDistance h, staticKilling]
 
-/-- On the radial line the static motion stops exactly at `s = -ℓ`. -/
 theorem staticKilling_velocity_eq_zero_iff {rs r : ℝ} (h : IsExterior rs r) (s : ℝ) :
     commutator (staticKilling rs r) (event ![0, s, 0, 0]) = 0 ↔ s = -axisDistance rs r := by
   rw [staticKilling, killing_velocity_eq_zero_iff, ← killingRate_mul_axisDistance h, ← mul_add,
     mul_eq_zero, or_iff_right (killingRate_pos h).ne']
   constructor <;> intro hs <;> linarith
 
-/-- The static observer's orbit is the hovering hyperbola about the inward axis. -/
 theorem sandwich_exp_staticKilling_event_zero {rs r : ℝ} (h : IsExterior rs r) (τ : ℝ) :
     sandwich (exp (τ • staticKilling rs r)) (event 0) =
       event (hoverWorldline (killingRate rs r) (axisDistance rs r) τ) := by
   rw [staticKilling, ← killingRate_mul_axisDistance h, sandwich_exp_killing_event_zero]
 
-/-- The axis recedes monotonically with radius. -/
 theorem axisDistance_strictMonoOn {rs : ℝ} (hrs : 0 < rs) :
     StrictMonoOn (axisDistance rs) (Ioi rs) := by
   intro r1 hr1 r2 hr2 hlt
@@ -1128,7 +1004,6 @@ theorem tendsto_killingRate_horizon {rs : ℝ} (hrs : 0 < rs) :
   rw [hval] at h
   exact h
 
-/-- At the horizon the axis reaches the observer. -/
 theorem tendsto_axisDistance_horizon {rs : ℝ} (hrs : 0 < rs) :
     Tendsto (axisDistance rs) (𝓝[>] rs) (𝓝 0) := by
   have h := (tendsto_killingNorm_horizon hrs).div (tendsto_killingRate_horizon hrs)
@@ -1136,7 +1011,6 @@ theorem tendsto_axisDistance_horizon {rs : ℝ} (hrs : 0 < rs) :
   rw [zero_div] at h
   exact h
 
-/-- At the horizon `K` becomes the pure boost of rate `1/(2rₛ)`, the surface gravity. -/
 theorem tendsto_staticKilling_horizon {rs : ℝ} (hrs : 0 < rs) :
     Tendsto (staticKilling rs) (𝓝[>] rs) (𝓝 ((1 / (4 * rs)) • hyperbolic 0)) := by
   have h := (((tendsto_killingRate_horizon hrs).div_const 2).smul_const (hyperbolic 0)).add
@@ -1161,7 +1035,6 @@ theorem tendsto_killingRate_atTop (rs : ℝ) :
   tendsto_const_nhds.div_atTop
     ((tendsto_pow_atTop two_ne_zero).const_mul_atTop two_pos)
 
-/-- Far away the axis recedes without bound. -/
 theorem tendsto_axisDistance_atTop {rs : ℝ} (hrs : 0 < rs) :
     Tendsto (axisDistance rs) atTop atTop := by
   have hpow : Tendsto (fun r : ℝ => 2 / rs * r ^ 2) atTop atTop :=
@@ -1171,7 +1044,6 @@ theorem tendsto_axisDistance_atTop {rs : ℝ} (hrs : 0 < rs) :
   filter_upwards [eventually_gt_atTop rs] with r hr
   rw [axisDistance_eq ⟨hrs, hr⟩]
 
-/-- Far away `K` becomes the pure time translation `½ N₀`. -/
 theorem tendsto_staticKilling_atTop (rs : ℝ) :
     Tendsto (staticKilling rs) atTop (𝓝 ((1 / 2 : ℝ) • null 0)) := by
   have h := (((tendsto_killingRate_atTop rs).div_const 2).smul_const (hyperbolic 0)).add
@@ -1179,7 +1051,6 @@ theorem tendsto_staticKilling_atTop (rs : ℝ) :
   rw [zero_div, zero_smul, zero_add] at h
   exact h
 
-/-- The torsional scalar of the Killing boost is the redshifted field seed. -/
 theorem J_killingRate {rs r : ℝ} (h : IsExterior rs r) :
     Invariant.J (pureBoost (killingRate rs r)) = schwarzschildA rs r ^ 2 * J_field rs r := by
   have hA := (schwarzschildA_pos h).ne'
@@ -1188,7 +1059,6 @@ theorem J_killingRate {rs r : ℝ} (h : IsExterior rs r) :
   field_simp
   ring
 
-/-- Per unit proper time the boost rate is the hover acceleration, with `J = A J_field`. -/
 theorem J_hoverAcceleration {rs r : ℝ} (h : IsExterior rs r) :
     Invariant.J (pureBoost (dSqrtA_dr rs r)) = schwarzschildA rs r * J_field rs r := by
   have hApos := schwarzschildA_pos h
@@ -1199,7 +1069,6 @@ theorem J_hoverAcceleration {rs r : ℝ} (h : IsExterior rs r) :
   field_simp
   ring
 
-/-- On the exterior chart the flat-model initial acceleration is `-∂_r √A`. -/
 theorem released_initial_acceleration_exterior {rs r : ℝ} (h : IsExterior rs r) :
     deriv (deriv (releasedDisplacementProper (axisDistance rs r))) 0 =
       -dSqrtA_dr rs r := by
@@ -1211,7 +1080,6 @@ theorem released_initial_acceleration_exterior {rs r : ℝ} (h : IsExterior rs r
   rw [hdiv]
   ring
 
-/-- On the exterior chart that light-cone meeting lies on the horizon of the static field. -/
 theorem released_on_staticHorizon {rs r : ℝ} (h : IsExterior rs r) :
     killingNormSq (killingParams (killingRate rs r) (killingNorm rs r))
       (releasedWorldline (axisDistance rs r)) = 0 := by

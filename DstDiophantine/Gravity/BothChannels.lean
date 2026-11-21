@@ -11,27 +11,10 @@ set_option linter.style.native false
 /-!
 # Both channels at once
 
-## Paper boundary (do **not** claim)
-
-`G`, the masses, `α`, `ℏ`, and `c` are external inputs. The windows
-`ℓ_E < 387` fm and `a₀ > 52917` fm, and `λ_π < 71/50` fm, are the same
-external comparisons used for the length rule. Nothing here derives a
-spectrum, a binding, or a force-free radius where the two interference
-factors have opposite signs.
-
-## What is proved
-
-An electron and a proton exert both terms at every separation. For an
-unlike pair, wherever the two factors have the same sign, the two terms
-point the same way and the separation-increasing force does not vanish.
-At a separation above `52917` fm, read with `ℓ_E < 387` fm and
-`λ_π < 71/50` fm, both phases lie in `[0, 1/40]` and both factors are
-positive. The ratio of the mass term to the charge term there lies
-strictly between `440/10^42` and `442/10^42`. The prefactor
-`G m_e m_p/(k e²)` itself lies strictly between `4407/10^43` and
-`4408/10^43`. The same scale gives
-`1.2355×10³⁶ < k e²/(G m_p²) < 1.2356×10³⁶` and
-`8.093×10⁻³⁷ < G m_p²/(k e²) < 8.094×10⁻³⁷`.
+Where the two interference factors share a sign, the separation-increasing
+force of an unlike pair does not vanish. \(G\), the masses, \(\alpha\),
+\(\hbar\), and \(c\) are inputs; no spectrum, binding, or opposite-sign
+force-free radius is derived.
 -/
 
 namespace DstDiophantine
@@ -40,8 +23,7 @@ namespace Gravity
 
 open Real SI
 
-/-- Separation-increasing force of a massive charged pair.
-`κ` is `G m₁ m₂` and `coul` is `k q₁ q₂`. -/
+/-- Separation-increasing force of a massive charged pair. `κ` is `G m₁ m₂` and `coul` is `k q₁ q₂`. -/
 noncomputable def pairChannelForce (κ coul γG γE r : ℝ) : ℝ :=
   -κ / (γG * r ^ 2) + coul / (γE * r ^ 2)
 
@@ -49,8 +31,6 @@ theorem channel_term_ne_zero {c γ r : ℝ} (hc : c ≠ 0) (hγ : γ ≠ 0) (hr 
     c / (γ * r ^ 2) ≠ 0 :=
   div_ne_zero hc (mul_ne_zero hγ (pow_ne_zero 2 hr))
 
-/-- Unlike charges on a common sign: both terms point the same way.
-Positive factors give two attractions; negative factors give two repulsions. -/
 theorem unlike_same_sign_no_zero {κ coul γG γE r : ℝ}
     (hκ : 0 < κ) (hc : coul < 0) (hr : r ≠ 0)
     (hG : 0 < γG) (hE : 0 < γE) :
@@ -187,7 +167,6 @@ private theorem protonCoulombOverNewton_den_pos :
   unfold protonCoulombOverNewton_den GMantissa protonMassMantissa
   norm_num
 
-/-- \(1.2355\times 10^{36} < ke^{2}/(G m_p^{2}) < 1.2356\times 10^{36}\). -/
 theorem protonCoulombOverNewton_bounds :
     (12355 / 10000 : ℚ) * 10 ^ 36 < protonCoulombOverNewton ∧
       protonCoulombOverNewton < (12356 / 10000) * 10 ^ 36 := by
@@ -225,7 +204,6 @@ theorem protonCoulombOverNewton_bounds :
         (12356 / 10000) * 10 ^ 36 * protonCoulombOverNewton_den := by ring
     linarith
 
-/-- \(8.093\times 10^{-37} < G m_p^{2}/(ke^{2}) < 8.094\times 10^{-37}\). -/
 theorem protonNewtonOverCoulomb_bounds :
     (8093 : ℚ) / 10 ^ 40 < protonNewtonOverCoulomb ∧
       protonNewtonOverCoulomb < 8094 / 10 ^ 40 := by
@@ -275,7 +253,6 @@ theorem phase_le_one_fortieth {ℓ r : ℝ} (hℓ0 : 0 < ℓ) (hℓ : ℓ < 387)
   rw [div_le_iff₀ (by positivity)]
   nlinarith
 
-/-- On `0 ≤ x ≤ 1/40`, `15987/16000 ≤ γ_s(x) ≤ 1`. -/
 theorem gammaWindow_of_le_one_fortieth {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 / 40) :
     (15987 / 16000 : ℝ) ≤ gammaSEqual x ∧ gammaSEqual x ≤ 1 := by
   have h := invGamma_dev_le hx0 hx1
@@ -294,8 +271,6 @@ theorem gammaWindow_of_le_one_fortieth {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1 
     field_simp
   linarith
 
-/-- At a hydrogenic separation the mass term is a fraction of the charge term
-strictly between `4.40×10⁻⁴⁰` and `4.42×10⁻⁴⁰`. -/
 theorem bohr_mass_fraction {ℓE ℓG a : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387)
     (hG0 : 0 < ℓG) (hG : ℓG < 71 / 50)

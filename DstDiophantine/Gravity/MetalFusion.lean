@@ -10,30 +10,7 @@ import Mathlib.Tactic.Positivity
 /-!
 # A proton pair in an octahedral hole
 
-Lengths are in units of the electromagnetic `ℓ`, and the axial component is
-in units of `k e²/ℓ²`. Six ions of charge `Z` sit at `±a` on each axis of an
-orthonormal frame. Two protons sit at `±t` on the third axis.
-
-The separation-increasing component on the proton at `+t` is
-`octaPairOutward`. Each ion contributes `Z · pullRate(x) · ⟨p - c, axis⟩`,
-and `pullRate(x) · r = pairAttraction(x)` when the separation from that ion
-is `r`. The partner contributes `pairAttraction` at the phase of separation
-`2t`.
-
-## Paper boundary (do **not** claim)
-
-No rate, no heat, and no choice among experiments is derived. The
-electromagnetic length and the nuclear length are not identified. No
-infinite lattice sum is taken. Screening is not introduced.
-
-## What is proved
-
-* For every ion charge `Z ≥ 1`, at cage radius `2` and proton half-separation
-  `1`, the axial component is strictly negative.
-* As the half-separation descends to `1/(4x₁)`, the component tends to `+∞`.
-* On the half-separations strictly between `1/(4x₁)` and `1`, the component
-  falls strictly. The balance is therefore unique, outward on its inner side
-  and inward on its outer side.
+Six ions of charge `Z` sit at `±a` and two protons at `±t`, and the axial component on the proton at `+t` is `octaPairOutward`. No rate, heat, or experiment is derived, and the electromagnetic length is not identified with the nuclear length.
 -/
 
 namespace DstDiophantine
@@ -44,7 +21,6 @@ open Real Set Filter
 
 /-! ### Bounds on the interference factor -/
 
-/-- `γ_s(x) ≥ 1 - x² cosh x` for `x ≥ 0`. -/
 private lemma gammaSEqual_ge_one_sub_sq_cosh {x : ℝ} (hx : 0 ≤ x) :
     1 - x ^ 2 * cosh x ≤ gammaSEqual x := by
   let f : ℝ → ℝ := fun y => gammaSEqual y - 1 + y ^ 2 * cosh y
@@ -85,7 +61,6 @@ private lemma gammaSEqual_ge_one_sub_sq_cosh {x : ℝ} (hx : 0 ≤ x) :
     norm_num
   linarith
 
-/-- Up to phase `1`, `γ_s(x) ≤ 2 cos x - 1`. -/
 private lemma gammaSEqual_le_two_cos_sub_one {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) :
     gammaSEqual x ≤ 2 * cos x - 1 := by
   let f : ℝ → ℝ := fun y => 2 * cos y - 1 - gammaSEqual y
@@ -166,8 +141,7 @@ private lemma gamma_half_le : gammaSEqual (1 / 2 : ℝ) ≤ 581 / 768 := by
 
 /-! ### The axial component -/
 
-/-- Separation-increasing component for ions of charge `Z` on the octahedron
-of radius `a`, with protons at half-separation `t`. -/
+/-- Separation-increasing component for ions of charge `Z` on the octahedron of radius `a`, with protons at half-separation `t`. -/
 noncomputable def octaPairOutward (Z a t : ℝ) : ℝ :=
   -Z * pairAttraction (1 / (2 * (a - t)))
   + Z * pairAttraction (1 / (2 * (a + t)))
@@ -507,9 +481,6 @@ theorem tendsto_octaPairOutward_node {Z : ℝ} :
     simp only [Function.comp_apply]
     exact (hEq t).symm
 
-/-- For an ion charge at least one, the axial component changes from outward,
-just outside the first charge node, to inward at separation `2`. A balance
-lies strictly between them. -/
 theorem exists_octa_pair_balance {Z : ℝ} (hZ : 1 ≤ Z) :
     ∃ s, 1 / (2 * resonanceRoot1) < s ∧ s < 2 ∧ octaPairOutward Z 2 (s / 2) = 0 := by
   set t0 := 1 / (4 * resonanceRoot1)
@@ -1175,8 +1146,6 @@ private lemma hasDerivAt_octaPairOutward_aboveNode {Z t : ℝ} (_hZ : 1 ≤ Z)
   simp only [Function.comp_apply, Pi.add_apply]
   exact octaPairOutward_eq_cage (Z := Z) (t := s)
 
-/-- For an ion charge at least one, the axial component falls strictly from just
-outside the first charge node through separation `2`. -/
 theorem octaPairOutward_strictAnti {Z : ℝ} (hZ : 1 ≤ Z) :
     StrictAntiOn (octaPairOutward Z 2) (Ioc (1 / (4 * resonanceRoot1)) 1) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioc _ _) (continuousOn_octaPair_aboveNode (Z := Z)) ?_
@@ -1212,8 +1181,6 @@ theorem octaPairOutward_strictAnti {Z : ℝ} (hZ : 1 ≤ Z) :
     exact mul_neg_of_pos_of_neg hnum hneg
   linarith
 
-/-- The axial balance lies at one separation. Inside it the component is outward,
-and outside it the component is inward. -/
 theorem octa_pair_seat {Z : ℝ} (hZ : 1 ≤ Z) :
     ∃ s, 1 / (2 * resonanceRoot1) < s ∧ s < 2 ∧ octaPairOutward Z 2 (s / 2) = 0 ∧
       (∀ s', 1 / (2 * resonanceRoot1) < s' → s' < 2 →

@@ -4,20 +4,9 @@ import DstDiophantine.Theorems.Polignac
 set_option linter.style.native false
 
 /-!
-# One phase for the additive prime problems
+# One phase for Goldbach and Polignac
 
-Goldbach and Polignac are two channels of one prime pair with even
-difference. For primes `p ≤ q` the rapidity is `δ = log(q/p)`, the relative
-rotor is the pure boost of angle `2δ`, and the mismatch is `J = 2δ²`. The
-channels are `n/2 = √(pq) cosh(δ/2)` and `k = √(pq) sinh(δ/2)`, with
-`n = p + q` and `k = (q - p)/2`, and therefore
-
-`(n/2)² - k² = pq`,
-
-which is `cosh²(δ/2) - sinh²(δ/2) = 1`. Equal primes close the gap channel
-(`k = 0`). Every unequal pair of this kind is at once a Goldbach decomposition
-of `n` and a Polignac pair of gap `2k`. The classical conjectures ask
-different questions of this one family, and neither is claimed.
+The two channels are the hyperbola `(n/2)² − k² = pq`. Neither classical conjecture is claimed.
 -/
 
 namespace DstDiophantine
@@ -30,33 +19,28 @@ open Real
 def halfGap (p q : ℕ) : ℕ :=
   (q - p) / 2
 
-/-- The sum and the signed half-gap of any two naturals lie on one hyperbola. -/
 theorem additive_phase_relation (p q : ℕ) :
     ((p + q : ℝ) / 2) ^ 2 - (((q : ℝ) - (p : ℝ)) / 2) ^ 2 = (p : ℝ) * q := by
   ring
 
-/-- The Goldbach and Polignac rapidities are the same number. -/
 theorem primePair_rapidity_eq {p q k : ℕ} (hp : p ≠ 0) (hq : q ≠ 0)
     (hk : q = p + 2 * k) :
     goldbachRapidity p q hp hq = polignacRapidity p k hp := by
   unfold goldbachRapidity polignacRapidity
   rw [hk]
 
-/-- The Goldbach and Polignac mismatches are the same scalar. -/
 theorem primePair_mismatch_eq {p q k : ℕ} (hp : p ≠ 0) (hq : q ≠ 0)
     (hk : q = p + 2 * k) :
     goldbachMismatch p q hp hq = polignacMismatch p k hp := by
   unfold goldbachMismatch polignacMismatch
   rw [primePair_rapidity_eq hp hq hk]
 
-/-- The normalised heights of the two channels agree. -/
 theorem primePair_mismatchHeight_eq {p q k : ℕ} (hp : p ≠ 0) (hq : q ≠ 0)
     (hk : q = p + 2 * k) :
     goldbachMismatchHeight p q hp hq = polignacMismatchHeight p k hp := by
   unfold goldbachMismatchHeight polignacMismatchHeight
   rw [primePair_rapidity_eq hp hq hk]
 
-/-- A Polignac pair is the Goldbach decomposition of its sum. -/
 theorem polignac_is_goldbach {p k : ℕ} (h : IsPolignacPair p k) :
     IsGoldbachPair p (p + 2 * k) (2 * (p + k)) := by
   obtain ⟨hp, hq, hk⟩ := h
@@ -65,7 +49,6 @@ theorem polignac_is_goldbach {p k : ℕ} (h : IsPolignacPair p k) :
   · omega
   · omega
 
-/-- An unequal Goldbach pair is the Polignac pair of half-gap `(q - p) / 2`. -/
 theorem goldbach_unequal_is_polignac {p q n : ℕ}
     (h : IsGoldbachPair p q n) (hlt : p < q) :
     IsPolignacPair p (halfGap p q) ∧ q = p + 2 * halfGap p q ∧ n = p + q := by
@@ -99,7 +82,6 @@ theorem goldbach_unequal_is_polignac {p q n : ℕ}
   rw [← hqeq]
   exact h.2.1
 
-/-- Equal primes are the vacuum of the same hyperbola: the gap channel is closed. -/
 theorem goldbach_vacuum_phase {p : ℕ} (hp : Nat.Prime p) :
     ((2 * p : ℕ) : ℝ) / 2 = (p : ℝ) ∧
       goldbachMismatch p p hp.ne_zero hp.ne_zero = 0 ∧
@@ -113,11 +95,6 @@ theorem goldbach_vacuum_phase {p : ℕ} (hp : Nat.Prime p) :
   · push_cast
     ring
 
-/--
-The two additive channels are one relation. For a Polignac pair the sum channel
-and the gap channel are the hyperbolic cosine and sine of one rapidity, the
-hyperbola `(n/2)² - k² = pq` is `cosh² - sinh² = 1`, and the mismatches agree.
--/
 theorem additive_phase_one_relation {p k : ℕ} (h : IsPolignacPair p k) :
     let q : ℕ := p + 2 * k
     let n : ℕ := p + q
@@ -171,8 +148,6 @@ theorem additive_phase_one_relation {p k : ℕ} (h : IsPolignacPair p k) :
   · simpa [q, δ] using
       primePair_mismatchHeight_eq (Nat.Prime.ne_zero h.1) (Nat.Prime.ne_zero h.2.1) hqeq
 
-/-- An unequal Goldbach pair carries the same mismatch as its Polignac reading,
-and the sum and the half-gap lie on the hyperbola. -/
 theorem goldbach_unequal_same_phase {p q n : ℕ}
     (h : IsGoldbachPair p q n) (hlt : p < q) :
     IsPolignacPair p (halfGap p q) ∧

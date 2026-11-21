@@ -13,32 +13,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Torque from a spherical geodesic read in the flat chart
 
-The pull follows a great circle of the three-sphere. The motion is read in the
-flat three-space, through the azimuthal equidistant chart. Those two
-directions are not the same, and the difference is a moment about the source.
-
-The chart sends the point at geodesic distance `χ` in a unit direction `n` to
-`χ n`. The great circle from the body to the source is the spherical
-interpolation of their lifts. Its initial tangent pushes into the chart as
-`pushedTangent`. About the source, that tangent has moment `pushedMoment`.
-With the body at chart distance `χ`, the source at `ψ`, and angle `α` between
-them,
-
-`pushedMoment χ ψ α = chordMoment χ ψ α`.
-
-The moment vanishes when `sin α = 0`, and when the source is the chart origin.
-For equal chart distances it is `(1 - cos α) χ (χ - sin χ cos χ) sin α`,
-which is positive for `χ, α ∈ (0, π)`. It is odd in the oriented angle, so the
-moments at `α` and `-α` sum to zero, and on `(-π, 0)` the equal-distance
-moment is negative. The cancellation is inside one chart. It is not an
-exchange of the two parallel families.
-
-## Not claimed
-
-* A net spin of a ball whose source sits at the chart origin. That moment is
-  zero: the great circle through the origin is a straight ray.
-* A numerical angular momentum for the solar system or for a galaxy.
-* A value of `a₀`, or a change to the circular-speed law.
+No net spin is claimed for a source at the chart origin, and neither a solar or galactic angular momentum, a value of `a₀`, nor a change to the circular-speed law is derived.
 -/
 
 namespace DstDiophantine.Gravity.SlerpTorque
@@ -148,9 +123,7 @@ theorem hasDerivAt_slerp_coord (Ω : ℝ) (P Q : V4) (i : Fin 4) (hΩ : Real.sin
   field_simp [hΩ]
   ring
 
-/-- Initial tangent `Q - (P·Q) P` of the great circle, pushed by the
-differential of the equidistant chart at chart radius `χ`. The body lies on
-the first axis and the source in the first-second plane. -/
+/-- Initial tangent `Q - (P·Q) P` of the great circle, pushed by the differential of the equidistant chart at chart radius `χ`. The body lies on the first axis and the source in the first-second plane. -/
 noncomputable def pushedTangent (χ ψ α : ℝ) : V3 :=
   let sχ := Real.sin χ
   let cχ := Real.cos χ
@@ -179,8 +152,7 @@ noncomputable def sourcePoint (ψ α : ℝ) : V3
   | 1 => ψ * Real.sin α
   | 2 => 0
 
-/-- Moment about the source of the pushed tangent. Its third component is the
-scalar `pushedMoment`; the first two vanish. -/
+/-- Moment about the source of the pushed tangent. Its third component is the scalar `pushedMoment`; the first two vanish. -/
 noncomputable def pushedMoment (χ ψ α : ℝ) : ℝ :=
   let sχ := Real.sin χ
   let cχ := Real.cos χ
@@ -244,19 +216,16 @@ theorem pushedMoment_eq (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
   · exact absurd hpow (pow_ne_zero 2 hsχ)
   · exact sub_eq_zero.mp hdiff
 
-/-- On one ray from the chart origin the moment vanishes. -/
 theorem pushedMoment_aligned (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) (hα : Real.sin α = 0) :
     pushedMoment χ ψ α = 0 := by
   rw [pushedMoment_eq χ ψ α hs, chordMoment, hα]
   ring
 
-/-- A source at the chart origin exerts no moment. The great circle is a ray. -/
 theorem pushedMoment_origin (χ α : ℝ) (hs : Real.sin χ ≠ 0) :
     pushedMoment χ 0 α = 0 := by
   rw [pushedMoment_eq χ 0 α hs]
   simp [chordMoment, Real.sin_zero, Real.cos_zero]
 
-/-- Equal chart distances. -/
 theorem chordMoment_equal (χ α : ℝ) (hs : Real.sin χ ≠ 0) :
     chordMoment χ χ α =
       (1 - Real.cos α) * χ * (χ - Real.sin χ * Real.cos χ) * Real.sin α := by
@@ -293,19 +262,16 @@ theorem chordMoment_equal_pos {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
     nlinarith [hsin]
   exact mul_pos (mul_pos (mul_pos hcos hχ) hrad) hsinα
 
-/-- Reversing the oriented angle reverses the moment. -/
 theorem chordMoment_neg_angle (χ ψ α : ℝ) :
     chordMoment χ ψ (-α) = -chordMoment χ ψ α := by
   simp only [chordMoment, Real.sin_neg, Real.cos_neg]
   ring
 
-/-- A source and its reflection across the ray cancel. -/
 theorem chordMoment_cancels (χ ψ α : ℝ) :
     chordMoment χ ψ α + chordMoment χ ψ (-α) = 0 := by
   rw [chordMoment_neg_angle]
   ring
 
-/-- Equal chart distances give a negative moment on `(-π, 0)`. -/
 theorem chordMoment_equal_neg {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
     (hα : -Real.pi < α) (hα0 : α < 0) :
     chordMoment χ χ α < 0 := by

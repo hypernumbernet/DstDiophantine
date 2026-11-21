@@ -26,76 +26,9 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Beal's conjecture (problem-specific layer)
+# Amplification versus the admissible bound
 
-Amplification vs. admissible bound with minimal exponent `m = min(x,y,z)`,
-together with the faithful null-translator encoding of `A^x + B^y - C^z`.
-Shared no-go theorems come from `Framework.Amplification` (not from Fermat).
-
-## Paper gap (not closed)
-
-Classical Beal is **not** claimed unconditionally. The exponent-gcd assembly
-is proved in the sibling modules
-(`beal_conjecture_pos_of_fine_residuals_even_split`). What remains are the
-residual leaves. This file holds the additive encoding and the diagnostic
-bridges. The case split is exponent-gcd reduction (not an independent CGA
-geometric principle):
-
-* `BealCGARealization` — **bookkeeping**: coprime solution ⇒ A–C root ratio is
-  an integer CGA dilation; under coprimality this forces `|A|=1` and an
-  `m`-th-power condition on `|C|^z` (not a live geometric bridge);
-* `bealExpGcd` reduction — `d = gcd(x,y,z)`: trichotomy `d ∈ {1,2}` or `d ≥ 3`;
-  `d ≥ 3` is closed under the FLT axiom `fermatLastTheorem` (phase 7i;
-  same contract as Mihăilescu; not a Lean proof of Wiles);
-  unconditional slices when `3 ∣ d` or `4 ∣ d` live in `BealSlice`
-  (mathlib `fermatLastTheoremThree` / `Four`);
-* `d = 2` — Pythagorean powers; coprime solutions admit
-  `PythagoreanTriple.coprime_classification` parameters; fourth-divisibility
-  of at least two exponents is closed in `BealPythagorean` / `BealSlice`;
-  equal-odd matching even-leg/hyp slices reduce via Gaussian UFD to
-  `BealEqualOddTwoFactorResidual` (`BealGaussian`); the cube leaf `e = 3`
-  is closed under the Euler axiom `eulerAffineCubeAddTwo`; the live body
-  inside that residual is odd `e ≥ 5`; residual outside those is
-  `BealPythagoreanResidual` (at least two reduced exponents odd);
-* `d = 1` — mixed-exponent residual (`BealMixedExpResidual`, unproved), with
-  two-equal and all-distinct case splits; even two-equal progress (mod 4 +
-  sum-of-squares shape) in `BealGaussian` / `BealTwoEqualEvenResidual`;
-  odd two-equal with repeated exponent `3` is closed when the companion lies
-  in `3 … 10^9` or is even and at least `4` (`sumTwoCubesNotPerfectPower`,
-  phase 7w; Bruin's `4` and `5` are the first cases); any two exponents
-  divisible by `3` with the third a `TwoCubeExponent` close by the same
-  prohibition (`IsCubePairPowerShape`, phase 7x), whether or not `d = 1`;
-  signature `(3,4,5)` is
-  closed in every order (`siksekStoll345`); a repeated five beside `7` or
-  `19` is closed in every order (`sumTwoFifthsNotSeventhOrNineteenth`,
-  phase 7y; `(7,7,5)` is already `(n,n,5)`); the live odd two-equal body is
-  `BealTwoEqualOddOutsideRepeatedFifthResidual`; an even two-equal sum whose
-  common exponent is divisible by `4` rewrites to a fourth power plus a square
-  and is closed for hypotenuse exponent `z ≥ 4` (`bennettEllenbergNg`,
-  phase 7z; `(4,4,7)` is the first case); two exponents divisible by `5` with
-  the third divisible by `7` or by `19` rewrite to Dahmen–Siksek (phase 8a;
-  `(10,10,7)` is the first even sum, `(10,10,9)` remains); the live even-sum
-  body is `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual`;
-* `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
-  positive bases via the Mihăilescu axiom;
-* `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”
-  by `beal_kFold_powerLattice_iff_natAbs_eq_one`;
-* **Proved descent:** power-lattice closure of the `k`-fold seed + pairwise
-  coprimality ⇒ `|A| = 1` (and converse);
-* **Window winding (proved):** gap in `[2π/k, 4π/k)` ⇒ modular witness
-  (`beal_winding_of_solution_window`);
-* `BealWindingBridge` — **window-regime diagnostic** (not full-solution live);
-* Legacy integer-lattice `BealCGALatticeGauge` / `BealCGADilationNoGo` —
-  equal-exponent slice only; mixed exponents miss the integer lattice;
-* Diagnostic `BealCGAGauge` / `BealCGANoGo` — tautological / ill-posed.
-
-The legacy `BealModularBridge` (witness + `ConformalGaugeAdmissible`) is
-**diagnostic only**: those conjuncts are equation-independently incompatible
-(`beal_modular_payload_incompatible`). Continuous `BealAdmissibleBridge` remains
-diagnostic (balanced seeds sit below `1/m²`).
-
-Amplification factor for modular witnesses is `k = bealAmpExp = max(m, 4)`.
-Wide principal window: `2π/k ≤ {δ} < 4π/k` on `N = k` yields `n₀ = 1`.
+A seed taller than `1/m²` cannot amplify inside the admissible bound. Classical Beal is not claimed; what remains are the named residuals.
 -/
 
 namespace DstDiophantine
@@ -140,11 +73,7 @@ theorem bealMinExp_pos {x y z : ℕ} (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z
     0 < bealMinExp x y z :=
   Nat.zero_lt_of_lt (bealMinExp_ge_one hx hy hz)
 
-/--
-Modular amplification factor: `max(m, 4)`. The fractional gap still uses
-`m = bealMinExp`, but `ModularAmplificationWitness` requires `4 ≤ k`
-(`modularWitness_four_le`), so `m = 3` lifts to `k = 4`.
--/
+/-- `max(m, 4)`: a modular witness needs `4 ≤ k`, so `m = 3` lifts to `k = 4`. -/
 def bealAmpExp (x y z : ℕ) : ℕ :=
   max (bealMinExp x y z) 4
 
@@ -181,7 +110,6 @@ theorem bealGcd_dvd_mid (A B C : ℤ) : bealGcd A B C ∣ B.natAbs :=
 theorem bealGcd_dvd_right (A B C : ℤ) : bealGcd A B C ∣ C.natAbs :=
   Nat.dvd_trans (Nat.gcd_dvd_right A.natAbs _) (Nat.gcd_dvd_right B.natAbs C.natAbs)
 
-/-- Classical Beal conclusion shape: a common prime factor of `|A|,|B|,|C|`. -/
 theorem exists_common_prime_of_bealGcd_gt_one {A B C : ℤ}
     (h : 1 < bealGcd A B C) :
     ∃ p : ℕ, Nat.Prime p ∧ p ∣ A.natAbs ∧ p ∣ B.natAbs ∧ p ∣ C.natAbs := by
@@ -257,7 +185,6 @@ private theorem beal_pair_coprime_of
   rw [hgcd] at hpG
   exact Nat.Prime.not_dvd_one hp hpG
 
-/-- A three-way coprime Beal solution is pairwise coprime on absolute values. -/
 theorem beal_pairwise_coprime {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (_hC : C ≠ 0)
     (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
@@ -300,12 +227,7 @@ theorem beal_coprime_bc {A B C : ℤ} {x y z : ℕ}
 
 /-! ### Fractional-power log gap (magnitude layer; no BCH) -/
 
-/--
-Fractional log-gap used as the Beal modular seed:
-`δ = (z/m) log|C| − (x/m) log|A|`.
-When `m = bealMinExp x y z` and `A^x + B^y = C^z` with positive terms,
-`m · δ = log(1 + B^y / A^x)`.
--/
+/-- Fractional log-gap `δ = (z/m) log|C| − (x/m) log|A|`. -/
 noncomputable def bealFracLogGap (A C : ℤ) (x z m : ℕ) : ℝ :=
   (z : ℝ) / m * Real.log (Int.natAbs C) - (x : ℝ) / m * Real.log (Int.natAbs A)
 
@@ -316,7 +238,6 @@ theorem bealFracLogGap_mul (A C : ℤ) (x z m : ℕ) (hm : m ≠ 0) :
   unfold bealFracLogGap
   field_simp [hm0]
 
-/-- Positive Beal solutions satisfy `A^x < C^z`. -/
 theorem beal_pos_pow_lt {A B C : ℤ} {x y z : ℕ}
     (_hA : 0 < A) (hB : 0 < B) (_hC : 0 < C)
     (hsol : A ^ x + B ^ y = C ^ z) : A ^ x < C ^ z := by
@@ -353,7 +274,6 @@ theorem bealFracLogGap_eq_log_div (A C : ℤ) (x z m : ℕ) (hm : m ≠ 0)
     linarith [hmul']
   rw [hgap, hlog]
 
-/-- On a positive Beal solution, m · δ = log(1 + B^y / A^x). -/
 theorem bealFracLogGap_of_solution {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -380,7 +300,6 @@ theorem bealFracLogGap_of_solution {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
     _ = Real.log ((C.natAbs : ℝ) ^ z / (A.natAbs : ℝ) ^ x) := by field_simp [hm0]
     _ = Real.log (1 + (B : ℝ) ^ y / (A : ℝ) ^ x) := by rw [hratio]
 
-/-- Equal exponents specialise the fractional gap to `log|C| − log|A|`. -/
 theorem bealFracLogGap_eq_exp (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
     bealFracLogGap A C p p p =
       Real.log (Int.natAbs C) - Real.log (Int.natAbs A) := by
@@ -388,7 +307,6 @@ theorem bealFracLogGap_eq_exp (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
   unfold bealFracLogGap
   field_simp [hp0]
 
-/-- On a positive Beal solution, `δ = log(1 + B^y / A^x) / m`. -/
 theorem bealFracLogGap_eq_log_one_add_div {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -399,7 +317,6 @@ theorem bealFracLogGap_eq_log_one_add_div {A B C : ℤ} {x y z m : ℕ} (hm : m 
   field_simp [hm0] at hmul ⊢
   linarith [hmul]
 
-/-- Positive Beal solutions have strictly positive fractional log-gap. -/
 theorem bealFracLogGap_pos_of_solution {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -412,13 +329,11 @@ theorem bealFracLogGap_pos_of_solution {A B C : ℤ} {x y z m : ℕ} (hm : m ≠
   rw [bealFracLogGap_eq_log_one_add_div hm hA hB hC hsol]
   exact div_pos hlog (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hm))
 
-/-- Winding threshold sits strictly above the continuous seed cone when `m = 3`. -/
 theorem beal_winding_threshold_gt_half_pi_of_minExp_eq_three
     {x y z : ℕ} (hm : bealMinExp x y z = 3) :
     Real.pi / 2 < 2 * Real.pi / (bealMinExp x y z : ℝ) := by
   rw [hm]; nlinarith [Real.pi_pos]
 
-/-- Balanced model gap `log 2 / m` misses the modular winding threshold `2π / m`. -/
 theorem beal_balanced_fracGap_lt_winding_threshold {m : ℕ} (hm : 0 < m) :
     Real.log 2 / (m : ℝ) < 2 * Real.pi / (m : ℝ) := by
   have hlog : Real.log 2 < 2 * Real.pi := by
@@ -428,7 +343,6 @@ theorem beal_balanced_fracGap_lt_winding_threshold {m : ℕ} (hm : 0 < m) :
     exact h1.trans (by nlinarith [Real.pi_gt_three])
   exact div_lt_div_of_pos_right hlog (Nat.cast_pos.mpr hm)
 
-/-- Balanced gap also misses the lifted threshold `2π / bealAmpExp`. -/
 theorem beal_balanced_fracGap_lt_ampExp_threshold {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     Real.log 2 / (bealMinExp x y z : ℝ) <
@@ -450,7 +364,6 @@ theorem beal_balanced_fracGap_lt_ampExp_threshold {x y z : ℕ}
         omega
       have hk4 : bealAmpExp x y z = 4 := bealAmpExp_eq_four_of_minExp_eq_three hm3
       rw [hm3, hk4]
-      -- `4 log 2 < 6π` from `log 2 < 1` and `π > 3`
       have hπ : (3 : ℝ) < Real.pi := Real.pi_gt_three
       have : (4 : ℝ) * Real.log 2 < 6 * Real.pi := by
         nlinarith [hlog1, hπ]
@@ -459,7 +372,6 @@ theorem beal_balanced_fracGap_lt_ampExp_threshold {x y z : ℕ}
 
 /-! ### Amplification vs admissible bound -/
 
-/-- Chapter 6 core: a seed taller than `1/m²` cannot amplify inside the admissible bound. -/
 theorem beal_amplification_contradiction
     {A C : ℤ} (hA : A ≠ 0) (hC : C ≠ 0) {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -476,7 +388,6 @@ theorem beal_amplification_contradiction
   change (1 : ℝ) / (_ : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
   exact continuous_amplification_contradiction _ hm1 hadm hbig
 
-/-- Discrete torus form via the shared amplification core. -/
 theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (t : AdmissibleClass N)
@@ -492,18 +403,7 @@ theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : 
 
 /-! ### Continuous bridge (diagnostic) -/
 
-/--
-Continuous Beal amplification bridge (**diagnostic**).
-
-* **Assumption (unproved):** a coprime Beal solution yields an admissible powered
-  pure-boost mismatch whose seed already exceeds `1/m²`.
-* **Proved core:** `beal_amplification_contradiction` /
-  `continuous_amplification_contradiction`.
-* **Obstruction:** at the balanced scale `θ = log 2 / m` the seed is below
-  `1/m²` (`beal_balanced_seed_lt_threshold`).
-* **Live programme:** `BealModularBridge` (solution-dependent modular payload).
-* **Does not claim:** unconditional classical Beal.
--/
+/-- Diagnostic, unproved: a coprime solution would already exceed `1/m²`. -/
 def BealAdmissibleBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (hA : A ≠ 0) (_hB : B ≠ 0) (hC : C ≠ 0),
@@ -516,7 +416,6 @@ def BealAdmissibleBridge : Prop :=
         (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
           |JNormalized (logMismatch A C hA hC)|
 
-/-- Conditional DST recovery of Beal's conjecture (common prime factor). -/
 theorem beal_conjecture_of_bridge (hbridge : BealAdmissibleBridge) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -533,14 +432,12 @@ theorem beal_conjecture_of_bridge (hbridge : BealAdmissibleBridge) :
 
 /-! ### Balanced-seed diagnostic (continuous obstruction) -/
 
-/-- At `θ = log 2 / m`, the seed height is below the continuous Beal threshold. -/
 theorem beal_balanced_seed_lt_threshold {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     |JNormalized (pureBoost (Real.log 2 / (bealMinExp x y z : ℝ)))| <
       (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 :=
   fermat_balanced_seed_lt_threshold (bealMinExp_ge_one hx hy hz)
 
-/-- Balanced seed remains admissible after `m`-fold amplification. -/
 theorem beal_balanced_amplification_admissible {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     IsAdmissibleContinuous
@@ -551,16 +448,11 @@ theorem beal_balanced_amplification_admissible {x y z : ℕ}
 
 /-! ### Equal-exponent recovery toward FLT -/
 
-/-- Equal exponents specialise Beal's additive motor to Fermat's. -/
 theorem beal_eq_exp_motor (A B C : ℤ) (p : ℕ) :
     powerSumMotor (bealEquation A B C p p p) =
       powerSumMotor (fermatEquation A B C p) := by
   rw [bealEquation_eq_fermat]
 
-/--
-Under the continuous Beal bridge, an equal-exponent solution with `p ≥ 3` cannot
-be primitive (`bealGcd = 1`). Still conditional on the bridge.
--/
 theorem beal_eq_exp_not_coprime_of_bridge (hbridge : BealAdmissibleBridge)
     (A B C : ℤ) (p : ℕ) (hp : 3 ≤ p)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -581,15 +473,7 @@ theorem quantizeBealMismatch_pureBoost (N : ℕ) [NeZero N] (A C : ℤ) (x z m :
 
 /-! ### Diagnostic modular bridge (payload-incompatible) -/
 
-/--
-**Diagnostic** modular Beal bridge (do not treat as the live programme).
-
-The three conjuncts are equation-independently incompatible: a
-`ModularAmplificationWitness` with nonzero winding rules out
-`ConformalGaugeAdmissible` under the present PGA real-scale identification
-(`beal_modular_payload_incompatible`). Live programme (phase 7d):
-`BealCGADiscreteClosed` + `BealUnitBaseNoGo`.
--/
+/-- Diagnostic only: winding and `ConformalGaugeAdmissible` are incompatible. -/
 def BealModularBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -604,14 +488,12 @@ def BealModularBridge : Prop :=
             ConformalGaugeAdmissible
               (scaleTorsion (m : ℝ) (toTorsionParams t))
 
-/-- Winding witness and PGA-identified conformal gauge cannot hold together. -/
 theorem beal_modular_payload_incompatible {N k : ℕ} [NeZero N]
     (w : ModularAmplificationWitness N k) :
     ¬ ConformalGaugeAdmissible
         (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
   ModularAmplificationWitness.not_admissible_real_scale w
 
-/-- Conditional classical Beal from the diagnostic modular bridge. -/
 theorem beal_conjecture_of_modular_bridge (hbridge : BealModularBridge) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -630,7 +512,6 @@ theorem beal_conjecture_of_modular_bridge (hbridge : BealModularBridge) :
   rw [hw] at hnot'
   exact hnot' hconf
 
-/-- Equal-exponent specialisation under the diagnostic modular Beal bridge. -/
 theorem beal_eq_exp_not_coprime_of_modular_bridge (hbridge : BealModularBridge)
     (A B C : ℤ) (p : ℕ) (hp : 3 ≤ p)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -640,10 +521,6 @@ theorem beal_eq_exp_not_coprime_of_modular_bridge (hbridge : BealModularBridge)
 
 /-! ### Partial winding on the principal interval -/
 
-/--
-If `2π/k ≤ δ < 2π` and `k ∣ N`, the quantised Beal seed (gap still uses `m`)
-has nonzero total winding under amplification factor `k`.
--/
 theorem beal_has_winding_of_fracGap_ge (N k m : ℕ) [NeZero N] (hk : 0 < k)
     (A C : ℤ) (x z : ℕ)
     (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
@@ -659,16 +536,7 @@ theorem beal_has_winding_of_fracGap_ge (N k m : ℕ) [NeZero N] (hk : 0 < k)
 
 /-! ### Window-regime winding bridge (diagnostic for full solutions) -/
 
-/--
-**Window-regime** Beal winding bridge (not the live full-solution programme).
-
-Asserts that a coprime solution yields some lattice `N` carrying an admissible
-modular winding witness with `k = bealAmpExp`. The **proved** half is the wide
-window construction (`beal_winding_of_solution_window`). Balanced gaps
-`δ ≈ log 2 / m < 2π/k` never wind (`windingTotal_eq_zero_of_rapidity_lt`), so
-this cannot be the live bridge for all solutions. Live programme (phase 7d):
-`BealCGADiscreteClosed` + `BealUnitBaseNoGo`.
--/
+/-- Window-regime diagnostic, not a full-solution bridge. -/
 def BealWindingBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -692,7 +560,6 @@ theorem bealRootMag_pos {n : ℤ} (hn : n ≠ 0) (e m : ℕ) :
   unfold bealRootMag
   exact Real.rpow_pos_of_pos (Nat.cast_pos.mpr (Int.natAbs_pos.mpr hn)) _
 
-/-- Raising a fractional root magnitude to `m` recovers the integer power. -/
 theorem bealRootMag_pow (n : ℤ) (e m : ℕ) (hm : m ≠ 0) :
     bealRootMag n e m ^ m = (n.natAbs : ℝ) ^ e := by
   unfold bealRootMag
@@ -701,7 +568,6 @@ theorem bealRootMag_pow (n : ℤ) (e m : ℕ) (hm : m ≠ 0) :
   have hmul : ((e : ℝ) / m) * m = e := by field_simp [hm0]
   rw [← Real.rpow_natCast _ m, ← Real.rpow_mul hnn, hmul, Real.rpow_natCast]
 
-/-- Equal-exponent roots collapse to absolute values. -/
 theorem bealRootMag_eq_natAbs (n : ℤ) (p : ℕ) (hp : p ≠ 0) :
     bealRootMag n p p = (n.natAbs : ℝ) := by
   unfold bealRootMag
@@ -709,7 +575,6 @@ theorem bealRootMag_eq_natAbs (n : ℤ) (p : ℕ) (hp : p ≠ 0) :
   have : (p : ℝ) / p = 1 := by field_simp [hp0]
   rw [this, Real.rpow_one]
 
-/-- Fractional log-gap equals the log-ratio of fractional-power magnitudes. -/
 theorem bealFracLogGap_eq_log_rootMag (A C : ℤ) (x z m : ℕ)
     (hA : A ≠ 0) (hC : C ≠ 0) :
     bealFracLogGap A C x z m =
@@ -721,11 +586,6 @@ theorem bealFracLogGap_eq_log_rootMag (A C : ℤ) (x z m : ℕ)
   unfold bealFracLogGap bealRootMag
   rw [Real.log_rpow hCabs, Real.log_rpow hAabs]
 
-/--
-On a positive Beal solution the three root-magnitudes satisfy the Fermat-shaped
-identity `α^m + β^m = γ^m`. PGA additive faithfulness and CGA dilation are thus
-two faces of the same solution.
--/
 theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
     (hm : m ≠ 0) (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -741,7 +601,6 @@ theorem beal_rootMag_pow_sum_of_solution {A B C : ℤ} {x y z m : ℕ}
   rw [bealRootMag_pow A x m hm, bealRootMag_pow B y m hm, bealRootMag_pow C z m hm,
     hAn, hBn, hCn, hsolR]
 
-/-- Beal root magnitudes always lie on the `m`-power null lattice. -/
 theorem bealRootMag_isCGAPowerLatticePoint (A : ℤ) (x m : ℕ)
     (hA : A ≠ 0) (hm : m ≠ 0) :
     IsCGAPowerLatticePoint (bealRootMag A x m) m :=
@@ -765,12 +624,7 @@ theorem bealCGADilationMismatch_pos_of_solution {A B C : ℤ} {x y z m : ℕ}
 
 /-! ### Diagnostic tautological CGA gauge (always true) -/
 
-/--
-**Diagnostic** CGA gauge: A/C root-magnitudes embed as null points.
-Always true (`BealCGAGauge_of_ne_zero`); do **not** use as a live no-go hypothesis.
-Live gauge: `BealCGALatticeGauge`. The third root `B` is likewise null by
-`conformalPoint_sq` (no separate triple predicate).
--/
+/-- Diagnostic: always-true null embedding. Not a live no-go. -/
 def BealCGAGauge (A C : ℤ) (x z m : ℕ) : Prop :=
   conformalPoint (bealRootMag A x m) * conformalPoint (bealRootMag A x m) = 0 ∧
     conformalPoint (bealRootMag C z m) * conformalPoint (bealRootMag C z m) = 0
@@ -779,7 +633,6 @@ theorem BealCGAGauge_of_ne_zero (A C : ℤ) (x z m : ℕ) :
     BealCGAGauge A C x z m :=
   ⟨conformalPoint_sq _, conformalPoint_sq _⟩
 
-/-- Dilation weights `(1, e^δ, e^{2δ})` relating the two Beal CGA seeds. -/
 theorem beal_cga_dilation_weights (A C : ℤ) (x z m : ℕ)
     (hA : A ≠ 0) (hC : C ≠ 0) :
     let δ := bealFracLogGap A C x z m
@@ -798,7 +651,6 @@ theorem beal_cga_dilation_weights (A C : ℤ) (x z m : ℕ)
     field_simp [ne_of_gt ha]
   rw [← hexp, conformalPoint_smul]
 
-/-- Beal seed under `k`-fold CGA dilation (via `pointVec_exp_nat_mul`). -/
 theorem beal_cga_k_fold_dilation (A C : ℤ) (x z m k : ℕ) :
     let δ := bealFracLogGap A C x z m
     let a := bealRootMag A x m
@@ -809,17 +661,12 @@ theorem beal_cga_k_fold_dilation (A C : ℤ) (x z m k : ℕ) :
 
 /-! ### Non-tautological DST integer null lattice gauge -/
 
-/--
-**Live** CGA lattice gauge: all three root-magnitudes lie on the DST discrete
-integer null lattice `X(n)`, `n ≠ 0`. **Not** identified with PGA
-`IsAdmissibleContinuous`. Fails for typical mixed-exponent fractional powers.
--/
+/-- Integer null-lattice gauge. Not `IsAdmissibleContinuous`. -/
 def BealCGALatticeGauge (A B C : ℤ) (x y z m : ℕ) : Prop :=
   IsCGAIntegerPoint (bealRootMag A x m) ∧
     IsCGAIntegerPoint (bealRootMag B y m) ∧
       IsCGAIntegerPoint (bealRootMag C z m)
 
-/-- Equal exponents place all three roots on the integer null lattice. -/
 theorem BealCGALatticeGauge_of_eq_exp (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
     BealCGALatticeGauge A B C p p p p := by
@@ -831,11 +678,6 @@ theorem BealCGALatticeGauge_of_eq_exp (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
   · exact IsCGAIntegerPoint_of_eq (by exact_mod_cast ne_of_gt (Int.natAbs_pos.mpr hC))
       (bealRootMag_eq_natAbs C p hp)
 
-/--
-Equal-exponent positive solutions are integer Fermat equations on absolute
-values (no unconditional FLT claimed). Lattice membership is immediate from
-`BealCGALatticeGauge_of_eq_exp`.
--/
 theorem beal_eq_exp_lattice_fermat_form {A B C : ℤ} {p : ℕ} (hp : p ≠ 0)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
     (hsol : A ^ p + B ^ p = C ^ p) :
@@ -858,7 +700,7 @@ theorem beal_eq_exp_lattice_fermat_form {A B C : ℤ} {p : ℕ} (hp : p ≠ 0)
     simpa [hA', hB', hC'] using hpow
   exact_mod_cast this
 
-/-- Mixed-exponent seed `2^{4/3}` misses the integer lattice (diagnostic). -/
+/-- Diagnostic: `2^{4/3}` misses the integer lattice. -/
 theorem not_BealCGALatticeGauge_two_two_two_four_four_three :
     ¬ BealCGALatticeGauge 2 2 2 4 4 3 3 := by
   intro h
@@ -869,14 +711,7 @@ theorem not_BealCGALatticeGauge_two_two_two_four_four_three :
 
 /-! ### Diagnostic / live CGA no-go predicates -/
 
-/--
-**Diagnostic** geometric no-go (ill-posed as a live bridge).
-
-Uses tautological `BealCGAGauge`, so together with the proved window construction
-it would forbid coprime solutions from ever entering the wide gap window —
-equation-independently over-strong. Kept for the logical relation lemma below.
-Live programme: `BealCGADilationNoGo`.
--/
+/-- Diagnostic no-go on a tautological gauge. Ill-posed as a live bridge. -/
 def BealCGANoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -890,13 +725,7 @@ def BealCGANoGo : Prop :=
           let t := quantizeBealMismatch N A C x z m
           ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t)
 
-/--
-**Live** CGA dilation / lattice no-go (unproved).
-
-A coprime solution whose root-magnitudes lie on the DST integer null lattice
-cannot carry a modular winding witness. Uses `BealCGALatticeGauge` (fails for
-typical mixed exponents), not tautological `BealCGAGauge` / PGA real-scale.
--/
+/-- Unproved: a lattice solution carries no modular winding witness. -/
 def BealCGADilationNoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -910,7 +739,6 @@ def BealCGADilationNoGo : Prop :=
           let t := quantizeBealMismatch N A C x z m
           ¬ (IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t)
 
-/-- Conditional classical Beal from winding + diagnostic CGA no-go. -/
 theorem beal_conjecture_of_winding_and_cga_nogo
     (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
@@ -929,10 +757,6 @@ theorem beal_conjecture_of_winding_and_cga_nogo
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hsol
     (BealCGAGauge_of_ne_zero A C x z (bealMinExp x y z)) N hN ⟨hadm, hw⟩
 
-/--
-Conditional classical Beal from winding + live lattice/dilation no-go, for
-solutions that satisfy the lattice gauge (includes equal exponents).
--/
 theorem beal_conjecture_of_winding_and_cga_dilation_nogo
     (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
@@ -951,7 +775,6 @@ theorem beal_conjecture_of_winding_and_cga_dilation_nogo
   let : NeZero N := ⟨hN⟩
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hsol hlat N hN ⟨hadm, hw⟩
 
-/-- Equal-exponent specialisation of the live lattice conditional. -/
 theorem beal_eq_exp_not_coprime_of_winding_and_cga_dilation_nogo
     (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo)
     (A B C : ℤ) (p : ℕ) (hp : 3 ≤ p)
@@ -968,10 +791,7 @@ theorem beal_eq_exp_not_coprime_of_winding_and_cga_dilation_nogo
 
 /-! ### Phase 7d: k-fold CGA power-lattice descent -/
 
-/--
-`k`-fold CGA dilation of the A-root seed along the A–C fractional gap:
-`α · e^{kδ}`. Equals `γ^k / α^{k-1}` when `α, γ > 0`.
--/
+/-- `k`-fold CGA dilation of the A-root: `α · e^{kδ} = γ^k / α^{k−1}` when positive. -/
 noncomputable def bealCGAKFoldMag (A C : ℤ) (x z m k : ℕ) : ℝ :=
   bealRootMag A x m * Real.exp ((k : ℝ) * bealFracLogGap A C x z m)
 
@@ -1013,10 +833,6 @@ theorem bealCGAKFoldMag_pow (A C : ℤ) (x z m k : ℕ)
     rw [← pow_mul, mul_comm (k - 1) m, pow_mul, hapow, ← pow_mul]
   rw [h1, h2]
 
-/--
-If the `k`-fold seed lies on the `m`-power lattice, then
-`|A|^{x(k-1)}` divides `|C|^{k z}` in `ℕ`.
--/
 theorem beal_kFold_powerLattice_dvd (A C : ℤ) (x z m k : ℕ)
     (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k)
     (hlat : IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m) :
@@ -1049,10 +865,6 @@ theorem beal_kFold_powerLattice_dvd (A C : ℤ) (x z m k : ℕ)
     exact_mod_cast Int.toNat_of_nonneg hn0.le
   rw [hnR, hdivR, mul_comm]
 
-/--
-If `|A|^e` divides `|C|^f` with `e > 0` and `Nat.Coprime |A| |C|`, then `|A| = 1`.
-Shared by k-fold power-lattice descent and DST discrete-config descent.
--/
 theorem beal_natAbs_eq_one_of_ac_pow_dvd {A C : ℤ} {e f : ℕ}
     (he : 0 < e) (hac : Nat.Coprime A.natAbs C.natAbs)
     (hdvd : A.natAbs ^ e ∣ C.natAbs ^ f) : A.natAbs = 1 := by
@@ -1063,16 +875,11 @@ theorem beal_natAbs_eq_one_of_ac_pow_dvd {A C : ℤ} {e f : ℕ}
     exact hp.dvd_of_dvd_pow (Nat.dvd_trans this hdvd)
   exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, hpA, hpC⟩ hac
 
-/-- Recover `bealGcd = 1` from the negation of the classical conclusion. -/
 theorem bealGcd_eq_one_of_not_gt {A B C : ℤ} (hA : A ≠ 0)
     (hnot : ¬ 1 < bealGcd A B C) : bealGcd A B C = 1 := by
   have hle : bealGcd A B C ≤ 1 := Nat.not_lt.mp hnot
   exact le_antisymm hle (Nat.succ_le_of_lt (bealGcd_pos hA))
 
-/--
-Pairwise AC-coprimality + power-lattice closure of the `k`-fold seed
-(`k ≥ 2`) forces `|A| = 1`. Unconditional descent lemma (no bridge).
--/
 theorem beal_natAbs_eq_one_of_kFold_powerLattice {A B C : ℤ} {x y z m k : ℕ}
     (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
@@ -1087,10 +894,6 @@ theorem beal_natAbs_eq_one_of_kFold_powerLattice {A B C : ℤ} {x y z m k : ℕ}
     Nat.mul_pos hx (Nat.sub_pos_of_lt hk)
   exact beal_natAbs_eq_one_of_ac_pow_dvd hpow hac hdvd
 
-/--
-Converse of the descent: `|A| = 1` places the `k`-fold seed on the `m`-power
-lattice (no coprimality needed). Witness is `|C|^{k z}`.
--/
 theorem beal_kFold_powerLattice_of_natAbs_eq_one (A C : ℤ) (x z m k : ℕ)
     (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) (hk : 1 ≤ k)
     (hA1 : A.natAbs = 1) :
@@ -1101,11 +904,6 @@ theorem beal_kFold_powerLattice_of_natAbs_eq_one (A C : ℤ) (x z m k : ℕ)
     rw [hpow, hA1]
     simp [one_pow]
 
-/--
-For a three-way-coprime Beal solution with `k ≥ 2`, the `k`-fold CGA seed lies
-on the `m`-power lattice if and only if `|A| = 1`. Phase 7e diagnostic: the
-former `BealCGADiscreteClosed` bridge is bookkeeping for this equivalence.
--/
 theorem beal_kFold_powerLattice_iff_natAbs_eq_one {A B C : ℤ} {x y z m k : ℕ}
     (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
@@ -1119,7 +917,6 @@ theorem beal_kFold_powerLattice_iff_natAbs_eq_one {A B C : ℤ} {x y z m k : ℕ
     exact beal_kFold_powerLattice_of_natAbs_eq_one A C x z m k hm hA hC
       (Nat.le_trans (by decide : 1 ≤ 2) hk) hA1
 
-/-- Balanced model rapidity never yields a modular winding witness on any `N`. -/
 theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
     ¬ ∃ w : ModularAmplificationWitness N (bealAmpExp x y z),
@@ -1132,15 +929,7 @@ theorem beal_balanced_gap_no_modularWitness (N : ℕ) [NeZero N] {x y z : ℕ}
 
 /-! ### Bookkeeping discrete closure + unit-base residual (phase 7e) -/
 
-/--
-**Bookkeeping alias** (phase 7e): a coprime Beal solution has its `k`-fold
-CGA seed on the `m`-power null lattice.
-
-By `beal_kFold_powerLattice_iff_natAbs_eq_one` this is equivalent to
-“every coprime solution has `|A| = 1`”. Not an independent geometric principle;
-the live programme is exponent-gcd reduction + mathlib `FermatLastTheorem`
-(hypothesis) + Mihăilescu (`BealUnitBaseNoGo`).
--/
+/-- Bookkeeping: coprime power-lattice closure means `|A| = 1`. -/
 def BealCGADiscreteClosed : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -1150,11 +939,7 @@ def BealCGADiscreteClosed : Prop :=
         (bealCGAKFoldMag A C x z (bealMinExp x y z) (bealAmpExp x y z))
         (bealMinExp x y z)
 
-/--
-**Residual half:** no coprime Beal solution has `|A| = 1`.
-Positive bases are closed by `bealUnitBaseNoGo_pos` (Mihăilescu axiom);
-elementary `1 + b³ = c³` remains axiom-free.
--/
+/-- Residual: no coprime `|A| = 1`. Positive bases are closed by Mihăilescu. -/
 def BealUnitBaseNoGo : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -1162,10 +947,6 @@ def BealUnitBaseNoGo : Prop :=
     A.natAbs = 1 →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-Positive fragment of `BealUnitBaseNoGo`, proved from the Mihăilescu axiom.
-Coprimality is unused (Catalan needs only the unit base and positivity).
--/
 theorem bealUnitBaseNoGo_pos {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -1173,7 +954,6 @@ theorem bealUnitBaseNoGo_pos {A B C : ℤ} {x y z : ℕ}
     ¬ A ^ x + B ^ y = C ^ z :=
   not_unitAbs_pow_add_pow_eq_pow_pos hA hB hC hA1 hx hy hz
 
-/-- Bookkeeping closure is exactly “coprime solution ⇒ `|A| = 1`”. -/
 theorem BealCGADiscreteClosed_iff_unitAbs :
     BealCGADiscreteClosed ↔
       ∀ (A B C : ℤ) (x y z : ℕ),
@@ -1201,7 +981,6 @@ theorem BealCGADiscreteClosed_iff_unitAbs :
       (Nat.le_trans (by decide : 2 ≤ 4) (bealAmpExp_ge_four x y z))
       hgcd hsol).mpr (hunit A B C x y z hx hy hz hA hB hC hgcd hsol)
 
-/-- Conditional classical Beal from discrete closure + unit-base no-go. -/
 theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
     (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
     ∀ (A B C : ℤ) (x y z : ℕ),
@@ -1216,10 +995,6 @@ theorem beal_conjecture_of_discreteClosed_and_unitBaseNoGo
     A B C x y z hx hy hz hA hB hC hcoprime hsol
   exact hnogo A B C x y z hx hy hz hA hB hC hcoprime hA1 hsol
 
-/--
-Positive classical Beal from bookkeeping discrete closure + Mihăilescu
-(no separate `BealUnitBaseNoGo` hypothesis).
--/
 theorem beal_conjecture_pos_of_discreteClosed
     (hclosed : BealCGADiscreteClosed) :
     ∀ (A B C : ℤ) (x y z : ℕ),
@@ -1234,7 +1009,6 @@ theorem beal_conjecture_pos_of_discreteClosed
     A B C x y z hx hy hz hA.ne' hB.ne' hC.ne' hcoprime hsol
   exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1 hsol
 
-/-- Elementary unit-base fragment: `1 + b^3 = c^3` has no positive solutions. -/
 theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
     (hb : 0 < b) (hc : 0 < c) : ¬ ((1 : ℤ) + b ^ 3 = c ^ 3) := by
   intro hsol
@@ -1268,25 +1042,17 @@ theorem not_one_add_pow_three_eq_pow_three {b c : ℤ}
 
 /-! ### Phase 7e–7f: DST discrete config + CGA realisation (bookkeeping) -/
 
-/--
-Combined DST configuration: PGA additive faithfulness together with an
-integer CGA dilation along the A–C root-magnitude ratio.
--/
+/-- PGA faithfulness together with an integer CGA dilation of the A–C root ratio. -/
 def IsDSTBealDiscreteConfig (A B C : ℤ) (x y z : ℕ) : Prop :=
   powerSumMotor (bealEquation A B C x y z) = 1 ∧
     IsCGAIntegerDilation
       (bealRootMag C z (bealMinExp x y z) / bealRootMag A x (bealMinExp x y z))
 
-/-- Equal-exponent specialisation of the dilation scale. -/
 theorem bealRootMag_div_eq_natAbs_div (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
     bealRootMag C p p / bealRootMag A p p =
       (C.natAbs : ℝ) / (A.natAbs : ℝ) := by
   rw [bealRootMag_eq_natAbs A p hp, bealRootMag_eq_natAbs C p hp]
 
-/--
-Integer CGA dilation of the A–C root-magnitude ratio is equivalent to a
-positive integer power identity `|C|^z = k^m |A|^x` in `ℕ`.
--/
 theorem beal_integerDilation_iff_pow_eq (A C : ℤ) (x z m : ℕ)
     (hm : m ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
     IsCGAIntegerDilation (bealRootMag C z m / bealRootMag A x m) ↔
@@ -1331,9 +1097,6 @@ theorem beal_integerDilation_iff_pow_eq (A C : ℤ) (x z m : ℕ)
       (pow_left_inj₀ hγ.le hposR hm).mp hscale
     exact ((eq_div_iff (ne_of_gt hα)).mpr heqMag.symm).symm
 
-/--
-Easy direction: a discrete DST config that is three-way coprime forces `|A| = 1`.
--/
 theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1353,7 +1116,6 @@ theorem beal_natAbs_eq_one_of_dstDiscreteConfig {A B C : ℤ} {x y z : ℕ}
     (beal_integerDilation_iff_pow_eq A C x z m hm hA hC).mp hdil
   exact beal_natAbs_eq_one_of_ac_pow_dvd hx0 hac ⟨k ^ m, by rw [hpow, mul_comm]⟩
 
-/-- Coprime DST discrete configs do not exist (positive bases + Mihăilescu). -/
 theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -1365,17 +1127,7 @@ theorem not_dstDiscreteConfig_coprime_pos {A B C : ℤ} {x y z : ℕ}
   exact bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1
     ((beal_solution_iff_motor A B C x y z).mpr hcfg.1)
 
-/--
-**Bookkeeping alias** (phase 7f): a coprime Beal solution has A–C
-root-magnitude ratio in the integer CGA dilation group.
-
-Not an independent geometric principle. Under three-way coprimality the
-conclusion forces `|A| = 1` and `|C|^z` to be an `m`-th power
-(`beal_integerDilation_of_coprime_iff`). Equal-exponent specialisation is
-`|A| ∣ |C|` (`beal_eq_exp_integerDilation_iff`); the Pythagorean triple
-`3²+4²=5²` shows the ratio need not be integral. Live programme: exponent-gcd
-reduction + `FermatLastTheorem` hypothesis + Mihăilescu.
--/
+/-- Bookkeeping: coprime integer dilation forces `|A| = 1`. -/
 def BealCGARealization : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -1384,7 +1136,6 @@ def BealCGARealization : Prop :=
       IsCGAIntegerDilation
         (bealRootMag C z (bealMinExp x y z) / bealRootMag A x (bealMinExp x y z))
 
-/-- Realisation produces a DST discrete config from a solution. -/
 theorem IsDSTBealDiscreteConfig_of_realization
     (hreal : BealCGARealization) {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -1395,7 +1146,6 @@ theorem IsDSTBealDiscreteConfig_of_realization
   ⟨(beal_solution_iff_motor A B C x y z).mp hsol,
     hreal A B C x y z hx hy hz hA hB hC hgcd hsol⟩
 
-/-- Positive classical Beal from realisation + Mihăilescu (bookkeeping route). -/
 theorem beal_conjecture_pos_of_realization (hreal : BealCGARealization) :
     ∀ (A B C : ℤ) (x y z : ℕ),
       3 ≤ x → 3 ≤ y → 3 ≤ z →
@@ -1409,11 +1159,6 @@ theorem beal_conjecture_pos_of_realization (hreal : BealCGARealization) :
     (IsDSTBealDiscreteConfig_of_realization hreal hx hy hz
       hA.ne' hB.ne' hC.ne' hcoprime hsol)
 
-/--
-Equal exponents: the PGA mismatch rotor rapidity equals the CGA log-scale
-`log(|C|/|A|)`. Connects `integerRotor` ratio to the dilation scale (no
-integer-membership claim).
--/
 theorem beal_eq_exp_mismatchRotor_scale (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hC : C ≠ 0) :
     mismatchRotor A C hA hC =
@@ -1431,10 +1176,6 @@ theorem beal_eq_exp_mismatchRotor_scale (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
       Real.log_div (ne_of_gt hCabs) (ne_of_gt hAabs)]
   rw [mismatchRotor_eq_rotorTorsion A C hA hC, hlog]
 
-/--
-Equal-exponent integer dilation of the root ratio is equivalent to
-`|A| ∣ |C|` (hence to `|A| = 1` under AC-coprimality).
--/
 theorem beal_eq_exp_integerDilation_iff (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
     (hA : A ≠ 0) (hC : C ≠ 0) :
     IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
@@ -1442,9 +1183,6 @@ theorem beal_eq_exp_integerDilation_iff (A C : ℤ) (p : ℕ) (hp : p ≠ 0)
   rw [bealRootMag_div_eq_natAbs_div A C p hp]
   exact IsCGAIntegerDilation_div_iff hA hC
 
-/--
-Under AC-coprimality, equal-exponent integer dilation is exactly `|A| = 1`.
--/
 theorem beal_eq_exp_integerDilation_iff_natAbs_eq_one (A C : ℤ) (p : ℕ)
     (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0)
     (hac : Nat.Coprime A.natAbs C.natAbs) :
@@ -1454,10 +1192,6 @@ theorem beal_eq_exp_integerDilation_iff_natAbs_eq_one (A C : ℤ) (p : ℕ)
   exact ⟨fun hdvd => Nat.Coprime.eq_one_of_dvd hac hdvd, fun hA1 => by
     rw [hA1]; exact one_dvd _⟩
 
-/--
-For a three-way-coprime Beal solution, integer CGA dilation of the A–C root
-ratio is equivalent to `|A| = 1` together with `|C|^z` being an `m`-th power.
--/
 theorem beal_integerDilation_of_coprime_iff {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1483,12 +1217,7 @@ theorem beal_integerDilation_of_coprime_iff {A B C : ℤ} {x y z : ℕ}
     refine ⟨k, hk, ?_⟩
     simpa [hA1, one_pow, mul_one] using hpowN
 
-/--
-Diagnostic: the primitive Pythagorean triple `3^2 + 4^2 = 5^2` is three-way
-coprime, yet the A–C ratio `5/3` is not an integer CGA dilation. (Exponents
-are `2`, outside the Beal range `≥ 3`; records that solution implies integer
-dilation fails as a geometric principle even before Beal exponents.)
--/
+/-- `3² + 4² = 5²` misses integer dilation; exponents `2` lie outside Beal. -/
 theorem not_beal_eq_exp_integerDilation_three_four_five :
     ¬ IsCGAIntegerDilation (bealRootMag (5 : ℤ) 2 2 / bealRootMag (3 : ℤ) 2 2) := by
   rw [bealRootMag_div_eq_natAbs_div 3 5 2 (by decide)]
@@ -1519,13 +1248,11 @@ theorem bealExpGcd_eq_of_eq_exp (p : ℕ) :
 
 /-! ### Phase 7g: exponent-gcd trichotomy -/
 
-/-- Trichotomy for the Beal exponent gcd when at least one exponent is ≥ 3. -/
 theorem bealExpGcd_eq_one_or_eq_two_or_ge_three {x y z : ℕ} (hx : 3 ≤ x) :
     bealExpGcd x y z = 1 ∨ bealExpGcd x y z = 2 ∨ 3 ≤ bealExpGcd x y z := by
   have hpos : 0 < bealExpGcd x y z := bealExpGcd_pos hx
   omega
 
-/-- Equal exponents force `bealExpGcd = p`, so `d = 1` excludes the equal-exponent slice. -/
 theorem bealExpGcd_eq_one_implies_not_all_eq {x y z : ℕ}
     (hx : 3 ≤ x) (hd : bealExpGcd x y z = 1) : ¬ (x = y ∧ y = z) := by
   intro ⟨hxy, hyz⟩
@@ -1533,17 +1260,12 @@ theorem bealExpGcd_eq_one_implies_not_all_eq {x y z : ℕ}
   have : bealExpGcd x x x = x := bealExpGcd_eq_of_eq_exp x
   omega
 
-/-- When `bealExpGcd = 2`, each exponent is even. -/
 theorem bealExpGcd_eq_two_dvd {x y z : ℕ} (hd : bealExpGcd x y z = 2) :
     2 ∣ x ∧ 2 ∣ y ∧ 2 ∣ z :=
   ⟨by have := bealExpGcd_dvd_left x y z; rwa [hd] at this,
     by have := bealExpGcd_dvd_mid x y z; rwa [hd] at this,
     by have := bealExpGcd_dvd_right x y z; rwa [hd] at this⟩
 
-/--
-When `bealExpGcd = 2`, the reduced exponents satisfy
-`gcd(x/2, y/2, z/2) = 1`.
--/
 theorem bealExpGcd_div_two_eq_one {x y z : ℕ}
     (hd : bealExpGcd x y z = 2) :
     bealExpGcd (x / 2) (y / 2) (z / 2) = 1 := by
@@ -1561,7 +1283,6 @@ theorem bealExpGcd_div_two_eq_one {x y z : ℕ}
           Nat.gcd_mul_left _ _ _
   omega
 
-/-- Power sum form of a Beal equation after extracting the exponent gcd. -/
 theorem beal_eq_pow_mul_expGcd (A B C : ℤ) (x y z : ℕ) :
     let d := bealExpGcd x y z
     A ^ x + B ^ y = C ^ z ↔
@@ -1582,7 +1303,6 @@ theorem beal_eq_pow_mul_expGcd (A B C : ℤ) (x y z : ℕ) :
   · intro hsol
     rw [← hx', ← hy', ← hz', hsol]
 
-/-- Raising bases to positive powers preserves three-way gcd `= 1`. -/
 theorem bealGcd_pow_eq_one {A B C : ℤ} {p q r : ℕ}
     (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hgcd : bealGcd A B C = 1) :
@@ -1624,10 +1344,6 @@ theorem bealGcd_pow_eq_one {A B C : ℤ} {p q r : ℕ}
   rw [hgcd] at hpG
   exact Nat.Prime.not_dvd_one hpPrime hpG
 
-/--
-A nonzero Beal solution yields a nonzero Fermat equation of exponent
-`d = bealExpGcd`. Used for the `d ≥ 3` FLT slice.
--/
 theorem beal_fermat_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -1641,10 +1357,6 @@ theorem beal_fermat_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
   exact ⟨pow_ne_zero _ hA, pow_ne_zero _ hB, pow_ne_zero _ hC,
     (beal_eq_pow_mul_expGcd A B C x y z).mp hsol⟩
 
-/--
-Under `FermatLastTheorem`, there is no nonzero Beal solution with
-`bealExpGcd ≥ 3`.
--/
 theorem not_beal_sol_of_expGcd_ge_three_of_FLT
     (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1656,20 +1368,14 @@ theorem not_beal_sol_of_expGcd_ge_three_of_FLT
     (fermatLastTheoremFor_iff_int).mp (hFLT (bealExpGcd x y z) hd)
   exact hInt _ _ _ hα hβ hγ hF
 
-/--
-Phase 7i: no nonzero Beal solution with `bealExpGcd ≥ 3`, via the FLT axiom
-`fermatLastTheorem` (not a Lean proof of Wiles's theorem).
--/
+/-- Uses `fermatLastTheorem`; not a Lean proof of Wiles. -/
 theorem not_beal_sol_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z) :
     ¬ A ^ x + B ^ y = C ^ z :=
   not_beal_sol_of_expGcd_ge_three_of_FLT fermatLastTheorem hA hB hC hd
 
-/--
-Beal-shaped conclusion under FLT when `bealExpGcd ≥ 3`: any solution would
-force `1 < bealGcd` (vacuous, since solutions are forbidden).
--/
+/-- Vacuous: solutions with `bealExpGcd ≥ 3` are already forbidden. -/
 theorem beal_conjecture_of_expGcd_ge_three_of_FLT
     (hFLT : FermatLastTheorem) {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1678,7 +1384,6 @@ theorem beal_conjecture_of_expGcd_ge_three_of_FLT
     1 < bealGcd A B C :=
   False.elim (not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd hsol)
 
-/-- Phase 7i: `d ≥ 3` forces `1 < bealGcd` via the FLT axiom. -/
 theorem beal_conjecture_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hd : 3 ≤ bealExpGcd x y z)
@@ -1686,7 +1391,6 @@ theorem beal_conjecture_of_expGcd_ge_three {A B C : ℤ} {x y z : ℕ}
     1 < bealGcd A B C :=
   beal_conjecture_of_expGcd_ge_three_of_FLT fermatLastTheorem hA hB hC hd hsol
 
-/-- Equal-exponent Beal (`p ≥ 3`) is the FLT slice of the exponent-gcd reduction. -/
 theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
     {A B C : ℤ} {p : ℕ} (hp : 3 ≤ p)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
@@ -1695,13 +1399,11 @@ theorem beal_eq_exp_not_sol_of_FLT (hFLT : FermatLastTheorem)
     rw [bealExpGcd_eq_of_eq_exp]; exact hp
   exact not_beal_sol_of_expGcd_ge_three_of_FLT hFLT hA hB hC hd
 
-/-- Phase 7i: equal-exponent Beal forbidden by the FLT axiom. -/
 theorem beal_eq_exp_not_sol {A B C : ℤ} {p : ℕ} (hp : 3 ≤ p)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
     ¬ A ^ p + B ^ p = C ^ p :=
   beal_eq_exp_not_sol_of_FLT fermatLastTheorem hp hA hB hC
 
-/-- Modular Fermat bridge yields the gcd≥3 Beal slice. -/
 theorem not_beal_sol_of_expGcd_ge_three_of_modular_bridge
     (hbridge : FermatModularBridge) {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1710,10 +1412,6 @@ theorem not_beal_sol_of_expGcd_ge_three_of_modular_bridge
   not_beal_sol_of_expGcd_ge_three_of_FLT
     (FermatLastTheorem_of_modular_bridge hbridge) hA hB hC hd
 
-/--
-When `bealExpGcd = 2`, a Beal solution is a Pythagorean equation on powered
-bases with reduced exponents `≥ 2`.
--/
 theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hd : bealExpGcd x y z = 2)
@@ -1725,7 +1423,6 @@ theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
       (A ^ x') ^ 2 + (B ^ y') ^ 2 = (C ^ z') ^ 2 := by
   intro x' y' z'
   obtain ⟨hxdiv, hydiv, hzdiv⟩ := bealExpGcd_eq_two_dvd hd
-  -- `3 ≤ n` and `2 ∣ n` force `4 ≤ n`, hence `2 ≤ n/2`.
   have hx2 : 2 ≤ x / 2 := by omega
   have hy2 : 2 ≤ y / 2 := by omega
   have hz2 : 2 ≤ z / 2 := by omega
@@ -1733,10 +1430,6 @@ theorem beal_pythagorean_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
   simp only [hd] at hsol'
   exact ⟨hx2, hy2, hz2, hsol'⟩
 
-/--
-`d = 2` solutions yield a Pythagorean triple on the powered bases
-`(A^{x/2}, B^{y/2}, C^{z/2})`.
--/
 theorem beal_pythagoreanTriple_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hd : bealExpGcd x y z = 2)
@@ -1745,10 +1438,6 @@ theorem beal_pythagoreanTriple_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
   obtain ⟨_, _, _, hsq⟩ := beal_pythagorean_of_expGcd_eq_two hx hy hz hd hsol
   simpa [PythagoreanTriple, sq] using hsq
 
-/--
-Three-way coprimality of the original bases lifts to pairwise coprimality of the
-powered legs under `d = 2` (via pairwise AB coprimality of a solution).
--/
 theorem beal_pythagorean_legs_coprime_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1769,11 +1458,7 @@ theorem beal_pythagorean_legs_coprime_of_expGcd_eq_two {A B C : ℤ} {x y z : �
     exact hab
   simpa [Int.gcd, Int.natAbs_pow] using Nat.coprime_iff_gcd_eq_one.mp hpow
 
-/--
-Coprime `d = 2` solutions admit the classical primitive Pythagorean
-parametrisation. Descent of the parameters `m, n` themselves to powers is a
-residual of phase 7g (not closed here).
--/
+/-- Parametrisation only; descent of `m, n` is not closed here. -/
 theorem beal_pythagorean_classification_of_expGcd_eq_two {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -1793,11 +1478,7 @@ theorem beal_pythagorean_classification_of_expGcd_eq_two {A B C : ℤ} {x y z : 
 
 /-! ### Phase 7g/7h: mixed-exponent residual (type + case splits) -/
 
-/--
-**Residual** (phase 7g/7h, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 1`. Logically the disjunction of the two-equal-exponent forms
-below and the fully distinct-exponent case; body not proved here.
--/
+/-- Open residual: no three-way-coprime solution with `bealExpGcd = 1`. -/
 def BealMixedExpResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -1805,11 +1486,6 @@ def BealMixedExpResidual : Prop :=
     bealExpGcd x y z = 1 →
       ¬ A ^ x + B ^ y = C ^ z
 
-/--
-When two exponents agree and `bealExpGcd = 1`, the third differs and is
-coprime to the common value. The equation specialises to `A^x + B^x = C^z`
-with `gcd(x, z) = 1` and `x ≠ z`.
--/
 theorem beal_two_equal_exp_of_expGcd_eq_one {x y z : ℕ}
     (hx : 3 ≤ x) (hxy : x = y) (hd : bealExpGcd x y z = 1) :
     Nat.gcd x z = 1 ∧ x ≠ z := by
@@ -1825,8 +1501,6 @@ theorem beal_two_equal_exp_of_expGcd_eq_one {x y z : ℕ}
   have : bealExpGcd x x x = x := bealExpGcd_eq_of_eq_exp x
   omega
 
-/-- Specialisation: equal first two exponents with `d = 1` yield a generalised
-Fermat equation of signature `(x, x, z)` with coprime unequal exponents. -/
 theorem beal_eq_two_exp_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hxy : x = y) (hd : bealExpGcd x y z = 1)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -1834,7 +1508,6 @@ theorem beal_eq_two_exp_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
   obtain ⟨hg, hne⟩ := beal_two_equal_exp_of_expGcd_eq_one hx hxy hd
   exact ⟨hg, hne, by simpa [hxy] using hsol⟩
 
-/-- Phase 7h: `y = z` with `d = 1` ⇒ `gcd(x, y) = 1` and `x ≠ y`. -/
 theorem beal_two_equal_exp_yz_of_expGcd_eq_one {x y z : ℕ}
     (hy : 3 ≤ y) (hyz : y = z) (hd : bealExpGcd x y z = 1) :
     Nat.gcd x y = 1 ∧ x ≠ y := by
@@ -1850,7 +1523,6 @@ theorem beal_two_equal_exp_yz_of_expGcd_eq_one {x y z : ℕ}
   have hd'' : bealExpGcd y y y = 1 := by simpa [heq] using hd'
   omega
 
-/-- Signature `(x, y, y)` with coprime unequal exponents under `d = 1`. -/
 theorem beal_eq_two_exp_yz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
     (hy : 3 ≤ y) (hyz : y = z) (hd : bealExpGcd x y z = 1)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -1858,7 +1530,6 @@ theorem beal_eq_two_exp_yz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
   obtain ⟨hg, hne⟩ := beal_two_equal_exp_yz_of_expGcd_eq_one hy hyz hd
   exact ⟨hg, hne, by simpa [hyz] using hsol⟩
 
-/-- Phase 7h: `x = z` with `d = 1` ⇒ `gcd(x, y) = 1` and `x ≠ y`. -/
 theorem beal_two_equal_exp_xz_of_expGcd_eq_one {x y z : ℕ}
     (hx : 3 ≤ x) (hxz : x = z) (hd : bealExpGcd x y z = 1) :
     Nat.gcd x y = 1 ∧ x ≠ y := by
@@ -1874,7 +1545,6 @@ theorem beal_two_equal_exp_xz_of_expGcd_eq_one {x y z : ℕ}
   have hd'' : bealExpGcd x x x = 1 := by simpa [heq] using hd'
   omega
 
-/-- Signature `(x, y, x)` with coprime unequal exponents under `d = 1`. -/
 theorem beal_eq_two_exp_xz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hxz : x = z) (hd : bealExpGcd x y z = 1)
     (hsol : A ^ x + B ^ y = C ^ z) :
@@ -1882,10 +1552,6 @@ theorem beal_eq_two_exp_xz_form_of_expGcd_eq_one {A B C : ℤ} {x y z : ℕ}
   obtain ⟨hg, hne⟩ := beal_two_equal_exp_xz_of_expGcd_eq_one hx hxz hd
   exact ⟨hg, hne, by simpa [hxz] using hsol⟩
 
-/--
-Phase 7h cut: under `d = 1`, either some two exponents agree, or all three
-differ. Pairwise gcds need not be 1 when all differ (only `gcd(x,y,z) = 1`).
--/
 theorem beal_expGcd_eq_one_two_equal_or_all_distinct {x y z : ℕ}
     (_hd : bealExpGcd x y z = 1) :
     x = y ∨ y = z ∨ x = z ∨ (x ≠ y ∧ y ≠ z ∧ x ≠ z) := by
@@ -1897,7 +1563,6 @@ theorem beal_expGcd_eq_one_two_equal_or_all_distinct {x y z : ℕ}
       · exact Or.inr (Or.inr (Or.inl hxz))
       · exact Or.inr (Or.inr (Or.inr ⟨hxy, hyz, hxz⟩))
 
-/-- Fully distinct exponents with `d = 1` (still only `gcd(x,y,z) = 1`). -/
 theorem beal_all_distinct_exp_of_expGcd_eq_one {x y z : ℕ}
     (hd : bealExpGcd x y z = 1)
     (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
@@ -1988,13 +1653,6 @@ private theorem beal_wide_smul_n0_eq_zero (k : ℕ) [NeZero k] (hk4 : 4 ≤ k) {
   change ((k : ℕ) : ZMod k) * (1 : ZMod k) = 0
   rw [mul_one, ZMod.natCast_self]
 
-/--
-Wide principal window: if `4 ≤ k` and the gap lies in `[2π/k, 4π/k)`, the
-quantised seed on `N = k` is a modular winding witness with `n₀ = 1`.
-
-Depends only on the gap size (no solution hypothesis). Includes `m = 3` via
-`k = bealAmpExp = 4` (window `[π/2, π)`).
--/
 theorem beal_modularWitness_of_fracGap_window
     (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
     (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
@@ -2025,7 +1683,6 @@ theorem beal_modularWitness_of_fracGap_window
     beal_has_winding_of_fracGap_ge N k m hkpos A C x z hle hδlt2π ⟨1, by ring⟩
   exact ⟨hadm, modularWitness_of_pureBoost_winding k t hp hadm hamp hwind, rfl⟩
 
-/-- Specialisation of the wide window to `k = bealAmpExp`. -/
 theorem beal_modularWitness_of_fracGap_window_ampExp
     (A C : ℤ) (x y z : ℕ)
     (hle : 2 * Real.pi / bealAmpExp x y z ≤
@@ -2042,11 +1699,6 @@ theorem beal_modularWitness_of_fracGap_window_ampExp
   beal_modularWitness_of_fracGap_window A C x z (bealMinExp x y z)
     (bealAmpExp x y z) (bealAmpExp_ge_four x y z) hle hlt
 
-/--
-Torus fold: if the *principal* gap lies in the wide window, the quantised seed
-(using the unreduced gap) still yields a modular winding witness, because
-`quantizeRapidity` depends on `θ` only through its class mod `2π`.
--/
 theorem beal_modularWitness_of_principal_fracGap_window
     (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
     (hδ0 : 0 ≤ bealFracLogGap A C x z m)
@@ -2090,12 +1742,6 @@ theorem beal_modularWitness_of_principal_fracGap_window
 
 /-! ### Window case of the winding bridge (proved) -/
 
-/--
-Positive solution whose fractional gap lies in the wide principal window yields
-a modular winding witness. Specialises the gap-only construction; no coprimality
-hypothesis. Closes the window half of BealWindingBridge; the balanced regime
-δ ≈ log 2 / m < 2π/k remains open.
--/
 theorem beal_winding_of_solution_window {A B C : ℤ} {x y z : ℕ}
     (_hA : 0 < A) (_hB : 0 < B) (_hC : 0 < C)
     (_hsol : A ^ x + B ^ y = C ^ z)
@@ -2112,7 +1758,6 @@ theorem beal_winding_of_solution_window {A B C : ℤ} {x y z : ℕ}
       IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
   beal_modularWitness_of_fracGap_window_ampExp A C x y z hle hlt
 
-/-- Torus-folded window case for a positive Beal-range solution. -/
 theorem beal_winding_of_solution_principal_window {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
@@ -2136,11 +1781,7 @@ theorem beal_winding_of_solution_principal_window {A B C : ℤ} {x y z : ℕ}
     (bealMinExp x y z) (bealAmpExp x y z) (bealAmpExp_ge_four x y z)
     hδ0 hle hlt
 
-/--
-Diagnostic relation: the ill-posed BealCGANoGo plus the window construction
-implies that a coprime positive solution cannot lie in the wide gap window.
-(Does not prove BealCGANoGo; records the over-strength of the tautological gauge.)
--/
+/-- Does not prove `BealCGANoGo`; the tautological gauge is too strong. -/
 theorem beal_coprime_not_in_wide_window_of_cga_nogo
     (hnogo : BealCGANoGo) {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)

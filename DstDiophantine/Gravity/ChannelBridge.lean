@@ -10,23 +10,10 @@ set_option linter.style.native false
 /-!
 # One interference factor, two lengths
 
-## Paper boundary (do **not** claim)
-
-`G`, the masses, `α`, `ℏ`, `c`, and the sign-reversal window
-`1/2 < r₁ < 1` fm are external inputs. The channel length is the definition
-`ℓ = 2 x₁ r₁`. It is not a Compton wavelength. Nothing here derives a
-spectrum, a binding, or a radius at which the two factors vanish together.
-
-## What is proved
-
-* Where both interference factors are nonzero, the ratio of the mass term to
-  the charge term is `(κ / coul) · (γ_E / γ_G)`, up to the sign written below.
-* On the equal-scale ansatz, corresponding node radii stand in the ratio of
-  the two lengths. The first node of the defined nuclear length is `r₁`.
-* For every reversal in `(1/2, 1)` fm, the electron's electromagnetic length
-  over that nuclear length lies strictly between `203` and `414`. The first
-  node of the charge channel therefore stands that many times farther out
-  than the nuclear sign-reversal.
+Where both interference factors are nonzero, node radii stand in the ratio of
+the two lengths. \(G\), the masses, \(\alpha\), \(\hbar\), \(c\), and the
+sign-reversal window are inputs; the channel length is not a Compton
+wavelength, and no joint zero is derived.
 -/
 
 namespace DstDiophantine
@@ -35,8 +22,6 @@ namespace Gravity
 
 open Real SI
 
-/-- Ratio of the two signed inverse-square terms.
-The mass term is `−κ/(γ_G r²)` and the charge term is `coul/(γ_E r²)`. -/
 theorem channelTerm_ratio {κ coul γG γE r : ℝ}
     (hr : r ≠ 0) (hG : γG ≠ 0) (hE : γE ≠ 0) (hc : coul ≠ 0) :
     (-κ / (γG * r ^ 2)) / (coul / (γE * r ^ 2)) =
@@ -44,7 +29,6 @@ theorem channelTerm_ratio {κ coul γG γE r : ℝ}
   have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
   field_simp
 
-/-- Corresponding equal-scale nodes stand in the ratio of the lengths. -/
 theorem layerRadius_ratio {ℓ₁ ℓ₂ x : ℝ} (hℓ : ℓ₂ ≠ 0) (hx : x ≠ 0) :
     layerRadius ℓ₁ x / layerRadius ℓ₂ x = ℓ₁ / ℓ₂ := by
   unfold layerRadius
@@ -78,7 +62,6 @@ theorem ellRepFm_bounds :
 theorem ellRepFm_pos : (0 : ℚ) < ellRepFm :=
   lt_trans (by norm_num) ellRepFm_bounds.1
 
-/-- For every scattering window, the two lengths differ by a factor in `(203, 414)`. -/
 theorem charge_over_nuclear_length {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
     (203 : ℝ) < ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ ∧
       ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ < 414 := by
@@ -106,7 +89,6 @@ theorem charge_over_nuclear_length {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁
   have hceil : (3862 / 10) / (14 / 15) < (414 : ℝ) := by norm_num
   exact ⟨lt_trans hfloor hlo, lt_trans hhi hceil⟩
 
-/-- The same factor separates the first nodes. -/
 theorem first_node_ratio {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
     (203 : ℝ) <
         layerRadius ((ellRepFm : ℚ) : ℝ) resonanceRoot1 / r₁ ∧

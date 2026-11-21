@@ -15,27 +15,10 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Closed flows of the three neighbouring rotor systems
 
-`DualRotorDynamics` records the Euler–Lagrange jets. Here those jets are
-integrated.
-
-The written opposite-sign action has free mismatch, so the general
-one-axis solution is the affine lag `δ(t) = δ₀ + ν t` together with the
-cubic common rapidity
-`σ(t) = σ₀ + σ̇₀ t - m δ₀ t² - (m ν / 3) t³`.
-Along that flow the Jacobi integral collapses to the initial value
-`½ ν σ̇₀ + (m/2) δ₀²`.
-
-The neighbouring runaway `δ̈ = 2 m δ`, for a rate `κ` with `κ² = 2 m`,
-is the hyperbolic motion `A cosh(κ t) + B sinh(κ t)`. A nonzero seed is
-unbounded. The same-sign oscillator at the same rate is the bounded
-motion `A cos(ω t) + B sin(ω t)`, with squared amplitude `A² + B²` and
-with Jacobi integral `¼ σ̇₀² + (m/2)(A² + B²)`. In units `ℏ = c = 1`
-the lines `√(2 m)` and the Compton frequency `m` meet only at `m = 0`
-and `m = 2`.
-
-The value of `m` is not fixed here. Its role in the common acceleration
-is the ratio of the coefficients of `δ²` in `MassCoefficient`. The de Broglie reading of
-`ν` remains out of scope.
+The written flow is an affine lag with a cubic common rapidity; the
+neighbouring runaway is hyperbolic and the same-sign model is harmonic. The
+value of \(m\) is not fixed here, and the de Broglie reading of the lag rate
+is out of scope.
 -/
 
 namespace DstDiophantine
@@ -77,8 +60,7 @@ noncomputable def affineMismatch (δ₀ ν t : ℝ) : ℝ :=
 noncomputable def cubicRapiditySpeed (σd₀ m δ₀ ν t : ℝ) : ℝ :=
   σd₀ - 2 * m * δ₀ * t - m * ν * t ^ 2
 
-/-- Common rapidity sourced by an affine lag:
-`σ(t) = σ₀ + σ̇₀ t - m δ₀ t² - (m ν / 3) t³`. -/
+/-- Common rapidity sourced by an affine lag: `σ(t) = σ₀ + σ̇₀ t - m δ₀ t² - (m ν / 3) t³`. -/
 noncomputable def cubicRapidity (σ₀ σd₀ m δ₀ ν t : ℝ) : ℝ :=
   σ₀ + σd₀ * t - m * δ₀ * t ^ 2 - (m * ν / 3) * t ^ 3
 
@@ -178,7 +160,6 @@ theorem deriv_dualFrom_fun {σ δ σ' δ' : ℝ → ℝ}
   funext t
   exact deriv_dualFrom (hσ t) (hδ t)
 
-/-- Second derivative of `(σ' + c) / 2` when the mismatch speed is the constant `c`. -/
 theorem deriv2_sum_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt σ' σ'' t) :
     deriv (fun s => (σ' s + c) / 2) t = σ'' / 2 := by
   have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
@@ -186,7 +167,6 @@ theorem deriv2_sum_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt 
   rw [h.deriv]
   ring
 
-/-- Second derivative of `(σ' - c) / 2` when the mismatch speed is the constant `c`. -/
 theorem deriv2_sub_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt σ' σ'' t) :
     deriv (fun s => (σ' s - c) / 2) t = σ'' / 2 := by
   have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
@@ -194,7 +174,6 @@ theorem deriv2_sub_const {σ' : ℝ → ℝ} {c σ'' t : ℝ} (hσ : HasDerivAt 
   rw [h.deriv]
   ring
 
-/-- Second derivative of `(c + δ') / 2` when the rapidity speed is the constant `c`. -/
 theorem deriv2_const_add {δ' : ℝ → ℝ} {c δ'' t : ℝ} (hδ : HasDerivAt δ' δ'' t) :
     deriv (fun s => (c + δ' s) / 2) t = δ'' / 2 := by
   have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
@@ -202,7 +181,6 @@ theorem deriv2_const_add {δ' : ℝ → ℝ} {c δ'' t : ℝ} (hδ : HasDerivAt 
   rw [h.deriv]
   ring
 
-/-- Second derivative of `(c - δ') / 2` when the rapidity speed is the constant `c`. -/
 theorem deriv2_const_sub {δ' : ℝ → ℝ} {c δ'' t : ℝ} (hδ : HasDerivAt δ' δ'' t) :
     deriv (fun s => (c - δ' s) / 2) t = -δ'' / 2 := by
   have hc : HasDerivAt (fun _ : ℝ => c) 0 t := hasDerivAt_const t c
@@ -295,7 +273,6 @@ theorem deriv2_writtenDual (σ₀ σd₀ m δ₀ ν t : ℝ) :
   unfold writtenDelta
   ring
 
-/-- The cubic flow solves the written Euler–Lagrange system at every time. -/
 theorem written_flow_actualEL (σ₀ σd₀ m δ₀ ν t : ℝ) :
     PaperActualEL m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
       (deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t)
@@ -305,7 +282,6 @@ theorem written_flow_actualEL (σ₀ σd₀ m δ₀ ν t : ℝ) :
   · rw [deriv2_writtenUsual, writtenUsual, writtenDual, usualFrom_sub_dualFrom]
   · rw [deriv2_writtenDual, writtenUsual, writtenDual, usualFrom_sub_dualFrom]
 
-/-- Initial data of the cubic flow. -/
 theorem written_flow_initial (σ₀ σd₀ m δ₀ ν : ℝ) :
     writtenDelta δ₀ ν 0 = δ₀ ∧
       deriv (writtenDelta δ₀ ν) 0 = ν ∧
@@ -317,7 +293,6 @@ theorem written_flow_initial (σ₀ σd₀ m δ₀ ν : ℝ) :
   · simp [writtenSigma, cubicRapidity]
   · rw [deriv_writtenSigma, cubicRapiditySpeed]; ring
 
-/-- Along the cubic flow the Jacobi integral equals its initial value. -/
 theorem written_flow_energy (σ₀ σd₀ m δ₀ ν t : ℝ) :
     paperEnergy m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
         (deriv (writtenUsual σ₀ σd₀ m δ₀ ν) t)
@@ -440,7 +415,6 @@ theorem deriv2_hyperbolicMismatch (A B κ t : ℝ) :
   rw [deriv_hyperbolicMismatch]
   exact (hasDerivAt_hyperbolicSpeed A B κ t).deriv
 
-/-- Squared harmonic amplitude is constant: `(A cos + B sin)² ≤ A² + B²`. -/
 theorem harmonicMismatch_sq_le (A B ω t : ℝ) :
     harmonicMismatch A B ω t ^ 2 ≤ A ^ 2 + B ^ 2 := by
   unfold harmonicMismatch
@@ -449,7 +423,6 @@ theorem harmonicMismatch_sq_le (A B ω t : ℝ) :
   have hnn : 0 ≤ (A * Real.sin (ω * t) - B * Real.cos (ω * t)) ^ 2 := sq_nonneg _
   nlinarith [hsc, hnn]
 
-/-- Mismatch part of the oscillator energy, reduced by `ω² = 2 m`. -/
 theorem harmonic_energy_identity (A B ω m θ : ℝ) (hω : ω ^ 2 = 2 * m) :
     (1 / 4) * (-A * ω * Real.sin θ + B * ω * Real.cos θ) ^ 2 +
         (m / 2) * (A * Real.cos θ + B * Real.sin θ) ^ 2 =
@@ -538,7 +511,6 @@ theorem deriv2_oscillatorDual (σ₀ σd₀ A B ω t : ℝ) :
   unfold oscillatorDelta
   ring
 
-/-- The harmonic flow solves the same-sign oscillator when `ω² = 2 m`. -/
 theorem oscillator_flow_EL (σ₀ σd₀ A B ω m t : ℝ) (hω : ω ^ 2 = 2 * m) :
     OscillatorEL m (oscillatorUsual σ₀ σd₀ A B ω t) (oscillatorDual σ₀ σd₀ A B ω t)
       (deriv (deriv (oscillatorUsual σ₀ σd₀ A B ω)) t)
@@ -550,7 +522,6 @@ theorem oscillator_flow_EL (σ₀ σd₀ A B ω m t : ℝ) (hω : ω ^ 2 = 2 * m
   · rw [deriv2_oscillatorDual, oscillatorUsual, oscillatorDual, usualFrom_sub_dualFrom, hω]
     ring
 
-/-- Oscillator energy along the harmonic flow. -/
 theorem oscillator_flow_energy (σ₀ σd₀ A B ω m t : ℝ) (hω : ω ^ 2 = 2 * m) :
     oscillatorEnergy m (oscillatorUsual σ₀ σd₀ A B ω t) (oscillatorDual σ₀ σd₀ A B ω t)
         (deriv (oscillatorUsual σ₀ σd₀ A B ω) t)
@@ -569,8 +540,7 @@ theorem oscillator_flow_energy (σ₀ σd₀ A B ω m t : ℝ) (hω : ω ^ 2 = 2
   have hrest := harmonic_energy_identity A B ω m (ω * t) hω
   linarith
 
-/-- In units `ℏ = c = 1`, `√(2 m)` meets the Compton frequency `m`
-only at the isolated values `m = 0` and `m = 2`. -/
+/-- In units `ℏ = c = 1`, `√(2m)` meets the Compton frequency `m` only at `m = 0` and `m = 2`. -/
 theorem sqrt_two_mul_eq_compton_iff {m : ℝ} (hm : 0 ≤ m) :
     Real.sqrt (2 * m) = m ↔ m = 0 ∨ m = 2 := by
   constructor
@@ -641,7 +611,6 @@ theorem deriv2_runawayDual (σ₀ σd₀ A B κ t : ℝ) :
   unfold runawayDelta
   ring
 
-/-- The hyperbolic flow solves the neighbouring runaway system when `κ² = 2 m`. -/
 theorem runaway_flow_claimedEL (σ₀ σd₀ A B κ m t : ℝ) (hκ : κ ^ 2 = 2 * m) :
     PaperClaimedEL m (runawayUsual σ₀ σd₀ A B κ t) (runawayDual σ₀ σd₀ A B κ t)
       (deriv (deriv (runawayUsual σ₀ σd₀ A B κ)) t)
@@ -659,7 +628,6 @@ theorem hyperbolicMismatch_eq_exp (A B κ t : ℝ) :
   rw [Real.cosh_eq, Real.sinh_eq]
   ring
 
-/-- A nonzero hyperbolic seed is unbounded in time. -/
 theorem exists_abs_hyperbolicMismatch_gt {A B κ : ℝ} (hκ : 0 < κ)
     (hAB : A ≠ 0 ∨ B ≠ 0) (C : ℝ) :
     ∃ t, C < |hyperbolicMismatch A B κ t| := by

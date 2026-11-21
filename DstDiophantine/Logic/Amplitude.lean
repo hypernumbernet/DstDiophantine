@@ -4,18 +4,7 @@ import DstDiophantine.Algebra.Motor
 /-!
 # D4L amplitudes
 
-A proposition's primary carrier is an admissible torsion configuration, not a
-scalar in `[-1,1]`. The four labels appear only after measurement.
-
-* `measure` is `JNormalized`.
-* `collapse` is the existing classifier `ofParams`.
-* `adjoint` is the usual–dual swap, already known to flip the sign of `J`.
-* `mass` is the unsigned second observable. `IsVacuum` / `IsBalancedMassive`
-  split label `T`; they are predicates, not a fifth name.
-
-This module does **not** introduce a Hilbert space, a Born rule, or a new
-Clifford algebra. The PGA objects `omega` / `rotor` are the ones already
-proved in `Algebra.Motor`.
+The carrier is an admissible torsion configuration; labels appear only after measurement. This is not a Hilbert space, a Born rule, or a new Clifford algebra.
 -/
 
 namespace DstDiophantine
@@ -24,12 +13,11 @@ namespace Logic
 
 open Admissible Invariant Motor Operations
 
-/-- Usual–dual swap is an involution on parameter space. -/
 @[simp] theorem daggerParams_involutive (p : TorsionParams) :
     daggerParams (daggerParams p) = p :=
   rfl
 
-/-- Bundled admissible configuration: the D4L amplitude. -/
+/-- Bundled admissible torsion configuration. -/
 @[ext]
 structure Amplitude where
   params : TorsionParams
@@ -37,19 +25,19 @@ structure Amplitude where
 
 namespace Amplitude
 
-/-- Scalar observable: the already-proved normalised torsional height. -/
+/-- Normalised torsional height `JNormalized`. -/
 noncomputable def measure (a : Amplitude) : ℝ :=
   JNormalized a.params
 
-/-- Four-state collapse. -/
+/-- Classifier `ofParams`. -/
 noncomputable def collapse (a : Amplitude) : TruthValue :=
   ofParams a.params a.admissible
 
-/-- Usual–dual adjoint. -/
+/-- Usual–dual swap `daggerParams`. -/
 def adjoint (a : Amplitude) : Amplitude :=
   ⟨daggerParams a.params, isAdmissibleContinuous_dagger a.admissible⟩
 
-/-- Torsion bivector carrier. -/
+/-- Torsion bivector `omegaTorsion`. -/
 noncomputable def omega (a : Amplitude) : PGA :=
   omegaTorsion a.params
 
@@ -88,7 +76,7 @@ theorem measure_eq_one_iff (a : Amplitude) :
     a.measure = 1 ↔ a.collapse = .F :=
   (ofParams_eq_F_iff a.admissible).symm
 
-/-- Unsigned mass of the underlying torsion configuration. -/
+/-- Unsigned mass. -/
 noncomputable def mass (a : Amplitude) : ℝ :=
   Invariant.mass a.params
 
@@ -111,17 +99,11 @@ theorem abs_measure_le_massNormalized (a : Amplitude) :
     |a.measure| ≤ a.massNormalized :=
   abs_JNormalized_le_massNormalized a.params
 
-/--
-Vacuum: label `T` with vanishing mass. A predicate on amplitudes, not a
-fifth D4L name. Equivalent to all six rapidities being zero.
--/
+/-- Label `T` with vanishing mass. Not a fifth D4L name. -/
 def IsVacuum (a : Amplitude) : Prop :=
   a.collapse = .T ∧ a.mass = 0
 
-/--
-Balanced massive: label `T` with positive mass. The geometric seat of
-balanced Beal seeds, conflated with vacuum by signed height alone.
--/
+/-- Label `T` with positive mass. Signed height conflates this with vacuum. -/
 def IsBalancedMassive (a : Amplitude) : Prop :=
   a.collapse = .T ∧ 0 < a.mass
 
@@ -153,12 +135,11 @@ theorem not_vacuum_of_balancedMassive {a : Amplitude} (h : a.IsBalancedMassive) 
 
 end Amplitude
 
-/-- Every label is realised by some amplitude. -/
 theorem exists_amplitude (tv : TruthValue) : ∃ a : Amplitude, a.collapse = tv := by
   obtain ⟨p, h, hp⟩ := exists_ofParams tv
   exact ⟨⟨p, h⟩, hp⟩
 
-/-- Vacuum is inhabited (the origin of the admissible cone). -/
+/-- Origin of the admissible cone. -/
 noncomputable def vacuumAmplitude : Amplitude :=
   ⟨pureHyperbolicRay 0, isAdmissibleContinuous_pureHyperbolicRay (by norm_num) (by norm_num)⟩
 
@@ -166,7 +147,7 @@ theorem vacuumAmplitude_isVacuum : vacuumAmplitude.IsVacuum :=
   (Amplitude.isVacuum_iff_mass_eq_zero _).mpr <|
     (mass_eq_zero_iff _).mpr fun _ => by simp [vacuumAmplitude, pureHyperbolicRay]
 
-/-- Balanced massive configurations inhabit label `T` with positive mass. -/
+/-- `balancedRay 1`. -/
 noncomputable def balancedAmplitude : Amplitude :=
   ⟨balancedRay 1, isAdmissibleContinuous_balancedRay (by norm_num) (by norm_num)⟩
 
@@ -180,7 +161,6 @@ theorem balancedAmplitude_isBalancedMassive : balancedAmplitude.IsBalancedMassiv
 theorem exists_balancedMassive : ∃ a : Amplitude, a.IsBalancedMassive :=
   ⟨balancedAmplitude, balancedAmplitude_isBalancedMassive⟩
 
-/-- Label `T` is not a single geometric point: vacuum and balanced massive coexist. -/
 theorem T_splits_vacuum_and_balancedMassive :
     (∃ a : Amplitude, a.collapse = .T ∧ a.IsVacuum) ∧
       (∃ b : Amplitude, b.collapse = .T ∧ b.IsBalancedMassive) :=
@@ -188,11 +168,11 @@ theorem T_splits_vacuum_and_balancedMassive :
     ⟨balancedAmplitude, balancedAmplitude_isBalancedMassive.1,
       balancedAmplitude_isBalancedMassive⟩⟩
 
-/-- Axiswise usual–dual equality. Strictly stronger than vanishing height. -/
+/-- Axiswise `α = β`. Stronger than vanishing height. -/
 def IsAxiswiseBalanced (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, p.alpha a = p.beta a
 
-/-- Cross-axis cancellation: boost on axis `0`, rotation on axis `1`. -/
+/-- Boost on axis `0`, rotation on axis `1`. -/
 def unbalancedZeroParams : TorsionParams :=
   ⟨fun a => if a = 0 then 1 else 0, fun a => if a = 1 then 1 else 0⟩
 
@@ -247,8 +227,7 @@ theorem unbalancedAmplitude_massive : 0 < unbalancedAmplitude.mass := by
   rw [h]
   exact one_pos
 
-/-- Vanishing height is not axiswise balance: a boost on one axis can cancel
-a rotation on another. -/
+/-- Vanishing height is not axiswise balance. -/
 theorem T_has_cross_axis_cancellation :
     ∃ a : Amplitude, a.collapse = .T ∧ 0 < a.mass ∧ ¬ IsAxiswiseBalanced a.params :=
   ⟨unbalancedAmplitude, unbalancedAmplitude_T, unbalancedAmplitude_massive,

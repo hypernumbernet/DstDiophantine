@@ -9,36 +9,7 @@ import Mathlib.Tactic.Ring
 /-!
 # What surrounding matter fixes
 
-Sources determine the admissible point a particle expresses. They do not
-determine the stiffness `m`.
-
-The configuration expressed by a list of sources is the nearest admissible
-point of their bivector sum, and that sum does not depend on order. The empty
-list expresses the origin: every rapidity vanishes, the stiffness potential
-vanishes at every `m`, and the written action assigns no angular acceleration.
-
-On one axis the written action drives the common rapidity by
-`σ̈ = -2m(α - β)`. That acceleration follows the lag. A balanced source
-adds the same rapidity to both sectors, so the lag, the stiffness potential,
-and the acceleration are unchanged on the internal sum and, once the axis
-lies on the wall, on the expressed state as well. The acceleration overflows
-only when the lag itself no longer fits in the triangle. Aligned pure boosts
-are that case, because for them the lag and the sum are one number: while
-`nφ ≤ π/2` the common acceleration of the expressed state is `n` times the
-acceleration of one boost, and once `nφ ≥ π/2` it is `-mπ`, however large
-`nφ` becomes. Past that wall the acceleration read from the internal lag is
-strictly more negative. Two boosts of rapidity `π/4` add their accelerations
-and do not add their values of `J`. A third leaves the acceleration at `-mπ`.
-
-A lag the particle already carries is not that reading. A pure boost of
-rapidity `π/4`, taken as the particle's own angles, still has common
-acceleration `-mπ/2` when the source list is empty.
-
-## What is not claimed
-
-No derivation of `m` from the source sum, no identification with `F = ma`,
-and no ceiling on laboratory proper acceleration. The additive-then-saturated
-acceleration is the aligned pure-boost family, not a Newtonian multi-body law.
+Sources determine the admissible point a particle expresses, and they do not determine the stiffness `m`. No derivation of `m`, no identification with `F = ma`, and no Newtonian multi-body law are claimed.
 -/
 
 namespace DstDiophantine
@@ -55,7 +26,6 @@ theorem commonAccel_empty_angles (m : ℝ) : commonAccel m 0 0 = 0 := by
   unfold commonAccel
   ring
 
-/-- The empty source list is the origin of coefficient space. -/
 theorem sumParams_nil :
     sumParams ([] : List TorsionParams) = ⟨fun _ => 0, fun _ => 0⟩ := by
   refine congrArg₂ TorsionParams.mk ?_ ?_ <;> funext a <;> simp
@@ -85,7 +55,6 @@ theorem lagSq_origin : lagSq ⟨fun _ => 0, fun _ => 0⟩ = 0 := by
   unfold lagSq
   simp
 
-/-- Emptiness extinguishes the potential at every stiffness, including a nonzero one. -/
 theorem empty_sources_zero_stiffness (m : ℝ) :
     stiffnessPotential m (expressedSuperposition ([] : List TorsionParams)) = 0 := by
   rw [stiffnessPotential_eq_lag]
@@ -93,7 +62,6 @@ theorem empty_sources_zero_stiffness (m : ℝ) :
   rw [express_nil, sumParams_nil, lagSq_origin]
   ring
 
-/-- At the origin the written action assigns no angular acceleration, for every `m`. -/
 theorem empty_sources_no_acceleration (m φddot θddot : ℝ) :
     PaperActualEL m 0 0 φddot θddot ↔ φddot = 0 ∧ θddot = 0 := by
   rw [paperActualEL_eq]
@@ -109,7 +77,6 @@ theorem expressedLag_perm {ps qs : List TorsionParams} (h : ps.Perm qs) (a : Fin
   unfold expressedSuperposition
   rw [sumParams_perm h]
 
-/-- Expressed aligned pure boosts stop at rapidity `π/2`. -/
 theorem express_replicate_axisBoost {n : ℕ} {a0 : Fin 3} {φ : ℝ} (hφ : 0 ≤ φ) :
     express (sumParams (List.replicate n (axisBoost a0 φ))) =
       axisBoost a0 (min ((n : ℝ) * φ) (Real.pi / 2)) := by
@@ -143,7 +110,6 @@ theorem commonAccel_expressed_boost {m : ℝ} {n : ℕ} {a0 : Fin 3} {φ : ℝ} 
   rw [expressed_boost_alpha hφ a0, expressed_boost_beta hφ a0]
   simp
 
-/-- While the internal rapidity stays inside the wall, accelerations add. -/
 theorem aligned_boosts_accel_scales {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
     (hφ : 0 ≤ φ) (hle : (n : ℝ) * φ ≤ Real.pi / 2) :
     commonAccel m
@@ -172,7 +138,6 @@ theorem aligned_boosts_accel_scales {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
     rw [hminn, hmin1]
     ring
 
-/-- Past the wall the expressed common acceleration is \(-m\pi\), for every larger sum. -/
 theorem aligned_boosts_accel_saturated {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
     (hφ : 0 ≤ φ) (hs : Real.pi / 2 ≤ (n : ℝ) * φ) :
     commonAccel m
@@ -204,7 +169,6 @@ theorem two_quarter_boosts_accel (m : ℝ) (a0 : Fin 3) :
   aligned_boosts_accel_saturated (n := 2) (m := m) (φ := Real.pi / 4) (a0 := a0)
     (by positivity) (by linarith [Real.pi_pos])
 
-/-- A further quarter-boost does not add another copy of the one-boost acceleration. -/
 theorem quarter_boosts_past_wall {m : ℝ} (hm : m ≠ 0) {n : ℕ} (hn : 3 ≤ n) (a0 : Fin 3) :
     commonAccel m
         ((expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 4)))).alpha a0)
@@ -237,8 +201,6 @@ theorem quarter_boosts_past_wall {m : ℝ} (hm : m ≠ 0) {n : ℕ} (hn : 3 ≤ 
   · exact hm h0
   · linarith
 
-/-- A pure boost of rapidity `π/4`, carried as the particle's own angles,
-has common acceleration `-mπ/2`. -/
 theorem carried_quarter_boost_accel (m : ℝ) (a0 : Fin 3) :
     commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0)
         ((axisBoost a0 (Real.pi / 4)).beta a0) =
@@ -247,7 +209,6 @@ theorem carried_quarter_boost_accel (m : ℝ) (a0 : Fin 3) :
   simp [axisBoost]
   ring
 
-/-- A lag already carried is not the state expressed by an empty source list. -/
 theorem carried_quarter_boost_not_empty {m : ℝ} (hm : m ≠ 0) (a0 : Fin 3) :
     commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0) ((axisBoost a0 (Real.pi / 4)).beta a0) ≠
       commonAccel m
@@ -288,7 +249,6 @@ theorem lagSq_axisBoost (a0 : Fin 3) (φ : ℝ) :
   rw [axisBoost_eq_axisPair, lagSq_axisPair]
   ring
 
-/-- A balanced pile keeps the lag, hence the potential and the common acceleration. -/
 theorem balancePile_lag_passes {a0 : Fin 3} {δ ε m : ℝ} {n : ℕ}
     (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 ≤ ε) :
     let s := sumParams (balancePile a0 δ ε n)
@@ -369,7 +329,6 @@ theorem stiffness_expressed_saturated_boost {n : ℕ} {φ : ℝ} (hφ : 0 ≤ φ
   unfold expressedSuperposition
   rw [express_replicate_axisBoost hφ, min_eq_right hs, lagSq_axisBoost]
 
-/-- Past the wall the internal lag gives a strictly stronger force than the expressed state. -/
 theorem pure_boost_force_overflows {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
     (hm : 0 < m) (hφ : 0 ≤ φ) (hs : Real.pi / 2 < (n : ℝ) * φ) :
     commonAccel m

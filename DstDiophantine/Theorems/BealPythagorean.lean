@@ -7,25 +7,9 @@ import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.LinearCombination
 
 /-!
-# Phase 7h: Pythagorean UFD descent for Beal `d = 2`
+# Pythagorean descent for exponent gcd 2
 
-Isolated from `Beal.lean` / `BealSlice.lean`.
-
-## Closed (no hypotheses)
-
-* `bealExpGcd = 2` with `4 ∣ x ∧ 4 ∣ z` and the symmetric `4 ∣ y ∧ 4 ∣ z`;
-* any `d = 2` solution where at least two of `{x,y,z}` are divisible by 4.
-
-## Residual (type only)
-
-* `BealPythagoreanResidual`
-
-## Discrete tools
-
-* `ℕ`-UFD for `2mn` an `e`-th power;
-* `ℤ[i]` hypotenuse-power preparation; the Gaussian continuation is `BealGaussian`.
-
-Classical Beal is **not** claimed unconditionally.
+Fourth-divisibility slices are closed with no extra hypothesis. Classical Beal is not claimed; `BealPythagoreanResidual` stays open.
 -/
 
 namespace DstDiophantine
@@ -74,11 +58,6 @@ theorem nat_eq_pow_of_mul_eq_pow_of_coprime_right {a b c : ℕ} {e : ℕ}
   rw [mul_comm] at h
   exact nat_eq_pow_of_mul_eq_pow_of_coprime hcop.symm h
 
-/--
-If `m, n` are coprime of opposite parity and `2 * m * n` is an `e`-th power,
-then the odd factor is an `e`-th power and twice the even factor is an `e`-th
-power.
--/
 theorem exists_pow_of_two_mul_coprime_eq_pow {m n k : ℕ} {e : ℕ}
     (hcop : Nat.Coprime m n)
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
@@ -117,10 +96,7 @@ theorem gaussian_norm_mk (m n : ℤ) :
     Zsqrtd.norm (⟨m, n⟩ : ℤ[i]) = m ^ 2 + n ^ 2 := by
   simp [Zsqrtd.norm, sq]
 
-/--
-Preparation label: the hypotenuse `m^2 + n^2` is the norm of an `e`-th power in
-`ℤ[i]`. Full unique-factorisation descent is left for a later cycle.
--/
+/-- Hypotenuse norm in `ℤ[i]`. Unique factorisation is not finished here. -/
 def IsGaussianHypotenusePower (m n : ℤ) (e : ℕ) : Prop :=
   ∃ g : ℤ[i], Zsqrtd.norm (g ^ e) = m ^ 2 + n ^ 2
 
@@ -168,12 +144,6 @@ private lemma hyp_eq_of_classification {x : ℕ} {m n : ℤ}
     have hmnnonneg : (0 : ℤ) ≤ m ^ 2 + n ^ 2 := by positivity
     linarith [h, hxnonneg, hmnnonneg]
 
-/--
-No positive Nat solution of `x^4 = y^4 + z^2`.
-
-Proved by strong induction on `x`, using Pythagorean classification of
-`(y^2, z, x^2)` and `ℤ`/`ℕ`-UFD lemmas (Fermat descent).
--/
 theorem not_diffFourthSqPos : ∀ {x y : ℕ}, DiffFourthSqPos x y → False := by
   intro x
   induction x using Nat.strong_induction_on with
@@ -544,10 +514,7 @@ theorem not_beal_sol_of_expGcd_eq_two_of_two_four_dvd {A B C : ℤ} {x y z : ℕ
 
 /-! ### Residual type for remaining `d = 2` -/
 
-/--
-**Residual** (phase 7h, unproved): no three-way-coprime Beal solution with
-`bealExpGcd = 2` outside the fourth-divisibility slices already closed.
--/
+/-- Open residual: coprime `d = 2` outside the closed fourth-divisibility slices. -/
 def BealPythagoreanResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),

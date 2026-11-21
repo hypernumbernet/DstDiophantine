@@ -6,15 +6,9 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
-# Birkhoff–von Neumann quantum logic of `DualSpinor`
+# Quantum logic of `DualSpinor`
 
-Propositions are linear subspaces of `ℂ²` (closed automatically). Meet is
-intersection, join is the sum, negation is the orthogonal complement.
-The orthomodular law is the orthogonal decomposition of a finite-dimensional
-subspace.
-
-This lattice is D4L's dual Hilbert layer. It is not identified with
-`{T,U,F,B}` or with `min`/`max`.
+Propositions are subspaces of `ℂ²`, with the orthomodular law. This lattice is not identified with `{T, U, F, B}` or with `min`/`max`.
 -/
 
 namespace DstDiophantine
@@ -33,7 +27,6 @@ noncomputable def qJoin (A B : QProp) : QProp := A ⊔ B
 
 noncomputable def qNot (A : QProp) : QProp := Aᗮ
 
-/-- Orthomodular law on `DualSpinor`: if `A ≤ B` then `A ∨ (A⊥ ∧ B) = B`. -/
 theorem orthomodular {A B : QProp} (h : A ≤ B) : A ⊔ Aᗮ ⊓ B = B :=
   Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection h
 
@@ -151,7 +144,6 @@ theorem lineE1_sup_lineD : (lineE1 ⊔ lineD : QProp) = ⊤ := by
     linarith
   exact eq_of_le_of_finrank_eq le_top (hdim.trans finrank_top_qprop.symm)
 
-/-- Standard non-distributivity of the subspace lattice of `ℂ²`. -/
 theorem not_distributive :
     (lineE0 ⊓ (lineE1 ⊔ lineD) : QProp) ≠
       ((lineE0 ⊓ lineE1) ⊔ (lineE0 ⊓ lineD) : QProp) := by
@@ -161,7 +153,6 @@ theorem not_distributive :
   rw [lineE0_finrank] at this
   exact (by decide : ¬ (1 : ℕ) = 0) this
 
-/-- There are no three pairwise orthogonal lines in `ℂ²`. -/
 theorem no_three_pairwise_orthogonal_lines
     {A B C : QProp}
     (hA : finrank ℂ A = 1) (hB : finrank ℂ B = 1) (hC : finrank ℂ C = 1)
@@ -183,7 +174,6 @@ theorem no_three_pairwise_orthogonal_lines
 private theorem inner_e0_e1 : ⟪e0, e1⟫_ℂ = 0 := by
   simp [e0, e1, EuclideanSpace.inner_single_left]
 
-/-- A complementary pair of rays exists in `ℂ²`. -/
 theorem lineE0_isOrtho_lineE1 : lineE0 ⟂ lineE1 := by
   intro x hx y hy
   obtain ⟨a, rfl⟩ := mem_span_singleton.mp hx
@@ -235,8 +225,7 @@ theorem lineOf_injective {z w : ℂ} (h : lineOf z = lineOf w) : z = w := by
   rw [one_mul] at h1
   exact h1.symm
 
-/-- The dual Hilbert layer has infinitely many atoms. Four D4L labels cannot
-enumerate them. -/
+/-- Four D4L labels cannot enumerate them. -/
 theorem infinite_one_dim_subspaces :
     Infinite {A : QProp // finrank ℂ A = 1} := by
   refine Infinite.of_injective (fun n : ℕ => ⟨lineOf (n : ℂ), lineOf_finrank n⟩) ?_

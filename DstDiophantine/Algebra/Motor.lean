@@ -15,34 +15,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 /-!
 # Motors, Ω decomposition, and null exponential truncation
 
-The translational exponential truncates at first order because the null sector is
-strongly nilpotent (`N_μ N_ν = 0`). Torsion rotors use the Banach-algebra exponential.
-
-## What is proved vs. paper narrative
-
-* **Proved here:** the *definitional* factorisation `motor p := rotorTorsion *
-  expTrans`, together with `rotor_unitary`, `expTrans_unitary`, and
-  `motor_unitary` for that product.
-* **Proved here:** closed forms `exp(t • x)` when `x * x = ±1`, and the
-  left-inverse ⇒ right-inverse lemma for unitary motors (`m * reverse m = 1`).
-* **Proved here:** the Banach exponential truncates, `exp(Ω_trans) = 1 + Ω_trans`,
-  translators multiply by adding coefficients, and `exp(Ω_biv) = RT` whenever
-  torsion and translation commute.
-* **Proved here:** the full torsion–null commutator table lands in the null span;
-  `[Ω_trans,[Ω_torsion,Ω_trans]]=0`; Baker–Campbell–Hausdorff jets of `RT` versus
-  the truncated BCH exponential agree through order three, with the first
-  correction `½[Ω_torsion,Ω_trans]`; and `exp(Ω_biv) ≠ RT` in general (radial
-  boost against time translation).
-* **Proved in `DstDiophantine.Algebra.MotorGroup`:** the group-level consequences:
-  every torsion rotor normalises the translators (`R T R˜ = T'`), motors multiply in
-  semidirect form `(R_p T_p)(R_q T_q) = (R_p R_q) T'`, and `exp(Ω_biv)` is itself a
-  motor `R · T_dressed` with the *same* torsion rotor and a dressed translation
-  (which differs from `Ω_trans` in general, consistent with `exists_omegaBiv_ne_motor`).
-* Not claimed: a fully closed parametrised product law on `OmegaParams` (this would
-  need surjectivity of `exp` from `lorentzSpan` onto the rotor group).
-* A motor preserves the degenerate square of `G(3,1,1)`. The statement is
-  `Gravity.DegenerateSandwich.motor_degenerate_isometry`. An arbitrary unitary
-  outside the motor subgroup is not treated there.
+The null exponential truncates because `N_μ N_ν = 0`. `motor` is `R · T`, not `exp(Ω_biv)`, and a closed law on `OmegaParams` is not claimed.
 -/
 
 namespace DstDiophantine
@@ -78,7 +51,6 @@ theorem omegaTorsion_reverse (p : TorsionParams) :
   ext a
   simp [neg_add_rev, add_comm]
 
-/-- Helper for the deferred `reverse_exp_of_reverse_neg` proof. -/
 theorem reverse_pow (x : PGA) (n : ℕ) : reverse (x ^ n) = (reverse x) ^ n := by
   induction n with
   | zero => simp
@@ -111,7 +83,6 @@ theorem expTrans_eq (p : TransParams) :
 noncomputable def rotorTorsion (p : TorsionParams) : PGA :=
   exp (omegaTorsion p)
 
-/-- `reverse(exp x) = exp(-x)` when `reverse x = -x`. -/
 theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
     reverse (exp x) = exp (-x) := by
   set revOp := CliffordAlgebra.reverseOp (Q := Q311)
@@ -126,8 +97,6 @@ theorem reverse_exp_of_reverse_neg {x : PGA} (hx : reverse x = -x) :
 
 /-! ### Left inverse implies right inverse for unitary motors -/
 
-/-- If `m * reverse m = 1`, then also `reverse m * m = 1`
-(finite-dimensional: left-invertible ⇒ right-invertible). -/
 theorem reverse_mul_of_mul_reverse {m : PGA} (h : m * reverse m = 1) :
     reverse m * m = 1 := by
   have hsurj : Function.Surjective (LinearMap.mulLeft ℝ m) := by
@@ -156,7 +125,6 @@ private theorem exp_smul_mul_exp_neg_smul (x : PGA) (t : ℝ) :
     ((Commute.refl x).smul_left t).smul_right (-t)
   rw [← exp_add_of_commute hc, ← add_smul, add_neg_cancel, zero_smul, exp_zero]
 
-/-- Hyperbolic closed form: `x² = 1 ⇒ exp(t • x) = cosh t + sinh t • x`. -/
 theorem exp_of_sq_one {x : PGA} (hx : x * x = 1) (t : ℝ) :
     exp (t • x) = Real.cosh t • (1 : PGA) + Real.sinh t • x := by
   let R : ℝ → PGA := fun u => Real.cosh u • (1 : PGA) + Real.sinh u • x
@@ -211,7 +179,6 @@ theorem exp_of_sq_one {x : PGA} (hx : x * x = 1) (t : ℝ) :
     _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
     _ = R t := one_mul _
 
-/-- Circular closed form: `x² = -1 ⇒ exp(t • x) = cos t + sin t • x`. -/
 theorem exp_of_sq_neg_one {x : PGA} (hx : x * x = -1) (t : ℝ) :
     exp (t • x) = Real.cos t • (1 : PGA) + Real.sin t • x := by
   let R : ℝ → PGA := fun u => Real.cos u • (1 : PGA) + Real.sin u • x
@@ -266,7 +233,6 @@ theorem exp_of_sq_neg_one {x : PGA} (hx : x * x = -1) (t : ℝ) :
     _ = 1 * R t := by rw [exp_smul_mul_exp_neg_smul]
     _ = R t := one_mul _
 
-/-- Nilpotent closed form: `x² = 0 ⇒ exp(t • x) = 1 + t • x`. -/
 theorem exp_of_sq_zero {x : PGA} (hx : x * x = 0) (t : ℝ) :
     exp (t • x) = (1 : PGA) + t • x := by
   let R : ℝ → PGA := fun u => (1 : PGA) + u • x
@@ -321,11 +287,10 @@ theorem rotor_unitary (p : TorsionParams) :
   rw [← exp_add_of_commute (Commute.neg_right (Commute.refl (omegaTorsion p)))]
   simp
 
-/-- Motor split `M := R · T` at the **definition** level (not `exp(Ω_biv)`). -/
+/-- Definitional split `R · T`, not `exp(Ω_biv)`. -/
 noncomputable def motor (p : OmegaParams) : PGA :=
   rotorTorsion p.torsion * expTrans p.trans
 
-/-- Null translator is unitary: `(1+Ω_trans)(1+Ω_trans)˜ = 1`. -/
 theorem expTrans_unitary (p : TransParams) :
     expTrans p * reverse (expTrans p) = 1 := by
   have hrev : reverse (omegaTrans p) = -omegaTrans p := by
@@ -360,24 +325,20 @@ theorem omegaTrans_smul_mul (p : TransParams) (t u : ℝ) :
     (t • omegaTrans p) * (u • omegaTrans p) = 0 := by
   rw [mul_smul_comm, smul_mul_assoc, omegaTrans_sq, smul_zero, smul_zero]
 
-/-- First-order truncation: \(\exp(t\,\Omega_{\mathrm{trans}})=1+t\,\Omega_{\mathrm{trans}}\). -/
 theorem exp_smul_omegaTrans (p : TransParams) (t : ℝ) :
     exp (t • omegaTrans p) = (1 : PGA) + t • omegaTrans p :=
   exp_of_sq_zero (omegaTrans_sq p) t
 
-/-- The Banach exponential of a null generator truncates at first order. -/
 theorem exp_omegaTrans (p : TransParams) :
     exp (omegaTrans p) = expTrans p := by
   simpa [expTrans, one_smul] using exp_smul_omegaTrans p 1
 
-/-- Translators form an abelian group: coefficients add. -/
 theorem expTrans_mul (p q : TransParams) :
     expTrans p * expTrans q =
       expTrans ⟨fun μ => p.lambda μ + q.lambda μ⟩ := by
   simp only [expTrans, mul_add, add_mul, mul_one, one_mul, omegaTrans_mul, add_zero]
   rw [add_assoc, omegaTrans_add]
 
-/-- When torsion and translation commute, \(\exp(\Omega_{\mathrm{biv}})=RT\). -/
 theorem exp_omegaBiv_eq_motor_of_commute (p : OmegaParams)
     (h : Commute (omegaTorsion p.torsion) (omegaTrans p.trans)) :
     exp (omegaBiv p) = motor p := by
@@ -405,7 +366,6 @@ theorem commutator_cyclic_omegaTrans_mem_span (a : Fin 3) (p : TransParams) :
   rw [commutator_smul_right]
   exact smul_mem_nullSpan _ (commutator_cyclic_null_mem_span a μ)
 
-/-- The mismatch commutator remains translational. -/
 theorem commutator_omegaTorsion_omegaTrans_mem_span (t : TorsionParams) (p : TransParams) :
     Generators.commutator (omegaTorsion t) (omegaTrans p) ∈ nullSpan := by
   simp only [omegaTorsion, commutator_sum_left]
@@ -414,7 +374,6 @@ theorem commutator_omegaTorsion_omegaTrans_mem_span (t : TorsionParams) (p : Tra
   exact add_mem (smul_mem_nullSpan _ (commutator_hyperbolic_omegaTrans_mem_span a p))
     (smul_mem_nullSpan _ (commutator_cyclic_omegaTrans_mem_span a p))
 
-/-- Nested `[Ω_trans,[Ω_torsion,Ω_trans]]` vanishes: the null sector is abelian. -/
 theorem commutator_omegaTrans_commutator_torsion_trans
     (t : TorsionParams) (p : TransParams) :
     Generators.commutator (omegaTrans p)
@@ -521,7 +480,6 @@ private theorem hasDerivAt_deriv_motorPath (p : OmegaParams) (t : ℝ) :
     have hmul := hadd.const_mul (omegaTorsion p.torsion)
     exact (hmul.add_const (omegaTrans p.trans)).congr_deriv (by simp)
   have hprod := hL.mul hlin
-  -- product rule: exp' * lin + exp * lin' = exp * X * lin + exp * (X Y)
   have : exp (t • omegaTorsion p.torsion) * omegaTorsion p.torsion *
         (omegaTorsion p.torsion * ((1 : PGA) + t • omegaTrans p.trans) +
           omegaTrans p.trans) +
@@ -694,7 +652,6 @@ private theorem iteratedDeriv_two_bch2Path_zero (p : OmegaParams) :
     simp
   rw [hid, iteratedFDeriv_two_exp_diag]
 
-/-- The product `RT` and the second-order BCH exponential share a 2-jet at vanishing scale. -/
 theorem motor_bch2_jet (p : OmegaParams) :
     motorPath p 0 = bch2Path p 0 ∧
       deriv (motorPath p) 0 = deriv (bch2Path p) 0 ∧
@@ -937,7 +894,6 @@ private theorem iteratedDeriv_three_bch3Path_zero (p : OmegaParams) :
     _ = X * X * X + (3 : ℝ) • (X * X * Y) := by
           simpa [hA, hCdef, hKdef] using hAlg
 
-/-- The product `RT` and the third-order BCH exponential share a 3-jet at vanishing scale. -/
 theorem motor_bch3_jet (p : OmegaParams) :
     motorPath p 0 = bch3Path p 0 ∧
       deriv (motorPath p) 0 = deriv (bch3Path p) 0 ∧
@@ -1013,7 +969,6 @@ private theorem omegaBiv_scaled (p : OmegaParams) (t : ℝ) :
     omegaBiv (scaledParams p t) = t • omegaBiv p := by
   simp [omegaBiv, scaledParams, omegaTorsion_scaled, omegaTrans_scaled, smul_add]
 
-/-- Mixed torsion-plus-translation motors are not the Banach exponential of `Ω_biv`. -/
 theorem exists_omegaBiv_ne_motor :
     ∃ p : OmegaParams, exp (omegaBiv p) ≠ motor p := by
   let t0 : TorsionParams := ⟨fun a => if a = 0 then (2 : ℝ) else 0, fun _ => 0⟩

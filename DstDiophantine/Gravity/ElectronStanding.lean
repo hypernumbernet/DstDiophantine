@@ -14,37 +14,10 @@ set_option linter.unusedSimpArgs false
 /-!
 # One electron, one proton: an unstable curvature balance
 
-## Paper boundary (do **not** claim)
-
-The amplitude `e^{-r/a}` is not an energy eigenfunction. The curvature force
-`ℏ²/(m a r²)` meets the signed force once in the outer well, and the balance
-is unstable: at larger radius the curvature increases the separation further,
-and at smaller radius the signed force decreases it further. The balance does
-not hold the electron. No binding energy, no Rydberg spectrum, and no reduced
-mass are derived. `α` is an input. The electromagnetic length is the reduced
-Compton wavelength already used as an identification, not a theorem. `pr = nℏ`
-does not select the radius. No angular momentum is assigned, and the outward
-term is not a centrifugal contribution `L²/(m r³)`.
-
-## What is proved
-
-* The Laplacian of the radial amplitude `e^{-r/a}` is that amplitude times
-  `1/a² - 2/(a r)`. The outward force read from this curvature is
-  `ℏ²/(m a r²)`.
-* That force cancels the signed force `-k e²/(γ r²)` exactly when
-  `γ = a/a₀`, with `a₀ = ℏ²/(m k e²)`.
-* On the outer well, `1 - x² - x⁴/6 < γ_s(x) < 1 - x²`.
-* Every decay `0 < a < a₀` meets the signed force at exactly one outer-well
-  phase. The separation-increasing imbalance is positive at every smaller
-  phase, hence at larger radius, so the balance is unstable and does not hold
-  the radius. The decay `a = a₀` is inward at every finite outer-well phase.
-* With the Compton identification, the decay `a₀ γ_s(α/2)` meets the signed
-  force at the Bohr phase. That balance is unstable. The fractional
-  shortening `1 - γ_s(α/2)`, and the fractional excess `1/γ_s(α/2) - 1`,
-  both lie strictly between `13312/10⁹` and `13314/10⁹`. The shortening lies
-  below the electron-to-proton mass ratio. The first node lies strictly
-  between `a₀/261` and `a₀/255`. The node is a divergence, and the curvature
-  balance does not hold the electron.
+The curvature force of \(e^{-r/a}\) meets the signed force once in the outer
+well, and the balance is unstable. The amplitude is not an energy
+eigenfunction; no binding energy or Rydberg spectrum is derived, \(\alpha\)
+is an input, and \(pr=n\hbar\) does not select the radius.
 -/
 
 namespace DstDiophantine
@@ -407,7 +380,6 @@ private lemma gammaLowerGap_pos {b : ℝ} (hb0 : 0 < b) (hb : b < resonanceRoot1
     rw [(hasDerivAt_gammaLowerGap x).deriv]
     exact gammaFirst_pos hx.1 (lt_trans hx.2 hb)
 
-/-- On the outer well, `1 - x² - x⁴/6 < γ_s(x) < 1 - x²`. -/
 theorem gammaSEqual_poly_bounds {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     1 - x ^ 2 - x ^ 4 / 6 < gammaSEqual x ∧ gammaSEqual x < 1 - x ^ 2 := by
   have hup := gammaUpperGap_pos hx.1 hx.2.le
@@ -485,8 +457,6 @@ theorem hydrogenDecay_pos : 0 < hydrogenDecay := by
   unfold hydrogenDecay
   positivity
 
-/-- Fractional shortening `1 - γ_s(α/2)`, and the force excess `1/γ_s(α/2) - 1`,
-both lie strictly between `13312/10⁹` and `13314/10⁹`. -/
 theorem hydrogen_fraction_window :
     (13312 / 10 ^ 9 : ℝ) < 1 - gammaSEqual bohrPhase ∧
       1 - gammaSEqual bohrPhase < 13314 / 10 ^ 9 ∧
@@ -544,7 +514,6 @@ theorem hydrogen_fraction_window :
     linarith [hone', hid, hforceHiRat]
   exact ⟨hshort_lo, hshort_hi, hforce_lo, hforce_hi⟩
 
-/-- The shortening lies below the ratio of the electron mass to the proton mass. -/
 theorem hydrogen_shortening_lt_mass_ratio :
     1 - gammaSEqual bohrPhase <
       (electronMassApprox : ℝ) / (protonMassApprox : ℝ) := by
@@ -570,8 +539,7 @@ theorem hydrogenStanding_unique {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoo
   · rintro rfl
     rfl
 
-/-- Separation-increasing imbalance. Positive at smaller phase, hence at
-larger radius, so the curvature balance is unstable. -/
+/-- Separation-increasing imbalance. Positive at smaller phase, hence at larger radius, so the curvature balance is unstable. -/
 noncomputable def hydrogenImbalance (x : ℝ) : ℝ :=
   1 / gammaSEqual bohrPhase - 1 / gammaSEqual x
 
@@ -598,7 +566,6 @@ theorem hydrogenImbalance_pos_iff {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceR
       one_div_lt_one_div_of_lt hγb hγgt
     linarith
 
-/-- The Coulomb decay `a = a₀` is pulled inward at every finite outer-well phase. -/
 theorem coulombDecay_inward {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) :
     1 - 1 / gammaSEqual x < 0 := by
   have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node hx
@@ -608,7 +575,6 @@ theorem coulombDecay_inward {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoot1) 
   have hone : 1 < 1 / gammaSEqual x := (one_lt_div hγ).mpr hlt
   linarith
 
-/-- The first node, in units of the Bohr radius, lies strictly between `1/261` and `1/255`. -/
 theorem firstNode_over_bohr_window :
     (1 / 261 : ℝ) < (fineStructureApprox : ℝ) / (2 * resonanceRoot1) ∧
       (fineStructureApprox : ℝ) / (2 * resonanceRoot1) < 1 / 255 := by

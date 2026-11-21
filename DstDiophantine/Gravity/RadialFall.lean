@@ -5,35 +5,7 @@ import Mathlib.Analysis.SpecialFunctions.Arsinh
 /-!
 # From the flat fall to the radial Schwarzschild motion
 
-The flat flow fixes a law for radial rapidity, not a geodesic of the exterior.
-Along the inertial line `s e₀`, with `|s| < ℓ`, the local axis distance is the
-hyperbolic radius `ρ = √(ℓ² − s²)`. The rapidity `ψ` relative to the hovering
-observer stationed there, positive when the motion is outward, satisfies
-`sinh ψ = −s/ρ` and
-`dψ/ds = − cosh ψ / ρ`.
-At release, `ψ = 0` and `ρ = ℓ`, so the derivative equals the initial
-acceleration `−1/ℓ` of the simultaneous separation.
-
-On the exterior the same law is kept, with the chart distance `ℓ(r)` in place
-of `ρ`, and the static coframe converts rapidity into the areal radius,
-`dr/dτ = √A sinh ψ`.
-Differentiating, the radial change of `√A` (whose derivative is `1/ℓ`)
-contributes a `sinh² ψ` term and the rapidity law a `cosh² ψ` term. The
-hyperbolic identity cancels every power of the speed:
-`d²r/dτ² = −√A / ℓ = −κ = −rₛ/(2r²)`.
-The combination `E = √A cosh ψ` has vanishing derivative, and on any proper-time
-interval on which the two laws hold,
-`(dr/dτ)² = E² − A`.
-A body released from rest at radius `R` has `E² = A(R)`.
-
-## Not claimed
-
-* That one fixed flat jet, the straight line `s e₀` at a single `ℓ`, is itself
-  a Schwarzschild geodesic.
-* A fixed coordinate latitude. `OffEquator` keeps
-  `L² = r²(ûθ² + ûφ²)` and `r sin θ ûφ` where `sin θ ≠ 0`, and the areal
-  acceleration is the equatorial one in that `L²`. `Perihelion` is the
-  case `ûθ = 0`. The chart stops at the poles.
+A single flat jet `s e₀` at one `ℓ` is not identified with a Schwarzschild geodesic, and a fixed coordinate latitude is not derived.
 -/
 
 namespace DstDiophantine.Gravity.KillingAxis
@@ -43,8 +15,7 @@ open scoped Topology
 
 /-! ### Flat flow: local radius and radial rapidity -/
 
-/-- Hyperbolic distance from the axis to the released body at proper time `s`:
-`ρ = √(ℓ² − s²)`. -/
+/-- Hyperbolic distance from the axis to the released body at proper time `s`: `ρ = √(ℓ² − s²)`. -/
 noncomputable def releasedLocalRadius (ℓ s : ℝ) : ℝ :=
   Real.sqrt (ℓ ^ 2 - s ^ 2)
 
@@ -62,8 +33,7 @@ theorem releasedLocalRadius_sq {ℓ s : ℝ} (hℓ : 0 < ℓ) (hs : |s| < ℓ) :
     exact hs
   exact Real.sq_sqrt (sub_nonneg.mpr hsq.le)
 
-/-- Radial rapidity relative to the local hovering observer, positive outward.
-`sinh ψ = −s/ρ`. -/
+/-- Radial rapidity relative to the local hovering observer, positive outward. `sinh ψ = −s/ρ`. -/
 noncomputable def releasedRapidity (ℓ s : ℝ) : ℝ :=
   -Real.arsinh (s / releasedLocalRadius ℓ s)
 
@@ -88,8 +58,6 @@ theorem releasedRapidity_zero {ℓ : ℝ} (hℓ : 0 < ℓ) : releasedRapidity �
     simp [releasedLocalRadius, sqrt_sq hℓ.le]
   simp [releasedRapidity, hρ, arsinh_zero]
 
-/-- The flat radial coordinate accelerates exactly as the rapidity prescribes:
-`dρ/ds = sinh ψ`. -/
 theorem hasDerivAt_releasedLocalRadius {ℓ s : ℝ} (hℓ : 0 < ℓ) (hs : |s| < ℓ) :
     HasDerivAt (releasedLocalRadius ℓ) (Real.sinh (releasedRapidity ℓ s)) s := by
   have hlt : s ^ 2 < ℓ ^ 2 := by
@@ -115,7 +83,6 @@ theorem hasDerivAt_releasedLocalRadius {ℓ s : ℝ} (hℓ : 0 < ℓ) (hs : |s| 
   rw [releasedRapidity_sinh hℓ hs, releasedLocalRadius]
   field_simp [(Real.sqrt_pos.mpr hpos).ne']
 
-/-- Flat rapidity law: `dψ/ds = − cosh ψ / ρ`. -/
 theorem hasDerivAt_releasedRapidity {ℓ s : ℝ} (hℓ : 0 < ℓ) (hs : |s| < ℓ) :
     HasDerivAt (releasedRapidity ℓ)
       (-Real.cosh (releasedRapidity ℓ s) / releasedLocalRadius ℓ s) s := by
@@ -186,7 +153,6 @@ theorem deriv_releasedRapidity_zero {ℓ : ℝ} (hℓ : 0 < ℓ) :
   rw [hρ]
   field_simp [hℓ.ne']
 
-/-- At release the rapidity law is the initial acceleration of the separation. -/
 theorem deriv_releasedRapidity_zero_eq_initial {ℓ : ℝ} (hℓ : 0 < ℓ) :
     deriv (releasedRapidity ℓ) 0 =
       deriv (deriv (releasedDisplacementProper ℓ)) 0 := by
@@ -201,9 +167,6 @@ open scoped Topology
 
 /-! ### The chart: rapidity law with a changing radius -/
 
-/-- Differentiating `√A sinh ψ` under the two laws yields the boost rate.
-The `sinh²` term is the radial change of the redshift; the `cosh²` term is the
-rapidity law; their difference is `1`. -/
 theorem arealVelocity_hasDerivAt {rs : ℝ} {r ψ : ℝ → ℝ} {τ : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * Real.sinh (ψ τ)) τ)
@@ -247,7 +210,6 @@ theorem arealVelocity_hasDerivAt {rs : ℝ} {r ψ : ℝ → ℝ} {τ : ℝ}
       _ = -(killingNorm rs (r τ) / ℓ) := by ring
   rw [hstep, hνℓ]
 
-/-- `E = √A cosh ψ` is stationary: redshift and rapidity trade exactly. -/
 theorem radialEnergy_hasDerivAt {rs : ℝ} {r ψ : ℝ → ℝ} {τ : ℝ}
     (hExt : IsExterior rs (r τ))
     (hr : HasDerivAt r (killingNorm rs (r τ) * Real.sinh (ψ τ)) τ)
@@ -288,7 +250,6 @@ theorem arealVelocity_sq_eq_energy {rs r₀ ψ₀ : ℝ} (h : IsExterior rs r₀
         rw [← hsq]
         ring
 
-/-- On a proper-time interval the integrated energy is independent of the instant. -/
 theorem radialEnergy_eq_on {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a ≤ b)
     (hExt : ∀ τ ∈ Icc a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Icc a b,
@@ -313,7 +274,6 @@ theorem radialEnergy_eq_on {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a ≤ b)
   have hsub : E τ₂ - E τ₁ = 0 := norm_eq_zero.mp (le_antisymm hle (norm_nonneg _))
   exact (sub_eq_zero.mp hsub).symm
 
-/-- The first integral of the rapidity law is the radial Schwarzschild fall. -/
 theorem radialFall_first_integral {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a ≤ b)
     (hExt : ∀ τ ∈ Icc a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Icc a b,
@@ -329,7 +289,6 @@ theorem radialFall_first_integral {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a �
   have hsq := arealVelocity_sq_eq_energy (ψ₀ := ψ τ) (hExt τ hτ)
   rwa [hE] at hsq
 
-/-- Released from rest, the constant is the redshift at the point of release. -/
 theorem radialFall_from_rest {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a ≤ b)
     (hExt : ∀ τ ∈ Icc a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Icc a b,
@@ -342,7 +301,6 @@ theorem radialFall_from_rest {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a ≤ b)
   rw [show killingNorm rs (r τ₀) ^ 2 = schwarzschildA rs (r τ₀) from
     Real.sq_sqrt (schwarzschildA_pos (hExt τ₀ h₀)).le]
 
-/-- Where the two laws hold on an open interval, the areal acceleration is `−κ`. -/
 theorem radialFall_second_deriv {rs a b : ℝ} {r ψ : ℝ → ℝ} (hab : a < b)
     (hExt : ∀ τ ∈ Ioo a b, IsExterior rs (r τ))
     (hr : ∀ τ ∈ Ioo a b,
