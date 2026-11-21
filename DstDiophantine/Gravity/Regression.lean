@@ -3506,6 +3506,41 @@ example {N : ℕ} (hN : 8 ≤ N) :
   exact ⟨hax.2.2.2.1, hax.2.1, hax.2.2.1, hperp.1, hperp.2.2.1,
     GravitonLogic.error_ratio_eq_height_ratio hN⟩
 
+/-- Regression: four turns on a circle divisible by four share the label `B`.
+The quarter turns lie off the computational island, so the classical expansion
+does not detach onto the quarter turn. The device error reads as `U`, `F`,
+and `T`. The untouched eigenstate shares the full turn's ray and is synchronous. -/
+example {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps (N / 4) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps (N / 2) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify?
+          (JNormalized (express (GravitonQuantum.alignedSteps (3 * (N / 4)) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps N N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps 0 N))) =
+        some Logic.TruthValue.T ∧
+      ¬ Logic.Compatible Logic.lineE0
+          (GravitonLogic.atomOf (GravitonLogic.afterTransverse
+            (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) ∧
+      ¬ Logic.lineE0 ⊓ Logic.material Logic.lineE0
+            (GravitonLogic.atomOf (GravitonLogic.afterTransverse
+              (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) ≤
+          GravitonLogic.atomOf (GravitonLogic.afterTransverse
+            (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N)) ∧
+      Logic.classify? (GravitonLogic.deviceError (GravitonLogic.afterTransverse
+          (((N / 2 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) = some Logic.TruthValue.F ∧
+      Logic.classify? (GravitonLogic.deviceError (GravitonLogic.afterTransverse
+          ((N : ℝ) * GravitonQuantum.stepAngle N))) = some Logic.TruthValue.T ∧
+      GravitonLogic.atomOf (GravitonLogic.afterTransverse 0) =
+        GravitonLogic.atomOf (GravitonLogic.afterTransverse
+          ((N : ℝ) * GravitonQuantum.stepAngle N)) := by
+  have h := GravitonLogic.four_turns_read hdiv hN
+  exact ⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1, h.2.2.2.2.2.1, h.2.2.2.2.2.2.1,
+    h.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.2.1⟩
+
 end Gravity
 
 end DstDiophantine

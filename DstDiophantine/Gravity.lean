@@ -217,9 +217,14 @@ imported by the modules below. They are not named in the import list of
   occupies a third ray. When `4 ∣ N`, the quarter turn and the three-quarter
   turn share the device error `1/2` on different third rays, the half turn is
   the negation with error `1`, and the full turn returns to the original ray
-  with error `0`, while all four express the height `-1/3`. The
-  device error is not the ray the carrier satisfies. No laboratory rate. The
-  height does not see the order.
+  with error `0`, while all four express the height `-1/3` and the amplitude
+  label `B`. The half turn and the full turn lie on the computational island;
+  the quarter turns do not, and the classical expansion along the computational
+  ray does not detach onto them. The untouched eigenstate occupies that same
+  ray and expresses height `0`. The device errors `0`, `1/2`, and `1`, read as
+  heights, are the labels `T`, `U`, and `F`. The device error is not the ray
+  the carrier satisfies, and it is not the expressed height. No laboratory
+  rate. The height does not see the order.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`. No `F=ma`,
   and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum

@@ -1,7 +1,9 @@
 import DstDiophantine.Gravity.GravitonQuantum
-import DstDiophantine.Logic.Quantum.QuantumLogic
+import DstDiophantine.Logic.Quantum.BooleanIsland
+import DstDiophantine.Logic.Valuation
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
 set_option linter.style.native false
@@ -35,14 +37,19 @@ For `0 < n ≤ N`, `n` aligned transverse gravitons put the carrier on the
 original ray exactly at the full turn, and on the negation exactly when
 `2n = N`. Every other count occupies a third ray, and the device error is
 then strictly between `0` and `1`. When `4 ∣ N`, the quarter turn, the half
-turn, the three-quarter turn, and the full turn express one height, `-1/3`.
-The quarter turn and the three-quarter turn share the device error `1/2`
-and occupy different third rays. The half turn is the negation, with device
-error `1`. The full turn returns to the original ray, with device error `0`.
+turn, the three-quarter turn, and the full turn express one height, `-1/3`,
+and therefore one amplitude label, the negative unsaturated label. The half
+turn and the full turn are the two atoms of the computational island. The
+quarter turns lie off that island, so the classical expansion along the
+computational ray does not detach onto either. The untouched eigenstate
+occupies the same ray as the full turn and expresses synchrony. The device
+errors `0`, `1/2`, and `1`, read as heights, are the other three labels.
 
 ## Not claimed
 
 * That the device error is the proposition the carrier satisfies.
+* That the device error is a height. The reading that treats it as one
+  assigns different labels from the expressed height.
 * A laboratory error rate. The integer `N` is not fixed.
 * That the order of the rotors is seen by the height. The height does not
   see it. The atoms do.
@@ -1223,6 +1230,232 @@ theorem locked_four_rays {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
   exact ⟨hqRay.2.2.1, hqRay.2.2.2.1, hhRay.2.1, hhRay.2.2.1, htRay.2.2.1, htRay.2.2.2.1,
     hatoms, hfRay.2.1, hfRay.2.2.1, hdq, hdh, hdt, hdf, hcounts.1, hcounts.2.1, hcounts.2.2.1,
     hcounts.2.2.2.1⟩
+
+private theorem classify?_eq_T {j : ℝ} (hj : j = 0) : classify? j = some .T := by
+  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have hT : classifyOfMem j habs = .T := (classifyOfMem_eq_T_iff habs).mpr hj
+  simpa [classify?, habs] using hT
+
+private theorem classify?_eq_U {j : ℝ} (hj : j = 1 / 2) : classify? j = some .U := by
+  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have hU : classifyOfMem j habs = .U :=
+    (classifyOfMem_eq_U_iff habs).mpr (by rw [hj]; constructor <;> norm_num)
+  simpa [classify?, habs] using hU
+
+private theorem classify?_eq_F {j : ℝ} (hj : j = 1) : classify? j = some .F := by
+  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have hF : classifyOfMem j habs = .F := (classifyOfMem_eq_F_iff habs).mpr hj
+  simpa [classify?, habs] using hF
+
+private theorem classify?_eq_B {j : ℝ} (hj : j = -((1 : ℝ) / 3)) : classify? j = some .B := by
+  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have hB : classifyOfMem j habs = .B :=
+    (classifyOfMem_eq_B_iff habs).mpr (by rw [hj]; constructor <;> norm_num)
+  simpa [classify?, habs] using hB
+
+private theorem afterTransverse_ne_zero_of_cos {θ : ℝ} (h : Real.cos (θ / 2) ≠ 0) :
+    afterTransverse θ ≠ 0 := by
+  intro hz
+  have h0 : afterTransverse θ 0 = 0 := by
+    rw [hz]
+    simp [PiLp.zero_apply]
+  rw [(transverse_coord θ).1] at h0
+  exact h (Complex.ofReal_eq_zero.mp h0)
+
+private theorem ray_not_mem_island {L A : QProp} (hA : finrank ℂ A = 1)
+    (hne : A ≠ L) (hneo : A ≠ Lᗮ) : A ∉ Island L := by
+  intro hmem
+  rcases mem_island_iff.mp hmem with h | h | h | h
+  · exact (bot_ne_of_finrank_one hA) h.symm
+  · exact hne h
+  · exact hneo h
+  · exact (top_ne_of_finrank_one hA) h.symm
+
+private theorem not_compatible_third_ray {L A : QProp} (hL : finrank ℂ L = 1)
+    (hA : finrank ℂ A = 1) (hne : A ≠ L) (hneo : A ≠ Lᗮ) : ¬ Compatible L A := by
+  intro hc
+  rcases (compatible_line_iff hL hA).mp hc with h | hortho
+  · exact hne h.symm
+  · have hle : L ≤ Aᗮ := (Submodule.isOrtho_iff_le).mp hortho
+    have hLeq : L = Aᗮ :=
+      eq_of_le_of_finrank_eq hle (hL.trans (finrank_orthogonal_line hA).symm)
+    exact hneo (by rw [← orthogonal_orthogonal A, hLeq])
+
+/-- On a circle divisible by four, the quarter turn, the half turn, the
+three-quarter turn, and the full turn express one height and one amplitude
+label. The half turn and the full turn are the atoms of the computational
+island. The quarter turns lie off it, and the classical expansion along the
+computational ray does not detach onto either. The untouched eigenstate
+occupies the same ray as the full turn and expresses synchrony. The device
+error, read as a height, receives the other three labels. -/
+theorem four_turns_one_label {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    let jq := JNormalized (express (alignedSteps (N / 4) N))
+    let jh := JNormalized (express (alignedSteps (N / 2) N))
+    let jt := JNormalized (express (alignedSteps (3 * (N / 4)) N))
+    let jf := JNormalized (express (alignedSteps N N))
+    let q := atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N))
+    let half := atomOf (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N))
+    let three := atomOf (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N))
+    let full := atomOf (afterTransverse ((N : ℝ) * stepAngle N))
+    let eq := deviceError (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N))
+    let eh := deviceError (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N))
+    let et := deviceError (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N))
+    let ef := deviceError (afterTransverse ((N : ℝ) * stepAngle N))
+    let j0 := JNormalized (express (alignedSteps 0 N))
+    jq = -((1 : ℝ) / 3) ∧ jh = -((1 : ℝ) / 3) ∧ jt = -((1 : ℝ) / 3) ∧
+      jf = -((1 : ℝ) / 3) ∧
+      classify? jq = some .B ∧ classify? jh = some .B ∧
+      classify? jt = some .B ∧ classify? jf = some .B ∧
+      HoldsNotF jq ∧ HoldsNotF jh ∧ HoldsNotF jt ∧ HoldsNotF jf ∧
+      ¬ HoldsT jq ∧ ¬ HoldsT jh ∧ ¬ HoldsT jt ∧ ¬ HoldsT jf ∧
+      full = lineE0 ∧ half = qNot lineE0 ∧
+      full ∈ Island lineE0 ∧ half ∈ Island lineE0 ∧
+      q ∉ Island lineE0 ∧ three ∉ Island lineE0 ∧ q ≠ three ∧ full ≠ half ∧
+      ¬ Compatible lineE0 q ∧ ¬ Compatible lineE0 three ∧
+      ¬ lineE0 ⊓ material lineE0 q ≤ q ∧
+      ¬ lineE0 ⊓ material lineE0 three ≤ three ∧
+      eq = 1 / 2 ∧ eh = 1 ∧ et = 1 / 2 ∧ ef = 0 ∧
+      classify? eq = some .U ∧ classify? eh = some .F ∧
+      classify? et = some .U ∧ classify? ef = some .T ∧
+      j0 = 0 ∧ classify? j0 = some .T ∧ HoldsT j0 ∧
+      atomOf (afterTransverse 0) = lineE0 ∧ atomOf (afterTransverse 0) = full := by
+  intro jq jh jt jf q half three full eq eh et ef j0
+  have hlock := locked_four_rays hdiv hN
+  rcases hlock with
+    ⟨hqNe, hqNeo, hhalf, _hhalfOut, htNe, htNeo, htq, hfull, _hfullOut,
+      heq, heh, het, hef, hjq, hjh, hjt, hjf⟩
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : (0 : ℕ) < 4) hN
+  have hθ := quarterTurn_angle hdiv hpos
+  have hφ := threeQuarterTurn_angle hdiv hpos
+  have hcosQ : Real.cos ((((N / 4 : ℕ) : ℝ) * stepAngle N) / 2) ≠ 0 := by
+    rw [hθ]
+    have harg : (Real.pi / 2) / 2 = Real.pi / 4 := by ring
+    rw [harg, Real.cos_pi_div_four]
+    positivity
+  have hcosT : Real.cos ((((3 * (N / 4) : ℕ) : ℝ) * stepAngle N) / 2) ≠ 0 := by
+    rw [hφ]
+    have harg : (3 * Real.pi / 2) / 2 = 3 * Real.pi / 4 := by ring
+    rw [harg]
+    have hsub : 3 * Real.pi / 4 = Real.pi - Real.pi / 4 := by ring
+    rw [hsub, Real.cos_pi_sub, Real.cos_pi_div_four]
+    exact neg_ne_zero.mpr
+      (ne_of_gt (div_pos (Real.sqrt_pos.mpr (by norm_num)) (by norm_num)))
+  have hqFin : finrank ℂ q = 1 :=
+    finrank_span_singleton (afterTransverse_ne_zero_of_cos hcosQ)
+  have htFin : finrank ℂ three = 1 :=
+    finrank_span_singleton (afterTransverse_ne_zero_of_cos hcosT)
+  have hnotQ : ¬ Compatible lineE0 q :=
+    not_compatible_third_ray lineE0_finrank hqFin hqNe hqNeo
+  have hnotT : ¬ Compatible lineE0 three :=
+    not_compatible_third_ray lineE0_finrank htFin htNe htNeo
+  have hfullEq : full = lineE0 := hfull
+  have hhalfEq : half = qNot lineE0 := hhalf
+  have hfullNe : full ≠ half := by
+    rw [hfullEq, hhalfEq]
+    exact line_ne_orthogonal lineE0_finrank
+  have hzeroSteps : alignedSteps 0 N = oneAxisDual 0 := by
+    unfold alignedSteps
+    simp
+  have hadm0 :=
+    oneAxisDual_admissible (θ := 0) (by norm_num) (by nlinarith [Real.pi_pos])
+  have hexp0 : express (alignedSteps 0 N) = oneAxisDual 0 := by
+    rw [hzeroSteps]
+    exact express_eq_of_admissible hadm0
+  have hj0 : j0 = 0 := by
+    have hJ : JNormalized (express (alignedSteps 0 N)) = JNormalized (oneAxisDual 0) :=
+      congrArg JNormalized hexp0
+    have hJ0 : JNormalized (oneAxisDual 0) = 0 := by
+      rw [JNormalized_oneAxisDual]
+      simp
+    exact hJ.trans hJ0
+  have hcoord0 := transverse_coord 0
+  have hmem0 : afterTransverse 0 ∈ lineE0 := by
+    rw [mem_lineE0_iff, hcoord0.2]
+    simp
+  have hnz0 : afterTransverse 0 ≠ 0 := by
+    intro hz
+    have : afterTransverse 0 0 = 0 := by
+      rw [hz]
+      simp [PiLp.zero_apply]
+    rw [hcoord0.1] at this
+    simp at this
+  have hat0 : atomOf (afterTransverse 0) = lineE0 := by
+    have hle : atomOf (afterTransverse 0) ≤ lineE0 := by
+      unfold atomOf
+      rw [Submodule.span_singleton_le_iff_mem]
+      exact hmem0
+    have hfr : finrank ℂ (atomOf (afterTransverse 0)) = 1 := finrank_span_singleton hnz0
+    exact eq_of_le_of_finrank_eq hle (hfr.trans lineE0_finrank.symm)
+  have hfullMem : full ∈ Island lineE0 := by
+    rw [hfullEq, mem_island_iff]
+    exact Or.inr (Or.inl rfl)
+  have hhalfMem : half ∈ Island lineE0 := by
+    rw [hhalfEq, mem_island_iff]
+    exact Or.inr (Or.inr (Or.inl rfl))
+  refine ⟨hjq, hjh, hjt, hjf, classify?_eq_B hjq, classify?_eq_B hjh, classify?_eq_B hjt,
+    classify?_eq_B hjf, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, hfullEq, hhalfEq, hfullMem, hhalfMem,
+    ray_not_mem_island hqFin hqNe hqNeo, ray_not_mem_island htFin htNe htNeo, htq.symm, hfullNe,
+    hnotQ, hnotT, (material_detach_iff_compatible).not.mpr hnotQ,
+    (material_detach_iff_compatible).not.mpr hnotT, heq, heh, het, hef, classify?_eq_U heq,
+    classify?_eq_F heh, classify?_eq_U het, classify?_eq_T hef, hj0, classify?_eq_T hj0, ?_,
+    hat0, hat0.trans hfullEq.symm⟩
+  · have hlt : JNormalized (express (alignedSteps (N / 4) N)) < 1 := by rw [hjq]; norm_num
+    exact hlt
+  · have hlt : JNormalized (express (alignedSteps (N / 2) N)) < 1 := by rw [hjh]; norm_num
+    exact hlt
+  · have hlt : JNormalized (express (alignedSteps (3 * (N / 4)) N)) < 1 := by rw [hjt]; norm_num
+    exact hlt
+  · have hlt : JNormalized (express (alignedSteps N N)) < 1 := by rw [hjf]; norm_num
+    exact hlt
+  · intro hT
+    have hzero : JNormalized (express (alignedSteps (N / 4) N)) = 0 := hT
+    rw [hjq] at hzero
+    norm_num at hzero
+  · intro hT
+    have hzero : JNormalized (express (alignedSteps (N / 2) N)) = 0 := hT
+    rw [hjh] at hzero
+    norm_num at hzero
+  · intro hT
+    have hzero : JNormalized (express (alignedSteps (3 * (N / 4)) N)) = 0 := hT
+    rw [hjt] at hzero
+    norm_num at hzero
+  · intro hT
+    have hzero : JNormalized (express (alignedSteps N N)) = 0 := hT
+    rw [hjf] at hzero
+    norm_num at hzero
+  · exact hj0
+
+/-- The same four turns, read at the level of labels, islands, and device error. -/
+theorem four_turns_read {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    classify? (JNormalized (express (alignedSteps (N / 4) N))) = some .B ∧
+      classify? (JNormalized (express (alignedSteps (N / 2) N))) = some .B ∧
+      classify? (JNormalized (express (alignedSteps (3 * (N / 4)) N))) = some .B ∧
+      classify? (JNormalized (express (alignedSteps N N))) = some .B ∧
+      classify? (JNormalized (express (alignedSteps 0 N))) = some .T ∧
+      ¬ Compatible lineE0 (atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N))) ∧
+      ¬ lineE0 ⊓ material lineE0
+          (atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N))) ≤
+        atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ∧
+      ¬ Compatible lineE0
+          (atomOf (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N))) ∧
+      classify? (deviceError (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N))) = some .U ∧
+      classify? (deviceError (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N))) = some .F ∧
+      classify? (deviceError (afterTransverse (((3 * (N / 4) : ℕ) : ℝ) * stepAngle N))) =
+        some .U ∧
+      classify? (deviceError (afterTransverse ((N : ℝ) * stepAngle N))) = some .T ∧
+      atomOf (afterTransverse 0) = atomOf (afterTransverse ((N : ℝ) * stepAngle N)) ∧
+      atomOf (afterTransverse 0) ∈ Island lineE0 ∧
+      atomOf (afterTransverse (((N / 2 : ℕ) : ℝ) * stepAngle N)) ∈ Island lineE0 ∧
+      atomOf (afterTransverse (((N / 4 : ℕ) : ℝ) * stepAngle N)) ∉ Island lineE0 := by
+  have h := four_turns_one_label hdiv hN
+  dsimp only at h
+  rcases h with ⟨_, _, _, _, hq, hh, ht, hf, _, _, _, _, _, _, _, _, _, _, hfullMem,
+    hhalfMem, hqOut, _, _, _, hcomp, hcompT, hdet, _, _, _, _, _, hU, hF, hUt, hT, _,
+    hT0, _, _, hsame⟩
+  refine ⟨hq, hh, ht, hf, hT0, hcomp, hdet, hcompT, hU, hF, hUt, hT, hsame, ?_, hhalfMem,
+    hqOut⟩
+  rw [hsame]
+  exact hfullMem
 
 end DstDiophantine.Gravity.GravitonLogic
 
