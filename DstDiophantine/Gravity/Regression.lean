@@ -85,6 +85,7 @@ import DstDiophantine.Gravity.EMControl
 import DstDiophantine.Gravity.CircularHold
 import DstDiophantine.Gravity.NeutronMagnet
 import DstDiophantine.Gravity.SilentControl
+import DstDiophantine.Gravity.BetaDecay
 import DstDiophantine.Gravity.ShieldHold
 import DstDiophantine.Gravity.HoldPrice
 import DstDiophantine.Gravity.ControlScale
@@ -2752,6 +2753,28 @@ example (a : Fin 3) (p : Operations.TorsionParams)
 example (p : FaradayParams) :
     sandwichIncrement (faradayDual p) (ι 0) = 0 :=
   magnet_rest_kick p
+
+/-- Regression: the quark chart is the unique rational solution of the two nucleon charges. -/
+example (u d : ℚ) (hp : 2 * u + d = 1) (hn : u + 2 * d = 0) :
+    u = 2 / 3 ∧ d = -1 / 3 :=
+  quarkChart_unique hp hn
+
+/-- Regression: the chart moment ratio is \(-2/3\). -/
+example {μu μd : ℚ} (h : μu = -2 * μd) (hd : μd ≠ 0) :
+    chartMuN μu μd / chartMuP μu μd = -2 / 3 :=
+  (chart_moment_ratios h hd).1
+
+/-- Regression: replacing one factor preserves the count and the winding sum. -/
+example (xs : List NucleonClass) (i : ℕ) :
+    (replaceAt xs i NucleonClass.proton).length = xs.length ∧
+      totalWinding (replaceAt xs i NucleonClass.proton) = totalWinding xs :=
+  ⟨replaceAt_length xs i NucleonClass.proton, replaceAt_winding xs i NucleonClass.proton⟩
+
+/-- Regression: the free gap lies below the Coulomb energy inside `1` fm. -/
+example {r₁ gap : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1)
+    (hgap : gap ≤ ((12934 : ℝ) / 10000)) :
+    gap < (SI.coulombMeVFm : ℝ) / r₁ :=
+  freeGap_lt_coulomb_at_reversal hr0 hr1 hgap
 
 /-- Regression: \(\theta\mapsto\theta+eA\) is magnetic Faraday superposition. -/
 example (p : Operations.TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) :
