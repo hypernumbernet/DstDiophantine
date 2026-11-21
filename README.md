@@ -6,7 +6,7 @@ amplification programme for classical Diophantine conjectures.
 The machine-checked core is an algebraic bound, a motor calculus, and a
 shared amplification no-go. Unconditional Fermat, Beal, abc, the Riemann
 Hypothesis, Goldbach, Polignac, and Collatz remain open. Open work is named
-as a residual or a `*Bridge` proposition. Eight classical theorems that
+as a residual or a `*Bridge` proposition. Nine classical theorems that
 mathlib does not supply at this pin are explicit `axiom`s. There is no
 `sorry`.
 
@@ -168,12 +168,13 @@ column.
 | Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$ and for every even $n \ge 4$ | `sumTwoCubesNotPerfectPower`. Bruin's $n = 4, 5$ is derived from it. The same prohibition covers every signature in which two exponents are divisible by $3$ and the third is one of those $n$ (`IsCubePairPowerShape`), whether or not $d = 1$ |
 | Signature $(3,4,5)$ in every order | `siksekStoll345` |
 | Repeated five beside $7$ or $19$, in every order | `sumTwoFifthsNotSeventhOrNineteenth`. Signature $(7,7,5)$ is already the $(n,n,5)$ slice. The companions $11$ and $13$ are conditional on the generalised Riemann hypothesis in the same source and are not axioms here |
+| Even two-equal sum whose common exponent is divisible by $4$, with hypotenuse exponent at least $4$ | `bennettEllenbergNg`. $(4,4,7)$ is the first case. $(10,10,7)$ does not rewrite: the common exponent is twice an odd integer |
 | Pythagorean slice in which $4$ divides at least two of the reduced exponents | Internal, from the classification of coprime Pythagorean triples |
 
 | Live leaf | What is still open |
 | --- | --- |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Odd Gaussian exponent $e \ge 5$ in the equal-odd two-factor body. The case $e = 3$ is the Euler leaf. Absolute value $1$ on the pure-power slot is closed for every odd $e \ge 3$ by Mihăilescu |
-| `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | Even common exponent, hypotenuse $z \ge 7$, outside cube-pair shapes. The case $z = 5$ is the $(n,n,5)$ axiom. $(6,6,7)$ is a cube-pair shape. $(4,4,7)$ remains |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside cube-pair shapes, and not divisible by $4$. The case $z = 5$ is the $(n,n,5)$ axiom. $(6,6,7)$ is a cube-pair shape. $(4,4,7)$ is `bennettEllenbergNg`. $(10,10,7)$ remains |
 | `BealTwoEqualEvenDiffOutsideCubePairResidual` | Even-difference two-equal body outside cube-pair shapes. $(5,6,6)$ is removed with the two-cube prohibition |
 | `BealTwoEqualOddOutsideRepeatedFifthResidual` | Odd two-equal body outside cube-pair shapes and outside a repeated five beside $7$ or $19$ |
 | `BealAllDistinctOutsideCubePairResidual` | Pairwise distinct exponents outside cube-pair shapes. Signature $(3,4,5)$ has no coprime nonzero solution |
@@ -202,6 +203,7 @@ proof of the cited theorem, and none of them is the live Fermat route.
 | `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^n$ for $3 \le n \le 10^9$, nor for any even $n \ge 4$ |
 | `siksekStoll345` | [`SiksekStoll.lean`](DstDiophantine/Theorems/SiksekStoll.lean) | Every coprime integer solution of $x^3 + y^4 + z^5 = 0$ has a vanishing coordinate |
 | `sumTwoFifthsNotSeventhOrNineteenth` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 7$ or $l = 19$ |
+| `bennettEllenbergNg` | [`BennettEllenbergNg.lean`](DstDiophantine/Theorems/BennettEllenbergNg.lean) | No coprime nonzero solution of $A^4 + B^2 = C^n$ for $n \ge 4$ |
 
 ### Finite certificates
 
@@ -749,7 +751,7 @@ DstDiophantine/
                              height, power map, conformal integers
   Framework/                 Power sums, lattice, descent, amplification,
                              spectrum, search
-  Theorems/                  Problem layers, eight axioms, finite certificates
+  Theorems/                  Problem layers, nine axioms, finite certificates
   FoundationRegression.lean  CI-facing examples, including the Beal atlas
   Logic/                     D4L, and Logic/Quantum
   Logic/Example/             Fermat and Beal status boards

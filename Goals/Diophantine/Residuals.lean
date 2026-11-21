@@ -1,5 +1,6 @@
 import DstDiophantine.Theorems.BealEven
 import DstDiophantine.Theorems.BealGaussianCube
+import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.FermatMixed
@@ -45,18 +46,20 @@ theorem bealEqualOddTwoFactorExpGeFiveResidual :
     BealEqualOddTwoFactorExpGeFiveResidual := by sorry
 
 /-- **Claim (EN):** No coprime even two-equal sum `A^x + B^x = C^z` with
-    `z ≥ 7` outside a cube-pair shape.
+    `z ≥ 7`, outside a cube-pair shape, and with common exponent not divisible
+    by `4`.
 
-    **Claim (JA):** 立方対の形を除き、`z ≥ 7` の互いに素な偶数二等和
-    `A^x + B^x = C^z` はない。
+    **Claim (JA):** 立方対の形を除き、共通指数が `4` で割り切れない `z ≥ 7` の
+    互いに素な偶数二等和 `A^x + B^x = C^z` はない。
 
     **Paper:** `papers/dst-diophantine.tex`.
 
     **Status:** open. `z = 5` is `BealTwoEqualEvenSumExpFiveResidual_of_NN5`.
-    `(6,6,7)` is a cube-pair shape. `(4,4,7)` remains here.
+    `(6,6,7)` is a cube-pair shape. `(4,4,7)` is `bennettEllenbergNg`.
+    `(10,10,7)` remains here.
 -/
-theorem bealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual :
-    BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual := by sorry
+theorem bealTwoEqualEvenSumExpGeSevenOutsideFourthResidual :
+    BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual := by sorry
 
 /-- **Claim (EN):** No coprime even-difference two-equal solution outside a
     cube-pair shape.

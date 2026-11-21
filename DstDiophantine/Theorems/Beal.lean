@@ -69,7 +69,11 @@ geometric principle):
   closed in every order (`siksekStoll345`); a repeated five beside `7` or
   `19` is closed in every order (`sumTwoFifthsNotSeventhOrNineteenth`,
   phase 7y; `(7,7,5)` is already `(n,n,5)`); the live odd two-equal body is
-  `BealTwoEqualOddOutsideRepeatedFifthResidual`;
+  `BealTwoEqualOddOutsideRepeatedFifthResidual`; an even two-equal sum whose
+  common exponent is divisible by `4` rewrites to a fourth power plus a square
+  and is closed for hypotenuse exponent `z ≥ 4` (`bennettEllenbergNg`,
+  phase 7z; `(4,4,7)` is the first case, `(10,10,7)` remains); the live
+  even-sum body is `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual`;
 * `BealUnitBaseNoGo` / `bealUnitBaseNoGo_pos` — `|A| = 1` residual, closed for
   positive bases via the Mihăilescu axiom;
 * `BealCGADiscreteClosed` — **bookkeeping**: equivalent to “coprime ⇒ `|A|=1`”

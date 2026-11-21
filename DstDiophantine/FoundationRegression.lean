@@ -37,6 +37,7 @@ import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.SiksekStoll
 import DstDiophantine.Theorems.DahmenSiksek
+import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
 import DstDiophantine.Embedding.ConformalInteger
@@ -860,16 +861,34 @@ example (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
     BealTwoEqualOddResidual :=
   BealTwoEqualOddResidual_of_outside_repeated_fifth hOut
 
-/-- Phase 7x: multiples of `3` collapse; `(4,4,7)` does not. -/
+/-- Phase 7x: multiples of `3` collapse; an odd hypotenuse past `10^9` does not. -/
 example :
     classifyBealExponents 6 6 7 = .T ∧ classifyBealExponents 9 9 4 = .T ∧
       classifyBealExponents 3 6 5 = .T ∧ classifyBealExponents 5 6 6 = .T ∧
-        classifyBealExponents 4 4 7 = .U ∧
-          classifyBealExponents 9 9 1000000001 = .U :=
+        classifyBealExponents 9 9 1000000001 = .U :=
   ⟨classifyBealExponents_six_six_seven, classifyBealExponents_nine_nine_four,
     classifyBealExponents_three_six_five, classifyBealExponents_five_six_six,
-    classifyBealExponents_four_four_seven,
     classifyBealExponents_nine_nine_past_bound⟩
+
+/-- Phase 7z: a fourth-power sum is closed; twice an odd common exponent is not. -/
+example :
+    classifyBealExponents 4 4 7 = .T ∧ classifyBealExponents 8 8 7 = .T ∧
+      classifyBealExponents 4 4 9 = .T ∧ classifyBealExponents 10 10 7 = .U ∧
+        classifyBealExponents 4 7 7 = .U :=
+  ⟨classifyBealExponents_four_four_seven, classifyBealExponents_fourth_sum⟩
+
+example {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1) :
+    ¬ A ^ 4 + B ^ 4 = C ^ 7 ∧ ¬ A ^ 8 + B ^ 8 = C ^ 9 :=
+  ⟨fun h => not_beal_fourth_sum_shape (by decide) (by decide) (by decide)
+      hA hB hC hgcd (by decide) h,
+    fun h => not_beal_fourth_sum_shape (by decide) (by decide) (by decide)
+      hA hB hC hgcd (by decide) h⟩
+
+example (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual) :
+    BealTwoEqualEvenSumResidual :=
+  BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth hOut
 
 /-- Phase 7p: closed slices do not T-entail classical Beal (atlas). -/
 example :

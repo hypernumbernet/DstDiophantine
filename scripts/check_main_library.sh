@@ -14,8 +14,9 @@ if grep -nE "$SORRY_PAT" $LEAN_FILES 2>/dev/null | grep -q .; then
   exit 1
 fi
 
-# Eight explicit classical axioms permitted (see README / site/lean.html).
+# Nine explicit classical axioms permitted (see README / site/lean.html).
 ALLOWED=(
+  bennettEllenbergNg
   sumTwoCubesNotPerfectPower
   sumTwoFifthsNotSeventhOrNineteenth
   darmonMerelCube

@@ -31,6 +31,7 @@ import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.SiksekStoll
 import DstDiophantine.Theorems.DahmenSiksek
+import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.EulerCube
 import DstDiophantine.Theorems.Collatz
@@ -272,6 +273,11 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   BealTwoEqualEvenSumResidual_of_ge_seven
   BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual
   BealTwoEqualEvenSumResidual_of_ge_seven_outside_cube_pair
+  bennettEllenbergNg IsFourthSumShape not_beal_fourth_sum
+  not_beal_fourth_sum_shape
+  BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual
+  BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual_of_outside_fourth
+  BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth
   BealTwoEqualEvenDiffOutsideCubePairResidual
   BealTwoEqualEvenDiffResidual_of_outside_cube_pair
   exists_two_mul_pow_eq_signed_pow_add_opposite_parity

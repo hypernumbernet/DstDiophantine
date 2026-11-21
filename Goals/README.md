@@ -36,7 +36,7 @@ the main library (`beal_conjecture_pos_of_fine_residuals_even_split`):
 
 | Leaf | Discharges |
 | --- | --- |
-| `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_cube_pair` |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth`. Phase 7z: a common exponent divisible by `4` rewrites to `A⁴ + B² = Cⁿ` and is closed by `bennettEllenbergNg`. `(4,4,7)` leaves this leaf; `(10,10,7)` remains |
 | `BealTwoEqualEvenDiffOutsideCubePairResidual` | even two-equal difference, via `BealTwoEqualEvenDiffResidual_of_outside_cube_pair` |
 | `BealTwoEqualOddOutsideRepeatedFifthResidual` | odd two-equal, via `BealTwoEqualOddResidual_of_outside_repeated_fifth` |
 | `BealAllDistinctOutsideCubePairResidual` | pairwise distinct exponents, via `BealAllDistinctExpResidual_of_outside_cube_pair` |
@@ -119,6 +119,7 @@ is not a substitute.
 | `BealMordellCubeAddTwoResidual` | Diagnostic Weierstrass packaging. The cube leaf is the Euler theorem, not this packaging |
 | `BealCGADilationNoGo` | Legacy equal-exponent lattice. Mixed exponents miss it |
 | `BealTwoEqualEvenDiffFactorResidual`, `BealTwoEqualEvenDiffPerfectPowerResidual` | Older packaging of the even-difference body. The named leaf is `BealTwoEqualEvenDiffOutsideCubePairResidual` |
+| `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` by `bennettEllenbergNg` |
 | `BealAdmissibleBridge`, `FermatAdmissibleBridge` | Continuous bridges. Balanced seeds sit below the threshold |
 | `BealModularBridge`, `FermatModularBridge` | Payload incompatible with the conformal gauge, independently of a solution in the Beal case |
 | `BealWindingBridge` | Window regime only |

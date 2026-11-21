@@ -758,7 +758,8 @@ theorem BealTwoEqualEvenSumResidual_of_ge_seven
 /--
 Phase 7x: even-sum body at hypotenuse exponent `z ≥ 7`, outside signatures in
 which the common exponent is divisible by `3` and `z` is a `TwoCubeExponent`.
-`(6,6,7)` is removed; `(4,4,7)` remains.
+`(6,6,7)` is removed. Phase 7z removes the further case `4 ∣ x`
+(`(4,4,7)`); this residual follows from that narrower body.
 -/
 def BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)

@@ -211,7 +211,14 @@ theorem classifyBealExponents_five_six_six :
 
 /-- The even sum whose common exponent is not divisible by `3` stays open. -/
 theorem classifyBealExponents_four_four_seven :
-    classifyBealExponents 4 4 7 = .U := by native_decide
+    classifyBealExponents 4 4 7 = .T := by native_decide
+
+/-- Phase 7z: `(8,8,7)` and `(4,4,9)` close with `(4,4,7)`; `(10,10,7)` and
+`(4,7,7)` stay open. -/
+theorem classifyBealExponents_fourth_sum :
+    classifyBealExponents 8 8 7 = .T ∧ classifyBealExponents 4 4 9 = .T ∧
+      classifyBealExponents 10 10 7 = .U ∧ classifyBealExponents 4 7 7 = .U := by
+  native_decide
 
 /-- Repeated multiple of `3` with an odd companion past `10^9` stays open. -/
 theorem classifyBealExponents_nine_nine_past_bound :

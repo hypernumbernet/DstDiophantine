@@ -1,4 +1,5 @@
 import DstDiophantine.Theorems.BealFinite
+import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.SiksekStoll
@@ -19,7 +20,8 @@ it does **not** close residual bodies (`BealPosCubeAddTwoCubeResidual`, etc.).
   slices `d ≥ 3`, two exponents divisible by 4, Darmon–Merel cube positions,
   signature-`(n,n,5)` with common exponent `≥ 4`, two-cube powers, signature
   `(3,4,5)`, cube pairs — two exponents divisible by `3` with the third a
-  `TwoCubeExponent` — and a repeated five beside `7` or `19`):
+  `TwoCubeExponent` — a repeated five beside `7` or `19`, and a fourth-power
+  sum — two equal exponents divisible by `4` with the third at least `4`):
   current certificate bases `≤ 80`, exponents `3…7`.
 
 Classical Beal is **not** claimed unconditionally.
@@ -206,7 +208,10 @@ Beal-range exponent triples whose *shape* is closed by a named slice:
   need not equal `3`, and `d` need not equal `1`);
 * signature `(3,4,5)` in every order (`IsSignature345`);
 * a repeated five beside `7` or `19`, every order (`IsRepeatedFifthShape`;
-  phase 7y). `(7,7,5)` is already signature `(n,n,5)`.
+  phase 7y). `(7,7,5)` is already signature `(n,n,5)`;
+* a fourth-power sum (`IsFourthSumShape`): two equal exponents divisible by
+  `4` and a third exponent at least `4` (phase 7z; `(4,4,7)` is the first
+  case). `(10,10,7)` is not this shape.
 
 This is strictly coarser than the residual atlas: Mihăilescu's `|u| = 1`
 slice is a coefficient condition, not an exponent shape.
@@ -226,7 +231,8 @@ def IsClosedShapeExponents (x y z : ℕ) : Prop :=
       (bealExpGcd x y z = 1 ∧ IsTwoCubePowerShape x y z) ∨
       (bealExpGcd x y z = 1 ∧ IsSignature345 x y z) ∨
       IsCubePairPowerShape x y z ∨
-      IsRepeatedFifthShape x y z)
+      IsRepeatedFifthShape x y z ∨
+      IsFourthSumShape x y z)
 
 instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   unfold IsClosedShapeExponents
@@ -253,7 +259,8 @@ def isOpenResidualExponents (x y z : ℕ) : Bool :=
       ¬(d = 1 ∧ IsTwoCubePowerShape x y z) ∧
       ¬(d = 1 ∧ IsSignature345 x y z) ∧
       ¬ IsCubePairPowerShape x y z ∧
-      ¬ IsRepeatedFifthShape x y z)
+      ¬ IsRepeatedFifthShape x y z ∧
+      ¬ IsFourthSumShape x y z)
 
 theorem isOpenResidualExponents_iff {x y z : ℕ} :
     isOpenResidualExponents x y z = true ↔
@@ -261,11 +268,11 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
   unfold isOpenResidualExponents
   simp only [decide_eq_true_eq]
   constructor
-  · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5, hCube, h345, hpair, hfifth⟩
+  · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5, hCube, h345, hpair, hfifth, h4sum⟩
     refine ⟨hx, hy, hz, ?_⟩
     intro hcl
     obtain ⟨_, _, _, hdisj⟩ := hcl
-    rcases hdisj with hge | h2 | hdm | hnn | hcube | hsig | hcp | hfifth'
+    rcases hdisj with hge | h2 | hdm | hnn | hcube | hsig | hcp | hfifth' | h4sum'
     · rcases hd with hd | hd <;> omega
     · exact hfourth h2
     · exact hDM hdm
@@ -274,8 +281,9 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
     · exact h345 hsig
     · exact hpair hcp
     · exact hfifth hfifth'
+    · exact h4sum h4sum'
   · intro ⟨hx, hy, hz, hnot⟩
-    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · have htri := bealExpGcd_eq_one_or_eq_two_or_ge_three (y := y) (z := z) hx
       have hnge : ¬ 3 ≤ bealExpGcd x y z := fun hd =>
         hnot ⟨hx, hy, hz, Or.inl hd⟩
@@ -292,7 +300,11 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
     · exact fun hpair =>
         hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl hpair))))))⟩
     · exact fun hfifth =>
-        hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr hfifth))))))⟩
+        hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+          (Or.inl hfifth)))))))⟩
+    · exact fun h4sum =>
+        hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+          (Or.inr h4sum)))))))⟩
 
 theorem isOpenResidualExponents_eq_false_of_closed {x y z : ℕ}
     (h : IsClosedShapeExponents x y z) :
