@@ -31,6 +31,7 @@ import DstDiophantine.Logic.Quantum.UsualRotor
 import DstDiophantine.Logic.Quantum.QuantumLogic
 import DstDiophantine.Logic.Quantum.Sasaki
 import DstDiophantine.Logic.Quantum.BooleanIsland
+import DstDiophantine.Logic.Quantum.BlockReading
 import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
 import DstDiophantine.Logic.Quantum.StringSpectrum
@@ -166,6 +167,11 @@ and `DstDiophantine.CGA`).
   ray are its four-element island `{⊥, ℓ, ℓ⊥, ⊤}`, on which meet
   distributes over join and the two implications agree; distinct islands
   meet only at `{⊥, ⊤}`; only `⊥` and `⊤` split along every subspace
+* `Logic.Quantum.BlockReading` — splitting along both arguments distributes
+  in `ℂ²`; a ray that does so keeps both subspaces in its island; the
+  island is two classical bits, orthocomplement negates both and fixes
+  nothing, the two atoms do not embed into the height order, and a height
+  assignment carrying that negation to sign flip misses a label
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
@@ -607,6 +613,40 @@ example {A B C : QProp}
     (hC : Module.finrank ℂ C = 1) (hAB : A ≠ B) (hAC : A ≠ C) (hBC : B ≠ C)
     (hABc : Compatible A B) (hACc : Compatible A C) (hBCc : Compatible B C) : False :=
   no_three_pairwise_compatible_lines hA hB hC hAB hAC hBC hABc hACc hBCc
+
+/-- Regression: splitting along both arguments distributes, and a ray keeps both in its island. -/
+example {A B C : QProp} (hB : Compatible A B) (hC : Compatible A C) :
+    A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) :=
+  distributes_of_splits hB hC
+
+example {A B C : QProp} (hA : Module.finrank ℂ A = 1)
+    (hB : Compatible A B) (hC : Compatible A C) :
+    B ∈ Island A ∧ C ∈ Island A ∧ Compatible B C :=
+  splits_ray_forces_island hA hB hC
+
+/-- Regression: orthocomplement fixes nothing, and the island does not embed into the height. -/
+example (A : QProp) : A ≠ Aᗮ :=
+  orthogonal_ne A
+
+example {L : QProp} (hL : Module.finrank ℂ L = 1) :
+    ¬ ∃ φ : QProp → ℝ,
+      ∀ A B : QProp, A ∈ Island L → B ∈ Island L → (A ≤ B ↔ φ A ≤ φ B) :=
+  no_height_order_embedding hL
+
+/-- Regression: island negation is bitwise, and sign flip on heights misses a label. -/
+example (L : QProp) (p : Bool × Bool) :
+    (ofBits L p)ᗮ = ofBits L (bitComplement p) :=
+  ofBits_orthogonal L p
+
+example :
+    ¬ ∃ (φ : Bool × Bool → ℝ) (_hφ : ∀ p, |φ p| ≤ 1),
+      (∀ p, φ (bitComplement p) = - φ p) ∧
+        ∀ tv : TruthValue, ∃ p, classifyOfMem (φ p) (_hφ p) = tv :=
+  no_sign_flip_realizes_four_labels
+
+/-- Regression: a height meets its sign flip at zero only at balance. -/
+example (j : ℝ) : conjJ j (negJ j) = 0 ↔ j = 0 :=
+  height_meet_neg_eq_zero_iff j
 
 /-- Regression: complementary rays exist in `ℂ²`. -/
 example : lineE0 ⟂ lineE1 :=

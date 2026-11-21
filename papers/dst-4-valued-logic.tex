@@ -62,7 +62,12 @@ inclusion is the identity that \(A^\perp\vee(A\wedge B)\) is the whole
 space. That implication agrees with the classical expansion
 \(A^\perp\vee B\), and the expansion detaches, exactly when the
 antecedent splits along the consequent. The implication carried by the
-lattice detaches for every pair. The statements of this paper are
+lattice detaches for every pair. A subspace that splits along two others
+distributes over their join, and a ray that does so keeps both inside
+one island. That island is two classical bits: orthocomplement negates
+both and fixes no subspace, the two atoms do not embed into the height
+order, and a height assignment that carries the bit-wise negation to
+sign flip misses a label. The statements of this paper are
 machine-checked.
 \end{abstract}
 
@@ -129,7 +134,8 @@ implication. Section~\ref{sec:examples}
 shows why two-valued restrictions of the interval cannot host the
 situations D4L is built to record. Section~\ref{sec:block} names the
 splitting on which a classical expansion detaches in the spinor
-lattice, and the island of a complementary pair.
+lattice, the island of a complementary pair, and the sense in which
+that island reads as two classical bits of one measurement.
 Section~\ref{sec:regime} reads DST proof artefacts and Diophantine
 regimes in the same four names. Section~\ref{sec:claims} states the
 reach of the theory, and its limits.
@@ -1005,6 +1011,28 @@ to sit. A classical expansion that has left the island is the expansion
 that failed on the diagonal. The four elements are one measurement
 context. They are not the four labels of the amplitude layer.
 
+\begin{theorem}[The block and the four labels]
+\label{thm:blockfour}
+Orthocomplement fixes no subspace. A subspace that splits along two
+others distributes over their join. When that subspace is a ray, both
+others lie in its island and split along each other. The two atoms of
+the island are incomparable under inclusion, so the island does not
+embed into the height order. Reading the four elements as bits, with
+\((0,0)\) the zero subspace, \((1,0)\) the ray, \((0,1)\) its
+orthogonal, and \((1,1)\) the whole space, orthocomplement negates both
+bits. Any assignment of heights in \([-1,1]\) to the four bit-pairs
+that carries this negation to sign flip misses at least one label. On
+the island an element meets its orthocomplement at zero. On the height
+a value meets its sign flip at zero only at balance.
+\end{theorem}
+
+A distributive step whose distributing subspace is a ray therefore stays
+inside one island, and the other two subspaces split along each other.
+The four elements are the truth table of one complementary measurement.
+Their order has width two. The height order is total, and sign flip
+fixes the balanced label. The four names remain the sign and the
+saturation of one scalar.
+
 \section{Proof status and Diophantine regimes}
 \label{sec:regime}
 
@@ -1183,7 +1211,13 @@ that split along a ray form the island
 \(\{0,\ell,\ell^\perp,\mathbb{C}^2\}\), on which meet distributes over
 join and the two implications agree. Distinct islands meet only at
 \(\{0,\mathbb{C}^2\}\), and the only subspaces that split along every
-subspace are those two. Label \(\lvert T\rangle\) is not a
+subspace are those two. A subspace that splits along two others
+distributes over their join, and a ray that does so forces both into
+its island. Orthocomplement fixes no subspace. The island does not
+embed into the height order, and a height assignment carrying the
+island's bit-wise negation to sign flip misses a label. An element of
+the island meets its orthocomplement at zero; a height meets its sign
+flip at zero only at balance. Label \(\lvert T\rangle\) is not a
 single geometric point: vacuum, axiswise balanced massive, and
 cross-axis cancellation all sit there, distinguished by mass and by
 axiswise equality, without a fifth name. Discrete \(\lvert F\rangle\)
