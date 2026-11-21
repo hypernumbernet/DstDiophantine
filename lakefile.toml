@@ -22,3 +22,6 @@ rev = "v4.35.0"
 
 [[lean_lib]]
 name = "DstDiophantine"
+
+[[lean_lib]]
+name = "Goals"

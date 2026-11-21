@@ -14,3 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
+      - name: Main library hygiene (sorry, axiom allowlist, no Goals import)
+        run: bash scripts/check_main_library.sh
+      - name: Build Goals library (sorry allowed)
+        run: lake build Goals
+      - name: Report open goal count
+        run: bash scripts/count_goals.sh
