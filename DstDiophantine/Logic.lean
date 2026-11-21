@@ -30,6 +30,7 @@ import DstDiophantine.Logic.Quantum.UsualRodrigues
 import DstDiophantine.Logic.Quantum.UsualRotor
 import DstDiophantine.Logic.Quantum.QuantumLogic
 import DstDiophantine.Logic.Quantum.Sasaki
+import DstDiophantine.Logic.Quantum.BooleanIsland
 import DstDiophantine.Logic.Quantum.Dictionary
 import DstDiophantine.Logic.Quantum.Spinor10
 import DstDiophantine.Logic.Quantum.StringSpectrum
@@ -160,6 +161,11 @@ and `DstDiophantine.CGA`).
 * `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
   detaches for every pair; it agrees with the classical expansion, and
   that expansion detaches, exactly on splitting pairs
+* `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly
+  when the two are equal or orthogonal; the subspaces that split along a
+  ray are its four-element island `{⊥, ℓ, ℓ⊥, ⊤}`, on which meet
+  distributes over join and the two implications agree; distinct islands
+  meet only at `{⊥, ⊤}`; only `⊥` and `⊤` split along every subspace
 * `Logic.Regime` — discrete proof-status algebra and implication table
 * `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`,
   Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
@@ -569,6 +575,38 @@ example {A B : QProp} : A ⊓ material A B ≤ B ↔ Compatible A B :=
 /-- Regression: a basis ray and the diagonal refuse detachment of the expansion. -/
 example : ¬ lineE0 ⊓ material lineE0 lineD ≤ lineD :=
   material_detach_iff_compatible.not.mpr diagonal_not_compatible
+
+/-- Regression: a ray splits along another ray exactly when they coincide or are orthogonal. -/
+example {A B : QProp} (hA : Module.finrank ℂ A = 1) (hB : Module.finrank ℂ B = 1) :
+    Compatible A B ↔ A = B ∨ A ⟂ B :=
+  compatible_line_iff hA hB
+
+/-- Regression: splitting along a ray is membership in its island. -/
+example {L A : QProp} (hL : Module.finrank ℂ L = 1) :
+    Compatible A L ↔ A ∈ Island L :=
+  compatible_ray_iff_mem_island hL
+
+/-- Regression: on an island the two implications agree, and meet distributes over join. -/
+example {L A B C : QProp} (hA : A ∈ Island L) (hB : B ∈ Island L) (hC : C ∈ Island L) :
+    sasaki A B = material A B ∧ A ⊓ (B ⊔ C) = (A ⊓ B) ⊔ (A ⊓ C) :=
+  ⟨island_implications_agree hA hB, island_inf_sup_distrib hA hB hC⟩
+
+/-- Regression: distinct islands meet only at the trivial subspaces. -/
+example {L M : QProp} (hL : Module.finrank ℂ L = 1) (hM : Module.finrank ℂ M = 1)
+    (hne : L ≠ M) (hneO : L ≠ Mᗮ) :
+    Island L ∩ Island M = ({⊥, ⊤} : Set QProp) :=
+  island_inter_trivial hL hM hne hneO
+
+/-- Regression: only the trivial subspaces split along every subspace. -/
+example {A : QProp} : (∀ B : QProp, Compatible A B) ↔ A = ⊥ ∨ A = ⊤ :=
+  compatible_all_iff
+
+/-- Regression: three distinct rays never split pairwise. -/
+example {A B C : QProp}
+    (hA : Module.finrank ℂ A = 1) (hB : Module.finrank ℂ B = 1)
+    (hC : Module.finrank ℂ C = 1) (hAB : A ≠ B) (hAC : A ≠ C) (hBC : B ≠ C)
+    (hABc : Compatible A B) (hACc : Compatible A C) (hBCc : Compatible B C) : False :=
+  no_three_pairwise_compatible_lines hA hB hC hAB hAC hBC hABc hACc hBCc
 
 /-- Regression: complementary rays exist in `ℂ²`. -/
 example : lineE0 ⟂ lineE1 :=

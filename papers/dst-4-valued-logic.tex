@@ -129,7 +129,7 @@ implication. Section~\ref{sec:examples}
 shows why two-valued restrictions of the interval cannot host the
 situations D4L is built to record. Section~\ref{sec:block} names the
 splitting on which a classical expansion detaches in the spinor
-lattice.
+lattice, and the island of a complementary pair.
 Section~\ref{sec:regime} reads DST proof artefacts and Diophantine
 regimes in the same four names. Section~\ref{sec:claims} states the
 reach of the theory, and its limits.
@@ -918,9 +918,10 @@ fragment cannot see the difference.
 The subspace lattice of \(\mathbb{C}^2\) is not distributive, hence not
 a Boolean algebra. It has at most two pairwise orthogonal atoms. The
 four D4L labels are not a PVM. The distributive scalar connectives
-cannot present that lattice. Complementary rays in the dual Hilbert
-layer cannot be assigned Boolean values, and they cannot be identified
-with the four names of the amplitude layer. The two layers remain two
+cannot present that lattice. Each complementary pair determines a
+four-element Boolean island (Section~\ref{sec:block}). That island is
+not a Boolean valuation of the lattice, and it is not the four names
+of the amplitude layer. The two layers remain two
 layers.
 
 \section{Where a classical proof survives in the spinor lattice}
@@ -978,6 +979,31 @@ implication carried by the lattice returns only the orthogonal line.
 The meet of the ray with the expansion is the ray, and the ray does not
 lie in the diagonal, so the expansion does not detach. That pair is the
 step at which a two-valued proof leaves the lattice.
+
+\begin{theorem}[Rays and their islands]
+\label{thm:island}
+A one-dimensional subspace splits along another exactly when the two
+are equal or orthogonal. A subspace splits along a ray \(\ell\) exactly
+when it lies in the island
+\[
+\{0,\;\ell,\;\ell^\perp,\;\mathbb{C}^2\}.
+\]
+That set is closed under meet, join, and orthocomplement. On it, meet
+distributes over join, and the lattice implication agrees with the
+classical expansion. Splitting along \(\ell\) already splits along
+\(\ell^\perp\). Islands of distinct complementary pairs meet only at
+\(\{0,\mathbb{C}^2\}\). A subspace splits along every subspace exactly
+when it is \(0\) or \(\mathbb{C}^2\). Three distinct rays never split
+pairwise.
+\end{theorem}
+
+Equality is the trivial split. Orthogonality is the split of a
+computational basis, and the failure of orthogonality is the refusal
+already seen for the diagonal. In this dimension, the subspaces that
+split along one ray are the whole island, so a third ray has nowhere
+to sit. A classical expansion that has left the island is the expansion
+that failed on the diagonal. The four elements are one measurement
+context. They are not the four labels of the amplitude layer.
 
 \section{Proof status and Diophantine regimes}
 \label{sec:regime}
@@ -1151,7 +1177,13 @@ whole space exactly when \(A\) is contained in \(B\). It agrees with
 \(A^\perp\vee B\), and \(A\wedge(A^\perp\vee B)\) lies in \(B\), exactly
 when \(A\) splits along \(B\). The lattice implication detaches for
 every pair. A basis ray and the diagonal separate the two implications,
-and on that pair the expansion does not detach. Label \(\lvert T\rangle\) is not a
+and on that pair the expansion does not detach. A ray splits along
+another ray exactly when the two are equal or orthogonal. The subspaces
+that split along a ray form the island
+\(\{0,\ell,\ell^\perp,\mathbb{C}^2\}\), on which meet distributes over
+join and the two implications agree. Distinct islands meet only at
+\(\{0,\mathbb{C}^2\}\), and the only subspaces that split along every
+subspace are those two. Label \(\lvert T\rangle\) is not a
 single geometric point: vacuum, axiswise balanced massive, and
 cross-axis cancellation all sit there, distinguished by mass and by
 axiswise equality, without a fifth name. Discrete \(\lvert F\rangle\)
