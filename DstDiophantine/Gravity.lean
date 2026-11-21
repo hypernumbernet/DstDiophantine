@@ -417,6 +417,11 @@ imported by the modules below. They are not named in the import list of
   mass. The ratio of nucleon moments is not derived.
 * `SilentControl` — that magnet joined to dual-only control. With the charge label off, a circular
   potential drops no ponderomotive mean.
+* `BetaDecay` — replacement of one nucleon class. The quark charges are the unique rational
+  solution of the two nucleon charges. On the external free-gap window the excess over the
+  electron and the ratio to the electron mass stay inside the stated rationals, and the gap
+  lies below the Coulomb energy at every reversal inside `1` fm. The chart moment ratio is
+  `-2/3`. The weights, the absolute gap, and V--A are not derived.
 * `ParityBridge` — spatial inversion exchanges the two projectors of every axis and acts by
   `(E,B)↦(-E,B)`. The bridge is not identified with `CP`.
 
