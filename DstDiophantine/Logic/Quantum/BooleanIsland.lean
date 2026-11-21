@@ -10,7 +10,9 @@ A subspace splits along a ray exactly when it lies in the four-element island
 `{⊥, ℓ, ℓ⊥, ⊤}` of that ray, and splitting along the ray already splits along
 the orthogonal ray. The island is closed under meet, join, and orthocomplement;
 meet distributes over join; and the lattice implication agrees with the
-classical expansion throughout the island. Distinct complementary pairs
+classical expansion throughout the island. The expansion detaches exactly
+on pairs where the two implications agree, hence on the island, and it
+does not detach on a basis ray against the diagonal. Distinct complementary pairs
 determine islands that meet only at `{⊥, ⊤}`. The only subspaces that split
 along every subspace are `⊥` and `⊤`.
 -/
@@ -292,6 +294,24 @@ theorem island_implications_agree {L A B : QProp}
     (hA : A ∈ Island L) (hB : B ∈ Island L) :
     sasaki A B = material A B :=
   compatible_iff_sasaki_eq_material.mp (island_compatible hA hB)
+
+/-- The classical expansion detaches exactly on pairs whose two implications
+already agree. This is not a map from formulas into the lattice. -/
+theorem expansion_detaches_iff_agree {A B : QProp} :
+    A ⊓ material A B ≤ B ↔ sasaki A B = material A B := by
+  rw [material_detach_iff_compatible, compatible_iff_sasaki_eq_material]
+
+/-- On an island the expansion detaches, because the two implications agree. -/
+theorem island_expansion_detaches {L A B : QProp}
+    (hA : A ∈ Island L) (hB : B ∈ Island L) :
+    A ⊓ material A B ≤ B :=
+  expansion_detaches_iff_agree.mpr (island_implications_agree hA hB)
+
+/-- On a basis ray and the diagonal the expansion does not detach. -/
+theorem diagonal_expansion_does_not_detach :
+    ¬ (lineE0 ⊓ material lineE0 lineD ≤ lineD) := by
+  intro h
+  exact diagonal_not_compatible (material_detach_iff_compatible.mp h)
 
 /-- A subspace splits along a ray exactly when it lies in that ray's island.
 Splitting along the ray already splits along the orthogonal ray. -/

@@ -17,6 +17,19 @@ implication. Off the walls the discharge fails. The atom `P` forces
 Inside the interval, preservation of the positive wall is decided by
 the same three heights that decide equational identity. Weakening a
 positive wall by a disjunct uses the bound `|j| ≤ 1`.
+
+For a finite set of premises that check mentions only atoms that occur,
+so it is an assignment of those atoms to `{-1, 0, 1}`. The wall
+assignments in that check are classical consequence. The assignments
+that send an occurring atom to balance are the case distinction on
+atoms the premises do not fix to a wall. Modus ponens, tollens,
+disjunctive syllogism, and the syllogism satisfy both. Excluded middle
+satisfies only the classical half.
+
+Discharge of any finite list of premises agrees with that classical
+consequence on the walls, and the packaged formula returns balance at
+total balance. Synchrony, non-refutation, and positive-wall forcing are
+pairwise incomparable.
 -/
 
 namespace DstDiophantine
@@ -270,6 +283,511 @@ theorem not_entailsOne_disj :
     simp [v]
   have h1 := h v hprem
   simp [v, disjJ] at h1
+
+/-!
+## Support, and the cut from classical consequence
+
+Positive-wall forcing on the interval depends only on the atoms that
+occur. The check is then a finite assignment of those atoms to
+`{-1, 0, 1}`. Assignments into the two walls are classical consequence.
+Assignments that send at least one occurring atom to balance are the
+case distinction on atoms the premises do not fix to a wall.
+-/
+
+/-- Classical consequence: wall bits that satisfy the premises satisfy the conclusion. -/
+def EntailsClassical (Γ : Set Formula) (ψ : Formula) : Prop :=
+  ∀ b : ℕ → Bool, (∀ φ ∈ Γ, φ.boolEval b = true) → ψ.boolEval b = true
+
+theorem isWallTwo_abs {j : ℝ} (h : IsWallTwo j) : |j| ≤ 1 := by
+  rcases h with rfl | rfl <;> norm_num
+
+/-- Restricting positive-wall forcing to the two walls is classical consequence. -/
+theorem entailsClassical_iff_wall (Γ : Set Formula) (ψ : Formula) :
+    EntailsClassical Γ ψ ↔
+      ∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
+        (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1 := by
+  constructor
+  · intro h v hv hprem
+    let b : ℕ → Bool := fun n => wallBit (v n)
+    have hvb : v = fun n => ofBool (b n) := by
+      funext n
+      exact wallBit_of_wall (hv n)
+    have hpremB : ∀ φ ∈ Γ, φ.boolEval b = true := by
+      intro φ hφ
+      have h1 : φ.eval v = 1 := hprem φ hφ
+      rw [hvb, eval_ofBool] at h1
+      exact (ofBool_eq_one).mp h1
+    have hψB : ψ.boolEval b = true := h b hpremB
+    rw [hvb, eval_ofBool, hψB, ofBool_true]
+  · intro h b hprem
+    have hv : ∀ n, IsWallTwo (ofBool (b n)) := fun n => ofBool_wall _
+    have hprem1 : ∀ φ ∈ Γ, φ.eval (fun n => ofBool (b n)) = 1 := by
+      intro φ hφ
+      rw [eval_ofBool, hprem φ hφ, ofBool_true]
+    have h1 : ψ.eval (fun n => ofBool (b n)) = 1 := h _ hv hprem1
+    rw [eval_ofBool] at h1
+    exact (ofBool_eq_one).mp h1
+
+/-- Atoms occurring in a finite set of premises or in the conclusion. -/
+def support (Γ : Finset Formula) (ψ : Formula) : Finset ℕ :=
+  Γ.biUnion Formula.atoms ∪ ψ.atoms
+
+theorem mem_support_of_premise {Γ : Finset Formula} {ψ φ : Formula} {n : ℕ}
+    (hφ : φ ∈ Γ) (hn : n ∈ φ.atoms) : n ∈ support Γ ψ :=
+  Finset.mem_union.mpr (Or.inl (Finset.mem_biUnion.mpr ⟨φ, hφ, hn⟩))
+
+theorem mem_support_of_conclusion {Γ : Finset Formula} {ψ : Formula} {n : ℕ}
+    (hn : n ∈ ψ.atoms) : n ∈ support Γ ψ :=
+  Finset.mem_union.mpr (Or.inr hn)
+
+/-- On the interval, positive-wall forcing mentions only atoms that occur. -/
+theorem entailsWall_iff_support (Γ : Finset Formula) (ψ : Formula) :
+    EntailsWall (↑Γ) ψ ↔
+      ∀ v : ℕ → ℝ, (∀ n ∈ support Γ ψ, IsThreeHeight (v n)) →
+        (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1 := by
+  constructor
+  · intro h v hv hprem
+    let w : ℕ → ℝ := fun n => if n ∈ support Γ ψ then v n else 0
+    have hw : ∀ n, |w n| ≤ 1 := by
+      intro n
+      by_cases hn : n ∈ support Γ ψ
+      · rw [show w n = v n by simp [w, hn]]
+        exact isThreeHeight_abs (hv n hn)
+      · simp [w, hn]
+    have hpremW : ∀ φ ∈ (↑Γ : Set Formula), φ.eval w = 1 := by
+      intro φ hφ
+      have hagree : φ.eval v = φ.eval w :=
+        Formula.eval_eq_of_agree_on_atoms fun n hn => by
+          have hn' : n ∈ support Γ ψ := mem_support_of_premise (ψ := ψ) hφ hn
+          simp [w, hn']
+      rw [← hagree]
+      exact hprem φ hφ
+    have hψw : ψ.eval w = 1 := h w hw hpremW
+    have hagree : ψ.eval v = ψ.eval w :=
+      Formula.eval_eq_of_agree_on_atoms fun n hn => by
+        have hn' : n ∈ support Γ ψ := mem_support_of_conclusion (ψ := ψ) hn
+        simp [w, hn']
+    rw [hagree]
+    exact hψw
+  · intro h
+    rw [entailsWall_iff_threeHeight]
+    intro v hv hprem
+    exact h v (fun n _ => hv n) hprem
+
+/-- Three codes for the heights that decide the interval check. -/
+inductive HeightCode
+  | neg
+  | bal
+  | pos
+  deriving DecidableEq
+
+namespace HeightCode
+
+def toReal : HeightCode → ℝ
+  | neg => -1
+  | bal => 0
+  | pos => 1
+
+/-- Wall bit. Balance is not a wall; the bit is read only off balance. -/
+def bit : HeightCode → Bool
+  | neg => false
+  | bal => false
+  | pos => true
+
+noncomputable def ofThree (j : ℝ) : HeightCode :=
+  if j = -1 then neg else if j = 0 then bal else pos
+
+theorem abs_toReal (c : HeightCode) : |c.toReal| ≤ 1 := by
+  cases c <;> norm_num [toReal]
+
+theorem toReal_ofThree {j : ℝ} (h : IsThreeHeight j) : (ofThree j).toReal = j := by
+  rcases h with rfl | rfl | rfl
+  · simp [ofThree, toReal]
+  · have h1 : ¬ ((0 : ℝ) = -1) := by norm_num
+    simp [ofThree, toReal, h1]
+  · have h1 : ¬ ((1 : ℝ) = -1) := by norm_num
+    have h0 : ¬ ((1 : ℝ) = 0) := by norm_num
+    simp [ofThree, toReal, h1, h0]
+
+theorem ofThree_zero : ofThree 0 = bal := by
+  simp [ofThree]
+
+theorem ofBool_bit_of_ne_zero {j : ℝ} (h : IsThreeHeight j) (h0 : j ≠ 0) :
+    ofBool (ofThree j).bit = j := by
+  rcases h with rfl | rfl | rfl
+  · simp [ofThree, bit, ofBool]
+  · exact absurd rfl h0
+  · have h1 : ¬ ((1 : ℝ) = -1) := by norm_num
+    have hz : ¬ ((1 : ℝ) = 0) := by norm_num
+    simp [ofThree, bit, ofBool, h1, hz]
+
+end HeightCode
+
+/-- A code assignment of a finite atom set, extended by balance off that set. -/
+noncomputable def extendHeight (s : Finset ℕ) (f : {n // n ∈ s} → HeightCode) (n : ℕ) : ℝ :=
+  if h : n ∈ s then (f ⟨n, h⟩).toReal else 0
+
+theorem extendHeight_abs (s : Finset ℕ) (f : {n // n ∈ s} → HeightCode) (n : ℕ) :
+    |extendHeight s f n| ≤ 1 := by
+  rw [extendHeight]
+  by_cases hn : n ∈ s
+  · rw [dite_eq_left hn]
+    exact HeightCode.abs_toReal _
+  · rw [dite_eq_right hn]
+    norm_num
+
+theorem extendHeight_eq_of_three {s : Finset ℕ} {v : ℕ → ℝ}
+    (hv : ∀ n ∈ s, IsThreeHeight (v n)) (n : ℕ) (hn : n ∈ s) :
+    extendHeight s (fun m => HeightCode.ofThree (v m)) n = v n := by
+  rw [extendHeight, dite_eq_left hn]
+  exact HeightCode.toReal_ofThree (hv n hn)
+
+/-- Boolean value of a formula, from a height assignment that matches the bits on its atoms. -/
+theorem eval_ofBool_on_atoms (φ : Formula) {v : ℕ → ℝ} {b : ℕ → Bool}
+    (h : ∀ n ∈ φ.atoms, v n = ofBool (b n)) :
+    φ.eval v = ofBool (φ.boolEval b) := by
+  induction φ with
+  | atom n =>
+    simpa using h n (by simp)
+  | neg ψ ih =>
+    simp [ih h, ofBool_neg]
+  | conj ψ χ ihψ ihχ =>
+    simp [ihψ (fun n hn => h n (Finset.mem_union.mpr (Or.inl hn))),
+      ihχ (fun n hn => h n (Finset.mem_union.mpr (Or.inr hn))), ofBool_conj]
+  | disj ψ χ ihψ ihχ =>
+    simp [ihψ (fun n hn => h n (Finset.mem_union.mpr (Or.inl hn))),
+      ihχ (fun n hn => h n (Finset.mem_union.mpr (Or.inr hn))), ofBool_disj]
+
+/-- The case distinction on occurring atoms left at balance. -/
+noncomputable def BalanceCase (Γ : Finset Formula) (ψ : Formula) : Prop :=
+  ∀ f : {n // n ∈ support Γ ψ} → HeightCode,
+    (∃ n, f n = .bal) →
+    (∀ φ ∈ Γ, φ.eval (extendHeight (support Γ ψ) f) = 1) →
+      ψ.eval (extendHeight (support Γ ψ) f) = 1
+
+/-- Positive-wall forcing on the interval, cut out of classical consequence.
+
+The second conjunct quantifies over codes of the atoms that occur. A code
+that hits balance is an assignment the premises have not fixed to a wall.
+-/
+theorem entailsWall_cut (Γ : Finset Formula) (ψ : Formula) :
+    EntailsWall (↑Γ) ψ ↔ EntailsClassical (↑Γ) ψ ∧ BalanceCase Γ ψ := by
+  constructor
+  · intro h
+    refine ⟨?_, ?_⟩
+    · rw [entailsClassical_iff_wall]
+      intro v hv hprem
+      exact h v (fun n => isWallTwo_abs (hv n)) hprem
+    · intro f _ hprem
+      exact h (extendHeight (support Γ ψ) f) (extendHeight_abs _ f) hprem
+  · rintro ⟨hC, hB⟩
+    rw [entailsWall_iff_support]
+    intro v hv hprem
+    let s := support Γ ψ
+    let f : {n // n ∈ s} → HeightCode := fun m => HeightCode.ofThree (v m)
+    have hpremE : ∀ φ ∈ Γ, φ.eval (extendHeight s f) = 1 := by
+      intro φ hφ
+      have hagree : φ.eval (extendHeight s f) = φ.eval v :=
+        Formula.eval_eq_of_agree_on_atoms fun n hn => by
+          exact extendHeight_eq_of_three hv n (mem_support_of_premise hφ hn)
+      rw [hagree]
+      exact hprem φ hφ
+    by_cases hbal : ∃ n : {n // n ∈ s}, f n = HeightCode.bal
+    · have hψE : ψ.eval (extendHeight s f) = 1 := hB f hbal hpremE
+      have hagree : ψ.eval (extendHeight s f) = ψ.eval v :=
+        Formula.eval_eq_of_agree_on_atoms fun n hn =>
+          extendHeight_eq_of_three hv n (mem_support_of_conclusion hn)
+      rw [← hagree]
+      exact hψE
+    · push Not at hbal
+      have hwall : ∀ n ∈ s, v n ≠ 0 := by
+        intro n hn h0
+        have hf : f ⟨n, hn⟩ = HeightCode.bal := by
+          simp [f, h0, HeightCode.ofThree_zero]
+        exact hbal ⟨n, hn⟩ hf
+      let b : ℕ → Bool := fun n =>
+        if h : n ∈ s then (f ⟨n, h⟩).bit else false
+      have hmatch (φ : Formula) (hsub : φ.atoms ⊆ s) :
+          φ.eval (extendHeight s f) = ofBool (φ.boolEval b) :=
+        eval_ofBool_on_atoms φ fun n hn => by
+          have hn' : n ∈ s := hsub hn
+          have hbit : ofBool (f ⟨n, hn'⟩).bit = v n := by
+            simp only [f]
+            exact HeightCode.ofBool_bit_of_ne_zero (hv n hn') (hwall n hn')
+          have hext : extendHeight s f n = v n :=
+            extendHeight_eq_of_three hv n hn'
+          have hb : b n = (f ⟨n, hn'⟩).bit := by simp [b, hn']
+          rw [hext, ← hbit, hb]
+      have hpremB : ∀ φ ∈ (↑Γ : Set Formula), φ.boolEval b = true := by
+        intro φ hφ
+        have hsub : φ.atoms ⊆ s := fun n hn => mem_support_of_premise hφ hn
+        have h1 : φ.eval (extendHeight s f) = 1 := hpremE φ hφ
+        rw [hmatch φ hsub] at h1
+        exact (ofBool_eq_one).mp h1
+      have hψB : ψ.boolEval b = true := hC b hpremB
+      have hsubψ : ψ.atoms ⊆ s := fun n hn => mem_support_of_conclusion hn
+      have hψE : ψ.eval (extendHeight s f) = 1 := by
+        rw [hmatch ψ hsubψ, hψB, ofBool_true]
+      have hagree : ψ.eval (extendHeight s f) = ψ.eval v :=
+        Formula.eval_eq_of_agree_on_atoms fun n hn =>
+          extendHeight_eq_of_three hv n (mem_support_of_conclusion hn)
+      rw [← hagree]
+      exact hψE
+
+theorem coe_finset_pair (φ ψ : Formula) :
+    (↑({φ, ψ} : Finset Formula) : Set Formula) = {φ, ψ} := by
+  ext χ
+  simp
+
+theorem cut_of_entailsOne (Γ : Finset Formula) {ψ : Formula}
+    (h : EntailsOne (↑Γ) ψ) :
+    EntailsClassical (↑Γ) ψ ∧ BalanceCase Γ ψ :=
+  (entailsWall_cut Γ ψ).mp (entailsOne_to_wall h)
+
+theorem modus_ponens_cut (φ ψ : Formula) :
+    EntailsClassical (↑({φ, impF φ ψ} : Finset Formula)) ψ ∧
+      BalanceCase {φ, impF φ ψ} ψ := by
+  refine cut_of_entailsOne _ ?_
+  rw [coe_finset_pair]
+  exact entailsOne_modus_ponens φ ψ
+
+theorem tollens_cut (φ ψ : Formula) :
+    EntailsClassical (↑({impF φ ψ, ψ.neg} : Finset Formula)) φ.neg ∧
+      BalanceCase {impF φ ψ, ψ.neg} φ.neg := by
+  refine cut_of_entailsOne _ ?_
+  rw [coe_finset_pair]
+  exact entailsOne_tollens φ ψ
+
+theorem disjunctive_cut (φ ψ : Formula) :
+    EntailsClassical (↑({φ.disj ψ, φ.neg} : Finset Formula)) ψ ∧
+      BalanceCase {φ.disj ψ, φ.neg} ψ := by
+  refine cut_of_entailsOne _ ?_
+  rw [coe_finset_pair]
+  exact entailsOne_disjunctive φ ψ
+
+theorem chain_cut (φ ψ χ : Formula) :
+    EntailsClassical (↑({impF φ ψ, impF ψ χ} : Finset Formula)) (impF φ χ) ∧
+      BalanceCase {impF φ ψ, impF ψ χ} (impF φ χ) := by
+  refine cut_of_entailsOne _ ?_
+  rw [coe_finset_pair]
+  exact entailsOne_chain φ ψ χ
+
+/-- Excluded middle is classical, and the balance case is where the converse fails. -/
+theorem excludedMiddle_classical_not_balance :
+    EntailsClassical (↑(∅ : Finset Formula)) (excludedMiddle 0) ∧
+      ¬ BalanceCase ∅ (excludedMiddle 0) := by
+  refine ⟨?_, ?_⟩
+  · intro b _
+    exact excluded_middle_classical b
+  · intro h
+    have h0 : (0 : ℕ) ∈ support ∅ (excludedMiddle 0) := by
+      simp [support, excludedMiddle]
+    let f : {n // n ∈ support ∅ (excludedMiddle 0)} → HeightCode := fun _ => .bal
+    have hψ := h f ⟨⟨0, h0⟩, rfl⟩ (by intro _ hφ; simp at hφ)
+    have hext : extendHeight (support ∅ (excludedMiddle 0)) f 0 = 0 := by
+      rw [extendHeight, dite_eq_left h0]
+      simp [f, HeightCode.toReal]
+    have heval : (excludedMiddle 0).eval (extendHeight _ f) = 0 := by
+      rw [excludedMiddle_eval, hext]
+      norm_num
+    rw [heval] at hψ
+    exact zero_ne_one hψ
+
+/-- The atom of excluded middle is not fixed to a wall by the empty premises. -/
+theorem excludedMiddle_atom_at_balance :
+    ∃ v : ℕ → ℝ, (∀ n ∈ support ∅ (excludedMiddle 0), IsThreeHeight (v n)) ∧
+      v 0 = 0 ∧ (excludedMiddle 0).eval v = 0 := by
+  refine ⟨fun _ => 0, ?_, rfl, ?_⟩
+  · intro n _
+    simp [IsThreeHeight]
+  · simp [excludedMiddle_eval]
+
+/-!
+## Discharge at every finite depth
+
+Packaging premises into nested material implications agrees with classical
+consequence on the walls, at every finite depth. At total balance the
+packaged formula returns synchrony, at every depth.
+-/
+
+/-- Nested discharge. `discharge [φ₁, …, φₙ] ψ` is `φ₁ → (⋯ → (φₙ → ψ))`. -/
+def discharge : List Formula → Formula → Formula
+  | [], ψ => ψ
+  | φ :: Γ, ψ => impF φ (discharge Γ ψ)
+
+theorem boolEval_discharge (Γ : List Formula) (ψ : Formula) (b : ℕ → Bool) :
+    (discharge Γ ψ).boolEval b = true ↔
+      ((∀ φ ∈ Γ, φ.boolEval b = true) → ψ.boolEval b = true) := by
+  induction Γ with
+  | nil => simp [discharge]
+  | cons φ Γ ih =>
+    simp only [discharge, List.mem_cons, boolEval_impF, ih]
+    constructor
+    · intro h hprem
+      exact (h (hprem φ (Or.inl rfl)))
+        (fun χ hχ => hprem χ (Or.inr hχ))
+    · intro h hφ hΓ
+      exact h (fun χ hχ => by
+        rcases hχ with rfl | hχ
+        · exact hφ
+        · exact hΓ χ hχ)
+
+/-- At every depth, discharge on the walls is classical consequence of the rule. -/
+theorem discharge_wall_iff (Γ : List Formula) (ψ : Formula) :
+    (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
+        (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1) ↔
+      (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
+        (discharge Γ ψ).eval v = 1) := by
+  constructor
+  · intro h
+    have hbool : ∀ b : ℕ → Bool, (discharge Γ ψ).boolEval b = true := by
+      intro b
+      rw [boolEval_discharge]
+      intro hprem
+      have hv : ∀ n, IsWallTwo (ofBool (b n)) := fun n => ofBool_wall _
+      have hprem1 : ∀ φ ∈ Γ, φ.eval (fun n => ofBool (b n)) = 1 := by
+        intro φ hφ
+        rw [eval_ofBool, hprem φ hφ, ofBool_true]
+      have h1 : ψ.eval (fun n => ofBool (b n)) = 1 := h _ hv hprem1
+      rw [eval_ofBool] at h1
+      exact (ofBool_eq_one).mp h1
+    intro v hv
+    exact (classical_iff_positive_wall (discharge Γ ψ)).mp hbool v hv
+  · intro h v hv hprem
+    let b : ℕ → Bool := fun n => wallBit (v n)
+    have hvb : v = fun n => ofBool (b n) := by
+      funext n
+      exact wallBit_of_wall (hv n)
+    have hpremB : ∀ φ ∈ Γ, φ.boolEval b = true := by
+      intro φ hφ
+      have h1 : φ.eval v = 1 := hprem φ hφ
+      rw [hvb, eval_ofBool] at h1
+      exact (ofBool_eq_one).mp h1
+    have hdis : (discharge Γ ψ).eval v = 1 := h v hv
+    have hdisB : (discharge Γ ψ).boolEval b = true := by
+      rw [hvb, eval_ofBool] at hdis
+      exact (ofBool_eq_one).mp hdis
+    rw [boolEval_discharge] at hdisB
+    rw [hvb, eval_ofBool, hdisB hpremB, ofBool_true]
+
+theorem discharge_balance (Γ : List Formula) (ψ : Formula) :
+    (discharge Γ ψ).eval (fun _ => 0) = 0 :=
+  eval_balance _
+
+/-- Wall agreement and the fall to balance, at every finite depth. -/
+theorem discharge_depth (Γ : List Formula) (ψ : Formula) :
+    ((∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
+          (∀ φ ∈ Γ, φ.eval v = 1) → ψ.eval v = 1) ↔
+        (∀ v : ℕ → ℝ, (∀ n, IsWallTwo (v n)) →
+          (discharge Γ ψ).eval v = 1)) ∧
+      (discharge Γ ψ).eval (fun _ => 0) = 0 :=
+  ⟨discharge_wall_iff Γ ψ, discharge_balance Γ ψ⟩
+
+theorem syllogismFormula_discharge :
+    syllogismFormula =
+      discharge [impF (Formula.atom 0) (Formula.atom 1),
+          impF (Formula.atom 1) (Formula.atom 2)]
+        (impF (Formula.atom 0) (Formula.atom 2)) := by
+  rfl
+
+/-- The syllogism rule preserves the positive wall; its two-premise package does not. -/
+theorem chain_depth_two :
+    EntailsOne {impF (Formula.atom 0) (Formula.atom 1),
+        impF (Formula.atom 1) (Formula.atom 2)}
+      (impF (Formula.atom 0) (Formula.atom 2)) ∧
+      syllogismFormula.eval (fun _ => 0) = 0 :=
+  ⟨entailsOne_chain (Formula.atom 0) (Formula.atom 1) (Formula.atom 2),
+    syllogism_balance⟩
+
+/-!
+## The three consequence relations
+
+Synchrony, non-refutation, and positive-wall forcing are pairwise
+incomparable. The positive-wall inference from a height and its negation
+is vacuous. Synchrony and non-refutation both admit that pair and refuse
+the step to an unrelated atom.
+-/
+
+theorem entailsOne_not_entailsT :
+    EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
+      ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1) := by
+  refine ⟨entailsOne_explosion _ _, ?_⟩
+  intro h
+  let v := Valuation.pair 0 1 (by norm_num) (by norm_num)
+  have hM : ModelsT v (contradict (Formula.atom 0)) := by
+    rw [modelsT_contradict]
+    simp [v, HoldsT, negJ]
+  have := h v hM
+  simp [HoldsT, v] at this
+
+theorem entailsT_not_entailsOne :
+    EntailsT {(Formula.atom 0).disj (Formula.atom 0).neg} (Formula.atom 0) ∧
+      ¬ EntailsOne {(Formula.atom 0).disj (Formula.atom 0).neg} (Formula.atom 0) := by
+  constructor
+  · intro v hv
+    have h := hv _ (Set.mem_singleton _)
+    simpa using (holdsT_excluded_middle (v.assign 0)).mp h
+  · intro h
+    let v : ℕ → ℝ := fun n => if n = 0 then -1 else 0
+    have hprem : ∀ φ ∈
+        ({(Formula.atom 0).disj (Formula.atom 0).neg} : Set Formula),
+        φ.eval v = 1 := by
+      intro φ hφ
+      rw [Set.eq_of_mem_singleton hφ]
+      simp [v, disj_neg_eq_abs]
+    have h1 := h v hprem
+    simp [v] at h1
+    norm_num at h1
+
+theorem entailsOne_not_entailsNotF :
+    EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
+      ¬ EntailsNotF (contradict (Formula.atom 0)) (Formula.atom 1) := by
+  refine ⟨entailsOne_explosion _ _, ?_⟩
+  intro h
+  let v := Valuation.pair (-(1 / 2)) 1 (by norm_num) (by norm_num)
+  have hM : ModelsNotF v (contradict (Formula.atom 0)) := by
+    rw [modelsNotF_contradict]
+    simp [v, HoldsNotF, negJ]
+    norm_num
+  have := h v hM
+  simp [HoldsNotF, v] at this
+
+theorem entailsNotF_not_entailsOne :
+    EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
+      ¬ EntailsOne ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) := by
+  refine ⟨entailsNotF_conj_neg _, ?_⟩
+  intro h
+  have h1 := h (fun _ => 0) (by intro _ hφ; simp at hφ)
+  simp [conjJ, negJ] at h1
+
+theorem entailsT_not_entailsNotF :
+    EntailsT {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 0).neg) ∧
+      ¬ EntailsNotF {(Formula.atom 0)}
+        ((Formula.atom 0).disj (Formula.atom 0).neg) :=
+  ⟨entailsT_excluded_middle _, not_entailsNotF_excluded_middle⟩
+
+theorem entailsNotF_not_entailsT :
+    EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
+      ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) :=
+  ⟨entailsNotF_conj_neg _, not_entailsT_conj_neg⟩
+
+/-- One diagram: none of the three relations contains another. -/
+theorem consequence_relations_incomparable :
+    (EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
+      ¬ EntailsT (contradict (Formula.atom 0)) (Formula.atom 1)) ∧
+    (EntailsT {(Formula.atom 0).disj (Formula.atom 0).neg} (Formula.atom 0) ∧
+      ¬ EntailsOne {(Formula.atom 0).disj (Formula.atom 0).neg} (Formula.atom 0)) ∧
+    (EntailsOne (contradict (Formula.atom 0)) (Formula.atom 1) ∧
+      ¬ EntailsNotF (contradict (Formula.atom 0)) (Formula.atom 1)) ∧
+    (EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
+      ¬ EntailsOne ∅ ((Formula.atom 0).conj (Formula.atom 0).neg)) ∧
+    (EntailsT {(Formula.atom 0)} ((Formula.atom 0).disj (Formula.atom 0).neg) ∧
+      ¬ EntailsNotF {(Formula.atom 0)}
+        ((Formula.atom 0).disj (Formula.atom 0).neg)) ∧
+    (EntailsNotF ∅ ((Formula.atom 0).conj (Formula.atom 0).neg) ∧
+      ¬ EntailsT ∅ ((Formula.atom 0).conj (Formula.atom 0).neg)) :=
+  ⟨entailsOne_not_entailsT, entailsT_not_entailsOne, entailsOne_not_entailsNotF,
+    entailsNotF_not_entailsOne, entailsT_not_entailsNotF, entailsNotF_not_entailsT⟩
 
 end Logic
 

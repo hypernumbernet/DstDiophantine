@@ -65,6 +65,14 @@ saturation \(|j|=1\). Material implication, modus tollens, disjunctive
 syllogism, and the syllogism rule preserve the positive wall at every
 real height. Discharge of a premise into a material implication holds
 on the walls, and at balance the discharged formula returns synchrony.
+For a finite set of premises, that forcing on the interval is decided by
+assigning the atoms that occur to the three heights, and it splits into
+classical consequence and the case distinction that uses balance.
+Discharge of any finite depth agrees with classical consequence on the
+walls and returns synchrony at total balance. Synchrony, non-refutation,
+and positive-wall forcing are pairwise incomparable. On an island the
+classical expansion detaches, and the four rules are the classical ones
+on the island's bits. On the diagonal the expansion does not detach.
 In the spinor lattice a
 classical expansion detaches exactly when the antecedent splits along
 the consequent, and each complementary pair determines a four-element
@@ -968,6 +976,39 @@ positive wall be weakened by any disjunct: the max of \(1\) with a
 height at most \(1\) is \(1\). A height sitting above the wall, taken
 as that disjunct, carries the max above \(1\).
 
+\begin{theorem}[Support and the cut]
+\label{thm:cut}
+For a finite set of premises, positive-wall forcing on the interval
+depends only on the atoms that occur in the premises or the conclusion.
+The three-height check is then an assignment of that finite set to
+\(\{-1,0,1\}\). The forcing splits in two. One half is classical
+consequence, the assignment of those atoms to the two walls. The other
+half is the case distinction on assignments that send at least one of
+them to balance. An atom that appears there is one the premises do not
+fix to a wall. Excluded middle satisfies only the classical half, and
+the forcing on the interval fails. Detachment, modus tollens,
+disjunctive syllogism, and the syllogism rule satisfy both.
+\end{theorem}
+
+Discharge of any finite depth agrees, on the walls, with classical
+consequence at that depth. At total balance the packaged formula returns
+synchrony, whatever the depth. The one-premise witness is an atom and
+its excluded middle. The two-premise witness is the syllogism formula.
+
+The three consequence relations are pairwise incomparable. Synchrony
+does not pass from \(\{P,\neg P\}\) to an unrelated atom, and neither
+does non-refutation. Positive-wall forcing preserves that inference,
+because the two premises cannot both equal \(1\). In the other
+direction, synchrony of an atom from its excluded middle is not
+positive-wall forcing, and non-refutation of a contradiction is neither
+synchrony nor positive-wall forcing.
+
+Where the two implications already agree, detachment of the classical
+expansion is that agreement. Every pair on an island agrees, and on the
+bits of the island the four rules are the classical ones. A basis ray
+and the diagonal separate the two implications, and the expansion does
+not detach. No map sends a formula into the subspace lattice.
+
 Explosion has the same shape. The emptiness just recorded is why a
 classical proof of it is short: the premise does not occur.
 
@@ -977,8 +1018,9 @@ classical proof of it is short: the premise does not occur.
 Section~\ref{sec:wall} factors a classical proof into a height identity,
 decided by the three heights \(-1\), \(0\), and \(1\), a wall saturation,
 and the three cuts of detachment. The same section records the rules
-that preserve the positive wall at every real height, and the discharge
-of a premise, which holds on the walls. Two-valued algebras still cannot host the
+that preserve the positive wall at every real height, the cut of that
+forcing by the atoms that occur, and discharge at every finite depth,
+which agrees with classical consequence on the walls. Two-valued algebras still cannot host the
 situations below, and D4L still realises them. The difference is fixed
 as a pair: emptiness (or vacuity, or collapse to a singleton) on the
 fragment, realisation on D4L.
@@ -1330,6 +1372,15 @@ On the walls a premise discharges into a material implication. The atom
 \(P\) forces \(P\vee\neg P\) onto the positive wall, and
 \(P\to(P\vee\neg P)\) returns synchrony at balance. Inside the interval a
 positive wall may be weakened by any disjunct.
+For a finite set of premises that forcing is decided by the three-valued
+assignments of the atoms that occur, and it splits into classical
+consequence on the walls and the case distinction that uses balance.
+Discharge of any finite depth agrees with classical consequence on the
+walls and returns synchrony at total balance. Synchrony,
+non-refutation, and positive-wall forcing are pairwise incomparable.
+On an island the two implications agree, so the classical expansion
+detaches, and the four rules are the classical ones on the island's
+bits. On the diagonal the expansion does not detach.
 In the spinor lattice, \(A^\perp\vee(A\wedge B)\) is the
 whole space exactly when \(A\) is contained in \(B\). It agrees with
 \(A^\perp\vee B\), and \(A\wedge(A^\perp\vee B)\) lies in \(B\), exactly
@@ -1365,7 +1416,12 @@ Section~\ref{sec:proj}; it is not a derivation of mass from torsion. It records 
 exponential beyond a single pure sector, nor factor mixed usual/dual
 rotors through \(\mathrm{SL}(2,\mathbb{C})\). It does not refute G\"odel's
 theorems in classical arithmetic, and it does not claim unconditional
-Beal, FLT, or abc.
+Beal, FLT, or abc. It does not supply a map from a named D4L fragment
+into the subspace lattice. The implication \(U\to T=U\) refuses the
+step that would raise an open bridge from \(U\) to \(T\). The twelve
+leaves, including the even two-equal sum \((10,10,9)\), the odd
+two-equal \((5,5,11)\), and the coprime exponents \((3,5,7)\), are not
+closed by the positive-wall rules.
 
 The statements above are machine-checked.
 

@@ -169,15 +169,21 @@ and `DstDiophantine.CGA`).
   the syllogism preserve the positive wall at every real height; every
   formula returns balance at total balance, so discharge of those rules
   into a formula is special to the walls; on the interval the same
-  consequence is decided by `{-1, 0, 1}`
+  consequence is decided by `{-1, 0, 1}` on the atoms that occur, and
+  that check splits into classical consequence and the balance case;
+  discharge agrees with classical consequence on the walls at every
+  finite depth; synchrony, non-refutation, and positive-wall forcing
+  are pairwise incomparable
 * `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
   detaches for every pair; it agrees with the classical expansion, and
   that expansion detaches, exactly on splitting pairs
 * `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly
   when the two are equal or orthogonal; the subspaces that split along a
   ray are its four-element island `{⊥, ℓ, ℓ⊥, ⊤}`, on which meet
-  distributes over join and the two implications agree; distinct islands
-  meet only at `{⊥, ⊤}`; only `⊥` and `⊤` split along every subspace
+  distributes over join and the two implications agree; the classical
+  expansion detaches exactly on those agreeing pairs, and fails on a
+  basis ray against the diagonal; distinct islands meet only at
+  `{⊥, ⊤}`; only `⊥` and `⊤` split along every subspace
 * `Logic.Quantum.BlockReading` — splitting along both arguments distributes
   in `ℂ²`; a ray that does so keeps both subspaces in its island; the
   island is two classical bits, orthocomplement negates both and fixes

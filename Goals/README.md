@@ -106,7 +106,7 @@ is not a substitute.
 | Node clearance | Every sample stays a full step from a node | A clearance predicate beyond the first-node cap in `ShieldCeiling` |
 | Binding energy | Binding energy from the first-node clearance cap | An operator. `bindingEnergyPerNucleonMeVApprox` is an external SI label. `NuclearLength` produces no binding energy |
 | Channel walls | Finite wall height, with layer positions fixed | A derived finite height |
-| Dual Hilbert lift | Subspace facts of the ordinary layer become theorems of the dual Hilbert layer | A map from a named D4L fragment into `QProp`. `QuantumLogic` already proves the orthomodular law on `ℂ²`. `Separation` proves that `min`/`max` is not that lattice, and `infinite_one_dim_subspaces` shows four labels do not enumerate the atoms |
+| Dual Hilbert lift | Subspace facts of the ordinary layer become theorems of the dual Hilbert layer | A map from a named D4L fragment into `QProp`. `BooleanIsland` and `BlockReading` compare pairs whose two implications already agree: the expansion detaches on those pairs, and the four positive-wall rules are the classical bit rules on an island. That comparison is not the missing map. `QuantumLogic` already proves the orthomodular law on `ℂ²`. `Separation` proves that `min`/`max` is not that lattice, and `infinite_one_dim_subspaces` shows four labels do not enumerate the atoms |
 | Propellantless control | Laboratory inertia coupling by a motor whose translation commutes with torsion | A laboratory observable. `MotorGroup` proves the commuting exponential is a motor and does not claim a closed product law on `OmegaParams` |
 
 ## Not targets (recorded in the main library)
@@ -130,6 +130,8 @@ is not a substitute.
 | `BealWindingBridge` | Window regime only |
 | `FermatCoarseDiscreteBridge` | Witness empty under the coarse threshold. Not a research target |
 | `AbcAdmissibleBridge` | False (`AbcAdmissibleBridge_false`), from the triple `1 + 8 = 9` |
+
+The positive-wall cut is a theorem of the main library (`Logic.WallRule`), not a Goal. For a finite set of premises, forcing on the interval depends only on the atoms that occur, and it splits into classical consequence and the balance case. Discharge agrees with classical consequence on the walls at every finite depth. Synchrony, non-refutation, and positive-wall forcing are pairwise incomparable. None of this discharges the twelve leaves above, and `U → T = U` still refuses a promotion from an open bridge to `T`.
 
 ## Proved headline results (main library only — no Goals entry)
 

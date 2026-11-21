@@ -1,4 +1,5 @@
 import DstDiophantine.Logic.Connective
+import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -66,6 +67,40 @@ theorem eval_mem (φ : Formula) {v : ℕ → ℝ} (hv : ∀ n, |v n| ≤ 1) :
     have hb := abs_le.mp ihχ
     refine abs_le.mpr ⟨?_, max_le ha.2 hb.2⟩
     exact ha.1.trans (le_max_left _ _)
+
+/-- Atoms that occur in a formula. -/
+def atoms : Formula → Finset ℕ
+  | atom n => {n}
+  | neg φ => φ.atoms
+  | conj φ ψ => φ.atoms ∪ ψ.atoms
+  | disj φ ψ => φ.atoms ∪ ψ.atoms
+
+@[simp] theorem atoms_atom (n : ℕ) : (atom n).atoms = {n} := rfl
+
+@[simp] theorem atoms_neg (φ : Formula) : φ.neg.atoms = φ.atoms := rfl
+
+@[simp] theorem atoms_conj (φ ψ : Formula) :
+    (φ.conj ψ).atoms = φ.atoms ∪ ψ.atoms := rfl
+
+@[simp] theorem atoms_disj (φ ψ : Formula) :
+    (φ.disj ψ).atoms = φ.atoms ∪ ψ.atoms := rfl
+
+/-- Evaluation reads only the atoms that occur. -/
+theorem eval_eq_of_agree_on_atoms {φ : Formula} {v w : ℕ → ℝ}
+    (h : ∀ n ∈ φ.atoms, v n = w n) : φ.eval v = φ.eval w := by
+  induction φ with
+  | atom n =>
+    exact h n (by simp)
+  | neg ψ ih =>
+    simpa using congrArg negJ (ih h)
+  | conj ψ χ ihψ ihχ =>
+    have hψ := ihψ (fun n hn => h n (Finset.mem_union.mpr (Or.inl hn)))
+    have hχ := ihχ (fun n hn => h n (Finset.mem_union.mpr (Or.inr hn)))
+    simpa using congrArg₂ conjJ hψ hχ
+  | disj ψ χ ihψ ihχ =>
+    have hψ := ihψ (fun n hn => h n (Finset.mem_union.mpr (Or.inl hn)))
+    have hχ := ihχ (fun n hn => h n (Finset.mem_union.mpr (Or.inr hn)))
+    simpa using congrArg₂ disjJ hψ hχ
 
 end Formula
 

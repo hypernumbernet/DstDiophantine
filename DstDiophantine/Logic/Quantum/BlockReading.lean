@@ -6,9 +6,11 @@ import DstDiophantine.Logic.Connective
 
 In dimension two, a classical distributive step is a step inside one
 four-element island. That island is two classical bits: orthocomplement
-negates both and fixes nothing. The height order is total, so it cannot
-receive the two atoms. Sign flip fixes balance, and any height assignment
-that carries the bit-wise negation to sign flip misses a label.
+negates both and fixes nothing. On those bits, modus ponens, tollens,
+disjunctive syllogism, and the syllogism are the classical rules. The
+height order is total, so it cannot receive the two atoms. Sign flip
+fixes balance, and any height assignment that carries the bit-wise
+negation to sign flip misses a label. No map sends a formula to a subspace.
 -/
 
 namespace DstDiophantine
@@ -266,6 +268,95 @@ theorem meet_orthogonal_bot (A : QProp) : A ⊓ Aᗮ = ⊥ :=
 theorem height_meet_neg_eq_zero_iff (j : ℝ) :
     conjJ j (negJ j) = 0 ↔ j = 0 := by
   rw [conj_neg_eq_neg_abs, neg_eq_zero, abs_eq_zero]
+
+/-!
+## Classical rules on an island
+
+The four positive-wall rules, read on the two bits of an island, are the
+classical ones. The reading uses the Boolean operations already carried by
+`ofBits`. It does not send a formula to a subspace.
+-/
+
+theorem ofBits_material (L : QProp) (p q : Bool × Bool) :
+    material (ofBits L p) (ofBits L q) =
+      ofBits L (!p.1 || q.1, !p.2 || q.2) := by
+  rw [material, ofBits_orthogonal, ofBits_sup]
+  rfl
+
+theorem ofBits_eq_top_iff {L : QProp} (hL : finrank ℂ L = 1) {p : Bool × Bool} :
+    ofBits L p = ⊤ ↔ p = (true, true) := by
+  constructor
+  · intro h
+    exact ofBits_injective hL (h.trans (by simp [ofBits]))
+  · rintro rfl
+    rfl
+
+theorem ofBits_eq_bot_iff {L : QProp} (hL : finrank ℂ L = 1) {p : Bool × Bool} :
+    ofBits L p = ⊥ ↔ p = (false, false) := by
+  constructor
+  · intro h
+    exact ofBits_injective hL (h.trans (by simp [ofBits]))
+  · rintro rfl
+    rfl
+
+private theorem bool_chain (a b c : Bool)
+    (hab : (!a || b) = true) (hbc : (!b || c) = true) : (!a || c) = true := by
+  cases a <;> cases b <;> cases c <;> simp_all
+
+/-- Modus ponens on an island is the classical bit rule. -/
+theorem island_modus_ponens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
+    (hp : ofBits L p = ⊤) (hi : material (ofBits L p) (ofBits L q) = ⊤) :
+    ofBits L q = ⊤ := by
+  have hp' : p = (true, true) := (ofBits_eq_top_iff hL).mp hp
+  have hbits : (!p.1 || q.1, !p.2 || q.2) = (true, true) :=
+    (ofBits_eq_top_iff hL).mp (by rw [← ofBits_material]; exact hi)
+  rcases hp' with rfl
+  have hq : q = (true, true) := by
+    simpa using hbits
+  exact (ofBits_eq_top_iff hL).mpr hq
+
+/-- Modus tollens on an island is the classical bit rule. -/
+theorem island_tollens {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
+    (hi : material (ofBits L p) (ofBits L q) = ⊤) (hq : ofBits L q = ⊥) :
+    ofBits L p = ⊥ := by
+  have hq' : q = (false, false) := (ofBits_eq_bot_iff hL).mp hq
+  have hbits : (!p.1 || q.1, !p.2 || q.2) = (true, true) :=
+    (ofBits_eq_top_iff hL).mp (by rw [← ofBits_material]; exact hi)
+  rcases hq' with rfl
+  have hp : p = (false, false) := by
+    cases p with
+    | mk a b =>
+      cases a <;> cases b <;> simp_all
+  exact (ofBits_eq_bot_iff hL).mpr hp
+
+/-- Disjunctive syllogism on an island is the classical bit rule. -/
+theorem island_disjunctive {L : QProp} (hL : finrank ℂ L = 1) {p q : Bool × Bool}
+    (h : ofBits L p ⊔ ofBits L q = ⊤) (hp : ofBits L p = ⊥) :
+    ofBits L q = ⊤ := by
+  have hp' : p = (false, false) := (ofBits_eq_bot_iff hL).mp hp
+  have hbits : (p.1 || q.1, p.2 || q.2) = (true, true) :=
+    (ofBits_eq_top_iff hL).mp (by rw [← ofBits_sup]; exact h)
+  rcases hp' with rfl
+  have hq : q = (true, true) := by
+    simpa using hbits
+  exact (ofBits_eq_top_iff hL).mpr hq
+
+/-- The syllogism rule on an island is the classical bit rule. -/
+theorem island_chain {L : QProp} (hL : finrank ℂ L = 1) {p q r : Bool × Bool}
+    (hq : material (ofBits L p) (ofBits L q) = ⊤)
+    (hr : material (ofBits L q) (ofBits L r) = ⊤) :
+    material (ofBits L p) (ofBits L r) = ⊤ := by
+  have hqbits : (!p.1 || q.1, !p.2 || q.2) = (true, true) :=
+    (ofBits_eq_top_iff hL).mp (by rw [← ofBits_material]; exact hq)
+  have hrbits : (!q.1 || r.1, !q.2 || r.2) = (true, true) :=
+    (ofBits_eq_top_iff hL).mp (by rw [← ofBits_material]; exact hr)
+  rw [ofBits_material]
+  have hpair : (!p.1 || r.1, !p.2 || r.2) = (true, true) :=
+    Prod.ext
+      (bool_chain p.1 q.1 r.1 (congrArg Prod.fst hqbits) (congrArg Prod.fst hrbits))
+      (bool_chain p.2 q.2 r.2 (congrArg Prod.snd hqbits) (congrArg Prod.snd hrbits))
+  rw [hpair]
+  rfl
 
 end Logic
 
