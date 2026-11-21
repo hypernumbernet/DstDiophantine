@@ -4,13 +4,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-MAIN_GLOB="DstDiophantine/**/*.lean"
+LEAN_FILES="$(find DstDiophantine -name '*.lean' -type f)"
 
 # Match proof obligations only (ignore docstrings that mention the word sorry).
 SORRY_PAT='(^|[[:space:]])(by[[:space:]]+)?sorry[[:space:]]*$|:= by sorry'
-if rg -q "$SORRY_PAT" -g "$MAIN_GLOB" .; then
+if grep -nE "$SORRY_PAT" $LEAN_FILES 2>/dev/null | grep -q .; then
   echo "error: sorry found in main library (DstDiophantine/)"
-  rg "$SORRY_PAT" -g "$MAIN_GLOB" . || true
+  grep -nE "$SORRY_PAT" $LEAN_FILES 2>/dev/null || true
   exit 1
 fi
 
@@ -27,7 +27,8 @@ ALLOWED=(
 )
 
 while IFS= read -r line; do
-  name=$(echo "$line" | sed -n 's/^[[:space:]]*axiom[[:space:]]\([^[:space:]:]*\).*/\1/p')
+  [[ -z "$line" ]] && continue
+  name=$(echo "$line" | sed -n 's/^[[:space:]]*axiom[[:space:]]\([A-Za-z_][A-Za-z0-9_'\'']*\).*/\1/p')
   [[ -z "$name" ]] && continue
   ok=0
   for a in "${ALLOWED[@]}"; do
@@ -38,11 +39,11 @@ while IFS= read -r line; do
     echo "$line"
     exit 1
   fi
-done < <(rg '^[[:space:]]*axiom ' -g "$MAIN_GLOB" . || true)
+done < <(grep -hE '^[[:space:]]*axiom[[:space:]]+[A-Za-z_][A-Za-z0-9_'\'']*' $LEAN_FILES 2>/dev/null || true)
 
-if rg -q '^[[:space:]]*import[[:space:]]+Goals' -g "$MAIN_GLOB" .; then
+if grep -hE '^[[:space:]]*import[[:space:]]+Goals' $LEAN_FILES 2>/dev/null | grep -q .; then
   echo "error: main library must not import Goals"
-  rg '^[[:space:]]*import[[:space:]]+Goals' -g "$MAIN_GLOB" . || true
+  grep -nE '^[[:space:]]*import[[:space:]]+Goals' $LEAN_FILES 2>/dev/null || true
   exit 1
 fi
 
