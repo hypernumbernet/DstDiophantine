@@ -9,6 +9,7 @@ import DstDiophantine.Logic.Valuation
 import DstDiophantine.Logic.Consequence
 import DstDiophantine.Logic.Implication
 import DstDiophantine.Logic.ClassicalCore
+import DstDiophantine.Logic.HeightIdentity
 import DstDiophantine.Logic.Example.FixedPoint
 import DstDiophantine.Logic.Example.Explosion
 import DstDiophantine.Logic.Example.NotFalse
@@ -159,6 +160,10 @@ and `DstDiophantine.CGA`).
   the walls, excluded middle and the syllogism do not; material
   implication detaches the positive wall, and its non-refutation is
   the non-refutation of the negated antecedent
+* `Logic.HeightIdentity` — a formula returns one literal; equational
+  identity on the height is decided by `{-1, 0, 1}`, and agreement on
+  the two walls is strictly coarser (the two excluded middles); a height
+  identity rewrites under every one-hole context
 * `Logic.Quantum.Sasaki` — the implication carried by orthomodularity
   detaches for every pair; it agrees with the classical expansion, and
   that expansion detaches, exactly on splitting pairs

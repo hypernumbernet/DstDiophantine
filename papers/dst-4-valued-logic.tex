@@ -58,9 +58,11 @@ height into a consequence relation. The names \(\lvert T\rangle\) and
 On the two walls the positive wall is read as classical truth, and a
 classical tautology is a formula that returns that wall under every
 assignment of atoms to the two walls. The De~Morgan skeleton of a
-classical proof holds at every real height. Excluded middle and the
-syllogism are the saturation \(|j|=1\). Material implication detaches
-the positive wall on every real height. In the spinor lattice a
+classical proof holds at every real height. An equational step holds
+at every real height exactly when it holds on the three heights
+\(-1\), \(0\), and \(1\). Excluded middle and the syllogism are the
+saturation \(|j|=1\). Material implication detaches the positive wall
+on every real height. In the spinor lattice a
 classical expansion detaches exactly when the antecedent splits along
 the consequent, and each complementary pair determines a four-element
 Boolean island. That island is two classical bits of one measurement.
@@ -128,8 +130,8 @@ Section~\ref{sec:hilbert} extracts the dual Hilbert layer and states
 the dictionary that refuses to identify it with the first.
 Section~\ref{sec:cons} says which heights hold.
 Section~\ref{sec:wall} separates a classical proof into a height
-identity, a saturation on the walls, and the three cuts of material
-implication. Section~\ref{sec:examples}
+identity, decided by the three heights \(-1\), \(0\), and \(1\), a
+saturation on the walls, and the three cuts of material implication. Section~\ref{sec:examples}
 shows why two-valued restrictions of the interval cannot host the
 situations D4L is built to record. Section~\ref{sec:block} names the
 splitting on which a classical expansion detaches in the spinor
@@ -822,6 +824,44 @@ negation and absorption are of the same kind. A proof of any of them by
 cases on true and false repeats a computation the height has already
 performed. The case split records the specialisation of that identity.
 
+Three heights decide which of these identities hold at every real height.
+
+\begin{theorem}[Three heights]
+\label{thm:three}
+Two formulas built from atoms, negation, conjunction, and disjunction
+take the same value under every real assignment if and only if they do
+so whenever every atom lies in \(\{-1,0,1\}\).
+\end{theorem}
+
+Conjunction and disjunction each return one argument, and negation
+returns the swap, so a formula returns the value of one atom or the
+swap of one atom. It creates no magnitude of its own. If two formulas
+differ at a real assignment, the larger of the absolute values they
+return is a positive threshold. Sending every height of absolute value
+strictly below that threshold to balance, and every other height to
+the wall of its sign, preserves order and commutes with negation,
+conjunction, and disjunction. The formulas still differ after every atom has been moved
+to \(-1\), \(0\), or \(1\). Every separation that appears at an
+intermediate height already appears among these three. The identity is
+an identity of functions, so it remains valid inside any surrounding
+formula.
+
+Agreement on the walls is a coarser relation.
+
+\begin{theorem}[Walls do not decide a height identity]
+\label{thm:walls-coarse}
+\(P\vee\neg P\) and \(Q\vee\neg Q\) return the positive wall under
+every assignment of the atoms to the two walls. They differ as heights:
+when \(P\) sits at the positive wall and \(Q\) at balance, the first
+returns \(1\) and the second returns \(0\).
+\end{theorem}
+
+A classical proof may exchange the two excluded middles, because both
+sit at the positive wall. Off the walls the exchange compares absolute
+values, and that comparison is the saturation recorded below. An
+equational step checked on \(-1\), \(0\), and \(1\) holds at every real
+height.
+
 The walls contribute saturation.
 Section~\ref{sec:conn} records \(j\wedge\neg j=-|j|\) and
 \(j\vee\neg j=|j|\). Both equal the corresponding wall if and only if
@@ -883,7 +923,8 @@ classical proof is short because the premise does not occur.
 \label{sec:examples}
 
 Section~\ref{sec:wall} factors a classical proof into a height identity,
-a wall saturation, and the three cuts of detachment. Two-valued algebras still cannot host the
+decided by the three heights \(-1\), \(0\), and \(1\), a wall saturation,
+and the three cuts of detachment. Two-valued algebras still cannot host the
 situations below, and D4L still realises them. The difference is fixed
 as a pair: emptiness (or vacuity, or collapse to a singleton) on the
 fragment, realisation on D4L.
@@ -1219,9 +1260,12 @@ bridge---without \(T\)-entailing a classical conjecture. No operation on the hei
 Implication lives on the status algebra, where the table residuates
 non-refutation and \(U\to T=U\). Classical tautologies are the formulas
 that return the positive wall on every wall assignment. The De Morgan
-skeleton holds for every real height; excluded middle and the syllogism
-are the saturation \(|j|=1\), and at balance the syllogism returns
-synchrony. Material implication detaches the positive wall on every
+skeleton holds for every real height. An equivalence holds at every
+real height exactly when it holds on \(\{-1,0,1\}\). The two excluded
+middles agree on the walls, and they differ when one atom is the
+positive wall and the other is balance. Excluded middle and the
+syllogism are the saturation \(|j|=1\), and at balance the syllogism
+returns synchrony. Material implication detaches the positive wall on every
 real height, lies below that wall exactly when the negated antecedent
 and the consequent do, and returns balance when balance implies a nonpositive height.
 In the spinor lattice, \(A^\perp\vee(A\wedge B)\) is the
