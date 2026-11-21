@@ -246,10 +246,11 @@ instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
 
 /--
 Exponents that still sit in an **open** residual after skipping closed
-*shapes* (`IsClosedShapeExponents`). Even permutations of the cube and
-`(n,n,5)` signatures are kept open: they belong to the even two-equal
-difference residual, because an even common exponent does not rewrite to
-Darmon–Merel or `(n,n,5)` form.
+*shapes* (`IsClosedShapeExponents`). Even permutations of the
+Darmon–Merel and `(n,n,5)` signatures are kept open: they belong to the
+even two-equal difference residual, because an even common exponent does
+not rewrite to Darmon–Merel or `(n,n,5)` form. Divisibility of that
+common exponent by three is a separate closure.
 -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
   let d := bealExpGcd x y z

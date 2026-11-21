@@ -23,8 +23,10 @@ namespace Logic
 open scoped Set
 
 /--
-Label negation (a function of the four names). Representatives
-`T↦0`, `U↦1/2`, `F↦1`, `B↦-1/2` with `j ↦ -j`.
+Label negation (a function of the four names). Representatives are
+`T↦0`, `U↦1/2`, `F↦1`, `B↦-1/2`. Sign flip sends the representative of
+`F` to `-1`, which the four-state classifier reads as `B`; this map
+stores that label, whose own representative is `-1/2`.
 -/
 def negR : TruthValue → TruthValue
   | .T => .T
