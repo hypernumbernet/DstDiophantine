@@ -40,6 +40,8 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   leaves the Lorentz part fixed.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
+* `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian
+  century from external elements.
 * `OffEquator` — the same radial law with both angular legs.
 
 ## Scales that are inputs

@@ -19,8 +19,9 @@ things. They are separated as follows.
 | Six diagnostic bridges dropped | `BealAdmissibleBridge`, `BealModularBridge`, `BealWindingBridge`, `FermatAdmissibleBridge`, `FermatCoarseDiscreteBridge`, and `FermatModularBridge` are diagnostic, demoted, or vacuous in the main library. They are not research targets. `AbcAdmissibleBridge` is false (`AbcAdmissibleBridge_false`) and was already absent. |
 | Twenty-four gravity, logic, and PGA entries dropped from Lean | Each statement was `True`, or an existence claim with a witness that does not use a library definition (`42 < Δ < 44`, `0 < θ`). Both elaborate without the claim they were meant to record. They are indexed below as not yet stateable. |
 | Two physics frontiers added | Mercury's advance is `Perihelion.radialReturn` on external orbital elements, in arcseconds per Julian century. The charged-pion Compton length selects one sign-reversal scale in `(1/2, 1)` through `lengthOfReversal`. |
+| Mercury frontier closed | `Mercury.perihelion_arcsec_bounds` in the main library proves `42 < arcsecPerCentury < 44` from `bound_return_bounds` and the external elements. Removed from Goals. |
 
-Open `sorry` count: **14** (`scripts/count_goals.sh`). Twelve are the Diophantine leaves and bridges left by the split. Two are the physics frontiers above.
+Open `sorry` count: **13** (`scripts/count_goals.sh`). Twelve are the Diophantine leaves and bridges left by the split. One is the charged-pion physics frontier.
 
 ## Open `sorry` targets
 
@@ -28,8 +29,8 @@ Open `sorry` count: **14** (`scripts/count_goals.sh`). Twelve are the Diophantin
 | --- | ---: | --- |
 | `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
-| `Gravity/Frontiers.lean` | 2 | Mercury arcseconds per century; charged-pion reversal scale |
-| **Total** | **14** | |
+| `Gravity/Frontiers.lean` | 1 | charged-pion reversal scale |
+| **Total** | **13** | |
 
 ### Beal leaves
 
@@ -76,12 +77,13 @@ leaves above. The proofs are not unconditional.
 
 ### Physics frontiers
 
-`Gravity/Frontiers.lean` states two claims. The `sorry` is the whole statement. Neither is assembled from a named leaf in the main library.
+`Gravity/Frontiers.lean` states one open claim. The `sorry` is the whole statement. It is not assembled from a named leaf in the main library.
 
 | Theorem | Statement |
 | --- | --- |
-| `mercuryPerihelionArcsecPerCentury` | `42 < mercuryArcsecPerCentury < 44`. The quantity is `(radialReturn M α β - 2π)` times Mercury's orbits per Julian century, in arcseconds. `M = GM/c²` uses `SI.GApprox`, `SI.solarMassApprox`, and `SI.speedOfLight`. `α` and `β` are the reciprocal aphelion and perihelion from the external elements `5.790905×10¹⁰` m, eccentricity `0.205630`, and period `87.9691` days |
 | `chargedPionSelectsReversalScale` | There is a unique `r₁` in `(1/2, 1)` with `lengthOfReversal r₁ = pionComptonFm`. That is the selector the window `channelMassRatio` does not supply: the charged-pion Compton length picks one scattering scale |
+
+Mercury's advance is proved in the main library (`Mercury.perihelion_arcsec_bounds`): `(radialReturn M α β - 2π)` times Mercury's orbits per Julian century lies in `(42, 44)` arcseconds, with the same external elements and SI stand-ins.
 
 ## Not yet stateable (index only)
 
@@ -146,7 +148,8 @@ The positive-wall cut is a theorem of the main library (`Logic.WallRule`), not a
 
 Examples already sorry-free in `DstDiophantine/`: admissible bound
 `|J_norm| ≤ 1`, PGA motor algebra, Schwarzschild exterior leading perihelion
-coefficient, sign-reversal window for ℓ, Coulomb from the dual channel,
-partial metal-fusion sign lemmas, Collatz certificate up to `2^20`. These
-are not duplicated as Goals. A sharper observational match stays in the
+coefficient, Mercury arcseconds per Julian century in `(42, 44)`,
+sign-reversal window for ℓ, Coulomb from the dual channel, partial
+metal-fusion sign lemmas, Collatz certificate up to `2^20`. These are not
+duplicated as Goals. A sharper observational match stays in the
 not-yet-stateable index until the missing definition exists.
