@@ -97,20 +97,26 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   and `channelMassRatio` still does not take a meson mass.
 * `ScatteringScale` — repulsion at `1/2` and attraction on `[1, 2]` are exactly `1/2 < r₁ < 1`,
   so `14/15 < ℓ < 19/10`. The same signs do not select a point. One positive rapidity gives
-  `3/5` and `9/10` the same `thresholdRadius / ℓ`. `γ_s` is even in `ℓ`, and the charged-pion
-  selector is not an input.
+  `3/5` and `9/10` the same `thresholdRadius / ℓ`. A two-channel zero at a phase that ignores `ℓ`
+  does not select `ℓ`. `γ_s` is even in `ℓ`, and the charged-pion selector is not an input.
 * `StrongChannel` — `thresholdRadius ℓ φ` is the equal-scale radius where a positive rapidity meets
-  `phiStar`. The ratio to `ℓ` depends only on `φ`. At the external `14` MeV hypothesis the skin is
-  thinner than `6/100` of the static node. The prefactor `κ`, a fusion rate, and the `1/v` law are
-  not derived.
-* `LengthRule` — both channels at once; nothing here fixes `κ` or computes a binding.
-* `BothChannels` — an unlike pair exerts both terms at every separation.
+  `phiStar`. Every `layerRadius ℓ x` whose phase ignores `ℓ` has a ratio that depends only on that
+  phase, so it does not select `ℓ`. `phiStar` has no critical phase on `(π/4, π/2)`. `gammaSEqual`
+  is critical only at integer multiples of `π`, and those radii stay in the family. At the external
+  `14` MeV hypothesis the skin is thinner than `6/100` of the static node. The prefactor `κ`, a
+  fusion rate, and the `1/v` law are not derived.
+* `LengthRule` — both channels at once; `ℓ_E` stays an external input and is not a nuclear
+  `layerRadius`. Nothing here fixes `κ` or computes a binding.
+* `BothChannels` — an unlike pair exerts both terms at every separation. Vanishing of
+  `pairChannelForce` does not depend on the separation.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
   gravitationally; no spin-statistics theorem is claimed.
 * `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector; no
   spin-statistics theorem is claimed.
 * `ChannelBridge` — where both factors are nonzero, the mass-to-charge ratio is
   `(κ/coul)·(γ_E/γ_G)`; nothing here derives a radius at which the two factors vanish together.
+  The external electromagnetic length over the sign-reversal window lies in `(203, 414)` and does
+  not select `r₁`.
 * `BaryonAsymmetry` — both signs of a vacuum rapidity; no numerical baryon yield is derived.
 * `ParticleStability` — a balanced massive seed is not emptied by either rapidity budget alone.
 

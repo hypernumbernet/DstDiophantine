@@ -19,7 +19,8 @@ they place the rapidity wall on opposite sides of `1` fm.
 is the choice of a separation, not a consequence of the repulsive sample.
 The charged-pion selector is a different identification and is not used here.
 A threshold radius at one positive rapidity cancels `ℓ` in the ratio, so `3/5` and `9/10`
-keep the same ratio and the signs still do not select a point.
+keep the same ratio and the signs still do not select a point. A two-channel zero read at
+phases that ignore `ℓ` is the same for every positive length.
 Two sample radii, rather than the whole segment `[1, 2]`, are not the observable:
 a later positive chamber can match `1` and `2` while the segment between them changes sign.
 -/
@@ -419,6 +420,33 @@ theorem scattering_threshold_same_ratio {φ : ℝ} (hφ : 0 < φ) :
   refine ⟨h35, h910, ?_⟩
   exact thresholdRadius_scale (lengthOfReversal_pos (by norm_num))
     (lengthOfReversal_pos (by norm_num)) hφ
+
+/-- The two-channel force at a `layerRadius` phase ignores the separation, by
+`pairChannelForce_eq_zero_iff`. -/
+theorem pairChannelForce_at_layerRadius_zero_iff {κ coul ℓ x y : ℝ}
+    (hℓ : ℓ ≠ 0) (hx : x ≠ 0) (hG : gammaSEqual x ≠ 0) (hE : gammaSEqual y ≠ 0) :
+    pairChannelForce κ coul (gammaSEqual x) (gammaSEqual y) (layerRadius ℓ x) = 0 ↔
+      κ * gammaSEqual y = coul * gammaSEqual x := by
+  have hr : layerRadius ℓ x ≠ 0 := by
+    unfold layerRadius
+    exact div_ne_zero hℓ (mul_ne_zero (by norm_num) hx)
+  exact pairChannelForce_eq_zero_iff hr hG hE
+
+/-- A two-channel zero at phases that ignore `ℓ` does not select `ℓ`. Either no positive length
+is a zero, or every positive length is. -/
+theorem pairChannelForce_layer_zero_not_unique {κ coul x y : ℝ}
+    (hx : x ≠ 0) (hG : gammaSEqual x ≠ 0) (hE : gammaSEqual y ≠ 0) :
+    ¬ ∃! ℓ : ℝ, 0 < ℓ ∧
+        pairChannelForce κ coul (gammaSEqual x) (gammaSEqual y) (layerRadius ℓ x) = 0 := by
+  intro h
+  obtain ⟨ℓ, ⟨hℓ, hzero⟩, huniq⟩ := h
+  have hcond :=
+    (pairChannelForce_at_layerRadius_zero_iff hℓ.ne' hx hG hE).1 hzero
+  have h2pos : 0 < 2 * ℓ := by linarith
+  have h2 :=
+    (pairChannelForce_at_layerRadius_zero_iff (by linarith : (2 : ℝ) * ℓ ≠ 0) hx hG hE).2 hcond
+  have heq := huniq (2 * ℓ) ⟨h2pos, h2⟩
+  linarith [heq]
 
 end Gravity
 

@@ -13,7 +13,8 @@ set_option linter.style.native false
 Where both interference factors are nonzero, node radii stand in the ratio of
 the two lengths. \(G\), the masses, \(\alpha\), \(\hbar\), \(c\), and the
 sign-reversal window are inputs; the channel length is not a Compton
-wavelength, and no joint zero is derived.
+wavelength, and no joint zero is derived. The external electromagnetic length
+over that window lies in `(203, 414)` and does not select `r₁`.
 -/
 
 namespace DstDiophantine
@@ -88,6 +89,20 @@ theorem charge_over_nuclear_length {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁
   have hfloor : (203 : ℝ) < (3861 / 10) / (19 / 10) := by norm_num
   have hceil : (3862 / 10) / (14 / 15) < (414 : ℝ) := by norm_num
   exact ⟨lt_trans hfloor hlo, lt_trans hhi hceil⟩
+
+/-- `3/5` and `9/10` both lie in the external electromagnetic ratio, so that ratio does not
+select `r₁`. No identification of `ℓ_E` with the nuclear channel length is assumed. -/
+theorem charge_over_nuclear_length_not_unique :
+    ¬ ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+        (203 : ℝ) < ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ ∧
+          ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ < 414 := by
+  intro h
+  obtain ⟨r, -, huniq⟩ := h
+  have h35 := charge_over_nuclear_length (r₁ := 3 / 5) (by norm_num) (by norm_num)
+  have h910 := charge_over_nuclear_length (r₁ := 9 / 10) (by norm_num) (by norm_num)
+  have hleft := huniq (3 / 5) ⟨by norm_num, by norm_num, h35⟩
+  have hright := huniq (9 / 10) ⟨by norm_num, by norm_num, h910⟩
+  exact absurd (hleft.trans hright.symm) (by norm_num)
 
 theorem first_node_ratio {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
     (203 : ℝ) <

@@ -13,8 +13,11 @@ import Mathlib.Topology.Order.IntermediateValue
 The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity, the laboratory `1/v` law, and a
 capture cross section are not derived. The host that holds a rapidity down, a fusion rate, and the
 Coulomb-to-nuclear ratio are not derived. `thresholdRadius ℓ φ` is the equal-scale radius at which a
-positive rapidity meets `phiStar`. The ratio of that radius to `ℓ` depends only on `φ`, so one
-rapidity does not select `ℓ`.
+positive rapidity meets `phiStar`. Every radius `layerRadius ℓ x` whose phase ignores `ℓ` has a
+ratio to `ℓ` that depends only on that phase, so one rapidity does not select `ℓ`. `phiStar` has no
+critical phase on `(π/4, π/2)`. `gammaSEqual` is critical only at integer
+multiples of `π`, and those radii stay in the same family. The open interval
+`(0, π)` contains none.
 -/
 
 namespace DstDiophantine
@@ -259,6 +262,15 @@ theorem strictAntiOn_phiStar : StrictAntiOn phiStar (Ioo (π / 4) (π / 2)) := b
     cos_neg_of_pi_div_two_lt_of_lt (by linarith) (by linarith [pi_pos])
   have hnum : 0 < 1 - cos (2 * x) := by linarith
   exact div_neg_of_pos_of_neg (by positivity) hcos2
+
+/-- No critical phase of `phiStar` lies on the threshold interval, so that derivative supplies no
+radius outside the `layerRadius` family. -/
+theorem deriv_phiStar_ne_zero {x : ℝ} (hx : π / 4 < x) (hx2 : x < π / 2) :
+    deriv phiStar x ≠ 0 := by
+  rw [(hasDerivAt_phiStar hx hx2).deriv]
+  have hcos2 : cos (2 * x) < 0 :=
+    cos_neg_of_pi_div_two_lt_of_lt (by linarith) (by linarith [pi_pos])
+  exact (div_neg_of_pos_of_neg (by linarith) hcos2).ne
 
 theorem phiStar_pos {x : ℝ} (hx : π / 4 < x) (hx1 : x < resonanceRoot1) :
     0 < phiStar x := by
@@ -954,6 +966,10 @@ theorem thresholdPhase_spec {φ : ℝ} (hφ : 0 < φ) :
     thresholdPhase φ ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar (thresholdPhase φ) = φ :=
   Classical.epsilon_spec (exists_threshold_phase hφ)
 
+theorem thresholdPhase_ne_zero {φ : ℝ} (hφ : 0 < φ) : thresholdPhase φ ≠ 0 := by
+  have hmem := (thresholdPhase_spec hφ).1
+  linarith [hmem.1, pi_pos]
+
 theorem thresholdPhase_unique {φ x : ℝ} (hφ : 0 < φ)
     (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
     x = thresholdPhase φ := by
@@ -992,18 +1008,83 @@ theorem thresholdRadius_between_node_and_wall {ℓ φ : ℝ} (hℓ : 0 < ℓ) (h
   · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
     nlinarith [hx.1, hℓ]
 
+/-! ### The `layerRadius` family -/
+
+/-- A phase that does not depend on the channel length cancels in the radius-to-length ratio. -/
+theorem layerRadius_div_length {ℓ x : ℝ} (hℓ : ℓ ≠ 0) (hx : x ≠ 0) :
+    layerRadius ℓ x / ℓ = 1 / (2 * x) := by
+  unfold layerRadius
+  field_simp
+
+/-- Two lengths give the same radius-to-length ratio at any phase that ignores the length. -/
+theorem layerRadius_scale {ℓ₁ ℓ₂ x : ℝ} (h₁ : ℓ₁ ≠ 0) (h₂ : ℓ₂ ≠ 0) (hx : x ≠ 0) :
+    layerRadius ℓ₁ x / ℓ₁ = layerRadius ℓ₂ x / ℓ₂ := by
+  rw [layerRadius_div_length h₁ hx, layerRadius_div_length h₂ hx]
+
+/-- The ratio of two radii in the family depends only on the two phases. -/
+theorem layerRadius_pair_ratio {ℓ x y : ℝ} (hℓ : ℓ ≠ 0) (hx : x ≠ 0) (hy : y ≠ 0) :
+    layerRadius ℓ x / layerRadius ℓ y = y / x := by
+  unfold layerRadius
+  field_simp
+
+theorem layerRadius_pair_ratio_scale {ℓ₁ ℓ₂ x y : ℝ}
+    (h₁ : ℓ₁ ≠ 0) (h₂ : ℓ₂ ≠ 0) (hx : x ≠ 0) (hy : y ≠ 0) :
+    layerRadius ℓ₁ x / layerRadius ℓ₁ y = layerRadius ℓ₂ x / layerRadius ℓ₂ y := by
+  rw [layerRadius_pair_ratio h₁ hx hy, layerRadius_pair_ratio h₂ hx hy]
+
+/-- Every positive length realises the same ratio, so a reading in this family does not select
+`ℓ`. -/
+theorem layerRadius_scale_not_unique {x : ℝ} (hx : x ≠ 0) :
+    ¬ ∃! ℓ : ℝ, 0 < ℓ ∧ layerRadius ℓ x / ℓ = 1 / (2 * x) := by
+  intro h
+  obtain ⟨ℓ, ⟨hℓ, -⟩, huniq⟩ := h
+  have h2pos : 0 < 2 * ℓ := by linarith
+  have h2 : layerRadius (2 * ℓ) x / (2 * ℓ) = 1 / (2 * x) :=
+    layerRadius_div_length (by linarith : (2 : ℝ) * ℓ ≠ 0) hx
+  have heq := huniq (2 * ℓ) ⟨h2pos, h2⟩
+  linarith [heq]
+
 /-- The ratio of the threshold radius to the channel length depends only on the rapidity. -/
 theorem thresholdRadius_div_length {ℓ φ : ℝ} (hℓ : ℓ ≠ 0) (hφ : 0 < φ) :
     thresholdRadius ℓ φ / ℓ = 1 / (2 * thresholdPhase φ) := by
-  rw [thresholdRadius_eq]
-  have hx : thresholdPhase φ ≠ 0 := by
-    have hmem := (thresholdPhase_spec hφ).1
-    linarith [hmem.1, pi_pos]
-  field_simp
+  simpa [thresholdRadius] using
+    layerRadius_div_length hℓ (thresholdPhase_ne_zero hφ)
 
 theorem thresholdRadius_scale {ℓ₁ ℓ₂ φ : ℝ} (h₁ : 0 < ℓ₁) (h₂ : 0 < ℓ₂) (hφ : 0 < φ) :
     thresholdRadius ℓ₁ φ / ℓ₁ = thresholdRadius ℓ₂ φ / ℓ₂ := by
-  rw [thresholdRadius_div_length h₁.ne' hφ, thresholdRadius_div_length h₂.ne' hφ]
+  simpa [thresholdRadius] using
+    layerRadius_scale h₁.ne' h₂.ne' (thresholdPhase_ne_zero hφ)
+
+/-- One positive rapidity does not select `ℓ`. -/
+theorem thresholdRadius_scale_not_unique {φ : ℝ} (hφ : 0 < φ) :
+    ¬ ∃! ℓ : ℝ, 0 < ℓ ∧ thresholdRadius ℓ φ / ℓ = 1 / (2 * thresholdPhase φ) := by
+  intro h
+  apply layerRadius_scale_not_unique (thresholdPhase_ne_zero hφ)
+  obtain ⟨ℓ, ⟨hℓ, hr⟩, huniq⟩ := h
+  refine ⟨ℓ, ⟨hℓ, ?_⟩, ?_⟩
+  · simpa [thresholdRadius] using hr
+  · intro y hy
+    exact huniq y ⟨hy.1, by simpa [thresholdRadius] using hy.2⟩
+
+/-! ### Critical phases stay in the family -/
+
+/-- `gammaSEqual` has no critical phase on `(0, π)`, which contains the first node. -/
+theorem gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi {x : ℝ} (hx : x ∈ Ioo 0 π) :
+    deriv gammaSEqual x ≠ 0 := by
+  intro h
+  have hsin : sin x = 0 := (deriv_gammaSEqual_eq_zero_iff x).1 h
+  exact (sin_pos_of_pos_of_lt_pi hx.1 hx.2).ne' hsin
+
+theorem gammaSEqual_critical_at_int_pi {n : ℤ} :
+    deriv gammaSEqual ((n : ℝ) * π) = 0 :=
+  (deriv_gammaSEqual_eq_zero_iff _).2 (by simp [Real.sin_int_mul_pi])
+
+/-- A critical radius of `gammaSEqual` is `layerRadius ℓ (nπ)` for `n ≠ 0`, so the ratio to `ℓ`
+depends only on `n`. -/
+theorem gammaSEqual_critical_radius_div_length {ℓ : ℝ} {n : ℤ} (hℓ : ℓ ≠ 0) (hn : n ≠ 0) :
+    layerRadius ℓ ((n : ℝ) * π) / ℓ = 1 / (2 * ((n : ℝ) * π)) := by
+  have hx : (n : ℝ) * π ≠ 0 := mul_ne_zero (by exact_mod_cast hn) Real.pi_ne_zero
+  exact layerRadius_div_length hℓ hx
 
 theorem threshold_fractional_widening {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ) :
     (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <

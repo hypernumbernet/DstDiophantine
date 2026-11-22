@@ -2827,6 +2827,31 @@ example {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ)
       (6 : ℝ) / 100 :=
   fourteenMeV_fractional_widening hℓ hφ h
 
+example {φ x y : ℝ} (hφ : 0 < φ) (hx : x ≠ 0) (hy : y ≠ 0)
+    (hGx : gammaSEqual x ≠ 0) (hGy : gammaSEqual y ≠ 0) :
+    (¬ ∃! ℓ : ℝ, 0 < ℓ ∧ layerRadius ℓ x / ℓ = 1 / (2 * x)) ∧
+      (∀ ℓ₁ ℓ₂ : ℝ, ℓ₁ ≠ 0 → ℓ₂ ≠ 0 →
+        layerRadius ℓ₁ x / layerRadius ℓ₁ y = layerRadius ℓ₂ x / layerRadius ℓ₂ y) ∧
+      (¬ ∃! ℓ : ℝ, 0 < ℓ ∧ thresholdRadius ℓ φ / ℓ = 1 / (2 * thresholdPhase φ)) ∧
+      (deriv gammaSEqual ((1 : ℤ) * Real.pi) = 0) ∧
+      (∀ ξ ∈ Set.Ioo 0 Real.pi, deriv gammaSEqual ξ ≠ 0) ∧
+      (∀ ξ ∈ Set.Ioo (Real.pi / 4) (Real.pi / 2), deriv phiStar ξ ≠ 0) ∧
+      (¬ ∃! ℓ : ℝ, 0 < ℓ ∧
+        pairChannelForce 1 1 (gammaSEqual x) (gammaSEqual y) (layerRadius ℓ x) = 0) ∧
+      (¬ ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+        (203 : ℝ) < ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ ∧
+          ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ < 414) := by
+  refine ⟨layerRadius_scale_not_unique hx, ?_, thresholdRadius_scale_not_unique hφ,
+    gammaSEqual_critical_at_int_pi, ?_, ?_,
+    pairChannelForce_layer_zero_not_unique hx hGx hGy,
+    charge_over_nuclear_length_not_unique⟩
+  · intro ℓ₁ ℓ₂ h₁ h₂
+    exact layerRadius_pair_ratio_scale h₁ h₂ hx hy
+  · intro ξ hξ
+    exact gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi hξ
+  · intro ξ hξ
+    exact deriv_phiStar_ne_zero hξ.1 hξ.2
+
 example (N : ℕ) :
     (3 ≤ N →
       -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <

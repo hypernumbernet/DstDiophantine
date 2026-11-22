@@ -12,7 +12,9 @@ set_option linter.style.native false
 # Both channels at once
 
 Where the two interference factors share a sign, the separation-increasing
-force of an unlike pair does not vanish. \(G\), the masses, \(\alpha\),
+force of an unlike pair does not vanish. The vanishing condition itself does
+not mention the separation: once the two interference factors are fixed, either
+every positive radius is a zero or none is. \(G\), the masses, \(\alpha\),
 \(\hbar\), and \(c\) are inputs; no spectrum, binding, or opposite-sign
 force-free radius is derived.
 -/
@@ -44,6 +46,30 @@ theorem unlike_same_sign_no_zero {κ coul γG γE r : ℝ}
   refine ⟨hm, he, ?_⟩
   unfold pairChannelForce
   linarith
+
+/-- Vanishing does not depend on the separation. A zero of `pairChannelForce` therefore does not
+select a radius. -/
+theorem pairChannelForce_eq_zero_iff {κ coul γG γE r : ℝ}
+    (hr : r ≠ 0) (hG : γG ≠ 0) (hE : γE ≠ 0) :
+    pairChannelForce κ coul γG γE r = 0 ↔ κ * γE = coul * γG := by
+  unfold pairChannelForce
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hdenG : γG * r ^ 2 ≠ 0 := mul_ne_zero hG hr2
+  have hdenE : γE * r ^ 2 ≠ 0 := mul_ne_zero hE hr2
+  have hfac : -κ * (γE * r ^ 2) + γG * r ^ 2 * coul =
+      (-κ * γE + coul * γG) * r ^ 2 := by ring
+  rw [div_add_div _ _ hdenG hdenE, div_eq_zero_iff, hfac]
+  constructor
+  · intro h
+    rcases h with h | h
+    · rcases mul_eq_zero.mp h with h | h
+      · linarith
+      · exact absurd h hr2
+    · exact absurd h (mul_ne_zero hdenG hdenE)
+  · intro h
+    refine Or.inl ?_
+    have hzero : -κ * γE + coul * γG = 0 := by linarith
+    rw [hzero, zero_mul]
 
 theorem unlike_both_negative_no_zero {κ coul γG γE r : ℝ}
     (hκ : 0 < κ) (hc : coul < 0) (hr : r ≠ 0)

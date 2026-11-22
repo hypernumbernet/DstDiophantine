@@ -8,7 +8,8 @@ import Mathlib.Tactic.Positivity
 
 A charge is isolated toward a partner when no electromagnetic wall lies at or beyond their
 separation, and a nuclear proton in `(1, 2)` fm is not such a charge. The lengths `ℓ_E` and `a₀` and
-that window are external inputs, and nothing here fixes `κ` or computes a binding.
+that window are external inputs. `ℓ_E` is not identified with a nuclear `layerRadius`, and nothing
+here fixes `κ` or computes a binding.
 -/
 
 namespace DstDiophantine
