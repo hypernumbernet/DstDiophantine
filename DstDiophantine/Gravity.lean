@@ -92,6 +92,9 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `SignReversal` — the sign-reversal scale `r₁` is an observational constant for the channel
   theorems; equating `ℓ` to the charged-pion Compton stand-in selects a unique scale in `(1/2, 1)`,
   and `channelMassRatio` still does not take a meson mass.
+* `ScatteringScale` — repulsion at `1/2` and attraction on `[1, 2]` are exactly `1/2 < r₁ < 1`,
+  so `14/15 < ℓ < 19/10`. The same signs do not select a point. `γ_s` is even in `ℓ`, and the
+  charged-pion selector is not an input.
 * `StrongChannel` — the rapidity threshold on `(π/4,π/2)`; the prefactor `κ`, a fusion rate, and the
   `1/v` law are not derived.
 * `LengthRule` — both channels at once; nothing here fixes `κ` or computes a binding.

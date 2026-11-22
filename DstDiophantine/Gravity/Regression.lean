@@ -34,6 +34,7 @@ import DstDiophantine.Gravity.TorsionalLayer
 import DstDiophantine.Gravity.NuclearLayer
 import DstDiophantine.Gravity.NuclearLength
 import DstDiophantine.Gravity.SignReversal
+import DstDiophantine.Gravity.ScatteringScale
 import DstDiophantine.Gravity.StrongChannel
 import DstDiophantine.Gravity.DualRotorDynamics
 import DstDiophantine.Gravity.DualRotorRigidity
@@ -2793,6 +2794,21 @@ example :
     ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
       lengthOfReversal r₁ = (pionComptonFm : ℝ) :=
   chargedPionSelectsReversalScale
+
+example :
+    (∀ r₁ : ℝ, scatteringSignCuts r₁ ↔ 1 / 2 < r₁ ∧ r₁ < 1) ∧
+      (∀ r₁ : ℝ, scatteringSignCuts r₁ →
+        (14 / 15 : ℝ) < lengthOfReversal r₁ ∧ lengthOfReversal r₁ < 19 / 10) ∧
+      (¬ ∃! r₁ : ℝ, scatteringSignCuts r₁) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧ 2 * lengthOfReversal r₁ / Real.pi < 1) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧ 1 < 2 * lengthOfReversal r₁ / Real.pi) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧
+        (SI.coulombMeVFm : ℝ) / r₁ < (deuteronBindingMeVLower : ℝ)) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧
+        (deuteronBindingMeVUpper : ℝ) < (SI.coulombMeVFm : ℝ) / r₁) := by
+  refine ⟨fun r₁ => scatteringSignCuts_iff, fun r₁ h => length_window_of_scatteringSignCuts h,
+    scatteringSignCuts_not_unique, scattering_wall_inside_one, scattering_wall_outside_one,
+    scattering_coulomb_below_deuteron, scattering_coulomb_above_deuteron⟩
 
 example (N : ℕ) :
     (3 ≤ N →
