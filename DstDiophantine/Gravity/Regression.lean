@@ -97,6 +97,7 @@ import DstDiophantine.Gravity.KillingAxis
 import DstDiophantine.Gravity.RadialFall
 import DstDiophantine.Gravity.Perihelion
 import DstDiophantine.Gravity.Mercury
+import DstDiophantine.Gravity.SolarDeflection
 import DstDiophantine.Gravity.OffEquator
 import DstDiophantine.Gravity.DegenerateSandwich
 import DstDiophantine.Gravity.KillingTransport
@@ -355,6 +356,10 @@ example {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β) (h�
 example :
     42 < Mercury.arcsecPerCentury ∧ Mercury.arcsecPerCentury < 44 :=
   Mercury.perihelion_arcsec_bounds
+
+example :
+    17 / 10 < SolarDeflection.deflectionArcsec ∧ SolarDeflection.deflectionArcsec < 9 / 5 :=
+  SolarDeflection.solar_deflection_arcsec_bounds
 
 example (uθ uφ c : ℝ) :
     2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 :=

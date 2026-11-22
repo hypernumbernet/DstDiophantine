@@ -11,10 +11,11 @@ include this library.
 
 DST already has a sorry-free algebraic core, a shared amplification no-go, a
 Schwarzschild-chart perihelion match for Mercury in `(42, 44)` arcsec/century,
-and a unique charged-pion selector for one reversal scale. Those close
-*consistency* and *selection* claims. They do not yet make DST derive a free
-laboratory or galactic constant, nor do they close a classical Diophantine
-headline without an open residual or bridge.
+a weak-field solar deflection in `(17/10, 9/5)` arcseconds, and a unique
+charged-pion selector for one reversal scale. Those close *consistency* and
+*selection* claims. They do not yet make DST derive a free laboratory or
+galactic constant, nor do they close a classical Diophantine headline without
+an open residual or bridge.
 
 A breakthrough here means one of three things, in this order of programme
 value:
@@ -37,11 +38,12 @@ and Fermat packages marked demoted) are not breakthrough routes.
 | Algebra / PGA / \|J_norm\| ≤ 1 | Proved | Not a Goal; keep regression-only |
 | Amplification no-go (layer 2) | Proved | Layer 3 (leaf or live bridge) still open |
 | Mercury perihelion window | Proved | Closed; do not reopen as a Goal |
+| Solar light deflection | Proved | Closed; do not reopen as a Goal |
 | Charged-pion reversal selector | Proved | Selects `r₁`; channel theorems still take `r₁` as input |
 | Positive Beal assembly | Conditional on six leaves + FLT axiom | Closest Diophantine stack; leaves remain |
 | Other classical headlines | Conditional on five live bridges | Bridges open; continuous abc bridge is false |
 | Free scales `G`, `a₀`, `α`, `ℓ` | Scattering signs fix `14/15 < ℓ < 19/10` and refuse a point. A threshold radius at one positive rapidity cancels `ℓ`, so it also refuses a point. `G`, `a₀`, `α`, and one value of `ℓ` stay underived | Identity breakthrough if any one of those single values is derived |
-| GR solar deflection / rotating source | Not yet stateable | Observation breakthrough once definitions exist |
+| Rotating source | Not yet stateable | Exterior chart of a rotating mass |
 | Dual Hilbert lift / closed dynamics | Not yet stateable | Foundational unlocks, not near-term Goals |
 
 ### Priority targets (new aims)
@@ -54,7 +56,7 @@ the main library already defines the `Prop`. Until then it stays
 | --- | --- | --- | --- | --- | --- |
 | **P0** | Derive channel length `ℓ` (or remove free `r₁`) from a scattering observable | Gravity / strong | `thresholdRadius ℓ φ` is defined. `thresholdRadius_scale` cancels `ℓ`. `scattering_threshold_same_ratio` keeps `3/5` and `9/10` on the same ratio. `fourteenMeV_fractional_widening` puts the skin under `6/100` of the node at the external `14` MeV hypothesis `cosh φ = 1 + 14/(939.565)`. One rapidity still does not select `ℓ`. The sign window and the pion stand-in are unchanged. `1/v` is still not derived | A second absolute length that is not proportional to `ℓ`, before any uniqueness `sorry` | One value of `ℓ` on that path, with no free channel input |
 | **P0** | Derive `a₀` (or an equivalent MOND scale) from dual-image / compactification data | Gravity / galaxy | `GalaxyCurve` and `DualImage` bound dwarfs from external `a₀` and `G`; `dst_derives_a0` is refused | Define `a₀` from the source geometry (e.g. dual period / baryonic data) so flat curves are theorems without that input | A theorem that does not take `a₀` as an input and still recovers a named flat-speed window |
-| **P1** | Solar light deflection in the classical GR window | Gravity / optics | `Lensing.interiorDeflection` is a thin-shell map; no solar null-ray deflection angle | Define the weak-field solar deflection angle on the exterior chart; prove a numerical window against the classical GR value | Goal closed in the main library the same way Mercury was |
+| **P1** | Solar light deflection in the classical GR window | Gravity / optics | `SolarDeflection.solar_deflection_arcsec_bounds` proves `17/10 < deflectionArcsec < 9/5` for a null ray that turns at the nominal solar radius | Closed in the main library | Do not reopen as a Goal |
 | **P1** | Close one Beal leaf *without* a new external axiom | Diophantine | Six leaves open; many slices already closed by named axioms and internal lemmas | Prefer a leaf whose remaining signatures are finite or factor through existing motor / fifth-pair structure (e.g. chase `(10,10,9)`, `(5,5,11)`, or `(3,5,7)` inside the existing residual) | That leaf becomes a theorem; `Goals` deletes its `sorry` |
 | **P2** | `FermatMixedMotorResidual` via the mixed-motor excess already in the library | Diophantine | Excess and odd-prime factorisation lemmas exist; classical FLT not claimed | Strengthen the motor residual until the mixed seat cannot stay admissible for `n ≥ 3` | `fermatMixedMotorResidual` proved; headline follows |
 | **P2** | One live admissible bridge (Collatz / Goldbach / Polignac) | Diophantine | Finite certificates exist; infinite bridge open | Prefer Collatz: cone facts and `n ≤ 2^20` certificates are the strongest local base | Bridge theorem in the main library |
@@ -148,6 +150,7 @@ leaves above. The proofs are not unconditional.
 | Theorem | Statement |
 | --- | --- |
 | `Mercury.perihelion_arcsec_bounds` | `(radialReturn M α β - 2π)` times Mercury's orbits per Julian century lies in `(42, 44)` arcseconds, with the same external elements and SI stand-ins |
+| `SolarDeflection.solar_deflection_arcsec_bounds` | Azimuthal excess of an exterior null ray that turns at the nominal solar radius lies in `(17/10, 9/5)` arcseconds. The excess is strictly above `4GM/(c²R)`. No eclipse residual is claimed |
 | `SignReversal.chargedPionSelectsReversalScale` | Unique `r₁` in `(1/2, 1)` with `lengthOfReversal r₁ = pionComptonFm`. The charged-pion Compton stand-in picks one scattering scale; it does not remove `r₁` from the rest of the channel |
 | `ScatteringScale.scatteringSignCuts_iff` | Repulsion at `1/2` and attraction throughout `[1, 2]` are exactly `1/2 < r₁ < 1`, hence `14/15 < lengthOfReversal r₁ < 19/10`. `scatteringSignCuts_not_unique` shows `3/5` and `9/10` both match. `gammaSEqual_even` is why the sign of `ℓ` is not chosen by the force signs |
 
@@ -165,7 +168,6 @@ rows stay deferred.
 | **P3** | Dynamic equation | Full DST evolution equation in closed form | Global time-evolution operator on coupled rotors |
 | | Beta decay | Mass excess as a class difference with no external input | Unsigned mass-class order |
 | | De Broglie | Wave–particle bridge past the partial quantum logic | Transport–phase coupling on the exterior chart |
-| **P1** | Solar light deflection | Weak-field deflection matches the classical GR angle | Deflection angle of a solar null ray. `Lensing.interiorDeflection` is the thin-shell map |
 | | Rotating masses | Perihelion and lensing for a rotating source | Exterior chart of a rotating mass |
 | | Interior clocks | A light signal makes the beat of two clocks the carrier's wavelength change, read against the deep-interior surplus | That identification. `InteriorClock` defines `compactness` and `centreAdvance`; the Earth figures are external rounding bins |
 | | Mach | Inertial mass from surrounding sources, with stiffness `m` derived | A definition of `m` from the source sum. `MachSource` states that sources do not determine `m` |
@@ -216,9 +218,9 @@ The positive-wall cut is a theorem of the main library (`Logic.WallRule`), not a
 
 Examples already sorry-free in `DstDiophantine/`: admissible bound
 `|J_norm| ≤ 1`, PGA motor algebra, Schwarzschild exterior leading perihelion
-coefficient, Mercury arcseconds per Julian century in `(42, 44)`, unique
-charged-pion reversal scale in `(1/2, 1)`, sign-reversal window for ℓ,
-Coulomb from the dual channel, partial metal-fusion sign lemmas, Collatz
+coefficient, Mercury arcseconds per Julian century in `(42, 44)`, solar null
+deflection in `(17/10, 9/5)` arcseconds, unique charged-pion reversal scale in
+`(1/2, 1)`, sign-reversal window for ℓ, Coulomb from the dual channel, partial metal-fusion sign lemmas, Collatz
 certificate up to `2^20`. These are not duplicated as Goals. A sharper
 observational match stays in the not-yet-stateable index until the missing
 definition exists.

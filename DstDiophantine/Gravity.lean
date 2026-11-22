@@ -42,6 +42,9 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian
   century from external elements.
+* `SolarDeflection` — azimuthal excess of an exterior null ray that turns at radius `R`.
+  For the nominal solar radius the excess lies in `(17/10, 9/5)` arcseconds. No eclipse
+  residual is claimed, and this is not `Lensing.interiorDeflection`.
 * `OffEquator` — the same radial law with both angular legs.
 
 ## Scales that are inputs
