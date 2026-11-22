@@ -18,8 +18,9 @@ things. They are separated as follows.
 | Nineteen coarser `*Residual` props dropped | Two are already theorems (`BealPosCubeAddTwoCubeResidual_of_euler`, `BealTwoEqualEvenSumExpFiveResidual_of_NN5`). Thirteen are consequences of the six Beal leaves in the main library. The other four are not on that path: the even-difference factor and perfect-power packagings, `BealMordellCubeAddTwoResidual`, and `BealCGADilationNoGo`. |
 | Six diagnostic bridges dropped | `BealAdmissibleBridge`, `BealModularBridge`, `BealWindingBridge`, `FermatAdmissibleBridge`, `FermatCoarseDiscreteBridge`, and `FermatModularBridge` are diagnostic, demoted, or vacuous in the main library. They are not research targets. `AbcAdmissibleBridge` is false (`AbcAdmissibleBridge_false`) and was already absent. |
 | Twenty-four gravity, logic, and PGA entries dropped from Lean | Each statement was `True`, or an existence claim with a witness that does not use a library definition (`42 < Δ < 44`, `0 < θ`). Both elaborate without the claim they were meant to record. They are indexed below as not yet stateable. |
+| Two physics frontiers added | Mercury's advance is `Perihelion.radialReturn` on external orbital elements, in arcseconds per Julian century. The charged-pion Compton length selects one sign-reversal scale in `(1/2, 1)` through `lengthOfReversal`. |
 
-Open `sorry` count after the split: **12** (`scripts/count_goals.sh`).
+Open `sorry` count: **14** (`scripts/count_goals.sh`). Twelve are the Diophantine leaves and bridges left by the split. Two are the physics frontiers above.
 
 ## Open `sorry` targets
 
@@ -27,7 +28,8 @@ Open `sorry` count after the split: **12** (`scripts/count_goals.sh`).
 | --- | ---: | --- |
 | `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
-| **Total** | **12** | |
+| `Gravity/Frontiers.lean` | 2 | Mercury arcseconds per century; charged-pion reversal scale |
+| **Total** | **14** | |
 
 ### Beal leaves
 
@@ -72,6 +74,15 @@ leaves above. The proofs are not unconditional.
 | `twin_prime_conjecture_unconditional` | `polignacAdmissibleBridge` at `k = 1` |
 | `riemann_hypothesis_unconditional` | `riemannAdmissibleBridge` |
 
+### Physics frontiers
+
+`Gravity/Frontiers.lean` states two claims. The `sorry` is the whole statement. Neither is assembled from a named leaf in the main library.
+
+| Theorem | Statement |
+| --- | --- |
+| `mercuryPerihelionArcsecPerCentury` | `42 < mercuryArcsecPerCentury < 44`. The quantity is `(radialReturn M α β - 2π)` times Mercury's orbits per Julian century, in arcseconds. `M = GM/c²` uses `SI.GApprox`, `SI.solarMassApprox`, and `SI.speedOfLight`. `α` and `β` are the reciprocal aphelion and perihelion from the external elements `5.790905×10¹⁰` m, eccentricity `0.205630`, and period `87.9691` days |
+| `chargedPionSelectsReversalScale` | There is a unique `r₁` in `(1/2, 1)` with `lengthOfReversal r₁ = pionComptonFm`. That is the selector the window `channelMassRatio` does not supply: the charged-pion Compton length picks one scattering scale |
+
 ## Not yet stateable (index only)
 
 No definition in the main library states these claims. A `True` placeholder
@@ -84,14 +95,12 @@ is not a substitute.
 | Dynamic equation | Full DST evolution equation in closed form | Global time-evolution operator on coupled rotors |
 | Beta decay | Mass excess as a class difference with no external input | Unsigned mass-class order |
 | De Broglie | Wave–particle bridge past the partial quantum logic | Transport–phase coupling on the exterior chart |
-| Mercury perihelion | Advance of about 43 arcseconds per century from the exterior radial return | Conversion from `Perihelion.radialReturn` to arcseconds per Julian century. The module states that no arcseconds are computed. Solar orbital elements are not defined |
 | Solar light deflection | Weak-field deflection matches the classical GR angle | Deflection angle of a solar null ray. `Lensing.interiorDeflection` is the thin-shell map |
 | Rotating masses | Perihelion and lensing for a rotating source | Exterior chart of a rotating mass |
 | Interior clocks | A light signal makes the beat of two clocks the carrier's wavelength change, read against the deep-interior surplus | That identification. `InteriorClock` defines `compactness` and `centreAdvance`; the Earth figures are external rounding bins |
 | Mach | Inertial mass from surrounding sources, with stiffness `m` derived | A definition of `m` from the source sum. `MachSource` states that sources do not determine `m` |
 | Galactic rotation | Flat rotation curves for a general baryonic disk, with `a₀` derived | A theorem that does not take `a₀` as an input. `GalaxyCurve` already bounds stand-in dwarfs (for example `50.2 < v_∞ < 50.3` km/s at `4×10⁸ M_⊙`) from external `a₀` and `G`, and does not assert `dst_derives_a0` |
-| Channel length | `ℓ` and the nuclear pull fixed by scattering, with no free input | A scattering observable. `SignReversal` takes `r₁` as an input. `StrongChannel` does not derive `ℓ` |
-| Yukawa window | A scale inside the carrier-mass window selected by the pion mass | A selector. `channelMassRatio` meets the charged-pion/proton band for every scattering scale and does not pick one (`NuclearLayer`) |
+| Channel length | `ℓ` and the nuclear pull fixed by scattering, with no free input | A scattering observable. `SignReversal` takes `r₁` as an input. `StrongChannel` does not derive `ℓ`. The charged-pion selector is the frontier `chargedPionSelectsReversalScale`; it does not remove the input `r₁` from the rest of the channel |
 | Neutron capture | Cross section growing as `1/v` | A cross section. `StrongChannel` states that the laboratory `1/v` law is not derived |
 | Magic-number splitting | The oscillator closures arise from the layer nodes | That derivation. The integers themselves are theorems: `oscillatorClosure` is `2, 8, 20` and `shiftedClosure` is `28, 50, 82, 126` (`NuclearLayer`) |
 | Surface pairs | Nucleon-pair forces across a touching surface, summed | That sum. The head-on distance of a `7.69` MeV alpha on gold is already in `(29, 30)` fm (`Rutherford`); no cross section is computed there |
