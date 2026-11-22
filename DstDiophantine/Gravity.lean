@@ -93,10 +93,13 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   theorems; equating `ℓ` to the charged-pion Compton stand-in selects a unique scale in `(1/2, 1)`,
   and `channelMassRatio` still does not take a meson mass.
 * `ScatteringScale` — repulsion at `1/2` and attraction on `[1, 2]` are exactly `1/2 < r₁ < 1`,
-  so `14/15 < ℓ < 19/10`. The same signs do not select a point. `γ_s` is even in `ℓ`, and the
-  charged-pion selector is not an input.
-* `StrongChannel` — the rapidity threshold on `(π/4,π/2)`; the prefactor `κ`, a fusion rate, and the
-  `1/v` law are not derived.
+  so `14/15 < ℓ < 19/10`. The same signs do not select a point. One positive rapidity gives
+  `3/5` and `9/10` the same `thresholdRadius / ℓ`. `γ_s` is even in `ℓ`, and the charged-pion
+  selector is not an input.
+* `StrongChannel` — `thresholdRadius ℓ φ` is the equal-scale radius where a positive rapidity meets
+  `phiStar`. The ratio to `ℓ` depends only on `φ`. At the external `14` MeV hypothesis the skin is
+  thinner than `6/100` of the static node. The prefactor `κ`, a fusion rate, and the `1/v` law are
+  not derived.
 * `LengthRule` — both channels at once; nothing here fixes `κ` or computes a binding.
 * `BothChannels` — an unlike pair exerts both terms at every separation.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract

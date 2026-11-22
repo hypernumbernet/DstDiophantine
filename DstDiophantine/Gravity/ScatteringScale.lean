@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.SignReversal
+import DstDiophantine.Gravity.StrongChannel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
@@ -17,6 +18,8 @@ they place the rapidity wall on opposite sides of `1` fm.
 `gammaSEqual` is even, so the opposite length has the same signs. Positivity of `r₁`
 is the choice of a separation, not a consequence of the repulsive sample.
 The charged-pion selector is a different identification and is not used here.
+A threshold radius at one positive rapidity cancels `ℓ` in the ratio, so `3/5` and `9/10`
+keep the same ratio and the signs still do not select a point.
 Two sample radii, rather than the whole segment `[1, 2]`, are not the observable:
 a later positive chamber can match `1` and `2` while the segment between them changes sign.
 -/
@@ -404,6 +407,18 @@ theorem scattering_coulomb_above_deuteron :
       (deuteronBindingMeVUpper : ℝ) < (coulombMeVFm : ℝ) / r₁ :=
   ⟨3 / 5, (scatteringSignCuts_iff).mpr (by norm_num),
     coulomb_gt_deuteronBinding_of_narrow (by norm_num) (by norm_num)⟩
+
+/-- One positive rapidity does not separate the two scattering samples.
+Both stay in the sign window, and their threshold radii scale by the same factor. -/
+theorem scattering_threshold_same_ratio {φ : ℝ} (hφ : 0 < φ) :
+    scatteringSignCuts (3 / 5) ∧ scatteringSignCuts (9 / 10) ∧
+      thresholdRadius (lengthOfReversal (3 / 5)) φ / lengthOfReversal (3 / 5) =
+        thresholdRadius (lengthOfReversal (9 / 10)) φ / lengthOfReversal (9 / 10) := by
+  have h35 : scatteringSignCuts (3 / 5) := (scatteringSignCuts_iff).mpr (by norm_num)
+  have h910 : scatteringSignCuts (9 / 10) := (scatteringSignCuts_iff).mpr (by norm_num)
+  refine ⟨h35, h910, ?_⟩
+  exact thresholdRadius_scale (lengthOfReversal_pos (by norm_num))
+    (lengthOfReversal_pos (by norm_num)) hφ
 
 end Gravity
 

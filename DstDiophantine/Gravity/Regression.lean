@@ -2810,6 +2810,18 @@ example :
     scatteringSignCuts_not_unique, scattering_wall_inside_one, scattering_wall_outside_one,
     scattering_coulomb_below_deuteron, scattering_coulomb_above_deuteron⟩
 
+example {φ : ℝ} (hφ : 0 < φ) :
+    scatteringSignCuts (3 / 5) ∧ scatteringSignCuts (9 / 10) ∧
+      thresholdRadius (lengthOfReversal (3 / 5)) φ / lengthOfReversal (3 / 5) =
+        thresholdRadius (lengthOfReversal (9 / 10)) φ / lengthOfReversal (9 / 10) :=
+  scattering_threshold_same_ratio hφ
+
+example {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ)
+    (h : Real.cosh φ = 1 + (14 : ℝ) / (939565 / 1000)) :
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+      (6 : ℝ) / 100 :=
+  fourteenMeV_fractional_widening hℓ hφ h
+
 example (N : ℕ) :
     (3 ≤ N →
       -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <

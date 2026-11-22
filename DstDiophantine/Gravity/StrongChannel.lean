@@ -12,7 +12,9 @@ import Mathlib.Topology.Order.IntermediateValue
 
 The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity, the laboratory `1/v` law, and a
 capture cross section are not derived. The host that holds a rapidity down, a fusion rate, and the
-Coulomb-to-nuclear ratio are not derived.
+Coulomb-to-nuclear ratio are not derived. `thresholdRadius ℓ φ` is the equal-scale radius at which a
+positive rapidity meets `phiStar`. The ratio of that radius to `ℓ` depends only on `φ`, so one
+rapidity does not select `ℓ`.
 -/
 
 namespace DstDiophantine
@@ -943,6 +945,82 @@ theorem exists_threshold_phase {φ : ℝ} (hφ : 0 < φ) :
   obtain ⟨x, hx, hxφ⟩ := intermediate_value_Ioo' hx0mem.2.le hcont hval
   exact ⟨x, ⟨lt_trans hx0mem.1 hx.1, hx.2⟩, hxφ⟩
 
+/-- The unique phase in `(π/4, x₁)` at which `phiStar` equals `φ`, for `φ > 0`.
+A nonpositive rapidity does not meet that specification. -/
+noncomputable def thresholdPhase (φ : ℝ) : ℝ :=
+  Classical.epsilon fun x => x ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar x = φ
+
+theorem thresholdPhase_spec {φ : ℝ} (hφ : 0 < φ) :
+    thresholdPhase φ ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar (thresholdPhase φ) = φ :=
+  Classical.epsilon_spec (exists_threshold_phase hφ)
+
+theorem thresholdPhase_unique {φ x : ℝ} (hφ : 0 < φ)
+    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
+    x = thresholdPhase φ := by
+  have hspec := thresholdPhase_spec hφ
+  set y := thresholdPhase φ
+  have hπ : resonanceRoot1 < π / 2 := by
+    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hx' : x ∈ Ioo (π / 4) (π / 2) := ⟨hx.1, lt_trans hx.2 hπ⟩
+  have hy' : y ∈ Ioo (π / 4) (π / 2) := ⟨hspec.1.1, lt_trans hspec.1.2 hπ⟩
+  by_contra hne
+  rcases lt_or_gt_of_ne hne with hlt | hgt
+  · have hanti : phiStar y < phiStar x := strictAntiOn_phiStar hx' hy' hlt
+    linarith [hφx, hspec.2]
+  · have hanti : phiStar x < phiStar y := strictAntiOn_phiStar hy' hx' hgt
+    linarith [hφx, hspec.2]
+
+/-- Equal-scale radius at which rapidity `φ` sits on the sign-change threshold, `ℓ / (2 x_*)`. -/
+noncomputable def thresholdRadius (ℓ φ : ℝ) : ℝ :=
+  layerRadius ℓ (thresholdPhase φ)
+
+theorem thresholdRadius_eq (ℓ φ : ℝ) :
+    thresholdRadius ℓ φ = ℓ / (2 * thresholdPhase φ) := by
+  unfold thresholdRadius layerRadius
+  rfl
+
+theorem thresholdRadius_between_node_and_wall {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ) :
+    layerRadius ℓ resonanceRoot1 < thresholdRadius ℓ φ ∧
+      thresholdRadius ℓ φ < 2 * ℓ / π := by
+  have hx := (thresholdPhase_spec hφ).1
+  have hxpos : 0 < thresholdPhase φ := by linarith [hx.1, pi_pos]
+  have hx1pos : 0 < resonanceRoot1 := lt_trans hxpos hx.2
+  unfold thresholdRadius layerRadius
+  constructor
+  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    nlinarith [hx.2, hℓ]
+  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    nlinarith [hx.1, hℓ]
+
+/-- The ratio of the threshold radius to the channel length depends only on the rapidity. -/
+theorem thresholdRadius_div_length {ℓ φ : ℝ} (hℓ : ℓ ≠ 0) (hφ : 0 < φ) :
+    thresholdRadius ℓ φ / ℓ = 1 / (2 * thresholdPhase φ) := by
+  rw [thresholdRadius_eq]
+  have hx : thresholdPhase φ ≠ 0 := by
+    have hmem := (thresholdPhase_spec hφ).1
+    linarith [hmem.1, pi_pos]
+  field_simp
+
+theorem thresholdRadius_scale {ℓ₁ ℓ₂ φ : ℝ} (h₁ : 0 < ℓ₁) (h₂ : 0 < ℓ₂) (hφ : 0 < φ) :
+    thresholdRadius ℓ₁ φ / ℓ₁ = thresholdRadius ℓ₂ φ / ℓ₂ := by
+  rw [thresholdRadius_div_length h₁.ne' hφ, thresholdRadius_div_length h₂.ne' hφ]
+
+theorem threshold_fractional_widening {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ) :
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+      φ / π := by
+  have hspec := thresholdPhase_spec hφ
+  have hfrac := fractional_widening_lt_phi_div_pi hφ hspec.1 hspec.2
+  have hxpos : 0 < thresholdPhase φ := by linarith [hspec.1.1, pi_pos]
+  have hx1pos : 0 < resonanceRoot1 := lt_trans hxpos hspec.1.2
+  have hrew :
+      (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 =
+        (resonanceRoot1 - thresholdPhase φ) / thresholdPhase φ := by
+    rw [thresholdRadius_eq]
+    unfold layerRadius
+    field_simp [hxpos.ne', hx1pos.ne', hℓ.ne']
+  rw [hrew]
+  exact hfrac
+
 theorem slower_threshold_deeper {φ₁ φ₂ x₁ x₂ : ℝ}
     (hφ : φ₁ < φ₂)
     (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)
@@ -998,6 +1076,36 @@ theorem rapidity_lt_sqrt_two {φ y : ℝ} (hφ : 0 < φ) (hy : cosh φ = 1 + y) 
   rw [← sq_lt_sq₀ (le_of_lt hφ) (sqrt_nonneg _)]
   rw [sq_sqrt hy0]
   exact hφsq
+
+/-- At the `14` MeV hypothesis `cosh φ = 1 + 14 / (939.565)`, the repulsive skin is strictly
+thinner than `6/100` of the static node. The rest energy is an external input, and the bound
+does not select `ℓ`. -/
+theorem fourteenMeV_fractional_widening {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ)
+    (h : cosh φ = 1 + (14 : ℝ) / (939565 / 1000)) :
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+      (6 : ℝ) / 100 := by
+  have hwid := threshold_fractional_widening hℓ hφ
+  have hy : (14 : ℝ) / (939565 / 1000) = 14000 / 939565 := by norm_num
+  rw [hy] at h
+  have hφlt := rapidity_lt_sqrt_two hφ h
+  have harg : 2 * ((14000 : ℝ) / 939565) = (28000 : ℝ) / 939565 := by ring
+  have hφsqrt : φ < sqrt ((28000 : ℝ) / 939565) := by simpa [harg] using hφlt
+  have hsqrt_lt : sqrt ((28000 : ℝ) / 939565) < (18 : ℝ) / 100 := by
+    have hL : 0 ≤ sqrt ((28000 : ℝ) / 939565) := sqrt_nonneg _
+    have hR : (0 : ℝ) ≤ (18 : ℝ) / 100 := by norm_num
+    rw [← sq_lt_sq₀ hL hR, sq_sqrt (by positivity)]
+    have hsq : ((18 : ℝ) / 100) ^ 2 = 324 / 10000 := by norm_num
+    rw [hsq, div_lt_div_iff₀ (by norm_num) (by norm_num)]
+    norm_num
+  have hπ : (3 : ℝ) < π := pi_gt_three
+  have hφπ : φ / π < φ / 3 := div_lt_div_of_pos_left hφ (by norm_num) hπ
+  have hφ3 : φ / 3 < ((18 : ℝ) / 100) / 3 :=
+    div_lt_div_of_pos_right (lt_trans hφsqrt hsqrt_lt) (by norm_num)
+  have hend : ((18 : ℝ) / 100) / 3 = (6 : ℝ) / 100 := by norm_num
+  have hφbound : φ / π < (6 : ℝ) / 100 := by
+    have hstep : φ / π < ((18 : ℝ) / 100) / 3 := lt_trans hφπ hφ3
+    linarith
+  linarith
 
 theorem sqrt_two_tenth_lt :
     sqrt (2 / (10 : ℝ) ^ 10) < (3 : ℝ) / 2 / (10 : ℝ) ^ 5 := by
