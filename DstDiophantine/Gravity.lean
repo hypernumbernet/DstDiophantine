@@ -89,8 +89,9 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   node indices, and the splitting is not derived.
 * `NuclearLength` — the charged-pion Compton wavelength against laboratory caps; not the definition
   of the sign-reversal scale.
-* `SignReversal` — the sign-reversal scale `r₁` is an observational constant; a meson mass is not an
-  input, and this ratio is not one graviton.
+* `SignReversal` — the sign-reversal scale `r₁` is an observational constant for the channel
+  theorems; equating `ℓ` to the charged-pion Compton stand-in selects a unique scale in `(1/2, 1)`,
+  and `channelMassRatio` still does not take a meson mass.
 * `StrongChannel` — the rapidity threshold on `(π/4,π/2)`; the prefactor `κ`, a fusion rate, and the
   `1/v` law are not derived.
 * `LengthRule` — both channels at once; nothing here fixes `κ` or computes a binding.

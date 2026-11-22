@@ -9,8 +9,10 @@ set_option linter.style.native false
 /-!
 # The sign-reversal scale as an observational constant
 
-The window `1/2 < r₁ < 1` is an input: `ℓ = 2 x₁ r₁` is not a Compton wavelength, and `r₁` is not
-computed from one.
+The window `1/2 < r₁ < 1` is an input for the channel theorems below. Equating the channel length
+`ℓ = 2 x₁ r₁` to the charged-pion Compton stand-in selects a unique scale in that window
+(`chargedPionSelectsReversalScale`); that selector does not remove `r₁` as an input from the rest of
+the channel, and `channelMassRatio` still does not take a meson mass.
 -/
 
 namespace DstDiophantine
@@ -273,6 +275,64 @@ theorem reversal_bohr_mass_fraction {ℓE a r₁ : ℝ}
       mul_lt_mul_of_pos_right hρhi hMpos
     have hprod : ρ * (γE / γG) = ρ * γE / γG := by ring
     linarith
+
+/-! ### Charged-pion selector
+
+Setting `ℓ = λ_π⁺` (SI stand-in `pionComptonFm`) fixes one `r₁` in `(1/2, 1)`. The map
+`r₁ ↦ 2 x₁ r₁` is strictly monotone, so the root is unique. This does not discharge the channel
+theorems that still take `r₁` as a free parameter.
+-/
+
+/-- The unique sign-reversal scale with channel length equal to the charged-pion Compton length. -/
+noncomputable def chargedPionReversalScale : ℝ :=
+  equalScaleLayerRadius (pionComptonFm : ℝ) resonanceRoot1
+
+theorem chargedPionReversalScale_eq_div :
+    chargedPionReversalScale = (pionComptonFm : ℝ) / (2 * resonanceRoot1) := by
+  rfl
+
+theorem chargedPionReversalScale_mem :
+    (1 / 2 : ℝ) < chargedPionReversalScale ∧ chargedPionReversalScale < 1 := by
+  have hx := firstNode_num_window
+  have hxpos : (0 : ℝ) < resonanceRoot1 := lt_trans (by norm_num) hx.1
+  have h2x : (0 : ℝ) < 2 * resonanceRoot1 := by positivity
+  have hpion_gt : (7 / 5 : ℝ) < (pionComptonFm : ℝ) := by
+    rw [show (7 / 5 : ℝ) = ((7 / 5 : ℚ) : ℝ) by norm_num]
+    exact_mod_cast pionComptonFm_tight_bounds.1
+  have hpion_lt : (pionComptonFm : ℝ) < 71 / 50 := by
+    rw [show (71 / 50 : ℝ) = ((71 / 50 : ℚ) : ℝ) by norm_num]
+    exact_mod_cast pionComptonFm_tight_bounds.2
+  rw [chargedPionReversalScale_eq_div]
+  constructor
+  · rw [lt_div_iff₀ h2x]
+    have hhalf : (1 / 2 : ℝ) * (2 * resonanceRoot1) = resonanceRoot1 := by ring
+    rw [hhalf]
+    exact lt_trans hx.2 (lt_trans (by norm_num : (19 / 20 : ℝ) < 7 / 5) hpion_gt)
+  · rw [div_lt_iff₀ h2x]
+    have h2x_lo : (28 / 15 : ℝ) < 2 * resonanceRoot1 := by nlinarith [hx.1]
+    have hcmp : (71 / 50 : ℝ) < 28 / 15 := by norm_num
+    linarith
+
+theorem lengthOfReversal_chargedPionReversalScale :
+    lengthOfReversal chargedPionReversalScale = (pionComptonFm : ℝ) := by
+  have hxpos : (0 : ℝ) < resonanceRoot1 :=
+    lt_trans (by norm_num) firstNode_num_window.1
+  unfold lengthOfReversal chargedPionReversalScale equalScaleLayerRadius
+  field_simp [hxpos.ne']
+
+/-- The charged-pion Compton length selects a unique sign-reversal scale in `(1/2, 1)`. -/
+theorem chargedPionSelectsReversalScale :
+    ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+      lengthOfReversal r₁ = (pionComptonFm : ℝ) := by
+  have hxpos : (0 : ℝ) < resonanceRoot1 :=
+    lt_trans (by norm_num) firstNode_num_window.1
+  obtain ⟨hr0, hr1⟩ := chargedPionReversalScale_mem
+  refine ⟨chargedPionReversalScale, ⟨hr0, hr1, lengthOfReversal_chargedPionReversalScale⟩, ?_⟩
+  intro y hy
+  have hyeq : lengthOfReversal y = lengthOfReversal chargedPionReversalScale :=
+    hy.2.2.trans lengthOfReversal_chargedPionReversalScale.symm
+  unfold lengthOfReversal at hyeq
+  exact mul_left_cancel₀ (mul_ne_zero (by norm_num : (2 : ℝ) ≠ 0) hxpos.ne') hyeq
 
 /-! ### Channel-length mass ratio
 

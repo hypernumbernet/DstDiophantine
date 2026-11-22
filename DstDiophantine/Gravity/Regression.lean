@@ -2789,6 +2789,11 @@ example {r₁ : ℝ} {N : ℕ} (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1)
     channelMassRatio_exceeds_planck hr0 hr1,
     channelMassRatio_ne_remote_floor hr0 hr1 hN⟩
 
+example :
+    ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+      lengthOfReversal r₁ = (pionComptonFm : ℝ) :=
+  chargedPionSelectsReversalScale
+
 example (N : ℕ) :
     (3 ≤ N →
       -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <
