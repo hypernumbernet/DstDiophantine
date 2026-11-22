@@ -115,8 +115,7 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
   have hβval (a : Fin 3) : (t.m a : ZMod N).val = βk a := by
     simp [t, ZMod.val_natCast, Nat.mod_eq_of_lt (hβklt a)]
   refine ⟨N, hNe, t, ?_, ?_, ?_⟩
-  ·
-    intro a
+  · intro a
     have hαle := natFloor_le hNpos (h a).1
     have hβle := natFloor_le hNpos (h a).2.1
     rw [Discrete.toTorsionParams_alpha, Discrete.toTorsionParams_beta, hαval, hβval]

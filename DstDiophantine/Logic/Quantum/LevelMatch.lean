@@ -4,7 +4,8 @@ import Mathlib.Tactic.Positivity
 /-!
 # Level-matching dictionary
 
-String level matching `L₀ = L̄₀` is not identified with a DST equation. The dictionary records the slice `J = 0`, and balanced rays sit on it.
+String level matching `L₀ = L̄₀` is not identified with a DST equation. The dictionary records the
+slice `J = 0`, and balanced rays sit on it.
 -/
 
 namespace DstDiophantine

@@ -8,7 +8,8 @@ import Mathlib.Data.Finset.Sort
 /-!
 # The ten bivectors are a basis of the bivector grade
 
-Boosts, rotations, and translations span the grade-2 summand. An abstract isomorphism with `𝔦𝔰𝔬(3,1)` is not claimed.
+Boosts, rotations, and translations span the grade-2 summand. An abstract isomorphism with
+`𝔦𝔰𝔬(3,1)` is not claimed.
 -/
 
 namespace DstDiophantine

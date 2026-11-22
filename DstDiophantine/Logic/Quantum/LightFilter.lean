@@ -7,7 +7,9 @@ import DstDiophantine.Logic.Quantum.DiracField
 /-!
 # The light-cone filter
 
-Manifestation sends a dual vector to a future lightlike four-vector, and superposition is not addition in the chart. The joint rapidity pairing is indefinite, so it is not the information weight.
+Manifestation sends a dual vector to a future lightlike four-vector, and superposition is not
+addition in the chart. The joint rapidity pairing is indefinite, so it is not the information
+weight.
 -/
 
 namespace DstDiophantine

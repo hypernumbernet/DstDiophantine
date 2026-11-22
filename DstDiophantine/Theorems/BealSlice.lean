@@ -5,7 +5,8 @@ import Mathlib.NumberTheory.FLT.Four
 /-!
 # Unconditional slices for exponents 3 and 4
 
-Mathlib FLT closes `3 ∣ bealExpGcd` and `4 ∣ bealExpGcd`. Classical Beal is not claimed; `BealPythagoreanResidual` and `BealMixedExpResidual` stay open.
+Mathlib FLT closes `3 ∣ bealExpGcd` and `4 ∣ bealExpGcd`. Classical Beal is not claimed;
+`BealPythagoreanResidual` and `BealMixedExpResidual` stay open.
 -/
 
 namespace DstDiophantine

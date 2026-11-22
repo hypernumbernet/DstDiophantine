@@ -7,7 +7,8 @@ import Mathlib.Tactic.Ring
 /-!
 # A local Lorentz 1-jet whose teleparallel scalar does not vanish
 
-Two Minkowski-antisymmetric generators with independent jets need not have vanishing teleparallel scalar. At the identity, `exp(y K_{tx}) exp(t K_{xy})` has teleparallel scalar `-2`.
+Two Minkowski-antisymmetric generators with independent jets need not have vanishing teleparallel
+scalar. At the identity, `exp(y K_{tx}) exp(t K_{xy})` has teleparallel scalar `-2`.
 -/
 
 namespace DstDiophantine

@@ -8,7 +8,8 @@ import Mathlib.Algebra.Order.Group.Abs
 /-!
 # Torsional invariants `J`, `J₅`, and unsigned mass
 
-On the admissible cone `|JNormalized| ≤ 1`. `IsPrincipalBranch` alone does not bound `J`, and `8 ∑(α²-β²)` is not the Killing pairing.
+On the admissible cone `|JNormalized| ≤ 1`. `IsPrincipalBranch` alone does not bound `J`, and
+`8 ∑(α²-β²)` is not the Killing pairing.
 -/
 
 namespace DstDiophantine
@@ -21,7 +22,8 @@ namespace Invariant
 def killingForm (p q : TorsionParams) : ℝ :=
   8 * (∑ a : Fin 3, (p.alpha a * q.alpha a - p.beta a * q.beta a))
 
-/-- Generator Killing form evaluated on the half-angle coefficients of `omegaTorsion`: `∑_a 8 (α_a/2)² + (-8) (β_a/2)²`. -/
+/-- Generator Killing form evaluated on the half-angle coefficients of `omegaTorsion`:
+`∑_a 8 (α_a/2)² + (-8) (β_a/2)²`. -/
 noncomputable def omegaTorsionGeneratorKilling (p : TorsionParams) : ℝ :=
   ∑ a : Fin 3, (8 * (p.alpha a / 2) ^ 2 + (-8) * (p.beta a / 2) ^ 2)
 

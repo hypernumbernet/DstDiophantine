@@ -14,7 +14,8 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 /-!
 # Group-level structure of torsion rotors and null translators
 
-A torsion rotor normalises translators, and `exp(Ω_biv)` is a motor with a dressed translation. Surjectivity of `exp` onto the rotor group is not claimed.
+A torsion rotor normalises translators, and `exp(Ω_biv)` is a motor with a dressed translation.
+Surjectivity of `exp` onto the rotor group is not claimed.
 -/
 
 namespace DstDiophantine

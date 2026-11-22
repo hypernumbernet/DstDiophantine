@@ -1874,8 +1874,7 @@ theorem dodecaResponse_gt_seven {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) dodecaWall) 
         · exact (dodecaFarTerm_strictAnti hx ⟨by norm_num, lt_trans (by norm_num) hcut⟩ hlt).le
         · exact le_rfl
       linarith [dodeca_slot_1, hnear, hfar, hfarx]
-    ·
-      have hmono := dodecaNearTerm_strictMono
+    · have hmono := dodecaNearTerm_strictMono
       have hanti := dodecaFarTerm_strictAnti
       rcases le_or_gt x (66 / 250) with h2 | h2
       · have ha : (33 / 250 : ℝ) ∈ Ioo (0 : ℝ) dodecaWall := ⟨by norm_num, lt_trans (by norm_num)

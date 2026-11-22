@@ -16,7 +16,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Fourier analysis on the discrete dual circle
 
-Centered Dirichlet phases are characters of `ℤ/Nℤ` only for odd `N`. This is not `ℂ²` and not the indefinite Killing pairing.
+Centered Dirichlet phases are characters of `ℤ/Nℤ` only for odd `N`. This is not `ℂ²` and not the
+indefinite Killing pairing.
 -/
 
 namespace DstDiophantine

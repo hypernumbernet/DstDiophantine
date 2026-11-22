@@ -584,7 +584,8 @@ theorem secondZ_eq_secondX_iff {a b c : ℝ} (ha : 0 ≤ a) (hc : 0 ≤ c) :
     rw [h]
     ring
 
-/-- Signed moments of the four cross pairs in one coordinate plane. The two opposite arms each see both signs of the right angle. -/
+/-- Signed moments of the four cross pairs in one coordinate plane. The two opposite arms each see
+both signs of the right angle. -/
 noncomputable def axisPairTorque (χ ψ : ℝ) : ℝ :=
   chordMoment χ ψ (Real.pi / 2) + chordMoment χ ψ (-Real.pi / 2) +
     chordMoment χ ψ (-Real.pi / 2) + chordMoment χ ψ (Real.pi / 2)

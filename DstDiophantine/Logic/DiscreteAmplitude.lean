@@ -6,7 +6,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Discrete D4L amplitudes
 
-When `¬ 4 ∣ N` the label `F` is uninhabited; when `4 ∣ N` both walls are attained. Does not import `Theorems`.
+When `¬ 4 ∣ N` the label `F` is uninhabited; when `4 ∣ N` both walls are attained. Does not import
+`Theorems`.
 -/
 
 namespace DstDiophantine

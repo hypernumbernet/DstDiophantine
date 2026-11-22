@@ -7,7 +7,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Dual-sector Rodrigues formula
 
-`Γ(β)² = -‖β‖²`, so the Banach exponential collapses to the Rodrigues formula. Mixed usual/dual generators are not identified with a matrix exponential here.
+`Γ(β)² = -‖β‖²`, so the Banach exponential collapses to the Rodrigues formula. Mixed usual/dual
+generators are not identified with a matrix exponential here.
 -/
 
 namespace DstDiophantine

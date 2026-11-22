@@ -5,7 +5,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # Spin and the exclusion of a repeated ray
 
-The spin-statistics theorem is not derived, the outward pole is not claimed absent as a force, and the three cosines are not identified with the separations in `γ_s`.
+The spin-statistics theorem is not derived, the outward pole is not claimed absent as a force, and
+the three cosines are not identified with the separations in `γ_s`.
 -/
 
 noncomputable section

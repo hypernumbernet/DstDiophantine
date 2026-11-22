@@ -5,7 +5,8 @@ import DstDiophantine.Algebra.Amplification
 /-!
 # Motor propositions
 
-The additive null translation is separate from the multiplicative torsion layer. Mixed `R·T` is not identified with `exp(Ω_biv)`.
+The additive null translation is separate from the multiplicative torsion layer. Mixed `R·T` is not
+identified with `exp(Ω_biv)`.
 -/
 
 namespace DstDiophantine

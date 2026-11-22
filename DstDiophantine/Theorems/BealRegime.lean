@@ -9,7 +9,8 @@ set_option linter.style.native false
 /-!
 # Exponent regime labels
 
-`classifyBealExponents` marks a closed shape `T` or the open residual `U`, and never bookkeeping `B`. A `.U` label does not claim classical Beal.
+`classifyBealExponents` marks a closed shape `T` or the open residual `U`, and never bookkeeping
+`B`. A `.U` label does not claim classical Beal.
 -/
 
 namespace DstDiophantine

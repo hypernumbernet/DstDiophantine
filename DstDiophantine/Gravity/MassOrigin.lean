@@ -9,7 +9,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Where unsigned mass sits
 
-The time-reversing map `(α, β) ↦ (β, −α)` preserves unsigned mass and fixes only the origin, where that mass vanishes. No value of `m`, no mass gap from leaving the sector-symmetric state, and no identification with `F = ma` are claimed.
+The time-reversing map `(α, β) ↦ (β, −α)` preserves unsigned mass and fixes only the origin, where
+that mass vanishes. No value of `m`, no mass gap from leaving the sector-symmetric state, and no
+identification with `F = ma` are claimed.
 -/
 
 namespace DstDiophantine

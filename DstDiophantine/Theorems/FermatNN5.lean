@@ -7,7 +7,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Signature `(n,n,5)` as an axiom
 
-`fermatSignatureNN5` assumes no coprime nonzero `a^n + b^n = c⁵` for `n ≥ 4`. It is not Darmon–Merel and not a Lean proof of that theorem; `(3,3,5)` is not this axiom.
+`fermatSignatureNN5` assumes no coprime nonzero `a^n + b^n = c⁵` for `n ≥ 4`. It is not Darmon–Merel
+and not a Lean proof of that theorem; `(3,3,5)` is not this axiom.
 -/
 
 namespace DstDiophantine

@@ -28,7 +28,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Amplification versus the admissible bound
 
-A seed taller than `1/m²` cannot amplify inside the admissible bound. Classical Beal is not claimed; what remains are the named residuals.
+A seed taller than `1/m²` cannot amplify inside the admissible bound. Classical Beal is not claimed;
+what remains are the named residuals.
 -/
 
 namespace DstDiophantine

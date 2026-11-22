@@ -7,7 +7,8 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 /-!
 # Occupancy of one dual-spinor ray
 
-For `u ≠ 0` the orthogonal complement of the ray of `u` is the ray of `Ju`, and `J` reverses the spin vector. A repeated ray of a nonzero dual spinor is not a scalar multiple of the singlet.
+For `u ≠ 0` the orthogonal complement of the ray of `u` is the ray of `Ju`, and `J` reverses the
+spin vector. A repeated ray of a nonzero dual spinor is not a scalar multiple of the singlet.
 -/
 
 namespace DstDiophantine

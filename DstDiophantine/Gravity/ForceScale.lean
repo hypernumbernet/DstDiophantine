@@ -6,7 +6,8 @@ set_option linter.style.native false
 /-!
 # Which scale one compactification produces
 
-Once `N²` is the Planck ratio, the nonzero floor is `(16/3) α_G(m)`, a gravitational scale. No theorem asserts `dst_derives_G` or `dst_derives_alpha`, and the integer `N` is not derived.
+Once `N²` is the Planck ratio, the nonzero floor is `(16/3) α_G(m)`, a gravitational scale. No
+theorem asserts `dst_derives_G` or `dst_derives_alpha`, and the integer `N` is not derived.
 -/
 
 namespace DstDiophantine

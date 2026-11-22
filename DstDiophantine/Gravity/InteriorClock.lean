@@ -11,7 +11,9 @@ set_option linter.style.native false
 /-!
 # Interior clock, apart from the potential
 
-DST time at a station is the enclosed compactness, while the potential is a different quantity whose slope is the weight. No theorem equates a frequency beat with a wavelength change, and the Earth figures are rounding bins for external `GM`, `R`, `G`, and `c`.
+DST time at a station is the enclosed compactness, while the potential is a different quantity whose
+slope is the weight. No theorem equates a frequency beat with a wavelength change, and the Earth
+figures are rounding bins for external `GM`, `R`, `G`, and `c`.
 -/
 
 namespace DstDiophantine
@@ -337,7 +339,8 @@ private theorem centreAdvance_at_6962 :
   rw [one_div]
   linarith
 
-/-- `GM/(Rc²)` and the centre advance round to `6.96×10⁻¹⁰`; the Newtonian centre is a separate bin. -/
+/-- `GM/(Rc²)` and the centre advance round to `6.96×10⁻¹⁰`; the Newtonian centre is a separate
+bin. -/
 theorem earth_centre_bins :
     (6955 : ℝ) / 10 ^ 13 < (earthCompactnessQ : ℝ) ∧
       (earthCompactnessQ : ℝ) < (6965 : ℝ) / 10 ^ 13 ∧

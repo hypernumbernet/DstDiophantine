@@ -4,7 +4,8 @@ import DstDiophantine.Logic.Connective
 /-!
 # From a Boolean block to the four labels
 
-A classical step in dimension two stays inside one four-element island, and the height order cannot receive its two atoms. No map sends a formula to a subspace.
+A classical step in dimension two stays inside one four-element island, and the height order cannot
+receive its two atoms. No map sends a formula to a subspace.
 -/
 
 namespace DstDiophantine
@@ -256,7 +257,8 @@ theorem height_meet_neg_eq_zero_iff (j : ℝ) :
 /-!
 ## Classical rules on an island
 
-The four positive-wall rules, read on the two bits, are the classical ones. The reading does not send a formula to a subspace.
+The four positive-wall rules, read on the two bits, are the classical ones. The reading does not
+send a formula to a subspace.
 -/
 
 theorem ofBits_material (L : QProp) (p q : Bool × Bool) :

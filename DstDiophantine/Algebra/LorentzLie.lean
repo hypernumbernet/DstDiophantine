@@ -10,7 +10,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Lie closure of the ten generators
 
-The Lorentz and Poincaré spans are closed under the commutator, with duality a complex structure on the Lorentz span. An abstract isomorphism with `𝔰𝔬(3,1)` is not claimed.
+The Lorentz and Poincaré spans are closed under the commutator, with duality a complex structure on
+the Lorentz span. An abstract isomorphism with `𝔰𝔬(3,1)` is not claimed.
 -/
 
 namespace DstDiophantine

@@ -24,7 +24,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Dual-axis Fermat motors
 
-Positive solutions of degree `n = 2` are pure cyclic, and degree `n ≥ 3` are mixed. Classical FLT is not claimed; `FermatMixedMotorResidual` stays open.
+Positive solutions of degree `n = 2` are pure cyclic, and degree `n ≥ 3` are mixed. Classical FLT is
+not claimed; `FermatMixedMotorResidual` stays open.
 -/
 
 namespace DstDiophantine
@@ -156,7 +157,8 @@ theorem isMixedFermatMotor_of_sol {a b c : ℤ} {n : ℕ}
 
 /-! ### Sandwich / commutator connection (geometric, independent of FLT)
 
-The mixed seed is a radial boost plus an axis-1 rotation. The jets on \(N_1\) and \(N_3\) assemble from those two factors.
+The mixed seed is a radial boost plus an axis-1 rotation. The jets on \(N_1\) and \(N_3\) assemble
+from those two factors.
 -/
 
 /-! #### First jet and finite sandwich on \(N_3\) -/

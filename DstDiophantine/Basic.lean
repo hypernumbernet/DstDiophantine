@@ -45,7 +45,8 @@ import DstDiophantine.FoundationRegression
 /-!
 # Diophantine public API
 
-Re-exports the PGA algebra, the integer embedding, the amplification core, and `Theorems`. Gravity, `Theorems.BealRegime`, and `DstDiophantine.Logic` are not re-exported.
+Re-exports the PGA algebra, the integer embedding, the amplification core, and `Theorems`. Gravity,
+`Theorems.BealRegime`, and `DstDiophantine.Logic` are not re-exported.
 -/
 
 namespace DstDiophantine

@@ -8,7 +8,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Two electrons as elements of the three-sphere
 
-The nucleus and the two electrons are three elements, and a spatial amplitude unchanged by every common right rotation is an amplitude of their three cosines. These angles are not identified with laboratory separations, and no energy, spectrum, or spin-statistics theorem is derived.
+The nucleus and the two electrons are three elements, and a spatial amplitude unchanged by every
+common right rotation is an amplitude of their three cosines. These angles are not identified with
+laboratory separations, and no energy, spectrum, or spin-statistics theorem is derived.
 -/
 
 noncomputable section

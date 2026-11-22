@@ -6,7 +6,8 @@ import DstDiophantine.Logic.Quantum.LightFilter
 /-!
 # The carrier before the chart
 
-The spin curve solves `i u' = ½ (ω·σ) u`, and a chart time of nonzero energy does not keep the de Broglie phase fixed. `e^{iα} I` is a dual rotor only at the phases `±1`.
+The spin curve solves `i u' = ½ (ω·σ) u`, and a chart time of nonzero energy does not keep the de
+Broglie phase fixed. `e^{iα} I` is a dual rotor only at the phases `±1`.
 -/
 
 namespace DstDiophantine

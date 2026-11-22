@@ -25,7 +25,8 @@ open scoped Real
 
 /-! ### Circular and linear travelling waves -/
 
-/-- Circularly polarised wave of helicity \(\sigma\) at phase \(\psi=kz-\omega t\) (units \(c=1\)). -/
+/-- Circularly polarised wave of helicity \(\sigma\) at phase \(\psi=kz-\omega t\) (units
+\(c=1\)). -/
 noncomputable def circularWave (σ E0 ψ : ℝ) : FaradayParams where
   E := fun
     | 0 => E0 * Real.cos ψ

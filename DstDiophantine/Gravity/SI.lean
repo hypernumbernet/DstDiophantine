@@ -8,7 +8,8 @@ set_option linter.style.native false
 /-!
 # SI / CODATA bookkeeping for the DST gravity chart
 
-These rationals are external CODATA-style inputs and are not derived from the double spacetime algebra.
+These rationals are external CODATA-style inputs and are not derived from the double spacetime
+algebra.
 -/
 
 namespace DstDiophantine
@@ -53,7 +54,8 @@ def protonMassScale : ℕ := 38
 def protonMassApprox : ℚ :=
   protonMassMantissa / (10 : ℚ) ^ protonMassScale
 
-/-- Mantissa of \(m_\alpha \approx 6.6446573357\times 10^{-27}\) kg, the \(^4\mathrm{He}\) nucleus. -/
+/-- Mantissa of \(m_\alpha \approx 6.6446573357\times 10^{-27}\) kg, the \(^4\mathrm{He}\)
+nucleus. -/
 def alphaMassMantissa : ℕ := 66446573357
 
 /-- Scale: \(m_\alpha =\) `alphaMassMantissa` `/ 10^alphaMassScale`. -/
@@ -62,7 +64,8 @@ def alphaMassScale : ℕ := 37
 def alphaMassApprox : ℚ :=
   alphaMassMantissa / (10 : ℚ) ^ alphaMassScale
 
-/-- Mantissa of the \(^{23}\mathrm{Na}\) nucleus stand-in \(3.8165389703\times 10^{-26}\) kg. Electron binding is not included. -/
+/-- Mantissa of the \(^{23}\mathrm{Na}\) nucleus stand-in \(3.8165389703\times 10^{-26}\) kg.
+Electron binding is not included. -/
 def sodiumMassMantissa : ℕ := 38165389703
 
 /-- Scale: \(m_{\mathrm{Na}} =\) `sodiumMassMantissa` `/ 10^sodiumMassScale`. -/
@@ -71,7 +74,8 @@ def sodiumMassScale : ℕ := 36
 def sodiumMassApprox : ℚ :=
   sodiumMassMantissa / (10 : ℚ) ^ sodiumMassScale
 
-/-- Mantissa of the \(^{7}\mathrm{Li}\) nucleus stand-in \(1.1647614983\times 10^{-26}\) kg. Electron binding is not included. -/
+/-- Mantissa of the \(^{7}\mathrm{Li}\) nucleus stand-in \(1.1647614983\times 10^{-26}\) kg.
+Electron binding is not included. -/
 def lithiumMassMantissa : ℕ := 11647614983
 
 /-- Scale: \(m_{\mathrm{Li}} =\) `lithiumMassMantissa` `/ 10^lithiumMassScale`. -/
@@ -144,7 +148,8 @@ theorem elementaryCharge_pos : (0 : ℚ) < elementaryCharge := by
 theorem fineStructureApprox_pos : (0 : ℚ) < fineStructureApprox := by
   unfold fineStructureApprox fineStructureMantissa fineStructureScale; norm_num
 
-/-- Electromagnetic pair scale \(ke^{2}=\alpha\hbar c\) (J·m). The single observational definition of the force scale. -/
+/-- Electromagnetic pair scale \(ke^{2}=\alpha\hbar c\) (J·m). The single observational definition
+of the force scale. -/
 def coulombScale : ℚ := fineStructureApprox * hbarC
 
 /-- Coulomb prefactor \(k = \alpha\,\hbar c / e^2\) (N·m²/C²). -/
@@ -331,7 +336,8 @@ def nuclearWellDepthMeVApprox : ℚ := 45
 
 /-! ### Nucleon-nucleon sign radii and charge radii (external) -/
 
-/-- A separation inside the repulsive core. The quoted core scale is `1/2` fm; `2/5` fm lies strictly inside it. -/
+/-- A separation inside the repulsive core. The quoted core scale is `1/2` fm; `2/5` fm lies
+strictly inside it. -/
 def nnCoreInteriorFm : ℚ := 2 / 5
 
 /-- Quoted repulsive-core scale, `1/2` fm. -/

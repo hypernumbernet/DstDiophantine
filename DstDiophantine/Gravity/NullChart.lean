@@ -8,7 +8,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Null rotation on the inertial chart
 
-The coframe is the inverse of the parabolic rotor `1 + t(B⁺₀ + B⁻₁)` on Minkowski coordinates. Its Maurer–Cartan generator is constant, and the coefficient mismatch `α₀ = β₁ = 2t` is zero.
+The coframe is the inverse of the parabolic rotor `1 + t(B⁺₀ + B⁻₁)` on Minkowski coordinates. Its
+Maurer–Cartan generator is constant, and the coefficient mismatch `α₀ = β₁ = 2t` is zero.
 -/
 
 namespace DstDiophantine

@@ -14,7 +14,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Closed-form structure of the equal-scale torsional layers
 
-The length `ℓ` and the identification of the layered phase with the strong force are not derived. No theorem asserts `dst_derives_lambda`, `dst_derives_alpha_s`, or `dst_derives_Amax`.
+The length `ℓ` and the identification of the layered phase with the strong force are not derived. No
+theorem asserts `dst_derives_lambda`, `dst_derives_alpha_s`, or `dst_derives_Amax`.
 -/
 
 namespace DstDiophantine
@@ -158,7 +159,8 @@ theorem signed_sin_pos_on_branch (n : ℕ) {x : ℝ}
 
 /-! ### Strict monotonicity on each branch -/
 
-/-- Sign-corrected interference factor: strictly decreasing on the `n`-th `π`-interval for every `n`. -/
+/-- Sign-corrected interference factor: strictly decreasing on the `n`-th `π`-interval for every
+`n`. -/
 noncomputable def gammaSSigned (n : ℕ) (x : ℝ) : ℝ := (-1 : ℝ) ^ n * gammaSEqual x
 
 theorem gammaSSigned_eq_zero_iff (n : ℕ) (x : ℝ) :
@@ -547,7 +549,8 @@ theorem cosh_nat_mul_pi_le_exp (n : ℕ) :
 
 /-! ### Inward screening of the mid-layer force -/
 
-/-- Mid-layer (plateau) force factor: the force at the extremal radius `r = ℓ/(2nπ)` is `k/(γ_s r²)`, i.e. `k/ℓ²` times this factor. -/
+/-- Mid-layer (plateau) force factor: the force at the extremal radius `r = ℓ/(2nπ)` is
+`k/(γ_s r²)`, i.e. `k/ℓ²` times this factor. -/
 noncomputable def plateauForceFactor (n : ℕ) : ℝ :=
   4 * π ^ 2 * (n : ℝ) ^ 2 / cosh ((n : ℝ) * π)
 

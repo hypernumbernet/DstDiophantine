@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Quantum.DiracField
 /-!
 # Position and momentum on the de Broglie phase
 
-A chart point enters only through the phase `p_μ x^μ`. The Weyl relation of that phase is not the canonical commutator, and an uncertainty bound for orbital angles is not claimed.
+A chart point enters only through the phase `p_μ x^μ`. The Weyl relation of that phase is not the
+canonical commutator, and an uncertainty bound for orbital angles is not claimed.
 -/
 
 namespace DstDiophantine

@@ -7,7 +7,9 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!
 # Neutron scattering outside the rapidity wall
 
-At vanishing phase the pair force is the inverse-square law of strength `κ/cosh(φ/2)`, and a neutron outside the rapidity wall of a nucleon ball is pulled inward. The prefactor `κ`, a scattering length in femtometres, and the rest energy `939.565` MeV are not derived.
+At vanishing phase the pair force is the inverse-square law of strength `κ/cosh(φ/2)`, and a neutron
+outside the rapidity wall of a nucleon ball is pulled inward. The prefactor `κ`, a scattering length
+in femtometres, and the rest energy `939.565` MeV are not derived.
 -/
 
 namespace DstDiophantine
@@ -330,7 +332,8 @@ theorem fourteenMeV_halfAngle {φ : ℝ}
   · rw [← sq_lt_sq₀ hpos.le (by norm_num), hsq]
     norm_num
 
-/-- From `1` MeV to `14` MeV the far-field coefficient falls by a fraction strictly less than `4/1000`. -/
+/-- From `1` MeV to `14` MeV the far-field coefficient falls by a fraction strictly less than
+`4/1000`. -/
 theorem farField_strength_drop {c₁ c₁₄ : ℝ}
     (h₁ : (1000266 : ℝ) / 1000000 < c₁)
     (h₁₄lo : (1003718 : ℝ) / 1000000 < c₁₄)
@@ -384,7 +387,8 @@ private theorem radial_gap_pos
   have hrew : ‖n - C‖ * (‖n - C‖ - R) = ‖n - C‖ ^ 2 - R * ‖n - C‖ := by ring
   linarith
 
-/-- The force on the neutron from one nucleon, along the separation. A positive coefficient is an attraction. -/
+/-- The force on the neutron from one nucleon, along the separation. A positive coefficient is an
+attraction. -/
 noncomputable def neutronPairForce
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (κ ℓ δ : ℝ) (n p : E) : E :=
@@ -663,7 +667,8 @@ private theorem phase_le_of_ball
     linarith
   exact ⟨by positivity, hle.trans hphase⟩
 
-/-- At phase at most `7/100`, the fractional gap from the point field is `< 6/1000 + (1 + 6/1000) · 2(R/D)/(1 − R/D)³`. -/
+/-- At phase at most `7/100`, the fractional gap from the point field is
+`< 6/1000 + (1 + 6/1000) · 2(R/D)/(1 − R/D)³`. -/
 theorem neutron_force_near_point
     {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     {ι : Type*} {s : Finset ι} {n C : E} {p : ι → E} {κ ℓ δ R : ℝ}
@@ -917,7 +922,8 @@ theorem neutron_force_near_point_fifty
   have hlt := lt_trans hnear' hscaled
   simpa [div_eq_mul_inv] using hlt
 
-/-- From `1` MeV to `14` MeV the Rutherford prefactor grows by a factor in `(197, 198)`; the angular law is not re-derived. -/
+/-- From `1` MeV to `14` MeV the Rutherford prefactor grows by a factor in `(197, 198)`; the angular
+law is not re-derived. -/
 theorem pointField_cross_section_ratio :
     (197 : ℝ) < 14 ^ 2 * (1 + 14 / (2 * ((939565 : ℝ) / 1000))) /
         (1 + 1 / (2 * ((939565 : ℝ) / 1000))) ∧
@@ -925,14 +931,16 @@ theorem pointField_cross_section_ratio :
         (1 + 1 / (2 * ((939565 : ℝ) / 1000))) < 198 := by
   constructor <;> norm_num
 
-/-- External gold totals `5.295` b and `5.755` b leave the later total above nine tenths of the earlier one. -/
+/-- External gold totals `5.295` b and `5.755` b leave the later total above nine tenths of the
+earlier one. -/
 theorem goldTotal_above_nine_tenths :
     (9 : ℝ) / 10 < ((5295 : ℝ) / 1000) / (5755 / 1000) := by
   norm_num
 
 /-! ### Relative dual phase -/
 
-/-- Interference factor at phase `x`, rapidity half-angle `δ`, and relative dual half-angle `ε`. At equal scale both angles sit on top of `x`. -/
+/-- Interference factor at phase `x`, rapidity half-angle `δ`, and relative dual half-angle `ε`. At
+equal scale both angles sit on top of `x`. -/
 noncomputable def gammaChannel (x δ ε : ℝ) : ℝ :=
   cosh (x + δ) * cos (x + ε) - sinh (x + δ) * sin (x + ε)
 
@@ -1204,17 +1212,20 @@ theorem opposite_channel_mean_smaller {p b₁ b₂ : ℝ}
   · rw [abs_of_nonneg hμ]
     exact lt_of_lt_of_le hbetween.2 (le_max_right _ _)
 
-/-- External Sears values: natural hydrogen's incoherent cross section exceeds the coherent one by more than `45`. -/
+/-- External Sears values: natural hydrogen's incoherent cross section exceeds the coherent one by
+more than `45`. -/
 theorem hydrogen_incoherent_dominates :
     (45 : ℝ) < ((8026 : ℝ) / 100) / (17568 / 10000) := by
   norm_num
 
-/-- External Sears values: natural vanadium's incoherent cross section exceeds the coherent one by more than `200`. -/
+/-- External Sears values: natural vanadium's incoherent cross section exceeds the coherent one by
+more than `200`. -/
 theorem vanadium_incoherent_dominates :
     (200 : ℝ) < ((508 : ℝ) / 100) / (184 / 10000) := by
   norm_num
 
-/-- External Sears data: the weighted mean of five stable titanium lengths lies in `(-3.44, -3.43)` fm. -/
+/-- External Sears data: the weighted mean of five stable titanium lengths lies in `(-3.44, -3.43)`
+fm. -/
 theorem titanium_sample_mean :
     ((82 : ℝ) / 1000) * (493 / 100) + (74 / 1000) * (363 / 100) +
         (738 / 1000) * (-608 / 100) + (54 / 1000) * (104 / 100) +

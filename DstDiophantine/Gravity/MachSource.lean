@@ -9,7 +9,9 @@ import Mathlib.Tactic.Ring
 /-!
 # What surrounding matter fixes
 
-Sources determine the admissible point a particle expresses, and they do not determine the stiffness `m`. No derivation of `m`, no identification with `F = ma`, and no Newtonian multi-body law are claimed.
+Sources determine the admissible point a particle expresses, and they do not determine the stiffness
+`m`. No derivation of `m`, no identification with `F = ma`, and no Newtonian multi-body law are
+claimed.
 -/
 
 namespace DstDiophantine

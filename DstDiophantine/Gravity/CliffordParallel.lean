@@ -308,7 +308,8 @@ theorem frames_differ_at_quarter :
 
 /-! ### The two channels -/
 
-/-- Mirror mismatch at physical distance `s` on a three-sphere of radius `ρ`. Twice the geodesic angle `s/ρ`. -/
+/-- Mirror mismatch at physical distance `s` on a three-sphere of radius `ρ`. Twice the geodesic
+angle `s/ρ`. -/
 noncomputable def mirrorTwist (s ρ : ℝ) : ℝ :=
   2 * s / ρ
 

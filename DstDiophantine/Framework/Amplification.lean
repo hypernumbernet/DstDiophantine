@@ -10,7 +10,8 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Shared amplification no-go core
 
-An admissible `k`-fold pure boost has seed height at most `1/k²`. `CoarseAmplificationWitness` is empty under the coarse threshold.
+An admissible `k`-fold pure boost has seed height at most `1/k²`. `CoarseAmplificationWitness` is
+empty under the coarse threshold.
 -/
 
 namespace DstDiophantine

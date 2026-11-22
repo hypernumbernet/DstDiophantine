@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Quantum.DualEntanglement
 /-!
 # Spin observables of a dual spinor
 
-`U(β)` turns the spin vector by the full angle `‖β‖`, and the interference of `u` with `U(β) u` has period `4π`. On a unit spinor the Robertson–Schrödinger relation is an equality.
+`U(β)` turns the spin vector by the full angle `‖β‖`, and the interference of `u` with `U(β) u` has
+period `4π`. On a unit spinor the Robertson–Schrödinger relation is an equality.
 -/
 
 namespace DstDiophantine

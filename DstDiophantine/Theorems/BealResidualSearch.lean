@@ -9,7 +9,8 @@ set_option linter.style.native false
 /-!
 # Search aimed at open residuals
 
-Finite certificates look where a counterexample could still hide. They do not close those residuals, and classical Beal is not claimed.
+Finite certificates look where a counterexample could still hide. They do not close those residuals,
+and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine

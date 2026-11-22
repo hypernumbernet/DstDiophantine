@@ -19,7 +19,8 @@ set_option linter.style.native false
 /-!
 # Critical-line balance
 
-An off-critical real part is a boost–rotation mismatch of positive height. Classical RH is not claimed; `RiemannAdmissibleBridge` stays open.
+An off-critical real part is a boost–rotation mismatch of positive height. Classical RH is not
+claimed; `RiemannAdmissibleBridge` stays open.
 -/
 
 namespace DstDiophantine
@@ -142,8 +143,7 @@ theorem critical_dagger (θ σ : ℝ) :
   refine congr_arg₂ TorsionParams.mk ?_ ?_
   · funext a; fin_cases a <;> rfl
   · funext a; fin_cases a
-    ·
-      change θ * σ = θ * (1 - (1 - σ))
+    · change θ * σ = θ * (1 - (1 - σ))
       ring
     · rfl
     · rfl

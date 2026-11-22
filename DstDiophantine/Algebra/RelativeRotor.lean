@@ -12,7 +12,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Relative rotor and same-axis factorisation
 
-`Ω = R_usual† R_dual` is `1` iff the rotors coincide, which is not anti-synchronisation. A general six-parameter factorisation is not claimed.
+`Ω = R_usual† R_dual` is `1` iff the rotors coincide, which is not anti-synchronisation. A general
+six-parameter factorisation is not claimed.
 -/
 
 namespace DstDiophantine

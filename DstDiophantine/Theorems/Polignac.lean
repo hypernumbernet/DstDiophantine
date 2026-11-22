@@ -22,7 +22,8 @@ set_option linter.style.native false
 /-!
 # Even prime gaps
 
-No Polignac pair meets the admissible cone, and twin primes are the gap `2`. Classical Polignac is not claimed; `PolignacAdmissibleBridge` is not a reduction.
+No Polignac pair meets the admissible cone, and twin primes are the gap `2`. Classical Polignac is
+not claimed; `PolignacAdmissibleBridge` is not a reduction.
 -/
 
 namespace DstDiophantine
@@ -295,7 +296,8 @@ theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
 
 /-! ### Relative rotor of a pair
 
-The rapidity is `δ = log((p+2k)/p)`. The relative rotor is the pure boost of angle `2δ`, so `J = 2δ²`.
+The rapidity is `δ = log((p+2k)/p)`. The relative rotor is the pure boost of angle `2δ`, so
+`J = 2δ²`.
 -/
 
 /-- Rapidity of the ratio `(p + 2k) / p`. -/

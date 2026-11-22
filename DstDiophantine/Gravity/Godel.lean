@@ -14,7 +14,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Gödel chart and the azimuthal time loop
 
-For `r > log(1+√2)` the azimuthal norm is negative, while no real rapidity makes those circles timelike. The periodic identification of `φ`, a pure-boost reading of the coframe, and a teleparallel scalar are not claimed.
+For `r > log(1+√2)` the azimuthal norm is negative, while no real rapidity makes those circles
+timelike. The periodic identification of `φ`, a pure-boost reading of the coframe, and a
+teleparallel scalar are not claimed.
 -/
 
 namespace DstDiophantine
@@ -350,7 +352,8 @@ theorem godelGφφ_not_neg_of_eq_tanh {ψ r : ℝ} (hr0 : 0 < r)
 
 /-! ### A pure boost does not write the cross term -/
 
-/-- Diagonal cylindrical coframe, boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the circumferential scale of the reference leg. -/
+/-- Diagonal cylindrical coframe, boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the
+circumferential scale of the reference leg. -/
 noncomputable def cylBoostCoframe (ψ β : ℝ) : Coframe :=
   fun a μ =>
     if a = 0 ∧ μ = 0 then Real.cosh ψ

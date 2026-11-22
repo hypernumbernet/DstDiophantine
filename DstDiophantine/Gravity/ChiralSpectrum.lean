@@ -270,14 +270,16 @@ theorem chiralityRAxis_sum_ne_one :
 
 /-! ### Cartan versus charged triples -/
 
-/-- Cartan generators of axis `a`: parallel magnetic and the two perpendicular electrics, \((B_a, E_{a+1}, E_{a+2})\). -/
+/-- Cartan generators of axis `a`: parallel magnetic and the two perpendicular electrics, \((B_a,
+E_{a+1}, E_{a+2})\). -/
 noncomputable def cartanGen (a i : Fin 3) : PGA :=
   match i with
   | 0 => cyclic a
   | 1 => hyperbolic (a + 1)
   | 2 => hyperbolic (a + 2)
 
-/-- Charged generators of axis `a`: parallel electric and the two perpendicular magnetics, \((E_a, B_{a+1}, B_{a+2})\). -/
+/-- Charged generators of axis `a`: parallel electric and the two perpendicular magnetics, \((E_a,
+B_{a+1}, B_{a+2})\). -/
 noncomputable def chargedGen (a i : Fin 3) : PGA :=
   match i with
   | 0 => hyperbolic a
@@ -367,40 +369,31 @@ private theorem anticomm_biv_right {i j : Fin 5} (hij : i ≠ j) :
 theorem cartanGen_commute_axis (a i : Fin 3) :
     Commute (spatialGen a) (cartanGen a i) := by
   fin_cases a <;> fin_cases i
-  ·
-    simpa [spatialGen, cartanGen, cyclic] using
+  · simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (3 : Fin 5) ≠ 2)
         (by decide : (1 : Fin 5) ≠ 3) (by decide : (1 : Fin 5) ≠ 2)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 2)
         (by decide : (1 : Fin 5) ≠ 0) (by decide : (1 : Fin 5) ≠ 2)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 3)
         (by decide : (1 : Fin 5) ≠ 0) (by decide : (1 : Fin 5) ≠ 3)).symm
-  ·
-    simpa [spatialGen, cartanGen, cyclic] using
+  · simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (1 : Fin 5) ≠ 3)
         (by decide : (2 : Fin 5) ≠ 1) (by decide : (2 : Fin 5) ≠ 3)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 3)
         (by decide : (2 : Fin 5) ≠ 0) (by decide : (2 : Fin 5) ≠ 3)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 1)
         (by decide : (2 : Fin 5) ≠ 0) (by decide : (2 : Fin 5) ≠ 1)).symm
-  ·
-    simpa [spatialGen, cartanGen, cyclic] using
+  · simpa [spatialGen, cartanGen, cyclic] using
       (commute_biv_vec (by decide : (2 : Fin 5) ≠ 1)
         (by decide : (3 : Fin 5) ≠ 2) (by decide : (3 : Fin 5) ≠ 1)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 1)
         (by decide : (3 : Fin 5) ≠ 0) (by decide : (3 : Fin 5) ≠ 1)).symm
-  ·
-    simpa [spatialGen, cartanGen, hyperbolic] using
+  · simpa [spatialGen, cartanGen, hyperbolic] using
       (commute_biv_vec (by decide : (0 : Fin 5) ≠ 2)
         (by decide : (3 : Fin 5) ≠ 0) (by decide : (3 : Fin 5) ≠ 2)).symm
 
@@ -409,32 +402,23 @@ theorem chargedGen_anticomm_axis (a i : Fin 3) :
   have hneg {x y : PGA} (h : y * x = -(x * y)) : x * y = -(y * x) := by
     rw [h, neg_neg]
   fin_cases a <;> fin_cases i
-  ·
-    simpa [spatialGen, chargedGen, hyperbolic] using
+  · simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 1))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (1 : Fin 5) ≠ 3))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (2 : Fin 5) ≠ 1))
-  ·
-    simpa [spatialGen, chargedGen, hyperbolic] using
+  · simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 2))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (2 : Fin 5) ≠ 1))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (3 : Fin 5) ≠ 2))
-  ·
-    simpa [spatialGen, chargedGen, hyperbolic] using
+  · simpa [spatialGen, chargedGen, hyperbolic] using
       hneg (anticomm_biv_right (by decide : (0 : Fin 5) ≠ 3))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_left (by decide : (3 : Fin 5) ≠ 2))
-  ·
-    simpa [spatialGen, chargedGen, cyclic] using
+  · simpa [spatialGen, chargedGen, cyclic] using
       hneg (anticomm_biv_right (by decide : (1 : Fin 5) ≠ 3))
 
 /-! ### Cartan $\mathfrak{so}(2,1)$ brackets -/

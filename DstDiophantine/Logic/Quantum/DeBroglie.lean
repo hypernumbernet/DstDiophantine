@@ -10,7 +10,9 @@ import Mathlib.Tactic.Abel
 /-!
 # Dual-rotor character and relative overlap
 
-The character, the spinor matrix element, and the observer–particle pairing are invariants of an `SU(2)` dual rotor. None of them is a spacetime Schrödinger wave, a Born position density, or a derivation of `E/ℏ` from rest mass.
+The character, the spinor matrix element, and the observer–particle pairing are invariants of an
+`SU(2)` dual rotor. None of them is a spacetime Schrödinger wave, a Born position density, or a
+derivation of `E/ℏ` from rest mass.
 -/
 
 namespace DstDiophantine

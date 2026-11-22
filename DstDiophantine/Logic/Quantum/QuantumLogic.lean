@@ -8,7 +8,8 @@ import Mathlib.Data.Set.Finite.Basic
 /-!
 # Quantum logic of `DualSpinor`
 
-Propositions are subspaces of `ℂ²`, with the orthomodular law. This lattice is not identified with `{T, U, F, B}` or with `min`/`max`.
+Propositions are subspaces of `ℂ²`, with the orthomodular law. This lattice is not identified with
+`{T, U, F, B}` or with `min`/`max`.
 -/
 
 namespace DstDiophantine

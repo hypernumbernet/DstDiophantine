@@ -13,7 +13,9 @@ set_option linter.style.native false
 /-!
 # Spherical dwarfs and disk galaxies
 
-Outside a spherical baryonic ball the dual curve is the point-mass law of the whole mass, and a disk reads the same acceleration off its Newtonian curve. `a₀` and `G` are external inputs, and no theorem asserts `dst_derives_a0`.
+Outside a spherical baryonic ball the dual curve is the point-mass law of the whole mass, and a disk
+reads the same acceleration off its Newtonian curve. `a₀` and `G` are external inputs, and no
+theorem asserts `dst_derives_a0`.
 -/
 
 namespace DstDiophantine
@@ -167,7 +169,8 @@ theorem dwarfAntipode_bounds :
 
 /-! ### Speed outside a ball -/
 
-/-- Squared circular speed of a point mass on the dual lattice, in (m/s)², read at a radius of `aKpc` kiloparsecs on the dwarf stand-in. -/
+/-- Squared circular speed of a point mass on the dual lattice, in (m/s)², read at a radius of
+`aKpc` kiloparsecs on the dwarf stand-in. -/
 noncomputable def dwarfPointSpeedSq (aKpc : ℝ) : ℝ :=
   sqrt (dwarfFlatSpeedFourth : ℝ) *
     (cosh (aKpc / dwarfROverKpc) / sinh (aKpc / dwarfROverKpc))

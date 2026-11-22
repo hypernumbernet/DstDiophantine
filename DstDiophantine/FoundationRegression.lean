@@ -52,7 +52,8 @@ set_option linter.style.native false
 /-!
 # Public-API regression examples
 
-These examples guard export and layering of the shared core. Classical conjectures are not claimed here, and `FermatMixedMotorResidual` remains open.
+These examples guard export and layering of the shared core. Classical conjectures are not claimed
+here, and `FermatMixedMotorResidual` remains open.
 -/
 
 namespace DstDiophantine.FoundationRegression

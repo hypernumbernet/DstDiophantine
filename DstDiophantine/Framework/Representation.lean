@@ -5,7 +5,8 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 /-!
 # Power-sum Diophantine representation
 
-Integer linear combinations of pure powers, with a faithful null-translator motor. Arbitrary polynomials are not represented.
+Integer linear combinations of pure powers, with a faithful null-translator motor. Arbitrary
+polynomials are not represented.
 -/
 
 namespace DstDiophantine

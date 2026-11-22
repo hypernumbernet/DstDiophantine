@@ -13,7 +13,9 @@ set_option linter.style.native false
 /-!
 # Nuclear torsional layers (strong-force scale)
 
-SI stand-in windows and equal-scale layer ratios are checked against external nuclear scales. No theorem asserts `dst_derives_alpha_s`, `dst_derives_lambdaN`, or `dst_derives_Amax`, and QCD `α_s` is not paired with `epsN`.
+SI stand-in windows and equal-scale layer ratios are checked against external nuclear scales. No
+theorem asserts `dst_derives_alpha_s`, `dst_derives_lambdaN`, or `dst_derives_Amax`, and QCD `α_s`
+is not paired with `epsN`.
 -/
 
 namespace DstDiophantine
@@ -213,20 +215,19 @@ theorem equalScale_layer_ratio_bounds
   have hx₂pos : (0 : ℝ) < x₂ := lt_trans pi_pos hx₂.1
   have hπpos : (0 : ℝ) < π := pi_pos
   constructor
-  ·
-    rw [div_lt_div_iff₀ (mul_pos (by norm_num) hπpos) hx₂pos]
+  · rw [div_lt_div_iff₀ (mul_pos (by norm_num) hπpos) hx₂pos]
     calc (1 : ℝ) * x₂ = x₂ := one_mul _
       _ < 3 * π / 2 := hx₂.2
       _ = (1 / 2) * (3 * π) := by ring
       _ < x₁ * (3 * π) :=
           mul_lt_mul_of_pos_right hx₁.1 (mul_pos (by norm_num) hπpos)
-  ·
-    rw [div_lt_div_iff₀ hx₂pos hπpos]
+  · rw [div_lt_div_iff₀ hx₂pos hπpos]
     calc x₁ * π < 1 * π := mul_lt_mul_of_pos_right hx₁.2 hπpos
       _ = π := one_mul _
       _ < 1 * x₂ := by simpa using hx₂.1
 
-/-- Compatibility (not uniqueness): outer \(r_1\in(1,2)\) fm and a ratio in \((1/(3\pi),1/\pi)\) can place \(r_2\) at \(1/2\) fm. -/
+/-- Compatibility (not uniqueness): outer \(r_1\in(1,2)\) fm and a ratio in \((1/(3\pi),1/\pi)\) can
+place \(r_2\) at \(1/2\) fm. -/
 theorem hardCore_half_fm_compatible :
     ∃ r₁ ratio : ℝ,
       r₁ ∈ Ioo (1 : ℝ) 2 ∧
@@ -236,13 +237,11 @@ theorem hardCore_half_fm_compatible :
   · simp only [mem_Ioo]; constructor <;> norm_num
   · simp only [mem_Ioo]
     constructor
-    ·
-      have : (1 : ℝ) / (3 * π) < 4 / 15 := by
+    · have : (1 : ℝ) / (3 * π) < 4 / 15 := by
         rw [div_lt_div_iff₀ (mul_pos (by norm_num) pi_pos) (by norm_num)]
         nlinarith [pi_gt_three]
       exact this
-    ·
-      have : (4 : ℝ) / 15 < 1 / π := by
+    · have : (4 : ℝ) / 15 < 1 / π := by
         rw [div_lt_div_iff₀ (by norm_num : (0 : ℝ) < 15) pi_pos]
         nlinarith [pi_lt_d2]
       exact this
@@ -346,7 +345,8 @@ theorem paper_binding_40_50_as_BE_A_false :
   have : bindingEnergyPerNucleonMeVApprox < 40 := lt_trans hhi (by norm_num)
   exact absurd h.1 (not_le.mpr this)
 
-/-- Optical well depth \(45\) MeV lies in the \(40\)–\(50\) MeV band (separate external label, not BE/\(A\)). -/
+/-- Optical well depth \(45\) MeV lies in the \(40\)–\(50\) MeV band (separate external label, not
+BE/\(A\)). -/
 theorem nuclearWellDepth_in_40_50 :
     (40 : ℚ) ≤ nuclearWellDepthMeVApprox ∧
       nuclearWellDepthMeVApprox ≤ 50 := by
@@ -411,7 +411,8 @@ theorem epsN_one_ne_nuclear_order :
   · unfold epsN; norm_num
   · unfold epsN; norm_num
 
-/-- The charged-pion mass over the proton mass lies strictly between the floors `ε_6` and `ε_5`, and strictly below the lock `1/3`. -/
+/-- The charged-pion mass over the proton mass lies strictly between the floors `ε_6` and `ε_5`, and
+strictly below the lock `1/3`. -/
 theorem pion_over_proton_between_floors :
     epsN 6 < pionMassMeVApprox / protonMassMeVApprox ∧
       pionMassMeVApprox / protonMassMeVApprox < epsN 5 ∧
@@ -436,7 +437,8 @@ theorem pion_over_proton_between_floors :
   · rw [div_lt_div_iff₀ (by norm_num) (by norm_num)]
     norm_num
 
-/-- The charged-pion ratio lies in `(2/19, 9/28)`; membership does not select a scale or a lattice height. -/
+/-- The charged-pion ratio lies in `(2/19, 9/28)`; membership does not select a scale or a lattice
+height. -/
 theorem pion_over_proton_in_channel_window :
     (2 / 19 : ℚ) < pionMassMeVApprox / protonMassMeVApprox ∧
       pionMassMeVApprox / protonMassMeVApprox < 9 / 28 := by
@@ -574,7 +576,8 @@ theorem pionLambda_node_lt_one_fm (n : ℕ) {x : ℝ}
     linarith [pionComptonFm_real_lt, pi_gt_d2]
   linarith
 
-/-- Outermost node under the pion hypothesis: the hard-core band `0.44 fm < r₁ < 0.91 fm`, not `1`–`2` fm. -/
+/-- Outermost node under the pion hypothesis: the hard-core band `0.44 fm < r₁ < 0.91 fm`, not
+`1`–`2` fm. -/
 theorem pionLambda_outer_node_band {x : ℝ} (hx : x ∈ Ioo (π / 4) (π / 2)) :
     (44 / 100 : ℝ) < layerRadius (pionComptonFm : ℝ) x ∧
       layerRadius (pionComptonFm : ℝ) x < 91 / 100 := by
@@ -596,7 +599,8 @@ theorem paper_outer_layer_1_2_fm_incompatible_with_pionLambda (n : ℕ) {x : ℝ
   have hlt := pionLambda_node_lt_one_fm n hx
   linarith [h.1]
 
-/-- Conversely, an outermost node at `1` fm or beyond forces the characteristic length above `π/2` fm, hence strictly above `λ_π`. -/
+/-- Conversely, an outermost node at `1` fm or beyond forces the characteristic length above `π/2`
+fm, hence strictly above `λ_π`. -/
 theorem outer_node_one_fm_forces_ell_gt_pi_div_two
     {ℓ x : ℝ} (hℓ : 0 < ℓ) (hx : x ∈ Ioo (π / 4) (π / 2))
     (h1 : 1 ≤ layerRadius ℓ x) : π / 2 < ℓ := by
@@ -622,7 +626,8 @@ theorem equalScale_layer_ratio_sharp
   · rw [div_lt_div_iff₀ hx₂pos (by positivity)]
     nlinarith [hx₁.2, hx₂.1]
 
-/-- Concrete instance: the first two nodes exist and their radius ratio lies in the sharpened window. -/
+/-- Concrete instance: the first two nodes exist and their radius ratio lies in the sharpened
+window. -/
 theorem layer_ratio_first_second_sharp :
     ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 ∧
       resonanceRoot1 / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
@@ -642,14 +647,16 @@ theorem equalScale_layer_ratio_sharp_refines :
 
 /-! ### Saturation density versus the `A^{1/3}` radius law -/
 
-/-- Nucleon number density of a uniform sphere of radius `r₀ A^{1/3}`, parameterised by `s = A^{1/3}`. -/
+/-- Nucleon number density of a uniform sphere of radius `r₀ A^{1/3}`, parameterised by
+`s = A^{1/3}`. -/
 noncomputable def nucleonNumberDensity (r0 s : ℝ) : ℝ :=
   s ^ 3 / ((4 / 3) * π * (r0 * s) ^ 3)
 
 /-- Constant-density limit `3/(4π r₀³)`. -/
 noncomputable def numberDensityOfRadiusCoeff (r0 : ℝ) : ℝ := 3 / (4 * π * r0 ^ 3)
 
-/-- Saturation of nuclear density is exactly the `A^{1/3}` radius law: the density is independent of `A`. -/
+/-- Saturation of nuclear density is exactly the `A^{1/3}` radius law: the density is independent of
+`A`. -/
 theorem nucleonNumberDensity_eq_const {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
     nucleonNumberDensity r0 s = numberDensityOfRadiusCoeff r0 := by
   unfold nucleonNumberDensity numberDensityOfRadiusCoeff
@@ -676,7 +683,8 @@ theorem numberDensity_radiusCoeff_1_2_ne_saturation :
   rw [h] at hhi
   norm_num at hhi
 
-/-- The radius coefficient matching `n₀ = 0.16` fm⁻³ satisfies `(1.14)³ < 3/(4π n₀) < (1.15)³`, i.e. `r₀* ≈ 1.14` fm. -/
+/-- The radius coefficient matching `n₀ = 0.16` fm⁻³ satisfies `(1.14)³ < 3/(4π n₀) < (1.15)³`, i.e.
+`r₀* ≈ 1.14` fm. -/
 theorem saturation_matching_radiusCoeff_cube_window :
     (114 / 100 : ℝ) ^ 3 < 3 / (4 * π * (4 / 25)) ∧
       3 / (4 * π * (4 / 25)) < (115 / 100 : ℝ) ^ 3 := by
@@ -689,14 +697,16 @@ theorem saturation_matching_radiusCoeff_cube_window :
 
 /-! ### No finite `A_max` from the equal-scale layer geometry -/
 
-/-- With a collective `ℓ ∝ A^{1/3}` the surface-to-node ratio is `A`-independent, so no mass number is singled out. -/
+/-- With a collective `ℓ ∝ A^{1/3}` the surface-to-node ratio is `A`-independent, so no mass number
+is singled out. -/
 theorem surface_to_node_ratio_scale_free
     {r0 c x s : ℝ} (hc : c ≠ 0) (hx : x ≠ 0) (hs : s ≠ 0) :
     (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c := by
   unfold layerRadius
   field_simp
 
-/-- With `ℓ` independent of `A` the nuclear surface already lies outside every torsional node at `A = 1`, so again no cutoff appears. -/
+/-- With `ℓ` independent of `A` the nuclear surface already lies outside every torsional node at
+`A = 1`, so again no cutoff appears. -/
 theorem nuclearSurface_outside_every_node_at_A_one (n : ℕ) {x : ℝ}
     (hx : x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2)) :
     layerRadius (pionComptonFm : ℝ) x < (nuclearRadiusCoeffFmApprox : ℝ) := by
@@ -708,7 +718,8 @@ theorem nuclearSurface_outside_every_node_at_A_one (n : ℕ) {x : ℝ}
   rw [hr0]
   linarith
 
-/-- The heuristic `A ≈ 300` is not forced: the layer geometry provides no finite termination of the nuclear chart. -/
+/-- The heuristic `A ≈ 300` is not forced: the layer geometry provides no finite termination of the
+nuclear chart. -/
 theorem paper_Amax_300_not_forced_by_equalScale_layers :
     (∀ r0 c x s : ℝ, c ≠ 0 → x ≠ 0 → s ≠ 0 →
         (r0 * s) / layerRadius (c * s) x = 2 * r0 * x / c) ∧
@@ -725,7 +736,8 @@ theorem gammaEff_pos_at_node (x : ℝ) : 0 < gammaEff (2 * x) (2 * x) :=
 
 /-! ### Seat counts
 
-The integers `2`, `8`, `20`, `28`, `50`, `82`, and `126` are oscillator arithmetic, not indices of the equal-scale nodes.
+The integers `2`, `8`, `20`, `28`, `50`, `82`, and `126` are oscillator arithmetic, not indices of
+the equal-scale nodes.
 -/
 
 theorem three_dvd_mul_succ_succ (n : ℕ) : 3 ∣ n * (n + 1) * (n + 2) := by
@@ -772,7 +784,8 @@ theorem oscillatorClosure_values :
   unfold oscillatorClosure
   norm_num
 
-/-- One high-`j` orbital of the next shell, of degeneracy `2(N+2)`, counted with the shells through `N`. -/
+/-- One high-`j` orbital of the next shell, of degeneracy `2(N+2)`, counted with the shells through
+`N`. -/
 def shiftedClosure (N : ℕ) : ℕ :=
   oscillatorClosure N + 2 * (N + 2)
 

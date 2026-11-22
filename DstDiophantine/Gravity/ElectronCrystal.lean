@@ -263,7 +263,8 @@ theorem tetra_lin_sum (b : OrthonormalBasis (Fin 3) ℝ E) (h : ℝ) (hT : Tetra
   rw [mom1 β hT hβf, mom2 β hT hβf, mom3 β hT hβc hβf]
   simp
 
-/-- Isotropic rate of a tetrahedrally symmetric site, per unit `‖v‖²`, for an electron. A test charge `q` has `-q` times this rate. -/
+/-- Isotropic rate of a tetrahedrally symmetric site, per unit `‖v‖²`, for an electron. A test
+charge `q` has `-q` times this rate. -/
 noncomputable def siteRate (h : ℝ) (T : Finset (ℤ × ℤ × ℤ)) (Q : ℤ × ℤ × ℤ → ℝ) : ℝ :=
   (∑ t ∈ T, Q t * ionOutflow (sitePhase h t)) / 3
 
@@ -676,7 +677,8 @@ end Ionic
 
 /-! ### The nearest two shells of four ionic arrangements -/
 
-/-- Zincblende, in units of a quarter of the cube edge: the face-centred sites of even coordinate sum divisible by four, and one tetrahedron of the odd sites. -/
+/-- Zincblende, in units of a quarter of the cube edge: the face-centred sites of even coordinate
+sum divisible by four, and one tetrahedron of the odd sites. -/
 def zincblendeSite (t : ℤ × ℤ × ℤ) : Prop :=
   (t.1 % 2 = 0 ∧ t.2.1 % 2 = 0 ∧ t.2.2 % 2 = 0 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 0) ∨
     (t.1 % 2 = 1 ∧ t.2.1 % 2 = 1 ∧ t.2.2 % 2 = 1 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 3)
@@ -691,7 +693,8 @@ def fluoriteCationSite (t : ℤ × ℤ × ℤ) : Prop :=
 instance : DecidablePred fluoriteCationSite := fun t => by
   unfold fluoriteCationSite; infer_instance
 
-/-- Fluorite, seen from an anion: every even site, and the odd sites whose coordinate sum is congruent to one modulo four. -/
+/-- Fluorite, seen from an anion: every even site, and the odd sites whose coordinate sum is
+congruent to one modulo four. -/
 def fluoriteAnionSite (t : ℤ × ℤ × ℤ) : Prop :=
   (t.1 % 2 = 1 ∧ t.2.1 % 2 = 1 ∧ t.2.2 % 2 = 1 ∧ (t.1 + t.2.1 + t.2.2) % 4 = 1) ∨
     (t.1 % 2 = 0 ∧ t.2.1 % 2 = 0 ∧ t.2.2 % 2 = 0)

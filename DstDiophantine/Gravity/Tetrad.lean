@@ -13,7 +13,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Motor-induced reference vectors (chart tetrad bridge)
 
-A general grade-1 projection, angular legs from a pure radial boost, and the degenerate-metric isometry are not derived here.
+A general grade-1 projection, angular legs from a pure radial boost, and the degenerate-metric
+isometry are not derived here.
 -/
 
 namespace DstDiophantine
@@ -75,7 +76,8 @@ theorem omegaTrans_spatial_one :
       (1 / 2 : ℝ) • null 1 := by
   simp [omegaTrans, Fin.sum_univ_four, null]
 
-/-- A pure spatial translator is not the identity, so it does not reproduce the diagonal Schwarzschild coframe. -/
+/-- A pure spatial translator is not the identity, so it does not reproduce the diagonal
+Schwarzschild coframe. -/
 theorem pure_translator_ne_identity_of_spatial :
     expTrans ⟨fun μ => if μ = 1 then (1 : ℝ) else 0⟩ ≠ 1 := by
   intro h

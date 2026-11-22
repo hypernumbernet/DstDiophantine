@@ -8,7 +8,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Real dimension of the commuting left ideal
 
-Right multiplication by `e₁` and `e₀e₂` cuts `G(3,1,1)` down to an 8-dimensional principal left ideal. Irreducibility as a spinor module is not claimed.
+Right multiplication by `e₁` and `e₀e₂` cuts `G(3,1,1)` down to an 8-dimensional principal left
+ideal. Irreducibility as a spinor module is not claimed.
 -/
 
 namespace DstDiophantine

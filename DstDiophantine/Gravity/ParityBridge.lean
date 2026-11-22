@@ -9,7 +9,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Parity, the bridge, and the two disorders
 
-No baryon current, no Sakharov identity, and no derivation of \(\eta\). Spatial inversion is not charge conjugation, and the bridge is not \(\mathrm{CP}\).
+No baryon current, no Sakharov identity, and no derivation of \(\eta\). Spatial inversion is not
+charge conjugation, and the bridge is not \(\mathrm{CP}\).
 -/
 
 namespace DstDiophantine

@@ -26,7 +26,8 @@ import DstDiophantine.Algebra.UnitGroup
 /-!
 # DST algebraic core barrel
 
-Re-exports the PGA / biquaternion / discrete-torus layer. Diophantine theorems and Gravity chart modules are not imported here.
+Re-exports the PGA / biquaternion / discrete-torus layer. Diophantine theorems and Gravity chart
+modules are not imported here.
 -/
 
 namespace DstDiophantine

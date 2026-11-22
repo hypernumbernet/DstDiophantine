@@ -192,7 +192,8 @@ theorem JDot_coupleA (p : TorsionParams) (e : ℝ) (A Adot : Fin 3 → ℝ) :
 
 /-! ### Coulomb-gauge potentials of circular and linear waves -/
 
-/-- Coulomb-gauge potential of a \(z\)-propagating circular wave, \(E=-\partial_t A\) under \(\dot\psi=-\omega\). -/
+/-- Coulomb-gauge potential of a \(z\)-propagating circular wave, \(E=-\partial_t A\) under
+\(\dot\psi=-\omega\). -/
 noncomputable def circularPotential (σ E0 ω ψ : ℝ) : Fin 3 → ℝ
   | 0 => E0 / ω * Real.sin ψ
   | 1 => -σ * (E0 / ω) * Real.cos ψ

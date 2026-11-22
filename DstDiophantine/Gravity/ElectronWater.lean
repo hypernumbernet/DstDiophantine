@@ -267,7 +267,8 @@ private theorem quarter_bracket_neg {Z x y : ℝ}
 
 /-! ### Pair force and the straight skeleton -/
 
-/-- Separation-increasing force on charge `qi` at `ri` from charge `qj` at `rj`, in units of `k e²`, with `ℓ = 1`. -/
+/-- Separation-increasing force on charge `qi` at `ri` from charge `qj` at `rj`, in units of `k e²`,
+with `ℓ = 1`. -/
 def pairForce (qi qj : ℝ) (ri rj : Fin 3 → ℝ) (i : Fin 3) : ℝ :=
   qi * qj * (ri i - rj i) /
     (gammaSEqual (pairPhase (vnorm (vsub ri rj))) * vnorm (vsub ri rj) ^ 3)
@@ -317,7 +318,8 @@ private theorem pairForce_axis_in {qi qj s t : ℝ} (hst : s < t)
   field_simp [_hγ, hne]
   ring
 
-/-- Outward force on the electron of the straight water molecule. The nucleus is at the origin, the electron at `+r`, its proton at `+R`. -/
+/-- Outward force on the electron of the straight water molecule. The nucleus is at the origin, the
+electron at `+r`, its proton at `+R`. -/
 def waterStraightElectron (Z r R : ℝ) : ℝ :=
   pairForce (-1) Z (axisPoint r) (axisPoint 0) 0 +
     pairForce (-1) 1 (axisPoint r) (axisPoint R) 0 +
@@ -634,7 +636,8 @@ private theorem cross_sep_pos {r R θ : ℝ}
       (r - R) ^ 2 + 2 * r * R * (1 - cos θ) := by ring
   linarith [sq_nonneg (r - R), hid]
 
-/-- Tangential component of the force on the electron at distance `r` on the ray of half-angle `a`. -/
+/-- Tangential component of the force on the electron at distance `r` on the ray of half-angle
+`a`. -/
 def waterBendElectron (Z r R a : ℝ) : ℝ :=
   vdot (waterT a) (fun i =>
     pairForce (-1) Z (vsmul r (waterU a)) (fun _ => 0) i +
@@ -1094,7 +1097,8 @@ theorem waterBendElectron_straight {Z r R : ℝ}
     exact (outer_gamma_pos ⟨by linarith [hr.1, hR.1], (phase_sum_mem hr hR.1).2⟩).ne'
   rw [waterBendElectron_factor ha hr.1 hR.1 hee hc, hangle, sin_pi, zero_mul]
 
-/-- A point on the axis between the two rays, or, for a negative coordinate, on the opposite axis. -/
+/-- A point on the axis between the two rays, or, for a negative coordinate, on the opposite
+axis. -/
 def bondAxis (z : ℝ) : Fin 3 → ℝ :=
   ![0, 0, z]
 

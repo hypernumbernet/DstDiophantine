@@ -393,7 +393,8 @@ theorem radiusRatio_bounds :
 
 /-! ### Saturated interior coframe: frozen boost legs, angular torsion remains -/
 
-/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing radial derivatives; angular legs match the Schwarzschild coframe. -/
+/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing radial derivatives;
+angular legs match the Schwarzschild coframe. -/
 noncomputable def constantAPartials (r θ : ℝ) : CoframePartials :=
   fun μ a ν =>
     if μ = 1 ∧ a = 2 ∧ ν = 2 then 1
@@ -431,7 +432,8 @@ noncomputable def saturatedJ_field (rs r : ℝ) : ℝ :=
 noncomputable def pluggedConstantAT (A r : ℝ) : ℝ :=
   (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
 
-/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)): \(T = -4(1-\sqrt{A})/r^2\). -/
+/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)): \(T =
+-4(1-\sqrt{A})/r^2\). -/
 noncomputable def frozenDivT (A r : ℝ) : ℝ :=
   -(4 / r ^ 2) * (1 - Real.sqrt A)
 

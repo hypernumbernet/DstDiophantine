@@ -3,7 +3,8 @@ import DstDiophantine.Algebra.LorentzDim
 /-!
 # Massless string spectrum labels
 
-Textbook `SO(8)` little-group dimensions and heterotic adjoint dimensions, as bare `ℕ` counts. No worldsheet, no GSO derivation, and no root system.
+Textbook `SO(8)` little-group dimensions and heterotic adjoint dimensions, as bare `ℕ` counts. No
+worldsheet, no GSO derivation, and no root system.
 -/
 
 namespace DstDiophantine

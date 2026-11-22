@@ -6,7 +6,8 @@ import Mathlib.Tactic.Ring
 /-!
 # One revolution of the dual rotor, and the scalar phase on it
 
-`pr = nℏ` is not the rotor's return to `1` or the orbital return, and it is not used to place a radius or to close a matter-wave phase on a nuclear circumference.
+`pr = nℏ` is not the rotor's return to `1` or the orbital return, and it is not used to place a
+radius or to close a matter-wave phase on a nuclear circumference.
 -/
 
 namespace DstDiophantine

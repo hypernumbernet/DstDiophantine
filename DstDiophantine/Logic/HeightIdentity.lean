@@ -3,7 +3,8 @@ import DstDiophantine.Logic.ClassicalCore
 /-!
 # Height identities
 
-Agreement at every real height is agreement on atoms in `{-1, 0, 1}`. Agreement on the two walls is coarser.
+Agreement at every real height is agreement on atoms in `{-1, 0, 1}`. Agreement on the two walls is
+coarser.
 -/
 
 namespace DstDiophantine

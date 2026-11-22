@@ -8,7 +8,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Vacuum-wavelength window on the SI stand-ins
 
-The photon wavelength of an energy, with `π` replaced by a twenty-digit rational bracket. A positive numerator and denominator carry a rational inequality between those brackets up to the real wavelength.
+The photon wavelength of an energy, with `π` replaced by a twenty-digit rational bracket. A positive
+numerator and denominator carry a rational inequality between those brackets up to the real
+wavelength.
 -/
 
 namespace DstDiophantine

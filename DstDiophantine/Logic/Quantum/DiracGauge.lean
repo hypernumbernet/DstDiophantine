@@ -4,7 +4,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 /-!
 # Electromagnetic coupling of the Dirac field
 
-Minimal coupling gives `γ^μ D_μ Ψ = -m Ψ`, and `[D_μ, D_ν] = -i e F_{μν}`. The magnetic field enters both Weyl blocks through the same dual-rotor generator.
+Minimal coupling gives `γ^μ D_μ Ψ = -m Ψ`, and `[D_μ, D_ν] = -i e F_{μν}`. The magnetic field enters
+both Weyl blocks through the same dual-rotor generator.
 -/
 
 namespace DstDiophantine

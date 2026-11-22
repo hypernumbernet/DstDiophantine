@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Consequence
 /-!
 # Boolean core on the walls
 
-On `{-1, 1}`, `+1` is classical truth. Height identities specialise to classical equivalences. Excluded middle and the syllogism hold only on the walls.
+On `{-1, 1}`, `+1` is classical truth. Height identities specialise to classical equivalences.
+Excluded middle and the syllogism hold only on the walls.
 -/
 
 namespace DstDiophantine

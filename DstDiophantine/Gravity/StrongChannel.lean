@@ -10,7 +10,9 @@ import Mathlib.Topology.Order.IntermediateValue
 /-!
 # Strong channel: rapidity threshold and dual excitation
 
-The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity, the laboratory `1/v` law, and a capture cross section are not derived. The host that holds a rapidity down, a fusion rate, and the Coulomb-to-nuclear ratio are not derived.
+The nuclear prefactor `κ`, the length `ℓ`, the disposal of rapidity, the laboratory `1/v` law, and a
+capture cross section are not derived. The host that holds a rapidity down, a fusion rate, and the
+Coulomb-to-nuclear ratio are not derived.
 -/
 
 namespace DstDiophantine

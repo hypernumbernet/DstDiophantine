@@ -11,7 +11,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Inertial-boost gauge: metric, torsion, and the teleparallel scalar
 
-A rapidity profile in a fixed inertial plane keeps the Minkowski metric, and the teleparallel quadratic of its 1-jet vanishes. Vanishing of `T` for an arbitrary local Lorentz transformation is not claimed, and `J = ½ φ²` does not determine `T`.
+A rapidity profile in a fixed inertial plane keeps the Minkowski metric, and the teleparallel
+quadratic of its 1-jet vanishes. Vanishing of `T` for an arbitrary local Lorentz transformation is
+not claimed, and `J = ½ φ²` does not determine `T`.
 -/
 
 namespace DstDiophantine
@@ -362,7 +364,8 @@ theorem inertialBoost_same_metric_distinct_J {φ ψ : ℝ} (h : φ ^ 2 ≠ ψ ^ 
   · rw [J_pureBoost, J_pureBoost]
     exact fun heq => h (by linarith)
 
-/-- `J = ½ φ²` vanishes on the inertial boost and is positive on the exterior Schwarzschild coframe of that rapidity. -/
+/-- `J = ½ φ²` vanishes on the inertial boost and is positive on the exterior Schwarzschild coframe
+of that rapidity. -/
 theorem sameJ_inertial_T_zero_schwarzschild_T_pos {rs r : ℝ} (h : IsExterior rs r) :
     J (pureBoost (schwarzschildRapidity rs r)) = J (radialBoostParams rs r) ∧
       boostTeleparallel 0 0 = 0 ∧

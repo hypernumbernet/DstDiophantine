@@ -11,7 +11,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Discrete torsional spectrum
 
-The admissible mismatch image is a proper subset of `{-3K²,…,3K²}`. Mixed walls meet the mass ceiling and miss the torsion ceiling.
+The admissible mismatch image is a proper subset of `{-3K²,…,3K²}`. Mixed walls meet the mass
+ceiling and miss the torsion ceiling.
 -/
 
 namespace DstDiophantine
@@ -1052,7 +1053,8 @@ theorem torsion_gap_attained {N : ℕ} [NeZero N] (hN : 4 ≤ N) :
   rw [JNormalized_eq_sixteen_lattice, latticeMismatch_unitHyperbolicDiscrete hN]
   simp [abs_of_pos (by positivity : (0 : ℝ) < 16 / (3 * (N : ℝ) ^ 2))]
 
-/-- Cross-axis cancellation on the torus: vanishing `J` with positive mass, not from balanced axes. -/
+/-- Cross-axis cancellation on the torus: vanishing `J` with positive mass, not from balanced
+axes. -/
 def unbalancedZeroDiscrete (N : ℕ) [NeZero N] : DiscreteTorsion N where
   n := fun a => if a = 0 then 1 else 0
   m := fun a => if a = 1 then 1 else 0

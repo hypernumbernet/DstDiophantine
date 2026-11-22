@@ -13,7 +13,8 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 /-!
 # Composite spinor projectors
 
-The product `P_spin P_R` is not idempotent. Irreducibility of the Minkowski core as a `Cl(3,1)`-module is not claimed.
+The product `P_spin P_R` is not idempotent. Irreducibility of the Minkowski core as a
+`Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine

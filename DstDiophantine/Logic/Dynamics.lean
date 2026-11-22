@@ -8,7 +8,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Amplification as a D4L dynamics
 
-Pure-boost scaling multiplies `JNormalized` by `k²`: `T` stays fixed, and `U` can reach `F` or leave the cone. No new arithmetic.
+Pure-boost scaling multiplies `JNormalized` by `k²`: `T` stays fixed, and `U` can reach `F` or leave
+the cone. No new arithmetic.
 -/
 
 namespace DstDiophantine

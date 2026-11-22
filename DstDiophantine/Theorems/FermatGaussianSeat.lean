@@ -14,7 +14,8 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Gaussian generator and the dual rotor
 
-One hypotenuse norm carries a pure dual rotor and, for odd `e ≥ 5`, a mixed motor outside the cone. The cone does not decide the integer residual.
+One hypotenuse norm carries a pure dual rotor and, for odd `e ≥ 5`, a mixed motor outside the cone.
+The cone does not decide the integer residual.
 -/
 
 namespace DstDiophantine

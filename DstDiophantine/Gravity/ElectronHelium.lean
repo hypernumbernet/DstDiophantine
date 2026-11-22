@@ -235,8 +235,7 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
   have hxI := evenInterval_outer hx
   have hyI := evenInterval_outer hy
   rcases lt_trichotomy x y with hlt | heq | hgt
-  ·
-    set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
+  · set rEp : ℝ := sqrt ((R / 2) ^ 2 + ρ ^ 2)
     set s : ℝ := x / y
     have hs0 : 0 < s := div_pos hx.1 hy.1
     have hs1 : s < 1 := (div_lt_one hy.1).mpr hlt

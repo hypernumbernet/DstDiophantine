@@ -12,7 +12,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Periodicity of cyclic versus hyperbolic exponentials
 
-Cyclic exponentials are `2π`-periodic and hyperbolic ones are not. Putting boosts on a `2π`-torus is a modelling choice, not a consequence of the exponential.
+Cyclic exponentials are `2π`-periodic and hyperbolic ones are not. Putting boosts on a `2π`-torus is
+a modelling choice, not a consequence of the exponential.
 -/
 
 namespace DstDiophantine

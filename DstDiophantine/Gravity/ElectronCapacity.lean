@@ -343,6 +343,7 @@ lemma cos_two_ge : -1 / 2 ≤ cos 2 := by
   linarith
 
 set_option maxHeartbeats 4000000 in
+-- `norm_num` on the hyperbolic bounds exceeds the default heartbeat limit.
 lemma shell_numerator_neg {t : ℝ} (ht : t ∈ Icc (4 / 5) (π / 2)) :
     2 * sinh t ^ 3 * sin (2 * t) < cosh t * cosh (2 * t) * (2 + cos (2 * t)) := by
   have hpi : π / 2 < 8 / 5 := by linarith [pi_lt_d6]
@@ -1362,6 +1363,7 @@ lemma weightNumer_eq (y : ℝ) :
   ring
 
 set_option maxHeartbeats 4000000 in
+-- Differentiating the quotient and clearing denominators exceeds the default heartbeat limit.
 lemma hasDerivAt_capacityPhase {y : ℝ} (hg : gammaSEqual y ≠ 0) :
     HasDerivAt capacityPhase (phaseLogNum y / (2 * gammaSEqual y ^ 2)) y := by
   have hnum :=

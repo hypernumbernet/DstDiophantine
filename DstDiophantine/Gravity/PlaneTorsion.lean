@@ -140,6 +140,7 @@ private def unitCoeff (i : Fin 6) : Fin 6 → ℝ :=
   fun j => if j = i then 1 else 0
 
 set_option maxHeartbeats 400000 in
+-- `ring` after `fin_cases` on the six generators exceeds the default heartbeat limit.
 private theorem genCleared_unit (i : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (unitCoeff i)) d = 0 := by
   fin_cases i <;>
@@ -147,11 +148,13 @@ private theorem genCleared_unit (i : Fin 6) (d : Fin 4 → ℝ) :
       genTup, genTorsion, Fin.sum_univ_four, unitCoeff, soK, w31] <;>
     ring
 
-/-- Two-coefficient jets are the pairs needed for a null generator and for the quadratic polarisation. `i` and `j` are arbitrary, including equals. -/
+/-- Two-coefficient jets are the pairs needed for a null generator and for the quadratic
+polarisation. `i` and `j` are arbitrary, including equals. -/
 private def pairCoeff (i j : Fin 6) : Fin 6 → ℝ :=
   fun k => if k = i then 1 else if k = j then 1 else 0
 
 set_option maxHeartbeats 2000000 in
+-- `ring` after `fin_cases` on every generator pair exceeds the default heartbeat limit.
 private theorem genCleared_pair (i j : Fin 6) (d : Fin 4 → ℝ) :
     genCleared (soK (pairCoeff i j)) d = 0 := by
   fin_cases i <;> fin_cases j <;>

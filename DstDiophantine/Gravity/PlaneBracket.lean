@@ -5,7 +5,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 /-!
 # Brackets of coordinate planes
 
-The resulting translation, and the boost a displaced plane acquires, are not identified with the torsional mismatch.
+The resulting translation, and the boost a displaced plane acquires, are not identified with the
+torsional mismatch.
 -/
 
 namespace DstDiophantine.Gravity.PlaneBracket

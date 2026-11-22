@@ -4,7 +4,8 @@ import DstDiophantine.Algebra.ModularAmplification
 /-!
 # Height and winding
 
-Admissible real scale and nonzero winding cannot hold together. This separates two measurements; it is not a Both-status on one observable.
+Admissible real scale and nonzero winding cannot hold together. This separates two measurements; it
+is not a Both-status on one observable.
 -/
 
 namespace DstDiophantine

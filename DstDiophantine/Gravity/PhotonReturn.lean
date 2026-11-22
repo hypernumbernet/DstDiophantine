@@ -16,7 +16,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Return of rays that a horizon would capture
 
-No mass on a nodal shell and no magnification are derived, and `F = k/(γₛ r²)` is not the force on a ray. No gravitational-wave boundary condition or late echo train is derived, and neither ceiling is identified as the physical one.
+No mass on a nodal shell and no magnification are derived, and `F = k/(γₛ r²)` is not the force on a
+ray. No gravitational-wave boundary condition or late echo train is derived, and neither ceiling is
+identified as the physical one.
 -/
 
 namespace DstDiophantine
@@ -51,7 +53,8 @@ noncomputable def photonHalfOrbit : ℝ :=
 noncomputable def killingAntideriv (rs r : ℝ) : ℝ :=
   r + rs * Real.log (r - rs)
 
-/-- Dimensionless round trip from the freeze out to the photon sphere. In units where `rₛ = 2GM/c²`, this is `Δt` in units of `GM/c³`. -/
+/-- Dimensionless round trip from the freeze out to the photon sphere. In units where `rₛ = 2GM/c²`,
+this is `Δt` in units of `GM/c³`. -/
 noncomputable def cavityFactor (A : ℝ) : ℝ :=
   4 * (3 / 2 - 1 / (1 - A) + Real.log ((1 - A) / (2 * A)))
 
@@ -59,7 +62,8 @@ noncomputable def cavityFactor (A : ℝ) : ℝ :=
 noncomputable def interiorRadialFactor (A : ℝ) : ℝ :=
   4 / (A * (1 - A))
 
-/-- Chord lower bound on the marginal interior round trip. The geodesic time is `interiorVisit`, which is strictly longer. -/
+/-- Chord lower bound on the marginal interior round trip. The geodesic time is `interiorVisit`,
+which is strictly longer. -/
 noncomputable def shallowInteriorFactor (A : ℝ) : ℝ :=
   4 * (1 / (1 - A) - (3 * Real.sqrt 3 / 2) * Real.sqrt A) / A
 

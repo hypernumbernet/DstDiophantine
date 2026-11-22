@@ -4,7 +4,9 @@ import Mathlib.Tactic.Linarith
 /-!
 # Fourth power plus a square
 
-`bennettEllenbergNg` assumes no nonzero coprime `A⁴ + B² = Cⁿ` for `n ≥ 4`. It is an axiom, not a Lean proof; classical Beal is not claimed and `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` stays open.
+`bennettEllenbergNg` assumes no nonzero coprime `A⁴ + B² = Cⁿ` for `n ≥ 4`. It is an axiom, not a
+Lean proof; classical Beal is not claimed and `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual`
+stays open.
 -/
 
 namespace DstDiophantine

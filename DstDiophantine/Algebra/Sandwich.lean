@@ -8,7 +8,8 @@ import Mathlib.Algebra.BigOperators.Fin
 /-!
 # Geometric sandwich `M v M˜`
 
-Unitary conjugation preserves products and Minkowski squares. A general grade projection, and degenerate isometry outside the motor subgroup, are not claimed.
+Unitary conjugation preserves products and Minkowski squares. A general grade projection, and
+degenerate isometry outside the motor subgroup, are not claimed.
 -/
 
 namespace DstDiophantine

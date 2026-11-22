@@ -4,7 +4,8 @@ import DstDiophantine.Gravity.ShieldCeiling
 /-!
 # Mass ceiling of the admissible cone
 
-The unsigned mass meets the mismatch ceiling exactly on the pure-boost and pure-rotation corners. That mass is the Euclidean size of the rapidities, and it is not the Dirac mass.
+The unsigned mass meets the mismatch ceiling exactly on the pure-boost and pure-rotation corners.
+That mass is the Euclidean size of the rapidities, and it is not the Dirac mass.
 -/
 
 namespace DstDiophantine

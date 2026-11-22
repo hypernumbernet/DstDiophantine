@@ -7,7 +7,8 @@ set_option linter.style.native false
 /-!
 # Finite Beal certificates
 
-Bounded searches report coprime hits inside a box or as perfect powers. They are diagnostic and do not claim classical Beal.
+Bounded searches report coprime hits inside a box or as perfect powers. They are diagnostic and do
+not claim classical Beal.
 -/
 
 namespace DstDiophantine
@@ -38,7 +39,8 @@ def hasCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
 def noCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
   !(hasCoprimeBealUpTo Amax Emax)
 
-/-- First positive coprime Beal solution in the bounded box, if any (`C` also bounded by `Amax`). Diagnostic / `#eval` finder. -/
+/-- First positive coprime Beal solution in the bounded box, if any (`C` also bounded by `Amax`).
+Diagnostic / `#eval` finder. -/
 def findCoprimeBealUpTo (Amax Emax : ℕ) : Option (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
   (List.range' 1 Amax).findSome? fun A =>
     (List.range' 1 Amax).findSome? fun B =>
@@ -222,7 +224,8 @@ private theorem bin_mid_bounds {lo hi : ℕ} (h : lo < hi) :
       Nat.div_lt_self hpos (by decide : 1 < 2)
     omega
 
-/-- Binary search for a positive `z`-th root of `s` in the half-open interval `[lo, hi)`. Returns `some C` when `C ^ z = s`. -/
+/-- Binary search for a positive `z`-th root of `s` in the half-open interval `[lo, hi)`. Returns
+`some C` when `C ^ z = s`. -/
 def findNthRootBin (s z lo hi fuel : ℕ) : Option ℕ :=
   match fuel with
   | 0 => none
@@ -342,7 +345,8 @@ theorem findNthRoot_eq_some_of {s z C : ℕ}
       Nat.pow_left_injective (Nat.pos_iff_ne_zero.mp hz) (heq'.trans heq.symm)
     exact congrArg some this
 
-/-- True when `A^x + B^y` is a positive perfect `z`-th power `C^z` with three-way gcd 1 and exponents / bases positive as in Beal. -/
+/-- True when `A^x + B^y` is a positive perfect `z`-th power `C^z` with three-way gcd 1 and
+exponents / bases positive as in Beal. -/
 def isCoprimeBealPerfectPower (A B x y z : ℕ) : Bool :=
   decide (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧ 0 < A ∧ 0 < B) &&
     match findNthRoot (A ^ x + B ^ y) z with

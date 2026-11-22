@@ -15,7 +15,9 @@ import Mathlib.Tactic.Ring
 /-!
 # The six inertial planes, and one-parameter curvature
 
-Each coordinate plane carries a one-parameter coframe with Minkowski metric and vanishing teleparallel scalar. The Maurer–Cartan curvature of a connection proportional to one `dφ` vanishes, and that curvature is not the teleparallel scalar.
+Each coordinate plane carries a one-parameter coframe with Minkowski metric and vanishing
+teleparallel scalar. The Maurer–Cartan curvature of a connection proportional to one `dφ` vanishes,
+and that curvature is not the teleparallel scalar.
 -/
 
 namespace DstDiophantine

@@ -79,16 +79,21 @@ The track is not re-exported from `DstDiophantine.Basic`.
 * `Logic.Order` — height and information preorders
 * `Logic.Geometric` — Killing overlap, bivector commutator, rotor composition
 * `Logic.Quantum` — dual Hilbert layer of D4L
-* `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated `HoldsT` / `HoldsNotF`, two-valued fragments, entailment
+* `Logic.Formula` / `Valuation` / `Consequence` — syntax, designated `HoldsT` / `HoldsNotF`,
+  two-valued fragments, entailment
 * `Logic.Implication` — separate residuals of the two predicates
-* `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with classical truth the positive wall
+* `Logic.ClassicalCore` — the wall fragment as a Boolean algebra, with classical truth the positive
+  wall
 * `Logic.HeightIdentity` — a formula returns one literal
-* `Logic.WallRule` — modus ponens, tollens, disjunctive syllogism, and the syllogism preserve the positive wall at every real height
+* `Logic.WallRule` — modus ponens, tollens, disjunctive syllogism, and the syllogism preserve the
+  positive wall at every real height
 * `Logic.Quantum.Sasaki` — the implication carried by orthomodularity detaches for every pair
-* `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly when the two are equal or orthogonal
+* `Logic.Quantum.BooleanIsland` — a ray splits along another ray exactly when the two are equal or
+  orthogonal
 * `Logic.Quantum.BlockReading` — splitting along both arguments distributes in `ℂ²`
 * `Logic.Regime` — discrete proof-status algebra and implication table
-* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`, Diophantine regimes, Beal residual atlas, dual-axis FLT atlas
+* `Logic.Example` — fixed-point, non-explosion, `Jnorm < 1`, Diophantine regimes, Beal residual
+  atlas, dual-axis FLT atlas
 * `Logic.DiscreteAmplitude` — torus amplitudes
 * `Logic.Dynamics` — amplification as a partial map on labels
 * `Logic.Winding` — height and winding are incompatible measurements
@@ -96,7 +101,8 @@ The track is not re-exported from `DstDiophantine.Basic`.
 * `Logic.BalancedResidual` — L3: `BalancedResidualClass` vs window seeds
 
 Unconditional FLT / Beal / a Gödel-refutation are not claimed.
-The amplitude layer is not a Hilbert space, a Born rule, or an orthomodular lattice, and the `ℂ²` operations are not the four labels.
+The amplitude layer is not a Hilbert space, a Born rule, or an orthomodular lattice, and the `ℂ²`
+operations are not the four labels.
 -/
 
 namespace DstDiophantine
@@ -1127,7 +1133,8 @@ example {u : DualSpinor} (hu : u ≠ 0) :
       realCurrent (restParticleSpinor u) ≠ manifest u + manifest (Complex.I • u) :=
   ⟨Q31_realCurrent_rest_timelike hu, realCurrent_rest_ne_manifest_sum hu⟩
 
-/-- Regression: the spin curve solves the Pauli equation and holds the chart's time component at the information weight. A nonzero energy makes the de Broglie phase along that axis move. -/
+/-- Regression: the spin curve solves the Pauli equation and holds the chart's time component at the
+information weight. A nonzero energy makes the de Broglie phase along that axis move. -/
 example (ω : DualRapidity) (u : DualSpinor) {p : Vec4} (hp : p 0 ≠ 0) (t : ℝ) :
     Complex.I • deriv (spinCurve ω u) t =
         (1 / 2 : ℂ) • applyMat (pauliComb (fun a => ω a)) (spinCurve ω u t) ∧

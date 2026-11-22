@@ -8,7 +8,8 @@ import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 /-!
 # Dirac spinor as a matrix representation of `Cl(3,1)`
 
-The gamma matrices act on `ℂ⁴`. This is not the dual-sector space `ℂ²`, and it is not a Dirac equation.
+The gamma matrices act on `ℂ⁴`. This is not the dual-sector space `ℂ²`, and it is not a Dirac
+equation.
 -/
 
 namespace DstDiophantine

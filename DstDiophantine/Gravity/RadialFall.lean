@@ -5,7 +5,8 @@ import Mathlib.Analysis.SpecialFunctions.Arsinh
 /-!
 # From the flat fall to the radial Schwarzschild motion
 
-A single flat jet `s e₀` at one `ℓ` is not identified with a Schwarzschild geodesic, and a fixed coordinate latitude is not derived.
+A single flat jet `s e₀` at one `ℓ` is not identified with a Schwarzschild geodesic, and a fixed
+coordinate latitude is not derived.
 -/
 
 namespace DstDiophantine.Gravity.KillingAxis

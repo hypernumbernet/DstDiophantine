@@ -5092,6 +5092,7 @@ private lemma phaseAt_924 :
   refine ⟨ht0, ht1, by norm_num, by norm_num, hph.1, hph.2.1, by norm_num, hph.2.2.1, hph.2.2.2⟩
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_350_360 {x : ℝ}
     (hx : x ∈ Ioc ((350 : ℝ) / 1000) ((360 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5192,6 +5193,7 @@ private lemma deriv_pos_Ioc_350_360 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_360_375 {x : ℝ}
     (hx : x ∈ Ioc ((360 : ℝ) / 1000) ((375 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5292,6 +5294,7 @@ private lemma deriv_pos_Ioc_360_375 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_375_395 {x : ℝ}
     (hx : x ∈ Ioc ((375 : ℝ) / 1000) ((395 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5392,6 +5395,7 @@ private lemma deriv_pos_Ioc_375_395 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_395_415 {x : ℝ}
     (hx : x ∈ Ioc ((395 : ℝ) / 1000) ((415 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5492,6 +5496,7 @@ private lemma deriv_pos_Ioc_395_415 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_415_445 {x : ℝ}
     (hx : x ∈ Ioc ((415 : ℝ) / 1000) ((445 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5592,6 +5597,7 @@ private lemma deriv_pos_Ioc_415_445 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_445_485 {x : ℝ}
     (hx : x ∈ Ioc ((445 : ℝ) / 1000) ((485 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5692,6 +5698,7 @@ private lemma deriv_pos_Ioc_445_485 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_485_525 {x : ℝ}
     (hx : x ∈ Ioc ((485 : ℝ) / 1000) ((525 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5792,6 +5799,7 @@ private lemma deriv_pos_Ioc_485_525 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_525_565 {x : ℝ}
     (hx : x ∈ Ioc ((525 : ℝ) / 1000) ((565 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5892,6 +5900,7 @@ private lemma deriv_pos_Ioc_525_565 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_565_605 {x : ℝ}
     (hx : x ∈ Ioc ((565 : ℝ) / 1000) ((605 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -5992,6 +6001,7 @@ private lemma deriv_pos_Ioc_565_605 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_605_645 {x : ℝ}
     (hx : x ∈ Ioc ((605 : ℝ) / 1000) ((645 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -6092,6 +6102,7 @@ private lemma deriv_pos_Ioc_605_645 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioc_645_660 {x : ℝ}
     (hx : x ∈ Ioc ((645 : ℝ) / 1000) ((660 : ℝ) / 1000)) :
     0 < deriv dodecaResponse x := by
@@ -6193,6 +6204,7 @@ private lemma deriv_pos_Ioc_645_660 {x : ℝ}
   exact deriv_pos_of_gap hxI hN h3 h6 hF hH (by norm_num)
 
 set_option maxHeartbeats 0 in
+-- `norm_num` on the Taylor bounds for this interval exceeds the default heartbeat limit.
 private lemma deriv_pos_Ioo_660_wall {x : ℝ}
     (hx : x ∈ Ioo ((660 : ℝ) / 1000) dodecaWall) :
     0 < deriv dodecaResponse x := by

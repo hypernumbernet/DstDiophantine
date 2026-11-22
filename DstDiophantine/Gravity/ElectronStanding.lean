@@ -539,7 +539,8 @@ theorem hydrogenStanding_unique {x : ℝ} (hx : x ∈ Ioo (0 : ℝ) resonanceRoo
   · rintro rfl
     rfl
 
-/-- Separation-increasing imbalance. Positive at smaller phase, hence at larger radius, so the curvature balance is unstable. -/
+/-- Separation-increasing imbalance. Positive at smaller phase, hence at larger radius, so the
+curvature balance is unstable. -/
 noncomputable def hydrogenImbalance (x : ℝ) : ℝ :=
   1 / gammaSEqual bohrPhase - 1 / gammaSEqual x
 

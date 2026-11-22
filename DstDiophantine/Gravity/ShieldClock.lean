@@ -17,7 +17,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Dual-only shielding and the one-axis clock are distinct displacements
 
-`γ_eff` is not a product of three sandwiches and is not the mismatch `J`. No electromagnetic coupling, laboratory protocol, helicity drive of `J`, or many-axis clock is derived.
+`γ_eff` is not a product of three sandwiches and is not the mismatch `J`. No electromagnetic
+coupling, laboratory protocol, helicity drive of `J`, or many-axis clock is derived.
 -/
 
 namespace DstDiophantine

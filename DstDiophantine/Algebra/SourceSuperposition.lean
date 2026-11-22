@@ -10,7 +10,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Superposition of source bivectors
 
-The expressed point is the nearest admissible point to the coefficient sum. This is not a derivation of the Newtonian multi-body law.
+The expressed point is the nearest admissible point to the coefficient sum. This is not a derivation
+of the Newtonian multi-body law.
 -/
 
 namespace DstDiophantine

@@ -12,7 +12,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Dual-axis Fermat motor embedding
 
-Boost on hyperbolic axis `0`, cyclic angle on axis `1`. This is not a proof that `R·T = exp(Ω_biv)`, nor of FLT.
+Boost on hyperbolic axis `0`, cyclic angle on axis `1`. This is not a proof that `R·T = exp(Ω_biv)`,
+nor of FLT.
 -/
 
 namespace DstDiophantine
@@ -178,7 +179,8 @@ theorem omegaTorsion_fermatTorsion_add (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 
   rw [omegaTorsion_fermatTorsion, fermatBoostSeed, fermatAngleSeed,
     omegaTorsion_pureBoost, omegaTorsion_pureRotation1]
 
-/-- Geometric interference of the Fermat boost against its cyclic angle: `[Ω_boost, Ω_cyclic] = (α β / 2) B⁺₂`. -/
+/-- Geometric interference of the Fermat boost against its cyclic angle:
+`[Ω_boost, Ω_cyclic] = (α β / 2) B⁺₂`. -/
 noncomputable def fermatInterfere (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) : PGA :=
   Generators.commutator (omegaTorsion (fermatBoostSeed a b c hc))
     (omegaTorsion (fermatAngleSeed a b ha))

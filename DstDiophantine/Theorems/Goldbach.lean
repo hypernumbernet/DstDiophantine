@@ -22,7 +22,8 @@ set_option linter.style.native false
 /-!
 # Goldbach outside the cone
 
-The only pair on the stable phase is `2 + 2 = 4`, and `GoldbachAdmissibleBridge` is not a reduction. Classical Goldbach is not claimed.
+The only pair on the stable phase is `2 + 2 = 4`, and `GoldbachAdmissibleBridge` is not a reduction.
+Classical Goldbach is not claimed.
 -/
 
 namespace DstDiophantine
@@ -137,7 +138,8 @@ theorem goldbachTargetHeight_gt_one_of_four_le {n : ℕ} (hn : 4 ≤ n) :
 
 /-! ### Mismatch of the relative rotor
 
-`logMismatch` is the half-angle seed. The relative rotor `R(p)† R(q)` is the pure boost of angle `2(log q - log p)`.
+`logMismatch` is the half-angle seed. The relative rotor `R(p)† R(q)` is the pure boost of angle
+`2(log q - log p)`.
 -/
 
 /-- Rapidity of the ratio `q / p`. -/
@@ -232,7 +234,8 @@ theorem goldbachMismatch_eq_zero_iff {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
 
 /-! ### Equation of state
 
-The additive channel fixes `n = p + q`. The rapidity is the hyperbolic gap between `n/2` and `√(pq)`.
+The additive channel fixes `n = p + q`. The rapidity is the hyperbolic gap between `n/2` and
+`√(pq)`.
 -/
 
 theorem goldbach_equation_of_state {p q : ℕ} (hp : 0 < p) (hq : 0 < q) :
@@ -308,7 +311,8 @@ theorem goldbach_three_three_vacuum :
 
 /-! ### Parity floor
 
-Both summands of an even target `n ≥ 6` are odd. Their difference is at least `2` when `4 ∣ n`, and a positive multiple of `4` when `n ≡ 2 (mod 4)`.
+Both summands of an even target `n ≥ 6` are odd. Their difference is at least `2` when `4 ∣ n`, and
+a positive multiple of `4` when `n ≡ 2 (mod 4)`.
 -/
 
 /-- Minimal positive separation of an unbalanced odd-odd pair of sum `n`. -/
@@ -544,7 +548,8 @@ theorem goldbach_parity_floor_eventually_lt {ε : ℝ} (hε : 0 < ε) :
 
 /-! ### Statistical weight
 
-The cone does not select a decomposition. The weight `exp(-β J)` is greatest at a minimum of `J`, a pair closest to equality.
+The cone does not select a decomposition. The weight `exp(-β J)` is greatest at a minimum of `J`, a
+pair closest to equality.
 -/
 
 noncomputable def goldbachWeight (β : ℝ) (p q : ℕ) (hp : p ≠ 0) (hq : q ≠ 0) : ℝ :=

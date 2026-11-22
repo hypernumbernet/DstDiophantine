@@ -9,7 +9,8 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Pythagorean descent for exponent gcd 2
 
-Fourth-divisibility slices are closed with no extra hypothesis. Classical Beal is not claimed; `BealPythagoreanResidual` stays open.
+Fourth-divisibility slices are closed with no extra hypothesis. Classical Beal is not claimed;
+`BealPythagoreanResidual` stays open.
 -/
 
 namespace DstDiophantine

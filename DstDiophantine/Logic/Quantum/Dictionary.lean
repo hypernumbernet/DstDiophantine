@@ -9,7 +9,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Dictionary of the amplitude layer and the dual Hilbert layer
 
-Maps are explicit and one-way. None of them is a lattice isomorphism, a Born rule, or a Hilbert-space adjoint.
+Maps are explicit and one-way. None of them is a lattice isomorphism, a Born rule, or a
+Hilbert-space adjoint.
 -/
 
 namespace DstDiophantine

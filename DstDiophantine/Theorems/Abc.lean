@@ -28,7 +28,8 @@ set_option linter.style.native false
 /-!
 # Quality height for abc
 
-Pure-boost height tracks `log c − log rad(abc)`. Classical abc is not claimed; `AbcAdmissibleBridge` is false and `AbcModularBridge` stays open.
+Pure-boost height tracks `log c − log rad(abc)`. Classical abc is not claimed; `AbcAdmissibleBridge`
+is false and `AbcModularBridge` stays open.
 -/
 
 namespace DstDiophantine
@@ -615,7 +616,8 @@ theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b 
 
 /-! ### Coarser ceiling from `|JNormalized| ≤ 1` -/
 
-/-- Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with `ε_N = 16/(3N²)` from `discrete_nonzero_height_lb`. -/
+/-- Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with `ε_N = 16/(3N²)` from
+`discrete_nonzero_height_lb`. -/
 noncomputable def discreteAbcCeiling (N rad : ℕ) : ℝ :=
   1 + Real.sqrt (1 / (abcHeightCoef rad * ((16 : ℝ) / (3 * (N : ℝ) ^ 2))))
 
@@ -1209,7 +1211,8 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
 
 /-! ### One-algebra label packet
 
-Axes carry label squares `1`, `4`, and `9` times `2δ`. The Killing form adds those squares, so admissibility is the heaviest axis.
+Axes carry label squares `1`, `4`, and `9` times `2δ`. The Killing form adds those squares, so
+admissibility is the heaviest axis.
 -/
 
 /-- Squares of the labels `1`, `2`, `3`, one per axis. -/

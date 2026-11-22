@@ -19,7 +19,9 @@ import DstDiophantine.Gravity.SI
 /-!
 # Longitudinal excitation of an outermost electron
 
-A collision rate, cross section, and mean free path are not derived; `h` and `k_B` stay external, and cavity growth as `ν²` is not a consequence of the collision. No theorem retunes a root by temperature or impulse, or identifies a root with the enclosure peak.
+A collision rate, cross section, and mean free path are not derived; `h` and `k_B` stay external,
+and cavity growth as `ν²` is not a consequence of the collision. No theorem retunes a root by
+temperature or impulse, or identifies a root with the enclosure peak.
 -/
 
 namespace DstDiophantine

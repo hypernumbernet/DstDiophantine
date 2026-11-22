@@ -8,7 +8,9 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 /-!
 # Perihelion from the radial law with angular momentum
 
-No chart through the poles is derived, the precessing ellipse is not identified as a solution of the orbit equation, and the upper bound is not claimed when `3M(α+β) > 1/2`. The tangential tilt is not the retarded field of a moving source, and this bivector is not the torsional mismatch.
+No chart through the poles is derived, the precessing ellipse is not identified as a solution of the
+orbit equation, and the upper bound is not claimed when `3M(α+β) > 1/2`. The tangential tilt is not
+the retarded field of a moving source, and this bivector is not the torsional mismatch.
 -/
 
 namespace DstDiophantine.Gravity.Perihelion
@@ -26,7 +28,8 @@ def gammaSq (ur uφ : ℝ) : ℝ :=
 noncomputable def angularMomentum (L r : ℝ) : ℝ :=
   L / r
 
-/-- Rate of the orthonormal radial momentum. The first term is the rapidity law; the second is the centrifugal change along the angular leg. -/
+/-- Rate of the orthonormal radial momentum. The first term is the rapidity law; the second is the
+centrifugal change along the angular leg. -/
 noncomputable def radialMomentumRate (rs r ur L : ℝ) : ℝ :=
   -(gammaSq ur (angularMomentum L r)) / axisDistance rs r +
     (killingNorm rs r / r) * (angularMomentum L r) ^ 2

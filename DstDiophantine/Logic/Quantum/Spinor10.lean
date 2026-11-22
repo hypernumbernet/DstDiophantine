@@ -7,7 +7,8 @@ import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # 10D Majorana–Weyl type
 
-`MajoranaWeyl10` is a real 16-dimensional carrier and `WeylSU4` has the same real dimension. No `Spin(9,1)`-equivariance is claimed, and `ℂ²` is not identified with `MajoranaWeyl10`.
+`MajoranaWeyl10` is a real 16-dimensional carrier and `WeylSU4` has the same real dimension. No
+`Spin(9,1)`-equivariance is claimed, and `ℂ²` is not identified with `MajoranaWeyl10`.
 -/
 
 namespace DstDiophantine

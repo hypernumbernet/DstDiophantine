@@ -10,7 +10,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Null doubling of the commuting left ideal
 
-The principal left ideal splits as a four-dimensional Minkowski core plus a null copy, so it is reducible as a PGA-module. Irreducibility of that core as a `Cl(3,1)`-module is not claimed.
+The principal left ideal splits as a four-dimensional Minkowski core plus a null copy, so it is
+reducible as a PGA-module. Irreducibility of that core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine

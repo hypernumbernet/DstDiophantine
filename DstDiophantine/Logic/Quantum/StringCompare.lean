@@ -9,7 +9,8 @@ import DstDiophantine.Logic.Quantum.MinimalIdeal
 /-!
 # DST versus 10D string kinematics
 
-These theorems record numerical coincidences and reject false identifications. Standard-Model emergence is not a theorem.
+These theorems record numerical coincidences and reject false identifications. Standard-Model
+emergence is not a theorem.
 -/
 
 namespace DstDiophantine

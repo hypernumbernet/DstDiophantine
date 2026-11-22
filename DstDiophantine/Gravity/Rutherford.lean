@@ -12,7 +12,8 @@ set_option linter.style.native false
 /-!
 # Alpha–gold scattering in the outer region of the nuclear length
 
-The electromagnetic scale, the alpha energy, the charges, and the mass numbers are external inputs. No cross section or half-life is computed, and the coherent sum `A₁ A₂ κ` is not a claim.
+The electromagnetic scale, the alpha energy, the charges, and the mass numbers are external inputs.
+No cross section or half-life is computed, and the coherent sum `A₁ A₂ κ` is not a claim.
 -/
 
 namespace DstDiophantine
@@ -768,7 +769,8 @@ theorem dev_at_ten_fm :
 /-- Inverse-variance weight for a one-percent error on a charge `Z`. -/
 def chadwickWeight (Z : ℚ) : ℚ := 1 / (Z / 100) ^ 2
 
-/-- Coherent ratio `κ/(k e²)` from copper, silver, and platinum, weighted by one percent on each measured charge. The charges and mass numbers are external. -/
+/-- Coherent ratio `κ/(k e²)` from copper, silver, and platinum, weighted by one percent on each
+measured charge. The charges and mass numbers are external. -/
 def chadwickBeta : ℚ :=
   let wCu := chadwickWeight 29
   let wAg := chadwickWeight 47

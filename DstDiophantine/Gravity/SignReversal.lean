@@ -9,7 +9,8 @@ set_option linter.style.native false
 /-!
 # The sign-reversal scale as an observational constant
 
-The window `1/2 < r₁ < 1` is an input: `ℓ = 2 x₁ r₁` is not a Compton wavelength, and `r₁` is not computed from one.
+The window `1/2 < r₁ < 1` is an input: `ℓ = 2 x₁ r₁` is not a Compton wavelength, and `r₁` is not
+computed from one.
 -/
 
 namespace DstDiophantine
@@ -363,7 +364,8 @@ theorem channelMassRatio_exceeds_planck {r₁ : ℝ}
     rwa [hnum] at hleft
   exact lt_trans (lt_trans hscaled (by norm_num)) (channelMassRatio_window hr0 hr1).1
 
-/-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\). The CODATA value lies strictly inside. Not derived. -/
+/-- External window, in MeV, for the deuteron binding \(m_n+m_p-m_d\). The CODATA value lies
+strictly inside. Not derived. -/
 def deuteronBindingMeVLower : ℚ := 2224 / 1000
 
 def deuteronBindingMeVUpper : ℚ := 2225 / 1000

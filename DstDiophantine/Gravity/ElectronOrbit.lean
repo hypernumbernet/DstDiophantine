@@ -47,7 +47,8 @@ theorem lambdaHyp_sharp_bounds :
 
 /-! ### Coulombic circular balance -/
 
-/-- Written Coulombic force \(F=ke^2/(\gamma_s r^2)\). The sign of \(F\) is the sign of \(\gamma_s\). -/
+/-- Written Coulombic force \(F=ke^2/(\gamma_s r^2)\). The sign of \(F\) is the sign of
+\(\gamma_s\). -/
 noncomputable def coulombForce (k e γs r : ℝ) : ℝ :=
   k * e ^ 2 / (γs * r ^ 2)
 

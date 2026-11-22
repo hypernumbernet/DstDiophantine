@@ -8,7 +8,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 /-!
 # Covariance under the total rotor
 
-A unit-determinant total rotor sends a solution of mass `m` at `p` to a solution of the same mass at `Λ_M p`. An axis-2 dual rotation on the left of an axis-0 boost keeps the time component `m cosh φ`, so the rapidity is not an extremum of the order.
+A unit-determinant total rotor sends a solution of mass `m` at `p` to a solution of the same mass at
+`Λ_M p`. An axis-2 dual rotation on the left of an axis-0 boost keeps the time component `m cosh φ`,
+so the rapidity is not an extremum of the order.
 -/
 
 namespace DstDiophantine

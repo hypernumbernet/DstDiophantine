@@ -11,7 +11,9 @@ import Mathlib.Tactic.Module
 /-!
 # Faraday bivector in the dual-rotor 6-space
 
-The coefficients `(E_a, B_a)` live on the same six generators as the dual-rotor torsion, with `J = ½(E² − B²)`. Maxwell's equations and the Lorentz force are not derived, and helicity drive of `J` is not a theorem.
+The coefficients `(E_a, B_a)` live on the same six generators as the dual-rotor torsion, with
+`J = ½(E² − B²)`. Maxwell's equations and the Lorentz force are not derived, and helicity drive of
+`J` is not a theorem.
 -/
 
 namespace DstDiophantine
@@ -139,7 +141,8 @@ theorem mass_pos_of_null {p : FaradayParams}
     0 < mass (toTorsion p) :=
   (mass_eq_energySq_of_null h).symm ▸ lt_of_le_of_ne (energySq_nonneg p) hE.symm
 
-/-- Interference of two Faraday configurations: \(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q\). -/
+/-- Interference of two Faraday configurations:
+\(\mathbf{E}_p\cdot\mathbf{E}_q-\mathbf{B}_p\cdot\mathbf{B}_q\). -/
 def faradayCross (p q : FaradayParams) : ℝ :=
   (∑ a : Fin 3, p.E a * q.E a) - (∑ a : Fin 3, p.B a * q.B a)
 
@@ -295,7 +298,8 @@ def pureB (Bx : ℝ) : FaradayParams where
     | 0 => Bx
     | _ => 0
 
-/-- Helicity snapshot of a \(z\)-propagating circular wave at one instant: \(E=E_0\hat x\), \(B=\sigma E_0\hat y\) (units \(c=1\)). -/
+/-- Helicity snapshot of a \(z\)-propagating circular wave at one instant: \(E=E_0\hat x\),
+\(B=\sigma E_0\hat y\) (units \(c=1\)). -/
 def circularSnapshot (σ E0 : ℝ) : FaradayParams where
   E := fun
     | 0 => E0

@@ -20,7 +20,8 @@ import Mathlib.Topology.Order.Compact
 /-!
 # Mirror average and the canonical weight of the reversal
 
-No reversal frequency, floating-point trajectory, value of `a₀`, or identification of a galaxy with this aggregate is derived.
+No reversal frequency, floating-point trajectory, value of `a₀`, or identification of a galaxy with
+this aggregate is derived.
 -/
 
 namespace DstDiophantine.Gravity.RacketThermal

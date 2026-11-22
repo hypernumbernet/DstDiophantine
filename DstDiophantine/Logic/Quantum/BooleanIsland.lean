@@ -5,7 +5,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Boolean islands in the spinor lattice
 
-A ray's island is `{⊥, ℓ, ℓ⊥, ⊤}`, and the classical expansion detaches exactly where the two implications agree. It does not detach on a basis ray against the diagonal.
+A ray's island is `{⊥, ℓ, ℓ⊥, ⊤}`, and the classical expansion detaches exactly where the two
+implications agree. It does not detach on a basis ray against the diagonal.
 -/
 
 namespace DstDiophantine

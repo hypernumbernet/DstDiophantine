@@ -316,7 +316,8 @@ theorem ellRep_nodeUpper_meter_window :
   rw [rat_pow_ten_sixteen]
   exact h
 
-/-- The first node of the electron Compton wavelength lies strictly between `2032×10⁻¹⁶` m and `2069×10⁻¹⁶` m. -/
+/-- The first node of the electron Compton wavelength lies strictly between `2032×10⁻¹⁶` m and
+`2069×10⁻¹⁶` m. -/
 theorem ellRep_node_meter_window :
     (2032 : ℝ) / 10 ^ 16 < (ellRep : ℝ) / (2 * resonanceRoot1) ∧
       (ellRep : ℝ) / (2 * resonanceRoot1) < (2069 : ℝ) / 10 ^ 16 := by

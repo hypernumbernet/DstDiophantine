@@ -6,14 +6,16 @@ import Mathlib.Tactic.NormNum
 /-!
 # Mihăilescu's theorem as an axiom
 
-`mihailescu` assumes the only solution of `a^x − b^y = 1` with exponents greater than 1 is `3² − 2³ = 1`. It is an axiom, not a Lean proof of Mihăilescu.
+`mihailescu` assumes the only solution of `a^x − b^y = 1` with exponents greater than 1 is
+`3² − 2³ = 1`. It is an axiom, not a Lean proof of Mihăilescu.
 -/
 
 namespace DstDiophantine
 
 namespace Theorems
 
-/-- The only perfect-power difference of 1 is `3² − 2³ = 1`. An axiom, not a Lean proof of Mihăilescu. -/
+/-- The only perfect-power difference of 1 is `3² − 2³ = 1`. An axiom, not a Lean proof of
+Mihăilescu. -/
 axiom mihailescu :
     ∀ (a b x y : ℕ),
       1 < x → 1 < y → 0 < a → 0 < b →

@@ -10,7 +10,9 @@ import Mathlib.Tactic.Positivity
 /-!
 # A proton pair in an octahedral hole
 
-Six ions of charge `Z` sit at `±a` and two protons at `±t`, and the axial component on the proton at `+t` is `octaPairOutward`. No rate, heat, or experiment is derived, and the electromagnetic length is not identified with the nuclear length.
+Six ions of charge `Z` sit at `±a` and two protons at `±t`, and the axial component on the proton at
+`+t` is `octaPairOutward`. No rate, heat, or experiment is derived, and the electromagnetic length
+is not identified with the nuclear length.
 -/
 
 namespace DstDiophantine
@@ -141,7 +143,8 @@ private lemma gamma_half_le : gammaSEqual (1 / 2 : ℝ) ≤ 581 / 768 := by
 
 /-! ### The axial component -/
 
-/-- Separation-increasing component for ions of charge `Z` on the octahedron of radius `a`, with protons at half-separation `t`. -/
+/-- Separation-increasing component for ions of charge `Z` on the octahedron of radius `a`, with
+protons at half-separation `t`. -/
 noncomputable def octaPairOutward (Z a t : ℝ) : ℝ :=
   -Z * pairAttraction (1 / (2 * (a - t)))
   + Z * pairAttraction (1 / (2 * (a + t)))

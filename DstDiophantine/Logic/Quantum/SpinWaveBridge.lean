@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Quantum.ExternalChart
 /-!
 # Internal spin and the chart wave
 
-On a twice differentiable carrier `(σ·Π)² = Π² - e σ·B`, and the magnetic remainder is a dual rotor. A chart phase multiplies the identity, so the magnetic spin Hamiltonian is never that phase.
+On a twice differentiable carrier `(σ·Π)² = Π² - e σ·B`, and the magnetic remainder is a dual rotor.
+A chart phase multiplies the identity, so the magnetic spin Hamiltonian is never that phase.
 -/
 
 namespace DstDiophantine

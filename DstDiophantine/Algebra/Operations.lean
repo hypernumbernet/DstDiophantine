@@ -5,7 +5,8 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 /-!
 # Reverse, dual, and dagger operations
 
-Duality is right multiplication by the `Cl(3,1)` pseudoscalar. It does not send null bivectors to null bivectors.
+Duality is right multiplication by the `Cl(3,1)` pseudoscalar. It does not send null bivectors to
+null bivectors.
 -/
 
 namespace DstDiophantine
@@ -219,8 +220,7 @@ theorem dual_time (c : ℝ) :
 
 theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
   fin_cases a
-  ·
-    dsimp [dual, hyperbolic, cyclic, pseudoscalar]
+  · dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     have hsq : (ι 0 * ι 1) * (ι 0 * ι 1) = 1 := by
       simpa [hyperbolic] using hyperbolic_sq (0 : Fin 3)
     calc ι 0 * ι 1 * (ι 0 * ι 1 * ι 2 * ι 3)
@@ -228,8 +228,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
       _ = (1 : PGA) * (ι 2 * ι 3) := by rw [hsq]
       _ = ι 2 * ι 3 := by simp
       _ = -(ι 3 * ι 2) := (e_mul_anticomm (by decide : (2 : Fin 5) ≠ 3))
-  ·
-    dsimp [dual, hyperbolic, cyclic, pseudoscalar]
+  · dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     calc ι 0 * ι 2 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 0 * (ι 2 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
       _ = ι 0 * (-(ι 0 * ι 2)) * ι 1 * ι 2 * ι 3 := by
@@ -242,8 +241,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
           rw [e_mul_anticomm (by decide : (1 : Fin 5) ≠ 2)]
       _ = -((ι 2 * ι 2) * ι 1 * ι 3) := by simp [mul_neg, mul_assoc]
       _ = -(ι 1 * ι 3) := by simp [e2_sq]
-  ·
-    dsimp [dual, hyperbolic, cyclic, pseudoscalar]
+  · dsimp [dual, hyperbolic, cyclic, pseudoscalar]
     calc ι 0 * ι 3 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 0 * (ι 3 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
       _ = ι 0 * (-(ι 0 * ι 3)) * ι 1 * ι 2 * ι 3 := by
@@ -263,8 +261,7 @@ theorem dual_hyperbolic (a : Fin 3) : dual (hyperbolic a) = -cyclic a := by
 
 theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
   fin_cases a
-  ·
-    dsimp [dual, cyclic, hyperbolic, pseudoscalar]
+  · dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 3 * ι 2 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 3 * (ι 2 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
       _ = ι 3 * (-(ι 0 * ι 2)) * ι 1 * ι 2 * ι 3 := by
@@ -283,8 +280,7 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
           rw [e_mul_anticomm (by decide : (3 : Fin 5) ≠ 1)]
       _ = ι 0 * ι 1 * (ι 3 * ι 3) := by simp [mul_neg, mul_assoc]
       _ = ι 0 * ι 1 := by simp [e3_sq]
-  ·
-    dsimp [dual, cyclic, hyperbolic, pseudoscalar]
+  · dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 1 * ι 3 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 1 * (ι 3 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
       _ = ι 1 * (-(ι 0 * ι 3)) * ι 1 * ι 2 * ι 3 := by
@@ -303,8 +299,7 @@ theorem dual_cyclic (a : Fin 3) : dual (cyclic a) = hyperbolic a := by
           rw [e_mul_anticomm (by decide : (2 : Fin 5) ≠ 3)]
       _ = ι 0 * (ι 3 * ι 3) * ι 2 := by simp [mul_neg, mul_assoc]
       _ = ι 0 * ι 2 := by simp [e3_sq]
-  ·
-    dsimp [dual, cyclic, hyperbolic, pseudoscalar]
+  · dsimp [dual, cyclic, hyperbolic, pseudoscalar]
     calc ι 2 * ι 1 * (ι 0 * ι 1 * ι 2 * ι 3)
         = ι 2 * (ι 1 * ι 0) * ι 1 * ι 2 * ι 3 := by simp [mul_assoc]
       _ = ι 2 * (-(ι 0 * ι 1)) * ι 1 * ι 2 * ι 3 := by

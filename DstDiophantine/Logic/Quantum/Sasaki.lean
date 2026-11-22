@@ -5,7 +5,9 @@ import Mathlib.Tactic.Linarith
 /-!
 # Boolean blocks inside the spinor lattice
 
-The native implication `A⊥ ∨ (A ∧ B)` equals the whole space exactly when `A ≤ B`, and it agrees with `A⊥ ∨ B` exactly on a splitting. On a basis ray and the diagonal the classical expansion is the whole space.
+The native implication `A⊥ ∨ (A ∧ B)` equals the whole space exactly when `A ≤ B`, and it agrees
+with `A⊥ ∨ B` exactly on a splitting. On a basis ray and the diagonal the classical expansion is the
+whole space.
 -/
 
 namespace DstDiophantine

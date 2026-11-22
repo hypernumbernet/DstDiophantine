@@ -5,7 +5,9 @@ import DstDiophantine.Algebra.BivectorBasis
 /-!
 # The direction of gravity: the axis of the static Killing bivector
 
-For the static field `∂_t` the Killing element is `K = (κ/2) B⁺ + (ν/2) N₀`, the pure boost of rate `κ` displaced by `ℓ = ν/κ`. The finite rotor of rapidity `φ` is not itself that bivector, and the flat-flow line is not claimed to be a Schwarzschild geodesic.
+For the static field `∂_t` the Killing element is `K = (κ/2) B⁺ + (ν/2) N₀`, the pure boost of rate
+`κ` displaced by `ℓ = ν/κ`. The finite rotor of rapidity `φ` is not itself that bivector, and the
+flat-flow line is not claimed to be a Schwarzschild geodesic.
 -/
 
 namespace DstDiophantine
@@ -590,7 +592,8 @@ theorem exp_neg_killing_eq_displacedBoost (κ ℓ τ : ℝ) :
   rw [show -(τ * κ) = (-τ) * κ by ring]
   exact exp_smul_killingBivector κ ℓ (-τ)
 
-/-- Proper time on the inertial line at which the event is simultaneous with the observer at flow parameter `τ`. -/
+/-- Proper time on the inertial line at which the event is simultaneous with the observer at flow
+parameter `τ`. -/
 noncomputable def releasedSimulTime (ℓ κ τ : ℝ) : ℝ :=
   ℓ * Real.tanh (τ * κ)
 

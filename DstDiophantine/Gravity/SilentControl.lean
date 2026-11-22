@@ -9,7 +9,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Charge-silent dual control
 
-A V--A coupling, a Fermi constant, a lifetime, a helicity-odd drive of \(J\), the absolute mass gap, and an identification of either increment with the weak-interaction operator are not derived.
+A V--A coupling, a Fermi constant, a lifetime, a helicity-odd drive of \(J\), the absolute mass gap,
+and an identification of either increment with the weak-interaction operator are not derived.
 -/
 
 namespace DstDiophantine

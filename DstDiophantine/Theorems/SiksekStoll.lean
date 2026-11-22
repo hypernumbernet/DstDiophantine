@@ -7,7 +7,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Signature `(3,4,5)` via Siksek–Stoll
 
-`siksekStoll345` assumes a primitive `x³ + y⁴ + z⁵ = 0` has a vanishing coordinate. It is an axiom, not a Lean proof of Siksek–Stoll, and classical Beal is not claimed.
+`siksekStoll345` assumes a primitive `x³ + y⁴ + z⁵ = 0` has a vanishing coordinate. It is an axiom,
+not a Lean proof of Siksek–Stoll, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine

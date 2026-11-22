@@ -10,7 +10,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Kerr chart
 
-On `Σ > 0` and `Δ > 0` the orthonormal coframe induces the Kerr metric, and vanishing spin returns exterior Schwarzschild. The horizon `Δ = 0`, a real coframe on `Δ < 0`, and a pure-boost reading of the cross term are not claimed.
+On `Σ > 0` and `Δ > 0` the orthonormal coframe induces the Kerr metric, and vanishing spin returns
+exterior Schwarzschild. The horizon `Δ = 0`, a real coframe on `Δ < 0`, and a pure-boost reading of
+the cross term are not claimed.
 -/
 
 namespace DstDiophantine
@@ -361,7 +363,8 @@ theorem kerrCoframe_zero_spin {M r θ : ℝ} (h : IsExterior (2 * M) r) :
 
 /-! ### A pure boost does not write the cross term -/
 
-/-- Diagonal frame boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the azimuthal scale of the reference leg. `φ` is index `3`. -/
+/-- Diagonal frame boosted by rapidity `ψ` in the `(t,φ)` plane. `β` is the azimuthal scale of the
+reference leg. `φ` is index `3`. -/
 noncomputable def kerrAzimuthBoostCoframe (ψ β : ℝ) : Coframe :=
   fun b μ =>
     if b = 0 ∧ μ = 0 then Real.cosh ψ

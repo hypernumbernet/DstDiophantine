@@ -9,7 +9,8 @@ set_option linter.style.native false
 /-!
 # Exploratory hypothesis: discrete height → Newton coupling
 
-The labelled hypothesis is `G_hyp(N, m) = ε_N · ℏc / m²`, not a derivation of `G` from `c`. No theorem asserts `dst_derives_G`, and dimensionless `|J| ≤ 3π²/8` is not `c⁴/(G ℓ_P⁻²)`.
+The labelled hypothesis is `G_hyp(N, m) = ε_N · ℏc / m²`, not a derivation of `G` from `c`. No
+theorem asserts `dst_derives_G`, and dimensionless `|J| ≤ 3π²/8` is not `c⁴/(G ℓ_P⁻²)`.
 -/
 
 namespace DstDiophantine

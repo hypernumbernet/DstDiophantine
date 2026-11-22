@@ -309,7 +309,8 @@ theorem charge_with_emission (xs : List NucleonClass) (i : ℕ)
       have ih' := ih n h
       linarith
 
-/-- When the extra Coulomb cost exceeds the free gap, the proton-richer product is heavier; both quantities are inputs. -/
+/-- When the extra Coulomb cost exceeds the free gap, the proton-richer product is heavier; both
+quantities are inputs. -/
 theorem reverse_opens_when_coulomb_exceeds {gap cost : ℚ} (hcost : gap < cost) :
     0 < cost - gap := by
   linarith

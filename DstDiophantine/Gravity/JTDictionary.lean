@@ -26,7 +26,9 @@ import Mathlib.Data.Nat.Factorial.Basic
 /-!
 # Auxiliary expression on the radial chart, not the teleparallel quadratic
 
-`schwarzschildTeleparallelT` is `(2/r²)(1−√A)²/√A`; the quadratic on this coframe is `-2(A+r A')/r²`. No dictionary for a general motor is claimed, and `∫ J` is not the TEGR integral of `T`.
+`schwarzschildTeleparallelT` is `(2/r²)(1−√A)²/√A`; the quadratic on this coframe is
+`-2(A+r A')/r²`. No dictionary for a general motor is claimed, and `∫ J` is not the TEGR integral of
+`T`.
 -/
 
 namespace DstDiophantine

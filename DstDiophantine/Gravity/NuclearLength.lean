@@ -11,7 +11,9 @@ set_option linter.style.native false
 /-!
 # Laboratory caps on the nuclear length
 
-The hypothesis `ℓ = λ_π` is compared with laboratory caps that place a length between `56/75` fm and `19/10` fm. That hypothesis is not a derivation of `ℓ`, and it is not `SignReversal.channelMassRatio`.
+The hypothesis `ℓ = λ_π` is compared with laboratory caps that place a length between `56/75` fm and
+`19/10` fm. That hypothesis is not a derivation of `ℓ`, and it is not
+`SignReversal.channelMassRatio`.
 -/
 
 namespace DstDiophantine

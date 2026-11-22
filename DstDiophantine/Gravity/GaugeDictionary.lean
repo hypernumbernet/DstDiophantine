@@ -15,7 +15,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Algebra of the auxiliary radial expression
 
-`teleparallelTofA` is `(2/r²)(1−√A)²/√A`, not the teleparallel quadratic. No dictionary for a general tetrad is claimed, and `∫ J` is not identified with the TEGR integral of `T`.
+`teleparallelTofA` is `(2/r²)(1−√A)²/√A`, not the teleparallel quadratic. No dictionary for a
+general tetrad is claimed, and `∫ J` is not identified with the TEGR integral of `T`.
 -/
 
 namespace DstDiophantine

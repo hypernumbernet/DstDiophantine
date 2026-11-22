@@ -11,7 +11,8 @@ import Mathlib.Tactic.Positivity
 /-!
 # Chart-level sandwich scales and Schwarzschild radial boost
 
-Degenerate-metric sandwich preservation on full `G(3,1,1)` and a general grade-1 projection are not derived here.
+Degenerate-metric sandwich preservation on full `G(3,1,1)` and a general grade-1 projection are not
+derived here.
 -/
 
 namespace DstDiophantine

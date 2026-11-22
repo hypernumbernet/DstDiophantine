@@ -4,7 +4,9 @@ import DstDiophantine.Gravity.SlerpTorque
 /-!
 # Position as a relation of two elements
 
-`ρ` is not the intra-particle mismatch `Ω` and not a chart coordinate. No `a₀`, circular speed, chord-moment formula, metric, or position operator is derived, and `chordMoment` is not a function of the pair alone.
+`ρ` is not the intra-particle mismatch `Ω` and not a chart coordinate. No `a₀`, circular speed,
+chord-moment formula, metric, or position operator is derived, and `chordMoment` is not a function
+of the pair alone.
 -/
 
 noncomputable section
@@ -132,7 +134,8 @@ structure Rotation where
 
 namespace Rotation
 
-/-- Pair product. The right factor is multiplied in the opposite order, so that `(g, h) · p = g p h` is a left action. -/
+/-- Pair product. The right factor is multiplied in the opposite order, so that `(g, h) · p = g p h`
+is a left action. -/
 def mul (x y : Rotation) : Rotation where
   left := x.left * y.left
   right := y.right * x.right
@@ -323,7 +326,8 @@ def sampleBody : S3 :=
 def sampleSource : S3 :=
   sourceElem sampleχ sampleχ
 
-/-- Right translation that lays the sample body on the first chart axis. `relative_right` conjugates by `h⁻¹`, and that conjugate is the quaternion `logChart` sends to `bodyPoint (-sampleχ)`. -/
+/-- Right translation that lays the sample body on the first chart axis. `relative_right` conjugates
+by `h⁻¹`, and that conjugate is the quaternion `logChart` sends to `bodyPoint (-sampleχ)`. -/
 def axisTurn : S3 where
   val := ⟨Real.sqrt 2 / 2, 0, Real.sqrt 2 / 2, 0⟩
   norm_one := by

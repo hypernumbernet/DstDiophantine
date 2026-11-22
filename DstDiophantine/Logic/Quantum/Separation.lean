@@ -11,7 +11,8 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # D4L is not Hilbert, Born, or Birkhoff–von Neumann
 
-The Killing form is indefinite, so self-overlap is not a Born probability. Distributive `min`/`max` is not the subspace lattice of `ℂ²`.
+The Killing form is indefinite, so self-overlap is not a Born probability. Distributive `min`/`max`
+is not the subspace lattice of `ℂ²`.
 -/
 
 namespace DstDiophantine

@@ -134,7 +134,8 @@ noncomputable def vecPhase (w : E) : ℝ :=
 noncomputable def pointForce (Q : ℝ) (c p : E) : E :=
   -(Q * pullRate (vecPhase (p - c))) • (p - c)
 
-/-- Derivative, along `v`, of the component along `v` of the force of a point charge `Q` at separation `w`. Positive means the displacement is pushed further. -/
+/-- Derivative, along `v`, of the component along `v` of the force of a point charge `Q` at
+separation `w`. Positive means the displacement is pushed further. -/
 noncomputable def lineStiff (Q : ℝ) (w v : E) : ℝ :=
   -(Q * (pullRate (vecPhase w) * ‖v‖ ^ 2 -
     pullRateDeriv (vecPhase w) * ⟪w, v⟫ ^ 2 / (2 * ‖w‖ ^ 3)))
@@ -556,7 +557,8 @@ theorem shell_force_zero {V : Type*} [Fintype V] (Q : ℝ) (f : V → E) (p : E)
   simp only [hr]
   rw [← Finset.smul_sum, hsum, smul_zero]
 
-/-- Ions on a regular octahedron (radius `a`), a cube (half-edge `h`), and a cuboctahedron (`g (±bⱼ ± bₖ)`), all centred at `p`. -/
+/-- Ions on a regular octahedron (radius `a`), a cube (half-edge `h`), and a cuboctahedron
+(`g (±bⱼ ± bₖ)`), all centred at `p`. -/
 noncomputable def cubicSite (b : OrthonormalBasis (Fin 3) ℝ E) (p : E) (a h g : ℝ) :
     ((Fin 3 × Bool) ⊕ (Bool × Bool × Bool)) ⊕ (Fin 3 × Bool × Bool) → E
   | Sum.inl (Sum.inl js) => octaSite b p a js

@@ -4,7 +4,9 @@ import DstDiophantine.Gravity.EMControl
 /-!
 # Neutron spin and the charge-silent magnet
 
-On `J = 0` the magnetic square equals the electric square and the unsigned mass. The ratio `μ_n/μ_p = −2/3`, the weights `4/3` and `−1/3`, a nuclear-magneton moment, `g_A/g_V`, a V-A coupling, and a Faraday reading of the electromagnetic label are not derived.
+On `J = 0` the magnetic square equals the electric square and the unsigned mass. The ratio
+`μ_n/μ_p = −2/3`, the weights `4/3` and `−1/3`, a nuclear-magneton moment, `g_A/g_V`, a V-A
+coupling, and a Faraday reading of the electromagnetic label are not derived.
 -/
 
 namespace DstDiophantine

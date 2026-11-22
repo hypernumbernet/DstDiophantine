@@ -13,7 +13,8 @@ import Mathlib.Tactic.Positivity
 /-!
 # Equal-odd cube leaf
 
-Positive `α³ + 2β³ = γ³` is closed by the axiom `eulerAffineCubeAddTwo`, which is not a Lean proof of Euler. `BealEqualOddTwoFactorExpGeFiveResidual` stays open.
+Positive `α³ + 2β³ = γ³` is closed by the axiom `eulerAffineCubeAddTwo`, which is not a Lean proof
+of Euler. `BealEqualOddTwoFactorExpGeFiveResidual` stays open.
 -/
 
 namespace DstDiophantine

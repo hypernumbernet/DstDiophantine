@@ -389,7 +389,8 @@ theorem seatPattern_quadrupole {M : Matrix (Fin 3) (Fin 3) ℝ}
 
 /-! ### Octupole
 
-Coefficients, matching `octuTrace`: `0,1,2` are `x³,y³,z³`; `3,4` are `x²y,x²z`; `5` is `xy²`; `6` is `y²z`; `7` is `xz²`; `8` is `yz²`; `9` is `xyz`. `octuTrace` is then half the Laplacian.
+Coefficients, matching `octuTrace`: `0,1,2` are `x³,y³,z³`; `3,4` are `x²y,x²z`; `5` is `xy²`; `6`
+is `y²z`; `7` is `xz²`; `8` is `yz²`; `9` is `xyz`. `octuTrace` is then half the Laplacian.
 -/
 
 def octuValue (c : Fin 10 → ℝ) (v : Fin 3 → ℝ) : ℝ :=

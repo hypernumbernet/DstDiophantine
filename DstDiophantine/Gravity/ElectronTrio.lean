@@ -327,7 +327,8 @@ lemma cross_sum_along {q₁ q₂ ρ σ : ℝ} {i : Fin 3}
   rw [hpull, hlin]
   field_simp [hD]
 
-/-- Force on the bonding electron of ray `i`, from the nucleus, its proton, the other two electrons, and the other two protons. -/
+/-- Force on the bonding electron of ray `i`, from the nucleus, its proton, the other two electrons,
+and the other two protons. -/
 def electronForce (Z : ℝ) (i : Fin 3) (r R : ℝ) : Fin 3 → ℝ :=
   fun k =>
     pairForce (-1) Z (vsmul r (triU i)) (fun _ => 0) k +
@@ -446,7 +447,8 @@ theorem tri_tangent_zero {Z r R : ℝ} {i : Fin 3}
 /-- Distance from a charge at radius `ρ` in the plane to an electron at height `s` on the axis. -/
 def axialDist (ρ s : ℝ) : ℝ := sqrt (ρ ^ 2 + s ^ 2)
 
-/-- Generalized force that increases the angle from the positive axis, at the plane. Positive drives every ray to the side opposite an electron at `+s`. -/
+/-- Generalized force that increases the angle from the positive axis, at the plane. Positive drives
+every ray to the side opposite an electron at `+s`. -/
 def triBend (r R s : ℝ) : ℝ :=
   s * (r / (gammaSEqual (pairPhase (axialDist r s)) * axialDist r s ^ 3) -
     R / (gammaSEqual (pairPhase (axialDist R s)) * axialDist R s ^ 3))

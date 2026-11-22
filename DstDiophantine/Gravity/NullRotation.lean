@@ -4,7 +4,8 @@ import DstDiophantine.Gravity.KillingAxis
 /-!
 # The parabolic rotor is a null rotation
 
-Off a common axis, `B⁺₀ + B⁻₁` squares to zero, so its exponential truncates and the truncations add in the parameter. No position operator is claimed.
+Off a common axis, `B⁺₀ + B⁻₁` squares to zero, so its exponential truncates and the truncations add
+in the parameter. No position operator is claimed.
 -/
 
 namespace DstDiophantine

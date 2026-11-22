@@ -5,7 +5,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Sums of two cubes
 
-`sumTwoCubesNotPerfectPower` assumes no nonzero coprime `a³ + b³ = cⁿ` for a `TwoCubeExponent` `n`. It is an axiom, not a Lean proof, and classical Beal is not claimed.
+`sumTwoCubesNotPerfectPower` assumes no nonzero coprime `a³ + b³ = cⁿ` for a `TwoCubeExponent` `n`.
+It is an axiom, not a Lean proof, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine
@@ -22,7 +23,8 @@ instance {x y z : ℕ} : Decidable (IsBruinTwoCubeShape x y z) := by
   unfold IsBruinTwoCubeShape
   infer_instance
 
-/-- Companion exponents for which a coprime sum of two cubes is not an `n`-th power: the range `3 ≤ n ≤ 10^9`, or any even `n ≥ 4`. -/
+/-- Companion exponents for which a coprime sum of two cubes is not an `n`-th power: the range
+`3 ≤ n ≤ 10^9`, or any even `n ≥ 4`. -/
 def TwoCubeExponent (n : ℕ) : Prop :=
   (3 ≤ n ∧ n ≤ 1000000000) ∨ (4 ≤ n ∧ 2 ∣ n)
 

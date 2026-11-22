@@ -673,8 +673,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
   have hπ : 0 < Real.pi := Real.pi_pos
   have hπ2 : 0 < Real.pi ^ 2 := by positivity
   by_cases h8 : Jval ≤ Real.pi ^ 2 / 8
-  ·
-    by_cases hcross : Mval ≤ Real.pi ^ 2 / 4 - Jval
+  · by_cases hcross : Mval ≤ Real.pi ^ 2 / 4 - Jval
     · refine ⟨crossUsualDual (Real.sqrt (Mval + Jval)) (Real.sqrt (Mval - Jval)),
         ?_, ?_, ?_⟩
       · refine isAdmissibleContinuous_crossUsualDual (Real.sqrt_nonneg _)
@@ -687,8 +686,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
       · rw [mass_crossUsualDual, Real.sq_sqrt (add_nonneg (le_trans hJ0 hMlo) hJ0),
           Real.sq_sqrt (sub_nonneg.mpr hMlo)]
         ring
-    ·
-      set γ := Real.pi / 4 + 2 * Jval / Real.pi with hγdef
+    · set γ := Real.pi / 4 + 2 * Jval / Real.pi with hγdef
       have hγ0 : 0 ≤ γ := by
         unfold γ
         have : 0 ≤ 2 * Jval / Real.pi := div_nonneg (by linarith) (le_of_lt hπ)
@@ -757,8 +755,7 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
         ring
       · rw [mass_opposedWall, hwall, hsdef, Real.sq_sqrt hs2]
         ring
-  ·
-    have h8lt : Real.pi ^ 2 / 8 < Jval := lt_of_not_ge h8
+  · have h8lt : Real.pi ^ 2 / 8 < Jval := lt_of_not_ge h8
     by_cases h4 : Jval ≤ Real.pi ^ 2 / 4
     · by_cases hpin : Mval ≤ Real.pi ^ 2 / 2 - Jval
       · have hx2 : 0 ≤ Mval + Jval - Real.pi ^ 2 / 4 := by

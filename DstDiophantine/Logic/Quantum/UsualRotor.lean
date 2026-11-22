@@ -10,7 +10,8 @@ import Mathlib.Tactic.LinearCombination
 /-!
 # Usual-sector matrix rotor
 
-The usual rotor is `exp(α·σ/2)`, Hermitian of determinant `1`, and not unitary for a nonzero boost. Mixed usual/dual exponentials are not identified with an `SL(2,ℂ)` product.
+The usual rotor is `exp(α·σ/2)`, Hermitian of determinant `1`, and not unitary for a nonzero boost.
+Mixed usual/dual exponentials are not identified with an `SL(2,ℂ)` product.
 -/
 
 namespace DstDiophantine

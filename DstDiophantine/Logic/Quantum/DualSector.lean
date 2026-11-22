@@ -7,7 +7,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Dual and usual sectors
 
-On the dual sector the Killing form is negative definite, and on the usual sector it is positive definite. The inner-product space is the linear span of each sector, not the admissible cone.
+On the dual sector the Killing form is negative definite, and on the usual sector it is positive
+definite. The inner-product space is the linear span of each sector, not the admissible cone.
 -/
 
 namespace DstDiophantine

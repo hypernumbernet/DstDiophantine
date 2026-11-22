@@ -6,7 +6,8 @@ import Mathlib.Tactic.Positivity
 /-!
 # Mixed-exponent residual splits
 
-`BealMixedExpResidual` and `BealPythagoreanResidual` split into finer residuals. Classical Beal is not claimed; those sub-residuals stay open.
+`BealMixedExpResidual` and `BealPythagoreanResidual` split into finer residuals. Classical Beal is
+not claimed; those sub-residuals stay open.
 -/
 
 namespace DstDiophantine

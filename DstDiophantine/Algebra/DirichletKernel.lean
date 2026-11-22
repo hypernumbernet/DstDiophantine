@@ -8,7 +8,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Normalised Dirichlet kernel
 
-Lattice singularities are filled in. The bound does not need primality, and mass spectra are not treated.
+Lattice singularities are filled in. The bound does not need primality, and mass spectra are not
+treated.
 -/
 
 namespace DstDiophantine

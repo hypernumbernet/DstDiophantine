@@ -118,7 +118,8 @@ theorem gammaEff_eq_one_of_alpha_zero (β : ℝ) : gammaEff 0 β = 1 := by
   rw [gammaEff_closed]
   simp
 
-/-- It is not the case that `α ≠ 0` already separates the clock from the special-relativistic factor. -/
+/-- It is not the case that `α ≠ 0` already separates the clock from the special-relativistic
+factor. -/
 theorem gammaEff_balanced_eq_cosh_iff (α : ℝ) :
     gammaEff α α = cosh α ↔ sin α = 0 := by
   rw [gammaEff_closed]
@@ -422,7 +423,8 @@ theorem equalScale_radius_O_of_one_over_n
 
 /-! ### External ladder, for the mismatch only -/
 
-/-- External length \(r_n = n^2 a_0\). Not a radius of this force, and not produced by \(pr = n\hbar\). -/
+/-- External length \(r_n = n^2 a_0\). Not a radius of this force, and not produced by \(pr =
+n\hbar\). -/
 noncomputable def bohrShellRadius (n : ℕ) : ℝ :=
   (n : ℝ) ^ 2 * (bohrRadiusApprox : ℝ)
 

@@ -10,7 +10,8 @@ import Mathlib.Tactic.NoncommRing
 /-!
 # Dirac Clifford relations inside `Cl(3,1)`
 
-The Dirac matrices are the grade-1 generators `Cl31.ι μ`, not the hyperbolic bivectors `e₀eₐ`. The spacetime Dirac equation is not formalised here.
+The Dirac matrices are the grade-1 generators `Cl31.ι μ`, not the hyperbolic bivectors `e₀eₐ`. The
+spacetime Dirac equation is not formalised here.
 -/
 
 namespace DstDiophantine

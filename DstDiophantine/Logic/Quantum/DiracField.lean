@@ -5,7 +5,8 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 /-!
 # Dirac current and the spacetime equation
 
-On spacetime, `γ^μ ∂_μ Ψ = -m Ψ`, and the current of two solutions of one real mass is conserved. A total rotor acts by `Ψ ↦ S(M) Ψ(L_M x)` and carries solutions to solutions.
+On spacetime, `γ^μ ∂_μ Ψ = -m Ψ`, and the current of two solutions of one real mass is conserved. A
+total rotor acts by `Ψ ↦ S(M) Ψ(L_M x)` and carries solutions to solutions.
 -/
 
 namespace DstDiophantine
@@ -260,7 +261,8 @@ noncomputable def partialD (Ψ : Vec4 → DiracSpinor) (μ : Fin 4) (x : Vec4) :
 noncomputable def diracOp (Ψ : Vec4 → DiracSpinor) (x : Vec4) : DiracSpinor :=
   ∑ μ : Fin 4, applyDiracMat (diracMat μ) (partialD Ψ μ x)
 
-/-- Spacetime Dirac equation `γ^μ ∂_μ Ψ = -m Ψ`, the image of `γ(p) Ψ = i m Ψ` under `p_μ ↦ -i ∂_μ`. -/
+/-- Spacetime Dirac equation `γ^μ ∂_μ Ψ = -m Ψ`, the image of `γ(p) Ψ = i m Ψ` under
+`p_μ ↦ -i ∂_μ`. -/
 def DiracField (m : ℝ) (Ψ : Vec4 → DiracSpinor) : Prop :=
   Differentiable ℝ Ψ ∧ ∀ x, diracOp Ψ x = (-(m : ℂ)) • Ψ x
 

@@ -5,7 +5,8 @@ import Mathlib.Data.Set.Basic
 /-!
 # Proof-status layer
 
-Discrete labels `{T, U, F, B}` with table implication `impR`, not the residuum of `min`. Measurement is not `JNormalized`.
+Discrete labels `{T, U, F, B}` with table implication `impR`, not the residuum of `min`. Measurement
+is not `JNormalized`.
 -/
 
 namespace DstDiophantine

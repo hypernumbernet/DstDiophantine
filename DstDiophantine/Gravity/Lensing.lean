@@ -11,7 +11,9 @@ import Mathlib.Tactic.NormNum
 /-!
 # Weak deflection by a thin signed shell
 
-The lens map is the weak deflection of one thin spherical shell, with angles in units of the shell's angular radius. No shell mass, no stack of critical curves, and no identification of `F = k/(γₛ r²)` with a ray are claimed.
+The lens map is the weak deflection of one thin spherical shell, with angles in units of the shell's
+angular radius. No shell mass, no stack of critical curves, and no identification of `F = k/(γₛ r²)`
+with a ray are claimed.
 -/
 
 namespace DstDiophantine

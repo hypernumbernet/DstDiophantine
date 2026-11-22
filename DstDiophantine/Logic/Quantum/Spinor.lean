@@ -17,7 +17,8 @@ import Mathlib.Basic.Complex.Basic
 /-!
 # Dual-sector spinor space `ℂ²`
 
-Cyclic generators act by `-i σ_a`, and the dual rotor is `exp(-i/2 β·σ)`. This is not the space of scalar-layer propositions `{T, U, F, B}`.
+Cyclic generators act by `-i σ_a`, and the dual rotor is `exp(-i/2 β·σ)`. This is not the space of
+scalar-layer propositions `{T, U, F, B}`.
 -/
 
 namespace DstDiophantine

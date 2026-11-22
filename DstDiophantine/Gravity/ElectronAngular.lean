@@ -88,7 +88,8 @@ theorem angSq_dipole (a v : Fin 3 → ℝ) :
 
 /-! ### Quadrupole
 
-A homogeneous quadratic is stored as `x²`, `y²`, `z²`, `xy`, `xz`, `yz`. For a symmetric matrix the cross coefficients are twice the off-diagonal entries.
+A homogeneous quadratic is stored as `x²`, `y²`, `z²`, `xy`, `xz`, `yz`. For a symmetric matrix the
+cross coefficients are twice the off-diagonal entries.
 -/
 
 def quadPoly (c : Fin 6 → ℝ) (v : Fin 3 → ℝ) : ℝ :=
@@ -164,7 +165,8 @@ theorem jQuadYZ_eval (c : Fin 6 → ℝ) (v : Fin 3 → ℝ) :
   unfold quadPoly jQuadYZ dQuadZ dQuadY
   ring
 
-/-- Sum of the three squared rotations on a homogeneous quadratic. On the diagonal coefficients the trace term remains; the cross coefficients are pure. -/
+/-- Sum of the three squared rotations on a homogeneous quadratic. On the diagonal coefficients the
+trace term remains; the cross coefficients are pure. -/
 def quadGenSq (c : Fin 6 → ℝ) : Fin 6 → ℝ
   | 0 => -6 * c 0 + 2 * (c 0 + c 1 + c 2)
   | 1 => -6 * c 1 + 2 * (c 0 + c 1 + c 2)

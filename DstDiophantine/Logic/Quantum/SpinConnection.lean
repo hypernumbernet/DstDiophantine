@@ -8,7 +8,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Pure-gauge spin connection
 
-`¼[γ⁰, γ¹]` is the logarithmic derivative of the axis-0 boost, and subtracting it leaves the rotor applied to the flat derivative. The ponderomotive Hamiltonian is not used.
+`¼[γ⁰, γ¹]` is the logarithmic derivative of the axis-0 boost, and subtracting it leaves the rotor
+applied to the flat derivative. The ponderomotive Hamiltonian is not used.
 -/
 
 namespace DstDiophantine

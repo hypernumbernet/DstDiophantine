@@ -3,7 +3,9 @@ import DstDiophantine.Logic.Quantum.DiracGauge
 /-!
 # Charge conjugation and the antiparticle
 
-Charge conjugation `Ψᶜ = (-J l, J u)` carries a solution at `p` to a solution at `-p`, and the antiparticle `ω Ψᶜ` stays at momentum `p`. The field `x ↦ ω Ψᶜ(-x)` solves the equation of charge `-e` in the reflected potential.
+Charge conjugation `Ψᶜ = (-J l, J u)` carries a solution at `p` to a solution at `-p`, and the
+antiparticle `ω Ψᶜ` stays at momentum `p`. The field `x ↦ ω Ψᶜ(-x)` solves the equation of charge
+`-e` in the reflected potential.
 -/
 
 namespace DstDiophantine

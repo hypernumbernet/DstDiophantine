@@ -17,7 +17,8 @@ set_option linter.style.native false
 /-!
 # Modular torsional amplification with winding
 
-Scaling on `(ℤ/Nℤ)⁶` records an integer winding. The live gap is that winding error, not the empty coarse witness.
+Scaling on `(ℤ/Nℤ)⁶` records an integer winding. The live gap is that winding error, not the empty
+coarse witness.
 -/
 
 namespace DstDiophantine

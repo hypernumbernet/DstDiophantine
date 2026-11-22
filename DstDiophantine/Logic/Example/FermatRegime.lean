@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Regime
 /-!
 # Dual-axis FLT regime atlas
 
-Atoms are names only. Closed slices do not T-entail classical FLT, and unconditional FLT is not claimed.
+Atoms are names only. Closed slices do not T-entail classical FLT, and unconditional FLT is not
+claimed.
 -/
 
 namespace DstDiophantine

@@ -12,7 +12,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Identification of `J` / `J⁵` with the teleparallel scalar
 
-Algebraic `J` is a dimensionless parameter diagnostic and is not the TEGR density `T` or the Planck curvature scale. No theorem derives `G` from `c`, and `a₀` is an external input not identified with algebraic `J`.
+Algebraic `J` is a dimensionless parameter diagnostic and is not the TEGR density `T` or the Planck
+curvature scale. No theorem derives `G` from `c`, and `a₀` is an external input not identified with
+algebraic `J`.
 -/
 
 namespace DstDiophantine
@@ -66,7 +68,8 @@ theorem J5_and_T_on_schwarzschild_slice {rs r : ℝ} (h : IsExterior rs r) :
 
 /-! ### Rejection of naive point identification -/
 
-/-- Constant nonzero boost: parameter `J ≠ 0`, while the auxiliary expression at `rₛ = 0` vanishes. -/
+/-- Constant nonzero boost: parameter `J ≠ 0`, while the auxiliary expression at `rₛ = 0`
+vanishes. -/
 theorem constant_boost_J_ne_zero_flat_T_zero (φ : ℝ) (hφ : φ ≠ 0) :
     J (Amplification.pureBoost φ) ≠ 0 ∧
       schwarzschildTeleparallelT 0 1 = 0 := by
@@ -100,7 +103,8 @@ theorem naive_parametric_J5_eq_half_flat_T_false :
     (minkowski_T_and_J_field_zero (by norm_num : (0 : ℝ) < 1)).1
   simpa [hT] using hJ5
 
-/-- At `rₛ = 2`, `r = 4`, `J_field` is not half the auxiliary expression, which is not the teleparallel quadratic. -/
+/-- At `rₛ = 2`, `r = 4`, `J_field` is not half the auxiliary expression, which is not the
+teleparallel quadratic. -/
 theorem J_field_ne_half_T_schwarzschild_point :
     J_field 2 4 ≠ (1 / 2) * schwarzschildTeleparallelT 2 4 := by
   intro h
@@ -137,7 +141,8 @@ theorem J_field_ne_half_T_schwarzschild_point :
   rw [hs2] at this
   norm_num at this
 
-/-- At `(rₛ, r) = (2, 4)` the field seed is `1/128` and half the frozen scalar `-2/r²` is `-1/16`. -/
+/-- At `(rₛ, r) = (2, 4)` the field seed is `1/128` and half the frozen scalar `-2/r²` is
+`-1/16`. -/
 theorem J_field_ne_half_frozen_T_two_four :
     J_field 2 4 = (1 : ℝ) / 128 ∧
       (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) = -(1 : ℝ) / 16 ∧

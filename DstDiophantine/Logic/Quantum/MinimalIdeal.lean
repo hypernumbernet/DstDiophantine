@@ -6,7 +6,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Chiral and spinor projectors
 
-The factors `(1 ± i)/2` are not idempotent; working projectors use generators that square to `+1`. Irreducibility of the Minkowski core as a `Cl(3,1)`-module is not claimed.
+The factors `(1 ± i)/2` are not idempotent; working projectors use generators that square to `+1`.
+Irreducibility of the Minkowski core as a `Cl(3,1)`-module is not claimed.
 -/
 
 namespace DstDiophantine

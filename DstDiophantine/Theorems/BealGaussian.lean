@@ -11,7 +11,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Gaussian descent under the FLT axiom
 
-Positive classical Beal follows from `BealMixedExpResidual` and `BealPythagoreanResidual` once `fermatLastTheorem` is assumed. That axiom is not a Lean proof of Wiles, and both residuals stay open.
+Positive classical Beal follows from `BealMixedExpResidual` and `BealPythagoreanResidual` once
+`fermatLastTheorem` is assumed. That axiom is not a Lean proof of Wiles, and both residuals stay
+open.
 -/
 
 namespace DstDiophantine

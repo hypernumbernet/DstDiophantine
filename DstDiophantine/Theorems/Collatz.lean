@@ -18,7 +18,8 @@ set_option linter.style.native false
 /-!
 # Collatz height and the admissible cone
 
-Only `1` and `2` lie on the admissible cone, and every start up to `2^20` reaches `1`. Classical Collatz is not claimed; `CollatzAdmissibleBridge` is not a reduction of it.
+Only `1` and `2` lie on the admissible cone, and every start up to `2^20` reaches `1`. Classical
+Collatz is not claimed; `CollatzAdmissibleBridge` is not a reduction of it.
 -/
 
 namespace DstDiophantine
@@ -243,8 +244,7 @@ theorem collatz_cycle_avoids_one_exceeds_bound {s : Finset ℕ}
     ∃ m ∈ s, ∃ hm : m ≠ 0, 1 < collatzHeight m hm := by
   obtain ⟨⟨m0, hm0⟩, hclosed⟩ := hcyc
   by_cases hle : ∀ m ∈ s, m ≤ 3
-  ·
-    have hs23 : ∀ m ∈ s, m = 2 ∨ m = 3 := by
+  · have hs23 : ∀ m ∈ s, m = 2 ∨ m = 3 := by
       intro m hm
       have hmpos : 0 < m := hpos m hm
       have hmle : m ≤ 3 := hle m hm
@@ -730,7 +730,8 @@ theorem reachesOne_of_iter {k n : ℕ} (h : ReachesOne (collatzIter k n)) : Reac
     rw [collatzIter_succ_left] at h
     exact reachesOne_of_step (ih h)
 
-/-- `dropsBelow fuel n start` follows the ordinary orbit of `n` until it falls strictly below `start`, or hits `1`. -/
+/-- `dropsBelow fuel n start` follows the ordinary orbit of `n` until it falls strictly below
+`start`, or hits `1`. -/
 def dropsBelow : ℕ → ℕ → ℕ → Bool
   | 0, _, _ => false
   | fuel + 1, n, start =>

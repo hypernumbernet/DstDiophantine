@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Valuation
 /-!
 # No common residual on the height
 
-`syncImp` residuates synchrony and `nonrefImp` residuates non-refutation. No operation on `[-1, 1]` residuates both.
+`syncImp` residuates synchrony and `nonrefImp` residuates non-refutation. No operation on `[-1, 1]`
+residuates both.
 -/
 
 namespace DstDiophantine

@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Regime
 /-!
 # Three-layer proof status
 
-Atoms: `0` core, `1` diagnostic, `2` live bridge, `3` conjecture. Honest assignment `T`, `F`, `U`, `U`. A semantics for proof artefacts, not a theorem of arithmetic.
+Atoms: `0` core, `1` diagnostic, `2` live bridge, `3` conjecture. Honest assignment `T`, `F`, `U`,
+`U`. A semantics for proof artefacts, not a theorem of arithmetic.
 -/
 
 namespace DstDiophantine

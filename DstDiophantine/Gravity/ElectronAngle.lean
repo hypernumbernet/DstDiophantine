@@ -720,11 +720,13 @@ lemma tet_widen_dot : tetCos * (1 - tetCos) = -4 / 9 := by
   unfold tetCos
   ring
 
-/-- Tangential shift on ray `i` when the electron on `lone` moves from `r` to `s` and the proton on `lone` is removed. -/
+/-- Tangential shift on ray `i` when the electron on `lone` moves from `r` to `s` and the proton on
+`lone` is removed. -/
 def loneShift (i lone : Fin 4) (r s R : ℝ) : Fin 3 → ℝ :=
   fun k => eeTang i lone r s k - eeTang i lone r r k - peTang i lone r R k
 
-/-- Component of that shift along the direction that widens the angle with `partner`. Negative means the bond angle is driven narrower. -/
+/-- Component of that shift along the direction that widens the angle with `partner`. Negative means
+the bond angle is driven narrower. -/
 def narrowComponent (i lone partner : Fin 4) (r s R : ℝ) : ℝ :=
   vdot (loneShift i lone r s R) (widenDir i partner)
 

@@ -3,7 +3,9 @@ import DstDiophantine.Logic.HeightIdentity
 /-!
 # Positive-wall consequence
 
-`EntailsOne` forces the value `1` at every real height. `EntailsWall` restricts assignments to `[-1, 1]`. Discharge into material implication holds on the walls and fails off them. `EntailsOne`, `EntailsT`, and `EntailsNotF` are pairwise incomparable.
+`EntailsOne` forces the value `1` at every real height. `EntailsWall` restricts assignments to
+`[-1, 1]`. Discharge into material implication holds on the walls and fails off them. `EntailsOne`,
+`EntailsT`, and `EntailsNotF` are pairwise incomparable.
 -/
 
 namespace DstDiophantine

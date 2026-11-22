@@ -5,7 +5,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 # Motion off the equatorial leg
 
-The radial period of the resonant ellipse is not identified with the advance of a solution of the orbit equation. This bivector is not the torsional mismatch, and no formula writes the teleparallel scalar as a total divergence for an arbitrary motor.
+The radial period of the resonant ellipse is not identified with the advance of a solution of the
+orbit equation. This bivector is not the torsional mismatch, and no formula writes the teleparallel
+scalar as a total divergence for an arbitrary motor.
 -/
 
 namespace DstDiophantine.Gravity.OffEquator

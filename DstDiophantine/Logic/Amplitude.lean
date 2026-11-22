@@ -4,7 +4,8 @@ import DstDiophantine.Algebra.Motor
 /-!
 # D4L amplitudes
 
-The carrier is an admissible torsion configuration; labels appear only after measurement. This is not a Hilbert space, a Born rule, or a new Clifford algebra.
+The carrier is an admissible torsion configuration; labels appear only after measurement. This is
+not a Hilbert space, a Born rule, or a new Clifford algebra.
 -/
 
 namespace DstDiophantine

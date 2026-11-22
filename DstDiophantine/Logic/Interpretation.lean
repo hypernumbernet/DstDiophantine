@@ -8,7 +8,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Geometric-algebra reading of D4L
 
-The four states are the sign and saturation of `JNormalized`. Signed negation is the usual–dual swap, not a new connective.
+The four states are the sign and saturation of `JNormalized`. Signed negation is the usual–dual
+swap, not a new connective.
 -/
 
 namespace DstDiophantine

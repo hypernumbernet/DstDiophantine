@@ -6,7 +6,9 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
 /-!
 # Flat transport of a Poincaré bivector along an arbitrary curve
 
-Conjugation by the translator of a displacement leaves the Lorentz part unchanged and replaces the translation by `λ + ω x`. The finite rotor of rapidity `φ` is not the Killing bivector, and static bivectors at two exterior radii are not flat transports of one another.
+Conjugation by the translator of a displacement leaves the Lorentz part unchanged and replaces the
+translation by `λ + ω x`. The finite rotor of rapidity `φ` is not the Killing bivector, and static
+bivectors at two exterior radii are not flat transports of one another.
 -/
 
 namespace DstDiophantine.Gravity.KillingTransport

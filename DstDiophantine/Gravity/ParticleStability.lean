@@ -13,7 +13,8 @@ set_option linter.style.native false
 /-!
 # Stability of the proton and the electron
 
-No lifetime, no baryon-number selection rule, and no derivation of \(m_p\) or \(m_e\). The mass ratio and the payment comparisons use external inputs.
+No lifetime, no baryon-number selection rule, and no derivation of \(m_p\) or \(m_e\). The mass
+ratio and the payment comparisons use external inputs.
 -/
 
 namespace DstDiophantine

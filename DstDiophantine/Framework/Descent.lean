@@ -7,7 +7,8 @@ import Mathlib.Data.Fintype.Card
 /-!
 # Unified algebraic descent
 
-Dagger preserves height; it is not a strict descent. Termination uses a well-founded measure on a finite search state.
+Dagger preserves height; it is not a strict descent. Termination uses a well-founded measure on a
+finite search state.
 -/
 
 namespace DstDiophantine

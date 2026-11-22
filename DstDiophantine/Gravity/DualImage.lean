@@ -347,7 +347,8 @@ theorem dualAccel_bounds {G M R r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (hr : 0 
 
 /-! ### Rotation curve -/
 
-/-- Rotation curve from a Newtonian baryonic curve `vbarSq`: \(v^2=v_{\mathrm{bar}}^2\,x\coth x\). -/
+/-- Rotation curve from a Newtonian baryonic curve `vbarSq`: \(v^2=v_{\mathrm{bar}}^2\,x\coth
+x\). -/
 noncomputable def dualRotationSq (R : ℝ) (vbarSq : ℝ → ℝ) (r : ℝ) : ℝ :=
   vbarSq r * dualEnhancement (r / R)
 

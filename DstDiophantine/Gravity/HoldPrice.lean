@@ -7,7 +7,9 @@ import Mathlib.Tactic.Ring
 /-!
 # The price of holding a shield
 
-On the admissible cone the lag budget is at least `4M − 3π²/4`, with equality exactly on the wall. No electromagnetic coupling or laboratory protocol is claimed, and vanishing power along a joint motion is not free fall.
+On the admissible cone the lag budget is at least `4M − 3π²/4`, with equality exactly on the wall.
+No electromagnetic coupling or laboratory protocol is claimed, and vanishing power along a joint
+motion is not free fall.
 -/
 
 namespace DstDiophantine
@@ -170,7 +172,8 @@ private theorem fin3_cases : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by
 
 /-! ### The wall from the free sit to the heaviest shield -/
 
-/-- Neutral wall with lags `(t, -t, 0)`, from the free sit at `t = 0` to the heaviest shield at `t = π/2`. -/
+/-- Neutral wall with lags `(t, -t, 0)`, from the free sit at `t = 0` to the heaviest shield at
+`t = π/2`. -/
 noncomputable def balancedWall (t : ℝ) : TorsionParams where
   alpha := fun a =>
     if a.val = 0 then Real.pi / 4 + t / 2
@@ -243,7 +246,8 @@ theorem stiffness_balancedWall {m t : ℝ} :
   rw [stiffnessPotential_eq_lag, lagSq_balancedWall, mass_balancedWall]
   ring
 
-/-- Neutral wall of unsigned mass \(M\), for \(M\) between the free-sitting ceiling and the heaviest shield. -/
+/-- Neutral wall of unsigned mass \(M\), for \(M\) between the free-sitting ceiling and the heaviest
+shield. -/
 noncomputable def balancedWallOfMass (M : ℝ) : TorsionParams :=
   balancedWall (Real.sqrt (2 * (M - 3 * Real.pi ^ 2 / 16)))
 

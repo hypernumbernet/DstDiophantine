@@ -6,7 +6,9 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 /-!
 # The discrete dual circle on one chart axis
 
-Winding `k` is the plane wave of momentum `k` along one axis, sampled at spacing `2π/N`. Off the samples, for `N > 1`, a momentum kick of the identity amplitude is not the field of the clocked amplitude.
+Winding `k` is the plane wave of momentum `k` along one axis, sampled at spacing `2π/N`. Off the
+samples, for `N > 1`, a momentum kick of the identity amplitude is not the field of the clocked
+amplitude.
 -/
 
 namespace DstDiophantine

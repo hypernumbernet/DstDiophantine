@@ -5,7 +5,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 /-!
 # Admissible torsional configurations
 
-`IsPrincipalBranch` alone does not bound `J`. Anti-synchronisation `R_dual = R_usual†` is not the cone `α + β ≤ π/2`.
+`IsPrincipalBranch` alone does not bound `J`. Anti-synchronisation `R_dual = R_usual†` is not the
+cone `α + β ≤ π/2`.
 -/
 
 namespace DstDiophantine

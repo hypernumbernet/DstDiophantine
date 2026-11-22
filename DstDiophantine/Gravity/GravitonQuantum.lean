@@ -16,7 +16,9 @@ set_option linter.style.native false
 /-!
 # One graviton
 
-A graviton is one pure dual step of angle `2π/N`, with normalized height `-ε_N` for `N ≥ 4`. No derivation of `G`, `α_G`, or a laboratory error rate is claimed, `N` is not fixed, and the orthogonal probability is not the height `ε_N`.
+A graviton is one pure dual step of angle `2π/N`, with normalized height `-ε_N` for `N ≥ 4`. No
+derivation of `G`, `α_G`, or a laboratory error rate is claimed, `N` is not fixed, and the
+orthogonal probability is not the height `ε_N`.
 -/
 
 noncomputable section

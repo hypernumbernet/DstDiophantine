@@ -15,7 +15,8 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 /-!
 # Motors, Ω decomposition, and null exponential truncation
 
-The null exponential truncates because `N_μ N_ν = 0`. `motor` is `R · T`, not `exp(Ω_biv)`, and a closed law on `OmegaParams` is not claimed.
+The null exponential truncates because `N_μ N_ν = 0`. `motor` is `R · T`, not `exp(Ω_biv)`, and a
+closed law on `OmegaParams` is not claimed.
 -/
 
 namespace DstDiophantine

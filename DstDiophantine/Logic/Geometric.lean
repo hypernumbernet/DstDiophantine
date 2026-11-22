@@ -10,7 +10,9 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # Geometric operations on amplitudes
 
-The Killing pairing is the commutative overlap and the bivector commutator is the interference. Rotor composition stays in `PGA` and is not pulled back through BCH; metric preservation is not claimed.
+The Killing pairing is the commutative overlap and the bivector commutator is the interference.
+Rotor composition stays in `PGA` and is not pulled back through BCH; metric preservation is not
+claimed.
 -/
 
 namespace DstDiophantine

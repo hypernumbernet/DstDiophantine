@@ -8,7 +8,8 @@ open DstDiophantine.Theorems
 /-!
 # Headline Diophantine conjectures
 
-Each proof assembles an open leaf or bridge and is not unconditional. Positive Beal also uses the FLT axiom `fermatLastTheorem`.
+Each proof assembles an open leaf or bridge and is not unconditional. Positive Beal also uses the
+FLT axiom `fermatLastTheorem`.
 -/
 
 namespace Goals.Diophantine

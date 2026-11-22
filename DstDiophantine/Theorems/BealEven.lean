@@ -12,7 +12,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Even two-equal residual
 
-The residual splits into a Gaussian sum and a hyperbolic difference. Classical Beal is not claimed; the named sum and difference residuals stay open.
+The residual splits into a Gaussian sum and a hyperbolic difference. Classical Beal is not claimed;
+the named sum and difference residuals stay open.
 -/
 
 namespace DstDiophantine
@@ -366,8 +367,7 @@ theorem two_mul_pow_eq_signed_pow_add_of_diff_sum_abs
   have hDs := exists_signed_pow_of_natAbs_eq_pow hD
   have hEs := exists_signed_pow_of_natAbs_eq_pow hE
   constructor
-  ·
-    have hsum : 2 * C ^ k = (C ^ k - B ^ k) + (C ^ k + B ^ k) := by ring
+  · have hsum : 2 * C ^ k = (C ^ k - B ^ k) + (C ^ k + B ^ k) := by ring
     rcases hDs with hDp | hDm
     · rcases hEs with hEp | hEm
       · left; rw [hsum, hDp, hEp]
@@ -375,8 +375,7 @@ theorem two_mul_pow_eq_signed_pow_add_of_diff_sum_abs
     · rcases hEs with hEp | hEm
       · right; right; left; rw [hsum, hDm, hEp]
       · right; right; right; rw [hsum, hDm, hEm]
-  ·
-    have hdiff : 2 * B ^ k = (C ^ k + B ^ k) - (C ^ k - B ^ k) := by ring
+  · have hdiff : 2 * B ^ k = (C ^ k + B ^ k) - (C ^ k - B ^ k) := by ring
     rcases hDs with hDp | hDm
     · rcases hEs with hEp | hEm
       · left; rw [hdiff, hEp, hDp]
@@ -708,7 +707,8 @@ theorem beal_conjecture_pos_of_fine_residuals_even_split
 /-! ### Phase 7r: sector diagnostics (sum = cyclic, diff = hyperbolic) -/
 
 /-
-Even-sum is a Gaussian hypotenuse; even-diff is hyperbolic. The two forms must not share one CGA dilation no-go.
+Even-sum is a Gaussian hypotenuse; even-diff is hyperbolic. The two forms must not share one CGA
+dilation no-go.
 -/
 
 theorem beal_even_sum_diff_sectors_interfere :

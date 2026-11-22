@@ -7,7 +7,9 @@ import Mathlib.Tactic.Ring
 /-!
 # The rest-mass coefficient, read at equal rapidity
 
-An equal-rapidity state is critical for the stiffness potential and the unsigned mass, and a pure lag adds `δ²/4` to the mass. The Jacobi integral along an equal-rapidity motion is zero, so `m` is not an energy of that state and is not fixed.
+An equal-rapidity state is critical for the stiffness potential and the unsigned mass, and a pure
+lag adds `δ²/4` to the mass. The Jacobi integral along an equal-rapidity motion is zero, so `m` is
+not an energy of that state and is not fixed.
 -/
 
 namespace DstDiophantine

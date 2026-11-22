@@ -9,7 +9,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Holding a shield still
 
-No electromagnetic coupling, no laboratory protocol, and no identification of either channel force with a Faraday field are derived. Vanishing holding force is not free fall.
+No electromagnetic coupling, no laboratory protocol, and no identification of either channel force
+with a Faraday field are derived. Vanishing holding force is not free fall.
 -/
 
 namespace DstDiophantine
@@ -145,8 +146,7 @@ private theorem lag_sq_le_of_balanced {k s0 s1 s2 d0 d1 d2 : ℝ}
         simp [z0, z1, z2]
         have hk : 0 ≤ k := le_trans hs0 hk0
         nlinarith
-      ·
-        have h2le : d2 < 0 := lt_of_not_ge h2
+      · have h2le : d2 < 0 := lt_of_not_ge h2
         have hflip :
             (-d2) ^ 2 + (-d0) ^ 2 + (-d1) ^ 2 ≤ 2 * k ^ 2 :=
           lag_sq_le_of_pos_side hk2 hs2 hs0 hs1

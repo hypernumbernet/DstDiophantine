@@ -10,7 +10,8 @@ import Mathlib.Tactic.Positivity
 /-!
 # Position and momentum on the chart
 
-On differentiable chart fields `[X^ν, P_μ] = i δ^ν_μ`, while no endomorphisms of the dual spinor space obey `[A, B] = i I`. An uncertainty bound for orbital angles is not claimed.
+On differentiable chart fields `[X^ν, P_μ] = i δ^ν_μ`, while no endomorphisms of the dual spinor
+space obey `[A, B] = i I`. An uncertainty bound for orbital angles is not claimed.
 -/
 
 namespace DstDiophantine

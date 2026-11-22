@@ -28,7 +28,8 @@ def radialBoost : Fin 4 → Fin 4 → ℝ
 def staticBoost (κ : ℝ) : Fin 4 → Fin 4 → ℝ :=
   fun a b => κ * radialBoost a b
 
-/-- Levi-Civita coefficient `ω^a_b(e_c)` of the exterior orthonormal frame. `a` is the value slot, `b` the argument slot, `c` the direction. -/
+/-- Levi-Civita coefficient `ω^a_b(e_c)` of the exterior orthonormal frame. `a` is the value slot,
+`b` the argument slot, `c` the direction. -/
 noncomputable def exteriorConn (rs r θ : ℝ) : Fin 4 → Fin 4 → Fin 4 → ℝ
   | 0, 1, 0 => dSqrtA_dr rs r
   | 1, 0, 0 => dSqrtA_dr rs r
@@ -48,7 +49,8 @@ def connOnBivector (ω : Fin 4 → Fin 4 → Fin 4 → ℝ) (Λ : Fin 4 → Fin 
     (ω a 2 c * Λ 2 b - Λ a 2 * ω 2 b c) +
     (ω a 3 c * Λ 3 b - Λ a 3 * ω 3 b c)
 
-/-- Covariant derivative of `ξ = ν e₀` along `e_c`. The radial leg differentiates the coefficient; every other leg contributes only the connection. -/
+/-- Covariant derivative of `ξ = ν e₀` along `e_c`. The radial leg differentiates the coefficient;
+every other leg contributes only the connection. -/
 noncomputable def killingCov (rs r θ : ℝ) (c a : Fin 4) : ℝ :=
   (if c = 1 ∧ a = 0 then killingRate rs r else 0) +
     exteriorConn rs r θ a 0 c * killingNorm rs r

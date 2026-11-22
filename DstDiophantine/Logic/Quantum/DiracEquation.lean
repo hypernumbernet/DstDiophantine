@@ -9,7 +9,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 /-!
 # Momentum-space Dirac equation
 
-`slash(p)² = Q(p) I`, so an eigenspinor `slash(p) Ψ = i m Ψ` sits on the shell `Q(p) = -m²`. This is the first-order factor of Klein–Gordon in momentum space, not the spacetime equation.
+`slash(p)² = Q(p) I`, so an eigenspinor `slash(p) Ψ = i m Ψ` sits on the shell `Q(p) = -m²`. This is
+the first-order factor of Klein–Gordon in momentum space, not the spacetime equation.
 -/
 
 namespace DstDiophantine
@@ -701,7 +702,8 @@ theorem minkowskiQ_boostZ (m α : ℝ) :
 
 /-! ### Chiral boost along \(z\) and internal dual rotation -/
 
-/-- Hyperbolic Rodrigues factor along \(\sigma_z\): \(\cosh(\alpha/2)\,I+\sinh(\alpha/2)\,\sigma_z\). -/
+/-- Hyperbolic Rodrigues factor along \(\sigma_z\):
+\(\cosh(\alpha/2)\,I+\sinh(\alpha/2)\,\sigma_z\). -/
 noncomputable def chiralBoostZ (α : ℝ) : Matrix (Fin 2) (Fin 2) ℂ :=
   (Real.cosh (α / 2) : ℂ) • 1 + (Real.sinh (α / 2) : ℂ) • pauliZ
 
@@ -1053,7 +1055,8 @@ theorem boostedRest_overlap_eq_rest_iff (α : ℝ) :
 /-!
 ### Mass bilinear and Dirac current
 
-On a rest pair `(-iγ⁰)` reproduces the Euclidean overlap. A longitudinal boost leaves that bilinear fixed and turns `cosh α` into the time component of the current.
+On a rest pair `(-iγ⁰)` reproduces the Euclidean overlap. A longitudinal boost leaves that bilinear
+fixed and turns `cosh α` into the time component of the current.
 -/
 
 /-- Dirac adjoint matrix \(-i\gamma^0\) in the Weyl representation. -/
@@ -1444,7 +1447,9 @@ theorem boostedRest_current_parallel (m α : ℝ) (u v : DualSpinor) :
 /-!
 ### Spin along the longitudinal momentum
 
-A longitudinal boost preserves each `σ_z` ray, and a perpendicular dual rotation of angle `π` exchanges the rays. Opposite rays are orthogonal in the mass bilinear, and the current between them vanishes.
+A longitudinal boost preserves each `σ_z` ray, and a perpendicular dual rotation of angle `π`
+exchanges the rays. Opposite rays are orthogonal in the mass bilinear, and the current between them
+vanishes.
 -/
 
 private theorem spinUp_inner_spinDown : inner ℂ spinUp spinDown = 0 := by

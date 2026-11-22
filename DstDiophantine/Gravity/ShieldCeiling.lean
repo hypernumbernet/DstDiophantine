@@ -112,7 +112,8 @@ theorem massNormalized_le_shield_curve (p : TorsionParams)
 
 /-! ### The ceiling is attained -/
 
-/-- Wall family attaining the trade-off: axis `0` purely usual, axis `1` purely dual, axis `2` on the wall with free split `γ`. -/
+/-- Wall family attaining the trade-off: axis `0` purely usual, axis `1` purely dual, axis `2` on
+the wall with free split `γ`. -/
 noncomputable def ceilingWitness (γ : ℝ) : TorsionParams where
   alpha := fun a => if a.val = 0 then Real.pi / 2 else if a.val = 1 then 0 else γ
   beta := fun a =>

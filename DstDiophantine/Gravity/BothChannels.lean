@@ -23,7 +23,8 @@ namespace Gravity
 
 open Real SI
 
-/-- Separation-increasing force of a massive charged pair. `κ` is `G m₁ m₂` and `coul` is `k q₁ q₂`. -/
+/-- Separation-increasing force of a massive charged pair. `κ` is `G m₁ m₂` and `coul` is
+`k q₁ q₂`. -/
 noncomputable def pairChannelForce (κ coul γG γE r : ℝ) : ℝ :=
   -κ / (γG * r ^ 2) + coul / (γE * r ^ 2)
 

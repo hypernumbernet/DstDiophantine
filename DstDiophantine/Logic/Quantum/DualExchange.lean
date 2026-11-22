@@ -3,7 +3,9 @@ import DstDiophantine.Logic.Quantum.DualObservables
 /-!
 # Partial spin vectors and exchange
 
-On a unit joint state each particle has polarization `√(1 - (2‖det Ψ‖)²)`, and the antisymmetric states are the multiples of the singlet. `u ⊗ v - v ⊗ u` vanishes exactly when `v` is parallel to `u`.
+On a unit joint state each particle has polarization `√(1 - (2‖det Ψ‖)²)`, and the antisymmetric
+states are the multiples of the singlet. `u ⊗ v - v ⊗ u` vanishes exactly when `v` is parallel to
+`u`.
 -/
 
 namespace DstDiophantine

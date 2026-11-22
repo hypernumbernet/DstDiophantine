@@ -13,7 +13,8 @@ import Mathlib.Tactic.Ring
 /-!
 # Torque from a spherical geodesic read in the flat chart
 
-No net spin is claimed for a source at the chart origin, and neither a solar or galactic angular momentum, a value of `a₀`, nor a change to the circular-speed law is derived.
+No net spin is claimed for a source at the chart origin, and neither a solar or galactic angular
+momentum, a value of `a₀`, nor a change to the circular-speed law is derived.
 -/
 
 namespace DstDiophantine.Gravity.SlerpTorque
@@ -123,7 +124,9 @@ theorem hasDerivAt_slerp_coord (Ω : ℝ) (P Q : V4) (i : Fin 4) (hΩ : Real.sin
   field_simp [hΩ]
   ring
 
-/-- Initial tangent `Q - (P·Q) P` of the great circle, pushed by the differential of the equidistant chart at chart radius `χ`. The body lies on the first axis and the source in the first-second plane. -/
+/-- Initial tangent `Q - (P·Q) P` of the great circle, pushed by the differential of the equidistant
+chart at chart radius `χ`. The body lies on the first axis and the source in the first-second
+plane. -/
 noncomputable def pushedTangent (χ ψ α : ℝ) : V3 :=
   let sχ := Real.sin χ
   let cχ := Real.cos χ
@@ -152,7 +155,8 @@ noncomputable def sourcePoint (ψ α : ℝ) : V3
   | 1 => ψ * Real.sin α
   | 2 => 0
 
-/-- Moment about the source of the pushed tangent. Its third component is the scalar `pushedMoment`; the first two vanish. -/
+/-- Moment about the source of the pushed tangent. Its third component is the scalar `pushedMoment`;
+the first two vanish. -/
 noncomputable def pushedMoment (χ ψ α : ℝ) : ℝ :=
   let sχ := Real.sin χ
   let cχ := Real.cos χ

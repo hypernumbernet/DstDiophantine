@@ -3,7 +3,8 @@ import DstDiophantine.Logic.Quantum.DiracConjugation
 /-!
 # The singlet and the CHSH bound
 
-`det Ψ` vanishes exactly on product states, and the states fixed by every common dual rotor are the line of the singlet. Local variables keep `|S| ≤ 2`; the singlet reaches `2√2`.
+`det Ψ` vanishes exactly on product states, and the states fixed by every common dual rotor are the
+line of the singlet. Local variables keep `|S| ≤ 2`; the singlet reaches `2√2`.
 -/
 
 namespace DstDiophantine

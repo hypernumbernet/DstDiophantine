@@ -4,7 +4,8 @@ import Mathlib.Tactic.IntervalCases
 /-!
 # Beal residual atlas
 
-Atoms are names only. The status board does not encode the arithmetic assembly, and unconditional classical Beal is not claimed.
+Atoms are names only. The status board does not encode the arithmetic assembly, and unconditional
+classical Beal is not claimed.
 -/
 
 namespace DstDiophantine

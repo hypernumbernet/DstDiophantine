@@ -6,7 +6,8 @@ import Mathlib.Tactic.Linarith
 /-!
 # Repeated fifth powers
 
-`sumTwoFifthsNotSeventhOrNineteenth` assumes no nonzero coprime `a⁵ + b⁵ = cˡ` for `l = 7` or `19`. It is an axiom, not a Lean proof of Dahmen–Siksek, and classical Beal is not claimed.
+`sumTwoFifthsNotSeventhOrNineteenth` assumes no nonzero coprime `a⁵ + b⁵ = cˡ` for `l = 7` or `19`.
+It is an axiom, not a Lean proof of Dahmen–Siksek, and classical Beal is not claimed.
 -/
 
 namespace DstDiophantine

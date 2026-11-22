@@ -119,7 +119,8 @@ import DstDiophantine.Gravity.LineWindow
 /-!
 # Gravity regression examples
 
-Smoke tests for the gravity track. Each `example` restates a theorem proved in a submodule, and nothing here is a new claim.
+Smoke tests for the gravity track. Each `example` restates a theorem proved in a submodule, and
+nothing here is a new claim.
 -/
 
 namespace DstDiophantine
@@ -1147,7 +1148,8 @@ example :
   ⟨wavelengthPeak_bounds.1, wavelengthPeak_bounds.2,
     frequencyPeak_bounds.1, frequencyPeak_bounds.2, boseIntegral⟩
 
-/-- Regression: an impulse does not retune a root, and the thermal mean of the frequency shape lies strictly between `3` and `4`, above the peak. -/
+/-- Regression: an impulse does not retune a root, and the thermal mean of the frequency shape lies
+strictly between `3` and `4`, above the peak. -/
 example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : κ1 < κ2) :
     longitudinalOmega κ1 m < longitudinalOmega κ2 m ∧
       impulseAmplitude m κ2 p < impulseAmplitude m κ1 p ∧
@@ -1156,7 +1158,8 @@ example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : 
   ⟨longitudinalOmega_strictMono hm hκ1 hκ, impulseAmplitude_strictAnti hm hp hκ1 hκ,
     impulse_energy hm.ne', shapeMean_bounds.1, shapeMean_bounds.2, peak_lt_shapeMean⟩
 
-/-- Regression: on the printed square curvatures the diagonal wavelength exceeds the electron wavelength by a factor strictly between `45.07` and `45.08`. -/
+/-- Regression: on the printed square curvatures the diagonal wavelength exceeds the electron
+wavelength by a factor strictly between `45.07` and `45.08`. -/
 example :
     (4507 / 100 : ℝ) <
         longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
@@ -2587,7 +2590,8 @@ example {κ coul γG γE r : ℝ}
     pairChannelForce κ coul γG γE r < 0 :=
   (unlike_same_sign_no_zero hκ hc hr hG hE).2.2
 
-/-- Regression: at a hydrogenic separation the mass term is between \(4.40\times 10^{-40}\) and \(4.42\times 10^{-40}\) of the charge term. -/
+/-- Regression: at a hydrogenic separation the mass term is between \(4.40\times 10^{-40}\) and
+\(4.42\times 10^{-40}\) of the charge term. -/
 example {ℓE ℓG a : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 71 / 50)
     (ha : 52917 < a) :
@@ -2599,7 +2603,8 @@ example {ℓE ℓG a : ℝ}
         442 / 10 ^ 42 :=
   bohr_mass_fraction hE0 hE hG0 hG ha
 
-/-- Regression: the gravitational term is between `2.398×10⁻⁴³` and `2.404×10⁻⁴³` of that repulsion. -/
+/-- Regression: the gravitational term is between `2.398×10⁻⁴³` and `2.404×10⁻⁴³` of that
+repulsion. -/
 example {ℓE ℓG a : ℝ}
     (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
     (ha : 52917 < a) :
@@ -2653,14 +2658,16 @@ example {ℓE ℓG a coul r : ℝ}
           (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
   SpinVersusExclusion.repeated_ray_where_masses_attract hE0 hE hG0 hG ha hc hr c
 
-/-- Regression: inside the first node the outward excess over `ke²/r²` is a fractional depth below `1.64×10⁻⁴³`, and that depth is attained. -/
+/-- Regression: inside the first node the outward excess over `ke²/r²` is a fractional depth below
+`1.64×10⁻⁴³`, and that depth is attained. -/
 example :
     ∃ ε : ℝ, 0 < ε ∧ ε < (164 : ℝ) / 100 / 10 ^ 43 ∧
       ε < 1 - resonanceRoot1 ∧
         (electronElectronGravToCoulomb : ℝ) > -gammaSEqual (phaseAtDepth ε) :=
   exists_grav_excess_depth
 
-/-- Regression: a node below `1` fm and a depth below `1.64×10⁻⁴³` is smaller than a radius above `52917` by more than `3×10⁴⁷`. -/
+/-- Regression: a node below `1` fm and a depth below `1.64×10⁻⁴³` is smaller than a radius above
+`52917` by more than `3×10⁴⁷`. -/
 example {r₁ a ε : ℝ}
     (hr0 : 0 < r₁) (hr1 : r₁ < 1) (ha : 52917 < a)
     (hε : 0 < ε) (hε1 : ε < (164 : ℝ) / 100 / 10 ^ 43) :

@@ -6,7 +6,8 @@ import Mathlib.Tactic.Module
 /-!
 # Ten bivector generators of G(3,1,1)
 
-Hyperbolic, cyclic, and null generators inside `G(3,1,1)`. This is not an isomorphism with `𝔰𝔬(3,1)`, and not a sum of two copies.
+Hyperbolic, cyclic, and null generators inside `G(3,1,1)`. This is not an isomorphism with
+`𝔰𝔬(3,1)`, and not a sum of two copies.
 -/
 
 namespace DstDiophantine

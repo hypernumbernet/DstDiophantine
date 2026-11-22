@@ -9,7 +9,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Usual-sector Rodrigues formula
 
-`Γ⁺(α)² = ‖α‖²`, so the Banach exponential collapses to the hyperbolic Rodrigues formula. Mixed usual/dual generators are not identified with a matrix exponential here.
+`Γ⁺(α)² = ‖α‖²`, so the Banach exponential collapses to the hyperbolic Rodrigues formula. Mixed
+usual/dual generators are not identified with a matrix exponential here.
 -/
 
 namespace DstDiophantine
