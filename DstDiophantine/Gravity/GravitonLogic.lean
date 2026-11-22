@@ -11,7 +11,10 @@ set_option linter.style.native false
 /-!
 # Gravitons on the quantum logic of one device
 
-An axial graviton stays in the computational atom, and a transverse graviton of angle in `(0, π)` occupies a third atom whose device error is not that proposition. The integer `N` is not fixed, and the device error is not a height.
+An axial graviton stays in the computational atom, and a transverse graviton
+of angle in `(0, π)` occupies a third atom. The two orders of one step on
+each of two transverse axes occupy distinct atoms and record one device error.
+The integer `N` is not fixed, and the device error is not a height.
 -/
 
 noncomputable section
@@ -1384,6 +1387,399 @@ theorem four_turns_read {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     hqOut⟩
   rw [hsame]
   exact hfullMem
+
+private theorem half_trig_pos {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
+    0 < Real.cos (θ / 2) ∧ 0 < Real.sin (θ / 2) := by
+  exact ⟨Real.cos_pos_of_mem_Ioo (halfAngle_mem h0 hπ),
+    Real.sin_pos_of_pos_of_lt_pi (by linarith) (by linarith)⟩
+
+private theorem coord_re_cos_sq {θ : ℝ} :
+    (afterPerp θ θ 0).re = Real.cos (θ / 2) ^ 2 := by
+  rw [(perp_coord θ θ).1]
+  simp only [Complex.add_re, Complex.mul_re, Complex.mul_im, Complex.ofReal_re,
+    Complex.ofReal_im, Complex.I_re, Complex.I_im, mul_zero, zero_mul, sub_zero, add_zero]
+  ring
+
+private theorem coord_re_sin_cos {θ : ℝ} :
+    (afterPerp θ θ 1).re = Real.sin (θ / 2) * Real.cos (θ / 2) := by
+  rw [(perp_coord θ θ).2]
+  simp only [Complex.sub_re, Complex.mul_re, Complex.mul_im, Complex.ofReal_re,
+    Complex.ofReal_im, Complex.I_re, Complex.I_im, mul_zero, zero_mul, sub_zero]
+
+private theorem coord_re_rev_cos_sq {θ : ℝ} :
+    (afterPerpRev θ θ 0).re = Real.cos (θ / 2) ^ 2 := by
+  rw [(perpRev_coord θ θ).1]
+  simp only [Complex.sub_re, Complex.mul_re, Complex.mul_im, Complex.ofReal_re,
+    Complex.ofReal_im, Complex.I_re, Complex.I_im, mul_zero, zero_mul, sub_zero]
+  ring
+
+private theorem coord_re_rev_sin_cos {θ : ℝ} :
+    (afterPerpRev θ θ 1).re = Real.sin (θ / 2) * Real.cos (θ / 2) := by
+  rw [(perpRev_coord θ θ).2]
+  simp only [Complex.sub_re, Complex.mul_re, Complex.mul_im, Complex.ofReal_re,
+    Complex.ofReal_im, Complex.I_re, Complex.I_im, mul_zero, zero_mul, sub_zero]
+  ring
+
+private theorem perp_forward_coords_ne {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
+    afterPerp θ θ 0 ≠ 0 ∧ afterPerp θ θ 1 ≠ 0 := by
+  obtain ⟨hc, hs⟩ := half_trig_pos h0 hπ
+  constructor
+  · intro hz
+    have hre := coord_re_cos_sq (θ := θ)
+    rw [hz, Complex.zero_re] at hre
+    exact (sq_pos_of_pos hc).ne hre
+  · intro hz
+    have hre := coord_re_sin_cos (θ := θ)
+    rw [hz, Complex.zero_re] at hre
+    exact (mul_pos hs hc).ne hre
+
+private theorem perp_reverse_coords_ne {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
+    afterPerpRev θ θ 0 ≠ 0 ∧ afterPerpRev θ θ 1 ≠ 0 := by
+  obtain ⟨hc, hs⟩ := half_trig_pos h0 hπ
+  constructor
+  · intro hz
+    have hre := coord_re_rev_cos_sq (θ := θ)
+    rw [hz, Complex.zero_re] at hre
+    exact (sq_pos_of_pos hc).ne hre
+  · intro hz
+    have hre := coord_re_rev_sin_cos (θ := θ)
+    rw [hz, Complex.zero_re] at hre
+    exact (mul_pos hs hc).ne hre
+
+private theorem carrier_ne_zero_of_coord {u : DualSpinor} (h : u 0 ≠ 0) : u ≠ 0 := by
+  intro hz
+  exact h (by simp [hz, PiLp.zero_apply])
+
+private theorem atom_outside_computational {u : DualSpinor}
+    (h0 : u 0 ≠ 0) (h1 : u 1 ≠ 0) :
+    atomOf u ∉ Island lineE0 ∧
+      ¬ Compatible lineE0 (atomOf u) ∧
+      ¬ lineE0 ⊓ material lineE0 (atomOf u) ≤ atomOf u := by
+  have hu : u ≠ 0 := carrier_ne_zero_of_coord h0
+  have hfin : finrank ℂ (atomOf u) = 1 := finrank_span_singleton hu
+  have hout0 : u ∉ lineE0 := by
+    rw [mem_lineE0_iff]
+    exact h1
+  have hout1 : u ∉ lineE1 := by
+    rw [mem_lineE1_iff]
+    exact h0
+  have hne : atomOf u ≠ lineE0 := by
+    intro hspan
+    have hmem : u ∈ lineE0 := by
+      rw [← hspan]
+      exact Submodule.mem_span_singleton_self _
+    exact hout0 hmem
+  have hneo : atomOf u ≠ qNot lineE0 := by
+    intro hspan
+    have hmem : u ∈ qNot lineE0 := by
+      rw [← hspan]
+      exact Submodule.mem_span_singleton_self _
+    rw [← lineE1_eq_negation] at hmem
+    exact hout1 hmem
+  have hcomp : ¬ Compatible lineE0 (atomOf u) :=
+    not_compatible_third_ray lineE0_finrank hfin hne hneo
+  exact ⟨ray_not_mem_island hfin hne hneo, hcomp,
+    (material_detach_iff_compatible).not.mpr hcomp⟩
+
+private theorem perp_order_inner_im (θ : ℝ) :
+    (inner ℂ (afterPerp θ θ) (afterPerpRev θ θ)).im =
+      -2 * Real.cos (θ / 2) ^ 2 * Real.sin (θ / 2) ^ 2 := by
+  rw [dualSpinor_inner_eq, Fin.sum_univ_two, (perp_coord θ θ).1, (perp_coord θ θ).2,
+    (perpRev_coord θ θ).1, (perpRev_coord θ θ).2]
+  simp only [star_add, star_sub, star_mul', Complex.star_def, Complex.conj_ofReal, Complex.conj_I]
+  simp only [Complex.add_im, Complex.sub_im, Complex.mul_im, Complex.mul_re, Complex.neg_im,
+    Complex.neg_re, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]
+  ring_nf
+  simp only [← Complex.ofReal_pow, Complex.ofReal_re, Complex.ofReal_im, Complex.neg_re,
+    Complex.mul_re, Complex.mul_im, Complex.I_re, Complex.I_im, Complex.add_re, Complex.sub_re]
+  ring
+
+private theorem perp_orders_not_ortho {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
+    ¬ atomOf (afterPerp θ θ) ⟂ atomOf (afterPerpRev θ θ) := by
+  intro hortho
+  have hzero := hortho.inner_eq (Submodule.mem_span_singleton_self _)
+    (Submodule.mem_span_singleton_self _)
+  have him := congrArg Complex.im hzero
+  rw [perp_order_inner_im, Complex.zero_im] at him
+  obtain ⟨hc, hs⟩ := half_trig_pos h0 hπ
+  nlinarith [sq_pos_of_pos hc, sq_pos_of_pos hs]
+
+theorem perp_orders_outside {θ : ℝ} (h0 : 0 < θ) (hπ : θ < Real.pi) :
+    atomOf (afterPerp θ θ) ≠ atomOf (afterPerpRev θ θ) ∧
+      atomOf (afterPerp θ θ) ∉ Island lineE0 ∧
+      atomOf (afterPerpRev θ θ) ∉ Island lineE0 ∧
+      ¬ Compatible lineE0 (atomOf (afterPerp θ θ)) ∧
+      ¬ Compatible lineE0 (atomOf (afterPerpRev θ θ)) ∧
+      ¬ lineE0 ⊓ material lineE0 (atomOf (afterPerp θ θ)) ≤ atomOf (afterPerp θ θ) ∧
+      ¬ lineE0 ⊓ material lineE0 (atomOf (afterPerpRev θ θ)) ≤
+        atomOf (afterPerpRev θ θ) ∧
+      ¬ Compatible (atomOf (afterPerp θ θ)) (atomOf (afterPerpRev θ θ)) := by
+  have hf := perp_forward_coords_ne h0 hπ
+  have hr := perp_reverse_coords_ne h0 hπ
+  have houtF := atom_outside_computational hf.1 hf.2
+  have houtR := atom_outside_computational hr.1 hr.2
+  have hfinF : finrank ℂ (atomOf (afterPerp θ θ)) = 1 :=
+    finrank_span_singleton (carrier_ne_zero_of_coord hf.1)
+  have hfinR : finrank ℂ (atomOf (afterPerpRev θ θ)) = 1 :=
+    finrank_span_singleton (carrier_ne_zero_of_coord hr.1)
+  refine ⟨perp_atom_ne h0 hπ h0 hπ, houtF.1, houtR.1, houtF.2.1, houtR.2.1, houtF.2.2,
+    houtR.2.2, ?_⟩
+  intro hc
+  rcases (compatible_line_iff hfinF hfinR).mp hc with hEq | hortho
+  · exact perp_atom_ne h0 hπ h0 hπ hEq
+  · exact perp_orders_not_ortho h0 hπ hortho
+
+private theorem phase_factor_ne_zero (φ : ℝ) :
+    (Real.cos (φ / 2) : ℂ) + Complex.I * (Real.sin (φ / 2) : ℂ) ≠ 0 := by
+  intro hz
+  have hns : Complex.normSq
+      ((Real.cos (φ / 2) : ℂ) + Complex.I * (Real.sin (φ / 2) : ℂ)) = 1 := by
+    rw [Complex.normSq_apply]
+    simp only [Complex.add_re, Complex.add_im, Complex.mul_re, Complex.mul_im, Complex.I_re,
+      Complex.I_im, Complex.ofReal_re, Complex.ofReal_im, mul_zero, zero_mul, sub_zero,
+      add_zero, zero_add]
+    have hsum := Real.cos_sq_add_sin_sq (φ / 2)
+    linarith
+  rw [hz, Complex.normSq_zero] at hns
+  exact zero_ne_one hns
+
+private theorem axial_reverse_coords_ne {θ φ : ℝ} (hθ0 : 0 < θ) (hθπ : θ < Real.pi) :
+    afterTransverseAxial θ φ 0 ≠ 0 ∧ afterTransverseAxial θ φ 1 ≠ 0 := by
+  obtain ⟨hc, hs⟩ := half_trig_pos hθ0 hθπ
+  have ha := axial_after_coord θ φ
+  have ht := transverse_coord θ
+  constructor
+  · intro hz
+    rw [ha.1, ht.1] at hz
+    exact mul_ne_zero (axialFactor_ne_zero φ)
+      (Complex.ofReal_ne_zero.mpr (ne_of_gt hc)) hz
+  · intro hz
+    rw [ha.2, ht.2] at hz
+    exact mul_ne_zero (phase_factor_ne_zero φ)
+      (mul_ne_zero (by simp [Complex.I_ne_zero])
+        (Complex.ofReal_ne_zero.mpr (ne_of_gt hs))) hz
+
+theorem axial_atom_computational (φ : ℝ) :
+    atomOf (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) φ)) spinUp) = lineE0 ∧
+      applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) φ)) spinUp ∈ lineE0 ∧
+      deviceError (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) φ)) spinUp) =
+        0 := by
+  have hlin := axial_on_eigen φ
+  have herr := (axial_no_logical_error φ).2.2
+  refine ⟨?_, (axial_no_logical_error φ).1, herr⟩
+  rw [hlin, spinUp_eq_e0]
+  simpa [atomOf, lineE0] using span_smul (axialFactor_ne_zero φ)
+
+theorem order_atom_error {N : ℕ} (hN : 3 ≤ N) :
+    atomOf (afterPerp (stepAngle N) (stepAngle N)) ≠
+        atomOf (afterPerpRev (stepAngle N) (stepAngle N)) ∧
+      atomOf (afterPerp (stepAngle N) (stepAngle N)) ∉ Island lineE0 ∧
+      atomOf (afterPerpRev (stepAngle N) (stepAngle N)) ∉ Island lineE0 ∧
+      ¬ Compatible lineE0 (atomOf (afterPerp (stepAngle N) (stepAngle N))) ∧
+      ¬ Compatible lineE0 (atomOf (afterPerpRev (stepAngle N) (stepAngle N))) ∧
+      ¬ lineE0 ⊓ material lineE0 (atomOf (afterPerp (stepAngle N) (stepAngle N))) ≤
+        atomOf (afterPerp (stepAngle N) (stepAngle N)) ∧
+      ¬ lineE0 ⊓ material lineE0 (atomOf (afterPerpRev (stepAngle N) (stepAngle N))) ≤
+        atomOf (afterPerpRev (stepAngle N) (stepAngle N)) ∧
+      ¬ Compatible (atomOf (afterPerp (stepAngle N) (stepAngle N)))
+        (atomOf (afterPerpRev (stepAngle N) (stepAngle N))) ∧
+      deviceError (afterPerp (stepAngle N) (stepAngle N)) =
+        deviceError (afterPerpRev (stepAngle N) (stepAngle N)) ∧
+      deviceError (afterPerp (stepAngle N) (stepAngle N)) =
+        (1 / 2) * deviceError (afterTransverse (2 * stepAngle N)) ∧
+      deviceError (afterPerp (stepAngle N) (stepAngle N)) <
+        2 * deviceError (afterTransverse (stepAngle N)) ∧
+      atomOf (afterAxialTransverse (stepAngle N) (stepAngle N)) =
+        atomOf (afterTransverse (stepAngle N)) ∧
+      atomOf (afterTransverseAxial (stepAngle N) (stepAngle N)) ≠
+        atomOf (afterTransverse (stepAngle N)) ∧
+      atomOf (afterTransverseAxial (stepAngle N) (stepAngle N)) ∉ Island lineE0 ∧
+      ¬ Compatible lineE0 (atomOf (afterTransverseAxial (stepAngle N) (stepAngle N))) ∧
+      ¬ lineE0 ⊓ material lineE0
+          (atomOf (afterTransverseAxial (stepAngle N) (stepAngle N))) ≤
+        atomOf (afterTransverseAxial (stepAngle N) (stepAngle N)) ∧
+      deviceError (afterAxialTransverse (stepAngle N) (stepAngle N)) =
+        deviceError (afterTransverse (stepAngle N)) ∧
+      deviceError (afterTransverseAxial (stepAngle N) (stepAngle N)) =
+        deviceError (afterTransverse (stepAngle N)) ∧
+      atomOf (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) (stepAngle N)))
+        spinUp) = lineE0 ∧
+      deviceError (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3) (stepAngle N)))
+        spinUp) = 0 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 3) hN
+  have hθ : 0 < stepAngle N := stepAngle_pos hpos
+  have hπ : stepAngle N < Real.pi := by
+    unfold stepAngle
+    have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+    rw [div_lt_iff₀ hN0]
+    have h2 : (2 : ℝ) < N := by exact_mod_cast (lt_of_lt_of_le (by decide : 2 < 3) hN)
+    nlinarith [Real.pi_pos]
+  have htwo : stepAngle N < 2 * Real.pi := by linarith [Real.pi_pos]
+  have hper := perp_orders_outside hθ hπ
+  have hlat := lattice_perp hN
+  have hord := axial_order_changes_atom hθ hπ hθ htwo
+  have hrev := axial_reverse_coords_ne (φ := stepAngle N) hθ hπ
+  have hout := atom_outside_computational hrev.1 hrev.2
+  have hax := axial_atom_computational (stepAngle N)
+  exact ⟨hper.1, hper.2.1, hper.2.2.1, hper.2.2.2.1, hper.2.2.2.2.1, hper.2.2.2.2.2.1,
+    hper.2.2.2.2.2.2.1, hper.2.2.2.2.2.2.2, hlat.2.1, hlat.2.2.1, hlat.2.2.2, hord.1,
+    hord.2.1, hout.1, hout.2.1, hout.2.2, hord.2.2.2, hord.2.2.1, hax.1, hax.2.2⟩
+
+private theorem step_lt_half_pi {N : ℕ} (hN : 8 ≤ N) :
+    0 < stepAngle N ∧ stepAngle N < Real.pi / 2 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
+  refine ⟨stepAngle_pos hpos, ?_⟩
+  unfold stepAngle
+  have hN0 : (0 : ℝ) < N := by exact_mod_cast hpos
+  rw [div_lt_iff₀ hN0]
+  have h4 : (4 : ℝ) < N := by exact_mod_cast (lt_of_lt_of_le (by decide : 4 < 8) hN)
+  nlinarith [Real.pi_pos]
+
+private theorem sin_sq_unit {α : ℝ} (h0 : 0 < α) (hπ : α < Real.pi / 2) :
+    0 < Real.sin α ^ 2 ∧ Real.sin α ^ 2 < 1 := by
+  have hs : 0 < Real.sin α := Real.sin_pos_of_pos_of_lt_pi h0 (by linarith [Real.pi_pos])
+  have hc : 0 < Real.cos α := Real.cos_pos_of_mem_Ioo ⟨by linarith, by linarith⟩
+  have hsum := Real.cos_sq_add_sin_sq α
+  exact ⟨sq_pos_of_pos hs, by nlinarith [sq_pos_of_pos hc]⟩
+
+private theorem classify?_open {j : ℝ} (h0 : 0 < j) (h1 : j < 1) :
+    classify? j = some .U := by
+  have habs : |j| ≤ 1 := by
+    rw [abs_of_pos h0]
+    exact h1.le
+  have hU : classifyOfMem j habs = .U := (classifyOfMem_eq_U_iff habs).mpr ⟨h0, h1⟩
+  simpa [classify?, habs] using hU
+
+private theorem classify?_neg {j : ℝ} (hlo : -1 ≤ j) (hhi : j < 0) :
+    classify? j = some .B := by
+  have habs : |j| ≤ 1 := abs_le.mpr ⟨hlo, by linarith⟩
+  have hB : classifyOfMem j habs = .B := (classifyOfMem_eq_B_iff habs).mpr ⟨hlo, hhi⟩
+  simpa [classify?, habs] using hB
+
+theorem order_height_ratio {N : ℕ} (hN : 8 ≤ N) :
+    deviceError (afterPerp (stepAngle N) (stepAngle N)) /
+        deviceError (afterTransverse (2 * stepAngle N)) =
+      JNormalized (express (perpSteps N)) / JNormalized (express (alignedSteps 2 N)) ∧
+      deviceError (afterPerp (stepAngle N) (stepAngle N)) /
+          deviceError (afterTransverse (2 * stepAngle N)) = (1 : ℝ) / 2 ∧
+        JNormalized (express (alignedSteps 2 N)) < JNormalized (express (perpSteps N)) ∧
+          JNormalized (express (perpSteps N)) < 0 ∧
+            classify? (JNormalized (express (perpSteps N))) = some .B ∧
+              classify? (JNormalized (express (alignedSteps 2 N))) = some .B ∧
+                HoldsNotF (JNormalized (express (perpSteps N))) ∧
+                  HoldsNotF (JNormalized (express (alignedSteps 2 N))) ∧
+                    ¬ HoldsT (JNormalized (express (perpSteps N))) ∧
+                      ¬ HoldsT (JNormalized (express (alignedSteps 2 N))) ∧
+                        classify? (deviceError (afterTransverse (stepAngle N))) = some .U ∧
+                          classify? (deviceError (afterPerp (stepAngle N) (stepAngle N))) =
+                            some .U ∧
+                            classify? (deviceError (afterTransverse (2 * stepAngle N))) =
+                              some .U := by
+  set eOne := deviceError (afterTransverse (stepAngle N))
+  set ePerp := deviceError (afterPerp (stepAngle N) (stepAngle N))
+  set eAlign := deviceError (afterTransverse (2 * stepAngle N))
+  set jPerp := JNormalized (express (perpSteps N))
+  set jAlign := JNormalized (express (alignedSteps 2 N))
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 8) hN
+  have h3 : 3 ≤ N := le_trans (by decide : (3 : ℕ) ≤ 8) hN
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 8) hN
+  have hlat := lattice_perp h3
+  have hstep := step_lt_half_pi hN
+  have honeForm := transverse_step_third_atom h3
+  have halign := aligned_error_trig hstep.1
+  have hden : eAlign ≠ 0 := by
+    change deviceError (afterTransverse (2 * stepAngle N)) ≠ 0
+    rw [halign]
+    exact ne_of_gt (sin_sq_unit hstep.1 hstep.2).1
+  have hleft : ePerp / eAlign = (1 : ℝ) / 2 := by
+    change deviceError (afterPerp (stepAngle N) (stepAngle N)) /
+        deviceError (afterTransverse (2 * stepAngle N)) = (1 : ℝ) / 2
+    rw [hlat.2.2.1, mul_div_cancel_right₀ _ hden]
+  have hadmA := (twoGravitons_fourfold hN).1
+  have hadmP := perpSteps_admissible h4
+  have hJA : jAlign = 4 * farHeight N := by
+    change JNormalized (express (alignedSteps 2 N)) = 4 * farHeight N
+    rw [express_eq_of_admissible hadmA, (twoGravitons_fourfold hN).2, alignedSteps_one]
+    rfl
+  have hJP : jPerp = 2 * farHeight N := by
+    change JNormalized (express (perpSteps N)) = 2 * farHeight N
+    rw [express_eq_of_admissible hadmP, (perp_twofold h4).2]
+  have hfar := farHeight_eq hpos
+  have hneg := farHeight_neg hpos
+  have hlt : jAlign < jPerp := by
+    rw [hJA, hJP]
+    linarith
+  have hjp0 : jPerp < 0 := by
+    rw [hJP]
+    linarith
+  have hN8 : (8 : ℝ) ≤ N := by exact_mod_cast hN
+  have hsq : (64 : ℝ) ≤ (N : ℝ) ^ 2 := by
+    have hpow : (8 : ℝ) ^ 2 ≤ (N : ℝ) ^ 2 := pow_le_pow_left₀ (by norm_num) hN8 2
+    norm_num at hpow
+    exact hpow
+  have habsA : |jAlign| ≤ 1 := by
+    rw [hJA, hfar, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 4), abs_neg,
+      abs_of_pos (div_pos (by norm_num) (by positivity : (0 : ℝ) < 3 * (N : ℝ) ^ 2))]
+    have hden3 : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
+    have hform : 4 * (16 / (3 * (N : ℝ) ^ 2)) = 64 / (3 * (N : ℝ) ^ 2) := by ring
+    rw [hform, div_le_one hden3]
+    nlinarith [hsq]
+  have habsP : |jPerp| ≤ 1 := by
+    rw [hJP, hfar, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 2), abs_neg,
+      abs_of_pos (div_pos (by norm_num) (by positivity : (0 : ℝ) < 3 * (N : ℝ) ^ 2))]
+    have hden3 : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
+    have hform : 2 * (16 / (3 * (N : ℝ) ^ 2)) = 32 / (3 * (N : ℝ) ^ 2) := by ring
+    rw [hform, div_le_one hden3]
+    nlinarith [hsq]
+  have hloA : -1 ≤ jAlign := (abs_le.mp habsA).1
+  have hloP : -1 ≤ jPerp := (abs_le.mp habsP).1
+  have hJden : jAlign ≠ 0 := ne_of_lt (lt_trans hlt hjp0)
+  have hright : jPerp / jAlign = (1 : ℝ) / 2 := by
+    rw [hJP, hJA]
+    have hf : farHeight N ≠ 0 := ne_of_lt hneg
+    field_simp [hf]
+    norm_num
+  have honeUnit := sin_sq_unit (by linarith : 0 < stepAngle N / 2)
+    (by linarith : stepAngle N / 2 < Real.pi / 2)
+  have halignUnit := sin_sq_unit hstep.1 hstep.2
+  have honeBound : 0 < eOne ∧ eOne < 1 := by
+    have hhalf : stepAngle N / 2 = Real.pi / N := by
+      simpa using halfArg_eq (n := 1) hpos
+    constructor
+    · change 0 < deviceError (afterTransverse (stepAngle N))
+      rw [honeForm.2.2.2.2, ← hhalf]
+      exact honeUnit.1
+    · change deviceError (afterTransverse (stepAngle N)) < 1
+      rw [honeForm.2.2.2.2, ← hhalf]
+      exact honeUnit.2
+  have halignBound : 0 < eAlign ∧ eAlign < 1 := by
+    constructor
+    · change 0 < deviceError (afterTransverse (2 * stepAngle N))
+      rw [halign]
+      exact halignUnit.1
+    · change deviceError (afterTransverse (2 * stepAngle N)) < 1
+      rw [halign]
+      exact halignUnit.2
+  have hperpBound : 0 < ePerp ∧ ePerp < 1 := by
+    constructor
+    · change 0 < deviceError (afterPerp (stepAngle N) (stepAngle N))
+      rw [hlat.2.2.1]
+      exact mul_pos (by norm_num) halignBound.1
+    · change deviceError (afterPerp (stepAngle N) (stepAngle N)) < 1
+      rw [hlat.2.2.1]
+      nlinarith [halignBound.1, halignBound.2]
+  refine ⟨hleft.trans hright.symm, hleft, hlt, hjp0, classify?_neg hloP hjp0,
+    classify?_neg hloA (lt_trans hlt hjp0), ?_, ?_, ?_, ?_,
+    classify?_open honeBound.1 honeBound.2, classify?_open hperpBound.1 hperpBound.2,
+    classify?_open halignBound.1 halignBound.2⟩
+  · change jPerp < 1
+    linarith
+  · change jAlign < 1
+    linarith
+  · intro hT
+    exact hjp0.ne hT
+  · intro hT
+    exact (lt_trans hlt hjp0).ne hT
 
 end DstDiophantine.Gravity.GravitonLogic
 

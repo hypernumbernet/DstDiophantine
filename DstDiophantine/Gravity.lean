@@ -38,7 +38,7 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `Kerr` — the Kerr coframe on `Σ > 0` and `Δ > 0`.
 * `Algebra.SourceSuperposition` — source bivectors add without a ceiling.
 * `GravitonQuantum` — one graviton is one pure dual step of angle `2π/N`; these carriers are not a mass spectrum, and no derivation of `α_G` or of a laboratory error rate.
-* `GravitonLogic` — the computational observable is the ray of `spinUp` and its negation; the device error is not the ray the carrier satisfies and not the expressed height, and no laboratory rate.
+* `GravitonLogic` — the ray of `spinUp` is the computational observable; two orders occupy distinct atoms and one device error, and no laboratory rate.
 * `MachSource` — surrounding matter fixes the expressed point, not the stiffness `m`; no `F=ma`, and no laboratory acceleration ceiling.
 * `InteriorClock` — DST time is the enclosed compactness, and at the centre it is the vacuum rate; no claim that a frequency beat equals a wavelength.
 * `MassOrigin` — the time-reversing dual map fixes a configuration only at vanishing unsigned mass.

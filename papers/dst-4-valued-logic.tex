@@ -82,7 +82,11 @@ divisible by four, four turns of aligned transverse gravitons express
 one height, \(-\frac13\), and therefore one label \(\lvert B\rangle\).
 Only the half turn and the full turn lie on the island of the
 computational ray, and the expansion along that ray does not detach
-onto either quarter turn. A separate
+onto either quarter turn. For \(N\ge 3\) the two orders of one step
+about each of two transverse axes occupy distinct rays outside that
+island and do not split along each other, while their device errors
+agree; for \(N\ge 8\) the ratio of that error to the error of two
+aligned steps equals the ratio of the expressed heights. A separate
 status algebra reuses the four names for proof artefacts and
 Diophantine regimes, and an open classical conjecture stays off
 synchrony. The statements of this paper are machine-checked.
@@ -156,7 +160,8 @@ lattice, the island of a complementary pair, and the sense in which
 that island reads as two classical bits of one measurement.
 Section~\ref{sec:turns} applies both layers to aligned gravitons:
 four turns express one height, two of them lie on one island, and
-the device error carries other labels.
+the device error carries other labels. The two orders of steps on
+distinct axes occupy distinct rays and one device error.
 Section~\ref{sec:regime} reads DST proof artefacts and Diophantine
 regimes in the same four names. Section~\ref{sec:godel} reads a
 self-referential sentence by the same two predicates, and it does not
@@ -1239,6 +1244,53 @@ deficit \(\frac12\) and occupy distinct rays. The expressed height, the
 device deficit, and the ray are three observables. The integer \(N\)
 stays unfixed, and the deficit is not a laboratory rate.
 
+The same three observables separate an order. A step about one
+transverse axis, followed by a step of the same angle about the other,
+is a different proposition from the reverse order.
+
+\begin{theorem}[Order and the atom]
+\label{thm:order}
+Let \(N\ge 3\). One step of angle \(2\pi/N\) about axis \(0\), followed
+by the same angle about axis \(1\), occupies a ray distinct from the
+reverse order. Neither ray lies in the island of the computational ray.
+Neither splits along that ray, so the classical expansion along it does
+not detach onto either. The two rays do not split along each other.
+The device errors of the two orders agree. That common value is half
+the device error of two aligned steps of the same angle, and it is
+strictly less than twice the device error of one step.
+
+A step about the eigenaxis occupies the computational ray and records
+device error \(0\). An eigenaxis step followed by a transverse step
+occupies the ray of the transverse step. The reverse order occupies a
+different ray, outside the island, and the expansion along the
+computational ray does not detach onto it. Both orders record the
+device error of the transverse step.
+
+Let \(N\ge 8\). Both two-graviton configurations are admissible, so
+each expresses its own height. The perpendicular height is twice the
+height of one graviton, and the aligned height is four times the
+height of one graviton, so the aligned height lies strictly below the
+perpendicular height. Both are negative. Both labels are \(\lvert B\rangle\), both
+are non-refuted, and neither is synchronous. The ratio of the two
+device errors equals the ratio of the two heights, and both ratios
+equal \(\frac12\). The device error of one step, of the perpendicular
+pair, and of the aligned pair each lies strictly between \(0\) and
+\(1\), so each reads as the label \(\lvert U\rangle\).
+\end{theorem}
+
+The lattice records the order in the ray. The device records one number
+for both orders. Two non-commuting steps are two propositions that do
+not split along each other, so they do not share a Boolean island, and
+the expansion that would treat them as classical bits does not detach.
+For \(N\ge 8\) that common number stands to the aligned error as the
+expressed heights stand to each other. The height remains the label
+\(\lvert B\rangle\) while the device reads \(\lvert U\rangle\). An
+eigenaxis step is invisible to the device and stays on the computational
+ray. Placed after a transverse step, it moves the ray. Placed before,
+the carrier stays on the transverse ray. The error is the transverse
+error in both orders. The integer \(N\) stays unfixed, and the error is
+not a laboratory rate.
+
 \section{Proof status and Diophantine regimes}
 \label{sec:regime}
 
@@ -1456,7 +1508,16 @@ either. The configuration with no graviton expresses height \(0\) on
 the full turn's ray. The
 device deficits \(\frac12\), \(1\), \(\frac12\), and \(0\), read as
 heights, are the labels \(\lvert U\rangle\), \(\lvert F\rangle\),
-\(\lvert U\rangle\), and \(\lvert T\rangle\). Label \(\lvert T\rangle\) is not a
+\(\lvert U\rangle\), and \(\lvert T\rangle\). For \(N\ge 3\), the two
+orders of one step about each of two transverse axes occupy distinct
+rays outside the computational island, do not split along each other,
+and record one device error, half the error of two aligned steps. For
+\(N\ge 8\) that ratio equals the ratio of the expressed heights, both
+heights are the label \(\lvert B\rangle\), and the three device errors
+are the label \(\lvert U\rangle\). An eigenaxis step stays on the
+computational ray with device error \(0\). Placed after a transverse
+step, it leaves that ray. Placed before, the carrier stays on the
+transverse ray. Label \(\lvert T\rangle\) is not a
 single geometric point: vacuum, axiswise balanced massive, and
 cross-axis cancellation all sit there, distinguished by mass and by
 axiswise equality, without a fifth name. Discrete \(\lvert F\rangle\)
