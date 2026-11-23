@@ -56,6 +56,7 @@ import DstDiophantine.Logic.Quantum.ExternalChart
 import DstDiophantine.Logic.Quantum.SpinWaveBridge
 import DstDiophantine.Logic.Quantum.ChartOperators
 import DstDiophantine.Logic.Quantum.NewtonWigner
+import DstDiophantine.Logic.Quantum.PositionInformation
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1189,6 +1190,18 @@ example (Q P : DiracSpinor →ₗ[ℂ] DiracSpinor) {u : DiracSpinor} (hu : u �
   ⟨no_newtonWignerPair_dirac Q P, planeWave_no_chartPositionInfo p u,
     equalPacket_chartPositionInfo hpq hu, equalPacket_not_boxLocalized hpq hu,
     axis_fringe_contrast⟩
+
+/-- Regression: fringe visibility and which-momentum distinguishability are complementary.
+A definite momentum carries no chart-position information. Equal weights have visibility `1`. -/
+example (r s : ℝ) (h : r ^ 2 + s ^ 2 ≠ 0) (α : ℝ) (p q : Vec4) (u : DiracSpinor) :
+    whichMomentum r s ^ 2 + fringeVisibility r s ^ 2 = 1 ∧
+      whichMomentum 1 (1 / 2) = 3 / 5 ∧
+      fringeVisibility 1 (1 / 2) = 4 / 5 ∧
+      ¬ ChartPositionInfo (phasedPacket r 0 α p q u) ∧
+      fringeVisibility 1 1 = 1 :=
+  ⟨whichMomentum_sq_add_fringeVisibility r s h, half_weight_information.1,
+    half_weight_information.2.1, phasedPacket_definite_no_chartPositionInfo r α p q u,
+    fringeVisibility_equal (by norm_num)⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
