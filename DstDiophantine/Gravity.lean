@@ -146,6 +146,11 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase;
   the denominator is the time-delay factor `γ_s`, not the torsional mismatch.
   No angular momentum is assigned, and no circular energy is formed.
+* `HydrogenRepulsion` — the constant factor `1` puts `-ke²/(2n²a₀)` on the gross-structure
+  ladder, so the Balmer and Lyman ratios are the rational Rydberg ratios. The equal-scale factor
+  `γ_s` is a repulsive correction on the outer well and points outward on `(x₁, π)`. The written
+  factor `1/γ_s` strengthens the attraction and is unbounded at the first node. Reading energies
+  off the nodes does not recover those ratios. No fine structure is claimed.
 * `RelationalPolarization` — the interaction is the stiffness cross term of two charge labels,
   evaluated at the geodesic angle of the relative rotor `ρ = a⁻¹b`. `m` is that stiffness.
   The conjugate momenta are half the mismatch rate and half the common rate. Holding the usual

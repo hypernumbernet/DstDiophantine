@@ -49,6 +49,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.HydrogenRepulsion
 import DstDiophantine.Gravity.RelationalPolarization
 import DstDiophantine.Gravity.ElectronDiscrete
 import DstDiophantine.Gravity.OrbitClosure
@@ -3140,6 +3141,11 @@ example {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
   have h := GravitonLogic.four_turns_read hdiv hN
   exact ⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1, h.2.2.2.2.2.1, h.2.2.2.2.2.2.1,
     h.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.2.1⟩
+
+example : rydbergGap 2 4 / rydbergGap 2 3 = 27 / 20 ∧
+    rydbergGap 1 2 / rydbergGap 1 3 = 27 / 32 ∧
+    rydbergGap 2 3 / rydbergGap 1 2 = 5 / 27 :=
+  ⟨balmer_alpha_over_beta, lyman_two_over_three, second_over_first⟩
 
 end Gravity
 
