@@ -325,7 +325,7 @@ example :
 example : ¬ EntailsTR {RegimeFormula.atom 0} (RegimeFormula.atom 3) :=
   core_not_entailsTR_conjecture
 
-/-- Regression: window ∧ ill-posed NoGo does not force the conjecture. -/
+/-- Regression: a closed slice with bookkeeping does not force the conjecture. -/
 example :
     ¬ EntailsNotFR {RegimeFormula.atom 0, RegimeFormula.atom 1}
         (RegimeFormula.atom 3) :=

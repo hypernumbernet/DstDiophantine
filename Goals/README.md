@@ -85,8 +85,8 @@ things. They are separated as follows.
 | What changed | Reason |
 | --- | --- |
 | Eight headline conjectures no longer have `sorry` | The main library already proves each one from a named leaf or bridge. `Headlines.lean` applies that proof. The `sorry` stays on the leaf. |
-| Nineteen coarser `*Residual` props dropped | Two are already theorems (`BealPosCubeAddTwoCubeResidual_of_euler`, `BealTwoEqualEvenSumExpFiveResidual_of_NN5`). Thirteen are consequences of the six Beal leaves in the main library. The other four are not on that path: the even-difference factor and perfect-power packagings, `BealMordellCubeAddTwoResidual`, and `BealCGADilationNoGo`. |
-| Six diagnostic bridges dropped | `BealAdmissibleBridge`, `BealModularBridge`, `BealWindingBridge`, `FermatAdmissibleBridge`, `FermatCoarseDiscreteBridge`, and `FermatModularBridge` are diagnostic, demoted, or vacuous in the main library. They are not research targets. `AbcAdmissibleBridge` is false (`AbcAdmissibleBridge_false`) and was already absent. |
+| Nineteen coarser `*Residual` props dropped | Two are already theorems (`BealPosCubeAddTwoCubeResidual_of_euler`, `BealTwoEqualEvenSumExpFiveResidual_of_NN5`). Thirteen are consequences of the six Beal leaves in the main library. Three remain off that path: the even-difference factor and perfect-power packagings, and `BealMordellCubeAddTwoResidual`. `BealCGADilationNoGo` left with the conformal probe. |
+| Six diagnostic bridges dropped | `BealAdmissibleBridge`, `FermatAdmissibleBridge`, `FermatCoarseDiscreteBridge`, and `FermatModularBridge` remain in the main library. They are diagnostic, demoted, or vacuous, and they are not research targets. `BealModularBridge` and `BealWindingBridge` left with the conformal probe. `AbcAdmissibleBridge` is false (`AbcAdmissibleBridge_false`) and was already absent. |
 | Twenty-four gravity, logic, and PGA entries dropped from Lean | Each statement was `True`, or an existence claim with a witness that does not use a library definition (`42 < Δ < 44`, `0 < θ`). Both elaborate without the claim they were meant to record. They are indexed below as not yet stateable. |
 | Two physics frontiers added | Mercury's advance is `Perihelion.radialReturn` on external orbital elements, in arcseconds per Julian century. The charged-pion Compton length selects one sign-reversal scale in `(1/2, 1)` through `lengthOfReversal`. |
 | Mercury frontier closed | `Mercury.perihelion_arcsec_bounds` in the main library proves `42 < arcsecPerCentury < 44` from `bound_return_bounds` and the external elements. Removed from Goals. |
@@ -199,7 +199,6 @@ rows stay deferred.
 | `BealTwoEqualEvenSumExpFiveResidual` | Theorem `BealTwoEqualEvenSumExpFiveResidual_of_NN5` |
 | `BealAffineCubeAddTwoResidual` | The Euler axiom, by abbreviation |
 | `BealMordellCubeAddTwoResidual` | Diagnostic Weierstrass packaging. The cube leaf is the Euler theorem, not this packaging |
-| `BealCGADilationNoGo` | Legacy equal-exponent lattice. Mixed exponents miss it |
 | `BealTwoEqualEvenDiffFactorResidual`, `BealTwoEqualEvenDiffPerfectPowerResidual` | Older packaging of the even-difference body. The named leaf is `BealTwoEqualEvenDiffOutsideFifthPairResidual` |
 | `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` by `bennettEllenbergNg` |
 | `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` by `sumTwoFifthsNotSeventhOrNineteenth` (phase 8a) |
@@ -208,8 +207,7 @@ rows stay deferred.
 | `BealAllDistinctOutsideCubePairResidual` | Follows from `BealAllDistinctOutsideFifthPairResidual` by the same axiom |
 | `BealPythagoreanUnequalOddOutsideCubePairResidual` | Follows from `BealPythagoreanUnequalOddOutsideFifthPairResidual` by the same axiom |
 | `BealAdmissibleBridge`, `FermatAdmissibleBridge` | Continuous bridges. Balanced seeds sit below the threshold |
-| `BealModularBridge`, `FermatModularBridge` | Payload incompatible with the conformal gauge, independently of a solution in the Beal case |
-| `BealWindingBridge` | Window regime only |
+| `FermatModularBridge` | Payload incompatible with real-scale admissibility |
 | `FermatCoarseDiscreteBridge` | Witness empty under the coarse threshold. Not a research target |
 | `AbcAdmissibleBridge` | False (`AbcAdmissibleBridge_false`), from the triple `1 + 8 = 9` |
 

@@ -25,12 +25,12 @@ def sliceAbsOne : RegimeFormula := atom 2
 /-- Closed slice: `d = 2` with at least two exponents divisible by 4. -/
 def sliceFourth : RegimeFormula := atom 3
 
-/-- Diagnostic: modular payload incompatible with conformal gauge. -/
+/-- Diagnostic label. Status `F`. -/
 def diagModular : RegimeFormula := atom 4
 /-- Diagnostic: balanced seed below continuous threshold. -/
 def diagBalanced : RegimeFormula := atom 5
 
-/-- Bookkeeping: CGA discrete closure ≡ `|A| = 1`. -/
+/-- Bookkeeping label. Status `B` does not force the conjecture. -/
 def bookRealization : RegimeFormula := atom 6
 
 /-- Live residual: Mordell `y² = x³ - 1728` rank. -/

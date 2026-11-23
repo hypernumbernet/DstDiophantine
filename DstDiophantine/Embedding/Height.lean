@@ -3,6 +3,12 @@ import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Operations
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
 
 /-!
 # Torsional height and one-step descent infrastructure
@@ -63,6 +69,62 @@ theorem descent_height_eq (p : TorsionParams) :
 theorem descent_height_le (p : TorsionParams) :
     torsionHeight (descentCandidate p) ≤ torsionHeight p := by
   rw [descent_height_eq]
+
+theorem exists_integerHeight_gt (M : ℝ) :
+    ∃ (n : ℤ) (hn : n ≠ 0), M < integerHeight n hn := by
+  have hcoef : (0 : ℝ) < 16 / (3 * Real.pi ^ 2) := by positivity
+  have hlog2 : (0 : ℝ) < Real.log 2 := Real.log_pos (by norm_num)
+  let target : ℝ := max M 0 + 1
+  let thresh : ℝ :=
+    Real.sqrt (target / (16 / (3 * Real.pi ^ 2))) / Real.log 2
+  obtain ⟨k, hk⟩ := exists_nat_gt thresh
+  refine ⟨(2 : ℤ) ^ (k + 1), pow_ne_zero _ (by decide), ?_⟩
+  have hn : (2 : ℤ) ^ (k + 1) ≠ 0 := pow_ne_zero _ (by decide)
+  rw [integerHeight_eq _ hn]
+  have habs : Int.natAbs ((2 : ℤ) ^ (k + 1)) = 2 ^ (k + 1) := by
+    rw [Int.natAbs_pow]; simp
+  rw [habs, Nat.cast_pow]
+  have h2 : ((2 : ℕ) : ℝ) = (2 : ℝ) := by norm_num
+  rw [h2]
+  have hlog : Real.log ((2 : ℝ) ^ (k + 1)) = (↑(k + 1) : ℝ) * Real.log 2 := by
+    rw [Real.log_pow (2 : ℝ) (k + 1)]
+  rw [hlog, abs_of_nonneg (mul_nonneg hcoef.le (sq_nonneg _))]
+  have hk1 : thresh < (↑(k + 1) : ℝ) := by
+    have : (k : ℝ) < ↑(k + 1) := by exact_mod_cast Nat.lt_succ_self k
+    exact hk.trans this
+  have hsqrt :
+      Real.sqrt (target / (16 / (3 * Real.pi ^ 2))) <
+        (↑(k + 1) : ℝ) * Real.log 2 := by
+    have hden : Real.log 2 ≠ 0 := ne_of_gt hlog2
+    calc Real.sqrt (target / (16 / (3 * Real.pi ^ 2)))
+        = thresh * Real.log 2 := by
+          change _ = (_ / Real.log 2) * Real.log 2
+          field_simp [hden]
+      _ < (↑(k + 1) : ℝ) * Real.log 2 := mul_lt_mul_of_pos_right hk1 hlog2
+  have ha : 0 ≤ target / (16 / (3 * Real.pi ^ 2)) := by positivity
+  have hsq :
+      target / (16 / (3 * Real.pi ^ 2)) < ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 := by
+    have hnn' : 0 ≤ (↑(k + 1) : ℝ) * Real.log 2 := by positivity
+    have hlt := (sq_lt_sq₀ (Real.sqrt_nonneg _) hnn').mpr hsqrt
+    rwa [Real.sq_sqrt ha] at hlt
+  have hgt :
+      target < (16 / (3 * Real.pi ^ 2)) * ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 := by
+    have hc : (16 / (3 * Real.pi ^ 2) : ℝ) ≠ 0 := ne_of_gt hcoef
+    calc target
+        = (16 / (3 * Real.pi ^ 2)) *
+            (target / (16 / (3 * Real.pi ^ 2))) := by field_simp [hc]
+      _ < (16 / (3 * Real.pi ^ 2)) * ((↑(k + 1) : ℝ) * Real.log 2) ^ 2 :=
+          mul_lt_mul_of_pos_left hsq hcoef
+  have hMlt : M < target := by
+    have : M ≤ max M 0 := le_max_left _ _
+    linarith
+  exact hMlt.trans hgt
+
+theorem integerHeight_not_globally_bounded :
+    ¬ ∃ M : ℝ, ∀ (n : ℤ) (hn : n ≠ 0), integerHeight n hn ≤ M := by
+  rintro ⟨M, hM⟩
+  obtain ⟨n, hn, hlt⟩ := exists_integerHeight_gt M
+  exact not_le_of_gt hlt (hM n hn)
 
 end Embedding
 

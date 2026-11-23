@@ -569,7 +569,7 @@ theorem ModularAmplificationWitness.not_admissible_real_scale
         (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
   windingTotal_ne_zero_implies_not_admissible_scale k w.t.val w.has_winding
 
-/-- Provisional alias of `IsAdmissibleContinuous`, not a separate CGA gauge. -/
+/-- Alias of `IsAdmissibleContinuous`. -/
 abbrev ConformalGaugeAdmissible (p : TorsionParams) : Prop :=
   IsAdmissibleContinuous p
 

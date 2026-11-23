@@ -20,10 +20,10 @@ boundaries live in the module docstrings. This file is the map.
 
 Entry point for the Diophantine path:
 [`DstDiophantine/Basic.lean`](DstDiophantine/Basic.lean)
-(`import DstDiophantine.Basic`). Gravity, four-valued logic, and the
-conformal probe are parallel tracks. Their barrels are not re-exported
-from `Basic`. The root [`DstDiophantine.lean`](DstDiophantine.lean) imports
-`Basic` and `Gravity` together.
+(`import DstDiophantine.Basic`). Gravity and four-valued logic are parallel
+tracks. Their barrels are not re-exported from `Basic`. The root
+[`DstDiophantine.lean`](DstDiophantine.lean) imports `Basic` and `Gravity`
+together.
 
 ## Double Spacetime Theory
 
@@ -69,18 +69,14 @@ Motors and the direction of gravity:
 | Import | Gets |
 | --- | --- |
 | `DstDiophantine.Basic` | Diophantine path: algebra, integer embedding, amplification, problem layers |
-| `DstDiophantine.Algebra` | Algebra only. Gravity, logic, and the conformal barrel stay out |
+| `DstDiophantine.Algebra` | Algebra only. Gravity and logic stay out |
 | `DstDiophantine.Gravity` | Chart, scales, dual-rotor dynamics, signed force, Faraday, control |
 | `DstDiophantine.Logic` | Four-valued logic (D4L) and the dual Hilbert layer |
-| `DstDiophantine.CGA` | One-dimensional conformal probe |
 
 `Theorems.BealRegime` is compiled through
 [`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean)
 and is not re-exported from `Basic`. A `.U → .T` edit of an atlas atom
 belongs in `Logic.Example.BealRegime` and does not promote classical Beal.
-Selected integer-lattice predicates from `Embedding.ConformalInteger` are
-re-exported because the Beal layer uses them. The barrel
-`DstDiophantine.CGA` itself is not.
 
 ## Algebraic core
 
@@ -125,12 +121,10 @@ over an admissible lattice. Sources:
 
 The proof challenge is layer 3. Diagnostic bridges are recorded so they
 can be told apart from the live route. `FermatAdmissibleBridge`,
-`FermatModularBridge`, `BealAdmissibleBridge`, `BealModularBridge`, and
-`BealWindingBridge` are diagnostic. `BealModularBridge` is incompatible
-independently of the equation. `AbcAdmissibleBridge` is false: $(1,8,9)$
-has quality greater than $1$ and an admissible mismatch.
-`BealCGARealization` is bookkeeping. Under coprimality it forces a unit
-base. It is not a geometric proof of Beal.
+`FermatModularBridge`, and `BealAdmissibleBridge` are diagnostic.
+`AbcAdmissibleBridge` is false: $(1,8,9)$ has quality greater than $1$
+and an admissible mismatch. PGA integer-rotor height is not globally
+bounded.
 
 ### Live status
 
@@ -349,20 +343,6 @@ reaches the CHSH value $2\sqrt{2}$. The layer does not produce a mass
 from torsion. A finite discrete rotor image is not a count of
 generations.
 
-## Conformal probe
-
-[`DstDiophantine/CGA.lean`](DstDiophantine/CGA.lean) is a one-dimensional
-$\mathrm{Cl}(2,1)$ probe of the dilation sector that $G(3,1,1)$ does not
-supply. Conformal points are null, and integers land on that null cone.
-The point $2^{4/3}$ does not, although it lies on the $3$-power lattice.
-The Pythagorean ratio $5/3$ is not an integer dilation. PGA integer-rotor
-height is not globally bounded.
-
-The probe is diagnostic. It supplies the Beal bookkeeping predicates
-`IsCGAIntegerPoint`, `IsCGAPowerLatticePoint`, and
-`IsCGAIntegerDilation`. It is not a three-dimensional conformal model,
-and it is not a proof of Beal.
-
 ## Repository layout
 
 ```
@@ -379,7 +359,6 @@ DstDiophantine/
   Gravity/                     Chart, scales, dynamics, force, Faraday, control
   Logic.lean                   D4L barrel
   Logic/                       D4L, and Logic/Quantum
-  CGA.lean                     Conformal barrel
 Goals/                         Open targets. Sorry allowed. Not imported by the library
 papers/                        English sources
 papers/japanese/               Japanese counterparts, luatexja
@@ -423,14 +402,13 @@ then from the repository root:
 lake build
 ```
 
-That builds the root (Diophantine path and gravity), the logic barrel, and
-the conformal probe. `Basic` does not re-export the parallel barrels. A
-module can still be built on its own:
+That builds the root (Diophantine path and gravity) and the logic barrel.
+`Basic` does not re-export the parallel barrels. A module can still be
+built on its own:
 
 ```bash
 lake build DstDiophantine.Gravity
 lake build DstDiophantine.Logic
-lake build DstDiophantine.CGA
 ```
 
 Open targets are a separate library. `sorry` is allowed there, and the

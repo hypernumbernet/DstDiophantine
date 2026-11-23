@@ -707,8 +707,7 @@ theorem beal_conjecture_pos_of_fine_residuals_even_split
 /-! ### Phase 7r: sector diagnostics (sum = cyclic, diff = hyperbolic) -/
 
 /-
-Even-sum is a Gaussian hypotenuse; even-diff is hyperbolic. The two forms must not share one CGA
-dilation no-go.
+Even-sum is a Gaussian hypotenuse; even-diff is hyperbolic.
 -/
 
 theorem beal_even_sum_diff_sectors_interfere :

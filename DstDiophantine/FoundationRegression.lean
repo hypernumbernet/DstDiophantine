@@ -40,8 +40,6 @@ import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.FermatLast
 import DstDiophantine.Theorems.Abc
-import DstDiophantine.Embedding.ConformalInteger
-import DstDiophantine.Algebra.CGA.NullCone
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
@@ -307,93 +305,6 @@ example {N : ℕ} [NeZero N] {x y z : ℕ}
     False :=
   beal_discrete_amplification_contradiction hx hy hz t hlb hadm
 
-example (hbridge : BealModularBridge) :
-    ∀ (A B C : ℤ) (x y z : ℕ),
-      3 ≤ x → 3 ≤ y → 3 ≤ z →
-      A ≠ 0 → B ≠ 0 → C ≠ 0 →
-      A ^ x + B ^ y = C ^ z →
-      1 < bealGcd A B C :=
-  beal_conjecture_of_modular_bridge hbridge
-
-example {N k : ℕ} [NeZero N] (w : ModularAmplificationWitness N k) :
-    ¬ ConformalGaugeAdmissible
-        (scaleTorsion (k : ℝ) (toTorsionParams w.t.val)) :=
-  beal_modular_payload_incompatible w
-
-example {x y z : ℕ} (hm : bealMinExp x y z = 3) :
-    Real.pi / 2 < 2 * Real.pi / (bealMinExp x y z : ℝ) :=
-  beal_winding_threshold_gt_half_pi_of_minExp_eq_three hm
-
-example {m : ℕ} (hm : 0 < m) :
-    Real.log 2 / (m : ℝ) < 2 * Real.pi / (m : ℝ) :=
-  beal_balanced_fracGap_lt_winding_threshold hm
-
-example (hwind : BealWindingBridge) (hnogo : BealCGANoGo) :
-    ∀ (A B C : ℤ) (x y z : ℕ),
-      3 ≤ x → 3 ≤ y → 3 ≤ z →
-      A ≠ 0 → B ≠ 0 → C ≠ 0 →
-      A ^ x + B ^ y = C ^ z →
-      1 < bealGcd A B C :=
-  beal_conjecture_of_winding_and_cga_nogo hwind hnogo
-
-example (hwind : BealWindingBridge) (hnogo : BealCGADilationNoGo) :
-    ∀ (A B C : ℤ) (x y z : ℕ),
-      3 ≤ x → 3 ≤ y → 3 ≤ z →
-      A ≠ 0 → B ≠ 0 → C ≠ 0 →
-      BealCGALatticeGauge A B C x y z (bealMinExp x y z) →
-      A ^ x + B ^ y = C ^ z →
-      1 < bealGcd A B C :=
-  beal_conjecture_of_winding_and_cga_dilation_nogo hwind hnogo
-
-example (hclosed : BealCGADiscreteClosed) (hnogo : BealUnitBaseNoGo) :
-    ∀ (A B C : ℤ) (x y z : ℕ),
-      3 ≤ x → 3 ≤ y → 3 ≤ z →
-      A ≠ 0 → B ≠ 0 → C ≠ 0 →
-      A ^ x + B ^ y = C ^ z →
-      1 < bealGcd A B C :=
-  beal_conjecture_of_discreteClosed_and_unitBaseNoGo hclosed hnogo
-
-example {A B C : ℤ} {x y z m k : ℕ}
-    (hm : m ≠ 0) (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
-    (hx : 0 < x) (hy : 0 < y) (hz : 0 < z) (hk : 2 ≤ k)
-    (hgcd : bealGcd A B C = 1)
-    (hsol : A ^ x + B ^ y = C ^ z) :
-    IsCGAPowerLatticePoint (bealCGAKFoldMag A C x z m k) m ↔ A.natAbs = 1 :=
-  beal_kFold_powerLattice_iff_natAbs_eq_one hm hA hB hC hx hy hz hk hgcd hsol
-
-example :
-    BealCGADiscreteClosed ↔
-      ∀ (A B C : ℤ) (x y z : ℕ),
-        3 ≤ x → 3 ≤ y → 3 ≤ z →
-        A ≠ 0 → B ≠ 0 → C ≠ 0 →
-        bealGcd A B C = 1 →
-        A ^ x + B ^ y = C ^ z →
-          A.natAbs = 1 :=
-  BealCGADiscreteClosed_iff_unitAbs
-
-example {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hA1 : A.natAbs = 1) :
-    ¬ A ^ x + B ^ y = C ^ z :=
-  bealUnitBaseNoGo_pos hx hy hz hA hB hC hA1
-
-example (hreal : BealCGARealization) :
-    ∀ (A B C : ℤ) (x y z : ℕ),
-      3 ≤ x → 3 ≤ y → 3 ≤ z →
-      0 < A → 0 < B → 0 < C →
-      A ^ x + B ^ y = C ^ z →
-      1 < bealGcd A B C :=
-  beal_conjecture_pos_of_realization hreal
-
-example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0)
-    (hac : Nat.Coprime A.natAbs C.natAbs) :
-    IsCGAIntegerDilation (bealRootMag C p p / bealRootMag A p p) ↔
-      A.natAbs = 1 :=
-  beal_eq_exp_integerDilation_iff_natAbs_eq_one A C p hp hA hC hac
-
-example : ¬ IsCGAIntegerDilation (bealRootMag (5 : ℤ) 2 2 / bealRootMag (3 : ℤ) 2 2) :=
-  not_beal_eq_exp_integerDilation_three_four_five
 
 example (A B C : ℤ) (x y z : ℕ) :
     let d := bealExpGcd x y z
@@ -934,12 +845,6 @@ example :
 example : isNthPower (3 ^ 3 + 6 ^ 3) 5 = true :=
   beal_known_noncoprime_is_perfect_power
 
-example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) (hA : A ≠ 0) (hC : C ≠ 0) :
-    mismatchRotor A C hA hC =
-      rotorTorsion
-        (pureBoost
-          (2 * Real.log (bealRootMag C p p / bealRootMag A p p))) :=
-  beal_eq_exp_mismatchRotor_scale A C p hp hA hC
 
 example {A B C : ℤ} {x y z : ℕ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
@@ -951,63 +856,6 @@ example {A B C : ℤ} {x y z : ℕ}
         Nat.Coprime B.natAbs C.natAbs :=
   beal_pairwise_coprime hA hB hC hx hy hz hgcd hsol
 
-example (A : ℤ) (x m : ℕ) (hA : A ≠ 0) (hm : m ≠ 0) :
-    IsCGAPowerLatticePoint (bealRootMag A x m) m :=
-  bealRootMag_isCGAPowerLatticePoint A x m hA hm
-
-example (N : ℕ) [NeZero N] {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z) :
-    ¬ ∃ w : ModularAmplificationWitness N (bealAmpExp x y z),
-      w.t.val = pureBoostSeedOfRapidity N
-        (Real.log 2 / (bealMinExp x y z : ℝ)) :=
-  beal_balanced_gap_no_modularWitness N hx hy hz
-
-example {b c : ℤ} (hb : 0 < b) (hc : 0 < c) :
-    ¬ ((1 : ℤ) + b ^ 3 = c ^ 3) :=
-  not_one_add_pow_three_eq_pow_three hb hc
-
-example (A B C : ℤ) (p : ℕ) (hp : p ≠ 0)
-    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0) :
-    BealCGALatticeGauge A B C p p p p :=
-  BealCGALatticeGauge_of_eq_exp A B C p hp hA hB hC
-
-/-- Diagnostic: the seed `2^{4/3}` misses the integer lattice. -/
-example : ¬ BealCGALatticeGauge 2 2 2 4 4 3 3 :=
-  not_BealCGALatticeGauge_two_two_two_four_four_three
-
-example {A B C : ℤ} {x y z : ℕ}
-    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hsol : A ^ x + B ^ y = C ^ z)
-    (hle : 2 * Real.pi / bealAmpExp x y z ≤
-      bealFracLogGap A C x z (bealMinExp x y z))
-    (hlt : bealFracLogGap A C x z (bealMinExp x y z) <
-      4 * Real.pi / bealAmpExp x y z) :
-    let m := bealMinExp x y z
-    let k := bealAmpExp x y z
-    let N := k
-    ∃ (hN : N ≠ 0),
-      letI : NeZero N := ⟨hN⟩
-      let t := quantizeBealMismatch N A C x z m
-      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
-  beal_winding_of_solution_window hA hB hC hsol hle hlt
-
-example (hnogo : BealCGANoGo) {A B C : ℤ} {x y z : ℕ}
-    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
-    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hcoprime : bealGcd A B C = 1)
-    (hsol : A ^ x + B ^ y = C ^ z) :
-    ¬ (2 * Real.pi / bealAmpExp x y z ≤
-        bealFracLogGap A C x z (bealMinExp x y z) ∧
-      bealFracLogGap A C x z (bealMinExp x y z) <
-        4 * Real.pi / bealAmpExp x y z) :=
-  beal_coprime_not_in_wide_window_of_cga_nogo hnogo hx hy hz hA hB hC hcoprime hsol
-
-example {A B C : ℤ} {x y z m : ℕ} (hm : m ≠ 0)
-    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
-    (hsol : A ^ x + B ^ y = C ^ z) :
-    bealRootMag A x m ^ m + bealRootMag B y m ^ m =
-      bealRootMag C z m ^ m :=
-  beal_rootMag_pow_sum_of_solution hm hA hB hC hsol
 
 example {N : ℕ} [NeZero N] : IsEmpty (ModularAmplificationWitness N 3) :=
   modularWitness_empty_of_eq_three
@@ -1015,50 +863,10 @@ example {N : ℕ} [NeZero N] : IsEmpty (ModularAmplificationWitness N 3) :=
 example {x y z : ℕ} (hm : bealMinExp x y z = 3) : bealAmpExp x y z = 4 :=
   bealAmpExp_eq_four_of_minExp_eq_three hm
 
-example (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
-    (hle : 2 * Real.pi / k ≤ bealFracLogGap A C x z m)
-    (hlt : bealFracLogGap A C x z m < 4 * Real.pi / k) :
-    let N := k
-    ∃ (hN : N ≠ 0),
-      letI : NeZero N := ⟨hN⟩
-      let t := quantizeBealMismatch N A C x z m
-      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
-  beal_modularWitness_of_fracGap_window A C x z m k hk4 hle hlt
-
-example (A C : ℤ) (x z m k : ℕ) (hk4 : 4 ≤ k)
-    (hδ0 : 0 ≤ bealFracLogGap A C x z m)
-    (hle : 2 * Real.pi / k ≤ principalRapidity (bealFracLogGap A C x z m))
-    (hlt : principalRapidity (bealFracLogGap A C x z m) < 4 * Real.pi / k) :
-    let N := k
-    ∃ (hN : N ≠ 0),
-      letI : NeZero N := ⟨hN⟩
-      let t := quantizeBealMismatch N A C x z m
-      IsAdmissible t ∧ ∃ w : ModularAmplificationWitness N k, w.t.val = t :=
-  beal_modularWitness_of_principal_fracGap_window A C x z m k hk4 hδ0 hle hlt
-
-example {a : ℝ} (ha : 0 < a) (δ : ℝ) :
-    CGA.CGA1.pointVec (Real.exp (δ + 2 * Real.pi) * a) ≠
-      CGA.CGA1.pointVec (Real.exp δ * a) :=
-  conformalPoint_dilation_not_two_pi_periodic ha δ
-
-example (x : ℝ) : CGA.CGA1.bilin21 (CGA.CGA1.pointVec x) CGA.CGA1.nInfVec = -1 :=
-  bilin21_conformalPoint_nInf x
-
-example (A C : ℤ) (p : ℕ) (hp : p ≠ 0) :
-    bealFracLogGap A C p p p =
-      Real.log (Int.natAbs C) - Real.log (Int.natAbs A) :=
-  bealFracLogGap_eq_exp A C p hp
-
-example (A C : ℤ) (x z m : ℕ) (hA : A ≠ 0) (hC : C ≠ 0) :
-    bealFracLogGap A C x z m =
-      Real.log (bealRootMag C z m) - Real.log (bealRootMag A x m) :=
-  bealFracLogGap_eq_log_rootMag A C x z m hA hC
 
 example (M : ℝ) : ∃ (n : ℤ) (hn : n ≠ 0), M < integerHeight n hn :=
   exists_integerHeight_gt M
 
-example (x : ℝ) : conformalPoint x * conformalPoint x = 0 :=
-  conformalPoint_sq x
 
 example : ¬ AbcAdmissibleBridge :=
   AbcAdmissibleBridge_false
