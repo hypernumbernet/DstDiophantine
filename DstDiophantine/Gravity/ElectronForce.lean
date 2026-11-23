@@ -19,8 +19,8 @@ import Mathlib.Tactic.Ring
 
 On the outer well the attraction-positive force is strictly increasing, and on
 the first repulsive shell it has a single critical phase. The denominator is
-the time-delay factor \(\gamma_s\), not the torsional mismatch; that repulsion
-is `MismatchRepulsion`. The length \(\ell\)
+the time-delay factor \(\gamma_s\), not the relational polarization of
+`RelationalPolarization`. The length \(\ell\)
 is not derived; that phase is not a spectroscopic shell or an equilibrium, and
 no radius is produced from \(pr=n\hbar\).
 -/

@@ -18,9 +18,9 @@ import Mathlib.Tactic.Ring
 
 Coulomb rewritten with \(\gamma_s\) places equal-scale shells where
 \(\tanh(\alpha/2)\tan(\beta/2)=1\). That factor is the time-delay scalar.
-Repulsion from the torsional mismatch is `MismatchRepulsion`, and on this
-equal-scale locus the mismatch vanishes. The characteristic length \(\ell\) is not
-a theorem of the dual-rotor algebra.
+The relational polarization of `RelationalPolarization` is a different
+quantity, and on this equal-scale locus the mismatch vanishes. The
+characteristic length \(\ell\) is not a theorem of the dual-rotor algebra.
 -/
 
 namespace DstDiophantine

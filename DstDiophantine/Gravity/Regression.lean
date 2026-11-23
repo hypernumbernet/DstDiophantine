@@ -49,7 +49,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
-import DstDiophantine.Gravity.MismatchRepulsion
+import DstDiophantine.Gravity.RelationalPolarization
 import DstDiophantine.Gravity.ElectronDiscrete
 import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.ElectronNumbers
@@ -839,9 +839,14 @@ example {m q φ : ℝ} (hm : m ≠ 0) (hβ : q * φ ≠ 0) :
     ¬ PaperActualEL m 0 (q * φ) 0 0 :=
   dualSourced_not_actualEL hm hβ
 
+example (m q1 q2 : ℝ) (g a b : RelationalPosition.S3) :
+    relationalPolarization m q1 q2 (g * a) (g * b) =
+      relationalPolarization m q1 q2 a b :=
+  relationalPolarization_left m q1 q2 g a b
+
 example :
-    -((1 : ℝ) * (1 * mismatchProfile 1 1)) ≠ mismatchForce 1 1 1 1 1 :=
-  unit_usualConstraint_ne_mismatchForce
+    -((1 : ℝ) * (1 * 1)) ≠ polarizationAngleDeriv 1 1 1 1 :=
+  unit_usualConstraint_ne_angleDeriv
 
 example {m φ θ φdot θdot φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
@@ -1121,9 +1126,12 @@ example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     pairBalance 1 x = 0 :=
   exists_unique_diameter_shell (by norm_num)
 
-/-- Regression: the mismatch force on a diameter has no positive root. -/
-example {r : ℝ} (hr : 0 < r) : mismatchDiameterForce 1 1 1 r ≠ 0 :=
-  no_diameter_root (by norm_num) (by norm_num) (by norm_num) hr
+/-- Regression: `Z = 1` has no diameter root in `(0, π/2)`, and `Z = 4` vanishes. -/
+example {χ : ℝ} (hχ : χ ≠ 0) : diameterAngleDeriv 1 1 χ ≠ 0 :=
+  diameterAngleDeriv_ne_zero_of_one (by norm_num) hχ
+
+example (χ : ℝ) : diameterAngleDeriv 1 4 χ = 0 :=
+  diameterAngleDeriv_zero_of_four 1 χ
 
 example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     cubeOutward Z x < 0 :=

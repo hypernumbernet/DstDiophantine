@@ -146,12 +146,13 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `ElectronForce` — counted with attraction positive, the outer-well force strengthens with phase;
   the denominator is the time-delay factor `γ_s`, not the torsional mismatch.
   No angular momentum is assigned, and no circular energy is formed.
-* `MismatchRepulsion` — repulsion is the radial derivative of the stiffness cross term of two
-  charge-sourced dual rapidities. `m` is that stiffness. The conjugate momenta are half the
-  mismatch rate and half the common rate. Holding the usual rapidity at zero is a constraint.
-  On the equal-scale locus `J` vanishes while `γ_s` changes sign.
-  The profile `ℓ/s` is an input; the force scales as `1/s³` and is not Coulomb's law. A diameter
-  has no restoring radius for `Z ≥ 1`.
+* `RelationalPolarization` — the interaction is the stiffness cross term of two charge labels,
+  evaluated at the geodesic angle of the relative rotor `ρ = a⁻¹b`. `m` is that stiffness.
+  The conjugate momenta are half the mismatch rate and half the common rate. Holding the usual
+  rapidity at zero is a constraint. On the equal-scale locus `J` vanishes while `γ_s` changes
+  sign, so those shells are not this polarization. The angle derivative is not an
+  Euler–Lagrange force. On a diameter the coefficient is `4 - Z`; it vanishes at every angle
+  when `Z = 4`, and nowhere in `(0, π/2)` otherwise. No position operator is claimed.
 * `ElectronDiscrete` — a dual step `2π/N` spaces the equal-scale phase by `π/N`; a sample is not
   proved to stay a full step from the node, and the second node is not capped.
 * `ElectronStanding` — the curvature of `e^{-r/a}` supplies the outward force `ℏ²/(m a r²)`; no
