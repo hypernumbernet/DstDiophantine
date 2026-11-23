@@ -17,7 +17,9 @@ import Mathlib.Tactic.Ring
 # Electron shells via Coulombic torsional layers
 
 Coulomb rewritten with \(\gamma_s\) places equal-scale shells where
-\(\tanh(\alpha/2)\tan(\beta/2)=1\). The characteristic length \(\ell\) is not
+\(\tanh(\alpha/2)\tan(\beta/2)=1\). That factor is the time-delay scalar.
+Repulsion from the torsional mismatch is `MismatchRepulsion`, and on this
+equal-scale locus the mismatch vanishes. The characteristic length \(\ell\) is not
 a theorem of the dual-rotor algebra.
 -/
 

@@ -49,6 +49,7 @@ import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium
 import DstDiophantine.Gravity.HeliumBody
 import DstDiophantine.Gravity.ElectronForce
+import DstDiophantine.Gravity.MismatchRepulsion
 import DstDiophantine.Gravity.ElectronDiscrete
 import DstDiophantine.Gravity.OrbitClosure
 import DstDiophantine.Gravity.ElectronNumbers
@@ -1102,6 +1103,10 @@ example :
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
     pairBalance 1 x = 0 :=
   exists_unique_diameter_shell (by norm_num)
+
+/-- Regression: the mismatch force on a diameter has no positive root. -/
+example {r : ℝ} (hr : 0 < r) : mismatchDiameterForce 1 1 1 r ≠ 0 :=
+  no_diameter_root (by norm_num) (by norm_num) (by norm_num) hr
 
 example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
     cubeOutward Z x < 0 :=
