@@ -55,6 +55,7 @@ import DstDiophantine.Logic.Quantum.Complementarity
 import DstDiophantine.Logic.Quantum.ExternalChart
 import DstDiophantine.Logic.Quantum.SpinWaveBridge
 import DstDiophantine.Logic.Quantum.ChartOperators
+import DstDiophantine.Logic.Quantum.NewtonWigner
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1174,6 +1175,20 @@ example {k : Vec4} (hk : k ≠ 0) :
 example (A B : DualSpinor →ₗ[ℂ] DualSpinor) :
     A.comp B - B.comp A ≠ Complex.I • LinearMap.id :=
   no_ccr_dualSpinor A B
+
+/-- Regression: Newton–Wigner position is not a carrier operator. One momentum has no chart-position
+information; two momenta do, and the fringe is not boxed. The axis packet has contrast `4`. -/
+example (Q P : DiracSpinor →ₗ[ℂ] DiracSpinor) {u : DiracSpinor} (hu : u ≠ 0)
+    (p q : Vec4) (hpq : p ≠ q) :
+    ¬ NewtonWignerPair Q P ∧
+      ¬ ChartPositionInfo (planeWave p u) ∧
+      ChartPositionInfo (equalPacket p q u) ∧
+      ¬ BoxLocalized (equalPacket p q u) ∧
+      chartContrast (equalPacket 0 (Pi.single 1 1) (EuclideanSpace.single 0 1)) 0
+          (Pi.single 1 Real.pi) = 4 :=
+  ⟨no_newtonWignerPair_dirac Q P, planeWave_no_chartPositionInfo p u,
+    equalPacket_chartPositionInfo hpq hu, equalPacket_not_boxLocalized hpq hu,
+    axis_fringe_contrast⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=

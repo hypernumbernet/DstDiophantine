@@ -720,8 +720,23 @@ states and $0$ on the singlet. The orthogonal complement of a nonzero dual
 spinor is the ray of its spin-reversed partner; the two rays exhaust
 $\mathbb{C}^2$, and a third ray orthogonal to both is zero.
 
+[`NewtonWigner.lean`](DstDiophantine/Logic/Quantum/NewtonWigner.lean):
+no endomorphisms of the dual spinor or the Dirac spinor satisfy $[Q,P]=iI$.
+Chart multiplication by $x^\nu$ translates by the shift $a^\nu$ and satisfies
+the canonical commutator with $-i\partial_\mu$, and every continuous eigenfield
+of that multiplication is zero. A momentum eigenfield has constant Born density
+$\|\Psi(0)\|^2$. Chart-position information is the failure of that constancy.
+For momenta $p\neq q$ the contrast of an equal packet is
+$4\bigl(\cos^2(((q-p)\cdot x)/2)-\cos^2(((q-p)\cdot y)/2)\bigr)\|u\|^2$.
+The contrast between the origin and a node is $4\|u\|^2$, and on the axis from
+$0$ to $e_1$, with a unit spinor, the contrast between $0$ and $\pi e_1$ is
+$4$. The density repeats when the relative phase advances by $2\pi$, so the
+fringe is not confined to a coordinate box. Translation preserves the
+predicate of having that information.
+
 The dual-rotor action on the Weyl parameter is internal. This layer does not
-produce a mass from torsion or position operators. The dual-rotor character,
+produce a mass from torsion. Position is the chart reading above, not an
+operator on the carrier. The dual-rotor character,
 the spinor matrix element,
 and a scalar $\mathrm{U}(1)$ phase are three distinct invariants. A finite
 discrete rotor image is not a count of generations. The light-cone split
