@@ -57,6 +57,7 @@ import DstDiophantine.Logic.Quantum.SpinWaveBridge
 import DstDiophantine.Logic.Quantum.ChartOperators
 import DstDiophantine.Logic.Quantum.NewtonWigner
 import DstDiophantine.Logic.Quantum.PositionInformation
+import DstDiophantine.Logic.Quantum.PhaseInformation
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1202,6 +1203,22 @@ example (r s : ℝ) (h : r ^ 2 + s ^ 2 ≠ 0) (α : ℝ) (p q : Vec4) (u : Dirac
   ⟨whichMomentum_sq_add_fringeVisibility r s h, half_weight_information.1,
     half_weight_information.2.1, phasedPacket_definite_no_chartPositionInfo r α p q u,
     fringeVisibility_equal (by norm_num)⟩
+
+/-- Regression: phase information is `V²`, and complements which-momentum distinguishability.
+The weight formula can be `1` with no chart contrast. Distinct momenta read it on one carrier
+ray. -/
+example (r s : ℝ) (h : r ^ 2 + s ^ 2 ≠ 0) {t : ℝ} (ht : t ≠ 0) (α : ℝ) (p q : Vec4)
+    (hpq : p ≠ q) {u : DiracSpinor} (hu : u ≠ 0) :
+    whichMomentum r s ^ 2 + phaseInformation r s = 1 ∧
+      phaseInformation 1 (1 / 2) = 16 / 25 ∧
+      phaseInformation t t = 1 ∧
+      ¬ ChartPositionInfo (phasedPacket t t α p p u) ∧
+      ChartPositionInfo (phasedPacket t t α p q u) ∧
+      (∀ x, ∃ z : ℂ, phasedPacket t t α p q u x = z • u) :=
+  ⟨whichMomentum_sq_add_phaseInformation r s h, half_weight_phaseInformation.1,
+    phaseInformation_equal ht, (phaseInformation_not_a_location ht α p u).2,
+    phasedPacket_equal_chartPositionInfo ht hpq hu α,
+    fun x => ⟨_, phasedPacket_eq_smul t t α p q u x⟩⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
