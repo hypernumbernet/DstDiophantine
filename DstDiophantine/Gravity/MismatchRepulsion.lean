@@ -11,11 +11,20 @@ import Mathlib.Tactic.Ring
 /-!
 # Repulsion from the torsional mismatch
 
-A charge at rest keeps the usual rapidity at zero and sources a dual rapidity
-`q φ` on the joining axis. The interaction is the cross term of the written
-stiffness, equivalently the polarization of `J`. Its separation-increasing
-derivative is the force. The profile `φ(s) = ℓ/s` is an input, and `ℓ` is not
-derived.
+A charge held at usual rapidity zero sources a dual rapidity `q φ` on the
+joining axis. Both charges are labels on that one axis, so the configuration
+has one pair of conjugate momenta. The hold is a constraint: with `m ≠ 0` and
+`q φ ≠ 0` it is not a free solution of the written Euler–Lagrange equations.
+The interaction is the cross term of the written stiffness, equivalently the
+polarization of `J`. Its separation-increasing derivative is the force. The
+profile `φ(s) = ℓ/s` is an input, and `ℓ` is not derived.
+
+The coefficient `m` is the stiffness of this one configuration. The conjugate
+momenta are half the mismatch rate and half the common rate, and the unsigned
+mass of the sourced state is a function of the dual rapidity alone. The radial
+force is the derivative of the stiffness cross term in the separation. The
+usual-channel constraint that cancels the usual acceleration is a different
+function of the same data.
 
 On the equal-scale locus the mismatch vanishes while `γ_s` changes sign, so the
 shells whose denominator is `γ_s` are the time-delay calculation and are not
@@ -82,6 +91,29 @@ theorem interactionJ_eq (q1 q2 φ : ℝ) :
 theorem interactionStiffness_eq_neg_mul_interactionJ (m q1 q2 φ : ℝ) :
     interactionStiffness m q1 q2 φ = -m * interactionJ q1 q2 φ := by
   rw [interactionStiffness_eq, interactionJ_eq]
+  ring
+
+/-! ### Unsigned mass of the sourced state does not carry `m` -/
+
+theorem mass_dualSourced (q φ : ℝ) :
+    mass (dualSourced q φ) = (1 / 2) * (q * φ) ^ 2 := by
+  unfold dualSourced
+  rw [mass_axisParams]
+  ring
+
+/-- Polarization of the unsigned mass of two pure dual charges. -/
+noncomputable def interactionMass (q1 q2 φ : ℝ) : ℝ :=
+  mass (dualSourced (q1 + q2) φ) - mass (dualSourced q1 φ) - mass (dualSourced q2 φ)
+
+theorem interactionMass_eq (q1 q2 φ : ℝ) :
+    interactionMass q1 q2 φ = q1 * q2 * φ ^ 2 := by
+  unfold interactionMass
+  rw [mass_dualSourced, mass_dualSourced, mass_dualSourced]
+  ring
+
+theorem interactionStiffness_eq_mul_interactionMass (m q1 q2 φ : ℝ) :
+    interactionStiffness m q1 q2 φ = m * interactionMass q1 q2 φ := by
+  rw [interactionStiffness_eq, interactionMass_eq]
   ring
 
 /-! ### Profile `ℓ/s` and the separation-increasing force -/
@@ -166,6 +198,46 @@ theorem mismatchForce_neg_of_unlike {m q1 q2 ℓ s : ℝ}
     ring
   rw [hfac]
   exact mul_neg_of_pos_of_neg hpos hq
+
+/-! ### A frozen usual rapidity is a constraint -/
+
+/-- Vanishing velocities give vanishing momenta, and the Jacobi integral equals the stiffness. -/
+theorem dualSourced_rest_reads (m q φ : ℝ) :
+    paperMomentumSigma 0 0 = 0 ∧ paperMomentumDelta 0 0 = 0 ∧
+      paperEnergy m 0 (q * φ) 0 0 = stiffnessPotential m (dualSourced q φ) := by
+  refine ⟨?_, ?_, ?_⟩
+  · simp [paperMomentumSigma]
+  · simp [paperMomentumDelta]
+  · rw [paperEnergy, dualSourced, stiffness_axis]
+    ring
+
+/-- Nonzero stiffness and a nonzero dual rapidity are not a free solution at usual rapidity zero. -/
+theorem dualSourced_not_actualEL {m q φ : ℝ} (hm : m ≠ 0) (hβ : q * φ ≠ 0) :
+    ¬ PaperActualEL m 0 (q * φ) 0 0 := by
+  intro h
+  have hφ := ((paperActualEL_eq m 0 (q * φ) 0 0).mp h).1
+  have hzero : m * (q * φ) = 0 := by
+    have : -m * (0 - q * φ) = m * (q * φ) := by ring
+    linarith
+  exact hβ ((mul_eq_zero.mp hzero).resolve_left hm)
+
+/-- Both-channel forces `v = u = -m q φ` cancel both accelerations. -/
+theorem dualSourced_both_constrained (m q φ : ℝ) :
+    PaperBothSourcedEL m 0 (q * φ) 0 0 (-m * (q * φ)) (-m * (q * φ)) := by
+  constructor <;> ring
+
+/-- At vanishing velocities the constraint does no work. -/
+theorem dualSourced_constraint_powerless (m q φ : ℝ) :
+    paperEnergyDot m 0 (q * φ) 0 0 0 0 = 0 := by
+  have h :=
+    paperEnergyDot_rest_usual (θdot := 0) (dualSourced_both_constrained m q φ) rfl
+  simpa using h
+
+/-- At unit data the usual-channel constraint is `-1` and the radial force is `2`. -/
+theorem unit_usualConstraint_ne_mismatchForce :
+    -((1 : ℝ) * (1 * mismatchProfile 1 1)) ≠ mismatchForce 1 1 1 1 1 := by
+  unfold mismatchProfile mismatchForce
+  norm_num
 
 /-! ### Diameter: the homothetic coefficient never vanishes for `Z ≥ 1` -/
 

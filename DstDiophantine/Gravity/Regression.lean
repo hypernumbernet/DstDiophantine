@@ -826,6 +826,23 @@ example (m φ θ φddot θddot : ℝ) :
       φddot - θddot = 0 ∧ φddot + θddot = -2 * m * (φ - θ) :=
   paperActualEL_iff_channels m φ θ φddot θddot
 
+example (φdot θdot : ℝ) :
+    paperMomentumSigma φdot θdot = (1 / 2) * (φdot - θdot) ∧
+      paperMomentumDelta φdot θdot = (1 / 2) * (φdot + θdot) := by
+  constructor <;> rfl
+
+example (m q1 q2 φ : ℝ) :
+    interactionStiffness m q1 q2 φ = m * interactionMass q1 q2 φ :=
+  interactionStiffness_eq_mul_interactionMass m q1 q2 φ
+
+example {m q φ : ℝ} (hm : m ≠ 0) (hβ : q * φ ≠ 0) :
+    ¬ PaperActualEL m 0 (q * φ) 0 0 :=
+  dualSourced_not_actualEL hm hβ
+
+example :
+    -((1 : ℝ) * (1 * mismatchProfile 1 1)) ≠ mismatchForce 1 1 1 1 1 :=
+  unit_usualConstraint_ne_mismatchForce
+
 example {m φ θ φdot θdot φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
     paperEnergyDot m φ θ φdot θdot φddot θddot = 0 :=

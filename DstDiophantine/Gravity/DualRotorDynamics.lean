@@ -8,7 +8,9 @@ import Mathlib.Tactic.Ring
 
 The written Lagrangian has free mismatch and sources the common channel; it
 does not yield the oscillator \(\ddot\delta+m\delta=0\). No value of \(m\) is
-fixed, and a constant dual drive is not derived from Faraday helicity.
+fixed, and a constant dual drive is not derived from Faraday helicity. The
+conjugate momenta are half the mismatch rate and half the common rate; the
+stiffness \(m\) is not a factor in either.
 -/
 
 namespace DstDiophantine
@@ -61,6 +63,41 @@ theorem paperActualEL_common_driven {m φ θ φddot θddot : ℝ}
     (h : PaperActualEL m φ θ φddot θddot) :
     φddot + θddot = -2 * m * (φ - θ) :=
   (paperActualEL_iff_channels m φ θ φddot θddot).mp h |>.2
+
+/-! ### Conjugate momenta do not carry the stiffness -/
+
+/-- Half the mismatch rate. The stiffness `m` is not an argument. -/
+noncomputable def paperMomentumSigma (φdot θdot : ℝ) : ℝ :=
+  (1 / 2) * (φdot - θdot)
+
+/-- Half the common rate. The stiffness `m` is not an argument. -/
+noncomputable def paperMomentumDelta (φdot θdot : ℝ) : ℝ :=
+  (1 / 2) * (φdot + θdot)
+
+/-- Algebraic jet of `paperMomentumSigma`, half the mismatch acceleration. -/
+noncomputable def paperMomentumSigmaDot (φddot θddot : ℝ) : ℝ :=
+  (1 / 2) * (φddot - θddot)
+
+/-- Algebraic jet of `paperMomentumDelta`, half the common acceleration. -/
+noncomputable def paperMomentumDeltaDot (φddot θddot : ℝ) : ℝ :=
+  (1 / 2) * (φddot + θddot)
+
+theorem paperMomentum_zero :
+    paperMomentumSigma 0 0 = 0 ∧ paperMomentumDelta 0 0 = 0 := by
+  constructor <;> simp [paperMomentumSigma, paperMomentumDelta]
+
+/-- On the written flow, `p_σ` is conserved and `p_δ` changes at `-m δ`. -/
+theorem paperMomentum_jets_of_actualEL {m φ θ φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) :
+    paperMomentumSigmaDot φddot θddot = (1 / 2) * (φddot - θddot) ∧
+      paperMomentumSigmaDot φddot θddot = 0 ∧
+      paperMomentumDeltaDot φddot θddot = (1 / 2) * (φddot + θddot) ∧
+      paperMomentumDeltaDot φddot θddot = -m * (φ - θ) := by
+  refine ⟨rfl, ?_, rfl, ?_⟩
+  · rw [paperMomentumSigmaDot, paperActualEL_free_mismatch h]
+    ring
+  · rw [paperMomentumDeltaDot, paperActualEL_common_driven h]
+    ring
 
 /-- Jacobi integral of the written density. -/
 noncomputable def paperEnergy (m φ θ φdot θdot : ℝ) : ℝ :=

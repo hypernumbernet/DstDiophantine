@@ -147,7 +147,9 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   the denominator is the time-delay factor `γ_s`, not the torsional mismatch.
   No angular momentum is assigned, and no circular energy is formed.
 * `MismatchRepulsion` — repulsion is the radial derivative of the stiffness cross term of two
-  charge-sourced dual rapidities. On the equal-scale locus `J` vanishes while `γ_s` changes sign.
+  charge-sourced dual rapidities. `m` is that stiffness. The conjugate momenta are half the
+  mismatch rate and half the common rate. Holding the usual rapidity at zero is a constraint.
+  On the equal-scale locus `J` vanishes while `γ_s` changes sign.
   The profile `ℓ/s` is an input; the force scales as `1/s³` and is not Coulomb's law. A diameter
   has no restoring radius for `Z ≥ 1`.
 * `ElectronDiscrete` — a dual step `2π/N` spaces the equal-scale phase by `π/N`; a sample is not
