@@ -7,8 +7,9 @@ import Mathlib.Tactic.Ring
 /-!
 # Darmon–Merel as an axiom
 
-`darmonMerelCube` assumes no coprime nonzero `a^n + b^n = c³` for `n ≥ 4`. Even common exponents do
-not rewrite to that form, and the axiom is not a Lean proof of Darmon–Merel.
+`darmonMerelCube` assumes no coprime nonzero `a^n + b^n = c³` for `n ≥ 4`. A shared exponent
+`n ≥ 4` rewrites to that form when the remaining exponent is a multiple of `3`
+(`IsSharedExpCubeOrFifth`). The axiom is not a Lean proof of Darmon–Merel.
 -/
 
 namespace DstDiophantine

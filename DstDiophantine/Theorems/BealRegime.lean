@@ -198,9 +198,18 @@ theorem classifyBealExponents_fifth_pair :
       classifyBealExponents 7 10 10 = .T ∧ classifyBealExponents 5 10 7 = .T ∧
         classifyBealExponents 25 25 7 = .T ∧ classifyBealExponents 5 5 21 = .T ∧
           classifyBealExponents 10 10 14 = .T ∧
-            classifyBealExponents 10 10 9 = .U ∧
-              classifyBealExponents 22 22 7 = .U ∧
-                classifyBealExponents 5 5 11 = .U := by
+            classifyBealExponents 22 22 7 = .U ∧
+              classifyBealExponents 5 5 11 = .U := by
+  native_decide
+
+/-- `(10,10,9)` is a shared exponent beside a multiple of `3`.
+`(5,5,11)` and `(3,5,7)` stay open. -/
+theorem classifyBealExponents_shared_exp :
+    classifyBealExponents 10 10 9 = .T ∧ classifyBealExponents 14 14 9 = .T ∧
+      classifyBealExponents 14 14 25 = .T ∧ classifyBealExponents 8 12 9 = .T ∧
+        classifyBealExponents 9 7 7 = .T ∧ classifyBealExponents 10 10 11 = .U ∧
+          classifyBealExponents 5 5 11 = .U ∧ classifyBealExponents 3 5 7 = .U ∧
+            classifyBealExponents 22 22 7 = .U := by
   native_decide
 
 theorem classifyBealExponents_nine_nine_past_bound :

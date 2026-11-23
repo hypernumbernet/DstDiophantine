@@ -748,19 +748,27 @@ example :
       classifyBealExponents 7 10 10 = .T ∧ classifyBealExponents 5 10 7 = .T ∧
         classifyBealExponents 25 25 7 = .T ∧ classifyBealExponents 5 5 21 = .T ∧
           classifyBealExponents 10 10 14 = .T ∧
-            classifyBealExponents 10 10 9 = .U ∧
-              classifyBealExponents 22 22 7 = .U ∧
-                classifyBealExponents 5 5 11 = .U :=
+            classifyBealExponents 22 22 7 = .U ∧
+              classifyBealExponents 5 5 11 = .U :=
   classifyBealExponents_fifth_pair
+
+example :
+    classifyBealExponents 10 10 9 = .T ∧ classifyBealExponents 14 14 9 = .T ∧
+      classifyBealExponents 14 14 25 = .T ∧ classifyBealExponents 8 12 9 = .T ∧
+        classifyBealExponents 9 7 7 = .T ∧ classifyBealExponents 10 10 11 = .U ∧
+          classifyBealExponents 5 5 11 = .U ∧ classifyBealExponents 3 5 7 = .U ∧
+            classifyBealExponents 22 22 7 = .U :=
+  classifyBealExponents_shared_exp
 
 example {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
     (hgcd : bealGcd A B C = 1) :
     ¬ A ^ 10 + B ^ 10 = C ^ 7 ∧ ¬ A ^ 7 + B ^ 10 = C ^ 10 ∧
-      ¬ A ^ 5 + B ^ 5 = C ^ 21 :=
+      ¬ A ^ 5 + B ^ 5 = C ^ 21 ∧ ¬ A ^ 10 + B ^ 10 = C ^ 9 :=
   ⟨fun h => not_beal_ten_ten_seven hA hB hC hgcd h,
     fun h => not_beal_seven_ten_ten hA hB hC hgcd h,
-    fun h => not_beal_five_five_twenty_one hA hB hC hgcd h⟩
+    fun h => not_beal_five_five_twenty_one hA hB hC hgcd h,
+    fun h => not_beal_ten_ten_nine hA hB hC hgcd h⟩
 
 example (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual) :
     BealTwoEqualEvenSumResidual :=

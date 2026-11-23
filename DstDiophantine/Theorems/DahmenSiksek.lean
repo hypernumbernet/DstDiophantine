@@ -271,7 +271,156 @@ theorem not_beal_five_five_twenty_one {A B C : ℤ}
   not_beal_fifth_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/-- Open: even sum `z ≥ 7` outside fourth- and fifth-power cuts. `(10,10,9)` remains. -/
+/-! ### Shared exponent beside a multiple of `3` or `5` -/
+
+/-- Two exponents share a divisor at least `4`, and the third is divisible by `3` or by `5`.
+A difference seat requires that shared divisor to be odd, so the sign rewrite stays a sum. -/
+def IsSharedExpCubeOrFifth (x y z : ℕ) : Prop :=
+  (4 ≤ Nat.gcd x y ∧ (3 ∣ z ∨ 5 ∣ z)) ∨
+    (4 ≤ Nat.gcd y z ∧ Nat.gcd y z % 2 = 1 ∧ (3 ∣ x ∨ 5 ∣ x)) ∨
+      (4 ≤ Nat.gcd x z ∧ Nat.gcd x z % 2 = 1 ∧ (3 ∣ y ∨ 5 ∣ y))
+
+instance {x y z : ℕ} : Decidable (IsSharedExpCubeOrFifth x y z) := by
+  unfold IsSharedExpCubeOrFifth
+  infer_instance
+
+private theorem not_beal_shared_sum
+    {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hn : 4 ≤ Nat.gcd x y) (hdiv : 3 ∣ z ∨ 5 ∣ z)
+    (hsol : A ^ x + B ^ y = C ^ z) : False := by
+  set n := Nat.gcd x y
+  have hnx : n ∣ x := Nat.gcd_dvd_left _ _
+  have hny : n ∣ y := Nat.gcd_dvd_right _ _
+  have hxn : 0 < x / n := pos_div_of_dvd (by omega) hnx
+  have hyn : 0 < y / n := pos_div_of_dvd (by omega) hny
+  rcases hdiv with hz3 | hz5
+  · have hzt : 0 < z / 3 := pos_div_of_dvd (by omega) hz3
+    have hgcd' := bealGcd_three_pow_eq_one hxn hyn hzt hA hgcd
+    have hsol' :
+        (A ^ (x / n)) ^ n + (B ^ (y / n)) ^ n = (C ^ (z / 3)) ^ 3 := by
+      rw [zpow_mul_div hnx, zpow_mul_div hny, zpow_mul_div hz3]
+      exact hsol
+    exact darmonMerelCube (A ^ (x / n)) (B ^ (y / n)) (C ^ (z / 3)) n hn
+      (pow_ne_zero _ hA) (pow_ne_zero _ hB) (pow_ne_zero _ hC) hgcd' hsol'
+  · have hzt : 0 < z / 5 := pos_div_of_dvd (by omega) hz5
+    have hgcd' := bealGcd_three_pow_eq_one hxn hyn hzt hA hgcd
+    have hsol' :
+        (A ^ (x / n)) ^ n + (B ^ (y / n)) ^ n = (C ^ (z / 5)) ^ 5 := by
+      rw [zpow_mul_div hnx, zpow_mul_div hny, zpow_mul_div hz5]
+      exact hsol
+    exact fermatSignatureNN5 (A ^ (x / n)) (B ^ (y / n)) (C ^ (z / 5)) n hn
+      (pow_ne_zero _ hA) (pow_ne_zero _ hB) (pow_ne_zero _ hC) hgcd' hsol'
+
+private theorem not_beal_shared_diff_yz
+    {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hn : 4 ≤ Nat.gcd y z) (hodd : Nat.gcd y z % 2 = 1)
+    (hdiv : 3 ∣ x ∨ 5 ∣ x)
+    (hsol : A ^ x + B ^ y = C ^ z) : False := by
+  set n := Nat.gcd y z
+  have hny : n ∣ y := Nat.gcd_dvd_left _ _
+  have hnz : n ∣ z := Nat.gcd_dvd_right _ _
+  have hodd' : Odd n := Nat.odd_iff.mpr hodd
+  have hyn : 0 < y / n := pos_div_of_dvd (by omega) hny
+  have hzn : 0 < z / n := pos_div_of_dvd (by omega) hnz
+  rcases hdiv with hx3 | hx5
+  · have hxt : 0 < x / 3 := pos_div_of_dvd (by omega) hx3
+    have hrew :
+        (C ^ (z / n)) ^ n + (-(B ^ (y / n))) ^ n = (A ^ (x / 3)) ^ 3 := by
+      rw [odd_pow_neg hodd', zpow_mul_div hnz, zpow_mul_div hny, zpow_mul_div hx3]
+      linarith [hsol]
+    have hgcd' :
+        bealGcd (C ^ (z / n)) (-(B ^ (y / n))) (A ^ (x / 3)) = 1 := by
+      have hplain := bealGcd_three_pow_eq_one (A := C) (B := B) (C := A)
+        hzn hyn hxt hC (bealGcd_eq_cba.trans hgcd)
+      simpa [bealGcd, Int.natAbs_neg] using hplain
+    exact darmonMerelCube (C ^ (z / n)) (-(B ^ (y / n))) (A ^ (x / 3)) n hn
+      (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hB)) (pow_ne_zero _ hA)
+      hgcd' hrew
+  · have hxt : 0 < x / 5 := pos_div_of_dvd (by omega) hx5
+    have hrew :
+        (C ^ (z / n)) ^ n + (-(B ^ (y / n))) ^ n = (A ^ (x / 5)) ^ 5 := by
+      rw [odd_pow_neg hodd', zpow_mul_div hnz, zpow_mul_div hny, zpow_mul_div hx5]
+      linarith [hsol]
+    have hgcd' :
+        bealGcd (C ^ (z / n)) (-(B ^ (y / n))) (A ^ (x / 5)) = 1 := by
+      have hplain := bealGcd_three_pow_eq_one (A := C) (B := B) (C := A)
+        hzn hyn hxt hC (bealGcd_eq_cba.trans hgcd)
+      simpa [bealGcd, Int.natAbs_neg] using hplain
+    exact fermatSignatureNN5 (C ^ (z / n)) (-(B ^ (y / n))) (A ^ (x / 5)) n hn
+      (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hB)) (pow_ne_zero _ hA)
+      hgcd' hrew
+
+private theorem not_beal_shared_diff_xz
+    {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hn : 4 ≤ Nat.gcd x z) (hodd : Nat.gcd x z % 2 = 1)
+    (hdiv : 3 ∣ y ∨ 5 ∣ y)
+    (hsol : A ^ x + B ^ y = C ^ z) : False := by
+  set n := Nat.gcd x z
+  have hnx : n ∣ x := Nat.gcd_dvd_left _ _
+  have hnz : n ∣ z := Nat.gcd_dvd_right _ _
+  have hodd' : Odd n := Nat.odd_iff.mpr hodd
+  have hxn : 0 < x / n := pos_div_of_dvd (by omega) hnx
+  have hzn : 0 < z / n := pos_div_of_dvd (by omega) hnz
+  rcases hdiv with hy3 | hy5
+  · have hyt : 0 < y / 3 := pos_div_of_dvd (by omega) hy3
+    have hrew :
+        (C ^ (z / n)) ^ n + (-(A ^ (x / n))) ^ n = (B ^ (y / 3)) ^ 3 := by
+      rw [odd_pow_neg hodd', zpow_mul_div hnz, zpow_mul_div hnx, zpow_mul_div hy3]
+      linarith [hsol]
+    have hgcd' :
+        bealGcd (C ^ (z / n)) (-(A ^ (x / n))) (B ^ (y / 3)) = 1 := by
+      have hplain := bealGcd_three_pow_eq_one (A := C) (B := A) (C := B)
+        hzn hxn hyt hC (bealGcd_eq_cab.trans hgcd)
+      simpa [bealGcd, Int.natAbs_neg] using hplain
+    exact darmonMerelCube (C ^ (z / n)) (-(A ^ (x / n))) (B ^ (y / 3)) n hn
+      (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hA)) (pow_ne_zero _ hB)
+      hgcd' hrew
+  · have hyt : 0 < y / 5 := pos_div_of_dvd (by omega) hy5
+    have hrew :
+        (C ^ (z / n)) ^ n + (-(A ^ (x / n))) ^ n = (B ^ (y / 5)) ^ 5 := by
+      rw [odd_pow_neg hodd', zpow_mul_div hnz, zpow_mul_div hnx, zpow_mul_div hy5]
+      linarith [hsol]
+    have hgcd' :
+        bealGcd (C ^ (z / n)) (-(A ^ (x / n))) (B ^ (y / 5)) = 1 := by
+      have hplain := bealGcd_three_pow_eq_one (A := C) (B := A) (C := B)
+        hzn hxn hyt hC (bealGcd_eq_cab.trans hgcd)
+      simpa [bealGcd, Int.natAbs_neg] using hplain
+    exact fermatSignatureNN5 (C ^ (z / n)) (-(A ^ (x / n))) (B ^ (y / 5)) n hn
+      (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hA)) (pow_ne_zero _ hB)
+      hgcd' hrew
+
+/-- No coprime nonzero solution whose exponents share a divisor at least `4` beside a multiple of
+`3` or of `5`. The cube case is `darmonMerelCube`; the fifth-power case is `fermatSignatureNN5`. -/
+theorem not_beal_shared_exp_cube_or_fifth
+    {A B C : ℤ} {x y z : ℕ}
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hshape : IsSharedExpCubeOrFifth x y z)
+    (hsol : A ^ x + B ^ y = C ^ z) : False := by
+  rcases hshape with hsum | hdiff | hdiff
+  · exact not_beal_shared_sum hx hy hz hA hB hC hgcd hsum.1 hsum.2 hsol
+  · exact not_beal_shared_diff_yz hx hy hz hA hB hC hgcd hdiff.1 hdiff.2.1 hdiff.2.2 hsol
+  · exact not_beal_shared_diff_xz hx hy hz hA hB hC hgcd hdiff.1 hdiff.2.1 hdiff.2.2 hsol
+
+theorem not_beal_ten_ten_nine {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ 10 + B ^ 10 = C ^ 9) : False :=
+  not_beal_shared_exp_cube_or_fifth (by decide) (by decide) (by decide)
+    hA hB hC hgcd (by decide) hsol
+
+/-- Open: even sum `z ≥ 7` outside fourth-, fifth-, and shared-exponent cuts.
+`(22,22,7)` remains. -/
 def BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -281,16 +430,19 @@ def BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual : Prop :=
     ¬ IsCubePairPowerShape x y z →
     ¬ 4 ∣ x →
     ¬ IsFifthPairPowerShape x y z →
+    ¬ IsSharedExpCubeOrFifth x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 theorem BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual_of_outside_fifth
     (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual) :
     BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hshape h4 hsol
-  by_cases hfifth : IsFifthPairPowerShape x y z
-  · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
-  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hshape h4
-      hfifth hsol
+  by_cases hshared : IsSharedExpCubeOrFifth x y z
+  · exact not_beal_shared_exp_cube_or_fifth hx hy hz hA hB hC hgcd hshared hsol
+  · by_cases hfifth : IsFifthPairPowerShape x y z
+    · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
+    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxeven hz7 hshape h4
+        hfifth hshared hsol
 
 theorem BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth
     (h7 : BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual) :
@@ -307,15 +459,19 @@ def BealTwoEqualEvenDiffOutsideFifthPairResidual : Prop :=
     ((y = z ∧ Even y) ∨ (x = z ∧ Even x)) →
     ¬ IsCubePairPowerShape x y z →
     ¬ IsFifthPairPowerShape x y z →
+    ¬ IsSharedExpCubeOrFifth x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 theorem BealTwoEqualEvenDiffOutsideCubePairResidual_of_outside_fifth
     (hOut : BealTwoEqualEvenDiffOutsideFifthPairResidual) :
     BealTwoEqualEvenDiffOutsideCubePairResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hpair hshape hsol
-  by_cases hfifth : IsFifthPairPowerShape x y z
-  · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
-  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hshape hfifth hsol
+  by_cases hshared : IsSharedExpCubeOrFifth x y z
+  · exact not_beal_shared_exp_cube_or_fifth hx hy hz hA hB hC hgcd hshared hsol
+  · by_cases hfifth : IsFifthPairPowerShape x y z
+    · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
+    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hshape hfifth
+        hshared hsol
 
 theorem BealTwoEqualEvenDiffResidual_of_outside_fifth
     (hOut : BealTwoEqualEvenDiffOutsideFifthPairResidual) :
@@ -323,7 +479,7 @@ theorem BealTwoEqualEvenDiffResidual_of_outside_fifth
   BealTwoEqualEvenDiffResidual_of_outside_cube_pair
     (BealTwoEqualEvenDiffOutsideCubePairResidual_of_outside_fifth hOut)
 
-/-- Open: odd two-equal outside those cuts. `(5,5,11)` remains. -/
+/-- Open: odd two-equal outside those cuts. `(5,5,11)` remains after the shared-exponent cut. -/
 def BealTwoEqualOddOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -333,15 +489,19 @@ def BealTwoEqualOddOutsideFifthPairResidual : Prop :=
     ¬ IsCubePairPowerShape x y z →
     ¬ IsRepeatedFifthShape x y z →
     ¬ IsFifthPairPowerShape x y z →
+    ¬ IsSharedExpCubeOrFifth x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 theorem BealTwoEqualOddOutsideRepeatedFifthResidual_of_outside_fifth
     (hOut : BealTwoEqualOddOutsideFifthPairResidual) :
     BealTwoEqualOddOutsideRepeatedFifthResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hrep hsol
-  by_cases hfifth : IsFifthPairPowerShape x y z
-  · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
-  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hrep hfifth hsol
+  by_cases hshared : IsSharedExpCubeOrFifth x y z
+  · exact not_beal_shared_exp_cube_or_fifth hx hy hz hA hB hC hgcd hshared hsol
+  · by_cases hfifth : IsFifthPairPowerShape x y z
+    · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
+    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hpair hcube hrep hfifth
+        hshared hsol
 
 theorem BealTwoEqualOddResidual_of_outside_fifth_pair
     (hOut : BealTwoEqualOddOutsideFifthPairResidual) :
@@ -349,7 +509,8 @@ theorem BealTwoEqualOddResidual_of_outside_fifth_pair
   BealTwoEqualOddResidual_of_outside_repeated_fifth
     (BealTwoEqualOddOutsideRepeatedFifthResidual_of_outside_fifth hOut)
 
-/-- Open: distinct exponents outside those cuts. `(3,5,7)` remains. -/
+/-- Open: distinct exponents outside those cuts.
+`(3,5,7)` remains after the shared-exponent cut. -/
 def BealAllDistinctOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),
@@ -358,15 +519,19 @@ def BealAllDistinctOutsideFifthPairResidual : Prop :=
     x ≠ y → y ≠ z → x ≠ z →
     ¬ IsCubePairPowerShape x y z →
     ¬ IsFifthPairPowerShape x y z →
+    ¬ IsSharedExpCubeOrFifth x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 theorem BealAllDistinctOutsideCubePairResidual_of_outside_fifth
     (hOut : BealAllDistinctOutsideFifthPairResidual) :
     BealAllDistinctOutsideCubePairResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hxy hyz hxz hshape hsol
-  by_cases hfifth : IsFifthPairPowerShape x y z
-  · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
-  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hyz hxz hshape hfifth hsol
+  by_cases hshared : IsSharedExpCubeOrFifth x y z
+  · exact not_beal_shared_exp_cube_or_fifth hx hy hz hA hB hC hgcd hshared hsol
+  · by_cases hfifth : IsFifthPairPowerShape x y z
+    · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
+    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hyz hxz hshape hfifth
+        hshared hsol
 
 theorem BealAllDistinctExpResidual_of_outside_fifth_pair
     (hOut : BealAllDistinctOutsideFifthPairResidual) :
@@ -387,16 +552,19 @@ def BealPythagoreanUnequalOddOutsideFifthPairResidual : Prop :=
     ¬ (x = z ∧ Odd (x / 2) ∧ Even A) →
     ¬ IsCubePairPowerShape x y z →
     ¬ IsFifthPairPowerShape x y z →
+    ¬ IsSharedExpCubeOrFifth x y z →
       ¬ A ^ x + B ^ y = C ^ z
 
 theorem BealPythagoreanUnequalOddOutsideCubePairResidual_of_outside_fifth
     (hOut : BealPythagoreanUnequalOddOutsideFifthPairResidual) :
     BealPythagoreanUnequalOddOutsideCubePairResidual := by
   intro A B C x y z hx hy hz hA hB hC hgcd hd hxy hxz hyz hyzOdd hxzOdd hshape hsol
-  by_cases hfifth : IsFifthPairPowerShape x y z
-  · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
-  · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxz hyz hyzOdd hxzOdd
-      hshape hfifth hsol
+  by_cases hshared : IsSharedExpCubeOrFifth x y z
+  · exact not_beal_shared_exp_cube_or_fifth hx hy hz hA hB hC hgcd hshared hsol
+  · by_cases hfifth : IsFifthPairPowerShape x y z
+    · exact not_beal_fifth_pair_power_shape hx hy hz hA hB hC hgcd hfifth hsol
+    · exact hOut A B C x y z hx hy hz hA hB hC hgcd hd hxy hxz hyz hyzOdd hxzOdd
+        hshape hfifth hshared hsol
 
 theorem BealPythagoreanUnequalOddResidual_of_outside_fifth_pair
     (hOut : BealPythagoreanUnequalOddOutsideFifthPairResidual) :

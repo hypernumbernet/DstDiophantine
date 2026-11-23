@@ -22,7 +22,7 @@ theorem fermatMixedMotorResidual : FermatMixedMotorResidual := by sorry
 theorem bealEqualOddTwoFactorExpGeFiveResidual :
     BealEqualOddTwoFactorExpGeFiveResidual := by sorry
 
-/-- Open. `(10,10,9)` remains after the named exclusions. -/
+/-- Open. `(10,10,9)` is `IsSharedExpCubeOrFifth`. `(22,22,7)` remains. -/
 theorem bealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual :
     BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual := by sorry
 
@@ -30,11 +30,11 @@ theorem bealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual :
 theorem bealTwoEqualEvenDiffOutsideFifthPairResidual :
     BealTwoEqualEvenDiffOutsideFifthPairResidual := by sorry
 
-/-- Open. `(5,5,11)` remains after the named exclusions. -/
+/-- Open. `(5,5,11)` remains after the shared-exponent cut. -/
 theorem bealTwoEqualOddOutsideFifthPairResidual :
     BealTwoEqualOddOutsideFifthPairResidual := by sorry
 
-/-- Open. `(3,5,7)` remains after the named exclusions. -/
+/-- Open. `(3,5,7)` remains after the shared-exponent cut. -/
 theorem bealAllDistinctOutsideFifthPairResidual :
     BealAllDistinctOutsideFifthPairResidual := by sorry
 
