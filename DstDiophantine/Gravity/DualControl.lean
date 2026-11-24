@@ -425,6 +425,32 @@ theorem J_dualShieldInterp_mismatch_diagnostic (p : TorsionParams) (t : ℝ) :
           mismatchRotationHalfSqSum (dualShieldInterp p t)) := by
   rw [J_eq_mismatch_diagnostic]
 
+theorem sumAlphaSq_eq_four_mismatchBoostHalfSqSum (p : TorsionParams) :
+    sumAlphaSq p = 4 * mismatchBoostHalfSqSum p := by
+  simp only [sumAlphaSq, mismatchBoostHalfSqSum, mismatchBoostHalf]
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun _ _ => by ring
+
+theorem mismatchRotationHalfSqSum_dualShieldInterp (p : TorsionParams) (t : ℝ) :
+    mismatchRotationHalfSqSum (dualShieldInterp p t) =
+      (t ^ 2 / 4) * sumWallSq p := by
+  simp only [dualShieldInterp, dualInterp, zeroDual, mismatchRotationHalfSqSum, sumWallSq,
+    dualWall, mismatchRotationHalf, Fin.sum_univ_three, mul_pow, div_pow]
+  ring
+
+theorem mismatchBoostHalfSqSum_dualShieldInterp (p : TorsionParams) (t : ℝ) :
+    mismatchBoostHalfSqSum (dualShieldInterp p t) =
+      mismatchBoostHalfSqSum (zeroDual p) := by
+  simp [dualShieldInterp, zeroDual, mismatchBoostHalfSqSum, mismatchBoostHalf]
+
+theorem J_dualShieldInterp_mismatch_sq_param (p : TorsionParams) (t : ℝ) :
+    mismatchBoostHalfSqSum (dualShieldInterp p t) -
+        mismatchRotationHalfSqSum (dualShieldInterp p t) =
+      (1 / 4) * (sumAlphaSq p - t ^ 2 * sumWallSq p) := by
+  have hJ := J_dualShieldInterp p t
+  have hdiag := J_dualShieldInterp_mismatch_diagnostic p t
+  linarith
+
 theorem sumWallSq_pos_of_wall_nonpos {p : TorsionParams}
     (h : J (dualWallParams p) ≤ 0) :
     0 < sumWallSq p := by

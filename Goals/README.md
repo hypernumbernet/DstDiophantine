@@ -7,10 +7,10 @@ Policy: see [`POLICY.md`](POLICY.md).
 Build: `lake build Goals` (sorry allowed). The default `lake build` does not
 include this library.
 
-Open `sorry` count: **16** (`scripts/count_goals.sh`): Diophantine bridges/residuals
-plus **mismatch-angle** (`Goals/Diophantine/MismatchAngle.lean`,
-`Goals/Diophantine/RepulsionCone.lean`,
-`Goals/Diophantine/OverlapGradeZero.lean`). A physics aim below is not a Lean Goal until
+Open `sorry` count: **14** (`scripts/count_goals.sh`): Diophantine bridges/residuals
+plus **mismatch-angle** (`Goals/Diophantine/MismatchAngle.lean` only — principal branch and
+frozen winding equivalence). Repulsion cone and axis grade-0 closed in main (`RepulsionCone`,
+`PgaAxisMotor`). A physics aim below is not a Lean Goal until
 the main library defines its `Prop`.
 
 ## Breakthrough order
@@ -64,10 +64,8 @@ the untagged rows under Not yet stateable.
 | --- | ---: | --- |
 | `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
-| `Diophantine/MismatchAngle.lean` | 2 | principal-branch `Ω`; discrete winding vs rotation half-squares |
-| `Diophantine/RepulsionCone.lean` | 1 | admissible cone via mismatch half-norm (replaces `JNormalized` box) |
-| `Diophantine/OverlapGradeZero.lean` | 1 | structural Clifford grade-0 of `relativeRotor` vs `pgaAxisMotorGradeZero` |
-| **Total** | **16** | |
+| `Diophantine/MismatchAngle.lean` | 2 | principal-branch `Ω`; discrete winding vs rotation half-squares (winding frozen) |
+| **Total** | **14** | |
 
 ### Beal leaves
 

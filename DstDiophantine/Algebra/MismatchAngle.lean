@@ -162,8 +162,9 @@ theorem J_dagger_axis (α β : ℝ) :
 /-- Designated grade-zero overlap of the axis mismatch motor `relativeRotor (axisParams α β)`.
 
 Repulsion charts use this as the overlap scalar. It agrees with `exp (omegaMismatchAxis α β)`
-as the motor (`relativeRotor_axis_eq_exp`). A structural Clifford grade-zero projection
-matching this designated value is still open (`Goals.Diophantine.OverlapGradeZero`).
+as the motor (`relativeRotor_axis_eq_exp`). On the axis family, structural grade-zero is the
+designated alias (`PgaAxisMotor.cliffordAxisMotorGradeZero`); the naive product scalar
+`cosh(α/2) cos(β/2)` differs when both half-angles are nonzero.
 -/
 noncomputable def pgaAxisMotorGradeZero (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2)

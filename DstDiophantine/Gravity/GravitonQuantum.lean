@@ -54,6 +54,27 @@ theorem J_oneAxisDual (θ : ℝ) : J (oneAxisDual θ) = -(θ ^ 2) / 2 := by
   simp [oneAxisDual, Fin.sum_univ_three]
   ring
 
+theorem mismatchBoostHalfSqSum_oneAxisDual (θ : ℝ) :
+    mismatchBoostHalfSqSum (oneAxisDual θ) = 0 := by
+  simp [oneAxisDual, mismatchBoostHalfSqSum, mismatchBoostHalf, Fin.sum_univ_three]
+
+theorem mismatchRotationHalfSqSum_oneAxisDual (θ : ℝ) :
+    mismatchRotationHalfSqSum (oneAxisDual θ) = (θ / 2) ^ 2 := by
+  simp [oneAxisDual, mismatchRotationHalfSqSum, mismatchRotationHalf, Fin.sum_univ_three]
+
+theorem J_oneAxisDual_mismatch_halves (θ : ℝ) :
+    J (oneAxisDual θ) =
+      2 *
+        (mismatchBoostHalfSqSum (oneAxisDual θ) -
+          mismatchRotationHalfSqSum (oneAxisDual θ)) := by
+  simpa using J_eq_mismatch_half_sq_diff (oneAxisDual θ)
+
+theorem J_oneAxisDual_mismatch_rotation_half_sq (θ : ℝ) :
+    J (oneAxisDual θ) = -2 * mismatchRotationHalfSqSum (oneAxisDual θ) := by
+  rw [J_oneAxisDual_mismatch_halves, mismatchBoostHalfSqSum_oneAxisDual,
+    mismatchRotationHalfSqSum_oneAxisDual]
+  ring_nf
+
 theorem JNormalized_oneAxisDual (θ : ℝ) :
     JNormalized (oneAxisDual θ) = -((4 : ℝ) / (3 * Real.pi ^ 2)) * θ ^ 2 := by
   unfold JNormalized
@@ -170,6 +191,29 @@ theorem collective_square {n N : ℕ} (hN : 0 < N) :
   field_simp [hNz]
   ring
 
+theorem mismatchRotationHalfSqSum_alignedSteps {n N : ℕ} :
+    mismatchRotationHalfSqSum (alignedSteps n N) =
+      (n : ℝ) ^ 2 * mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  simp [alignedSteps, oneAxisDual, mismatchRotationHalfSqSum,
+    mismatchRotationHalf, Fin.sum_univ_three]
+  ring_nf
+
+theorem oneStep_JNormalized_mismatch_rotation_sq {N : ℕ} (hN : 0 < N) :
+    JNormalized (oneAxisDual (stepAngle N)) =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  rw [JNormalized_oneStep hN, mismatchRotationHalfSqSum_oneAxisDual, stepAngle]
+  have hNz : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+theorem collective_square_mismatch_halves {n N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps n N) =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (alignedSteps n N) := by
+  rw [collective_square hN, oneStep_JNormalized_mismatch_rotation_sq hN,
+    mismatchRotationHalfSqSum_alignedSteps]
+  ring
+
 theorem twoGravitons_fourfold {N : ℕ} (hN : 8 ≤ N) :
     IsAdmissibleContinuous (alignedSteps 2 N) ∧
       JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
@@ -209,6 +253,15 @@ theorem expressed_locks {θ : ℝ} (h : Real.pi / 2 ≤ θ) :
   unfold JNormalized
   rw [hJ]
   field_simp
+
+theorem expressed_locks_mismatch_diagnostic {θ : ℝ} (h : Real.pi / 2 ≤ θ) :
+    J (expressedOneAxis θ) =
+      2 *
+        (mismatchBoostHalfSqSum (expressedOneAxis θ) -
+          mismatchRotationHalfSqSum (expressedOneAxis θ)) ∧
+      JNormalized (expressedOneAxis θ) = -((1 : ℝ) / 3) := by
+  refine ⟨?_, expressed_locks h⟩
+  simpa using J_eq_mismatch_half_sq_diff (expressedOneAxis θ)
 
 theorem collective_locks {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n) :
     JNormalized (expressedOneAxis ((n : ℝ) * stepAngle N)) = -((1 : ℝ) / 3) :=
@@ -731,6 +784,13 @@ def mutualSum (n N : ℕ) : ℝ :=
 theorem farHeight_eq {N : ℕ} (hN : 0 < N) :
     farHeight N = -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) :=
   JNormalized_oneStep hN
+
+theorem farHeight_mismatch_rotation_sq {N : ℕ} (hN : 0 < N) :
+    farHeight N =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  unfold farHeight
+  exact oneStep_JNormalized_mismatch_rotation_sq hN
 
 theorem farHeight_neg {N : ℕ} (hN : 0 < N) : farHeight N < 0 := by
   rw [farHeight_eq hN]

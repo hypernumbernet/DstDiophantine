@@ -8,6 +8,8 @@ import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.DirichletKernel
 import DstDiophantine.Algebra.DualFourier
 import DstDiophantine.Algebra.MismatchAngle
+import DstDiophantine.Algebra.PgaAxisMotor
+import DstDiophantine.Algebra.RepulsionCone
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
@@ -211,6 +213,12 @@ export MismatchAngle (omegaMismatchAxis mismatchBoostHalf mismatchRotationHalf
   pgaAxisMotorGradeZero axisOverlapScalar pgaAxisMotorGradeZero_eq_overlap
   axisOverlap_balanced axisOverlap_balanced_neg_at_half_pi
   axisOverlap_balanced_nonpos_at_half_pi axisOverlap_sign_reversal_threshold)
+export PgaAxisMotor (cliffordProductGradeZero cliffordAxisMotorGradeZero
+  relativeRotor_axis_eq_reverse_product_exp
+  relativeRotor_axis_product_scalar_ne_designated
+  relativeRotor_axis_clifford_gradeZero_eq_designated)
+export RepulsionCone (mismatchHalfNormSq admissibleContinuous_implies_mismatch_half_box
+  mismatch_half_box_not_implies_admissible)
 
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=

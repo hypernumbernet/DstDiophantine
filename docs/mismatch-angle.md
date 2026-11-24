@@ -3,8 +3,9 @@
 Lean path: `DstDiophantine/Algebra/MismatchAngle.lean` (main, sorry-free).
 Gravity bridge: `DstDiophantine/Gravity/MismatchAngleBridge.lean`.
 Discrete lattice bridge: `DstDiophantine/Framework/MismatchLattice.lean`.
-Open general branch: `Goals/Diophantine/MismatchAngle.lean`,
-`Goals/Diophantine/OverlapGradeZero.lean`.
+Axis overlap / cone: `DstDiophantine/Algebra/PgaAxisMotor.lean`,
+`DstDiophantine/Algebra/RepulsionCone.lean`.
+Open general branch: `Goals/Diophantine/MismatchAngle.lean` only (class-(c) winding + principal branch).
 
 ## Definition (one-axis family)
 
@@ -37,51 +38,49 @@ The **designated** grade-zero overlap on this motor is `pgaAxisMotorGradeZero α
 | Envelope corner patterns | `EnvelopeLock.twoPure*_mismatch_*`, `onEnvelope_J_zero_mismatch_balance` |
 | Magnetic control | `SilentControl.balanced_magnetic_rotation_dominates`, `EMControl.magnetic_superpose_rotation_sq_geq_when_J_nonpos` |
 | Discrete lattice | `MismatchLattice.mismatch_half_sq_diff`, `pure_boost_mismatch_boost_eq_lattice`, `winding_implies_latticeMismatch_ne` |
-| **Wave 3** DualControl / MassCorners / modular / graviton overlap | see wave 3 PR section |
-| **Wave 4 — modular winding primary** | `mismatchHalfWindingSqSum`, `mismatch_sq_scale_primary`, `J_scale_eq_amplified_add_winding_diagnostic` |
-| **Wave 4 — DualControl shield jets** | `J_dualShieldInterp_mismatch_diagnostic`, `mismatch_half_sq_dot` |
-| **Wave 4 — graviton channels** | `graviton_negative_overlap_not_admissible`, `graviton_step_usual/dual_overlap_*` |
-| **Wave 4 — designated PGA overlap** | `pgaAxisMotorGradeZero`, `pgaAxisMotorGradeZero_eq_exp_motor` |
+| **Wave 3–4** (modular primary, shield jets, graviton overlap) | prior PR sections |
+| **Wave 5 — axis structural grade-0** | `PgaAxisMotor.cliffordAxisMotorGradeZero`, `relativeRotor_axis_product_scalar_ne_designated` |
+| **Wave 5 — repulsion cone (one direction)** | `RepulsionCone.admissibleContinuous_implies_mismatch_half_box`, `mismatch_half_box_not_implies_admissible` |
+| **Wave 5 — DualControl shield** | `sumAlphaSq_eq_four_mismatchBoostHalfSqSum`, `J_dualShieldInterp_mismatch_sq_param`, `mismatchRotationHalfSqSum_dualShieldInterp` |
+| **Wave 5 — Graviton heights** | `oneStep_JNormalized_mismatch_rotation_sq`, `collective_square_mismatch_halves`, `expressed_locks_mismatch_diagnostic`, `farHeight_mismatch_rotation_sq` |
 
-**Open (Goals, sorry allowed — 16 total):**
+**Open (Goals, sorry allowed — 14 total):**
 
 - `Goals.Diophantine.omegaMismatch_principal_branch` — general six-parameter log of `Ω`.
-- `Goals.Diophantine.winding_total_equiv_mismatch_rotation_half` — winding vs rotation half-squares (**awaiting author conceptual decision**; not scheduled for wave work).
-- `Goals.Diophantine.admissible_iff_mismatch_box` — cone in overlap half-norm (was `|JNormalized| ≤ 1`).
-- `Goals.Diophantine.relativeRotor_axis_clifford_gradeZero_eq_designated` — **structural** Clifford grade-0 of `relativeRotor` vs designated chart.
+- `Goals.Diophantine.winding_total_equiv_mismatch_rotation_half` — winding vs rotation half-squares (**awaiting author conceptual decision**; frozen).
 
-**Author decision / false lead (unchanged plus wave 4):**
+**Author decision / false leads (incl. wave 5):**
 
 - `overlap < 0` does **not** imply `J < 0` (equal-scale witness in `RepulsionOverlap`).
 - Full iff overlap sign on `[0, π]` not proved (monotonicity).
 - **Winding ≠ rotation half on pure-boost seeds:** general equivalence stays a Goal until the author picks a bookkeeping convention.
-- **`pgaAxisMotorGradeZero` is the chart-designated overlap**, not a proved naive Clifford scalar of `relativeRotor`; structural identification is `OverlapGradeZero` Goal.
+- **`admissible_iff_mismatch_box` is false** — admissible ⇒ per-axis half-box is proved; converse refuted by `RepulsionCone.mismatch_half_box_not_implies_admissible` (`axisParams (0.9π) 0`).
+- **Structural grade-0 on the axis family** is the designated chart (`PgaAxisMotor.cliffordAxisMotorGradeZero`); the naive product scalar `cosh(α/2)cos(β/2)` differs when both legs are active.
 - **`J_scale_eq_J_amplified_add_error` is derived** from `mismatch_sq_scale_primary` + `J` diagnostic (not an independent axiom).
 
 ## Classification of existing `J` / `JNormalized` results
 
-Inventory: **78** modules reference `J` or `JNormalized`; **~420** theorem-level declarations (per-theorem tagging still in progress).
+Inventory: **78** modules reference `J` or `JNormalized`; per-theorem tagging still in progress.
 
 | Class | Count (modules) | Role |
 |-------|-----------------|------|
 | **(a) Survives unchanged** | ~32 | Killing definition, Diophantine cone book-keeping; `J` stays derived |
-| **(b) Restatable via angle / overlap (cheap)** | ~18 (**~25 migrated**) | Waves 1–4 overlap / mismatch headlines |
-| **(c) Needs real rewrite / may fail** | ~28 (**~9–10 remaining**) | Bulk `JNormalized` graviton heights, deep shield jet parametrization by `sumAlphaSq`, per-theorem audit |
+| **(b) Restatable via angle / overlap (cheap)** | ~20 (**~32 migrated** after wave 5) | Overlap / mismatch headlines + graviton collective heights |
+| **(c) Needs real rewrite / may fail** | ~26 (**~5–7 remaining**) | Residual `JNormalized` audit, principal-branch log, deep off-axis Clifford |
 
-### (c) Still J-native or open (selected)
+### (c) Still substantial (selected)
 
 | Item | Module | Issue |
 |------|--------|-------|
-| Graviton collective heights | `GravitonQuantum` | `JNormalized` aligned steps / express comparison still native |
-| DualControl shield calculus | `DualControl` | `J_dualShieldInterp` / `sumAlphaSq` parametrization not overlap-first |
-| Admissible cone box | `RepulsionCone` Goal | mismatch norm vs `JNormalized` |
-| Clifford grade-0 | `OverlapGradeZero` Goal | `cliffordGradeZeroScalar` vs `pgaAxisMotorGradeZero` |
-| Winding bookkeeping | Goals only | author decision pending |
+| General `Ω` branch | `Goals/MismatchAngle` | six-parameter principal branch log |
+| Winding bookkeeping | Goals only | author decision pending (frozen) |
+| Off-axis product factorisation | `DualRotorMotor` | not axis half-box programme |
+| Bulk `JNormalized` corollaries | `GravitonQuantum` | heights now have mismatch companions; many corollaries still `JNormalized`-worded |
 
-**Rough remainder:** **~8–10 module clusters** with irreducible `J`/`JNormalized` phrasing (plus **~390** per-theorem tags not yet audited).
+**Rough remainder:** **~5–7 module clusters** with irreducible off-axis or bookkeeping content.
 
 ## CI
 
 - `lake build DstDiophantine` — required green
 - `scripts/check_main_library.sh` — no `sorry`, allowlisted axioms only
-- `lake build Goals` — **16** open sorries (`scripts/count_goals.sh`)
+- `lake build Goals` — **14** open sorries (`scripts/count_goals.sh`)
