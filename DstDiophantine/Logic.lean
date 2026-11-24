@@ -59,6 +59,7 @@ import DstDiophantine.Logic.Quantum.NewtonWigner
 import DstDiophantine.Logic.Quantum.PositionInformation
 import DstDiophantine.Logic.Quantum.PhaseInformation
 import DstDiophantine.Logic.Quantum.ShellInformation
+import DstDiophantine.Logic.Quantum.FrameInformation
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1232,6 +1233,20 @@ example (α : ℝ) :
               DiracMomentum 3 shellRestQ shellParticleP) :=
   ⟨shellRest_regression α |>.2.2.2.1, shellRest_regression α |>.2.2.1,
     shellRest_regression α |>.2.1, shellRest_regression α |>.2.2.2.2.2.2⟩
+
+/-- Regression: off the mean rest frame the same mass and seed are read on the time axis.
+Equal weights have fidelity `4/5` and information `144/289`, not the mean-rest value `81/625`.
+The origin sample lies on neither carrier ray. The opposite Weyl seed carries information `0`. -/
+example :
+    shellInformation 1 1 shellParticleP shellLabSpinor = 144 / 289 ∧
+      carrierFidelity shellParticleP shellLabSpinor = 4 / 5 ∧
+        bornDensity (shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor)
+            (timeShift (-Real.pi / 2)) = 20 / 9 ∧
+          (∀ z : ℂ, shellPacket 1 1 0 shellRestP (restMomentum 3)
+              shellParticleP shellLabSpinor 0 ≠ z • shellParticleP) ∧
+            shellInformation 1 1 shellParticleP shellOrthQ = 0 :=
+  ⟨shellLab_information.1, shellLab_fidelity, shellLab_time_density.2.1,
+    shellLab_sample_leaves_ray.1, shellOrth_silent 0 |>.2.1⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=

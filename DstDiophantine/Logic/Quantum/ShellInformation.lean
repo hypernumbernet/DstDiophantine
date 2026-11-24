@@ -629,6 +629,12 @@ private theorem shell_particle_coord (k : ℝ) :
     refine ⟨this.1.symm, this.2.1.symm, this.2.2.1.symm, this.2.2.2.symm⟩
   simpa [hseed.1, hseed.2] using hfun
 
+theorem shellParticleP_coord :
+    shellParticleP 0 = 1 ∧ shellParticleP 1 = 0 ∧
+      shellParticleP 2 = 5 * I / 3 ∧
+        shellParticleP 3 = -((4 : ℂ) * I) / 3 := by
+  simpa [shellParticleP, shellRestP] using shell_particle_coord (4 : ℝ)
+
 theorem shellRest_geometry :
     minkowskiQ shellRestP = -((3 : ℝ) ^ 2) ∧
       minkowskiQ shellRestQ = -((3 : ℝ) ^ 2) ∧
