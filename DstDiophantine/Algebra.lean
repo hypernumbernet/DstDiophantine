@@ -7,6 +7,7 @@ import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.DirichletKernel
 import DstDiophantine.Algebra.DualFourier
+import DstDiophantine.Algebra.MismatchAngle
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
@@ -196,6 +197,13 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
   relativeRotor_of_paperVacuumSync paperVacuumSync_axis
   not_paperVacuumSync_pureBoost J_axisParams_balanced
   axis_rotors_ne_of_bivector J_zero_not_relativeRotor_one)
+export MismatchAngle (omegaMismatchAxis mismatchBoostHalf mismatchRotationHalf
+  relativeRotor_axis_eq_exp relativeRotor_axis_eq_one_iff_rotors
+  relativeRotor_axis_ne_one_of_bivector mismatchHalf_dagger_axis
+  mismatchOrientation_dagger_axis omegaMismatch_reverse_axis mass_dagger_axis
+  J_axis_from_mismatchHalves J_dagger_axis dagger_axisParams axisOverlapScalar
+  axisOverlap_balanced axisOverlap_balanced_nonpos_at_half_pi
+  axisOverlap_sign_reversal_threshold)
 
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=
