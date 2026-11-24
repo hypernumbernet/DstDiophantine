@@ -60,6 +60,7 @@ import DstDiophantine.Logic.Quantum.PositionInformation
 import DstDiophantine.Logic.Quantum.PhaseInformation
 import DstDiophantine.Logic.Quantum.ShellInformation
 import DstDiophantine.Logic.Quantum.FrameInformation
+import DstDiophantine.Logic.Quantum.CarrierDeficit
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1233,6 +1234,21 @@ example (α : ℝ) :
               DiracMomentum 3 shellRestQ shellParticleP) :=
   ⟨shellRest_regression α |>.2.2.2.1, shellRest_regression α |>.2.2.1,
     shellRest_regression α |>.2.1, shellRest_regression α |>.2.2.2.2.2.2⟩
+
+/-- Regression: the complement of which-momentum splits into shell information and a carrier
+deficit. Mean rest leaves `544/625` unread. The time-axis pair has `D = 8/17`, visibility
+`12/17`, and deficit `81/289`. The opposite seed puts the whole complement in the deficit. -/
+example :
+    shellDeficit 1 1 shellParticleP shellParticleQ = 544 / 625 ∧
+      whichMomentum ‖shellParticleP‖ ‖shellLabSpinor‖ = 8 / 17 ∧
+        shellDeficit 1 1 shellParticleP shellLabSpinor = 81 / 289 ∧
+          shellDeficit 1 1 shellParticleP shellOrthQ = 1 ∧
+            whichMomentum ‖shellParticleP‖ ‖shellParticleQ‖ ^ 2 +
+                shellInformation 1 1 shellParticleP shellParticleQ +
+                  shellDeficit 1 1 shellParticleP shellParticleQ =
+              1 :=
+  ⟨shellRest_split.2.2.1, shellLab_split.1, shellLab_split.2.2.1, shellOrth_deficit.2.2.2,
+    shellRest_split.2.2.2⟩
 
 /-- Regression: off the mean rest frame the same mass and seed are read on the time axis.
 Equal weights have fidelity `4/5` and information `144/289`, not the mean-rest value `81/625`.

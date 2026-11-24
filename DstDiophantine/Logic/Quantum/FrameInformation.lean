@@ -469,6 +469,22 @@ private theorem shellOrth_coord :
     refine ⟨this.1.symm, this.2.1.symm, this.2.2.1.symm, this.2.2.2.symm⟩
   simpa [horth0, horth1, hlow0, hlow1] using hfun
 
+theorem shellOrth_norm : ‖shellOrthQ‖ ^ 2 = 50 / 9 := by
+  have hQ := shellOrth_coord
+  have hself : inner ℂ shellOrthQ shellOrthQ = (50 / 9 : ℂ) := by
+    rw [diracSpinor_inner_eq, Fin.sum_univ_four, hQ.1, hQ.2.1, hQ.2.2.1, hQ.2.2.2]
+    simp [conj_I]
+    ring_nf
+    norm_num
+  have heq := inner_self_eq_norm_sq_to_K (𝕜 := ℂ) (x := shellOrthQ)
+  apply Complex.ofReal_injective
+  calc
+    Complex.ofReal (‖shellOrthQ‖ ^ 2) = (‖shellOrthQ‖ : ℂ) ^ 2 :=
+      Complex.ofReal_pow ‖shellOrthQ‖ 2
+    _ = inner ℂ shellOrthQ shellOrthQ := heq.symm
+    _ = (50 / 9 : ℂ) := hself
+    _ = Complex.ofReal (50 / 9) := by norm_num
+
 theorem shellOrth_inner : inner ℂ shellParticleP shellOrthQ = 0 := by
   have hP := shellParticleP_coord
   have hQ := shellOrth_coord
