@@ -32,7 +32,7 @@ private theorem axisSum_sq_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     (p.alpha a + p.beta a) ^ 2 ≤ (Real.pi / 2) ^ 2 := by
   have hs0 : 0 ≤ p.alpha a + p.beta a := add_nonneg (h a).1 (h a).2.1
-  have hs : p.alpha a + p.beta a ≤ Real.pi / 2 := (h a).2.2
+  have hs : p.alpha a + p.beta a ≤ Real.pi := admissibleContinuous_sum_le p h a
   have hk : (0 : ℝ) ≤ Real.pi / 2 := le_of_lt Real.pi_div_two_pos
   nlinarith
 
@@ -63,9 +63,9 @@ private theorem sum_axisSum_sq_eq_iff {p : TorsionParams}
     intro a
     have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
     rcases hcase a with rfl | rfl | rfl
-    · exact axisSum_eq_of_sq_eq (add_nonneg (h 0).1 (h 0).2.1) (h 0).2.2 e0
-    · exact axisSum_eq_of_sq_eq (add_nonneg (h 1).1 (h 1).2.1) (h 1).2.2 e1
-    · exact axisSum_eq_of_sq_eq (add_nonneg (h 2).1 (h 2).2.1) (h 2).2.2 e2
+    · exact axisSum_eq_of_sq_eq (add_nonneg (h 0).1 (h 0).2.1) (admissibleContinuous_sum_le p h 0) e0
+    · exact axisSum_eq_of_sq_eq (add_nonneg (h 1).1 (h 1).2.1) (admissibleContinuous_sum_le p h 1) e1
+    · exact axisSum_eq_of_sq_eq (add_nonneg (h 2).1 (h 2).2.1) (admissibleContinuous_sum_le p h 2) e2
   · intro hw
     rw [Fin.sum_univ_three, hw 0, hw 1, hw 2]
     ring

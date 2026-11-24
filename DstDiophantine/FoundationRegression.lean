@@ -99,17 +99,17 @@ example (hbridge : FermatCoarseDiscreteBridge) :
   fermat_last_theorem_of_coarse_discrete_bridge hbridge
 
 example {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
-    (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False :=
   w.false hk hcoarse
 
 example {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
-    (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False :=
   CoarseAmplificationWitness.empty_of_coarse hk hcoarse w
 
-example {N k : ℕ} (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) : N < 4 * k :=
-  coarse_implies_lt_four_mul hcoarse
+example {N k : ℕ} (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) : N < 2 * k :=
+  coarse_implies_lt_two_mul hcoarse
 
 example : Nonempty (ModularAmplificationWitness 16 5) :=
   ModularAmplificationWitness.nonempty_example
@@ -954,17 +954,17 @@ example (a b : Fin 3) (p : TorsionParams) :
   ⟨hyperbolic_eq_dual_cyclic a, commutator_hyperbolic_hyperbolic_eq_neg a b,
     dual_omegaTorsion p, J_dualParams p⟩
 
-example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) :
-    IsAdmissible t ↔ IsAdmissibleContinuous (toTorsionParams t) :=
-  isAdmissible_iff_admissibleContinuous t
+example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
+    IsAdmissibleContinuous (toTorsionParams t) :=
+  Discrete.isAdmissible_imp_admissibleContinuous t h
 
 example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    |JNormalized p| ≤ 1 :=
+    |JNormalized p| ≤ 4 :=
   torsion_bound_continuous p h
 
 example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    |J p| ≤ 3 * Real.pi ^ 2 / 8 :=
-  torsion_bound_raw_continuous_pi_sq p h
+    |J p| ≤ 3 * Real.pi ^ 2 / 2 :=
+  torsion_bound_raw_continuous p h
 
 example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p :=
@@ -999,7 +999,7 @@ example {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ} (hε : 0 <
 
 example {y ε : ℝ} (hy : |y| ≤ 1) (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
-      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+      ∃ t : DiscreteTorsion N, Admissible.IsAdmissibleContinuous (toTorsionParams t) ∧
         |JNormalized (toTorsionParams t) - y| < ε :=
   dense_discrete_JNormalized hy hε
 

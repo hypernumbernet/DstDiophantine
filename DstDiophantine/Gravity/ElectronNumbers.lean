@@ -145,30 +145,9 @@ private lemma gamma_nineteen_twentieths_neg : gammaSEqual (19 / 20) < 0 := by
   linarith [hbounds.2]
 
 theorem firstNode_num_window :
-    (14 / 15 : ℝ) < resonanceRoot1 ∧ resonanceRoot1 < 19 / 20 := by
-  have hroot : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
-  have hrootI := mem_gamma_Icc
-    (le_of_lt (lt_trans (by norm_num : (0 : ℝ) < 1 / 2) resonanceRoot1_bounds.1))
-    (le_of_lt (lt_trans resonanceRoot1_sharp_bounds.2
-      (by linarith [pi_gt_three] : (1 : ℝ) < π)))
-  have hanti := strictAntiOn_gammaSEqual_even 0
-  constructor
-  · have h14I := mem_gamma_Icc (by norm_num : (0 : ℝ) ≤ 14 / 15)
-      (by linarith [pi_gt_three] : (14 / 15 : ℝ) ≤ π)
-    by_contra hge
-    have hle : resonanceRoot1 ≤ 14 / 15 := le_of_not_gt hge
-    rcases eq_or_lt_of_le hle with hEq | hlt
-    · exact (ne_of_gt gamma_fourteen_fifteenths_pos) (hEq ▸ hroot)
-    · have := hanti hrootI h14I hlt
-      linarith [gamma_fourteen_fifteenths_pos, hroot]
-  · have h19I := mem_gamma_Icc (by norm_num : (0 : ℝ) ≤ 19 / 20)
-      (by linarith [pi_gt_three] : (19 / 20 : ℝ) ≤ π)
-    by_contra hle
-    have hge : 19 / 20 ≤ resonanceRoot1 := le_of_not_gt hle
-    rcases eq_or_lt_of_le hge with hEq | hlt
-    · exact (ne_of_lt gamma_nineteen_twentieths_neg) (hEq.symm ▸ hroot)
-    · have := hanti h19I hrootI hlt
-      linarith [gamma_nineteen_twentieths_neg, hroot]
+    (3.141592 / 2 : ℝ) < resonanceRoot1 ∧ resonanceRoot1 < (3.141593 / 2) := by
+  rw [resonanceRoot1_eq_pi_div_two]
+  constructor <;> linarith [pi_gt_d6, pi_lt_d6]
 
 theorem firstNode_radius_window :
     (10 / 19 : ℝ) < 1 / (2 * resonanceRoot1) ∧ 1 / (2 * resonanceRoot1) < 15 / 28 := by

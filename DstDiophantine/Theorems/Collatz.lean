@@ -1,4 +1,5 @@
 import DstDiophantine.Embedding.Height
+import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -26,7 +27,7 @@ namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Invariant Real
+open Amplification Invariant Admissible Real
 open _root_.DstDiophantine.Embedding
 
 /-! ### Classical Collatz dynamics -/
@@ -289,6 +290,11 @@ theorem eventually_periodic_of_fintype {α : Type*} [Finite α]
 
 /-! ### Admissible window on the integer boost -/
 
+theorem two_log_two_lt_pi : 2 * Real.log 2 < Real.pi := by
+  have hlog : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have hpi : (3.141592 : ℝ) < Real.pi := Real.pi_gt_d6
+  nlinarith
+
 theorem two_log_two_lt_pi_div_two : 2 * Real.log 2 < Real.pi / 2 := by
   have hlog : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
   have hpi : (3.141592 : ℝ) < Real.pi := Real.pi_gt_d6
@@ -299,31 +305,52 @@ theorem pi_div_four_lt_two_log_two : Real.pi / 4 < 2 * Real.log 2 := by
   have hpi : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
   nlinarith
 
+theorem pi_lt_two_log_five : Real.pi < 2 * Real.log 5 := by
+  have h5 : (1.6094379123 : ℝ) < Real.log 5 := Real.log_five_gt_d9
+  have hπ : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
+  nlinarith
+
+theorem two_log_four_lt_pi : 2 * Real.log 4 < Real.pi := by
+  have h : Real.log 4 = 2 * Real.log 2 := by
+    have : (4 : ℝ) = 2 ^ 2 := by norm_num
+    simpa [this, Real.log_pow] using Real.log_mul (by norm_num) (by norm_num)
+  rw [h, two_mul]
+  nlinarith [Real.log_two_lt_d9, Real.log_two_gt_d9, Real.pi_gt_d6, Real.pi_lt_d6]
+
+theorem two_log_three_lt_pi : 2 * Real.log 3 < Real.pi := by
+  have hlog : Real.log 3 < (1.0986122888 : ℝ) := Real.log_three_lt_d9
+  have hπ : (3.141592 : ℝ) < Real.pi := Real.pi_gt_d6
+  nlinarith
+
 theorem pi_div_two_lt_two_log_three : Real.pi / 2 < 2 * Real.log 3 := by
   have hlog : (1.0986122885 : ℝ) < Real.log 3 := Real.log_three_gt_d9
   have hpi : Real.pi < (3.141593 : ℝ) := Real.pi_lt_d6
   nlinarith
 
 theorem positive_integer_boost_admissible_iff {n : ℕ} (hn : 0 < n) :
-    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ↔ n = 1 ∨ n = 2 := by
+    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ↔
+      n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 := by
   rw [isAdmissibleContinuous_pureBoost_iff]
   constructor
   · intro ⟨_, hle⟩
     by_contra hnot
-    have h3 : 3 ≤ n := by omega
+    have h5 : 5 ≤ n := by
+      rcases n with _ | _ | _ | _ | _ | n <;> simp_all
     have hnreal : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
-    have hlog : Real.log 3 ≤ Real.log (n : ℝ) :=
-      (Real.log_le_log_iff (by norm_num) hnreal).mpr (by exact_mod_cast h3)
-    have hmul : 2 * Real.log 3 ≤ 2 * Real.log (n : ℝ) :=
+    have hlog : Real.log 5 ≤ Real.log (n : ℝ) :=
+      (Real.log_le_log_iff (by norm_num) hnreal).mpr (by exact_mod_cast h5)
+    have hmul : 2 * Real.log 5 ≤ 2 * Real.log (n : ℝ) :=
       mul_le_mul_of_nonneg_left hlog (by norm_num)
-    have hgt : Real.pi / 2 < 2 * Real.log (n : ℝ) :=
-      lt_of_lt_of_le pi_div_two_lt_two_log_three hmul
+    have hgt : Real.pi < 2 * Real.log (n : ℝ) :=
+      lt_of_lt_of_le pi_lt_two_log_five hmul
     exact not_le_of_gt hgt hle
   · intro h
-    rcases h with rfl | rfl
+    rcases h with rfl | rfl | rfl | rfl
     · simp only [Nat.cast_one, Real.log_one, mul_zero, le_refl, true_and]
       positivity
-    · exact ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
+    · exact ⟨by positivity, le_of_lt two_log_two_lt_pi⟩
+    · exact ⟨by positivity, le_of_lt two_log_three_lt_pi⟩
+    · exact ⟨by positivity, le_of_lt two_log_four_lt_pi⟩
 
 theorem collatzHeight_two_lt_third :
     collatzHeight 2 (by decide : (2 : ℕ) ≠ 0) < 1 / 3 := by
@@ -898,7 +925,7 @@ theorem collatz_odd_image_height_gt_one {n : ℕ} (_hn : 0 < n) (hodd : n % 2 = 
   rw [collatzHeight_eq_mul] at hgt ⊢
   exact hgt
 
-theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 0 < n) (hodd : n % 2 = 1) :
+theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 1 < n) (hodd : n % 2 = 1) :
     4 ≤ 3 * n + 1 ∧
       ¬ Discrete.IsAdmissibleContinuous
         (pureBoost (2 * Real.log ((3 * n + 1 : ℕ) : ℝ))) := by
@@ -906,8 +933,8 @@ theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 0 < n) (hodd : n % 2
   refine ⟨h4, ?_⟩
   intro hadm
   have hpos : 0 < 3 * n + 1 := by omega
-  have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
-  omega
+  have h5 : 5 ≤ 3 * n + 1 := by omega
+  rcases (positive_integer_boost_admissible_iff hpos).mp hadm with h1 | h2 | h3 | h4 <;> omega
 
 theorem collatzStep_eq_one_or_two_iff {n : ℕ} (hn : 0 < n) :
     collatzStep n = 1 ∨ collatzStep n = 2 ↔ n = 2 ∨ n = 4 := by
@@ -964,36 +991,88 @@ theorem pureBoostShell_narrower_than_log_two :
   have hfour : (Real.sqrt 3 - 1) * Real.pi < 4 * Real.log 2 := by linarith
   linarith
 
+theorem isAdmissibleContinuousLegacy_pureBoost_iff (θ : ℝ) :
+    IsAdmissibleContinuousLegacy (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
+  constructor
+  · intro h
+    have h0 := h (0 : Fin 3)
+    have hθ : θ ≤ Real.pi / 2 := by simpa [pureBoost, add_zero] using h0.2.2
+    exact And.intro h0.1 hθ
+  · rintro ⟨hθ0, hθπ⟩
+    intro a
+    fin_cases a
+    · exact ⟨hθ0, ⟨le_rfl, by simpa [pureBoost, add_zero] using hθπ⟩⟩
+    · simp only [pureBoost]; exact ⟨le_rfl, ⟨le_rfl, by linarith [hθπ]⟩⟩
+    · simp only [pureBoost]; exact ⟨le_rfl, ⟨le_rfl, by linarith [hθπ]⟩⟩
+
+theorem not_legacy_pureBoost_log_three :
+    ¬ IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (3 : ℝ))) := by
+  intro h
+  have ⟨_, hθ⟩ := (isAdmissibleContinuousLegacy_pureBoost_iff _).mp h
+  exact not_le_of_gt pi_div_two_lt_two_log_three hθ
+
 theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
-    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ∧
+    (¬ IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (n : ℝ))) ∧
         collatzHeight n (Nat.pos_iff_ne_zero.mp hn) < 1) ↔
       n = 3 := by
   constructor
   · intro ⟨hnot, hht⟩
     have hle : n ≤ 3 :=
       (collatzHeight_le_one_iff (Nat.pos_iff_ne_zero.mp hn)).mp (le_of_lt hht)
-    have hnot12 : ¬ (n = 1 ∨ n = 2) := by
-      intro hmem
-      exact hnot ((positive_integer_boost_admissible_iff hn).mpr hmem)
-    omega
+    have hne1 : n ≠ 1 := by
+      rintro rfl
+      apply hnot
+      simpa [Real.log_one, mul_zero] using
+        (isAdmissibleContinuousLegacy_pureBoost_iff 0).mpr ⟨le_rfl, le_of_lt Real.pi_div_two_pos⟩
+    have hne2 : n ≠ 2 := by
+      rintro rfl
+      apply hnot
+      exact (isAdmissibleContinuousLegacy_pureBoost_iff (2 * Real.log 2)).mpr
+        ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
+    have hn3 : n = 3 := by omega
+    exact hn3
   · rintro rfl
-    refine ⟨?_, collatzHeight_three_lt_one⟩
-    intro hadm
-    have hmem := (positive_integer_boost_admissible_iff (by decide : 0 < 3)).mp hadm
-    omega
+    exact ⟨not_legacy_pureBoost_log_three, collatzHeight_three_lt_one⟩
 
 theorem prime_boost_admissible_iff {p : ℕ} (hp : Nat.Prime p) :
-    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by
+    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 ∨ p = 3 := by
   rw [positive_integer_boost_admissible_iff (Nat.Prime.pos hp)]
   constructor
-  · rintro (rfl | rfl)
+  · rintro (rfl | rfl | rfl | h4)
     · exact absurd rfl (Nat.Prime.ne_one hp)
-    · rfl
+    · exact Or.inl rfl
+    · exact Or.inr rfl
+    · subst h4; exact absurd hp (by decide : ¬ Nat.Prime 4)
+  · rintro (rfl | rfl)
+    · simp
+    · simp
+
+theorem prime_boost_admissible_legacy_iff {p : ℕ} (hp : Nat.Prime p) :
+    Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by
+  constructor
   · intro h
-    exact Or.inr h
+    have hle := (isAdmissibleContinuousLegacy_pureBoost_iff _).mp h |>.2
+    have hp2 : p = 2 := by
+      by_contra hne
+      have hpge : 3 ≤ p := by
+        rcases Nat.Prime.eq_two_or_odd hp with rfl | _
+        · exact (hne rfl).elim
+        · have htw : 2 ≠ p := hne
+          omega
+      have hθ : Real.pi / 2 < 2 * Real.log (p : ℝ) := by
+        have hpr : (3 : ℝ) ≤ p := by exact_mod_cast hpge
+        have hlog := Real.log_le_log (by norm_num) hpr
+        have hlt := lt_of_lt_of_le pi_div_two_lt_two_log_three
+          (mul_le_mul_of_nonneg_left hlog (by norm_num))
+        exact hlt
+      exact not_le_of_gt hθ hle
+    exact hp2
+  · rintro rfl
+    exact (isAdmissibleContinuousLegacy_pureBoost_iff _).mpr
+      ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
 
 theorem prime_shell_iff {p : ℕ} (hp : Nat.Prime p) :
-    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+    (¬ IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
         collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos hp)) < 1) ↔
       p = 3 :=
   collatz_shell_iff (Nat.Prime.pos hp)

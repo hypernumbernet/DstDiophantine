@@ -115,8 +115,10 @@ theorem scatteringForceSigns_of_window {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : 
     rw [hrew]
     refine gammaSEqual_neg_right_of_first_node ⟨?_, ?_⟩
     · nlinarith [hxpos]
-    · have htwo : 2 * resonanceRoot1 * r₁ < 2 := by nlinarith
-      linarith [pi_gt_three]
+    · have hlt : 2 * resonanceRoot1 * r₁ < π := by
+        rw [resonanceRoot1_eq_pi_div_two]
+        nlinarith [hr1]
+      exact hlt
   · intro r hrlo hrhi
     have hrpos : (0 : ℝ) < r := by linarith
     unfold slowPairAttracts

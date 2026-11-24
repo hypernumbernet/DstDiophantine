@@ -73,7 +73,7 @@ private theorem three_axis_assembly {k t₀ t₁ t₂ u₀ u₁ u₂ : ℝ}
 /-! ### The trade-off between unsigned mass and mismatch -/
 
 theorem pi_sq_mass_le_shield_ceiling_add_J_sq (p : TorsionParams)
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 := by
   have hax : ∀ a : Fin 3,
       2 * (Real.pi / 2) ^ 2 * (p.alpha a ^ 2 + p.beta a ^ 2)
@@ -93,8 +93,29 @@ theorem pi_sq_mass_le_shield_ceiling_add_J_sq (p : TorsionParams)
   simp only [Fin.sum_univ_three]
   nlinarith [hcore]
 
-theorem massNormalized_le_shield_curve (p : TorsionParams)
+theorem pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 4 + 4 * J p ^ 2 := by
+  have hax : ∀ a : Fin 3,
+      2 * Real.pi ^ 2 * (p.alpha a ^ 2 + p.beta a ^ 2)
+        ≤ Real.pi ^ 4 + (p.alpha a ^ 2 - p.beta a ^ 2) ^ 2 := fun a =>
+    axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+  have habs : ∀ a : Fin 3,
+      |p.alpha a ^ 2 - p.beta a ^ 2| ≤ Real.pi ^ 2 := fun a =>
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+  have he : -Real.pi ^ 4 ≤
+      (p.alpha 0 ^ 2 - p.beta 0 ^ 2) * (p.alpha 1 ^ 2 - p.beta 1 ^ 2) +
+        (p.alpha 0 ^ 2 - p.beta 0 ^ 2) * (p.alpha 2 ^ 2 - p.beta 2 ^ 2) +
+        (p.alpha 1 ^ 2 - p.beta 1 ^ 2) * (p.alpha 2 ^ 2 - p.beta 2 ^ 2) := by
+    have h3 := elementary_two_ge (habs 0) (habs 1) (habs 2)
+    nlinarith [h3]
+  have hcore := three_axis_assembly (hax 0) (hax 1) (hax 2) he
+  rw [mass_coef, J_coef]
+  simp only [Fin.sum_univ_three]
+  nlinarith [hcore]
+
+theorem massNormalized_le_shield_curve (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) :
     massNormalized p ≤ 5 / 6 + (3 / 2) * JNormalized p ^ 2 := by
   have hraw := pi_sq_mass_le_shield_ceiling_add_J_sq p h
   have hπ : Real.pi ≠ 0 := Real.pi_ne_zero
@@ -141,10 +162,10 @@ theorem isAdmissibleContinuous_ceilingWitness {γ : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [ceilingWitness] <;>
     norm_num <;>
-    linarith
+    linarith [hπ]
 
 theorem ceilingWitness_attains (γ : ℝ) :
     Real.pi ^ 2 * mass (ceilingWitness γ)
@@ -195,15 +216,15 @@ theorem exists_isGravNeutral_massive_torsioned :
 
 theorem mass_le_shield_ceiling {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hJ : J p = 0) :
-    mass p ≤ 5 * Real.pi ^ 2 / 16 := by
-  have hraw := pi_sq_mass_le_shield_ceiling_add_J_sq p h
+    mass p ≤ 5 * Real.pi ^ 2 / 4 := by
+  have hraw := pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous p h
   rw [hJ] at hraw
   have hπ : 0 < Real.pi ^ 2 := by positivity
   nlinarith [hraw, hπ]
 
 theorem mass_le_shield_ceiling_of_isGravNeutral {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hn : IsGravNeutral p) :
-    mass p ≤ 5 * Real.pi ^ 2 / 16 :=
+    mass p ≤ 5 * Real.pi ^ 2 / 4 :=
   mass_le_shield_ceiling h hn
 
 theorem exists_admissible_shield_of_mass_eq_ceiling :
@@ -226,7 +247,7 @@ theorem exists_admissible_max_mass_full_repulsion :
     ring
 
 theorem mass_le_equalScale_ceiling {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
+    (h : IsAdmissibleContinuousLegacy p) (heq : p.beta = p.alpha) :
     mass p ≤ 3 * Real.pi ^ 2 / 16 := by
   have hπ : 0 < Real.pi := Real.pi_pos
   have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ Real.pi ^ 2 / 8 := by
@@ -241,18 +262,18 @@ theorem mass_le_equalScale_ceiling {p : TorsionParams}
   linarith [haxis 0, haxis 1, haxis 2]
 
 theorem pi_sq_div_eight_le_abs_J_of_mass_eq_max {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    (h : IsAdmissibleContinuousLegacy p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
     Real.pi ^ 2 / 8 ≤ |J p| := by
   have hraw := pi_sq_mass_le_shield_ceiling_add_J_sq p h
   rw [hM] at hraw
-  have hsq : (Real.pi ^ 2 / 8) ^ 2 ≤ J p ^ 2 := by nlinarith
+  have hsq : (Real.pi ^ 2 / 8) ^ 2 ≤ J p ^ 2 := by nlinarith [hraw, Real.pi_pos]
   have habs : |Real.pi ^ 2 / 8| ≤ |J p| := by
     rw [← Real.sqrt_sq_eq_abs, ← Real.sqrt_sq_eq_abs]
     exact Real.sqrt_le_sqrt hsq
   rwa [abs_of_nonneg (by positivity : (0 : ℝ) ≤ Real.pi ^ 2 / 8)] at habs
 
 theorem not_isGravNeutral_of_mass_eq_max {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    (h : IsAdmissibleContinuousLegacy p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
     ¬ IsGravNeutral p := by
   intro hn
   have hle := pi_sq_div_eight_le_abs_J_of_mass_eq_max h hM
@@ -262,18 +283,22 @@ theorem not_isGravNeutral_of_mass_eq_max {p : TorsionParams}
   linarith
 
 theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8)
+    (h : IsAdmissibleContinuousLegacy p) (hM : mass p = 3 * Real.pi ^ 2 / 8)
     (a : Fin 3) :
     (p.alpha a = Real.pi / 2 ∧ p.beta a = 0) ∨
       (p.alpha a = 0 ∧ p.beta a = Real.pi / 2) := by
   have hπ : 0 < Real.pi := Real.pi_pos
   have haxle : ∀ b : Fin 3,
-      p.alpha b ^ 2 + p.beta b ^ 2 ≤ Real.pi ^ 2 / 4 := by
-    intro b
+      p.alpha b ^ 2 + p.beta b ^ 2 ≤ Real.pi ^ 2 / 4 := fun b => by
     have hα := (h b).1
     have hβ := (h b).2.1
     have hsum := (h b).2.2
-    nlinarith
+    have h1 : p.alpha b ^ 2 + p.beta b ^ 2 ≤ (p.alpha b + p.beta b) ^ 2 :=
+      by linarith [sq_nonneg (p.alpha b - p.beta b)]
+    have h2 : (p.alpha b + p.beta b) ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+      gcongr
+      exact hsum
+    linarith [h1, h2]
   have hsum3 : p.alpha 0 ^ 2 + p.beta 0 ^ 2 + (p.alpha 1 ^ 2 + p.beta 1 ^ 2) +
       (p.alpha 2 ^ 2 + p.beta 2 ^ 2) = 3 * Real.pi ^ 2 / 4 := by
     have := hM
@@ -283,11 +308,13 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   have heq : p.alpha a ^ 2 + p.beta a ^ 2 = Real.pi ^ 2 / 4 := by
     rcases hcase a with rfl | rfl | rfl <;>
-      linarith [haxle 0, haxle 1, haxle 2]
+      nlinarith [haxle 0, haxle 1, haxle 2, hsum3,
+        sq_nonneg (p.alpha 0 - p.beta 0), sq_nonneg (p.alpha 1 - p.beta 1),
+        sq_nonneg (p.alpha 2 - p.beta 2)]
   have hα := (h a).1
   have hβ := (h a).2.1
   have hsum := (h a).2.2
-  have hprod : p.alpha a * p.beta a = 0 := by nlinarith
+  have hprod : p.alpha a * p.beta a = 0 := by nlinarith [hsum, Real.pi_pos]
   rcases mul_eq_zero.mp hprod with hz | hz
   · right
     refine ⟨hz, ?_⟩
@@ -303,7 +330,7 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
 theorem sum_alpha_sq_le_shield_ceiling_of_dual_only_shield
     {p q : TorsionParams} (hα : q.alpha = p.alpha)
     (hq : IsAdmissibleContinuous q) (hJ : J q = 0) :
-    ∑ a : Fin 3, p.alpha a ^ 2 ≤ 5 * Real.pi ^ 2 / 16 := by
+    ∑ a : Fin 3, p.alpha a ^ 2 ≤ 5 * Real.pi ^ 2 / 4 := by
   rw [← mass_dual_only_of_J_eq_zero hα hJ]
   exact mass_le_shield_ceiling hq hJ
 

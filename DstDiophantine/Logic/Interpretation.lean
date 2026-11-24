@@ -30,8 +30,8 @@ theorem isAdmissibleContinuous_dagger {p : TorsionParams}
     IsAdmissibleContinuous (daggerParams p) := by
   intro a
   have ha := h a
-  refine ⟨ha.2.1, ha.1, ?_⟩
-  simpa [daggerParams, add_comm] using ha.2.2
+  refine ⟨ha.2.1, ha.1, admissibleContinuous_alpha_le_pi p h a,
+    by simpa [daggerParams, add_comm] using ha.2.2.2⟩
 
 theorem ofParams_dagger {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     ofParams (daggerParams p) (isAdmissibleContinuous_dagger h) =

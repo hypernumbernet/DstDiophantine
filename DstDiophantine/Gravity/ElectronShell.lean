@@ -3,6 +3,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Real.Pi.Bounds
@@ -261,6 +262,48 @@ private theorem one_lt_pi_div_two : (1 : ℝ) < π / 2 := by
 
 private theorem half_lt_pi_div_four : (1 / 2 : ℝ) < π / 4 := by
   linarith [pi_gt_three]
+
+private theorem tanh_lt_id_of_pos {x : ℝ} (hx : 0 < x) : tanh x < x := by
+  have hcosh : 0 < cosh x := cosh_pos x
+  rw [tanh_eq_sinh_div_cosh, div_lt_iff₀ hcosh]
+  set f : ℝ → ℝ := fun y => y * cosh y - sinh y
+  have hf0 : f 0 = 0 := by simp [f]
+  have hderiv : ∀ t, HasDerivAt f (t * sinh t) t := fun t => by
+    have hmul := (hasDerivAt_id t).mul (hasDerivAt_cosh t)
+    have : HasDerivAt f (1 * cosh t + t * sinh t - cosh t) t :=
+      hmul.sub (hasDerivAt_sinh t)
+    convert this using 1
+    ring
+  have hcont : ContinuousOn f (Icc 0 x) := fun t _ =>
+    (hderiv t).continuousAt.continuousWithinAt
+  obtain ⟨c, hc, hEq⟩ :=
+    exists_hasDerivAt_eq_slope f (fun t => t * sinh t) hx hcont
+      fun t _ => hderiv t
+  have hxne : (x : ℝ) ≠ 0 := hx.ne'
+  have hfx : f x = x * (c * sinh c) := by
+    have : c * sinh c = (f x - f 0) / (x - 0) := hEq
+    simp only [hf0, sub_zero] at this
+    field_simp [hxne] at this
+    linarith
+  have hpos : 0 < c * sinh c :=
+    mul_pos hc.1 (sinh_pos_iff.mpr hc.1)
+  have : 0 < f x := by
+    rw [hfx]
+    exact mul_pos hx hpos
+  simpa [f] using this
+
+private theorem tanh_lt_tan_of_mem_Ioo {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (π / 2)) :
+    tanh t < tan t :=
+  (tanh_lt_id_of_pos ht.1).trans (lt_tan ht.1 ht.2)
+
+theorem sinh_mul_cos_lt_cosh_mul_sin {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) (π / 2)) :
+    sinh t * cos t < cosh t * sin t := by
+  have hcos : 0 < cos t :=
+    cos_pos_of_mem_Ioo ⟨by linarith [ht.1, pi_div_two_pos], ht.2⟩
+  have hlt := tanh_lt_tan_of_mem_Ioo ht
+  rw [tanh_eq_sinh_div_cosh, tan_eq_sin_div_cos] at hlt
+  have := (div_lt_div_iff₀ (cosh_pos t) hcos).mp hlt
+  linarith
 
 theorem strictMonoOn_resonanceProd :
     StrictMonoOn resonanceProd (Ioo 0 (π / 2)) := by

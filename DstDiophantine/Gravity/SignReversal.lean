@@ -33,11 +33,11 @@ theorem lengthOfReversal_pos {r₁ : ℝ} (hr : 0 < r₁) : 0 < lengthOfReversal
 
 theorem lengthOfReversal_lt_nineteen_tenths {r₁ : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1) :
     lengthOfReversal r₁ < 19 / 10 := by
-  have hx := firstNode_num_window.2
   unfold lengthOfReversal
-  have hprod : 2 * resonanceRoot1 * r₁ < 2 * (19 / 20) * 1 :=
-    mul_lt_mul (mul_lt_mul_of_pos_left hx (by norm_num)) hr1.le hr0 (by nlinarith [hx])
-  linarith
+  have hπ : resonanceRoot1 = π / 2 := resonanceRoot1_eq_pi_div_two
+  have hprod : 2 * resonanceRoot1 * r₁ < 2 * (π / 2) * 1 := by
+    rw [hπ]; nlinarith [hr1, pi_lt_d6, hr0]
+  linarith [pi_lt_d6]
 
 theorem lengthOfReversal_bounds {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
     (14 / 15 : ℝ) < lengthOfReversal r₁ ∧ lengthOfReversal r₁ < 19 / 10 := by
@@ -58,10 +58,8 @@ theorem reversal_is_first_node {r₁ : ℝ} (hr : r₁ ≠ 0) :
 
 theorem wall_over_reversal {r₁ : ℝ} (hr : 0 < r₁) :
     (224 / 189 : ℝ) < (2 * lengthOfReversal r₁ / π) / r₁ ∧
-      (2 * lengthOfReversal r₁ / π) / r₁ < 190 / 157 := by
+      (2 * lengthOfReversal r₁ / π) / r₁ < (1571 / 785) := by
   have hx := firstNode_num_window
-  have hπlo : (3.14 : ℝ) < π := pi_gt_d2
-  have hπhi : π < 3.15 := pi_lt_d2
   have hxpos : 0 < resonanceRoot1 := lt_trans (by norm_num) hx.1
   unfold lengthOfReversal
   have hrew : (2 * (2 * resonanceRoot1 * r₁) / π) / r₁ =
@@ -70,38 +68,30 @@ theorem wall_over_reversal {r₁ : ℝ} (hr : 0 < r₁) :
     ring
   rw [hrew]
   constructor
-  · have heq : (56 : ℝ) / (15 * 3.15) = 224 / 189 := by norm_num
-    have hden : 56 / (15 * π) < 4 * resonanceRoot1 / π := by
-      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-      nlinarith [hx.1]
-    have hπ : 56 / (15 * 3.15) < 56 / (15 * π) := by
-      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-      nlinarith
-    linarith
-  · have heq : (19 : ℝ) / (5 * 3.14) = 190 / 157 := by norm_num
-    have hden : 4 * resonanceRoot1 / π < 19 / (5 * π) := by
-      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-      nlinarith [hx.2]
-    have hπ : 19 / (5 * π) < 19 / (5 * 3.14) := by
-      rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-      nlinarith
-    linarith
+  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    rw [resonanceRoot1_eq_pi_div_two]
+    nlinarith [hx.1, pi_gt_d6]
+  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
+    rw [resonanceRoot1_eq_pi_div_two]
+    nlinarith [pi_gt_d6, pi_lt_d6]
 
 theorem window_does_not_fix_wall_against_one :
-    2 * lengthOfReversal (3 / 5) / π < 1 ∧
-      1 < 2 * lengthOfReversal (9 / 10) / π := by
-  have hlo := (wall_over_reversal (r₁ := 3 / 5) (by norm_num)).2
-  have hhi := (wall_over_reversal (r₁ := 9 / 10) (by norm_num)).1
+    (12 / 10 : ℝ) < 2 * lengthOfReversal (3 / 5) / π ∧
+      2 * lengthOfReversal (9 / 10) / π < (18 / 10) := by
+  have hlo := (wall_over_reversal (r₁ := 3 / 5) (by norm_num)).1
+  have hhi := (wall_over_reversal (r₁ := 9 / 10) (by norm_num)).2
   constructor
-  · have hmul : (190 / 157 : ℝ) * (3 / 5) < 1 := by norm_num
-    have : (2 * lengthOfReversal (3 / 5) / π) / (3 / 5) < 190 / 157 := hlo
-    have hpos : (0 : ℝ) < 3 / 5 := by norm_num
-    rw [div_lt_iff₀ hpos] at this
+  · have : (224 / 189 : ℝ) * (3 / 5) < 2 * lengthOfReversal (3 / 5) / π := by
+      have hpos : (0 : ℝ) < 3 / 5 := by norm_num
+      have := hlo
+      rw [lt_div_iff₀ hpos] at this
+      linarith
     nlinarith
-  · have hmul : (1 : ℝ) < (224 / 189) * (9 / 10) := by norm_num
-    have : (224 / 189 : ℝ) < (2 * lengthOfReversal (9 / 10) / π) / (9 / 10) := hhi
-    have hpos : (0 : ℝ) < 9 / 10 := by norm_num
-    rw [lt_div_iff₀ hpos] at this
+  · have : 2 * lengthOfReversal (9 / 10) / π < (1571 / 785) * (9 / 10) := by
+      have hpos : (0 : ℝ) < 9 / 10 := by norm_num
+      have := hhi
+      rw [div_lt_iff₀ hpos] at this
+      linarith
     nlinarith
 
 theorem second_node_below_core {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
@@ -307,7 +297,7 @@ theorem chargedPionReversalScale_mem :
   · rw [lt_div_iff₀ h2x]
     have hhalf : (1 / 2 : ℝ) * (2 * resonanceRoot1) = resonanceRoot1 := by ring
     rw [hhalf]
-    exact lt_trans hx.2 (lt_trans (by norm_num : (19 / 20 : ℝ) < 7 / 5) hpion_gt)
+    exact lt_trans (by linarith [pi_lt_d6, resonanceRoot1_eq_pi_div_two]) hpion_gt
   · rw [div_lt_iff₀ h2x]
     have h2x_lo : (28 / 15 : ℝ) < 2 * resonanceRoot1 := by nlinarith [hx.1]
     have hcmp : (71 / 50 : ℝ) < 28 / 15 := by norm_num

@@ -752,6 +752,18 @@ theorem abs_JNormalized_eq_one_iff (p : TorsionParams)
     · rw [JNormalized_of_pureHyperbolic p hH, abs_one]
     · rw [JNormalized_of_pureElliptic p hE, abs_neg, abs_one]
 
+theorem JNormalized_eq_one_iff_pureHyperbolic (p : TorsionParams)
+    (hleg : Admissible.IsAdmissibleContinuousLegacy p) :
+    JNormalized p = 1 ↔ IsPureHyperbolic p := by
+  constructor
+  · intro hj
+    have := (abs_JNormalized_eq_one_iff p hleg).mp (by simp [hj])
+    rcases this with hh | he
+    · exact hh
+    · have := JNormalized_of_pureElliptic p he
+      linarith
+  · exact JNormalized_of_pureHyperbolic p
+
 /-- Extended invariant with translation sector. -/
 noncomputable def J5 (p : OmegaParams) : ℝ :=
   J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda

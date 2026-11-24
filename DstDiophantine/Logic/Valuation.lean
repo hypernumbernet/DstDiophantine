@@ -65,7 +65,7 @@ def IsNamedTwo (j : ℝ) : Prop :=
 def IsWallTwo (j : ℝ) : Prop :=
   j = -1 ∨ j = 1
 
-theorem holdsT_iff_classify {j : ℝ} (hj : |j| ≤ 1) :
+theorem holdsT_iff_classify {j : ℝ} (hj : |j| ≤ 4) :
     HoldsT j ↔ classifyOfMem j hj = .T :=
   (classifyOfMem_eq_T_iff hj).symm
 
@@ -73,10 +73,10 @@ theorem holdsNotF_iff_ne_one {j : ℝ} (hj : |j| ≤ 1) :
     HoldsNotF j ↔ j ≠ 1 :=
   ⟨ne_of_lt, fun hne => lt_of_le_of_ne (abs_le.mp hj).2 hne⟩
 
-theorem holdsNotF_iff_ne_F {j : ℝ} (hj : |j| ≤ 1) :
-    HoldsNotF j ↔ classifyOfMem j hj ≠ .F := by
-  rw [holdsNotF_iff_ne_one hj]
-  exact (Iff.not (classifyOfMem_eq_F_iff hj)).symm
+theorem holdsNotF_iff_ne_F {j : ℝ} (hj1 : |j| ≤ 1) :
+    HoldsNotF j ↔ classifyOfMem j (hj1.trans (by norm_num : (1 : ℝ) ≤ 4)) ≠ .F := by
+  have hj := hj1.trans (by norm_num : (1 : ℝ) ≤ 4)
+  exact (holdsNotF_iff_ne_one hj1).trans (Iff.symm (Iff.not (classifyOfMem_eq_F_iff hj)))
 
 theorem holdsT_holdsNotF {j : ℝ} (h : HoldsT j) : HoldsNotF j := by
   simp [HoldsT, HoldsNotF] at h ⊢
@@ -109,9 +109,10 @@ theorem not_holdsNotF_excluded_middle_iff {j : ℝ} (hj : |j| ≤ 1) :
   simp only [HoldsNotF]
   constructor
   · intro h
-    have hle : 1 ≤ |j| := not_lt.mp h
-    have : |j| = 1 := le_antisymm hj hle
-    exact (abs_eq (by norm_num : (0 : ℝ) ≤ 1)).mp this
+    have hge : 1 ≤ |j| := not_lt.mp (by simpa using h)
+    have hle : |j| ≤ 1 := hj
+    have heq : |j| = 1 := le_antisymm hle hge
+    rcases (abs_eq (by norm_num : (0 : ℝ) ≤ 1)).mp heq with rfl | rfl <;> norm_num
   · rintro (rfl | rfl) <;> norm_num
 
 theorem conj_neg_holdsNotF (j : ℝ) : HoldsNotF (conjJ j (negJ j)) := by
@@ -155,20 +156,20 @@ theorem residuumJ_B_T_eq_F :
   exact residuumJ_B_T
 
 theorem exists_holdsNotF_label {tv : TruthValue} (hne : tv ≠ .F) :
-    ∃ (j : ℝ) (hj : |j| ≤ 1),
+    ∃ (j : ℝ) (hj : |j| ≤ 4),
       classifyOfMem j hj = tv ∧ HoldsNotF j := by
   cases tv with
   | T =>
     refine ⟨0, by norm_num, ?_, by norm_num [HoldsNotF]⟩
-    exact (classifyOfMem_eq_T_iff (by norm_num : |(0 : ℝ)| ≤ 1)).mpr rfl
+    exact (classifyOfMem_eq_T_iff (by norm_num : |(0 : ℝ)| ≤ 4)).mpr rfl
   | U =>
     refine ⟨(1 / 2 : ℝ), by norm_num, ?_, by norm_num [HoldsNotF]⟩
-    exact (classifyOfMem_eq_U_iff (by norm_num : |(1 / 2 : ℝ)| ≤ 1)).mpr
+    exact (classifyOfMem_eq_U_iff (by norm_num : |(1 / 2 : ℝ)| ≤ 4)).mpr
       (by norm_num)
   | F => exact (hne rfl).elim
   | B =>
     refine ⟨(-1 / 2 : ℝ), by norm_num, ?_, by norm_num [HoldsNotF]⟩
-    exact (classifyOfMem_eq_B_iff (by norm_num : |(-1 / 2 : ℝ)| ≤ 1)).mpr
+    exact (classifyOfMem_eq_B_iff (by norm_num : |(-1 / 2 : ℝ)| ≤ 4)).mpr
       (by norm_num)
 
 end Logic

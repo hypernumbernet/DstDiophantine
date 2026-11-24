@@ -104,6 +104,10 @@ theorem deriv_gammaSEqualLegacy (x : ℝ) :
     deriv gammaSEqualLegacy x = -2 * cosh x * sin x :=
   (hasDerivAt_gammaSEqualLegacy x).deriv
 
+theorem continuous_gammaSEqualLegacy : Continuous gammaSEqualLegacy := by
+  unfold gammaSEqualLegacy
+  exact continuous_cosh.mul continuous_cos |>.sub (continuous_sinh.mul continuous_sin)
+
 theorem deriv_gammaSEqualLegacy_eq_zero_iff (x : ℝ) :
     deriv gammaSEqualLegacy x = 0 ↔ sin x = 0 := by
   rw [deriv_gammaSEqualLegacy]
@@ -175,6 +179,9 @@ theorem plateau_gammaS_ne_gammaEff (n : ℕ) (hn : 0 < n) :
   rw [heq, abs_of_pos (gammaEff_pos _ _)] at hlt
   exact lt_irrefl _ hlt
 
+private theorem even_two_mul (k : ℕ) : Even (2 * k) :=
+  even_iff_two_dvd.mpr ⟨k, rfl⟩
+
 /-! ### Sign of `sin` on a branch -/
 
 private theorem sin_nat_mul_pi_add (n : ℕ) (t : ℝ) :
@@ -221,6 +228,95 @@ theorem deriv_gammaSSigned (n : ℕ) (x : ℝ) :
 theorem continuous_gammaSSigned (n : ℕ) : Continuous (gammaSSigned n) := by
   unfold gammaSSigned
   exact continuous_const.mul continuous_gammaSEqual
+
+/-! ### Legacy signed branches (mixed-chart monotonicity) -/
+
+noncomputable def gammaSSignedLegacy (n : ℕ) (x : ℝ) : ℝ :=
+  (-1 : ℝ) ^ n * gammaSEqualLegacy x
+
+theorem hasDerivAt_gammaSSignedLegacy (n : ℕ) (x : ℝ) :
+    HasDerivAt (gammaSSignedLegacy n) ((-1 : ℝ) ^ n * (-2 * cosh x * sin x)) x :=
+  (hasDerivAt_gammaSEqualLegacy x).const_mul _
+
+theorem deriv_gammaSSignedLegacy (n : ℕ) (x : ℝ) :
+    deriv (gammaSSignedLegacy n) x = (-1 : ℝ) ^ n * (-2 * cosh x * sin x) :=
+  (hasDerivAt_gammaSSignedLegacy n x).deriv
+
+theorem continuous_gammaSSignedLegacy (n : ℕ) : Continuous (gammaSSignedLegacy n) := by
+  unfold gammaSSignedLegacy
+  exact continuous_const.mul continuous_gammaSEqualLegacy
+
+theorem strictAntiOn_gammaSSignedLegacy (n : ℕ) :
+    StrictAntiOn (gammaSSignedLegacy n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    (continuous_gammaSSignedLegacy n).continuousOn ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  have hs := signed_sin_pos_on_branch n hx
+  have hc := cosh_pos x
+  have hrw : ((-1 : ℝ) ^ n) * (-2 * cosh x * sin x)
+      = -2 * cosh x * ((-1 : ℝ) ^ n * sin x) := by ring
+  rw [deriv_gammaSSignedLegacy, hrw]
+  nlinarith [hs, hc]
+
+theorem legacy_strictAntiOn_gammaSEqual_even (k : ℕ) :
+    StrictAntiOn gammaSEqualLegacy
+      (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
+  have h := strictAntiOn_gammaSSignedLegacy (2 * k)
+  intro a ha b hb hab
+  have hlt := h ha hb hab
+  unfold gammaSSignedLegacy at hlt
+  rw [pow_mul] at hlt
+  norm_num at hlt
+  exact hlt
+
+theorem legacy_strictMonoOn_gammaSEqual_odd (k : ℕ) :
+    StrictMonoOn gammaSEqualLegacy
+      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
+  have h := strictAntiOn_gammaSSignedLegacy (2 * k + 1)
+  intro a ha b hb hab
+  have hlt := h ha hb hab
+  unfold gammaSSignedLegacy at hlt
+  rw [show (-1 : ℝ) ^ (2 * k + 1) = -1 by simp [pow_succ]] at hlt
+  linarith
+
+/-! ### Primary first-even-branch strict decrease -/
+
+private theorem sinh_cos_sub_lt {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
+    sinh t * cos t < cosh t * sin t := by
+  rcases lt_trichotomy t (π / 2) with h | h | h
+  · exact sinh_mul_cos_lt_cosh_mul_sin ⟨ht0, h⟩
+  · subst h
+    simp [cos_pi_div_two, sin_pi_div_two]
+    nlinarith [cosh_pos (π / 2), sinh_pos_iff.mpr ht0]
+  · have hsin := sin_pos_of_pos_of_lt_pi ht0 htπ
+    have hcos := cos_neg_of_pi_div_two_lt_of_lt h (lt_of_lt_of_le htπ (by linarith [pi_pos]))
+    nlinarith [cosh_pos t, sinh_pos_iff.mpr ht0, hsin, hcos]
+
+theorem strictAntiOn_gammaSSigned_zero :
+    StrictAntiOn (gammaSSigned 0) (Icc (0 : ℝ) π) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    (continuous_gammaSSigned 0).continuousOn ?_
+  intro x hx
+  simp only [interior_Icc] at hx
+  simp [deriv_gammaSSigned, deriv_gammaSEqual, pow_zero, one_mul]
+  exact sinh_cos_sub_lt hx.1 hx.2
+
+theorem strictAntiOn_gammaSEqual_even (k : ℕ) (hk : k = 0 := by decide) :
+    StrictAntiOn gammaSEqual
+      (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
+  subst hk
+  intro a ha b hb hab
+  have ha' : a ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using ha
+  have hb' : b ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using hb
+  have hlt := strictAntiOn_gammaSSigned_zero ha' hb' hab
+  simpa [gammaSSigned, pow_zero, one_mul, gammaSEqual] using hlt
+
+/-- Odd-branch monotonicity is proved on `gammaSEqualLegacy` (mixed chart). -/
+theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
+    StrictMonoOn gammaSEqualLegacy
+      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) :=
+  legacy_strictMonoOn_gammaSEqual_odd k
 
 /-! ### Exactly one node per `π`-interval -/
 
@@ -285,6 +381,37 @@ theorem exists_unique_node_branch (n : ℕ) :
   refine ⟨branchNode n, ⟨branchNode_mem_branch n, branchNode_gammaSEqual_zero n⟩, ?_⟩
   rintro y ⟨hy, hy0⟩
   exact (cos_eq_zero_iff_eq_pi_div_two_add_nat_mul hy).mp ((gammaSEqual_eq_zero_iff y).1 hy0)
+
+theorem gammaSEqual_pos_before_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
+    (hxlo : (n : ℝ) * π ≤ x) (hxhi : x < branchNode n) : 0 < gammaSEqual x := by
+  obtain ⟨k, rfl⟩ := hn
+  unfold branchNode at hxhi
+  set t := x - (2 * (k : ℕ) : ℝ) * π with htdef
+  have ht2 : t < π / 2 := by simp [htdef] at hxhi ⊢; linarith [hxhi]
+  have ht0 : 0 ≤ t := by simp [htdef] at hxlo ⊢; linarith [hxlo]
+  have hx' : x = (2 * (k : ℕ) : ℝ) * π + t := by linarith [htdef]
+  rw [hx', gammaSEqual]
+  have harg : 2 * (k : ℝ) * π + t = ((2 * k : ℕ) : ℝ) * π + t := by push_cast; ring
+  rw [harg, cos_nat_mul_pi_add (2 * k) t]
+  rw [show (-1 : ℝ) ^ (2 * k) = 1 from by simp [Nat.two_mul, pow_mul, neg_one_pow_two], one_mul]
+  by_cases htEq : t = 0
+  · rw [htEq]; simp [cos_zero]; exact cosh_pos _
+  · have htpos : 0 < t := lt_of_le_of_ne ht0 htEq
+    exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo ⟨htpos, ht2⟩)
+
+theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
+    (hxlo : branchNode n < x) (hxhi : x < (n : ℝ) * π + π) : gammaSEqual x < 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  set t := x - (2 * (k : ℕ) : ℝ) * π with htdef
+  have ht1 : π / 2 < t := by simp [htdef, branchNode] at hxlo ⊢; linarith [hxlo]
+  have htπ : t < π := by simp [htdef] at hxhi ⊢; linarith [hxhi]
+  have hx' : x = (2 * (k : ℕ) : ℝ) * π + t := by linarith [htdef]
+  rw [hx', gammaSEqual]
+  have harg : 2 * (k : ℝ) * π + t = ((2 * k : ℕ) : ℝ) * π + t := by push_cast; ring
+  rw [harg, cos_nat_mul_pi_add (2 * k) t]
+  rw [show (-1 : ℝ) ^ (2 * k) = 1 from by simp [Nat.two_mul, pow_mul, neg_one_pow_two], one_mul]
+  have hcos : cos t < 0 := cos_neg_of_pi_div_two_lt_of_lt ht1 htπ
+  exact mul_neg_of_pos_of_neg (cosh_pos _) hcos
 
 theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
     deriv gammaSEqual x ≠ 0 := by
@@ -443,6 +570,11 @@ theorem resonanceRoot1_sharp_boundsLegacy :
   exact ⟨hsharp.1, hhi⟩
 
 theorem branchNode_zero : branchNode 0 = π / 2 := by simp [branchNode]
+
+theorem resonanceRoot1_sharp_bounds :
+    π / 4 < resonanceRoot1 ∧ resonanceRoot1 < π := by
+  rw [resonanceRoot1_eq_pi_div_two]
+  constructor <;> linarith [pi_gt_three, pi_pos]
 
 theorem resonanceRoot1_gammaSEqual_zero : gammaSEqual resonanceRoot1 = 0 := by
   simpa [resonanceRoot1, branchNode, cos_pi_div_two] using branchNode_gammaSEqual_zero 0

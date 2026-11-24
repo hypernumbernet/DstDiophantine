@@ -6,7 +6,7 @@ import Mathlib.Tactic.Ring
 /-!
 # Connectives on the signed height
 
-`negJ`, `min`, and `max` on `[-1, 1]`. Negation is not a function of the four labels.
+`negJ`, `min`, and `max` on the mismatch-normalized image `[-4, 4]`. Negation is not a function of the four labels.
 -/
 
 namespace DstDiophantine
@@ -66,11 +66,11 @@ theorem conjJ_zero_of_nonneg {k : ℝ} (hk : 0 ≤ k) : conjJ 0 k = 0 := by
 theorem disjJ_zero_of_nonpos {k : ℝ} (hk : k ≤ 0) : disjJ 0 k = 0 := by
   simp [disjJ, hk]
 
-theorem abs_conj_neg_le {j : ℝ} (hj : |j| ≤ 1) : |conjJ j (negJ j)| ≤ 1 := by
+theorem abs_conj_neg_le {j : ℝ} (hj : |j| ≤ 4) : |conjJ j (negJ j)| ≤ 4 := by
   rw [conj_neg_eq_neg_abs, abs_neg, abs_abs]
   exact hj
 
-theorem classify_conj_neg_ne_F {j : ℝ} (hj : |j| ≤ 1) :
+theorem classify_conj_neg_ne_F {j : ℝ} (hj : |j| ≤ 4) :
     classifyOfMem (conjJ j (negJ j)) (abs_conj_neg_le hj) ≠ .F := by
   intro hf
   rw [classifyOfMem_eq_F_iff] at hf
@@ -79,7 +79,7 @@ theorem classify_conj_neg_ne_F {j : ℝ} (hj : |j| ≤ 1) :
   have : 0 ≤ |j| := abs_nonneg j
   linarith
 
-theorem classify_conj_neg_T_or_B {j : ℝ} (hj : |j| ≤ 1) :
+theorem classify_conj_neg_T_or_B {j : ℝ} (hj : |j| ≤ 4) :
     classifyOfMem (conjJ j (negJ j)) (abs_conj_neg_le hj) = .T ∨
       classifyOfMem (conjJ j (negJ j)) (abs_conj_neg_le hj) = .B := by
   have hk := abs_conj_neg_le hj
@@ -88,20 +88,18 @@ theorem classify_conj_neg_T_or_B {j : ℝ} (hj : |j| ≤ 1) :
   · left
     linarith
   · right
-    constructor
-    · linarith [abs_le.mp hj]
-    · linarith
+    linarith [abs_nonneg j, hpos]
 
 theorem neg_not_a_function_of_TruthValue :
-    ∃ j₁ j₂ : ℝ, ∃ h₁ : |j₁| ≤ 1, ∃ h₂ : |j₂| ≤ 1,
+    ∃ j₁ j₂ : ℝ, ∃ h₁ : |j₁| ≤ 4, ∃ h₂ : |j₂| ≤ 4,
       classifyOfMem j₁ h₁ = .B ∧ classifyOfMem j₂ h₂ = .B ∧
         classifyOfMem (negJ j₁) (by simpa [negJ, abs_neg] using h₁) ≠
           classifyOfMem (negJ j₂) (by simpa [negJ, abs_neg] using h₂) := by
   refine ⟨-1, -1 / 2, by norm_num, by norm_num, ?_, ?_, ?_⟩
-  · rw [classifyOfMem_eq_B_iff]; norm_num
-  · rw [classifyOfMem_eq_B_iff]; norm_num
-  · have h1' : |(1 : ℝ)| ≤ 1 := by norm_num
-    have h2' : |(1 / 2 : ℝ)| ≤ 1 := by norm_num
+  · exact (classifyOfMem_eq_B_iff (by norm_num)).mpr (by norm_num)
+  · exact (classifyOfMem_eq_B_iff (by norm_num)).mpr (by norm_num)
+  · have h1' : |(1 : ℝ)| ≤ 4 := by norm_num
+    have h2' : |(1 / 2 : ℝ)| ≤ 4 := by norm_num
     have hF : classifyOfMem (1 : ℝ) h1' = .F := (classifyOfMem_eq_F_iff h1').mpr rfl
     have hU : classifyOfMem (1 / 2 : ℝ) h2' = .U :=
       (classifyOfMem_eq_U_iff h2').mpr (by norm_num)

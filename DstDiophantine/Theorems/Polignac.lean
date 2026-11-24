@@ -225,20 +225,20 @@ theorem polignac_not_two {p k : ℕ} (h : IsPolignacPair p k) : p ≠ 2 := by
   exact polignac_two_partner_composite h.2.2 hprime
 
 theorem polignac_outside_cone {p k : ℕ} (h : IsPolignacPair p k) :
-    ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
-      ¬ Discrete.IsAdmissibleContinuous
+    ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
+      ¬ Admissible.IsAdmissibleContinuousLegacy
         (pureBoost (2 * Real.log ((p + 2 * k : ℕ) : ℝ))) := by
   refine ⟨?_, ?_⟩
   · intro hadm
-    exact polignac_not_two h ((prime_boost_admissible_iff h.1).mp hadm)
+    exact polignac_not_two h ((prime_boost_admissible_legacy_iff h.1).mp hadm)
   · intro hadm
-    have hq2 : p + 2 * k = 2 := (prime_boost_admissible_iff h.2.1).mp hadm
+    have hq2 : p + 2 * k = 2 := (prime_boost_admissible_legacy_iff h.2.1).mp hadm
     have hpge : 2 ≤ p := Nat.Prime.two_le h.1
     have hk : 0 < k := h.2.2
     omega
 
 theorem polignac_smaller_shell_iff {p k : ℕ} (h : IsPolignacPair p k) :
-    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+    (¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
         collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) < 1) ↔
       p = 3 :=
   prime_shell_iff h.1

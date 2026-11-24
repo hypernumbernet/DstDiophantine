@@ -164,16 +164,13 @@ theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
   intro a
   have hα := admissibleContinuous_legacy_alpha_nonneg p h a
   have hαle := admissibleContinuous_alpha_le_half_pi p h a
-  refine ⟨hα, ?_, ?_⟩
-  · unfold dualWallParams dualWall
-    linarith
-  · unfold dualWallParams dualWall
-    linarith
+  unfold dualWallParams dualWall
+  exact half_pi_axis_admissibleContinuous hα (by linarith) (by linarith)
 
 theorem admissibleContinuous_beta_le_dualWall {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     p.beta a ≤ dualWall (p.alpha a) := by
-  have := admissibleContinuous_sum_le p h a
+  have := admissibleContinuous_legacy_sum_le_half_pi p h a
   unfold dualWall
   linarith
 
@@ -240,11 +237,16 @@ theorem isAdmissibleContinuous_dualInterp {p : TorsionParams} {β' : Fin 3 → �
   intro a
   have hpα := (hp a).1
   have hpβ := (hp a).2.1
-  have hpsum := (hp a).2.2
+  have hpsum := admissibleContinuous_sum_le p hp a
   have hβ'β := (hβ' a).2.1
-  have hβ'sum := (hβ' a).2.2
-  refine ⟨hpα, combo_nonneg hpβ hβ'β ht0 ht1, ?_⟩
-  simpa [dualInterp] using combo_sum_le hpsum hβ'sum ht0 ht1
+  have hβ'sum := admissibleContinuous_sum_le { alpha := p.alpha, beta := β' } hβ' a
+  have hβnn := combo_nonneg hpβ hβ'β ht0 ht1
+  have hβle : (dualInterp p β' t).beta a ≤ Real.pi := by
+    unfold dualInterp
+    nlinarith [admissibleContinuous_beta_le_pi p hp a,
+      admissibleContinuous_beta_le_pi { alpha := p.alpha, beta := β' } hβ' a]
+  refine ⟨hpα, hβnn, hβle,
+    by simpa [dualInterp] using combo_sum_le hpsum hβ'sum ht0 ht1⟩
 
 theorem J_dualInterp_anti {p : TorsionParams} {β' : Fin 3 → ℝ} {t s : ℝ}
     (hβ : ∀ a, 0 ≤ p.beta a) (hmono : ∀ a, p.beta a ≤ β' a)
@@ -286,9 +288,9 @@ theorem isAdmissibleContinuous_zeroDual {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :
     IsAdmissibleContinuous (zeroDual p) := by
   intro a
-  refine ⟨(h a).1, by simp [zeroDual], ?_⟩
-  simp [zeroDual]
-  linarith [(h a).2.2, (h a).2.1]
+  simp only [zeroDual]
+  refine ⟨(h a).1, le_rfl, Real.pi_pos.le, ?_⟩
+  linarith [admissibleContinuous_beta_nonneg p h a, admissibleContinuous_sum_le p h a]
 
 theorem J_le_zeroDual (p : TorsionParams) :
     J p ≤ J (zeroDual p) := by
@@ -331,14 +333,14 @@ theorem J_dual_only_le_zeroDual {p q : TorsionParams}
   exact J_le_zeroDual q
 
 theorem J_dual_only_ge_wall {p q : TorsionParams}
-    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuousLegacy q) :
     J (dualWallParams p) ≤ J q := by
   rw [J_eq_sum_JAxis, J_eq_sum_JAxis]
   refine Finset.sum_le_sum fun a _ => ?_
   unfold JAxis dualWallParams
-  have hβnn := admissibleContinuous_beta_nonneg q hq a
+  have hβnn := admissibleContinuous_legacy_beta_nonneg q hq a
   have hβle : q.beta a ≤ dualWall (p.alpha a) := by
-    have := admissibleContinuous_beta_le_dualWall hq a
+    have := admissibleContinuous_beta_le_dualWall (p := q) hq a
     rwa [hα] at this
   have hsq : q.beta a ^ 2 ≤ dualWall (p.alpha a) ^ 2 :=
     pow_le_pow_left₀ hβnn hβle 2
@@ -346,7 +348,7 @@ theorem J_dual_only_ge_wall {p q : TorsionParams}
   linarith
 
 theorem J_dual_only_mem_interval {p q : TorsionParams}
-    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q) :
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuousLegacy q) :
     J (dualWallParams p) ≤ J q ∧ J q ≤ J (zeroDual p) :=
   ⟨J_dual_only_ge_wall hα hq, J_dual_only_le_zeroDual hα⟩
 
@@ -373,16 +375,15 @@ theorem mass_equalScaleOf (p : TorsionParams) :
 
 theorem isAdmissibleContinuous_equalScaleOf_iff {p : TorsionParams}
     (hα : ∀ a, 0 ≤ p.alpha a) :
-    IsAdmissibleContinuous (equalScaleOf p) ↔ ∀ a, p.alpha a ≤ Real.pi / 4 := by
+    IsAdmissibleContinuous (equalScaleOf p) ↔ ∀ a, p.alpha a ≤ Real.pi / 2 := by
   constructor
   · intro h a
-    have hsum := (h a).2.2
+    have hsum := admissibleContinuous_sum_le (equalScaleOf p) h a
     simp only [equalScaleOf] at hsum
     linarith
   · intro h a
-    refine ⟨hα a, hα a, ?_⟩
     simp only [equalScaleOf]
-    linarith [h a]
+    refine ⟨(hα a), (hα a), by linarith [h a, Real.pi_pos], by linarith [h a, Real.pi_pos]⟩
 
 /-! ### Existence of a dual-only shield when the wall is nonpositive -/
 
@@ -515,16 +516,16 @@ theorem J_dualShieldInterp_at_T {p : TorsionParams}
   rw [this, sub_self, mul_zero]
 
 theorem isAdmissibleContinuous_dualShieldInterp_at_T {p : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) ≤ 0) :
+    (hp : IsAdmissibleContinuousLegacy p) (h : J (dualWallParams p) ≤ 0) :
     IsAdmissibleContinuous (dualShieldInterp p (dualShieldT p)) := by
   have hSw : 0 < sumWallSq p := sumWallSq_pos_of_wall_nonpos h
   refine isAdmissibleContinuous_dualInterp
-    (isAdmissibleContinuous_zeroDual hp) ?_ (dualShieldT_nonneg p)
+    (isAdmissibleContinuous_zeroDual (legacy_admissible_implies_mismatch p hp)) ?_ (dualShieldT_nonneg p)
     (dualShieldT_le_one h hSw.ne')
   simpa [zeroDual, dualWallParams] using isAdmissibleContinuous_dualWallParams hp
 
 theorem exists_dual_only_J_eq_zero {p : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) ≤ 0) :
+    (hp : IsAdmissibleContinuousLegacy p) (h : J (dualWallParams p) ≤ 0) :
     ∃ q : TorsionParams,
       q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q = 0 :=
   ⟨dualShieldInterp p (dualShieldT p), rfl,
@@ -569,7 +570,7 @@ theorem JDot_dual_only_rotation_halves (p pdot : TorsionParams)
   simpa using congrArg Neg.neg hsum
 
 theorem exists_dual_only_mismatch_balance {p : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) ≤ 0) :
+    (hp : IsAdmissibleContinuousLegacy p) (h : J (dualWallParams p) ≤ 0) :
     ∃ q : TorsionParams,
       q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧
         mismatchBoostHalfSqSum q = mismatchRotationHalfSqSum q := by
@@ -587,13 +588,13 @@ theorem dual_only_shield_mismatch_balanced (q : TorsionParams) (hJ : J q = 0) :
   (J_eq_zero_iff_mismatch_sq_balance q).mp hJ
 
 theorem not_dual_only_J_eq_zero_of_wall_pos {p q : TorsionParams}
-    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q)
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuousLegacy q)
     (hwall : 0 < J (dualWallParams p)) :
     0 < J q :=
   lt_of_lt_of_le hwall (J_dual_only_ge_wall hα hq)
 
 theorem exists_dual_only_J_lt_zero {p : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) < 0) :
+    (hp : IsAdmissibleContinuousLegacy p) (h : J (dualWallParams p) < 0) :
     ∃ q : TorsionParams,
       q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q < 0 :=
   ⟨dualWallParams p, rfl, isAdmissibleContinuous_dualWallParams hp, h⟩
@@ -670,11 +671,12 @@ theorem J_dualShieldInterp_at_target {p : TorsionParams} {c : ℝ}
   ring
 
 theorem isAdmissibleContinuous_dualShieldInterp_at_target {p : TorsionParams}
-    {c : ℝ} (hp : IsAdmissibleContinuous p) (hSw : 0 < sumWallSq p)
+    {c : ℝ} (hp : IsAdmissibleContinuousLegacy p) (hSw : 0 < sumWallSq p)
     (hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
     IsAdmissibleContinuous (dualShieldInterp p (dualTargetT p c)) := by
   refine isAdmissibleContinuous_dualInterp
-    (isAdmissibleContinuous_zeroDual hp) ?_ (dualTargetT_nonneg p c)
+    (isAdmissibleContinuous_zeroDual (legacy_admissible_implies_mismatch p hp)) ?_
+      (dualTargetT_nonneg p c)
     (dualTargetT_le_one hSw.ne' hc hc')
   simpa [zeroDual, dualWallParams] using isAdmissibleContinuous_dualWallParams hp
 
@@ -684,14 +686,15 @@ theorem J_dualWall_eq_zeroDual_of_sumWallSq_eq_zero {p : TorsionParams}
   rw [J_dualWall_eq_half_diff, J_zeroDual_eq_half_sumAlphaSq, h, sub_zero]
 
 theorem exists_dual_only_J_eq {p : TorsionParams} {c : ℝ}
-    (hp : IsAdmissibleContinuous p)
+    (hp : IsAdmissibleContinuousLegacy p)
     (hc : J (dualWallParams p) ≤ c) (hc' : c ≤ J (zeroDual p)) :
     ∃ q : TorsionParams,
       q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q = c := by
   by_cases hSw : sumWallSq p = 0
   · have hEq := J_dualWall_eq_zeroDual_of_sumWallSq_eq_zero hSw
     have hc0 : c = J (zeroDual p) := le_antisymm hc' (hEq ▸ hc)
-    exact ⟨zeroDual p, rfl, isAdmissibleContinuous_zeroDual hp, hc0.symm⟩
+    exact ⟨zeroDual p, rfl, isAdmissibleContinuous_zeroDual (legacy_admissible_implies_mismatch p hp),
+      hc0.symm⟩
   · have hne : sumWallSq p ≠ 0 := hSw
     have hpos : 0 < sumWallSq p :=
       lt_of_le_of_ne (Finset.sum_nonneg fun _ _ => sq_nonneg _) hne.symm
@@ -707,7 +710,8 @@ def uniformTorsion (α β : ℝ) : TorsionParams where
 
 theorem isAdmissibleContinuous_uniform {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
-    IsAdmissibleContinuous (uniformTorsion α β) := fun _ => ⟨hα, hβ, hsum⟩
+    IsAdmissibleContinuous (uniformTorsion α β) :=
+  fun _ => half_pi_axis_admissibleContinuous hα hβ hsum
 
 theorem J_uniform (α β : ℝ) :
     J (uniformTorsion α β) = (3 / 2) * (α ^ 2 - β ^ 2) := by
@@ -748,7 +752,7 @@ theorem uniform_pi_div_six_equalScale_admissible :
     positivity
   · intro a
     simp only [uniformTorsion]
-    exact le_of_lt pi_div_six_lt_pi_div_four
+    linarith [Real.pi_pos, show (Real.pi / 6 : ℝ) ≤ Real.pi / 2 from by linarith [Real.pi_pos]]
 
 theorem uniform_pi_div_six_shields :
     J (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) = 0 :=
@@ -773,13 +777,11 @@ theorem uniform_pi_div_three_admissible :
     have hπ : 0 < Real.pi := Real.pi_pos
     nlinarith)
 
-theorem uniform_pi_div_three_equalScale_not_admissible :
-    ¬ IsAdmissibleContinuous (equalScaleOf (uniformTorsion (Real.pi / 3) 0)) := by
-  intro h
-  have := (isAdmissibleContinuous_equalScaleOf_iff
-    (fun a => by simp only [uniformTorsion]; positivity)).mp h 0
-  simp only [uniformTorsion] at this
-  exact (not_le_of_gt pi_div_four_lt_pi_div_three) this
+theorem uniform_pi_div_three_equalScale_admissible :
+    IsAdmissibleContinuous (equalScaleOf (uniformTorsion (Real.pi / 3) 0)) :=
+  (isAdmissibleContinuous_equalScaleOf_iff
+    (fun a => by simp only [uniformTorsion]; positivity)).mpr fun _ => by
+      simp [uniformTorsion]; linarith [Real.pi_pos]
 
 theorem uniform_pi_div_three_wall_pos :
     0 < J (dualWallParams (uniformTorsion (Real.pi / 3) 0)) := by
@@ -789,7 +791,7 @@ theorem uniform_pi_div_three_wall_pos :
 
 theorem uniform_pi_div_three_no_dual_shield {q : TorsionParams}
     (hα : ∀ a, q.alpha a = Real.pi / 3)
-    (hq : IsAdmissibleContinuous q) :
+    (hq : IsAdmissibleContinuousLegacy q) :
     0 < J q := by
   have hαp : q.alpha = (uniformTorsion (Real.pi / 3) 0).alpha := by
     funext a; exact hα a
@@ -815,9 +817,8 @@ theorem isAdmissibleContinuous_equalScaleUnwind {p : TorsionParams}
     linarith
   have hmin : 0 ≤ min (p.alpha a) (Real.pi / 4) := le_min (hα a) hπ
   have hle : min (p.alpha a) (Real.pi / 4) ≤ Real.pi / 4 := min_le_right _ _
-  refine ⟨hmin, hmin, ?_⟩
-  simp only [equalScaleUnwind]
-  linarith
+  simpa [equalScaleUnwind] using
+    half_pi_axis_admissibleContinuous hmin hmin (by linarith [hle, hle])
 
 theorem mass_equalScaleUnwind (p : TorsionParams) :
     mass (equalScaleUnwind p) =
@@ -905,9 +906,10 @@ theorem isAdmissibleContinuous_axisUsual {α : ℝ}
     (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
     IsAdmissibleContinuous (axisUsual α) := by
   intro a
-  refine ⟨finCoord_nonneg hα0 a, le_rfl, ?_⟩
-  simp [axisUsual, finCoord]
-  split_ifs <;> linarith [hα0, hα]
+  simp only [axisUsual, finCoord]
+  split_ifs
+  · simpa using half_pi_axis_admissibleContinuous hα0 le_rfl (by linarith [hα])
+  · simpa using half_pi_axis_admissibleContinuous le_rfl le_rfl (by linarith [Real.pi_pos])
 
 theorem J_crossAxisDual (α : ℝ) : J (crossAxisDual α) = 0 :=
   J_finCoord_pair 0 1 α
@@ -927,23 +929,25 @@ theorem isAdmissibleContinuous_crossAxisDual {α : ℝ}
     (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
     IsAdmissibleContinuous (crossAxisDual α) := by
   intro a
-  refine ⟨finCoord_nonneg hα0 a, finCoord_nonneg hα0 a, ?_⟩
   fin_cases a
-  · simpa [crossAxisDual, finCoord] using hα
-  · simpa [crossAxisDual, finCoord] using hα
-  · have : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-    simpa [crossAxisDual, finCoord] using this
+  · simpa [crossAxisDual, finCoord] using
+      half_pi_axis_admissibleContinuous hα0 le_rfl (by linarith [hα])
+  · simpa [crossAxisDual, finCoord] using
+      half_pi_axis_admissibleContinuous le_rfl hα0 (by linarith [hα])
+  · simpa [crossAxisDual, finCoord] using
+      half_pi_axis_admissibleContinuous le_rfl le_rfl (by linarith [Real.pi_pos])
 
 theorem isAdmissibleContinuous_crossAxisDual' {α : ℝ}
     (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :
     IsAdmissibleContinuous (crossAxisDual' α) := by
   intro a
-  refine ⟨finCoord_nonneg hα0 a, finCoord_nonneg hα0 a, ?_⟩
   fin_cases a
-  · simpa [crossAxisDual', finCoord] using hα
-  · have : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-    simpa [crossAxisDual', finCoord] using this
-  · simpa [crossAxisDual', finCoord] using hα
+  · simpa [crossAxisDual', finCoord] using
+      half_pi_axis_admissibleContinuous hα0 le_rfl (by linarith [hα])
+  · simpa [crossAxisDual', finCoord] using
+      half_pi_axis_admissibleContinuous le_rfl le_rfl (by linarith [Real.pi_pos])
+  · simpa [crossAxisDual', finCoord] using
+      half_pi_axis_admissibleContinuous le_rfl hα0 (by linarith [hα])
 
 theorem crossAxisDual_ne_crossAxisDual' {α : ℝ} (hα : α ≠ 0) :
     crossAxisDual α ≠ crossAxisDual' α := by
@@ -953,12 +957,11 @@ theorem crossAxisDual_ne_crossAxisDual' {α : ℝ} (hα : α ≠ 0) :
   exact hα hβ
 
 theorem equalScale_axisUsual_not_admissible {α : ℝ}
-    (h : Real.pi / 4 < α) :
+    (h : Real.pi / 2 < α) :
     ¬ IsAdmissibleContinuous (equalScaleOf (axisUsual α)) := by
   intro hAdm
   have hnn : ∀ a, 0 ≤ (axisUsual α).alpha a :=
-    axisUsual_alpha_nonneg
-      (le_of_lt (lt_trans (by positivity : (0 : ℝ) < Real.pi / 4) h))
+    axisUsual_alpha_nonneg (le_of_lt (lt_trans (by positivity : (0 : ℝ) < Real.pi / 2) h))
   have := (isAdmissibleContinuous_equalScaleOf_iff hnn).mp hAdm 0
   simp only [axisUsual, finCoord] at this
   exact (not_le_of_gt h) this
@@ -975,11 +978,15 @@ theorem equalScale_strictly_stronger_than_dual_only_shield :
       IsAdmissibleContinuous p ∧
         (∃ q : TorsionParams,
           q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧ J q = 0) ∧
-          ¬ IsAdmissibleContinuous (equalScaleOf p) :=
+          ¬ IsAdmissibleContinuousLegacy (equalScaleOf p) :=
   ⟨axisUsual (Real.pi / 3),
     isAdmissibleContinuous_axisUsual (by positivity) pi_div_three_le_pi_div_two,
     exists_dual_only_shield_axisUsual (by positivity) pi_div_three_le_pi_div_two,
-    equalScale_axisUsual_not_admissible pi_div_four_lt_pi_div_three⟩
+    by
+      intro hleg
+      have hsum := (hleg 0).2.2
+      simp [equalScaleOf, axisUsual, finCoord] at hsum
+      linarith [show (2 * Real.pi / 3 : ℝ) > Real.pi / 2 from by linarith [Real.pi_pos]]⟩
 
 theorem exists_two_dual_only_shields_axisUsual {α : ℝ}
     (hα0 : 0 < α) (hα : α ≤ Real.pi / 2) :
@@ -996,7 +1003,7 @@ theorem exists_two_dual_only_shields_axisUsual {α : ℝ}
 /-! ### Unique dual-only shield on the wall, and vacuum obstruction -/
 
 theorem dual_only_shield_unique_of_wall_zero {p q : TorsionParams}
-    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q)
+    (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuousLegacy q)
     (hwall : J (dualWallParams p) = 0) (hJ : J q = 0) :
     q = dualWallParams p := by
   refine torsionParams_ext hα ?_
@@ -1008,12 +1015,12 @@ theorem dual_only_shield_unique_of_wall_zero {p q : TorsionParams}
     rw [← hq', hα]
     exact hp'
   have hle (i : Fin 3) : q.beta i ≤ dualWall (p.alpha i) := by
-    have := admissibleContinuous_beta_le_dualWall hq i
+    have := admissibleContinuous_beta_le_dualWall (p := q) hq i
     rwa [hα] at this
   have hnn : ∀ i ∈ (Finset.univ : Finset (Fin 3)),
       0 ≤ dualWall (p.alpha i) ^ 2 - q.beta i ^ 2 := fun i _ =>
     sub_nonneg.mpr <|
-      pow_le_pow_left₀ (admissibleContinuous_beta_nonneg q hq i) (hle i) 2
+      pow_le_pow_left₀ (admissibleContinuous_legacy_beta_nonneg q hq i) (hle i) 2
   have hdiff0 :
       ∑ i : Fin 3, (dualWall (p.alpha i) ^ 2 - q.beta i ^ 2) = 0 := by
     simp [Finset.sum_sub_distrib, hβW]
@@ -1022,9 +1029,9 @@ theorem dual_only_shield_unique_of_wall_zero {p q : TorsionParams}
     linarith [(Finset.sum_eq_zero_iff_of_nonneg hnn).mp hdiff0 a
       (Finset.mem_univ a)]
   have hWnn : 0 ≤ dualWall (p.alpha a) :=
-    le_trans (admissibleContinuous_beta_nonneg q hq a) (hle a)
+    le_trans (admissibleContinuous_legacy_beta_nonneg q hq a) (hle a)
   simp only [dualWallParams]
-  exact ((sq_eq_sq₀ hWnn (admissibleContinuous_beta_nonneg q hq a)).mp
+  exact ((sq_eq_sq₀ hWnn (admissibleContinuous_legacy_beta_nonneg q hq a)).mp
     hsq).symm
 
 theorem dual_only_not_vacuum_of_usual_pos {p q : TorsionParams}

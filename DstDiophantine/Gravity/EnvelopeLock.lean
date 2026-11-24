@@ -171,12 +171,12 @@ private theorem signedSum3 (p : TorsionParams) :
 private theorem axisSigned_le_K {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
-  (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).2
+    (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).2
 
 private theorem axisSigned_ge_negK {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     -((Real.pi / 2) ^ 2) ≤ axisSigned p a :=
-  (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).1
+    (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).1
 
 private theorem le_J_of_twoPureUsual {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hUU : TwoPureUsual p) :
@@ -545,9 +545,9 @@ private theorem onWall_iff_three_gap {p : TorsionParams}
     have h2eq : 2 * (Real.pi / 2) ^ 2 * axisUnsigned p 2 =
         (Real.pi / 2) ^ 4 + axisSigned p 2 ^ 2 := by linarith
     rcases hfin a with rfl | rfl | rfl
-    · exact (axis_trade_off_eq_iff (h 0).1 (h 0).2.1 (h 0).2.2 hπ).mp
+    · exact (axis_trade_off_eq_iff (h 0).1 (h 0).2.1 (h 0).2.2.2 hπ).mp
         (by simpa [axisSigned, axisUnsigned] using h0eq)
-    · exact (axis_trade_off_eq_iff (h 1).1 (h 1).2.1 (h 1).2.2 hπ).mp
+    · exact (axis_trade_off_eq_iff (h 1).1 (h 1).2.1 (h 1).2.2.2 hπ).mp
         (by simpa [axisSigned, axisUnsigned] using h1eq)
     · exact (axis_trade_off_eq_iff (h 2).1 (h 2).2.1 (h 2).2.2 hπ).mp
         (by simpa [axisSigned, axisUnsigned] using h2eq)
@@ -557,7 +557,7 @@ private theorem onWall_iff_three_gap {p : TorsionParams}
           (Real.pi / 2) ^ 4 + axisSigned p a ^ 2 := by
       intro a
       have :=
-        (axis_trade_off_eq_iff (h a).1 (h a).2.1 (h a).2.2 hπ).mpr (hw a)
+        (axis_trade_off_eq_iff (h a).1 (h a).2.1 (h a).2.2.2 hπ).mpr (hw a)
       simpa [axisSigned, axisUnsigned] using this
     linarith [heq 0, heq 1, heq 2, hgap]
 

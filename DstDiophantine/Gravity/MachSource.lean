@@ -86,8 +86,9 @@ theorem express_replicate_axisBoost {n : ℕ} {a0 : Fin 3} {φ : ℝ} (hφ : 0 �
   have hψ : 0 ≤ (n : ℝ) * φ := mul_nonneg (Nat.cast_nonneg n) hφ
   rcases le_total ((n : ℝ) * φ) (Real.pi / 2) with hle | hge
   · have hadm : IsAdmissibleContinuous (axisBoost a0 ((n : ℝ) * φ)) :=
-      axisBoost_admissible hψ hle
-    rw [hsum, express_eq_of_admissible hadm, min_eq_left hle]
+      axisBoost_admissible (a0 := a0) (φ := (n : ℝ) * φ) hψ hle
+    rw [hsum, express_eq_of_admissible (axisBoost_admissible_legacy (a0 := a0) (h0 := hψ) hle),
+        min_eq_left hle]
   · rw [hsum, express_axisBoost_saturated hge, min_eq_right hge]
 
 theorem expressed_boost_alpha {n : ℕ} {a0 : Fin 3} {φ : ℝ} (hφ : 0 ≤ φ) (a : Fin 3) :

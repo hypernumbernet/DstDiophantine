@@ -127,17 +127,20 @@ theorem magnetic_superpose_rotation_sq_geq_when_J_nonpos {p : TorsionParams}
 theorem isAdmissibleContinuous_superpose_magnetic
     {p : TorsionParams} {B : Fin 3 → ℝ}
     (hp : IsAdmissibleContinuous p) (hB : ∀ a, 0 ≤ B a)
-    (hsum : ∀ a, p.alpha a + p.beta a + B a ≤ Real.pi / 2) :
+    (hsum : ∀ a, p.alpha a + p.beta a + B a ≤ Real.pi) :
     IsAdmissibleContinuous (superpose p (magneticFaraday B)) := by
   intro a
   have hα : 0 ≤ (superpose p (magneticFaraday B)).alpha a := by
     simpa [magneticFaraday] using (hp a).1
   have hβ : 0 ≤ (superpose p (magneticFaraday B)).beta a := by
     simpa [magneticFaraday] using add_nonneg (hp a).2.1 (hB a)
+  have hβπ : (superpose p (magneticFaraday B)).beta a ≤ Real.pi := by
+    simp [magneticFaraday, add_assoc]
+    linarith [(hp a).1, hsum a]
   have hs : (superpose p (magneticFaraday B)).alpha a +
-      (superpose p (magneticFaraday B)).beta a ≤ Real.pi / 2 := by
+      (superpose p (magneticFaraday B)).beta a ≤ Real.pi := by
     simpa [magneticFaraday, add_assoc] using hsum a
-  exact ⟨hα, hβ, hs⟩
+  exact ⟨hα, hβ, hβπ, hs⟩
 
 theorem not_admissible_superpose_magnetic_of_neg_beta
     {p : TorsionParams} {B : Fin 3 → ℝ} {a : Fin 3}
@@ -353,11 +356,13 @@ theorem exists_constant_potential_changes_J :
 theorem isAdmissibleContinuous_coupleA {p : TorsionParams} {e : ℝ}
     {A : Fin 3 → ℝ} (hp : IsAdmissibleContinuous p)
     (hβ : ∀ a, 0 ≤ p.beta a + e * A a)
-    (hsum : ∀ a, p.alpha a + p.beta a + e * A a ≤ Real.pi / 2) :
+    (hsum : ∀ a, p.alpha a + p.beta a + e * A a ≤ Real.pi) :
     IsAdmissibleContinuous (coupleA p e A) := by
   intro a
-  refine ⟨(hp a).1, hβ a, ?_⟩
-  simpa [coupleA, add_assoc] using hsum a
+  refine ⟨(hp a).1, hβ a, ?_, ?_⟩
+  · simp [coupleA, add_assoc]
+    linarith [(hp a).1, hsum a]
+  · simpa [coupleA, add_assoc] using hsum a
 
 theorem not_admissible_coupleA_of_neg_beta {p : TorsionParams} {e : ℝ}
     {A : Fin 3 → ℝ} {a : Fin 3} (h : p.beta a + e * A a < 0) :

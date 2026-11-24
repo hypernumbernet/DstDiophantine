@@ -45,9 +45,14 @@ def InDualEdge (x y : ℝ) : Prop :=
   0 ≤ y ∧ y ≤ Real.pi / 2 ∧ x ≤ 0
 
 theorem admissible_iff_axes (p : TorsionParams) :
-    IsAdmissibleContinuous p ↔ ∀ a, InTriangle (p.alpha a) (p.beta a) := by
-  unfold IsAdmissibleContinuous InTriangle
+    IsAdmissibleContinuousLegacy p ↔ ∀ a, InTriangle (p.alpha a) (p.beta a) := by
+  unfold IsAdmissibleContinuousLegacy InTriangle
   rfl
+
+theorem inTriangle_of_admissibleContinuousLegacy (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
+    InTriangle (p.alpha a) (p.beta a) :=
+  (admissible_iff_axes p).mp h a
 
 /-- Orthogonal foot of `(x, y)` on the line `α + β = π/2`. -/
 noncomputable def wallPoint (x y : ℝ) : ℝ × ℝ :=
@@ -386,30 +391,41 @@ noncomputable def express (p : TorsionParams) : TorsionParams where
   alpha := fun a => (axisExpress (p.alpha a) (p.beta a)).1
   beta := fun a => (axisExpress (p.alpha a) (p.beta a)).2
 
-theorem express_admissible (p : TorsionParams) : IsAdmissibleContinuous (express p) := by
+theorem express_admissible_legacy (p : TorsionParams) : IsAdmissibleContinuousLegacy (express p) := by
   rw [admissible_iff_axes]
   intro a
   simpa [express] using axisExpress_mem (p.alpha a) (p.beta a)
 
-theorem express_eq_of_admissible {p : TorsionParams} (h : IsAdmissibleContinuous p) :
+theorem express_admissible (p : TorsionParams) : IsAdmissibleContinuous (express p) :=
+  legacy_admissible_implies_mismatch _ (express_admissible_legacy p)
+
+theorem express_eq_of_in_triangle {p : TorsionParams} (h : ∀ a, InTriangle (p.alpha a) (p.beta a)) :
     express p = p := by
   refine congrArg₂ TorsionParams.mk ?_ ?_
   · funext a
-    have he := axisExpress_triangle ((admissible_iff_axes p).mp h a)
+    have he := axisExpress_triangle (h a)
     simp [he]
   · funext a
-    have he := axisExpress_triangle ((admissible_iff_axes p).mp h a)
+    have he := axisExpress_triangle (h a)
     simp [he]
 
+theorem express_eq_of_admissible {p : TorsionParams} (h : IsAdmissibleContinuousLegacy p) :
+    express p = p :=
+  express_eq_of_in_triangle (admissible_iff_axes p |>.mp h)
+
+theorem express_eq_of_admissibleContinuous {p : TorsionParams} (h : ∀ a, InTriangle (p.alpha a) (p.beta a)) :
+    express p = p :=
+  express_eq_of_in_triangle h
+
 theorem express_idempotent (p : TorsionParams) : express (express p) = express p :=
-  express_eq_of_admissible (express_admissible p)
+  express_eq_of_admissible (express_admissible_legacy p)
 
 theorem abs_J_express_le (p : TorsionParams) :
-    |J (express p)| ≤ 3 * Real.pi ^ 2 / 8 :=
-  torsion_bound_raw_continuous_pi_sq _ (express_admissible p)
+    |J (express p)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+  torsion_bound_raw_legacy_continuous (express p) (express_admissible_legacy p)
 
 theorem mass_express_le (p : TorsionParams) :
-    mass (express p) ≤ 3 * Real.pi ^ 2 / 8 :=
+    mass (express p) ≤ 3 * Real.pi ^ 2 / 2 :=
   mass_bound_raw_continuous _ (express_admissible p)
 
 /-- Squared Euclidean distance of the six coefficients. -/
@@ -419,11 +435,11 @@ def sqDist (p q : TorsionParams) : ℝ :=
 private theorem sq_sub_comm (a b : ℝ) : (a - b) ^ 2 = (b - a) ^ 2 := by
   ring
 
-theorem sqDist_express_le (p q : TorsionParams) (hq : IsAdmissibleContinuous q) :
+theorem sqDist_express_le (p q : TorsionParams) (hq : IsAdmissibleContinuousLegacy q) :
     sqDist (express p) p ≤ sqDist q p := by
   unfold sqDist
   refine Finset.sum_le_sum fun a _ => ?_
-  have h := axisSq_le (x := p.alpha a) (y := p.beta a) ((admissible_iff_axes q).mp hq a)
+  have h := axisSq_le (x := p.alpha a) (y := p.beta a) (inTriangle_of_admissibleContinuousLegacy q hq a)
   have h1 := sq_sub_comm ((express p).alpha a) (p.alpha a)
   have h2 := sq_sub_comm ((express p).beta a) (p.beta a)
   have h3 := sq_sub_comm (q.alpha a) (p.alpha a)
@@ -432,14 +448,14 @@ theorem sqDist_express_le (p q : TorsionParams) (hq : IsAdmissibleContinuous q) 
   linarith
 
 theorem eq_express_of_sqDist_le {p q : TorsionParams}
-    (hq : IsAdmissibleContinuous q)
+    (hq : IsAdmissibleContinuousLegacy q)
     (hle : sqDist q p ≤ sqDist (express p) p) :
     q = express p := by
   have hgap : ∀ a : Fin 3,
       0 ≤ (p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
         ((p.alpha a - (express p).alpha a) ^ 2 + (p.beta a - (express p).beta a) ^ 2) := by
     intro a
-    have := axisSq_le (x := p.alpha a) (y := p.beta a) ((admissible_iff_axes q).mp hq a)
+    have := axisSq_le (x := p.alpha a) (y := p.beta a) (inTriangle_of_admissibleContinuousLegacy q hq a)
     simpa [express] using this
   have hsum :
       ∑ a : Fin 3,
@@ -476,10 +492,10 @@ theorem eq_express_of_sqDist_le {p q : TorsionParams}
     linarith
   refine congrArg₂ TorsionParams.mk ?_ ?_
   · funext a
-    exact ((axisSq_eq_zero_iff ((admissible_iff_axes q).mp hq a)).mp (by
+    exact ((axisSq_eq_zero_iff (inTriangle_of_admissibleContinuousLegacy q hq a)).mp (by
       simpa [express] using haxis a)).1
   · funext a
-    exact ((axisSq_eq_zero_iff ((admissible_iff_axes q).mp hq a)).mp (by
+    exact ((axisSq_eq_zero_iff (inTriangle_of_admissibleContinuousLegacy q hq a)).mp (by
       simpa [express] using haxis a)).2
 
 /-- Componentwise sum of two torsional bivectors. -/
@@ -538,15 +554,20 @@ theorem J_axisBoost (a0 : Fin 3) (φ : ℝ) :
   rw [J_coef, Fin.sum_univ_three]
   fin_cases a0 <;> simp [axisBoost] <;> ring
 
-theorem axisBoost_admissible {a0 : Fin 3} {φ : ℝ}
+theorem axisBoost_admissible_legacy {a0 : Fin 3} {φ : ℝ}
     (h0 : 0 ≤ φ) (hφ : φ ≤ Real.pi / 2) :
-    IsAdmissibleContinuous (axisBoost a0 φ) := by
+    IsAdmissibleContinuousLegacy (axisBoost a0 φ) := by
   intro a
   by_cases h : a = a0
-  · simp only [axisBoost, h, ite_true]
-    exact ⟨h0, le_refl 0, by linarith⟩
+  · simp only [axisBoost, h, ite_true]; exact ⟨h0, le_rfl, by linarith [hφ]⟩
   · simp only [axisBoost, h, ite_false]
-    exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+    exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+
+theorem axisBoost_admissible {a0 : Fin 3} {φ : ℝ}
+    (h0 : 0 ≤ φ) (hφ : φ ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisBoost a0 φ) :=
+  legacy_admissible_implies_mismatch (axisBoost a0 φ)
+    (axisBoost_admissible_legacy (a0 := a0) (h0 := h0) (hφ := hφ))
 
 theorem sumParams_replicate_axisBoost (n : ℕ) (a0 : Fin 3) (φ : ℝ) :
     sumParams (List.replicate n (axisBoost a0 φ)) = axisBoost a0 ((n : ℝ) * φ) := by
@@ -605,7 +626,7 @@ theorem J_internal_repeat_gt_ceiling {n : ℕ} (hn : 2 ≤ n) (a0 : Fin 3) :
   nlinarith [hn2, hπ]
 
 theorem internal_unbounded_expressed_bounded :
-    (∀ p : TorsionParams, |J (express p)| ≤ 3 * Real.pi ^ 2 / 8) ∧
+    (∀ p : TorsionParams, |J (express p)| ≤ 3 * (Real.pi / 2) ^ 2 / 2) ∧
       (∀ C : ℝ, ∃ p : TorsionParams, C < J p) := by
   refine ⟨abs_J_express_le, ?_⟩
   intro C
@@ -640,13 +661,16 @@ theorem J_two_quarter_boosts (a0 : Fin 3) :
   have hs : IsAdmissibleContinuous s := by
     rw [hs_eq]
     exact axisBoost_admissible (a0 := a0) (φ := Real.pi / 2) (by positivity) le_rfl
+  have hsLegacy : IsAdmissibleContinuousLegacy s := by
+    simpa [hs_eq] using
+      axisBoost_admissible_legacy (a0 := a0) (h0 := by positivity) (hφ := le_rfl)
   have hJ : J p = Real.pi ^ 2 / 32 := by
     rw [J_axisBoost]
     ring
   have hJs : J s = Real.pi ^ 2 / 8 := by
     rw [hs_eq, J_axisBoost]
     ring
-  refine ⟨hp, hs, express_eq_of_admissible hs, hJ, hJs, ?_, ?_⟩
+  refine ⟨hp, hs, express_eq_of_admissible hsLegacy, hJ, hJs, ?_, ?_⟩
   · rw [hJ]
     ring
   · rw [hJs, hJ]
@@ -676,15 +700,20 @@ theorem J_add_mass_axisPair (a0 : Fin 3) (α β : ℝ) :
   rw [J_axisPair, mass_axisPair]
   ring
 
-theorem axisPair_admissible {a0 : Fin 3} {α β : ℝ}
+theorem axisPair_admissible_legacy {a0 : Fin 3} {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ Real.pi / 2) :
-    IsAdmissibleContinuous (axisPair a0 α β) := by
+    IsAdmissibleContinuousLegacy (axisPair a0 α β) := by
   intro a
   by_cases h : a = a0
-  · simp only [axisPair, h, ite_true]
-    exact ⟨hα, hβ, hs⟩
+  · simp only [axisPair, h, ite_true]; exact ⟨hα, hβ, hs⟩
   · simp only [axisPair, h, ite_false]
-    exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+    exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+
+theorem axisPair_admissible {a0 : Fin 3} {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisPair a0 α β) :=
+  legacy_admissible_implies_mismatch (axisPair a0 α β)
+    (axisPair_admissible_legacy (a0 := a0) (hα := hα) (hβ := hβ) (hs := hs))
 
 /-- Equal rapidity added to both sectors of one axis. -/
 def axisBalance (a0 : Fin 3) (ε : ℝ) : TorsionParams :=
@@ -884,7 +913,11 @@ theorem eighth_balance_inside (a0 : Fin 3) :
   have hJs : J s = 3 * Real.pi ^ 2 / 128 := by
     rw [hs_eq, J_axisPair]
     ring
-  refine ⟨hadm, express_eq_of_admissible hadm, hJb, hJs, ?_⟩
+  have hsLegacy : IsAdmissibleContinuousLegacy s := by
+    rw [hs_eq]
+    exact axisPair_admissible_legacy (a0 := a0)
+      (hα := by positivity) (hβ := by positivity) (hs := by linarith [Real.pi_pos])
+  refine ⟨hadm, express_eq_of_admissible hsLegacy, hJb, hJs, ?_⟩
   rw [hJb, hJs]
   nlinarith [Real.pi_pos]
 

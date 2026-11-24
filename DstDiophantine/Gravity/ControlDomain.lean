@@ -46,13 +46,13 @@ private theorem axis_signed_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).2
+    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).2
 
 private theorem axis_signed_ge {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     -(Real.pi / 2) ^ 2 ≤ axisSigned p a :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2)).1
+    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).1
 
 private theorem e2_ge_two_K_T_sub_three_K_sq {K t₀ t₁ t₂ : ℝ}
     (h₀ : t₀ ≤ K) (h₁ : t₁ ≤ K) (h₂ : t₂ ≤ K) :
@@ -199,11 +199,11 @@ theorem controlCeiling_neg (Jval : ℝ) :
 theorem pi_sq_mass_le_envelope (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
     Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + controlEnvelopeNum (J p) := by
-  have hC := pi_sq_mass_le_shield_ceiling_add_J_sq p h
+  have hC := pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous p h
   have hA := pi_sq_mass_le_attractive_lobe p h
   have hR := pi_sq_mass_le_repulsive_lobe p h
   have ha : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤ 4 * J p ^ 2 := by
-    linarith [hC]
+    linarith [le_trans hC (by nlinarith [Real.pi_pos])]
   have hb : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
       (2 * J p - Real.pi ^ 2 / 2) ^ 2 := by
     linarith [hA]

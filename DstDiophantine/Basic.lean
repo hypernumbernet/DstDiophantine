@@ -113,7 +113,7 @@ export Framework (PowerSumEquation evalPowerSum powerSumMotor powerSumMotor_one_
   discrete_amplification_contradiction
   coarse_height_gap coarse_condition_of_le_two_mul
   coarse_height_gap_of_le_two_mul coarse_discrete_contradiction
-  CoarseAmplificationWitness coarse_implies_lt_four_mul
+  CoarseAmplificationWitness coarse_implies_lt_two_mul
   scale_admissible_iff_four_mul_le)
 export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorTorsion
   fermat_balanced_seed_constant_lt_one fermat_balanced_seed_height_eq

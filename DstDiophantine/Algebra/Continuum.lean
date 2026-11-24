@@ -13,7 +13,7 @@ torsional scalar `J` on the admissible cone (`exists_discrete_approx_J`).
 
 namespace DstDiophantine
 
-open Operations Real Discrete Invariant
+open Operations Real Discrete Invariant Admissible
 
 namespace Continuum
 
@@ -67,7 +67,7 @@ private theorem natFloor_near {N : ℕ} (hNpos : 0 < N) (x : ℝ) :
 theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleContinuous p) {ε : ℝ}
     (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
-      ∃ t : Discrete.DiscreteTorsion N, Discrete.IsAdmissible t ∧
+      ∃ t : Discrete.DiscreteTorsion N, Admissible.IsAdmissibleContinuous (Discrete.toTorsionParams t) ∧
         (∀ a : Fin 3, |p.alpha a - (Discrete.toTorsionParams t).alpha a| < ε) ∧
         (∀ a : Fin 3, |p.beta a - (Discrete.toTorsionParams t).beta a| < ε) := by
   set N₀ := Nat.ceil (4 * Real.pi / ε) + 1
@@ -88,7 +88,7 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
     { n := fun a => (αk a : ZMod N), m := fun a => (βk a : ZMod N) }
   have hαklt (a : Fin 3) : αk a < N := by
     have hα : p.alpha a < 2 * Real.pi := by
-      have hle : p.alpha a ≤ Real.pi / 2 := by linarith [(h a).1, (h a).2.1, (h a).2.2]
+      have hle := admissibleContinuous_alpha_le_pi p h a
       linarith [Real.pi_pos, hle,
         show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
     have hlt : p.alpha a * (N : ℝ) < (N : ℝ) * (2 * Real.pi) := by
@@ -100,7 +100,7 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
     exact (Nat.floor_lt hpos).2 ((div_lt_iff₀ hπ).2 hlt)
   have hβklt (a : Fin 3) : βk a < N := by
     have hβ : p.beta a < 2 * Real.pi := by
-      have hle : p.beta a ≤ Real.pi / 2 := by linarith [(h a).2.1, (h a).1, (h a).2.2]
+      have hle := admissibleContinuous_beta_le_pi p h a
       linarith [Real.pi_pos, hle,
         show (Real.pi / 2 : ℝ) < 2 * Real.pi from by nlinarith [Real.pi_pos]]
     have hlt : p.beta a * (N : ℝ) < (N : ℝ) * (2 * Real.pi) := by
@@ -116,16 +116,13 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
     simp [t, ZMod.val_natCast, Nat.mod_eq_of_lt (hβklt a)]
   refine ⟨N, hNe, t, ?_, ?_, ?_⟩
   · intro a
-    have hαle := natFloor_le hNpos (h a).1
-    have hβle := natFloor_le hNpos (h a).2.1
-    rw [Discrete.toTorsionParams_alpha, Discrete.toTorsionParams_beta, hαval, hβval]
-    have hαnn' : 0 ≤ 2 * Real.pi * (αk a : ℝ) / N := by
-      simpa [Discrete.toTorsionParams_alpha, hαval] using
-        Discrete.toTorsionParams_alpha_nonneg t a
-    have hβnn' : 0 ≤ 2 * Real.pi * (βk a : ℝ) / N := by
-      simpa [Discrete.toTorsionParams_beta, hβval] using
-        Discrete.toTorsionParams_beta_nonneg t a
-    exact ⟨hαnn', hβnn', add_le_add hαle hβle |>.trans (h a).2.2⟩
+    rcases h a with ⟨hα, ⟨hβ, ⟨_hβπ, hsum⟩⟩⟩
+    have hαle := natFloor_le hNpos hα
+    have hβle := natFloor_le hNpos hβ
+    simp [Discrete.toTorsionParams_alpha, Discrete.toTorsionParams_beta, hαval, hβval]
+    refine ⟨by positivity, by positivity, ?_, ?_⟩
+    · exact hβle.trans (by linarith [hβ, hsum, Real.pi_pos])
+    · exact add_le_add hαle hβle |>.trans hsum
   · intro a
     have hαnn := (h a).1
     rw [Discrete.toTorsionParams_alpha, hαval, abs_lt]
@@ -140,42 +137,44 @@ theorem exists_discrete_approx {p : TorsionParams} (h : Discrete.IsAdmissibleCon
     · linarith [natFloor_le hNpos hβnn, natFloor_near hNpos (p.beta a), hstep]
 
 private theorem abs_sq_sub_le_of_coord_bound {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y)
-    (hxle : x ≤ Real.pi / 2) (hyle : y ≤ Real.pi / 2) {δ : ℝ}
+    (hxle : x ≤ Real.pi) (hyle : y ≤ Real.pi) {δ : ℝ}
     (hδnn : 0 ≤ δ) (hδ : |x - y| ≤ δ) :
-    |x ^ 2 - y ^ 2| ≤ δ * Real.pi := by
+    |x ^ 2 - y ^ 2| ≤ δ * (2 * Real.pi) := by
   have hfac : |x ^ 2 - y ^ 2| = |x - y| * |x + y| := by
     rw [← abs_mul, axis_sq_diff_eq]
-  have hsum : |x + y| ≤ Real.pi := by
+  have hsum : |x + y| ≤ 2 * Real.pi := by
     rw [abs_of_nonneg (add_nonneg hx hy)]
-    linarith
+    linarith [hxle, hyle]
   calc |x ^ 2 - y ^ 2|
       = |x - y| * |x + y| := hfac
-    _ ≤ δ * Real.pi := mul_le_mul hδ hsum (abs_nonneg _) hδnn
+    _ ≤ δ * (2 * Real.pi) := mul_le_mul hδ hsum (abs_nonneg _) hδnn
 
 private theorem abs_J_sub_le_of_coord_bound {p q : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (hq : IsAdmissibleContinuous q) {δ : ℝ}
+    (hp : Admissible.IsAdmissibleContinuous p) (hq : Admissible.IsAdmissibleContinuous q) {δ : ℝ}
     (hδnn : 0 ≤ δ)
     (hα : ∀ a, |p.alpha a - q.alpha a| ≤ δ) (hβ : ∀ a, |p.beta a - q.beta a| ≤ δ) :
-    |J p - J q| ≤ 3 * δ * Real.pi := by
+    |J p - J q| ≤ 6 * δ * Real.pi := by
   have haxis (a : Fin 3) :
       |(p.alpha a ^ 2 - p.beta a ^ 2) - (q.alpha a ^ 2 - q.beta a ^ 2)| ≤
-        2 * δ * Real.pi := by
+        4 * δ * Real.pi := by
     have h1 := abs_sq_sub_le_of_coord_bound (hp a).1 (hq a).1
-      (by linarith [(hp a).2.1, (hp a).2.2]) (by linarith [(hq a).2.1, (hq a).2.2])
+      (by linarith [admissibleContinuous_alpha_le_pi p hp a])
+      (by linarith [admissibleContinuous_alpha_le_pi q hq a])
       hδnn (hα a)
     have h2 := abs_sq_sub_le_of_coord_bound (hp a).2.1 (hq a).2.1
-      (by linarith [(hp a).1, (hp a).2.2]) (by linarith [(hq a).1, (hq a).2.2])
+      (by linarith [admissibleContinuous_beta_le_pi p hp a])
+      (by linarith [admissibleContinuous_beta_le_pi q hq a])
       hδnn (hβ a)
     calc |(p.alpha a ^ 2 - p.beta a ^ 2) - (q.alpha a ^ 2 - q.beta a ^ 2)|
         = |(p.alpha a ^ 2 - q.alpha a ^ 2) - (p.beta a ^ 2 - q.beta a ^ 2)| := by ring_nf
       _ ≤ |p.alpha a ^ 2 - q.alpha a ^ 2| + |p.beta a ^ 2 - q.beta a ^ 2| := abs_sub _ _
-      _ ≤ δ * Real.pi + δ * Real.pi := by gcongr
-      _ = 2 * δ * Real.pi := by ring
+      _ ≤ δ * (2 * Real.pi) + δ * (2 * Real.pi) := by gcongr
+      _ = 4 * δ * Real.pi := by ring
   have hJp : J p = (1 / 2) * ∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2) := J_coef p
   have hJq : J q = (1 / 2) * ∑ a : Fin 3, (q.alpha a ^ 2 - q.beta a ^ 2) := J_coef q
   have hsum :
       |∑ a : Fin 3, ((p.alpha a ^ 2 - p.beta a ^ 2) - (q.alpha a ^ 2 - q.beta a ^ 2))| ≤
-        3 * (2 * δ * Real.pi) := by
+        3 * (4 * δ * Real.pi) := by
     simp only [Fin.sum_univ_three]
     have h01 := abs_add_le
       ((p.alpha 0 ^ 2 - p.beta 0 ^ 2) - (q.alpha 0 ^ 2 - q.beta 0 ^ 2))
@@ -195,34 +194,32 @@ private theorem abs_J_sub_le_of_coord_bound {p q : TorsionParams}
   rw [hdiff]
   calc (1 / 2 : ℝ) *
         |∑ a : Fin 3, ((p.alpha a ^ 2 - p.beta a ^ 2) - (q.alpha a ^ 2 - q.beta a ^ 2))|
-      ≤ (1 / 2) * (3 * (2 * δ * Real.pi)) := by gcongr
-    _ = 3 * δ * Real.pi := by ring
+      ≤ (1 / 2) * (3 * (4 * δ * Real.pi)) := by gcongr
+    _ = 6 * δ * Real.pi := by ring
 
-theorem exists_discrete_approx_J {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ}
+theorem exists_discrete_approx_J {p : TorsionParams} (h : Admissible.IsAdmissibleContinuous p) {ε : ℝ}
     (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
-      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+      ∃ t : DiscreteTorsion N, Admissible.IsAdmissibleContinuous (toTorsionParams t) ∧
         |J p - J (toTorsionParams t)| < ε := by
-  set δ := ε / (6 * Real.pi) with hδdef
+  set δ := ε / (12 * Real.pi) with hδdef
   have hπ : 0 < Real.pi := Real.pi_pos
   have hδ : 0 < δ := by
     dsimp [δ]; positivity
-  obtain ⟨N, hNe, t, hadm, hα, hβ⟩ := exists_discrete_approx h hδ
-  refine ⟨N, hNe, t, hadm, ?_⟩
-  have hq : IsAdmissibleContinuous (toTorsionParams t) :=
-    (Discrete.isAdmissible_iff_admissibleContinuous t).mp hadm
+  obtain ⟨N, hNe, t, hq, hα, hβ⟩ := exists_discrete_approx h hδ
+  refine ⟨N, hNe, t, hq, ?_⟩
   have hle := abs_J_sub_le_of_coord_bound h hq hδ.le
     (fun a => (hα a).le) (fun a => (hβ a).le)
-  have hbound : 3 * δ * Real.pi = ε / 2 := by
+  have hbound : 6 * δ * Real.pi = ε / 2 := by
     rw [hδdef]; field_simp; ring
   calc |J p - J (toTorsionParams t)|
-      ≤ 3 * δ * Real.pi := hle
+      ≤ 6 * δ * Real.pi := hle
     _ = ε / 2 := hbound
     _ < ε := by linarith
 
 theorem dense_discrete_JNormalized {y ε : ℝ} (hy : |y| ≤ 1) (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
-      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+      ∃ t : DiscreteTorsion N, Admissible.IsAdmissibleContinuous (toTorsionParams t) ∧
         |JNormalized (toTorsionParams t) - y| < ε := by
   obtain ⟨p, hadm, hp⟩ := exists_admissible_JNormalized y hy
   set δJ := ε * (3 * Real.pi ^ 2 / 8) with hδJ

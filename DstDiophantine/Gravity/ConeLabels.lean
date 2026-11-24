@@ -102,21 +102,24 @@ theorem dualOnly_rigid_iff_F {p : TorsionParams} (hp : IsAdmissibleContinuous p)
     refine torsionParams_ext hα ?_
     funext a
     have hqa : q.alpha a = Real.pi / 2 := by rw [hα]; exact (hpure a).1
-    have hle := admissibleContinuous_beta_le_dualWall hq a
+    have hsum := admissibleContinuous_sum_le q hq a
+    have hle : q.beta a ≤ dualWall (p.alpha a) := by
+      rw [hqa, dualWall]
+      linarith [hsum, Real.pi_pos]
     have hnn := admissibleContinuous_beta_nonneg q hq a
     have hqβ : q.beta a = 0 := by
-      simp [dualWall, hqa] at hle
-      linarith
+      linarith [hle, hnn]
     have hpβ : p.beta a = 0 := (hpure a).2
     simp [hqβ, hpβ]
 
-theorem exists_dualOnly_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
-    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
+theorem exists_dualOnly_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuousLegacy p) :
+    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuousLegacy q,
       q.alpha = p.alpha ∧ Logic.ofParams q hq = .B) ↔
       J (dualWallParams p) < 0 := by
   constructor
   · rintro ⟨q, hq, hα, hB⟩
-    have hJ : J q < 0 := (JNormalized_lt_zero_iff q).mp ((ofParams_eq_B_iff_neg hq).mp hB)
+    have hJ : J q < 0 := (JNormalized_lt_zero_iff q).mp ((ofParams_eq_B_iff_neg
+      (legacy_admissible_implies_mismatch q hq)).mp hB)
     exact lt_of_le_of_lt (J_dual_only_ge_wall hα hq) hJ
   · intro hwall
     refine ⟨dualWallParams p, isAdmissibleContinuous_dualWallParams hp, rfl, ?_⟩

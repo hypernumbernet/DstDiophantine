@@ -176,12 +176,12 @@ theorem phiMax_gt_half_pi : Real.pi / 2 < phiMax := by
     Real.lt_sqrt_of_sq_lt (by norm_num : (1 : ℝ) ^ 2 < 3)
   nlinarith [Real.pi_pos]
 
-theorem not_admissible_pureBoost_phiMax :
-    ¬ IsAdmissibleContinuous (pureBoost phiMax) := by
+theorem not_admissibleLegacy_pureBoost_phiMax :
+    ¬ IsAdmissibleContinuousLegacy (pureBoost phiMax) := by
   intro h
   have hsum := (h 0).2.2
   simp only [pureBoost, add_zero] at hsum
-  exact absurd hsum phiMax_gt_half_pi.not_ge
+  exact not_le_of_gt phiMax_gt_half_pi hsum
 
 /-! ### Saturated chart (definition only; no metric re-proof) -/
 
@@ -287,17 +287,17 @@ theorem JMax_eq_three_single_axis :
 
 theorem J_pureBoost_of_admissible {θ : ℝ}
     (h : IsAdmissibleContinuous (pureBoost θ)) :
-    J (pureBoost θ) ≤ Real.pi ^ 2 / 8 := by
+    J (pureBoost θ) ≤ (3 / 2) * Real.pi ^ 2 := by
   have hθ := (isAdmissibleContinuous_pureBoost_iff θ).mp h
   rw [J_pureBoost]
-  have : θ ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+  have : θ ^ 2 ≤ Real.pi ^ 2 := by
     nlinarith [hθ.1, hθ.2, Real.pi_pos]
   nlinarith
 
 theorem phiMax_inverts_three_axis_ceiling_on_one_axis :
     J (pureBoost phiMax) = JMax ∧
-      ¬ IsAdmissibleContinuous (pureBoost phiMax) :=
-  ⟨J_pureBoost_phiMax, not_admissible_pureBoost_phiMax⟩
+      ¬ IsAdmissibleContinuousLegacy (pureBoost phiMax) :=
+  ⟨J_pureBoost_phiMax, not_admissibleLegacy_pureBoost_phiMax⟩
 
 /-! ### Rational envelopes (machine-checked numerics) -/
 

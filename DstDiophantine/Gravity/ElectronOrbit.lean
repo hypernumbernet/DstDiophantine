@@ -127,12 +127,16 @@ theorem gammaSEqual_neg_right_of_first_node {x : ℝ}
   exact hlt
 
 /-- A Coulombic node is a force divergence, not a clock freeze. -/
+theorem primary_node_overlap_zero {x : ℝ} (h : gammaSEqual x = 0) :
+    MismatchAngle.axisOverlapScalar (2 * x) (2 * x) = 0 :=
+  by simpa [gammaSEqual_eq_overlap_primary] using h
+
 theorem node_is_force_divergence_not_clock_freeze {x : ℝ}
-    (h : gammaSEqual x = 0) :
+    (h : gammaSEqualLegacy x = 0) :
     gammaS (2 * x) (2 * x) = 0 ∧
       gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 ∧
       0 < gammaEff (2 * x) (2 * x) :=
-  ⟨by rw [← gammaSEqual_eq_gammaS]; exact h, gammaEff_eq_gammaB_sq_at_node h,
+  ⟨by rw [← gammaSEqual_eq_gammaS]; exact h, gammaEff_eq_gammaB_sq_at_nodeLegacy h,
     gammaEff_pos _ _⟩
 
 /-! ### Inward equal-scale tower versus outward Bohr shells -/
@@ -196,22 +200,16 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
 
 private lemma gammaSEqual_neg_on_even_right (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k) < x)
-    (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 := by
-  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
-  have hnode := (branchNode_spec (2 * k)).1
-  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
-  have hnI : branchNode (2 * k) ∈
-      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictAntiOn_gammaSEqual_even k hnI hxI hxlo
-  rwa [hzero] at hlt
+    (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 :=
+  have hxhi' : x < ((2 * k : ℕ) : ℝ) * π + π := lt_of_le_of_lt hxhi (by linarith [pi_pos])
+  gammaSEqual_neg_after_branchNode (2 * k) (even_two_mul k) hxlo hxhi'
 
 private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
-    (hxhi : x < branchNode (2 * k + 1)) : gammaSEqual x < 0 := by
-  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
-    (branchNode_spec (2 * k + 1)).2
+    (hxhi : x < branchNode (2 * k + 1)) : gammaSEqualLegacy x < 0 := by
+  have hzero : gammaSEqualLegacy (branchNode (2 * k + 1)) = 0 := by
+    unfold gammaSEqualLegacy branchNode
+    simp [cos_add, cos_nat_mul_pi, sin_nat_mul_pi, cos_pi_div_two, mul_zero, sub_zero]
   have hnode := (branchNode_spec (2 * k + 1)).1
   have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π)
       (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
@@ -224,9 +222,10 @@ private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
 
 private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k + 1) < x)
-    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqual x := by
-  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
-    (branchNode_spec (2 * k + 1)).2
+    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqualLegacy x := by
+  have hzero : gammaSEqualLegacy (branchNode (2 * k + 1)) = 0 := by
+    unfold gammaSEqualLegacy branchNode
+    simp [cos_add, cos_nat_mul_pi, sin_nat_mul_pi, cos_pi_div_two, mul_zero, sub_zero]
   have hnode := (branchNode_spec (2 * k + 1)).1
   have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π)
       (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
@@ -239,20 +238,12 @@ private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
 
 private lemma gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k : ℕ) : ℝ) * π ≤ x)
-    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x := by
-  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
-  have hnode := (branchNode_spec (2 * k)).1
-  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
-  have hnI : branchNode (2 * k) ∈
-      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictAntiOn_gammaSEqual_even k hxI hnI hxhi
-  rwa [hzero] at hlt
+    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x :=
+  gammaSEqual_pos_before_branchNode (2 * k) (even_two_mul k) hxlo hxhi
 
 theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k)) (branchNode (2 * k + 1))) :
-    gammaSEqual x < 0 := by
+    gammaSEqualLegacy x < 0 := by
   have hmid : ((2 * k : ℕ) : ℝ) * π + π = ((2 * k + 1 : ℕ) : ℝ) * π := by
     push_cast
     ring
@@ -262,18 +253,28 @@ theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
 
 theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k + 1)) (branchNode (2 * k + 2))) :
-    0 < gammaSEqual x := by
+    0 < gammaSEqualLegacy x := by
   have hmid : ((2 * k + 1 : ℕ) : ℝ) * π + π = ((2 * (k + 1) : ℕ) : ℝ) * π := by
     push_cast
     ring
   rcases le_or_gt x (((2 * k + 1 : ℕ) : ℝ) * π + π) with hle | hgt
   · exact gammaSEqual_pos_on_odd_right k hx.1 hle
-  · exact gammaSEqual_pos_on_even_left (k + 1) (by linarith [hmid]) hx.2
+  · have hzero : gammaSEqualLegacy (branchNode (2 * (k + 1))) = 0 := by
+      unfold gammaSEqualLegacy branchNode
+      simp [cos_add, cos_nat_mul_pi, sin_nat_mul_pi, cos_pi_div_two, mul_zero, sub_zero]
+    have hnode := (branchNode_spec (2 * (k + 1))).1
+    have hxI : x ∈ Icc (((2 * (k + 1) : ℕ) : ℝ) * π) (((2 * (k + 1) : ℕ) : ℝ) * π + π) :=
+      ⟨by linarith [hmid], le_of_lt (lt_trans hx.2 hnode.2)⟩
+    have hnI : branchNode (2 * (k + 1)) ∈
+        Icc (((2 * (k + 1) : ℕ) : ℝ) * π) (((2 * (k + 1) : ℕ) : ℝ) * π + π) :=
+      ⟨hnode.1.le, hnode.2.le⟩
+    have hlt := legacy_strictAntiOn_gammaSEqual_even (k + 1) hxI hnI hx.2
+    rwa [hzero] at hlt
 
 theorem successive_gaps_opposite_sign (n : ℕ) {x y : ℝ}
     (hx : x ∈ Ioo (branchNode n) (branchNode (n + 1)))
     (hy : y ∈ Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
-    gammaSEqual x * gammaSEqual y < 0 := by
+    gammaSEqualLegacy x * gammaSEqualLegacy y < 0 := by
   rcases Nat.even_or_odd n with hn | hn
   · obtain ⟨k, hk⟩ := hn
     have hn2 : n = 2 * k := by rw [hk, ← two_mul]

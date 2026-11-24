@@ -58,7 +58,17 @@ theorem seedU_to_F_is_U {k : ℕ} (hk : 2 ≤ k) : (seedU_to_F hk).collapse = .U
       pow_le_pow_left₀ (div_nonneg (by norm_num) hkpos.le) hle 2
     have h14 : (1 / 2 : ℝ) ^ 2 = 1 / 4 := by norm_num
     linarith
-  exact (ofParams_eq_U_iff (seedU_to_F hk).admissible).mpr ⟨h0, h1⟩
+  have hne : (seedU_to_F hk).measure ≠ 1 := by
+    rw [hJ]
+    intro h1
+    have hk2 : (2 : ℝ) ≤ k := Nat.cast_le.mpr hk
+    have hdiv : (1 : ℝ) / k ≤ 1 / 2 :=
+      one_div_le_one_div_of_le (by norm_num : (0 : ℝ) < 2) hk2
+    have hsq : ((1 : ℝ) / k) ^ 2 ≤ (1 / 2 : ℝ) ^ 2 :=
+      pow_le_pow_left₀ (div_nonneg (by norm_num) (Nat.cast_nonneg k)) hdiv 2
+    rw [h1] at hsq
+    norm_num at hsq
+  exact (ofParams_eq_U_iff (seedU_to_F hk).admissible).mpr ⟨h0, hne⟩
 
 theorem seedU_to_F_scale_admissible {k : ℕ} (hk : 2 ≤ k) :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (seedU_to_F hk).params) := by
@@ -73,8 +83,8 @@ theorem seedU_to_F_scale_admissible {k : ℕ} (hk : 2 ≤ k) :
   have hβ : (scaleTorsion (k : ℝ) (seedU_to_F hk).params).beta a = 0 := by
     simp [scaleTorsion, seedU_to_F, pureHyperbolicRay]
   have hπ : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-  refine ⟨by simp [hα, hπ], by simp [hβ], ?_⟩
-  simp [hα, hβ]
+  refine ⟨by simp [hα, hπ], by simp [hβ], by linarith [Real.pi_pos],
+    by simpa [hα, hβ, add_zero] using (show (Real.pi / 2 : ℝ) ≤ Real.pi from by linarith [Real.pi_pos])⟩
 
 theorem seedU_to_F_scales_to_F {k : ℕ} (hk : 2 ≤ k) :
     (⟨scaleTorsion (k : ℝ) (seedU_to_F hk).params,
@@ -103,25 +113,22 @@ theorem seedU_exits_is_U : seedU_exits.collapse = .U := by
   exact (ofParams_eq_U_iff seedU_exits.admissible).mpr (by constructor <;> linarith [hJ])
 
 theorem seedU_exits_not_admissible :
-    ¬ IsAdmissibleContinuous (scaleTorsion (2 : ℝ) seedU_exits.params) := by
+    ¬ IsAdmissibleContinuous (scaleTorsion (4 : ℝ) seedU_exits.params) := by
   intro h
-  have hbound := torsion_bound_continuous _ h
-  have hJ : JNormalized (scaleTorsion (2 : ℝ) seedU_exits.params) = 2 := by
-    rw [JNormalized_scale]
-    unfold seedU_exits
-    rw [JNormalized_pureHyperbolicRay, Real.sq_sqrt (by norm_num)]
-    norm_num
-  rw [hJ] at hbound
-  norm_num at hbound
+  have hsum := admissibleContinuous_sum_le _ h (0 : Fin 3)
+  dsimp [scaleTorsion, seedU_exits, pureHyperbolicRay, Amplification.scaleTorsion] at hsum
+  have hsq : (Real.sqrt (1 / 2)) ^ 2 = 1 / 2 := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 1 / 2)
+  nlinarith [Real.sqrt_nonneg (1 / 2), hsq, Real.pi_pos]
 
 theorem seedU_exits_unclassified :
-    classify? (JNormalized (scaleTorsion (2 : ℝ) seedU_exits.params)) = none := by
-  have hJ : JNormalized (scaleTorsion (2 : ℝ) seedU_exits.params) = 2 := by
+    classify? (JNormalized (scaleTorsion (4 : ℝ) seedU_exits.params)) = none := by
+  have hJ : JNormalized (scaleTorsion (4 : ℝ) seedU_exits.params) = 8 := by
     rw [JNormalized_scale]
     unfold seedU_exits
     rw [JNormalized_pureHyperbolicRay, Real.sq_sqrt (by norm_num)]
     norm_num
-  simp [classify?, hJ]
+  have hgt : |(8 : ℝ)| ≤ 4 ↔ False := by norm_num
+  simpa [hJ, hgt] using rfl
 
 /-! ### Vacuum vs balanced-massive dynamics -/
 
@@ -151,9 +158,12 @@ theorem scale_balancedMassive_stays_balanced {k : ℕ} (hk : 1 ≤ k) {a : Ampli
 noncomputable def seedBalanced_stays {k : ℕ} (hk : 1 ≤ k) : Amplitude :=
   ⟨balancedRay (1 / (k : ℝ)), by
     have hk0 : 0 ≤ (1 : ℝ) / k := by positivity
-    have hk1 : (1 : ℝ) / k ≤ 1 := by
-      have : (1 : ℝ) ≤ k := Nat.one_le_cast.mpr hk
-      exact (div_le_one (lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1) this)).mpr this
+    have hk1 : (1 : ℝ) / k ≤ 2 := by
+      have hkpos : 0 < (k : ℝ) := Nat.cast_pos.mpr (Nat.succ_le_iff.mp hk)
+      calc (1 : ℝ) / k ≤ 1 / 1 :=
+          one_div_le_one_div_of_le (by norm_num : (0 : ℝ) < 1) (Nat.one_le_cast.mpr hk)
+        _ = 1 := by norm_num
+        _ ≤ 2 := by norm_num
     exact isAdmissibleContinuous_balancedRay hk0 hk1⟩
 
 theorem seedBalanced_stays_isBalancedMassive {k : ℕ} (hk : 1 ≤ k) :
@@ -185,10 +195,11 @@ theorem seedBalanced_stays_scales_balanced {k : ℕ} (hk : 1 ≤ k) :
     (seedBalanced_stays_scale_admissible hk)
 
 theorem balancedAmplitude_exits_not_admissible :
-    ¬ IsAdmissibleContinuous (scaleTorsion (2 : ℝ) balancedAmplitude.params) := by
-  have heq : scaleTorsion (2 : ℝ) balancedAmplitude.params = balancedRay 2 := by
+    ¬ IsAdmissibleContinuous (scaleTorsion (3 : ℝ) balancedAmplitude.params) := by
+  have heq : scaleTorsion (3 : ℝ) balancedAmplitude.params = balancedRay 3 := by
     simp [balancedAmplitude, scaleTorsion_balancedRay]
-  simpa [heq] using not_admissible_balancedRay_of_one_lt (by norm_num : (1 : ℝ) < 2)
+  intro h
+  exact not_admissible_balancedRay_of_two_lt (by norm_num : (2 : ℝ) < 3) (by simpa [heq] using h)
 
 /-- Cone exit is invisible to signed height: `classify?` stays `T`. -/
 theorem balancedAmplitude_scale_classify_T :

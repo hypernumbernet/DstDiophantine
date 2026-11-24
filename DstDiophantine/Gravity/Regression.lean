@@ -2190,7 +2190,7 @@ example {p : Operations.TorsionParams}
 example (p : Operations.TorsionParams)
     (h : Admissible.IsAdmissibleContinuous p) :
     Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 :=
-  pi_sq_mass_le_shield_ceiling_add_J_sq p h
+  pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous p h
 
 example (p : Operations.TorsionParams)
     (h : Admissible.IsAdmissibleContinuous p) :

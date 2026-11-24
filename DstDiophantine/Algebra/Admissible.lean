@@ -110,6 +110,12 @@ theorem admissible_mismatch_implies_beta_rotation_half_le_pi (p : TorsionParams)
     p.beta a / 2 ≤ Real.pi / 2 :=
   div_le_div_of_nonneg_right (admissibleContinuous_beta_le_pi p h a) (by norm_num)
 
+/-- Pack axis data in the legacy triangle `α,β ≥ 0` and `α+β ≤ π/2`. -/
+theorem half_pi_axis_admissibleContinuous {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
+    0 ≤ α ∧ 0 ≤ β ∧ β ≤ Real.pi ∧ α + β ≤ Real.pi :=
+  ⟨hα, hβ, by linarith [hβ, hsum, Real.pi_pos], le_trans hsum (by linarith [Real.pi_pos])⟩
+
 end Admissible
 
 end DstDiophantine

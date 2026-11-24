@@ -18,6 +18,8 @@ nor of FLT.
 
 namespace DstDiophantine
 
+open Admissible
+
 namespace Embedding
 
 open Operations Amplification Admissible Motor Real Generators
@@ -149,11 +151,18 @@ theorem isAdmissibleContinuous_fermatTorsion {a b c : ℤ}
     IsAdmissibleContinuous (fermatTorsion a b c ha hc) := by
   intro i
   fin_cases i
-  · refine ⟨hα, by simp [fermatTorsion], ?_⟩
-    simpa [fermatTorsion] using hαπ
-  · refine ⟨by simp [fermatTorsion], hβ, ?_⟩
-    simpa [fermatTorsion] using hβπ
-  · simp [fermatTorsion, Real.pi_div_two_pos.le]
+  · rw [fermatTorsion]
+    rcases half_pi_axis_admissibleContinuous hα le_rfl (by simpa using hαπ) with
+      ⟨hα0, hβ0, hβπ, hsum⟩
+    exact ⟨hα0, hβ0, hβπ, hsum⟩
+  · rw [fermatTorsion]
+    rcases half_pi_axis_admissibleContinuous le_rfl hβ (by simpa using hβπ) with
+      ⟨hα0, hβ0, hβπ, hsum⟩
+    exact ⟨hα0, hβ0, hβπ, hsum⟩
+  · rw [fermatTorsion]
+    rcases half_pi_axis_admissibleContinuous le_rfl le_rfl (by linarith [Real.pi_pos]) with
+      ⟨hα0, hβ0, hβπ, hsum⟩
+    exact ⟨hα0, hβ0, hβπ, hsum⟩
 
 /-! ### Dual-axis seed: closed form, interference, and non-factorisation -/
 

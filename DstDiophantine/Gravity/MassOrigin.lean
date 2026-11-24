@@ -148,13 +148,15 @@ theorem aligned_axis_not_freefall {φ : ℝ} (hφ : φ ≠ 0) :
 theorem aligned_admissible {φ : ℝ} (h0 : 0 ≤ φ) (hw : φ ≤ Real.pi / 4) :
     IsAdmissibleContinuous (axisParams φ φ) := by
   intro a
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
   · simp only [axisParams]
     split_ifs <;> linarith
   · simp only [axisParams]
     split_ifs <;> linarith
   · simp only [axisParams]
     split_ifs <;> linarith [Real.pi_pos]
+  · simp only [axisParams]
+    split_ifs <;> linarith [Real.pi_pos, hw]
 
 theorem dual_aligned_not_admissible {φ : ℝ} (hφ : 0 < φ) :
     ¬ IsAdmissibleContinuous (dualParams (axisParams φ φ)) := by

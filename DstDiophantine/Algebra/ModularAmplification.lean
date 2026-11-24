@@ -94,6 +94,10 @@ def amplifyDiscrete (k : ℕ) (t : DiscreteTorsion N) : DiscreteTorsion N where
 def windingTotal (k : ℕ) (t : DiscreteTorsion N) : ℕ :=
   ∑ a : Fin 3, (windingCoord k (t.n a) + windingCoord k (t.m a))
 
+private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
+    (h : 2 * k * s ≤ N) (hle : v ≤ s) : k * v < N := by
+  omega
+
 private theorem four_mul_le_implies_mul_lt (k v N : ℕ) [NeZero N]
     (h : 4 * k * v ≤ N) : k * v < N := by
   have hle : k * v ≤ 4 * k * v := by
@@ -123,20 +127,20 @@ theorem admissible_scale_implies_windingTotal_eq_zero (k : ℕ)
   intro a _
   have hn : windingCoord k (t.n a) = 0 := by
     apply windingCoord_eq_zero_of_lt
-    have hbound : 4 * k * (t.n a).val ≤ N := by
-      have := hfour a
-      have hle : 4 * k * (t.n a).val ≤ 4 * k * ((t.n a).val + (t.m a).val) :=
-        Nat.mul_le_mul_left _ (Nat.le_add_right _ _)
-      exact hle.trans this
-    exact four_mul_le_implies_mul_lt k (t.n a).val N hbound
+    have hbound := hfour a
+    have hle : k * (t.n a).val ≤ k * ((t.n a).val + (t.m a).val) :=
+      Nat.mul_le_mul_left _ (Nat.le_add_right _ _)
+    have hboundNat : 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by exact_mod_cast hfour a
+    exact windingCoord_eq_zero_of_lt
+      (coord_lt_of_two_mul_sum k (t.n a).val ((t.n a).val + (t.m a).val) N hboundNat hle)
   have hm : windingCoord k (t.m a) = 0 := by
     apply windingCoord_eq_zero_of_lt
-    have hbound : 4 * k * (t.m a).val ≤ N := by
-      have := hfour a
-      have hle : 4 * k * (t.m a).val ≤ 4 * k * ((t.n a).val + (t.m a).val) :=
-        Nat.mul_le_mul_left _ (Nat.le_add_left _ _)
-      exact hle.trans this
-    exact four_mul_le_implies_mul_lt k (t.m a).val N hbound
+    have hbound := hfour a
+    have hle : k * (t.m a).val ≤ k * ((t.n a).val + (t.m a).val) :=
+      Nat.mul_le_mul_left _ (Nat.le_add_left _ _)
+    have hboundNat : 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by exact_mod_cast hfour a
+    exact windingCoord_eq_zero_of_lt
+      (coord_lt_of_two_mul_sum k (t.m a).val ((t.n a).val + (t.m a).val) N hboundNat hle)
   simp [hn, hm]
 theorem windingTotal_ne_zero_implies_not_admissible_scale (k : ℕ)
     (t : DiscreteTorsion N) (hw : windingTotal k t ≠ 0) :

@@ -100,22 +100,23 @@ theorem JNormalized_oneStep {N : ℕ} (hN : 0 < N) :
   field_simp [hNz]
   ring
 
-theorem oneAxisDual_admissible {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
-    IsAdmissibleContinuous (oneAxisDual θ) := by
+theorem oneAxisDual_admissible_legacy {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
+    IsAdmissibleContinuousLegacy (oneAxisDual θ) := by
   intro a
   match a with
   | 0 =>
     rw [oneAxisDual_alpha, oneAxisDual_beta_0]
-    simp only [le_rfl, zero_add, true_and]
-    exact ⟨h0, hθ⟩
+    exact ⟨h0, hθ, by simp⟩
   | 1 =>
     rw [oneAxisDual_alpha, oneAxisDual_beta_1]
-    simp only [le_rfl, add_zero, true_and]
-    exact div_nonneg Real.pi_pos.le (by norm_num)
+    exact ⟨le_rfl, le_rfl, by simp⟩
   | 2 =>
     rw [oneAxisDual_alpha, oneAxisDual_beta_2]
-    simp only [le_rfl, add_zero, true_and]
-    exact div_nonneg Real.pi_pos.le (by norm_num)
+    exact ⟨le_rfl, le_rfl, by simp⟩
+
+theorem oneAxisDual_admissible {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (oneAxisDual θ) :=
+  legacy_admissible_implies_mismatch _ (oneAxisDual_admissible_legacy h0 hθ)
 
 theorem stepAngle_le_half_pi {N : ℕ} (hN : 4 ≤ N) : stepAngle N ≤ Real.pi / 2 := by
   unfold stepAngle
@@ -177,11 +178,15 @@ theorem alignedAngle_ge_half_pi {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n) :
       _ = (n : ℝ) * 2 * Real.pi * 2 := by ring
   exact (mul_le_mul_iff_of_pos_right (by norm_num : (0 : ℝ) < 2)).mp htwice
 
-theorem collective_admissible {n N : ℕ} (h : 4 * n ≤ N) :
-    IsAdmissibleContinuous (alignedSteps n N) :=
-  oneAxisDual_admissible
+theorem collective_admissible_legacy {n N : ℕ} (h : 4 * n ≤ N) :
+    IsAdmissibleContinuousLegacy (alignedSteps n N) :=
+  oneAxisDual_admissible_legacy
     (mul_nonneg (Nat.cast_nonneg _) (stepAngle_nonneg N))
     (alignedAngle_le_half_pi h)
+
+theorem collective_admissible {n N : ℕ} (h : 4 * n ≤ N) :
+    IsAdmissibleContinuous (alignedSteps n N) :=
+  legacy_admissible_implies_mismatch _ (collective_admissible_legacy h)
 
 theorem collective_square {n N : ℕ} (hN : 0 < N) :
     JNormalized (alignedSteps n N) =
@@ -925,7 +930,7 @@ theorem express_aligned (n N : ℕ) :
 
 theorem expressed_own_plus_mutual {n N : ℕ} (hN : 0 < N) (h : 4 * n ≤ N) :
     JNormalized (express (alignedSteps n N)) = ownSum n N + mutualSum n N := by
-  rw [express_eq_of_admissible (collective_admissible h)]
+  rw [express_eq_of_admissible (collective_admissible_legacy h)]
   exact height_own_plus_mutual hN
 
 theorem expressed_locks_while_mutual_grows {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n)
@@ -1611,9 +1616,9 @@ theorem occupation_above_aligned {n0 n1 n2 N : ℕ} (hN : 0 < N)
     mul_neg_of_pos_of_neg (by positivity) hneg
   linarith
 
-theorem occupation_admissible {n0 n1 n2 N : ℕ}
+theorem occupation_admissible_legacy {n0 n1 n2 N : ℕ}
     (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
-    IsAdmissibleContinuous (occupation n0 n1 n2 N) := by
+    IsAdmissibleContinuousLegacy (occupation n0 n1 n2 N) := by
   have hβ {n : ℕ} (hn : 4 * n ≤ N) :
       0 ≤ (n : ℝ) * stepAngle N ∧ (n : ℝ) * stepAngle N ≤ Real.pi / 2 := by
     refine ⟨?_, alignedAngle_le_half_pi hn⟩
@@ -1621,11 +1626,16 @@ theorem occupation_admissible {n0 n1 n2 N : ℕ}
   intro a
   fin_cases a
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h0).1, by simpa using (hβ h0).2⟩
+    exact ⟨le_rfl, (hβ h0).1, by simpa using (hβ h0).2⟩⟩
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h1).1, by simpa using (hβ h1).2⟩
+    exact ⟨le_rfl, (hβ h1).1, by simpa using (hβ h1).2⟩⟩
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩
+    exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩⟩
+
+theorem occupation_admissible {n0 n1 n2 N : ℕ}
+    (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
+    IsAdmissibleContinuous (occupation n0 n1 n2 N) :=
+  legacy_admissible_implies_mismatch _ (occupation_admissible_legacy h0 h1 h2)
 
 theorem move_height_delta {n m k N : ℕ} (hn : 0 < n) (_hN : 0 < N) :
     JNormalized (occupation (n - 1) (m + 1) k N) -
@@ -1733,7 +1743,7 @@ theorem expressed_occupation_sum (n0 n1 n2 N : ℕ) :
 
 theorem express_empty (N : ℕ) :
     JNormalized (express (alignedSteps 0 N)) = 0 := by
-  rw [express_eq_of_admissible (collective_admissible (n := 0) (Nat.zero_le N))]
+  rw [express_eq_of_admissible (collective_admissible_legacy (n := 0) (Nat.zero_le N))]
   simp [alignedSteps, JNormalized_oneAxisDual]
 
 theorem expressed_two_locks {n0 n1 N : ℕ} (hN : 0 < N)
@@ -1768,7 +1778,7 @@ theorem expressed_occupation_squares {n0 n1 n2 N : ℕ}
     (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
     JNormalized (express (occupation n0 n1 n2 N)) =
       ((n0 : ℝ) ^ 2 + (n1 : ℝ) ^ 2 + (n2 : ℝ) ^ 2) * farHeight N := by
-  rw [express_eq_of_admissible (occupation_admissible h0 h1 h2), occupation_sq]
+  rw [express_eq_of_admissible (occupation_admissible_legacy h0 h1 h2), occupation_sq]
 
 theorem expressed_lock_plus {n0 n1 n2 N : ℕ} (hN : 0 < N)
     (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :
@@ -1778,10 +1788,10 @@ theorem expressed_lock_plus {n0 n1 n2 N : ℕ} (hN : 0 < N)
     rw [express_aligned]
     exact collective_locks hN h0
   have hb : JNormalized (express (alignedSteps n1 N)) = (n1 : ℝ) ^ 2 * farHeight N := by
-    rw [express_eq_of_admissible (collective_admissible h1), collective_square hN]
+    rw [express_eq_of_admissible (collective_admissible_legacy h1), collective_square hN]
     rfl
   have hc : JNormalized (express (alignedSteps n2 N)) = (n2 : ℝ) ^ 2 * farHeight N := by
-    rw [express_eq_of_admissible (collective_admissible h2), collective_square hN]
+    rw [express_eq_of_admissible (collective_admissible_legacy h2), collective_square hN]
     rfl
   rw [expressed_occupation_sum, ha, hb, hc]
   ring
@@ -1839,8 +1849,8 @@ theorem expressed_aligned_lowest {n0 n1 n2 N : ℕ}
   have h2 : 4 * n2 ≤ N := by
     have hle : n2 ≤ n0 + n1 + n2 := by omega
     exact le_trans (Nat.mul_le_mul_left 4 hle) hsum
-  rw [express_eq_of_admissible (collective_admissible hsum),
-    express_eq_of_admissible (occupation_admissible h0 h1 h2)]
+  rw [express_eq_of_admissible (collective_admissible_legacy hsum),
+    express_eq_of_admissible (occupation_admissible_legacy h0 h1 h2)]
   exact occupation_above_aligned hN hcross
 
 theorem equal_vs_aligned {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
@@ -1857,7 +1867,7 @@ theorem equal_vs_aligned {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
   have hthree : 4 * (3 * n) ≤ N := by simpa [show 4 * (3 * n) = 12 * n by omega] using h
   have halign : JNormalized (express (alignedSteps (3 * n) N)) =
       (9 * (n : ℝ) ^ 2) * farHeight N := by
-    rw [express_eq_of_admissible (collective_admissible hthree), collective_square hN]
+    rw [express_eq_of_admissible (collective_admissible_legacy hthree), collective_square hN]
     have hcast : ((3 * n : ℕ) : ℝ) = 3 * (n : ℝ) := by norm_cast
     rw [hcast]
     unfold farHeight
@@ -1882,8 +1892,8 @@ theorem expressed_move_raises {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
       JNormalized (express (occupation (n - 1) (m + 1) k N)) := by
   have hm : 4 * m ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.le_succ m)) h1
   have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
-  rw [express_eq_of_admissible (occupation_admissible h0 hm hk),
-    express_eq_of_admissible (occupation_admissible hsrc h1 hk)]
+  rw [express_eq_of_admissible (occupation_admissible_legacy h0 hm hk),
+    express_eq_of_admissible (occupation_admissible_legacy hsrc h1 hk)]
   exact move_to_thinner_raises hn hN hthin
 
 theorem expressed_move_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
@@ -1892,8 +1902,8 @@ theorem expressed_move_lowers {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
       JNormalized (express (occupation n m k N)) := by
   have hm : 4 * m ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.le_succ m)) h1
   have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
-  rw [express_eq_of_admissible (occupation_admissible hsrc h1 hk),
-    express_eq_of_admissible (occupation_admissible h0 hm hk)]
+  rw [express_eq_of_admissible (occupation_admissible_legacy hsrc h1 hk),
+    express_eq_of_admissible (occupation_admissible_legacy h0 hm hk)]
   exact move_to_fuller_lowers hn hN hfull
 
 theorem expressed_move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
@@ -1905,8 +1915,8 @@ theorem expressed_move_balances {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N)
     exact le_trans (Nat.mul_le_mul_left 4 hle) h0
   have hdest : 4 * (m + 1) ≤ N := by simpa [heq] using h0
   have hsrc : 4 * (n - 1) ≤ N := le_trans (Nat.mul_le_mul_left 4 (Nat.sub_le n 1)) h0
-  rw [express_eq_of_admissible (occupation_admissible hsrc hdest hk),
-    express_eq_of_admissible (occupation_admissible h0 hm hk)]
+  rw [express_eq_of_admissible (occupation_admissible_legacy hsrc hdest hk),
+    express_eq_of_admissible (occupation_admissible_legacy h0 hm hk)]
   exact move_balances hn hN heq
 
 /-! ### The same aligned steps, read on a spinor -/
@@ -2134,7 +2144,7 @@ theorem height_square_defect_below {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤
     exact lt_of_lt_of_le (by decide : (0 : ℕ) < 8) (le_trans h8 hcone)
   have hlt : n < N := by omega
   refine ⟨?_, aligned_defect_below_square hn hlt⟩
-  rw [express_eq_of_admissible (collective_admissible hcone), collective_square hpos]
+  rw [express_eq_of_admissible (collective_admissible_legacy hcone), collective_square hpos]
   rfl
 
 theorem full_turn_locks {N : ℕ} (hN : 0 < N) :

@@ -17,9 +17,9 @@ open MismatchAngle
 theorem axisOverlapLegacy_eq_gammaS (α β : ℝ) : axisOverlapLegacy α β = gammaS α β := rfl
 
 theorem axisOverlap_eq_gammaSEqual_balanced (x : ℝ) :
-    axisOverlapLegacy (2 * x) (2 * x) = gammaSEqual x := by
+    axisOverlapLegacy (2 * x) (2 * x) = gammaSEqualLegacy x := by
   rw [axisOverlapLegacy_balanced]
-  unfold gammaSEqual
+  unfold gammaSEqualLegacy
   ring_nf
 
 theorem axisOverlap_primary_balanced (x : ℝ) :

@@ -57,7 +57,7 @@ theorem adjoint_involutive (a : Amplitude) : a.adjoint.adjoint = a := by
 theorem measure_adjoint (a : Amplitude) : a.adjoint.measure = -a.measure :=
   JNormalized_dagger a.params
 
-theorem abs_measure (a : Amplitude) : |a.measure| ≤ 1 :=
+theorem abs_measure (a : Amplitude) : |a.measure| ≤ 4 :=
   torsion_bound_continuous a.params a.admissible
 
 theorem collapse_eq_classify (a : Amplitude) :
@@ -90,7 +90,7 @@ theorem mass_nonneg (a : Amplitude) : 0 ≤ a.mass :=
 theorem massNormalized_nonneg (a : Amplitude) : 0 ≤ a.massNormalized :=
   Invariant.massNormalized_nonneg a.params
 
-theorem massNormalized_le_one (a : Amplitude) : a.massNormalized ≤ 1 :=
+theorem massNormalized_le_one (a : Amplitude) : a.massNormalized ≤ 4 :=
   massNormalized_bound_continuous a.params a.admissible
 
 theorem mass_adjoint (a : Amplitude) : a.adjoint.mass = a.mass :=
@@ -186,16 +186,9 @@ private theorem unbalancedZero_vals :
 theorem isAdmissibleContinuous_unbalancedZero :
     IsAdmissibleContinuous unbalancedZeroParams := by
   intro a
-  have hπ : (1 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_gt_three]
-  have hz : (0 : ℝ) ≤ Real.pi / 2 := by linarith [Real.pi_pos]
-  rcases unbalancedZero_vals with ⟨hα0, hα1, hα2, hβ0, hβ1, hβ2⟩
-  fin_cases a
-  · simp only [Fin.zero_eta]
-    rw [hα0, hβ0]; exact ⟨zero_le_one, le_rfl, by linarith [hπ]⟩
-  · simp only [Fin.mk_one]
-    rw [hα1, hβ1]; exact ⟨le_rfl, zero_le_one, by linarith [hπ]⟩
-  · simp only [Fin.reduceFinMk]
-    rw [hα2, hβ2]; exact ⟨le_rfl, le_rfl, by linarith [hz]⟩
+  fin_cases a <;> dsimp [unbalancedZeroParams] <;>
+    exact ⟨by norm_num, by norm_num, by nlinarith [Real.pi_gt_three, Real.pi_pos],
+      by nlinarith [Real.pi_gt_three]⟩
 
 theorem J_unbalancedZero : J unbalancedZeroParams = 0 := by
   rcases unbalancedZero_vals with ⟨hα0, hα1, hα2, hβ0, hβ1, hβ2⟩

@@ -25,19 +25,19 @@ open _root_.DstDiophantine.Embedding
 
 theorem amplification_implies_seed_le (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
     (hadm : IsAdmissibleContinuous (pureBoost (k * θ))) :
-    |JNormalized (pureBoost θ)| ≤ 1 / (k : ℝ) ^ 2 := by
+    |JNormalized (pureBoost θ)| ≤ 4 / (k : ℝ) ^ 2 := by
   have hbound := torsion_bound_continuous _ hadm
   rw [JNormalized_pow_amplify] at hbound
   have hk2 : 0 < (k : ℝ) ^ 2 := by
     have : 0 < (k : ℝ) := Nat.cast_pos.mpr hk
     positivity
-  have hmul : |(k : ℝ) ^ 2 * JNormalized (pureBoost θ)| ≤ 1 := hbound
+  have hmul : |(k : ℝ) ^ 2 * JNormalized (pureBoost θ)| ≤ 4 := hbound
   rw [abs_mul, abs_of_pos hk2] at hmul
   exact (le_div_iff₀ hk2).mpr (by linarith [hmul])
 
 theorem continuous_amplification_contradiction (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
     (hadm : IsAdmissibleContinuous (pureBoost (k * θ)))
-    (hbig : (1 : ℝ) / (k : ℝ) ^ 2 < |JNormalized (pureBoost θ)|) :
+    (hbig : (4 : ℝ) / (k : ℝ) ^ 2 < |JNormalized (pureBoost θ)|) :
     False :=
   not_le_of_gt hbig (amplification_implies_seed_le θ hk hadm)
 
@@ -77,7 +77,7 @@ theorem discrete_nonzero_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
 
 theorem discrete_amplification_contradiction {N : ℕ} [NeZero N] {k : ℕ} (hk : 1 ≤ k)
     (t : AdmissibleClass N)
-    (hlb : (1 : ℝ) / (k : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t))
+    (hlb : (4 : ℝ) / (k : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t))
     (hadm :
       IsAdmissibleContinuous
         (scaleTorsion (k : ℝ) (AdmissibleClass.toParams t))) :
@@ -88,9 +88,9 @@ theorem discrete_amplification_contradiction {N : ℕ} [NeZero N] {k : ℕ} (hk 
   have hk2 : 0 < (k : ℝ) ^ 2 := by
     have : 0 < (k : ℝ) := Nat.cast_pos.mpr hk
     positivity
-  have hmul : |(k : ℝ) ^ 2 * JNormalized (AdmissibleClass.toParams t)| ≤ 1 := hbound
+  have hmul : |(k : ℝ) ^ 2 * JNormalized (AdmissibleClass.toParams t)| ≤ 4 := hbound
   rw [abs_mul, abs_of_pos hk2] at hmul
-  have hle : |JNormalized (AdmissibleClass.toParams t)| ≤ 1 / (k : ℝ) ^ 2 :=
+  have hle : |JNormalized (AdmissibleClass.toParams t)| ≤ 4 / (k : ℝ) ^ 2 :=
     (le_div_iff₀ hk2).mpr (by linarith [hmul])
   exact not_le_of_gt hlb hle
 
@@ -109,6 +109,10 @@ theorem coarse_height_gap {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
   simpa only [one_mul] using (by exact_mod_cast hcoarse :
     (3 : ℝ) * (N : ℝ) ^ 2 < 16 * (k : ℝ) ^ 2)
 
+theorem coarse_condition_of_le_one_mul {N k : ℕ} (hk : 1 ≤ k)
+    (hN : N ≤ k) : 12 * N ^ 2 < 16 * k ^ 2 := by
+  nlinarith [Nat.pow_le_pow_left hN 2]
+
 theorem coarse_condition_of_le_two_mul {N k : ℕ} (hk : 1 ≤ k)
     (hN : N ≤ 2 * k) : 3 * N ^ 2 < 16 * k ^ 2 := by
   have hsquare : N ^ 2 ≤ (2 * k) ^ 2 := Nat.pow_le_pow_left hN 2
@@ -120,18 +124,30 @@ theorem coarse_height_gap_of_le_two_mul {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
     (1 : ℝ) / (k : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
   coarse_height_gap hk (coarse_condition_of_le_two_mul hk hN)
 
+theorem coarse_height_gap_four {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) :
+    (4 : ℝ) / (k : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+  have hk2 : 0 < (k : ℝ) ^ 2 := by
+    simpa using pow_pos (Nat.cast_pos.mpr (Nat.zero_lt_of_lt hk)) 2
+  have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
+  have hN3 : 0 < (3 : ℝ) * (N : ℝ) ^ 2 := mul_pos (by norm_num) (pow_pos hNpos 2)
+  have hcast : (12 : ℝ) * (N : ℝ) ^ 2 < (16 : ℝ) * (k : ℝ) ^ 2 := by exact_mod_cast hcoarse
+  rw [div_lt_div_iff₀ hk2 hN3]
+  field_simp
+  nlinarith
+
 theorem coarse_discrete_contradiction {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
-    (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) (t : AdmissibleClass N)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) (t : AdmissibleClass N)
     (hne : latticeMismatch t.val ≠ 0)
     (hadm :
       IsAdmissibleContinuous
         (scaleTorsion (k : ℝ) (AdmissibleClass.toParams t))) :
     False := by
-  have hgap := coarse_height_gap hk hcoarse
   have hlb := discrete_nonzero_height_lb t.val hne
+  have hgap := coarse_height_gap_four hk hcoarse
   have hseed :
-      (1 : ℝ) / (k : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t) :=
-    hgap.trans_le hlb
+      (4 : ℝ) / (k : ℝ) ^ 2 < torsionHeight (AdmissibleClass.toParams t) :=
+    lt_of_lt_of_le hgap hlb
   exact discrete_amplification_contradiction hk t hseed hadm
 
 /-! ### Coarse amplification witness (legacy / diagnostic payload) -/
@@ -144,7 +160,7 @@ structure CoarseAmplificationWitness (N k : ℕ) [NeZero N] where
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (AdmissibleClass.toParams t))
 
 theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
-    (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False :=
   coarse_discrete_contradiction hk hcoarse w.t w.nonzero w.admissible_after
 
@@ -153,85 +169,86 @@ theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
 theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (hk0 : 0 ≤ (k : ℝ)) :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t)) ↔
-      ∀ a : Fin 3, 4 * k * ((t.n a).val + (t.m a).val) ≤ N := by
+      ∀ a : Fin 3, 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by
   have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
   have hπ : 0 < Real.pi := Real.pi_pos
   constructor
   · intro hadm a
     have hαnn := toTorsionParams_alpha_nonneg t a
     have hβnn := toTorsionParams_beta_nonneg t a
-    have hsum := (hadm a).2.2
+    have hsum := Admissible.admissibleContinuous_sum_le _ hadm a
     have hcomb :
-        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi / 2 := by
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi := by
       convert hsum using 1
       simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
       ring
-    have hcleared : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
+    have hcleared : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
       have h1 :=
         mul_le_mul_of_nonneg_left hcomb
-          (by positivity : (0 : ℝ) ≤ 2 * N / Real.pi)
+          (by positivity : (0 : ℝ) ≤ N / Real.pi)
       have hL :
-          2 * N / Real.pi *
+          N / Real.pi *
               ((k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N)) =
-            (4 * k * ((t.n a).val + (t.m a).val) : ℝ) := by
-        field_simp; ring
-      have hR : 2 * N / Real.pi * (Real.pi / 2) = (N : ℝ) := by field_simp
+            (2 * k * ((t.n a).val + (t.m a).val) : ℝ) := by
+        field_simp [Real.pi_ne_zero, hNpos.ne']
+      have hR : N / Real.pi * Real.pi = (N : ℝ) := by field_simp [Real.pi_ne_zero]
       rwa [hL, hR] at h1
     exact_mod_cast hcleared
   · intro h a
     have hαnn := toTorsionParams_alpha_nonneg t a
     have hβnn := toTorsionParams_beta_nonneg t a
-    refine ⟨mul_nonneg hk0 hαnn, mul_nonneg hk0 hβnn, ?_⟩
-    have hineq : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
-      exact_mod_cast h a
-    have hhalf : (k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ 1 / 2 := by
-      have h1 : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) / N ≤ 1 :=
+    have hineq : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by exact_mod_cast h a
+    have hone : (k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ 1 := by
+      have h1 : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) / N ≤ 1 :=
         (div_le_one hNpos).mpr hineq
-      have : 2 * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) ≤ 1 := by
-        convert h1 using 1
-        field_simp; ring
-      linarith
+      convert h1 using 1 <;> field_simp <;> ring
     have hπbound :
-        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤
-          Real.pi / 2 := by
-      calc (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N)
-          = Real.pi * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) := by
-              ring
-        _ ≤ Real.pi * (1 / 2) := mul_le_mul_of_nonneg_left hhalf hπ.le
-        _ = Real.pi / 2 := by ring
-    convert hπbound using 1
-    simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
-    ring
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi := by
+      calc
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) =
+            Real.pi * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) := by ring
+        _ ≤ Real.pi * 1 := mul_le_mul_of_nonneg_left hone Real.pi_pos.le
+        _ = Real.pi := by ring
+    have hβπ : (k : ℝ) * (2 * Real.pi * ↑(t.m a).val / N) ≤ Real.pi :=
+      le_trans (by gcongr; exact_mod_cast Nat.le_add_left (t.m a).val _) hπbound
+    refine ⟨mul_nonneg hk0 hαnn, mul_nonneg hk0 hβnn, ?_, ?_⟩
+    · convert hβπ using 1 <;> simp [scaleTorsion, toTorsionParams_beta]
+    · simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
+      have heq :
+          (k : ℝ) * (2 * Real.pi * ((t.n a).val : ℝ) / N) +
+              (k : ℝ) * (2 * Real.pi * ((t.m a).val : ℝ) / N) =
+            (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) := by ring
+      calc
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val : ℝ) / N) +
+            (k : ℝ) * (2 * Real.pi * ((t.m a).val : ℝ) / N) =
+            (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) := heq
+        _ ≤ Real.pi := hπbound
 
-theorem coarse_implies_lt_four_mul {N k : ℕ} (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) :
-    N < 4 * k := by
+theorem coarse_implies_lt_two_mul {N k : ℕ} (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) :
+    N < 2 * k := by
   by_contra hge
-  have hN : 4 * k ≤ N := Nat.le_of_not_gt hge
-  have hsq : (4 * k) ^ 2 ≤ N ^ 2 := Nat.pow_le_pow_left hN 2
-  have : 16 * k ^ 2 ≤ N ^ 2 := by
-    convert hsq using 1
-    ring
-  have : 16 * k ^ 2 ≤ 3 * N ^ 2 := by
-    have h3 : N ^ 2 ≤ 3 * N ^ 2 := Nat.le_mul_of_pos_left _ (by decide : 0 < 3)
-    exact this.trans h3
-  exact absurd hcoarse (not_lt_of_ge this)
+  have hN : 2 * k ≤ N := Nat.le_of_not_gt hge
+  have hNsq : (2 * k) ^ 2 ≤ N ^ 2 := Nat.pow_le_pow_left hN 2
+  nlinarith
 
 theorem scale_admissible_forces_zero {N k : ℕ} [NeZero N] (_hk : 1 ≤ k)
-    (hN : N < 4 * k) (t : DiscreteTorsion N)
+    (hN : N < 2 * k) (t : DiscreteTorsion N)
     (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
     ∀ a : Fin 3, t.n a = 0 ∧ t.m a = 0 := by
   have hk0 : 0 ≤ (k : ℝ) := Nat.cast_nonneg _
   intro a
   have hfour := (scale_admissible_iff_four_mul_le t hk0).mp hadm a
   have hsum : (t.n a).val + (t.m a).val = 0 := by
-    have hlt : 4 * k * ((t.n a).val + (t.m a).val) < 4 * k * 1 := by
-      simpa using lt_of_le_of_lt hfour hN
-    exact Nat.lt_one_iff.mp (Nat.lt_of_mul_lt_mul_left hlt)
+    by_contra hne
+    have hpos : 0 < (t.n a).val + (t.m a).val := Nat.pos_iff_ne_zero.mpr hne
+    have h1 : 1 ≤ (t.n a).val + (t.m a).val := Nat.succ_le_of_lt hpos
+    have h2k : 2 * k ≤ N := by nlinarith [hfour, h1]
+    linarith
   have ⟨hn, hm⟩ := Nat.add_eq_zero_iff.mp hsum
   exact ⟨(ZMod.val_eq_zero _).mp hn, (ZMod.val_eq_zero _).mp hm⟩
 
 theorem scale_admissible_forces_latticeMismatch_zero {N k : ℕ} [NeZero N]
-    (hk : 1 ≤ k) (hN : N < 4 * k) (t : DiscreteTorsion N)
+    (hk : 1 ≤ k) (hN : N < 2 * k) (t : DiscreteTorsion N)
     (hadm : IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t))) :
     latticeMismatch t = 0 := by
   have hzm := scale_admissible_forces_zero hk hN t hadm
@@ -243,9 +260,9 @@ theorem scale_admissible_forces_latticeMismatch_zero {N k : ℕ} [NeZero N]
 
 /-- Equation-independent: uninhabited under the coarse threshold. -/
 theorem CoarseAmplificationWitness.empty_of_coarse {N k : ℕ} [NeZero N]
-    (hk : 1 ≤ k) (hcoarse : 3 * N ^ 2 < 16 * k ^ 2)
+    (hk : 1 ≤ k) (hcoarse : 12 * N ^ 2 < 16 * k ^ 2)
     (w : CoarseAmplificationWitness N k) : False := by
-  have hN := coarse_implies_lt_four_mul hcoarse
+  have hN := coarse_implies_lt_two_mul hcoarse
   have h0 :=
     scale_admissible_forces_latticeMismatch_zero hk hN w.t.val w.admissible_after
   exact w.nonzero h0

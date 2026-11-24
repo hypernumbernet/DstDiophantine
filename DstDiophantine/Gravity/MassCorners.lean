@@ -40,11 +40,11 @@ theorem isAdmissibleContinuous_massCorner (usual : Fin 3 → Bool) :
   · have hα : (massCorner usual).alpha a = 0 := by simp [massCorner, ha]
     have hβ : (massCorner usual).beta a = Real.pi / 2 := by simp [massCorner, ha]
     rw [hα, hβ]
-    exact ⟨le_rfl, by positivity, by simp⟩
+    exact ⟨le_rfl, by positivity, Real.pi_div_two_pos.le, by simp⟩
   · have hα : (massCorner usual).alpha a = Real.pi / 2 := by simp [massCorner, ha]
     have hβ : (massCorner usual).beta a = 0 := by simp [massCorner, ha]
     rw [hα, hβ]
-    exact ⟨by positivity, le_rfl, by simp⟩
+    exact ⟨by positivity, le_rfl, Real.pi_div_two_pos.le, by simp⟩
 
 private theorem axis_sq_sum_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
     (massCorner usual).alpha a ^ 2 + (massCorner usual).beta a ^ 2 = (Real.pi / 2) ^ 2 := by
