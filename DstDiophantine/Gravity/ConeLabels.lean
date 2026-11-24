@@ -8,7 +8,7 @@ import DstDiophantine.Logic.Interpretation
 
 Four regime labels still read `JNormalized` (derived diagnostic). On one axis,
 overlap sign for repulsive shell physics is `axisOverlapScalar` (`MismatchAngle`);
-see `RepulsionOverlap.overlap_neg_not_J_neg_witness`.
+see `RepulsionOverlap.primary_overlap_zero_legacy_neg_witness`.
 -/
 
 namespace DstDiophantine
@@ -346,9 +346,10 @@ theorem regime_B_still_J_negative (p : TorsionParams) (hp : IsAdmissibleContinuo
 theorem regime_label_not_overlap_sign :
     J (axisParams Real.pi Real.pi) = 0 ∧
       JNormalized (axisParams Real.pi Real.pi) = 0 ∧
-        axisOverlapScalar Real.pi Real.pi < 0 := by
-  rcases repulsive_equal_scale_J_zero_overlap_neg with ⟨hJ, hO, _⟩
-  exact ⟨hJ, (JNormalized_eq_zero_iff _).2 hJ, hO⟩
+        axisOverlapScalar Real.pi Real.pi = 0 ∧
+          axisOverlapLegacy Real.pi Real.pi < 0 := by
+  rcases primary_overlap_zero_legacy_neg_witness with ⟨hO, ⟨hL, hJ⟩⟩
+  exact ⟨hJ, (JNormalized_eq_zero_iff _).2 hJ, hO, hL⟩
 
 end Gravity
 

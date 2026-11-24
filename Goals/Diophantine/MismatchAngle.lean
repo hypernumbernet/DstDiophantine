@@ -1,38 +1,22 @@
 import DstDiophantine.Algebra.MismatchAngle
-import DstDiophantine.Framework.MismatchLattice
+import DstDiophantine.Algebra.RelativeRotor
 
 set_option linter.style.whitespace false
 
 /-!
-# General mismatch angle (principal branch)
+# Off-axis mismatch log (open)
 
-On non-commuting two-sector configurations there is no global additive
-logarithm of `Ω = R_usual† R_dual`. A principal-branch mismatch bivector is
-currently under research.
+One-axis overlap and `Ω = exp(ω)` are closed in main (`MismatchAngle`, `PgaAxisMotor`).
+Lattice winding on the rotation leg is in `Framework/MismatchLattice` (`windingRotationTotal`).
 -/
 
 namespace Goals.Diophantine
 
 open DstDiophantine
-open Operations RelativeRotor MismatchAngle PGA Generators NormedSpace Discrete
+open Operations RelativeRotor MismatchAngle PGA Generators NormedSpace
 
-/-- Principal-branch mismatch bivector for general parameters (open). -/
-theorem omegaMismatch_principal_branch (p : TorsionParams) :
-    ∃ ω : PGA, relativeRotor p = NormedSpace.exp ω ∧
-      (∀ a : Fin 3, p.alpha a ≠ 0 → p.beta a ≠ 0 → False) := by sorry
-
-variable {N : ℕ} [NeZero N]
-
-open ModularAmplification DstDiophantine.Framework
-
-/-- Discrete winding versus compact rotation half-coefficients (open).
-
-On pure-boost seeds, `windingTotal_pureBoost` lives on axis `n`, while all
-`mismatchRotationHalf` vanish. A general equivalence with `t.m` must choose
-sector bookkeeping.
--/
-theorem winding_total_equiv_mismatch_rotation_half (k : ℕ) (t : DiscreteTorsion N) :
-    windingTotal k t ≠ 0 ↔
-      mismatchRotationHalfSqSum (toTorsionParams t) ≠ 0 := by sorry
+/-- Open: principal-branch mismatch bivector when hyperbolic and cyclic generators do not commute. -/
+theorem omegaMismatch_off_axis_principal_branch (p : TorsionParams) :
+    ∃ ω : PGA, relativeRotor p = NormedSpace.exp ω := by sorry
 
 end Goals.Diophantine

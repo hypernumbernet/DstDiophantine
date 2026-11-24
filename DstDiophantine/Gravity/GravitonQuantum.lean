@@ -1100,27 +1100,40 @@ theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
       nlinarith [Real.pi_pos]
     exact le_trans (by simpa [hq] using hdiv) hcmp
 
-/-! ### Mismatch overlap channel (primary; `gammaS` is the chart) -/
+/-! ### Primary overlap channel (`cosh·cos`; legacy `gammaS` separate) -/
 
 theorem graviton_usual_overlap_gt_one {θ : ℝ} (hθ : 0 < θ) :
     1 < MismatchAngle.axisOverlapScalar θ 0 := by
-  rw [axisOverlap_eq_gammaS]
+  rw [axisOverlap_primary_eq_gammaS_usual]
   exact usual_interference_gt_one hθ
 
 theorem graviton_dual_overlap_between {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi / 2) :
     0 < MismatchAngle.axisOverlapScalar 0 θ ∧
       MismatchAngle.axisOverlapScalar 0 θ < 1 := by
-  rw [axisOverlap_eq_gammaS]
+  rw [axisOverlap_primary_eq_gammaS_dual]
   exact dual_interference_between h0 hθ
 
-theorem graviton_balanced_overlap_eq_gammaSEqual (θ : ℝ) :
-    MismatchAngle.axisOverlapScalar θ θ = gammaSEqual (θ / 2) := by
-  rw [axisOverlap_eq_gammaS, gammaS_balanced]
+theorem graviton_primary_balanced_overlap (θ : ℝ) :
+    MismatchAngle.axisOverlapScalar θ θ =
+      Real.cosh (θ / 2) * Real.cos (θ / 2) := by
+  simp [MismatchAngle.axisOverlapScalar]
+
+theorem graviton_legacy_balanced_overlap (θ : ℝ) :
+    MismatchAngle.axisOverlapLegacy θ θ = gammaSEqual (θ / 2) := by
+  have h : 2 * (θ / 2) = θ := by ring
+  simpa [h] using axisOverlap_eq_gammaSEqual_balanced (θ / 2)
 
 theorem graviton_balanced_overlap_pos {N : ℕ} (hN : 4 ≤ N) :
     0 < MismatchAngle.axisOverlapScalar (stepAngle N / 2) (stepAngle N / 2) := by
-  rw [graviton_balanced_overlap_eq_gammaSEqual]
-  exact balanced_interference_pos hN
+  rw [graviton_primary_balanced_overlap]
+  have hform : stepAngle N / 2 / 2 = stepAngle N / 4 := by ring
+  rw [hform]
+  have hstep := stepAngle_le_half_pi hN
+  have hNpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  have hlo : -(Real.pi / 2) < stepAngle N / 4 := by linarith [stepAngle_pos hNpos, Real.pi_pos]
+  have hhi : stepAngle N / 4 < Real.pi / 2 := by nlinarith [hstep, Real.pi_pos]
+  have hmem : stepAngle N / 4 ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2) := ⟨hlo, hhi⟩
+  exact mul_pos (Real.cosh_pos _) (Real.cos_pos_of_mem_Ioo hmem)
 
 theorem gammaSEqual_pi_neg : gammaSEqual Real.pi < 0 := by
   have h := gammaSEqual_nat_mul_pi 1
@@ -1139,27 +1152,24 @@ theorem negative_interference_not_admissible :
     simp [oneAxisBalanced] at hsum
     linarith [Real.pi_pos]
 
-theorem graviton_negative_overlap_not_admissible :
-    axisOverlapScalar (2 * Real.pi) (2 * Real.pi) < 0 ∧
+theorem graviton_primary_overlap_zero_at_rotation_pi :
+    axisOverlapScalar Real.pi Real.pi = 0 ∧
+      MismatchAngle.axisOverlapLegacy (2 * Real.pi) (2 * Real.pi) < 0 ∧
       ¬ IsAdmissibleContinuous (oneAxisBalanced (2 * Real.pi)) := by
-  rw [axisOverlap_eq_gammaS]
-  exact negative_interference_not_admissible
+  refine ⟨axisOverlap_zero_at_full_rotation Real.pi, ?_, negative_interference_not_admissible.2⟩
+  · rw [graviton_legacy_balanced_overlap]
+    simpa using gammaSEqual_pi_neg
 
 theorem graviton_step_usual_overlap_gt_one {N : ℕ} (hN : 4 ≤ N) :
     1 < axisOverlapScalar (stepAngle N) 0 := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
-  have hθ := stepAngle_pos hpos
-  rw [axisOverlap_eq_gammaS]
-  exact usual_interference_gt_one hθ
+  exact graviton_usual_overlap_gt_one (stepAngle_pos hpos)
 
 theorem graviton_step_dual_overlap_between {N : ℕ} (hN : 4 ≤ N) :
     0 < axisOverlapScalar 0 (stepAngle N) ∧
       axisOverlapScalar 0 (stepAngle N) < 1 := by
   have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
-  have hθ := stepAngle_pos hpos
-  have hhalf := stepAngle_le_half_pi hN
-  rw [axisOverlap_eq_gammaS]
-  exact dual_interference_between hθ hhalf
+  exact graviton_dual_overlap_between (stepAngle_pos hpos) (stepAngle_le_half_pi hN)
 
 theorem carriers_distinct {N : ℕ} (hN : 4 ≤ N) :
     oneAxisUsual (stepAngle N) ≠ oneAxisDual (stepAngle N) ∧

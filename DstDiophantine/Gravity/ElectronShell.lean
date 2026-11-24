@@ -29,8 +29,10 @@ namespace Gravity
 
 open Real Set SI
 
-/-! ### Scalar interference factor -/
+/-! ### Scalar interference factor (legacy overlap chart) -/
 
+/-- Legacy shell overlap: same formula as `MismatchAngle.axisOverlapLegacy` / `gammaS`.
+    Primary repulsion overlap is `axisOverlapScalar` = `cosh(α/2)·cos(β/2)` only. -/
 noncomputable def gammaS (α β : ℝ) : ℝ :=
   cosh (α / 2) * cos (β / 2) - sinh (α / 2) * sin (β / 2)
 

@@ -6,12 +6,11 @@ import Mathlib.Tactic.Positivity
 set_option linter.style.whitespace false
 
 /-!
-# Repulsion via overlap (angle-first)
+# Repulsion via primary overlap (`cosh·cos`)
 
-Repulsive shell layers are gated by the **overlap scalar** `axisOverlapScalar`
-(= `gammaS` on one axis), not by the Killing diagnostic `J` alone. The legacy
-teleparallel chart still yields `repulsive_requires_negative_J` as a corollary
-on the `J` cone.
+Primary overlap vanishes only when `cos(β/2)=0` (rotation mismatch `β=π` on-axis);
+`cosh(α/2)` scales magnitude with boost. Legacy `gammaS` charts remain in
+`ElectronShell` / `TorsionalLayer` unchanged.
 -/
 
 namespace DstDiophantine
@@ -25,8 +24,7 @@ open MismatchAngle RelativeRotor Invariant Real
 theorem axisOverlap_strict_pos_dual_zero (α : ℝ) :
     1 ≤ axisOverlapScalar α 0 := by
   have h : axisOverlapScalar α 0 = Real.cosh (α / 2) := by
-    unfold axisOverlapScalar pgaAxisMotorGradeZero
-    simp [Real.sin_zero, Real.cos_zero]
+    simp [axisOverlapScalar, Real.cos_zero]
   rw [h]
   exact Real.one_le_cosh (α / 2)
 
@@ -34,50 +32,47 @@ theorem not_repulsive_pure_boost (α : ℝ) : ¬ axisOverlapScalar α 0 < 0 := b
   intro h
   linarith [axisOverlap_strict_pos_dual_zero α]
 
-theorem axisOverlap_eq_gammaS_dual_zero (α : ℝ) :
+theorem axisOverlap_primary_eq_gammaS_dual_zero (α : ℝ) :
     axisOverlapScalar α 0 = gammaS α 0 :=
-  axisOverlap_eq_gammaS α 0
+  axisOverlap_primary_eq_gammaS_usual α
 
-theorem not_repulsive_pure_gammaS (α : ℝ) : ¬ gammaS α 0 < 0 := by
-  rw [← axisOverlap_eq_gammaS_dual_zero α]
-  exact not_repulsive_pure_boost α
+/-! ### Sign reversal (primary): rotation π, not legacy mixed node -/
 
-/-! ### Equal-scale repulsion at rotation threshold -/
-
-/-- `J = 0` on the balanced ray but overlap turns negative at half-angle `π/2`. -/
-theorem repulsive_equal_scale_J_zero_overlap_neg :
+theorem repulsive_equal_scale_J_zero_overlap_zero :
     J (axisParams Real.pi Real.pi) = 0 ∧
-      axisOverlapScalar Real.pi Real.pi < 0 ∧
-        gammaS Real.pi Real.pi < 0 := by
-  refine ⟨J_axisParams_balanced Real.pi, ?_, ?_⟩
-  · exact axisOverlap_balanced_neg_at_half_pi
-  · rw [← axisOverlap_eq_gammaS Real.pi Real.pi]
-    exact axisOverlap_balanced_neg_at_half_pi
+      axisOverlapScalar Real.pi Real.pi = 0 := by
+  refine ⟨J_axisParams_balanced Real.pi, ?_⟩
+  simp [axisOverlapScalar, Real.cos_pi]
 
-theorem repulsive_equal_scale_gammaSEqual :
+theorem legacy_overlap_neg_at_balanced_pi :
+    axisOverlapLegacy Real.pi Real.pi < 0 ∧
+      gammaS Real.pi Real.pi < 0 := by
+  refine ⟨axisOverlapLegacy_sign_reversal_at_pi.2, ?_⟩
+  rw [← axisOverlapLegacy_eq_gammaS]
+  exact axisOverlapLegacy_sign_reversal_at_pi.2
+
+theorem repulsive_equal_scale_legacy_gammaSEqual :
     gammaSEqual (Real.pi / 2) < 0 ∧
-      axisOverlapScalar (2 * (Real.pi / 2)) (2 * (Real.pi / 2)) =
-        gammaSEqual (Real.pi / 2) := by
-  have heq := axisOverlap_eq_gammaSEqual_balanced (Real.pi / 2)
-  have hO : axisOverlapScalar (2 * (Real.pi / 2)) (2 * (Real.pi / 2)) < 0 := by
-    rw [show (2 : ℝ) * (Real.pi / 2) = Real.pi by ring]
-    exact axisOverlap_balanced_neg_at_half_pi
+      axisOverlapLegacy (Real.pi) (Real.pi) = gammaSEqual (Real.pi / 2) := by
   constructor
-  · rw [← heq]
-    exact hO
-  · exact heq
+  · unfold gammaSEqual
+    have hpos : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
+    simp [Real.cos_pi_div_two, Real.sin_pi_div_two, Real.sinh_pos_iff.mpr hpos]
+  · have hπ : (2 : ℝ) * (Real.pi / 2) = Real.pi := by ring
+    simpa [hπ] using axisOverlap_eq_gammaSEqual_balanced (Real.pi / 2)
+
+theorem primary_overlap_zero_legacy_neg_witness :
+    axisOverlapScalar Real.pi Real.pi = 0 ∧
+      axisOverlapLegacy Real.pi Real.pi < 0 ∧
+        J (axisParams Real.pi Real.pi) = 0 :=
+  ⟨repulsive_equal_scale_J_zero_overlap_zero.2,
+    ⟨axisOverlapLegacy_sign_reversal_at_pi.2, J_axisParams_balanced Real.pi⟩⟩
 
 /-! ### Legacy teleparallel chart (J diagnostic) -/
 
-/-- Teleparallel sign on the `J` cone (diagnostic corollary of `repulsive_requires_negative_J`). -/
 theorem repulsive_teleparallel_forces_negative_J {Jval r : ℝ} (hr : r ≠ 0)
     (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) : Jval < 0 :=
   repulsive_requires_negative_J hr hbound hT
-
-/-- Negative overlap does **not** force `J < 0` on the balanced ray (`J = 0`, overlap `< 0`). -/
-theorem overlap_neg_not_J_neg_witness : axisOverlapScalar Real.pi Real.pi < 0 ∧
-    J (axisParams Real.pi Real.pi) = 0 := by
-  refine ⟨axisOverlap_balanced_neg_at_half_pi, J_axisParams_balanced Real.pi⟩
 
 end Gravity
 end DstDiophantine

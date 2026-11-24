@@ -163,7 +163,7 @@ theorem teleparallelTofA_not_lt_zero {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
 
 /-- **Legacy `J` cone chart:** negative teleparallel layer forces `J < 0`. Repulsive shell
 sign on the one-axis locus is `axisOverlapScalar < 0` (`RepulsionOverlap`); see
-`overlap_neg_not_J_neg_witness` for decoupling from `J`. -/
+`primary_overlap_zero_legacy_neg_witness` for decoupling primary overlap from legacy/`J`. -/
 theorem repulsive_requires_negative_J {Jval r : ℝ} (hr : r ≠ 0)
     (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) :
     Jval < 0 := by

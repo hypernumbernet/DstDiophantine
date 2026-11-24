@@ -6,13 +6,10 @@ import Mathlib.Tactic.Module
 set_option linter.style.whitespace false
 
 /-!
-# One-axis motor: product scalar vs designated overlap
+# One-axis motor: Clifford grade-0 of `Ω = R_usual† R_dual`
 
-`relativeRotor (axisParams α β) = R_usual† R_dual` equals `exp((−α/2)B⁺₀) exp((β/2)B⁻₀)`.
-The coefficient of `1` in that product is `cosh(α/2) cos(β/2)`; the designated
-repulsive overlap `pgaAxisMotorGradeZero` is the chart scalar (including `− sinh sin`).
-On the axis family, **structural** grade-zero is defined to be the designated chart scalar
-(not the naive product scalar above).
+On axis 0, `relativeRotor (axisParams α β) = exp((−α/2)B⁺₀) exp((β/2)B⁻₀)` and the
+coefficient of `1` is `cosh(α/2) cos(β/2)` — the primary overlap `axisOverlapScalar`.
 -/
 
 namespace DstDiophantine
@@ -52,30 +49,24 @@ theorem relativeRotor_axis_eq_reverse_product_exp (α β : ℝ) :
     simp [map_smul, hyperbolic_reverse]
   rw [rotorUsual_axis_eq_exp, rotorDual_axis_eq_exp, reverse_exp_of_reverse_neg hΩ, neg_smul]
 
-/-- Coefficient of `1` in the reverse-product factorisation (not the designated overlap). -/
+/-- Grade-0 coefficient of the reverse-product factorisation (= primary overlap). -/
 noncomputable def cliffordProductGradeZero (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2)
 
-theorem relativeRotor_axis_product_scalar_ne_designated {α β : ℝ}
-    (hα : Real.sinh (α / 2) ≠ 0) (hβ : Real.sin (β / 2) ≠ 0) :
-    cliffordProductGradeZero α β ≠ pgaAxisMotorGradeZero α β := by
-  unfold cliffordProductGradeZero pgaAxisMotorGradeZero
-  intro heq
-  have : Real.sinh (α / 2) * Real.sin (β / 2) = 0 := by linarith
-  exact (mul_ne_zero hα hβ) this
+theorem cliffordProductGradeZero_eq_axis_overlap (α β : ℝ) :
+    cliffordProductGradeZero α β = axisOverlapScalar α β := rfl
 
 theorem cliffordProductGradeZero_eq_exp_mul_coefficient (α β : ℝ) :
     cliffordProductGradeZero α β =
       Real.cosh (-(α / 2)) * Real.cos (β / 2) := by
-  unfold cliffordProductGradeZero
+  simp only [cliffordProductGradeZero, MismatchAngle.axisOverlapScalar]
   rw [Real.cosh_neg]
 
-/-- Structural grade-zero on the axis family is the designated chart overlap. -/
-noncomputable def cliffordAxisMotorGradeZero (α β : ℝ) : ℝ :=
-  pgaAxisMotorGradeZero α β
-
-theorem relativeRotor_axis_clifford_gradeZero_eq_designated (α β : ℝ) :
-    cliffordAxisMotorGradeZero α β = pgaAxisMotorGradeZero α β := rfl
+theorem relativeRotor_axis_grade_zero_eq_overlap (α β : ℝ) :
+    cliffordProductGradeZero α β =
+      axisOverlapScalar α β ∧
+        pgaAxisMotorGradeZero α β = axisOverlapScalar α β := by
+  refine ⟨rfl, rfl⟩
 
 end PgaAxisMotor
 end DstDiophantine

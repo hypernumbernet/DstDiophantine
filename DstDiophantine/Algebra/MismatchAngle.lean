@@ -157,66 +157,137 @@ theorem J_dagger_axis (α β : ℝ) :
     J (axisParams β α) = -J (axisParams α β) := by
   simpa [dagger_axisParams] using J_dagger (axisParams α β)
 
-/-! ### Scalar overlap (time-delay factor on one axis) -/
+/-! ### Scalar overlap: Clifford grade-0 of `Ω` on one axis -/
 
-/-- Designated grade-zero overlap of the axis mismatch motor `relativeRotor (axisParams α β)`.
+/-- Primary overlap: grade-zero of `R_usual† R_dual` on the axis family (`cosh·cos`). -/
+noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
+  Real.cosh (α / 2) * Real.cos (β / 2)
 
-Repulsion charts use this as the overlap scalar. It agrees with `exp (omegaMismatchAxis α β)`
-as the motor (`relativeRotor_axis_eq_exp`). On the axis family, structural grade-zero is the
-designated alias (`PgaAxisMotor.cliffordAxisMotorGradeZero`); the naive product scalar
-`cosh(α/2) cos(β/2)` differs when both half-angles are nonzero.
--/
-noncomputable def pgaAxisMotorGradeZero (α β : ℝ) : ℝ :=
+/-- Legacy papers / shell charts: full bivector interference factor. -/
+noncomputable def axisOverlapLegacy (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2)
 
-noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
-  pgaAxisMotorGradeZero α β
+/-- Clifford grade-zero of the axis motor (equals `axisOverlapScalar`). -/
+noncomputable def pgaAxisMotorGradeZero (α β : ℝ) : ℝ :=
+  axisOverlapScalar α β
 
 theorem pgaAxisMotorGradeZero_eq_overlap (α β : ℝ) :
     pgaAxisMotorGradeZero α β = axisOverlapScalar α β := rfl
 
-theorem pgaAxisMotorGradeZero_eq_exp_motor (α β : ℝ) :
-    pgaAxisMotorGradeZero α β =
-      pgaAxisMotorGradeZero α β ∧
-        relativeRotor (axisParams α β) = exp (omegaMismatchAxis α β) := by
-  refine ⟨rfl, relativeRotor_axis_eq_exp α β⟩
-
-theorem axisOverlap_eq_components (α β : ℝ) :
+theorem axisOverlap_factor_cosh_cos (α β : ℝ) :
     axisOverlapScalar α β =
+      Real.cosh (α / 2) * Real.cos (β / 2) := rfl
+
+theorem axisOverlapLegacy_eq_components (α β : ℝ) :
+    axisOverlapLegacy α β =
       Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2) := rfl
 
+theorem axisOverlap_eq_zero_iff (α β : ℝ) :
+    axisOverlapScalar α β = 0 ↔ Real.cos (β / 2) = 0 := by
+  simp only [axisOverlapScalar]
+  constructor
+  · intro h
+    rcases mul_eq_zero.mp h with hcosh | hcos
+    · linarith [Real.cosh_pos (α / 2), hcosh]
+    · exact hcos
+  · intro hcos
+    simp [hcos]
+
+theorem axisOverlap_nonpos_iff (α β : ℝ) :
+    axisOverlapScalar α β ≤ 0 ↔ Real.cos (β / 2) ≤ 0 := by
+  simp only [axisOverlapScalar]
+  constructor
+  · intro h
+    rcases mul_nonpos_iff.mp h with h1 | h2
+    · exact h1.2
+    · linarith [Real.cosh_pos (α / 2)]
+  · intro hcos
+    exact mul_nonpos_of_nonneg_of_nonpos (Real.cosh_pos (α / 2)).le hcos
+
+theorem axisOverlap_nonneg_iff (α β : ℝ) :
+    0 ≤ axisOverlapScalar α β ↔ 0 ≤ Real.cos (β / 2) := by
+  simp only [axisOverlapScalar]
+  constructor
+  · intro h
+    rcases mul_nonneg_iff.mp h with h1 | h2
+    · exact h1.2
+    · linarith [Real.cosh_pos (α / 2)]
+  · intro hcos
+    exact mul_nonneg (Real.cosh_pos (α / 2)).le hcos
+
+theorem axisOverlap_zero_at_full_rotation (α : ℝ) :
+    axisOverlapScalar α Real.pi = 0 := by
+  simp [axisOverlapScalar, Real.cos_pi]
+
 theorem axisOverlap_balanced (x : ℝ) :
-    axisOverlapScalar (2 * x) (2 * x) =
+    axisOverlapScalar (2 * x) (2 * x) = Real.cosh x * Real.cos x := by
+  simp [axisOverlapScalar, mul_div_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)]
+
+theorem axisOverlap_balanced_eq_zero_iff {x : ℝ} :
+    axisOverlapScalar (2 * x) (2 * x) = 0 ↔ Real.cos x = 0 := by
+  rw [axisOverlap_balanced]
+  have hc : 0 < Real.cosh x := Real.cosh_pos x
+  simp [hc.ne']
+
+theorem axisOverlap_admissible_nonneg {α β : ℝ}
+    (_hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi / 2) :
+    0 ≤ axisOverlapScalar α β := by
+  rw [axisOverlap_nonneg_iff]
+  rcases le_iff_eq_or_lt.mp hβle with heq | hβlt
+  · have hπ4 : β / 2 = Real.pi / 4 := by linarith [heq, Real.pi_pos]
+    rw [hπ4, Real.cos_pi_div_four]
+    positivity
+  · exact (Real.cos_pos_of_mem_Ioo ⟨by linarith [hβ], by linarith [hβlt, Real.pi_pos]⟩).le
+
+/-! ### Legacy overlap sign (papers; electron / strong charts) -/
+
+theorem axisOverlapLegacy_balanced (x : ℝ) :
+    axisOverlapLegacy (2 * x) (2 * x) =
       Real.cosh x * Real.cos x - Real.sinh x * Real.sin x := by
-  unfold axisOverlapScalar pgaAxisMotorGradeZero
-  ring_nf
+  simp [axisOverlapLegacy, mul_div_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)]
 
-private theorem axisOverlap_balanced_pos_at_zero :
-    0 < axisOverlapScalar 0 0 := by
-  simp [axisOverlapScalar, pgaAxisMotorGradeZero]
-
-theorem axisOverlap_balanced_neg_at_half_pi :
-    axisOverlapScalar Real.pi Real.pi < 0 := by
-  have h := axisOverlap_balanced (Real.pi / 2)
+private theorem axisOverlapLegacy_balanced_neg_at_pi :
+    axisOverlapLegacy Real.pi Real.pi < 0 := by
+  have h := axisOverlapLegacy_balanced (Real.pi / 2)
   have hπ : (2 : ℝ) * (Real.pi / 2) = Real.pi := by ring
   rw [hπ] at h
-  rw [h]
-  rw [Real.cos_pi_div_two, Real.sin_pi_div_two]
-  simpa using (Real.sinh_pos_iff.mpr (by linarith [Real.pi_pos]))
+  simp only [Real.cos_pi_div_two, Real.sin_pi_div_two] at h
+  have hsinh : 0 < Real.sinh (Real.pi / 2) := by positivity
+  linarith
 
-/-- Nonpositive overlap once the equal-scale rotation half-angle reaches `π/2`. -/
-theorem axisOverlap_balanced_nonpos_at_half_pi :
-    axisOverlapScalar (2 * (Real.pi / 2)) (2 * (Real.pi / 2)) ≤ 0 := by
-  rw [show (2 * (Real.pi / 2) : ℝ) = Real.pi by ring]
-  exact le_of_lt axisOverlap_balanced_neg_at_half_pi
+theorem axisOverlapLegacy_sign_reversal_at_pi :
+    axisOverlapLegacy 0 0 > 0 ∧
+      axisOverlapLegacy Real.pi Real.pi < 0 :=
+  ⟨by simp [axisOverlapLegacy], axisOverlapLegacy_balanced_neg_at_pi⟩
 
 theorem axisOverlap_sign_reversal_threshold :
     axisOverlapScalar 0 0 > 0 ∧
-      axisOverlapScalar Real.pi Real.pi < 0 ∧
-        mismatchRotationHalf Real.pi Real.pi = Real.pi / 2 ∧
-          mismatchRotationHalf 0 0 = 0 :=
-  ⟨axisOverlap_balanced_pos_at_zero, axisOverlap_balanced_neg_at_half_pi,
-    by simp [mismatchRotationHalf], by simp [mismatchRotationHalf]⟩
+      axisOverlapScalar 0 Real.pi = 0 ∧
+        axisOverlapScalar Real.pi Real.pi = 0 ∧
+        mismatchRotationHalf 0 Real.pi = Real.pi / 2 ∧
+          axisOverlapLegacy Real.pi Real.pi < 0 := by
+  refine ⟨?_, axisOverlap_zero_at_full_rotation 0, ?_, by simp [mismatchRotationHalf],
+    axisOverlapLegacy_sign_reversal_at_pi.2⟩
+  · simp [axisOverlapScalar]
+  · simp [axisOverlapScalar, Real.cos_pi]
+
+/-- Multi-axis overlap: product of per-axis Clifford grade-zero factors (axis-decoupled chart). -/
+noncomputable def relativeRotorOverlap (p : TorsionParams) : ℝ :=
+  axisOverlapScalar (p.alpha 0) (p.beta 0) *
+    axisOverlapScalar (p.alpha 1) (p.beta 1) *
+    axisOverlapScalar (p.alpha 2) (p.beta 2)
+
+theorem relativeRotorOverlap_axisParams (α β : ℝ) :
+    relativeRotorOverlap (axisParams α β) = axisOverlapScalar α β := by
+  simp only [relativeRotorOverlap, axisParams, axisOverlapScalar,
+    Fin.reduceFinMk, Nat.succ_eq_add_one, Nat.add_zero, Nat.zero_eq, one_mul, mul_one]
+  simp [Real.cosh_zero, Real.cos_zero]
+
+theorem relativeRotor_axis_overlap_eq_gradeZero (α β : ℝ) :
+    axisOverlapScalar α β = pgaAxisMotorGradeZero α β ∧
+      relativeRotorOverlap (axisParams α β) = axisOverlapScalar α β ∧
+        relativeRotor (axisParams α β) = exp (omegaMismatchAxis α β) := by
+  refine ⟨rfl, ⟨relativeRotorOverlap_axisParams α β, relativeRotor_axis_eq_exp α β⟩⟩
 
 end MismatchAngle
 end DstDiophantine
