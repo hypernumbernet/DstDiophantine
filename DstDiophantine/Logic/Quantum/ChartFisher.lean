@@ -21,7 +21,9 @@ Mean rest, mass 3: the time component of the relative momentum vanishes, so the 
 Fisher information is `0`, while the quadrature phase Fisher information is `544/625`. Axis `1`
 reads `34816/625`, which is not `64 · 81/625`. Rest against `(5, 4, 0, 0)`: the time axis reads
 `324/289` at quadrature, and `324/841` and `324/25` at the extreme times. The opposite Weyl seed
-reads `64` on axis `1`. None of these numbers is a Newton–Wigner eigenvalue.
+reads `64` on axis `1`. `ChartScore` multiplies that number by the Born density and obtains the
+squared length of a vector orthogonal to the state. `positionOp` multiplies the state by the
+coordinate.
 -/
 
 namespace DstDiophantine

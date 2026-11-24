@@ -63,6 +63,7 @@ import DstDiophantine.Logic.Quantum.FrameInformation
 import DstDiophantine.Logic.Quantum.CarrierDeficit
 import DstDiophantine.Logic.Quantum.PhaseFisher
 import DstDiophantine.Logic.Quantum.ChartFisher
+import DstDiophantine.Logic.Quantum.ChartScore
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1313,6 +1314,45 @@ example (θ : ℝ) :
     sameMomentum_chartFisher (r := 1) (hr := by norm_num)
       (u := EuclideanSpace.single (0 : Fin 4) (1 : ℂ)) (p := 0) (μ := 1) (θ := 0)
   refine ⟨⟨η, h0, h1⟩, shellLab_chartFisher.2.1, (shellOrth_chartFisher θ).2, hsame.1, hsame.2⟩
+
+/-- Regression: the displacement score is orthogonal to the state, and its squared length is the
+chart Fisher information times the Born density. The position operator multiplies by the
+coordinate. Mean rest at the origin reads position `0` and score length squared `139264/225`.
+At time `1` the score is `0` and the position reads `1`. Rest against `(5, 4, 0, 0)` at time
+`-π/2` reads position `-π/2` and score length squared `144/5`. The opposite seed at the origin
+reads position `0` and score length squared `6400/9`. One momentum has score `0` and position
+`1`. -/
+example :
+    (∃ θ : ℝ,
+        positionOp 1 (shellPacket 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ) 0 =
+          0 ∧
+          ‖packetScore 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 1 0‖ ^ 2 =
+            139264 / 225) ∧
+      (let Ψ := shellPacket 1 1 0 shellRestP shellRestQ shellParticleP shellParticleQ
+        let x := timeShift (1 : ℝ)
+        packetScore 1 1 0 shellRestP shellRestQ shellParticleP shellParticleQ 0 x = 0 ∧
+          (inner ℂ (Ψ x) (positionOp 0 Ψ x)).re / ‖Ψ x‖ ^ 2 = 1) ∧
+      (let Ψ := shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor
+        let x := timeShift (-Real.pi / 2)
+        (inner ℂ (Ψ x) (positionOp 0 Ψ x)).re / ‖Ψ x‖ ^ 2 = -Real.pi / 2 ∧
+          ‖packetScore 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor 0 x‖ ^ 2 =
+            144 / 5) ∧
+        (positionOp 1 (shellPacket 1 1 0 shellRestP shellRestQ shellParticleP shellOrthQ) 0 = 0 ∧
+          ‖packetScore 1 1 0 shellRestP shellRestQ shellParticleP shellOrthQ 1 0‖ ^ 2 =
+            6400 / 9) ∧
+          (let u : DiracSpinor := EuclideanSpace.single 0 1
+            let x : Vec4 := Pi.single 1 1
+            let Ψ := shellPacket 1 1 0 (0 : Vec4) 0 u u
+            packetScore 1 1 0 (0 : Vec4) 0 u u 1 x = 0 ∧
+              (inner ℂ (Ψ x) (positionOp 1 Ψ x)).re / ‖Ψ x‖ ^ 2 = 1) := by
+  obtain ⟨θ, _, _, hpos, hscore, _⟩ := shellRest_origin_score
+  refine ⟨⟨θ, hpos, hscore⟩, ?_, ?_, ?_, ?_⟩
+  · have htime := shellRest_time_score (0 : ℝ)
+    exact ⟨htime.2.2.1, htime.2.2.2⟩
+  · exact ⟨shellLab_score.1, shellLab_score.2.1⟩
+  · exact ⟨shellOrth_origin_score.2.1, shellOrth_origin_score.2.2.1⟩
+  · have hsame := sameMomentum_score
+    exact ⟨hsame.2.2.1, hsame.2.2.2⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
