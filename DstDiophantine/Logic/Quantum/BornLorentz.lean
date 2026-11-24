@@ -3,10 +3,11 @@ import DstDiophantine.Logic.Quantum.FrameInformation
 /-!
 # Chart Born density against the Lorentz scalar
 
-The chart Born density is `‖Ψ‖²`, and `realCurrent_zero` says that this is the time component of
-the probability current. It is not a Lorentz scalar. The scalar is the mass bilinear
-`invariantDensity Ψ = (Ψ̄Ψ).re`. On a solution of mass `m` at momentum `p` the two differ by the
-energy factor: the scalar is `(m / p₀) ‖Ψ‖²`. They agree exactly at rest.
+The chart Born density is `‖Ψ(x)‖²`. `bornDensity_eq_realCurrent` says that this is the time
+component of the probability current of the value `Ψ(x)`, at every point of every field. It is
+not a Lorentz scalar. The scalar is the mass bilinear `invariantDensity Ψ = (Ψ̄Ψ).re`. On a
+solution of mass `m` at momentum `p` the two differ by the energy factor: the scalar is
+`(m / p₀) ‖Ψ‖²`. They agree exactly at rest.
 
 A longitudinal boost multiplies the chart density by `cosh` and leaves the scalar at its rest
 value. The two agree for every seed only at rapidity `0`.
@@ -14,8 +15,10 @@ value. The two agree for every seed only at rapidity `0`.
 The information numbers above are read from fixed Weyl seeds, which are not the rotor images of
 the rest spinor. On the mass-3 shell the fixed seed at `(5, 4, 0, 0)` has chart density `50/9`
 and scalar `10/3`, ratio `5/3`. The rest spinor has both equal to `2`. A usual rotor carrying
-that rest spinor onto the same momentum has chart density `2 · 5/3 = 10/3` and scalar `2`. Same
-momentum, different representative.
+that rest spinor onto the same momentum has chart density `2 · 5/3 = 10/3` and scalar `2`. Both
+ratios equal `p₀/m`, so the two numbers do not separate the rays. The fixed seed keeps upper
+Weyl component `(1, 0)`, and that vector is not an eigenvector of this boost, so the carriers
+are not complex multiples.
 
 Weight information rebuilt from the square roots of the scalars stays `1` in the mean rest frame,
 because both carriers share the factor `5/3`. Against the rest spinor the chart reading is
@@ -34,10 +37,6 @@ open Complex InnerProductSpace
 /-- Real mass bilinear `(Ψ̄Ψ).re`. -/
 noncomputable def invariantDensity (Ψ : DiracSpinor) : ℝ :=
   (diracScalar Ψ Ψ).re
-
-theorem bornDensity_eq_realCurrent (p : Vec4) (u : DiracSpinor) (x : Vec4) :
-    bornDensity (planeWave p u) x = realCurrent u 0 := by
-  rw [bornDensity_planeWave, realCurrent_zero]
 
 theorem invariantDensity_onShell {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (hm : m ≠ 0)
     (hΨ : Ψ ≠ 0) (h : DiracMomentum m p Ψ) :
@@ -119,26 +118,6 @@ theorem boostedRest_invariantDensity (α : ℝ) (u : DualSpinor) :
   unfold invariantDensity
   rw [boostedRest_diracScalar, restParticle_diracScalar]
 
-private theorem shell_energy : shellRestP 0 = 5 ∧ shellRestQ 0 = 5 := by
-  constructor
-  · simp [shellRestP, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same, Pi.single_eq_of_ne]
-  · simp [shellRestQ, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same, Pi.single_eq_of_ne]
-
-private theorem shell_seed_ne : shellAxisSeed ≠ 0 := by
-  simp [shellAxisSeed, EuclideanSpace.single]
-
-theorem shellLab_densities :
-    invariantDensity shellLabSpinor = 2 ∧ ‖shellLabSpinor‖ ^ 2 = 2 := by
-  refine ⟨?_, shellLab_norm⟩
-  have hinv := invariantDensity_onShell (by norm_num : (3 : ℝ) ≠ 0)
-    (onShellParticleSpinor_ne_zero shell_seed_ne) shellLab_dirac.2.1
-  have hinv' : invariantDensity shellLabSpinor =
-      3 / restMomentum 3 0 * ‖shellLabSpinor‖ ^ 2 := by
-    simpa [shellLabSpinor] using hinv
-  have hp : restMomentum 3 0 = 3 := by simp [restMomentum]
-  rw [hinv', hp, shellLab_norm]
-  norm_num
-
 private theorem cosh_eq_one_iff (α : ℝ) : Real.cosh α = 1 ↔ α = 0 := by
   constructor
   · intro h
@@ -172,18 +151,26 @@ theorem boostedRest_densities_eq_iff (α : ℝ) :
       α = 0 := by
   constructor
   · intro h
-    have heq : restParticleSpinor shellAxisSeed = shellLabSpinor :=
-      (onShellParticleSpinor_rest (by norm_num : (3 : ℝ) ≠ 0) shellAxisSeed).symm
-    have hu := h shellAxisSeed
-    rw [boostedRest_invariantDensity, boostedRest_chartDensity, heq, shellLab_densities.1,
-      shellLab_densities.2] at hu
-    have hcosh : Real.cosh α = 1 := by
-      apply mul_left_cancel₀ (by norm_num : (2 : ℝ) ≠ 0)
-      have : 2 * Real.cosh α = 2 * 1 := by
-        rw [mul_one]
-        linarith [hu]
-      exact this
-    exact (cosh_eq_one_iff α).1 hcosh
+    let u : DualSpinor := EuclideanSpace.single 0 1
+    have hu := h u
+    rw [boostedRest_invariantDensity, boostedRest_chartDensity] at hu
+    have hrest : invariantDensity (restParticleSpinor u) = ‖restParticleSpinor u‖ ^ 2 := by
+      unfold invariantDensity
+      rw [restParticle_diracScalar_eq_inner]
+      have hself := inner_self_eq_norm_sq_to_K (𝕜 := ℂ) (x := restParticleSpinor u)
+      calc
+        (inner ℂ (restParticleSpinor u) (restParticleSpinor u)).re =
+            ((‖restParticleSpinor u‖ : ℂ) ^ 2).re := congrArg Complex.re hself
+        _ = (ofReal (‖restParticleSpinor u‖ ^ 2)).re :=
+            congrArg Complex.re (ofReal_pow _ 2).symm
+        _ = ‖restParticleSpinor u‖ ^ 2 := ofReal_re _
+    rw [hrest] at hu
+    have hnorm : ‖restParticleSpinor u‖ ^ 2 ≠ 0 :=
+      pow_ne_zero 2 (norm_ne_zero_iff.mpr restParticleSpinor_ne_zero)
+    have hcosh : Real.cosh α * ‖restParticleSpinor u‖ ^ 2 =
+        1 * ‖restParticleSpinor u‖ ^ 2 := by
+      simpa [one_mul] using hu.symm
+    exact (cosh_eq_one_iff α).1 (mul_right_cancel₀ hnorm hcosh)
   · intro hα u
     subst hα
     rw [boostedRest_chartDensity, Real.cosh_zero, one_mul, boostedRest_invariantDensity]
@@ -198,6 +185,26 @@ theorem boostedRest_densities_eq_iff (α : ℝ) :
       _ = ‖restParticleSpinor u‖ ^ 2 := ofReal_re _
 
 /-! ### Fixed seeds on the mass-3 shell, and the rotor image of rest -/
+
+private theorem shell_energy : shellRestP 0 = 5 ∧ shellRestQ 0 = 5 := by
+  constructor
+  · simp [shellRestP, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same, Pi.single_eq_of_ne]
+  · simp [shellRestQ, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same, Pi.single_eq_of_ne]
+
+private theorem shell_seed_ne : shellAxisSeed ≠ 0 := by
+  simp [shellAxisSeed, EuclideanSpace.single]
+
+theorem shellLab_densities :
+    invariantDensity shellLabSpinor = 2 ∧ ‖shellLabSpinor‖ ^ 2 = 2 := by
+  refine ⟨?_, shellLab_norm⟩
+  have hinv := invariantDensity_onShell (by norm_num : (3 : ℝ) ≠ 0)
+    (onShellParticleSpinor_ne_zero shell_seed_ne) shellLab_dirac.2.1
+  have hinv' : invariantDensity shellLabSpinor =
+      3 / restMomentum 3 0 * ‖shellLabSpinor‖ ^ 2 := by
+    simpa [shellLabSpinor] using hinv
+  have hp : restMomentum 3 0 = 3 := by simp [restMomentum]
+  rw [hinv', hp, shellLab_norm]
+  norm_num
 
 private theorem shell_carrier_densities {Ψ : DiracSpinor} {p : Vec4} (hΨ : Ψ ≠ 0)
     (h : DiracMomentum 3 p Ψ) (hp : p 0 = 5) (hn : ‖Ψ‖ ^ 2 = 50 / 9) :
@@ -229,14 +236,30 @@ theorem shellParticle_densities :
   have hQ := shell_carrier_densities hneQ shellRest_dirac.2.1 shell_energy.2 shellRest_norms.2
   exact ⟨hP.1, shellRest_norms.1, hP.2.1, hP.2.2, hQ.1, shellRest_norms.2, hQ.2.1, hQ.2.2⟩
 
-/-- The rest spinor, carried onto `(5, 4, 0, 0)`, is not the fixed-seed carrier. -/
+/-- `pauliSlash` of `(5, 4, 0, 0)` sends the seed `(1, 0)` off its own line. -/
+private theorem pauliSlash_shellRestP_seed_off :
+    applyMat (pauliSlash shellRestP) shellAxisSeed 1 = 4 := by
+  have h0 : shellRestP 0 = 5 := shell_energy.1
+  have h1 : shellRestP 1 = 4 := by
+    simp [shellRestP, Pi.add_apply, Pi.smul_apply, Pi.single_eq_same, Pi.single_eq_of_ne]
+  have h2 : shellRestP 2 = 0 := by
+    simp [shellRestP, Pi.add_apply, Pi.smul_apply, Pi.single_eq_of_ne]
+  have h3 : shellRestP 3 = 0 := by
+    simp [shellRestP, Pi.add_apply, Pi.smul_apply, Pi.single_eq_of_ne]
+  unfold pauliSlash
+  rw [h0, h1, h2, h3]
+  simp [applyMat_apply, pauliX, pauliY, pauliZ, shellAxisSeed, EuclideanSpace.single,
+    PiLp.single_apply, Matrix.one_apply]
+
+/-- The rest spinor, carried onto `(5, 4, 0, 0)`, is not a complex multiple of the fixed seed. -/
 theorem shellRest_rotorImage :
     ∃ Ψ : DiracSpinor,
       DiracMomentum 3 shellRestP Ψ ∧
         ‖Ψ‖ ^ 2 = 10 / 3 ∧
           invariantDensity Ψ = 2 ∧
             ‖Ψ‖ ^ 2 = 2 * (shellRestP 0 / 3) ∧
-              ‖shellParticleP‖ ^ 2 ≠ ‖Ψ‖ ^ 2 := by
+              ‖shellParticleP‖ ^ 2 ≠ ‖Ψ‖ ^ 2 ∧
+                ¬ ∃ c : ℂ, shellParticleP = c • Ψ := by
   obtain ⟨α, hα⟩ := exists_usualRotor_momentum (by norm_num : (0 : ℝ) < 3)
     shellRest_geometry.1 shellRest_geometry.2.2.2.1
   set M := usualRotorMat α
@@ -266,7 +289,54 @@ theorem shellRest_rotorImage :
   have hne : ‖shellParticleP‖ ^ 2 ≠ ‖Ψ‖ ^ 2 := by
     rw [shellRest_norms.1, hn]
     norm_num
-  exact ⟨Ψ, hdir, hn, hinv, hfactor, hne⟩
+  have hray : ¬ ∃ c : ℂ, shellParticleP = c • Ψ := by
+    intro ⟨c, hc⟩
+    have hherm : M.conjTranspose = M := usualRotorMat_isHermitian α
+    have hslash : pauliSlash shellRestP = (3 : ℂ) • (M * M) := by
+      have hrest := lorentzAct_rest M (3 : ℝ)
+      rwa [hα, hherm] at hrest
+    have hupP : diracUpper shellParticleP = shellAxisSeed := by
+      unfold shellParticleP onShellParticleSpinor
+      rw [diracUpper_add, diracUpper_weylUpper, diracUpper_weylLower, add_zero]
+    have hlab : shellLabSpinor = restParticleSpinor shellAxisSeed := by
+      unfold shellLabSpinor
+      exact onShellParticleSpinor_rest (by norm_num : (3 : ℝ) ≠ 0) shellAxisSeed
+    have hupΨ : diracUpper Ψ = applyMat M shellAxisSeed := by
+      have hΨ : Ψ = rotorDirac M (restParticleSpinor shellAxisSeed) := by
+        unfold Ψ
+        rw [hlab]
+      rw [hΨ]
+      unfold restParticleSpinor
+      rw [rotorDirac_weyl, diracUpper_add, diracUpper_weylUpper, diracUpper_weylLower,
+        add_zero]
+    have hseed : shellAxisSeed = c • applyMat M shellAxisSeed := by
+      calc
+        shellAxisSeed = diracUpper shellParticleP := hupP.symm
+        _ = diracUpper (c • Ψ) := by rw [hc]
+        _ = c • diracUpper Ψ := diracUpper_smul _ _
+        _ = c • applyMat M shellAxisSeed := by rw [hupΨ]
+    have hc0 : c ≠ 0 := by
+      intro h0
+      apply shell_seed_ne
+      simpa [h0] using hseed
+    have hMseed : applyMat M shellAxisSeed = c⁻¹ • shellAxisSeed := by
+      calc
+        applyMat M shellAxisSeed = (c⁻¹ * c) • applyMat M shellAxisSeed := by
+          rw [inv_mul_cancel₀ hc0, one_smul]
+        _ = c⁻¹ • (c • applyMat M shellAxisSeed) := by rw [smul_smul]
+        _ = c⁻¹ • shellAxisSeed := by rw [← hseed]
+    have hMM : applyMat (M * M) shellAxisSeed = (c⁻¹ * c⁻¹) • shellAxisSeed := by
+      rw [applyMat_mul, hMseed, applyMat_smul, hMseed, smul_smul]
+    have hline : applyMat (pauliSlash shellRestP) shellAxisSeed =
+        ((3 : ℂ) * (c⁻¹ * c⁻¹)) • shellAxisSeed := by
+      rw [hslash, applyMat_smul_mat, hMM, smul_smul]
+    have hcomp := congrArg (fun v : DualSpinor => v 1) hline
+    rw [pauliSlash_shellRestP_seed_off] at hcomp
+    have hzero : (((3 : ℂ) * (c⁻¹ * c⁻¹)) • shellAxisSeed) 1 = 0 := by
+      simp [shellAxisSeed, EuclideanSpace.single, PiLp.smul_apply]
+    rw [hzero] at hcomp
+    norm_num at hcomp
+  exact ⟨Ψ, hdir, hn, hinv, hfactor, hne, hray⟩
 
 /-! ### Weight information from the scalar densities -/
 

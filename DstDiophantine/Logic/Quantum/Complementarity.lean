@@ -79,6 +79,11 @@ def SameRay (ψ φ : DiracSpinor) : Prop :=
 noncomputable def bornDensity (Ψ : Vec4 → DiracSpinor) (x : Vec4) : ℝ :=
   ‖Ψ x‖ ^ 2
 
+/-- The chart density is the time component of the probability current, at every point. -/
+theorem bornDensity_eq_realCurrent (Ψ : Vec4 → DiracSpinor) (x : Vec4) :
+    bornDensity Ψ x = realCurrent (Ψ x) 0 := by
+  rw [bornDensity, realCurrent_zero]
+
 theorem planeWave_translate (p : Vec4) (u : DiracSpinor) (x a : Vec4) :
     planeWave p u (x + a) = exp (I * (wavePhase p a : ℂ)) • planeWave p u x := by
   unfold planeWave
