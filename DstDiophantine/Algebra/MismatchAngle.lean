@@ -128,7 +128,7 @@ private theorem axisOverlap_balanced_pos_at_zero :
     0 < axisOverlapScalar 0 0 := by
   simp [axisOverlapScalar]
 
-private theorem axisOverlap_balanced_neg_at_half_pi :
+theorem axisOverlap_balanced_neg_at_half_pi :
     axisOverlapScalar Real.pi Real.pi < 0 := by
   have h := axisOverlap_balanced (Real.pi / 2)
   have hπ : (2 : ℝ) * (Real.pi / 2) = Real.pi := by ring

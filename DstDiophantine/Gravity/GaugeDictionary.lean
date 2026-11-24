@@ -161,7 +161,9 @@ theorem teleparallelTofA_not_lt_zero {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
     ¬ teleparallelTofA A r < 0 :=
   not_lt.mpr (teleparallelTofA_nonneg hA hr)
 
-/-- Repulsive layers need `J < 0`; a real radial boost has `J ≥ 0` and cannot supply them. -/
+/-- **Legacy `J` cone chart:** negative teleparallel layer forces `J < 0`. Repulsive shell
+sign on the one-axis locus is `axisOverlapScalar < 0` (`RepulsionOverlap`); see
+`overlap_neg_not_J_neg_witness` for decoupling from `J`. -/
 theorem repulsive_requires_negative_J {Jval r : ℝ} (hr : r ≠ 0)
     (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) :
     Jval < 0 := by

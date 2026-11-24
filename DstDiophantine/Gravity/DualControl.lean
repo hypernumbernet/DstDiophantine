@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.MismatchAngle
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -9,8 +10,10 @@ import Mathlib.Tactic.FinCases
 /-!
 # Dual-only control of the particle mismatch \(J\)
 
-Dual-only motion cannot undercut the wall value of \(J\), and a shield with
-\(J=0\) exists precisely when that wall is nonpositive. An electromagnetic
+Primary mismatch data is the relative rotor / overlap half-angles (`MismatchAngle`);
+`J` and `JAxis` below are derived diagnostics. Dual-only motion cannot undercut
+the wall value of \(J\), and a shield with \(J=0\) exists precisely when that wall
+is nonpositive. An electromagnetic
 coupling, a resonance frequency, a laboratory protocol, and helicity drive of
 \(J\) are not derived.
 -/
@@ -20,7 +23,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle RelativeRotor MismatchAngle RelativeRotor
 
 /-! ### Axis density and the formal jet -/
 
@@ -33,6 +36,14 @@ theorem J_eq_sum_JAxis (p : TorsionParams) :
   rw [J_coef]
   simp only [JAxis, Fin.sum_univ_three]
   ring
+
+theorem JAxis_eq_J_axisParams (α β : ℝ) : JAxis α β = J (axisParams α β) := by
+  rw [JAxis, J_axisParams]
+
+theorem JAxis_mismatch_halves (α β : ℝ) :
+    JAxis α β =
+      2 * (mismatchBoostHalf α β ^ 2 - mismatchRotationHalf α β ^ 2) := by
+  rw [JAxis_eq_J_axisParams, J_axis_from_mismatchHalves]
 
 /-- Formal \(\dot J\) along a jet \((p,\dot p)\). -/
 def JDot (p pdot : TorsionParams) : ℝ :=

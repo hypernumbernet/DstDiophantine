@@ -7,8 +7,9 @@ Policy: see [`POLICY.md`](POLICY.md).
 Build: `lake build Goals` (sorry allowed). The default `lake build` does not
 include this library.
 
-Open `sorry` count: **12** (`scripts/count_goals.sh`). All twelve are
-Diophantine leaves and bridges. A physics aim below is not a Lean Goal until
+Open `sorry` count: **14** (`scripts/count_goals.sh`): Diophantine bridges/residuals
+plus **mismatch-angle** (`Goals/Diophantine/MismatchAngle.lean`,
+`Goals/Diophantine/RepulsionCone.lean`). A physics aim below is not a Lean Goal until
 the main library defines its `Prop`.
 
 ## Breakthrough order
@@ -62,7 +63,9 @@ the untagged rows under Not yet stateable.
 | --- | ---: | --- |
 | `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
-| **Total** | **12** | |
+| `Diophantine/MismatchAngle.lean` | 1 | principal-branch logarithm of `Ω` off one axis |
+| `Diophantine/RepulsionCone.lean` | 1 | admissible cone via mismatch half-norm (replaces `JNormalized` box) |
+| **Total** | **14** | |
 
 ### Beal leaves
 

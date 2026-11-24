@@ -1,13 +1,14 @@
 import DstDiophantine.Gravity.DualControl
+import DstDiophantine.Gravity.RepulsionOverlap
 import DstDiophantine.Logic.Connective
 import DstDiophantine.Logic.Interpretation
 
 /-!
 # Four regimes of the admissible cone
 
-The normalised mismatch on an admissible configuration is one of four regimes
-of sign and saturation. Saturated attraction is the unique point whose usual
-rapidities admit no other dual completion.
+Four regime labels still read `JNormalized` (derived diagnostic). On one axis,
+overlap sign for repulsive shell physics is `axisOverlapScalar` (`MismatchAngle`);
+see `RepulsionOverlap.overlap_neg_not_J_neg_witness`.
 -/
 
 namespace DstDiophantine
@@ -15,6 +16,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open Admissible Invariant Operations Real
+open MismatchAngle RelativeRotor
 
 private theorem JNormalized_coeff_pos : 0 < (8 / (3 * Real.pi ^ 2) : ℝ) := by
   positivity
@@ -280,6 +282,19 @@ theorem uniform_pi_div_three_dualOnly_U {q : TorsionParams}
     exact J_uniform_usual_lt_ceiling hα0 hαπ
   exact dualOnly_eq_U_of_positive_wall hq hαp
     uniform_pi_div_three_wall_pos hceil
+
+/-! ### Overlap sign decoupled from regime `B` (`J < 0`) on axis -/
+
+theorem regime_B_still_J_negative (p : TorsionParams) (hp : IsAdmissibleContinuous p)
+    (hB : Logic.ofParams p hp = .B) : JNormalized p < 0 :=
+  (ofParams_eq_B_iff_neg hp).mp hB
+
+theorem regime_label_not_overlap_sign :
+    J (axisParams Real.pi Real.pi) = 0 ∧
+      JNormalized (axisParams Real.pi Real.pi) = 0 ∧
+        axisOverlapScalar Real.pi Real.pi < 0 := by
+  rcases repulsive_equal_scale_J_zero_overlap_neg with ⟨hJ, hO, _⟩
+  exact ⟨hJ, (JNormalized_eq_zero_iff _).2 hJ, hO⟩
 
 end Gravity
 

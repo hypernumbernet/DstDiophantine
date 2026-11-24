@@ -37,8 +37,10 @@ Legacy `J` is expressed on the same locus by
 | Overlap sign reversal at equal-scale threshold `π/2` | `axisOverlap_sign_reversal_threshold`, `axisOverlap_balanced_nonpos_at_half_pi` |
 | `axisOverlap` on balanced locus = `gammaSEqual` | `axisOverlap_eq_gammaSEqual_balanced` |
 
-**Open (Goals, sorry allowed):** principal-branch mismatch logarithm for full six-parameter
-`TorsionParams` (`Goals.Diophantine.omegaMismatch_principal_branch`).
+**Open (Goals, sorry allowed):**
+
+- `Goals.Diophantine.omegaMismatch_principal_branch` — general six-parameter log of `Ω`.
+- `Goals.Diophantine.admissible_iff_mismatch_box` — cone in overlap half-norm (was `|JNormalized| ≤ 1`).
 
 **Not yet in main:** extracting `axisOverlapScalar` as the grade-0 part of `Ω` inside PGA
 (without re-using the closed scalar formula). Currently under research.
@@ -52,8 +54,8 @@ below we group by **module family** (full per-theorem tagging is in progress).
 | Class | Count (modules) | Role |
 |-------|-----------------|------|
 | **(a) Survives unchanged** | ~32 | Killing definition, cone metric book-keeping, Diophantine closure; `J` stays as derived scalar |
-| **(b) Restatable via angle / overlap (cheap)** | ~18 | One-axis stiffness, shell factors, balanced-ray diagnostics; use `MismatchAngle` + `gammaS` bridge |
-| **(c) Needs real rewrite / may fail** | ~28 | Repulsion tied to `J < 0`, `|JNormalized| ≤ 1` regime labels, lattice amplification error terms |
+| **(b) Restatable via angle / overlap (cheap)** | ~18 (**7 migrated**) | `RepulsionOverlap`, `DualControl.JAxis_mismatch_halves`, envelope corners, cone overlap witness |
+| **(c) Needs real rewrite / may fail** | ~28 (**~5 in progress**) | Repulsion core migrated; ConeLabels regimes, full `DualControl`, `latticeMismatch` still J-native |
 
 ### (a) Survives unchanged (selected)
 
@@ -66,9 +68,9 @@ below we group by **module family** (full per-theorem tagging is in progress).
 
 | Item | Module | Angle-first restatement |
 |------|--------|-------------------------|
-| Stiffness `−m J` on one axis | `RestMass`, `DualControl` | `J_axis_from_mismatchHalves` |
+| Stiffness `−m J` on one axis | `RestMass`, `DualControl` | `JAxis_mismatch_halves` (migrated in `DualControl`) |
 | Equal-scale shells / sign of `γ_s` | `ElectronShell`, `TorsionalLayer` | `axisOverlap_eq_gammaS`, `axisOverlap_eq_gammaSEqual_balanced` |
-| `J = 0` but `γ_s` changes sign | `RelationalPolarization.equalScale_clock_not_mismatch` | overlap threshold theorems |
+| `J = 0` but `γ_s` changes sign | `RelationalPolarization`, `RepulsionOverlap` | `overlap_neg_not_J_neg_witness`, `regime_label_not_overlap_sign` |
 | Relative rotor transport | `RelativeRotor`, `DualRotorMotor` | `relativeRotor_axis_eq_exp` |
 | `latticeMismatch` modulus bounds | `ModularAmplification` | winding on rotation leg (research) |
 
@@ -76,7 +78,7 @@ below we group by **module family** (full per-theorem tagging is in progress).
 
 | Item | Module | Issue |
 |------|--------|-------|
-| `repulsive_requires_negative_J` | `GaugeDictionary` | Repulsion from overlap rotation threshold, not `J < 0` alone |
+| `repulsive_requires_negative_J` | `GaugeDictionary` | **Dual track:** `RepulsionOverlap` (overlap) + legacy J corollary retained |
 | `ConeLabels`, `|JNormalized| ≤ 1` | `ConeLabels`, `ControlDomain` | Admissible cone in angle norm; currently under research |
 | `MassCorners` | `MassCorners` | Corner classification by scalar; needs bivector direction |
 | `DualControl` (40+ `J` theorems) | `DualControl` | Dual-only control phrased entirely in `J` |

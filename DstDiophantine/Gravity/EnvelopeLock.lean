@@ -1,4 +1,5 @@
 import DstDiophantine.Gravity.ControlDomain
+import DstDiophantine.Algebra.MismatchAngle
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
@@ -7,10 +8,11 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # The envelope is a lock
 
-An admissible configuration meets the envelope if and only if every axis is on
-the wall and at least two axes are corners, so a dual-only motion meets it at
-most once. No electromagnetic coupling, no laboratory protocol, and no
-identification of the dual-channel force \(u\).
+Wall and corner predicates are still stated with half-angles on each axis; the
+compact rotation content of a corner is `mismatchRotationHalf` / `mismatchBoostHalf`
+on that axis (`MismatchAngle`). An admissible configuration meets the envelope if
+and only if every axis is on the wall and at least two axes are corners, so a
+dual-only motion meets it at most once.
 -/
 
 namespace DstDiophantine
@@ -18,7 +20,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle RelativeRotor
 
 /-! ### Wall, corners, and the two same-sector patterns -/
 
@@ -33,6 +35,24 @@ def IsPureDual (p : TorsionParams) (a : Fin 3) : Prop :=
 
 def IsCorner (p : TorsionParams) (a : Fin 3) : Prop :=
   IsPureUsual p a ∨ IsPureDual p a
+
+theorem pure_dual_corner_mismatch (p : TorsionParams) (h : IsPureDual p 0) :
+    mismatchRotationHalf (p.alpha 0) (p.beta 0) = Real.pi / 4 ∧
+      mismatchBoostHalf (p.alpha 0) (p.beta 0) = 0 := by
+  rcases h with ⟨hα, hβ⟩
+  constructor
+  · simp [mismatchRotationHalf, hβ]
+    ring_nf
+  · simp [mismatchBoostHalf, hα]
+
+theorem pure_usual_corner_mismatch (p : TorsionParams) (h : IsPureUsual p 0) :
+    mismatchBoostHalf (p.alpha 0) (p.beta 0) = -(Real.pi / 4) ∧
+      mismatchRotationHalf (p.alpha 0) (p.beta 0) = 0 := by
+  rcases h with ⟨hα, hβ⟩
+  constructor
+  · simp [mismatchBoostHalf, hα]
+    ring_nf
+  · simp [mismatchRotationHalf, hβ]
 
 /-- At least two axes occupy corners of the cone. -/
 def TwoCorners (p : TorsionParams) : Prop :=
