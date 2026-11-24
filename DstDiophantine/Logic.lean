@@ -62,6 +62,7 @@ import DstDiophantine.Logic.Quantum.ShellInformation
 import DstDiophantine.Logic.Quantum.FrameInformation
 import DstDiophantine.Logic.Quantum.CarrierDeficit
 import DstDiophantine.Logic.Quantum.PhaseFisher
+import DstDiophantine.Logic.Quantum.ChartFisher
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1264,6 +1265,54 @@ example :
             shellInformation 1 1 shellParticleP shellOrthQ = 0 :=
   ⟨shellLab_information.1, shellLab_fidelity, shellLab_time_density.2.1,
     shellLab_sample_leaves_ray.1, shellOrth_silent 0 |>.2.1⟩
+
+/-- Regression: projective Fisher information equals the carrier deficit at a quadrature phase.
+Mean rest reads `544/625` there, and `136/289`, `17/8` at the extremes. The time-axis pair reads
+`81/841`, `81/25`, and `81/289`. The opposite seed reads `1`. -/
+example :
+    (∃ θ : ℝ, phaseFisher 1 1 shellParticleP shellParticleQ θ = 544 / 625) ∧
+      (∃ θ : ℝ, phaseFisher 1 1 shellParticleP shellParticleQ θ = 136 / 289) ∧
+        (∃ θ : ℝ, phaseFisher 1 1 shellParticleP shellParticleQ θ = 17 / 8) ∧
+          phaseFisher 1 1 shellParticleP shellLabSpinor
+              (wavePhase (restMomentum 3 - shellRestP) (timeShift 0)) = 81 / 841 ∧
+            phaseFisher 1 1 shellParticleP shellLabSpinor
+                (wavePhase (restMomentum 3 - shellRestP) (timeShift (-Real.pi / 2))) = 81 / 25 ∧
+              (∃ t : ℝ,
+                phaseFisher 1 1 shellParticleP shellLabSpinor
+                    (wavePhase (restMomentum 3 - shellRestP) (timeShift t)) = 81 / 289) ∧
+                (∀ θ : ℝ, phaseFisher 1 1 shellParticleP shellOrthQ θ = 1) := by
+  refine ⟨?_, ?_, ?_, shellLab_phaseFisher.1, shellLab_phaseFisher.2.1, ?_, ?_⟩
+  · obtain ⟨θ, _, h⟩ := shellRest_phaseFisher.1
+    exact ⟨θ, h⟩
+  · obtain ⟨θ, _, h⟩ := shellRest_phaseFisher.2.1
+    exact ⟨θ, h⟩
+  · obtain ⟨θ, _, h⟩ := shellRest_phaseFisher.2.2
+    exact ⟨θ, h⟩
+  · obtain ⟨t, _, _, h⟩ := shellLab_phaseFisher.2.2.1
+    exact ⟨t, h⟩
+  · intro θ
+    exact (shellOrth_phaseFisher θ).1
+
+/-- Regression: chart Fisher information is the phase Fisher information times the squared
+momentum split. Mean rest reads `0` on the time axis and `34816/625` on axis `1`. The time-axis
+pair reads `324/841` at time `0`. The opposite seed reads `64` on axis `1`. Equal weights on one
+momentum have phase information `1` and chart Fisher information `0`. -/
+example (θ : ℝ) :
+    (∃ η : ℝ,
+        chartFisher 1 1 shellParticleP shellParticleQ (shellRestQ - shellRestP) 0 η = 0 ∧
+          chartFisher 1 1 shellParticleP shellParticleQ (shellRestQ - shellRestP) 1 η =
+            34816 / 625) ∧
+      chartFisher 1 1 shellParticleP shellLabSpinor (restMomentum 3 - shellRestP) 0
+          (wavePhase (restMomentum 3 - shellRestP) (timeShift 0)) = 324 / 841 ∧
+        chartFisher 1 1 shellParticleP shellOrthQ (shellRestQ - shellRestP) 1 θ = 64 ∧
+          phaseInformation 1 1 = 1 ∧
+            chartFisher 1 1 (EuclideanSpace.single 0 1) (EuclideanSpace.single 0 1)
+                (0 - 0) 1 0 = 0 := by
+  obtain ⟨η, _, _, h0, h1⟩ := shellRest_chartFisher.1
+  have hsame :=
+    sameMomentum_chartFisher (r := 1) (hr := by norm_num)
+      (u := EuclideanSpace.single (0 : Fin 4) (1 : ℂ)) (p := 0) (μ := 1) (θ := 0)
+  refine ⟨⟨η, h0, h1⟩, shellLab_chartFisher.2.1, (shellOrth_chartFisher θ).2, hsame.1, hsame.2⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=

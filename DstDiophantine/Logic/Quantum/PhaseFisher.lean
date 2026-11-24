@@ -4,8 +4,8 @@ import Mathlib.Analysis.InnerProductSpace.LinearMap
 /-!
 # Quantum Fisher information of the relative phase
 
-`PhaseInformation` names `I = 4p(1 − p)` and leaves the symmetric logarithmic derivative unbuilt.
-On the orthonormal weight space the relative phase is unitary. Its generator is the projector onto
+`PhaseInformation` names `I = 4p(1 − p)`. On the orthonormal weight space the relative phase is
+unitary. Its generator is the projector onto
 the second weight. The horizontal derivative `D` is orthogonal to the state, the pure-state
 symmetric logarithmic derivative satisfies `Lψ = 2D`, and `⟨ψ, L²ψ⟩ = I`.
 
