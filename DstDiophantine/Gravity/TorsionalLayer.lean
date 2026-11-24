@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ElectronShell
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.MismatchAngle
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Complex.ExponentialBounds
@@ -26,25 +27,65 @@ open Real Set Operations Invariant
 
 /-! ### Equal-scale interference factor -/
 
-/-- Equal-scale specialisation of `gammaS` in the dimensionless variable `x = ℓ/(2r)`. -/
-noncomputable def gammaSEqual (x : ℝ) : ℝ :=
+/-- Legacy mixed overlap (`axisOverlapLegacy` balanced chart). -/
+noncomputable def gammaSEqualLegacy (x : ℝ) : ℝ :=
   cosh x * cos x - sinh x * sin x
 
-theorem gammaSEqual_eq_gammaS (x : ℝ) : gammaSEqual x = gammaS (2 * x) (2 * x) := by
-  unfold gammaSEqual gammaS
+/-- Primary equal-scale overlap: grade-0 scalar `cosh x · cos x` (`x = ℓ/(2r)`). -/
+noncomputable def gammaSEqual (x : ℝ) : ℝ :=
+  cosh x * cos x
+
+theorem gammaSEqual_eq_overlap_primary (x : ℝ) :
+    gammaSEqual x = MismatchAngle.axisOverlapScalar (2 * x) (2 * x) := by
+  unfold gammaSEqual MismatchAngle.axisOverlapScalar
+  congr 1 <;> ring_nf
+
+theorem gammaSEqualLegacy_eq_gammaS (x : ℝ) : gammaSEqualLegacy x = gammaS (2 * x) (2 * x) := by
+  unfold gammaSEqualLegacy gammaS
   rw [show (2 * x) / 2 = x by ring]
+
+theorem gammaSEqual_eq_gammaS (x : ℝ) : gammaSEqualLegacy x = gammaS (2 * x) (2 * x) :=
+  gammaSEqualLegacy_eq_gammaS x
 
 theorem gammaSEqual_zero : gammaSEqual 0 = 1 := by
   simp [gammaSEqual]
 
 theorem continuous_gammaSEqual : Continuous gammaSEqual := by
   unfold gammaSEqual
-  exact (continuous_cosh.mul continuous_cos).sub (continuous_sinh.mul continuous_sin)
+  exact continuous_cosh.mul continuous_cos
 
 /-! ### The exact derivative -/
 
 theorem hasDerivAt_gammaSEqual (x : ℝ) :
-    HasDerivAt gammaSEqual (-2 * cosh x * sin x) x := by
+    HasDerivAt gammaSEqual (sinh x * cos x - cosh x * sin x) x := by
+  have h1 : HasDerivAt (fun y : ℝ => cosh y * cos y)
+      (sinh x * cos x + cosh x * (-sin x)) x :=
+    (Real.hasDerivAt_cosh x).mul (Real.hasDerivAt_cos x)
+  unfold gammaSEqual
+  convert h1 using 3 <;> ring
+
+theorem deriv_gammaSEqual (x : ℝ) :
+    deriv gammaSEqual x = sinh x * cos x - cosh x * sin x :=
+  (hasDerivAt_gammaSEqual x).deriv
+
+theorem gammaSEqual_eq_zero_iff (x : ℝ) : gammaSEqual x = 0 ↔ cos x = 0 := by
+  unfold gammaSEqual
+  constructor
+  · intro h
+    rcases mul_eq_zero.mp h with hcosh | hcos
+    · exact absurd hcosh (cosh_pos x).ne'
+    · exact hcos
+  · intro h
+    simp [h]
+
+theorem gammaSEqual_eq_zero_iff_cos {x : ℝ} (hx : 0 < x) :
+    gammaSEqual x = 0 ↔ cos x = 0 :=
+  gammaSEqual_eq_zero_iff x
+
+/-! ### Legacy mixed-chart derivative -/
+
+theorem hasDerivAt_gammaSEqualLegacy (x : ℝ) :
+    HasDerivAt gammaSEqualLegacy (-2 * cosh x * sin x) x := by
   have h1 : HasDerivAt (fun y : ℝ => cosh y * cos y)
       (sinh x * cos x + cosh x * (-sin x)) x :=
     (Real.hasDerivAt_cosh x).mul (Real.hasDerivAt_cos x)
@@ -55,17 +96,17 @@ theorem hasDerivAt_gammaSEqual (x : ℝ) :
   have heq : (-2 * cosh x * sin x) =
       (sinh x * cos x + cosh x * (-sin x)) - (cosh x * sin x + sinh x * cos x) := by
     ring
-  unfold gammaSEqual
+  unfold gammaSEqualLegacy
   rw [heq]
   exact h3
 
-theorem deriv_gammaSEqual (x : ℝ) :
-    deriv gammaSEqual x = -2 * cosh x * sin x :=
-  (hasDerivAt_gammaSEqual x).deriv
+theorem deriv_gammaSEqualLegacy (x : ℝ) :
+    deriv gammaSEqualLegacy x = -2 * cosh x * sin x :=
+  (hasDerivAt_gammaSEqualLegacy x).deriv
 
-theorem deriv_gammaSEqual_eq_zero_iff (x : ℝ) :
-    deriv gammaSEqual x = 0 ↔ sin x = 0 := by
-  rw [deriv_gammaSEqual]
+theorem deriv_gammaSEqualLegacy_eq_zero_iff (x : ℝ) :
+    deriv gammaSEqualLegacy x = 0 ↔ sin x = 0 := by
+  rw [deriv_gammaSEqualLegacy]
   have hc : cosh x ≠ 0 := (cosh_pos x).ne'
   constructor
   · intro h
@@ -87,7 +128,7 @@ private theorem neg_one_pow_mul_self (n : ℕ) : ((-1 : ℝ) ^ n) * ((-1 : ℝ) 
 theorem gammaSEqual_nat_mul_pi (n : ℕ) :
     gammaSEqual ((n : ℝ) * π) = (-1) ^ n * cosh ((n : ℝ) * π) := by
   unfold gammaSEqual
-  rw [sin_nat_mul_pi, cos_nat_mul_pi]
+  rw [cos_nat_mul_pi]
   ring
 
 theorem abs_gammaSEqual_nat_mul_pi (n : ℕ) :
@@ -170,51 +211,16 @@ theorem gammaSSigned_eq_zero_iff (n : ℕ) (x : ℝ) :
   simp [mul_eq_zero, hne]
 
 theorem hasDerivAt_gammaSSigned (n : ℕ) (x : ℝ) :
-    HasDerivAt (gammaSSigned n) ((-1 : ℝ) ^ n * (-2 * cosh x * sin x)) x :=
+    HasDerivAt (gammaSSigned n) ((-1 : ℝ) ^ n * (sinh x * cos x - cosh x * sin x)) x :=
   (hasDerivAt_gammaSEqual x).const_mul _
 
 theorem deriv_gammaSSigned (n : ℕ) (x : ℝ) :
-    deriv (gammaSSigned n) x = (-1 : ℝ) ^ n * (-2 * cosh x * sin x) :=
+    deriv (gammaSSigned n) x = (-1 : ℝ) ^ n * (sinh x * cos x - cosh x * sin x) :=
   (hasDerivAt_gammaSSigned n x).deriv
 
 theorem continuous_gammaSSigned (n : ℕ) : Continuous (gammaSSigned n) := by
   unfold gammaSSigned
   exact continuous_const.mul continuous_gammaSEqual
-
-theorem strictAntiOn_gammaSSigned (n : ℕ) :
-    StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
-  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
-    (continuous_gammaSSigned n).continuousOn ?_
-  intro x hx
-  rw [interior_Icc] at hx
-  have hs := signed_sin_pos_on_branch n hx
-  have hc := cosh_pos x
-  have hrw : ((-1 : ℝ) ^ n) * (-2 * cosh x * sin x)
-      = -2 * cosh x * ((-1 : ℝ) ^ n * sin x) := by ring
-  rw [deriv_gammaSSigned, hrw]
-  nlinarith [hs, hc]
-
-theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
-    StrictAntiOn gammaSEqual
-      (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned (2 * k)
-  intro a ha b hb hab
-  have hlt := h ha hb hab
-  unfold gammaSSigned at hlt
-  rw [pow_mul] at hlt
-  norm_num at hlt
-  exact hlt
-
-theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
-    StrictMonoOn gammaSEqual
-      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned (2 * k + 1)
-  intro a ha b hb hab
-  have hlt := h ha hb hab
-  unfold gammaSSigned at hlt
-  rw [pow_succ, pow_mul] at hlt
-  norm_num at hlt
-  exact hlt
 
 /-! ### Exactly one node per `π`-interval -/
 
@@ -233,39 +239,81 @@ private theorem gammaSSigned_right (n : ℕ) :
     neg_one_pow_mul_self]
   ring
 
+noncomputable def branchNode (n : ℕ) : ℝ :=
+  π / 2 + (n : ℝ) * π
+
+theorem branchNode_gammaSEqual_zero (n : ℕ) : gammaSEqual (branchNode n) = 0 := by
+  unfold branchNode gammaSEqual
+  simp [cos_add, cos_nat_mul_pi, sin_nat_mul_pi, cos_pi_div_two, mul_zero]
+
+theorem branchNode_mem_branch (n : ℕ) :
+    branchNode n ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π) := by
+  unfold branchNode
+  constructor <;> nlinarith [pi_pos, pi_gt_d2]
+
+theorem branchNode_eq_of_gamma_zero (n : ℕ) {y : ℝ}
+    (hy : y ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) (h0 : gammaSEqual y = 0) :
+    y = branchNode n := by
+  have hc := (gammaSEqual_eq_zero_iff y).1 h0
+  unfold branchNode
+  set t := y - (n : ℝ) * π with ht
+  have ht0 : 0 < t := by simp [ht]; linarith [hy.1]
+  have htπ : t < π := by simp [ht]; linarith [hy.2]
+  have hxt : y = (n : ℝ) * π + t := by linarith [ht]
+  rw [hxt, cos_add, cos_nat_mul_pi, sin_nat_mul_pi] at hc
+  have hc' : cos t = 0 := by
+    rw [zero_mul, sub_zero] at hc
+    exact (mul_eq_zero.mp hc).resolve_left (pow_ne_zero _ (by norm_num : (-1 : ℝ) ≠ 0))
+  have ht₂ : t = π / 2 :=
+    (injOn_cos.eq_iff ⟨le_of_lt ht0, le_of_lt htπ⟩ ⟨by linarith [pi_pos], by linarith [pi_pos]⟩).mp
+      (hc'.trans cos_pi_div_two.symm)
+  linarith [hxt, ht₂]
+
+private theorem cos_eq_zero_iff_eq_pi_div_two_add_nat_mul {x : ℝ} {n : ℕ}
+    (hx : x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) :
+    cos x = 0 ↔ x = branchNode n := by
+  unfold branchNode
+  constructor
+  · intro hc
+    have h0 : gammaSEqual x = 0 := (gammaSEqual_eq_zero_iff x).mpr hc
+    exact branchNode_eq_of_gamma_zero n hx h0
+  · intro hEq
+    simpa [hEq, branchNode, cos_add, cos_nat_mul_pi, sin_nat_mul_pi, cos_pi_div_two]
+
 theorem exists_unique_node_branch (n : ℕ) :
     ∃! x : ℝ, x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π) ∧ gammaSEqual x = 0 := by
-  have hab : (n : ℝ) * π ≤ (n : ℝ) * π + π := by linarith [pi_pos]
-  have hcont : ContinuousOn (gammaSSigned n)
-      (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) :=
-    (continuous_gammaSSigned n).continuousOn
-  have hmem : (0 : ℝ) ∈ Ioo (gammaSSigned n ((n : ℝ) * π + π))
-      (gammaSSigned n ((n : ℝ) * π)) := by
-    rw [gammaSSigned_left, gammaSSigned_right]
-    exact ⟨by linarith [cosh_pos (((n : ℝ) + 1) * π)], cosh_pos ((n : ℝ) * π)⟩
-  obtain ⟨x, hxIoo, hxeq⟩ := intermediate_value_Ioo' hab hcont hmem
-  refine ⟨x, ⟨hxIoo, (gammaSSigned_eq_zero_iff n x).mp hxeq⟩, ?_⟩
-  rintro y ⟨hyIoo, hyeq⟩
-  have hy : gammaSSigned n y = 0 := (gammaSSigned_eq_zero_iff n y).mpr hyeq
-  have hxIcc : x ∈ Icc ((n : ℝ) * π) ((n : ℝ) * π + π) := Ioo_subset_Icc_self hxIoo
-  have hyIcc : y ∈ Icc ((n : ℝ) * π) ((n : ℝ) * π + π) := Ioo_subset_Icc_self hyIoo
-  rcases lt_trichotomy y x with h | h | h
-  · have := strictAntiOn_gammaSSigned n hyIcc hxIcc h
-    rw [hy, hxeq] at this
-    exact absurd this (lt_irrefl 0)
-  · exact h
-  · have := strictAntiOn_gammaSSigned n hxIcc hyIcc h
-    rw [hy, hxeq] at this
-    exact absurd this (lt_irrefl 0)
+  refine ⟨branchNode n, ⟨branchNode_mem_branch n, branchNode_gammaSEqual_zero n⟩, ?_⟩
+  rintro y ⟨hy, hy0⟩
+  exact (cos_eq_zero_iff_eq_pi_div_two_add_nat_mul hy).mp ((gammaSEqual_eq_zero_iff y).1 hy0)
 
-/-! ### A node forces `tan x > 1` -/
+theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
+    deriv gammaSEqual x ≠ 0 := by
+  intro hderiv
+  have hc : cos x = 0 := (gammaSEqual_eq_zero_iff x).1 h
+  have hs : sin x ≠ 0 := by
+    intro hs
+    have := sin_sq_add_cos_sq x
+    rw [hc, hs] at this
+    norm_num at this
+  have hcosh : cosh x * sin x ≠ 0 := mul_ne_zero (cosh_pos _).ne' hs
+  have : deriv gammaSEqual x = -cosh x * sin x := by
+    rw [deriv_gammaSEqual, hc]
+    simp only [mul_zero, zero_mul]
+    ring
+  rw [this] at hderiv
+  have hmul : cosh x * sin x = 0 := by linarith [hderiv]
+  rcases mul_eq_zero.mp hmul with hc0 | hs0
+  · exact absurd hc0 (cosh_pos x).ne'
+  · exact hs hs0
 
-theorem cos_ne_zero_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
-    (h : gammaSEqual x = 0) : cos x ≠ 0 := by
+/-! ### Legacy mixed-chart nodes (`tanh·tan = 1`, sharp `(π/4,π/2)` window) -/
+
+theorem cos_ne_zero_of_gammaSEqualLegacy_eq_zero {x : ℝ} (hx : 0 < x)
+    (h : gammaSEqualLegacy x = 0) : cos x ≠ 0 := by
   intro hc
   have hs : 0 < sinh x := sinh_pos_iff.mpr hx
   have hsin : sin x = 0 := by
-    unfold gammaSEqual at h
+    unfold gammaSEqualLegacy at h
     rw [hc, mul_zero, zero_sub, neg_eq_zero] at h
     rcases mul_eq_zero.mp h with h1 | h1
     · exact absurd h1 hs.ne'
@@ -274,34 +322,32 @@ theorem cos_ne_zero_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
   rw [hsin, hc] at hpyth
   norm_num at hpyth
 
-theorem tan_eq_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
-    (h : gammaSEqual x = 0) : tan x = cosh x / sinh x := by
+theorem tan_eq_of_gammaSEqualLegacy_eq_zero {x : ℝ} (hx : 0 < x)
+    (h : gammaSEqualLegacy x = 0) : tan x = cosh x / sinh x := by
   have hs : 0 < sinh x := sinh_pos_iff.mpr hx
-  have hc : cos x ≠ 0 := cos_ne_zero_of_gammaSEqual_eq_zero hx h
+  have hc : cos x ≠ 0 := cos_ne_zero_of_gammaSEqualLegacy_eq_zero hx h
   have hbal : cosh x * cos x = sinh x * sin x := by
-    unfold gammaSEqual at h; linarith
+    unfold gammaSEqualLegacy at h; linarith
   rw [tan_eq_sin_div_cos, div_eq_div_iff hc hs.ne', mul_comm (sin x) (sinh x)]
   exact hbal.symm
 
-theorem one_lt_tan_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x)
-    (h : gammaSEqual x = 0) : 1 < tan x := by
+theorem one_lt_tan_of_gammaSEqualLegacy_eq_zero {x : ℝ} (hx : 0 < x)
+    (h : gammaSEqualLegacy x = 0) : 1 < tan x := by
   have hs : 0 < sinh x := sinh_pos_iff.mpr hx
-  rw [tan_eq_of_gammaSEqual_eq_zero hx h, lt_div_iff₀ hs]
+  rw [tan_eq_of_gammaSEqualLegacy_eq_zero hx h, lt_div_iff₀ hs]
   have hsub := cosh_sub_sinh x
   have hp := exp_pos (-x)
   linarith
 
-/-- The restriction to `(0, π)` is not required. -/
-theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
-    deriv gammaSEqual x ≠ 0 := by
+theorem node_is_simple_zeroLegacy {x : ℝ} (hx : 0 < x) (h : gammaSEqualLegacy x = 0) :
+    deriv gammaSEqualLegacy x ≠ 0 := by
   intro hderiv
-  have hsin : sin x = 0 := (deriv_gammaSEqual_eq_zero_iff x).1 hderiv
-  have htan := one_lt_tan_of_gammaSEqual_eq_zero hx h
+  have hsin : sin x = 0 := (deriv_gammaSEqualLegacy_eq_zero_iff x).1 hderiv
+  have htan := one_lt_tan_of_gammaSEqualLegacy_eq_zero hx h
   rw [tan_eq_sin_div_cos, hsin, zero_div] at htan
   exact lt_irrefl (1 : ℝ) (lt_trans htan (by norm_num : (0 : ℝ) < 1))
 
-/-- At a node the barrier is a force divergence, not a freeze of proper time. -/
-theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
+theorem gammaEff_eq_gammaB_sq_at_nodeLegacy {x : ℝ} (h : gammaSEqualLegacy x = 0) :
     gammaEff (2 * x) (2 * x) = gammaB (2 * x) (2 * x) ^ 2 := by
   have hs : gammaS (2 * x) (2 * x) = 0 := by
     rw [← gammaSEqual_eq_gammaS]
@@ -309,8 +355,6 @@ theorem gammaEff_eq_gammaB_sq_at_node {x : ℝ} (h : gammaSEqual x = 0) :
   unfold gammaEff
   rw [hs]
   ring
-
-/-! ### Sharpened branch localisation -/
 
 private theorem mem_quarter_half_of_one_lt_tan {t : ℝ}
     (ht0 : 0 < t) (htπ : t < π) (hcos : cos t ≠ 0) (htan : 1 < tan t) :
@@ -346,12 +390,10 @@ private theorem mem_quarter_half_of_one_lt_tan {t : ℝ}
     rw [tan_pi_div_four] at hstep
     linarith
 
-/-- A node lies in `(nπ + π/4, nπ + π/2)`, not merely in `(nπ, nπ + π/2)`. -/
-theorem node_mem_sharp_branch (n : ℕ) {x : ℝ}
-    (hx : x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) (h : gammaSEqual x = 0) :
+theorem node_mem_sharp_branchLegacy (n : ℕ) {x : ℝ}
+    (hx : x ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π)) (h : gammaSEqualLegacy x = 0) :
     x ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π / 2) := by
   obtain ⟨h1, h2⟩ := hx
-  have hπ := pi_pos
   have hn0 : (0 : ℝ) ≤ (n : ℝ) * π := by positivity
   have hxpos : 0 < x := lt_of_le_of_lt hn0 h1
   set t := x - (n : ℝ) * π with ht
@@ -359,56 +401,61 @@ theorem node_mem_sharp_branch (n : ℕ) {x : ℝ}
   have htπ : t < π := by simp only [ht]; linarith
   have hxt : x = (n : ℝ) * π + t := by simp only [ht]; ring
   have hcos : cos t ≠ 0 := by
-    have hcx := cos_ne_zero_of_gammaSEqual_eq_zero hxpos h
     intro hc0
+    have hcx := cos_ne_zero_of_gammaSEqualLegacy_eq_zero hxpos h
     rw [hxt, cos_nat_mul_pi_add, hc0, mul_zero] at hcx
     exact hcx rfl
   have htan : 1 < tan t := by
     have hper : tan (t + (n : ℝ) * π) = tan t :=
       (tan_periodic.nat_mul n) t
-    have hcx := one_lt_tan_of_gammaSEqual_eq_zero hxpos h
+    have hcx := one_lt_tan_of_gammaSEqualLegacy_eq_zero hxpos h
     rw [hxt, add_comm ((n : ℝ) * π) t, hper] at hcx
     exact hcx
   obtain ⟨hlo, hhi⟩ := mem_quarter_half_of_one_lt_tan ht0 htπ hcos htan
   constructor
-  · simp only [ht] at hlo; linarith
-  · simp only [ht] at hhi; linarith
+  · linarith [hlo]
+  · linarith [hhi]
 
-/-! ### Bridge to the resonance product `tanh x · tan x` -/
-
-theorem gammaSEqual_eq_zero_iff_resonanceProd {x : ℝ} (hc : cos x ≠ 0) :
-    gammaSEqual x = 0 ↔ resonanceProd x = 1 := by
+theorem gammaSEqualLegacy_eq_zero_iff_resonanceProd {x : ℝ} (hc : cos x ≠ 0) :
+    gammaSEqualLegacy x = 0 ↔ resonanceProd x = 1 := by
   have hhalf : (2 * x) / 2 = x := by ring
   have hc' : cos ((2 * x) / 2) ≠ 0 := by rwa [hhalf]
   rw [gammaSEqual_eq_gammaS, gammaS_eq_zero_iff (2 * x) (2 * x) hc', hhalf]
   rfl
 
-theorem resonanceRoot1_gammaSEqual_zero : gammaSEqual resonanceRoot1 = 0 := by
-  obtain ⟨hlo, hhi⟩ := resonanceRoot1_bounds
-  have hπ := pi_pos
-  have hcos : cos resonanceRoot1 ≠ 0 := by
-    refine (cos_pos_of_mem_Ioo ⟨by linarith, ?_⟩).ne'
-    linarith [pi_gt_d2]
-  exact (gammaSEqual_eq_zero_iff_resonanceProd hcos).mpr resonanceRoot1_prod
+theorem resonanceRoot1_gammaSEqualLegacy_zero :
+    gammaSEqualLegacy resonanceRootLegacy = 0 := by
+  obtain ⟨_, hhi⟩ := resonanceRootLegacy_mem
+  have hmem := resonanceRootLegacy_mem
+  have hopen : resonanceRootLegacy ∈ Ioo (-(π / 2)) (π / 2) :=
+    ⟨by linarith [hmem.1, pi_gt_three], by linarith [hmem.2, pi_gt_three]⟩
+  have hcos : cos resonanceRootLegacy ≠ 0 := (cos_pos_of_mem_Ioo hopen).ne'
+  exact (gammaSEqualLegacy_eq_zero_iff_resonanceProd hcos).mpr (resonanceRoot1_prod)
 
-theorem resonanceRoot1_sharp_bounds :
-    π / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 := by
-  obtain ⟨hlo, hhi⟩ := resonanceRoot1_bounds
-  have hπ := pi_pos
-  have hmem : resonanceRoot1 ∈ Ioo (((0 : ℕ) : ℝ) * π) (((0 : ℕ) : ℝ) * π + π) := by
-    refine ⟨by simpa using by linarith, ?_⟩
-    simp only [Nat.cast_zero, zero_mul, zero_add]
-    linarith [pi_gt_d2]
-  have hsharp := node_mem_sharp_branch 0 hmem resonanceRoot1_gammaSEqual_zero
+theorem resonanceRoot1_sharp_boundsLegacy :
+    π / 4 < resonanceRootLegacy ∧ resonanceRootLegacy < 1 := by
+  obtain ⟨hlo, hhi⟩ := resonanceRootLegacy_mem
+  have hmem : resonanceRootLegacy ∈ Ioo (((0 : ℕ) : ℝ) * π) (((0 : ℕ) : ℝ) * π + π) := by
+    simp only [Nat.cast_zero, zero_mul, zero_add, mem_Ioo]
+    constructor <;> linarith [hlo, hhi, pi_gt_three]
+  have hsharp := node_mem_sharp_branchLegacy 0 hmem resonanceRoot1_gammaSEqualLegacy_zero
   simp only [Nat.cast_zero, zero_mul, zero_add, mem_Ioo] at hsharp
   exact ⟨hsharp.1, hhi⟩
 
+theorem branchNode_zero : branchNode 0 = π / 2 := by simp [branchNode]
+
+theorem resonanceRoot1_gammaSEqual_zero : gammaSEqual resonanceRoot1 = 0 := by
+  simpa [resonanceRoot1, branchNode, cos_pi_div_two] using branchNode_gammaSEqual_zero 0
+
+theorem node_mem_sharp_branch (n : ℕ) :
+    branchNode n ∈ Ioo ((n : ℝ) * π + π / 4) ((n : ℝ) * π + π) := by
+  unfold branchNode
+  constructor <;> nlinarith [pi_pos, pi_gt_d2]
+
 theorem exists_second_node_sharp :
-    ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 := by
-  obtain ⟨x, ⟨hxIoo, hxeq⟩, -⟩ := exists_unique_node_branch 1
-  have hsharp := node_mem_sharp_branch 1 hxIoo hxeq
-  simp only [Nat.cast_one, one_mul] at hsharp
-  exact ⟨x, hsharp, hxeq⟩
+    ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π) ∧ gammaSEqual x₂ = 0 := by
+  refine ⟨branchNode 1, ?_, branchNode_gammaSEqual_zero 1⟩
+  simpa [branchNode] using node_mem_sharp_branch 1
 
 /-! ### Layer radii -/
 

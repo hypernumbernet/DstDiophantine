@@ -120,8 +120,10 @@ private theorem isPureUsual_iff_axisSigned {p : TorsionParams}
   · intro ht
     have hα := (h a).1
     have hβ := (h a).2.1
-    have hαle : p.alpha a ≤ Real.pi / 2 :=
-      admissibleContinuous_alpha_le_half_pi p h a
+    have hαle : p.alpha a ≤ Real.pi / 2 := by
+      have hβ := (h a).2.1
+      rw [axisSigned] at ht
+      nlinarith [sq_nonneg (p.beta a)]
     have : p.beta a = 0 ∧ p.alpha a = Real.pi / 2 := by
       have hsq : p.alpha a ^ 2 ≤ (Real.pi / 2) ^ 2 := by
         nlinarith [sq_nonneg (p.alpha a - Real.pi / 2)]

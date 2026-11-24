@@ -373,23 +373,38 @@ theorem exists_unique_resonance_root_in_half_one :
     rw [hyeq, hxeq] at this
     exact (lt_irrefl _ this).elim
 
-/-- First positive resonance root on the equal-scale ansatz. -/
+/-- First positive primary overlap node (`cos x = 0` on the first branch). -/
 noncomputable def resonanceRoot1 : ℝ :=
+  π / 2
+
+theorem resonanceRoot1_eq_pi_div_two : resonanceRoot1 = π / 2 := rfl
+
+/-- Legacy resonance root for `tanh x · tan x = 1` on `(1/2, 1)`. -/
+noncomputable def resonanceRootLegacy : ℝ :=
   Classical.choose (ExistsUnique.exists exists_unique_resonance_root_in_half_one)
 
-private theorem resonanceRoot1_spec :
-    resonanceRoot1 ∈ Ioo (1 / 2 : ℝ) 1 ∧ resonanceProd resonanceRoot1 = 1 :=
+private theorem resonanceRootLegacy_spec :
+    resonanceRootLegacy ∈ Ioo (1 / 2 : ℝ) 1 ∧ resonanceProd resonanceRootLegacy = 1 :=
   Classical.choose_spec (ExistsUnique.exists exists_unique_resonance_root_in_half_one)
 
-theorem resonanceRoot1_mem : resonanceRoot1 ∈ Ioo (1 / 2 : ℝ) 1 :=
-  resonanceRoot1_spec.1
+theorem resonanceRoot1_prod : resonanceProd resonanceRootLegacy = 1 :=
+  resonanceRootLegacy_spec.2
 
-theorem resonanceRoot1_prod : resonanceProd resonanceRoot1 = 1 :=
-  resonanceRoot1_spec.2
+theorem resonanceRootLegacy_mem : resonanceRootLegacy ∈ Ioo (1 / 2 : ℝ) 1 :=
+  resonanceRootLegacy_spec.1
+
+theorem resonanceRoot1_mem : resonanceRoot1 ∈ Ioo (π / 4) π := by
+  rw [resonanceRoot1_eq_pi_div_two]
+  constructor <;> linarith [pi_gt_three, pi_pos]
 
 theorem resonanceRoot1_bounds :
-    (1 / 2 : ℝ) < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
-  mem_Ioo.mp resonanceRoot1_mem
+    π / 4 < resonanceRoot1 ∧ resonanceRoot1 < π := by
+  rw [resonanceRoot1_eq_pi_div_two]
+  constructor <;> linarith [pi_gt_three, pi_pos]
+
+private theorem resonanceRoot1_spec :
+    resonanceRoot1 ∈ Ioo (π / 4) π ∧ resonanceRoot1 = π / 2 := by
+  exact ⟨resonanceRoot1_mem, resonanceRoot1_eq_pi_div_two⟩
 
 /-! ### Characteristic length \(\ell = 2 x_1 a_0\) -/
 
@@ -397,12 +412,12 @@ noncomputable def lambdaHyp : ℝ :=
   2 * resonanceRoot1 * (bohrRadiusApprox : ℝ)
 
 theorem lambdaHyp_bounds :
-    (bohrRadiusApprox : ℝ) < lambdaHyp ∧
-      lambdaHyp < 2 * (bohrRadiusApprox : ℝ) := by
+    Real.pi / 2 * (bohrRadiusApprox : ℝ) < lambdaHyp ∧
+      lambdaHyp < 2 * Real.pi * (bohrRadiusApprox : ℝ) := by
   unfold lambdaHyp
   have ha0 : (0 : ℝ) < (bohrRadiusApprox : ℝ) := by exact_mod_cast bohrRadiusApprox_pos
   have hx := resonanceRoot1_bounds
-  constructor <;> nlinarith
+  constructor <;> nlinarith [resonanceRoot1_eq_pi_div_two]
 
 /-! ### Equal-scale radii are \(\Theta(1/n)\) -/
 

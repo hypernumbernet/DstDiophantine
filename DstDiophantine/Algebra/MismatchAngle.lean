@@ -230,14 +230,21 @@ theorem axisOverlap_balanced_eq_zero_iff {x : ℝ} :
   simp [hc.ne']
 
 theorem axisOverlap_admissible_nonneg {α β : ℝ}
-    (_hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi / 2) :
+    (_hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi) :
     0 ≤ axisOverlapScalar α β := by
   rw [axisOverlap_nonneg_iff]
-  rcases le_iff_eq_or_lt.mp hβle with heq | hβlt
-  · have hπ4 : β / 2 = Real.pi / 4 := by linarith [heq, Real.pi_pos]
-    rw [hπ4, Real.cos_pi_div_four]
-    positivity
+  have hhalf : β / 2 ≤ Real.pi / 2 := by linarith [hβle, Real.pi_pos]
+  rcases le_iff_eq_or_lt.mp hhalf with heq | hβlt
+  · have hcos : Real.cos (β / 2) = 0 := by
+      have : β / 2 = Real.pi / 2 := by linarith [heq, Real.pi_pos]
+      simp [this, Real.cos_pi_div_two]
+    simp [hcos]
   · exact (Real.cos_pos_of_mem_Ioo ⟨by linarith [hβ], by linarith [hβlt, Real.pi_pos]⟩).le
+
+theorem axisOverlap_legacy_cone_nonneg {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi / 2) :
+    0 ≤ axisOverlapScalar α β :=
+  axisOverlap_admissible_nonneg hα hβ (le_trans hβle (by linarith [Real.pi_pos]))
 
 /-! ### Legacy overlap sign (papers; electron / strong charts) -/
 

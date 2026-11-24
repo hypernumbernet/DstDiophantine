@@ -159,10 +159,10 @@ theorem J_dualWall_neg_iff (p : TorsionParams) :
     nlinarith
 
 theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     IsAdmissibleContinuous (dualWallParams p) := by
   intro a
-  have hα := admissibleContinuous_alpha_nonneg p h a
+  have hα := admissibleContinuous_legacy_alpha_nonneg p h a
   have hαle := admissibleContinuous_alpha_le_half_pi p h a
   refine ⟨hα, ?_, ?_⟩
   · unfold dualWallParams dualWall
