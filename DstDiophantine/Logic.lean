@@ -65,6 +65,7 @@ import DstDiophantine.Logic.Quantum.PhaseFisher
 import DstDiophantine.Logic.Quantum.ChartFisher
 import DstDiophantine.Logic.Quantum.ChartScore
 import DstDiophantine.Logic.Quantum.MomentumReading
+import DstDiophantine.Logic.Quantum.BornLorentz
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1392,6 +1393,32 @@ example :
   · exact ⟨shellOrth_momentum.1, shellOrth_momentum.2.1, shellOrth_momentum.2.2.1,
       shellOrth_momentum.2.2.2⟩
   · exact ⟨zeroMomentum_packet.1, zeroMomentum_packet.2⟩
+
+/-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
+is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and
+scalar `10/3`. Rest has both equal to `2`. The rotor image of that rest spinor at `(5, 4, 0, 0)`
+has chart density `10/3`, not `50/9`. Invariant weight information stays `1` in the mean rest
+frame and is `15/16` against rest, not the chart value `225/289`. -/
+example :
+    invariantDensity shellLabSpinor = 2 ∧
+      ‖shellLabSpinor‖ ^ 2 = 2 ∧
+        invariantDensity shellParticleP = 10 / 3 ∧
+          ‖shellParticleP‖ ^ 2 / invariantDensity shellParticleP = 5 / 3 ∧
+            (∃ Ψ : DiracSpinor,
+              DiracMomentum 3 shellRestP Ψ ∧
+                ‖Ψ‖ ^ 2 = 10 / 3 ∧
+                  invariantDensity Ψ = 2 ∧
+                    ‖shellParticleP‖ ^ 2 ≠ ‖Ψ‖ ^ 2) ∧
+              phaseInformation (Real.sqrt (invariantDensity shellParticleP))
+                  (Real.sqrt (invariantDensity shellParticleQ)) = 1 ∧
+                phaseInformation (Real.sqrt (invariantDensity shellParticleP))
+                    (Real.sqrt (invariantDensity shellLabSpinor)) = 15 / 16 ∧
+                  phaseInformation ‖shellParticleP‖ ‖shellLabSpinor‖ = 225 / 289 ∧
+                    (15 / 16 : ℝ) ≠ 225 / 289 := by
+  obtain ⟨Ψ, hdir, hn, hinv, -, hne⟩ := shellRest_rotorImage
+  exact ⟨shellLab_densities.1, shellLab_densities.2, shellParticle_densities.1,
+    shellParticle_densities.2.2.1, ⟨Ψ, hdir, hn, hinv, hne⟩, shellRest_invariantPhase.2,
+    shellLab_invariantPhase.2.1, shellLab_invariantPhase.1, shellLab_invariantPhase.2.2.1⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
