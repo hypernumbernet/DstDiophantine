@@ -25,7 +25,7 @@ open MismatchAngle RelativeRotor Invariant Real
 theorem axisOverlap_strict_pos_dual_zero (α : ℝ) :
     1 ≤ axisOverlapScalar α 0 := by
   have h : axisOverlapScalar α 0 = Real.cosh (α / 2) := by
-    unfold axisOverlapScalar
+    unfold axisOverlapScalar pgaAxisMotorGradeZero
     simp [Real.sin_zero, Real.cos_zero]
   rw [h]
   exact Real.one_le_cosh (α / 2)

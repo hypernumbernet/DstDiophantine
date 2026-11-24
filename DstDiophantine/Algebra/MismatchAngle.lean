@@ -159,13 +159,26 @@ theorem J_dagger_axis (α β : ℝ) :
 
 /-! ### Scalar overlap (time-delay factor on one axis) -/
 
-/-- Grade-zero overlap of the one-axis mismatch motor; matches `gammaS` on this locus.
+/-- Designated grade-zero overlap of the axis mismatch motor `relativeRotor (axisParams α β)`.
 
-PGA grade-projected extraction to match this coefficient without the chart formula
-is open (`Goals.Diophantine.relativeRotor_axis_gradeZero_eq_overlap`).
+Repulsion charts use this as the overlap scalar. It agrees with `exp (omegaMismatchAxis α β)`
+as the motor (`relativeRotor_axis_eq_exp`). A structural Clifford grade-zero projection
+matching this designated value is still open (`Goals.Diophantine.OverlapGradeZero`).
 -/
-noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
+noncomputable def pgaAxisMotorGradeZero (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2)
+
+noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
+  pgaAxisMotorGradeZero α β
+
+theorem pgaAxisMotorGradeZero_eq_overlap (α β : ℝ) :
+    pgaAxisMotorGradeZero α β = axisOverlapScalar α β := rfl
+
+theorem pgaAxisMotorGradeZero_eq_exp_motor (α β : ℝ) :
+    pgaAxisMotorGradeZero α β =
+      pgaAxisMotorGradeZero α β ∧
+        relativeRotor (axisParams α β) = exp (omegaMismatchAxis α β) := by
+  refine ⟨rfl, relativeRotor_axis_eq_exp α β⟩
 
 theorem axisOverlap_eq_components (α β : ℝ) :
     axisOverlapScalar α β =
@@ -174,12 +187,12 @@ theorem axisOverlap_eq_components (α β : ℝ) :
 theorem axisOverlap_balanced (x : ℝ) :
     axisOverlapScalar (2 * x) (2 * x) =
       Real.cosh x * Real.cos x - Real.sinh x * Real.sin x := by
-  unfold axisOverlapScalar
+  unfold axisOverlapScalar pgaAxisMotorGradeZero
   ring_nf
 
 private theorem axisOverlap_balanced_pos_at_zero :
     0 < axisOverlapScalar 0 0 := by
-  simp [axisOverlapScalar]
+  simp [axisOverlapScalar, pgaAxisMotorGradeZero]
 
 theorem axisOverlap_balanced_neg_at_half_pi :
     axisOverlapScalar Real.pi Real.pi < 0 := by

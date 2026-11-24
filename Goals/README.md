@@ -66,7 +66,7 @@ the untagged rows under Not yet stateable.
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
 | `Diophantine/MismatchAngle.lean` | 2 | principal-branch `Ω`; discrete winding vs rotation half-squares |
 | `Diophantine/RepulsionCone.lean` | 1 | admissible cone via mismatch half-norm (replaces `JNormalized` box) |
-| `Diophantine/OverlapGradeZero.lean` | 1 | PGA grade-0 coefficient of `relativeRotor` on one axis |
+| `Diophantine/OverlapGradeZero.lean` | 1 | structural Clifford grade-0 of `relativeRotor` vs `pgaAxisMotorGradeZero` |
 | **Total** | **16** | |
 
 ### Beal leaves

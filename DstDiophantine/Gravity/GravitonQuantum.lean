@@ -1079,6 +1079,28 @@ theorem negative_interference_not_admissible :
     simp [oneAxisBalanced] at hsum
     linarith [Real.pi_pos]
 
+theorem graviton_negative_overlap_not_admissible :
+    axisOverlapScalar (2 * Real.pi) (2 * Real.pi) < 0 ∧
+      ¬ IsAdmissibleContinuous (oneAxisBalanced (2 * Real.pi)) := by
+  rw [axisOverlap_eq_gammaS]
+  exact negative_interference_not_admissible
+
+theorem graviton_step_usual_overlap_gt_one {N : ℕ} (hN : 4 ≤ N) :
+    1 < axisOverlapScalar (stepAngle N) 0 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  have hθ := stepAngle_pos hpos
+  rw [axisOverlap_eq_gammaS]
+  exact usual_interference_gt_one hθ
+
+theorem graviton_step_dual_overlap_between {N : ℕ} (hN : 4 ≤ N) :
+    0 < axisOverlapScalar 0 (stepAngle N) ∧
+      axisOverlapScalar 0 (stepAngle N) < 1 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  have hθ := stepAngle_pos hpos
+  have hhalf := stepAngle_le_half_pi hN
+  rw [axisOverlap_eq_gammaS]
+  exact dual_interference_between hθ hhalf
+
 theorem carriers_distinct {N : ℕ} (hN : 4 ≤ N) :
     oneAxisUsual (stepAngle N) ≠ oneAxisDual (stepAngle N) ∧
       oneAxisDual (stepAngle N) ≠ oneAxisBalanced (stepAngle N / 2) ∧

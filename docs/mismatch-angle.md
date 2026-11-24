@@ -13,13 +13,10 @@ Usual and dual rotors factor on `axisParams α β` because `B⁺₀` and `B⁻�
 - `Ω = R_usual† R_dual = exp(ω)` with
   `ω = mismatchBoostHalf • B⁺₀ + mismatchRotationHalf • B⁻₀`
 - `mismatchBoostHalf α β = −α/2` (unbounded boost leg)
-- `mismatchRotationHalf α β = β/2` (compact rotation leg; periodic under `β ↦ β + 2π`)
+- `mismatchRotationHalf α β = β/2` (compact rotation leg; periodic under `β ↦ β + 2π`
 
-The scalar overlap (shell time-delay factor on this locus) is
-
-`axisOverlapScalar α β = cosh(α/2) cos(β/2) − sinh(α/2) sin(β/2)`,
-
-which agrees with `Gravity.gammaS` (`MismatchAngleBridge.axisOverlap_eq_gammaS`).
+The **designated** grade-zero overlap on this motor is `pgaAxisMotorGradeZero α β` (also
+`axisOverlapScalar`; matches `gammaS` via `MismatchAngleBridge.axisOverlap_eq_gammaS`).
 
 **Repulsion is overlap-first:** see `Gravity/RepulsionOverlap.lean`. Legacy `J` is a derived diagnostic:
 
@@ -33,33 +30,33 @@ which agrees with `Gravity.gammaS` (`MismatchAngleBridge.axisOverlap_eq_gammaS`)
 | Sign of `J` ↔ which half-square dominates | `J_neg_iff_rotation_sq_dominates`, `J_pos_iff_boost_sq_dominates` |
 | Pure hyperbolic / elliptic corners | `pure_hyperbolic_rotation_sq_zero`, `pure_elliptic_boost_sq_zero` |
 | `Ω = exp(ω)` on one axis | `relativeRotor_axis_eq_exp` |
-| Overlap / `gammaS` | `axisOverlap_eq_gammaS`, `axisOverlap_eq_gammaSEqual_balanced` |
+| Overlap / `gammaS` | `axisOverlap_eq_gammaS`, `pgaAxisMotorGradeZero_eq_overlap` |
 | Dual wall in half-squares | `J_dualWall_neg_iff_rotation_dominates`, `J_dualWall_nonpos_iff_mismatch` |
 | Equal-scale shield | `J_equalScaleOf_mismatch_balanced` |
 | Regime `T|B|U|F` via half-squares | `ConeLabels.ofParams_eq_*_iff_mismatch_*` |
 | Envelope corner patterns | `EnvelopeLock.twoPure*_mismatch_*`, `onEnvelope_J_zero_mismatch_balance` |
 | Magnetic control | `SilentControl.balanced_magnetic_rotation_dominates`, `EMControl.magnetic_superpose_rotation_sq_geq_when_J_nonpos` |
 | Discrete lattice | `MismatchLattice.mismatch_half_sq_diff`, `pure_boost_mismatch_boost_eq_lattice`, `winding_implies_latticeMismatch_ne` |
-| **Wave 3 — DualControl jets / shield** | `JDot_eq_mismatch_half_derivative`, `JDot_dual_only_rotation_halves`, `exists_dual_only_mismatch_balance`, `dualShield_interp_mismatch_balanced` |
-| **Wave 3 — Mass ceiling corners** | `massCorner_*_mismatch`, `mass_ceiling_not_mismatch_balance`, `mass_ceiling_eq_U_iff_mismatch_one_third` |
-| **Wave 3 — modular scale** | `mismatch_half_sq_diff_scale_eq_amplified_add_winding`, `J_scale_mismatch_half_sq_diagnostic` |
-| **Wave 3 — graviton chart** | `graviton_*_overlap_*` (via `axisOverlapScalar` / `gammaSEqual`) |
+| **Wave 3** DualControl / MassCorners / modular / graviton overlap | see wave 3 PR section |
+| **Wave 4 — modular winding primary** | `mismatchHalfWindingSqSum`, `mismatch_sq_scale_primary`, `J_scale_eq_amplified_add_winding_diagnostic` |
+| **Wave 4 — DualControl shield jets** | `J_dualShieldInterp_mismatch_diagnostic`, `mismatch_half_sq_dot` |
+| **Wave 4 — graviton channels** | `graviton_negative_overlap_not_admissible`, `graviton_step_usual/dual_overlap_*` |
+| **Wave 4 — designated PGA overlap** | `pgaAxisMotorGradeZero`, `pgaAxisMotorGradeZero_eq_exp_motor` |
 
 **Open (Goals, sorry allowed — 16 total):**
 
 - `Goals.Diophantine.omegaMismatch_principal_branch` — general six-parameter log of `Ω`.
-- `Goals.Diophantine.winding_total_equiv_mismatch_rotation_half` — winding vs rotation half-squares off pure-boost bookkeeping.
+- `Goals.Diophantine.winding_total_equiv_mismatch_rotation_half` — winding vs rotation half-squares (**awaiting author conceptual decision**; not scheduled for wave work).
 - `Goals.Diophantine.admissible_iff_mismatch_box` — cone in overlap half-norm (was `|JNormalized| ≤ 1`).
-- `Goals.Diophantine.relativeRotor_axis_gradeZero_eq_overlap` — PGA grade-0 coefficient of `relativeRotor` (`pgaGradeZeroScalar` opaque in Goals only).
+- `Goals.Diophantine.relativeRotor_axis_clifford_gradeZero_eq_designated` — **structural** Clifford grade-0 of `relativeRotor` vs designated chart.
 
-**Author decision / false lead (unchanged):**
+**Author decision / false lead (unchanged plus wave 4):**
 
 - `overlap < 0` does **not** imply `J < 0` (equal-scale witness in `RepulsionOverlap`).
 - Full iff overlap sign on `[0, π]` not proved (monotonicity).
-- **Winding ≠ rotation half on pure-boost seeds:** `windingTotal_pureBoost` tracks `n₀`; `mismatchRotationHalf` vanishes. General equivalence is a Goal, not a theorem.
-- **`massCorner_J_eq` denominator:** corner `J` is `(2·usualCount − 3) · π² / 8` from axis rapidities, not `π²/16`; mismatch half-square book-keeping uses the same corner data via `J_eq_mismatch_half_sq_diff` (do not fold corners into a single bivector angle without a new definition).
-
-**Not yet in main:** constructive PGA grade-0 projection matching `axisOverlapScalar` (Goal above; chart formula remains the interface).
+- **Winding ≠ rotation half on pure-boost seeds:** general equivalence stays a Goal until the author picks a bookkeeping convention.
+- **`pgaAxisMotorGradeZero` is the chart-designated overlap**, not a proved naive Clifford scalar of `relativeRotor`; structural identification is `OverlapGradeZero` Goal.
+- **`J_scale_eq_J_amplified_add_error` is derived** from `mismatch_sq_scale_primary` + `J` diagnostic (not an independent axiom).
 
 ## Classification of existing `J` / `JNormalized` results
 
@@ -68,34 +65,20 @@ Inventory: **78** modules reference `J` or `JNormalized`; **~420** theorem-level
 | Class | Count (modules) | Role |
 |-------|-----------------|------|
 | **(a) Survives unchanged** | ~32 | Killing definition, Diophantine cone book-keeping; `J` stays derived |
-| **(b) Restatable via angle / overlap (cheap)** | ~18 (**21 migrated**) | Wave 1–2 headlines plus wave 3 DualControl / MassCorners / modular / graviton overlap lemmas |
-| **(c) Needs real rewrite / may fail** | ~28 (**~12 remaining**) | Legacy `J_scale_eq_J_amplified_add_error` error bookkeeping, deep DualControl `JDot` paths, bulk GravitonQuantum channel physics, scattered `JNormalized`-native corollaries |
-
-### (b) Migrated (waves 1–3, selected)
-
-| Item | Module | Mismatch-first statement |
-|------|--------|--------------------------|
-| Global `J` book-keeping | `MismatchAngle` | `mismatchBoostHalfSqSum`, `J_eq_mismatch_half_sq_diff` |
-| Dual wall / equal scale / shield | `DualControl` | `J_eq_mismatch_diagnostic`, `J_equalScaleOf_mismatch_balanced`, `JDot_eq_mismatch_half_derivative`, dual-only mismatch balance |
-| Four regimes | `ConeLabels` | `ofParams_eq_T/B/U_iff_mismatch_*`, dual-only existence lemmas |
-| Envelope lock | `EnvelopeLock` | `twoPureUsual/Dual_mismatch_*` |
-| Silent / EM control | `SilentControl`, `EMControl` | balanced magnetic rotation dominance |
-| Lattice | `Framework/MismatchLattice` | `mismatch_half_sq_diff`, pure-boost boost-square = `latticeMismatch` |
-| Mass ceiling | `MassCorners` | corner half-coefficients, ceiling excludes mismatch balance, `U` at one-third height |
-| Modular amplification | `ModularAmplification` | scaled mismatch half-square identity, `J_scale_mismatch_half_sq_diagnostic` |
-| Graviton quantum | `GravitonQuantum` | channel overlap vs `gammaS` on axis params |
+| **(b) Restatable via angle / overlap (cheap)** | ~18 (**~25 migrated**) | Waves 1–4 overlap / mismatch headlines |
+| **(c) Needs real rewrite / may fail** | ~28 (**~9–10 remaining**) | Bulk `JNormalized` graviton heights, deep shield jet parametrization by `sumAlphaSq`, per-theorem audit |
 
 ### (c) Still J-native or open (selected)
 
 | Item | Module | Issue |
 |------|--------|-------|
-| Modular error term | `ModularAmplification` | `J_scale_eq_J_amplified_add_error` still winds via legacy `J` error, not overlap |
-| DualControl jets | `DualControl` | general `JDot` and shield interpolation lemmas still `J`-indexed in places |
+| Graviton collective heights | `GravitonQuantum` | `JNormalized` aligned steps / express comparison still native |
+| DualControl shield calculus | `DualControl` | `J_dualShieldInterp` / `sumAlphaSq` parametrization not overlap-first |
 | Admissible cone box | `RepulsionCone` Goal | mismatch norm vs `JNormalized` |
-| Graviton quantum (bulk) | `GravitonQuantum` | interference / channel theorems not yet overlap-first |
-| PGA overlap extraction | `OverlapGradeZero` Goal | `pgaGradeZeroScalar` definition and proof |
+| Clifford grade-0 | `OverlapGradeZero` Goal | `cliffordGradeZeroScalar` vs `pgaAxisMotorGradeZero` |
+| Winding bookkeeping | Goals only | author decision pending |
 
-**Rough remainder:** on the order of **10–15 module clusters** still carrying irreducible `J`/`JNormalized` phrasing (plus **~390** per-theorem tags not yet audited in the inventory spreadsheet sense).
+**Rough remainder:** **~8–10 module clusters** with irreducible `J`/`JNormalized` phrasing (plus **~390** per-theorem tags not yet audited).
 
 ## CI
 

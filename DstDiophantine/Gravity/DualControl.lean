@@ -418,6 +418,13 @@ theorem J_dualShieldInterp (p : TorsionParams) (t : ℝ) :
     Fin.sum_univ_three]
   ring
 
+theorem J_dualShieldInterp_mismatch_diagnostic (p : TorsionParams) (t : ℝ) :
+    J (dualShieldInterp p t) =
+      2 *
+        (mismatchBoostHalfSqSum (dualShieldInterp p t) -
+          mismatchRotationHalfSqSum (dualShieldInterp p t)) := by
+  rw [J_eq_mismatch_diagnostic]
+
 theorem sumWallSq_pos_of_wall_nonpos {p : TorsionParams}
     (h : J (dualWallParams p) ≤ 0) :
     0 < sumWallSq p := by
@@ -507,6 +514,17 @@ theorem JDot_eq_mismatch_half_derivative (p pdot : TorsionParams) :
   unfold JDot
   simp only [mismatchBoostHalf, mismatchRotationHalf, Fin.sum_univ_three]
   ring_nf
+
+theorem mismatch_half_sq_dot (p pdot : TorsionParams) :
+    ∑ a : Fin 3,
+        (mismatchBoostHalf (p.alpha a) (p.beta a) * (-(pdot.alpha a) / 2) -
+          mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2)) =
+      (1 / 4) * JDot p pdot := by
+  have h := JDot_eq_mismatch_half_derivative p pdot
+  apply Eq.symm
+  rw [h]
+  simp only [Fin.sum_univ_three, mul_one_div, one_mul]
+  ring
 
 theorem JDot_dual_only_rotation_halves (p pdot : TorsionParams)
     (hα : ∀ a, pdot.alpha a = 0) :
