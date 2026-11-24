@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.TorsionalLayer
+import DstDiophantine.Gravity.MismatchAngleBridge
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
@@ -25,8 +26,8 @@ noncomputable section
 
 namespace DstDiophantine.Gravity.GravitonQuantum
 
-open Admissible Invariant Operations Real SourceSuperposition
-open DstDiophantine.Logic
+open Admissible Invariant Operations Real SourceSuperposition MismatchAngle
+open DstDiophantine.Logic Gravity
 
 /-- Pure dual rapidity `θ` on axis 0. -/
 def oneAxisDual (θ : ℝ) : TorsionParams where
@@ -1038,6 +1039,28 @@ theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
       rw [div_le_div_iff₀ (by norm_num) (by norm_num)]
       nlinarith [Real.pi_pos]
     exact le_trans (by simpa [hq] using hdiv) hcmp
+
+/-! ### Mismatch overlap channel (primary; `gammaS` is the chart) -/
+
+theorem graviton_usual_overlap_gt_one {θ : ℝ} (hθ : 0 < θ) :
+    1 < MismatchAngle.axisOverlapScalar θ 0 := by
+  rw [axisOverlap_eq_gammaS]
+  exact usual_interference_gt_one hθ
+
+theorem graviton_dual_overlap_between {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi / 2) :
+    0 < MismatchAngle.axisOverlapScalar 0 θ ∧
+      MismatchAngle.axisOverlapScalar 0 θ < 1 := by
+  rw [axisOverlap_eq_gammaS]
+  exact dual_interference_between h0 hθ
+
+theorem graviton_balanced_overlap_eq_gammaSEqual (θ : ℝ) :
+    MismatchAngle.axisOverlapScalar θ θ = gammaSEqual (θ / 2) := by
+  rw [axisOverlap_eq_gammaS, gammaS_balanced]
+
+theorem graviton_balanced_overlap_pos {N : ℕ} (hN : 4 ≤ N) :
+    0 < MismatchAngle.axisOverlapScalar (stepAngle N / 2) (stepAngle N / 2) := by
+  rw [graviton_balanced_overlap_eq_gammaSEqual]
+  exact balanced_interference_pos hN
 
 theorem gammaSEqual_pi_neg : gammaSEqual Real.pi < 0 := by
   have h := gammaSEqual_nat_mul_pi 1

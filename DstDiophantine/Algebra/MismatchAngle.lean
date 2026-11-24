@@ -159,7 +159,11 @@ theorem J_dagger_axis (α β : ℝ) :
 
 /-! ### Scalar overlap (time-delay factor on one axis) -/
 
-/-- Grade-zero overlap of the one-axis mismatch motor; matches `gammaS` on this locus. -/
+/-- Grade-zero overlap of the one-axis mismatch motor; matches `gammaS` on this locus.
+
+PGA grade-projected extraction to match this coefficient without the chart formula
+is open (`Goals.Diophantine.relativeRotor_axis_gradeZero_eq_overlap`).
+-/
 noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2)
 

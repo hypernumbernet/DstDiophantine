@@ -4,6 +4,7 @@ import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Framework.Lattice
+import DstDiophantine.Algebra.MismatchAngle
 import DstDiophantine.Framework.Amplification
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.Linarith
@@ -23,7 +24,7 @@ coarse witness.
 
 namespace DstDiophantine
 
-open Operations Discrete Amplification Invariant Framework Real
+open Operations Discrete Amplification Invariant Framework Real MismatchAngle
 open _root_.DstDiophantine.Embedding
 
 namespace ModularAmplification
@@ -233,6 +234,36 @@ theorem J_scale_eq_J_amplified_add_error_pureBoost (k : ℕ) (t : DiscreteTorsio
   have h1 := axisWindingError_pureBoost_of_ne_zero k t hp (by decide : (1 : Fin 3) ≠ 0)
   have h2 := axisWindingError_pureBoost_of_ne_zero k t hp (by decide : (2 : Fin 3) ≠ 0)
   simp [h1, h2]
+
+theorem mismatch_half_sq_diff_scale_eq_amplified_add_winding
+    (k : ℕ) (t : DiscreteTorsion N) :
+    mismatchBoostHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) -
+        mismatchRotationHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) =
+      mismatchBoostHalfSqSum (amplifiedParams k t) -
+          mismatchRotationHalfSqSum (amplifiedParams k t) +
+        (1 / 4) * ∑ a : Fin 3, axisWindingError k t a := by
+  have hJ := J_eq_mismatch_half_sq_diff (scaleTorsion (k : ℝ) (toTorsionParams t))
+  have hJa := J_eq_mismatch_half_sq_diff (amplifiedParams k t)
+  linarith [J_scale_eq_J_amplified_add_error k t, hJ, hJa]
+
+theorem mismatch_half_sq_diff_scale_eq_amplified_add_winding_pureBoost
+    (k : ℕ) (t : DiscreteTorsion N) (hp : IsPureBoostSeed t) :
+    mismatchBoostHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) -
+        mismatchRotationHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) =
+      mismatchBoostHalfSqSum (amplifiedParams k t) -
+          mismatchRotationHalfSqSum (amplifiedParams k t) +
+        (1 / 4) * axisWindingError k t 0 := by
+  rw [mismatch_half_sq_diff_scale_eq_amplified_add_winding k t]
+  simp only [Fin.sum_univ_three]
+  have h1 := axisWindingError_pureBoost_of_ne_zero k t hp (by decide : (1 : Fin 3) ≠ 0)
+  have h2 := axisWindingError_pureBoost_of_ne_zero k t hp (by decide : (2 : Fin 3) ≠ 0)
+  simp [h1, h2]
+
+theorem J_scale_mismatch_half_sq_diagnostic (k : ℕ) (t : DiscreteTorsion N) :
+    mismatchBoostHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) -
+        mismatchRotationHalfSqSum (scaleTorsion (k : ℝ) (toTorsionParams t)) =
+      (1 / 2) * J (scaleTorsion (k : ℝ) (toTorsionParams t)) := by
+  linarith [J_eq_mismatch_half_sq_diff (scaleTorsion (k : ℝ) (toTorsionParams t))]
 
 /-! ### Pure-boost winding criterion -/
 

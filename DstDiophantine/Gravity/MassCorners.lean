@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ConeLabels
 import DstDiophantine.Gravity.ShieldCeiling
+import DstDiophantine.Algebra.MismatchAngle
 
 /-!
 # Mass ceiling of the admissible cone
@@ -13,7 +14,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle
 
 /-- One axis at the pure-boost corner. -/
 def IsUsualCorner (p : TorsionParams) (a : Fin 3) : Prop :=
@@ -51,6 +52,72 @@ private theorem axis_sq_sum_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
   · simp [massCorner, ha]
   · simp [massCorner, ha]
 
+theorem massCorner_usual_mismatch (usual : Fin 3 → Bool) (a : Fin 3)
+    (h : usual a = true) :
+    mismatchBoostHalf ((massCorner usual).alpha a) ((massCorner usual).beta a) =
+      -(Real.pi / 4) ∧
+      mismatchRotationHalf ((massCorner usual).alpha a) ((massCorner usual).beta a) = 0 := by
+  have hα : (massCorner usual).alpha a = Real.pi / 2 := by simp [massCorner, h]
+  have hβ : (massCorner usual).beta a = 0 := by simp [massCorner, h]
+  constructor
+  · simp [mismatchBoostHalf, hα]
+    ring_nf
+  · simp [mismatchRotationHalf, hβ]
+
+theorem massCorner_dual_mismatch (usual : Fin 3 → Bool) (a : Fin 3)
+    (h : usual a = false) :
+    mismatchBoostHalf ((massCorner usual).alpha a) ((massCorner usual).beta a) = 0 ∧
+      mismatchRotationHalf ((massCorner usual).alpha a) ((massCorner usual).beta a) =
+        Real.pi / 4 := by
+  have hα : (massCorner usual).alpha a = 0 := by simp [massCorner, h]
+  have hβ : (massCorner usual).beta a = Real.pi / 2 := by simp [massCorner, h]
+  constructor
+  · simp [mismatchBoostHalf, hα]
+  · simp [mismatchRotationHalf, hβ]
+    ring_nf
+
+private theorem usualCount_eq_bits (usual : Fin 3 → Bool) :
+    usualCount usual =
+      (if usual 0 then 1 else 0) + (if usual 1 then 1 else 0) + (if usual 2 then 1 else 0) :=
+  rfl
+
+theorem usualCount_le_three (usual : Fin 3 → Bool) : usualCount usual ≤ 3 := by
+  rw [usualCount_eq_bits]
+  cases usual 0 <;> cases usual 1 <;> cases usual 2 <;> decide
+
+private theorem axis_signed_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
+    (massCorner usual).alpha a ^ 2 - (massCorner usual).beta a ^ 2 =
+      if usual a then (Real.pi / 2) ^ 2 else -((Real.pi / 2) ^ 2) := by
+  cases ha : usual a
+  · simp [massCorner, ha]
+  · simp [massCorner, ha]
+
+private theorem massCorner_J_eq (usual : Fin 3 → Bool) :
+    J (massCorner usual) =
+      ((usualCount usual : ℝ) * 2 - 3) * Real.pi ^ 2 / 8 := by
+  rw [J_coef, Fin.sum_univ_three]
+  have h0 := axis_signed_massCorner usual 0
+  have h1 := axis_signed_massCorner usual 1
+  have h2 := axis_signed_massCorner usual 2
+  rw [usualCount_eq_bits]
+  cases b0 : usual 0 <;> cases b1 : usual 1 <;> cases b2 : usual 2 <;> all_goals
+    simp [h0, h1, h2, b0, b1, b2, usualCount] <;> field_simp <;> ring
+
+theorem massCorner_mismatch_boost_dominates (usual : Fin 3 → Bool)
+    (hcount : 2 ≤ usualCount usual) :
+    mismatchBoostHalfSqSum (massCorner usual) >
+      mismatchRotationHalfSqSum (massCorner usual) := by
+  rw [← J_pos_iff_boost_sq_dominates, massCorner_J_eq]
+  have hpos : 0 < (usualCount usual : ℝ) * 2 - 3 := by
+    have hle := usualCount_le_three usual
+    have hcn : usualCount usual = 2 ∨ usualCount usual = 3 := by omega
+    rcases hcn with h2 | h3
+    · rw [h2]; norm_num
+    · rw [h3]; norm_num
+  apply div_pos _ (by norm_num : (0 : ℝ) < 8)
+  apply mul_pos hpos
+  positivity
+
 theorem mass_massCorner (usual : Fin 3 → Bool) :
     mass (massCorner usual) = 3 * Real.pi ^ 2 / 8 := by
   rw [mass_coef]
@@ -64,22 +131,6 @@ theorem mass_massCorner (usual : Fin 3 → Bool) :
         ((massCorner usual).alpha 2 ^ 2 + (massCorner usual).beta 2 ^ 2))
       = (1 / 2) * (3 * (Real.pi / 2) ^ 2) := by rw [h0, h1, h2]; ring
     _ = 3 * Real.pi ^ 2 / 8 := by ring
-
-private theorem axis_signed_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
-    (massCorner usual).alpha a ^ 2 - (massCorner usual).beta a ^ 2 =
-      if usual a then (Real.pi / 2) ^ 2 else -((Real.pi / 2) ^ 2) := by
-  cases ha : usual a
-  · simp [massCorner, ha]
-  · simp [massCorner, ha]
-
-private theorem usualCount_eq_bits (usual : Fin 3 → Bool) :
-    usualCount usual =
-      (if usual 0 then 1 else 0) + (if usual 1 then 1 else 0) + (if usual 2 then 1 else 0) :=
-  rfl
-
-theorem usualCount_le_three (usual : Fin 3 → Bool) : usualCount usual ≤ 3 := by
-  rw [usualCount_eq_bits]
-  cases usual 0 <;> cases usual 1 <;> cases usual 2 <;> decide
 
 theorem JNormalized_massCorner (usual : Fin 3 → Bool) :
     JNormalized (massCorner usual) = ((usualCount usual : ℝ) * 2 - 3) / 3 := by
@@ -202,6 +253,15 @@ theorem mass_ceiling_not_balance {p : TorsionParams}
   have hfour := JNormalized_mass_ceiling_four hp hM
   rcases hfour with h | h | h | h <;> linarith
 
+theorem mass_ceiling_not_mismatch_balance {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    mismatchBoostHalfSqSum p ≠ mismatchRotationHalfSqSum p := by
+  intro hbal
+  have hne := mass_ceiling_not_balance hp hM
+  have hJ : J p = 0 := (J_eq_zero_iff_mismatch_sq_balance p).mpr hbal
+  have hT := (Logic.ofParams_eq_T_iff hp).mpr ((JNormalized_eq_zero_iff p).mpr hJ)
+  exact hne hT
+
 theorem mass_ceiling_eq_F_iff {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (_hM : mass p = 3 * Real.pi ^ 2 / 8) :
     Logic.ofParams p hp = .F ↔ JNormalized p = 1 := by
@@ -221,6 +281,20 @@ theorem mass_ceiling_eq_U_iff {p : TorsionParams}
     · linarith
   · intro h
     exact ⟨by linarith, by linarith⟩
+
+theorem mass_ceiling_eq_U_iff_mismatch_one_third {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    Logic.ofParams p hp = .U ↔
+      mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p ∧
+        mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p <
+          3 * Real.pi ^ 2 / 16 ∧
+        JNormalized p = 1 / 3 := by
+  constructor
+  · intro hU
+    rcases (ofParams_eq_U_iff_mismatch_halves hp).mp hU with ⟨hb, hd⟩
+    exact ⟨hb, hd, (mass_ceiling_eq_U_iff hp hM).mp hU⟩
+  · intro ⟨_, _, hJn⟩
+    exact (mass_ceiling_eq_U_iff hp hM).mpr hJn
 
 theorem mass_ceiling_eq_B_iff {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :

@@ -1,5 +1,6 @@
 import Goals.Diophantine.Headlines
 import Goals.Diophantine.MismatchAngle
+import Goals.Diophantine.OverlapGradeZero
 import Goals.Diophantine.RepulsionCone
 import Goals.Diophantine.Residuals
 import Goals.Diophantine.Bridges

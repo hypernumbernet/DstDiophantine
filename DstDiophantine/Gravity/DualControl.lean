@@ -498,6 +498,50 @@ theorem exists_dual_only_J_eq_zero {p : TorsionParams}
     isAdmissibleContinuous_dualShieldInterp_at_T hp h,
     J_dualShieldInterp_at_T h⟩
 
+theorem JDot_eq_mismatch_half_derivative (p pdot : TorsionParams) :
+    JDot p pdot =
+      4 *
+        ∑ a : Fin 3,
+          (mismatchBoostHalf (p.alpha a) (p.beta a) * (-(pdot.alpha a) / 2) -
+            mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2)) := by
+  unfold JDot
+  simp only [mismatchBoostHalf, mismatchRotationHalf, Fin.sum_univ_three]
+  ring_nf
+
+theorem JDot_dual_only_rotation_halves (p pdot : TorsionParams)
+    (hα : ∀ a, pdot.alpha a = 0) :
+    JDot p pdot =
+      -4 *
+        ∑ a : Fin 3,
+          mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2) := by
+  have hsum :
+      ∑ a : Fin 3, p.beta a * pdot.beta a =
+        4 *
+          ∑ a : Fin 3,
+            mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2) := by
+    simp only [Fin.sum_univ_three, mismatchRotationHalf]
+    ring_nf
+  rw [JDot_dual_only p pdot hα]
+  simpa using congrArg Neg.neg hsum
+
+theorem exists_dual_only_mismatch_balance {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) ≤ 0) :
+    ∃ q : TorsionParams,
+      q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧
+        mismatchBoostHalfSqSum q = mismatchRotationHalfSqSum q := by
+  obtain ⟨q, hα, hq, hJ⟩ := exists_dual_only_J_eq_zero hp h
+  exact ⟨q, hα, hq, (J_eq_zero_iff_mismatch_sq_balance q).mp hJ⟩
+
+theorem dualShield_interp_mismatch_balanced {p : TorsionParams}
+    (h : J (dualWallParams p) ≤ 0) :
+    mismatchBoostHalfSqSum (dualShieldInterp p (dualShieldT p)) =
+      mismatchRotationHalfSqSum (dualShieldInterp p (dualShieldT p)) := by
+  exact (J_eq_zero_iff_mismatch_sq_balance _).mp (J_dualShieldInterp_at_T h)
+
+theorem dual_only_shield_mismatch_balanced (q : TorsionParams) (hJ : J q = 0) :
+    mismatchBoostHalfSqSum q = mismatchRotationHalfSqSum q :=
+  (J_eq_zero_iff_mismatch_sq_balance q).mp hJ
+
 theorem not_dual_only_J_eq_zero_of_wall_pos {p q : TorsionParams}
     (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q)
     (hwall : 0 < J (dualWallParams p)) :
