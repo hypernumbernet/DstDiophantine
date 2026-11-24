@@ -64,6 +64,7 @@ import DstDiophantine.Logic.Quantum.CarrierDeficit
 import DstDiophantine.Logic.Quantum.PhaseFisher
 import DstDiophantine.Logic.Quantum.ChartFisher
 import DstDiophantine.Logic.Quantum.ChartScore
+import DstDiophantine.Logic.Quantum.MomentumReading
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1353,6 +1354,44 @@ example :
   · exact ⟨shellOrth_origin_score.2.1, shellOrth_origin_score.2.2.1⟩
   · have hsame := sameMomentum_score
     exact ⟨hsame.2.2.1, hsame.2.2.2⟩
+
+/-- Regression: on a shell packet the part of `momentumOp` orthogonal to the sample is `-i/2`
+times the displacement score. Mean rest, quadrature, origin, axis `1`: real part `0`, imaginary
+part squared `(36/25)²`, horizontal length squared `34816/225`. The time axis is the eigen-sample
+`5 • Ψ`. Rest against `(5, 4, 0, 0)` at time `-π/2` has quotient `28/5`, horizontal length
+squared `36/5`, and position `-π/2`. The opposite seed has quotient `0`, a nonzero momentum
+operator, horizontal length squared `1600/9`, and position `0`. The zero-momentum packet has
+`momentumOp = 0` and position `1`. -/
+example :
+    (∃ θ : ℝ,
+        let Ψ := shellPacket 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ;
+        (momentumQuotient 1 Ψ 0).re = 0 ∧
+          (momentumQuotient 1 Ψ 0).im ^ 2 = (36 / 25) ^ 2 ∧
+            ‖momentumHorizontal 1 Ψ 0‖ ^ 2 = 34816 / 225) ∧
+      (let Ψ := shellPacket 1 1 0 shellRestP shellRestQ shellParticleP shellParticleQ;
+        momentumOp 0 Ψ 0 = (5 : ℂ) • Ψ 0 ∧ momentumHorizontal 0 Ψ 0 = 0) ∧
+      (let Ψ := shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor;
+        let x := timeShift (-Real.pi / 2);
+        momentumQuotient 0 Ψ x = (28 / 5 : ℂ) ∧
+          ‖momentumHorizontal 0 Ψ x‖ ^ 2 = 36 / 5 ∧
+            (inner ℂ (Ψ x) (positionOp 0 Ψ x)).re / ‖Ψ x‖ ^ 2 = -Real.pi / 2) ∧
+        (let Ψ := shellPacket 1 1 0 shellRestP shellRestQ shellParticleP shellOrthQ;
+          momentumQuotient 1 Ψ 0 = 0 ∧
+            momentumOp 1 Ψ 0 ≠ 0 ∧
+              ‖momentumHorizontal 1 Ψ 0‖ ^ 2 = 1600 / 9 ∧
+                positionOp 1 Ψ 0 = 0) ∧
+          (let u : DiracSpinor := EuclideanSpace.single 0 1;
+            let x : Vec4 := Pi.single 1 1;
+            let Ψ := shellPacket 1 1 0 (0 : Vec4) 0 u u;
+            momentumOp 1 Ψ x = 0 ∧
+              (inner ℂ (Ψ x) (positionOp 1 Ψ x)).re / ‖Ψ x‖ ^ 2 = 1) := by
+  obtain ⟨θ, hrest⟩ := shellRest_quadrature_momentum
+  refine ⟨⟨θ, hrest⟩, ?_, ?_, ?_, ?_⟩
+  · exact shellRest_time_eigen (0 : ℝ) 0
+  · exact ⟨shellLab_momentum.1, shellLab_momentum.2.1, shellLab_momentum.2.2⟩
+  · exact ⟨shellOrth_momentum.1, shellOrth_momentum.2.1, shellOrth_momentum.2.2.1,
+      shellOrth_momentum.2.2.2⟩
+  · exact ⟨zeroMomentum_packet.1, zeroMomentum_packet.2⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
