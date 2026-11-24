@@ -214,6 +214,25 @@ private theorem J_le_of_twoPureDual {p : TorsionParams}
     have ht0 := axisSigned_le_K h 0
     nlinarith [hT, ht1, ht2, ht0, hK]
 
+theorem onEnvelope_J_zero_mismatch_balance {p : TorsionParams}
+    (hJ : J p = 0) :
+    mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p :=
+  (J_eq_zero_iff_mismatch_sq_balance p).mp hJ
+
+theorem twoPureDual_mismatch_rotation_dominates {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (hDD : TwoPureDual p) :
+    mismatchRotationHalfSqSum p > mismatchBoostHalfSqSum p := by
+  have hJ := J_le_of_twoPureDual h hDD
+  have hJneg : J p < 0 := by nlinarith [hJ, Real.pi_pos]
+  exact (J_neg_iff_rotation_sq_dominates p).mp hJneg
+
+theorem twoPureUsual_mismatch_boost_dominates {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (hUU : TwoPureUsual p) :
+    mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p := by
+  have hJ := le_J_of_twoPureUsual h hUU
+  have hJpos : 0 < J p := by nlinarith [hJ, Real.pi_pos]
+  exact (J_pos_iff_boost_sq_dominates p).mp hJpos
+
 /-! ### Pairing of the three axis densities -/
 
 private theorem pair_abs_le {K x y : ℝ} (hx : |x| ≤ K) (hy : |y| ≤ K)

@@ -198,6 +198,12 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
   not_paperVacuumSync_pureBoost J_axisParams_balanced
   axis_rotors_ne_of_bivector J_zero_not_relativeRotor_one)
 export MismatchAngle (omegaMismatchAxis mismatchBoostHalf mismatchRotationHalf
+  mismatchBoostHalfSqSum mismatchRotationHalfSqSum
+  J_eq_mismatch_half_sq_diff J_eq_zero_iff_mismatch_sq_balance
+  J_neg_iff_rotation_sq_dominates J_nonpos_iff_rotation_sq_geq
+  J_pos_iff_boost_sq_dominates
+  pure_hyperbolic_rotation_sq_zero
+  pure_elliptic_boost_sq_zero
   relativeRotor_axis_eq_exp relativeRotor_axis_eq_one_iff_rotors
   relativeRotor_axis_ne_one_of_bivector mismatchHalf_dagger_axis
   mismatchOrientation_dagger_axis omegaMismatch_reverse_axis mass_dagger_axis

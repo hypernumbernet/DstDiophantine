@@ -18,7 +18,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible PGA
+open Operations Invariant Admissible PGA MismatchAngle
 
 /-! ### The linear wall bound carries the mass ceiling -/
 
@@ -319,6 +319,17 @@ theorem balanced_magnetic_repels {p : TorsionParams} {B : Fin 3 → ℝ}
   have hlt := J_superpose_magnetic_lt hβ hB hne
   have hmass := mass_superpose_magnetic_lt hβ hB hne
   exact ⟨by linarith, hmass⟩
+
+theorem balanced_magnetic_rotation_dominates {p : TorsionParams} {B : Fin 3 → ℝ}
+    (hJ : J p = 0) (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a)
+    (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
+    mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p ∧
+      mismatchRotationHalfSqSum (superpose p (magneticFaraday B)) >
+        mismatchBoostHalfSqSum (superpose p (magneticFaraday B)) := by
+  constructor
+  · exact (J_eq_zero_iff_mismatch_sq_balance p).mp hJ
+  · rcases balanced_magnetic_repels hJ hβ hB hne with ⟨hJneg, _⟩
+    exact (J_neg_iff_rotation_sq_dominates _).mp hJneg
 
 theorem magnetic_increment_rest_silent (B : Fin 3 → ℝ) :
     sandwichIncrement (faradayDual (magneticFaraday B)) (ι 0) = 0 :=

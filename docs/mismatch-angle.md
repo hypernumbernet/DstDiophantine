@@ -2,6 +2,7 @@
 
 Lean path: `DstDiophantine/Algebra/MismatchAngle.lean` (main, sorry-free).
 Gravity bridge: `DstDiophantine/Gravity/MismatchAngleBridge.lean`.
+Discrete lattice bridge: `DstDiophantine/Framework/MismatchLattice.lean`.
 Open general branch: `Goals/Diophantine/MismatchAngle.lean`.
 
 ## Definition (one-axis family)
@@ -19,85 +20,73 @@ The scalar overlap (shell time-delay factor on this locus) is
 
 which agrees with `Gravity.gammaS` (`MismatchAngleBridge.axisOverlap_eq_gammaS`).
 
-Legacy `J` is expressed on the same locus by
+**Repulsion is overlap-first:** see `Gravity/RepulsionOverlap.lean`. Legacy `J` is a derived diagnostic:
 
-`J = 2 · (mismatchBoostHalf² − mismatchRotationHalf²)` (`J_axis_from_mismatchHalves`).
+`J = 2 · (Σ mismatchBoostHalf² − Σ mismatchRotationHalf²)` (`J_eq_mismatch_half_sq_diff`).
 
-## Proven properties (main library)
+## Proven properties (main library, wave 2 additions)
 
 | Property | Lean name |
 |----------|-----------|
+| Global `J` from half-square sums | `J_eq_mismatch_half_sq_diff`, `J_eq_zero_iff_mismatch_sq_balance` |
+| Sign of `J` ↔ which half-square dominates | `J_neg_iff_rotation_sq_dominates`, `J_pos_iff_boost_sq_dominates` |
+| Pure hyperbolic / elliptic corners | `pure_hyperbolic_rotation_sq_zero`, `pure_elliptic_boost_sq_zero` |
 | `Ω = exp(ω)` on one axis | `relativeRotor_axis_eq_exp` |
-| `Ω = 1 ↔` rotors coincide | `relativeRotor_axis_eq_one_iff_rotors` (+ global `relativeRotor_eq_one_iff`) |
-| Nontrivial axis bivector ⇒ `Ω ≠ 1` | `relativeRotor_axis_ne_one_of_bivector` |
-| Dagger swaps oriented half-coefficients | `mismatchOrientation_dagger_axis`, `dagger_axisParams` |
-| `J` flips sign under dagger on axis | `J_dagger_axis` |
-| Unsigned mass unchanged under dagger | `mass_dagger_axis` |
-| `J` from mismatch half-coefficients | `J_axis_from_mismatchHalves` |
-| Overlap sign reversal at equal-scale threshold `π/2` | `axisOverlap_sign_reversal_threshold`, `axisOverlap_balanced_nonpos_at_half_pi` |
-| `axisOverlap` on balanced locus = `gammaSEqual` | `axisOverlap_eq_gammaSEqual_balanced` |
+| Overlap / `gammaS` | `axisOverlap_eq_gammaS`, `axisOverlap_eq_gammaSEqual_balanced` |
+| Dual wall in half-squares | `J_dualWall_neg_iff_rotation_dominates`, `J_dualWall_nonpos_iff_mismatch` |
+| Equal-scale shield | `J_equalScaleOf_mismatch_balanced` |
+| Regime `T|B|U|F` via half-squares | `ConeLabels.ofParams_eq_*_iff_mismatch_*` |
+| Envelope corner patterns | `EnvelopeLock.twoPure*_mismatch_*`, `onEnvelope_J_zero_mismatch_balance` |
+| Magnetic control | `SilentControl.balanced_magnetic_rotation_dominates`, `EMControl.magnetic_superpose_rotation_sq_geq_when_J_nonpos` |
+| Discrete lattice | `MismatchLattice.mismatch_half_sq_diff`, `pure_boost_mismatch_boost_eq_lattice`, `winding_implies_latticeMismatch_ne` |
 
 **Open (Goals, sorry allowed):**
 
 - `Goals.Diophantine.omegaMismatch_principal_branch` — general six-parameter log of `Ω`.
+- `Goals.Diophantine.winding_total_equiv_mismatch_rotation_half` — winding vs rotation half-squares off pure-boost bookkeeping.
 - `Goals.Diophantine.admissible_iff_mismatch_box` — cone in overlap half-norm (was `|JNormalized| ≤ 1`).
 
-**Not yet in main:** extracting `axisOverlapScalar` as the grade-0 part of `Ω` inside PGA
-(without re-using the closed scalar formula). Currently under research.
+**Author decision / false lead (unchanged):**
+
+- `overlap < 0` does **not** imply `J < 0` (equal-scale witness in `RepulsionOverlap`).
+- Full iff overlap sign on `[0, π]` not proved (monotonicity).
+- **Winding ≠ rotation half on pure-boost seeds:** `windingTotal_pureBoost` tracks `n₀`; `mismatchRotationHalf` vanishes. General equivalence is a Goal, not a theorem.
+
+**Not yet in main:** grade-0 extraction of overlap from `Ω` inside PGA without closed `gammaS`.
 
 ## Classification of existing `J` / `JNormalized` results
 
-Inventory: **78** Lean modules under `DstDiophantine/` reference `J` or `JNormalized`.
-Theorem-level grep (`theorem … J` / `JNormalized` in name or statement): **~420** declarations;
-below we group by **module family** (full per-theorem tagging is in progress).
+Inventory: **78** modules reference `J` or `JNormalized`; **~420** theorem-level declarations (per-theorem tagging still in progress).
 
 | Class | Count (modules) | Role |
 |-------|-----------------|------|
-| **(a) Survives unchanged** | ~32 | Killing definition, cone metric book-keeping, Diophantine closure; `J` stays as derived scalar |
-| **(b) Restatable via angle / overlap (cheap)** | ~18 (**7 migrated**) | `RepulsionOverlap`, `DualControl.JAxis_mismatch_halves`, envelope corners, cone overlap witness |
-| **(c) Needs real rewrite / may fail** | ~28 (**~5 in progress**) | Repulsion core migrated; ConeLabels regimes, full `DualControl`, `latticeMismatch` still J-native |
+| **(a) Survives unchanged** | ~32 | Killing definition, Diophantine cone book-keeping; `J` stays derived |
+| **(b) Restatable via angle / overlap (cheap)** | ~18 (**16 migrated**) | DualControl headline, ConeLabels regimes, EnvelopeLock patterns, lattice bridge, control bridges |
+| **(c) Needs real rewrite / may fail** | ~28 (**~8 in progress**) | Full `DualControl` jet calculus, MassCorners bivector classification, modular `J_scale` error, GravitonQuantum |
 
-### (a) Survives unchanged (selected)
+### (b) Migrated this wave (selected)
 
-- `Algebra/Invariant.lean` — full `J`, `JNormalized`, mass cone, dagger laws (retained as diagnostics).
-- `Theorems/*` admissible bridges — cone predicates on `JNormalized`.
-- `Logic/ClassicalCore.lean`, `Logic/Connective.lean` — truth-value bookkeeping on `J` labels.
-- `Gravity/Identification.lean`, `JTDictionary.lean` — explicit chart warnings that `J ≠ T`.
+| Item | Module | Mismatch-first statement |
+|------|--------|--------------------------|
+| Global `J` book-keeping | `MismatchAngle` | `mismatchBoostHalfSqSum`, `J_eq_mismatch_half_sq_diff` |
+| Dual wall / equal scale | `DualControl` | `J_eq_mismatch_diagnostic`, `J_equalScaleOf_mismatch_balanced`, `J_dualWall_*_mismatch` |
+| Four regimes | `ConeLabels` | `ofParams_eq_T/B/U_iff_mismatch_*`, dual-only existence lemmas |
+| Envelope lock | `EnvelopeLock` | `twoPureUsual/Dual_mismatch_*` |
+| Silent / EM control | `SilentControl`, `EMControl` | balanced magnetic rotation dominance |
+| Lattice | `Framework/MismatchLattice` | `mismatch_half_sq_diff`, pure-boost boost-square = `latticeMismatch` |
 
-### (b) Restatable via mismatch angle (selected; partly done)
-
-| Item | Module | Angle-first restatement |
-|------|--------|-------------------------|
-| Stiffness `−m J` on one axis | `RestMass`, `DualControl` | `JAxis_mismatch_halves` (migrated in `DualControl`) |
-| Equal-scale shells / sign of `γ_s` | `ElectronShell`, `TorsionalLayer` | `axisOverlap_eq_gammaS`, `axisOverlap_eq_gammaSEqual_balanced` |
-| `J = 0` but `γ_s` changes sign | `RelationalPolarization`, `RepulsionOverlap` | `overlap_neg_not_J_neg_witness`, `regime_label_not_overlap_sign` |
-| Relative rotor transport | `RelativeRotor`, `DualRotorMotor` | `relativeRotor_axis_eq_exp` |
-| `latticeMismatch` modulus bounds | `ModularAmplification` | winding on rotation leg (research) |
-
-### (c) Needs rewrite / may fail (key items)
+### (c) Still J-native or open (selected)
 
 | Item | Module | Issue |
 |------|--------|-------|
-| `repulsive_requires_negative_J` | `GaugeDictionary` | **Dual track:** `RepulsionOverlap` (overlap) + legacy J corollary retained |
-| `ConeLabels`, `|JNormalized| ≤ 1` | `ConeLabels`, `ControlDomain` | Admissible cone in angle norm; currently under research |
-| `MassCorners` | `MassCorners` | Corner classification by scalar; needs bivector direction |
-| `DualControl` (40+ `J` theorems) | `DualControl` | Dual-only control phrased entirely in `J` |
-| `EnvelopeLock` | `EnvelopeLock` | Envelope tied to `JNormalized` extrema |
-| `SilentControl`, `EMControl` | various | Control domain inequalities on `J` |
-| `Framework/Lattice.latticeMismatch` | `Framework/Lattice` | Discrete bound on scalar mismatch |
-| `Amplification` / modular error | `Algebra/ModularAmplification` | `J_scale_eq_J_amplified_add_error` |
-| `GravitonQuantum` balanced channel | `GravitonQuantum` | Partially bridged via `gammaS_balanced`; angle first-class statements desired |
-| `J_zero_not_relativeRotor_one` | `RelativeRotor` | Shows scalar zero does not mean vacuum; physics narrative moves to `Ω` |
-
-## What did not work in this iteration
-
-- Full **iff** characterisation of overlap sign by rotation half-angle on `[0, π]` (monotonicity fails
-  before `π/2` on equal-scale locus); only threshold certificates at `0` and `π/2` are proved.
-- **Grade-projected** scalar part of `Ω` in PGA without importing the closed `gammaS` formula.
-- **Non-commuting** six-parameter logarithm of `Ω` (left in Goals).
+| `DualControl` jets | `DualControl` | `JDot`, shield calculus still on `J` |
+| `MassCorners` | `MassCorners` | Corner classification by scalar only |
+| Modular amplification | `ModularAmplification` | `J_scale_eq_J_amplified_add_error` |
+| Admissible cone box | `RepulsionCone` Goal | mismatch norm vs `JNormalized` |
+| Graviton quantum channel | `GravitonQuantum` | angle-first channel statements |
 
 ## CI
 
 - `lake build DstDiophantine` — required green
 - `scripts/check_main_library.sh` — no `sorry`, allowlisted axioms only
-- `lake build Goals` — principal branch sorry isolated in Goals
+- `lake build Goals` — **15** open sorries (`scripts/count_goals.sh`)

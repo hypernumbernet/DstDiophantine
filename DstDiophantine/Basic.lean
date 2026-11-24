@@ -8,6 +8,7 @@ import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Framework.Amplification
 import DstDiophantine.Framework.Descent
 import DstDiophantine.Framework.Lattice
+import DstDiophantine.Framework.MismatchLattice
 import DstDiophantine.Framework.DiscreteCount
 import DstDiophantine.Framework.Spectrum
 import DstDiophantine.Framework.SpectrumSearch

@@ -45,6 +45,14 @@ theorem JAxis_mismatch_halves (α β : ℝ) :
       2 * (mismatchBoostHalf α β ^ 2 - mismatchRotationHalf α β ^ 2) := by
   rw [JAxis_eq_J_axisParams, J_axis_from_mismatchHalves]
 
+theorem J_eq_mismatch_diagnostic (p : TorsionParams) :
+    J p = 2 * (mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p) :=
+  J_eq_mismatch_half_sq_diff p
+
+theorem J_eq_zero_iff_mismatch_balance (p : TorsionParams) :
+    J p = 0 ↔ mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p :=
+  J_eq_zero_iff_mismatch_sq_balance p
+
 /-- Formal \(\dot J\) along a jet \((p,\dot p)\). -/
 def JDot (p pdot : TorsionParams) : ℝ :=
   ∑ a : Fin 3, (p.alpha a * pdot.alpha a - p.beta a * pdot.beta a)
@@ -117,6 +125,18 @@ theorem J_dualWallParams_eq_sum_alpha (p : TorsionParams) :
   rw [J_dualWallParams]
   simp only [Fin.sum_univ_three]
   ring
+
+theorem J_dualWall_neg_iff_rotation_dominates (p : TorsionParams) :
+    J (dualWallParams p) < 0 ↔
+      mismatchRotationHalfSqSum (dualWallParams p) >
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [J_neg_iff_rotation_sq_dominates]
+
+theorem J_dualWall_nonpos_iff_mismatch (p : TorsionParams) :
+    J (dualWallParams p) ≤ 0 ↔
+      mismatchRotationHalfSqSum (dualWallParams p) ≥
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [J_nonpos_iff_rotation_sq_geq]
 
 theorem J_dualWall_nonpos_iff (p : TorsionParams) :
     J (dualWallParams p) ≤ 0 ↔ ∑ a : Fin 3, p.alpha a ≤ 3 * Real.pi / 4 := by
@@ -339,6 +359,11 @@ def equalScaleOf (p : TorsionParams) : TorsionParams where
 theorem J_equalScaleOf (p : TorsionParams) : J (equalScaleOf p) = 0 := by
   rw [J_coef]
   simp [equalScaleOf]
+
+theorem J_equalScaleOf_mismatch_balanced (p : TorsionParams) :
+    mismatchBoostHalfSqSum (equalScaleOf p) =
+      mismatchRotationHalfSqSum (equalScaleOf p) := by
+  rw [← J_eq_zero_iff_mismatch_balance, J_equalScaleOf]
 
 theorem mass_equalScaleOf (p : TorsionParams) :
     mass (equalScaleOf p) = ∑ a : Fin 3, p.alpha a ^ 2 := by

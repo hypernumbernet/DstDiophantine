@@ -92,6 +92,55 @@ theorem mass_dagger_axis (α β : ℝ) :
     mass (daggerParams (axisParams α β)) = mass (axisParams α β) := by
   simpa [daggerParams, axisParams] using mass_dagger (axisParams α β)
 
+/-! ### Global half-square aggregates (derived `J`) -/
+
+noncomputable def mismatchBoostHalfSqSum (p : TorsionParams) : ℝ :=
+  ∑ a : Fin 3, mismatchBoostHalf (p.alpha a) (p.beta a) ^ 2
+
+noncomputable def mismatchRotationHalfSqSum (p : TorsionParams) : ℝ :=
+  ∑ a : Fin 3, mismatchRotationHalf (p.alpha a) (p.beta a) ^ 2
+
+theorem J_eq_mismatch_half_sq_diff (p : TorsionParams) :
+    J p = 2 * (mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p) := by
+  rw [J_coef]
+  simp only [mismatchBoostHalfSqSum, mismatchRotationHalfSqSum,
+    mismatchBoostHalf, mismatchRotationHalf, Fin.sum_univ_three]
+  ring_nf
+
+theorem J_eq_zero_iff_mismatch_sq_balance (p : TorsionParams) :
+    J p = 0 ↔ mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p := by
+  rw [J_eq_mismatch_half_sq_diff]
+  constructor <;> intro h <;> linarith
+
+theorem J_neg_iff_rotation_sq_dominates (p : TorsionParams) :
+    J p < 0 ↔ mismatchRotationHalfSqSum p > mismatchBoostHalfSqSum p := by
+  rw [J_eq_mismatch_half_sq_diff]
+  constructor <;> intro h <;> linarith
+
+theorem J_nonpos_iff_rotation_sq_geq (p : TorsionParams) :
+    J p ≤ 0 ↔ mismatchRotationHalfSqSum p ≥ mismatchBoostHalfSqSum p := by
+  rw [J_eq_mismatch_half_sq_diff]
+  constructor <;> intro h <;> linarith
+
+theorem J_pos_iff_boost_sq_dominates (p : TorsionParams) :
+    0 < J p ↔ mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p := by
+  rw [J_eq_mismatch_half_sq_diff]
+  constructor <;> intro h <;> linarith
+
+theorem pure_hyperbolic_rotation_sq_zero {p : TorsionParams}
+    (h : IsPureHyperbolic p) :
+    mismatchRotationHalfSqSum p = 0 := by
+  simp only [mismatchRotationHalfSqSum]
+  refine Finset.sum_eq_zero fun a _ => ?_
+  simp [mismatchRotationHalf, (h a).2]
+
+theorem pure_elliptic_boost_sq_zero {p : TorsionParams}
+    (h : IsPureElliptic p) :
+    mismatchBoostHalfSqSum p = 0 := by
+  simp only [mismatchBoostHalfSqSum]
+  refine Finset.sum_eq_zero fun a _ => ?_
+  simp [mismatchBoostHalf, (h a).1]
+
 /-! ### Legacy `J` as a derived diagnostic -/
 
 theorem J_axis_from_mismatchHalves (α β : ℝ) :

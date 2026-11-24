@@ -1,4 +1,5 @@
 import DstDiophantine.Algebra.MismatchAngle
+import DstDiophantine.Framework.MismatchLattice
 
 set_option linter.style.whitespace false
 
@@ -13,11 +14,25 @@ currently under research.
 namespace Goals.Diophantine
 
 open DstDiophantine
-open Operations RelativeRotor MismatchAngle PGA Generators NormedSpace
+open Operations RelativeRotor MismatchAngle PGA Generators NormedSpace Discrete
 
 /-- Principal-branch mismatch bivector for general parameters (open). -/
 theorem omegaMismatch_principal_branch (p : TorsionParams) :
     ∃ ω : PGA, relativeRotor p = NormedSpace.exp ω ∧
       (∀ a : Fin 3, p.alpha a ≠ 0 → p.beta a ≠ 0 → False) := by sorry
+
+variable {N : ℕ} [NeZero N]
+
+open ModularAmplification DstDiophantine.Framework
+
+/-- Discrete winding versus compact rotation half-coefficients (open).
+
+On pure-boost seeds, `windingTotal_pureBoost` lives on axis `n`, while all
+`mismatchRotationHalf` vanish. A general equivalence with `t.m` must choose
+sector bookkeeping.
+-/
+theorem winding_total_equiv_mismatch_rotation_half (k : ℕ) (t : DiscreteTorsion N) :
+    windingTotal k t ≠ 0 ↔
+      mismatchRotationHalfSqSum (toTorsionParams t) ≠ 0 := by sorry
 
 end Goals.Diophantine
