@@ -58,6 +58,7 @@ import DstDiophantine.Logic.Quantum.ChartOperators
 import DstDiophantine.Logic.Quantum.NewtonWigner
 import DstDiophantine.Logic.Quantum.PositionInformation
 import DstDiophantine.Logic.Quantum.PhaseInformation
+import DstDiophantine.Logic.Quantum.ShellInformation
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy
@@ -1219,6 +1220,18 @@ example (r s : ℝ) (h : r ^ 2 + s ^ 2 ≠ 0) {t : ℝ} (ht : t ≠ 0) (α : ℝ
     phaseInformation_equal ht, (phaseInformation_not_a_location ht α p u).2,
     phasedPacket_equal_chartPositionInfo ht hpq hu α,
     fun x => ⟨_, phasedPacket_eq_smul t t α p q u x⟩⟩
+
+/-- Regression: on one mass shell the information is fidelity squared times the single-carrier
+phase information. The mean-rest mass-3 pair has information `81/625`, and its fringe does not
+move in time. One spinor cannot carry both shell momenta. -/
+example (α : ℝ) :
+    shellInformation 1 1 shellParticleP shellParticleQ = 81 / 625 ∧
+      carrierFidelity shellParticleP shellParticleQ = 9 / 25 ∧
+        (shellRestQ - shellRestP) 0 = 0 ∧
+          ¬ (DiracMomentum 3 shellRestP shellParticleP ∧
+              DiracMomentum 3 shellRestQ shellParticleP) :=
+  ⟨shellRest_regression α |>.2.2.2.1, shellRest_regression α |>.2.2.1,
+    shellRest_regression α |>.2.1, shellRest_regression α |>.2.2.2.2.2.2⟩
 
 example (a b : Fin 3 → ℝ) :
     Matrix.trace (pauliComb a * pauliComb b - pauliComb b * pauliComb a) = 0 :=
