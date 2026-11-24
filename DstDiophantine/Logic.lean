@@ -61,6 +61,7 @@ import DstDiophantine.Logic.Quantum.PhaseInformation
 import DstDiophantine.Logic.Quantum.ShellInformation
 import DstDiophantine.Logic.Quantum.FrameInformation
 import DstDiophantine.Logic.Quantum.CarrierDeficit
+import DstDiophantine.Logic.Quantum.PhaseFisher
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
 import DstDiophantine.Logic.Quantum.DualOccupancy

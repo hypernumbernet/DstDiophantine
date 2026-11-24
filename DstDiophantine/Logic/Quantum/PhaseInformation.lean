@@ -9,7 +9,10 @@ fringe visibility `V`, with `D² + V² = 1`. This section names the complementar
 The share of the first momentum is `p = r² / (r² + s²)`. Its Bernoulli variance is `p(1 − p)`.
 Four times that variance is the information `I` of the relative chart phase. It equals `V²`, so
 `D² + I = 1`. For a pure state this `I` is the quantum Fisher information of the phase generated
-by the projector onto the second momentum. No symmetric logarithmic derivative is constructed.
+by the projector onto the second momentum. `PhaseFisher.weightPhaseDerivative_generator` is that
+generator, and `PhaseFisher.phaseSLD_fisher` is the symmetric logarithmic derivative: `⟨ψ, Lψ⟩ = 0`
+and `⟨ψ, L²ψ⟩ = I`. On two carriers the projective Fisher information equals the carrier deficit
+exactly where the interference term vanishes (`PhaseFisher.phaseFisher_quadrature`).
 
 The number is not a location. `I` depends only on the two weights. When the two momenta coincide,
 `I` may be `1` while every Born density agrees, so the chart carries no position information.
