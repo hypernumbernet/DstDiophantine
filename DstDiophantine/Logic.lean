@@ -65,6 +65,7 @@ import DstDiophantine.Logic.Quantum.PhaseFisher
 import DstDiophantine.Logic.Quantum.ChartFisher
 import DstDiophantine.Logic.Quantum.ChartScore
 import DstDiophantine.Logic.Quantum.MomentumReading
+import DstDiophantine.Logic.Quantum.TranslationFisher
 import DstDiophantine.Logic.Quantum.BornLorentz
 import DstDiophantine.Logic.Quantum.AngleChart
 import DstDiophantine.Logic.Quantum.DualExchange
@@ -1393,6 +1394,33 @@ example :
   · exact ⟨shellOrth_momentum.1, shellOrth_momentum.2.1, shellOrth_momentum.2.2.1,
       shellOrth_momentum.2.2.2⟩
   · exact ⟨zeroMomentum_packet.1, zeroMomentum_packet.2⟩
+
+/-- Regression: the Fisher information of translations is the outer product of the relative
+momentum. Mean rest at quadrature reads `0` on the time axis and `34816/625` on axis `1`. The
+precision floor there is `625/34816`, and the position reading is `0`. The boost with
+`cosh = 5/3` and `sinh = -4/3` keeps the contraction `34816/625` and puts `557056/5625` on the
+time slot. Rest against `(5, 4, 0, 0)` at time `-π/2` has time floor `25/324`, not the coordinate
+`-π/2`. -/
+example :
+    (∃ θ : ℝ,
+        let Ψ := shellPacket 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
+        translationFisher 0 0 Ψ 0 = 0 ∧
+          translationFisher 1 1 Ψ 0 = 34816 / 625 ∧
+            precisionFloor Ψ 0 (Pi.single 1 1) = 625 / 34816 ∧
+              (inner ℂ (Ψ 0) (positionOp 1 Ψ 0)).re / ‖Ψ 0‖ ^ 2 = 0) ∧
+      fisherContraction ((544 : ℝ) / 625) (shellRestQ - shellRestP) = 34816 / 625 ∧
+        fisherContraction ((544 : ℝ) / 625)
+            (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP)) = 34816 / 625 ∧
+          ((544 : ℝ) / 625) * ((32 : ℝ) / 3) * ((32 : ℝ) / 3) = 557056 / 5625 ∧
+            (let Ψ := shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor
+              let x := timeShift (-Real.pi / 2)
+              precisionFloor Ψ x (Pi.single 0 1) = 25 / 324 ∧
+                (inner ℂ (Ψ x) (positionOp 0 Ψ x)).re / ‖Ψ x‖ ^ 2 = -Real.pi / 2) := by
+  obtain ⟨θ, _, h0, h1, _, hfloor, hpos⟩ := shellRest_translationFisher
+  have hboost := shellRest_boost_fisher
+  refine ⟨⟨θ, h0, h1, hfloor, hpos⟩, hboost.2.2.2.2.2.1, hboost.2.2.2.2.2.2.1, ?_, ?_⟩
+  · exact hboost.2.2.2.2.2.2.2.1
+  · exact ⟨shellLab_translationFisher.2.2.2.1, shellLab_translationFisher.2.2.2.2.1⟩
 
 /-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
 is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and
