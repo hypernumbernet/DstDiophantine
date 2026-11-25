@@ -1124,7 +1124,7 @@ example :
 /-! ## Layers and particle dynamics -/
 
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
-    pairBalance 1 x = 0 :=
+    pairBalanceLegacy 1 x = 0 :=
   exists_unique_diameter_shell (by norm_num)
 
 /-- Regression: `Z = 1` has no diameter root in `(0, π/2)`, and `Z = 4` vanishes. -/
@@ -1214,7 +1214,7 @@ example :
 end
 
 example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
-    cubeOutward 1 x = 0 :=
+    cubeOutwardLegacy 1 x = 0 :=
   exists_unique_cube_shell (by norm_num)
 
 example : ∃! x : ℝ, x ∈ Set.Ioo (resonanceRoot1 / tetraScale) (branchNode 1) ∧
