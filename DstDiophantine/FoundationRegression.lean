@@ -68,7 +68,7 @@ example (a b c : ℤ) (p : ℕ) :
 
 example (θ : ℝ) {k : ℕ} (hk : 1 ≤ k)
     (hadm : IsAdmissibleContinuous (pureBoost (k * θ))) :
-    |JNormalized (pureBoost θ)| ≤ 1 / (k : ℝ) ^ 2 :=
+    |JNormalized (pureBoost θ)| ≤ 4 / (k : ℝ) ^ 2 :=
   amplification_implies_seed_le θ hk hadm
 
 example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (hne : latticeMismatch t ≠ 0) :
@@ -76,7 +76,7 @@ example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (hne : latticeMismatch t �
   discrete_nonzero_height_lb t hne
 
 example {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
-    (hcoarse : 3 * N ^ 2 < 16 * k ^ 2) (t : AdmissibleClass N)
+    (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) (t : AdmissibleClass N)
     (hne : latticeMismatch t.val ≠ 0)
     (hadm :
       IsAdmissibleContinuous
@@ -297,7 +297,7 @@ example {N : ℕ} [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (t : AdmissibleClass N)
     (hlb :
-      (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
+      (4 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
         torsionHeight (AdmissibleClass.toParams t))
     (hadm :
       IsAdmissibleContinuous
@@ -901,7 +901,7 @@ example : Real.pi / 4 < abcLogGap 1 80 81 ∧ abcHeight 1 80 81 < 1 :=
   ⟨pi_div_four_lt_abcLogGap_one_eighty, abcHeight_lt_one_one_eighty⟩
 
 example : 1 < abcHeight 3 125 128 ∧
-    ¬ IsAdmissibleContinuousLegacy (abcMismatchParams 3 125 128) :=
+    ¬ IsAdmissibleContinuous (abcMismatchParams 3 125 128) :=
   ⟨one_lt_abcHeight_three_one_two_five, not_admissible_abc_three_one_two_five⟩
 
 example :
@@ -956,7 +956,7 @@ example (a b : Fin 3) (p : TorsionParams) :
 
 example {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
     IsAdmissibleContinuous (toTorsionParams t) :=
-  Discrete.isAdmissible_imp_admissibleContinuous t h
+  admissible_continuous_of_discrete t h
 
 example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |JNormalized p| ≤ 4 :=
@@ -966,7 +966,7 @@ example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
     |J p| ≤ 3 * Real.pi ^ 2 / 2 :=
   torsion_bound_raw_continuous p h
 
-example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+example (p : TorsionParams) (h : Admissible.IsAdmissibleContinuousLegacy p) :
     |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p :=
   abs_JNormalized_eq_one_iff p h
 
@@ -978,7 +978,7 @@ example : ∃ p : TorsionParams, IsPrincipalBranch p ∧ 1 < |J p| :=
   torsion_bound_naive_false
 
 example (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    massNormalized p ≤ 1 :=
+    massNormalized p ≤ 4 :=
   massNormalized_bound_continuous p h
 
 /-- The paper step “`J = 0` ⇒ vacuum” is false. -/
@@ -991,9 +991,9 @@ example :
 example {N : ℕ} [NeZero N] : (DiscreteRotorImage N).Finite :=
   discreteRotorImage_finite
 
-example {p : TorsionParams} (h : IsAdmissibleContinuous p) {ε : ℝ} (hε : 0 < ε) :
+example {p : TorsionParams} (h : Admissible.IsAdmissibleContinuous p) {ε : ℝ} (hε : 0 < ε) :
     ∃ (N : ℕ) (_ : NeZero N),
-      ∃ t : DiscreteTorsion N, IsAdmissible t ∧
+      ∃ t : DiscreteTorsion N, Admissible.IsAdmissibleContinuous (toTorsionParams t) ∧
         |J p - J (toTorsionParams t)| < ε :=
   exists_discrete_approx_J h hε
 

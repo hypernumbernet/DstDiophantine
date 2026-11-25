@@ -24,7 +24,7 @@ private theorem sigmaEqual_zero : sigmaEqual 0 = 0 := by
   simp [sigmaEqual]
 
 theorem gammaRapidity_zero_phase (δ : ℝ) : gammaRapidity 0 δ = cosh δ := by
-  simp [gammaRapidity, gammaSEqual_zero, sigmaEqual_zero]
+  simp [gammaRapidity, sigmaEqual_zero, gammaSEqualLegacy]
 
 theorem cosh_half_sq (φ : ℝ) : cosh (φ / 2) ^ 2 = (cosh φ + 1) / 2 := by
   have h := cosh_two_mul (φ / 2)
@@ -77,10 +77,19 @@ private theorem gammaSEqual_lt_one_of_pos {x : ℝ} (hx : 0 < x) (hxπ : x < π)
   have hlt := hanti h0 hxI hx0'
   simpa [gammaSEqual_zero] using hlt
 
+private theorem gammaSEqualLegacy_lt_gammaSEqual {x : ℝ} (hx0 : 0 < x) (hxπ : x < π) :
+    gammaSEqualLegacy x < gammaSEqual x := by
+  unfold gammaSEqualLegacy gammaSEqual
+  have hsin : 0 < sin x := sin_pos_of_pos_of_lt_pi hx0 hxπ
+  have hsinh : 0 < sinh x := sinh_pos_iff.mpr hx0
+  linarith [mul_pos hsinh hsin]
+
 private theorem gamma_sub_sigma (x : ℝ) :
-    gammaSEqual x - sigmaEqual x = exp x * (cos x - sin x) := by
-  have h := sigmaEqual_sub_gammaSEqual x
-  linarith
+    gammaSEqualLegacy x - sigmaEqual x = exp x * (cos x - sin x) := by
+  unfold sigmaEqual gammaSEqualLegacy
+  rw [cosh_eq, sinh_eq]
+  field_simp [exp_ne_zero]
+  ring
 
 private theorem cos_sub_sin_pos {x : ℝ} (hx0 : 0 ≤ x) (hx : x < π / 4) :
     0 < cos x - sin x := by
@@ -106,7 +115,7 @@ private theorem tanh_lt_one (δ : ℝ) : tanh δ < 1 := by
   linarith [exp_pos (-δ)]
 
 theorem gammaRapidity_ratio {x δ : ℝ} :
-    gammaRapidity x δ / cosh δ = gammaSEqual x - tanh δ * sigmaEqual x := by
+    gammaRapidity x δ / cosh δ = gammaSEqualLegacy x - tanh δ * sigmaEqual x := by
   unfold gammaRapidity
   rw [tanh_eq_sinh_div_cosh]
   field_simp [(cosh_pos δ).ne']
@@ -116,13 +125,14 @@ theorem farField_excess {x δ : ℝ} (hx0 : 0 < x) (hx : x < π / 4) (hδ : 0 �
       cosh δ / gammaRapidity x δ - 1 < exp (-x) / (cos x - sin x) - 1 := by
   have hπ : x < π := lt_trans hx (by linarith [pi_gt_three])
   have hσ : 0 < sigmaEqual x := sigmaEqual_pos hx0 hπ
-  have hγs : gammaSEqual x < 1 := gammaSEqual_lt_one_of_pos hx0 hπ
+  have hγs : gammaSEqualLegacy x < 1 :=
+    lt_trans (gammaSEqualLegacy_lt_gammaSEqual hx0 hπ) (gammaSEqual_lt_one_of_pos hx0 hπ)
   have hcosh : 0 < cosh δ := cosh_pos δ
   have hratio := gammaRapidity_ratio (x := x) (δ := δ)
   have htanh0 : 0 ≤ tanh δ := by
     rw [tanh_eq_sinh_div_cosh]
     exact div_nonneg (sinh_nonneg_iff.mpr hδ) hcosh.le
-  have hle : gammaRapidity x δ / cosh δ ≤ gammaSEqual x := by
+  have hle : gammaRapidity x δ / cosh δ ≤ gammaSEqualLegacy x := by
     rw [hratio]
     have hsub : 0 ≤ tanh δ * sigmaEqual x := mul_nonneg htanh0 hσ.le
     linarith
@@ -130,16 +140,17 @@ theorem farField_excess {x δ : ℝ} (hx0 : 0 < x) (hx : x < π / 4) (hδ : 0 �
     have hdiv : gammaRapidity x δ / cosh δ < 1 := lt_of_le_of_lt hle hγs
     rwa [div_lt_one hcosh] at hdiv
   have hdiff : cos x - sin x > 0 := cos_sub_sin_pos hx0.le hx
-  have hfloor : gammaSEqual x - sigmaEqual x = exp x * (cos x - sin x) := gamma_sub_sigma x
-  have hstrict : gammaSEqual x - sigmaEqual x < gammaRapidity x δ / cosh δ := by
+  have hfloor : gammaSEqualLegacy x - sigmaEqual x = exp x * (cos x - sin x) := gamma_sub_sigma x
+  have hstrict : gammaSEqualLegacy x - sigmaEqual x < gammaRapidity x δ / cosh δ := by
     rw [hratio]
     have hgap : sigmaEqual x * (1 - tanh δ) =
-        (gammaSEqual x - tanh δ * sigmaEqual x) - (gammaSEqual x - sigmaEqual x) := by ring
+        (gammaSEqualLegacy x - tanh δ * sigmaEqual x) - (gammaSEqualLegacy x - sigmaEqual x) := by
+      ring
     have hpos : 0 < sigmaEqual x * (1 - tanh δ) := by
       have ht : tanh δ < 1 := tanh_lt_one δ
       positivity
     linarith
-  have hfloor_pos : 0 < gammaSEqual x - sigmaEqual x := by
+  have hfloor_pos : 0 < gammaSEqualLegacy x - sigmaEqual x := by
     rw [hfloor]
     positivity
   have hγpos : 0 < gammaRapidity x δ := by
@@ -148,15 +159,15 @@ theorem farField_excess {x δ : ℝ} (hx0 : 0 < x) (hx : x < π / 4) (hδ : 0 �
     rwa [div_mul_cancel₀ _ hcosh.ne'] at hmul
   refine ⟨hγlt, ?_⟩
   have hbound : cosh δ / gammaRapidity x δ <
-      1 / (gammaSEqual x - sigmaEqual x) := by
+      1 / (gammaSEqualLegacy x - sigmaEqual x) := by
     rw [div_lt_div_iff₀ hγpos hfloor_pos]
-    have hleft : cosh δ * (gammaSEqual x - sigmaEqual x) <
+    have hleft : cosh δ * (gammaSEqualLegacy x - sigmaEqual x) <
         cosh δ * (gammaRapidity x δ / cosh δ) :=
       mul_lt_mul_of_pos_left hstrict hcosh
     have hrew : cosh δ * (gammaRapidity x δ / cosh δ) = gammaRapidity x δ := by
       field_simp [hcosh.ne']
     linarith
-  have hinv : 1 / (gammaSEqual x - sigmaEqual x) = exp (-x) / (cos x - sin x) := by
+  have hinv : 1 / (gammaSEqualLegacy x - sigmaEqual x) = exp (-x) / (cos x - sin x) := by
     rw [hfloor]
     field_simp [hdiff.ne', (exp_pos x).ne']
     rw [← exp_add]
@@ -950,13 +961,13 @@ theorem gammaChannel_zero_phase (δ ε : ℝ) :
 
 theorem gammaChannel_eq_rapidity (x δ : ℝ) :
     gammaChannel x δ 0 = gammaRapidity x δ := by
-  unfold gammaChannel gammaRapidity gammaSEqual sigmaEqual
+  unfold gammaChannel gammaRapidity sigmaEqual gammaSEqualLegacy
   rw [show x + (0 : ℝ) = x by ring, cosh_add x δ, sinh_add x δ]
   ring
 
 theorem gammaChannel_eq_dual (x ε : ℝ) :
-    gammaChannel x 0 ε = cos ε * gammaSEqual x - sin ε * tauEqual x := by
-  unfold gammaChannel gammaSEqual tauEqual
+    gammaChannel x 0 ε = cos ε * gammaSEqualLegacy x - sin ε * tauEqual x := by
+  unfold gammaChannel gammaSEqualLegacy tauEqual
   rw [show x + (0 : ℝ) = x by ring, cos_add x ε, sin_add x ε]
   ring
 
