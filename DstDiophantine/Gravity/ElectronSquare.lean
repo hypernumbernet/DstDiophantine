@@ -51,6 +51,16 @@ noncomputable def gammaLower (E1 dLo sLo : ℝ) : ℝ :=
 noncomputable def gammaUpper (E0 dHi sHi : ℝ) : ℝ :=
   E0 / 2 * dHi + sHi / (2 * E0)
 
+noncomputable def gammaCosLower (E0 E1 cLo : ℝ) : ℝ :=
+  (E0 / 2 + 1 / (2 * E1)) * cLo
+
+noncomputable def gammaCosUpper (E0 E1 cHi : ℝ) : ℝ :=
+  (E0 / 2 + 1 / (2 * E1)) * cHi
+
+/-- After `π/2` the cosine factor is negative; before `π/2` it is positive. -/
+noncomputable def gammaCosUpperPos (E1 E0 cHi : ℝ) : ℝ :=
+  (E1 / 2 + 1 / (2 * E0)) * cHi
+
 lemma continuous_squareBalance : Continuous squareBalance := by
   unfold squareBalance
   exact (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).sub
@@ -210,6 +220,11 @@ lemma gamma_legacy_parts_bounds {x E0 E1 dLo dHi sLo sHi : ℝ}
       linarith
     linarith
 
+lemma gammaSEqualLegacy_le_gammaSEqual_of_sin_pos {x : ℝ} (hx : 0 < x) (hsin : 0 < sin x) :
+    gammaSEqualLegacy x ≤ gammaSEqual x := by
+  unfold gammaSEqual gammaSEqualLegacy
+  nlinarith [sinh_pos_iff.2 hx, hsin, sq_nonneg (sin x)]
+
 lemma gamma_before_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 - ε)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
     (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
@@ -227,6 +242,48 @@ lemma gamma_before_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 - ε)
   · rw [hsinx, hcosx]; linarith [hsin.1, hcos.1]
   · rw [hsinx, hcosx]; linarith [hsin.2, hcos.2]
   · exact hSlo
+
+lemma gamma_before {x ε a b E0 E1 : ℝ} (hx : x = π / 2 - ε)
+    (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
+    (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
+    (hDhi : sinHi b - cosLo b < 0) (hSlo : 0 < sinLo a b + cosLo b) :
+    gammaLower E1 (sinLo a b - cosHi a b) (sinLo a b + cosLo b) ≤ gammaSEqual x ∧
+      gammaSEqual x ≤ gammaCosUpperPos E1 E0 (sinHi b) := by
+  have hsin := sin_mem_bounds ha hb hεa hεb
+  have hb0 : 0 ≤ b := by linarith [ha, hεa, hεb]
+  have hsinx : 0 < sin x := by
+    rw [hx]
+    exact sin_pos_of_pos_of_lt_pi (by linarith [hεb, hb, pi_gt_three]) (by linarith [pi_pos])
+  have hcosx : cos x = sin ε := by rw [hx, cos_pi_div_two_sub]
+  have hcHi : cos x ≤ sinHi b := by rw [hcosx]; exact hsin.2
+  have hinv0 : exp (-x) ≤ 1 / E0 := by
+    simpa [exp_neg] using one_div_le_one_div_of_le hE0 hE
+  have hinv : 1 / E1 ≤ exp (-x) := by
+    simpa [exp_neg] using one_div_le_one_div_of_le (exp_pos x) hE1
+  have hleg := gamma_before_legacy hx ha hb hεa hεb hE0 hE hE1 hDhi hSlo
+  constructor
+  · have hxpos : 0 < x := by rw [hx]; linarith [hεb, hb, pi_gt_three]
+    exact hleg.1.trans (gammaSEqualLegacy_le_gammaSEqual_of_sin_pos hxpos hsinx)
+  · rw [gammaSEqual_exp]
+    dsimp [gammaCosUpperPos]
+    have hcoefHi : exp x / 2 + exp (-x) / 2 ≤ E1 / 2 + 1 / (2 * E0) := by
+      have h₁ : exp x / 2 ≤ E1 / 2 := by nlinarith [hE1]
+      have h₂ : exp (-x) / 2 ≤ 1 / (2 * E0) := by
+        have : 1 / (2 * E0) = (1 / E0) / 2 := by ring
+        rw [this]
+        exact div_le_div_of_nonneg_right hinv0 (by norm_num : (0 : ℝ) ≤ 2)
+      linarith
+    have hcoefpos : 0 ≤ exp x / 2 + exp (-x) / 2 := by positivity
+    have hsinHi : 0 ≤ sinHi b := by
+      dsimp only [sinHi]
+      nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 3), sq_nonneg (b ^ 5)]
+    have hg : (exp x / 2 + exp (-x) / 2) * cos x ≤
+        (exp x / 2 + exp (-x) / 2) * sinHi b :=
+      mul_le_mul_of_nonneg_left hcHi hcoefpos
+    have hcert : (exp x / 2 + exp (-x) / 2) * sinHi b ≤
+        (E1 / 2 + 1 / (2 * E0)) * sinHi b :=
+      mul_le_mul_of_nonneg_right hcoefHi hsinHi
+    linarith
 
 lemma gamma_after_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 + ε)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
@@ -246,6 +303,62 @@ lemma gamma_after_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 + ε)
   · rw [hsinx, hcosx]; linarith [hsin.2, hcos.1]
   · rw [hsinx, hcosx]; linarith [hsin.1, hcos.2]
   · exact hSlo
+
+lemma gamma_after {x ε a b E0 E1 : ℝ} (hx : x = π / 2 + ε)
+    (ha : (1 / 50 : ℝ) ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
+    (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
+    (hDhi : -(sinLo a b + cosLo b) < 0) (hSlo : 0 < -sinHi b + cosLo b) :
+    gammaLower E1 (-(sinHi b + cosHi a b)) (-sinHi b + cosLo b) ≤ gammaSEqual x ∧
+      gammaSEqual x ≤ gammaCosUpper E0 E1 (-sinLo a b) := by
+  have hsin := sin_mem_bounds (by linarith [ha]) hb hεa hεb
+  have hsinx : sin x = cos ε := by rw [hx, add_comm, sin_add_pi_div_two]
+  have hεhi : ε < π / 2 := by linarith [hεb, hb, pi_gt_three]
+  have hsinpos : 0 < sin x := by
+    rw [hsinx]
+    exact cos_pos_of_mem_Ioo
+      ⟨by linarith [ha, hεa, (show (0 : ℝ) < 1 / 50 from by norm_num)], hεhi⟩
+  have hcosx : cos x = -sin ε := by rw [hx, add_comm, cos_add_pi_div_two]
+  have hcHi : cos x ≤ -sinLo a b := by rw [hcosx]; linarith [hsin.1]
+  have hinv : 1 / E1 ≤ exp (-x) := by
+    simpa [exp_neg] using one_div_le_one_div_of_le (exp_pos x) hE1
+  have hleg := gamma_after_legacy hx (by linarith [ha]) hb hεa hεb hE0 hE hE1 hDhi hSlo
+  have ha₁ : a ≤ 1 := le_trans (le_trans hεa hεb) hb
+  have hb0 : 0 ≤ b := le_trans (by linarith [ha]) hεb
+  have hsinLo : 0 < sinLo a b := by
+    dsimp [sinLo]
+    have hbase : 0 < (1 / 50 : ℝ) - (1 / 50) ^ 3 / 6 - (1 : ℝ) ^ 5 / 100 := by norm_num
+    have hb5 : b ^ 5 / 100 ≤ (1 : ℝ) ^ 5 / 100 :=
+      div_le_div_of_nonneg_right (pow_le_pow_left₀ hb0 hb 5) (by norm_num)
+    have hmono : (1 / 50 : ℝ) - (1 / 50) ^ 3 / 6 ≤ a - a ^ 3 / 6 := by
+      have hinc : ∀ {u v : ℝ}, (1 / 50) ≤ u → u ≤ v → v ≤ 1 → u - u ^ 3 / 6 ≤ v - v ^ 3 / 6 := by
+        intro u v hu huv hv
+        have hdiff : (v - v ^ 3 / 6) - (u - u ^ 3 / 6) =
+            (v - u) * (1 - (v ^ 2 + v * u + u ^ 2) / 6) := by ring
+        have hquad : v ^ 2 + v * u + u ^ 2 ≤ 3 := by nlinarith
+        nlinarith [hdiff, hquad, huv, hu]
+      exact hinc (le_rfl) ha ha₁
+    linarith [hbase, hb5, hmono]
+  have hsinLoneg : -sinLo a b < 0 := by linarith [hsinLo]
+  constructor
+  · have hxpos : 0 < x := by rw [hx]; linarith [pi_pos, ha, hεa]
+    exact hleg.1.trans (gammaSEqualLegacy_le_gammaSEqual_of_sin_pos hxpos hsinpos)
+  · rw [gammaSEqual_exp]
+    dsimp [gammaCosUpper]
+    have hcoefLo : E0 / 2 + 1 / (2 * E1) ≤ exp x / 2 + exp (-x) / 2 := by
+      have h₁ : E0 / 2 ≤ exp x / 2 := by nlinarith [hE]
+      have h₂ : 1 / (2 * E1) ≤ exp (-x) / 2 := by
+        have : 1 / (2 * E1) = (1 / E1) / 2 := by ring
+        rw [this]
+        exact div_le_div_of_nonneg_right hinv (by norm_num : (0 : ℝ) ≤ 2)
+      linarith
+    have hcoefpos : 0 ≤ exp x / 2 + exp (-x) / 2 := by positivity
+    have hg : (exp x / 2 + exp (-x) / 2) * cos x ≤
+        (exp x / 2 + exp (-x) / 2) * (-sinLo a b) :=
+      mul_le_mul_of_nonneg_left hcHi hcoefpos
+    have hcert : (exp x / 2 + exp (-x) / 2) * (-sinLo a b) ≤
+        (E0 / 2 + 1 / (2 * E1)) * (-sinLo a b) :=
+      mul_le_mul_of_nonpos_right hcoefLo hsinLoneg.le
+    linarith
 
 /-! ### Square geometry -/
 

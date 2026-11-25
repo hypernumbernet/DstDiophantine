@@ -2452,11 +2452,8 @@ lemma gammaSEqual_thirtyNine_twentieths_lt : gammaSEqual (39 / 20) < -4 := by
       (a := 379 / 1000) (b := 380 / 1000) (E0 := 7) (E1 := 74 / 10)
       (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
       exp_thirtyNine_twentieths_gt.le hexp_hi hD hS
-  have hgu : gammaUpper 7
-      (-(sinLo (379 / 1000) (380 / 1000) + cosLo (380 / 1000)))
-      (-sinLo (379 / 1000) (380 / 1000) +
-        cosHi (379 / 1000) (380 / 1000)) < -4 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  have hgu : gammaCosUpper 7 (74 / 10) (-sinLo (379 / 1000) (380 / 1000)) < -4 := by
+    simp only [gammaCosUpper, sinLo]; norm_num
   linarith [hbounds.2]
 
 lemma branchNode_one_gt_thirtyNine_tenths : 39 / 10 < branchNode 1 := by

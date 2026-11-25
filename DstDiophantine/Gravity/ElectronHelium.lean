@@ -195,8 +195,7 @@ private lemma amp_lt_two_sqrt {s : ℝ} (hs0 : 0 ≤ s) (hs1 : s < 1) :
 private lemma evenInterval_outer {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) resonanceRoot1) :
     t ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
   obtain ⟨ht0, ht1⟩ := ht
-  have htπ : t < π :=
-    lt_trans ht1 (lt_trans resonanceRoot1_bounds.2 (by linarith [pi_gt_three]))
+  have htπ : t < π := lt_trans ht1 resonanceRoot1_bounds.2
   constructor
   · have hzero : (((2 * 0 : ℕ) : ℝ) * π) = 0 := by norm_num
     rw [hzero]
@@ -330,7 +329,9 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
       exact sqrt_lt_sqrt (by positivity) (by nlinarith : 1 + s ^ 2 < 2 ^ 2)
     have hp_lt_pi : ℓ / (2 * rEp) < π := by
       rw [hphase]
-      have hxlt : x < 1 := lt_trans hx.2 resonanceRoot1_bounds.2
+      have hxlt : x < π / 2 := by
+        rw [← resonanceRoot1_eq_pi_div_two]
+        exact hx.2
       have hcoef : 2 / sqrt (1 + s ^ 2) < 2 := by
         have hsqrt_gt : (1 : ℝ) < sqrt (1 + s ^ 2) := by
           have h1 : (1 : ℝ) ^ 2 < 1 + s ^ 2 := by
@@ -341,20 +342,19 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
         calc
           (2 : ℝ) = 2 * 1 := by ring
           _ < 2 * sqrt (1 + s ^ 2) := mul_lt_mul_of_pos_left hsqrt_gt (by norm_num)
-      have hprod : x * (2 / sqrt (1 + s ^ 2)) < 2 := by
+      have hprod : x * (2 / sqrt (1 + s ^ 2)) < π := by
         have hposc : 0 < 2 / sqrt (1 + s ^ 2) :=
           div_pos (by norm_num) (sqrt_pos.mpr hspos)
         calc
-          x * (2 / sqrt (1 + s ^ 2)) < 1 * (2 / sqrt (1 + s ^ 2)) :=
+          x * (2 / sqrt (1 + s ^ 2)) < π / 2 * (2 / sqrt (1 + s ^ 2)) :=
             mul_lt_mul_of_pos_right hxlt hposc
-          _ = 2 / sqrt (1 + s ^ 2) := by ring
-          _ < 2 := hcoef
-      linarith [pi_gt_three]
+          _ < π := by nlinarith [hcoef, pi_gt_three]
+      exact hprod
     have hγep_pos : 0 < gammaSEqual (ℓ / (2 * rEp)) := lt_trans hposx hγep
     have hplt := phase_lt_firstNode_of_pos hp_lt_pi hγep_pos
     have hpI := evenInterval_outer ⟨lt_trans hx.1 hp_gt, hplt⟩
     have hγlt : gammaSEqual (ℓ / (2 * rEp)) < gammaSEqual x :=
-      strictAntiOn_gammaSEqual_even 0 hxI hpI hp_gt
+      (strictAntiOn_gammaSEqual_even 0) hxI hpI hp_gt
     linarith
   · have hZsq : Z ^ 2 = 1 := by
       have hγeq : gammaSEqual x = gammaSEqual y := by simp [heq]
@@ -371,7 +371,7 @@ theorem pairCharge_no_outer {Z ℓ R ρ : ℝ} (hZlo : (1 : ℝ) ≤ Z) (hZhi : 
     · exact (ne_of_gt hZgt) h1
     · linarith
   · have hγ : gammaSEqual x < gammaSEqual y :=
-      strictAntiOn_gammaSEqual_even 0 hyI hxI hgt
+      (strictAntiOn_gammaSEqual_even 0) hyI hxI hgt
     have hleft : gammaSEqual x / gammaSEqual y < 1 := by
       rw [div_lt_one hposy]
       exact hγ

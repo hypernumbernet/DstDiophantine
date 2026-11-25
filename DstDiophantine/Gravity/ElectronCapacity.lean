@@ -125,43 +125,20 @@ lemma cosh_ge_of_exp_bounds {x e0 E : ℝ} (he : e0 ≤ exp x) (hE : exp x ≤ E
 lemma gammaSEqual_four_fifths_pos : 0 < gammaSEqual (4 / 5) := by
   have hlo : (222 / 100 : ℝ) < exp (4 / 5) := exp_four_fifths_bounds.1
   have hhi : exp (4 / 5) < 223 / 100 := exp_four_fifths_bounds.2
-  have hDhi : cosHi (4 / 5) (4 / 5) - sinLo (4 / 5) (4 / 5) < 0 := by
-    simp only [cosHi, sinLo]; norm_num
-  have hSlo : 0 < cosLo (4 / 5) + sinLo (4 / 5) (4 / 5) := by
-    simp only [cosLo, sinLo]; norm_num
-  have hbounds := gamma_parts_bounds (x := 4 / 5)
+  have hbounds := gamma_before (x := 4 / 5) (ε := π / 2 - 4 / 5)
+      (a := 3.141592 / 2 - 4 / 5) (b := 3.141593 / 2 - 4 / 5)
       (E0 := 222 / 100) (E1 := 223 / 100)
-      (dLo := cosLo (4 / 5) - sinHi (4 / 5))
-      (dHi := cosHi (4 / 5) (4 / 5) - sinLo (4 / 5) (4 / 5))
-      (sLo := cosLo (4 / 5) + sinLo (4 / 5) (4 / 5))
-      (sHi := cosHi (4 / 5) (4 / 5) + sinHi (4 / 5))
+      (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
       (by norm_num) hlo.le hhi.le
-      ?_ ?_ hDhi ?_ ?_ hSlo
-  · have hgl : 0 < gammaLower (223 / 100)
-        (cosLo (4 / 5) - sinHi (4 / 5))
-        (cosLo (4 / 5) + sinLo (4 / 5) (4 / 5)) := by
-      simp only [gammaLower, cosLo, sinHi, sinLo]; norm_num
-    linarith [hbounds.1]
-  · have hsin := sin_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    have hcos := cos_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    linarith [hsin.2, hcos.1]
-  · have hsin := sin_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    have hcos := cos_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    linarith [hsin.1, hcos.2]
-  · have hsin := sin_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    have hcos := cos_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    linarith [hsin.1, hcos.1]
-  · have hsin := sin_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    have hcos := cos_mem_bounds (a := 4 / 5) (b := 4 / 5)
-        (by norm_num) (by norm_num) le_rfl le_rfl
-    linarith [hsin.2, hcos.2]
+      (by simp only [sinHi, cosLo]; norm_num)
+      (by simp only [sinLo, cosLo]; norm_num)
+  have hgl : 0 < gammaLower (223 / 100)
+      (sinLo (3.141592 / 2 - 4 / 5) (3.141593 / 2 - 4 / 5) -
+        cosHi (3.141592 / 2 - 4 / 5) (3.141593 / 2 - 4 / 5))
+      (sinLo (3.141592 / 2 - 4 / 5) (3.141593 / 2 - 4 / 5) +
+        cosLo (3.141593 / 2 - 4 / 5)) := by
+    simp only [gammaLower, sinLo, cosLo, cosHi]; norm_num
+  linarith [hbounds.1]
 
 theorem four_fifths_lt_resonanceRoot1 : 4 / 5 < resonanceRoot1 := by
   by_contra h
@@ -177,11 +154,10 @@ theorem four_fifths_lt_resonanceRoot1 : 4 / 5 < resonanceRoot1 := by
       simpa [heq] using resonanceRoot1_gammaSEqual_zero
     linarith [gammaSEqual_four_fifths_pos, hzero]
 
-lemma gammaSEqual_eight_fifths_lt : gammaSEqual (8 / 5) < -1 := by
-  have hεlo : (292 / 10000 : ℝ) ≤ 8 / 5 - π / 2 := by
-    linarith [pi_lt_d6]
-  have hεhi : 8 / 5 - π / 2 ≤ 293 / 10000 := by
-    linarith [pi_gt_d6]
+/-- Primary `γ(8/5) ≈ −0.075`; the legacy envelope gave `γ < −1` on the mixed chart. -/
+lemma gammaSEqual_eight_fifths_lt : gammaSEqual (8 / 5) < 0 := by
+  have hεlo : (292 / 10000 : ℝ) ≤ 8 / 5 - π / 2 := by linarith [pi_lt_d6]
+  have hεhi : 8 / 5 - π / 2 ≤ 293 / 10000 := by linarith [pi_gt_d6]
   have hexp_lo : (492 / 100 : ℝ) < exp (8 / 5) := by
     have hid : exp (8 / 5) = exp (4 / 5) * exp (4 / 5) := by
       rw [show (8 / 5 : ℝ) = 4 / 5 + 4 / 5 by norm_num, exp_add]
@@ -199,12 +175,33 @@ lemma gammaSEqual_eight_fifths_lt : gammaSEqual (8 / 5) < -1 := by
       (E0 := 492 / 100) (E1 := 498 / 100)
       (by ring) (by norm_num) (by norm_num) hεlo hεhi
       (by norm_num) hexp_lo.le hexp_hi.le hD hS
-  have hgu : gammaUpper (492 / 100)
-      (-(sinLo (292 / 10000) (293 / 10000) + cosLo (293 / 10000)))
-      (-sinLo (292 / 10000) (293 / 10000) +
-        cosHi (292 / 10000) (293 / 10000)) < -1 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  have hgu : gammaCosUpper (492 / 100) (498 / 100)
+      (-sinLo (292 / 10000) (293 / 10000)) < 0 := by
+    simp only [gammaCosUpper, sinLo]; norm_num
   linarith [hbounds.2]
+
+/-- Diameter-shell anchor just past `π`: primary `γ < −1` (replaces the false `8/5` lift). -/
+lemma gammaSEqual_diameter_anchor_lt_neg_one {h : ℝ} (hh0 : 0 < h) (hh : h ≤ 1 / 64) :
+    gammaSEqual (π + 2 * h) < -1 := by
+  have hδlo : 2 * h ≥ 2 / 64 := by nlinarith [hh]
+  have hδhi : 2 * h ≤ 2 / 64 := by nlinarith [hh]
+  have hcos : cos (π + 2 * h) = -cos (2 * h) := by rw [cos_add_pi]
+  have hcoshi : cos (2 * h) ≤ 1 := cos_le_one _
+  have hcoslo : 127 / 100 < cos (2 * h) := by
+    have hx : 0 ≤ 2 * h := by linarith
+    have hs : 2 * h ≤ 1 / 32 := by linarith
+    have hcosB := cos_mem_bounds (a := 0) (b := 1 / 32) (by norm_num) (by norm_num) hx hs
+    dsimp [cosLo] at hcosB
+    linarith [hcosB.1]
+  have hcosh : (31 / 5 : ℝ) < cosh (π + 2 * h) := by
+    have hle : cosh π < cosh (π + 2 * h) := (cosh_lt_cosh).mpr (by linarith [hh0])
+    have hπ : (31 / 5 : ℝ) < cosh π := by
+      rw [cosh_eq]
+      nlinarith [exp_one_gt_d9, exp_pos (-π)]
+    linarith
+  unfold gammaSEqual
+  rw [hcos]
+  nlinarith [hcosh, hcoslo, hcoshi, cosh_pos (π + 2 * h)]
 
 theorem gammaSEqual_neg_first_shell {x : ℝ}
     (hx : x ∈ Ioo resonanceRoot1 (branchNode 1)) : gammaSEqual x < 0 := by
@@ -214,16 +211,9 @@ theorem gammaSEqual_neg_first_shell {x : ℝ}
         simpa [Nat.cast_one, one_mul] using gammaSEqual_nat_mul_pi 1
       linarith [cosh_pos π]
     · exact gammaSEqual_neg_right_of_first_node ⟨hx.1, hlt⟩
-  · have hnode := (branchNode_spec 1).1
-    have hzero : gammaSEqual (branchNode 1) = 0 := (branchNode_spec 1).2
-    have hup : branchNode 1 < π + π := by
-      simpa [Nat.cast_one, one_mul] using hnode.2
-    have hlo : π < branchNode 1 := by
-      simpa [Nat.cast_one, one_mul] using hnode.1
-    have hxI : x ∈ Icc π (π + π) := ⟨hgt.le, le_of_lt (lt_trans hx.2 hup)⟩
-    have hnI : branchNode 1 ∈ Icc π (π + π) := ⟨hlo.le, hup.le⟩
-    have hlt := strictMonoOn_gammaSEqual_odd 0 (by simpa using hxI) (by simpa using hnI) hx.2
-    rwa [hzero] at hlt
+  · have hlo : ((1 : ℕ) : ℝ) * π < x := by simpa [Nat.cast_one, one_mul] using hgt
+    exact gammaSEqual_neg_before_branchNode 1 (by decide)
+      (by simpa [Nat.cast_one, one_mul] using hlo.le) hx.2
 
 theorem pairBalance_neg_outer {Z x : ℝ} (hZ : 1 ≤ Z) (hx : x ∈ Ioo 0 resonanceRoot1) :
     pairBalance Z x < 0 := by
@@ -819,12 +809,9 @@ lemma halfPhase_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) (br
   have hπ : π < branchNode 1 := by
     simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
   refine gammaSEqual_neg_first_shell ⟨?_, ?_⟩
-  · linarith [four_fifths_lt_resonanceRoot1, hy.1]
-  · have hy0 : 0 < y := by linarith [hy.1, resonanceRoot1_bounds.1]
-    have hlt : y / 2 < y := by
-      rw [div_lt_iff₀ (by norm_num : (0 : ℝ) < 2)]
-      linarith
-    exact lt_trans hlt hy.2
+  · have hr1 : resonanceRoot1 = π / 2 := resonanceRoot1_eq_pi_div_two
+    linarith [hy.1, hr1]
+  · exact lt_trans (half_lt_self (by linarith [hy.1, resonanceRoot1_bounds.1, pi_pos])) hy.2
 
 lemma pairRatio_strictAnti :
     StrictAntiOn pairRatio (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
@@ -868,10 +855,8 @@ lemma gamma_seven_quarters_lt : gammaSEqual (7 / 4) < -3 := by
       (a := 179 / 1000) (b := 180 / 1000) (E0 := 56 / 10) (E1 := 6)
       (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
       hexp_lo.le hexp_hi.le hD hS
-  have hgu : gammaUpper (56 / 10)
-      (-(sinLo (179 / 1000) (180 / 1000) + cosLo (180 / 1000)))
-      (-sinLo (179 / 1000) (180 / 1000) + cosHi (179 / 1000) (180 / 1000)) < -3 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  have hgu : gammaCosUpper (56 / 10) (6) (-sinLo (179 / 1000) (180 / 1000)) < -3 := by
+    simp only [gammaCosUpper, sinLo]; norm_num
   linarith [hbounds.2]
 
 lemma gamma_seven_halves_gt : -11 < gammaSEqual (7 / 2) := by
@@ -983,17 +968,9 @@ lemma pairBalance_neg_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
   have hsmall : -gammaSEqual (resonanceRoot1 + h) < 10 * h := by
     rw [hval, deriv_gammaSEqual]
     nlinarith [hmag, hh0]
-  have hxbig : 8 / 5 < 2 * (resonanceRoot1 + h) := by
-    linarith [four_fifths_lt_resonanceRoot1]
-  have hxπ : 2 * (resonanceRoot1 + h) < π := by
-    linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three]
-  have hmemL : (8 / 5 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
-  have hmemx : 2 * (resonanceRoot1 + h) ∈ Icc (0 : ℝ) π :=
-    ⟨by linarith [resonanceRoot1_bounds.1], hxπ.le⟩
-  have hγx : gammaSEqual (2 * (resonanceRoot1 + h)) < gammaSEqual (8 / 5) :=
-    strictAntiOn_gammaSEqual_even 0 (by simpa using hmemL) (by simpa using hmemx) hxbig
   have hγlt : gammaSEqual (2 * (resonanceRoot1 + h)) < -1 := by
-    linarith [hγx, gammaSEqual_eight_fifths_lt]
+    rw [resonanceRoot1_eq_pi_div_two]
+    simpa [two_mul, add_mul, one_div] using gammaSEqual_diameter_anchor_lt_neg_one hh0 hh1
   unfold pairBalance
   have harg : 2 * (resonanceRoot1 + h) / 2 = resonanceRoot1 + h := by ring
   rw [harg]
@@ -1711,10 +1688,8 @@ lemma gammaSEqual_eleven_fifths_lt : gammaSEqual (11 / 5) < -6 := by
       (a := 62 / 100) (b := 64 / 100) (E0 := 89 / 10) (E1 := 93 / 10)
       (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
       hexp_lo.le hexp_hi.le hD hS
-  have hgu : gammaUpper (89 / 10)
-      (-(sinLo (62 / 100) (64 / 100) + cosLo (64 / 100)))
-      (-sinLo (62 / 100) (64 / 100) + cosHi (62 / 100) (64 / 100)) < -6 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  have hgu : gammaCosUpper (89 / 10) (93 / 10) (-sinLo (62 / 100) (64 / 100)) < -6 := by
+    simp only [gammaCosUpper, sinLo]; norm_num
   linarith [hbounds.2]
 
 lemma gammaSEqual_thirtyNine_tenths_gt : -3 / 2 < gammaSEqual (39 / 10) := by
@@ -1873,16 +1848,10 @@ lemma cubeResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
     rw [hval, deriv_gammaSEqual]
     nlinarith [hmag, hh0]
   set x : ℝ := 2 * (resonanceRoot1 + h)
-  have hxbig : 8 / 5 < x := by
-    dsimp [x]; linarith [four_fifths_lt_resonanceRoot1]
-  have hxπ : x < π := by
-    dsimp [x]; linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three, hh1]
-  have hmemL : (8 / 5 : ℝ) ∈ Icc (0 : ℝ) π := ⟨by norm_num, by linarith [pi_gt_three]⟩
-  have hmemx : x ∈ Icc (0 : ℝ) π :=
-    ⟨by dsimp [x]; linarith [resonanceRoot1_bounds.1], hxπ.le⟩
-  have hγx : gammaSEqual x < gammaSEqual (8 / 5) :=
-    strictAntiOn_gammaSEqual_even 0 (by simpa using hmemL) (by simpa using hmemx) hxbig
-  have hγlt : gammaSEqual x < -1 := by linarith [hγx, gammaSEqual_eight_fifths_lt]
+  have hγlt : gammaSEqual x < -1 := by
+    dsimp [x]
+    rw [resonanceRoot1_eq_pi_div_two]
+    exact gammaSEqual_diameter_anchor_lt_neg_one hh0 hh1
   have harg : x / 2 = resonanceRoot1 + h := by dsimp [x]; ring
   have hhalf_gt : -(10 * h) < gammaSEqual (x / 2) := by
     rw [harg]; linarith [hsmall]
@@ -1900,7 +1869,9 @@ lemma cubeResponse_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
     refine ⟨by dsimp [x]; linarith, ?_⟩
     have hnode : π < branchNode 1 := by
       simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-    dsimp [x]; linarith [hxπ, hnode]
+    dsimp [x]
+    rw [resonanceRoot1_eq_pi_div_two]
+    linarith [hnode, hh0]
   have hphases := cube_phases_in_shell hshell
   have hbody : cubeCoeffBody * scaledRatio (1 / 2) x < cubeResponse x := by
     unfold cubeResponse
@@ -1956,13 +1927,14 @@ lemma cubeResponse_thirtyNine_tenths_lt : cubeResponse (39 / 10) < 1 := by
     have hmul : (173 / 100) * (39 / 20) < sqrt 3 * (39 / 20) := by
       nlinarith [sqrt_three_gt_oneSevenThree]
     linarith
-  have hγe : gammaSEqual (cubeEdge * (39 / 10)) < gammaSEqual (7 / 2) := by
-    have hleft : cubeEdge * (39 / 10) ∈ Icc π (π + π) :=
+  have hγe : gammaSEqual (7 / 2) < gammaSEqual (cubeEdge * (39 / 10)) := by
+    have hleft : cubeEdge * (39 / 10) ∈ Icc π (π + 2 / 5) :=
       ⟨hedge_lo.le, by linarith [hedge_hi, pi_gt_three]⟩
-    have hright : (7 / 2 : ℝ) ∈ Icc π (π + π) := ⟨hπ.le, by linarith [pi_gt_three]⟩
-    exact strictMonoOn_gammaSEqual_odd 0 (by simpa using hleft) (by simpa using hright) hedge_hi
+    have hright : (7 / 2 : ℝ) ∈ Icc π (π + 2 / 5) := ⟨hπ.le, by linarith [hedge_hi, pi_gt_three]⟩
+    exact strictAntiOn_gammaSEqual_odd_branch 0 (by simpa using hright) (by simpa using hleft) hedge_hi
   have hγe6 : gammaSEqual (cubeEdge * (39 / 10)) < -6 := by
-    linarith [hγe, gammaSEqual_seven_halves_lt_neg_six]
+    have hlt : gammaSEqual (7 / 2) < -6 := gammaSEqual_seven_halves_lt_neg_six
+    linarith [hγe, hlt]
   have hface_lo : 11 / 5 < cubeFace * (39 / 10) := by
     unfold cubeFace
     have hsqrt : 88 / 39 < sqrt 6 := by
