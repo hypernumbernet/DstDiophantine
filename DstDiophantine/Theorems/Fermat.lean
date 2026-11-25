@@ -157,8 +157,8 @@ theorem fermat_balanced_amplification_admissible {p : ℕ} (hp : 1 ≤ p) :
   have hscale : (p : ℝ) * (Real.log 2 / (p : ℝ)) = Real.log 2 := by
     field_simp
   rw [hscale, isAdmissibleContinuous_pureBoost_iff]
-  have hone_pi : (1 : ℝ) < Real.pi / 2 := by nlinarith [Real.pi_gt_three]
-  exact ⟨log_two_nonneg, (log_two_lt_one.trans hone_pi).le⟩
+  have hone : (1 : ℝ) < Real.pi := by linarith [Real.pi_gt_three]
+  exact ⟨log_two_nonneg, le_trans (le_of_lt log_two_lt_one) hone.le⟩
 
 /-! ### Fermat wrappers around the shared no-go core -/
 
@@ -168,27 +168,30 @@ theorem fermat_amplification_contradiction
       IsAdmissibleContinuous
         (pureBoost (p * (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)))))
     (hbig :
-      (1 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (logMismatch a c ha hc)|) :
+      (4 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (logMismatch a c ha hc)|) :
     False := by
-  change (1 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
+  change (4 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
   exact continuous_amplification_contradiction _ hp hadm hbig
 
 theorem fermat_coarse_height_gap {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
-    (hcoarse : 3 * N ^ 2 < 16 * p ^ 2) :
-    (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
-  coarse_height_gap hp hcoarse
+    (hcoarse : 12 * N ^ 2 < 16 * p ^ 2) :
+    (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) := by
+  have h := coarse_height_gap_four hp hcoarse
+  have hp2 : 0 < (p : ℝ) ^ 2 := by positivity
+  have h1 : (1 : ℝ) < (4 : ℝ) := by norm_num
+  exact lt_trans (div_lt_div_of_pos_right h1 hp2) h
 
 theorem fermat_coarse_condition_of_le_two_mul {N p : ℕ} (hp : 1 ≤ p)
-    (hN : N ≤ 2 * p) : 3 * N ^ 2 < 16 * p ^ 2 :=
-  coarse_condition_of_le_two_mul hp hN
+    (hN : N ≤ p) : 12 * N ^ 2 < 16 * p ^ 2 :=
+  coarse_condition_of_le_one_mul hp hN
 
 theorem fermat_coarse_height_gap_of_le_two_mul {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
-    (hN : N ≤ 2 * p) :
+    (hN : N ≤ p) :
     (1 : ℝ) / (p : ℝ) ^ 2 < (16 : ℝ) / (3 * (N : ℝ) ^ 2) :=
-  coarse_height_gap_of_le_two_mul hp hN
+  fermat_coarse_height_gap hp (fermat_coarse_condition_of_le_two_mul hp hN)
 
 theorem fermat_coarse_discrete_contradiction {N p : ℕ} [NeZero N] (hp : 1 ≤ p)
-    (hcoarse : 3 * N ^ 2 < 16 * p ^ 2) (t : AdmissibleClass N)
+    (hcoarse : 12 * N ^ 2 < 16 * p ^ 2) (t : AdmissibleClass N)
     (hne : latticeMismatch t.val ≠ 0)
     (hadm :
       IsAdmissibleContinuous
@@ -204,7 +207,7 @@ def FermatCoarseDiscreteBridge : Prop :=
     a ^ p + b ^ p = c ^ p →
       ∃ (N : ℕ) (hN : N ≠ 0),
         letI : NeZero N := ⟨hN⟩
-        3 * N ^ 2 < 16 * p ^ 2 ∧ Nonempty (CoarseAmplificationWitness N p)
+        12 * N ^ 2 < 16 * p ^ 2 ∧ Nonempty (CoarseAmplificationWitness N p)
 
 /-- Vacuous: the coarse witness is already empty. -/
 theorem fermat_last_theorem_of_coarse_discrete_bridge
@@ -225,7 +228,7 @@ def FermatAdmissibleBridge : Prop :=
     a ^ p + b ^ p = c ^ p →
       IsAdmissibleContinuous
           (pureBoost (p * (Real.log (Int.natAbs c) - Real.log (Int.natAbs a)))) ∧
-        (1 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (logMismatch a c ha hc)|
+        (4 : ℝ) / (p : ℝ) ^ 2 < |JNormalized (logMismatch a c ha hc)|
 
 theorem fermat_last_theorem_of_bridge (hbridge : FermatAdmissibleBridge) :
     ∀ (a b c : ℤ) (p : ℕ), 3 ≤ p → a ≠ 0 → b ≠ 0 → c ≠ 0 →

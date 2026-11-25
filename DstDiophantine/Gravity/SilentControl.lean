@@ -396,10 +396,12 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
           have : 0 ≤ ε := le_of_lt (by simpa [ε] using hε)
           exact add_nonneg (hp b).2.1 this
         simpa [superpose_beta, magneticFaraday, B, hb] using hβ
-      · have hβπ : p.beta b + ε ≤ Real.pi := by linarith [(hp b).2.2.1, hε.le]
+      · have hβπ : p.beta b + ε ≤ Real.pi := by
+          have : p.beta b + ε = Real.pi / 2 - p.alpha b := by simp [ε, hb]; ring
+          linarith [(hp b).1, this]
         simpa [superpose_beta, magneticFaraday, B, hb] using hβπ
-      · have hsum : p.alpha b + p.beta b + ε = Real.pi / 2 := by
-          simp [ε, hb]; linarith [hi]
+      · have hsum : p.alpha b + (p.beta b + ε) ≤ Real.pi := by
+          simpa [add_assoc, ε, hb] using (hp b).2.2.2
         simpa [superpose_alpha, superpose_beta, magneticFaraday, B, hb, add_assoc] using hsum
     · have hBz : B b = 0 := by simp [B, hb]
       have hα : (superpose p (magneticFaraday B)).alpha b = p.alpha b := by
@@ -549,9 +551,10 @@ theorem exists_admissible_electric_attraction {p : TorsionParams}
       · have hα : 0 ≤ p.alpha b + ε := add_nonneg (hp b).1 (le_of_lt (by simpa [ε] using hε))
         simpa [superpose_alpha, electricFaraday, E, hb] using hα
       · simpa [superpose_beta, electricFaraday] using (hp b).2.1
-      · exact (hp b).2.2.1
-      · have hsum : p.alpha b + ε + p.beta b = Real.pi / 2 := by
-          simp [ε, hb]; linarith [hi]
+      · have hβπ : p.beta b ≤ Real.pi := (hp b).2.2.1
+        simpa [superpose_beta, electricFaraday] using hβπ
+      · have hsum : p.alpha b + ε + p.beta b ≤ Real.pi := by
+          simpa [ε, hb, add_assoc] using (hp b).2.2.2
         simpa [superpose_alpha, superpose_beta, electricFaraday, E, hb, add_assoc] using hsum
     · have hEz : E b = 0 := by simp [E, hb]
       refine ⟨?_, ?_, ?_, ?_⟩

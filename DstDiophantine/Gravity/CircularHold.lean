@@ -73,6 +73,12 @@ def TransverseMargin (p : TorsionParams) (ρ : ℝ) : Prop :=
     p.alpha 0 + p.beta 0 + ρ ≤ Real.pi ∧
     p.alpha 1 + p.beta 1 + ρ ≤ Real.pi
 
+/-- Legacy π/2 transverse wall (shell programmes). -/
+def TransverseMarginLegacy (p : TorsionParams) (ρ : ℝ) : Prop :=
+  ρ ≤ p.beta 0 ∧ ρ ≤ p.beta 1 ∧
+    p.alpha 0 + p.beta 0 + ρ ≤ Real.pi / 2 ∧
+    p.alpha 1 + p.beta 1 + ρ ≤ Real.pi / 2
+
 private theorem beta_ge_abs_of_both {β s : ℝ}
     (hp : 0 ≤ β + s) (hm : 0 ≤ β + (-s)) : |s| ≤ β := by
   rw [abs_le]
@@ -189,11 +195,13 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
             0 ≤ p.beta 0 + e * circularPotential σ E0 ω ψ 0 := by
           linarith
         simpa [coupleA] using hineq
-      · linarith [(hseed 0).2.2.1]
+      · have hβπ : p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi := by
+          linarith [hmargin.2.2.1, (hseed 0).1, hlo, hhi, hmargin.1]
+        simpa [coupleA] using hβπ
       · have hwall := hmargin.2.2.1
         have hineq :
             p.alpha 0 + p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi := by
-          linarith
+          linarith [hwall, (hseed 0).1, hlo, hhi, hmargin.1]
         simpa [coupleA, add_assoc] using hineq
     · have hd := abs_increment_one (e := e) (σ := σ) (E0 := E0) (ω := ω)
         (ψ := ψ) hσ
@@ -208,11 +216,13 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
             0 ≤ p.beta 1 + e * circularPotential σ E0 ω ψ 1 := by
           linarith
         simpa [coupleA] using hineq
-      · linarith [(hseed 1).2.2.1]
+      · have hβπ : p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi := by
+          linarith [hmargin.2.2.2, (hseed 1).1, hlo, hhi, hmargin.2.1]
+        simpa [coupleA] using hβπ
       · have hwall := hmargin.2.2.2
         have hineq :
             p.alpha 1 + p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi := by
-          linarith
+          linarith [hwall, (hseed 1).1, hlo, hhi, hmargin.2.1]
         simpa [coupleA, add_assoc] using hineq
     · have hinc := circular_increment_two e σ E0 ω ψ
       have haxis := hseed 2
@@ -221,19 +231,133 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
       · simpa [coupleA, hinc] using haxis.2.2.1
       · simpa [coupleA, hinc, add_assoc] using haxis.2.2.2
 
+theorem cycle_admissible_legacy_forward {p : TorsionParams} {e σ E0 ω : ℝ}
+    (hσ : σ ^ 2 = 1)
+    (h : ∀ ψ : ℝ,
+      IsAdmissibleContinuousLegacy (coupleA p e (circularPotential σ E0 ω ψ))) :
+    IsAdmissibleContinuousLegacy p ∧
+      TransverseMarginLegacy p (circAmp e E0 ω) := by
+  let s : ℝ := e * (E0 / ω)
+  have hs : circAmp e E0 ω = |s| := rfl
+  have h0 := h 0
+  have hpi := h Real.pi
+  have hhalf := h (Real.pi / 2)
+  have hthree := h (3 * Real.pi / 2)
+  have inc0_zero : e * circularPotential σ E0 ω 0 0 = 0 := by
+    simp [circularPotential, Real.sin_zero]
+  have inc1_half : e * circularPotential σ E0 ω (Real.pi / 2) 1 = 0 := by
+    simp [circularPotential, Real.cos_pi_div_two]
+  have inc2 : ∀ ψ, e * circularPotential σ E0 ω ψ 2 = 0 :=
+    fun ψ => circular_increment_two e σ E0 ω ψ
+  have hseed : IsAdmissibleContinuousLegacy p := by
+    intro a
+    fin_cases a
+    · have h := h0 0
+      refine ⟨(by simpa [coupleA, inc0_zero] using h.1),
+        (by simpa [coupleA, inc0_zero] using h.2.1), (by simpa [coupleA, inc0_zero, add_assoc] using h.2.2)⟩
+    · have h := hhalf 1
+      refine ⟨(by simpa [coupleA, inc1_half] using h.1),
+        (by simpa [coupleA, inc1_half] using h.2.1), (by simpa [coupleA, inc1_half, add_assoc] using h.2.2)⟩
+    · simpa [coupleA, inc2, circular_increment_two] using h0 2
+  have inc0_half : e * circularPotential σ E0 ω (Real.pi / 2) 0 = s := by
+    simp [circularPotential, Real.sin_pi_div_two, s]
+  have inc0_three :
+      e * circularPotential σ E0 ω (3 * Real.pi / 2) 0 = -s := by
+    simp [circularPotential, sin_three_pi_div_two, s]
+  have hβ0 : |s| ≤ p.beta 0 := by
+    have hp := (hhalf 0).2.1
+    have hm := (hthree 0).2.1
+    have hp' : 0 ≤ p.beta 0 + s := by simpa [coupleA, inc0_half] using hp
+    have hm' : 0 ≤ p.beta 0 + (-s) := by simpa [coupleA, inc0_three] using hm
+    exact beta_ge_abs_of_both hp' hm'
+  have hwall0 : p.alpha 0 + p.beta 0 + |s| ≤ Real.pi / 2 := by
+    have hp := (hhalf 0).2.2
+    have hm := (hthree 0).2.2
+    have hp' : p.alpha 0 + p.beta 0 + s ≤ Real.pi / 2 := by
+      simpa [coupleA, inc0_half, add_assoc] using hp
+    have hm' : p.alpha 0 + p.beta 0 + (-s) ≤ Real.pi / 2 := by
+      simpa [coupleA, inc0_three, add_assoc] using hm
+    exact sum_ge_abs_of_both hp' hm'
+  have inc1_zero : e * circularPotential σ E0 ω 0 1 = -σ * s := by
+    simp [circularPotential, Real.cos_zero, s]; ring
+  have inc1_pi : e * circularPotential σ E0 ω Real.pi 1 = σ * s := by
+    simp [circularPotential, Real.cos_pi, s]; ring
+  have hβ1 : |s| ≤ p.beta 1 := by
+    have hz := (h0 1).2.1
+    have hp := (hpi 1).2.1
+    have hz' : 0 ≤ p.beta 1 + -(σ * s) := by
+      simpa [coupleA, inc1_zero] using hz
+    have hp' : 0 ≤ p.beta 1 + σ * s := by simpa [coupleA, inc1_pi] using hp
+    have habs : |σ * s| ≤ p.beta 1 := beta_ge_abs_of_both hp' hz'
+    rwa [abs_mul, abs_of_helicity hσ, one_mul] at habs
+  have hwall1 : p.alpha 1 + p.beta 1 + |s| ≤ Real.pi / 2 := by
+    have hz := (h0 1).2.2
+    have hp := (hpi 1).2.2
+    have hz' : p.alpha 1 + p.beta 1 + -(σ * s) ≤ Real.pi / 2 := by
+      simpa [coupleA, inc1_zero, add_assoc] using hz
+    have hp' : p.alpha 1 + p.beta 1 + σ * s ≤ Real.pi / 2 := by
+      simpa [coupleA, inc1_pi, add_assoc] using hp
+    have habs := sum_ge_abs_of_both hp' hz'
+    rwa [abs_mul, abs_of_helicity hσ, one_mul] at habs
+  refine ⟨hseed, ?_⟩
+  rw [hs]
+  exact ⟨hβ0, hβ1, hwall0, hwall1⟩
+
+theorem cycle_admissible_legacy_backward {p : TorsionParams} {e σ E0 ω : ℝ}
+    (hσ : σ ^ 2 = 1)
+    (h : IsAdmissibleContinuousLegacy p ∧
+      TransverseMarginLegacy p (circAmp e E0 ω)) :
+    ∀ ψ : ℝ,
+      IsAdmissibleContinuousLegacy (coupleA p e (circularPotential σ E0 ω ψ)) := by
+  rcases h with ⟨hseed, hmargin⟩
+  intro ψ a
+  have hρ0 : 0 ≤ circAmp e E0 ω := circAmp_nonneg e E0 ω
+  fin_cases a
+  · have hd := abs_increment_zero e σ E0 ω ψ
+    have hsin : |Real.sin ψ| ≤ 1 := Real.abs_sin_le_one ψ
+    have habs : |e * circularPotential σ E0 ω ψ 0| ≤ circAmp e E0 ω := by
+      rw [hd]; exact mul_le_of_le_one_right hρ0 hsin
+    rcases abs_le.mp habs with ⟨hlo, hhi⟩
+    have hinc : -circAmp e E0 ω ≤ e * circularPotential σ E0 ω ψ 0 := by
+      simpa [hd] using hlo
+    have hβ : 0 ≤ p.beta 0 + e * circularPotential σ E0 ω ψ 0 := by
+      linarith [(hseed 0).2.1, hmargin.1, hinc, hhi]
+    have hwall : p.alpha 0 + p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi / 2 := by
+      linarith [hmargin.2.2.1, (hseed 0).2.2, hlo, hhi, hmargin.1]
+    refine ⟨(hseed 0).1, ?_, ?_⟩
+    · simpa [coupleA] using hβ
+    · simpa [coupleA, add_assoc] using hwall
+  · have hd := abs_increment_one (e := e) (σ := σ) (E0 := E0) (ω := ω) (ψ := ψ) hσ
+    have hcos : |Real.cos ψ| ≤ 1 := Real.abs_cos_le_one ψ
+    have habs : |e * circularPotential σ E0 ω ψ 1| ≤ circAmp e E0 ω := by
+      rw [hd]; exact mul_le_of_le_one_right hρ0 hcos
+    rcases abs_le.mp habs with ⟨hlo, hhi⟩
+    have hinc : -circAmp e E0 ω ≤ e * circularPotential σ E0 ω ψ 1 := by
+      simpa [hd] using hlo
+    have hβ : 0 ≤ p.beta 1 + e * circularPotential σ E0 ω ψ 1 := by
+      linarith [(hseed 1).2.1, hmargin.2.1, hinc, hhi]
+    have hwall : p.alpha 1 + p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi / 2 := by
+      linarith [hmargin.2.2.2, (hseed 1).2.2, hlo, hhi, hmargin.2.1]
+    refine ⟨(hseed 1).1, ?_, ?_⟩
+    · simpa [coupleA] using hβ
+    · simpa [coupleA, add_assoc] using hwall
+  · have hinc := circular_increment_two e σ E0 ω ψ
+    simpa [coupleA, hinc] using hseed 2
+
 theorem circAmp_le_pi_div_four {p : TorsionParams} {e σ E0 ω : ℝ}
     (hσ : σ ^ 2 = 1)
     (h : ∀ ψ : ℝ,
-      IsAdmissibleContinuous (coupleA p e (circularPotential σ E0 ω ψ))) :
+      IsAdmissibleContinuousLegacy (coupleA p e (circularPotential σ E0 ω ψ))) :
     circAmp e E0 ω ≤ Real.pi / 4 := by
-  rcases (cycle_admissible_iff hσ).mp h with ⟨hseed, hβ, -, hwall, -⟩
+  rcases cycle_admissible_legacy_forward hσ h with ⟨hseed, hmargin⟩
+  rcases hmargin with ⟨_, _, hwall0, _⟩
   have hα : 0 ≤ p.alpha 0 := (hseed 0).1
   linarith
 
 theorem ponderomotive_le_pi_sq_div_32 {p : TorsionParams} {e σ E0 ω : ℝ}
     (hσ : σ ^ 2 = 1)
     (h : ∀ ψ : ℝ,
-      IsAdmissibleContinuous (coupleA p e (circularPotential σ E0 ω ψ))) :
+      IsAdmissibleContinuousLegacy (coupleA p e (circularPotential σ E0 ω ψ))) :
     (e ^ 2 / 2) * (E0 / ω) ^ 2 ≤ Real.pi ^ 2 / 32 := by
   rw [ponderomotive_eq_half_circAmp]
   have hρ := circAmp_le_pi_div_four hσ h
@@ -256,10 +380,9 @@ noncomputable def transversePureDual : TorsionParams where
 theorem transversePureDual_admissible :
     IsAdmissibleContinuous transversePureDual := by
   intro a
-  fin_cases a <;>
-    simp [transversePureDual, Admissible.IsAdmissibleContinuous, le_rfl, le_refl] <;>
-    norm_num <;>
-    linarith [Real.pi_pos]
+  fin_cases a <;> simp only [transversePureDual] <;>
+    refine ⟨le_rfl, by linarith [Real.pi_pos], by linarith [Real.pi_pos],
+      by linarith [Real.pi_pos]⟩
 
 theorem circAmp_transverse_extremal :
     circAmp 1 (Real.pi / 4) 1 = Real.pi / 4 := by
@@ -393,13 +516,17 @@ noncomputable def isotropicSeed (φ : ℝ) : TorsionParams where
   alpha := fun _ => φ
   beta := fun _ => φ
 
+theorem isotropicSeed_admissible_legacy {φ : ℝ} (h0 : 0 ≤ φ) (hφ : φ ≤ Real.pi / 4) :
+    IsAdmissibleContinuousLegacy (isotropicSeed φ) := by
+  intro a
+  fin_cases a <;> simp only [isotropicSeed] <;>
+    exact ⟨h0, h0, by linarith [hφ]⟩
+
 theorem isotropicSeed_admissible {φ : ℝ} (h0 : 0 ≤ φ) (hφ : φ ≤ Real.pi / 4) :
     IsAdmissibleContinuous (isotropicSeed φ) := by
   intro a
-  fin_cases a <;>
-    simp only [isotropicSeed] <;>
-    refine ⟨h0, h0, ?_⟩ <;>
-    linarith
+  fin_cases a <;> simp only [isotropicSeed] <;>
+    refine ⟨h0, h0, ?_, ?_⟩ <;> linarith [Real.pi_pos, hφ]
 
 theorem isotropicSeed_aligned (φ : ℝ) :
     (isotropicSeed φ).alpha 0 = (isotropicSeed φ).beta 0 ∧
@@ -408,10 +535,11 @@ theorem isotropicSeed_aligned (φ : ℝ) :
 
 theorem circAmp_le_pi_div_six_of_isotropic {φ e σ E0 ω : ℝ} (hσ : σ ^ 2 = 1)
     (h : ∀ ψ : ℝ,
-      IsAdmissibleContinuous
+      IsAdmissibleContinuousLegacy
         (coupleA (isotropicSeed φ) e (circularPotential σ E0 ω ψ))) :
     circAmp e E0 ω ≤ Real.pi / 6 := by
-  rcases (cycle_admissible_iff hσ).mp h with ⟨-, hβ0, -, hwall0, -⟩
+  rcases cycle_admissible_legacy_forward hσ h with ⟨_, hmargin⟩
+  rcases hmargin with ⟨_, hβ0, hwall0, -⟩
   have hβ : circAmp e E0 ω ≤ φ := by simpa [isotropicSeed] using hβ0
   have hwall : circAmp e E0 ω ≤ Real.pi / 2 - 2 * φ := by
     simp only [isotropicSeed] at hwall0
@@ -430,16 +558,14 @@ theorem circAmp_isotropic_sixth :
 
 theorem cycle_admissible_isotropic_sixth {σ : ℝ} (hσ : σ ^ 2 = 1) :
     ∀ ψ : ℝ,
-      IsAdmissibleContinuous
+      IsAdmissibleContinuousLegacy
         (coupleA (isotropicSeed (Real.pi / 6)) 1
-          (circularPotential σ (Real.pi / 6) 1 ψ)) := by
-  refine (cycle_admissible_iff hσ).mpr ⟨?_, ?_⟩
-  · exact isotropicSeed_admissible (by linarith [Real.pi_pos])
-      (by linarith [Real.pi_pos])
-  · rw [circAmp_isotropic_sixth]
-    refine ⟨?_, ?_, ?_, ?_⟩ <;>
-      simp only [isotropicSeed] <;>
-      linarith [Real.pi_pos]
+          (circularPotential σ (Real.pi / 6) 1 ψ)) :=
+  cycle_admissible_legacy_backward hσ
+    ⟨isotropicSeed_admissible_legacy (by linarith [Real.pi_pos]) (by linarith [Real.pi_pos]),
+      by
+        rw [circAmp_isotropic_sixth]
+        refine ⟨?_, ?_, ?_, ?_⟩ <;> simp [isotropicSeed] <;> linarith [Real.pi_pos]⟩
 
 theorem stiffness_isotropic_sixth {m ψ σ : ℝ} (hσ : σ ^ 2 = 1) :
     stiffnessPotential m
@@ -461,9 +587,10 @@ theorem circAmp_eq_zero_of_transverse_wall {p : TorsionParams} {e σ E0 ω : ℝ
     (hwall : p.alpha 0 + p.beta 0 = Real.pi / 2 ∨
       p.alpha 1 + p.beta 1 = Real.pi / 2)
     (h : ∀ ψ : ℝ,
-      IsAdmissibleContinuous (coupleA p e (circularPotential σ E0 ω ψ))) :
+      IsAdmissibleContinuousLegacy (coupleA p e (circularPotential σ E0 ω ψ))) :
     circAmp e E0 ω = 0 := by
-  rcases (cycle_admissible_iff hσ).mp h with ⟨-, -, -, hwall0, hwall1⟩
+  rcases cycle_admissible_legacy_forward hσ h with ⟨_, hmargin⟩
+  rcases hmargin with ⟨_, _, hwall0, hwall1⟩
   have hρ := circAmp_nonneg e E0 ω
   rcases hwall with h0 | h1
   · linarith
@@ -471,7 +598,7 @@ theorem circAmp_eq_zero_of_transverse_wall {p : TorsionParams} {e σ E0 ω : ℝ
 
 theorem circAmp_eq_zero_of_isotropic_wall {e σ E0 ω : ℝ} (hσ : σ ^ 2 = 1)
     (h : ∀ ψ : ℝ,
-      IsAdmissibleContinuous
+      IsAdmissibleContinuousLegacy
         (coupleA (isotropicSeed (Real.pi / 4)) e
           (circularPotential σ E0 ω ψ))) :
     circAmp e E0 ω = 0 := by

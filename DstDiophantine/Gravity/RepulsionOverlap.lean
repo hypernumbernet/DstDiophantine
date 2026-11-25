@@ -52,10 +52,10 @@ theorem legacy_overlap_neg_at_balanced_pi :
   exact axisOverlapLegacy_sign_reversal_at_pi.2
 
 theorem repulsive_equal_scale_legacy_gammaSEqual :
-    gammaSEqual (Real.pi / 2) < 0 ∧
-      axisOverlapLegacy (Real.pi) (Real.pi) = gammaSEqual (Real.pi / 2) := by
+    gammaSEqualLegacy (Real.pi / 2) < 0 ∧
+      axisOverlapLegacy (Real.pi) (Real.pi) = gammaSEqualLegacy (Real.pi / 2) := by
   constructor
-  · unfold gammaSEqual
+  · unfold gammaSEqualLegacy
     have hpos : 0 < Real.pi / 2 := by linarith [Real.pi_pos]
     simp [Real.cos_pi_div_two, Real.sin_pi_div_two, Real.sinh_pos_iff.mpr hpos]
   · have hπ : (2 : ℝ) * (Real.pi / 2) = Real.pi := by ring

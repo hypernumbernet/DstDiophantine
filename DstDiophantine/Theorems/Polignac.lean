@@ -296,22 +296,19 @@ theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
     | k + 2 =>
         exfalso
         have hk2 : 2 ≤ k + 2 := by omega
-        have harg : (4 : ℝ) ≤ (2 * (k + 2)) := by exact_mod_cast (show 4 ≤ 2 * (k + 2) by omega)
+        have harg : (4 : ℝ) ≤ (2 * (k + 2) : ℕ) := by exact_mod_cast (show 4 ≤ 2 * (k + 2) by omega)
         have hlog := Real.log_le_log (by norm_num) harg
-        have hθgt : Real.pi / 2 < 2 * Real.log ((2 * (k + 2)) : ℝ) := by
-          have h42 : Real.pi / 2 < 4 * Real.log 2 := by
-            have := pi_div_four_lt_two_log_two
-            nlinarith
+        have hθgt : Real.pi / 2 < 2 * Real.log ((2 * (k + 2) : ℕ) : ℝ) := by
+          have h42 : Real.pi / 2 < 4 * Real.log 2 := by nlinarith [pi_div_four_lt_two_log_two]
           have hlog4 : Real.log (4 : ℝ) = 2 * Real.log 2 := by
             rw [show (4 : ℝ) = 2 ^ (2 : ℕ) by norm_num, Real.log_pow]; ring
           calc Real.pi / 2 < 4 * Real.log 2 := h42
             _ = 2 * Real.log 4 := by rw [hlog4]; ring
-            _ ≤ 2 * Real.log ((2 * (k + 2)) : ℝ) := mul_le_mul_of_nonneg_left hlog (by norm_num)
-        exact not_le_of_gt hθgt hle
+            _ ≤ 2 * Real.log ((2 * (k + 2) : ℕ) : ℝ) := mul_le_mul_of_nonneg_left hlog (by norm_num)
+        simpa using not_le_of_gt hθgt hle
   · rintro rfl
-    refine (isAdmissibleContinuousLegacy_pureBoost_iff (2 * Real.log 2)).mpr ⟨?_, le_of_lt two_log_two_lt_pi_div_two⟩
-    have : 0 < (2 : ℝ) := by norm_num
-    exact mul_nonneg this (Real.log_pos.mpr (by norm_num : (1 : ℝ) < 2))
+    exact (isAdmissibleContinuousLegacy_pureBoost_iff _).mpr
+      ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
 
 theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
     1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=

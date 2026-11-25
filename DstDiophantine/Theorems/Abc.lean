@@ -271,27 +271,33 @@ theorem abcQualityCeiling_eq {rad : ℕ} (hrad : 1 < rad) :
 theorem abc_quality_bound_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) := by
-  have hbound := torsion_bound_continuous _ hadm
-  have hH : abcHeight a b c ≤ 1 := by
+  have hH : abcHeight a b c ≤ 4 := by
     unfold abcHeight
-    exact hbound
+    exact torsion_bound_continuous _ hadm
   rw [abcHeight_eq_coef h] at hH
   set R := abcRadical (a * b * c)
   set q := abcQuality a b c
   have hcoef_pos : 0 < abcHeightCoef R := abcHeightCoef_pos h
-  have hsq : (q - 1) ^ 2 ≤ 1 / abcHeightCoef R :=
+  have hsq : (q - 1) ^ 2 ≤ 4 / abcHeightCoef R :=
     (le_div_iff₀ hcoef_pos).mpr (by linarith [hH])
-  have hsqrt : q - 1 ≤ Real.sqrt (1 / abcHeightCoef R) := by
+  have hsqrt : q - 1 ≤ Real.sqrt (4 / abcHeightCoef R) := by
     cases le_total (q - 1) 0 with
     | inl hneg => exact le_trans hneg (Real.sqrt_nonneg _)
     | inr hnonneg =>
       calc
         q - 1 = Real.sqrt ((q - 1) ^ 2) := (Real.sqrt_sq hnonneg).symm
-        _ ≤ Real.sqrt (1 / abcHeightCoef R) := Real.sqrt_le_sqrt hsq
+        _ ≤ Real.sqrt (4 / abcHeightCoef R) := Real.sqrt_le_sqrt hsq
   have hrad_lt : 1 < R :=
     lt_of_lt_of_le (by decide : (1 : ℕ) < 2) (isAbcTriple_radical_two_le h)
-  have hceil : abcQualityCeiling R = 1 + Real.sqrt (1 / abcHeightCoef R) :=
-    abcQualityCeiling_eq hrad_lt
+  have hceil : abcQualityCeiling R ≤ 1 + Real.sqrt (4 / abcHeightCoef R) := by
+    unfold abcQualityCeiling
+    gcongr
+    field_simp [ne_of_gt (abcHeightCoef_pos h)]
+    rw [Real.sqrt_le_sqrt_iff' (by positivity)]
+    · rw [div_le_div_iff₀ (by positivity) (by positivity)]
+      ring_nf
+      norm_num
+    · positivity
   linarith [hsqrt, hceil]
 
 theorem abc_amplification_contradiction {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -342,11 +348,11 @@ theorem abcMismatch_rapidity {a b c : ℕ} (h : IsAbcTriple a b c) :
 theorem isAdmissibleContinuous_abcMismatch_iff {a b c : ℕ} (_h : IsAbcTriple a b c) :
     IsAdmissibleContinuous (abcMismatchParams a b c) ↔
       0 ≤ Real.log c - Real.log (abcRadical (a * b * c)) ∧
-        Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 4 := by
+        Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 2 := by
   set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
   unfold abcMismatchParams
   rw [isAdmissibleContinuous_pureBoost_iff]
-  change (0 ≤ 2 * δ ∧ 2 * δ ≤ Real.pi / 2) ↔ (0 ≤ δ ∧ δ ≤ Real.pi / 4)
+  change (0 ≤ 2 * δ ∧ 2 * δ ≤ Real.pi) ↔ (0 ≤ δ ∧ δ ≤ Real.pi / 2)
   constructor
   · rintro ⟨h0, hπ⟩
     exact ⟨by nlinarith, by nlinarith⟩
@@ -1276,7 +1282,7 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
     simp only [abcLabelPacket, abcLabelSquare, Nat.cast_one] at h0 h2
     constructor
     · linarith [h0.1]
-    · linarith [h2.2.2]
+    · linarith [h2.2.2.2]
   · rintro ⟨h0, hπ⟩ a
     have hsq : (abcLabelSquare a : ℝ) ≤ 9 := by
       fin_cases a <;> (simp only [abcLabelSquare]; norm_num)
@@ -1287,16 +1293,18 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
     have hle : (abcLabelSquare a : ℝ) * (2 * δ) ≤ 9 * (2 * δ) :=
       mul_le_mul_of_nonneg_right hsq (mul_nonneg (by norm_num) h0)
     have h18 : 9 * (2 * δ) ≤ Real.pi / 2 := by nlinarith
-    refine ⟨?_, ?_, ?_⟩
+    have hπsum : 9 * (2 * δ) ≤ Real.pi := le_trans h18 (by linarith [Real.pi_pos])
+    refine ⟨?_, ?_, ?_, ?_⟩
     · simpa [abcLabelPacket] using hα
     · simp [abcLabelPacket]
-    · simpa [abcLabelPacket] using le_trans hle h18
+    · linarith [Real.pi_pos]
+    · simpa [abcLabelPacket] using hπsum
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
       IsAdmissibleContinuous (pureBoost (18 * δ)) := by
   rw [isAdmissibleContinuous_abcLabelPacket_iff, isAdmissibleContinuous_pureBoost_iff]
-  constructor <;> intro h <;> constructor <;> nlinarith [h.1, h.2]
+  constructor <;> intro h <;> obtain ⟨h0, hπ⟩ := h <;> exact ⟨h0, hπ⟩
 
 theorem JNormalized_abcLabelPacket_le_of_admissible {δ : ℝ}
     (hadm : IsAdmissibleContinuous (abcLabelPacket δ)) :
@@ -1344,16 +1352,16 @@ theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
   · intro h a
     have ha := h a
     simp only [daggerParams, abcLabelPacket] at ha
-    refine ⟨ha.2.1, ?_, ?_⟩
+    refine ⟨ha.1, ?_, ha.2.2.1, ha.2.2.2⟩
     · simp [abcLabelPacket]
-    · simpa [abcLabelPacket] using ha.2.2
   · intro h a
     have ha := h a
     simp only [abcLabelPacket] at ha
-    refine ⟨?_, ?_, ?_⟩
+    refine ⟨?_, ?_, ?_, ?_⟩
     · simp [daggerParams, abcLabelPacket]
     · simpa [daggerParams, abcLabelPacket] using ha.1
-    · simpa [daggerParams, abcLabelPacket] using ha.2.2
+    · linarith [Real.pi_pos]
+    · simpa [daggerParams, abcLabelPacket] using ha.2.2.2
 
 theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
     J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧

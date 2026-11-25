@@ -86,7 +86,7 @@ export Discrete (DiscreteTorsion toTorsionParams IsAdmissible
   toTorsionParams_alpha_nonneg toTorsionParams_beta_nonneg
   toTorsionParams_alpha_lt_two_pi toTorsionParams_beta_lt_two_pi
   card_discreteTorsion
-  isAdmissible_iff_admissibleContinuous isAdmissible_iff_principalBranch
+  admissible_implies_continuous isAdmissible_iff_principalBranch
   admissible_continuous_of_discrete admissible_sum_le admissible_alpha_le_half_pi
   admissible_beta_le_half_pi)
 export DirichletKernel (dirichletKernel abs_dirichletKernel_le_one
@@ -156,7 +156,7 @@ export Invariant (J J5 JNormalized counterExampleParams J_coef JNormalized_coef 
   mass_bound_raw_continuous massNormalized_bound_continuous
   balancedRay JNormalized_balancedRay mass_balancedRay massNormalized_balancedRay
   mass_balancedRay_pos isAdmissibleContinuous_balancedRay
-  not_admissible_balancedRay_of_one_lt JNormalized_zero_not_implies_vacuum
+  not_admissible_balancedRay_of_two_lt JNormalized_zero_not_implies_vacuum
   IsPureHyperbolic IsPureElliptic
   IsSpatialTrans IsBoundedTrans J5_unbounded J5_bound_spatial
   torsion_bound_raw torsion_bound_raw_continuous_pi_sq torsion_bound_raw_pi_sq

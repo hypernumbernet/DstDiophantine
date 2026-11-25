@@ -1626,11 +1626,11 @@ theorem occupation_admissible_legacy {n0 n1 n2 N : ℕ}
   intro a
   fin_cases a
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h0).1, by simpa using (hβ h0).2⟩⟩
+    exact ⟨le_rfl, (hβ h0).1, by simpa using (hβ h0).2⟩
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h1).1, by simpa using (hβ h1).2⟩⟩
+    exact ⟨le_rfl, (hβ h1).1, by simpa using (hβ h1).2⟩
   · simp only [occupation]
-    exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩⟩
+    exact ⟨le_rfl, (hβ h2).1, by simpa using (hβ h2).2⟩
 
 theorem occupation_admissible {n0 n1 n2 N : ℕ}
     (h0 : 4 * n0 ≤ N) (h1 : 4 * n1 ≤ N) (h2 : 4 * n2 ≤ N) :

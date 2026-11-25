@@ -29,21 +29,13 @@ open Real Set SI
 /-! ### First-root window and labelled characteristic length -/
 
 theorem firstNode_window :
-    π / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
+    π / 4 < resonanceRoot1 ∧ resonanceRoot1 < π :=
   resonanceRoot1_sharp_bounds
 
 theorem lambdaHyp_sharp_bounds :
     (π / 2) * (bohrRadiusApprox : ℝ) < lambdaHyp ∧
-      lambdaHyp < 2 * (bohrRadiusApprox : ℝ) := by
-  unfold lambdaHyp
-  have ha0 : (0 : ℝ) < (bohrRadiusApprox : ℝ) := by exact_mod_cast bohrRadiusApprox_pos
-  have hx := resonanceRoot1_sharp_bounds
-  constructor
-  · have : (π / 2) * (bohrRadiusApprox : ℝ) = 2 * (π / 4) * (bohrRadiusApprox : ℝ) := by
-      ring
-    rw [this]
-    nlinarith [hx.1, ha0]
-  · nlinarith [hx.2, ha0]
+      lambdaHyp < 2 * Real.pi * (bohrRadiusApprox : ℝ) :=
+  lambdaHyp_bounds
 
 /-! ### Coulombic circular balance -/
 
@@ -98,12 +90,10 @@ theorem gammaSEqual_pos_left_of_first_node {x : ℝ}
     0 < gammaSEqual x := by
   obtain ⟨h0, hx1⟩ := hx
   have hxIcc : x ∈ Icc (0 : ℝ) π :=
-    ⟨h0.le, le_of_lt (lt_trans hx1 (lt_trans resonanceRoot1_sharp_bounds.2
-      (by linarith [pi_gt_three] : (1 : ℝ) < π)))⟩
+    ⟨h0.le, le_of_lt (lt_trans hx1 resonanceRoot1_bounds.2)⟩
   have hrootIcc : resonanceRoot1 ∈ Icc (0 : ℝ) π :=
     ⟨le_of_lt (lt_trans (by norm_num : (0 : ℝ) < 1 / 2) resonanceRoot1_bounds.1),
-      le_of_lt (lt_trans resonanceRoot1_sharp_bounds.2
-        (by linarith [pi_gt_three] : (1 : ℝ) < π))⟩
+      resonanceRoot1_bounds.2.le⟩
   have hanti := strictAntiOn_gammaSEqual_even 0
   have hlt := hanti (by simpa using hxIcc) (by simpa using hrootIcc) hx1
   rw [resonanceRoot1_gammaSEqual_zero] at hlt
@@ -117,10 +107,8 @@ theorem gammaSEqual_neg_right_of_first_node {x : ℝ}
     ⟨le_of_lt (lt_trans (by positivity : (0 : ℝ) < π / 4)
         (lt_trans resonanceRoot1_sharp_bounds.1 hx1)), hπ.le⟩
   have hrootIcc : resonanceRoot1 ∈ Icc (0 : ℝ) π :=
-    ⟨le_of_lt (lt_trans (by positivity : (0 : ℝ) < π / 4)
-        resonanceRoot1_sharp_bounds.1),
-      le_of_lt (lt_trans resonanceRoot1_sharp_bounds.2
-        (by linarith [pi_gt_three] : (1 : ℝ) < π))⟩
+    ⟨le_of_lt (lt_trans (by positivity : (0 : ℝ) < π / 4) resonanceRoot1_bounds.1),
+      resonanceRoot1_bounds.2.le⟩
   have hanti := strictAntiOn_gammaSEqual_even 0
   have hlt := hanti (by simpa using hrootIcc) (by simpa using hxIcc) hx1
   rw [resonanceRoot1_gammaSEqual_zero] at hlt

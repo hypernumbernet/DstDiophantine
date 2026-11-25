@@ -42,8 +42,8 @@ theorem gammaSEqual_pos_beyond_two_ell_div_pi {ℓ r : ℝ} (hℓ : 0 < ℓ)
   linarith
 
 theorem phase_gt_root1_of_lt_half {ℓ r : ℝ} (hr0 : 0 < r) (hr : r < ℓ / 2) :
-    resonanceRoot1 < ℓ / (2 * r) := by
-  have hb := resonanceRoot1_sharp_bounds
+    resonanceRootLegacy < ℓ / (2 * r) := by
+  have hb := resonanceRoot1_sharp_boundsLegacy
   have : 1 < ℓ / (2 * r) := by
     rw [lt_div_iff₀ (by positivity)]
     linarith
@@ -85,7 +85,7 @@ theorem nuclear_window_em_walls {ℓE : ℝ} (hlo : 386 < ℓE) (hhi : ℓE < 38
 /-- Separations below `193` fm, read at `ℓ_E > 386` fm, lie inward of the first electromagnetic
 node. -/
 theorem below_193_inside_first_em_node {ℓE r : ℝ} (hlo : 386 < ℓE)
-    (hr0 : 0 < r) (hr : r < 193) : resonanceRoot1 < ℓE / (2 * r) :=
+    (hr0 : 0 < r) (hr : r < 193) : resonanceRootLegacy < ℓE / (2 * r) :=
   phase_gt_root1_of_lt_half hr0 (by linarith)
 
 theorem twoChannel_common_length (κ ke2 g r : ℝ) :

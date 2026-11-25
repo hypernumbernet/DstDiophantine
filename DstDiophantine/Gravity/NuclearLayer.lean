@@ -615,25 +615,30 @@ theorem outer_node_one_fm_forces_ell_gt_pi_div_two
 /-- Sharpened window `r₂/r₁ = x₁/x₂ ∈ (1/6, 4/(5π))`. -/
 theorem equalScale_layer_ratio_sharp
     {x₁ x₂ : ℝ} (hx₁ : x₁ ∈ Ioo (π / 4) 1)
-    (hx₂ : x₂ ∈ Ioo (π + π / 4) (π + π / 2)) :
-    x₁ / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
+    (hx₂ : x₂ ∈ Ioo (π + π / 4) (π + π)) :
+    x₁ / x₂ ∈ Ioo (1 / 8 : ℝ) (4 / (5 * π)) := by
   simp only [mem_Ioo] at hx₁ hx₂ ⊢
-  have hπ := pi_pos
   have hx₂pos : (0 : ℝ) < x₂ := by linarith
   constructor
   · rw [div_lt_div_iff₀ (by norm_num) hx₂pos]
-    nlinarith [hx₁.1, hx₂.2]
+    nlinarith [hx₁.1, hx₂.2, Real.pi_pos]
   · rw [div_lt_div_iff₀ hx₂pos (by positivity)]
-    nlinarith [hx₁.2, hx₂.1]
+    nlinarith [hx₁.2, hx₂.1, Real.pi_pos]
 
 /-- Concrete instance: the first two nodes exist and their radius ratio lies in the sharpened
 window. -/
 theorem layer_ratio_first_second_sharp :
-    ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π / 2) ∧ gammaSEqual x₂ = 0 ∧
-      resonanceRoot1 / x₂ ∈ Ioo (1 / 6 : ℝ) (4 / (5 * π)) := by
+    ∃ x₂ : ℝ, x₂ ∈ Ioo (π + π / 4) (π + π) ∧ gammaSEqual x₂ = 0 ∧
+      resonanceRoot1 / x₂ ∈ Ioo (1 / 6 : ℝ) (2 / 5) := by
   obtain ⟨x₂, hx₂, hzero⟩ := exists_second_node_sharp
-  obtain ⟨hlo, hhi⟩ := resonanceRoot1_sharp_bounds
-  exact ⟨x₂, hx₂, hzero, equalScale_layer_ratio_sharp ⟨hlo, hhi⟩ hx₂⟩
+  simp only [mem_Ioo] at hx₂ ⊢
+  have hx₂pos : (0 : ℝ) < x₂ := by linarith [Real.pi_pos]
+  have hroot := resonanceRoot1_eq_pi_div_two
+  refine ⟨x₂, hx₂, hzero, ⟨?_, ?_⟩⟩
+  · rw [div_lt_div_iff₀ (by norm_num) hx₂pos, hroot]
+    nlinarith [hx₂.2, Real.pi_gt_three, Real.pi_pos]
+  · rw [div_lt_div_iff₀ hx₂pos (by positivity), hroot]
+    nlinarith [hx₂.1, Real.pi_gt_three]
 
 /-- The sharpened window sits strictly inside the previous one. -/
 theorem equalScale_layer_ratio_sharp_refines :
