@@ -46,10 +46,13 @@ theorem windowSeed_collapse_U {a : Amplitude} (h : IsWindowSeed a) :
   obtain ⟨t, ht0, ht1, hp⟩ := h
   have hmeas : a.measure = t ^ 2 := windowSeed_measure hp
   have h0 : 0 < a.measure := by rw [hmeas]; exact sq_pos_of_pos ht0
-  have h1 : a.measure < 1 := by
+  have hlt : t ^ 2 < 1 := by nlinarith [ht0, ht1]
+  have hne : a.measure ≠ 1 := by
     rw [hmeas]
-    exact (sq_lt_one_iff_abs_lt_one t).mpr (by rwa [abs_of_nonneg (le_of_lt ht0)])
-  exact (ofParams_eq_U_iff a.admissible).mpr ⟨h0, h1⟩
+    intro h
+    linarith [hlt, h]
+  dsimp [Amplitude.collapse]
+  exact (ofParams_eq_U_iff a.admissible).mpr ⟨h0, hne⟩
 
 theorem windowSeed_not_mem_balancedResidualClass {a : Amplitude}
     (h : IsWindowSeed a) : ¬ BalancedResidualClass a := by

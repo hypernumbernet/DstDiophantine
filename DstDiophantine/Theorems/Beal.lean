@@ -232,18 +232,18 @@ theorem beal_amplification_contradiction
           ((bealMinExp x y z : ℝ) *
             (Real.log (Int.natAbs C) - Real.log (Int.natAbs A)))))
     (hbig :
-      (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
+      (4 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
         |JNormalized (logMismatch A C hA hC)|) :
     False := by
   have hm1 : 1 ≤ bealMinExp x y z := bealMinExp_ge_one hx hy hz
-  change (1 : ℝ) / (_ : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
+  change (4 : ℝ) / (_ : ℝ) ^ 2 < |JNormalized (pureBoost _)| at hbig
   exact continuous_amplification_contradiction _ hm1 hadm hbig
 
 theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
     (t : AdmissibleClass N)
     (hlb :
-      (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
+      (4 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
         torsionHeight (AdmissibleClass.toParams t))
     (hadm :
       IsAdmissibleContinuous
@@ -254,7 +254,7 @@ theorem beal_discrete_amplification_contradiction {N : ℕ} [NeZero N] {x y z : 
 
 /-! ### Continuous bridge (diagnostic) -/
 
-/-- Diagnostic, unproved: a coprime solution would already exceed `1/m²`. -/
+/-- Diagnostic, unproved: a coprime solution would already exceed `4/m²`. -/
 def BealAdmissibleBridge : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (hA : A ≠ 0) (_hB : B ≠ 0) (hC : C ≠ 0),
@@ -264,7 +264,7 @@ def BealAdmissibleBridge : Prop :=
           (pureBoost
             ((bealMinExp x y z : ℝ) *
               (Real.log (Int.natAbs C) - Real.log (Int.natAbs A)))) ∧
-        (1 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
+        (4 : ℝ) / (bealMinExp x y z : ℝ) ^ 2 <
           |JNormalized (logMismatch A C hA hC)|
 
 theorem beal_conjecture_of_bridge (hbridge : BealAdmissibleBridge) :
