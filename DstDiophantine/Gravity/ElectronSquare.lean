@@ -45,6 +45,10 @@ noncomputable def cosLo (b : ℝ) : ℝ := 1 - b ^ 2 / 2 - b ^ 4 * (5 / 96)
 
 noncomputable def cosHi (a b : ℝ) : ℝ := 1 - a ^ 2 / 2 + b ^ 4 * (5 / 96)
 
+private lemma cosLo_pos {b : ℝ} (hb0 : 0 ≤ b) (hb : b ≤ 1) : 0 < cosLo b := by
+  dsimp [cosLo]
+  nlinarith [hb0, hb, sq_nonneg b, sq_nonneg (b ^ 4)]
+
 noncomputable def gammaLower (E1 dLo sLo : ℝ) : ℝ :=
   E1 / 2 * dLo + sLo / (2 * E1)
 
@@ -397,17 +401,12 @@ lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
   have hcosζ := cos_mem_bounds ha hb hζa hζb
   have hb0 : 0 ≤ b := le_trans ha (le_trans hζa hζb)
   have hcosx : cos x = -cos ζ := by rw [hx, cos_pi_sub]
-  have hcHi : (-cosLo b) ≤ 0 := by
-    have hcospos : 0 < cosLo b := by
-      dsimp [cosLo]
-      nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 4)]
-    linarith
-  have hClo : -cosHi a b ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
-  have hChi : cos x ≤ -cosLo b := by rw [hcosx]; linarith [hcosζ.1]
-  obtain ⟨hlo, hhi⟩ :=
-    gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
-  dsimp only [gammaCosLower, gammaCosUpper] at hlo hhi ⊢
-  exact ⟨hlo, hhi⟩
+  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
+  have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosζ.1]
+  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
+  exact h
 
 lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hηa : a ≤ η) (hηb : η ≤ b)
@@ -416,18 +415,13 @@ lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
       gammaSEqual x ≤ gammaCosUpper E0 E1 (-cosLo b) := by
   have hcosη := cos_mem_bounds ha hb hηa hηb
   have hb0 : 0 ≤ b := le_trans ha (le_trans hηa hηb)
-  have hcosx : cos x = -cos η := by rw [hx, cos_add_pi]
-  have hcHi : (-cosLo b) ≤ 0 := by
-    have hcospos : 0 < cosLo b := by
-      dsimp [cosLo]
-      nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 4)]
-    linarith
-  have hClo : -cosHi a b ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
-  have hChi : cos x ≤ -cosLo b := by rw [hcosx]; linarith [hcosη.1]
-  obtain ⟨hlo, hhi⟩ :=
-    gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
-  dsimp only [gammaCosLower, gammaCosUpper] at hlo hhi ⊢
-  exact ⟨hlo, hhi⟩
+  have hcosx : cos x = -cos η := by rw [hx, add_comm, cos_add_pi]
+  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
+  have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosη.1]
+  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
+  exact h
 
 
 /-! ### Square geometry -/

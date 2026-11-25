@@ -3,6 +3,19 @@ from pathlib import Path
 p = Path(__file__).resolve().parents[1] / "DstDiophantine/Gravity/ElectronSquare.lean"
 t = p.read_text()
 
+COSLO = """noncomputable def cosHi (a b : ℝ) : ℝ := 1 - a ^ 2 / 2 + b ^ 4 * (5 / 96)
+
+private lemma cosLo_pos {b : ℝ} (hb0 : 0 ≤ b) (hb : b ≤ 1) : 0 < cosLo b := by
+  dsimp [cosLo]
+  nlinarith [hb0, hb, sq_nonneg b, sq_nonneg (b ^ 4)]
+
+noncomputable def gammaLower"""
+if "cosLo_pos" not in t:
+    t = t.replace(
+        "noncomputable def cosHi (a b : ℝ) : ℝ := 1 - a ^ 2 / 2 + b ^ 4 * (5 / 96)\n\nnoncomputable def gammaLower",
+        COSLO,
+    )
+
 OLD_GAMMA = """  constructor
   · calc
       (E1 / 2 + 1 / (2 * E0)) * cLo ≤ (exp x / 2 + exp (-x) / 2) * cLo :=
@@ -42,11 +55,37 @@ NEW_HC = """  have hcHi : (-cosLo b) ≤ 0 := by
 
 t = t.replace(OLD_HC, NEW_HC)
 
-t = t.replace(
-    """  dsimp only [gammaCosLower, gammaCosUpper]
-  exact ⟨hlo, hhi⟩""",
-    """  dsimp only [gammaCosLower, gammaCosUpper] at hlo hhi ⊢
-  exact ⟨hlo, hhi⟩""",
+PI_WRAP = """  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
+  have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosζ.1]
+  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
+  exact h"""
+
+PI_WRAP_ADD = """  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
+  have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosη.1]
+  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
+  exact h"""
+
+t = t.replace("have hcosx : cos x = -cos η := by rw [hx, cos_add_pi]", 
+    "have hcosx : cos x = -cos η := by rw [hx, add_comm, cos_add_pi]")
+
+import re
+t = re.sub(
+    r"  have hcHi : \(-cosLo b\) ≤ 0 := by\n.*?\n  have hClo : -cosHi a b ≤ cos x := by rw \[hcosx\]; linarith \[hcosζ\.2\]\n  have hChi : cos x ≤ -cosLo b := by rw \[hcosx\]; linarith \[hcosζ\.1\]\n  obtain ⟨hlo, hhi⟩ :=\n    gamma_cos_cert_bounds_nonpos.*?exact ⟨hlo, hhi⟩",
+    PI_WRAP,
+    t,
+    count=1,
+    flags=re.S,
+)
+t = re.sub(
+    r"  have hcHi : \(-cosLo b\) ≤ 0 := by\n.*?\n  have hClo : -cosHi a b ≤ cos x := by rw \[hcosx\]; linarith \[hcosη\.2\]\n  have hChi : cos x ≤ -cosLo b := by rw \[hcosx\]; linarith \[hcosη\.1\]\n  obtain ⟨hlo, hhi⟩ :=\n    gamma_cos_cert_bounds_nonpos.*?exact ⟨hlo, hhi⟩",
+    PI_WRAP_ADD,
+    t,
+    count=1,
+    flags=re.S,
 )
 
 # exp/sqrt block from commit may use sqrt2_mul eq — replace whole sqrt2 exp section if present
