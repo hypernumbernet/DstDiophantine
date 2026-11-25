@@ -1761,8 +1761,8 @@ private theorem squareBalanceLegacy_oneFiveSeven_pos : 0 < squareBalanceLegacy (
 theorem squareBalance_oneFiveSeven_pos : 0 < squareBalanceLegacy (157 / 100) :=
   squareBalanceLegacy_oneFiveSeven_pos
 
-/-- Certified shell crossing on `(153/100, 157/100)` (`squareBalanceLegacy`). -/
-theorem exists_square_shell_primary :
+/-- Legacy balance crossing on the Numbers proxy window (not the primary late shell). -/
+theorem exists_square_shell_legacy_numbers_window :
     ∃ x : ℝ, x ∈ Set.Ioo (153 / 100) (157 / 100) ∧ squareBalanceLegacy x = 0 := by
   obtain ⟨x, hxI, hx0⟩ :=
     intermediate_value_Ioo (by norm_num)

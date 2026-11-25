@@ -103,7 +103,11 @@ Phase \(x\) is the equal-scale chart argument; radius in units of \(\ell\) is \(
 
 **Research / theorem status:** existence of a **primary** square shell in \((3/2,8/5)\) is **not** supported (no crossing).
 Main library proves **`exists_unique_square_shell` via `squareBalanceLegacy`** on `(3/2,33/20)` with documented research gap for primary.
-A **clean primary zero at \(\approx 2.635\)** suggests a **late-branch** shell programme (research: primary shell existence theorem not closed in main).
+A **clean primary zero at \(\approx 2.635\)** lies in **\((13/5,\,8/3)\)** (sign change: `squareBalance(13/5) > 0`, `squareBalance(8/3) < 0` numerically); **`exists_square_shell_primary`** on primary `squareBalance` is **in progress** (IVT, no sorry).
+
+**Capacity (legacy cube fallback):** certified legacy window `legacyCubeCertHi = 39/10` (legacy \(\gamma\) turns positive near \(x \approx 4\)); `exists_unique_cube_shell` / cube monotonicity use **`gammaSEqualLegacy`** on `(2·resonanceRoot1, 39/10)`.
+
+**Force:** `exists_unique_forceQuiet` / `exists_unique_forceQuiet_shell` — unique `forceCrit = 0` in **`(5/2, π)`** (`ElectronForce`, primary chart).
 
 ### Primary electron–proton balance (`forceCrit`, `pairAttraction`)
 
