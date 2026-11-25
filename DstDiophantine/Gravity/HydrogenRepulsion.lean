@@ -106,10 +106,10 @@ node. -/
 noncomputable def gammaPrimitive (x : ℝ) : ℝ := sinh x * cos x
 
 theorem hasDerivAt_gammaPrimitive (x : ℝ) :
-    HasDerivAt gammaPrimitive (gammaSEqual x) x := by
+    HasDerivAt gammaPrimitive (gammaSEqualLegacy x) x := by
   have h := (Real.hasDerivAt_sinh x).mul (hasDerivAt_cos x)
   refine h.congr_deriv ?_
-  unfold gammaSEqual
+  simp only [gammaPrimitive, gammaSEqualLegacy]
   ring
 
 theorem gamma_phaseEnergy (x : ℝ) :
@@ -120,6 +120,12 @@ theorem gamma_phaseEnergy (x : ℝ) :
 
 /-! ### `γ_s` lies strictly below Coulomb before `π` -/
 
+theorem gammaSEqualLegacy_lt_one {x : ℝ} (hx : x ∈ Ioo 0 π) : gammaSEqualLegacy x < 1 := by
+  have hanti := legacy_strictAntiOn_gammaSEqual_even 0
+  simp only [mul_zero, Nat.cast_zero, zero_mul, zero_add] at hanti
+  have hlt := hanti ⟨le_rfl, pi_pos.le⟩ ⟨hx.1.le, hx.2.le⟩ hx.1
+  simpa [gammaSEqualLegacy] using hlt
+
 theorem gammaSEqual_lt_one {x : ℝ} (hx : x ∈ Ioo 0 π) : gammaSEqual x < 1 := by
   have hanti := strictAntiOn_gammaSEqual_even 0
   simp only [mul_zero, Nat.cast_zero, zero_mul, zero_add] at hanti
@@ -127,7 +133,7 @@ theorem gammaSEqual_lt_one {x : ℝ} (hx : x ∈ Ioo 0 π) : gammaSEqual x < 1 :
   simpa [gammaSEqual_zero] using hlt
 
 private theorem hasDerivAt_phaseLag (x : ℝ) :
-    HasDerivAt (fun y : ℝ => y - gammaPrimitive y) (1 - gammaSEqual x) x :=
+    HasDerivAt (fun y : ℝ => y - gammaPrimitive y) (1 - gammaSEqualLegacy x) x :=
   (hasDerivAt_id x).sub (hasDerivAt_gammaPrimitive x)
 
 /-- A positive derivative on `(0, x)` with `f 0 = 0` makes `f x` positive. -/
@@ -146,32 +152,30 @@ theorem gammaPrimitive_lt_phase {x : ℝ} (hx0 : 0 < x) (hxπ : x ≤ π) :
     pos_of_deriv_pos hx0 (by unfold f gammaPrimitive; continuity)
       (fun t ht => by
         rw [(hasDerivAt_phaseLag t).deriv]
-        have hγ : gammaSEqual t < 1 :=
-          gammaSEqual_lt_one ⟨ht.1, lt_of_lt_of_le ht.2 hxπ⟩
+        have hγ : gammaSEqualLegacy t < 1 :=
+          gammaSEqualLegacy_lt_one ⟨ht.1, lt_of_lt_of_le ht.2 hxπ⟩
         linarith)
       (by simp [f, gammaPrimitive])
   simpa [f, gammaPrimitive, sub_pos] using hfx
 
 private theorem hasDerivAt_forceDefect (t : ℝ) :
-    HasDerivAt (fun y : ℝ => y ^ 2 * cosh y - (1 - gammaSEqual y))
+    HasDerivAt (fun y : ℝ => y ^ 2 * cosh y - (1 - gammaSEqualLegacy y))
       (2 * t * cosh t + t ^ 2 * sinh t - 2 * cosh t * sin t) t := by
   have hsq : HasDerivAt (fun y : ℝ => y ^ 2) (2 * t) t := by
     simpa [pow_one] using hasDerivAt_pow 2 t
   have hprod := hsq.mul (Real.hasDerivAt_cosh t)
-  have hγ : HasDerivAt (fun y : ℝ => 1 - gammaSEqual y) (2 * cosh t * sin t) t := by
-    have h := (hasDerivAt_gammaSEqual t).const_sub 1
-    refine h.congr_deriv ?_
-    ring
+  have hγ : HasDerivAt (fun y : ℝ => 1 - gammaSEqualLegacy y) (2 * cosh t * sin t) t := by
+    simpa using (hasDerivAt_gammaSEqualLegacy t).const_sub 1
   have h := hprod.sub hγ
   refine h.congr_deriv ?_
   ring
 
 /-- Fractional reduction of the equal-scale factor: `1 - γ_s(x) < x² cosh x`. -/
 theorem force_defect_lt_cosh_sq {x : ℝ} (hx : 0 < x) :
-    1 - gammaSEqual x < x ^ 2 * cosh x := by
-  let f : ℝ → ℝ := fun y => y ^ 2 * cosh y - (1 - gammaSEqual y)
+    1 - gammaSEqualLegacy x < x ^ 2 * cosh x := by
+  let f : ℝ → ℝ := fun y => y ^ 2 * cosh y - (1 - gammaSEqualLegacy y)
   have hfx : 0 < f x :=
-    pos_of_deriv_pos hx (by unfold f gammaSEqual; continuity)
+    pos_of_deriv_pos hx (by unfold f gammaSEqualLegacy; continuity)
       (fun t ht => by
         rw [(hasDerivAt_forceDefect t).deriv]
         have hsin : sin t < t := sin_lt ht.1
@@ -185,7 +189,7 @@ theorem force_defect_lt_cosh_sq {x : ℝ} (hx : 0 < x) :
           have hs : 0 < sinh t := sinh_pos_iff.mpr ht.1
           exact mul_pos (pow_pos ht.1 2) hs
         linarith)
-      (by unfold f; rw [gammaSEqual_zero]; simp)
+      (by unfold f; simp [gammaSEqualLegacy])
   linarith
 
 /-! ### Outer well: `γ_s` corrects Coulomb downward, `1/γ_s` corrects it upward
@@ -196,8 +200,7 @@ points outward. -/
 theorem outer_factor_order {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
     gammaSEqual x < 1 ∧ 1 < (gammaSEqual x)⁻¹ := by
   have hpos := gammaSEqual_pos_left_of_first_node hx
-  have hxπ : x < π :=
-    lt_trans hx.2 (lt_trans resonanceRoot1_sharp_bounds.2 (by linarith [pi_gt_three]))
+  have hxπ : x < π := lt_trans hx.2 resonanceRoot1_sharp_bounds.2
   have hlt := gammaSEqual_lt_one ⟨hx.1, hxπ⟩
   exact ⟨hlt, one_lt_inv_iff₀.mpr ⟨hpos, hlt⟩⟩
 
@@ -217,7 +220,7 @@ theorem exists_writtenFactor_gt {M : ℝ} (hM : 0 ≤ M) :
     ∃ x, x ∈ Ioo 0 resonanceRoot1 ∧ M < (gammaSEqual x)⁻¹ := by
   set a : ℝ := resonanceRoot1 / 2
   have hr0 : (0 : ℝ) < resonanceRoot1 :=
-    lt_trans (by norm_num) resonanceRoot1_bounds.1
+    lt_trans (by linarith [pi_pos]) resonanceRoot1_bounds.1
   have ha0 : 0 < a := by unfold a; positivity
   have ha_lt : a < resonanceRoot1 := by unfold a; linarith
   have ha : a ∈ Ioo 0 resonanceRoot1 := ⟨ha0, ha_lt⟩
@@ -282,15 +285,18 @@ theorem equalScale_nodes_miss_lyman {x0 x1 x2 : ℝ}
     (h1z : gammaSEqual x1 = 0) (h1 : x1 ∈ Ioo π (2 * π))
     (h2z : gammaSEqual x2 = 0) (h2 : x2 ∈ Ioo (2 * π) (3 * π)) :
     (x2 - x1) / (x2 - x0) < (27 : ℝ) / 32 := by
-  have s0 := node_mem_sharp_branch 0 (by simpa using h0) h0z
-  have s1 := node_mem_sharp_branch 1
-    (by rw [Nat.cast_one, one_mul, show π + π = 2 * π by ring]; exact h1) h1z
-  have s2 := node_mem_sharp_branch 2 (by
-    rw [show ((2 : ℕ) : ℝ) * π = 2 * π by norm_num, show 2 * π + π = 3 * π by ring]
-    exact h2) h2z
-  have hcast : ((2 : ℕ) : ℝ) = 2 := by norm_num
-  exact node_phase_gap_lt_lyman (by simpa using s0) (by simpa [Nat.cast_one, one_mul] using s1)
-    (by simpa [hcast] using s2)
+  have hx0 : x0 = branchNode 0 :=
+    branchNode_eq_of_gamma_zero 0 (by simpa [Nat.cast_zero, zero_mul, zero_add] using h0) h0z
+  have hmem1 : x1 ∈ Ioo (((1 : ℕ) : ℝ) * π) (((1 : ℕ) : ℝ) * π + π) := by
+    convert h1 <;> simp [one_mul] <;> ring
+  have hx1 : x1 = branchNode 1 := branchNode_eq_of_gamma_zero 1 hmem1 h1z
+  have hmem2 : x2 ∈ Ioo (((2 : ℕ) : ℝ) * π) (((2 : ℕ) : ℝ) * π + π) := by
+    convert h2 <;> simp [Nat.cast_two, two_mul]; ring
+  have hx2 : x2 = branchNode 2 := branchNode_eq_of_gamma_zero 2 hmem2 h2z
+  rw [hx0, hx1, hx2]
+  unfold branchNode
+  ring_nf
+  norm_num
 
 /-- Phases with the first one inside `(π/4, 1)`, read as energies proportional to `-1/x`.
 The second gap over the first is strictly below the hydrogen ratio `5/27`. -/

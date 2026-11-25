@@ -1355,10 +1355,9 @@ theorem abcLabelPacket_wall_axes :
 theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
     IsAdmissibleContinuous (daggerParams (abcLabelPacket δ)) ↔
       IsAdmissibleContinuous (abcLabelPacket δ) :=
-  ⟨fun h => Logic.isAdmissibleContinuous_dagger _ h,
-    fun h => by
-      simpa [Logic.Amplitude.daggerParams_involutive] using
-        Logic.isAdmissibleContinuous_dagger (daggerParams (abcLabelPacket δ)) h⟩
+  ⟨fun h => by
+      simpa [Logic.daggerParams_involutive] using Logic.isAdmissibleContinuous_dagger h,
+    fun h => Logic.isAdmissibleContinuous_dagger h⟩
 
 theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
     J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧
