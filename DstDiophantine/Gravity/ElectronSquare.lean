@@ -400,7 +400,7 @@ lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
   have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr hcosb.le
   have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
   have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosζ.1]
-  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  have h := gamma_cos_cert_bounds_nonpos (x := x) (E0 := E0) (E1 := E1) (cLo := -cosHi a b) (cHi := -cosLo b) hE0 hE hE1 hClo hChi hcHi
   dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
   exact h
 
@@ -415,7 +415,7 @@ lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
   have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr hcosb.le
   have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
   have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosη.1]
-  have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
+  have h := gamma_cos_cert_bounds_nonpos (x := x) (E0 := E0) (E1 := E1) (cLo := -cosHi a b) (cHi := -cosLo b) hE0 hE hE1 hClo hChi hcHi
   dsimp only [gammaCosLower, gammaCosUpper] at h ⊢
   exact h
 
