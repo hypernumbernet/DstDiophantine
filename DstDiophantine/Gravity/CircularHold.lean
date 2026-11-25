@@ -380,13 +380,9 @@ noncomputable def transversePureDual : TorsionParams where
 theorem transversePureDual_admissible_legacy :
     IsAdmissibleContinuousLegacy transversePureDual := by
   intro a
-  fin_cases a
-  · simp [transversePureDual]
-    exact ⟨le_rfl, by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩
-  · simp [transversePureDual]
-    exact ⟨le_rfl, by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩
-  · simp [transversePureDual]
-    exact ⟨le_rfl, le_rfl, le_rfl⟩
+  fin_cases a <;> simp only [transversePureDual, le_rfl] <;>
+    refine ⟨trivial, trivial, ?_⟩
+  all_goals linarith [Real.pi_pos]
 
 theorem transversePureDual_admissible :
     IsAdmissibleContinuous transversePureDual :=
