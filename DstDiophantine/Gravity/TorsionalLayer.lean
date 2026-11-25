@@ -394,10 +394,11 @@ theorem gammaSEqual_pos_before_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   have harg : 2 * (k : ℝ) * π + t = ((2 * k : ℕ) : ℝ) * π + t := by push_cast; ring
   rw [harg, cos_nat_mul_pi_add (2 * k) t]
   rw [show (-1 : ℝ) ^ (2 * k) = 1 from by simp [Nat.two_mul, pow_mul, neg_one_pow_two], one_mul]
-  by_cases htEq : t = 0
-  · rw [htEq]; simp [cos_zero]; exact cosh_pos _
-  · have htpos : 0 < t := by linarith [htnn, htEq]
-    exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo ⟨htpos, ht2⟩)
+  by_cases ht0 : t = 0
+  · rw [ht0]; simp [cos_zero]; exact cosh_pos _
+  · have htpos : 0 < t := lt_of_le_of_ne htnn (Ne.symm ht0)
+    have htIoo : t ∈ Set.Ioo (0 : ℝ) (π / 2) := ⟨htpos, ht2⟩
+    exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo htIoo)
 
 theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
     (hxlo : branchNode n < x) (hxhi : x < (n : ℝ) * π + π) : gammaSEqual x < 0 := by
@@ -410,7 +411,8 @@ theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   have harg : 2 * (k : ℝ) * π + t = ((2 * k : ℕ) : ℝ) * π + t := by push_cast; ring
   rw [harg, cos_nat_mul_pi_add (2 * k) t]
   rw [show (-1 : ℝ) ^ (2 * k) = 1 from by simp [Nat.two_mul, pow_mul, neg_one_pow_two], one_mul]
-  have hcos : cos t < 0 := cos_neg_of_pi_div_two_lt_of_lt ht1 htπ
+  have hcos : cos t < 0 :=
+    Real.cos_neg_of_pi_div_two_lt_of_lt ht1 (lt_of_lt_of_le htπ (by linarith [Real.pi_pos]))
   exact mul_neg_of_pos_of_neg (cosh_pos _) hcos
 
 theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :

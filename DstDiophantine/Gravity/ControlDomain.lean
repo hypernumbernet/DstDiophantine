@@ -227,7 +227,7 @@ private theorem four_K_mass_le_three_K_sq_add_sum_sq_continuous {p : TorsionPara
       2 * mass p := by
     simpa [Fin.sum_univ_three] using unsignedSum_eq_two_mass p
   calc 4 * Real.pi ^ 2 * mass p
-      _ = 2 * Real.pi ^ 2 * (2 * mass p) := by ring
+      = 2 * Real.pi ^ 2 * (2 * mass p) := by ring
     _ ≤ 3 * Real.pi ^ 4 +
           (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) := by
         simpa [← hU] using hsum

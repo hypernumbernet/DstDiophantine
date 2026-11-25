@@ -21,10 +21,7 @@ abbrev zeroTorsion : TorsionParams := zeroParams
 theorem isAdmissibleContinuous_zeroTorsion :
     IsAdmissibleContinuous zeroTorsion := by
   intro a
-  refine ⟨by simp only [zeroTorsion, zeroParams, le_refl],
-    by simp only [zeroTorsion, zeroParams, le_refl], ?_⟩
-  simp only [zeroTorsion, zeroParams, add_zero]
-  exact div_nonneg (Real.pi_pos.le) (by norm_num)
+  simp [zeroTorsion, zeroParams, Admissible.IsAdmissibleContinuous, le_rfl, le_refl]
 
 theorem motor_of_pure_translation (p : TransParams) :
     motor ⟨zeroTorsion, p⟩ = expTrans p := by

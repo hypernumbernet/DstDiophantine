@@ -270,10 +270,11 @@ theorem gapChainHeight_admissible_le_one {S : ℝ}
     gapChainHeight S ≤ 1 := by
   rw [gapChainHeight_eq]
   have hθ := (isAdmissibleContinuousLegacy_pureBoost_iff S).mp hadm
+  have hcoef : 0 ≤ 4 / (3 * Real.pi ^ 2) := by positivity
+  have hS : |S| ≤ Real.pi / 2 := by rwa [abs_of_nonneg hθ.1]
   calc (4 / (3 * Real.pi ^ 2)) * S ^ 2
-      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 := by
-        gcongr
-        exact pow_le_pow_left₀ hθ.1 hθ.2 (by norm_num : (0 : ℝ) < 2)
+      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 :=
+        mul_le_mul_of_nonneg_left (sq_le_sq hS hS) hcoef
     _ = 1 / 3 := by ring
     _ ≤ 1 := by norm_num
 
@@ -299,7 +300,9 @@ theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
         have harg : (4 : ℝ) ≤ (2 * (k + 2)) := by exact_mod_cast (show 4 ≤ 2 * (k + 2) by omega)
         have hlog := Real.log_le_log (by norm_num) harg
         have hθgt : Real.pi / 2 < 2 * Real.log ((2 * (k + 2)) : ℝ) := by
-          have h42 : Real.pi / 2 < 4 * Real.log 2 := by simpa [two_mul] using pi_div_four_lt_two_log_two
+          have h42 : Real.pi / 2 < 4 * Real.log 2 := by
+            have := pi_div_four_lt_two_log_two
+            nlinarith
           have hlog4 : Real.log (4 : ℝ) = 2 * Real.log 2 := by
             rw [show (4 : ℝ) = 2 ^ (2 : ℕ) by norm_num, Real.log_pow]; ring
           calc Real.pi / 2 < 4 * Real.log 2 := h42

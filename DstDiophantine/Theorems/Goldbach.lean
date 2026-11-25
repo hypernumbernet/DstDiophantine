@@ -799,14 +799,14 @@ theorem goldbach_two_two : IsGoldbachPair 2 2 4 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨2, by decide⟩, by decide⟩
 
 theorem goldbach_two_two_in_cone :
-    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (2 : ℝ))) :=
-  (prime_boost_admissible_iff (by decide : Nat.Prime 2)).mpr rfl
+    Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (2 : ℝ))) :=
+  (prime_boost_admissible_legacy_iff (by decide : Nat.Prime 2)).mpr rfl
 
 theorem goldbach_summand_in_cone {p q n : ℕ} (h : IsGoldbachPair p q n)
-    (hadm : Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ)))) :
+    (hadm : Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ)))) :
     p = 2 ∧ q = 2 ∧ n = 4 := by
   obtain ⟨hp, hq, hsum, heven, _⟩ := h
-  have hp2 : p = 2 := (prime_boost_admissible_iff hp).mp hadm
+  have hp2 : p = 2 := (prime_boost_admissible_legacy_iff hp).mp hadm
   subst hp2
   have hqmod : q % 2 = 0 := by
     have hnmod : n % 2 = 0 := Nat.even_iff.mp heven
@@ -818,8 +818,8 @@ theorem goldbach_summand_in_cone {p q n : ℕ} (h : IsGoldbachPair p q n)
   · omega
 
 theorem goldbach_pair_outside_cone {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 6 ≤ n) :
-    ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
-      ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (q : ℝ))) := by
+    ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (q : ℝ))) := by
   refine ⟨?_, ?_⟩
   · intro hadm
     have := goldbach_summand_in_cone h hadm
@@ -832,14 +832,14 @@ theorem goldbach_three_three : IsGoldbachPair 3 3 6 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨3, by decide⟩, by decide⟩
 
 theorem goldbach_three_in_shell :
-    ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) ∧
+    ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (3 : ℝ))) ∧
       collatzHeight 3 (by decide : (3 : ℕ) ≠ 0) < 1 :=
   (prime_shell_iff (by decide : Nat.Prime 3)).mpr rfl
 
 theorem goldbach_both_shell {p q n : ℕ} (h : IsGoldbachPair p q n)
-    (hp : ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
+    (hp : ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
       collatzHeight p (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.1)) < 1)
-    (hq : ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (q : ℝ))) ∧
+    (hq : ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (q : ℝ))) ∧
       collatzHeight q (Nat.pos_iff_ne_zero.mp (Nat.Prime.pos h.2.1)) < 1) :
     p = 3 ∧ q = 3 ∧ n = 6 := by
   have hp3 : p = 3 := (prime_shell_iff h.1).mp hp
@@ -856,13 +856,13 @@ theorem goldbach_max_ge_five {p q n : ℕ} (h : IsGoldbachPair p q n) (hn : 8 �
   have hpge : 3 ≤ p := by
     have hne : p ≠ 2 := by
       intro hp2
-      exact hout.1 ((prime_boost_admissible_iff hp).mpr hp2)
+      exact hout.1 ((prime_boost_admissible_legacy_iff hp).mpr hp2)
     have := Nat.Prime.two_le hp
     omega
   have hqge : 3 ≤ q := by
     have hne : q ≠ 2 := by
       intro hq2
-      exact hout.2 ((prime_boost_admissible_iff hq).mpr hq2)
+      exact hout.2 ((prime_boost_admissible_legacy_iff hq).mpr hq2)
     have := Nat.Prime.two_le hq
     omega
   by_contra hlt
@@ -892,7 +892,7 @@ theorem goldbach_larger_summand_height {p q n : ℕ} (h : IsGoldbachPair p q n) 
 def GoldbachAdmissibleBridge : Prop :=
   ∀ n : ℕ, Even n → 4 ≤ n →
     (¬ ∃ p q, IsGoldbachPair p q n) →
-      IsAdmissibleContinuous (pureBoost (2 * Real.log n))
+      Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log n))
 
 theorem goldbach_conjecture_of_bridge (hbridge : GoldbachAdmissibleBridge) :
     ∀ n : ℕ, Even n → 4 ≤ n → ∃ p q, IsGoldbachPair p q n := by
@@ -900,12 +900,17 @@ theorem goldbach_conjecture_of_bridge (hbridge : GoldbachAdmissibleBridge) :
   by_contra hnone
   have hadm := hbridge n he hn4 hnone
   have hgt := goldbachTargetHeight_gt_one_of_four_le hn4
-  have hbound := torsion_bound_continuous _ hadm
-  unfold goldbachTargetHeight integerHeight torsionHeight at hgt
-  have hparams : pureBoost (2 * Real.log (Int.natAbs (n : ℤ))) =
-      pureBoost (2 * Real.log n) := by simp
-  rw [hparams] at hgt
-  exact (not_le_of_gt hgt) hbound
+  have hle := (isAdmissibleContinuousLegacy_pureBoost_iff _).mp hadm |>.2
+  have harg : (4 : ℝ) ≤ n := by exact_mod_cast hn4
+  have hlog := Real.log_le_log (by norm_num) harg
+  have hθgt : Real.pi / 2 < 2 * Real.log n := by
+    have h42 : Real.pi / 2 < 4 * Real.log 2 := by nlinarith [pi_div_four_lt_two_log_two]
+    have hlog4 : Real.log (4 : ℝ) = 2 * Real.log 2 := by
+      rw [show (4 : ℝ) = 2 ^ (2 : ℕ) by norm_num, Real.log_pow]; ring
+    calc Real.pi / 2 < 4 * Real.log 2 := h42
+      _ = 2 * Real.log 4 := by rw [hlog4]; ring
+      _ ≤ 2 * Real.log n := mul_le_mul_of_nonneg_left hlog (by norm_num)
+  exact not_le_of_gt hθgt hle
 
 theorem goldbachAdmissibleBridge_of_pairs
     (h : ∀ n : ℕ, Even n → 4 ≤ n → ∃ p q, IsGoldbachPair p q n) :

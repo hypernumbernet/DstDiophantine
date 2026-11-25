@@ -94,6 +94,9 @@ def amplifyDiscrete (k : ℕ) (t : DiscreteTorsion N) : DiscreteTorsion N where
 def windingTotal (k : ℕ) (t : DiscreteTorsion N) : ℕ :=
   ∑ a : Fin 3, (windingCoord k (t.n a) + windingCoord k (t.m a))
 
+private theorem two_mul_mul_le_of_le (k v s : ℕ) (hle : v ≤ s) : 2 * (k * v) ≤ 2 * (k * s) :=
+  Nat.mul_le_mul_left 2 (Nat.mul_le_mul_left k hle)
+
 private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
     (h : 2 * k * s ≤ N) (hle : v ≤ s) : k * v < N := by
   rcases Nat.le_total (k * v) N with hKN | hNK
@@ -101,14 +104,12 @@ private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
     · exact hlt
     · exfalso
       have hdouble : 2 * (k * v) ≤ N := by
-        calc 2 * (k * v) = k * v + k * v := by ring
-          _ ≤ k * v + k * s := Nat.add_le_add_left (Nat.mul_le_mul_left k hle) _
-          _ ≤ k * s + k * s :=
-              Nat.add_le_add (Nat.le_refl (k * v)) (Nat.mul_le_mul_left k hle)
+        calc 2 * (k * v) ≤ 2 * (k * s) := two_mul_mul_le_of_le k v s hle
           _ = 2 * k * s := by ring
           _ ≤ N := h
       have h2N : 2 * N ≤ N := by simpa [heq] using hdouble
-      exact Nat.not_le_of_gt (Nat.lt_mul_iff_one_lt_left (NeZero.pos N)).2 h2N
+      have hlt : N < 2 * N := Nat.lt_mul_of_pos_left (by decide : 0 < 2) (NeZero.pos N)
+      exact (hlt.not_le) h2N
   · exfalso
     have hkvs : k * v ≤ k * s := Nat.mul_le_mul_left k hle
     have h2N : 2 * N ≤ N :=
@@ -116,7 +117,8 @@ private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
         _ ≤ 2 * (k * s) := Nat.mul_le_mul_left 2 hkvs
         _ = 2 * k * s := by ring
         _ ≤ N := h
-    exact Nat.not_le_of_gt (Nat.lt_mul_iff_one_lt_left (NeZero.pos N)).2 h2N
+    have hlt : N < 2 * N := Nat.lt_mul_of_pos_left (by decide : 0 < 2) (NeZero.pos N)
+    exact (hlt.not_le) h2N
 
 private theorem four_mul_le_implies_mul_lt (k v N : ℕ) [NeZero N]
     (h : 4 * k * v ≤ N) : k * v < N := by
@@ -147,14 +149,12 @@ theorem admissible_scale_implies_windingTotal_eq_zero (k : ℕ)
   intro a _
   have hn : windingCoord k (t.n a) = 0 := by
     have hbound := hfour a
-    have hle : k * (t.n a).val ≤ k * ((t.n a).val + (t.m a).val) :=
-      Nat.mul_le_mul_left _ (Nat.le_add_right _ _)
+    have hle : (t.n a).val ≤ (t.n a).val + (t.m a).val := Nat.le_add_right _ _
     exact windingCoord_eq_zero_of_lt _ _
       (coord_lt_of_two_mul_sum k (t.n a).val ((t.n a).val + (t.m a).val) N hbound hle)
   have hm : windingCoord k (t.m a) = 0 := by
     have hbound := hfour a
-    have hle : k * (t.m a).val ≤ k * ((t.n a).val + (t.m a).val) :=
-      Nat.mul_le_mul_left _ (Nat.le_add_left _ _)
+    have hle : (t.m a).val ≤ (t.n a).val + (t.m a).val := Nat.le_add_left _ _
     exact windingCoord_eq_zero_of_lt _ _
       (coord_lt_of_two_mul_sum k (t.m a).val ((t.n a).val + (t.m a).val) N hbound hle)
   simp [hn, hm]

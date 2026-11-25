@@ -113,9 +113,9 @@ theorem seedU_exits_is_U : seedU_exits.collapse = .U := by
   exact (ofParams_eq_U_iff seedU_exits.admissible).mpr (by constructor <;> linarith [hJ])
 
 theorem seedU_exits_not_admissible :
-    ¬ IsAdmissibleContinuous (scaleTorsion (4 : ℝ) seedU_exits.params) := by
+    ¬ IsAdmissibleContinuousLegacy (scaleTorsion (4 : ℝ) seedU_exits.params) := by
   intro h
-  have hsum := admissibleContinuous_sum_le _ h (0 : Fin 3)
+  have hsum := (h (0 : Fin 3)).2.2
   dsimp [scaleTorsion, seedU_exits, pureHyperbolicRay, Amplification.scaleTorsion] at hsum
   have hsq : (Real.sqrt (1 / 2)) ^ 2 = 1 / 2 := Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 1 / 2)
   nlinarith [Real.sqrt_nonneg (1 / 2), hsq, Real.pi_pos]
@@ -127,9 +127,10 @@ theorem seedU_exits_unclassified :
     unfold seedU_exits
     rw [JNormalized_pureHyperbolicRay, Real.sq_sqrt (by norm_num)]
     norm_num
-  rw [hJ]
-  dsimp [classify?]
-  simp [abs_of_nonneg (by norm_num : (0 : ℝ) ≤ (8 : ℝ))]
+  rw [hJ, classify?]
+  split_ifs with h
+  · exact absurd h (by norm_num : ¬ |(8 : ℝ)| ≤ 4)
+  · rfl
 
 /-! ### Vacuum vs balanced-massive dynamics -/
 
