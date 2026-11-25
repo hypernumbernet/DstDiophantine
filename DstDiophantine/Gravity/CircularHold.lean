@@ -380,8 +380,15 @@ noncomputable def transversePureDual : TorsionParams where
 theorem transversePureDual_admissible :
     IsAdmissibleContinuous transversePureDual := by
   intro a
-  fin_cases a <;> simp only [transversePureDual] <;>
-    repeat constructor <;> linarith [Real.pi_pos]
+  fin_cases a
+  · simp only [transversePureDual]
+    refine ⟨le_rfl, le_rfl, ?_, ?_⟩
+    all_goals linarith [Real.pi_pos]
+  · simp only [transversePureDual]
+    refine ⟨le_rfl, le_rfl, ?_, ?_⟩
+    all_goals linarith [Real.pi_pos]
+  · simp only [transversePureDual]
+    refine ⟨le_rfl, le_rfl, Real.pi_pos.le, by simp [zero_add]; exact Real.pi_pos.le⟩
 
 theorem circAmp_transverse_extremal :
     circAmp 1 (Real.pi / 4) 1 = Real.pi / 4 := by
