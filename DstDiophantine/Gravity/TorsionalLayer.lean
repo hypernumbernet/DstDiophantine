@@ -246,6 +246,19 @@ theorem continuous_gammaSSignedLegacy (n : ℕ) : Continuous (gammaSSignedLegacy
   unfold gammaSSignedLegacy
   exact continuous_const.mul continuous_gammaSEqualLegacy
 
+theorem strictAntiOn_gammaSSigned (n : ℕ) :
+    StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    (continuous_gammaSSigned n).continuousOn ?_
+  intro x hx
+  rw [interior_Icc] at hx
+  have hs := signed_sin_pos_on_branch n hx
+  have hc := cosh_pos x
+  have hsinh : sinh x * cos x < cosh x * sin x :=
+    sinh_mul_cos_lt_cosh_mul_sin ⟨le_of_lt hx.1, hx.2⟩
+  simp [deriv_gammaSSigned, deriv_gammaSEqual]
+  nlinarith [hs, hc, hsinh]
+
 theorem strictAntiOn_gammaSSignedLegacy (n : ℕ) :
     StrictAntiOn (gammaSSignedLegacy n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
@@ -302,18 +315,29 @@ theorem strictAntiOn_gammaSSigned_zero :
   simp [deriv_gammaSSigned, deriv_gammaSEqual, pow_zero, one_mul]
   exact sinh_cos_sub_lt hx.1 hx.2
 
-theorem strictAntiOn_gammaSEqual_even (k : ℕ) (hk : k = 0 := by decide) :
+theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
     StrictAntiOn gammaSEqual
       (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
-  subst hk
+  have h := strictAntiOn_gammaSSigned (2 * k)
   intro a ha b hb hab
-  have ha' : a ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using ha
-  have hb' : b ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using hb
-  have hlt := strictAntiOn_gammaSSigned_zero ha' hb' hab
-  simpa [gammaSSigned, pow_zero, one_mul, gammaSEqual] using hlt
+  have hlt := h ha hb hab
+  unfold gammaSSigned at hlt
+  rw [pow_mul] at hlt
+  norm_num at hlt
+  exact hlt
 
-/-- Odd-branch monotonicity is proved on `gammaSEqualLegacy` (mixed chart). -/
 theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
+    StrictMonoOn gammaSEqual
+      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
+  have h := strictAntiOn_gammaSSigned (2 * k + 1)
+  intro a ha b hb hab
+  have hlt := h ha hb hab
+  unfold gammaSSigned at hlt
+  rw [show (-1 : ℝ) ^ (2 * k + 1) = -1 by simp [pow_succ, pow_mul]] at hlt
+  linarith
+
+/-- Odd-branch monotonicity on the legacy mixed chart (π-cone version currently under research). -/
+theorem strictMonoOn_gammaSEqualLegacy_odd (k : ℕ) :
     StrictMonoOn gammaSEqualLegacy
       (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) :=
   legacy_strictMonoOn_gammaSEqual_odd k

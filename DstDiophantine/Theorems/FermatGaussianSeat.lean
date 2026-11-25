@@ -417,13 +417,14 @@ theorem isAdmissible_pythagorean_generators {m n : ℤ}
           (odd_leg_ne_zero_of_natAbs_ne hne) (hyp_ne_zero_of_ne hm)).beta 0 = 0 := by
         simp [fermatTorsion, pureRotation1, hboost]
       simp only [fermatTorsion, pureRotation1, hβ0]
-      refine ⟨le_rfl, le_rfl, le_rfl⟩
+      exact ⟨le_rfl, le_rfl, le_rfl⟩
+    · have ha := odd_leg_ne_zero_of_natAbs_ne hne
+      have hπ := fermatAngle_lt_half_pi (m ^ 2 - n ^ 2) (2 * m * n) ha
+      simp only [fermatTorsion, pureRotation1]
+      exact ⟨le_rfl, fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) ha,
+        le_trans (by simpa [add_zero]) hπ.le⟩
     · simp only [fermatTorsion, pureRotation1]
-      refine ⟨le_rfl,
-        fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne),
-        (fermatAngle_lt_half_pi (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne)).le⟩
-    · simp only [fermatTorsion, pureRotation1]
-      refine ⟨le_rfl, le_rfl, le_rfl⟩
+      exact ⟨le_rfl, le_rfl, le_rfl⟩
   exact legacy_admissible_implies_mismatch _ hleg
 
 theorem gaussian_hyp_split_of_exp_ge_five {m n : ℤ} {e : ℕ}

@@ -182,66 +182,59 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
     ring
   linarith
 
-private theorem even_two_mul_local (k : ℕ) : Even (2 * k) := Even.mul_right (by decide) k
-
-private theorem cos_nat_mul_pi_add_local (n : ℕ) (t : ℝ) :
-    cos ((n : ℝ) * π + t) = (-1) ^ n * cos t := by
-  rw [cos_add, cos_nat_mul_pi, sin_nat_mul_pi]
-  ring
-
 private lemma gammaSEqual_neg_on_even_right (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k) < x)
     (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 := by
-  rcases lt_or_eq_of_le hxhi with hlt | heq
-  · exact gammaSEqual_neg_after_branchNode (2 * k)
-      (even_two_mul_local k) hxlo hlt
-  · subst heq
-    have hx : ((2 * k : ℕ) : ℝ) * π + π = ((2 * k + 1 : ℕ) : ℝ) * π := by push_cast; ring
-    rw [hx, gammaSEqual, cos_nat_mul_pi (2 * k + 1), sin_nat_mul_pi]
-    nlinarith [cosh_pos _]
+  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
+  have hnode := (branchNode_spec (2 * k)).1
+  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
+  have hnI : branchNode (2 * k) ∈
+      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictAntiOn_gammaSEqual_even k hnI hxI hxlo
+  rwa [hzero] at hlt
 
 private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
     (hxhi : x < branchNode (2 * k + 1)) : gammaSEqual x < 0 := by
-  set t := x - ((2 * k + 1 : ℕ) : ℝ) * π with htdef
-  have ht0 : 0 ≤ t := by simpa [htdef] using hxlo
-  have htπ : t < π / 2 := by
-    unfold branchNode at hxhi
-    simp only [htdef] at hxhi ⊢
-    linarith
-  rw [show x = ((2 * k + 1 : ℕ) : ℝ) * π + t from by linarith [htdef],
-    gammaSEqual, cos_nat_mul_pi_add_local (2 * k + 1) t]
-  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by simp [pow_succ, pow_mul, neg_one_sq]
-  rw [hpow, neg_one_mul]
-  rcases lt_or_eq_of_le ht0 with htpos | ht0
-  · have hcos := cos_pos_of_mem_Ioo ⟨htpos, htπ⟩
-    nlinarith [cosh_pos x, hcos]
-  · rw [ht0, cos_zero]
-    nlinarith [cosh_pos x]
+  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
+    (branchNode_spec (2 * k + 1)).2
+  have hnode := (branchNode_spec (2 * k + 1)).1
+  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
+  have hnI : branchNode (2 * k + 1) ∈
+      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictMonoOn_gammaSEqual_odd k hxI hnI hxhi
+  rwa [hzero] at hlt
 
 private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k + 1) < x)
     (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqual x := by
-  set t := x - ((2 * k + 1 : ℕ) : ℝ) * π with htdef
-  have ht1 : π / 2 < t := by
-    unfold branchNode at hxlo
-    simp only [htdef] at hxlo ⊢
-    linarith
-  have htπ : t ≤ π := by
-    simp only [htdef] at hxhi ⊢
-    linarith [hxhi]
-  rw [show x = ((2 * k + 1 : ℕ) : ℝ) * π + t from by linarith [htdef],
-    gammaSEqual, cos_nat_mul_pi_add_local (2 * k + 1) t]
-  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by simp [pow_succ, pow_mul, neg_one_sq]
-  rw [hpow, neg_one_mul]
-  have hcos : 0 < -cos t :=
-    neg_pos.mpr (cos_neg_of_pi_div_two_lt_of_lt ht1 (lt_of_le_of_lt htπ (by linarith [pi_pos])))
-  exact mul_pos (cosh_pos _) hcos
+  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
+    (branchNode_spec (2 * k + 1)).2
+  have hnode := (branchNode_spec (2 * k + 1)).1
+  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
+  have hnI : branchNode (2 * k + 1) ∈
+      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictMonoOn_gammaSEqual_odd k hnI hxI hxlo
+  rwa [hzero] at hlt
 
 private lemma gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k : ℕ) : ℝ) * π ≤ x)
-    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x :=
-  gammaSEqual_pos_before_branchNode (2 * k) (even_two_mul_local k) hxlo hxhi
+    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x := by
+  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
+  have hnode := (branchNode_spec (2 * k)).1
+  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
+  have hnI : branchNode (2 * k) ∈
+      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
+    ⟨hnode.1.le, hnode.2.le⟩
+  have hlt := strictAntiOn_gammaSEqual_even k hxI hnI hxhi
+  rwa [hzero] at hlt
 
 theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k)) (branchNode (2 * k + 1))) :

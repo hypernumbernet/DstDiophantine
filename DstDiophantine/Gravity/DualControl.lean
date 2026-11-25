@@ -300,7 +300,10 @@ theorem isAdmissibleContinuousLegacy_zeroDual {p : TorsionParams}
   intro a
   have ha := h a
   simp only [zeroDual]
-  exact ⟨ha.1, le_rfl, ha.2.2⟩
+  refine ⟨ha.1, le_rfl, ?_⟩
+  have hsum : p.alpha a + 0 ≤ p.alpha a + p.beta a :=
+    add_le_add le_rfl ha.2.1
+  simpa [add_zero] using le_trans hsum ha.2.2
 
 theorem isAdmissibleContinuous_zeroDual {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :

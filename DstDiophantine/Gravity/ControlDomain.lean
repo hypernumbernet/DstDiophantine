@@ -771,18 +771,18 @@ private theorem shifted_mass_le_axis_parabola {Jval Mval : ℝ}
 
 theorem controlCeilingLegacy_le_controlCeiling (Jval : ℝ) :
     controlCeilingLegacy Jval ≤ controlCeiling Jval := by
-  unfold controlCeiling controlCeilingLegacy controlEnvelopeNum controlEnvelopeNumLegacy
+  unfold controlCeiling controlCeilingLegacy
   have hπ : 0 < Real.pi ^ 2 := by positivity
-  have hmin :
-      controlEnvelopeNumLegacy Jval ≤ controlEnvelopeNum Jval := by
-    dsimp [controlEnvelopeNum controlEnvelopeNumLegacy]
-    refine le_min (le_trans (min_le_right _ _) (min_le_left _ _)) ?_
-    refine le_min ?_ ?_
-    · nlinarith
-    · nlinarith
+  have hnum : controlEnvelopeNumLegacy Jval ≤ controlEnvelopeNum Jval := by
+    have h4 : controlEnvelopeNumLegacy Jval ≤ 4 * Jval ^ 2 := by
+      unfold controlEnvelopeNumLegacy
+      exact min_le_left _ _
+    exact le_trans h4 (min_le_left _ _)
   have hfrac : controlEnvelopeNumLegacy Jval / Real.pi ^ 2 ≤
       controlEnvelopeNum Jval / Real.pi ^ 2 :=
-    div_le_div_of_nonneg_right hmin (le_of_lt hπ)
+    div_le_div_of_nonneg_right hnum (le_of_lt hπ)
+  have hhead : (5 : ℝ) * Real.pi ^ 2 / 16 ≤ 5 * Real.pi ^ 2 / 4 := by
+    linarith [Real.pi_pos]
   linarith
 
 
