@@ -271,12 +271,11 @@ theorem gapChainHeight_admissible_le_one {S : ℝ}
   rw [gapChainHeight_eq]
   have hθ := (isAdmissibleContinuousLegacy_pureBoost_iff S).mp hadm
   have hcoef : 0 ≤ 4 / (3 * Real.pi ^ 2) := by positivity
+  have hSq : S ^ 2 ≤ (Real.pi / 2) ^ 2 := by nlinarith [sq_nonneg S, hθ.1, hθ.2, Real.pi_pos]
   calc (4 / (3 * Real.pi ^ 2)) * S ^ 2
-      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 := by
-        gcongr
-        nlinarith [sq_nonneg S, hθ.1, hθ.2, Real.pi_pos]
+      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 := mul_le_mul_of_nonneg_left hSq hcoef
     _ = 1 / 3 := by field_simp [hcoef] <;> ring
-    _ ≤ 1 := by norm_num
+    _ ≤ (1 : ℝ) := by norm_num
 
 theorem polignac_admissible_witness_empty :
     ¬ ∃ S : ℝ, Admissible.IsAdmissibleContinuousLegacy (pureBoost S) ∧ 1 < gapChainHeight S := by
@@ -310,8 +309,9 @@ theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
             _ ≤ 2 * Real.log ((2 * (k + 2)) : ℝ) := mul_le_mul_of_nonneg_left hlog (by norm_num)
         exact not_le_of_gt hθgt hle
   · rintro rfl
-    exact (isAdmissibleContinuousLegacy_pureBoost_iff _).mpr
-      ⟨by norm_num, le_of_lt two_log_two_lt_pi_div_two⟩
+    refine (isAdmissibleContinuousLegacy_pureBoost_iff (2 * Real.log 2)).mpr ⟨?_, le_of_lt two_log_two_lt_pi_div_two⟩
+    have : 0 < (2 : ℝ) := by norm_num
+    exact mul_nonneg this (Real.log_pos.mpr (by norm_num : (1 : ℝ) < 2))
 
 theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
     1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=

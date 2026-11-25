@@ -551,12 +551,8 @@ theorem exists_admissible_electric_attraction {p : TorsionParams}
       · simpa [superpose_beta, electricFaraday] using (hp b).2.1
       · exact (hp b).2.2.1
       · have hsum : p.alpha b + ε + p.beta b = Real.pi / 2 := by
-          have hεb : ε = Real.pi / 2 - p.alpha b - p.beta b := by simp [ε, hb]
-          linarith
-        have : (superpose p (electricFaraday E)).alpha b +
-            (superpose p (electricFaraday E)).beta b = p.alpha b + ε + p.beta b := by
-          simp [superpose_alpha, superpose_beta, electricFaraday, E, hb]
-        linarith
+          simp [ε, hb]; linarith [hi]
+        simpa [superpose_alpha, superpose_beta, electricFaraday, E, hb, add_assoc] using hsum
     · have hEz : E b = 0 := by simp [E, hb]
       refine ⟨?_, ?_, ?_, ?_⟩
       · simpa [superpose_alpha, electricFaraday, hEz] using (hp b).1
