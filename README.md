@@ -160,7 +160,7 @@ window, so winding does not close it.
 | Two-equal cubes, and a shared exponent $n \ge 4$ whose third exponent is a multiple of $3$ | `darmonMerelCube` |
 | Even-sum slice at hypotenuse exponent $5$, and a shared exponent whose third exponent is a multiple of $5$ | `fermatSignatureNN5` |
 | Gaussian leaf $\alpha^3 + 2\beta^3 = \gamma^3$ | `eulerAffineCubeAddTwo` |
-| Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$ and every even $n \ge 4$, and every cube-pair shape of that form | `sumTwoCubesNotPerfectPower` |
+| Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$, every even $n \ge 4$, and every multiple of such an exponent, together with every cube-pair shape of that form. $(3,3,10^9+1)$ is this closure because $7$ divides the hypotenuse. A prime exponent past $10^9$ is not | `sumTwoCubesNotPerfectPower` |
 | Signature $(3,4,5)$ in every order | `siksekStoll345` |
 | A repeated five beside $7$ or $19$, and two exponents divisible by $5$ with the third divisible by $7$ or $19$ | `sumTwoFifthsNotSeventhOrNineteenth` |
 | Two exponents divisible by $5$, the third by $11$, $13$, or $17$ | `sumTwoFifthsNotStollPrime`. Stoll's chapter removes the GRH hypothesis for these three primes. Primes $p \ge 23$ stay conditional there and are not axioms. $(7,7,11)$ is not this statement |

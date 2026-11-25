@@ -644,7 +644,7 @@ example (hOut : BealTwoEqualOddOutsideRepeatedFifthResidual) :
 example :
     classifyBealExponents 6 6 7 = .T ∧ classifyBealExponents 9 9 4 = .T ∧
       classifyBealExponents 3 6 5 = .T ∧ classifyBealExponents 5 6 6 = .T ∧
-        classifyBealExponents 9 9 1000000001 = .U :=
+        classifyBealExponents 9 9 1000000001 = .T :=
   ⟨classifyBealExponents_six_six_seven, classifyBealExponents_nine_nine_four,
     classifyBealExponents_three_six_five, classifyBealExponents_five_six_six,
     classifyBealExponents_nine_nine_past_bound⟩

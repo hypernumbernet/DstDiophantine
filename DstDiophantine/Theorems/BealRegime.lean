@@ -149,10 +149,12 @@ theorem classifyBealExponents_three_three_seven :
 theorem classifyBealExponents_three_three_eight :
     classifyBealExponents 3 3 8 = .T := by native_decide
 
-/-- An even companion past `10^9` stays closed; the next odd companion does not. -/
+/-- An even companion past `10^9` stays closed. The next odd integer is closed as well:
+`7 ∣ 10^9 + 1`, so the hypotenuse is a `TwoCubeMultiple`. A prime past `10^9` is not
+(`not_cubePair_three_three_large_prime`). -/
 theorem classifyBealExponents_three_three_past_bound :
     classifyBealExponents 3 3 1000000002 = .T ∧
-      classifyBealExponents 3 3 1000000001 = .U := by
+      classifyBealExponents 3 3 1000000001 = .T := by
   native_decide
 
 theorem classifyBealExponents_three_four_five :
@@ -228,8 +230,10 @@ theorem classifyBealExponents_shared_exp :
             classifyBealExponents 22 22 7 = .T := by
   native_decide
 
+/-- `(9,9,10^9+1)` is a cube pair: both exponents are divisible by `3`, and `7` divides
+the hypotenuse. -/
 theorem classifyBealExponents_nine_nine_past_bound :
-    classifyBealExponents 9 9 1000000001 = .U := by native_decide
+    classifyBealExponents 9 9 1000000001 = .T := by native_decide
 
 theorem classifyBealExponents_two_three_three :
     classifyBealExponents 2 3 3 = .F := by native_decide
