@@ -9,7 +9,7 @@ in both directions, mathematics and physics.
 
 Unconditional Fermat, Beal, abc, the Riemann Hypothesis, Goldbach,
 Polignac, and Collatz remain open. Open work is named as a residual or a
-`*Bridge` proposition. Nine classical theorems that mathlib does not
+`*Bridge` proposition. Ten classical theorems that mathlib does not
 supply at this pin are explicit `axiom`s. The main library has no `sorry`.
 Open targets that still use `sorry` live in [`Goals/`](Goals/), which the
 main library does not import.
@@ -162,16 +162,17 @@ window, so winding does not close it.
 | Gaussian leaf $\alpha^3 + 2\beta^3 = \gamma^3$ | `eulerAffineCubeAddTwo` |
 | Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$ and every even $n \ge 4$, and every cube-pair shape of that form | `sumTwoCubesNotPerfectPower` |
 | Signature $(3,4,5)$ in every order | `siksekStoll345` |
-| A repeated five beside $7$ or $19$, and two exponents divisible by $5$ with the third divisible by $7$ or $19$ | `sumTwoFifthsNotSeventhOrNineteenth`. The companions $11$ and $13$ are conditional on the generalised Riemann hypothesis in the source and are not axioms here |
+| A repeated five beside $7$ or $19$, and two exponents divisible by $5$ with the third divisible by $7$ or $19$ | `sumTwoFifthsNotSeventhOrNineteenth` |
+| Two exponents divisible by $5$, the third by $11$, $13$, or $17$ | `sumTwoFifthsNotStollPrime`. Stoll's chapter removes the GRH hypothesis for these three primes. Primes $p \ge 23$ stay conditional there and are not axioms. $(7,7,11)$ is not this statement |
 | Even two-equal sum whose common exponent is divisible by $4$, hypotenuse at least $4$ | `bennettEllenbergNg` |
 | Pythagorean slice in which $4$ divides at least two reduced exponents | Internal, from coprime Pythagorean triples |
 
 | Live leaf | Still open |
 | --- | --- |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Odd Gaussian exponent $e \ge 5$. The case $e = 3$ is the Euler leaf |
-| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside the closed shapes. $(22,22,7)$ and $(10,10,11)$ remain |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside the closed shapes. $(22,22,7)$ remains. $(10,10,11)$ is a fifth-power pair |
 | `BealTwoEqualEvenDiffOutsideFifthPairResidual` | Even-difference two-equal body outside the closed shapes |
-| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal body outside the closed shapes. $(5,5,11)$ remains |
+| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal body outside the closed shapes. $(5,5,23)$ and $(7,7,11)$ remain. $(5,5,11)$ is a fifth-power pair |
 | `BealAllDistinctOutsideFifthPairResidual` | Pairwise distinct exponents outside the closed shapes. $(3,5,7)$ remains |
 | `BealPythagoreanUnequalOddOutsideFifthPairResidual` | Exponent gcd $2$, at least two reduced exponents odd, outside the closed shapes |
 
@@ -192,6 +193,7 @@ route.
 | `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^n$ in the range above |
 | `siksekStoll345` | [`SiksekStoll.lean`](DstDiophantine/Theorems/SiksekStoll.lean) | Every coprime integer solution of $x^3 + y^4 + z^5 = 0$ has a vanishing coordinate |
 | `sumTwoFifthsNotSeventhOrNineteenth` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 7$ or $l = 19$ |
+| `sumTwoFifthsNotStollPrime` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 11$, $13$, or $17$ |
 | `bennettEllenbergNg` | [`BennettEllenbergNg.lean`](DstDiophantine/Theorems/BennettEllenbergNg.lean) | No coprime nonzero solution of $A^4 + B^2 = C^n$ for $n \ge 4$ |
 
 ### Finite certificates
@@ -353,7 +355,7 @@ DstDiophantine/
   Algebra/                     PGA, Cl(3,1), Cl(9,1), motors, J, discrete torus
   Embedding/                   Integer rotors, translators, Fermat motor, height
   Framework/                   Power sums, lattice, descent, amplification
-  Theorems/                    Problem layers, nine axioms, finite certificates
+  Theorems/                    Problem layers, ten axioms, finite certificates
   FoundationRegression.lean    CI-facing examples, including the Beal atlas
   Gravity.lean                 Gravity barrel and module index
   Gravity/                     Chart, scales, dynamics, force, Faraday, control
@@ -422,7 +424,7 @@ Continuous integration
 ([`.github/workflows/lean_action_ci.yml`](.github/workflows/lean_action_ci.yml))
 builds the main library with
 [lean-action](https://github.com/leanprover/lean-action), rejects `sorry`
-and any axiom outside the nine names above
+and any axiom outside the ten names above
 ([`scripts/check_main_library.sh`](scripts/check_main_library.sh)), then
 builds `Goals`. A toolchain change on `main` or `master` is tagged by
 [`.github/workflows/create-release.yml`](.github/workflows/create-release.yml).

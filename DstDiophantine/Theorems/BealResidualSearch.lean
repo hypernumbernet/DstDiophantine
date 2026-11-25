@@ -191,7 +191,8 @@ instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   unfold IsClosedShapeExponents
   infer_instance
 
-/-- Open after closed shapes. `(22,22,7)`, `(5,5,11)`, and `(3,5,7)` stay open. -/
+/-- Open after closed shapes. `(22,22,7)`, `(5,5,23)`, and `(3,5,7)` stay open.
+`(5,5,11)` is a fifth-power pair. -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
   let d := bealExpGcd x y z
   decide
