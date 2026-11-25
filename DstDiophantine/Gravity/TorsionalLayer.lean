@@ -388,7 +388,7 @@ theorem gammaSEqual_pos_before_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   unfold branchNode at hxhi
   set t := x - (2 * (k : ℕ) : ℝ) * π with htdef
   have ht2 : t < π / 2 := by simp [htdef] at hxhi ⊢; linarith [hxhi]
-  have ht0 : 0 ≤ t := by simp [htdef] at hxlo ⊢; linarith [hxlo]
+  have htnn : 0 ≤ t := by simp [htdef] at hxlo ⊢; linarith [hxlo]
   have hx' : x = (2 * (k : ℕ) : ℝ) * π + t := by linarith [htdef]
   rw [hx', gammaSEqual]
   have harg : 2 * (k : ℝ) * π + t = ((2 * k : ℕ) : ℝ) * π + t := by push_cast; ring
@@ -396,7 +396,7 @@ theorem gammaSEqual_pos_before_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   rw [show (-1 : ℝ) ^ (2 * k) = 1 from by simp [Nat.two_mul, pow_mul, neg_one_pow_two], one_mul]
   by_cases htEq : t = 0
   · rw [htEq]; simp [cos_zero]; exact cosh_pos _
-  · have htpos : 0 < t := lt_of_le_of_ne ht0 htEq
+  · have htpos : 0 < t := by linarith [htnn, htEq]
     exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo ⟨htpos, ht2⟩)
 
 theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}

@@ -85,9 +85,9 @@ theorem aligned_is_neutral {p : TorsionParams} (h : p.beta = p.alpha) :
 
 theorem aligned_mass_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
-    IsGravNeutral p ∧ lagSq p = 0 ∧ mass p ≤ 3 * Real.pi ^ 2 / 16 :=
+    IsGravNeutral p ∧ lagSq p = 0 ∧ mass p ≤ 3 * Real.pi ^ 2 / 2 :=
   ⟨(aligned_is_neutral heq).1, (aligned_is_neutral heq).2,
-    mass_le_equalScale_ceiling h heq⟩
+    mass_le_equalScale_ceiling_continuous h heq⟩
 
 /-! ### Neutral lag budget -/
 
@@ -229,7 +229,7 @@ theorem abs_lag_le_axis_sum {p : TorsionParams}
 
 theorem lagSq_le_of_neutral {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hn : IsGravNeutral p) :
-    lagSq p ≤ Real.pi ^ 2 / 2 := by
+    lagSq p ≤ 2 * Real.pi ^ 2 := by
   have hJ : J p = 0 := hn
   have hbal :
       (p.alpha 0 + p.beta 0) * (p.alpha 0 - p.beta 0) +
@@ -240,24 +240,24 @@ theorem lagSq_le_of_neutral {p : TorsionParams}
     linarith
   have hsq :=
     lag_sq_le_of_balanced
-      (k := Real.pi / 2)
+      (k := Real.pi)
       (s0 := p.alpha 0 + p.beta 0) (s1 := p.alpha 1 + p.beta 1)
       (s2 := p.alpha 2 + p.beta 2)
       (d0 := p.alpha 0 - p.beta 0) (d1 := p.alpha 1 - p.beta 1)
       (d2 := p.alpha 2 - p.beta 2)
-      (h 0).2.2 (h 1).2.2 (h 2).2.2
+      (h 0).2.2.2 (h 1).2.2.2 (h 2).2.2.2
       (add_nonneg (h 0).1 (h 0).2.1)
       (add_nonneg (h 1).1 (h 1).2.1)
       (add_nonneg (h 2).1 (h 2).2.1)
       (abs_lag_le_axis_sum h 0) (abs_lag_le_axis_sum h 1) (abs_lag_le_axis_sum h 2)
       hbal
   rw [lagSq, Fin.sum_univ_three]
-  have htwo : 2 * (Real.pi / 2) ^ 2 = Real.pi ^ 2 / 2 := by ring
+  have htwo : 2 * Real.pi ^ 2 = 2 * Real.pi ^ 2 := by ring
   linarith
 
 theorem stiffness_le_of_neutral {m : ℝ} {p : TorsionParams}
     (hm : 0 ≤ m) (h : IsAdmissibleContinuous p) (hn : IsGravNeutral p) :
-    stiffnessPotential m p ≤ m * Real.pi ^ 2 / 4 := by
+    stiffnessPotential m p ≤ 2 * m * Real.pi ^ 2 := by
   rw [stiffnessPotential_eq_lag]
   have hlag := lagSq_le_of_neutral h hn
   nlinarith

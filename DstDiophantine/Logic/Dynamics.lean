@@ -127,8 +127,9 @@ theorem seedU_exits_unclassified :
     unfold seedU_exits
     rw [JNormalized_pureHyperbolicRay, Real.sq_sqrt (by norm_num)]
     norm_num
-  have hgt : |(8 : ℝ)| ≤ 4 ↔ False := by norm_num
-  simpa [hJ, hgt] using rfl
+  rw [hJ]
+  dsimp [classify?]
+  simp [abs_of_nonneg (by norm_num : (0 : ℝ) ≤ (8 : ℝ))]
 
 /-! ### Vacuum vs balanced-massive dynamics -/
 

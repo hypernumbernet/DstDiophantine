@@ -246,6 +246,27 @@ theorem exists_admissible_max_mass_full_repulsion :
     simp only [Fin.sum_univ_three]
     ring
 
+private theorem mass_le_equalScale_ceiling_continuous_aux {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
+    mass p ≤ 3 * Real.pi ^ 2 / 4 := by
+  have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ Real.pi ^ 2 / 2 := by
+    intro a
+    have hα := (h a).1
+    have hsum := (h a).2.2.2
+    have hβ : p.beta a = p.alpha a := congrFun heq a
+    rw [hβ] at hsum ⊢
+    nlinarith
+  rw [mass_coef]
+  simp only [Fin.sum_univ_three]
+  linarith [haxis 0, haxis 1, haxis 2]
+
+theorem mass_le_equalScale_ceiling_continuous {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
+    mass p ≤ 3 * Real.pi ^ 2 / 2 := by
+  have hle : (3 : ℝ) * Real.pi ^ 2 / 4 ≤ 3 * Real.pi ^ 2 / 2 := by
+    nlinarith [Real.pi_pos]
+  exact le_trans (mass_le_equalScale_ceiling_continuous_aux h heq) hle
+
 theorem mass_le_equalScale_ceiling {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) (heq : p.beta = p.alpha) :
     mass p ≤ 3 * Real.pi ^ 2 / 16 := by
@@ -293,12 +314,7 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
     have hα := (h b).1
     have hβ := (h b).2.1
     have hsum := (h b).2.2
-    have h1 : p.alpha b ^ 2 + p.beta b ^ 2 ≤ (p.alpha b + p.beta b) ^ 2 :=
-      by linarith [sq_nonneg (p.alpha b - p.beta b)]
-    have h2 : (p.alpha b + p.beta b) ^ 2 ≤ (Real.pi / 2) ^ 2 := by
-      gcongr
-      exact hsum
-    linarith [h1, h2]
+    nlinarith [sq_nonneg (p.alpha b - p.beta b), hsum, hα, hβ, Real.pi_pos]
   have hsum3 : p.alpha 0 ^ 2 + p.beta 0 ^ 2 + (p.alpha 1 ^ 2 + p.beta 1 ^ 2) +
       (p.alpha 2 ^ 2 + p.beta 2 ^ 2) = 3 * Real.pi ^ 2 / 4 := by
     have := hM

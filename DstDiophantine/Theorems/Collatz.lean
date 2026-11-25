@@ -1055,10 +1055,11 @@ theorem prime_boost_admissible_legacy_iff {p : ℕ} (hp : Nat.Prime p) :
     have hp2 : p = 2 := by
       by_contra hne
       have hpge : 3 ≤ p := by
-        rcases Nat.Prime.eq_two_or_odd hp with rfl | _
-        · exact (hne rfl).elim
-        · have htw : 2 ≠ p := hne
-          omega
+        have htw : 2 ≤ p := Nat.Prime.two_le hp
+        rcases lt_trichotomy p 2 with hlt | heq | hgt
+        · linarith [htw]
+        · exact (hne heq).elim
+        · exact Nat.succ_le_of_lt hgt
       have hθ : Real.pi / 2 < 2 * Real.log (p : ℝ) := by
         have hpr : (3 : ℝ) ≤ p := by exact_mod_cast hpge
         have hlog := Real.log_le_log (by norm_num) hpr

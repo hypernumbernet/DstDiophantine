@@ -96,7 +96,27 @@ def windingTotal (k : ℕ) (t : DiscreteTorsion N) : ℕ :=
 
 private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
     (h : 2 * k * s ≤ N) (hle : v ≤ s) : k * v < N := by
-  omega
+  rcases Nat.le_total (k * v) N with hKN | hNK
+  · rcases Nat.lt_or_eq_of_le hKN with hlt | heq
+    · exact hlt
+    · exfalso
+      have hdouble : 2 * (k * v) ≤ N := by
+        calc 2 * (k * v) = k * v + k * v := by ring
+          _ ≤ k * v + k * s := Nat.add_le_add_left (Nat.mul_le_mul_left k hle) _
+          _ ≤ k * s + k * s :=
+              Nat.add_le_add (Nat.le_refl (k * v)) (Nat.mul_le_mul_left k hle)
+          _ = 2 * k * s := by ring
+          _ ≤ N := h
+      have h2N : 2 * N ≤ N := by simpa [heq] using hdouble
+      exact Nat.not_le_of_gt (Nat.lt_mul_iff_one_lt_left (NeZero.pos N)).2 h2N
+  · exfalso
+    have hkvs : k * v ≤ k * s := Nat.mul_le_mul_left k hle
+    have h2N : 2 * N ≤ N :=
+      calc 2 * N ≤ 2 * (k * v) := Nat.mul_le_mul_left 2 hNK
+        _ ≤ 2 * (k * s) := Nat.mul_le_mul_left 2 hkvs
+        _ = 2 * k * s := by ring
+        _ ≤ N := h
+    exact Nat.not_le_of_gt (Nat.lt_mul_iff_one_lt_left (NeZero.pos N)).2 h2N
 
 private theorem four_mul_le_implies_mul_lt (k v N : ℕ) [NeZero N]
     (h : 4 * k * v ≤ N) : k * v < N := by
@@ -126,21 +146,17 @@ theorem admissible_scale_implies_windingTotal_eq_zero (k : ℕ)
   apply Finset.sum_eq_zero
   intro a _
   have hn : windingCoord k (t.n a) = 0 := by
-    apply windingCoord_eq_zero_of_lt
     have hbound := hfour a
     have hle : k * (t.n a).val ≤ k * ((t.n a).val + (t.m a).val) :=
       Nat.mul_le_mul_left _ (Nat.le_add_right _ _)
-    have hboundNat : 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by exact_mod_cast hfour a
-    exact windingCoord_eq_zero_of_lt
-      (coord_lt_of_two_mul_sum k (t.n a).val ((t.n a).val + (t.m a).val) N hboundNat hle)
+    exact windingCoord_eq_zero_of_lt _ _
+      (coord_lt_of_two_mul_sum k (t.n a).val ((t.n a).val + (t.m a).val) N hbound hle)
   have hm : windingCoord k (t.m a) = 0 := by
-    apply windingCoord_eq_zero_of_lt
     have hbound := hfour a
     have hle : k * (t.m a).val ≤ k * ((t.n a).val + (t.m a).val) :=
       Nat.mul_le_mul_left _ (Nat.le_add_left _ _)
-    have hboundNat : 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by exact_mod_cast hfour a
-    exact windingCoord_eq_zero_of_lt
-      (coord_lt_of_two_mul_sum k (t.m a).val ((t.n a).val + (t.m a).val) N hboundNat hle)
+    exact windingCoord_eq_zero_of_lt _ _
+      (coord_lt_of_two_mul_sum k (t.m a).val ((t.n a).val + (t.m a).val) N hbound hle)
   simp [hn, hm]
 theorem windingTotal_ne_zero_implies_not_admissible_scale (k : ℕ)
     (t : DiscreteTorsion N) (hw : windingTotal k t ≠ 0) :

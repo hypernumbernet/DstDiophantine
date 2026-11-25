@@ -259,36 +259,56 @@ theorem polignac_smaller_height {p k : ℕ} (h : IsPolignacPair p k) (hp : 5 ≤
   collatzHeight_ge_four_gt_one (by omega)
 
 theorem twin_three_five_phase :
-    (¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) ∧
+    (¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (3 : ℝ))) ∧
         collatzHeight 3 (by decide : (3 : ℕ) ≠ 0) < 1) ∧
       1 < collatzHeight 5 (by decide : (5 : ℕ) ≠ 0) := by
   refine ⟨(prime_shell_iff (by decide : Nat.Prime 3)).mpr rfl, ?_⟩
   exact collatzHeight_ge_four_gt_one (by decide : 4 ≤ 5)
 
 theorem gapChainHeight_admissible_le_one {S : ℝ}
-    (hadm : IsAdmissibleContinuous (pureBoost S)) :
+    (hadm : Admissible.IsAdmissibleContinuousLegacy (pureBoost S)) :
     gapChainHeight S ≤ 1 := by
-  simpa [gapChainHeight] using torsion_bound_continuous (pureBoost S) hadm
+  rw [gapChainHeight_eq]
+  have hθ := (isAdmissibleContinuousLegacy_pureBoost_iff S).mp hadm
+  calc (4 / (3 * Real.pi ^ 2)) * S ^ 2
+      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 := by
+        gcongr
+        exact pow_le_pow_left₀ hθ.1 hθ.2 (by norm_num : (0 : ℝ) < 2)
+    _ = 1 / 3 := by ring
+    _ ≤ 1 := by norm_num
 
 theorem polignac_admissible_witness_empty :
-    ¬ ∃ S : ℝ, IsAdmissibleContinuous (pureBoost S) ∧ 1 < gapChainHeight S := by
+    ¬ ∃ S : ℝ, Admissible.IsAdmissibleContinuousLegacy (pureBoost S) ∧ 1 < gapChainHeight S := by
   intro ⟨S, hadm, hgt⟩
   exact not_lt_of_ge (gapChainHeight_admissible_le_one hadm) hgt
 
 /-! ### The gap integer on the axis -/
 
 theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
-    IsAdmissibleContinuous (pureBoost (2 * Real.log ((2 * k : ℕ) : ℝ))) ↔ k = 1 := by
-  have hpos : 0 < 2 * k := by omega
-  rw [positive_integer_boost_admissible_iff hpos]
+    Admissible.IsAdmissibleContinuousLegacy
+        (pureBoost (2 * Real.log ((2 * k : ℕ) : ℝ))) ↔ k = 1 := by
   constructor
-  · intro h
-    rcases h with h1 | h2
-    · omega
-    · omega
-  · intro hk1
-    subst hk1
-    exact Or.inr rfl
+  · intro hadm
+    have hle := (isAdmissibleContinuousLegacy_pureBoost_iff _).mp hadm |>.2
+    match k with
+    | 0 => exact absurd hk (Nat.not_lt_zero _)
+    | 1 => rfl
+    | k + 2 =>
+        exfalso
+        have hk2 : 2 ≤ k + 2 := by omega
+        have harg : (4 : ℝ) ≤ (2 * (k + 2)) := by exact_mod_cast (show 4 ≤ 2 * (k + 2) by omega)
+        have hlog := Real.log_le_log (by norm_num) harg
+        have hθgt : Real.pi / 2 < 2 * Real.log ((2 * (k + 2)) : ℝ) := by
+          have h42 : Real.pi / 2 < 4 * Real.log 2 := by simpa [two_mul] using pi_div_four_lt_two_log_two
+          have hlog4 : Real.log (4 : ℝ) = 2 * Real.log 2 := by
+            rw [show (4 : ℝ) = 2 ^ (2 : ℕ) by norm_num, Real.log_pow]; ring
+          calc Real.pi / 2 < 4 * Real.log 2 := h42
+            _ = 2 * Real.log 4 := by rw [hlog4]; ring
+            _ ≤ 2 * Real.log ((2 * (k + 2)) : ℝ) := mul_le_mul_of_nonneg_left hlog (by norm_num)
+        exact not_le_of_gt hθgt hle
+  · rintro rfl
+    exact (isAdmissibleContinuousLegacy_pureBoost_iff _).mpr
+      ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
 
 theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
     1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=
@@ -414,7 +434,7 @@ theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge :
   have hmul :
       2 * Real.log (((p + 2 * k : ℕ) : ℝ) / p) ≤ 2 * Real.log 2 :=
     mul_le_mul_of_nonneg_left hlog (by norm_num)
-  have hlt : 2 * Real.log 2 < Real.pi / 2 := two_log_two_lt_pi_div_two
+  have hlt : 2 * Real.log 2 < Real.pi := two_log_two_lt_pi
   refine ⟨?_, le_trans hmul hlt.le⟩
   have hge1 : (1 : ℝ) ≤ ((p + 2 * k : ℕ) : ℝ) / p := by
     rw [one_le_div (by exact_mod_cast hp)]
@@ -426,8 +446,9 @@ theorem twin_relative_admissible {p : ℕ} (h : IsTwinPrimePair p) :
     IsAdmissibleContinuous
         (pureBoost (2 * polignacRapidity p 1 (Nat.Prime.ne_zero h.1))) ∧
       0 < polignacMismatch p 1 (Nat.Prime.ne_zero h.1) ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log ((p + 2 : ℕ) : ℝ))) := by
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ∧
+      ¬ Admissible.IsAdmissibleContinuousLegacy
+        (pureBoost (2 * Real.log ((p + 2 : ℕ) : ℝ))) := by
   have hpair : IsPolignacPair p 1 := h
   have hp3 : 3 ≤ p := by
     have hne := polignac_not_two hpair
@@ -461,14 +482,17 @@ theorem two_log_seven_div_three_gt_pi_div_two :
 
 theorem polignac_three_seven_relative_outside :
     IsPolignacPair 3 2 ∧
-      ¬ IsAdmissibleContinuous
+      ¬ Admissible.IsAdmissibleContinuousLegacy
         (pureBoost (2 * polignacRapidity 3 2 (by decide : (3 : ℕ) ≠ 0))) := by
   refine ⟨polignac_three_two, ?_⟩
   intro hadm
-  rw [isAdmissibleContinuous_pureBoost_iff, polignacRapidity_eq_log_div (by decide : 0 < 3)] at hadm
-  have hcast : ((3 + 2 * 2 : ℕ) : ℝ) / ((3 : ℕ) : ℝ) = (7 : ℝ) / 3 := by norm_num
-  rw [hcast] at hadm
-  exact not_le_of_gt two_log_seven_div_three_gt_pi_div_two hadm.2
+  have hθ :
+      2 * polignacRapidity 3 2 (by decide : (3 : ℕ) ≠ 0) = 2 * Real.log ((7 : ℝ) / 3) := by
+    rw [polignacRapidity_eq_log_div (by decide : 0 < 3)]
+    norm_num
+  have hle := (isAdmissibleContinuousLegacy_pureBoost_iff _).mp hadm |>.2
+  rw [hθ] at hle
+  exact not_le_of_gt two_log_seven_div_three_gt_pi_div_two hle
 
 theorem polignac_seven_two : IsPolignacPair 7 2 := by
   refine ⟨?_, ?_, by decide⟩
@@ -478,8 +502,8 @@ theorem polignac_seven_two : IsPolignacPair 7 2 := by
 theorem polignac_seven_eleven_relative_admissible :
     IsAdmissibleContinuous
         (pureBoost (2 * polignacRapidity 7 2 (by decide : (7 : ℕ) ≠ 0))) ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (7 : ℝ))) ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (11 : ℝ))) := by
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (7 : ℝ))) ∧
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (11 : ℝ))) := by
   have h := polignac_seven_two
   exact ⟨polignac_relative_admissible h (by decide : 2 * 2 ≤ 7),
     (polignac_outside_cone h).1, (polignac_outside_cone h).2⟩
@@ -586,14 +610,15 @@ theorem polignac_mismatchHeight_strictAnti {p q k : ℕ}
 def PolignacAdmissibleBridge : Prop :=
   ∀ k : ℕ, 0 < k →
     (¬ ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k) →
-      ∃ S : ℝ, IsAdmissibleContinuous (pureBoost S) ∧ 1 < gapChainHeight S
+      ∃ S : ℝ,
+        Admissible.IsAdmissibleContinuousLegacy (pureBoost S) ∧ 1 < gapChainHeight S
 
 theorem polignac_conjecture_of_bridge (hbridge : PolignacAdmissibleBridge) :
     ∀ k : ℕ, 0 < k → ∀ B : ℕ, ∃ p, B < p ∧ IsPolignacPair p k := by
   intro k hk
   by_contra hnone
   obtain ⟨S, hadm, hgt⟩ := hbridge k hk hnone
-  have hbound := torsion_bound_continuous _ hadm
+  have hbound := gapChainHeight_admissible_le_one hadm
   unfold gapChainHeight at hgt
   exact (not_le_of_gt hgt) hbound
 

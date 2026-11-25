@@ -294,18 +294,17 @@ theorem goldbach_double_prime {p : ℕ} (hp : Nat.Prime p) : IsGoldbachPair p p 
 theorem goldbach_vacuum_outside_cone {p : ℕ} (hp : Nat.Prime p) (hp3 : 3 ≤ p) :
     goldbachMismatch p p hp.ne_zero hp.ne_zero = 0 ∧
       IsAdmissibleContinuous (pureBoost 0) ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) := by
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) := by
   refine ⟨?_, (isAdmissibleContinuous_pureBoost_iff 0).mpr ⟨le_rfl, by positivity⟩, ?_⟩
   · rw [goldbachMismatch_eq]
     unfold goldbachRapidity
     ring
   · intro hadm
-    have hp2 : p = 2 := (prime_boost_admissible_iff hp).mp hadm
-    omega
+    exact absurd ((prime_boost_admissible_legacy_iff hp).mp hadm) (by omega)
 
 theorem goldbach_three_three_vacuum :
     goldbachMismatch 3 3 (by decide) (by decide) = 0 ∧
-      ¬ IsAdmissibleContinuous (pureBoost (2 * Real.log (3 : ℝ))) := by
+      ¬ Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (3 : ℝ))) := by
   have h := goldbach_vacuum_outside_cone (by decide : Nat.Prime 3) (by decide)
   exact ⟨h.1, h.2.2⟩
 
@@ -789,12 +788,12 @@ theorem goldbach_of_le_hundred {n : ℕ} (hn4 : 4 ≤ n) (hn : n ≤ 100) (he : 
 
 /-! ### The cone as the stable phase -/
 
-theorem goldbach_target_not_admissible {n : ℕ} (hn : 4 ≤ n) :
+theorem goldbach_target_not_admissible {n : ℕ} (hn : 5 ≤ n) :
     ¬ Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) := by
   intro hadm
   have hpos : 0 < n := by omega
   have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
-  omega
+  rcases hmem with rfl | rfl | rfl | rfl <;> omega
 
 theorem goldbach_two_two : IsGoldbachPair 2 2 4 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨2, by decide⟩, by decide⟩

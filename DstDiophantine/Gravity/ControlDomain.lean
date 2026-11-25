@@ -44,15 +44,27 @@ theorem unsignedSum_eq_two_mass (p : TorsionParams) :
 
 private theorem axis_signed_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
-    axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
+    axisSigned p a ≤ Real.pi ^ 2 :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).2
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2)).2
 
 private theorem axis_signed_ge {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
-    -(Real.pi / 2) ^ 2 ≤ axisSigned p a :=
+    -Real.pi ^ 2 ≤ axisSigned p a :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).1
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2)).1
+
+private theorem axis_signed_le_legacy {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
+    axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
+  (abs_le.mp (by simpa [axisSigned] using
+    axis_abs_density_le (k := Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).2
+
+private theorem axis_signed_ge_legacy {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
+    -((Real.pi / 2) ^ 2) ≤ axisSigned p a :=
+  (abs_le.mp (by simpa [axisSigned] using
+    axis_abs_density_le (k := Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).1
 
 private theorem e2_ge_two_K_T_sub_three_K_sq {K t₀ t₁ t₂ : ℝ}
     (h₀ : t₀ ≤ K) (h₁ : t₁ ≤ K) (h₂ : t₂ ≤ K) :
@@ -82,7 +94,7 @@ private theorem sum_sq_eq_T_sq_sub_two_e2 (t₀ t₁ t₂ : ℝ) :
   ring
 
 private theorem sum_signed_sq_le_attractive_lobe {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2 ≤
       (2 * J p - Real.pi ^ 2 / 2) ^ 2 + 2 * ((Real.pi / 2) ^ 2) ^ 2 := by
   set K := (Real.pi / 2) ^ 2
@@ -92,8 +104,8 @@ private theorem sum_signed_sq_le_attractive_lobe {p : TorsionParams}
   have hT : t₀ + t₁ + t₂ = 2 * J p := by
     simpa [t₀, t₁, t₂, Fin.sum_univ_three] using signedSum_eq_two_J p
   have he : 2 * K * (t₀ + t₁ + t₂) - 3 * K ^ 2 ≤ t₀ * t₁ + t₀ * t₂ + t₁ * t₂ :=
-    e2_ge_two_K_T_sub_three_K_sq (axis_signed_le h 0) (axis_signed_le h 1)
-      (axis_signed_le h 2)
+    e2_ge_two_K_T_sub_three_K_sq (axis_signed_le_legacy h 0) (axis_signed_le_legacy h 1)
+      (axis_signed_le_legacy h 2)
   have hsq := sum_sq_eq_T_sq_sub_two_e2 t₀ t₁ t₂
   have hK : 2 * K = Real.pi ^ 2 / 2 := by unfold K; ring
   have hbody :
@@ -103,8 +115,30 @@ private theorem sum_signed_sq_le_attractive_lobe {p : TorsionParams}
   rw [hT, hK] at hbody
   simpa [t₀, t₁, t₂] using hbody
 
-private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
+private theorem sum_signed_sq_le_attractive_lobe_continuous {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :
+    axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2 ≤
+      (2 * J p - 2 * Real.pi ^ 2) ^ 2 + 2 * Real.pi ^ 4 := by
+  set K := Real.pi ^ 2
+  set t₀ := axisSigned p 0
+  set t₁ := axisSigned p 1
+  set t₂ := axisSigned p 2
+  have hT : t₀ + t₁ + t₂ = 2 * J p := by
+    simpa [t₀, t₁, t₂, Fin.sum_univ_three] using signedSum_eq_two_J p
+  have he : 2 * K * (t₀ + t₁ + t₂) - 3 * K ^ 2 ≤ t₀ * t₁ + t₀ * t₂ + t₁ * t₂ :=
+    e2_ge_two_K_T_sub_three_K_sq (axis_signed_le h 0) (axis_signed_le h 1)
+      (axis_signed_le h 2)
+  have hsq := sum_sq_eq_T_sq_sub_two_e2 t₀ t₁ t₂
+  have hK : 2 * K = 2 * Real.pi ^ 2 := by unfold K; ring
+  have hbody :
+      t₀ ^ 2 + t₁ ^ 2 + t₂ ^ 2 ≤
+        (t₀ + t₁ + t₂ - 2 * K) ^ 2 + 2 * K ^ 2 := by
+    nlinarith [hsq, he]
+  rw [hT, hK] at hbody
+  simpa [t₀, t₁, t₂] using hbody
+
+private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) :
     axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2 ≤
       (2 * J p + Real.pi ^ 2 / 2) ^ 2 + 2 * ((Real.pi / 2) ^ 2) ^ 2 := by
   set K := (Real.pi / 2) ^ 2
@@ -114,8 +148,8 @@ private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
   have hT : t₀ + t₁ + t₂ = 2 * J p := by
     simpa [t₀, t₁, t₂, Fin.sum_univ_three] using signedSum_eq_two_J p
   have he : -2 * K * (t₀ + t₁ + t₂) - 3 * K ^ 2 ≤ t₀ * t₁ + t₀ * t₂ + t₁ * t₂ :=
-    e2_ge_neg_two_K_T_sub_three_K_sq (axis_signed_ge h 0) (axis_signed_ge h 1)
-      (axis_signed_ge h 2)
+    e2_ge_neg_two_K_T_sub_three_K_sq (axis_signed_ge_legacy h 0) (axis_signed_ge_legacy h 1)
+      (axis_signed_ge_legacy h 2)
   have hsq := sum_sq_eq_T_sq_sub_two_e2 t₀ t₁ t₂
   have hK : 2 * K = Real.pi ^ 2 / 2 := by unfold K; ring
   have hbody :
@@ -125,8 +159,30 @@ private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
   rw [hT, hK] at hbody
   simpa [t₀, t₁, t₂] using hbody
 
-private theorem four_K_mass_le_three_K_sq_add_sum_sq {p : TorsionParams}
+private theorem sum_signed_sq_le_repulsive_lobe_continuous {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :
+    axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2 ≤
+      (2 * J p + 2 * Real.pi ^ 2) ^ 2 + 2 * Real.pi ^ 4 := by
+  set K := Real.pi ^ 2
+  set t₀ := axisSigned p 0
+  set t₁ := axisSigned p 1
+  set t₂ := axisSigned p 2
+  have hT : t₀ + t₁ + t₂ = 2 * J p := by
+    simpa [t₀, t₁, t₂, Fin.sum_univ_three] using signedSum_eq_two_J p
+  have he : -2 * K * (t₀ + t₁ + t₂) - 3 * K ^ 2 ≤ t₀ * t₁ + t₀ * t₂ + t₁ * t₂ :=
+    e2_ge_neg_two_K_T_sub_three_K_sq (axis_signed_ge h 0) (axis_signed_ge h 1)
+      (axis_signed_ge h 2)
+  have hsq := sum_sq_eq_T_sq_sub_two_e2 t₀ t₁ t₂
+  have hK : 2 * K = 2 * Real.pi ^ 2 := by unfold K; ring
+  have hbody :
+      t₀ ^ 2 + t₁ ^ 2 + t₂ ^ 2 ≤
+        (t₀ + t₁ + t₂ + 2 * K) ^ 2 + 2 * K ^ 2 := by
+    nlinarith [hsq, he]
+  rw [hT, hK] at hbody
+  simpa [t₀, t₁, t₂] using hbody
+
+private theorem four_K_mass_le_three_K_sq_add_sum_sq {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p ≤
       3 * (Real.pi / 2) ^ 4 +
         (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) := by
@@ -151,8 +207,33 @@ private theorem four_K_mass_le_three_K_sq_add_sum_sq {p : TorsionParams}
     rw [← hπ, ← hU]; exact hsum
   nlinarith [this]
 
-theorem pi_sq_mass_le_attractive_lobe (p : TorsionParams)
+private theorem four_K_mass_le_three_K_sq_add_sum_sq_continuous {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :
+    4 * Real.pi ^ 2 * mass p ≤
+      3 * Real.pi ^ 4 +
+        (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) := by
+  have hax : ∀ a : Fin 3,
+      2 * Real.pi ^ 2 * axisUnsigned p a ≤
+        Real.pi ^ 4 + axisSigned p a ^ 2 := fun a => by
+    simpa [axisUnsigned, axisSigned] using
+      axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+  have hsum :
+      2 * Real.pi ^ 2 *
+          (axisUnsigned p 0 + axisUnsigned p 1 + axisUnsigned p 2) ≤
+        3 * Real.pi ^ 4 +
+          (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) := by
+    nlinarith [hax 0, hax 1, hax 2]
+  have hU : axisUnsigned p 0 + axisUnsigned p 1 + axisUnsigned p 2 =
+      2 * mass p := by
+    simpa [Fin.sum_univ_three] using unsignedSum_eq_two_mass p
+  calc 4 * Real.pi ^ 2 * mass p
+      _ = 2 * Real.pi ^ 2 * (2 * mass p) := by ring
+    _ ≤ 3 * Real.pi ^ 4 +
+          (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) := by
+        simpa [← hU] using hsum
+
+theorem pi_sq_mass_le_attractive_lobe (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p ≤
       5 * Real.pi ^ 4 / 16 + (2 * J p - Real.pi ^ 2 / 2) ^ 2 := by
   have hsum := four_K_mass_le_three_K_sq_add_sum_sq h
@@ -162,7 +243,7 @@ theorem pi_sq_mass_le_attractive_lobe (p : TorsionParams)
   nlinarith [hsum, hsq, hK4]
 
 theorem pi_sq_mass_le_repulsive_lobe (p : TorsionParams)
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p ≤
       5 * Real.pi ^ 4 / 16 + (2 * J p + Real.pi ^ 2 / 2) ^ 2 := by
   have hsum := four_K_mass_le_three_K_sq_add_sum_sq h
@@ -171,19 +252,55 @@ theorem pi_sq_mass_le_repulsive_lobe (p : TorsionParams)
       5 * Real.pi ^ 4 / 16 := by ring
   nlinarith [hsum, hsq, hK4]
 
+theorem pi_sq_mass_le_attractive_lobe_continuous (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 + (2 * J p - 2 * Real.pi ^ 2) ^ 2 := by
+  have hsum := four_K_mass_le_three_K_sq_add_sum_sq_continuous h
+  have hsq := sum_signed_sq_le_attractive_lobe_continuous h
+  have hK4 : 3 * Real.pi ^ 4 + 2 * Real.pi ^ 4 = 5 * Real.pi ^ 4 := by ring
+  nlinarith [hsum, hsq, hK4]
+
+theorem pi_sq_mass_le_repulsive_lobe_continuous (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 + (2 * J p + 2 * Real.pi ^ 2) ^ 2 := by
+  have hsum := four_K_mass_le_three_K_sq_add_sum_sq_continuous h
+  have hsq := sum_signed_sq_le_repulsive_lobe_continuous h
+  have hK4 : 3 * Real.pi ^ 4 + 2 * Real.pi ^ 4 = 5 * Real.pi ^ 4 := by ring
+  nlinarith [hsum, hsq, hK4]
+
 /-! ### The sharp envelope -/
 
-noncomputable def controlEnvelopeNum (Jval : ℝ) : ℝ :=
+noncomputable def controlEnvelopeNumLegacy (Jval : ℝ) : ℝ :=
   min (4 * Jval ^ 2)
     (min ((2 * Jval - Real.pi ^ 2 / 2) ^ 2)
       ((2 * Jval + Real.pi ^ 2 / 2) ^ 2))
 
+noncomputable def controlEnvelopeNum (Jval : ℝ) : ℝ :=
+  min (4 * Jval ^ 2)
+    (min ((2 * Jval - 2 * Real.pi ^ 2) ^ 2)
+      ((2 * Jval + 2 * Real.pi ^ 2) ^ 2))
+
 noncomputable def controlCeiling (Jval : ℝ) : ℝ :=
-  5 * Real.pi ^ 2 / 16 + controlEnvelopeNum Jval / Real.pi ^ 2
+  5 * Real.pi ^ 2 / 4 + controlEnvelopeNum Jval / Real.pi ^ 2
+
+noncomputable def controlCeilingLegacy (Jval : ℝ) : ℝ :=
+  5 * Real.pi ^ 2 / 16 + controlEnvelopeNumLegacy Jval / Real.pi ^ 2
 
 theorem controlEnvelopeNum_neg (Jval : ℝ) :
     controlEnvelopeNum (-Jval) = controlEnvelopeNum Jval := by
   unfold controlEnvelopeNum
+  have h4 : 4 * (-Jval) ^ 2 = 4 * Jval ^ 2 := by ring
+  have hA : (2 * (-Jval) - 2 * Real.pi ^ 2) ^ 2 =
+      (2 * Jval + 2 * Real.pi ^ 2) ^ 2 := by ring
+  have hB : (2 * (-Jval) + 2 * Real.pi ^ 2) ^ 2 =
+      (2 * Jval - 2 * Real.pi ^ 2) ^ 2 := by ring
+  rw [h4, hA, hB, min_comm (a := (2 * Jval - 2 * Real.pi ^ 2) ^ 2)]
+
+theorem controlEnvelopeNumLegacy_neg (Jval : ℝ) :
+    controlEnvelopeNumLegacy (-Jval) = controlEnvelopeNumLegacy Jval := by
+  unfold controlEnvelopeNumLegacy
   have h4 : 4 * (-Jval) ^ 2 = 4 * Jval ^ 2 := by ring
   have hA : (2 * (-Jval) - Real.pi ^ 2 / 2) ^ 2 =
       (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by ring
@@ -196,21 +313,39 @@ theorem controlCeiling_neg (Jval : ℝ) :
   unfold controlCeiling
   rw [controlEnvelopeNum_neg]
 
-theorem pi_sq_mass_le_envelope (p : TorsionParams)
-    (h : IsAdmissibleContinuous p) :
-    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + controlEnvelopeNum (J p) := by
-  have hC := pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous p h
+theorem controlCeilingLegacy_neg (Jval : ℝ) :
+    controlCeilingLegacy (-Jval) = controlCeilingLegacy Jval := by
+  unfold controlCeilingLegacy
+  rw [controlEnvelopeNumLegacy_neg]
+
+theorem pi_sq_mass_le_envelope_legacy (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) :
+    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + controlEnvelopeNumLegacy (J p) := by
+  have hC := pi_sq_mass_le_shield_ceiling_add_J_sq p h
   have hA := pi_sq_mass_le_attractive_lobe p h
   have hR := pi_sq_mass_le_repulsive_lobe p h
-  have ha : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤ 4 * J p ^ 2 := by
-    linarith [le_trans hC (by nlinarith [Real.pi_pos])]
+  have ha : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤ 4 * J p ^ 2 := by linarith [hC]
   have hb : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
-      (2 * J p - Real.pi ^ 2 / 2) ^ 2 := by
-    linarith [hA]
+      (2 * J p - Real.pi ^ 2 / 2) ^ 2 := by linarith [hA]
   have hc : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
-      (2 * J p + Real.pi ^ 2 / 2) ^ 2 := by
-    linarith [hR]
+      (2 * J p + Real.pi ^ 2 / 2) ^ 2 := by linarith [hR]
   have : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
+      controlEnvelopeNumLegacy (J p) :=
+    le_min ha (le_min hb hc)
+  linarith
+
+theorem pi_sq_mass_le_envelope (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 4 + controlEnvelopeNum (J p) := by
+  have hC := pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous p h
+  have hA := pi_sq_mass_le_attractive_lobe_continuous p h
+  have hR := pi_sq_mass_le_repulsive_lobe_continuous p h
+  have ha : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 ≤ 4 * J p ^ 2 := by linarith [hC]
+  have hb : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 ≤
+      (2 * J p - 2 * Real.pi ^ 2) ^ 2 := by linarith [hA]
+  have hc : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 ≤
+      (2 * J p + 2 * Real.pi ^ 2) ^ 2 := by linarith [hR]
+  have : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 ≤
       controlEnvelopeNum (J p) :=
     le_min ha (le_min hb hc)
   linarith
@@ -221,11 +356,11 @@ theorem mass_le_control_ceiling (p : TorsionParams)
   have hraw := pi_sq_mass_le_envelope p h
   have hπ : 0 < Real.pi ^ 2 := by positivity
   unfold controlCeiling
-  have hsub : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
+  have hsub : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 ≤
       controlEnvelopeNum (J p) := by linarith
-  have hid : Real.pi ^ 2 * (mass p - 5 * Real.pi ^ 2 / 16) =
-      Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 := by ring
-  have : mass p - 5 * Real.pi ^ 2 / 16 ≤
+  have hid : Real.pi ^ 2 * (mass p - 5 * Real.pi ^ 2 / 4) =
+      Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 := by ring
+  have : mass p - 5 * Real.pi ^ 2 / 4 ≤
       controlEnvelopeNum (J p) / Real.pi ^ 2 :=
     (le_div_iff₀ hπ).mpr (by linarith [hid, hsub])
   linarith
@@ -248,8 +383,8 @@ private theorem three_Jn_add_two_sq_mul (Jval : ℝ) :
   field_simp
   ring
 
-private theorem controlEnvelopeNum_eq_scaled (Jval : ℝ) :
-    controlEnvelopeNum Jval =
+private theorem controlEnvelopeNumLegacy_eq_scaled (Jval : ℝ) :
+    controlEnvelopeNumLegacy Jval =
       (Real.pi ^ 4 / 16) *
         min (9 * ((8 / (3 * Real.pi ^ 2)) * Jval) ^ 2)
           (min ((3 * ((8 / (3 * Real.pi ^ 2)) * Jval) - 2) ^ 2)
@@ -259,7 +394,7 @@ private theorem controlEnvelopeNum_eq_scaled (Jval : ℝ) :
       min x y * (Real.pi ^ 4 / 16) =
         min (x * (Real.pi ^ 4 / 16)) (y * (Real.pi ^ 4 / 16)) :=
     fun x y => min_mul_of_nonneg x y hpos
-  unfold controlEnvelopeNum
+  unfold controlEnvelopeNumLegacy
   rw [eq_comm]
   calc (Real.pi ^ 4 / 16) *
         min (9 * ((8 / (3 * Real.pi ^ 2)) * Jval) ^ 2)
@@ -275,30 +410,47 @@ private theorem controlEnvelopeNum_eq_scaled (Jval : ℝ) :
         rw [hmul, hmul, nine_Jn_sq_mul, three_Jn_sub_two_sq_mul,
           three_Jn_add_two_sq_mul]
 
-theorem massNormalized_le_control_curve (p : TorsionParams)
-    (h : IsAdmissibleContinuous p) :
+theorem massNormalized_le_control_curve_legacy (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) :
     massNormalized p ≤
       5 / 6 + (1 / 6) *
         min (9 * JNormalized p ^ 2)
           (min ((3 * JNormalized p - 2) ^ 2)
             ((3 * JNormalized p + 2) ^ 2)) := by
-  have hraw := mass_le_control_ceiling p h
+  have hraw := by
+    have henvelope := pi_sq_mass_le_envelope_legacy p h
+    have hπ : 0 < Real.pi ^ 2 := by positivity
+    unfold controlCeilingLegacy
+    have hsub : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
+        controlEnvelopeNumLegacy (J p) := by linarith
+    have hid : Real.pi ^ 2 * (mass p - 5 * Real.pi ^ 2 / 16) =
+        Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 := by ring
+    have : mass p - 5 * Real.pi ^ 2 / 16 ≤
+        controlEnvelopeNumLegacy (J p) / Real.pi ^ 2 :=
+      (le_div_iff₀ hπ).mpr (by linarith [hid, hsub])
+    linarith
   have hpos : (0 : ℝ) ≤ 8 / (3 * Real.pi ^ 2) := by positivity
   have hmul : massNormalized p ≤
-      (8 / (3 * Real.pi ^ 2)) * controlCeiling (J p) := by
+      (8 / (3 * Real.pi ^ 2)) * controlCeilingLegacy (J p) := by
     unfold massNormalized
     exact mul_le_mul_of_nonneg_left hraw hpos
-  have hscale := controlEnvelopeNum_eq_scaled (J p)
-  have hid : (8 / (3 * Real.pi ^ 2)) * controlCeiling (J p) =
+  have hscale := controlEnvelopeNumLegacy_eq_scaled (J p)
+  have hid : (8 / (3 * Real.pi ^ 2)) * controlCeilingLegacy (J p) =
       5 / 6 + (1 / 6) *
         min (9 * JNormalized p ^ 2)
           (min ((3 * JNormalized p - 2) ^ 2)
             ((3 * JNormalized p + 2) ^ 2)) := by
-    unfold controlCeiling JNormalized
+    unfold controlCeilingLegacy JNormalized
     rw [hscale]
     field_simp
     ring
   linarith
+
+theorem massNormalized_le_control_curve (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    massNormalized p ≤ (8 / (3 * Real.pi ^ 2)) * controlCeiling (J p) := by
+  unfold massNormalized
+  exact mul_le_mul_of_nonneg_left (mass_le_control_ceiling p h) (by positivity)
 
 /-! ### Wall families attaining the envelope -/
 
@@ -332,7 +484,7 @@ theorem isAdmissibleContinuous_twoUsualWitness {γ : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [twoUsualWitness] <;>
     norm_num <;>
     linarith
@@ -359,8 +511,8 @@ theorem isAdmissibleContinuous_twoDualWitness {γ : ℝ}
     IsAdmissibleContinuous (twoDualWitness γ) := by
   intro a
   have ha := isAdmissibleContinuous_twoUsualWitness h0 h1 a
-  refine ⟨ha.2.1, ha.1, ?_⟩
-  simpa [twoDualWitness, daggerParams, add_comm] using ha.2.2
+  refine ⟨ha.2.1, ha.1, ha.2.2.1, ?_⟩
+  simpa [twoDualWitness, daggerParams, add_comm] using ha.2.2.2
 
 theorem twoDualWitness_attains (γ : ℝ) :
     Real.pi ^ 2 * mass (twoDualWitness γ) =
@@ -372,8 +524,8 @@ theorem twoDualWitness_attains (γ : ℝ) :
 theorem mass_le_shield_of_abs_J_eq_quarter {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (hJ : |J p| = Real.pi ^ 2 / 4) :
     mass p ≤ 5 * Real.pi ^ 2 / 16 := by
-  have hA := pi_sq_mass_le_attractive_lobe p h
-  have hR := pi_sq_mass_le_repulsive_lobe p h
+  have hA := pi_sq_mass_le_attractive_lobe_continuous p h
+  have hR := pi_sq_mass_le_repulsive_lobe_continuous p h
   have hπ : 0 < Real.pi ^ 2 := by positivity
   rcases eq_or_eq_neg_of_abs_eq hJ with hp | hn
   · have : 2 * J p - Real.pi ^ 2 / 2 = 0 := by linarith
@@ -426,7 +578,7 @@ theorem isAdmissibleContinuous_crossUsualDual {x y : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [crossUsualDual] <;>
     norm_num <;>
     linarith [hx0, hy0, hx, hy]
@@ -460,7 +612,7 @@ theorem isAdmissibleContinuous_opposedWall {s γ : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [opposedWall] <;>
     norm_num <;>
     linarith [hs0, hs, hγ0, hγ, hπ]
@@ -492,7 +644,7 @@ theorem isAdmissibleContinuous_oneUsualCross {x y : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [oneUsualCross] <;>
     norm_num <;>
     linarith [hx0, hy0, hx, hy, hπ]
@@ -524,7 +676,7 @@ theorem isAdmissibleContinuous_twoUsualRest {x y : ℝ}
   have hcase : ∀ b : Fin 3, b = 0 ∨ b = 1 ∨ b = 2 := by decide
   intro a
   rcases hcase a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine ⟨?_, ?_, ?_, ?_⟩ <;>
     simp only [twoUsualRest] <;>
     norm_num <;>
     linarith [hx0, hy0, hsum, hπ]
@@ -808,8 +960,8 @@ theorem exists_admissible_of_JM {Jval Mval : ℝ}
     refine ⟨daggerParams q, ?_, ?_, ?_⟩
     · intro a
       have ha := hq a
-      refine ⟨ha.2.1, ha.1, ?_⟩
-      simpa [daggerParams, add_comm] using ha.2.2
+      refine ⟨ha.2.1, ha.1, ha.2.2.1, ?_⟩
+      simpa [daggerParams, add_comm] using ha.2.2.2
     · rw [J_dagger, hJq, neg_neg]
     · rw [mass_dagger, hMq]
 

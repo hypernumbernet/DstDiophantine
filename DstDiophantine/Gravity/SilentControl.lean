@@ -338,7 +338,7 @@ theorem magnetic_increment_rest_silent (B : Fin 3 → ℝ) :
 theorem not_admissible_magnetic_on_wall {p : TorsionParams} {B : Fin 3 → ℝ}
     (hw : ∀ a, p.alpha a + p.beta a = Real.pi / 2)
     (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
-    ¬ IsAdmissibleContinuous (superpose p (magneticFaraday B)) := by
+    ¬ IsAdmissibleContinuousLegacy (superpose p (magneticFaraday B)) := by
   intro hadm
   have hex : ∃ a, 0 < B a := by
     by_contra hnone
@@ -357,7 +357,7 @@ theorem maximalShield_on_wall (a : Fin 3) :
 
 theorem maximalShield_magnetic_rigid {B : Fin 3 → ℝ}
     (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
-    ¬ IsAdmissibleContinuous (superpose maximalShield (magneticFaraday B)) :=
+    ¬ IsAdmissibleContinuousLegacy (superpose maximalShield (magneticFaraday B)) :=
   not_admissible_magnetic_on_wall maximalShield_on_wall hB hne
 
 theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
@@ -390,12 +390,14 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
   have hadm : IsAdmissibleContinuous (superpose p (magneticFaraday B)) := by
     intro b
     by_cases hb : b = i
-    · refine ⟨?_, ?_, ?_⟩
+    · refine ⟨?_, ?_, ?_, ?_⟩
       · simpa [superpose_alpha, magneticFaraday] using (hp b).1
       · have hβ : 0 ≤ p.beta b + ε := by
           have : 0 ≤ ε := le_of_lt (by simpa [ε] using hε)
           exact add_nonneg (hp b).2.1 this
         simpa [superpose_beta, magneticFaraday, B, hb] using hβ
+      · have hβπ : p.beta b + ε ≤ Real.pi := by linarith [(hp b).2.2.1, hε.le]
+        simpa [superpose_beta, magneticFaraday, B, hb] using hβπ
       · have hsum : p.alpha b + p.beta b + ε = Real.pi / 2 := by
           have hεb : ε = Real.pi / 2 - p.alpha b - p.beta b := by
             simp [ε, hb]
@@ -412,13 +414,15 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
       have hβ : (superpose p (magneticFaraday B)).beta b = p.beta b + B b := by
         simp [superpose_beta, magneticFaraday]
       rw [hBz] at hβ
-      refine ⟨?_, ?_, ?_⟩
+      refine ⟨?_, ?_, ?_, ?_⟩
       · rw [hα]
         exact (hp b).1
       · rw [hβ]
         simpa using (hp b).2.1
+      · rw [hβ]
+        exact (hp b).2.2.1
       · rw [hα, hβ]
-        simpa using (hp b).2.2
+        simpa using (hp b).2.2.2
   have hrep := balanced_magnetic_repels hJ (fun b => (hp b).2.1) hB hne
   exact ⟨B, hB, hne, hadm, hrep.1, hrep.2, magnetic_increment_rest_silent B⟩
 
@@ -482,7 +486,7 @@ theorem balanced_electric_attracts {p : TorsionParams} {E : Fin 3 → ℝ}
 theorem not_admissible_electric_on_wall {p : TorsionParams} {E : Fin 3 → ℝ}
     (hw : ∀ a, p.alpha a + p.beta a = Real.pi / 2)
     (hE : ∀ a, 0 ≤ E a) (hne : ∑ a : Fin 3, E a ^ 2 ≠ 0) :
-    ¬ IsAdmissibleContinuous (superpose p (electricFaraday E)) := by
+    ¬ IsAdmissibleContinuousLegacy (superpose p (electricFaraday E)) := by
   intro hadm
   have hex : ∃ a, 0 < E a := by
     by_contra hnone
@@ -548,10 +552,11 @@ theorem exists_admissible_electric_attraction {p : TorsionParams}
   have hadm : IsAdmissibleContinuous (superpose p (electricFaraday E)) := by
     intro b
     by_cases hb : b = i
-    · refine ⟨?_, ?_, ?_⟩
+    · refine ⟨?_, ?_, ?_, ?_⟩
       · have hα : 0 ≤ p.alpha b + ε := add_nonneg (hp b).1 (le_of_lt (by simpa [ε] using hε))
         simpa [superpose_alpha, electricFaraday, E, hb] using hα
       · simpa [superpose_beta, electricFaraday] using (hp b).2.1
+      · exact (hp b).2.2.1
       · have hsum : p.alpha b + ε + p.beta b = Real.pi / 2 := by
           have hεb : ε = Real.pi / 2 - p.alpha b - p.beta b := by simp [ε, hb]
           linarith
@@ -560,10 +565,11 @@ theorem exists_admissible_electric_attraction {p : TorsionParams}
           simp [superpose_alpha, superpose_beta, electricFaraday, E, hb]
         linarith
     · have hEz : E b = 0 := by simp [E, hb]
-      refine ⟨?_, ?_, ?_⟩
+      refine ⟨?_, ?_, ?_, ?_⟩
       · simpa [superpose_alpha, electricFaraday, hEz] using (hp b).1
       · simpa [superpose_beta, electricFaraday] using (hp b).2.1
-      · simpa [superpose_alpha, superpose_beta, electricFaraday, hEz] using (hp b).2.2
+      · simpa [superpose_beta, electricFaraday] using (hp b).2.2.1
+      · simpa [superpose_alpha, superpose_beta, electricFaraday, hEz] using (hp b).2.2.2
   have hattr := balanced_electric_attracts hJ (fun b => (hp b).1) hE hne
   have hkick := electric_axis_rest_ne_zero (ne_of_gt hε) (i := i)
   exact ⟨E, hE, hne, hadm, hattr.1, hattr.2, magneticSq_superpose_electric p E,
@@ -651,16 +657,19 @@ theorem isAdmissibleContinuous_dual_unwind {p : TorsionParams} {v : Fin 3 → �
     (hvβ : ∀ a, v a ≤ p.beta a) :
     IsAdmissibleContinuous (superpose p (magneticFaraday (fun a => -v a))) := by
   intro a
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
   · simpa [superpose_alpha, magneticFaraday] using (hp a).1
   · have hβ : 0 ≤ p.beta a + -v a := by linarith [hvβ a]
     simpa [superpose_beta, magneticFaraday] using hβ
+  · have hβπ : p.beta a + -v a ≤ Real.pi := by
+      linarith [(hp a).2.2.1, hv0 a]
+    simpa [superpose_beta, magneticFaraday] using hβπ
   · have hle : p.alpha a + (p.beta a + -v a) ≤ p.alpha a + p.beta a := by linarith [hv0 a]
     have : (superpose p (magneticFaraday (fun b => -v b))).alpha a +
         (superpose p (magneticFaraday (fun b => -v b))).beta a =
           p.alpha a + (p.beta a + -v a) := by
       simp [superpose_alpha, superpose_beta, magneticFaraday]
-    linarith [(hp a).2.2]
+    linarith [(hp a).2.2.2]
 
 theorem J_unwind_pos_of_equalScale {α v : Fin 3 → ℝ}
     (hv0 : ∀ a, 0 ≤ v a) (hvα : ∀ a, v a ≤ α a)
