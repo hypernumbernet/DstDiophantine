@@ -8,6 +8,8 @@ import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Operations
+import DstDiophantine.Logic.Interpretation
+import DstDiophantine.Logic.Amplitude
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Exp
@@ -39,7 +41,7 @@ namespace Theorems
 abbrev IsAdmissibleContinuous := Admissible.IsAdmissibleContinuous
 abbrev IsAdmissibleContinuousLegacy := Admissible.IsAdmissibleContinuousLegacy
 
-open Amplification Invariant Operations Real ModularAmplification Admissible
+open Amplification Invariant Operations Real ModularAmplification Admissible Logic
 open Finset
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Framework
@@ -1353,7 +1355,10 @@ private theorem abcLabelPacket_delta_upper {δ : ℝ}
     simp only [abcLabelPacket, abcLabelSquare, mul_zero, add_zero] at hsum
     rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring]
     exact hsum
-  have hα : Real.pi / 2 < (18 : ℝ) * δ := by nlinarith [hδ, Real.pi_pos]
+  have h36 : (18 : ℝ) * (Real.pi / 36) = Real.pi / 2 := by ring
+  have hδ' : Real.pi / 36 < δ := not_le.mp hδ
+  have hα : Real.pi / 2 < (18 : ℝ) * δ := by
+    simpa [h36] using mul_lt_mul_of_pos_left hδ' (by norm_num : (0 : ℝ) < 18)
   linarith [hbound, hα]
 
 private theorem abcLabelPacket_continuous_implies_legacy {δ : ℝ}
@@ -1367,32 +1372,25 @@ private theorem abcLabelPacket_continuous_implies_legacy {δ : ℝ}
       abcLabelPacket_delta_upper hadm⟩
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
-    IsAdmissibleContinuous (abcLabelPacket δ) ↔
-      IsAdmissibleContinuous (pureBoost (18 * δ)) := by
+    IsAdmissibleContinuousLegacy (abcLabelPacket δ) ↔
+      IsAdmissibleContinuousLegacy (pureBoost (18 * δ)) := by
   constructor
   · intro hadm
-    have hsum := Admissible.admissibleContinuous_sum_le (abcLabelPacket δ) hadm 2
-    have hα := Admissible.admissibleContinuous_alpha_nonneg (abcLabelPacket δ) hadm 2
+    have hsum := Admissible.admissibleContinuous_legacy_sum_le_half_pi (abcLabelPacket δ) hadm 2
+    have hα := Admissible.admissibleContinuous_legacy_alpha_nonneg (abcLabelPacket δ) hadm 2
     simp only [abcLabelPacket, abcLabelSquare, mul_zero, add_zero] at hsum hα ⊢
-    have hα' : 0 ≤ (18 : ℝ) * δ := by
-      rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring] at hα ⊢
-      exact hα
-    have hsum' : (18 : ℝ) * δ ≤ Real.pi := by
-      rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring]
-      exact hsum
-    exact (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mpr ⟨hα', hsum'⟩
+    exact (isAdmissibleContinuousLegacy_pureBoost_iff (18 * δ)).mpr ⟨hα, hsum⟩
   · intro hadm
-    have hθ := (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mp hadm
+    have hθ := (isAdmissibleContinuousLegacy_pureBoost_iff (18 * δ)).mp hadm
     intro a
-    fin_cases a
-    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
-      exact ⟨by nlinarith [hθ.1], le_rfl, by linarith [Real.pi_pos], by nlinarith [hθ.1, hθ.2]⟩
-    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
-      exact ⟨by nlinarith [hθ.1], le_rfl, by linarith [Real.pi_pos], by nlinarith [hθ.1, hθ.2]⟩
-    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
-      exact ⟨hθ.1, le_rfl, by linarith [Real.pi_pos], hθ.2⟩
+    fin_cases a <;> simp [abcLabelPacket, abcLabelSquare, pureBoost, hθ, Real.pi_pos]
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
+    IsAdmissibleContinuousLegacy (abcLabelPacket δ) ↔
+      0 ≤ δ ∧ δ ≤ Real.pi / 36 :=
+  isAdmissibleContinuousLegacy_abcLabelPacket_iff δ
+
+theorem isAdmissibleContinuous_abcLabelPacket_gap_iff (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
       0 ≤ δ ∧ δ ≤ Real.pi / 36 := by
   constructor
@@ -1406,7 +1404,7 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
 theorem JNormalized_abcLabelPacket_le_of_admissible {δ : ℝ}
     (hadm : IsAdmissibleContinuous (abcLabelPacket δ)) :
     JNormalized (abcLabelPacket δ) ≤ 98 / 243 := by
-  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff δ).mp hadm
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_gap_iff δ).mp hadm
   have hwall := JNormalized_abcLabelPacket_wall
   rw [JNormalized_abcLabelPacket] at hwall ⊢
   have hcoef : 0 ≤ 1568 / (3 * Real.pi ^ 2) := by positivity
@@ -1444,20 +1442,12 @@ theorem abcLabelPacket_wall_axes :
 
 theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
     IsAdmissibleContinuous (daggerParams (abcLabelPacket δ)) ↔
-      IsAdmissibleContinuous (abcLabelPacket δ) := by
-  constructor
-  · intro h a
-    have ha := h a
-    dsimp only [daggerParams, abcLabelPacket] at ha ⊢
-    exact ⟨ha.2.1, ha.1, ha.2.2.1, ha.2.2.2⟩
-  · intro h a
-    have ha := h a
-    simp only [abcLabelPacket] at ha ⊢
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · simp [daggerParams, abcLabelPacket]
-    · exact ha.1
-    · exact ha.2.2.1
-    · exact ha.2.2.2
+      IsAdmissibleContinuous (abcLabelPacket δ) :=
+  ⟨fun hadm =>
+    show IsAdmissibleContinuous (abcLabelPacket δ) from by
+      simpa [daggerParams_involutive] using
+        isAdmissibleContinuous_dagger (p := daggerParams (abcLabelPacket δ)) hadm,
+    isAdmissibleContinuous_dagger⟩
 
 theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
     J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧
@@ -1475,7 +1465,7 @@ theorem abc_c_le_exp_packet_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcTriplePacket a b c)) :
     (c : ℝ) ≤
       Real.exp (Real.pi / 36) * (abcRadical (a * b * c) : ℝ) := by
-  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap a b c)).mp (by
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_gap_iff (abcLogGap a b c)).mp (by
     simpa [abcTriplePacket] using hadm)
   set R : ℝ := (abcRadical (a * b * c) : ℝ)
   have hRpos : 0 < R := Nat.cast_pos.mpr (abcRadical_pos _)
@@ -1498,7 +1488,7 @@ theorem abc_quality_le_packet_branch_of_admissible {a b c : ℕ} (h : IsAbcTripl
     (hadm : IsAdmissibleContinuous (abcTriplePacket a b c)) :
     abcQuality a b c ≤
       1 + (Real.pi / 36) / Real.log (abcRadical (a * b * c)) := by
-  have hδ := (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap a b c)).mp (by
+  have hδ := (isAdmissibleContinuous_abcLabelPacket_gap_iff (abcLogGap a b c)).mp (by
     simpa [abcTriplePacket] using hadm)
   have hgap := abcLogGap_eq_quality h
   have hLpos : 0 < Real.log (abcRadical (a * b * c)) := log_radical_pos h
@@ -1552,7 +1542,7 @@ theorem not_admissible_abcTriplePacket_one_eight_nine :
     ¬ IsAdmissibleContinuous (abcTriplePacket 1 8 9) := by
   intro h
   have hle :=
-    (isAdmissibleContinuous_abcLabelPacket_iff (abcLogGap 1 8 9)).mp
+    (isAdmissibleContinuous_abcLabelPacket_gap_iff (abcLogGap 1 8 9)).mp
       (by simpa [abcTriplePacket] using h)
   exact not_le_of_gt pi_div_thirty_six_lt_abcLogGap_one_eight_nine hle.2
 
