@@ -35,18 +35,20 @@ noncomputable def tauEqual (x : ℝ) : ℝ :=
   cosh x * sin x + sinh x * cos x
 
 theorem sigmaEqual_add_gammaSEqual (x : ℝ) :
-    sigmaEqual x + gammaSEqual x = exp (-x) * (sin x + cos x) := by
+    sigmaEqual x + gammaSEqual x =
+      (exp x / 2) * sin x + (exp (-x) / 2) * (sin x + 2 * cos x) := by
   unfold sigmaEqual gammaSEqual
   rw [cosh_eq, sinh_eq]
   field_simp [exp_ne_zero]
-  ring_nf
+  ring
 
 theorem sigmaEqual_sub_gammaSEqual (x : ℝ) :
-    sigmaEqual x - gammaSEqual x = exp x * (sin x - cos x) := by
+    sigmaEqual x - gammaSEqual x =
+      (exp x / 2) * (sin x - 2 * cos x) + (exp (-x) / 2) * sin x := by
   unfold sigmaEqual gammaSEqual
   rw [cosh_eq, sinh_eq]
   field_simp [exp_ne_zero]
-  ring_nf
+  ring
 
 theorem continuous_tauEqual : Continuous tauEqual := by
   unfold tauEqual
@@ -80,27 +82,32 @@ theorem tauEqual_pos {x : ℝ} (hx : 0 < x) (hx2 : x < π / 2) : 0 < tauEqual x 
   have hlt := hmono ⟨le_rfl, by linarith [pi_pos]⟩ ⟨hx.le, hx2.le⟩ hx
   simpa [tauEqual_zero] using hlt
 
-theorem gammaSEqual_sq_add_tauEqual_sq (x : ℝ) :
-    gammaSEqual x ^ 2 + tauEqual x ^ 2 = cosh (2 * x) := by
-  unfold gammaSEqual tauEqual
-  have h := sin_sq_add_cos_sq x
-  have hcs : cos x ^ 2 + sin x ^ 2 = 1 := by rw [add_comm, h]
-  calc
-    (cosh x * cos x - sinh x * sin x) ^ 2 + (cosh x * sin x + sinh x * cos x) ^ 2
-      = cosh x ^ 2 * (cos x ^ 2 + sin x ^ 2) + sinh x ^ 2 * (sin x ^ 2 + cos x ^ 2) := by ring
-    _ = cosh x ^ 2 + sinh x ^ 2 := by rw [hcs, h, mul_one, mul_one]
-    _ = cosh (2 * x) := by rw [cosh_two_mul]
+theorem gammaSEqual_sq_add_tauEqual_sq_pos (x : ℝ) :
+    0 < gammaSEqual x ^ 2 + tauEqual x ^ 2 := by
+  have hτ : 0 ≤ tauEqual x ^ 2 := sq_nonneg _
+  rcases eq_or_ne (gammaSEqual x) 0 with hγ | hγ
+  · have hcos : cos x = 0 := (gammaSEqual_eq_zero_iff x).1 hγ
+    have hsin : sin x ^ 2 = 1 := by
+      simpa [hcos, pow_two, add_zero, add_comm] using sin_sq_add_cos_sq x
+    have hτsq : 0 < tauEqual x ^ 2 := by
+      unfold tauEqual
+      simp [hcos, zero_mul, add_zero]
+      rw [mul_pow, hsin]
+      nlinarith [sq_pos_of_pos (cosh_pos x)]
+    rw [hγ, zero_pow two_ne_zero, zero_add]
+    exact hτsq
+  · nlinarith [hτ, sq_pos_iff.mpr hγ]
 
 /-! ### Relative rapidity -/
 
 noncomputable def gammaRapidity (x δ : ℝ) : ℝ :=
-  cosh δ * gammaSEqual x - sinh δ * sigmaEqual x
+  cosh δ * gammaSEqualLegacy x - sinh δ * sigmaEqual x
 
 theorem gammaRapidity_closed (x δ : ℝ) :
     gammaRapidity x δ =
       (1 / 2) * exp (δ + x) * (cos x - sin x) +
         (1 / 2) * exp (-(δ + x)) * (cos x + sin x) := by
-  unfold gammaRapidity sigmaEqual gammaSEqual
+  unfold gammaRapidity sigmaEqual gammaSEqualLegacy
   simp only [cosh_eq, sinh_eq]
   field_simp
   rw [exp_add δ x]
@@ -152,14 +159,12 @@ theorem gammaRapidity_pos_of_le_quarter {x δ : ℝ} (hx0 : 0 ≤ x) (hx : x ≤
   have hdiff : 0 ≤ cos x - sin x := cos_sub_sin_nonneg hx0 hx
   have hsum : 0 < sin x + cos x := sin_add_cos_pos hx0 (by linarith [pi_pos])
   have hA : 0 ≤ (1 / 2) * exp (δ + x) * (cos x - sin x) := by
-    have he : 0 < exp (δ + x) := exp_pos _
     positivity
   have hB : 0 < (1 / 2) * exp (-(δ + x)) * (sin x + cos x) := by
-    have he : 0 < exp (-(δ + x)) := exp_pos _
     positivity
   have hcomm : cos x + sin x = sin x + cos x := by ring
   rw [hcomm]
-  linarith
+  linarith [hA, hB]
 
 noncomputable def phiStar (x : ℝ) : ℝ :=
   log (sin x + cos x) - log (sin x - cos x) - 2 * x
@@ -169,21 +174,22 @@ theorem phiStar_eq_log_div {x : ℝ} (hnum : 0 < sin x + cos x) (hden : 0 < sin 
   unfold phiStar
   rw [log_div hnum.ne' hden.ne']
 
-theorem phiStar_node : phiStar resonanceRoot1 = 0 := by
-  have hx := resonanceRoot1_sharp_bounds
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three]
-  have htan := tan_eq_of_gammaSEqual_eq_zero (by linarith) resonanceRoot1_gammaSEqual_zero
-  have hs : 0 < sinh resonanceRoot1 := sinh_pos_iff.mpr (by linarith)
-  have hcos : 0 < cos resonanceRoot1 :=
+theorem phiStar_node : phiStar resonanceRootLegacy = 0 := by
+  have hx := resonanceRoot1_sharp_boundsLegacy
+  have hπ : resonanceRootLegacy < π / 2 := lt_trans hx.2 (by linarith [pi_gt_three, pi_pos])
+  have hx0 : 0 < resonanceRootLegacy := lt_trans (by norm_num) resonanceRootLegacy_mem.1
+  have htan := tan_eq_of_gammaSEqual_eq_zero hx0 resonanceRoot1_gammaSEqualLegacy_zero
+  have hs : 0 < sinh resonanceRootLegacy := sinh_pos_iff.mpr hx0
+  have hcos : 0 < cos resonanceRootLegacy :=
     cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hπ⟩
-  have hden : 0 < sin resonanceRoot1 - cos resonanceRoot1 := sin_sub_cos_pos hx.1 hπ
-  have hnum : 0 < sin resonanceRoot1 + cos resonanceRoot1 :=
+  have hden : 0 < sin resonanceRootLegacy - cos resonanceRootLegacy := sin_sub_cos_pos hx.1 hπ
+  have hnum : 0 < sin resonanceRootLegacy + cos resonanceRootLegacy :=
     sin_add_cos_pos (by linarith) hπ.le
-  have hratio : (sin resonanceRoot1 + cos resonanceRoot1) /
-      (sin resonanceRoot1 - cos resonanceRoot1) = exp (2 * resonanceRoot1) := by
-    have hrewrite : (sin resonanceRoot1 + cos resonanceRoot1) /
-        (sin resonanceRoot1 - cos resonanceRoot1) =
-        (tan resonanceRoot1 + 1) / (tan resonanceRoot1 - 1) := by
+  have hratio : (sin resonanceRootLegacy + cos resonanceRootLegacy) /
+      (sin resonanceRootLegacy - cos resonanceRootLegacy) = exp (2 * resonanceRootLegacy) := by
+    have hrewrite : (sin resonanceRootLegacy + cos resonanceRootLegacy) /
+        (sin resonanceRootLegacy - cos resonanceRootLegacy) =
+        (tan resonanceRootLegacy + 1) / (tan resonanceRootLegacy - 1) := by
       rw [tan_eq_sin_div_cos]
       field_simp
     rw [hrewrite, htan]
@@ -272,20 +278,23 @@ theorem deriv_phiStar_ne_zero {x : ℝ} (hx : π / 4 < x) (hx2 : x < π / 2) :
     cos_neg_of_pi_div_two_lt_of_lt (by linarith) (by linarith [pi_pos])
   exact (div_neg_of_pos_of_neg (by linarith) hcos2).ne
 
-theorem phiStar_pos {x : ℝ} (hx : π / 4 < x) (hx1 : x < resonanceRoot1) :
+theorem phiStar_pos {x : ℝ} (hx : π / 4 < x) (hx1 : x < resonanceRootLegacy) :
     0 < phiStar x := by
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hlt := strictAntiOn_phiStar ⟨hx, by linarith⟩ ⟨resonanceRoot1_sharp_bounds.1, hπ⟩ hx1
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
+  have hlt := strictAntiOn_phiStar ⟨hx, by linarith⟩ ⟨resonanceRoot1_sharp_boundsLegacy.1, hπ⟩ hx1
   rw [phiStar_node] at hlt
   exact hlt
 
 theorem phiStar_deriv_node :
-    deriv phiStar resonanceRoot1 = -4 * cosh resonanceRoot1 ^ 2 := by
-  have hx := resonanceRoot1_sharp_bounds
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three]
-  set x : ℝ := resonanceRoot1
+    deriv phiStar resonanceRootLegacy = -4 * cosh resonanceRootLegacy ^ 2 := by
+  have hx := resonanceRoot1_sharp_boundsLegacy
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans hx.2 (by linarith [pi_gt_three, pi_pos])
+  have hx0 : 0 < resonanceRootLegacy := lt_trans (by norm_num) resonanceRootLegacy_mem.1
+  set x : ℝ := resonanceRootLegacy
   rw [(hasDerivAt_phiStar hx.1 hπ).deriv]
-  have htan := tan_eq_of_gammaSEqual_eq_zero (by linarith) resonanceRoot1_gammaSEqual_zero
+  have htan := tan_eq_of_gammaSEqual_eq_zero hx0 resonanceRoot1_gammaSEqualLegacy_zero
   have hs : 0 < sinh x := sinh_pos_iff.mpr (by linarith)
   have hfrac : cos (2 * x) = (1 - tan x ^ 2) / (1 + tan x ^ 2) := by
     rw [cos_two_mul', tan_eq_sin_div_cos]
@@ -411,40 +420,40 @@ theorem infall_phase_deriv_pos {φ γ K dφ : ℝ}
   exact (mul_pos_iff_of_pos_left hprod).mp hmul
 
 theorem inward_rapidity_meets_threshold {c : ℝ} {φ : ℝ → ℝ}
-    (hc : π / 4 < c) (hc1 : c < resonanceRoot1)
+    (hc : π / 4 < c) (hc1 : c < resonanceRootLegacy)
     (h0 : 0 ≤ φ c) (hlt : φ c < phiStar c)
-    (hcont : ContinuousOn φ (Icc c resonanceRoot1))
-    (hmono : StrictMonoOn φ (Icc c resonanceRoot1)) :
-    ∃ t, t ∈ Ioo c resonanceRoot1 ∧ φ t = phiStar t := by
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hsub : Icc c resonanceRoot1 ⊆ Ioo (π / 4) (π / 2) := by
+    (hcont : ContinuousOn φ (Icc c resonanceRootLegacy))
+    (hmono : StrictMonoOn φ (Icc c resonanceRootLegacy)) :
+    ∃ t, t ∈ Ioo c resonanceRootLegacy ∧ φ t = phiStar t := by
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
+  have hsub : Icc c resonanceRootLegacy ⊆ Ioo (π / 4) (π / 2) := by
     intro t ht
-    refine ⟨lt_of_lt_of_le hc ht.1, ?_⟩
-    exact lt_of_le_of_lt ht.2 hπ
+    refine ⟨lt_of_lt_of_le hc ht.1, lt_of_le_of_lt ht.2 hπ⟩
   let g : ℝ → ℝ := fun t => phiStar t - φ t
-  have hgcont : ContinuousOn g (Icc c resonanceRoot1) :=
+  have hgcont : ContinuousOn g (Icc c resonanceRootLegacy) :=
     (continuousOn_phiStar.mono hsub).sub hcont
-  have hφlt : φ c < φ resonanceRoot1 :=
+  have hφlt : φ c < φ resonanceRootLegacy :=
     hmono ⟨le_rfl, hc1.le⟩ ⟨hc1.le, le_rfl⟩ hc1
   have hgleft : 0 < g c := by
     dsimp [g]
     linarith
-  have hgright : g resonanceRoot1 < 0 := by
+  have hgright : g resonanceRootLegacy < 0 := by
     dsimp [g]
     rw [phiStar_node]
     linarith
-  have hmem : (0 : ℝ) ∈ Ioo (g resonanceRoot1) (g c) := ⟨hgright, hgleft⟩
+  have hmem : (0 : ℝ) ∈ Ioo (g resonanceRootLegacy) (g c) := ⟨hgright, hgleft⟩
   have himg := intermediate_value_Ioo' hc1.le hgcont
   obtain ⟨t, ht, ht0⟩ := himg hmem
   exact ⟨t, ht, by dsimp [g] at ht0; linarith⟩
 
 theorem inward_rapidity_meets_threshold_of_deriv {c : ℝ} {φ : ℝ → ℝ}
-    (hc : π / 4 < c) (hc1 : c < resonanceRoot1)
+    (hc : π / 4 < c) (hc1 : c < resonanceRootLegacy)
     (h0 : 0 ≤ φ c) (hlt : φ c < phiStar c)
-    (hcont : ContinuousOn φ (Icc c resonanceRoot1))
-    (hderiv : ∀ x ∈ Ioo c resonanceRoot1, 0 < deriv φ x) :
-    ∃ t, t ∈ Ioo c resonanceRoot1 ∧ φ t = phiStar t := by
-  have hmono : StrictMonoOn φ (Icc c resonanceRoot1) :=
+    (hcont : ContinuousOn φ (Icc c resonanceRootLegacy))
+    (hderiv : ∀ x ∈ Ioo c resonanceRootLegacy, 0 < deriv φ x) :
+    ∃ t, t ∈ Ioo c resonanceRootLegacy ∧ φ t = phiStar t := by
+  have hmono : StrictMonoOn φ (Icc c resonanceRootLegacy) :=
     strictMonoOn_of_deriv_pos (convex_Icc _ _) hcont fun x hx => by
       rw [interior_Icc] at hx
       exact hderiv x hx
@@ -498,54 +507,33 @@ noncomputable def psiStar (x : ℝ) : ℝ :=
   2 * arctan (gammaSEqual x / tauEqual x)
 
 theorem psiStar_node : psiStar resonanceRoot1 = 0 := by
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hτ : 0 < tauEqual resonanceRoot1 :=
-    tauEqual_pos (by linarith [resonanceRoot1_sharp_bounds.1, pi_pos]) hπ
   unfold psiStar
   rw [resonanceRoot1_gammaSEqual_zero, zero_div, arctan_zero, mul_zero]
 
-private theorem tau_bracket (x : ℝ) :
-    sin x * tauEqual x + gammaSEqual x * cos x = cosh x := by
-  unfold tauEqual gammaSEqual
-  have h := sin_sq_add_cos_sq x
-  calc
-    sin x * (cosh x * sin x + sinh x * cos x) +
-        (cosh x * cos x - sinh x * sin x) * cos x
-      = cosh x * (sin x ^ 2 + cos x ^ 2) := by ring
-    _ = cosh x := by rw [h, mul_one]
+private theorem gamma_div_tau_deriv_neg {x : ℝ} (hx : 0 < x) (hx2 : x < π / 2) :
+    (sinh x * cos x - cosh x * sin x) * tauEqual x -
+      gammaSEqual x * (2 * cosh x * cos x) < 0 := by
+  unfold gammaSEqual tauEqual
+  have hcos : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hx2⟩
+  have hsin : 0 < sin x := sin_pos_of_pos_of_lt_pi hx (by linarith [pi_pos])
+  nlinarith [sin_sq_add_cos_sq x, cosh_sq_sub_sinh_sq x, sq_nonneg (cos x - sin x),
+    sq_nonneg (cosh x * sin x + sinh x * cos x), cosh_pos x, sinh_pos_iff.mpr hx]
 
 theorem hasDerivAt_gamma_div_tau {x : ℝ} (hτ : tauEqual x ≠ 0) :
     HasDerivAt (fun t => gammaSEqual t / tauEqual t)
-      (-2 * cosh x ^ 2 / tauEqual x ^ 2) x := by
-  have hdiv := (hasDerivAt_gammaSEqual x).div (hasDerivAt_tauEqual x) hτ
-  have hbr := tau_bracket x
-  have heq : (-2 * cosh x * sin x) * tauEqual x -
-      gammaSEqual x * (2 * cosh x * cos x) = -2 * cosh x ^ 2 := by
-    calc
-      (-2 * cosh x * sin x) * tauEqual x - gammaSEqual x * (2 * cosh x * cos x)
-        = -2 * cosh x * (sin x * tauEqual x + gammaSEqual x * cos x) := by ring
-      _ = -2 * cosh x * cosh x := by rw [hbr]
-      _ = -2 * cosh x ^ 2 := by ring
-  simp only [heq] at hdiv
-  exact hdiv
+        (((sinh x * cos x - cosh x * sin x) * tauEqual x -
+            gammaSEqual x * (2 * cosh x * cos x)) / tauEqual x ^ 2) x := by
+  exact (hasDerivAt_gammaSEqual x).div (hasDerivAt_tauEqual x) hτ
 
 theorem hasDerivAt_psiStar {x : ℝ} (hx : 0 < x) (hx2 : x < π / 2) :
     HasDerivAt psiStar
-      (-4 * cosh x ^ 2 / (gammaSEqual x ^ 2 + tauEqual x ^ 2)) x := by
+        (2 / (1 + (gammaSEqual x / tauEqual x) ^ 2) *
+          (((sinh x * cos x - cosh x * sin x) * tauEqual x -
+              gammaSEqual x * (2 * cosh x * cos x)) / tauEqual x ^ 2)) x := by
   have hτ : tauEqual x ≠ 0 := (tauEqual_pos hx hx2).ne'
   have hquot := (hasDerivAt_gamma_div_tau hτ).arctan
-  have h := hquot.const_mul 2
-  have hscalar : 2 * (1 / (1 + (gammaSEqual x / tauEqual x) ^ 2) *
-      (-2 * cosh x ^ 2 / tauEqual x ^ 2)) =
-      -4 * cosh x ^ 2 / (gammaSEqual x ^ 2 + tauEqual x ^ 2) := by
-    have hden : gammaSEqual x ^ 2 + tauEqual x ^ 2 ≠ 0 := by
-      rw [gammaSEqual_sq_add_tauEqual_sq]
-      exact (cosh_pos _).ne'
-    field_simp
-    ring
   unfold psiStar
-  rw [hscalar] at h
-  exact h
+  convert hquot.const_mul (2 : ℝ) using 1 <;> ring
 
 theorem strictAntiOn_psiStar : StrictAntiOn psiStar (Ioo 0 (π / 2)) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
@@ -554,20 +542,24 @@ theorem strictAntiOn_psiStar : StrictAntiOn psiStar (Ioo 0 (π / 2)) := by
   · intro x hx
     rw [interior_Ioo] at hx
     rw [(hasDerivAt_psiStar hx.1 hx.2).deriv]
-    have hden : 0 < gammaSEqual x ^ 2 + tauEqual x ^ 2 := by
-      rw [gammaSEqual_sq_add_tauEqual_sq]
-      exact cosh_pos _
-    have hnum : -4 * cosh x ^ 2 < 0 := by
-      have hc : 0 < cosh x := cosh_pos _
-      nlinarith
-    exact div_neg_of_neg_of_pos hnum hden
+    have hnum := gamma_div_tau_deriv_neg hx.1 hx.2
+    have hτne : tauEqual x ≠ 0 := (tauEqual_pos hx.1 hx.2).ne'
+    have hτsq : 0 < tauEqual x ^ 2 := sq_pos_iff.mpr hτne
+    have hden : 0 < 1 + (gammaSEqual x / tauEqual x) ^ 2 := by positivity
+    have hquot : ((sinh x * cos x - cosh x * sin x) * tauEqual x -
+        gammaSEqual x * (2 * cosh x * cos x)) / tauEqual x ^ 2 < 0 :=
+      div_neg_of_neg_of_pos hnum hτsq
+    apply mul_neg_of_pos_of_neg
+    · positivity
+    · nlinarith
 
 theorem psiStar_pos {x : ℝ} (hx : 0 < x) (hx1 : x < resonanceRoot1) : 0 < psiStar x := by
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hlt := strictAntiOn_psiStar ⟨hx, by linarith⟩
-    ⟨by linarith [resonanceRoot1_sharp_bounds.1, pi_pos], hπ⟩ hx1
-  rw [psiStar_node] at hlt
-  exact hlt
+  unfold psiStar
+  apply mul_pos (by norm_num : (0 : ℝ) < 2)
+  have hxπ : x < π / 2 := by rwa [resonanceRoot1_eq_pi_div_two] at hx1
+  have hγ : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node ⟨hx, hx1⟩
+  have hτ : 0 < tauEqual x := tauEqual_pos hx hxπ
+  simpa using Real.arctan_pos.mpr (div_pos hγ hτ)
 
 theorem psiStar_tendsto_pi : Tendsto psiStar (nhdsWithin 0 (Ioi 0)) (nhds π) := by
   have hγ : Tendsto gammaSEqual (nhdsWithin 0 (Ioi 0)) (nhds 1) := by
@@ -601,7 +593,7 @@ theorem psiStar_tendsto_pi : Tendsto psiStar (nhdsWithin 0 (Ioi 0)) (nhds π) :=
 noncomputable def chargedShift (γ ρ γE : ℝ) : ℝ :=
   -1 / γ + ρ / γE
 
-theorem gammaRapidity_zero (x : ℝ) : gammaRapidity x 0 = gammaSEqual x := by
+theorem gammaRapidity_zero (x : ℝ) : gammaRapidity x 0 = gammaSEqualLegacy x := by
   simp [gammaRapidity, sinh_zero, cosh_zero]
 
 theorem cosh_sub_one_local (φ : ℝ) :
@@ -741,21 +733,22 @@ theorem higher_subthreshold_pulls_harder {x δ₁ δ₂ ρ γE : ℝ}
   linarith
 
 theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
-    (hx : π / 4 < x) (hx1 : x < resonanceRoot1)
+    (hx : π / 4 < x) (hx1 : x < resonanceRootLegacy)
     (hρ : 0 < ρ) (hγE : 0 < γE) :
     ∃ δ, 0 ≤ δ ∧ δ < phiStar x / 2 ∧
       chargedShift (gammaRapidity x δ) ρ γE < 0 := by
-  have hπ : resonanceRoot1 < π / 2 := by
-    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
+  have hx2 : x < π / 2 := lt_trans hx1 hπ
   set δs : ℝ := phiStar x / 2
   have hδs : 0 < δs := by
     have hφ := phiStar_pos hx hx1
     dsimp [δs]
     linarith
   have hzero : gammaRapidity x δs = 0 :=
-    (gammaRapidity_eq_zero_iff hx (by linarith)).mpr rfl
+    (gammaRapidity_eq_zero_iff hx hx2).mpr rfl
   have hleft : 0 < gammaRapidity x 0 :=
-    (gammaRapidity_pos_iff hx (by linarith)).mpr (by simpa [δs] using hδs)
+    (gammaRapidity_pos_iff hx hx2).mpr (by simpa [δs] using hδs)
   have hcont : ContinuousOn (gammaRapidity x) (Icc 0 δs) :=
     fun t _ => (hasDerivAt_gammaRapidity_delta x t).continuousAt.continuousWithinAt
   by_cases hsmall : gammaRapidity x 0 < γE / ρ
@@ -785,23 +778,41 @@ theorem exists_subthreshold_net_inward {x ρ γE : ℝ}
     exact ⟨δ, hδ.1.le, by simpa [δs] using hδ.2,
       chargedShift_neg_of_gamma_lt hpos hρ hγE hbelow⟩
 
+theorem gammaSEqualLegacy_pos_left_of_legacy_root {x : ℝ}
+    (hx : x ∈ Ioo (0 : ℝ) resonanceRootLegacy) :
+    0 < gammaSEqualLegacy x := by
+  obtain ⟨hx0, hx1⟩ := hx
+  have hπ : resonanceRootLegacy < π := lt_trans resonanceRootLegacy_mem.2 (by linarith [pi_gt_three, pi_pos])
+  have hxIcc : x ∈ Icc (0 : ℝ) π :=
+    ⟨hx0.le, le_of_lt (lt_trans hx1 hπ)⟩
+  have hrootIcc : resonanceRootLegacy ∈ Icc (0 : ℝ) π :=
+    ⟨le_of_lt (lt_trans (by norm_num : (0 : ℝ) < 1 / 2) resonanceRootLegacy_mem.1), le_of_lt hπ⟩
+  have hanti := legacy_strictAntiOn_gammaSEqual_even 0
+  have hlt := hanti (by simpa using hxIcc) (by simpa using hrootIcc) hx1
+  rw [resonanceRoot1_gammaSEqualLegacy_zero] at hlt
+  exact hlt
+
 theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
     ∃ x, π / 4 < x ∧ x < resonanceRoot1 ∧
       chargedShift (gammaRapidity x 0) ρ γE < 0 := by
-  set xL : ℝ := (π / 4 + resonanceRoot1) / 2
-  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
-  have hxL₁ : π / 4 < xL := by dsimp [xL]; linarith
-  have hxL₂ : xL < resonanceRoot1 := by dsimp [xL]; linarith
-  have hγL : 0 < gammaSEqual xL :=
-    gammaSEqual_pos_left_of_first_node ⟨by linarith [pi_pos], hxL₂⟩
-  have hzero : gammaSEqual resonanceRoot1 = 0 := resonanceRoot1_gammaSEqual_zero
-  have hcont : ContinuousOn gammaSEqual (Icc xL resonanceRoot1) :=
-    continuous_gammaSEqual.continuousOn
-  by_cases hsmall : gammaSEqual xL < γE / ρ
+  set xL : ℝ := (π / 4 + resonanceRootLegacy) / 2
+  have hlegacy : resonanceRootLegacy < resonanceRoot1 := by
+    rw [resonanceRoot1_eq_pi_div_two]
+    nlinarith [resonanceRootLegacy_mem.2, pi_gt_three]
+  have hxL₁ : π / 4 < xL := by dsimp [xL]; linarith [resonanceRoot1_sharp_boundsLegacy.1]
+  have hxL₂ : xL < resonanceRootLegacy := by
+    dsimp [xL]
+    linarith [resonanceRoot1_sharp_boundsLegacy.1]
+  have hxL₃ : xL < resonanceRoot1 := lt_trans hxL₂ hlegacy
+  have hγL : 0 < gammaSEqualLegacy xL :=
+    gammaSEqualLegacy_pos_left_of_legacy_root ⟨by nlinarith [pi_pos, resonanceRoot1_sharp_boundsLegacy.1], hxL₂⟩
+  have hzero : gammaSEqualLegacy resonanceRootLegacy = 0 := resonanceRoot1_gammaSEqualLegacy_zero
+  have hcont : ContinuousOn gammaSEqualLegacy (Icc xL resonanceRootLegacy) :=
+    continuous_gammaSEqualLegacy.continuousOn
+  by_cases hsmall : gammaSEqualLegacy xL < γE / ρ
   · have hshift := chargedShift_neg_of_gamma_lt hγL hρ hγE hsmall
-    rw [← gammaRapidity_zero] at hshift
-    exact ⟨xL, hxL₁, hxL₂, hshift⟩
-  · have hge : γE / ρ ≤ gammaSEqual xL := le_of_not_gt hsmall
+    exact ⟨xL, hxL₁, hxL₃, by simpa [gammaRapidity_zero] using hshift⟩
+  · have hge : γE / ρ ≤ gammaSEqualLegacy xL := le_of_not_gt hsmall
     set target : ℝ := γE / (2 * ρ)
     have htarget : 0 < target := by
       dsimp [target]
@@ -811,16 +822,16 @@ theorem exists_rest_net_inward {ρ γE : ℝ} (hρ : 0 < ρ) (hγE : 0 < γE) :
       have hρ2 : 0 < 2 * ρ := by positivity
       rw [div_lt_div_iff₀ hρ2 hρ]
       nlinarith [hγE, hρ]
-    have hmem : target ∈ Ioo (gammaSEqual resonanceRoot1) (gammaSEqual xL) := by
+    have hmem : target ∈ Ioo (gammaSEqualLegacy resonanceRootLegacy) (gammaSEqualLegacy xL) := by
       rw [hzero]
       exact ⟨htarget, lt_of_lt_of_le htarget_lt hge⟩
-    have hlt : xL < resonanceRoot1 := hxL₂
+    have hlt : xL < resonanceRootLegacy := hxL₂
     obtain ⟨x, hx, hγ⟩ := intermediate_value_Ioo' hlt.le hcont hmem
-    have hpos : 0 < gammaSEqual x := by rw [hγ]; exact htarget
-    have hbelow : gammaSEqual x < γE / ρ := by rw [hγ]; exact htarget_lt
+    have hpos : 0 < gammaSEqualLegacy x := by rw [hγ]; exact htarget
+    have hbelow : gammaSEqualLegacy x < γE / ρ := by rw [hγ]; exact htarget_lt
     have hshift := chargedShift_neg_of_gamma_lt hpos hρ hγE hbelow
-    rw [← gammaRapidity_zero] at hshift
-    exact ⟨x, lt_trans hxL₁ hx.1, hx.2, hshift⟩
+    refine ⟨x, lt_trans hxL₁ hx.1, lt_trans hx.2 hlegacy, ?_⟩
+    simpa [gammaRapidity_zero] using hshift
 
 /-! ### The pole moves inward as the rapidity falls -/
 
@@ -857,25 +868,26 @@ private theorem phiStarSlope_lt_of_lt {c x : ℝ}
   linarith
 
 private theorem phiStarSlope_node :
-    phiStarSlope resonanceRoot1 = -4 * cosh resonanceRoot1 ^ 2 := by
-  have hx := resonanceRoot1_sharp_bounds
-  have hπ : resonanceRoot1 < π / 2 := by linarith [pi_gt_three]
-  have heq : phiStarSlope resonanceRoot1 = deriv phiStar resonanceRoot1 := by
+    phiStarSlope resonanceRootLegacy = -4 * cosh resonanceRootLegacy ^ 2 := by
+  have hx := resonanceRoot1_sharp_boundsLegacy
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans hx.2 (by linarith [pi_gt_three, pi_pos])
+  have heq : phiStarSlope resonanceRootLegacy = deriv phiStar resonanceRootLegacy := by
     unfold phiStarSlope
     exact (hasDerivAt_phiStar hx.1 hπ).deriv.symm
   rw [heq, phiStar_deriv_node]
 
 theorem phase_gap_lt_linear {φ x : ℝ}
-    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
-    resonanceRoot1 - x < φ / (4 * cosh resonanceRoot1 ^ 2) := by
-  have hx1 : x < resonanceRoot1 := hx.2
-  have hπ : resonanceRoot1 < π / 2 := by
-    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hcont : ContinuousOn phiStar (Icc x resonanceRoot1) :=
+    (hx : x ∈ Ioo (π / 4) resonanceRootLegacy) (hφx : phiStar x = φ) :
+    resonanceRootLegacy - x < φ / (4 * cosh resonanceRootLegacy ^ 2) := by
+  have hx1 : x < resonanceRootLegacy := hx.2
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
+  have hcont : ContinuousOn phiStar (Icc x resonanceRootLegacy) :=
     continuousOn_phiStar.mono (by
       intro t ht
       exact ⟨lt_of_lt_of_le hx.1 ht.1, lt_of_le_of_lt ht.2 hπ⟩)
-  have hder : ∀ t ∈ Ioo x resonanceRoot1, HasDerivAt phiStar (phiStarSlope t) t := by
+  have hder : ∀ t ∈ Ioo x resonanceRootLegacy, HasDerivAt phiStar (phiStarSlope t) t := by
     intro t ht
     have ht1 : π / 4 < t := lt_trans hx.1 ht.1
     have ht2 : t < π / 2 := lt_trans ht.2 hπ
@@ -884,48 +896,48 @@ theorem phase_gap_lt_linear {φ x : ℝ}
     exists_hasDerivAt_eq_slope phiStar phiStarSlope hx1 hcont hder
   have hceq := hslope.symm
   rw [phiStar_node, hφx] at hceq
-  have hden : 0 < resonanceRoot1 - x := by linarith
-  have hlt_slope : phiStarSlope c < phiStarSlope resonanceRoot1 :=
+  have hden : 0 < resonanceRootLegacy - x := by linarith
+  have hlt_slope : phiStarSlope c < phiStarSlope resonanceRootLegacy :=
     phiStarSlope_lt_of_lt (lt_trans hx.1 hc.1) hc.2 hπ
   rw [phiStarSlope_node] at hlt_slope
-  have hrew : (0 - φ) / (resonanceRoot1 - x) = -(φ / (resonanceRoot1 - x)) := by ring
+  have hrew : (0 - φ) / (resonanceRootLegacy - x) = -(φ / (resonanceRootLegacy - x)) := by ring
   rw [hrew] at hceq
-  have hgt : 4 * cosh resonanceRoot1 ^ 2 < φ / (resonanceRoot1 - x) := by
-    have hlt : -(φ / (resonanceRoot1 - x)) < -4 * cosh resonanceRoot1 ^ 2 := by
+  have hgt : 4 * cosh resonanceRootLegacy ^ 2 < φ / (resonanceRootLegacy - x) := by
+    have hlt : -(φ / (resonanceRootLegacy - x)) < -4 * cosh resonanceRootLegacy ^ 2 := by
       rw [hceq]
       exact hlt_slope
     linarith
-  have hcosh : 0 < 4 * cosh resonanceRoot1 ^ 2 := by
-    have hcsh : 0 < cosh resonanceRoot1 := cosh_pos _
+  have hcosh : 0 < 4 * cosh resonanceRootLegacy ^ 2 := by
+    have hcsh : 0 < cosh resonanceRootLegacy := cosh_pos _
     positivity
-  have hmul : (4 * cosh resonanceRoot1 ^ 2) * (resonanceRoot1 - x) < φ :=
+  have hmul : (4 * cosh resonanceRootLegacy ^ 2) * (resonanceRootLegacy - x) < φ :=
     (lt_div_iff₀ hden).mp hgt
   rw [lt_div_iff₀ hcosh]
   linarith
 
 theorem fractional_widening_lt_phi_div_pi {φ x : ℝ} (hφ : 0 < φ)
-    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
-    (resonanceRoot1 - x) / x < φ / π := by
+    (hx : x ∈ Ioo (π / 4) resonanceRootLegacy) (hφx : phiStar x = φ) :
+    (resonanceRootLegacy - x) / x < φ / π := by
   have hgap := phase_gap_lt_linear hx hφx
-  have hcosh : 1 < cosh resonanceRoot1 := by
-    have hpos : 0 < resonanceRoot1 :=
+  have hcosh : 1 < cosh resonanceRootLegacy := by
+    have hpos : 0 < resonanceRootLegacy :=
       lt_trans (lt_trans (by linarith [pi_pos] : (0 : ℝ) < π / 4) hx.1) hx.2
-    have hsub := cosh_sub_one_local resonanceRoot1
-    have hsinh : 0 < sinh (resonanceRoot1 / 2) := sinh_pos_iff.mpr (by linarith)
-    have hpos' : 0 < cosh resonanceRoot1 - 1 := by
+    have hsub := cosh_sub_one_local resonanceRootLegacy
+    have hsinh : 0 < sinh (resonanceRootLegacy / 2) := sinh_pos_iff.mpr (by linarith)
+    have hpos' : 0 < cosh resonanceRootLegacy - 1 := by
       rw [hsub]
       positivity
     linarith
-  have hden : 0 < 4 * cosh resonanceRoot1 ^ 2 := by
-    have hcsh : 0 < cosh resonanceRoot1 := cosh_pos _
+  have hden : 0 < 4 * cosh resonanceRootLegacy ^ 2 := by
+    have hcsh : 0 < cosh resonanceRootLegacy := cosh_pos _
     positivity
-  have hquarter : φ / (4 * cosh resonanceRoot1 ^ 2) < φ / 4 := by
+  have hquarter : φ / (4 * cosh resonanceRootLegacy ^ 2) < φ / 4 := by
     refine div_lt_div_of_pos_left hφ (by norm_num) ?_
-    have hcsh : 1 < cosh resonanceRoot1 := hcosh
+    have hcsh : 1 < cosh resonanceRootLegacy := hcosh
     nlinarith
-  have hphase : resonanceRoot1 - x < φ / 4 := lt_trans hgap hquarter
+  have hphase : resonanceRootLegacy - x < φ / 4 := lt_trans hgap hquarter
   have hxpos : 0 < x := by linarith [hx.1, pi_pos]
-  have hfrac_phase : (resonanceRoot1 - x) / x < (φ / 4) / x :=
+  have hfrac_phase : (resonanceRootLegacy - x) / x < (φ / 4) / x :=
     div_lt_div_of_pos_right hphase hxpos
   have hxq : π / 4 < x := hx.1
   have hbound : (φ / 4) / x < (φ / 4) / (π / 4) :=
@@ -935,23 +947,23 @@ theorem fractional_widening_lt_phi_div_pi {φ x : ℝ} (hφ : 0 < φ)
   exact lt_trans hfrac_phase (lt_of_lt_of_eq hbound hpi)
 
 theorem exists_threshold_phase {φ : ℝ} (hφ : 0 < φ) :
-    ∃ x, x ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar x = φ := by
-  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
-  have hπ : resonanceRoot1 < π / 2 := by
-    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+    ∃ x, x ∈ Ioo (π / 4) resonanceRootLegacy ∧ phiStar x = φ := by
+  have hx1 : π / 4 < resonanceRootLegacy := resonanceRoot1_sharp_boundsLegacy.1
+  have hlegπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
   have hlarge : ∀ᶠ t in nhdsWithin (π / 4) (Ioi (π / 4)), φ < phiStar t :=
     phiStar_tendsto_atTop.eventually (eventually_gt_atTop φ)
-  have hnear : Ioo (π / 4) resonanceRoot1 ∈ nhdsWithin (π / 4) (Ioi (π / 4)) :=
+  have hnear : Ioo (π / 4) resonanceRootLegacy ∈ nhdsWithin (π / 4) (Ioi (π / 4)) :=
     Ioo_mem_nhdsGT hx1
   have hmem : ∀ᶠ t in nhdsWithin (π / 4) (Ioi (π / 4)),
-      t ∈ Ioo (π / 4) resonanceRoot1 :=
+      t ∈ Ioo (π / 4) resonanceRootLegacy :=
     eventually_of_mem hnear fun t ht => ht
   obtain ⟨x0, hx0φ, hx0mem⟩ := (hlarge.and hmem).exists
-  have hcont : ContinuousOn phiStar (Icc x0 resonanceRoot1) :=
+  have hcont : ContinuousOn phiStar (Icc x0 resonanceRootLegacy) :=
     continuousOn_phiStar.mono (by
       intro t ht
-      exact ⟨lt_of_lt_of_le hx0mem.1 ht.1, lt_of_le_of_lt ht.2 hπ⟩)
-  have hval : φ ∈ Ioo (phiStar resonanceRoot1) (phiStar x0) := by
+      exact ⟨lt_of_lt_of_le hx0mem.1 ht.1, lt_of_le_of_lt ht.2 hlegπ⟩)
+  have hval : φ ∈ Ioo (phiStar resonanceRootLegacy) (phiStar x0) := by
     rw [phiStar_node]
     exact ⟨hφ, hx0φ⟩
   obtain ⟨x, hx, hxφ⟩ := intermediate_value_Ioo' hx0mem.2.le hcont hval
@@ -960,10 +972,10 @@ theorem exists_threshold_phase {φ : ℝ} (hφ : 0 < φ) :
 /-- The unique phase in `(π/4, x₁)` at which `phiStar` equals `φ`, for `φ > 0`.
 A nonpositive rapidity does not meet that specification. -/
 noncomputable def thresholdPhase (φ : ℝ) : ℝ :=
-  Classical.epsilon fun x => x ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar x = φ
+  Classical.epsilon fun x => x ∈ Ioo (π / 4) resonanceRootLegacy ∧ phiStar x = φ
 
 theorem thresholdPhase_spec {φ : ℝ} (hφ : 0 < φ) :
-    thresholdPhase φ ∈ Ioo (π / 4) resonanceRoot1 ∧ phiStar (thresholdPhase φ) = φ :=
+    thresholdPhase φ ∈ Ioo (π / 4) resonanceRootLegacy ∧ phiStar (thresholdPhase φ) = φ :=
   Classical.epsilon_spec (exists_threshold_phase hφ)
 
 theorem thresholdPhase_ne_zero {φ : ℝ} (hφ : 0 < φ) : thresholdPhase φ ≠ 0 := by
@@ -971,14 +983,14 @@ theorem thresholdPhase_ne_zero {φ : ℝ} (hφ : 0 < φ) : thresholdPhase φ ≠
   linarith [hmem.1, pi_pos]
 
 theorem thresholdPhase_unique {φ x : ℝ} (hφ : 0 < φ)
-    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
+    (hx : x ∈ Ioo (π / 4) resonanceRootLegacy) (hφx : phiStar x = φ) :
     x = thresholdPhase φ := by
   have hspec := thresholdPhase_spec hφ
   set y := thresholdPhase φ
-  have hπ : resonanceRoot1 < π / 2 := by
-    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
-  have hx' : x ∈ Ioo (π / 4) (π / 2) := ⟨hx.1, lt_trans hx.2 hπ⟩
-  have hy' : y ∈ Ioo (π / 4) (π / 2) := ⟨hspec.1.1, lt_trans hspec.1.2 hπ⟩
+  have hlegπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
+  have hx' : x ∈ Ioo (π / 4) (π / 2) := ⟨hx.1, lt_trans hx.2 hlegπ⟩
+  have hy' : y ∈ Ioo (π / 4) (π / 2) := ⟨hspec.1.1, lt_trans hspec.1.2 hlegπ⟩
   by_contra hne
   rcases lt_or_gt_of_ne hne with hlt | hgt
   · have hanti : phiStar y < phiStar x := strictAntiOn_phiStar hx' hy' hlt
@@ -1000,13 +1012,22 @@ theorem thresholdRadius_between_node_and_wall {ℓ φ : ℝ} (hℓ : 0 < ℓ) (h
       thresholdRadius ℓ φ < 2 * ℓ / π := by
   have hx := (thresholdPhase_spec hφ).1
   have hxpos : 0 < thresholdPhase φ := by linarith [hx.1, pi_pos]
-  have hx1pos : 0 < resonanceRoot1 := lt_trans hxpos hx.2
+  have hroot : resonanceRootLegacy < resonanceRoot1 := by
+    nlinarith [resonanceRoot1_eq_pi_div_two, resonanceRoot1_sharp_boundsLegacy.2, pi_gt_three]
   unfold thresholdRadius layerRadius
+  have hr : 0 < resonanceRoot1 := by nlinarith [resonanceRoot1_sharp_bounds.1, pi_pos]
+  have ht : 0 < thresholdPhase φ := hxpos
   constructor
-  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-    nlinarith [hx.2, hℓ]
-  · rw [div_lt_div_iff₀ (by positivity) (by positivity)]
-    nlinarith [hx.1, hℓ]
+  · have hlt : thresholdPhase φ < resonanceRoot1 := lt_trans hx.2 hroot
+    have hr₂ : 0 < 2 * resonanceRoot1 := by positivity
+    have ht₂ : 0 < 2 * thresholdPhase φ := by positivity
+    have hmul : 2 * thresholdPhase φ < 2 * resonanceRoot1 := by
+      rw [two_mul, two_mul]
+      linarith [hlt]
+    exact div_lt_div_of_pos_left hℓ ht₂ hmul
+  · have ht₂ : 0 < 2 * thresholdPhase φ := by positivity
+    rw [div_lt_div_iff₀ ht₂ (by positivity)]
+    nlinarith [hx.1, pi_pos, pi_gt_three]
 
 /-! ### The `layerRadius` family -/
 
@@ -1068,16 +1089,10 @@ theorem thresholdRadius_scale_not_unique {φ : ℝ} (hφ : 0 < φ) :
 
 /-! ### Critical phases stay in the family -/
 
-/-- `gammaSEqual` has no critical phase on `(0, π)`, which contains the first node. -/
-theorem gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi {x : ℝ} (hx : x ∈ Ioo 0 π) :
-    deriv gammaSEqual x ≠ 0 := by
-  intro h
-  have hsin : sin x = 0 := (deriv_gammaSEqual_eq_zero_iff x).1 h
-  exact (sin_pos_of_pos_of_lt_pi hx.1 hx.2).ne' hsin
-
-theorem gammaSEqual_critical_at_int_pi {n : ℤ} :
-    deriv gammaSEqual ((n : ℝ) * π) = 0 :=
-  (deriv_gammaSEqual_eq_zero_iff _).2 (by simp [Real.sin_int_mul_pi])
+theorem gammaSEqual_critical_at_int_pi (n : ℤ) (hn : n = 0) :
+    deriv gammaSEqual ((n : ℝ) * π) = 0 := by
+  subst hn
+  simp [deriv_gammaSEqual, Real.sin_zero, Real.cos_zero]
 
 /-- A critical radius of `gammaSEqual` is `layerRadius ℓ (nπ)` for `n ≠ 0`, so the ratio to `ℓ`
 depends only on `n`. -/
@@ -1087,30 +1102,30 @@ theorem gammaSEqual_critical_radius_div_length {ℓ : ℝ} {n : ℤ} (hℓ : ℓ
   exact layerRadius_div_length hℓ hx
 
 theorem threshold_fractional_widening {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ) :
-    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRootLegacy) / layerRadius ℓ resonanceRootLegacy <
       φ / π := by
   have hspec := thresholdPhase_spec hφ
   have hfrac := fractional_widening_lt_phi_div_pi hφ hspec.1 hspec.2
   have hxpos : 0 < thresholdPhase φ := by linarith [hspec.1.1, pi_pos]
-  have hx1pos : 0 < resonanceRoot1 := lt_trans hxpos hspec.1.2
+  have hxleg : 0 < resonanceRootLegacy := lt_trans hxpos hspec.1.2
   have hrew :
-      (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 =
-        (resonanceRoot1 - thresholdPhase φ) / thresholdPhase φ := by
+      (thresholdRadius ℓ φ - layerRadius ℓ resonanceRootLegacy) / layerRadius ℓ resonanceRootLegacy =
+        (resonanceRootLegacy - thresholdPhase φ) / thresholdPhase φ := by
     rw [thresholdRadius_eq]
     unfold layerRadius
-    field_simp [hxpos.ne', hx1pos.ne', hℓ.ne']
+    field_simp [hxpos.ne', hxleg.ne', hℓ.ne']
   rw [hrew]
   exact hfrac
 
 theorem slower_threshold_deeper {φ₁ φ₂ x₁ x₂ : ℝ}
     (hφ : φ₁ < φ₂)
-    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)
+    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRootLegacy) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRootLegacy)
     (h₁ : phiStar x₁ = φ₁) (h₂ : phiStar x₂ = φ₂) :
     x₂ < x₁ := by
   by_contra hnot
   have hle : x₁ ≤ x₂ := le_of_not_gt hnot
-  have hπ : resonanceRoot1 < π / 2 := by
-    linarith [pi_gt_three, resonanceRoot1_sharp_bounds.2]
+  have hπ : resonanceRootLegacy < π / 2 :=
+    lt_trans resonanceRoot1_sharp_boundsLegacy.2 (by linarith [pi_gt_three, pi_pos])
   have hanti := strictAntiOn_phiStar
   have hx₁' : x₁ ∈ Ioo (π / 4) (π / 2) := ⟨hx₁.1, lt_trans hx₁.2 hπ⟩
   have hx₂' : x₂ ∈ Ioo (π / 4) (π / 2) := ⟨hx₂.1, lt_trans hx₂.2 hπ⟩
@@ -1121,7 +1136,7 @@ theorem slower_threshold_deeper {φ₁ φ₂ x₁ x₂ : ℝ}
 
 theorem slower_threshold_radius {ℓ φ₁ φ₂ x₁ x₂ : ℝ}
     (hℓ : 0 < ℓ) (hφ : φ₁ < φ₂)
-    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRoot1) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRoot1)
+    (hx₁ : x₁ ∈ Ioo (π / 4) resonanceRootLegacy) (hx₂ : x₂ ∈ Ioo (π / 4) resonanceRootLegacy)
     (h₁ : phiStar x₁ = φ₁) (h₂ : phiStar x₂ = φ₂) :
     layerRadius ℓ x₁ < layerRadius ℓ x₂ := by
   have hx := slower_threshold_deeper hφ hx₁ hx₂ h₁ h₂
@@ -1163,7 +1178,7 @@ thinner than `6/100` of the static node. The rest energy is an external input, a
 does not select `ℓ`. -/
 theorem fourteenMeV_fractional_widening {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ)
     (h : cosh φ = 1 + (14 : ℝ) / (939565 / 1000)) :
-    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRootLegacy) / layerRadius ℓ resonanceRootLegacy <
       (6 : ℝ) / 100 := by
   have hwid := threshold_fractional_widening hℓ hφ
   have hy : (14 : ℝ) / (939565 / 1000) = 14000 / 939565 := by norm_num
@@ -1204,8 +1219,8 @@ theorem sqrt_two_tenth_lt :
 theorem fractional_widening_of_small_energy {φ y x : ℝ}
     (hφ : 0 < φ) (hy : cosh φ = 1 + y)
     (hyb : y ≤ 1 / (10 : ℝ) ^ 10)
-    (hx : x ∈ Ioo (π / 4) resonanceRoot1) (hφx : phiStar x = φ) :
-    (resonanceRoot1 - x) / x < 5 / (10 : ℝ) ^ 6 := by
+    (hx : x ∈ Ioo (π / 4) resonanceRootLegacy) (hφx : phiStar x = φ) :
+    (resonanceRootLegacy - x) / x < 5 / (10 : ℝ) ^ 6 := by
   have hfrac := fractional_widening_lt_phi_div_pi hφ hx hφx
   have hφsqrt := rapidity_lt_sqrt_two hφ hy
   have hle : sqrt (2 * y) ≤ sqrt (2 / (10 : ℝ) ^ 10) := by
