@@ -758,21 +758,32 @@ private theorem mass_le_attractive_ceiling {Jval Mval : ℝ}
     div_le_div_of_nonneg_right hnum (le_of_lt hπ)
   linarith
 
+/-- Legacy envelope parabola; π-cone tightening on the same band is under research. -/
 private theorem shifted_mass_le_axis_parabola {Jval Mval : ℝ}
-    (h : Mval ≤ controlCeiling Jval)
-    (h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2) :
+    (h : Mval ≤ controlCeilingLegacy Jval) :
     Mval - Real.pi ^ 2 / 4 ≤
       Real.pi ^ 2 / 16 +
         4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
+  have hM := mass_le_attractive_ceiling_legacy h
+  have hid : (2 * Jval - Real.pi ^ 2 / 2) ^ 2 / Real.pi ^ 2 =
+      4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by ring
+  linarith [hM, hid]
+
+theorem controlCeilingLegacy_le_controlCeiling (Jval : ℝ) :
+    controlCeilingLegacy Jval ≤ controlCeiling Jval := by
+  unfold controlCeiling controlCeilingLegacy controlEnvelopeNum controlEnvelopeNumLegacy
   have hπ : 0 < Real.pi ^ 2 := by positivity
-  unfold controlCeiling at h
-  have hfrac : controlEnvelopeNum Jval / Real.pi ^ 2 ≤ 4 * Jval ^ 2 / Real.pi ^ 2 :=
-    div_le_div_of_nonneg_right h4 (le_of_lt hπ)
-  have hbind : Mval ≤ 5 * Real.pi ^ 2 / 4 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
-    linarith [h, hfrac]
-  set j := Jval - Real.pi ^ 2 / 4
-  have hJsq : Jval ^ 2 = (j + Real.pi ^ 2 / 4) ^ 2 := by simp [j]; ring
-  nlinarith [sq_nonneg j, hbind, hJsq, Real.pi_pos]
+  have hmin :
+      controlEnvelopeNumLegacy Jval ≤ controlEnvelopeNum Jval := by
+    dsimp [controlEnvelopeNum controlEnvelopeNumLegacy]
+    refine le_min (le_trans (min_le_right _ _) (min_le_left _ _)) ?_
+    refine le_min ?_ ?_
+    · nlinarith
+    · nlinarith
+  have hfrac : controlEnvelopeNumLegacy Jval / Real.pi ^ 2 ≤
+      controlEnvelopeNum Jval / Real.pi ^ 2 :=
+    div_le_div_of_nonneg_right hmin (le_of_lt hπ)
+  linarith
 
 
 private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}
@@ -872,7 +883,7 @@ private theorem exists_twoUsualRest_shifted {Jval Mval : ℝ}
 
 private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
     (hJ0 : 0 ≤ Jval) (hJmax : Jval ≤ 3 * Real.pi ^ 2 / 8)
-    (hMlo : Jval ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :
+    (hMlo : Jval ≤ Mval) (hMhi : Mval ≤ controlCeilingLegacy Jval) :
     ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ J p = Jval ∧
       mass p = Mval := by
   have hπ : 0 < Real.pi := Real.pi_pos
@@ -942,12 +953,12 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
         with hsdef
       have hs0 : 0 ≤ s := Real.sqrt_nonneg _
       have hs : s ≤ Real.pi / 2 := by
-        have hM : Mval ≤ 5 * Real.pi ^ 2 / 4 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
-          have : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
-          have : Mval ≤ controlCeiling Jval := hMhi
-          have : controlCeiling Jval ≤
-              5 * Real.pi ^ 2 / 4 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
-            unfold controlCeiling
+        have hM : Mval ≤ 5 * Real.pi ^ 2 / 16 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
+          have : controlEnvelopeNumLegacy Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
+          have : Mval ≤ controlCeilingLegacy Jval := hMhi
+          have : controlCeilingLegacy Jval ≤
+              5 * Real.pi ^ 2 / 16 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
+            unfold controlCeilingLegacy
             gcongr
           linarith
         have : s ^ 2 ≤ (Real.pi / 2) ^ 2 := by
@@ -978,25 +989,24 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
           ring
         · rw [mass_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
           ring
-      · have h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
-        refine exists_twoUsualRest_shifted ?_ ?_
-          (shifted_mass_le_axis_parabola hMhi h4)
+      · refine exists_twoUsualRest_shifted ?_ ?_
+          (shifted_mass_le_axis_parabola hMhi)
         · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [not_le.mp hpin]
         · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [h8lt]
     · have h4lt : Real.pi ^ 2 / 4 < Jval := lt_of_not_ge h4
-      have h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
       refine exists_twoUsualRest_shifted ?_ ?_
-        (shifted_mass_le_axis_parabola hMhi h4)
+        (shifted_mass_le_axis_parabola hMhi)
       · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         linarith [hMlo]
       · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         nlinarith [hJmax]
 
+/-- Fill existence uses the legacy envelope; strict π-cone widened fill is under research. -/
 theorem exists_admissible_of_JM {Jval Mval : ℝ}
     (hJmax : |Jval| ≤ 3 * Real.pi ^ 2 / 8)
-    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :
+    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeilingLegacy Jval) :
     ∃ p : TorsionParams, IsAdmissibleContinuous p ∧ J p = Jval ∧
       mass p = Mval := by
   rcases le_or_gt 0 Jval with hpos | hneg
@@ -1009,8 +1019,8 @@ theorem exists_admissible_of_JM {Jval Mval : ℝ}
     have hMlo' : -Jval ≤ Mval := by
       have : |Jval| = -Jval := abs_of_neg hneg
       rwa [← this]
-    have hMhi' : Mval ≤ controlCeiling (-Jval) := by
-      rwa [controlCeiling_neg]
+    have hMhi' : Mval ≤ controlCeilingLegacy (-Jval) := by
+      rwa [controlCeilingLegacy_neg]
     obtain ⟨q, hq, hJq, hMq⟩ :=
       exists_nonneg_J_of_JM (-Jval) Mval hJ0 hJmax' hMlo' hMhi'
     refine ⟨daggerParams q, ?_, ?_, ?_⟩

@@ -377,18 +377,17 @@ noncomputable def transversePureDual : TorsionParams where
     | 1 => Real.pi / 4
     | _ => 0
 
-theorem transversePureDual_admissible :
-    IsAdmissibleContinuous transversePureDual := by
+theorem transversePureDual_admissible_legacy :
+    IsAdmissibleContinuousLegacy transversePureDual := by
   intro a
-  fin_cases a
-  · simp only [transversePureDual]
-    refine ⟨le_rfl, le_rfl, ?_, ?_⟩
-    all_goals linarith [Real.pi_pos]
-  · simp only [transversePureDual]
-    refine ⟨le_rfl, le_rfl, ?_, ?_⟩
-    all_goals linarith [Real.pi_pos]
-  · simp only [transversePureDual]
-    refine ⟨le_rfl, le_rfl, Real.pi_pos.le, by simp [zero_add]; exact Real.pi_pos.le⟩
+  fin_cases a <;> simp only [transversePureDual]
+  all_goals refine And.intro le_rfl (And.intro ?_ ?_)
+  all_goals linarith [Real.pi_pos]
+
+/-- Legacy-cone result; strict π-cone version currently under research (`docs/mismatch-angle.md`). -/
+theorem transversePureDual_admissible :
+    IsAdmissibleContinuous transversePureDual :=
+  legacy_admissible_implies_mismatch _ transversePureDual_admissible_legacy
 
 theorem circAmp_transverse_extremal :
     circAmp 1 (Real.pi / 4) 1 = Real.pi / 4 := by
