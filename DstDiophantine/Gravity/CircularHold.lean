@@ -380,8 +380,9 @@ noncomputable def transversePureDual : TorsionParams where
 theorem transversePureDual_admissible_legacy :
     IsAdmissibleContinuousLegacy transversePureDual := by
   intro a
+  intro a
   fin_cases a <;> simp only [transversePureDual] <;>
-    refine ⟨le_rfl, by positivity, by ring_nf; linarith [Real.pi_pos]⟩
+    refine ⟨le_rfl, by positivity, by simp [add_zero, zero_add]; linarith [Real.pi_pos]⟩
 
 /-- Legacy-cone result; strict π-cone version currently under research (`docs/mismatch-angle.md`). -/
 theorem transversePureDual_admissible :

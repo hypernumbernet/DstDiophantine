@@ -246,6 +246,17 @@ theorem continuous_gammaSSignedLegacy (n : ℕ) : Continuous (gammaSSignedLegacy
   unfold gammaSSignedLegacy
   exact continuous_const.mul continuous_gammaSEqualLegacy
 
+private theorem sinh_cos_sub_lt {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
+    sinh t * cos t < cosh t * sin t := by
+  rcases lt_trichotomy t (π / 2) with h | h | h
+  · exact sinh_mul_cos_lt_cosh_mul_sin ⟨ht0, h⟩
+  · subst h
+    simp [cos_pi_div_two, sin_pi_div_two]
+    nlinarith [cosh_pos (π / 2), sinh_pos_iff.mpr ht0]
+  · have hsin := sin_pos_of_pos_of_lt_pi ht0 htπ
+    have hcos := cos_neg_of_pi_div_two_lt_of_lt h (lt_of_lt_of_le htπ (by linarith [pi_pos]))
+    nlinarith [cosh_pos t, sinh_pos_iff.mpr ht0, hsin, hcos]
+
 theorem strictAntiOn_gammaSSigned (n : ℕ) :
     StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
@@ -254,8 +265,9 @@ theorem strictAntiOn_gammaSSigned (n : ℕ) :
   rw [interior_Icc] at hx
   have hs := signed_sin_pos_on_branch n hx
   have hc := cosh_pos x
-  have hsinh : sinh x * cos x < cosh x * sin x :=
-    sinh_mul_cos_lt_cosh_mul_sin ⟨le_of_lt hx.1, hx.2⟩
+  have ht0 : 0 < x - (n : ℝ) * π := by linarith [hx.1]
+  have htπ : x - (n : ℝ) * π < π := by linarith [hx.2]
+  have hsinh := sinh_cos_sub_lt ht0 htπ
   simp [deriv_gammaSSigned, deriv_gammaSEqual]
   nlinarith [hs, hc, hsinh]
 
@@ -294,17 +306,6 @@ theorem legacy_strictMonoOn_gammaSEqual_odd (k : ℕ) :
   linarith
 
 /-! ### Primary first-even-branch strict decrease -/
-
-private theorem sinh_cos_sub_lt {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
-    sinh t * cos t < cosh t * sin t := by
-  rcases lt_trichotomy t (π / 2) with h | h | h
-  · exact sinh_mul_cos_lt_cosh_mul_sin ⟨ht0, h⟩
-  · subst h
-    simp [cos_pi_div_two, sin_pi_div_two]
-    nlinarith [cosh_pos (π / 2), sinh_pos_iff.mpr ht0]
-  · have hsin := sin_pos_of_pos_of_lt_pi ht0 htπ
-    have hcos := cos_neg_of_pi_div_two_lt_of_lt h (lt_of_lt_of_le htπ (by linarith [pi_pos]))
-    nlinarith [cosh_pos t, sinh_pos_iff.mpr ht0, hsin, hcos]
 
 theorem strictAntiOn_gammaSSigned_zero :
     StrictAntiOn (gammaSSigned 0) (Icc (0 : ℝ) π) := by

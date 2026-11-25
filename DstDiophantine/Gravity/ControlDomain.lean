@@ -774,10 +774,12 @@ theorem controlCeilingLegacy_le_controlCeiling (Jval : ℝ) :
   unfold controlCeiling controlCeilingLegacy
   have hπ : 0 < Real.pi ^ 2 := by positivity
   have hnum : controlEnvelopeNumLegacy Jval ≤ controlEnvelopeNum Jval := by
-    have h4 : controlEnvelopeNumLegacy Jval ≤ 4 * Jval ^ 2 := by
-      unfold controlEnvelopeNumLegacy
-      exact min_le_left _ _
-    exact le_trans h4 (min_le_left _ _)
+    unfold controlEnvelopeNum controlEnvelopeNumLegacy
+    have hinner :
+        min ((2 * Jval - Real.pi ^ 2 / 2) ^ 2) ((2 * Jval + Real.pi ^ 2 / 2) ^ 2) ≤
+          min ((2 * Jval - 2 * Real.pi ^ 2) ^ 2) ((2 * Jval + 2 * Real.pi ^ 2) ^ 2) := by
+      apply le_min (le_min (by nlinarith) (by nlinarith)) (le_min (by nlinarith) (by nlinarith))
+    exact le_min (le_refl _) hinner
   have hfrac : controlEnvelopeNumLegacy Jval / Real.pi ^ 2 ≤
       controlEnvelopeNum Jval / Real.pi ^ 2 :=
     div_le_div_of_nonneg_right hnum (le_of_lt hπ)

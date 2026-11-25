@@ -114,7 +114,7 @@ theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
   · intro h
     have h0 := h (0 : Fin 3)
     have hθ : θ ≤ Real.pi := by
-      simpa [pureBoost, add_zero] using h0.2.2.2.2
+      simpa [pureBoost, add_zero] using h0.2.2.2
     exact ⟨h0.1, hθ⟩
   · rintro ⟨hθ0, hθπ⟩ a
     fin_cases a <;> simp [pureBoost, hθ0, hθπ] <;> linarith [Real.pi_pos]
