@@ -399,15 +399,8 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
       · have hβπ : p.beta b + ε ≤ Real.pi := by linarith [(hp b).2.2.1, hε.le]
         simpa [superpose_beta, magneticFaraday, B, hb] using hβπ
       · have hsum : p.alpha b + p.beta b + ε = Real.pi / 2 := by
-          have hεb : ε = Real.pi / 2 - p.alpha b - p.beta b := by
-            simp [ε, hb]
-          linarith
-        have : (superpose p (magneticFaraday B)).alpha b +
-            (superpose p (magneticFaraday B)).beta b =
-              p.alpha b + p.beta b + ε := by
-          simp [superpose_alpha, superpose_beta, magneticFaraday, B, hb]
-          ring
-        linarith
+          simp [ε, hb]; linarith [hi]
+        simpa [superpose_alpha, superpose_beta, magneticFaraday, B, hb, add_assoc] using hsum
     · have hBz : B b = 0 := by simp [B, hb]
       have hα : (superpose p (magneticFaraday B)).alpha b = p.alpha b := by
         simp [superpose_alpha, magneticFaraday]

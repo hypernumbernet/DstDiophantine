@@ -108,8 +108,9 @@ private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
           _ = 2 * k * s := by ring
           _ ≤ N := h
       have h2N : 2 * N ≤ N := by simpa [heq] using hdouble
-      have hlt : N < 2 * N := Nat.lt_mul_of_pos_left (by decide : 0 < 2) (NeZero.pos N)
-      exact (hlt.not_le) h2N
+      have hlt : N < 2 * N := by
+        simpa using Nat.mul_lt_mul_of_pos_right (by decide : 1 < 2) (NeZero.pos N)
+      exact not_le_of_gt hlt h2N
   · exfalso
     have hkvs : k * v ≤ k * s := Nat.mul_le_mul_left k hle
     have h2N : 2 * N ≤ N :=
@@ -117,8 +118,9 @@ private theorem coord_lt_of_two_mul_sum (k v s N : ℕ) [NeZero N]
         _ ≤ 2 * (k * s) := Nat.mul_le_mul_left 2 hkvs
         _ = 2 * k * s := by ring
         _ ≤ N := h
-    have hlt : N < 2 * N := Nat.lt_mul_of_pos_left (by decide : 0 < 2) (NeZero.pos N)
-    exact (hlt.not_le) h2N
+    have hlt : N < 2 * N := by
+      simpa using Nat.mul_lt_mul_of_pos_right (by decide : 1 < 2) (NeZero.pos N)
+    exact not_le_of_gt hlt h2N
 
 private theorem four_mul_le_implies_mul_lt (k v N : ℕ) [NeZero N]
     (h : 4 * k * v ≤ N) : k * v < N := by

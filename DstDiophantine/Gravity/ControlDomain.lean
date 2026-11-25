@@ -135,7 +135,7 @@ private theorem sum_signed_sq_le_attractive_lobe_continuous {p : TorsionParams}
         (t₀ + t₁ + t₂ - 2 * K) ^ 2 + 2 * K ^ 2 := by
     nlinarith [hsq, he]
   rw [hT, hK] at hbody
-  simpa [t₀, t₁, t₂] using hbody
+  simpa [t₀, t₁, t₂, axisSigned, K] using hbody
 
 private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) :

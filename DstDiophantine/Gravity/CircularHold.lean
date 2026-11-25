@@ -122,11 +122,7 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
         · simpa [coupleA, inc1_half] using h.2.1
         · simpa [coupleA, inc1_half] using h.2.2.1
         · simpa [coupleA, inc1_half, add_assoc] using h.2.2.2
-      · have h := h0 2
-        refine ⟨h.1, ?_, ?_, _⟩
-        · simpa [coupleA, inc2 0] using h.2.1
-        · simpa [coupleA, inc2 0] using h.2.2.1
-        · simpa [coupleA, inc2 0, add_assoc] using h.2.2.2
+      · simpa [coupleA, inc2, circular_increment_two] using h0 2
     have inc0_half : e * circularPotential σ E0 ω (Real.pi / 2) 0 = s := by
       simp [circularPotential, Real.sin_pi_div_two, s]
     have inc0_three :

@@ -397,8 +397,9 @@ theorem gammaSEqual_pos_before_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   by_cases ht0 : t = 0
   · rw [ht0]; simp [cos_zero]; exact cosh_pos _
   · have htpos : 0 < t := lt_of_le_of_ne htnn (Ne.symm ht0)
-    have htIoo : t ∈ Set.Ioo (0 : ℝ) (π / 2) := ⟨htpos, ht2⟩
-    exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo htIoo)
+    have ht' : t ∈ Ioo (-π / 2) (π / 2) :=
+      ⟨by linarith [htpos, pi_div_two_pos], by linarith [ht2, pi_div_two_pos]⟩
+    exact mul_pos (cosh_pos _) (cos_pos_of_mem_Ioo ht')
 
 theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
     (hxlo : branchNode n < x) (hxhi : x < (n : ℝ) * π + π) : gammaSEqual x < 0 := by

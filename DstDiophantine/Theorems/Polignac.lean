@@ -271,11 +271,11 @@ theorem gapChainHeight_admissible_le_one {S : ℝ}
   rw [gapChainHeight_eq]
   have hθ := (isAdmissibleContinuousLegacy_pureBoost_iff S).mp hadm
   have hcoef : 0 ≤ 4 / (3 * Real.pi ^ 2) := by positivity
-  have hS : |S| ≤ Real.pi / 2 := by rwa [abs_of_nonneg hθ.1]
   calc (4 / (3 * Real.pi ^ 2)) * S ^ 2
-      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 :=
-        mul_le_mul_of_nonneg_left (sq_le_sq hS hS) hcoef
-    _ = 1 / 3 := by ring
+      ≤ (4 / (3 * Real.pi ^ 2)) * (Real.pi / 2) ^ 2 := by
+        gcongr
+        nlinarith [sq_nonneg S, hθ.1, hθ.2, Real.pi_pos]
+    _ = 1 / 3 := by field_simp [hcoef] <;> ring
     _ ≤ 1 := by norm_num
 
 theorem polignac_admissible_witness_empty :
@@ -311,7 +311,7 @@ theorem polignac_gap_phase_iff {k : ℕ} (hk : 0 < k) :
         exact not_le_of_gt hθgt hle
   · rintro rfl
     exact (isAdmissibleContinuousLegacy_pureBoost_iff _).mpr
-      ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
+      ⟨by norm_num, le_of_lt two_log_two_lt_pi_div_two⟩
 
 theorem polignac_wide_gap_height {k : ℕ} (hk : 2 ≤ k) :
     1 < collatzHeight (2 * k) (by omega : 2 * k ≠ 0) :=
