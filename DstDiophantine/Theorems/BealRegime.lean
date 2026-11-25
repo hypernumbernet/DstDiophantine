@@ -203,20 +203,29 @@ theorem classifyBealExponents_fifth_pair :
                 classifyBealExponents 5 5 13 = .T ∧
                   classifyBealExponents 5 5 17 = .T ∧
                     classifyBealExponents 5 10 11 = .T ∧
-                      classifyBealExponents 22 22 7 = .U ∧
-                        classifyBealExponents 5 5 23 = .U ∧
-                          classifyBealExponents 7 7 11 = .U := by
+                      classifyBealExponents 5 5 23 = .U ∧
+                        classifyBealExponents 7 7 11 = .U := by
+  native_decide
+
+/-- `(22,22,7)` and `(14,14,13)` are Anni–Siksek even sums.
+`(14,14,17)` is an equal even seventeenth power.
+`(10,10,23)` and `(14,14,19)` stay open. -/
+theorem classifyBealExponents_anni_seventeenth :
+    classifyBealExponents 22 22 7 = .T ∧ classifyBealExponents 14 14 11 = .T ∧
+      classifyBealExponents 14 14 13 = .T ∧ classifyBealExponents 14 14 17 = .T ∧
+        classifyBealExponents 22 22 17 = .T ∧ classifyBealExponents 10 10 23 = .U ∧
+          classifyBealExponents 14 14 19 = .U := by
   native_decide
 
 /-- `(10,10,9)` is a shared exponent beside a multiple of `3`.
 `(10,10,11)` and `(5,5,11)` are fifth-power pairs.
-`(3,5,7)` and `(22,22,7)` stay open. -/
+`(3,5,7)` stays open. `(22,22,7)` is an Anni–Siksek even sum. -/
 theorem classifyBealExponents_shared_exp :
     classifyBealExponents 10 10 9 = .T ∧ classifyBealExponents 14 14 9 = .T ∧
       classifyBealExponents 14 14 25 = .T ∧ classifyBealExponents 8 12 9 = .T ∧
         classifyBealExponents 9 7 7 = .T ∧ classifyBealExponents 10 10 11 = .T ∧
           classifyBealExponents 5 5 11 = .T ∧ classifyBealExponents 3 5 7 = .U ∧
-            classifyBealExponents 22 22 7 = .U := by
+            classifyBealExponents 22 22 7 = .T := by
   native_decide
 
 theorem classifyBealExponents_nine_nine_past_bound :

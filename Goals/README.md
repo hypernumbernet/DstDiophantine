@@ -75,12 +75,12 @@ seat `n` is odd.
 
 | Leaf | Discharges | Still in this leaf |
 | --- | --- | --- |
-| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | Even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth` | `(22,22,7)`. A common exponent divisible by `4`, a fifth-power pair (`5` divides two exponents and `7`, `11`, `13`, `17`, or `19` divides the third), and `IsSharedExpCubeOrFifth` have left, including `(4,4,7)`, `(10,10,7)`, `(10,10,9)`, and `(10,10,11)` |
+| `BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual` | Even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_anni` | `(10,10,23)` and `(14,14,19)`. `(22,22,7)` is Anni–Siksek (`anniSiksekDoublePrimeSum`). `(14,14,17)` is Michaud-Jacobs (`michaudJacobsPrimeSeventeenth`). A common exponent divisible by `4`, a fifth-power pair, and `IsSharedExpCubeOrFifth` have left |
 | `BealTwoEqualEvenDiffOutsideFifthPairResidual` | Even two-equal difference, via `BealTwoEqualEvenDiffResidual_of_outside_fifth` | Open except the fifth-power pair `(7,10,10)`, and except the shared-exponent cut when the two left exponents share `n ≥ 4` |
 | `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal, via `BealTwoEqualOddResidual_of_outside_fifth_pair` | `(5,5,23)` and `(7,7,11)`. `(5,5,11)`, `(5,5,13)`, `(5,5,17)`, `(25,25,7)`, and `(5,5,21)` are fifth-power pairs, and `(9,7,7)` is the shared-exponent cut |
 | `BealAllDistinctOutsideFifthPairResidual` | Pairwise distinct exponents, via `BealAllDistinctExpResidual_of_outside_fifth_pair` | `(3,5,7)`. `(5,10,7)` and `(5,10,11)` are fifth-power pairs, and `(8,12,9)` is the shared-exponent cut |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Equal-odd Gaussian body, via `BealEqualOddTwoFactorResidual_of_ge_five` | Open as stated |
-| `BealPythagoreanUnequalOddOutsideFifthPairResidual` | Exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_fifth_pair` | The leaf outside the fifth-power pair `(10,10,14)` and the shared-exponent cut `(10,10,18)` |
+| `BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual` | Exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_anni` | The leaf outside the fifth-power pair `(10,10,14)`, the shared-exponent cut `(10,10,18)`, and the even-sum cuts `(22,22,14)` and `(14,14,34)` |
 
 `FermatMixedMotorResidual` discharges classical FLT
 (`FermatLastTheorem_of_mixed_motor_residual`). Excess and odd-prime
@@ -221,7 +221,9 @@ tree. They are not research targets.
 | `BealTwoEqualEvenDiffFactorResidual`, `BealTwoEqualEvenDiffPerfectPowerResidual` | Older packaging of the even-difference body. The named leaf is `BealTwoEqualEvenDiffOutsideFifthPairResidual` |
 | `BealTwoEqualEvenSumExpGeSevenOutsideCubePairResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` by `bennettEllenbergNg` |
 | `BealTwoEqualEvenSumExpGeSevenOutsideFourthResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` by `sumTwoFifthsNotSeventhOrNineteenth` and `sumTwoFifthsNotStollPrime` |
-| `BealTwoEqualEvenDiffOutsideCubePairResidual` | Follows from `BealTwoEqualEvenDiffOutsideFifthPairResidual` by the same two axioms |
+| `BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual` | Follows from `BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual` by `anniSiksekDoublePrimeSum` and `michaudJacobsPrimeSeventeenth` |
+| `BealPythagoreanUnequalOddOutsideFifthPairResidual` | Follows from `BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual` by the same two axioms |
+| `BealTwoEqualEvenDiffOutsideCubePairResidual` | Follows from `BealTwoEqualEvenDiffOutsideFifthPairResidual` by `sumTwoFifthsNotSeventhOrNineteenth` and `sumTwoFifthsNotStollPrime` |
 | `BealTwoEqualOddOutsideRepeatedFifthResidual` | Follows from `BealTwoEqualOddOutsideFifthPairResidual` by the same two axioms |
 | `BealAllDistinctOutsideCubePairResidual` | Follows from `BealAllDistinctOutsideFifthPairResidual` by the same two axioms |
 | `BealPythagoreanUnequalOddOutsideCubePairResidual` | Follows from `BealPythagoreanUnequalOddOutsideFifthPairResidual` by the same two axioms |
@@ -248,3 +250,4 @@ leaves and the closed theorems.
 | Hydrogen ladder, Newton–Wigner, Kerr chart, written action | Recorded as closed or refused. No new `sorry`. The Kerr window stays definition-first |
 | `Algebra/CGA` | Off the algebra barrel. Do not restore those props as Goals |
 | Fifth-power pairs at `11`, `13`, and `17` | `sumTwoFifthsNotStollPrime`, Stoll's unconditional range. The `sorry` stays on the narrower leaf. `(5,5,11)` and `(10,10,11)` leave the open column. Primes `p ≥ 23`, and `(7,7,11)`, stay open |
+| Even sums `x^{2ℓ} + y^{2m} = z^p` for primes `ℓ, m ≥ 5` and `p ∈ {7,11,13}`, and the equal case at hypotenuse `17` for primes other than `5` | `anniSiksekDoublePrimeSum` and `michaudJacobsPrimeSeventeenth`. The `sorry` stays on the narrower leaf. `(22,22,7)`, `(14,14,13)`, and `(14,14,17)` leave the open column. `(10,10,23)` and `(14,14,19)` stay open |

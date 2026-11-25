@@ -1,6 +1,7 @@
 import DstDiophantine.Theorems.BealFinite
 import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.Bruin
+import DstDiophantine.Theorems.AnniSiksek
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.SiksekStoll
 
@@ -185,14 +186,16 @@ def IsClosedShapeExponents (x y z : ℕ) : Prop :=
       IsRepeatedFifthShape x y z ∨
       IsFourthSumShape x y z ∨
       IsFifthPairPowerShape x y z ∨
-      IsSharedExpCubeOrFifth x y z)
+      IsSharedExpCubeOrFifth x y z ∨
+      IsAnniSiksekEvenSumShape x y z ∨
+      IsEqualEvenSeventeenthShape x y z)
 
 instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   unfold IsClosedShapeExponents
   infer_instance
 
-/-- Open after closed shapes. `(22,22,7)`, `(5,5,23)`, and `(3,5,7)` stay open.
-`(5,5,11)` is a fifth-power pair. -/
+/-- Open after closed shapes. `(10,10,23)`, `(14,14,19)`, `(5,5,23)`, and `(3,5,7)` stay open.
+`(22,22,7)` is an Anni–Siksek even sum. `(5,5,11)` is a fifth-power pair. -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
   let d := bealExpGcd x y z
   decide
@@ -210,7 +213,9 @@ def isOpenResidualExponents (x y z : ℕ) : Bool :=
       ¬ IsRepeatedFifthShape x y z ∧
       ¬ IsFourthSumShape x y z ∧
       ¬ IsFifthPairPowerShape x y z ∧
-      ¬ IsSharedExpCubeOrFifth x y z)
+      ¬ IsSharedExpCubeOrFifth x y z ∧
+      ¬ IsAnniSiksekEvenSumShape x y z ∧
+      ¬ IsEqualEvenSeventeenthShape x y z)
 
 theorem isOpenResidualExponents_iff {x y z : ℕ} :
     isOpenResidualExponents x y z = true ↔
@@ -219,12 +224,12 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
   simp only [decide_eq_true_eq]
   constructor
   · intro ⟨hx, hy, hz, hd, hfourth, hDM, hNN5, hCube, h345, hpair, hfifth, h4sum, h5pair,
-      hshare⟩
+      hshare, hanni, h17⟩
     refine ⟨hx, hy, hz, ?_⟩
     intro hcl
     obtain ⟨_, _, _, hdisj⟩ := hcl
     rcases hdisj with hge | h2 | hdm | hnn | hcube | hsig | hcp | hfifth' | h4sum' | h5pair' |
-      hshare'
+      hshare' | hanni' | h17'
     · rcases hd with hd | hd <;> omega
     · exact hfourth h2
     · exact hDM hdm
@@ -236,8 +241,10 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
     · exact h4sum h4sum'
     · exact h5pair h5pair'
     · exact hshare hshare'
+    · exact hanni hanni'
+    · exact h17 h17'
   · intro ⟨hx, hy, hz, hnot⟩
-    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    refine ⟨hx, hy, hz, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · have htri := bealExpGcd_eq_one_or_eq_two_or_ge_three (y := y) (z := z) hx
       have hnge : ¬ 3 ≤ bealExpGcd x y z := fun hd =>
         hnot ⟨hx, hy, hz, Or.inl hd⟩
@@ -264,7 +271,13 @@ theorem isOpenResidualExponents_iff {x y z : ℕ} :
           (Or.inr (Or.inr (Or.inl h5pair)))))))))⟩
     · exact fun hshare =>
         hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-          (Or.inr (Or.inr (Or.inr hshare)))))))))⟩
+          (Or.inr (Or.inr (Or.inr (Or.inl hshare))))))))))⟩
+    · exact fun hanni =>
+        hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+          (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl hanni)))))))))))⟩
+    · exact fun h17 =>
+        hnot ⟨hx, hy, hz, Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+          (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr h17)))))))))))⟩
 
 theorem isOpenResidualExponents_eq_false_of_closed {x y z : ℕ}
     (h : IsClosedShapeExponents x y z) :

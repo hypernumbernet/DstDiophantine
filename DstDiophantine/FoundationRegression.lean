@@ -36,6 +36,7 @@ import DstDiophantine.Theorems.DarmonMerel
 import DstDiophantine.Theorems.FermatNN5
 import DstDiophantine.Theorems.Bruin
 import DstDiophantine.Theorems.SiksekStoll
+import DstDiophantine.Theorems.AnniSiksek
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.FermatLast
@@ -664,17 +665,23 @@ example :
                 classifyBealExponents 5 5 13 = .T ∧
                   classifyBealExponents 5 5 17 = .T ∧
                     classifyBealExponents 5 10 11 = .T ∧
-                      classifyBealExponents 22 22 7 = .U ∧
-                        classifyBealExponents 5 5 23 = .U ∧
-                          classifyBealExponents 7 7 11 = .U :=
+                      classifyBealExponents 5 5 23 = .U ∧
+                        classifyBealExponents 7 7 11 = .U :=
   classifyBealExponents_fifth_pair
+
+example :
+    classifyBealExponents 22 22 7 = .T ∧ classifyBealExponents 14 14 11 = .T ∧
+      classifyBealExponents 14 14 13 = .T ∧ classifyBealExponents 14 14 17 = .T ∧
+        classifyBealExponents 22 22 17 = .T ∧ classifyBealExponents 10 10 23 = .U ∧
+          classifyBealExponents 14 14 19 = .U :=
+  classifyBealExponents_anni_seventeenth
 
 example :
     classifyBealExponents 10 10 9 = .T ∧ classifyBealExponents 14 14 9 = .T ∧
       classifyBealExponents 14 14 25 = .T ∧ classifyBealExponents 8 12 9 = .T ∧
         classifyBealExponents 9 7 7 = .T ∧ classifyBealExponents 10 10 11 = .T ∧
           classifyBealExponents 5 5 11 = .T ∧ classifyBealExponents 3 5 7 = .U ∧
-            classifyBealExponents 22 22 7 = .U :=
+            classifyBealExponents 22 22 7 = .T :=
   classifyBealExponents_shared_exp
 
 example {A B C : ℤ}
@@ -693,9 +700,18 @@ example {A B C : ℤ}
     fun h => not_beal_five_five_seventeen hA hB hC hgcd h,
     fun h => not_beal_ten_ten_eleven hA hB hC hgcd h⟩
 
-example (hOut : BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual) :
+example (hOut : BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual) :
     BealTwoEqualEvenSumResidual :=
-  BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth hOut
+  BealTwoEqualEvenSumResidual_of_ge_seven_outside_anni hOut
+
+example {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1) :
+    ¬ A ^ 22 + B ^ 22 = C ^ 7 ∧ ¬ A ^ 14 + B ^ 14 = C ^ 13 ∧
+      ¬ A ^ 14 + B ^ 14 = C ^ 17 :=
+  ⟨fun h => not_beal_twenty_two_twenty_two_seven hA hB hC hgcd h,
+    fun h => not_beal_fourteen_fourteen_thirteen hA hB hC hgcd h,
+    fun h => not_beal_fourteen_fourteen_seventeen hA hB hC hgcd h⟩
 
 example {A B C : ℤ}
     (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)

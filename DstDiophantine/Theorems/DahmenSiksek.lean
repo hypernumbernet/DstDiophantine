@@ -487,8 +487,9 @@ theorem not_beal_ten_ten_nine {A B C : ℤ}
   not_beal_shared_exp_cube_or_fifth (by decide) (by decide) (by decide)
     hA hB hC hgcd (by decide) hsol
 
-/-- Open: even sum `z ≥ 7` outside fourth-, fifth-, and shared-exponent cuts.
-`(22,22,7)` remains. `(10,10,11)` is a fifth-power pair. -/
+/-- Even sum `z ≥ 7` outside fourth-, fifth-, and shared-exponent cuts.
+Follows from `BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual`.
+`(22,22,7)` is an Anni–Siksek shape. `(10,10,11)` is a fifth-power pair. -/
 def BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),

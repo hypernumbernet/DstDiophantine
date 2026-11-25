@@ -2,6 +2,7 @@ import DstDiophantine.Theorems.BealEven
 import DstDiophantine.Theorems.BealGaussianCube
 import DstDiophantine.Theorems.BennettEllenbergNg
 import DstDiophantine.Theorems.Bruin
+import DstDiophantine.Theorems.AnniSiksek
 import DstDiophantine.Theorems.DahmenSiksek
 import DstDiophantine.Theorems.FermatMixed
 
@@ -22,10 +23,10 @@ theorem fermatMixedMotorResidual : FermatMixedMotorResidual := by sorry
 theorem bealEqualOddTwoFactorExpGeFiveResidual :
     BealEqualOddTwoFactorExpGeFiveResidual := by sorry
 
-/-- Open. `(10,10,9)` is `IsSharedExpCubeOrFifth`. `(10,10,11)` is a fifth-power pair.
-`(22,22,7)` remains. -/
-theorem bealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual :
-    BealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual := by sorry
+/-- Open. `(22,22,7)` is `IsAnniSiksekEvenSumShape`. `(14,14,17)` is an equal even
+seventeenth power. `(10,10,23)` and `(14,14,19)` remain. -/
+theorem bealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual :
+    BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual := by sorry
 
 /-- Open. Outside cube-pair and fifth-power shapes. -/
 theorem bealTwoEqualEvenDiffOutsideFifthPairResidual :
@@ -39,8 +40,8 @@ theorem bealTwoEqualOddOutsideFifthPairResidual :
 theorem bealAllDistinctOutsideFifthPairResidual :
     BealAllDistinctOutsideFifthPairResidual := by sorry
 
-/-- Open. Outside the equal-odd Gaussian slices and the named shapes. -/
-theorem bealPythagoreanUnequalOddOutsideFifthPairResidual :
-    BealPythagoreanUnequalOddOutsideFifthPairResidual := by sorry
+/-- Open. `(22,22,14)` is `IsAnniSiksekEvenSumShape`. `(10,10,14)` is a fifth-power pair. -/
+theorem bealPythagoreanUnequalOddOutsideAnniSeventeenthResidual :
+    BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual := by sorry
 
 end Goals.Diophantine

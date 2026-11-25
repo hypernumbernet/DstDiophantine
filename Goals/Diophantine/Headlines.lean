@@ -22,8 +22,8 @@ theorem classical_beal_conjecture :
       A ^ x + B ^ y = C ^ z →
       1 < bealGcd A B C :=
   beal_conjecture_pos_of_fine_residuals_even_split
-    (BealTwoEqualEvenSumResidual_of_ge_seven_outside_fourth_fifth
-      bealTwoEqualEvenSumExpGeSevenOutsideFourthFifthResidual)
+    (BealTwoEqualEvenSumResidual_of_ge_seven_outside_anni
+      bealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual)
     (BealTwoEqualEvenDiffResidual_of_outside_fifth
       bealTwoEqualEvenDiffOutsideFifthPairResidual)
     (BealTwoEqualOddResidual_of_outside_fifth_pair
@@ -32,8 +32,8 @@ theorem classical_beal_conjecture :
       bealAllDistinctOutsideFifthPairResidual)
     (BealEqualOddTwoFactorResidual_of_ge_five
       bealEqualOddTwoFactorExpGeFiveResidual)
-    (BealPythagoreanUnequalOddResidual_of_outside_fifth_pair
-      bealPythagoreanUnequalOddOutsideFifthPairResidual)
+    (BealPythagoreanUnequalOddResidual_of_outside_anni
+      bealPythagoreanUnequalOddOutsideAnniSeventeenthResidual)
 
 /-- Not a proof: assembled from the open leaf `fermatMixedMotorResidual`. -/
 theorem fermat_last_theorem_unconditional : FermatLastTheorem :=
