@@ -25,33 +25,25 @@ open Real Set intervalIntegral MeasureTheory
 /-! ### Value at the quarter phase -/
 
 theorem gammaSEqual_pi_div_four :
-    gammaSEqual (π / 4) = exp (-π / 4) / sqrt 2 := by
+    gammaSEqual (π / 4) = -cosh (π / 4) * (sqrt 2 / 2) := by
   unfold gammaSEqual
   rw [sin_pi_div_four, cos_pi_div_four]
-  have hfac : cosh (π / 4) * (sqrt 2 / 2) - sinh (π / 4) * (sqrt 2 / 2) =
-      (sqrt 2 / 2) * (cosh (π / 4) - sinh (π / 4)) := by ring
-  rw [hfac, cosh_sub_sinh]
-  have hhalf : sqrt 2 / 2 = 1 / sqrt 2 := by
-    field_simp
-    exact sq_sqrt (by norm_num)
-  rw [hhalf, one_div, mul_comm, ← div_eq_mul_inv]
-  refine congrArg (fun t => t / sqrt 2) ?_
-  rw [show -(π / 4) = -π / 4 by ring]
+  ring
 
 theorem pairAttraction_pi_div_four :
-    pairAttraction (π / 4) = (π ^ 2 * sqrt 2 / 4) * exp (π / 4) := by
+    pairAttraction (π / 4) = (4 * (π / 4) ^ 2) / (-cosh (π / 4) * (sqrt 2 / 2)) := by
   unfold pairAttraction
   rw [gammaSEqual_pi_div_four]
-  have hs : (sqrt 2) ^ 2 = 2 := sq_sqrt (by norm_num)
-  field_simp [hs, (exp_pos (-π / 4)).ne']
-  rw [← exp_add, show -(π / 4) + π / 4 = 0 by ring, exp_zero]
+  ring
 
 /-! ### Slope comparison on both sides of the first node -/
 
 private theorem four_lt_nodeSlopeHi_mul_pi : 4 < nodeSlopeHi * π := by
   dsimp [nodeSlopeHi, nodeGap]
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, sub_zero]
-  nlinarith [cosh_pos (π / 2), pi_pos, one_lt_cosh]
+  have hγπ : gammaSEqual π = -cosh π := by
+    simpa [Nat.cast_one, one_mul] using gammaSEqual_nat_mul_pi 1
+  nlinarith [hγπ, cosh_pos π, pi_pos, one_lt_cosh]
 
 theorem gammaSEqual_linear_right_firstNode {x : ℝ} (hx : x ∈ Ioc resonanceRoot1 1) :
     nodeSlopeLo * (x - resonanceRoot1) < -gammaSEqual x ∧

@@ -51,9 +51,9 @@ noncomputable def legacyCubeCertHi : ℝ := 39 / 10
 lemma legacyCubeCertHi_def : legacyCubeCertHi = (39 / 10 : ℝ) := rfl
 
 lemma legacyCubeCertHi_lt_branchNode : legacyCubeCertHi < branchNode 1 := by
-  unfold legacyCubeCertHi branchNode
-  have hlo : π + π / 4 < branchNode 1 := (node_mem_sharp_branch 1).1
-  linarith [pi_gt_d6, hlo]
+  rw [legacyCubeCertHi_def]
+  have hmem := (node_mem_sharp_branch 1).1
+  linarith [hmem.1]
 
 lemma two_resonanceRoot1_lt_legacyCubeCertHi : 2 * resonanceRoot1 < legacyCubeCertHi := by
   rw [resonanceRoot1_eq_pi_div_two, legacyCubeCertHi_def, two_mul]
@@ -766,12 +766,43 @@ private lemma gammaSEqualLegacy_neg_right_of_node_local {x : ℝ} (hx : x ∈ Io
 
 lemma gammaSEqualLegacy_thirtyNine_tenths_neg : gammaSEqualLegacy legacyCubeCertHi < 0 := by
   rw [legacyCubeCertHi_def]
-  have h39lo : π < (39 / 10 : ℝ) := by linarith [pi_lt_d6]
-  have h39hi : (39 / 10 : ℝ) < 7 / 2 := by norm_num
-  have hIcc39 : (39 / 10 : ℝ) ∈ Icc π (π + π) := ⟨h39lo.le, by linarith [h39hi, pi_gt_three]⟩
-  have hIcc72 : (7 / 2 : ℝ) ∈ Icc π (π + π) := ⟨by linarith [pi_lt_d6], by linarith [pi_gt_three]⟩
-  have hmono := strictMonoOn_gammaSEqualLegacy_odd 0 hIcc39 hIcc72 h39hi
-  linarith [hmono, gammaSEqualLegacy_seven_halves_lt_neg_six]
+  have hεlo : (758 / 1000 : ℝ) ≤ 39 / 10 - π := by linarith [pi_lt_d6]
+  have hεhi : 39 / 10 - π ≤ 760 / 1000 := by linarith [pi_gt_d6]
+  have hexp_lo : (48 : ℝ) < exp (39 / 10) := by
+    have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
+      rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
+    have h4 : (73 / 10) ^ 2 < exp 4 := by
+      have hid4 : exp 4 = exp 2 * exp 2 := by
+        rw [show (4 : ℝ) = 2 + 2 by norm_num, exp_add]
+      nlinarith [exp_one_sq_bounds.1, exp_pos 2]
+    have h10 : exp (1 / 10) < 111 / 100 := exp_tenth_bounds.2
+    rw [hid]
+    refine (lt_div_iff₀ (exp_pos _)).2 ?_
+    nlinarith [h4, h10]
+  have hexp_hi : exp (39 / 10) < 50 := by
+    have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
+      rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
+    have h4 : exp 4 < (74 / 10) ^ 2 := by
+      have hid4 : exp 4 = exp 2 * exp 2 := by
+        rw [show (4 : ℝ) = 2 + 2 by norm_num, exp_add]
+      nlinarith [exp_one_sq_bounds.2, exp_pos 2]
+    have h10 : (11 / 10 : ℝ) < exp (1 / 10) := exp_tenth_bounds.1
+    rw [hid]
+    refine (div_lt_iff₀ (exp_pos _)).2 ?_
+    nlinarith [h4, h10]
+  have hD : -(sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (760 / 1000) + cosLo (760 / 1000) := by
+    simp only [sinHi, cosLo]; norm_num
+  have hbounds := gamma_after_legacy (x := 39 / 10) (ε := 39 / 10 - π)
+      (a := 758 / 1000) (b := 760 / 1000) (E0 := 48) (E1 := 50)
+      (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
+      hexp_lo.le hexp_hi.le hD hS
+  have hgu : gammaUpper (50)
+      (-(sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000)))
+      (-sinLo (758 / 1000) (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) < 0 := by
+    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+  linarith [hbounds.2, hgu]
 
 private lemma gammaSEqualLegacy_neg_legacy_cube_window {x : ℝ}
     (hx : x ∈ Ioo resonanceRoot1 legacyCubeCertHi) : gammaSEqualLegacy x < 0 := by
@@ -782,14 +813,13 @@ private lemma gammaSEqualLegacy_neg_legacy_cube_window {x : ℝ}
     · exact gammaSEqualLegacy_neg_right_of_node_local ⟨hx.1, hlt⟩
   · have hπneg : gammaSEqualLegacy π < 0 := by
       rw [gammaSEqualLegacy_exp, cos_pi, sin_pi]; linarith [cosh_pos π, exp_pos π, exp_pos (-π)]
-    have h39neg : gammaSEqualLegacy legacyCubeCertHi < 0 := gammaSEqualLegacy_thirtyNine_tenths_neg
-    have hcert := legacyCubeCertHi_def
-    have hIccπ : π ∈ Icc π legacyCubeCertHi := ⟨le_rfl, by rwa [hcert]⟩
-    have hIccx : x ∈ Icc π legacyCubeCertHi := ⟨hgt.le, by linarith [hx.2, hgt.le]⟩
-    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0 (by simpa [hcert] using hIccπ)
-      (by simpa [hcert] using hIccx) hgt
-    rw [← hcert] at h39neg
-    linarith [hltmono, h39neg]
+    have h39neg := gammaSEqualLegacy_thirtyNine_tenths_neg
+    rw [legacyCubeCertHi_def] at h39neg ⊢
+    have hIccπ : (π : ℝ) ∈ Icc π (39 / 10) := ⟨le_rfl, by linarith [hx.2, hgt]⟩
+    have hIccx : x ∈ Icc π (39 / 10) := ⟨hgt.le, hx.2⟩
+    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0
+      (by simpa [legacyCubeCertHi_def] using hIccπ) (by simpa [legacyCubeCertHi_def] using hIccx) hgt
+    exact lt_trans hltmono h39neg
 
 lemma halfPhaseLegacy_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
     gammaSEqualLegacy (y / 2) < 0 := by
@@ -802,9 +832,9 @@ lemma halfPhaseLegacy_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot
 
 lemma ratioSlopeLegacy_neg_right {x : ℝ} (hx : x ∈ Ioo π legacyCubeCertHi) : ratioSlopeLegacy x < 0 := by
   have hhalf_lo : π / 2 < x / 2 := by linarith [hx.1]
-  have hnode : branchNode 1 < π + π := by
-    simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.2
-  have hhalf_hi : x / 2 < π := by linarith [hx.2, hnode]
+  have hhalf_hi : x / 2 < π := by
+    rw [legacyCubeCertHi_def] at hx
+    linarith [hx.2, pi_gt_three]
   have hγ : gammaSEqualLegacy x < 0 :=
     gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [resonanceRoot1_eq_pi_div_two, hx.1], hx.2⟩
   have hγh : gammaSEqualLegacy (x / 2) < 0 :=
