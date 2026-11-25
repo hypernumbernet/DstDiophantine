@@ -769,25 +769,6 @@ private theorem shifted_mass_le_axis_parabola {Jval Mval : ℝ}
       4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by ring
   linarith [hM, hid]
 
-theorem controlCeilingLegacy_le_controlCeiling (Jval : ℝ) :
-    controlCeilingLegacy Jval ≤ controlCeiling Jval := by
-  unfold controlCeiling controlCeilingLegacy
-  have hπ : 0 < Real.pi ^ 2 := by positivity
-  have hnum : controlEnvelopeNumLegacy Jval ≤ controlEnvelopeNum Jval := by
-    have h4 : controlEnvelopeNumLegacy Jval ≤ 4 * Jval ^ 2 := by
-      unfold controlEnvelopeNumLegacy
-      exact min_le_left _ _
-    have h4 : controlEnvelopeNumLegacy Jval ≤ 4 * Jval ^ 2 := by
-      unfold controlEnvelopeNumLegacy
-      exact min_le_left _ _
-    unfold controlEnvelopeNum
-    exact le_trans h4 (min_le_left _ _)
-  have hfrac : controlEnvelopeNumLegacy Jval / Real.pi ^ 2 ≤
-      controlEnvelopeNum Jval / Real.pi ^ 2 :=
-    div_le_div_of_nonneg_right hnum (le_of_lt hπ)
-  have hhead : (5 : ℝ) * Real.pi ^ 2 / 16 ≤ 5 * Real.pi ^ 2 / 4 := by
-    linarith [Real.pi_pos]
-  linarith
 
 
 private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}

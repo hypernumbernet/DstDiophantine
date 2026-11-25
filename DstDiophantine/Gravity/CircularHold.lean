@@ -382,11 +382,11 @@ theorem transversePureDual_admissible_legacy :
   intro a
   fin_cases a
   · simp only [transversePureDual]
-    refine ⟨le_rfl, by linarith [Real.pi_pos], by
-      simpa using (show (0 : ℝ) + Real.pi / 4 ≤ Real.pi / 2 by linarith [Real.pi_pos])⟩
+    refine ⟨le_rfl, div_nonneg (le_of_lt Real.pi_pos) (by norm_num),
+      show (0 : ℝ) + Real.pi / 4 ≤ Real.pi / 2 from by linarith [Real.pi_gt_d2]⟩
   · simp only [transversePureDual]
-    refine ⟨le_rfl, by linarith [Real.pi_pos], by
-      simpa using (show (0 : ℝ) + Real.pi / 4 ≤ Real.pi / 2 by linarith [Real.pi_pos])⟩
+    refine ⟨le_rfl, div_nonneg (le_of_lt Real.pi_pos) (by norm_num),
+      show (0 : ℝ) + Real.pi / 4 ≤ Real.pi / 2 from by linarith [Real.pi_gt_d2]⟩
   · simp only [transversePureDual]
     refine ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
 

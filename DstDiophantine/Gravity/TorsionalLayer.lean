@@ -257,23 +257,54 @@ private theorem sinh_cos_sub_lt {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
     have hcos := cos_neg_of_pi_div_two_lt_of_lt h (lt_of_lt_of_le htπ (by linarith [pi_pos]))
     nlinarith [cosh_pos t, sinh_pos_iff.mpr ht0, hsin, hcos]
 
-theorem strictAntiOn_gammaSSigned (n : ℕ) :
+theorem strictAntiOn_gammaSSigned {n : ℕ} (hn : Even n) :
     StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
+  rcases even_iff_two_dvd.mp hn with ⟨k, rfl⟩
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
-    (continuous_gammaSSigned n).continuousOn ?_
+    (continuous_gammaSSigned (2 * k)).continuousOn ?_
   intro x hx
-  rw [interior_Icc] at hx
-  have hs := signed_sin_pos_on_branch n hx
+  simp only [interior_Icc] at hx
+  obtain ⟨hx1, hx2⟩ := hx
+  have hs := signed_sin_pos_on_branch (2 * k) ⟨hx1, hx2⟩
   have hc := cosh_pos x
-  have ht0 : 0 < x - (n : ℝ) * π := by linarith [hx.1]
-  have htπ : x - (n : ℝ) * π < π := by linarith [hx.2]
+  have ht0 : 0 < x - (2 * k : ℝ) * π := sub_pos.mpr (by simpa using hx1)
+  have htπ : x - (2 * k : ℝ) * π < π := by linarith [hx2]
   have hsinh := sinh_cos_sub_lt ht0 htπ
-  suffices hderiv : deriv (gammaSSigned n) x < 0 by exact hderiv
-  rcases Nat.even_or_odd n with ⟨k, rfl⟩ | ⟨k, rfl⟩
-  · simp [deriv_gammaSSigned, deriv_gammaSEqual, Nat.even_mul, pow_mul]
-    nlinarith [hs, hc, hsinh]
-  · simp [deriv_gammaSSigned, deriv_gammaSEqual, pow_succ, pow_mul, pow_one]
-    nlinarith [hs, hc, hsinh]
+  suffices hderiv : sinh x * cos x - cosh x * sin x < 0 by
+    simpa [deriv_gammaSSigned, deriv_gammaSEqual, pow_mul, Nat.even_mul] using hderiv
+  exact hsinh
+
+private theorem sin_neg_of_signed_sin_pos_branch {n : ℕ} {x : ℝ}
+    (hs : 0 < (-1 : ℝ) ^ n * sin x) (hn : Odd n) : sin x < 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by
+    simp [pow_add, pow_mul, neg_one_sq, one_mul]
+  rw [hpow, neg_mul] at hs
+  simpa using hs
+
+private theorem cosh_sin_lt_sinh_cos_of_sin_neg {x : ℝ}
+    (hsin : sin x < 0) (hx0 : 0 < x) :
+    cosh x * sin x < sinh x * cos x := by
+  have hc := cosh_pos x
+  have hs := sinh_pos_iff.mpr hx0
+  nlinarith [hsin, hc, hs, sinh_add_cosh, Real.sin_sq_add_cos_sq x]
+
+theorem strictAntiOn_gammaSSigned_odd (k : ℕ) :
+    StrictAntiOn (gammaSSigned (2 * k + 1))
+      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) ((2 * k + 1 : ℕ) * π + π)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    (continuous_gammaSSigned (2 * k + 1)).continuousOn ?_
+  intro x hx
+  simp only [interior_Icc] at hx
+  obtain ⟨hx1, hx2⟩ := hx
+  have hs := signed_sin_pos_on_branch (2 * k + 1) ⟨hx1, hx2⟩
+  have hsin := sin_neg_of_signed_sin_pos_branch hs ⟨k, rfl⟩
+  have hx0 : 0 < x := lt_trans (by linarith [pi_pos]) hx1
+  have hlt := cosh_sin_lt_sinh_cos_of_sin_neg hsin hx0
+  suffices hderiv : deriv (gammaSSigned (2 * k + 1)) x < 0 by exact hderiv
+  rw [deriv_gammaSSigned, deriv_gammaSEqual]
+  simp [pow_succ, pow_mul]
+  linarith [hlt]
 
 theorem strictAntiOn_gammaSSignedLegacy (n : ℕ) :
     StrictAntiOn (gammaSSignedLegacy n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
@@ -323,7 +354,7 @@ theorem strictAntiOn_gammaSSigned_zero :
 theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
     StrictAntiOn gammaSEqual
       (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned (2 * k)
+  have h := strictAntiOn_gammaSSigned (even_two_mul k)
   intro a ha b hb hab
   have hlt := h ha hb hab
   unfold gammaSSigned at hlt
@@ -334,14 +365,14 @@ theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
 theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
     StrictMonoOn gammaSEqual
       (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned (2 * k + 1)
+  have h := strictAntiOn_gammaSSigned_odd k
   intro a ha b hb hab
   have hlt := h ha hb hab
   unfold gammaSSigned at hlt
   rw [show (-1 : ℝ) ^ (2 * k + 1) = -1 by simp [pow_succ, pow_mul]] at hlt
   linarith
 
-/-- Odd-branch monotonicity on the legacy mixed chart (π-cone version currently under research). -/
+/-- Odd-branch monotonicity on the legacy mixed chart (balanced overlap; see `docs/mismatch-angle.md`). -/
 theorem strictMonoOn_gammaSEqualLegacy_odd (k : ℕ) :
     StrictMonoOn gammaSEqualLegacy
       (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) :=

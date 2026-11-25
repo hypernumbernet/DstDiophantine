@@ -564,10 +564,14 @@ theorem isAdmissibleContinuous_abcMismatch_iff {a b c : ℕ} (h : IsAbcTriple a 
       0 ≤ Real.log c - Real.log (abcRadical (a * b * c)) ∧
         Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 2 := by
   set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
-  unfold abcMismatchParams
   simp only [abcMismatchParams, pureBoost]
-  rw [Amplification.isAdmissibleContinuous_pureBoost_iff δ]
-  constructor <;> rintro ⟨h0, hπ⟩ <;> constructor <;> nlinarith
+  constructor
+  · intro hadm
+    rcases (Amplification.isAdmissibleContinuous_pureBoost_iff (2 * δ)).mp hadm with ⟨hθ0, hθ⟩
+    exact ⟨by nlinarith, by linarith⟩
+  · rintro ⟨hδ0, hδπ⟩
+    exact (Amplification.isAdmissibleContinuous_pureBoost_iff (2 * δ)).mpr
+      ⟨by nlinarith, by nlinarith⟩
 
 theorem abc_c_le_exp_mul_radical_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuousLegacy (abcMismatchParams a b c)) :
@@ -793,9 +797,11 @@ theorem isAdmissibleContinuous_abc_one_eight_nine :
   · rw [abcRadical_one_eight_nine]
     push_cast
     rw [← Real.log_div (by norm_num) (by norm_num)]
-    have hratio : (9 : ℝ) / 6 < Real.exp (Real.pi / 4) :=
-      (by norm_num : (9 : ℝ) / 6 < 2).trans two_lt_exp_pi_div_four
-    exact le_of_lt ((Real.log_lt_iff_lt_exp (by norm_num)).mpr hratio)
+    have hratio : (9 : ℝ) / 6 < Real.exp (Real.pi / 2) :=
+      lt_trans (lt_trans (by norm_num : (9 : ℝ) / 6 < 2) two_lt_exp_pi_div_four)
+        (Real.exp_lt_exp.mpr (by linarith [Real.pi_pos]))
+    have := (Real.log_lt_iff_lt_exp (by norm_num)).mpr hratio
+    exact le_of_lt this
 
 theorem isAbcTriple_three_one_two_five : IsAbcTriple 3 125 128 := by
   refine ⟨by decide, by decide, by decide, ?_⟩
@@ -1046,19 +1052,24 @@ private theorem abc_quality_le_branch_of_admissible_continuous {a b c : ℕ}
     (le_div_iff₀ hLpos).mpr hle
   linarith
 
+/-- Champion ceiling still uses the legacy mismatch cone (`δ ≤ π/4`); the π-widened continuous
+    cone does not retain the radical–33 analytic margin (`docs/mismatch-angle.md`). -/
 private theorem abc_admissible_champion_dichotomy {a b c : ℕ} (h : IsAbcTriple a b c)
-    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    (hadm : IsAdmissibleContinuousLegacy (abcMismatchParams a b c)) :
     (a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) ∨
       abcQuality a b c < abcQuality 1 8 9 := by
   by_cases hrad : abcRadical (a * b * c) ≤ 32
-  · have hc_exp := abc_c_le_exp_mul_radical_of_admissible_continuous h hadm
+  · have hc_exp := abc_c_le_exp_mul_radical_of_admissible h hadm
     have hRle : (abcRadical (a * b * c) : ℝ) ≤ 32 := by exact_mod_cast hrad
-    have hexp : Real.exp (Real.pi / 2) * (abcRadical (a * b * c) : ℝ) ≤
-        Real.exp (Real.pi / 2) * 32 :=
+    have hexp : Real.exp (Real.pi / 4) * (abcRadical (a * b * c) : ℝ) ≤
+        Real.exp (Real.pi / 4) * 32 :=
       mul_le_mul_of_nonneg_left hRle (le_of_lt (Real.exp_pos _))
     have hc_lt : (c : ℝ) < 71 := by
-      have hle : (c : ℝ) ≤ Real.exp (Real.pi / 2) * 32 := hc_exp.trans hexp
-      nlinarith [hle, Real.exp_pos, Real.pi_pos, show Real.exp (Real.pi / 2) < 5 by norm_num]
+      have hle : (c : ℝ) ≤ Real.exp (Real.pi / 4) * 32 := hc_exp.trans hexp
+      have h32lt : Real.exp (Real.pi / 4) * 32 < (11 : ℝ) / 5 * 32 :=
+        mul_lt_mul_of_pos_right exp_pi_div_four_lt_eleven_div_five (by norm_num)
+      have hcap : (11 : ℝ) / 5 * 32 < 71 := by norm_num
+      exact hle.trans_lt (h32lt.trans hcap)
     have hc70 : c ≤ 70 := by
       have hlt : c < 71 := Nat.cast_lt.mp hc_lt
       omega
@@ -1072,7 +1083,7 @@ private theorem abc_admissible_champion_dichotomy {a b c : ℕ} (h : IsAbcTriple
     · exact Or.inr (Or.inl h8)
     · exact Or.inr (Or.inr (abcQuality_lt_champion_of_pow8 h hpow))
   · have h33 : 33 ≤ abcRadical (a * b * c) := by omega
-    have hceil := abc_quality_le_branch_of_admissible_continuous h hadm
+    have hceil := abc_quality_le_branch_of_admissible h hadm
     have hlog_mono : Real.log 33 ≤ Real.log (abcRadical (a * b * c)) := by
       refine (Real.log_le_log_iff (by norm_num) ?_).mpr ?_
       · exact Nat.cast_pos.mpr (abcRadical_pos _)
@@ -1092,7 +1103,7 @@ private theorem abc_admissible_champion_dichotomy {a b c : ℕ} (h : IsAbcTriple
     exact Or.inr (Or.inr hstrict)
 
 theorem abcQuality_le_one_eight_nine_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
-    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    (hadm : IsAdmissibleContinuousLegacy (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQuality 1 8 9 := by
   rcases abc_admissible_champion_dichotomy h hadm with h1 | h8 | hlt
   · rcases h1 with ⟨rfl, rfl, rfl⟩
@@ -1102,7 +1113,7 @@ theorem abcQuality_le_one_eight_nine_of_admissible {a b c : ℕ} (h : IsAbcTripl
   · exact le_of_lt hlt
 
 theorem abcQuality_eq_one_eight_nine_iff {a b c : ℕ} (h : IsAbcTriple a b c)
-    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    (hadm : IsAdmissibleContinuousLegacy (abcMismatchParams a b c)) :
     abcQuality a b c = abcQuality 1 8 9 ↔
       (a = 1 ∧ b = 8 ∧ c = 9) ∨ (a = 8 ∧ b = 1 ∧ c = 9) := by
   constructor
@@ -1336,34 +1347,50 @@ private theorem abcLabelPacket_delta_upper {δ : ℝ}
     δ ≤ Real.pi / 36 := by
   by_contra hδ
   push_neg at hδ
-  have hsum : (18 : ℝ) * δ ≤ Real.pi :=
-    by simpa [abcLabelPacket, abcLabelSquare] using admissibleContinuous_sum_le _ hadm 2
+  have hsum :=
+    Admissible.admissibleContinuous_sum_le (abcLabelPacket δ) hadm 2
+  have hbound : (18 : ℝ) * δ ≤ Real.pi := by
+    simp only [abcLabelPacket, abcLabelSquare, mul_zero, add_zero] at hsum
+    rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring]
+    exact hsum
   have hα : Real.pi / 2 < (18 : ℝ) * δ := by nlinarith [hδ, Real.pi_pos]
-  linarith [hsum, hα]
+  linarith [hbound, hα]
 
 private theorem abcLabelPacket_continuous_implies_legacy {δ : ℝ}
     (hadm : IsAdmissibleContinuous (abcLabelPacket δ)) :
     IsAdmissibleContinuousLegacy (abcLabelPacket δ) :=
   (isAdmissibleContinuousLegacy_abcLabelPacket_iff δ).mpr
-    ⟨Admissible.admissibleContinuous_alpha_nonneg _ hadm 0, abcLabelPacket_delta_upper hadm⟩
+    ⟨by
+      have := Admissible.admissibleContinuous_alpha_nonneg (abcLabelPacket δ) hadm 0
+      simp [abcLabelPacket, abcLabelSquare] at this ⊢
+      nlinarith,
+      abcLabelPacket_delta_upper hadm⟩
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
       IsAdmissibleContinuous (pureBoost (18 * δ)) := by
-  constructor <;> intro hadm
-  · have h2 := hadm 2
-    simp [abcLabelPacket, abcLabelSquare] at h2
-    refine (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mpr ⟨?_, ?_⟩
-    · simpa [abcLabelPacket, abcLabelSquare] using h2.1
-    · simpa [abcLabelPacket, abcLabelSquare, mul_assoc] using h2.2.2.2
-  · have hθ := (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mp hadm
+  constructor
+  · intro hadm
+    have hsum := Admissible.admissibleContinuous_sum_le (abcLabelPacket δ) hadm 2
+    have hα := Admissible.admissibleContinuous_alpha_nonneg (abcLabelPacket δ) hadm 2
+    simp only [abcLabelPacket, abcLabelSquare, mul_zero, add_zero] at hsum hα ⊢
+    have hα' : 0 ≤ (18 : ℝ) * δ := by
+      rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring] at hα ⊢
+      exact hα
+    have hsum' : (18 : ℝ) * δ ≤ Real.pi := by
+      rw [show (18 : ℝ) * δ = (9 : ℝ) * (2 * δ) by ring]
+      exact hsum
+    exact (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mpr ⟨hα', hsum'⟩
+  · intro hadm
+    have hθ := (Amplification.isAdmissibleContinuous_pureBoost_iff (18 * δ)).mp hadm
     intro a
-    fin_cases a <;> simp [abcLabelPacket, abcLabelSquare, hθ] <;>
-      refine ⟨?_, ?_, ?_, ?_⟩
-      · nlinarith [hθ.1]
-      · simp [abcLabelPacket]
-      · linarith [hθ.1, Real.pi_pos]
-      · nlinarith [hθ.1, hθ.2, Real.pi_pos]
+    fin_cases a
+    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
+      exact ⟨by nlinarith [hθ.1], le_rfl, by linarith [Real.pi_pos], by nlinarith [hθ.1, hθ.2]⟩
+    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
+      exact ⟨by nlinarith [hθ.1], le_rfl, by linarith [Real.pi_pos], by nlinarith [hθ.1, hθ.2]⟩
+    · simp only [abcLabelPacket, abcLabelSquare, pureBoost]
+      exact ⟨hθ.1, le_rfl, by linarith [Real.pi_pos], hθ.2⟩
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
@@ -1421,16 +1448,16 @@ theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
   constructor
   · intro h a
     have ha := h a
-    simp only [daggerParams, abcLabelPacket] at ha
-    refine ⟨ha.1, ha.2.1, ha.2.2.1, ha.2.2.2⟩
+    dsimp only [daggerParams, abcLabelPacket] at ha ⊢
+    exact ⟨ha.2.1, ha.1, ha.2.2.1, ha.2.2.2⟩
   · intro h a
     have ha := h a
-    simp only [abcLabelPacket] at ha
+    simp only [abcLabelPacket] at ha ⊢
     refine ⟨?_, ?_, ?_, ?_⟩
     · simp [daggerParams, abcLabelPacket]
-    · simpa [daggerParams, abcLabelPacket] using ha.1
-    · simpa [daggerParams, abcLabelPacket] using ha.2.2.1
-    · simpa [daggerParams, abcLabelPacket] using ha.2.2.2
+    · exact ha.1
+    · exact ha.2.2.1
+    · exact ha.2.2.2
 
 theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
     J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧

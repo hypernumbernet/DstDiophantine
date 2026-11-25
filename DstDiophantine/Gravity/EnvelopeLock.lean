@@ -111,7 +111,7 @@ private theorem axis_trade_off_eq_iff {k α β : ℝ}
     nlinarith [hdiff]
 
 private theorem isPureUsual_iff_axisSigned {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     IsPureUsual p a ↔ axisSigned p a = (Real.pi / 2) ^ 2 := by
   constructor
   · intro hu
@@ -140,7 +140,7 @@ private theorem isPureUsual_iff_axisSigned {p : TorsionParams}
     exact ⟨this.2, this.1⟩
 
 private theorem isPureDual_iff_axisSigned {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     IsPureDual p a ↔ axisSigned p a = -((Real.pi / 2) ^ 2) := by
   constructor
   · intro hd
@@ -169,17 +169,17 @@ private theorem signedSum3 (p : TorsionParams) :
   simpa [Fin.sum_univ_three] using signedSum_eq_two_J p
 
 private theorem axisSigned_le_K {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
-    (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).2
+    (abs_le.mp (axis_abs_density_le (Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).2
 
 private theorem axisSigned_ge_negK {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     -((Real.pi / 2) ^ 2) ≤ axisSigned p a :=
-    (abs_le.mp (axis_abs_density_le (h a).1 (h a).2.1 (h a).2.2.2)).1
+    (abs_le.mp (axis_abs_density_le (Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).1
 
 private theorem le_J_of_twoPureUsual {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hUU : TwoPureUsual p) :
+    (h : IsAdmissibleContinuousLegacy p) (hUU : TwoPureUsual p) :
     Real.pi ^ 2 / 8 ≤ J p := by
   have hT := signedSum3 p
   have hK : (Real.pi / 2) ^ 2 = Real.pi ^ 2 / 4 := by ring
@@ -198,7 +198,7 @@ private theorem le_J_of_twoPureUsual {p : TorsionParams}
     nlinarith [hT, ht1, ht2, ht0, hK]
 
 private theorem J_le_of_twoPureDual {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hDD : TwoPureDual p) :
+    (h : IsAdmissibleContinuousLegacy p) (hDD : TwoPureDual p) :
     J p ≤ -(Real.pi ^ 2 / 8) := by
   have hT := signedSum3 p
   have hK : (Real.pi / 2) ^ 2 = Real.pi ^ 2 / 4 := by ring
@@ -222,14 +222,14 @@ theorem onEnvelope_J_zero_mismatch_balance {p : TorsionParams}
   (J_eq_zero_iff_mismatch_sq_balance p).mp hJ
 
 theorem twoPureDual_mismatch_rotation_dominates {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hDD : TwoPureDual p) :
+    (h : IsAdmissibleContinuousLegacy p) (hDD : TwoPureDual p) :
     mismatchRotationHalfSqSum p > mismatchBoostHalfSqSum p := by
   have hJ := J_le_of_twoPureDual h hDD
   have hJneg : J p < 0 := by nlinarith [hJ, Real.pi_pos]
   exact (J_neg_iff_rotation_sq_dominates p).mp hJneg
 
 theorem twoPureUsual_mismatch_boost_dominates {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hUU : TwoPureUsual p) :
+    (h : IsAdmissibleContinuousLegacy p) (hUU : TwoPureUsual p) :
     mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p := by
   have hJ := le_J_of_twoPureUsual h hUU
   have hJpos : 0 < J p := by nlinarith [hJ, Real.pi_pos]
@@ -504,7 +504,7 @@ private theorem three_mass_gap (p : TorsionParams) :
   ring
 
 private theorem onWall_iff_three_gap {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p =
         3 * (Real.pi / 2) ^ 4 +
           (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) ↔
@@ -557,7 +557,7 @@ private theorem onWall_iff_three_gap {p : TorsionParams}
           (Real.pi / 2) ^ 4 + axisSigned p a ^ 2 := by
       intro a
       have :=
-        (axis_trade_off_eq_iff (h a).1 (h a).2.1 (h a).2.2.2 hπ).mpr (hw a)
+        (axis_trade_off_eq_iff (h a).1 (h a).2.1 (h a).2.2 hπ).mpr (hw a)
       simpa [axisSigned, axisUnsigned] using this
     linarith [heq 0, heq 1, heq 2, hgap]
 
@@ -586,7 +586,7 @@ private theorem repulsive_gap_identity (t0 t1 t2 : ℝ) :
   ring
 
 private theorem twoPureUsual_iff_densities {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     TwoPureUsual p ↔
       (axisSigned p 0 = (Real.pi / 2) ^ 2 ∧
           axisSigned p 1 = (Real.pi / 2) ^ 2) ∨
@@ -621,7 +621,7 @@ private theorem twoPureUsual_iff_densities {p : TorsionParams}
         (isPureUsual_iff_axisSigned h 2).mpr h2⟩
 
 private theorem twoPureDual_iff_densities {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     TwoPureDual p ↔
       (axisSigned p 0 = -((Real.pi / 2) ^ 2) ∧
           axisSigned p 1 = -((Real.pi / 2) ^ 2)) ∨
@@ -656,7 +656,7 @@ private theorem twoPureDual_iff_densities {p : TorsionParams}
         (isPureDual_iff_axisSigned h 2).mpr h2⟩
 
 private theorem opposed_iff_densities {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     OpposedCorners p ↔
       (axisSigned p 0 = (Real.pi / 2) ^ 2 ∧
           axisSigned p 1 = -((Real.pi / 2) ^ 2)) ∨
@@ -729,7 +729,7 @@ private theorem elem_ge {K t0 t1 t2 : ℝ}
         (by linarith : (0 : ℝ) ≤ -(t0 + t1))]
 
 private theorem three_slack_nonneg {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     0 ≤ 3 * (Real.pi / 2) ^ 4 +
       (axisSigned p 0 ^ 2 + axisSigned p 1 ^ 2 + axisSigned p 2 ^ 2) -
       Real.pi ^ 2 * mass p := by
@@ -743,7 +743,7 @@ private theorem three_slack_nonneg {p : TorsionParams}
   linarith [hslack 0, hslack 1, hslack 2, hgap]
 
 private theorem pi_sq_mass_eq_shield_iff {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p = 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 ↔
       OnWall p ∧ OpposedCorners p := by
   have hT := signedSum3 p
@@ -752,11 +752,11 @@ private theorem pi_sq_mass_eq_shield_iff {p : TorsionParams}
   have hthree := onWall_iff_three_gap h
   have hK : 0 ≤ (Real.pi / 2) ^ 2 := by positivity
   have habs0 : |axisSigned p 0| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (h 0).1 (h 0).2.1 (h 0).2.2
+    axis_abs_density_le (Real.pi / 2) (h 0).1 (h 0).2.1 (h 0).2.2
   have habs1 : |axisSigned p 1| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (h 1).1 (h 1).2.1 (h 1).2.2
+    axis_abs_density_le (Real.pi / 2) (h 1).1 (h 1).2.1 (h 1).2.2
   have habs2 : |axisSigned p 2| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (h 2).1 (h 2).2.1 (h 2).2.2
+    axis_abs_density_le (Real.pi / 2) (h 2).1 (h 2).2.1 (h 2).2.2
   have hBA := shield_gap_identity (axisSigned p 0) (axisSigned p 1) (axisSigned p 2)
   have hBA' := hBA
   rw [hsq] at hBA'
@@ -800,7 +800,7 @@ private theorem pi_sq_mass_eq_shield_iff {p : TorsionParams}
     linarith [hthreeEq, he2, hBA', hC]
 
 private theorem pi_sq_mass_eq_attractive_iff {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p =
         5 * Real.pi ^ 4 / 16 + (2 * J p - Real.pi ^ 2 / 2) ^ 2 ↔
       OnWall p ∧ TwoPureUsual p := by
@@ -870,7 +870,7 @@ private theorem pi_sq_mass_eq_attractive_iff {p : TorsionParams}
     linarith [hthreeEq, hprod, hBA', hC]
 
 private theorem pi_sq_mass_eq_repulsive_iff {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p =
         5 * Real.pi ^ 4 / 16 + (2 * J p + Real.pi ^ 2 / 2) ^ 2 ↔
       OnWall p ∧ TwoPureDual p := by
@@ -1115,7 +1115,7 @@ private theorem abs_J_le_of_free_density {Jval t : ℝ}
   constructor <;> nlinarith [hK]
 
 private theorem abs_J_le_of_opposed {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hopp : OpposedCorners p) :
+    (h : IsAdmissibleContinuousLegacy p) (hopp : OpposedCorners p) :
     |J p| ≤ Real.pi ^ 2 / 8 := by
   have hT := signedSum3 p
   have hopp' := (opposed_iff_densities h).mp hopp
@@ -1136,7 +1136,7 @@ private theorem abs_J_le_of_opposed {p : TorsionParams}
 
 /-! ### The lock -/
 
-theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuous p) :
+theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuousLegacy p) :
     mass p = controlCeiling (J p) ↔ OnWall p ∧ TwoCorners p := by
   constructor
   · intro hmass
@@ -1177,7 +1177,7 @@ theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuous p) :
         exact (mass_eq_controlCeiling_iff_raw (p := p)).mpr (by rw [heq, hnum])
 
 theorem eq_of_onEnvelope_of_alpha_eq {p q : TorsionParams}
-    (hp : IsAdmissibleContinuous p) (hq : IsAdmissibleContinuous q)
+    (hp : IsAdmissibleContinuousLegacy p) (hq : IsAdmissibleContinuousLegacy q)
     (hα : q.alpha = p.alpha)
     (hpE : mass p = controlCeiling (J p))
     (hqE : mass q = controlCeiling (J q)) : p = q := by
@@ -1208,7 +1208,7 @@ private theorem quarter_of_density_zero {p : TorsionParams}
   ring
 
 theorem exists_heaviest_shield_roles {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hJ : J p = 0)
+    (h : IsAdmissibleContinuousLegacy p) (hJ : J p = 0)
     (hM : mass p = 5 * Real.pi ^ 2 / 16) :
     ∃ a b c : Fin 3, a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
       IsPureUsual p a ∧ IsPureDual p b ∧
