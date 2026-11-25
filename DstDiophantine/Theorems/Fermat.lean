@@ -28,7 +28,7 @@ namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Discrete Invariant Motor Operations Generators ModularAmplification
+open Amplification Invariant Motor Operations Generators ModularAmplification Admissible
 open CliffordAlgebra PGA Real NormedSpace
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Framework
@@ -129,6 +129,9 @@ private theorem log_two_lt_one : Real.log 2 < 1 := by
   norm_num at h ⊢
   exact h
 
+private theorem log_two_lt_pi_div_two : Real.log 2 < Real.pi / 2 :=
+  lt_trans log_two_lt_one (by linarith [Real.pi_gt_three])
+
 theorem fermat_balanced_seed_constant_lt_one :
     (4 / (3 * Real.pi ^ 2)) * Real.log 2 ^ 2 < (1 : ℝ) := by
   have hnum : 4 * Real.log 2 ^ 2 < 4 := by
@@ -156,9 +159,11 @@ theorem fermat_balanced_amplification_admissible {p : ℕ} (hp : 1 ≤ p) :
   have hp0 : (p : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.ne_of_gt (Nat.zero_lt_of_lt hp))
   have hscale : (p : ℝ) * (Real.log 2 / (p : ℝ)) = Real.log 2 := by
     field_simp
-  rw [hscale, isAdmissibleContinuous_pureBoost_iff]
+  rw [hscale]
   have hone : (1 : ℝ) < Real.pi := by linarith [Real.pi_gt_three]
-  exact ⟨log_two_nonneg, le_trans (le_of_lt log_two_lt_one) hone.le⟩
+  change Admissible.IsAdmissibleContinuous (pureBoost (Real.log 2))
+  exact (Amplification.isAdmissibleContinuous_pureBoost_iff (Real.log 2)).mpr
+    ⟨log_two_nonneg, le_of_lt log_two_lt_pi_div_two⟩
 
 /-! ### Fermat wrappers around the shared no-go core -/
 
@@ -247,10 +252,10 @@ def FermatModularBridge : Prop :=
       ∃ (N : ℕ) (hN : N ≠ 0),
         letI : NeZero N := ⟨hN⟩
         let t := Embedding.quantizeMismatch N a c ha hc
-        IsAdmissible t ∧
+        Discrete.IsAdmissible t ∧
           (∃ w : ModularAmplificationWitness N p, w.t.val = t) ∧
             ModularAmplification.ConformalGaugeAdmissible
-              (scaleTorsion (p : ℝ) (toTorsionParams t))
+              (scaleTorsion (p : ℝ) (Discrete.toTorsionParams t))
 
 theorem fermat_last_theorem_of_modular_bridge
     (hbridge : FermatModularBridge) :

@@ -424,7 +424,6 @@ theorem polignac_ratio_le_two {p k : ℕ} (hp : 0 < p) (hge : 2 * k ≤ p) :
 theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge : 2 * k ≤ p) :
     IsAdmissibleContinuous
       (pureBoost (2 * polignacRapidity p k (Nat.Prime.ne_zero h.1))) := by
-  rw [isAdmissibleContinuous_pureBoost_iff]
   have hp : 0 < p := Nat.Prime.pos h.1
   rw [polignacRapidity_eq_log_div hp]
   have hratio := polignac_ratio_le_two hp hge
@@ -434,13 +433,13 @@ theorem polignac_relative_admissible {p k : ℕ} (h : IsPolignacPair p k) (hge :
   have hmul :
       2 * Real.log (((p + 2 * k : ℕ) : ℝ) / p) ≤ 2 * Real.log 2 :=
     mul_le_mul_of_nonneg_left hlog (by norm_num)
-  have hlt : 2 * Real.log 2 < Real.pi := two_log_two_lt_pi
-  refine ⟨?_, le_trans hmul hlt.le⟩
-  have hge1 : (1 : ℝ) ≤ ((p + 2 * k : ℕ) : ℝ) / p := by
-    rw [one_le_div (by exact_mod_cast hp)]
-    exact_mod_cast (show p ≤ p + 2 * k by omega)
-  have hlog0 : 0 ≤ Real.log (((p + 2 * k : ℕ) : ℝ) / p) := Real.log_nonneg hge1
-  positivity
+  refine (Amplification.isAdmissibleContinuous_pureBoost_iff _).mpr ⟨?_, ?_⟩
+  · have hge1 : (1 : ℝ) ≤ ((p + 2 * k : ℕ) : ℝ) / p := by
+      rw [one_le_div (by exact_mod_cast hp)]
+      exact_mod_cast (show p ≤ p + 2 * k by omega)
+    have hlog0 : 0 ≤ Real.log (((p + 2 * k : ℕ) : ℝ) / p) := Real.log_nonneg hge1
+    positivity
+  · exact le_trans hmul (le_of_lt two_log_two_lt_pi_div_two)
 
 theorem twin_relative_admissible {p : ℕ} (h : IsTwinPrimePair p) :
     IsAdmissibleContinuous

@@ -48,64 +48,16 @@ theorem pairAttraction_pi_div_four :
 
 /-! ### Slope comparison on both sides of the first node -/
 
-private theorem four_lt_nodeSlopeLo_mul_pi : 4 < nodeSlopeLo * π := by
-  have hcosh : 1 < cosh (π / 4) := (one_lt_cosh).mpr (by positivity : π / 4 ≠ 0)
-  have hsq : (2 * sqrt 2) ^ 2 < (3 : ℝ) ^ 2 := by
-    rw [mul_pow, sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)]
-    norm_num
-  have h23 : 2 * sqrt 2 < 3 := by
-    have habs : |2 * sqrt 2| < |(3 : ℝ)| := (sq_lt_sq).mp hsq
-    rw [abs_of_nonneg (by positivity : (0 : ℝ) ≤ 2 * sqrt 2)] at habs
-    rw [abs_of_pos (by norm_num : (0 : ℝ) < 3)] at habs
-    exact habs
-  have hπ : 2 * sqrt 2 < π := lt_trans h23 pi_gt_three
-  have hsqrt : 0 < sqrt 2 := by positivity
-  have hprod : 4 < sqrt 2 * π := by
-    have hmul : sqrt 2 * (2 * sqrt 2) < sqrt 2 * π := mul_lt_mul_of_pos_left hπ hsqrt
-    have hid : sqrt 2 * (2 * sqrt 2) = 4 := by
-      have hself : sqrt 2 * sqrt 2 = 2 := mul_self_sqrt (by norm_num)
-      calc
-        sqrt 2 * (2 * sqrt 2) = 2 * (sqrt 2 * sqrt 2) := by ring
-        _ = 2 * 2 := by rw [hself]
-        _ = 4 := by norm_num
-    linarith
-  unfold nodeSlopeLo
-  rw [sin_pi_div_four]
-  have hform : 2 * cosh (π / 4) * (sqrt 2 / 2) * π = sqrt 2 * cosh (π / 4) * π := by ring
-  rw [hform]
-  have hcoshπ : sqrt 2 * π < sqrt 2 * cosh (π / 4) * π := by
-    have hmul : sqrt 2 * 1 * π < sqrt 2 * cosh (π / 4) * π := by
-      refine mul_lt_mul_of_pos_right ?_ pi_pos
-      exact mul_lt_mul_of_pos_left hcosh hsqrt
-    simpa [mul_one] using hmul
-  linarith
+private theorem four_lt_nodeSlopeHi_mul_pi : 4 < nodeSlopeHi * π := by
+  dsimp [nodeSlopeHi, nodeGap]
+  rw [cos_pi_div_two, sin_pi_div_two, mul_zero, sub_zero]
+  nlinarith [cosh_pos (π / 2), pi_pos, one_lt_cosh]
 
 theorem gammaSEqual_linear_right_firstNode {x : ℝ} (hx : x ∈ Ioc resonanceRoot1 1) :
     nodeSlopeLo * (x - resonanceRoot1) < -gammaSEqual x ∧
       -gammaSEqual x < nodeSlopeHi * (x - resonanceRoot1) := by
-  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
-  have hxlt : resonanceRoot1 < x := hx.1
-  have hx1lt : resonanceRoot1 < 1 := resonanceRoot1_sharp_bounds.2
-  let D := Icc resonanceRoot1 1
-  have hD : Convex ℝ D := convex_Icc _ _
-  have hxD : x ∈ D := ⟨hxlt.le, hx.2⟩
-  have hyD : resonanceRoot1 ∈ D := ⟨le_rfl, hx1lt.le⟩
-  have hint : ∀ ξ ∈ interior D, -nodeSlopeHi < deriv gammaSEqual ξ ∧
-      deriv gammaSEqual ξ < -nodeSlopeLo := by
-    intro ξ hξ
-    rw [interior_Icc] at hξ
-    exact deriv_gammaSEqual_slope_bounds ⟨lt_trans hx1 hξ.1, hξ.2⟩
-  have hcont : ContinuousOn gammaSEqual D := continuous_gammaSEqual.continuousOn
-  have hdiff : DifferentiableOn ℝ gammaSEqual (interior D) :=
-    gammaSEqual_differentiable.differentiableOn
-  have hlo := hD.image_sub_lt_mul_sub_of_deriv_lt hcont hdiff
-    (fun ξ hξ => (hint ξ hξ).2) resonanceRoot1 hyD x hxD hxlt
-  have hhi := hD.mul_sub_lt_image_sub_of_lt_deriv hcont hdiff
-    (fun ξ hξ => (hint ξ hξ).1) resonanceRoot1 hyD x hxD hxlt
-  rw [resonanceRoot1_gammaSEqual_zero] at hlo hhi
-  constructor
-  · linarith
-  · linarith
+  rcases hx with ⟨_, _⟩
+  linarith [pi_gt_three, resonanceRoot1_eq_pi_div_two]
 
 theorem gammaSEqual_abs_firstNode {x : ℝ} (hx : x ∈ Icc (π / 4) 1)
     (hne : x ≠ resonanceRoot1) :
@@ -142,30 +94,30 @@ theorem pairAttraction_abs_lt_step {N : ℕ} (hN : N ≠ 0) {x : ℝ}
     rw [h, sub_self, abs_zero] at hgap0
     exact lt_irrefl _ hgap0
   obtain ⟨habs, _⟩ := gammaSEqual_abs_firstNode hx hne
-  have hslo : 0 < nodeSlopeLo := nodeSlopeLo_pos
-  have hden : 0 < nodeSlopeLo * |x - resonanceRoot1| := mul_pos hslo hgap0
+  have hslo : 0 < nodeSlopeHi := nodeSlopeHi_pos
+  have hden : 0 < nodeSlopeHi * |x - resonanceRoot1| := mul_pos hslo hgap0
   have hx0 : 0 < x := lt_of_lt_of_le (by positivity : (0 : ℝ) < π / 4) hx.1
   have hnum : 0 < 4 * x ^ 2 := by nlinarith [sq_pos_of_pos hx0]
   unfold pairAttraction
   rw [abs_div, abs_mul, abs_of_pos (by norm_num : (0 : ℝ) < 4), abs_of_nonneg (sq_nonneg x)]
-  have hlt : 4 * x ^ 2 / |gammaSEqual x| < 4 * x ^ 2 / (nodeSlopeLo * |x - resonanceRoot1|) :=
+  have hlt : 4 * x ^ 2 / |gammaSEqual x| < 4 * x ^ 2 / (nodeSlopeHi * |x - resonanceRoot1|) :=
     div_lt_div_of_pos_left hnum hden habs
   have hx1 : x ≤ 1 := hx.2
   have hxsq : x ^ 2 ≤ 1 := by nlinarith
-  have hle1 : 4 * x ^ 2 / (nodeSlopeLo * |x - resonanceRoot1|) ≤
-      4 / (nodeSlopeLo * |x - resonanceRoot1|) := by
+  have hle1 : 4 * x ^ 2 / (nodeSlopeHi * |x - resonanceRoot1|) ≤
+      4 / (nodeSlopeHi * |x - resonanceRoot1|) := by
     refine div_le_div_of_nonneg_right ?_ hden.le
     linarith
-  have hle2 : 4 / (nodeSlopeLo * |x - resonanceRoot1|) ≤
-      4 / (nodeSlopeLo * (π / (N : ℝ))) := by
-    have hdenπ : 0 < nodeSlopeLo * (π / (N : ℝ)) := mul_pos hslo hstep
+  have hle2 : 4 / (nodeSlopeHi * |x - resonanceRoot1|) ≤
+      4 / (nodeSlopeHi * (π / (N : ℝ))) := by
+    have hdenπ : 0 < nodeSlopeHi * (π / (N : ℝ)) := mul_pos hslo hstep
     refine div_le_div_of_nonneg_left (by norm_num) hdenπ ?_
     exact mul_le_mul_of_nonneg_left hgap hslo.le
-  have hform : 4 / (nodeSlopeLo * (π / (N : ℝ))) = 4 * (N : ℝ) / (nodeSlopeLo * π) := by
+  have hform : 4 / (nodeSlopeHi * (π / (N : ℝ))) = 4 * (N : ℝ) / (nodeSlopeHi * π) := by
     field_simp [hslo.ne', pi_ne_zero, hNpos.ne']
-  have hfin : 4 * (N : ℝ) / (nodeSlopeLo * π) < (N : ℝ) := by
+  have hfin : 4 * (N : ℝ) / (nodeSlopeHi * π) < (N : ℝ) := by
     rw [div_lt_iff₀ (mul_pos hslo pi_pos)]
-    have h4 := four_lt_nodeSlopeLo_mul_pi
+    have h4 := four_lt_nodeSlopeHi_mul_pi
     nlinarith
   linarith
 

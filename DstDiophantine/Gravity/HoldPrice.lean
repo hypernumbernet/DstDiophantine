@@ -32,7 +32,7 @@ private theorem axisSum_sq_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     (p.alpha a + p.beta a) ^ 2 ≤ (Real.pi / 2) ^ 2 := by
   have hs0 : 0 ≤ p.alpha a + p.beta a := add_nonneg (h a).1 (h a).2.1
-  have hs : p.alpha a + p.beta a ≤ Real.pi := admissibleContinuous_sum_le p h a
+  have hs : p.alpha a + p.beta a ≤ Real.pi / 2 := Admissible.admissibleContinuous_sum_le p h a
   have hk : (0 : ℝ) ≤ Real.pi / 2 := le_of_lt Real.pi_div_two_pos
   nlinarith
 
@@ -190,10 +190,10 @@ theorem isAdmissibleContinuous_balancedWall {t : ℝ}
   have hπ : 0 < Real.pi := Real.pi_pos
   intro a
   rcases fin3_cases a with rfl | rfl | rfl <;>
-    refine ⟨?_, ?_, ?_⟩ <;>
+    refine Admissible.half_pi_axis_admissibleContinuous ?_ ?_ ?_ <;>
     simp only [balancedWall] <;>
     norm_num <;>
-    linarith
+    linarith [hπ]
 
 theorem onWall_balancedWall (t : ℝ) : OnWall (balancedWall t) := by
   intro a

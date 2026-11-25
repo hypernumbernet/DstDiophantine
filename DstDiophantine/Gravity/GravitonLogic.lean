@@ -1189,7 +1189,7 @@ private theorem classify?_eq_F {j : ℝ} (hj : j = 1) : classify? j = some .F :=
 private theorem classify?_eq_B {j : ℝ} (hj : j = -((1 : ℝ) / 3)) : classify? j = some .B := by
   have habs : |j| ≤ 4 := by rw [hj]; norm_num
   have hB : classifyOfMem j habs = .B :=
-    (classifyOfMem_eq_B_iff habs).mpr (by rw [hj]; constructor <;> norm_num)
+    (classifyOfMem_eq_B_iff habs).mpr (by rw [hj]; norm_num)
   simpa [classify?, habs] using hB
 
 private theorem afterTransverse_ne_zero_of_cos {θ : ℝ} (h : Real.cos (θ / 2) ≠ 0) :
@@ -1292,7 +1292,7 @@ theorem four_turns_one_label {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     oneAxisDual_admissible (θ := 0) (by norm_num) (by nlinarith [Real.pi_pos])
   have hexp0 : express (alignedSteps 0 N) = oneAxisDual 0 := by
     rw [hzeroSteps]
-    exact express_eq_of_admissible hadm0
+    exact express_eq_of_mismatch_admissible hadm0
   have hj0 : j0 = 0 := by
     have hJ : JNormalized (express (alignedSteps 0 N)) = JNormalized (oneAxisDual 0) :=
       congrArg JNormalized hexp0
@@ -1647,13 +1647,16 @@ private theorem classify?_open {j : ℝ} (h0 : 0 < j) (h1 : j < 1) :
   have habs : |j| ≤ 4 := by
     rw [abs_of_pos h0]
     exact le_trans h1.le (by norm_num)
-  have hU : classifyOfMem j habs = .U := (classifyOfMem_eq_U_iff habs).mpr ⟨h0, h1⟩
+  have hU : classifyOfMem j habs = .U :=
+    (classifyOfMem_eq_U_iff habs).mpr ⟨h0, by intro h; linarith⟩
   simpa [classify?, habs] using hU
 
 private theorem classify?_neg {j : ℝ} (hlo : -1 ≤ j) (hhi : j < 0) :
     classify? j = some .B := by
-  have habs : |j| ≤ 4 := abs_le.mpr ⟨hlo, by linarith⟩
-  have hB : classifyOfMem j habs = .B := (classifyOfMem_eq_B_iff habs).mpr ⟨hlo, hhi⟩
+  have habs : |j| ≤ 4 := by
+    rw [abs_of_nonpos (le_of_lt hhi)]
+    linarith [hlo]
+  have hB : classifyOfMem j habs = .B := (classifyOfMem_eq_B_iff habs).mpr hhi
   simpa [classify?, habs] using hB
 
 theorem order_height_ratio {N : ℕ} (hN : 8 ≤ N) :
@@ -1699,11 +1702,11 @@ theorem order_height_ratio {N : ℕ} (hN : 8 ≤ N) :
   have hadmP := perpSteps_admissible h4
   have hJA : jAlign = 4 * farHeight N := by
     change JNormalized (express (alignedSteps 2 N)) = 4 * farHeight N
-    rw [express_eq_of_admissible hadmA, (twoGravitons_fourfold hN).2, alignedSteps_one]
+    rw [express_eq_of_mismatch_admissible hadmA, (twoGravitons_fourfold hN).2, alignedSteps_one]
     rfl
   have hJP : jPerp = 2 * farHeight N := by
     change JNormalized (express (perpSteps N)) = 2 * farHeight N
-    rw [express_eq_of_admissible hadmP, (perp_twofold h4).2]
+    rw [express_eq_of_mismatch_admissible hadmP, (perp_twofold h4).2]
   have hfar := farHeight_eq hpos
   have hneg := farHeight_neg hpos
   have hlt : jAlign < jPerp := by

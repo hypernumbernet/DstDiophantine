@@ -131,33 +131,38 @@ private theorem add_sq_scale (Jval : ℝ) :
   ring
 
 private theorem envelopeNum_div_scale (Jval : ℝ) :
-    (4 / Real.pi ^ 4) * controlEnvelopeNum Jval = lobeExcess (Jval / coneScale) := by
+    (4 / Real.pi ^ 4) * controlEnvelopeNumLegacy Jval = lobeExcess (Jval / coneScale) := by
   have hpos : (0 : ℝ) ≤ 4 / Real.pi ^ 4 := by positivity
   have hmul : ∀ x y : ℝ,
       (4 / Real.pi ^ 4) * min x y =
         min ((4 / Real.pi ^ 4) * x) ((4 / Real.pi ^ 4) * y) :=
     fun x y => mul_min_of_nonneg x y hpos
-  unfold controlEnvelopeNum lobeExcess
+  unfold controlEnvelopeNumLegacy lobeExcess
   rw [hmul, hmul, four_sq_scale, sub_sq_scale, add_sq_scale]
 
 theorem controlCeiling_div_coneScale (Jval : ℝ) :
-    controlCeiling Jval / coneScale = 5 / 4 + lobeExcess (Jval / coneScale) := by
+    controlCeilingLegacy Jval / coneScale = 5 / 4 + lobeExcess (Jval / coneScale) := by
   have hfloor : (5 * Real.pi ^ 2 / 16) / coneScale = 5 / 4 := by
     rw [coneScale_eq]
     field_simp
     ring
   have henv :
-      controlEnvelopeNum Jval / Real.pi ^ 2 / coneScale =
-        (4 / Real.pi ^ 4) * controlEnvelopeNum Jval := by
+      controlEnvelopeNumLegacy Jval / Real.pi ^ 2 / coneScale =
+        (4 / Real.pi ^ 4) * controlEnvelopeNumLegacy Jval := by
     rw [coneScale_eq]
     field_simp
-  unfold controlCeiling
+  unfold controlCeilingLegacy
   rw [add_div, hfloor, henv, envelopeNum_div_scale]
+
+private def legacyOfMismatch {p : TorsionParams} (h : IsAdmissibleContinuous p) :
+    IsAdmissibleContinuousLegacy p := by
+  intro a
+  exact ⟨(h a).1, (h a).2.1, (h a).2.2.2⟩
 
 theorem scaledMass_le_lobe {p : TorsionParams} (h : IsAdmissibleContinuous p) :
     mass p / coneScale ≤ 5 / 4 + lobeExcess (J p / coneScale) := by
-  have hM := mass_le_control_ceiling p h
-  have hdiv : mass p / coneScale ≤ controlCeiling (J p) / coneScale :=
+  have hM := mass_le_control_ceiling_legacy p (legacyOfMismatch h)
+  have hdiv : mass p / coneScale ≤ controlCeilingLegacy (J p) / coneScale :=
     div_le_div_of_nonneg_right hM (le_of_lt coneScale_pos)
   rw [controlCeiling_div_coneScale] at hdiv
   exact hdiv
@@ -166,24 +171,26 @@ theorem scaledMass_eq_lobe_iff {p : TorsionParams} (h : IsAdmissibleContinuous p
     mass p / coneScale = 5 / 4 + lobeExcess (J p / coneScale) ↔
       OnWall p ∧ TwoCorners p := by
   have hc : coneScale ≠ 0 := ne_of_gt coneScale_pos
+  have hleg := legacyOfMismatch h
   have hid := controlCeiling_div_coneScale (J p)
   constructor
   · intro heq
-    have hmass : mass p = controlCeiling (J p) := by
-      have hdiv : mass p / coneScale = controlCeiling (J p) / coneScale := by
+    have hmass : mass p = controlCeilingLegacy (J p) := by
+      have hdiv : mass p / coneScale = controlCeilingLegacy (J p) / coneScale := by
         rw [heq, hid]
       exact (div_left_inj' hc).mp hdiv
-    exact (onEnvelope_iff h).mp hmass
+    exact (onEnvelope_iff hleg).mp hmass
   · intro hlock
-    have hmass := (onEnvelope_iff h).mpr hlock
+    have hmass := (onEnvelope_iff hleg).mpr hlock
     rw [← hid, hmass]
 
 /-! ### The hold on that boundary is the same distance -/
 
 theorem lagSq_div_coneScale_of_onEnvelope {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hE : mass p = controlCeiling (J p)) :
+    (h : IsAdmissibleContinuous p) (hE : mass p = controlCeilingLegacy (J p)) :
     lagSq p / coneScale = 2 + 4 * lobeExcess (J p / coneScale) := by
-  have hw := ((onEnvelope_iff h).mp hE).1
+  have hleg := legacyOfMismatch h
+  have hw := ((onEnvelope_iff hleg).mp hE).1
   have hlag := (lagSq_eq_mass_wall_iff h).mpr hw
   have hceil := controlCeiling_div_coneScale (J p)
   have hmass : mass p / coneScale = 5 / 4 + lobeExcess (J p / coneScale) := by
@@ -199,7 +206,7 @@ theorem lagSq_div_coneScale_of_onEnvelope {p : TorsionParams}
   ring
 
 theorem stiffness_div_coneScale_of_onEnvelope {m : ℝ} {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) (hE : mass p = controlCeiling (J p)) :
+    (h : IsAdmissibleContinuous p) (hE : mass p = controlCeilingLegacy (J p)) :
     stiffnessPotential m p =
       m * coneScale * (1 + 2 * lobeExcess (J p / coneScale)) := by
   have hL := lagSq_div_coneScale_of_onEnvelope h hE

@@ -306,7 +306,7 @@ theorem not_isGravNeutral_of_mass_eq_max {p : TorsionParams}
   linarith
 
 theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
-    (h : IsAdmissibleContinuousLegacy p) (hM : mass p = 3 * Real.pi ^ 2 / 8)
+    (h : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8)
     (a : Fin 3) :
     (p.alpha a = Real.pi / 2 ∧ p.beta a = 0) ∨
       (p.alpha a = 0 ∧ p.beta a = Real.pi / 2) := by
@@ -315,7 +315,7 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
       p.alpha b ^ 2 + p.beta b ^ 2 ≤ Real.pi ^ 2 / 4 := fun b => by
     have hα := (h b).1
     have hβ := (h b).2.1
-    have hsum := (h b).2.2
+    have hsum := (h b).2.2.2
     nlinarith [sq_nonneg (p.alpha b - p.beta b), hsum, hα, hβ, Real.pi_pos]
   have hsum3 : p.alpha 0 ^ 2 + p.beta 0 ^ 2 + (p.alpha 1 ^ 2 + p.beta 1 ^ 2) +
       (p.alpha 2 ^ 2 + p.beta 2 ^ 2) = 3 * Real.pi ^ 2 / 4 := by
@@ -331,7 +331,7 @@ theorem axis_rigidity_of_mass_eq_max {p : TorsionParams}
         sq_nonneg (p.alpha 2 - p.beta 2)]
   have hα := (h a).1
   have hβ := (h a).2.1
-  have hsum := (h a).2.2
+  have hsum := (h a).2.2.2
   have hprod : p.alpha a * p.beta a = 0 := by nlinarith [hsum, Real.pi_pos]
   rcases mul_eq_zero.mp hprod with hz | hz
   · right

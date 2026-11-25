@@ -70,8 +70,8 @@ theorem abs_increment_one {e σ E0 ω ψ : ℝ} (hσ : σ ^ 2 = 1) :
 /-- Dual bias and wall slack on the two axes transverse to the beam. -/
 def TransverseMargin (p : TorsionParams) (ρ : ℝ) : Prop :=
   ρ ≤ p.beta 0 ∧ ρ ≤ p.beta 1 ∧
-    p.alpha 0 + p.beta 0 + ρ ≤ Real.pi ∧
-    p.alpha 1 + p.beta 1 + ρ ≤ Real.pi
+    p.alpha 0 + p.beta 0 + ρ ≤ Real.pi / 2 ∧
+    p.alpha 1 + p.beta 1 + ρ ≤ Real.pi / 2
 
 /-- Legacy π/2 transverse wall (shell programmes). -/
 def TransverseMarginLegacy (p : TorsionParams) (ρ : ℝ) : Prop :=
@@ -140,13 +140,11 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
       have hp' : 0 ≤ p.beta 0 + s := by simpa [coupleA, inc0_half] using hp
       have hm' : 0 ≤ p.beta 0 + (-s) := by simpa [coupleA, inc0_three] using hm
       exact beta_ge_abs_of_both hp' hm'
-    have hwall0 : p.alpha 0 + p.beta 0 + |s| ≤ Real.pi := by
-      have hp := (hhalf 0).2.2.2
-      have hm := (hthree 0).2.2.2
-      have hp' : p.alpha 0 + p.beta 0 + s ≤ Real.pi := by
-        simpa [coupleA, inc0_half, add_assoc] using hp
-      have hm' : p.alpha 0 + p.beta 0 + (-s) ≤ Real.pi := by
-        simpa [coupleA, inc0_three, add_assoc] using hm
+    have hwall0 : p.alpha 0 + p.beta 0 + |s| ≤ Real.pi / 2 := by
+      have hp' : p.alpha 0 + p.beta 0 + s ≤ Real.pi / 2 :=
+        by simpa [coupleA, inc0_half, add_assoc] using (hhalf 0).2.2.2
+      have hm' : p.alpha 0 + p.beta 0 + (-s) ≤ Real.pi / 2 :=
+        by simpa [coupleA, inc0_three, add_assoc] using (hthree 0).2.2.2
       exact sum_ge_abs_of_both hp' hm'
     have inc1_zero : e * circularPotential σ E0 ω 0 1 = -σ * s := by
       simp [circularPotential, Real.cos_zero, s]
@@ -164,23 +162,19 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
       have hp' : 0 ≤ p.beta 1 + σ * s := by simpa [coupleA, inc1_pi] using hp
       have habs : |σ * s| ≤ p.beta 1 := beta_ge_abs_of_both hp' hz'
       rwa [abs_mul, abs_of_helicity hσ, one_mul] at habs
-    have hwall1 : p.alpha 1 + p.beta 1 + |s| ≤ Real.pi := by
-      have hz := (h0 1).2.2.2
-      have hp := (hpi 1).2.2.2
-      have hz' : p.alpha 1 + p.beta 1 + -(σ * s) ≤ Real.pi := by
-        have hz0 : p.alpha 1 + p.beta 1 + -σ * s ≤ Real.pi := by
-          simpa [coupleA, inc1_zero, add_assoc] using hz
-        have heq : -σ * s = -(σ * s) := by ring
-        linarith
-      have hp' : p.alpha 1 + p.beta 1 + σ * s ≤ Real.pi := by
-        simpa [coupleA, inc1_pi, add_assoc] using hp
-      have habs := sum_ge_abs_of_both hp' hz'
-      rwa [abs_mul, abs_of_helicity hσ, one_mul] at habs
+    have hwall1 : p.alpha 1 + p.beta 1 + |s| ≤ Real.pi / 2 := by
+      have hz' : p.alpha 1 + p.beta 1 + -(σ * s) ≤ Real.pi / 2 :=
+        by simpa [coupleA, inc1_zero, add_assoc] using (h0 1).2.2.2
+      have hp' : p.alpha 1 + p.beta 1 + σ * s ≤ Real.pi / 2 :=
+        by simpa [coupleA, inc1_pi, add_assoc] using (hpi 1).2.2.2
+      have hsabs : |σ * s| = |s| := by rw [abs_mul, abs_of_helicity hσ, one_mul]
+      have hsum := sum_ge_abs_of_both (σ := p.alpha 1) (β := p.beta 1) (s := σ * s) (wall := Real.pi / 2) hp' hz'
+      simpa [hsabs, add_assoc] using hsum
     refine ⟨hseed, ?_⟩
     rw [hs]
     exact ⟨hβ0, hβ1, hwall0, hwall1⟩
-  · intro h ψ a
-    rcases h with ⟨hseed, hmargin⟩
+  · intro hadm ψ a
+    rcases hadm with ⟨hseed, hmargin⟩
     have hρ0 : 0 ≤ circAmp e E0 ω := circAmp_nonneg e E0 ω
     fin_cases a
     · have hd := abs_increment_zero e σ E0 ω ψ
@@ -195,13 +189,17 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
             0 ≤ p.beta 0 + e * circularPotential σ E0 ω ψ 0 := by
           linarith
         simpa [coupleA] using hineq
-      · have hβπ : p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi := by
-          linarith [hmargin.2.2.1, (hseed 0).1, hlo, hhi, hmargin.1]
-        simpa [coupleA] using hβπ
+      · have hρ := hmargin.1
+        have hwall := hmargin.2.2.1
+        have hα := (hseed 0).1
+        have hle : p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ p.beta 0 + circAmp e E0 ω := by
+          nlinarith [hlo, hhi, hρ]
+        have hρπ : p.beta 0 + circAmp e E0 ω ≤ Real.pi := by linarith [hwall, hα]
+        exact le_trans hle hρπ
       · have hwall := hmargin.2.2.1
         have hineq :
-            p.alpha 0 + p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi := by
-          linarith [hwall, (hseed 0).1, hlo, hhi, hmargin.1]
+            p.alpha 0 + p.beta 0 + e * circularPotential σ E0 ω ψ 0 ≤ Real.pi / 2 := by
+          linarith [hwall, hlo, hhi, (hseed 0).1, hmargin.1]
         simpa [coupleA, add_assoc] using hineq
     · have hd := abs_increment_one (e := e) (σ := σ) (E0 := E0) (ω := ω)
         (ψ := ψ) hσ
@@ -216,13 +214,17 @@ theorem cycle_admissible_iff {p : TorsionParams} {e σ E0 ω : ℝ}
             0 ≤ p.beta 1 + e * circularPotential σ E0 ω ψ 1 := by
           linarith
         simpa [coupleA] using hineq
-      · have hβπ : p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi := by
-          linarith [hmargin.2.2.2, (hseed 1).1, hlo, hhi, hmargin.2.1]
-        simpa [coupleA] using hβπ
+      · have hρ := hmargin.2.1
+        have hwall := hmargin.2.2.2
+        have hα := (hseed 1).1
+        have hle : p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ p.beta 1 + circAmp e E0 ω := by
+          nlinarith [hlo, hhi, hρ]
+        have hρπ : p.beta 1 + circAmp e E0 ω ≤ Real.pi := by linarith [hwall, hα]
+        exact le_trans hle hρπ
       · have hwall := hmargin.2.2.2
         have hineq :
-            p.alpha 1 + p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi := by
-          linarith [hwall, (hseed 1).1, hlo, hhi, hmargin.2.1]
+            p.alpha 1 + p.beta 1 + e * circularPotential σ E0 ω ψ 1 ≤ Real.pi / 2 := by
+          linarith [hwall, hlo, hhi, (hseed 1).1, hmargin.2.1]
         simpa [coupleA, add_assoc] using hineq
     · have hinc := circular_increment_two e σ E0 ω ψ
       have haxis := hseed 2

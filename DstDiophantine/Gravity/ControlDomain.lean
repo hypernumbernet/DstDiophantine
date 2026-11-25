@@ -335,6 +335,14 @@ theorem controlCeilingLegacy_neg (Jval : ℝ) :
   unfold controlCeilingLegacy
   rw [controlEnvelopeNumLegacy_neg]
 
+theorem controlCeilingLegacy_zero : controlCeilingLegacy 0 = 5 * Real.pi ^ 2 / 16 := by
+  have hnum : controlEnvelopeNumLegacy 0 = 0 := by
+    unfold controlEnvelopeNumLegacy
+    rw [show (4 : ℝ) * 0 ^ 2 = 0 by ring]
+    exact min_eq_left (le_min (by positivity) (by positivity))
+  unfold controlCeilingLegacy
+  rw [hnum, zero_div, add_zero]
+
 theorem pi_sq_mass_le_envelope_legacy (p : TorsionParams)
     (h : IsAdmissibleContinuousLegacy p) :
     Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + controlEnvelopeNumLegacy (J p) := by
@@ -379,6 +387,21 @@ theorem mass_le_control_ceiling (p : TorsionParams)
       Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 4 := by ring
   have : mass p - 5 * Real.pi ^ 2 / 4 ≤
       controlEnvelopeNum (J p) / Real.pi ^ 2 :=
+    (le_div_iff₀ hπ).mpr (by linarith [hid, hsub])
+  linarith
+
+theorem mass_le_control_ceiling_legacy (p : TorsionParams)
+    (h : IsAdmissibleContinuousLegacy p) :
+    mass p ≤ controlCeilingLegacy (J p) := by
+  have hraw := pi_sq_mass_le_envelope_legacy p h
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  unfold controlCeilingLegacy
+  have hsub : Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 ≤
+      controlEnvelopeNumLegacy (J p) := by linarith
+  have hid : Real.pi ^ 2 * (mass p - 5 * Real.pi ^ 2 / 16) =
+      Real.pi ^ 2 * mass p - 5 * Real.pi ^ 4 / 16 := by ring
+  have : mass p - 5 * Real.pi ^ 2 / 16 ≤
+      controlEnvelopeNumLegacy (J p) / Real.pi ^ 2 :=
     (le_div_iff₀ hπ).mpr (by linarith [hid, hsub])
   linarith
 

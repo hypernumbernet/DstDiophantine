@@ -135,9 +135,10 @@ theorem isAdmissibleContinuous_superpose_magnetic
   have hβ : 0 ≤ (superpose p (magneticFaraday B)).beta a := by
     simpa [magneticFaraday] using add_nonneg (hp a).2.1 (hB a)
   have hβπ : (superpose p (magneticFaraday B)).beta a ≤ Real.pi := by
-    have hβπ' : p.beta a + B a ≤ Real.pi :=
-      le_trans (le_add_of_nonneg_right (hB a)) (admissibleContinuous_beta_le_pi p hp a)
-    linarith [hsum a, hβπ', Admissible.admissibleContinuous_beta_le_pi p hp a]
+    have hβπ' : p.beta a + B a ≤ Real.pi := by
+      have hhalf : p.beta a + B a ≤ Real.pi / 2 := by linarith [(hp a).1, hsum a]
+      exact le_trans hhalf (by linarith [Real.pi_pos])
+    simpa [magneticFaraday] using hβπ'
   have hs : (superpose p (magneticFaraday B)).alpha a +
       (superpose p (magneticFaraday B)).beta a ≤ Real.pi / 2 := by
     simpa [magneticFaraday, add_assoc] using hsum a
@@ -361,9 +362,10 @@ theorem isAdmissibleContinuous_coupleA {p : TorsionParams} {e : ℝ}
     IsAdmissibleContinuous (coupleA p e A) := by
   intro a
   refine ⟨(hp a).1, hβ a, ?_, ?_⟩
-  · have hβπ' : p.beta a + e * A a ≤ Real.pi :=
-      le_trans (le_add_of_nonneg_right (hβ a)) (admissibleContinuous_beta_le_pi p hp a)
-    linarith [hsum a, hβπ', Admissible.admissibleContinuous_beta_le_pi p hp a]
+  · have hβπ' : p.beta a + e * A a ≤ Real.pi := by
+      have hhalf : p.beta a + e * A a ≤ Real.pi / 2 := by linarith [(hp a).1, hsum a]
+      exact le_trans hhalf (by linarith [Real.pi_pos])
+    simpa [coupleA] using hβπ'
   · simpa [coupleA, add_assoc] using hsum a
 
 theorem not_admissible_coupleA_of_neg_beta {p : TorsionParams} {e : ℝ}

@@ -1,5 +1,6 @@
 import DstDiophantine.Gravity.ConeLabels
 import DstDiophantine.Gravity.ShieldCeiling
+import DstDiophantine.Gravity.ControlDomain
 import DstDiophantine.Algebra.MismatchAngle
 
 /-!
@@ -40,12 +41,12 @@ theorem isAdmissibleContinuous_massCorner (usual : Fin 3 → Bool) :
   · have hα : (massCorner usual).alpha a = 0 := by simp [massCorner, ha]
     have hβ : (massCorner usual).beta a = Real.pi / 2 := by simp [massCorner, ha]
     rw [hα, hβ]
-    refine ⟨le_rfl, by positivity, by linarith [Real.pi_pos], ?_⟩
+    refine Admissible.half_pi_axis_admissibleContinuous le_rfl (by positivity) ?_
     simp
   · have hα : (massCorner usual).alpha a = Real.pi / 2 := by simp [massCorner, ha]
     have hβ : (massCorner usual).beta a = 0 := by simp [massCorner, ha]
     rw [hα, hβ]
-    refine ⟨by positivity, le_rfl, le_rfl, ?_⟩
+    refine Admissible.half_pi_axis_admissibleContinuous (by positivity) le_rfl ?_
     simp
 
 private theorem axis_sq_sum_massCorner (usual : Fin 3 → Bool) (a : Fin 3) :
@@ -275,14 +276,15 @@ theorem mass_ceiling_eq_U_iff {p : TorsionParams}
   have hfour := JNormalized_mass_ceiling_four hp hM
   rw [Logic.ofParams_eq_U_iff]
   constructor
-  · intro ⟨hpos, hlt⟩
+  · intro ⟨hpos, hne⟩
     rcases hfour with h | h | h | h
-    · linarith
+    · exact absurd h hne
     · exact h
     · linarith
     · linarith
   · intro h
-    exact ⟨by linarith, by linarith⟩
+    exact ⟨(by linarith [show (0 : ℝ) < 1 / 3 from by norm_num]),
+      by intro h1; linarith [h, h1]⟩
 
 theorem mass_ceiling_eq_U_iff_mismatch_one_third {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hM : mass p = 3 * Real.pi ^ 2 / 8) :
@@ -293,9 +295,9 @@ theorem mass_ceiling_eq_U_iff_mismatch_one_third {p : TorsionParams}
         JNormalized p = 1 / 3 := by
   constructor
   · intro hU
-    rcases (ofParams_eq_U_iff_mismatch_halves hp (by
-      simpa using (mass_ceiling_eq_U_iff hp hM).mp hU)).mp hU with ⟨hb, hd⟩
-    exact ⟨hb, hd, (mass_ceiling_eq_U_iff hp hM).mp hU⟩
+    have hJn := (mass_ceiling_eq_U_iff hp hM).mp hU
+    rcases (ofParams_eq_U_iff_mismatch_halves hp (by linarith)).mp hU with ⟨hb, hd⟩
+    exact ⟨hb, hd, hJn⟩
   · intro ⟨_, _, hJn⟩
     exact (mass_ceiling_eq_U_iff hp hM).mpr hJn
 
@@ -305,27 +307,29 @@ theorem mass_ceiling_eq_B_iff {p : TorsionParams}
   have hfour := JNormalized_mass_ceiling_four hp hM
   rw [Logic.ofParams_eq_B_iff]
   constructor
-  · intro ⟨hle, hlt⟩
-    rcases hfour with h | h | h | h
-    · linarith
-    · linarith
-    · exact Or.inl h
-    · exact Or.inr h
+  · intro hB
+    rcases hfour with h | h | h | h <;> (try linarith) <;> (try exact Or.inl h) <;> exact Or.inr h
   · intro h
-    rcases h with h | h
-    · exact ⟨by linarith, by linarith⟩
-    · exact ⟨by linarith, by linarith⟩
+    rcases h with h | h <;> simpa [h] using (Logic.ofParams_eq_B_iff hp).mpr (by linarith)
 
 theorem massNormalized_le_five_sixths_of_balance {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hT : Logic.ofParams p hp = .T) :
     massNormalized p ≤ 5 / 6 := by
   have hJ : J p = 0 :=
     (JNormalized_eq_zero_iff p).mp ((Logic.ofParams_eq_T_iff hp).mp hT)
-  have hM := mass_le_shield_ceiling hp hJ
+  have hleg : IsAdmissibleContinuousLegacy p := by
+    intro a
+    exact ⟨(hp a).1, (hp a).2.1, (hp a).2.2.2⟩
+  have hM := mass_le_control_ceiling_legacy p hleg
+  have hceil : controlCeilingLegacy (J p) = 5 * Real.pi ^ 2 / 16 := by
+    rw [hJ]
+    exact controlCeilingLegacy_zero
+  have hmass : mass p ≤ 5 * Real.pi ^ 2 / 16 := by linarith [hM, hceil]
   unfold massNormalized
   calc
     (8 / (3 * Real.pi ^ 2)) * mass p
-        ≤ (8 / (3 * Real.pi ^ 2)) * (5 * Real.pi ^ 2 / 16) := by gcongr
+        ≤ (8 / (3 * Real.pi ^ 2)) * (5 * Real.pi ^ 2 / 16) :=
+      mul_le_mul_of_nonneg_left hmass (by positivity)
     _ = 5 / 6 := by
       field_simp
       norm_num
@@ -369,8 +373,11 @@ theorem dagger_mass_ceiling {p : TorsionParams}
 theorem saturated_attraction_has_mass_ceiling {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hF : Logic.ofParams p hp = .F) :
     mass p = 3 * Real.pi ^ 2 / 8 ∧ massNormalized p = 1 ∧ JNormalized p = 1 := by
-  have hpure : IsPureHyperbolic p := (Logic.ofParams_F_iff_pureHyperbolic hp).mp hF
   have hJ : JNormalized p = 1 := (Logic.ofParams_eq_F_iff hp).mp hF
+  have hleg : IsAdmissibleContinuousLegacy p := by
+    intro a
+    exact ⟨(hp a).1, (hp a).2.1, (hp a).2.2.2⟩
+  have hpure : IsPureHyperbolic p := (JNormalized_eq_one_iff_pureHyperbolic p hleg).mp hJ
   have hM : mass p = 3 * Real.pi ^ 2 / 8 := by
     rw [mass_coef]
     simp only [Fin.sum_univ_three]

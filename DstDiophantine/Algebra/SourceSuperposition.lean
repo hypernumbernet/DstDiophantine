@@ -54,6 +54,11 @@ theorem inTriangle_of_admissibleContinuousLegacy (p : TorsionParams)
     InTriangle (p.alpha a) (p.beta a) :=
   (admissible_iff_axes p).mp h a
 
+theorem inTriangle_of_admissibleContinuous (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    InTriangle (p.alpha a) (p.beta a) :=
+  ⟨(h a).1, (h a).2.1, (h a).2.2.2⟩
+
 /-- Orthogonal foot of `(x, y)` on the line `α + β = π/2`. -/
 noncomputable def wallPoint (x y : ℝ) : ℝ × ℝ :=
   ((x - y + Real.pi / 2) / 2, (y - x + Real.pi / 2) / 2)
@@ -416,6 +421,10 @@ theorem express_eq_of_admissible {p : TorsionParams} (h : IsAdmissibleContinuous
 theorem express_eq_of_admissibleContinuous {p : TorsionParams} (h : ∀ a, InTriangle (p.alpha a) (p.beta a)) :
     express p = p :=
   express_eq_of_in_triangle h
+
+theorem express_eq_of_mismatch_admissible {p : TorsionParams} (h : IsAdmissibleContinuous p) :
+    express p = p :=
+  express_eq_of_admissibleContinuous fun a => inTriangle_of_admissibleContinuous p h a
 
 theorem express_idempotent (p : TorsionParams) : express (express p) = express p :=
   express_eq_of_admissible (express_admissible_legacy p)

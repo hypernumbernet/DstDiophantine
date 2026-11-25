@@ -185,12 +185,21 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
 private lemma gammaSEqual_neg_on_even_right_orbit (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k) < x)
     (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 := by
-  have hxlt : x < ((2 * k : ℕ) : ℝ) * π + π :=
-    lt_of_le_of_ne hxhi fun hxeq => by
-      have hnode := (branchNode_spec (2 * k)).1.1
-      rw [hxeq, branchNode] at hxlo
-      linarith [hnode, pi_pos]
-  exact gammaSEqual_neg_after_branchNode (2 * k) ⟨k, by simp [two_mul]⟩ hxlo hxlt
+  rcases lt_or_eq_of_le hxhi with hlt | heq
+  · exact gammaSEqual_neg_after_branchNode (2 * k) ⟨k, by simp [two_mul]⟩ hxlo hlt
+  · have hx : x = ((2 * k + 1 : ℕ) : ℝ) * π := by
+      rw [heq]
+      push_cast
+      ring
+    rw [hx, gammaSEqual_nat_mul_pi]
+    have hneg : (-1 : ℝ) ^ (2 * k + 1) * cosh (((2 * k + 1 : ℕ) : ℝ) * π) < 0 := by
+      have hk : (-1 : ℝ) ^ (2 * k + 1) = -1 := by
+        calc (-1 : ℝ) ^ (2 * k + 1) = (-1) ^ (2 * k) * (-1) ^ 1 := by rw [pow_add]
+          _ = 1 * -1 := by simp
+          _ = -1 := by ring
+      rw [hk, neg_one_mul]
+      exact neg_neg_of_pos (cosh_pos _)
+    simpa using hneg
 
 private lemma gammaSEqual_neg_on_odd_left_orbit (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
@@ -321,11 +330,45 @@ theorem Z_contraction_equalScale (ℓ Z r : ℝ) (hZ : Z ≠ 0) :
 
 open intervalIntegral
 
-/-- Lower comparison slope \(2\cosh(\pi/4)\sin(\pi/4)\). -/
-noncomputable def nodeSlopeLo : ℝ := 2 * cosh (π / 4) * sin (π / 4)
+/-- Primary overlap slope gap \(\cosh t\sin t - \sinh t\cos t\) (derivative magnitude of `gammaSEqual`). -/
+noncomputable def nodeGap (t : ℝ) : ℝ :=
+  cosh t * sin t - sinh t * cos t
 
-/-- Upper comparison slope \(2\cosh(\pi/2)\sin(\pi/2)\). -/
-noncomputable def nodeSlopeHi : ℝ := 2 * cosh (π / 2) * sin (π / 2)
+/-- Lower comparison slope at the quarter-wave point. -/
+noncomputable def nodeSlopeLo : ℝ := nodeGap (π / 4)
+
+/-- Upper comparison slope at the first overlap node. -/
+noncomputable def nodeSlopeHi : ℝ := nodeGap (π / 2)
+
+/-- Legacy envelope slope (numerical shell bounds; dominates `nodeSlopeLo` on `(π/4,π/2)`). -/
+noncomputable def nodeSlopeLoLegacy : ℝ := 2 * cosh (π / 4) * sin (π / 4)
+
+private theorem hasDerivAt_nodeGap (t : ℝ) :
+    HasDerivAt nodeGap (2 * sinh t * sin t) t := by
+  unfold nodeGap
+  have hc := (Real.hasDerivAt_cosh t).mul (Real.hasDerivAt_sin t)
+  have hs := (Real.hasDerivAt_sinh t).mul (Real.hasDerivAt_cos t)
+  convert hc.sub hs using 1 <;> ring
+
+private theorem deriv_nodeGap (t : ℝ) : deriv nodeGap t = 2 * sinh t * sin t :=
+  (hasDerivAt_nodeGap t).deriv
+
+private theorem nodeGap_strictMonoOn : StrictMonoOn nodeGap (Ioo 0 π) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ioo _ _) ?_ ?_
+  · exact
+      ((continuous_cosh.mul continuous_sin).sub (continuous_sinh.mul continuous_cos)).continuousOn
+  · intro t ht
+    rw [interior_Ioo] at ht
+    rw [deriv_nodeGap]
+    rcases ht with ⟨ht0, htπ⟩
+    nlinarith [sinh_pos_iff.mpr ht0, sin_pos_of_mem_Ioo ⟨ht0, htπ⟩]
+
+private theorem nodeSlopeLo_lt_nodeSlopeHi : nodeSlopeLo < nodeSlopeHi := by
+  dsimp [nodeSlopeLo, nodeSlopeHi, nodeGap]
+  have hq : (π / 4 : ℝ) ∈ Ioo 0 π :=
+    ⟨by linarith [pi_pos, pi_gt_three], by linarith [pi_pos]⟩
+  have hh : (π / 2 : ℝ) ∈ Ioo 0 π := ⟨by linarith [pi_pos], by linarith [pi_pos]⟩
+  exact nodeGap_strictMonoOn hq hh (by linarith [pi_gt_three])
 
 theorem gammaSEqual_differentiable : Differentiable ℝ gammaSEqual :=
   fun x => (hasDerivAt_gammaSEqual x).differentiableAt
@@ -338,14 +381,13 @@ private theorem strictMonoOn_cosh_Ici : StrictMonoOn cosh (Ici 0) :=
     exact sinh_pos_iff.mpr hx
 
 theorem nodeSlopeLo_pos : 0 < nodeSlopeLo := by
-  unfold nodeSlopeLo
-  refine mul_pos (mul_pos (by norm_num) (cosh_pos _)) ?_
-  exact sin_pos_of_mem_Ioo ⟨by positivity, by linarith [pi_gt_three]⟩
+  dsimp [nodeSlopeLo, nodeGap]
+  exact sub_pos.mpr (sinh_mul_cos_lt_cosh_mul_sin ⟨by positivity, by linarith [pi_gt_three]⟩)
 
 theorem nodeSlopeHi_pos : 0 < nodeSlopeHi := by
-  unfold nodeSlopeHi
-  refine mul_pos (mul_pos (by norm_num) (cosh_pos _)) ?_
-  exact sin_pos_of_mem_Ioo ⟨by positivity, by linarith [pi_gt_three]⟩
+  dsimp [nodeSlopeHi, nodeGap]
+  simp only [cos_pi_div_two, sin_pi_div_two, mul_zero, sub_zero]
+  positivity
 
 private theorem sinh_cos_sub_lt_local {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
     sinh t * cos t < cosh t * sin t := by
@@ -360,70 +402,37 @@ private theorem sinh_cos_sub_lt_local {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
 
 theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) (π / 2)) :
     -nodeSlopeHi < deriv gammaSEqual ξ ∧ deriv gammaSEqual ξ < -nodeSlopeLo := by
-  rw [deriv_gammaSEqual]
-  have hξI : ξ ∈ Icc (-(π / 2)) (π / 2) :=
-    ⟨by linarith [pi_pos, hξ.1], by linarith [hξ.2, pi_pos]⟩
-  have hquarter : (π / 4) ∈ Icc (-(π / 2)) (π / 2) :=
-    ⟨by linarith [pi_pos], by linarith [pi_gt_three]⟩
-  have hhalf : (π / 2 : ℝ) ∈ Icc (-(π / 2)) (π / 2) := ⟨by linarith [pi_pos], le_rfl⟩
-  have hsin_lo : sin (π / 4) < sin ξ := strictMonoOn_sin hquarter hξI hξ.1
-  have hsin_hi : sin ξ < sin (π / 2) := by
-    have := strictMonoOn_sin hξI hhalf hξ.2
-    simpa [sin_pi_div_two] using this
-  have hcosh_lo : cosh (π / 4) < cosh ξ :=
-    strictMonoOn_cosh_Ici (le_of_lt (by positivity : (0 : ℝ) < π / 4))
-      (le_of_lt (lt_trans (by positivity) hξ.1)) hξ.1
-  have hcosh_hi : cosh ξ < cosh (π / 2) :=
-    strictMonoOn_cosh_Ici (le_of_lt (lt_trans (by positivity) hξ.1)) (le_of_lt pi_div_two_pos) hξ.2
-  have hsinpos : 0 < sin ξ :=
-    sin_pos_of_mem_Ioo ⟨lt_trans (by positivity : (0 : ℝ) < π / 4) hξ.1,
-      lt_trans hξ.2 (by linarith [pi_pos])⟩
-  have hprod_lo : cosh (π / 4) * sin (π / 4) < cosh ξ * sin ξ := by
-    calc cosh (π / 4) * sin (π / 4)
-        < cosh ξ * sin (π / 4) := mul_lt_mul_of_pos_right hcosh_lo
-            (sin_pos_of_mem_Ioo ⟨by positivity, by linarith [pi_gt_three]⟩)
-      _ < cosh ξ * sin ξ := mul_lt_mul_of_pos_left hsin_lo (cosh_pos _)
-  have hprod_hi : cosh ξ * sin ξ < cosh (π / 2) * sin (π / 2) := by
-    calc cosh ξ * sin ξ
-        < cosh (π / 2) * sin ξ := mul_lt_mul_of_pos_right hcosh_hi hsinpos
-      _ < cosh (π / 2) * sin (π / 2) := mul_lt_mul_of_pos_left hsin_hi (cosh_pos _)
-  have hξlo : 0 < ξ := lt_trans (by positivity : (0 : ℝ) < π / 4) hξ.1
-  have hdiff := sinh_cos_sub_lt_local hξlo (lt_trans hξ.2 pi_pos)
-  constructor
-  · unfold nodeSlopeHi
-    rw [sin_pi_div_two]
-    linarith [hprod_hi, hdiff]
-  · unfold nodeSlopeLo
-    linarith [hprod_lo, hdiff]
+  have hξmem : ξ ∈ Ioo 0 π :=
+    ⟨lt_trans (by positivity : (0 : ℝ) < π / 4) hξ.1,
+      lt_trans hξ.2 (half_lt_self pi_pos)⟩
+  have hquarter : (π / 4 : ℝ) ∈ Ioo 0 π := by
+    constructor <;> linarith [pi_pos, pi_gt_three]
+  have hhalf : (π / 2 : ℝ) ∈ Ioo 0 π := by
+    constructor <;> linarith [pi_pos]
+  have hlo : nodeSlopeLo < nodeGap ξ := by
+    simpa [nodeSlopeLo, nodeGap] using nodeGap_strictMonoOn hquarter hξmem hξ.1
+  have hhi : nodeGap ξ < nodeSlopeHi := by
+    simpa [nodeSlopeHi, nodeGap] using nodeGap_strictMonoOn hξmem hhalf hξ.2
+  have hneg : deriv gammaSEqual ξ = -nodeGap ξ := by
+    rw [deriv_gammaSEqual]
+    dsimp [nodeGap]
+    ring
+  rw [hneg]
+  constructor <;> linarith
 
 theorem firstNode_eps_coeff_bounds :
-    (π / (2 * sqrt 2)) * cosh (π / 4) <
-      resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) ∧
-    resonanceRoot1 * (2 * cosh resonanceRoot1 * sin resonanceRoot1) <
-      2 * cosh (π / 2) * sin (π / 2) := by
+    (π / 4) * nodeSlopeLo < resonanceRoot1 * nodeSlopeHi ∧
+      resonanceRoot1 * nodeSlopeHi < 2 * nodeSlopeHi := by
   have hwin := resonanceRoot1_bounds
-  have hcoeff :
-      (π / (2 * sqrt 2)) * cosh (π / 4) = (π / 4) * nodeSlopeLo := by
-    unfold nodeSlopeLo
-    rw [sin_pi_div_four]
-    have hs : (sqrt 2) ^ 2 = 2 := sq_sqrt (by norm_num)
-    field_simp [hs]
-    rw [hs]
-    norm_num
-  have hroot : 0 < π / 2 := pi_div_two_pos
-  rw [resonanceRoot1_eq_pi_div_two, sin_pi_div_two]
-  refine ⟨?_, ?_⟩
-  · rw [hcoeff]
-    have hmag : nodeSlopeLo < 2 * cosh (π / 2) := by
-      unfold nodeSlopeLo
-      rw [sin_pi_div_four]
-      nlinarith [nodeSlopeLo_pos, cosh_pos (π / 2)]
-    have h1 : (π / 4) * nodeSlopeLo < (π / 2) * nodeSlopeLo :=
+  rw [resonanceRoot1_eq_pi_div_two]
+  constructor
+  · have hmid : (π / 4) * nodeSlopeLo < (π / 2) * nodeSlopeLo :=
       mul_lt_mul_of_pos_right hwin.1 nodeSlopeLo_pos
-    have hmul : (π / 4) * nodeSlopeLo < (π / 2) * (2 * cosh (π / 2) * 1) := by
-      nlinarith [hwin.1, nodeSlopeLo_pos, cosh_pos (π / 2)]
-    linarith [hmag, hmul]
-  · nlinarith [pi_gt_three, cosh_pos (π / 2)]
+    have htop : (π / 2) * nodeSlopeLo < (π / 2) * nodeSlopeHi :=
+      mul_lt_mul_of_pos_left nodeSlopeLo_lt_nodeSlopeHi (by linarith [pi_pos])
+    exact lt_trans hmid htop
+  · refine mul_lt_mul_of_pos_right ?_ nodeSlopeHi_pos
+    linarith [pi_lt_four]
 
 theorem gammaSEqual_pos_of_lt_firstNode {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < resonanceRoot1) :
     0 < gammaSEqual x := by
@@ -445,7 +454,7 @@ theorem gammaSEqual_linear_firstNode {x : ℝ} (hx : x ∈ Ico (π / 4) resonanc
     intro ξ hξ
     rw [interior_Icc] at hξ
     exact deriv_gammaSEqual_slope_bounds
-      ⟨hξ.1, lt_trans hξ.2 (by rw [resonanceRoot1_eq_pi_div_two]; linarith [pi_pos])⟩
+      ⟨hξ.1, lt_of_lt_of_eq hξ.2 resonanceRoot1_eq_pi_div_two.symm⟩
   have hcont : ContinuousOn gammaSEqual D := continuous_gammaSEqual.continuousOn
   have hdiff : DifferentiableOn ℝ gammaSEqual (interior D) :=
     gammaSEqual_differentiable.differentiableOn
@@ -454,9 +463,7 @@ theorem gammaSEqual_linear_firstNode {x : ℝ} (hx : x ∈ Ico (π / 4) resonanc
   have hhi := hD.mul_sub_lt_image_sub_of_lt_deriv hcont hdiff
     (fun ξ hξ => (hint ξ hξ).1) x hxD resonanceRoot1 hyD hxlt
   rw [resonanceRoot1_gammaSEqual_zero] at hlo hhi
-  constructor
-  · linarith
-  · linarith
+  constructor <;> linarith
 
 private theorem integral_inv_gap {a b c : ℝ} (hab : a < b) (hbc : b < c) :
     ∫ x in a..b, (1 / (c - x)) = log ((c - a) / (c - b)) := by

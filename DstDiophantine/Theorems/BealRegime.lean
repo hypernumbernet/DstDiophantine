@@ -246,11 +246,12 @@ theorem isAdmissibleContinuous_beal_model_rapidity {m : ℕ} (hm : 0 < m) :
   refine (Amplification.isAdmissibleContinuous_pureBoost_iff _).mpr ?_
   have hmpos : (0 : ℝ) < m := Nat.cast_pos.mpr hm
   have hθ0 : 0 ≤ Real.log 2 / (m : ℝ) := div_nonneg log_two_nonneg_beal hmpos.le
-  have hθπ : Real.log 2 / (m : ℝ) ≤ Real.pi := by
+  have hθπ : Real.log 2 / (m : ℝ) ≤ Real.pi / 2 := by
     have hle : Real.log 2 / (m : ℝ) ≤ Real.log 2 :=
       div_le_self log_two_nonneg_beal (Nat.one_le_cast.mpr (Nat.succ_le_of_lt hm))
-    have honepi : (1 : ℝ) < Real.pi := by linarith [Real.pi_gt_three]
-    exact hle.trans (le_of_lt (lt_trans log_two_lt_one_beal honepi))
+    have hlt : Real.log 2 < Real.pi / 2 :=
+      lt_trans log_two_lt_one_beal (by linarith [Real.pi_gt_three])
+    exact hle.trans (le_of_lt hlt)
   exact ⟨hθ0, hθπ⟩
 
 theorem beal_model_rapidity_measure_pos {m : ℕ} (hm : 0 < m) :

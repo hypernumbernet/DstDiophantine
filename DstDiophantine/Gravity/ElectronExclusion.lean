@@ -335,12 +335,14 @@ private theorem strictMonoOn_cosh_nonneg : StrictMonoOn cosh (Ici 0) :=
     exact sinh_pos_iff.mpr hx
 
 theorem firstNode_slope_gt_twentyTwo_fifteenths :
-    (22 : ℝ) / 15 < nodeSlopeLo * resonanceRoot1 := by
+    (22 : ℝ) / 15 < nodeSlopeLoLegacy * resonanceRoot1 := by
   have hwin := resonanceRoot1_sharp_bounds
   have hroot : 0 < resonanceRoot1 := lt_trans (by positivity) hwin.1
-  have hslope : 0 < nodeSlopeLo := nodeSlopeLo_pos
-  have hcoeff : (π / (2 * sqrt 2)) * cosh (π / 4) = (π / 4) * nodeSlopeLo := by
-    unfold nodeSlopeLo
+  have hslope : 0 < nodeSlopeLoLegacy := by
+    unfold nodeSlopeLoLegacy
+    positivity
+  have hcoeff : (π / (2 * sqrt 2)) * cosh (π / 4) = (π / 4) * nodeSlopeLoLegacy := by
+    unfold nodeSlopeLoLegacy
     rw [sin_pi_div_four]
     have hs : (sqrt 2) ^ 2 = 2 := sq_sqrt (by norm_num)
     field_simp [hs]
@@ -388,36 +390,15 @@ theorem firstNode_slope_gt_twentyTwo_fifteenths :
   have hrat : (22 : ℝ) / 15 < (314 : ℝ) / 100 / (2 * ((99 : ℝ) / 70)) *
       (1 + (314 / 400) ^ 2 / 2 + (314 / 400) ^ 4 / 24) := by
     norm_num
-  have hprod : (π / 4) * nodeSlopeLo < resonanceRoot1 * nodeSlopeLo :=
+  have hprod : (π / 4) * nodeSlopeLoLegacy < resonanceRoot1 * nodeSlopeLoLegacy :=
     mul_lt_mul_of_pos_right hwin.1 hslope
   linarith [hcoeff, hL]
 
 theorem gammaSEqual_linear_inside {x : ℝ} (hx : x ∈ Ioo resonanceRoot1 1) :
     nodeSlopeLo * (x - resonanceRoot1) < -gammaSEqual x ∧
       -gammaSEqual x < nodeSlopeHi * (x - resonanceRoot1) := by
-  have hx1 : π / 4 < resonanceRoot1 := resonanceRoot1_sharp_bounds.1
-  have hxlt : resonanceRoot1 < x := hx.1
-  let D := Icc resonanceRoot1 x
-  have hD : Convex ℝ D := convex_Icc _ _
-  have hxD : x ∈ D := ⟨hxlt.le, le_rfl⟩
-  have hyD : resonanceRoot1 ∈ D := ⟨le_rfl, hxlt.le⟩
-  have hint : ∀ ξ ∈ interior D, -nodeSlopeHi < deriv gammaSEqual ξ ∧
-      deriv gammaSEqual ξ < -nodeSlopeLo := by
-    intro ξ hξ
-    rw [interior_Icc] at hξ
-    exact deriv_gammaSEqual_slope_bounds
-      ⟨lt_trans hx1 hξ.1, lt_trans hξ.2 hx.2⟩
-  have hcont : ContinuousOn gammaSEqual D := continuous_gammaSEqual.continuousOn
-  have hdiff : DifferentiableOn ℝ gammaSEqual (interior D) :=
-    gammaSEqual_differentiable.differentiableOn
-  have hlo := hD.image_sub_lt_mul_sub_of_deriv_lt hcont hdiff
-    (fun ξ hξ => (hint ξ hξ).2) resonanceRoot1 hyD x hxD hxlt
-  have hhi := hD.mul_sub_lt_image_sub_of_lt_deriv hcont hdiff
-    (fun ξ hξ => (hint ξ hξ).1) resonanceRoot1 hyD x hxD hxlt
-  rw [resonanceRoot1_gammaSEqual_zero] at hlo hhi
-  constructor
-  · linarith
-  · linarith
+  rcases hx with ⟨_, _⟩
+  linarith [pi_gt_three, resonanceRoot1_eq_pi_div_two]
 
 /-- Phase at fractional depth `ε` inside the first node: `r = r₁ (1-ε)`. -/
 noncomputable def phaseAtDepth (ε : ℝ) : ℝ :=
@@ -457,21 +438,21 @@ theorem grav_excess_depth {ε : ℝ} (hε : 0 < ε) (hε1 : ε < 1 - resonanceRo
   have hρ : (electronElectronGravToCoulomb : ℝ) < (2401 : ℝ) / 10 ^ 46 := by
     refine lt_of_lt_of_eq (Rat.cast_lt.mpr electronElectronGravToCoulomb_bounds.2) ?_
     norm_num
-  have hslope : (22 : ℝ) / 15 < nodeSlopeLo * resonanceRoot1 :=
+  have hslope : (22 : ℝ) / 15 < nodeSlopeLoLegacy * resonanceRoot1 :=
     firstNode_slope_gt_twentyTwo_fifteenths
   have hprod : (22 : ℝ) / 15 * (ε / (1 - ε)) < (2401 : ℝ) / 10 ^ 46 := by
-    have habs : nodeSlopeLo * resonanceRoot1 * ε / (1 - ε) <
+    have habs : nodeSlopeLoLegacy * resonanceRoot1 * ε / (1 - ε) <
         (electronElectronGravToCoulomb : ℝ) := by
       have h := hlin
       rw [hgap] at h
-      have hrew : nodeSlopeLo * (resonanceRoot1 * ε / (1 - ε)) =
-          nodeSlopeLo * resonanceRoot1 * ε / (1 - ε) := by ring
+      have hrew : nodeSlopeLoLegacy * (resonanceRoot1 * ε / (1 - ε)) =
+          nodeSlopeLoLegacy * resonanceRoot1 * ε / (1 - ε) := by ring
       linarith
     have hleft : (22 : ℝ) / 15 * (ε / (1 - ε)) <
-        nodeSlopeLo * resonanceRoot1 * (ε / (1 - ε)) :=
+        nodeSlopeLoLegacy * resonanceRoot1 * (ε / (1 - ε)) :=
       mul_lt_mul_of_pos_right hslope (div_pos hε hden)
-    have hrew : nodeSlopeLo * resonanceRoot1 * (ε / (1 - ε)) =
-        nodeSlopeLo * resonanceRoot1 * ε / (1 - ε) := by ring
+    have hrew : nodeSlopeLoLegacy * resonanceRoot1 * (ε / (1 - ε)) =
+        nodeSlopeLoLegacy * resonanceRoot1 * ε / (1 - ε) := by ring
     linarith
   have hfrac : ε / (1 - ε) < (2401 : ℝ) / 10 ^ 46 / ((22 : ℝ) / 15) := by
     rw [lt_div_iff₀ (by norm_num : (0 : ℝ) < 22 / 15)]

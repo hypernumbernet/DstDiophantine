@@ -6,6 +6,8 @@ import DstDiophantine.Embedding.RotorClass
 import DstDiophantine.Algebra.Amplification
 import DstDiophantine.Algebra.ModularAmplification
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Logic.Interpretation
+import DstDiophantine.Logic.Amplitude
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.Operations
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -36,7 +38,7 @@ namespace DstDiophantine
 
 namespace Theorems
 
-open Amplification Discrete Invariant Operations Real ModularAmplification
+open Amplification Invariant Operations Real ModularAmplification Admissible
 open Finset
 open _root_.DstDiophantine.Embedding
 open _root_.DstDiophantine.Framework
@@ -271,10 +273,24 @@ theorem abcQualityCeiling_eq {rad : ℕ} (hrad : 1 < rad) :
 theorem abc_quality_bound_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
     (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) := by
-  have hbound := torsion_bound_continuous _ hadm
-  have hH : abcHeight a b c ≤ 1 := by
-    unfold abcHeight
-    exact hbound
+  have hδ :
+      0 ≤ Real.log c - Real.log (abcRadical (a * b * c)) ∧
+        Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 4 := by
+    have h0 := hadm 0
+    simp only [abcMismatchParams, Amplification.pureBoost, Fin.sum_univ_three] at h0
+    constructor <;> nlinarith [h0.1, h0.2.2.2]
+  have hH : abcHeight a b c ≤ 1 / 3 := by
+    rw [abcHeight_eq]
+    set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
+    have hsq : δ ^ 2 ≤ (Real.pi / 4) ^ 2 := by
+      have habs : |δ| ≤ |Real.pi / 4| := by
+        rw [abs_of_nonneg hδ.1, abs_of_pos (by positivity : (0 : ℝ) < Real.pi / 4)]
+        exact hδ.2
+      exact (sq_le_sq).mpr habs
+    have hcoef : (0 : ℝ) ≤ 16 / (3 * Real.pi ^ 2) := by positivity
+    have hmul := mul_le_mul_of_nonneg_left hsq hcoef
+    have hconst : (16 / (3 * Real.pi ^ 2)) * (Real.pi / 4) ^ 2 = 1 / 3 := by field_simp; ring
+    linarith
   rw [abcHeight_eq_coef h] at hH
   set R := abcRadical (a * b * c)
   set q := abcQuality a b c
@@ -345,13 +361,35 @@ theorem isAdmissibleContinuous_abcMismatch_iff {a b c : ℕ} (_h : IsAbcTriple a
         Real.log c - Real.log (abcRadical (a * b * c)) ≤ Real.pi / 4 := by
   set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
   unfold abcMismatchParams
-  rw [isAdmissibleContinuous_pureBoost_iff]
+  change Admissible.IsAdmissibleContinuous (pureBoost (2 * δ)) ↔ _
+  rw [Amplification.isAdmissibleContinuous_pureBoost_iff]
   change (0 ≤ 2 * δ ∧ 2 * δ ≤ Real.pi / 2) ↔ (0 ≤ δ ∧ δ ≤ Real.pi / 4)
   constructor
   · rintro ⟨h0, hπ⟩
     exact ⟨by nlinarith, by nlinarith⟩
   · rintro ⟨h0, hπ⟩
     exact ⟨by nlinarith, by nlinarith⟩
+
+theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
+    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
+    abcHeight a b c ≤ 1 / 3 := by
+  have hδ := (isAdmissibleContinuous_abcMismatch_iff h).mp hadm
+  rw [abcHeight_eq]
+  set δ : ℝ := Real.log c - Real.log (abcRadical (a * b * c))
+  have hsq : δ ^ 2 ≤ (Real.pi / 4) ^ 2 := by
+    have h0 : 0 ≤ δ := hδ.1
+    have hπle : δ ≤ Real.pi / 4 := hδ.2
+    have habs : |δ| ≤ |Real.pi / 4| := by
+      rw [abs_of_nonneg h0, abs_of_pos (by positivity : (0 : ℝ) < Real.pi / 4)]
+      exact hπle
+    exact (sq_le_sq).mpr habs
+  have hcoef : (0 : ℝ) ≤ 16 / (3 * Real.pi ^ 2) := by positivity
+  have hmul := mul_le_mul_of_nonneg_left hsq hcoef
+  have hconst :
+      (16 : ℝ) / (3 * Real.pi ^ 2) * (Real.pi / 4) ^ 2 = 1 / 3 := by
+    field_simp
+    ring
+  linarith
 
 /-! ### Logarithmic gap -/
 
@@ -589,31 +627,6 @@ theorem abc_quality_le_branch_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c
     (le_div_iff₀ hLpos).mpr hle
   linarith
 
-theorem abcHeight_le_one_third_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
-    (hadm : IsAdmissibleContinuous (abcMismatchParams a b c)) :
-    abcHeight a b c ≤ 1 / 3 := by
-  have hδ := (isAdmissibleContinuous_abcMismatch_iff h).mp hadm
-  rw [abcHeight_eq_logGap]
-  set δ : ℝ := abcLogGap a b c
-  have hsq : δ ^ 2 ≤ (Real.pi / 4) ^ 2 := by
-    have h0 : 0 ≤ δ := by
-      unfold δ abcLogGap
-      exact hδ.1
-    have hπle : δ ≤ Real.pi / 4 := by
-      unfold δ abcLogGap
-      exact hδ.2
-    have habs : |δ| ≤ |Real.pi / 4| := by
-      rw [abs_of_nonneg h0, abs_of_pos (by positivity : (0 : ℝ) < Real.pi / 4)]
-      exact hπle
-    exact (sq_le_sq).mpr habs
-  have hcoef : (0 : ℝ) ≤ 16 / (3 * Real.pi ^ 2) := by positivity
-  have hmul := mul_le_mul_of_nonneg_left hsq hcoef
-  have hconst :
-      (16 : ℝ) / (3 * Real.pi ^ 2) * (Real.pi / 4) ^ 2 = 1 / 3 := by
-    field_simp
-    ring
-  linarith
-
 /-! ### Coarser ceiling from `|JNormalized| ≤ 1` -/
 
 /-- Discrete quality ceiling `1 + √(1/(c₁ ε_N))` with `ε_N = 16/(3N²)` from
@@ -626,9 +639,9 @@ theorem discrete_abc_bound {a b c : ℕ} (h : IsAbcTriple a b c)
     abcQuality a b c ≤ abcQualityCeiling (abcRadical (a * b * c)) :=
   abc_quality_bound_of_admissible h hadm
 
-theorem discrete_abc_height_lb {N : ℕ} [NeZero N] (t : DiscreteTorsion N)
+theorem discrete_abc_height_lb {N : ℕ} [NeZero N] (t : Discrete.DiscreteTorsion N)
     (hne : latticeMismatch t ≠ 0) :
-    (16 : ℝ) / (3 * (N : ℝ) ^ 2) ≤ |JNormalized (toTorsionParams t)| :=
+    (16 : ℝ) / (3 * (N : ℝ) ^ 2) ≤ |JNormalized (Discrete.toTorsionParams t)| :=
   Framework.discrete_nonzero_height_lb t hne
 
 /-! ### Finite search over primitive triples -/
@@ -1118,7 +1131,7 @@ theorem AbcAdmissibleBridge_false : ¬ AbcAdmissibleBridge := by
 
 /-- Quantise the abc log-gap `log c − log rad(abc)` to a pure-boost lattice seed. -/
 noncomputable def quantizeAbcMismatch (N : ℕ) [NeZero N] (a b c : ℕ)
-    (_h : IsAbcTriple a b c) : DiscreteTorsion N :=
+    (_h : IsAbcTriple a b c) : Discrete.DiscreteTorsion N :=
   Embedding.quantizeMismatch N (abcRadical (a * b * c) : ℤ) (c : ℤ)
     (Int.natCast_ne_zero.mpr (abcRadical_ne_zero _))
     (Int.natCast_ne_zero.mpr (isAbcTriple_c_ne_zero _h))
@@ -1158,10 +1171,10 @@ def AbcModularBridge : Prop :=
       ∃ (N k : ℕ) (hN : N ≠ 0),
         letI : NeZero N := ⟨hN⟩
         let t := quantizeAbcMismatch N a b c h
-        IsAdmissible t ∧
+        Discrete.IsAdmissible t ∧
           (∃ w : ModularAmplificationWitness N k, w.t.val = t) ∧
             ModularAmplification.ConformalGaugeAdmissible
-              (scaleTorsion (k : ℝ) (toTorsionParams t))
+              (scaleTorsion (k : ℝ) (Discrete.toTorsionParams t))
 
 theorem abc_conjecture_of_modular_bridge (hbridge : AbcModularBridge) :
     ∀ (ε : ℝ), 0 < ε →
@@ -1199,7 +1212,7 @@ theorem abc_has_winding_of_logGap_ge (N k : ℕ) [NeZero N] (hk : 0 < k)
         pureBoostSeedOfRapidity N (abcLogGap a b c) := by
     -- `fin_cases` leaves some axes with unused simp lemmas; silence that linter here.
     set_option linter.unusedSimpArgs false in
-    refine congr_arg₂ DiscreteTorsion.mk ?_ rfl
+    refine congr_arg₂ Discrete.DiscreteTorsion.mk ?_ rfl
     funext i
     fin_cases i <;>
       simp [quantizeAbcMismatch, quantizeMismatch, pureBoostSeedOfRapidity, abcLogGap,
@@ -1287,15 +1300,17 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff (δ : ℝ) :
     have hle : (abcLabelSquare a : ℝ) * (2 * δ) ≤ 9 * (2 * δ) :=
       mul_le_mul_of_nonneg_right hsq (mul_nonneg (by norm_num) h0)
     have h18 : 9 * (2 * δ) ≤ Real.pi / 2 := by nlinarith
-    refine ⟨?_, ?_, ?_⟩
+    refine ⟨?_, ?_, ?_, ?_⟩
     · simpa [abcLabelPacket] using hα
     · simp [abcLabelPacket]
+    · exact Real.pi_pos.le
     · simpa [abcLabelPacket] using le_trans hle h18
 
 theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
     IsAdmissibleContinuous (abcLabelPacket δ) ↔
       IsAdmissibleContinuous (pureBoost (18 * δ)) := by
-  rw [isAdmissibleContinuous_abcLabelPacket_iff, isAdmissibleContinuous_pureBoost_iff]
+  rw [isAdmissibleContinuous_abcLabelPacket_iff,
+    Amplification.isAdmissibleContinuous_pureBoost_iff]
   constructor <;> intro h <;> constructor <;> nlinarith [h.1, h.2]
 
 theorem JNormalized_abcLabelPacket_le_of_admissible {δ : ℝ}
@@ -1339,21 +1354,11 @@ theorem abcLabelPacket_wall_axes :
 
 theorem isAdmissibleContinuous_dagger_abcLabelPacket (δ : ℝ) :
     IsAdmissibleContinuous (daggerParams (abcLabelPacket δ)) ↔
-      IsAdmissibleContinuous (abcLabelPacket δ) := by
-  constructor
-  · intro h a
-    have ha := h a
-    simp only [daggerParams, abcLabelPacket] at ha
-    refine ⟨ha.2.1, ?_, ?_⟩
-    · simp [abcLabelPacket]
-    · simpa [abcLabelPacket] using ha.2.2
-  · intro h a
-    have ha := h a
-    simp only [abcLabelPacket] at ha
-    refine ⟨?_, ?_, ?_⟩
-    · simp [daggerParams, abcLabelPacket]
-    · simpa [daggerParams, abcLabelPacket] using ha.1
-    · simpa [daggerParams, abcLabelPacket] using ha.2.2
+      IsAdmissibleContinuous (abcLabelPacket δ) :=
+  ⟨fun h => Logic.isAdmissibleContinuous_dagger _ h,
+    fun h => by
+      simpa [Logic.Amplitude.daggerParams_involutive] using
+        Logic.isAdmissibleContinuous_dagger (daggerParams (abcLabelPacket δ)) h⟩
 
 theorem dagger_abcLabelPacket_invariants (δ : ℝ) :
     J (daggerParams (abcLabelPacket δ)) = -J (abcLabelPacket δ) ∧

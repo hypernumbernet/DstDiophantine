@@ -38,15 +38,15 @@ theorem sigmaEqual_add_gammaSEqual (x : ℝ) :
     sigmaEqual x + gammaSEqual x = exp (-x) * (sin x + cos x) := by
   unfold sigmaEqual gammaSEqual
   rw [cosh_eq, sinh_eq]
-  field_simp
-  ring
+  field_simp [exp_ne_zero]
+  ring_nf
 
 theorem sigmaEqual_sub_gammaSEqual (x : ℝ) :
     sigmaEqual x - gammaSEqual x = exp x * (sin x - cos x) := by
   unfold sigmaEqual gammaSEqual
   rw [cosh_eq, sinh_eq]
-  field_simp
-  ring
+  field_simp [exp_ne_zero]
+  ring_nf
 
 theorem continuous_tauEqual : Continuous tauEqual := by
   unfold tauEqual

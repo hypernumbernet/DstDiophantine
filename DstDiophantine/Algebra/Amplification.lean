@@ -14,7 +14,7 @@ Pure-boost scaling used by the amplification no-go theorems.
 
 namespace DstDiophantine
 
-open Operations Motor Invariant Generators Discrete NormedSpace Admissible
+open Operations Motor Invariant Generators NormedSpace Admissible
 
 namespace Amplification
 
@@ -110,7 +110,7 @@ theorem JNormalized_pow_amplify (θ : ℝ) (p : ℕ) :
   rw [pureBoost_scale, JNormalized_scale]
 
 theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
-    Admissible.IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
+    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
   constructor
   · intro h
     have h0 := h (0 : Fin 3)
