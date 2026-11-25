@@ -182,59 +182,30 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
     ring
   linarith
 
-private lemma gammaSEqual_neg_on_even_right (k : ℕ) {x : ℝ}
+private lemma gammaSEqual_neg_on_even_right_orbit (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k) < x)
     (hxhi : x ≤ ((2 * k : ℕ) : ℝ) * π + π) : gammaSEqual x < 0 := by
-  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
-  have hnode := (branchNode_spec (2 * k)).1
-  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
-  have hnI : branchNode (2 * k) ∈
-      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictAntiOn_gammaSEqual_even k hnI hxI hxlo
-  rwa [hzero] at hlt
+  have hxlt : x < ((2 * k : ℕ) : ℝ) * π + π :=
+    lt_of_le_of_ne hxhi fun hxeq => by
+      have hnode := (branchNode_spec (2 * k)).1.1
+      rw [hxeq, branchNode] at hxlo
+      linarith [hnode, pi_pos]
+  exact gammaSEqual_neg_after_branchNode (2 * k) ⟨k, by simp [two_mul]⟩ hxlo hxlt
 
-private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
+private lemma gammaSEqual_neg_on_odd_left_orbit (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
-    (hxhi : x < branchNode (2 * k + 1)) : gammaSEqual x < 0 := by
-  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
-    (branchNode_spec (2 * k + 1)).2
-  have hnode := (branchNode_spec (2 * k + 1)).1
-  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
-    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
-  have hnI : branchNode (2 * k + 1) ∈
-      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictMonoOn_gammaSEqual_odd k hxI hnI hxhi
-  rwa [hzero] at hlt
+    (hxhi : x < branchNode (2 * k + 1)) : gammaSEqual x < 0 :=
+  gammaSEqual_neg_on_odd_left k hxlo hxhi
 
-private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
+private lemma gammaSEqual_pos_on_odd_right_orbit (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k + 1) < x)
-    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqual x := by
-  have hzero : gammaSEqual (branchNode (2 * k + 1)) = 0 :=
-    (branchNode_spec (2 * k + 1)).2
-  have hnode := (branchNode_spec (2 * k + 1)).1
-  have hxI : x ∈ Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
-    ⟨le_of_lt (lt_trans hnode.1 hxlo), hxhi⟩
-  have hnI : branchNode (2 * k + 1) ∈
-      Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictMonoOn_gammaSEqual_odd k hnI hxI hxlo
-  rwa [hzero] at hlt
+    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) : 0 < gammaSEqual x :=
+  gammaSEqual_pos_on_odd_right k hxlo hxhi
 
-private lemma gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
+private lemma gammaSEqual_pos_on_even_left_orbit (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k : ℕ) : ℝ) * π ≤ x)
-    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x := by
-  have hzero : gammaSEqual (branchNode (2 * k)) = 0 := (branchNode_spec (2 * k)).2
-  have hnode := (branchNode_spec (2 * k)).1
-  have hxI : x ∈ Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hxlo, le_of_lt (lt_trans hxhi hnode.2)⟩
-  have hnI : branchNode (2 * k) ∈
-      Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π) :=
-    ⟨hnode.1.le, hnode.2.le⟩
-  have hlt := strictAntiOn_gammaSEqual_even k hxI hnI hxhi
-  rwa [hzero] at hlt
+    (hxhi : x < branchNode (2 * k)) : 0 < gammaSEqual x :=
+  gammaSEqual_pos_on_even_left k hxlo hxhi
 
 theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k)) (branchNode (2 * k + 1))) :
@@ -243,8 +214,8 @@ theorem gammaSEqual_neg_between_even (k : ℕ) {x : ℝ}
     push_cast
     ring
   rcases le_or_gt x (((2 * k : ℕ) : ℝ) * π + π) with hle | hgt
-  · exact gammaSEqual_neg_on_even_right k hx.1 hle
-  · exact gammaSEqual_neg_on_odd_left k (by linarith [hmid]) hx.2
+  · exact gammaSEqual_neg_on_even_right_orbit k hx.1 hle
+  · exact gammaSEqual_neg_on_odd_left_orbit k (by linarith [hmid]) hx.2
 
 theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
     (hx : x ∈ Ioo (branchNode (2 * k + 1)) (branchNode (2 * k + 2))) :
@@ -253,8 +224,8 @@ theorem gammaSEqual_pos_between_odd (k : ℕ) {x : ℝ}
     push_cast
     ring
   rcases le_or_gt x (((2 * k + 1 : ℕ) : ℝ) * π + π) with hle | hgt
-  · exact gammaSEqual_pos_on_odd_right k hx.1 hle
-  · exact gammaSEqual_pos_on_even_left (k + 1) (by linarith [hmid]) hx.2
+  · exact gammaSEqual_pos_on_odd_right_orbit k hx.1 hle
+  · exact gammaSEqual_pos_on_even_left_orbit (k + 1) (by linarith [hmid]) hx.2
 
 theorem successive_gaps_opposite_sign (n : ℕ) {x y : ℝ}
     (hx : x ∈ Ioo (branchNode n) (branchNode (n + 1)))

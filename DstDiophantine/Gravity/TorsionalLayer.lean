@@ -768,6 +768,12 @@ theorem gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
     0 < gammaSEqual x :=
   gammaSEqual_pos_after_branchNode (2 * k + 1) ⟨k, rfl⟩ hxlo hxhi
 
+theorem gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
+    (hxlo : ((2 * k : ℕ) : ℝ) * π ≤ x)
+    (hxhi : x < branchNode (2 * k)) :
+    0 < gammaSEqual x :=
+  gammaSEqual_pos_before_branchNode (2 * k) ⟨k, by simp [two_mul]⟩ hxlo hxhi
+
 /-- Primary `cosh·cos` is strictly decreasing on `Icc π (π + 2/5)`
     (certified band where `γ' < 0` on the first odd branch). -/
 theorem strictAntiOn_gammaSEqual_odd_branch (k : ℕ) (hk : k = 0 := by decide) :

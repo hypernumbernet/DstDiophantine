@@ -1171,23 +1171,23 @@ theorem locked_four_rays {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
     hcounts.2.2.2.1⟩
 
 private theorem classify?_eq_T {j : ℝ} (hj : j = 0) : classify? j = some .T := by
-  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have habs : |j| ≤ 4 := by rw [hj]; norm_num
   have hT : classifyOfMem j habs = .T := (classifyOfMem_eq_T_iff habs).mpr hj
   simpa [classify?, habs] using hT
 
 private theorem classify?_eq_U {j : ℝ} (hj : j = 1 / 2) : classify? j = some .U := by
-  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have habs : |j| ≤ 4 := by rw [hj]; norm_num
   have hU : classifyOfMem j habs = .U :=
     (classifyOfMem_eq_U_iff habs).mpr (by rw [hj]; constructor <;> norm_num)
   simpa [classify?, habs] using hU
 
 private theorem classify?_eq_F {j : ℝ} (hj : j = 1) : classify? j = some .F := by
-  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have habs : |j| ≤ 4 := by rw [hj]; norm_num
   have hF : classifyOfMem j habs = .F := (classifyOfMem_eq_F_iff habs).mpr hj
   simpa [classify?, habs] using hF
 
 private theorem classify?_eq_B {j : ℝ} (hj : j = -((1 : ℝ) / 3)) : classify? j = some .B := by
-  have habs : |j| ≤ 1 := by rw [hj]; norm_num
+  have habs : |j| ≤ 4 := by rw [hj]; norm_num
   have hB : classifyOfMem j habs = .B :=
     (classifyOfMem_eq_B_iff habs).mpr (by rw [hj]; constructor <;> norm_num)
   simpa [classify?, habs] using hB
@@ -1644,15 +1644,15 @@ private theorem sin_sq_unit {α : ℝ} (h0 : 0 < α) (hπ : α < Real.pi / 2) :
 
 private theorem classify?_open {j : ℝ} (h0 : 0 < j) (h1 : j < 1) :
     classify? j = some .U := by
-  have habs : |j| ≤ 1 := by
+  have habs : |j| ≤ 4 := by
     rw [abs_of_pos h0]
-    exact h1.le
+    exact le_trans h1.le (by norm_num)
   have hU : classifyOfMem j habs = .U := (classifyOfMem_eq_U_iff habs).mpr ⟨h0, h1⟩
   simpa [classify?, habs] using hU
 
 private theorem classify?_neg {j : ℝ} (hlo : -1 ≤ j) (hhi : j < 0) :
     classify? j = some .B := by
-  have habs : |j| ≤ 1 := abs_le.mpr ⟨hlo, by linarith⟩
+  have habs : |j| ≤ 4 := abs_le.mpr ⟨hlo, by linarith⟩
   have hB : classifyOfMem j habs = .B := (classifyOfMem_eq_B_iff habs).mpr ⟨hlo, hhi⟩
   simpa [classify?, habs] using hB
 

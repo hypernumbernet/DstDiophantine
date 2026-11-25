@@ -1,4 +1,5 @@
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Motor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Discrete
@@ -13,7 +14,7 @@ Pure-boost scaling used by the amplification no-go theorems.
 
 namespace DstDiophantine
 
-open Operations Motor Invariant Generators Discrete NormedSpace
+open Operations Motor Invariant Generators Discrete NormedSpace Admissible
 
 namespace Amplification
 
@@ -109,15 +110,20 @@ theorem JNormalized_pow_amplify (θ : ℝ) (p : ℕ) :
   rw [pureBoost_scale, JNormalized_scale]
 
 theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
-    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi := by
+    Admissible.IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
   constructor
   · intro h
     have h0 := h (0 : Fin 3)
-    have hθ : θ ≤ Real.pi := by
+    have hθ : θ ≤ Real.pi / 2 := by
       simpa [pureBoost, add_zero] using h0.2.2.2
     exact ⟨h0.1, hθ⟩
   · rintro ⟨hθ0, hθπ⟩ a
-    fin_cases a <;> simp [pureBoost, hθ0, hθπ] <;> linarith [Real.pi_pos]
+    fin_cases a
+    · exact ⟨hθ0, le_rfl, Real.pi_pos.le, by simpa [pureBoost, add_zero] using hθπ⟩
+    · simp only [pureBoost]
+      exact ⟨le_rfl, le_rfl, Real.pi_pos.le, by simp [add_zero]; linarith [Real.pi_pos]⟩
+    · simp only [pureBoost]
+      exact ⟨le_rfl, le_rfl, Real.pi_pos.le, by simp [add_zero]; linarith [Real.pi_pos]⟩
 
 /-- Pure cyclic rotation on axis `1` (`B⁻₁ = e₁ e₃`). -/
 def pureRotation1 (θ : ℝ) : TorsionParams where

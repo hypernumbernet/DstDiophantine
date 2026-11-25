@@ -169,7 +169,7 @@ theorem CoarseAmplificationWitness.false {N k : ℕ} [NeZero N] (hk : 1 ≤ k)
 theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     (t : DiscreteTorsion N) (hk0 : 0 ≤ (k : ℝ)) :
     IsAdmissibleContinuous (scaleTorsion (k : ℝ) (toTorsionParams t)) ↔
-      ∀ a : Fin 3, 2 * k * ((t.n a).val + (t.m a).val) ≤ N := by
+      ∀ a : Fin 3, 4 * k * ((t.n a).val + (t.m a).val) ≤ N := by
   have hNpos : 0 < (N : ℝ) := Nat.cast_pos.mpr (NeZero.pos N)
   have hπ : 0 < Real.pi := Real.pi_pos
   constructor
@@ -178,39 +178,48 @@ theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
     have hβnn := toTorsionParams_beta_nonneg t a
     have hsum := Admissible.admissibleContinuous_sum_le _ hadm a
     have hcomb :
-        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi := by
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi / 2 := by
       convert hsum using 1
       simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
       ring
-    have hcleared : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
+    have hcleared : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by
       have h1 :=
         mul_le_mul_of_nonneg_left hcomb
-          (by positivity : (0 : ℝ) ≤ N / Real.pi)
+          (by positivity : (0 : ℝ) ≤ (2 * N) / Real.pi)
       have hL :
-          N / Real.pi *
+          (2 * N) / Real.pi *
               ((k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N)) =
-            (2 * k * ((t.n a).val + (t.m a).val) : ℝ) := by
+            (4 * k * ((t.n a).val + (t.m a).val) : ℝ) := by
         field_simp [Real.pi_ne_zero, hNpos.ne']
-      have hR : N / Real.pi * Real.pi = (N : ℝ) := by field_simp [Real.pi_ne_zero]
+        ring
+      have hR : (2 * N) / Real.pi * (Real.pi / 2) = (N : ℝ) := by
+        field_simp [Real.pi_ne_zero]
       rwa [hL, hR] at h1
     exact_mod_cast hcleared
   · intro h a
     have hαnn := toTorsionParams_alpha_nonneg t a
     have hβnn := toTorsionParams_beta_nonneg t a
-    have hineq : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by exact_mod_cast h a
-    have hone : (k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ 1 := by
-      have h1 : (2 * k * ((t.n a).val + (t.m a).val) : ℝ) / N ≤ 1 :=
-        (div_le_one hNpos).mpr hineq
-      convert h1 using 1 <;> field_simp <;> ring
+    have hineq : (4 * k * ((t.n a).val + (t.m a).val) : ℝ) ≤ N := by exact_mod_cast h a
+    have hone :
+        (k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ 1 / 2 := by
+      have hle : (2 * (k : ℝ) * ((t.n a).val + (t.m a).val)) / N ≤ (1 / 2 : ℝ) := by
+        rw [div_le_iff₀ hNpos]
+        nlinarith [hineq]
+      convert hle using 1 <;> ring
     have hπbound :
-        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi := by
+        (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) ≤ Real.pi / 2 := by
       calc
         (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) =
             Real.pi * ((k : ℝ) * (2 * ((t.n a).val + (t.m a).val : ℝ) / N)) := by ring
-        _ ≤ Real.pi * 1 := mul_le_mul_of_nonneg_left hone Real.pi_pos.le
-        _ = Real.pi := by ring
+        _ ≤ Real.pi * (1 / 2) := mul_le_mul_of_nonneg_left hone Real.pi_pos.le
+        _ = Real.pi / 2 := by ring
+    have hβpart :
+        (k : ℝ) * (2 * Real.pi * ↑(t.m a).val / N) ≤
+          (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) := by
+      gcongr
+      exact_mod_cast Nat.le_add_left _ _
     have hβπ : (k : ℝ) * (2 * Real.pi * ↑(t.m a).val / N) ≤ Real.pi :=
-      le_trans (by gcongr; exact_mod_cast Nat.le_add_left (t.m a).val _) hπbound
+      le_trans hβpart (le_trans hπbound (by linarith [Real.pi_pos]))
     refine ⟨mul_nonneg hk0 hαnn, mul_nonneg hk0 hβnn, ?_, ?_⟩
     · convert hβπ using 1 <;> simp [scaleTorsion, toTorsionParams_beta]
     · simp only [scaleTorsion, toTorsionParams_alpha, toTorsionParams_beta]
@@ -222,7 +231,7 @@ theorem scale_admissible_iff_four_mul_le {N k : ℕ} [NeZero N]
         (k : ℝ) * (2 * Real.pi * ((t.n a).val : ℝ) / N) +
             (k : ℝ) * (2 * Real.pi * ((t.m a).val : ℝ) / N) =
             (k : ℝ) * (2 * Real.pi * ((t.n a).val + (t.m a).val : ℝ) / N) := heq
-        _ ≤ Real.pi := hπbound
+        _ ≤ Real.pi / 2 := hπbound
 
 theorem coarse_implies_lt_two_mul {N k : ℕ} (hcoarse : 12 * N ^ 2 < 16 * k ^ 2) :
     N < 2 * k := by

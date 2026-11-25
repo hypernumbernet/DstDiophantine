@@ -397,7 +397,7 @@ theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContin
     |J p| ≤ 3 * Real.pi ^ 2 / 2 := by
   rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
   have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ Real.pi ^ 2 := fun a =>
-    sq_diff_le_pi_sq (h a).1 (h a).2.1 (h a).2.2.2
+    sq_diff_le_pi_sq (h a).1 (h a).2.1 (Admissible.admissibleContinuous_sum_le_pi p h a)
   have hsum : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * Real.pi ^ 2 := by
     simp only [Fin.sum_univ_three]
     linarith [hbound 0, hbound 1, hbound 2]
@@ -460,7 +460,7 @@ theorem mass_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuou
     mass p ≤ 3 * Real.pi ^ 2 / 2 := by
   rw [mass_coef]
   have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ Real.pi ^ 2 := fun a =>
-    sq_sum_le_pi_sq (h a).1 (h a).2.1 (h a).2.2.2
+    sq_sum_le_pi_sq (h a).1 (h a).2.1 (Admissible.admissibleContinuous_sum_le_pi p h a)
   have hsum : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤ 3 * Real.pi ^ 2 := by
     simp only [Fin.sum_univ_three]
     linarith [haxis 0, haxis 1, haxis 2]
@@ -537,22 +537,20 @@ theorem JNormalized_pureEllipticRay (t : ℝ) :
 theorem isAdmissibleContinuous_pureHyperbolicRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
     IsAdmissibleContinuous (pureHyperbolicRay t) := by
   intro a
-  unfold pureHyperbolicRay
+  simp only [pureHyperbolicRay]
   have hπ : 0 ≤ Real.pi / 2 := by positivity
-  have hsum : t * (Real.pi / 2) ≤ Real.pi := by
-    calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
-      _ ≤ Real.pi := by linarith [Real.pi_pos]
-  exact ⟨mul_nonneg ht0 hπ, le_rfl, le_of_lt Real.pi_pos, by simpa⟩
+  have hsum : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+    simpa [one_mul] using mul_le_mul_of_nonneg_right ht1 hπ
+  exact ⟨mul_nonneg ht0 hπ, le_rfl, Real.pi_pos.le, by simpa⟩
 
 theorem isAdmissibleContinuous_pureEllipticRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
     IsAdmissibleContinuous (pureEllipticRay t) := by
   intro a
-  unfold pureEllipticRay
+  simp only [pureEllipticRay]
   have hπ : 0 ≤ Real.pi / 2 := by positivity
-  have hsum : t * (Real.pi / 2) ≤ Real.pi := by
-    calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
-      _ ≤ Real.pi := by linarith [Real.pi_pos]
-  exact ⟨le_rfl, mul_nonneg ht0 hπ, hsum, by simpa [add_zero]⟩
+  have hsum : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+    simpa [one_mul] using mul_le_mul_of_nonneg_right ht1 hπ
+  exact ⟨le_rfl, mul_nonneg ht0 hπ, le_trans hsum (by linarith [Real.pi_pos]), by simpa [add_zero]⟩
 
 theorem JNormalized_balancedRay (t : ℝ) : JNormalized (balancedRay t) = 0 := by
   rw [JNormalized_coef]
@@ -572,17 +570,21 @@ theorem massNormalized_balancedRay (t : ℝ) :
   field_simp [Real.pi_ne_zero]
   ring
 
-theorem isAdmissibleContinuous_balancedRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 2) :
+theorem isAdmissibleContinuous_balancedRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
     IsAdmissibleContinuous (balancedRay t) := by
   intro a
   simp only [balancedRay]
   have hπ4 : 0 ≤ Real.pi / 4 := by linarith [Real.pi_pos]
   have hα : 0 ≤ t * (Real.pi / 4) := mul_nonneg ht0 hπ4
   have hπ2 : 0 ≤ Real.pi / 2 := by positivity
-  have hbound : t * (Real.pi / 2) ≤ Real.pi := by
-    calc t * (Real.pi / 2) ≤ 2 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ2
-      _ = Real.pi := by ring
-  exact ⟨hα, hα, by linarith [Real.pi_pos], by linarith⟩
+  have hbound : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+    simpa [one_mul] using mul_le_mul_of_nonneg_right ht1 hπ2
+  have hsum : (balancedRay t).alpha a + (balancedRay t).beta a ≤ Real.pi / 2 := by
+    convert hbound using 1
+    simp only [balancedRay]
+    ring
+  have hβπ : t * (Real.pi / 4) ≤ Real.pi := by linarith [ht1, Real.pi_pos]
+  exact ⟨hα, hα, hβπ, hsum⟩
 
 theorem mass_balancedRay_pos {t : ℝ} (ht : t ≠ 0) : 0 < mass (balancedRay t) := by
   rw [mass_balancedRay]
@@ -592,11 +594,11 @@ theorem mass_balancedRay_pos {t : ℝ} (ht : t ≠ 0) : 0 < mass (balancedRay t)
 theorem not_admissible_balancedRay_of_two_lt {t : ℝ} (ht : 2 < t) :
     ¬ IsAdmissibleContinuous (balancedRay t) := by
   intro h
-  have hsum := (h (0 : Fin 3)).2.2.2
+  have hsum := Admissible.admissibleContinuous_sum_le _ h (0 : Fin 3)
   have hαβ :
       (balancedRay t).alpha 0 + (balancedRay t).beta 0 = t * (Real.pi / 2) := by
     simp [balancedRay]; ring
-  have : t * (Real.pi / 2) ≤ Real.pi := by rwa [← hαβ]
+  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by simpa [hαβ] using hsum
   nlinarith [Real.pi_pos]
 
 /-- `J = 0` on the cone does not force vanishing mass. -/

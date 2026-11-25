@@ -245,7 +245,9 @@ theorem lagSq_le_of_neutral {p : TorsionParams}
       (s2 := p.alpha 2 + p.beta 2)
       (d0 := p.alpha 0 - p.beta 0) (d1 := p.alpha 1 - p.beta 1)
       (d2 := p.alpha 2 - p.beta 2)
-      (h 0).2.2.2 (h 1).2.2.2 (h 2).2.2.2
+      (Admissible.admissibleContinuous_sum_le_pi p h 0)
+      (Admissible.admissibleContinuous_sum_le_pi p h 1)
+      (Admissible.admissibleContinuous_sum_le_pi p h 2)
       (add_nonneg (h 0).1 (h 0).2.1)
       (add_nonneg (h 1).1 (h 1).2.1)
       (add_nonneg (h 2).1 (h 2).2.1)

@@ -46,13 +46,15 @@ private theorem axis_signed_le {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     axisSigned p a ≤ Real.pi ^ 2 :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2)).2
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 <|
+      Admissible.admissibleContinuous_sum_le_pi p h a)).2
 
 private theorem axis_signed_ge {p : TorsionParams}
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     -Real.pi ^ 2 ≤ axisSigned p a :=
   (abs_le.mp (by simpa [axisSigned] using
-    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2)).1
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 <|
+      Admissible.admissibleContinuous_sum_le_pi p h a)).1
 
 private theorem axis_signed_le_legacy {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
@@ -218,7 +220,8 @@ private theorem four_K_mass_le_three_K_sq_add_sum_sq_continuous {p : TorsionPara
       2 * Real.pi ^ 2 * axisUnsigned p a ≤
         Real.pi ^ 4 + axisSigned p a ^ 2 := fun a => by
     simpa [axisUnsigned, axisSigned] using
-      axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+      axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 <|
+        admissibleContinuous_sum_le_pi p h a
   have hsum :
       2 * Real.pi ^ 2 *
           (axisUnsigned p 0 + axisUnsigned p 1 + axisUnsigned p 2) ≤
@@ -539,13 +542,20 @@ private theorem isAdmissibleContinuousLegacy_dagger (p : TorsionParams)
   rcases h a with ⟨hα, hβ, hsum⟩
   exact ⟨hβ, hα, by simpa [daggerParams, add_comm] using hsum⟩
 
+private theorem isAdmissibleContinuous_dagger (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) :
+    IsAdmissibleContinuous (daggerParams p) := by
+  intro a
+  rcases h a with ⟨hα, hβ, hβπ, hsum⟩
+  have hαπ : p.alpha a ≤ Real.pi := by linarith [hα, hβ, hsum, Real.pi_pos]
+  refine ⟨hβ, hα, hαπ, by simpa [daggerParams, add_comm] using hsum⟩
+
 theorem isAdmissibleContinuous_twoDualWitness {γ : ℝ}
     (h0 : 0 ≤ γ) (h1 : γ ≤ Real.pi / 2) :
     IsAdmissibleContinuous (twoDualWitness γ) := by
   simpa [twoDualWitness] using
-    legacy_admissible_implies_mismatch (daggerParams (twoUsualWitness γ))
-      (isAdmissibleContinuousLegacy_dagger (twoUsualWitness γ)
-        (isAdmissibleContinuousLegacy_twoUsualWitness h0 h1))
+    isAdmissibleContinuous_dagger (twoUsualWitness γ)
+      (isAdmissibleContinuous_twoUsualWitness h0 h1)
 
 theorem twoDualWitness_attains (γ : ℝ) :
     Real.pi ^ 2 * mass (twoDualWitness γ) =
@@ -1008,12 +1018,7 @@ theorem exists_admissible_of_JM {Jval Mval : ℝ}
       rwa [controlCeilingLegacy_neg]
     obtain ⟨q, hq, hJq, hMq⟩ :=
       exists_nonneg_J_of_JM (-Jval) Mval hJ0 hJmax' hMlo' hMhi'
-    refine ⟨daggerParams q, ?_, ?_, ?_⟩
-    · intro a
-      have ha := hq a
-      simp only [daggerParams]
-      refine ⟨ha.2.1, ha.1, ?_, by simpa [add_comm] using ha.2.2.2⟩
-      exact le_trans (le_add_of_nonneg_right ha.2.1) ha.2.2.2
+    refine ⟨daggerParams q, isAdmissibleContinuous_dagger q hq, ?_, ?_⟩
     · rw [J_dagger, hJq, neg_neg]
     · rw [mass_dagger, hMq]
 

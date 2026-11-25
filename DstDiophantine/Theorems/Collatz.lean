@@ -329,28 +329,41 @@ theorem pi_div_two_lt_two_log_three : Real.pi / 2 < 2 * Real.log 3 := by
 
 theorem positive_integer_boost_admissible_iff {n : ℕ} (hn : 0 < n) :
     Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (n : ℝ))) ↔
-      n = 1 ∨ n = 2 ∨ n = 3 ∨ n = 4 := by
+      n = 1 ∨ n = 2 := by
+  dsimp only [Discrete.IsAdmissibleContinuous]
   rw [isAdmissibleContinuous_pureBoost_iff]
   constructor
   · intro ⟨_, hle⟩
-    by_contra hnot
-    have h5 : 5 ≤ n := by
-      rcases n with _ | _ | _ | _ | _ | n <;> simp_all
-    have hnreal : 0 < (n : ℝ) := Nat.cast_pos.mpr hn
-    have hlog : Real.log 5 ≤ Real.log (n : ℝ) :=
-      (Real.log_le_log_iff (by norm_num) hnreal).mpr (by exact_mod_cast h5)
-    have hmul : 2 * Real.log 5 ≤ 2 * Real.log (n : ℝ) :=
-      mul_le_mul_of_nonneg_left hlog (by norm_num)
-    have hgt : Real.pi < 2 * Real.log (n : ℝ) :=
-      lt_of_lt_of_le pi_lt_two_log_five hmul
-    exact not_le_of_gt hgt hle
+    rcases n with _ | _ | _ | _ | _ | n
+    · exact absurd hn Nat.not_lt_zero
+    · exact Or.inl rfl
+    · exact Or.inr rfl
+    · exfalso
+      exact not_le_of_gt pi_div_two_lt_two_log_three hle
+    · exfalso
+      have h4log : Real.pi / 2 < 2 * Real.log (4 : ℝ) := by
+        have hlog : Real.log (4 : ℝ) = 2 * Real.log 2 := by
+          norm_num [Real.log_mul, Real.log_pow]
+        rw [hlog]
+        nlinarith [pi_div_four_lt_two_log_two, Real.log_two_gt_d9]
+      exact not_le_of_gt h4log hle
+    · exfalso
+      have h5 : 5 ≤ 5 + n := by omega
+      have hnreal : 0 < (5 + n : ℝ) := by positivity
+      have hlog : Real.log 5 ≤ Real.log (5 + n : ℝ) :=
+        (Real.log_le_log_iff (by norm_num) hnreal).mpr (by exact_mod_cast h5)
+      have hmul : 2 * Real.log 5 ≤ 2 * Real.log (5 + n : ℝ) :=
+        mul_le_mul_of_nonneg_left hlog (by norm_num)
+      have hpi5 : Real.pi / 2 < 2 * Real.log 5 := by
+        linarith [Real.pi_pos, pi_lt_two_log_five, Real.log_five_gt_d9]
+      have hgt : Real.pi / 2 < 2 * Real.log (5 + n : ℝ) :=
+        lt_of_lt_of_le hpi5 hmul
+      simpa using not_le_of_gt hgt hle
   · intro h
-    rcases h with rfl | rfl | rfl | rfl
+    rcases h with rfl | rfl
     · simp only [Nat.cast_one, Real.log_one, mul_zero, le_refl, true_and]
       positivity
-    · exact ⟨by positivity, le_of_lt two_log_two_lt_pi⟩
-    · exact ⟨by positivity, le_of_lt two_log_three_lt_pi⟩
-    · exact ⟨by positivity, le_of_lt two_log_four_lt_pi⟩
+    · exact ⟨by positivity, le_of_lt two_log_two_lt_pi_div_two⟩
 
 theorem collatzHeight_two_lt_third :
     collatzHeight 2 (by decide : (2 : ℕ) ≠ 0) < 1 / 3 := by
@@ -934,7 +947,7 @@ theorem collatz_odd_step_beyond_unit_height {n : ℕ} (hn : 1 < n) (hodd : n % 2
   intro hadm
   have hpos : 0 < 3 * n + 1 := by omega
   have h5 : 5 ≤ 3 * n + 1 := by omega
-  rcases (positive_integer_boost_admissible_iff hpos).mp hadm with h1 | h2 | h3 | h4 <;> omega
+  rcases (positive_integer_boost_admissible_iff hpos).mp hadm with h1 | h2 <;> omega
 
 theorem collatzStep_eq_one_or_two_iff {n : ℕ} (hn : 0 < n) :
     collatzStep n = 1 ∨ collatzStep n = 2 ↔ n = 2 ∨ n = 4 := by
@@ -1035,17 +1048,14 @@ theorem collatz_shell_iff {n : ℕ} (hn : 0 < n) :
     exact ⟨not_legacy_pureBoost_log_three, collatzHeight_three_lt_one⟩
 
 theorem prime_boost_admissible_iff {p : ℕ} (hp : Nat.Prime p) :
-    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 ∨ p = 3 := by
+    Discrete.IsAdmissibleContinuous (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by
   rw [positive_integer_boost_admissible_iff (Nat.Prime.pos hp)]
   constructor
-  · rintro (rfl | rfl | rfl | h4)
-    · exact absurd rfl (Nat.Prime.ne_one hp)
-    · exact Or.inl rfl
-    · exact Or.inr rfl
-    · subst h4; exact absurd hp (by decide : ¬ Nat.Prime 4)
   · rintro (rfl | rfl)
-    · simp
-    · simp
+    · exact absurd rfl (Nat.Prime.ne_one hp)
+    · exact rfl
+  · rintro rfl
+    simp
 
 theorem prime_boost_admissible_legacy_iff {p : ℕ} (hp : Nat.Prime p) :
     Admissible.IsAdmissibleContinuousLegacy (pureBoost (2 * Real.log (p : ℝ))) ↔ p = 2 := by

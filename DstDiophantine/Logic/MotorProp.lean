@@ -19,10 +19,11 @@ open Admissible Amplification Invariant Motor Operations Generators
 abbrev zeroTorsion : TorsionParams := zeroParams
 
 theorem isAdmissibleContinuous_zeroTorsion :
-    IsAdmissibleContinuous zeroTorsion := by
-  intro a
-  fin_cases a <;> simp only [zeroTorsion, zeroParams] <;>
-    exact ⟨le_rfl, le_rfl, Real.pi_pos.le, by simp [zero_add]; exact Real.pi_pos.le⟩
+    IsAdmissibleContinuous zeroTorsion :=
+  legacy_admissible_implies_mismatch _ (by
+    intro a
+    fin_cases a <;> simp only [zeroTorsion, zeroParams] <;>
+      exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩)
 
 theorem motor_of_pure_translation (p : TransParams) :
     motor ⟨zeroTorsion, p⟩ = expTrans p := by

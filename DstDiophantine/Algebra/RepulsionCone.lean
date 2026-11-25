@@ -45,7 +45,7 @@ theorem admissibleContinuous_implies_mismatch_half_box (p : TorsionParams)
     mismatchBoostHalf (p.alpha a) (p.beta a) ^ 2 +
         mismatchRotationHalf (p.alpha a) (p.beta a) ^ 2 ≤
       (Real.pi / 2) ^ 2 := by
-  exact admissible_axis_implies_mismatch_half_box_pi (h a).1 (h a).2.1 (h a).2.2.2
+  exact admissible_axis_implies_mismatch_half_box (h a).1 (h a).2.1 (h a).2.2.2
 
 /-- Counterexample: mismatch half-box on every axis does **not** imply admissibility. -/
 theorem mismatch_half_box_not_implies_admissible :

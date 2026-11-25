@@ -160,12 +160,11 @@ theorem scale_balancedMassive_stays_balanced {k : ℕ} (hk : 1 ≤ k) {a : Ampli
 noncomputable def seedBalanced_stays {k : ℕ} (hk : 1 ≤ k) : Amplitude :=
   ⟨balancedRay (1 / (k : ℝ)), by
     have hk0 : 0 ≤ (1 : ℝ) / k := by positivity
-    have hk1 : (1 : ℝ) / k ≤ 2 := by
+    have hk1 : (1 : ℝ) / k ≤ 1 := by
       have hkpos : 0 < (k : ℝ) := Nat.cast_pos.mpr (Nat.succ_le_iff.mp hk)
       calc (1 : ℝ) / k ≤ 1 / 1 :=
           one_div_le_one_div_of_le (by norm_num : (0 : ℝ) < 1) (Nat.one_le_cast.mpr hk)
         _ = 1 := by norm_num
-        _ ≤ 2 := by norm_num
     exact isAdmissibleContinuous_balancedRay hk0 hk1⟩
 
 theorem seedBalanced_stays_isBalancedMassive {k : ℕ} (hk : 1 ≤ k) :

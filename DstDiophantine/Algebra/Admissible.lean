@@ -22,11 +22,11 @@ def IsPrincipalBranch (p : TorsionParams) : Prop :=
 def IsAdmissibleContinuousLegacy (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, 0 ≤ p.alpha a ∧ 0 ≤ p.beta a ∧ p.alpha a + p.beta a ≤ Real.pi / 2
 
-/-- Mismatch cone: rotation mismatch may reach `π` (primary overlap zero), boost nonnegative.
-    Each axis satisfies `β ≤ π` and `α+β ≤ π`, so repulsion at `β=π` stays admissible. -/
+/-- Mismatch cone: rotation mismatch may reach `π` on `β`, while the boost half-sum stays on the
+    legacy wall `α+β ≤ π/2` (primary overlap discipline). -/
 def IsAdmissibleContinuous (p : TorsionParams) : Prop :=
-  ∀ a : Fin 3, 0 ≤ p.alpha a ∧ 0 ≤ p.beta a ∧
-    p.beta a ≤ Real.pi ∧ p.alpha a + p.beta a ≤ Real.pi
+  ∀ a : Fin 3,
+    (0 ≤ p.alpha a ∧ 0 ≤ p.beta a ∧ p.beta a ≤ Real.pi ∧ p.alpha a + p.beta a ≤ Real.pi / 2)
 
 theorem legacy_admissible_implies_mismatch (p : TorsionParams)
     (h : IsAdmissibleContinuousLegacy p) : IsAdmissibleContinuous p := by
@@ -60,8 +60,13 @@ theorem admissibleContinuous_beta_le_pi (p : TorsionParams)
 
 theorem admissibleContinuous_sum_le (p : TorsionParams)
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
-    p.alpha a + p.beta a ≤ Real.pi :=
+    p.alpha a + p.beta a ≤ Real.pi / 2 :=
   (h a).2.2.2
+
+theorem admissibleContinuous_sum_le_pi (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    p.alpha a + p.beta a ≤ Real.pi :=
+  le_trans (admissibleContinuous_sum_le p h a) (by linarith [Real.pi_pos])
 
 theorem admissibleContinuous_legacy_sum_le_half_pi (p : TorsionParams)
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
@@ -73,6 +78,11 @@ theorem admissibleContinuous_alpha_le_pi (p : TorsionParams)
     p.alpha a ≤ Real.pi := by
   linarith [admissibleContinuous_beta_nonneg p h a, admissibleContinuous_sum_le p h a,
     Real.pi_pos]
+
+theorem admissibleContinuous_alpha_le_half_pi (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    p.alpha a ≤ Real.pi / 2 := by
+  linarith [admissibleContinuous_beta_nonneg p h a, admissibleContinuous_sum_le p h a]
 
 theorem admissibleContinuous_legacy_alpha_nonneg (p : TorsionParams)
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) : 0 ≤ p.alpha a :=
@@ -94,8 +104,7 @@ theorem admissibleContinuous_legacy_beta_le_half_pi (p : TorsionParams)
   linarith [admissibleContinuous_legacy_alpha_nonneg p h a,
     admissibleContinuous_legacy_sum_le_half_pi p h a]
 
-/-- Legacy cone bounds each half-angle by `π/2`. -/
-theorem admissibleContinuous_alpha_le_half_pi (p : TorsionParams)
+theorem admissibleContinuous_legacy_alpha_le_half_pi_alias (p : TorsionParams)
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     p.alpha a ≤ Real.pi / 2 :=
   admissibleContinuous_legacy_alpha_le_half_pi p h a
@@ -105,6 +114,11 @@ theorem admissibleContinuous_beta_le_half_pi (p : TorsionParams)
     p.beta a ≤ Real.pi / 2 :=
   admissibleContinuous_legacy_beta_le_half_pi p h a
 
+theorem admissibleContinuous_beta_le_half_pi_mismatch (p : TorsionParams)
+    (h : IsAdmissibleContinuous p) (a : Fin 3) :
+    p.beta a ≤ Real.pi / 2 := by
+  linarith [admissibleContinuous_alpha_nonneg p h a, admissibleContinuous_sum_le p h a]
+
 theorem admissible_mismatch_implies_beta_rotation_half_le_pi (p : TorsionParams)
     (h : IsAdmissibleContinuous p) (a : Fin 3) :
     p.beta a / 2 ≤ Real.pi / 2 :=
@@ -113,8 +127,8 @@ theorem admissible_mismatch_implies_beta_rotation_half_le_pi (p : TorsionParams)
 /-- Pack axis data in the legacy triangle `α,β ≥ 0` and `α+β ≤ π/2`. -/
 theorem half_pi_axis_admissibleContinuous {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
-    0 ≤ α ∧ 0 ≤ β ∧ β ≤ Real.pi ∧ α + β ≤ Real.pi :=
-  ⟨hα, hβ, by linarith [hβ, hsum, Real.pi_pos], le_trans hsum (by linarith [Real.pi_pos])⟩
+    0 ≤ α ∧ 0 ≤ β ∧ β ≤ Real.pi ∧ α + β ≤ Real.pi / 2 :=
+  ⟨hα, hβ, by linarith [hβ, hsum, Real.pi_pos], hsum⟩
 
 end Admissible
 

@@ -120,10 +120,7 @@ private theorem isPureUsual_iff_axisSigned {p : TorsionParams}
   · intro ht
     have hα := (h a).1
     have hβ := (h a).2.1
-    have hαle : p.alpha a ≤ Real.pi / 2 := by
-      have hβ := (h a).2.1
-      rw [axisSigned] at ht
-      nlinarith [sq_nonneg (p.beta a)]
+    have hαle := Admissible.admissibleContinuous_legacy_alpha_le_half_pi p h a
     have : p.beta a = 0 ∧ p.alpha a = Real.pi / 2 := by
       have hsq : p.alpha a ^ 2 ≤ (Real.pi / 2) ^ 2 := by
         nlinarith [sq_nonneg (p.alpha a - Real.pi / 2)]
@@ -171,12 +168,12 @@ private theorem signedSum3 (p : TorsionParams) :
 private theorem axisSigned_le_K {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     axisSigned p a ≤ (Real.pi / 2) ^ 2 :=
-    (abs_le.mp (axis_abs_density_le (Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).2
+    (abs_le.mp (axis_abs_density_le (k := Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).2
 
 private theorem axisSigned_ge_negK {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) (a : Fin 3) :
     -((Real.pi / 2) ^ 2) ≤ axisSigned p a :=
-    (abs_le.mp (axis_abs_density_le (Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).1
+    (abs_le.mp (axis_abs_density_le (k := Real.pi / 2) (h a).1 (h a).2.1 (h a).2.2)).1
 
 private theorem le_J_of_twoPureUsual {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) (hUU : TwoPureUsual p) :
@@ -751,12 +748,15 @@ private theorem pi_sq_mass_eq_shield_iff {p : TorsionParams}
       (2 * J p) ^ 2 := by rw [hT]
   have hthree := onWall_iff_three_gap h
   have hK : 0 ≤ (Real.pi / 2) ^ 2 := by positivity
-  have habs0 : |axisSigned p 0| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (Real.pi / 2) (h 0).1 (h 0).2.1 (h 0).2.2
-  have habs1 : |axisSigned p 1| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (Real.pi / 2) (h 1).1 (h 1).2.1 (h 1).2.2
-  have habs2 : |axisSigned p 2| ≤ (Real.pi / 2) ^ 2 :=
-    axis_abs_density_le (Real.pi / 2) (h 2).1 (h 2).2.1 (h 2).2.2
+  have habs0 : |axisSigned p 0| ≤ (Real.pi / 2) ^ 2 := by
+    simpa [axisSigned] using
+      axis_abs_density_le (k := Real.pi / 2) (h 0).1 (h 0).2.1 (h 0).2.2
+  have habs1 : |axisSigned p 1| ≤ (Real.pi / 2) ^ 2 := by
+    simpa [axisSigned] using
+      axis_abs_density_le (k := Real.pi / 2) (h 1).1 (h 1).2.1 (h 1).2.2
+  have habs2 : |axisSigned p 2| ≤ (Real.pi / 2) ^ 2 := by
+    simpa [axisSigned] using
+      axis_abs_density_le (k := Real.pi / 2) (h 2).1 (h 2).2.1 (h 2).2.2
   have hBA := shield_gap_identity (axisSigned p 0) (axisSigned p 1) (axisSigned p 2)
   have hBA' := hBA
   rw [hsq] at hBA'
@@ -943,7 +943,7 @@ private theorem pi_sq_mass_eq_repulsive_iff {p : TorsionParams}
 
 private theorem controlEnvelopeNum_eq_shield {Jval : ℝ}
     (h : |Jval| ≤ Real.pi ^ 2 / 8) :
-    controlEnvelopeNum Jval = 4 * Jval ^ 2 := by
+    controlEnvelopeNumLegacy Jval = 4 * Jval ^ 2 := by
   have hJ := abs_le.mp h
   have hnonpos : 2 * Jval - Real.pi ^ 2 / 2 ≤ 0 := by linarith
   have hA : 4 * Jval ^ 2 ≤ (2 * Jval - Real.pi ^ 2 / 2) ^ 2 := by
@@ -959,12 +959,12 @@ private theorem controlEnvelopeNum_eq_shield {Jval : ℝ}
     apply sq_le_sq.mpr
     rw [abs_of_nonneg hpos, abs_le]
     constructor <;> linarith [show (0 : ℝ) < Real.pi ^ 2 by positivity]
-  unfold controlEnvelopeNum
+  unfold controlEnvelopeNumLegacy
   rw [min_eq_left (le_min hA hB)]
 
 private theorem controlEnvelopeNum_eq_attractive {Jval : ℝ}
     (h : Real.pi ^ 2 / 8 ≤ Jval) :
-    controlEnvelopeNum Jval = (2 * Jval - Real.pi ^ 2 / 2) ^ 2 := by
+    controlEnvelopeNumLegacy Jval = (2 * Jval - Real.pi ^ 2 / 2) ^ 2 := by
   have hJ : 0 ≤ Jval := by
     have : (0 : ℝ) < Real.pi ^ 2 / 8 := by positivity
     linarith
@@ -981,50 +981,50 @@ private theorem controlEnvelopeNum_eq_attractive {Jval : ℝ}
     apply sq_le_sq.mpr
     rw [abs_of_nonneg hpos, abs_le]
     constructor <;> linarith [show (0 : ℝ) < Real.pi ^ 2 by positivity]
-  unfold controlEnvelopeNum
+  unfold controlEnvelopeNumLegacy
   rw [min_eq_left hR, min_eq_right h4]
 
 private theorem controlEnvelopeNum_eq_repulsive {Jval : ℝ}
     (h : Jval ≤ -(Real.pi ^ 2 / 8)) :
-    controlEnvelopeNum Jval = (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by
+    controlEnvelopeNumLegacy Jval = (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by
   have hpos : Real.pi ^ 2 / 8 ≤ -Jval := by linarith
   have hneg := controlEnvelopeNum_eq_attractive hpos
-  rw [← controlEnvelopeNum_neg Jval]
+  rw [← controlEnvelopeNumLegacy_neg Jval]
   have hsq :
       (2 * (-Jval) - Real.pi ^ 2 / 2) ^ 2 =
         (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by ring
   rw [hneg, hsq]
 
 private theorem mass_eq_controlCeiling_iff_raw {p : TorsionParams} :
-    mass p = controlCeiling (J p) ↔
+    mass p = controlCeilingLegacy (J p) ↔
       Real.pi ^ 2 * mass p =
-        5 * Real.pi ^ 4 / 16 + controlEnvelopeNum (J p) := by
+        5 * Real.pi ^ 4 / 16 + controlEnvelopeNumLegacy (J p) := by
   have hπ : Real.pi ^ 2 ≠ 0 := by positivity
   constructor
   · intro h
-    unfold controlCeiling at h
+    unfold controlCeilingLegacy at h
     have := congrArg (fun x : ℝ => Real.pi ^ 2 * x) h
     have hid :
         Real.pi ^ 2 *
-            (5 * Real.pi ^ 2 / 16 + controlEnvelopeNum (J p) / Real.pi ^ 2) =
-          5 * Real.pi ^ 4 / 16 + controlEnvelopeNum (J p) := by
+            (5 * Real.pi ^ 2 / 16 + controlEnvelopeNumLegacy (J p) / Real.pi ^ 2) =
+          5 * Real.pi ^ 4 / 16 + controlEnvelopeNumLegacy (J p) := by
       field_simp
     linarith
   · intro h
-    unfold controlCeiling
+    unfold controlCeilingLegacy
     have hid :
         Real.pi ^ 2 *
-            (5 * Real.pi ^ 2 / 16 + controlEnvelopeNum (J p) / Real.pi ^ 2) =
-          5 * Real.pi ^ 4 / 16 + controlEnvelopeNum (J p) := by
+            (5 * Real.pi ^ 2 / 16 + controlEnvelopeNumLegacy (J p) / Real.pi ^ 2) =
+          5 * Real.pi ^ 4 / 16 + controlEnvelopeNumLegacy (J p) := by
       field_simp
     apply mul_left_cancel₀ hπ
     linarith
 
 private theorem envelopeNum_trichotomy (Jval : ℝ) :
-    controlEnvelopeNum Jval = 4 * Jval ^ 2 ∨
-      controlEnvelopeNum Jval = (2 * Jval - Real.pi ^ 2 / 2) ^ 2 ∨
-      controlEnvelopeNum Jval = (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by
-  unfold controlEnvelopeNum
+    controlEnvelopeNumLegacy Jval = 4 * Jval ^ 2 ∨
+      controlEnvelopeNumLegacy Jval = (2 * Jval - Real.pi ^ 2 / 2) ^ 2 ∨
+      controlEnvelopeNumLegacy Jval = (2 * Jval + Real.pi ^ 2 / 2) ^ 2 := by
+  unfold controlEnvelopeNumLegacy
   rcases le_or_gt (4 * Jval ^ 2)
       (min ((2 * Jval - Real.pi ^ 2 / 2) ^ 2)
         ((2 * Jval + Real.pi ^ 2 / 2) ^ 2)) with hle | hgt
@@ -1137,7 +1137,7 @@ private theorem abs_J_le_of_opposed {p : TorsionParams}
 /-! ### The lock -/
 
 theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuousLegacy p) :
-    mass p = controlCeiling (J p) ↔ OnWall p ∧ TwoCorners p := by
+    mass p = controlCeilingLegacy (J p) ↔ OnWall p ∧ TwoCorners p := by
   constructor
   · intro hmass
     have hraw := (mass_eq_controlCeiling_iff_raw (p := p)).mp hmass
@@ -1179,8 +1179,8 @@ theorem onEnvelope_iff {p : TorsionParams} (h : IsAdmissibleContinuousLegacy p) 
 theorem eq_of_onEnvelope_of_alpha_eq {p q : TorsionParams}
     (hp : IsAdmissibleContinuousLegacy p) (hq : IsAdmissibleContinuousLegacy q)
     (hα : q.alpha = p.alpha)
-    (hpE : mass p = controlCeiling (J p))
-    (hqE : mass q = controlCeiling (J q)) : p = q := by
+    (hpE : mass p = controlCeilingLegacy (J p))
+    (hqE : mass q = controlCeilingLegacy (J q)) : p = q := by
   have hpw := ((onEnvelope_iff hp).mp hpE).1
   have hqw := ((onEnvelope_iff hq).mp hqE).1
   have hβ : q.beta = p.beta := by
@@ -1189,12 +1189,12 @@ theorem eq_of_onEnvelope_of_alpha_eq {p q : TorsionParams}
   exact torsionParams_ext hα.symm hβ.symm
 
 private theorem controlCeiling_zero :
-    controlCeiling 0 = 5 * Real.pi ^ 2 / 16 := by
-  have hnum : controlEnvelopeNum 0 = 0 := by
-    unfold controlEnvelopeNum
+    controlCeilingLegacy 0 = 5 * Real.pi ^ 2 / 16 := by
+  have hnum : controlEnvelopeNumLegacy 0 = 0 := by
+    unfold controlEnvelopeNumLegacy
     rw [show (4 : ℝ) * 0 ^ 2 = 0 by ring]
     exact min_eq_left (le_min (by positivity) (by positivity))
-  unfold controlCeiling
+  unfold controlCeilingLegacy
   rw [hnum, zero_div, add_zero]
 
 private theorem quarter_of_density_zero {p : TorsionParams}
@@ -1213,7 +1213,7 @@ theorem exists_heaviest_shield_roles {p : TorsionParams}
     ∃ a b c : Fin 3, a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
       IsPureUsual p a ∧ IsPureDual p b ∧
       p.alpha c = Real.pi / 4 ∧ p.beta c = Real.pi / 4 := by
-  have henv : mass p = controlCeiling (J p) := by
+  have henv : mass p = controlCeilingLegacy (J p) := by
     rw [hJ, hM, controlCeiling_zero]
   have ⟨hw, hcorn⟩ := (onEnvelope_iff h).mp henv
   have hUU : ¬ TwoPureUsual p := by

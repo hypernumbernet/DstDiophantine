@@ -155,7 +155,7 @@ theorem isAdmissible_iff_principalBranch (t : DiscreteTorsion N) :
 
 theorem admissible_sum_le (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
     (toTorsionParams t).alpha a + (toTorsionParams t).beta a ≤ Real.pi :=
-  admissibleContinuous_sum_le _ (admissible_implies_continuous t h) a
+  admissibleContinuous_sum_le_pi _ (admissible_implies_continuous t h) a
 
 theorem admissible_sum_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
     (toTorsionParams t).alpha a + (toTorsionParams t).beta a ≤ Real.pi / 2 :=
@@ -163,7 +163,7 @@ theorem admissible_sum_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (
 
 theorem admissible_alpha_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
     (toTorsionParams t).alpha a ≤ Real.pi / 2 :=
-  admissibleContinuous_alpha_le_half_pi _ (admissible_implies_legacy_continuous t h) a
+  admissibleContinuous_alpha_le_half_pi _ (admissible_implies_continuous t h) a
 
 theorem admissible_beta_le_half_pi (t : DiscreteTorsion N) (h : IsAdmissible t) (a : Fin 3) :
     (toTorsionParams t).beta a ≤ Real.pi / 2 :=

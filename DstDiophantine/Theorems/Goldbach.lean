@@ -793,7 +793,7 @@ theorem goldbach_target_not_admissible {n : ℕ} (hn : 5 ≤ n) :
   intro hadm
   have hpos : 0 < n := by omega
   have hmem := (positive_integer_boost_admissible_iff hpos).mp hadm
-  rcases hmem with rfl | rfl | rfl | rfl <;> omega
+  rcases hmem with rfl | rfl <;> omega
 
 theorem goldbach_two_two : IsGoldbachPair 2 2 4 :=
   ⟨by decide, by decide, by decide, even_iff_two_dvd.mpr ⟨2, by decide⟩, by decide⟩

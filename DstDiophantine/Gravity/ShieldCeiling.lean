@@ -99,10 +99,12 @@ theorem pi_sq_mass_le_shield_ceiling_add_J_sq_of_continuous (p : TorsionParams)
   have hax : ∀ a : Fin 3,
       2 * Real.pi ^ 2 * (p.alpha a ^ 2 + p.beta a ^ 2)
         ≤ Real.pi ^ 4 + (p.alpha a ^ 2 - p.beta a ^ 2) ^ 2 := fun a =>
-    axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+    axis_trade_off (k := Real.pi) (h a).1 (h a).2.1 <|
+      Admissible.admissibleContinuous_sum_le_pi p h a
   have habs : ∀ a : Fin 3,
       |p.alpha a ^ 2 - p.beta a ^ 2| ≤ Real.pi ^ 2 := fun a =>
-    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 (h a).2.2.2
+    axis_abs_density_le (k := Real.pi) (h a).1 (h a).2.1 <|
+      Admissible.admissibleContinuous_sum_le_pi p h a
   have he : -Real.pi ^ 4 ≤
       (p.alpha 0 ^ 2 - p.beta 0 ^ 2) * (p.alpha 1 ^ 2 - p.beta 1 ^ 2) +
         (p.alpha 0 ^ 2 - p.beta 0 ^ 2) * (p.alpha 2 ^ 2 - p.beta 2 ^ 2) +

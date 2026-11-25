@@ -173,7 +173,7 @@ theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
     IsAdmissibleContinuous (dualWallParams p) := by
   intro a
   have hα := admissibleContinuous_legacy_alpha_nonneg p h a
-  have hαle := admissibleContinuous_alpha_le_half_pi p h a
+  have hαle := admissibleContinuous_legacy_alpha_le_half_pi p h a
   unfold dualWallParams dualWall
   exact half_pi_axis_admissibleContinuous hα (by linarith) (by linarith)
 
@@ -396,7 +396,7 @@ theorem mass_equalScaleOf (p : TorsionParams) :
 
 theorem isAdmissibleContinuous_equalScaleOf_iff {p : TorsionParams}
     (hα : ∀ a, 0 ≤ p.alpha a) :
-    IsAdmissibleContinuous (equalScaleOf p) ↔ ∀ a, p.alpha a ≤ Real.pi / 2 := by
+    IsAdmissibleContinuous (equalScaleOf p) ↔ ∀ a, p.alpha a ≤ Real.pi / 4 := by
   constructor
   · intro h a
     have hsum := admissibleContinuous_sum_le (equalScaleOf p) h a
@@ -404,7 +404,7 @@ theorem isAdmissibleContinuous_equalScaleOf_iff {p : TorsionParams}
     linarith
   · intro h a
     simp only [equalScaleOf]
-    refine ⟨(hα a), (hα a), by linarith [h a, Real.pi_pos], by linarith [h a, Real.pi_pos]⟩
+    refine ⟨hα a, hα a, le_trans (h a) (by nlinarith [Real.pi_pos]), by linarith [h a]⟩
 
 /-! ### Existence of a dual-only shield when the wall is nonpositive -/
 
@@ -807,11 +807,13 @@ theorem uniform_pi_div_three_admissible :
     have hπ : 0 < Real.pi := Real.pi_pos
     nlinarith)
 
-theorem uniform_pi_div_three_equalScale_admissible :
-    IsAdmissibleContinuous (equalScaleOf (uniformTorsion (Real.pi / 3) 0)) :=
-  (isAdmissibleContinuous_equalScaleOf_iff
-    (fun a => by simp only [uniformTorsion]; positivity)).mpr fun _ => by
-      simp [uniformTorsion]; linarith [Real.pi_pos]
+theorem uniform_pi_div_three_equalScale_not_admissible :
+    ¬ IsAdmissibleContinuous (equalScaleOf (uniformTorsion (Real.pi / 3) 0)) := by
+  intro hAdm
+  have hα := (isAdmissibleContinuous_equalScaleOf_iff
+    (fun a => by simp only [uniformTorsion]; positivity)).mp hAdm 0
+  simp only [uniformTorsion, equalScaleOf] at hα
+  exact (not_le_of_gt pi_div_four_lt_pi_div_three) hα
 
 theorem uniform_pi_div_three_wall_pos :
     0 < J (dualWallParams (uniformTorsion (Real.pi / 3) 0)) := by
@@ -992,9 +994,10 @@ theorem equalScale_axisUsual_not_admissible {α : ℝ}
   intro hAdm
   have hnn : ∀ a, 0 ≤ (axisUsual α).alpha a :=
     axisUsual_alpha_nonneg (le_of_lt (lt_trans (by positivity : (0 : ℝ) < Real.pi / 2) h))
-  have := (isAdmissibleContinuous_equalScaleOf_iff hnn).mp hAdm 0
-  simp only [axisUsual, finCoord] at this
-  exact (not_le_of_gt h) this
+  have hα4 := (isAdmissibleContinuous_equalScaleOf_iff hnn).mp hAdm 0
+  simp only [axisUsual, finCoord] at hα4
+  have hhalf : α ≤ Real.pi / 2 := le_trans hα4 (by nlinarith [Real.pi_pos])
+  exact not_le_of_gt h hhalf
 
 theorem exists_dual_only_shield_axisUsual {α : ℝ}
     (hα0 : 0 ≤ α) (hα : α ≤ Real.pi / 2) :

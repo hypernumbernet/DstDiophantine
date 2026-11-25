@@ -26,7 +26,7 @@ noncomputable section
 
 namespace DstDiophantine.Gravity.GravitonQuantum
 
-open Admissible Invariant Operations Real SourceSuperposition MismatchAngle
+open Admissible Invariant Operations Real Set SourceSuperposition MismatchAngle
 open DstDiophantine.Logic Gravity
 
 /-- Pure dual rapidity `θ` on axis 0. -/
@@ -103,10 +103,10 @@ theorem JNormalized_oneStep {N : ℕ} (hN : 0 < N) :
 theorem oneAxisDual_admissible_legacy {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuousLegacy (oneAxisDual θ) := by
   intro a
-  fin_cases a <;> simp only [oneAxisDual]
-  · exact ⟨le_rfl, h0, by simpa [add_zero] using hθ⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
+  fin_cases a
+  · simp only [oneAxisDual]; exact ⟨le_rfl, h0, by simpa [add_zero] using hθ⟩
+  · simp only [oneAxisDual]; exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+  · simp only [oneAxisDual]; exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
 
 theorem oneAxisDual_admissible {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuous (oneAxisDual θ) :=
@@ -993,8 +993,8 @@ theorem usualStep_admissible_legacy {N : ℕ} (hN : 4 ≤ N) :
   intro a
   fin_cases a <;> simp only [oneAxisUsual]
   · exact ⟨hθ, le_rfl, by linarith [hθ, hle]⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
 
 theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) :=
@@ -1002,13 +1002,15 @@ theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
 
 theorem balancedStep_admissible_legacy {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuousLegacy (oneAxisBalanced (stepAngle N / 2)) := by
-  have hsum := stepAngle_le_half_pi hN
-  have hhalf := div_nonneg (stepAngle_nonneg N) (by norm_num)
+  have hstep := stepAngle_le_half_pi hN
+  have hθ : 0 ≤ stepAngle N / 2 := div_nonneg (stepAngle_nonneg N) (by norm_num)
+  have hsum_axis0 : stepAngle N / 2 + stepAngle N / 2 ≤ Real.pi / 2 := by
+    simpa [two_mul] using hstep
   intro a
   fin_cases a <;> simp only [oneAxisBalanced]
-  · exact ⟨hhalf, hhalf, by nlinarith [hhalf, hsum]⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
-  · exact ⟨le_rfl, le_rfl, le_rfl⟩
+  · exact ⟨hθ, hθ, hsum_axis0⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
 
 theorem balancedStep_admissible {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) :=
@@ -1058,9 +1060,20 @@ theorem gammaSEqualLegacy_pos_up_to_quarter {x : ℝ} (hx0 : 0 ≤ x) (hx : x �
   rcases hx0.eq_or_lt with rfl | hxpos
   · simp [gammaSEqualLegacy]
   · unfold gammaSEqualLegacy
-    have hcos : 0 < cos x :=
-      cos_pos_of_mem_Ioo ⟨hxpos, lt_of_le_of_lt hx (by linarith [Real.pi_pos])⟩
-    exact mul_pos (Real.cosh_pos _) hcos
+    have hsin_pos : 0 < Real.sin x :=
+      Real.sin_pos_of_pos_of_lt_pi hxpos (by linarith [hx, Real.pi_pos])
+    have hsin_le : Real.sin x ≤ Real.sin (Real.pi / 4) :=
+      Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [hx0, Real.pi_pos])
+        (by linarith [Real.pi_pos]) hx
+    have hcos_ge : Real.cos (Real.pi / 4) ≤ Real.cos x :=
+      Real.cos_le_cos_of_nonneg_of_le_pi (by linarith [hx0, Real.pi_pos])
+        (by linarith [Real.pi_pos]) hx
+    have hid : Real.sin (Real.pi / 4) = Real.cos (Real.pi / 4) := by
+      rw [Real.sin_pi_div_four, Real.cos_pi_div_four]
+    have hsc : Real.sin x ≤ Real.cos x := by linarith [hsin_le, hcos_ge, hid]
+    have hsub : Real.cosh x - Real.sinh x = Real.exp (-x) := by
+      rw [Real.cosh_eq, Real.sinh_eq]; ring
+    nlinarith [Real.cosh_pos x, (Real.sinh_pos_iff.mpr hxpos), hsin_pos, hsc, hsub, Real.exp_pos (-x)]
 
 theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
     0 < gammaS (stepAngle N / 2) (stepAngle N / 2) := by
@@ -1290,19 +1303,23 @@ theorem J_splitSteps (N : ℕ) :
   simp [splitSteps, Fin.sum_univ_three]
   ring
 
-theorem perpSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
-    IsAdmissibleContinuous (perpSteps N) := by
+theorem perpSteps_admissible_legacy {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuousLegacy (perpSteps N) := by
   have hθ : 0 ≤ stepAngle N :=
     (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
   have hle := stepAngle_le_half_pi hN
   intro a
   fin_cases a
   · simp only [perpSteps]
-    exact ⟨le_rfl, hθ, by linarith [Real.pi_pos], by linarith [hle, hθ]⟩
+    exact ⟨le_rfl, hθ, by linarith [hle, hθ]⟩
   · simp only [perpSteps]
-    exact ⟨le_rfl, hθ, by linarith [Real.pi_pos], by linarith [hle, hθ]⟩
+    exact ⟨le_rfl, hθ, by linarith [hle, hθ]⟩
   · simp only [perpSteps]
-    refine ⟨le_rfl, le_rfl, by linarith [Real.pi_pos], by linarith⟩
+    exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+
+theorem perpSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (perpSteps N) :=
+  legacy_admissible_implies_mismatch _ (perpSteps_admissible_legacy hN)
 
 theorem splitSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (splitSteps N) := by

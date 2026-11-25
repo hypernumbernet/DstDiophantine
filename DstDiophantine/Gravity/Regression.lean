@@ -2153,9 +2153,10 @@ example :
 
 example {q : Operations.TorsionParams}
     (hα : ∀ a, q.alpha a = Real.pi / 3)
-    (hq : Admissible.IsAdmissibleContinuous q) :
+    (hq : Admissible.IsAdmissibleContinuous q)
+    (hleg : Admissible.IsAdmissibleContinuousLegacy q) :
     Logic.ofParams q hq = .U :=
-  uniform_pi_div_three_dualOnly_U hα hq
+  uniform_pi_div_three_dualOnly_U hα hq hleg
 
 example {p q : Operations.TorsionParams}
     (hα : q.alpha = p.alpha)
