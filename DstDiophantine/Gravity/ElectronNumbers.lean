@@ -128,22 +128,6 @@ private lemma gamma_fourteen_fifteenths_pos : 0 < gammaSEqual (14 / 15) := by
     norm_num
   linarith [hbounds.1]
 
-private lemma gamma_nineteen_twentieths_neg : gammaSEqual (19 / 20) < 0 := by
-  have hbounds := gamma_before (x := 19 / 20) (ε := π / 2 - 19 / 20)
-    (a := 3.141592 / 2 - 19 / 20) (b := 3.141593 / 2 - 19 / 20)
-    (E0 := 2585 / 1000) (E1 := 2586 / 1000)
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
-    (by norm_num) exp_nineteen_twentieths_bounds.1.le exp_nineteen_twentieths_bounds.2.le
-    (by simp only [sinHi, cosLo]; norm_num)
-    (by simp only [sinLo, cosLo]; norm_num)
-  have hhi : gammaUpper (2585 / 1000)
-      (sinHi (3.141593 / 2 - 19 / 20) - cosLo (3.141593 / 2 - 19 / 20))
-      (sinHi (3.141593 / 2 - 19 / 20) +
-        cosHi (3.141592 / 2 - 19 / 20) (3.141593 / 2 - 19 / 20)) < 0 := by
-    simp only [gammaUpper, sinHi, cosLo, cosHi]
-    norm_num
-  linarith [hbounds.2]
-
 theorem firstNode_num_window :
     (3.141592 / 2 : ℝ) < resonanceRoot1 ∧ resonanceRoot1 < (3.141593 / 2) := by
   rw [resonanceRoot1_eq_pi_div_two]
@@ -159,213 +143,11 @@ theorem firstNode_radius_window :
   · rw [div_lt_div_iff₀ (mul_pos (by norm_num) hx) (by norm_num)]
     nlinarith
 
-/-! ### The restoring square -/
+private lemma lowPhase_mem_shell : (153 / 100 : ℝ) ∈ Set.Ioo (3 / 2 : ℝ) (33 / 20) := by
+  exact ⟨by norm_num, by norm_num⟩
 
-private lemma proxy_lt_side_low : (2163 / 1000 : ℝ) < sqrt 2 * (153 / 100) := by
-  have h := sqrt_two_bounds.1
-  have hrat : (2163 / 1000 : ℝ) < (140 / 99) * (153 / 100) := by norm_num
-  nlinarith
-
-private lemma side_high_lt_proxy : sqrt 2 * (157 / 100) < (2221 / 1000 : ℝ) := by
-  have h := sqrt_two_bounds.2
-  have hrat : (99 / 70) * (157 / 100) < (2221 / 1000 : ℝ) := by norm_num
-  nlinarith
-
-private lemma gamma_oneFiveThree_lower :
-    gammaLower ((2.7182818286 : ℝ) * (1699 / 1000))
-      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) -
-        cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100))
-      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
-        cosLo (3.141593 / 2 - 153 / 100)) ≤ gammaSEqual (153 / 100) := by
-  have hD : sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100) < 0 := by
-    simp only [sinHi, cosLo]; norm_num
-  have hS : 0 < sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
-      cosLo (3.141593 / 2 - 153 / 100) := by
-    simp only [sinLo, cosLo]; norm_num
-  exact (gamma_before (x := 153 / 100) (ε := π / 2 - 153 / 100)
-    (a := 3.141592 / 2 - 153 / 100) (b := 3.141593 / 2 - 153 / 100)
-    (E0 := (2.7182818283 : ℝ) * (1698 / 1000))
-    (E1 := (2.7182818286 : ℝ) * (1699 / 1000))
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
-    (by positivity) exp_oneFiveThree_bounds.1.le exp_oneFiveThree_bounds.2.le hD hS).1
-
-private lemma gamma_twoOneSixThree_upper :
-    gammaSEqual (2163 / 1000) ≤
-      gammaCosUpper ((2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
-        ((2.7182818286 : ℝ) ^ 2 * (1178 / 1000))
-        (-sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2)) := by
-  have hD : -(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
-      cosLo (2163 / 1000 - 3.141592 / 2)) < 0 := by
-    simp only [sinLo, cosLo]; norm_num
-  have hS : 0 < -sinHi (2163 / 1000 - 3.141592 / 2) +
-      cosLo (2163 / 1000 - 3.141592 / 2) := by
-    simp only [sinHi, cosLo]; norm_num
-  exact (gamma_after (x := 2163 / 1000) (ε := 2163 / 1000 - π / 2)
-    (a := 2163 / 1000 - 3.141593 / 2) (b := 2163 / 1000 - 3.141592 / 2)
-    (E0 := (2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
-    (E1 := (2.7182818286 : ℝ) ^ 2 * (1178 / 1000))
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
-    (by positivity) exp_twoOneSixThree_bounds.1.le exp_twoOneSixThree_bounds.2.le hD hS).2
-
-private lemma gamma_oneFiveSeven_upper :
-    gammaSEqual (157 / 100) ≤
-      gammaUpper ((2.7182818283 : ℝ) * (1768 / 1000))
-        (sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100))
-        (sinHi (3.141593 / 2 - 157 / 100) +
-          cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100)) := by
-  have hD : sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100) < 0 := by
-    simp only [sinHi, cosLo]; norm_num
-  have hS : 0 < sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
-      cosLo (3.141593 / 2 - 157 / 100) := by
-    simp only [sinLo, cosLo]; norm_num
-  exact (gamma_before (x := 157 / 100) (ε := π / 2 - 157 / 100)
-    (a := 3.141592 / 2 - 157 / 100) (b := 3.141593 / 2 - 157 / 100)
-    (E0 := (2.7182818283 : ℝ) * (1768 / 1000))
-    (E1 := (2.7182818286 : ℝ) * (1769 / 1000))
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
-    (by positivity) exp_oneFiveSeven_bounds.1.le exp_oneFiveSeven_bounds.2.le hD hS).2
-
-private lemma gamma_oneFiveSeven_lower :
-    gammaLower ((2.7182818286 : ℝ) * (1769 / 1000))
-      (sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) -
-        cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100))
-      (sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
-        cosLo (3.141593 / 2 - 157 / 100)) ≤ gammaSEqual (157 / 100) := by
-  have hD : sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100) < 0 := by
-    simp only [sinHi, cosLo]; norm_num
-  have hS : 0 < sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
-      cosLo (3.141593 / 2 - 157 / 100) := by
-    simp only [sinLo, cosLo]; norm_num
-  exact (gamma_before (x := 157 / 100) (ε := π / 2 - 157 / 100)
-    (a := 3.141592 / 2 - 157 / 100) (b := 3.141593 / 2 - 157 / 100)
-    (E0 := (2.7182818283 : ℝ) * (1768 / 1000))
-    (E1 := (2.7182818286 : ℝ) * (1769 / 1000))
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
-    (by positivity) exp_oneFiveSeven_bounds.1.le exp_oneFiveSeven_bounds.2.le hD hS).1
-
-private lemma gamma_twoTwoTwoOne_lower :
-    gammaLower ((2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
-      (-(sinHi (2221 / 1000 - 3.141592 / 2) +
-        cosHi (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2)))
-      (-sinHi (2221 / 1000 - 3.141592 / 2) + cosLo (2221 / 1000 - 3.141592 / 2)) ≤
-      gammaSEqual (2221 / 1000) := by
-  have hD : -(sinLo (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2) +
-      cosLo (2221 / 1000 - 3.141592 / 2)) < 0 := by
-    simp only [sinLo, cosLo]; norm_num
-  have hS : 0 < -sinHi (2221 / 1000 - 3.141592 / 2) +
-      cosLo (2221 / 1000 - 3.141592 / 2) := by
-    simp only [sinHi, cosLo]; norm_num
-  exact (gamma_after (x := 2221 / 1000) (ε := 2221 / 1000 - π / 2)
-    (a := 2221 / 1000 - 3.141593 / 2) (b := 2221 / 1000 - 3.141592 / 2)
-    (E0 := (2.7182818283 : ℝ) ^ 2 * (1247 / 1000))
-    (E1 := (2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
-    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
-    (by positivity) exp_twoTwoTwoOne_bounds.1.le exp_twoTwoTwoOne_bounds.2.le hD hS).1
-
-private lemma lowPhase_mem_shell :
-    (153 / 100 : ℝ) ∈ Ioo resonanceRoot1 (branchNode 1 / sqrt 2) := by
-  refine ⟨by linarith [resonanceRoot1_sharp_bounds.2], ?_⟩
-  have hs : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
-  rw [lt_div_iff₀ hs]
-  have h8 : (8 / 5 : ℝ) ∈ Ioo resonanceRoot1 (branchNode 1 / sqrt 2) := by
-    have hnode : π < branchNode 1 := by
-      simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-    refine ⟨by linarith [resonanceRoot1_sharp_bounds.2], ?_⟩
-    rw [lt_div_iff₀ hs]
-    have : sqrt 2 * (8 / 5) < 3 := by
-      have h := sqrt_two_bounds.2
-      nlinarith
-    linarith [pi_gt_three, hnode]
-  have hlt : (153 / 100 : ℝ) < 8 / 5 := by norm_num
-  have hcmp : sqrt 2 * (153 / 100) < sqrt 2 * (8 / 5) :=
-    mul_lt_mul_of_pos_left hlt hs
-  have h8side : sqrt 2 * (8 / 5) < branchNode 1 := by
-    have h := h8.2
-    rw [lt_div_iff₀ hs] at h
-    simpa [mul_comm] using h
-  linarith
-
-private lemma highPhase_mem_shell :
-    (157 / 100 : ℝ) ∈ Ioo resonanceRoot1 (branchNode 1 / sqrt 2) := by
-  refine ⟨by linarith [resonanceRoot1_sharp_bounds.2], ?_⟩
-  have hs : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
-  have hnode : π < branchNode 1 := by
-    simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-  rw [lt_div_iff₀ hs]
-  have : sqrt 2 * (157 / 100) < 3 := by
-    have h := sqrt_two_bounds.2
-    nlinarith
-  linarith [pi_gt_three, hnode]
-
-theorem squareBalance_oneFiveThree_neg : squareBalance (153 / 100) < 0 := by
-  have hy := proxy_lt_side_low
-  have hyπ : sqrt 2 * (153 / 100) < π := by
-    have : sqrt 2 * (153 / 100) < 3 := by
-      have h := sqrt_two_bounds.2
-      nlinarith
-    linarith [pi_gt_three]
-  have hy0 : 0 < sqrt 2 * (153 / 100) := by positivity
-  have hdec : gammaSEqual (sqrt 2 * (153 / 100)) < gammaSEqual (2163 / 1000) :=
-    strictAntiOn_gammaSEqual_even 0
-      (mem_gamma_Icc (by norm_num) (by linarith [pi_gt_three]))
-      (mem_gamma_Icc hy0.le hyπ.le) hy
-  have hlo := gamma_oneFiveThree_lower
-  have hhi := gamma_twoOneSixThree_upper
-  have hcmp :
-      gammaUpper ((2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
-        (-(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
-          cosLo (2163 / 1000 - 3.141592 / 2)))
-        (-sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
-          cosHi (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2)) <
-      (99 / 35) * gammaLower ((2.7182818286 : ℝ) * (1699 / 1000))
-        (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) -
-          cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100))
-        (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
-          cosLo (3.141593 / 2 - 153 / 100)) := by
-    simp only [gammaUpper, gammaLower, sinLo, cosLo, cosHi]
-    norm_num
-  have hγneg : gammaSEqual (153 / 100) < 0 :=
-    gammaSEqual_neg_right_of_first_node
-      ⟨by linarith [resonanceRoot1_sharp_bounds.2], by linarith [pi_gt_three]⟩
-  have hA : 2 * sqrt 2 < 99 / 35 := two_sqrt_two_bounds.2
-  have hP : (99 / 35) * gammaSEqual (153 / 100) < 2 * sqrt 2 * gammaSEqual (153 / 100) := by
-    nlinarith
-  unfold squareBalance
-  linarith
-
-theorem squareBalance_oneFiveSeven_pos : 0 < squareBalance (157 / 100) := by
-  have hy := side_high_lt_proxy
-  have hy0 : 0 < sqrt 2 * (157 / 100) := by positivity
-  have hyπ : sqrt 2 * (157 / 100) < π := by
-    have : sqrt 2 * (157 / 100) < 3 := by
-      have h := sqrt_two_bounds.2
-      nlinarith
-    linarith [pi_gt_three]
-  have hUπ : (2221 / 1000 : ℝ) < π := by linarith [pi_gt_three]
-  have hdec : gammaSEqual (2221 / 1000) < gammaSEqual (sqrt 2 * (157 / 100)) :=
-    strictAntiOn_gammaSEqual_even 0 (mem_gamma_Icc hy0.le hyπ.le)
-      (mem_gamma_Icc (by norm_num) hUπ.le) hy
-  have hhi := gamma_oneFiveSeven_upper
-  have hlo := gamma_twoTwoTwoOne_lower
-  have hγneg : gammaSEqual (157 / 100) < 0 :=
-    gammaSEqual_neg_right_of_first_node
-      ⟨by linarith [resonanceRoot1_sharp_bounds.2], by linarith [pi_gt_three]⟩
-  have hcmp : (280 / 99) * gammaUpper ((2.7182818283 : ℝ) * (1768 / 1000))
-      (sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100))
-      (sinHi (3.141593 / 2 - 157 / 100) +
-        cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100)) <
-      gammaLower ((2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
-        (-(sinHi (2221 / 1000 - 3.141592 / 2) +
-          cosHi (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2)))
-        (-sinHi (2221 / 1000 - 3.141592 / 2) +
-          cosLo (2221 / 1000 - 3.141592 / 2)) := by
-    simp only [gammaUpper, gammaLower, sinHi, cosLo, cosHi]
-    norm_num
-  have hA : 280 / 99 < 2 * sqrt 2 := two_sqrt_two_bounds.1
-  have hP : 2 * sqrt 2 * gammaSEqual (157 / 100) < (280 / 99) * gammaSEqual (157 / 100) := by
-    nlinarith
-  unfold squareBalance
-  linarith
+private lemma highPhase_mem_shell : (157 / 100 : ℝ) ∈ Set.Ioo (3 / 2 : ℝ) (33 / 20) := by
+  exact ⟨by norm_num, by norm_num⟩
 
 noncomputable def squarePhase : ℝ :=
   Classical.choose (exists_unique_square_shell).exists
@@ -384,9 +166,9 @@ theorem squarePhase_num_window :
     have hle : squarePhase ≤ 153 / 100 := le_of_not_gt hge
     have hmem := lowPhase_mem_shell
     rcases eq_or_lt_of_le hle with hEq | hlt
-    · exact (ne_of_lt squareBalance_oneFiveThree_neg) (hEq ▸ h0)
+    · exact (ne_of_lt squareBalanceLegacy_oneFiveThree_neg) (hEq ▸ h0)
     · have := hmono hx hmem hlt
-      linarith [squareBalance_oneFiveThree_neg, h0]
+      linarith [squareBalanceLegacy_oneFiveThree_neg, h0]
   · by_contra hle
     have hge : 157 / 100 ≤ squarePhase := le_of_not_gt hle
     have hmem := highPhase_mem_shell

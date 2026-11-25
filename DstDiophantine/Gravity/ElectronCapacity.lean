@@ -52,8 +52,8 @@ lemma legacyCubeCertHi_def : legacyCubeCertHi = (39 / 10 : ℝ) := rfl
 
 lemma legacyCubeCertHi_lt_branchNode : legacyCubeCertHi < branchNode 1 := by
   rw [legacyCubeCertHi_def]
-  have hmem := (node_mem_sharp_branch 1).1
-  linarith [hmem.1]
+  have h := node_mem_sharp_branch 1
+  linarith [h.1, pi_gt_d6]
 
 lemma two_resonanceRoot1_lt_legacyCubeCertHi : 2 * resonanceRoot1 < legacyCubeCertHi := by
   rw [resonanceRoot1_eq_pi_div_two, legacyCubeCertHi_def, two_mul]
@@ -766,43 +766,41 @@ private lemma gammaSEqualLegacy_neg_right_of_node_local {x : ℝ} (hx : x ∈ Io
 
 lemma gammaSEqualLegacy_thirtyNine_tenths_neg : gammaSEqualLegacy legacyCubeCertHi < 0 := by
   rw [legacyCubeCertHi_def]
-  have hεlo : (758 / 1000 : ℝ) ≤ 39 / 10 - π := by linarith [pi_lt_d6]
-  have hεhi : 39 / 10 - π ≤ 760 / 1000 := by linarith [pi_gt_d6]
-  have hexp_lo : (48 : ℝ) < exp (39 / 10) := by
-    have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
-      rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
-    have h4 : (73 / 10) ^ 2 < exp 4 := by
-      have hid4 : exp 4 = exp 2 * exp 2 := by
-        rw [show (4 : ℝ) = 2 + 2 by norm_num, exp_add]
-      nlinarith [exp_one_sq_bounds.1, exp_pos 2]
-    have h10 : exp (1 / 10) < 111 / 100 := exp_tenth_bounds.2
-    rw [hid]
-    refine (lt_div_iff₀ (exp_pos _)).2 ?_
-    nlinarith [h4, h10]
-  have hexp_hi : exp (39 / 10) < 50 := by
-    have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
-      rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
-    have h4 : exp 4 < (74 / 10) ^ 2 := by
-      have hid4 : exp 4 = exp 2 * exp 2 := by
-        rw [show (4 : ℝ) = 2 + 2 by norm_num, exp_add]
-      nlinarith [exp_one_sq_bounds.2, exp_pos 2]
-    have h10 : (11 / 10 : ℝ) < exp (1 / 10) := exp_tenth_bounds.1
-    rw [hid]
-    refine (div_lt_iff₀ (exp_pos _)).2 ?_
-    nlinarith [h4, h10]
-  have hD : -(sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000)) < 0 := by
-    simp only [sinLo, cosLo]; norm_num
-  have hS : 0 < -sinHi (760 / 1000) + cosLo (760 / 1000) := by
-    simp only [sinHi, cosLo]; norm_num
-  have hbounds := gamma_after_legacy (x := 39 / 10) (ε := 39 / 10 - π)
-      (a := 758 / 1000) (b := 760 / 1000) (E0 := 48) (E1 := 50)
-      (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
-      hexp_lo.le hexp_hi.le hD hS
-  have hgu : gammaUpper (50)
-      (-(sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000)))
-      (-sinLo (758 / 1000) (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) < 0 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
-  linarith [hbounds.2, hgu]
+  have hδlo : (758 / 1000 : ℝ) ≤ 39 / 10 - π := by linarith [pi_lt_d6]
+  have hδhi : 39 / 10 - π ≤ 760 / 1000 := by linarith [pi_gt_d6]
+  have hsin := sin_mem_bounds (a := 758 / 1000) (b := 760 / 1000)
+    (by norm_num) (by norm_num) hδlo hδhi
+  have hcos := cos_mem_bounds (a := 758 / 1000) (b := 760 / 1000)
+    (by norm_num) (by norm_num) hδlo hδhi
+  have hDact : sin (39 / 10 - π) - cos (39 / 10 - π) < 0 := by
+    have hup : sin (39 / 10 - π) - cos (39 / 10 - π) ≤
+        sinHi (760 / 1000) - cosLo (760 / 1000) := by linarith [hsin.2, hcos.1]
+    have hneg : sinHi (760 / 1000) - cosLo (760 / 1000) < 0 := by
+      simp only [sinHi, cosLo]; norm_num
+    linarith
+  have hid : gammaSEqualLegacy (39 / 10) =
+      exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) -
+        exp (-(39 / 10)) / 2 * (sin (39 / 10 - π) + cos (39 / 10 - π)) := by
+    rw [gammaSEqualLegacy_exp]
+    have hsinx : sin (39 / 10) = -sin (39 / 10 - π) := by
+      conv_lhs => rw [show (39 / 10 : ℝ) = (39 / 10 - π) + π by ring]
+      rw [sin_add_pi]
+    have hcosx : cos (39 / 10) = -cos (39 / 10 - π) := by
+      conv_lhs => rw [show (39 / 10 : ℝ) = (39 / 10 - π) + π by ring]
+      rw [cos_add_pi]
+    rw [hsinx, hcosx]
+    ring
+  have hmain : exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) < 0 := by
+    have hpos : 0 < exp (39 / 10) / 2 := by positivity
+    exact mul_neg_of_pos_of_neg hpos hDact
+  have hrest : 0 ≤ exp (-(39 / 10)) / 2 * (sin (39 / 10 - π) + cos (39 / 10 - π)) := by
+    have hS0 : 0 ≤ sin (39 / 10 - π) + cos (39 / 10 - π) := by
+      have hpos : 0 < sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000) := by
+        simp only [sinLo, cosLo]; norm_num
+      linarith [hsin.1, hcos.1, hpos]
+    positivity
+  rw [hid]
+  linarith [hmain, hrest]
 
 private lemma gammaSEqualLegacy_neg_legacy_cube_window {x : ℝ}
     (hx : x ∈ Ioo resonanceRoot1 legacyCubeCertHi) : gammaSEqualLegacy x < 0 := by
@@ -814,12 +812,13 @@ private lemma gammaSEqualLegacy_neg_legacy_cube_window {x : ℝ}
   · have hπneg : gammaSEqualLegacy π < 0 := by
       rw [gammaSEqualLegacy_exp, cos_pi, sin_pi]; linarith [cosh_pos π, exp_pos π, exp_pos (-π)]
     have h39neg := gammaSEqualLegacy_thirtyNine_tenths_neg
-    rw [legacyCubeCertHi_def] at h39neg ⊢
-    have hIccπ : (π : ℝ) ∈ Icc π (39 / 10) := ⟨le_rfl, by linarith [hx.2, hgt]⟩
-    have hIccx : x ∈ Icc π (39 / 10) := ⟨hgt.le, hx.2⟩
-    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0
-      (by simpa [legacyCubeCertHi_def] using hIccπ) (by simpa [legacyCubeCertHi_def] using hIccx) hgt
-    exact lt_trans hltmono h39neg
+    have hcert := legacyCubeCertHi_def
+    have hIccπ : π ∈ Icc π legacyCubeCertHi := ⟨le_rfl, by linarith [pi_lt_d6, hcert]⟩
+    have hIccx : x ∈ Icc π legacyCubeCertHi := ⟨hgt.le, hx.2⟩
+    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0 (by simpa [hcert] using hIccπ)
+      (by simpa [hcert] using hIccx) hgt
+    rw [← hcert] at h39neg
+    linarith [hltmono, h39neg]
 
 lemma halfPhaseLegacy_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
     gammaSEqualLegacy (y / 2) < 0 := by
@@ -838,8 +837,8 @@ lemma ratioSlopeLegacy_neg_right {x : ℝ} (hx : x ∈ Ioo π legacyCubeCertHi) 
   have hγ : gammaSEqualLegacy x < 0 :=
     gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [resonanceRoot1_eq_pi_div_two, hx.1], hx.2⟩
   have hγh : gammaSEqualLegacy (x / 2) < 0 :=
-    gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [resonanceRoot1_eq_pi_div_two, hhalf_lo],
-      by linarith [hx.2, (branchNode_spec 1).1.1]⟩
+    gammaSEqualLegacy_neg_legacy_cube_window
+      ⟨by linarith [resonanceRoot1_eq_pi_div_two, hhalf_lo], by linarith [hhalf_hi, hx.2]⟩
   have hsinx : sin x < 0 := by
     have hneg : sin x = -sin (x - π) := by
       conv_lhs => rw [show x = (x - π) + π by ring]
@@ -934,7 +933,7 @@ lemma gamma_seven_quarters_lt : gammaSEqual (7 / 4) < -3 := by
       hexp_lo.le hexp_hi.le hD hS
   have hgu : gammaCosUpper (56 / 10) (6) (-sinLo (179 / 1000) (180 / 1000)) < -3 := by
     simp only [gammaCosUpper, sinLo]; norm_num
-  linarith [hbounds.2]
+  linarith [hbounds.2, hgu]
 
 lemma gammaSEqualLegacy_seven_halves_gt : -11 < gammaSEqualLegacy (7 / 2) := by
   have hδlo : (358 / 1000 : ℝ) ≤ 7 / 2 - π := by linarith [pi_lt_d6]
@@ -1105,7 +1104,7 @@ lemma pairBalanceLegacy_neg_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
   nlinarith [hsmall, hγlt, hscale]
 
 theorem exists_unique_diameter_shell {Z : ℝ} (hZ : 1 ≤ Z) :
-    ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi ∧
       pairBalanceLegacy Z x = 0 := by
   set xL : ℝ := 2 * (resonanceRoot1 + 1 / (64 * Z))
   have hneg := pairBalanceLegacy_neg_near_outer hZ
@@ -1119,17 +1118,14 @@ theorem exists_unique_diameter_shell {Z : ℝ} (hZ : 1 ≤ Z) :
       nlinarith
     dsimp [xL]
     linarith [resonanceRoot1_sharp_bounds.2, pi_gt_three, hh]
-  have h72 : (7 / 2 : ℝ) < branchNode 1 := by
-    have hlo : π + π / 4 < branchNode 1 := by
-      simpa [Nat.cast_one, one_mul] using (node_mem_sharp_branch 1).1
-    linarith [pi_gt_three, hlo]
+  have h72 : (7 / 2 : ℝ) < legacyCubeCertHi := by rw [legacyCubeCertHi_def]; norm_num
   obtain ⟨x, hxI, hx0⟩ := intermediate_value_Ioo (le_of_lt hxL_hi)
     (continuous_pairBalanceLegacy Z).continuousOn ⟨hneg, hpos⟩
-  have hxmem : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) :=
+  have hxmem : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi :=
     ⟨lt_trans hxL_lo hxI.1, lt_trans hxI.2 h72⟩
   refine ⟨x, ⟨hxmem, hx0⟩, ?_⟩
   intro y hy
-  have hratio (w : ℝ) (hw : w ∈ Ioo (2 * resonanceRoot1) (branchNode 1))
+  have hratio (w : ℝ) (hw : w ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi)
       (h0 : pairBalanceLegacy Z w = 0) : pairRatioLegacy w = 4 * Z := by
     have hden : gammaSEqualLegacy (w / 2) ≠ 0 := (halfPhaseLegacy_in_firstShell hw).ne
     have h0' : gammaSEqualLegacy w - 4 * Z * gammaSEqualLegacy (w / 2) = 0 := by
@@ -1648,7 +1644,7 @@ lemma cube_phases_in_shell_legacy {x : ℝ}
     (hx : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
     gammaSEqualLegacy x < 0 ∧ gammaSEqualLegacy (cubeEdge * x) < 0 ∧
       gammaSEqualLegacy (cubeFace * x) < 0 ∧ gammaSEqualLegacy (x / 2) < 0 := by
-  have hedge : resonanceRoot1 < cubeEdge * x ∧ cubeEdge * x < branchNode 1 := by
+  have hedge : resonanceRoot1 < cubeEdge * x ∧ cubeEdge * x < legacyCubeCertHi := by
     have hc := cubeScale_mem_Ioo
     have hx0 : 0 < x := by linarith [hx.1, root1_pos]
     refine ⟨?_, ?_⟩
@@ -1657,13 +1653,13 @@ lemma cube_phases_in_shell_legacy {x : ℝ}
         linarith [hx.1]
       have hlt : x / 2 < cubeEdge * x := by nlinarith [hc.1, hc.2.1, hx0]
       exact lt_trans hhalf hlt
-    · nlinarith [hc.2.2, hx.2, hx0]
-  have hface : resonanceRoot1 < cubeFace * x ∧ cubeFace * x < branchNode 1 := by
+    · rw [legacyCubeCertHi_def]; nlinarith [hc.2.2, hx.2, hx0]
+  have hface : resonanceRoot1 < cubeFace * x ∧ cubeFace * x < legacyCubeCertHi := by
     have hc := cubeScale_mem_Ioo
     have hx0 : 0 < x := by linarith [hx.1, root1_pos]
     refine ⟨?_, ?_⟩
     · nlinarith [hc.1, hx.1, hx0]
-    · nlinarith [hc.2.1, hc.2.2, hx.2, hx0]
+    · rw [legacyCubeCertHi_def]; nlinarith [hc.2.1, hc.2.2, hx.2, hx0]
   exact ⟨gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [hx.1, four_fifths_lt_resonanceRoot1], hx.2⟩,
     gammaSEqualLegacy_neg_legacy_cube_window ⟨hedge.1, hedge.2⟩,
     gammaSEqualLegacy_neg_legacy_cube_window ⟨hface.1, hface.2⟩,
@@ -2076,11 +2072,11 @@ lemma cubeResponseLegacy_gt_near_outer {Z : ℝ} (hZ : 1 ≤ Z) :
       have hid : (1 / (10 * h)) * (-(10 * h)) = -1 := by field_simp [hh0.ne']
       nlinarith [hhalf_gt, hid, hh0]
     linarith [hγlt]
-  have hshell : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) := by
+  have hshell : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi := by
     refine ⟨by dsimp [x]; linarith, ?_⟩
-    have hnode : π < branchNode 1 := by
-      simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-    dsimp [x]; linarith [hxπ, hnode]
+    dsimp [x]
+    rw [legacyCubeCertHi_def]
+    linarith [hxπ, pi_gt_three, hh1]
   have hphases := cube_phases_in_shell_legacy hshell
   have hbody : cubeCoeffBody * scaledRatioLegacy (1 / 2) x < cubeResponseLegacy x := by
     unfold cubeResponseLegacy
@@ -2220,7 +2216,8 @@ lemma cubeResponseLegacy_thirtyNine_tenths_lt : cubeResponseLegacy (39 / 10) < 1
   linarith [hpe, hpf, hph]
 
 theorem exists_unique_cube_shell {Z : ℝ} (hZ : 1 ≤ Z) :
-    ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) ∧ cubeOutwardLegacy Z x = 0 := by
+    ∃! x : ℝ, x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi ∧
+      cubeOutwardLegacy Z x = 0 := by
   have hZ0 : 0 < Z := by linarith
   set xL : ℝ := 2 * (resonanceRoot1 + 1 / (40 * Z))
   set xR : ℝ := 39 / 10
@@ -2241,10 +2238,7 @@ theorem exists_unique_cube_shell {Z : ℝ} (hZ : 1 ≤ Z) :
     refine ⟨by
       rw [resonanceRoot1_eq_pi_div_two, two_mul]
       linarith [pi_lt_d6], ?_⟩
-    have hlo : π + π / 4 < branchNode 1 := by
-      have h := node_mem_sharp_branch 1
-      simpa [Nat.cast_one, one_mul] using h.1
-    linarith [pi_gt_d6, hlo]
+    linarith [legacyCubeCertHi_lt_branchNode, legacyCubeCertHi_def]
   have hxL_lo : 2 * resonanceRoot1 < xL := by
     dsimp [xL]
     have : 0 < 1 / (40 * Z) := by positivity
@@ -2259,17 +2253,10 @@ theorem exists_unique_cube_shell {Z : ℝ} (hZ : 1 ≤ Z) :
   have hright : 0 < (fun t => Z - cubeResponseLegacy t) xR := by
     simpa using sub_pos.mpr hlt
   obtain ⟨x, hxI, hx0⟩ := intermediate_value_Ioo (le_of_lt hxL_hi) hcont ⟨hleft, hright⟩
-  have hxLmem : xL ∈ Ioo (2 * resonanceRoot1) (branchNode 1) := by
-    refine ⟨by dsimp [xL]; linarith, ?_⟩
-    have hnode : π < branchNode 1 := by
-      simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-    dsimp [xL]
-    rw [resonanceRoot1_eq_pi_div_two, two_mul]
-    linarith [pi_gt_three, hnode,
-      show 1 / (40 * Z) ≤ 1 / 40 by
-        rw [div_le_div_iff₀ (by positivity) (by norm_num)]; nlinarith]
-  have hxmem : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) :=
-    ⟨lt_trans hxL_lo hxI.1, lt_trans hxI.2 hRmem.2⟩
+  have hxmem : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi :=
+    ⟨lt_trans hxL_lo hxI.1, by
+      have hxhi : x < (39 / 10 : ℝ) := hxI.2
+      rwa [legacyCubeCertHi_def]⟩
   have hzero : cubeOutwardLegacy Z x = 0 := by
     have hphases := cube_phases_in_shell_legacy hxmem
     rw [cubeOutwardLegacy_eq_response hphases.1.ne hphases.2.1.ne hphases.2.2.1.ne hphases.2.2.2.ne]
@@ -2281,7 +2268,7 @@ theorem exists_unique_cube_shell {Z : ℝ} (hZ : 1 ≤ Z) :
     ring
   refine ⟨x, ⟨hxmem, hzero⟩, ?_⟩
   intro y hy
-  have hresp (w : ℝ) (hw : w ∈ Ioo (2 * resonanceRoot1) (branchNode 1))
+  have hresp (w : ℝ) (hw : w ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi)
       (h0 : cubeOutwardLegacy Z w = 0) : cubeResponseLegacy w = Z := by
     have hphases := cube_phases_in_shell_legacy hw
     have heq := cubeOutwardLegacy_eq_response (Z := Z) (x := w) hphases.1.ne hphases.2.1.ne
@@ -2314,15 +2301,12 @@ lemma gammaSEqual_eleven_fifths_lt : gammaSEqual (11 / 5) < -6 := by
       (a := 62 / 100) (b := 64 / 100) (E0 := 89 / 10) (E1 := 93 / 10)
       (by ring) (by norm_num) (by norm_num) hεlo hεhi (by norm_num)
       hexp_lo.le hexp_hi.le hD hS
-  have hgu : gammaUpper (89 / 10)
-      (-(sinLo (62 / 100) (64 / 100) + cosLo (64 / 100)))
-      (-sinLo (62 / 100) (64 / 100) + cosHi (62 / 100) (64 / 100)) < -6 := by
-    simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
-  linarith [hbounds.2]
+  have hgu : gammaCosUpper (89 / 10) (93 / 10) (-sinLo (62 / 100) (64 / 100)) < -6 := by
+    simp only [gammaCosUpper, sinLo]; norm_num
+  linarith [hbounds.2, hgu]
 
 lemma gammaSEqual_thirtyNine_tenths_gt : -3 / 2 < gammaSEqual (39 / 10) := by
-  have hδlo : (758 / 1000 : ℝ) ≤ 39 / 10 - π := by linarith [pi_lt_d6]
-  have hδhi : 39 / 10 - π ≤ 760 / 1000 := by linarith [pi_gt_d6]
+  unfold gammaSEqual
   have hexp_hi : exp (39 / 10) < 50 := by
     have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
       rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
@@ -2334,76 +2318,19 @@ lemma gammaSEqual_thirtyNine_tenths_gt : -3 / 2 < gammaSEqual (39 / 10) := by
     rw [hid]
     refine (div_lt_iff₀ (exp_pos _)).2 ?_
     nlinarith [h4, h10]
-  have hexp_lo : (48 : ℝ) < exp (39 / 10) := by
-    have hid : exp (39 / 10) = exp 4 / exp (1 / 10) := by
-      rw [show (39 / 10 : ℝ) = 4 - 1 / 10 by norm_num, exp_sub]
-    have h4 : (73 / 10) ^ 2 < exp 4 := by
-      have hid4 : exp 4 = exp 2 * exp 2 := by
-        rw [show (4 : ℝ) = 2 + 2 by norm_num, exp_add]
-      nlinarith [exp_one_sq_bounds.1, exp_pos 2]
-    have h10 : exp (1 / 10) < 111 / 100 := exp_tenth_bounds.2
-    rw [hid]
-    refine (lt_div_iff₀ (exp_pos _)).2 ?_
-    nlinarith [h4, h10]
-  have hsin := sin_mem_bounds (a := 758 / 1000) (b := 760 / 1000)
-    (by norm_num) (by norm_num) hδlo hδhi
-  have hcos := cos_mem_bounds (a := 758 / 1000) (b := 760 / 1000)
-    (by norm_num) (by norm_num) hδlo hδhi
-  have hDlo : sinLo (758 / 1000) (760 / 1000) - cosHi (758 / 1000) (760 / 1000) ≤
-      sin (39 / 10 - π) - cos (39 / 10 - π) := by linarith [hsin.1, hcos.2]
-  have hShi : sin (39 / 10 - π) + cos (39 / 10 - π) ≤
-      sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000) := by linarith [hsin.2, hcos.2]
-  have hDneg : sinLo (758 / 1000) (760 / 1000) - cosHi (758 / 1000) (760 / 1000) < 0 := by
-    simp only [sinLo, cosHi]; norm_num
-  have hlow : -3 / 2 < (50 / 2) * (sinLo (758 / 1000) (760 / 1000) -
-      cosHi (758 / 1000) (760 / 1000)) -
-      (sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) / (2 * 48) := by
-    simp only [sinLo, sinHi, cosHi]; norm_num
-  have hid : gammaSEqual (39 / 10) =
-      exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) -
-        exp (-(39 / 10)) / 2 * (sin (39 / 10 - π) + cos (39 / 10 - π)) := by
-    rw [gammaSEqual_exp]
-    have hcosx : cos (39 / 10) = -cos (39 / 10 - π) := by
-      conv_lhs => rw [show (39 / 10 : ℝ) = (39 / 10 - π) + π by ring]
-      rw [cos_add_pi]
-    rw [hcosx]
-    ring
-  have hinv : exp (-(39 / 10)) ≤ 1 / 48 := by
-    have hdiv : 1 / exp (39 / 10) ≤ 1 / 48 :=
-      one_div_le_one_div_of_le (by norm_num) hexp_lo.le
-    simpa [exp_neg, one_div] using hdiv
-  have hDact : sin (39 / 10 - π) - cos (39 / 10 - π) < 0 := by
-    have hup : sin (39 / 10 - π) - cos (39 / 10 - π) ≤
-        sinHi (760 / 1000) - cosLo (760 / 1000) := by linarith [hsin.2, hcos.1]
-    have hneg : sinHi (760 / 1000) - cosLo (760 / 1000) < 0 := by
-      simp only [sinHi, cosLo]; norm_num
-    linarith
-  have hfirst : (50 / 2) * (sinLo (758 / 1000) (760 / 1000) -
-      cosHi (758 / 1000) (760 / 1000)) ≤
-      exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) := by
-    have hstep : (50 / 2) * (sin (39 / 10 - π) - cos (39 / 10 - π)) ≤
-        exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) := by
-      nlinarith [hexp_hi, hDact]
-    have hcmp : (50 / 2) * (sinLo (758 / 1000) (760 / 1000) -
-        cosHi (758 / 1000) (760 / 1000)) ≤
-        (50 / 2) * (sin (39 / 10 - π) - cos (39 / 10 - π)) := by
-      nlinarith [hDlo]
-    exact le_trans hcmp hstep
-  have hsecond : exp (-(39 / 10)) / 2 * (sin (39 / 10 - π) + cos (39 / 10 - π)) ≤
-      (sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) / (2 * 48) := by
-    have hS0 : 0 ≤ sin (39 / 10 - π) + cos (39 / 10 - π) := by
-      have hpos : 0 < sinLo (758 / 1000) (760 / 1000) + cosLo (760 / 1000) := by
-        simp only [sinLo, cosLo]; norm_num
-      linarith [hsin.1, hcos.1, hpos]
-    have hmul : exp (-(39 / 10)) * (sin (39 / 10 - π) + cos (39 / 10 - π)) ≤
-        (1 / 48) * (sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) := by
-      exact mul_le_mul hinv hShi hS0 (by norm_num)
-    have heq : (sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000)) / (2 * 48) =
-        ((1 / 48) * (sinHi (760 / 1000) + cosHi (758 / 1000) (760 / 1000))) / 2 := by ring
-    rw [heq]
-    linarith
-  linarith [hid, hfirst, hsecond, hlow]
-
+  have hcosh_hi : cosh (39 / 10) < (50 + 1) / 2 := by
+    rw [cosh_eq]
+    have hinv : exp (-(39 / 10)) ≤ 1 := by
+      rw [Real.exp_neg]
+      exact one_div_le_one_of_one (by norm_num) (exp_pos _).le
+    nlinarith [hexp_hi, hinv, exp_pos (39 / 10)]
+  have hcos : cos (39 / 10) > -1 := by
+    have hne : cos (39 / 10) ≠ -1 := fun heq => by
+      have := cos_eq_neg_one_iff.mp heq
+      linarith [pi_lt_d6]
+    have hle : (-1 : ℝ) ≤ cos (39 / 10) := neg_one_le_cos _
+    exact lt_of_le_of_ne hle hne
+  nlinarith [hcosh_hi, hcos, cosh_pos (39 / 10)]
 
 /-! ### Seats
 

@@ -25,16 +25,14 @@ open Real Set intervalIntegral MeasureTheory
 /-! ### Value at the quarter phase -/
 
 theorem gammaSEqual_pi_div_four :
-    gammaSEqual (π / 4) = -cosh (π / 4) * (sqrt 2 / 2) := by
+    gammaSEqual (π / 4) = cosh (π / 4) * (sqrt 2 / 2) := by
   unfold gammaSEqual
-  rw [sin_pi_div_four, cos_pi_div_four]
-  ring
+  rw [cos_pi_div_four]
 
 theorem pairAttraction_pi_div_four :
-    pairAttraction (π / 4) = (4 * (π / 4) ^ 2) / (-cosh (π / 4) * (sqrt 2 / 2)) := by
+    pairAttraction (π / 4) = (4 * (π / 4) ^ 2) / (cosh (π / 4) * (sqrt 2 / 2)) := by
   unfold pairAttraction
   rw [gammaSEqual_pi_div_four]
-  ring
 
 /-! ### Slope comparison on both sides of the first node -/
 

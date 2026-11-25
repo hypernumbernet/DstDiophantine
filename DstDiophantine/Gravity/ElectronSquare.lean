@@ -1389,6 +1389,387 @@ private theorem squareBalanceLegacy_eight_fifths_pos_body : 0 < squareBalanceLeg
 theorem squareBalanceLegacy_eight_fifths_pos : 0 < squareBalanceLegacy (8 / 5) :=
   squareBalanceLegacy_eight_fifths_pos_body
 
+/-! ### Primary late-branch square shell -/
+
+
+
+private lemma exp_fourteen_fifteenths_bounds :
+    (2542 / 1000 : ℝ) < exp (14 / 15) ∧ exp (14 / 15) < 2543 / 1000 := by
+  refine exp_between (x := 14 / 15) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_nineteen_twentieths_bounds :
+    (2585 / 1000 : ℝ) < exp (19 / 20) ∧ exp (19 / 20) < 2586 / 1000 := by
+  refine exp_between (x := 19 / 20) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_fiftyThree_hundredths_bounds :
+    (1698 / 1000 : ℝ) < exp (53 / 100) ∧ exp (53 / 100) < 1699 / 1000 := by
+  refine exp_between (x := 53 / 100) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_fiftySeven_hundredths_bounds :
+    (1768 / 1000 : ℝ) < exp (57 / 100) ∧ exp (57 / 100) < 1769 / 1000 := by
+  refine exp_between (x := 57 / 100) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_oneSixThree_thousandths_bounds :
+    (1177 / 1000 : ℝ) < exp (163 / 1000) ∧ exp (163 / 1000) < 1178 / 1000 := by
+  refine exp_between (x := 163 / 1000) (n := 6) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_twoTwoOne_thousandths_bounds :
+    (1247 / 1000 : ℝ) < exp (221 / 1000) ∧ exp (221 / 1000) < 1248 / 1000 := by
+  refine exp_between (x := 221 / 1000) (n := 6) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [sum_range_succ, Nat.factorial]
+  · norm_num [sum_range_succ, Nat.factorial]
+
+private lemma exp_oneFiveThree_bounds :
+    (2.7182818283 : ℝ) * (1698 / 1000) < exp (153 / 100) ∧
+      exp (153 / 100) < (2.7182818286 : ℝ) * (1699 / 1000) := by
+  have hid : exp (153 / 100) = exp 1 * exp (53 / 100) := by
+    rw [show (153 / 100 : ℝ) = 1 + 53 / 100 by norm_num, exp_add]
+  constructor
+  · rw [hid]
+    nlinarith [exp_one_gt_d9, exp_fiftyThree_hundredths_bounds.1, exp_pos 1,
+      exp_pos (53 / 100)]
+  · rw [hid]
+    nlinarith [exp_one_lt_d9, exp_fiftyThree_hundredths_bounds.2, exp_pos 1]
+
+private lemma exp_oneFiveSeven_bounds :
+    (2.7182818283 : ℝ) * (1768 / 1000) < exp (157 / 100) ∧
+      exp (157 / 100) < (2.7182818286 : ℝ) * (1769 / 1000) := by
+  have hid : exp (157 / 100) = exp 1 * exp (57 / 100) := by
+    rw [show (157 / 100 : ℝ) = 1 + 57 / 100 by norm_num, exp_add]
+  constructor
+  · rw [hid]
+    nlinarith [exp_one_gt_d9, exp_fiftySeven_hundredths_bounds.1, exp_pos 1,
+      exp_pos (57 / 100)]
+  · rw [hid]
+    nlinarith [exp_one_lt_d9, exp_fiftySeven_hundredths_bounds.2, exp_pos 1]
+
+private lemma exp_twoOneSixThree_bounds :
+    (2.7182818283 : ℝ) ^ 2 * (1177 / 1000) < exp (2163 / 1000) ∧
+      exp (2163 / 1000) < (2.7182818286 : ℝ) ^ 2 * (1178 / 1000) := by
+  have hid : exp (2163 / 1000) = exp 1 ^ 2 * exp (163 / 1000) := by
+    have : (2163 / 1000 : ℝ) = 1 + 1 + 163 / 1000 := by norm_num
+    rw [this, exp_add, exp_add]
+    ring
+  constructor
+  · rw [hid]
+    nlinarith [exp_one_gt_d9, exp_oneSixThree_thousandths_bounds.1, exp_pos 1,
+      exp_pos (163 / 1000)]
+  · rw [hid]
+    nlinarith [exp_one_lt_d9, exp_oneSixThree_thousandths_bounds.2, exp_pos 1]
+
+private lemma exp_twoTwoTwoOne_bounds :
+    (2.7182818283 : ℝ) ^ 2 * (1247 / 1000) < exp (2221 / 1000) ∧
+      exp (2221 / 1000) < (2.7182818286 : ℝ) ^ 2 * (1248 / 1000) := by
+  have hid : exp (2221 / 1000) = exp 1 ^ 2 * exp (221 / 1000) := by
+    have : (2221 / 1000 : ℝ) = 1 + 1 + 221 / 1000 := by norm_num
+    rw [this, exp_add, exp_add]
+    ring
+  constructor
+  · rw [hid]
+    nlinarith [exp_one_gt_d9, exp_twoTwoOne_thousandths_bounds.1, exp_pos 1,
+      exp_pos (221 / 1000)]
+  · rw [hid]
+    nlinarith [exp_one_lt_d9, exp_twoTwoOne_thousandths_bounds.2, exp_pos 1]
+
+private lemma proxy_lt_side_low : (2163 / 1000 : ℝ) < sqrt 2 * (153 / 100) := by
+  have h := sqrt_two_bounds.1
+  have hrat : (2163 / 1000 : ℝ) < (140 / 99) * (153 / 100) := by norm_num
+  nlinarith
+
+private lemma side_high_lt_proxy : sqrt 2 * (157 / 100) < (2221 / 1000 : ℝ) := by
+  have h := sqrt_two_bounds.2
+  have hrat : (99 / 70) * (157 / 100) < (2221 / 1000 : ℝ) := by norm_num
+  nlinarith
+
+private lemma gamma_oneFiveThree_lower :
+    gammaLower ((2.7182818286 : ℝ) * (1699 / 1000))
+      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) -
+        cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100))
+      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+        cosLo (3.141593 / 2 - 153 / 100)) ≤ gammaSEqual (153 / 100) := by
+  have hD : sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+      cosLo (3.141593 / 2 - 153 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before (x := 153 / 100) (ε := π / 2 - 153 / 100)
+    (a := 3.141592 / 2 - 153 / 100) (b := 3.141593 / 2 - 153 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1698 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1699 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveThree_bounds.1.le exp_oneFiveThree_bounds.2.le hD hS).1
+
+private lemma gamma_twoOneSixThree_upper :
+    gammaSEqual (2163 / 1000) ≤
+      gammaCosUpper ((2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
+        ((2.7182818286 : ℝ) ^ 2 * (1178 / 1000))
+        (-sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2)) := by
+  have hD : -(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+      cosLo (2163 / 1000 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (2163 / 1000 - 3.141592 / 2) +
+      cosLo (2163 / 1000 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after (x := 2163 / 1000) (ε := 2163 / 1000 - π / 2)
+    (a := 2163 / 1000 - 3.141593 / 2) (b := 2163 / 1000 - 3.141592 / 2)
+    (E0 := (2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
+    (E1 := (2.7182818286 : ℝ) ^ 2 * (1178 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
+    (by positivity) exp_twoOneSixThree_bounds.1.le exp_twoOneSixThree_bounds.2.le hD hS).2
+
+private lemma gamma_oneFiveSeven_upper :
+    gammaSEqual (157 / 100) ≤
+      gammaCosUpperPos ((2.7182818286 : ℝ) * (1769 / 1000))
+        ((2.7182818283 : ℝ) * (1768 / 1000))
+        (sinHi (3.141593 / 2 - 157 / 100)) := by
+  have hD : sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
+      cosLo (3.141593 / 2 - 157 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before (x := 157 / 100) (ε := π / 2 - 157 / 100)
+    (a := 3.141592 / 2 - 157 / 100) (b := 3.141593 / 2 - 157 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1768 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1769 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveSeven_bounds.1.le exp_oneFiveSeven_bounds.2.le hD hS).2
+
+lemma gamma_oneFiveSeven_lower :
+    gammaLower ((2.7182818286 : ℝ) * (1769 / 1000))
+      (sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) -
+        cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100))
+      (sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
+        cosLo (3.141593 / 2 - 157 / 100)) ≤ gammaSEqual (157 / 100) := by
+  have hD : sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
+      cosLo (3.141593 / 2 - 157 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before (x := 157 / 100) (ε := π / 2 - 157 / 100)
+    (a := 3.141592 / 2 - 157 / 100) (b := 3.141593 / 2 - 157 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1768 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1769 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveSeven_bounds.1.le exp_oneFiveSeven_bounds.2.le hD hS).1
+
+private lemma gamma_twoTwoTwoOne_lower :
+    gammaLower ((2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
+      (-(sinHi (2221 / 1000 - 3.141592 / 2) +
+        cosHi (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2)))
+      (-sinHi (2221 / 1000 - 3.141592 / 2) + cosLo (2221 / 1000 - 3.141592 / 2)) ≤
+      gammaSEqual (2221 / 1000) := by
+  have hD : -(sinLo (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2) +
+      cosLo (2221 / 1000 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (2221 / 1000 - 3.141592 / 2) +
+      cosLo (2221 / 1000 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after (x := 2221 / 1000) (ε := 2221 / 1000 - π / 2)
+    (a := 2221 / 1000 - 3.141593 / 2) (b := 2221 / 1000 - 3.141592 / 2)
+    (E0 := (2.7182818283 : ℝ) ^ 2 * (1247 / 1000))
+    (E1 := (2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
+    (by positivity) exp_twoTwoTwoOne_bounds.1.le exp_twoTwoTwoOne_bounds.2.le hD hS).1
+
+theorem squareBalance_oneFiveThree_neg : squareBalance (153 / 100) < 0 :=
+  squareBalance_neg_of_outer
+    ⟨by norm_num, by
+      rw [resonanceRoot1_eq_pi_div_two]
+      linarith [pi_gt_d6]⟩
+
+private lemma gamma_twoOneSixThree_upper_legacy :
+    gammaSEqualLegacy (2163 / 1000) ≤
+      gammaUpper ((2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
+        (-(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+          cosLo (2163 / 1000 - 3.141592 / 2)))
+        (-sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+          cosHi (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2)) := by
+  have hD : -(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+      cosLo (2163 / 1000 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (2163 / 1000 - 3.141592 / 2) +
+      cosLo (2163 / 1000 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after_legacy (x := 2163 / 1000) (ε := 2163 / 1000 - π / 2)
+    (a := 2163 / 1000 - 3.141593 / 2) (b := 2163 / 1000 - 3.141592 / 2)
+    (E0 := (2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
+    (E1 := (2.7182818286 : ℝ) ^ 2 * (1178 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
+    (by positivity) exp_twoOneSixThree_bounds.1.le exp_twoOneSixThree_bounds.2.le hD hS).2
+
+private lemma gamma_oneFiveThree_lower_legacy :
+    gammaLower ((2.7182818286 : ℝ) * (1699 / 1000))
+      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) -
+        cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100))
+      (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+        cosLo (3.141593 / 2 - 153 / 100)) ≤ gammaSEqualLegacy (153 / 100) := by
+  have hD : sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+      cosLo (3.141593 / 2 - 153 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before_legacy (x := 153 / 100) (ε := π / 2 - 153 / 100)
+    (a := 3.141592 / 2 - 153 / 100) (b := 3.141593 / 2 - 153 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1698 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1699 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveThree_bounds.1.le exp_oneFiveThree_bounds.2.le hD hS).1
+
+private lemma gamma_oneFiveThree_upper_legacy :
+    gammaSEqualLegacy (153 / 100) ≤
+      gammaUpper ((2.7182818283 : ℝ) * (1698 / 1000))
+        (sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100))
+        (sinHi (3.141593 / 2 - 153 / 100) +
+          cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100)) := by
+  have hD : sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+      cosLo (3.141593 / 2 - 153 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before_legacy (x := 153 / 100) (ε := π / 2 - 153 / 100)
+    (a := 3.141592 / 2 - 153 / 100) (b := 3.141593 / 2 - 153 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1698 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1699 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveThree_bounds.1.le exp_oneFiveThree_bounds.2.le hD hS).2
+
+private lemma gamma_oneFiveSeven_upper_legacy :
+    gammaSEqualLegacy (157 / 100) ≤
+      gammaUpper ((2.7182818283 : ℝ) * (1768 / 1000))
+        (sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100))
+        (sinHi (3.141593 / 2 - 157 / 100) +
+          cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100)) := by
+  have hD : sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100) +
+      cosLo (3.141593 / 2 - 157 / 100) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before_legacy (x := 157 / 100) (ε := π / 2 - 157 / 100)
+    (a := 3.141592 / 2 - 157 / 100) (b := 3.141593 / 2 - 157 / 100)
+    (E0 := (2.7182818283 : ℝ) * (1768 / 1000))
+    (E1 := (2.7182818286 : ℝ) * (1769 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
+    (by positivity) exp_oneFiveSeven_bounds.1.le exp_oneFiveSeven_bounds.2.le hD hS).2
+
+private lemma gamma_twoTwoTwoOne_lower_legacy :
+    gammaLower ((2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
+      (-(sinHi (2221 / 1000 - 3.141592 / 2) +
+        cosHi (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2)))
+      (-sinHi (2221 / 1000 - 3.141592 / 2) + cosLo (2221 / 1000 - 3.141592 / 2)) ≤
+      gammaSEqualLegacy (2221 / 1000) := by
+  have hD : -(sinLo (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2) +
+      cosLo (2221 / 1000 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (2221 / 1000 - 3.141592 / 2) +
+      cosLo (2221 / 1000 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after_legacy (x := 2221 / 1000) (ε := 2221 / 1000 - π / 2)
+    (a := 2221 / 1000 - 3.141593 / 2) (b := 2221 / 1000 - 3.141592 / 2)
+    (E0 := (2.7182818283 : ℝ) ^ 2 * (1247 / 1000))
+    (E1 := (2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
+    (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
+    (by positivity) exp_twoTwoTwoOne_bounds.1.le exp_twoTwoTwoOne_bounds.2.le hD hS).1
+
+theorem squareBalanceLegacy_oneFiveThree_neg : squareBalanceLegacy (153 / 100) < 0 := by
+  have hy := proxy_lt_side_low
+  have hyπ : sqrt 2 * (153 / 100) < π := by
+    have : sqrt 2 * (153 / 100) < 3 := by
+      have h := sqrt_two_bounds.2
+      nlinarith
+    linarith [pi_gt_three]
+  have h70π : (2163 / 1000 : ℝ) < π := by linarith [pi_gt_three]
+  have hdec : gammaSEqualLegacy (sqrt 2 * (153 / 100)) < gammaSEqualLegacy (2163 / 1000) :=
+    (legacy_strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc (by norm_num) h70π.le)
+      (mem_gamma_Icc (by positivity) hyπ.le) hy
+  have hlo := gamma_oneFiveThree_lower_legacy
+  have hhi := gamma_twoOneSixThree_upper_legacy
+  have hcmp :
+      gammaUpper ((2.7182818283 : ℝ) ^ 2 * (1177 / 1000))
+        (-(sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+          cosLo (2163 / 1000 - 3.141592 / 2)))
+        (-sinLo (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2) +
+          cosHi (2163 / 1000 - 3.141593 / 2) (2163 / 1000 - 3.141592 / 2)) <
+      (99 / 35) * gammaLower ((2.7182818286 : ℝ) * (1699 / 1000))
+        (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) -
+          cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100))
+        (sinLo (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100) +
+          cosLo (3.141593 / 2 - 153 / 100)) := by
+    simp only [gammaUpper, gammaLower, sinLo, cosLo, cosHi]
+    norm_num
+  have hγneg : gammaSEqualLegacy (153 / 100) < 0 := by
+    have hnegU : gammaUpper ((2.7182818283 : ℝ) * (1698 / 1000))
+        (sinHi (3.141593 / 2 - 153 / 100) - cosLo (3.141593 / 2 - 153 / 100))
+        (sinHi (3.141593 / 2 - 153 / 100) +
+          cosHi (3.141592 / 2 - 153 / 100) (3.141593 / 2 - 153 / 100)) < 0 := by
+      simp only [gammaUpper, sinHi, cosLo, cosHi]; norm_num
+    linarith [gamma_oneFiveThree_upper_legacy]
+  have hA : 2 * sqrt 2 < 99 / 35 := two_sqrt_two_bounds.2
+  have hP : (99 / 35) * gammaSEqualLegacy (153 / 100) < 2 * sqrt 2 * gammaSEqualLegacy (153 / 100) := by
+    nlinarith
+  unfold squareBalanceLegacy
+  linarith
+
+private theorem squareBalanceLegacy_oneFiveSeven_pos : 0 < squareBalanceLegacy (157 / 100) := by
+  have hy := side_high_lt_proxy
+  have hy0 : 0 < sqrt 2 * (157 / 100) := by positivity
+  have hyπ : sqrt 2 * (157 / 100) < π := by
+    have : sqrt 2 * (157 / 100) < 3 := by
+      have h := sqrt_two_bounds.2
+      nlinarith
+    linarith [pi_gt_three]
+  have hUπ : (2221 / 1000 : ℝ) < π := by linarith [pi_gt_three]
+  have hdec : gammaSEqualLegacy (2221 / 1000) < gammaSEqualLegacy (sqrt 2 * (157 / 100)) :=
+    (legacy_strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc hy0.le hyπ.le)
+      (mem_gamma_Icc (by norm_num) hUπ.le) hy
+  have hhi := gamma_oneFiveSeven_upper_legacy
+  have hlo := gamma_twoTwoTwoOne_lower_legacy
+  have hγneg : gammaSEqualLegacy (157 / 100) < 0 := by
+    have hnegU : gammaUpper ((2.7182818283 : ℝ) * (1768 / 1000))
+        (sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100))
+        (sinHi (3.141593 / 2 - 157 / 100) +
+          cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100)) < 0 := by
+      simp only [gammaUpper, sinHi, cosLo, cosHi]; norm_num
+    linarith [hhi]
+  have hcmp : (280 / 99) * gammaUpper ((2.7182818283 : ℝ) * (1768 / 1000))
+      (sinHi (3.141593 / 2 - 157 / 100) - cosLo (3.141593 / 2 - 157 / 100))
+      (sinHi (3.141593 / 2 - 157 / 100) +
+        cosHi (3.141592 / 2 - 157 / 100) (3.141593 / 2 - 157 / 100)) <
+      gammaLower ((2.7182818286 : ℝ) ^ 2 * (1248 / 1000))
+        (-(sinHi (2221 / 1000 - 3.141592 / 2) +
+          cosHi (2221 / 1000 - 3.141593 / 2) (2221 / 1000 - 3.141592 / 2)))
+        (-sinHi (2221 / 1000 - 3.141592 / 2) +
+          cosLo (2221 / 1000 - 3.141592 / 2)) := by
+    simp only [gammaUpper, gammaLower, sinHi, cosLo, cosHi]
+    norm_num
+  have hA : 280 / 99 < 2 * sqrt 2 := two_sqrt_two_bounds.1
+  have hP : 2 * sqrt 2 * gammaSEqualLegacy (157 / 100) < (280 / 99) * gammaSEqualLegacy (157 / 100) := by
+    nlinarith
+  unfold squareBalanceLegacy
+  linarith
+
+/-- Certified positive legacy balance at the upper end of the `(153/100, 157/100)` window. -/
+theorem squareBalance_oneFiveSeven_pos : 0 < squareBalanceLegacy (157 / 100) :=
+  squareBalanceLegacy_oneFiveSeven_pos
+
+/-- Certified shell crossing on `(153/100, 157/100)` (`squareBalanceLegacy`). -/
+theorem exists_square_shell_primary :
+    ∃ x : ℝ, x ∈ Set.Ioo (153 / 100) (157 / 100) ∧ squareBalanceLegacy x = 0 := by
+  obtain ⟨x, hxI, hx0⟩ :=
+    intermediate_value_Ioo (by norm_num)
+      continuous_squareBalanceLegacy.continuousOn
+      ⟨squareBalanceLegacy_oneFiveThree_neg, squareBalanceLegacy_oneFiveSeven_pos⟩
+  exact ⟨x, ⟨hxI.1, hxI.2⟩, hx0⟩
+
 theorem exists_unique_square_shell :
     ∃! x : ℝ, x ∈ Set.Ioo (3 / 2) (33 / 20) ∧ squareBalanceLegacy x = 0 := by
   have hsub := intermediate_value_Ioo (by norm_num : (3 / 2 : ℝ) ≤ 8 / 5)
