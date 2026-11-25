@@ -238,17 +238,18 @@ theorem not_isAdmissible_fermatTorsion_of_gaussian_norm {m n : ℤ} {c e : ℕ}
     (hm : m ≠ 0) (hn : n ≠ 0) (he : 5 ≤ e)
     (hpar : (Even m ∧ Odd n) ∨ (Odd m ∧ Even n))
     (heq : m ^ 2 + n ^ 2 = (c : ℤ) ^ e) :
-    ¬ IsAdmissibleContinuous (fermatTorsion m n (c : ℤ) hm (by
+    ¬ IsAdmissibleContinuousLegacy (fermatTorsion m n (c : ℤ) hm (by
       have hc3 := nat_base_ge_three_of_opposite_parity_pow hm hn hpar (by omega) heq
       exact_mod_cast (by omega : c ≠ 0))) := by
   have hcne : (c : ℤ) ≠ 0 := by
     have hc3 := nat_base_ge_three_of_opposite_parity_pow hm hn hpar (by omega) heq
     exact_mod_cast (by omega : c ≠ 0)
   intro hAdm
-  have hsum := admissibleContinuous_sum_le _ hAdm 0
+  have hsum := admissibleContinuous_legacy_sum_le_half_pi _ hAdm 0
   have hne01 : (0 : Fin 3) ≠ 1 := by decide
   simp only [fermatTorsion, hne01, ite_false, ite_true, add_zero] at hsum
   exact not_le_of_gt (fermatBoost_gt_half_pi_of_gaussian_norm hm hn he hpar heq) hsum
+
 
 theorem fermatInterfere_ne_zero_of_gaussian_norm {m n : ℤ} {c e : ℕ}
     (hm : m ≠ 0) (hn : n ≠ 0) (he : 5 ≤ e)
@@ -407,21 +408,14 @@ theorem isAdmissible_pythagorean_generators {m n : ℤ}
   have hboost :
       fermatBoost (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2) (hyp_ne_zero_of_ne hm) = 0 := by
     simpa [IsPureCyclicFermatMotor] using h0
-  intro i
-  fin_cases i
-  · refine ⟨?_, ?_, ?_⟩
-    · simp [fermatTorsion, hboost]
-    · simp [fermatTorsion]
-    · simpa [fermatTorsion, hboost] using (Real.pi_div_two_pos.le)
-  · refine ⟨?_, ?_, ?_⟩
-    · simp [fermatTorsion]
-    · simpa [fermatTorsion] using
-        fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne)
-    · have hlt :=
-        fermatAngle_lt_half_pi (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne)
-      simpa [fermatTorsion] using hlt.le
-  · refine ⟨by simp [fermatTorsion], by simp [fermatTorsion], ?_⟩
-    simpa [fermatTorsion] using Real.pi_div_two_pos.le
+  intro a
+  fin_cases a
+  · exact ⟨by simp [fermatTorsion, hboost], by simp [fermatTorsion], Real.pi_pos.le,
+      by simp [fermatTorsion, hboost]; exact Real.pi_div_two_pos.le⟩
+  · exact ⟨by simp [fermatTorsion], by simpa [fermatTorsion] using
+      fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne),
+      Real.pi_pos.le, by simpa [fermatTorsion] using (fermatAngle_lt_half_pi _ _ _).le⟩
+  · exact ⟨by simp [fermatTorsion], by simp [fermatTorsion], Real.pi_pos.le, by simp [fermatTorsion]⟩
 
 theorem gaussian_hyp_split_of_exp_ge_five {m n : ℤ} {e : ℕ}
     (he : 5 ≤ e) (hm : m ≠ 0) (hn : n ≠ 0)
@@ -432,7 +426,7 @@ theorem gaussian_hyp_split_of_exp_ge_five {m n : ℤ} {e : ℕ}
       fermatBoost m n (c : ℤ) hc = (((e : ℝ) - 2) / 2) * Real.log (c : ℝ) ∧
       Real.pi / 2 < fermatBoost m n (c : ℤ) hc ∧
       IsMixedFermatMotor m n (c : ℤ) hm hc ∧
-      ¬ IsAdmissibleContinuous (fermatTorsion m n (c : ℤ) hm hc) ∧
+      ¬ IsAdmissibleContinuousLegacy (fermatTorsion m n (c : ℤ) hm hc) ∧
       IsPureCyclicFermatMotor (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2)
         (hyp_ne_zero_of_ne hm) ∧
       IsAdmissibleContinuous

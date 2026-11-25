@@ -289,13 +289,8 @@ theorem abc_quality_bound_of_admissible {a b c : ℕ} (h : IsAbcTriple a b c)
         _ ≤ Real.sqrt (4 / abcHeightCoef R) := Real.sqrt_le_sqrt hsq
   have hrad_lt : 1 < R :=
     lt_of_lt_of_le (by decide : (1 : ℕ) < 2) (isAbcTriple_radical_two_le h)
-  have hceil : abcQualityCeiling R ≤ 1 + Real.sqrt (4 / abcHeightCoef R) := by
-    have heq := abcQualityCeiling_eq hrad_lt
-    rw [heq]
-    gcongr
-    exact le_sqrt_of_sqrt_le (by positivity) (by
-      rw [div_le_div_iff₀ (by positivity) (by positivity)]
-      linarith [hsq])
+  have hceil : abcQualityCeiling R = 1 + Real.sqrt (4 / abcHeightCoef R) :=
+    abcQualityCeiling_eq hrad_lt
   linarith [hsqrt, hceil]
 
 theorem abc_amplification_contradiction {a b c : ℕ} (h : IsAbcTriple a b c)
@@ -1307,7 +1302,8 @@ theorem isAdmissibleContinuous_abcLabelPacket_iff_heaviest (δ : ℝ) :
     · rcases (isAdmissibleContinuous_abcLabelPacket_iff δ).mp hadm with ⟨h0, hπ⟩
       nlinarith
     · rcases (isAdmissibleContinuous_abcLabelPacket_iff δ).mp hadm with ⟨h0, hπ⟩
-      nlinarith [Real.pi_pos]
+      have : 18 * δ ≤ Real.pi := by nlinarith [hπ]
+      exact le_trans this (by linarith [Real.pi_pos])
   · intro hadm
     have hθ := (isAdmissibleContinuous_pureBoost_iff (18 * δ)).mp hadm
     rcases hθ with ⟨h0, hθπ⟩

@@ -738,11 +738,20 @@ theorem pi_div_three_le_pi_div_two : Real.pi / 3 ≤ Real.pi / 2 := by
   have hπ : 0 < Real.pi := Real.pi_pos
   nlinarith
 
+theorem uniform_pi_div_six_admissible_legacy :
+    IsAdmissibleContinuousLegacy (uniformTorsion (Real.pi / 6) 0) := by
+  refine fun a => ?_
+  simp only [uniformTorsion]
+  constructor
+  · positivity
+  constructor
+  · simp
+  · have hπ : 0 < Real.pi := Real.pi_pos
+    nlinarith
+
 theorem uniform_pi_div_six_admissible :
     IsAdmissibleContinuous (uniformTorsion (Real.pi / 6) 0) :=
-  isAdmissibleContinuous_uniform (by positivity) le_rfl (by
-    have hπ : 0 < Real.pi := Real.pi_pos
-    nlinarith)
+  legacy_admissible_implies_mismatch _ uniform_pi_div_six_admissible_legacy
 
 theorem uniform_pi_div_six_equalScale_admissible :
     IsAdmissibleContinuous (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) := by

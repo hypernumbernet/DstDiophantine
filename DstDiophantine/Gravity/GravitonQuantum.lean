@@ -103,16 +103,13 @@ theorem JNormalized_oneStep {N : ℕ} (hN : 0 < N) :
 theorem oneAxisDual_admissible_legacy {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuousLegacy (oneAxisDual θ) := by
   intro a
-  match a with
-  | 0 =>
-    rw [oneAxisDual_alpha, oneAxisDual_beta_0]
-    exact ⟨h0, hθ, by simp⟩
-  | 1 =>
-    rw [oneAxisDual_alpha, oneAxisDual_beta_1]
-    exact ⟨le_rfl, le_rfl, by simp⟩
-  | 2 =>
-    rw [oneAxisDual_alpha, oneAxisDual_beta_2]
-    exact ⟨le_rfl, le_rfl, by simp⟩
+  fin_cases a
+  · simp [oneAxisDual]
+    exact ⟨le_rfl, h0, hθ⟩
+  · simp [oneAxisDual]
+    exact ⟨le_rfl, le_rfl, le_rfl⟩
+  · simp [oneAxisDual]
+    exact ⟨le_rfl, le_rfl, le_rfl⟩
 
 theorem oneAxisDual_admissible {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuous (oneAxisDual θ) :=
@@ -1000,11 +997,13 @@ theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
   intro a
   fin_cases a
   · simp only [oneAxisUsual]
-    exact ⟨hθ, le_rfl, by simpa using hle⟩
+    exact ⟨hθ, le_rfl, Real.pi_pos.le, by linarith [hle, hθ]⟩
   · simp only [oneAxisUsual]
-    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
+      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
   · simp only [oneAxisUsual]
-    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
+      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
 
 theorem balancedStep_admissible {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) := by
@@ -1014,11 +1013,13 @@ theorem balancedStep_admissible {N : ℕ} (hN : 4 ≤ N) :
   intro a
   fin_cases a
   · simp only [oneAxisBalanced]
-    exact ⟨hhalf, hhalf, by simpa using hsum⟩
+    exact ⟨hhalf, hhalf, Real.pi_pos.le, by linarith [hsum, hhalf]⟩
   · simp only [oneAxisBalanced]
-    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
+      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
   · simp only [oneAxisBalanced]
-    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
+      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
 
 theorem gammaS_usual (θ : ℝ) : gammaS θ 0 = Real.cosh (θ / 2) := by
   unfold gammaS
@@ -1029,9 +1030,8 @@ theorem gammaS_dual (θ : ℝ) : gammaS 0 θ = Real.cos (θ / 2) := by
   simp
 
 theorem gammaS_balanced (θ : ℝ) : gammaS θ θ = gammaSEqual (θ / 2) := by
-  have h := gammaSEqual_eq_gammaS (θ / 2)
-  have htwice : 2 * (θ / 2) = θ := by ring
-  simpa [htwice] using h.symm
+  unfold gammaS gammaSEqual
+  ring_nf
 
 theorem usual_interference_gt_one {θ : ℝ} (hθ : 0 < θ) : 1 < gammaS θ 0 := by
   rw [gammaS_usual, Real.cosh_eq]
@@ -1320,11 +1320,12 @@ theorem perpSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
   intro a
   fin_cases a
   · simp only [perpSteps]
-    exact ⟨le_rfl, hθ, by simpa using hle⟩
+    exact ⟨le_rfl, hθ, by linarith [Real.pi_pos], by linarith [hle, hθ]⟩
   · simp only [perpSteps]
-    exact ⟨le_rfl, hθ, by simpa using hle⟩
+    exact ⟨le_rfl, hθ, by linarith [Real.pi_pos], by linarith [hle, hθ]⟩
   · simp only [perpSteps]
-    exact ⟨le_rfl, le_rfl, by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    refine ⟨le_rfl, le_rfl, by linarith [Real.pi_pos], ?_⟩
+    exact div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2)
 
 theorem splitSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (splitSteps N) := by
@@ -1332,9 +1333,8 @@ theorem splitSteps_admissible {N : ℕ} (hN : 4 ≤ N) :
     (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
   have hle := stepAngle_le_half_pi hN
   intro a
-  fin_cases a <;>
-    · simp only [splitSteps]
-      exact ⟨le_rfl, hθ, by simpa using hle⟩
+  fin_cases a <;> simp only [splitSteps] <;>
+    exact ⟨le_rfl, hθ, by linarith [Real.pi_pos], by linarith [hle, hθ]⟩
 
 theorem perp_twofold {N : ℕ} (hN : 4 ≤ N) :
     IsAdmissibleContinuous (perpSteps N) ∧
