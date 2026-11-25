@@ -52,7 +52,7 @@ theorem hasDerivAt_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
     rwa [heq] at h
   have hdiv := hnum.fun_div (hasDerivAt_gammaSEqual x) hγ
   refine hdiv.congr_deriv ?_
-  unfold forceCrit gammaSEqual
+  unfold forceCrit
   ring
 
 theorem deriv_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
@@ -701,22 +701,14 @@ private lemma forceCrit_strictAnti : StrictAntiOn forceCrit (Icc (5 / 2) π) := 
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _) continuous_forceCrit.continuousOn ?_
   intro x hx
   rw [interior_Icc] at hx
-  rw [(hasDerivAt_forceCrit x).deriv, forceCrit_deriv_exp_form]
+  rw [(hasDerivAt_forceCrit x).deriv, forceCrit_deriv_factor]
   have hxπ2 : π / 2 < x := by linarith [hx.1, pi_div_two_lt_five_halves]
   have hP := critP_neg_of_ge_five_halves ⟨hx.1.le, hx.2.le⟩
   have hQ := critQ_neg hxπ2 hx.2
-  have hEP : exp (2 * x) * critP x < 0 := mul_neg_of_pos_of_neg (exp_pos _) hP
-  have hbundle : exp (2 * x) * critP x + critQ x < 0 := by linarith [hEP, hQ]
-  have hlegacy : exp (-x) / 2 * (exp (2 * x) * critP x + critQ x) < 0 :=
-    mul_neg_of_pos_of_neg (by positivity) hbundle
-  have hosc_lt : sinh x * cos x + cosh x * sin x <
-      -(exp (-x) / 2 * (exp (2 * x) * critP x + critQ x)) := by
-    nlinarith [hbundle, hP, hQ, exp_pos (-x), exp_pos (2 * x), cosh_pos x,
-      sinh_pos_iff.mpr (by linarith [hx.1]),
-      sin_pos_of_pos_of_lt_pi (by linarith [hx.1, five_halves_lt_pi]) hx.2,
-      cos_neg_of_pi_div_two_lt_of_lt hxπ2 hx.2, Real.cos_sq_add_sin_sq x,
-      mul_pos (exp_pos (2 * x)) (neg_pos.mpr hP)]
-  linarith [hlegacy, hosc_lt]
+  have hsum : exp (2 * x) * critP x + critQ x < 0 := by
+    have hEP : exp (2 * x) * critP x < 0 := mul_neg_of_pos_of_neg (exp_pos _) hP
+    linarith
+  exact mul_neg_of_pos_of_neg (by positivity) hsum
 
 theorem forceCrit_pi : forceCrit π = -cosh π := by
   unfold forceCrit
@@ -804,13 +796,14 @@ private lemma gamma_five_halves_lt_neg_sixth : gammaSEqual (5 / 2) < -(25 / 6) :
   set ε : ℝ := 5 / 2 - π / 2
   have haI : (9292035 / 10000000 : ℝ) ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have hb1 : (929204 / 1000000 : ℝ) ≤ 1 := by norm_num
-  have hεI0 : ε ∈ Icc (0 : ℝ) 1 := ⟨by linarith [hε.1], by linarith [hε.2, hb1]⟩
+  have hεI : ε ∈ Icc (0 : ℝ) 1 := ⟨by linarith [hε.1], by linarith [hε.2, hb1]⟩
+  have hsinlo : (8 / 9 : ℝ) < polySin3 (9292035 / 10000000) := by
+    dsimp [polySin3]; norm_num
   have hsinε : (8 / 9 : ℝ) < sin ε := by
-    have h1 := sin_lower_cubic hεI0.1
-    have h2 := mono_polySin3 haI hεI0 (le_of_lt hε.1)
-    have hlo : (8 / 9 : ℝ) < polySin3 (9292035 / 10000000) := by
-      dsimp [polySin3]; norm_num
-    linarith [h1, h2, hlo]
+    have h1 := sin_lower_cubic hεI.1
+    have h2 := mono_polySin3 haI hεI (le_of_lt hε.1)
+    unfold polySin3 at h2
+    linarith [h1, h2, hsinlo]
   have hcosh : (11 / 2 : ℝ) < cosh (5 / 2) := by
     rw [cosh_eq]
     have hE : (12 : ℝ) < exp (5 / 2) := by
@@ -818,11 +811,13 @@ private lemma gamma_five_halves_lt_neg_sixth : gammaSEqual (5 / 2) < -(25 / 6) :
         rw [show (5 / 2 : ℝ) = 1 + 1 + 1 / 2 by norm_num, exp_add, exp_add]
       nlinarith [exp_one_gt_d9, exp_half_bounds.1, exp_pos 1, exp_pos (1 / 2), hid]
     nlinarith [hE, exp_pos (-(5 / 2))]
-  have hγz : gammaSEqual (5 / 2) = cosh (5 / 2) * cos (5 / 2) := by
-    unfold gammaSEqual; ring
-  have hcosx : cos (5 / 2) = -sin ε := cos_five_halves
-  rw [hγz, hcosx]
-  nlinarith [hcosh, hsinε]
+  have hmullo : (25 / 6 : ℝ) < (11 / 2) * (8 / 9) := by norm_num
+  have hprod : (25 / 6 : ℝ) < cosh (5 / 2) * sin ε :=
+    lt_trans hmullo (mul_lt_mul hcosh hsinε (by norm_num) (le_of_lt hcosh))
+  have hγz : gammaSEqual (5 / 2) = -(cosh (5 / 2) * sin ε) := by
+    rw [show gammaSEqual (5 / 2) = cosh (5 / 2) * cos (5 / 2) from by unfold gammaSEqual; ring,
+      cos_five_halves, mul_neg]
+  linarith [hprod, hγz]
 
 private lemma gamma_five_halves_neg : gammaSEqual (5 / 2) < 0 :=
   lt_trans gamma_five_halves_lt_neg_sixth (by norm_num)
@@ -870,14 +865,9 @@ theorem forceQuiet_magnitude {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) (h0 : forceCr
           ⟨hx.1.le, hx.2.le⟩ ht.2
         linarith [h0]
       have ht0 : 0 < t := by linarith [ht.1]
-      have hγneg := gamma_neg_on_quiet ht.1.le (lt_trans ht.2 hx.2)
-      have hsin :=
-        sin_pos_of_pos_of_lt_pi ht0 (lt_trans ht.2 hx.2)
-      have hcos : cos t < 0 :=
-        cos_neg_of_pi_div_two_lt_of_lt
-          (by linarith [ht.1, pi_div_two_lt_five_halves])
-          (lt_trans ht.2 hx.2)
-      exact div_pos (mul_pos (mul_pos (by norm_num) ht0) hcrit) (sq_pos_of_ne_zero hγ)
+      have htπ : t < π := lt_trans ht.2 hx.2
+      exact div_pos (mul_pos (mul_pos (by norm_num) ht0) hcrit)
+        (sq_pos_of_ne_zero (gamma_neg_on_quiet ht.1.le htπ).ne)
   have hgt : pairAttraction (5 / 2) < pairAttraction x :=
     hmono ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
   have hneg : pairAttraction x < 0 := by
