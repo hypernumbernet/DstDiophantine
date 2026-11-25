@@ -2333,13 +2333,10 @@ lemma gammaSEqual_thirtyNine_tenths_gt : -3 / 2 < gammaSEqual (39 / 10) := by
       exp (39 / 10) / 2 * (sin (39 / 10 - π) - cos (39 / 10 - π)) -
         exp (-(39 / 10)) / 2 * (sin (39 / 10 - π) + cos (39 / 10 - π)) := by
     rw [gammaSEqual_exp]
-    have hsinx : sin (39 / 10) = -sin (39 / 10 - π) := by
-      conv_lhs => rw [show (39 / 10 : ℝ) = (39 / 10 - π) + π by ring]
-      rw [sin_add_pi]
     have hcosx : cos (39 / 10) = -cos (39 / 10 - π) := by
       conv_lhs => rw [show (39 / 10 : ℝ) = (39 / 10 - π) + π by ring]
       rw [cos_add_pi]
-    rw [hsinx, hcosx]
+    rw [hcosx]
     ring
   have hinv : exp (-(39 / 10)) ≤ 1 / 48 := by
     have hdiv : 1 / exp (39 / 10) ≤ 1 / 48 :=
