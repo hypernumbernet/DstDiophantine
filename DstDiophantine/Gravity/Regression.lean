@@ -2874,7 +2874,7 @@ example {φ x y : ℝ} (hφ : 0 < φ) (hx : x ≠ 0) (hy : y ≠ 0)
         (203 : ℝ) < ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ ∧
           ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ < 414) := by
   refine ⟨layerRadius_scale_not_unique hx, ?_, thresholdRadius_scale_not_unique hφ,
-    gammaSEqual_critical_at_int_pi, ?_, ?_,
+    gammaSEqual_critical_at_int_pi 0 rfl, ?_, ?_,
     pairChannelForce_layer_zero_not_unique hx hGx hGy,
     charge_over_nuclear_length_not_unique⟩
   · intro ℓ₁ ℓ₂ h₁ h₂

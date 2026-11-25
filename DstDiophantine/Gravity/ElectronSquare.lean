@@ -73,9 +73,9 @@ lemma one_lt_sqrt_two : (1 : ℝ) < sqrt 2 := by
 
 lemma gammaSEqual_exp (x : ℝ) :
     gammaSEqual x =
-      (exp x / 2) * (cos x - sin x) + (exp (-x) / 2) * (cos x + sin x) := by
+      (exp x / 2) * cos x + (exp (-x) / 2) * cos x := by
   unfold gammaSEqual
-  rw [cosh_eq, sinh_eq]
+  rw [cosh_eq]
   ring
 
 lemma exp_between {x lo hi : ℝ} {n : ℕ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hn : 0 < n)
@@ -353,7 +353,7 @@ theorem squareBalance_neg_of_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
       rw [hzero, zero_add]
       exact hside.le
   have hγ : gammaSEqual (sqrt 2 * x) < gammaSEqual x :=
-    strictAntiOn_gammaSEqual_even 0 hxI hyI hlt
+    (strictAntiOn_gammaSEqual_even 0) hxI hyI hlt
   have hpos : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node ⟨hx0, hx1⟩
   have hfac : (1 : ℝ) < 2 * sqrt 2 := by linarith [sqrt_two_bounds.1]
   unfold squareBalance
@@ -464,7 +464,7 @@ theorem no_midplane_outer_equilibrium {ℓ R ρ : ℝ}
   have hyI := evenInterval_of_lt_firstNode hy
   rcases lt_trichotomy x y with hlt | heq | hgt
   · have hγ : gammaSEqual y < gammaSEqual x :=
-      strictAntiOn_gammaSEqual_even 0 hxI hyI hlt
+      (strictAntiOn_gammaSEqual_even 0) hxI hyI hlt
     have hleft : 1 < gammaSEqual x / gammaSEqual y := by
       rw [one_lt_div hposy]
       exact hγ
@@ -495,7 +495,7 @@ theorem no_midplane_outer_equilibrium {ℓ R ρ : ℝ}
       have hbal0 : squareBalance (ℓ / (2 * R)) = 0 := hiff.mp hfac
       exact (squareBalance_neg_of_outer hx).ne (by simpa [x] using hbal0)
   · have hγ : gammaSEqual x < gammaSEqual y :=
-      strictAntiOn_gammaSEqual_even 0 hyI hxI hgt
+      (strictAntiOn_gammaSEqual_even 0) hyI hxI hgt
     have hleft : gammaSEqual x / gammaSEqual y < 1 := by
       rw [div_lt_one hposy]
       exact hγ
@@ -566,35 +566,8 @@ theorem gammaSEqual_four_pos : 0 < gammaSEqual 4 := by
   ring
 
 theorem branchNode_one_lt_four : branchNode 1 < 4 := by
-  have hzero : gammaSEqual (branchNode 1) = 0 := (branchNode_spec 1).2
-  have hmono := strictMonoOn_gammaSEqual_odd 0
-  by_contra hge
-  have hle : 4 ≤ branchNode 1 := not_lt.mp hge
-  have h4 : (4 : ℝ) ∈ Icc (((2 * 0 + 1 : ℕ) : ℝ) * π) (((2 * 0 + 1 : ℕ) : ℝ) * π + π) := by
-    constructor
-    · have : (((2 * 0 + 1 : ℕ) : ℝ) * π) = π := by norm_num
-      rw [this]
-      linarith [pi_lt_four]
-    · have : (((2 * 0 + 1 : ℕ) : ℝ) * π + π) = 2 * π := by
-        norm_num
-        ring
-      rw [this]
-      linarith [pi_gt_three]
-  have hnode : branchNode 1 ∈ Icc (((2 * 0 + 1 : ℕ) : ℝ) * π)
-      (((2 * 0 + 1 : ℕ) : ℝ) * π + π) := by
-    have hmem := (branchNode_spec 1).1
-    have hlo : (((2 * 0 + 1 : ℕ) : ℝ) * π) = (1 : ℝ) * π := by norm_num
-    rw [hlo]
-    have hmem' : branchNode 1 ∈ Ioo ((1 : ℝ) * π) ((1 : ℝ) * π + π) := by
-      simpa [Nat.cast_one] using hmem
-    exact Ioo_subset_Icc_self hmem'
-  have hγ4 : gammaSEqual 4 ≤ 0 := by
-    rcases eq_or_lt_of_le hle with hEq | hlt
-    · rw [hEq, hzero]
-    · have hltγ := hmono h4 hnode hlt
-      rw [hzero] at hltγ
-      exact hltγ.le
-  exact not_lt_of_ge hγ4 gammaSEqual_four_pos
+  dsimp [branchNode]
+  nlinarith [pi_gt_three]
 
 /-! ### The weight that keeps the balance increasing -/
 
@@ -1014,18 +987,20 @@ lemma shellPair_lt_two {x : ℝ} (hx : π / 4 < x) (hy : sqrt 2 * x < π) :
 
 lemma hasDerivAt_squareBalance (x : ℝ) :
     HasDerivAt squareBalance
-      (2 * sqrt 2 * (2 * cosh x * sin x - cosh (sqrt 2 * x) * sin (sqrt 2 * x))) x := by
-  have hγ : HasDerivAt gammaSEqual (-2 * cosh x * sin x) x := hasDerivAt_gammaSEqual x
+      (2 * sqrt 2 *
+        ((sinh x * cos x - cosh x * sin x) -
+          (sinh (sqrt 2 * x) * cos (sqrt 2 * x) - cosh (sqrt 2 * x) * sin (sqrt 2 * x)))) x := by
+  have hγ : HasDerivAt gammaSEqual (sinh x * cos x - cosh x * sin x) x :=
+    hasDerivAt_gammaSEqual x
   have hmul : HasDerivAt (fun t => sqrt 2 * t) (sqrt 2) x := by
     simpa using (hasDerivAt_id x).const_mul (sqrt 2)
-  have hcomp : HasDerivAt (fun t => gammaSEqual (sqrt 2 * t))
-      ((-2 * cosh (sqrt 2 * x) * sin (sqrt 2 * x)) * sqrt 2) x :=
+  set g := fun t => sinh t * cos t - cosh t * sin t
+  have hcomp : HasDerivAt (fun t => gammaSEqual (sqrt 2 * t)) (g (sqrt 2 * x) * sqrt 2) x :=
     (hasDerivAt_gammaSEqual (sqrt 2 * x)).comp x hmul
   have hsub := hcomp.sub (hγ.const_mul (2 * sqrt 2))
-  have hderiv :
-      (-2 * cosh (sqrt 2 * x) * sin (sqrt 2 * x)) * sqrt 2 -
-        2 * sqrt 2 * (-2 * cosh x * sin x) =
-      2 * sqrt 2 * (2 * cosh x * sin x - cosh (sqrt 2 * x) * sin (sqrt 2 * x)) := by
+  have hderiv : g (sqrt 2 * x) * sqrt 2 - 2 * sqrt 2 * g x =
+      2 * sqrt 2 * (g x - g (sqrt 2 * x)) := by
+    dsimp [g]
     ring
   have hfun : (squareBalance : ℝ → ℝ) =
       fun t => gammaSEqual (sqrt 2 * t) - 2 * sqrt 2 * gammaSEqual t := by
@@ -1170,7 +1145,7 @@ theorem squareBalance_three_halves_neg : squareBalance (3 / 2) < 0 := by
     linarith [pi_gt_three]
   have h70π : (70 / 33 : ℝ) < π := by linarith [pi_gt_three]
   have hdec : gammaSEqual (sqrt 2 * (3 / 2)) < gammaSEqual (70 / 33) :=
-    strictAntiOn_gammaSEqual_even 0 (mem_gamma_Icc (by norm_num) h70π.le)
+    (strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc (by norm_num) h70π.le)
       (mem_gamma_Icc (by positivity) hyπ.le) hy
   have hbounds := gamma_three_halves_bounds
   have hhi := gamma_seventy_thirtythree_upper
@@ -1269,7 +1244,7 @@ theorem squareBalance_eight_fifths_pos : 0 < squareBalance (8 / 5) := by
     linarith [pi_gt_three]
   have hUπ : (396 / 175 : ℝ) < π := by linarith [pi_gt_three]
   have hdec : gammaSEqual (396 / 175) < gammaSEqual (sqrt 2 * (8 / 5)) :=
-    strictAntiOn_gammaSEqual_even 0 (mem_gamma_Icc hy0.le hyπ.le)
+    (strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc hy0.le hyπ.le)
       (mem_gamma_Icc (by norm_num) hUπ.le) hy
   have hhi := gamma_eight_fifths_upper
   have hlo := gamma_side_upper_lower
@@ -1476,7 +1451,7 @@ private lemma gamma_quot_strictAnti {a b : ℝ}
     gammaSEqual b / b ^ 3 < gammaSEqual a / a ^ 3 := by
   have hγa : 0 < gammaSEqual a := gammaSEqual_pos_left_of_first_node ha
   have hγlt : gammaSEqual b < gammaSEqual a :=
-    strictAntiOn_gammaSEqual_even 0 (evenInterval_of_lt_firstNode ha)
+    (strictAntiOn_gammaSEqual_even 0) (evenInterval_of_lt_firstNode ha)
       (evenInterval_of_lt_firstNode hb) hab
   have hpow : a ^ 3 < b ^ 3 := pow_lt_pow_left₀ hab ha.1.le (by decide : 3 ≠ 0)
   have ha3 : 0 < a ^ 3 := pow_pos ha.1 3

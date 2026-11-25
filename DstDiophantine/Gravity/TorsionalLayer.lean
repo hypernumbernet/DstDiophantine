@@ -82,6 +82,39 @@ theorem gammaSEqual_eq_zero_iff_cos {x : ℝ} (hx : 0 < x) :
     gammaSEqual x = 0 ↔ cos x = 0 :=
   gammaSEqual_eq_zero_iff x
 
+theorem resonanceRoot1_le_pi_div_two : resonanceRoot1 ≤ π / 2 := by
+  rw [resonanceRoot1_eq_pi_div_two]
+
+theorem deriv_gammaSEqual_eq_zero_iff (x : ℝ) :
+    deriv gammaSEqual x = 0 ↔ sinh x * cos x = cosh x * sin x := by
+  simp [deriv_gammaSEqual, sub_eq_zero]
+
+private theorem tanh_lt_tan_of_mem_Ioo_quarter_half {x : ℝ} (hx : π / 4 < x) (hlt : x < π / 2) :
+    tanh x < tan x := by
+  have hx0 : 0 < x := lt_trans (by linarith [pi_pos]) hx
+  have htan : 1 < tan x := by
+    have hmem₁ : x ∈ Ioo (-(π / 2)) (π / 2) := ⟨by linarith [pi_pos], hlt⟩
+    have hmem₂ : (π / 4) ∈ Ioo (-(π / 2)) (π / 2) :=
+      ⟨by linarith [pi_pos], by linarith [pi_pos]⟩
+    have hstep := strictMonoOn_tan hmem₂ hmem₁ hx
+    rwa [tan_pi_div_four] at hstep
+  have htanh : tanh x < 1 := tanh_lt_one x
+  linarith
+
+theorem deriv_gammaSEqual_ne_zero_of_mem_Ioo_quarter_half {x : ℝ}
+    (hx : π / 4 < x) (hlt : x < π / 2) : deriv gammaSEqual x ≠ 0 := by
+  intro h
+  have hc : cos x ≠ 0 := (cos_pos_of_mem_Ioo ⟨by linarith [pi_pos], hlt⟩).ne'
+  have hmul : sinh x * cos x = cosh x * sin x := (deriv_gammaSEqual_eq_zero_iff x).1 h
+  have htan : tan x = tanh x := by
+    rw [tan_eq_sin_div_cos, tanh_eq_sinh_div_cosh]
+    field_simp [hc, (cosh_pos x).ne']
+    linarith [hmul.symm]
+  exact (tanh_lt_tan_of_mem_Ioo_quarter_half hx hlt).ne' htan
+
+alias gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi :=
+  deriv_gammaSEqual_ne_zero_of_mem_Ioo_quarter_half
+
 /-! ### Legacy mixed-chart derivative -/
 
 theorem hasDerivAt_gammaSEqualLegacy (x : ℝ) :
@@ -832,6 +865,10 @@ theorem tan_eq_of_gammaSEqualLegacy_eq_zero {x : ℝ} (hx : 0 < x)
     unfold gammaSEqualLegacy at h; linarith
   rw [tan_eq_sin_div_cos, div_eq_div_iff hc hs.ne', mul_comm (sin x) (sinh x)]
   exact hbal.symm
+
+theorem tan_eq_of_gammaSEqual_eq_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqualLegacy x = 0) :
+    tan x = cosh x / sinh x :=
+  tan_eq_of_gammaSEqualLegacy_eq_zero hx h
 
 theorem one_lt_tan_of_gammaSEqualLegacy_eq_zero {x : ℝ} (hx : 0 < x)
     (h : gammaSEqualLegacy x = 0) : 1 < tan x := by
