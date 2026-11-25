@@ -45,10 +45,6 @@ noncomputable def cosLo (b : ℝ) : ℝ := 1 - b ^ 2 / 2 - b ^ 4 * (5 / 96)
 
 noncomputable def cosHi (a b : ℝ) : ℝ := 1 - a ^ 2 / 2 + b ^ 4 * (5 / 96)
 
-private lemma cosLo_pos {b : ℝ} (hb0 : 0 ≤ b) (hb : b ≤ 1) : 0 < cosLo b := by
-  dsimp [cosLo]
-  nlinarith [hb0, hb, sq_nonneg b, sq_nonneg (b ^ 4)]
-
 noncomputable def gammaLower (E1 dLo sLo : ℝ) : ℝ :=
   E1 / 2 * dLo + sLo / (2 * E1)
 
@@ -395,13 +391,13 @@ private lemma gamma_cos_cert_bounds_nonpos {x E0 E1 cLo cHi : ℝ}
 
 lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hζa : a ≤ ζ) (hζb : ζ ≤ b)
+    (hcosb : 0 < cosLo b)
     (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1) :
     gammaCosLower E1 E0 (-cosHi a b) ≤ gammaSEqual x ∧
       gammaSEqual x ≤ gammaCosUpper E0 E1 (-cosLo b) := by
   have hcosζ := cos_mem_bounds ha hb hζa hζb
-  have hb0 : 0 ≤ b := le_trans ha (le_trans hζa hζb)
   have hcosx : cos x = -cos ζ := by rw [hx, cos_pi_sub]
-  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr hcosb
   have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
   have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosζ.1]
   have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
@@ -410,13 +406,13 @@ lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
 
 lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hηa : a ≤ η) (hηb : η ≤ b)
+    (hcosb : 0 < cosLo b)
     (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1) :
     gammaCosLower E1 E0 (-cosHi a b) ≤ gammaSEqual x ∧
       gammaSEqual x ≤ gammaCosUpper E0 E1 (-cosLo b) := by
   have hcosη := cos_mem_bounds ha hb hηa hηb
-  have hb0 : 0 ≤ b := le_trans ha (le_trans hηa hηb)
   have hcosx : cos x = -cos η := by rw [hx, add_comm, cos_add_pi]
-  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr (cosLo_pos hb0 hb)
+  have hcHi : (-cosLo b) ≤ 0 := neg_nonpos.mpr hcosb
   have hClo : (-cosHi a b) ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
   have hChi : cos x ≤ (-cosLo b) := by rw [hcosx]; linarith [hcosη.1]
   have h := gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
@@ -1543,6 +1539,7 @@ private lemma gamma_thirteen_fifths_lower :
   have hx : 13 / 5 = π - ζ := by simp [ζ]
   exact (gamma_pi_sub_before (x := 13 / 5) (ζ := ζ) (a := 474926 / 1000000) (b := 541593 / 1000000)
     (E0 := 13450 / 1000) (E1 := 13480 / 1000) hx (by norm_num) (by norm_num)
+    (by dsimp [cosLo]; norm_num)
     (by dsimp [ζ]; linarith [pi_gt_d6]) (by dsimp [ζ]; linarith [pi_lt_d6])
     (by positivity) exp_thirteen_fifths_bounds.1.le exp_thirteen_fifths_bounds.2.le).1
 
@@ -1553,6 +1550,7 @@ private lemma gamma_thirteen_fifths_upper :
   have hx : 13 / 5 = π - ζ := by simp [ζ]
   exact (gamma_pi_sub_before (x := 13 / 5) (ζ := ζ) (a := 474926 / 1000000) (b := 541593 / 1000000)
     (E0 := 13450 / 1000) (E1 := 13480 / 1000) hx (by norm_num) (by norm_num)
+    (by dsimp [cosLo]; norm_num)
     (by dsimp [ζ]; linarith [pi_gt_d6]) (by dsimp [ζ]; linarith [pi_lt_d6])
     (by positivity) exp_thirteen_fifths_bounds.1.le exp_thirteen_fifths_bounds.2.le).2
 
@@ -1567,7 +1565,7 @@ private lemma gamma_sqrt2_thirteen_fifths_upper :
     dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6]
   exact (gamma_pi_add_after (x := sqrt 2 * (13 / 5)) (η := η) (a := 535362 / 1000000)
     (b := 535363 / 1000000) (E0 := 3940 / 100) (E1 := 3965 / 100) hx (by norm_num) (by norm_num)
-    hηa hηb (by positivity) exp_sqrt2_thirteen_fifths_bounds.1.le
+    (by dsimp [cosLo]; norm_num) hηa hηb (by positivity) exp_sqrt2_thirteen_fifths_bounds.1.le
     exp_sqrt2_thirteen_fifths_bounds.2.le).2
 
 private lemma gamma_eight_thirds_lower :
@@ -1577,6 +1575,7 @@ private lemma gamma_eight_thirds_lower :
   have hx : 8 / 3 = π - ζ := by simp [ζ]
   exact (gamma_pi_sub_before (x := 8 / 3) (ζ := ζ) (a := 474925 / 1000000) (b := 474927 / 1000000)
     (E0 := 14380 / 1000) (E1 := 14410 / 1000) hx (by norm_num) (by norm_num)
+    (by dsimp [cosLo]; norm_num)
     (by dsimp [ζ]; linarith [pi_gt_d6]) (by dsimp [ζ]; linarith [pi_lt_d6])
     (by positivity) exp_eight_thirds_bounds.1.le exp_eight_thirds_bounds.2.le).1
 
@@ -1587,6 +1586,7 @@ private lemma gamma_eight_thirds_upper :
   have hx : 8 / 3 = π - ζ := by simp [ζ]
   exact (gamma_pi_sub_before (x := 8 / 3) (ζ := ζ) (a := 474925 / 1000000) (b := 474927 / 1000000)
     (E0 := 14380 / 1000) (E1 := 14410 / 1000) hx (by norm_num) (by norm_num)
+    (by dsimp [cosLo]; norm_num)
     (by dsimp [ζ]; linarith [pi_gt_d6]) (by dsimp [ζ]; linarith [pi_lt_d6])
     (by positivity) exp_eight_thirds_bounds.1.le exp_eight_thirds_bounds.2.le).2
 
@@ -1601,7 +1601,7 @@ private lemma gamma_sqrt2_eight_thirds_lower :
     dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6]
   exact (gamma_pi_add_after (x := sqrt 2 * (8 / 3)) (η := η) (a := 629843 / 1000000)
     (b := 629844 / 1000000) (E0 := 4330 / 100) (E1 := 4360 / 100) hx (by norm_num) (by norm_num)
-    hηa hηb (by positivity) exp_sqrt2_eight_thirds_bounds.1.le
+    (by dsimp [cosLo]; norm_num) hηa hηb (by positivity) exp_sqrt2_eight_thirds_bounds.1.le
     exp_sqrt2_eight_thirds_bounds.2.le).1
 
 /-- Lower-chart endpoint: `squareBalance (13/5) < 0` (named `*_pos` per mismatch-angle chart). -/
