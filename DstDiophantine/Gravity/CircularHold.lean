@@ -377,16 +377,11 @@ noncomputable def transversePureDual : TorsionParams where
     | 1 => Real.pi / 4
     | _ => 0
 
-theorem transversePureDual_admissible_legacy :
-    IsAdmissibleContinuousLegacy transversePureDual := by
-  intro a
-  fin_cases a <;> simp only [transversePureDual, le_rfl] <;>
-    refine ⟨trivial, trivial, ?_⟩
-  all_goals linarith [Real.pi_pos]
-
 theorem transversePureDual_admissible :
-    IsAdmissibleContinuous transversePureDual :=
-  legacy_admissible_implies_mismatch _ transversePureDual_admissible_legacy
+    IsAdmissibleContinuous transversePureDual := by
+  intro a
+  fin_cases a <;> simp only [transversePureDual] <;>
+    repeat constructor <;> linarith [Real.pi_pos]
 
 theorem circAmp_transverse_extremal :
     circAmp 1 (Real.pi / 4) 1 = Real.pi / 4 := by
