@@ -42,7 +42,9 @@ noncomputable def forceCrit (x : ℝ) : ℝ :=
   gammaSEqual x + x * cosh x * sin x
 
 theorem hasDerivAt_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
-    HasDerivAt pairAttraction (8 * x * forceCrit x / gammaSEqual x ^ 2) x := by
+    HasDerivAt pairAttraction
+      ((8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x)) /
+        gammaSEqual x ^ 2) x := by
   unfold pairAttraction
   have hsq : HasDerivAt (fun y : ℝ => y ^ 2) (2 * x) x := by
     simpa [pow_one] using hasDerivAt_pow 2 x
@@ -52,11 +54,13 @@ theorem hasDerivAt_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
     rwa [heq] at h
   have hdiv := hnum.fun_div (hasDerivAt_gammaSEqual x) hγ
   refine hdiv.congr_deriv ?_
-  unfold forceCrit
+  unfold forceCrit gammaSEqual
   ring
 
 theorem deriv_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
-    deriv pairAttraction x = 8 * x * forceCrit x / gammaSEqual x ^ 2 :=
+    deriv pairAttraction x =
+      (8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x)) /
+        gammaSEqual x ^ 2 :=
   (hasDerivAt_pairAttraction hγ).deriv
 
 private lemma sinhCos_add_coshSin_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
@@ -65,6 +69,12 @@ private lemma sinhCos_add_coshSin_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanc
   have hcos : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [hx.1], hxπ⟩
   have hsin : 0 < sin x := sin_pos_of_pos_of_lt_pi hx.1 (by linarith [hxπ, pi_pos])
   nlinarith [cosh_pos x, sinh_pos_iff.mpr hx.1, hcos, hsin]
+
+private lemma pairAttraction_deriv_num_eq_sub (x : ℝ) :
+    8 * x * gammaSEqual x - 4 * x ^ 2 * (sinh x * cos x - cosh x * sin x) =
+      8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x) := by
+  unfold forceCrit gammaSEqual
+  ring
 
 private theorem continuousOn_pairAttraction {s : Set ℝ}
     (hs : ∀ x ∈ s, gammaSEqual x ≠ 0) : ContinuousOn pairAttraction s := by
@@ -588,9 +598,14 @@ theorem pairAttraction_strictMono_outer :
   intro x hx
   rw [interior_Ioo] at hx
   have hγ : gammaSEqual x ≠ 0 := (gammaSEqual_pos_left_of_first_node hx).ne'
-  rw [deriv_pairAttraction hγ]
-  exact div_pos (mul_pos (mul_pos (by norm_num) hx.1) (forceCrit_pos_outer hx))
-    (sq_pos_of_ne_zero hγ)
+  rw [deriv_pairAttraction hγ, ← pairAttraction_deriv_num_eq_sub]
+  have hmem : x ∈ Ioo (0 : ℝ) (π / 2) :=
+    ⟨hx.1, by linarith [hx.2, resonanceRoot1_eq_pi_div_two]⟩
+  have hdiff : sinh x * cos x - cosh x * sin x < 0 :=
+    sub_neg.mpr (sinh_mul_cos_lt_cosh_mul_sin hmem)
+  have hnum : 0 < 8 * x * gammaSEqual x - 4 * x ^ 2 * (sinh x * cos x - cosh x * sin x) := by
+    nlinarith [gammaSEqual_pos_left_of_first_node hx, hx.1, hdiff, sq_nonneg x]
+  exact div_pos hnum (sq_pos_of_ne_zero hγ)
 
 private lemma critP_five_halves_neg : critP (5 / 2) < 0 := by
   have hε := eps_window
@@ -697,18 +712,87 @@ private lemma continuous_forceCrit : Continuous forceCrit := by
   unfold forceCrit
   exact continuous_gammaSEqual.add ((continuous_id.mul continuous_cosh).mul continuous_sin)
 
+private theorem hasDerivAt_sinhSin_add_coshCos (x : ℝ) :
+    HasDerivAt (fun t : ℝ => sinh t * sin t + cosh t * cos t) (2 * sinh x * cos x) x := by
+  have h1 := (Real.hasDerivAt_sinh x).mul (Real.hasDerivAt_sin x)
+  have h2 := (Real.hasDerivAt_cosh x).mul (Real.hasDerivAt_cos x)
+  have h := h1.add h2
+  refine h.congr_deriv ?_
+  ring
+
+private lemma sinh_sin_add_cosh_cos_strictAnti :
+    StrictAntiOn (fun x : ℝ => sinh x * sin x + cosh x * cos x) (Icc (5 / 2) π) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _) ?_ ?_
+  · exact ((continuous_sinh.mul continuous_sin).add (continuous_cosh.mul continuous_cos)).continuousOn
+  · intro x hx
+    rw [interior_Icc] at hx
+    have hcos : cos x < 0 :=
+      cos_neg_of_pi_div_two_lt_of_lt (by linarith [hx.1, pi_div_two_lt_five_halves])
+        (by linarith [hx.2, pi_pos])
+    rw [(hasDerivAt_sinhSin_add_coshCos x).deriv]
+    exact mul_neg_of_pos_of_neg (mul_pos (by norm_num) (sinh_pos_iff.mpr (by linarith [hx.1]))) hcos
+
+private lemma sinh_sin_add_cosh_cos_five_halves_neg :
+    sinh (5 / 2) * sin (5 / 2) + cosh (5 / 2) * cos (5 / 2) < 0 := by
+  have hε := eps_window
+  set ε : ℝ := 5 / 2 - π / 2
+  have ha1 : (9292035 / 10000000 : ℝ) ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
+  have hb1 : (929204 / 1000000 : ℝ) ≤ 1 := by norm_num
+  have hεI : ε ∈ Icc (0 : ℝ) 1 := ⟨by linarith [hε.1], by linarith [hε.2, hb1]⟩
+  have hsin : polySin3 (9292035 / 10000000) ≤ sin ε :=
+    le_trans (mono_polySin3 ha1 hεI (le_of_lt hε.1)) (sin_lower_cubic hεI.1)
+  have hcos : cos ε ≤ polyCos4 (9292035 / 10000000) :=
+    le_trans (cos_upper_quartic hεI.1) (anti_polyCos4 ha1 hεI (le_of_lt hε.1))
+  have hform :
+      sinh (5 / 2) * sin (5 / 2) + cosh (5 / 2) * cos (5 / 2) =
+        sinh (5 / 2) * cos ε - cosh (5 / 2) * sin ε := by
+    rw [sin_five_halves, cos_five_halves]
+    ring
+  have hbound :
+      sinh (5 / 2) * cos ε - cosh (5 / 2) * sin ε ≤
+        sinh (5 / 2) * polyCos4 (9292035 / 10000000) -
+          cosh (5 / 2) * polySin3 (9292035 / 10000000) := by
+    have hs := sinh_pos_iff.mpr (by norm_num : (0 : ℝ) < 5 / 2)
+    have h1 : sinh (5 / 2) * cos ε ≤ sinh (5 / 2) * polyCos4 (9292035 / 10000000) :=
+      mul_le_mul_of_nonneg_left hcos hs.le
+    have hc := cosh_pos (5 / 2)
+    have h2 : -cosh (5 / 2) * sin ε ≤ -cosh (5 / 2) * polySin3 (9292035 / 10000000) := by
+      simpa [mul_neg, neg_le_neg_iff] using mul_le_mul_of_nonneg_left hsin hc.le
+    linarith [h1, h2]
+  have hnum : sinh (5 / 2) * polyCos4 (9292035 / 10000000) -
+      cosh (5 / 2) * polySin3 (9292035 / 10000000) < 0 := by
+    unfold polySin3 polyCos4
+    rw [sinh_eq, cosh_eq]
+    nlinarith [exp_one_gt_d9, exp_half_bounds.1, exp_pos 1, exp_pos (5 / 2), exp_pos (-(5 / 2))]
+  rw [hform]
+  linarith [hbound, hnum]
+
+private lemma sinh_sin_add_cosh_cos_neg_quiet {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) :
+    sinh x * sin x + cosh x * cos x < 0 := by
+  have hxIcc : x ∈ Icc (5 / 2) π := ⟨le_of_lt hx.1, le_of_lt hx.2⟩
+  have hleft : (5 / 2 : ℝ) ∈ Icc (5 / 2) π := ⟨le_rfl, five_halves_lt_pi.le⟩
+  have hdec := sinh_sin_add_cosh_cos_strictAnti hleft hxIcc hx.1
+  exact lt_trans hdec sinh_sin_add_cosh_cos_five_halves_neg
+
+private lemma forceCrit_deriv_neg {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) :
+    deriv forceCrit x < 0 := by
+  rw [(hasDerivAt_forceCrit x).deriv]
+  have hxπ2 : π / 2 < x := by linarith [hx.1, pi_div_two_lt_five_halves]
+  have hsin : 0 < sin x :=
+    sin_pos_of_pos_of_lt_pi (by linarith [hx.1]) (by linarith [hx.2, pi_pos])
+  have hcos : cos x < 0 :=
+    cos_neg_of_pi_div_two_lt_of_lt hxπ2 (by linarith [hx.2, pi_pos])
+  have h1 : sinh x * cos x < 0 := mul_neg_of_pos_of_neg (sinh_pos_iff.mpr (by linarith [hx.1])) hcos
+  have hinner := sinh_sin_add_cosh_cos_neg_quiet hx
+  have h2 : x * (sinh x * sin x + cosh x * cos x) < 0 :=
+    mul_neg_of_pos_of_neg (by linarith [hx.1]) hinner
+  linarith [h1, h2]
+
 private lemma forceCrit_strictAnti : StrictAntiOn forceCrit (Icc (5 / 2) π) := by
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _) continuous_forceCrit.continuousOn ?_
   intro x hx
   rw [interior_Icc] at hx
-  rw [(hasDerivAt_forceCrit x).deriv, forceCrit_deriv_factor]
-  have hxπ2 : π / 2 < x := by linarith [hx.1, pi_div_two_lt_five_halves]
-  have hP := critP_neg_of_ge_five_halves ⟨hx.1.le, hx.2.le⟩
-  have hQ := critQ_neg hxπ2 hx.2
-  have hsum : exp (2 * x) * critP x + critQ x < 0 := by
-    have hEP : exp (2 * x) * critP x < 0 := mul_neg_of_pos_of_neg (exp_pos _) hP
-    linarith
-  exact mul_neg_of_pos_of_neg (by positivity) hsum
+  exact forceCrit_deriv_neg ⟨hx.1, hx.2⟩
 
 theorem forceCrit_pi : forceCrit π = -cosh π := by
   unfold forceCrit
@@ -791,19 +875,36 @@ theorem exists_unique_forceQuiet_shell :
 
 /-! ### Magnitude against `3` -/
 
+private lemma tanh_five_halves_gt : (4 / 5 : ℝ) < tanh (5 / 2) := by
+  have hE : (3 : ℝ) < exp (5 / 2) := by
+    have hid : exp (5 / 2) = exp 1 * exp 1 * exp (1 / 2) := by
+      rw [show (5 / 2 : ℝ) = 1 + 1 + 1 / 2 by norm_num, exp_add, exp_add]
+    nlinarith [hid, exp_one_gt_d9, exp_half_bounds.1, exp_pos 1, exp_pos (1 / 2)]
+  have hsq : (9 : ℝ) < exp (5 / 2) ^ 2 := by nlinarith [hE, exp_pos (5 / 2)]
+  have hform : tanh (5 / 2) = (exp (5 / 2) ^ 2 - 1) / (exp (5 / 2) ^ 2 + 1) := by
+    rw [tanh_eq_sinh_div_cosh, sinh_eq, cosh_eq, show exp (-(5 / 2)) = 1 / exp (5 / 2) from by
+      rw [exp_neg, one_div]]
+    field_simp [exp_ne_zero, (exp_pos (5 / 2)).ne']
+  rw [hform]
+  have hpos : 0 < exp (5 / 2) ^ 2 + 1 := by nlinarith [exp_pos (5 / 2)]
+  rw [lt_div_iff₀ hpos]
+  nlinarith [hsq, exp_pos (5 / 2)]
+
+private lemma tanh_gt_two_div_on_quiet {t : ℝ} (ht : (5 / 2 : ℝ) < t) : 2 / t < tanh t := by
+  have hden : (2 / (5 / 2) : ℝ) = 4 / 5 := by norm_num
+  have hlo : 2 / t < 2 / (5 / 2) :=
+    div_lt_div_of_pos_left (by norm_num) (by linarith [ht]) ht
+  have hhi := tanh_strictMono ht
+  linarith [tanh_five_halves_gt, hlo, hden, hhi]
+
 private lemma gamma_five_halves_lt_neg_sixth : gammaSEqual (5 / 2) < -(25 / 6) := by
   have hε := eps_window
   set ε : ℝ := 5 / 2 - π / 2
   have haI : (9292035 / 10000000 : ℝ) ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have hb1 : (929204 / 1000000 : ℝ) ≤ 1 := by norm_num
   have hεI : ε ∈ Icc (0 : ℝ) 1 := ⟨by linarith [hε.1], by linarith [hε.2, hb1]⟩
-  have hsinlo : (8 / 9 : ℝ) < polySin3 (9292035 / 10000000) := by
-    dsimp [polySin3]; norm_num
-  have hsinε : (8 / 9 : ℝ) < sin ε := by
-    have h1 := sin_lower_cubic hεI.1
-    have h2 := mono_polySin3 haI hεI (le_of_lt hε.1)
-    unfold polySin3 at h2
-    linarith [h1, h2, hsinlo]
+  have hsin : polySin3 (9292035 / 10000000) ≤ sin ε :=
+    le_trans (mono_polySin3 haI hεI (le_of_lt hε.1)) (sin_lower_cubic hεI.1)
   have hcosh : (11 / 2 : ℝ) < cosh (5 / 2) := by
     rw [cosh_eq]
     have hE : (12 : ℝ) < exp (5 / 2) := by
@@ -811,13 +912,16 @@ private lemma gamma_five_halves_lt_neg_sixth : gammaSEqual (5 / 2) < -(25 / 6) :
         rw [show (5 / 2 : ℝ) = 1 + 1 + 1 / 2 by norm_num, exp_add, exp_add]
       nlinarith [exp_one_gt_d9, exp_half_bounds.1, exp_pos 1, exp_pos (1 / 2), hid]
     nlinarith [hE, exp_pos (-(5 / 2))]
-  have hmullo : (25 / 6 : ℝ) < (11 / 2) * (8 / 9) := by norm_num
-  have hprod : (25 / 6 : ℝ) < cosh (5 / 2) * sin ε :=
-    lt_trans hmullo (mul_lt_mul hcosh hsinε (by norm_num) (le_of_lt hcosh))
-  have hγz : gammaSEqual (5 / 2) = -(cosh (5 / 2) * sin ε) := by
-    rw [show gammaSEqual (5 / 2) = cosh (5 / 2) * cos (5 / 2) from by unfold gammaSEqual; ring,
-      cos_five_halves, mul_neg]
-  linarith [hprod, hγz]
+  have hγz : gammaSEqual (5 / 2) = cosh (5 / 2) * cos (5 / 2) := by
+    unfold gammaSEqual; ring
+  have hcosx : cos (5 / 2) = -sin ε := cos_five_halves
+  have hpoly : (25 / 6 : ℝ) < (11 / 2) * polySin3 (9292035 / 10000000) := by
+    dsimp [polySin3]; norm_num
+  have hsinpos : 0 < sin ε := by
+    have hlo : 0 < polySin3 (9292035 / 10000000) := by dsimp [polySin3]; linarith [hε.1]
+    linarith [hsin, hlo]
+  rw [hγz, hcosx]
+  nlinarith [hcosh, hsin, hpoly, hsinpos]
 
 private lemma gamma_five_halves_neg : gammaSEqual (5 / 2) < 0 :=
   lt_trans gamma_five_halves_lt_neg_sixth (by norm_num)
@@ -866,8 +970,31 @@ theorem forceQuiet_magnitude {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) (h0 : forceCr
         linarith [h0]
       have ht0 : 0 < t := by linarith [ht.1]
       have htπ : t < π := lt_trans ht.2 hx.2
-      exact div_pos (mul_pos (mul_pos (by norm_num) ht0) hcrit)
-        (sq_pos_of_ne_zero (gamma_neg_on_quiet ht.1.le htπ).ne)
+      have hγneg := gamma_neg_on_quiet ht.1.le htπ
+      have hsin := sin_pos_of_pos_of_lt_pi ht0 (by linarith [htπ, pi_pos])
+      have hcos : cos t < 0 :=
+        cos_neg_of_pi_div_two_lt_of_lt (by linarith [ht.1, pi_div_two_lt_five_halves])
+          (by linarith [htπ, pi_pos])
+      have hnum' :
+          0 < 8 * t * forceCrit t - 4 * t ^ 2 * (sinh t * cos t + cosh t * sin t) := by
+        have hform := pairAttraction_deriv_num_eq_sub t
+        have hkey : 4 * t ^ 2 * (sinh t * cos t + cosh t * sin t) < 8 * t * forceCrit t := by
+          rw [forceCrit_expand t]
+          have htan := tanh_gt_two_div_on_quiet ht.1
+          have htan' : 2 / t < sinh t / cosh t := by simpa [tanh_eq_sinh_div_cosh] using htan
+          have hsinhc : 2 * cosh t < t * sinh t := by
+            have hpos : 0 < t * cosh t := mul_pos ht0 (cosh_pos t)
+            field_simp [ht0.ne', (cosh_pos t).ne'] at htan'
+            nlinarith [htan', hpos]
+          have hneg : t * sinh t * cos t - 2 * cosh t * cos t < 0 := by
+            have hcosneg : cosh t * cos t < 0 := mul_neg_of_pos_of_neg (cosh_pos t) hcos
+            nlinarith [hcosneg, hsinhc]
+          nlinarith [ht0, hcrit, hsin, cosh_pos t, sinh_pos_iff.mpr ht0, hneg]
+        have hleft : 0 < 8 * t * forceCrit t -
+            4 * t ^ 2 * (sinh t * cos t + cosh t * sin t) :=
+          sub_pos.mpr hkey
+        linarith [hform, hleft]
+      exact div_pos hnum' (sq_pos_of_ne_zero hγ)
   have hgt : pairAttraction (5 / 2) < pairAttraction x :=
     hmono ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
   have hneg : pairAttraction x < 0 := by
