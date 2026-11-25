@@ -901,7 +901,7 @@ example : Real.pi / 4 < abcLogGap 1 80 81 ∧ abcHeight 1 80 81 < 1 :=
   ⟨pi_div_four_lt_abcLogGap_one_eighty, abcHeight_lt_one_one_eighty⟩
 
 example : 1 < abcHeight 3 125 128 ∧
-    ¬ IsAdmissibleContinuous (abcMismatchParams 3 125 128) :=
+    ¬ IsAdmissibleContinuousLegacy (abcMismatchParams 3 125 128) :=
   ⟨one_lt_abcHeight_three_one_two_five, not_admissible_abc_three_one_two_five⟩
 
 example :

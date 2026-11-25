@@ -268,8 +268,12 @@ theorem strictAntiOn_gammaSSigned (n : ℕ) :
   have ht0 : 0 < x - (n : ℝ) * π := by linarith [hx.1]
   have htπ : x - (n : ℝ) * π < π := by linarith [hx.2]
   have hsinh := sinh_cos_sub_lt ht0 htπ
-  simp [deriv_gammaSSigned, deriv_gammaSEqual]
-  nlinarith [hs, hc, hsinh]
+  suffices hderiv : deriv (gammaSSigned n) x < 0 by exact hderiv
+  rcases Nat.even_or_odd n with ⟨k, rfl⟩ | ⟨k, rfl⟩
+  · simp [deriv_gammaSSigned, deriv_gammaSEqual, Nat.even_mul, pow_mul]
+    nlinarith [hs, hc, hsinh]
+  · simp [deriv_gammaSSigned, deriv_gammaSEqual, pow_succ, pow_mul, pow_one]
+    nlinarith [hs, hc, hsinh]
 
 theorem strictAntiOn_gammaSSignedLegacy (n : ℕ) :
     StrictAntiOn (gammaSSignedLegacy n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
