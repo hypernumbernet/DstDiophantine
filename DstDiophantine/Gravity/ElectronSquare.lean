@@ -385,17 +385,9 @@ private lemma gamma_cos_cert_bounds_nonpos {x E0 E1 cLo cHi : ℝ}
       rw [this]
       exact div_le_div_of_nonneg_right hinv0 (by norm_num : (0 : ℝ) ≤ 2)
     linarith
-  constructor
-  · calc
-      (E1 / 2 + 1 / (2 * E0)) * cLo ≤ (exp x / 2 + exp (-x) / 2) * cLo :=
-        mul_le_mul_of_nonneg_left hcoefHi (le_trans hClo hcHi)
-      _ ≤ (exp x / 2 + exp (-x) / 2) * cos x :=
-        mul_le_mul_of_nonpos_left hClo (by positivity)
-  · calc
-      (exp x / 2 + exp (-x) / 2) * cos x ≤ (exp x / 2 + exp (-x) / 2) * cHi :=
-        mul_le_mul_of_nonpos_left hChi (by positivity)
-      _ ≤ (E0 / 2 + 1 / (2 * E1)) * cHi :=
-        mul_le_mul_of_nonneg_right hcoefLo hcHi
+  have hclneg : cLo ≤ 0 := le_trans (le_trans hClo hChi) hcHi
+  have hcoefpos : 0 ≤ exp x / 2 + exp (-x) / 2 := by positivity
+  constructor <;> nlinarith [hcoefHi, hcoefLo, hClo, hChi, hcHi, hclneg, hcoefpos]
 
 lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hζa : a ≤ ζ) (hζb : ζ ≤ b)
@@ -403,16 +395,18 @@ lemma gamma_pi_sub_before {x ζ a b E0 E1 : ℝ} (hx : x = π - ζ)
     gammaCosLower E1 E0 (-cosHi a b) ≤ gammaSEqual x ∧
       gammaSEqual x ≤ gammaCosUpper E0 E1 (-cosLo b) := by
   have hcosζ := cos_mem_bounds ha hb hζa hζb
-  have hb0 : 0 ≤ b := le_trans ha hζb
+  have hb0 : 0 ≤ b := le_trans ha (le_trans hζa hζb)
   have hcosx : cos x = -cos ζ := by rw [hx, cos_pi_sub]
   have hcHi : (-cosLo b) ≤ 0 := by
-    dsimp [cosLo]
-    nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 3), sq_nonneg (b ^ 4)]
+    have hcospos : 0 < cosLo b := by
+      dsimp [cosLo]
+      nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 4)]
+    linarith
   have hClo : -cosHi a b ≤ cos x := by rw [hcosx]; linarith [hcosζ.2]
   have hChi : cos x ≤ -cosLo b := by rw [hcosx]; linarith [hcosζ.1]
   obtain ⟨hlo, hhi⟩ :=
     gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
-  dsimp only [gammaCosLower, gammaCosUpper]
+  dsimp only [gammaCosLower, gammaCosUpper] at hlo hhi ⊢
   exact ⟨hlo, hhi⟩
 
 lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
@@ -421,16 +415,18 @@ lemma gamma_pi_add_after {x η a b E0 E1 : ℝ} (hx : x = π + η)
     gammaCosLower E1 E0 (-cosHi a b) ≤ gammaSEqual x ∧
       gammaSEqual x ≤ gammaCosUpper E0 E1 (-cosLo b) := by
   have hcosη := cos_mem_bounds ha hb hηa hηb
-  have hb0 : 0 ≤ b := le_trans ha hηb
+  have hb0 : 0 ≤ b := le_trans ha (le_trans hηa hηb)
   have hcosx : cos x = -cos η := by rw [hx, cos_add_pi]
   have hcHi : (-cosLo b) ≤ 0 := by
-    dsimp [cosLo]
-    nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 3), sq_nonneg (b ^ 4)]
+    have hcospos : 0 < cosLo b := by
+      dsimp [cosLo]
+      nlinarith [hb0, sq_nonneg b, sq_nonneg (b ^ 4)]
+    linarith
   have hClo : -cosHi a b ≤ cos x := by rw [hcosx]; linarith [hcosη.2]
   have hChi : cos x ≤ -cosLo b := by rw [hcosx]; linarith [hcosη.1]
   obtain ⟨hlo, hhi⟩ :=
     gamma_cos_cert_bounds_nonpos x E0 E1 (-cosHi a b) (-cosLo b) hE0 hE hE1 hClo hChi hcHi
-  dsimp only [gammaCosLower, gammaCosUpper]
+  dsimp only [gammaCosLower, gammaCosUpper] at hlo hhi ⊢
   exact ⟨hlo, hhi⟩
 
 
@@ -1470,22 +1466,22 @@ private lemma exp_two_sq_bounds :
   constructor <;> nlinarith [exp_one_gt_d9, exp_one_lt_d9, exp_pos 1]
 
 private lemma exp_two_thirds_bounds :
-    (1943 / 1000 : ℝ) < exp (2 / 3) ∧ exp (2 / 3) < (1944 / 1000 : ℝ) := by
+    (1940 / 1000 : ℝ) < exp (2 / 3) ∧ exp (2 / 3) < (1950 / 1000 : ℝ) := by
   refine exp_between (x := 2 / 3) (n := 10) (by norm_num) (by norm_num) (by decide) ?_ ?_
   · norm_num [sum_range_succ, Nat.factorial]
   · norm_num [sum_range_succ, Nat.factorial]
 
 private lemma exp_side_tail_sixtyseven_bounds :
-    (1968 / 1000 : ℝ) < exp (676955 / 1000000) ∧
-      exp (676955 / 1000000) < (1969 / 1000 : ℝ) := by
+    (1965 / 1000 : ℝ) < exp (676955 / 1000000) ∧
+      exp (676955 / 1000000) < (1970 / 1000 : ℝ) := by
   refine exp_between (x := 676955 / 1000000) (n := 10) (by norm_num) (by norm_num) (by decide)
     ?_ ?_
   · norm_num [sum_range_succ, Nat.factorial]
   · norm_num [sum_range_succ, Nat.factorial]
 
 private lemma exp_side_tail_seventyseven_bounds :
-    (2167 / 1000 : ℝ) < exp (771236 / 1000000) ∧
-      exp (771236 / 1000000) < (2168 / 1000 : ℝ) := by
+    (2165 / 1000 : ℝ) < exp (771236 / 1000000) ∧
+      exp (771236 / 1000000) < (2170 / 1000 : ℝ) := by
   refine exp_between (x := 771236 / 1000000) (n := 10) (by norm_num) (by norm_num) (by decide)
     ?_ ?_
   · norm_num [sum_range_succ, Nat.factorial]
@@ -1503,27 +1499,48 @@ private lemma exp_eight_thirds_bounds :
     rw [show (8 / 3 : ℝ) = 1 + 1 + 2 / 3 by norm_num, exp_add, exp_add]
   constructor <;> rw [hid] <;> nlinarith [exp_two_sq_bounds, exp_two_thirds_bounds, exp_pos 1]
 
-private lemma sqrt2_mul_thirteen_fifths_eq : sqrt 2 * (13 / 5) = 3 + 676955 / 1000000 := by
-  nlinarith [sqrt_two_bounds.1, sqrt_two_bounds.2]
+private lemma sqrt2_thirteen_tail_bounds :
+    (676955 / 1000000 : ℝ) < sqrt 2 * (13 / 5) - 3 ∧
+      sqrt 2 * (13 / 5) - 3 < (676956 / 1000000 : ℝ) := by
+  constructor <;> nlinarith [sqrt_two_bounds.1, sqrt_two_bounds.2]
 
-private lemma sqrt2_mul_eight_thirds_eq : sqrt 2 * (8 / 3) = 3 + 771236 / 1000000 := by
-  nlinarith [sqrt_two_bounds.1, sqrt_two_bounds.2]
+private lemma sqrt2_eight_thirds_tail_bounds :
+    (771236 / 1000000 : ℝ) < sqrt 2 * (8 / 3) - 3 ∧
+      sqrt 2 * (8 / 3) - 3 < (771237 / 1000000 : ℝ) := by
+  constructor <;> nlinarith [sqrt_two_bounds.1, sqrt_two_bounds.2]
 
 private lemma exp_sqrt2_thirteen_fifths_bounds :
     (3940 / 100 : ℝ) < exp (sqrt 2 * (13 / 5)) ∧
       exp (sqrt 2 * (13 / 5)) < (3965 / 100 : ℝ) := by
-  have hid : exp (sqrt 2 * (13 / 5)) = (exp 1) ^ 3 * exp (676955 / 1000000) := by
-    rw [sqrt2_mul_thirteen_fifths_eq, show (3 : ℝ) = 1 + 1 + 1 by norm_num, exp_add, exp_add]
-  constructor <;> rw [hid] <;> nlinarith [exp_two_sq_bounds, exp_one_gt_d9, exp_one_lt_d9,
-    exp_side_tail_sixtyseven_bounds, exp_pos 1]
+  have htail := sqrt2_thirteen_tail_bounds
+  have hid : exp (sqrt 2 * (13 / 5)) = (exp 1) ^ 3 * exp (sqrt 2 * (13 / 5) - 3) := by
+    have hx : sqrt 2 * (13 / 5) = 3 + (sqrt 2 * (13 / 5) - 3) := by ring
+    rw [hx, show (3 : ℝ) = 1 + 1 + 1 by norm_num, exp_add, exp_add]
+  have hexpLo : (1965 / 1000 : ℝ) < exp (sqrt 2 * (13 / 5) - 3) :=
+    exp_side_tail_sixtyseven_bounds.1.trans (exp_strictMono htail.1)
+  have hexpHi : exp (sqrt 2 * (13 / 5) - 3) < (1970 / 1000 : ℝ) := by
+    have hstep : (676955 / 1000000 : ℝ) < 676956 / 1000000 := by norm_num
+    exact (exp_strictMono htail.2).trans (exp_strictMono hstep)
+      |>.trans exp_side_tail_sixtyseven_bounds.2
+  constructor <;> rw [hid] <;> nlinarith [exp_two_sq_bounds, exp_one_gt_d9, exp_one_lt_d9, hexpLo,
+    hexpHi, exp_pos 1]
 
 private lemma exp_sqrt2_eight_thirds_bounds :
     (4330 / 100 : ℝ) < exp (sqrt 2 * (8 / 3)) ∧
       exp (sqrt 2 * (8 / 3)) < (4360 / 100 : ℝ) := by
-  have hid : exp (sqrt 2 * (8 / 3)) = (exp 1) ^ 3 * exp (771236 / 1000000) := by
-    rw [sqrt2_mul_eight_thirds_eq, show (3 : ℝ) = 1 + 1 + 1 by norm_num, exp_add, exp_add]
-  constructor <;> rw [hid] <;> nlinarith [exp_two_sq_bounds, exp_one_gt_d9, exp_one_lt_d9,
-    exp_side_tail_seventyseven_bounds, exp_pos 1]
+  have htail := sqrt2_eight_thirds_tail_bounds
+  have hid : exp (sqrt 2 * (8 / 3)) = (exp 1) ^ 3 * exp (sqrt 2 * (8 / 3) - 3) := by
+    have hx : sqrt 2 * (8 / 3) = 3 + (sqrt 2 * (8 / 3) - 3) := by ring
+    rw [hx, show (3 : ℝ) = 1 + 1 + 1 by norm_num, exp_add, exp_add]
+  have hexpLo : (2165 / 1000 : ℝ) < exp (sqrt 2 * (8 / 3) - 3) :=
+    exp_side_tail_seventyseven_bounds.1.trans (exp_strictMono htail.1)
+  have hexpHi : exp (sqrt 2 * (8 / 3) - 3) < (2170 / 1000 : ℝ) := by
+    have hstep : (771236 / 1000000 : ℝ) < 771237 / 1000000 := by norm_num
+    exact (exp_strictMono htail.2).trans (exp_strictMono hstep)
+      |>.trans exp_side_tail_seventyseven_bounds.2
+  constructor <;> rw [hid] <;> nlinarith [exp_two_sq_bounds, exp_one_gt_d9, exp_one_lt_d9, hexpLo,
+    hexpHi, exp_pos 1]
+
 
 private lemma gamma_thirteen_fifths_lower :
     gammaCosLower (13480 / 1000) (13450 / 1000)
@@ -1551,9 +1568,9 @@ private lemma gamma_sqrt2_thirteen_fifths_upper :
   set η := sqrt 2 * (13 / 5) - π
   have hx : sqrt 2 * (13 / 5) = π + η := by simp [η]
   have hηa : 535362 / 1000000 ≤ η := by
-    dsimp [η]; nlinarith [sqrt_two_bounds.1, pi_gt_d6, sqrt2_mul_thirteen_fifths_eq]
+    dsimp [η]; nlinarith [sqrt_two_bounds.1, pi_gt_d6]
   have hηb : η ≤ 535363 / 1000000 := by
-    dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6, sqrt2_mul_thirteen_fifths_eq]
+    dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6]
   exact (gamma_pi_add_after (x := sqrt 2 * (13 / 5)) (η := η) (a := 535362 / 1000000)
     (b := 535363 / 1000000) (E0 := 3940 / 100) (E1 := 3965 / 100) hx (by norm_num) (by norm_num)
     hηa hηb (by positivity) exp_sqrt2_thirteen_fifths_bounds.1.le
@@ -1585,9 +1602,9 @@ private lemma gamma_sqrt2_eight_thirds_lower :
   set η := sqrt 2 * (8 / 3) - π
   have hx : sqrt 2 * (8 / 3) = π + η := by simp [η]
   have hηa : 629843 / 1000000 ≤ η := by
-    dsimp [η]; nlinarith [sqrt_two_bounds.1, pi_gt_d6, sqrt2_mul_eight_thirds_eq]
+    dsimp [η]; nlinarith [sqrt_two_bounds.1, pi_gt_d6]
   have hηb : η ≤ 629844 / 1000000 := by
-    dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6, sqrt2_mul_eight_thirds_eq]
+    dsimp [η]; nlinarith [sqrt_two_bounds.2, pi_lt_d6]
   exact (gamma_pi_add_after (x := sqrt 2 * (8 / 3)) (η := η) (a := 629843 / 1000000)
     (b := 629844 / 1000000) (E0 := 4330 / 100) (E1 := 4360 / 100) hx (by norm_num) (by norm_num)
     hηa hηb (by positivity) exp_sqrt2_eight_thirds_bounds.1.le
