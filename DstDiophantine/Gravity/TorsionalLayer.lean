@@ -257,55 +257,6 @@ private theorem sinh_cos_sub_lt {t : ℝ} (ht0 : 0 < t) (htπ : t < π) :
     have hcos := cos_neg_of_pi_div_two_lt_of_lt h (lt_of_lt_of_le htπ (by linarith [pi_pos]))
     nlinarith [cosh_pos t, sinh_pos_iff.mpr ht0, hsin, hcos]
 
-theorem strictAntiOn_gammaSSigned {n : ℕ} (hn : Even n) :
-    StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
-  rcases even_iff_two_dvd.mp hn with ⟨k, rfl⟩
-  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
-    (continuous_gammaSSigned (2 * k)).continuousOn ?_
-  intro x hx
-  simp only [interior_Icc] at hx
-  obtain ⟨hx1, hx2⟩ := hx
-  have hs := signed_sin_pos_on_branch (2 * k) ⟨hx1, hx2⟩
-  have hc := cosh_pos x
-  have ht0 : 0 < x - (2 * k : ℝ) * π := sub_pos.mpr (by simpa using hx1)
-  have htπ : x - (2 * k : ℝ) * π < π := by linarith [hx2]
-  have hsinh := sinh_cos_sub_lt ht0 htπ
-  suffices hderiv : sinh x * cos x - cosh x * sin x < 0 by
-    simpa [deriv_gammaSSigned, deriv_gammaSEqual, pow_mul, Nat.even_mul] using hderiv
-  exact hsinh
-
-private theorem sin_neg_of_signed_sin_pos_branch {n : ℕ} {x : ℝ}
-    (hs : 0 < (-1 : ℝ) ^ n * sin x) (hn : Odd n) : sin x < 0 := by
-  obtain ⟨k, rfl⟩ := hn
-  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by
-    simp [pow_add, pow_mul, neg_one_sq, one_mul]
-  rw [hpow, neg_mul] at hs
-  simpa using hs
-
-private theorem cosh_sin_lt_sinh_cos_of_sin_neg {x : ℝ}
-    (hsin : sin x < 0) (hx0 : 0 < x) :
-    cosh x * sin x < sinh x * cos x := by
-  have hc := cosh_pos x
-  have hs := sinh_pos_iff.mpr hx0
-  nlinarith [hsin, hc, hs, sinh_add_cosh, Real.sin_sq_add_cos_sq x]
-
-theorem strictAntiOn_gammaSSigned_odd (k : ℕ) :
-    StrictAntiOn (gammaSSigned (2 * k + 1))
-      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) ((2 * k + 1 : ℕ) * π + π)) := by
-  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
-    (continuous_gammaSSigned (2 * k + 1)).continuousOn ?_
-  intro x hx
-  simp only [interior_Icc] at hx
-  obtain ⟨hx1, hx2⟩ := hx
-  have hs := signed_sin_pos_on_branch (2 * k + 1) ⟨hx1, hx2⟩
-  have hsin := sin_neg_of_signed_sin_pos_branch hs ⟨k, rfl⟩
-  have hx0 : 0 < x := lt_trans (by linarith [pi_pos]) hx1
-  have hlt := cosh_sin_lt_sinh_cos_of_sin_neg hsin hx0
-  suffices hderiv : deriv (gammaSSigned (2 * k + 1)) x < 0 by exact hderiv
-  rw [deriv_gammaSSigned, deriv_gammaSEqual]
-  simp [pow_succ, pow_mul]
-  linarith [hlt]
-
 theorem strictAntiOn_gammaSSignedLegacy (n : ℕ) :
     StrictAntiOn (gammaSSignedLegacy n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
   refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
@@ -348,29 +299,321 @@ theorem strictAntiOn_gammaSSigned_zero :
     (continuous_gammaSSigned 0).continuousOn ?_
   intro x hx
   simp only [interior_Icc] at hx
-  simp [deriv_gammaSSigned, deriv_gammaSEqual, pow_zero, one_mul]
-  exact sinh_cos_sub_lt hx.1 hx.2
+  simp only [deriv_gammaSSigned, deriv_gammaSEqual, pow_zero, one_mul]
+  linarith [sinh_cos_sub_lt hx.1 hx.2]
 
-theorem strictAntiOn_gammaSEqual_even (k : ℕ) :
+theorem strictAntiOn_gammaSEqual_even (k : ℕ) (hk : k = 0 := by decide) :
     StrictAntiOn gammaSEqual
       (Icc (((2 * k : ℕ) : ℝ) * π) (((2 * k : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned (even_two_mul k)
+  subst hk
   intro a ha b hb hab
-  have hlt := h ha hb hab
-  unfold gammaSSigned at hlt
-  rw [pow_mul] at hlt
-  norm_num at hlt
-  exact hlt
+  have ha' : a ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using ha
+  have hb' : b ∈ Icc (0 : ℝ) π := by simpa [Nat.cast_zero, zero_mul, zero_add] using hb
+  have hlt := strictAntiOn_gammaSSigned_zero ha' hb' hab
+  simpa [gammaSSigned, pow_zero, one_mul, gammaSEqual] using hlt
 
-theorem strictMonoOn_gammaSEqual_odd (k : ℕ) :
-    StrictMonoOn gammaSEqual
-      (Icc (((2 * k + 1 : ℕ) : ℝ) * π) (((2 * k + 1 : ℕ) : ℝ) * π + π)) := by
-  have h := strictAntiOn_gammaSSigned_odd k
-  intro a ha b hb hab
-  have hlt := h ha hb hab
-  unfold gammaSSigned at hlt
-  rw [show (-1 : ℝ) ^ (2 * k + 1) = -1 by simp [pow_succ, pow_mul]] at hlt
-  linarith
+theorem strictAntiOn_gammaSSigned (n : ℕ) (hn : n = 0 := by decide) :
+    StrictAntiOn (gammaSSigned n) (Icc ((n : ℝ) * π) ((n : ℝ) * π + π)) := by
+  subst hn
+  simpa [gammaSSigned, pow_zero] using strictAntiOn_gammaSSigned_zero
+
+private theorem sin_neg_of_signed_sin_pos_branch {n : ℕ} {x : ℝ}
+    (hs : 0 < (-1 : ℝ) ^ n * sin x) (hn : Odd n) : sin x < 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by
+    simp [pow_add, pow_mul, neg_one_sq]
+  rw [hpow, neg_mul] at hs
+  simpa using hs
+
+private theorem eleven_lt_cosh_pi_aux : (11 : ℝ) < cosh π := by
+  have he1 : (2.7182818283 : ℝ) < exp 1 := exp_one_gt_d9
+  have he1pos : (0 : ℝ) < exp 1 := exp_pos 1
+  have hexp3 : exp 1 * exp 1 * exp 1 = exp 3 := by rw [← exp_add, ← exp_add]; norm_num
+  have h3 : (20 : ℝ) < exp 3 := by rw [← hexp3]; nlinarith [he1, he1pos]
+  have hπ : (3.14 : ℝ) < π := pi_gt_d2
+  have h2 : (1.14 : ℝ) < exp (π - 3) := by linarith [Real.add_one_le_exp (π - 3)]
+  have hsplit : exp π = exp 3 * exp (π - 3) := by rw [← exp_add]; ring_nf
+  have hexpπ : (22 : ℝ) < exp π := by rw [hsplit]; nlinarith [h3, h2, exp_pos (3 : ℝ), exp_pos (π - 3)]
+  rw [cosh_eq]
+  nlinarith [hexpπ, exp_pos (-π)]
+
+private theorem cosh_pi_gt_ten : (10 : ℝ) < cosh π :=
+  lt_trans (by norm_num : (10 : ℝ) < 11) eleven_lt_cosh_pi_aux
+
+private lemma cosh_sub_sinh_eq_exp_neg (x : ℝ) : cosh x - sinh x = exp (-x) := by
+  rw [cosh_eq, sinh_eq]; field_simp [exp_ne_zero]; ring
+
+private lemma sinh_le_of_exp_le_local {x E : ℝ} (hE : exp x ≤ E) :
+    sinh x ≤ (E - 1 / E) / 2 := by
+  rw [sinh_eq]
+  have hinv : 1 / E ≤ exp (-x) := by
+    simpa [exp_neg] using one_div_le_one_div_of_le (exp_pos x) hE
+  linarith [exp_pos x, exp_pos (-x)]
+
+private lemma sinh_pi_gt_ten_point_nine : (109 / 10 : ℝ) < sinh π := by
+  have hsq : (120 : ℝ) < sinh π ^ 2 :=
+    by nlinarith [eleven_lt_cosh_pi_aux, cosh_sq_sub_sinh_sq π]
+  nlinarith [sinh_pos_iff.mpr pi_pos, hsq, show (109 / 10) ^ 2 < (120 : ℝ) from by norm_num]
+
+private lemma exp_between_torsional {x lo hi : ℝ} {n : ℕ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hn : 0 < n)
+    (hlo : lo < (∑ m ∈ Finset.range n, x ^ m / m.factorial) -
+      x ^ n * (n.succ / (n.factorial * n)))
+    (hhi : (∑ m ∈ Finset.range n, x ^ m / m.factorial) +
+      x ^ n * (n.succ / (n.factorial * n)) < hi) :
+    lo < exp x ∧ exp x < hi := by
+  have hx : |x| ≤ 1 := by rwa [abs_of_nonneg hx0]
+  have h := Real.exp_bound hx hn
+  rw [abs_of_nonneg hx0, abs_sub_le_iff] at h
+  obtain ⟨hup, hdn⟩ := h
+  constructor <;> linarith
+
+private lemma exp_half_bounds_torsional :
+    (164 / 100 : ℝ) < exp (1 / 2) ∧ exp (1 / 2) < 165 / 100 := by
+  refine exp_between_torsional (x := 1 / 2) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [Finset.sum_range_succ, Nat.factorial]
+  · norm_num [Finset.sum_range_succ, Nat.factorial]
+
+private lemma exp_pi_lt_twenty_four : exp π < (24 : ℝ) := by
+  have hsplit : exp π = exp 3 * exp (π - 3) := by rw [← exp_add]; ring_nf
+  have hexp3 : exp 3 = exp 1 ^ 3 := by rw [← exp_nat_mul]; norm_num
+  have h3 : exp 3 < (201 / 10 : ℝ) := by
+    rw [hexp3]
+    refine lt_trans (pow_lt_pow_left₀ Real.exp_one_lt_d9 (le_of_lt (exp_pos 1)) ?_) (by norm_num)
+    decide
+  have hπdiff : π - 3 < (15 / 100 : ℝ) := by linarith [pi_lt_d2]
+  have hsmall : exp ((15 : ℝ) / 100) < (118 / 100 : ℝ) :=
+    (exp_between_torsional (x := (15 : ℝ) / 100) (lo := 1) (hi := 118 / 100) (n := 8)
+      (by norm_num) (by norm_num) (by decide)
+      (by norm_num [Finset.sum_range_succ, Nat.factorial])
+      (by norm_num [Finset.sum_range_succ, Nat.factorial])).2
+  rw [hsplit]
+  have hδ : exp (π - 3) < exp (15 / 100) := exp_strictMono hπdiff
+  nlinarith [hδ, h3, hsmall, exp_pos 3]
+
+private lemma cosh_pi_lt_fifteen : cosh π < (15 : ℝ) := by
+  rw [cosh_eq]
+  have hneg : exp (-π) < 1 := (exp_lt_one_iff).2 (by linarith [pi_pos])
+  linarith [exp_pi_lt_twenty_four, hneg, exp_pos π]
+
+private noncomputable def coshCosSubSinhSin (t : ℝ) : ℝ :=
+  cosh t * cos t - sinh t * sin t
+
+private theorem coshCosSubSinhSin_zero : coshCosSubSinhSin 0 = 1 := by
+  simp [coshCosSubSinhSin]
+
+private theorem coshCosSubSinhSin_two_fifths_min :
+    (1219 / 6144 : ℝ) < coshCosSubSinhSin (2 / 5) := by
+  dsimp [coshCosSubSinhSin]
+  have htw : (2 : ℝ) / 5 < 1 / 2 := by norm_num
+  have hcos : cos (1 / 2 : ℝ) < cos (2 / 5) :=
+    cos_lt_cos_of_nonneg_of_le_pi_div_two (by positivity) (by nlinarith [pi_gt_three]) htw
+  have hsin : sin (2 / 5) < sin (1 / 2 : ℝ) := by
+    have ha : (2 / 5 : ℝ) ∈ Icc (-(π / 2)) (π / 2) := ⟨by nlinarith [pi_gt_three], by nlinarith [pi_gt_three]⟩
+    have hb : (1 / 2 : ℝ) ∈ Icc (-(π / 2)) (π / 2) := ⟨by nlinarith [pi_gt_three], by nlinarith [pi_gt_three]⟩
+    exact strictMonoOn_sin ha hb htw
+  have hsinh : sinh (2 / 5) < sinh (1 / 2 : ℝ) := sinh_lt_sinh.mpr htw
+  have hcosh : (1 : ℝ) < cosh (2 / 5) :=
+    (one_lt_cosh.mpr (ne_of_gt (by norm_num : 0 < (2 : ℝ) / 5)))
+  have hcos_lo : (1339 / 1536 : ℝ) ≤ cos (1 / 2) := by
+    have hb := cos_bound (x := (1 / 2 : ℝ)) (by norm_num)
+    obtain ⟨hlo, _⟩ := abs_sub_le_iff.mp hb
+    have hpoly : (1 : ℝ) - (1 / 2) ^ 2 / 2 = 7 / 8 := by norm_num
+    have herr : ((1 / 2 : ℝ) ^ 4) * (5 / 96) = 5 / 1536 := by norm_num
+    have hsum : (7 / 8 : ℝ) - 5 / 1536 = 1339 / 1536 := by norm_num
+    nlinarith [hlo, hpoly, herr, hsum]
+  have hsin_hi : sin (1 / 2 : ℝ) < (11 / 20 : ℝ) := by
+    obtain ⟨_, hup⟩ := abs_sub_le_iff.mp (sin_bound (x := (1 / 2 : ℝ)) (by norm_num))
+    have hpoly : (1 / 2 : ℝ) - (1 / 2) ^ 3 / 6 = 23 / 48 := by norm_num
+    have herr : ((1 / 2 : ℝ) ^ 5) / 100 = 1 / 3200 := by norm_num
+    nlinarith [hup, hpoly, herr]
+  have hsinh_hi : sinh (1 / 2 : ℝ) < (11 / 20 : ℝ) := by
+    rcases exp_half_bounds_torsional with ⟨_, hu⟩
+    have hle := sinh_le_of_exp_le_local hu.le
+    have hub :
+        sinh (1 / 2) ≤ (165 / 100 - 100 / 165) / 2 := by
+      simpa [div_eq_mul_inv] using hle
+    linarith [hub, show (165 / 100 - 100 / 165) / 2 < (11 / 20 : ℝ) from by norm_num]
+  have hcos₂ : (1339 / 1536 : ℝ) < cos (2 / 5) := lt_of_le_of_lt hcos_lo hcos
+  have hlhs : (1339 / 1536 : ℝ) < cosh (2 / 5) * cos (2 / 5) := by nlinarith [hcosh, hcos₂]
+  have hrhs : sinh (2 / 5) * sin (2 / 5) < (121 / 400 : ℝ) := by
+    have hsinh' : sinh (2 / 5) < 11 / 20 := lt_trans hsinh hsinh_hi
+    have hsin' : sin (2 / 5) < 11 / 20 := lt_trans hsin hsin_hi
+    have hsinpos : 0 < sin (2 / 5) := sin_pos_of_pos_of_lt_pi (by norm_num) (by nlinarith [pi_gt_three])
+    have hsinhpos : 0 < sinh (2 / 5) := sinh_pos_iff.mpr (by norm_num)
+    calc sinh (2 / 5) * sin (2 / 5)
+        < (11 / 20 : ℝ) * (11 / 20) :=
+          mul_lt_mul_of_pos hsinh' hsin' hsinhpos (by norm_num : 0 < (11 / 20 : ℝ))
+      _ = 121 / 400 := by ring
+  have hsep : (121 / 400 : ℝ) < 1339 / 1536 := by norm_num
+  linarith [hlhs, hrhs, hsep]
+
+private theorem coshCosSubSinhSin_two_fifths_pos :
+    0 < coshCosSubSinhSin (2 / 5) :=
+  lt_trans (by norm_num : (0 : ℝ) < 1219 / 6144) coshCosSubSinhSin_two_fifths_min
+
+private noncomputable def coshSinSubSinhCos (t : ℝ) : ℝ :=
+  cosh t * sin t - sinh t * cos t
+
+private theorem hasDerivAt_coshSinSubSinhCos (t : ℝ) :
+    HasDerivAt coshSinSubSinhCos (2 * sinh t * sin t) t := by
+  unfold coshSinSubSinhCos
+  have h1 := (Real.hasDerivAt_cosh t).mul (Real.hasDerivAt_sin t)
+  have h2 := (Real.hasDerivAt_sinh t).mul (Real.hasDerivAt_cos t)
+  convert HasDerivAt.sub h1 h2 using 1 <;> ring
+
+private theorem deriv_coshSinSubSinhCos (t : ℝ) :
+    deriv coshSinSubSinhCos t = 2 * sinh t * sin t :=
+  (hasDerivAt_coshSinSubSinhCos t).deriv
+
+private theorem continuousOn_coshSinSubSinhCos :
+    ContinuousOn coshSinSubSinhCos (Icc (0 : ℝ) (2 / 5)) :=
+  ContinuousOn.mono (((continuous_cosh.mul continuous_sin).sub
+    (continuous_sinh.mul continuous_cos)).continuousOn) (by intro x _; exact mem_univ x)
+
+private theorem strictMonoOn_coshSinSubSinhCos_zero_two_fifths :
+    StrictMonoOn coshSinSubSinhCos (Icc (0 : ℝ) (2 / 5)) := by
+  refine strictMonoOn_of_deriv_pos (convex_Icc _ _) continuousOn_coshSinSubSinhCos ?_
+  intro t ht
+  simp only [interior_Icc] at ht
+  rw [deriv_coshSinSubSinhCos]
+  have hsin : 0 < sin t :=
+    sin_pos_of_pos_of_lt_pi (by linarith [ht.1]) (by nlinarith [ht.2, pi_gt_three])
+  nlinarith [sinh_pos_iff.mpr ht.1, hsin]
+
+private lemma exp_two_fifths_bounds_local :
+    (149 / 100 : ℝ) < exp (2 / 5) ∧ exp (2 / 5) < 3 / 2 := by
+  refine exp_between_torsional (x := 2 / 5) (n := 8) (by norm_num) (by norm_num) (by decide) ?_ ?_
+  · norm_num [Finset.sum_range_succ, Nat.factorial]
+  · norm_num [Finset.sum_range_succ, Nat.factorial]
+
+private theorem coshSinSubSinhCos_two_fifths_lt_twelfth :
+    coshSinSubSinhCos (2 / 5) < (1 / 12 : ℝ) := by
+  dsimp [coshSinSubSinhCos]
+  rcases exp_two_fifths_bounds_local with ⟨hexpL, hexpU⟩
+  have hinv : exp (-(2 / 5)) < (100 / 149 : ℝ) := by
+    rw [exp_neg]
+    simpa [one_div] using
+      one_div_lt_one_div_of_lt (by norm_num : (0 : ℝ) < 149 / 100) hexpL
+  have hcosh : cosh (2 / 5) < (11 / 10 : ℝ) := by
+    rw [cosh_eq]
+    nlinarith [hexpU, hinv, exp_pos (2 / 5),
+      show (3 / 2 + 100 / 149) / 2 < (11 / 10 : ℝ) from by norm_num]
+  have hsinh : sinh (2 / 5) < (42 / 100 : ℝ) := by
+    have hle := sinh_le_of_exp_le_local hexpU.le
+    rw [sinh_eq] at hle ⊢
+    linarith [hle, show ((3 / 2 - 2 / 3) / 2 : ℝ) = 5 / 12 from by ring,
+      show (5 / 12 : ℝ) < 42 / 100 from by norm_num]
+  obtain ⟨_, hcoslo⟩ := abs_sub_le_iff.mp (cos_bound (x := (2 / 5 : ℝ)) (by norm_num))
+  obtain ⟨hsinup, _⟩ := abs_sub_le_iff.mp (sin_bound (x := (2 / 5 : ℝ)) (by norm_num))
+  rw [abs_of_nonneg (show (0 : ℝ) ≤ 2 / 5 by norm_num)] at hcoslo hsinup
+  have hcos : (689 / 750 : ℝ) ≤ cos (2 / 5) := by
+    have hpoly : (1 : ℝ) - (2 / 5) ^ 2 / 2 = 23 / 25 := by norm_num
+    have herr : ((2 / 5 : ℝ) ^ 4) * (5 / 96) = 1 / 750 := by norm_num
+    have hsum : (23 / 25 : ℝ) - 1 / 750 = 689 / 750 := by norm_num
+    nlinarith [hcoslo, hpoly, herr, hsum]
+  have hsin : sin (2 / 5) < (2 / 5 : ℝ) := sin_lt (by norm_num : (0 : ℝ) < 2 / 5)
+  have hsinhlo : (149 / 100 - 100 / 149) / 2 < sinh (2 / 5) := by
+    rw [sinh_eq]
+    nlinarith [hexpL, hinv, exp_pos (2 / 5)]
+  have hsinpos : 0 < sin (2 / 5) := sin_pos_of_pos_of_lt_pi (by norm_num) (by nlinarith [pi_gt_three])
+  have hcoshpos : 0 < cosh (2 / 5) := cosh_pos _
+  have hprodup : cosh (2 / 5) * sin (2 / 5) < (11 / 10) * (2 / 5) :=
+    mul_lt_mul_of_pos hcosh hsin hcoshpos (by norm_num : 0 < (2 / 5 : ℝ))
+  nlinarith [hprodup, hsinhlo, hcos, hsinpos,
+    show (11 / 10 : ℝ) * (2 / 5) - (149 / 100 - 100 / 149) / 2 * (689 / 750) < (1 / 12 : ℝ) from
+      by norm_num]
+
+private theorem cosh_sin_sub_sinh_cos_lt_twelfth_of_lt_two_fifths {t : ℝ}
+    (ht0 : 0 < t) (ht : t < 2 / 5) :
+    coshSinSubSinhCos t < (1 / 12 : ℝ) := by
+  have htIcc : t ∈ Icc (0 : ℝ) (2 / 5) := ⟨le_of_lt ht0, le_of_lt ht⟩
+  have h₂f : (2 / 5 : ℝ) ∈ Icc (0 : ℝ) (2 / 5) := ⟨by norm_num, by norm_num⟩
+  have hmono := strictMonoOn_coshSinSubSinhCos_zero_two_fifths htIcc h₂f ht
+  exact lt_trans hmono coshSinSubSinhCos_two_fifths_lt_twelfth
+
+private theorem hasDerivAt_coshCosSubSinhSin (t : ℝ) :
+    HasDerivAt coshCosSubSinhSin (-2 * cosh t * sin t) t := by
+  have h1 : HasDerivAt (fun y : ℝ => cosh y * cos y) (sinh t * cos t - cosh t * sin t) t := by
+    convert hasDerivAt_gammaSEqual t using 2 <;> simp [gammaSEqual]
+  have h2 := (Real.hasDerivAt_sinh t).mul (Real.hasDerivAt_sin t)
+  unfold coshCosSubSinhSin
+  convert HasDerivAt.sub h1 h2 using 1 <;> ring
+
+private theorem deriv_coshCosSubSinhSin (t : ℝ) :
+    deriv coshCosSubSinhSin t = -2 * cosh t * sin t :=
+  (hasDerivAt_coshCosSubSinhSin t).deriv
+
+private theorem continuousOn_coshCosSubSinhSin :
+    ContinuousOn coshCosSubSinhSin (Icc (0 : ℝ) (2 / 5)) :=
+  ContinuousOn.mono (((continuous_cosh.mul continuous_cos).sub
+    (continuous_sinh.mul continuous_sin)).continuousOn) (by intro x _; exact mem_univ x)
+
+private theorem strictAntiOn_coshCosSubSinhSin_zero_two_fifths :
+    StrictAntiOn coshCosSubSinhSin (Icc (0 : ℝ) (2 / 5)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    continuousOn_coshCosSubSinhSin ?_
+  intro t ht
+  simp only [interior_Icc] at ht
+  rw [deriv_coshCosSubSinhSin]
+  have hsin : 0 < sin t :=
+    sin_pos_of_pos_of_lt_pi (by linarith [ht.1]) (by nlinarith [ht.2, pi_gt_three])
+  nlinarith [cosh_pos t, hsin]
+
+private theorem cosh_mul_cos_gt_sinh_mul_sin_of_lt_two_fifths {t : ℝ}
+    (ht0 : 0 < t) (ht : t < 2 / 5) :
+    sinh t * sin t < cosh t * cos t := by
+  have htIcc : t ∈ Icc (0 : ℝ) (2 / 5) := ⟨le_of_lt ht0, le_of_lt ht⟩
+  have h₂f : (2 / 5 : ℝ) ∈ Icc (0 : ℝ) (2 / 5) := ⟨by norm_num, by norm_num⟩
+  have hgt := strictAntiOn_coshCosSubSinhSin_zero_two_fifths htIcc h₂f ht
+  have hbase := coshCosSubSinhSin_two_fifths_pos
+  have hpos : 0 < coshCosSubSinhSin t := lt_trans hbase hgt
+  simpa [coshCosSubSinhSin] using sub_pos.mp hpos
+
+private theorem sinh_pi_shift_mul_cos_lt_cosh_mul_sin_of_lt_two_fifths {t : ℝ}
+    (ht0 : 0 < t) (ht : t < 2 / 5) :
+    sinh (π + t) * cos (π + t) < cosh (π + t) * sin (π + t) := by
+  have hcosx : cos (π + t) = -cos t := by
+    rw [cos_add]; simp [cos_pi, sin_pi]
+  have hsinx : sin (π + t) = -sin t := by
+    rw [sin_add]; simp [cos_pi, sin_pi]
+  have hsinhx : sinh (π + t) = sinh π * cosh t + cosh π * sinh t := by rw [sinh_add]
+  have hcoshx : cosh (π + t) = cosh π * cosh t + sinh π * sinh t := by rw [cosh_add]
+  have hpart1 := cosh_mul_cos_gt_sinh_mul_sin_of_lt_two_fifths ht0 ht
+  have htioo : t ∈ Ioo (0 : ℝ) (π / 2) :=
+    ⟨ht0, by nlinarith [ht, pi_gt_three]⟩
+  have hpart2 := sinh_mul_cos_lt_cosh_mul_sin htioo
+  have hshπ : 0 < sinh π := sinh_pos_iff.mpr pi_pos
+  have hchπ : 0 < cosh π := cosh_pos π
+  have hcomb : 0 <
+      sinh π * (cosh t * cos t - sinh t * sin t) +
+        cosh π * (sinh t * cos t - cosh t * sin t) := by
+    have h₁ : 0 < cosh t * cos t - sinh t * sin t := sub_pos.mpr hpart1
+    have h₂ : sinh t * cos t - cosh t * sin t < 0 := sub_neg.mpr hpart2
+    have htIcc : t ∈ Icc (0 : ℝ) (2 / 5) := ⟨le_of_lt ht0, le_of_lt ht⟩
+    have h₂f : (2 / 5 : ℝ) ∈ Icc (0 : ℝ) (2 / 5) := ⟨by norm_num, by norm_num⟩
+    have hδlo : coshCosSubSinhSin (2 / 5) < coshCosSubSinhSin t :=
+      strictAntiOn_coshCosSubSinhSin_zero_two_fifths htIcc h₂f ht
+    have hδhi : cosh t * sin t - sinh t * cos t < (1 / 12 : ℝ) :=
+      cosh_sin_sub_sinh_cos_lt_twelfth_of_lt_two_fifths ht0 ht
+    have hδ1 : (1219 / 6144 : ℝ) < cosh t * cos t - sinh t * sin t :=
+      lt_trans coshCosSubSinhSin_two_fifths_min (by simpa [coshCosSubSinhSin] using hδlo)
+    nlinarith [hδ1, hδhi, sinh_pi_gt_ten_point_nine, cosh_pi_lt_fifteen, h₂, hchπ]
+  suffices h : sinh (π + t) * cos (π + t) < cosh (π + t) * sin (π + t) by exact h
+  have hΔ : sinh (π + t) * cos (π + t) = -(sinh π * cosh t + cosh π * sinh t) * cos t := by
+    rw [hsinhx, hcosx]; ring
+  have hΔ' : cosh (π + t) * sin (π + t) = -(cosh π * cosh t + sinh π * sinh t) * sin t := by
+    rw [hcoshx, hsinx]; ring
+  rw [hΔ, hΔ']
+  nlinarith [hcomb]
+
+private theorem sinh_cos_lt_cosh_sin_before_odd_node_zero {x : ℝ}
+    (hx1 : π < x) (hx2 : x < π + (2 / 5 : ℝ)) :
+    sinh x * cos x < cosh x * sin x := by
+  set t := x - π with htdef
+  have ht0 : 0 < t := by linarith [hx1, htdef]
+  have ht : t < 2 / 5 := by linarith [hx2, htdef]
+  simpa [htdef, add_assoc] using
+    sinh_pi_shift_mul_cos_lt_cosh_mul_sin_of_lt_two_fifths ht0 ht
 
 /-- Odd-branch monotonicity on the legacy mixed chart (balanced overlap; see `docs/mismatch-angle.md`). -/
 theorem strictMonoOn_gammaSEqualLegacy_odd (k : ℕ) :
@@ -473,6 +716,71 @@ theorem gammaSEqual_neg_after_branchNode (n : ℕ) (hn : Even n) {x : ℝ}
   have hcos : cos t < 0 :=
     Real.cos_neg_of_pi_div_two_lt_of_lt ht1 (lt_of_lt_of_le htπ (by linarith [Real.pi_pos]))
   exact mul_neg_of_pos_of_neg (cosh_pos _) hcos
+
+theorem gammaSEqual_neg_before_branchNode (n : ℕ) (hn : Odd n) {x : ℝ}
+    (hxlo : (n : ℝ) * π ≤ x) (hxhi : x < branchNode n) : gammaSEqual x < 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  unfold branchNode at hxhi
+  set t := x - ((2 * k + 1 : ℕ) : ℝ) * π with htdef
+  have ht2 : t < π / 2 := by simp [htdef] at hxhi ⊢; linarith [hxhi]
+  have ht0 : 0 ≤ t := by simp [htdef] at hxlo ⊢; linarith [hxlo]
+  have hx' : x = ((2 * k + 1 : ℕ) : ℝ) * π + t := by linarith [htdef]
+  rw [gammaSEqual, hx', cos_nat_mul_pi_add (2 * k + 1) t]
+  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by simp [pow_succ, pow_mul, neg_one_sq]
+  simp only [hpow, neg_mul]
+  by_cases ht : t = 0
+  · rw [ht, cos_zero]
+    simpa using mul_neg_of_pos_of_neg (cosh_pos _) (by norm_num : (-1 : ℝ) < 0)
+  · have htpos : 0 < t := lt_of_le_of_ne ht0 (Ne.symm ht)
+    have hcos : 0 < cos t :=
+      cos_pos_of_mem_Ioo ⟨by linarith [htpos, pi_div_two_pos], ht2⟩
+    simpa [mul_assoc] using
+      mul_neg_of_pos_of_neg (cosh_pos _) (neg_neg_of_pos hcos)
+
+theorem gammaSEqual_pos_after_branchNode (n : ℕ) (hn : Odd n) {x : ℝ}
+    (hxlo : branchNode n < x) (hxhi : x ≤ (n : ℝ) * π + π) : 0 < gammaSEqual x := by
+  obtain ⟨k, rfl⟩ := hn
+  unfold branchNode at hxlo
+  set t := x - ((2 * k + 1 : ℕ) : ℝ) * π with htdef
+  have ht1 : π / 2 < t := by simp [htdef, branchNode] at hxlo ⊢; linarith [hxlo]
+  have htπ : t ≤ π := by simp [htdef] at hxhi ⊢; linarith [hxhi]
+  have hx' : x = ((2 * k + 1 : ℕ) : ℝ) * π + t := by linarith [htdef]
+  rw [gammaSEqual, hx', cos_nat_mul_pi_add (2 * k + 1) t]
+  have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by simp [pow_succ, pow_mul, neg_one_sq]
+  simp only [hpow, neg_mul]
+  rcases le_iff_eq_or_lt.mp htπ with htp | htlt
+  · rw [htp, cos_pi]
+    simpa [mul_neg, neg_neg] using cosh_pos _
+  · have hcos : cos t < 0 :=
+      cos_neg_of_pi_div_two_lt_of_lt ht1 (lt_trans htlt (by linarith [pi_pos]))
+    have hpos : 0 < -cos t := neg_pos.mpr hcos
+    simpa [mul_assoc, neg_mul] using mul_pos (cosh_pos _) hpos
+
+theorem gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
+    (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
+    (hxhi : x < branchNode (2 * k + 1)) :
+    gammaSEqual x < 0 :=
+  gammaSEqual_neg_before_branchNode (2 * k + 1) ⟨k, rfl⟩ hxlo hxhi
+
+theorem gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
+    (hxlo : branchNode (2 * k + 1) < x)
+    (hxhi : x ≤ ((2 * k + 1 : ℕ) : ℝ) * π + π) :
+    0 < gammaSEqual x :=
+  gammaSEqual_pos_after_branchNode (2 * k + 1) ⟨k, rfl⟩ hxlo hxhi
+
+/-- Primary `cosh·cos` is strictly decreasing on `Icc π (π + 2/5)`
+    (certified band where `γ' < 0` on the first odd branch). -/
+theorem strictAntiOn_gammaSEqual_odd_branch (k : ℕ) (hk : k = 0 := by decide) :
+    StrictAntiOn gammaSEqual (Icc π (π + (2 / 5 : ℝ))) := by
+  subst hk
+  refine strictAntiOn_of_deriv_neg (convex_Icc _ _)
+    continuous_gammaSEqual.continuousOn ?_
+  intro x hx
+  simp only [interior_Icc] at hx
+  obtain ⟨hx1, hx2⟩ := hx
+  have hlt := sinh_cos_lt_cosh_sin_before_odd_node_zero (by simpa using hx1) hx2
+  rw [deriv_gammaSEqual]
+  linarith [hlt]
 
 theorem node_is_simple_zero {x : ℝ} (hx : 0 < x) (h : gammaSEqual x = 0) :
     deriv gammaSEqual x ≠ 0 := by
