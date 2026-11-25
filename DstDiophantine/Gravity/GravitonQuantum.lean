@@ -103,13 +103,10 @@ theorem JNormalized_oneStep {N : ℕ} (hN : 0 < N) :
 theorem oneAxisDual_admissible_legacy {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuousLegacy (oneAxisDual θ) := by
   intro a
-  fin_cases a
-  · simp [oneAxisDual]
-    exact ⟨le_rfl, h0, hθ⟩
-  · simp [oneAxisDual]
-    exact ⟨le_rfl, le_rfl, le_rfl⟩
-  · simp [oneAxisDual]
-    exact ⟨le_rfl, le_rfl, le_rfl⟩
+  fin_cases a <;> simp only [oneAxisDual]
+  · exact ⟨le_rfl, h0, hθ⟩
+  · exact ⟨le_rfl, le_rfl, le_rfl⟩
+  · exact ⟨le_rfl, le_rfl, le_rfl⟩
 
 theorem oneAxisDual_admissible {θ : ℝ} (h0 : 0 ≤ θ) (hθ : θ ≤ Real.pi / 2) :
     IsAdmissibleContinuous (oneAxisDual θ) :=
@@ -989,37 +986,33 @@ theorem JNormalized_balanced (θ : ℝ) : JNormalized (oneAxisBalanced θ) = 0 :
   rw [J_oneAxisBalanced]
   ring
 
-theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
-    IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) := by
-  have hθ : 0 ≤ stepAngle N :=
-    (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
+theorem usualStep_admissible_legacy {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuousLegacy (oneAxisUsual (stepAngle N)) := by
+  have hθ := (stepAngle_pos (lt_of_lt_of_le (by decide : 0 < 4) hN)).le
   have hle := stepAngle_le_half_pi hN
   intro a
-  fin_cases a
-  · simp only [oneAxisUsual]
-    exact ⟨hθ, le_rfl, Real.pi_pos.le, by linarith [hle, hθ]⟩
-  · simp only [oneAxisUsual]
-    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
-      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
-  · simp only [oneAxisUsual]
-    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
-      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+  fin_cases a <;> simp only [oneAxisUsual]
+  · exact ⟨le_rfl, hθ, by linarith [hθ, hle]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+
+theorem usualStep_admissible {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuous (oneAxisUsual (stepAngle N)) :=
+  legacy_admissible_implies_mismatch _ (usualStep_admissible_legacy hN)
+
+theorem balancedStep_admissible_legacy {N : ℕ} (hN : 4 ≤ N) :
+    IsAdmissibleContinuousLegacy (oneAxisBalanced (stepAngle N / 2)) := by
+  have hsum := stepAngle_le_half_pi hN
+  have hhalf := div_nonneg (stepAngle_nonneg N) (by norm_num)
+  intro a
+  fin_cases a <;> simp only [oneAxisBalanced]
+  · exact ⟨hhalf, hhalf, by linarith [Real.pi_pos, hhalf, hsum]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
+  · exact ⟨le_rfl, le_rfl, by linarith [Real.pi_pos]⟩
 
 theorem balancedStep_admissible {N : ℕ} (hN : 4 ≤ N) :
-    IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) := by
-  have hsum := stepAngle_le_half_pi hN
-  have hhalf : 0 ≤ stepAngle N / 2 :=
-    div_nonneg (stepAngle_nonneg N) (by norm_num)
-  intro a
-  fin_cases a
-  · simp only [oneAxisBalanced]
-    exact ⟨hhalf, hhalf, Real.pi_pos.le, by linarith [hsum, hhalf]⟩
-  · simp only [oneAxisBalanced]
-    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
-      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
-  · simp only [oneAxisBalanced]
-    exact ⟨le_rfl, le_rfl, Real.pi_pos.le,
-      by simpa using (div_nonneg Real.pi_nonneg (by norm_num : (0 : ℝ) ≤ 2))⟩
+    IsAdmissibleContinuous (oneAxisBalanced (stepAngle N / 2)) :=
+  legacy_admissible_implies_mismatch _ (balancedStep_admissible_legacy hN)
 
 theorem gammaS_usual (θ : ℝ) : gammaS θ 0 = Real.cosh (θ / 2) := by
   unfold gammaS
@@ -1029,8 +1022,8 @@ theorem gammaS_dual (θ : ℝ) : gammaS 0 θ = Real.cos (θ / 2) := by
   unfold gammaS
   simp
 
-theorem gammaS_balanced (θ : ℝ) : gammaS θ θ = gammaSEqual (θ / 2) := by
-  unfold gammaS gammaSEqual
+theorem gammaS_balanced (θ : ℝ) : gammaS θ θ = gammaSEqualLegacy (θ / 2) := by
+  unfold gammaS gammaSEqualLegacy
   ring_nf
 
 theorem usual_interference_gt_one {θ : ℝ} (hθ : 0 < θ) : 1 < gammaS θ 0 := by
@@ -1060,40 +1053,20 @@ theorem dual_interference_between {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi
         (by linarith)
     simpa [Real.cos_zero] using hlt
 
-theorem gammaSEqual_pos_up_to_quarter {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi / 4) :
-    0 < gammaSEqual x := by
+theorem gammaSEqualLegacy_pos_up_to_quarter {x : ℝ} (hx0 : 0 ≤ x) (hx : x ≤ Real.pi / 4) :
+    0 < gammaSEqualLegacy x := by
   rcases hx0.eq_or_lt with rfl | hxpos
-  · simp [gammaSEqual_zero]
-  · have hsin_pos : 0 < Real.sin x :=
-      Real.sin_pos_of_pos_of_lt_pi hxpos (by linarith [hx, Real.pi_pos])
-    have hsin_le : Real.sin x ≤ Real.sin (Real.pi / 4) := by
-      refine Real.sin_le_sin_of_le_of_le_pi_div_two (by linarith [hx0, Real.pi_pos])
-        (by linarith [Real.pi_pos]) hx
-    have hcos_ge : Real.cos (Real.pi / 4) ≤ Real.cos x := by
-      refine Real.cos_le_cos_of_nonneg_of_le_pi ?_ (by linarith [Real.pi_pos]) hx
-      linarith
-    have hid : Real.sin (Real.pi / 4) = Real.cos (Real.pi / 4) := by
-      rw [Real.sin_pi_div_four, Real.cos_pi_div_four]
-    have hsc : Real.sin x ≤ Real.cos x := by linarith [hsin_le, hcos_ge, hid]
-    have hsub : Real.cosh x - Real.sinh x = Real.exp (-x) := by
-      rw [Real.cosh_eq, Real.sinh_eq]
-      ring
-    unfold gammaSEqual
-    have hsplit : Real.cosh x * Real.cos x - Real.sinh x * Real.sin x =
-        Real.cosh x * (Real.cos x - Real.sin x) + Real.exp (-x) * Real.sin x := by
-      rw [← hsub]
-      ring
-    have hrest : 0 ≤ Real.cosh x * (Real.cos x - Real.sin x) :=
-      mul_nonneg (Real.cosh_pos x).le (sub_nonneg.mpr hsc)
-    have hmain : 0 < Real.exp (-x) * Real.sin x :=
-      mul_pos (Real.exp_pos _) hsin_pos
-    linarith [hsplit, hrest, hmain]
+  · simp [gammaSEqualLegacy]
+  · unfold gammaSEqualLegacy
+    have hcos := Real.cos_pos_of_mem_Ioo
+      ⟨by linarith [hxpos, Real.pi_pos], by linarith [hx, Real.pi_pos, hxpos]⟩
+    exact mul_pos (Real.cosh_pos _) hcos
 
 theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
     0 < gammaS (stepAngle N / 2) (stepAngle N / 2) := by
   rw [gammaS_balanced]
   have hstep := stepAngle_le_half_pi hN
-  refine gammaSEqual_pos_up_to_quarter ?_ ?_
+  refine gammaSEqualLegacy_pos_up_to_quarter ?_ ?_
   · exact div_nonneg (div_nonneg (stepAngle_nonneg N) (by norm_num)) (by norm_num)
   · have hform : stepAngle N / 2 / 2 = stepAngle N / 4 := by ring
     rw [hform]
@@ -1124,7 +1097,7 @@ theorem graviton_primary_balanced_overlap (θ : ℝ) :
   simp [MismatchAngle.axisOverlapScalar]
 
 theorem graviton_legacy_balanced_overlap (θ : ℝ) :
-    MismatchAngle.axisOverlapLegacy θ θ = gammaSEqual (θ / 2) := by
+    MismatchAngle.axisOverlapLegacy θ θ = gammaSEqualLegacy (θ / 2) := by
   have h : 2 * (θ / 2) = θ := by ring
   simpa [h] using axisOverlap_eq_gammaSEqual_balanced (θ / 2)
 

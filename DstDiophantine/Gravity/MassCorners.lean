@@ -291,7 +291,8 @@ theorem mass_ceiling_eq_U_iff_mismatch_one_third {p : TorsionParams}
         JNormalized p = 1 / 3 := by
   constructor
   · intro hU
-    rcases (ofParams_eq_U_iff_mismatch_halves hp).mp hU with ⟨hb, hd⟩
+    rcases (ofParams_eq_U_iff_mismatch_halves hp (by
+      simpa using (mass_ceiling_eq_U_iff hp hM).mp hU)).mp hU with ⟨hb, hd⟩
     exact ⟨hb, hd, (mass_ceiling_eq_U_iff hp hM).mp hU⟩
   · intro ⟨_, _, hJn⟩
     exact (mass_ceiling_eq_U_iff hp hM).mpr hJn

@@ -2255,7 +2255,7 @@ example : ∃ p : Operations.TorsionParams,
 
 example {Jval Mval : ℝ}
     (hJmax : |Jval| ≤ 3 * Real.pi ^ 2 / 8)
-    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :
+    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeilingLegacy Jval) :
     ∃ p : Operations.TorsionParams, Admissible.IsAdmissibleContinuous p ∧
       J p = Jval ∧ mass p = Mval :=
   exists_admissible_of_JM hJmax hMlo hMhi

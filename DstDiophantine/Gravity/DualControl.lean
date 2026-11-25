@@ -158,6 +158,16 @@ theorem J_dualWall_neg_iff (p : TorsionParams) :
   · intro h
     nlinarith
 
+theorem dualWallParams_admissible_legacy {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) :
+    IsAdmissibleContinuousLegacy (dualWallParams p) := by
+  intro a
+  have hα := admissibleContinuous_legacy_alpha_nonneg p h a
+  have hβ := admissibleContinuous_legacy_beta_nonneg p h a
+  have hsum := admissibleContinuous_legacy_sum_le_half_pi p h a
+  simp only [dualWallParams, dualWall]
+  exact ⟨hα, by linarith, by linarith [hα]⟩
+
 theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) :
     IsAdmissibleContinuous (dualWallParams p) := by
@@ -283,6 +293,14 @@ theorem dualRay_zero (α v : Fin 3 → ℝ) :
   refine torsionParams_ext rfl ?_
   funext a
   simp [dualRay, zeroDual]
+
+theorem isAdmissibleContinuousLegacy_zeroDual {p : TorsionParams}
+    (h : IsAdmissibleContinuousLegacy p) :
+    IsAdmissibleContinuousLegacy (zeroDual p) := by
+  intro a
+  have ha := h a
+  simp only [zeroDual]
+  exact ⟨ha.1, le_rfl, ha.2.2⟩
 
 theorem isAdmissibleContinuous_zeroDual {p : TorsionParams}
     (h : IsAdmissibleContinuous p) :

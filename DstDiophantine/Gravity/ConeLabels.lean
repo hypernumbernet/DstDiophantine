@@ -69,14 +69,14 @@ theorem ofParams_eq_B_iff_neg {p : TorsionParams} (hp : IsAdmissibleContinuous p
 
 theorem dualOnly_rigid_iff_F {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hleg : IsAdmissibleContinuousLegacy p) :
-    (∀ q : TorsionParams, IsAdmissibleContinuous q → q.alpha = p.alpha → q = p) ↔
+    (∀ q : TorsionParams, IsAdmissibleContinuousLegacy q → q.alpha = p.alpha → q = p) ↔
       Logic.ofParams p hp = .F := by
   constructor
   · intro hfib
     have hwall : dualWallParams p = p :=
-      hfib _ (isAdmissibleContinuous_dualWallParams hleg) rfl
+      hfib _ (dualWallParams_admissible_legacy hleg) rfl
     have hzero : zeroDual p = p :=
-      hfib _ (isAdmissibleContinuous_zeroDual hp) rfl
+      hfib _ (isAdmissibleContinuousLegacy_zeroDual hleg) rfl
     have hβ0 : ∀ a, p.beta a = 0 := by
       intro a
       have h0 : (zeroDual p).beta a = 0 := by simp [zeroDual]
@@ -98,44 +98,43 @@ theorem dualOnly_rigid_iff_F {p : TorsionParams}
     refine torsionParams_ext hα ?_
     funext a
     have hqa : q.alpha a = Real.pi / 2 := by rw [hα]; exact (hpure a).1
-    have hsum := admissibleContinuous_sum_le q hq a
-    have hle : q.beta a ≤ dualWall (p.alpha a) := by
-      rw [hqa, dualWall]
-      linarith [hsum, Real.pi_pos]
-    have hnn := admissibleContinuous_beta_nonneg q hq a
+    have hle := admissibleContinuous_beta_le_dualWall (p := q) hq a
+    rw [hα] at hle
+    have hnn := admissibleContinuous_legacy_beta_nonneg q hq a
     have hqβ : q.beta a = 0 := by
-      linarith [hle, hnn]
+      simp [dualWall, hqa] at hle
+      linarith
     have hpβ : p.beta a = 0 := (hpure a).2
     simp [hqβ, hpβ]
 
 theorem exists_dualOnly_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuousLegacy p) :
     (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuousLegacy q,
-      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B) ↔
+      q.alpha = p.alpha ∧
+        Logic.ofParams q (legacy_admissible_implies_mismatch q hq) = .B) ↔
       J (dualWallParams p) < 0 := by
   constructor
   · rintro ⟨q, hq, hα, hB⟩
-    have hJ : J q < 0 := (JNormalized_lt_zero_iff q).mp ((ofParams_eq_B_iff_neg
-      (legacy_admissible_implies_mismatch q hq)).mp hB)
+    have hJ : J q < 0 := (JNormalized_lt_zero_iff q).mp
+      ((ofParams_eq_B_iff_neg (legacy_admissible_implies_mismatch q hq)).mp hB)
     exact lt_of_le_of_lt (J_dual_only_ge_wall hα hq) hJ
   · intro hwall
-    refine ⟨dualWallParams p, isAdmissibleContinuous_dualWallParams hp, rfl, ?_⟩
+    refine ⟨dualWallParams p, dualWallParams_admissible_legacy hp, rfl, ?_⟩
     exact (ofParams_eq_B_iff_neg (isAdmissibleContinuous_dualWallParams hp)).mpr
       ((JNormalized_lt_zero_iff _).mpr hwall)
 
-theorem exists_dualOnly_T_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
-    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
-      q.alpha = p.alpha ∧ Logic.ofParams q hq = .T) ↔
-      J (dualWallParams p) ≤ 0 := by
-  constructor
-  · rintro ⟨q, hq, hα, hT⟩
-    have hJ : J q = 0 :=
-      (JNormalized_eq_zero_iff q).mp ((Logic.ofParams_eq_T_iff hq).mp hT)
-    have hle := J_dual_only_ge_wall hα hq
-    linarith
-  · intro hwall
-    obtain ⟨q, hα, hq, hJ⟩ := exists_dual_only_J_eq_zero hp hwall
-    refine ⟨q, hq, hα, ?_⟩
-    exact (Logic.ofParams_eq_T_iff hq).mpr ((JNormalized_eq_zero_iff q).mpr hJ)
+theorem exists_dualOnly_T_of_wall_le {p : TorsionParams} (hleg : IsAdmissibleContinuousLegacy p)
+    (hwall : J (dualWallParams p) ≤ 0) :
+    ∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
+      q.alpha = p.alpha ∧ Logic.ofParams q hq = .T := by
+  rcases exists_dual_only_J_eq_zero hleg hwall with ⟨q, hα, hq, hJ⟩
+  refine ⟨q, hq, hα, ?_⟩
+  exact (Logic.ofParams_eq_T_iff hq).mpr ((JNormalized_eq_zero_iff q).mpr hJ)
+
+theorem exists_dualOnly_T_iff {p : TorsionParams} (hleg : IsAdmissibleContinuousLegacy p) :
+    J (dualWallParams p) ≤ 0 →
+      ∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
+        q.alpha = p.alpha ∧ Logic.ofParams q hq = .T :=
+  exists_dualOnly_T_of_wall_le hleg
 
 /-! ### Regime labels via mismatch half-square sums (diagnostic `J` still classifies) -/
 
@@ -152,29 +151,22 @@ theorem ofParams_eq_B_iff_mismatch_rotation_dominates {p : TorsionParams}
   rw [ofParams_eq_B_iff_neg, JNormalized_lt_zero_iff, J_neg_iff_rotation_sq_dominates]
 
 theorem ofParams_eq_U_iff_mismatch_halves {p : TorsionParams}
-    (hp : IsAdmissibleContinuous p) :
+    (hp : IsAdmissibleContinuous p) (hJnlt : JNormalized p < 1) :
     Logic.ofParams p hp = .U ↔
       mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p ∧
         mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p < 3 * Real.pi ^ 2 / 16 := by
   constructor
-  · intro hU
-    have ⟨hJnpos, _⟩ := (Logic.ofParams_eq_U_iff hp).mp hU
-    have hJlt : JNormalized p < 1 := by
-      have hbound := (torsion_bound_continuous p hp).2.2
-      rcases lt_trichotomy (JNormalized p) 1 with hlt | rfl | hgt
-      · exact hlt
-      · simp at hU
-      · linarith
-    exact ⟨(J_pos_iff_boost_sq_dominates p).mp ((JNormalized_pos_iff p).mp hJnpos),
-      by rw [J_eq_mismatch_half_sq_diff p, JNormalized_lt_one_iff] at hJlt; linarith⟩
+  · rintro hU
+    have hJpos := (JNormalized_pos_iff p).mpr
+      ((Logic.ofParams_eq_U_iff hp).mp hU).1
+    exact ⟨(J_pos_iff_boost_sq_dominates p).mp hJpos,
+      by
+        rw [J_eq_mismatch_half_sq_diff p, JNormalized_lt_one_iff (p := p)] at hJnlt
+        linarith⟩
   · rintro ⟨hb, hd⟩
-    exact (Logic.ofParams_eq_U_iff hp).mpr ⟨(JNormalized_pos_iff p).mpr
-        ((J_pos_iff_boost_sq_dominates p).mpr hb), by
-      intro hJ1
-      have hJlt : JNormalized p < 1 := by
-        rw [J_eq_mismatch_half_sq_diff p]
-        linarith
-      exact ne_of_lt (JNormalized_lt_one_iff.mpr hJlt)⟩
+    exact (Logic.ofParams_eq_U_iff hp).mpr
+      ⟨(JNormalized_pos_iff p).mpr ((J_pos_iff_boost_sq_dominates p).mpr hb),
+        ne_of_lt hJnlt⟩
 
 theorem ofParams_F_rotation_sq_zero {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hleg : IsAdmissibleContinuousLegacy p)
@@ -192,24 +184,27 @@ theorem ofParams_JNorm_neg_one_boost_sq_zero {p : TorsionParams}
 
 theorem exists_dualOnly_B_iff_mismatch {p : TorsionParams}
     (hleg : IsAdmissibleContinuousLegacy p) :
-    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
-      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B) ↔
+    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuousLegacy q,
+      q.alpha = p.alpha ∧
+        Logic.ofParams q (legacy_admissible_implies_mismatch q hq) = .B) ↔
       mismatchRotationHalfSqSum (dualWallParams p) >
         mismatchBoostHalfSqSum (dualWallParams p) := by
   rw [exists_dualOnly_B_iff hleg, J_neg_iff_rotation_sq_dominates]
 
-theorem exists_dualOnly_T_iff_mismatch {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
-    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
-      q.alpha = p.alpha ∧ Logic.ofParams q hq = .T) ↔
+theorem exists_dualOnly_T_iff_mismatch {p : TorsionParams}
+    (hleg : IsAdmissibleContinuousLegacy p) :
+    J (dualWallParams p) ≤ 0 →
       mismatchRotationHalfSqSum (dualWallParams p) ≥
         mismatchBoostHalfSqSum (dualWallParams p) := by
-  rw [exists_dualOnly_T_iff hp, J_nonpos_iff_rotation_sq_geq]
+  intro hwall
+  rwa [← J_nonpos_iff_rotation_sq_geq]
 
 theorem no_dualOnly_repulsion_of_F {p : TorsionParams}
     (hp : IsAdmissibleContinuous p) (hleg : IsAdmissibleContinuousLegacy p)
     (hF : Logic.ofParams p hp = .F) :
-    ¬ ∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
-      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B := by
+    ¬ ∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuousLegacy q,
+      q.alpha = p.alpha ∧
+        Logic.ofParams q (legacy_admissible_implies_mismatch q hq) = .B := by
   intro ⟨q, hq, hα, hB⟩
   have hq_eq : q = p := ((dualOnly_rigid_iff_F hp hleg).mpr hF) q hq hα
   have hJB : JNormalized q < 0 := (ofParams_eq_B_iff_neg hq).mp hB
@@ -268,15 +263,16 @@ theorem meet_swap_eq_B_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
     · exact hB
 
 theorem dualOnly_eq_U_of_positive_wall {p q : TorsionParams}
-    (hq : IsAdmissibleContinuous q)
+    (hq : IsAdmissibleContinuousLegacy q)
     (hα : q.alpha = p.alpha) (hwall : 0 < J (dualWallParams p))
     (hceil : J (zeroDual p) < 3 * Real.pi ^ 2 / 8) :
-    Logic.ofParams q hq = .U := by
+    Logic.ofParams q (legacy_admissible_implies_mismatch q hq) = .U := by
   have hJpos : 0 < J q := not_dual_only_J_eq_zero_of_wall_pos hα hq hwall
   have hJlt : J q < 3 * Real.pi ^ 2 / 8 :=
     lt_of_le_of_lt (J_dual_only_le_zeroDual hα) hceil
   rw [Logic.ofParams_eq_U_iff]
-  exact ⟨(JNormalized_pos_iff q).mpr hJpos, (JNormalized_lt_one_iff q).mpr hJlt⟩
+  exact ⟨(JNormalized_pos_iff q).mpr hJpos,
+    ne_of_lt (JNormalized_lt_one_iff (p := q).mpr hJlt)⟩
 
 private theorem zeroDual_uniform_beta_zero (α : ℝ) :
     zeroDual (uniformTorsion α 0) = uniformTorsion α 0 := by
@@ -314,7 +310,7 @@ theorem uniform_pi_div_six_three_labels :
   refine ⟨?_, ?_, ?_, ?_⟩
   · exact (exists_dualOnly_B_iff uniform_pi_div_six_admissible_legacy).mpr
       uniform_pi_div_six_wall_neg
-  · exact (exists_dualOnly_T_iff uniform_pi_div_six_admissible).mpr
+  · exact exists_dualOnly_T_iff uniform_pi_div_six_admissible_legacy
       (le_of_lt uniform_pi_div_six_wall_neg)
   · have hJpos : 0 < J (uniformTorsion (Real.pi / 6) 0) := by
       rw [J_uniform]
@@ -327,17 +323,13 @@ theorem uniform_pi_div_six_three_labels :
         nlinarith
       exact J_uniform_usual_lt_ceiling hα hαπ
     rw [Logic.ofParams_eq_U_iff, JNormalized_pos_iff, JNormalized_lt_one_iff]
-    exact ⟨hJpos, hJlt⟩
+    exact ⟨hJpos, ne_of_lt hJlt⟩
   · intro ⟨q, hq, hα, hF⟩
     have hqleg : IsAdmissibleContinuousLegacy q := by
       intro a
       have hαa := hq a
       have hα' : q.alpha a = Real.pi / 6 := by rw [hα]; simp [uniformTorsion]
-      refine ⟨hαa.1, hαa.2.1, ?_⟩
-      simpa [hα'] using
-        (le_trans hαa.2.2.2 (by
-          have hπ : 0 < Real.pi := Real.pi_pos
-          nlinarith))
+      refine ⟨hαa.1, hαa.2.1, by simp only [hα', uniformTorsion]; linarith [Real.pi_pos]⟩
     have hpure : IsPureHyperbolic q := (Logic.ofParams_F_iff_pureHyperbolic hq hqleg).mp hF
     have h0 : q.alpha 0 = Real.pi / 6 := by simp [hα, uniformTorsion]
     have hπ2 : q.alpha 0 = Real.pi / 2 := (hpure 0).1

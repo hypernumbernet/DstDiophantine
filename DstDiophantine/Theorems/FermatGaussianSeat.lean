@@ -408,14 +408,23 @@ theorem isAdmissible_pythagorean_generators {m n : ℤ}
   have hboost :
       fermatBoost (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2) (hyp_ne_zero_of_ne hm) = 0 := by
     simpa [IsPureCyclicFermatMotor] using h0
-  intro a
-  fin_cases a
-  · exact ⟨by simp [fermatTorsion, hboost], by simp [fermatTorsion], Real.pi_pos.le,
-      by simp [fermatTorsion, hboost]; exact Real.pi_div_two_pos.le⟩
-  · exact ⟨by simp [fermatTorsion], by simpa [fermatTorsion] using
-      fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne),
-      Real.pi_pos.le, by simpa [fermatTorsion] using (fermatAngle_lt_half_pi _ _ _).le⟩
-  · exact ⟨by simp [fermatTorsion], by simp [fermatTorsion], Real.pi_pos.le, by simp [fermatTorsion]⟩
+  have hleg : IsAdmissibleContinuousLegacy
+      (fermatTorsion (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2)
+        (odd_leg_ne_zero_of_natAbs_ne hne) (hyp_ne_zero_of_ne hm)) := by
+    intro a
+    fin_cases a
+    · have hβ0 : (fermatTorsion (m ^ 2 - n ^ 2) (2 * m * n) (m ^ 2 + n ^ 2)
+          (odd_leg_ne_zero_of_natAbs_ne hne) (hyp_ne_zero_of_ne hm)).beta 0 = 0 := by
+        simp [fermatTorsion, pureRotation1, hboost]
+      simp only [fermatTorsion, pureRotation1, hβ0]
+      refine ⟨le_rfl, le_rfl, le_rfl⟩
+    · simp only [fermatTorsion, pureRotation1]
+      refine ⟨le_rfl,
+        fermatAngle_nonneg (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne),
+        (fermatAngle_lt_half_pi (m ^ 2 - n ^ 2) (2 * m * n) (odd_leg_ne_zero_of_natAbs_ne hne)).le⟩
+    · simp only [fermatTorsion, pureRotation1]
+      refine ⟨le_rfl, le_rfl, le_rfl⟩
+  exact legacy_admissible_implies_mismatch _ hleg
 
 theorem gaussian_hyp_split_of_exp_ge_five {m n : ℤ} {e : ℕ}
     (he : 5 ≤ e) (hm : m ≠ 0) (hn : n ≠ 0)

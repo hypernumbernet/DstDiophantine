@@ -182,7 +182,7 @@ theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := b
     ring
   linarith
 
-private theorem even_two_mul_local (k : ℕ) : Even (2 * k) := ⟨k, rfl⟩
+private theorem even_two_mul_local (k : ℕ) : Even (2 * k) := Even.mul_right (by decide) k
 
 private theorem cos_nat_mul_pi_add_local (n : ℕ) (t : ℝ) :
     cos ((n : ℝ) * π + t) = (-1) ^ n * cos t := by
@@ -195,11 +195,10 @@ private lemma gammaSEqual_neg_on_even_right (k : ℕ) {x : ℝ}
   rcases lt_or_eq_of_le hxhi with hlt | heq
   · exact gammaSEqual_neg_after_branchNode (2 * k)
       (even_two_mul_local k) hxlo hlt
-  · rw [heq]
+  · subst heq
     have hx : ((2 * k : ℕ) : ℝ) * π + π = ((2 * k + 1 : ℕ) : ℝ) * π := by push_cast; ring
-    rw [hx, gammaSEqual, cos_nat_mul_pi, sin_nat_mul_pi]
-    have hcosh : 0 < cosh x := cosh_pos _
-    nlinarith [hcosh, cos_pi]
+    rw [hx, gammaSEqual, cos_nat_mul_pi (2 * k + 1), sin_nat_mul_pi]
+    nlinarith [cosh_pos _]
 
 private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
     (hxlo : ((2 * k + 1 : ℕ) : ℝ) * π ≤ x)
@@ -215,9 +214,10 @@ private lemma gammaSEqual_neg_on_odd_left (k : ℕ) {x : ℝ}
   have hpow : (-1 : ℝ) ^ (2 * k + 1) = -1 := by simp [pow_succ, pow_mul, neg_one_sq]
   rw [hpow, neg_one_mul]
   rcases lt_or_eq_of_le ht0 with htpos | ht0
-  · have hcos := cos_pos_of_mem_Ioo ⟨htpos, by linarith [htπ, Real.pi_pos]⟩
+  · have hcos := cos_pos_of_mem_Ioo ⟨htpos, htπ⟩
     nlinarith [cosh_pos x, hcos]
-  · simp [ht0, cos_zero, cosh_pos]
+  · rw [ht0, cos_zero]
+    nlinarith [cosh_pos x]
 
 private lemma gammaSEqual_pos_on_odd_right (k : ℕ) {x : ℝ}
     (hxlo : branchNode (2 * k + 1) < x)
@@ -398,7 +398,7 @@ theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) (π
     -nodeSlopeHi < deriv gammaSEqual ξ ∧ deriv gammaSEqual ξ < -nodeSlopeLo := by
   rw [deriv_gammaSEqual]
   have hξI : ξ ∈ Icc (-(π / 2)) (π / 2) :=
-    ⟨by linarith [pi_pos, hξ.1], le_of_lt (lt_trans hξ.2 pi_div_two_pos)⟩
+    ⟨by linarith [pi_pos, hξ.1], by linarith [hξ.2, pi_pos]⟩
   have hquarter : (π / 4) ∈ Icc (-(π / 2)) (π / 2) :=
     ⟨by linarith [pi_pos], by linarith [pi_gt_three]⟩
   have hhalf : (π / 2 : ℝ) ∈ Icc (-(π / 2)) (π / 2) := ⟨by linarith [pi_pos], le_rfl⟩
@@ -412,7 +412,8 @@ theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) (π
   have hcosh_hi : cosh ξ < cosh (π / 2) :=
     strictMonoOn_cosh_Ici (le_of_lt (lt_trans (by positivity) hξ.1)) (le_of_lt pi_div_two_pos) hξ.2
   have hsinpos : 0 < sin ξ :=
-    sin_pos_of_mem_Ioo ⟨lt_trans (by positivity) hξ.1, hξ.2⟩
+    sin_pos_of_mem_Ioo ⟨lt_trans (by positivity : (0 : ℝ) < π / 4) hξ.1,
+      lt_trans hξ.2 (by linarith [pi_pos])⟩
   have hprod_lo : cosh (π / 4) * sin (π / 4) < cosh ξ * sin ξ := by
     calc cosh (π / 4) * sin (π / 4)
         < cosh ξ * sin (π / 4) := mul_lt_mul_of_pos_right hcosh_lo
@@ -422,7 +423,8 @@ theorem deriv_gammaSEqual_slope_bounds {ξ : ℝ} (hξ : ξ ∈ Ioo (π / 4) (π
     calc cosh ξ * sin ξ
         < cosh (π / 2) * sin ξ := mul_lt_mul_of_pos_right hcosh_hi hsinpos
       _ < cosh (π / 2) * sin (π / 2) := mul_lt_mul_of_pos_left hsin_hi (cosh_pos _)
-  have hdiff := sinh_cos_sub_lt_local hξ.1 (lt_trans hξ.2 (by linarith [pi_pos]))
+  have hξlo : 0 < ξ := lt_trans (by positivity : (0 : ℝ) < π / 4) hξ.1
+  have hdiff := sinh_cos_sub_lt_local hξlo (lt_trans hξ.2 pi_pos)
   constructor
   · unfold nodeSlopeHi
     rw [sin_pi_div_two]
@@ -454,7 +456,9 @@ theorem firstNode_eps_coeff_bounds :
       nlinarith [nodeSlopeLo_pos, cosh_pos (π / 2)]
     have h1 : (π / 4) * nodeSlopeLo < (π / 2) * nodeSlopeLo :=
       mul_lt_mul_of_pos_right hwin.1 nodeSlopeLo_pos
-    exact lt_trans h1 (mul_lt_mul_of_pos_left hmag hroot)
+    have hmul : (π / 4) * nodeSlopeLo < (π / 2) * (2 * cosh (π / 2) * 1) := by
+      nlinarith [hwin.1, nodeSlopeLo_pos, cosh_pos (π / 2)]
+    linarith [hmag, hmul]
   · nlinarith [pi_gt_three, cosh_pos (π / 2)]
 
 theorem gammaSEqual_pos_of_lt_firstNode {x : ℝ} (hx0 : 0 ≤ x) (hx1 : x < resonanceRoot1) :
@@ -477,7 +481,7 @@ theorem gammaSEqual_linear_firstNode {x : ℝ} (hx : x ∈ Ico (π / 4) resonanc
     intro ξ hξ
     rw [interior_Icc] at hξ
     exact deriv_gammaSEqual_slope_bounds
-      ⟨hξ.1, lt_trans hξ.2 (resonanceRoot1_eq_pi_div_two ▸ pi_div_two_pos)⟩
+      ⟨hξ.1, lt_trans hξ.2 (by rw [resonanceRoot1_eq_pi_div_two]; linarith [pi_pos])⟩
   have hcont : ContinuousOn gammaSEqual D := continuous_gammaSEqual.continuousOn
   have hdiff : DifferentiableOn ℝ gammaSEqual (interior D) :=
     gammaSEqual_differentiable.differentiableOn
