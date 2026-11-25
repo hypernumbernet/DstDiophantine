@@ -45,6 +45,24 @@ noncomputable def pairRatioLegacy (x : ℝ) : ℝ :=
 noncomputable def diameterOutwardLegacy (Z x : ℝ) : ℝ :=
   -Z / gammaSEqualLegacy x + 1 / (4 * gammaSEqualLegacy (x / 2))
 
+/-- Certified upper legacy-cube angle (below the legacy γ zero before `branchNode 1`). -/
+noncomputable def legacyCubeCertHi : ℝ := 39 / 10
+
+lemma legacyCubeCertHi_def : legacyCubeCertHi = (39 / 10 : ℝ) := rfl
+
+lemma legacyCubeCertHi_lt_branchNode : legacyCubeCertHi < branchNode 1 := by
+  unfold legacyCubeCertHi branchNode
+  have hlo : π + π / 4 < branchNode 1 := (node_mem_sharp_branch 1).1
+  linarith [pi_gt_d6, hlo]
+
+lemma two_resonanceRoot1_lt_legacyCubeCertHi : 2 * resonanceRoot1 < legacyCubeCertHi := by
+  rw [resonanceRoot1_eq_pi_div_two, legacyCubeCertHi_def, two_mul]
+  linarith [pi_lt_d6]
+
+lemma mem_legacy_cube_window {x : ℝ} (hx : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
+    x ∈ Ioo (2 * resonanceRoot1) (branchNode 1) :=
+  ⟨hx.1, lt_trans hx.2 legacyCubeCertHi_lt_branchNode⟩
+
 lemma continuous_pairBalance (Z : ℝ) : Continuous (pairBalance Z) := by
   unfold pairBalance
   exact continuous_gammaSEqual.sub
@@ -746,8 +764,17 @@ private lemma gammaSEqualLegacy_neg_right_of_node_local {x : ℝ} (hx : x ∈ Io
   have hxIcc := mem_gamma_Icc (le_of_lt h0x) hπ.le
   exact (legacy_strictAntiOn_gammaSEqual_even 0 hresIcc hxIcc hx1).trans_le (le_of_lt hres)
 
-private lemma gammaSEqualLegacy_neg_first_shell {x : ℝ}
-    (hx : x ∈ Ioo resonanceRoot1 (branchNode 1)) : gammaSEqualLegacy x < 0 := by
+lemma gammaSEqualLegacy_thirtyNine_tenths_neg : gammaSEqualLegacy legacyCubeCertHi < 0 := by
+  rw [legacyCubeCertHi_def]
+  have h39lo : π < (39 / 10 : ℝ) := by linarith [pi_lt_d6]
+  have h39hi : (39 / 10 : ℝ) < 7 / 2 := by norm_num
+  have hIcc39 : (39 / 10 : ℝ) ∈ Icc π (π + π) := ⟨h39lo.le, by linarith [h39hi, pi_gt_three]⟩
+  have hIcc72 : (7 / 2 : ℝ) ∈ Icc π (π + π) := ⟨by linarith [pi_lt_d6], by linarith [pi_gt_three]⟩
+  have hmono := strictMonoOn_gammaSEqualLegacy_odd 0 hIcc39 hIcc72 h39hi
+  linarith [hmono, gammaSEqualLegacy_seven_halves_lt_neg_six]
+
+private lemma gammaSEqualLegacy_neg_legacy_cube_window {x : ℝ}
+    (hx : x ∈ Ioo resonanceRoot1 legacyCubeCertHi) : gammaSEqualLegacy x < 0 := by
   rcases le_or_gt x π with hle | hgt
   · rcases eq_or_lt_of_le hle with rfl | hlt
     · rw [gammaSEqualLegacy_exp, cos_pi, sin_pi]
@@ -755,31 +782,33 @@ private lemma gammaSEqualLegacy_neg_first_shell {x : ℝ}
     · exact gammaSEqualLegacy_neg_right_of_node_local ⟨hx.1, hlt⟩
   · have hπneg : gammaSEqualLegacy π < 0 := by
       rw [gammaSEqualLegacy_exp, cos_pi, sin_pi]; linarith [cosh_pos π, exp_pos π, exp_pos (-π)]
-    have hnode : branchNode 1 ≤ π + π := by
-      simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.2
-    have hIccπ : π ∈ Icc π (π + π) := ⟨le_rfl, by linarith [pi_gt_three]⟩
-    have hIccx : x ∈ Icc π (π + π) := ⟨hgt.le, le_trans hx.2 hnode⟩
-    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0 hIccπ hIccx hgt
-    linarith [hltmono, hπneg]
+    have h39neg : gammaSEqualLegacy legacyCubeCertHi < 0 := gammaSEqualLegacy_thirtyNine_tenths_neg
+    have hcert := legacyCubeCertHi_def
+    have hIccπ : π ∈ Icc π legacyCubeCertHi := ⟨le_rfl, by rwa [hcert]⟩
+    have hIccx : x ∈ Icc π legacyCubeCertHi := ⟨hgt.le, by linarith [hx.2, hgt.le]⟩
+    have hltmono := strictMonoOn_gammaSEqualLegacy_odd 0 (by simpa [hcert] using hIccπ)
+      (by simpa [hcert] using hIccx) hgt
+    rw [← hcert] at h39neg
+    linarith [hltmono, h39neg]
 
-lemma halfPhaseLegacy_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) (branchNode 1)) :
+lemma halfPhaseLegacy_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
     gammaSEqualLegacy (y / 2) < 0 := by
   have hπ : π < branchNode 1 := by
     simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.1
-  refine gammaSEqualLegacy_neg_first_shell ⟨?_, ?_⟩
+  refine gammaSEqualLegacy_neg_legacy_cube_window ⟨?_, ?_⟩
   · have hr1 : resonanceRoot1 = π / 2 := resonanceRoot1_eq_pi_div_two
     linarith [hy.1, hr1]
   · exact lt_trans (half_lt_self (by linarith [hy.1, resonanceRoot1_bounds.1, pi_pos])) hy.2
 
-lemma ratioSlopeLegacy_neg_right {x : ℝ} (hx : x ∈ Ioo π (branchNode 1)) : ratioSlopeLegacy x < 0 := by
+lemma ratioSlopeLegacy_neg_right {x : ℝ} (hx : x ∈ Ioo π legacyCubeCertHi) : ratioSlopeLegacy x < 0 := by
   have hhalf_lo : π / 2 < x / 2 := by linarith [hx.1]
   have hnode : branchNode 1 < π + π := by
     simpa [Nat.cast_one, one_mul] using (branchNode_spec 1).1.2
   have hhalf_hi : x / 2 < π := by linarith [hx.2, hnode]
   have hγ : gammaSEqualLegacy x < 0 :=
-    gammaSEqualLegacy_neg_first_shell ⟨by linarith [resonanceRoot1_eq_pi_div_two, hx.1], hx.2⟩
+    gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [resonanceRoot1_eq_pi_div_two, hx.1], hx.2⟩
   have hγh : gammaSEqualLegacy (x / 2) < 0 :=
-    gammaSEqualLegacy_neg_first_shell ⟨by linarith [resonanceRoot1_eq_pi_div_two, hhalf_lo],
+    gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [resonanceRoot1_eq_pi_div_two, hhalf_lo],
       by linarith [hx.2, (branchNode_spec 1).1.1]⟩
   have hsinx : sin x < 0 := by
     have hneg : sin x = -sin (x - π) := by
@@ -832,7 +861,7 @@ lemma halfPhase_in_firstShell {y : ℝ} (hy : y ∈ Ioo (2 * resonanceRoot1) (br
   · exact lt_trans (half_lt_self (by linarith [hy.1, resonanceRoot1_bounds.1, pi_pos])) hy.2
 
 lemma pairRatioLegacy_strictAnti :
-    StrictAntiOn pairRatioLegacy (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+    StrictAntiOn pairRatioLegacy (Ioo (2 * resonanceRoot1) legacyCubeCertHi) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
   · unfold pairRatioLegacy
     refine ContinuousOn.div continuous_gammaSEqualLegacy.continuousOn
@@ -1381,7 +1410,7 @@ lemma phaseLogNum_neg_high {u : ℝ} (hu : 7 / 4 ≤ u) : phaseLogNum u < 0 := b
   have hT3 : -(2 * u) + c - s - 1 < 0 := by nlinarith
   linarith
 
-lemma phaseLogNum_neg {u : ℝ} (hu : u ∈ Ioo resonanceRoot1 (branchNode 1)) :
+lemma phaseLogNum_neg {u : ℝ} (hu : u ∈ Ioo resonanceRoot1 legacyCubeCertHi) :
     phaseLogNum u < 0 := by
   have hlo : 4 / 5 < u := lt_trans four_fifths_lt_resonanceRoot1 hu.1
   rcases lt_or_ge u (5 / 4) with hlt | hge
@@ -1430,17 +1459,17 @@ lemma hasDerivAt_capacityPhaseLegacy {y : ℝ} (hg : gammaSEqualLegacy y ≠ 0) 
   linarith
 
 lemma capacityPhaseLegacy_strictAnti :
-    StrictAntiOn capacityPhaseLegacy (Ioo resonanceRoot1 (branchNode 1)) := by
+    StrictAntiOn capacityPhaseLegacy (Ioo resonanceRoot1 legacyCubeCertHi) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
   · unfold capacityPhaseLegacy
     refine ContinuousOn.div ?_ ?_ ?_
     · exact (by continuity : Continuous fun y : ℝ => 2 * y * cosh y * sin y).continuousOn
     · exact continuous_gammaSEqualLegacy.neg.continuousOn
     · intro y hy
-      simpa using (gammaSEqualLegacy_neg_first_shell hy).ne
+      simpa using (gammaSEqualLegacy_neg_legacy_cube_window hy).ne
   · intro y hy
     rw [interior_Ioo] at hy
-    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_first_shell hy).ne
+    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_legacy_cube_window hy).ne
     rw [(hasDerivAt_capacityPhaseLegacy hg).deriv]
     exact div_neg_of_neg_of_pos (phaseLogNum_neg hy) (by positivity)
 
@@ -1586,7 +1615,7 @@ theorem cubeOutward_sign {Z x : ℝ}
 
 
 lemma cube_phases_in_shell_legacy {x : ℝ}
-    (hx : x ∈ Ioo (2 * resonanceRoot1) (branchNode 1)) :
+    (hx : x ∈ Ioo (2 * resonanceRoot1) legacyCubeCertHi) :
     gammaSEqualLegacy x < 0 ∧ gammaSEqualLegacy (cubeEdge * x) < 0 ∧
       gammaSEqualLegacy (cubeFace * x) < 0 ∧ gammaSEqualLegacy (x / 2) < 0 := by
   have hedge : resonanceRoot1 < cubeEdge * x ∧ cubeEdge * x < branchNode 1 := by
@@ -1605,9 +1634,9 @@ lemma cube_phases_in_shell_legacy {x : ℝ}
     refine ⟨?_, ?_⟩
     · nlinarith [hc.1, hx.1, hx0]
     · nlinarith [hc.2.1, hc.2.2, hx.2, hx0]
-  exact ⟨gammaSEqualLegacy_neg_first_shell ⟨by linarith [hx.1, four_fifths_lt_resonanceRoot1], hx.2⟩,
-    gammaSEqualLegacy_neg_first_shell ⟨hedge.1, hedge.2⟩,
-    gammaSEqualLegacy_neg_first_shell ⟨hface.1, hface.2⟩,
+  exact ⟨gammaSEqualLegacy_neg_legacy_cube_window ⟨by linarith [hx.1, four_fifths_lt_resonanceRoot1], hx.2⟩,
+    gammaSEqualLegacy_neg_legacy_cube_window ⟨hedge.1, hedge.2⟩,
+    gammaSEqualLegacy_neg_legacy_cube_window ⟨hface.1, hface.2⟩,
     halfPhaseLegacy_in_firstShell hx⟩
 
 lemma scaledRatioSlopeLegacy_eq_weight {c x : ℝ} (_hc : 0 < c) (hx : 0 < x)
@@ -1635,7 +1664,7 @@ lemma hasDerivAt_scaledRatioLegacy {c x : ℝ} (hgc : gammaSEqualLegacy (c * x) 
   simp only [Function.comp_apply]
 
 lemma scaledRatioLegacy_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
-    StrictAntiOn (scaledRatioLegacy c) (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+    StrictAntiOn (scaledRatioLegacy c) (Ioo (2 * resonanceRoot1) legacyCubeCertHi) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
   · unfold scaledRatioLegacy
     refine ContinuousOn.div continuous_gammaSEqualLegacy.continuousOn ?_ ?_
@@ -1647,8 +1676,8 @@ lemma scaledRatioLegacy_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
           rw [lt_div_iff₀ (by norm_num : (0 : ℝ) < 2)]
           linarith [hy.1]
         nlinarith [hc0, hy0, hhalf]
-      have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
-      exact (gammaSEqualLegacy_neg_first_shell ⟨hcy_lo, hcy_hi⟩).ne
+      have hcy_hi : c * y < legacyCubeCertHi := by nlinarith [hc1, hy.2, hy0, legacyCubeCertHi_def]
+      exact (gammaSEqualLegacy_neg_legacy_cube_window ⟨hcy_lo, hcy_hi⟩).ne
   · intro y hy
     rw [interior_Ioo] at hy
     have hy0 : 0 < y := by linarith [hy.1, root1_pos]
@@ -1658,20 +1687,20 @@ lemma scaledRatioLegacy_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
         rw [lt_div_iff₀ (by norm_num : (0 : ℝ) < 2)]
         linarith [hy.1]
       nlinarith [hc0, hy0, hhalf]
-    have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
-    have hmemc : c * y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hcy_lo, hcy_hi⟩
-    have hmemy : y ∈ Ioo resonanceRoot1 (branchNode 1) :=
+    have hcy_hi : c * y < legacyCubeCertHi := by nlinarith [hc1, hy.2, hy0, legacyCubeCertHi_def]
+    have hmemc : c * y ∈ Ioo resonanceRoot1 legacyCubeCertHi := ⟨hcy_lo, hcy_hi⟩
+    have hmemy : y ∈ Ioo resonanceRoot1 legacyCubeCertHi :=
       ⟨by linarith [hy.1, four_fifths_lt_resonanceRoot1], hy.2⟩
     have hweight : capacityPhaseLegacy y < capacityPhaseLegacy (c * y) :=
       capacityPhaseLegacy_strictAnti hmemc hmemy hcy
-    have hgc : gammaSEqualLegacy (c * y) ≠ 0 := (gammaSEqualLegacy_neg_first_shell hmemc).ne
-    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_first_shell hmemy).ne
+    have hgc : gammaSEqualLegacy (c * y) ≠ 0 := (gammaSEqualLegacy_neg_legacy_cube_window hmemc).ne
+    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_legacy_cube_window hmemy).ne
     have hcpos : 0 < c := by linarith
     rw [(hasDerivAt_scaledRatioLegacy hgc).deriv, scaledRatioSlopeLegacy_eq_weight hcpos hy0 hg hgc]
     have hden : 0 < gammaSEqualLegacy (c * y) ^ 2 := sq_pos_of_ne_zero hgc
     have hprod : gammaSEqualLegacy y * gammaSEqualLegacy (c * y) > 0 :=
-      mul_pos_of_neg_of_neg (gammaSEqualLegacy_neg_first_shell hmemy)
-        (gammaSEqualLegacy_neg_first_shell hmemc)
+      mul_pos_of_neg_of_neg (gammaSEqualLegacy_neg_legacy_cube_window hmemy)
+        (gammaSEqualLegacy_neg_legacy_cube_window hmemc)
     have hdiff : capacityPhaseLegacy y - capacityPhaseLegacy (c * y) < 0 := by linarith
     have hnum : gammaSEqualLegacy y * gammaSEqualLegacy (c * y) *
         (capacityPhaseLegacy y - capacityPhaseLegacy (c * y)) / y < 0 := by
@@ -1679,7 +1708,7 @@ lemma scaledRatioLegacy_strictAnti {c : ℝ} (hc0 : 1 / 2 ≤ c) (hc1 : c < 1) :
     exact div_neg_of_neg_of_pos hnum hden
 
 lemma scaledRatioLegacy_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c < 1) :
-    StrictAntiOn (scaledRatioLegacy c) (Ioo (resonanceRoot1 / c) (branchNode 1)) := by
+    StrictAntiOn (scaledRatioLegacy c) (Ioo (resonanceRoot1 / c) legacyCubeCertHi) := by
   refine strictAntiOn_of_deriv_neg (convex_Ioo _ _) ?_ ?_
   · unfold scaledRatioLegacy
     refine ContinuousOn.div continuous_gammaSEqualLegacy.continuousOn ?_ ?_
@@ -1691,8 +1720,8 @@ lemma scaledRatioLegacy_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c <
         linarith [hy.1, hslot]
       have hcy_lo : resonanceRoot1 < c * y := by
         simpa [mul_comm] using (div_lt_iff₀ hc0).mp hy.1
-      have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
-      exact (gammaSEqualLegacy_neg_first_shell ⟨hcy_lo, hcy_hi⟩).ne
+      have hcy_hi : c * y < legacyCubeCertHi := by nlinarith [hc1, hy.2, hy0, legacyCubeCertHi_def]
+      exact (gammaSEqualLegacy_neg_legacy_cube_window ⟨hcy_lo, hcy_hi⟩).ne
   · intro y hy
     rw [interior_Ioo] at hy
     have hy0 : 0 < y := by
@@ -1701,8 +1730,8 @@ lemma scaledRatioLegacy_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c <
     have hcy : c * y < y := by nlinarith [hc1, hy0]
     have hcy_lo : resonanceRoot1 < c * y := by
       simpa [mul_comm] using (div_lt_iff₀ hc0).mp hy.1
-    have hcy_hi : c * y < branchNode 1 := by nlinarith [hc1, hy.2, hy0]
-    have hmemc : c * y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hcy_lo, hcy_hi⟩
+    have hcy_hi : c * y < legacyCubeCertHi := by nlinarith [hc1, hy.2, hy0, legacyCubeCertHi_def]
+    have hmemc : c * y ∈ Ioo resonanceRoot1 legacyCubeCertHi := ⟨hcy_lo, hcy_hi⟩
     have hy_root : resonanceRoot1 < y := by
       have hdiv : resonanceRoot1 < resonanceRoot1 / c := by
         rw [lt_div_iff₀ hc0]
@@ -1710,16 +1739,16 @@ lemma scaledRatioLegacy_strictAnti_from_chord {c : ℝ} (hc0 : 0 < c) (hc1 : c <
           lt_trans (by norm_num) resonanceRoot1_bounds.1
         nlinarith [hc1, hroot]
       exact lt_trans hdiv hy.1
-    have hmemy : y ∈ Ioo resonanceRoot1 (branchNode 1) := ⟨hy_root, hy.2⟩
+    have hmemy : y ∈ Ioo resonanceRoot1 legacyCubeCertHi := ⟨hy_root, hy.2⟩
     have hweight : capacityPhaseLegacy y < capacityPhaseLegacy (c * y) :=
       capacityPhaseLegacy_strictAnti hmemc hmemy hcy
-    have hgc : gammaSEqualLegacy (c * y) ≠ 0 := (gammaSEqualLegacy_neg_first_shell hmemc).ne
-    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_first_shell hmemy).ne
+    have hgc : gammaSEqualLegacy (c * y) ≠ 0 := (gammaSEqualLegacy_neg_legacy_cube_window hmemc).ne
+    have hg : gammaSEqualLegacy y ≠ 0 := (gammaSEqualLegacy_neg_legacy_cube_window hmemy).ne
     rw [(hasDerivAt_scaledRatioLegacy hgc).deriv, scaledRatioSlopeLegacy_eq_weight hc0 hy0 hg hgc]
     have hden : 0 < gammaSEqualLegacy (c * y) ^ 2 := sq_pos_of_ne_zero hgc
     have hprod : gammaSEqualLegacy y * gammaSEqualLegacy (c * y) > 0 :=
-      mul_pos_of_neg_of_neg (gammaSEqualLegacy_neg_first_shell hmemy)
-        (gammaSEqualLegacy_neg_first_shell hmemc)
+      mul_pos_of_neg_of_neg (gammaSEqualLegacy_neg_legacy_cube_window hmemy)
+        (gammaSEqualLegacy_neg_legacy_cube_window hmemc)
     have hdiff : capacityPhaseLegacy y - capacityPhaseLegacy (c * y) < 0 := by linarith
     have hnum : gammaSEqualLegacy y * gammaSEqualLegacy (c * y) *
         (capacityPhaseLegacy y - capacityPhaseLegacy (c * y)) / y < 0 := by
@@ -1738,7 +1767,7 @@ lemma strictAntiOn_add {f g : ℝ → ℝ} {s : Set ℝ}
   linarith [hf hx hy hxy, hg hx hy hxy]
 
 lemma cubeResponseLegacy_strictAnti :
-    StrictAntiOn cubeResponseLegacy (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+    StrictAntiOn cubeResponseLegacy (Ioo (2 * resonanceRoot1) legacyCubeCertHi) := by
   have hscale := cubeScale_mem_Ioo
   have hedge := scaledRatioLegacy_strictAnti (c := cubeEdge) (by nlinarith [hscale.1, hscale.2.1])
     hscale.2.2
@@ -1915,7 +1944,7 @@ lemma gammaSEqualLegacy_thirtyNine_tenths_gt : -3 / 2 < gammaSEqualLegacy (39 / 
   linarith [hid, hfirst, hsecond, hlow]
 
 lemma continuousOn_cubeResponseLegacy :
-    ContinuousOn cubeResponseLegacy (Ioo (2 * resonanceRoot1) (branchNode 1)) := by
+    ContinuousOn cubeResponseLegacy (Ioo (2 * resonanceRoot1) legacyCubeCertHi) := by
   unfold cubeResponseLegacy scaledRatioLegacy
   refine ContinuousOn.add (ContinuousOn.add ?_ ?_) ?_
   · refine ContinuousOn.mul continuousOn_const ?_
