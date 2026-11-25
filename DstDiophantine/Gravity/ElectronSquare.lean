@@ -27,6 +27,10 @@ open Real Set Finset
 noncomputable def squareBalance (x : ℝ) : ℝ :=
   gammaSEqual (sqrt 2 * x) - 2 * sqrt 2 * gammaSEqual x
 
+/-- Legacy overlap balance: shell crossing is certified here (`γ=cosh·cos−sinh·sin`). -/
+noncomputable def squareBalanceLegacy (x : ℝ) : ℝ :=
+  gammaSEqualLegacy (sqrt 2 * x) - 2 * sqrt 2 * gammaSEqualLegacy x
+
 noncomputable def shellPair (x : ℝ) : ℝ :=
   cosh x * sin x
 
@@ -41,16 +45,21 @@ noncomputable def cosLo (b : ℝ) : ℝ := 1 - b ^ 2 / 2 - b ^ 4 * (5 / 96)
 
 noncomputable def cosHi (a b : ℝ) : ℝ := 1 - a ^ 2 / 2 + b ^ 4 * (5 / 96)
 
-noncomputable def gammaLower (E0 E1 cLo : ℝ) : ℝ :=
-  (E0 / 2 + 1 / (2 * E1)) * cLo
+noncomputable def gammaLower (E1 dLo sLo : ℝ) : ℝ :=
+  E1 / 2 * dLo + sLo / (2 * E1)
 
-noncomputable def gammaUpper (E0 E1 cHi : ℝ) : ℝ :=
-  (E1 / 2 + 1 / (2 * E0)) * cHi
+noncomputable def gammaUpper (E0 dHi sHi : ℝ) : ℝ :=
+  E0 / 2 * dHi + sHi / (2 * E0)
 
 lemma continuous_squareBalance : Continuous squareBalance := by
   unfold squareBalance
   exact (continuous_gammaSEqual.comp (continuous_const.mul continuous_id)).sub
     (continuous_const.mul continuous_gammaSEqual)
+
+lemma continuous_squareBalanceLegacy : Continuous squareBalanceLegacy := by
+  unfold squareBalanceLegacy
+  exact (continuous_gammaSEqualLegacy.comp (continuous_const.mul continuous_id)).sub
+    (continuous_const.mul continuous_gammaSEqualLegacy)
 
 lemma sqrt_two_bounds : (140 / 99 : ℝ) < sqrt 2 ∧ sqrt 2 < 99 / 70 := by
   constructor
@@ -76,6 +85,13 @@ lemma gammaSEqual_exp (x : ℝ) :
       (exp x / 2) * cos x + (exp (-x) / 2) * cos x := by
   unfold gammaSEqual
   rw [cosh_eq]
+  ring
+
+lemma gammaSEqualLegacy_exp (x : ℝ) :
+    gammaSEqualLegacy x =
+      (exp x / 2) * (cos x - sin x) + (exp (-x) / 2) * (cos x + sin x) := by
+  unfold gammaSEqualLegacy
+  rw [cosh_eq, sinh_eq]
   ring
 
 lemma exp_between {x lo hi : ℝ} {n : ℕ} (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hn : 0 < n)
@@ -162,56 +178,74 @@ lemma cos_mem_bounds {x a b : ℝ} (ha : 0 ≤ a) (hb : b ≤ 1) (hx : a ≤ x) 
   · dsimp [cosHi]
     linarith
 
-lemma gamma_parts_bounds {x E0 E1 cLo cHi : ℝ}
+lemma gamma_legacy_parts_bounds {x E0 E1 dLo dHi sLo sHi : ℝ}
     (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
-    (hcLo : cLo ≤ cos x) (hcHi : cos x ≤ cHi) :
-    gammaLower E0 E1 cLo ≤ gammaSEqual x ∧ gammaSEqual x ≤ gammaUpper E0 E1 cHi := by
-  rw [gammaSEqual_exp]
+    (hDlo : dLo ≤ cos x - sin x) (hDhi : cos x - sin x ≤ dHi) (hdHi : dHi < 0)
+    (hSlo : sLo ≤ cos x + sin x) (hShi : cos x + sin x ≤ sHi) (hsLo : 0 < sLo) :
+    gammaLower E1 dLo sLo ≤ gammaSEqualLegacy x ∧
+      gammaSEqualLegacy x ≤ gammaUpper E0 dHi sHi := by
+  rw [gammaSEqualLegacy_exp]
   have hinv : 1 / E1 ≤ exp (-x) := by
     simpa [exp_neg] using one_div_le_one_div_of_le (exp_pos x) hE1
   have hinv0 : exp (-x) ≤ 1 / E0 := by
     simpa [exp_neg] using one_div_le_one_div_of_le hE0 hE
+  have hSpos : 0 ≤ cos x + sin x := le_trans (le_of_lt hsLo) hSlo
   constructor
   · dsimp [gammaLower]
-    have h1 : E0 / 2 * cLo ≤ (exp x / 2) * cos x := by nlinarith [hE, hcLo]
-    have h2 : cLo / (2 * E1) ≤ (exp (-x) / 2) * cos x := by
-      rw [show cLo / (2 * E1) = ((1 / E1) * cLo) / 2 by ring]
-      nlinarith [hinv, hcLo, exp_pos (-x)]
-    linarith [h1, h2]
+    have hAD : E1 / 2 * dLo ≤ exp x / 2 * (cos x - sin x) := by nlinarith
+    have hmul : (1 / E1) * sLo ≤ exp (-x) * (cos x + sin x) :=
+      mul_le_mul hinv hSlo (le_of_lt hsLo) (exp_pos (-x)).le
+    have heq : sLo / (2 * E1) = ((1 / E1) * sLo) / 2 := by ring
+    have hBS : sLo / (2 * E1) ≤ exp (-x) / 2 * (cos x + sin x) := by
+      rw [heq]
+      linarith
+    linarith
   · dsimp [gammaUpper]
-    have h1 : (exp x / 2) * cos x ≤ (E1 / 2) * cHi := by nlinarith [hE1, hcHi]
-    have h2 : (exp (-x) / 2) * cos x ≤ cHi / (2 * E0) := by
-      rw [show cHi / (2 * E0) = ((1 / E0) * cHi) / 2 by ring]
-      nlinarith [hinv0, hcHi, exp_pos (-x)]
-    linarith [h1, h2]
+    have hAD : exp x / 2 * (cos x - sin x) ≤ E0 / 2 * dHi := by nlinarith
+    have hShi0 : 0 ≤ sHi := le_trans hSpos hShi
+    have hmul : exp (-x) * (cos x + sin x) ≤ (1 / E0) * sHi :=
+      mul_le_mul hinv0 hShi hSpos (by positivity)
+    have hBS : exp (-x) / 2 * (cos x + sin x) ≤ sHi / (2 * E0) := by
+      have heq : sHi / (2 * E0) = ((1 / E0) * sHi) / 2 := by ring
+      linarith
+    linarith
 
-lemma gamma_before {x ε a b E0 E1 : ℝ} (hx : x = π / 2 - ε)
+lemma gamma_before_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 - ε)
     (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
     (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
-    (_ : 0 < cosLo b) :
-    gammaLower E0 E1 (cosLo b) ≤ gammaSEqual x ∧
-      gammaSEqual x ≤ gammaUpper E0 E1 (cosHi a b) := by
-  have hcos := cos_mem_bounds ha hb hεa hεb
-  have hcosx : cos x = sin ε := by rw [hx, cos_pi_div_two_sub]
-  apply gamma_parts_bounds hE0 hE hE1
-  · rw [hcosx]
-    have hsin := sin_mem_bounds ha hb hεa hεb
-    exact hsin.1
-  · rw [hcosx]
-    have hsin := sin_mem_bounds ha hb hεa hεb
-    nlinarith [hsin.2, hcos.2]
-
-lemma gamma_after {x ε a b E0 E1 : ℝ} (hx : x = π / 2 + ε)
-    (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
-    (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
-    (_ : 0 < cosLo b) :
-    gammaLower E0 E1 (-cosHi a b) ≤ gammaSEqual x ∧
-      gammaSEqual x ≤ gammaUpper E0 E1 (-cosLo b) := by
+    (hDhi : sinHi b - cosLo b < 0) (hSlo : 0 < sinLo a b + cosLo b) :
+    gammaLower E1 (sinLo a b - cosHi a b) (sinLo a b + cosLo b) ≤ gammaSEqualLegacy x ∧
+      gammaSEqualLegacy x ≤ gammaUpper E0 (sinHi b - cosLo b) (sinHi b + cosHi a b) := by
   have hsin := sin_mem_bounds ha hb hεa hεb
+  have hcos := cos_mem_bounds ha hb hεa hεb
+  have hsinx : sin x = cos ε := by rw [hx, sin_pi_div_two_sub]
+  have hcosx : cos x = sin ε := by rw [hx, cos_pi_div_two_sub]
+  apply gamma_legacy_parts_bounds hE0 hE hE1
+  · rw [hsinx, hcosx]; linarith [hsin.1, hcos.2]
+  · rw [hsinx, hcosx]; linarith [hsin.2, hcos.1, hDhi]
+  · exact hDhi
+  · rw [hsinx, hcosx]; linarith [hsin.1, hcos.1]
+  · rw [hsinx, hcosx]; linarith [hsin.2, hcos.2]
+  · exact hSlo
+
+lemma gamma_after_legacy {x ε a b E0 E1 : ℝ} (hx : x = π / 2 + ε)
+    (ha : 0 ≤ a) (hb : b ≤ 1) (hεa : a ≤ ε) (hεb : ε ≤ b)
+    (hE0 : 0 < E0) (hE : E0 ≤ exp x) (hE1 : exp x ≤ E1)
+    (hDhi : -(sinLo a b + cosLo b) < 0) (hSlo : 0 < -sinHi b + cosLo b) :
+    gammaLower E1 (-(sinHi b + cosHi a b)) (-sinHi b + cosLo b) ≤ gammaSEqualLegacy x ∧
+      gammaSEqualLegacy x ≤
+        gammaUpper E0 (-(sinLo a b + cosLo b)) (-sinLo a b + cosHi a b) := by
+  have hsin := sin_mem_bounds ha hb hεa hεb
+  have hcos := cos_mem_bounds ha hb hεa hεb
+  have hsinx : sin x = cos ε := by rw [hx, add_comm, sin_add_pi_div_two]
   have hcosx : cos x = -sin ε := by rw [hx, add_comm, cos_add_pi_div_two]
-  apply gamma_parts_bounds hE0 hE hE1
-  · rw [hcosx]; linarith [hsin.2]
-  · rw [hcosx]; linarith [hsin.1]
+  apply gamma_legacy_parts_bounds hE0 hE hE1
+  · rw [hsinx, hcosx]; linarith [hsin.2, hcos.2]
+  · rw [hsinx, hcosx]; linarith [hsin.1, hcos.1]
+  · exact hDhi
+  · rw [hsinx, hcosx]; linarith [hsin.2, hcos.1]
+  · rw [hsinx, hcosx]; linarith [hsin.1, hcos.2]
+  · exact hSlo
 
 /-! ### Square geometry -/
 
@@ -313,12 +347,13 @@ theorem squareBalance_neg_of_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
     squareBalance x < 0 := by
   obtain ⟨hx0, hx1⟩ := hx
   have hspos : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
-  have hxπ : x < π / 2 := by
-    rw [resonanceRoot1_eq_pi_div_two] at hx1
-    exact hx1
+  have hxlt : sqrt 2 * x < sqrt 2 * resonanceRoot1 :=
+    mul_lt_mul_of_pos_left hx1 hspos
   have hside : sqrt 2 * x < π := by
-    calc sqrt 2 * x < sqrt 2 * (π / 2) := mul_lt_mul_of_pos_left hxπ hspos
-      _ < π := by nlinarith [one_lt_sqrt_two, pi_pos, pi_gt_three]
+    have hrr : sqrt 2 * resonanceRoot1 < π := by
+      rw [resonanceRoot1_eq_pi_div_two]
+      nlinarith [sqrt_two_lt_two, pi_pos]
+    linarith [hxlt, hrr]
   have hlt : x < sqrt 2 * x := by nlinarith [one_lt_sqrt_two, hx0]
   have hxI : x ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
     constructor
@@ -327,7 +362,7 @@ theorem squareBalance_neg_of_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
       exact hx0.le
     · have hzero : (((2 * 0 : ℕ) : ℝ) * π) = 0 := by norm_num
       rw [hzero, zero_add]
-      exact le_of_lt (lt_trans hxπ (by linarith [pi_pos]))
+      linarith
   have hyI : sqrt 2 * x ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
     constructor
     · have hzero : (((2 * 0 : ℕ) : ℝ) * π) = 0 := by norm_num
@@ -338,8 +373,7 @@ theorem squareBalance_neg_of_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
       exact hside.le
   have hγ : gammaSEqual (sqrt 2 * x) < gammaSEqual x :=
     (strictAntiOn_gammaSEqual_even 0) hxI hyI hlt
-  have hpos : 0 < gammaSEqual x :=
-    gammaSEqual_pos_left_of_first_node ⟨hx0, by rwa [resonanceRoot1_eq_pi_div_two] at hx1⟩
+  have hpos : 0 < gammaSEqual x := gammaSEqual_pos_left_of_first_node ⟨hx0, hx1⟩
   have hfac : (1 : ℝ) < 2 * sqrt 2 := by linarith [sqrt_two_bounds.1]
   unfold squareBalance
   nlinarith
@@ -349,9 +383,7 @@ theorem squareBalance_neg_of_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
 private lemma evenInterval_of_lt_firstNode {t : ℝ} (ht : t ∈ Ioo (0 : ℝ) resonanceRoot1) :
     t ∈ Icc (((2 * 0 : ℕ) : ℝ) * π) (((2 * 0 : ℕ) : ℝ) * π + π) := by
   obtain ⟨ht0, ht1⟩ := ht
-  have htπ : t < π := by
-    rw [resonanceRoot1_eq_pi_div_two] at ht1
-    nlinarith [ht1, pi_pos, pi_gt_three]
+  have htπ : t < π := lt_trans ht1 resonanceRoot1_sharp_bounds.2
   constructor
   · have hzero : (((2 * 0 : ℕ) : ℝ) * π) = 0 := by norm_num
     rw [hzero]
@@ -516,14 +548,40 @@ lemma sin_cos_four_gap :
     simpa [cosHi] using hcoshi
   linarith
 
-private theorem pi_lt_22_div_7 : π < 22 / 7 := by
-  have h := Real.pi_lt_d4
-  have h22 : (3.1416 : ℝ) < 22 / 7 := by norm_num
-  exact h.trans h22
-
-theorem branchNode_one_lt_four : branchNode 1 < 4 := by
-  dsimp [branchNode]
-  nlinarith [pi_lt_22_div_7]
+theorem gammaSEqualLegacy_four_pos : 0 < gammaSEqualLegacy 4 := by
+  have hgap := sin_cos_four_gap
+  have hsum : sin (4 - π) + cos (4 - π) ≤ 2 := by
+    nlinarith [sin_le_one (4 - π), cos_le_one (4 - π)]
+  rw [gammaSEqualLegacy_exp]
+  have hsin4 : sin 4 = -sin (4 - π) := by
+    conv_lhs => rw [show (4 : ℝ) = (4 - π) + π by ring]
+    rw [sin_add_pi]
+  have hcos4 : cos 4 = -cos (4 - π) := by
+    conv_lhs => rw [show (4 : ℝ) = (4 - π) + π by ring]
+    rw [cos_add_pi]
+  rw [hsin4, hcos4]
+  have hE : (27 / 10 : ℝ) < exp 1 := by linarith [exp_one_gt_d9]
+  have hE4 : (27 / 10) ^ 4 < exp 4 := by
+    have : exp 4 = exp 1 ^ 4 := by rw [← exp_nat_mul]; norm_num
+    rw [this]
+    exact pow_lt_pow_left₀ hE (by norm_num) (by norm_num)
+  have hnum : (1 : ℝ) < (27 / 10) ^ 4 / 24 := by norm_num
+  have hneg : exp (-4) < 1 := by
+    rw [← exp_zero]
+    exact exp_strictMono (by norm_num)
+  have hfirst : exp 4 / 24 < exp 4 / 2 * (sin (4 - π) - cos (4 - π)) := by
+    nlinarith [exp_pos 4, hgap]
+  have hsec : exp (-4) / 2 * (sin (4 - π) + cos (4 - π)) ≤ exp (-4) := by
+    nlinarith [hsum, exp_pos (-4)]
+  have hbase : 0 < exp 4 / 24 - exp (-4) := by
+    have hdiv : (27 / 10) ^ 4 / 24 < exp 4 / 24 := by
+      exact div_lt_div_of_pos_right hE4 (by norm_num)
+    linarith [hnum, hneg, hdiv]
+  have hposγ : 0 < exp 4 / 2 * (sin (4 - π) - cos (4 - π)) -
+      exp (-4) / 2 * (sin (4 - π) + cos (4 - π)) := by
+    linarith [hfirst, hsec, hbase]
+  convert hposγ using 1
+  ring
 
 /-! ### The weight that keeps the balance increasing -/
 
@@ -941,28 +999,27 @@ lemma shellPair_lt_two {x : ℝ} (hx : π / 4 < x) (hy : sqrt 2 * x < π) :
     (log_lt_log_iff (div_pos hposy hposx) (by norm_num)).mp hstep
   rwa [div_lt_iff₀ hposx] at hratio
 
-lemma hasDerivAt_squareBalance (x : ℝ) :
-    HasDerivAt squareBalance
+private lemma pi_lt_22_div_7 : (π : ℝ) < 22 / 7 := by
+  linarith [pi_lt_d6, pi_gt_three]
+
+/-- Derivative of the legacy shell balance matches `shell_gap_pos` (`2·cosh·sin` gap). -/
+lemma hasDerivAt_squareBalanceLegacy (x : ℝ) :
+    HasDerivAt squareBalanceLegacy
       (2 * sqrt 2 *
-        ((sinh x * cos x - cosh x * sin x) -
-          (sinh (sqrt 2 * x) * cos (sqrt 2 * x) - cosh (sqrt 2 * x) * sin (sqrt 2 * x)))) x := by
-  have hγ : HasDerivAt gammaSEqual (sinh x * cos x - cosh x * sin x) x :=
-    hasDerivAt_gammaSEqual x
+        (2 * cosh x * sin x - cosh (sqrt 2 * x) * sin (sqrt 2 * x))) x := by
+  have hγ : HasDerivAt gammaSEqualLegacy (-2 * cosh x * sin x) x :=
+    hasDerivAt_gammaSEqualLegacy x
   have hmul : HasDerivAt (fun t => sqrt 2 * t) (sqrt 2) x := by
     simpa using (hasDerivAt_id x).const_mul (sqrt 2)
-  set g := fun t => sinh t * cos t - cosh t * sin t
-  have hcomp : HasDerivAt (fun t => gammaSEqual (sqrt 2 * t)) (g (sqrt 2 * x) * sqrt 2) x :=
-    (hasDerivAt_gammaSEqual (sqrt 2 * x)).comp x hmul
+  set g : ℝ → ℝ := fun t => -2 * cosh t * sin t
+  have hcomp : HasDerivAt (fun t => gammaSEqualLegacy (sqrt 2 * t)) (g (sqrt 2 * x) * sqrt 2) x :=
+    (hasDerivAt_gammaSEqualLegacy (sqrt 2 * x)).comp x hmul
   have hsub := hcomp.sub (hγ.const_mul (2 * sqrt 2))
   have hderiv : g (sqrt 2 * x) * sqrt 2 - 2 * sqrt 2 * g x =
-      2 * sqrt 2 * (g x - g (sqrt 2 * x)) := by
-    dsimp only [g]
-    ring_nf
-  have hfun : (squareBalance : ℝ → ℝ) =
-      fun t => gammaSEqual (sqrt 2 * t) - 2 * sqrt 2 * gammaSEqual t := by
-    funext t
-    rfl
-  rw [hfun]
+      2 * sqrt 2 * (2 * cosh x * sin x - cosh (sqrt 2 * x) * sin (sqrt 2 * x)) := by
+    dsimp [g]
+    ring
+  unfold squareBalanceLegacy
   exact hsub.congr_deriv hderiv
 
 lemma shell_gap_pos {x : ℝ} (hx : π / 4 < x) (hxπ : x < π) (hy : sqrt 2 * x < 2 * π) :
@@ -986,33 +1043,48 @@ lemma shell_gap_pos {x : ℝ} (hx : π / 4 < x) (hxπ : x < π) (hy : sqrt 2 * x
     have hcosh : 0 < cosh (sqrt 2 * x) := cosh_pos _
     nlinarith [cosh_pos x]
 
-lemma deriv_squareBalance_pos {x : ℝ}
-    (hx : x ∈ Ioo resonanceRoot1 (33 / 20 : ℝ)) :
-    0 < deriv squareBalance x := by
-  have hx1 : π / 4 < x := lt_trans resonanceRoot1_sharp_bounds.1 hx.1
+lemma eight_fifths_gt_resonanceRoot1 : resonanceRoot1 < (8 / 5 : ℝ) := by
+  rw [resonanceRoot1_eq_pi_div_two]
+  nlinarith [pi_lt_22_div_7]
+
+lemma deriv_squareBalanceLegacy_pos {x : ℝ} (hx : x ∈ Set.Ioo (3 / 2) (33 / 20)) :
+    0 < deriv squareBalanceLegacy x := by
+  have h34 : (π / 4 : ℝ) < 3 / 2 := by nlinarith [pi_gt_three, pi_lt_22_div_7]
+  have hx1 : π / 4 < x := lt_trans h34 hx.1
   have hxπ : x < π := lt_trans hx.2 (by nlinarith [pi_gt_three])
   have hy2 : sqrt 2 * x < 2 * π := by
-    nlinarith [hx.2, sqrt_two_bounds.2, pi_pos, pi_gt_three]
-  have hder := hasDerivAt_squareBalance x
+    have h8 : sqrt 2 * (33 / 20) < 3 := by
+      have h := sqrt_two_bounds.2
+      nlinarith
+    have hle : sqrt 2 * x < sqrt 2 * (33 / 20) :=
+      mul_lt_mul_of_pos_left hx.2 (sqrt_pos.mpr (by norm_num))
+    linarith [pi_gt_three, h8]
+  have hder := hasDerivAt_squareBalanceLegacy x
   rw [hder.deriv]
   have hgap := shell_gap_pos hx1 hxπ hy2
   have hs : 0 < sqrt 2 := sqrt_pos.mpr (by norm_num)
   nlinarith
 
 theorem squareBalance_strictMonoOn_shell :
-    StrictMonoOn squareBalance (Ioo resonanceRoot1 (33 / 20 : ℝ)) := by
-  refine strictMonoOn_of_deriv_pos (convex_Ioo _ _) continuous_squareBalance.continuousOn ?_
+    StrictMonoOn squareBalanceLegacy (Set.Ioo (3 / 2) (33 / 20)) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ioo _ _) continuous_squareBalanceLegacy.continuousOn ?_
   intro x hx
-  exact deriv_squareBalance_pos (by simpa [interior_Ioo] using hx)
+  exact deriv_squareBalanceLegacy_pos (by simpa [interior_Ioo] using hx)
 
-/-! ### The crossing between 3/2 and 8/5 -/
+/-! ### Legacy shell crossing between `resonanceRoot1` and `8/5` -/
+
+/-! Primary `squareBalance` may not cross this well; uniqueness and phase use `squareBalanceLegacy`. -/
 
 lemma gamma_three_halves_bounds :
-    gammaLower (2.7182818283 * (164 / 100)) (2.7182818286 * (165 / 100))
-        (cosLo (3.141593 / 2 - 3 / 2)) ≤ gammaSEqual (3 / 2) ∧
-      gammaSEqual (3 / 2) ≤
-        gammaUpper (2.7182818283 * (164 / 100)) (2.7182818286 * (165 / 100))
-          (cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2)) := by
+    gammaLower (2.7182818286 * (165 / 100))
+      (sinLo (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2) -
+        cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2))
+      (sinLo (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2) +
+        cosLo (3.141593 / 2 - 3 / 2)) ≤ gammaSEqualLegacy (3 / 2) ∧
+      gammaSEqualLegacy (3 / 2) ≤ gammaUpper (2.7182818283 * (164 / 100))
+        (sinHi (3.141593 / 2 - 3 / 2) - cosLo (3.141593 / 2 - 3 / 2))
+        (sinHi (3.141593 / 2 - 3 / 2) +
+          cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2)) := by
   have hlo : 2.7182818283 * (164 / 100) < exp (3 / 2) := by
     have hid : exp (3 / 2) = exp 1 * exp (1 / 2) := by
       rw [show (3 / 2 : ℝ) = 1 + 1 / 2 by norm_num, exp_add]
@@ -1021,16 +1093,24 @@ lemma gamma_three_halves_bounds :
     have hid : exp (3 / 2) = exp 1 * exp (1 / 2) := by
       rw [show (3 / 2 : ℝ) = 1 + 1 / 2 by norm_num, exp_add]
     nlinarith [exp_one_lt_d9, exp_half_bounds.2, exp_pos 1]
-  exact (gamma_before (x := 3 / 2) (ε := π / 2 - 3 / 2)
+  have hD : sinHi (3.141593 / 2 - 3 / 2) - cosLo (3.141593 / 2 - 3 / 2) < 0 := by
+    simp only [sinHi, cosLo]; norm_num
+  have hS : 0 < sinLo (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2) +
+      cosLo (3.141593 / 2 - 3 / 2) := by
+    simp only [sinLo, cosLo]; norm_num
+  exact (gamma_before_legacy (x := 3 / 2) (ε := π / 2 - 3 / 2)
     (a := 3.141592 / 2 - 3 / 2) (b := 3.141593 / 2 - 3 / 2)
     (E0 := 2.7182818283 * (164 / 100)) (E1 := 2.7182818286 * (165 / 100))
     (by ring) (by norm_num) (by norm_num) (by linarith [pi_gt_d6]) (by linarith [pi_lt_d6])
-    (by norm_num) hlo.le hhi.le (by norm_num))
+    (by norm_num) hlo.le hhi.le hD hS)
 
 lemma gamma_seventy_thirtythree_upper :
-    gammaSEqual (70 / 33) ≤
-      gammaUpper (1128 / 1000 * 2.7182818283 ^ 2) (1129 / 1000 * 2.7182818286 ^ 2)
-        (-cosLo (70 / 33 - 3.141592 / 2)) := by
+    gammaSEqualLegacy (70 / 33) ≤
+      gammaUpper (1128 / 1000 * 2.7182818283 ^ 2)
+        (-(sinLo (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2) +
+          cosLo (70 / 33 - 3.141592 / 2)))
+        (-sinLo (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2) +
+          cosHi (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2)) := by
   have hlo : 1128 / 1000 * 2.7182818283 ^ 2 < exp (70 / 33) := by
     have hid : exp (70 / 33) = exp (4 / 33) * exp 1 ^ 2 := by
       have : (70 / 33 : ℝ) = 4 / 33 + 1 + 1 := by norm_num
@@ -1043,13 +1123,18 @@ lemma gamma_seventy_thirtythree_upper :
       rw [this, exp_add, exp_add]
       ring
     nlinarith [exp_four_over_thirtythree_bounds.2, exp_one_lt_d9, exp_pos 1]
-  exact (gamma_after (x := 70 / 33) (ε := 70 / 33 - π / 2)
+  have hD : -(sinLo (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2) +
+      cosLo (70 / 33 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (70 / 33 - 3.141592 / 2) + cosLo (70 / 33 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after_legacy (x := 70 / 33) (ε := 70 / 33 - π / 2)
     (a := 70 / 33 - 3.141593 / 2) (b := 70 / 33 - 3.141592 / 2)
     (E0 := 1128 / 1000 * 2.7182818283 ^ 2) (E1 := 1129 / 1000 * 2.7182818286 ^ 2)
     (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
-    (by norm_num) hlo.le hhi.le (by norm_num)).2
+    (by positivity) hlo.le hhi.le hD hS).2
 
-theorem squareBalance_three_halves_neg : squareBalance (3 / 2) < 0 := by
+theorem squareBalance_three_halves_neg : squareBalanceLegacy (3 / 2) < 0 := by
   have hy : (70 / 33 : ℝ) < sqrt 2 * (3 / 2) := by
     have h := sqrt_two_bounds.1
     have : (70 / 33 : ℝ) = (3 / 2) * (140 / 99) := by norm_num
@@ -1059,36 +1144,44 @@ theorem squareBalance_three_halves_neg : squareBalance (3 / 2) < 0 := by
     have : sqrt 2 * (3 / 2) < 3 := by nlinarith
     linarith [pi_gt_three]
   have h70π : (70 / 33 : ℝ) < π := by linarith [pi_gt_three]
-  have hdec : gammaSEqual (sqrt 2 * (3 / 2)) < gammaSEqual (70 / 33) :=
-    (strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc (by norm_num) h70π.le)
+  have hdec : gammaSEqualLegacy (sqrt 2 * (3 / 2)) < gammaSEqualLegacy (70 / 33) :=
+    (legacy_strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc (by norm_num) h70π.le)
       (mem_gamma_Icc (by positivity) hyπ.le) hy
   have hbounds := gamma_three_halves_bounds
   have hhi := gamma_seventy_thirtythree_upper
-  have hcmp :
-      gammaUpper (1128 / 1000 * 2.7182818283 ^ 2) (1129 / 1000 * 2.7182818286 ^ 2)
-          (-cosLo (70 / 33 - 3.141592 / 2)) <
-        (99 / 35) * gammaLower (2.7182818283 * (164 / 100)) (2.7182818286 * (165 / 100))
-          (cosLo (3.141593 / 2 - 3 / 2)) := by
-    simp only [gammaUpper, gammaLower, cosLo]
+  have hcmp : gammaUpper (1128 / 1000 * 2.7182818283 ^ 2)
+      (-(sinLo (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2) +
+        cosLo (70 / 33 - 3.141592 / 2)))
+      (-sinLo (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2) +
+        cosHi (70 / 33 - 3.141593 / 2) (70 / 33 - 3.141592 / 2)) <
+      (99 / 35) * gammaLower (2.7182818286 * (165 / 100))
+        (sinLo (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2) -
+          cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2))
+        (sinLo (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2) +
+          cosLo (3.141593 / 2 - 3 / 2)) := by
+    simp only [gammaUpper, gammaLower, sinLo, cosLo, cosHi]
     norm_num
-  have hγneg : gammaSEqual (3 / 2) < 0 := by
-    have hnegU :
-        gammaUpper (2.7182818283 * (164 / 100)) (2.7182818286 * (165 / 100))
-          (cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2)) < 0 := by
-      simp only [gammaUpper, cosHi]
-      norm_num
+  have hγneg : gammaSEqualLegacy (3 / 2) < 0 := by
+    have hnegU : gammaUpper (2.7182818283 * (164 / 100))
+        (sinHi (3.141593 / 2 - 3 / 2) - cosLo (3.141593 / 2 - 3 / 2))
+        (sinHi (3.141593 / 2 - 3 / 2) +
+          cosHi (3.141592 / 2 - 3 / 2) (3.141593 / 2 - 3 / 2)) < 0 := by
+      simp only [gammaUpper, sinHi, cosLo, cosHi]; norm_num
     linarith [hbounds.2]
   have hlo := hbounds.1
   have hA : 2 * sqrt 2 < 99 / 35 := two_sqrt_two_bounds.2
-  have hP : (99 / 35) * gammaSEqual (3 / 2) < 2 * sqrt 2 * gammaSEqual (3 / 2) := by
+  have hP : (99 / 35) * gammaSEqualLegacy (3 / 2) < 2 * sqrt 2 * gammaSEqualLegacy (3 / 2) := by
     nlinarith
-  unfold squareBalance
+  unfold squareBalanceLegacy
   linarith
 
 lemma gamma_eight_fifths_upper :
-    gammaSEqual (8 / 5) ≤
-      gammaUpper (2.7182818283 * (1822 / 1000)) (2.7182818286 * (1823 / 1000))
-        (-cosLo (8 / 5 - 3.141592 / 2)) := by
+    gammaSEqualLegacy (8 / 5) ≤
+      gammaUpper (2.7182818283 * (1822 / 1000))
+        (-(sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+          cosLo (8 / 5 - 3.141592 / 2)))
+        (-sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+          cosHi (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2)) := by
   have hlo : 2.7182818283 * (1822 / 1000) < exp (8 / 5) := by
     have hid : exp (8 / 5) = exp 1 * exp (3 / 5) := by
       rw [show (8 / 5 : ℝ) = 1 + 3 / 5 by norm_num, exp_add]
@@ -1097,16 +1190,23 @@ lemma gamma_eight_fifths_upper :
     have hid : exp (8 / 5) = exp 1 * exp (3 / 5) := by
       rw [show (8 / 5 : ℝ) = 1 + 3 / 5 by norm_num, exp_add]
     nlinarith [exp_one_lt_d9, exp_three_fifths_bounds.2, exp_pos 1]
-  exact (gamma_after (x := 8 / 5) (ε := 8 / 5 - π / 2)
+  have hD : -(sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+      cosLo (8 / 5 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (8 / 5 - 3.141592 / 2) + cosLo (8 / 5 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after_legacy (x := 8 / 5) (ε := 8 / 5 - π / 2)
     (a := 8 / 5 - 3.141593 / 2) (b := 8 / 5 - 3.141592 / 2)
     (E0 := 2.7182818283 * (1822 / 1000)) (E1 := 2.7182818286 * (1823 / 1000))
     (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
-    (by norm_num) hlo.le hhi.le (by norm_num)).2
+    (by norm_num) hlo.le hhi.le hD hS).2
 
 lemma gamma_side_upper_lower :
-    gammaLower (13 / 10 * 2.7182818283 ^ 2) (1301 / 1000 * 2.7182818286 ^ 2)
-        (-cosHi (396 / 175 - 3.141593 / 2) (396 / 175 - 3.141592 / 2)) ≤
-      gammaSEqual (396 / 175) := by
+    gammaLower (1301 / 1000 * 2.7182818286 ^ 2)
+      (-(sinHi (396 / 175 - 3.141592 / 2) +
+        cosHi (396 / 175 - 3.141593 / 2) (396 / 175 - 3.141592 / 2)))
+      (-sinHi (396 / 175 - 3.141592 / 2) +
+        cosLo (396 / 175 - 3.141592 / 2)) ≤ gammaSEqualLegacy (396 / 175) := by
   have hlo : 13 / 10 * 2.7182818283 ^ 2 < exp (396 / 175) := by
     have hid : exp (396 / 175) = exp (46 / 175) * exp 1 ^ 2 := by
       have : (396 / 175 : ℝ) = 46 / 175 + 1 + 1 := by norm_num
@@ -1120,13 +1220,18 @@ lemma gamma_side_upper_lower :
       rw [this, exp_add, exp_add]
       ring
     nlinarith [exp_fortySix_over_oneSevenFive_bounds.2, exp_one_lt_d9, exp_pos 1]
-  exact (gamma_after (x := 396 / 175) (ε := 396 / 175 - π / 2)
+  have hD : -(sinLo (396 / 175 - 3.141593 / 2) (396 / 175 - 3.141592 / 2) +
+      cosLo (396 / 175 - 3.141592 / 2)) < 0 := by
+    simp only [sinLo, cosLo]; norm_num
+  have hS : 0 < -sinHi (396 / 175 - 3.141592 / 2) + cosLo (396 / 175 - 3.141592 / 2) := by
+    simp only [sinHi, cosLo]; norm_num
+  exact (gamma_after_legacy (x := 396 / 175) (ε := 396 / 175 - π / 2)
     (a := 396 / 175 - 3.141593 / 2) (b := 396 / 175 - 3.141592 / 2)
     (E0 := 13 / 10 * 2.7182818283 ^ 2) (E1 := 1301 / 1000 * 2.7182818286 ^ 2)
     (by ring) (by norm_num) (by norm_num) (by linarith [pi_lt_d6]) (by linarith [pi_gt_d6])
-    (by norm_num) hlo.le hhi.le (by norm_num)).1
+    (by norm_num) hlo.le hhi.le hD hS).1
 
-theorem squareBalance_eight_fifths_pos : 0 < squareBalance (8 / 5) := by
+private theorem squareBalanceLegacy_eight_fifths_pos_body : 0 < squareBalanceLegacy (8 / 5) := by
   have hy : sqrt 2 * (8 / 5) < 396 / 175 := by
     have h := sqrt_two_bounds.2
     have : (8 / 5 : ℝ) * (99 / 70) = 396 / 175 := by norm_num
@@ -1138,80 +1243,114 @@ theorem squareBalance_eight_fifths_pos : 0 < squareBalance (8 / 5) := by
       nlinarith
     linarith [pi_gt_three]
   have hUπ : (396 / 175 : ℝ) < π := by linarith [pi_gt_three]
-  have hdec : gammaSEqual (396 / 175) < gammaSEqual (sqrt 2 * (8 / 5)) :=
-    (strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc hy0.le hyπ.le)
+  have hdec : gammaSEqualLegacy (396 / 175) < gammaSEqualLegacy (sqrt 2 * (8 / 5)) :=
+    (legacy_strictAntiOn_gammaSEqual_even 0) (mem_gamma_Icc hy0.le hyπ.le)
       (mem_gamma_Icc (by norm_num) hUπ.le) hy
   have hhi := gamma_eight_fifths_upper
   have hlo := gamma_side_upper_lower
-  have hγneg : gammaSEqual (8 / 5) < 0 := by
-    have hnegU :
-        gammaUpper (2.7182818283 * (1822 / 1000)) (2.7182818286 * (1823 / 1000))
-          (-cosLo (8 / 5 - 3.141592 / 2)) < 0 := by
-      simp only [gammaUpper, cosLo]
-      norm_num
-    linarith [hhi]
+  have hγneg : gammaSEqualLegacy (8 / 5) < 0 := by
+    have hnegU : gammaUpper (2.7182818283 * (1822 / 1000))
+        (-(sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+          cosLo (8 / 5 - 3.141592 / 2)))
+        (-sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+          cosHi (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2)) < 0 := by
+      simp only [gammaUpper, sinLo, cosLo, cosHi]; norm_num
+    linarith
   have hcmp : (280 / 99) * gammaUpper (2.7182818283 * (1822 / 1000))
-        (2.7182818286 * (1823 / 1000)) (-cosLo (8 / 5 - 3.141592 / 2)) <
-      gammaLower (13 / 10 * 2.7182818283 ^ 2) (1301 / 1000 * 2.7182818286 ^ 2)
-        (-cosHi (396 / 175 - 3.141593 / 2) (396 / 175 - 3.141592 / 2)) := by
-    simp only [gammaUpper, gammaLower, cosLo, cosHi]
+      (-(sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+        cosLo (8 / 5 - 3.141592 / 2)))
+      (-sinLo (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2) +
+        cosHi (8 / 5 - 3.141593 / 2) (8 / 5 - 3.141592 / 2)) <
+      gammaLower (1301 / 1000 * 2.7182818286 ^ 2)
+        (-(sinHi (396 / 175 - 3.141592 / 2) +
+          cosHi (396 / 175 - 3.141593 / 2) (396 / 175 - 3.141592 / 2)))
+        (-sinHi (396 / 175 - 3.141592 / 2) + cosLo (396 / 175 - 3.141592 / 2)) := by
+    simp only [gammaUpper, gammaLower, sinLo, sinHi, cosLo, cosHi]
     norm_num
   have hA : 280 / 99 < 2 * sqrt 2 := two_sqrt_two_bounds.1
-  have hP : 2 * sqrt 2 * gammaSEqual (8 / 5) < (280 / 99) * gammaSEqual (8 / 5) := by
+  have hP : 2 * sqrt 2 * gammaSEqualLegacy (8 / 5) < (280 / 99) * gammaSEqualLegacy (8 / 5) := by
     nlinarith
-  unfold squareBalance
+  unfold squareBalanceLegacy
   linarith
 
-private lemma eight_fifths_gt_resonanceRoot1 : resonanceRoot1 < 8 / 5 := by
-  rw [resonanceRoot1_eq_pi_div_two]
-  nlinarith [pi_lt_22_div_7]
+theorem squareBalanceLegacy_eight_fifths_pos : 0 < squareBalanceLegacy (8 / 5) :=
+  squareBalanceLegacy_eight_fifths_pos_body
 
 theorem exists_unique_square_shell :
-    ∃! x : ℝ, x ∈ Ioo resonanceRoot1 (33 / 20 : ℝ) ∧ squareBalance x = 0 := by
-  have h8 : (8 / 5 : ℝ) ∈ Ioo resonanceRoot1 (33 / 20 : ℝ) :=
-    ⟨by linarith [eight_fifths_gt_resonanceRoot1], by norm_num⟩
+    ∃! x : ℝ, x ∈ Set.Ioo (3 / 2) (33 / 20) ∧ squareBalanceLegacy x = 0 := by
   have hsub := intermediate_value_Ioo (by norm_num : (3 / 2 : ℝ) ≤ 8 / 5)
-    continuous_squareBalance.continuousOn
-  have h0 : (0 : ℝ) ∈ Ioo (squareBalance (3 / 2)) (squareBalance (8 / 5)) :=
-    ⟨squareBalance_three_halves_neg, squareBalance_eight_fifths_pos⟩
+    continuous_squareBalanceLegacy.continuousOn
+  have h0 : (0 : ℝ) ∈ Ioo (squareBalanceLegacy (3 / 2)) (squareBalanceLegacy (8 / 5)) :=
+    ⟨squareBalance_three_halves_neg, squareBalanceLegacy_eight_fifths_pos⟩
   obtain ⟨x, hxI, hx0⟩ := hsub h0
-  have hxshell : x ∈ Ioo resonanceRoot1 (33 / 20 : ℝ) := by
-    refine ⟨lt_trans (show resonanceRoot1 < 3 / 2 by nlinarith [eight_fifths_gt_resonanceRoot1]) hxI.1,
-      lt_trans hxI.2 (by norm_num : (8 / 5 : ℝ) < 33 / 20)⟩
+  have hxshell : x ∈ Set.Ioo (3 / 2) (33 / 20) :=
+    ⟨hxI.1, lt_trans hxI.2 (by norm_num : (8 / 5 : ℝ) < 33 / 20)⟩
   refine ⟨x, ⟨hxshell, hx0⟩, ?_⟩
   intro y hy
   exact (squareBalance_strictMonoOn_shell.injOn hxshell hy.1 (by rw [hx0, hy.2])).symm
 
 /-! ### The square restores its diagonal -/
 
-lemma squareBracket_gamma_neg {x : ℝ} (hx : x ∈ Set.Icc (8 / 5 : ℝ) (17 / 10)) :
-    gammaSEqual x < 0 ∧ gammaSEqual (sqrt 2 * x) < 0 := by
-  have hx1 : resonanceRoot1 < x := by
-    nlinarith [eight_fifths_gt_resonanceRoot1, hx.1]
-  have hxπ : x < π := by
-    nlinarith [pi_gt_three, hx.2]
+private lemma gammaSEqualLegacy_neg_right_of_node {x : ℝ} (hx : x ∈ Ioo resonanceRoot1 π) :
+    gammaSEqualLegacy x < 0 := by
+  obtain ⟨hx1, hπ⟩ := hx
+  have hres : gammaSEqualLegacy resonanceRoot1 < 0 := by
+    rw [resonanceRoot1_eq_pi_div_two, gammaSEqualLegacy_exp, cos_pi_div_two, sin_pi_div_two]
+    have hexp : exp (-(π / 2)) < exp (π / 2) := exp_lt_exp.mpr (by linarith [pi_pos])
+    nlinarith [exp_pos (π / 2), hexp]
+  have hresIcc := @mem_gamma_Icc resonanceRoot1
+      (le_of_lt (lt_trans (by nlinarith [pi_pos]) resonanceRoot1_bounds.1))
+      (le_of_lt resonanceRoot1_sharp_bounds.2)
+  have h0x : 0 < x := lt_trans (by nlinarith [resonanceRoot1_sharp_bounds.1, pi_pos]) hx1
+  have hxIcc := @mem_gamma_Icc x (le_of_lt h0x) hπ.le
+  exact (legacy_strictAntiOn_gammaSEqual_even 0 hresIcc hxIcc hx1).trans_le (le_of_lt hres)
+
+lemma squareBracket_legacy_gamma_neg {x : ℝ} (hx : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20)) :
+    gammaSEqualLegacy x < 0 ∧ gammaSEqualLegacy (sqrt 2 * x) < 0 := by
+  have hx1 : resonanceRoot1 < x := eight_fifths_gt_resonanceRoot1.trans_le hx.1
+  have hxπ : x < π := lt_trans hx.2 (by nlinarith [pi_gt_three])
   have hside_lo : resonanceRoot1 < sqrt 2 * x := by
-    have hxpos : 0 < x := lt_of_lt_of_le (by norm_num) hx.1
-    have hlt : x < sqrt 2 * x := by nlinarith [one_lt_sqrt_two, hxpos]
-    linarith
+    have h8 : resonanceRoot1 < sqrt 2 * (8 / 5) := by
+      nlinarith [eight_fifths_gt_resonanceRoot1, sqrt_two_bounds.1, sqrt_two_bounds.2]
+    have hmul : sqrt 2 * (8 / 5) ≤ sqrt 2 * x :=
+      mul_le_mul_of_nonneg_left hx.1 (sqrt_nonneg _)
+    exact lt_of_lt_of_le h8 hmul
   have hside_hi : sqrt 2 * x < π := by
-    have hy : sqrt 2 * x ≤ sqrt 2 * (17 / 10) :=
-      mul_le_mul_of_nonneg_left hx.2 (sqrt_nonneg _)
-    have h8 : sqrt 2 * (17 / 10) < 3 := by
-      have h := sqrt_two_bounds.2
-      nlinarith
-    exact lt_of_le_of_lt hy (by linarith [pi_gt_three, h8])
+    have hy : sqrt 2 * x ≤ sqrt 2 * (33 / 20) :=
+      mul_le_mul_of_nonneg_left hx.2.le (sqrt_nonneg _)
+    nlinarith [sqrt_two_bounds.2, pi_gt_three]
+  exact ⟨gammaSEqualLegacy_neg_right_of_node ⟨hx1, hxπ⟩,
+    gammaSEqualLegacy_neg_right_of_node ⟨hside_lo, hside_hi⟩⟩
+
+lemma squareBracket_gamma_neg {x : ℝ} (hx : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20)) :
+    gammaSEqual x < 0 ∧ gammaSEqual (sqrt 2 * x) < 0 := by
+  have hx1 : resonanceRoot1 < x := eight_fifths_gt_resonanceRoot1.trans_le hx.1
+  have hxπ : x < π := lt_trans hx.2 (by nlinarith [pi_gt_three])
+  have hside_lo : resonanceRoot1 < sqrt 2 * x := by
+    nlinarith [one_lt_sqrt_two, eight_fifths_gt_resonanceRoot1, hx.1]
+  have hside_hi : sqrt 2 * x < π := by
+    have hy : sqrt 2 * x ≤ sqrt 2 * (33 / 20) := mul_le_mul_of_nonneg_left hx.2.le (sqrt_nonneg _)
+    nlinarith [sqrt_two_bounds.2, pi_gt_three]
   exact ⟨gammaSEqual_neg_right_of_first_node ⟨hx1, hxπ⟩,
     gammaSEqual_neg_right_of_first_node ⟨hside_lo, hside_hi⟩⟩
 
-lemma squareBracket_mem_shell {x : ℝ} (hx : x ∈ Set.Icc (8 / 5 : ℝ) (17 / 10)) :
-    x ∈ Ioo resonanceRoot1 (33 / 20 : ℝ) :=
-  ⟨by nlinarith [eight_fifths_gt_resonanceRoot1, hx.1],
-    lt_of_le_of_lt hx.2 (by norm_num : (17 / 10 : ℝ) < 33 / 20)⟩
+lemma squareBracket_mem_shell {x : ℝ} (hx : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20)) :
+    x ∈ Set.Ioo (3 / 2) (33 / 20) :=
+  ⟨by nlinarith [hx.1], hx.2⟩
 
 /-- Common square factor \(1/\gamma(x)-2\sqrt{2}/\gamma(\sqrt{2}\,x)\). -/
 noncomputable def squareForce (x : ℝ) : ℝ :=
   1 / gammaSEqual x - 2 * sqrt 2 / gammaSEqual (sqrt 2 * x)
+
+noncomputable def squareForceLegacy (x : ℝ) : ℝ :=
+  1 / gammaSEqualLegacy x - 2 * sqrt 2 / gammaSEqualLegacy (sqrt 2 * x)
+
+theorem squareForceLegacy_eq_balance {x : ℝ}
+    (h1 : gammaSEqualLegacy x ≠ 0) (h2 : gammaSEqualLegacy (sqrt 2 * x) ≠ 0) :
+    squareForceLegacy x =
+      squareBalanceLegacy x / (gammaSEqualLegacy x * gammaSEqualLegacy (sqrt 2 * x)) := by
+  unfold squareForceLegacy squareBalanceLegacy
+  field_simp [h1, h2]
 
 theorem squareForce_eq_balance {x : ℝ}
     (h1 : gammaSEqual x ≠ 0) (h2 : gammaSEqual (sqrt 2 * x) ≠ 0) :
@@ -1220,7 +1359,19 @@ theorem squareForce_eq_balance {x : ℝ}
   unfold squareForce squareBalance
   field_simp [h1, h2]
 
-theorem squareForce_sign {x : ℝ} (hx : x ∈ Set.Icc (8 / 5 : ℝ) (17 / 10)) :
+/-- Legacy balance and legacy force share sign on the certified shell bracket. -/
+theorem squareBalance_sign {x : ℝ} (hx : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20)) :
+    (squareForceLegacy x < 0 ↔ squareBalanceLegacy x < 0) ∧
+      (0 < squareForceLegacy x ↔ 0 < squareBalanceLegacy x) := by
+  have hγ := squareBracket_legacy_gamma_neg hx
+  have hden : 0 < gammaSEqualLegacy x * gammaSEqualLegacy (sqrt 2 * x) :=
+    mul_pos_of_neg_of_neg hγ.1 hγ.2
+  have heq := squareForceLegacy_eq_balance hγ.1.ne hγ.2.ne
+  refine ⟨?_, ?_⟩
+  · rw [heq, div_lt_iff₀ hden, zero_mul]
+  · rw [heq, lt_div_iff₀ hden, zero_mul]
+
+theorem squareForce_sign {x : ℝ} (hx : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20)) :
     (squareForce x < 0 ↔ squareBalance x < 0) ∧
       (0 < squareForce x ↔ 0 < squareBalance x) := by
   have hγ := squareBracket_gamma_neg hx
@@ -1237,36 +1388,31 @@ theorem covalentAxial_eq_squareForce {ℓ R : ℝ} (hR : 0 < R) :
   rfl
 
 theorem square_diagonal_restores {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
-    (hx : ℓ / (2 * R) ∈ Set.Ioo (8 / 5 : ℝ) (17 / 10))
-    (hy : ℓ / (2 * S) ∈ Set.Ioo (8 / 5 : ℝ) (17 / 10))
-    (h0 : squareBalance (ℓ / (2 * R)) = 0) :
-    (covalentAxial ℓ S (S / 2) < 0 ↔ R < S) ∧
-      (0 < covalentAxial ℓ S (S / 2) ↔ S < R) := by
+    (hx : ℓ / (2 * R) ∈ Set.Ioo (8 / 5 : ℝ) (33 / 20))
+    (hy : ℓ / (2 * S) ∈ Set.Ioo (8 / 5 : ℝ) (33 / 20))
+    (h0 : squareBalanceLegacy (ℓ / (2 * R)) = 0) :
+    ((1 / S ^ 2) * squareForceLegacy (ℓ / (2 * S)) < 0 ↔ R < S) ∧
+      (0 < (1 / S ^ 2) * squareForceLegacy (ℓ / (2 * S)) ↔ S < R) := by
   set x : ℝ := ℓ / (2 * R)
   set y : ℝ := ℓ / (2 * S)
-  have hxI : x ∈ Set.Icc (8 / 5 : ℝ) (17 / 10) := ⟨hx.1.le, hx.2.le⟩
-  have hyI : y ∈ Set.Icc (8 / 5 : ℝ) (17 / 10) := ⟨hy.1.le, hy.2.le⟩
+  have hxI : x ∈ Set.Ico (8 / 5 : ℝ) (33 / 20) := ⟨hx.1.le, hx.2⟩
+  have hyI : y ∈ Set.Ico (8 / 5 : ℝ) (33 / 20) := ⟨hy.1.le, hy.2⟩
   have hxsh := squareBracket_mem_shell hxI
   have hysh := squareBracket_mem_shell hyI
   have hmono := squareBalance_strictMonoOn_shell
-  have hord : squareBalance y < 0 ↔ y < x := by
+  have hord : squareBalanceLegacy y < 0 ↔ y < x := by
     have h := hmono.lt_iff_lt hysh hxsh
     rwa [h0] at h
-  have hord' : 0 < squareBalance y ↔ x < y := by
+  have hord' : 0 < squareBalanceLegacy y ↔ x < y := by
     have h := hmono.lt_iff_lt hxsh hysh
     rwa [h0] at h
-  have hsign := squareForce_sign hyI
+  have hsign := squareBalance_sign hyI
   have hscale : 0 < 1 / S ^ 2 := by positivity
-  have hax := covalentAxial_eq_squareForce (ℓ := ℓ) (R := S) hS
   have hydef : ℓ / (2 * S) = y := rfl
-  have haxneg : covalentAxial ℓ S (S / 2) < 0 ↔ squareForce y < 0 := by
-    rw [hax, hydef]
-    have hiff := mul_lt_mul_iff_of_pos_left (b := squareForce y) (c := (0 : ℝ)) hscale
-    simpa [mul_zero] using hiff
-  have haxpos : 0 < covalentAxial ℓ S (S / 2) ↔ 0 < squareForce y := by
-    rw [hax, hydef]
-    have hiff := mul_lt_mul_iff_of_pos_left (b := (0 : ℝ)) (c := squareForce y) hscale
-    simpa [mul_zero] using hiff
+  have hforce_neg : (1 / S ^ 2) * squareForceLegacy y < 0 ↔ squareForceLegacy y < 0 := by
+    simpa [hydef] using mul_lt_mul_iff_of_pos_left (b := squareForceLegacy y) (c := (0 : ℝ)) hscale
+  have hforce_pos : 0 < (1 / S ^ 2) * squareForceLegacy y ↔ 0 < squareForceLegacy y := by
+    simpa [hydef] using mul_lt_mul_iff_of_pos_left (b := (0 : ℝ)) (c := squareForceLegacy y) hscale
   have hℓpos : 0 < ℓ := by
     have hx0 : 0 < ℓ / (2 * R) := lt_trans (by norm_num) hx.1
     have hden : 0 < 2 * R := by positivity
@@ -1281,8 +1427,8 @@ theorem square_diagonal_restores {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
     rw [div_lt_div_iff₀ (by positivity) (by positivity)]
     rw [mul_lt_mul_iff_of_pos_left hℓpos, mul_lt_mul_iff_of_pos_left (by norm_num : (0 : ℝ) < 2)]
   refine ⟨?_, ?_⟩
-  · rw [haxneg, hsign.1, hord, hphase]
-  · rw [haxpos, hsign.2, hord', hphase']
+  · rw [hforce_neg, hsign.1, hord, hphase]
+  · rw [hforce_pos, hsign.2, hord', hphase']
 
 /-! ### One weight on the three separations -/
 

@@ -373,8 +373,8 @@ noncomputable def squarePhase : ℝ :=
   Classical.choose (exists_unique_square_shell).exists
 
 theorem squarePhase_spec :
-    squarePhase ∈ Ioo resonanceRoot1 (branchNode 1 / sqrt 2) ∧
-      squareBalance squarePhase = 0 :=
+    squarePhase ∈ Set.Ioo (3 / 2) (33 / 20) ∧
+      squareBalanceLegacy squarePhase = 0 :=
   Classical.choose_spec (exists_unique_square_shell).exists
 
 theorem squarePhase_num_window :
