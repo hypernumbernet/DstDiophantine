@@ -160,7 +160,8 @@ window, so winding does not close it.
 | Two-equal cubes, and a shared exponent $n \ge 4$ whose third exponent is a multiple of $3$ | `darmonMerelCube` |
 | Even-sum slice at hypotenuse exponent $5$, and a shared exponent whose third exponent is a multiple of $5$ | `fermatSignatureNN5` |
 | Gaussian leaf $\alpha^3 + 2\beta^3 = \gamma^3$ | `eulerAffineCubeAddTwo` |
-| Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$, every even $n \ge 4$, and every multiple of such an exponent, together with every cube-pair shape of that form. $(3,3,10^9+1)$ is this closure because $7$ divides the hypotenuse. A prime exponent past $10^9$ is not | `sumTwoCubesNotPerfectPower` |
+| Coprime sum of two cubes equal to an $n$th power, for $3 \le n \le 10^9$, every even $n \ge 4$, and every multiple of such an exponent, together with every cube-pair shape of that form. $(3,3,10^9+1)$ is this closure because $7$ divides the hypotenuse. A prime exponent past $10^9$ is not this closure | `sumTwoCubesNotPerfectPower` |
+| Coprime sum of two cubes equal to a prime power $p \ge 17$ with $p \equiv 2 \pmod 3$, and every exponent divisible by such a prime, on a cube-pair seat. A prime past $10^9$ with $p \equiv 1 \pmod 3$ stays open | `freitasSumTwoCubesPrime` |
 | Signature $(3,4,5)$ in every order | `siksekStoll345` |
 | A repeated five beside $7$ or $19$, and two exponents divisible by $5$ with the third divisible by $7$ or $19$ | `sumTwoFifthsNotSeventhOrNineteenth` |
 | Two exponents divisible by $5$, the third by $11$, $13$, or $17$ | `sumTwoFifthsNotStollPrime`. Stoll's chapter removes the GRH hypothesis for these three primes. Primes $p \ge 23$ stay conditional there and are not axioms. $(7,7,11)$ is not this statement |
@@ -174,7 +175,7 @@ window, so winding does not close it.
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Odd Gaussian exponent $e \ge 5$. The case $e = 3$ is the Euler leaf |
 | `BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual` | Even common exponent, hypotenuse $z \ge 7$, outside the closed shapes. $(10,10,23)$ and $(14,14,19)$ remain. $(22,22,7)$ is an Anni–Siksek even sum |
 | `BealTwoEqualEvenDiffOutsideFifthPairResidual` | Even-difference two-equal body outside the closed shapes |
-| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal body outside the closed shapes. $(5,5,23)$ and $(7,7,11)$ remain. $(5,5,11)$ is a fifth-power pair |
+| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal body outside the closed shapes. $(5,5,23)$ and $(7,7,11)$ remain. $(5,5,11)$ is a fifth-power pair. A prime hypotenuse past $10^9$ with $p \equiv 2 \pmod 3$ is Freitas; $p \equiv 1 \pmod 3$ stays |
 | `BealAllDistinctOutsideFifthPairResidual` | Pairwise distinct exponents outside the closed shapes. $(3,5,7)$ remains |
 | `BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual` | Exponent gcd $2$, at least two reduced exponents odd, outside the closed shapes. $(22,22,14)$ is an Anni–Siksek even sum |
 
@@ -193,6 +194,7 @@ route.
 | `fermatSignatureNN5` | [`FermatNN5.lean`](DstDiophantine/Theorems/FermatNN5.lean) | No coprime nonzero solution of $a^n + b^n = c^5$ for $n \ge 4$ |
 | `eulerAffineCubeAddTwo` | [`EulerCube.lean`](DstDiophantine/Theorems/EulerCube.lean) | The only rational points of $X^3 + 2Y^3 = 1$ are $(1,0)$ and $(-1,1)$ |
 | `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^n$ in the range above |
+| `freitasSumTwoCubesPrime` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^p$ for a prime $p \ge 17$ with $p \equiv 2 \pmod 3$ |
 | `siksekStoll345` | [`SiksekStoll.lean`](DstDiophantine/Theorems/SiksekStoll.lean) | Every coprime integer solution of $x^3 + y^4 + z^5 = 0$ has a vanishing coordinate |
 | `sumTwoFifthsNotSeventhOrNineteenth` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 7$ or $l = 19$ |
 | `sumTwoFifthsNotStollPrime` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 11$, $13$, or $17$ |

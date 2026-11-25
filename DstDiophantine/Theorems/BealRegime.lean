@@ -150,8 +150,9 @@ theorem classifyBealExponents_three_three_eight :
     classifyBealExponents 3 3 8 = .T := by native_decide
 
 /-- An even companion past `10^9` stays closed. The next odd integer is closed as well:
-`7 ∣ 10^9 + 1`, so the hypotenuse is a `TwoCubeMultiple`. A prime past `10^9` is not
-(`not_cubePair_three_three_large_prime`). -/
+`7 ∣ 10^9 + 1`, so the hypotenuse is a `TwoCubeMultiple`. A prime past `10^9` with
+`p ≡ 1 (mod 3)` is not (`not_cubePair_three_three_large_prime`). `p ≡ 2 (mod 3)` is
+Freitas (`not_beal_three_three_large_freitas_prime`). -/
 theorem classifyBealExponents_three_three_past_bound :
     classifyBealExponents 3 3 1000000002 = .T ∧
       classifyBealExponents 3 3 1000000001 = .T := by

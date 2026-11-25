@@ -71,13 +71,16 @@ the main library (`beal_conjecture_pos_of_fine_residuals_even_split`).
 `IsSharedExpCubeOrFifth` is closed by `darmonMerelCube` and
 `fermatSignatureNN5`: a shared divisor `n ≥ 4` beside a third exponent
 divisible by `3` or by `5` is not a remaining signature. On a difference
-seat `n` is odd.
+seat `n` is odd. A cube-pair companion divisible by a prime `p ≥ 17` with
+`p ≡ 2 (mod 3)` is `freitasSumTwoCubesPrime`, including a prime hypotenuse
+past `10^9`. Every leaf that excludes `IsCubePairPowerShape` loses that
+companion. A prime past `10^9` with `p ≡ 1 (mod 3)` stays.
 
 | Leaf | Discharges | Still in this leaf |
 | --- | --- | --- |
 | `BealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual` | Even two-equal sum, via `BealTwoEqualEvenSumResidual_of_ge_seven_outside_anni` | `(10,10,23)` and `(14,14,19)`. `(22,22,7)` is Anni–Siksek (`anniSiksekDoublePrimeSum`). `(14,14,17)` is Michaud-Jacobs (`michaudJacobsPrimeSeventeenth`). A common exponent divisible by `4`, a fifth-power pair, and `IsSharedExpCubeOrFifth` have left |
 | `BealTwoEqualEvenDiffOutsideFifthPairResidual` | Even two-equal difference, via `BealTwoEqualEvenDiffResidual_of_outside_fifth` | Open except the fifth-power pair `(7,10,10)`, and except the shared-exponent cut when the two left exponents share `n ≥ 4` |
-| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal, via `BealTwoEqualOddResidual_of_outside_fifth_pair` | `(5,5,23)` and `(7,7,11)`. `(5,5,11)`, `(5,5,13)`, `(5,5,17)`, `(25,25,7)`, and `(5,5,21)` are fifth-power pairs, and `(9,7,7)` is the shared-exponent cut |
+| `BealTwoEqualOddOutsideFifthPairResidual` | Odd two-equal, via `BealTwoEqualOddResidual_of_outside_fifth_pair` | `(5,5,23)` and `(7,7,11)`. `(5,5,11)`, `(5,5,13)`, `(5,5,17)`, `(25,25,7)`, and `(5,5,21)` are fifth-power pairs, and `(9,7,7)` is the shared-exponent cut. A prime hypotenuse past `10^9` with `p ≡ 2 (mod 3)` is Freitas. `p ≡ 1 (mod 3)` stays |
 | `BealAllDistinctOutsideFifthPairResidual` | Pairwise distinct exponents, via `BealAllDistinctExpResidual_of_outside_fifth_pair` | `(3,5,7)`. `(5,10,7)` and `(5,10,11)` are fifth-power pairs, and `(8,12,9)` is the shared-exponent cut |
 | `BealEqualOddTwoFactorExpGeFiveResidual` | Equal-odd Gaussian body, via `BealEqualOddTwoFactorResidual_of_ge_five` | Open as stated |
 | `BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual` | Exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_anni` | The leaf outside the fifth-power pair `(10,10,14)`, the shared-exponent cut `(10,10,18)`, and the even-sum cuts `(22,22,14)` and `(14,14,34)` |
@@ -252,3 +255,4 @@ leaves and the closed theorems.
 | Fifth-power pairs at `11`, `13`, and `17` | `sumTwoFifthsNotStollPrime`, Stoll's unconditional range. The `sorry` stays on the narrower leaf. `(5,5,11)` and `(10,10,11)` leave the open column. Primes `p ≥ 23`, and `(7,7,11)`, stay open |
 | Odd cube-pair companions past `10^9` that have a factor in the two-cube range | `sumTwoCubesNotPerfectPower`, by dividing the hypotenuse. No new axiom. `(3,3,10^9+1)` and `(9,9,10^9+1)` leave the open column because `7` divides `10^9+1`. A prime hypotenuse past `10^9` stays open (`not_cubePair_three_three_large_prime`) |
 | Even sums `x^{2ℓ} + y^{2m} = z^p` for primes `ℓ, m ≥ 5` and `p ∈ {7,11,13}`, and the equal case at hypotenuse `17` for primes other than `5` | `anniSiksekDoublePrimeSum` and `michaudJacobsPrimeSeventeenth`. The `sorry` stays on the narrower leaf. `(22,22,7)`, `(14,14,13)`, and `(14,14,17)` leave the open column. `(10,10,23)` and `(14,14,19)` stay open |
+| Cube-pair companions divisible by a prime `p ≥ 17` with `p ≡ 2 (mod 3)`, including a prime hypotenuse past `10^9` | `freitasSumTwoCubesPrime`, Freitas, Comment. Math. Helv. 91 (2016), Theorem 3. The shape `IsCubePairPowerShape` grows, so every leaf that excludes it loses those companions. The `sorry` stays on the narrower leaf. A prime past `10^9` with `p ≡ 1 (mod 3)` stays open (`not_cubePair_three_three_large_prime`) |

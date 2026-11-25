@@ -649,6 +649,19 @@ example :
     classifyBealExponents_three_six_five, classifyBealExponents_five_six_six,
     classifyBealExponents_nine_nine_past_bound⟩
 
+/-- A prime hypotenuse past `10^9` leaves the cube-pair shape only when `p ≡ 1 (mod 3)`.
+`p ≡ 2 (mod 3)` is Freitas, Theorem 3. -/
+example {A B C : ℤ} {p : ℕ}
+    (hp : Nat.Prime p) (hgt : 1000000000 < p) (hmod : p % 3 = 2)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1) :
+    ¬ A ^ 3 + B ^ 3 = C ^ p :=
+  not_beal_three_three_large_freitas_prime hp hgt hmod hA hB hC hgcd
+
+example {p : ℕ} (hp : Nat.Prime p) (hgt : 1000000000 < p) (hmod : p % 3 = 1) :
+    ¬ IsCubePairPowerShape 3 3 p :=
+  not_cubePair_three_three_large_prime hp hgt hmod
+
 /-- `(4,7,7)` stays open; it is not a fourth-power sum. -/
 example :
     classifyBealExponents 4 4 7 = .T ∧ classifyBealExponents 8 8 7 = .T ∧

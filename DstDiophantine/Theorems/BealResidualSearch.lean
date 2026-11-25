@@ -195,7 +195,8 @@ instance {x y z : ℕ} : Decidable (IsClosedShapeExponents x y z) := by
   infer_instance
 
 /-- Open after closed shapes. `(10,10,23)`, `(14,14,19)`, `(5,5,23)`, and `(3,5,7)` stay open.
-`(22,22,7)` is an Anni–Siksek even sum. `(5,5,11)` is a fifth-power pair. -/
+`(22,22,7)` is an Anni–Siksek even sum. `(5,5,11)` is a fifth-power pair.
+A prime companion past `10^9` with `p ≡ 2 (mod 3)` is a cube pair. `p ≡ 1 (mod 3)` stays open. -/
 def isOpenResidualExponents (x y z : ℕ) : Bool :=
   let d := bealExpGcd x y z
   decide

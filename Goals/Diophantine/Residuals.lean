@@ -32,7 +32,8 @@ theorem bealTwoEqualEvenSumExpGeSevenOutsideAnniSeventeenthResidual :
 theorem bealTwoEqualEvenDiffOutsideFifthPairResidual :
     BealTwoEqualEvenDiffOutsideFifthPairResidual := by sorry
 
-/-- Open. `(5,5,11)` is a fifth-power pair. `(5,5,23)` and `(7,7,11)` remain. -/
+/-- Open. `(5,5,11)` is a fifth-power pair. `(5,5,23)` and `(7,7,11)` remain.
+A prime hypotenuse past `10^9` with `p ≡ 2 (mod 3)` is a Freitas cube companion. -/
 theorem bealTwoEqualOddOutsideFifthPairResidual :
     BealTwoEqualOddOutsideFifthPairResidual := by sorry
 

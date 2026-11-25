@@ -549,7 +549,9 @@ theorem BealTwoEqualEvenDiffResidual_of_outside_fifth
     (BealTwoEqualEvenDiffOutsideCubePairResidual_of_outside_fifth hOut)
 
 /-- Open: odd two-equal outside those cuts.
-`(5,5,23)` and `(7,7,11)` remain. `(5,5,11)`, `(5,5,13)`, and `(5,5,17)` are fifth-power pairs. -/
+`(5,5,23)` and `(7,7,11)` remain. `(5,5,11)`, `(5,5,13)`, and `(5,5,17)` are fifth-power pairs.
+A prime hypotenuse past `10^9` with `p ≡ 2 (mod 3)` is a Freitas cube companion.
+`p ≡ 1 (mod 3)` stays in this leaf. -/
 def BealTwoEqualOddOutsideFifthPairResidual : Prop :=
   ∀ (A B C : ℤ) (x y z : ℕ) (_hx : 3 ≤ x) (_hy : 3 ≤ y) (_hz : 3 ≤ z)
     (_hA : A ≠ 0) (_hB : B ≠ 0) (_hC : C ≠ 0),

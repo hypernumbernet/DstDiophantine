@@ -1,13 +1,16 @@
 import DstDiophantine.Theorems.BealMixed
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Nat.Factors
 import Mathlib.Tactic.Linarith
 
 /-!
 # Sums of two cubes
 
 `sumTwoCubesNotPerfectPower` assumes no nonzero coprime `a³ + b³ = cⁿ` for a `TwoCubeExponent` `n`.
-A proper multiple of such an `n` reduces to that axiom. It is not a Lean proof of the cited range,
-and classical Beal is not claimed. A prime exponent past `10^9` stays outside the closure.
+A proper multiple of such an `n` reduces to that axiom. `freitasSumTwoCubesPrime` assumes the same
+equation for a prime `p ≥ 17` with `p ≡ 2 (mod 3)`, Freitas, Comment. Math. Helv. 91 (2016),
+Theorem 3. Neither axiom is a Lean proof of the cited theorem, and classical Beal is not claimed.
+A prime hypotenuse past `10^9` with `p ≡ 1 (mod 3)` stays outside the closure.
 -/
 
 namespace DstDiophantine
@@ -187,6 +190,16 @@ axiom sumTwoCubesNotPerfectPower :
       Nat.gcd a.natAbs (Nat.gcd b.natAbs c.natAbs) = 1 →
       ¬ a ^ 3 + b ^ 3 = c ^ n
 
+/-- No nonzero coprime `a³ + b³ = c^p` for a prime `p ≥ 17` with `p ≡ 2 (mod 3)`.
+An axiom, not a proof of Freitas, Comment. Math. Helv. 91 (2016), Theorem 3.
+Primes `5` and `11` are below that bound; they stay with `sumTwoCubesNotPerfectPower`. -/
+axiom freitasSumTwoCubesPrime :
+    ∀ (a b c : ℤ) (p : ℕ),
+      Nat.Prime p → 17 ≤ p → p % 3 = 2 →
+      a ≠ 0 → b ≠ 0 → c ≠ 0 →
+      Nat.gcd a.natAbs (Nat.gcd b.natAbs c.natAbs) = 1 →
+      ¬ a ^ 3 + b ^ 3 = c ^ p
+
 theorem bruinSumTwoCubes :
     ∀ (a b c : ℤ) (n : ℕ),
       (n = 4 ∨ n = 5) →
@@ -240,11 +253,61 @@ theorem not_beal_bruin_two_cube_shape_of
       rw [(bealGcd_neg_permute A B C).2]; exact hgcd
     exact hBr C (-A) B y hy45 hC (neg_ne_zero.mpr hA) hB hgcd' hrew
 
-/-- Two exponents divisible by `3`, the other a `TwoCubeMultiple`. -/
+/-- `n` has a prime factor `p ≥ 17` with `p ≡ 2 (mod 3)`. -/
+def IsFreitasCubeMultiple (n : ℕ) : Prop :=
+  ∃ p, p ∈ n.primeFactorsList ∧ 17 ≤ p ∧ p % 3 = 2
+
+private def isFreitasCubeMultiple (n : ℕ) : Bool :=
+  n.primeFactorsList.any fun p => decide (17 ≤ p ∧ p % 3 = 2)
+
+private theorem isFreitasCubeMultiple_iff {n : ℕ} :
+    isFreitasCubeMultiple n = true ↔ IsFreitasCubeMultiple n := by
+  unfold isFreitasCubeMultiple IsFreitasCubeMultiple
+  simp only [List.any_eq_true, decide_eq_true_eq]
+
+instance : DecidablePred IsFreitasCubeMultiple := fun n =>
+  decidable_of_iff (isFreitasCubeMultiple n = true) isFreitasCubeMultiple_iff
+
+theorem isFreitasCubeMultiple_seventeen : IsFreitasCubeMultiple 17 := by
+  refine ⟨17, ?_, by decide, by decide⟩
+  rw [Nat.mem_primeFactorsList']
+  exact ⟨by decide, dvd_rfl, by decide⟩
+
+theorem not_isFreitasCubeMultiple_eleven : ¬ IsFreitasCubeMultiple 11 := by
+  intro ⟨p, hp, h17, _⟩
+  have hmem := Nat.mem_primeFactorsList'.mp hp
+  have h11 : (11 : ℕ) = p :=
+    ((by decide : Nat.Prime 11).dvd_iff_eq hmem.1.ne_one).mp hmem.2.1
+  omega
+
+theorem not_isFreitasCubeMultiple_nineteen : ¬ IsFreitasCubeMultiple 19 := by
+  intro ⟨p, hp, _, hmod⟩
+  have hmem := Nat.mem_primeFactorsList'.mp hp
+  have h19 : (19 : ℕ) = p :=
+    ((by decide : Nat.Prime 19).dvd_iff_eq hmem.1.ne_one).mp hmem.2.1
+  have h1 : p % 3 = 1 := by rw [← h19]
+  omega
+
+/-- `323 = 17 · 19`. The factor `17` is a Freitas prime; `19 ≡ 1 (mod 3)` is not. -/
+theorem isFreitasCubeMultiple_threeTwentyThree : IsFreitasCubeMultiple 323 := by
+  refine ⟨17, ?_, by decide, by decide⟩
+  rw [Nat.mem_primeFactorsList']
+  exact ⟨by decide, by decide, by decide⟩
+
+/-- A `TwoCubeMultiple`, or a multiple of a Freitas prime. -/
+def IsCubeCompanion (n : ℕ) : Prop :=
+  TwoCubeMultiple n ∨ IsFreitasCubeMultiple n
+
+instance : DecidablePred IsCubeCompanion := by
+  intro n
+  unfold IsCubeCompanion
+  infer_instance
+
+/-- Two exponents divisible by `3`, the other a cube companion. -/
 def IsCubePairPowerShape (x y z : ℕ) : Prop :=
-  (3 ∣ x ∧ 3 ∣ y ∧ TwoCubeMultiple z) ∨
-    (3 ∣ y ∧ 3 ∣ z ∧ TwoCubeMultiple x) ∨
-      (3 ∣ x ∧ 3 ∣ z ∧ TwoCubeMultiple y)
+  (3 ∣ x ∧ 3 ∣ y ∧ IsCubeCompanion z) ∨
+    (3 ∣ y ∧ 3 ∣ z ∧ IsCubeCompanion x) ∨
+      (3 ∣ x ∧ 3 ∣ z ∧ IsCubeCompanion y)
 
 instance {x y z : ℕ} : Decidable (IsCubePairPowerShape x y z) := by
   unfold IsCubePairPowerShape
@@ -254,11 +317,14 @@ theorem IsCubePairPowerShape_of_twoCube {x y z : ℕ}
     (h : IsTwoCubePowerShape x y z) : IsCubePairPowerShape x y z := by
   rcases h with ⟨hx, hy, hz⟩ | ⟨hy, hz, hx⟩ | ⟨hx, hz, hy⟩
   · subst hx; subst hy
-    exact Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3, TwoCubeMultiple.of_twoCube hz⟩
+    exact Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3,
+      Or.inl (TwoCubeMultiple.of_twoCube hz)⟩
   · subst hy; subst hz
-    exact Or.inr (Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3, TwoCubeMultiple.of_twoCube hx⟩)
+    exact Or.inr (Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3,
+      Or.inl (TwoCubeMultiple.of_twoCube hx)⟩)
   · subst hx; subst hz
-    exact Or.inr (Or.inr ⟨Nat.dvd_refl 3, Nat.dvd_refl 3, TwoCubeMultiple.of_twoCube hy⟩)
+    exact Or.inr (Or.inr ⟨Nat.dvd_refl 3, Nat.dvd_refl 3,
+      Or.inl (TwoCubeMultiple.of_twoCube hy)⟩)
 
 private theorem zpow_mul_div_three {A : ℤ} {n : ℕ} (h : 3 ∣ n) :
     (A ^ (n / 3)) ^ 3 = A ^ n := by
@@ -354,6 +420,41 @@ theorem not_sum_two_cubes_of_twoCubeMultiple
     exact sumTwoCubesNotPerfectPower a b (c ^ (n / d)) d hExp ha hb
       (pow_ne_zero _ hc) (by simpa [bealGcd] using hgcd') hsol'
 
+/-- A coprime sum of two cubes is not an `n`th power when `n` has a Freitas prime factor. -/
+theorem not_sum_two_cubes_of_freitasMultiple
+    {a b c : ℤ} {n : ℕ}
+    (hn : IsFreitasCubeMultiple n)
+    (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (hgcd : bealGcd a b c = 1)
+    (hsol : a ^ 3 + b ^ 3 = c ^ n) : False := by
+  obtain ⟨p, hpmem, h17, hmod⟩ := hn
+  have hp : Nat.Prime p := Nat.prime_of_mem_primeFactorsList hpmem
+  have hdiv : p ∣ n := Nat.dvd_of_mem_primeFactorsList hpmem
+  have hn0 : n ≠ 0 := (Nat.mem_primeFactorsList'.mp hpmem).2.2
+  have hquot : 0 < n / p := by
+    have hmul : p * (n / p) = n := Nat.mul_div_cancel' hdiv
+    apply Nat.pos_of_ne_zero
+    intro hz
+    rw [hz, Nat.mul_zero] at hmul
+    exact hn0 hmul.symm
+  have hsol' : a ^ 3 + b ^ 3 = (c ^ (n / p)) ^ p := by
+    rw [← pow_mul, Nat.div_mul_cancel hdiv]
+    exact hsol
+  have hgcd' : bealGcd a b (c ^ (n / p)) = 1 :=
+    bealGcd_pow_right hquot ha hgcd
+  exact freitasSumTwoCubesPrime a b (c ^ (n / p)) p hp h17 hmod ha hb
+    (pow_ne_zero _ hc) (by simpa [bealGcd] using hgcd') hsol'
+
+theorem not_sum_two_cubes_of_cubeCompanion
+    {a b c : ℤ} {n : ℕ}
+    (hn : IsCubeCompanion n)
+    (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (hgcd : bealGcd a b c = 1)
+    (hsol : a ^ 3 + b ^ 3 = c ^ n) : False := by
+  rcases hn with hn | hn
+  · exact not_sum_two_cubes_of_twoCubeMultiple hn ha hb hc hgcd hsol
+  · exact not_sum_two_cubes_of_freitasMultiple hn ha hb hc hgcd hsol
+
 theorem not_beal_cube_pair_power_shape
     {A B C : ℤ} {x y z : ℕ}
     (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
@@ -369,7 +470,7 @@ theorem not_beal_cube_pair_power_shape
         (A ^ (x / 3)) ^ 3 + (B ^ (y / 3)) ^ 3 = C ^ z := by
       rw [zpow_mul_div_three hx3, zpow_mul_div_three hy3]
       exact hsol
-    exact not_sum_two_cubes_of_twoCubeMultiple hzN
+    exact not_sum_two_cubes_of_cubeCompanion hzN
       (pow_ne_zero _ hA) (pow_ne_zero _ hB) hC hgcd' hsol'
   · have hzr : 0 < z / 3 := pos_div_three_of_dvd hz hz3
     have hyr : 0 < y / 3 := pos_div_three_of_dvd hy hy3
@@ -380,7 +481,7 @@ theorem not_beal_cube_pair_power_shape
       rw [hcub, zpow_mul_div_three hz3, zpow_mul_div_three hy3]
       linarith [hsol]
     have hgcd' := bealGcd_neg_pow_cross_eq_one hzr hyr hC hgcd
-    exact not_sum_two_cubes_of_twoCubeMultiple hxN
+    exact not_sum_two_cubes_of_cubeCompanion hxN
       (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hB)) hA hgcd' hrew
   · have hzr : 0 < z / 3 := pos_div_three_of_dvd hz hz3
     have hxr : 0 < x / 3 := pos_div_three_of_dvd hx hx3
@@ -393,7 +494,7 @@ theorem not_beal_cube_pair_power_shape
     have hgcd' :=
       bealGcd_neg_pow_cross_eq_one (A := B) (B := A) hzr hxr hC
         (by simpa [bealGcd, Nat.gcd_left_comm] using hgcd)
-    exact not_sum_two_cubes_of_twoCubeMultiple hyN
+    exact not_sum_two_cubes_of_cubeCompanion hyN
       (pow_ne_zero _ hC) (neg_ne_zero.mpr (pow_ne_zero _ hA)) hB hgcd' hrew
 
 theorem not_beal_two_cube_power_shape
@@ -549,7 +650,8 @@ theorem not_beal_three_three_billion_plus_one {A B C : ℤ}
     (hsol : A ^ 3 + B ^ 3 = C ^ 1000000001) : False :=
   not_beal_cube_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd
-    (Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3, twoCubeMultiple_billion_plus_one⟩) hsol
+    (Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3,
+      Or.inl twoCubeMultiple_billion_plus_one⟩) hsol
 
 /-- No coprime `A⁹ + B⁹ = C^(10^9+1)`. Both exponents are divisible by `3`. -/
 theorem not_beal_nine_nine_billion_plus_one {A B C : ℤ}
@@ -558,19 +660,50 @@ theorem not_beal_nine_nine_billion_plus_one {A B C : ℤ}
     (hsol : A ^ 9 + B ^ 9 = C ^ 1000000001) : False :=
   not_beal_cube_pair_power_shape (by decide) (by decide) (by decide)
     hA hB hC hgcd
-    (Or.inl ⟨by decide, by decide, twoCubeMultiple_billion_plus_one⟩) hsol
+    (Or.inl ⟨by decide, by decide, Or.inl twoCubeMultiple_billion_plus_one⟩) hsol
 
-/-- A prime hypotenuse past `10^9` is not a cube-pair shape. -/
+/-- A prime hypotenuse past `10^9` with `p ≡ 1 (mod 3)` is not a cube-pair shape.
+`p ≡ 2 (mod 3)` is `IsFreitasCubeMultiple`. -/
 theorem not_cubePair_three_three_large_prime {p : ℕ}
-    (hp : Nat.Prime p) (hgt : 1000000000 < p) :
+    (hp : Nat.Prime p) (hgt : 1000000000 < p) (hmod : p % 3 = 1) :
     ¬ IsCubePairPowerShape 3 3 p := by
   intro h
-  rcases h with ⟨_, _, hpM⟩ | ⟨_, hpdiv, _⟩ | ⟨_, hpdiv, _⟩
-  · exact not_twoCubeMultiple_of_large_prime hp hgt hpM
+  rcases h with ⟨_, _, hcomp⟩ | ⟨_, hpdiv, _⟩ | ⟨_, hpdiv, _⟩
+  · rcases hcomp with htwo | ⟨q, hqmem, _, hqmod⟩
+    · exact not_twoCubeMultiple_of_large_prime hp hgt htwo
+    · have hqdiv : q ∣ p := Nat.dvd_of_mem_primeFactorsList hqmem
+      have hq : p = q :=
+        (hp.dvd_iff_eq (Nat.prime_of_mem_primeFactorsList hqmem).ne_one).mp hqdiv
+      subst hq
+      rw [hmod] at hqmod
+      omega
   · have hp3 : p = 3 := (hp.dvd_iff_eq (by decide : (3 : ℕ) ≠ 1)).mp hpdiv
     omega
   · have hp3 : p = 3 := (hp.dvd_iff_eq (by decide : (3 : ℕ) ≠ 1)).mp hpdiv
     omega
+
+/-- No coprime `A³ + B³ = C^p` for a prime `p > 10^9` with `p ≡ 2 (mod 3)`. -/
+theorem not_beal_three_three_large_freitas_prime {A B C : ℤ} {p : ℕ}
+    (hp : Nat.Prime p) (hgt : 1000000000 < p) (hmod : p % 3 = 2)
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ 3 + B ^ 3 = C ^ p) : False := by
+  have h17 : 17 ≤ p := by omega
+  have hmem : p ∈ p.primeFactorsList := by
+    rw [Nat.mem_primeFactorsList']
+    exact ⟨hp, dvd_rfl, hp.ne_zero⟩
+  have hshape : IsCubePairPowerShape 3 3 p :=
+    Or.inl ⟨Nat.dvd_refl 3, Nat.dvd_refl 3, Or.inr ⟨p, hmem, h17, hmod⟩⟩
+  exact not_beal_cube_pair_power_shape (by decide) (by decide) (by omega)
+    hA hB hC hgcd hshape hsol
+
+/-- The prime `17` is inside the Freitas range, and also a `TwoCubeExponent`. -/
+theorem not_beal_three_three_seventeen {A B C : ℤ}
+    (hA : A ≠ 0) (hB : B ≠ 0) (hC : C ≠ 0)
+    (hgcd : bealGcd A B C = 1)
+    (hsol : A ^ 3 + B ^ 3 = C ^ 17) : False :=
+  freitasSumTwoCubesPrime A B C 17 (by decide) (by decide) (by decide)
+    hA hB hC hgcd hsol
 
 end Theorems
 

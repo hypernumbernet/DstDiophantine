@@ -195,11 +195,13 @@ export Theorems (fermat_solution_iff_motor fermat_pos_lt mismatchRotor_eq_rotorT
   not_beal_two_equal_cube_slice
   fermatSignatureNN5 not_beal_two_equal_third_five_even
   not_beal_two_equal_fifth_slice
-  sumTwoCubesNotPerfectPower bruinSumTwoCubes
+  sumTwoCubesNotPerfectPower freitasSumTwoCubesPrime bruinSumTwoCubes
   IsBruinTwoCubeShape IsTwoCubePowerShape not_beal_bruin_two_cube_shape
   not_beal_two_cube_power_shape
+  IsFreitasCubeMultiple IsCubeCompanion
   IsCubePairPowerShape IsCubePairPowerShape_of_twoCube
   not_beal_cube_pair_power_shape
+  not_beal_three_three_large_freitas_prime not_beal_three_three_seventeen
   not_beal_six_six_seven not_beal_nine_nine_four not_beal_three_six_five
   not_beal_five_six_six
   BealTwoEqualOddOutsideBruinResidual BealTwoEqualOddResidual_of_outside_bruin
