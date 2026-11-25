@@ -87,6 +87,41 @@ Usual and dual rotors factor on `axisParams α β` because `B⁺₀` and `B⁻�
 - `Goals.Diophantine.omegaMismatch_off_axis_principal_branch` — general six-parameter log of `Ω`.
 - Winding on the rotation leg is **closed in main** (not a Goal).
 
+## Primary vs legacy — numerical scan (Nov 2025)
+
+Phase \(x\) is the equal-scale chart argument; radius in units of \(\ell\) is \(r/\ell = 1/(2x)\) via `layerRadius`.
+`squareBalance(x) = γ(\sqrt2·x) − 2\sqrt2·γ(x)` with primary \(\gamma = \cosh\cos\); legacy uses `squareBalanceLegacy`.
+
+### Primary `squareBalance` — sign in the well vs zero elsewhere
+
+| Interval / observation | Primary | Legacy (for comparison) |
+|------------------------|---------|-------------------------|
+| \((3/2,\,8/5)\) covalent well | **No sign change** — stays \(\approx -2.7\) … \(-3.3\) (negative throughout) | Unique zero \(\approx 1.5547\), \(r/\ell \approx 0.3216\) |
+| \([0,\,2\pi]\) zero of `squareBalance` | **Yes** at \(x \approx 2.6346\), \(r/\ell \approx 0.1898\) | (well zero as above; additional nodes differ) |
+| \(x \approx 5.4155\) (first shell after \(2\pi\)) | **Yes** (balance \(\approx 0\)), \(r/\ell \approx 0.0923\) | not tabulated here |
+| \(x \approx 7.781\), \(10.023\), \(12.230\) | Further primary zeros (late odd/even branches) | — |
+
+**Research / theorem status:** existence of a **primary** square shell in \((3/2,8/5)\) is **not** supported (no crossing).
+Main library proves **`exists_unique_square_shell` via `squareBalanceLegacy`** on `(3/2,33/20)` with documented research gap for primary.
+A **clean primary zero at \(\approx 2.635\)** suggests a **late-branch** shell programme (research: primary shell existence theorem not closed in main).
+
+### Primary electron–proton balance (`forceCrit`, `pairAttraction`)
+
+| Quantity | Location | Value (4 d.p.) | \(r/\ell\) |
+|----------|----------|----------------|------------|
+| `forceCrit x = 0` (quiet point) | \(x \in (5/2,\,\pi)\) | \(x \approx 2.7984\) | \(\approx 0.1787\) |
+| `pairAttraction(5/2)` | quiet band anchor | \(\approx -5.0887\) | \(\approx 0.2000\) |
+| Primary \(\gamma(5/2)\) | | \(\approx -4.9128\) | |
+
+### Nuclear selector — `resonanceRoot1 = π/2`
+
+| Chart | \(\gamma(\pi/2)\) | Comment |
+|-------|-------------------|---------|
+| **Primary** `gammaSEqual` | \(\approx 0\) (\(\cos\) node) | `resonanceRoot1_gammaSEqual_zero` |
+| **Legacy** `gammaSEqualLegacy` | \(\approx -2.3013\) | old mixed overlap at same phase |
+
+14 MeV skin uses **legacy** rapidity (\(cosh\phi = 1 + 14/939.565\), \(\phi \approx 0.1724\)); primary vs legacy \(\gamma\) at comparable small phases differ by \(\mathcal{O}(\sinh\sin)\) (e.g. at \(x=0.9\): primary \(\approx 0.891\), legacy \(\approx 0.087\)).
+
 ## CI
 
 - `lake build DstDiophantine` — required green

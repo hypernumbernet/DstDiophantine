@@ -42,9 +42,7 @@ noncomputable def forceCrit (x : ℝ) : ℝ :=
   gammaSEqual x + x * cosh x * sin x
 
 theorem hasDerivAt_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
-    HasDerivAt pairAttraction
-      ((8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x)) /
-        gammaSEqual x ^ 2) x := by
+    HasDerivAt pairAttraction (8 * x * forceCrit x / gammaSEqual x ^ 2) x := by
   unfold pairAttraction
   have hsq : HasDerivAt (fun y : ℝ => y ^ 2) (2 * x) x := by
     simpa [pow_one] using hasDerivAt_pow 2 x
@@ -58,9 +56,7 @@ theorem hasDerivAt_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
   ring
 
 theorem deriv_pairAttraction {x : ℝ} (hγ : gammaSEqual x ≠ 0) :
-    deriv pairAttraction x =
-      (8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x)) /
-        gammaSEqual x ^ 2 :=
+    deriv pairAttraction x = 8 * x * forceCrit x / gammaSEqual x ^ 2 :=
   (hasDerivAt_pairAttraction hγ).deriv
 
 private lemma sinhCos_add_coshSin_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanceRoot1) :
@@ -69,12 +65,6 @@ private lemma sinhCos_add_coshSin_pos_outer {x : ℝ} (hx : x ∈ Ioo 0 resonanc
   have hcos : 0 < cos x := cos_pos_of_mem_Ioo ⟨by linarith [hx.1], hxπ⟩
   have hsin : 0 < sin x := sin_pos_of_pos_of_lt_pi hx.1 (by linarith [hxπ, pi_pos])
   nlinarith [cosh_pos x, sinh_pos_iff.mpr hx.1, hcos, hsin]
-
-private lemma pairAttraction_deriv_num_eq_sub (x : ℝ) :
-    8 * x * gammaSEqual x - 4 * x ^ 2 * (sinh x * cos x - cosh x * sin x) =
-      8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x) := by
-  unfold forceCrit gammaSEqual
-  ring
 
 private theorem continuousOn_pairAttraction {s : Set ℝ}
     (hs : ∀ x ∈ s, gammaSEqual x ≠ 0) : ContinuousOn pairAttraction s := by
@@ -599,15 +589,8 @@ theorem pairAttraction_strictMono_outer :
   rw [interior_Ioo] at hx
   have hγ : gammaSEqual x ≠ 0 := (gammaSEqual_pos_left_of_first_node hx).ne'
   rw [deriv_pairAttraction hγ]
-  have hbound : 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x) < 8 * x * forceCrit x := by
-    unfold forceCrit gammaSEqual
-    nlinarith [forceCrit_pos_outer hx, sinhCos_add_coshSin_pos_outer hx, hx.1,
-      cos_pos_of_mem_Ioo ⟨by linarith [hx.1], by linarith [hx.2, resonanceRoot1_eq_pi_div_two]⟩,
-      sin_pos_of_pos_of_lt_pi hx.1 (by linarith [hx.2, resonanceRoot1_eq_pi_div_two, pi_pos]),
-      cosh_pos x, sinh_pos_iff.mpr hx.1, sq_pos_of_pos hx.1]
-  have hnum : 0 < 8 * x * forceCrit x - 4 * x ^ 2 * (sinh x * cos x + cosh x * sin x) :=
-    sub_pos_of_lt hbound
-  exact div_pos hnum (sq_pos_of_ne_zero hγ)
+  exact div_pos (mul_pos (mul_pos (by norm_num) hx.1) (forceCrit_pos_outer hx))
+    (sq_pos_of_ne_zero hγ)
 
 private lemma critP_five_halves_neg : critP (5 / 2) < 0 := by
   have hε := eps_window
@@ -894,13 +877,7 @@ theorem forceQuiet_magnitude {x : ℝ} (hx : x ∈ Ioo (5 / 2) π) (h0 : forceCr
         cos_neg_of_pi_div_two_lt_of_lt
           (by linarith [ht.1, pi_div_two_lt_five_halves])
           (lt_trans ht.2 hx.2)
-      have hbound : 4 * t ^ 2 * (sinh t * cos t + cosh t * sin t) < 8 * t * forceCrit t := by
-        unfold forceCrit gammaSEqual
-        nlinarith [hcrit, ht0, hγneg, hsin, hcos, forceCrit_expand t, cosh_pos t,
-          sinh_pos_iff.mpr ht0, sq_pos_of_pos ht0]
-      have hnum : 0 < 8 * t * forceCrit t - 4 * t ^ 2 * (sinh t * cos t + cosh t * sin t) :=
-        sub_pos_of_lt hbound
-      exact div_pos hnum (sq_pos_of_ne_zero hγ)
+      exact div_pos (mul_pos (mul_pos (by norm_num) ht0) hcrit) (sq_pos_of_ne_zero hγ)
   have hgt : pairAttraction (5 / 2) < pairAttraction x :=
     hmono ⟨le_rfl, hx.1.le⟩ ⟨hx.1.le, le_rfl⟩ hx.1
   have hneg : pairAttraction x < 0 := by
