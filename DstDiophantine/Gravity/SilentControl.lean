@@ -397,27 +397,25 @@ theorem exists_admissible_magnetic_repulsion {p : TorsionParams}
           exact add_nonneg (hp b).2.1 this
         simpa [superpose_beta, magneticFaraday, B, hb] using hβ
       · have hβπ : p.beta b + ε ≤ Real.pi := by
-          have : p.beta b + ε = Real.pi / 2 - p.alpha b := by simp [ε, hb]; ring
-          linarith [(hp b).1, this]
+          suffices p.beta b + ε ≤ Real.pi / 2 by linarith [Real.pi_pos, (hp b).1]
+          have hmid : p.beta b + ε = Real.pi / 2 - p.alpha b := by
+            subst hb
+            simp [B, ε, magneticFaraday, superpose_beta]
+          linarith [(hp b).1, hmid]
         simpa [superpose_beta, magneticFaraday, B, hb] using hβπ
-      · have hsum : p.alpha b + (p.beta b + ε) ≤ Real.pi := by
-          simpa [add_assoc, ε, hb] using (hp b).2.2.2
+      · have hsum : p.alpha b + p.beta b + ε ≤ Real.pi := by
+          have hmid : p.alpha b + p.beta b + ε = Real.pi / 2 := by
+            subst hb
+            dsimp only [ε]
+            ring
+          linarith [hmid, Real.pi_pos]
         simpa [superpose_alpha, superpose_beta, magneticFaraday, B, hb, add_assoc] using hsum
     · have hBz : B b = 0 := by simp [B, hb]
       have hα : (superpose p (magneticFaraday B)).alpha b = p.alpha b := by
         simp [superpose_alpha, magneticFaraday]
       have hβ : (superpose p (magneticFaraday B)).beta b = p.beta b + B b := by
         simp [superpose_beta, magneticFaraday]
-      rw [hBz] at hβ
-      refine ⟨?_, ?_, ?_, ?_⟩
-      · rw [hα]
-        exact (hp b).1
-      · rw [hβ]
-        simpa using (hp b).2.1
-      · rw [hβ]
-        exact (hp b).2.2.1
-      · rw [hα, hβ]
-        simpa using (hp b).2.2.2
+      simpa [superpose_alpha, superpose_beta, magneticFaraday, hBz] using hp b
   have hrep := balanced_magnetic_repels hJ (fun b => (hp b).2.1) hB hne
   exact ⟨B, hB, hne, hadm, hrep.1, hrep.2, magnetic_increment_rest_silent B⟩
 
@@ -554,7 +552,11 @@ theorem exists_admissible_electric_attraction {p : TorsionParams}
       · have hβπ : p.beta b ≤ Real.pi := (hp b).2.2.1
         simpa [superpose_beta, electricFaraday] using hβπ
       · have hsum : p.alpha b + ε + p.beta b ≤ Real.pi := by
-          simpa [ε, hb, add_assoc] using (hp b).2.2.2
+          have hmid : p.alpha b + p.beta b + ε = Real.pi / 2 := by
+            subst hb
+            dsimp only [ε]
+            ring
+          linarith [hmid, Real.pi_pos]
         simpa [superpose_alpha, superpose_beta, electricFaraday, E, hb, add_assoc] using hsum
     · have hEz : E b = 0 := by simp [E, hb]
       refine ⟨?_, ?_, ?_, ?_⟩

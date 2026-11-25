@@ -135,9 +135,8 @@ private theorem sum_signed_sq_le_attractive_lobe_continuous {p : TorsionParams}
         (t₀ + t₁ + t₂ - 2 * K) ^ 2 + 2 * K ^ 2 := by
     nlinarith [hsq, he]
   rw [hT, hK] at hbody
-  simp only [K, pow_two] at hbody
-  rw [← t₀, ← t₁, ← t₂]
-  exact hbody
+  simp only [K, pow_two, t₀, t₁, t₂] at hbody ⊢
+  convert hbody using 2 <;> ring_nf
 
 private theorem sum_signed_sq_le_repulsive_lobe {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) :
@@ -181,9 +180,8 @@ private theorem sum_signed_sq_le_repulsive_lobe_continuous {p : TorsionParams}
         (t₀ + t₁ + t₂ + 2 * K) ^ 2 + 2 * K ^ 2 := by
     nlinarith [hsq, he]
   rw [hT, hK] at hbody
-  simp only [K, pow_two] at hbody
-  rw [← t₀, ← t₁, ← t₂]
-  exact hbody
+  simp only [K, pow_two, t₀, t₁, t₂] at hbody ⊢
+  convert hbody using 2 <;> ring_nf
 
 private theorem four_K_mass_le_three_K_sq_add_sum_sq {p : TorsionParams}
     (h : IsAdmissibleContinuousLegacy p) :
@@ -761,22 +759,20 @@ private theorem mass_le_attractive_ceiling {Jval Mval : ℝ}
   linarith
 
 private theorem shifted_mass_le_axis_parabola {Jval Mval : ℝ}
-    (hJ : |Jval - Real.pi ^ 2 / 4| ≤ Real.pi ^ 2 / 8)
-    (h : Mval ≤ controlCeiling Jval) :
+    (h : Mval ≤ controlCeiling Jval)
+    (h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2) :
     Mval - Real.pi ^ 2 / 4 ≤
       Real.pi ^ 2 / 16 +
         4 * (Jval - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
-  have hM := mass_le_attractive_ceiling h
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  unfold controlCeiling at h
+  have hfrac : controlEnvelopeNum Jval / Real.pi ^ 2 ≤ 4 * Jval ^ 2 / Real.pi ^ 2 :=
+    div_le_div_of_nonneg_right h4 (le_of_lt hπ)
+  have hbind : Mval ≤ 5 * Real.pi ^ 2 / 4 + 4 * Jval ^ 2 / Real.pi ^ 2 := by
+    linarith [h, hfrac]
   set j := Jval - Real.pi ^ 2 / 4
-  rcases abs_le.mp hJ with ⟨hjlo, hjhi⟩
-  have hj0 : -Real.pi ^ 2 / 8 ≤ j := by simpa [j] using hjlo
-  have hj1 : j ≤ Real.pi ^ 2 / 8 := by simpa [j] using hjhi
-  have hid : (2 * Jval - 2 * Real.pi ^ 2) ^ 2 =
-      4 * (j - Real.pi ^ 2 / 4) ^ 2 := by simp only [j]; ring
-  have hM' :
-      Mval ≤ 5 * Real.pi ^ 2 / 4 + 4 * (j - Real.pi ^ 2 / 4) ^ 2 / Real.pi ^ 2 := by
-    linarith [hM, hid]
-  linarith [hM', hj0, hj1]
+  have hJsq : Jval ^ 2 = (j + Real.pi ^ 2 / 4) ^ 2 := by simp [j]; ring
+  nlinarith [sq_nonneg j, hbind, hJsq, Real.pi_pos]
 
 
 private theorem m_le_pi_sq_div_eight_of_axis {j m : ℝ}
@@ -982,15 +978,17 @@ private theorem exists_nonneg_J_of_JM (Jval Mval : ℝ)
           ring
         · rw [mass_oneUsualCross, Real.sq_sqrt hx2, Real.sq_sqrt hy2]
           ring
-      · refine exists_twoUsualRest_shifted ?_ ?_
-          (shifted_mass_le_axis_parabola (by rw [abs_of_nonpos (by linarith [h4])]; nlinarith) hMhi)
+      · have h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
+        refine exists_twoUsualRest_shifted ?_ ?_
+          (shifted_mass_le_axis_parabola hMhi h4)
         · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [not_le.mp hpin]
         · rw [abs_of_nonpos (by linarith [h4])]
           nlinarith [h8lt]
     · have h4lt : Real.pi ^ 2 / 4 < Jval := lt_of_not_ge h4
+      have h4 : controlEnvelopeNum Jval ≤ 4 * Jval ^ 2 := min_le_left _ _
       refine exists_twoUsualRest_shifted ?_ ?_
-        (shifted_mass_le_axis_parabola (by rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]; linarith) hMhi)
+        (shifted_mass_le_axis_parabola hMhi h4)
       · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
         linarith [hMlo]
       · rw [abs_of_nonneg (le_of_lt (sub_pos.mpr h4lt))]
