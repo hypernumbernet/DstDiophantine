@@ -41,6 +41,7 @@ import DstDiophantine.Gravity.WheelerDeWitt
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
+import DstDiophantine.Gravity.DualRotorMismatch
 import DstDiophantine.Gravity.DualRotorMotor
 import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.ExponentialFamily
@@ -994,6 +995,28 @@ example (σ₀ σd₀ m δ₀ ν t : ℝ) :
         (deriv (writtenDual σ₀ σd₀ m δ₀ ν) t) =
       (1 / 2) * ν * σd₀ + (m / 2) * δ₀ ^ 2 :=
   written_flow_energy σ₀ σd₀ m δ₀ ν t
+
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    J (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m δ₀ ν t)
+        (writtenDual σ₀ σd₀ m δ₀ ν t)) =
+      writtenLagProduct σ₀ σd₀ m δ₀ ν t :=
+  written_flow_J σ₀ σd₀ m δ₀ ν t
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) :
+    (∀ t, writtenLagProduct σ₀ σd₀ m δ₀ ν t = writtenLagProduct σ₀ σd₀ m δ₀ ν 0) ↔
+      δ₀ = 0 ∧ ν = 0 :=
+  writtenLagProduct_const_iff hm
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) (h : δ₀ ≠ 0 ∨ ν ≠ 0) :
+    Filter.Tendsto (writtenLagProduct σ₀ σd₀ m δ₀ ν) Filter.atTop Filter.atBot ∧
+      Filter.Tendsto (writtenLagProduct σ₀ σd₀ m δ₀ ν) Filter.atBot Filter.atBot :=
+  ⟨writtenLagProduct_tendsto_atTop hm h, writtenLagProduct_tendsto_atBot hm h⟩
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) :
+    (∀ t, Admissible.IsAdmissibleContinuous (RelativeRotor.axisParams
+        (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t))) ↔
+      δ₀ = 0 ∧ ν = 0 ∧ σd₀ = 0 ∧ 0 ≤ σ₀ ∧ σ₀ ≤ Real.pi / 2 :=
+  written_flow_forever_admissible_iff hm
 
 example {m : ℝ} (hm : 0 ≤ m) :
     Real.sqrt (2 * m) = m ↔ m = 0 ∨ m = 2 :=
