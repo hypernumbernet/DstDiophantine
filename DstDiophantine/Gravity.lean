@@ -133,7 +133,10 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   prescribed Compton value.
 * `DualRotorFlow` — closed integrals of those jets.
 * `DualRotorVacuum` — on one axis, written alignment keeps `J=0` while `M` coasts with `σ²/4`.
-* `DualRotorMismatch` — on the written flow `J` is the product `δσ/2`. For positive stiffness it is constant only when the lag vanishes, and then it is zero; any other lag tends to `-∞` at both time ends. The flow stays in the admissible cone for every time only at a resting aligned rapidity in `[0, π/2]`.
+* `DualRotorMismatch` — on the written flow `J` is the product `δσ/2`. For positive stiffness
+  it is constant only when the lag vanishes, and then it is zero; any other lag tends to `-∞`
+  at both time ends. The flow stays in the admissible cone for every time only at a resting
+  aligned rapidity in `[0, π/2]`.
 * `DualRotorMotor` — the factorised rotor splits the null ideal.
 * `NullRotation` — that parabolic rotor is a one-parameter group of Minkowski isometries; no
   position operator is claimed.

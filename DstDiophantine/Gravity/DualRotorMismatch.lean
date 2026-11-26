@@ -1,7 +1,7 @@
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Gravity.DualRotorVacuum
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Degree.Operations
-import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Analysis.Polynomial.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -67,11 +67,6 @@ noncomputable def lagPoly (σ₀ σd₀ m δ₀ ν : ℝ) : ℝ[X] :=
     C (-(2 / 3) * m * ν * δ₀) * X ^ 3 +
     C (-(m * ν ^ 2 / 6)) * X ^ 4
 
-private theorem coeff_scaled_pow (a : ℝ) (n k : ℕ) :
-    (C a * X ^ n).coeff k = if k = n then a else 0 := by
-  simp only [coeff_C_mul, coeff_X_pow]
-  split_ifs <;> simp
-
 theorem lagPoly_coeff_four (σ₀ σd₀ m δ₀ ν : ℝ) :
     (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = -(m * ν ^ 2 / 6) := by
   simp only [lagPoly, coeff_add, coeff_C, coeff_C_mul, coeff_X]
@@ -91,6 +86,15 @@ theorem lagPoly_eval (σ₀ σd₀ m δ₀ ν t : ℝ) :
     (lagPoly σ₀ σd₀ m δ₀ ν).eval t = writtenLagProduct σ₀ σd₀ m δ₀ ν t := by
   simp only [lagPoly, eval_add, eval_mul, eval_pow, eval_C, eval_X, writtenLagProduct_poly]
 
+/-- `-(m a² / c) = 0` with `m` and `c` positive forces `a = 0`. -/
+private theorem eq_zero_of_neg_div_square {m a c : ℝ} (hm : 0 < m) (hc : 0 < c)
+    (h : -(m * a ^ 2 / c) = 0) : a = 0 := by
+  have hmul : m * a ^ 2 = 0 := by
+    have h0 : m * a ^ 2 / c = 0 := by linarith
+    field_simp [hc.ne'] at h0
+    linarith
+  exact sq_eq_zero_iff.mp ((mul_eq_zero.mp hmul).resolve_left hm.ne')
+
 theorem writtenLagProduct_const_iff {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) :
     (∀ t, writtenLagProduct σ₀ σd₀ m δ₀ ν t = writtenLagProduct σ₀ σd₀ m δ₀ ν 0) ↔
       δ₀ = 0 ∧ ν = 0 := by
@@ -108,41 +112,27 @@ theorem writtenLagProduct_const_iff {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m)
       simp
     rw [lagPoly_coeff_four] at h4
     rw [lagPoly_coeff_two] at h2
-    have hν : ν = 0 := by
-      have hmul : m * ν ^ 2 = 0 := by
-        field_simp at h4
-        linarith
-      exact sq_eq_zero_iff.mp ((mul_eq_zero.mp hmul).resolve_left hm.ne')
-    rw [hν] at h2
-    have hδ : δ₀ = 0 := by
-      have hmul : m * δ₀ ^ 2 = 0 := by
-        field_simp at h2
-        linarith
-      exact sq_eq_zero_iff.mp ((mul_eq_zero.mp hmul).resolve_left hm.ne')
-    exact ⟨hδ, hν⟩
+    have hν : ν = 0 := eq_zero_of_neg_div_square hm (by norm_num) h4
+    rw [hν, zero_mul, zero_div, zero_sub] at h2
+    exact ⟨eq_zero_of_neg_div_square hm (by norm_num) h2, hν⟩
   · intro ⟨hδ, hν⟩ t
     simp [writtenLagProduct, writtenDelta, writtenSigma, affineMismatch, cubicRapidity, hδ, hν]
 
-private theorem ne_of_gt {n k : ℕ} (hn : k < n) : n ≠ k := by
-  intro h
-  subst h
-  exact Nat.lt_irrefl _ hn
-
-private theorem lagPoly_coeff_high {σ₀ σd₀ m δ₀ ν : ℝ} {n : ℕ} (hn : 4 < n) :
-    (lagPoly σ₀ σd₀ m δ₀ ν).coeff n = 0 := by
-  simp only [lagPoly, coeff_add, coeff_C, coeff_C_mul, coeff_X]
-  have h0 : n ≠ 0 := ne_of_gt (Nat.lt_trans (by decide : 0 < 4) hn)
-  have h1 : n ≠ 1 := ne_of_gt (Nat.lt_trans (by decide : 1 < 4) hn)
-  have h2 : n ≠ 2 := ne_of_gt (Nat.lt_trans (by decide : 2 < 4) hn)
-  have h3 : n ≠ 3 := ne_of_gt (Nat.lt_trans (by decide : 3 < 4) hn)
-  have h4 : n ≠ 4 := ne_of_gt hn
-  simp [h0, h2, h3, h4, Ne.symm h1]
-
 private theorem lagPoly_natDegree_le (σ₀ σd₀ m δ₀ ν : ℝ) :
     (lagPoly σ₀ σd₀ m δ₀ ν).natDegree ≤ 4 := by
-  rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
-  intro n hn
-  exact lagPoly_coeff_high (WithBot.coe_lt_coe.mp hn)
+  unfold lagPoly
+  have hC {a : ℝ} : (C a).natDegree ≤ 4 := by
+    rw [natDegree_C]
+    decide
+  have hX {a : ℝ} : (C a * X).natDegree ≤ 4 := by
+    rw [← pow_one X]
+    exact (natDegree_C_mul_X_pow_le a 1).trans (by decide)
+  have hpow {a : ℝ} {n : ℕ} (hn : n ≤ 4) : (C a * X ^ n).natDegree ≤ 4 :=
+    (natDegree_C_mul_X_pow_le a n).trans hn
+  refine (natDegree_add_le _ _).trans (max_le ?_ (hpow (by decide)))
+  refine (natDegree_add_le _ _).trans (max_le ?_ (hpow (by decide)))
+  refine (natDegree_add_le _ _).trans (max_le ?_ (hpow (by decide)))
+  exact (natDegree_add_le _ _).trans (max_le hC hX)
 
 private theorem tendsto_eval_of_natDegree {p : ℝ[X]} {n : ℕ}
     (hn : p.natDegree = n) (hdeg : 0 < n) (hlead : p.leadingCoeff ≤ 0) :
@@ -157,80 +147,62 @@ private theorem tendsto_eval_of_natDegree {p : ℝ[X]} {n : ℕ}
     exact WithBot.coe_lt_coe.mpr hdeg
   exact p.tendsto_atBot_of_leadingCoeff_nonpos hp hlead
 
+private theorem natDegree_eq_two_of_tail {p : ℝ[X]} (hle : p.natDegree ≤ 4)
+    (h3 : p.coeff 3 = 0) (h4 : p.coeff 4 = 0) (h2 : p.coeff 2 ≠ 0) : p.natDegree = 2 := by
+  refine le_antisymm ?_ (le_natDegree_of_ne_zero h2)
+  rw [natDegree_le_iff_coeff_eq_zero]
+  intro n hn
+  by_cases hhi : 4 < n
+  · exact coeff_eq_zero_of_natDegree_lt (Nat.lt_of_le_of_lt hle hhi)
+  · rcases Nat.eq_or_lt_of_le (Nat.succ_le_of_lt hn) with rfl | hn3
+    · exact h3
+    · rcases Nat.eq_or_lt_of_le (Nat.succ_le_of_lt hn3) with rfl | hn4
+      · exact h4
+      · exact absurd hn4 hhi
+
+/-- A nonzero rate makes the degree-four term the leading term, and it is negative. -/
+private theorem lagPoly_tendsto_of_rate {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) (hν : ν ≠ 0) :
+    Tendsto (fun t => (lagPoly σ₀ σd₀ m δ₀ ν).eval t) atTop atBot := by
+  have hc4 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = -(m * ν ^ 2 / 6) :=
+    lagPoly_coeff_four σ₀ σd₀ m δ₀ ν
+  have hc4ne : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 ≠ 0 := by
+    intro h0
+    exact hν <| eq_zero_of_neg_div_square hm (by norm_num) (hc4.symm.trans h0)
+  have hnat : (lagPoly σ₀ σd₀ m δ₀ ν).natDegree = 4 :=
+    le_antisymm (lagPoly_natDegree_le σ₀ σd₀ m δ₀ ν) (le_natDegree_of_ne_zero hc4ne)
+  have hlead : (lagPoly σ₀ σd₀ m δ₀ ν).leadingCoeff ≤ 0 := by
+    rw [leadingCoeff, hnat, hc4]
+    have : 0 ≤ m * ν ^ 2 / 6 := by positivity
+    linarith
+  exact tendsto_eval_of_natDegree hnat (by decide) hlead
+
 private theorem lagPoly_tendsto_atTop_of_lag {σ₀ σd₀ m δ₀ ν : ℝ}
     (hm : 0 < m) (h : δ₀ ≠ 0 ∨ ν ≠ 0) :
     Tendsto (fun t => (lagPoly σ₀ σd₀ m δ₀ ν).eval t) atTop atBot := by
-  rcases h with hδ | hν
-  · by_cases hrate : ν = 0
-    · have hc2 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 2 = -(m * δ₀ ^ 2 / 2) := by
-        rw [lagPoly_coeff_two, hrate]
-        ring
-      have hc2ne : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 2 ≠ 0 := by
-        intro h0
-        rw [hc2] at h0
-        have : m * δ₀ ^ 2 = 0 := by
-          field_simp at h0
-          linarith
-        exact hδ (sq_eq_zero_iff.mp ((mul_eq_zero.mp this).resolve_left hm.ne'))
-      have hc3 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 3 = 0 := by
-        rw [lagPoly_coeff_three, hrate]
-        ring
-      have hc4 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = 0 := by
-        rw [lagPoly_coeff_four, hrate]
-        ring
-      have hnat : (lagPoly σ₀ σd₀ m δ₀ ν).natDegree = 2 := by
-        apply le_antisymm
-        · rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
-          intro n hn
-          have hn2 : 2 < n := WithBot.coe_lt_coe.mp hn
-          by_cases h3 : n = 3
-          · simpa [h3] using hc3
-          · by_cases h4 : n = 4
-            · simpa [h4] using hc4
-            · have hgt : 4 < n := by
-                have hge3 : 3 ≤ n := Nat.succ_le_of_lt hn2
-                have hgt3 : 3 < n := Nat.lt_of_le_of_ne hge3 (Ne.symm h3)
-                have hge4 : 4 ≤ n := Nat.succ_le_of_lt hgt3
-                exact Nat.lt_of_le_of_ne hge4 (Ne.symm h4)
-              exact lagPoly_coeff_high hgt
-        · exact le_natDegree_of_ne_zero hc2ne
-      have hlead : (lagPoly σ₀ σd₀ m δ₀ ν).leadingCoeff ≤ 0 := by
-        rw [leadingCoeff, hnat, hc2]
-        have : 0 ≤ m * δ₀ ^ 2 / 2 := by positivity
-        linarith
-      exact tendsto_eval_of_natDegree hnat (by decide) hlead
-    · have hc4 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = -(m * ν ^ 2 / 6) :=
-        lagPoly_coeff_four σ₀ σd₀ m δ₀ ν
-      have hc4ne : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 ≠ 0 := by
-        intro h0
-        rw [hc4] at h0
-        have : m * ν ^ 2 = 0 := by
-          field_simp at h0
-          linarith
-        exact hrate (sq_eq_zero_iff.mp ((mul_eq_zero.mp this).resolve_left hm.ne'))
-      have hnat : (lagPoly σ₀ σd₀ m δ₀ ν).natDegree = 4 :=
-        le_antisymm (lagPoly_natDegree_le σ₀ σd₀ m δ₀ ν) (le_natDegree_of_ne_zero hc4ne)
-      have hlead : (lagPoly σ₀ σd₀ m δ₀ ν).leadingCoeff ≤ 0 := by
-        rw [leadingCoeff, hnat, hc4]
-        have : 0 ≤ m * ν ^ 2 / 6 := by positivity
-        linarith
-      exact tendsto_eval_of_natDegree hnat (by decide) hlead
-  · have hc4 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = -(m * ν ^ 2 / 6) :=
-      lagPoly_coeff_four σ₀ σd₀ m δ₀ ν
-    have hc4ne : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 ≠ 0 := by
+  by_cases hν : ν = 0
+  · have hδ : δ₀ ≠ 0 := by
+      rcases h with hδ | hν'
+      · exact hδ
+      · exact absurd hν hν'
+    have hc2 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 2 = -(m * δ₀ ^ 2 / 2) := by
+      rw [lagPoly_coeff_two, hν]
+      ring
+    have hc2ne : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 2 ≠ 0 := by
       intro h0
-      rw [hc4] at h0
-      have : m * ν ^ 2 = 0 := by
-        field_simp at h0
-        linarith
-      exact hν (sq_eq_zero_iff.mp ((mul_eq_zero.mp this).resolve_left hm.ne'))
-    have hnat : (lagPoly σ₀ σd₀ m δ₀ ν).natDegree = 4 :=
-      le_antisymm (lagPoly_natDegree_le σ₀ σd₀ m δ₀ ν) (le_natDegree_of_ne_zero hc4ne)
+      exact hδ <| eq_zero_of_neg_div_square hm (by norm_num) (hc2.symm.trans h0)
+    have hc3 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 3 = 0 := by
+      rw [lagPoly_coeff_three, hν]
+      ring
+    have hc4 : (lagPoly σ₀ σd₀ m δ₀ ν).coeff 4 = 0 := by
+      rw [lagPoly_coeff_four, hν]
+      ring
+    have hnat := natDegree_eq_two_of_tail (lagPoly_natDegree_le σ₀ σd₀ m δ₀ ν) hc3 hc4 hc2ne
     have hlead : (lagPoly σ₀ σd₀ m δ₀ ν).leadingCoeff ≤ 0 := by
-      rw [leadingCoeff, hnat, hc4]
-      have : 0 ≤ m * ν ^ 2 / 6 := by positivity
+      rw [leadingCoeff, hnat, hc2]
+      have : 0 ≤ m * δ₀ ^ 2 / 2 := by positivity
       linarith
     exact tendsto_eval_of_natDegree hnat (by decide) hlead
+  · exact lagPoly_tendsto_of_rate hm hν
 
 theorem writtenLagProduct_timeFlip (σ₀ σd₀ m δ₀ ν t : ℝ) :
     writtenLagProduct σ₀ (-σd₀) m δ₀ (-ν) (-t) =
@@ -339,12 +311,11 @@ theorem written_flow_forever_admissible_iff {σ₀ σd₀ m δ₀ ν : ℝ} (hm 
     have hdeg : (sigmaPoly σ₀ σd₀ m δ₀ ν).degree ≤ 0 :=
       (isBoundedUnder_abs_atTop_iff _).mp hbound
     have hnat : (sigmaPoly σ₀ σd₀ m δ₀ ν).natDegree ≤ 0 := natDegree_le_of_degree_le hdeg
-    have hc1 : (sigmaPoly σ₀ σd₀ m δ₀ ν).coeff 1 = 0 :=
-      coeff_eq_zero_of_natDegree_lt (Nat.lt_of_le_of_lt hnat (by decide))
-    have hc2 : (sigmaPoly σ₀ σd₀ m δ₀ ν).coeff 2 = 0 :=
-      coeff_eq_zero_of_natDegree_lt (Nat.lt_of_le_of_lt hnat (by decide))
-    have hc3 : (sigmaPoly σ₀ σd₀ m δ₀ ν).coeff 3 = 0 :=
-      coeff_eq_zero_of_natDegree_lt (Nat.lt_of_le_of_lt hnat (by decide))
+    have hcoeff (k : ℕ) (hk : 0 < k) : (sigmaPoly σ₀ σd₀ m δ₀ ν).coeff k = 0 :=
+      coeff_eq_zero_of_natDegree_lt (Nat.lt_of_le_of_lt hnat hk)
+    have hc1 := hcoeff 1 (by decide)
+    have hc2 := hcoeff 2 (by decide)
+    have hc3 := hcoeff 3 (by decide)
     rw [sigmaPoly_coeff_three] at hc3
     rw [sigmaPoly_coeff_two] at hc2
     rw [sigmaPoly_coeff_one] at hc1
@@ -353,8 +324,7 @@ theorem written_flow_forever_admissible_iff {σ₀ σd₀ m δ₀ ν : ℝ} (hm 
         field_simp at hc3
         linarith
       exact (mul_eq_zero.mp hmul).resolve_left hm.ne'
-    have hδ : δ₀ = 0 := by
-      exact (mul_eq_zero.mp (neg_eq_zero.mp hc2)).resolve_left hm.ne'
+    have hδ : δ₀ = 0 := (mul_eq_zero.mp (neg_eq_zero.mp hc2)).resolve_left hm.ne'
     have hσd : σd₀ = 0 := hc1
     have h0 := hcone 0
     have hσ : writtenSigma σ₀ σd₀ m δ₀ ν 0 = σ₀ := by
