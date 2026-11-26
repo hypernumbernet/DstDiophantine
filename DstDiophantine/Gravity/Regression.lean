@@ -37,6 +37,7 @@ import DstDiophantine.Gravity.SignReversal
 import DstDiophantine.Gravity.ScatteringScale
 import DstDiophantine.Gravity.StrongChannel
 import DstDiophantine.Gravity.DualRotorDynamics
+import DstDiophantine.Gravity.WheelerDeWitt
 import DstDiophantine.Gravity.DualRotorRigidity
 import DstDiophantine.Gravity.DualRotorFlow
 import DstDiophantine.Gravity.DualRotorVacuum
@@ -858,6 +859,23 @@ example :
     (∃ m φ θ φdot θdot : ℝ, 0 < paperEnergy m φ θ φdot θdot) ∧
       (∃ m φ θ φdot θdot : ℝ, paperEnergy m φ θ φdot θdot < 0) :=
   paperEnergy_indefinite
+
+example : paperKineticHessianDet = -1 ∧ paperKineticHessianDet6 = -1 ∧
+    mixedKineticHessianDet = -1 / 4 :=
+  ⟨paperKineticHessianDet_eq, paperKineticHessianDet6_eq, mixedKineticHessianDet_eq⟩
+
+example :
+    PaperActualEL 1 0 0 0 0 ∧ paperEnergy 1 0 0 0 1 < 0 :=
+  paperEnergy_negative_on_shell
+
+example (c : PGA) :
+    (0 : PGA) + (c * c - c * c) = 0 ∧
+      (∃ m φ θ φdot θdot φddot θddot : ℝ,
+        PaperActualEL m φ θ φddot θddot ∧ paperEnergy m φ θ φdot θdot ≠ 0) :=
+  oneParam_curvature_leaves_energy_free c
+
+example : oscillatorKineticHessianDet = 1 ∧ 0 < oscillatorEnergy 1 1 0 0 0 :=
+  ⟨oscillatorKineticHessianDet_eq, oscillatorEnergy_positive_on_shell.2⟩
 
 example (σ₀ σd₀ m δ₀ ν t : ℝ) :
     PaperActualEL m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)

@@ -125,6 +125,10 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `TorsionalLayer` — the equal-scale spectrum: one node in each `π`-interval, and inward screening
   of the plateau force.
 * `DualRotorDynamics` — the Euler–Lagrange system of the written action.
+* `WheelerDeWitt` — the written kinetic Hessian has determinant `-1` in six rapidities, `-1` on
+  one axis, and `-1/4` in the mixed velocities. The Jacobi integral is the Hamiltonian and takes
+  both signs on the solutions. Vanishing curvature of a one-parameter rotor does not impose that
+  constraint. No wave functional of a spatial metric is constructed.
 * `DualRotorRigidity` — an arbitrary mismatch slope; the quartic well's curvature is not a
   prescribed Compton value.
 * `DualRotorFlow` — closed integrals of those jets.
