@@ -45,6 +45,7 @@ import DstDiophantine.Gravity.DualRotorMotor
 import DstDiophantine.Gravity.NullRotation
 import DstDiophantine.Gravity.ExponentialFamily
 import DstDiophantine.Gravity.RestMass
+import DstDiophantine.Gravity.DualCycle
 import DstDiophantine.Gravity.ElectronOrbit
 import DstDiophantine.Gravity.ElectronSquare
 import DstDiophantine.Gravity.ElectronHelium

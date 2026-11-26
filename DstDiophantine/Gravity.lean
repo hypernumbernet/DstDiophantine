@@ -140,6 +140,10 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   claimed.
 * `RestMass` — stiffness, unsigned mass, and free fall are three different quantities; no `F=ma` is
   claimed.
+* `DualCycle` — an admissible dual half-angle is at most `π √3 / 4`, so the dual rotor is never
+  `-1`. Negating the dual rapidities reverses the rotor and preserves `J`, and a unit lag rate
+  leaves the cone short of the antipodal rapidity `2π`. No acceleration ceiling is read off a
+  `4π` wrap.
 * `ElectronOrbit` — the first Coulombic node lies in `(π/4,1)`; equal-scale radii are not the Bohr
   radii, and the map `ℓ ↦ ℓ/Z` is not the radius `a₀/Z`.
 * `ElectronSquare` — on the square the midplane pair has no outer-well equilibrium.
