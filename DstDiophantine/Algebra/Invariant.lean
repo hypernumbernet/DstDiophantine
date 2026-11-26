@@ -285,6 +285,17 @@ def IsPureHyperbolic (p : TorsionParams) : Prop :=
 def IsPureElliptic (p : TorsionParams) : Prop :=
   ∀ a : Fin 3, p.alpha a = 0 ∧ p.beta a = Real.pi / 2
 
+theorem sq_diff_le_pi_sq {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi) :
+    |α ^ 2 - β ^ 2| ≤ Real.pi ^ 2 := by
+  rcases le_total α β with hle | hle
+  · have hnonpos : α ^ 2 - β ^ 2 ≤ 0 := by nlinarith
+    rw [abs_of_nonpos hnonpos]
+    nlinarith [sq_nonneg (β - α), sq_nonneg (α + β)]
+  · have hnonneg : 0 ≤ α ^ 2 - β ^ 2 := by nlinarith
+    rw [abs_of_nonneg hnonneg]
+    nlinarith [sq_nonneg (α - β), sq_nonneg (α + β)]
+
 theorem sq_diff_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     |α ^ 2 - β ^ 2| ≤ (Real.pi / 2) ^ 2 := by
@@ -301,6 +312,11 @@ theorem sq_diff_le_half_pi_sq {α β : ℝ}
 theorem sq_sum_le_half_pi_sq {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi / 2) :
     α ^ 2 + β ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+  nlinarith [sq_nonneg (α + β), mul_nonneg hα hβ]
+
+theorem sq_sum_le_pi_sq {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hsum : α + β ≤ Real.pi) :
+    α ^ 2 + β ^ 2 ≤ Real.pi ^ 2 := by
   nlinarith [sq_nonneg (α + β), mul_nonneg hα hβ]
 
 theorem sq_sum_eq_half_pi_sq_iff {α β : ℝ}
@@ -378,6 +394,24 @@ theorem sq_diff_eq_half_pi_sq_iff {α β : ℝ}
         abs_of_nonneg (sq_nonneg (Real.pi / 2))]
 
 theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+    |J p| ≤ 3 * Real.pi ^ 2 / 2 := by
+  rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
+  have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ Real.pi ^ 2 := fun a =>
+    sq_diff_le_pi_sq (h a).1 (h a).2.1 (h a).2.2.2
+  have hsum : ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ 3 * Real.pi ^ 2 := by
+    simp only [Fin.sum_univ_three]
+    linarith [hbound 0, hbound 1, hbound 2]
+  have habs : |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)| ≤
+      ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+    Finset.abs_sum_le_sum_abs (s := Finset.univ) (f := fun a => p.alpha a ^ 2 - p.beta a ^ 2)
+  calc
+    (1 / 2 : ℝ) * |∑ a : Fin 3, (p.alpha a ^ 2 - p.beta a ^ 2)|
+        ≤ (1 / 2) * ∑ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| :=
+      mul_le_mul_of_nonneg_left habs (by norm_num)
+    _ ≤ 3 * Real.pi ^ 2 / 2 := by linarith [hsum]
+
+theorem torsion_bound_raw_legacy_continuous (p : TorsionParams)
+    (h : Admissible.IsAdmissibleContinuousLegacy p) :
     |J p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by
   rw [J_coef, abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
   have hbound : ∀ a : Fin 3, |p.alpha a ^ 2 - p.beta a ^ 2| ≤ (Real.pi / 2) ^ 2 := fun a =>
@@ -395,59 +429,57 @@ theorem torsion_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContin
     _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 := by linarith [hsum]
 
 theorem torsion_bound_raw_continuous_pi_sq (p : TorsionParams)
-    (h : IsAdmissibleContinuous p) :
-    |J p| ≤ 3 * Real.pi ^ 2 / 8 := by
-  have hJ := torsion_bound_raw_continuous p h
-  convert hJ using 1
-  ring
+    (h : Admissible.IsAdmissibleContinuousLegacy p) :
+    |J p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+  torsion_bound_raw_legacy_continuous p h
 
 theorem torsion_bound_raw {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+    |J (toTorsionParams t)| ≤ 3 * Real.pi ^ 2 / 2 :=
   torsion_bound_raw_continuous _ (admissible_continuous_of_discrete t h)
 
 theorem torsion_bound_raw_pi_sq {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |J (toTorsionParams t)| ≤ 3 * Real.pi ^ 2 / 8 :=
-  torsion_bound_raw_continuous_pi_sq _ (admissible_continuous_of_discrete t h)
+    |J (toTorsionParams t)| ≤ 3 * (Real.pi / 2) ^ 2 / 2 :=
+  torsion_bound_raw_continuous_pi_sq _ (admissible_implies_legacy_continuous t h)
 
 theorem torsion_bound_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    |JNormalized p| ≤ 1 := by
+    |JNormalized p| ≤ 4 := by
   unfold JNormalized
   have hJ := torsion_bound_raw_continuous p h
   have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
   rw [abs_mul, abs_of_nonneg hcoef]
   calc
     (8 / (3 * Real.pi ^ 2)) * |J p|
-        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * (Real.pi / 2) ^ 2 / 2) := by gcongr
-    _ = 1 := by field_simp; ring
+        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * Real.pi ^ 2 / 2) := by gcongr
+    _ = 4 := by field_simp; ring
 
 theorem torsion_bound {N : ℕ} [NeZero N] (t : DiscreteTorsion N) (h : IsAdmissible t) :
-    |JNormalized (toTorsionParams t)| ≤ 1 :=
+    |JNormalized (toTorsionParams t)| ≤ 4 :=
   torsion_bound_continuous _ (admissible_continuous_of_discrete t h)
 
 theorem mass_bound_raw_continuous (p : TorsionParams) (h : IsAdmissibleContinuous p) :
-    mass p ≤ 3 * Real.pi ^ 2 / 8 := by
+    mass p ≤ 3 * Real.pi ^ 2 / 2 := by
   rw [mass_coef]
-  have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ (Real.pi / 2) ^ 2 := fun a =>
-    sq_sum_le_half_pi_sq (h a).1 (h a).2.1 (h a).2.2
-  have hsum : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤ 3 * (Real.pi / 2) ^ 2 := by
+  have haxis : ∀ a : Fin 3, p.alpha a ^ 2 + p.beta a ^ 2 ≤ Real.pi ^ 2 := fun a =>
+    sq_sum_le_pi_sq (h a).1 (h a).2.1 (h a).2.2.2
+  have hsum : ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤ 3 * Real.pi ^ 2 := by
     simp only [Fin.sum_univ_three]
     linarith [haxis 0, haxis 1, haxis 2]
   have : (1 / 2 : ℝ) * ∑ a : Fin 3, (p.alpha a ^ 2 + p.beta a ^ 2) ≤
-      (1 / 2) * (3 * (Real.pi / 2) ^ 2) :=
+      (1 / 2) * (3 * Real.pi ^ 2) :=
     mul_le_mul_of_nonneg_left hsum (by norm_num)
   convert this using 1
   ring
 
 theorem massNormalized_bound_continuous (p : TorsionParams)
     (h : IsAdmissibleContinuous p) :
-    massNormalized p ≤ 1 := by
+    massNormalized p ≤ 4 := by
   unfold massNormalized
   have hM := mass_bound_raw_continuous p h
   have hcoef : 0 ≤ 8 / (3 * Real.pi ^ 2) := by positivity
   calc
     (8 / (3 * Real.pi ^ 2)) * mass p
-        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * Real.pi ^ 2 / 8) := by gcongr
-    _ = 1 := by field_simp
+        ≤ (8 / (3 * Real.pi ^ 2)) * (3 * Real.pi ^ 2 / 2) := by gcongr
+    _ = 4 := by field_simp [Real.pi_ne_zero] <;> ring
 
 theorem JNormalized_extremal :
     JNormalized { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = 1 := by
@@ -466,20 +498,12 @@ theorem JNormalized_extremal_neg :
 theorem isAdmissibleContinuous_pureHyperbolic :
     IsAdmissibleContinuous { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } := by
   intro a
-  constructor
-  · positivity
-  constructor
-  · exact le_refl 0
-  · linarith [Real.pi_pos.le]
+  refine ⟨by positivity, le_rfl, by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩
 
 theorem isAdmissibleContinuous_pureElliptic :
     IsAdmissibleContinuous { alpha := fun _ => 0, beta := fun _ => Real.pi / 2 } := by
   intro a
-  constructor
-  · exact le_refl 0
-  constructor
-  · positivity
-  · linarith [Real.pi_pos.le]
+  refine ⟨le_rfl, by positivity, by linarith [Real.pi_pos], by linarith [Real.pi_pos]⟩
 
 /-- Uniform scaling of all axes along the pure-boost ray. -/
 noncomputable def pureHyperbolicRay (t : ℝ) : TorsionParams where
@@ -513,24 +537,22 @@ theorem JNormalized_pureEllipticRay (t : ℝ) :
 theorem isAdmissibleContinuous_pureHyperbolicRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
     IsAdmissibleContinuous (pureHyperbolicRay t) := by
   intro a
+  unfold pureHyperbolicRay
   have hπ : 0 ≤ Real.pi / 2 := by positivity
-  refine ⟨mul_nonneg ht0 hπ, le_rfl, ?_⟩
-  change t * (Real.pi / 2) + 0 ≤ Real.pi / 2
-  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+  have hsum : t * (Real.pi / 2) ≤ Real.pi := by
     calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
-      _ = Real.pi / 2 := one_mul _
-  linarith
+      _ ≤ Real.pi := by linarith [Real.pi_pos]
+  exact ⟨mul_nonneg ht0 hπ, le_rfl, le_of_lt Real.pi_pos, by simpa⟩
 
 theorem isAdmissibleContinuous_pureEllipticRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
     IsAdmissibleContinuous (pureEllipticRay t) := by
   intro a
+  unfold pureEllipticRay
   have hπ : 0 ≤ Real.pi / 2 := by positivity
-  refine ⟨le_rfl, mul_nonneg ht0 hπ, ?_⟩
-  change 0 + t * (Real.pi / 2) ≤ Real.pi / 2
-  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by
+  have hsum : t * (Real.pi / 2) ≤ Real.pi := by
     calc t * (Real.pi / 2) ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ
-      _ = Real.pi / 2 := one_mul _
-  linarith
+      _ ≤ Real.pi := by linarith [Real.pi_pos]
+  exact ⟨le_rfl, mul_nonneg ht0 hπ, hsum, by simpa [add_zero]⟩
 
 theorem JNormalized_balancedRay (t : ℝ) : JNormalized (balancedRay t) = 0 := by
   rw [JNormalized_coef]
@@ -550,33 +572,32 @@ theorem massNormalized_balancedRay (t : ℝ) :
   field_simp [Real.pi_ne_zero]
   ring
 
-theorem isAdmissibleContinuous_balancedRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 1) :
+theorem isAdmissibleContinuous_balancedRay {t : ℝ} (ht0 : 0 ≤ t) (ht1 : t ≤ 2) :
     IsAdmissibleContinuous (balancedRay t) := by
   intro a
+  simp only [balancedRay]
   have hπ4 : 0 ≤ Real.pi / 4 := by linarith [Real.pi_pos]
   have hα : 0 ≤ t * (Real.pi / 4) := mul_nonneg ht0 hπ4
-  refine ⟨hα, hα, ?_⟩
   have hπ2 : 0 ≤ Real.pi / 2 := by positivity
-  calc t * (Real.pi / 4) + t * (Real.pi / 4)
-      = t * (Real.pi / 2) := by ring
-    _ ≤ 1 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ2
-    _ = Real.pi / 2 := one_mul _
+  have hbound : t * (Real.pi / 2) ≤ Real.pi := by
+    calc t * (Real.pi / 2) ≤ 2 * (Real.pi / 2) := mul_le_mul_of_nonneg_right ht1 hπ2
+      _ = Real.pi := by ring
+  exact ⟨hα, hα, by linarith [Real.pi_pos], by linarith⟩
 
 theorem mass_balancedRay_pos {t : ℝ} (ht : t ≠ 0) : 0 < mass (balancedRay t) := by
   rw [mass_balancedRay]
   have : 0 < t ^ 2 := sq_pos_of_ne_zero ht
   positivity
 
-theorem not_admissible_balancedRay_of_one_lt {t : ℝ} (ht : 1 < t) :
+theorem not_admissible_balancedRay_of_two_lt {t : ℝ} (ht : 2 < t) :
     ¬ IsAdmissibleContinuous (balancedRay t) := by
   intro h
-  have hsum := (h (0 : Fin 3)).2.2
+  have hsum := (h (0 : Fin 3)).2.2.2
   have hαβ :
       (balancedRay t).alpha 0 + (balancedRay t).beta 0 = t * (Real.pi / 2) := by
     simp [balancedRay]; ring
-  have : t * (Real.pi / 2) ≤ Real.pi / 2 := by rwa [← hαβ]
-  have hπ : 0 < Real.pi / 2 := by positivity
-  nlinarith
+  have : t * (Real.pi / 2) ≤ Real.pi := by rwa [← hαβ]
+  nlinarith [Real.pi_pos]
 
 /-- `J = 0` on the cone does not force vanishing mass. -/
 theorem JNormalized_zero_not_implies_vacuum :
@@ -664,7 +685,8 @@ theorem JNormalized_of_pureElliptic (p : TorsionParams) (h : IsPureElliptic p) :
   field_simp [Real.pi_ne_zero]
   ring
 
-theorem abs_JNormalized_eq_one_iff (p : TorsionParams) (h : IsAdmissibleContinuous p) :
+theorem abs_JNormalized_eq_one_iff (p : TorsionParams)
+    (h : Admissible.IsAdmissibleContinuousLegacy p) :
     |JNormalized p| = 1 ↔ IsPureHyperbolic p ∨ IsPureElliptic p := by
   constructor
   · intro heq
@@ -811,7 +833,7 @@ theorem torsion_bound_naive_false :
 
 theorem J5_bound_spatial (R : ℝ) (p : OmegaParams)
     (ht : IsAdmissibleContinuous p.torsion) (hb : IsBoundedTrans R p.trans) :
-    |J5 p| ≤ 3 * (Real.pi / 2) ^ 2 / 2 + R ^ 2 / 2 := by
+    |J5 p| ≤ 3 * Real.pi ^ 2 / 2 + R ^ 2 / 2 := by
   rw [J5_eq]
   have htors := torsion_bound_raw_continuous p.torsion ht
   have htrans : |minkowskiDot p.trans.lambda| ≤ R ^ 2 := by
@@ -821,12 +843,12 @@ theorem J5_bound_spatial (R : ℝ) (p : OmegaParams)
       _ ≤ R ^ 2 := hb.2
   calc |J p.torsion + (1 / 2) * minkowskiDot p.trans.lambda|
       ≤ |J p.torsion| + |(1 / 2) * minkowskiDot p.trans.lambda| := abs_add_le _ _
-    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 + |(1 / 2) * minkowskiDot p.trans.lambda| := by gcongr
-    _ ≤ 3 * (Real.pi / 2) ^ 2 / 2 + (1 / 2) * R ^ 2 := by
+    _ ≤ 3 * Real.pi ^ 2 / 2 + |(1 / 2) * minkowskiDot p.trans.lambda| := by gcongr
+    _ ≤ 3 * Real.pi ^ 2 / 2 + (1 / 2) * R ^ 2 := by
       gcongr
       rw [abs_mul, abs_of_pos (show 0 < (1 / 2 : ℝ) by norm_num)]
       exact mul_le_mul_of_nonneg_left htrans (by norm_num)
-    _ = 3 * (Real.pi / 2) ^ 2 / 2 + R ^ 2 / 2 := by ring
+    _ = 3 * Real.pi ^ 2 / 2 + R ^ 2 / 2 := by ring
 
 end Invariant
 

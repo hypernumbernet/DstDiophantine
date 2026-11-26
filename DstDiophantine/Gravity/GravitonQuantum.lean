@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.SourceSuperposition
 import DstDiophantine.Gravity.TorsionalLayer
+import DstDiophantine.Gravity.MismatchAngleBridge
 import DstDiophantine.Logic.Quantum.DeBroglie
 import DstDiophantine.Logic.Quantum.DualObservables
 import DstDiophantine.Logic.Quantum.LightFilter
@@ -25,8 +26,8 @@ noncomputable section
 
 namespace DstDiophantine.Gravity.GravitonQuantum
 
-open Admissible Invariant Operations Real SourceSuperposition
-open DstDiophantine.Logic
+open Admissible Invariant Operations Real SourceSuperposition MismatchAngle
+open DstDiophantine.Logic Gravity
 
 /-- Pure dual rapidity `θ` on axis 0. -/
 def oneAxisDual (θ : ℝ) : TorsionParams where
@@ -52,6 +53,27 @@ theorem J_oneAxisDual (θ : ℝ) : J (oneAxisDual θ) = -(θ ^ 2) / 2 := by
   rw [J_coef]
   simp [oneAxisDual, Fin.sum_univ_three]
   ring
+
+theorem mismatchBoostHalfSqSum_oneAxisDual (θ : ℝ) :
+    mismatchBoostHalfSqSum (oneAxisDual θ) = 0 := by
+  simp [oneAxisDual, mismatchBoostHalfSqSum, mismatchBoostHalf, Fin.sum_univ_three]
+
+theorem mismatchRotationHalfSqSum_oneAxisDual (θ : ℝ) :
+    mismatchRotationHalfSqSum (oneAxisDual θ) = (θ / 2) ^ 2 := by
+  simp [oneAxisDual, mismatchRotationHalfSqSum, mismatchRotationHalf, Fin.sum_univ_three]
+
+theorem J_oneAxisDual_mismatch_halves (θ : ℝ) :
+    J (oneAxisDual θ) =
+      2 *
+        (mismatchBoostHalfSqSum (oneAxisDual θ) -
+          mismatchRotationHalfSqSum (oneAxisDual θ)) := by
+  simpa using J_eq_mismatch_half_sq_diff (oneAxisDual θ)
+
+theorem J_oneAxisDual_mismatch_rotation_half_sq (θ : ℝ) :
+    J (oneAxisDual θ) = -2 * mismatchRotationHalfSqSum (oneAxisDual θ) := by
+  rw [J_oneAxisDual_mismatch_halves, mismatchBoostHalfSqSum_oneAxisDual,
+    mismatchRotationHalfSqSum_oneAxisDual]
+  ring_nf
 
 theorem JNormalized_oneAxisDual (θ : ℝ) :
     JNormalized (oneAxisDual θ) = -((4 : ℝ) / (3 * Real.pi ^ 2)) * θ ^ 2 := by
@@ -169,6 +191,29 @@ theorem collective_square {n N : ℕ} (hN : 0 < N) :
   field_simp [hNz]
   ring
 
+theorem mismatchRotationHalfSqSum_alignedSteps {n N : ℕ} :
+    mismatchRotationHalfSqSum (alignedSteps n N) =
+      (n : ℝ) ^ 2 * mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  simp [alignedSteps, oneAxisDual, mismatchRotationHalfSqSum,
+    mismatchRotationHalf, Fin.sum_univ_three]
+  ring_nf
+
+theorem oneStep_JNormalized_mismatch_rotation_sq {N : ℕ} (hN : 0 < N) :
+    JNormalized (oneAxisDual (stepAngle N)) =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  rw [JNormalized_oneStep hN, mismatchRotationHalfSqSum_oneAxisDual, stepAngle]
+  have hNz : (N : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hN)
+  field_simp [hNz]
+
+theorem collective_square_mismatch_halves {n N : ℕ} (hN : 0 < N) :
+    JNormalized (alignedSteps n N) =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (alignedSteps n N) := by
+  rw [collective_square hN, oneStep_JNormalized_mismatch_rotation_sq hN,
+    mismatchRotationHalfSqSum_alignedSteps]
+  ring
+
 theorem twoGravitons_fourfold {N : ℕ} (hN : 8 ≤ N) :
     IsAdmissibleContinuous (alignedSteps 2 N) ∧
       JNormalized (alignedSteps 2 N) = 4 * JNormalized (alignedSteps 1 N) := by
@@ -208,6 +253,15 @@ theorem expressed_locks {θ : ℝ} (h : Real.pi / 2 ≤ θ) :
   unfold JNormalized
   rw [hJ]
   field_simp
+
+theorem expressed_locks_mismatch_diagnostic {θ : ℝ} (h : Real.pi / 2 ≤ θ) :
+    J (expressedOneAxis θ) =
+      2 *
+        (mismatchBoostHalfSqSum (expressedOneAxis θ) -
+          mismatchRotationHalfSqSum (expressedOneAxis θ)) ∧
+      JNormalized (expressedOneAxis θ) = -((1 : ℝ) / 3) := by
+  refine ⟨?_, expressed_locks h⟩
+  simpa using J_eq_mismatch_half_sq_diff (expressedOneAxis θ)
 
 theorem collective_locks {n N : ℕ} (hN : 0 < N) (h : N ≤ 4 * n) :
     JNormalized (expressedOneAxis ((n : ℝ) * stepAngle N)) = -((1 : ℝ) / 3) :=
@@ -731,6 +785,13 @@ theorem farHeight_eq {N : ℕ} (hN : 0 < N) :
     farHeight N = -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) :=
   JNormalized_oneStep hN
 
+theorem farHeight_mismatch_rotation_sq {N : ℕ} (hN : 0 < N) :
+    farHeight N =
+      -((16 : ℝ) / (3 * Real.pi ^ 2)) *
+        mismatchRotationHalfSqSum (oneAxisDual (stepAngle N)) := by
+  unfold farHeight
+  exact oneStep_JNormalized_mismatch_rotation_sq hN
+
 theorem farHeight_neg {N : ℕ} (hN : 0 < N) : farHeight N < 0 := by
   rw [farHeight_eq hN]
   have hden : (0 : ℝ) < 3 * (N : ℝ) ^ 2 := by positivity
@@ -1039,6 +1100,41 @@ theorem balanced_interference_pos {N : ℕ} (hN : 4 ≤ N) :
       nlinarith [Real.pi_pos]
     exact le_trans (by simpa [hq] using hdiv) hcmp
 
+/-! ### Primary overlap channel (`cosh·cos`; legacy `gammaS` separate) -/
+
+theorem graviton_usual_overlap_gt_one {θ : ℝ} (hθ : 0 < θ) :
+    1 < MismatchAngle.axisOverlapScalar θ 0 := by
+  rw [axisOverlap_primary_eq_gammaS_usual]
+  exact usual_interference_gt_one hθ
+
+theorem graviton_dual_overlap_between {θ : ℝ} (h0 : 0 < θ) (hθ : θ ≤ Real.pi / 2) :
+    0 < MismatchAngle.axisOverlapScalar 0 θ ∧
+      MismatchAngle.axisOverlapScalar 0 θ < 1 := by
+  rw [axisOverlap_primary_eq_gammaS_dual]
+  exact dual_interference_between h0 hθ
+
+theorem graviton_primary_balanced_overlap (θ : ℝ) :
+    MismatchAngle.axisOverlapScalar θ θ =
+      Real.cosh (θ / 2) * Real.cos (θ / 2) := by
+  simp [MismatchAngle.axisOverlapScalar]
+
+theorem graviton_legacy_balanced_overlap (θ : ℝ) :
+    MismatchAngle.axisOverlapLegacy θ θ = gammaSEqual (θ / 2) := by
+  have h : 2 * (θ / 2) = θ := by ring
+  simpa [h] using axisOverlap_eq_gammaSEqual_balanced (θ / 2)
+
+theorem graviton_balanced_overlap_pos {N : ℕ} (hN : 4 ≤ N) :
+    0 < MismatchAngle.axisOverlapScalar (stepAngle N / 2) (stepAngle N / 2) := by
+  rw [graviton_primary_balanced_overlap]
+  have hform : stepAngle N / 2 / 2 = stepAngle N / 4 := by ring
+  rw [hform]
+  have hstep := stepAngle_le_half_pi hN
+  have hNpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  have hlo : -(Real.pi / 2) < stepAngle N / 4 := by linarith [stepAngle_pos hNpos, Real.pi_pos]
+  have hhi : stepAngle N / 4 < Real.pi / 2 := by nlinarith [hstep, Real.pi_pos]
+  have hmem : stepAngle N / 4 ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2) := ⟨hlo, hhi⟩
+  exact mul_pos (Real.cosh_pos _) (Real.cos_pos_of_mem_Ioo hmem)
+
 theorem gammaSEqual_pi_neg : gammaSEqual Real.pi < 0 := by
   have h := gammaSEqual_nat_mul_pi 1
   simp only [Nat.cast_one, one_mul, pow_one] at h
@@ -1055,6 +1151,25 @@ theorem negative_interference_not_admissible :
     have hsum := (h 0).2.2
     simp [oneAxisBalanced] at hsum
     linarith [Real.pi_pos]
+
+theorem graviton_primary_overlap_zero_at_rotation_pi :
+    axisOverlapScalar Real.pi Real.pi = 0 ∧
+      MismatchAngle.axisOverlapLegacy (2 * Real.pi) (2 * Real.pi) < 0 ∧
+      ¬ IsAdmissibleContinuous (oneAxisBalanced (2 * Real.pi)) := by
+  refine ⟨axisOverlap_zero_at_full_rotation Real.pi, ?_, negative_interference_not_admissible.2⟩
+  · rw [graviton_legacy_balanced_overlap]
+    simpa using gammaSEqual_pi_neg
+
+theorem graviton_step_usual_overlap_gt_one {N : ℕ} (hN : 4 ≤ N) :
+    1 < axisOverlapScalar (stepAngle N) 0 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  exact graviton_usual_overlap_gt_one (stepAngle_pos hpos)
+
+theorem graviton_step_dual_overlap_between {N : ℕ} (hN : 4 ≤ N) :
+    0 < axisOverlapScalar 0 (stepAngle N) ∧
+      axisOverlapScalar 0 (stepAngle N) < 1 := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 4) hN
+  exact graviton_dual_overlap_between (stepAngle_pos hpos) (stepAngle_le_half_pi hN)
 
 theorem carriers_distinct {N : ℕ} (hN : 4 ≤ N) :
     oneAxisUsual (stepAngle N) ≠ oneAxisDual (stepAngle N) ∧

@@ -7,6 +7,9 @@ import DstDiophantine.Algebra.Continuum
 import DstDiophantine.Algebra.Discrete
 import DstDiophantine.Algebra.DirichletKernel
 import DstDiophantine.Algebra.DualFourier
+import DstDiophantine.Algebra.MismatchAngle
+import DstDiophantine.Algebra.PgaAxisMotor
+import DstDiophantine.Algebra.RepulsionCone
 import DstDiophantine.Algebra.RelativeRotor
 import DstDiophantine.Algebra.Generators
 import DstDiophantine.Algebra.Invariant
@@ -196,6 +199,27 @@ export RelativeRotor (omegaUsual omegaDual rotorUsual rotorDual relativeRotor
   relativeRotor_of_paperVacuumSync paperVacuumSync_axis
   not_paperVacuumSync_pureBoost J_axisParams_balanced
   axis_rotors_ne_of_bivector J_zero_not_relativeRotor_one)
+export MismatchAngle (omegaMismatchAxis mismatchBoostHalf mismatchRotationHalf
+  mismatchBoostHalfSqSum mismatchRotationHalfSqSum
+  J_eq_mismatch_half_sq_diff J_eq_zero_iff_mismatch_sq_balance
+  J_neg_iff_rotation_sq_dominates J_nonpos_iff_rotation_sq_geq
+  J_pos_iff_boost_sq_dominates
+  pure_hyperbolic_rotation_sq_zero
+  pure_elliptic_boost_sq_zero
+  relativeRotor_axis_eq_exp relativeRotor_axis_eq_one_iff_rotors
+  relativeRotor_axis_ne_one_of_bivector mismatchHalf_dagger_axis
+  mismatchOrientation_dagger_axis omegaMismatch_reverse_axis mass_dagger_axis
+  J_axis_from_mismatchHalves J_dagger_axis dagger_axisParams
+  pgaAxisMotorGradeZero axisOverlapScalar axisOverlapLegacy
+  pgaAxisMotorGradeZero_eq_overlap relativeRotorOverlap
+  axisOverlap_balanced axisOverlapLegacy_balanced
+  axisOverlap_sign_reversal_threshold axisOverlapLegacy_sign_reversal_at_pi)
+export PgaAxisMotor (cliffordProductGradeZero
+  relativeRotor_axis_eq_reverse_product_exp
+  cliffordProductGradeZero_eq_axis_overlap
+  relativeRotor_axis_grade_zero_eq_overlap)
+export RepulsionCone (mismatchHalfNormSq admissibleContinuous_implies_mismatch_half_box
+  mismatch_half_box_not_implies_admissible)
 
 example {N : ℕ} (hN : N ≠ 0) (θ : ℝ) :
     |dirichletKernel N θ| ≤ 1 :=

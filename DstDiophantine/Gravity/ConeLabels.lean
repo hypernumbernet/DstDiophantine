@@ -1,13 +1,14 @@
 import DstDiophantine.Gravity.DualControl
+import DstDiophantine.Gravity.RepulsionOverlap
 import DstDiophantine.Logic.Connective
 import DstDiophantine.Logic.Interpretation
 
 /-!
 # Four regimes of the admissible cone
 
-The normalised mismatch on an admissible configuration is one of four regimes
-of sign and saturation. Saturated attraction is the unique point whose usual
-rapidities admit no other dual completion.
+Four regime labels still read `JNormalized` (derived diagnostic). On one axis,
+overlap sign for repulsive shell physics is `axisOverlapScalar` (`MismatchAngle`);
+see `RepulsionOverlap.primary_overlap_zero_legacy_neg_witness`.
 -/
 
 namespace DstDiophantine
@@ -15,6 +16,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open Admissible Invariant Operations Real
+open MismatchAngle RelativeRotor
 
 private theorem JNormalized_coeff_pos : 0 < (8 / (3 * Real.pi ^ 2) : ℝ) := by
   positivity
@@ -135,6 +137,60 @@ theorem exists_dualOnly_T_iff {p : TorsionParams} (hp : IsAdmissibleContinuous p
     obtain ⟨q, hα, hq, hJ⟩ := exists_dual_only_J_eq_zero hp hwall
     refine ⟨q, hq, hα, ?_⟩
     exact (Logic.ofParams_eq_T_iff hq).mpr ((JNormalized_eq_zero_iff q).mpr hJ)
+
+/-! ### Regime labels via mismatch half-square sums (diagnostic `J` still classifies) -/
+
+theorem ofParams_eq_T_iff_mismatch_balance {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) :
+    Logic.ofParams p hp = .T ↔
+      mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p := by
+  rw [Logic.ofParams_eq_T_iff, JNormalized_eq_zero_iff, J_eq_zero_iff_mismatch_sq_balance]
+
+theorem ofParams_eq_B_iff_mismatch_rotation_dominates {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) :
+    Logic.ofParams p hp = .B ↔
+      mismatchRotationHalfSqSum p > mismatchBoostHalfSqSum p := by
+  rw [ofParams_eq_B_iff_neg, JNormalized_lt_zero_iff, J_neg_iff_rotation_sq_dominates]
+
+theorem ofParams_eq_U_iff_mismatch_halves {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) :
+    Logic.ofParams p hp = .U ↔
+      mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p ∧
+        mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p < 3 * Real.pi ^ 2 / 16 := by
+  rw [Logic.ofParams_eq_U_iff, JNormalized_pos_iff, JNormalized_lt_one_iff]
+  constructor
+  · rintro ⟨hJpos, hJceil⟩
+    exact ⟨(J_pos_iff_boost_sq_dominates p).mp hJpos,
+      by rw [J_eq_mismatch_half_sq_diff p] at hJceil; linarith⟩
+  · rintro ⟨hb, hd⟩
+    exact ⟨(J_pos_iff_boost_sq_dominates p).mpr hb,
+      by rw [J_eq_mismatch_half_sq_diff p]; linarith⟩
+
+theorem ofParams_F_rotation_sq_zero {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (hF : Logic.ofParams p hp = .F) :
+    mismatchRotationHalfSqSum p = 0 := by
+  have hpure := (Logic.ofParams_F_iff_pureHyperbolic hp).mp hF
+  exact pure_hyperbolic_rotation_sq_zero hpure
+
+theorem ofParams_JNorm_neg_one_boost_sq_zero {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (hj : JNormalized p = -1) :
+    mismatchBoostHalfSqSum p = 0 := by
+  have hpure := (Logic.ofParams_deepB_iff_pureElliptic hp).mp hj
+  exact pure_elliptic_boost_sq_zero hpure
+
+theorem exists_dualOnly_B_iff_mismatch {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
+    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
+      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B) ↔
+      mismatchRotationHalfSqSum (dualWallParams p) >
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [exists_dualOnly_B_iff hp, J_neg_iff_rotation_sq_dominates]
+
+theorem exists_dualOnly_T_iff_mismatch {p : TorsionParams} (hp : IsAdmissibleContinuous p) :
+    (∃ q : TorsionParams, ∃ hq : IsAdmissibleContinuous q,
+      q.alpha = p.alpha ∧ Logic.ofParams q hq = .T) ↔
+      mismatchRotationHalfSqSum (dualWallParams p) ≥
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [exists_dualOnly_T_iff hp, J_nonpos_iff_rotation_sq_geq]
 
 theorem no_dualOnly_repulsion_of_F {p : TorsionParams} (hp : IsAdmissibleContinuous p)
     (hF : Logic.ofParams p hp = .F) :
@@ -280,6 +336,20 @@ theorem uniform_pi_div_three_dualOnly_U {q : TorsionParams}
     exact J_uniform_usual_lt_ceiling hα0 hαπ
   exact dualOnly_eq_U_of_positive_wall hq hαp
     uniform_pi_div_three_wall_pos hceil
+
+/-! ### Overlap sign decoupled from regime `B` (`J < 0`) on axis -/
+
+theorem regime_B_still_J_negative (p : TorsionParams) (hp : IsAdmissibleContinuous p)
+    (hB : Logic.ofParams p hp = .B) : JNormalized p < 0 :=
+  (ofParams_eq_B_iff_neg hp).mp hB
+
+theorem regime_label_not_overlap_sign :
+    J (axisParams Real.pi Real.pi) = 0 ∧
+      JNormalized (axisParams Real.pi Real.pi) = 0 ∧
+        axisOverlapScalar Real.pi Real.pi = 0 ∧
+          axisOverlapLegacy Real.pi Real.pi < 0 := by
+  rcases primary_overlap_zero_legacy_neg_witness with ⟨hO, ⟨hL, hJ⟩⟩
+  exact ⟨hJ, (JNormalized_eq_zero_iff _).2 hJ, hO, hL⟩
 
 end Gravity
 

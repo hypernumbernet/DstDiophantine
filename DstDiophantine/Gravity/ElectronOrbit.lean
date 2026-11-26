@@ -181,14 +181,10 @@ theorem equalScale_ratio_ne_bohr
 
 /-! ### Inward order for any decreasing equal phase -/
 
-/-- The unique node of the `n`-th `π`-interval. -/
-noncomputable def branchNode (n : ℕ) : ℝ :=
-  Classical.choose (ExistsUnique.exists (exists_unique_node_branch n))
-
 theorem branchNode_spec (n : ℕ) :
     branchNode n ∈ Ioo ((n : ℝ) * π) ((n : ℝ) * π + π) ∧
       gammaSEqual (branchNode n) = 0 :=
-  Classical.choose_spec (ExistsUnique.exists (exists_unique_node_branch n))
+  ⟨branchNode_mem_branch n, branchNode_gammaSEqual_zero n⟩
 
 theorem branchNode_strictMono (n : ℕ) : branchNode n < branchNode (n + 1) := by
   have hlo := (mem_Ioo.mp (branchNode_spec n).1).2

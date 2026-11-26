@@ -1,5 +1,6 @@
 import DstDiophantine.Algebra.Admissible
 import DstDiophantine.Algebra.Invariant
+import DstDiophantine.Algebra.MismatchAngle
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
@@ -9,8 +10,10 @@ import Mathlib.Tactic.FinCases
 /-!
 # Dual-only control of the particle mismatch \(J\)
 
-Dual-only motion cannot undercut the wall value of \(J\), and a shield with
-\(J=0\) exists precisely when that wall is nonpositive. An electromagnetic
+Primary mismatch data is the relative rotor / overlap half-angles (`MismatchAngle`);
+`J` and `JAxis` below are derived diagnostics. Dual-only motion cannot undercut
+the wall value of \(J\), and a shield with \(J=0\) exists precisely when that wall
+is nonpositive. An electromagnetic
 coupling, a resonance frequency, a laboratory protocol, and helicity drive of
 \(J\) are not derived.
 -/
@@ -20,7 +23,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle RelativeRotor MismatchAngle RelativeRotor
 
 /-! ### Axis density and the formal jet -/
 
@@ -33,6 +36,22 @@ theorem J_eq_sum_JAxis (p : TorsionParams) :
   rw [J_coef]
   simp only [JAxis, Fin.sum_univ_three]
   ring
+
+theorem JAxis_eq_J_axisParams (α β : ℝ) : JAxis α β = J (axisParams α β) := by
+  rw [JAxis, J_axisParams]
+
+theorem JAxis_mismatch_halves (α β : ℝ) :
+    JAxis α β =
+      2 * (mismatchBoostHalf α β ^ 2 - mismatchRotationHalf α β ^ 2) := by
+  rw [JAxis_eq_J_axisParams, J_axis_from_mismatchHalves]
+
+theorem J_eq_mismatch_diagnostic (p : TorsionParams) :
+    J p = 2 * (mismatchBoostHalfSqSum p - mismatchRotationHalfSqSum p) :=
+  J_eq_mismatch_half_sq_diff p
+
+theorem J_eq_zero_iff_mismatch_balance (p : TorsionParams) :
+    J p = 0 ↔ mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p :=
+  J_eq_zero_iff_mismatch_sq_balance p
 
 /-- Formal \(\dot J\) along a jet \((p,\dot p)\). -/
 def JDot (p pdot : TorsionParams) : ℝ :=
@@ -107,6 +126,18 @@ theorem J_dualWallParams_eq_sum_alpha (p : TorsionParams) :
   simp only [Fin.sum_univ_three]
   ring
 
+theorem J_dualWall_neg_iff_rotation_dominates (p : TorsionParams) :
+    J (dualWallParams p) < 0 ↔
+      mismatchRotationHalfSqSum (dualWallParams p) >
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [J_neg_iff_rotation_sq_dominates]
+
+theorem J_dualWall_nonpos_iff_mismatch (p : TorsionParams) :
+    J (dualWallParams p) ≤ 0 ↔
+      mismatchRotationHalfSqSum (dualWallParams p) ≥
+        mismatchBoostHalfSqSum (dualWallParams p) := by
+  rw [J_nonpos_iff_rotation_sq_geq]
+
 theorem J_dualWall_nonpos_iff (p : TorsionParams) :
     J (dualWallParams p) ≤ 0 ↔ ∑ a : Fin 3, p.alpha a ≤ 3 * Real.pi / 4 := by
   rw [J_dualWallParams_eq_sum_alpha]
@@ -128,10 +159,10 @@ theorem J_dualWall_neg_iff (p : TorsionParams) :
     nlinarith
 
 theorem isAdmissibleContinuous_dualWallParams {p : TorsionParams}
-    (h : IsAdmissibleContinuous p) :
+    (h : IsAdmissibleContinuousLegacy p) :
     IsAdmissibleContinuous (dualWallParams p) := by
   intro a
-  have hα := admissibleContinuous_alpha_nonneg p h a
+  have hα := admissibleContinuous_legacy_alpha_nonneg p h a
   have hαle := admissibleContinuous_alpha_le_half_pi p h a
   refine ⟨hα, ?_, ?_⟩
   · unfold dualWallParams dualWall
@@ -329,6 +360,11 @@ theorem J_equalScaleOf (p : TorsionParams) : J (equalScaleOf p) = 0 := by
   rw [J_coef]
   simp [equalScaleOf]
 
+theorem J_equalScaleOf_mismatch_balanced (p : TorsionParams) :
+    mismatchBoostHalfSqSum (equalScaleOf p) =
+      mismatchRotationHalfSqSum (equalScaleOf p) := by
+  rw [← J_eq_zero_iff_mismatch_balance, J_equalScaleOf]
+
 theorem mass_equalScaleOf (p : TorsionParams) :
     mass (equalScaleOf p) = ∑ a : Fin 3, p.alpha a ^ 2 := by
   rw [mass_coef]
@@ -381,6 +417,39 @@ theorem J_dualShieldInterp (p : TorsionParams) (t : ℝ) :
   simp only [dualShieldInterp, dualInterp, zeroDual, sumAlphaSq, sumWallSq,
     Fin.sum_univ_three]
   ring
+
+theorem J_dualShieldInterp_mismatch_diagnostic (p : TorsionParams) (t : ℝ) :
+    J (dualShieldInterp p t) =
+      2 *
+        (mismatchBoostHalfSqSum (dualShieldInterp p t) -
+          mismatchRotationHalfSqSum (dualShieldInterp p t)) := by
+  rw [J_eq_mismatch_diagnostic]
+
+theorem sumAlphaSq_eq_four_mismatchBoostHalfSqSum (p : TorsionParams) :
+    sumAlphaSq p = 4 * mismatchBoostHalfSqSum p := by
+  simp only [sumAlphaSq, mismatchBoostHalfSqSum, mismatchBoostHalf]
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun _ _ => by ring
+
+theorem mismatchRotationHalfSqSum_dualShieldInterp (p : TorsionParams) (t : ℝ) :
+    mismatchRotationHalfSqSum (dualShieldInterp p t) =
+      (t ^ 2 / 4) * sumWallSq p := by
+  simp only [dualShieldInterp, dualInterp, zeroDual, mismatchRotationHalfSqSum, sumWallSq,
+    dualWall, mismatchRotationHalf, Fin.sum_univ_three, mul_pow, div_pow]
+  ring
+
+theorem mismatchBoostHalfSqSum_dualShieldInterp (p : TorsionParams) (t : ℝ) :
+    mismatchBoostHalfSqSum (dualShieldInterp p t) =
+      mismatchBoostHalfSqSum (zeroDual p) := by
+  simp [dualShieldInterp, zeroDual, mismatchBoostHalfSqSum, mismatchBoostHalf]
+
+theorem J_dualShieldInterp_mismatch_sq_param (p : TorsionParams) (t : ℝ) :
+    mismatchBoostHalfSqSum (dualShieldInterp p t) -
+        mismatchRotationHalfSqSum (dualShieldInterp p t) =
+      (1 / 4) * (sumAlphaSq p - t ^ 2 * sumWallSq p) := by
+  have hJ := J_dualShieldInterp p t
+  have hdiag := J_dualShieldInterp_mismatch_diagnostic p t
+  linarith
 
 theorem sumWallSq_pos_of_wall_nonpos {p : TorsionParams}
     (h : J (dualWallParams p) ≤ 0) :
@@ -461,6 +530,61 @@ theorem exists_dual_only_J_eq_zero {p : TorsionParams}
   ⟨dualShieldInterp p (dualShieldT p), rfl,
     isAdmissibleContinuous_dualShieldInterp_at_T hp h,
     J_dualShieldInterp_at_T h⟩
+
+theorem JDot_eq_mismatch_half_derivative (p pdot : TorsionParams) :
+    JDot p pdot =
+      4 *
+        ∑ a : Fin 3,
+          (mismatchBoostHalf (p.alpha a) (p.beta a) * (-(pdot.alpha a) / 2) -
+            mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2)) := by
+  unfold JDot
+  simp only [mismatchBoostHalf, mismatchRotationHalf, Fin.sum_univ_three]
+  ring_nf
+
+theorem mismatch_half_sq_dot (p pdot : TorsionParams) :
+    ∑ a : Fin 3,
+        (mismatchBoostHalf (p.alpha a) (p.beta a) * (-(pdot.alpha a) / 2) -
+          mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2)) =
+      (1 / 4) * JDot p pdot := by
+  have h := JDot_eq_mismatch_half_derivative p pdot
+  apply Eq.symm
+  rw [h]
+  simp only [Fin.sum_univ_three, mul_one_div, one_mul]
+  ring
+
+theorem JDot_dual_only_rotation_halves (p pdot : TorsionParams)
+    (hα : ∀ a, pdot.alpha a = 0) :
+    JDot p pdot =
+      -4 *
+        ∑ a : Fin 3,
+          mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2) := by
+  have hsum :
+      ∑ a : Fin 3, p.beta a * pdot.beta a =
+        4 *
+          ∑ a : Fin 3,
+            mismatchRotationHalf (p.alpha a) (p.beta a) * (pdot.beta a / 2) := by
+    simp only [Fin.sum_univ_three, mismatchRotationHalf]
+    ring_nf
+  rw [JDot_dual_only p pdot hα]
+  simpa using congrArg Neg.neg hsum
+
+theorem exists_dual_only_mismatch_balance {p : TorsionParams}
+    (hp : IsAdmissibleContinuous p) (h : J (dualWallParams p) ≤ 0) :
+    ∃ q : TorsionParams,
+      q.alpha = p.alpha ∧ IsAdmissibleContinuous q ∧
+        mismatchBoostHalfSqSum q = mismatchRotationHalfSqSum q := by
+  obtain ⟨q, hα, hq, hJ⟩ := exists_dual_only_J_eq_zero hp h
+  exact ⟨q, hα, hq, (J_eq_zero_iff_mismatch_sq_balance q).mp hJ⟩
+
+theorem dualShield_interp_mismatch_balanced {p : TorsionParams}
+    (h : J (dualWallParams p) ≤ 0) :
+    mismatchBoostHalfSqSum (dualShieldInterp p (dualShieldT p)) =
+      mismatchRotationHalfSqSum (dualShieldInterp p (dualShieldT p)) := by
+  exact (J_eq_zero_iff_mismatch_sq_balance _).mp (J_dualShieldInterp_at_T h)
+
+theorem dual_only_shield_mismatch_balanced (q : TorsionParams) (hJ : J q = 0) :
+    mismatchBoostHalfSqSum q = mismatchRotationHalfSqSum q :=
+  (J_eq_zero_iff_mismatch_sq_balance q).mp hJ
 
 theorem not_dual_only_J_eq_zero_of_wall_pos {p q : TorsionParams}
     (hα : q.alpha = p.alpha) (hq : IsAdmissibleContinuous q)

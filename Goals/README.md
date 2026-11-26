@@ -7,8 +7,10 @@ Policy: see [`POLICY.md`](POLICY.md).
 Build: `lake build Goals` (sorry allowed). The default `lake build` does not
 include this library.
 
-Open `sorry` count: **12** (`scripts/count_goals.sh`). All twelve are
-Diophantine leaves and bridges. A physics aim below is not a Lean Goal until
+Open `sorry` count: **13** (`scripts/count_goals.sh`): Diophantine bridges/residuals
+plus **mismatch-angle** (`Goals/Diophantine/MismatchAngle.lean` only — off-axis principal branch).
+Lattice rotation winding is closed in main (`Framework/MismatchLattice`). Primary overlap
+`axisOverlapScalar` = grade-0 of \(\Omega\) on one axis. A physics aim below is not a Lean Goal until
 the main library defines its `Prop`.
 
 ## Breakthrough order
@@ -92,7 +94,8 @@ Open `sorry`s. The catalogue order is not the work order:
 | --- | ---: | --- |
 | `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorOddPrimeResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
-| **Total** | **12** | |
+| `Diophantine/MismatchAngle.lean` | 1 | off-axis principal-branch log of `Ω` |
+| **Total** | **13** | |
 
 ### Beal leaves
 

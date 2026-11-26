@@ -109,13 +109,15 @@ theorem JNormalized_pow_amplify (θ : ℝ) (p : ℕ) :
   rw [pureBoost_scale, JNormalized_scale]
 
 theorem isAdmissibleContinuous_pureBoost_iff (θ : ℝ) :
-    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi / 2 := by
+    IsAdmissibleContinuous (pureBoost θ) ↔ 0 ≤ θ ∧ θ ≤ Real.pi := by
   constructor
   · intro h
-    simpa [pureBoost] using h (0 : Fin 3)
+    have h0 := h (0 : Fin 3)
+    have hθ : θ ≤ Real.pi := by
+      simpa [pureBoost, add_zero] using h0.2.2.2
+    exact ⟨h0.1, hθ⟩
   · rintro ⟨hθ0, hθπ⟩ a
-    have hhalf_pi : (0 : ℝ) ≤ Real.pi / 2 := by positivity
-    fin_cases a <;> simp [pureBoost, hθ0, hθπ, hhalf_pi]
+    fin_cases a <;> simp [pureBoost, hθ0, hθπ] <;> linarith [Real.pi_pos]
 
 /-- Pure cyclic rotation on axis `1` (`B⁻₁ = e₁ e₃`). -/
 def pureRotation1 (θ : ℝ) : TorsionParams where

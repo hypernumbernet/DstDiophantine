@@ -20,7 +20,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle
 
 /-! ### Shared 6-space superposition -/
 
@@ -115,6 +115,14 @@ theorem J_superpose_magnetic_le {p : TorsionParams} {B : Fin 3 → ℝ}
     Finset.sum_nonneg fun _ _ => sq_nonneg _
   have hJ := J_superpose_magnetic p B
   linarith
+
+theorem magnetic_superpose_rotation_sq_geq_when_J_nonpos {p : TorsionParams}
+    {B : Fin 3 → ℝ} (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a)
+    (hJ : J p ≤ 0) :
+    mismatchRotationHalfSqSum (superpose p (magneticFaraday B)) ≥
+      mismatchBoostHalfSqSum (superpose p (magneticFaraday B)) := by
+  rw [← J_nonpos_iff_rotation_sq_geq]
+  linarith [J_superpose_magnetic_le hβ hB]
 
 theorem isAdmissibleContinuous_superpose_magnetic
     {p : TorsionParams} {B : Fin 3 → ℝ}

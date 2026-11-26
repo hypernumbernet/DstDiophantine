@@ -1,4 +1,5 @@
 import DstDiophantine.Gravity.ControlDomain
+import DstDiophantine.Algebra.MismatchAngle
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
@@ -7,10 +8,11 @@ import Mathlib.Tactic.FieldSimp
 /-!
 # The envelope is a lock
 
-An admissible configuration meets the envelope if and only if every axis is on
-the wall and at least two axes are corners, so a dual-only motion meets it at
-most once. No electromagnetic coupling, no laboratory protocol, and no
-identification of the dual-channel force \(u\).
+Wall and corner predicates are still stated with half-angles on each axis; the
+compact rotation content of a corner is `mismatchRotationHalf` / `mismatchBoostHalf`
+on that axis (`MismatchAngle`). An admissible configuration meets the envelope if
+and only if every axis is on the wall and at least two axes are corners, so a
+dual-only motion meets it at most once.
 -/
 
 namespace DstDiophantine
@@ -18,7 +20,7 @@ namespace DstDiophantine
 namespace Gravity
 
 open scoped Real
-open Operations Invariant Admissible
+open Operations Invariant Admissible MismatchAngle RelativeRotor
 
 /-! ### Wall, corners, and the two same-sector patterns -/
 
@@ -33,6 +35,24 @@ def IsPureDual (p : TorsionParams) (a : Fin 3) : Prop :=
 
 def IsCorner (p : TorsionParams) (a : Fin 3) : Prop :=
   IsPureUsual p a ∨ IsPureDual p a
+
+theorem pure_dual_corner_mismatch (p : TorsionParams) (h : IsPureDual p 0) :
+    mismatchRotationHalf (p.alpha 0) (p.beta 0) = Real.pi / 4 ∧
+      mismatchBoostHalf (p.alpha 0) (p.beta 0) = 0 := by
+  rcases h with ⟨hα, hβ⟩
+  constructor
+  · simp [mismatchRotationHalf, hβ]
+    ring_nf
+  · simp [mismatchBoostHalf, hα]
+
+theorem pure_usual_corner_mismatch (p : TorsionParams) (h : IsPureUsual p 0) :
+    mismatchBoostHalf (p.alpha 0) (p.beta 0) = -(Real.pi / 4) ∧
+      mismatchRotationHalf (p.alpha 0) (p.beta 0) = 0 := by
+  rcases h with ⟨hα, hβ⟩
+  constructor
+  · simp [mismatchBoostHalf, hα]
+    ring_nf
+  · simp [mismatchRotationHalf, hβ]
 
 /-- At least two axes occupy corners of the cone. -/
 def TwoCorners (p : TorsionParams) : Prop :=
@@ -100,8 +120,10 @@ private theorem isPureUsual_iff_axisSigned {p : TorsionParams}
   · intro ht
     have hα := (h a).1
     have hβ := (h a).2.1
-    have hαle : p.alpha a ≤ Real.pi / 2 :=
-      admissibleContinuous_alpha_le_half_pi p h a
+    have hαle : p.alpha a ≤ Real.pi / 2 := by
+      have hβ := (h a).2.1
+      rw [axisSigned] at ht
+      nlinarith [sq_nonneg (p.beta a)]
     have : p.beta a = 0 ∧ p.alpha a = Real.pi / 2 := by
       have hsq : p.alpha a ^ 2 ≤ (Real.pi / 2) ^ 2 := by
         nlinarith [sq_nonneg (p.alpha a - Real.pi / 2)]
@@ -193,6 +215,25 @@ private theorem J_le_of_twoPureDual {p : TorsionParams}
     have ht2 := (isPureDual_iff_axisSigned h 2).mp h2
     have ht0 := axisSigned_le_K h 0
     nlinarith [hT, ht1, ht2, ht0, hK]
+
+theorem onEnvelope_J_zero_mismatch_balance {p : TorsionParams}
+    (hJ : J p = 0) :
+    mismatchBoostHalfSqSum p = mismatchRotationHalfSqSum p :=
+  (J_eq_zero_iff_mismatch_sq_balance p).mp hJ
+
+theorem twoPureDual_mismatch_rotation_dominates {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (hDD : TwoPureDual p) :
+    mismatchRotationHalfSqSum p > mismatchBoostHalfSqSum p := by
+  have hJ := J_le_of_twoPureDual h hDD
+  have hJneg : J p < 0 := by nlinarith [hJ, Real.pi_pos]
+  exact (J_neg_iff_rotation_sq_dominates p).mp hJneg
+
+theorem twoPureUsual_mismatch_boost_dominates {p : TorsionParams}
+    (h : IsAdmissibleContinuous p) (hUU : TwoPureUsual p) :
+    mismatchBoostHalfSqSum p > mismatchRotationHalfSqSum p := by
+  have hJ := le_J_of_twoPureUsual h hUU
+  have hJpos : 0 < J p := by nlinarith [hJ, Real.pi_pos]
+  exact (J_pos_iff_boost_sq_dominates p).mp hJpos
 
 /-! ### Pairing of the three axis densities -/
 
