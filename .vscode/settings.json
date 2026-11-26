@@ -8,5 +8,6 @@
     "**/*.fdb_latexmk": true,
     "**/*.synctex.gz": true,
     "**/*.synctex(busy)": true
-  }
+  },
+  "latex-workshop.latex.recipe.default": "latexmk (latexmkrc)"
 }
