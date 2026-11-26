@@ -9,7 +9,7 @@ GOAL_FILES="$(find Goals -name '*.lean' -type f 2>/dev/null || true)"
 if [[ -z "$GOAL_FILES" ]]; then
   echo "open_goals: 0"
   echo "goal_files: 0"
-  echo "by_topic:"
+  echo "by_file:"
   exit 0
 fi
 

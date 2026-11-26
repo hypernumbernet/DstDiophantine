@@ -361,7 +361,7 @@ DstDiophantine/
   Algebra/                     PGA, Cl(3,1), Cl(9,1), motors, J, discrete torus
   Embedding/                   Integer rotors, translators, Fermat motor, height
   Framework/                   Power sums, lattice, descent, amplification
-  Theorems/                    Problem layers, twelve axioms, finite certificates
+  Theorems/                    Problem layers, thirteen axioms, finite certificates
   FoundationRegression.lean    CI-facing examples, including the Beal atlas
   Gravity.lean                 Gravity barrel and module index
   Gravity/                     Chart, scales, dynamics, force, Faraday, control
@@ -428,11 +428,12 @@ lake build Goals
 
 Continuous integration
 ([`.github/workflows/lean_action_ci.yml`](.github/workflows/lean_action_ci.yml))
-builds the main library with
-[lean-action](https://github.com/leanprover/lean-action), rejects `sorry`
-and any axiom outside the ten names above
-([`scripts/check_main_library.sh`](scripts/check_main_library.sh)), then
-builds `Goals`. A toolchain change on `main` or `master` is tagged by
+on a pull request rejects `sorry` and any axiom outside the thirteen names
+above ([`scripts/check_main_library.sh`](scripts/check_main_library.sh)) and
+reports the open goal count. It does not build Lean. A full build, including
+`Goals`, runs only from a manual workflow dispatch, using
+[lean-action](https://github.com/leanprover/lean-action). A toolchain change
+on `main` or `master` is tagged by
 [`.github/workflows/create-release.yml`](.github/workflows/create-release.yml).
 Dependency updates are manual, through
 [`.github/workflows/update.yml`](.github/workflows/update.yml).

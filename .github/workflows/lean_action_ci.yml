@@ -8,15 +8,22 @@ permissions:
   contents: read # Read access to repository contents
 
 jobs:
-  build:
+  hygiene:
+    name: Hygiene
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Main library hygiene (sorry, axiom allowlist, no Goals import)
+        run: bash scripts/check_main_library.sh
+      - name: Report open goal count
+        run: bash scripts/count_goals.sh
 
+  build:
+    name: Lean build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
-      - name: Main library hygiene (sorry, axiom allowlist, no Goals import)
-        run: bash scripts/check_main_library.sh
       - name: Build Goals library (sorry allowed)
         run: lake build Goals
-      - name: Report open goal count
-        run: bash scripts/count_goals.sh
