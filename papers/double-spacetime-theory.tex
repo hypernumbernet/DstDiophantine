@@ -659,12 +659,20 @@ It is convenient also to introduce the scalar interference factor
 \]
 which, unlike $\gamma_\text{eff}$, may change sign and will serve as the order parameter distinguishing attractive ($\gamma_s > 0$) from repulsive ($\gamma_s < 0$) torsional regimes below. The negative sign in the interference term is fixed by the time-reversed duality of the dual spacetime.
 
-A short calculation collapses the squares:
-\begin{equation}
-\label{eq:gamma-eff}
-\gamma_{\mathrm{eff}}(\alpha,\beta)=\cosh\alpha-\sinh\alpha\sin\beta.
-\end{equation}
-This factor is always at least $e^{-|\alpha|}$, hence never zero: a clock may be slowed or hastened, but it does not stop. If the dual sector is unexcited, $\beta=0$, one recovers the special-relativistic factor $\cosh\alpha$. If there is no usual boost, $\alpha=0$, then $\gamma_{\mathrm{eff}}=1$. The balanced locus $\alpha=\beta$, where $J=0$ on one axis, is a different kinematics: $\gamma_{\mathrm{eff}}(\alpha,\alpha)=\cosh\alpha-\sinh\alpha\sin\alpha$, which differs from $\cosh\alpha$ precisely when $\sin\alpha\neq 0$. At $\alpha=n\pi$ the clock factor agrees with the special-relativistic value even though the dual angle is excited. Special relativity is the unexcited dual sector $\theta=0$, not the vanishing of $J$, and not this numerical agreement of the clock.
+A short calculation collapses the squares. With $\alpha$ the full rapidity $\phi$ and $\beta$ the full dual angle $\theta$, the time component and the conjugate norm stand side by side:
+\begin{align}
+\gamma_{\mathrm{eff}}(\alpha,\beta)&=\cosh\alpha-\sinh\alpha\sin\beta,
+\label{eq:gamma-eff}\\
+s^{2}-b^{2}&=\cos\beta.
+\label{eq:gamma-cos}
+\end{align}
+They are two readings of one image. The sandwich sends the pure time vector $ct\,j$ to
+\[
+ct\bigl[(s^{2}+b^{2})\,j+2sb\,\hat{p}j\bigr].
+\]
+The coefficient of $j$ is the time component $\gamma_{\mathrm{eff}}$. The Minkowski square of the image is $-(ct\cos\beta)^{2}$, so the length of the interval is $ct\,|\cos\beta|$. A negative cosine reverses the conjugate norm and leaves that length unchanged. The image lies on the time axis again precisely when $sb=0$, that is when $s=0$ or $b=0$, and the two readings then share one absolute value. Elsewhere a spatial leg stands out of the time axis, and a number taken from the time component is not the length of the interval. The sandwich of Section~\ref{sec:kinematics} preserves the Minkowski norm when the conjugate norm equals $1$, which here is the locus $\cos\beta=1$.
+
+The time component is always at least $e^{-|\alpha|}$, so it never vanishes: read as a clock it may run slow or run fast, and it does not stop. For a nonzero boost that lower bound is attained exactly where $\sin\beta$ equals the sign of $\alpha$, and there $\cos\beta=0$. The image is null. The interval is what stops, and it stops where the time component is smallest. If the dual sector is unexcited, $\beta=0$, then $\cos\beta=1$ and both readings recover the special-relativistic factor $\cosh\alpha$. If there is no usual boost, $\alpha=0$, the time component remains $1$ and the whole of the dual excitation is carried by the interval, as $|\cos\beta|$. The balanced locus $\alpha=\beta$, where $J=0$ on one axis, is a different kinematics: the time component is $\gamma_{\mathrm{eff}}(\alpha,\alpha)=\cosh\alpha-\sinh\alpha\sin\alpha$, and the conjugate norm is $\cos\alpha$. The time component differs from $\cosh\alpha$ precisely when $\sin\alpha\neq 0$. At $\alpha=n\pi$ the time component agrees with the special-relativistic value, and $|\cos(n\pi)|=1$, so the interval has unit length, even though the dual angle is excited. Special relativity is the unexcited dual sector $\theta=0$, not the vanishing of $J$, and not this numerical agreement of the clock.
 
 \subsection{Vacuum Limit and Massless Particles}
 
@@ -730,7 +738,7 @@ The plateau amplitudes grow at least geometrically, \((\cosh\pi)^n\le\cosh(n\pi)
 \]
 which decreases in \(n\) for \(n\ge 1\). What grows inward without bound is the barrier structure---the nodes at which \(\gamma_s\) vanishes and \(1/\gamma_s\) diverges. The derivative \(-2\cosh x\sin x\) vanishes only where \(\sin x=0\), and no node lies there, so each zero, on every branch, is simple: the inward force has a simple pole, and the radial potential falls logarithmically, without a lower bound. The plateaux between barriers become exponentially quiet, successive factors falling like \(\mathrm{e}^{-n\pi}\). In radius the screening is \(1/\cosh\bigl(\ell/(2r)\bigr)\): the deep interior of a torsional condensate is quasi-free between the poles. The poles interrupt a smooth crossing. Reading that interruption as nuclear confinement remains a proposal.
 
-A barrier is a force divergence, not a clock freeze: at a node \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. At a plateau \(x=n\pi\) the full rapidity is \(2n\pi\). There \(\sin(2n\pi)=0\), so the clock agrees with \(\cosh(2n\pi)\) and is not the alternating force denominator \((-1)^n\cosh(n\pi)\). The ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are identical at nuclear and at stellar scales; \(\ell\) fixes the absolute radii and cancels from every ratio. That is the content of the scale invariance in the title of this section, and the only sense in which nuclear and stellar layering are the same structure.
+A barrier is a force divergence, not a clock freeze: at a node \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. There \(s=0\), so this value equals \(|\cos\beta|\) by~\eqref{eq:gamma-cos}: the time component and the interval agree, and a clock that compares them reads \(1\). The interval vanishes where \(\cos\beta=0\). On the equal-scale ray \(\alpha=\beta=2x\) that locus is \(x=\pi/4+n\pi/2\), and the outermost such radius lies outside the first force node. At a plateau \(x=n\pi\) the full rapidity is \(2n\pi\). There \(\sin(2n\pi)=0\) and \(\cos(2n\pi)=1\), so both readings agree with \(\cosh(2n\pi)\) and neither is the alternating force denominator \((-1)^n\cosh(n\pi)\). The ratios \(r_{n+1}/r_n\) depend only on the dimensionless roots \(x_n\), so they are identical at nuclear and at stellar scales; \(\ell\) fixes the absolute radii and cancels from every ratio. That is the content of the scale invariance in the title of this section, and the only sense in which nuclear and stellar layering are the same structure.
 
 \subsection{Torsional Layers at Nuclear Densities}
 
@@ -828,7 +836,7 @@ The hyperbolic-trigonometric form of \(\gamma_s\) introduces extreme oscillatory
   \]
 \end{itemize}
 
-The force is undefined at a node. A node is a force divergence, not a clock freeze: \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}. The same simple zero lets the radial potential fall without a lower bound, and the divergence does not by itself supply a radius. Spacing the dual angle by \(2\pi/N\) spaces the equal-scale phase by \(\pi/N\). On \([\pi/4,1]\), every phase at least one such step from the first node has absolute dimensionless force strictly less than \(N\), and the outer-well integral stopped one step short of the node is finite for each finite \(N\). Its growth in \(N\) does not exceed a constant plus a multiple of \(\ln N\). The unbounded limit is the removal of that step.
+The force is undefined at a node. A node is a force divergence, not a clock freeze: \(\gamma_{\mathrm{eff}}=\gamma_b^2>0\) by~\eqref{eq:gamma-eff}, and \(s=0\) makes that value equal to \(|\cos\beta|\) by~\eqref{eq:gamma-cos}. The same simple zero lets the radial potential fall without a lower bound, and the divergence does not by itself supply a radius. Spacing the dual angle by \(2\pi/N\) spaces the equal-scale phase by \(\pi/N\). On \([\pi/4,1]\), every phase at least one such step from the first node has absolute dimensionless force strictly less than \(N\), and the outer-well integral stopped one step short of the node is finite for each finite \(N\). Its growth in \(N\) does not exceed a constant plus a multiple of \(\ln N\). The unbounded limit is the removal of that step.
 
 \subsection{First Coulombic node and characteristic length}
 
