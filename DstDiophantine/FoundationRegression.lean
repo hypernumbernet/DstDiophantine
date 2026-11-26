@@ -52,7 +52,7 @@ set_option linter.style.native false
 # Public-API regression examples
 
 These examples guard export and layering of the shared core. Classical conjectures are not claimed
-here, and `FermatMixedMotorResidual` remains open.
+here. `FermatMixedMotorResidual` follows from the open face `FermatMixedMotorOddPrimeResidual`.
 -/
 
 namespace DstDiophantine.FoundationRegression
@@ -192,6 +192,28 @@ example {a b c n : ℕ} (hp : Nat.Prime n) (hodd : Odd n)
       p ^ n + q ^ n + r ^ n = 2 * c ∧
       (a ^ n + b ^ n) / (a + b) = t ^ n ∧ c = p * t :=
   fermat_odd_prime_three_powers hp hodd ha hb hcop hnd hsol
+
+example {a b c n : ℕ} (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ¬ Nat.Prime c ∧
+      ∃ p q r : ℕ, 1 < p ∧ 0 < q ∧ 0 < r ∧
+        a = (p ^ n + r ^ n - q ^ n) / 2 ∧
+        b = (p ^ n + q ^ n - r ^ n) / 2 ∧
+        c = (p ^ n + q ^ n + r ^ n) / 2 :=
+  ⟨fermat_odd_prime_hypotenuse_composite hp hodd ha hb hcop hnd hsol,
+    fermat_bases_of_three_powers hp hodd ha hb hcop hnd hsol⟩
+
+example {a b c : ℤ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hE : a ^ 2 + b ^ 2 = c ^ 2 + 1) (n : ℕ) :
+    fermatBoost a b c (ne_of_gt hc) = Real.log (1 + 1 / (c : ℝ) ^ 2) / 2 ∧
+      Real.exp ((n : ℝ) * fermatBoost a b c (ne_of_gt hc)) *
+        ((c : ℝ) ^ 2 / ((c : ℝ) ^ 2 + 1)) ^ ((n : ℝ) / 2) = 1 :=
+  ⟨fermatBoost_eq_half_log_of_excess_one ha hb hc hE,
+    fermat_excess_one_polar_touches_boost ha hb hc hE⟩
+
+example (hres : FermatMixedMotorOddPrimeResidual) : FermatMixedMotorResidual :=
+  FermatMixedMotorResidual_of_oddPrime hres
 
 example (a b c : ℤ) (ha : a ≠ 0) (hc : c ≠ 0) :
     omegaTorsion (fermatTorsion a b c ha hc) =

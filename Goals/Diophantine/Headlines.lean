@@ -35,7 +35,7 @@ theorem classical_beal_conjecture :
     (BealPythagoreanUnequalOddResidual_of_outside_anni
       bealPythagoreanUnequalOddOutsideAnniSeventeenthResidual)
 
-/-- Not a proof: assembled from the open leaf `fermatMixedMotorResidual`. -/
+/-- Not a proof: assembled from the open face `fermatMixedMotorOddPrimeResidual`. -/
 theorem fermat_last_theorem_unconditional : FermatLastTheorem :=
   FermatLastTheorem_of_mixed_motor_residual fermatMixedMotorResidual
 

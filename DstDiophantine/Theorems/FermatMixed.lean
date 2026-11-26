@@ -6,6 +6,9 @@ import DstDiophantine.Algebra.Sandwich
 import DstDiophantine.Algebra.Invariant
 import DstDiophantine.Algebra.PGA.Normed
 import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.NumberTheory.FLT.Three
+import Mathlib.NumberTheory.FLT.Four
+import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -24,8 +27,10 @@ import Mathlib.Tactic.Ring
 /-!
 # Dual-axis Fermat motors
 
-Positive solutions of degree `n = 2` are pure cyclic, and degree `n ≥ 3` are mixed. Classical FLT is
-not claimed; `FermatMixedMotorResidual` stays open.
+Positive solutions of degree `n = 2` are pure cyclic, and degree `n ≥ 3` are mixed. The elliptic
+sandwich locates that mixedness. The live obstruction is the integral three-power seat of an odd
+prime `n ≥ 5`. `FermatMixedMotorOddPrimeResidual` stays open. Exponents divisible by `3` or by `4`
+are mathlib's theorems, so `FermatMixedMotorResidual` follows from that face.
 -/
 
 namespace DstDiophantine
@@ -1026,6 +1031,48 @@ theorem fermatBoost_ge_half_log_one_over_sq {a b c : ℤ} {n : ℕ}
   rw [fermatBoost_eq_half_log_excess ha hb hc]
   exact div_le_div_of_nonneg_right hlog (by norm_num : (0 : ℝ) ≤ 2)
 
+/-- Excess `1` makes the boost lower bound the boost itself. -/
+theorem fermatBoost_eq_half_log_of_excess_one {a b c : ℤ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hE : a ^ 2 + b ^ 2 = c ^ 2 + 1) :
+    fermatBoost a b c (ne_of_gt hc) =
+      Real.log (1 + 1 / (c : ℝ) ^ 2) / 2 := by
+  have hsub : a ^ 2 + b ^ 2 - c ^ 2 = 1 := by omega
+  have hcast : (a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2 = 1 := by
+    exact_mod_cast hsub
+  rw [fermatBoost_eq_half_log_excess ha hb hc, hcast]
+
+/-- At excess `1`, `exp(n α_min)` times the radial factor `(c²/(c²+1))^{n/2}` is `1`.
+The lower bound meets the polar form and does not drive the product below one. -/
+theorem fermat_excess_one_boost_polar_touch {c : ℝ} {n : ℕ} (hc : 0 < c) :
+    Real.exp ((n : ℝ) * (Real.log (1 + 1 / c ^ 2) / 2)) *
+      (c ^ 2 / (c ^ 2 + 1)) ^ ((n : ℝ) / 2) = 1 := by
+  have hc0 : c ≠ 0 := ne_of_gt hc
+  set s : ℝ := (c ^ 2 + 1) / c ^ 2
+  have hs : 0 < s := by positivity
+  have hs_eq : 1 + 1 / c ^ 2 = s := by
+    dsimp [s]
+    field_simp [hc0]
+  have hexp :
+      Real.exp ((n : ℝ) * (Real.log (1 + 1 / c ^ 2) / 2)) = s ^ ((n : ℝ) / 2) := by
+    rw [hs_eq]
+    have hmul : (n : ℝ) * (Real.log s / 2) = Real.log s * ((n : ℝ) / 2) := by ring
+    rw [hmul, ← Real.rpow_def_of_pos hs]
+  have hinv : c ^ 2 / (c ^ 2 + 1) = s⁻¹ := by
+    dsimp [s]
+    field_simp [hc0]
+  rw [hexp, hinv, Real.inv_rpow (le_of_lt hs)]
+  exact mul_inv_cancel₀ (Real.rpow_pos_of_pos hs _).ne'
+
+/-- The same touch, read on a positive integer triple whose excess is `1`. No power sum is used. -/
+theorem fermat_excess_one_polar_touches_boost {a b c : ℤ} {n : ℕ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
+    (hE : a ^ 2 + b ^ 2 = c ^ 2 + 1) :
+    Real.exp ((n : ℝ) * fermatBoost a b c (ne_of_gt hc)) *
+      ((c : ℝ) ^ 2 / ((c : ℝ) ^ 2 + 1)) ^ ((n : ℝ) / 2) = 1 := by
+  rw [fermatBoost_eq_half_log_of_excess_one ha hb hc hE]
+  exact fermat_excess_one_boost_polar_touch (by exact_mod_cast hc : (0 : ℝ) < c)
+
 theorem not_fermat_pos_of_dvd_leg {a b c : ℤ} {n : ℕ}
     (hn : 3 ≤ n) (ha : 0 < a) (hb : 0 < b) (_hc : 0 < c)
     (hdvd : a ∣ b) :
@@ -1518,13 +1565,245 @@ theorem fermat_odd_prime_three_powers {a b c n : ℕ}
   refine ⟨p, q, r, t, hpgt, hq_pos, hr_pos, ht, hcop_pq, hcop_pr, hcop_qr, hcoppt,
     hp_pow, hq, hr, hsum2, ht_pow, hc_eq⟩
 
-/-! ### Live residual (sandwich / commutator attack; unproved) -/
+/-! ### Three-power seat -/
 
-/-- Open residual: mixed motor against a positive power sum of degree `n ≥ 3`. -/
+/-- A positive power sum forces a positive hypotenuse. -/
+theorem fermat_c_pos_of_nat_sol {a b c n : ℕ} (hn : n ≠ 0) (ha : 0 < a)
+    (hsol : a ^ n + b ^ n = c ^ n) : 0 < c := by
+  refine Nat.pos_of_ne_zero ?_
+  intro hc0
+  have : a ^ n + b ^ n = 0 := by simpa [hc0, hn, zero_pow] using hsol
+  have ha0 : a ^ n = 0 := by omega
+  exact (pow_pos ha n).ne' ha0
+
+/-- The three summands `a + b`, `c - a`, and `c - b` rebuild the bases by halves. -/
+theorem fermat_nat_half_reconstruction {a b c : ℕ} (hac : a ≤ c) (hbc : b ≤ c) :
+    (a + b) + (c - b) - (c - a) = 2 * a ∧
+      (a + b) + (c - a) - (c - b) = 2 * b ∧
+      (a + b) + (c - a) + (c - b) = 2 * c := by
+  have hPR : (a + b) + (c - b) = a + c := by
+    calc (a + b) + (c - b)
+        = a + (b + (c - b)) := by rw [Nat.add_assoc]
+      _ = a + c := by rw [Nat.add_sub_cancel' hbc]
+  have hPQ : (a + b) + (c - a) = b + c := by
+    calc (a + b) + (c - a)
+        = b + (a + (c - a)) := by rw [Nat.add_comm a b, Nat.add_assoc]
+      _ = b + c := by rw [Nat.add_sub_cancel' hac]
+  refine ⟨?_, ?_, ?_⟩
+  · rw [hPR]
+    calc a + c - (c - a)
+        = a + (c - (c - a)) := Nat.add_sub_assoc (Nat.sub_le c a) a
+      _ = a + a := by rw [Nat.sub_sub_self hac]
+      _ = 2 * a := by rw [two_mul]
+  · rw [hPQ]
+    calc b + c - (c - b)
+        = b + (c - (c - b)) := Nat.add_sub_assoc (Nat.sub_le c b) b
+      _ = b + b := by rw [Nat.sub_sub_self hbc]
+      _ = 2 * b := by rw [two_mul]
+  · calc (a + b) + (c - a) + (c - b)
+        = a + (c - a) + b + (c - b) := by
+          rw [Nat.add_assoc a b (c - a), Nat.add_comm b (c - a),
+            ← Nat.add_assoc a (c - a) b]
+        _ = (a + (c - a)) + (b + (c - b)) := by
+          rw [← Nat.add_assoc (a + (c - a)) b (c - b)]
+        _ = c + c := by rw [Nat.add_sub_cancel' hac, Nat.add_sub_cancel' hbc]
+        _ = 2 * c := by rw [two_mul]
+
+/-- On the odd-prime seat the hypotenuse is a product of two integers greater than one. -/
+theorem fermat_odd_prime_hypotenuse_composite {a b c n : ℕ}
+    (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ¬ Nat.Prime c := by
+  obtain ⟨p, _q, _r, t, hpgt, _, _, ht, _, _, _, _, _, _, _, _, _, hc⟩ :=
+    fermat_odd_prime_three_powers hp hodd ha hb hcop hnd hsol
+  exact Nat.not_prime_of_mul_eq hc.symm (Nat.ne_of_gt hpgt) (Nat.ne_of_gt ht)
+
+/-- The pure powers rebuild `(a, b, c)`. -/
+theorem fermat_bases_of_three_powers {a b c n : ℕ}
+    (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ∃ p q r : ℕ, 1 < p ∧ 0 < q ∧ 0 < r ∧
+      a = (p ^ n + r ^ n - q ^ n) / 2 ∧
+      b = (p ^ n + q ^ n - r ^ n) / 2 ∧
+      c = (p ^ n + q ^ n + r ^ n) / 2 := by
+  have hbc : b < c := by
+    have hpow : b ^ n < c ^ n := by
+      have : b ^ n < a ^ n + b ^ n := Nat.lt_add_of_pos_left (pow_pos ha n)
+      rwa [hsol] at this
+    exact lt_of_pow_lt_pow_left₀ n (Nat.zero_le _) hpow
+  have hac : a < c := by
+    have hpow : a ^ n < c ^ n := by
+      have : a ^ n < a ^ n + b ^ n := Nat.lt_add_of_pos_right (pow_pos hb n)
+      rwa [hsol] at this
+    exact lt_of_pow_lt_pow_left₀ n (Nat.zero_le _) hpow
+  obtain ⟨p, q, r, _t, hpgt, hq, hr, _, _, _, _, _, hp_pow, hq_pow, hr_pow, hsum, _, _⟩ :=
+    fermat_odd_prime_three_powers hp hodd ha hb hcop hnd hsol
+  obtain ⟨h2a, h2b, h2c⟩ := fermat_nat_half_reconstruction hac.le hbc.le
+  have ha_eq : a = (p ^ n + r ^ n - q ^ n) / 2 := by
+    have h2 : p ^ n + r ^ n - q ^ n = 2 * a := by simpa [hp_pow, hq_pow, hr_pow] using h2a
+    exact (Nat.div_eq_of_eq_mul_right (by decide : 0 < 2) h2).symm
+  have hb_eq : b = (p ^ n + q ^ n - r ^ n) / 2 := by
+    have h2 : p ^ n + q ^ n - r ^ n = 2 * b := by simpa [hp_pow, hq_pow, hr_pow] using h2b
+    exact (Nat.div_eq_of_eq_mul_right (by decide : 0 < 2) h2).symm
+  have hc_eq : c = (p ^ n + q ^ n + r ^ n) / 2 := by
+    have h2 : p ^ n + q ^ n + r ^ n = 2 * c := by simpa [hp_pow, hq_pow, hr_pow] using h2c
+    exact (Nat.div_eq_of_eq_mul_right (by decide : 0 < 2) h2).symm
+  exact ⟨p, q, r, hpgt, hq, hr, ha_eq, hb_eq, hc_eq⟩
+
+/-- The square excess is the integer `(P - Q - R)² - 8QR`, divided by four. -/
+theorem fermat_four_sq_excess_eq {a b c P Q R : ℤ}
+    (hP : P = a + b) (hQ : Q = c - a) (hR : R = c - b) :
+    4 * (a ^ 2 + b ^ 2 - c ^ 2) = (P - Q - R) ^ 2 - 8 * Q * R := by
+  rw [hP, hQ, hR]
+  ring
+
+/-- The boost is the half-logarithm of one plus that excess over `c²`. -/
+theorem fermatBoost_eq_three_power_log {a b c : ℤ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    fermatBoost a b c (ne_of_gt hc) =
+      Real.log (1 +
+        (((((a + b) - (c - a) - (c - b)) ^ 2 -
+            8 * (c - a) * (c - b) : ℤ) : ℝ) / (4 * (c : ℝ) ^ 2))) / 2 := by
+  have h4 := fermat_four_sq_excess_eq (a := a) (b := b) (c := c)
+    (P := a + b) (Q := c - a) (R := c - b) rfl rfl rfl
+  rw [fermatBoost_eq_half_log_excess ha hb hc]
+  congr 1
+  have hcast :
+      (4 : ℝ) * ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) =
+        (((a + b - (c - a) - (c - b)) ^ 2 - 8 * (c - a) * (c - b) : ℤ) : ℝ) := by
+    exact_mod_cast h4
+  have hc0 : (c : ℝ) ≠ 0 := by exact_mod_cast (ne_of_gt hc)
+  have h4r : (4 : ℝ) ≠ 0 := by norm_num
+  have hdiv :
+      ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) / (c : ℝ) ^ 2 =
+        (((a + b - (c - a) - (c - b)) ^ 2 - 8 * (c - a) * (c - b) : ℤ) : ℝ) /
+          (4 * (c : ℝ) ^ 2) := by
+    apply (div_eq_div_iff (pow_ne_zero 2 hc0) (mul_ne_zero h4r (pow_ne_zero 2 hc0))).mpr
+    calc ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2) * (4 * (c : ℝ) ^ 2)
+        = (4 * ((a : ℝ) ^ 2 + (b : ℝ) ^ 2 - (c : ℝ) ^ 2)) * (c : ℝ) ^ 2 := by ring
+      _ = (((a + b - (c - a) - (c - b)) ^ 2 -
+            8 * (c - a) * (c - b) : ℤ) : ℝ) * (c : ℝ) ^ 2 := by rw [hcast]
+  rw [hdiv]
+
+/-- On the three-power seat the polar scalar is one, with bases rebuilt from the pure powers. -/
+theorem fermat_polar_of_three_powers {a b c n : ℕ}
+    (hp : Nat.Prime n) (hodd : Odd n)
+    (ha : 0 < a) (hb : 0 < b) (hcop : Nat.Coprime a b)
+    (hnd : ¬ n ∣ a * b * c) (hsol : a ^ n + b ^ n = c ^ n) :
+    ∃ p q r : ℕ, 1 < p ∧ 0 < q ∧ 0 < r ∧
+      a = (p ^ n + r ^ n - q ^ n) / 2 ∧
+      b = (p ^ n + q ^ n - r ^ n) / 2 ∧
+      c = (p ^ n + q ^ n + r ^ n) / 2 ∧
+      Real.exp ((n : ℝ) * fermatBoost (a : ℤ) (b : ℤ) (c : ℤ)
+        (ne_of_gt (Nat.cast_pos.mpr (fermat_c_pos_of_nat_sol hp.ne_zero ha hsol)))) *
+        (Real.cos (fermatAngle (a : ℤ) (b : ℤ) (ne_of_gt (Nat.cast_pos.mpr ha))) ^ n +
+          Real.sin (fermatAngle (a : ℤ) (b : ℤ) (ne_of_gt (Nat.cast_pos.mpr ha))) ^ n) = 1 := by
+  obtain ⟨p, q, r, hpgt, hq, hr, ha_eq, hb_eq, hc_eq⟩ :=
+    fermat_bases_of_three_powers hp hodd ha hb hcop hnd hsol
+  have haZ : (0 : ℤ) < a := Nat.cast_pos.mpr ha
+  have hbZ : (0 : ℤ) < b := Nat.cast_pos.mpr hb
+  have hcZ : (0 : ℤ) < c := Nat.cast_pos.mpr (fermat_c_pos_of_nat_sol hp.ne_zero ha hsol)
+  have hsolZ : (a : ℤ) ^ n + (b : ℤ) ^ n = (c : ℤ) ^ n := by exact_mod_cast hsol
+  have hpol := (fermat_solution_iff_polar haZ hbZ hcZ).mp hsolZ
+  refine ⟨p, q, r, hpgt, hq, hr, ha_eq, hb_eq, hc_eq, ?_⟩
+  simpa [Nat.cast_pos] using hpol
+
+/-! ### Live residual (integral three-power seat; open for odd primes `n ≥ 5`) -/
+
+/-- Every `n ≥ 3` is divisible by `3`, by `4`, or by an odd prime `p ≥ 5`. -/
+theorem exists_fermat_exponent_cut {n : ℕ} (hn : 3 ≤ n) :
+    3 ∣ n ∨ 4 ∣ n ∨ ∃ p, Nat.Prime p ∧ Odd p ∧ 5 ≤ p ∧ p ∣ n := by
+  by_cases h3 : 3 ∣ n
+  · exact Or.inl h3
+  by_cases h4 : 4 ∣ n
+  · exact Or.inr (Or.inl h4)
+  refine Or.inr (Or.inr ?_)
+  have hn0 : n ≠ 0 := by omega
+  obtain ⟨k, m, hm, hnm⟩ := Nat.exists_eq_two_pow_mul_odd hn0
+  have hm_gt : 1 < m := by
+    have hm0 : m ≠ 0 := by
+      intro hm0
+      simp [hm0] at hnm
+      omega
+    have hm_ne1 : m ≠ 1 := by
+      intro hm1
+      have hn2 : n = 2 ^ k := by simpa [hm1] using hnm
+      have hk2 : 2 ≤ k := by
+        by_contra hk
+        have hk1 : k ≤ 1 := by omega
+        interval_cases k <;> simp [hn2] at hn
+      have h4n : 4 ∣ n := by
+        rw [hn2]
+        exact pow_dvd_pow 2 hk2
+      exact h4 h4n
+    omega
+  have hnot2 : ¬ 2 ∣ m := by
+    intro h2
+    obtain ⟨k, hk⟩ := hm
+    obtain ⟨t, ht⟩ := h2
+    omega
+  have hp := Nat.minFac_prime (by omega : m ≠ 1)
+  have hdvdp : m.minFac ∣ m := Nat.minFac_dvd m
+  have hp2 : m.minFac ≠ 2 := by
+    intro hp2
+    exact hnot2 (by simpa [hp2] using hdvdp)
+  have hp_ne3 : m.minFac ≠ 3 := by
+    intro hp3
+    apply h3
+    rw [hnm]
+    exact dvd_mul_of_dvd_right (by simpa [hp3] using hdvdp) _
+  have h5 : 5 ≤ m.minFac := by
+    have h3le : 3 ≤ m.minFac := hp.odd_iff.mp (hp.odd_of_ne_two hp2)
+    by_contra hlt
+    have : m.minFac < 5 := by omega
+    interval_cases m.minFac
+    · exact hp_ne3 rfl
+    · exact absurd hp (by decide : ¬ Nat.Prime 4)
+  refine ⟨m.minFac, hp, hp.odd_of_ne_two hp2, h5, ?_⟩
+  rw [hnm]
+  exact dvd_mul_of_dvd_right hdvdp _
+
+/-- Open face: a mixed motor is not a positive power sum at an odd prime `n ≥ 5`. -/
+def FermatMixedMotorOddPrimeResidual : Prop :=
+  ∀ (n : ℕ) (_hp : Nat.Prime n) (_hodd : Odd n) (_hn : 5 ≤ n)
+    (a b c : ℤ) (ha : 0 < a) (_hb : 0 < b) (hc : 0 < c),
+    IsMixedFermatMotor a b c (ne_of_gt ha) (ne_of_gt hc) →
+      ¬ a ^ n + b ^ n = c ^ n
+
+theorem fermatLastTheoremFor_of_oddPrimeResidual
+    (hres : FermatMixedMotorOddPrimeResidual) {p : ℕ}
+    (hp : Nat.Prime p) (hodd : Odd p) (h5 : 5 ≤ p) :
+    FermatLastTheoremFor p := by
+  intro a b c ha hb hc hsol
+  have haZ : (0 : ℤ) < a := Nat.cast_pos.mpr (Nat.pos_of_ne_zero ha)
+  have hbZ : (0 : ℤ) < b := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hb)
+  have hcZ : (0 : ℤ) < c := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hc)
+  have hsolZ : (a : ℤ) ^ p + (b : ℤ) ^ p = (c : ℤ) ^ p := by exact_mod_cast hsol
+  have h3 : 3 ≤ p := le_trans (by decide : 3 ≤ 5) h5
+  exact hres p hp hodd h5 a b c haZ hbZ hcZ
+    (isMixedFermatMotor_of_sol h3 haZ hbZ hcZ hsolZ) hsolZ
+
+/-- Open residual: mixed motor against a positive power sum of degree `n ≥ 3`.
+Exponents divisible by `3` or by `4` are discharged; the odd-prime face remains. -/
 def FermatMixedMotorResidual : Prop :=
   ∀ (a b c : ℤ) (n : ℕ) (_hn : 3 ≤ n) (ha : 0 < a) (_hb : 0 < b) (hc : 0 < c),
     IsMixedFermatMotor a b c (ne_of_gt ha) (ne_of_gt hc) →
       ¬ a ^ n + b ^ n = c ^ n
+
+theorem FermatMixedMotorResidual_of_oddPrime
+    (hres : FermatMixedMotorOddPrimeResidual) : FermatMixedMotorResidual := by
+  intro a b c n hn ha hb hc _hmix hsol
+  rcases exists_fermat_exponent_cut hn with h3 | h4 | ⟨p, hp, hodd, h5, hdvd⟩
+  · exact (fermatLastTheoremFor_iff_int).mp
+      (FermatLastTheoremFor.mono h3 fermatLastTheoremThree) a b c ha.ne' hb.ne' hc.ne' hsol
+  · exact (fermatLastTheoremFor_iff_int).mp
+      (FermatLastTheoremFor.mono h4 fermatLastTheoremFour) a b c ha.ne' hb.ne' hc.ne' hsol
+  · exact (fermatLastTheoremFor_iff_int).mp
+      (FermatLastTheoremFor.mono hdvd
+        (fermatLastTheoremFor_of_oddPrimeResidual hres hp hodd h5))
+      a b c ha.ne' hb.ne' hc.ne' hsol
 
 theorem fermat_pos_of_mixed_motor_residual
     (hres : FermatMixedMotorResidual) :

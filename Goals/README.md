@@ -21,8 +21,10 @@ the families already defined is a proved refusal, recorded under
    calculus already in the main library. No further number-theory axiom.
    That residual is the live DST encoding: a positive solution of degree
    `n ≥ 3` is a mixed motor, and the residual says a mixed motor is not a
-   positive power sum. `FermatLastTheorem_of_mixed_motor_residual` then
-   discharges classical FLT, and the Beal reduction no longer takes
+   positive power sum. Exponents divisible by `3` or by `4` are mathlib.
+   The open face is `FermatMixedMotorOddPrimeResidual`, an odd prime
+   `n ≥ 5`, on the three-power seat. `FermatLastTheorem_of_mixed_motor_residual`
+   then discharges classical FLT, and the Beal reduction no longer takes
    `fermatLastTheorem` as an external axiom.
 2. **Observation** — one named window on the Kerr chart, in the shape of
    the Mercury and solar-deflection theorems. The coframe, the induced
@@ -50,7 +52,7 @@ in the same PR that updates this index.
 
 | Pri | Aim | Already in the library | Success |
 | --- | --- | --- | --- |
-| **P0** | `FermatMixedMotorResidual` | Mixed motor for `n ≥ 3`, the excess lower bound, the odd-prime factorisation, and the sandwich and commutator lemmas. The `Prop` is the motor implication | The residual, with no new axiom. Goals deletes that `sorry`. `fermat_last_theorem_unconditional` becomes unconditional, and `fermatLastTheorem` leaves the Beal axiom list |
+| **P0** | `FermatMixedMotorOddPrimeResidual` | Mixed motor for `n ≥ 3`, the excess lower bound, the odd-prime factorisation and the three-power rebuild, and the sandwich and commutator lemmas. Exponents divisible by `3` or by `4` are mathlib, so the full residual follows from the odd-prime face. The `Prop` is the motor implication at an odd prime `n ≥ 5` | That face, with no new axiom. Goals deletes that `sorry`. `fermat_last_theorem_unconditional` becomes unconditional, and `fermatLastTheorem` leaves the Beal axiom list |
 | **P0** | One named window on the Kerr chart | `inducedMetric_kerr` on `Σ > 0` and `Δ > 0`, `kerrCoframe_zero_spin`, `kerr_cross_ne_azimuthBoost` | Frame dragging, or equatorial perihelion, in a named window, from library definitions and external elements. The `Prop` lands in `DstDiophantine/` before any Goal `sorry` |
 | **P1** | Gravity-only repulsive layer on a finite set | `gammaSEqual` is the layer sign, and `layer_order_parameter_is_gammaS` keeps `J = 0` on the equal-scale locus. `pairChannelForce` still carries both channels. No finite configuration and no pairwise sum | In `DstDiophantine/`: the gravity-only term `-κ / (gammaSEqual (ℓ / (2r)) · r²)` along the separation, the sum of those terms over the other bodies of a finite set, and the theorem that the term increases the separation where `gammaSEqual < 0`. `ℓ` and `G` stay inputs. No electromagnetic term, and no time step. No Goal `sorry` until that `Prop` exists |
 | **P1** | One Beal leaf | The six classical residuals. The cuts through Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are axioms | A leaf closed by the motor encoding, or by the residual above. A new axiom that only narrows a leaf is an index edit |
@@ -77,7 +79,7 @@ Solar deflection is closed. See [Closed and refused](#closed-and-refused).
 
 Open `sorry`s. The catalogue order is not the work order:
 
-1. `fermatMixedMotorResidual` (P0).
+1. `fermatMixedMotorOddPrimeResidual` (P0). The full residual is assembled from it.
 2. The six Beal leaves (P1), after the motor residual.
 3. `abcModularBridge`, then `riemannAdmissibleBridge` (P2).
 4. `collatzAdmissibleBridge`, `goldbachAdmissibleBridge`, and
@@ -88,7 +90,7 @@ Open `sorry`s. The catalogue order is not the work order:
 
 | Module | Count | What is open |
 | --- | ---: | --- |
-| `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorResidual` and the six Beal leaves |
+| `Diophantine/Residuals.lean` | 7 | `FermatMixedMotorOddPrimeResidual` and the six Beal leaves |
 | `Diophantine/Bridges.lean` | 5 | abc modular; Collatz, Goldbach, Polignac, and the critical-line bridge |
 | **Total** | **12** | |
 
@@ -114,8 +116,11 @@ companion. A prime past `10^9` with `p ≡ 1 (mod 3)` stays.
 | `BealPythagoreanUnequalOddOutsideAnniSeventeenthResidual` | Exponent-gcd `2` outside those slices, via `BealPythagoreanUnequalOddResidual_of_outside_anni` | The leaf outside the fifth-power pair `(10,10,14)`, the shared-exponent cut `(10,10,18)`, and the even-sum cuts `(22,22,14)` and `(14,14,34)` |
 
 `FermatMixedMotorResidual` discharges classical FLT
-(`FermatLastTheorem_of_mixed_motor_residual`). Excess and odd-prime
-factorisation lemmas are in the main library; the residual is open.
+(`FermatLastTheorem_of_mixed_motor_residual`). It follows from
+`FermatMixedMotorOddPrimeResidual`. Exponents divisible by `3` or by `4`
+are mathlib. Excess, the odd-prime factorisation, and the three-power
+rebuild are in the main library. The odd-prime face is open. At excess `1`
+the boost lower bound meets the polar radial factor.
 
 ### Live bridges
 
@@ -141,7 +146,7 @@ leaves above. The proofs are not unconditional.
 | Theorem | Open leaf |
 | --- | --- |
 | `classical_beal_conjecture` | The six Beal leaves, and the FLT axiom in the main library |
-| `fermat_last_theorem_unconditional` | `fermatMixedMotorResidual` |
+| `fermat_last_theorem_unconditional` | `fermatMixedMotorOddPrimeResidual` |
 | `abc_conjecture_unconditional` | `abcModularBridge` |
 | `collatz_conjecture_unconditional` | `collatzAdmissibleBridge` |
 | `goldbach_conjecture_unconditional` | `goldbachAdmissibleBridge` |
@@ -293,3 +298,4 @@ revision: they leave the work order, and the `sorry`s stay.
 | Six Beal leaves as the amplification breakthrough | The work order. Each leaf is a classical exponent statement. Cuts by Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are imported axioms, which the breakthrough rule excludes. The DST-native reduction already stated is `FermatMixedMotorResidual` |
 | Collatz ahead of the other bridges | The work order. `collatzAdmissibleBridge_iff` is an equivalence, as are the Goldbach and Polignac bridges. They stay in the catalogue |
 | Gravity-only N-body layer | Added to the work order at P1. `gammaSEqual` and `pairChannelForce` are proved. A finite sum of the gravity-only term is not defined, so the row stays not yet stateable and adds no `sorry` |
+| `FermatMixedMotorResidual` split | The full residual follows from `FermatMixedMotorOddPrimeResidual` by mathlib's exponents `3` and `4`. The `sorry` moves to the odd prime `n ≥ 5`. The sandwich locates mixedness. Excess `1` meets the polar radial factor |

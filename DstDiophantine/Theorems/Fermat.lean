@@ -20,8 +20,8 @@ import Mathlib.Tactic.NormNum
 /-!
 # Diagnostic bridges for Fermat
 
-Classical FLT is not claimed. `FermatAdmissibleBridge` and `FermatModularBridge` are diagnostic, and
-`FermatMixedMotorResidual` stays open.
+Classical FLT is not claimed. `FermatAdmissibleBridge` and `FermatModularBridge` are diagnostic.
+`FermatMixedMotorResidual` follows from the open face `FermatMixedMotorOddPrimeResidual`.
 -/
 
 namespace DstDiophantine

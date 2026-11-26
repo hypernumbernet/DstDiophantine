@@ -16,8 +16,12 @@ namespace Goals.Diophantine
 
 open DstDiophantine.Theorems
 
-/-- Open. `FermatLastTheorem_of_mixed_motor_residual` turns this into classical FLT. -/
-theorem fermatMixedMotorResidual : FermatMixedMotorResidual := by sorry
+/-- Open face. Exponents divisible by `3` or by `4` are mathlib. -/
+theorem fermatMixedMotorOddPrimeResidual : FermatMixedMotorOddPrimeResidual := by sorry
+
+/-- Assembled from the odd-prime face. -/
+theorem fermatMixedMotorResidual : FermatMixedMotorResidual :=
+  FermatMixedMotorResidual_of_oddPrime fermatMixedMotorOddPrimeResidual
 
 /-- Open. The case `e = 3` is discharged; this leaf starts at `e ≥ 5`. -/
 theorem bealEqualOddTwoFactorExpGeFiveResidual :
