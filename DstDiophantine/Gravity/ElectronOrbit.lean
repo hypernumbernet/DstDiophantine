@@ -115,8 +115,8 @@ theorem gammaSEqual_neg_right_of_first_node {x : ℝ}
 
 /-- A Coulombic node is a force divergence, not a clock freeze. -/
 theorem primary_node_overlap_zero {x : ℝ} (h : gammaSEqual x = 0) :
-    MismatchAngle.axisOverlapScalar (2 * x) (2 * x) = 0 :=
-  by simpa [gammaSEqual_eq_overlap_primary] using h
+    MismatchAngle.dualOverlap (2 * x) (2 * x) = 0 :=
+  by simpa [gammaSEqual_eq_dualOverlap] using h
 
 theorem node_is_force_divergence_not_clock_freeze {x : ℝ}
     (h : gammaSEqualLegacy x = 0) :
@@ -330,7 +330,7 @@ theorem Z_contraction_equalScale (ℓ Z r : ℝ) (hZ : Z ≠ 0) :
 
 open intervalIntegral
 
-/-- Primary overlap slope gap \(\cosh t\sin t - \sinh t\cos t\) (derivative magnitude of `gammaSEqual`). -/
+/-- Dual overlap slope gap \(\cosh t\sin t - \sinh t\cos t\) (derivative magnitude of `gammaSEqual`). -/
 noncomputable def nodeGap (t : ℝ) : ℝ :=
   cosh t * sin t - sinh t * cos t
 

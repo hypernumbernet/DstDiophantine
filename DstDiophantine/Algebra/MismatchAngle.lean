@@ -8,8 +8,8 @@ set_option linter.style.whitespace false
 
 On the one-axis family (`axisParams`) the boost and dual generators commute, so
 `Ω = exp(ω_mismatch)` with explicit boost and rotation half-coefficients. The
-scalar overlap factor used in gravity charts is the grade-zero coefficient of
-this motor; it is recorded here as `axisOverlapScalar`. The legacy Killing scalar
+dual overlap factor used in gravity charts is the grade-zero coefficient of
+this motor; it is recorded here as `dualOverlap`. The legacy Killing scalar
 `J` remains available as a derived diagnostic on this locus.
 -/
 
@@ -157,34 +157,34 @@ theorem J_dagger_axis (α β : ℝ) :
     J (axisParams β α) = -J (axisParams α β) := by
   simpa [dagger_axisParams] using J_dagger (axisParams α β)
 
-/-! ### Scalar overlap: Clifford grade-0 of `Ω` on one axis -/
+/-! ### Dual overlap: Clifford grade-0 of `Ω` on one axis -/
 
-/-- Primary overlap: grade-zero of `R_usual† R_dual` on the axis family (`cosh·cos`). -/
-noncomputable def axisOverlapScalar (α β : ℝ) : ℝ :=
+/-- Dual overlap: grade-zero of `R_usual† R_dual` on the axis family (`cosh·cos`). -/
+noncomputable def dualOverlap (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2)
 
 /-- Legacy papers / shell charts: full bivector interference factor. -/
 noncomputable def axisOverlapLegacy (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2)
 
-/-- Clifford grade-zero of the axis motor (equals `axisOverlapScalar`). -/
+/-- Clifford grade-zero of the axis motor (equals `dualOverlap`). -/
 noncomputable def pgaAxisMotorGradeZero (α β : ℝ) : ℝ :=
-  axisOverlapScalar α β
+  dualOverlap α β
 
-theorem pgaAxisMotorGradeZero_eq_overlap (α β : ℝ) :
-    pgaAxisMotorGradeZero α β = axisOverlapScalar α β := rfl
+theorem pgaAxisMotorGradeZero_eq_dualOverlap (α β : ℝ) :
+    pgaAxisMotorGradeZero α β = dualOverlap α β := rfl
 
-theorem axisOverlap_factor_cosh_cos (α β : ℝ) :
-    axisOverlapScalar α β =
+theorem dualOverlap_factor_cosh_cos (α β : ℝ) :
+    dualOverlap α β =
       Real.cosh (α / 2) * Real.cos (β / 2) := rfl
 
 theorem axisOverlapLegacy_eq_components (α β : ℝ) :
     axisOverlapLegacy α β =
       Real.cosh (α / 2) * Real.cos (β / 2) - Real.sinh (α / 2) * Real.sin (β / 2) := rfl
 
-theorem axisOverlap_eq_zero_iff (α β : ℝ) :
-    axisOverlapScalar α β = 0 ↔ Real.cos (β / 2) = 0 := by
-  simp only [axisOverlapScalar]
+theorem dualOverlap_eq_zero_iff (α β : ℝ) :
+    dualOverlap α β = 0 ↔ Real.cos (β / 2) = 0 := by
+  simp only [dualOverlap]
   constructor
   · intro h
     rcases mul_eq_zero.mp h with hcosh | hcos
@@ -193,9 +193,9 @@ theorem axisOverlap_eq_zero_iff (α β : ℝ) :
   · intro hcos
     simp [hcos]
 
-theorem axisOverlap_nonpos_iff (α β : ℝ) :
-    axisOverlapScalar α β ≤ 0 ↔ Real.cos (β / 2) ≤ 0 := by
-  simp only [axisOverlapScalar]
+theorem dualOverlap_nonpos_iff (α β : ℝ) :
+    dualOverlap α β ≤ 0 ↔ Real.cos (β / 2) ≤ 0 := by
+  simp only [dualOverlap]
   constructor
   · intro h
     rcases mul_nonpos_iff.mp h with h1 | h2
@@ -204,9 +204,9 @@ theorem axisOverlap_nonpos_iff (α β : ℝ) :
   · intro hcos
     exact mul_nonpos_of_nonneg_of_nonpos (Real.cosh_pos (α / 2)).le hcos
 
-theorem axisOverlap_nonneg_iff (α β : ℝ) :
-    0 ≤ axisOverlapScalar α β ↔ 0 ≤ Real.cos (β / 2) := by
-  simp only [axisOverlapScalar]
+theorem dualOverlap_nonneg_iff (α β : ℝ) :
+    0 ≤ dualOverlap α β ↔ 0 ≤ Real.cos (β / 2) := by
+  simp only [dualOverlap]
   constructor
   · intro h
     rcases mul_nonneg_iff.mp h with h1 | h2
@@ -215,24 +215,24 @@ theorem axisOverlap_nonneg_iff (α β : ℝ) :
   · intro hcos
     exact mul_nonneg (Real.cosh_pos (α / 2)).le hcos
 
-theorem axisOverlap_zero_at_full_rotation (α : ℝ) :
-    axisOverlapScalar α Real.pi = 0 := by
-  simp [axisOverlapScalar, Real.cos_pi]
+theorem dualOverlap_zero_at_full_rotation (α : ℝ) :
+    dualOverlap α Real.pi = 0 := by
+  simp [dualOverlap, Real.cos_pi]
 
-theorem axisOverlap_balanced (x : ℝ) :
-    axisOverlapScalar (2 * x) (2 * x) = Real.cosh x * Real.cos x := by
-  simp [axisOverlapScalar, mul_div_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)]
+theorem dualOverlap_balanced (x : ℝ) :
+    dualOverlap (2 * x) (2 * x) = Real.cosh x * Real.cos x := by
+  simp [dualOverlap, mul_div_cancel₀ _ (by norm_num : (2 : ℝ) ≠ 0)]
 
-theorem axisOverlap_balanced_eq_zero_iff {x : ℝ} :
-    axisOverlapScalar (2 * x) (2 * x) = 0 ↔ Real.cos x = 0 := by
-  rw [axisOverlap_balanced]
+theorem dualOverlap_balanced_eq_zero_iff {x : ℝ} :
+    dualOverlap (2 * x) (2 * x) = 0 ↔ Real.cos x = 0 := by
+  rw [dualOverlap_balanced]
   have hc : 0 < Real.cosh x := Real.cosh_pos x
   simp [hc.ne']
 
-theorem axisOverlap_admissible_nonneg {α β : ℝ}
+theorem dualOverlap_admissible_nonneg {α β : ℝ}
     (_hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi) :
-    0 ≤ axisOverlapScalar α β := by
-  rw [axisOverlap_nonneg_iff]
+    0 ≤ dualOverlap α β := by
+  rw [dualOverlap_nonneg_iff]
   have hhalf : β / 2 ≤ Real.pi / 2 := by linarith [hβle, Real.pi_pos]
   rcases le_iff_eq_or_lt.mp hhalf with heq | hβlt
   · have hcos : Real.cos (β / 2) = 0 := by
@@ -241,10 +241,10 @@ theorem axisOverlap_admissible_nonneg {α β : ℝ}
     simp [hcos]
   · exact (Real.cos_pos_of_mem_Ioo ⟨by linarith [hβ], by linarith [hβlt, Real.pi_pos]⟩).le
 
-theorem axisOverlap_legacy_cone_nonneg {α β : ℝ}
+theorem dualOverlap_cone_nonneg {α β : ℝ}
     (hα : 0 ≤ α) (hβ : 0 ≤ β) (hβle : β ≤ Real.pi / 2) :
-    0 ≤ axisOverlapScalar α β :=
-  axisOverlap_admissible_nonneg hα hβ (le_trans hβle (by linarith [Real.pi_pos]))
+    0 ≤ dualOverlap α β :=
+  dualOverlap_admissible_nonneg hα hβ (le_trans hβle (by linarith [Real.pi_pos]))
 
 /-! ### Legacy overlap sign (papers; electron / strong charts) -/
 
@@ -267,32 +267,32 @@ theorem axisOverlapLegacy_sign_reversal_at_pi :
       axisOverlapLegacy Real.pi Real.pi < 0 :=
   ⟨by simp [axisOverlapLegacy], axisOverlapLegacy_balanced_neg_at_pi⟩
 
-theorem axisOverlap_sign_reversal_threshold :
-    axisOverlapScalar 0 0 > 0 ∧
-      axisOverlapScalar 0 Real.pi = 0 ∧
-        axisOverlapScalar Real.pi Real.pi = 0 ∧
+theorem dualOverlap_sign_reversal_threshold :
+    dualOverlap 0 0 > 0 ∧
+      dualOverlap 0 Real.pi = 0 ∧
+        dualOverlap Real.pi Real.pi = 0 ∧
         mismatchRotationHalf 0 Real.pi = Real.pi / 2 ∧
           axisOverlapLegacy Real.pi Real.pi < 0 := by
-  refine ⟨?_, axisOverlap_zero_at_full_rotation 0, ?_, by simp [mismatchRotationHalf],
+  refine ⟨?_, dualOverlap_zero_at_full_rotation 0, ?_, by simp [mismatchRotationHalf],
     axisOverlapLegacy_sign_reversal_at_pi.2⟩
-  · simp [axisOverlapScalar]
-  · simp [axisOverlapScalar, Real.cos_pi]
+  · simp [dualOverlap]
+  · simp [dualOverlap, Real.cos_pi]
 
 /-- Multi-axis overlap: product of per-axis Clifford grade-zero factors (axis-decoupled chart). -/
 noncomputable def relativeRotorOverlap (p : TorsionParams) : ℝ :=
-  axisOverlapScalar (p.alpha 0) (p.beta 0) *
-    axisOverlapScalar (p.alpha 1) (p.beta 1) *
-    axisOverlapScalar (p.alpha 2) (p.beta 2)
+  dualOverlap (p.alpha 0) (p.beta 0) *
+    dualOverlap (p.alpha 1) (p.beta 1) *
+    dualOverlap (p.alpha 2) (p.beta 2)
 
 theorem relativeRotorOverlap_axisParams (α β : ℝ) :
-    relativeRotorOverlap (axisParams α β) = axisOverlapScalar α β := by
-  simp only [relativeRotorOverlap, axisParams, axisOverlapScalar,
+    relativeRotorOverlap (axisParams α β) = dualOverlap α β := by
+  simp only [relativeRotorOverlap, axisParams, dualOverlap,
     Fin.reduceFinMk, Nat.succ_eq_add_one, Nat.add_zero, Nat.zero_eq, one_mul, mul_one]
   simp [Real.cosh_zero, Real.cos_zero]
 
-theorem relativeRotor_axis_overlap_eq_gradeZero (α β : ℝ) :
-    axisOverlapScalar α β = pgaAxisMotorGradeZero α β ∧
-      relativeRotorOverlap (axisParams α β) = axisOverlapScalar α β ∧
+theorem relativeRotor_axis_dualOverlap_eq_gradeZero (α β : ℝ) :
+    dualOverlap α β = pgaAxisMotorGradeZero α β ∧
+      relativeRotorOverlap (axisParams α β) = dualOverlap α β ∧
         relativeRotor (axisParams α β) = exp (omegaMismatchAxis α β) := by
   refine ⟨rfl, ⟨relativeRotorOverlap_axisParams α β, relativeRotor_axis_eq_exp α β⟩⟩
 

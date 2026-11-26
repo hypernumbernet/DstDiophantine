@@ -7,8 +7,8 @@ import DstDiophantine.Logic.Interpretation
 # Four regimes of the admissible cone
 
 Four regime labels still read `JNormalized` (derived diagnostic). On one axis,
-overlap sign for repulsive shell physics is `axisOverlapScalar` (`MismatchAngle`);
-see `RepulsionOverlap.primary_overlap_zero_legacy_neg_witness`.
+overlap sign for repulsive shell physics is `dualOverlap` (`MismatchAngle`);
+see `RepulsionOverlap.dualOverlap_zero_legacy_neg_witness`.
 -/
 
 namespace DstDiophantine
@@ -376,9 +376,9 @@ theorem regime_B_still_J_negative (p : TorsionParams) (hp : IsAdmissibleContinuo
 theorem regime_label_not_overlap_sign :
     J (axisParams Real.pi Real.pi) = 0 ∧
       JNormalized (axisParams Real.pi Real.pi) = 0 ∧
-        axisOverlapScalar Real.pi Real.pi = 0 ∧
+        dualOverlap Real.pi Real.pi = 0 ∧
           axisOverlapLegacy Real.pi Real.pi < 0 := by
-  rcases primary_overlap_zero_legacy_neg_witness with ⟨hO, ⟨hL, hJ⟩⟩
+  rcases dualOverlap_zero_legacy_neg_witness with ⟨hO, ⟨hL, hJ⟩⟩
   exact ⟨hJ, (JNormalized_eq_zero_iff _).2 hJ, hO, hL⟩
 
 end Gravity

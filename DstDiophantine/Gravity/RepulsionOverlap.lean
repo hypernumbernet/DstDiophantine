@@ -6,9 +6,9 @@ import Mathlib.Tactic.Positivity
 set_option linter.style.whitespace false
 
 /-!
-# Repulsion via primary overlap (`cosh·cos`)
+# Repulsion via dual overlap (`cosh·cos`)
 
-Primary overlap vanishes only when `cos(β/2)=0` (rotation mismatch `β=π` on-axis);
+Dual overlap vanishes only when `cos(β/2)=0` (rotation mismatch `β=π` on-axis);
 `cosh(α/2)` scales magnitude with boost. Legacy `gammaS` charts remain in
 `ElectronShell` / `TorsionalLayer` unchanged.
 -/
@@ -21,28 +21,28 @@ open MismatchAngle RelativeRotor Invariant Real
 
 /-! ### Pure boost cannot switch overlap sign -/
 
-theorem axisOverlap_strict_pos_dual_zero (α : ℝ) :
-    1 ≤ axisOverlapScalar α 0 := by
-  have h : axisOverlapScalar α 0 = Real.cosh (α / 2) := by
-    simp [axisOverlapScalar, Real.cos_zero]
+theorem dualOverlap_strict_pos_dual_zero (α : ℝ) :
+    1 ≤ dualOverlap α 0 := by
+  have h : dualOverlap α 0 = Real.cosh (α / 2) := by
+    simp [dualOverlap, Real.cos_zero]
   rw [h]
   exact Real.one_le_cosh (α / 2)
 
-theorem not_repulsive_pure_boost (α : ℝ) : ¬ axisOverlapScalar α 0 < 0 := by
+theorem not_repulsive_pure_boost (α : ℝ) : ¬ dualOverlap α 0 < 0 := by
   intro h
-  linarith [axisOverlap_strict_pos_dual_zero α]
+  linarith [dualOverlap_strict_pos_dual_zero α]
 
-theorem axisOverlap_primary_eq_gammaS_dual_zero (α : ℝ) :
-    axisOverlapScalar α 0 = gammaS α 0 :=
-  axisOverlap_primary_eq_gammaS_usual α
+theorem dualOverlap_eq_gammaS_dual_zero (α : ℝ) :
+    dualOverlap α 0 = gammaS α 0 :=
+  dualOverlap_eq_gammaS_usual α
 
 /-! ### Sign reversal (primary): rotation π, not legacy mixed node -/
 
 theorem repulsive_equal_scale_J_zero_overlap_zero :
     J (axisParams Real.pi Real.pi) = 0 ∧
-      axisOverlapScalar Real.pi Real.pi = 0 := by
+      dualOverlap Real.pi Real.pi = 0 := by
   refine ⟨J_axisParams_balanced Real.pi, ?_⟩
-  simp [axisOverlapScalar, Real.cos_pi]
+  simp [dualOverlap, Real.cos_pi]
 
 theorem legacy_overlap_neg_at_balanced_pi :
     axisOverlapLegacy Real.pi Real.pi < 0 ∧
@@ -61,8 +61,8 @@ theorem repulsive_equal_scale_legacy_gammaSEqual :
   · have hπ : (2 : ℝ) * (Real.pi / 2) = Real.pi := by ring
     simpa [hπ] using axisOverlap_eq_gammaSEqual_balanced (Real.pi / 2)
 
-theorem primary_overlap_zero_legacy_neg_witness :
-    axisOverlapScalar Real.pi Real.pi = 0 ∧
+theorem dualOverlap_zero_legacy_neg_witness :
+    dualOverlap Real.pi Real.pi = 0 ∧
       axisOverlapLegacy Real.pi Real.pi < 0 ∧
         J (axisParams Real.pi Real.pi) = 0 :=
   ⟨repulsive_equal_scale_J_zero_overlap_zero.2,

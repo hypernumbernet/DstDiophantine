@@ -5,7 +5,7 @@ import DstDiophantine.Gravity.TorsionalLayer
 set_option linter.style.whitespace false
 
 /-!
-# Bridge: primary overlap, legacy `γ_s`, and shell charts
+# Bridge: dual overlap, legacy `γ_s`, and shell charts
 -/
 
 namespace DstDiophantine
@@ -22,17 +22,17 @@ theorem axisOverlap_eq_gammaSEqual_balanced (x : ℝ) :
   unfold gammaSEqualLegacy
   ring_nf
 
-theorem axisOverlap_primary_balanced (x : ℝ) :
-    axisOverlapScalar (2 * x) (2 * x) = Real.cosh x * Real.cos x :=
-  axisOverlap_balanced x
+theorem dualOverlap_balanced_cosh_cos (x : ℝ) :
+    dualOverlap (2 * x) (2 * x) = Real.cosh x * Real.cos x :=
+  dualOverlap_balanced x
 
-theorem axisOverlap_primary_eq_gammaS_usual (α : ℝ) :
-    axisOverlapScalar α 0 = gammaS α 0 := by
-  simp [axisOverlapScalar, gammaS]
+theorem dualOverlap_eq_gammaS_usual (α : ℝ) :
+    dualOverlap α 0 = gammaS α 0 := by
+  simp [dualOverlap, gammaS]
 
-theorem axisOverlap_primary_eq_gammaS_dual (β : ℝ) :
-    axisOverlapScalar 0 β = gammaS 0 β := by
-  simp [axisOverlapScalar, gammaS]
+theorem dualOverlap_eq_gammaS_dual (β : ℝ) :
+    dualOverlap 0 β = gammaS 0 β := by
+  simp [dualOverlap, gammaS]
 
 end Gravity
 end DstDiophantine

@@ -35,9 +35,9 @@ noncomputable def gammaSEqualLegacy (x : ℝ) : ℝ :=
 noncomputable def gammaSEqual (x : ℝ) : ℝ :=
   cosh x * cos x
 
-theorem gammaSEqual_eq_overlap_primary (x : ℝ) :
-    gammaSEqual x = MismatchAngle.axisOverlapScalar (2 * x) (2 * x) := by
-  unfold gammaSEqual MismatchAngle.axisOverlapScalar
+theorem gammaSEqual_eq_dualOverlap (x : ℝ) :
+    gammaSEqual x = MismatchAngle.dualOverlap (2 * x) (2 * x) := by
+  unfold gammaSEqual MismatchAngle.dualOverlap
   congr 1 <;> ring_nf
 
 theorem gammaSEqualLegacy_eq_gammaS (x : ℝ) : gammaSEqualLegacy x = gammaS (2 * x) (2 * x) := by
@@ -807,7 +807,7 @@ theorem gammaSEqual_pos_on_even_left (k : ℕ) {x : ℝ}
     0 < gammaSEqual x :=
   gammaSEqual_pos_before_branchNode (2 * k) ⟨k, by simp [two_mul]⟩ hxlo hxhi
 
-/-- Primary `cosh·cos` is strictly decreasing on `Icc π (π + 2/5)`
+/-- Dual overlap (`cosh·cos`) is strictly decreasing on `Icc π (π + 2/5)`
     (certified band where `γ' < 0` on the first odd branch). -/
 theorem strictAntiOn_gammaSEqual_odd_branch (k : ℕ) (hk : k = 0 := by decide) :
     StrictAntiOn gammaSEqual (Icc π (π + (2 / 5 : ℝ))) := by

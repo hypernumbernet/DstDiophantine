@@ -9,7 +9,7 @@ set_option linter.style.whitespace false
 # One-axis motor: Clifford grade-0 of `Ω = R_usual† R_dual`
 
 On axis 0, `relativeRotor (axisParams α β) = exp((−α/2)B⁺₀) exp((β/2)B⁻₀)` and the
-coefficient of `1` is `cosh(α/2) cos(β/2)` — the primary overlap `axisOverlapScalar`.
+coefficient of `1` is `cosh(α/2) cos(β/2)` — the dual overlap `dualOverlap`.
 -/
 
 namespace DstDiophantine
@@ -49,23 +49,23 @@ theorem relativeRotor_axis_eq_reverse_product_exp (α β : ℝ) :
     simp [map_smul, hyperbolic_reverse]
   rw [rotorUsual_axis_eq_exp, rotorDual_axis_eq_exp, reverse_exp_of_reverse_neg hΩ, neg_smul]
 
-/-- Grade-0 coefficient of the reverse-product factorisation (= primary overlap). -/
+/-- Grade-0 coefficient of the reverse-product factorisation (= dual overlap). -/
 noncomputable def cliffordProductGradeZero (α β : ℝ) : ℝ :=
   Real.cosh (α / 2) * Real.cos (β / 2)
 
-theorem cliffordProductGradeZero_eq_axis_overlap (α β : ℝ) :
-    cliffordProductGradeZero α β = axisOverlapScalar α β := rfl
+theorem cliffordProductGradeZero_eq_dualOverlap (α β : ℝ) :
+    cliffordProductGradeZero α β = dualOverlap α β := rfl
 
 theorem cliffordProductGradeZero_eq_exp_mul_coefficient (α β : ℝ) :
     cliffordProductGradeZero α β =
       Real.cosh (-(α / 2)) * Real.cos (β / 2) := by
-  simp only [cliffordProductGradeZero, MismatchAngle.axisOverlapScalar]
+  simp only [cliffordProductGradeZero, MismatchAngle.dualOverlap]
   rw [Real.cosh_neg]
 
-theorem relativeRotor_axis_grade_zero_eq_overlap (α β : ℝ) :
+theorem relativeRotor_axis_grade_zero_eq_dualOverlap (α β : ℝ) :
     cliffordProductGradeZero α β =
-      axisOverlapScalar α β ∧
-        pgaAxisMotorGradeZero α β = axisOverlapScalar α β := by
+      dualOverlap α β ∧
+        pgaAxisMotorGradeZero α β = dualOverlap α β := by
   refine ⟨rfl, rfl⟩
 
 end PgaAxisMotor
