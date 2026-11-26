@@ -13,19 +13,33 @@ the main library defines its `Prop`.
 
 ## Breakthrough order
 
-A breakthrough is one of three things, in this order of programme value:
+A breakthrough is one of two things the library can still host. Identity on
+the families already defined is a proved refusal, recorded under
+[Closed and refused](#closed-and-refused), and is not an open route.
 
-1. **Identity** — a named constant that is an input today becomes a theorem
-   of the dual-rotor / channel geometry (no external fit).
-2. **Observation** — another classical GR or scattering observable, stated
-   with library definitions and proved in a named window.
-3. **Amplification** — at least one live Diophantine leaf or bridge is closed
-   by the DST encoding itself, not by importing a further number-theory axiom.
+1. **Amplification** — `FermatMixedMotorResidual` is proved from the motor
+   calculus already in the main library. No further number-theory axiom.
+   That residual is the live DST encoding: a positive solution of degree
+   `n ≥ 3` is a mixed motor, and the residual says a mixed motor is not a
+   positive power sum. `FermatLastTheorem_of_mixed_motor_residual` then
+   discharges classical FLT, and the Beal reduction no longer takes
+   `fermatLastTheorem` as an external axiom.
+2. **Observation** — one named window on the Kerr chart, in the shape of
+   the Mercury and solar-deflection theorems. The coframe, the induced
+   metric, the zero-spin reduction, and the refusal of a pure-boost reading
+   of the cross term are proved. The horizon `Δ = 0` stays out.
 
-Diagnostic or false bridges (`AbcAdmissibleBridge`, and the modular or
-admissible Beal and Fermat packages marked demoted) are not breakthrough
-routes. The amplification no-go (layer 2) is proved. Layer 3 — a leaf or a
-live bridge — is still open.
+Importing a further classical theorem to narrow a Beal leaf updates the
+index and is not amplification. A bridge the main library proves equivalent
+to its conjecture (`CollatzAdmissibleBridge`, `GoldbachAdmissibleBridge`,
+`PolignacAdmissibleBridge`) is not a reduction, and a finite certificate
+does not shrink it. Diagnostic or false bridges stay off this list. The
+amplification no-go (layer 2) is proved.
+
+`AbcModularBridge` and `RiemannAdmissibleBridge` remain live bridges. They
+sit behind the motor residual: the first recovers abc from a modular
+witness on the quantised log-gap, and the second is the off-line height
+statement, not mathlib's `riemannZeta`.
 
 ## Near-term order
 
@@ -34,27 +48,41 @@ main library already defines the `Prop`. A `True` placeholder is forbidden.
 Land the missing definition in `DstDiophantine/` first, then add the `sorry`
 in the same PR that updates this index.
 
-| Pri | Aim | Missing definition | Success |
+| Pri | Aim | Already in the library | Success |
 | --- | --- | --- | --- |
-| **P0** | One value of the channel length `ℓ`, or no free `r₁` | A length that is not `layerRadius ℓ x` for a phase `x` independent of `ℓ`, stated before any uniqueness `sorry` | One value of `ℓ` on that path, with no free channel input |
-| **P0** | `a₀`, or an equivalent MOND scale, from the source geometry | `a₀` from the dual period or from baryonic data, so a flat curve does not take `a₀` as an input | A named flat-speed window with no `a₀` input |
-| **P2** | One named window on the Kerr chart | The observable (perihelion or frame dragging), from library definitions, in a window | A theorem in that window. Only then a Goal |
-| **P3** | Closed-form DST evolution | A global time-evolution operator on coupled rotors | The target is no longer not yet stateable |
-| **P3** | Dual Hilbert lift | A map from a named D4L fragment into `QProp` | That definition, and at least one lifted island theorem |
+| **P0** | `FermatMixedMotorResidual` | Mixed motor for `n ≥ 3`, the excess lower bound, the odd-prime factorisation, and the sandwich and commutator lemmas. The `Prop` is the motor implication | The residual, with no new axiom. Goals deletes that `sorry`. `fermat_last_theorem_unconditional` becomes unconditional, and `fermatLastTheorem` leaves the Beal axiom list |
+| **P0** | One named window on the Kerr chart | `inducedMetric_kerr` on `Σ > 0` and `Δ > 0`, `kerrCoframe_zero_spin`, `kerr_cross_ne_azimuthBoost` | Frame dragging, or equatorial perihelion, in a named window, from library definitions and external elements. The `Prop` lands in `DstDiophantine/` before any Goal `sorry` |
+| **P1** | Gravity-only repulsive layer on a finite set | `gammaSEqual` is the layer sign, and `layer_order_parameter_is_gammaS` keeps `J = 0` on the equal-scale locus. `pairChannelForce` still carries both channels. No finite configuration and no pairwise sum | In `DstDiophantine/`: the gravity-only term `-κ / (gammaSEqual (ℓ / (2r)) · r²)` along the separation, the sum of those terms over the other bodies of a finite set, and the theorem that the term increases the separation where `gammaSEqual < 0`. `ℓ` and `G` stay inputs. No electromagnetic term, and no time step. No Goal `sorry` until that `Prop` exists |
+| **P1** | One Beal leaf | The six classical residuals. The cuts through Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are axioms | A leaf closed by the motor encoding, or by the residual above. A new axiom that only narrows a leaf is an index edit |
+| **P2** | `AbcModularBridge`, then `RiemannAdmissibleBridge` | The false continuous abc bridge, and rational-grid certificates of denominator `≤ 20` | That bridge, from the encoding. Equivalence bridges stay in the catalogue and off this order |
+| **P3** | Closed-form evolution, then the dual Hilbert lift | The written action refuses `δ̈ + mδ = 0` and is not a Wheeler–DeWitt constraint. The written flow stays in the cone for every time only at a resting aligned rapidity in `[0, π/2]` | A definition the written flow does not already refuse. Then one theorem |
+
+The finite-set row is the foundation for a gravity-only N-body step.
+`pairChannelForce` is the separation-increasing force of a massive charged
+pair, so the gravitational piece is the term in `-κ`. A repulsive layer is
+`gammaSEqual < 0`. The sum is over a finite indexed family of positions and
+masses. An integrator, a derived `ℓ`, and a derived `G` are outside this row.
+
+Channel length and `a₀` are not scheduled. Every uniqueness claim on the
+families in the library is a theorem in
+[Closed and refused](#closed-and-refused): scattering signs, `layerRadius`,
+`thresholdRadius`, `pairChannelForce`, the electromagnetic ratio, and
+`gammaSEqual`. `GalaxyCurve` refuses `dst_derives_a0`. A later identity
+`Prop` has to lie outside that list, and it arrives in the main library
+before it can outrank the two P0 rows. `G` and `α` stay underived.
+Electroweak masses, propellantless control, a cold-fusion rate, and Mach
+`m` stay with the untagged rows under Not yet stateable.
 
 Solar deflection is closed. See [Closed and refused](#closed-and-refused).
 
-Open `sorry`s, in order:
+Open `sorry`s. The catalogue order is not the work order:
 
-1. The six Beal leaves (P1). Closing one is the amplification breakthrough, and Goals deletes that `sorry`.
-2. `fermatMixedMotorResidual` (P2). The motor path is native to DST.
-3. `collatzAdmissibleBridge`, ahead of Goldbach and Polignac (P2).
-4. `abcModularBridge` and `riemannAdmissibleBridge`, after the three above.
-
-Identity budget stays on the P0 rows until a P0 or a P1 closes. `G` and `α`
-stay underived, and they are not scheduled ahead of those rows. Electroweak
-masses, propellantless control, a cold-fusion rate, and Mach `m` wait with
-the untagged rows under Not yet stateable.
+1. `fermatMixedMotorResidual` (P0).
+2. The six Beal leaves (P1), after the motor residual.
+3. `abcModularBridge`, then `riemannAdmissibleBridge` (P2).
+4. `collatzAdmissibleBridge`, `goldbachAdmissibleBridge`, and
+   `polignacAdmissibleBridge` stay open and unscheduled. Each is equivalent
+   to its conjecture.
 
 ## Open `sorry` catalogue
 
@@ -92,8 +120,10 @@ factorisation lemmas are in the main library; the residual is open.
 ### Live bridges
 
 Finite certificates exist. The infinite statement is open.
-`collatzAdmissibleBridge` is first among them: cone facts and certificates
-for `n ≤ 2^20` are the strongest local base.
+`CollatzAdmissibleBridge`, `GoldbachAdmissibleBridge`, and
+`PolignacAdmissibleBridge` are equivalent to their conjectures, so the
+certificates do not put them on the work order.
+`AbcModularBridge` and `RiemannAdmissibleBridge` are the live reductions.
 
 | Bridge | Headline it discharges |
 | --- | --- |
@@ -122,9 +152,10 @@ leaves above. The proofs are not unconditional.
 ## Not yet stateable
 
 No definition in the main library states these claims. A `True` placeholder
-is not a substitute. Rows tagged **P0**, **P2**, or **P3** are the
-definition-first aims above; the cell points there. Untagged rows stay
-deferred.
+is not a substitute. Rows tagged **P0**, **P1** (the finite-set layer), or
+**P3** are the definition-first aims above; the cell points there. Untagged
+rows stay deferred. Channel length and galactic `a₀` left the active order:
+the families that could have stated them are proved refusals.
 
 | Pri | Topic | Claim | Missing definition |
 | --- | --- | --- | --- |
@@ -133,11 +164,12 @@ deferred.
 | **P3** | Dynamic equation | Full DST evolution in closed form | See [Near-term order](#near-term-order) |
 | | Beta decay | Mass excess as a class difference, with no external input | Unsigned mass-class order |
 | | De Broglie | A spacetime wave, or `E/ℏ` from rest mass | That wave |
-| **P2** | Rotating masses | Perihelion or frame dragging on the Kerr chart, in a named window | See [Near-term order](#near-term-order) |
+| **P0** | Rotating masses | Perihelion or frame dragging on the Kerr chart, in a named window | See [Near-term order](#near-term-order) |
+| **P1** | N-body layer force | Gravity-only repulsive layer on a finite set of point masses | The pairwise term `-κ / (gammaSEqual (ℓ / (2r)) · r²)`, the finite sum, and the separation-increasing sign on `gammaSEqual < 0`. See [Near-term order](#near-term-order) |
 | | Interior clocks | The beat of two clocks is the carrier's wavelength change, read against the deep-interior surplus | That identification |
 | | Mach | Inertial mass from surrounding sources, with stiffness `m` derived | A definition of `m` from the source sum |
-| **P0** | Galactic rotation | Flat rotation curves for a general baryonic disk, with `a₀` derived | See [Near-term order](#near-term-order) |
-| **P0** | Channel length | One scattering scale, past the sign window | See [Near-term order](#near-term-order) |
+| | Galactic rotation | Flat rotation curves for a general baryonic disk, with `a₀` derived | Refused on the current families (`dst_derives_a0`). A new `Prop` has to lie outside that refusal |
+| | Channel length | One scattering scale, past the sign window | Refused on scattering signs, `layerRadius`, `thresholdRadius`, the pair force, the electromagnetic ratio, and `gammaSEqual`. The pion selector does not remove `r₁` from the rest of the channel |
 | | Neutron capture | A cross section growing as `1/v` | A cross section |
 | | Magic-number splitting | The oscillator closures arise from the layer nodes | That derivation |
 | | Surface pairs | Nucleon-pair forces across a touching surface, summed | That sum |
@@ -240,9 +272,10 @@ tree. They are not research targets.
 
 The previous index counted 69 `sorry`s. That count mixed four different
 things. The split is why twelve remain. The sections above hold the surviving
-leaves and the closed theorems.
+leaves and the closed theorems. The last three rows are the priority
+revision: they leave the work order, and the `sorry`s stay.
 
-| What changed | Why it left the open-`sorry` list |
+| What changed | Why it left |
 | --- | --- |
 | Eight headline conjectures | The main library already proves each one from a named leaf or bridge. `Headlines.lean` applies that proof. The `sorry` stays on the leaf |
 | Nineteen coarser `*Residual` props | Two are already theorems. Thirteen follow from the six Beal leaves. Three sit off that path: the even-difference factor and perfect-power packagings, and `BealMordellCubeAddTwoResidual`. `BealCGADilationNoGo` left with the conformal probe |
@@ -256,3 +289,7 @@ leaves and the closed theorems.
 | Odd cube-pair companions past `10^9` that have a factor in the two-cube range | `sumTwoCubesNotPerfectPower`, by dividing the hypotenuse. No new axiom. `(3,3,10^9+1)` and `(9,9,10^9+1)` leave the open column because `7` divides `10^9+1`. A prime hypotenuse past `10^9` stays open (`not_cubePair_three_three_large_prime`) |
 | Even sums `x^{2ℓ} + y^{2m} = z^p` for primes `ℓ, m ≥ 5` and `p ∈ {7,11,13}`, and the equal case at hypotenuse `17` for primes other than `5` | `anniSiksekDoublePrimeSum` and `michaudJacobsPrimeSeventeenth`. The `sorry` stays on the narrower leaf. `(22,22,7)`, `(14,14,13)`, and `(14,14,17)` leave the open column. `(10,10,23)` and `(14,14,19)` stay open |
 | Cube-pair companions divisible by a prime `p ≥ 17` with `p ≡ 2 (mod 3)`, including a prime hypotenuse past `10^9` | `freitasSumTwoCubesPrime`, Freitas, Comment. Math. Helv. 91 (2016), Theorem 3. The shape `IsCubePairPowerShape` grows, so every leaf that excludes it loses those companions. The `sorry` stays on the narrower leaf. A prime past `10^9` with `p ≡ 1 (mod 3)` stays open (`not_cubePair_three_three_large_prime`) |
+| Identity budget on `ℓ` and `a₀` | The active order. Scattering signs, `layerRadius`, `thresholdRadius`, `pairChannelForce`, the electromagnetic ratio, and `gammaSEqual` are uniqueness refusals. `GalaxyCurve` refuses `dst_derives_a0`. The charged-pion selector does not remove `r₁` from the channel. Those rows stay under Not yet stateable, untagged |
+| Six Beal leaves as the amplification breakthrough | The work order. Each leaf is a classical exponent statement. Cuts by Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are imported axioms, which the breakthrough rule excludes. The DST-native reduction already stated is `FermatMixedMotorResidual` |
+| Collatz ahead of the other bridges | The work order. `collatzAdmissibleBridge_iff` is an equivalence, as are the Goldbach and Polignac bridges. They stay in the catalogue |
+| Gravity-only N-body layer | Added to the work order at P1. `gammaSEqual` and `pairChannelForce` are proved. A finite sum of the gravity-only term is not defined, so the row stays not yet stateable and adds no `sorry` |
