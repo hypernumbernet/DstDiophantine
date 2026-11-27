@@ -109,6 +109,9 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   `layerRadius`. Nothing here fixes `κ` or computes a binding.
 * `BothChannels` — an unlike pair exerts both terms at every separation. Vanishing of
   `pairChannelForce` does not depend on the separation.
+* `LayerForce` — the gravity-only term `-κ/(γ_s(ℓ/(2r)) r²)` along a separation, summed over the
+  other bodies of a finite set. The term increases that separation where `γ_s < 0`. `ℓ` and `G`
+  stay inputs. No electromagnetic term and no time step.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
   gravitationally; no spin-statistics theorem is claimed.
 * `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector; no

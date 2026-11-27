@@ -112,6 +112,7 @@ import DstDiophantine.Gravity.Lensing
 import DstDiophantine.Gravity.PhotonReturn
 import DstDiophantine.Gravity.LengthRule
 import DstDiophantine.Gravity.BothChannels
+import DstDiophantine.Gravity.LayerForce
 import DstDiophantine.Gravity.ElectronExclusion
 import DstDiophantine.Gravity.SpinVersusExclusion
 import DstDiophantine.Gravity.ChannelBridge
@@ -2710,6 +2711,29 @@ example {ℓE ℓG a coul r : ℝ}
           ((electronElectronGravToCoulomb : ℝ) * coul) coul
           (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
   shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: on a repulsive layer the gravity-only term increases the separation. -/
+example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)
+    (hγ : gammaSEqual (ℓ / (2 * r)) < 0) :
+    0 < gravityLayerTerm κ ℓ r ∧
+      gravityLayerTerm κ ℓ r =
+        pairChannelForce κ 0 (gammaSEqual (ℓ / (2 * r))) 1 r :=
+  ⟨gravityLayerTerm_pos_of_repulsive hκ hr hγ, gravityLayerTerm_eq_channel κ ℓ r⟩
+
+example {κ ℓ : ℝ} {c p : ℝ} (hκ : 0 < κ) (hpc : p ≠ c)
+    (hγ : gammaSEqual (ℓ / (2 * ‖p - c‖)) < 0) :
+    0 < inner ℝ (gravityLayerPush κ ℓ c p) ((‖p - c‖)⁻¹ • (p - c)) :=
+  gravityLayerPush_increases_separation hκ hpc hγ
+
+example {ι : Type*} [DecidableEq ι] {ℓ G : ℝ} {mass : ι → ℝ} {pos : ι → ℝ}
+    {S : Finset ι} {i : ι} (hi : i ∈ S) (hG : 0 < G)
+    (hm : ∀ k ∈ S, 0 < mass k)
+    (hdist : ∀ j ∈ S.erase i, pos i ≠ pos j)
+    (hγ : ∀ j ∈ S.erase i, gammaSEqual (ℓ / (2 * ‖pos i - pos j‖)) < 0) :
+    ∀ j ∈ S.erase i,
+      0 < inner ℝ (gravityLayerPush (G * mass i * mass j) ℓ (pos j) (pos i))
+        ((‖pos i - pos j‖)⁻¹ • (pos i - pos j)) :=
+  gravityLayerForce_each_increases hi hG hm hdist hγ
 
 example :
     SpinVersusExclusion.samePlace

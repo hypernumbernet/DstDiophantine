@@ -54,16 +54,9 @@ in the same PR that updates this index.
 | --- | --- | --- | --- |
 | **P0** | `FermatMixedMotorOddPrimeResidual` | Mixed motor for `n ≥ 3`, the excess lower bound, the odd-prime factorisation and the three-power rebuild, and the sandwich and commutator lemmas. Exponents divisible by `3` or by `4` are mathlib, so the full residual follows from the odd-prime face. The `Prop` is the motor implication at an odd prime `n ≥ 5` | That face, with no new axiom. Goals deletes that `sorry`. `fermat_last_theorem_unconditional` becomes unconditional, and `fermatLastTheorem` leaves the Beal axiom list |
 | **P0** | One named window on the Kerr chart | `inducedMetric_kerr` on `Σ > 0` and `Δ > 0`, `kerrCoframe_zero_spin`, `kerr_cross_ne_azimuthBoost` | Frame dragging, or equatorial perihelion, in a named window, from library definitions and external elements. The `Prop` lands in `DstDiophantine/` before any Goal `sorry` |
-| **P1** | Gravity-only repulsive layer on a finite set | `gammaSEqual` is the layer sign, and `layer_order_parameter_is_gammaS` keeps `J = 0` on the equal-scale locus. `pairChannelForce` still carries both channels. No finite configuration and no pairwise sum | In `DstDiophantine/`: the gravity-only term `-κ / (gammaSEqual (ℓ / (2r)) · r²)` along the separation, the sum of those terms over the other bodies of a finite set, and the theorem that the term increases the separation where `gammaSEqual < 0`. `ℓ` and `G` stay inputs. No electromagnetic term, and no time step. No Goal `sorry` until that `Prop` exists |
 | **P1** | One Beal leaf | The six classical residuals. The cuts through Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are axioms | A leaf closed by the motor encoding, or by the residual above. A new axiom that only narrows a leaf is an index edit |
 | **P2** | `AbcModularBridge`, then `RiemannAdmissibleBridge` | The false continuous abc bridge, and rational-grid certificates of denominator `≤ 20` | That bridge, from the encoding. Equivalence bridges stay in the catalogue and off this order |
 | **P3** | Closed-form evolution, then the dual Hilbert lift | The written action refuses `δ̈ + mδ = 0` and is not a Wheeler–DeWitt constraint. The written flow stays in the cone for every time only at a resting aligned rapidity in `[0, π/2]` | A definition the written flow does not already refuse. Then one theorem |
-
-The finite-set row is the foundation for a gravity-only N-body step.
-`pairChannelForce` is the separation-increasing force of a massive charged
-pair, so the gravitational piece is the term in `-κ`. A repulsive layer is
-`gammaSEqual < 0`. The sum is over a finite indexed family of positions and
-masses. An integrator, a derived `ℓ`, and a derived `G` are outside this row.
 
 Channel length and `a₀` are not scheduled. Every uniqueness claim on the
 families in the library is a theorem in
@@ -75,7 +68,8 @@ before it can outrank the two P0 rows. `G` and `α` stay underived.
 Electroweak masses, propellantless control, a cold-fusion rate, and Mach
 `m` stay with the untagged rows under Not yet stateable.
 
-Solar deflection is closed. See [Closed and refused](#closed-and-refused).
+Solar deflection is closed, and so is the gravity-only layer on a finite set.
+See [Closed and refused](#closed-and-refused).
 
 Open `sorry`s. The catalogue order is not the work order:
 
@@ -157,10 +151,10 @@ leaves above. The proofs are not unconditional.
 ## Not yet stateable
 
 No definition in the main library states these claims. A `True` placeholder
-is not a substitute. Rows tagged **P0**, **P1** (the finite-set layer), or
-**P3** are the definition-first aims above; the cell points there. Untagged
-rows stay deferred. Channel length and galactic `a₀` left the active order:
-the families that could have stated them are proved refusals.
+is not a substitute. Rows tagged **P0** or **P3** are the definition-first
+aims above; the cell points there. Untagged rows stay deferred. Channel
+length and galactic `a₀` left the active order: the families that could have
+stated them are proved refusals.
 
 | Pri | Topic | Claim | Missing definition |
 | --- | --- | --- | --- |
@@ -170,7 +164,6 @@ the families that could have stated them are proved refusals.
 | | Beta decay | Mass excess as a class difference, with no external input | Unsigned mass-class order |
 | | De Broglie | A spacetime wave, or `E/ℏ` from rest mass | That wave |
 | **P0** | Rotating masses | Perihelion or frame dragging on the Kerr chart, in a named window | See [Near-term order](#near-term-order) |
-| **P1** | N-body layer force | Gravity-only repulsive layer on a finite set of point masses | The pairwise term `-κ / (gammaSEqual (ℓ / (2r)) · r²)`, the finite sum, and the separation-increasing sign on `gammaSEqual < 0`. See [Near-term order](#near-term-order) |
 | | Interior clocks | The beat of two clocks is the carrier's wavelength change, read against the deep-interior surplus | That identification |
 | | Mach | Inertial mass from surrounding sources, with stiffness `m` derived | A definition of `m` from the source sum |
 | | Galactic rotation | Flat rotation curves for a general baryonic disk, with `a₀` derived | Refused on the current families (`dst_derives_a0`). A new `Prop` has to lie outside that refusal |
@@ -210,6 +203,7 @@ a Goal.
 | `deriv_phiStar_ne_zero` | `phiStar` has no critical phase on `(π/4, π/2)` |
 | `gammaSEqual_critical_radius_div_length`, `gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi` | `gammaSEqual` is critical only where `sin = 0`. Those integer multiples of `π` stay in the `layerRadius` family, and `(0, π)` has none |
 | `pairChannelForce_eq_zero_iff`, `pairChannelForce_layer_zero_not_unique` | The separation drops out, and a layer zero is not a unique point |
+| `LayerForce.gravityLayerTerm` | Gravity-only term `-κ / (gammaSEqual (ℓ / (2r)) · r²)`, with the charge term absent (`gravityLayerTerm_eq_channel`). Positive where `gammaSEqual < 0`, including the first repulsive shell. `gravityLayerPush` points along the separation, and `gravityLayerForce` sums those pushes over the other bodies of a finite set. Each summand increases its own separation on a repulsive layer. `ℓ` and `G` stay inputs. No time step |
 | `charge_over_nuclear_length_not_unique` | The external electromagnetic ratio `(203, 414)` does not select a point |
 | `fourteenMeV_fractional_widening` | The skin stays under `6/100` of the node |
 | `HydrogenRepulsion.lyman_two_over_three`, `balmer_alpha_over_beta` | With the constant factor `1`, the Lyman ratio is `27/32` and Hα/Hβ is `27/20`. `equalScale_nodes_miss_lyman` and `inv_node_gap_lt_hydrogen` put the equal-scale node gaps strictly below `27/32` and `5/27`. No fine structure |
@@ -297,5 +291,5 @@ revision: they leave the work order, and the `sorry`s stay.
 | Identity budget on `ℓ` and `a₀` | The active order. Scattering signs, `layerRadius`, `thresholdRadius`, `pairChannelForce`, the electromagnetic ratio, and `gammaSEqual` are uniqueness refusals. `GalaxyCurve` refuses `dst_derives_a0`. The charged-pion selector does not remove `r₁` from the channel. Those rows stay under Not yet stateable, untagged |
 | Six Beal leaves as the amplification breakthrough | The work order. Each leaf is a classical exponent statement. Cuts by Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are imported axioms, which the breakthrough rule excludes. The DST-native reduction already stated is `FermatMixedMotorResidual` |
 | Collatz ahead of the other bridges | The work order. `collatzAdmissibleBridge_iff` is an equivalence, as are the Goldbach and Polignac bridges. They stay in the catalogue |
-| Gravity-only N-body layer | Added to the work order at P1. `gammaSEqual` and `pairChannelForce` are proved. A finite sum of the gravity-only term is not defined, so the row stays not yet stateable and adds no `sorry` |
+| Gravity-only N-body layer | Proved in `LayerForce`. The term, the push along the separation, and the finite sum are theorems. `ℓ` and `G` stay inputs. An integrator stays outside the library. No new `sorry` |
 | `FermatMixedMotorResidual` split | The full residual follows from `FermatMixedMotorOddPrimeResidual` by mathlib's exponents `3` and `4`. The `sorry` moves to the odd prime `n ≥ 5`. The sandwich locates mixedness. Excess `1` meets the polar radial factor |
