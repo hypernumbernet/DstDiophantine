@@ -65,10 +65,11 @@ families in the library is a theorem in
 `gammaSEqual`. `GalaxyCurve` refuses `dst_derives_a0`. A later identity
 `Prop` has to lie outside that list, and it arrives in the main library
 before it can outrank the two P0 rows. `G` and `α` stay underived.
-Electroweak masses, propellantless control, a cold-fusion rate, and Mach
-`m` stay with the untagged rows under Not yet stateable.
+Electroweak masses, a cold-fusion rate, and Mach `m` stay with the untagged
+rows under Not yet stateable.
 
 Solar deflection is closed, and so is the gravity-only layer on a finite set.
+The kinematic domain of gravitational control is closed with them.
 See [Closed and refused](#closed-and-refused).
 
 Open `sorry`s. The catalogue order is not the work order:
@@ -79,6 +80,31 @@ Open `sorry`s. The catalogue order is not the work order:
 4. `collatzAdmissibleBridge`, `goldbachAdmissibleBridge`, and
    `polignacAdmissibleBridge` stay open and unscheduled. Each is equivalent
    to its conjecture.
+
+## Gravitational control and warp
+
+Two definition-first aims. They do not outrank the two P0 rows, and they
+add no `sorry`. The kinematic domain is already a theorem, so it is not
+rescheduled. A `True` placeholder is not a substitute. Warp waits on the
+foundation row.
+
+The domain is the three-lobed image of the admissible cone, the hold, and
+the constraint that realises a dual-only slice. `PaperBothSourcedEL` names
+a usual force `v` and a dual force `u`.
+`paperBothSourcedEL_constraint_force` says that holding the usual
+acceleration at zero is `v = m(φ − θ)`, not a free solution.
+`DualRotorMismatch` says the unforced written flow stays in the cone for
+every time only at a resting aligned rapidity in `[0, π/2]`.
+`EMControl`, `CircularHold`, and `CircularPolarization` refuse a
+helicity-odd drive of `J`. A cycle that stays in the cone lowers the mean
+of `J` by at most `π²/32`, and a wall transverse to the beam admits none.
+No definition identifies `u` with a laboratory field, and none names a
+phase velocity.
+
+| Pri | Aim | Already in the library | Success |
+| --- | --- | --- | --- |
+| **P4** | Gravity-control foundation | The image, the hold, the constraint force, and the refusal of a helicity-odd drive. See [Closed and refused](#closed-and-refused) | A forced trajectory, defined in `DstDiophantine/`, that changes `J` and stays admissible on a positive interval. The dual force is not the phase-lock. Cancelling `J` on that trajectory is not a reduction of `M`, and a neutral state past unsigned mass `3π²/16` has to be held |
+| **P4** | Warp | Vanishing stiffness is not the vacuum (`RestMass`). A null rotation keeps the displacement on a null line (`NullRotation`). The paper's sentence on a transient superluminal phase velocity is not a theorem | A phase velocity of a massive configuration under the force above. On a short interval that velocity exceeds the null speed, and every signal stays on the null line. No horizon, no causal shortcut, and no continuum bubble |
 
 ## Open `sorry` catalogue
 
@@ -151,8 +177,9 @@ leaves above. The proofs are not unconditional.
 ## Not yet stateable
 
 No definition in the main library states these claims. A `True` placeholder
-is not a substitute. Rows tagged **P0** or **P3** are the definition-first
-aims above; the cell points there. Untagged rows stay deferred. Channel
+is not a substitute. Rows tagged **P0**, **P3**, or **P4** are the
+definition-first aims; the cell points there. Untagged rows stay deferred.
+Channel
 length and galactic `a₀` left the active order: the families that could have
 stated them are proved refusals.
 
@@ -183,7 +210,8 @@ stated them are proved refusals.
 | | Binding energy | Binding energy from the first-node clearance cap | An operator. `bindingEnergyPerNucleonMeVApprox` is an external SI label, and `NuclearLength` produces none |
 | | Channel walls | Finite wall height, with layer positions fixed | A derived finite height |
 | **P3** | Dual Hilbert lift | Subspace facts of the ordinary layer become theorems of the dual Hilbert layer | See [Near-term order](#near-term-order) |
-| | Propellantless control | Laboratory inertia coupling by a motor whose translation commutes with torsion | A laboratory observable |
+| **P4** | Gravity-control foundation | A forced trajectory that changes `J` and stays admissible on a positive interval | See [Gravitational control and warp](#gravitational-control-and-warp). The kinematic domain is already proved |
+| **P4** | Warp | A transient phase velocity above the null speed on a massive configuration, with every signal still on the null line | A phase velocity. It waits on the foundation row |
 
 ## Closed and refused
 
@@ -221,6 +249,11 @@ a Goal.
 | `TranslationFisher.translationFisher_outer` | `F_μν = 4 Cov(P_μ, P_ν) = phaseFisher · (q − p)_μ · (q − p)_ν`. The diagonal is `chartFisher`. The matrix has rank at most one, so the Cramér–Rao floor is the reciprocal of `vᵀ F v` on the support, not an inverse on all four coordinates, and not a reading of `positionOp`. Mean rest, quadrature: time slot `0`, axis `1` is `34816/625`, floor `625/34816`, position reading `0`. The boost `cosh = 5/3`, `sinh = -4/3` preserves the contraction `34816/625` and puts `557056/5625` on the time slot. Rest against `(5, 4, 0, 0)` at time `-π/2`: time floor `25/324`, position reading `-π/2` |
 | `BornLorentz.invariantDensity` | The chart Born density is `J⁰`. On a positive-energy shell it equals the Dirac scalar exactly at rest, and off rest the scalar is `(m / p₀)` times the chart density. A longitudinal boost multiplies the chart density by `cosh` and leaves the scalar fixed; they agree for every seed only at rapidity `0`. The fixed-seed mass-3 carriers have chart density `50/9` and scalar `10/3`, ratio `5/3`. Rest has both equal to `2`. A rotor image of that rest spinor at `(5, 4, 0, 0)` has chart density `10/3` and scalar `2`, and is not a complex multiple of the fixed seed. Mean-rest weight information stays `1`. Against rest, the scalar reading is `15/16` and the chart reading is `225/289`. The shell information `144/289` still uses the chart fidelity |
 | `Kerr.inducedMetric_kerr` | On `Σ > 0` and `Δ > 0` the coframe induces the Kerr metric. `kerrCoframe_zero_spin` returns exterior Schwarzschild. `kerr_cross_ne_azimuthBoost` refuses a pure-boost reading of the cross term. The horizon `Δ = 0` is not claimed |
+| `DualControl` | Dual-only motion conserves `J + M` and cannot raise `J`. A shield `J = 0` exists precisely when the dual wall is nonpositive. Mixed unwind reaches an equal-scale shield from every admissible seed, including uniform rapidity `π/3`, where dual-only fails |
+| `ShieldCeiling`, `ControlDomain`, `ControlScale`, `EnvelopeLock` | With `\|J\| ≤ M`, the exact image of the cone is the three-lobed envelope. A neutral configuration weighs at most `5π²/16`, five sixths of the mass ceiling `3π²/8`. Full repulsion carries that ceiling. The envelope is met only when every axis lies on the wall and at least two axes are corners, so a dual-only motion meets it at most once |
+| `ShieldHold`, `HoldPrice` | For nonzero stiffness both angular accelerations vanish exactly on axiswise alignment, and that sit exchanges no power while the rotors are at rest. On the cone the lag is at least `4M − 3π²/4`, with equality exactly on the wall. Past the free-sitting mass `3π²/16` the cheapest neutral hold is `2m` times the excess. The heaviest neutral configuration has lag `π²/2`. Coaxial alignment relaxes the lag; a silent axis raises it |
+| `ShieldClock` | On a boosted axis `γ_eff` returns to `1` at a dual angle strictly before the coaxial shield. Cross-axis compensation cancels `J` and leaves that axis at `cosh α` |
+| `PaperBothSourcedEL`, `EMControl`, `CircularHold`, `CircularPolarization`, `SilentControl` | The two forces are named, and a dual-only slice is the constraint `v = m(φ − θ)`. Magnetic superposition and `θ ↦ θ + eA` are the dual-only readings. The ponderomotive drop is helicity-even and at most `π²/32` on a cycle that stays in the cone. No helicity-odd drive of `J` is derived, and `u` is not identified with a laboratory field |
 | `DualRotorDynamics.paperActualEL_not_oscillator` | The written action refuses `δ̈ + mδ = 0`. The same-sign working model is not that action. `paperMomentumSigma` and `paperMomentumDelta` are half the mismatch rate and half the common rate, and neither contains `m` |
 | `RelationalPolarization.diameter_one_root_iff` | The diameter angle derivative, evaluated at the geodesic angle of `ρ = a⁻¹b`, has a root in `(0, π/2)` exactly when `Z = 4`, and then every such angle is a root. `unit_usualConstraint_ne_angleDeriv` says that derivative is not the constraint force. No `ℓ` enters |
 | `GalaxyCurve`, `DualImage` | Stand-in dwarfs are bounded from external `a₀` and `G` (for example `50.2 < v_∞ < 50.3` km/s at `4×10⁸ M_⊙`). `dst_derives_a0` is refused |
@@ -293,3 +326,4 @@ revision: they leave the work order, and the `sorry`s stay.
 | Collatz ahead of the other bridges | The work order. `collatzAdmissibleBridge_iff` is an equivalence, as are the Goldbach and Polignac bridges. They stay in the catalogue |
 | Gravity-only N-body layer | Proved in `LayerForce`. The term, the push along the separation, and the finite sum are theorems. `ℓ` and `G` stay inputs. An integrator stays outside the library. No new `sorry` |
 | `FermatMixedMotorResidual` split | The full residual follows from `FermatMixedMotorOddPrimeResidual` by mathlib's exponents `3` and `4`. The `sorry` moves to the odd prime `n ≥ 5`. The sandwich locates mixedness. Excess `1` meets the polar radial factor |
+| Gravitational control and warp | The kinematic domain is already proved and is recorded under Closed and refused. The open aims are a forced trajectory that changes `J` and stays admissible, then a phase velocity of a massive configuration that exceeds the null speed while every signal stays luminal. Neither `Prop` exists. No new `sorry`. The two rows do not outrank the P0 aims |
