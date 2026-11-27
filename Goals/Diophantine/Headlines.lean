@@ -1,9 +1,9 @@
-import DstDiophantine.Algebra.Admissible
+import DoubleSpacetime.Algebra.Admissible
 import Goals.Diophantine.Bridges
 import Goals.Diophantine.Residuals
 
-open DstDiophantine.Admissible
-open DstDiophantine.Theorems
+open DoubleSpacetime.Admissible
+open DoubleSpacetime.Theorems
 
 /-!
 # Headline Diophantine conjectures

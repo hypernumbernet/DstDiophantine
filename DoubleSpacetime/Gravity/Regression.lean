@@ -1,0 +1,3218 @@
+import DoubleSpacetime.Gravity.Identification
+import DoubleSpacetime.Gravity.JTDictionary
+import DoubleSpacetime.Gravity.GaugeDictionary
+import DoubleSpacetime.Gravity.ClassicalSchwarzschild
+import DoubleSpacetime.Gravity.LorentzGauge
+import DoubleSpacetime.Gravity.LorentzFamily
+import DoubleSpacetime.Gravity.NullChart
+import DoubleSpacetime.Gravity.CommutingPlanes
+import DoubleSpacetime.Gravity.LorentzCounterexample
+import DoubleSpacetime.Gravity.OrderedPlanes
+import DoubleSpacetime.Algebra.RelativeRotor
+import DoubleSpacetime.Logic.Quantum.SpinConnection
+import DoubleSpacetime.Gravity.RadialQuadratic
+import DoubleSpacetime.Gravity.Tetrad
+import DoubleSpacetime.Gravity.NewtonFromLight
+import DoubleSpacetime.Gravity.EventBoundary
+import DoubleSpacetime.Gravity.Godel
+import DoubleSpacetime.Gravity.Kerr
+import DoubleSpacetime.Gravity.CoulombFromDual
+import DoubleSpacetime.Gravity.ForceScale
+import DoubleSpacetime.Gravity.ElectronShell
+import DoubleSpacetime.Gravity.CompactS3
+import DoubleSpacetime.Gravity.DualImage
+import DoubleSpacetime.Gravity.GalaxyCurve
+import DoubleSpacetime.Gravity.SlerpTorque
+import DoubleSpacetime.Gravity.RelationalPosition
+import DoubleSpacetime.Gravity.ChannelRange
+import DoubleSpacetime.Gravity.CliffordParallel
+import DoubleSpacetime.Gravity.ChartRotation
+import DoubleSpacetime.Gravity.RacketFlip
+import DoubleSpacetime.Gravity.RacketThermal
+import DoubleSpacetime.Gravity.WeakLinearity
+import DoubleSpacetime.Gravity.TorsionalLayer
+import DoubleSpacetime.Gravity.NuclearLayer
+import DoubleSpacetime.Gravity.NuclearLength
+import DoubleSpacetime.Gravity.SignReversal
+import DoubleSpacetime.Gravity.ScatteringScale
+import DoubleSpacetime.Gravity.StrongChannel
+import DoubleSpacetime.Gravity.DualRotorDynamics
+import DoubleSpacetime.Gravity.WheelerDeWitt
+import DoubleSpacetime.Gravity.DualRotorRigidity
+import DoubleSpacetime.Gravity.DualRotorFlow
+import DoubleSpacetime.Gravity.DualRotorVacuum
+import DoubleSpacetime.Gravity.DualRotorMismatch
+import DoubleSpacetime.Gravity.DualRotorMotor
+import DoubleSpacetime.Gravity.NullRotation
+import DoubleSpacetime.Gravity.ExponentialFamily
+import DoubleSpacetime.Gravity.RestMass
+import DoubleSpacetime.Gravity.DualCycle
+import DoubleSpacetime.Gravity.ElectronOrbit
+import DoubleSpacetime.Gravity.ElectronSquare
+import DoubleSpacetime.Gravity.ElectronHelium
+import DoubleSpacetime.Gravity.HeliumBody
+import DoubleSpacetime.Gravity.ElectronForce
+import DoubleSpacetime.Gravity.HydrogenRepulsion
+import DoubleSpacetime.Gravity.RelationalPolarization
+import DoubleSpacetime.Gravity.ElectronDiscrete
+import DoubleSpacetime.Gravity.OrbitClosure
+import DoubleSpacetime.Gravity.ElectronNumbers
+import DoubleSpacetime.Gravity.ElectronLength
+import DoubleSpacetime.Gravity.ElectronStanding
+import DoubleSpacetime.Gravity.Rutherford
+import DoubleSpacetime.Gravity.NeutronScatter
+import DoubleSpacetime.Gravity.ElectronCapacity
+import DoubleSpacetime.Gravity.ElectronShape
+import DoubleSpacetime.Gravity.ElectronAngular
+import DoubleSpacetime.Gravity.ElectronBoundary
+import DoubleSpacetime.Gravity.ElectronWater
+import DoubleSpacetime.Gravity.ElectronAngle
+import DoubleSpacetime.Gravity.ElectronTrio
+import DoubleSpacetime.Gravity.ElectronMetal
+import DoubleSpacetime.Gravity.ElectronCrystal
+import DoubleSpacetime.Gravity.MetalFusion
+import DoubleSpacetime.Gravity.ElectronDodeca
+import DoubleSpacetime.Gravity.Blackbody
+import DoubleSpacetime.Gravity.ShellCollision
+import DoubleSpacetime.Gravity.Faraday
+import DoubleSpacetime.Gravity.Electroweak
+import DoubleSpacetime.Gravity.CircularPolarization
+import DoubleSpacetime.Gravity.DualControl
+import DoubleSpacetime.Gravity.ConeLabels
+import DoubleSpacetime.Gravity.MassCorners
+import DoubleSpacetime.Gravity.ShieldClock
+import DoubleSpacetime.Gravity.ShieldCeiling
+import DoubleSpacetime.Gravity.ControlDomain
+import DoubleSpacetime.Gravity.EnvelopeLock
+import DoubleSpacetime.Gravity.ChiralSpectrum
+import DoubleSpacetime.Gravity.ChiralityStabilizer
+import DoubleSpacetime.Gravity.ChiralCurrent
+import DoubleSpacetime.Gravity.EMControl
+import DoubleSpacetime.Gravity.CircularHold
+import DoubleSpacetime.Gravity.NeutronMagnet
+import DoubleSpacetime.Gravity.SilentControl
+import DoubleSpacetime.Gravity.BetaDecay
+import DoubleSpacetime.Gravity.ShieldHold
+import DoubleSpacetime.Gravity.HoldPrice
+import DoubleSpacetime.Gravity.ControlScale
+import DoubleSpacetime.Gravity.ParticleStability
+import DoubleSpacetime.Gravity.BaryonAsymmetry
+import DoubleSpacetime.Gravity.ParityBridge
+import DoubleSpacetime.Gravity.KillingAxis
+import DoubleSpacetime.Gravity.RadialFall
+import DoubleSpacetime.Gravity.Perihelion
+import DoubleSpacetime.Gravity.Mercury
+import DoubleSpacetime.Gravity.SolarDeflection
+import DoubleSpacetime.Gravity.OffEquator
+import DoubleSpacetime.Gravity.DegenerateSandwich
+import DoubleSpacetime.Gravity.KillingTransport
+import DoubleSpacetime.Gravity.CurvedTransport
+import DoubleSpacetime.Gravity.PlaneBracket
+import DoubleSpacetime.Gravity.Lensing
+import DoubleSpacetime.Gravity.PhotonReturn
+import DoubleSpacetime.Gravity.LengthRule
+import DoubleSpacetime.Gravity.BothChannels
+import DoubleSpacetime.Gravity.LayerForce
+import DoubleSpacetime.Gravity.ElectronExclusion
+import DoubleSpacetime.Gravity.SpinVersusExclusion
+import DoubleSpacetime.Gravity.ChannelBridge
+import DoubleSpacetime.Algebra.SourceSuperposition
+import DoubleSpacetime.Gravity.MachSource
+import DoubleSpacetime.Gravity.InteriorClock
+import DoubleSpacetime.Gravity.MassOrigin
+import DoubleSpacetime.Gravity.MassCoefficient
+import DoubleSpacetime.Gravity.GravitonQuantum
+import DoubleSpacetime.Gravity.GravitonLogic
+import DoubleSpacetime.Gravity.LineWindow
+
+/-!
+# Gravity regression examples
+
+Smoke tests for the gravity track. Each `example` restates a theorem proved in a submodule, and
+nothing here is a new claim.
+-/
+
+namespace DoubleSpacetime
+
+namespace Gravity
+
+open Invariant PGA Generators Logic Operations SourceSuperposition
+
+
+/-! ## Chart dictionary -/
+
+example :
+    J_field 2 4 = (1 : ℝ) / 128 ∧
+      (1 / 2) * (-(2 : ℝ) / (4 : ℝ) ^ 2) = -(1 : ℝ) / 16 :=
+  ⟨J_field_ne_half_frozen_T_two_four.1, J_field_ne_half_frozen_T_two_four.2.1⟩
+
+/-- Regression: auxiliary expression `(4/r²)(cosh√(2J)-1)`, not the teleparallel quadratic. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    schwarzschildTeleparallelT rs r =
+      teleparallelTofJ (J (radialBoostParams rs r)) r :=
+  schwarzschild_T_eq_teleparallelTofJ h
+
+
+/-! ## The direction of gravity -/
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.staticKilling rs r =
+      Sandwich.sandwich (Motor.expTrans (KillingAxis.radialShift (KillingAxis.axisDistance rs r)))
+        ((KillingAxis.killingRate rs r / 2) • hyperbolic 0) ∧
+      KillingAxis.axisDistance rs r * dSqrtA_dr rs r = 1 :=
+  ⟨KillingAxis.staticKilling_eq_sandwich h, KillingAxis.axisDistance_mul_dSqrtA_dr h⟩
+
+example {rs r ε : ℝ} (h : IsExterior rs r) :
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (radialMomentum ε 0) =
+      (ε * dSqrtA_dr rs r) • null 1 ∧
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 +
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε / KillingAxis.killingNorm rs r ∧
+    Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 0 -
+        Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![ε, 0, 0, 0] 1 =
+      ε * KillingAxis.killingNorm rs r ∧
+    minkowskiDot ![ε, 0, 0, 0] = -(ε * ε) :=
+  ⟨KillingAxis.commutator_staticProper_rest h,
+    (KillingAxis.rest_nullWeights_chart h).1,
+    (KillingAxis.rest_nullWeights_chart h).2,
+    by simpa [add_zero, sub_zero] using Sandwich.minkowskiDot_radial_weights ε 0⟩
+
+/-- Regression: a dual angle does not enter the scale of the outward ray. -/
+example {rs r : ℝ} (h : IsExterior rs r) (θ : ℝ) :
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (null 0 + null 1) =
+      dSqrtA_dr rs r • (null 0 + null 1) ∧
+    commutator ((1 / KillingAxis.killingNorm rs r) • KillingAxis.staticKilling rs r)
+        (null 0 - null 1) =
+      (-dSqrtA_dr rs r) • (null 0 - null 1) ∧
+    Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+        (schwarzschildRapidity rs r) θ)) (null 0 + null 1) =
+      (Real.sqrt (schwarzschildA rs r))⁻¹ • (null 0 + null 1) ∧
+    Q31 (Sandwich.boostConjLambda (schwarzschildRapidity rs r) ![1, 1, 0, 0]) = 0 := by
+  refine ⟨KillingAxis.commutator_staticProper_light_plus h,
+    KillingAxis.commutator_staticProper_light_minus h, ?_, ?_⟩
+  · have hrs := h.1
+    have hr := h.2
+    rw [sandwich_axis_null_plus, exp_schwarzschildRapidity hrs hr, schwarzschildA]
+  · have hcone : Q31 ![1, 1, 0, 0] = 0 := by simp [Q31_eq_minkowskiDot, minkowskiDot]
+    rw [Sandwich.Q31_boostConjLambda, hcone]
+
+example (p : Motor.OmegaParams) (v : Vec5) :
+    ∃ w : Vec5,
+      Sandwich.sandwich (Motor.motor p) (DegenerateSandwich.vec5 v) =
+          DegenerateSandwich.vec5 w ∧
+        w 4 = v 4 + DegenerateSandwich.minkowskiPair p.trans.lambda (restrict4 v) ∧
+        Q311 w = Q311 v :=
+  DegenerateSandwich.motor_degenerate_isometry p v
+
+example (φ : ℝ) (hφ : φ ≠ 0) (μ : Fin 4) :
+    Sandwich.sandwich (Motor.motor ⟨Amplification.pureBoost φ, ⟨fun _ => 0⟩⟩) (frameVec μ) -
+        Sandwich.sandwich (Motor.rotorTorsion (Amplification.pureBoost φ)) (frameVec μ) = 0 ∧
+      J (Amplification.pureBoost φ) ≠ 0 :=
+  DegenerateSandwich.pureBoost_nullShear_zero_of_J φ hφ μ
+
+example (p : Motor.OmegaParams) (x : Vec4) :
+    Sandwich.sandwich (Motor.expTrans (KillingTransport.originShift x)) (Motor.omegaBiv p) =
+      Motor.omegaBiv (KillingTransport.transportedParams p x) :=
+  KillingTransport.sandwich_originShift p x
+
+example (κ ν s : ℝ) :
+    (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
+      ![0, s, 0, 0]).trans.lambda = ![ν + κ * s, 0, 0, 0] :=
+  KillingTransport.transported_killing_radial κ ν s
+
+example (rs r θ : ℝ) (a b : Fin 4) :
+    CurvedTransport.exteriorConn rs r θ a b 1 = 0 :=
+  CurvedTransport.exteriorConn_radial rs r θ a b
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.killingNorm rs r * (-(rs / r ^ 3)) =
+      -2 * KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.properRadial_killingRate h
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.lorentzAct (Amplification.pureBoost (KillingAxis.killingRate rs r))
+        ![0, 1, 0, 0] =
+      ![KillingAxis.killingNorm rs r * dSqrtA_dr rs r, 0, 0, 0] :=
+  CurvedTransport.properRadial_killingNorm_eq_flat h
+
+example (rs r θ : ℝ) :
+    CurvedTransport.connOnBivector (CurvedTransport.exteriorConn rs r θ)
+        (CurvedTransport.staticBoost (KillingAxis.killingRate rs r)) 2 0 2 =
+      KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.conn_staticBoost_polar_02 rs r θ
+
+/-- Regression: the azimuthal tilt has the same rate, with no `cot θ`. -/
+example (rs r θ : ℝ) :
+    CurvedTransport.connOnBivector (CurvedTransport.exteriorConn rs r θ)
+        (CurvedTransport.staticBoost (KillingAxis.killingRate rs r)) 3 0 3 =
+      KillingAxis.killingRate rs r * KillingAxis.killingNorm rs r / r :=
+  CurvedTransport.conn_staticBoost_azimuth_03 rs r θ
+
+example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) :
+    KillingAxis.killingRate rs r₁ ≠ KillingAxis.killingRate rs r₂ :=
+  CurvedTransport.static_not_radial_parallel h₁ h₂ hne
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    -(KillingAxis.killingNorm rs r) *
+        (KillingAxis.killingNorm rs r * dRapidity_dr rs r) =
+      rs / (2 * r ^ 2) := by
+  simpa [KillingAxis.killingRate] using
+    (KillingTransport.incongruence_kappa_eq_exterior h).1
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    Motor.omegaBiv (KillingTransport.transportedParams
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r)
+          (KillingAxis.killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]) =
+      (KillingAxis.killingRate rs r / 2) • Generators.hyperbolic 0 :=
+  KillingTransport.omegaBiv_axisShift_eq_boost h
+
+example {rs r₁ r₂ : ℝ} (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂)
+    (x : Vec4) :
+    (KillingTransport.transportedParams
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r₁)
+          (KillingAxis.killingNorm rs r₁)) x).torsion ≠
+      Amplification.pureBoost (KillingAxis.killingRate rs r₂) :=
+  KillingTransport.static_not_flat_transport h₁ h₂ hne x
+
+example (a : Fin 3) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlane a) PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureShift (Fin.succ a) (-2)) :=
+  PlaneBracket.vee_ideal_volume_eq_biv a
+
+example (a : Fin 3) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlane a) (PlaneBracket.dualNormal a) =
+      Motor.omegaBiv (PlaneBracket.pureShift 0 2) :=
+  PlaneBracket.vee_ideal_dualNormal_eq_biv a
+
+example :
+    Generators.commutator (PlaneBracket.idealPlane 2) (PlaneBracket.dualNormal 0) = 0 :=
+  PlaneBracket.commutator_plane12_inPlane
+
+example (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlaneOf n)
+        PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureSpatialShift n) :=
+  PlaneBracket.vee_idealPlaneOf_volume_eq_biv n
+
+example (n : Fin 3 → ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.idealPlaneOf n) (PlaneBracket.dualOf n) =
+      Motor.omegaBiv (PlaneBracket.pureShift 0 (2 * PlaneBracket.spatialNormSq n)) :=
+  PlaneBracket.vee_idealPlaneOf_dualOf_eq_biv n
+
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.displacedPlane n δ)
+        PlaneBracket.spatialVolume =
+      Motor.omegaBiv (PlaneBracket.pureSpatialShift n) :=
+  PlaneBracket.vee_displaced_volume_eq_biv n δ
+
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • (PlaneBracket.displacedPlane n δ * PlaneBracket.spatialVolume +
+        PlaneBracket.spatialVolume * PlaneBracket.displacedPlane n δ) =
+      (-δ) • (1 : PGA) :=
+  PlaneBracket.sym_displaced_volume n δ
+
+example (n : Fin 3 → ℝ) (δ : ℝ) :
+    (1 / 2 : ℝ) • Generators.commutator (PlaneBracket.displacedPlane n δ) (PlaneBracket.dualOf n) =
+      Motor.omegaBiv (PlaneBracket.displacedMotor n δ) :=
+  PlaneBracket.vee_displaced_dualOf_eq_biv n δ
+
+example (p : Motor.OmegaParams) (x : Fin 4 → ℝ) (t : ℝ) :
+    ∑ μ : Fin 4, w31 μ * (KillingAxis.killingNormSq p (x + t • e4vec μ) +
+        KillingAxis.killingNormSq p (x - t • e4vec μ) - 2 * KillingAxis.killingNormSq p x) =
+      8 * J p.torsion * t ^ 2 :=
+  KillingAxis.killingNormSq_dAlembertian p x t
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    deriv (deriv (KillingAxis.releasedDisplacementProper (KillingAxis.axisDistance rs r))) 0 =
+      -dSqrtA_dr rs r :=
+  KillingAxis.released_initial_acceleration_exterior h
+
+example {rs r L : ℝ} (hr : r ≠ 0) :
+    (schwarzschildA rs r - 1) * L ^ 2 / r ^ 3 =
+        2 * (-(KillingAxis.killingRate rs r) * (L / r) ^ 2) ∧
+      -(KillingAxis.killingRate rs r) * (L / r) ^ 2 +
+          (schwarzschildA rs r - 1) * L ^ 2 / r ^ 3 =
+        -3 * KillingAxis.killingRate rs r * L ^ 2 / r ^ 2 :=
+  Perihelion.perihelion_three_shares hr
+
+example {M L p : ℝ} (hM : M ≠ 0) (hp : p = L ^ 2 / M)
+    (hx0 : 0 < 6 * M / p) (hx1 : 6 * M / p < 1) :
+    let k := Real.sqrt (1 - 6 * M / p)
+    6 * Real.pi * M / p < 2 * Real.pi * (1 / k - 1) ∧
+      2 * Real.pi * (1 / k - 1) < (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
+  Perihelion.perihelion_excess_latus hM hp hx0 hx1
+
+example {M α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β) (hβγ : β < γ)
+    (hsum : α + β + γ = 1 / (2 * M)) (hx : 3 * M * (α + β) ≤ 1 / 2) :
+    let p := 2 / (α + β)
+    6 * Real.pi * M / p < Perihelion.radialReturn M α β - 2 * Real.pi ∧
+      Perihelion.radialReturn M α β - 2 * Real.pi <
+        (6 * Real.pi * M / p) / (1 - 6 * M / p) :=
+  Perihelion.bound_return_bounds hM hα hαβ hβγ hsum hx
+
+example {M L α β γ : ℝ} (hM : 0 < M) (hα : 0 ≤ α) (hαβ : α < β) (hβγ : β < γ)
+    (hsum : α + β + γ = 1 / (2 * M))
+    (hσ : α * β + β * γ + γ * α = 1 / L ^ 2) :
+    6 * Real.pi * M ^ 2 / L ^ 2 < Perihelion.radialReturn M α β - 2 * Real.pi :=
+  Perihelion.bound_return_gt_angular hM hα hαβ hβγ hsum hσ
+
+example :
+    42 < Mercury.arcsecPerCentury ∧ Mercury.arcsecPerCentury < 44 :=
+  Mercury.perihelion_arcsec_bounds
+
+example :
+    17 / 10 < SolarDeflection.deflectionArcsec ∧ SolarDeflection.deflectionArcsec < 9 / 5 :=
+  SolarDeflection.solar_deflection_arcsec_bounds
+
+example (uθ uφ c : ℝ) :
+    2 * uθ * (c * uφ ^ 2) + 2 * uφ * (-(c * uθ * uφ)) = 0 :=
+  OffEquator.sphere_rotation_cancels uθ uφ c
+
+example (r θ uθ uφ : ℝ) :
+    OffEquator.azimuthalMomentum r θ uφ ^ 2 ≤
+      OffEquator.angularMomentumSq r uθ uφ * (Real.sin θ) ^ 2 :=
+  OffEquator.azimuthal_le_angular r θ uθ uφ
+
+example {r θ uφ : ℝ} (hr : 0 < r) (hs : 0 < Real.sin θ) (hc : 0 < Real.cos θ)
+    (hφ : uφ ≠ 0) :
+    0 < OffEquator.sphereRotation θ r * uφ ^ 2 :=
+  OffEquator.northern_edge_rate hr hs hc hφ
+
+/-- Regression: that rotation does not enter the radial geodesic acceleration. -/
+example (rs r θ γ ur uθ uφ : ℝ) :
+    OffEquator.geodesicAccel (CurvedTransport.exteriorConn rs r θ)
+        (OffEquator.frameVel γ ur uθ uφ) 1 =
+      dSqrtA_dr rs r * γ ^ 2 -
+        (KillingAxis.killingNorm rs r / r) * (uθ ^ 2 + uφ ^ 2) :=
+  OffEquator.geodesicAccel_radial rs r θ γ ur uθ uφ
+
+example {r θ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hM : OffEquator.azimuthalMomentum r θ uφ = 0) :
+    uφ = 0 :=
+  OffEquator.azimuthal_leg_of_zero hr hs hM
+
+example {r uθ L : ℝ} (hr : r ≠ 0) (hL : L = r * uθ) :
+    uθ / r = L / r ^ 2 :=
+  OffEquator.meridian_colatitude_rate hr hL
+
+example {r uθ uφ : ℝ} (hr : r ≠ 0)
+    (hL : OffEquator.angularMomentumSq r uθ uφ = 0) :
+    uθ = 0 ∧ uφ = 0 :=
+  OffEquator.angular_legs_of_zero hr hL
+
+example {r θ uθ uφ : ℝ} (hr : r ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hL : OffEquator.angularMomentumSq r uθ uφ ≠ 0)
+    (heq : OffEquator.azimuthalMomentum r θ uφ ^ 2 =
+      OffEquator.angularMomentumSq r uθ uφ) :
+    (Real.sin θ) ^ 2 = 1 ∧ uθ = 0 :=
+  OffEquator.band_collapses_to_equator hr hs hL heq
+
+example {r₁ r₂ θ uθ₁ uφ₁ uθ₂ uφ₂ : ℝ}
+    (hr₁ : r₁ ≠ 0) (hr₂ : r₂ ≠ 0) (hs : Real.sin θ ≠ 0)
+    (hθ₁ : uθ₁ ≠ 0) (hθ₂ : uθ₂ ≠ 0)
+    (hL : OffEquator.angularMomentumSq r₁ uθ₁ uφ₁ =
+      OffEquator.angularMomentumSq r₂ uθ₂ uφ₂)
+    (hM : OffEquator.azimuthalMomentum r₁ θ uφ₁ =
+      OffEquator.azimuthalMomentum r₂ θ uφ₂) :
+    ((uφ₁ / (r₁ * Real.sin θ)) / (uθ₁ / r₁)) ^ 2 =
+      ((uφ₂ / (r₂ * Real.sin θ)) / (uθ₂ / r₂)) ^ 2 :=
+  OffEquator.azimuth_slope_eq_of_constants hr₁ hr₂ hs hθ₁ hθ₂ hL hM
+
+example {κ ur uφ : ℝ} :
+    κ * ur ^ 2 - κ * Perihelion.gammaSq ur uφ = -κ * (1 + uφ ^ 2) :=
+  Perihelion.radial_speed_cancels
+
+example {κ L0 τ₁ τ₂ : ℝ} (hL : 0 < L0) (hκ : 0 < κ) (hτ : τ₁ < τ₂) :
+    L0 * Real.exp (-κ * τ₂) < L0 * Real.exp (-κ * τ₁) :=
+  Perihelion.naiveAngular_strictAnti hL hκ hτ
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.killingNormSq
+        (KillingAxis.killingParams (KillingAxis.killingRate rs r) (KillingAxis.killingNorm rs r))
+        (KillingAxis.releasedWorldline (KillingAxis.axisDistance rs r)) = 0 :=
+  KillingAxis.released_on_staticHorizon h
+
+example {GM c2 r h : ℝ} (hr : r ≠ 0) (hrh : r + h ≠ 0) (hc : c2 ≠ 0) :
+    InteriorClock.clockExterior GM c2 r h = InteriorClock.potentialExterior GM c2 r h :=
+  InteriorClock.exterior_agreement hr hrh hc
+
+example {grav c2 h : ℝ} :
+    InteriorClock.lightClimb grav c2 h = grav * h / c2 :=
+  InteriorClock.lightClimb_eq
+
+example {ε : ℝ} :
+    InteriorClock.centreFactor / InteriorClock.surfaceFactor ε - 1 =
+      InteriorClock.centreAdvance ε :=
+  InteriorClock.centreAdvance_eq_ratio
+
+/-- Regression: the shared potential gradient rounds to `1.093×10⁻¹⁶` per metre. -/
+example :
+    (10925 : ℝ) / 10 ^ 20 < InteriorClock.earthWeight ∧
+      InteriorClock.earthWeight < (10935 : ℝ) / 10 ^ 20 :=
+  InteriorClock.earth_potential_gradient_bins
+
+/-- Regression: compactness and the centre advance both round to `6.96×10⁻¹⁰`. -/
+example :
+    (6955 : ℝ) / 10 ^ 13 < (InteriorClock.earthCompactnessQ : ℝ) ∧
+      (InteriorClock.earthCompactnessQ : ℝ) < (6965 : ℝ) / 10 ^ 13 ∧
+      (6955 : ℝ) / 10 ^ 13 <
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) ∧
+        InteriorClock.centreAdvance (InteriorClock.earthCompactnessQ : ℝ) <
+          (6965 : ℝ) / 10 ^ 13 :=
+  ⟨InteriorClock.earth_centre_bins.1, InteriorClock.earth_centre_bins.2.1,
+    InteriorClock.earth_centre_bins.2.2.1, InteriorClock.earth_centre_bins.2.2.2.1⟩
+
+
+/-! ## Chart dictionary -/
+
+example (φ u v : ℝ) (μ ν : Fin 4) :
+    inducedMetric (inertialBoostCoframe φ) μ ν =
+        (if μ = ν then w31 μ else 0) ∧
+      boostCoordTorsion φ u v 0 0 1 = u ∧
+      boostTeleparallel u v = 0 :=
+  ⟨inducedMetric_inertialBoost φ μ ν, boostCoordTorsion_ttx φ u v,
+    boostTeleparallel_eq_zero u v⟩
+
+example (θ p q : ℝ) (μ ν : Fin 4) :
+    inducedMetric (inertialRotationCoframe θ) μ ν =
+        (if μ = ν then w31 μ else 0) ∧
+      rotationCoordTorsion θ p q 1 1 2 = p ∧
+      rotationCoordTorsion θ p q 2 1 2 = q ∧
+      rotationTeleparallel p q = 0 ∧
+      J (inertialRotationParams θ) = -J (DoubleSpacetime.Amplification.pureBoost θ) :=
+  ⟨inducedMetric_inertialRotation θ μ ν, rotationCoordTorsion_xxy θ p q,
+    rotationCoordTorsion_yxy θ p q, rotationTeleparallel_eq_zero p q,
+    J_inertialRotation_eq_neg_pureBoost θ⟩
+
+example (φ : ℝ) :
+    Sandwich.sandwich (Motor.rotorTorsion (Amplification.pureBoost φ)) (ι 0) =
+      axisBoostCoframe 0 φ 0 0 • ι 0 + axisBoostCoframe 0 φ 0 1 • ι 1 +
+        axisBoostCoframe 0 φ 0 2 • ι 2 + axisBoostCoframe 0 φ 0 3 • ι 3 :=
+  sandwich_pureBoost_coframe_ι0 φ
+
+example (θ : ℝ) :
+    Sandwich.sandwich (Motor.rotorTorsion (Sandwich.pureRotation2 θ)) (ι 1) =
+      axisRotCoframe 2 θ 1 1 • ι 1 + axisRotCoframe 2 θ 1 2 • ι 2 :=
+  sandwich_rotation2_coframe_ι1 θ
+
+example (i : Fin 3) (φ : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (axisBoostCoframe i φ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      PlaneTorsion.genTeleparallel (axisBoostGen i) d = 0 ∧
+      J (axisBoostParams i φ) = (1 / 2) * φ ^ 2 :=
+  ⟨inducedMetric_axisBoost i φ μ ν, axisBoostTeleparallel_eq_zero i d, J_axisBoost i φ⟩
+
+example (i : Fin 3) (θ : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (axisRotCoframe i θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      PlaneTorsion.genTeleparallel (axisRotGen i) d = 0 ∧
+      J (axisRotParams i θ) = -J (axisBoostParams i θ) :=
+  ⟨inducedMetric_axisRot i θ μ ν, axisRotTeleparallel_eq_zero i d, J_axisRot_eq_neg_boost i θ⟩
+
+example (c : PGA) : (0 : PGA) + (c * c - c * c) = 0 :=
+  oneParam_curvature c
+
+example (S : PGA) (hS : S * CliffordAlgebra.reverse S = 1) (α β : ℝ) :
+    CliffordAlgebra.reverse (S * RelativeRotor.rotorUsual (RelativeRotor.axisParams α β)) *
+        (S * RelativeRotor.rotorDual (RelativeRotor.axisParams α β)) =
+      RelativeRotor.relativeRotor (RelativeRotor.axisParams α β) :=
+  RelativeRotor.common_left_preserves_relativeRotor S hS _
+
+example (t : ℝ) (d : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (nullCoframe t) μ ν = (if μ = ν then w31 μ else 0) ∧
+      J (nullMismatch t) = 0 ∧
+      PlaneTorsion.genTeleparallel nullCoGen d = 0 :=
+  ⟨inducedMetric_nullCoframe t μ ν, J_nullMismatch t, nullTeleparallel_eq_zero d⟩
+
+example (φ θ : ℝ) (dφ dθ : Fin 4 → ℝ) (μ ν : Fin 4) :
+    inducedMetric (productCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      productTeleparallel dφ dθ = 0 :=
+  ⟨inducedMetric_product φ θ μ ν, productTeleparallel_eq_zero dφ dθ⟩
+
+example (φ θ u v : ℝ) (huv : u * v ≠ 0) (μ ν : Fin 4) :
+    inducedMetric (boostLeftCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      inducedMetric (rotLeftCoframe φ θ) μ ν = (if μ = ν then w31 μ else 0) ∧
+      (boostLeftTeleparallel φ θ u v = rotLeftTeleparallel φ θ u v ↔
+        φ = 0 ∧ Real.cos θ = 1) :=
+  ⟨inducedMetric_boostLeft φ θ μ ν, inducedMetric_rotLeft φ θ μ ν,
+    ordered_agree_iff φ θ u v huv⟩
+
+example (φ θ u v : ℝ) (h : 0 < u * v) :
+    rotLeftTeleparallel φ θ u v < 0 ∧
+      (boostLeftTeleparallel φ θ u v < 0 ↔ 0 < Real.cos θ) ∧
+      boostLeftTeleparallel 0 Real.pi u v = 2 * u * v ∧
+      rotLeftTeleparallel 0 Real.pi u v = -2 * u * v ∧
+      boostLeftTeleparallel 0 (Real.pi / 2) u v = 0 ∧
+      rotLeftTeleparallel 0 (Real.pi / 2) u v = -2 * u * v := by
+  obtain ⟨hπb, hπr⟩ := ordered_opposite_at_pi u v
+  obtain ⟨hhb, hhr⟩ := ordered_split_at_half_pi u v
+  exact ⟨rotLeft_has_vacuum_sign φ θ u v h, boostLeft_has_vacuum_sign_iff φ θ u v h,
+    hπb, hπr, hhb, hhr⟩
+
+example (p : Motor.TransParams) (q : Motor.OmegaParams) (μ : Fin 4) :
+    sandwich (Motor.expTrans p) (frameVec μ) =
+        frameVec μ + (w31 μ * p.lambda μ) • ι e4Index ∧
+      sandwich (Motor.motor q) (frameVec μ) =
+        sandwich (Motor.rotorTorsion q.torsion) (frameVec μ) +
+          (w31 μ * q.trans.lambda μ) • ι e4Index :=
+  ⟨translator_minkowski_leg p μ, motor_minkowski_leg q μ⟩
+
+example (θ : ℝ) {m : ℝ} {p : Vec4} {Ψ : DiracSpinor} (h : DiracMomentum m p Ψ) :
+    blockDiag2 (embedR (halfDerivR θ * halfInvR θ))
+        (embedR (halfInvDerivR θ * halfR θ)) = spinGen 0 1 ∧
+      DiracMomentum m (lorentzAct (usualRotorMat (EuclideanSpace.single 0 θ)) p)
+        (rotorDirac (usualRotorMat (EuclideanSpace.single 0 θ)) Ψ) :=
+  ⟨boost_logDeriv θ, constant_boost_sends_solution θ h⟩
+
+example (Λ : Coframe)
+    (h : ∀ μ ν, ∑ a : Fin 4, w31 a * Λ a μ * Λ a ν = if μ = ν then w31 μ else 0)
+    (μ ν : Fin 4) :
+    inducedMetric Λ μ ν = (if μ = ν then w31 μ else 0) ∧ mixedTeleparallel = -2 :=
+  ⟨inducedMetric_of_lorentz Λ h μ ν, mixedTeleparallel_eq⟩
+
+/-- Regression: the same `J` does not determine `T`. -/
+example {rs r θ : ℝ} (h : IsExterior rs r) (hs : Real.sin θ ≠ 0) :
+    J (DoubleSpacetime.Amplification.pureBoost (schwarzschildRapidity rs r)) =
+        J (radialBoostParams rs r) ∧
+      boostTeleparallel 0 0 = 0 ∧
+      radialTeleparallel (schwarzschildA rs r) (rs / r ^ 2) r θ = -2 / r ^ 2 ∧
+      0 < J (radialBoostParams rs r) := by
+  refine ⟨?_, boostTeleparallel_eq_zero 0 0, radialTeleparallel_schwarzschild h hs, ?_⟩
+  · rw [Amplification.J_pureBoost, J_radialBoostParams]
+  · exact (schwarzschild_J_pos_T_frozen h hs).1
+
+/-- Regression: the auxiliary chart expression is positive, and is not the quadratic. -/
+example {rs r : ℝ} (h : IsExterior rs r) :
+    J (DoubleSpacetime.Amplification.pureBoost (schwarzschildRapidity rs r)) =
+        J (radialBoostParams rs r) ∧
+      boostTeleparallel 0 0 = 0 ∧
+      0 < schwarzschildTeleparallelT rs r :=
+  sameJ_inertial_T_zero_schwarzschild_T_pos h
+
+/-- Regression: the auxiliary expression on any positive time-leg, not the quadratic. -/
+example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofA A r =
+      4 * (Real.cosh (Real.sqrt (2 * J (gaugeBoostParams A))) - 1) :=
+  r_sq_T_ofA_eq_four_cosh_sqrt hA hr
+
+example {A r : ℝ} (hA : 0 < A) (hr : r ≠ 0) :
+    ¬ teleparallelTofA A r < 0 :=
+  teleparallelTofA_not_lt_zero hA hr
+
+example {Jval r : ℝ} (hr : r ≠ 0)
+    (hbound : |Jval| ≤ JMax) (hT : teleparallelTofJ Jval r < 0) :
+    Jval < 0 :=
+  repulsive_requires_negative_J hr hbound hT
+
+example {A r θ : ℝ} (hA : 0 < A) (hr : r ≠ 0) (hsin : 0 ≤ Real.sin θ) :
+    algebraicDensity A r θ ≤ tegrDensity A r θ :=
+  algebraicDensity_le_tegrDensity hA hr hsin
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    4 * J (radialBoostParams rs r) ≤
+      r ^ 2 * schwarzschildTeleparallelT rs r ∧
+    schwarzschildTeleparallelT rs r ≤ 4 * J_field rs r :=
+  ⟨four_J_le_r_sq_T h, T_le_four_J_field h⟩
+
+example {rs r1 r2 : ℝ}
+    (h1 : IsExterior rs r1) (h2 : IsExterior rs r2)
+    (heq1 : J_field rs r1 = (1 / 2) * schwarzschildTeleparallelT rs r1)
+    (heq2 : J_field rs r2 = (1 / 2) * schwarzschildTeleparallelT rs r2) :
+    r1 = r2 :=
+  naive_half_ratio_at_most_one_sphere h1 h2 heq1 heq2
+
+
+/-! ## Scales that are inputs -/
+
+example {n : ℕ} (hn : 1 ≤ n) (a0 : Fin 3) :
+    J (expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
+      Real.pi ^ 2 / 8 :=
+  J_express_repeat_pure_boost hn a0
+
+/-- Regression: the internal quadratic of those boosts has no ceiling. -/
+example {n : ℕ} (hn : 2 ≤ n) (a0 : Fin 3) :
+    3 * Real.pi ^ 2 / 8 <
+      J (sumParams (List.replicate n (axisBoost a0 (Real.pi / 2)))) :=
+  J_internal_repeat_gt_ceiling hn a0
+
+example (a0 : Fin 3) :
+    let p := axisBoost a0 (Real.pi / 4)
+    let s := sumParams [p, p]
+    J s ≠ J p + J p :=
+  (J_two_quarter_boosts a0).2.2.2.2.2.2
+
+example {n : ℕ} (hn : 6 ≤ n) (a0 : Fin 3) :
+    J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        Real.pi ^ 2 / 16 ∧
+      mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        5 * Real.pi ^ 2 / 64 ∧
+      J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+        ((n : ℝ) + 1) * Real.pi ^ 2 / 16 ∧
+      3 * Real.pi ^ 2 / 8 <
+        J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) ∧
+      J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) +
+          mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) <
+        J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) +
+          mass (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) :=
+  ⟨J_express_quarter_balancePile a0, mass_express_quarter_balancePile a0,
+    J_quarter_balancePile n a0, J_quarter_balancePile_gt_ceiling hn a0,
+    balancePile_JM_overflow (by positivity) (by linarith [Real.pi_pos])
+      (by positivity) (le_trans (by decide : (1 : ℕ) ≤ 6) hn)⟩
+
+example (a0 : Fin 3) :
+    let b := axisBoost a0 (Real.pi / 8)
+    let s := sumParams [b, axisBalance a0 (Real.pi / 8)]
+    Admissible.IsAdmissibleContinuous s ∧ express s = s ∧ J b < J s :=
+  let h := eighth_balance_inside a0
+  ⟨h.1, h.2.1, h.2.2.2.2⟩
+
+example (m φddot θddot : ℝ) :
+    PaperActualEL m 0 0 φddot θddot ↔ φddot = 0 ∧ θddot = 0 :=
+  empty_sources_no_acceleration m φddot θddot
+
+example (m : ℝ) (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (List.replicate 2 (axisBoost a0 (Real.pi / 4)))).alpha a0)
+        ((expressedSuperposition (List.replicate 2 (axisBoost a0 (Real.pi / 4)))).beta a0) =
+      -m * Real.pi :=
+  two_quarter_boosts_accel m a0
+
+example (m : ℝ) {n : ℕ} (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+        ((expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+      -m * Real.pi / 2 ∧
+      commonAccel m
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).alpha a0)
+          ((sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)).beta a0) =
+        -m * Real.pi / 2 :=
+  quarter_balancePile_accel m a0
+
+example {n : ℕ} {m φ : ℝ} {a0 : Fin 3}
+    (hm : 0 < m) (hφ : 0 ≤ φ) (hs : Real.pi / 2 < (n : ℝ) * φ) :
+    commonAccel m
+        ((sumParams (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((sumParams (List.replicate n (axisBoost a0 φ))).beta a0) <
+      commonAccel m
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).alpha a0)
+        ((expressedSuperposition (List.replicate n (axisBoost a0 φ))).beta a0) :=
+  (pure_boost_force_overflows hm hφ hs).2.1
+
+example {m : ℝ} (hm : m ≠ 0) {n : ℕ} (hn : 3 ≤ n) (a0 : Fin 3) :
+    commonAccel m
+        ((expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 4)))).alpha a0)
+        ((expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 4)))).beta a0) ≠
+      (n : ℝ) *
+        commonAccel m
+          ((expressedSuperposition (List.replicate 1 (axisBoost a0 (Real.pi / 4)))).alpha a0)
+          ((expressedSuperposition (List.replicate 1 (axisBoost a0 (Real.pi / 4)))).beta a0) :=
+  quarter_boosts_past_wall hm hn a0
+
+/-- Regression: a carried quarter-boost accelerates, and is not the empty reading. -/
+example {m : ℝ} (hm : m ≠ 0) (a0 : Fin 3) :
+    commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0)
+        ((axisBoost a0 (Real.pi / 4)).beta a0) = -m * Real.pi / 2 ∧
+      commonAccel m ((axisBoost a0 (Real.pi / 4)).alpha a0)
+          ((axisBoost a0 (Real.pi / 4)).beta a0) ≠
+        commonAccel m
+          ((expressedSuperposition ([] : List TorsionParams)).alpha a0)
+          ((expressedSuperposition ([] : List TorsionParams)).beta a0) :=
+  ⟨carried_quarter_boost_accel m a0, carried_quarter_boost_not_empty hm a0⟩
+
+
+/-! ## Chart dictionary -/
+
+example {rs r : ℝ} (h : IsExterior rs r)
+    (hφ : schwarzschildRapidity rs r ≤ phiMax) :
+    r ^ 2 * schwarzschildTeleparallelT rs r < 27 :=
+  lt_of_le_of_lt (r_sq_T_le_ceiling h hφ) four_cosh_phiMax_sub_one_bounds.2
+
+example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
+    4 * (Real.cos phiMax - 1) ≤ r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r ≤ 4 * (Real.cosh phiMax - 1) :=
+  r_sq_teleparallelTofJ_window hr hbound
+
+/-- Regression: numeric envelope of the auxiliary expression, not of the quadratic. -/
+example {Jval r : ℝ} (hr : r ≠ 0) (hbound : |Jval| ≤ JMax) :
+    -8 < r ^ 2 * teleparallelTofJ Jval r ∧
+      r ^ 2 * teleparallelTofJ Jval r < 27 :=
+  r_sq_teleparallelTofJ_bounds hr hbound
+
+/-- Regression: both window ends are attained, so neither bound is improvable. -/
+example {r : ℝ} (hr : r ≠ 0) :
+    r ^ 2 * teleparallelTofJ (-JMax) r = 4 * (Real.cos phiMax - 1) ∧
+      r ^ 2 * teleparallelTofJ JMax r = 4 * (Real.cosh phiMax - 1) :=
+  r_sq_teleparallelTofJ_window_sharp hr
+
+example {J₁ J₂ r : ℝ} (hr : r ≠ 0) (h₁ : |J₁| ≤ JMax) (h₂ : |J₂| ≤ JMax)
+    (heq : teleparallelTofJ J₁ r = teleparallelTofJ J₂ r) : J₁ = J₂ :=
+  J_unique_of_teleparallelTofJ_eq hr h₁ h₂ heq
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    (1 / 2) *
+        Real.arcosh (1 + r ^ 2 * schwarzschildTeleparallelT rs r / 4) ^ 2 =
+      J (radialBoostParams rs r) :=
+  J_radialBoostParams_eq_half_arcosh_sq h
+
+example (r : ℝ) :
+    inducedMetric (godelCoframe r) 2 2 = godelGφφ r :=
+  induced_godel_φφ r
+
+example :
+    ∃ r, 0 < r ∧ r < godelCriticalRadius ∧ godelRapidity r = phiMax ∧
+      0 < godelGφφ r :=
+  exists_phiMax_godel_before_loop
+
+example {ψ r : ℝ} (hr : godelCriticalRadius < r) :
+    godelTilt r ≠ Real.tanh ψ :=
+  godelTilt_ne_tanh_of_gt_critical hr
+
+example (ψ β : ℝ) :
+    inducedMetric (cylBoostCoframe ψ β) 0 2 = 0 :=
+  induced_cylBoost_tφ ψ β
+
+example {M a r θ : ℝ} (hSig : kerrSigma a r θ ≠ 0) :
+    -(1 - 2 * M * r / kerrSigma a r θ) * kerrGφφ M a r θ - kerrGtφ M a r θ ^ 2 =
+      -kerrDelta M a r * Real.sin θ ^ 2 :=
+  kerr_timePhi_det M a r θ hSig
+
+example {M r θ : ℝ} (h : IsExterior (2 * M) r) :
+    kerrCoframe M 0 r θ = schwarzschildCoframe (2 * M) r θ :=
+  kerrCoframe_zero_spin h
+
+example (ψ β : ℝ) :
+    inducedMetric (kerrAzimuthBoostCoframe ψ β) 0 3 = 0 :=
+  induced_kerrAzimuthBoost_tφ ψ β
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    HasDerivAt (fun x => x * schwarzschildA rs x) 1 r :=
+  hasDerivAt_r_mul_schwarzschildA rs r (lt_trans h.1 h.2).ne'
+
+example {rs r : ℝ} (h : IsExterior rs r) :
+    rs / (2 * r) ≤ schwarzschildRapidity rs r :=
+  (schwarzschildRapidity_sandwich h).1
+
+/-- Regression: exact witness of the auxiliary expression at \(r=\frac43 r_s\). -/
+example {rs : ℝ} (hrs : 0 < rs) :
+    referenceRadius rs ^ 2 *
+      schwarzschildTeleparallelT rs (referenceRadius rs) = 1 :=
+  r_sq_T_reference hrs
+
+
+/-! ## Scales that are inputs -/
+
+example (α β : ℝ) : 0 < gammaEff α β :=
+  gammaEff_pos α β
+
+example (α : ℝ) : gammaEff α 0 = Real.cosh α :=
+  gammaEff_sr_is_beta_zero α
+
+example (α : ℝ) : gammaEff α α = Real.cosh α ↔ Real.sin α = 0 :=
+  gammaEff_balanced_eq_cosh_iff α
+
+/-- Regression: an equal-scale plateau clock is not the force denominator. -/
+example (n : ℕ) (hn : 0 < n) :
+    gammaSEqual ((n : ℝ) * Real.pi) ≠
+      gammaEff (2 * ((n : ℝ) * Real.pi)) (2 * ((n : ℝ) * Real.pi)) :=
+  plateau_gammaS_ne_gammaEff n hn
+
+example (n : ℕ) {x y : ℝ}
+    (hx : x ∈ Set.Ioo (branchNode n) (branchNode (n + 1)))
+    (hy : y ∈ Set.Ioo (branchNode (n + 1)) (branchNode (n + 2))) :
+    gammaSEqual x * gammaSEqual y < 0 :=
+  successive_gaps_opposite_sign n hx hy
+
+
+/-! ## Layers and particle dynamics -/
+
+example (m φ θ φddot θddot : ℝ) :
+    PaperActualEL m φ θ φddot θddot ↔
+      φddot - θddot = 0 ∧ φddot + θddot = -2 * m * (φ - θ) :=
+  paperActualEL_iff_channels m φ θ φddot θddot
+
+example (φdot θdot : ℝ) :
+    paperMomentumSigma φdot θdot = (1 / 2) * (φdot - θdot) ∧
+      paperMomentumDelta φdot θdot = (1 / 2) * (φdot + θdot) := by
+  constructor <;> rfl
+
+example (m q1 q2 φ : ℝ) :
+    interactionStiffness m q1 q2 φ = m * interactionMass q1 q2 φ :=
+  interactionStiffness_eq_mul_interactionMass m q1 q2 φ
+
+example {m q φ : ℝ} (hm : m ≠ 0) (hβ : q * φ ≠ 0) :
+    ¬ PaperActualEL m 0 (q * φ) 0 0 :=
+  dualSourced_not_actualEL hm hβ
+
+example (m q1 q2 : ℝ) (g a b : RelationalPosition.S3) :
+    relationalPolarization m q1 q2 (g * a) (g * b) =
+      relationalPolarization m q1 q2 a b :=
+  relationalPolarization_left m q1 q2 g a b
+
+example :
+    -((1 : ℝ) * (1 * 1)) ≠ polarizationAngleDeriv 1 1 1 1 :=
+  unit_usualConstraint_ne_angleDeriv
+
+example {m φ θ φdot θdot φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = 0 :=
+  paperEnergy_conserved h
+
+example :
+    (∃ m φ θ φdot θdot : ℝ, 0 < paperEnergy m φ θ φdot θdot) ∧
+      (∃ m φ θ φdot θdot : ℝ, paperEnergy m φ θ φdot θdot < 0) :=
+  paperEnergy_indefinite
+
+example : paperKineticHessianDet = -1 ∧ paperKineticHessianDet6 = -1 ∧
+    mixedKineticHessianDet = -1 / 4 :=
+  ⟨paperKineticHessianDet_eq, paperKineticHessianDet6_eq, mixedKineticHessianDet_eq⟩
+
+example :
+    PaperActualEL 1 0 0 0 0 ∧ paperEnergy 1 0 0 0 1 < 0 :=
+  paperEnergy_negative_on_shell
+
+example (c : PGA) :
+    (0 : PGA) + (c * c - c * c) = 0 ∧
+      (∃ m φ θ φdot θdot φddot θddot : ℝ,
+        PaperActualEL m φ θ φddot θddot ∧ paperEnergy m φ θ φdot θdot ≠ 0) :=
+  oneParam_curvature_leaves_energy_free c
+
+example : oscillatorKineticHessianDet = 1 ∧ 0 < oscillatorEnergy 1 1 0 0 0 :=
+  ⟨oscillatorKineticHessianDet_eq, oscillatorEnergy_positive_on_shell.2⟩
+
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    PaperActualEL m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
+      (deriv (deriv (writtenUsual σ₀ σd₀ m δ₀ ν)) t)
+      (deriv (deriv (writtenDual σ₀ σd₀ m δ₀ ν)) t) :=
+  written_flow_actualEL σ₀ σd₀ m δ₀ ν t
+
+/-- Regression: one-axis stiffness is \(2m(M-\sigma^2/4)\), not \(J\). -/
+example (m α β : ℝ) :
+    stiffnessPotential m (RelativeRotor.axisParams α β) =
+      2 * m * (mass (RelativeRotor.axisParams α β) - (α + β) ^ 2 / 4) :=
+  stiffness_axis_massShift m α β
+
+example (σ₀ σd₀ m t : ℝ) :
+    J (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m 0 0 t)
+        (writtenDual σ₀ σd₀ m 0 0 t)) = 0 ∧
+      mass (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m 0 0 t)
+        (writtenDual σ₀ σd₀ m 0 0 t)) =
+        (σ₀ + σd₀ * t) ^ 2 / 4 :=
+  ⟨written_aligned_J σ₀ σd₀ m t, written_aligned_mass σ₀ σd₀ m t⟩
+
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    writtenUsual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t + writtenDelta δ₀ ν t) / 2 ∧
+      writtenDual σ₀ σd₀ m δ₀ ν t =
+        (writtenSigma σ₀ σd₀ m δ₀ ν t - writtenDelta δ₀ ν t) / 2 ∧
+      Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+          (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)))
+        (Generators.null 0 + Generators.null 1) =
+          Real.exp (writtenUsual σ₀ σd₀ m δ₀ ν t) •
+            (Generators.null 0 + Generators.null 1) ∧
+      Sandwich.sandwich (Motor.rotorTorsion (RelativeRotor.axisParams
+          (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)))
+        (Generators.null 2) =
+          Real.cos (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 2 +
+            Real.sin (writtenDual σ₀ σd₀ m δ₀ ν t) • Generators.null 3 :=
+  written_flow_null_split σ₀ σd₀ m δ₀ ν t
+
+example {t : ℝ} (ht : t ≠ 0) :
+    NormedSpace.exp (t • (hyperbolic 0 + cyclic 1)) =
+        (1 : PGA) + t • (hyperbolic 0 + cyclic 1) ∧
+      Sandwich.sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) =
+        null 1 + (2 * t) • null 0 - (2 * t) • null 3 ∧
+      ∀ c₀ c₁ : ℝ,
+        Sandwich.sandwich ((1 : PGA) + t • (hyperbolic 0 + cyclic 1)) (null 1) ≠
+          c₀ • null 0 + c₁ • null 1 :=
+  ⟨exp_offAxis_sum (by decide) t, sandwich_parabolic_null1 t,
+    sandwich_parabolic_null1_not_boostPlane ht⟩
+
+example (t : ℝ) :
+    Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 0 - ι 3) = ι 0 - ι 3 ∧
+      Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 2) = ι 2 ∧
+        Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 1) =
+          ι 1 + (2 * t) • (ι 0 - ι 3) ∧
+          Sandwich.sandwich ((1 : PGA) + t • parabolicGen) (ι 0 + ι 3) =
+            ι 0 + ι 3 + (4 * t) • ι 1 + (4 * t ^ 2) • (ι 0 - ι 3) ∧
+            Sandwich.sandwich (Motor.expTrans ⟨![0, t, 0, 0]⟩) (ι 1) =
+              ι 1 + t • ι e4Index ∧
+              parabolicGen ∉ nullSpan :=
+  ⟨sandwich_parabolic_fixedNull t, sandwich_parabolic_e2 t,
+    sandwich_parabolic_e1_shear t, sandwich_parabolic_nullPlus_shear t,
+    sandwich_translator_e1 t, parabolicGen_not_mem_nullSpan⟩
+
+example (t s : ℝ) (x y : Fin 4 → ℝ) :
+    parabolicRotor t * parabolicRotor s = parabolicRotor (t + s) ∧
+      CliffordAlgebra.reverse (parabolicRotor t) = parabolicRotor (-t) ∧
+        parabolicRotor t * CliffordAlgebra.reverse (parabolicRotor t) = 1 ∧
+          Q31 (nullRotation t x) = Q31 x ∧
+            KillingAxis.minkowskiProd (nullRotation t x) (nullRotation t y) =
+              KillingAxis.minkowskiProd x y ∧
+              Sandwich.sandwich (parabolicRotor t) (nullVector x) =
+                nullVector (nullRotation t x) ∧
+                Sandwich.sandwich (parabolicRotor t) (null 0 - null 3) = null 0 - null 3 ∧
+                  Sandwich.sandwich (parabolicRotor t) (null 2) = null 2 :=
+  ⟨parabolicRotor_mul t s, reverse_parabolicRotor t, parabolicRotor_mul_reverse t,
+    Q31_nullRotation t x, minkowskiProd_nullRotation t x y,
+    sandwich_parabolic_nullVector t x, sandwich_parabolic_null_fixedLine t,
+    sandwich_parabolic_null2_fixed t⟩
+
+example {t : ℝ} (ht : t ≠ 0) (x : Fin 4 → ℝ) :
+    nullRotation t x = x ↔ ∃ a b : ℝ, x = a • nullLineVec + b • transverseVec :=
+  nullRotation_eq_self_iff ht x
+
+example {t : ℝ} (ht : t ≠ 0) :
+    nullRotation t nullLineVec = nullLineVec ∧
+      nullRotation t screenVec = screenVec + (2 * t) • nullLineVec ∧
+      (nullRotation t screenVec) 1 = 1 ∧
+      (nullRotation t screenVec) 2 = 0 ∧
+      Q31 (nullRotation t screenVec - screenVec) = 0 ∧
+      nullRotation t screenVec ≠ screenVec :=
+  light_kept_on_null_line ht
+
+example {t : ℝ} {x : Fin 4 → ℝ} (ht : t ≠ 0) (hs : x 0 + x 3 ≠ 0) :
+    (nullRotation t x) 0 + (nullRotation t x) 3 = x 0 + x 3 ∧
+      (nullRotation t x) 1 ≠ x 1 :=
+  ⟨null_sum_invariant t x, transverse_moves_off_ray ht hs⟩
+
+example {ε t : ℝ} (hε : ε ≠ 0) :
+    NormedSpace.exp (t • contractedGen ε) =
+        Real.cos (ε * t) • (1 : PGA) +
+          (t * Real.sinc (ε * t)) • contractedGen ε ∧
+      NormedSpace.exp ((Real.pi / ε) • contractedGen ε) = -1 ∧
+        (NormedSpace.exp (t • contractedGen ε) = -1 ↔ Real.cos (ε * t) = -1) ∧
+          (Generators.commutator (contractedGen ε) (minkowskiVector nullLineVec) = 0 ↔
+            ε = 0) ∧
+            Real.sinc Real.pi = 0 ∧
+              compactJacobian Real.pi = 0 :=
+  ⟨exp_contractedGen_formula ε t, exp_contractedGen_antipode hε,
+    exp_contractedGen_eq_neg_one_iff hε, commutator_contracted_nullLine_eq_zero_iff ε,
+    sinc_pi, compactJacobian_antipode⟩
+
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    paperEnergy m (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t)
+        (deriv (writtenUsual σ₀ σd₀ m δ₀ ν) t)
+        (deriv (writtenDual σ₀ σd₀ m δ₀ ν) t) =
+      (1 / 2) * ν * σd₀ + (m / 2) * δ₀ ^ 2 :=
+  written_flow_energy σ₀ σd₀ m δ₀ ν t
+
+example (σ₀ σd₀ m δ₀ ν t : ℝ) :
+    J (RelativeRotor.axisParams (writtenUsual σ₀ σd₀ m δ₀ ν t)
+        (writtenDual σ₀ σd₀ m δ₀ ν t)) =
+      writtenLagProduct σ₀ σd₀ m δ₀ ν t :=
+  written_flow_J σ₀ σd₀ m δ₀ ν t
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) :
+    (∀ t, writtenLagProduct σ₀ σd₀ m δ₀ ν t = writtenLagProduct σ₀ σd₀ m δ₀ ν 0) ↔
+      δ₀ = 0 ∧ ν = 0 :=
+  writtenLagProduct_const_iff hm
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) (h : δ₀ ≠ 0 ∨ ν ≠ 0) :
+    Filter.Tendsto (writtenLagProduct σ₀ σd₀ m δ₀ ν) Filter.atTop Filter.atBot ∧
+      Filter.Tendsto (writtenLagProduct σ₀ σd₀ m δ₀ ν) Filter.atBot Filter.atBot :=
+  ⟨writtenLagProduct_tendsto_atTop hm h, writtenLagProduct_tendsto_atBot hm h⟩
+
+example {σ₀ σd₀ m δ₀ ν : ℝ} (hm : 0 < m) :
+    (∀ t, Admissible.IsAdmissibleContinuous (RelativeRotor.axisParams
+        (writtenUsual σ₀ σd₀ m δ₀ ν t) (writtenDual σ₀ σd₀ m δ₀ ν t))) ↔
+      δ₀ = 0 ∧ ν = 0 ∧ σd₀ = 0 ∧ 0 ≤ σ₀ ∧ σ₀ ≤ Real.pi / 2 :=
+  written_flow_forever_admissible_iff hm
+
+example {m : ℝ} (hm : 0 ≤ m) :
+    Real.sqrt (2 * m) = m ↔ m = 0 ∨ m = 2 :=
+  sqrt_two_mul_eq_compton_iff hm
+
+
+/-! ## Scales that are inputs -/
+
+example {m φ θ φddot θddot : ℝ}
+    (h : PaperActualEL m φ θ φddot θddot) (hδ : φ - θ ≠ 0) :
+    (φddot + θddot) / (φ - θ) =
+      -(lagPotentialSecond m ((φ + θ) / 2) (φ - θ) /
+          lagMassSecond ((φ + θ) / 2) (φ - θ)) :=
+  common_accel_eq_lagSecond_ratio h hδ
+
+example {m : ℝ} {p : Operations.TorsionParams} (h : lagSq p ≠ 0) :
+    stiffnessPotential m p / transverseMass p = 2 * m :=
+  stiffness_quotient h
+
+
+/-! ## Layers and particle dynamics -/
+
+example {m φ θ φddot θddot : ℝ}
+    (h : OscillatorEL m φ θ φddot θddot) :
+    φddot + θddot = 0 :=
+  oscillatorEL_free_common h
+
+example (x : ℝ) :
+    HasDerivAt gammaSEqual (-2 * Real.cosh x * Real.sin x) x :=
+  hasDerivAt_gammaSEqual x
+
+example (x : ℝ) : deriv gammaSEqual x = 0 ↔ Real.sin x = 0 :=
+  deriv_gammaSEqual_eq_zero_iff x
+
+example (n : ℕ) :
+    gammaSEqual ((n : ℝ) * Real.pi) = (-1) ^ n * Real.cosh ((n : ℝ) * Real.pi) :=
+  gammaSEqual_nat_mul_pi n
+
+example (n : ℕ) :
+    ∃! x : ℝ,
+      x ∈ Set.Ioo ((n : ℝ) * Real.pi) ((n : ℝ) * Real.pi + Real.pi) ∧
+        gammaSEqual x = 0 :=
+  exists_unique_node_branch n
+
+example (n : ℕ) {x : ℝ}
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi) ((n : ℝ) * Real.pi + Real.pi))
+    (h : gammaSEqual x = 0) :
+    x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2) :=
+  node_mem_sharp_branch n hx h
+
+example {ℓ x : ℝ} (hℓ : 0 < ℓ) (n : ℕ)
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2)) :
+    ℓ / ((2 * (n : ℝ) + 1) * Real.pi) < layerRadius ℓ x ∧
+      layerRadius ℓ x < 2 * ℓ / ((4 * (n : ℝ) + 1) * Real.pi) :=
+  layerRadius_window hℓ n hx
+
+example (n : ℕ) : (11 : ℝ) ^ n ≤ Real.cosh ((n : ℝ) * Real.pi) :=
+  eleven_pow_le_cosh_nat_mul_pi n
+
+example (a : ℝ) : Real.cosh (a + Real.pi) < Real.exp Real.pi * Real.cosh a :=
+  cosh_add_pi_lt_exp_pi_mul a
+
+example (a : ℝ) :
+    Real.exp Real.pi * Real.cosh a - Real.cosh (a + Real.pi) =
+      Real.sinh Real.pi * Real.exp (-a) :=
+  exp_pi_mul_cosh_sub_cosh_add_pi a
+
+example {a b : ℝ} (hab : a < b) :
+    Real.cosh (a + Real.pi) * Real.cosh b <
+      Real.cosh (b + Real.pi) * Real.cosh a :=
+  cosh_add_pi_ratio_strictMono hab
+
+example (n : ℕ) :
+    Real.cosh ((n : ℝ) * Real.pi) ≤ Real.exp ((n : ℝ) * Real.pi) :=
+  cosh_nat_mul_pi_le_exp n
+
+example (n : ℕ) (hn : 1 ≤ n) :
+    plateauForceFactor (n + 1) < plateauForceFactor n :=
+  plateauForceFactor_strictAnti n hn
+
+example (α : Fin 3 → ℝ) : J (equalScaleParams α) = 0 :=
+  J_equalScaleParams α
+
+example {α : Fin 3 → ℝ} (h : ∃ a, α a ≠ 0) : 0 < mass (equalScaleParams α) :=
+  mass_equalScaleParams_pos h
+
+
+/-! ## Scales that are inputs -/
+
+example (n : ℕ) {x : ℝ}
+    (hx : x ∈ Set.Ioo ((n : ℝ) * Real.pi + Real.pi / 4)
+      ((n : ℝ) * Real.pi + Real.pi / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < 1 :=
+  pionLambda_node_lt_one_fm n hx
+
+example {ℓ x : ℝ} (hℓ : 0 < ℓ)
+    (hx : x ∈ Set.Ioo (Real.pi / 4) (Real.pi / 2))
+    (h1 : 1 ≤ layerRadius ℓ x) : Real.pi / 2 < ℓ :=
+  outer_node_one_fm_forces_ell_gt_pi_div_two hℓ hx h1
+
+example {r0 s : ℝ} (hr0 : r0 ≠ 0) (hs : s ≠ 0) :
+    nucleonNumberDensity r0 s = numberDensityOfRadiusCoeff r0 :=
+  nucleonNumberDensity_eq_const hr0 hs
+
+/-- Regression: `r₀ = 1.2` fm is not consistent with `n₀ = 0.16` fm⁻³. -/
+example : numberDensityOfRadiusCoeff (6 / 5) ≠ 4 / 25 :=
+  numberDensity_radiusCoeff_1_2_ne_saturation
+
+example : (56 / 75 : ℚ) < pionComptonFm ∧ pionComptonFm < 19 / 10 :=
+  pion_inside_sign_caps
+
+example {num den : ℕ} {lo hi : ℚ} (hnum : 0 < num) (hden : 0 < den)
+    (hlo : lo < standInWavelength num den piDigitLo)
+    (hhi : standInWavelength num den piDigitHi < hi) :
+    (lo : ℝ) <
+        (num : ℝ) * Real.pi * (SI.hbarApprox : ℝ) /
+          ((den : ℝ) * (SI.electronMassApprox : ℝ) * (SI.speedOfLight : ℝ) *
+            (SI.fineStructureApprox : ℝ) ^ 2) ∧
+      (num : ℝ) * Real.pi * (SI.hbarApprox : ℝ) /
+          ((den : ℝ) * (SI.electronMassApprox : ℝ) * (SI.speedOfLight : ℝ) *
+            (SI.fineStructureApprox : ℝ) ^ 2) <
+        (hi : ℝ) :=
+  ratioWavelength_bounds hnum hden hlo hhi
+
+/-- Regression: the nuclear seat counts are the oscillator closures, not node indices. -/
+example :
+    oscillatorClosure 0 = 2 ∧ oscillatorClosure 1 = 8 ∧ oscillatorClosure 2 = 20 ∧
+      shiftedClosure 2 = 28 ∧ shiftedClosure 3 = 50 ∧
+        shiftedClosure 4 = 82 ∧ shiftedClosure 5 = 126 := by
+  have h := oscillatorClosure_values
+  have hs := shiftedClosure_values
+  exact ⟨h.1, h.2.1, h.2.2.1, hs.1, hs.2.1, hs.2.2.1, hs.2.2.2⟩
+
+example {x : ℝ} (hx : x ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
+    layerRadius (pionComptonFm : ℝ) x < (SI.nnCoreScaleFm : ℝ) ∧
+      (SI.nnCoreScaleFm : ℝ) < layerRadius (pionComptonFm : ℝ) resonanceRoot1 :=
+  pion_core_scale_in_inversion_layer hx
+
+example :
+    2 * (pionComptonFm : ℝ) / Real.pi < (SI.he4ChargeRadiusFmLower : ℝ) ∧
+      2 * (pionComptonFm : ℝ) / Real.pi < (SI.lead208ChargeRadiusFmLower : ℝ) :=
+  ⟨chargeRadii_outside_wall.2.1, chargeRadii_outside_wall.2.2.2.2.2⟩
+
+
+/-! ## Layers and particle dynamics -/
+
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    pairBalance 1 x = 0 :=
+  exists_unique_diameter_shell (by norm_num)
+
+/-- Regression: `Z = 1` has no diameter root in `(0, π/2)`, and `Z = 4` vanishes. -/
+example {χ : ℝ} (hχ : χ ≠ 0) : diameterAngleDeriv 1 1 χ ≠ 0 :=
+  diameterAngleDeriv_ne_zero_of_one (by norm_num) hχ
+
+example (χ : ℝ) : diameterAngleDeriv 1 4 χ = 0 :=
+  diameterAngleDeriv_zero_of_four 1 χ
+
+example {Z x : ℝ} (hZ : 3 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    cubeOutward Z x < 0 :=
+  cube_no_outer_root hZ hx
+
+example {Z x : ℝ} (hZ : 1 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    tetraOutward Z x < 0 :=
+  tetra_no_outer_root hZ hx
+
+example {Z x : ℝ} (hZ : 2 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    octaOutward Z x < 0 :=
+  octa_no_outer_root hZ hx
+
+example {Z x : ℝ} (hZ : 5 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    icosaOutward Z x < 0 :=
+  icosa_no_outer_root hZ hx
+
+example {Z : ℝ} (hZ : 8 ≤ Z) :
+    ∃! x : ℝ, x ∈ Set.Ioo (0 : ℝ) dodecaWall ∧ dodecaResponse x = Z :=
+  exists_unique_dodeca_outer_root hZ
+
+example {Z x : ℝ} (hZ : 8 ≤ Z) (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall)
+    (hR : dodecaResponse x = Z) :
+    (7 : ℝ) / 10 < 1 / (2 * x) ∧ 1 / (2 * x) < 10 / 7 ∧
+      (∀ y ∈ Set.Ioo (0 : ℝ) dodecaWall,
+        (y < x → dodecaOutward Z y < 0) ∧ (y = x → dodecaOutward Z y = 0) ∧
+          (x < y → 0 < dodecaOutward Z y)) :=
+  ⟨(dodeca_outer_root_radius hZ hx hR).1, (dodeca_outer_root_radius hZ hx hR).2,
+    fun _ hy => dodeca_outer_root_restoring hZ hx hR hy⟩
+
+example : (15 / 2 : ℝ) < dodecaCoeff ∧ dodecaCoeff < 8 :=
+  ⟨dodecaCoeff_gt_fifteen_halves, dodecaCoeff_lt_eight⟩
+
+example {Z x : ℝ} (hZ : Z ≤ 7) (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall) :
+    7 < dodecaResponse x ∧ 0 < dodecaOutward Z x :=
+  ⟨dodecaResponse_gt_seven hx, dodeca_outward_pos_of_le_seven hZ hx⟩
+
+example {Z W x y : ℝ} (hZ : (8 : ℝ) ≤ Z) (hW : Z < W)
+    (hx : x ∈ Set.Ioo (0 : ℝ) dodecaWall) (hy : y ∈ Set.Ioo (0 : ℝ) dodecaWall)
+    (hRx : dodecaResponse x = Z) (hRy : dodecaResponse y = W) :
+    1 / (2 * y) < 1 / (2 * x) :=
+  dodeca_root_radius_lt_of_lt_charge hZ hW hx hy hRx hRy
+
+example {Z : ℝ} (hZ : 8 ≤ Z) :
+    ∃ a ∈ Set.Ioo (0 : ℝ) dodecaWall, ∀ x ∈ Set.Ioo (0 : ℝ) a, dodecaOutward Z x < 0 :=
+  dodeca_far_field_inward hZ
+
+section
+open MeasureTheory
+
+example :
+    (9 / 2 : ℝ) < planckPeak 5 ∧ planckPeak 5 < 5 ∧
+      (5 / 2 : ℝ) < planckPeak 3 ∧ planckPeak 3 < 3 ∧
+      ∫ x in Set.Ioi (0 : ℝ), planckShape 3 x = Real.pi ^ 4 / 15 :=
+  ⟨wavelengthPeak_bounds.1, wavelengthPeak_bounds.2,
+    frequencyPeak_bounds.1, frequencyPeak_bounds.2, boseIntegral⟩
+
+/-- Regression: an impulse does not retune a root, and the thermal mean of the frequency shape lies
+strictly between `3` and `4`, above the peak. -/
+example {m κ1 κ2 p : ℝ} (hm : 0 < m) (hp : p ≠ 0) (hκ1 : 0 < κ1) (hκ : κ1 < κ2) :
+    longitudinalOmega κ1 m < longitudinalOmega κ2 m ∧
+      impulseAmplitude m κ2 p < impulseAmplitude m κ1 p ∧
+      radialEnergy m κ1 0 (p / m) = p ^ 2 / (2 * m) ∧
+      (3 : ℝ) < shapeMean ∧ shapeMean < 4 ∧ planckPeak 3 < shapeMean :=
+  ⟨longitudinalOmega_strictMono hm hκ1 hκ, impulseAmplitude_strictAnti hm hp hκ1 hκ,
+    impulse_energy hm.ne', shapeMean_bounds.1, shapeMean_bounds.2, peak_lt_shapeMean⟩
+
+/-- Regression: on the printed square curvatures the diagonal wavelength exceeds the electron
+wavelength by a factor strictly between `45.07` and `45.08`. -/
+example :
+    (4507 / 100 : ℝ) <
+        longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) ∧
+      longitudinalOmega ((1810 : ℝ) / 100) (SI.electronMassApprox : ℝ) /
+          longitudinalOmega ((8178 : ℝ) / 1000) ((SI.protonMassApprox : ℝ) / 2) <
+        (4508 / 100 : ℝ) :=
+  squareFrequencyRatio_window
+
+end
+
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    cubeOutward 1 x = 0 :=
+  exists_unique_cube_shell (by norm_num)
+
+example : ∃! x : ℝ, x ∈ Set.Ioo (resonanceRoot1 / tetraScale) (branchNode 1) ∧
+    tetraOutward 1 x = 0 :=
+  exists_unique_tetra_shell (by norm_num)
+
+example : ∃! x : ℝ, x ∈ Set.Ioo (2 * resonanceRoot1) (branchNode 1) ∧
+    octaOutward 1 x = 0 :=
+  exists_unique_octa_shell (by norm_num)
+
+example {Z : ℝ} (hZ : 1 ≤ Z) :
+    ∃ s, 1 / (2 * resonanceRoot1) < s ∧ s < 2 ∧
+      octaPairOutward Z 2 (s / 2) = 0 ∧
+      (∀ s', 1 / (2 * resonanceRoot1) < s' → s' < 2 →
+        octaPairOutward Z 2 (s' / 2) = 0 → s' = s) ∧
+      ∀ t, 1 / (4 * resonanceRoot1) < t → t ≤ 1 →
+        (t < s / 2 → 0 < octaPairOutward Z 2 t) ∧
+        (s / 2 < t → octaPairOutward Z 2 t < 0) :=
+  octa_pair_seat hZ
+
+example : 2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+    Module.finrank ℝ Gravity.quadrupole) = 18 ∧
+    2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+      Module.finrank ℝ Gravity.quadrupole + Module.finrank ℝ Gravity.octupole) = 32 := by
+  simpa using shell_seat_counts.2.2
+
+example : 2 * Module.finrank ℝ ℝ = 2 ∧
+    2 * Module.finrank ℝ (Fin 3 → ℝ) = 6 ∧
+    2 * Module.finrank ℝ Gravity.quadrupole = 10 ∧
+    2 * Module.finrank ℝ Gravity.octupole = 14 :=
+  subshell_seat_counts
+
+/-- Regression: angular-momentum squares `0`, `2`, `6`, and `12`, and the running total `2 n²`. -/
+example (a : Fin 3 → ℝ) (v : Fin 3 → ℝ) {M : Matrix (Fin 3) (Fin 3) ℝ}
+    (hM : M ∈ quadrupole) {c : Fin 10 → ℝ} (hc : c ∈ octupole) :
+    -(dipoleValue (jDip 0 1 (jDip 0 1 a)) v +
+        dipoleValue (jDip 0 2 (jDip 0 2 a)) v +
+        dipoleValue (jDip 1 2 (jDip 1 2 a)) v) =
+      (1 * 2) * dipoleValue a v ∧
+    -(quadPoly (jQuadXY (jQuadXY (quadCoeff M))) v +
+        quadPoly (jQuadXZ (jQuadXZ (quadCoeff M))) v +
+        quadPoly (jQuadYZ (jQuadYZ (quadCoeff M))) v) =
+      (2 * 3) * quadValue M v ∧
+    -(octuValue (jOctuXY (jOctuXY c)) v +
+        octuValue (jOctuXZ (jOctuXZ c)) v +
+        octuValue (jOctuYZ (jOctuYZ c)) v) =
+      (3 * 4) * octuValue c v ∧
+    2 * (Module.finrank ℝ ℝ + Module.finrank ℝ (Fin 3 → ℝ) +
+      Module.finrank ℝ quadrupole + Module.finrank ℝ octupole) =
+      2 * 4 ^ 2 :=
+  ⟨angSq_dipole a v, angSq_quadrupole hM v, angSq_octupole hc v,
+    shell_capacity_two_n_sq.2.2.2⟩
+
+example {a : Fin 3 → ℝ} (ha : dipoleValue a a ≠ 0) :=
+  seatPattern_dipole ha
+
+example {M} (hM : M ∈ quadrupole) (h0 : M ≠ 0) :=
+  seatPattern_quadrupole hM h0
+
+example {c} (hc : c ∈ octupole) (h0 : c ≠ 0) :=
+  seatPattern_octupole hc h0
+
+example {ℓ R S : ℝ} (hR : 0 < R) (hS : 0 < S)
+    (hx : ℓ / (2 * R) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (hy : ℓ / (2 * S) ∈ Set.Ioo (3 / 2 : ℝ) (8 / 5))
+    (h0 : squareBalance (ℓ / (2 * R)) = 0) :
+    (covalentAxial ℓ S (S / 2) < 0 ↔ R < S) ∧
+      (0 < covalentAxial ℓ S (S / 2) ↔ S < R) :=
+  square_diagonal_restores hR hS hx hy h0
+
+example :
+    (Real.pi / (2 * Real.sqrt 2)) * Real.cosh (Real.pi / 4) <
+      resonanceRoot1 * (2 * Real.cosh resonanceRoot1 * Real.sin resonanceRoot1) ∧
+    resonanceRoot1 * (2 * Real.cosh resonanceRoot1 * Real.sin resonanceRoot1) <
+      2 * Real.cosh 1 * Real.sin 1 :=
+  firstNode_eps_coeff_bounds
+
+example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
+    (hRwell : ℓ / (2 * R) ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
+  no_midplane_outer_equilibrium hℓ hR hρ hRwell hEwell
+
+example {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hγR : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγee : gammaSEqual (ℓ / (2 * (2 * ρ))) ≠ 0)
+    (hγep : gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) ≠ 0) :
+    covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0 ↔
+      gammaSEqual (ℓ / (2 * R)) * R ^ 3 =
+          gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 ∧
+        gammaSEqual (ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2))) *
+            (Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ^ 3 =
+          gammaSEqual (ℓ / (2 * (2 * ρ))) * (2 * ρ) ^ 3 :=
+  covalent_forces_iff_weights hR hρ hγR hγee hγep
+
+example {ℓ R ρ : ℝ} (hR : 0 < R) (hρ : 0 < ρ)
+    (hEp : ℓ / (2 * Real.sqrt ((R / 2) ^ 2 + ρ ^ 2)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (covalentAxial ℓ R ρ = 0 ∧ covalentRadial ℓ R ρ = 0) :=
+  no_midplane_ep_outer hR hρ hEp
+
+example {ℓ R : ℝ} (hR : 0 < R)
+    (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγs : gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) ≠ 0)
+    (hbal : squareBalance (ℓ / (2 * R)) = 0) :
+    |1 / (gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) * (R / Real.sqrt 2) ^ 2)| =
+      |1 / (gammaSEqual (ℓ / (2 * R)) * R ^ 2)| / Real.sqrt 2 :=
+  square_side_eq_diag_div_sqrtTwo hR hγ hγs hbal
+
+example {ℓ R : ℝ} (hR : 0 < R)
+    (hγ : gammaSEqual (ℓ / (2 * R)) ≠ 0)
+    (hγs : gammaSEqual (Real.sqrt 2 * (ℓ / (2 * R))) ≠ 0) :
+    ¬ (heliumAxial 2 ℓ R (R / 2) = 0 ∧ heliumRadial 2 ℓ R (R / 2) = 0) :=
+  helium_square_not_balance (by norm_num) (by norm_num) hR hγ hγs
+
+example {ℓ R ρ : ℝ} (hℓ : 0 < ℓ) (hR : 0 < R) (hρ : 0 < ρ)
+    (hRwell : ℓ / (2 * R) ∈ Set.Ioo (0 : ℝ) resonanceRoot1)
+    (hEwell : ℓ / (2 * (2 * ρ)) ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    ¬ (heliumAxial 2 ℓ R ρ = 0 ∧ heliumRadial 2 ℓ R ρ = 0) :=
+  helium_no_outer_equilibrium hℓ hR hρ hRwell hEwell
+
+example {k e γ r : ℝ} (hr : 0 < r) (hk : 0 < k) (he : e ≠ 0) (hγ : 0 < γ) :
+    0 < likePairEnergySlope k e γ (2 * r) *
+      deriv (deriv (pairSeparation r)) Real.pi :=
+  antipode_energy_curvature_pos hr hk he hγ
+
+example {Z : ℝ} {a b : Fin 3 → ℝ} (hZ : (1 / 4 : ℝ) ≤ Z)
+    (ha : outerSep (vnorm a)) (hb : outerSep (vnorm b))
+    (hd : outerSep (vnorm (vsub a b))) :
+    ¬ ((∀ i, twoForce Z a b i = 0) ∧ (∀ i, twoForce Z b a i = 0)) :=
+  two_electron_no_outer_balance hZ ha hb hd
+
+example {Z r R θ : ℝ}
+    (hθ : θ ∈ Set.Ioo 0 Real.pi) (hr : 0 < r) (hR : 0 < R) (hne : r ≠ R)
+    (hee : outerSep (2 * r * Real.sin (θ / 2)))
+    (hhh : outerSep (2 * R * Real.sin (θ / 2)))
+    (hc : gammaSEqual (pairPhase
+      (Real.sqrt (r ^ 2 + R ^ 2 - 2 * r * R * Real.cos θ))) ≠ 0) :
+    ¬ (waterBendElectron Z r R (θ / 2) = 0 ∧ waterBendProton Z r R (θ / 2) = 0) :=
+  water_no_outer_tangent hθ hr hR hne hee hhh hc
+
+example {Z r R a : ℝ}
+    (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * Real.sin a)) :
+    0 < waterBendElectron Z r R a :=
+  waterBendElectron_opening ha hr hrR hee
+
+example (r a q s : ℝ) :
+    waterExtraTangent r a q (vsmul s (waterU a)) = 0 :=
+  waterExtraTangent_same_ray r a q s
+
+example {r a μ : ℝ} (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hμ : 0 < μ)
+    (hsep : outerSep (vnorm (vsub (vsmul r (waterU a)) (bondAxis μ)))) :
+    0 < waterExtraTangent r a (-1) (bondAxis μ) :=
+  waterExtraTangent_bisector_pos ha hμ hsep
+
+example {Z r R lam : ℝ} (hr : outerSep r) (hR : outerSep R) (hlam : 0 < lam) :
+    waterBendElectron Z r R (Real.pi / 2) +
+      waterExtraTangent r (Real.pi / 2) (-1) (bondAxis (-lam)) < 0 :=
+  water_straight_far_neg hr hR hlam
+
+example {Z r R a : ℝ}
+    (ha : a ∈ Set.Ioo 0 (Real.pi / 2)) (hr : 0 < r) (hrR : r < R)
+    (hee : outerSep (2 * r * Real.sin a)) :
+    0 < waterBendElectron Z r R a +
+      waterTangentSum r a (fun _ : Fin 0 => (0 : ℝ)) (fun _ _ => (0 : ℝ)) := by
+  refine waterMolecule_opening ha hr hrR hee ?_
+  intro i
+  exact Fin.elim0 i
+
+example :
+    Real.pi / 2 < Real.arccos tetCos ∧
+      Real.arccos tetCos < Real.arccos triCos ∧
+      Real.arccos triCos < Real.pi :=
+  shared_angle_order
+
+example {Z r R : ℝ} {i : Fin 3}
+    (hr : outerSep r) (hR : r < R) (hgap : outerSep (R - r)) :
+    vdot (triPerp i) (electronForce Z i r R) = 0 ∧
+      vdot triZ (electronForce Z i r R) = 0 ∧
+      vdot (triPerp i) (protonForce Z i r R) = 0 ∧
+      vdot triZ (protonForce Z i r R) = 0 :=
+  tri_tangent_zero hr hR hgap
+
+example {Z r R s : ℝ} {i : Fin 3}
+    (hr : 0 < r) (hR : 0 < R) (hs : 0 ≤ s)
+    (hwell : outerSep s) (hsr : s ≤ r) (hrR : r < R) :
+    -r * (electronForce Z i r R 2 +
+        pairForce (-1) (-1) (vsmul r (triU i)) (triAxis s) 2) -
+      R * (protonForce Z i r R 2 +
+        pairForce 1 (-1) (vsmul R (triU i)) (triAxis s) 2) =
+      triBend r R s ∧ 0 < triBend r R s :=
+  ⟨triRay_bend_eq hr hR hs, triBend_pos hwell hsr hrR⟩
+
+example {Z r R : ℝ} (hZ : (1 / 4 : ℝ) ≤ Z) (hr : outerSep r) (hR : outerSep R)
+    (hrR : r < R) (hgap : gammaSEqual (pairPhase (R - r)) ≠ 0) :
+    waterStraightElectron Z r R + waterStraightProton Z r R < 0 :=
+  water_straight_sum_neg hZ hr hR hrR hgap
+
+example : Real.pi / 4 < resonanceRoot1 ∧ resonanceRoot1 < 1 :=
+  firstNode_window
+
+example : ∃! x : ℝ, x ∈ Set.Ioo (5 / 2) Real.pi ∧ forceCrit x = 0 :=
+  exists_unique_forceQuiet
+
+example {x : ℝ} (hx : x ∈ Set.Ioo (5 / 2) Real.pi) (h0 : forceCrit x = 0) :
+    -3 < pairAttraction x ∧ pairAttraction x < 0 ∧ pairAttraction Real.pi < -3 :=
+  ⟨(forceQuiet_magnitude hx h0).1, (forceQuiet_magnitude hx h0).2,
+    pairAttraction_pi_lt_neg_three⟩
+
+example : StrictMonoOn pairAttraction (Set.Ioo (0 : ℝ) resonanceRoot1) :=
+  pairAttraction_strictMono_outer
+
+example {N : ℕ} (hN : N ≠ 0) {x : ℝ}
+    (hx : x ∈ Set.Icc (Real.pi / 4) 1)
+    (hgap : Real.pi / (N : ℝ) ≤ |x - resonanceRoot1|) :
+    |pairAttraction x| < (N : ℝ) :=
+  pairAttraction_abs_lt_step hN hx hgap
+
+example {N : ℕ} (hN : 0 < N) (hfit : Real.pi / (N : ℝ) < resonanceRoot1 - Real.pi / 4) :
+    ∫ x in (0 : ℝ)..(resonanceRoot1 - Real.pi / (N : ℝ)), (1 / gammaSEqual x) ≤
+      (Real.pi / 4) * Real.sqrt 2 * Real.exp (Real.pi / 4) +
+        (1 / nodeSlopeLo) * Real.log ((N : ℝ) * (resonanceRoot1 - Real.pi / 4) / Real.pi) :=
+  outerWell_integral_oneStep hN hfit
+
+/-- Regression: the centripetal formula is not a radius law. -/
+example {k e m γs r : ℝ} (hk : 0 < k) (he : e ≠ 0) (hm : 0 < m)
+    (hγ : γs < 0) (hr : 0 < r) :
+    circularSpeedSq k e m γs r < 0 :=
+  circularSpeedSq_neg_of_repulsive hk he hm hγ hr
+
+example {x₂ : ℝ} (hx₂ : x₂ ∈ Set.Ioo (Real.pi + Real.pi / 4) (Real.pi + Real.pi / 2)) :
+    resonanceRoot1 / x₂ ≠ bohrShellRadius 2 / bohrShellRadius 1 :=
+  equalScale_ratio_ne_bohr hx₂
+
+example {ρ : ℝ → ℝ} {n k : ℕ} (hk : 0 < k) (hanti : StrictAntiOn ρ (Set.Ioi 0))
+    (hr : ρ (bohrShellRadius k) = 2 * branchNode n)
+    (hs : ρ (bohrShellRadius (k + 1)) = 2 * branchNode (n + 1)) : False :=
+  equalScale_successive_nodes_ne_bohr hk hanti hr hs
+
+example {ℓ Z x : ℝ} (hZ : Z ≠ 0) :
+    layerRadius (ℓ / Z) x = layerRadius ℓ x / Z :=
+  Z_contracts_layerRadius hZ
+
+
+/-! ## One Faraday six-space -/
+
+example (p : FaradayParams) :
+    faraday p = faradayUsual p + faradayDual p :=
+  faraday_eq_add p
+
+example (p : FaradayParams) :
+    Operations.dual (faraday p) = faraday (dualFaradayParams p) :=
+  dual_faraday p
+
+example (p : FaradayParams) :
+    J (toTorsion p) = (1 / 2) * (energySq p - magneticSq p) :=
+  J_faraday p
+
+example {E0 : ℝ} (hE : E0 ≠ 0) :
+    J (toTorsion (circularSnapshot 1 E0)) = 0 ∧
+      0 < mass (toTorsion (circularSnapshot 1 E0)) :=
+  ⟨(circularSnapshot_J (by norm_num : (1 : ℝ) ^ 2 = 1)),
+    circularSnapshot_mass_pos (by norm_num) hE⟩
+
+example (p : FaradayParams) :
+    J (toTorsion (dualFaradayParams p)) = -J (toTorsion p) ∧
+      J (toTorsion (timeReverseFaradayParams p)) = J (toTorsion p) :=
+  ⟨J_dualFaraday p, J_timeReverse p⟩
+
+example :
+    dualFaradayParams (pureE 1) ≠ swapFaradayParams (pureE 1) ∧
+      dualFaradayParams (pureE 1) ≠ timeReverseFaradayParams (pureE 1) ∧
+      swapFaradayParams (pureE 1) ≠ timeReverseFaradayParams (pureE 1) :=
+  ⟨dual_ne_swap_of_pureE, dual_ne_timeReverse_of_pureE, swap_ne_timeReverse_of_pureE⟩
+
+example (p : FaradayParams) :
+    Operations.dual (Operations.dual (faraday p)) = -faraday p :=
+  dual_dual_faraday p
+
+example :
+    sandwichIncrement (cyclic 0) (ι 0) = 0 ∧
+      paperWedgeIncrement (cyclic 0) (ι 0) ≠ 0 :=
+  paper_wedge_ne_lorentz_increment
+
+example :
+    sandwichIncrement (cyclic 0) (ι 2) = (2 : ℝ) • ι 3 ∧
+      paperWedgeIncrement (cyclic 0) (ι 2) = 0 :=
+  sandwich_moving_pureB_ne_wedge
+
+example : chiralityL * chiralityR = 0 :=
+  chiralityL_mul_chiralityR
+
+example : ¬ ∃ c : ℝ, Operations.dual chiralityGen = c • chiralityGen :=
+  dual_chiralityGen_not_real_span
+
+example :
+    Commute chiralityGen (cyclic 0) ∧
+      chiralityGen * hyperbolic 0 = -(hyperbolic 0 * chiralityGen) :=
+  ⟨commute_chiralityGen_cyclic0, chiralityGen_anticomm_hyperbolic0⟩
+
+example (p : FaradayParams) :
+    chiralSandwich (faradayCharged p) = 0 ∧
+      chiralSandwich (faraday p) = chiralityR * faradayCartan p :=
+  ⟨chiralSandwich_charged p, chiralSandwich_faraday p⟩
+
+example (p : FaradayParams) :
+    mixFaradayParams (Real.pi / 2) p = dualFaradayParams p :=
+  mixFaradayParams_pi_div_two p
+
+example {ω : ℝ} {p : FaradayParams} (h : faradayDot p = 0) :
+    J (toTorsion (mixFaradayParams ω p)) =
+      Real.cos (2 * ω) * J (toTorsion p) :=
+  J_mixFaraday_of_orthogonal h
+
+example (Ex Bx : ℝ) :
+    0 ≤ J (toTorsion (pureE Ex)) ∧ J (toTorsion (pureB Bx)) ≤ 0 :=
+  ⟨J_pureE_nonneg Ex, J_pureB_nonpos Bx⟩
+
+example {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (circularWave σ E0 ψ)) = 0 :=
+  circularWave_J hσ
+
+example (σ E0 ψ : ℝ) :
+    poyntingZ (circularWave σ E0 ψ) = σ * E0 ^ 2 :=
+  poyntingZ_circularWave σ E0 ψ
+
+example (σ E0 : ℝ) :
+    quadMean (fun ψ => (circularWave σ E0 ψ).E 0) = 0 :=
+  quadMean_circularWave_E σ E0 0
+
+example (p : FaradayParams) {σ E0 : ℝ} (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (toTorsion (p + circularWave σ E0 ψ))) =
+      J (toTorsion p) :=
+  quadMean_J_add_circularWave p hσ
+
+example (ω : ℝ) {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (mixFaradayParams ω (circularWave σ E0 ψ))) = 0 :=
+  J_mix_circularWave ω hσ
+
+example (p : FaradayParams) :
+    poyntingZ (timeReverseFaradayParams p) = -poyntingZ p ∧
+      poyntingZ (dualFaradayParams p) = poyntingZ p :=
+  ⟨poyntingZ_timeReverse p, poyntingZ_dual p⟩
+
+example (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (ι 0) = 0 :=
+  sandwichIncrement_rest_faradayDual p
+
+example (p : FaradayParams) :
+    cartanParams p + chargedParams p = p :=
+  cartanParams_add_chargedParams p
+
+example (p : FaradayParams) :
+    faraday (cartanParams p) = faradayCartan p :=
+  faraday_cartanParams p
+
+example (p : FaradayParams) :
+    chiralSandwich (faradayCharged p) = 0 ∧
+      chiralSandwichL (faradayCharged p) = 0 :=
+  ⟨chiralSandwich_charged p, chiralSandwichL_charged p⟩
+
+example {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    J (toTorsion (cartanParams (circularWave σ E0 ψ))) = 0 ∧
+      J (toTorsion (chargedParams (circularWave σ E0 ψ))) = 0 :=
+  ⟨circularWave_cartan_J hσ, circularWave_charged_J hσ⟩
+
+example (σ E0 ψ : ℝ) :
+    poyntingZ (cartanParams (circularWave σ E0 ψ)) +
+        poyntingZ (chargedParams (circularWave σ E0 ψ)) =
+      poyntingZ (circularWave σ E0 ψ) :=
+  poyntingZ_circularWave_cartan_add_charged σ E0 ψ
+
+example (σ E0 : ℝ) :
+    chiralSandwich (faraday (circularWave σ E0 0)) = 0 :=
+  chiralSandwich_circularWave_zero σ E0
+
+example (p : FaradayParams) (v : Fin 3 → ℝ) :
+    sandwichIncrement (faraday p) (minkowskiVec v) = lorentzKick p v :=
+  sandwichIncrement_faraday_minkowski p v
+
+example (p : FaradayParams) (v : Fin 3 → ℝ) :
+    sandwichForce p v = lorentzForce 1 (timeReverseFaradayParams p) v :=
+  sandwichForce_eq_lorentzForce_timeReverse p v
+
+example (p : FaradayParams) :
+    sandwichIncrement (faraday p) (ι 0) =
+      p.E 0 • ι 1 + p.E 1 • ι 2 + p.E 2 • ι 3 :=
+  sandwichIncrement_rest_faraday p
+
+example (σ E0 : ℝ) (a : Fin 3) :
+    quadMean (fun ψ =>
+      sandwichForce (circularWave σ E0 ψ) restVelocity a) = 0 :=
+  quadMean_sandwichForce_circularWave_rest σ E0 a
+
+example (σ E0 ψ vz : ℝ) :
+    sandwichForce (circularWave σ E0 ψ) (zVelocity vz) 2 = 0 :=
+  sandwichForce_circularWave_zVelocity_transverse σ E0 ψ vz
+
+
+/-! ## Scales that are inputs -/
+
+example (G M R r : ℝ) (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    s3CircularSpeedSq G M R r = (G * M / R) * rotationShape (r / R) :=
+  s3CircularSpeedSq_eq_shape G M R r hR hs
+
+example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) (Real.pi / 2)) :
+    f0 ≤ rotationShape x ∧ (rotationShape x = f0 ↔ x = plateauRoot) :=
+  rotationShape_min hx
+
+/-- Regression: \(1.35<f_0<1.41\). -/
+example : (135 / 100 : ℝ) < f0 ∧ f0 < (141 / 100 : ℝ) :=
+  f0_bounds
+
+example : plateauRoot < Real.pi / 2 ∧ Real.pi / 2 < (2 : ℝ) :=
+  attractive_patch_before_two
+
+example : StrictMonoOn enhancement (Set.Ioo (0 : ℝ) Real.pi) :=
+  strictMonoOn_enhancement
+
+example : enhancement (Real.pi / 2) = Real.pi ^ 2 / 4 :=
+  enhancement_pi_div_two
+
+example : (8 : ℝ) < milkyWayROverKpc ∧ milkyWayROverKpc < (9 : ℝ) :=
+  milkyWayROverKpc_bounds
+
+example : (9 : ℝ) < milkyWayPlateauOverKpc ∧ milkyWayPlateauOverKpc < (11 : ℝ) :=
+  milkyWayPlateauOverKpc_bounds
+
+example :
+    (12 : ℝ) < milkyWayReversalOverKpc ∧ milkyWayReversalOverKpc < (15 : ℝ) ∧
+      milkyWayPlateauOverKpc < milkyWayReversalOverKpc :=
+  ⟨milkyWayReversalOverKpc_bounds.1, milkyWayReversalOverKpc_bounds.2,
+    milkyWayPlateau_lt_reversal⟩
+
+example (G M R r : ℝ) (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    s3Accel G M R r * (4 * Real.pi * R ^ 2 * Real.sin (r / R) ^ 2) =
+      -4 * Real.pi * G * M :=
+  s3Accel_gauss G M R r hR hs
+
+example {G M R a0 : ℝ} (hR : R ≠ 0) (hscale : R ^ 2 = G * M / a0)
+    (ha0 : a0 ≠ 0) :
+    (vFlatSq G M R) ^ 2 = G * M * a0 * f0 ^ 2 :=
+  tullyFisher_of_scaling hR hscale ha0
+
+example {G M R r : ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    R ^ 2 * Real.sin (r / R) ^ 2 * deriv (cotPotential G M R) r = G * M :=
+  geodesicFlux_cotPotential hR hs
+
+example {G M R r : ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0) :
+    radialLaplace R (cotPotential G M R) r = 0 :=
+  radialLaplace_cotPotential hR hs
+
+example {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hr : r ∈ Set.Ioo (0 : ℝ) (Real.pi * R)) :
+    s3Accel G M R r < 0 :=
+  s3Accel_lt_zero_of_mem_Ioo hG hM hR hr
+
+example {G M R r : ℝ} (hG : 0 < G) (hM : 0 < M) (hR : 0 < R)
+    (hr : 0 < r) (hπ : r < Real.pi * R) :
+    cotPotential G M R r < 0 ↔ r < Real.pi * R / 2 :=
+  cotPotential_neg_iff_lt_equator hG hM hR hr hπ
+
+example :
+    Filter.Tendsto enhancement (nhdsWithin 0 (Set.Ioi 0)) (nhds 1) ∧
+      Filter.Tendsto compactJacobian (nhdsWithin 0 (Set.Ioi 0)) (nhds 1) :=
+  ⟨tendsto_enhancement_zero, tendsto_compactJacobian_zero⟩
+
+example {G M R r : ℝ} (hR : 0 < R) (hr : 0 < r) (hrR : r ≤ R) :
+    |cotPotential G M R r + G * M / r - G * M * r / (3 * R ^ 2)|
+      ≤ |G * M| * r ^ 3 / (6 * R ^ 4) :=
+  abs_cotPotential_newton hR hr hrR
+
+example {x : ℝ} (hx : x ∈ Set.Icc (1 : ℝ) (6 / 5)) :
+    rotationShape x < (11 / 10) * f0 :=
+  rotationShape_lt_eleven_tenths_f0 hx
+
+example {G R M0 r : ℝ} {M : ℝ → ℝ} (hR : R ≠ 0) (hs : Real.sin (r / R) ≠ 0)
+    (hM : M r = M0) :
+    enclosedCircularSpeedSq G R M r = s3CircularSpeedSq G M0 R r :=
+  enclosedCircularSpeedSq_const_eq_point hR hs hM
+
+example : Filter.Tendsto rotationShape (nhdsWithin Real.pi (Set.Iio Real.pi)) Filter.atTop :=
+  tendsto_rotationShape_pi
+
+example : (25 : ℝ) < Real.pi * milkyWayROverKpc ∧ Real.pi * milkyWayROverKpc < 29 :=
+  milkyWayAntipode_bounds
+
+example {x : ℝ} (hx : x ≠ 0) :
+    HasSum (fun n : ℤ => x ^ 2 / (x ^ 2 + ((n : ℝ) * Real.pi) ^ 2)) (dualEnhancement x) :=
+  hasSum_dualImage hx
+
+example {G M R r : ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
+    HasSum (fun n : ℤ => G * M / (r ^ 2 + ((n : ℝ) * Real.pi * R) ^ 2))
+      (dualAccel G M R r) :=
+  hasSum_dualAccel hr hR
+
+example {x : ℝ} (hx : 0 < x) :
+    1 < dualEnhancement x ∧ x < dualEnhancement x ∧ dualEnhancement x < 1 + x ∧
+      dualEnhancement x < 1 + x ^ 2 / 3 :=
+  ⟨one_lt_dualEnhancement hx, self_lt_dualEnhancement hx, dualEnhancement_lt_one_add hx,
+    dualEnhancement_lt_one_add_sq_div_three hx⟩
+
+example {G M R r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (hr : 0 < r) :
+    G * M / r ^ 2 < dualAccel G M R r ∧ G * M / (r * R) < dualAccel G M R r ∧
+      dualAccel G M R r < G * M / r ^ 2 + G * M / (r * R) ∧
+      dualAccel G M R r < G * M / r ^ 2 + G * M / (3 * R ^ 2) :=
+  dualAccel_bounds hGM hR hr
+
+example (χ ψ α : ℝ) (hs : Real.sin χ ≠ 0) :
+    SlerpTorque.pushedMoment χ ψ α = SlerpTorque.chordMoment χ ψ α :=
+  SlerpTorque.pushedMoment_eq χ ψ α hs
+
+example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
+    0 < SlerpTorque.chordMoment χ χ α :=
+  SlerpTorque.chordMoment_equal_pos hχ hχu hα hαu
+
+example {χ : ℝ} {n : SlerpTorque.V3} (hn : SlerpTorque.dot3 n n = 1)
+    (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    SlerpTorque.logChart (SlerpTorque.lift χ (ChartRotation.reflectZ n)) =
+      ChartRotation.reflectZ (SlerpTorque.logChart (SlerpTorque.lift χ n)) :=
+  ChartRotation.logChart_reflectZ hn hχ hχu
+
+example (t : ℝ) (a b : RelationalPosition.S3) :
+    RelationalPosition.relative (CliffordParallel.hopfI t * a)
+        (CliffordParallel.hopfI t * b) =
+      RelationalPosition.relative a b :=
+  ChartRotation.common_left_preserves_relative t a b
+
+example {χ : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) :
+    (fun i => χ * ChartRotation.axisJ i) ≠ ChartRotation.leftVelocity χ ∧
+      ChartRotation.leftVelocity χ ≠ ChartRotation.secondLogVelocity χ ∧
+      ChartRotation.secondLogVelocity (Real.pi / 2) 0 = -1 ∧
+      ChartRotation.leftVelocity (Real.pi / 2) 2 = Real.pi / 2 :=
+  ⟨ChartRotation.iterated_log_ne_leftVelocity hχ hχu,
+    ChartRotation.leftVelocity_ne_secondLog hχ hχu,
+    ChartRotation.secondLogVelocity_equator_value.1,
+    ChartRotation.leftVelocity_equator_value.2⟩
+
+example {a b c : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b < c) :
+    ChartRotation.axisPairTorque a b = 0 ∧
+      ChartRotation.secondZ a b c < ChartRotation.secondY a b c ∧
+      ChartRotation.secondY a b c < ChartRotation.secondX a b c :=
+  ⟨(ChartRotation.axisInterceptTorque_zero a b c).1,
+    (ChartRotation.principal_ordered ha hab hbc).1,
+    (ChartRotation.principal_ordered ha hab hbc).2⟩
+
+example {χ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi) (hα : 0 < α) (hαu : α < Real.pi) :
+    SlerpTorque.chordMoment χ χ 0 = 0 ∧ 0 < ChartRotation.defectTorque χ α :=
+  ChartRotation.displacement_seeds_torque hχ hχu hα hαu
+
+example {I1 I2 I3 B t : ℝ} (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3) (hB : 0 < B) :
+    RacketFlip.racketLsq I1 I2 I3 B t = 2 * RacketFlip.racketEnergy I1 I2 I3 B t * I2 ∧
+      (RacketFlip.omega2 I1 I2 I3 B t = 0 ↔ t = 0) :=
+  ⟨RacketFlip.racket_critical h1 h12 h23 hB t, RacketFlip.omega2_eq_zero_iff h1 h12 h23 hB t⟩
+
+example {I1 I2 I3 Ω : ℝ} (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3) (hΩ : Ω ≠ 0) :
+    0 < RacketFlip.rateMid I1 I2 I3 Ω ∧ RacketFlip.rateSmall I1 I2 I3 Ω < 0 ∧
+      RacketFlip.rateLarge I1 I2 I3 Ω < 0 :=
+  ⟨RacketFlip.rateMid_pos h1 h12 h23 hΩ, RacketFlip.rateSmall_neg h1 h12 h23 hΩ,
+    RacketFlip.rateLarge_neg h1 h12 h23 hΩ⟩
+
+example {k ε : ℝ} (hk : 0 < k) (hε : 0 < ε) (hεu : ε < 1 / 6) :
+    RacketFlip.crossingTime k < RacketFlip.waitingTime k ε :=
+  RacketFlip.waiting_gt_crossing hk hε hεu
+
+example (m : Fin 2 → ℝ) :
+    RacketThermal.mirrorAverage (fun σ => RacketThermal.mirrorTorque m σ) = 0 ∧
+      RacketThermal.mirrorAverage (fun σ => RacketThermal.mirrorTorque m σ ^ 2) =
+        ∑ i, m i ^ 2 :=
+  ⟨RacketThermal.mirrorAverage_zero m, RacketThermal.mirrorAverage_sq m⟩
+
+example {β I1 I2 I3 : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h2 : 0 < I2) (h3 : 0 < I3) :
+    ∫ p : ℝ × ℝ × ℝ, RacketThermal.separatrixGap I1 I2 I3 p.1 p.2.1 p.2.2
+        ∂RacketThermal.rotorMeasure β I1 I2 I3 =
+      (I1 + I3 - 2 * I2) / β :=
+  RacketThermal.meanGap hβ h1 h2 h3
+
+example {β I1 I2 I3 B : ℝ} (hβ : 0 < β) (h1 : 0 < I1) (h12 : I1 < I2) (h23 : I2 < I3)
+    (hB : 0 < B) :
+    0 < RacketThermal.rotorMeasure β I1 I2 I3 (RacketThermal.residualSet I1 I2 I3 B) :=
+  RacketThermal.residual_weight_pos hβ h1 h12 h23 hB
+
+example (n a b : RelationalPosition.S3) :
+    HeliumBody.ee (HeliumBody.toFrame n a b) = RelationalPosition.relative a b :=
+  HeliumBody.ee_toFrame n a b
+
+example (p : HeliumBody.Frame) :
+    HeliumBody.cosA (HeliumBody.exchange p) = HeliumBody.cosB p ∧
+      HeliumBody.cosEE (HeliumBody.exchange p) = HeliumBody.cosEE p :=
+  ⟨(HeliumBody.cos_exchange p).1, (HeliumBody.cos_exchange p).2.2⟩
+
+example (F : HeliumBody.Frame → ℂ) (hF : HeliumBody.Symmetric F) (c : ℂ) (p : HeliumBody.Frame) :
+    F (HeliumBody.exchange p) • DoubleSpacetime.Logic.pairSwap (c • DoubleSpacetime.Logic.singlet) =
+      -(F p • (c • DoubleSpacetime.Logic.singlet)) :=
+  HeliumBody.singlet_sector_exchange F hF c p
+
+example (a b : RelationalPosition.S3) :
+    RelationalPosition.relative a b = 1 ↔ a = b :=
+  RelationalPosition.relative_eq_one_iff a b
+
+example (g a b : RelationalPosition.S3) :
+    RelationalPosition.relative (g * a) (g * b) = RelationalPosition.relative a b :=
+  RelationalPosition.relative_left g a b
+
+example (a b h : RelationalPosition.S3) :
+    RelationalPosition.separation (a * h) (b * h) = RelationalPosition.separation a b :=
+  RelationalPosition.separation_right a b h
+
+example (g : RelationalPosition.S3) {χ ψ α : ℝ}
+    (hχ : 0 < χ) (hχu : χ < Real.pi) (hψ : 0 < ψ) (hψu : ψ < Real.pi) :
+    RelationalPosition.chartAt g (g * RelationalPosition.bodyElem χ) =
+        SlerpTorque.bodyPoint χ ∧
+      RelationalPosition.chartAt g (g * RelationalPosition.sourceElem ψ α) =
+        SlerpTorque.sourcePoint ψ α :=
+  RelationalPosition.charts_joint_left g hχ hχu hψ hψu
+
+example :
+    0 < SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
+        RelationalPosition.sampleχ ∧
+      RelationalPosition.chartAt
+          (RelationalPosition.sampleSource * RelationalPosition.axisTurn)
+          (RelationalPosition.sampleBody * RelationalPosition.axisTurn) =
+        SlerpTorque.bodyPoint (-RelationalPosition.sampleχ) ∧
+      SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 = 0 ∧
+      SlerpTorque.chordMoment RelationalPosition.sampleχ RelationalPosition.sampleχ
+          RelationalPosition.sampleχ ≠
+        SlerpTorque.pushedMoment (-RelationalPosition.sampleχ) 0 0 ∧
+      RelationalPosition.separation
+          (RelationalPosition.sampleSource * RelationalPosition.axisTurn)
+          (RelationalPosition.sampleBody * RelationalPosition.axisTurn) =
+        RelationalPosition.separation RelationalPosition.sampleSource
+          RelationalPosition.sampleBody := by
+  obtain ⟨_, _, _, hpos, hbody, _, hzero, hdiff, hsep⟩ :=
+    RelationalPosition.pole_shift_changes_moment
+  exact ⟨hpos, hbody, hzero, hdiff, hsep⟩
+
+example (q : RelationalPosition.S3) (t s : ℝ) :
+    (CliffordParallel.leftParallel q t)⁻¹ * CliffordParallel.leftParallel q (t + s) =
+      CliffordParallel.hopfI s :=
+  CliffordParallel.leftParallel_step q t s
+
+example (q : RelationalPosition.S3) (t : ℝ) :
+    (CliffordParallel.leftParallel q t)⁻¹ = CliffordParallel.rightParallel q⁻¹ (-t) :=
+  CliffordParallel.mirror_parallel q t
+
+example (a b q : RelationalPosition.S3) (t : ℝ) :
+    a * CliffordParallel.leftParallel q t * b =
+      (a * q * b) * (b⁻¹ * CliffordParallel.hopfI t * b) ∧
+      a * CliffordParallel.rightParallel q t * b =
+        (a * CliffordParallel.hopfI t * a⁻¹) * (a * q * b) :=
+  ⟨CliffordParallel.rotation_carries_left a b q t,
+    CliffordParallel.rotation_carries_right a b q t⟩
+
+example :
+    (CliffordParallel.leftParallel CliffordParallel.sJ (Real.pi / 2)).val =
+      -CliffordParallel.qK ∧
+      (CliffordParallel.rightParallel CliffordParallel.sJ (Real.pi / 2)).val =
+        CliffordParallel.qK ∧
+      CliffordParallel.leftParallel CliffordParallel.sJ (Real.pi / 2) ≠
+        CliffordParallel.rightParallel CliffordParallel.sJ (Real.pi / 2) :=
+  CliffordParallel.family_sense
+
+example {φ : ℝ} (h0 : 0 < φ) (hπ : φ < Real.pi / 2) :
+    (CliffordParallel.twistedJ φ).imK = -Real.sin (2 * φ) ∧
+      (CliffordParallel.twistedJ (-φ)).imK = Real.sin (2 * φ) ∧
+      (CliffordParallel.twistedJ φ).imK < 0 ∧
+      0 < (CliffordParallel.twistedJ (-φ)).imK :=
+  CliffordParallel.screw_sign h0 hπ
+
+example {χ ψ α : ℝ} (hχ : 0 < χ) (hχu : χ < Real.pi)
+    (hα : -Real.pi < α) (hα0 : α < 0) :
+    SlerpTorque.chordMoment χ ψ (-α) = -SlerpTorque.chordMoment χ ψ α ∧
+      SlerpTorque.chordMoment χ ψ α + SlerpTorque.chordMoment χ ψ (-α) = 0 ∧
+      SlerpTorque.chordMoment χ χ α < 0 :=
+  ⟨SlerpTorque.chordMoment_neg_angle χ ψ α, SlerpTorque.chordMoment_cancels χ ψ α,
+    SlerpTorque.chordMoment_equal_neg hχ hχu hα hα0⟩
+
+example {φ : ℝ} (h0 : 0 ≤ φ) (hπ : φ ≤ Real.pi / 2) :
+    Real.arccos ((star CliffordParallel.qJ * CliffordParallel.twistedJ φ).re) = 2 * φ :=
+  CliffordParallel.twist_angle h0 hπ
+
+example {R s Λ : ℝ} (hR : R ≠ 0) (hs : s ≠ 0) (hΛ : Λ ≠ 0) :
+    CliffordParallel.mirrorTwist R R = 2 ∧
+      CliffordParallel.mirrorTwist s R / CliffordParallel.mirrorTwist s Λ = Λ / R :=
+  ⟨CliffordParallel.mirrorTwist_edge hR, CliffordParallel.mirrorTwist_ratio hs hR hΛ⟩
+
+/-- Regression: \(H_0\) is an external input. -/
+example {R H : ℝ} (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
+    (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
+    (450138 : ℝ) < ((SI.speedOfLight : ℝ) / H) / R ∧
+      ((SI.speedOfLight : ℝ) / H) / R < 559315 ∧
+      (357 : ℝ) / 10 ^ 8 < 2 * R / ((SI.speedOfLight : ℝ) / H) ∧
+      2 * R / ((SI.speedOfLight : ℝ) / H) < (445 : ℝ) / 10 ^ 8 :=
+  CliffordParallel.hubble_frame_window hRlo hRhi hHlo hHhi
+
+example {r R H : ℝ} (hr : 0 < r) (hrR : r ≤ R)
+    (hRlo : (8 : ℝ) ≤ R) (hRhi : R ≤ 9)
+    (hHlo : (67 : ℝ) ≤ H) (hHhi : H ≤ 74) :
+    (1787 : ℝ) / 10 ^ 9 < R / ((SI.speedOfLight : ℝ) / H) ∧
+      R / ((SI.speedOfLight : ℝ) / H) < 2222 / 10 ^ 9 ∧
+      0 < 1 - compactJacobian (r / ((SI.speedOfLight : ℝ) / H)) ∧
+      1 - compactJacobian (r / ((SI.speedOfLight : ℝ) / H)) < 1646 / 10 ^ 15 ∧
+      dualEnhancement (r / ((SI.speedOfLight : ℝ) / H)) - 1 < 1646 / 10 ^ 15 ∧
+      (18836 : ℝ) * 10 ^ 7 <
+        (dualEnhancement 1 - 1) /
+          (dualEnhancement (R / ((SI.speedOfLight : ℝ) / H)) - 1) :=
+  hubble_patch_reading hr hrR hRlo hRhi hHlo hHhi
+
+example (a b : RelationalPosition.S3) (r : RelationalPosition.Rotation) :
+    RelationalPosition.chartAt a a = RelationalPosition.chartAt a (RelationalPosition.antipode a) ∧
+      (RelationalPosition.separation a b = Real.pi ↔ b = RelationalPosition.antipode a) ∧
+      RelationalPosition.relative (r.act a) (r.act (RelationalPosition.antipode a)) =
+        RelationalPosition.negOne ∧
+      RelationalPosition.elem Real.pi RelationalPosition.axis0 RelationalPosition.axis0_unit =
+        RelationalPosition.elem Real.pi (RelationalPosition.axisAngle (Real.pi / 2))
+          (RelationalPosition.axisAngle_unit (Real.pi / 2)) := by
+  obtain ⟨hchart, _, _, _, _, hfix⟩ := RelationalPosition.flattened_chart_loses_antipode a r
+  obtain ⟨h0, h1, _⟩ := RelationalPosition.boundary_one_element
+  exact ⟨hchart, RelationalPosition.separation_eq_pi_iff a b, hfix, h0.trans h1.symm⟩
+
+example {G R r : ℝ} {M : ℝ → ℝ} (hr : r ≠ 0) (hR : R ≠ 0) :
+    dualRotationSq R (fun s => G * M s / s) r = dualCircularSpeedSq G R M r :=
+  dualRotationSq_spherical hr hR
+
+example {R GM : ℝ} {vbarSq : ℝ → ℝ} (hR : 0 < R)
+    (h : Filter.Tendsto (fun r => r * vbarSq r) Filter.atTop (nhds GM)) :
+    Filter.Tendsto (dualRotationSq R vbarSq) Filter.atTop (nhds (GM / R)) :=
+  tendsto_dualRotationSq_atTop hR h
+
+example {G R M0 r : ℝ} {M : ℝ → ℝ} (hGM : 0 < G * M0) (hR : 0 < R) (hr : 3 * R ≤ r)
+    (hM : M r = M0) :
+    dualCircularSpeedSq G R M r < (1 + 1 / 200) * (G * M0 / R) :=
+  dualCircularSpeedSq_near_flat hGM hR hr hM
+
+example {G M R a0 : ℝ} (hR : 0 < R) (ha0 : 0 < a0) (hscale : R ^ 2 = G * M / a0) :
+    (G * M / R) ^ 2 = G * M * a0 :=
+  dual_tullyFisher hR ha0 hscale
+
+example : (131 / 100 : ℝ) < dualEnhancement 1 ∧ dualEnhancement 1 < 132 / 100 :=
+  dualEnhancement_one_bounds
+
+example {G M R a0 r : ℝ} (hGM : 0 < G * M) (hR : 0 < R) (ha0 : 0 < a0) (hr : 0 < r)
+    (hscale : R ^ 2 = G * M / a0) :
+    dualAccel G M R r = dualRAR a0 (G * M / r ^ 2) :=
+  dualAccel_eq_dualRAR hGM hR ha0 hr hscale
+
+example {a0 gN : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) :
+    gN < dualRAR a0 gN ∧ Real.sqrt (a0 * gN) < dualRAR a0 gN ∧
+      dualRAR a0 gN < gN + Real.sqrt (a0 * gN) ∧ dualRAR a0 gN < gN + a0 / 3 :=
+  dualRAR_bounds ha0 hgN
+
+example (G R r M₁ M₂ : ℝ) :
+    dualAccel G (M₁ + M₂) R r = dualAccel G M₁ R r + dualAccel G M₂ R r :=
+  dualAccel_add G R r M₁ M₂
+
+example {a0 gN k : ℝ} (ha0 : 0 < a0) (hgN : 0 < gN) (hk : 1 < k) :
+    dualRAR a0 (k * gN) < k * dualRAR a0 gN :=
+  dualRAR_strict_subhomogeneous ha0 hgN hk
+
+example {x : ℝ} (hx : 0 < x) (hxπ : x < Real.pi) :
+    1 + x ^ 2 / 3 < enhancement x :=
+  enhancement_gt_curvatureGerm hx hxπ
+
+example :
+    (7020 : ℝ) * astronomicalUnit < solarCompactR ∧
+      solarCompactR < (7040 : ℝ) * astronomicalUnit :=
+  solarCompactR_bounds
+
+example :
+    dualEnhancement ((astronomicalUnit : ℝ) / solarCompactR) - 1 < 1 / 10 ^ 8 :=
+  solar_dualExcess_at_au
+
+example :
+    schwarzschildRapidity milkyWayRs milkyWayCompactR /
+        (milkyWayRs / (2 * milkyWayCompactR)) - 1 < 1 / 10 ^ 6 :=
+  milkyWay_fractionalRapidity_at_compactification
+
+example {a0 : ℝ} (ha0 : 0 < a0) :
+    dualRAR a0 a0 = a0 * (Real.cosh 1 / Real.sinh 1) :=
+  dualRAR_self ha0
+
+example {a0 r : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hr : 0 < r) (hv : 0 < vbarSq r) :
+    dualLocalRotationSq a0 vbarSq r =
+      vbarSq r * dualEnhancement (Real.sqrt (a0 * r / vbarSq r)) :=
+  dualLocalRotationSq_eq ha0 hr hv
+
+example {a0 r : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hr : 0 < r) (hv : 0 < vbarSq r) :
+    vbarSq r < dualLocalRotationSq a0 vbarSq r ∧
+      Real.sqrt (a0 * (r * vbarSq r)) < dualLocalRotationSq a0 vbarSq r ∧
+      dualLocalRotationSq a0 vbarSq r < vbarSq r + Real.sqrt (a0 * (r * vbarSq r)) :=
+  dualLocalRotationSq_bounds ha0 hr hv
+
+example {a0 GM : ℝ} {vbarSq : ℝ → ℝ} (ha0 : 0 < a0) (hGM : 0 < GM)
+    (h : Filter.Tendsto (fun r => r * vbarSq r) Filter.atTop (nhds GM)) :
+    Filter.Tendsto (dualLocalRotationSq a0 vbarSq) Filter.atTop (nhds (Real.sqrt (a0 * GM))) :=
+  tendsto_dualLocalRotationSq_atTop ha0 hGM h
+
+example :
+    ((175 * 10 ^ 3 : ℚ)) ^ 4 < milkyWayFlatSpeedFourth ∧
+      milkyWayFlatSpeedFourth < ((176 * 10 ^ 3 : ℚ)) ^ 4 :=
+  milkyWayFlatSpeedFourth_bounds
+
+/-- Regression: dwarf \(50.2<v_\infty<50.3\,\mathrm{km/s}\). -/
+example :
+    ((502 * 10 ^ 2 : ℚ)) ^ 4 < dwarfFlatSpeedFourth ∧
+      dwarfFlatSpeedFourth < ((503 * 10 ^ 2 : ℚ)) ^ 4 :=
+  dwarfFlatSpeedFourth_bounds
+
+/-- Regression: low-surface-brightness \(83.1<v_\infty<83.2\,\mathrm{km/s}\). -/
+example :
+    ((831 * 10 ^ 2 : ℚ)) ^ 4 < lsbFlatSpeedFourth ∧
+      lsbFlatSpeedFourth < ((832 * 10 ^ 2 : ℚ)) ^ 4 :=
+  lsbFlatSpeedFourth_bounds
+
+/-- Regression: dwarf ball of radius \(0.8\,\mathrm{kpc}\), and the flat stretch past it. -/
+example :
+    ((552 * 10 ^ 2) ^ 4 : ℝ) < dwarfPointSpeedSq (4 / 5) ^ 2 ∧
+      dwarfPointSpeedSq (4 / 5) ^ 2 < ((553 * 10 ^ 2) ^ 4 : ℝ) ∧
+      ((50380 : ℕ) ^ 4 : ℝ) < dwarfPointSpeedSq 2 ^ 2 ∧
+      dwarfPointSpeedSq 2 ^ 2 < ((50390 : ℕ) ^ 4 : ℝ) ∧
+      ((502 * 10 ^ 2) ^ 4 : ℝ) < dwarfPointSpeedSq 4 ^ 2 ∧
+      dwarfPointSpeedSq 4 ^ 2 < ((503 * 10 ^ 2) ^ 4 : ℝ) :=
+  ⟨dwarfSurfaceSpeed_bounds.1, dwarfSurfaceSpeed_bounds.2,
+    dwarfTwoKpcSpeed_bounds.1, dwarfTwoKpcSpeed_bounds.2,
+    dwarfFourKpcSpeed_bounds.1, dwarfFourKpcSpeed_bounds.2⟩
+
+
+/-! ## Dual-only control of \(J,M\) -/
+
+example (α : ℝ) :
+    JAxis α (dualWall α) = (Real.pi / 2) * (α - Real.pi / 4) :=
+  JAxis_wall α
+
+example (p : Operations.TorsionParams) :
+    J (dualWallParams p) ≤ 0 ↔
+      ∑ a : Fin 3, p.alpha a ≤ 3 * Real.pi / 4 :=
+  J_dualWall_nonpos_iff p
+
+example : J (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) = 0 ∧
+    Admissible.IsAdmissibleContinuous
+      (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) ∧
+    0 < mass (equalScaleOf (uniformTorsion (Real.pi / 6) 0)) :=
+  ⟨uniform_pi_div_six_shields, uniform_pi_div_six_equalScale_admissible,
+    uniform_pi_div_six_massive⟩
+
+example (p : Operations.TorsionParams) :
+    equalScaleOf p = equalScaleParams p.alpha :=
+  rfl
+
+example {q : Operations.TorsionParams}
+    (hα : ∀ a, q.alpha a = Real.pi / 3)
+    (hq : Admissible.IsAdmissibleContinuous q) :
+    0 < J q :=
+  uniform_pi_div_three_no_dual_shield hα hq
+
+example {p q : Operations.TorsionParams} (hα : q.alpha = p.alpha) :
+    J q + mass q = J p + mass p :=
+  dual_only_conserves_J_add_mass hα
+
+example {p q : Operations.TorsionParams}
+    (hα : q.alpha = p.alpha) (hJ : J q = 0) :
+    mass q = 2 * mass (zeroDual p) :=
+  mass_eq_two_zeroDual_of_dual_only_J_eq_zero hα hJ
+
+example :
+    J (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) = 0 ∧
+      Admissible.IsAdmissibleContinuous
+        (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) ∧
+      0 < mass (equalScaleUnwind (uniformTorsion (Real.pi / 3) 0)) :=
+  uniform_pi_div_three_mixed_shield
+
+example :
+    ∃ p : Operations.TorsionParams,
+      Admissible.IsAdmissibleContinuous p ∧
+        (∃ q : Operations.TorsionParams,
+          q.alpha = p.alpha ∧ Admissible.IsAdmissibleContinuous q ∧
+            J q = 0) ∧
+          ¬ Admissible.IsAdmissibleContinuous (equalScaleOf p) :=
+  equalScale_strictly_stronger_than_dual_only_shield
+
+example :
+    ∃ q₁ q₂ : Operations.TorsionParams,
+      q₁.alpha = (axisUsual (Real.pi / 3)).alpha ∧
+        q₂.alpha = (axisUsual (Real.pi / 3)).alpha ∧
+          Admissible.IsAdmissibleContinuous q₁ ∧
+            Admissible.IsAdmissibleContinuous q₂ ∧
+              J q₁ = 0 ∧ J q₂ = 0 ∧ q₁ ≠ q₂ :=
+  exists_two_dual_only_shields_axisUsual (by positivity)
+    pi_div_three_le_pi_div_two
+
+example {p : Operations.TorsionParams} (hp : Admissible.IsAdmissibleContinuous p) :
+    (∀ q : Operations.TorsionParams,
+        Admissible.IsAdmissibleContinuous q → q.alpha = p.alpha → q = p) ↔
+      Logic.ofParams p hp = .F :=
+  dualOnly_rigid_iff_F hp
+
+example {p : Operations.TorsionParams} (hp : Admissible.IsAdmissibleContinuous p)
+    (hF : Logic.ofParams p hp = .F) :
+    ¬ ∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+      q.alpha = p.alpha ∧ Logic.ofParams q hq = .B :=
+  no_dualOnly_repulsion_of_F hp hF
+
+example :
+    (∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+        q.alpha = (uniformTorsion (Real.pi / 6) 0).alpha ∧ Logic.ofParams q hq = .B) ∧
+      (∃ q : Operations.TorsionParams, ∃ hq : Admissible.IsAdmissibleContinuous q,
+        q.alpha = (uniformTorsion (Real.pi / 6) 0).alpha ∧ Logic.ofParams q hq = .T) ∧
+      Logic.ofParams (uniformTorsion (Real.pi / 6) 0) uniform_pi_div_six_admissible = .U :=
+  ⟨uniform_pi_div_six_three_labels.1, uniform_pi_div_six_three_labels.2.1,
+    uniform_pi_div_six_three_labels.2.2.1⟩
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    JNormalized p = 1 ∨ JNormalized p = 1 / 3 ∨
+      JNormalized p = -(1 / 3) ∨ JNormalized p = -1 :=
+  JNormalized_mass_ceiling_four h hM
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hF : Logic.ofParams p h = .F) :
+    mass p = 3 * Real.pi ^ 2 / 8 ∧ massNormalized p = 1 ∧ JNormalized p = 1 :=
+  saturated_attraction_has_mass_ceiling h hF
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hT : Logic.ofParams p h = .T) :
+    massNormalized p ≤ 5 / 6 :=
+  massNormalized_le_five_sixths_of_balance h hT
+
+example :
+    massNormalized maximalShield = 5 / 6 ∧
+      Logic.ofParams maximalShield isAdmissibleContinuous_maximalShield = .T :=
+  ⟨massNormalized_maximalShield, ofParams_maximalShield⟩
+
+example {q : Operations.TorsionParams}
+    (hα : ∀ a, q.alpha a = Real.pi / 3)
+    (hq : Admissible.IsAdmissibleContinuous q) :
+    Logic.ofParams q hq = .U :=
+  uniform_pi_div_three_dualOnly_U hα hq
+
+example {p q : Operations.TorsionParams}
+    (hα : q.alpha = p.alpha)
+    (hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0)
+    (hM : mass q = 0) : False :=
+  dual_only_not_vacuum_of_usual_pos hα hU hM
+
+
+/-! ## Scales that are inputs -/
+
+example {p q : Operations.TorsionParams}
+    (hJ : J p = 0) (hM : 0 < mass p) (hq : mass q = 0) :
+    q.alpha ≠ p.alpha ∧ q.beta ≠ p.beta :=
+  vacuum_moves_both_budgets hJ hM hq
+
+example (p : Operations.TorsionParams) :
+    (IsGravNeutral p ↔
+      ∑ a : Fin 3, p.alpha a ^ 2 = ∑ a : Fin 3, p.beta a ^ 2) ∧
+    (∃ q : Operations.TorsionParams, IsGravNeutral q ∧ 0 < mass q ∧
+      RelativeRotor.relativeRotor q ≠ 1) :=
+  ⟨isGravNeutral_iff_budgets_agree p, exists_isGravNeutral_massive_torsioned⟩
+
+
+/-! ## Dual-only control of \(J,M\) -/
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    ¬ IsGravNeutral p :=
+  not_isGravNeutral_of_mass_eq_max h hM
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤ 5 * Real.pi ^ 4 / 16 + 4 * J p ^ 2 :=
+  pi_sq_mass_le_shield_ceiling_add_J_sq p h
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    massNormalized p ≤ 5 / 6 + (3 / 2) * JNormalized p ^ 2 :=
+  massNormalized_le_shield_curve p h
+
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧ J p = 0 ∧
+      mass p = 5 * Real.pi ^ 2 / 16 :=
+  exists_admissible_shield_of_mass_eq_ceiling
+
+example (γ : ℝ) :
+    Real.pi ^ 2 * mass (ceilingWitness γ)
+      = 5 * Real.pi ^ 4 / 16 + 4 * J (ceilingWitness γ) ^ 2 :=
+  ceilingWitness_attains γ
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p) (heq : p.beta = p.alpha) :
+    mass p ≤ 3 * Real.pi ^ 2 / 16 :=
+  mass_le_equalScale_ceiling h heq
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hM : mass p = 3 * Real.pi ^ 2 / 8) :
+    (∀ a : Fin 3, (p.alpha a = Real.pi / 2 ∧ p.beta a = 0) ∨
+        (p.alpha a = 0 ∧ p.beta a = Real.pi / 2)) ∧
+      Real.pi ^ 2 / 8 ≤ |J p| :=
+  ⟨fun a => axis_rigidity_of_mass_eq_max h hM a,
+    pi_sq_div_eight_le_abs_J_of_mass_eq_max h hM⟩
+
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧
+      mass p = 3 * Real.pi ^ 2 / 8 ∧ J p = -(3 * Real.pi ^ 2 / 8) :=
+  exists_admissible_max_mass_full_repulsion
+
+example {p q : Operations.TorsionParams} (hα : q.alpha = p.alpha)
+    (hq : Admissible.IsAdmissibleContinuous q) (hJ : J q = 0) :
+    ∑ a : Fin 3, p.alpha a ^ 2 ≤ 5 * Real.pi ^ 2 / 16 :=
+  sum_alpha_sq_le_shield_ceiling_of_dual_only_shield hα hq hJ
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 / 16 + (2 * J p - Real.pi ^ 2 / 2) ^ 2 :=
+  pi_sq_mass_le_attractive_lobe p h
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    Real.pi ^ 2 * mass p ≤
+      5 * Real.pi ^ 4 / 16 + (2 * J p + Real.pi ^ 2 / 2) ^ 2 :=
+  pi_sq_mass_le_repulsive_lobe p h
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p ≤ controlCeiling (J p) :=
+  mass_le_control_ceiling p h
+
+example : ∃ p : Operations.TorsionParams,
+    Admissible.IsAdmissibleContinuous p ∧
+      J p = Real.pi ^ 2 / 4 ∧ mass p = 5 * Real.pi ^ 2 / 16 :=
+  exists_admissible_J_quarter_mass_eq_shield
+
+example {Jval Mval : ℝ}
+    (hJmax : |Jval| ≤ 3 * Real.pi ^ 2 / 8)
+    (hMlo : |Jval| ≤ Mval) (hMhi : Mval ≤ controlCeiling Jval) :
+    ∃ p : Operations.TorsionParams, Admissible.IsAdmissibleContinuous p ∧
+      J p = Jval ∧ mass p = Mval :=
+  exists_admissible_of_JM hJmax hMlo hMhi
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p = controlCeiling (J p) ↔ OnWall p ∧ TwoCorners p :=
+  onEnvelope_iff h
+
+example {p q : Operations.TorsionParams}
+    (hp : Admissible.IsAdmissibleContinuous p)
+    (hq : Admissible.IsAdmissibleContinuous q)
+    (hα : q.alpha = p.alpha)
+    (hpE : mass p = controlCeiling (J p))
+    (hqE : mass q = controlCeiling (J q)) : p = q :=
+  eq_of_onEnvelope_of_alpha_eq hp hq hα hpE hqE
+
+example {p : Operations.TorsionParams}
+    (h : Admissible.IsAdmissibleContinuous p)
+    (hJ : J p = 0) (hM : mass p = 5 * Real.pi ^ 2 / 16) :
+    ∃ a b c : Fin 3, a ≠ b ∧ a ≠ c ∧ b ≠ c ∧
+      IsPureUsual p a ∧ IsPureDual p b ∧
+      p.alpha c = Real.pi / 4 ∧ p.beta c = Real.pi / 4 :=
+  exists_heaviest_shield_roles h hJ hM
+
+example {m φ θ φdot θdot φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) :
+    paperEnergyDot m φ θ φdot θdot φddot θddot = v * φdot - u * θdot :=
+  paperEnergyDot_both_sourced h
+
+example {m φ θ φddot θddot v u : ℝ}
+    (h : PaperBothSourcedEL m φ θ φddot θddot v u) (hφ : φddot = 0) :
+    v = m * (φ - θ) :=
+  paperBothSourcedEL_constraint_force h hφ
+
+example (m φ θ φddot θddot : ℝ) :
+    PaperSourcedEL m φ θ φddot θddot 0 ↔ PaperActualEL m φ θ φddot θddot :=
+  paperSourcedEL_zero_iff m φ θ φddot θddot
+
+example (m φ θ φddot θddot u : ℝ) (h : PaperSourcedEL m φ θ φddot θddot u) :
+    φddot - θddot = -u :=
+  paperSourcedEL_mismatch h
+
+example {m φ θ u : ℝ} (hm : m ≠ 0)
+    (h : OscillatorSourcedEL m φ θ 0 0 u) :
+    φ - θ = -u / (2 * m) :=
+  oscillatorSourcedEL_eq_mismatch hm h
+
+example {m φ θ φddot θddot u : ℝ} (hm : m ≠ 0) (hδ : φ ≠ θ) :
+    ¬ (PaperSourcedEL m φ θ φddot θddot u ∧ φddot = 0) :=
+  paperSourcedEL_not_dual_only_of_mismatch hm hδ
+
+
+/-! ## One Faraday six-space -/
+
+example {cE2 cB2 cEB cPx cPy cPz : ℝ}
+    (h : ∀ σ E0 ψ : ℝ, σ ^ 2 = 1 →
+      classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave (-σ) E0 ψ) =
+        -classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ))
+    {σ E0 ψ : ℝ} (hσ : σ ^ 2 = 1) :
+    classicalQuadratic cE2 cB2 cEB cPx cPy cPz (circularWave σ E0 ψ) =
+      cPz * poyntingZ (circularWave σ E0 ψ) :=
+  classicalQuadratic_eq_smul_poyntingZ_of_helicity_odd h hσ
+
+example :
+    ((1 : PGA) + PGA.ι 0) * half * (((1 : PGA) + PGA.ι 0) * half) ≠
+      ((1 : PGA) + PGA.ι 0) * half :=
+  timeAxis_not_chirality_projector
+
+example : chiralityRAxis 0 + chiralityRAxis 1 + chiralityRAxis 2 ≠ 1 :=
+  chiralityRAxis_sum_ne_one
+
+example : chiralityRAxis 0 * chiralityRAxis 1 ≠
+    chiralityRAxis 1 * chiralityRAxis 0 :=
+  chiralityRAxis_not_commute (by decide : (0 : Fin 3) ≠ 1)
+
+example :
+    commutator (cartanGen 0 0) (cartanGen 0 1) = (2 : ℝ) • cartanGen 0 2 ∧
+      commutator (cartanGen 0 0) (cartanGen 0 2) = -((2 : ℝ) • cartanGen 0 1) ∧
+        commutator (cartanGen 0 1) (cartanGen 0 2) = -((2 : ℝ) • cartanGen 0 0) :=
+  ⟨commutator_cartan_K_P1 0, commutator_cartan_K_P2 0, commutator_cartan_P1_P2 0⟩
+
+example (a : Fin 3) :
+    ¬ (spatialGen a * commutator (chargedGen a 0) (chargedGen a 1) =
+        -(commutator (chargedGen a 0) (chargedGen a 1) * spatialGen a)) :=
+  charged_triple_not_lie_closed a
+
+example (a : Fin 3) :
+    dual (cartanGen a 0) = chargedGen a 0 ∧
+      dual (cartanGen a 1) = -chargedGen a 1 :=
+  ⟨(dual_cartanGen a).1, (dual_cartanGen a).2.1⟩
+
+example (a : Fin 3) :
+    NormedSpace.exp ((Real.pi / 2) • cyclic (a + 1)) * chiralityRAxis a *
+        CliffordAlgebra.reverse
+          (NormedSpace.exp ((Real.pi / 2) • cyclic (a + 1))) =
+      chiralityLAxis a :=
+  dualRotation_exchanges_projectors a
+
+example (a i : Fin 3) :
+    chargedGen a i * chiralityRAxis a = chiralityLAxis a * chargedGen a i ∧
+      chiralityLAxis a * chargedGen a i * chiralityRAxis a ≠ 0 :=
+  ⟨chargedGen_mul_chiralityRAxis a i, crossSandwich_charged_ne_zero a i⟩
+
+example (a i : Fin 3) :
+    cartanGen a i * chiralityRAxis a = chiralityRAxis a * cartanGen a i ∧
+      chiralityLAxis a * cartanGen a i * chiralityRAxis a = 0 :=
+  ⟨cartanGen_mul_chiralityRAxis a i, crossSandwich_cartan a i⟩
+
+example (a : Fin 3) (p : FaradayParams) :
+    J (toTorsion p) =
+      J (toTorsion (evenParams a p)) + J (toTorsion (oddParams a p)) :=
+  J_even_add_odd a p
+
+
+/-! ## Scales that are inputs -/
+
+example {ℓ₁ ℓ₂ x : ℝ} (hℓ : ℓ₂ ≠ 0) (hx : x ≠ 0) :
+    layerRadius ℓ₁ x / layerRadius ℓ₂ x = ℓ₁ / ℓ₂ :=
+  layerRadius_ratio hℓ hx
+
+example {r₁ : ℝ} (hr0 : 1 / 2 < r₁) (hr1 : r₁ < 1) :
+    (203 : ℝ) < layerRadius ((ellRepFm : ℚ) : ℝ) resonanceRoot1 / r₁ ∧
+      layerRadius ((ellRepFm : ℚ) : ℝ) resonanceRoot1 / r₁ < 414 :=
+  first_node_ratio hr0 hr1
+
+
+/-! ## One Faraday six-space -/
+
+example (a : Fin 3) (cB cE : ℝ) :
+    Commute (spatialGen a) (cB • cyclic a + cE • hyperbolic a) ↔ cE = 0 :=
+  commute_neutral_axis_iff a cB cE
+
+example {p : FaradayParams} (hJ : J (toTorsion p) = 0) :
+    mass (toTorsion p) = magneticSq p ∧
+      (1 / 2) * magneticSq p = mass (toTorsion p) / 2 :=
+  ⟨mass_eq_magneticSq_of_balanced hJ, (balanced_shares hJ).1⟩
+
+example (p : Operations.TorsionParams) (A : Fin 3 → ℝ) :
+    coupleA p 0 A = p :=
+  coupleA_zero_label p A
+
+example (p : Operations.TorsionParams) (A : ℝ → Fin 3 → ℝ) :
+    quadMean (fun ψ => J (coupleA p 0 (A ψ))) = J p :=
+  quadMean_J_coupleA_zero_label p A
+
+example {B : Fin 3 → ℝ} (hB : ∀ a, 0 ≤ B a) (hne : ∑ a : Fin 3, B a ^ 2 ≠ 0) :
+    ¬ Admissible.IsAdmissibleContinuous (superpose maximalShield (magneticFaraday B)) :=
+  maximalShield_magnetic_rigid hB hne
+
+example (a : Fin 3) (p : Operations.TorsionParams)
+    (h : ∀ b, p.beta b = if b = a then 2 * Real.pi else 0) :
+    RelativeRotor.rotorDual p = -1 :=
+  rotorDual_single_axis_two_pi a p h
+
+example (p : FaradayParams) :
+    sandwichIncrement (faradayDual p) (ι 0) = 0 :=
+  magnet_rest_kick p
+
+example (u d : ℚ) (hp : 2 * u + d = 1) (hn : u + 2 * d = 0) :
+    u = 2 / 3 ∧ d = -1 / 3 :=
+  quarkChart_unique hp hn
+
+example {μu μd : ℚ} (h : μu = -2 * μd) (hd : μd ≠ 0) :
+    chartMuN μu μd / chartMuP μu μd = -2 / 3 :=
+  (chart_moment_ratios h hd).1
+
+example (xs : List NucleonClass) (i : ℕ) :
+    (replaceAt xs i NucleonClass.proton).length = xs.length ∧
+      totalWinding (replaceAt xs i NucleonClass.proton) = totalWinding xs :=
+  ⟨replaceAt_length xs i NucleonClass.proton, replaceAt_winding xs i NucleonClass.proton⟩
+
+example {r₁ gap : ℝ} (hr0 : 0 < r₁) (hr1 : r₁ < 1)
+    (hgap : gap ≤ ((12934 : ℝ) / 10000)) :
+    gap < (SI.coulombMeVFm : ℝ) / r₁ :=
+  freeGap_lt_coulomb_at_reversal hr0 hr1 hgap
+
+example (p : Operations.TorsionParams) (e : ℝ) (A : Fin 3 → ℝ) :
+    coupleA p e A = superpose p (magneticFaraday (fun a => e * A a)) :=
+  coupleA_eq_superpose_magnetic p e A
+
+example {p : Operations.TorsionParams} {B : Fin 3 → ℝ}
+    (hβ : ∀ a, 0 ≤ p.beta a) (hB : ∀ a, 0 ≤ B a) :
+    J (superpose p (magneticFaraday B)) ≤ J p :=
+  J_superpose_magnetic_le hβ hB
+
+example (p : Operations.TorsionParams) {σ E0 : ℝ} (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (superpose p (circularWave σ E0 ψ))) = J p :=
+  quadMean_J_superpose_circular p hσ
+
+example (p : Operations.TorsionParams) (e E0 ω σ : ℝ) (hσ : σ ^ 2 = 1) :
+    quadMean (fun ψ => J (coupleA p e (circularPotential σ E0 ω ψ))) =
+      J p - (e ^ 2 / 2) * (E0 / ω) ^ 2 ∧
+    quadMean (fun ψ => J (coupleA p e (circularPotential σ E0 ω ψ))) =
+      quadMean (fun ψ =>
+        J (coupleA p e (circularPotential (-σ) E0 ω ψ))) :=
+  ⟨quadMean_J_coupleA_circular p e E0 ω hσ,
+    quadMean_J_coupleA_circular_helicity_even p e E0 ω σ hσ⟩
+
+example {σ : ℝ} (hσ : σ ^ 2 = 1) :
+    ((1 : ℝ) ^ 2 / 2) * ((Real.pi / 4) / 1) ^ 2 = Real.pi ^ 2 / 32 ∧
+      (∀ ψ : ℝ, Admissible.IsAdmissibleContinuous
+        (coupleA transversePureDual 1 (circularPotential σ (Real.pi / 4) 1 ψ))) :=
+  ⟨ponderomotive_transverse_extremal, cycle_admissible_transverse_extremal hσ⟩
+
+example {m ψ σ : ℝ} (hσ : σ ^ 2 = 1) :
+    stiffnessPotential m
+        (coupleA (isotropicSeed (Real.pi / 6)) 1
+          (circularPotential σ (Real.pi / 6) 1 ψ)) =
+      m * (Real.pi ^ 2 / 72) :=
+  stiffness_isotropic_sixth hσ
+
+example :
+    ∃ p : Operations.TorsionParams, ∃ e : ℝ, ∃ A c : Fin 3 → ℝ,
+      J (coupleA p e A) ≠ J (coupleA p e (fun a => A a + c a)) :=
+  exists_constant_potential_changes_J
+
+example {p : Operations.TorsionParams} {e E0 ω : ℝ} (hβ : p.beta 0 = 0)
+    (he : 0 < e) (hE : 0 < E0) (hω : 0 < ω) :
+    ¬ Admissible.IsAdmissibleContinuous
+        (coupleA p e (circularPotential 1 E0 ω (3 * Real.pi / 2))) :=
+  not_admissible_coupleA_circular_from_zeroDual hβ he hE hω
+
+example (m φ θ0 e A Addot : ℝ) :
+    PaperBothSourcedEL m φ (θ0 + e * A) 0 (e * Addot)
+      (m * (φ - (θ0 + e * A)))
+      (e * Addot + m * (φ - (θ0 + e * A))) :=
+  paperBothSourcedEL_coupleA_jet m φ θ0 e A Addot
+
+example : cyclic 0 * cyclic 1 = cyclic 2 :=
+  dual_rotor_quaternion.1
+
+example (a : Fin 3) :
+    cartanGen a 0 * cartanGen a 0 = -1 ∧ hyperbolic a * hyperbolic a ≠ -1 :=
+  ⟨(cartan_mixed_signature a).1, hyperbolic_noncompact a⟩
+
+
+/-! ## Dual-only control of \(J,M\) -/
+
+example {α β₁ β₂ : ℝ} (hα : 0 < α) (hlo : 0 ≤ β₁) (hlt : β₁ < β₂)
+    (hhi : β₂ ≤ Real.pi / 2) :
+    gammaEff α β₂ < gammaEff α β₁ :=
+  gammaEff_lt_gammaEff_of_lt_beta hα hlo hlt hhi
+
+example {α β : ℝ} (hα : 0 < α) (hβ0 : 0 ≤ β) (hβ : β ≤ Real.pi / 2) :
+    gammaEff α β = 1 ↔ β = clockAngle α :=
+  gammaEff_eq_one_iff_clockAngle hα hβ0 hβ
+
+example {α : ℝ} (hα0 : 0 < α) (hα : α ≤ Real.pi / 4) :
+    gammaEff α α < 1 :=
+  gammaEff_coaxial_lt_one hα0 hα
+
+example :
+    wallClockRoot ∈ Set.Ioo (Real.pi / 3) (Real.pi / 2) ∧
+      ∀ α, α ∈ Set.Ioo (Real.pi / 3) (Real.pi / 2) →
+        wallClockProbe α = 0 → α = wallClockRoot :=
+  ⟨wallClockRoot_mem, fun _ h hz => eq_wallClockRoot h hz⟩
+
+example (α : ℝ) :
+    J (crossAxisDual α) = 0 ∧
+      J (equalScaleOf (axisUsual α)) = 0 ∧
+        mass (crossAxisDual α) = mass (equalScaleOf (axisUsual α)) ∧
+          gammaEff ((crossAxisDual α).alpha 0) ((crossAxisDual α).beta 0) =
+            Real.cosh α ∧
+            gammaEff ((crossAxisDual α).alpha 1) ((crossAxisDual α).beta 1) =
+              1 :=
+  ⟨J_crossAxisDual α, J_equalScaleOf (axisUsual α),
+    mass_crossAxisDual_eq_equalScale α, gammaEff_crossAxisDual_boost α,
+    gammaEff_crossAxisDual_comp α⟩
+
+example (α : ℝ) (hα : α ≠ 0) :
+    lagSq maximalShield = Real.pi ^ 2 / 2 ∧
+      lagSq (equalScaleOf (axisUsual α)) = 0 ∧
+        lagSq (crossAxisDual α) = 2 * lagSq (axisUsual α) ∧
+          lagSq (axisUsual α) < lagSq (crossAxisDual α) :=
+  ⟨lagSq_maximalShield, lagSq_equalScale_axisUsual α, lagSq_cross_eq_two_axisUsual α,
+    lagSq_cross_gt_axisUsual hα⟩
+
+example {M : ℝ} (hlo : 3 * Real.pi ^ 2 / 16 ≤ M) (hhi : M ≤ 5 * Real.pi ^ 2 / 16) :=
+  balancedWallOfMass_spec hlo hhi
+
+example {m c : ℝ} {φ θ : Fin 3 → ℝ} :
+    holdPower (fun a => m * (φ a - θ a)) (fun a => m * (φ a - θ a))
+      (fun _ => c) (fun _ => c) = 0 :=
+  holdPower_matched_of_equal_velocity (fun _ => rfl)
+
+example (p : Operations.TorsionParams)
+    (h : Admissible.IsAdmissibleContinuous p) :
+    mass p / coneScale ≤ 5 / 4 + lobeExcess (J p / coneScale) ∧
+      (mass p = controlCeiling (J p) →
+        lagSq p / coneScale = 2 + 4 * lobeExcess (J p / coneScale)) :=
+  ⟨scaledMass_le_lobe h, fun hE => lagSq_div_coneScale_of_onEnvelope h hE⟩
+
+example :
+    J maximalShield / coneScale = 0 ∧
+      J (twoUsualWitness (Real.pi / 4)) / coneScale = 1 ∧
+        J (twoDualWitness (Real.pi / 4)) / coneScale = -1 ∧
+          mass maximalShield = 5 * coneScale / 4 ∧
+            lagSq maximalShield = 2 * coneScale ∧
+              stiffnessPotential 1 maximalShield = coneScale ∧
+                stiffnessPotential 1 (twoUsualWitness (Real.pi / 4)) = coneScale := by
+  have hs := center_shield_mass_lag
+  have hu := center_usual_mass_lag
+  have hd := center_dual_mass_lag
+  refine ⟨hs.1, hu.1, hd.1, ?_, ?_, hs.2.2.2, hu.2.2.2⟩
+  · rw [mass_maximalShield, shield_mass_eq_scaled]
+  · rw [lagSq_maximalShield, neutral_lag_cap_eq_scaled]
+
+
+/-! ## Scales that are inputs -/
+
+example {δ : ℝ} {p : Fin 3 → ℝ} (hδ : δ ≠ 0) (hp : ∑ a : Fin 3, p a ^ 2 = 1) :
+    J (boostAlong δ p) = δ ^ 2 / 2 ∧
+      mass (boostAlong δ p) = δ ^ 2 / 2 ∧
+        J (boostAlong δ p) / mass (boostAlong δ p) = 1 ∧
+          J (rotationAlong δ p) / mass (rotationAlong δ p) = -1 := by
+  have hJ := J_boostAlong_unit (δ := δ) hp
+  have hp0 : ∑ a : Fin 3, p a ^ 2 ≠ 0 := by
+    rw [hp]
+    norm_num
+  exact ⟨hJ.1, hJ.2, J_div_mass_boostAlong hδ hp0, J_div_mass_rotationAlong hδ hp0⟩
+
+example (φ : ℝ) :
+    (∀ δ : ℝ, J (balancedBoostShift φ δ) = δ ^ 2 / 2) ↔ φ = 0 :=
+  balancedBoostShift_J_eq_quadratic_iff φ
+
+example : spatialParity Operations.pseudoscalar = -Operations.pseudoscalar :=
+  spatialParity_pseudoscalar
+
+
+/-! ## Layers and particle dynamics -/
+
+example {c : ℝ} (h1 : 1 < c) (h2 : c < 2) :
+    xiOfS (radialCriticalS c) < xiOfS (tangentialCriticalS c) :=
+  radial_caustic_lt_tangential h1 h2
+
+example {rs r b T : ℝ} (hrs : 0 < rs) (hr : rs < r) (hb : 0 ≤ b)
+    (hlt : b < criticalImpact rs) :
+    b ^ 2 * schwarzschildA rs r < r ^ 2 ∧
+      ∃ s, rs < s ∧ s < photonSphere rs ∧
+        T < killingAntideriv rs (photonSphere rs) - killingAntideriv rs s :=
+  ⟨no_exterior_turning hrs hr hb hlt, exists_classical_delay_gt hrs⟩
+
+example {x : ℝ} (hx : x ∈ Set.Ioo 0 resonanceRoot1) : 0 < ionOutflow x :=
+  ionOutflow_pos_outer hx
+
+
+/-! ## Scales that are inputs -/
+
+example {c : ℝ} {φ : ℝ → ℝ}
+    (hc : Real.pi / 4 < c) (hc1 : c < resonanceRoot1)
+    (h0 : 0 ≤ φ c) (hlt : φ c < phiStar c)
+    (hcont : ContinuousOn φ (Set.Icc c resonanceRoot1))
+    (hmono : StrictMonoOn φ (Set.Icc c resonanceRoot1)) :
+    ∃ t, t ∈ Set.Ioo c resonanceRoot1 ∧ φ t = phiStar t :=
+  inward_rapidity_meets_threshold hc hc1 h0 hlt hcont hmono
+
+example {x δ ρ γE : ℝ}
+    (hx : Real.pi / 4 < x) (hx2 : x < Real.pi / 2)
+    (hδ : phiStar x / 2 < δ) (hρ : 0 < ρ) (hγE : 0 < γE) :
+    ρ / γE < chargedShift (gammaRapidity x δ) ρ γE :=
+  above_threshold_reinforces_coulomb hx hx2 hδ hρ hγE
+
+example {φ y x : ℝ}
+    (hφ : 0 < φ) (hy : Real.cosh φ = 1 + y)
+    (hyb : y ≤ 1 / (10 : ℝ) ^ 10)
+    (hx : x ∈ Set.Ioo (Real.pi / 4) resonanceRoot1)
+    (hφx : phiStar x = φ) :
+    (resonanceRoot1 - x) / x < 5 / (10 : ℝ) ^ 6 :=
+  fractional_widening_of_small_energy hφ hy hyb hx hφx
+
+example {κ coul γG γE r : ℝ}
+    (hκ : 0 < κ) (hc : coul < 0) (hr : r ≠ 0) (hG : 0 < γG) (hE : 0 < γE) :
+    pairChannelForce κ coul γG γE r < 0 :=
+  (unlike_same_sign_no_zero hκ hc hr hG hE).2.2
+
+/-- Regression: at a hydrogenic separation the mass term is between \(4.40\times 10^{-40}\) and
+\(4.42\times 10^{-40}\) of the charge term. -/
+example {ℓE ℓG a : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 71 / 50)
+    (ha : 52917 < a) :
+    (440 : ℝ) / 10 ^ 42 <
+        (electronProtonGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) ∧
+      (electronProtonGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
+        442 / 10 ^ 42 :=
+  bohr_mass_fraction hE0 hE hG0 hG ha
+
+/-- Regression: the gravitational term is between `2.398×10⁻⁴³` and `2.404×10⁻⁴³` of that
+repulsion. -/
+example {ℓE ℓG a : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) :
+    (2398 : ℝ) / 10 ^ 46 <
+        (electronElectronGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) ∧
+      (electronElectronGravToCoulomb : ℝ) *
+          gammaSEqual (ℓE / (2 * a)) / gammaSEqual (ℓG / (2 * a)) <
+        2404 / 10 ^ 46 :=
+  shell_electron_grav_fraction hE0 hE hG0 hG ha
+
+example {ℓE ℓG a coul r : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) (hc : 0 < coul) (hr : r ≠ 0) :
+    0 < coul / (gammaSEqual (ℓE / (2 * a)) * r ^ 2) ∧
+      -(electronElectronGravToCoulomb : ℝ) * coul /
+          (gammaSEqual (ℓG / (2 * a)) * r ^ 2) < 0 ∧
+        0 < pairChannelForce
+          ((electronElectronGravToCoulomb : ℝ) * coul) coul
+          (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
+  shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: on a repulsive layer the gravity-only term increases the separation. -/
+example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)
+    (hγ : gammaSEqual (ℓ / (2 * r)) < 0) :
+    0 < gravityLayerTerm κ ℓ r ∧
+      gravityLayerTerm κ ℓ r =
+        pairChannelForce κ 0 (gammaSEqual (ℓ / (2 * r))) 1 r :=
+  ⟨gravityLayerTerm_pos_of_repulsive hκ hr hγ, gravityLayerTerm_eq_channel κ ℓ r⟩
+
+example {κ ℓ : ℝ} {c p : ℝ} (hκ : 0 < κ) (hpc : p ≠ c)
+    (hγ : gammaSEqual (ℓ / (2 * ‖p - c‖)) < 0) :
+    0 < inner ℝ (gravityLayerPush κ ℓ c p) ((‖p - c‖)⁻¹ • (p - c)) :=
+  gravityLayerPush_increases_separation hκ hpc hγ
+
+example {ι : Type*} [DecidableEq ι] {ℓ G : ℝ} {mass : ι → ℝ} {pos : ι → ℝ}
+    {S : Finset ι} {i : ι} (hi : i ∈ S) (hG : 0 < G)
+    (hm : ∀ k ∈ S, 0 < mass k)
+    (hdist : ∀ j ∈ S.erase i, pos i ≠ pos j)
+    (hγ : ∀ j ∈ S.erase i, gammaSEqual (ℓ / (2 * ‖pos i - pos j‖)) < 0) :
+    ∀ j ∈ S.erase i,
+      0 < inner ℝ (gravityLayerPush (G * mass i * mass j) ℓ (pos j) (pos i))
+        ((‖pos i - pos j‖)⁻¹ • (pos i - pos j)) :=
+  gravityLayerForce_each_increases hi hG hm hdist hγ
+
+example :
+    SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      ¬ SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.spinReverse
+          (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)) ∧
+      SpinVersusExclusion.sameRay
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) ∧
+      ¬ SpinVersusExclusion.samePlace
+        (SpinVersusExclusion.atPlace 1 SpinVersusExclusion.axisUp)
+        (SpinVersusExclusion.atPlace RelationalPosition.negOne SpinVersusExclusion.axisUp) := by
+  have hsing := SpinVersusExclusion.singlet_at_one_place
+  have hrep := SpinVersusExclusion.repeated_ray_at_antipodes (0 : ℂ)
+  exact ⟨hsing.1, hsing.2.1, hrep.1, hrep.2.1⟩
+
+example {ℓE ℓG a coul r : ℝ}
+    (hE0 : 0 < ℓE) (hE : ℓE < 387) (hG0 : 0 < ℓG) (hG : ℓG < 19 / 10)
+    (ha : 52917 < a) (hc : 0 < coul) (hr : r ≠ 0) (c : ℂ) :
+    DoubleSpacetime.Logic.pairTensor SpinVersusExclusion.axisUp SpinVersusExclusion.axisUp ≠
+        c • DoubleSpacetime.Logic.singlet ∧
+      -(electronElectronGravToCoulomb : ℝ) * coul /
+          (gammaSEqual (ℓG / (2 * a)) * r ^ 2) < 0 ∧
+        0 < pairChannelForce
+          ((electronElectronGravToCoulomb : ℝ) * coul) coul
+          (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
+  SpinVersusExclusion.repeated_ray_where_masses_attract hE0 hE hG0 hG ha hc hr c
+
+/-- Regression: inside the first node the outward excess over `ke²/r²` is a fractional depth below
+`1.64×10⁻⁴³`, and that depth is attained. -/
+example :
+    ∃ ε : ℝ, 0 < ε ∧ ε < (164 : ℝ) / 100 / 10 ^ 43 ∧
+      ε < 1 - resonanceRoot1 ∧
+        (electronElectronGravToCoulomb : ℝ) > -gammaSEqual (phaseAtDepth ε) :=
+  exists_grav_excess_depth
+
+/-- Regression: a node below `1` fm and a depth below `1.64×10⁻⁴³` is smaller than a radius above
+`52917` by more than `3×10⁴⁷`. -/
+example {r₁ a ε : ℝ}
+    (hr0 : 0 < r₁) (hr1 : r₁ < 1) (ha : 52917 < a)
+    (hε : 0 < ε) (hε1 : ε < (164 : ℝ) / 100 / 10 ^ 43) :
+    a / (ε * r₁) > 3 * 10 ^ 47 := by
+  have h := grav_depth_below_bohr hr0 hr1 ha hε.le hε1
+  exact h.resolve_right (ne_of_gt hε)
+
+
+/-! ## One Faraday six-space -/
+
+example (a : Fin 3) (p : FaradayParams) :
+    spatialParity (chiralityRAxis a) = chiralityLAxis a ∧
+      spatialParity (chiralityLAxis a) = chiralityRAxis a ∧
+        J (toTorsion (parityFaradayParams p)) = J (toTorsion p) ∧
+          faradayDot (parityFaradayParams p) = -faradayDot p ∧
+            faradayDot (swapFaradayParams p) = faradayDot p ∧
+              poyntingZ (parityFaradayParams (timeReverseFaradayParams p)) =
+                poyntingZ p := by
+  refine ⟨spatialParity_chiralityRAxis a, spatialParity_chiralityLAxis a,
+    J_parityFaraday p, faradayDot_parity p, faradayDot_swap p, ?_⟩
+  rw [parity_timeReverse_eq_neg, poyntingZ_neg]
+
+example (δ : ℝ) (dir : Fin 3 → ℝ) :
+    faradayDot ({ E := fun a => δ * dir a, B := fun _ => 0 } : FaradayParams) = 0 ∧
+      faradayDot ({ E := fun _ => 0, B := fun a => δ * dir a } : FaradayParams) = 0 :=
+  ⟨faradayDot_boostAlong δ dir, faradayDot_rotationAlong δ dir⟩
+
+
+/-! ## Layers and particle dynamics -/
+
+example (a b : ℝ) :
+    Motor.rotorTorsion (Amplification.pureRotation1 (2 * Real.pi)) = -1 ∧
+      Sandwich.sandwich
+        (Motor.rotorTorsion (Amplification.pureRotation1 (2 * Real.pi)))
+        (a • ι 1 + b • ι 3) = a • ι 1 + b • ι 3 :=
+  ⟨dualRotor_one_revolution, orbitPoint_one_revolution a b⟩
+
+/-- Regression: this equivalence does not place a radius. -/
+example {p r ℏ : ℝ} (hℏ : ℏ ≠ 0) :
+    Complex.exp (Complex.I * ((p * r * (2 * Real.pi) / ℏ : ℝ) : ℂ)) = 1 ↔
+      ∃ n : ℤ, p * r = (n : ℝ) * ℏ :=
+  planeWave_revolution_iff hℏ
+
+
+/-! ## Charge two -/
+
+example {x : ℝ} (hx : x ∈ Set.Ioo (0 : ℝ) resonanceRoot1) :
+    0 < -diameterOutward 2 x :=
+  diameter_inward hx
+
+/-- Regression: the balance does not hold the electron. -/
+example :
+    (13312 / 10 ^ 9 : ℝ) < 1 - gammaSEqual bohrPhase ∧
+      1 - gammaSEqual bohrPhase < 13314 / 10 ^ 9 ∧
+        1 - gammaSEqual bohrPhase <
+          (SI.electronMassApprox : ℝ) / (SI.protonMassApprox : ℝ) ∧
+      (1 / 261 : ℝ) < (SI.fineStructureApprox : ℝ) / (2 * resonanceRoot1) ∧
+        (SI.fineStructureApprox : ℝ) / (2 * resonanceRoot1) < 1 / 255 := by
+  have hfrac := hydrogen_fraction_window
+  exact ⟨hfrac.1, hfrac.2.1, hydrogen_shortening_lt_mass_ratio,
+    firstNode_over_bohr_window.1, firstNode_over_bohr_window.2⟩
+
+/-! ## Scales that are inputs -/
+
+example (β : DualRapidity) :
+    (dualRotorMat β).det = 1 ∧ ((dualRotorMat β).det).arg = 0 :=
+  dualRotor_det_arg β
+
+example {N : ℕ} (hN : 5 ≤ N) :
+    JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) =
+      -((16 : ℝ) / (3 * (N : ℝ) ^ 2)) ∧
+      1 / 2 < GravitonQuantum.computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+          spinUp) ∧
+        GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) < 1 ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) =
+        Real.sin (Real.pi / (N : ℝ)) ^ 2 ∧
+      (3 / 4 : ℝ) *
+          (-JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N))) <
+        1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp) ∧
+        1 - GravitonQuantum.computationalWeight
+            (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+              spinUp) <
+          (3 * Real.pi ^ 2 / 16) *
+            (-JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N))) ∧
+      -((1 : ℝ) / 3) < JNormalized (GravitonQuantum.alignedSteps 1 N) := by
+  have hpos : 0 < N := lt_of_lt_of_le (by decide : 0 < 5) hN
+  have hweight := GravitonQuantum.transverseStep_weight hN
+  have hfloor := GravitonQuantum.transverseDefect_vs_floor hN
+  refine ⟨GravitonQuantum.JNormalized_oneStep hpos, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact hweight.1
+  · exact hweight.2
+  · exact GravitonQuantum.transverseStep_defect hpos
+  · exact hfloor.1
+  · exact hfloor.2.1
+  · exact GravitonQuantum.oneGraviton_above_lock hN
+
+example {r₁ : ℝ} {N : ℕ} (hr0 : (1 / 2 : ℝ) < r₁) (hr1 : r₁ < 1)
+    (hN : N ≤ 4 ∨ 8 ≤ N) :
+    (2 / 19 : ℝ) < channelMassRatio r₁ ∧ channelMassRatio r₁ < 9 / 28 ∧
+      (SI.epsN 8 : ℝ) < channelMassRatio r₁ ∧
+      channelMassRatio r₁ < (SI.epsN 4 : ℝ) ∧
+      (10 : ℝ) ^ 36 * ((16 / 3) * (alphaG : ℝ)) < channelMassRatio r₁ ∧
+      (SI.epsN N : ℝ) ≠ channelMassRatio r₁ := by
+  have hwindow := channelMassRatio_window hr0 hr1
+  have hfloors := channelMassRatio_between_remote_floors hr0 hr1
+  exact ⟨hwindow.1, hwindow.2, hfloors.1, hfloors.2,
+    channelMassRatio_exceeds_planck hr0 hr1,
+    channelMassRatio_ne_remote_floor hr0 hr1 hN⟩
+
+example :
+    ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+      lengthOfReversal r₁ = (pionComptonFm : ℝ) :=
+  chargedPionSelectsReversalScale
+
+example :
+    (∀ r₁ : ℝ, scatteringSignCuts r₁ ↔ 1 / 2 < r₁ ∧ r₁ < 1) ∧
+      (∀ r₁ : ℝ, scatteringSignCuts r₁ →
+        (14 / 15 : ℝ) < lengthOfReversal r₁ ∧ lengthOfReversal r₁ < 19 / 10) ∧
+      (¬ ∃! r₁ : ℝ, scatteringSignCuts r₁) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧ 2 * lengthOfReversal r₁ / Real.pi < 1) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧ 1 < 2 * lengthOfReversal r₁ / Real.pi) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧
+        (SI.coulombMeVFm : ℝ) / r₁ < (deuteronBindingMeVLower : ℝ)) ∧
+      (∃ r₁ : ℝ, scatteringSignCuts r₁ ∧
+        (deuteronBindingMeVUpper : ℝ) < (SI.coulombMeVFm : ℝ) / r₁) := by
+  refine ⟨fun r₁ => scatteringSignCuts_iff, fun r₁ h => length_window_of_scatteringSignCuts h,
+    scatteringSignCuts_not_unique, scattering_wall_inside_one, scattering_wall_outside_one,
+    scattering_coulomb_below_deuteron, scattering_coulomb_above_deuteron⟩
+
+example {φ : ℝ} (hφ : 0 < φ) :
+    scatteringSignCuts (3 / 5) ∧ scatteringSignCuts (9 / 10) ∧
+      thresholdRadius (lengthOfReversal (3 / 5)) φ / lengthOfReversal (3 / 5) =
+        thresholdRadius (lengthOfReversal (9 / 10)) φ / lengthOfReversal (9 / 10) :=
+  scattering_threshold_same_ratio hφ
+
+example {ℓ φ : ℝ} (hℓ : 0 < ℓ) (hφ : 0 < φ)
+    (h : Real.cosh φ = 1 + (14 : ℝ) / (939565 / 1000)) :
+    (thresholdRadius ℓ φ - layerRadius ℓ resonanceRoot1) / layerRadius ℓ resonanceRoot1 <
+      (6 : ℝ) / 100 :=
+  fourteenMeV_fractional_widening hℓ hφ h
+
+example {φ x y : ℝ} (hφ : 0 < φ) (hx : x ≠ 0) (hy : y ≠ 0)
+    (hGx : gammaSEqual x ≠ 0) (hGy : gammaSEqual y ≠ 0) :
+    (¬ ∃! ℓ : ℝ, 0 < ℓ ∧ layerRadius ℓ x / ℓ = 1 / (2 * x)) ∧
+      (∀ ℓ₁ ℓ₂ : ℝ, ℓ₁ ≠ 0 → ℓ₂ ≠ 0 →
+        layerRadius ℓ₁ x / layerRadius ℓ₁ y = layerRadius ℓ₂ x / layerRadius ℓ₂ y) ∧
+      (¬ ∃! ℓ : ℝ, 0 < ℓ ∧ thresholdRadius ℓ φ / ℓ = 1 / (2 * thresholdPhase φ)) ∧
+      (deriv gammaSEqual ((1 : ℤ) * Real.pi) = 0) ∧
+      (∀ ξ ∈ Set.Ioo 0 Real.pi, deriv gammaSEqual ξ ≠ 0) ∧
+      (∀ ξ ∈ Set.Ioo (Real.pi / 4) (Real.pi / 2), deriv phiStar ξ ≠ 0) ∧
+      (¬ ∃! ℓ : ℝ, 0 < ℓ ∧
+        pairChannelForce 1 1 (gammaSEqual x) (gammaSEqual y) (layerRadius ℓ x) = 0) ∧
+      (¬ ∃! r₁ : ℝ, 1 / 2 < r₁ ∧ r₁ < 1 ∧
+        (203 : ℝ) < ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ ∧
+          ((ellRepFm : ℚ) : ℝ) / lengthOfReversal r₁ < 414) := by
+  refine ⟨layerRadius_scale_not_unique hx, ?_, thresholdRadius_scale_not_unique hφ,
+    gammaSEqual_critical_at_int_pi, ?_, ?_,
+    pairChannelForce_layer_zero_not_unique hx hGx hGy,
+    charge_over_nuclear_length_not_unique⟩
+  · intro ℓ₁ ℓ₂ h₁ h₂
+    exact layerRadius_pair_ratio_scale h₁ h₂ hx hy
+  · intro ξ hξ
+    exact gammaSEqual_deriv_ne_zero_of_mem_Ioo_pi hξ
+  · intro ξ hξ
+    exact deriv_phiStar_ne_zero hξ.1 hξ.2
+
+example (N : ℕ) :
+    (3 ≤ N →
+      -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) <
+        1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)))
+            spinUp)) ∧
+      (0 < N → SI.epsN N ≤ (16 / 3) * alphaG →
+        10 ^ 19 < N ∧
+          Real.sin (Real.pi / (N : ℝ)) ^ 2 < (1 : ℝ) / 10 ^ 37 ∧
+          -((1 : ℝ) / 10 ^ 32) <
+            JNormalized (GravitonQuantum.alignedSteps 300 N)) := by
+  refine ⟨fun hN => GravitonQuantum.transverse_defect_gt_height hN, ?_⟩
+  intro hpos hfloor
+  have hbig := floor_at_most_proton_planck hpos hfloor
+  exact ⟨hbig, GravitonQuantum.transverse_defect_below_inv_pow hbig,
+    (GravitonQuantum.threeHundred_square hbig).2.2.1⟩
+
+example (N : ℕ) :
+    SI.epsN 6 < SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      SI.pionMassMeVApprox / SI.protonMassMeVApprox < SI.epsN 5 ∧
+      SI.epsN N ≠ SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      (2 / 19 : ℚ) < SI.pionMassMeVApprox / SI.protonMassMeVApprox ∧
+      SI.pionMassMeVApprox / SI.protonMassMeVApprox < 9 / 28 ∧
+      (10 : ℚ) ^ 36 <
+        (SI.pionMassMeVApprox / SI.protonMassMeVApprox) / ((16 / 3) * alphaG) := by
+  have h := pion_over_proton_between_floors
+  have hwin := pion_over_proton_in_channel_window
+  exact ⟨h.1, h.2.1, pion_over_proton_ne_any_floor N, hwin.1, hwin.2,
+    pion_proton_planck_factor⟩
+
+example {N : ℕ} (hN : 8 ≤ N) :
+    Admissible.IsAdmissibleContinuous (GravitonQuantum.alignedSteps 2 N) ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) =
+        4 * JNormalized (GravitonQuantum.alignedSteps 1 N) :=
+  GravitonQuantum.twoGravitons_fourfold hN
+
+example {n N : ℕ} (hN : 0 < N) (hn : 0 < n) :
+    JNormalized (GravitonQuantum.alignedSteps n N) =
+      GravitonQuantum.ownSum n N + GravitonQuantum.mutualSum n N ∧
+      GravitonQuantum.mutualSum n N =
+        ((n : ℝ) - 1) * GravitonQuantum.ownSum n N ∧
+      JNormalized (GravitonQuantum.alignedSteps 1 N) = GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum 1 N = 0 ∧
+      JNormalized (GravitonQuantum.alignedSteps (n + 1) N) -
+          JNormalized (GravitonQuantum.alignedSteps n N) =
+        GravitonQuantum.farHeight N + (2 * (n : ℝ)) * GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum (n + 1) N < GravitonQuantum.mutualSum n N ∧
+      (1 ≤ n → ∀ m : ℕ, n < m →
+        GravitonQuantum.mutualSum m N < GravitonQuantum.mutualSum n N) := by
+  refine ⟨GravitonQuantum.height_own_plus_mutual hN, GravitonQuantum.mutual_factor,
+    (GravitonQuantum.lone_eq_far hN).1, (GravitonQuantum.lone_eq_far hN).2,
+    GravitonQuantum.added_step_split hN, GravitonQuantum.mutual_strict hN hn, ?_⟩
+  intro h1 m hm
+  exact GravitonQuantum.mutual_grows hN h1 hm
+
+example {n N : ℕ} (hN : 0 < N) (hn : 3 ≤ n) (hcone : 4 * n ≤ N) :
+    GravitonQuantum.mutualSum n N < GravitonQuantum.ownSum n N ∧
+      GravitonQuantum.ownSum n N < 0 ∧
+      JNormalized (express (GravitonQuantum.alignedSteps n N)) =
+        GravitonQuantum.ownSum n N + GravitonQuantum.mutualSum n N ∧
+      GravitonQuantum.ownSum 2 N = 2 * GravitonQuantum.farHeight N ∧
+      GravitonQuantum.mutualSum 2 N = 2 * GravitonQuantum.farHeight N := by
+  have htwo := GravitonQuantum.two_fourfold_split hN
+  exact ⟨(GravitonQuantum.mutual_below_own hN hn).1,
+    (GravitonQuantum.mutual_below_own hN hn).2,
+    GravitonQuantum.expressed_own_plus_mutual hN hcone, htwo.2.1, htwo.2.2⟩
+
+example {n N : ℕ} (hN : 0 < N) (hwall : N ≤ 4 * n) (hn : 0 < n) :
+    JNormalized (express (GravitonQuantum.alignedSteps n N)) = -((1 : ℝ) / 3) ∧
+      GravitonQuantum.mutualSum (n + 1) N < GravitonQuantum.mutualSum n N :=
+  GravitonQuantum.expressed_locks_while_mutual_grows hN hwall hn
+
+example {N n : ℕ} (hN : 5 ≤ N) (hn : N < 4 * n) :
+    1 < gammaS (GravitonQuantum.stepAngle N) 0 ∧
+      0 < gammaS 0 (GravitonQuantum.stepAngle N) ∧
+      gammaS 0 (GravitonQuantum.stepAngle N) < 1 ∧
+      0 < gammaS (GravitonQuantum.stepAngle N / 2) (GravitonQuantum.stepAngle N / 2) ∧
+      JNormalized (GravitonQuantum.oneAxisBalanced (GravitonQuantum.stepAngle N / 2)) = 0 ∧
+      JNormalized (GravitonQuantum.oneAxisUsual (GravitonQuantum.stepAngle N)) =
+        -JNormalized (GravitonQuantum.oneAxisDual (GravitonQuantum.stepAngle N)) ∧
+      gammaS (2 * Real.pi) (2 * Real.pi) < 0 ∧
+      ¬ Admissible.IsAdmissibleContinuous (GravitonQuantum.oneAxisBalanced (2 * Real.pi)) ∧
+      JNormalized (GravitonQuantum.alignedSteps n N) <
+        JNormalized (express (GravitonQuantum.alignedSteps n N)) ∧
+      JNormalized (express (GravitonQuantum.alignedSteps n N)) = -((1 : ℝ) / 3) := by
+  have hroles := GravitonQuantum.carrier_roles hN
+  have hneg := GravitonQuantum.negative_interference_not_admissible
+  have hex := GravitonQuantum.excess_unexpressed (lt_of_lt_of_le (by decide : 0 < 5) hN) hn
+  exact ⟨hroles.1, hroles.2.1, hroles.2.2.1, hroles.2.2.2.1, hroles.2.2.2.2.1,
+    hroles.2.2.2.2.2, hneg.1, hneg.2, hex.1, hex.2⟩
+
+example {N : ℕ} (h8 : 8 ≤ N) (h12 : 12 ≤ N) (h7 : 7 ≤ N) :
+    Admissible.IsAdmissibleContinuous (GravitonQuantum.perpSteps N) ∧
+      JNormalized (GravitonQuantum.perpSteps N) =
+        2 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) =
+        JNormalized (GravitonQuantum.perpSteps N) +
+          GravitonQuantum.mutualSum 2 N ∧
+      JNormalized (GravitonQuantum.alignedSteps 2 N) <
+        JNormalized (GravitonQuantum.perpSteps N) ∧
+      Admissible.IsAdmissibleContinuous (GravitonQuantum.splitSteps N) ∧
+      JNormalized (GravitonQuantum.splitSteps N) =
+        3 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 3 N) =
+        JNormalized (GravitonQuantum.splitSteps N) +
+          6 * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.alignedSteps 3 N) <
+        JNormalized (GravitonQuantum.splitSteps N) ∧
+      -((1 : ℝ) / 3) < JNormalized (GravitonQuantum.splitSteps N) := by
+  have h4 : 4 ≤ N := le_trans (by decide : (4 : ℕ) ≤ 8) h8
+  have hperp := GravitonQuantum.perp_twofold h4
+  have hmiss := GravitonQuantum.perp_missing_pair h8
+  have hsplit := GravitonQuantum.split_threefold h4
+  have hsix := GravitonQuantum.split_missing_pairs h12
+  exact ⟨hperp.1, hperp.2, hmiss.1, hmiss.2.1, hsplit.1, hsplit.2,
+    hsix.2.1, hsix.2.2, GravitonQuantum.split_above_lock h7⟩
+
+example :
+    JNormalized (GravitonQuantum.splitSteps 4) = -1 ∧
+      (GravitonQuantum.splitSteps 4).beta 0 = Real.pi / 2 :=
+  ⟨GravitonQuantum.split_at_four.2.1, GravitonQuantum.split_at_four.2.2.1⟩
+
+example {N : ℕ} (hN : 3 ≤ N) :
+    dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 1 (GravitonQuantum.stepAngle N)) ≠
+      dualRotorMat (EuclideanSpace.single 1 (GravitonQuantum.stepAngle N)) *
+        dualRotorMat (EuclideanSpace.single 0 (GravitonQuantum.stepAngle N)) ∧
+      dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) =
+        dualRotorMat (EuclideanSpace.single 1 (2 * Real.pi)) *
+          dualRotorMat (EuclideanSpace.single 0 (2 * Real.pi)) :=
+  ⟨GravitonQuantum.perp_gravitons_not_commute hN,
+    GravitonQuantum.fullTurn_commute.2.2⟩
+
+/-- Regression: three express `-1`, and further gravitons on a locked axis are not expressed. -/
+example {n0 n1 n2 N : ℕ} (hN : 0 < N)
+    (h0 : N ≤ 4 * n0) (h1 : N ≤ 4 * n1) (h2 : N ≤ 4 * n2) :
+    JNormalized (express (GravitonQuantum.occupation n0 n1 0 N)) = -((2 : ℝ) / 3) ∧
+      JNormalized (express (GravitonQuantum.occupation n0 n1 n2 N)) = -1 ∧
+      JNormalized (express (GravitonQuantum.occupation (n0 + n0) (n1 + 1) (n2 + 1) N)) = -1 := by
+  refine ⟨GravitonQuantum.expressed_two_locks hN h0 h1,
+    GravitonQuantum.expressed_three_locks hN h0 h1 h2, ?_⟩
+  exact GravitonQuantum.expressed_floor_stable hN h0 h1 h2
+    (Nat.le_add_left _ _) (Nat.le_succ _) (Nat.le_succ _)
+
+example {n0 n1 N : ℕ} (hN : 0 < N) (h0 : N ≤ 4 * n0) (h1 : 4 * n1 ≤ N) (hn1 : 0 < n1) :
+    JNormalized (express (GravitonQuantum.occupation n0 n1 0 N)) <
+      JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1) N)) ∧
+      JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1) N)) = -((1 : ℝ) / 3) := by
+  have h := GravitonQuantum.spread_past_wall hN h0 h1 hn1
+  exact ⟨h.2.1, h.2.2⟩
+
+example {n N : ℕ} (hn : 0 < n) (h : 12 * n ≤ N) :
+    JNormalized (express (GravitonQuantum.alignedSteps (3 * n) N)) =
+      JNormalized (express (GravitonQuantum.occupation n n n N)) +
+        (6 * (n : ℝ) ^ 2) * GravitonQuantum.farHeight N ∧
+      JNormalized (express (GravitonQuantum.occupation n n n (4 * n))) = -1 :=
+  ⟨(GravitonQuantum.equal_vs_aligned hn h).2.2.1, GravitonQuantum.equal_split_floor hn⟩
+
+example {n0 n1 n2 N : ℕ} (hsum : 4 * (n0 + n1 + n2) ≤ N)
+    (hcross : 0 < n0 * n1 + n0 * n2 + n1 * n2) :
+    JNormalized (express (GravitonQuantum.alignedSteps (n0 + n1 + n2) N)) <
+      JNormalized (express (GravitonQuantum.occupation n0 n1 n2 N)) :=
+  GravitonQuantum.expressed_aligned_lowest hsum hcross
+
+example {n m k N : ℕ} (hn : 0 < n) (hN : 0 < N) (heq : n = m + 1) :
+    JNormalized (GravitonQuantum.occupation (n - 1) (m + 1) k N) -
+        JNormalized (GravitonQuantum.occupation n m k N) =
+      (2 * ((m : ℝ) + 1 - n)) * GravitonQuantum.farHeight N ∧
+      JNormalized (GravitonQuantum.occupation (n - 1) (m + 1) k N) =
+        JNormalized (GravitonQuantum.occupation n m k N) :=
+  ⟨GravitonQuantum.move_height_delta hn hN, GravitonQuantum.move_balances hn hN heq⟩
+
+example {n N : ℕ} (hn : 2 ≤ n) (hcone : 4 * n ≤ N) :
+    JNormalized (express (GravitonQuantum.alignedSteps n N)) =
+      (n : ℝ) ^ 2 * GravitonQuantum.farHeight N ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0
+            ((n : ℝ) * GravitonQuantum.stepAngle N))) spinUp) <
+        (n : ℝ) ^ 2 *
+          (1 - GravitonQuantum.computationalWeight
+            (applyMat (dualRotorMat (EuclideanSpace.single 0
+              (GravitonQuantum.stepAngle N))) spinUp)) :=
+  GravitonQuantum.height_square_defect_below hn hcone
+
+example {N : ℕ} (hN : 0 < N) :
+    GravitonQuantum.computationalWeight
+        (applyMat (dualRotorMat (EuclideanSpace.single 0
+          ((N : ℝ) * GravitonQuantum.stepAngle N))) spinUp) = 1 ∧
+      1 - GravitonQuantum.computationalWeight
+          (applyMat (dualRotorMat (EuclideanSpace.single 0
+            ((N : ℝ) * GravitonQuantum.stepAngle N))) spinUp) = 0 ∧
+      JNormalized (express (GravitonQuantum.alignedSteps N N)) = -((1 : ℝ) / 3) := by
+  have h := GravitonQuantum.full_turn_locks hN
+  exact ⟨h.2.1, h.2.2.1, h.2.2.2⟩
+
+example {N : ℕ} (hN : 8 ≤ N) :
+    GravitonLogic.deviceError
+        (applyMat (dualRotorMat (EuclideanSpace.single (2 : Fin 3)
+          (GravitonQuantum.stepAngle N))) spinUp) = 0 ∧
+      GravitonLogic.atomOf (GravitonLogic.afterTransverseAxial
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ≠
+        GravitonLogic.atomOf
+          (GravitonLogic.afterTransverse (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterTransverseAxial
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) =
+        GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.atomOf (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ≠
+        GravitonLogic.atomOf (GravitonLogic.afterPerpRev
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) =
+        (1 / 2) * GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (2 * GravitonQuantum.stepAngle N)) ∧
+      GravitonLogic.deviceError (GravitonLogic.afterPerp
+          (GravitonQuantum.stepAngle N) (GravitonQuantum.stepAngle N)) /
+        GravitonLogic.deviceError
+          (GravitonLogic.afterTransverse (2 * GravitonQuantum.stepAngle N)) =
+        JNormalized (GravitonQuantum.perpSteps N) /
+          JNormalized (GravitonQuantum.alignedSteps 2 N) := by
+  have h3 : 3 ≤ N := le_trans (by decide : (3 : ℕ) ≤ 8) hN
+  have hax := GravitonLogic.lattice_axial_order h3
+  have hperp := GravitonLogic.lattice_perp h3
+  exact ⟨hax.2.2.2.1, hax.2.1, hax.2.2.1, hperp.1, hperp.2.2.1,
+    GravitonLogic.error_ratio_eq_height_ratio hN⟩
+
+example {N : ℕ} (hdiv : 4 ∣ N) (hN : 4 ≤ N) :
+    Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps (N / 4) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps (N / 2) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify?
+          (JNormalized (express (GravitonQuantum.alignedSteps (3 * (N / 4)) N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps N N))) =
+        some Logic.TruthValue.B ∧
+      Logic.classify? (JNormalized (express (GravitonQuantum.alignedSteps 0 N))) =
+        some Logic.TruthValue.T ∧
+      ¬ Logic.Compatible Logic.lineE0
+          (GravitonLogic.atomOf (GravitonLogic.afterTransverse
+            (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) ∧
+      ¬ Logic.lineE0 ⊓ Logic.material Logic.lineE0
+            (GravitonLogic.atomOf (GravitonLogic.afterTransverse
+              (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) ≤
+          GravitonLogic.atomOf (GravitonLogic.afterTransverse
+            (((N / 4 : ℕ) : ℝ) * GravitonQuantum.stepAngle N)) ∧
+      Logic.classify? (GravitonLogic.deviceError (GravitonLogic.afterTransverse
+          (((N / 2 : ℕ) : ℝ) * GravitonQuantum.stepAngle N))) = some Logic.TruthValue.F ∧
+      Logic.classify? (GravitonLogic.deviceError (GravitonLogic.afterTransverse
+          ((N : ℝ) * GravitonQuantum.stepAngle N))) = some Logic.TruthValue.T ∧
+      GravitonLogic.atomOf (GravitonLogic.afterTransverse 0) =
+        GravitonLogic.atomOf (GravitonLogic.afterTransverse
+          ((N : ℝ) * GravitonQuantum.stepAngle N)) := by
+  have h := GravitonLogic.four_turns_read hdiv hN
+  exact ⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1, h.2.2.2.2.2.1, h.2.2.2.2.2.2.1,
+    h.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.1, h.2.2.2.2.2.2.2.2.2.2.2.2.1⟩
+
+example : rydbergGap 2 4 / rydbergGap 2 3 = 27 / 20 ∧
+    rydbergGap 1 2 / rydbergGap 1 3 = 27 / 32 ∧
+    rydbergGap 2 3 / rydbergGap 1 2 = 5 / 27 :=
+  ⟨balmer_alpha_over_beta, lyman_two_over_three, second_over_first⟩
+
+end Gravity
+
+end DoubleSpacetime

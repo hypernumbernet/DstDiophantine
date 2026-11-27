@@ -2,13 +2,13 @@
 
 The `Goals/` Lean library holds **target statements** for the dual spacetime
 programme. It is isolated from the main library: nothing under
-`DstDiophantine/` may import `Goals`.
+`DoubleSpacetime/` may import `Goals`.
 
 ## Lifecycle
 
 1. Each target is a `theorem` with a complete statement and `sorry` as proof.
 2. When a target is proved without `sorry`, move the proof into the main
-   library (under `DstDiophantine/`), delete the corresponding goal, and update
+   library (under `DoubleSpacetime/`), delete the corresponding goal, and update
    `Goals/README.md` in the same pull request.
 3. Changes to a target's **statement** must be visible in the PR diff and
    noted in `Goals/README.md` (including the reason for the change).

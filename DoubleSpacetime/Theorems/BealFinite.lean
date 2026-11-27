@@ -1,0 +1,679 @@
+import DoubleSpacetime.Theorems.Beal
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Tactic.NormNum
+
+set_option linter.style.native false
+
+/-!
+# Finite Beal certificates
+
+Bounded searches report coprime hits inside a box or as perfect powers. They are diagnostic and do
+not claim classical Beal.
+-/
+
+namespace DoubleSpacetime
+
+namespace Theorems
+
+/-! ### Bool search (bounded box) -/
+
+/-- True when `(A,B,C,x,y,z)` is a positive coprime Beal solution (exponents ≥ 3). -/
+def isCoprimeBeal (A B C x y z : ℕ) : Bool :=
+  decide
+    (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
+      0 < A ∧ 0 < B ∧ 0 < C ∧
+      A ^ x + B ^ y = C ^ z ∧
+      Nat.gcd A (Nat.gcd B C) = 1)
+
+/-- Bases `1…Amax` and exponents `3…Emax` (empty when `Emax < 3`). -/
+def hasCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
+  (List.range' 1 Amax).any fun A =>
+    (List.range' 1 Amax).any fun B =>
+      (List.range' 1 Amax).any fun C =>
+        (List.range' 3 (Emax + 1 - 3)).any fun x =>
+          (List.range' 3 (Emax + 1 - 3)).any fun y =>
+            (List.range' 3 (Emax + 1 - 3)).any fun z =>
+              isCoprimeBeal A B C x y z
+
+/-- Negation of `hasCoprimeBealUpTo` (certificate Bool). -/
+def noCoprimeBealUpTo (Amax Emax : ℕ) : Bool :=
+  !(hasCoprimeBealUpTo Amax Emax)
+
+/-- First positive coprime Beal solution in the bounded box, if any (`C` also bounded by `Amax`).
+Diagnostic / `#eval` finder. -/
+def findCoprimeBealUpTo (Amax Emax : ℕ) : Option (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
+  (List.range' 1 Amax).findSome? fun A =>
+    (List.range' 1 Amax).findSome? fun B =>
+      (List.range' 1 Amax).findSome? fun C =>
+        (List.range' 3 (Emax + 1 - 3)).findSome? fun x =>
+          (List.range' 3 (Emax + 1 - 3)).findSome? fun y =>
+            (List.range' 3 (Emax + 1 - 3)).findSome? fun z =>
+              if isCoprimeBeal A B C x y z then some (A, B, C, x, y, z) else none
+
+private theorem mem_bases {A Amax : ℕ} (hA : 0 < A) (hAmax : A ≤ Amax) :
+    A ∈ List.range' 1 Amax :=
+  List.mem_range'_1.mpr ⟨Nat.succ_le_of_lt hA, by omega⟩
+
+private theorem mem_exps {x Emax : ℕ} (hx : 3 ≤ x) (hxE : x ≤ Emax) :
+    x ∈ List.range' 3 (Emax + 1 - 3) :=
+  List.mem_range'_1.mpr ⟨hx, by omega⟩
+
+theorem mem_beal_bases {A Amax : ℕ} (hA : 0 < A) (hAmax : A ≤ Amax) :
+    A ∈ List.range' 1 Amax :=
+  mem_bases hA hAmax
+
+theorem mem_beal_exps {x Emax : ℕ} (hx : 3 ≤ x) (hxE : x ≤ Emax) :
+    x ∈ List.range' 3 (Emax + 1 - 3) :=
+  mem_exps hx hxE
+
+theorem isCoprimeBeal_sound {A B C x y z : ℕ}
+    (h : isCoprimeBeal A B C x y z = true) :
+    3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
+      0 < A ∧ 0 < B ∧ 0 < C ∧
+      A ^ x + B ^ y = C ^ z ∧
+      Nat.gcd A (Nat.gcd B C) = 1 := by
+  simpa [isCoprimeBeal, decide_eq_true_eq] using h
+
+private theorem mem_of_eq_append_cons {α : Type*} {l l₁ l₂ : List α} {a : α}
+    (heq : l = l₁ ++ a :: l₂) : a ∈ l :=
+  heq ▸ List.mem_append_right l₁ (List.mem_cons_self (l := l₂))
+
+private theorem findSome_nested6_sound
+    {α : Type*} {f : ℕ → ℕ → ℕ → ℕ → ℕ → ℕ → Option α}
+    {As Bs Cs xs ys zs : List ℕ} {w : α}
+    (h : (As.findSome? fun A =>
+          Bs.findSome? fun B =>
+            Cs.findSome? fun C =>
+              xs.findSome? fun x =>
+                ys.findSome? fun y =>
+                  zs.findSome? fun z => f A B C x y z) = some w) :
+    ∃ A B C x y z, A ∈ As ∧ B ∈ Bs ∧ C ∈ Cs ∧ x ∈ xs ∧ y ∈ ys ∧ z ∈ zs ∧
+      f A B C x y z = some w := by
+  obtain ⟨lA, A, rA, heqA, h1, _⟩ := (List.findSome?_eq_some_iff).1 h
+  obtain ⟨lB, B, rB, heqB, h2, _⟩ := (List.findSome?_eq_some_iff).1 h1
+  obtain ⟨lC, C, rC, heqC, h3, _⟩ := (List.findSome?_eq_some_iff).1 h2
+  obtain ⟨lx, x, rx, heqx, h4, _⟩ := (List.findSome?_eq_some_iff).1 h3
+  obtain ⟨ly, y, ry, heqy, h5, _⟩ := (List.findSome?_eq_some_iff).1 h4
+  obtain ⟨lz, z, rz, heqz, h6, _⟩ := (List.findSome?_eq_some_iff).1 h5
+  exact ⟨A, B, C, x, y, z,
+    mem_of_eq_append_cons heqA, mem_of_eq_append_cons heqB, mem_of_eq_append_cons heqC,
+    mem_of_eq_append_cons heqx, mem_of_eq_append_cons heqy, mem_of_eq_append_cons heqz, h6⟩
+
+theorem findCoprimeBealUpTo_sound {Amax Emax A B C x y z : ℕ}
+    (h : findCoprimeBealUpTo Amax Emax = some (A, B, C, x, y, z)) :
+    isCoprimeBeal A B C x y z = true := by
+  obtain ⟨A', B', C', x', y', z', _, _, _, _, _, _, hf⟩ :=
+    findSome_nested6_sound (f := fun A B C x y z =>
+      if isCoprimeBeal A B C x y z then some (A, B, C, x, y, z) else none) h
+  by_cases htrue : isCoprimeBeal A' B' C' x' y' z' = true
+  · simp only [htrue, ↓reduceIte] at hf
+    obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩ := Option.some_inj.mp hf
+    exact htrue
+  · simp [htrue] at hf
+
+private theorem findSome_nested6_eq_none
+    {α : Type*} {f : ℕ → ℕ → ℕ → ℕ → ℕ → ℕ → Option α}
+    {As Bs Cs xs ys zs : List ℕ}
+    (h : (As.findSome? fun A =>
+          Bs.findSome? fun B =>
+            Cs.findSome? fun C =>
+              xs.findSome? fun x =>
+                ys.findSome? fun y =>
+                  zs.findSome? fun z => f A B C x y z) = none) :
+    ∀ A ∈ As, ∀ B ∈ Bs, ∀ C ∈ Cs, ∀ x ∈ xs, ∀ y ∈ ys, ∀ z ∈ zs, f A B C x y z = none := by
+  intro A hA B hB C hC x hx y hy z hz
+  have hA' := (List.findSome?_eq_none_iff).1 h A hA
+  have hB' := (List.findSome?_eq_none_iff).1 hA' B hB
+  have hC' := (List.findSome?_eq_none_iff).1 hB' C hC
+  have hx' := (List.findSome?_eq_none_iff).1 hC' x hx
+  have hy' := (List.findSome?_eq_none_iff).1 hx' y hy
+  exact (List.findSome?_eq_none_iff).1 hy' z hz
+
+theorem findCoprimeBealUpTo_complete {Amax Emax : ℕ}
+    (h : hasCoprimeBealUpTo Amax Emax = true) :
+    (findCoprimeBealUpTo Amax Emax).isSome := by
+  have h' : hasCoprimeBealUpTo Amax Emax = true := h
+  unfold hasCoprimeBealUpTo at h'
+  obtain ⟨A, hA, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨B, hB, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨C, hC, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨x, hx, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨y, hy, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨z, hz, hsol⟩ := List.any_eq_true.mp h'
+  by_contra hnone
+  have hEq : findCoprimeBealUpTo Amax Emax = none :=
+    Option.not_isSome_iff_eq_none.mp hnone
+  have hf := findSome_nested6_eq_none (f := fun A B C x y z =>
+    if isCoprimeBeal A B C x y z then some (A, B, C, x, y, z) else none) hEq
+    A hA B hB C hC x hx y hy z hz
+  by_cases htrue : isCoprimeBeal A B C x y z = true
+  · simp [htrue] at hf
+  · exact htrue hsol
+
+theorem noCoprimeBealUpTo_sound {Amax Emax : ℕ}
+    (h : noCoprimeBealUpTo Amax Emax = true)
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ Amax) (hBmax : B ≤ Amax) (hCmax : C ≤ Amax)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ Emax) (hyE : y ≤ Emax) (hzE : z ≤ Emax)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False := by
+  have hany : hasCoprimeBealUpTo Amax Emax = true := by
+    refine (List.any_eq_true).mpr ⟨A, mem_bases hA hAmax, ?_⟩
+    refine (List.any_eq_true).mpr ⟨B, mem_bases hB hBmax, ?_⟩
+    refine (List.any_eq_true).mpr ⟨C, mem_bases hC hCmax, ?_⟩
+    refine (List.any_eq_true).mpr ⟨x, mem_exps hx hxE, ?_⟩
+    refine (List.any_eq_true).mpr ⟨y, mem_exps hy hyE, ?_⟩
+    refine (List.any_eq_true).mpr ⟨z, mem_exps hz hzE, ?_⟩
+    simp [isCoprimeBeal, hx, hy, hz, hA, hB, hC, hsol, hgcd]
+  have : hasCoprimeBealUpTo Amax Emax = false := by
+    simpa [noCoprimeBealUpTo, Bool.not_eq_true'] using h
+  exact absurd hany (by simp [this])
+
+theorem beal_no_coprime_of_le_eight_five
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 8) (hBmax : B ≤ 8) (hCmax : C ≤ 8)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 5) (hyE : y ≤ 5) (hzE : z ≤ 5)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealUpTo_sound
+    (by native_decide : noCoprimeBealUpTo 8 5 = true)
+    hA hB hC hAmax hBmax hCmax hx hy hz hxE hyE hzE hsol hgcd
+
+/-! ### Perfect-power search (phase 7k; `C` unbounded) -/
+
+/-- Double until `hi` exceeds a `z`-th root; the fuel fallback still does. -/
+def growNthRootHi (s z hi fuel : ℕ) : ℕ :=
+  match fuel with
+  | 0 => max hi (s + 1)
+  | fuel + 1 =>
+    if s < hi ^ z then hi
+    else growNthRootHi s z (hi * 2) fuel
+
+theorem growNthRootHi_gt {s z hi fuel : ℕ} (hhi : 0 < hi) (hz : 0 < z) :
+    s < (growNthRootHi s z hi fuel) ^ z ∧
+      hi ≤ growNthRootHi s z hi fuel := by
+  induction fuel generalizing hi with
+  | zero =>
+    simp only [growNthRootHi]
+    constructor
+    · have hlt : s < max hi (s + 1) := Nat.lt_of_succ_le (le_max_right _ _)
+      have hpos : 0 < max hi (s + 1) :=
+        Nat.lt_of_lt_of_le hhi (le_max_left _ _)
+      have hle : max hi (s + 1) ≤ (max hi (s + 1)) ^ z :=
+        Nat.le_self_pow (Nat.pos_iff_ne_zero.mp hz) _
+      omega
+    · exact le_max_left _ _
+  | succ fuel ih =>
+    by_cases hgt : s < hi ^ z
+    · simp [growNthRootHi, hgt]
+    · have hrec := ih (Nat.mul_pos hhi (by decide : 0 < 2))
+      simp only [growNthRootHi, hgt, ↓reduceIte]
+      exact ⟨hrec.1,
+        Nat.le_trans (Nat.le_mul_of_pos_right hi (by decide : 0 < 2)) hrec.2⟩
+
+private theorem bin_mid_bounds {lo hi : ℕ} (h : lo < hi) :
+    lo ≤ lo + (hi - lo) / 2 ∧ lo + (hi - lo) / 2 < hi := by
+  have hpos : 0 < hi - lo := Nat.sub_pos_of_lt h
+  constructor
+  · exact Nat.le_add_right _ _
+  · have : (hi - lo) / 2 < hi - lo :=
+      Nat.div_lt_self hpos (by decide : 1 < 2)
+    omega
+
+/-- Binary search for a positive `z`-th root of `s` in the half-open interval `[lo, hi)`. Returns
+`some C` when `C ^ z = s`. -/
+def findNthRootBin (s z lo hi fuel : ℕ) : Option ℕ :=
+  match fuel with
+  | 0 => none
+  | fuel + 1 =>
+    if hi ≤ lo then none
+    else
+      let mid := lo + (hi - lo) / 2
+      let p := mid ^ z
+      if p = s then some mid
+      else if p < s then findNthRootBin s z (mid + 1) hi fuel
+      else findNthRootBin s z lo mid fuel
+
+set_option linter.flexible false in
+theorem findNthRootBin_sound {s z lo hi fuel C : ℕ}
+    (h : findNthRootBin s z lo hi fuel = some C) :
+    C ^ z = s ∧ lo ≤ C ∧ C < hi := by
+  induction fuel generalizing lo hi with
+  | zero =>
+    simp [findNthRootBin] at h
+  | succ fuel ih =>
+    by_cases hle : hi ≤ lo
+    · simp [findNthRootBin, hle] at h
+    · have hlt : lo < hi := Nat.not_le.mp hle
+      have ⟨hmlo, hmhi⟩ := bin_mid_bounds hlt
+      set mid := lo + (hi - lo) / 2 with hmid
+      simp [findNthRootBin, hle] at h
+      rw [← hmid] at h
+      by_cases hEq : mid ^ z = s
+      · simp [hEq] at h
+        subst h
+        exact ⟨hEq, hmlo, hmhi⟩
+      · simp [hEq] at h
+        by_cases hLt : mid ^ z < s
+        · simp [hLt] at h
+          obtain ⟨heq, hleC, hltC⟩ := ih h
+          exact ⟨heq, le_trans (Nat.le_succ_of_le hmlo) hleC, hltC⟩
+        · simp [hLt] at h
+          obtain ⟨heq, hleC, hltC⟩ := ih h
+          exact ⟨heq, hleC, Nat.lt_trans hltC hmhi⟩
+
+set_option linter.flexible false in
+theorem findNthRootBin_complete {s z lo hi fuel C : ℕ}
+    (hz : 0 < z) (hlo : lo ≤ C) (hhi : C < hi) (heq : C ^ z = s)
+    (hfuel : hi - lo < fuel) :
+    (findNthRootBin s z lo hi fuel).isSome := by
+  have hz0 : z ≠ 0 := Nat.pos_iff_ne_zero.mp hz
+  induction fuel generalizing lo hi with
+  | zero =>
+    omega
+  | succ fuel ih =>
+    have hlt : lo < hi := by omega
+    have hle : ¬ hi ≤ lo := Nat.not_le.mpr hlt
+    have ⟨hmlo, hmhi⟩ := bin_mid_bounds hlt
+    set mid := lo + (hi - lo) / 2 with hmid
+    simp [findNthRootBin, hle]
+    rw [← hmid]
+    by_cases hEq : mid ^ z = s
+    · simp [hEq]
+    · simp [hEq]
+      by_cases hLt : mid ^ z < s
+      · have hpow : mid ^ z < C ^ z := by simpa [heq] using hLt
+        have hmidC : mid < C := (Nat.pow_lt_pow_iff_left hz0).mp hpow
+        have hrec :
+            (findNthRootBin s z (mid + 1) hi fuel).isSome :=
+          ih (Nat.succ_le_of_lt hmidC) hhi (by omega)
+        simpa [hLt] using hrec
+      · have hsle : s ≤ mid ^ z := Nat.not_lt.mp hLt
+        have hslt : s < mid ^ z := Nat.lt_of_le_of_ne hsle (Ne.symm hEq)
+        have hpow : C ^ z < mid ^ z := by simpa [heq] using hslt
+        have hCmid : C < mid := (Nat.pow_lt_pow_iff_left hz0).mp hpow
+        have hrec :
+            (findNthRootBin s z lo mid fuel).isSome :=
+          ih hlo hCmid (by omega)
+        simpa [hLt] using hrec
+
+/-- Positive `z`-th root of `s`, if any (`z = 0` yields `none`). -/
+def findNthRoot (s z : ℕ) : Option ℕ :=
+  if z = 0 then none
+  else
+    let hi := growNthRootHi s z 1 (Nat.log2 s + 4)
+    findNthRootBin s z 1 hi (hi + 1)
+
+/-- True when `s` is a positive perfect `z`-th power. -/
+def isNthPower (s z : ℕ) : Bool :=
+  (findNthRoot s z).isSome
+
+theorem findNthRoot_sound {s z C : ℕ}
+    (h : findNthRoot s z = some C) : 0 < C ∧ C ^ z = s := by
+  by_cases hz : z = 0
+  · simp [findNthRoot, hz] at h
+  · have h' : findNthRootBin s z 1 (growNthRootHi s z 1 (Nat.log2 s + 4))
+        (growNthRootHi s z 1 (Nat.log2 s + 4) + 1) = some C := by
+      simpa [findNthRoot, hz] using h
+    obtain ⟨heq, hle, _⟩ := findNthRootBin_sound h'
+    exact ⟨Nat.lt_of_lt_of_le (by decide : 0 < 1) hle, heq⟩
+
+theorem findNthRoot_complete {s z C : ℕ}
+    (hz : 0 < z) (hC : 0 < C) (heq : C ^ z = s) :
+    (findNthRoot s z).isSome := by
+  have hzne : z ≠ 0 := Nat.pos_iff_ne_zero.mp hz
+  simp only [findNthRoot, hzne, ↓reduceIte]
+  set hi := growNthRootHi s z 1 (Nat.log2 s + 4)
+  have hgt : s < hi ^ z := (growNthRootHi_gt (by decide : 0 < 1) hz).1
+  have hpow : C ^ z < hi ^ z := by simpa [heq] using hgt
+  have hChi : C < hi := (Nat.pow_lt_pow_iff_left hzne).mp hpow
+  exact findNthRootBin_complete hz (Nat.succ_le_of_lt hC) hChi heq (by omega)
+
+theorem findNthRoot_eq_some_of {s z C : ℕ}
+    (hz : 0 < z) (hC : 0 < C) (heq : C ^ z = s) :
+    findNthRoot s z = some C := by
+  have hsome := findNthRoot_complete hz hC heq
+  match hC' : findNthRoot s z with
+  | none => simp [hC'] at hsome
+  | some C' =>
+    obtain ⟨_, heq'⟩ := findNthRoot_sound hC'
+    have : C' = C :=
+      Nat.pow_left_injective (Nat.pos_iff_ne_zero.mp hz) (heq'.trans heq.symm)
+    exact congrArg some this
+
+/-- True when `A^x + B^y` is a positive perfect `z`-th power `C^z` with three-way gcd 1 and
+exponents / bases positive as in Beal. -/
+def isCoprimeBealPerfectPower (A B x y z : ℕ) : Bool :=
+  decide (3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧ 0 < A ∧ 0 < B) &&
+    match findNthRoot (A ^ x + B ^ y) z with
+    | some C => decide (Nat.gcd A (Nat.gcd B C) = 1)
+    | none => false
+
+/-- Whether a coprime perfect-power hit exists for bases `≤ Amax`. `C` is a root. -/
+def hasCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) : Bool :=
+  (List.range' 1 Amax).any fun A =>
+    (List.range' 1 Amax).any fun B =>
+      (List.range' 3 (Emax + 1 - 3)).any fun x =>
+        (List.range' 3 (Emax + 1 - 3)).any fun y =>
+          (List.range' 3 (Emax + 1 - 3)).any fun z =>
+            isCoprimeBealPerfectPower A B x y z
+
+def noCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) : Bool :=
+  !(hasCoprimeBealPerfectPowerUpTo Amax Emax)
+
+/-- First coprime perfect-power hit with bases `≤ Amax`, if any. Diagnostic. -/
+def findCoprimeBealPerfectPowerUpTo (Amax Emax : ℕ) :
+    Option (ℕ × ℕ × ℕ × ℕ × ℕ × ℕ) :=
+  (List.range' 1 Amax).findSome? fun A =>
+    (List.range' 1 Amax).findSome? fun B =>
+      (List.range' 3 (Emax + 1 - 3)).findSome? fun x =>
+        (List.range' 3 (Emax + 1 - 3)).findSome? fun y =>
+          (List.range' 3 (Emax + 1 - 3)).findSome? fun z =>
+            if isCoprimeBealPerfectPower A B x y z then
+              (findNthRoot (A ^ x + B ^ y) z).map fun C => (A, B, C, x, y, z)
+            else none
+
+private theorem findSome_nested5_sound
+    {α : Type*} {f : ℕ → ℕ → ℕ → ℕ → ℕ → Option α}
+    {As Bs xs ys zs : List ℕ} {w : α}
+    (h : (As.findSome? fun A =>
+          Bs.findSome? fun B =>
+            xs.findSome? fun x =>
+              ys.findSome? fun y =>
+                zs.findSome? fun z => f A B x y z) = some w) :
+    ∃ A B x y z, A ∈ As ∧ B ∈ Bs ∧ x ∈ xs ∧ y ∈ ys ∧ z ∈ zs ∧
+      f A B x y z = some w := by
+  obtain ⟨lA, A, rA, heqA, h1, _⟩ := (List.findSome?_eq_some_iff).1 h
+  obtain ⟨lB, B, rB, heqB, h2, _⟩ := (List.findSome?_eq_some_iff).1 h1
+  obtain ⟨lx, x, rx, heqx, h3, _⟩ := (List.findSome?_eq_some_iff).1 h2
+  obtain ⟨ly, y, ry, heqy, h4, _⟩ := (List.findSome?_eq_some_iff).1 h3
+  obtain ⟨lz, z, rz, heqz, h5, _⟩ := (List.findSome?_eq_some_iff).1 h4
+  exact ⟨A, B, x, y, z,
+    mem_of_eq_append_cons heqA, mem_of_eq_append_cons heqB, mem_of_eq_append_cons heqx,
+    mem_of_eq_append_cons heqy, mem_of_eq_append_cons heqz, h5⟩
+
+private theorem findSome_nested5_eq_none
+    {α : Type*} {f : ℕ → ℕ → ℕ → ℕ → ℕ → Option α}
+    {As Bs xs ys zs : List ℕ}
+    (h : (As.findSome? fun A =>
+          Bs.findSome? fun B =>
+            xs.findSome? fun x =>
+              ys.findSome? fun y =>
+                zs.findSome? fun z => f A B x y z) = none) :
+    ∀ A ∈ As, ∀ B ∈ Bs, ∀ x ∈ xs, ∀ y ∈ ys, ∀ z ∈ zs, f A B x y z = none := by
+  intro A hA B hB x hx y hy z hz
+  have hA' := (List.findSome?_eq_none_iff).1 h A hA
+  have hB' := (List.findSome?_eq_none_iff).1 hA' B hB
+  have hx' := (List.findSome?_eq_none_iff).1 hB' x hx
+  have hy' := (List.findSome?_eq_none_iff).1 hx' y hy
+  exact (List.findSome?_eq_none_iff).1 hy' z hz
+
+theorem findCoprimeBealPerfectPowerUpTo_sound {Amax Emax A B C x y z : ℕ}
+    (h : findCoprimeBealPerfectPowerUpTo Amax Emax = some (A, B, C, x, y, z)) :
+    isCoprimeBealPerfectPower A B x y z = true ∧ findNthRoot (A ^ x + B ^ y) z = some C := by
+  obtain ⟨A', B', x', y', z', _, _, _, _, _, hf⟩ :=
+    findSome_nested5_sound (f := fun A B x y z =>
+      if isCoprimeBealPerfectPower A B x y z then
+        (findNthRoot (A ^ x + B ^ y) z).map fun C => (A, B, C, x, y, z)
+      else none) h
+  by_cases htrue : isCoprimeBealPerfectPower A' B' x' y' z' = true
+  · simp only [htrue, ↓reduceIte, Option.map_eq_some_iff] at hf
+    obtain ⟨C', hC, hEq⟩ := hf
+    obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl⟩ := hEq
+    exact ⟨htrue, hC⟩
+  · simp [htrue] at hf
+
+theorem isCoprimeBealPerfectPower_sound {A B x y z : ℕ}
+    (h : isCoprimeBealPerfectPower A B x y z = true) :
+    ∃ C : ℕ,
+      3 ≤ x ∧ 3 ≤ y ∧ 3 ≤ z ∧
+        0 < A ∧ 0 < B ∧ 0 < C ∧
+          A ^ x + B ^ y = C ^ z ∧
+            Nat.gcd A (Nat.gcd B C) = 1 := by
+  simp only [isCoprimeBealPerfectPower, Bool.and_eq_true, decide_eq_true_eq] at h
+  obtain ⟨⟨hx, hy, hz, hA, hB⟩, hroot⟩ := h
+  match hC : findNthRoot (A ^ x + B ^ y) z with
+  | none => simp [hC] at hroot
+  | some C =>
+    simp only [hC, decide_eq_true_eq] at hroot
+    obtain ⟨hCpos, heq⟩ := findNthRoot_sound hC
+    exact ⟨C, hx, hy, hz, hA, hB, hCpos, heq.symm, hroot⟩
+
+theorem findCoprimeBealPerfectPowerUpTo_complete {Amax Emax : ℕ}
+    (h : hasCoprimeBealPerfectPowerUpTo Amax Emax = true) :
+    (findCoprimeBealPerfectPowerUpTo Amax Emax).isSome := by
+  have h' : hasCoprimeBealPerfectPowerUpTo Amax Emax = true := h
+  unfold hasCoprimeBealPerfectPowerUpTo at h'
+  obtain ⟨A, hA, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨B, hB, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨x, hx, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨y, hy, h'⟩ := List.any_eq_true.mp h'
+  obtain ⟨z, hz, hsol⟩ := List.any_eq_true.mp h'
+  by_contra hnone
+  have hEq : findCoprimeBealPerfectPowerUpTo Amax Emax = none :=
+    Option.not_isSome_iff_eq_none.mp hnone
+  have hf := findSome_nested5_eq_none (f := fun A B x y z =>
+    if isCoprimeBealPerfectPower A B x y z then
+      (findNthRoot (A ^ x + B ^ y) z).map fun C => (A, B, C, x, y, z)
+    else none) hEq A hA B hB x hx y hy z hz
+  by_cases htrue : isCoprimeBealPerfectPower A B x y z = true
+  · simp only [htrue, ↓reduceIte, Option.map_eq_none_iff] at hf
+    obtain ⟨C, _, _, hz', _, _, hCpos, heq, _⟩ := isCoprimeBealPerfectPower_sound htrue
+    have : findNthRoot (A ^ x + B ^ y) z = some C :=
+      findNthRoot_eq_some_of (Nat.lt_of_lt_of_le (by decide : 0 < 3) hz') hCpos heq.symm
+    simp [this] at hf
+  · exact htrue hsol
+
+theorem noCoprimeBealPerfectPowerUpTo_sound {Amax Emax : ℕ}
+    (h : noCoprimeBealPerfectPowerUpTo Amax Emax = true)
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ Amax) (hBmax : B ≤ Amax)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ Emax) (hyE : y ≤ Emax) (hzE : z ≤ Emax)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False := by
+  have hz0 : 0 < z := Nat.lt_of_lt_of_le (by decide : 0 < 3) hz
+  have hfind : findNthRoot (A ^ x + B ^ y) z = some C :=
+    findNthRoot_eq_some_of hz0 hC hsol.symm
+  have hpp : isCoprimeBealPerfectPower A B x y z = true := by
+    simp [isCoprimeBealPerfectPower, hx, hy, hz, hA, hB, hfind, hgcd]
+  have hany : hasCoprimeBealPerfectPowerUpTo Amax Emax = true := by
+    refine (List.any_eq_true).mpr ⟨A, mem_bases hA hAmax, ?_⟩
+    refine (List.any_eq_true).mpr ⟨B, mem_bases hB hBmax, ?_⟩
+    refine (List.any_eq_true).mpr ⟨x, mem_exps hx hxE, ?_⟩
+    refine (List.any_eq_true).mpr ⟨y, mem_exps hy hyE, ?_⟩
+    refine (List.any_eq_true).mpr ⟨z, mem_exps hz hzE, ?_⟩
+    exact hpp
+  have : hasCoprimeBealPerfectPowerUpTo Amax Emax = false := by
+    simpa [noCoprimeBealPerfectPowerUpTo, Bool.not_eq_true'] using h
+  exact absurd hany (by simp [this])
+
+theorem beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 24) (hBmax : B ≤ 24)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 8) (hyE : y ≤ 8) (hzE : z ≤ 8)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  noCoprimeBealPerfectPowerUpTo_sound
+    (by native_decide : noCoprimeBealPerfectPowerUpTo 24 8 = true)
+    hA hB hC hAmax hBmax hx hy hz hxE hyE hzE hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_twentyone_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 21) (hBmax : B ≤ 21)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_twenty_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 20) (hBmax : B ≤ 20)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_nineteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 19) (hBmax : B ≤ 19)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_twelve_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 12) (hBmax : B ≤ 12)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_thirteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 13) (hBmax : B ≤ 13)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_fourteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 14) (hBmax : B ≤ 14)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_fifteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 15) (hBmax : B ≤ 15)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_sixteen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 16) (hBmax : B ≤ 16)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_seventeen_six
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 17) (hBmax : B ≤ 17)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 6) (hyE : y ≤ 6) (hzE : z ≤ 6)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_twenty_seven
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 20) (hBmax : B ≤ 20)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_nineteen_seven
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 19) (hBmax : B ≤ 19)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 7) (hyE : y ≤ 7) (hzE : z ≤ 7)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz (by omega) (by omega) (by omega) hsol hgcd
+
+theorem beal_no_coprime_perfect_power_of_le_nineteen_eight
+    {A B C x y z : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hC : 0 < C)
+    (hAmax : A ≤ 19) (hBmax : B ≤ 19)
+    (hx : 3 ≤ x) (hy : 3 ≤ y) (hz : 3 ≤ z)
+    (hxE : x ≤ 8) (hyE : y ≤ 8) (hzE : z ≤ 8)
+    (hsol : A ^ x + B ^ y = C ^ z)
+    (hgcd : Nat.gcd A (Nat.gcd B C) = 1) : False :=
+  beal_no_coprime_perfect_power_of_le_twentyfour_eight
+    hA hB hC (by omega) (by omega) hx hy hz hxE hyE hzE hsol hgcd
+
+/-! ### Known non-coprime solutions (not counterexamples) -/
+
+theorem beal_known_noncoprime_three_six :
+    (3 : ℤ) ^ 3 + 6 ^ 3 = 3 ^ 5 ∧ bealGcd 3 6 3 = 3 := by
+  constructor
+  · norm_num
+  · native_decide
+
+theorem beal_known_noncoprime_two_two :
+    (2 : ℤ) ^ 3 + 2 ^ 3 = 2 ^ 4 ∧ bealGcd 2 2 2 = 2 := by
+  constructor
+  · norm_num
+  · native_decide
+
+theorem beal_known_noncoprime_seven_fourteen :
+    (7 : ℤ) ^ 3 + 7 ^ 4 = 14 ^ 3 ∧ bealGcd 7 7 14 = 7 := by
+  constructor
+  · norm_num
+  · native_decide
+
+theorem beal_known_noncoprime_two_five :
+    (2 : ℤ) ^ 5 + 2 ^ 5 = 2 ^ 6 ∧ bealGcd 2 2 2 = 2 := by
+  constructor
+  · norm_num
+  · native_decide
+
+theorem beal_known_noncoprime_is_perfect_power :
+    isNthPower (3 ^ 3 + 6 ^ 3) 5 = true := by
+  native_decide
+
+theorem known_noncoprime_not_isCoprimeBeal :
+    isCoprimeBeal 3 6 3 3 3 5 = false ∧
+      isCoprimeBeal 2 2 2 3 3 4 = false ∧
+        isCoprimeBeal 7 7 14 3 4 3 = false ∧
+          isCoprimeBeal 2 2 2 5 5 6 = false := by
+  native_decide
+
+end Theorems
+
+end DoubleSpacetime

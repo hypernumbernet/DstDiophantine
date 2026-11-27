@@ -131,7 +131,7 @@ J^{(5)} = \frac{1}{16} B_{\rm Killing}(\Omega_{\rm torsion}, \Omega_{\rm torsion
 
 \section{ねじれ有界性の厳密定理}
 
-我々は\emph{許容}構成上のねじれ不整合スカラーに対する厳密な上限を導く。上限は初等的である（キリング形式の符号非対称性と、非負ラピディティおよび和の上限）。それは Lean~4（プロジェクト \texttt{DstDiophantine}）において機械検証済みである。
+我々は\emph{許容}構成上のねじれ不整合スカラーに対する厳密な上限を導く。上限は初等的である（キリング形式の符号非対称性と、非負ラピディティおよび和の上限）。それは Lean~4（プロジェクト \texttt{DoubleSpacetime}）において機械検証済みである。
 
 \begin{definition}[許容ねじれ構成]
 \label{def:admissible}
@@ -274,7 +274,7 @@ R(n^p) = R(n)^p.
 \[
 J(\Omega^\dagger)=-J(\Omega),\qquad |\Jnorm(\Omega^\dagger)|=|\Jnorm(\Omega)|
 \]
-を満たす。ゆえにダガーだけではねじれ高さの厳密な降下を\emph{与えない}。離散トーラスの有限像に対する所属検査も、それ自体では \(|\Jnorm|\) を縮小しない。代数内部でディオファントス問題を決定可能にするのは、(i)~零トランスレータによる加法関係の忠実な符号化、(ii)~\((\mathbb{Z}/N\mathbb{Z})^6\) 上の有限な許容集合、および (iii)~零高さ構成の網羅的探索、または \(|\Jnorm|>1\) を強制して定理~\ref{thm:torsion-bound} に矛盾する増幅論証、の組み合わせである。第10章はこの三層スキームを抽象化する。Lean~4 開発 \texttt{DstDiophantine} は高さ保存恒等式および有限探索の停止を機械検証する。
+を満たす。ゆえにダガーだけではねじれ高さの厳密な降下を\emph{与えない}。離散トーラスの有限像に対する所属検査も、それ自体では \(|\Jnorm|\) を縮小しない。代数内部でディオファントス問題を決定可能にするのは、(i)~零トランスレータによる加法関係の忠実な符号化、(ii)~\((\mathbb{Z}/N\mathbb{Z})^6\) 上の有限な許容集合、および (iii)~零高さ構成の網羅的探索、または \(|\Jnorm|>1\) を強制して定理~\ref{thm:torsion-bound} に矛盾する増幅論証、の組み合わせである。第10章はこの三層スキームを抽象化する。Lean~4 開発 \texttt{DoubleSpacetime} は高さ保存恒等式および有限探索の停止を機械検証する。
 
 したがって本章の構成は、古典的ディオファントス問題を単一の32次元代数内部の有限かつ厳密に有界な計算へ還元する。後続の各章はこの符号化を、以下のディオファントス・プログラムへ適用する。
 
@@ -645,7 +645,7 @@ J(\Omega^\dagger)=-J(\Omega),\qquad |\Jnorm(\Omega^\dagger)|=|\Jnorm(\Omega)|
 \[
 J=\frac12\sum_a(\alpha_a^2-\beta_a^2)
 \]
-から直ちに従う。この恒等式は Lean~4 モジュール \texttt{DstDiophantine.\allowbreak Framework.\allowbreak Descent} において機械検証済みである。
+から直ちに従う。この恒等式は Lean~4 モジュール \texttt{DoubleSpacetime.\allowbreak Framework.\allowbreak Descent} において機械検証済みである。
 \end{proof}
 
 したがって、より古い物語「ダガー \(\to\) 単数群フィルタ \(\to\) 双対再構成が \(J\) を厳密に減少させる」は、述べられたとおりには正しくない。離散トーラスの単数群像は許容ローター代表元を記録するが、その像の現在の定義のもとでは、独立した高さ減少フィルタを課さない。
@@ -780,7 +780,7 @@ J = \frac12 \sum_{a=1}^3 (\alpha_a^2 - \beta_a^2), \qquad
 
 任意の \( N \) に対して、許容格子上限は \(|\Jnorm|\le(4\lfloor N/4\rfloor/N)^2\) であり、等号 \(\pm 1\) が成立するのは \(4\mid N\) のとき、かつ二つの一様極値点においてのみである。\(4\nmid N\) ならば不等式は厳密である。\( N \) が増すにつれ、許容点上で到達可能な \(\Jnorm\) 値の離散集合は \([-1,1]\) において稠密となる。ディリクレ 核の層共鳴はコンパクト格子上の同期を制御する（伴う論文）。それらは初等的な許容上限を補うが、置き換えない。
 
-これらの格子恒等式は Lean~4（\texttt{DstDiophantine.Framework.Lattice}）において機械検証済みであり、定理~\ref{thm:torsion-bound} の離散検査として力任せの列挙を置き換える。
+これらの格子恒等式は Lean~4（\texttt{DoubleSpacetime.Framework.Lattice}）において機械検証済みであり、定理~\ref{thm:torsion-bound} の離散検査として力任せの列挙を置き換える。
 
 \section[ベイカー–キャンベル–ハウスドルフ 展開と Spin 被覆]{ベイカー–キャンベル–ハウスドルフ 展開\\ と Spin 被覆の詳細}
 

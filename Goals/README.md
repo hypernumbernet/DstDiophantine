@@ -1,6 +1,6 @@
 # Goals — Lean target statements
 
-This directory is **isolated** from the proved library under `DstDiophantine/`.
+This directory is **isolated** from the proved library under `DoubleSpacetime/`.
 A target is a `theorem` whose statement is a `Prop` from the main library.
 Policy: see [`POLICY.md`](POLICY.md).
 
@@ -47,13 +47,13 @@ statement, not mathlib's `riemannZeta`.
 
 Work proceeds in priority order. A row becomes a Lean `sorry` only when the
 main library already defines the `Prop`. A `True` placeholder is forbidden.
-Land the missing definition in `DstDiophantine/` first, then add the `sorry`
+Land the missing definition in `DoubleSpacetime/` first, then add the `sorry`
 in the same PR that updates this index.
 
 | Pri | Aim | Already in the library | Success |
 | --- | --- | --- | --- |
 | **P0** | `FermatMixedMotorOddPrimeResidual` | Mixed motor for `n ≥ 3`, the excess lower bound, the odd-prime factorisation and the three-power rebuild, and the sandwich and commutator lemmas. Exponents divisible by `3` or by `4` are mathlib, so the full residual follows from the odd-prime face. The `Prop` is the motor implication at an odd prime `n ≥ 5` | That face, with no new axiom. Goals deletes that `sorry`. `fermat_last_theorem_unconditional` becomes unconditional, and `fermatLastTheorem` leaves the Beal axiom list |
-| **P0** | One named window on the Kerr chart | `inducedMetric_kerr` on `Σ > 0` and `Δ > 0`, `kerrCoframe_zero_spin`, `kerr_cross_ne_azimuthBoost` | Frame dragging, or equatorial perihelion, in a named window, from library definitions and external elements. The `Prop` lands in `DstDiophantine/` before any Goal `sorry` |
+| **P0** | One named window on the Kerr chart | `inducedMetric_kerr` on `Σ > 0` and `Δ > 0`, `kerrCoframe_zero_spin`, `kerr_cross_ne_azimuthBoost` | Frame dragging, or equatorial perihelion, in a named window, from library definitions and external elements. The `Prop` lands in `DoubleSpacetime/` before any Goal `sorry` |
 | **P1** | One Beal leaf | The six classical residuals. The cuts through Freitas, Anni–Siksek, Michaud-Jacobs, and Stoll are axioms | A leaf closed by the motor encoding, or by the residual above. A new axiom that only narrows a leaf is an index edit |
 | **P2** | `AbcModularBridge`, then `RiemannAdmissibleBridge` | The false continuous abc bridge, and rational-grid certificates of denominator `≤ 20` | That bridge, from the encoding. Equivalence bridges stay in the catalogue and off this order |
 | **P3** | Closed-form evolution, then the dual Hilbert lift | The written action refuses `δ̈ + mδ = 0` and is not a Wheeler–DeWitt constraint. The written flow stays in the cone for every time only at a resting aligned rapidity in `[0, π/2]` | A definition the written flow does not already refuse. Then one theorem |
@@ -103,7 +103,7 @@ phase velocity.
 
 | Pri | Aim | Already in the library | Success |
 | --- | --- | --- | --- |
-| **P4** | Gravity-control foundation | The image, the hold, the constraint force, and the refusal of a helicity-odd drive. See [Closed and refused](#closed-and-refused) | A forced trajectory, defined in `DstDiophantine/`, that changes `J` and stays admissible on a positive interval. The dual force is not the phase-lock. Cancelling `J` on that trajectory is not a reduction of `M`, and a neutral state past unsigned mass `3π²/16` has to be held |
+| **P4** | Gravity-control foundation | The image, the hold, the constraint force, and the refusal of a helicity-odd drive. See [Closed and refused](#closed-and-refused) | A forced trajectory, defined in `DoubleSpacetime/`, that changes `J` and stays admissible on a positive interval. The dual force is not the phase-lock. Cancelling `J` on that trajectory is not a reduction of `M`, and a neutral state past unsigned mass `3π²/16` has to be held |
 | **P4** | Warp | Vanishing stiffness is not the vacuum (`RestMass`). A null rotation keeps the displacement on a null line (`NullRotation`). The paper's sentence on a transient superluminal phase velocity is not a theorem | A phase velocity of a massive configuration under the force above. On a short interval that velocity exceeds the null speed, and every signal stays on the null line. No horizon, no causal shortcut, and no continuum bubble |
 
 ## Open `sorry` catalogue

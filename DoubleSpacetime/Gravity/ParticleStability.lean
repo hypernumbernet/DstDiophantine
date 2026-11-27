@@ -1,0 +1,323 @@
+import DoubleSpacetime.Gravity.DualControl
+import DoubleSpacetime.Gravity.DualRotorFlow
+import DoubleSpacetime.Gravity.NewtonFromLight
+import DoubleSpacetime.Gravity.SI
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+
+set_option linter.style.native false
+
+/-!
+# Stability of the proton and the electron
+
+No lifetime, no baryon-number selection rule, and no derivation of \(m_p\) or \(m_e\). The mass
+ratio and the payment comparisons use external inputs.
+-/
+
+namespace DoubleSpacetime
+
+namespace Gravity
+
+open Operations Invariant Admissible SI
+
+/-! ### Single-channel obstruction -/
+
+theorem usual_only_not_vacuum_of_dual_pos {p q : TorsionParams}
+    (hβ : q.beta = p.beta)
+    (hD : ∑ a : Fin 3, p.beta a ^ 2 ≠ 0)
+    (hM : mass q = 0) : False := by
+  rw [← hβ] at hD
+  exact hD <| Finset.sum_eq_zero fun a _ => by
+    simp [((mass_eq_zero_iff q).mp hM a).2]
+
+theorem balanced_budgets_eq_mass {p : TorsionParams} (hJ : J p = 0) :
+    ∑ a : Fin 3, p.alpha a ^ 2 = mass p ∧
+      ∑ a : Fin 3, p.beta a ^ 2 = mass p := by
+  constructor
+  · have := J_add_mass p
+    linarith
+  · have := mass_sub_J p
+    linarith
+
+theorem balanced_massive_not_dual_only_vacuum {p q : TorsionParams}
+    (hJ : J p = 0) (hM : 0 < mass p) (hα : q.alpha = p.alpha)
+    (hq : mass q = 0) : False := by
+  have hU : ∑ a : Fin 3, p.alpha a ^ 2 ≠ 0 := by
+    have := (balanced_budgets_eq_mass hJ).1
+    linarith
+  exact dual_only_not_vacuum_of_usual_pos hα hU hq
+
+theorem balanced_massive_not_usual_only_vacuum {p q : TorsionParams}
+    (hJ : J p = 0) (hM : 0 < mass p) (hβ : q.beta = p.beta)
+    (hq : mass q = 0) : False := by
+  have hD : ∑ a : Fin 3, p.beta a ^ 2 ≠ 0 := by
+    have := (balanced_budgets_eq_mass hJ).2
+    linarith
+  exact usual_only_not_vacuum_of_dual_pos hβ hD hq
+
+theorem vacuum_moves_both_budgets {p q : TorsionParams}
+    (hJ : J p = 0) (hM : 0 < mass p) (hq : mass q = 0) :
+    q.alpha ≠ p.alpha ∧ q.beta ≠ p.beta := by
+  constructor
+  · intro hα
+    exact balanced_massive_not_dual_only_vacuum hJ hM hα hq
+  · intro hβ
+    exact balanced_massive_not_usual_only_vacuum hJ hM hβ hq
+
+/-! ### Written rest point -/
+
+theorem written_frozen_balance_fixed (σ₀ m t : ℝ) :
+    writtenDelta 0 0 t = 0 ∧
+      writtenSigma σ₀ 0 m 0 0 t = σ₀ ∧
+        writtenUsual σ₀ 0 m 0 0 t = σ₀ / 2 ∧
+          writtenDual σ₀ 0 m 0 0 t = σ₀ / 2 := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simp [writtenDelta, affineMismatch]
+  · simp [writtenSigma, cubicRapidity]
+  · simp [writtenUsual, usualFrom, writtenSigma, writtenDelta, affineMismatch, cubicRapidity]
+  · simp [writtenDual, dualFrom, writtenSigma, writtenDelta, affineMismatch, cubicRapidity]
+
+theorem written_mismatch_rate_leaves {ν t : ℝ} (hν : ν ≠ 0) (ht : t ≠ 0) :
+    writtenDelta 0 ν t ≠ writtenDelta 0 ν 0 := by
+  simp [writtenDelta, affineMismatch, hν, ht]
+
+/-! ### Rest-energy comparisons (external SI stand-ins) -/
+
+def protonElectronMassRatio : ℚ := protonMassApprox / electronMassApprox
+
+def protonElectronMassRatio_num : ℕ :=
+  protonMassMantissa * 10 ^ electronMassScale
+
+def protonElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ protonMassScale
+
+theorem protonElectronMassRatio_eq_num_div_den :
+    protonElectronMassRatio =
+      (protonElectronMassRatio_num : ℚ) / protonElectronMassRatio_den := by
+  unfold protonElectronMassRatio protonMassApprox electronMassApprox
+    protonElectronMassRatio_num protonElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem protonElectronMassRatio_den_pos :
+    (0 : ℚ) < (protonElectronMassRatio_den : ℚ) := by
+  unfold protonElectronMassRatio_den electronMassMantissa protonMassScale
+  norm_num
+
+theorem protonElectronMassRatio_bounds :
+    (1836 : ℚ) < protonElectronMassRatio ∧
+      protonElectronMassRatio < (1837 : ℚ) := by
+  rw [protonElectronMassRatio_eq_num_div_den]
+  have hden := protonElectronMassRatio_den_pos
+  constructor
+  · have hnat : 1836 * protonElectronMassRatio_den <
+        protonElectronMassRatio_num := by
+      unfold protonElectronMassRatio_num protonElectronMassRatio_den
+        protonMassMantissa electronMassScale electronMassMantissa protonMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : protonElectronMassRatio_num <
+        1837 * protonElectronMassRatio_den := by
+      unfold protonElectronMassRatio_num protonElectronMassRatio_den
+        protonMassMantissa electronMassScale electronMassMantissa protonMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def alphaElectronMassRatio : ℚ := alphaMassApprox / electronMassApprox
+
+def alphaElectronMassRatio_num : ℕ :=
+  alphaMassMantissa * 10 ^ electronMassScale
+
+def alphaElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ alphaMassScale
+
+theorem alphaElectronMassRatio_eq_num_div_den :
+    alphaElectronMassRatio =
+      (alphaElectronMassRatio_num : ℚ) / alphaElectronMassRatio_den := by
+  unfold alphaElectronMassRatio alphaMassApprox electronMassApprox
+    alphaElectronMassRatio_num alphaElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem alphaElectronMassRatio_den_pos :
+    (0 : ℚ) < (alphaElectronMassRatio_den : ℚ) := by
+  unfold alphaElectronMassRatio_den electronMassMantissa alphaMassScale
+  norm_num
+
+theorem alphaElectronMassRatio_bounds :
+    (7294 : ℚ) < alphaElectronMassRatio ∧
+      alphaElectronMassRatio < (7295 : ℚ) := by
+  rw [alphaElectronMassRatio_eq_num_div_den]
+  have hden := alphaElectronMassRatio_den_pos
+  constructor
+  · have hnat : 7294 * alphaElectronMassRatio_den <
+        alphaElectronMassRatio_num := by
+      unfold alphaElectronMassRatio_num alphaElectronMassRatio_den
+        alphaMassMantissa electronMassScale electronMassMantissa alphaMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : alphaElectronMassRatio_num <
+        7295 * alphaElectronMassRatio_den := by
+      unfold alphaElectronMassRatio_num alphaElectronMassRatio_den
+        alphaMassMantissa electronMassScale electronMassMantissa alphaMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def sodiumElectronMassRatio : ℚ := sodiumMassApprox / electronMassApprox
+
+def sodiumElectronMassRatio_num : ℕ :=
+  sodiumMassMantissa * 10 ^ electronMassScale
+
+def sodiumElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ sodiumMassScale
+
+theorem sodiumElectronMassRatio_eq_num_div_den :
+    sodiumElectronMassRatio =
+      (sodiumElectronMassRatio_num : ℚ) / sodiumElectronMassRatio_den := by
+  unfold sodiumElectronMassRatio sodiumMassApprox electronMassApprox
+    sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem sodiumElectronMassRatio_den_pos :
+    (0 : ℚ) < (sodiumElectronMassRatio_den : ℚ) := by
+  unfold sodiumElectronMassRatio_den electronMassMantissa sodiumMassScale
+  norm_num
+
+theorem sodiumElectronMassRatio_bounds :
+    (41896 : ℚ) < sodiumElectronMassRatio ∧
+      sodiumElectronMassRatio < (41897 : ℚ) := by
+  rw [sodiumElectronMassRatio_eq_num_div_den]
+  have hden := sodiumElectronMassRatio_den_pos
+  constructor
+  · have hnat : 41896 * sodiumElectronMassRatio_den <
+        sodiumElectronMassRatio_num := by
+      unfold sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+        sodiumMassMantissa electronMassScale electronMassMantissa sodiumMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : sodiumElectronMassRatio_num <
+        41897 * sodiumElectronMassRatio_den := by
+      unfold sodiumElectronMassRatio_num sodiumElectronMassRatio_den
+        sodiumMassMantissa electronMassScale electronMassMantissa sodiumMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+def lithiumElectronMassRatio : ℚ := lithiumMassApprox / electronMassApprox
+
+def lithiumElectronMassRatio_num : ℕ :=
+  lithiumMassMantissa * 10 ^ electronMassScale
+
+def lithiumElectronMassRatio_den : ℕ :=
+  electronMassMantissa * 10 ^ lithiumMassScale
+
+theorem lithiumElectronMassRatio_eq_num_div_den :
+    lithiumElectronMassRatio =
+      (lithiumElectronMassRatio_num : ℚ) / lithiumElectronMassRatio_den := by
+  unfold lithiumElectronMassRatio lithiumMassApprox electronMassApprox
+    lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+  simp only [Nat.cast_mul, Nat.cast_pow]
+  field_simp
+  ring
+
+private theorem lithiumElectronMassRatio_den_pos :
+    (0 : ℚ) < (lithiumElectronMassRatio_den : ℚ) := by
+  unfold lithiumElectronMassRatio_den electronMassMantissa lithiumMassScale
+  norm_num
+
+theorem lithiumElectronMassRatio_bounds :
+    (12786 : ℚ) < lithiumElectronMassRatio ∧
+      lithiumElectronMassRatio < (12787 : ℚ) := by
+  rw [lithiumElectronMassRatio_eq_num_div_den]
+  have hden := lithiumElectronMassRatio_den_pos
+  constructor
+  · have hnat : 12786 * lithiumElectronMassRatio_den <
+        lithiumElectronMassRatio_num := by
+      unfold lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+        lithiumMassMantissa electronMassScale electronMassMantissa lithiumMassScale
+      native_decide
+    rw [lt_div_iff₀ hden]
+    exact_mod_cast hnat
+  · have hnat : lithiumElectronMassRatio_num <
+        12787 * lithiumElectronMassRatio_den := by
+      unfold lithiumElectronMassRatio_num lithiumElectronMassRatio_den
+        lithiumMassMantissa electronMassScale electronMassMantissa lithiumMassScale
+      native_decide
+    rw [div_lt_iff₀ hden]
+    exact_mod_cast hnat
+
+theorem proton_rest_exceeds_hundred_bindings :
+    (100 : ℚ) * bindingEnergyPerNucleonMeVApprox < protonMassMeVApprox := by
+  unfold bindingEnergyPerNucleonMeVApprox protonMassMeVApprox
+    bindingEnergyPerNucleonMeVMantissa bindingEnergyPerNucleonMeVScale
+    protonMassMeVMantissa protonMassMeVScale
+  norm_num
+
+theorem proton_rest_exceeds_twenty_wells :
+    (20 : ℚ) * nuclearWellDepthMeVApprox < protonMassMeVApprox := by
+  unfold nuclearWellDepthMeVApprox protonMassMeVApprox
+    protonMassMeVMantissa protonMassMeVScale
+  norm_num
+
+theorem hydrogen_ionisation_frac :
+    hydrogenIonisationApprox /
+        (electronMassApprox * speedOfLight ^ 2) =
+      fineStructureApprox ^ 2 / 2 := by
+  unfold hydrogenIonisationApprox
+  field_simp [electronMassApprox_pos.ne', speedOfLight_pos.ne']
+
+theorem hydrogen_ionisation_frac_bounds :
+    (2 : ℚ) / 10 ^ 5 < fineStructureApprox ^ 2 / 2 ∧
+      fineStructureApprox ^ 2 / 2 < (3 : ℚ) / 10 ^ 5 := by
+  unfold fineStructureApprox fineStructureMantissa fineStructureScale
+  norm_num
+
+theorem hydrogen_ionisations_per_rest_bounds :
+    (3 : ℚ) * 10 ^ 4 < 2 / fineStructureApprox ^ 2 ∧
+      2 / fineStructureApprox ^ 2 < (5 : ℚ) * 10 ^ 4 := by
+  have h := hydrogen_ionisation_frac_bounds
+  have hpos : (0 : ℚ) < fineStructureApprox ^ 2 / 2 := lt_trans (by norm_num) h.1
+  have hinv_hi : (10 : ℚ) ^ 5 / 3 < 2 / fineStructureApprox ^ 2 := by
+    have hrec := one_div_lt_one_div_of_lt hpos h.2
+    simpa [one_div_div] using hrec
+  have hinv_lo : 2 / fineStructureApprox ^ 2 < (10 : ℚ) ^ 5 / 2 := by
+    have hrec := one_div_lt_one_div_of_lt (by norm_num : (0 : ℚ) < (2 : ℚ) / 10 ^ 5) h.1
+    simpa [one_div_div] using hrec
+  refine ⟨lt_trans (by norm_num) hinv_hi, ?_⟩
+  exact lt_of_lt_of_eq hinv_lo (by norm_num)
+
+theorem gravitational_height_electron_over_proton :
+    (3 : ℚ) * 10 ^ 6 <
+      impliedNsq electronMassApprox / impliedNsq protonMassApprox := by
+  have he := impliedNsq_electron_bounds.1
+  have hp_hi := impliedNsq_proton_bounds.2
+  have hp_lo := impliedNsq_proton_bounds.1
+  have hp_pos : (0 : ℚ) < impliedNsq protonMassApprox :=
+    lt_trans (by norm_num) hp_lo
+  have hfloor : (3 : ℚ) * 10 ^ 6 <
+      impliedNsq electronMassApprox / (10 : ℚ) ^ 39 := by
+    rw [lt_div_iff₀ (by norm_num : (0 : ℚ) < (10 : ℚ) ^ 39)]
+    have : (3 : ℚ) * 10 ^ 6 * (10 : ℚ) ^ 39 = (3 : ℚ) * 10 ^ 45 := by norm_num
+    linarith
+  have he_pos : (0 : ℚ) < impliedNsq electronMassApprox :=
+    lt_trans (by norm_num) he
+  have hcomp : impliedNsq electronMassApprox / (10 : ℚ) ^ 39 <
+      impliedNsq electronMassApprox / impliedNsq protonMassApprox := by
+    exact div_lt_div_of_pos_left he_pos hp_pos hp_hi
+  exact lt_trans hfloor hcomp
+
+end Gravity
+
+end DoubleSpacetime

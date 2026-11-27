@@ -1,0 +1,306 @@
+import DoubleSpacetime.Gravity.KillingAxis
+import DoubleSpacetime.Algebra.Amplification
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Pow
+
+/-!
+# Flat transport of a Poincaré bivector along an arbitrary curve
+
+Conjugation by the translator of a displacement leaves the Lorentz part unchanged and replaces the
+translation by `λ + ω x`. The finite rotor of rapidity `φ` is not the Killing bivector, and static
+bivectors at two exterior radii are not flat transports of one another.
+-/
+
+namespace DoubleSpacetime.Gravity.KillingTransport
+
+open PGA Generators Operations Motor Amplification Invariant LorentzLie
+open Sandwich (sandwich)
+open KillingAxis (sandwich_expTrans killingNormSq killingParams killingRate killingNorm
+  lorentzAct commutator_omegaTorsion_minkowskiVector omegaTrans_eq_half_e4)
+
+/-- Translator that moves the origin to `x`: events shift by `-x`. -/
+def originShift (x : Vec4) : TransParams :=
+  ⟨fun μ => -x μ⟩
+
+/-- Bivector rewritten at the origin `x`: same torsion, velocity field as translation. -/
+def transportedParams (p : OmegaParams) (x : Vec4) : OmegaParams where
+  torsion := p.torsion
+  trans := ⟨fun μ => p.trans.lambda μ + lorentzAct p.torsion x μ⟩
+
+theorem lorentzAct_zero (t : TorsionParams) : lorentzAct t 0 = 0 := by
+  ext μ
+  fin_cases μ <;> simp [lorentzAct]
+
+theorem lorentzAct_neg (t : TorsionParams) (x : Vec4) :
+    lorentzAct t (-x) = -lorentzAct t x := by
+  ext μ
+  fin_cases μ <;> simp [lorentzAct, Pi.neg_apply] <;> ring
+
+theorem lorentzAct_add (t : TorsionParams) (x y : Vec4) :
+    lorentzAct t (x + y) = lorentzAct t x + lorentzAct t y := by
+  ext μ
+  fin_cases μ <;> simp [lorentzAct, Pi.add_apply] <;> ring
+
+theorem omegaTrans_neg_lambda (q : TransParams) :
+    omegaTrans ⟨fun μ => -q.lambda μ⟩ = -omegaTrans q := by
+  simp only [omegaTrans, neg_div, neg_smul, Finset.sum_neg_distrib]
+
+theorem commutator_omegaTrans_omegaTrans (p q : TransParams) :
+    commutator (omegaTrans p) (omegaTrans q) = 0 := by
+  rw [Generators.commutator, omegaTrans_mul, omegaTrans_mul, sub_zero]
+
+theorem commutator_omegaTorsion_omegaTrans (t : TorsionParams) (q : TransParams) :
+    commutator (omegaTorsion t) (omegaTrans q) =
+      omegaTrans ⟨lorentzAct t q.lambda⟩ := by
+  rw [omegaTrans_eq_half_e4, commutator_smul_right]
+  have hcomm : omegaTorsion t * ι e4Index = ι e4Index * omegaTorsion t :=
+    (KillingAxis.commute_e4_of_mem_lorentzSpan (omegaTorsion_mem_lorentzSpan t)).symm.eq
+  have hbr : commutator (omegaTorsion t) (ι e4Index * minkowskiVector q.lambda) =
+      ι e4Index * minkowskiVector (lorentzAct t q.lambda) := by
+    rw [Generators.commutator]
+    calc
+      omegaTorsion t * (ι e4Index * minkowskiVector q.lambda) -
+          ι e4Index * minkowskiVector q.lambda * omegaTorsion t
+        = ι e4Index * (omegaTorsion t * minkowskiVector q.lambda) -
+            ι e4Index * (minkowskiVector q.lambda * omegaTorsion t) := by
+          rw [← mul_assoc, hcomm]
+          simp [mul_assoc]
+      _ = ι e4Index * (omegaTorsion t * minkowskiVector q.lambda -
+            minkowskiVector q.lambda * omegaTorsion t) := by
+          rw [mul_sub]
+      _ = ι e4Index * minkowskiVector (lorentzAct t q.lambda) := by
+          rw [← Generators.commutator, commutator_omegaTorsion_minkowskiVector]
+  rw [hbr, ← omegaTrans_eq_half_e4]
+
+theorem sandwich_originShift (p : OmegaParams) (x : Vec4) :
+    sandwich (expTrans (originShift x)) (omegaBiv p) =
+      omegaBiv (transportedParams p x) := by
+  rw [sandwich_expTrans, omegaBiv, commutator_add_right,
+    commutator_omegaTrans_omegaTrans, add_zero]
+  rw [commutator_neg, commutator_omegaTorsion_omegaTrans]
+  have hfun : (originShift x).lambda = -x := by
+    ext μ
+    simp [originShift]
+  have hact : lorentzAct p.torsion (originShift x).lambda = -lorentzAct p.torsion x := by
+    rw [hfun]
+    exact lorentzAct_neg p.torsion x
+  rw [hact]
+  have hsame : omegaTrans ⟨-lorentzAct p.torsion x⟩ =
+      -omegaTrans ⟨lorentzAct p.torsion x⟩ := by
+    simp only [omegaTrans, Pi.neg_apply, neg_div, neg_smul, Finset.sum_neg_distrib]
+  rw [hsame, neg_neg]
+  have hadd := omegaTrans_add p.trans ⟨lorentzAct p.torsion x⟩
+  rw [add_assoc, hadd, omegaBiv]
+  congr 1
+
+theorem transported_torsion (p : OmegaParams) (x : Vec4) :
+    (transportedParams p x).torsion = p.torsion := rfl
+
+theorem transported_lambda (p : OmegaParams) (x : Vec4) (μ : Fin 4) :
+    (transportedParams p x).trans.lambda μ =
+      p.trans.lambda μ + lorentzAct p.torsion x μ := rfl
+
+theorem J_transported (p : OmegaParams) (x : Vec4) :
+    J (transportedParams p x).torsion = J p.torsion := rfl
+
+theorem killingNormSq_at_new_origin (p : OmegaParams) (x : Vec4) :
+    killingNormSq (transportedParams p x) 0 = killingNormSq p x := by
+  have hfun : (fun μ => p.trans.lambda μ + lorentzAct p.torsion x μ) =
+      p.trans.lambda + lorentzAct p.torsion x := by
+    ext μ
+    rfl
+  simp [killingNormSq, transportedParams, lorentzAct_zero, hfun, add_zero]
+
+theorem transported_killing_radial (κ ν s : ℝ) :
+    (transportedParams (killingParams κ ν) ![0, s, 0, 0]).trans.lambda =
+      ![ν + κ * s, 0, 0, 0] := by
+  ext μ
+  fin_cases μ <;> simp [transportedParams, killingParams, lorentzAct, pureBoost]
+
+theorem transported_killing_torsion (κ ν : ℝ) (x : Vec4) :
+    (transportedParams (killingParams κ ν) x).torsion = pureBoost κ := rfl
+
+/-! ### Derivative along an arbitrary differentiable curve -/
+
+theorem hasDerivAt_lorentzAct (t : TorsionParams) {x : ℝ → Vec4} {v : Vec4} {τ : ℝ}
+    (hx : ∀ μ, HasDerivAt (fun s => x s μ) (v μ) τ) (μ : Fin 4) :
+    HasDerivAt (fun s => lorentzAct t (x s) μ) (lorentzAct t v μ) τ := by
+  fin_cases μ
+  · change HasDerivAt (fun s => t.alpha 0 * x s 1 + t.alpha 1 * x s 2 + t.alpha 2 * x s 3)
+        (t.alpha 0 * v 1 + t.alpha 1 * v 2 + t.alpha 2 * v 3) τ
+    have h := ((hx 1).const_mul (t.alpha 0)).add
+      (((hx 2).const_mul (t.alpha 1)).add ((hx 3).const_mul (t.alpha 2)))
+    convert h using 1
+    · ext s
+      simp only [Pi.add_apply]
+      ring
+    · ring
+  · change HasDerivAt (fun s => t.alpha 0 * x s 0 - t.beta 2 * x s 2 + t.beta 1 * x s 3)
+        (t.alpha 0 * v 0 - t.beta 2 * v 2 + t.beta 1 * v 3) τ
+    have h := ((hx 0).const_mul (t.alpha 0)).add
+      (((hx 2).const_mul (-t.beta 2)).add ((hx 3).const_mul (t.beta 1)))
+    convert h using 1
+    · ext s
+      simp only [Pi.add_apply]
+      ring
+    · ring
+  · change HasDerivAt (fun s => t.alpha 1 * x s 0 + t.beta 2 * x s 1 - t.beta 0 * x s 3)
+        (t.alpha 1 * v 0 + t.beta 2 * v 1 - t.beta 0 * v 3) τ
+    have h := ((hx 0).const_mul (t.alpha 1)).add
+      (((hx 1).const_mul (t.beta 2)).add ((hx 3).const_mul (-t.beta 0)))
+    convert h using 1
+    · ext s
+      simp only [Pi.add_apply]
+      ring
+    · ring
+  · change HasDerivAt (fun s => t.alpha 2 * x s 0 - t.beta 1 * x s 1 + t.beta 0 * x s 2)
+        (t.alpha 2 * v 0 - t.beta 1 * v 1 + t.beta 0 * v 2) τ
+    have h := ((hx 0).const_mul (t.alpha 2)).add
+      (((hx 1).const_mul (-t.beta 1)).add ((hx 2).const_mul (t.beta 0)))
+    convert h using 1
+    · ext s
+      simp only [Pi.add_apply]
+      ring
+    · ring
+
+theorem hasDerivAt_transportedLambda (p : OmegaParams) {x : ℝ → Vec4} {v : Vec4} {τ : ℝ}
+    (hx : ∀ μ, HasDerivAt (fun s => x s μ) (v μ) τ) (μ : Fin 4) :
+    HasDerivAt (fun s => (transportedParams p (x s)).trans.lambda μ)
+      (lorentzAct p.torsion v μ) τ := by
+  have hconst : HasDerivAt (fun _ : ℝ => p.trans.lambda μ) 0 τ := hasDerivAt_const τ _
+  have h := hconst.add (hasDerivAt_lorentzAct p.torsion hx μ)
+  convert h using 1
+  · ext s
+    simp [transportedParams]
+  · simp
+
+theorem transported_torsion_const (p : OmegaParams) (x y : Vec4) :
+    (transportedParams p x).torsion = (transportedParams p y).torsion := rfl
+
+/-! ### The exterior rate is not a flat transport -/
+
+theorem hasDerivAt_killingRate (rs : ℝ) {r : ℝ} (hr : r ≠ 0) :
+    HasDerivAt (killingRate rs) (-(rs / r ^ 3)) r := by
+  have hfun : killingRate rs = fun x => (rs / 2) * (x ^ 2)⁻¹ := by
+    ext x
+    simp [killingRate, div_eq_mul_inv]
+    ring
+  rw [hfun]
+  have hsq : HasDerivAt (fun x => x ^ 2) (2 * r) r := by
+    simpa using hasDerivAt_pow 2 r
+  have hne : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hinv := hsq.inv hne
+  have h := hinv.const_mul (rs / 2)
+  refine h.congr_deriv ?_
+  have hr2 : (r ^ 2) ^ 2 = r ^ 4 := by ring
+  rw [hr2]
+  field_simp
+
+theorem killingRate_radial_deriv_ne {rs r : ℝ} (hrs : rs ≠ 0) (hr : r ≠ 0) :
+    -(rs / r ^ 3) ≠ 0 := by
+  intro h
+  have : rs / r ^ 3 = 0 := by linarith
+  exact hrs ((div_eq_zero_iff.mp this).resolve_right (pow_ne_zero 3 hr))
+
+theorem killingRate_ne_of_exterior {rs r₁ r₂ : ℝ}
+    (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) :
+    killingRate rs r₁ ≠ killingRate rs r₂ := by
+  intro h
+  have hrs : rs ≠ 0 := h₁.1.ne'
+  have hr₁ : r₁ ≠ 0 := (lt_trans h₁.1 h₁.2).ne'
+  have hr₂ : r₂ ≠ 0 := (lt_trans h₂.1 h₂.2).ne'
+  have hsq : r₁ ^ 2 = r₂ ^ 2 := by
+    have h' : rs / (2 * r₁ ^ 2) = rs / (2 * r₂ ^ 2) := by simpa [killingRate] using h
+    field_simp at h'
+    linarith
+  have habs : |r₁| = |r₂| := by
+    rw [← sq_eq_sq_iff_abs_eq_abs]
+    simpa using hsq
+  have hpos₁ : 0 < r₁ := lt_trans h₁.1 h₁.2
+  have hpos₂ : 0 < r₂ := lt_trans h₂.1 h₂.2
+  exact hne (by linarith [abs_of_pos hpos₁, abs_of_pos hpos₂, habs])
+
+theorem static_not_flat_transport {rs r₁ r₂ : ℝ}
+    (h₁ : IsExterior rs r₁) (h₂ : IsExterior rs r₂) (hne : r₁ ≠ r₂) (x : Vec4) :
+    (transportedParams (killingParams (killingRate rs r₁) (killingNorm rs r₁)) x).torsion ≠
+      pureBoost (killingRate rs r₂) := by
+  intro h
+  rw [transported_killing_torsion] at h
+  have hrate : killingRate rs r₁ = killingRate rs r₂ := by
+    have hα := congrArg (fun t : TorsionParams => t.alpha 0) h
+    simpa [pureBoost] using hα
+  exact killingRate_ne_of_exterior h₁ h₂ hne hrate
+
+/-! ### The exterior rate read from the incongruence -/
+
+theorem incongruence_kappa_eq_exterior {rs r : ℝ} (h : IsExterior rs r) :
+    -(killingNorm rs r) * (killingNorm rs r * dRapidity_dr rs r) = killingRate rs r ∧
+      killingRate rs r = rs / (2 * r ^ 2) := by
+  refine ⟨?_, rfl⟩
+  rw [KillingAxis.killingRate_eq_norm_mul_deriv h,
+    dSqrtA_dr_eq_neg_dRapidity_mul_sqrtA h]
+  simp only [killingNorm]
+  ring
+
+theorem axisDistance_eq_rapidity_length {rs r : ℝ} (h : IsExterior rs r) :
+    KillingAxis.axisDistance rs r = -1 / (killingNorm rs r * dRapidity_dr rs r) := by
+  have hden : killingNorm rs r * dRapidity_dr rs r ≠ 0 :=
+    mul_ne_zero (KillingAxis.killingNorm_pos h).ne' (KillingAxis.dRapidity_dr_neg h).ne
+  have hmul := KillingAxis.axisDistance_mul_rapidity h
+  have hre : KillingAxis.axisDistance rs r * (-(dRapidity_dr rs r) * killingNorm rs r) =
+      -(KillingAxis.axisDistance rs r * (killingNorm rs r * dRapidity_dr rs r)) := by
+    ring
+  rw [hre] at hmul
+  rw [eq_div_iff hden]
+  linarith
+
+theorem radial_shift_drops_translation_iff {rs r s : ℝ} (h : IsExterior rs r) :
+    (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, s, 0, 0]).trans.lambda = (fun _ => 0) ↔
+      s = -KillingAxis.axisDistance rs r := by
+  rw [transported_killing_radial]
+  constructor
+  · intro hLam
+    have h0 : killingNorm rs r + killingRate rs r * s = 0 := by
+      have := congrFun hLam 0
+      simpa [Matrix.cons_val_zero, Pi.zero_apply] using this
+    have hkl := KillingAxis.killingRate_mul_axisDistance h
+    have hsum : killingRate rs r * (KillingAxis.axisDistance rs r + s) = 0 := by
+      rw [mul_add, hkl]
+      linarith
+    have hs : KillingAxis.axisDistance rs r + s = 0 :=
+      (mul_eq_zero.mp hsum).resolve_left (KillingAxis.killingRate_pos h).ne'
+    linarith
+  · intro hs
+    rw [hs]
+    ext μ
+    fin_cases μ <;> simp [KillingAxis.killingRate_mul_axisDistance h]
+
+theorem omegaBiv_axisShift_eq_boost {rs r : ℝ} (h : IsExterior rs r) :
+    omegaBiv (transportedParams (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]) =
+      (killingRate rs r / 2) • hyperbolic 0 := by
+  have hdrop := (radial_shift_drops_translation_iff h).2 rfl
+  rw [omegaBiv]
+  have htrans : omegaTrans (transportedParams
+      (killingParams (killingRate rs r) (killingNorm rs r))
+        ![0, -KillingAxis.axisDistance rs r, 0, 0]).trans = 0 := by
+    simp [omegaTrans, hdrop]
+  rw [htrans, add_zero, transported_killing_torsion, omegaTorsion_pureBoost]
+
+theorem J_axisShift_pos {rs r : ℝ} (h : IsExterior rs r) (x : Vec4) :
+    J (transportedParams (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion =
+      (1 / 2) * (killingRate rs r) ^ 2 ∧
+      0 < J (transportedParams
+        (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion := by
+  have hJ : J (transportedParams
+      (killingParams (killingRate rs r) (killingNorm rs r)) x).torsion =
+        (1 / 2) * (killingRate rs r) ^ 2 := by
+    rw [J_transported]
+    simp [killingParams, J_pureBoost]
+  refine ⟨hJ, ?_⟩
+  have _hk := KillingAxis.killingRate_pos h
+  rw [hJ]
+  positivity
+
+end DoubleSpacetime.Gravity.KillingTransport

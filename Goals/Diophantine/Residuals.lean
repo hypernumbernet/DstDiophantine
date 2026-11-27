@@ -1,10 +1,10 @@
-import DstDiophantine.Theorems.BealEven
-import DstDiophantine.Theorems.BealGaussianCube
-import DstDiophantine.Theorems.BennettEllenbergNg
-import DstDiophantine.Theorems.Bruin
-import DstDiophantine.Theorems.AnniSiksek
-import DstDiophantine.Theorems.DahmenSiksek
-import DstDiophantine.Theorems.FermatMixed
+import DoubleSpacetime.Theorems.BealEven
+import DoubleSpacetime.Theorems.BealGaussianCube
+import DoubleSpacetime.Theorems.BennettEllenbergNg
+import DoubleSpacetime.Theorems.Bruin
+import DoubleSpacetime.Theorems.AnniSiksek
+import DoubleSpacetime.Theorems.DahmenSiksek
+import DoubleSpacetime.Theorems.FermatMixed
 
 /-!
 # Diophantine residuals
@@ -14,7 +14,7 @@ Each theorem is one open `*Residual` the main library does not prove.
 
 namespace Goals.Diophantine
 
-open DstDiophantine.Theorems
+open DoubleSpacetime.Theorems
 
 /-- Open face. Exponents divisible by `3` or by `4` are mathlib. -/
 theorem fermatMixedMotorOddPrimeResidual : FermatMixedMotorOddPrimeResidual := by sorry

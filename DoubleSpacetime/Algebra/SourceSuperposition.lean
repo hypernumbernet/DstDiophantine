@@ -1,0 +1,893 @@
+import DoubleSpacetime.Algebra.Admissible
+import DoubleSpacetime.Algebra.Invariant
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
+
+/-!
+# Superposition of source bivectors
+
+The expressed point is the nearest admissible point to the coefficient sum. This is not a derivation
+of the Newtonian multi-body law.
+-/
+
+namespace DoubleSpacetime
+
+namespace SourceSuperposition
+
+open Admissible Invariant Operations Real
+
+/-- One axis of the admissible cone: `α ≥ 0`, `β ≥ 0`, `α + β ≤ π/2`. -/
+def InTriangle (x y : ℝ) : Prop :=
+  0 ≤ x ∧ 0 ≤ y ∧ x + y ≤ Real.pi / 2
+
+/-- Voronoi cell of the pure-boost corner `(π/2, 0)`. -/
+def InPureUsual (x y : ℝ) : Prop :=
+  Real.pi / 2 ≤ x ∧ y ≤ x - Real.pi / 2
+
+/-- Voronoi cell of the pure-rotation corner `(0, π/2)`. -/
+def InPureDual (x y : ℝ) : Prop :=
+  Real.pi / 2 ≤ y ∧ x ≤ y - Real.pi / 2
+
+/-- Slab whose orthogonal foot lands on the hypotenuse, including the triangle. -/
+def InWall (x y : ℝ) : Prop :=
+  0 ≤ x ∧ 0 ≤ y ∧ |x - y| ≤ Real.pi / 2
+
+/-- Outward slab of the usual edge, including its corners. -/
+def InUsualEdge (x y : ℝ) : Prop :=
+  0 ≤ x ∧ x ≤ Real.pi / 2 ∧ y ≤ 0
+
+/-- Outward slab of the dual edge, including its corners. -/
+def InDualEdge (x y : ℝ) : Prop :=
+  0 ≤ y ∧ y ≤ Real.pi / 2 ∧ x ≤ 0
+
+theorem admissible_iff_axes (p : TorsionParams) :
+    IsAdmissibleContinuous p ↔ ∀ a, InTriangle (p.alpha a) (p.beta a) := by
+  unfold IsAdmissibleContinuous InTriangle
+  rfl
+
+/-- Orthogonal foot of `(x, y)` on the line `α + β = π/2`. -/
+noncomputable def wallPoint (x y : ℝ) : ℝ × ℝ :=
+  ((x - y + Real.pi / 2) / 2, (y - x + Real.pi / 2) / 2)
+
+theorem wallPoint_sum_diff (x y : ℝ) :
+    (wallPoint x y).1 + (wallPoint x y).2 = Real.pi / 2 ∧
+      (wallPoint x y).1 - (wallPoint x y).2 = x - y := by
+  unfold wallPoint
+  constructor <;> ring
+
+/-- Expressed coefficients on one axis: the nearest point of the triangle. -/
+noncomputable def axisExpress (x y : ℝ) : ℝ × ℝ :=
+  open Classical in
+  if InTriangle x y then (x, y)
+  else if InPureUsual x y then (Real.pi / 2, 0)
+  else if InPureDual x y then (0, Real.pi / 2)
+  else if InWall x y then wallPoint x y
+  else if InUsualEdge x y then (x, 0)
+  else if InDualEdge x y then (0, y)
+  else (0, 0)
+
+theorem axisExpress_triangle {x y : ℝ} (h : InTriangle x y) :
+    axisExpress x y = (x, y) := by
+  unfold axisExpress
+  rw [ite_eq_left h]
+
+theorem axisExpress_pureUsual {x y : ℝ} (h : InPureUsual x y) :
+    axisExpress x y = (Real.pi / 2, 0) := by
+  classical
+  unfold axisExpress
+  by_cases ht : InTriangle x y
+  · have hy : y = 0 := by
+      have hy_nonneg : 0 ≤ y := ht.2.1
+      have hy_le : y ≤ 0 := by linarith [h.1, h.2, ht.2.2]
+      linarith
+    have hx : x = Real.pi / 2 := by linarith [h.1, ht.2.2, hy]
+    rw [ite_eq_left ht]
+    simp [hx, hy]
+  · rw [ite_eq_right ht, ite_eq_left h]
+
+theorem axisExpress_pureDual {x y : ℝ} (h : InPureDual x y) :
+    axisExpress x y = (0, Real.pi / 2) := by
+  classical
+  unfold axisExpress
+  by_cases ht : InTriangle x y
+  · have hx : x = 0 := by
+      have hx_nonneg : 0 ≤ x := ht.1
+      have hx_le : x ≤ 0 := by linarith [h.1, h.2, ht.2.2]
+      linarith
+    have hy : y = Real.pi / 2 := by linarith [h.1, ht.2.2, hx]
+    rw [ite_eq_left ht]
+    simp [hx, hy]
+  · by_cases hu : InPureUsual x y
+    · exfalso
+      have hyx : y + Real.pi / 2 ≤ x := by linarith [hu.2]
+      have hxy : x + Real.pi / 2 ≤ y := by linarith [h.2]
+      linarith [hyx, hxy, Real.pi_pos]
+    · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_left h]
+
+theorem axisExpress_eq_wallPoint {x y : ℝ}
+    (hx : 0 ≤ x) (hy : 0 ≤ y) (hs : Real.pi / 2 ≤ x + y)
+    (hd : |x - y| ≤ Real.pi / 2) :
+    axisExpress x y = wallPoint x y := by
+  classical
+  have hwall : InWall x y := ⟨hx, hy, hd⟩
+  by_cases ht : InTriangle x y
+  · have hsum : x + y = Real.pi / 2 := by linarith [ht.2.2, hs]
+    have hid : (x, y) = wallPoint x y := by
+      unfold wallPoint
+      ext <;> linarith [hsum]
+    rw [axisExpress_triangle ht, hid]
+  · by_cases hu : InPureUsual x y
+    · have hd_eq : x - y = Real.pi / 2 := by
+        have hd_ge : Real.pi / 2 ≤ x - y := by linarith [hu.2]
+        have hd_le : x - y ≤ Real.pi / 2 := (abs_le.mp hd).2
+        linarith
+      rw [axisExpress_pureUsual hu]
+      unfold wallPoint
+      ext <;> linarith [hd_eq]
+    · by_cases hdual : InPureDual x y
+      · have hd_eq : y - x = Real.pi / 2 := by
+          have hd_ge : Real.pi / 2 ≤ y - x := by linarith [hdual.2]
+          have hd_le : y - x ≤ Real.pi / 2 := by
+            have := (abs_le.mp hd).1
+            linarith
+          linarith
+        rw [axisExpress_pureDual hdual]
+        unfold wallPoint
+        ext <;> linarith [hd_eq]
+      · unfold axisExpress
+        rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hdual, ite_eq_left hwall]
+
+theorem axisExpress_lock_usual {x y : ℝ}
+    (_hx : 0 ≤ x) (hy : 0 ≤ y) (hd : Real.pi / 2 ≤ x - y) :
+    axisExpress x y = (Real.pi / 2, 0) := by
+  have h : InPureUsual x y := by
+    constructor
+    · linarith
+    · linarith
+  exact axisExpress_pureUsual h
+
+theorem axisExpress_lock_dual {x y : ℝ}
+    (hx : 0 ≤ x) (_hy : 0 ≤ y) (hd : Real.pi / 2 ≤ y - x) :
+    axisExpress x y = (0, Real.pi / 2) := by
+  have h : InPureDual x y := by
+    constructor
+    · linarith
+    · linarith
+  exact axisExpress_pureDual h
+
+private theorem outside_nonpos {x y : ℝ}
+    (h1 : ¬ InTriangle x y) (h2 : ¬ InPureUsual x y) (h3 : ¬ InPureDual x y)
+    (h4 : ¬ InWall x y) (h5 : ¬ InUsualEdge x y) (h6 : ¬ InDualEdge x y) :
+    x ≤ 0 ∧ y ≤ 0 := by
+  classical
+  have hy : y ≤ 0 := by
+    by_contra hy
+    have hy0 : 0 < y := (not_le).mp hy
+    by_cases hx : 0 ≤ x
+    · by_cases hs : x + y ≤ Real.pi / 2
+      · exact h1 ⟨hx, le_of_lt hy0, hs⟩
+      · by_cases hd : |x - y| ≤ Real.pi / 2
+        · exact h4 ⟨hx, le_of_lt hy0, hd⟩
+        · by_cases hxy : Real.pi / 2 ≤ x - y
+          · exact h2 ⟨by linarith, by linarith⟩
+          · have hrev : Real.pi / 2 < y - x := by
+              have habs : Real.pi / 2 < |x - y| := (not_le).mp hd
+              have hdlt : x - y < 0 := by
+                by_contra hnn
+                have hge : 0 ≤ x - y := (not_lt).mp hnn
+                rw [abs_of_nonneg hge] at habs
+                linarith [habs, (not_le).mp hxy]
+              rw [abs_of_neg hdlt] at habs
+              linarith
+            exact h3 ⟨by linarith, by linarith⟩
+    · have hxlt : x < 0 := (not_le).mp hx
+      by_cases hyh : y ≤ Real.pi / 2
+      · exact h6 ⟨le_of_lt hy0, hyh, le_of_lt hxlt⟩
+      · exact h3 ⟨le_of_lt ((not_le).mp hyh), by linarith⟩
+  have hx : x ≤ 0 := by
+    by_contra hx
+    have hx0 : 0 < x := (not_le).mp hx
+    by_cases hxh : x ≤ Real.pi / 2
+    · exact h5 ⟨le_of_lt hx0, hxh, hy⟩
+    · exact h2 ⟨le_of_lt ((not_le).mp hxh), by linarith⟩
+  exact ⟨hx, hy⟩
+
+theorem axisExpress_mem (x y : ℝ) : InTriangle (axisExpress x y).1 (axisExpress x y).2 := by
+  classical
+  unfold axisExpress
+  by_cases ht : InTriangle x y
+  · simpa [ite_eq_left ht] using ht
+  · by_cases hu : InPureUsual x y
+    · rw [ite_eq_right ht, ite_eq_left hu]
+      exact ⟨le_of_lt (div_pos Real.pi_pos (by norm_num)), le_refl 0,
+        le_of_eq (by ring)⟩
+    · by_cases hd : InPureDual x y
+      · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_left hd]
+        exact ⟨le_refl 0, le_of_lt (div_pos Real.pi_pos (by norm_num)),
+          le_of_eq (by ring)⟩
+      · by_cases hw : InWall x y
+        · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_left hw]
+          have hsum := (wallPoint_sum_diff x y).1
+          have habs := abs_le.mp hw.2.2
+          constructor
+          · unfold wallPoint
+            linarith
+          · constructor
+            · unfold wallPoint
+              linarith
+            · linarith
+        · by_cases he : InUsualEdge x y
+          · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw, ite_eq_left he]
+            exact ⟨he.1, le_refl 0, by linarith [he.2.1]⟩
+          · by_cases hf : InDualEdge x y
+            · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw,
+                ite_eq_right he, ite_eq_left hf]
+              exact ⟨le_refl 0, hf.1, by linarith [hf.2.1]⟩
+            · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw,
+                ite_eq_right he, ite_eq_right hf]
+              exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+
+/-- Squared-distance pairing of an internal point against a comparison point. -/
+def dot2 (x y ex ey vx vy : ℝ) : ℝ :=
+  (x - ex) * (vx - ex) + (y - ey) * (vy - ey)
+
+private theorem vertexDots (x y : ℝ) :
+    let e := axisExpress x y
+    dot2 x y e.1 e.2 0 0 ≤ 0 ∧
+      dot2 x y e.1 e.2 (Real.pi / 2) 0 ≤ 0 ∧
+      dot2 x y e.1 e.2 0 (Real.pi / 2) ≤ 0 := by
+  classical
+  unfold axisExpress
+  by_cases ht : InTriangle x y
+  · rw [ite_eq_left ht]
+    simp [dot2]
+  · by_cases hu : InPureUsual x y
+    · rw [ite_eq_right ht, ite_eq_left hu]
+      refine ⟨?_, ?_, ?_⟩
+      · have : 0 ≤ x - Real.pi / 2 := by linarith [hu.1]
+        unfold dot2
+        nlinarith [Real.pi_pos, hu.1]
+      · exact le_of_eq (by unfold dot2; ring)
+      · unfold dot2
+        nlinarith [Real.pi_pos, hu.2]
+    · by_cases hd : InPureDual x y
+      · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_left hd]
+        refine ⟨?_, ?_, ?_⟩
+        · have : 0 ≤ y - Real.pi / 2 := by linarith [hd.1]
+          unfold dot2
+          nlinarith [Real.pi_pos, hd.1]
+        · unfold dot2
+          nlinarith [Real.pi_pos, hd.2]
+        · exact le_of_eq (by unfold dot2; ring)
+      · by_cases hw : InWall x y
+        · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_left hw]
+          have hsum_gt : Real.pi / 2 ≤ x + y := by
+            have hnot : ¬ x + y ≤ Real.pi / 2 := by
+              intro hs
+              exact ht ⟨hw.1, hw.2.1, hs⟩
+            exact le_of_lt ((not_le).mp hnot)
+          set t : ℝ := (x + y - Real.pi / 2) / 2
+          have ht0 : 0 ≤ t := by unfold t; linarith
+          have hx' : (wallPoint x y).1 = (x - y + Real.pi / 2) / 2 := rfl
+          have hy' : (wallPoint x y).2 = (y - x + Real.pi / 2) / 2 := rfl
+          have hxt : x - (wallPoint x y).1 = t := by unfold t; rw [hx']; ring
+          have hyt : y - (wallPoint x y).2 = t := by unfold t; rw [hy']; ring
+          have hsum' : (wallPoint x y).1 + (wallPoint x y).2 = Real.pi / 2 :=
+            (wallPoint_sum_diff x y).1
+          refine ⟨?_, ?_, ?_⟩
+          · unfold dot2
+            rw [hxt, hyt]
+            nlinarith [ht0, hsum', Real.pi_pos]
+          · unfold dot2
+            rw [hxt, hyt]
+            nlinarith [hsum']
+          · unfold dot2
+            rw [hxt, hyt]
+            nlinarith [hsum']
+        · by_cases he : InUsualEdge x y
+          · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw, ite_eq_left he]
+            refine ⟨?_, ?_, ?_⟩
+            · exact le_of_eq (by unfold dot2; ring)
+            · exact le_of_eq (by unfold dot2; ring)
+            · unfold dot2
+              nlinarith [he.2.2, Real.pi_pos]
+          · by_cases hf : InDualEdge x y
+            · rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw,
+                ite_eq_right he, ite_eq_left hf]
+              refine ⟨?_, ?_, ?_⟩
+              · exact le_of_eq (by unfold dot2; ring)
+              · unfold dot2
+                nlinarith [hf.2.2, Real.pi_pos]
+              · exact le_of_eq (by unfold dot2; ring)
+            · have hout := outside_nonpos ht hu hd hw he hf
+              rw [ite_eq_right ht, ite_eq_right hu, ite_eq_right hd, ite_eq_right hw,
+                ite_eq_right he, ite_eq_right hf]
+              refine ⟨?_, ?_, ?_⟩
+              · exact le_of_eq (by unfold dot2; ring)
+              · unfold dot2
+                nlinarith [hout.1, Real.pi_pos]
+              · unfold dot2
+                nlinarith [hout.2, Real.pi_pos]
+
+private theorem dot_bary {x y ex ey qx qy : ℝ} :
+    dot2 x y ex ey qx qy =
+      ((Real.pi / 2 - qx - qy) / (Real.pi / 2)) * dot2 x y ex ey 0 0 +
+        (qx / (Real.pi / 2)) * dot2 x y ex ey (Real.pi / 2) 0 +
+        (qy / (Real.pi / 2)) * dot2 x y ex ey 0 (Real.pi / 2) := by
+  have hh : Real.pi / 2 ≠ 0 := by positivity
+  unfold dot2
+  field_simp [hh]
+  ring
+
+theorem axisDot_le {x y qx qy : ℝ} (hq : InTriangle qx qy) :
+    dot2 x y (axisExpress x y).1 (axisExpress x y).2 qx qy ≤ 0 := by
+  have hv := vertexDots x y
+  rw [dot_bary]
+  have ha : 0 ≤ (Real.pi / 2 - qx - qy) / (Real.pi / 2) := by
+    apply div_nonneg
+    · linarith [hq.2.2]
+    · positivity
+  have hb : 0 ≤ qx / (Real.pi / 2) := div_nonneg hq.1 (by positivity)
+  have hc : 0 ≤ qy / (Real.pi / 2) := div_nonneg hq.2.1 (by positivity)
+  have h1 : ((Real.pi / 2 - qx - qy) / (Real.pi / 2)) *
+      dot2 x y (axisExpress x y).1 (axisExpress x y).2 0 0 ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos ha hv.1
+  have h2 : (qx / (Real.pi / 2)) *
+      dot2 x y (axisExpress x y).1 (axisExpress x y).2 (Real.pi / 2) 0 ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos hb hv.2.1
+  have h3 : (qy / (Real.pi / 2)) *
+      dot2 x y (axisExpress x y).1 (axisExpress x y).2 0 (Real.pi / 2) ≤ 0 :=
+    mul_nonpos_of_nonneg_of_nonpos hc hv.2.2
+  linarith
+
+theorem axisSq_le {x y qx qy : ℝ} (hq : InTriangle qx qy) :
+    (x - (axisExpress x y).1) ^ 2 + (y - (axisExpress x y).2) ^ 2 ≤
+      (x - qx) ^ 2 + (y - qy) ^ 2 := by
+  have hdot := axisDot_le (x := x) (y := y) hq
+  have hgap :
+      (x - qx) ^ 2 + (y - qy) ^ 2 -
+          ((x - (axisExpress x y).1) ^ 2 + (y - (axisExpress x y).2) ^ 2) =
+        ((axisExpress x y).1 - qx) ^ 2 + ((axisExpress x y).2 - qy) ^ 2 -
+          2 * dot2 x y (axisExpress x y).1 (axisExpress x y).2 qx qy := by
+    unfold dot2
+    ring
+  have hnn : 0 ≤ ((axisExpress x y).1 - qx) ^ 2 + ((axisExpress x y).2 - qy) ^ 2 := by
+    positivity
+  linarith
+
+theorem axisSq_eq_zero_iff {x y qx qy : ℝ} (hq : InTriangle qx qy) :
+    (x - qx) ^ 2 + (y - qy) ^ 2 =
+        (x - (axisExpress x y).1) ^ 2 + (y - (axisExpress x y).2) ^ 2 ↔
+      qx = (axisExpress x y).1 ∧ qy = (axisExpress x y).2 := by
+  constructor
+  · intro h
+    have hdot := axisDot_le (x := x) (y := y) hq
+    have hgap :
+        (x - qx) ^ 2 + (y - qy) ^ 2 -
+            ((x - (axisExpress x y).1) ^ 2 + (y - (axisExpress x y).2) ^ 2) =
+          ((axisExpress x y).1 - qx) ^ 2 + ((axisExpress x y).2 - qy) ^ 2 -
+            2 * dot2 x y (axisExpress x y).1 (axisExpress x y).2 qx qy := by
+      unfold dot2
+      ring
+    have hzero : ((axisExpress x y).1 - qx) ^ 2 + ((axisExpress x y).2 - qy) ^ 2 = 0 := by
+      nlinarith [hdot, hgap, h]
+    have hx0 : ((axisExpress x y).1 - qx) ^ 2 = 0 := by nlinarith [hzero]
+    have hy0 : ((axisExpress x y).2 - qy) ^ 2 = 0 := by nlinarith [hzero]
+    exact ⟨by linarith [sq_eq_zero_iff.mp hx0], by linarith [sq_eq_zero_iff.mp hy0]⟩
+  · rintro ⟨rfl, rfl⟩
+    rfl
+
+/-- The admissible point a particle expresses. -/
+noncomputable def express (p : TorsionParams) : TorsionParams where
+  alpha := fun a => (axisExpress (p.alpha a) (p.beta a)).1
+  beta := fun a => (axisExpress (p.alpha a) (p.beta a)).2
+
+theorem express_admissible (p : TorsionParams) : IsAdmissibleContinuous (express p) := by
+  rw [admissible_iff_axes]
+  intro a
+  simpa [express] using axisExpress_mem (p.alpha a) (p.beta a)
+
+theorem express_eq_of_admissible {p : TorsionParams} (h : IsAdmissibleContinuous p) :
+    express p = p := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    have he := axisExpress_triangle ((admissible_iff_axes p).mp h a)
+    simp [he]
+  · funext a
+    have he := axisExpress_triangle ((admissible_iff_axes p).mp h a)
+    simp [he]
+
+theorem express_idempotent (p : TorsionParams) : express (express p) = express p :=
+  express_eq_of_admissible (express_admissible p)
+
+theorem abs_J_express_le (p : TorsionParams) :
+    |J (express p)| ≤ 3 * Real.pi ^ 2 / 8 :=
+  torsion_bound_raw_continuous_pi_sq _ (express_admissible p)
+
+theorem mass_express_le (p : TorsionParams) :
+    mass (express p) ≤ 3 * Real.pi ^ 2 / 8 :=
+  mass_bound_raw_continuous _ (express_admissible p)
+
+/-- Squared Euclidean distance of the six coefficients. -/
+def sqDist (p q : TorsionParams) : ℝ :=
+  ∑ a : Fin 3, ((p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2)
+
+private theorem sq_sub_comm (a b : ℝ) : (a - b) ^ 2 = (b - a) ^ 2 := by
+  ring
+
+theorem sqDist_express_le (p q : TorsionParams) (hq : IsAdmissibleContinuous q) :
+    sqDist (express p) p ≤ sqDist q p := by
+  unfold sqDist
+  refine Finset.sum_le_sum fun a _ => ?_
+  have h := axisSq_le (x := p.alpha a) (y := p.beta a) ((admissible_iff_axes q).mp hq a)
+  have h1 := sq_sub_comm ((express p).alpha a) (p.alpha a)
+  have h2 := sq_sub_comm ((express p).beta a) (p.beta a)
+  have h3 := sq_sub_comm (q.alpha a) (p.alpha a)
+  have h4 := sq_sub_comm (q.beta a) (p.beta a)
+  simp only [express] at h h1 h2 ⊢
+  linarith
+
+theorem eq_express_of_sqDist_le {p q : TorsionParams}
+    (hq : IsAdmissibleContinuous q)
+    (hle : sqDist q p ≤ sqDist (express p) p) :
+    q = express p := by
+  have hgap : ∀ a : Fin 3,
+      0 ≤ (p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
+        ((p.alpha a - (express p).alpha a) ^ 2 + (p.beta a - (express p).beta a) ^ 2) := by
+    intro a
+    have := axisSq_le (x := p.alpha a) (y := p.beta a) ((admissible_iff_axes q).mp hq a)
+    simpa [express] using this
+  have hsum :
+      ∑ a : Fin 3,
+          ((p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
+            ((p.alpha a - (express p).alpha a) ^ 2 +
+              (p.beta a - (express p).beta a) ^ 2)) =
+        sqDist q p - sqDist (express p) p := by
+    unfold sqDist
+    rw [← Finset.sum_sub_distrib]
+    refine Finset.sum_congr rfl fun a _ => ?_
+    rw [sq_sub_comm (q.alpha a) (p.alpha a), sq_sub_comm (q.beta a) (p.beta a),
+      sq_sub_comm ((express p).alpha a) (p.alpha a),
+      sq_sub_comm ((express p).beta a) (p.beta a)]
+  have hnonneg :
+      0 ≤ ∑ a : Fin 3,
+          ((p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
+            ((p.alpha a - (express p).alpha a) ^ 2 +
+              (p.beta a - (express p).beta a) ^ 2)) :=
+    Finset.sum_nonneg fun a _ => hgap a
+  have hzero : ∑ a : Fin 3,
+      ((p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
+        ((p.alpha a - (express p).alpha a) ^ 2 +
+          (p.beta a - (express p).beta a) ^ 2)) = 0 := by
+    linarith [hle, hsum, hnonneg]
+  have haxis : ∀ a : Fin 3,
+      (p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 =
+        (p.alpha a - (express p).alpha a) ^ 2 + (p.beta a - (express p).beta a) ^ 2 := by
+    intro a
+    have hterm :
+        (p.alpha a - q.alpha a) ^ 2 + (p.beta a - q.beta a) ^ 2 -
+          ((p.alpha a - (express p).alpha a) ^ 2 +
+            (p.beta a - (express p).beta a) ^ 2) = 0 :=
+      (Finset.sum_eq_zero_iff_of_nonneg (fun a _ => hgap a)).mp hzero a (Finset.mem_univ a)
+    linarith
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    exact ((axisSq_eq_zero_iff ((admissible_iff_axes q).mp hq a)).mp (by
+      simpa [express] using haxis a)).1
+  · funext a
+    exact ((axisSq_eq_zero_iff ((admissible_iff_axes q).mp hq a)).mp (by
+      simpa [express] using haxis a)).2
+
+/-- Componentwise sum of two torsional bivectors. -/
+def addParams (p q : TorsionParams) : TorsionParams where
+  alpha := fun a => p.alpha a + q.alpha a
+  beta := fun a => p.beta a + q.beta a
+
+theorem addParams_comm (p q : TorsionParams) : addParams p q = addParams q p := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a; ring
+  · funext a; ring
+
+theorem addParams_assoc (p q r : TorsionParams) :
+    addParams (addParams p q) r = addParams p (addParams q r) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a; simp only [addParams]; ring
+  · funext a; simp only [addParams]; ring
+
+theorem addParams_left_comm (p q r : TorsionParams) :
+    addParams p (addParams q r) = addParams q (addParams p r) := by
+  rw [← addParams_assoc, addParams_comm p q, addParams_assoc]
+
+/-- Internal sum of source bivectors. Order is immaterial. -/
+def sumParams (ps : List TorsionParams) : TorsionParams where
+  alpha := fun a => (ps.map (fun p => p.alpha a)).sum
+  beta := fun a => (ps.map (fun p => p.beta a)).sum
+
+theorem sumParams_cons (p : TorsionParams) (ps : List TorsionParams) :
+    sumParams (p :: ps) = addParams p (sumParams ps) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a; simp [sumParams, List.map_cons, List.sum_cons]
+  · funext a; simp [sumParams, List.map_cons, List.sum_cons]
+
+theorem sumParams_perm {ps qs : List TorsionParams} (h : ps.Perm qs) :
+    sumParams ps = sumParams qs := by
+  induction h with
+  | nil => rfl
+  | cons x _ ih =>
+    rw [sumParams_cons, sumParams_cons, ih]
+  | swap x y _ =>
+    rw [sumParams_cons, sumParams_cons, sumParams_cons, sumParams_cons, addParams_left_comm]
+  | trans _ _ ih1 ih2 =>
+    exact ih1.trans ih2
+
+/-- The mismatch expressed by a list of sources. -/
+noncomputable def expressedSuperposition (ps : List TorsionParams) : TorsionParams :=
+  express (sumParams ps)
+
+/-- A pure boost of rapidity `φ` on one axis. -/
+def axisBoost (a0 : Fin 3) (φ : ℝ) : TorsionParams where
+  alpha := fun a => if a = a0 then φ else 0
+  beta := fun _ => 0
+
+theorem J_axisBoost (a0 : Fin 3) (φ : ℝ) :
+    J (axisBoost a0 φ) = φ ^ 2 / 2 := by
+  rw [J_coef, Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisBoost] <;> ring
+
+theorem axisBoost_admissible {a0 : Fin 3} {φ : ℝ}
+    (h0 : 0 ≤ φ) (hφ : φ ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisBoost a0 φ) := by
+  intro a
+  by_cases h : a = a0
+  · simp only [axisBoost, h, ite_true]
+    exact ⟨h0, le_refl 0, by linarith⟩
+  · simp only [axisBoost, h, ite_false]
+    exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+
+theorem sumParams_replicate_axisBoost (n : ℕ) (a0 : Fin 3) (φ : ℝ) :
+    sumParams (List.replicate n (axisBoost a0 φ)) = axisBoost a0 ((n : ℝ) * φ) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisBoost, List.map_replicate, List.sum_replicate, nsmul_eq_mul]
+    split_ifs <;> ring
+  · funext a
+    simp [axisBoost, List.map_replicate, List.sum_replicate]
+
+theorem express_axisBoost_saturated {a0 : Fin 3} {φ : ℝ} (hφ : Real.pi / 2 ≤ φ) :
+    express (axisBoost a0 φ) = axisBoost a0 (Real.pi / 2) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    by_cases h : a = a0
+    · have he := axisExpress_pureUsual (x := φ) (y := 0)
+        ⟨hφ, by linarith⟩
+      simp [axisBoost, h, he]
+    · have he := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisBoost, h, he]
+  · funext a
+    by_cases h : a = a0
+    · have he := axisExpress_pureUsual (x := φ) (y := 0)
+        ⟨hφ, by linarith⟩
+      simp [axisBoost, h, he]
+    · have he := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisBoost, h, he]
+
+theorem J_express_repeat_pure_boost {n : ℕ} (hn : 1 ≤ n) (a0 : Fin 3) :
+    J (expressedSuperposition (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
+      Real.pi ^ 2 / 8 := by
+  have hsum := sumParams_replicate_axisBoost n a0 (Real.pi / 2)
+  have hφ : Real.pi / 2 ≤ (n : ℝ) * (Real.pi / 2) := by
+    have hn1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
+    nlinarith [Real.pi_pos]
+  unfold expressedSuperposition
+  rw [hsum, express_axisBoost_saturated hφ, J_axisBoost]
+  ring
+
+theorem J_internal_repeat_pure_boost (n : ℕ) (a0 : Fin 3) :
+    J (sumParams (List.replicate n (axisBoost a0 (Real.pi / 2)))) =
+      (n : ℝ) ^ 2 * (Real.pi ^ 2 / 8) := by
+  rw [sumParams_replicate_axisBoost, J_axisBoost]
+  ring
+
+theorem J_internal_repeat_gt_ceiling {n : ℕ} (hn : 2 ≤ n) (a0 : Fin 3) :
+    3 * Real.pi ^ 2 / 8 <
+      J (sumParams (List.replicate n (axisBoost a0 (Real.pi / 2)))) := by
+  rw [J_internal_repeat_pure_boost]
+  have hn2 : (4 : ℝ) ≤ (n : ℝ) ^ 2 := by
+    have h2 : (2 : ℝ) ≤ (n : ℝ) := by exact_mod_cast hn
+    nlinarith
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  nlinarith [hn2, hπ]
+
+theorem internal_unbounded_expressed_bounded :
+    (∀ p : TorsionParams, |J (express p)| ≤ 3 * Real.pi ^ 2 / 8) ∧
+      (∀ C : ℝ, ∃ p : TorsionParams, C < J p) := by
+  refine ⟨abs_J_express_le, ?_⟩
+  intro C
+  refine ⟨axisBoost 0 (2 * |C| + 1), ?_⟩
+  rw [J_axisBoost]
+  have habs : 0 ≤ |C| := abs_nonneg C
+  nlinarith [sq_abs C, sq_nonneg (|C|)]
+
+/-- Two boosts of rapidity `π/4` express `π²/8`, not the sum of their heights. -/
+theorem J_two_quarter_boosts (a0 : Fin 3) :
+    let p := axisBoost a0 (Real.pi / 4)
+    let s := sumParams [p, p]
+    IsAdmissibleContinuous p ∧ IsAdmissibleContinuous s ∧ express s = s ∧
+      J p = Real.pi ^ 2 / 32 ∧ J s = Real.pi ^ 2 / 8 ∧
+      J p + J p = Real.pi ^ 2 / 16 ∧ J s ≠ J p + J p := by
+  set p : TorsionParams := axisBoost a0 (Real.pi / 4)
+  set s : TorsionParams := sumParams [p, p]
+  change
+    IsAdmissibleContinuous p ∧ IsAdmissibleContinuous s ∧ express s = s ∧
+      J p = Real.pi ^ 2 / 32 ∧ J s = Real.pi ^ 2 / 8 ∧
+      J p + J p = Real.pi ^ 2 / 16 ∧ J s ≠ J p + J p
+  have hp : IsAdmissibleContinuous p :=
+    axisBoost_admissible (a0 := a0) (φ := Real.pi / 4) (by positivity) (by linarith [Real.pi_pos])
+  have hs_eq : s = axisBoost a0 (Real.pi / 2) := by
+    simp only [s, p, sumParams, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil]
+    refine congrArg₂ TorsionParams.mk ?_ ?_
+    · funext a
+      simp only [axisBoost]
+      split_ifs <;> ring
+    · funext a
+      simp [axisBoost]
+  have hs : IsAdmissibleContinuous s := by
+    rw [hs_eq]
+    exact axisBoost_admissible (a0 := a0) (φ := Real.pi / 2) (by positivity) le_rfl
+  have hJ : J p = Real.pi ^ 2 / 32 := by
+    rw [J_axisBoost]
+    ring
+  have hJs : J s = Real.pi ^ 2 / 8 := by
+    rw [hs_eq, J_axisBoost]
+    ring
+  refine ⟨hp, hs, express_eq_of_admissible hs, hJ, hJs, ?_, ?_⟩
+  · rw [hJ]
+    ring
+  · rw [hJs, hJ]
+    intro h
+    exfalso
+    nlinarith [h, Real.pi_pos]
+
+/-! ### The lag passes through; the sum overflows -/
+
+/-- Equal rapidity on both sectors of one axis. -/
+def axisPair (a0 : Fin 3) (α β : ℝ) : TorsionParams where
+  alpha := fun a => if a = a0 then α else 0
+  beta := fun a => if a = a0 then β else 0
+
+theorem J_axisPair (a0 : Fin 3) (α β : ℝ) :
+    J (axisPair a0 α β) = (1 / 2) * (α ^ 2 - β ^ 2) := by
+  rw [J_coef, Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisPair]
+
+theorem mass_axisPair (a0 : Fin 3) (α β : ℝ) :
+    mass (axisPair a0 α β) = (1 / 2) * (α ^ 2 + β ^ 2) := by
+  rw [mass_coef, Fin.sum_univ_three]
+  fin_cases a0 <;> simp [axisPair]
+
+theorem J_add_mass_axisPair (a0 : Fin 3) (α β : ℝ) :
+    J (axisPair a0 α β) + mass (axisPair a0 α β) = α ^ 2 := by
+  rw [J_axisPair, mass_axisPair]
+  ring
+
+theorem axisPair_admissible {a0 : Fin 3} {α β : ℝ}
+    (hα : 0 ≤ α) (hβ : 0 ≤ β) (hs : α + β ≤ Real.pi / 2) :
+    IsAdmissibleContinuous (axisPair a0 α β) := by
+  intro a
+  by_cases h : a = a0
+  · simp only [axisPair, h, ite_true]
+    exact ⟨hα, hβ, hs⟩
+  · simp only [axisPair, h, ite_false]
+    exact ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+
+/-- Equal rapidity added to both sectors of one axis. -/
+def axisBalance (a0 : Fin 3) (ε : ℝ) : TorsionParams :=
+  axisPair a0 ε ε
+
+/-- One axis on the wall `α + β = π/2`, with difference `δ`. -/
+noncomputable def axisWall (a0 : Fin 3) (δ : ℝ) : TorsionParams :=
+  axisPair a0 ((Real.pi / 2 + δ) / 2) ((Real.pi / 2 - δ) / 2)
+
+theorem J_axisWall (a0 : Fin 3) (δ : ℝ) :
+    J (axisWall a0 δ) = δ * Real.pi / 4 := by
+  unfold axisWall
+  rw [J_axisPair]
+  ring
+
+theorem mass_axisWall (a0 : Fin 3) (δ : ℝ) :
+    mass (axisWall a0 δ) = ((Real.pi / 2) ^ 2 + δ ^ 2) / 4 := by
+  unfold axisWall
+  rw [mass_axisPair]
+  ring
+
+/-- A wall seed followed by `n` balanced sources on the same axis. -/
+noncomputable def balancePile (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) : List TorsionParams :=
+  axisWall a0 δ :: List.replicate n (axisBalance a0 ε)
+
+theorem sumParams_replicate_axisBalance (n : ℕ) (a0 : Fin 3) (ε : ℝ) :
+    sumParams (List.replicate n (axisBalance a0 ε)) = axisBalance a0 ((n : ℝ) * ε) := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisBalance, axisPair, List.map_replicate, List.sum_replicate, nsmul_eq_mul]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisBalance, axisPair, List.map_replicate, List.sum_replicate, nsmul_eq_mul]
+    split_ifs <;> ring
+
+theorem sumParams_balancePile (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    sumParams (balancePile a0 δ ε n) =
+      addParams (axisWall a0 δ) (axisBalance a0 ((n : ℝ) * ε)) := by
+  unfold balancePile
+  rw [sumParams_cons, sumParams_replicate_axisBalance]
+
+theorem sumParams_balancePile_eq (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    sumParams (balancePile a0 δ ε n) =
+      axisPair a0 ((Real.pi / 2 + δ) / 2 + (n : ℝ) * ε)
+        ((Real.pi / 2 - δ) / 2 + (n : ℝ) * ε) := by
+  rw [sumParams_balancePile]
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisWall, axisBalance, axisPair]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisWall, axisBalance, axisPair]
+    split_ifs <;> ring
+
+theorem axisExpress_wall_sum_diff {x y : ℝ}
+    (hx : 0 ≤ x) (hy : 0 ≤ y) (hs : Real.pi / 2 ≤ x + y)
+    (hd : |x - y| ≤ Real.pi / 2) :
+    (axisExpress x y).1 + (axisExpress x y).2 = Real.pi / 2 ∧
+      (axisExpress x y).1 - (axisExpress x y).2 = x - y := by
+  rw [axisExpress_eq_wallPoint hx hy hs hd]
+  exact wallPoint_sum_diff x y
+
+theorem express_balancePile {a0 : Fin 3} {δ ε : ℝ} {n : ℕ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 ≤ ε) :
+    express (sumParams (balancePile a0 δ ε n)) = axisWall a0 δ := by
+  rw [sumParams_balancePile_eq]
+  set x : ℝ := (Real.pi / 2 + δ) / 2 + (n : ℝ) * ε
+  set y : ℝ := (Real.pi / 2 - δ) / 2 + (n : ℝ) * ε
+  have hmul : 0 ≤ (n : ℝ) * ε := mul_nonneg (Nat.cast_nonneg n) hε
+  have hx : 0 ≤ x := by
+    unfold x
+    linarith [Real.pi_pos, hδ0, hmul]
+  have hy : 0 ≤ y := by
+    unfold y
+    linarith [hδ, hmul]
+  have hdiff : x - y = δ := by
+    unfold x y
+    ring
+  have hsum : Real.pi / 2 ≤ x + y := by
+    unfold x y
+    linarith [Real.pi_pos, hmul]
+  have habs : |x - y| ≤ Real.pi / 2 := by
+    rw [hdiff, abs_of_nonneg hδ0]
+    exact hδ
+  have he := axisExpress_eq_wallPoint hx hy hsum habs
+  have hfoot := wallPoint_sum_diff x y
+  rw [hdiff] at hfoot
+  have h1 : (wallPoint x y).1 = (Real.pi / 2 + δ) / 2 := by linarith [hfoot.1, hfoot.2]
+  have h2 : (wallPoint x y).2 = (Real.pi / 2 - δ) / 2 := by linarith [hfoot.1, hfoot.2]
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    by_cases ha : a = a0
+    · simp [axisPair, ha, he, h1]
+    · have ht := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisPair, ha, ht]
+  · funext a
+    by_cases ha : a = a0
+    · simp [axisPair, ha, he, h2]
+    · have ht := axisExpress_triangle (x := (0 : ℝ)) (y := 0)
+        ⟨le_refl 0, le_refl 0, by linarith [Real.pi_pos]⟩
+      simp [axisPair, ha, ht]
+
+theorem J_balancePile_sum (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    J (sumParams (balancePile a0 δ ε n)) =
+      δ * (Real.pi / 2 + 2 * (n : ℝ) * ε) / 2 := by
+  rw [sumParams_balancePile_eq, J_axisPair]
+  ring
+
+theorem mass_balancePile_sum (a0 : Fin 3) (δ ε : ℝ) (n : ℕ) :
+    mass (sumParams (balancePile a0 δ ε n)) =
+      ((Real.pi / 2 + 2 * (n : ℝ) * ε) ^ 2 + δ ^ 2) / 4 := by
+  rw [sumParams_balancePile_eq, mass_axisPair]
+  ring
+
+theorem balancePile_JM_overflow {a0 : Fin 3} {δ ε : ℝ} {n : ℕ}
+    (hδ0 : 0 ≤ δ) (hδ : δ ≤ Real.pi / 2) (hε : 0 < ε) (hn : 1 ≤ n) :
+    J (expressedSuperposition (balancePile a0 δ ε n)) +
+        mass (expressedSuperposition (balancePile a0 δ ε n)) <
+      J (sumParams (balancePile a0 δ ε n)) +
+        mass (sumParams (balancePile a0 δ ε n)) := by
+  unfold expressedSuperposition
+  rw [express_balancePile hδ0 hδ (le_of_lt hε)]
+  unfold axisWall
+  rw [sumParams_balancePile_eq, J_add_mass_axisPair, J_add_mass_axisPair]
+  have hn1 : (1 : ℝ) ≤ n := by exact_mod_cast hn
+  have hstep : 0 < (n : ℝ) * ε := by nlinarith
+  have hbase : 0 ≤ (Real.pi / 2 + δ) / 2 := by linarith [Real.pi_pos, hδ0]
+  nlinarith [sq_nonneg ((Real.pi / 2 + δ) / 2)]
+
+theorem J_quarter_balancePile (n : ℕ) (a0 : Fin 3) :
+    J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      ((n : ℝ) + 1) * Real.pi ^ 2 / 16 := by
+  rw [J_balancePile_sum]
+  ring
+
+theorem mass_quarter_balancePile (n : ℕ) (a0 : Fin 3) :
+    mass (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      (4 * ((n : ℝ) + 1) ^ 2 + 1) * Real.pi ^ 2 / 64 := by
+  rw [mass_balancePile_sum]
+  ring
+
+theorem J_express_quarter_balancePile {n : ℕ} (a0 : Fin 3) :
+    J (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      Real.pi ^ 2 / 16 := by
+  unfold expressedSuperposition
+  rw [express_balancePile (δ := Real.pi / 4) (ε := Real.pi / 4) (n := n)
+      (by positivity) (by linarith [Real.pi_pos]) (by positivity), J_axisWall]
+  ring
+
+theorem mass_express_quarter_balancePile {n : ℕ} (a0 : Fin 3) :
+    mass (expressedSuperposition (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) =
+      5 * Real.pi ^ 2 / 64 := by
+  unfold expressedSuperposition
+  rw [express_balancePile (δ := Real.pi / 4) (ε := Real.pi / 4) (n := n)
+      (by positivity) (by linarith [Real.pi_pos]) (by positivity), mass_axisWall]
+  ring
+
+theorem J_quarter_balancePile_gt_ceiling {n : ℕ} (hn : 6 ≤ n) (a0 : Fin 3) :
+    3 * Real.pi ^ 2 / 8 <
+      J (sumParams (balancePile a0 (Real.pi / 4) (Real.pi / 4) n)) := by
+  rw [J_quarter_balancePile]
+  have hn6 : (6 : ℝ) ≤ n := by exact_mod_cast hn
+  have hπ : 0 < Real.pi ^ 2 := by positivity
+  nlinarith [hn6, hπ]
+
+theorem sumParams_boost_then_balance (a0 : Fin 3) (φ ε : ℝ) :
+    sumParams [axisBoost a0 φ, axisBalance a0 ε] = axisPair a0 (φ + ε) ε := by
+  refine congrArg₂ TorsionParams.mk ?_ ?_
+  · funext a
+    simp only [axisBoost, axisBalance, axisPair, List.map_cons, List.map_nil,
+      List.sum_cons, List.sum_nil, add_zero]
+    split_ifs <;> ring
+  · funext a
+    simp only [axisBoost, axisBalance, axisPair, List.map_cons, List.map_nil,
+      List.sum_cons, List.sum_nil, add_zero]
+    split_ifs <;> ring
+
+theorem eighth_balance_inside (a0 : Fin 3) :
+    let b := axisBoost a0 (Real.pi / 8)
+    let s := sumParams [b, axisBalance a0 (Real.pi / 8)]
+    IsAdmissibleContinuous s ∧ express s = s ∧
+      J b = Real.pi ^ 2 / 128 ∧ J s = 3 * Real.pi ^ 2 / 128 ∧ J b < J s := by
+  intro b s
+  have hs_eq : s = axisPair a0 (Real.pi / 4) (Real.pi / 8) := by
+    unfold s b
+    rw [sumParams_boost_then_balance]
+    apply congrArg₂ (axisPair a0)
+    · ring
+    · rfl
+  have hadm : IsAdmissibleContinuous s := by
+    rw [hs_eq]
+    exact axisPair_admissible (by positivity) (by positivity) (by linarith [Real.pi_pos])
+  have hJb : J b = Real.pi ^ 2 / 128 := by
+    rw [J_axisBoost]
+    ring
+  have hJs : J s = 3 * Real.pi ^ 2 / 128 := by
+    rw [hs_eq, J_axisPair]
+    ring
+  refine ⟨hadm, express_eq_of_admissible hadm, hJb, hJs, ?_⟩
+  rw [hJb, hJs]
+  nlinarith [Real.pi_pos]
+
+end SourceSuperposition
+
+end DoubleSpacetime

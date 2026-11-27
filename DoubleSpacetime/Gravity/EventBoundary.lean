@@ -1,0 +1,499 @@
+import DoubleSpacetime.Gravity.Weitzenbock
+import DoubleSpacetime.Gravity.Sandwich
+import DoubleSpacetime.Algebra.Admissible
+import DoubleSpacetime.Algebra.Amplification
+import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.Complex.ExponentialBounds
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
+
+/-!
+# Quasi-horizon cutoff from the admissible torsional ceiling
+
+The ceiling \(|J|\le 3\pi^2/8\) is read as a finite radial cutoff
+\(\varphi_{\max}=\pi\sqrt{3}/2\), not as a derivation of that identification.
+Newton \(G\) is not derived from \(c\), dimensionless \(J\) is not identified
+with a Planck density, and an admissible one-axis boost cannot reach
+\(\varphi_{\max}\).
+-/
+
+namespace DoubleSpacetime
+
+namespace Gravity
+
+open Admissible Amplification Invariant
+
+/-! ### Source-of-truth constants
+
+`phiMax` is primary; `AMin` and the redshift / stretch factors are derived from it.
+-/
+
+/-- Maximal radial rapidity at the quasi-horizon: `π √3 / 2`. -/
+noncomputable def phiMax : ℝ :=
+  Real.pi * Real.sqrt 3 / 2
+
+/-- Raw torsional ceiling `|J| ≤ 3π²/8`. -/
+noncomputable def JMax : ℝ :=
+  3 * Real.pi ^ 2 / 8
+
+/-- Minimal Schwarzschild factor `A_min = e^{-2 φ_max}`. -/
+noncomputable def AMin : ℝ :=
+  Real.exp (-(2 * phiMax))
+
+/-- Redshift floor `e^{-φ_max} = √A_min`. -/
+noncomputable def redshiftMin : ℝ :=
+  Real.exp (-phiMax)
+
+/-- Radial stretch ceiling `e^{φ_max}`. -/
+noncomputable def stretchMax : ℝ :=
+  Real.exp phiMax
+
+/-- Ratio `r_★ / rₛ = 1 / (1 - A_min)`. -/
+noncomputable def radiusRatio : ℝ :=
+  (1 - AMin)⁻¹
+
+/-- Quasi-horizon radius where classical `φ(r) = φ_max`. -/
+noncomputable def eventBoundaryRadius (rs : ℝ) : ℝ :=
+  rs * radiusRatio
+
+/-- Finite rapidity at the event boundary. -/
+noncomputable abbrev eventBoundaryRapidity : ℝ := phiMax
+
+/-- Finite `A` at the event boundary. -/
+noncomputable abbrev eventBoundaryA : ℝ := AMin
+
+/-! ### Algebraic identities -/
+
+theorem AMin_eq_exp_neg_pi_sqrt_three :
+    AMin = Real.exp (-(Real.pi * Real.sqrt 3)) := by
+  unfold AMin phiMax
+  ring_nf
+
+theorem redshiftMin_sq_eq_AMin : redshiftMin ^ 2 = AMin := by
+  unfold redshiftMin AMin
+  rw [sq, ← Real.exp_add]
+  ring_nf
+
+theorem stretchMax_mul_redshiftMin : stretchMax * redshiftMin = 1 := by
+  unfold stretchMax redshiftMin
+  simp [← Real.exp_add]
+
+theorem J_pureBoost_phiMax : J (pureBoost phiMax) = JMax := by
+  unfold phiMax JMax
+  rw [J_pureBoost]
+  field_simp
+  ring_nf
+  rw [Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+  ring
+
+theorem JNormalized_pureBoost_phiMax :
+    JNormalized (pureBoost phiMax) = 1 := by
+  unfold phiMax
+  rw [JNormalized_pureBoost]
+  have hπ : (0 : ℝ) < Real.pi := Real.pi_pos
+  rw [div_pow, mul_pow, Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)]
+  field_simp [hπ.ne']
+  ring
+
+theorem AMin_pos : (0 : ℝ) < AMin :=
+  Real.exp_pos _
+
+theorem AMin_lt_one : AMin < 1 := by
+  rw [← Real.exp_zero, AMin_eq_exp_neg_pi_sqrt_three]
+  exact Real.exp_lt_exp.mpr
+    (neg_neg_of_pos (mul_pos Real.pi_pos (Real.sqrt_pos.mpr (by norm_num))))
+
+theorem one_sub_AMin_pos : (0 : ℝ) < 1 - AMin :=
+  sub_pos.mpr AMin_lt_one
+
+theorem radiusRatio_pos : (0 : ℝ) < radiusRatio :=
+  inv_pos.mpr one_sub_AMin_pos
+
+theorem one_lt_radiusRatio : (1 : ℝ) < radiusRatio := by
+  unfold radiusRatio
+  rw [one_lt_inv_iff₀]
+  exact ⟨one_sub_AMin_pos, sub_lt_self _ AMin_pos⟩
+
+theorem eventBoundaryRadius_pos {rs : ℝ} (hrs : 0 < rs) :
+    0 < eventBoundaryRadius rs :=
+  mul_pos hrs radiusRatio_pos
+
+theorem rs_lt_eventBoundaryRadius {rs : ℝ} (hrs : 0 < rs) :
+    rs < eventBoundaryRadius rs := by
+  unfold eventBoundaryRadius
+  simpa using mul_lt_mul_of_pos_left one_lt_radiusRatio hrs
+
+/-! ### Chart dictionary: classical `φ = φ_max` ↔ `r = r_★` -/
+
+theorem schwarzschildRapidity_eq_phiMax_iff {rs r : ℝ}
+    (hrs : 0 < rs) (hr : rs < r) :
+    schwarzschildRapidity rs r = phiMax ↔ 1 - rs / r = AMin := by
+  have hApos := A_pos_of_exterior hrs hr
+  constructor
+  · intro h
+    have hlog : Real.log (1 - rs / r) = -(2 * phiMax) := by
+      have := congrArg (fun x : ℝ => -2 * x) h
+      simp only [schwarzschildRapidity] at this
+      linarith
+    have := congrArg Real.exp hlog
+    rwa [Real.exp_log hApos] at this
+  · intro h
+    unfold schwarzschildRapidity
+    rw [h, AMin, Real.log_exp]
+    ring
+
+theorem A_eq_AMin_iff_eq_eventBoundaryRadius {rs r : ℝ}
+    (hrs : 0 < rs) (hr : 0 < r) :
+    1 - rs / r = AMin ↔ r = eventBoundaryRadius rs := by
+  have hden : 1 - AMin ≠ 0 := one_sub_AMin_pos.ne'
+  constructor
+  · intro h
+    unfold eventBoundaryRadius radiusRatio
+    have hquot : rs / r = 1 - AMin := by linarith
+    -- `r = rs * (1-A)⁻¹` ↔ `r * (1-A) = rs`
+    rw [← div_eq_mul_inv, eq_div_iff hden, mul_comm]
+    exact (div_eq_iff hr.ne').mp hquot |>.symm
+  · intro h
+    rw [h]
+    unfold eventBoundaryRadius radiusRatio
+    field_simp [hrs.ne', hden]
+    ring
+
+theorem schwarzschildRapidity_eq_phiMax_iff_eventBoundaryRadius {rs r : ℝ}
+    (hrs : 0 < rs) (hr : rs < r) :
+    schwarzschildRapidity rs r = phiMax ↔ r = eventBoundaryRadius rs := by
+  rw [schwarzschildRapidity_eq_phiMax_iff hrs hr,
+    A_eq_AMin_iff_eq_eventBoundaryRadius hrs (hrs.trans hr)]
+
+/-! ### Horizon boost is outside the admissible cone -/
+
+theorem phiMax_gt_half_pi : Real.pi / 2 < phiMax := by
+  unfold phiMax
+  have hs : (1 : ℝ) < Real.sqrt 3 :=
+    Real.lt_sqrt_of_sq_lt (by norm_num : (1 : ℝ) ^ 2 < 3)
+  nlinarith [Real.pi_pos]
+
+theorem not_admissible_pureBoost_phiMax :
+    ¬ IsAdmissibleContinuous (pureBoost phiMax) := by
+  intro h
+  have hsum := (h 0).2.2
+  simp only [pureBoost, add_zero] at hsum
+  exact absurd hsum phiMax_gt_half_pi.not_ge
+
+/-! ### Saturated chart (definition only; no metric re-proof) -/
+
+/-- Freeze rapidity at `φ_max` for `r ≤ r_★`; classical exterior formula outside. -/
+noncomputable def saturatedRapidity (rs r : ℝ) : ℝ :=
+  if r ≤ eventBoundaryRadius rs then phiMax else schwarzschildRapidity rs r
+
+/-- Freeze `A` at `A_min` for `r ≤ r_★`; classical `1 - rₛ/r` outside. -/
+noncomputable def saturatedA (rs r : ℝ) : ℝ :=
+  if r ≤ eventBoundaryRadius rs then AMin else 1 - rs / r
+
+@[simp] theorem saturatedRapidity_of_le {rs r : ℝ}
+    (h : r ≤ eventBoundaryRadius rs) :
+    saturatedRapidity rs r = phiMax := by
+  simp [saturatedRapidity, h]
+
+@[simp] theorem saturatedRapidity_of_gt {rs r : ℝ}
+    (h : eventBoundaryRadius rs < r) :
+    saturatedRapidity rs r = schwarzschildRapidity rs r := by
+  simp [saturatedRapidity, not_le_of_gt h]
+
+@[simp] theorem saturatedA_of_le {rs r : ℝ}
+    (h : r ≤ eventBoundaryRadius rs) :
+    saturatedA rs r = AMin := by
+  simp [saturatedA, h]
+
+@[simp] theorem saturatedA_of_gt {rs r : ℝ}
+    (h : eventBoundaryRadius rs < r) :
+    saturatedA rs r = 1 - rs / r := by
+  simp [saturatedA, not_le_of_gt h]
+
+theorem saturatedA_pos {rs r : ℝ} (hrs : 0 < rs) :
+    0 < saturatedA rs r := by
+  by_cases h : r ≤ eventBoundaryRadius rs
+  · simpa [h] using AMin_pos
+  · have hr : eventBoundaryRadius rs < r := lt_of_not_ge h
+    simpa [hr] using
+      A_pos_of_exterior hrs ((rs_lt_eventBoundaryRadius hrs).trans hr)
+
+theorem saturatedA_ne_zero {rs r : ℝ} (hrs : 0 < rs) :
+    saturatedA rs r ≠ 0 :=
+  (saturatedA_pos hrs).ne'
+
+theorem saturatedA_ne_horizon {rs r : ℝ} (hrs : 0 < rs) :
+    saturatedA rs r ≠ 0 :=
+  saturatedA_ne_zero hrs
+
+/-! ### Saturated chart matches classical Schwarzschild at `r_★` -/
+
+theorem saturatedA_at_boundary {rs : ℝ} (_hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) = AMin :=
+  saturatedA_of_le le_rfl
+
+theorem classicalA_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    1 - rs / eventBoundaryRadius rs = AMin :=
+  (A_eq_AMin_iff_eq_eventBoundaryRadius hrs (eventBoundaryRadius_pos hrs)).mpr rfl
+
+theorem saturatedA_eq_classical_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) =
+      1 - rs / eventBoundaryRadius rs := by
+  rw [saturatedA_at_boundary hrs, classicalA_at_boundary hrs]
+
+theorem saturatedRapidity_at_boundary {rs : ℝ} (_hrs : 0 < rs) :
+    saturatedRapidity rs (eventBoundaryRadius rs) = phiMax :=
+  saturatedRapidity_of_le le_rfl
+
+theorem classicalRapidity_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    schwarzschildRapidity rs (eventBoundaryRadius rs) = phiMax :=
+  (schwarzschildRapidity_eq_phiMax_iff_eventBoundaryRadius hrs
+    (rs_lt_eventBoundaryRadius hrs)).mpr rfl
+
+theorem saturatedRapidity_eq_classical_at_boundary {rs : ℝ} (hrs : 0 < rs) :
+    saturatedRapidity rs (eventBoundaryRadius rs) =
+      schwarzschildRapidity rs (eventBoundaryRadius rs) := by
+  rw [saturatedRapidity_at_boundary hrs, classicalRapidity_at_boundary hrs]
+
+theorem classicalA_eq_zero_at_horizon {rs : ℝ} (hrs : 0 < rs) :
+    1 - rs / rs = 0 := by
+  rw [div_self hrs.ne']
+  ring
+
+/-! ### Three-axis ceiling versus single-axis radial gauge -/
+
+theorem J_threeAxisPureHyperbolic :
+    J { alpha := fun _ => Real.pi / 2, beta := fun _ => 0 } = JMax := by
+  unfold JMax
+  rw [J_coef]
+  simp only [Fin.sum_univ_three]
+  field_simp [Real.pi_ne_zero]
+  ring
+
+theorem J_pureBoost_half_pi :
+    J (pureBoost (Real.pi / 2)) = Real.pi ^ 2 / 8 := by
+  rw [J_pureBoost]
+  field_simp
+  ring
+
+theorem JMax_eq_three_single_axis :
+    JMax = 3 * J (pureBoost (Real.pi / 2)) := by
+  rw [J_pureBoost_half_pi]
+  unfold JMax
+  ring
+
+theorem J_pureBoost_of_admissible {θ : ℝ}
+    (h : IsAdmissibleContinuous (pureBoost θ)) :
+    J (pureBoost θ) ≤ Real.pi ^ 2 / 8 := by
+  have hθ := (isAdmissibleContinuous_pureBoost_iff θ).mp h
+  rw [J_pureBoost]
+  have : θ ^ 2 ≤ (Real.pi / 2) ^ 2 := by
+    nlinarith [hθ.1, hθ.2, Real.pi_pos]
+  nlinarith
+
+theorem phiMax_inverts_three_axis_ceiling_on_one_axis :
+    J (pureBoost phiMax) = JMax ∧
+      ¬ IsAdmissibleContinuous (pureBoost phiMax) :=
+  ⟨J_pureBoost_phiMax, not_admissible_pureBoost_phiMax⟩
+
+/-! ### Rational envelopes (machine-checked numerics) -/
+
+private theorem sqrt_three_gt_173_100 :
+    (173 : ℝ) / 100 < Real.sqrt 3 :=
+  Real.lt_sqrt_of_sq_lt (by norm_num : ((173 : ℝ) / 100) ^ 2 < 3)
+
+private theorem pi_mul_sqrt_three_gt :
+    (314 : ℝ) * 173 / 10000 < Real.pi * Real.sqrt 3 := by
+  have hπ : (314 : ℝ) / 100 < Real.pi := by
+    convert (Real.pi_gt_d2 : (3.14 : ℝ) < Real.pi) using 1
+    norm_num
+  have hs := sqrt_three_gt_173_100
+  have hπpos : (0 : ℝ) < 314 / 100 := by norm_num
+  calc (314 : ℝ) * 173 / 10000
+      = (314 / 100) * (173 / 100) := by ring
+    _ < Real.pi * Real.sqrt 3 :=
+        mul_lt_mul hπ hs.le (by norm_num) (le_of_lt (hπpos.trans hπ))
+
+private theorem AMin_lt_inv_of {n : ℕ} (hn : 0 < n)
+    (hlog : Real.log (n : ℝ) < Real.pi * Real.sqrt 3) :
+    AMin < (1 : ℝ) / n := by
+  have hnR : (0 : ℝ) < n := Nat.cast_pos.mpr hn
+  have hlt :
+      Real.exp (-(Real.pi * Real.sqrt 3)) < Real.exp (-Real.log (n : ℝ)) :=
+    Real.exp_lt_exp.mpr (neg_lt_neg hlog)
+  calc AMin = Real.exp (-(Real.pi * Real.sqrt 3)) :=
+      AMin_eq_exp_neg_pi_sqrt_three
+    _ < Real.exp (-Real.log (n : ℝ)) := hlt
+    _ = (Real.exp (Real.log (n : ℝ)))⁻¹ := by rw [Real.exp_neg]
+    _ = (n : ℝ)⁻¹ := by rw [Real.exp_log hnR]
+    _ = 1 / n := by rw [one_div]
+
+private theorem log_100_lt_pi_sqrt_three :
+    Real.log 100 < Real.pi * Real.sqrt 3 := by
+  have h2 : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have h5 : Real.log 5 < (1.6094379126 : ℝ) := Real.log_five_lt_d9
+  have h100 : Real.log 100 = 2 * (Real.log 2 + Real.log 5) := by
+    have h : (100 : ℝ) = (10 : ℝ) ^ (2 : ℕ) := by norm_num
+    rw [h, Real.log_pow, Real.log_ten_eq]
+    norm_cast
+  have hlog : Real.log 100 < (314 : ℝ) * 173 / 10000 := by
+    rw [h100]
+    linarith
+  exact hlog.trans pi_mul_sqrt_three_gt
+
+theorem AMin_bounds :
+    (0 : ℝ) < AMin ∧ AMin < (1 : ℝ) / 100 :=
+  ⟨AMin_pos, AMin_lt_inv_of (by norm_num) log_100_lt_pi_sqrt_three⟩
+
+private theorem log_201_lt_pi_sqrt_three :
+    Real.log 201 < Real.pi * Real.sqrt 3 := by
+  have h2 : Real.log 2 < (0.6931471808 : ℝ) := Real.log_two_lt_d9
+  have h5 : Real.log 5 < (1.6094379126 : ℝ) := Real.log_five_lt_d9
+  have h200 : Real.log 200 = Real.log 2 + 2 * (Real.log 2 + Real.log 5) := by
+    have h : (200 : ℝ) = 2 * ((10 : ℝ) ^ (2 : ℕ)) := by norm_num
+    rw [h, Real.log_mul (by norm_num) (pow_ne_zero _ (by norm_num)),
+      Real.log_pow, Real.log_ten_eq]
+    norm_cast
+  have hfactor : (201 : ℝ) = 200 * (201 / 200) := by ring
+  have h201 : Real.log 201 = Real.log 200 + Real.log (201 / 200) := by
+    have hmul := Real.log_mul (by norm_num : (200 : ℝ) ≠ 0)
+      (by positivity : (201 : ℝ) / 200 ≠ 0)
+    rwa [← hfactor] at hmul
+  have hlog1p : Real.log (201 / 200) < (1 : ℝ) / 200 := by
+    have hx : (0 : ℝ) < 201 / 200 := by positivity
+    have hne : (201 : ℝ) / 200 ≠ 1 := by norm_num
+    convert (Real.log_lt_sub_one_of_pos hx hne) using 1
+    norm_num
+  have hlog200 : Real.log 200 < (314 : ℝ) * 173 / 10000 - 1 / 200 := by
+    rw [h200]
+    norm_num
+    linarith
+  have : Real.log 201 < (314 : ℝ) * 173 / 10000 := by
+    rw [h201]
+    linarith
+  exact this.trans pi_mul_sqrt_three_gt
+
+private theorem AMin_lt_inv_201 : AMin < (1 : ℝ) / 201 :=
+  AMin_lt_inv_of (by norm_num) log_201_lt_pi_sqrt_three
+
+theorem radiusRatio_bounds :
+    (1 : ℝ) < radiusRatio ∧ radiusRatio < (1005 : ℝ) / 1000 := by
+  refine ⟨one_lt_radiusRatio, ?_⟩
+  have hbound : (200 : ℝ) / 201 < 1 - AMin := by
+    have : (1 : ℝ) - 1 / 201 = (200 : ℝ) / 201 := by norm_num
+    linarith [AMin_lt_inv_201]
+  have hinv :
+      (1 - AMin)⁻¹ < ((200 : ℝ) / 201)⁻¹ :=
+    (inv_lt_inv₀ one_sub_AMin_pos (by norm_num)).mpr hbound
+  have hsimp : ((200 : ℝ) / 201)⁻¹ = (1005 : ℝ) / 1000 := by norm_num
+  simpa [radiusRatio, hsimp] using hinv
+
+/-! ### Saturated interior coframe: frozen boost legs, angular torsion remains -/
+
+/-- Constant-\(A\) spherical coframe partials: \(t,r\) legs have vanishing radial derivatives;
+angular legs match the Schwarzschild coframe. -/
+noncomputable def constantAPartials (r θ : ℝ) : CoframePartials :=
+  fun μ a ν =>
+    if μ = 1 ∧ a = 2 ∧ ν = 2 then 1
+    else if μ = 1 ∧ a = 3 ∧ ν = 3 then Real.sin θ
+    else if μ = 2 ∧ a = 3 ∧ ν = 3 then r * Real.cos θ
+    else 0
+
+theorem constantA_torsion_boost_leg_zero (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 0 1 0 = 0 := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+theorem constantA_torsion_T2_r_theta (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 2 1 2 = 1 := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+theorem constantA_torsion_T3_r_phi (r θ : ℝ) :
+    weitzenbockTorsion (constantAPartials r θ) 3 1 3 = Real.sin θ := by
+  simp [weitzenbockTorsion, constantAPartials]
+
+/-- Field seed of a frozen rapidity: \(\varphi' = 0\) on \(r \le r_\star\). -/
+noncomputable def saturatedJ_field (rs r : ℝ) : ℝ :=
+  if r ≤ eventBoundaryRadius rs then 0 else J_field rs r
+
+@[simp] theorem saturatedJ_field_of_le {rs r : ℝ}
+    (h : r ≤ eventBoundaryRadius rs) :
+    saturatedJ_field rs r = 0 := by
+  simp [saturatedJ_field, h]
+
+@[simp] theorem saturatedJ_field_of_gt {rs r : ℝ}
+    (h : eventBoundaryRadius rs < r) :
+    saturatedJ_field rs r = J_field rs r := by
+  simp [saturatedJ_field, not_le_of_gt h]
+
+/-- Exterior closed-form \(T\) evaluated at a constant factor \(A\). -/
+noncomputable def pluggedConstantAT (A r : ℝ) : ℝ :=
+  (2 / r ^ 2) * (1 - Real.sqrt A) ^ 2 / Real.sqrt A
+
+/-- Divergence form of \(T\) with frozen \(\sqrt{A}\) (so \((\sqrt{A})' = 0\)): \(T =
+-4(1-\sqrt{A})/r^2\). -/
+noncomputable def frozenDivT (A r : ℝ) : ℝ :=
+  -(4 / r ^ 2) * (1 - Real.sqrt A)
+
+theorem sqrt_AMin_pos : (0 : ℝ) < Real.sqrt AMin :=
+  Real.sqrt_pos.mpr AMin_pos
+
+theorem sqrt_AMin_lt_one : Real.sqrt AMin < 1 := by
+  have : Real.sqrt AMin < Real.sqrt 1 := Real.sqrt_lt_sqrt AMin_pos.le AMin_lt_one
+  simpa using this
+
+theorem one_sub_sqrt_AMin_pos : (0 : ℝ) < 1 - Real.sqrt AMin :=
+  sub_pos.mpr sqrt_AMin_lt_one
+
+theorem pluggedConstantAT_AMin_pos {r : ℝ} (hr : r ≠ 0) :
+    0 < pluggedConstantAT AMin r := by
+  unfold pluggedConstantAT
+  have hs := sqrt_AMin_pos
+  have h1 := one_sub_sqrt_AMin_pos
+  have hr2 : 0 < r ^ 2 := sq_pos_of_ne_zero hr
+  positivity
+
+/-- Substituting `A_min` into the exterior `T` formula does not reproduce the frozen divergence. -/
+theorem pluggedConstantAT_ne_frozenDivT {r : ℝ} (hr : r ≠ 0) :
+    pluggedConstantAT AMin r ≠ frozenDivT AMin r := by
+  intro h
+  set s := Real.sqrt AMin
+  have hs0 : s ≠ 0 := sqrt_AMin_pos.ne'
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have h1 : 1 - s ≠ 0 := one_sub_sqrt_AMin_pos.ne'
+  unfold pluggedConstantAT frozenDivT at h
+  have hmul := congrArg (fun x : ℝ => x * s * r ^ 2) h
+  field_simp [hr2, hs0] at hmul
+  have heq : 2 * (1 - s) ^ 2 / s = -4 * (1 - s) := by
+    simpa [s, mul_comm] using hmul
+  have hmul2 : 2 * (1 - s) ^ 2 = (-4 * (1 - s)) * s := by
+    rwa [div_eq_iff hs0] at heq
+  have hfac : (1 - s) * (2 * (1 - s) + 4 * s) = 0 := by
+    have := hmul2
+    ring_nf at this ⊢
+    linarith
+  have : s = -1 := by
+    have : 2 * (1 - s) + 4 * s = 0 := (mul_eq_zero.mp hfac).resolve_left h1
+    linarith
+  nlinarith [sqrt_AMin_pos]
+
+theorem saturated_interior_J_field_zero_of_angular_torsion {rs r θ : ℝ}
+    (_hrs : 0 < rs) (hr : 0 < r) (hle : r ≤ eventBoundaryRadius rs) :
+    saturatedJ_field rs r = 0 ∧
+      weitzenbockTorsion (constantAPartials r θ) 2 1 2 = 1 ∧
+      saturatedJ_field rs r ≠ (1 / 2) * pluggedConstantAT AMin r := by
+  refine ⟨saturatedJ_field_of_le hle, constantA_torsion_T2_r_theta r θ, ?_⟩
+  rw [saturatedJ_field_of_le hle]
+  have hpos := pluggedConstantAT_AMin_pos hr.ne'
+  exact (mul_ne_zero (by norm_num : (1 / 2 : ℝ) ≠ 0) hpos.ne').symm
+
+theorem saturated_interior_redshift_floor {rs : ℝ} (hrs : 0 < rs) :
+    saturatedA rs (eventBoundaryRadius rs) = AMin ∧
+      0 < AMin ∧ AMin < 1 :=
+  ⟨saturatedA_at_boundary hrs, AMin_pos, AMin_lt_one⟩
+
+end Gravity
+
+end DoubleSpacetime

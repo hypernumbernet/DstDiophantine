@@ -130,7 +130,7 @@ The constructions of this chapter therefore furnish a complete algebraic environ
 
 \section{Rigorous Torsion Boundedness Theorem}
 
-We derive a strict bound on the torsional mismatch scalar on \emph{admissible} configurations. The bound is elementary (sign asymmetry of the Killing form together with non-negative rapidities and the sum bound \(\alpha_a+\beta_a\le\pi/2\)); it has been machine-checked in Lean~4 (project \texttt{DstDiophantine}).
+We derive a strict bound on the torsional mismatch scalar on \emph{admissible} configurations. The bound is elementary (sign asymmetry of the Killing form together with non-negative rapidities and the sum bound \(\alpha_a+\beta_a\le\pi/2\)); it has been machine-checked in Lean~4 (project \texttt{DoubleSpacetime}).
 
 \begin{definition}[Admissible torsion configuration]
 \label{def:admissible}
@@ -271,7 +271,7 @@ The embedding supplies the ingredients of a finite decision procedure, but the m
 \[
 J(\Omega^\dagger)=-J(\Omega),\qquad |\Jnorm(\Omega^\dagger)|=|\Jnorm(\Omega)|.
 \]
-Thus dagger alone does \emph{not} furnish a strict descent on torsional height. Membership tests against the finite image of the discrete torus likewise do not, by themselves, shrink \(|\Jnorm|\). What makes Diophantine problems decidable inside the algebra is the combination of (i)~faithful encoding of additive relations by null translators, (ii)~the finite admissible set on \((\mathbb{Z}/N\mathbb{Z})^6\), and (iii)~either exhaustive search for zero-height configurations or an amplification argument that would force \(|\Jnorm|>1\), contradicting Theorem~\ref{thm:torsion-bound}. Chapter~10 abstracts this three-layer scheme; the Lean~4 development \texttt{DstDiophantine} machine-checks the height-preservation identity and the finite-search termination.
+Thus dagger alone does \emph{not} furnish a strict descent on torsional height. Membership tests against the finite image of the discrete torus likewise do not, by themselves, shrink \(|\Jnorm|\). What makes Diophantine problems decidable inside the algebra is the combination of (i)~faithful encoding of additive relations by null translators, (ii)~the finite admissible set on \((\mathbb{Z}/N\mathbb{Z})^6\), and (iii)~either exhaustive search for zero-height configurations or an amplification argument that would force \(|\Jnorm|>1\), contradicting Theorem~\ref{thm:torsion-bound}. Chapter~10 abstracts this three-layer scheme; the Lean~4 development \texttt{DoubleSpacetime} machine-checks the height-preservation identity and the finite-search termination.
 
 The constructions of this chapter therefore reduce classical Diophantine problems to finite, rigorously bounded computations inside a single 32-dimensional algebra. The subsequent chapters apply this encoding to the Diophantine programmes below.
 
@@ -638,7 +638,7 @@ In particular, dagger never yields a strict decrease of the normalised height.
 \end{proposition}
 
 \begin{proof}
-Immediate from \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) and Definition~\ref{def:Jnorm}. The identity is machine-checked in the Lean~4 module \texttt{DstDiophantine.\allowbreak Framework.\allowbreak Descent}.
+Immediate from \(J=\frac12\sum_a(\alpha_a^2-\beta_a^2)\) and Definition~\ref{def:Jnorm}. The identity is machine-checked in the Lean~4 module \texttt{DoubleSpacetime.\allowbreak Framework.\allowbreak Descent}.
 \end{proof}
 
 Consequently the older narrative ``dagger \(\to\) unit-group filter \(\to\) dual reconstruction strictly decreases \(J\)'' is incorrect as stated. The unit-group image of the discrete torus records admissible rotor representatives but does not, under the present definition of that image, impose an independent height-reducing filter.
@@ -772,7 +772,7 @@ Again \(4\mid N\), so \(\lfloor N/4\rfloor=2\) and the sharp bound collapses to 
 
 For arbitrary \( N \), the admissible lattice bound is \(|\Jnorm|\le(4\lfloor N/4\rfloor/N)^2\), with equality \(\pm 1\) if and only if \(4\mid N\) at the two uniform extremal points. If \(4\nmid N\) the inequality is strict. As \( N \) increases, the discrete set of attainable \(\Jnorm\)-values on admissible points becomes dense in \([-1,1]\). Dirichlet-kernel layer resonances control synchronization on the compact lattice (companion papers); they supplement but do not replace the elementary admissible bound.
 
-These lattice identities, machine-checked in Lean~4 (\texttt{DstDiophantine.Framework.Lattice}), replace brute-force enumeration as the discrete check of Theorem~\ref{thm:torsion-bound}.
+These lattice identities, machine-checked in Lean~4 (\texttt{DoubleSpacetime.Framework.Lattice}), replace brute-force enumeration as the discrete check of Theorem~\ref{thm:torsion-bound}.
 
 \section[Baker--Campbell--Hausdorff expansion and spin covering]{Baker--Campbell--Hausdorff Expansion\\ and Spin Covering Details}
 

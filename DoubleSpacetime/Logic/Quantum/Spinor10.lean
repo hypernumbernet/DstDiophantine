@@ -1,0 +1,56 @@
+import DoubleSpacetime.Logic.Quantum.Spinor
+import DoubleSpacetime.Algebra.Cl91
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Dimension.Free
+
+/-!
+# 10D Majorana–Weyl type
+
+`MajoranaWeyl10` is a real 16-dimensional carrier and `WeylSU4` has the same real dimension. No
+`Spin(9,1)`-equivariance is claimed, and `ℂ²` is not identified with `MajoranaWeyl10`.
+-/
+
+namespace DoubleSpacetime
+
+namespace Logic
+
+open Module Complex
+
+/-- Textbook 10D Majorana–Weyl spinor carrier (real 16). -/
+abbrev MajoranaWeyl10 := EuclideanSpace ℝ (Fin 16)
+
+/-- Complex 8-fold label for 10D → 4D branching bookkeeping (`ℂ² ⊗ ℂ⁴` dim). -/
+abbrev WeylSU4 := Fin 8 → ℂ
+
+theorem majoranaWeyl10_finrank : finrank ℝ MajoranaWeyl10 = 16 := by
+  simp
+
+theorem weylSU4_finrank_complex : finrank ℂ WeylSU4 = 8 := by
+  simp
+
+theorem weylSU4_finrank_real : finrank ℝ WeylSU4 = 16 := by
+  have h := Module.finrank_mul_finrank ℝ ℂ WeylSU4
+  have hc : finrank ℝ ℂ = 2 := Complex.finrank_real_complex
+  have hW : finrank ℂ WeylSU4 = 8 := weylSU4_finrank_complex
+  calc finrank ℝ WeylSU4 = finrank ℝ ℂ * finrank ℂ WeylSU4 := h.symm
+    _ = 2 * 8 := by rw [hc, hW]
+    _ = 16 := by norm_num
+
+/-- Real-linear equivalence witnessing equal real dimension (not Spin-equivariant). -/
+noncomputable def majoranaWeyl10_equiv_weylSU4 :
+    MajoranaWeyl10 ≃ₗ[ℝ] WeylSU4 :=
+  LinearEquiv.ofFinrankEq _ _ (majoranaWeyl10_finrank.trans weylSU4_finrank_real.symm)
+
+theorem dualSpinor_finrank_ne_majorana :
+    finrank ℂ DualSpinor ≠ finrank ℝ MajoranaWeyl10 := by
+  rw [dualSpinor_finrank, majoranaWeyl10_finrank]
+  norm_num
+
+theorem cl31_finrank_eq_majorana_count :
+    finrank ℝ Cl31 = finrank ℝ MajoranaWeyl10 := by
+  rw [Cl91.finrank_cl31, majoranaWeyl10_finrank]
+
+end Logic
+
+end DoubleSpacetime

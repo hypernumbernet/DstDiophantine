@@ -1,4 +1,4 @@
-# DstDiophantine
+# DoubleSpacetime
 
 The repository was founded to prove classical number theory in Lean 4, as
 an amplification programme for Diophantine conjectures. Its machine-checked
@@ -19,10 +19,10 @@ is the record. A paper title is the title of that source. Checked local
 boundaries live in the module docstrings. This file is the map.
 
 Entry point for the Diophantine path:
-[`DstDiophantine/Basic.lean`](DstDiophantine/Basic.lean)
-(`import DstDiophantine.Basic`). Gravity and four-valued logic are parallel
+[`DoubleSpacetime/Basic.lean`](DoubleSpacetime/Basic.lean)
+(`import DoubleSpacetime.Basic`). Gravity and four-valued logic are parallel
 tracks. Their barrels are not re-exported from `Basic`. The root
-[`DstDiophantine.lean`](DstDiophantine.lean) imports `Basic` and `Gravity`
+[`DoubleSpacetime.lean`](DoubleSpacetime.lean) imports `Basic` and `Gravity`
 together.
 
 ## Double Spacetime Theory
@@ -68,19 +68,19 @@ Motors and the direction of gravity:
 
 | Import | Gets |
 | --- | --- |
-| `DstDiophantine.Basic` | Diophantine path: algebra, integer embedding, amplification, problem layers |
-| `DstDiophantine.Algebra` | Algebra only. Gravity and logic stay out |
-| `DstDiophantine.Gravity` | Chart, scales, dual-rotor dynamics, signed force, Faraday, control |
-| `DstDiophantine.Logic` | Four-valued logic (D4L) and the dual Hilbert layer |
+| `DoubleSpacetime.Basic` | Diophantine path: algebra, integer embedding, amplification, problem layers |
+| `DoubleSpacetime.Algebra` | Algebra only. Gravity and logic stay out |
+| `DoubleSpacetime.Gravity` | Chart, scales, dual-rotor dynamics, signed force, Faraday, control |
+| `DoubleSpacetime.Logic` | Four-valued logic (D4L) and the dual Hilbert layer |
 
 `Theorems.BealRegime` is compiled through
-[`FoundationRegression.lean`](DstDiophantine/FoundationRegression.lean)
+[`FoundationRegression.lean`](DoubleSpacetime/FoundationRegression.lean)
 and is not re-exported from `Basic`. A `.U → .T` edit of an atlas atom
 belongs in `Logic.Example.BealRegime` and does not promote classical Beal.
 
 ## Algebraic core
 
-Proved in [`DstDiophantine/Algebra.lean`](DstDiophantine/Algebra.lean) and
+Proved in [`DoubleSpacetime/Algebra.lean`](DoubleSpacetime/Algebra.lean) and
 [`papers/discrete-dual-spacetime.tex`](papers/discrete-dual-spacetime.tex).
 
 - Duality is a complex structure on the Lorentz sector: every boost is the
@@ -100,7 +100,7 @@ Proved in [`DstDiophantine/Algebra.lean`](DstDiophantine/Algebra.lean) and
   factorises on one axis, and it is not a product of three one-axis images.
 
 The amplification no-go is in
-[`Framework/Amplification.lean`](DstDiophantine/Framework/Amplification.lean).
+[`Framework/Amplification.lean`](DoubleSpacetime/Framework/Amplification.lean).
 A seed that amplifies past the admissible ceiling cannot exist. The
 argument does not depend on which equation produced the seed.
 
@@ -110,7 +110,7 @@ Integers embed into PGA motors by rotors and null translators. A power-sum
 relation becomes `powerSumMotor = 1`. Dual-spacetime rapidities are
 discretised to $(\mathbb{Z}/N\mathbb{Z})^6$, so each problem is a search
 over an admissible lattice. Sources:
-[`DstDiophantine/Framework/`](DstDiophantine/Framework/) and
+[`DoubleSpacetime/Framework/`](DoubleSpacetime/Framework/) and
 [`papers/dst-diophantine.tex`](papers/dst-diophantine.tex).
 
 | Layer | Content | Status |
@@ -130,17 +130,17 @@ bounded.
 
 | Conjecture | Live layer | Status |
 | --- | --- | --- |
-| Fermat | [`FermatMixed.lean`](DstDiophantine/Theorems/FermatMixed.lean), [`FermatMotor.lean`](DstDiophantine/Embedding/FermatMotor.lean) | Dual-axis motor: boost $\alpha = \log(\sqrt{a^2+b^2}/\|c\|)$ on axis 0, cyclic angle $\beta = \arctan(\|b\|/\|a\|)$ on axis 1. Degree $2$ is pure cyclic. For $n \ge 3$ every positive solution is mixed. On a positive integer solution the excess $a^2+b^2-c^2$ is a positive integer, and the boost is at least $\tfrac12\log(1+1/c^2)$. An odd prime exponent dividing none of three coprime positive bases factorises the third base, and those pure powers rebuild the bases. Excess `1` makes the boost lower bound meet the polar radial factor. The full residual follows from `FermatMixedMotorOddPrimeResidual`. The open face is an odd prime `n ≥ 5`. Exponents divisible by `3` or by `4` are mathlib. Classical Fermat is not claimed, and this route does not assume `fermatLastTheorem`. |
-| Beal | [`Beal.lean`](DstDiophantine/Theorems/Beal.lean) and the slice files | Furthest along. `beal_conjecture_pos_of_fine_residuals_even_split` reduces positive Beal to the FLT axiom and six residuals. Classical Beal remains open. |
-| abc | [`Abc.lean`](DstDiophantine/Theorems/Abc.lean) | The continuous bridge is false. The live statement is `AbcModularBridge`. |
-| Riemann | [`Riemann.lean`](DstDiophantine/Theorems/Riemann.lean) | `RiemannAdmissibleBridge`, with rational-grid certificates of denominator $\le 20$. This is not mathlib's `riemannZeta`. |
-| Goldbach | [`Goldbach.lean`](DstDiophantine/Theorems/Goldbach.lean) | `GoldbachAdmissibleBridge`. Even targets $4 \le n \le 100$ are certified. The integer height of a target does not depend on a prime pair. |
-| Polignac | [`Polignac.lean`](DstDiophantine/Theorems/Polignac.lean) | `PolignacAdmissibleBridge`. The gap $2k$ lies on the phase iff $k = 1$. Twin pairs have an admissible relative rotor. The normalised mismatch falls under every positive tolerance. |
-| Collatz | [`Collatz.lean`](DstDiophantine/Theorems/Collatz.lean) | `CollatzAdmissibleBridge`. The admissible integer-boost cone contains only $1$ and $2$. Every start $n \le 2^{20}$ reaches $1$. Any other cycle has normalised height greater than $100$. |
+| Fermat | [`FermatMixed.lean`](DoubleSpacetime/Theorems/FermatMixed.lean), [`FermatMotor.lean`](DoubleSpacetime/Embedding/FermatMotor.lean) | Dual-axis motor: boost $\alpha = \log(\sqrt{a^2+b^2}/\|c\|)$ on axis 0, cyclic angle $\beta = \arctan(\|b\|/\|a\|)$ on axis 1. Degree $2$ is pure cyclic. For $n \ge 3$ every positive solution is mixed. On a positive integer solution the excess $a^2+b^2-c^2$ is a positive integer, and the boost is at least $\tfrac12\log(1+1/c^2)$. An odd prime exponent dividing none of three coprime positive bases factorises the third base, and those pure powers rebuild the bases. Excess `1` makes the boost lower bound meet the polar radial factor. The full residual follows from `FermatMixedMotorOddPrimeResidual`. The open face is an odd prime `n ≥ 5`. Exponents divisible by `3` or by `4` are mathlib. Classical Fermat is not claimed, and this route does not assume `fermatLastTheorem`. |
+| Beal | [`Beal.lean`](DoubleSpacetime/Theorems/Beal.lean) and the slice files | Furthest along. `beal_conjecture_pos_of_fine_residuals_even_split` reduces positive Beal to the FLT axiom and six residuals. Classical Beal remains open. |
+| abc | [`Abc.lean`](DoubleSpacetime/Theorems/Abc.lean) | The continuous bridge is false. The live statement is `AbcModularBridge`. |
+| Riemann | [`Riemann.lean`](DoubleSpacetime/Theorems/Riemann.lean) | `RiemannAdmissibleBridge`, with rational-grid certificates of denominator $\le 20$. This is not mathlib's `riemannZeta`. |
+| Goldbach | [`Goldbach.lean`](DoubleSpacetime/Theorems/Goldbach.lean) | `GoldbachAdmissibleBridge`. Even targets $4 \le n \le 100$ are certified. The integer height of a target does not depend on a prime pair. |
+| Polignac | [`Polignac.lean`](DoubleSpacetime/Theorems/Polignac.lean) | `PolignacAdmissibleBridge`. The gap $2k$ lies on the phase iff $k = 1$. Twin pairs have an admissible relative rotor. The normalised mismatch falls under every positive tolerance. |
+| Collatz | [`Collatz.lean`](DoubleSpacetime/Theorems/Collatz.lean) | `CollatzAdmissibleBridge`. The admissible integer-boost cone contains only $1$ and $2$. Every start $n \le 2^{20}$ reaches $1$. Any other cycle has normalised height greater than $100$. |
 
 Goldbach and Polignac share one phase, the hyperbola
 $(n/2)^2 - k^2 = pq$
-([`AdditivePhase.lean`](DstDiophantine/Theorems/AdditivePhase.lean)).
+([`AdditivePhase.lean`](DoubleSpacetime/Theorems/AdditivePhase.lean)).
 Neither conjecture is claimed there.
 
 ### Beal frontier
@@ -148,7 +148,7 @@ Neither conjecture is claimed there.
 Positive classical Beal follows from `fermatLastTheorem` together with six
 residuals. The slices below are closed. What remains is the leaf column.
 Finite coprime-free boxes in
-[`BealFinite.lean`](DstDiophantine/Theorems/BealFinite.lean) do not close
+[`BealFinite.lean`](DoubleSpacetime/Theorems/BealFinite.lean) do not close
 an infinite leaf. Window winding produces a modular witness from a
 fractional gap in $[2\pi/k, 4\pi/k)$. The balanced regime sits below that
 window, so winding does not close it.
@@ -188,19 +188,19 @@ route.
 
 | Declaration | File | Statement used here |
 | --- | --- | --- |
-| `fermatLastTheorem` | [`FermatLast.lean`](DstDiophantine/Theorems/FermatLast.lean) | Wiles. Closes Beal exponent gcd $d \ge 3$ |
-| `mihailescu` | [`Mihailescu.lean`](DstDiophantine/Theorems/Mihailescu.lean) | The only perfect-power difference of $1$ with exponents greater than $1$ is $3^2 - 2^3 = 1$ |
-| `darmonMerelCube` | [`DarmonMerel.lean`](DstDiophantine/Theorems/DarmonMerel.lean) | No coprime nonzero solution of $a^n + b^n = c^3$ for $n \ge 4$ |
-| `fermatSignatureNN5` | [`FermatNN5.lean`](DstDiophantine/Theorems/FermatNN5.lean) | No coprime nonzero solution of $a^n + b^n = c^5$ for $n \ge 4$ |
-| `eulerAffineCubeAddTwo` | [`EulerCube.lean`](DstDiophantine/Theorems/EulerCube.lean) | The only rational points of $X^3 + 2Y^3 = 1$ are $(1,0)$ and $(-1,1)$ |
-| `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^n$ in the range above |
-| `freitasSumTwoCubesPrime` | [`Bruin.lean`](DstDiophantine/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^p$ for a prime $p \ge 17$ with $p \equiv 2 \pmod 3$ |
-| `siksekStoll345` | [`SiksekStoll.lean`](DstDiophantine/Theorems/SiksekStoll.lean) | Every coprime integer solution of $x^3 + y^4 + z^5 = 0$ has a vanishing coordinate |
-| `sumTwoFifthsNotSeventhOrNineteenth` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 7$ or $l = 19$ |
-| `sumTwoFifthsNotStollPrime` | [`DahmenSiksek.lean`](DstDiophantine/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 11$, $13$, or $17$ |
-| `bennettEllenbergNg` | [`BennettEllenbergNg.lean`](DstDiophantine/Theorems/BennettEllenbergNg.lean) | No coprime nonzero solution of $A^4 + B^2 = C^n$ for $n \ge 4$ |
-| `anniSiksekDoublePrimeSum` | [`AnniSiksek.lean`](DstDiophantine/Theorems/AnniSiksek.lean) | No coprime nonzero solution of $a^{2\ell}+b^{2m}=c^p$ for primes $\ell,m\ge 5$ and $p\in\{7,11,13\}$ |
-| `michaudJacobsPrimeSeventeenth` | [`AnniSiksek.lean`](DstDiophantine/Theorems/AnniSiksek.lean) | No coprime nonzero solution of $a^{2\ell}+b^{2m}=c^{17}$ for primes $\ell,m\neq 5$ |
+| `fermatLastTheorem` | [`FermatLast.lean`](DoubleSpacetime/Theorems/FermatLast.lean) | Wiles. Closes Beal exponent gcd $d \ge 3$ |
+| `mihailescu` | [`Mihailescu.lean`](DoubleSpacetime/Theorems/Mihailescu.lean) | The only perfect-power difference of $1$ with exponents greater than $1$ is $3^2 - 2^3 = 1$ |
+| `darmonMerelCube` | [`DarmonMerel.lean`](DoubleSpacetime/Theorems/DarmonMerel.lean) | No coprime nonzero solution of $a^n + b^n = c^3$ for $n \ge 4$ |
+| `fermatSignatureNN5` | [`FermatNN5.lean`](DoubleSpacetime/Theorems/FermatNN5.lean) | No coprime nonzero solution of $a^n + b^n = c^5$ for $n \ge 4$ |
+| `eulerAffineCubeAddTwo` | [`EulerCube.lean`](DoubleSpacetime/Theorems/EulerCube.lean) | The only rational points of $X^3 + 2Y^3 = 1$ are $(1,0)$ and $(-1,1)$ |
+| `sumTwoCubesNotPerfectPower` | [`Bruin.lean`](DoubleSpacetime/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^n$ in the range above |
+| `freitasSumTwoCubesPrime` | [`Bruin.lean`](DoubleSpacetime/Theorems/Bruin.lean) | No coprime nonzero solution of $a^3 + b^3 = c^p$ for a prime $p \ge 17$ with $p \equiv 2 \pmod 3$ |
+| `siksekStoll345` | [`SiksekStoll.lean`](DoubleSpacetime/Theorems/SiksekStoll.lean) | Every coprime integer solution of $x^3 + y^4 + z^5 = 0$ has a vanishing coordinate |
+| `sumTwoFifthsNotSeventhOrNineteenth` | [`DahmenSiksek.lean`](DoubleSpacetime/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 7$ or $l = 19$ |
+| `sumTwoFifthsNotStollPrime` | [`DahmenSiksek.lean`](DoubleSpacetime/Theorems/DahmenSiksek.lean) | No coprime nonzero solution of $a^5 + b^5 = c^l$ for $l = 11$, $13$, or $17$ |
+| `bennettEllenbergNg` | [`BennettEllenbergNg.lean`](DoubleSpacetime/Theorems/BennettEllenbergNg.lean) | No coprime nonzero solution of $A^4 + B^2 = C^n$ for $n \ge 4$ |
+| `anniSiksekDoublePrimeSum` | [`AnniSiksek.lean`](DoubleSpacetime/Theorems/AnniSiksek.lean) | No coprime nonzero solution of $a^{2\ell}+b^{2m}=c^p$ for primes $\ell,m\ge 5$ and $p\in\{7,11,13\}$ |
+| `michaudJacobsPrimeSeventeenth` | [`AnniSiksek.lean`](DoubleSpacetime/Theorems/AnniSiksek.lean) | No coprime nonzero solution of $a^{2\ell}+b^{2m}=c^{17}$ for primes $\ell,m\neq 5$ |
 
 ### Finite certificates
 
@@ -220,10 +220,10 @@ and says nothing about the complement.
 
 ## Gravity
 
-Parallel track, barrel [`DstDiophantine/Gravity.lean`](DstDiophantine/Gravity.lean).
+Parallel track, barrel [`DoubleSpacetime/Gravity.lean`](DoubleSpacetime/Gravity.lean).
 The module docstring there is the index. Each submodule docstring is the
 checked local map. Regression examples live in
-[`Gravity/Regression.lean`](DstDiophantine/Gravity/Regression.lean) and
+[`Gravity/Regression.lean`](DoubleSpacetime/Gravity/Regression.lean) and
 add no claim. Algebraic $J$ is not the Weitzenböck density $T$ and not a
 dimensionful coupling.
 
@@ -272,7 +272,7 @@ derived.
 
 ### Particles, force, and channels
 
-[`DualRotorDynamics.lean`](DstDiophantine/Gravity/DualRotorDynamics.lean)
+[`DualRotorDynamics.lean`](DoubleSpacetime/Gravity/DualRotorDynamics.lean)
 is the Euler–Lagrange system of the written opposite-sign density. In the
 sum and difference channels the mismatch is free and the common rapidity
 is sourced. Stiffness, unsigned mass, and free fall are three different
@@ -310,7 +310,7 @@ M_{\mathrm{norm}} \le \tfrac56 + \tfrac32 J_{\mathrm{norm}}^2.
 $$
 
 The exact image of the cone is the three-lobed envelope of
-[`ControlDomain.lean`](DstDiophantine/Gravity/ControlDomain.lean). A
+[`ControlDomain.lean`](DoubleSpacetime/Gravity/ControlDomain.lean). A
 dual-only motion meets that envelope at most once.
 
 No theorem in this track asserts `dst_derives_G`, `dst_derives_a0`,
@@ -321,12 +321,12 @@ numerical baryon yield.
 
 ## Four-valued logic
 
-Parallel track, barrel [`DstDiophantine/Logic.lean`](DstDiophantine/Logic.lean).
+Parallel track, barrel [`DoubleSpacetime/Logic.lean`](DoubleSpacetime/Logic.lean).
 The note is [`papers/dst-4-valued-logic.tex`](papers/dst-4-valued-logic.tex).
 
 A proposition is an admissible torsion configuration. Collapse of
 $J_{\mathrm{norm}} \in [-1,1]$ yields four labels
-([`TruthValue.lean`](DstDiophantine/Logic/TruthValue.lean)):
+([`TruthValue.lean`](DoubleSpacetime/Logic/TruthValue.lean)):
 $|T\rangle$ at $0$ (perfect balance), $|U\rangle$ on $(0,1)$
 (boost-dominant), $|F\rangle$ at $+1$ (pure boost), and $|B\rangle$ on
 $[-1,0)$ (rotation-dominant). Outside $[-1,1]$ classification is refused.
@@ -354,8 +354,8 @@ generations.
 ## Repository layout
 
 ```
-DstDiophantine.lean            Root: Basic and Gravity
-DstDiophantine/
+DoubleSpacetime.lean            Root: Basic and Gravity
+DoubleSpacetime/
   Basic.lean                   Diophantine public API
   Algebra.lean                 Algebra barrel
   Algebra/                     PGA, Cl(3,1), Cl(9,1), motors, J, discrete torus
@@ -377,7 +377,7 @@ papers/japanese/               Japanese counterparts, luatexja
 English sources live in [`papers/`](papers/). Each one has a Japanese
 counterpart in [`papers/japanese/`](papers/japanese/), with the same claims
 and the file name `<stem>-ja.tex`. Hosted PDFs are in
-[hypernumbernet/dual-spacetime-doc](https://github.com/hypernumbernet/dual-spacetime-doc).
+[hypernumbernet/double-spacetime-doc](https://github.com/hypernumbernet/double-spacetime-doc).
 Both languages compile with LuaLaTeX from the directory that contains the
 source. Japanese sources load `luatexja`.
 
@@ -415,8 +415,8 @@ That builds the root (Diophantine path and gravity) and the logic barrel.
 built on its own:
 
 ```bash
-lake build DstDiophantine.Gravity
-lake build DstDiophantine.Logic
+lake build DoubleSpacetime.Gravity
+lake build DoubleSpacetime.Logic
 ```
 
 Open targets are a separate library. `sorry` is allowed there, and the

@@ -1,8 +1,8 @@
-import DstDiophantine.Theorems.Abc
-import DstDiophantine.Theorems.Collatz
-import DstDiophantine.Theorems.Goldbach
-import DstDiophantine.Theorems.Polignac
-import DstDiophantine.Theorems.Riemann
+import DoubleSpacetime.Theorems.Abc
+import DoubleSpacetime.Theorems.Collatz
+import DoubleSpacetime.Theorems.Goldbach
+import DoubleSpacetime.Theorems.Polignac
+import DoubleSpacetime.Theorems.Riemann
 
 /-!
 # Live Diophantine bridges
@@ -12,7 +12,7 @@ A bridge is a target only while the main library treats it as the live path.
 
 namespace Goals.Diophantine
 
-open DstDiophantine.Theorems
+open DoubleSpacetime.Theorems
 
 /-- Open. The continuous bridge is false; this one recovers the classical conjecture. -/
 theorem abcModularBridge : AbcModularBridge := by sorry

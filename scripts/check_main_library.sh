@@ -4,12 +4,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-LEAN_FILES="$(find DstDiophantine -name '*.lean' -type f)"
+LEAN_FILES="$(find DoubleSpacetime -name '*.lean' -type f)"
 
 # Match proof obligations only (ignore docstrings that mention the word sorry).
 SORRY_PAT='(^|[[:space:]])(by[[:space:]]+)?sorry[[:space:]]*$|:= by sorry'
 if grep -nE "$SORRY_PAT" $LEAN_FILES 2>/dev/null | grep -q .; then
-  echo "error: sorry found in main library (DstDiophantine/)"
+  echo "error: sorry found in main library (DoubleSpacetime/)"
   grep -nE "$SORRY_PAT" $LEAN_FILES 2>/dev/null || true
   exit 1
 fi

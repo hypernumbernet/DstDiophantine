@@ -91,6 +91,6 @@
    "inputRev": "v4.35.0",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "DstDiophantine",
+ "name": "DoubleSpacetime",
  "lakeDir": ".lake",
  "fixedToolchain": false}
