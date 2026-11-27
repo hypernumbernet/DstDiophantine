@@ -1,13 +1,13 @@
-\section{時間を進める契約}
+\section{作業段の仮定を残す}
 \label{sec:contract}
 
-地位は\dstopen{}である。Lean に積分器は無い。この章の一段は、実行してよい作業手順であり、論文の運動方程式ではない。ログに契約を残さない呼び出しは、ライブラリが拒否する。
+地位は\dstopen{}である。Lean に積分器は無い。この章の一段は、実行してよい作業手順であり、論文の運動方程式ではない。仮定をログに残さない呼び出しは、ライブラリが拒否する。
 
 \subsection{一段が読んでよいもの}
 
 \begin{enumerate}
 \item 位置はチャート \(E\) の \texttt{ChartBody.pos} だけである。
-\item ペアの力は第\ref{sec:force}章の静的な和である。重力和と電磁和を両方使うなら、足し算をこの契約の中で行い、その旨をログに書く。
+\item ペアの力は第\ref{sec:force}章の静的な和である。重力和と電磁和を両方使うなら、足し算をこの作業段で行い、その旨をログに書く。
 \item 内在角は第\ref{sec:written}章の閉形式である。剛性 \(m\) は \texttt{WrittenSeed.stiffness} として外から渡す。層力の大きさから \(m\) を更新しない。
 \item 位置を動かすときに加速度 \(\ddot x=F/\mu\) を使うなら、\(\mu\) は呼び出し側の慣性パラメータである。剛性 \(m\) でもキリング質量 \(M\) でもない。
 \end{enumerate}
@@ -53,4 +53,4 @@ function working_step(bodies, seeds, mu, dt, inputs) -> reject or state:
 
 \subsection{論文へ昇格させない}
 
-この一段を、日本語論文の「書かれた作用」の節へ書き戻さない。Lean に \texttt{working\_step} という定義を足さない。多体系を閉じる式が足りない、という事実は、この契約のログが引き受ける。
+この一段を、日本語論文の「書かれた作用」の節へ書き戻さない。Lean に \texttt{working\_step} という定義を足さない。多体系を閉じる式が足りない、という事実は、この仮定のログが引き受ける。
