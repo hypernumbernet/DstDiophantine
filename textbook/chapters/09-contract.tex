@@ -1,0 +1,56 @@
+\section{時間を進める契約}
+\label{sec:contract}
+
+地位は\dstopen{}である。Lean に積分器は無い。この章の一段は、実行してよい作業手順であり、論文の運動方程式ではない。ログに契約を残さない呼び出しは、ライブラリが拒否する。
+
+\subsection{一段が読んでよいもの}
+
+\begin{enumerate}
+\item 位置はチャート \(E\) の \texttt{ChartBody.pos} だけである。
+\item ペアの力は第\ref{sec:force}章の静的な和である。重力和と電磁和を両方使うなら、足し算をこの契約の中で行い、その旨をログに書く。
+\item 内在角は第\ref{sec:written}章の閉形式である。剛性 \(m\) は \texttt{WrittenSeed.stiffness} として外から渡す。層力の大きさから \(m\) を更新しない。
+\item 位置を動かすときに加速度 \(\ddot x=F/\mu\) を使うなら、\(\mu\) は呼び出し側の慣性パラメータである。剛性 \(m\) でもキリング質量 \(M\) でもない。
+\end{enumerate}
+
+\subsection{ログ}
+
+各段の前に、次のレコードを残す。
+
+\begin{verbatim}
+struct StepContract:
+    tag: "working-step"
+    position_law: "caller_inertia"
+    mu: real
+    stiffness_m: real
+    killing_M: real
+    used_gravity_sum: bool
+    used_em_sum: bool
+    note: "mu, stiffness_m, and killing_M are three arguments"
+\end{verbatim}
+
+\(\mu\)、\(m\)、\(M\) の数値が偶然一致しても、フィールドは三つ残す。一致を恒等式として簡約しない。
+
+\subsection{一段の手順}
+
+\begin{verbatim}
+function working_step(bodies, seeds, mu, dt, inputs) -> reject or state:
+    require step contract log
+    for each unordered pair:
+        evaluate gravity sum, and em sum if requested
+        on r = 0 or gamma = 0: reject the whole step
+    for each body i:
+        a = F_i / mu_i
+        pos_i = pos_i + vel_i * dt + a * dt * dt / 2
+        vel_i = vel_i + a * dt
+    for each seed:
+        sample written_at(seed, t + dt)
+        build alpha, beta
+        if not admissible: reject
+    t = t + dt
+\end{verbatim}
+
+位置の差分法は作業模型の中の選択である。上の式は一次の例であり、DST の定理ではない。別の段法を使うときは \texttt{position\_law} の文字列を変える。内在角の側は、段法を替えても閉形式のままにする。
+
+\subsection{論文へ昇格させない}
+
+この一段を、日本語論文の「書かれた作用」の節へ書き戻さない。Lean に \texttt{working\_step} という定義を足さない。多体系を閉じる式が足りない、という事実は、この契約のログが引き受ける。

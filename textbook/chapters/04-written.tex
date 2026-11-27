@@ -1,0 +1,80 @@
+\section{書かれた一粒子作用}
+\label{sec:written}
+
+地位は\dstrec{}である。ソースは \texttt{DualRotorDynamics} と \texttt{DualRotorFlow} である。実装は数値 ODE を先に書かない。この章の関数は閉形式を返す。
+
+\subsection{密度とオイラー--ラグランジュ方程式}
+
+一軸の密度は
+\[
+L=\frac12\dot\phi^2-\frac12\dot\theta^2-\frac m2(\phi-\theta)^2
+\]
+であり、識別子は \texttt{paperLagrangian} である。三軸の作用は、この密度の和を時刻で積分したものである。軸間の交差項は無いので、ソルバは軸ごとに独立でよい。
+
+正しいオイラー--ラグランジュ方程式 \texttt{PaperActualEL} は
+\[
+\ddot\phi=-m(\phi-\theta),\qquad
+\ddot\theta=-m(\phi-\theta)
+\]
+である。したがって
+\[
+\ddot\delta=0,\qquad
+\ddot\sigma=-2m\delta.
+\]
+同じ初期値から \(\ddot\delta+m\delta=0\) を返す実装は、この記録に反する。Lean の \texttt{paperActualEL\_not\_oscillator} が、書かれた方程式と振動子方程式の不一致を述べている。
+
+\subsection{閉形式}
+
+初期値を \(\delta(0)=\delta_0\)、\(\dot\delta=\nu\)（定数）、\(\sigma(0)=\sigma_0\)、\(\dot\sigma(0)=\dot\sigma_0\) とする。解は
+\begin{align}
+\delta(t)&=\delta_0+\nu t,\\
+\dot\sigma(t)&=\dot\sigma_0-2m\delta_0 t-m\nu t^2,\\
+\sigma(t)&=\sigma_0+\dot\sigma_0 t-m\delta_0 t^2-\frac{m\nu}{3}t^3
+\end{align}
+である。識別子は \texttt{writtenDelta}、\texttt{cubicRapiditySpeed}、\texttt{writtenSigma} である。角へ戻すときは
+\begin{verbatim}
+phi(t) = (sigma(t) + delta(t)) / 2
+theta(t) = (sigma(t) - delta(t)) / 2
+\end{verbatim}
+とする。\(\ddot\phi=\ddot\theta=-m\delta(t)\) が各時刻で成り立つことを、実装後の検査に入れる。
+
+\subsection{運動量とヤコビ積分}
+
+共役運動量に剛性 \(m\) は掛からない。
+\begin{align}
+p_\sigma&=\frac12\dot\delta=\frac12(\dot\phi-\dot\theta),\\
+p_\delta&=\frac12\dot\sigma=\frac12(\dot\phi+\dot\theta).
+\end{align}
+識別子は \texttt{paperMomentumSigma} と \texttt{paperMomentumDelta} である。書かれた流れの上では \(p_\sigma\) は保存し、\(\dot p_\delta=-m\delta\) である。
+
+ヤコビ積分は
+\[
+E=\frac12\dot\phi^2-\frac12\dot\theta^2+\frac m2\delta^2
+=\frac12\dot\sigma\dot\delta+\frac m2\delta^2
+\]
+であり、識別子は \texttt{paperEnergy} である。\texttt{PaperActualEL} の上で \(\dot E=0\) である。閉形式に沿えば、この定数は初期データへ還元される。
+\[
+E=\frac12\nu\dot\sigma_0+\frac m2\delta_0^2.
+\]
+\(E\) は不定である。正にも負にもなりうる。保存を、振動数の存在へ読み替えない。
+
+\subsection{呼び出し境界}
+
+\begin{verbatim}
+function written_at(seed, t) -> (phi, theta, phidot, thetadot):
+    delta = seed.delta0 + seed.nu * t
+    sigmadot = seed.sigmadot0
+             - 2 * seed.stiffness * seed.delta0 * t
+             - seed.stiffness * seed.nu * t * t
+    sigma = seed.sigma0
+          + seed.sigmadot0 * t
+          - seed.stiffness * seed.delta0 * t * t
+          - (seed.stiffness * seed.nu / 3) * t * t * t
+    phi = (sigma + delta) / 2
+    theta = (sigma - delta) / 2
+    phidot = (sigmadot + seed.nu) / 2
+    thetadot = (sigmadot - seed.nu) / 2
+    return (phi, theta, phidot, thetadot)
+\end{verbatim}
+
+この関数は力も位置も受け取らない。駆動 \(u\)、振動子、暴走、任意ポテンシャルは第\ref{sec:working}章の別モジュールである。

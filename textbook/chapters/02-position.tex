@@ -1,0 +1,53 @@
+\section{位置は二種類ある}
+\label{sec:position}
+
+地位は\dstrec{}である。多体の層力と、関係としての位置は、別の型に入れる。
+
+\subsection{チャート上の点}
+
+\texttt{LayerForce} の位置は、実内積空間 \(E\) の点である。三次元の計算では \(E=\mathbb{R}^3\) で足りる。粒子の識別子を \(\iota\) とすると、配置は
+\begin{verbatim}
+pos:  map iota -> Vec3
+\end{verbatim}
+である。分離は \(\lVert\mathrm{pos}(i)-\mathrm{pos}(j)\rVert\) であり、このノルムが層の引数 \(r\) になる。この \(E\) は粒子の内在角が住む代数ではない。
+
+\subsection{三球上の関係}
+
+\texttt{RelationalPosition.S3} は単位四元数である。
+\begin{verbatim}
+struct S3:
+    val: quaternion
+    # normSq(val) = 1
+\end{verbatim}
+\(b\) の \(a\) に対する位置は相対ローター
+\[
+\rho(a,b)=a^{-1}b
+\]
+であり、識別子は \texttt{relative} である。\(\rho(a,b)=1\) は \(a=b\) と同値である。左からの同時移動は \(\rho\) を変えない。
+
+この \(\rho\) は、粒子内部の不整合ローター \(\Omega\) ではない。チャート座標の位置演算子でもない。\(\rho\) を \(\mathbb{R}^3\) の差と見なして、層力の \(r\) に渡さない。\(S^3\) 上の測地線を、ニュートン軌道の代わりに積分しない。
+
+\subsection{状態を分ける}
+
+最小の実行時状態は次の三層に割る。
+
+\begin{verbatim}
+struct ChartBody:
+    id: iota
+    pos: Vec3
+    mass_input: real    # factor in G * m_i * m_j
+    charge_input: real  # factor in k * q_i * q_j
+
+struct WrittenSeed:
+    axis: int           # 0, 1, or 2
+    sigma0: real
+    sigmadot0: real
+    delta0: real
+    nu: real            # constant delta-dot
+    stiffness: real     # input m
+
+struct RelationalSample:
+    element: S3         # not read by layer_force
+\end{verbatim}
+
+\texttt{ChartBody} は第\ref{sec:force}章だけが読む。\texttt{WrittenSeed} は第\ref{sec:written}章だけが読む。\texttt{RelationalSample} は関係の検査に残し、時間ループの位置更新へ接続しない。一つの構造体に三層の場を並べることはできる。そのとき更新関数の引数リストで、読む場を制限する。

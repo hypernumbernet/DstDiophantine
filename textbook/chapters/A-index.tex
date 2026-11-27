@@ -1,0 +1,46 @@
+\section{付録}
+\label{sec:appendix}
+
+\subsection{式と Lean 名}
+
+\begin{description}
+\item[六ラピディティ] \texttt{TorsionParams}（\texttt{Algebra.Operations}）
+\item[許容錐] \texttt{IsAdmissibleContinuous}（\texttt{Algebra.Admissible}）
+\item[\(J\)、\(J_{\mathrm{norm}}\)、\(M\)] \texttt{J}, \texttt{JNormalized}, \texttt{mass}（\texttt{Algebra.Invariant}）
+\item[書かれた密度] \texttt{paperLagrangian}（\texttt{DualRotorDynamics}）
+\item[書かれた EL] \texttt{PaperActualEL}（\texttt{DualRotorDynamics}）
+\item[\(p_\sigma\)、\(p_\delta\)、\(E\)] \texttt{paperMomentumSigma}, \texttt{paperMomentumDelta}, \texttt{paperEnergy}（\texttt{DualRotorDynamics}）
+\item[\(\delta(t)\)、\(\sigma(t)\)] \texttt{writtenDelta}, \texttt{writtenSigma}（\texttt{DualRotorFlow}）
+\item[暴走、振動子] \texttt{runawayDelta}, \texttt{harmonicMismatch}（\texttt{DualRotorFlow}）
+\item[駆動 \(u,v\)] \texttt{PaperSourcedEL}, \texttt{PaperBothSourcedEL}（\texttt{DualRotorDynamics}）
+\item[任意傾き] \texttt{OppositePotentialEL}, \texttt{SameSignPotentialEL}（\texttt{DualRotorRigidity}）
+\item[四次井戸] \texttt{quarticPotential}, \texttt{quarticSlope}（\texttt{DualRotorRigidity}）
+\item[等スケール因子] \texttt{gammaSEqual}（\texttt{TorsionalLayer}）
+\item[第一正根] \texttt{resonanceRoot1}（\texttt{ElectronShell}）
+\item[層半径] \texttt{layerRadius}（\texttt{TorsionalLayer}）
+\item[重力項、和] \texttt{gravityLayerTerm}, \texttt{gravityLayerForce}（\texttt{LayerForce}）
+\item[二チャネル] \texttt{pairChannelForce}（\texttt{BothChannels}）
+\item[クーロンスカラー] \texttt{coulombForce}（\texttt{ElectronOrbit}）
+\item[点電荷] \texttt{pointForce}（\texttt{ElectronMetal}）
+\item[関係位置] \texttt{S3}, \texttt{relative}（\texttt{RelationalPosition}）
+\item[離散標本] \texttt{DiscreteTorsion}（\texttt{Algebra.Discrete}）
+\item[剛性ポテンシャル] \texttt{stiffnessPotential}（\texttt{RestMass}）
+\item[外部有理数] \texttt{SI}（\texttt{Gravity.SI}）
+\end{description}
+
+\subsection{章と論文}
+
+\begin{description}
+\item[状態、許容錐、\(J\) と \(M\)] 主論文の数学的基礎と運動学。
+\item[書かれた作用、近傍模型、駆動 \(u\)、任意の \(V\)] 動態方程式の論文。
+\item[層、力、核の長さの範囲、電子の点電荷] 主論文の強場域、スケール不変層、クーロン層。
+\item[チャートの近日点と偏折] 主論文の弱場・ニュートン極限と、Lean の \texttt{Mercury}, \texttt{SolarDeflection}。
+\item[離散列挙] 離散双対時空の草稿と \texttt{Algebra.Discrete}。
+\item[ディラック方程式を時間積分に使わない] 量子重力稿のクリフォード平方の節。
+\end{description}
+
+量子重力稿の場の方程式は、双対スピノルのチャート上の読みである。多体シミュレーターの状態ベクトルへ \(\Psi\) を追加しない。
+
+\subsection{照合}
+
+本書に書いた閉形式、ヤコビ積分、層力、二チャネルの零条件、許容錐、離散埋め込みは、上表の Lean 定義および動態方程式の日本語稿と一致している。一致しなかった式は採用していない。作業段の差分法は Lean に無く、契約ログの外へ出さない。

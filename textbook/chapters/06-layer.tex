@@ -1,0 +1,66 @@
+\section{層因子}
+\label{sec:layer}
+
+地位は\dstrec{}である。ソースは \texttt{ElectronShell} と \texttt{TorsionalLayer} である。
+
+\subsection{二つの干渉因子}
+
+一般の対は
+\begin{align}
+\gamma_s(\alpha,\beta)
+&=\cosh\frac\alpha2\cos\frac\beta2-\sinh\frac\alpha2\sin\frac\beta2,\\
+\gamma_B(\alpha,\beta)
+&=-\cosh\frac\alpha2\sin\frac\beta2+\sinh\frac\alpha2\cos\frac\beta2,\\
+\gamma_{\mathrm{eff}}(\alpha,\beta)
+&=\gamma_s^2+\gamma_B^2
+\end{align}
+である。\(\gamma_{\mathrm{eff}}\ge 0\) は常に成り立つ。力の符号には使わない。固有時の読みと、層の符号は別の関数である。
+
+等スケールは \(x=\ell/(2r)\) と置き、
+\[
+\gamma_s^{\mathrm{eq}}(x)=\cosh x\cos x-\sinh x\sin x
+\]
+とする。識別子は \texttt{gammaSEqual} である。これは \(\gamma_s(2x,2x)\) に等しい。
+\[
+\gamma_s^{\mathrm{eq}}(0)=1,\qquad
+\frac{d}{dx}\gamma_s^{\mathrm{eq}}(x)=-2\cosh x\sin x.
+\]
+導関数が消えるのは \(\sin x=0\) のときである。
+
+\subsection{第一の正根}
+
+\texttt{resonanceRoot1} は、開区間 \((1/2,1)\) 内で \(\tanh x\tan x=1\) を満たす唯一の点である。その点で \(\gamma_s^{\mathrm{eq}}=0\) である。回帰検査は、より狭い範囲
+\[
+\frac\pi4<\texttt{resonanceRoot1}<1
+\]
+を要求する。根の閉形式を定数として埋めない。テストは、二分法または同等の手続きで見つけた根がこの区間に入り、その点で \(\gamma_s^{\mathrm{eq}}\) の絶対値が許容誤差未満であることを見る。
+
+第一斥力殻は、位相が \((\texttt{resonanceRoot1},\pi)\) に入る半径である。そこでは \(\gamma_s^{\mathrm{eq}}<0\) である。層半径は
+\[
+r=\frac{\ell}{2x}
+\]
+であり、識別子は \texttt{layerRadius} である。
+
+\subsection{零と近接点}
+
+\(\gamma_s^{\mathrm{eq}}(x)=0\) の半径では、層力の分母が消える。そのペアに対する力の評価は失敗として返し、段を進めない。\(r=0\) も同様に失敗である。消滅する分離は接触則ではない。接触、合体、反射を表す分岐を、この章へ書かない。
+
+切断半径 \(r_{\mathrm{cut}}>0\) を模型が欲しがるなら、\texttt{Inputs} の外から渡す。\(\ell\) から \(r_{\mathrm{cut}}\) を計算しない。\(r<r_{\mathrm{cut}}\) のペアは、力を数値で埋めず、拒否する。
+
+\subsection{実装}
+
+\begin{verbatim}
+function gamma_s_equal(x) -> real:
+    return cosh(x) * cos(x) - sinh(x) * sin(x)
+
+function phase(ell, r) -> real or reject:
+    if r == 0: reject
+    return ell / (2 * r)
+
+function layer_gamma(ell, r) -> real or reject:
+    g = gamma_s_equal(phase(ell, r))
+    if g == 0: reject
+    return g
+\end{verbatim}
+
+浮動小数では、零の判定を絶対許容 \(\varepsilon_\gamma\) で行う。\(\varepsilon_\gamma\) も入力であり、理論定数ではない。許容の内側で分母を小さい数に置き換えて力を連続化しない。

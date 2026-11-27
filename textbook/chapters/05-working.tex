@@ -1,0 +1,107 @@
+\section{近傍模型を隔離する}
+\label{sec:working}
+
+地位は\dstwork{}である。ソースは \texttt{DualRotorDynamics} の近傍系、\texttt{DualRotorFlow} の双曲線解と調和解、\texttt{DualRotorRigidity} の傾きジェットである。ファイル名と関数名に \texttt{working} を付ける。第\ref{sec:written}章のモジュールを import して式を再利用してよい。逆方向、つまり作業模型を記録ソルバの既定経路にする import は禁止する。
+
+三つの二次系は隣り合っている。運動項の符号が、\(\delta\) を力学座標にするかどうかを決める。書かれた作用は反対符号であり、振動しない。振動子は同符号であり、書かれた作用ではない。残る系は暴走である。
+
+\subsection{暴走}
+
+\texttt{PaperClaimedEL} は
+\[
+\ddot\phi=m\delta,\qquad \ddot\theta=-m\delta
+\]
+である。チャネルでは
+\[
+\ddot\delta=2m\delta,\qquad \ddot\sigma=0.
+\]
+\(\kappa=\sqrt{2m}\)（\(m\ge 0\)）として、閉形式は
+\begin{align}
+\delta(t)&=A\cosh(\kappa t)+B\sinh(\kappa t),\\
+\sigma(t)&=\sigma_0+\dot\sigma_0 t
+\end{align}
+である。識別子は \texttt{runawayDelta} と \texttt{runawaySigma} である。この解を \texttt{written\_at} の戻り値にしない。
+
+\subsection{振動子}
+
+同符号の密度は
+\[
+L_{\mathrm{osc}}=\frac12\dot\phi^2+\frac12\dot\theta^2-\frac m2\delta^2
+\]
+であり、識別子は \texttt{oscillatorLagrangian} である。方程式 \texttt{OscillatorEL} は
+\[
+\ddot\delta+2m\delta=0,\qquad \ddot\sigma=0
+\]
+である。角振動数は \(\sqrt{2m}\) である。単位 \(\hbar=c=1\) で、この値がコンプトン振動数 \(m\) と一致するのは \(m=0\) と \(m=2\) に限る。定理は \texttt{sqrt\_two\_mul\_eq\_compton\_iff} である。
+
+閉形式は
+\[
+\delta(t)=A\cos\bigl(\sqrt{2m}\,t\bigr)+B\sin\bigl(\sqrt{2m}\,t\bigr),
+\quad
+\sigma(t)=\sigma_0+\dot\sigma_0 t
+\]
+である。識別子は \texttt{harmonicMismatch} と \texttt{inertialRapidity} である。ヤコビ積分
+\[
+E_{\mathrm{osc}}=\frac12\dot\phi^2+\frac12\dot\theta^2+\frac m2\delta^2
+\]
+は \(m\ge 0\) のとき非負であり、\(\delta\) の運動を束縛する。書かれた作用の \(E\) とは符号も意味も違う。
+
+\subsection{双対チャネルの加速度}
+
+書かれた密度に、双対側の加速度 \(u\) を足したジェットが \texttt{PaperSourcedEL} である。
+\[
+\ddot\phi=-m\delta,\qquad
+\ddot\theta=-m\delta+u,
+\]
+したがって
+\[
+\ddot\delta=-u,\qquad
+\ddot\sigma=-2m\delta+u.
+\]
+\(u=0\) のときだけ \texttt{PaperActualEL} に戻る。\(u\) が定数でも、不整合は復元振動数を持たない。二重積分である。
+
+通常側の力 \(v\) も認める \texttt{PaperBothSourcedEL} では
+\[
+\ddot\phi=-m\delta+v,\qquad
+\ddot\theta=-m\delta+u
+\]
+であり、ヤコビ積分の時間微分は \(v\dot\phi-u\dot\theta\) である。\(\ddot\phi=0\) を課すと \(v=m\delta\) が一意に決まる。この \(v\) は自由解ではない。通常角が瞬間的に静止していれば、拘束は仕事をしない。
+
+同符号模型に \(u\) を足すと
+\[
+\ddot\delta+2m\delta=-u,\qquad \ddot\sigma=u
+\]
+である。\(m\neq 0\) の定数駆動は、平衡不整合を \(-u/(2m)\) だけずらす。\(u\) を実験室のファラデー双一次量と同定するのは模型の選択であり、導出ではない。
+
+\subsection{任意の傾き}
+
+\texttt{OppositePotentialEL} は、傾き \texttt{slope} \(=V'(\delta)\) に対して
+\[
+\ddot\phi=\ddot\theta=-\mathrm{slope}
+\]
+と置く。したがって \(\ddot\delta=0\) かつ \(\ddot\sigma=-2V'(\delta)\) である。調和剛性では \(\mathrm{slope}=m\delta\) であり、書かれた作用の力と一致する。反対符号のままでは、\(V\) の形を変えても \(\delta\) は自由なままである。零でない遅れは、傾きが消える点に留まらない。
+
+\texttt{SameSignPotentialEL} は
+\[
+\ddot\phi=-\mathrm{slope},\qquad \ddot\theta=\mathrm{slope}
+\]
+である。したがって \(\ddot\delta=-2V'(\delta)\) かつ \(\ddot\sigma=0\) である。四次井戸
+\[
+V(\delta)=\frac\lambda4(\delta^2-v^2)^2,\qquad
+V'(\delta)=\lambda\delta(\delta^2-v^2)
+\]
+の識別子は \texttt{quarticPotential} と \texttt{quarticSlope} である。\(\lambda\neq 0\) のとき傾きが消えるのは \(\delta=0,\pm v\) である。非零の井戸での曲率は \(4\lambda v^2\) であり、識別子は \texttt{radialFreqSq} である。この曲率をコンプトン値へ固定する関数は置かない。ワインバーグ角も \(W,Z\) の質量も、このモジュールから返さない。
+
+\subsection{API}
+
+\begin{verbatim}
+module working_models:
+    function runaway_at(...)
+    function oscillator_at(...)
+    function sourced_accelerations(m, delta, u, v)
+    function opposite_slope_el(slope)
+    function samesign_slope_el(slope)
+    function quartic_slope(lam, v, delta)
+\end{verbatim}
+
+\texttt{written\_at} は上のどれも呼ばない。テストは、同一の \((m,\phi,\theta)\) に対して \texttt{PaperActualEL} の加速度と \texttt{PaperClaimedEL} の加速度が一致しないサンプルを一つ持つ。

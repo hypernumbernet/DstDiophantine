@@ -1,0 +1,73 @@
+\section{一粒子の状態}
+\label{sec:state}
+
+地位は\dstrec{}である。型は \texttt{Operations.TorsionParams} であり、場は次の二つである。
+
+\begin{verbatim}
+struct TorsionParams:
+    alpha: array[3] of real   # usual rapidity phi
+    beta:  array[3] of real   # dual angle theta
+\end{verbatim}
+
+添字 \(a\in\{0,1,2\}\) は Lean の \texttt{Fin 3} である。三軸は、書かれた作用の中では別々に積分する。軸を混ぜる項を、この記録のソルバへ足さない。
+
+\subsection{共通ラピディティと不整合}
+
+一軸ごとに
+\[
+\sigma_a=\alpha_a+\beta_a,\qquad
+\delta_a=\alpha_a-\beta_a
+\]
+と置く。逆は
+\[
+\alpha_a=\frac{\sigma_a+\delta_a}{2},\qquad
+\beta_a=\frac{\sigma_a-\delta_a}{2}
+\]
+であり、Lean の \texttt{usualFrom} と \texttt{dualFrom} がこの復元である。プログラムは \(\alpha,\beta\) と \(\sigma,\delta\) を別々に更新しない。一方を時刻 \(t\) の閉形式で計算し、他方をこの一次変換で作る。
+
+\subsection{キリングスカラーと符号なし質量}
+
+\texttt{Invariant.J} と \texttt{Invariant.mass} は次のとおりである。
+\begin{align}
+J(p)&=\frac12\sum_{a=0}^{2}\bigl(\alpha_a^2-\beta_a^2\bigr)
+=\frac12\sum_{a=0}^{2}\delta_a\sigma_a,\\
+M(p)&=\frac12\sum_{a=0}^{2}\bigl(\alpha_a^2+\beta_a^2\bigr)
+=\frac14\sum_{a=0}^{2}\bigl(\sigma_a^2+\delta_a^2\bigr).
+\end{align}
+正規化は
+\[
+J_{\mathrm{norm}}(p)=\frac{8}{3\pi^2}J(p)
+\]
+であり、識別子は \texttt{JNormalized} である。許容錐の上では \(|J_{\mathrm{norm}}|\le 1\) が \(|J|\le 3\pi^2/8\) と同じ主張になる。
+
+一軸だけが非零のとき、論文の書き方 \(J=\frac12\delta\sigma\)、\(M=\frac14(\sigma^2+\delta^2)\) は上式のその軸への制限である。振動子ポテンシャル
+\[
+J_{\mathrm{osc}}=\frac m2\sum_a\delta_a^2
+\]
+は別の量である。コード上の名前を \texttt{j\_osc} とし、\texttt{J} へ代入しない。\(J=0\) は相対ローターが単位元であることを意味しない。\(\delta=0\) かつ \(\sigma\neq 0\) なら \(J=0\) かつ \(M=\sigma^2/4>0\) であり、二つの角は一致しない。
+
+\subsection{許容錐}
+
+\texttt{Admissible.IsAdmissibleContinuous} は、各軸で
+\[
+\alpha_a\ge 0,\qquad \beta_a\ge 0,\qquad \alpha_a+\beta_a\le\frac\pi2
+\]
+が成り立つことである。\(\sigma,\delta\) へ訳すと、各軸で
+\[
+\sigma_a\in\Bigl[0,\frac\pi2\Bigr],\qquad |\delta_a|\le\sigma_a
+\]
+である。主枝の絶対値条件 \(|\alpha_a+\beta_a|\le\pi/2\) だけでは \(J\) は抑えられない。検査関数は連続許容の三つ組を見る。
+
+許容錐を外れた状態の扱いは第\ref{sec:numerics}章で拒否とする。錐の中へ射影する関数は記録に無い。
+
+\subsection{三つの質量}
+
+\texttt{RestMass} は次の三つを一つの数にまとめない。
+
+\begin{enumerate}
+\item 剛性ポテンシャル \texttt{stiffnessPotential}$(m,p)=(m/2)\sum_a(\alpha_a-\beta_a)^2$。係数 \(m\) は入力である。
+\item 符号なし質量 \(M\)。ラピディティのユークリッド二次形式である。
+\item 自由落下。\(F=ma\) という識別は主張されていない。
+\end{enumerate}
+
+段の更新に慣性質量が要るなら、それは第四の引数として呼び出し側が渡す。詳細は第\ref{sec:contract}章である。

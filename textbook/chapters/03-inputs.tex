@@ -1,0 +1,33 @@
+\section{入力であって導出でない量}
+\label{sec:inputs}
+
+地位は\dstopen{}を、入力スロットとして固定する話である。次の量を幾何から計算する関数は置かない。
+
+\begin{itemize}
+\item 重力定数 \(G\)。
+\item 層の長さ \(\ell\)。チャネルが二つあるときは \(\ell_G\) と \(\ell_E\) を別引数にする。
+\item 書かれた作用の剛性 \(m\)。
+\item 電荷、およびクーロン前置 \(k\)。
+\item 微細構造定数、ボーア半径、核の長さ \(r_1\)。
+\item 銀河スケールの \(a_0\)。
+\end{itemize}
+
+\texttt{Gravity.SI} の有理数は、CODATA 型の外部入力を回帰で使うためのスタンドインである。代数から導出された値ではない。本番のソルバがこの有理数を既定値として焼き込まない。テストだけが、回帰検査の数値範囲と比べるために明示して渡す。
+
+\subsection{受け取り方}
+
+定数は有理数で保持できる。浮動小数へ落とすなら、落とした桁と、比較に使う区間を同じレコードに書く。
+\begin{verbatim}
+struct Inputs:
+    G: rational
+    ell_G: rational
+    ell_E: rational
+    k_coulomb: rational
+    stiffness: rational
+    note: string   # which external table, which digits
+\end{verbatim}
+ゼロ除算と符号の検査は、この値を力の式へ入れる前に行う。\(G\) の符号、\(\ell\) の符号、剛性の符号は、呼び出し側の責任としてログへ残す。Lean の層力定理は、正の \(\kappa=G m_i m_j\) と正の \(r\) を仮定して符号を述べている。
+
+\subsection{単位}
+
+内在角 \(\alpha,\beta,\sigma,\delta\) は無次元である。\(J\) と \(M\) も無次元である。チャート上の \(r\) は \(\ell\) と同じ単位で測る。\(\ell\) を fm で渡した力と、\(\ell\) をメートルで渡した力を、一つの和に入れない。SI へ変換する関数が要るなら、変換係数も \texttt{Inputs} のフィールドにし、幾何関数の中へ書かない。

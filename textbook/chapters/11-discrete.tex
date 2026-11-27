@@ -1,0 +1,36 @@
+\section{離散双対は軌道積分ではない}
+\label{sec:discrete}
+
+地位は\dstrec{}である。ソースは \texttt{Algebra.Discrete} である。この章の手続きは時間ループに入らない。
+
+\subsection{格子}
+
+正整数 \(N\) に対し、ねじれの標本は \((\mathbb{Z}/N\mathbb{Z})^6\) である。
+\begin{verbatim}
+struct DiscreteTorsion:
+    n: array[3] of mod N   # usual
+    m: array[3] of mod N   # dual
+\end{verbatim}
+点数は \(N^6\) である。連続パラメータへの埋め込みは
+\[
+\alpha_a=\frac{2\pi}{N}(n_a\bmod N),\qquad
+\beta_a=\frac{2\pi}{N}(m_a\bmod N)
+\]
+であり、識別子は \texttt{toTorsionParams} である。値は \([0,2\pi)\) に入る。許容かどうかは、埋め込んだあとの \texttt{IsAdmissibleContinuous} で判定する。格子点であること自体は許容を意味しない。
+
+\subsection{トーラスは模型選択である}
+
+循環指数は \(2\pi\) 周期である。双曲指数は \(2\pi\) 周期ではない。ブーストをこのトーラスへ載せることは、離散化の模型選択である。許容錐は、トーラスに載せたことから自動では従わない。列挙コマンドは、選択であることをヘルプ文字列に書く。
+
+\subsection{コマンド}
+
+\begin{verbatim}
+command enumerate_admissible(N) -> list of DiscreteTorsion:
+    for each of the N^6 points:
+        p = to_torsion_params(point)
+        if admissible(p): emit point
+\end{verbatim}
+
+出力は探索の入力である。各点の \(J\) と \(M\) を添えてよい。点を時刻順に並べ、速度として \texttt{working\_step} へ渡さない。\(N\) を段数と解釈しない。
+
+双対角だけを \((2\pi/N)\mathbb{Z}\) に制限し、通常ラピディティを実数のまま残す読みは、上の六次元格子とは別の模型である。同じコマンドにまとめない。
