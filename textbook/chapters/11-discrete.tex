@@ -33,4 +33,6 @@ command enumerate_admissible(N) -> list of DiscreteTorsion:
 
 出力は探索の入力である。各点の \(J\) と \(M\) を添えてよい。点を時刻順に並べ、速度として \texttt{working\_step} へ渡さない。\(N\) を段数と解釈しない。
 
+埋め込みの成分は常に非負なので、離散点に限れば \texttt{Discrete.IsAdmissible} と、埋め込んだあとの \texttt{IsPrincipalBranch} は同値である。連続状態では同値ではない。列挙の検査は \texttt{IsAdmissible} を呼ぶ。
+
 双対角だけを \((2\pi/N)\mathbb{Z}\) に制限し、通常ラピディティを実数のまま残す読みは、上の六次元格子とは別の模型である。同じコマンドにまとめない。

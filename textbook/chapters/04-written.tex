@@ -5,11 +5,11 @@
 
 \subsection{密度とオイラー--ラグランジュ方程式}
 
-一軸の密度は
+Lean が定義している密度は一軸のものである。
 \[
 L=\frac12\dot\phi^2-\frac12\dot\theta^2-\frac m2(\phi-\theta)^2
 \]
-であり、識別子は \texttt{paperLagrangian} である。三軸の作用は、この密度の和を時刻で積分したものである。軸間の交差項は無いので、ソルバは軸ごとに独立でよい。
+識別子は \texttt{paperLagrangian} である。この密度に軸をまたぐ項は無い。三軸を同時に進めるときは、同じ密度を軸ごとの初期値で別々に評価する。
 
 正しいオイラー--ラグランジュ方程式 \texttt{PaperActualEL} は
 \[
@@ -21,7 +21,11 @@ L=\frac12\dot\phi^2-\frac12\dot\theta^2-\frac m2(\phi-\theta)^2
 \ddot\delta=0,\qquad
 \ddot\sigma=-2m\delta.
 \]
-同じ初期値から \(\ddot\delta+m\delta=0\) を返す実装は、この記録に反する。Lean の \texttt{paperActualEL\_not\_oscillator} が、書かれた方程式と振動子方程式の不一致を述べている。
+書かれた方程式は \(\ddot\delta+m\delta=0\) ではない。定理 \texttt{paperActualEL\_not\_oscillator} の証人は
+\[
+(m,\phi,\theta,\ddot\phi,\ddot\theta)=(1,1,0,-1,-1)
+\]
+であり、この点では \(\ddot\delta=0\) かつ \(-m\delta=-1\) である。第\ref{sec:working}章の同符号模型はさらに別の方程式 \(\ddot\delta+2m\delta=0\) であり、ここへ混ぜない。
 
 \subsection{閉形式}
 
@@ -52,11 +56,11 @@ p_\delta&=\frac12\dot\sigma=\frac12(\dot\phi+\dot\theta).
 E=\frac12\dot\phi^2-\frac12\dot\theta^2+\frac m2\delta^2
 =\frac12\dot\sigma\dot\delta+\frac m2\delta^2
 \]
-であり、識別子は \texttt{paperEnergy} である。\texttt{PaperActualEL} の上で \(\dot E=0\) である。閉形式に沿えば、この定数は初期データへ還元される。
+であり、識別子は \texttt{paperEnergy} である。\texttt{PaperActualEL} の上で \(\dot E=0\) である。閉形式の上では、すべての時刻で
 \[
-E=\frac12\nu\dot\sigma_0+\frac m2\delta_0^2.
+E(t)=\frac12\nu\dot\sigma_0+\frac m2\delta_0^2
 \]
-\(E\) は不定である。正にも負にもなりうる。保存を、振動数の存在へ読み替えない。
+である。定理は \texttt{written\_flow\_energy} である。\(E\) は不定であり、正にも負にもなりうる。この保存は、振動数の存在を意味しない。
 
 \subsection{呼び出し境界}
 

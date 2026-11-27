@@ -5,8 +5,11 @@
 
 \begin{description}
 \item[六ラピディティ] \texttt{TorsionParams}（\texttt{Algebra.Operations}）
-\item[許容錐] \texttt{IsAdmissibleContinuous}（\texttt{Algebra.Admissible}）
-\item[\(J\)、\(J_{\mathrm{norm}}\)、\(M\)] \texttt{J}, \texttt{JNormalized}, \texttt{mass}（\texttt{Algebra.Invariant}）
+\item[許容錐] \texttt{IsAdmissibleContinuous}（\texttt{Algebra.Admissible}）。離散点では \texttt{Discrete.IsAdmissible}
+\item[\(J\)、\(J_{\mathrm{norm}}\)、\(M\)] \texttt{J}, \texttt{JNormalized}, \texttt{mass}（\texttt{Algebra.Invariant}）。上界は \texttt{torsion\_bound\_continuous}
+\item[相対ローター] \texttt{relativeRotor}（\texttt{Algebra.RelativeRotor}）。\\
+\(J=0\) でも単位元でない証人は \texttt{J\_zero\_not\_relativeRotor\_one}
+\item[剛性ポテンシャル] \texttt{stiffnessPotential}（\texttt{RestMass}）
 \item[書かれた密度] \texttt{paperLagrangian}（\texttt{DualRotorDynamics}）
 \item[書かれた EL] \texttt{PaperActualEL}（\texttt{DualRotorDynamics}）
 \item[\(p_\sigma\)、\(p_\delta\)、\(E\)] \texttt{paperMomentumSigma}, \texttt{paperMomentumDelta}, \texttt{paperEnergy}（\texttt{DualRotorDynamics}）
@@ -14,7 +17,7 @@
 \item[暴走、振動子] \texttt{runawayDelta}, \texttt{harmonicMismatch}（\texttt{DualRotorFlow}）
 \item[駆動 \(u,v\)] \texttt{PaperSourcedEL}, \texttt{PaperBothSourcedEL}（\texttt{DualRotorDynamics}）
 \item[任意傾き] \texttt{OppositePotentialEL}, \texttt{SameSignPotentialEL}（\texttt{DualRotorRigidity}）
-\item[四次井戸] \texttt{quarticPotential}, \texttt{quarticSlope}（\texttt{DualRotorRigidity}）
+\item[四次井戸] \texttt{quarticPotential}, \texttt{quarticSlope}, \texttt{radialFreqSq}（\texttt{DualRotorRigidity}）
 \item[等スケール因子] \texttt{gammaSEqual}（\texttt{TorsionalLayer}）
 \item[第一正根] \texttt{resonanceRoot1}（\texttt{ElectronShell}）
 \item[層半径] \texttt{layerRadius}（\texttt{TorsionalLayer}）
@@ -22,9 +25,9 @@
 \item[二チャネル] \texttt{pairChannelForce}（\texttt{BothChannels}）
 \item[クーロンスカラー] \texttt{coulombForce}（\texttt{ElectronOrbit}）
 \item[点電荷] \texttt{pointForce}（\texttt{ElectronMetal}）
+\item[有限格子の和] \texttt{siteForce}（\texttt{ElectronCrystal}）
 \item[関係位置] \texttt{S3}, \texttt{relative}（\texttt{RelationalPosition}）
 \item[離散標本] \texttt{DiscreteTorsion}（\texttt{Algebra.Discrete}）
-\item[剛性ポテンシャル] \texttt{stiffnessPotential}（\texttt{RestMass}）
 \item[外部有理数] \texttt{SI}（\texttt{Gravity.SI}）
 \end{description}
 
@@ -43,4 +46,4 @@
 
 \subsection{照合}
 
-本書に書いた閉形式、ヤコビ積分、層力、二チャネルの零条件、許容錐、離散埋め込みは、上表の Lean 定義および動態方程式の日本語稿と一致している。一致しなかった式は採用していない。作業段の差分法は Lean に無く、仮定のログの外へ出さない。
+本書に書いた閉形式、ヤコビ積分、層力、二チャネルの零条件、許容錐、離散埋め込みは、上表の Lean 定義と一致している。生成子のキリング形式を \(16\) で割る読み、\(\ddot\delta+m\delta=0\)、剛性ポテンシャルを \(J\) へ代入する読みは、採用していない。作業段の差分法は Lean に無く、仮定のログの外へ出さない。

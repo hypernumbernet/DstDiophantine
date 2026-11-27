@@ -13,9 +13,9 @@
 \item \(\phi=(\sigma+\delta)/2\)、\(\theta=(\sigma-\delta)/2\)。
 \item 数点の時刻で \(E(t)=E(0)=\frac12\nu\dot\sigma_0+\frac m2\delta_0^2\)。
 \item \(p_\sigma(t)=\nu/2\) が一定。
-\item サンプル \((m,\phi,\theta,\ddot\phi,\ddot\theta)=(1,1,0,-1,-1)\) は \texttt{PaperActualEL} を満たし、\(\ddot\delta=-m\delta\) を満たさない。
-\item 同じサンプルの近傍 \((1,1,0,1,-1)\) は \texttt{PaperClaimedEL} を満たし、\texttt{PaperActualEL} を満たさない。
-\item \(m\ge 0\) に対し \(\sqrt{2m}=m\) となるのは \(m=0,2\) だけである。この検査は振動子モジュールに置き、書かれた流れのテストから参照しない。
+\item サンプル \((m,\phi,\theta,\ddot\phi,\ddot\theta)=(1,1,0,-1,-1)\) は \texttt{PaperActualEL} を満たし、\(\ddot\delta=-m\delta\) を満たさない。この不一致は \(\ddot\delta+m\delta=0\) との差である。
+\item 同じ \((m,\phi,\theta)=(1,1,0)\) に対する加速度 \((1,-1)\) は \texttt{PaperClaimedEL} を満たし、\texttt{PaperActualEL} を満たさない。
+\item \(m\ge 0\) に対し \(\sqrt{2m}=m\) となるのは \(m=0,2\) だけである。この検査は振動子モジュールに置く。方程式は \(\ddot\delta+2m\delta=0\) であり、書かれた流れのテストから参照しない。
 \end{itemize}
 
 \subsection{層と力}
@@ -28,27 +28,28 @@
 \item 二体の \texttt{gravityLayerPush} が反対称。
 \item 斥力層で、外向き単位分離との内積が正。
 \item \(N=3\) の和が、自分自身を項に含まない。
-\item \(\gamma_G,\gamma_E,r\neq 0\) のとき、\texttt{pairChannelForce}\(=0\) と \(\kappa\gamma_E=\mathrm{coul}\,\gamma_G\) が同値。サンプルは半径を二種類に取り、零の有無が半径で変わらないことを見る。
+\item \(\gamma_G,\gamma_E,r\neq 0\) のとき、\texttt{pairChannelForce}\(=0\) と \(\kappa\gamma_E=\mathrm{coul}\,\gamma_G\) が同値。干渉因子を固定したサンプルを半径二種類で評価し、零の有無が半径で変わらないことを見る。
+\item \(\kappa>0\)、\(\mathrm{coul}<0\)、両方の干渉因子が正のサンプルで力は負。両方とも負のサンプルで力は正。
 \end{itemize}
 
 \subsection{チャート比較}
 
-\texttt{Regression} は次の区間を例として持つ。
+\texttt{Mercury.arcsecPerCentury} と \texttt{SolarDeflection.deflectionArcsec} は、外部の軌道要素と SI スタンドインから出るチャート量である。回帰が例として持つ区間は次のとおりである。
 
 \begin{itemize}
-\item 水星の近日点余剰について \(42<\texttt{arcsecPerCentury}<44\)。
-\item 太陽による光線の偏折について \(17/10<\texttt{deflectionArcsec}<9/5\)。
+\item 水星の近日点余剰について \(42<\texttt{arcsecPerCentury}<44\)。ソースは外部要素を動径回帰へ入れた \texttt{Mercury} である。
+\item 太陽による光線の偏折について \(17/10<\texttt{deflectionArcsec}<9/5\)。ソースは外部ヌル軌道の \texttt{SolarDeflection} である。
 \end{itemize}
 
-これらの数は、外部の軌道要素と SI スタンドインから出るチャート量である。内在角の閉形式の出力と比べない。テスト名に \texttt{chart} を入れる。
+これらの数を、内在角の閉形式の出力と比べない。テスト名に \texttt{chart} を入れる。惑星摂動、太陽の四重極、観測残差は、この区間の主張に入っていない。
 
 \subsection{核の長さが入る範囲}
 
-散乱の符号が反転する読みでは、第一ノードの半径 \(r_1\) が
+散乱の符号が反転する読みでは、第一ノードの半径として渡した実数 \(r_1\) が
 \[
 \frac12<r_1<1
 \]
-（fm の入力として渡す）にあるとき、対応する長さ
+を満たすとき、対応する長さ
 \[
 \texttt{lengthOfReversal}(r_1)=2\cdot\texttt{resonanceRoot1}\cdot r_1
 \]
@@ -56,6 +57,6 @@
 \[
 \frac{14}{15}<\texttt{lengthOfReversal}(r_1)<\frac{19}{10}
 \]
-を満たす。これは、渡した \(r_1\) に対する長さの検査である。力を時間積分した出力ではない。\(\alpha_s\) をこの範囲から逆算しない。
+を満たす。不等式は渡した実数についての検査である。fm という単位名は呼び出し側のラベルであり、この不等式は単位を検査しない。力を時間積分した出力ではない。\(\alpha_s\) をこの範囲から逆算しない。
 
 強い力の結合定数を返す関数、核融合率を返す関数は、このリポジトリの記録に無い。テストもそれらを期待値にしない。

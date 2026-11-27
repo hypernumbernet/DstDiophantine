@@ -49,11 +49,11 @@
 \[
 \kappa\,\gamma_E=\mathrm{coul}\,\gamma_G
 \]
-は同値である。零点は半径を選ばない。力の零から平衡半径を探索するループを書かない。
+は同値である。二つの干渉因子を固定したままでは、この条件に半径は現れない。正の半径がすべて零か、どれも零でないかである。\(\gamma\) を \(r\) から計算し直した合成関数の零を、平衡半径として探索するループは書かない。
 
 重力項は、電荷項を \(0\) にし \(\gamma_E=1\) とした二チャネル力と一致する。電磁項を \texttt{gravityLayerForce} の和へ混ぜない。二チャネルが要る呼び出しは、別関数 \texttt{pair\_channel\_force} を使う。
 
-同符号の干渉因子を持つ異種対では、分離を増やす力が零にならない、という符号定理がある。実装はそのサンプルをテストに残す。スペクトルも束縛エネルギーも、この関数の戻り値にしない。
+\(\kappa>0\) かつ \(\mathrm{coul}<0\) の異種対では、干渉因子が同符号なら分離を増やす力は零にならない。両方の因子が正なら力は負であり、両方とも負なら力は正である。実装はそのサンプルをテストに残す。スペクトルも束縛エネルギーも、この関数の戻り値にしない。
 
 \subsection{クーロン項と点電荷}
 
@@ -63,16 +63,20 @@
 \]
 の符号は \(\gamma_s\) の符号である。円軌道の読み \(v^2=ke^2/(m\gamma_s r)\) は、このスカラーと \(r/m\) の積として書かれている。その \(m\) は呼び出し側のパラメータであり、剛性からも \(M\) からも計算しない。
 
-金属・結晶側の点電荷力は、\(\ell=1\) に正規化した別モジュールである。
+金属側の点電荷力は、\(\ell=1\) に正規化した別モジュール \texttt{ElectronMetal} である。\texttt{pullRate} は \(ke^2/\ell^3\) を単位に含んだ量であり、\texttt{pointForce} は \(k\) と \(e\) を別引数に取らない。
 \begin{align}
 \texttt{vecPhase}(w)&=\frac{1}{2\lVert w\rVert},\\
 \texttt{pullRate}(x)&=\frac{8x^3}{\gamma_s^{\mathrm{eq}}(x)},\\
 \texttt{pointForce}(Q,c,p)
 &=-\bigl(Q\cdot\texttt{pullRate}(\texttt{vecPhase}(p-c))\bigr)\,(p-c).
 \end{align}
-\(\gamma_s^{\mathrm{eq}}>0\) かつ \(Q>0\) のとき、\(p\) に働くベクトルは \(c\) の向きを向く。大きさは \(|Q|/( \gamma_s^{\mathrm{eq}} r^2)\) に一致する。確認は \(r=1/(2x)\) と \(8x^3\cdot r=4x^2\) と \(4x^2=1/r^2\) を使えばよい。\(\ell\neq 1\) の計算で \texttt{vecPhase} を流用しない。長さを戻すなら、位相を \(\ell/(2r)\) に取り、前置因子を単位に合わせて別関数にする。その関数は記録の \texttt{pointForce} と別名にする。
+\(r=\lVert p-c\rVert>0\) かつ \(\gamma_s^{\mathrm{eq}}>0\) かつ \(Q>0\) のとき、\(p\) に働くベクトルは \(c\) の向きを向く。この正規化での大きさは \(|Q|/( \gamma_s^{\mathrm{eq}} r^2)\) に一致する。確認は \(r=1/(2x)\) と \(8x^3\cdot r=4x^2\) と \(4x^2=1/r^2\) を使えばよい。\(r=0\) または \(\gamma_s^{\mathrm{eq}}=0\) の呼び出しは拒否する。\(\ell\neq 1\) の計算で \texttt{vecPhase} を流用しない。長さを戻すなら、位相を \(\ell/(2r)\) に取り、前置因子を単位に合わせて別関数にする。その関数は記録の \texttt{pointForce} と別名にする。
 
-結晶の \texttt{siteForce} は、格子点上の \texttt{pointForce} の和である。時間は進まない。無限格子和と遮蔽は、この和の定義に入っていない。
+結晶の \texttt{siteForce} は \texttt{ElectronCrystal} にあり、有限集合 \(T\) 上のベクトル和
+\[
+\sum_{t\in T}(-q)\,\texttt{pointForce}(Q_t,\,p-\texttt{latticeVec}(b,h,t),\,x)
+\]
+である。\((-q)\) はベクトルへのスカラー倍であり、内積ではない。\(q\) は試験電荷、\(b\) は正規直交基底、\(h\) は格子間隔である。時間は進まない。無限格子和、遮蔽、凝集エネルギーは、この和の定義に入っていない。
 
 \subsection{チャネルを一つの和にしない}
 

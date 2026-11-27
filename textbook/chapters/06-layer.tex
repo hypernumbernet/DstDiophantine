@@ -5,31 +5,32 @@
 
 \subsection{二つの干渉因子}
 
-一般の対は
+一般の対の干渉因子は、粒子状態のラピディティとは別の引数 \((\alpha,\beta)\) を取る。
 \begin{align}
 \gamma_s(\alpha,\beta)
 &=\cosh\frac\alpha2\cos\frac\beta2-\sinh\frac\alpha2\sin\frac\beta2,\\
 \gamma_B(\alpha,\beta)
 &=-\cosh\frac\alpha2\sin\frac\beta2+\sinh\frac\alpha2\cos\frac\beta2,\\
 \gamma_{\mathrm{eff}}(\alpha,\beta)
-&=\gamma_s^2+\gamma_B^2
+&=\gamma_s^2+\gamma_B^2.
 \end{align}
-である。\(\gamma_{\mathrm{eff}}\ge 0\) は常に成り立つ。力の符号には使わない。固有時の読みと、層の符号は別の関数である。
+\(\gamma_{\mathrm{eff}}>0\) はすべての実引数で成り立つ。定理は \texttt{gammaEff\_pos} である。力の分母は \(\gamma_s\) である。\(\gamma_s=0\) なら \(\gamma_{\mathrm{eff}}=\gamma_B^2\) であり、消えた分母を \(\gamma_{\mathrm{eff}}\) で置き換えない。固有時の読みと、層の符号は別の関数である。
 
-等スケールは \(x=\ell/(2r)\) と置き、
+等スケールの層は、チャート上の分離 \(r\) と入力の長さ \(\ell\) から位相を作る。
 \[
-\gamma_s^{\mathrm{eq}}(x)=\cosh x\cos x-\sinh x\sin x
+x=\frac{\ell}{2r},\qquad
+\gamma_s^{\mathrm{eq}}(x)=\cosh x\cos x-\sinh x\sin x.
 \]
-とする。識別子は \texttt{gammaSEqual} である。これは \(\gamma_s(2x,2x)\) に等しい。
+識別子は \texttt{gammaSEqual} である。これは \(\gamma_s(2x,2x)\) に等しい。粒子の \((\alpha_a,\beta_a)\) をこの関数へ渡さない。
 \[
 \gamma_s^{\mathrm{eq}}(0)=1,\qquad
 \frac{d}{dx}\gamma_s^{\mathrm{eq}}(x)=-2\cosh x\sin x.
 \]
-導関数が消えるのは \(\sin x=0\) のときである。
+導関数が消えるのは \(\sin x=0\) のときである。第一正根は、この臨界点ではない。
 
 \subsection{第一の正根}
 
-\texttt{resonanceRoot1} は、開区間 \((1/2,1)\) 内で \(\tanh x\tan x=1\) を満たす唯一の点である。その点で \(\gamma_s^{\mathrm{eq}}=0\) である。回帰検査は、より狭い範囲
+\texttt{resonanceRoot1} は、開区間 \((1/2,1)\) 内で \(\tanh x\tan x=1\) を満たす唯一の点である。その点で \(\gamma_s^{\mathrm{eq}}=0\) であり、導関数は \(-2\cosh x\sin x\neq 0\) である。回帰検査は、より狭い範囲
 \[
 \frac\pi4<\texttt{resonanceRoot1}<1
 \]
@@ -39,7 +40,7 @@
 \[
 r=\frac{\ell}{2x}
 \]
-であり、識別子は \texttt{layerRadius} である。
+であり、識別子は \texttt{layerRadius} である。根そのものでは分母が消えるので、殻の開区間に根を含めない。
 
 \subsection{零と近接点}
 

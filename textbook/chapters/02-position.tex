@@ -35,8 +35,8 @@ struct S3:
 struct ChartBody:
     id: iota
     pos: Vec3
-    mass_input: real    # factor in G * m_i * m_j
-    charge_input: real  # factor in k * q_i * q_j
+    mass_input: real    # m_i in kappa = G * m_i * m_j
+    charge_input: real  # q_i in coul = k * q_i * q_j
 
 struct WrittenSeed:
     axis: int           # 0, 1, or 2
