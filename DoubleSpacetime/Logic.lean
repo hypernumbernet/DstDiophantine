@@ -1440,7 +1440,7 @@ example :
               (boostTranslator (5 / 3) (-4 / 3) readTranslator) = 34816 / 225) ∧
       wavePhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
           (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -328 / 9 ∧
-        minkowskiPhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+        minkowskiPolar (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
             (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -8 ∧
           (let Ψ := shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor
             let x := timeShift (-Real.pi / 2)
@@ -1466,17 +1466,17 @@ coordinate speed `0`. The null ray reads `2` and `0`. -/
 example (u : DualSpinor) (hu : u ≠ 0) (φ : ℝ) :
     AtLightSpeed (manifest u) ∧
       wavePhase (manifest u) (manifest u) = 2 * informationWeight u ^ 2 ∧
-        minkowskiPhase (manifest u) (manifest u) = 0 ∧
+        minkowskiPolar (manifest u) (manifest u) = 0 ∧
           wavePhase (manifest u) (manifest u) ≠ 0 ∧
             AtLightSpeed
               (boostTranslator (Real.cosh φ) (Real.sinh φ)
                 (rayTranslator (manifest u))).lambda ∧
               Invariant.mass (Amplification.pureBoost 0) = 0 ∧
-                coordinateSpeedSq (Pi.single (0 : Fin 4) (1 : ℝ)) = 0 ∧
+                coordinateSpeedSq timeTranslator.lambda = 0 ∧
                   coordinateSpeedSq (restMomentum 1) = 0 ∧
                     AtLightSpeed nullRay ∧
                       wavePhase nullRay nullRay = 2 ∧
-                        minkowskiPhase nullRay nullRay = 0 := by
+                        minkowskiPolar nullRay nullRay = 0 := by
   obtain ⟨hA, hW, hM, hne, hboost⟩ := massless_ray_from_position hu φ
   obtain ⟨_, hzero, hrest, _⟩ := unsignedMass_not_lightSpeed 0
   have hφ : Invariant.mass (Amplification.pureBoost 0) = 0 := hzero.mpr rfl

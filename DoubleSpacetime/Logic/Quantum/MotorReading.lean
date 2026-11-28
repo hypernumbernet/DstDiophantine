@@ -42,28 +42,27 @@ open Motor Amplification Sandwich Invariant Operations Real
 
 /-! ### The two scalars -/
 
-/-- Minkowski contraction `η(a, b)`. A boost preserves this, not `wavePhase`. -/
-def minkowskiPhase (a b : Vec4) : ℝ :=
-  ∑ μ : Fin 4, minkowskiEta μ μ * a μ * b μ
-
-theorem minkowskiPhase_eq (a b : Vec4) :
-    minkowskiPhase a b = -(a 0 * b 0) + a 1 * b 1 + a 2 * b 2 + a 3 * b 3 := by
-  unfold minkowskiPhase
+/-- Coordinate form of `minkowskiPolar`. A boost preserves this contraction, not `wavePhase`. -/
+theorem minkowskiPolar_eq (a b : Vec4) :
+    minkowskiPolar a b = -(a 0 * b 0) + a 1 * b 1 + a 2 * b 2 + a 3 * b 3 := by
+  unfold minkowskiPolar
   simp [minkowskiEta, w31, Fin.sum_univ_four]
+
+theorem minkowskiPolar_self (p : Vec4) : minkowskiPolar p p = minkowskiQ p := rfl
 
 theorem wavePhase_expand (a b : Vec4) :
     wavePhase a b = a 0 * b 0 + a 1 * b 1 + a 2 * b 2 + a 3 * b 3 := by
   unfold wavePhase
   simp [Fin.sum_univ_four]
 
-theorem wavePhase_sub_minkowskiPhase (a b : Vec4) :
-    wavePhase a b - minkowskiPhase a b = 2 * a 0 * b 0 := by
-  rw [wavePhase_expand, minkowskiPhase_eq]
+theorem wavePhase_sub_minkowskiPolar (a b : Vec4) :
+    wavePhase a b - minkowskiPolar a b = 2 * a 0 * b 0 := by
+  rw [wavePhase_expand, minkowskiPolar_eq]
   ring
 
-theorem wavePhase_eq_minkowskiPhase_iff (a b : Vec4) :
-    wavePhase a b = minkowskiPhase a b ↔ a 0 * b 0 = 0 := by
-  rw [← sub_eq_zero, wavePhase_sub_minkowskiPhase]
+theorem wavePhase_eq_minkowskiPolar_iff (a b : Vec4) :
+    wavePhase a b = minkowskiPolar a b ↔ a 0 * b 0 = 0 := by
+  rw [← sub_eq_zero, wavePhase_sub_minkowskiPolar]
   constructor
   · intro h
     nlinarith
@@ -74,15 +73,15 @@ theorem wavePhase_eq_minkowskiPhase_iff (a b : Vec4) :
       _ = 0 := by ring
 
 theorem wave_sq_sub_minkowski_sq (a b : Vec4) :
-    wavePhase a b ^ 2 - minkowskiPhase a b ^ 2 =
+    wavePhase a b ^ 2 - minkowskiPolar a b ^ 2 =
       4 * (a 0 * b 0) * (a 1 * b 1 + a 2 * b 2 + a 3 * b 3) := by
-  rw [wavePhase_expand, minkowskiPhase_eq]
+  rw [wavePhase_expand, minkowskiPolar_eq]
   ring
 
 /-- Active boost in the `(t, x)` plane preserves the Minkowski contraction. -/
-theorem boost01_minkowskiPhase {ch sh : ℝ} (h : ch ^ 2 - sh ^ 2 = 1) (a b : Vec4) :
-    minkowskiPhase (boost01 ch sh a) (boost01 ch sh b) = minkowskiPhase a b := by
-  rw [minkowskiPhase_eq, minkowskiPhase_eq]
+theorem boost01_minkowskiPolar {ch sh : ℝ} (h : ch ^ 2 - sh ^ 2 = 1) (a b : Vec4) :
+    minkowskiPolar (boost01 ch sh a) (boost01 ch sh b) = minkowskiPolar a b := by
+  rw [minkowskiPolar_eq, minkowskiPolar_eq]
   have hplane :
       -((ch * a 0 + sh * a 1) * (ch * b 0 + sh * b 1)) +
           (sh * a 0 + ch * a 1) * (sh * b 0 + ch * b 1) =
@@ -97,13 +96,13 @@ theorem boost01_minkowskiPhase {ch sh : ℝ} (h : ch ^ 2 - sh ^ 2 = 1) (a b : Ve
 noncomputable def invariantInformation (r s α : ℝ) (p q : Vec4) (u v : DiracSpinor)
     (x : Vec4) (lam : TransParams) : ℝ :=
   phaseFisher r s u v (wavePhase (q - p) x + α) *
-    minkowskiPhase (q - p) lam.lambda ^ 2
+    minkowskiPolar (q - p) lam.lambda ^ 2
 
 theorem information_sub_invariant (r s α : ℝ) (p q : Vec4) (u v : DiracSpinor) (x : Vec4)
     (lam : TransParams) (hψ : shellPacket r s α p q u v x ≠ 0) :
     translatorInformation r s α p q u v x lam - invariantInformation r s α p q u v x lam =
       phaseFisher r s u v (wavePhase (q - p) x + α) *
-        (wavePhase (q - p) lam.lambda ^ 2 - minkowskiPhase (q - p) lam.lambda ^ 2) := by
+        (wavePhase (q - p) lam.lambda ^ 2 - minkowskiPolar (q - p) lam.lambda ^ 2) := by
   rw [translatorInformation_eq_phase r s α p q u v x lam hψ, invariantInformation]
   ring
 
@@ -119,13 +118,13 @@ theorem information_eq_invariant_iff (r s α : ℝ) (p q : Vec4) (u v : DiracSpi
   set scale := phaseFisher r s u v (wavePhase (q - p) x + α)
   set a := q - p
   set b := lam.lambda
-  have hsub : wavePhase a b ^ 2 - minkowskiPhase a b ^ 2 =
+  have hsub : wavePhase a b ^ 2 - minkowskiPolar a b ^ 2 =
       4 * (a 0 * b 0) * (a 1 * b 1 + a 2 * b 2 + a 3 * b 3) :=
     wave_sq_sub_minkowski_sq a b
   constructor
   · intro h
-    have hsq : wavePhase a b ^ 2 = minkowskiPhase a b ^ 2 := mul_left_cancel₀ hF h
-    have hzero : wavePhase a b ^ 2 - minkowskiPhase a b ^ 2 = 0 := sub_eq_zero.mpr hsq
+    have hsq : wavePhase a b ^ 2 = minkowskiPolar a b ^ 2 := mul_left_cancel₀ hF h
+    have hzero : wavePhase a b ^ 2 - minkowskiPolar a b ^ 2 = 0 := sub_eq_zero.mpr hsq
     rw [hsub] at hzero
     have hprod : (4 : ℝ) * ((a 0 * b 0) * (a 1 * b 1 + a 2 * b 2 + a 3 * b 3)) = 0 := by
       simpa [mul_assoc] using hzero
@@ -135,10 +134,10 @@ theorem information_eq_invariant_iff (r s α : ℝ) (p q : Vec4) (u v : DiracSpi
     exact mul_eq_zero.mp hTS
   · intro h
     rcases h with hT | hS
-    · have heq : wavePhase a b = minkowskiPhase a b :=
-        (wavePhase_eq_minkowskiPhase_iff a b).mpr hT
+    · have heq : wavePhase a b = minkowskiPolar a b :=
+        (wavePhase_eq_minkowskiPolar_iff a b).mpr hT
       rw [heq]
-    · have hzero : wavePhase a b ^ 2 - minkowskiPhase a b ^ 2 = 0 := by
+    · have hzero : wavePhase a b ^ 2 - minkowskiPolar a b ^ 2 = 0 := by
         rw [hsub, hS, mul_zero]
       rw [sub_eq_zero.mp hzero]
 
@@ -148,14 +147,14 @@ theorem information_eq_invariant_iff (r s α : ℝ) (p q : Vec4) (u v : DiracSpi
 def boostTranslator (ch sh : ℝ) (p : TransParams) : TransParams where
   lambda := boost01 ch sh p.lambda
 
-private theorem transParams_ext {p q : TransParams} (h : p.lambda = q.lambda) : p = q := by
+theorem transParams_lambda_ext {p q : TransParams} (h : p.lambda = q.lambda) : p = q := by
   cases p
   cases q
   simpa using h
 
 theorem boostTranslator_eq_conj (φ : ℝ) (p : TransParams) :
     boostTranslator (cosh φ) (sinh φ) p = ⟨boostConjLambda φ p.lambda⟩ := by
-  apply transParams_ext
+  apply transParams_lambda_ext
   funext μ
   fin_cases μ
   · simp [boostTranslator, boost01, boostConjLambda]
@@ -172,27 +171,9 @@ theorem sandwich_boostTranslator (φ : ℝ) (p : TransParams) :
   congr 1
   exact (boostTranslator_eq_conj φ p).symm
 
-theorem J_pureBoost (φ : ℝ) : J (pureBoost φ) = (1 / 2) * φ ^ 2 := by
-  rw [J_coef, Fin.sum_univ_three]
-  have h0 : (pureBoost φ).alpha 0 = φ := rfl
-  have h1 : (pureBoost φ).alpha 1 = 0 := rfl
-  have h2 : (pureBoost φ).alpha 2 = 0 := rfl
-  have b0 : (pureBoost φ).beta 0 = 0 := rfl
-  have b1 : (pureBoost φ).beta 1 = 0 := rfl
-  have b2 : (pureBoost φ).beta 2 = 0 := rfl
-  rw [h0, h1, h2, b0, b1, b2]
-  ring
-
 theorem mass_pureBoost (φ : ℝ) : mass (pureBoost φ) = (1 / 2) * φ ^ 2 := by
-  rw [mass_coef, Fin.sum_univ_three]
-  have h0 : (pureBoost φ).alpha 0 = φ := rfl
-  have h1 : (pureBoost φ).alpha 1 = 0 := rfl
-  have h2 : (pureBoost φ).alpha 2 = 0 := rfl
-  have b0 : (pureBoost φ).beta 0 = 0 := rfl
-  have b1 : (pureBoost φ).beta 1 = 0 := rfl
-  have b2 : (pureBoost φ).beta 2 = 0 := rfl
-  rw [h0, h1, h2, b0, b1, b2]
-  ring
+  rw [mass_coef]
+  simp only [pureBoost, Fin.sum_univ_three, zero_pow two_ne_zero, add_zero, mul_zero, pow_two]
 
 theorem pureBoost_mass_eq_J (φ : ℝ) : mass (pureBoost φ) = J (pureBoost φ) := by
   rw [mass_pureBoost, J_pureBoost]
@@ -261,28 +242,28 @@ theorem boostedRead_coords :
 
 theorem meanRest_reads_invariant (b : Vec4) :
     wavePhase (shellRestQ - shellRestP) b =
-      minkowskiPhase (shellRestQ - shellRestP) b :=
-  (wavePhase_eq_minkowskiPhase_iff (shellRestQ - shellRestP) b).mpr <| by
+      minkowskiPolar (shellRestQ - shellRestP) b :=
+  (wavePhase_eq_minkowskiPolar_iff (shellRestQ - shellRestP) b).mpr <| by
     rw [shellRest_relative.1, zero_mul]
 
 theorem shellRest_read_minkowski :
-    minkowskiPhase (shellRestQ - shellRestP) readTranslator.lambda = -8 := by
+    minkowskiPolar (shellRestQ - shellRestP) readTranslator.lambda = -8 := by
   rw [← meanRest_reads_invariant readTranslator.lambda, shellRest_read_phase]
 
 theorem shellRest_boosted_phase :
     wavePhase (shellRestQ - shellRestP)
         (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -40 / 3 ∧
-      minkowskiPhase (shellRestQ - shellRestP)
+      minkowskiPolar (shellRestQ - shellRestP)
           (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -40 / 3 := by
   have hδ := shellRest_relative
   have hlam := boostedRead_coords
-  refine ⟨?_, ?_⟩
-  · rw [wavePhase_expand, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1,
+  have hwave :
+      wavePhase (shellRestQ - shellRestP)
+          (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -40 / 3 := by
+    rw [wavePhase_expand, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1,
       hlam.2.2.2]
     norm_num
-  · rw [← (wavePhase_eq_minkowskiPhase_iff _ _).mpr (by rw [hδ.1, zero_mul]), wavePhase_expand,
-      hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1, hlam.2.2.2]
-    norm_num
+  exact ⟨hwave, (meanRest_reads_invariant _).symm.trans hwave⟩
 
 theorem read_Q31 : Q31 readTranslator.lambda = 1 := by
   rw [Q31_eq_minkowskiDot]
@@ -309,15 +290,15 @@ theorem boosted_motor_ne :
 theorem shellRest_joint_scalars :
     wavePhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
         (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -328 / 9 ∧
-      minkowskiPhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+      minkowskiPolar (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
           (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -8 ∧
         -328 / 9 ≠ (-8 : ℝ) := by
   have hhyp : ((5 : ℝ) / 3) ^ 2 - (-4 / 3) ^ 2 = 1 := by norm_num
-  have hmink : minkowskiPhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+  have hmink : minkowskiPolar (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
       (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -8 := by
     have htr : (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda =
         boost01 (5 / 3) (-4 / 3) readTranslator.lambda := rfl
-    rw [htr, boost01_minkowskiPhase hhyp, shellRest_read_minkowski]
+    rw [htr, boost01_minkowskiPolar hhyp, shellRest_read_minkowski]
   have hδ := shellRest_relative
   have hlam := boostedRead_coords
   have hD0 : boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP) 0 = 32 / 3 := by
@@ -386,18 +367,23 @@ theorem shellRest_rotor_reading :
 
 /-! ### Off mean rest the two forms split -/
 
+/-- Unit coefficient of `N₀`. -/
+def timeTranslator : TransParams where
+  lambda := Pi.single 0 1
+
 theorem shellLab_time_sign :
-    wavePhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = -2 ∧
-      minkowskiPhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = 2 ∧
+    wavePhase (restMomentum 3 - shellRestP) timeTranslator.lambda = -2 ∧
+      minkowskiPolar (restMomentum 3 - shellRestP) timeTranslator.lambda = 2 ∧
         -2 ≠ (2 : ℝ) ∧
-          wavePhase (restMomentum 3 - shellRestP) (Pi.single 0 1) ^ 2 =
-            minkowskiPhase (restMomentum 3 - shellRestP) (Pi.single 0 1) ^ 2 := by
+          wavePhase (restMomentum 3 - shellRestP) timeTranslator.lambda ^ 2 =
+            minkowskiPolar (restMomentum 3 - shellRestP) timeTranslator.lambda ^ 2 := by
   have hδ : (restMomentum 3 - shellRestP) 0 = -2 := shellLab_relative.1
-  have hwave : wavePhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = -2 := by
-    rw [wavePhase_single, hδ]
-  have hmink : minkowskiPhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = 2 := by
-    rw [minkowskiPhase_eq]
-    simp only [Pi.single_eq_same, Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 0 by decide),
+  have hwave : wavePhase (restMomentum 3 - shellRestP) timeTranslator.lambda = -2 := by
+    rw [show timeTranslator.lambda = Pi.single 0 1 from rfl, wavePhase_single, hδ]
+  have hmink : minkowskiPolar (restMomentum 3 - shellRestP) timeTranslator.lambda = 2 := by
+    rw [minkowskiPolar_eq]
+    simp only [timeTranslator, Pi.single_eq_same,
+      Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 0 by decide),
       Pi.single_eq_of_ne (show (2 : Fin 4) ≠ 0 by decide),
       Pi.single_eq_of_ne (show (3 : Fin 4) ≠ 0 by decide), hδ]
     norm_num
@@ -408,7 +394,7 @@ theorem shellLab_time_sign :
 theorem lab_boosted_scalars :
     wavePhase (restMomentum 3 - shellRestP)
         (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -4 ∧
-      minkowskiPhase (restMomentum 3 - shellRestP)
+      minkowskiPolar (restMomentum 3 - shellRestP)
           (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -28 / 3 ∧
         -4 ≠ (-28 / 3 : ℝ) := by
   have hδ := shellLab_relative
@@ -417,7 +403,7 @@ theorem lab_boosted_scalars :
   · rw [wavePhase_expand, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1,
       hlam.2.2.2]
     norm_num
-  · rw [minkowskiPhase_eq, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1,
+  · rw [minkowskiPolar_eq, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2, hlam.1, hlam.2.1, hlam.2.2.1,
       hlam.2.2.2]
     norm_num
 

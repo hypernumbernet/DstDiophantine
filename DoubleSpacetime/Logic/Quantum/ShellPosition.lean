@@ -105,10 +105,6 @@ theorem shell_motor_is_boost_after_dual (α β : ℝ) (p : TransParams) :
 
 /-! ### Pure time, unread until the usual sector acts -/
 
-/-- Unit coefficient of `N₀`. -/
-def timeTranslator : TransParams where
-  lambda := Pi.single 0 1
-
 theorem timeTranslator_phase :
     wavePhase (shellRestQ - shellRestP) timeTranslator.lambda = 0 := by
   rw [shellRest_phase_coord]
@@ -136,11 +132,6 @@ theorem time_dual_phase (θ : ℝ) :
       0 := by
   rw [shellRest_phase_dual, timeTranslator_phase]
 
-private theorem one_lt_cosh_of_pos {x : ℝ} (hx : 0 < x) : 1 < cosh x := by
-  have hmono : StrictMonoOn cosh (Set.Ici 0) := cosh_strictMonoOn
-  have hlt := hmono (by simp) hx.le hx
-  simpa [cosh_zero] using hlt
-
 theorem shellNode_sectors_disagree :
     wavePhase (shellRestQ - shellRestP)
         (boostConjLambda shellRapidity readTranslator.lambda) =
@@ -154,7 +145,7 @@ theorem shellNode_sectors_disagree :
             -8 * sinh shellRapidity < 0 ∧
               wavePhase (shellRestQ - shellRestP)
                   (rotation0ConjLambda shellRapidity timeTranslator.lambda) = 0 := by
-  have hcosh : 1 < cosh shellRapidity := one_lt_cosh_of_pos shellRapidity_pos
+  have hcosh : 1 < cosh shellRapidity := one_lt_cosh.mpr shellRapidity_pos.ne'
   have hsinh : 0 < sinh shellRapidity := sinh_pos_iff.mpr shellRapidity_pos
   refine ⟨read_boost_phase _, read_dual_phase _, ?_, time_boost_phase _, ?_, time_dual_phase _⟩
   · linarith
@@ -183,24 +174,27 @@ theorem shellNode_information :
                   34816 / 625 := by
   obtain ⟨θ, hF, _, _, _, _, _⟩ := shellRest_translationFisher
   have hψ := shellRest_packet_ne_zero θ (0 : Vec4)
+  have hscale (lam : TransParams) :
+      translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0 lam =
+        (544 / 625) * wavePhase (shellRestQ - shellRestP) lam.lambda ^ 2 := by
+    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
+        0 lam hψ, wavePhase_zero, zero_add, hF]
   have hread : translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
       readTranslator = 34816 / 625 := by
-    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
-        0 readTranslator hψ, wavePhase_zero, zero_add, hF, shellRest_read_phase]
+    rw [hscale, shellRest_read_phase]
     norm_num
-  have hcosh : 1 < cosh shellRapidity := one_lt_cosh_of_pos shellRapidity_pos
+  have hcosh : 1 < cosh shellRapidity := one_lt_cosh.mpr shellRapidity_pos.ne'
   have hboost : translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
       (boostedTranslator shellRapidity readTranslator) =
         (544 / 625) * (8 * cosh shellRapidity) ^ 2 := by
-    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
-        0 (boostedTranslator shellRapidity readTranslator) hψ, wavePhase_zero, zero_add, hF,
+    rw [hscale,
       show (boostedTranslator shellRapidity readTranslator).lambda =
         boostConjLambda shellRapidity readTranslator.lambda from rfl, read_boost_phase]
     ring
   have hboost_gt : (544 / 625) * (8 * cosh shellRapidity) ^ 2 > 34816 / 625 := by
     have hsq : (1 : ℝ) < cosh shellRapidity ^ 2 := by nlinarith [hcosh]
     have hpos : (0 : ℝ) < 544 / 625 := by norm_num
-    have hscale : (544 / 625) * 64 * 1 < (544 / 625) * 64 * cosh shellRapidity ^ 2 :=
+    have hscaleLt : (544 / 625) * 64 * 1 < (544 / 625) * 64 * cosh shellRapidity ^ 2 :=
       mul_lt_mul_of_pos_left hsq (mul_pos hpos (by norm_num))
     have h64 : (8 * cosh shellRapidity) ^ 2 = 64 * cosh shellRapidity ^ 2 := by ring
     have hbase : (544 : ℝ) / 625 * 64 = 34816 / 625 := by norm_num
@@ -208,14 +202,11 @@ theorem shellNode_information :
     linarith
   have htime : translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
       timeTranslator = 0 := by
-    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
-        0 timeTranslator hψ, wavePhase_zero, zero_add, timeTranslator_phase, zero_pow (by norm_num),
-      mul_zero]
+    rw [hscale, timeTranslator_phase, zero_pow (by norm_num), mul_zero]
   have htimeBoost : translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP
       shellParticleQ 0 (boostedTranslator shellRapidity timeTranslator) =
         (544 / 625) * (8 * sinh shellRapidity) ^ 2 := by
-    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
-        0 (boostedTranslator shellRapidity timeTranslator) hψ, wavePhase_zero, zero_add, hF,
+    rw [hscale,
       show (boostedTranslator shellRapidity timeTranslator).lambda =
         boostConjLambda shellRapidity timeTranslator.lambda from rfl, time_boost_phase]
     ring
@@ -225,9 +216,7 @@ theorem shellNode_information :
     positivity
   have hdual : translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
       ⟨rotation0ConjLambda shellRapidity readTranslator.lambda⟩ = 34816 / 625 := by
-    rw [translatorInformation_eq_phase 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ
-        0 ⟨rotation0ConjLambda shellRapidity readTranslator.lambda⟩ hψ, wavePhase_zero, zero_add,
-      hF, read_dual_phase]
+    rw [hscale, read_dual_phase]
     norm_num
   exact ⟨θ, hF, hread, hboost_gt.trans_eq hboost.symm, htime, htime_gt.trans_eq htimeBoost.symm,
     hdual⟩

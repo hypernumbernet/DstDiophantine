@@ -148,10 +148,8 @@ theorem coordinateSpeedSq_of_atLightSpeed {v : Vec4} (h : AtLightSpeed v) :
 /-- On a null vector the packet's self-reading is twice the squared time coefficient, and the
 rotor's scalar is zero. -/
 theorem null_selfPhase {v : Vec4} (hQ : minkowskiQ v = 0) :
-    minkowskiPhase v v = 0 ∧ wavePhase v v = 2 * (v 0) ^ 2 := by
-  have hM : minkowskiPhase v v = minkowskiQ v := by
-    rw [minkowskiPhase_eq, minkowskiQ_eq]
-    ring
+    minkowskiPolar v v = 0 ∧ wavePhase v v = 2 * (v 0) ^ 2 := by
+  have hM : minkowskiPolar v v = minkowskiQ v := minkowskiPolar_self v
   have hW : wavePhase v v = (v 0) ^ 2 + spatialNormSq v := by
     rw [wavePhase_expand, spatialNormSq]
     ring
@@ -360,7 +358,7 @@ theorem nullRay_atLightSpeed : AtLightSpeed nullRay := by
 
 theorem nullRay_reading :
     Q31 nullRay = 0 ∧ coordinateSpeedSq nullRay = 1 ∧
-      wavePhase nullRay nullRay = 2 ∧ minkowskiPhase nullRay nullRay = 0 := by
+      wavePhase nullRay nullRay = 2 ∧ minkowskiPolar nullRay nullRay = 0 := by
   have hQ : minkowskiQ nullRay = 0 := (atLightSpeed_iff.mp nullRay_atLightSpeed).2
   obtain ⟨hM, hW⟩ := null_selfPhase hQ
   have h0 : nullRay 0 = 1 := by simp [nullRay]
@@ -379,7 +377,7 @@ theorem manifest_atLightSpeed {u : DualSpinor} (hu : u ≠ 0) : AtLightSpeed (ma
 
 theorem manifest_position_reading {u : DualSpinor} (hu : u ≠ 0) :
     AtLightSpeed (manifest u) ∧
-      minkowskiPhase (manifest u) (manifest u) = 0 ∧
+      minkowskiPolar (manifest u) (manifest u) = 0 ∧
         wavePhase (manifest u) (manifest u) = 2 * informationWeight u ^ 2 ∧
           wavePhase (manifest u) (manifest u) ≠ 0 := by
   have hA := manifest_atLightSpeed hu
@@ -433,15 +431,11 @@ theorem manifest_shell_and_translator {u : DualSpinor} (hu : u ≠ 0) :
 theorem rest_below_light {m : ℝ} (hm : m ≠ 0) :
     coordinateSpeedSq (restMomentum m) = 0 ∧
       coordinateSpeedSq (restMomentum m) < 1 ∧
-        minkowskiPhase (restMomentum m) (restMomentum m) = -m ^ 2 ∧
+        minkowskiPolar (restMomentum m) (restMomentum m) = -m ^ 2 ∧
           wavePhase (restMomentum m) (restMomentum m) = m ^ 2 := by
   have h0 : restMomentum m 0 = m := by simp [restMomentum]
-  have h1 : restMomentum m 1 = 0 := by simp [restMomentum]
-  have h2 : restMomentum m 2 = 0 := by simp [restMomentum]
-  have h3 : restMomentum m 3 = 0 := by simp [restMomentum]
   have hsp : spatialNormSq (restMomentum m) = 0 := by
-    rw [spatialNormSq, h1, h2, h3]
-    ring
+    simp [spatialNormSq, restMomentum]
   have hspeed : coordinateSpeedSq (restMomentum m) = 0 := by
     rw [coordinateSpeedSq, hsp, h0, zero_div]
   have hdir := restParticle_dirac m (EuclideanSpace.single (0 : Fin 2) (1 : ℂ))
@@ -449,9 +443,9 @@ theorem rest_below_light {m : ℝ} (hm : m ≠ 0) :
     restParticleSpinor_ne_zero
   have hlt := (onShell_speed hΨ hdir (by rw [h0]; exact hm)).2.2.mpr hm
   refine ⟨hspeed, hlt, ?_, ?_⟩
-  · rw [minkowskiPhase_eq, h0, h1, h2, h3]
-    ring
-  · rw [wavePhase_expand, h0, h1, h2, h3]
+  · rw [minkowskiPolar_self, minkowskiQ_rest]
+  · rw [wavePhase_expand]
+    simp [restMomentum]
     ring
 
 /-- `M` is the rotor. It does not set the translator's speed. `M = 0` leaves a pure time
@@ -459,7 +453,7 @@ translator at rest, while `nullRay` stays at speed `1` at every rapidity. -/
 theorem unsignedMass_not_lightSpeed (φ : ℝ) :
     mass (pureBoost φ) = (1 / 2) * φ ^ 2 ∧
       (mass (pureBoost φ) = 0 ↔ φ = 0) ∧
-        coordinateSpeedSq (Pi.single (0 : Fin 4) (1 : ℝ)) = 0 ∧
+        coordinateSpeedSq timeTranslator.lambda = 0 ∧
           AtLightSpeed nullRay := by
   refine ⟨mass_pureBoost φ, ?_, ?_, nullRay_atLightSpeed⟩
   · rw [mass_pureBoost]
@@ -470,12 +464,12 @@ theorem unsignedMass_not_lightSpeed (φ : ℝ) :
       rw [h]
       ring
   · rw [coordinateSpeedSq, spatialNormSq]
-    simp [Pi.single]
+    simp [timeTranslator]
 
 theorem massless_ray_from_position {u : DualSpinor} (hu : u ≠ 0) (φ : ℝ) :
     AtLightSpeed (manifest u) ∧
       wavePhase (manifest u) (manifest u) = 2 * informationWeight u ^ 2 ∧
-        minkowskiPhase (manifest u) (manifest u) = 0 ∧
+        minkowskiPolar (manifest u) (manifest u) = 0 ∧
           wavePhase (manifest u) (manifest u) ≠ 0 ∧
             AtLightSpeed
               (boostTranslator (Real.cosh φ) (Real.sinh φ)
@@ -509,12 +503,7 @@ theorem spatial_of_shell {m : ℝ} {p : Vec4} (hQ : minkowskiQ p = -m ^ 2) :
 
 theorem minkowskiPolar_expand (p q : Vec4) :
     minkowskiPolar p q = -(p 0) * q 0 + spatialDot p q := by
-  unfold minkowskiPolar spatialDot
-  simp only [Fin.sum_univ_four, minkowskiEta_diag, w31]
-  ring
-
-theorem minkowskiPolar_self (p : Vec4) : minkowskiPolar p p = minkowskiQ p := by
-  rw [minkowskiPolar_expand, minkowskiQ_eq, spatialDot]
+  rw [minkowskiPolar_eq, spatialDot]
   ring
 
 theorem minkowskiPolar_smul_right (p : Vec4) (t : ℝ) (q : Vec4) :
@@ -605,12 +594,15 @@ theorem spatial_ne_of_spacelike {v : Vec4} (hQ : 0 < minkowskiQ v) : spatialNorm
   rw [hs] at hq
   nlinarith [sq_nonneg (v 0)]
 
-/-- On one future shell, `η(p, q) ≤ -m²`. Equality holds for `m ≠ 0` exactly when `p = q`, and
-for `m = 0` exactly when `p` and `q` are positive multiples of one vector. -/
-theorem futureShell_polar_eq_iff {m : ℝ} {p q : Vec4}
+/-- On one future shell the spatial contraction cannot exceed the time product corrected by `m²`. -/
+theorem futureShell_spatial_bound {m : ℝ} {p q : Vec4}
     (hp : minkowskiQ p = -m ^ 2) (hq : minkowskiQ q = -m ^ 2)
     (hp0 : 0 < p 0) (hq0 : 0 < q 0) :
-    minkowskiPolar p q = -m ^ 2 ↔ (m ≠ 0 ∧ p = q) ∨ (m = 0 ∧ FutureRay p q) := by
+    |spatialDot p q| ≤ p 0 * q 0 - m ^ 2 ∧
+      spatialNormSq p = (p 0) ^ 2 - m ^ 2 ∧
+        spatialNormSq q = (q 0) ^ 2 - m ^ 2 ∧
+          (p 0 * q 0 - m ^ 2) ^ 2 - spatialNormSq p * spatialNormSq q =
+            m ^ 2 * (p 0 - q 0) ^ 2 := by
   have hEp : |m| ≤ p 0 := future_shell_time hp hp0
   have hEq : |m| ≤ q 0 := future_shell_time hq hq0
   have hEFm : m ^ 2 ≤ p 0 * q 0 := by
@@ -632,13 +624,22 @@ theorem futureShell_polar_eq_iff {m : ℝ} {p q : Vec4}
     calc
       spatialDot p q ^ 2 ≤ spatialNormSq p * spatialNormSq q := spatial_dot_sq_le p q
       _ ≤ (p 0 * q 0 - m ^ 2) ^ 2 := hprod
-  have habs : |spatialDot p q| ≤ p 0 * q 0 - m ^ 2 :=
-    abs_le_of_sq_le_sq hdot_sq hgap0
+  exact ⟨abs_le_of_sq_le_sq hdot_sq hgap0, hsp, hsq, hdiff⟩
+
+/-- On one future shell, `η(p, q) ≤ -m²`. Equality holds for `m ≠ 0` exactly when `p = q`, and
+for `m = 0` exactly when `p` and `q` are positive multiples of one vector. -/
+theorem futureShell_polar_eq_iff {m : ℝ} {p q : Vec4}
+    (hp : minkowskiQ p = -m ^ 2) (hq : minkowskiQ q = -m ^ 2)
+    (hp0 : 0 < p 0) (hq0 : 0 < q 0) :
+    minkowskiPolar p q = -m ^ 2 ↔ (m ≠ 0 ∧ p = q) ∨ (m = 0 ∧ FutureRay p q) := by
+  obtain ⟨habs, hsp, hsq, hdiff⟩ := futureShell_spatial_bound hp hq hp0 hq0
   have hpolar : minkowskiPolar p q = -(p 0) * q 0 + spatialDot p q :=
     minkowskiPolar_expand p q
   constructor
   · intro hEqP
     have hdot : spatialDot p q = p 0 * q 0 - m ^ 2 := by linarith
+    have hprod : spatialNormSq p * spatialNormSq q ≤ (p 0 * q 0 - m ^ 2) ^ 2 := by
+      nlinarith [sq_nonneg (p 0 - q 0), sq_nonneg m, hdiff]
     have hsqueeze : spatialNormSq p * spatialNormSq q = spatialDot p q ^ 2 :=
       le_antisymm (by nlinarith [hprod, hdot]) (spatial_dot_sq_le p q)
     have hEF : m ^ 2 * (p 0 - q 0) ^ 2 = 0 := by
@@ -705,29 +706,7 @@ theorem futureShell_polar_le {m : ℝ} {p q : Vec4}
     (hp : minkowskiQ p = -m ^ 2) (hq : minkowskiQ q = -m ^ 2)
     (hp0 : 0 < p 0) (hq0 : 0 < q 0) :
     minkowskiPolar p q ≤ -m ^ 2 := by
-  have hEp : |m| ≤ p 0 := future_shell_time hp hp0
-  have hEq : |m| ≤ q 0 := future_shell_time hq hq0
-  have hEFm : m ^ 2 ≤ p 0 * q 0 := by
-    have hmul : |m| * |m| ≤ p 0 * q 0 :=
-      mul_le_mul hEp hEq (abs_nonneg m) hp0.le
-    rw [← sq, sq_abs] at hmul
-    exact hmul
-  have hgap0 : 0 ≤ p 0 * q 0 - m ^ 2 := by linarith
-  have hsp := spatial_of_shell hp
-  have hsq := spatial_of_shell hq
-  have hdiff :
-      (p 0 * q 0 - m ^ 2) ^ 2 - spatialNormSq p * spatialNormSq q =
-        m ^ 2 * (p 0 - q 0) ^ 2 := by
-    rw [hsp, hsq]
-    ring
-  have hprod : spatialNormSq p * spatialNormSq q ≤ (p 0 * q 0 - m ^ 2) ^ 2 := by
-    nlinarith [sq_nonneg (p 0 - q 0), sq_nonneg m, hdiff]
-  have hdot_sq : spatialDot p q ^ 2 ≤ (p 0 * q 0 - m ^ 2) ^ 2 := by
-    calc
-      spatialDot p q ^ 2 ≤ spatialNormSq p * spatialNormSq q := spatial_dot_sq_le p q
-      _ ≤ (p 0 * q 0 - m ^ 2) ^ 2 := hprod
-  have habs : |spatialDot p q| ≤ p 0 * q 0 - m ^ 2 :=
-    abs_le_of_sq_le_sq hdot_sq hgap0
+  obtain ⟨habs, _, _, _⟩ := futureShell_spatial_bound hp hq hp0 hq0
   have hdot : spatialDot p q ≤ p 0 * q 0 - m ^ 2 := (abs_le.mp habs).2
   rw [minkowskiPolar_expand]
   linarith
@@ -855,6 +834,16 @@ theorem oppositeRay_atLightSpeed : AtLightSpeed oppositeRay := by
   · simp [oppositeRay]
   · simp [spatialNormSq, oppositeRay]
 
+theorem wavePhase_nullLine (δ : Vec4) :
+    wavePhase δ nullLineTranslator.lambda = δ 0 - δ 3 := by
+  have hsplit : nullLineTranslator.lambda =
+      Pi.single (0 : Fin 4) 1 + -Pi.single 3 1 := by
+    funext μ
+    fin_cases μ <;> simp [nullLineTranslator, Pi.add_apply, Pi.neg_apply]
+  rw [hsplit, wavePhase_add_right, wavePhase_neg_right, wavePhase_neg_left,
+    wavePhase_single, wavePhase_single]
+  ring
+
 theorem opposite_relative :
     (oppositeRay - nullRay) 0 = 0 ∧ (oppositeRay - nullRay) 1 = -2 ∧
       (oppositeRay - nullRay) 2 = 0 ∧ (oppositeRay - nullRay) 3 = 0 := by
@@ -888,30 +877,19 @@ theorem opposite_rays_stand (t : ℝ) (x : Vec4) :
   · rw [phaseFrontSpeedSq, hrel.1, hsp]
     norm_num
   · exact wavePhase_timeShift hrel.1 t x
-  · have hlam : readTranslator.lambda = Pi.single (1 : Fin 4) (1 : ℝ) := rfl
-    rw [hlam, wavePhase_single, hrel.2.1]
-  · have h0 : nullLineTranslator.lambda 0 = 1 := by
-      simp only [nullLineTranslator, Pi.sub_apply, Pi.single_eq_same,
-        Pi.single_eq_of_ne (show (0 : Fin 4) ≠ 3 by decide), sub_zero]
-    have h1 : nullLineTranslator.lambda 1 = 0 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 0 by decide),
-        Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 3 by decide), sub_self]
-    have h2 : nullLineTranslator.lambda 2 = 0 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (2 : Fin 4) ≠ 0 by decide),
-        Pi.single_eq_of_ne (show (2 : Fin 4) ≠ 3 by decide), sub_self]
-    have h3 : nullLineTranslator.lambda 3 = -1 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (3 : Fin 4) ≠ 0 by decide), Pi.single_eq_same, zero_sub]
-    unfold wavePhase
-    simp only [Fin.sum_univ_four, h0, h1, h2, h3, hrel.1, hrel.2.1, hrel.2.2.1, hrel.2.2.2]
-    norm_num
+  · rw [show readTranslator.lambda = Pi.single (1 : Fin 4) 1 from rfl, wavePhase_single,
+      hrel.2.1]
+  · rw [wavePhase_nullLine, hrel.1, hrel.2.2.2]
+    ring
 
 theorem collinear_relative : (2 : ℝ) • nullRay - nullRay = nullRay := by
-  funext μ
-  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
-  ring
+  calc
+    (2 : ℝ) • nullRay - nullRay
+        = (2 : ℝ) • nullRay + (-1 : ℝ) • nullRay := by
+          rw [sub_eq_add_neg, neg_one_smul]
+      _ = (2 + -1 : ℝ) • nullRay := (add_smul _ _ _).symm
+      _ = nullRay := by
+          rw [show (2 + -1 : ℝ) = 1 by norm_num, one_smul]
 
 /-- The beat of `nullRay` against twice itself is a lightlike fringe, and that fringe reads the
 null line through the time coefficient. -/
@@ -937,24 +915,8 @@ theorem collinear_rays_front :
     have htime : nullRay 0 = 1 := by simp [nullRay]
     rw [phaseFrontSpeedSq, htime, hsp]
     norm_num
-  · rw [collinear_relative]
-    have h0' : nullLineTranslator.lambda 0 = 1 := by
-      simp only [nullLineTranslator, Pi.sub_apply, Pi.single_eq_same,
-        Pi.single_eq_of_ne (show (0 : Fin 4) ≠ 3 by decide), sub_zero]
-    have h1 : nullLineTranslator.lambda 1 = 0 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 0 by decide),
-        Pi.single_eq_of_ne (show (1 : Fin 4) ≠ 3 by decide), sub_self]
-    have h2 : nullLineTranslator.lambda 2 = 0 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (2 : Fin 4) ≠ 0 by decide),
-        Pi.single_eq_of_ne (show (2 : Fin 4) ≠ 3 by decide), sub_self]
-    have h3 : nullLineTranslator.lambda 3 = -1 := by
-      simp only [nullLineTranslator, Pi.sub_apply,
-        Pi.single_eq_of_ne (show (3 : Fin 4) ≠ 0 by decide), Pi.single_eq_same, zero_sub]
-    unfold wavePhase
-    simp only [Fin.sum_univ_four, nullRay, h0', h1, h2, h3]
-    norm_num
+  · rw [collinear_relative, wavePhase_nullLine]
+    simp [nullRay]
 
 /-- Rest mass `1` and momentum `(5/4, 3/4, 0, 0)` are distinct future carriers on `Q = -1`.
 The positional fringe has squared speed `1/9`. -/

@@ -54,16 +54,16 @@ theorem timeReverse_timeReverse (v : Vec4) : timeReverse (timeReverse v) = v := 
 
 /-- The packet's scalar of a translator is the rotor's scalar of its time reversal. -/
 theorem wavePhase_timeReverse (a b : Vec4) :
-    wavePhase a (timeReverse b) = minkowskiPhase a b := by
-  rw [wavePhase_expand, minkowskiPhase_eq]
+    wavePhase a (timeReverse b) = minkowskiPolar a b := by
+  rw [wavePhase_expand, minkowskiPolar_eq]
   have h := timeReverse_coord b
   rw [h.1, h.2.1, h.2.2.1, h.2.2.2]
   ring
 
 /-- The rotor's scalar of a translator is the packet's scalar of its time reversal. -/
-theorem minkowskiPhase_timeReverse (a b : Vec4) :
-    minkowskiPhase a (timeReverse b) = wavePhase a b := by
-  rw [minkowskiPhase_eq, wavePhase_expand]
+theorem minkowskiPolar_timeReverse (a b : Vec4) :
+    minkowskiPolar a (timeReverse b) = wavePhase a b := by
+  rw [minkowskiPolar_eq, wavePhase_expand]
   have h := timeReverse_coord b
   rw [h.1, h.2.1, h.2.2.1, h.2.2.2]
   ring
@@ -77,28 +77,23 @@ theorem Q31_timeReverse (v : Vec4) : Q31 (timeReverse v) = Q31 v := by
 /-- Off mean rest, a pure time translator is the swap: the packet reads `-2` and the rotor
 reads `2`. -/
 theorem shellLab_time_is_swap :
-    wavePhase (restMomentum 3 - shellRestP) (Pi.single 0 1) =
-        minkowskiPhase (restMomentum 3 - shellRestP)
-          (timeReverse (Pi.single 0 1)) ∧
-      minkowskiPhase (restMomentum 3 - shellRestP) (Pi.single 0 1) =
+    wavePhase (restMomentum 3 - shellRestP) timeTranslator.lambda =
+        minkowskiPolar (restMomentum 3 - shellRestP)
+          (timeReverse timeTranslator.lambda) ∧
+      minkowskiPolar (restMomentum 3 - shellRestP) timeTranslator.lambda =
         wavePhase (restMomentum 3 - shellRestP)
-          (timeReverse (Pi.single 0 1)) ∧
-        wavePhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = -2 ∧
-          minkowskiPhase (restMomentum 3 - shellRestP) (Pi.single 0 1) = 2 := by
+          (timeReverse timeTranslator.lambda) ∧
+        wavePhase (restMomentum 3 - shellRestP) timeTranslator.lambda = -2 ∧
+          minkowskiPolar (restMomentum 3 - shellRestP) timeTranslator.lambda = 2 := by
   have h := shellLab_time_sign
   refine ⟨?_, ?_, h.1, h.2.1⟩
-  · rw [minkowskiPhase_timeReverse, h.1]
+  · rw [minkowskiPolar_timeReverse, h.1]
   · rw [wavePhase_timeReverse, h.2.1]
 
 /-! ### Composition -/
 
 def transAdd (p q : TransParams) : TransParams where
   lambda := fun μ => p.lambda μ + q.lambda μ
-
-theorem transParams_lambda_ext {p q : TransParams} (h : p.lambda = q.lambda) : p = q := by
-  cases p
-  cases q
-  simpa using h
 
 theorem transAdd_lambda (p q : TransParams) :
     (transAdd p q).lambda = p.lambda + q.lambda := by
@@ -136,22 +131,12 @@ def screenTranslator : TransParams where
 
 theorem opposeTranslator_phase :
     wavePhase (shellRestQ - shellRestP) opposeTranslator.lambda = 8 := by
-  have hδ := shellRest_relative
-  have h0 : opposeTranslator.lambda 0 = 0 := by
-    simp only [opposeTranslator, Pi.add_apply,
-      Pi.single_eq_of_ne (by decide : (0 : Fin 4) ≠ 1),
-      Pi.single_eq_of_ne (by decide : (0 : Fin 4) ≠ 2), add_zero]
-  have h1 : opposeTranslator.lambda 1 = -1 := by
-    simp only [opposeTranslator, Pi.add_apply, Pi.single_eq_same,
-      Pi.single_eq_of_ne (by decide : (1 : Fin 4) ≠ 2), add_zero]
-  have h2 : opposeTranslator.lambda 2 = 1 := by
-    simp only [opposeTranslator, Pi.add_apply, Pi.single_eq_same,
-      Pi.single_eq_of_ne (by decide : (2 : Fin 4) ≠ 1), zero_add]
-  have h3 : opposeTranslator.lambda 3 = 0 := by
-    simp only [opposeTranslator, Pi.add_apply,
-      Pi.single_eq_of_ne (by decide : (3 : Fin 4) ≠ 1),
-      Pi.single_eq_of_ne (by decide : (3 : Fin 4) ≠ 2), add_zero]
-  rw [wavePhase_expand, h0, h1, h2, h3, hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2]
+  have hlam : opposeTranslator.lambda =
+      (-1 : ℝ) • Pi.single (1 : Fin 4) 1 + Pi.single 2 1 := by
+    funext μ
+    fin_cases μ <;> simp [opposeTranslator, Pi.add_apply]
+  rw [hlam, wavePhase_add_right, wavePhase_smul_right, wavePhase_single, wavePhase_single,
+    shellRest_relative.2.1, shellRest_relative.2.2.1]
   norm_num
 
 theorem transAdd_read_oppose :
@@ -164,13 +149,8 @@ theorem transAdd_read_oppose :
 
 theorem screenTranslator_phase :
     wavePhase (shellRestQ - shellRestP) screenTranslator.lambda = 0 := by
-  have hδ := shellRest_relative
-  rw [wavePhase_expand]
-  simp only [screenTranslator, Pi.single_eq_same,
-    Pi.single_eq_of_ne (by decide : (0 : Fin 4) ≠ 2),
-    Pi.single_eq_of_ne (by decide : (1 : Fin 4) ≠ 2),
-    Pi.single_eq_of_ne (by decide : (3 : Fin 4) ≠ 2), hδ.1, hδ.2.1, hδ.2.2.1, hδ.2.2.2]
-  norm_num
+  rw [show screenTranslator.lambda = Pi.single (2 : Fin 4) 1 from rfl, wavePhase_single,
+    shellRest_relative.2.2.1]
 
 theorem screenTranslator_Q : Q31 screenTranslator.lambda = 1 := by
   rw [Q31_eq_minkowskiDot, minkowskiDot]
@@ -237,15 +217,15 @@ theorem meanRest_cancellation :
 twice the product of the boosted time coefficients. -/
 theorem wavePhase_jointBoost {ch sh : ℝ} (h : ch ^ 2 - sh ^ 2 = 1) (a b : Vec4) :
     wavePhase (boost01 ch sh a) (boost01 ch sh b) =
-      minkowskiPhase a b + 2 * boost01 ch sh a 0 * boost01 ch sh b 0 := by
-  have hsub := wavePhase_sub_minkowskiPhase (boost01 ch sh a) (boost01 ch sh b)
-  have hinv := boost01_minkowskiPhase h a b
+      minkowskiPolar a b + 2 * boost01 ch sh a 0 * boost01 ch sh b 0 := by
+  have hsub := wavePhase_sub_minkowskiPolar (boost01 ch sh a) (boost01 ch sh b)
+  have hinv := boost01_minkowskiPolar h a b
   calc
     wavePhase (boost01 ch sh a) (boost01 ch sh b)
-      = minkowskiPhase (boost01 ch sh a) (boost01 ch sh b) +
+      = minkowskiPolar (boost01 ch sh a) (boost01 ch sh b) +
           2 * boost01 ch sh a 0 * boost01 ch sh b 0 := by
         linarith
-    _ = minkowskiPhase a b + 2 * boost01 ch sh a 0 * boost01 ch sh b 0 := by rw [hinv]
+    _ = minkowskiPolar a b + 2 * boost01 ch sh a 0 * boost01 ch sh b 0 := by rw [hinv]
 
 theorem wavePhase_jointBoost_shift {ch sh : ℝ} (h : ch ^ 2 - sh ^ 2 = 1) (a b : Vec4) :
     wavePhase (boost01 ch sh a) (boost01 ch sh b) - wavePhase a b =
@@ -318,22 +298,10 @@ Minkowski scalar stays `-8`. -/
 theorem shellRest_joint_shift :
     wavePhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
         (boost01 (5 / 3) (-4 / 3) readTranslator.lambda) = -328 / 9 ∧
-      minkowskiPhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+      minkowskiPolar (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
           (boost01 (5 / 3) (-4 / 3) readTranslator.lambda) = -8 ∧
         -328 / 9 ≠ (-8 : ℝ) := by
-  have hhyp : ((5 : ℝ) / 3) ^ 2 - (-4 / 3) ^ 2 = 1 := by norm_num
-  have hδ := shellRest_relative
-  have hD0 : boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP) 0 = 32 / 3 := by
-    simp only [boost01, hδ.1, hδ.2.1]
-    norm_num
-  have hL0 : boost01 (5 / 3) (-4 / 3) readTranslator.lambda 0 = -4 / 3 := by
-    simp only [boost01, readTranslator,
-      Pi.single_eq_of_ne (show (0 : Fin 4) ≠ 1 by decide), Pi.single_eq_same]
-    norm_num
-  refine ⟨?_, ?_, by norm_num⟩
-  · rw [wavePhase_jointBoost hhyp, shellRest_read_minkowski, hD0, hL0]
-    norm_num
-  · rw [boost01_minkowskiPhase hhyp, shellRest_read_minkowski]
+  simpa [boostTranslator] using shellRest_joint_scalars
 
 end Logic
 
