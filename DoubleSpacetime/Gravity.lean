@@ -136,6 +136,12 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `LayerForce` — the gravity-only term `-κ/(γ_s(ℓ/(2r)) r²)` along a separation, summed over the
   other bodies of a finite set. The term increases that separation where `γ_s < 0`. `ℓ` and `G`
   stay inputs. No electromagnetic term and no time step.
+* `RepulsionMomentum` — on one shared boost the separation coefficient of speeds `1` and `3` is
+  `2t`. With input `ℓ = 4` the phases `1` and `1/2` lie on opposite sides of the first node, so
+  the chart term changes sign. The relational momentum keeps Minkowski square `4` and its
+  derivative vanishes. The witness momentum difference adds a time translation, whose spatial
+  coefficient is zero. The repulsive layer stays the sign of `γ_s`. No angular momentum is
+  assigned.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
   gravitationally; no spin-statistics theorem is claimed.
 * `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector; no

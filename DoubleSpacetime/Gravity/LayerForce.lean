@@ -13,7 +13,9 @@ charge term absent. It points along the separation and is positive where
 `gammaSEqual` is negative, which is a repulsive layer on the equal-scale
 locus `J = 0`. The length `ℓ` and the prefactor `G` stay inputs. No
 electromagnetic term is included, and no time step is taken. A vanishing
-separation is not a contact law.
+separation is not a contact law. The sign is this chart reading.
+`RepulsionMomentum` computes the same coefficient as a motor separation and
+shows that the relational momentum does not accelerate there.
 -/
 
 namespace DoubleSpacetime

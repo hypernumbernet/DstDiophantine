@@ -116,6 +116,7 @@ import DoubleSpacetime.Gravity.PhotonReturn
 import DoubleSpacetime.Gravity.LengthRule
 import DoubleSpacetime.Gravity.BothChannels
 import DoubleSpacetime.Gravity.LayerForce
+import DoubleSpacetime.Gravity.RepulsionMomentum
 import DoubleSpacetime.Gravity.ElectronExclusion
 import DoubleSpacetime.Gravity.SpinVersusExclusion
 import DoubleSpacetime.Gravity.ChannelBridge
@@ -2855,6 +2856,32 @@ example {ℓE ℓG a coul r : ℝ}
           ((electronElectronGravToCoulomb : ℝ) * coul) coul
           (gammaSEqual (ℓG / (2 * a))) (gammaSEqual (ℓE / (2 * a))) r :=
   shell_electron_net_repels hE0 hE hG0 hG ha hc hr
+
+/-- Regression: the chart layer changes sign across two readings of one separation, while the
+relational momentum keeps square `4` and does not accelerate. -/
+example :
+    RepulsionMomentum.sampleLength /
+        (2 * RelationalMotor.separationCoefficient RelationalMotor.zeroTrans
+          RelationalMotor.zeroTrans (RelationalMotor.along1 1) (RelationalMotor.along1 3) 1 1) =
+      1 ∧
+    0 < gravityLayerTerm 1 RepulsionMomentum.sampleLength 2 ∧
+      gravityLayerTerm 1 RepulsionMomentum.sampleLength 4 < 0 ∧
+        Q31 (RelationalMotor.separationVelocity (RelationalMotor.along1 1)
+          (RelationalMotor.along1 3)).lambda = 4 ∧
+          deriv (fun _ : ℝ =>
+              Motor.omegaTrans (RelationalMotor.separationVelocity (RelationalMotor.along1 1)
+                (RelationalMotor.along1 3))) 1 = 0 ∧
+            gravityLayerTerm 1 RepulsionMomentum.sampleLength 2 ≠
+              MotorForce.motorForceCoefficient
+                ⟨Amplification.pureBoost 1,
+                  RelationalMotor.separationVelocity (RelationalMotor.along1 1)
+                    (RelationalMotor.along1 3)⟩ 1 :=
+  ⟨(RepulsionMomentum.pair_momentum_across_chart_layer).2.2.1,
+    (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.1,
+    (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.1,
+    (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.2.1,
+    (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.2.2.1,
+    (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2⟩
 
 /-- Regression: on a repulsive layer the gravity-only term increases the separation. -/
 example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)

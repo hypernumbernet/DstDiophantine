@@ -350,6 +350,16 @@ through a third particle. On one worldline, the translator that joins two
 parameters is not the difference of the coefficients against the unit: the
 relative rotor conjugates the earlier translation.
 
+On that relative motor the separation coefficient is the position and the body
+velocity is the momentum (`RepulsionMomentum`). Speeds `1` and `3` on one
+boost give coefficient `2t`. The input `ℓ = 4` reads the phases `1` and
+`1/2`, which lie on opposite sides of the first equal-scale node, so the
+chart term changes sign. The relational momentum keeps Minkowski square `4`
+and does not accelerate. The difference of the momenta against the unit adds
+a time translation, and the spatial coefficient of that translation is zero.
+The repulsive layer stays the sign of `γ_s`. It is not an acceleration of
+this momentum, and no angular momentum is assigned.
+
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is
 the repulsion. The length $\ell$ is an input. No angular momentum is
