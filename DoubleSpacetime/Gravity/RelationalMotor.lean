@@ -17,11 +17,18 @@ On a shared torsion rotor the rotors cancel. The translator that remains is the 
 initial coefficients plus the flow parameter times the difference of the velocity coefficients.
 Particles that share a velocity keep that difference fixed, while each witness coefficient keeps
 moving. The commutator force of the joining translator is zero. The two witness forces need not
-be, and their difference is not the force in the space between the particles.
+be.
 
-Joining two parameters of one `motorPath` conjugates the earlier translator by the relative rotor.
-The difference of the witness coefficients is not that translator. No metric and no position
-operator is introduced.
+The body velocity of the relative motor is the translator of the velocity difference. It does not
+depend on the flow parameter, so the force in that space is zero. The difference of the two body
+velocities against the witness keeps an extra term, the commutator of the shared torsion with the
+relative velocity. The shared rotor has cancelled, so that torsion is not a generator of the
+space. The extra term equals the difference of the witness forces. Putting the cancelled torsion
+back on the relative velocity is not the force between the particles.
+
+Relations compose through a third particle. Joining two parameters of one `motorPath` conjugates
+the earlier translator by the relative rotor. The difference of the witness coefficients is not
+that translator. No metric and no position operator is introduced.
 -/
 
 noncomputable section
@@ -30,9 +37,9 @@ namespace DoubleSpacetime.Gravity.RelationalMotor
 
 open CliffordAlgebra NormedSpace
 open PGA Generators Operations Motor Amplification Sandwich
-open MotorForce (boostShift motorBodyVelocity motorForceBivector motorForceCoefficient
-  motorPath_factor translatorCoefficient omegaTrans_smul_lambda exp_smul_mul_exp_neg
-  reverse_exp_torsion)
+open MotorForce (boostShift boostShift_force_ne_zero motorBodyVelocity motorForceBivector
+  motorForceBivector_eq motorForceCoefficient motorPath_factor translatorCoefficient
+  omegaTrans_smul_lambda exp_smul_mul_exp_neg reverse_exp_torsion boostShift_forceCoefficient)
 open KillingAxis (killingRate lorentzAct)
 
 /-! ### A translator may carry an initial coefficient -/
@@ -134,6 +141,19 @@ theorem between_one (m : PGA) : between 1 m = m := by
 theorem between_self {m : PGA} (h : m * reverse m = 1) : between m m = 1 := by
   rw [between, reverse_mul_of_mul_reverse h]
 
+/-- Space from `a` to `c` is the product of the spaces through a third particle `b`. -/
+theorem between_comp {a b c : PGA} (hb : b * reverse b = 1) :
+    between a b * between b c = between a c := by
+  rw [between, between, between]
+  calc
+    (reverse a * b) * (reverse b * c) = reverse a * (b * (reverse b * c)) := by rw [mul_assoc]
+    _ = reverse a * ((b * reverse b) * c) := by rw [mul_assoc]
+    _ = reverse a * (1 * c) := by rw [hb]
+    _ = reverse a * c := by rw [one_mul]
+
+theorem between_symm (a b : PGA) : reverse (between a b) = between b a := by
+  rw [between, between, CliffordAlgebra.reverse.map_mul, reverse_reverse]
+
 theorem between_left {g a b : PGA} (hg : g * reverse g = 1) :
     between (g * a) (g * b) = between a b := by
   rw [between, between, CliffordAlgebra.reverse.map_mul]
@@ -226,6 +246,22 @@ theorem between_shared (tor : TorsionParams) (xa xb va vb : TransParams) (t : �
             rw [omegaTrans_smul_lambda, omegaTrans_add]
             exact omegaTrans_eq_of_lambda fun μ => by simp [separationCoefficient]
           rw [add_assoc, hcomb]
+
+/-- Three particles on one torsion, at rest relative to each other. The space from the first to
+the third is the product of the two spaces through the middle particle. -/
+theorem space_composes :
+    between (placedPath ⟨pureBoost 1, zeroTrans⟩ zeroTrans 0)
+        (placedPath ⟨pureBoost 1, zeroTrans⟩ (along1 1) 0) *
+      between (placedPath ⟨pureBoost 1, zeroTrans⟩ (along1 1) 0)
+        (placedPath ⟨pureBoost 1, zeroTrans⟩ (along1 3) 0) =
+      1 + omegaTrans (along1 3) := by
+  rw [between_comp (placedPath_unitary ⟨pureBoost 1, zeroTrans⟩ (along1 1) 0), between_shared]
+  exact congrArg (fun z => (1 : PGA) + z) <| omegaTrans_eq_of_lambda fun μ => by
+    fin_cases μ
+    · simp [separationCoefficient, zeroTrans, along1]
+    · norm_num [separationCoefficient, zeroTrans, along1]
+    · simp [separationCoefficient, zeroTrans, along1]
+    · simp [separationCoefficient, zeroTrans, along1]
 
 /-! ### Movement of the separation, and the witness coefficient -/
 
@@ -627,5 +663,216 @@ theorem witness_difference_ne_joining :
   rw [hcoeff, hjoin] at h0
   rw [show (2 : ℝ) - 1 = 1 by norm_num] at h0
   exact hsinh h0.symm
+
+/-! ### The cancelled torsion is not a force in the pair -/
+
+/-- Velocity coefficient of the separation: `v_b - v_a`. -/
+def separationVelocity (va vb : TransParams) : TransParams where
+  lambda := fun μ => vb.lambda μ - va.lambda μ
+
+theorem separationCoefficient_split (xa xb va vb : TransParams) (t : ℝ) :
+    separationCoefficient xa xb va vb t =
+      fun μ => xb.lambda μ - xa.lambda μ + t * (separationVelocity va vb).lambda μ := by
+  ext μ
+  simp [separationCoefficient, separationVelocity]
+
+/-- On a shared torsion the relative motor is an affine translator. Its derivative is the
+velocity difference, with no torsion left in it. -/
+theorem sharedSpace_split (tor : TorsionParams) (xa xb va vb : TransParams) (t : ℝ) :
+    between (placedPath ⟨tor, va⟩ xa t) (placedPath ⟨tor, vb⟩ xb t) =
+      1 + omegaTrans ⟨fun μ => xb.lambda μ - xa.lambda μ⟩ +
+        t • omegaTrans (separationVelocity va vb) := by
+  rw [between_shared]
+  have hsep : omegaTrans ⟨separationCoefficient xa xb va vb t⟩ =
+      omegaTrans ⟨fun μ => xb.lambda μ - xa.lambda μ⟩ +
+        t • omegaTrans (separationVelocity va vb) := by
+    rw [omegaTrans_smul_lambda, omegaTrans_add]
+    exact omegaTrans_eq_of_lambda fun μ => by simp [separationCoefficient, separationVelocity]
+  rw [hsep, add_assoc]
+
+theorem hasDerivAt_sharedSpace (tor : TorsionParams) (xa xb va vb : TransParams) (t : ℝ) :
+    HasDerivAt (fun s => between (placedPath ⟨tor, va⟩ xa s) (placedPath ⟨tor, vb⟩ xb s))
+      (omegaTrans (separationVelocity va vb)) t := by
+  have hfun : (fun s => between (placedPath ⟨tor, va⟩ xa s) (placedPath ⟨tor, vb⟩ xb s)) =
+      fun s => (1 + omegaTrans ⟨fun μ => xb.lambda μ - xa.lambda μ⟩) +
+        s • omegaTrans (separationVelocity va vb) := by
+    ext s
+    exact sharedSpace_split tor xa xb va vb s
+  rw [hfun]
+  exact (((hasDerivAt_id t).smul_const (omegaTrans (separationVelocity va vb))).const_add
+    (1 + omegaTrans ⟨fun μ => xb.lambda μ - xa.lambda μ⟩)).congr_deriv (one_smul _ _)
+
+/-- Body velocity of the space between two particles on one torsion. It is the translator of
+the velocity difference. -/
+theorem sharedSpace_body (tor : TorsionParams) (xa xb va vb : TransParams) (t : ℝ) :
+    reverse (between (placedPath ⟨tor, va⟩ xa t) (placedPath ⟨tor, vb⟩ xb t)) *
+        deriv (fun s => between (placedPath ⟨tor, va⟩ xa s) (placedPath ⟨tor, vb⟩ xb s)) t =
+      omegaTrans (separationVelocity va vb) := by
+  rw [(hasDerivAt_sharedSpace tor xa xb va vb t).deriv, between_shared]
+  set D := omegaTrans ⟨separationCoefficient xa xb va vb t⟩
+  set V := omegaTrans (separationVelocity va vb)
+  have hrev : reverse (1 + D) = 1 - D := by
+    rw [CliffordAlgebra.reverse.map_add, CliffordAlgebra.reverse.map_one, reverse_omegaTrans,
+      sub_eq_add_neg]
+  have hnull : D * V = 0 :=
+    nullSpan_mul (omegaTrans_mem_nullSpan _) (omegaTrans_mem_nullSpan _)
+  rw [hrev]
+  calc
+    (1 - D) * V = V - D * V := by rw [sub_mul, one_mul]
+    _ = V := by rw [hnull, sub_zero]
+
+theorem sharedSpace_body_accel (va vb : TransParams) (t : ℝ) :
+    deriv (fun _ : ℝ => omegaTrans (separationVelocity va vb)) t = 0 :=
+  (hasDerivAt_const t _).deriv
+
+private theorem commutator_sub_right (x y z : PGA) :
+    commutator x y - commutator x z = commutator x (y - z) := by
+  have hneg : -commutator x z = commutator x (-z) := by
+    rw [← neg_one_smul ℝ (commutator x z), ← commutator_smul_right, neg_one_smul]
+  calc
+    commutator x y - commutator x z = commutator x y + -commutator x z := by rw [sub_eq_add_neg]
+    _ = commutator x y + commutator x (-z) := by rw [hneg]
+    _ = commutator x (y + -z) := by rw [← commutator_add_right]
+    _ = commutator x (y - z) := by rw [sub_eq_add_neg]
+
+/-- Difference of the body velocities against the witness. The shared torsion cancels. The
+commutator of that torsion with the relative velocity remains. -/
+theorem witness_body_difference (tor : TorsionParams) (va vb : TransParams) (t : ℝ) :
+    motorBodyVelocity ⟨tor, vb⟩ t - motorBodyVelocity ⟨tor, va⟩ t =
+      omegaTrans (separationVelocity va vb) +
+        t • commutator (omegaTorsion tor) (omegaTrans (separationVelocity va vb)) := by
+  have hsub : omegaTrans vb - omegaTrans va = omegaTrans (separationVelocity va vb) := by
+    rw [omegaTrans_sub]
+    exact omegaTrans_eq_of_lambda fun _ => rfl
+  have hcomm : commutator (omegaTorsion tor) (omegaTrans vb) -
+      commutator (omegaTorsion tor) (omegaTrans va) =
+      commutator (omegaTorsion tor) (omegaTrans (separationVelocity va vb)) := by
+    rw [commutator_sub_right, hsub]
+  rw [motorBodyVelocity, motorBodyVelocity, motorForceBivector, motorForceBivector, omegaBiv,
+    omegaBiv]
+  calc
+    omegaTorsion tor + omegaTrans vb + t • commutator (omegaTorsion tor) (omegaTrans vb) -
+        (omegaTorsion tor + omegaTrans va +
+          t • commutator (omegaTorsion tor) (omegaTrans va))
+      = omegaTrans vb - omegaTrans va +
+          (t • commutator (omegaTorsion tor) (omegaTrans vb) -
+            t • commutator (omegaTorsion tor) (omegaTrans va)) := by abel
+    _ = omegaTrans (separationVelocity va vb) +
+          t • (commutator (omegaTorsion tor) (omegaTrans vb) -
+            commutator (omegaTorsion tor) (omegaTrans va)) := by
+        rw [hsub, ← smul_sub]
+    _ = omegaTrans (separationVelocity va vb) +
+          t • commutator (omegaTorsion tor)
+            (omegaTrans (separationVelocity va vb)) := by rw [hcomm]
+
+theorem deriv_witness_body_difference (tor : TorsionParams) (va vb : TransParams) (t : ℝ) :
+    deriv (fun s => motorBodyVelocity ⟨tor, vb⟩ s - motorBodyVelocity ⟨tor, va⟩ s) t =
+      commutator (omegaTorsion tor) (omegaTrans (separationVelocity va vb)) := by
+  have hfun : (fun s => motorBodyVelocity ⟨tor, vb⟩ s - motorBodyVelocity ⟨tor, va⟩ s) =
+      fun s => omegaTrans (separationVelocity va vb) +
+        s • commutator (omegaTorsion tor) (omegaTrans (separationVelocity va vb)) := by
+    ext s
+    exact witness_body_difference tor va vb s
+  rw [hfun]
+  exact (((hasDerivAt_id t).smul_const _).const_add _).deriv.trans (one_smul _ _)
+
+/-- The difference of the witness forces is the commutator of the shared torsion with the
+relative velocity. -/
+theorem witness_force_difference (tor : TorsionParams) (va vb : TransParams) :
+    motorForceBivector ⟨tor, vb⟩ - motorForceBivector ⟨tor, va⟩ =
+      commutator (omegaTorsion tor) (omegaTrans (separationVelocity va vb)) := by
+  rw [motorForceBivector, motorForceBivector, commutator_sub_right, omegaTrans_sub]
+  exact congrArg (commutator (omegaTorsion tor))
+    (omegaTrans_eq_of_lambda fun _ => rfl)
+
+theorem witness_force_coefficient_difference (tor : TorsionParams) (va vb : TransParams) :
+    (fun μ => motorForceCoefficient ⟨tor, vb⟩ μ - motorForceCoefficient ⟨tor, va⟩ μ) =
+      motorForceCoefficient ⟨tor, separationVelocity va vb⟩ := by
+  ext μ
+  have hsum : vb.lambda = va.lambda + (separationVelocity va vb).lambda := by
+    ext ν
+    simp [separationVelocity]
+  have hact := congrFun
+    (KillingTransport.lorentzAct_add tor va.lambda (separationVelocity va vb).lambda) μ
+  rw [motorForceCoefficient, motorForceCoefficient, hsum, hact, Pi.add_apply]
+  abel
+
+theorem separationVelocity_along :
+    omegaTrans (separationVelocity (along1 1) (along1 3)) = omegaTrans (along1 2) := by
+  apply omegaTrans_eq_of_lambda
+  intro μ
+  fin_cases μ
+  · simp [along1]
+  · norm_num [along1]
+  · simp [along1]
+  · simp [along1]
+
+theorem reattached_commutator :
+    commutator (omegaTorsion (pureBoost 1)) (omegaTrans (along1 2)) =
+      omegaTrans ⟨![2, 0, 0, 0]⟩ := by
+  rw [← show motorForceBivector ⟨pureBoost 1, along1 2⟩ =
+      commutator (omegaTorsion (pureBoost 1)) (omegaTrans (along1 2)) from rfl,
+    motorForceBivector_eq, boostVelocity_force]
+
+/-- Speeds `1` and `3` on one boost. The body velocity of the space between them is the
+translator of coefficient `2`. The difference of the witness body velocities adds the
+commutator of the cancelled torsion with that translator. The derivative of the witness
+difference is that commutator. The derivative of the pair body velocity is zero. The
+difference of the witness force coefficients is the force of the reattached torsion, and the
+force of the joining translator is zero. -/
+theorem cancelled_torsion_not_pair_force :
+    reverse (between (placedPath ⟨pureBoost 1, along1 1⟩ zeroTrans 1)
+          (placedPath ⟨pureBoost 1, along1 3⟩ zeroTrans 1)) *
+        deriv (fun s => between (placedPath ⟨pureBoost 1, along1 1⟩ zeroTrans s)
+          (placedPath ⟨pureBoost 1, along1 3⟩ zeroTrans s)) 1 =
+      omegaTrans (along1 2) ∧
+    motorBodyVelocity ⟨pureBoost 1, along1 3⟩ 1 - motorBodyVelocity ⟨pureBoost 1, along1 1⟩ 1 =
+      omegaTrans (along1 2) + omegaTrans ⟨![2, 0, 0, 0]⟩ ∧
+    omegaTrans (along1 2) ≠ omegaTrans (along1 2) + omegaTrans ⟨![2, 0, 0, 0]⟩ ∧
+    deriv (fun s => motorBodyVelocity ⟨pureBoost 1, along1 3⟩ s -
+        motorBodyVelocity ⟨pureBoost 1, along1 1⟩ s) 1 =
+      omegaTrans ⟨![2, 0, 0, 0]⟩ ∧
+    deriv (fun _ : ℝ => omegaTrans (separationVelocity (along1 1) (along1 3))) 1 = 0 ∧
+    (fun μ => motorForceCoefficient ⟨pureBoost 1, along1 3⟩ μ -
+        motorForceCoefficient ⟨pureBoost 1, along1 1⟩ μ) ≠
+      motorForceCoefficient (pureTranslator (along1 2)) := by
+  have hbody := sharedSpace_body (pureBoost 1) zeroTrans zeroTrans (along1 1) (along1 3) 1
+  have hvel := separationVelocity_along
+  have hwatch := witness_body_difference (pureBoost 1) (along1 1) (along1 3) 1
+  have hcoeff := witness_force_coefficient_difference (pureBoost 1) (along1 1) (along1 3)
+  have hcomm := reattached_commutator
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [hbody, hvel]
+  · rw [hwatch, hvel, hcomm, one_smul]
+  · intro h
+    have hzero : omegaTrans ⟨![2, 0, 0, 0]⟩ = 0 :=
+      add_left_cancel (show omegaTrans (along1 2) + omegaTrans ⟨![2, 0, 0, 0]⟩ =
+        omegaTrans (along1 2) + 0 by rw [add_zero]; exact h.symm)
+    have hscale : omegaTrans ⟨![2, 0, 0, 0]⟩ =
+        (2 : ℝ) • omegaTrans ⟨![1, 0, 0, 0]⟩ := by
+      rw [omegaTrans_smul_lambda]
+      exact omegaTrans_eq_of_lambda fun μ => by
+        fin_cases μ
+        · simp
+        · norm_num
+        · simp
+        · simp
+    rw [hscale] at hzero
+    have hunit : omegaTrans ⟨![1, 0, 0, 0]⟩ = 0 :=
+      (smul_eq_zero.mp hzero).resolve_left (by norm_num)
+    exact boostShift_force_ne_zero <| by
+      rw [motorForceBivector_eq, boostShift_forceCoefficient]
+      exact hunit
+  · rw [deriv_witness_body_difference, hvel, hcomm]
+  · rw [sharedSpace_body_accel]
+  · rw [hcoeff, pureTranslator_force]
+    intro h
+    have h0 := congrFun h 0
+    have hact : motorForceCoefficient
+        ⟨pureBoost 1, separationVelocity (along1 1) (along1 3)⟩ 0 = 2 := by
+      simp [motorForceCoefficient, lorentzAct, pureBoost, separationVelocity, along1]
+      norm_num
+    rw [hact] at h0
+    simp at h0
 
 end DoubleSpacetime.Gravity.RelationalMotor

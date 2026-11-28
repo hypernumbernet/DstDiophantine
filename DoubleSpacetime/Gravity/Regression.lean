@@ -297,6 +297,45 @@ example :
       RelationalMotor.joiningLambda 1 2 :=
   RelationalMotor.witness_difference_ne_joining
 
+example :
+    RelationalMotor.between
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.zeroTrans⟩
+          RelationalMotor.zeroTrans 0)
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.zeroTrans⟩
+          (RelationalMotor.along1 1) 0) *
+      RelationalMotor.between
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.zeroTrans⟩
+          (RelationalMotor.along1 1) 0)
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.zeroTrans⟩
+          (RelationalMotor.along1 3) 0) =
+      1 + Motor.omegaTrans (RelationalMotor.along1 3) ∧
+    CliffordAlgebra.reverse
+        (RelationalMotor.between
+          (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩
+            RelationalMotor.zeroTrans 1)
+          (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩
+            RelationalMotor.zeroTrans 1)) *
+      deriv (fun s =>
+        RelationalMotor.between
+          (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩
+            RelationalMotor.zeroTrans s)
+          (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩
+            RelationalMotor.zeroTrans s)) 1 =
+      Motor.omegaTrans (RelationalMotor.along1 2) ∧
+    MotorForce.motorBodyVelocity ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩ 1 -
+        MotorForce.motorBodyVelocity ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩ 1 =
+      Motor.omegaTrans (RelationalMotor.along1 2) + Motor.omegaTrans ⟨![2, 0, 0, 0]⟩ ∧
+    (fun μ =>
+        MotorForce.motorForceCoefficient ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩ μ -
+          MotorForce.motorForceCoefficient
+            ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩ μ) ≠
+      MotorForce.motorForceCoefficient
+        (RelationalMotor.pureTranslator (RelationalMotor.along1 2)) :=
+  ⟨RelationalMotor.space_composes,
+    (RelationalMotor.cancelled_torsion_not_pair_force).1,
+    (RelationalMotor.cancelled_torsion_not_pair_force).2.1,
+    (RelationalMotor.cancelled_torsion_not_pair_force).2.2.2.2.2⟩
+
 example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
       ![0, s, 0, 0]).trans.lambda = ![ν + κ * s, 0, 0, 0] :=

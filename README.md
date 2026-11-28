@@ -312,10 +312,14 @@ that remains is the difference of the initial coefficients plus the flow
 parameter times the difference of the velocity coefficients. Particles that
 share a velocity keep that difference fixed, while each witness coefficient
 keeps moving. The commutator force of the joining translator vanishes. The
-two witness forces need not, and their difference is not the force between
-the particles. On one worldline, the translator that joins two parameters
-is not the difference of the witness coefficients: the relative rotor
-conjugates the earlier translation.
+two witness forces need not. The body velocity of the relative motor is the
+translator of the velocity difference, so the force in that space is zero.
+The difference of the witness body velocities keeps the commutator of the
+cancelled shared torsion with the relative velocity. That commutator is the
+difference of the witness forces, and it is not a generator of the space.
+Relations compose through a third particle. On one worldline, the translator
+that joins two parameters is not the difference of the witness coefficients:
+the relative rotor conjugates the earlier translation.
 
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is

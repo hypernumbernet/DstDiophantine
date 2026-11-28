@@ -52,8 +52,12 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   the initial coefficients plus the parameter times the difference of the velocity coefficients.
   Particles that share a velocity keep that difference fixed while each witness coefficient moves.
   The commutator force of the joining translator is zero even when the two witness forces differ.
-  Joining two parameters of one `motorPath` conjugates the earlier translator, so the difference of
-  the witness coefficients is not that translator.
+  The body velocity of that relative motor is the translator of the velocity difference, so the
+  force in the space is zero. The difference of the witness body velocities keeps the commutator of
+  the cancelled shared torsion with the relative velocity, and that commutator is the difference of
+  the witness forces. Relations compose through a third particle. Joining two parameters of one
+  `motorPath` conjugates the earlier translator, so the difference of the witness coefficients is
+  not that translator.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian
