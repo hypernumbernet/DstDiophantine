@@ -8,10 +8,12 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
 /-!
 # Force along a fixed motor, as time advances
 
-Position and movement are the motor path `motorPath`: a torsion rotor times the truncated null
-translator `1 + t Ω_trans`. The translator coefficient of that path is linear in the flow
-parameter, so its second derivative vanishes. The body velocity is `M̃ Ṁ`. Its derivative, the
-force, is the commutator `[Ω_torsion, Ω_trans]`.
+Position and movement relative to the identity witness are the motor path `motorPath`: a torsion
+rotor times the truncated null translator `1 + t Ω_trans`. That witness is a second particle. The
+translator coefficient is the relation to it, not a position held by one particle; space between
+two particles is the relative motor of `RelationalMotor`. The translator coefficient of this path
+is linear in the flow parameter, so its second derivative vanishes. The body velocity is `M̃ Ṁ`.
+Its derivative, the force, is the commutator `[Ω_torsion, Ω_trans]`.
 
 That force does not depend on the flow parameter. What grows linearly is the body-frame
 translational velocity. The Minkowski square of that velocity is quadratic in the parameter, and
@@ -56,7 +58,7 @@ noncomputable def motorBodyVelocity (p : OmegaParams) (t : ℝ) : PGA :=
 def bodyTransCoefficient (p : OmegaParams) (t : ℝ) : Vec4 :=
   fun μ => p.trans.lambda μ + t * motorForceCoefficient p μ
 
-/-- Translator coefficient of the right factor. This is the positional parameter. -/
+/-- Translator coefficient of the right factor, relative to the identity witness. -/
 def translatorCoefficient (p : OmegaParams) (t : ℝ) : Vec4 :=
   fun μ => t * p.trans.lambda μ
 
@@ -237,7 +239,7 @@ theorem motorForce_independent (p : OmegaParams) (t s : ℝ) :
     deriv (motorBodyVelocity p) t = deriv (motorBodyVelocity p) s := by
   simp [deriv_motorBodyVelocity]
 
-/-! ### The positional parameter does not accelerate -/
+/-! ### The witness coefficient does not accelerate -/
 
 theorem hasDerivAt_translatorCoefficient (p : OmegaParams) (μ : Fin 4) (t : ℝ) :
     HasDerivAt (fun s => translatorCoefficient p s μ) (p.trans.lambda μ) t := by

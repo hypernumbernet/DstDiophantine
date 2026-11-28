@@ -46,6 +46,14 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   linear, so both accelerations vanish. The written flow sources the common rapidity and agrees
   with this advance at every parameter only when the lag vanishes. Rebuilding the generator from
   the advanced motor multiplies the force by the square of the flow parameter.
+* `RelationalMotor` — space between two particles is `reverse(M_a) M_b`. `motorPath` starts on the
+  identity witness, so a particle off that witness keeps an initial translator in the same
+  factorization. A shared torsion rotor cancels. The translator that remains is the difference of
+  the initial coefficients plus the parameter times the difference of the velocity coefficients.
+  Particles that share a velocity keep that difference fixed while each witness coefficient moves.
+  The commutator force of the joining translator is zero even when the two witness forces differ.
+  Joining two parameters of one `motorPath` conjugates the earlier translator, so the difference of
+  the witness coefficients is not that translator.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian

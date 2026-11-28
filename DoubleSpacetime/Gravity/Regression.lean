@@ -108,6 +108,7 @@ import DoubleSpacetime.Gravity.DegenerateSandwich
 import DoubleSpacetime.Gravity.KillingTransport
 import DoubleSpacetime.Gravity.MotorForce
 import DoubleSpacetime.Gravity.MotorAdvance
+import DoubleSpacetime.Gravity.RelationalMotor
 import DoubleSpacetime.Gravity.CurvedTransport
 import DoubleSpacetime.Gravity.PlaneBracket
 import DoubleSpacetime.Gravity.Lensing
@@ -259,6 +260,42 @@ example {m δ₀ ν : ℝ} (hm : m ≠ 0) (h : δ₀ ≠ 0 ∨ ν ≠ 0) :
     ∃ t, deriv (deriv (writtenSigma 0 0 m δ₀ ν)) t ≠
       deriv (deriv (MotorAdvance.motorCommon MotorForce.boostShift.torsion)) t :=
   MotorAdvance.written_common_ne_motor MotorForce.boostShift.torsion hm h
+
+example :
+    RelationalMotor.between
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩
+          RelationalMotor.zeroTrans 1)
+        (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩
+          RelationalMotor.zeroTrans 1) =
+      1 + Motor.omegaTrans (RelationalMotor.along1 2) ∧
+    (RelationalMotor.separationCoefficient RelationalMotor.zeroTrans RelationalMotor.zeroTrans
+      (RelationalMotor.along1 1) (RelationalMotor.along1 3) 1 =
+      (RelationalMotor.along1 2).lambda) ∧
+      (MotorForce.motorForceCoefficient
+          (RelationalMotor.pureTranslator (RelationalMotor.along1 2)) = fun _ => (0 : ℝ)) ∧
+        MotorForce.motorForceCoefficient ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩ ≠
+          MotorForce.motorForceCoefficient
+            (RelationalMotor.pureTranslator (RelationalMotor.along1 2)) :=
+  ⟨(RelationalMotor.pair_space_not_witness).1,
+    (RelationalMotor.pair_space_not_witness).2.2.2.1,
+    (RelationalMotor.pair_space_not_witness).2.2.2.2.2.2.2.2.1,
+    (RelationalMotor.pair_space_not_witness).2.2.2.2.2.2.2.2.2⟩
+
+example (t : ℝ) :
+    RelationalMotor.separationCoefficient (RelationalMotor.along1 1) (RelationalMotor.along1 3)
+        (RelationalMotor.along1 1) (RelationalMotor.along1 1) t =
+      (RelationalMotor.along1 2).lambda ∧
+    deriv (fun s => RelationalMotor.separationCoefficient (RelationalMotor.along1 1)
+      (RelationalMotor.along1 3) (RelationalMotor.along1 1) (RelationalMotor.along1 1) s 1) t = 0 ∧
+      deriv (fun s => MotorForce.translatorCoefficient
+        ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩ s 1) t = 1 :=
+  RelationalMotor.comoving_space_fixed t
+
+example :
+    (fun μ => MotorForce.translatorCoefficient MotorForce.boostShift 2 μ -
+        MotorForce.translatorCoefficient MotorForce.boostShift 1 μ) ≠
+      RelationalMotor.joiningLambda 1 2 :=
+  RelationalMotor.witness_difference_ne_joining
 
 example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)

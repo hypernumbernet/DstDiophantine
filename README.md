@@ -303,6 +303,20 @@ a torsion rate multiplies the force by the parameter. Reading the advanced
 rotor and the advanced translator back as a new generator multiplies it
 by the square of the parameter.
 
+That translator coefficient is the relation to the identity witness. Every
+`motorPath` starts there, so one such path cannot place two particles. A
+particle off the witness is the same rotor times a translator that carries
+an initial coefficient (`RelationalMotor`). Space between two particles is
+the motor from one to the other. A shared rotor cancels, and the translator
+that remains is the difference of the initial coefficients plus the flow
+parameter times the difference of the velocity coefficients. Particles that
+share a velocity keep that difference fixed, while each witness coefficient
+keeps moving. The commutator force of the joining translator vanishes. The
+two witness forces need not, and their difference is not the force between
+the particles. On one worldline, the translator that joins two parameters
+is not the difference of the witness coefficients: the relative rotor
+conjugates the earlier translation.
+
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is
 the repulsion. The length $\ell$ is an input. No angular momentum is
