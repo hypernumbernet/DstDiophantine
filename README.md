@@ -279,6 +279,18 @@ is sourced. Stiffness, unsigned mass, and free fall are three different
 quantities. The note is
 [`papers/dst-dynamic-equation.tex`](papers/dst-dynamic-equation.tex).
 
+Position and movement are the motor path, a torsion rotor times the
+truncated translator. Along a fixed generator the body-frame force is the
+commutator of those two parts, and that bivector does not depend on the
+flow parameter (`MotorForce`). The translator coefficient is linear in the
+parameter, so its acceleration vanishes. What grows linearly is the
+body-frame translational velocity. The written lag force `-m δ(t)` grows
+the same way, because the written mismatch accelerates by zero, and it is
+not this commutator. Reading the exterior rate `rₛ/(2r²)` off the
+translator clock applies the field law a second time. The field law still
+selects the generator from the separation. The motor clock does not
+multiply the force.
+
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is
 the repulsion. The length $\ell$ is an input. No angular momentum is

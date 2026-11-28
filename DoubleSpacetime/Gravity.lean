@@ -38,6 +38,10 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   outward radial leg.
 * `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x` and
   leaves the Lorentz part fixed.
+* `MotorForce` — along a fixed generator the body-frame force is the commutator
+  `[Ω_torsion, Ω_trans]`, and that bivector does not depend on the flow parameter. The translator
+  coefficient accelerates by zero. The written lag force `-m δ(t)` is linear in the parameter, and
+  reading `killingRate` off the translator clock is not this force.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian

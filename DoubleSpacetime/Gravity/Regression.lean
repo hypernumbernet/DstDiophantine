@@ -106,6 +106,7 @@ import DoubleSpacetime.Gravity.SolarDeflection
 import DoubleSpacetime.Gravity.OffEquator
 import DoubleSpacetime.Gravity.DegenerateSandwich
 import DoubleSpacetime.Gravity.KillingTransport
+import DoubleSpacetime.Gravity.MotorForce
 import DoubleSpacetime.Gravity.CurvedTransport
 import DoubleSpacetime.Gravity.PlaneBracket
 import DoubleSpacetime.Gravity.Lensing
@@ -216,6 +217,22 @@ example (p : Motor.OmegaParams) (x : Vec4) :
     Sandwich.sandwich (Motor.expTrans (KillingTransport.originShift x)) (Motor.omegaBiv p) =
       Motor.omegaBiv (KillingTransport.transportedParams p x) :=
   KillingTransport.sandwich_originShift p x
+
+example :
+    paperForcePhi 1 (affineMismatch 0 1 0) 0 ≠ paperForcePhi 1 (affineMismatch 0 1 1) 0 ∧
+      deriv (MotorForce.motorBodyVelocity MotorForce.boostShift) 0 =
+        deriv (MotorForce.motorBodyVelocity MotorForce.boostShift) 1 :=
+  MotorForce.lagForce_not_motorForce
+
+example (μ : Fin 4) (t : ℝ) :
+    deriv (deriv (fun s => MotorForce.translatorCoefficient MotorForce.boostShift s μ)) t = 0 ∧
+      MotorForce.motorForceBivector MotorForce.boostShift ≠ 0 :=
+  MotorForce.position_accel_zero_force_not μ t
+
+example {rs : ℝ} (hrs : rs ≠ 0) :
+    KillingAxis.killingRate rs (MotorForce.translatorCoefficient MotorForce.boostShift 1 1) ≠
+      KillingAxis.killingRate rs (MotorForce.translatorCoefficient MotorForce.boostShift 2 1) :=
+  MotorForce.killingRate_of_clock_changes hrs
 
 example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
