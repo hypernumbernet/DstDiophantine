@@ -134,17 +134,19 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
 * `BothChannels` — an unlike pair exerts both terms at every separation. Vanishing of
   `pairChannelForce` does not depend on the separation.
 * `LayerForce` — the gravity-only term `-κ/(γ_s(ℓ/(2r)) r²)` along a separation, summed over the
-  other bodies of a finite set. The term increases that separation where `γ_s < 0`. `ℓ` and `G`
-  stay inputs. No electromagnetic term and no time step.
+  other bodies of a finite set. The term is positive where `γ_s < 0`. That sign labels the radius.
+  It is not a time derivative of the separation. `ℓ` and `G` stay inputs. No electromagnetic term
+  and no time step.
 * `RepulsionMomentum` — on one shared boost the separation coefficient of speeds `1` and `3` is
   `2t`. With input `ℓ = 4` the phases `1` and `1/2` lie on opposite sides of the first node, so
   the chart term changes sign. The relational momentum keeps Minkowski square `4` and its
-  derivative vanishes. The witness momentum difference adds a time translation, whose spatial
-  coefficient is zero. The same signs, read at areal radii `2` and `4`, are a torsion-star sample.
-  Two comoving particles on the shared one-axis freeze have translator coefficient `1`, not that
-  gap, and body velocity `0`. Distinct admissible shell boosts leave a rotor, whose mismatch is
-  not `γ_s`. The repulsive layer stays the sign of `γ_s`. No angular momentum and no shell mass
-  are assigned.
+  derivative vanishes. The commutator is `N₀`, and `1 + s N₀` fixes the spatial legs, so the
+  torsion-star labels at radii `2` and `4` stay. The witness is null at parameter `1` and timelike
+  at `nodeParameter`, where the coasting phase meets the first node and the separation accelerates
+  by zero. Two comoving particles on the shared one-axis freeze have translator coefficient `1`,
+  not that gap, and body velocity `0`. Distinct admissible shell boosts leave a rotor, whose
+  mismatch is not `γ_s`. The repulsive layer stays the sign of `γ_s`. No angular momentum and no
+  shell mass are assigned.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
   gravitationally; no spin-statistics theorem is claimed.
 * `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector; no

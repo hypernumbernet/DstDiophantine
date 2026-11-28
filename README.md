@@ -355,10 +355,11 @@ velocity is the momentum (`RepulsionMomentum`). Speeds `1` and `3` on one
 boost give coefficient `2t`. The input `ℓ = 4` reads the phases `1` and
 `1/2`, which lie on opposite sides of the first equal-scale node, so the
 chart term changes sign. The relational momentum keeps Minkowski square `4`
-and does not accelerate. The difference of the momenta against the unit adds
-a time translation, and the spatial coefficient of that translation is zero.
-The repulsive layer stays the sign of `γ_s`. It is not an acceleration of
-this momentum, and no angular momentum is assigned.
+and does not accelerate. The commutator is the time translation $N_0$, and
+$1 + s N_0$ fixes the spatial legs, so the torsion-star labels at radii $2$
+and $4$ stay. The witness momentum is null at parameter $1$ and timelike at
+the first node, where the coasting phase arrives with acceleration zero. A
+positive chart term labels the radius. No angular momentum is assigned.
 
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is

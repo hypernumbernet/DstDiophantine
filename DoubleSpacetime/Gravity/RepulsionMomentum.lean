@@ -12,18 +12,19 @@ separation accelerates by zero.
 The chart term `gravityLayerTerm` reads an input length `ℓ` against that coefficient. On the
 sample below the coefficient is `2t`. With `ℓ = 4` the phase is `1/t`. At `t = 1` the phase sits
 on the repulsive side of the first node, and at `t = 2` it sits on the attractive side. The
-relational momentum has Minkowski square `4` at both parameters. The difference of the body
-momenta against the unit adds the commutator of the cancelled torsion with the relative velocity.
-That commutator is a time translation: its spatial coefficient is zero, while the chart term at
-the repulsive sample is positive.
+relational momentum has Minkowski square `4` at both parameters.
 
-The repulsive layer remains the sign of `γ_s` on the equal-scale locus. The chart may be fed the
-separation coefficient, and that reading is not the motor acceleration. On a torsion star the same
-sign is read at an areal radius. Two comoving particles on the shared one-axis freeze have a
-translator that is not the gap of those radii, and their body velocity is zero. Distinct admissible
-boosts, one on each shell, leave a rotor. That rotor is not a translator, and its mismatch does not
-have the sign of `γ_s`. No angular momentum is assigned, no shell mass is fixed, and `ℓ` stays an
-input.
+The repulsive layer remains the sign of `γ_s`. A positive chart term labels the radius. The
+difference of the body momenta against the unit is the commutator on this sample, the time
+translation `N₀`, and `1 + s N₀` fixes `e₁`, `e₂`, and `e₃`, so the torsion-star labels stay. The
+witness momentum is null at parameter `1` and timelike at `nodeParameter`, where the coasting
+phase meets the first node and the separation still accelerates by zero.
+
+On a torsion star the same sign is read at an areal radius. Two comoving particles on the shared
+one-axis freeze have a translator that is not the gap of those radii, and their body velocity is
+zero. Distinct admissible boosts, one on each shell, leave a rotor. That rotor is not a translator,
+and its mismatch does not have the sign of `γ_s`. No angular momentum is assigned, no shell mass
+is fixed, and `ℓ` stays an input.
 -/
 
 namespace DoubleSpacetime.Gravity.RepulsionMomentum
@@ -464,5 +465,80 @@ theorem torsionStar_repulsive_layer :
     (translator_chart_ne_outer 1).2,
     shell_motor_not_translator (along1 (outerShell - innerShell)), relative_mismatch_ne_gap,
     inner_gamma_ne_relative_mismatch⟩
+
+/-! ### Time translation fixes the shell -/
+
+/-- Speeds `1` and `3` on the unit boost. -/
+def samplePair : OmegaParams :=
+  ⟨pureBoost 1, separationVelocity (along1 1) (along1 3)⟩
+
+/-- Coasting parameter where the phase `1/t` meets the first node. -/
+noncomputable def nodeParameter : ℝ := 1 / resonanceRoot1
+
+/-- `Ω_trans` stores `λ/2`, so time coefficient `2s` is the translation `s N₀`. -/
+private def timeShift (s : ℝ) : TransParams := ⟨![2 * s, 0, 0, 0]⟩
+
+private theorem timeShift_eq (s : ℝ) :
+    expTrans (timeShift s) = 1 + s • null 0 := by
+  rw [expTrans_eq, omegaTrans, Fin.sum_univ_four]
+  simp [timeShift]
+
+private theorem timeTranslation_fixes_leg (s : ℝ) (μ : Fin 4) {i : Fin 5}
+    (hlam : (timeShift s).lambda μ = 0) (hc : Fin.castAdd 1 μ = i) :
+    sandwich (1 + s • null 0) (ι i) = ι i := by
+  have h := KillingAxis.sandwich_expTrans_ι (timeShift s) μ
+  rw [hlam, mul_zero, zero_smul, add_zero, hc] at h
+  simpa [timeShift_eq s] using h
+
+theorem nodeParameter_pos : 0 < nodeParameter := by
+  unfold nodeParameter
+  exact one_div_pos.mpr (lt_trans (by positivity) resonanceRoot1_sharp_bounds.1)
+
+theorem nodeParameter_gt_one : 1 < nodeParameter := by
+  unfold nodeParameter
+  exact (one_lt_div (lt_trans (by positivity) resonanceRoot1_sharp_bounds.1)).mpr
+    resonanceRoot1_sharp_bounds.2
+
+/-- The shared-boost commutator is the unit time translation `N₀`. -/
+theorem sample_force_is_null0 : motorForceBivector samplePair = null 0 := by
+  rw [samplePair, motorForceBivector_eq, sample_force]
+  simp only [omegaTrans, Fin.sum_univ_four]
+  simp
+
+/-- Any amplitude of `N₀` fixes the three spatial legs. -/
+theorem timeTranslation_fixes_spatial (s : ℝ) :
+    sandwich (1 + s • null 0) (ι 1) = ι 1 ∧
+      sandwich (1 + s • null 0) (ι 2) = ι 2 ∧
+        sandwich (1 + s • null 0) (ι 3) = ι 3 := by
+  refine ⟨?_, ?_, ?_⟩
+  · exact timeTranslation_fixes_leg s 1 (by simp [timeShift]) rfl
+  · exact timeTranslation_fixes_leg s 2 (by simp [timeShift]) rfl
+  · exact timeTranslation_fixes_leg s 3 (by simp [timeShift]) rfl
+
+theorem witness_null_at_one : Q31 (witnessMomentum 1) = 0 := by
+  rw [witnessMomentum_square]
+  norm_num
+
+theorem witness_timelike_at_node : Q31 (witnessMomentum nodeParameter) < 0 := by
+  rw [witnessMomentum_square]
+  have hsq : 1 < nodeParameter ^ 2 := by
+    nlinarith [nodeParameter_pos, nodeParameter_gt_one]
+  linarith
+
+/-- The coasting phase equals the first node, so the chart denominator vanishes there. -/
+theorem coast_phase_at_node :
+    sampleLength / (2 * separationCoefficient zeroTrans zeroTrans (along1 1) (along1 3)
+      nodeParameter 1) = resonanceRoot1 := by
+  have hr0 : resonanceRoot1 ≠ 0 :=
+    (lt_trans (by positivity) resonanceRoot1_sharp_bounds.1).ne'
+  rw [sample_position]
+  unfold sampleLength nodeParameter
+  field_simp [hr0]
+  ring
+
+theorem separation_accel_at_node :
+    deriv (deriv (fun u => separationCoefficient zeroTrans zeroTrans (along1 1) (along1 3)
+      u 1)) nodeParameter = 0 :=
+  separationCoefficient_accel zeroTrans zeroTrans (along1 1) (along1 3) 1 nodeParameter
 
 end DoubleSpacetime.Gravity.RepulsionMomentum

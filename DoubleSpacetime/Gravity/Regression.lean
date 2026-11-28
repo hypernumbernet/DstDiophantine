@@ -2897,7 +2897,29 @@ example :
     RepulsionMomentum.comoving_translator_ne_gap 1,
     RepulsionMomentum.inner_gamma_ne_relative_mismatch⟩
 
-/-- Regression: on a repulsive layer the gravity-only term increases the separation. -/
+/-- Regression: `N₀` fixes the spatial legs. The witness is null at `1` and timelike at the node,
+where the coasting phase arrives with acceleration zero. -/
+example (s : ℝ) :
+    MotorForce.motorForceBivector RepulsionMomentum.samplePair = null 0 ∧
+      Sandwich.sandwich ((1 : PGA) + s • null 0) (ι 1) = ι 1 ∧
+        Sandwich.sandwich ((1 : PGA) + s • null 0) (ι 2) = ι 2 ∧
+          Sandwich.sandwich ((1 : PGA) + s • null 0) (ι 3) = ι 3 ∧
+            Q31 (RepulsionMomentum.witnessMomentum 1) = 0 ∧
+              Q31 (RepulsionMomentum.witnessMomentum RepulsionMomentum.nodeParameter) < 0 ∧
+                RepulsionMomentum.sampleLength /
+                    (2 * RelationalMotor.separationCoefficient RelationalMotor.zeroTrans
+                      RelationalMotor.zeroTrans (RelationalMotor.along1 1)
+                        (RelationalMotor.along1 3) RepulsionMomentum.nodeParameter 1) =
+                  resonanceRoot1 ∧
+                  deriv (deriv (fun u => RelationalMotor.separationCoefficient
+                    RelationalMotor.zeroTrans RelationalMotor.zeroTrans (RelationalMotor.along1 1)
+                      (RelationalMotor.along1 3) u 1)) RepulsionMomentum.nodeParameter = 0 := by
+  obtain ⟨h1, h2, h3⟩ := RepulsionMomentum.timeTranslation_fixes_spatial s
+  exact ⟨RepulsionMomentum.sample_force_is_null0, h1, h2, h3,
+    RepulsionMomentum.witness_null_at_one, RepulsionMomentum.witness_timelike_at_node,
+    RepulsionMomentum.coast_phase_at_node, RepulsionMomentum.separation_accel_at_node⟩
+
+/-- Regression: on a repulsive layer the gravity-only term is positive. -/
 example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)
     (hγ : gammaSEqual (ℓ / (2 * r)) < 0) :
     0 < gravityLayerTerm κ ℓ r ∧
@@ -2908,7 +2930,7 @@ example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)
 example {κ ℓ : ℝ} {c p : ℝ} (hκ : 0 < κ) (hpc : p ≠ c)
     (hγ : gammaSEqual (ℓ / (2 * ‖p - c‖)) < 0) :
     0 < inner ℝ (gravityLayerPush κ ℓ c p) ((‖p - c‖)⁻¹ • (p - c)) :=
-  gravityLayerPush_increases_separation hκ hpc hγ
+  gravityLayerPush_repulsive_label hκ hpc hγ
 
 example {ι : Type*} [DecidableEq ι] {ℓ G : ℝ} {mass : ι → ℝ} {pos : ι → ℝ}
     {S : Finset ι} {i : ι} (hi : i ∈ S) (hG : 0 < G)
@@ -2918,7 +2940,7 @@ example {ι : Type*} [DecidableEq ι] {ℓ G : ℝ} {mass : ι → ℝ} {pos : �
     ∀ j ∈ S.erase i,
       0 < inner ℝ (gravityLayerPush (G * mass i * mass j) ℓ (pos j) (pos i))
         ((‖pos i - pos j‖)⁻¹ • (pos i - pos j)) :=
-  gravityLayerForce_each_increases hi hG hm hdist hγ
+  gravityLayerForce_each_repulsive hi hG hm hdist hγ
 
 example :
     SpinVersusExclusion.samePlace
