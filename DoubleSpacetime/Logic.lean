@@ -68,6 +68,7 @@ import DoubleSpacetime.Logic.Quantum.MomentumReading
 import DoubleSpacetime.Logic.Quantum.TranslationFisher
 import DoubleSpacetime.Logic.Quantum.TranslatorInformation
 import DoubleSpacetime.Logic.Quantum.MotorReading
+import DoubleSpacetime.Logic.Quantum.PositionLaw
 import DoubleSpacetime.Logic.Quantum.BornLorentz
 import DoubleSpacetime.Logic.Quantum.AngleChart
 import DoubleSpacetime.Logic.Quantum.DualExchange
