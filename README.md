@@ -37,8 +37,8 @@ $\mathbb{H} \otimes_{\mathbb{R}} \mathbb{H} \cong \mathrm{Cl}(3,1)$
 - **dual** spacetime, basis $(k, jI, jJ, jK)$, compact
 
 The dual map reverses the arrow of time and preserves the Minkowski norm.
-Lorentz transformations are rotors on each sector. Gravity and inertia are
-the **torsional mismatch**
+Lorentz transformations are rotors on each sector. The internal mismatch of
+one particle is
 
 $$
 \Omega = R_{\mathrm{usual}}^{\dagger}\, R_{\mathrm{dual}},
@@ -51,14 +51,36 @@ $M = \tfrac12\sum_a(\alpha_a^2 + \beta_a^2)$. The normalised height is
 $J_{\mathrm{norm}} = J / (3\pi^2/8)$, so $|J_{\mathrm{norm}}| \le 1$ is
 the same statement as $|J| \le 3\pi^2/8$. Vanishing $J$ does not force
 $\Omega = 1$: there is a balanced massive seed with $J = 0$, $M > 0$, and
-$\Omega \ne 1$.
+$\Omega \ne 1$. Stiffness, unsigned mass, and free fall are three
+quantities. The written force in the rapidity channels is the lag
+$-m\delta$. On that flow $J = \delta\sigma/2$, so $J$ records the product
+of the lag and the common rapidity.
 
 Translation comes from projective geometric algebra $G(3,1,1)$: one null
 vector, ten bivector generators, and motors $M = RT$. The ten bivectors are
 the Poincaré algebra under the commutator. The ordered product equals the
 Banach exponential when torsion and translation commute, and there are
 motors for which the two disagree. They share a 3-jet with the third-order
-Baker–Campbell–Hausdorff exponential.
+Baker–Campbell–Hausdorff exponential. PGA keeps $J$ as the internal
+mismatch and puts the direction of gravity on a motor.
+
+- The static Killing element is a pure boost of rate $\kappa$ displaced by
+  a null translator of coefficient $\nu$, so the axis sits at
+  $\ell = \nu/\kappa$. A body released from rest accelerates toward that
+  axis. Conjugation by a translator leaves the Lorentz part fixed, and
+  therefore leaves $J$ fixed, while the translator coefficient shifts by
+  the Lorentz action of the displacement. The same value of $J$ does not
+  determine the teleparallel scalar $T$, and $J$ is not a dimensionful
+  coupling.
+- Along a fixed generator the body-frame acceleration is the commutator
+  $[\Omega_{\mathrm{torsion}}, \Omega_{\mathrm{trans}}]$. That bivector
+  does not depend on the flow parameter, and it is not $J$. The exterior
+  rate $r_s/(2r^2)$ is selected from the separation. Once the generator is
+  fixed, the motor clock does not multiply the commutator.
+- The extended scalar $J_5 = J + \tfrac12\,\eta(\lambda,\lambda)$ adds the
+  Minkowski square of the translator. A spatial translation makes $|J_5|$
+  arbitrarily large, so $J_5$ is not a gravitational charge. It equals $J$
+  when the translator vanishes.
 
 Physics: [`papers/double-spacetime-theory.tex`](papers/double-spacetime-theory.tex).
 Motors and the direction of gravity:
@@ -224,8 +246,10 @@ Parallel track, barrel [`DoubleSpacetime/Gravity.lean`](DoubleSpacetime/Gravity.
 The module docstring there is the index. Each submodule docstring is the
 checked local map. Regression examples live in
 [`Gravity/Regression.lean`](DoubleSpacetime/Gravity/Regression.lean) and
-add no claim. Algebraic $J$ is not the Weitzenböck density $T$ and not a
-dimensionful coupling.
+add no claim. Algebraic $J$ is the internal mismatch of one particle. The
+direction of free fall is the displaced Killing motor, and the body-frame
+commutator along a fixed generator is a third object. $J$ is not the
+Weitzenböck density $T$ and not a dimensionful coupling.
 
 ### Chart and checked windows
 
