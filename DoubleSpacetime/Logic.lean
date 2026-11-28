@@ -1483,6 +1483,23 @@ example (u : DualSpinor) (hu : u ≠ 0) (φ : ℝ) :
   obtain ⟨_, _, hread, hinv⟩ := nullRay_reading
   exact ⟨hA, hW, hM, hne, hboost, hφ, hrest, hslow, nullRay_atLightSpeed, hread, hinv⟩
 
+/-- Regression: a Dirac shell reads position as the phase of `q − p`, not as the carrier speed.
+Opposite null rays stand still and do not read `e₀ − e₃`. The collinear null fringe has speed `1`
+and reads that line. Rest mass `1` against `(5/4, 3/4)` has fringe speed `1/9`. -/
+example (t : ℝ) (x : Vec4) :
+    coordinateSpeedSq nullRay = 1 ∧ coordinateSpeedSq oppositeRay = 1 ∧
+      phaseFrontSpeedSq (oppositeRay - nullRay) = 0 ∧
+        wavePhase (oppositeRay - nullRay) (x + timeShift t) =
+          wavePhase (oppositeRay - nullRay) x ∧
+          wavePhase (oppositeRay - nullRay) nullLineTranslator.lambda = 0 ∧
+            phaseFrontSpeedSq ((2 : ℝ) • nullRay - nullRay) = 1 ∧
+              wavePhase ((2 : ℝ) • nullRay - nullRay) nullLineTranslator.lambda = 1 ∧
+                phaseFrontSpeedSq (txMomentum (5 / 4) (3 / 4) - restMomentum 1) = 1 / 9 := by
+  obtain ⟨_, _, hcn, hco, hfront, htime, _, hnull⟩ := opposite_rays_stand t x
+  obtain ⟨_, hcol, hline, _, _⟩ := collinear_rays_front
+  obtain ⟨_, _, _, _, _, hmass, _⟩ := massive_pair_front
+  exact ⟨hcn, hco, hfront, htime, hnull, hcol, hline, hmass⟩
+
 /-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
 is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and
 scalar `10/3`. Rest has both equal to `2`. The rotor image of that rest spinor at `(5, 4, 0, 0)`
