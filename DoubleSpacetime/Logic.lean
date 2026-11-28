@@ -67,6 +67,7 @@ import DoubleSpacetime.Logic.Quantum.ChartScore
 import DoubleSpacetime.Logic.Quantum.MomentumReading
 import DoubleSpacetime.Logic.Quantum.TranslationFisher
 import DoubleSpacetime.Logic.Quantum.TranslatorInformation
+import DoubleSpacetime.Logic.Quantum.MotorReading
 import DoubleSpacetime.Logic.Quantum.BornLorentz
 import DoubleSpacetime.Logic.Quantum.AngleChart
 import DoubleSpacetime.Logic.Quantum.DualExchange
@@ -1422,6 +1423,38 @@ example :
   refine ⟨⟨θ, h0, h1, hfloor, hpos⟩, hboost.2.2.2.2.2.1, hboost.2.2.2.2.2.2.1, ?_, ?_⟩
   · exact hboost.2.2.2.2.2.2.2.1
   · exact ⟨shellLab_translationFisher.2.2.2.1, shellLab_translationFisher.2.2.2.2.1⟩
+
+/-- Regression: a pure boost sandwiches the translator and preserves the Minkowski contraction.
+The packet reads the Euclidean sum. Mean rest, one rapidity `cosh = 5/3`: `N_1` has information
+`34816/625`, its image `(-4/3, 5/3)` has `34816/225`, and the co-boosted scalars are `-8` and
+`-328/9`. That rapidity has `J = M < 2`. Rest against `(5, 4, 0, 0)` reads the image as
+`1296/25`; the invariant quadratic form is `7056/25`, and the position reading is `-π/2`. -/
+example :
+    (∃ θ : ℝ,
+        translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
+            readTranslator = 34816 / 625 ∧
+          translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
+              (boostTranslator (5 / 3) (-4 / 3) readTranslator) = 34816 / 225) ∧
+      wavePhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+          (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -328 / 9 ∧
+        minkowskiPhase (boost01 (5 / 3) (-4 / 3) (shellRestQ - shellRestP))
+            (boostTranslator (5 / 3) (-4 / 3) readTranslator).lambda = -8 ∧
+          (let Ψ := shellPacket 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor
+            let x := timeShift (-Real.pi / 2)
+            translatorInformation 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor x
+                (boostTranslator (5 / 3) (-4 / 3) readTranslator) = 1296 / 25 ∧
+              invariantInformation 1 1 0 shellRestP (restMomentum 3) shellParticleP shellLabSpinor
+                  x (boostTranslator (5 / 3) (-4 / 3) readTranslator) = 7056 / 25 ∧
+                (inner ℂ (Ψ x) (positionOp 0 Ψ x)).re / ‖Ψ x‖ ^ 2 = -Real.pi / 2) ∧
+            (∃ φ : ℝ, Real.cosh φ = 5 / 3 ∧ Real.sinh φ = -4 / 3 ∧
+              Invariant.J (Amplification.pureBoost φ) < 2 ∧
+                Invariant.mass (Amplification.pureBoost φ) =
+                  Invariant.J (Amplification.pureBoost φ)) := by
+  obtain ⟨θ, hread, hboost, _⟩ := shellRest_rotor_reading
+  obtain ⟨φ, hcosh, hsinh, _, hmass, hJ, _⟩ := labRapidity_below_two
+  refine ⟨⟨θ, hread, hboost⟩, shellRest_joint_scalars.1, shellRest_joint_scalars.2.1, ?_, ?_⟩
+  · exact ⟨shellLab_reading_split.1, shellLab_reading_split.2.1, shellLab_reading_split.2.2.2.1⟩
+  · exact ⟨φ, hcosh, hsinh, hJ, hmass⟩
 
 /-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
 is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and
