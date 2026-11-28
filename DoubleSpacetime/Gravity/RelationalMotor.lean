@@ -1,34 +1,42 @@
+import DoubleSpacetime.Algebra.BivectorBasis
 import DoubleSpacetime.Algebra.Sandwich
 import DoubleSpacetime.Gravity.MotorForce
 
 /-!
 # Space only between two particles
 
-Position and movement stay a torsion rotor times a truncated translator. `motorPath` is the case
-whose translator vanishes at the flow origin, so every such path starts on the identity witness.
-That witness is a second particle. The translator coefficient is the relation to it, and one such
-coefficient is not a position.
+A massive particle is its own torsion rotor times a truncated translator. The torsion is that
+particle's usual/dual pair. `motorPath` is the case whose translator vanishes at the flow origin,
+so the path equals the group unit there. The unit is the reference of that factorization. Its
+unsigned mass vanishes, and it is not a second particle and not a shared continuum. The translator
+coefficient reads one motor against the unit. It is not a position.
 
-A particle placed off the witness is the same factorization with an initial translator. Space
-between two particles is the motor `reverse(M_a) M_b`. It is the identity when the particles
-coincide. A common left motor cancels, so a shared displacement is not space.
+A particle placed off the unit is the same factorization with an initial translator. Space between
+two particles is the motor `reverse(M_a) M_b`. It is the unit when the particles coincide. A common
+left motor cancels, so a shared displacement is not space.
 
-On a shared torsion rotor the rotors cancel. The translator that remains is the difference of the
-initial coefficients plus the flow parameter times the difference of the velocity coefficients.
-Particles that share a velocity keep that difference fixed, while each witness coefficient keeps
-moving. The commutator force of the joining translator is zero. The two witness forces need not
-be.
+On one shared torsion the rotors cancel. Each particle keeps its own mismatch `J`. The relative
+motor carries none. The translator that remains is the difference of the initial coefficients plus
+the flow parameter times the difference of the velocity coefficients. Particles that share a
+velocity keep that difference fixed, while each coefficient against the unit keeps moving. The
+commutator of the joining translator is zero. That zero does not delete either particle's mismatch,
+and it is not the field law read from the separation. The two commutators against the unit need not
+vanish.
 
-The body velocity of the relative motor is the translator of the velocity difference. It does not
-depend on the flow parameter, so the force in that space is zero. The difference of the two body
-velocities against the witness keeps an extra term, the commutator of the shared torsion with the
-relative velocity. The shared rotor has cancelled, so that torsion is not a generator of the
-space. The extra term equals the difference of the witness forces. Putting the cancelled torsion
-back on the relative velocity is not the force between the particles.
+Distinct torsions do not cancel. Two pure boosts leave the rotor of the rapidity difference. The
+mismatch of that relative rotor is not the difference of the two mismatches.
+
+The body velocity of a shared-torsion relative motor is the translator of the velocity difference.
+It does not depend on the flow parameter, so the commutator in that space is zero. The difference
+of the two body velocities against the unit keeps an extra term, the commutator of the shared
+torsion with the relative velocity. The shared rotor has cancelled, so that torsion is not a
+generator of the space. The extra term equals the difference of those commutators. Putting the
+cancelled torsion back on the relative velocity is not a generator of the space between the
+particles.
 
 Relations compose through a third particle. Joining two parameters of one `motorPath` conjugates
-the earlier translator by the relative rotor. The difference of the witness coefficients is not
-that translator. No metric and no position operator is introduced.
+the earlier translator by the relative rotor. The difference of the coefficients against the unit
+is not that translator. No metric and no position operator is introduced.
 -/
 
 noncomputable section
@@ -36,7 +44,7 @@ noncomputable section
 namespace DoubleSpacetime.Gravity.RelationalMotor
 
 open CliffordAlgebra NormedSpace
-open PGA Generators Operations Motor Amplification Sandwich
+open PGA Generators Operations Motor Amplification Sandwich Invariant
 open MotorForce (boostShift boostShift_force_ne_zero motorBodyVelocity motorForceBivector
   motorForceBivector_eq motorForceCoefficient motorPath_factor translatorCoefficient
   omegaTrans_smul_lambda exp_smul_mul_exp_neg reverse_exp_torsion boostShift_forceCoefficient)
@@ -874,5 +882,137 @@ theorem cancelled_torsion_not_pair_force :
       norm_num
     rw [hact] at h0
     simp at h0
+
+/-! ### Each particle keeps its mismatch; distinct torsions do not cancel -/
+
+private theorem null01_ne_zero : null 0 + null 1 ≠ 0 := by
+  intro h
+  let l : Fin 4 → ℝ := fun μ => match μ with
+    | 0 => 1
+    | 1 => 1
+    | _ => 0
+  have hsum : ∑ μ : Fin 4, l μ • null μ = 0 := by
+    rw [Fin.sum_univ_four]
+    simpa [l] using h
+  have hli := Fintype.linearIndependent_iff.mp BivectorBasis.linearIndependent_null l hsum
+  have : (1 : ℝ) = 0 := by simpa [l] using hli 0
+  norm_num at this
+
+/-- A positive pure boost is not the group unit. The unit is the reference of a factorization,
+not this rotor. -/
+theorem rotorTorsion_pureBoost_ne_one {φ : ℝ} (hφ : 0 < φ) :
+    rotorTorsion (pureBoost φ) ≠ 1 := by
+  intro h
+  have hs := sandwich_pureBoost_null_plus φ
+  rw [h, sandwich_one] at hs
+  have hexp : Real.exp φ ≠ 1 := by
+    intro he
+    have hgt : Real.exp 0 < Real.exp φ := Real.exp_strictMono hφ
+    rw [Real.exp_zero, he] at hgt
+    exact lt_irrefl (1 : ℝ) hgt
+  have hzero : (1 - Real.exp φ) • (null 0 + null 1) = 0 := by
+    rw [sub_smul, one_smul]
+    nth_rw 1 [hs]
+    exact sub_self _
+  have hc0 : 1 - Real.exp φ ≠ 0 := sub_ne_zero.mpr (Ne.symm hexp)
+  have hv0 : null 0 + null 1 = 0 := by
+    calc
+      null 0 + null 1 = (1 - Real.exp φ)⁻¹ • ((1 - Real.exp φ) • (null 0 + null 1)) := by
+        rw [smul_smul, inv_mul_cancel₀ hc0, one_smul]
+      _ = (1 - Real.exp φ)⁻¹ • 0 := by rw [hzero]
+      _ = 0 := smul_zero _
+  exact null01_ne_zero hv0
+
+/-- A pure boost placed at the unit, with no translator, is the rotor of the scaled rapidity. -/
+theorem placed_pureBoost (θ t : ℝ) :
+    placedPath ⟨pureBoost θ, zeroTrans⟩ zeroTrans t = rotorTorsion (pureBoost (t * θ)) := by
+  rw [placedPath, placedRight, placedOffset, omegaTrans_zero, smul_zero, add_zero, add_zero,
+    mul_one, omegaTorsion_pureBoost, smul_smul, rotorTorsion_pureBoost]
+  have hcoeff : t * (θ / 2) = (t * θ) / 2 := by ring
+  rw [hcoeff]
+
+/-- Distinct boosts leave the rotor of the rapidity difference. The shared-torsion cancellation
+does not apply. -/
+theorem between_distinct_boosts (t : ℝ) :
+    between (placedPath ⟨pureBoost 1, zeroTrans⟩ zeroTrans t)
+        (placedPath ⟨pureBoost 3, zeroTrans⟩ zeroTrans t) =
+      rotorTorsion (pureBoost (2 * t)) := by
+  rw [placed_pureBoost, placed_pureBoost, between, reverse_rotorTorsion_pureBoost_eq,
+    rotorTorsion_pureBoost_mul]
+  have hsum : -(t * 1) + t * 3 = 2 * t := by ring
+  rw [hsum]
+
+/-- The relative rotor of boosts `1` and `3` has mismatch `2`. The difference of the two
+mismatches is `4`. Neither particle's rotor is that relative rotor. -/
+theorem distinct_mismatch_not_difference :
+    between (placedPath ⟨pureBoost 1, zeroTrans⟩ zeroTrans 1)
+        (placedPath ⟨pureBoost 3, zeroTrans⟩ zeroTrans 1) =
+      rotorTorsion (pureBoost 2) ∧
+    J (pureBoost 2) = 2 ∧
+      J (pureBoost 3) - J (pureBoost 1) = 4 ∧
+        J (pureBoost 2) ≠ J (pureBoost 3) - J (pureBoost 1) ∧
+          rotorTorsion (pureBoost 2) ≠ rotorTorsion (pureBoost 1) ∧
+            rotorTorsion (pureBoost 2) ≠ rotorTorsion (pureBoost 3) ∧
+              rotorTorsion (pureBoost 2) ≠ 1 := by
+  have hJ (θ : ℝ) : J (pureBoost θ) = (1 / 2) * θ ^ 2 := J_pureBoost θ
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, rotorTorsion_pureBoost_ne_one (by norm_num : (0 : ℝ) < 2)⟩
+  · simpa using between_distinct_boosts 1
+  · rw [hJ]
+    norm_num
+  · rw [hJ, hJ]
+    norm_num
+  · rw [hJ, hJ, hJ]
+    norm_num
+  · intro h
+    have hrel : rotorTorsion (pureBoost 1) = 1 := by
+      calc
+        rotorTorsion (pureBoost 1) = reverse (rotorTorsion (pureBoost 1)) *
+            rotorTorsion (pureBoost 2) := by
+          rw [reverse_rotorTorsion_pureBoost_eq, rotorTorsion_pureBoost_mul]
+          congr 1
+          norm_num
+        _ = reverse (rotorTorsion (pureBoost 1)) * rotorTorsion (pureBoost 1) := by rw [h]
+        _ = 1 := reverse_mul_of_mul_reverse (rotor_unitary (pureBoost 1))
+    exact rotorTorsion_pureBoost_ne_one (by norm_num : (0 : ℝ) < 1) hrel
+  · intro h
+    have hrel : rotorTorsion (pureBoost 1) = 1 := by
+      calc
+        rotorTorsion (pureBoost 1) = reverse (rotorTorsion (pureBoost 2)) *
+            rotorTorsion (pureBoost 3) := by
+          rw [reverse_rotorTorsion_pureBoost_eq, rotorTorsion_pureBoost_mul]
+          congr 1
+          norm_num
+        _ = reverse (rotorTorsion (pureBoost 2)) * rotorTorsion (pureBoost 2) := by rw [h]
+        _ = 1 := reverse_mul_of_mul_reverse (rotor_unitary (pureBoost 2))
+    exact rotorTorsion_pureBoost_ne_one (by norm_num : (0 : ℝ) < 1) hrel
+
+/-- Shared torsion cancels in the space between the particles. Each particle keeps mismatch `1/2`
+and unsigned mass `1/2`. The joining translator has neither. -/
+theorem shared_pair_keeps_mismatch :
+    J (pureBoost 1) = 1 / 2 ∧
+      mass (pureBoost 1) = 1 / 2 ∧
+        J (pureTranslator (along1 2)).torsion = 0 ∧
+          mass (pureTranslator (along1 2)).torsion = 0 ∧
+            between (placedPath ⟨pureBoost 1, along1 1⟩ zeroTrans 1)
+                (placedPath ⟨pureBoost 1, along1 3⟩ zeroTrans 1) =
+              1 + omegaTrans (along1 2) ∧
+              J (pureBoost 1) ≠ J (pureTranslator (along1 2)).torsion := by
+  have htor : (pureTranslator (along1 2)).torsion = ⟨fun _ => 0, fun _ => 0⟩ := rfl
+  have hJ0 : J (pureTranslator (along1 2)).torsion = 0 := by
+    rw [htor, J_coef]
+    simp
+  have hM0 : mass (pureTranslator (along1 2)).torsion = 0 := by
+    rw [htor, mass_coef]
+    simp
+  have hJ : J (pureBoost 1) = 1 / 2 := by
+    rw [J_pureBoost]
+    norm_num
+  have hM : mass (pureBoost 1) = 1 / 2 := by
+    rw [mass_coef]
+    simp only [pureBoost, Fin.sum_univ_three, zero_pow two_ne_zero, add_zero, mul_zero, pow_two]
+    norm_num
+  refine ⟨hJ, hM, hJ0, hM0, (pair_space_not_witness).1, ?_⟩
+  rw [hJ, hJ0]
+  norm_num
 
 end DoubleSpacetime.Gravity.RelationalMotor

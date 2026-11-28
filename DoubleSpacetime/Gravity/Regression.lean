@@ -336,6 +336,31 @@ example :
     (RelationalMotor.cancelled_torsion_not_pair_force).2.1,
     (RelationalMotor.cancelled_torsion_not_pair_force).2.2.2.2.2⟩
 
+example :
+    Invariant.J (Amplification.pureBoost 1) = 1 / 2 ∧
+      Invariant.J (RelationalMotor.pureTranslator (RelationalMotor.along1 2)).torsion = 0 ∧
+        RelationalMotor.between
+            (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 1⟩
+              RelationalMotor.zeroTrans 1)
+            (RelationalMotor.placedPath ⟨Amplification.pureBoost 1, RelationalMotor.along1 3⟩
+              RelationalMotor.zeroTrans 1) =
+          1 + Motor.omegaTrans (RelationalMotor.along1 2) ∧
+          RelationalMotor.between
+              (RelationalMotor.placedPath
+                ⟨Amplification.pureBoost 1, RelationalMotor.zeroTrans⟩
+                RelationalMotor.zeroTrans 1)
+              (RelationalMotor.placedPath
+                ⟨Amplification.pureBoost 3, RelationalMotor.zeroTrans⟩
+                RelationalMotor.zeroTrans 1) =
+            Motor.rotorTorsion (Amplification.pureBoost 2) ∧
+            Invariant.J (Amplification.pureBoost 2) ≠
+              Invariant.J (Amplification.pureBoost 3) - Invariant.J (Amplification.pureBoost 1) :=
+  ⟨(RelationalMotor.shared_pair_keeps_mismatch).1,
+    (RelationalMotor.shared_pair_keeps_mismatch).2.2.1,
+    (RelationalMotor.shared_pair_keeps_mismatch).2.2.2.2.1,
+    (RelationalMotor.distinct_mismatch_not_difference).1,
+    (RelationalMotor.distinct_mismatch_not_difference).2.2.2.1⟩
+
 example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
       ![0, s, 0, 0]).trans.lambda = ![ν + κ * s, 0, 0, 0] :=

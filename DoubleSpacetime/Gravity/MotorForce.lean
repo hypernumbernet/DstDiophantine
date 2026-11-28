@@ -8,18 +8,20 @@ import Mathlib.Analysis.Calculus.Deriv.Pow
 /-!
 # Force along a fixed motor, as time advances
 
-Position and movement relative to the identity witness are the motor path `motorPath`: a torsion
-rotor times the truncated null translator `1 + t Ω_trans`. That witness is a second particle. The
-translator coefficient is the relation to it, not a position held by one particle; space between
-two particles is the relative motor of `RelationalMotor`. The translator coefficient of this path
-is linear in the flow parameter, so its second derivative vanishes. The body velocity is `M̃ Ṁ`.
-Its derivative, the force, is the commutator `[Ω_torsion, Ω_trans]`.
+Position and movement of one motor against the group unit are the motor path `motorPath`: a torsion
+rotor times the truncated null translator `1 + t Ω_trans`. The unit is the reference of that
+factorization. It is not a massive particle. The translator coefficient reads the motor against the
+unit, and it is not a position held by one particle. Space between two particles is the relative
+motor of `RelationalMotor`. The translator coefficient of this path is linear in the flow
+parameter, so its second derivative vanishes. The body velocity is `M̃ Ṁ`. Its derivative, the
+commutator `[Ω_torsion, Ω_trans]`, is the acceleration of that body velocity. It is not the
+particle's torsional mismatch.
 
-That force does not depend on the flow parameter. What grows linearly is the body-frame
+That commutator does not depend on the flow parameter. What grows linearly is the body-frame
 translational velocity. The Minkowski square of that velocity is quadratic in the parameter, and
-the derivative of the square is not the force. The written lag force `-m δ(t)` is linear in the
-same parameter because the written mismatch accelerates by zero. Reading `killingRate` off the
-translator clock applies the field law a second time. Neither reading is this force.
+the derivative of the square is not the commutator. The written lag force `-m δ(t)` is linear in
+the same parameter because the written mismatch accelerates by zero. Reading `killingRate` off the
+translator clock applies the field law a second time. Neither reading is this commutator.
 
 The field law still selects the generator from the separation. Once the generator is fixed, the
 motor clock does not multiply the force.

@@ -38,26 +38,30 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   outward radial leg.
 * `KillingTransport` — conjugation by the translator of a displacement sends `λ` to `λ + ω x` and
   leaves the Lorentz part fixed.
-* `MotorForce` — along a fixed generator the body-frame force is the commutator
-  `[Ω_torsion, Ω_trans]`, and that bivector does not depend on the flow parameter. The translator
-  coefficient accelerates by zero. The written lag force `-m δ(t)` is linear in the parameter, and
-  reading `killingRate` off the translator clock is not this force.
+* `MotorForce` — along a fixed generator the body-frame acceleration is the commutator
+  `[Ω_torsion, Ω_trans]`, and that bivector does not depend on the flow parameter. It is not the
+  particle's torsional mismatch. The translator coefficient accelerates by zero. The written lag
+  force `-m δ(t)` is linear in the parameter, and reading `killingRate` off the translator clock is
+  not this commutator.
 * `MotorAdvance` — time advance keeps that generator. Accumulated common rapidity and mismatch are
   linear, so both accelerations vanish. The written flow sources the common rapidity and agrees
   with this advance at every parameter only when the lag vanishes. Rebuilding the generator from
-  the advanced motor multiplies the force by the square of the flow parameter.
-* `RelationalMotor` — space between two particles is `reverse(M_a) M_b`. `motorPath` starts on the
-  identity witness, so a particle off that witness keeps an initial translator in the same
-  factorization. A shared torsion rotor cancels. The translator that remains is the difference of
-  the initial coefficients plus the parameter times the difference of the velocity coefficients.
-  Particles that share a velocity keep that difference fixed while each witness coefficient moves.
-  The commutator force of the joining translator is zero even when the two witness forces differ.
-  The body velocity of that relative motor is the translator of the velocity difference, so the
-  force in the space is zero. The difference of the witness body velocities keeps the commutator of
-  the cancelled shared torsion with the relative velocity, and that commutator is the difference of
-  the witness forces. Relations compose through a third particle. Joining two parameters of one
-  `motorPath` conjugates the earlier translator, so the difference of the witness coefficients is
-  not that translator.
+  the advanced motor multiplies the commutator by the square of the flow parameter.
+* `RelationalMotor` — space between two particles is `reverse(M_a) M_b`. The group unit is the
+  reference of `motorPath`, not a massive particle. A particle off the unit keeps an initial
+  translator in the same factorization. A shared torsion rotor cancels in the relative motor, and
+  each particle keeps its own mismatch. The translator that remains is the difference of the initial
+  coefficients plus the parameter times the difference of the velocity coefficients. Particles that
+  share a velocity keep that difference fixed while each coefficient against the unit moves. The
+  commutator of the joining translator is zero. That zero does not delete either mismatch, and the
+  two commutators against the unit may differ. Distinct torsions do not cancel: two pure boosts
+  leave the rotor of the rapidity difference, and its mismatch is not the difference of the two
+  mismatches. The body velocity of a shared relative motor is the translator of the velocity
+  difference, so the commutator in that space is zero. The difference of the body velocities
+  against the unit keeps the commutator of the cancelled shared torsion with the relative velocity.
+  Relations compose through a third particle. Joining two parameters of one `motorPath` conjugates
+  the earlier translator, so the difference of the coefficients against the unit is not that
+  translator.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian

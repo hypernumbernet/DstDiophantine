@@ -280,16 +280,16 @@ quantities. The note is
 [`papers/dst-dynamic-equation.tex`](papers/dst-dynamic-equation.tex).
 
 Position and movement are the motor path, a torsion rotor times the
-truncated translator. Along a fixed generator the body-frame force is the
-commutator of those two parts, and that bivector does not depend on the
-flow parameter (`MotorForce`). The translator coefficient is linear in the
-parameter, so its acceleration vanishes. What grows linearly is the
-body-frame translational velocity. The written lag force `-m δ(t)` grows
-the same way, because the written mismatch accelerates by zero, and it is
-not this commutator. Reading the exterior rate `rₛ/(2r²)` off the
-translator clock applies the field law a second time. The field law still
-selects the generator from the separation. The motor clock does not
-multiply the force.
+truncated translator. Along a fixed generator the body-frame acceleration
+is the commutator of those two parts, and that bivector does not depend on
+the flow parameter (`MotorForce`). It is not the particle's torsional
+mismatch. The translator coefficient is linear in the parameter, so its
+acceleration vanishes. What grows linearly is the body-frame translational
+velocity. The written lag force `-m δ(t)` grows the same way, because the
+written mismatch accelerates by zero, and it is not this commutator.
+Reading the exterior rate `rₛ/(2r²)` off the translator clock applies the
+field law a second time. The field law still selects the generator from
+the separation. The motor clock does not multiply the commutator.
 
 Time advance keeps that generator (`MotorAdvance`). The rotor factor is
 the torsion scaled by the flow parameter, so on axis 0 the accumulated
@@ -299,27 +299,32 @@ written flow agrees on the free mismatch and sources the common rapidity;
 the two common accelerations agree at every parameter only when the lag
 vanishes. The oscillator and the runaway leave the common rapidity
 inertial and accelerate the mismatch. Reading the advanced rotor back as
-a torsion rate multiplies the force by the parameter. Reading the advanced
-rotor and the advanced translator back as a new generator multiplies it
-by the square of the parameter.
+a torsion rate multiplies the commutator by the parameter. Reading the
+advanced rotor and the advanced translator back as a new generator
+multiplies it by the square of the parameter.
 
-That translator coefficient is the relation to the identity witness. Every
-`motorPath` starts there, so one such path cannot place two particles. A
-particle off the witness is the same rotor times a translator that carries
-an initial coefficient (`RelationalMotor`). Space between two particles is
-the motor from one to the other. A shared rotor cancels, and the translator
-that remains is the difference of the initial coefficients plus the flow
-parameter times the difference of the velocity coefficients. Particles that
-share a velocity keep that difference fixed, while each witness coefficient
-keeps moving. The commutator force of the joining translator vanishes. The
-two witness forces need not. The body velocity of the relative motor is the
-translator of the velocity difference, so the force in that space is zero.
-The difference of the witness body velocities keeps the commutator of the
-cancelled shared torsion with the relative velocity. That commutator is the
-difference of the witness forces, and it is not a generator of the space.
-Relations compose through a third particle. On one worldline, the translator
-that joins two parameters is not the difference of the witness coefficients:
-the relative rotor conjugates the earlier translation.
+That translator coefficient reads one motor against the group unit. The unit
+is the reference of the factorization, not a massive particle, so one
+`motorPath` cannot place two particles. A particle off the unit is the same
+rotor times a translator that carries an initial coefficient
+(`RelationalMotor`). Space between two particles is the motor from one to
+the other. A shared rotor cancels in that motor, and each particle keeps its
+own mismatch. The translator that remains is the difference of the initial
+coefficients plus the flow parameter times the difference of the velocity
+coefficients. Particles that share a velocity keep that difference fixed,
+while each coefficient against the unit keeps moving. The commutator of the
+joining translator vanishes. That zero does not delete either mismatch, and
+the two commutators against the unit need not vanish. Distinct torsions do
+not cancel: two pure boosts leave the rotor of the rapidity difference, and
+its mismatch is not the difference of the two mismatches. The body velocity
+of a shared relative motor is the translator of the velocity difference, so
+the commutator in that space is zero. The difference of the body velocities
+against the unit keeps the commutator of the cancelled shared torsion with
+the relative velocity. That commutator is the difference of the commutators
+against the unit, and it is not a generator of the space. Relations compose
+through a third particle. On one worldline, the translator that joins two
+parameters is not the difference of the coefficients against the unit: the
+relative rotor conjugates the earlier translation.
 
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is
