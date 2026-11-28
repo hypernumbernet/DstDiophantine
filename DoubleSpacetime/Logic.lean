@@ -69,6 +69,7 @@ import DoubleSpacetime.Logic.Quantum.TranslationFisher
 import DoubleSpacetime.Logic.Quantum.TranslatorInformation
 import DoubleSpacetime.Logic.Quantum.MotorReading
 import DoubleSpacetime.Logic.Quantum.PositionLaw
+import DoubleSpacetime.Logic.Quantum.MasslessSpeed
 import DoubleSpacetime.Logic.Quantum.BornLorentz
 import DoubleSpacetime.Logic.Quantum.AngleChart
 import DoubleSpacetime.Logic.Quantum.DualExchange
@@ -1456,6 +1457,31 @@ example :
   refine ⟨⟨θ, hread, hboost⟩, shellRest_joint_scalars.1, shellRest_joint_scalars.2.1, ?_, ?_⟩
   · exact ⟨shellLab_reading_split.1, shellLab_reading_split.2.1, shellLab_reading_split.2.2.2.1⟩
   · exact ⟨φ, hcosh, hsinh, hJ, hmass⟩
+
+/-- Regression: a nonzero manifested translator is at null speed. Its Euclidean self-reading is
+twice the squared information weight and the rotor's scalar is zero. A pure boost keeps that
+speed. Vanishing unsigned mass leaves a pure time translator at rest, and rest mass `1` has
+coordinate speed `0`. The null ray reads `2` and `0`. -/
+example (u : DualSpinor) (hu : u ≠ 0) (φ : ℝ) :
+    AtLightSpeed (manifest u) ∧
+      wavePhase (manifest u) (manifest u) = 2 * informationWeight u ^ 2 ∧
+        minkowskiPhase (manifest u) (manifest u) = 0 ∧
+          wavePhase (manifest u) (manifest u) ≠ 0 ∧
+            AtLightSpeed
+              (boostTranslator (Real.cosh φ) (Real.sinh φ)
+                (rayTranslator (manifest u))).lambda ∧
+              Invariant.mass (Amplification.pureBoost 0) = 0 ∧
+                coordinateSpeedSq (Pi.single (0 : Fin 4) (1 : ℝ)) = 0 ∧
+                  coordinateSpeedSq (restMomentum 1) = 0 ∧
+                    AtLightSpeed nullRay ∧
+                      wavePhase nullRay nullRay = 2 ∧
+                        minkowskiPhase nullRay nullRay = 0 := by
+  obtain ⟨hA, hW, hM, hne, hboost⟩ := massless_ray_from_position hu φ
+  obtain ⟨_, hzero, hrest, _⟩ := unsignedMass_not_lightSpeed 0
+  have hφ : Invariant.mass (Amplification.pureBoost 0) = 0 := hzero.mpr rfl
+  obtain ⟨hslow, _, _, _⟩ := rest_below_light (m := 1) (by norm_num)
+  obtain ⟨_, _, hread, hinv⟩ := nullRay_reading
+  exact ⟨hA, hW, hM, hne, hboost, hφ, hrest, hslow, nullRay_atLightSpeed, hread, hinv⟩
 
 /-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
 is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and
