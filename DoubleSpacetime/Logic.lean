@@ -70,6 +70,7 @@ import DoubleSpacetime.Logic.Quantum.TranslatorInformation
 import DoubleSpacetime.Logic.Quantum.MotorReading
 import DoubleSpacetime.Logic.Quantum.PositionLaw
 import DoubleSpacetime.Logic.Quantum.MasslessSpeed
+import DoubleSpacetime.Logic.Quantum.ShellPosition
 import DoubleSpacetime.Logic.Quantum.BornLorentz
 import DoubleSpacetime.Logic.Quantum.AngleChart
 import DoubleSpacetime.Logic.Quantum.DualExchange
@@ -1499,6 +1500,36 @@ example (t : ℝ) (x : Vec4) :
   obtain ⟨_, hcol, hline, _, _⟩ := collinear_rays_front
   obtain ⟨_, _, _, _, _, hmass, _⟩ := massive_pair_front
   exact ⟨hcn, hco, hfront, htime, hnull, hcol, hline, hmass⟩
+
+/-- Regression: the first equal-scale shell is a rotor with `J = 0` and `γ_s = 0`. On the
+mass-3 mean-rest packet the positional scalar ignores the dual angle. `N₁` stays at `-8` under
+that angle and moves under the usual rapidity. The quadrature information of `N₁` stays
+`34816/625` under the dual factor and rises under the shell boost. A pure time translator is
+unread, and the same boost makes its information positive. -/
+example :
+    Gravity.gammaSEqual Gravity.resonanceRoot1 = 0 ∧
+      Invariant.J (RelativeRotor.axisParams shellRapidity shellRapidity) = 0 ∧
+        Invariant.mass (RelativeRotor.axisParams shellRapidity shellRapidity) =
+          shellRapidity ^ 2 ∧
+          (∀ β : ℝ, ∀ lam : Vec4,
+            wavePhase (shellRestQ - shellRestP)
+                (Sandwich.boostConjLambda shellRapidity
+                  (Sandwich.rotation0ConjLambda β lam)) =
+              wavePhase (shellRestQ - shellRestP)
+                (Sandwich.boostConjLambda shellRapidity lam)) ∧
+            (∃ θ : ℝ,
+              translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP shellParticleQ 0
+                  readTranslator = 34816 / 625 ∧
+                34816 / 625 <
+                  translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP
+                    shellParticleQ 0 (boostedTranslator shellRapidity readTranslator) ∧
+                  translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP
+                      shellParticleQ 0 timeTranslator = 0 ∧
+                    0 < translatorInformation 1 1 θ shellRestP shellRestQ shellParticleP
+                        shellParticleQ 0
+                          (boostedTranslator shellRapidity timeTranslator)) := by
+  obtain ⟨hγ, hJ, hM, hmotor, hlt, ⟨θ, hread, hinfo, htime, htimeInfo⟩⟩ := shellNode_position
+  exact ⟨hγ, hJ, hM, hmotor, ⟨θ, hread, hinfo, htime, htimeInfo⟩⟩
 
 /-- Regression: the chart Born density is the time component of the current, and the Dirac scalar
 is smaller by `p₀/m` off rest. The fixed-seed mass-3 carriers have chart density `50/9` and

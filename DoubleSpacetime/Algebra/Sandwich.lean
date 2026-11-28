@@ -1015,6 +1015,192 @@ theorem sandwich_pureRotation2_ι3 (θ : ℝ) :
   exact sandwich_cs_cyclic2_fixed _ _ _ (commute_cyclic2_ι (by decide) (by decide))
     (cos_sq_add_sin_sq_half θ)
 
+/-! ### Axis-0 pure rotation (`cyclic 0 = e₃ e₂`), the `(y,z)` plane -/
+
+/-- Dual rapidity on axis `0`. This is the compact factor of `axisParams`. -/
+def pureRotation0 (θ : ℝ) : TorsionParams where
+  alpha := fun _ => 0
+  beta := fun a => if a = 0 then θ else 0
+
+theorem rotorTorsion_pureRotation0_closed (θ : ℝ) :
+    rotorTorsion (pureRotation0 θ) =
+      Real.cos (θ / 2) • (1 : PGA) + Real.sin (θ / 2) • cyclic 0 := by
+  rw [show pureRotation0 θ = ⟨fun _ => 0, fun a => if a = 0 then θ else 0⟩ from rfl,
+    rotorTorsion_pureRotation_closed]
+
+private theorem e3_sq_one : ι 3 * ι 3 = (1 : PGA) := by
+  simp [e_sq, Q311_e5vec, w311]
+
+private theorem cyclic0_mul_null2 : cyclic 0 * null 2 = null 3 := by
+  dsimp [cyclic, null]
+  have h24 : ι 2 * ι e4Index = -(ι e4Index * ι 2) := e4_inner_anticomm 2
+  calc (ι 3 * ι 2) * (ι e4Index * ι 2)
+      = ι 3 * (ι 2 * ι e4Index) * ι 2 := by simp [mul_assoc]
+    _ = ι 3 * (-(ι e4Index * ι 2)) * ι 2 := by rw [h24]
+    _ = -(ι 3 * ι e4Index * (ι 2 * ι 2)) := by simp [mul_neg, mul_assoc]
+    _ = -(ι 3 * ι e4Index) := by simp [e2_sq_one]
+    _ = ι e4Index * ι 3 := (e4_mul_anticomm 3).symm
+    _ = null 3 := by simp [null]
+
+private theorem null2_mul_cyclic0 : null 2 * cyclic 0 = -null 3 := by
+  dsimp [cyclic, null]
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc (ι e4Index * ι 2) * (ι 3 * ι 2)
+      = ι e4Index * (ι 2 * ι 3) * ι 2 := by simp [mul_assoc]
+    _ = ι e4Index * (-(ι 3 * ι 2)) * ι 2 := by rw [h23]
+    _ = -(ι e4Index * ι 3 * (ι 2 * ι 2)) := by simp [mul_neg, mul_assoc]
+    _ = -null 3 := by simp [null, e2_sq_one]
+
+private theorem cyclic0_mul_null3 : cyclic 0 * null 3 = -null 2 := by
+  dsimp [cyclic, null]
+  have h24 : ι 2 * ι e4Index = -(ι e4Index * ι 2) := e4_inner_anticomm 2
+  have h34 : ι 3 * ι e4Index = -(ι e4Index * ι 3) := e4_inner_anticomm 3
+  have h23 : ι 2 * ι 3 = -(ι 3 * ι 2) := e_mul_anticomm (by decide)
+  calc (ι 3 * ι 2) * (ι e4Index * ι 3)
+      = ι 3 * (ι 2 * ι e4Index) * ι 3 := by simp [mul_assoc]
+    _ = ι 3 * (-(ι e4Index * ι 2)) * ι 3 := by rw [h24]
+    _ = -(ι 3 * ι e4Index) * ι 2 * ι 3 := by simp [mul_neg, mul_assoc]
+    _ = -(-(ι e4Index * ι 3)) * ι 2 * ι 3 := by rw [h34]
+    _ = ι e4Index * (ι 3 * (ι 2 * ι 3)) := by simp [mul_assoc]
+    _ = ι e4Index * (ι 3 * (-(ι 3 * ι 2))) := by rw [h23]
+    _ = -(ι e4Index * (ι 3 * ι 3) * ι 2) := by simp [mul_neg, mul_assoc]
+    _ = -null 2 := by simp [null, e3_sq_one]
+
+private theorem null3_mul_cyclic0 : null 3 * cyclic 0 = null 2 := by
+  dsimp [cyclic, null]
+  calc (ι e4Index * ι 3) * (ι 3 * ι 2)
+      = ι e4Index * (ι 3 * ι 3) * ι 2 := by simp [mul_assoc]
+    _ = null 2 := by simp [null, e3_sq_one]
+
+private theorem cyclic0_comm_null0 : cyclic 0 * null 0 = null 0 * cyclic 0 := by
+  have h := commutator_cyclic0_null0
+  simp only [Generators.commutator] at h
+  exact sub_eq_zero.mp h
+
+private theorem cyclic0_comm_null1 : cyclic 0 * null 1 = null 1 * cyclic 0 := by
+  have h := commutator_cyclic0_null1
+  simp only [Generators.commutator] at h
+  exact sub_eq_zero.mp h
+
+private theorem rotor_comm_null_of_cyclic0 {θ : ℝ} {n : PGA}
+    (hn : cyclic 0 * n = n * cyclic 0) :
+    rotorTorsion (pureRotation0 θ) * n = n * rotorTorsion (pureRotation0 θ) := by
+  rw [rotorTorsion_pureRotation0_closed]
+  simp only [add_mul, mul_add, smul_mul_assoc, mul_smul_comm, one_mul, mul_one, hn]
+
+private theorem sandwich_pureRotation0_fixed {θ : ℝ} {n : PGA}
+    (hn : cyclic 0 * n = n * cyclic 0) :
+    sandwich (rotorTorsion (pureRotation0 θ)) n = n := by
+  have hcomm := rotor_comm_null_of_cyclic0 (θ := θ) hn
+  rw [sandwich, hcomm, mul_assoc, rotor_unitary, mul_one]
+
+private theorem reverse_cs_cyclic0 (c s : ℝ) :
+    reverse (c • (1 : PGA) + s • cyclic 0) = c • (1 : PGA) - s • cyclic 0 := by
+  rw [map_add, map_smul, map_smul, reverse.map_one, cyclic_reverse, smul_neg]
+  abel
+
+theorem sandwich_pureRotation0_null0 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (null 0) = null 0 :=
+  sandwich_pureRotation0_fixed cyclic0_comm_null0
+
+theorem sandwich_pureRotation0_null1 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (null 1) = null 1 :=
+  sandwich_pureRotation0_fixed cyclic0_comm_null1
+
+private theorem sandwich_cs_cyclic0_null2 (c s : ℝ) :
+    (c • (1 : PGA) + s • cyclic 0) * null 2 * (c • (1 : PGA) - s • cyclic 0) =
+      (c ^ 2 - s ^ 2) • null 2 + (2 * c * s) • null 3 := by
+  have hL : (c • (1 : PGA) + s • cyclic 0) * null 2 = c • null 2 + s • null 3 := by
+    rw [add_mul, smul_mul_assoc, one_mul, smul_mul_assoc, cyclic0_mul_null2]
+  rw [hL, sub_eq_add_neg]
+  have hexpand :
+      (c • null 2 + s • null 3) * (c • (1 : PGA) + -(s • cyclic 0)) =
+        (c • null 2) * (c • (1 : PGA)) + (c • null 2) * (-(s • cyclic 0)) +
+          (s • null 3) * (c • (1 : PGA)) + (s • null 3) * (-(s • cyclic 0)) := by
+    rw [add_mul, mul_add, mul_add]
+    abel
+  rw [hexpand]
+  have t11 : (c • null 2) * (c • (1 : PGA)) = (c ^ 2) • null 2 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, pow_two]
+  have t12 : (c • null 2) * (-(s • cyclic 0)) = (c * s) • null 3 := by
+    rw [mul_neg, smul_mul_assoc, mul_smul_comm, null2_mul_cyclic0]
+    module
+  have t21 : (s • null 3) * (c • (1 : PGA)) = (c * s) • null 3 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, mul_comm]
+  have t22 : (s • null 3) * (-(s • cyclic 0)) = (-(s ^ 2)) • null 2 := by
+    rw [mul_neg, smul_mul_assoc, mul_smul_comm, null3_mul_cyclic0]
+    module
+  rw [t11, t12, t21, t22]
+  module
+
+private theorem sandwich_cs_cyclic0_null3 (c s : ℝ) :
+    (c • (1 : PGA) + s • cyclic 0) * null 3 * (c • (1 : PGA) - s • cyclic 0) =
+      (-(2 * c * s)) • null 2 + (c ^ 2 - s ^ 2) • null 3 := by
+  have hL : (c • (1 : PGA) + s • cyclic 0) * null 3 = -(s • null 2) + c • null 3 := by
+    rw [add_mul, smul_mul_assoc, one_mul, smul_mul_assoc, cyclic0_mul_null3]
+    module
+  rw [hL, sub_eq_add_neg]
+  have hexpand :
+      (-(s • null 2) + c • null 3) * (c • (1 : PGA) + -(s • cyclic 0)) =
+        (-(s • null 2)) * (c • (1 : PGA)) + (-(s • null 2)) * (-(s • cyclic 0)) +
+          (c • null 3) * (c • (1 : PGA)) + (c • null 3) * (-(s • cyclic 0)) := by
+    rw [add_mul, mul_add, mul_add]
+    abel
+  rw [hexpand]
+  have t11 : (-(s • null 2)) * (c • (1 : PGA)) = (-(c * s)) • null 2 := by
+    rw [neg_mul, smul_mul_assoc, mul_smul_comm, mul_one, smul_smul, mul_comm]
+    module
+  have t12 : (-(s • null 2)) * (-(s • cyclic 0)) = (-(s ^ 2)) • null 3 := by
+    rw [neg_mul_neg, smul_mul_smul, null2_mul_cyclic0]
+    module
+  have t21 : (c • null 3) * (c • (1 : PGA)) = (c ^ 2) • null 3 := by
+    rw [mul_smul_comm, smul_mul_assoc, mul_one, smul_smul, pow_two]
+  have t22 : (c • null 3) * (-(s • cyclic 0)) = (-(c * s)) • null 2 := by
+    rw [mul_neg, smul_mul_assoc, mul_smul_comm, null3_mul_cyclic0]
+    module
+  rw [t11, t12, t21, t22]
+  module
+
+theorem sandwich_pureRotation0_null2 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (null 2) =
+      Real.cos θ • null 2 + Real.sin θ • null 3 := by
+  rw [sandwich, rotorTorsion_pureRotation0_closed, reverse_cs_cyclic0, sandwich_cs_cyclic0_null2,
+    cos_sq_sub_sin_sq_half, sin_half_two]
+
+theorem sandwich_pureRotation0_null3 (θ : ℝ) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (null 3) =
+      -Real.sin θ • null 2 + Real.cos θ • null 3 := by
+  rw [sandwich, rotorTorsion_pureRotation0_closed, reverse_cs_cyclic0, sandwich_cs_cyclic0_null3,
+    cos_sq_sub_sin_sq_half, sin_half_two]
+
+/-- Dual rotation on axis `0` fixes `N₀` and `N₁`, and turns the `(N₂, N₃)` plane. -/
+noncomputable def rotation0ConjLambda (θ : ℝ) (lam : Fin 4 → ℝ) : Fin 4 → ℝ
+  | 0 => lam 0
+  | 1 => lam 1
+  | 2 => lam 2 * Real.cos θ - lam 3 * Real.sin θ
+  | 3 => lam 2 * Real.sin θ + lam 3 * Real.cos θ
+
+theorem rotation0ConjLambda_coord01 (θ : ℝ) (lam : Fin 4 → ℝ) :
+    rotation0ConjLambda θ lam 0 = lam 0 ∧ rotation0ConjLambda θ lam 1 = lam 1 := by
+  constructor <;> simp [rotation0ConjLambda]
+
+theorem sandwich_pureRotation0_omegaTrans (θ : ℝ) (p : TransParams) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (omegaTrans p) =
+      omegaTrans ⟨rotation0ConjLambda θ p.lambda⟩ := by
+  simp only [omegaTrans, sandwich_add, sandwich_smul, Fin.sum_univ_four]
+  rw [sandwich_pureRotation0_null0, sandwich_pureRotation0_null1,
+    sandwich_pureRotation0_null2, sandwich_pureRotation0_null3]
+  simp only [rotation0ConjLambda]
+  module
+
+theorem sandwich_pureRotation0_expTrans (θ : ℝ) (p : TransParams) :
+    sandwich (rotorTorsion (pureRotation0 θ)) (expTrans p) =
+      expTrans ⟨rotation0ConjLambda θ p.lambda⟩ := by
+  have h1 : sandwich (rotorTorsion (pureRotation0 θ)) 1 = 1 := by
+    simp [sandwich, rotor_unitary]
+  rw [expTrans, sandwich_add, sandwich_pureRotation0_omegaTrans, h1]
+  rfl
+
 end Sandwich
 
 end DoubleSpacetime
