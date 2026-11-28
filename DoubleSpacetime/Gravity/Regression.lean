@@ -2883,6 +2883,20 @@ example :
     (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.2.2.1,
     (RepulsionMomentum.pair_momentum_across_chart_layer).2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2.2⟩
 
+/-- Regression: torsion-star shell radii carry opposite chart signs. The comoving translator is
+not the areal gap, and `γ_s` on the inner shell is not the relative mismatch. -/
+example :
+    0 < gravityLayerTerm 1 RepulsionMomentum.sampleLength RepulsionMomentum.innerShell ∧
+      gravityLayerTerm 1 RepulsionMomentum.sampleLength RepulsionMomentum.outerShell < 0 ∧
+        RelationalMotor.separationCoefficient RelationalMotor.zeroTrans
+            (RelationalMotor.along1 1) RelationalMotor.zeroTrans RelationalMotor.zeroTrans 1 1 ≠
+          RepulsionMomentum.outerShell - RepulsionMomentum.innerShell ∧
+          gammaSEqual (RepulsionMomentum.sampleLength / (2 * RepulsionMomentum.innerShell)) ≠
+            J (Amplification.pureBoost (Real.pi / 4)) :=
+  ⟨RepulsionMomentum.inner_chart_pos, RepulsionMomentum.outer_chart_neg,
+    RepulsionMomentum.comoving_translator_ne_gap 1,
+    RepulsionMomentum.inner_gamma_ne_relative_mismatch⟩
+
 /-- Regression: on a repulsive layer the gravity-only term increases the separation. -/
 example {κ ℓ r : ℝ} (hκ : 0 < κ) (hr : 0 < r)
     (hγ : gammaSEqual (ℓ / (2 * r)) < 0) :

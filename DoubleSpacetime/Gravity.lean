@@ -140,8 +140,11 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   `2t`. With input `ℓ = 4` the phases `1` and `1/2` lie on opposite sides of the first node, so
   the chart term changes sign. The relational momentum keeps Minkowski square `4` and its
   derivative vanishes. The witness momentum difference adds a time translation, whose spatial
-  coefficient is zero. The repulsive layer stays the sign of `γ_s`. No angular momentum is
-  assigned.
+  coefficient is zero. The same signs, read at areal radii `2` and `4`, are a torsion-star sample.
+  Two comoving particles on the shared one-axis freeze have translator coefficient `1`, not that
+  gap, and body velocity `0`. Distinct admissible shell boosts leave a rotor, whose mismatch is
+  not `γ_s`. The repulsive layer stays the sign of `γ_s`. No angular momentum and no shell mass
+  are assigned.
 * `ElectronExclusion` — two electrons above the Bohr radius repel electrically and attract
   gravitationally; no spin-statistics theorem is claimed.
 * `SpinVersusExclusion` — spin reversal keeps the place and reverses the spin vector; no

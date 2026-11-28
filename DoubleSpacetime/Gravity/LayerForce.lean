@@ -15,7 +15,8 @@ locus `J = 0`. The length `ℓ` and the prefactor `G` stay inputs. No
 electromagnetic term is included, and no time step is taken. A vanishing
 separation is not a contact law. The sign is this chart reading.
 `RepulsionMomentum` computes the same coefficient as a motor separation and
-shows that the relational momentum does not accelerate there.
+shows that the relational momentum does not accelerate there. On a torsion
+star the areal radius is a chart input, not that coefficient.
 -/
 
 namespace DoubleSpacetime
