@@ -291,6 +291,18 @@ translator clock applies the field law a second time. The field law still
 selects the generator from the separation. The motor clock does not
 multiply the force.
 
+Time advance keeps that generator (`MotorAdvance`). The rotor factor is
+the torsion scaled by the flow parameter, so on axis 0 the accumulated
+common rapidity and the accumulated mismatch are linear, and both
+accelerations vanish. The body velocity keeps the unscaled torsion. The
+written flow agrees on the free mismatch and sources the common rapidity;
+the two common accelerations agree at every parameter only when the lag
+vanishes. The oscillator and the runaway leave the common rapidity
+inertial and accelerate the mismatch. Reading the advanced rotor back as
+a torsion rate multiplies the force by the parameter. Reading the advanced
+rotor and the advanced translator back as a new generator multiplies it
+by the square of the parameter.
+
 On the equal-scale locus the electromagnetic force is the Coulomb force
 divided by the interference factor $\gamma_s$. The sign of $\gamma_s$ is
 the repulsion. The length $\ell$ is an input. No angular momentum is

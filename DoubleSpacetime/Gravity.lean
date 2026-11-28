@@ -42,6 +42,10 @@ Child module docs hold the checked boundary, and `Gravity.Regression` adds no cl
   `[Ω_torsion, Ω_trans]`, and that bivector does not depend on the flow parameter. The translator
   coefficient accelerates by zero. The written lag force `-m δ(t)` is linear in the parameter, and
   reading `killingRate` off the translator clock is not this force.
+* `MotorAdvance` — time advance keeps that generator. Accumulated common rapidity and mismatch are
+  linear, so both accelerations vanish. The written flow sources the common rapidity and agrees
+  with this advance at every parameter only when the lag vanishes. Rebuilding the generator from
+  the advanced motor multiplies the force by the square of the flow parameter.
 * `RadialFall` — the same release law on the exterior chart.
 * `Perihelion` — constant angular momentum on that coframe; that ellipse is not an exact solution.
 * `Mercury` — exterior radial return of Mercury in `(42, 44)` arcseconds per Julian

@@ -107,6 +107,7 @@ import DoubleSpacetime.Gravity.OffEquator
 import DoubleSpacetime.Gravity.DegenerateSandwich
 import DoubleSpacetime.Gravity.KillingTransport
 import DoubleSpacetime.Gravity.MotorForce
+import DoubleSpacetime.Gravity.MotorAdvance
 import DoubleSpacetime.Gravity.CurvedTransport
 import DoubleSpacetime.Gravity.PlaneBracket
 import DoubleSpacetime.Gravity.Lensing
@@ -233,6 +234,31 @@ example {rs : ℝ} (hrs : rs ≠ 0) :
     KillingAxis.killingRate rs (MotorForce.translatorCoefficient MotorForce.boostShift 1 1) ≠
       KillingAxis.killingRate rs (MotorForce.translatorCoefficient MotorForce.boostShift 2 1) :=
   MotorForce.killingRate_of_clock_changes hrs
+
+example :
+    MotorAdvance.motorCommon MotorForce.boostShift.torsion 1 = 1 ∧
+      MotorAdvance.motorMismatch MotorForce.boostShift.torsion 1 = 1 ∧
+        MotorAdvance.motorCommon MotorForce.boostShift.torsion 1 ≠ writtenSigma 0 1 1 0 1 1 ∧
+          deriv (deriv (MotorAdvance.motorCommon MotorForce.boostShift.torsion)) 1 = 0 ∧
+            deriv (deriv (writtenSigma 0 1 1 0 1)) 1 = -2 :=
+  MotorAdvance.boostShift_advance_ne_written
+
+example :
+    MotorForce.motorForceCoefficient
+          ⟨Amplification.scaleTorsion 2 MotorForce.boostShift.torsion,
+            MotorForce.boostShift.trans⟩ ≠
+        MotorForce.motorForceCoefficient MotorForce.boostShift ∧
+      MotorForce.motorForceCoefficient
+          ⟨Amplification.scaleTorsion 2 MotorForce.boostShift.torsion,
+            ⟨fun μ => 2 * MotorForce.boostShift.trans.lambda μ⟩⟩ ≠
+        MotorForce.motorForceCoefficient MotorForce.boostShift :=
+  ⟨(MotorAdvance.boostShift_clock_not_generator).2.2.2.1,
+    (MotorAdvance.boostShift_clock_not_generator).2.2.2.2⟩
+
+example {m δ₀ ν : ℝ} (hm : m ≠ 0) (h : δ₀ ≠ 0 ∨ ν ≠ 0) :
+    ∃ t, deriv (deriv (writtenSigma 0 0 m δ₀ ν)) t ≠
+      deriv (deriv (MotorAdvance.motorCommon MotorForce.boostShift.torsion)) t :=
+  MotorAdvance.written_common_ne_motor MotorForce.boostShift.torsion hm h
 
 example (κ ν s : ℝ) :
     (KillingTransport.transportedParams (KillingAxis.killingParams κ ν)
