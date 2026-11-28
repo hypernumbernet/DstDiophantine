@@ -66,6 +66,7 @@ import DoubleSpacetime.Logic.Quantum.ChartFisher
 import DoubleSpacetime.Logic.Quantum.ChartScore
 import DoubleSpacetime.Logic.Quantum.MomentumReading
 import DoubleSpacetime.Logic.Quantum.TranslationFisher
+import DoubleSpacetime.Logic.Quantum.TranslatorInformation
 import DoubleSpacetime.Logic.Quantum.BornLorentz
 import DoubleSpacetime.Logic.Quantum.AngleChart
 import DoubleSpacetime.Logic.Quantum.DualExchange
